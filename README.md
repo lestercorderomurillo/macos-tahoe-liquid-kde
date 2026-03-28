@@ -20,7 +20,7 @@ Inspired by [Pear OS](https://pearos.xyz) in spirit — a complete environment, 
 | **SDDM theme** | Login and lock screen | 🔲 Planned |
 | **Aurorae decorations** | Window title bar and borders | 🔲 Planned |
 | **Color schemes** | Tahoe Light & Dark palettes | 🔲 Planned |
-| **Icons** | Full macOS-style icon set | 🔲 Planned |
+| **Icons** | Full macOS-style icon set (light & dark) | ✅ Done |
 | **Sounds** | Notification and event sounds | 🔲 Planned |
 | **Custom Electron apps** | "About This Mac" and System Settings | 🔲 Planned |
 | **Firefox** | Liquid Glass skin | 🔲 Planned |
@@ -55,15 +55,18 @@ macos-tahoe-liquid-kde/
     ├── mirrors/            # mirror lists and asset source metadata
     │   ├── wallpapers.txt
     │   ├── fonts.txt
-    │   └── cursors.txt
+    │   ├── cursors.txt
+    │   └── icons.txt
     └── steps/              # per-component install scripts
         ├── utils.sh
         ├── step-wallpapers.sh
         ├── step-fonts.sh
         ├── step-cursors.sh
+        ├── step-icons.sh
         ├── wallpapers/     # online
         ├── fonts/          # online
-        └── cursors/        # online
+        ├── cursors/        # online
+        └── icons/          # online
 ```
 
 ---
@@ -74,8 +77,8 @@ macos-tahoe-liquid-kde/
 |------|-------------|
 | `~/.local/share/wallpapers/` | Wallpaper collection |
 | `~/.local/share/fonts/` | SF Pro typefaces |
-| `~/.local/share/icons/` | Cursor themes |
-| `~/.config/kdeglobals` | System fonts set to SF Pro |
+| `~/.local/share/icons/` | Cursor themes and icon themes |
+| `~/.config/kdeglobals` | System fonts, icon theme |
 | `~/.config/kcminputrc` | Cursor theme applied |
 
 ---
