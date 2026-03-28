@@ -46,17 +46,8 @@ handle_mirror() {
 # ── source 1: MacTahoe cursors (vinceliuice) ──────────────────
 MIRRORS=(
   "https://github.com/vinceliuice/MacTahoe-icon-theme/archive/refs/heads/main.zip|zip|MacTahoeLiquidKde"
+  "https://github.com/vinceliuice/MacTahoe-icon-theme/archive/refs/tags/2025-10-16.zip|zip|MacTahoeLiquidKde"
 )
 run_mirrors && any_ok=true || warn "MacTahoeLiquidKde cursors — all mirrors failed"
-
-# reset tmp between downloads
-rm -rf "${TMP:?}/mirror"* "${TMP:?}/extract"*
-
-# ── source 2: Apple cursors (ful1e5) ─────────────────────────
-MIRRORS=(
-  "https://github.com/ful1e5/apple_cursor/releases/latest/download/macOS.tar.gz|tar.gz|MacTahoeLiquidKde-Apple"
-  "https://github.com/ful1e5/apple_cursor/releases/latest/download/macOS.tar.xz|tar.xz|MacTahoeLiquidKde-Apple"
-)
-run_mirrors && any_ok=true || warn "MacTahoeLiquidKde Apple cursors — all mirrors failed"
 
 $any_ok || { fail "no cursor themes installed — all mirrors failed"; exit 1; }

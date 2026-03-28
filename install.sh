@@ -80,7 +80,7 @@ _pkg_install() {
   else fail "no package manager found — install $* manually"; return 1; fi
 }
 
-for _dep in curl unzip fontconfig; do
+for _dep in curl unzip; do
   if command -v "$_dep" &>/dev/null; then
     ok "$_dep"
   else
@@ -88,6 +88,12 @@ for _dep in curl unzip fontconfig; do
     _pkg_install "$_dep" && ok "$_dep (installed)" || fail "$_dep (install failed)"
   fi
 done
+if command -v fc-cache &>/dev/null; then
+  ok "fontconfig"
+else
+  warn "fontconfig not found — installing..."
+  _pkg_install fontconfig && ok "fontconfig (installed)" || fail "fontconfig (install failed)"
+fi
 unset -f _pkg_install
 
 command -v kwriteconfig6 &>/dev/null && ok "kwriteconfig6" || warn "kwriteconfig6 not found — fonts won't apply automatically"
@@ -275,7 +281,7 @@ if command -v kwriteconfig6 &>/dev/null; then
     done
     if [[ -n "$cursor_theme" ]]; then
       kwriteconfig6 --file kcminputrc --group Mouse --key cursorTheme "$cursor_theme"
-      ok "cursor theme set ($cursor_theme)"
+      ok "Cursor theme set"
     else
       warn "cursor theme not found — set manually in System Settings"
     fi
