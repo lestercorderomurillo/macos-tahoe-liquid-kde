@@ -369,6 +369,9 @@ if command -v kwriteconfig6 &>/dev/null; then
     done
     if [[ -n "$cursor_theme" ]]; then
       kwriteconfig6 --file kcminputrc --group Mouse --key cursorTheme "$cursor_theme"
+      if command -v plasma-apply-cursortheme &>/dev/null; then
+        plasma-apply-cursortheme "$cursor_theme" &>/dev/null || true
+      fi
       ok "Cursor theme set"
     else
       warn "cursor theme not found — set manually in System Settings"
@@ -383,16 +386,38 @@ if command -v kwriteconfig6 &>/dev/null; then
     if [[ -n "$icon_theme" ]]; then
       kwriteconfig6 --file kdeglobals --group Icons --key Theme "$icon_theme"
       if command -v plasma-apply-icontheme &>/dev/null; then
-        plasma-apply-icontheme "$icon_theme" 2>/dev/null || true
+        plasma-apply-icontheme "$icon_theme" &>/dev/null || true
       fi
       dbus-send --session --type=signal /KIconLoader org.kde.KIconLoader.iconChanged 2>/dev/null || true
-      ok "Icon theme set (log out/in for full effect)"
+      ok "Icon theme set"
     else
       warn "icon theme not found — set manually in System Settings"
     fi
   fi
+
+  if [[ "$(cfg wallpapers)" == "true" ]]; then
+    wp_path="$WALLPAPERS/MacTahoe"
+    if [[ -d "$wp_path" ]]; then
+      if command -v plasma-apply-wallpaperimage &>/dev/null; then
+        plasma-apply-wallpaperimage "$wp_path" &>/dev/null || true
+        ok "Wallpaper set to MacTahoe (light/dark)"
+      else
+        ok "Wallpaper installed — set manually in Desktop Settings"
+      fi
+    fi
+  fi
 fi
 
+# rebuild sycoca first so KDE knows about new plasmoids/icons
+if command -v kbuildsycoca6 &>/dev/null; then
+  kbuildsycoca6 --noincremental 2>/dev/null \
+    && ok "KDE system cache rebuilt" || warn "kbuildsycoca6 failed (non-fatal)"
+elif command -v kbuildsycoca5 &>/dev/null; then
+  kbuildsycoca5 --noincremental 2>/dev/null \
+    && ok "KDE system cache rebuilt" || warn "kbuildsycoca5 failed (non-fatal)"
+fi
+
+# reconfigure KWin (window borders, decorations)
 for qdbus_cmd in qdbus6 qdbus; do
   command -v "$qdbus_cmd" &>/dev/null && {
     "$qdbus_cmd" org.kde.KWin /KWin org.kde.KWin.reconfigure 2>/dev/null \
@@ -401,18 +426,17 @@ for qdbus_cmd in qdbus6 qdbus; do
   }
 done
 
+# signal all icon-aware apps to refresh
+if command -v dbus-send &>/dev/null; then
+  dbus-send --session --type=signal /KIconLoader org.kde.KIconLoader.iconChanged 2>/dev/null || true
+  dbus-send --session --type=signal /KGlobalSettings org.kde.KGlobalSettings.notifyChange int32:4 int32:0 2>/dev/null || true
+fi
+
+# refresh Plasma shell (panels, dock, desktop)
 if command -v dbus-send &>/dev/null; then
   dbus-send --session --dest=org.kde.plasmashell \
     /PlasmaShell org.kde.PlasmaShell.refreshCurrentShell 2>/dev/null \
     && ok "Plasma shell refreshed" || warn "Plasma shell refresh failed (non-fatal)"
-fi
-
-if command -v kbuildsycoca6 &>/dev/null; then
-  kbuildsycoca6 --noincremental 2>/dev/null \
-    && ok "KDE system cache rebuilt" || warn "kbuildsycoca6 failed (non-fatal)"
-elif command -v kbuildsycoca5 &>/dev/null; then
-  kbuildsycoca5 --noincremental 2>/dev/null \
-    && ok "KDE system cache rebuilt" || warn "kbuildsycoca5 failed (non-fatal)"
 fi
 
 # ── Done ──────────────────────────────────────────────────────
@@ -424,6 +448,4 @@ else
   warn "${#ERRORS[@]} issue(s) — everything else installed fine:"
   for e in "${ERRORS[@]}"; do fail "$e"; done
 fi
-echo ""
-echo -e "  ${BOLD}Log out and back in to apply all changes${RESET}"
 echo ""
