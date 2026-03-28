@@ -12,9 +12,7 @@ trap 'rm -rf "$TMP"' EXIT
 mkdir -p "$DEST" "$TMP"
 
 # ── mirrors ───────────────────────────────────────────────────
-MIRRORS=(
-  "https://github.com/sahibjotsaggu/San-Francisco-Pro-Fonts/archive/refs/heads/master.zip|zip|SF"
-)
+mapfile -t MIRRORS < <(grep '^mirror:' "src/mirrors/fonts.txt" | sed 's/^mirror: *//')
 
 handle_mirror() {
   local xdir="$1" installed=false

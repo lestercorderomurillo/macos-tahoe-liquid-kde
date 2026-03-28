@@ -18,14 +18,14 @@ STEP=0
 
 ok()        { echo -e "  ${GREEN}✓${RESET}  $*"; }
 reinstall() { echo -e "  ${YELLOW}↺${RESET}  $* (reinstalled)"; }
-info()      { echo -e "  ${BOLD}$*${RESET}"; }
+info()      { echo ""; echo -e "  ${BOLD}$*${RESET}"; }
 note()      { echo -e "  $*"; echo ""; }
 warn()      { echo -e "  ${YELLOW}⚠${RESET}  $*"; }
 fail()      { echo -e "  ${RED}✗${RESET}  $*"; ERRORS+=("$*"); }
 step() {
   ((STEP++))
   echo ""
-  echo -e "${GREEN}${BOLD}  ── Step ${STEP}: $* ─────────────────────────────${RESET}"
+  echo -e "${GREEN}${BOLD}  Step ${STEP}: $*${RESET}"
 }
 
 cfg() {
@@ -247,12 +247,54 @@ if [[ "$(cfg cursors)" == "true" ]]; then
   info "$((n_inst+n_re)) cursor themes — $n_inst installed, $n_re reinstalled"
 fi
 
-# ── (future) Installing Icons ────────────────────────────────
-# if [[ "$(cfg icons)" == "true" ]]; then
-#   step "Installing Icons"
-#   note "Downloads and installs the MacTahoe Liquid KDE icon theme"
-#   run_step "step-icons.sh"
-# fi
+# ── Step 5: Installing Icons ─────────────────────────────────
+if [[ "$(cfg icons)" == "true" ]]; then
+  step "Installing Icons"
+  note "Downloads and installs MacTahoe Liquid KDE icon themes"
+
+  # snapshot before any downloads so installed/reinstalled reflects pre-run state
+  declare -A _ico_pre=()
+  for _d in "$ICONS_DIR"/*/; do [[ -d "$_d" ]] && _ico_pre["$(basename "$_d")"]=1; done
+
+  run_step "step-icons.sh"
+
+  mkdir -p "$ICONS_DIR"
+  n_inst=0; n_re=0
+  for theme in "$STEPS/icons"/*/; do
+    [[ -d "$theme" ]] || continue
+    name=$(basename "$theme")
+    [[ -f "$theme/index.theme" ]] || { fail "$name (no index.theme — skipping)"; continue; }
+
+    dest="$ICONS_DIR/$name"
+    tmp="$ICONS_DIR/.tmp_${name}_$$"
+    bak="$ICONS_DIR/.bak_${name}_$$"
+
+    rm -rf "$tmp" 2>/dev/null || true
+    if err=$(cp -r "$theme/." "$tmp/" 2>&1 || { mkdir -p "$tmp" && cp -r "$theme/." "$tmp/"; }); then
+      rm -rf "$bak" 2>/dev/null || true
+      [[ -d "$dest" ]] && { mv "$dest" "$bak" 2>/dev/null || rm -rf "$dest" 2>/dev/null || true; }
+      if err2=$(mv "$tmp" "$dest" 2>&1); then
+        rm -rf "$bak" 2>/dev/null || true
+        if [[ -n "${_ico_pre[$name]+_}" ]]; then
+          reinstall "$name"; n_re=$((n_re+1))
+        else
+          ok "$name (installed)"; n_inst=$((n_inst+1))
+        fi
+      else
+        [[ -d "$bak" ]] && mv "$bak" "$dest" 2>/dev/null || true
+        rm -rf "$tmp" 2>/dev/null || true
+        fail "$name (move failed: ${err2:-unknown error})"
+      fi
+    else
+      rm -rf "$tmp" 2>/dev/null || true
+      fail "$name (copy failed: ${err:-unknown error})"
+    fi
+  done
+  _n=$(( n_inst + n_re ))
+  [[ $_n -eq 1 ]] && _lbl="icon theme" || _lbl="icon themes"
+  info "$_n $_lbl — $n_inst installed, $n_re reinstalled"
+  unset _n _lbl
+fi
 # ── (future) Installing Sounds ───────────────────────────────
 # ── (future) Installing GTK Theme ────────────────────────────
 # ── (future) Installing SDDM Theme ───────────────────────────
@@ -286,6 +328,23 @@ if command -v kwriteconfig6 &>/dev/null; then
       warn "cursor theme not found — set manually in System Settings"
     fi
   fi
+
+  if [[ "$(cfg icons)" == "true" ]]; then
+    icon_theme=""
+    for theme in "$ICONS_DIR"/MacTahoeLiquidKde-Icons "$ICONS_DIR"/MacTahoeLiquidKde-Icons-dark; do
+      [[ -f "$theme/index.theme" ]] && { icon_theme=$(basename "$theme"); break; }
+    done
+    if [[ -n "$icon_theme" ]]; then
+      kwriteconfig6 --file kdeglobals --group Icons --key Theme "$icon_theme"
+      if command -v plasma-apply-icontheme &>/dev/null; then
+        plasma-apply-icontheme "$icon_theme" 2>/dev/null || true
+      fi
+      dbus-send --session --type=signal /KIconLoader org.kde.KIconLoader.iconChanged 2>/dev/null || true
+      ok "Icon theme set (log out/in for full effect)"
+    else
+      warn "icon theme not found — set manually in System Settings"
+    fi
+  fi
 fi
 
 for qdbus_cmd in qdbus6 qdbus; do
@@ -312,7 +371,7 @@ fi
 
 # ── Done ──────────────────────────────────────────────────────
 echo ""
-echo -e "${GREEN}${BOLD}  ── Done ────────────────────────────────────────${RESET}"
+echo -e "${GREEN}${BOLD}  ── Done${RESET}"
 if [[ ${#ERRORS[@]} -eq 0 ]]; then
   ok "MacTahoe Liquid KDE installed successfully"
 else

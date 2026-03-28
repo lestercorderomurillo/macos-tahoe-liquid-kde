@@ -1,13 +1,12 @@
 # MacTahoe KDE — font sources
 # downloaded at install time by src/steps/step-fonts.sh
-# installed to src/steps/fonts/ (not committed)
-# to add a mirror: append a line to MIRRORS in step-fonts.sh
+# mirror entries are read by the step script — format: url|ext|name
 
-# ── source 1 ──────────────────────────────────────────────────
+# ── source 1 — sahibjotsaggu/San-Francisco-Pro-Fonts ─────────
 source:   sahibjotsaggu/San-Francisco-Pro-Fonts
 url:      https://github.com/sahibjotsaggu/San-Francisco-Pro-Fonts
 license:  Apple Inc. (system fonts extracted from macOS)
 author:   sahibjotsaggu
-download: https://github.com/sahibjotsaggu/San-Francisco-Pro-Fonts/archive/refs/heads/master.zip
-extract:  *.otf  *.ttf
-installs: SF Pro Display, SF Pro Text, SF Pro Rounded, SF Pro (SF-Pro-*.otf / SF-Pro.ttf / SF-Pro-Italic.ttf)
+installs: SF Pro Display, SF Pro Text, SF Pro Rounded, SF Pro
+
+mirror: https://github.com/sahibjotsaggu/San-Francisco-Pro-Fonts/archive/refs/heads/master.zip|zip|SF

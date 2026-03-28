@@ -23,14 +23,14 @@ ERRORS=()
 STEP=0
 
 ok()   { echo -e "  ${GREEN}✓${RESET}  $*"; }
-info() { echo -e "  ${BOLD}$*${RESET}"; }
+info() { echo ""; echo -e "  ${BOLD}$*${RESET}"; }
 note() { echo -e "  $*"; echo ""; }
 warn() { echo -e "  ${YELLOW}⚠${RESET}  $*"; }
 fail() { echo -e "  ${RED}✗${RESET}  $*"; ERRORS+=("$*"); }
 step() {
   ((STEP++))
   echo ""
-  echo -e "${GREEN}${BOLD}  ── Step ${STEP}: $* ─────────────────────────────${RESET}"
+  echo -e "${GREEN}${BOLD}  ── Step ${STEP}: $*${RESET}"
 }
 
 cfg() {
@@ -158,6 +158,7 @@ if [[ "$(cfg cursors)" == "true" ]]; then
   for theme in "$ICONS_DIR"/MacTahoeLiquidKde* "$ICONS_DIR"/MacTahoe*cursors* "$ICONS_DIR"/MacTahoe*Cursors*; do
     [[ -d "$theme" ]] || continue
     name=$(basename "$theme")
+    [[ "$name" == *Icons* ]] && continue  # handled by the icons step
     if err=$(rm -rf "$theme" 2>&1); then
       ok "$name (removed)"; n=$((n + 1))
     else
@@ -170,10 +171,24 @@ if [[ "$(cfg cursors)" == "true" ]]; then
 fi
 
 # ── Step 9: Removing Icons ────────────────────────────────────
-# if [[ "$(cfg icons)" == "true" ]]; then
-#   step "Removing Icons"
-#   note "Removes the MacTahoe icon theme"
-# fi
+if [[ "$(cfg icons)" == "true" ]]; then
+  step "Removing Icons"
+  note "Removes the MacTahoe Liquid KDE icon themes"
+
+  n=0
+  for theme in "$ICONS_DIR"/MacTahoeLiquidKde-Icons*; do
+    [[ -d "$theme" ]] || continue
+    name=$(basename "$theme")
+    if err=$(rm -rf "$theme" 2>&1); then
+      ok "$name (removed)"; n=$((n + 1))
+    else
+      fail "$name (remove failed: ${err:-unknown error})"
+    fi
+  done
+  [[ $n -eq 0 ]] \
+    && info "0 icon themes removed (already removed?)" \
+    || info "$n icon themes removed"
+fi
 
 # ── Step 10: Removing Sounds ─────────────────────────────────
 # if [[ "$(cfg sounds)" == "true" ]]; then
@@ -219,6 +234,16 @@ if command -v kwriteconfig6 &>/dev/null; then
     kwriteconfig6 --file kcminputrc --group Mouse --key cursorTheme "breeze_cursors"
     ok "cursor theme reset to Breeze"
   fi
+
+  if [[ "$(cfg icons)" == "true" ]]; then
+    kwriteconfig6 --file kdeglobals --group Icons --key Theme "breeze"
+    ok "icon theme reset to Breeze"
+    if command -v plasma-apply-icontheme &>/dev/null; then
+      plasma-apply-icontheme breeze 2>/dev/null && ok "icon theme applied live" || true
+    else
+      dbus-send --session --type=signal /KIconLoader org.kde.KIconLoader.iconChanged 2>/dev/null || true
+    fi
+  fi
 fi
 
 for qdbus_cmd in qdbus6 qdbus; do
@@ -245,7 +270,7 @@ fi
 
 # ── Done ──────────────────────────────────────────────────────
 echo ""
-echo -e "${GREEN}${BOLD}  ── Done ────────────────────────────────────────${RESET}"
+echo -e "${GREEN}${BOLD}  ── Done${RESET}"
 if [[ ${#ERRORS[@]} -eq 0 ]]; then
   ok "MacTahoe Liquid KDE uninstalled successfully"
 else

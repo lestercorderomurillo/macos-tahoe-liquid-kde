@@ -44,10 +44,7 @@ handle_mirror() {
 }
 
 # ── source 1: MacTahoe cursors (vinceliuice) ──────────────────
-MIRRORS=(
-  "https://github.com/vinceliuice/MacTahoe-icon-theme/archive/refs/heads/main.zip|zip|MacTahoeLiquidKde"
-  "https://github.com/vinceliuice/MacTahoe-icon-theme/archive/refs/tags/2025-10-16.zip|zip|MacTahoeLiquidKde"
-)
+mapfile -t MIRRORS < <(grep '^mirror:' "src/mirrors/cursors.txt" | sed 's/^mirror: *//')
 run_mirrors && any_ok=true || warn "MacTahoeLiquidKde cursors — all mirrors failed"
 
 $any_ok || { fail "no cursor themes installed — all mirrors failed"; exit 1; }

@@ -6,7 +6,7 @@
   "window_decorations":  false,
   "kvantum":             false,
   "color_schemes":       false,
-  "icons":               false,
+  "icons":               true,
   "sounds":              false,
   "gtk":                 false,
   "sddm":                false,

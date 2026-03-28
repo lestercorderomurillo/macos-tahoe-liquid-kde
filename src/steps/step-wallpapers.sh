@@ -3,9 +3,10 @@
 set -uo pipefail
 
 DEST="src/steps/wallpapers"
-BASE="https://512pixels.net/downloads/macos-wallpapers-6k"
-BASE_OLD="https://512pixels.net/downloads/macos-wallpapers"
 TMP="/tmp/tahoe-wp-$$"
+BASE=$(grep '^base:' "src/mirrors/wallpapers.txt" | head -1 | sed 's/^base: *//')
+BASE_OLD=$(grep '^base_old:' "src/mirrors/wallpapers.txt" | head -1 | sed 's/^base_old: *//')
+REFERER=$(grep '^referer:' "src/mirrors/wallpapers.txt" | head -1 | sed 's/^referer: *//')
 
 source "$(dirname "$0")/utils.sh"
 
@@ -18,7 +19,7 @@ get() {
   local url="$1" dest="$2" name="$3"
   mkdir -p "$(dirname "$dest")"
   curl -fsSL --retry 3 --retry-delay 1 \
-    -H "Referer: https://512pixels.net/projects/default-mac-wallpapers-in-5k/" \
+    -H "Referer: $REFERER" \
     -H "User-Agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36" \
     -o "$dest" "$url" 2>/dev/null \
     || { rm -f "$dest"; fail "$name (download failed)"; }
@@ -65,9 +66,7 @@ for entry in "${BEACH[@]}"; do
 done
 
 # ── Landscape series (zip with mirrors) ───────────────────────
-MIRRORS=(
-  "https://lowendmac.com/wp-content/uploads/Lake-Tahoe-macOS-26-Beta-5-wallpapers.zip|zip|landscape"
-)
+mapfile -t MIRRORS < <(grep '^mirror:' "src/mirrors/wallpapers.txt" | sed 's/^mirror: *//')
 
 handle_mirror() {
   local xdir="$1" i=1
