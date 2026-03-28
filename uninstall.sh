@@ -7,6 +7,7 @@ CONFIG="$REPO/features.json"
 WALLPAPERS="$HOME/.local/share/wallpapers"
 FONTS_DIR="$HOME/.local/share/fonts"
 ICONS_DIR="$HOME/.local/share/icons"
+PLASMOIDS_DIR="$HOME/.local/share/plasma/plasmoids"
 # PLASMA="$HOME/.local/share/plasma/desktoptheme"
 # LOOKFEEL="$HOME/.local/share/plasma/look-and-feel"
 # AURORAE="$HOME/.local/share/aurorae/themes"
@@ -188,6 +189,26 @@ if [[ "$(cfg icons)" == "true" ]]; then
   [[ $n -eq 0 ]] \
     && info "0 icon themes removed (already removed?)" \
     || info "$n icon themes removed"
+fi
+
+# ── Step: Removing Plasmoids ─────────────────────────────────
+if [[ "$(cfg plasmoids)" == "true" ]]; then
+  step "Removing Plasmoids"
+  note "Removes custom Plasma widgets"
+
+  n=0
+  for widget in "$PLASMOIDS_DIR"/org.kde.mactahoe-liquid-kde.*; do
+    [[ -d "$widget" ]] || continue
+    name=$(basename "$widget")
+    if err=$(rm -rf "$widget" 2>&1); then
+      ok "$name (removed)"; n=$((n + 1))
+    else
+      fail "$name (remove failed: ${err:-unknown error})"
+    fi
+  done
+  [[ $n -eq 0 ]] \
+    && info "0 plasmoids removed (already removed?)" \
+    || info "$n plasmoids removed"
 fi
 
 # ── Step 10: Removing Sounds ─────────────────────────────────

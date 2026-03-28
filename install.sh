@@ -5,10 +5,12 @@ set -uo pipefail
 REPO="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 SRC="$REPO/src"
 STEPS="$REPO/src/steps"
+OFFLINE="$REPO/src/offline"
 CONFIG="$REPO/features.json"
 WALLPAPERS="$HOME/.local/share/wallpapers"
 FONTS_DIR="$HOME/.local/share/fonts"
 ICONS_DIR="$HOME/.local/share/icons"
+PLASMOIDS_DIR="$HOME/.local/share/plasma/plasmoids"
 
 GREEN='\033[0;32m'; YELLOW='\033[1;33m'
 RED='\033[0;31m'; RESET='\033[0m'; BOLD='\033[1m'
@@ -295,6 +297,50 @@ if [[ "$(cfg icons)" == "true" ]]; then
   info "$_n $_lbl — $n_inst installed, $n_re reinstalled"
   unset _n _lbl
 fi
+# ── Step: Installing Plasmoids ───────────────────────────────
+if [[ "$(cfg plasmoids)" == "true" ]]; then
+  step "Installing Plasmoids"
+  note "Installs custom Plasma widgets from src/offline/plasmoids"
+
+  mkdir -p "$PLASMOIDS_DIR"
+  n_inst=0; n_re=0
+  for widget in "$OFFLINE/plasmoids"/*/; do
+    [[ -d "$widget" ]] || continue
+    name=$(basename "$widget")
+    [[ -f "$widget/metadata.json" ]] || { fail "$name (no metadata.json — skipping)"; continue; }
+
+    dest="$PLASMOIDS_DIR/$name"
+    tmp="$PLASMOIDS_DIR/.tmp_${name}_$$"
+    bak="$PLASMOIDS_DIR/.bak_${name}_$$"
+
+    rm -rf "$tmp" 2>/dev/null || true
+    if err=$(cp -r "$widget/." "$tmp/" 2>&1 || { mkdir -p "$tmp" && cp -r "$widget/." "$tmp/"; }); then
+      rm -rf "$bak" 2>/dev/null || true
+      was_present=false
+      [[ -d "$dest" ]] && { was_present=true; mv "$dest" "$bak" 2>/dev/null || rm -rf "$dest" 2>/dev/null || true; }
+      if err2=$(mv "$tmp" "$dest" 2>&1); then
+        rm -rf "$bak" 2>/dev/null || true
+        if $was_present; then
+          reinstall "$name"; n_re=$((n_re+1))
+        else
+          ok "$name (installed)"; n_inst=$((n_inst+1))
+        fi
+      else
+        [[ -d "$bak" ]] && mv "$bak" "$dest" 2>/dev/null || true
+        rm -rf "$tmp" 2>/dev/null || true
+        fail "$name (move failed: ${err2:-unknown error})"
+      fi
+    else
+      rm -rf "$tmp" 2>/dev/null || true
+      fail "$name (copy failed: ${err:-unknown error})"
+    fi
+  done
+  _n=$(( n_inst + n_re ))
+  [[ $_n -eq 1 ]] && _lbl="plasmoid" || _lbl="plasmoids"
+  info "$_n $_lbl — $n_inst installed, $n_re reinstalled"
+  unset _n _lbl
+fi
+
 # ── (future) Installing Sounds ───────────────────────────────
 # ── (future) Installing GTK Theme ────────────────────────────
 # ── (future) Installing SDDM Theme ───────────────────────────

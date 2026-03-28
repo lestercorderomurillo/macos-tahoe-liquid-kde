@@ -1,0 +1,23 @@
+{
+    "KPackageStructure": "Plasma/Applet",
+    "KPlugin": {
+        "Authors": [
+            {
+                "Name": "Lester Cordero Murillo"
+            }
+        ],
+        "Category": "File System",
+        "Description": "Trash widget",
+        "Icon": "user-trash",
+        "Id": "org.kde.mactahoe-liquid-kde.trash",
+        "License": "GPL-2.0+",
+        "Name": "Trashcan (MacTahoe Liquid KDE)"
+    },
+    "X-Plasma-API-Minimum-Version": "6.0",
+    "X-Plasma-DropUrlPatterns": [
+        "trash:/"
+    ],
+    "X-Plasma-Provides": [
+        "org.kde.plasma.trash"
+    ]
+}

@@ -24,6 +24,7 @@ Inspired by [Pear OS](https://pearos.xyz) in spirit — a complete environment, 
 | **Sounds** | Notification and event sounds | 🔲 Planned |
 | **Custom Electron apps** | "About This Mac" and System Settings | 🔲 Planned |
 | **Firefox** | Liquid Glass skin | 🔲 Planned |
+| **Plasmoids** | Custom trash widget with configurable icons | ✅ Done |
 | **Widgets** | Plasma widgets styled after Tahoe UI | 🔲 Planned |
 
 ---
@@ -57,6 +58,9 @@ macos-tahoe-liquid-kde/
     │   ├── fonts.txt
     │   ├── cursors.txt
     │   └── icons.txt
+    ├── offline/            # assets bundled in-repo (no download needed)
+    │   └── plasmoids/
+    │       └── org.kde.mactahoe-liquid-kde.trash/  # custom trash widget
     └── steps/              # per-component install scripts
         ├── utils.sh
         ├── step-wallpapers.sh
@@ -80,6 +84,7 @@ macos-tahoe-liquid-kde/
 | `~/.local/share/icons/` | Cursor themes and icon themes |
 | `~/.config/kdeglobals` | System fonts, icon theme |
 | `~/.config/kcminputrc` | Cursor theme applied |
+| `~/.local/share/plasma/plasmoids/` | Custom plasmoids |
 
 ---
 
