@@ -350,6 +350,10 @@ fi
 step "Applying Changes"
 note "Applies settings and tells KDE to reload"
 
+# ── phase 1: write config files (before layout, so new panels read them) ──
+icon_theme=""
+cursor_theme=""
+
 if command -v kwriteconfig6 &>/dev/null; then
   if [[ "$(cfg fonts)" == "true" ]]; then
     kwriteconfig6 --file kdeglobals --group General --key font                 "SF Pro Text,10,-1,5,50,0,0,0,0,0"
@@ -363,77 +367,83 @@ if command -v kwriteconfig6 &>/dev/null; then
   fi
 
   if [[ "$(cfg cursors)" == "true" ]]; then
-    cursor_theme=""
     for theme in "$ICONS_DIR"/MacTahoeLiquidKde "$ICONS_DIR"/MacTahoeLiquidKde-Dark "$ICONS_DIR"/MacTahoeLiquidKde-Apple "$ICONS_DIR"/MacTahoeLiquidKde-Apple-White; do
       [[ -d "$theme/cursors" ]] && { cursor_theme=$(basename "$theme"); break; }
     done
     if [[ -n "$cursor_theme" ]]; then
       kwriteconfig6 --file kcminputrc --group Mouse --key cursorTheme "$cursor_theme"
-      if command -v plasma-apply-cursortheme &>/dev/null; then
-        plasma-apply-cursortheme "$cursor_theme" &>/dev/null || true
-      fi
-      ok "Cursor theme set"
+      ok "Cursor config written"
     else
       warn "cursor theme not found — set manually in System Settings"
     fi
   fi
 
   if [[ "$(cfg icons)" == "true" ]]; then
-    icon_theme=""
     for theme in "$ICONS_DIR"/MacTahoeLiquidKde-Icons "$ICONS_DIR"/MacTahoeLiquidKde-Icons-dark; do
       [[ -f "$theme/index.theme" ]] && { icon_theme=$(basename "$theme"); break; }
     done
     if [[ -n "$icon_theme" ]]; then
       kwriteconfig6 --file kdeglobals --group Icons --key Theme "$icon_theme"
-      if command -v plasma-apply-icontheme &>/dev/null; then
-        plasma-apply-icontheme "$icon_theme" &>/dev/null || true
-      fi
-      dbus-send --session --type=signal /KIconLoader org.kde.KIconLoader.iconChanged 2>/dev/null || true
-      ok "Icon theme set"
+      ok "Icon config written"
     else
       warn "icon theme not found — set manually in System Settings"
     fi
   fi
+fi
 
-  if [[ "$(cfg wallpapers)" == "true" ]]; then
-    wp_path="$WALLPAPERS/MacTahoe"
-    if [[ -d "$wp_path" ]]; then
-      if command -v plasma-apply-wallpaperimage &>/dev/null; then
-        plasma-apply-wallpaperimage "$wp_path" &>/dev/null || true
-        ok "Wallpaper set to MacTahoe (light/dark)"
-      else
-        ok "Wallpaper installed — set manually in Desktop Settings"
-      fi
+# ── phase 2: layout (new panels read the config we just wrote) ──
+if [[ "$(cfg layout)" == "true" ]]; then
+  _layout="$REPO/src/offline/layouts/mactahoe.js"
+  if [[ -f "$_layout" ]]; then
+    _qdbus=""
+    for _q in qdbus6 qdbus; do command -v "$_q" &>/dev/null && { _qdbus="$_q"; break; }; done
+    if [[ -n "$_qdbus" ]]; then
+      "$_qdbus" org.kde.plasmashell /PlasmaShell org.kde.PlasmaShell.evaluateScript "$(cat "$_layout")" &>/dev/null \
+        && ok "Layout applied (top bar + bottom dock)" \
+        || warn "layout script failed — set layout manually"
+      sleep 2  # let Plasma finish creating panels
+    else
+      warn "qdbus not found — layout not applied"
     fi
   fi
 fi
 
-# rebuild sycoca first so KDE knows about new plasmoids/icons
+# ── phase 3: live-apply themes (panels now exist with correct config) ──
+if [[ -n "$icon_theme" ]] && command -v plasma-apply-icontheme &>/dev/null; then
+  plasma-apply-icontheme "$icon_theme" &>/dev/null || true
+  ok "Icon theme applied"
+fi
+
+if [[ -n "$cursor_theme" ]] && command -v plasma-apply-cursortheme &>/dev/null; then
+  plasma-apply-cursortheme "$cursor_theme" &>/dev/null || true
+  ok "Cursor theme applied"
+fi
+
+if [[ "$(cfg wallpapers)" == "true" ]]; then
+  wp_path="$WALLPAPERS/MacTahoe"
+  if [[ -d "$wp_path" ]] && command -v plasma-apply-wallpaperimage &>/dev/null; then
+    plasma-apply-wallpaperimage "$wp_path" &>/dev/null || true
+    ok "Wallpaper set to MacTahoe (light/dark)"
+  fi
+fi
+
+# ── phase 4: rebuild caches and signal reload ──
 if command -v kbuildsycoca6 &>/dev/null; then
   kbuildsycoca6 --noincremental 2>/dev/null \
     && ok "KDE system cache rebuilt" || warn "kbuildsycoca6 failed (non-fatal)"
-elif command -v kbuildsycoca5 &>/dev/null; then
-  kbuildsycoca5 --noincremental 2>/dev/null \
-    && ok "KDE system cache rebuilt" || warn "kbuildsycoca5 failed (non-fatal)"
 fi
 
-# reconfigure KWin (window borders, decorations)
 for qdbus_cmd in qdbus6 qdbus; do
   command -v "$qdbus_cmd" &>/dev/null && {
-    "$qdbus_cmd" org.kde.KWin /KWin org.kde.KWin.reconfigure 2>/dev/null \
+    "$qdbus_cmd" org.kde.KWin /KWin org.kde.KWin.reconfigure &>/dev/null \
       && ok "KWin reconfigured" || warn "KWin reconfigure failed (non-fatal)"
     break
   }
 done
 
-# signal all icon-aware apps to refresh
 if command -v dbus-send &>/dev/null; then
   dbus-send --session --type=signal /KIconLoader org.kde.KIconLoader.iconChanged 2>/dev/null || true
   dbus-send --session --type=signal /KGlobalSettings org.kde.KGlobalSettings.notifyChange int32:4 int32:0 2>/dev/null || true
-fi
-
-# refresh Plasma shell (panels, dock, desktop)
-if command -v dbus-send &>/dev/null; then
   dbus-send --session --dest=org.kde.plasmashell \
     /PlasmaShell org.kde.PlasmaShell.refreshCurrentShell 2>/dev/null \
     && ok "Plasma shell refreshed" || warn "Plasma shell refresh failed (non-fatal)"

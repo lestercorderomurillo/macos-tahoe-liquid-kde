@@ -8,8 +8,9 @@
   "color_schemes":       false,
   "icons":               true,
   "plasmoids":           true,
+  "layout":              true,
   "sounds":              false,
   "gtk":                 false,
-  "sddm":                false,
+  "sddm":               false,
   "apps":                false
 }

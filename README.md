@@ -24,7 +24,8 @@ Inspired by [Pear OS](https://pearos.xyz) in spirit — a complete environment, 
 | **Sounds** | Notification and event sounds | 🔲 Planned |
 | **Custom Electron apps** | "About This Mac" and System Settings | 🔲 Planned |
 | **Firefox** | Liquid Glass skin | 🔲 Planned |
-| **Plasmoids** | Custom trash widget with configurable icons | ✅ Done |
+| **Plasmoids** | Custom Plasma widgets (trash, more planned) | ✅ In Progress |
+| **Layout** | Top menu bar + bottom floating dock | ✅ Done |
 | **Widgets** | Plasma widgets styled after Tahoe UI | 🔲 Planned |
 
 ---
@@ -59,8 +60,11 @@ macos-tahoe-liquid-kde/
     │   ├── cursors.txt
     │   └── icons.txt
     ├── offline/            # assets bundled in-repo (no download needed)
-    │   └── plasmoids/
-    │       └── org.kde.mactahoe-liquid-kde.trash/  # custom trash widget
+    │   ├── plasmoids/      # custom Plasma widgets
+    │   │   └── org.kde.mactahoe-liquid-kde.trash/
+    │   └── layouts/        # panel layout scripts
+    │       ├── mactahoe.js # top bar + bottom dock
+    │       └── default.js  # reset to stock KDE
     └── steps/              # per-component install scripts
         ├── utils.sh
         ├── step-wallpapers.sh
@@ -85,6 +89,7 @@ macos-tahoe-liquid-kde/
 | `~/.config/kdeglobals` | System fonts, icon theme |
 | `~/.config/kcminputrc` | Cursor theme applied |
 | `~/.local/share/plasma/plasmoids/` | Custom plasmoids |
+| `plasma-org.kde.plasma.desktop-appletsrc` | Panel layout (top bar + dock) |
 
 ---
 

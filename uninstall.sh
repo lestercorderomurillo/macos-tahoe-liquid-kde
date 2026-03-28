@@ -237,7 +237,21 @@ fi
 
 # ── Step Final: Applying Changes ──────────────────────────────
 step "Applying Changes"
-note "Resets settings and tells KDE to reload"
+note "Resets everything back to Breeze defaults"
+
+# layout first — recreates default panel before applying themes
+if [[ "$(cfg layout)" == "true" ]]; then
+  _layout="$REPO/src/offline/layouts/default.js"
+  if [[ -f "$_layout" ]]; then
+    _qdbus=""
+    for _q in qdbus6 qdbus; do command -v "$_q" &>/dev/null && { _qdbus="$_q"; break; }; done
+    if [[ -n "$_qdbus" ]]; then
+      "$_qdbus" org.kde.plasmashell /PlasmaShell org.kde.PlasmaShell.evaluateScript "$(cat "$_layout")" &>/dev/null \
+        && ok "Layout reset to default KDE panel" \
+        || warn "layout reset failed — set layout manually"
+    fi
+  fi
+fi
 
 if command -v kwriteconfig6 &>/dev/null; then
   if [[ "$(cfg fonts)" == "true" ]]; then
@@ -253,40 +267,70 @@ if command -v kwriteconfig6 &>/dev/null; then
 
   if [[ "$(cfg cursors)" == "true" ]]; then
     kwriteconfig6 --file kcminputrc --group Mouse --key cursorTheme "breeze_cursors"
-    ok "cursor theme reset to Breeze"
+    if command -v plasma-apply-cursortheme &>/dev/null; then
+      plasma-apply-cursortheme "breeze_cursors" &>/dev/null || true
+    fi
+    ok "Cursor theme reset to Breeze"
   fi
 
   if [[ "$(cfg icons)" == "true" ]]; then
     kwriteconfig6 --file kdeglobals --group Icons --key Theme "breeze"
-    ok "icon theme reset to Breeze"
     if command -v plasma-apply-icontheme &>/dev/null; then
-      plasma-apply-icontheme breeze 2>/dev/null && ok "icon theme applied live" || true
-    else
-      dbus-send --session --type=signal /KIconLoader org.kde.KIconLoader.iconChanged 2>/dev/null || true
+      plasma-apply-icontheme breeze &>/dev/null || true
     fi
+    dbus-send --session --type=signal /KIconLoader org.kde.KIconLoader.iconChanged 2>/dev/null || true
+    ok "Icon theme reset to Breeze"
+  fi
+
+  if [[ "$(cfg wallpapers)" == "true" ]]; then
+    # reset to default Breeze wallpaper
+    _breeze_wp=""
+    for _p in \
+      /usr/share/wallpapers/Next \
+      /usr/share/wallpapers/Breeze \
+      /usr/share/wallpapers/Flow; do
+      [[ -d "$_p" ]] && { _breeze_wp="$_p"; break; }
+    done
+    if [[ -n "$_breeze_wp" ]]; then
+      if command -v plasma-apply-wallpaperimage &>/dev/null; then
+        plasma-apply-wallpaperimage "$_breeze_wp" &>/dev/null || true
+        ok "Wallpaper reset to $(basename "$_breeze_wp")"
+      fi
+    fi
+  fi
+
+  # reset color scheme to Breeze
+  if command -v plasma-apply-colorscheme &>/dev/null; then
+    plasma-apply-colorscheme BreezeLight &>/dev/null || true
+    ok "Color scheme reset to Breeze Light"
   fi
 fi
 
-for qdbus_cmd in qdbus6 qdbus; do
-  command -v "$qdbus_cmd" &>/dev/null && {
-    "$qdbus_cmd" org.kde.KWin /KWin org.kde.KWin.reconfigure 2>/dev/null \
-      && ok "KWin reconfigured" || warn "KWin reconfigure failed (non-fatal)"
-    break
-  }
-done
-
-if command -v dbus-send &>/dev/null; then
-  dbus-send --session --dest=org.kde.plasmashell \
-    /PlasmaShell org.kde.PlasmaShell.refreshCurrentShell 2>/dev/null \
-    && ok "Plasma shell refreshed" || warn "Plasma shell refresh failed (non-fatal)"
-fi
-
+# rebuild sycoca
 if command -v kbuildsycoca6 &>/dev/null; then
   kbuildsycoca6 --noincremental 2>/dev/null \
     && ok "KDE system cache rebuilt" || warn "kbuildsycoca6 failed (non-fatal)"
 elif command -v kbuildsycoca5 &>/dev/null; then
   kbuildsycoca5 --noincremental 2>/dev/null \
     && ok "KDE system cache rebuilt" || warn "kbuildsycoca5 failed (non-fatal)"
+fi
+
+# reconfigure KWin
+for qdbus_cmd in qdbus6 qdbus; do
+  command -v "$qdbus_cmd" &>/dev/null && {
+    "$qdbus_cmd" org.kde.KWin /KWin org.kde.KWin.reconfigure &>/dev/null \
+      && ok "KWin reconfigured" || warn "KWin reconfigure failed (non-fatal)"
+    break
+  }
+done
+
+# signal icon refresh + Plasma reload
+if command -v dbus-send &>/dev/null; then
+  dbus-send --session --type=signal /KIconLoader org.kde.KIconLoader.iconChanged 2>/dev/null || true
+  dbus-send --session --type=signal /KGlobalSettings org.kde.KGlobalSettings.notifyChange int32:4 int32:0 2>/dev/null || true
+  dbus-send --session --dest=org.kde.plasmashell \
+    /PlasmaShell org.kde.PlasmaShell.refreshCurrentShell 2>/dev/null \
+    && ok "Plasma shell refreshed" || warn "Plasma shell refresh failed (non-fatal)"
 fi
 
 # ── Done ──────────────────────────────────────────────────────
@@ -298,6 +342,4 @@ else
   warn "${#ERRORS[@]} issue(s) — everything else removed fine:"
   for e in "${ERRORS[@]}"; do fail "$e"; done
 fi
-echo ""
-echo -e "  ${BOLD}Log out and back in to apply all changes${RESET}"
 echo ""
