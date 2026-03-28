@@ -28,18 +28,16 @@ Inspired by [Pear OS](https://pearos.xyz) in spirit — a complete environment, 
 
 ---
 
-## Installation
+## Usage
 
-Requires KDE Plasma 6.6+, `curl`, and `unzip`.
+Requires KDE Plasma 6.6+.
 
+**Install**
 ```bash
 bash install.sh
 ```
 
----
-
-## Uninstallation
-
+**Uninstall**
 ```bash
 bash uninstall.sh
 ```

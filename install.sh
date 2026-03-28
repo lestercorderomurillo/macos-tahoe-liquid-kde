@@ -71,8 +71,26 @@ if [[ "$plasma_major" -lt 6 ]] || { [[ "$plasma_major" -eq 6 ]] && [[ "$plasma_m
 fi
 
 ok "KDE Plasma $plasma_ver"
+
+# ── auto-install missing deps ─────────────────────────────────
+_pkg_install() {
+  if   command -v pacman &>/dev/null; then sudo pacman -S --noconfirm "$@"
+  elif command -v yay    &>/dev/null; then yay   -S --noconfirm "$@"
+  elif command -v paru   &>/dev/null; then paru  -S --noconfirm "$@"
+  else fail "no package manager found — install $* manually"; return 1; fi
+}
+
+for _dep in curl unzip fontconfig; do
+  if command -v "$_dep" &>/dev/null; then
+    ok "$_dep"
+  else
+    warn "$_dep not found — installing..."
+    _pkg_install "$_dep" && ok "$_dep (installed)" || fail "$_dep (install failed)"
+  fi
+done
+unset -f _pkg_install
+
 command -v kwriteconfig6 &>/dev/null && ok "kwriteconfig6" || warn "kwriteconfig6 not found — fonts won't apply automatically"
-command -v fc-cache      &>/dev/null && ok "fontconfig"    || warn "fc-cache not found"
 [[ -f "$CONFIG" ]] && ok "features.json loaded"
 
 # ── Step 2: Installing Wallpapers ─────────────────────────────
