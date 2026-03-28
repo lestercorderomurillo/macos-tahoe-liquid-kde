@@ -441,6 +441,13 @@ for qdbus_cmd in qdbus6 qdbus; do
   }
 done
 
+# flush icon caches so widgets (trash, etc.) pick up new theme immediately
+rm -rf "$HOME/.cache/icon-cache.kcache" 2>/dev/null || true
+rm -rf "$HOME/.cache/plasma-svgelements-"* 2>/dev/null || true
+rm -rf "$HOME/.cache/plasma_theme_"* 2>/dev/null || true
+find "$HOME/.cache" -maxdepth 1 -name "ksycoca6*" -delete 2>/dev/null || true
+ok "Icon and widget caches flushed"
+
 if command -v dbus-send &>/dev/null; then
   dbus-send --session --type=signal /KIconLoader org.kde.KIconLoader.iconChanged 2>/dev/null || true
   dbus-send --session --type=signal /KGlobalSettings org.kde.KGlobalSettings.notifyChange int32:4 int32:0 2>/dev/null || true
