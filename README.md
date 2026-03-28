@@ -23,8 +23,8 @@ Inspired by [Pear OS](https://pearos.xyz) in spirit — a complete environment, 
 | **Sounds** | macOS-style notification and event sounds |
 | **Wallpapers** | Official and curated macOS Tahoe wallpapers |
 | **Nautilus** | GNOME file manager styled and resourced to match the Tahoe aesthetic on KDE |
-| **GNOME apps** | Selected GNOME apps (Settings, etc.) themed for a native-feeling macOS look on KDE |
-| **Custom Electron apps** | "About This Mac" panel and system config app — built from scratch, Apple-style |
+| **GNOME apps** | Calculator and other utilities themed for a native macOS look on KDE |
+| **Custom Electron apps** | "About This Mac" and System Settings — built from scratch, Apple-style |
 | **Firefox** | Refined Liquid Glass skin for Firefox as the Safari replacement |
 | **Widgets** | Plasma widgets styled after macOS Tahoe UI components |
 
@@ -82,8 +82,6 @@ source uninstall.fish
 
 - KDE Plasma 6.6+
 - `bash` ≥ 4.0 **or** `fish` ≥ 3.0
-- `git`
-- [Kvantum engine](https://github.com/tsujan/Kvantum/blob/master/Kvantum/INSTALL.md#distributions)
 
 ---
 
