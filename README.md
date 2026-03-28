@@ -10,21 +10,21 @@ Inspired by [Pear OS](https://pearos.xyz) in spirit — a complete environment, 
 
 | Component | Description | Status |
 |-----------|-------------|--------|
-| **Wallpapers** | Official macOS Tahoe & Heritage wallpapers — light/dark pairs, Beach series, Landscape series | ✅ Implemented |
-| **Fonts** | SF Pro Display, SF Pro Text, SF Pro Rounded — downloaded from mirrors at install time | ✅ Implemented |
-| **Cursors** | macOS-style cursor themes (standard, dark, Apple, Apple White) | ✅ Implemented |
-| **Plasma theme** | macOS Tahoe-style shell, panel, dock, and look-and-feel for KDE Plasma | 🔲 Planned |
-| **GTK theme** | Tahoe-style window chrome and controls for GTK2/3/4 apps | 🔲 Planned |
-| **Kvantum theme** | Tahoe Kvantum theme for Qt apps | 🔲 Planned |
-| **Liquid Glass** | Fork of the Liquid Glass effect — Apple's macOS Tahoe signature material | 🔲 Planned |
-| **SDDM theme** | macOS-style login and lock screen | 🔲 Planned |
-| **Aurorae decorations** | Apple-inspired window title bar and borders | 🔲 Planned |
-| **Color schemes** | Tahoe Light & Dark KDE color palettes | 🔲 Planned |
-| **Icons** | macOS-style full icon set | 🔲 Planned |
-| **Sounds** | macOS-style notification and event sounds | 🔲 Planned |
-| **Custom Electron apps** | "About This Mac" and System Settings — built from scratch, Apple-style | 🔲 Planned |
-| **Firefox** | Refined Liquid Glass skin for Firefox as the Safari replacement | 🔲 Planned |
-| **Widgets** | Plasma widgets styled after macOS Tahoe UI components | 🔲 Planned |
+| **Wallpapers** | Tahoe, Heritage, Beach, Landscape — light/dark | ✅ Done |
+| **Fonts** | SF Pro Display, Text, Rounded | ✅ Done |
+| **Cursors** | Standard, Dark, Apple, Apple White | ✅ Done |
+| **Plasma theme** | Shell, panel, dock, look-and-feel | 🔲 Planned |
+| **GTK theme** | GTK2/3/4 window chrome and controls | 🔲 Planned |
+| **Kvantum theme** | Qt app theme | 🔲 Planned |
+| **Liquid Glass** | Apple's Tahoe signature material effect | 🔲 Planned |
+| **SDDM theme** | Login and lock screen | 🔲 Planned |
+| **Aurorae decorations** | Window title bar and borders | 🔲 Planned |
+| **Color schemes** | Tahoe Light & Dark palettes | 🔲 Planned |
+| **Icons** | Full macOS-style icon set | 🔲 Planned |
+| **Sounds** | Notification and event sounds | 🔲 Planned |
+| **Custom Electron apps** | "About This Mac" and System Settings | 🔲 Planned |
+| **Firefox** | Liquid Glass skin | 🔲 Planned |
+| **Widgets** | Plasma widgets styled after Tahoe UI | 🔲 Planned |
 
 ---
 
