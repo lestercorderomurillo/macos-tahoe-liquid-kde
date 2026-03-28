@@ -30,6 +30,10 @@ dock.lengthMode = "fit";
 dock.floating = true;
 dock.height = 2 * Math.ceil(gridUnit * 3.5 / 2);
 
+var launcher = dock.addWidget("org.kde.plasma.kickerdash");
+launcher.currentConfigGroup = ["General"];
+launcher.writeConfig("icon", "view-app-grid");
+dock.addWidget("org.kde.plasma.marginsseparator");
 dock.addWidget("org.kde.plasma.icontasks");
 dock.addWidget("org.kde.plasma.marginsseparator");
 dock.addWidget("org.kde.mactahoe-liquid-kde.trash");
