@@ -1,0 +1,25 @@
+# MacTahoe KDE — wallpaper sources
+# downloaded at install time by src/steps/step-wallpapers.sh
+# installed to src/steps/wallpapers/ (not committed)
+# to add a landscape mirror: append a line to MIRRORS in step-wallpapers.sh
+
+# ── source 1 — 512pixels.net (direct downloads) ───────────────
+source:   512pixels.net macOS wallpapers (6K)
+url:      https://512pixels.net/projects/default-mac-wallpapers-in-5k/
+license:  Apple Inc.
+author:   Stephen Hackett
+base:     https://512pixels.net/downloads/macos-wallpapers-6k/
+installs: MacTahoe (light/dark)
+          MacTahoe-Beach-Dawn, MacTahoe-Beach-Day, MacTahoe-Beach-Dusk, MacTahoe-Beach-Night
+          MacHeritage-Sequoia (light/dark), MacHeritage-Sequoia-Sunrise
+          MacHeritage-Sonoma (light/dark), MacHeritage-Sonoma-Horizon
+          MacHeritage-Ventura (light/dark)
+          MacHeritage-Monterey (light/dark)
+          MacHeritage-BigSur (light/dark)
+
+# ── mirror 1 — lowendmac.com (landscape zip) ──────────────────
+source:   lowendmac.com — Lake Tahoe macOS 26 Beta wallpapers
+url:      https://lowendmac.com/wp-content/uploads/Lake-Tahoe-macOS-26-Beta-5-wallpapers.zip
+license:  Apple Inc.
+download: https://lowendmac.com/wp-content/uploads/Lake-Tahoe-macOS-26-Beta-5-wallpapers.zip
+installs: MacTahoe-Landscape-01 … MacTahoe-Landscape-NN (numbered from zip contents)

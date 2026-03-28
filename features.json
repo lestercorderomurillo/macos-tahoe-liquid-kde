@@ -1,0 +1,14 @@
+{
+  "wallpapers":          true,
+  "fonts":               true,
+  "cursors":             true,
+  "plasma_theme":        false,
+  "window_decorations":  false,
+  "kvantum":             false,
+  "color_schemes":       false,
+  "icons":               false,
+  "sounds":              false,
+  "gtk":                 false,
+  "sddm":                false,
+  "apps":                false
+}

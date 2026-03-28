@@ -1,0 +1,22 @@
+# MacTahoe KDE — cursor theme sources
+# downloaded at install time by src/steps/step-cursors.sh
+# installed to src/steps/cursors/ (not committed)
+# to add a mirror: append a line to the relevant MIRRORS block in step-cursors.sh
+
+# ── source 1 — vinceliuice/MacTahoe-icon-theme ────────────────
+source:   vinceliuice/MacTahoe-icon-theme — cursors/dist/
+url:      https://github.com/vinceliuice/MacTahoe-icon-theme
+license:  GPL-3.0
+author:   Vince Liu (vinceliuice)
+download: https://github.com/vinceliuice/MacTahoe-icon-theme/archive/refs/heads/main.zip
+extract:  cursors/dist/  cursors/dist-dark/
+installs: MacTahoeLiquidKde  MacTahoeLiquidKde-Dark
+
+# ── source 2 — ful1e5/apple_cursor ────────────────────────────
+source:   ful1e5/apple_cursor
+url:      https://github.com/ful1e5/apple_cursor
+license:  GPL-3.0
+author:   ful1e5
+download: https://github.com/ful1e5/apple_cursor/releases/latest/download/macOS.tar.gz
+extract:  macOS/  macOS-White/
+installs: MacTahoeLiquidKde-Apple  MacTahoeLiquidKde-Apple-White

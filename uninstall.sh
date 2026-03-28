@@ -1,15 +1,17 @@
 #!/usr/bin/env bash
-# MacTahoe KDE — Uninstaller
+# MacTahoe Liquid KDE — Uninstaller
 set -uo pipefail
 
+REPO="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+CONFIG="$REPO/features.json"
 WALLPAPERS="$HOME/.local/share/wallpapers"
 FONTS_DIR="$HOME/.local/share/fonts"
+ICONS_DIR="$HOME/.local/share/icons"
 # PLASMA="$HOME/.local/share/plasma/desktoptheme"
 # LOOKFEEL="$HOME/.local/share/plasma/look-and-feel"
 # AURORAE="$HOME/.local/share/aurorae/themes"
 # KVANTUM="$HOME/.config/Kvantum"
 # COLORS="$HOME/.local/share/color-schemes"
-# ICONS="$HOME/.local/share/icons"
 # SOUNDS="$HOME/.local/share/sounds"
 # GTK="$HOME/.themes"
 # APPS="$HOME/.local/share/applications"
@@ -31,6 +33,13 @@ step() {
   echo -e "${GREEN}${BOLD}  ── Step ${STEP}: $* ─────────────────────────────${RESET}"
 }
 
+cfg() {
+  [[ -f "$CONFIG" ]] || { echo "true"; return; }
+  local val
+  val=$(grep -m1 "\"$1\"" "$CONFIG" | grep -o 'true\|false')
+  echo "${val:-true}"
+}
+
 # ── Step 1: Verification ──────────────────────────────────────
 step "Verification"
 note "Checks KDE version and required tools"
@@ -38,7 +47,7 @@ note "Checks KDE version and required tools"
 if ! command -v plasmashell &>/dev/null; then
   fail "KDE Plasma not found"
   echo ""
-  echo "     MacTahoe KDE requires KDE Plasma 6.6+."
+  echo "     MacTahoe Liquid KDE requires KDE Plasma 6.6+."
   echo "     It does not support GNOME, XFCE, or other desktops."
   echo ""
   exit 1
@@ -56,72 +65,160 @@ if [[ "$plasma_major" -lt 6 ]] || { [[ "$plasma_major" -eq 6 ]] && [[ "$plasma_m
 fi
 
 ok "KDE Plasma $plasma_ver"
-command -v kwriteconfig6 &>/dev/null && ok "kwriteconfig6" || warn "kwriteconfig6 not found — font settings won't be reset automatically"
+command -v kwriteconfig6 &>/dev/null && ok "kwriteconfig6" || warn "kwriteconfig6 not found — settings won't be reset automatically"
+[[ -f "$CONFIG" ]] && ok "features.json loaded"
 
 # ── Step 2: Removing Wallpapers ───────────────────────────────
-step "Removing Wallpapers"
-note "Removes all installed MacTahoe wallpaper packages"
+if [[ "$(cfg wallpapers)" == "true" ]]; then
+  step "Removing Wallpapers"
+  note "Removes all installed MacTahoe wallpaper packages"
 
-n=0
-for name in \
-  MacTahoe \
-  MacTahoe-Beach-Dawn MacTahoe-Beach-Day \
-  MacTahoe-Beach-Dusk MacTahoe-Beach-Night \
-  MacHeritage-Sequoia MacHeritage-Sequoia-Sunrise \
-  MacHeritage-Sonoma MacHeritage-Sonoma-Horizon \
-  MacHeritage-Ventura MacHeritage-Monterey MacHeritage-BigSur; do
-  [[ -d "$WALLPAPERS/$name" ]] || continue
-  if err=$(rm -rf "$WALLPAPERS/$name" 2>&1); then
-    ok "$name (removed)"; n=$((n + 1))
-  else
-    fail "$name (remove failed: ${err:-unknown error})"
-  fi
-done
-for d in "$WALLPAPERS"/MacTahoe-Landscape-*/; do
-  [[ -d "$d" ]] || continue
-  name=$(basename "$d")
-  if err=$(rm -rf "$d" 2>&1); then
-    ok "$name (removed)"; n=$((n + 1))
-  else
-    fail "$name (remove failed: ${err:-unknown error})"
-  fi
-done
-[[ $n -eq 0 ]] \
-  && info "0 wallpapers removed (already removed?)" \
-  || info "$n wallpapers removed"
-
-# ── Step 3: Removing Fonts ────────────────────────────────────
-step "Removing Fonts"
-note "Removes SF Pro and SF Mono"
-
-n=0
-for pattern in "SF-Pro*" "SF-Mono*" "SFPro*" "SFMono*"; do
-  for f in "$FONTS_DIR/"$pattern; do
-    [[ -f "$f" ]] || continue
-    if err=$(rm -f "$f" 2>&1); then
-      n=$((n + 1))
+  n=0
+  for name in \
+    MacTahoe \
+    MacTahoe-Beach-Dawn MacTahoe-Beach-Day \
+    MacTahoe-Beach-Dusk MacTahoe-Beach-Night \
+    MacHeritage-Sequoia MacHeritage-Sequoia-Sunrise \
+    MacHeritage-Sonoma MacHeritage-Sonoma-Horizon \
+    MacHeritage-Ventura MacHeritage-Monterey MacHeritage-BigSur; do
+    [[ -d "$WALLPAPERS/$name" ]] || continue
+    if err=$(rm -rf "$WALLPAPERS/$name" 2>&1); then
+      ok "$name (removed)"; n=$((n + 1))
     else
-      fail "$(basename "$f") (remove failed: ${err:-unknown error})"
+      fail "$name (remove failed: ${err:-unknown error})"
     fi
   done
-done
-[[ $n -eq 0 ]] \
-  && info "0 font files removed (already removed?)" \
-  || { info "$n font files removed"; fc-cache -f "$FONTS_DIR" 2>/dev/null || true; }
+  for d in "$WALLPAPERS"/MacTahoe-Landscape-*/; do
+    [[ -d "$d" ]] || continue
+    name=$(basename "$d")
+    if err=$(rm -rf "$d" 2>&1); then
+      ok "$name (removed)"; n=$((n + 1))
+    else
+      fail "$name (remove failed: ${err:-unknown error})"
+    fi
+  done
+  [[ $n -eq 0 ]] \
+    && info "0 wallpapers removed (already removed?)" \
+    || info "$n wallpapers removed"
+fi
 
-# ── Step 4: Applying Changes ──────────────────────────────────
+# ── Step 3: Removing Fonts ────────────────────────────────────
+if [[ "$(cfg fonts)" == "true" ]]; then
+  step "Removing Fonts"
+  note "Removes SF Pro and SF Mono"
+
+  n=0
+  for pattern in "SF-Pro*" "SF-Mono*" "SFPro*" "SFMono*"; do
+    for f in "$FONTS_DIR/"$pattern; do
+      [[ -f "$f" ]] || continue
+      if err=$(rm -f "$f" 2>&1); then
+        n=$((n + 1))
+      else
+        fail "$(basename "$f") (remove failed: ${err:-unknown error})"
+      fi
+    done
+  done
+  [[ $n -eq 0 ]] \
+    && info "0 font files removed (already removed?)" \
+    || { info "$n font files removed"; fc-cache -f "$FONTS_DIR" 2>/dev/null || true; }
+fi
+
+# ── Step 4: Removing Plasma Theme ────────────────────────────
+# if [[ "$(cfg plasma_theme)" == "true" ]]; then
+#   step "Removing Plasma Theme"
+#   note "Removes the MacTahoe Plasma desktop theme"
+#   [[ -d "$PLASMA/MacTahoe" ]]   && rm -rf "$PLASMA/MacTahoe"
+#   [[ -d "$LOOKFEEL/MacTahoe" ]] && rm -rf "$LOOKFEEL/MacTahoe"
+# fi
+
+# ── Step 5: Removing Window Decorations ──────────────────────
+# if [[ "$(cfg window_decorations)" == "true" ]]; then
+#   step "Removing Window Decorations"
+#   note "Removes Aurorae window decorations"
+# fi
+
+# ── Step 6: Removing Kvantum Theme ───────────────────────────
+# if [[ "$(cfg kvantum)" == "true" ]]; then
+#   step "Removing Kvantum Theme"
+#   note "Removes the MacTahoe Kvantum theme"
+# fi
+
+# ── Step 7: Removing Color Schemes ───────────────────────────
+# if [[ "$(cfg color_schemes)" == "true" ]]; then
+#   step "Removing Color Schemes"
+#   note "Removes Tahoe Light and Dark color palettes"
+# fi
+
+# ── Step 8: Removing Cursors ─────────────────────────────────
+if [[ "$(cfg cursors)" == "true" ]]; then
+  step "Removing Cursors"
+  note "Removes the MacTahoe cursor theme"
+
+  n=0
+  for theme in "$ICONS_DIR"/MacTahoeLiquidKde* "$ICONS_DIR"/MacTahoe*cursors* "$ICONS_DIR"/MacTahoe*Cursors*; do
+    [[ -d "$theme" ]] || continue
+    name=$(basename "$theme")
+    if err=$(rm -rf "$theme" 2>&1); then
+      ok "$name (removed)"; n=$((n + 1))
+    else
+      fail "$name (remove failed: ${err:-unknown error})"
+    fi
+  done
+  [[ $n -eq 0 ]] \
+    && info "0 cursor themes removed (already removed?)" \
+    || info "$n cursor themes removed"
+fi
+
+# ── Step 9: Removing Icons ────────────────────────────────────
+# if [[ "$(cfg icons)" == "true" ]]; then
+#   step "Removing Icons"
+#   note "Removes the MacTahoe icon theme"
+# fi
+
+# ── Step 10: Removing Sounds ─────────────────────────────────
+# if [[ "$(cfg sounds)" == "true" ]]; then
+#   step "Removing Sounds"
+#   note "Removes macOS-style notification sounds"
+# fi
+
+# ── Step 11: Removing GTK Theme ──────────────────────────────
+# if [[ "$(cfg gtk)" == "true" ]]; then
+#   step "Removing GTK Theme"
+#   note "Removes the MacTahoe GTK2/3/4 theme"
+# fi
+
+# ── Step 12: Removing SDDM Theme ─────────────────────────────
+# if [[ "$(cfg sddm)" == "true" ]]; then
+#   step "Removing SDDM Theme"
+#   note "Removes the macOS-style login screen"
+# fi
+
+# ── Step 13: Removing Custom Apps ────────────────────────────
+# if [[ "$(cfg apps)" == "true" ]]; then
+#   step "Removing Custom Apps"
+#   note "Removes About This Mac and other Electron apps"
+# fi
+
+# ── Step Final: Applying Changes ──────────────────────────────
 step "Applying Changes"
-note "Resets font settings and tells KDE to reload"
+note "Resets settings and tells KDE to reload"
 
 if command -v kwriteconfig6 &>/dev/null; then
-  kwriteconfig6 --file kdeglobals --group General --key font                 "Noto Sans,10,-1,5,50,0,0,0,0,0"
-  kwriteconfig6 --file kdeglobals --group General --key menuFont             "Noto Sans,10,-1,5,50,0,0,0,0,0"
-  kwriteconfig6 --file kdeglobals --group General --key toolBarFont          "Noto Sans,10,-1,5,50,0,0,0,0,0"
-  kwriteconfig6 --file kdeglobals --group General --key taskbarFont          "Noto Sans,10,-1,5,50,0,0,0,0,0"
-  kwriteconfig6 --file kdeglobals --group General --key smallestReadableFont "Noto Sans,8,-1,5,50,0,0,0,0,0"
-  kwriteconfig6 --file kdeglobals --group General --key fixed                "Hack,10,-1,5,50,0,0,0,0,0"
-  kwriteconfig6 --file kdeglobals --group WM      --key activeFont           "Noto Sans,10,-1,5,50,0,0,0,0,0"
-  ok "KDE fonts reset to defaults"
+  if [[ "$(cfg fonts)" == "true" ]]; then
+    kwriteconfig6 --file kdeglobals --group General --key font                 "Noto Sans,10,-1,5,50,0,0,0,0,0"
+    kwriteconfig6 --file kdeglobals --group General --key menuFont             "Noto Sans,10,-1,5,50,0,0,0,0,0"
+    kwriteconfig6 --file kdeglobals --group General --key toolBarFont          "Noto Sans,10,-1,5,50,0,0,0,0,0"
+    kwriteconfig6 --file kdeglobals --group General --key taskbarFont          "Noto Sans,10,-1,5,50,0,0,0,0,0"
+    kwriteconfig6 --file kdeglobals --group General --key smallestReadableFont "Noto Sans,8,-1,5,50,0,0,0,0,0"
+    kwriteconfig6 --file kdeglobals --group General --key fixed                "Hack,10,-1,5,50,0,0,0,0,0"
+    kwriteconfig6 --file kdeglobals --group WM      --key activeFont           "Noto Sans,10,-1,5,50,0,0,0,0,0"
+    ok "KDE fonts reset to defaults"
+  fi
+
+  if [[ "$(cfg cursors)" == "true" ]]; then
+    kwriteconfig6 --file kcminputrc --group Mouse --key cursorTheme "breeze_cursors"
+    ok "cursor theme reset to Breeze"
+  fi
 fi
 
 for qdbus_cmd in qdbus6 qdbus; do
@@ -146,25 +243,11 @@ elif command -v kbuildsycoca5 &>/dev/null; then
     && ok "KDE system cache rebuilt" || warn "kbuildsycoca5 failed (non-fatal)"
 fi
 
-# ── Step 5: Removing Plasma Theme ────────────────────────────
-# step "Removing Plasma Theme"
-# note "Removes the MacTahoe Plasma desktop theme"
-# [[ -d "$PLASMA/MacTahoe" ]]   && rm -rf "$PLASMA/MacTahoe"
-# [[ -d "$LOOKFEEL/MacTahoe" ]] && rm -rf "$LOOKFEEL/MacTahoe"
-# ── Step 6: Removing Window Decorations ──────────────────────
-# ── Step 7: Removing Kvantum Theme ───────────────────────────
-# ── Step 8: Removing Color Schemes ───────────────────────────
-# ── Step 9: Removing Icons & Cursors ─────────────────────────
-# ── Step 10: Removing Sounds ─────────────────────────────────
-# ── Step 11: Removing GTK Theme ──────────────────────────────
-# ── Step 12: Removing SDDM Theme ─────────────────────────────
-# ── Step 13: Removing Custom Apps ────────────────────────────
-
 # ── Done ──────────────────────────────────────────────────────
 echo ""
 echo -e "${GREEN}${BOLD}  ── Done ────────────────────────────────────────${RESET}"
 if [[ ${#ERRORS[@]} -eq 0 ]]; then
-  ok "MacTahoe KDE uninstalled successfully"
+  ok "MacTahoe Liquid KDE uninstalled successfully"
 else
   warn "${#ERRORS[@]} issue(s) — everything else removed fine:"
   for e in "${ERRORS[@]}"; do fail "$e"; done
