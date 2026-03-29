@@ -50,13 +50,13 @@ run_step() {
 
 # ── BETA WARNING ─────────────────────────────────────────────
 echo ""
-echo -e "${RED}${BOLD}  ┌─────────────────────────────────────────┐${RESET}"
-echo -e "${RED}${BOLD}  │  In development — Install at your own risk.  │${RESET}"
-echo -e "${RED}${BOLD}  └─────────────────────────────────────────┘${RESET}"
+echo -e "  ${RED}${BOLD}In development — Install at your own risk.${RESET}"
 echo ""
 read -p "  Continue? [Y/n] " _confirm
 [[ "$_confirm" =~ ^[Nn]$ ]] && { echo "  Aborted."; exit 0; }
 echo ""
+
+sudo -v || { echo -e "  ${RED}sudo required.${RESET}"; exit 1; }
 
 # ── Step 1: Verification ──────────────────────────────────────
 step "Verification"
@@ -84,12 +84,6 @@ fi
 
 ok "KDE Plasma $plasma_ver"
 
-# ── early sudo prompt (needed for deps + liquid glass install) ─
-if [[ "$(cfg liquid_glass)" == "true" ]] || ! command -v curl &>/dev/null || ! command -v unzip &>/dev/null || ! command -v fc-cache &>/dev/null; then
-  info "Some steps require elevated privileges"
-  sudo -v || { fail "sudo required — run as a user with sudo access"; exit 1; }
-  ok "sudo authenticated"
-fi
 
 # ── auto-install missing deps ─────────────────────────────────
 _pkg_install() {
