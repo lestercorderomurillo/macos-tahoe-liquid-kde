@@ -44,12 +44,12 @@ bar.addWidget("org.kde.plasma.marginsseparator");
 
 var clock = bar.addWidget("org.kde.plasma.digitalclock");
 clock.currentConfigGroup = ["Appearance"];
-clock.writeConfig("showDate", "false");
+clock.writeConfig("showDate", "true");
 clock.writeConfig("use24hFormat", 2);
 clock.writeConfig("showSeconds", 0);
 clock.writeConfig("dateDisplayFormat", "BesideTime");
-clock.writeConfig("dateFormat", "shortDate");
-clock.writeConfig("enabledCalendarPlugins", "");
+clock.writeConfig("dateFormat", "custom");
+clock.writeConfig("customDateFormat", "ddd MMM d");
 
 // ── bottom dock ─────────────────────────────────
 // floating, centered, large icons like macOS
