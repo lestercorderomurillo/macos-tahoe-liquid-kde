@@ -600,8 +600,8 @@ if [[ "$(cfg liquid_glass)" == "true" ]]; then
               kwriteconfig6 --file kwinrc --group "$_lg_grp" --key TransparentBlur true 2>/dev/null || true
               kwriteconfig6 --file kwinrc --group "$_lg_grp" --key TopCornerRadius 22 2>/dev/null || true
               kwriteconfig6 --file kwinrc --group "$_lg_grp" --key BottomCornerRadius 22 2>/dev/null || true
-              kwriteconfig6 --file kwinrc --group "$_lg_grp" --key MenuCornerRadius 22 2>/dev/null || true
-              kwriteconfig6 --file kwinrc --group "$_lg_grp" --key DockCornerRadius 22 2>/dev/null || true
+              kwriteconfig6 --file kwinrc --group "$_lg_grp" --key MenuCornerRadius 14 2>/dev/null || true
+              kwriteconfig6 --file kwinrc --group "$_lg_grp" --key DockCornerRadius 28 2>/dev/null || true
               ok "Liquid Glass preset installed"
               # enable in config — will load on next KWin start
               kwriteconfig6 --file kwinrc --group Plugins --key liquidglassEnabled true 2>/dev/null || true
@@ -733,6 +733,11 @@ ok "Plasma restarted"
 for qdbus_cmd in qdbus6 qdbus; do
   command -v "$qdbus_cmd" &>/dev/null && {
     "$qdbus_cmd" org.kde.KWin /KWin org.kde.KWin.reconfigure &>/dev/null || true
+    sleep 2
+    # make sure Liquid Glass loads after reconfigure
+    if [[ "$(cfg liquid_glass)" == "true" ]]; then
+      "$qdbus_cmd" org.kde.KWin /Effects org.kde.kwin.Effects.loadEffect liquidglass &>/dev/null || true
+    fi
     break
   }
 done

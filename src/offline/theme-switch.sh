@@ -14,46 +14,14 @@ ICONS_DIR="$HOME/.local/share/icons"
 
 _mode="${1:-auto}"
 
-# ── detect mode from system or time ──
+# ── detect mode from time of day ──
 detect_mode() {
-  # try freedesktop portal (KDE Plasma 6)
-  # 1 = prefer dark, 2 = prefer light, 0 = no preference
-  local val=""
-  for qdbus_cmd in qdbus6 qdbus; do
-    command -v "$qdbus_cmd" &>/dev/null || continue
-    val=$("$qdbus_cmd" org.freedesktop.portal.Desktop \
-      /org/freedesktop/portal/desktop \
-      org.freedesktop.portal.Settings.Read \
-      org.freedesktop.appearance color-scheme 2>/dev/null | grep -oP 'uint32 \K[0-9]+' || true)
-    [[ -n "$val" ]] && break
-  done
-
-  # fallback: check kdeglobals
-  if [[ -z "$val" || "$val" == "0" ]]; then
-    local scheme
-    scheme=$(grep -m1 'ColorScheme=' "$HOME/.config/kdeglobals" 2>/dev/null | cut -d= -f2)
-    if [[ "$scheme" == *"Dark"* || "$scheme" == *"dark"* ]]; then
-      val=1
-    elif [[ -n "$scheme" ]]; then
-      val=2
-    fi
-  fi
-
-  # fallback: time of day (7:00–19:00 = light, else dark)
-  if [[ -z "$val" || "$val" == "0" ]]; then
-    local hour
-    hour=$(date +%H)
-    if [[ $hour -ge 7 && $hour -lt 19 ]]; then
-      val=2
-    else
-      val=1
-    fi
-  fi
-
-  if [[ "$val" == "1" ]]; then
-    echo "dark"
-  else
+  local hour
+  hour=$(date +%H)
+  if [[ $hour -ge 7 && $hour -lt 19 ]]; then
     echo "light"
+  else
+    echo "dark"
   fi
 }
 

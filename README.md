@@ -28,6 +28,8 @@ Inspired by [Pear OS](https://pearos.xyz) in spirit — a complete environment, 
 | **Color schemes** | Tahoe Light & Dark palettes | ✅ Done |
 | **TimeOfDay Switcher** | Auto light/dark themes based on time of day | ✅ Done |
 | **Sounds** | Notification and event sounds | 🔲 Planned |
+| **Calendar plasmoid** | macOS-style calendar dropdown | 🔲 Planned |
+| **Control Center plasmoid** | macOS-style quick settings panel | 🔲 Planned |
 | **Global Menu plasmoid** | macOS-style top bar app menu | 🔲 Planned |
 | **System Preferences plasmoid** | macOS-style settings launcher | 🔲 Planned |
 
