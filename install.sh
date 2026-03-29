@@ -601,20 +601,13 @@ if [[ "$(cfg liquid_glass)" == "true" ]]; then
 
             if sudo cp "$_effect_so" "$_dest_effect" && sudo cp "$_config_so" "$_dest_config" 2>/dev/null; then
               ok "Liquid Glass installed"
-              # write clean preset (Clear)
+              # write clean preset — only settings the effect actually reads
               _lg_grp="Effect-liquidglass"
               kwriteconfig6 --file kwinrc --group "$_lg_grp" --key BlurStrength 2 2>/dev/null || true
               kwriteconfig6 --file kwinrc --group "$_lg_grp" --key NoiseStrength 0 2>/dev/null || true
               kwriteconfig6 --file kwinrc --group "$_lg_grp" --key Saturation 1.0 2>/dev/null || true
               kwriteconfig6 --file kwinrc --group "$_lg_grp" --key Brightness 1.0 2>/dev/null || true
               kwriteconfig6 --file kwinrc --group "$_lg_grp" --key Contrast 1.0 2>/dev/null || true
-              kwriteconfig6 --file kwinrc --group "$_lg_grp" --key RefractionStrength 0 2>/dev/null || true
-              kwriteconfig6 --file kwinrc --group "$_lg_grp" --key RefractionRGBFringing 0 2>/dev/null || true
-              kwriteconfig6 --file kwinrc --group "$_lg_grp" --key RefractionEdgeSize 0 2>/dev/null || true
-              kwriteconfig6 --file kwinrc --group "$_lg_grp" --key EdgeLighting false 2>/dev/null || true
-              kwriteconfig6 --file kwinrc --group "$_lg_grp" --key TintColor '#00000000' 2>/dev/null || true
-              kwriteconfig6 --file kwinrc --group "$_lg_grp" --key GlowColor '#00000000' 2>/dev/null || true
-              kwriteconfig6 --file kwinrc --group "$_lg_grp" --key TransparentBlur true 2>/dev/null || true
               kwriteconfig6 --file kwinrc --group "$_lg_grp" --key TopCornerRadius 22 2>/dev/null || true
               kwriteconfig6 --file kwinrc --group "$_lg_grp" --key BottomCornerRadius 22 2>/dev/null || true
               kwriteconfig6 --file kwinrc --group "$_lg_grp" --key MenuCornerRadius 14 2>/dev/null || true
