@@ -14,7 +14,7 @@ bar.location = "top";
 bar.screen = 0;
 bar.lengthMode = "fill";
 bar.floating = false;
-bar.hiding = "dodgewindows";
+bar.hiding = "none";
 bar.height = 38;
 
 // panel colorizer: transparent background
