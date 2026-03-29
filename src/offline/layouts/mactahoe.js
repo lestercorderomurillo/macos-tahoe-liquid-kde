@@ -15,9 +15,17 @@ bar.lengthMode = "fill";
 bar.floating = false;
 bar.height = 32;
 
-// set per-panel config for transparent background
-var barId = bar.id;
-bar.writeConfig("panelOpacity", 2);
+// panel colorizer: transparent background
+var colorizer = bar.addWidget("luisbocanegra.panel.colorizer");
+colorizer.currentConfigGroup = ["General"];
+colorizer.writeConfig("globalSettings", JSON.stringify({
+    "nativePanel": {
+        "background": { "enabled": false, "opacity": 0, "shadow": false },
+        "floatingDialogs": false
+    }
+}));
+colorizer.currentConfigGroup = ["Configuration"];
+colorizer.writeConfig("hideWidget", "true");
 
 bar.addWidget("org.kde.plasma.kickoff");
 bar.addWidget("org.kde.plasma.appmenu");

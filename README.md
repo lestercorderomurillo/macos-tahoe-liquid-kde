@@ -1,6 +1,6 @@
 # MacOS Tahoe Liquid Glass for KDE Plasma
 
-> **Warning:** This project is under active development and is **not stable**. Expect crashes, broken features, and incomplete components. Use at your own risk.
+**Status: In development** — Functional but under active development. Some features may not work as expected. Back up your KDE config before installing. Use at your own risk.
 
 A full macOS Tahoe-style desktop experience for KDE Plasma — going beyond a simple theme. MacTahoe Liquid KDE bundles a curated collection of widgets, GTK & KDE themes, SDDM login screen, window decorations, icons, cursors, fonts, sounds, wallpapers, and a custom Electron app menu, bringing a cohesive Tahoe look to every layer of your desktop.
 

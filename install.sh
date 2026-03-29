@@ -48,6 +48,16 @@ run_step() {
 
 [[ -d "$SRC" ]] || { echo -e "${RED}  Run from repo root.${RESET}" >&2; exit 1; }
 
+# ── BETA WARNING ─────────────────────────────────────────────
+echo ""
+echo -e "${RED}${BOLD}  ┌─────────────────────────────────────────┐${RESET}"
+echo -e "${RED}${BOLD}  │  In development — Install at your own risk.  │${RESET}"
+echo -e "${RED}${BOLD}  └─────────────────────────────────────────┘${RESET}"
+echo ""
+read -p "  Continue? [Y/n] " _confirm
+[[ "$_confirm" =~ ^[Nn]$ ]] && { echo "  Aborted."; exit 0; }
+echo ""
+
 # ── Step 1: Verification ──────────────────────────────────────
 step "Verification"
 note "Checks KDE version and required tools"
@@ -106,6 +116,31 @@ fi
 unset -f _pkg_install
 
 command -v kwriteconfig6 &>/dev/null && ok "kwriteconfig6" || warn "kwriteconfig6 not found — fonts won't apply automatically"
+
+# panel colorizer (needed for transparent top bar)
+if [[ "$(cfg layout)" == "true" ]]; then
+  _colorizer_dir="$HOME/.local/share/plasma/plasmoids/luisbocanegra.panel.colorizer"
+  if [[ -d "$_colorizer_dir" ]]; then
+    ok "Panel Colorizer"
+  else
+    warn "Panel Colorizer not found — installing..."
+    if command -v kpackagetool6 &>/dev/null; then
+      kpackagetool6 -i "https://store.kde.org/p/2130967" -t Plasma/Applet &>/dev/null \
+        || kpackagetool6 --install "luisbocanegra.panel.colorizer" -t Plasma/Applet &>/dev/null \
+        || true
+    fi
+    # fallback: install via plasma-discover CLI or paru
+    if [[ ! -d "$_colorizer_dir" ]]; then
+      if command -v paru &>/dev/null; then
+        paru -S --noconfirm plasma6-applets-panel-colorizer 2>/dev/null || true
+      elif command -v yay &>/dev/null; then
+        yay -S --noconfirm plasma6-applets-panel-colorizer 2>/dev/null || true
+      fi
+    fi
+    [[ -d "$_colorizer_dir" ]] && ok "Panel Colorizer (installed)" || warn "Panel Colorizer not installed — top bar won't be transparent. Install manually from KDE Store."
+  fi
+fi
+
 [[ -f "$CONFIG" ]] && ok "features.json loaded"
 
 # ── Step 2: Installing Wallpapers ─────────────────────────────
