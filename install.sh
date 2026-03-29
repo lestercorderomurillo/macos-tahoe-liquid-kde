@@ -272,11 +272,7 @@ if [[ "$(cfg kvantum)" == "true" ]]; then
       kwriteconfig6 --file kdeglobals --group KDE --key widgetStyle kvantum
       ok "Widget style set to kvantum"
     fi
-
-    # apply theme via kvantummanager
-    if command -v kvantummanager &>/dev/null; then
-      kvantummanager --set MacTahoeLiquidKde &>/dev/null && ok "Kvantum theme applied" || warn "Could not apply Kvantum theme automatically"
-    fi
+    # theme variant is applied later by theme-switch.sh (auto light/dark)
   else
     fail "Kvantum theme source not found at $_kv_src"
   fi
@@ -545,9 +541,6 @@ step "Applying Changes"
 note "Applies settings and tells KDE to reload"
 
 # ── writing KDE config ──
-icon_theme=""
-cursor_theme=""
-
 if command -v kwriteconfig6 &>/dev/null; then
   if [[ "$(cfg fonts)" == "true" ]]; then
     kwriteconfig6 --file kdeglobals --group General --key font                 "SF Pro Text,10,-1,5,50,0,0,0,0,0"
@@ -559,31 +552,8 @@ if command -v kwriteconfig6 &>/dev/null; then
     kwriteconfig6 --file kdeglobals --group WM      --key activeFont           "SF Pro Display,11,-1,5,63,0,0,0,0,0"
     ok "Fonts configured"
   fi
-
-  if [[ "$(cfg cursors)" == "true" ]]; then
-    for theme in "$ICONS_DIR"/MacTahoeLiquidKde "$ICONS_DIR"/MacTahoeLiquidKde-Dark "$ICONS_DIR"/MacTahoeLiquidKde-Apple "$ICONS_DIR"/MacTahoeLiquidKde-Apple-White; do
-      [[ -d "$theme/cursors" ]] && { cursor_theme=$(basename "$theme"); break; }
-    done
-    if [[ -n "$cursor_theme" ]]; then
-      kwriteconfig6 --file kcminputrc --group Mouse --key cursorTheme "$cursor_theme"
-      ok "Cursor configured"
-    else
-      warn "cursor theme not found — set manually in System Settings"
-    fi
-  fi
-
-  if [[ "$(cfg icons)" == "true" ]]; then
-    for theme in "$ICONS_DIR"/MacTahoeLiquidKde-Icons "$ICONS_DIR"/MacTahoeLiquidKde-Icons-dark; do
-      [[ -f "$theme/index.theme" ]] && { icon_theme=$(basename "$theme"); break; }
-    done
-    if [[ -n "$icon_theme" ]]; then
-      kwriteconfig6 --file kdeglobals --group Icons --key Theme "$icon_theme"
-      ok "Icons configured"
-    else
-      warn "icon theme not found — set manually in System Settings"
-    fi
-  fi
 fi
+# icons, cursors, kvantum, color scheme are applied by theme-switch.sh (auto light/dark)
 
 # ── applying layout ──
 if [[ "$(cfg layout)" == "true" ]]; then
@@ -602,15 +572,36 @@ if [[ "$(cfg layout)" == "true" ]]; then
   fi
 fi
 
-# ── applying themes ──
-if [[ -n "$icon_theme" ]] && command -v plasma-apply-icontheme &>/dev/null; then
-  plasma-apply-icontheme "$icon_theme" &>/dev/null || true
-  ok "Icon theme applied"
+# ── applying themes (auto light/dark) ──
+
+# install theme-switch script
+_switch_src="$OFFLINE/theme-switch.sh"
+_switch_dest="$HOME/.local/bin/mactahoe-theme-switch"
+if [[ -f "$_switch_src" ]]; then
+  mkdir -p "$HOME/.local/bin"
+  cp -f "$_switch_src" "$_switch_dest"
+  chmod +x "$_switch_dest"
+  ok "Theme switcher installed"
 fi
-if [[ -n "$cursor_theme" ]] && command -v plasma-apply-cursortheme &>/dev/null; then
-  plasma-apply-cursortheme "$cursor_theme" &>/dev/null || true
-  ok "Cursor theme applied"
+
+# install watcher service (auto-switches on KDE light/dark change)
+_svc_src="$OFFLINE/mactahoe-theme-watcher.service"
+_svc_dest="$HOME/.config/systemd/user/mactahoe-theme-watcher.service"
+if [[ -f "$_svc_src" ]]; then
+  mkdir -p "$HOME/.config/systemd/user"
+  cp -f "$_svc_src" "$_svc_dest"
+  systemctl --user daemon-reload 2>/dev/null || true
+  systemctl --user enable --now mactahoe-theme-watcher.service 2>/dev/null \
+    && ok "Theme watcher enabled" \
+    || warn "Theme watcher could not be started"
 fi
+
+# apply matching variants now (kvantum, icons, cursors, color scheme)
+if [[ -x "$_switch_dest" ]]; then
+  "$_switch_dest" auto && ok "Themes applied (auto light/dark)" || warn "Theme auto-switch failed"
+fi
+
+# wallpaper (already has built-in auto light/dark via images + images_dark)
 if [[ "$(cfg wallpapers)" == "true" ]]; then
   wp_path="$WALLPAPERS/MacTahoe"
   if [[ -d "$wp_path" ]] && command -v plasma-apply-wallpaperimage &>/dev/null; then

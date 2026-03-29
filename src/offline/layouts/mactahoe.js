@@ -11,6 +11,7 @@ for (var i = 0; i < old.length; i++) {
 // flush with screen edge (not floating), thin, full width
 var bar = new Panel("org.kde.panel");
 bar.location = "top";
+bar.screen = 0;
 bar.lengthMode = "fill";
 bar.floating = false;
 bar.height = 38;
@@ -59,6 +60,7 @@ clock.writeConfig("customDateFormat", "ddd d ' | '");
 // floating, centered, large icons like macOS
 var dock = new Panel("org.kde.panel");
 dock.location = "bottom";
+dock.screen = 0;
 dock.alignment = "center";
 dock.lengthMode = "fit";
 dock.floating = true;

@@ -116,7 +116,22 @@ if [[ "$(cfg icons)" == "true" ]]; then
   info "$n icon themes removed"
 fi
 
-# ── Step 6: Removing Kvantum Theme ──────────────────────────
+# ── Step 6: Removing Theme Watcher ──────────────────────────
+step "Removing Theme Watcher"
+note "Stops and removes the auto light/dark theme switcher"
+
+_svc="mactahoe-theme-watcher.service"
+if systemctl --user is-enabled "$_svc" &>/dev/null; then
+  systemctl --user disable --now "$_svc" 2>/dev/null || true
+  ok "Theme watcher stopped"
+else
+  ok "Theme watcher (not running)"
+fi
+rm -f "$HOME/.config/systemd/user/$_svc" 2>/dev/null
+systemctl --user daemon-reload 2>/dev/null || true
+rm -f "$HOME/.local/bin/mactahoe-theme-switch" 2>/dev/null && ok "Theme switcher removed"
+
+# ── Step 7: Removing Kvantum Theme ──────────────────────────
 if [[ "$(cfg kvantum)" == "true" ]]; then
   step "Removing Kvantum Theme"
   note "Removes MacTahoe Liquid KDE Kvantum theme (keeps Kvantum installed)"
@@ -138,7 +153,7 @@ if [[ "$(cfg kvantum)" == "true" ]]; then
   fi
 fi
 
-# ── Step 7: Removing Plasmoids ───────────────────────────────
+# ── Step 8: Removing Plasmoids ───────────────────────────────
 if [[ "$(cfg plasmoids)" == "true" ]]; then
   step "Removing Plasmoids"
   n=0
@@ -150,7 +165,7 @@ if [[ "$(cfg plasmoids)" == "true" ]]; then
   info "$n plasmoids removed"
 fi
 
-# ── Step 8: Removing Liquid Glass ────────────────────────────
+# ── Step 9: Removing Liquid Glass ────────────────────────────
 if [[ "$(cfg liquid_glass)" == "true" ]]; then
   step "Removing Liquid Glass"
 

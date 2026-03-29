@@ -1,0 +1,12 @@
+[Unit]
+Description=MacTahoe Liquid KDE — auto light/dark theme switcher
+After=graphical-session.target
+
+[Service]
+Type=simple
+ExecStart=%h/.local/bin/mactahoe-theme-switch watch
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=default.target
