@@ -26,12 +26,45 @@ step() {
   echo -e "${GREEN}${BOLD}  Step ${STEP}: $*${RESET}"
 }
 
-cfg() {
+# ── feature flags (same system as install.sh) ────────────
+_ALL_FEATURES=(wallpapers fonts cursors plasma_theme window_decorations kvantum color_schemes icons plasmoids liquid_glass layout sounds gtk sddm apps no_download)
+declare -A _feat=()
+declare -A _cli=()
+
+_cfg_read() {
+  local key="$1"
   [[ -f "$CONFIG" ]] || { echo "true"; return; }
   local val
-  val=$(grep -m1 "\"$1\"" "$CONFIG" | grep -o 'true\|false')
+  val=$(sed -n 's/.*"'"$key"'"[[:space:]]*:[[:space:]]*\("[^"]*"\|true\|false\).*/\1/p' "$CONFIG" | tr -d '"' | head -1)
   echo "${val:-true}"
 }
+
+for _f in "${_ALL_FEATURES[@]}"; do _feat[$_f]="$(_cfg_read "$_f")"; done
+
+for _arg in "$@"; do
+  case "$_arg" in
+    --no-*)
+      _key="${_arg#--no-}"
+      _key="${_key//-/_}"
+      for _f in "${_ALL_FEATURES[@]}"; do
+        [[ "$_f" == "$_key" ]] && { _cli[$_f]="false"; break; }
+      done
+      ;;
+    --*)
+      _key="${_arg#--}"
+      _key="${_key//-/_}"
+      for _f in "${_ALL_FEATURES[@]}"; do
+        [[ "$_f" == "$_key" ]] && { _cli[$_f]="true"; break; }
+      done
+      ;;
+  esac
+done
+
+for _f in "${_ALL_FEATURES[@]}"; do
+  [[ -n "${_cli[$_f]:-}" ]] && _feat[$_f]="${_cli[$_f]}"
+done
+
+cfg() { echo "${_feat[$1]:-true}"; }
 
 [[ -d "$REPO/src" ]] || { echo -e "${RED}  Run from repo root.${RESET}" >&2; exit 1; }
 
@@ -80,6 +113,7 @@ fi
 # ── Removing Fonts ───────────────────────────────────
 if [[ "$(cfg fonts)" == "true" ]]; then
   step "Removing Fonts"
+  note "Removes SF Pro and SF Mono font files"
   n=0
   for pattern in "SF-Pro*" "SF-Mono*" "SFPro*" "SFMono*"; do
     for f in "$FONTS_DIR/"$pattern; do
@@ -94,6 +128,7 @@ fi
 # ── Removing Cursors ─────────────────────────────────
 if [[ "$(cfg cursors)" == "true" ]]; then
   step "Removing Cursors"
+  note "Removes MacTahoe Liquid KDE cursor themes"
   n=0
   for theme in "$ICONS_DIR"/MacTahoeLiquidKde*; do
     [[ -d "$theme" ]] || continue
@@ -107,6 +142,7 @@ fi
 # ── Removing Icons ───────────────────────────────────
 if [[ "$(cfg icons)" == "true" ]]; then
   step "Removing Icons"
+  note "Removes MacTahoe Liquid KDE icon themes"
   n=0
   for theme in "$ICONS_DIR"/MacTahoeLiquidKde-Icons*; do
     [[ -d "$theme" ]] || continue
@@ -131,6 +167,7 @@ ok "Theme switcher removed"
 # ── Removing Plasma Theme ───────────────────────────
 if [[ "$(cfg plasma_theme)" == "true" ]]; then
   step "Removing Plasma Theme"
+  note "Removes MacTahoe Liquid KDE Plasma desktop theme and resets to Breeze"
   n=0
   for variant in MacTahoeLiquidKde-Dark MacTahoeLiquidKde-Light; do
     _pt_dir="$HOME/.local/share/plasma/desktoptheme/$variant"
@@ -169,6 +206,7 @@ fi
 # ── Removing Color Schemes ──────────────────────────
 if [[ "$(cfg color_schemes)" == "true" ]]; then
   step "Removing Color Schemes"
+  note "Removes MacTahoe Liquid KDE color schemes (light and dark)"
   n=0
   for cs in "$HOME/.local/share/color-schemes"/MacTahoeLiquidKde*.colors; do
     [[ -f "$cs" ]] || continue
@@ -210,6 +248,7 @@ fi
 # ── Removing Plasmoids ──────────────────────────────
 if [[ "$(cfg plasmoids)" == "true" ]]; then
   step "Removing Plasmoids"
+  note "Removes custom Plasma widgets"
   n=0
   for widget in "$PLASMOIDS_DIR"/org.kde.mac-tahoe-liquid-kde.* "$PLASMOIDS_DIR"/org.kde.mactahoe-liquid-kde.*; do
     [[ -d "$widget" ]] || continue
@@ -222,6 +261,7 @@ fi
 # ── Removing Liquid Glass ───────────────────────────
 if [[ "$(cfg liquid_glass)" == "true" ]]; then
   step "Removing Liquid Glass"
+  note "Unloads and removes the Liquid Glass KWin effect"
 
   # unload effect
   for _q in qdbus6 qdbus; do

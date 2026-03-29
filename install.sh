@@ -7,17 +7,6 @@ SRC="$REPO/src"
 STEPS="$REPO/src/steps"
 OFFLINE="$REPO/src/offline"
 CONFIG="$REPO/features.json"
-NO_DOWNLOAD=false
-for _arg in "$@"; do
-  case "$_arg" in
-    --no-download|--offline) NO_DOWNLOAD=true ;;
-    --download) NO_DOWNLOAD=false ;;
-  esac
-done
-# features.json default (CLI flags take priority)
-if ! $NO_DOWNLOAD && [[ -f "$CONFIG" ]]; then
-  [[ "$(grep -m1 '"no_download"' "$CONFIG" | grep -o 'true\|false')" == "true" ]] && NO_DOWNLOAD=true
-fi
 WALLPAPERS="$HOME/.local/share/wallpapers"
 FONTS_DIR="$HOME/.local/share/fonts"
 ICONS_DIR="$HOME/.local/share/icons"
@@ -41,12 +30,110 @@ step() {
   echo -e "${GREEN}${BOLD}  Step ${STEP}: $*${RESET}"
 }
 
-cfg() {
+# ── feature flags ────────────────────────────────────────
+# All features with their defaults
+_ALL_FEATURES=(wallpapers fonts cursors plasma_theme window_decorations kvantum color_schemes icons plasmoids liquid_glass layout sounds gtk sddm apps no_download)
+
+# declare associative arrays for feature state and CLI overrides
+declare -A _feat=()
+declare -A _cli=()
+_theme_mode=""
+_do_save=false
+_do_reset=false
+
+# 1. load defaults from features.json
+_cfg_read() {
+  local key="$1"
   [[ -f "$CONFIG" ]] || { echo "true"; return; }
   local val
-  val=$(grep -m1 "\"$1\"" "$CONFIG" | grep -o 'true\|false')
+  val=$(sed -n 's/.*"'"$key"'"[[:space:]]*:[[:space:]]*\("[^"]*"\|true\|false\).*/\1/p' "$CONFIG" | tr -d '"' | head -1)
   echo "${val:-true}"
 }
+
+for _f in "${_ALL_FEATURES[@]}"; do
+  _feat[$_f]="$(_cfg_read "$_f")"
+done
+_theme_mode="$(_cfg_read "theme_mode")"
+[[ "$_theme_mode" =~ ^(auto|light|dark)$ ]] || _theme_mode="auto"
+
+# 2. parse CLI flags (override features.json)
+for _arg in "$@"; do
+  case "$_arg" in
+    --light)       _theme_mode="light" ;;
+    --dark)        _theme_mode="dark" ;;
+    --auto)        _theme_mode="auto" ;;
+    --save)        _do_save=true ;;
+    --reset)       _do_reset=true ;;
+    --no-download|--offline) _cli[no_download]="true" ;;
+    --download)    _cli[no_download]="false" ;;
+    --no-*)
+      _key="${_arg#--no-}"
+      _key="${_key//-/_}"
+      for _f in "${_ALL_FEATURES[@]}"; do
+        [[ "$_f" == "$_key" ]] && { _cli[$_f]="false"; break; }
+      done
+      ;;
+    --*)
+      _key="${_arg#--}"
+      _key="${_key//-/_}"
+      for _f in "${_ALL_FEATURES[@]}"; do
+        [[ "$_f" == "$_key" ]] && { _cli[$_f]="true"; break; }
+      done
+      ;;
+  esac
+done
+
+# 3. --reset: restore features.json to all-true defaults
+if $_do_reset; then
+  cat > "$CONFIG" <<'DEFAULTS'
+{
+  "wallpapers":          true,
+  "fonts":               true,
+  "cursors":             true,
+  "plasma_theme":        true,
+  "window_decorations":  true,
+  "kvantum":             true,
+  "color_schemes":       true,
+  "icons":               true,
+  "plasmoids":           true,
+  "liquid_glass":        true,
+  "layout":              true,
+  "sounds":              true,
+  "gtk":                 true,
+  "sddm":               true,
+  "apps":                true,
+  "no_download":         true,
+  "theme_mode":          "auto"
+}
+DEFAULTS
+  echo -e "  ${GREEN}✓${RESET}  features.json reset to defaults"
+  # reload after reset
+  for _f in "${_ALL_FEATURES[@]}"; do _feat[$_f]="$(_cfg_read "$_f")"; done
+  _theme_mode="auto"
+fi
+
+# 4. apply CLI overrides on top
+for _f in "${_ALL_FEATURES[@]}"; do
+  [[ -n "${_cli[$_f]:-}" ]] && _feat[$_f]="${_cli[$_f]}"
+done
+
+# 5. --save: persist current state back to features.json
+if $_do_save; then
+  {
+    echo "{"
+    for _f in "${_ALL_FEATURES[@]}"; do
+      printf '  "%-20s %s\n' "${_f}\":" "${_feat[$_f]},"
+    done
+    printf '  "%-20s "%s"\n' 'theme_mode":' "$_theme_mode"
+    echo "}"
+  } > "$CONFIG"
+  echo -e "  ${GREEN}✓${RESET}  features.json saved"
+fi
+
+# convenience: cfg reads the resolved value (file + CLI merged)
+cfg() { echo "${_feat[$1]:-true}"; }
+
+NO_DOWNLOAD="${_feat[no_download]}"
 
 run_step() {
   local script="$1"
@@ -702,10 +789,15 @@ if [[ -f "$_svc_src" ]]; then
   mkdir -p "$HOME/.config/systemd/user"
   cp -f "$_svc_src" "$_svc_dest"
   systemctl --user daemon-reload 2>/dev/null || true
-  systemctl --user enable --now mac-tahoe-liquid-kde-theme.service &>/dev/null || true
+  if [[ "$_theme_mode" == "auto" ]]; then
+    systemctl --user enable --now mac-tahoe-liquid-kde-theme.service &>/dev/null || true
+  else
+    # fixed mode — no need for the watcher service
+    systemctl --user disable --now mac-tahoe-liquid-kde-theme.service &>/dev/null || true
+  fi
 fi
 if [[ -x "$_switch_dest" ]]; then
-  "$_switch_dest" auto &>/dev/null
+  "$_switch_dest" "$_theme_mode" &>/dev/null
   # wait for gtk-4.0 background overwrite to finish
   wait 2>/dev/null
   ok "Theme switcher installed"
