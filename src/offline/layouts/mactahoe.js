@@ -30,7 +30,16 @@ colorizer.writeConfig("hideWidget", "true");
 bar.addWidget("org.kde.plasma.kickoff");
 bar.addWidget("org.kde.plasma.appmenu");
 bar.addWidget("org.kde.plasma.panelspacer");
-bar.addWidget("org.kde.plasma.systemtray");
+
+// system tray — macOS style: only bluetooth, wifi, brightness visible
+var tray = bar.addWidget("org.kde.plasma.systemtray");
+tray.currentConfigGroup = ["General"];
+
+// shown = always visible, hidden = inside arrow, auto = KDE decides
+tray.writeConfig("shownItems", "org.kde.plasma.bluetooth,org.kde.plasma.networkmanagement,org.kde.plasma.brightness,org.kde.plasma.volume");
+tray.writeConfig("hiddenItems", "org.kde.plasma.clipboard,org.kde.plasma.devicenotifier,org.kde.plasma.manage-inputmethod,org.kde.plasma.mediacontroller,org.kde.plasma.notifications,org.kde.plasma.keyboardindicator,org.kde.plasma.weather,org.kde.kscreen,org.kde.plasma.keyboardlayout,org.kde.plasma.printmanager,org.kde.plasma.cameraindicator,org.kde.plasma.vault,org.kde.kdeconnect,org.kde.plasma.battery,Arch-Update,chrome_status_icon_1,discord,plasmashell_microphone,steam,spotify,telegram,slack");
+tray.writeConfig("iconSpacing", 3);
+
 bar.addWidget("org.kde.plasma.digitalclock");
 
 // ── bottom dock ─────────────────────────────────
