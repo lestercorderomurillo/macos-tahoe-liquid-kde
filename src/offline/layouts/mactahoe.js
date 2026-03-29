@@ -14,6 +14,7 @@ bar.location = "top";
 bar.screen = 0;
 bar.lengthMode = "fill";
 bar.floating = false;
+bar.hiding = "dodgewindows";
 bar.height = 38;
 
 // panel colorizer: transparent background
@@ -64,6 +65,7 @@ dock.screen = 0;
 dock.alignment = "center";
 dock.lengthMode = "fit";
 dock.floating = true;
+dock.hiding = "dodgewindows";
 dock.height = 2 * Math.ceil(gridUnit * 3.5 / 2);
 
 var launcher = dock.addWidget("org.kde.plasma.kickerdash");
