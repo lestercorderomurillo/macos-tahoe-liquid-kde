@@ -7,6 +7,17 @@ SRC="$REPO/src"
 STEPS="$REPO/src/steps"
 OFFLINE="$REPO/src/offline"
 CONFIG="$REPO/features.json"
+NO_DOWNLOAD=false
+for _arg in "$@"; do
+  case "$_arg" in
+    --no-download|--offline) NO_DOWNLOAD=true ;;
+    --download) NO_DOWNLOAD=false ;;
+  esac
+done
+# features.json default (CLI flags take priority)
+if ! $NO_DOWNLOAD && [[ -f "$CONFIG" ]]; then
+  [[ "$(grep -m1 '"no_download"' "$CONFIG" | grep -o 'true\|false')" == "true" ]] && NO_DOWNLOAD=true
+fi
 WALLPAPERS="$HOME/.local/share/wallpapers"
 FONTS_DIR="$HOME/.local/share/fonts"
 ICONS_DIR="$HOME/.local/share/icons"
@@ -146,7 +157,11 @@ if [[ "$(cfg wallpapers)" == "true" ]]; then
   declare -A _wp_pre=()
   for _d in "$WALLPAPERS"/*/; do [[ -d "$_d" ]] && _wp_pre["$(basename "$_d")"]=1; done
 
-  run_step "step-wallpapers.sh"
+  if $NO_DOWNLOAD && compgen -G "$SRC/steps/wallpapers/MacTahoe/contents/images/*" &>/dev/null; then
+    ok "Wallpapers already downloaded"
+  else
+    run_step "step-wallpapers.sh"
+  fi
 
   mkdir -p "$WALLPAPERS"
   n_inst=0; n_re=0
@@ -194,7 +209,11 @@ if [[ "$(cfg fonts)" == "true" ]]; then
   step "Installing Fonts"
   note "Downloads and installs SF Pro and SF Mono"
 
-  run_step "step-fonts.sh"
+  if $NO_DOWNLOAD && compgen -G "$SRC/steps/fonts/*.otf" &>/dev/null; then
+    ok "Fonts already downloaded"
+  else
+    run_step "step-fonts.sh"
+  fi
 
   mkdir -p "$FONTS_DIR"
   declare -A g_inst=() g_re=()
@@ -256,13 +275,19 @@ if [[ "$(cfg kvantum)" == "true" ]]; then
   # copy theme to Kvantum config dir
   _kv_src="$OFFLINE/kvantum/MacTahoeLiquidKde"
   _kv_dest="$HOME/.config/Kvantum/MacTahoeLiquidKde"
+  _kv_existed=false
+  [[ -d "$_kv_dest" ]] && ls "$_kv_dest"/*.kvconfig &>/dev/null && _kv_existed=true
   if [[ -d "$_kv_src" ]]; then
     mkdir -p "$_kv_dest"
     cp -f "$_kv_src"/*.kvconfig "$_kv_dest/" 2>/dev/null
     cp -f "$_kv_src"/*.svg      "$_kv_dest/" 2>/dev/null
 
     if [[ -d "$_kv_dest" ]] && ls "$_kv_dest"/*.kvconfig &>/dev/null; then
-      ok "MacTahoeLiquidKde theme installed"
+      if $_kv_existed; then
+        reinstall "MacTahoeLiquidKde theme"
+      else
+        ok "MacTahoeLiquidKde theme installed"
+      fi
     else
       fail "MacTahoeLiquidKde theme (copy failed)"
     fi
@@ -288,7 +313,11 @@ if [[ "$(cfg cursors)" == "true" ]]; then
   declare -A _cur_pre=()
   for _d in "$ICONS_DIR"/*/; do [[ -d "$_d" ]] && _cur_pre["$(basename "$_d")"]=1; done
 
-  run_step "step-cursors.sh"
+  if $NO_DOWNLOAD && [[ -d "$SRC/steps/cursors/MacTahoeLiquidKde/cursors" ]]; then
+    ok "Cursors already downloaded"
+  else
+    run_step "step-cursors.sh"
+  fi
 
   mkdir -p "$ICONS_DIR"
   n_inst=0; n_re=0
@@ -335,7 +364,11 @@ if [[ "$(cfg icons)" == "true" ]]; then
   declare -A _ico_pre=()
   for _d in "$ICONS_DIR"/*/; do [[ -d "$_d" ]] && _ico_pre["$(basename "$_d")"]=1; done
 
-  run_step "step-icons.sh"
+  if $NO_DOWNLOAD && [[ -d "$SRC/steps/icons/MacTahoeLiquidKde-Icons" ]]; then
+    ok "Icons already downloaded"
+  else
+    run_step "step-icons.sh"
+  fi
 
   mkdir -p "$ICONS_DIR"
   n_inst=0; n_re=0
@@ -494,7 +527,7 @@ if [[ "$(cfg liquid_glass)" == "true" ]]; then
               kwriteconfig6 --file kwinrc --group "$_lg_grp" --key TransparentBlur true 2>/dev/null || true
               kwriteconfig6 --file kwinrc --group "$_lg_grp" --key TopCornerRadius 22 2>/dev/null || true
               kwriteconfig6 --file kwinrc --group "$_lg_grp" --key BottomCornerRadius 22 2>/dev/null || true
-              kwriteconfig6 --file kwinrc --group "$_lg_grp" --key MenuCornerRadius 22 2>/dev/null || true
+              kwriteconfig6 --file kwinrc --group "$_lg_grp" --key MenuCornerRadius 14 2>/dev/null || true
               kwriteconfig6 --file kwinrc --group "$_lg_grp" --key DockCornerRadius 22 2>/dev/null || true
               ok "Liquid Glass preset applied"
               # persist + enable the effect

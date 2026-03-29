@@ -12,6 +12,7 @@
   "layout":              true,
   "sounds":              true,
   "gtk":                 true,
-  "sddm":               true,
-  "apps":                true
+  "sddm":                true,
+  "apps":                true,
+  "no_download":         true
 }
