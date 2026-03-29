@@ -3,7 +3,7 @@
 > [!CAUTION]
 > **Status: In development** — Functional but under active development. Some features may not work as expected. Back up your KDE config before installing. Use at your own risk.
 
-A full macOS Tahoe-style desktop experience for KDE Plasma — going beyond a simple theme. MacTahoe Liquid KDE bundles a curated collection of widgets, GTK & KDE themes, SDDM login screen, window decorations, icons, cursors, fonts, sounds, wallpapers, and a custom Electron app menu, bringing a cohesive Tahoe look to every layer of your desktop.
+A full macOS Tahoe-style desktop experience for KDE Plasma — going beyond a simple theme.
 
 Inspired by [Pear OS](https://pearos.xyz) in spirit — a complete environment, not just a coat of paint.
 
@@ -16,36 +16,39 @@ Inspired by [Pear OS](https://pearos.xyz) in spirit — a complete environment, 
 | **Wallpapers** | Tahoe, Heritage, Beach, Landscape — light/dark | ✅ Done |
 | **Fonts** | SF Pro Display, Text, Rounded | ✅ Done |
 | **Cursors** | Standard, Dark, Apple, Apple White | ✅ Done |
+| **Icons** | Full macOS-style icon set (light & dark) | ✅ Done |
+| **Layout** | Transparent top bar + floating bottom dock | ✅ Done |
+| **Liquid Glass** | KWin blur + rounded corners effect | ✅ Done |
+| **Plasmoids** | Custom trash widget with configurable icons | ✅ Done |
 | **Plasma theme** | Shell, panel, dock, look-and-feel | 🔲 Planned |
 | **GTK theme** | GTK2/3/4 window chrome and controls | 🔲 Planned |
 | **Kvantum theme** | Qt app theme | 🔲 Planned |
-| **Liquid Glass** | KWin glass effect with specular, iridescence, shadows | ✅ Done |
 | **SDDM theme** | Login and lock screen | 🔲 Planned |
 | **Aurorae decorations** | Window title bar and borders | 🔲 Planned |
 | **Color schemes** | Tahoe Light & Dark palettes | 🔲 Planned |
-| **Icons** | Full macOS-style icon set (light & dark) | ✅ Done |
 | **Sounds** | Notification and event sounds | 🔲 Planned |
-| **Custom Electron apps** | "About This Mac" and System Settings | 🔲 Planned |
-| **Firefox** | Liquid Glass skin | 🔲 Planned |
-| **Plasmoids** | Custom Plasma widgets (trash, more planned) | ✅ In Progress |
-| **Layout** | Top menu bar + bottom floating dock | ✅ Done |
-| **Widgets** | Plasma widgets styled after Tahoe UI | 🔲 Planned |
 
 ---
 
-## Usage
+## Requirements
 
-Requires KDE Plasma 6.6+.
+- KDE Plasma 6.6+
+- sudo access
+- [Panel Colorizer](https://store.kde.org/p/2130967) (auto-installed if missing)
+
+## Usage
 
 **Install**
 ```bash
 bash install.sh
 ```
 
-**Uninstall**
+**Uninstall** (resets to Breeze defaults)
 ```bash
 bash uninstall.sh
 ```
+
+Both scripts ask for confirmation, request sudo upfront, and restart Plasma automatically.
 
 ---
 
@@ -54,7 +57,7 @@ bash uninstall.sh
 ```
 macos-tahoe-liquid-kde/
 ├── install.sh              # main installer
-├── uninstall.sh            # uninstaller
+├── uninstall.sh            # uninstaller (resets to Breeze)
 ├── features.json           # toggle individual components on/off
 └── src/
     ├── mirrors/            # mirror lists and asset source metadata
@@ -66,41 +69,37 @@ macos-tahoe-liquid-kde/
     │   ├── plasmoids/      # custom Plasma widgets
     │   │   └── org.kde.mactahoe-liquid-kde.trash/
     │   ├── kwin-effects/   # KWin compositor effects (built from source)
-    │   │   └── glass-kde-replica/  # Apple-style glass material
+    │   │   └── glass-kde-replica/
     │   └── layouts/        # panel layout scripts
-    │       ├── mactahoe.js # top bar + bottom dock
+    │       ├── mactahoe.js # transparent top bar + bottom dock
     │       └── default.js  # reset to stock KDE
     └── steps/              # per-component install scripts
-        ├── utils.sh
-        ├── step-wallpapers.sh
-        ├── step-fonts.sh
-        ├── step-cursors.sh
-        ├── step-icons.sh
-        ├── wallpapers/     # online
-        ├── fonts/          # online
-        ├── cursors/        # online
-        └── icons/          # online
 ```
 
 ---
 
-## What the Installer Touches
+## What the Installer Does
 
 | Area | What changes |
 |------|-------------|
 | `~/.local/share/wallpapers/` | Wallpaper collection |
 | `~/.local/share/fonts/` | SF Pro typefaces |
-| `~/.local/share/icons/` | Cursor themes and icon themes |
-| `~/.config/kdeglobals` | System fonts, icon theme |
-| `~/.config/kcminputrc` | Cursor theme applied |
+| `~/.local/share/icons/` | Cursor and icon themes |
+| `~/.config/kdeglobals` | Fonts, icon theme |
+| `~/.config/kcminputrc` | Cursor theme |
+| `~/.config/kwinrc` | Liquid Glass effect config |
 | `~/.local/share/plasma/plasmoids/` | Custom plasmoids |
-| `plasma-org.kde.plasma.desktop-appletsrc` | Panel layout (top bar + dock) |
+| Panel layout | Top bar (transparent) + bottom dock (floating) |
+| KWin effects | Liquid Glass blur + rounded corners |
+| Plasma shell | Restarted to apply all changes |
+
+The uninstaller reverses everything and resets to Breeze defaults.
 
 ---
 
 ## Credits
 
-Based on [vinceliuice/MacTahoe-kde](https://github.com/vinceliuice/MacTahoe-kde) by [vinceliuice](https://github.com/vinceliuice) — consider [donating](https://www.paypal.me/vinceliuice) to support the original work.
+Based on [vinceliuice/MacTahoe-kde](https://github.com/vinceliuice/MacTahoe-kde) by [vinceliuice](https://github.com/vinceliuice).
 
 ---
 

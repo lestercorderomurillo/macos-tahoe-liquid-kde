@@ -550,68 +550,49 @@ if [[ "$(cfg layout)" == "true" ]]; then
       "$_qdbus" org.kde.plasmashell /PlasmaShell org.kde.PlasmaShell.evaluateScript "$(cat "$_layout")" &>/dev/null \
         && ok "Layout applied (top bar + bottom dock)" \
         || warn "layout script failed — set layout manually"
-      sleep 3  # let Plasma finish creating panels
+      sleep 1
     else
       warn "qdbus not found — layout not applied"
     fi
   fi
 fi
 
-# ── phase 3: live-apply themes (panels now exist with correct config) ──
-if [[ -n "$icon_theme" ]] && command -v plasma-apply-icontheme &>/dev/null; then
-  plasma-apply-icontheme "$icon_theme" &>/dev/null || true
-  ok "Icon theme applied"
-fi
-
-if [[ -n "$cursor_theme" ]] && command -v plasma-apply-cursortheme &>/dev/null; then
-  plasma-apply-cursortheme "$cursor_theme" &>/dev/null || true
-  ok "Cursor theme applied"
-fi
-
-if [[ "$(cfg wallpapers)" == "true" ]]; then
-  wp_path="$WALLPAPERS/MacTahoe"
-  if [[ -d "$wp_path" ]] && command -v plasma-apply-wallpaperimage &>/dev/null; then
-    plasma-apply-wallpaperimage "$wp_path" &>/dev/null || true
-    ok "Wallpaper set to MacTahoe (light/dark)"
-  fi
-fi
-
-# ── phase 4: rebuild caches and signal reload ──
-if command -v kbuildsycoca6 &>/dev/null; then
-  kbuildsycoca6 --noincremental 2>/dev/null \
-    && ok "KDE system cache rebuilt" || warn "kbuildsycoca6 failed (non-fatal)"
-fi
-
-for qdbus_cmd in qdbus6 qdbus; do
-  command -v "$qdbus_cmd" &>/dev/null && {
-    "$qdbus_cmd" org.kde.KWin /KWin org.kde.KWin.reconfigure &>/dev/null \
-      && ok "KWin reconfigured" || warn "KWin reconfigure failed (non-fatal)"
-    break
-  }
-done
-
-# flush icon caches so widgets (trash, etc.) pick up new theme immediately
+# ── phase 3: flush caches, rebuild, restart plasma ──
 rm -rf "$HOME/.cache/icon-cache.kcache" 2>/dev/null || true
 rm -rf "$HOME/.cache/plasma-svgelements-"* 2>/dev/null || true
 rm -rf "$HOME/.cache/plasma_theme_"* 2>/dev/null || true
 find "$HOME/.cache" -maxdepth 1 -name "ksycoca6*" -delete 2>/dev/null || true
-ok "Icon and widget caches flushed"
+kbuildsycoca6 --noincremental 2>/dev/null || true
+ok "Caches flushed"
 
-if command -v dbus-send &>/dev/null; then
-  dbus-send --session --type=signal /KIconLoader org.kde.KIconLoader.iconChanged 2>/dev/null || true
-  dbus-send --session --type=signal /KGlobalSettings org.kde.KGlobalSettings.notifyChange int32:4 int32:0 2>/dev/null || true
-  dbus-send --session --dest=org.kde.plasmashell \
-    /PlasmaShell org.kde.PlasmaShell.refreshCurrentShell 2>/dev/null \
-    && ok "Plasma shell refreshed" || warn "Plasma shell refresh failed (non-fatal)"
-fi
-
-# ── phase 5: final icon re-apply (catches panels created by layout) ──
-sleep 2
+# apply themes
 if [[ -n "$icon_theme" ]] && command -v plasma-apply-icontheme &>/dev/null; then
   plasma-apply-icontheme "$icon_theme" &>/dev/null || true
-  dbus-send --session --type=signal /KIconLoader org.kde.KIconLoader.iconChanged 2>/dev/null || true
-  ok "Icons re-applied to all panels"
+  ok "Icon theme applied"
 fi
+if [[ -n "$cursor_theme" ]] && command -v plasma-apply-cursortheme &>/dev/null; then
+  plasma-apply-cursortheme "$cursor_theme" &>/dev/null || true
+  ok "Cursor theme applied"
+fi
+if [[ "$(cfg wallpapers)" == "true" ]]; then
+  wp_path="$WALLPAPERS/MacTahoe"
+  if [[ -d "$wp_path" ]] && command -v plasma-apply-wallpaperimage &>/dev/null; then
+    plasma-apply-wallpaperimage "$wp_path" &>/dev/null || true
+    ok "Wallpaper set"
+  fi
+fi
+
+# restart plasmashell — picks up all changes including icons
+systemctl --user restart plasma-plasmashell 2>/dev/null || killall plasmashell 2>/dev/null || true
+ok "Plasma restarted"
+
+# reconfigure KWin
+for qdbus_cmd in qdbus6 qdbus; do
+  command -v "$qdbus_cmd" &>/dev/null && {
+    "$qdbus_cmd" org.kde.KWin /KWin org.kde.KWin.reconfigure &>/dev/null || true
+    break
+  }
+done
 
 # ── Done ──────────────────────────────────────────────────────
 echo ""

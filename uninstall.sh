@@ -8,14 +8,6 @@ WALLPAPERS="$HOME/.local/share/wallpapers"
 FONTS_DIR="$HOME/.local/share/fonts"
 ICONS_DIR="$HOME/.local/share/icons"
 PLASMOIDS_DIR="$HOME/.local/share/plasma/plasmoids"
-# PLASMA="$HOME/.local/share/plasma/desktoptheme"
-# LOOKFEEL="$HOME/.local/share/plasma/look-and-feel"
-# AURORAE="$HOME/.local/share/aurorae/themes"
-# KVANTUM="$HOME/.config/Kvantum"
-# COLORS="$HOME/.local/share/color-schemes"
-# SOUNDS="$HOME/.local/share/sounds"
-# GTK="$HOME/.themes"
-# APPS="$HOME/.local/share/applications"
 
 GREEN='\033[0;32m'; YELLOW='\033[1;33m'
 RED='\033[0;31m'; RESET='\033[0m'; BOLD='\033[1m'
@@ -31,7 +23,7 @@ fail() { echo -e "  ${RED}✗${RESET}  $*"; ERRORS+=("$*"); }
 step() {
   ((STEP++))
   echo ""
-  echo -e "${GREEN}${BOLD}  ── Step ${STEP}: $*${RESET}"
+  echo -e "${GREEN}${BOLD}  Step ${STEP}: $*${RESET}"
 }
 
 cfg() {
@@ -41,255 +33,142 @@ cfg() {
   echo "${val:-true}"
 }
 
+[[ -d "$REPO/src" ]] || { echo -e "${RED}  Run from repo root.${RESET}" >&2; exit 1; }
+
+# ── sudo first ───────────────────────────────────────────────
+echo ""
+echo -e "  ${RED}${BOLD}This will reset your desktop to Breeze defaults.${RESET}"
+echo ""
+read -p "  Continue? [Y/n] " _confirm
+[[ "$_confirm" =~ ^[Nn]$ ]] && { echo "  Aborted."; exit 0; }
+echo ""
+
+sudo -v || { echo -e "  ${RED}sudo required.${RESET}"; exit 1; }
+
 # ── Step 1: Verification ──────────────────────────────────────
 step "Verification"
-note "Checks KDE version and required tools"
+note "Checks KDE version"
 
 if ! command -v plasmashell &>/dev/null; then
-  fail "KDE Plasma not found"
-  echo ""
-  echo "     MacTahoe Liquid KDE requires KDE Plasma 6.6+."
-  echo "     It does not support GNOME, XFCE, or other desktops."
-  echo ""
-  exit 1
+  fail "KDE Plasma not found"; exit 1
 fi
 
 plasma_ver=$(plasmashell --version 2>/dev/null | grep -oP '[0-9]+[.][0-9]+[.][0-9]+' | head -1)
-plasma_major=$(echo "$plasma_ver" | cut -d. -f1)
-plasma_minor=$(echo "$plasma_ver" | cut -d. -f2)
-
-if [[ "$plasma_major" -lt 6 ]] || { [[ "$plasma_major" -eq 6 ]] && [[ "$plasma_minor" -lt 6 ]]; }; then
-  fail "KDE Plasma $plasma_ver (6.6+ required)"
-  echo "     Please update KDE Plasma before uninstalling."
-  echo ""
-  exit 1
-fi
-
 ok "KDE Plasma $plasma_ver"
-command -v kwriteconfig6 &>/dev/null && ok "kwriteconfig6" || warn "kwriteconfig6 not found — settings won't be reset automatically"
 [[ -f "$CONFIG" ]] && ok "features.json loaded"
 
-if [[ "$(cfg liquid_glass)" == "true" ]]; then
-  info "Some steps require elevated privileges"
-  sudo -v || { fail "sudo required"; exit 1; }
-  ok "sudo authenticated"
-fi
-
-# ── Step 2: Removing Wallpapers ───────────────────────────────
+# ── Step 2: Removing Wallpapers ──────────────────────────────
 if [[ "$(cfg wallpapers)" == "true" ]]; then
   step "Removing Wallpapers"
-  note "Removes all installed MacTahoe wallpaper packages"
+  note "Removes all MacTahoe wallpaper packages"
 
   n=0
-  for name in \
-    MacTahoe \
-    MacTahoe-Beach-Dawn MacTahoe-Beach-Day \
-    MacTahoe-Beach-Dusk MacTahoe-Beach-Night \
-    MacHeritage-Sequoia MacHeritage-Sequoia-Sunrise \
-    MacHeritage-Sonoma MacHeritage-Sonoma-Horizon \
+  for name in MacTahoe MacTahoe-Beach-Dawn MacTahoe-Beach-Day MacTahoe-Beach-Dusk MacTahoe-Beach-Night \
+    MacHeritage-Sequoia MacHeritage-Sequoia-Sunrise MacHeritage-Sonoma MacHeritage-Sonoma-Horizon \
     MacHeritage-Ventura MacHeritage-Monterey MacHeritage-BigSur; do
     [[ -d "$WALLPAPERS/$name" ]] || continue
-    if err=$(rm -rf "$WALLPAPERS/$name" 2>&1); then
-      ok "$name (removed)"; n=$((n + 1))
-    else
-      fail "$name (remove failed: ${err:-unknown error})"
-    fi
+    rm -rf "$WALLPAPERS/$name" 2>/dev/null && ok "$name" && n=$((n+1)) || fail "$name"
   done
   for d in "$WALLPAPERS"/MacTahoe-Landscape-*/; do
     [[ -d "$d" ]] || continue
     name=$(basename "$d")
-    if err=$(rm -rf "$d" 2>&1); then
-      ok "$name (removed)"; n=$((n + 1))
-    else
-      fail "$name (remove failed: ${err:-unknown error})"
-    fi
+    rm -rf "$d" 2>/dev/null && ok "$name" && n=$((n+1)) || fail "$name"
   done
-  [[ $n -eq 0 ]] \
-    && info "0 wallpapers removed (already removed?)" \
-    || info "$n wallpapers removed"
+  info "$n wallpapers removed"
 fi
 
-# ── Step 3: Removing Fonts ────────────────────────────────────
+# ── Step 3: Removing Fonts ───────────────────────────────────
 if [[ "$(cfg fonts)" == "true" ]]; then
   step "Removing Fonts"
-  note "Removes SF Pro and SF Mono"
-
   n=0
   for pattern in "SF-Pro*" "SF-Mono*" "SFPro*" "SFMono*"; do
     for f in "$FONTS_DIR/"$pattern; do
       [[ -f "$f" ]] || continue
-      if err=$(rm -f "$f" 2>&1); then
-        n=$((n + 1))
-      else
-        fail "$(basename "$f") (remove failed: ${err:-unknown error})"
-      fi
+      rm -f "$f" 2>/dev/null && n=$((n+1))
     done
   done
-  [[ $n -eq 0 ]] \
-    && info "0 font files removed (already removed?)" \
-    || { info "$n font files removed"; fc-cache -f "$FONTS_DIR" 2>/dev/null || true; }
+  [[ $n -gt 0 ]] && fc-cache -f "$FONTS_DIR" 2>/dev/null || true
+  info "$n font files removed"
 fi
 
-# ── Step 4: Removing Plasma Theme ────────────────────────────
-# if [[ "$(cfg plasma_theme)" == "true" ]]; then
-#   step "Removing Plasma Theme"
-#   note "Removes the MacTahoe Plasma desktop theme"
-#   [[ -d "$PLASMA/MacTahoe" ]]   && rm -rf "$PLASMA/MacTahoe"
-#   [[ -d "$LOOKFEEL/MacTahoe" ]] && rm -rf "$LOOKFEEL/MacTahoe"
-# fi
-
-# ── Step 5: Removing Window Decorations ──────────────────────
-# if [[ "$(cfg window_decorations)" == "true" ]]; then
-#   step "Removing Window Decorations"
-#   note "Removes Aurorae window decorations"
-# fi
-
-# ── Step 6: Removing Kvantum Theme ───────────────────────────
-# if [[ "$(cfg kvantum)" == "true" ]]; then
-#   step "Removing Kvantum Theme"
-#   note "Removes the MacTahoe Kvantum theme"
-# fi
-
-# ── Step 7: Removing Color Schemes ───────────────────────────
-# if [[ "$(cfg color_schemes)" == "true" ]]; then
-#   step "Removing Color Schemes"
-#   note "Removes Tahoe Light and Dark color palettes"
-# fi
-
-# ── Step 8: Removing Cursors ─────────────────────────────────
+# ── Step 4: Removing Cursors ─────────────────────────────────
 if [[ "$(cfg cursors)" == "true" ]]; then
   step "Removing Cursors"
-  note "Removes the MacTahoe cursor theme"
-
   n=0
-  for theme in "$ICONS_DIR"/MacTahoeLiquidKde* "$ICONS_DIR"/MacTahoe*cursors* "$ICONS_DIR"/MacTahoe*Cursors*; do
+  for theme in "$ICONS_DIR"/MacTahoeLiquidKde*; do
     [[ -d "$theme" ]] || continue
     name=$(basename "$theme")
-    [[ "$name" == *Icons* ]] && continue  # handled by the icons step
-    if err=$(rm -rf "$theme" 2>&1); then
-      ok "$name (removed)"; n=$((n + 1))
-    else
-      fail "$name (remove failed: ${err:-unknown error})"
-    fi
+    [[ "$name" == *Icons* ]] && continue
+    rm -rf "$theme" 2>/dev/null && ok "$name" && n=$((n+1)) || fail "$name"
   done
-  [[ $n -eq 0 ]] \
-    && info "0 cursor themes removed (already removed?)" \
-    || info "$n cursor themes removed"
+  info "$n cursor themes removed"
 fi
 
-# ── Step 9: Removing Icons ────────────────────────────────────
+# ── Step 5: Removing Icons ───────────────────────────────────
 if [[ "$(cfg icons)" == "true" ]]; then
   step "Removing Icons"
-  note "Removes the MacTahoe Liquid KDE icon themes"
-
   n=0
   for theme in "$ICONS_DIR"/MacTahoeLiquidKde-Icons*; do
     [[ -d "$theme" ]] || continue
     name=$(basename "$theme")
-    if err=$(rm -rf "$theme" 2>&1); then
-      ok "$name (removed)"; n=$((n + 1))
-    else
-      fail "$name (remove failed: ${err:-unknown error})"
-    fi
+    rm -rf "$theme" 2>/dev/null && ok "$name" && n=$((n+1)) || fail "$name"
   done
-  [[ $n -eq 0 ]] \
-    && info "0 icon themes removed (already removed?)" \
-    || info "$n icon themes removed"
+  info "$n icon themes removed"
 fi
 
-# ── Step: Removing Plasmoids ─────────────────────────────────
+# ── Step 6: Removing Plasmoids ───────────────────────────────
 if [[ "$(cfg plasmoids)" == "true" ]]; then
   step "Removing Plasmoids"
-  note "Removes custom Plasma widgets"
-
   n=0
   for widget in "$PLASMOIDS_DIR"/org.kde.mactahoe-liquid-kde.*; do
     [[ -d "$widget" ]] || continue
     name=$(basename "$widget")
-    if err=$(rm -rf "$widget" 2>&1); then
-      ok "$name (removed)"; n=$((n + 1))
-    else
-      fail "$name (remove failed: ${err:-unknown error})"
-    fi
+    rm -rf "$widget" 2>/dev/null && ok "$name" && n=$((n+1)) || fail "$name"
   done
-  [[ $n -eq 0 ]] \
-    && info "0 plasmoids removed (already removed?)" \
-    || info "$n plasmoids removed"
+  info "$n plasmoids removed"
 fi
 
-# ── Step: Removing Liquid Glass ──────────────────────────────
+# ── Step 7: Removing Liquid Glass ────────────────────────────
 if [[ "$(cfg liquid_glass)" == "true" ]]; then
   step "Removing Liquid Glass"
-  note "Removes the Liquid Glass KWin effect"
 
-  # disable before removing
-  _qdbus_lg=""
-  for _q in qdbus6 qdbus; do command -v "$_q" &>/dev/null && { _qdbus_lg="$_q"; break; }; done
-  if [[ -n "$_qdbus_lg" ]]; then
-    "$_qdbus_lg" org.kde.KWin /Effects org.kde.kwin.Effects.unloadEffect liquidglass &>/dev/null || true
-  fi
+  # unload effect
+  for _q in qdbus6 qdbus; do
+    command -v "$_q" &>/dev/null && {
+      "$_q" org.kde.KWin /Effects org.kde.kwin.Effects.unloadEffect liquidglass &>/dev/null || true
+      break
+    }
+  done
   kwriteconfig6 --file kwinrc --group Plugins --key liquidglassEnabled false 2>/dev/null || true
 
   _plugin_dir=$(qmake6 -query QT_INSTALL_PLUGINS 2>/dev/null \
     || qtpaths6 --plugin-dir 2>/dev/null \
-    || pkg-config --variable=plugindir Qt6Core 2>/dev/null \
     || echo "/usr/lib/qt6/plugins")
-  _removed=false
   for _so in "$_plugin_dir/kwin/effects/plugins/liquidglass.so" "$_plugin_dir/kwin/effects/configs/kwin_liquidglass_config.so"; do
-    if [[ -f "$_so" ]]; then
-      if sudo rm -f "$_so" 2>/dev/null; then
-        ok "$(basename "$_so") removed"
-        _removed=true
-      else
-        fail "$(basename "$_so") (needs sudo to remove)"
-      fi
-    fi
+    [[ -f "$_so" ]] && sudo rm -f "$_so" 2>/dev/null && ok "$(basename "$_so")"
   done
-  $_removed && info "Liquid Glass removed" || info "Liquid Glass not installed (skipped)"
+  info "Liquid Glass removed"
 fi
 
-# ── Step 10: Removing Sounds ─────────────────────────────────
-# if [[ "$(cfg sounds)" == "true" ]]; then
-#   step "Removing Sounds"
-#   note "Removes macOS-style notification sounds"
-# fi
-
-# ── Step 11: Removing GTK Theme ──────────────────────────────
-# if [[ "$(cfg gtk)" == "true" ]]; then
-#   step "Removing GTK Theme"
-#   note "Removes the MacTahoe GTK2/3/4 theme"
-# fi
-
-# ── Step 12: Removing SDDM Theme ─────────────────────────────
-# if [[ "$(cfg sddm)" == "true" ]]; then
-#   step "Removing SDDM Theme"
-#   note "Removes the macOS-style login screen"
-# fi
-
-# ── Step 13: Removing Custom Apps ────────────────────────────
-# if [[ "$(cfg apps)" == "true" ]]; then
-#   step "Removing Custom Apps"
-#   note "Removes About This Mac and other Electron apps"
-# fi
-
-# ── Step Final: Applying Changes ──────────────────────────────
+# ── Step Final: Reset to Breeze defaults ─────────────────────
 step "Applying Changes"
-note "Resets everything back to Breeze defaults"
+note "Resets to Breeze defaults and restarts Plasma"
 
-# layout first — recreates default panel before applying themes
+# layout — reset to default KDE panel
 if [[ "$(cfg layout)" == "true" ]]; then
   _layout="$REPO/src/offline/layouts/default.js"
   if [[ -f "$_layout" ]]; then
-    _qdbus=""
-    for _q in qdbus6 qdbus; do command -v "$_q" &>/dev/null && { _qdbus="$_q"; break; }; done
-    if [[ -n "$_qdbus" ]]; then
-      "$_qdbus" org.kde.plasmashell /PlasmaShell org.kde.PlasmaShell.evaluateScript "$(cat "$_layout")" &>/dev/null \
-        && ok "Layout reset to default KDE panel" \
-        || warn "layout reset failed — set layout manually"
-    fi
+    for _q in qdbus6 qdbus; do
+      command -v "$_q" &>/dev/null && {
+        "$_q" org.kde.plasmashell /PlasmaShell org.kde.PlasmaShell.evaluateScript "$(cat "$_layout")" &>/dev/null \
+          && ok "Layout reset" || warn "layout reset failed"
+        break
+      }
+    done
   fi
 fi
 
+# reset configs
 if command -v kwriteconfig6 &>/dev/null; then
   if [[ "$(cfg fonts)" == "true" ]]; then
     kwriteconfig6 --file kdeglobals --group General --key font                 "Noto Sans,10,-1,5,50,0,0,0,0,0"
@@ -299,76 +178,41 @@ if command -v kwriteconfig6 &>/dev/null; then
     kwriteconfig6 --file kdeglobals --group General --key smallestReadableFont "Noto Sans,8,-1,5,50,0,0,0,0,0"
     kwriteconfig6 --file kdeglobals --group General --key fixed                "Hack,10,-1,5,50,0,0,0,0,0"
     kwriteconfig6 --file kdeglobals --group WM      --key activeFont           "Noto Sans,10,-1,5,50,0,0,0,0,0"
-    ok "KDE fonts reset to defaults"
+    ok "Fonts reset"
   fi
-
   if [[ "$(cfg cursors)" == "true" ]]; then
     kwriteconfig6 --file kcminputrc --group Mouse --key cursorTheme "breeze_cursors"
-    if command -v plasma-apply-cursortheme &>/dev/null; then
-      plasma-apply-cursortheme "breeze_cursors" &>/dev/null || true
-    fi
-    ok "Cursor theme reset to Breeze"
+    plasma-apply-cursortheme "breeze_cursors" &>/dev/null || true
+    ok "Cursor reset"
   fi
-
   if [[ "$(cfg icons)" == "true" ]]; then
     kwriteconfig6 --file kdeglobals --group Icons --key Theme "breeze"
-    if command -v plasma-apply-icontheme &>/dev/null; then
-      plasma-apply-icontheme breeze &>/dev/null || true
-    fi
-    dbus-send --session --type=signal /KIconLoader org.kde.KIconLoader.iconChanged 2>/dev/null || true
-    ok "Icon theme reset to Breeze"
+    plasma-apply-icontheme breeze &>/dev/null || true
+    ok "Icons reset"
   fi
-
   if [[ "$(cfg wallpapers)" == "true" ]]; then
-    # reset to default Breeze wallpaper
-    _breeze_wp=""
-    for _p in \
-      /usr/share/wallpapers/Next \
-      /usr/share/wallpapers/Breeze \
-      /usr/share/wallpapers/Flow; do
-      [[ -d "$_p" ]] && { _breeze_wp="$_p"; break; }
+    for _p in /usr/share/wallpapers/Next /usr/share/wallpapers/Breeze /usr/share/wallpapers/Flow; do
+      [[ -d "$_p" ]] && { plasma-apply-wallpaperimage "$_p" &>/dev/null || true; ok "Wallpaper reset"; break; }
     done
-    if [[ -n "$_breeze_wp" ]]; then
-      if command -v plasma-apply-wallpaperimage &>/dev/null; then
-        plasma-apply-wallpaperimage "$_breeze_wp" &>/dev/null || true
-        ok "Wallpaper reset to $(basename "$_breeze_wp")"
-      fi
-    fi
   fi
-
-  # reset color scheme to Breeze
-  if command -v plasma-apply-colorscheme &>/dev/null; then
-    plasma-apply-colorscheme BreezeLight &>/dev/null || true
-    ok "Color scheme reset to Breeze Light"
-  fi
+  plasma-apply-colorscheme BreezeLight &>/dev/null || true
+  ok "Color scheme reset"
 fi
 
-# rebuild sycoca
-if command -v kbuildsycoca6 &>/dev/null; then
-  kbuildsycoca6 --noincremental 2>/dev/null \
-    && ok "KDE system cache rebuilt" || warn "kbuildsycoca6 failed (non-fatal)"
-elif command -v kbuildsycoca5 &>/dev/null; then
-  kbuildsycoca5 --noincremental 2>/dev/null \
-    && ok "KDE system cache rebuilt" || warn "kbuildsycoca5 failed (non-fatal)"
-fi
+# flush caches and restart
+rm -rf "$HOME/.cache/icon-cache.kcache" 2>/dev/null || true
+rm -rf "$HOME/.cache/plasma-svgelements-"* 2>/dev/null || true
+rm -rf "$HOME/.cache/plasma_theme_"* 2>/dev/null || true
+find "$HOME/.cache" -maxdepth 1 -name "ksycoca6*" -delete 2>/dev/null || true
+kbuildsycoca6 --noincremental 2>/dev/null || true
+ok "Caches flushed"
 
-# reconfigure KWin
-for qdbus_cmd in qdbus6 qdbus; do
-  command -v "$qdbus_cmd" &>/dev/null && {
-    "$qdbus_cmd" org.kde.KWin /KWin org.kde.KWin.reconfigure &>/dev/null \
-      && ok "KWin reconfigured" || warn "KWin reconfigure failed (non-fatal)"
-    break
-  }
+# restart plasma + KWin
+systemctl --user restart plasma-plasmashell 2>/dev/null || killall plasmashell 2>/dev/null || true
+ok "Plasma restarted"
+for _q in qdbus6 qdbus; do
+  command -v "$_q" &>/dev/null && { "$_q" org.kde.KWin /KWin org.kde.KWin.reconfigure &>/dev/null || true; break; }
 done
-
-# signal icon refresh + Plasma reload
-if command -v dbus-send &>/dev/null; then
-  dbus-send --session --type=signal /KIconLoader org.kde.KIconLoader.iconChanged 2>/dev/null || true
-  dbus-send --session --type=signal /KGlobalSettings org.kde.KGlobalSettings.notifyChange int32:4 int32:0 2>/dev/null || true
-  dbus-send --session --dest=org.kde.plasmashell \
-    /PlasmaShell org.kde.PlasmaShell.refreshCurrentShell 2>/dev/null \
-    && ok "Plasma shell refreshed" || warn "Plasma shell refresh failed (non-fatal)"
-fi
 
 # ── Done ──────────────────────────────────────────────────────
 echo ""
@@ -376,7 +220,7 @@ echo -e "${GREEN}${BOLD}  ── Done${RESET}"
 if [[ ${#ERRORS[@]} -eq 0 ]]; then
   ok "MacTahoe Liquid KDE uninstalled successfully"
 else
-  warn "${#ERRORS[@]} issue(s) — everything else removed fine:"
+  warn "${#ERRORS[@]} issue(s):"
   for e in "${ERRORS[@]}"; do fail "$e"; done
 fi
 echo ""
