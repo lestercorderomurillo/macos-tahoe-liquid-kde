@@ -539,19 +539,20 @@ if [[ "$(cfg liquid_glass)" == "true" ]]; then
           _dest_config="$_plugin_dir/kwin/effects/configs/kwin_liquidglass_config.so"
 
           if [[ -f "$_effect_so" ]]; then
-            # disable the effect before replacing .so to avoid crash
-            _was_enabled=false
+            # fully disable and unload the effect before replacing .so to avoid crash
             _qdbus_lg=""
             for _q in qdbus6 qdbus; do command -v "$_q" &>/dev/null && { _qdbus_lg="$_q"; break; }; done
+
+            # step 1: disable in config
+            kwriteconfig6 --file kwinrc --group Plugins --key liquidglassEnabled false 2>/dev/null || true
+
+            # step 2: unload from KWin and reconfigure so it fully releases the .so
             if [[ -n "$_qdbus_lg" ]]; then
-              _loaded=$("$_qdbus_lg" org.kde.KWin /Effects org.kde.kwin.Effects.loadedEffects 2>/dev/null || true)
-              if echo "$_loaded" | grep -q "liquidglass"; then
-                _was_enabled=true
-                "$_qdbus_lg" org.kde.KWin /Effects org.kde.kwin.Effects.unloadEffect liquidglass &>/dev/null || true
-                sleep 1
-                ok "Liquid Glass unloaded for safe upgrade"
-              fi
+              "$_qdbus_lg" org.kde.KWin /Effects org.kde.kwin.Effects.unloadEffect liquidglass &>/dev/null || true
+              "$_qdbus_lg" org.kde.KWin /KWin org.kde.KWin.reconfigure &>/dev/null || true
+              sleep 2
             fi
+            ok "Liquid Glass unloaded for safe upgrade"
 
             if sudo cp "$_effect_so" "$_dest_effect" && sudo cp "$_config_so" "$_dest_config" 2>/dev/null; then
               ok "Liquid Glass installed"
@@ -571,26 +572,12 @@ if [[ "$(cfg liquid_glass)" == "true" ]]; then
               kwriteconfig6 --file kwinrc --group "$_lg_grp" --key TransparentBlur true 2>/dev/null || true
               kwriteconfig6 --file kwinrc --group "$_lg_grp" --key TopCornerRadius 22 2>/dev/null || true
               kwriteconfig6 --file kwinrc --group "$_lg_grp" --key BottomCornerRadius 22 2>/dev/null || true
-              kwriteconfig6 --file kwinrc --group "$_lg_grp" --key MenuCornerRadius 14 2>/dev/null || true
+              kwriteconfig6 --file kwinrc --group "$_lg_grp" --key MenuCornerRadius 22 2>/dev/null || true
               kwriteconfig6 --file kwinrc --group "$_lg_grp" --key DockCornerRadius 22 2>/dev/null || true
               ok "Liquid Glass preset installed"
-              # persist + enable the effect
-              if [[ -n "$_qdbus_lg" ]]; then
-                # toggle cycle: KWin needs a disable→reconfigure→enable→reconfigure
-                # to pick up newly installed effects
-                kwriteconfig6 --file kwinrc --group Plugins --key liquidglassEnabled false 2>/dev/null || true
-                "$_qdbus_lg" org.kde.KWin /KWin org.kde.KWin.reconfigure &>/dev/null || true
-                sleep 1
-                kwriteconfig6 --file kwinrc --group Plugins --key liquidglassEnabled true 2>/dev/null || true
-                "$_qdbus_lg" org.kde.KWin /KWin org.kde.KWin.reconfigure &>/dev/null || true
-                sleep 1
-                # fallback: force load via D-Bus
-                "$_qdbus_lg" org.kde.KWin /Effects org.kde.kwin.Effects.loadEffect liquidglass &>/dev/null || true
-                ok "Liquid Glass installed"
-              else
-                kwriteconfig6 --file kwinrc --group Plugins --key liquidglassEnabled true 2>/dev/null || true
-                ok "Liquid Glass installed (restart KWin to activate)"
-              fi
+              # enable in config — will load on next KWin start
+              kwriteconfig6 --file kwinrc --group Plugins --key liquidglassEnabled true 2>/dev/null || true
+              ok "Liquid Glass installed (active after Plasma restart)"
             else
               warn "Liquid Glass built but install failed (needs sudo)"
               info "Run manually:"
