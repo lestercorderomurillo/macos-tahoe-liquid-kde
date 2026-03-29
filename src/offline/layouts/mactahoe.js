@@ -13,7 +13,7 @@ var bar = new Panel("org.kde.panel");
 bar.location = "top";
 bar.lengthMode = "fill";
 bar.floating = false;
-bar.height = 32;
+bar.height = 38;
 
 // panel colorizer: transparent background
 var colorizer = bar.addWidget("luisbocanegra.panel.colorizer");
@@ -44,12 +44,16 @@ bar.addWidget("org.kde.plasma.marginsseparator");
 
 var clock = bar.addWidget("org.kde.plasma.digitalclock");
 clock.currentConfigGroup = ["Appearance"];
+clock.writeConfig("autoFontAndSize", "false");
+clock.writeConfig("fontFamily", "SF Pro Text");
+clock.writeConfig("fontSize", 10);
+clock.writeConfig("fontWeight", 500);
 clock.writeConfig("showDate", "true");
-clock.writeConfig("use24hFormat", 2);
+clock.writeConfig("use24hFormat", 1);
 clock.writeConfig("showSeconds", 0);
 clock.writeConfig("dateDisplayFormat", "BesideTime");
 clock.writeConfig("dateFormat", "custom");
-clock.writeConfig("customDateFormat", "ddd MMM d");
+clock.writeConfig("customDateFormat", "ddd d ' | '");
 
 // ── bottom dock ─────────────────────────────────
 // floating, centered, large icons like macOS
