@@ -40,7 +40,16 @@ tray.writeConfig("shownItems", "org.kde.plasma.bluetooth,org.kde.plasma.networkm
 tray.writeConfig("hiddenItems", "org.kde.plasma.clipboard,org.kde.plasma.devicenotifier,org.kde.plasma.manage-inputmethod,org.kde.plasma.mediacontroller,org.kde.plasma.notifications,org.kde.plasma.keyboardindicator,org.kde.plasma.weather,org.kde.kscreen,org.kde.plasma.keyboardlayout,org.kde.plasma.printmanager,org.kde.plasma.cameraindicator,org.kde.plasma.vault,org.kde.kdeconnect,org.kde.plasma.battery,Arch-Update,chrome_status_icon_1,discord,plasmashell_microphone,steam,spotify,telegram,slack");
 tray.writeConfig("iconSpacing", 3);
 
-bar.addWidget("org.kde.plasma.digitalclock");
+bar.addWidget("org.kde.plasma.marginsseparator");
+
+var clock = bar.addWidget("org.kde.plasma.digitalclock");
+clock.currentConfigGroup = ["Appearance"];
+clock.writeConfig("showDate", "false");
+clock.writeConfig("use24hFormat", 2);
+clock.writeConfig("showSeconds", 0);
+clock.writeConfig("dateDisplayFormat", "BesideTime");
+clock.writeConfig("dateFormat", "shortDate");
+clock.writeConfig("enabledCalendarPlugins", "");
 
 // ── bottom dock ─────────────────────────────────
 // floating, centered, large icons like macOS

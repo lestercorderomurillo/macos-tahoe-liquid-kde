@@ -16,9 +16,9 @@ Inspired by [Pear OS](https://pearos.xyz) in spirit — a complete environment, 
 | **Wallpapers** | Tahoe, Heritage, Beach, Landscape — light/dark | ✅ Done |
 | **Fonts** | SF Pro Display, Text, Rounded | ✅ Done |
 | **Cursors** | Standard, Dark, Apple, Apple White | ✅ Done |
-| **Icons** | Full macOS-style icon set (light & dark) | ✅ Done |
-| **Layout** | Transparent top bar + floating bottom dock | ✅ Done |
-| **Liquid Glass** | KWin blur + rounded corners effect | ✅ Done |
+| **Icons** | Full macOS-style icon set (light & dark) | ✅ In Progress |
+| **Layout** | Transparent top bar + floating bottom dock | ✅ In Progress |
+| **Liquid Glass** | KWin blur + rounded corners effect | ✅ In Progress |
 | **Plasmoids** | Custom trash widget with configurable icons | ✅ Done |
 | **Plasma theme** | Shell, panel, dock, look-and-feel | 🔲 Planned |
 | **GTK theme** | GTK2/3/4 window chrome and controls | 🔲 Planned |
