@@ -19,17 +19,17 @@ Inspired by [Pear OS](https://pearos.xyz) — a complete environment, not just a
 | **Cursors** | macOS-Tahoe style cursors | ✅ Implemented |
 | **Icons** | Full macOS-style icon set (light & dark) | 🔧 In Progress |
 | **Sounds** | Notification and event sounds | 🔧 In Progress |
-| **Plasma theme** | Translucent panels + close/min/max buttons | ✅ Implemented |
-| **Kvantum theme** | macOS-style Kvantum theme | ✅ Implemented |
-| **GTK theme** | GTK2/3/4 window chrome and controls | 🔧 In Progress |
+| **Plasma Theme** | Translucent panels + close/min/max buttons | ✅ Implemented |
+| **Kvantum Theme** | macOS-style Kvantum theme | ✅ Implemented |
+| **GTK Theme** | GTK2/3/4 window chrome and controls | 🔧 In Progress |
 | **Liquid Glass** | KWin blur, rounded corners, glass effect | 🔧 In Progress |
 | **TimeOfDay Switcher** | Auto light/dark themes based on time of day | ✅ Implemented |
-| **SDDM theme** | macOS-style Login and lock screen | 🔲 Planned |
-| **Aurorae decorations** | Window title bar and borders | 🔲 Planned |
+| **Aurorae Decorations** | Window title bar and borders | 🔲 Planned |
+| **SDDM Theme** | macOS-style Login and lock screen | 🔲 Planned |
 | **Trashcan Plasmoid** | macOS-style trash widget with configurable icons | ✅ Implemented |
-| **Calendar plasmoid** | macOS-style calendar dropdown | 🔲 Planned |
-| **Control Center plasmoid** | macOS-style quick settings panel | 🔲 Planned |
-| **System Preferences plasmoid** | macOS-style settings launcher | 🔲 Planned |
+| **Calendar Plasmoid** | macOS-style calendar dropdown | 🔲 Planned |
+| **Control Center Plasmoid** | macOS-style quick settings panel | 🔲 Planned |
+| **System Preferences Plasmoid** | macOS-style settings launcher | 🔲 Planned |
 | **OS Selector** | Boot manager / OS picker screen | 🔲 Planned |
 | **Boot Screen** | Plymouth splash for startup | 🔲 Planned |
 | **Shutdown Screen** | Styled logout / shutdown sequence | 🔲 Planned |
