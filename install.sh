@@ -356,7 +356,6 @@ if [[ "$(cfg gtk)" == "true" ]]; then
 
   _gtk_src="$OFFLINE/gtk"
   _gtk_dest="$HOME/.themes"
-  _gtk4_dest="$HOME/.config/gtk-4.0"
   _gtk_n=0
 
   if [[ -d "$_gtk_src" ]]; then
@@ -377,15 +376,7 @@ if [[ "$(cfg gtk)" == "true" ]]; then
         fail "$variant (copy failed)"
       fi
     done
-
-    # link gtk-4.0 assets for libadwaita apps
-    if [[ -d "$_gtk_dest/MacTahoeLiquidKde-Light/gtk-4.0" ]]; then
-      mkdir -p "$_gtk4_dest"
-      ln -sf "$_gtk_dest/MacTahoeLiquidKde-Light/gtk-4.0/assets" "$_gtk4_dest/assets" 2>/dev/null
-      ln -sf "$_gtk_dest/MacTahoeLiquidKde-Light/gtk-4.0/gtk.css" "$_gtk4_dest/gtk.css" 2>/dev/null
-      ln -sf "$_gtk_dest/MacTahoeLiquidKde-Light/gtk-4.0/gtk-dark.css" "$_gtk4_dest/gtk-dark.css" 2>/dev/null
-    fi
-
+    # NEVER write to ~/.config/gtk-4.0/ — KDE's plasma-integration manages it
     info "$_gtk_n GTK themes installed"
     # theme variant is applied later by theme-switch.sh (auto light/dark)
   else
@@ -694,6 +685,8 @@ if [[ -f "$_svc_src" ]]; then
 fi
 if [[ -x "$_switch_dest" ]]; then
   "$_switch_dest" auto &>/dev/null
+  # wait for gtk-4.0 background overwrite to finish
+  wait 2>/dev/null
   ok "Theme switcher installed"
 else
   warn "Theme switcher not installed"

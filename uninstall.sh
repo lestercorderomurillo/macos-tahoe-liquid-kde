@@ -189,13 +189,21 @@ if [[ "$(cfg gtk)" == "true" ]]; then
     rm -rf "$HOME/.themes/$variant" 2>/dev/null && ok "$variant removed" && n=$((n+1)) || fail "$variant"
   done
 
-  # remove gtk-4.0 symlinks
-  for f in "$HOME/.config/gtk-4.0/assets" "$HOME/.config/gtk-4.0/gtk.css" "$HOME/.config/gtk-4.0/gtk-dark.css"; do
-    [[ -L "$f" ]] && rm -f "$f" 2>/dev/null
-  done
+  # remove gtk-4.0 theme overrides (restore KDE default)
+  rm -rf "$HOME/.config/gtk-4.0/assets" "$HOME/.config/gtk-4.0/windows-assets" 2>/dev/null
+  rm -f "$HOME/.config/gtk-4.0/gtk.css" "$HOME/.config/gtk-4.0/gtk-dark.css" "$HOME/.config/gtk-4.0/gtk-Dark.css" "$HOME/.config/gtk-4.0/gtk-Light.css" 2>/dev/null
 
-  # reset GTK theme
-  command -v gsettings &>/dev/null && gsettings reset org.gnome.desktop.interface gtk-theme &>/dev/null || true
+  # reset GTK theme via KDE + gsettings
+  for _q in qdbus6 qdbus; do
+    command -v "$_q" &>/dev/null && {
+      "$_q" org.kde.GtkConfig /GtkConfig org.kde.GtkConfig.setGtkTheme "Breeze" &>/dev/null || true
+      break
+    }
+  done
+  if command -v gsettings &>/dev/null; then
+    gsettings reset org.gnome.desktop.interface gtk-theme &>/dev/null || true
+    gsettings reset org.gnome.desktop.interface color-scheme &>/dev/null || true
+  fi
   info "$n GTK themes removed"
 fi
 

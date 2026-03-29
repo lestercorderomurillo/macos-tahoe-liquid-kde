@@ -71,7 +71,6 @@ apply() {
 
   # gtk
   local gtk_dest="$HOME/.themes"
-  local gtk4_dest="$HOME/.config/gtk-4.0"
   local gtk_theme
   if [[ "$mode" == "dark" ]]; then
     gtk_theme="MacTahoeLiquidKde-Dark"
@@ -79,24 +78,42 @@ apply() {
     gtk_theme="MacTahoeLiquidKde-Light"
   fi
   if [[ -d "$gtk_dest/$gtk_theme" ]]; then
-    if command -v kwriteconfig6 &>/dev/null; then
-      kwriteconfig6 --file kdeglobals --group KDE --key widgetStyle kvantum 2>/dev/null
+    # 1. KDE GTK config daemon — sets GTK3 theme + triggers gtk-4.0 regeneration
+    for _q in qdbus6 qdbus; do
+      command -v "$_q" &>/dev/null && {
+        "$_q" org.kde.GtkConfig /GtkConfig org.kde.GtkConfig.setGtkTheme "$gtk_theme" &>/dev/null || true
+        break
+      }
+    done
+    # 2. gsettings — color-scheme for libadwaita
+    if command -v gsettings &>/dev/null; then
+      gsettings set org.gnome.desktop.interface gtk-theme "$gtk_theme" &>/dev/null || true
+      if [[ "$mode" == "dark" ]]; then
+        gsettings set org.gnome.desktop.interface color-scheme 'prefer-dark' &>/dev/null || true
+      else
+        gsettings set org.gnome.desktop.interface color-scheme 'prefer-light' &>/dev/null || true
+      fi
     fi
-    # gtk-3.0 settings
-    mkdir -p "$HOME/.config/gtk-3.0"
-    if [[ -f "$HOME/.config/gtk-3.0/settings.ini" ]]; then
-      sed -i "s/^gtk-theme-name=.*/gtk-theme-name=$gtk_theme/" "$HOME/.config/gtk-3.0/settings.ini" 2>/dev/null || true
-    else
-      printf '[Settings]\ngtk-theme-name=%s\n' "$gtk_theme" > "$HOME/.config/gtk-3.0/settings.ini"
+    # 3. libadwaita/gtk4: overwrite ~/.config/gtk-4.0/ with compiled theme
+    # wait for KDE's gtkconfig daemon to finish regenerating, then overwrite
+    local gtk4_dest="$HOME/.config/gtk-4.0"
+    local gtk4_src="$gtk_dest/$gtk_theme/gtk-4.0"
+    if [[ -d "$gtk4_src" ]]; then
+      (sleep 3 && \
+       # stop portal before touching its files
+       systemctl --user stop xdg-desktop-portal-gtk.service 2>/dev/null; \
+       rm -rf "$gtk4_dest/assets" "$gtk4_dest/windows-assets" 2>/dev/null; \
+       rm -f "$gtk4_dest/gtk.css" "$gtk4_dest/gtk-dark.css" "$gtk4_dest/gtk-Dark.css" "$gtk4_dest/gtk-Light.css" 2>/dev/null; \
+       cp -rf "$gtk4_src/assets" "$gtk4_dest/" 2>/dev/null; \
+       cp -rf "$gtk4_src/windows-assets" "$gtk4_dest/" 2>/dev/null; \
+       cp -f "$gtk4_src/gtk-Dark.css" "$gtk4_dest/" 2>/dev/null; \
+       cp -f "$gtk4_src/gtk-Light.css" "$gtk4_dest/" 2>/dev/null; \
+       cd "$gtk4_dest" && \
+       ln -sf "gtk-${mode^}.css" gtk.css 2>/dev/null; \
+       ln -sf gtk-Dark.css gtk-dark.css 2>/dev/null; \
+       # restart portal with new files
+       systemctl --user start xdg-desktop-portal-gtk.service 2>/dev/null) &
     fi
-    # gtk-4.0 symlinks
-    if [[ -d "$gtk_dest/$gtk_theme/gtk-4.0" ]]; then
-      mkdir -p "$gtk4_dest"
-      ln -sf "$gtk_dest/$gtk_theme/gtk-4.0/assets" "$gtk4_dest/assets" 2>/dev/null
-      ln -sf "$gtk_dest/$gtk_theme/gtk-4.0/gtk.css" "$gtk4_dest/gtk.css" 2>/dev/null
-      ln -sf "$gtk_dest/$gtk_theme/gtk-4.0/gtk-dark.css" "$gtk4_dest/gtk-dark.css" 2>/dev/null
-    fi
-    command -v gsettings &>/dev/null && gsettings set org.gnome.desktop.interface gtk-theme "$gtk_theme" &>/dev/null || true
   fi
 
   # icons
