@@ -1,36 +1,34 @@
-# MacOS Tahoe Liquid Glass for KDE Plasma
+# MacOS Tahoe Liquid Glass Theme for KDE Plasma
 
 > [!CAUTION]
-> **Status: In development** — Functional but under active development. Some features may not work as expected. Back up your KDE config before installing. Use at your own risk.
+> **Status: In development** — This package is functional but under active development. Some features may not work as expected or be broken in your system. I advice you to back up your system config before installing. Use at your own risk.
 
-A full macOS Tahoe-style desktop experience for KDE Plasma — going beyond a simple theme.
+A full macOS Tahoe-style desktop experience for KDE Plasma 6.6+.
 
-Inspired by [Pear OS](https://pearos.xyz) in spirit — a complete environment, not just a coat of paint.
+Inspired by [Pear OS](https://pearos.xyz) — a complete environment, not just a coat of paint.
 
 ---
 
-## Components
+## Roadmap
 
 | Component | Description | Status |
 |-----------|-------------|--------|
-| **Wallpapers** | Tahoe, Heritage, Beach, Landscape — auto light/dark | ✅ Done |
-| **Fonts** | SF Pro Display, Text, Rounded, Mono | ✅ Done |
-| **Cursors** | Standard, Dark, Apple, Apple White | ✅ Done |
-| **Plasma theme** | Transparent glass dock, translucent panels | ✅ Done |
-| **Color schemes** | Tahoe Light & Dark palettes | ✅ Done |
-| **Kvantum theme** | Qt app styling with blur and translucency | ✅ Done |
-| **GTK theme** | GTK2/3/4 window chrome and controls | ✅ Done |
-| **Liquid Glass** | KWin blur, rounded corners, glass effect | 🔧 In Progress |
+| **Color schemes** | Light and Dark color palettes | ✅ Implemented |
+| **Wallpapers** | Tahoe, Heritage, Beach, Landscape | ✅ Implemented |
+| **Fonts** | SF Pro Display, Text, Rounded, Mono | ✅ Implemented |
+| **Cursors** | macOS-Tahoe style cursors | ✅ Implemented |
 | **Icons** | Full macOS-style icon set (light & dark) | 🔧 In Progress |
-| **Layout** | Transparent top bar + floating glass dock | 🔧 In Progress |
-| **Trash plasmoid** | Dock trash widget with configurable icons | ✅ Done |
-| **TimeOfDay Switcher** | Auto light/dark themes based on time of day | ✅ Done |
-| **SDDM theme** | Login and lock screen | 🔲 Planned |
+| **Sounds** | Notification and event sounds | 🔧 In Progress |
+| **Plasma theme** | Translucent panels + close/min/max buttons | ✅ Implemented |
+| **Kvantum theme** | macOS-style Kvantum theme | ✅ Implemented |
+| **GTK theme** | GTK2/3/4 window chrome and controls | 🔧 In Progress |
+| **Liquid Glass** | KWin blur, rounded corners, glass effect | 🔧 In Progress |
+| **TimeOfDay Switcher** | Auto light/dark themes based on time of day | ✅ Implemented |
+| **SDDM theme** | macOS-style Login and lock screen | 🔲 Planned |
 | **Aurorae decorations** | Window title bar and borders | 🔲 Planned |
-| **Sounds** | Notification and event sounds | 🔲 Planned |
+| **Trashcan Plasmoid** | macOS-style trash widget with configurable icons | ✅ Implemented |
 | **Calendar plasmoid** | macOS-style calendar dropdown | 🔲 Planned |
 | **Control Center plasmoid** | macOS-style quick settings panel | 🔲 Planned |
-| **Global Menu plasmoid** | macOS-style top bar app menu | 🔲 Planned |
 | **System Preferences plasmoid** | macOS-style settings launcher | 🔲 Planned |
 | **OS Selector** | Boot manager / OS picker screen | 🔲 Planned |
 | **Boot Screen** | Plymouth splash for startup | 🔲 Planned |
@@ -42,7 +40,6 @@ Inspired by [Pear OS](https://pearos.xyz) in spirit — a complete environment, 
 
 - KDE Plasma 6.6+
 - sudo access
-- [Panel Colorizer](https://store.kde.org/p/2130967) (auto-installed if missing)
 
 ## Usage
 
