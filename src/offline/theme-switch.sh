@@ -81,6 +81,30 @@ apply() {
     fi
   fi
 
+  # gtk
+  local gtk_dest="$HOME/.themes"
+  local gtk4_dest="$HOME/.config/gtk-4.0"
+  if [[ "$mode" == "dark" ]]; then
+    local gtk_theme="MacTahoeLiquidKde-Dark"
+  else
+    local gtk_theme="MacTahoeLiquidKde-Light"
+  fi
+  if [[ -d "$gtk_dest/$gtk_theme" ]]; then
+    # set gtk theme via settings
+    if command -v kwriteconfig6 &>/dev/null; then
+      kwriteconfig6 --file gtkrc --group Settings --key gtk-theme-name "$gtk_theme" 2>/dev/null
+    fi
+    # update gtk-4.0 symlinks
+    if [[ -d "$gtk_dest/$gtk_theme/gtk-4.0" ]]; then
+      mkdir -p "$gtk4_dest"
+      ln -sf "$gtk_dest/$gtk_theme/gtk-4.0/assets" "$gtk4_dest/assets" 2>/dev/null
+      ln -sf "$gtk_dest/$gtk_theme/gtk-4.0/gtk.css" "$gtk4_dest/gtk.css" 2>/dev/null
+      ln -sf "$gtk_dest/$gtk_theme/gtk-4.0/gtk-dark.css" "$gtk4_dest/gtk-dark.css" 2>/dev/null
+    fi
+    # gsettings for GNOME/GTK apps running under KDE
+    command -v gsettings &>/dev/null && gsettings set org.gnome.desktop.interface gtk-theme "$gtk_theme" &>/dev/null || true
+  fi
+
   # color scheme
   if command -v plasma-apply-colorscheme &>/dev/null; then
     if [[ "$mode" == "dark" ]]; then

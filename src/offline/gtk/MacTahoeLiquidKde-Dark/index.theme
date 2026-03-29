@@ -1,0 +1,13 @@
+[Desktop Entry]
+Type=X-GNOME-Metatheme
+Name=MacTahoeLiquidKde-Dark
+Comment=A MacOS Tahoe like Gtk+ theme based on Elegant Design
+Encoding=UTF-8
+
+[X-GNOME-Metatheme]
+GtkTheme=MacTahoeLiquidKde-Dark
+MetacityTheme=MacTahoeLiquidKde-Dark
+IconTheme=MacTahoeLiquidKde-Dark
+CursorTheme=MACTAHOE-cursors
+ButtonLayout=close,minimize,maximize:menu
+

@@ -57,19 +57,33 @@ clock.writeConfig("dateFormat", "custom");
 clock.writeConfig("customDateFormat", "ddd d ' | '");
 
 // ── bottom dock ─────────────────────────────────
-// floating, centered, large icons like macOS
+// floating, centered, auto-hide, large icons like macOS
 var dock = new Panel("org.kde.panel");
 dock.location = "bottom";
 dock.screen = 0;
 dock.alignment = "center";
 dock.lengthMode = "fit";
 dock.floating = true;
+dock.hiding = "autohide";
 dock.height = 2 * Math.ceil(gridUnit * 3.5 / 2);
 
 var launcher = dock.addWidget("org.kde.plasma.kickerdash");
 launcher.currentConfigGroup = ["General"];
 launcher.writeConfig("icon", "view-app-grid");
 dock.addWidget("org.kde.plasma.marginsseparator");
-dock.addWidget("org.kde.plasma.icontasks");
+
+var tasks = dock.addWidget("org.kde.plasma.icontasks");
+tasks.currentConfigGroup = ["General"];
+// pin common apps (Finder=dolphin, Safari=browser, Terminal, Settings, etc.)
+tasks.writeConfig("launchers", [
+    "applications:org.kde.dolphin.desktop",
+    "applications:firefox.desktop",
+    "preferred://browser",
+    "applications:org.kde.konsole.desktop",
+    "applications:systemsettings.desktop",
+    "applications:org.kde.kate.desktop",
+    "applications:org.kde.discover.desktop"
+].join(","));
+
 dock.addWidget("org.kde.plasma.marginsseparator");
 dock.addWidget("org.kde.mactahoe-liquid-kde.trash");

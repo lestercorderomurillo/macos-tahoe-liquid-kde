@@ -116,22 +116,10 @@ if [[ "$(cfg icons)" == "true" ]]; then
   info "$n icon themes removed"
 fi
 
-# ── Step 6: Removing Theme Watcher ──────────────────────────
-step "Removing Theme Watcher"
-note "Stops and removes the auto light/dark theme switcher"
+# ── (future) Step 6: Removing Theme Watcher ─────────────────
+# theme switcher not installed yet — cleanup will be added when enabled
 
-_svc="mactahoe-theme-watcher.service"
-if systemctl --user is-enabled "$_svc" &>/dev/null; then
-  systemctl --user disable --now "$_svc" 2>/dev/null || true
-  ok "Theme watcher stopped"
-else
-  ok "Theme watcher (not running)"
-fi
-rm -f "$HOME/.config/systemd/user/$_svc" 2>/dev/null
-systemctl --user daemon-reload 2>/dev/null || true
-rm -f "$HOME/.local/bin/mactahoe-theme-switch" 2>/dev/null && ok "Theme switcher removed"
-
-# ── Step 7: Removing Kvantum Theme ──────────────────────────
+# ── Step 6: Removing Kvantum Theme ──────────────────────────
 if [[ "$(cfg kvantum)" == "true" ]]; then
   step "Removing Kvantum Theme"
   note "Removes MacTahoe Liquid KDE Kvantum theme (keeps Kvantum installed)"
@@ -151,6 +139,27 @@ if [[ "$(cfg kvantum)" == "true" ]]; then
   else
     ok "MacTahoeLiquidKde theme (not installed)"
   fi
+fi
+
+# ── Step 7: Removing GTK Theme ───────────────────────────────
+if [[ "$(cfg gtk)" == "true" ]]; then
+  step "Removing GTK Theme"
+  note "Removes MacTahoe Liquid KDE GTK themes"
+
+  n=0
+  for variant in MacTahoeLiquidKde-Light MacTahoeLiquidKde-Dark; do
+    [[ -d "$HOME/.themes/$variant" ]] || continue
+    rm -rf "$HOME/.themes/$variant" 2>/dev/null && ok "$variant removed" && n=$((n+1)) || fail "$variant"
+  done
+
+  # remove gtk-4.0 symlinks
+  for f in "$HOME/.config/gtk-4.0/assets" "$HOME/.config/gtk-4.0/gtk.css" "$HOME/.config/gtk-4.0/gtk-dark.css"; do
+    [[ -L "$f" ]] && rm -f "$f" 2>/dev/null
+  done
+
+  # reset GTK theme
+  command -v gsettings &>/dev/null && gsettings reset org.gnome.desktop.interface gtk-theme &>/dev/null || true
+  info "$n GTK themes removed"
 fi
 
 # ── Step 8: Removing Plasmoids ───────────────────────────────

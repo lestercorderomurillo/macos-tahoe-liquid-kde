@@ -295,7 +295,7 @@ if [[ "$(cfg kvantum)" == "true" ]]; then
     # set Qt widget style to kvantum so the theme actually takes effect
     if command -v kwriteconfig6 &>/dev/null; then
       kwriteconfig6 --file kdeglobals --group KDE --key widgetStyle kvantum
-      ok "Widget style set to kvantum"
+      ok "Widget style installed"
     fi
     # theme variant is applied later by theme-switch.sh (auto light/dark)
   else
@@ -304,7 +304,51 @@ if [[ "$(cfg kvantum)" == "true" ]]; then
 fi
 # ── (future) Installing Color Schemes ────────────────────────
 
-# ── Step 4: Installing Cursors ───────────────────────────────
+# ── Installing GTK Theme ────────────────────────────────────
+if [[ "$(cfg gtk)" == "true" ]]; then
+  step "Installing GTK Theme"
+  note "Installs MacTahoe Liquid KDE GTK theme (light and dark)"
+
+  _gtk_src="$OFFLINE/gtk"
+  _gtk_dest="$HOME/.themes"
+  _gtk4_dest="$HOME/.config/gtk-4.0"
+  _gtk_n=0
+
+  if [[ -d "$_gtk_src" ]]; then
+    mkdir -p "$_gtk_dest"
+    for variant in MacTahoeLiquidKde-Light MacTahoeLiquidKde-Dark; do
+      [[ -d "$_gtk_src/$variant" ]] || continue
+      _existed=false
+      [[ -d "$_gtk_dest/$variant" ]] && _existed=true
+      cp -rf "$_gtk_src/$variant" "$_gtk_dest/"
+      if [[ -d "$_gtk_dest/$variant" ]]; then
+        if $_existed; then
+          reinstall "$variant"
+        else
+          ok "$variant installed"
+        fi
+        _gtk_n=$((_gtk_n+1))
+      else
+        fail "$variant (copy failed)"
+      fi
+    done
+
+    # link gtk-4.0 assets for libadwaita apps
+    if [[ -d "$_gtk_dest/MacTahoeLiquidKde-Light/gtk-4.0" ]]; then
+      mkdir -p "$_gtk4_dest"
+      ln -sf "$_gtk_dest/MacTahoeLiquidKde-Light/gtk-4.0/assets" "$_gtk4_dest/assets" 2>/dev/null
+      ln -sf "$_gtk_dest/MacTahoeLiquidKde-Light/gtk-4.0/gtk.css" "$_gtk4_dest/gtk.css" 2>/dev/null
+      ln -sf "$_gtk_dest/MacTahoeLiquidKde-Light/gtk-4.0/gtk-dark.css" "$_gtk4_dest/gtk-dark.css" 2>/dev/null
+    fi
+
+    info "$_gtk_n GTK themes installed"
+    # theme variant is applied later by theme-switch.sh (auto light/dark)
+  else
+    fail "GTK theme source not found at $_gtk_src"
+  fi
+fi
+
+# ── Installing Cursors ──────────────────────────────────────
 if [[ "$(cfg cursors)" == "true" ]]; then
   step "Installing Cursors"
   note "Downloads and installs MacTahoe Liquid KDE cursor themes"
@@ -529,7 +573,7 @@ if [[ "$(cfg liquid_glass)" == "true" ]]; then
               kwriteconfig6 --file kwinrc --group "$_lg_grp" --key BottomCornerRadius 22 2>/dev/null || true
               kwriteconfig6 --file kwinrc --group "$_lg_grp" --key MenuCornerRadius 14 2>/dev/null || true
               kwriteconfig6 --file kwinrc --group "$_lg_grp" --key DockCornerRadius 22 2>/dev/null || true
-              ok "Liquid Glass preset applied"
+              ok "Liquid Glass preset installed"
               # persist + enable the effect
               if [[ -n "$_qdbus_lg" ]]; then
                 # toggle cycle: KWin needs a disable→reconfigure→enable→reconfigure
@@ -542,10 +586,10 @@ if [[ "$(cfg liquid_glass)" == "true" ]]; then
                 sleep 1
                 # fallback: force load via D-Bus
                 "$_qdbus_lg" org.kde.KWin /Effects org.kde.kwin.Effects.loadEffect liquidglass &>/dev/null || true
-                ok "Liquid Glass enabled"
+                ok "Liquid Glass installed"
               else
                 kwriteconfig6 --file kwinrc --group Plugins --key liquidglassEnabled true 2>/dev/null || true
-                ok "Liquid Glass enabled (restart KWin to activate)"
+                ok "Liquid Glass installed (restart KWin to activate)"
               fi
             else
               warn "Liquid Glass built but install failed (needs sudo)"
@@ -583,7 +627,7 @@ if command -v kwriteconfig6 &>/dev/null; then
     kwriteconfig6 --file kdeglobals --group General --key smallestReadableFont "SF Pro Text,8,-1,5,50,0,0,0,0,0"
     kwriteconfig6 --file kdeglobals --group General --key fixed                "SF Mono,10,-1,5,50,0,0,0,0,0"
     kwriteconfig6 --file kdeglobals --group WM      --key activeFont           "SF Pro Display,11,-1,5,63,0,0,0,0,0"
-    ok "Fonts configured"
+    ok "Fonts installed"
   fi
 fi
 # icons, cursors, kvantum, color scheme are applied by theme-switch.sh (auto light/dark)
@@ -596,50 +640,25 @@ if [[ "$(cfg layout)" == "true" ]]; then
     for _q in qdbus6 qdbus; do command -v "$_q" &>/dev/null && { _qdbus="$_q"; break; }; done
     if [[ -n "$_qdbus" ]]; then
       "$_qdbus" org.kde.plasmashell /PlasmaShell org.kde.PlasmaShell.evaluateScript "$(cat "$_layout")" &>/dev/null \
-        && ok "Layout applied" \
-        || warn "layout script failed — set layout manually"
+        && ok "Layout installed" \
+        || warn "layout failed — set layout manually"
       sleep 1
     else
-      warn "qdbus not found — layout not applied"
+      warn "qdbus not found — layout not installed"
     fi
   fi
 fi
 
-# ── applying themes (auto light/dark) ──
-
-# install theme-switch script
-_switch_src="$OFFLINE/theme-switch.sh"
-_switch_dest="$HOME/.local/bin/mactahoe-theme-switch"
-if [[ -f "$_switch_src" ]]; then
-  mkdir -p "$HOME/.local/bin"
-  cp -f "$_switch_src" "$_switch_dest"
-  chmod +x "$_switch_dest"
-  ok "Theme switcher installed"
-fi
-
-# install watcher service (auto-switches on KDE light/dark change)
-_svc_src="$OFFLINE/mactahoe-theme-watcher.service"
-_svc_dest="$HOME/.config/systemd/user/mactahoe-theme-watcher.service"
-if [[ -f "$_svc_src" ]]; then
-  mkdir -p "$HOME/.config/systemd/user"
-  cp -f "$_svc_src" "$_svc_dest"
-  systemctl --user daemon-reload 2>/dev/null || true
-  systemctl --user enable --now mactahoe-theme-watcher.service 2>/dev/null \
-    && ok "Theme watcher enabled" \
-    || warn "Theme watcher could not be started"
-fi
-
-# apply matching variants now (kvantum, icons, cursors, color scheme)
-if [[ -x "$_switch_dest" ]]; then
-  "$_switch_dest" auto && ok "Themes applied (auto light/dark)" || warn "Theme auto-switch failed"
-fi
+# ── (future) applying themes (auto light/dark) ──
+# theme-switch.sh and mactahoe-theme-watcher.service are ready in src/offline/
+# but not installed yet — will be enabled once all theme variants are stable
 
 # wallpaper (already has built-in auto light/dark via images + images_dark)
 if [[ "$(cfg wallpapers)" == "true" ]]; then
   wp_path="$WALLPAPERS/MacTahoe"
   if [[ -d "$wp_path" ]] && command -v plasma-apply-wallpaperimage &>/dev/null; then
     plasma-apply-wallpaperimage "$wp_path" &>/dev/null || true
-    ok "Wallpaper applied"
+    ok "Wallpaper installed"
   fi
 fi
 
