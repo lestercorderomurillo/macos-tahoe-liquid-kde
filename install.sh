@@ -69,7 +69,7 @@ echo ""
 
 sudo -v || { echo -e "  ${RED}sudo required.${RESET}"; exit 1; }
 
-# ── Step 1: Verification ──────────────────────────────────────
+# ── Verification ──────────────────────────────────────
 step "Verification"
 note "Checks KDE version and required tools"
 
@@ -148,7 +148,7 @@ fi
 
 [[ -f "$CONFIG" ]] && ok "features.json loaded"
 
-# ── Step 2: Installing Wallpapers ─────────────────────────────
+# ── Installing Wallpapers ─────────────────────────────
 if [[ "$(cfg wallpapers)" == "true" ]]; then
   step "Installing Wallpapers"
   note "Downloads and installs MacTahoe Liquid KDE wallpaper packages"
@@ -204,7 +204,7 @@ if [[ "$(cfg wallpapers)" == "true" ]]; then
   info "$((n_inst+n_re)) wallpapers — $n_inst installed, $n_re reinstalled"
 fi
 
-# ── Step 3: Installing Fonts ──────────────────────────────────
+# ── Installing Fonts ──────────────────────────────────
 if [[ "$(cfg fonts)" == "true" ]]; then
   step "Installing Fonts"
   note "Downloads and installs SF Pro and SF Mono"
@@ -247,12 +247,39 @@ if [[ "$(cfg fonts)" == "true" ]]; then
   fc-cache -f "$FONTS_DIR" 2>/dev/null || true
 fi
 
-# ── (future) Installing Plasma Theme ─────────────────────────
-# if [[ "$(cfg plasma_theme)" == "true" ]]; then
-#   step "Installing Plasma Theme"
-#   note "Installs the MacTahoe Liquid KDE Plasma desktop theme"
-#   run_step "step-plasma.sh"
-# fi
+# ── Installing Plasma Theme ──────────────────────────────────
+if [[ "$(cfg plasma_theme)" == "true" ]]; then
+  step "Installing Plasma Theme"
+  note "Installs MacTahoe Liquid KDE Plasma desktop theme (light and dark)"
+
+  _pt_src="$OFFLINE/plasma-theme"
+  _pt_dest="$HOME/.local/share/plasma/desktoptheme"
+  _pt_n=0
+
+  if [[ -d "$_pt_src" ]]; then
+    mkdir -p "$_pt_dest"
+    for variant in MacTahoeLiquidKde-Dark MacTahoeLiquidKde-Light; do
+      [[ -d "$_pt_src/$variant" ]] || continue
+      _existed=false
+      [[ -d "$_pt_dest/$variant" ]] && _existed=true
+      cp -rf "$_pt_src/$variant" "$_pt_dest/"
+      if [[ -d "$_pt_dest/$variant" ]]; then
+        if $_existed; then
+          reinstall "$variant"
+        else
+          ok "$variant installed"
+        fi
+        _pt_n=$((_pt_n+1))
+      else
+        fail "$variant (copy failed)"
+      fi
+    done
+    info "$_pt_n Plasma themes installed"
+    # theme variant is applied later by theme-switch.sh (auto light/dark)
+  else
+    fail "Plasma theme source not found at $_pt_src"
+  fi
+fi
 # ── (future) Installing Window Decorations ───────────────────
 # ── Installing Kvantum Theme ─────────────────────────────────
 if [[ "$(cfg kvantum)" == "true" ]]; then
@@ -427,7 +454,7 @@ if [[ "$(cfg cursors)" == "true" ]]; then
   info "$((n_inst+n_re)) cursor themes — $n_inst installed, $n_re reinstalled"
 fi
 
-# ── Step 5: Installing Icons ─────────────────────────────────
+# ── Installing Icons ─────────────────────────────────
 if [[ "$(cfg icons)" == "true" ]]; then
   step "Installing Icons"
   note "Downloads and installs MacTahoe Liquid KDE icon themes"
@@ -479,7 +506,7 @@ if [[ "$(cfg icons)" == "true" ]]; then
   info "$_n $_lbl — $n_inst installed, $n_re reinstalled"
   unset _n _lbl
 fi
-# ── Step: Installing Plasmoids ───────────────────────────────
+# ── Installing Plasmoids ───────────────────────────────
 if [[ "$(cfg plasmoids)" == "true" ]]; then
   step "Installing Plasmoids"
   note "Installs custom Plasma widgets from src/offline/plasmoids"
@@ -523,7 +550,7 @@ if [[ "$(cfg plasmoids)" == "true" ]]; then
   unset _n _lbl
 fi
 
-# ── Step: Installing Liquid Glass KWin Effect ────────────────
+# ── Installing Liquid Glass KWin Effect ────────────────
 if [[ "$(cfg liquid_glass)" == "true" ]]; then
   step "Installing Liquid Glass"
   note "Builds and installs the Liquid Glass KWin effect from source"
@@ -628,7 +655,7 @@ fi
 # ── (future) Installing SDDM Theme ───────────────────────────
 # ── (future) Installing Custom Apps ──────────────────────────
 
-# ── Step 5: Applying Changes ─────────────────────────────────
+# ── Applying Changes ─────────────────────────────────
 step "Applying Changes"
 note "Applies settings and tells KDE to reload"
 

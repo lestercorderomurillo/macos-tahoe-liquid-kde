@@ -20,7 +20,7 @@ Inspired by [Pear OS](https://pearos.xyz) in spirit — a complete environment, 
 | **Icons** | Full macOS-style icon set (light & dark) | 🔧 In Progress |
 | **Layout** | Transparent top bar + floating bottom dock | 🔧 In Progress |
 | **Liquid Glass** | KWin blur + rounded corners effect | 🔧 In Progress |
-| **Plasma theme** | Shell, panel, dock, look-and-feel | 🔲 Planned |
+| **Plasma theme** | Translucent panels, glassy dock, shell theme | ✅ Done |
 | **GTK theme** | GTK2/3/4 window chrome and controls (light & dark) | ✅ Done |
 | **Kvantum theme** | Qt app theme (light & dark) | ✅ Done |
 | **SDDM theme** | Login and lock screen | 🔲 Planned |

@@ -45,7 +45,7 @@ echo ""
 
 sudo -v || { echo -e "  ${RED}sudo required.${RESET}"; exit 1; }
 
-# ── Step 1: Verification ──────────────────────────────────────
+# ── Verification ──────────────────────────────────────
 step "Verification"
 note "Checks KDE version"
 
@@ -57,7 +57,7 @@ plasma_ver=$(plasmashell --version 2>/dev/null | grep -oP '[0-9]+[.][0-9]+[.][0-
 ok "KDE Plasma $plasma_ver"
 [[ -f "$CONFIG" ]] && ok "features.json loaded"
 
-# ── Step 2: Removing Wallpapers ──────────────────────────────
+# ── Removing Wallpapers ──────────────────────────────
 if [[ "$(cfg wallpapers)" == "true" ]]; then
   step "Removing Wallpapers"
   note "Removes all MacTahoe wallpaper packages"
@@ -77,7 +77,7 @@ if [[ "$(cfg wallpapers)" == "true" ]]; then
   info "$n wallpapers removed"
 fi
 
-# ── Step 3: Removing Fonts ───────────────────────────────────
+# ── Removing Fonts ───────────────────────────────────
 if [[ "$(cfg fonts)" == "true" ]]; then
   step "Removing Fonts"
   n=0
@@ -91,7 +91,7 @@ if [[ "$(cfg fonts)" == "true" ]]; then
   info "$n font files removed"
 fi
 
-# ── Step 4: Removing Cursors ─────────────────────────────────
+# ── Removing Cursors ─────────────────────────────────
 if [[ "$(cfg cursors)" == "true" ]]; then
   step "Removing Cursors"
   n=0
@@ -104,7 +104,7 @@ if [[ "$(cfg cursors)" == "true" ]]; then
   info "$n cursor themes removed"
 fi
 
-# ── Step 5: Removing Icons ───────────────────────────────────
+# ── Removing Icons ───────────────────────────────────
 if [[ "$(cfg icons)" == "true" ]]; then
   step "Removing Icons"
   n=0
@@ -116,7 +116,7 @@ if [[ "$(cfg icons)" == "true" ]]; then
   info "$n icon themes removed"
 fi
 
-# ── Step 6: Removing Theme Switcher ─────────────────────────
+# ── Removing Theme Switcher ─────────────────────────
 step "Removing Theme Switcher"
 note "Stops and removes the auto light/dark theme switcher"
 
@@ -128,7 +128,23 @@ systemctl --user daemon-reload 2>/dev/null || true
 rm -f "$HOME/.local/bin/mactahoe-theme-switch" 2>/dev/null
 ok "Theme switcher removed"
 
-# ── Step 7: Removing Kvantum Theme ──────────────────────────
+# ── Removing Plasma Theme ───────────────────────────
+if [[ "$(cfg plasma_theme)" == "true" ]]; then
+  step "Removing Plasma Theme"
+  n=0
+  for variant in MacTahoeLiquidKde-Dark MacTahoeLiquidKde-Light; do
+    _pt_dir="$HOME/.local/share/plasma/desktoptheme/$variant"
+    [[ -d "$_pt_dir" ]] || continue
+    rm -rf "$_pt_dir" 2>/dev/null && ok "$variant removed" && n=$((n+1)) || fail "$variant"
+  done
+  # reset to breeze
+  if command -v kwriteconfig6 &>/dev/null; then
+    kwriteconfig6 --file plasmarc --group Theme --key name "default" 2>/dev/null || true
+  fi
+  info "$n Plasma themes removed"
+fi
+
+# ── Removing Kvantum Theme ──────────────────────────
 if [[ "$(cfg kvantum)" == "true" ]]; then
   step "Removing Kvantum Theme"
   note "Removes MacTahoe Liquid KDE Kvantum theme (keeps Kvantum installed)"
@@ -150,7 +166,7 @@ if [[ "$(cfg kvantum)" == "true" ]]; then
   fi
 fi
 
-# ── Step 8: Removing Color Schemes ──────────────────────────
+# ── Removing Color Schemes ──────────────────────────
 if [[ "$(cfg color_schemes)" == "true" ]]; then
   step "Removing Color Schemes"
   n=0
@@ -162,7 +178,7 @@ if [[ "$(cfg color_schemes)" == "true" ]]; then
   info "$n color schemes removed"
 fi
 
-# ── Step 9: Removing GTK Theme ───────────────────────────────
+# ── Removing GTK Theme ──────────────────────────────
 if [[ "$(cfg gtk)" == "true" ]]; then
   step "Removing GTK Theme"
   note "Removes MacTahoe Liquid KDE GTK themes"
@@ -183,7 +199,7 @@ if [[ "$(cfg gtk)" == "true" ]]; then
   info "$n GTK themes removed"
 fi
 
-# ── Step 10: Removing Plasmoids ──────────────────────────────
+# ── Removing Plasmoids ──────────────────────────────
 if [[ "$(cfg plasmoids)" == "true" ]]; then
   step "Removing Plasmoids"
   n=0
@@ -195,7 +211,7 @@ if [[ "$(cfg plasmoids)" == "true" ]]; then
   info "$n plasmoids removed"
 fi
 
-# ── Step 11: Removing Liquid Glass ───────────────────────────
+# ── Removing Liquid Glass ───────────────────────────
 if [[ "$(cfg liquid_glass)" == "true" ]]; then
   step "Removing Liquid Glass"
 
@@ -217,7 +233,7 @@ if [[ "$(cfg liquid_glass)" == "true" ]]; then
   info "Liquid Glass removed"
 fi
 
-# ── Step Final: Reset to Breeze defaults ─────────────────────
+# ── Reset to Breeze defaults ─────────────────────────────────
 step "Applying Changes"
 note "Resets to Breeze defaults and restarts Plasma"
 

@@ -1,11 +1,19 @@
 #!/usr/bin/env bash
 # MacTahoe Liquid KDE — Theme Switcher
 # Switches all installed themes between light and dark variants.
+# This is the single source of truth that links all theme components:
+#
+#   Color scheme    → MacTahoeLiquidKdeLight / MacTahoeLiquidKdeDark
+#   Plasma theme    → MacTahoeLiquidKde-Light / MacTahoeLiquidKde-Dark
+#   Kvantum         → MacTahoeLiquidKde / MacTahoeLiquidKdeDark
+#   GTK             → MacTahoeLiquidKde-Light / MacTahoeLiquidKde-Dark
+#   Icons           → MacTahoeLiquidKde-Icons / MacTahoeLiquidKde-Icons-dark
+#   Cursors         → MacTahoeLiquidKde / MacTahoeLiquidKde-Dark
 #
 # Usage:
 #   mactahoe-theme-switch light
 #   mactahoe-theme-switch dark
-#   mactahoe-theme-switch auto    (detect from system, fallback to time)
+#   mactahoe-theme-switch auto    (time of day: 7AM–7PM light, else dark)
 #   mactahoe-theme-switch watch   (monitor dbus and auto-switch on change)
 
 set -uo pipefail
@@ -37,6 +45,18 @@ apply() {
     else
       plasma-apply-colorscheme MacTahoeLiquidKdeLight &>/dev/null || \
         plasma-apply-colorscheme BreezeLight &>/dev/null
+    fi
+  fi
+
+  # plasma desktop theme
+  if command -v kwriteconfig6 &>/dev/null; then
+    local pt_dir="$HOME/.local/share/plasma/desktoptheme"
+    if [[ "$mode" == "dark" ]]; then
+      [[ -d "$pt_dir/MacTahoeLiquidKde-Dark" ]] && \
+        kwriteconfig6 --file plasmarc --group Theme --key name MacTahoeLiquidKde-Dark 2>/dev/null
+    else
+      [[ -d "$pt_dir/MacTahoeLiquidKde-Light" ]] && \
+        kwriteconfig6 --file plasmarc --group Theme --key name MacTahoeLiquidKde-Light 2>/dev/null
     fi
   fi
 
