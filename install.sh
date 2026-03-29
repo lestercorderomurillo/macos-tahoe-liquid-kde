@@ -302,7 +302,35 @@ if [[ "$(cfg kvantum)" == "true" ]]; then
     fail "Kvantum theme source not found at $_kv_src"
   fi
 fi
-# ── (future) Installing Color Schemes ────────────────────────
+# ── Installing Color Schemes ────────────────────────────────
+if [[ "$(cfg color_schemes)" == "true" ]]; then
+  step "Installing Color Schemes"
+  note "Installs MacTahoe Liquid KDE color schemes (light and dark)"
+
+  _cs_src="$OFFLINE/color-schemes"
+  _cs_dest="$HOME/.local/share/color-schemes"
+  _cs_n=0
+
+  if [[ -d "$_cs_src" ]]; then
+    mkdir -p "$_cs_dest"
+    for cs in "$_cs_src"/*.colors; do
+      [[ -f "$cs" ]] || continue
+      name=$(basename "$cs" .colors)
+      _existed=false
+      [[ -f "$_cs_dest/$(basename "$cs")" ]] && _existed=true
+      cp -f "$cs" "$_cs_dest/"
+      if $_existed; then
+        reinstall "$name"
+      else
+        ok "$name installed"
+      fi
+      _cs_n=$((_cs_n+1))
+    done
+    info "$_cs_n color schemes installed"
+  else
+    fail "Color scheme source not found at $_cs_src"
+  fi
+fi
 
 # ── Installing GTK Theme ────────────────────────────────────
 if [[ "$(cfg gtk)" == "true" ]]; then
@@ -658,9 +686,29 @@ if [[ "$(cfg layout)" == "true" ]]; then
   fi
 fi
 
-# ── (future) applying themes (auto light/dark) ──
-# theme-switch.sh and mactahoe-theme-watcher.service are ready in src/offline/
-# but not installed yet — will be enabled once all theme variants are stable
+# ── applying themes (auto light/dark) ──
+_switch_src="$OFFLINE/theme-switch.sh"
+_switch_dest="$HOME/.local/bin/mactahoe-theme-switch"
+_svc_src="$OFFLINE/mactahoe-liquid-kde-theme.service"
+_svc_dest="$HOME/.config/systemd/user/mactahoe-liquid-kde-theme.service"
+
+if [[ -f "$_switch_src" ]]; then
+  mkdir -p "$HOME/.local/bin"
+  cp -f "$_switch_src" "$_switch_dest"
+  chmod +x "$_switch_dest"
+fi
+if [[ -f "$_svc_src" ]]; then
+  mkdir -p "$HOME/.config/systemd/user"
+  cp -f "$_svc_src" "$_svc_dest"
+  systemctl --user daemon-reload 2>/dev/null || true
+  systemctl --user enable --now mactahoe-liquid-kde-theme.service &>/dev/null || true
+fi
+if [[ -x "$_switch_dest" ]]; then
+  "$_switch_dest" auto &>/dev/null
+  ok "Theme switcher installed"
+else
+  warn "Theme switcher not installed"
+fi
 
 # wallpaper (already has built-in auto light/dark via images + images_dark)
 if [[ "$(cfg wallpapers)" == "true" ]]; then

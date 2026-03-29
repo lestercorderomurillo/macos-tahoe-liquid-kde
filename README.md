@@ -25,7 +25,8 @@ Inspired by [Pear OS](https://pearos.xyz) in spirit — a complete environment, 
 | **Kvantum theme** | Qt app theme (light & dark) | ✅ Done |
 | **SDDM theme** | Login and lock screen | 🔲 Planned |
 | **Aurorae decorations** | Window title bar and borders | 🔲 Planned |
-| **Color schemes** | Tahoe Light & Dark palettes | 🔲 Planned |
+| **Color schemes** | Tahoe Light & Dark palettes | ✅ Done |
+| **TimeOfDay Switcher** | Auto light/dark themes based on time of day | ✅ Done |
 | **Sounds** | Notification and event sounds | 🔲 Planned |
 | **Global Menu plasmoid** | macOS-style top bar app menu | 🔲 Planned |
 | **System Preferences plasmoid** | macOS-style settings launcher | 🔲 Planned |
@@ -52,6 +53,14 @@ bash uninstall.sh
 
 Both scripts ask for confirmation, request sudo upfront, and restart Plasma automatically.
 
+**TimeOfDay Theme Switcher** — Automatically switches between light and dark themes based on time of day. Light from 7 AM to 7 PM, dark at night.
+
+```bash
+mactahoe-theme-switch light    # force light
+mactahoe-theme-switch dark     # force dark
+mactahoe-theme-switch auto     # detect from system or time
+```
+
 ---
 
 ## Repository Structure
@@ -75,11 +84,14 @@ macos-tahoe-liquid-kde/
     │   ├── gtk/            # GTK theme (light & dark)
     │   │   ├── MacTahoeLiquidKde-Light/
     │   │   └── MacTahoeLiquidKde-Dark/
+    │   ├── color-schemes/  # KDE color schemes (light & dark)
     │   ├── kwin-effects/   # KWin compositor effects (built from source)
     │   │   └── glass-kde-replica/
-    │   └── layouts/        # panel layout scripts
-    │       ├── mactahoe.js # transparent top bar + bottom dock
-    │       └── default.js  # reset to stock KDE
+    │   ├── layouts/        # panel layout scripts
+    │   │   ├── mactahoe.js # transparent top bar + bottom dock
+    │   │   └── default.js  # reset to stock KDE
+    │   ├── theme-switch.sh # auto light/dark switcher
+    │   └── mactahoe-liquid-kde-theme.service
     └── steps/              # per-component install scripts
 ```
 
@@ -96,9 +108,11 @@ macos-tahoe-liquid-kde/
 | `~/.config/kcminputrc` | Cursor theme |
 | `~/.config/kwinrc` | Liquid Glass effect config |
 | `~/.config/Kvantum/MacTahoeLiquidKde/` | Kvantum theme (light & dark) |
+| `~/.local/share/color-schemes/` | MacTahoe color schemes (light & dark) |
 | `~/.themes/MacTahoeLiquidKde-*/` | GTK theme (light & dark) |
 | `~/.local/share/plasma/plasmoids/` | Custom plasmoids |
-| Panel layout | Top bar (transparent) + bottom dock (floating) |
+| `~/.local/bin/mactahoe-theme-switch` | Auto light/dark theme switcher |
+| Panel layout | Top bar (always visible) + bottom dock (auto-hide) |
 | KWin effects | Liquid Glass blur + rounded corners |
 | Plasma shell | Restarted to apply all changes |
 

@@ -116,10 +116,19 @@ if [[ "$(cfg icons)" == "true" ]]; then
   info "$n icon themes removed"
 fi
 
-# ── (future) Step 6: Removing Theme Watcher ─────────────────
-# theme switcher not installed yet — cleanup will be added when enabled
+# ── Step 6: Removing Theme Switcher ─────────────────────────
+step "Removing Theme Switcher"
+note "Stops and removes the auto light/dark theme switcher"
 
-# ── Step 6: Removing Kvantum Theme ──────────────────────────
+for _svc in mactahoe-liquid-kde-theme.service mactahoe-theme-watcher.service; do
+  systemctl --user disable --now "$_svc" 2>/dev/null || true
+  rm -f "$HOME/.config/systemd/user/$_svc" 2>/dev/null
+done
+systemctl --user daemon-reload 2>/dev/null || true
+rm -f "$HOME/.local/bin/mactahoe-theme-switch" 2>/dev/null
+ok "Theme switcher removed"
+
+# ── Step 7: Removing Kvantum Theme ──────────────────────────
 if [[ "$(cfg kvantum)" == "true" ]]; then
   step "Removing Kvantum Theme"
   note "Removes MacTahoe Liquid KDE Kvantum theme (keeps Kvantum installed)"
@@ -141,7 +150,19 @@ if [[ "$(cfg kvantum)" == "true" ]]; then
   fi
 fi
 
-# ── Step 7: Removing GTK Theme ───────────────────────────────
+# ── Step 8: Removing Color Schemes ──────────────────────────
+if [[ "$(cfg color_schemes)" == "true" ]]; then
+  step "Removing Color Schemes"
+  n=0
+  for cs in "$HOME/.local/share/color-schemes"/MacTahoeLiquidKde*.colors; do
+    [[ -f "$cs" ]] || continue
+    name=$(basename "$cs" .colors)
+    rm -f "$cs" 2>/dev/null && ok "$name removed" && n=$((n+1)) || fail "$name"
+  done
+  info "$n color schemes removed"
+fi
+
+# ── Step 9: Removing GTK Theme ───────────────────────────────
 if [[ "$(cfg gtk)" == "true" ]]; then
   step "Removing GTK Theme"
   note "Removes MacTahoe Liquid KDE GTK themes"
@@ -162,7 +183,7 @@ if [[ "$(cfg gtk)" == "true" ]]; then
   info "$n GTK themes removed"
 fi
 
-# ── Step 8: Removing Plasmoids ───────────────────────────────
+# ── Step 10: Removing Plasmoids ──────────────────────────────
 if [[ "$(cfg plasmoids)" == "true" ]]; then
   step "Removing Plasmoids"
   n=0
@@ -174,7 +195,7 @@ if [[ "$(cfg plasmoids)" == "true" ]]; then
   info "$n plasmoids removed"
 fi
 
-# ── Step 9: Removing Liquid Glass ────────────────────────────
+# ── Step 11: Removing Liquid Glass ───────────────────────────
 if [[ "$(cfg liquid_glass)" == "true" ]]; then
   step "Removing Liquid Glass"
 
