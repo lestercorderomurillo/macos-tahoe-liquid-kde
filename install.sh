@@ -630,7 +630,29 @@ if command -v kwriteconfig6 &>/dev/null; then
     ok "Fonts installed"
   fi
 fi
-# icons, cursors, kvantum, color scheme are applied by theme-switch.sh (auto light/dark)
+# ── applying icons and cursors ──
+if [[ "$(cfg icons)" == "true" ]]; then
+  for theme in "$ICONS_DIR"/MacTahoeLiquidKde-Icons "$ICONS_DIR"/MacTahoeLiquidKde-Icons-dark; do
+    if [[ -f "$theme/index.theme" ]]; then
+      icon_theme=$(basename "$theme")
+      kwriteconfig6 --file kdeglobals --group Icons --key Theme "$icon_theme" 2>/dev/null
+      plasma-apply-icontheme "$icon_theme" &>/dev/null || true
+      ok "Icons installed ($icon_theme)"
+      break
+    fi
+  done
+fi
+if [[ "$(cfg cursors)" == "true" ]]; then
+  for theme in "$ICONS_DIR"/MacTahoeLiquidKde "$ICONS_DIR"/MacTahoeLiquidKde-Dark; do
+    if [[ -d "$theme/cursors" ]]; then
+      cursor_theme=$(basename "$theme")
+      kwriteconfig6 --file kcminputrc --group Mouse --key cursorTheme "$cursor_theme" 2>/dev/null
+      plasma-apply-cursortheme "$cursor_theme" &>/dev/null || true
+      ok "Cursors installed ($cursor_theme)"
+      break
+    fi
+  done
+fi
 
 # ── applying layout ──
 if [[ "$(cfg layout)" == "true" ]]; then
