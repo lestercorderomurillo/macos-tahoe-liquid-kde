@@ -4,7 +4,7 @@ After=graphical-session.target
 
 [Service]
 Type=simple
-ExecStart=%h/.local/bin/mactahoe-theme-switch watch
+ExecStart=%h/.local/bin/mac-tahoe-theme-switch watch
 Restart=on-failure
 RestartSec=5
 

@@ -104,23 +104,24 @@ _pkg_install() {
   else fail "no package manager found — install $* manually"; return 1; fi
 }
 
-for _dep in curl unzip; do
-  if command -v "$_dep" &>/dev/null; then
-    ok "$_dep"
+_auto_dep() {
+  local cmd="$1" pkg="${2:-$1}"
+  if command -v "$cmd" &>/dev/null; then
+    ok "$cmd"
   else
-    warn "$_dep not found — installing..."
-    _pkg_install "$_dep" && ok "$_dep (installed)" || fail "$_dep (install failed)"
+    warn "$cmd not found — installing..."
+    _pkg_install "$pkg" && ok "$cmd (installed)" || fail "$cmd (install failed)"
   fi
-done
-if command -v fc-cache &>/dev/null; then
-  ok "fontconfig"
-else
-  warn "fontconfig not found — installing..."
-  _pkg_install fontconfig && ok "fontconfig (installed)" || fail "fontconfig (install failed)"
-fi
-unset -f _pkg_install
+}
 
-command -v kwriteconfig6 &>/dev/null && ok "kwriteconfig6" || warn "kwriteconfig6 not found — fonts won't apply automatically"
+_auto_dep curl
+_auto_dep unzip
+_auto_dep fc-cache fontconfig
+_auto_dep kwriteconfig6 kconfig
+_auto_dep cmake
+_auto_dep g++ gcc
+_auto_dep pkg-config pkgconf
+_auto_dep dbus-monitor dbus
 
 # panel colorizer (needed for transparent top bar)
 if [[ "$(cfg layout)" == "true" ]]; then
@@ -286,22 +287,11 @@ if [[ "$(cfg kvantum)" == "true" ]]; then
   step "Installing Kvantum Theme"
   note "Installs Kvantum engine and the MacTahoe Liquid KDE Kvantum theme"
 
-  # install kvantum if missing
-  if ! command -v kvantummanager &>/dev/null; then
-    warn "Kvantum not found — installing..."
-    _kv_pkg="kvantum"
-    if   command -v pacman &>/dev/null; then sudo pacman -S --noconfirm "$_kv_pkg"
-    elif command -v yay    &>/dev/null; then yay   -S --noconfirm "$_kv_pkg"
-    elif command -v paru   &>/dev/null; then paru  -S --noconfirm "$_kv_pkg"
-    else fail "no package manager found — install $_kv_pkg manually"; fi
-    command -v kvantummanager &>/dev/null && ok "Kvantum (installed)" || fail "Kvantum (install failed)"
-  else
-    ok "Kvantum"
-  fi
+  _auto_dep kvantummanager kvantum
 
   # copy theme to Kvantum config dir
-  _kv_src="$OFFLINE/kvantum/MacTahoeLiquidKde"
-  _kv_dest="$HOME/.config/Kvantum/MacTahoeLiquidKde"
+  _kv_src="$OFFLINE/kvantum/mac-tahoe-liquid-kde"
+  _kv_dest="$HOME/.config/Kvantum/mac-tahoe-liquid-kde"
   _kv_existed=false
   [[ -d "$_kv_dest" ]] && ls "$_kv_dest"/*.kvconfig &>/dev/null && _kv_existed=true
   if [[ -d "$_kv_src" ]]; then
@@ -311,12 +301,12 @@ if [[ "$(cfg kvantum)" == "true" ]]; then
 
     if [[ -d "$_kv_dest" ]] && ls "$_kv_dest"/*.kvconfig &>/dev/null; then
       if $_kv_existed; then
-        reinstall "MacTahoeLiquidKde theme"
+        reinstall "mac-tahoe-liquid-kde theme"
       else
-        ok "MacTahoeLiquidKde theme installed"
+        ok "mac-tahoe-liquid-kde theme installed"
       fi
     else
-      fail "MacTahoeLiquidKde theme (copy failed)"
+      fail "mac-tahoe-liquid-kde theme (copy failed)"
     fi
 
     # set Qt widget style to kvantum so the theme actually takes effect
@@ -613,7 +603,7 @@ if [[ "$(cfg liquid_glass)" == "true" ]]; then
               ok "Liquid Glass installed"
               # write clean preset (Clear)
               _lg_grp="Effect-liquidglass"
-              kwriteconfig6 --file kwinrc --group "$_lg_grp" --key BlurStrength 3 2>/dev/null || true
+              kwriteconfig6 --file kwinrc --group "$_lg_grp" --key BlurStrength 2 2>/dev/null || true
               kwriteconfig6 --file kwinrc --group "$_lg_grp" --key NoiseStrength 0 2>/dev/null || true
               kwriteconfig6 --file kwinrc --group "$_lg_grp" --key Saturation 1.0 2>/dev/null || true
               kwriteconfig6 --file kwinrc --group "$_lg_grp" --key Brightness 1.0 2>/dev/null || true
@@ -672,33 +662,12 @@ if command -v kwriteconfig6 &>/dev/null; then
     ok "Fonts installed"
   fi
 fi
-# ── applying icons and cursors ──
-if [[ "$(cfg icons)" == "true" ]]; then
-  for theme in "$ICONS_DIR"/MacTahoeLiquidKde-Icons "$ICONS_DIR"/MacTahoeLiquidKde-Icons-dark; do
-    if [[ -f "$theme/index.theme" ]]; then
-      icon_theme=$(basename "$theme")
-      kwriteconfig6 --file kdeglobals --group Icons --key Theme "$icon_theme" 2>/dev/null
-      plasma-apply-icontheme "$icon_theme" &>/dev/null || true
-      ok "Icons installed ($icon_theme)"
-      break
-    fi
-  done
-fi
-if [[ "$(cfg cursors)" == "true" ]]; then
-  for theme in "$ICONS_DIR"/MacTahoeLiquidKde "$ICONS_DIR"/MacTahoeLiquidKde-Dark; do
-    if [[ -d "$theme/cursors" ]]; then
-      cursor_theme=$(basename "$theme")
-      kwriteconfig6 --file kcminputrc --group Mouse --key cursorTheme "$cursor_theme" 2>/dev/null
-      plasma-apply-cursortheme "$cursor_theme" &>/dev/null || true
-      ok "Cursors installed ($cursor_theme)"
-      break
-    fi
-  done
-fi
+# icons, cursors, color scheme, plasma theme, kvantum, gtk
+# are all applied by theme-switch.sh (auto light/dark based on time of day)
 
 # ── applying layout ──
 if [[ "$(cfg layout)" == "true" ]]; then
-  _layout="$REPO/src/offline/layouts/mactahoe.js"
+  _layout="$REPO/src/offline/layouts/mac-tahoe.js"
   if [[ -f "$_layout" ]]; then
     _qdbus=""
     for _q in qdbus6 qdbus; do command -v "$_q" &>/dev/null && { _qdbus="$_q"; break; }; done
@@ -706,7 +675,7 @@ if [[ "$(cfg layout)" == "true" ]]; then
       "$_qdbus" org.kde.plasmashell /PlasmaShell org.kde.PlasmaShell.evaluateScript "$(cat "$_layout")" &>/dev/null \
         && ok "Layout installed" \
         || warn "layout failed — set layout manually"
-      sleep 1
+      sleep 3
     else
       warn "qdbus not found — layout not installed"
     fi
@@ -715,9 +684,9 @@ fi
 
 # ── applying themes (auto light/dark) ──
 _switch_src="$OFFLINE/theme-switch.sh"
-_switch_dest="$HOME/.local/bin/mactahoe-theme-switch"
-_svc_src="$OFFLINE/mactahoe-liquid-kde-theme.service"
-_svc_dest="$HOME/.config/systemd/user/mactahoe-liquid-kde-theme.service"
+_switch_dest="$HOME/.local/bin/mac-tahoe-theme-switch"
+_svc_src="$OFFLINE/mac-tahoe-liquid-kde-theme.service"
+_svc_dest="$HOME/.config/systemd/user/mac-tahoe-liquid-kde-theme.service"
 
 if [[ -f "$_switch_src" ]]; then
   mkdir -p "$HOME/.local/bin"
@@ -728,7 +697,7 @@ if [[ -f "$_svc_src" ]]; then
   mkdir -p "$HOME/.config/systemd/user"
   cp -f "$_svc_src" "$_svc_dest"
   systemctl --user daemon-reload 2>/dev/null || true
-  systemctl --user enable --now mactahoe-liquid-kde-theme.service &>/dev/null || true
+  systemctl --user enable --now mac-tahoe-liquid-kde-theme.service &>/dev/null || true
 fi
 if [[ -x "$_switch_dest" ]]; then
   "$_switch_dest" auto &>/dev/null
@@ -754,6 +723,7 @@ find "$HOME/.cache" -maxdepth 1 -name "ksycoca6*" -delete 2>/dev/null || true
 kbuildsycoca6 --noincremental 2>/dev/null || true
 ok "Caches flushed"
 
+sleep 2
 systemctl --user restart plasma-plasmashell 2>/dev/null || killall plasmashell 2>/dev/null || true
 ok "Plasma restarted"
 

@@ -120,12 +120,12 @@ fi
 step "Removing Theme Switcher"
 note "Stops and removes the auto light/dark theme switcher"
 
-for _svc in mactahoe-liquid-kde-theme.service mactahoe-theme-watcher.service; do
+for _svc in mac-tahoe-liquid-kde-theme.service mactahoe-theme-watcher.service; do
   systemctl --user disable --now "$_svc" 2>/dev/null || true
   rm -f "$HOME/.config/systemd/user/$_svc" 2>/dev/null
 done
 systemctl --user daemon-reload 2>/dev/null || true
-rm -f "$HOME/.local/bin/mactahoe-theme-switch" 2>/dev/null
+rm -f "$HOME/.local/bin/mac-tahoe-theme-switch" "$HOME/.local/bin/mactahoe-theme-switch" 2>/dev/null
 ok "Theme switcher removed"
 
 # ── Removing Plasma Theme ───────────────────────────
@@ -149,7 +149,7 @@ if [[ "$(cfg kvantum)" == "true" ]]; then
   step "Removing Kvantum Theme"
   note "Removes MacTahoe Liquid KDE Kvantum theme (keeps Kvantum installed)"
 
-  _kv_dir="$HOME/.config/Kvantum/MacTahoeLiquidKde"
+  _kv_dir="$HOME/.config/Kvantum/mac-tahoe-liquid-kde"
   if [[ -d "$_kv_dir" ]]; then
     # reset widget style back to Breeze
     if command -v kwriteconfig6 &>/dev/null; then
@@ -158,7 +158,7 @@ if [[ "$(cfg kvantum)" == "true" ]]; then
     fi
     # reset kvantum to default before removing
     if command -v kvantummanager &>/dev/null; then
-      kvantummanager --set Default &>/dev/null || true
+      QT_QPA_PLATFORM=offscreen kvantummanager --set Default &>/dev/null || true
     fi
     rm -rf "$_kv_dir" 2>/dev/null && ok "MacTahoeLiquidKde theme removed" || fail "MacTahoeLiquidKde theme"
   else
@@ -203,7 +203,7 @@ fi
 if [[ "$(cfg plasmoids)" == "true" ]]; then
   step "Removing Plasmoids"
   n=0
-  for widget in "$PLASMOIDS_DIR"/org.kde.mactahoe-liquid-kde.*; do
+  for widget in "$PLASMOIDS_DIR"/org.kde.mac-tahoe-liquid-kde.* "$PLASMOIDS_DIR"/org.kde.mactahoe-liquid-kde.*; do
     [[ -d "$widget" ]] || continue
     name=$(basename "$widget")
     rm -rf "$widget" 2>/dev/null && ok "$name" && n=$((n+1)) || fail "$name"

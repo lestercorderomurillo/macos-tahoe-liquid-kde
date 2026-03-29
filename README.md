@@ -58,9 +58,9 @@ Both scripts ask for confirmation, request sudo upfront, and restart Plasma auto
 **TimeOfDay Theme Switcher** — Automatically switches between light and dark themes based on time of day. Light from 7 AM to 7 PM, dark at night. Switches everything together: Plasma theme, color scheme, Kvantum, GTK, icons, and cursors.
 
 ```bash
-mactahoe-theme-switch light    # force light
-mactahoe-theme-switch dark     # force dark
-mactahoe-theme-switch auto     # detect from time of day
+mac-tahoe-theme-switch light    # force light
+mac-tahoe-theme-switch dark     # force dark
+mac-tahoe-theme-switch auto     # detect from time of day
 ```
 
 ---
@@ -80,7 +80,7 @@ macos-tahoe-liquid-kde/
     │   │   └── MacTahoeLiquidKde-Dark/
     │   ├── color-schemes/  # KDE color schemes
     │   ├── kvantum/        # Kvantum Qt theme (blur + translucency)
-    │   │   └── MacTahoeLiquidKde/
+    │   │   └── mac-tahoe-liquid-kde/
     │   ├── gtk/            # GTK 2/3/4 theme
     │   │   ├── MacTahoeLiquidKde-Light/
     │   │   └── MacTahoeLiquidKde-Dark/
@@ -88,7 +88,7 @@ macos-tahoe-liquid-kde/
     │   ├── kwin-effects/   # Liquid Glass KWin effect (built from source)
     │   ├── layouts/        # panel layout scripts
     │   ├── theme-switch.sh # TimeOfDay theme switcher
-    │   └── mactahoe-liquid-kde-theme.service
+    │   └── mac-tahoe-liquid-kde-theme.service
     └── steps/              # per-component download scripts
 ```
 
@@ -103,10 +103,10 @@ macos-tahoe-liquid-kde/
 | `~/.local/share/icons/` | Cursor and icon themes |
 | `~/.local/share/plasma/desktoptheme/` | Transparent glass dock + panels |
 | `~/.local/share/color-schemes/` | Tahoe Light & Dark palettes |
-| `~/.config/Kvantum/MacTahoeLiquidKde/` | Kvantum theme (blur + translucency) |
+| `~/.config/Kvantum/mac-tahoe-liquid-kde/` | Kvantum theme (blur + translucency) |
 | `~/.themes/MacTahoeLiquidKde-*/` | GTK theme |
 | `~/.local/share/plasma/plasmoids/` | Custom plasmoids |
-| `~/.local/bin/mactahoe-theme-switch` | TimeOfDay theme switcher |
+| `~/.local/bin/mac-tahoe-theme-switch` | TimeOfDay theme switcher |
 | `~/.config/kwinrc` | Liquid Glass effect config |
 | Panel layout | Transparent top bar + floating glass dock |
 | KWin effects | Liquid Glass blur + rounded corners |

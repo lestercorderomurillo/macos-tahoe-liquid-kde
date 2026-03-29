@@ -5,16 +5,16 @@
 #
 #   Color scheme    → MacTahoeLiquidKdeLight / MacTahoeLiquidKdeDark
 #   Plasma theme    → MacTahoeLiquidKde-Light / MacTahoeLiquidKde-Dark
-#   Kvantum         → MacTahoeLiquidKde / MacTahoeLiquidKdeDark
+#   Kvantum         → mac-tahoe-liquid-kde / mac-tahoe-liquid-kdeDark
 #   GTK             → MacTahoeLiquidKde-Light / MacTahoeLiquidKde-Dark
 #   Icons           → MacTahoeLiquidKde-Icons / MacTahoeLiquidKde-Icons-dark
 #   Cursors         → MacTahoeLiquidKde / MacTahoeLiquidKde-Dark
 #
 # Usage:
-#   mactahoe-theme-switch light
-#   mactahoe-theme-switch dark
-#   mactahoe-theme-switch auto    (time of day: 7AM–7PM light, else dark)
-#   mactahoe-theme-switch watch   (monitor dbus and auto-switch on change)
+#   mac-tahoe-theme-switch light
+#   mac-tahoe-theme-switch dark
+#   mac-tahoe-theme-switch auto    (time of day: 7AM–7PM light, else dark)
+#   mac-tahoe-theme-switch watch   (monitor dbus and auto-switch on change)
 
 set -uo pipefail
 
@@ -63,9 +63,9 @@ apply() {
   # kvantum
   if command -v kvantummanager &>/dev/null; then
     if [[ "$mode" == "dark" ]]; then
-      kvantummanager --set MacTahoeLiquidKdeDark &>/dev/null
+      QT_QPA_PLATFORM=offscreen kvantummanager --set mac-tahoe-liquid-kdeDark &>/dev/null
     else
-      kvantummanager --set MacTahoeLiquidKde &>/dev/null
+      QT_QPA_PLATFORM=offscreen kvantummanager --set mac-tahoe-liquid-kde &>/dev/null
     fi
   fi
 
@@ -100,24 +100,32 @@ apply() {
   fi
 
   # icons
-  if command -v plasma-apply-icontheme &>/dev/null; then
-    if [[ "$mode" == "dark" ]]; then
-      [[ -d "$ICONS_DIR/MacTahoeLiquidKde-Icons-dark" ]] && \
-        plasma-apply-icontheme MacTahoeLiquidKde-Icons-dark &>/dev/null
-    else
-      [[ -d "$ICONS_DIR/MacTahoeLiquidKde-Icons" ]] && \
-        plasma-apply-icontheme MacTahoeLiquidKde-Icons &>/dev/null
+  local icon_theme
+  if [[ "$mode" == "dark" ]]; then
+    icon_theme="MacTahoeLiquidKde-Icons-dark"
+  else
+    icon_theme="MacTahoeLiquidKde-Icons"
+  fi
+  if [[ -d "$ICONS_DIR/$icon_theme" ]]; then
+    if command -v plasma-apply-icontheme &>/dev/null; then
+      plasma-apply-icontheme "$icon_theme" &>/dev/null
+    elif command -v kwriteconfig6 &>/dev/null; then
+      kwriteconfig6 --file kdeglobals --group Icons --key Theme "$icon_theme"
     fi
   fi
 
   # cursors
-  if command -v plasma-apply-cursortheme &>/dev/null; then
-    if [[ "$mode" == "dark" ]]; then
-      [[ -d "$ICONS_DIR/MacTahoeLiquidKde-Dark/cursors" ]] && \
-        plasma-apply-cursortheme MacTahoeLiquidKde-Dark &>/dev/null
-    else
-      [[ -d "$ICONS_DIR/MacTahoeLiquidKde/cursors" ]] && \
-        plasma-apply-cursortheme MacTahoeLiquidKde &>/dev/null
+  local cursor_theme
+  if [[ "$mode" == "dark" ]]; then
+    cursor_theme="MacTahoeLiquidKde-Dark"
+  else
+    cursor_theme="MacTahoeLiquidKde"
+  fi
+  if [[ -d "$ICONS_DIR/$cursor_theme/cursors" ]]; then
+    if command -v plasma-apply-cursortheme &>/dev/null; then
+      plasma-apply-cursortheme "$cursor_theme" &>/dev/null
+    elif command -v kwriteconfig6 &>/dev/null; then
+      kwriteconfig6 --file kcminputrc --group Mouse --key cursorTheme "$cursor_theme"
     fi
   fi
 }

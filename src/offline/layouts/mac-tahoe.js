@@ -78,4 +78,4 @@ tasks.currentConfigGroup = ["General"];
 tasks.writeConfig("launchers", "preferred://filemanager,preferred://browser,applications:systemsettings.desktop,applications:org.kde.discover.desktop,applications:steam.desktop");
 
 dock.addWidget("org.kde.plasma.marginsseparator");
-dock.addWidget("org.kde.mactahoe-liquid-kde.trash");
+dock.addWidget("org.kde.mac-tahoe-liquid-kde.trash");
