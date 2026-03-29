@@ -69,6 +69,12 @@ ok "KDE Plasma $plasma_ver"
 command -v kwriteconfig6 &>/dev/null && ok "kwriteconfig6" || warn "kwriteconfig6 not found — settings won't be reset automatically"
 [[ -f "$CONFIG" ]] && ok "features.json loaded"
 
+if [[ "$(cfg liquid_glass)" == "true" ]]; then
+  info "Some steps require elevated privileges"
+  sudo -v || { fail "sudo required"; exit 1; }
+  ok "sudo authenticated"
+fi
+
 # ── Step 2: Removing Wallpapers ───────────────────────────────
 if [[ "$(cfg wallpapers)" == "true" ]]; then
   step "Removing Wallpapers"
@@ -209,6 +215,37 @@ if [[ "$(cfg plasmoids)" == "true" ]]; then
   [[ $n -eq 0 ]] \
     && info "0 plasmoids removed (already removed?)" \
     || info "$n plasmoids removed"
+fi
+
+# ── Step: Removing Liquid Glass ──────────────────────────────
+if [[ "$(cfg liquid_glass)" == "true" ]]; then
+  step "Removing Liquid Glass"
+  note "Removes the Liquid Glass KWin effect"
+
+  # disable before removing
+  _qdbus_lg=""
+  for _q in qdbus6 qdbus; do command -v "$_q" &>/dev/null && { _qdbus_lg="$_q"; break; }; done
+  if [[ -n "$_qdbus_lg" ]]; then
+    "$_qdbus_lg" org.kde.KWin /Effects org.kde.kwin.Effects.unloadEffect liquidglass &>/dev/null || true
+  fi
+  kwriteconfig6 --file kwinrc --group Plugins --key liquidglassEnabled false 2>/dev/null || true
+
+  _plugin_dir=$(qmake6 -query QT_INSTALL_PLUGINS 2>/dev/null \
+    || qtpaths6 --plugin-dir 2>/dev/null \
+    || pkg-config --variable=plugindir Qt6Core 2>/dev/null \
+    || echo "/usr/lib/qt6/plugins")
+  _removed=false
+  for _so in "$_plugin_dir/kwin/effects/plugins/liquidglass.so" "$_plugin_dir/kwin/effects/configs/kwin_liquidglass_config.so"; do
+    if [[ -f "$_so" ]]; then
+      if sudo rm -f "$_so" 2>/dev/null; then
+        ok "$(basename "$_so") removed"
+        _removed=true
+      else
+        fail "$(basename "$_so") (needs sudo to remove)"
+      fi
+    fi
+  done
+  $_removed && info "Liquid Glass removed" || info "Liquid Glass not installed (skipped)"
 fi
 
 # ── Step 10: Removing Sounds ─────────────────────────────────

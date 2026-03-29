@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape" viewBox="0 0 100 100" width="100" height="100">
+  <!-- All elements fully transparent -->
+  <rect id="hint-top-margin" x="0" y="0" width="0" height="2" fill="none"/>
+  <rect id="hint-bottom-margin" x="0" y="0" width="0" height="2" fill="none"/>
+  <rect id="hint-left-margin" x="0" y="0" width="2" height="0" fill="none"/>
+  <rect id="hint-right-margin" x="0" y="0" width="2" height="0" fill="none"/>
+  <rect id="topleft" x="0" y="0" width="1" height="1" fill="none" opacity="0"/>
+  <rect id="top" x="1" y="0" width="98" height="1" fill="none" opacity="0"/>
+  <rect id="topright" x="99" y="0" width="1" height="1" fill="none" opacity="0"/>
+  <rect id="left" x="0" y="1" width="1" height="98" fill="none" opacity="0"/>
+  <rect id="center" x="1" y="1" width="98" height="98" fill="none" opacity="0"/>
+  <rect id="right" x="99" y="1" width="1" height="98" fill="none" opacity="0"/>
+  <rect id="bottomleft" x="0" y="99" width="1" height="1" fill="none" opacity="0"/>
+  <rect id="bottom" x="1" y="99" width="98" height="1" fill="none" opacity="0"/>
+  <rect id="bottomright" x="99" y="99" width="1" height="1" fill="none" opacity="0"/>
+  <rect id="shadow-topleft" x="0" y="0" width="1" height="1" fill="none" opacity="0"/>
+  <rect id="shadow-top" x="1" y="0" width="98" height="1" fill="none" opacity="0"/>
+  <rect id="shadow-topright" x="99" y="0" width="1" height="1" fill="none" opacity="0"/>
+  <rect id="shadow-left" x="0" y="1" width="1" height="98" fill="none" opacity="0"/>
+  <rect id="shadow-right" x="99" y="1" width="1" height="98" fill="none" opacity="0"/>
+  <rect id="shadow-bottomleft" x="0" y="99" width="1" height="1" fill="none" opacity="0"/>
+  <rect id="shadow-bottom" x="1" y="99" width="98" height="1" fill="none" opacity="0"/>
+  <rect id="shadow-bottomright" x="99" y="99" width="1" height="1" fill="none" opacity="0"/>
+</svg>

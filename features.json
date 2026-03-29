@@ -1,16 +1,17 @@
 {
-  "wallpapers":          true,
-  "fonts":               true,
-  "cursors":             true,
+  "wallpapers":          false,
+  "fonts":               false,
+  "cursors":             false,
   "plasma_theme":        false,
   "window_decorations":  false,
   "kvantum":             false,
   "color_schemes":       false,
   "icons":               true,
-  "plasmoids":           true,
+  "plasmoids":           false,
+  "liquid_glass":        true,
   "layout":              true,
   "sounds":              false,
   "gtk":                 false,
-  "sddm":               false,
+  "sddm":                false,
   "apps":                false
 }

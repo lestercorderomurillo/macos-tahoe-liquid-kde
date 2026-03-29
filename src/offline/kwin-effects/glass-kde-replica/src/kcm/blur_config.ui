@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>BlurEffectConfig</class>
+ <widget class="QWidget" name="BlurEffectConfig">
+  <property name="geometry">
+   <rect><x>0</x><y>0</y><width>480</width><height>300</height></rect>
+  </property>
+  <layout class="QVBoxLayout">
+   <item>
+    <widget class="QLabel">
+     <property name="text"><string>Liquid Glass — blur and rounded corners for KDE Plasma 6.</string></property>
+     <property name="wordWrap"><bool>true</bool></property>
+    </widget>
+   </item>
+   <item>
+    <layout class="QHBoxLayout">
+     <item><widget class="QLabel"><property name="text"><string>Preset:</string></property></widget></item>
+     <item>
+      <widget class="QComboBox" name="presetCombo">
+       <item><property name="text"><string>Clear</string></property></item>
+       <item><property name="text"><string>Frosted</string></property></item>
+      </widget>
+     </item>
+     <item><spacer><property name="orientation"><enum>Qt::Orientation::Horizontal</enum></property></spacer></item>
+    </layout>
+   </item>
+   <item>
+    <widget class="QGroupBox">
+     <property name="title"><string>Options</string></property>
+     <layout class="QVBoxLayout">
+      <item>
+       <widget class="QCheckBox" name="kcfg_TransparentBlur">
+        <property name="text"><string>Enable on transparent windows</string></property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QCheckBox" name="kcfg_BlurDecorations">
+        <property name="text"><string>Enable on window decorations</string></property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QGroupBox">
+     <property name="title"><string>Force blur</string></property>
+     <layout class="QVBoxLayout">
+      <item>
+       <widget class="QPlainTextEdit" name="kcfg_WindowClasses">
+        <property name="maximumSize"><size><width>16777215</width><height>80</height></size></property>
+       </widget>
+      </item>
+      <item>
+       <layout class="QHBoxLayout">
+        <item><widget class="QRadioButton" name="kcfg_BlurMatching"><property name="text"><string>Only matching</string></property></widget></item>
+        <item><widget class="QRadioButton" name="kcfg_BlurNonMatching"><property name="text"><string>All except matching</string></property></widget></item>
+       </layout>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QGroupBox">
+     <property name="title"><string>Rounded corners</string></property>
+     <layout class="QVBoxLayout">
+      <item>
+       <layout class="QHBoxLayout">
+        <item><widget class="QLabel"><property name="text"><string>Top</string></property></widget></item>
+        <item><widget class="QDoubleSpinBox" name="kcfg_TopCornerRadius"><property name="minimum"><double>0.0</double></property></widget></item>
+        <item><widget class="QLabel"><property name="text"><string>Bottom</string></property></widget></item>
+        <item><widget class="QDoubleSpinBox" name="kcfg_BottomCornerRadius"><property name="minimum"><double>0.0</double></property></widget></item>
+       </layout>
+      </item>
+      <item>
+       <layout class="QHBoxLayout">
+        <item><widget class="QLabel"><property name="text"><string>Menu</string></property></widget></item>
+        <item><widget class="QDoubleSpinBox" name="kcfg_MenuCornerRadius"><property name="minimum"><double>0.0</double></property></widget></item>
+        <item><widget class="QLabel"><property name="text"><string>Dock</string></property></widget></item>
+        <item><widget class="QDoubleSpinBox" name="kcfg_DockCornerRadius"><property name="minimum"><double>0.0</double></property></widget></item>
+       </layout>
+      </item>
+      <item>
+       <widget class="QCheckBox" name="kcfg_RoundCornersOfMaximizedWindows">
+        <property name="text"><string>Round maximized windows</string></property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item><spacer><property name="orientation"><enum>Qt::Orientation::Vertical</enum></property></spacer></item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

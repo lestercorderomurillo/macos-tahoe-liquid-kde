@@ -1,0 +1,13 @@
+{
+    "KPlugin": {
+        "Authors": [
+            {
+                "Name": "MacTahoe Liquid KDE"
+            }
+        ],
+        "Description": "Transparent panel background for macOS-style top bar",
+        "Id": "mactahoe-topbar",
+        "Name": "MacTahoe Top Bar"
+    },
+    "X-Plasma-API": "5.0"
+}

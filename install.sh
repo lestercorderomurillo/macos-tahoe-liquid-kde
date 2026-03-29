@@ -74,6 +74,13 @@ fi
 
 ok "KDE Plasma $plasma_ver"
 
+# ── early sudo prompt (needed for deps + liquid glass install) ─
+if [[ "$(cfg liquid_glass)" == "true" ]] || ! command -v curl &>/dev/null || ! command -v unzip &>/dev/null || ! command -v fc-cache &>/dev/null; then
+  info "Some steps require elevated privileges"
+  sudo -v || { fail "sudo required — run as a user with sudo access"; exit 1; }
+  ok "sudo authenticated"
+fi
+
 # ── auto-install missing deps ─────────────────────────────────
 _pkg_install() {
   if   command -v pacman &>/dev/null; then sudo pacman -S --noconfirm "$@"
@@ -341,6 +348,119 @@ if [[ "$(cfg plasmoids)" == "true" ]]; then
   unset _n _lbl
 fi
 
+# ── Step: Installing Liquid Glass KWin Effect ────────────────
+if [[ "$(cfg liquid_glass)" == "true" ]]; then
+  step "Installing Liquid Glass"
+  note "Builds and installs the Liquid Glass KWin effect from source"
+
+  _lg_src="$OFFLINE/kwin-effects/glass-kde-replica"
+  _lg_build="$_lg_src/build"
+  if [[ -f "$_lg_src/CMakeLists.txt" ]]; then
+    # check build deps
+    _missing=false
+    for _dep in cmake g++ pkg-config; do
+      command -v "$_dep" &>/dev/null || { warn "$_dep not found — needed to build Liquid Glass"; _missing=true; }
+    done
+
+    if ! $_missing; then
+      # clean stale generated shaders and build dir
+      rm -rf "$_lg_build"
+      rm -f "$_lg_src/src/shaders/onscreen_rounded_core.frag" "$_lg_src/src/shaders/onscreen_rounded.frag"
+      mkdir -p "$_lg_build"
+
+      # disable original glass effect if enabled (conflicts)
+      kwriteconfig6 --file kwinrc --group Plugins --key glassEnabled false 2>/dev/null || true
+      kwriteconfig6 --file kwinrc --group Plugins --key blurEnabled false 2>/dev/null || true
+      _qdbus_pre=""
+      for _q in qdbus6 qdbus; do command -v "$_q" &>/dev/null && { _qdbus_pre="$_q"; break; }; done
+      if [[ -n "$_qdbus_pre" ]]; then
+        "$_qdbus_pre" org.kde.KWin /Effects org.kde.kwin.Effects.unloadEffect glass &>/dev/null || true
+        "$_qdbus_pre" org.kde.KWin /Effects org.kde.kwin.Effects.unloadEffect blur &>/dev/null || true
+      fi
+
+      if cmake -S "$_lg_src" -B "$_lg_build" -DCMAKE_BUILD_TYPE=Release &>/dev/null; then
+        if make -C "$_lg_build" -j"$(nproc)" &>/dev/null; then
+          ok "Liquid Glass built"
+          # install .so files (requires write access to plugin dir)
+          _plugin_dir=$(qmake6 -query QT_INSTALL_PLUGINS 2>/dev/null \
+            || qtpaths6 --plugin-dir 2>/dev/null \
+            || pkg-config --variable=plugindir Qt6Core 2>/dev/null \
+            || echo "/usr/lib/qt6/plugins")
+          _effect_so="$_lg_build/src/liquidglass.so"
+          _config_so="$_lg_build/src/kcm/kwin_liquidglass_config.so"
+          _dest_effect="$_plugin_dir/kwin/effects/plugins/liquidglass.so"
+          _dest_config="$_plugin_dir/kwin/effects/configs/kwin_liquidglass_config.so"
+
+          if [[ -f "$_effect_so" ]]; then
+            # disable the effect before replacing .so to avoid crash
+            _was_enabled=false
+            _qdbus_lg=""
+            for _q in qdbus6 qdbus; do command -v "$_q" &>/dev/null && { _qdbus_lg="$_q"; break; }; done
+            if [[ -n "$_qdbus_lg" ]]; then
+              _loaded=$("$_qdbus_lg" org.kde.KWin /Effects org.kde.kwin.Effects.loadedEffects 2>/dev/null || true)
+              if echo "$_loaded" | grep -q "liquidglass"; then
+                _was_enabled=true
+                "$_qdbus_lg" org.kde.KWin /Effects org.kde.kwin.Effects.unloadEffect liquidglass &>/dev/null || true
+                sleep 1
+                ok "Liquid Glass unloaded for safe upgrade"
+              fi
+            fi
+
+            if sudo cp "$_effect_so" "$_dest_effect" && sudo cp "$_config_so" "$_dest_config" 2>/dev/null; then
+              ok "Liquid Glass installed"
+              # write clean preset (Clear)
+              _lg_grp="Effect-liquidglass"
+              kwriteconfig6 --file kwinrc --group "$_lg_grp" --key BlurStrength 3 2>/dev/null || true
+              kwriteconfig6 --file kwinrc --group "$_lg_grp" --key NoiseStrength 0 2>/dev/null || true
+              kwriteconfig6 --file kwinrc --group "$_lg_grp" --key Saturation 1.0 2>/dev/null || true
+              kwriteconfig6 --file kwinrc --group "$_lg_grp" --key Brightness 1.0 2>/dev/null || true
+              kwriteconfig6 --file kwinrc --group "$_lg_grp" --key Contrast 1.0 2>/dev/null || true
+              kwriteconfig6 --file kwinrc --group "$_lg_grp" --key RefractionStrength 0 2>/dev/null || true
+              kwriteconfig6 --file kwinrc --group "$_lg_grp" --key RefractionRGBFringing 0 2>/dev/null || true
+              kwriteconfig6 --file kwinrc --group "$_lg_grp" --key RefractionEdgeSize 0 2>/dev/null || true
+              kwriteconfig6 --file kwinrc --group "$_lg_grp" --key EdgeLighting false 2>/dev/null || true
+              kwriteconfig6 --file kwinrc --group "$_lg_grp" --key TintColor '#00000000' 2>/dev/null || true
+              kwriteconfig6 --file kwinrc --group "$_lg_grp" --key GlowColor '#00000000' 2>/dev/null || true
+              kwriteconfig6 --file kwinrc --group "$_lg_grp" --key TransparentBlur true 2>/dev/null || true
+              kwriteconfig6 --file kwinrc --group "$_lg_grp" --key TopCornerRadius 22 2>/dev/null || true
+              kwriteconfig6 --file kwinrc --group "$_lg_grp" --key BottomCornerRadius 22 2>/dev/null || true
+              kwriteconfig6 --file kwinrc --group "$_lg_grp" --key MenuCornerRadius 22 2>/dev/null || true
+              kwriteconfig6 --file kwinrc --group "$_lg_grp" --key DockCornerRadius 22 2>/dev/null || true
+              ok "Liquid Glass preset applied"
+              # persist + enable the effect
+              if [[ -n "$_qdbus_lg" ]]; then
+                # toggle cycle: KWin needs a disable→reconfigure→enable→reconfigure
+                # to pick up newly installed effects
+                kwriteconfig6 --file kwinrc --group Plugins --key liquidglassEnabled false 2>/dev/null || true
+                "$_qdbus_lg" org.kde.KWin /KWin org.kde.KWin.reconfigure &>/dev/null || true
+                sleep 1
+                kwriteconfig6 --file kwinrc --group Plugins --key liquidglassEnabled true 2>/dev/null || true
+                "$_qdbus_lg" org.kde.KWin /KWin org.kde.KWin.reconfigure &>/dev/null || true
+                sleep 1
+                # fallback: force load via D-Bus
+                "$_qdbus_lg" org.kde.KWin /Effects org.kde.kwin.Effects.loadEffect liquidglass &>/dev/null || true
+                ok "Liquid Glass enabled"
+              else
+                kwriteconfig6 --file kwinrc --group Plugins --key liquidglassEnabled true 2>/dev/null || true
+                ok "Liquid Glass enabled (restart KWin to activate)"
+              fi
+            else
+              warn "Liquid Glass built but install failed (needs sudo)"
+              info "Run manually:"
+              echo "    sudo cp $_effect_so $_dest_effect"
+              echo "    sudo cp $_config_so $_dest_config"
+            fi
+          fi
+        else
+          fail "Liquid Glass build failed"
+        fi
+      else
+        fail "Liquid Glass cmake failed"
+      fi
+    fi
+  fi
+fi
+
 # ── (future) Installing Sounds ───────────────────────────────
 # ── (future) Installing GTK Theme ────────────────────────────
 # ── (future) Installing SDDM Theme ───────────────────────────
@@ -401,7 +521,7 @@ if [[ "$(cfg layout)" == "true" ]]; then
       "$_qdbus" org.kde.plasmashell /PlasmaShell org.kde.PlasmaShell.evaluateScript "$(cat "$_layout")" &>/dev/null \
         && ok "Layout applied (top bar + bottom dock)" \
         || warn "layout script failed — set layout manually"
-      sleep 2  # let Plasma finish creating panels
+      sleep 3  # let Plasma finish creating panels
     else
       warn "qdbus not found — layout not applied"
     fi
@@ -454,6 +574,14 @@ if command -v dbus-send &>/dev/null; then
   dbus-send --session --dest=org.kde.plasmashell \
     /PlasmaShell org.kde.PlasmaShell.refreshCurrentShell 2>/dev/null \
     && ok "Plasma shell refreshed" || warn "Plasma shell refresh failed (non-fatal)"
+fi
+
+# ── phase 5: final icon re-apply (catches panels created by layout) ──
+sleep 2
+if [[ -n "$icon_theme" ]] && command -v plasma-apply-icontheme &>/dev/null; then
+  plasma-apply-icontheme "$icon_theme" &>/dev/null || true
+  dbus-send --session --type=signal /KIconLoader org.kde.KIconLoader.iconChanged 2>/dev/null || true
+  ok "Icons re-applied to all panels"
 fi
 
 # ── Done ──────────────────────────────────────────────────────

@@ -1,5 +1,7 @@
 # MacOS Tahoe Liquid Glass for KDE Plasma
 
+> **Warning:** This project is under active development and is **not stable**. Expect crashes, broken features, and incomplete components. Use at your own risk.
+
 A full macOS Tahoe-style desktop experience for KDE Plasma — going beyond a simple theme. MacTahoe Liquid KDE bundles a curated collection of widgets, GTK & KDE themes, SDDM login screen, window decorations, icons, cursors, fonts, sounds, wallpapers, and a custom Electron app menu, bringing a cohesive Tahoe look to every layer of your desktop.
 
 Inspired by [Pear OS](https://pearos.xyz) in spirit — a complete environment, not just a coat of paint.
@@ -16,7 +18,7 @@ Inspired by [Pear OS](https://pearos.xyz) in spirit — a complete environment, 
 | **Plasma theme** | Shell, panel, dock, look-and-feel | 🔲 Planned |
 | **GTK theme** | GTK2/3/4 window chrome and controls | 🔲 Planned |
 | **Kvantum theme** | Qt app theme | 🔲 Planned |
-| **Liquid Glass** | Apple's Tahoe signature material effect | 🔲 Planned |
+| **Liquid Glass** | KWin glass effect with specular, iridescence, shadows | ✅ Done |
 | **SDDM theme** | Login and lock screen | 🔲 Planned |
 | **Aurorae decorations** | Window title bar and borders | 🔲 Planned |
 | **Color schemes** | Tahoe Light & Dark palettes | 🔲 Planned |
@@ -62,6 +64,8 @@ macos-tahoe-liquid-kde/
     ├── offline/            # assets bundled in-repo (no download needed)
     │   ├── plasmoids/      # custom Plasma widgets
     │   │   └── org.kde.mactahoe-liquid-kde.trash/
+    │   ├── kwin-effects/   # KWin compositor effects (built from source)
+    │   │   └── glass-kde-replica/  # Apple-style glass material
     │   └── layouts/        # panel layout scripts
     │       ├── mactahoe.js # top bar + bottom dock
     │       └── default.js  # reset to stock KDE

@@ -13,7 +13,11 @@ var bar = new Panel("org.kde.panel");
 bar.location = "top";
 bar.lengthMode = "fill";
 bar.floating = false;
-bar.height = 2 * Math.ceil(gridUnit * 1.4 / 2);
+bar.height = 32;
+
+// set per-panel config for transparent background
+var barId = bar.id;
+bar.writeConfig("panelOpacity", 2);
 
 bar.addWidget("org.kde.plasma.kickoff");
 bar.addWidget("org.kde.plasma.appmenu");
