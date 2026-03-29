@@ -16,8 +16,8 @@ Inspired by [Pear OS](https://pearos.xyz) in spirit — a complete environment, 
 | **Wallpapers** | Tahoe, Heritage, Beach, Landscape — light/dark | ✅ Done |
 | **Fonts** | SF Pro Display, Text, Rounded | ✅ Done |
 | **Cursors** | Standard, Dark, Apple, Apple White | ✅ Done |
+| **Trash plasmoid** | Trash widget with configurable icons | ✅ Done |
 | **Icons** | Full macOS-style icon set (light & dark) | 🔧 In Progress |
-| **Plasmoids** | Custom trash widget with configurable icons | ✅ Done |
 | **Layout** | Transparent top bar + floating bottom dock | 🔧 In Progress |
 | **Liquid Glass** | KWin blur + rounded corners effect | 🔧 In Progress |
 | **Plasma theme** | Shell, panel, dock, look-and-feel | 🔲 Planned |
@@ -27,6 +27,8 @@ Inspired by [Pear OS](https://pearos.xyz) in spirit — a complete environment, 
 | **Aurorae decorations** | Window title bar and borders | 🔲 Planned |
 | **Color schemes** | Tahoe Light & Dark palettes | 🔲 Planned |
 | **Sounds** | Notification and event sounds | 🔲 Planned |
+| **Global Menu plasmoid** | macOS-style top bar app menu | 🔲 Planned |
+| **System Preferences plasmoid** | macOS-style settings launcher | 🔲 Planned |
 
 ---
 
