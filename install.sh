@@ -235,7 +235,52 @@ fi
 #   run_step "step-plasma.sh"
 # fi
 # ── (future) Installing Window Decorations ───────────────────
-# ── (future) Installing Kvantum Theme ────────────────────────
+# ── Installing Kvantum Theme ─────────────────────────────────
+if [[ "$(cfg kvantum)" == "true" ]]; then
+  step "Installing Kvantum Theme"
+  note "Installs Kvantum engine and the MacTahoe Liquid KDE Kvantum theme"
+
+  # install kvantum if missing
+  if ! command -v kvantummanager &>/dev/null; then
+    warn "Kvantum not found — installing..."
+    _kv_pkg="kvantum"
+    if   command -v pacman &>/dev/null; then sudo pacman -S --noconfirm "$_kv_pkg"
+    elif command -v yay    &>/dev/null; then yay   -S --noconfirm "$_kv_pkg"
+    elif command -v paru   &>/dev/null; then paru  -S --noconfirm "$_kv_pkg"
+    else fail "no package manager found — install $_kv_pkg manually"; fi
+    command -v kvantummanager &>/dev/null && ok "Kvantum (installed)" || fail "Kvantum (install failed)"
+  else
+    ok "Kvantum"
+  fi
+
+  # copy theme to Kvantum config dir
+  _kv_src="$OFFLINE/kvantum/MacTahoeLiquidKde"
+  _kv_dest="$HOME/.config/Kvantum/MacTahoeLiquidKde"
+  if [[ -d "$_kv_src" ]]; then
+    mkdir -p "$_kv_dest"
+    cp -f "$_kv_src"/*.kvconfig "$_kv_dest/" 2>/dev/null
+    cp -f "$_kv_src"/*.svg      "$_kv_dest/" 2>/dev/null
+
+    if [[ -d "$_kv_dest" ]] && ls "$_kv_dest"/*.kvconfig &>/dev/null; then
+      ok "MacTahoeLiquidKde theme installed"
+    else
+      fail "MacTahoeLiquidKde theme (copy failed)"
+    fi
+
+    # set Qt widget style to kvantum so the theme actually takes effect
+    if command -v kwriteconfig6 &>/dev/null; then
+      kwriteconfig6 --file kdeglobals --group KDE --key widgetStyle kvantum
+      ok "Widget style set to kvantum"
+    fi
+
+    # apply theme via kvantummanager
+    if command -v kvantummanager &>/dev/null; then
+      kvantummanager --set MacTahoeLiquidKde &>/dev/null && ok "Kvantum theme applied" || warn "Could not apply Kvantum theme automatically"
+    fi
+  else
+    fail "Kvantum theme source not found at $_kv_src"
+  fi
+fi
 # ── (future) Installing Color Schemes ────────────────────────
 
 # ── Step 4: Installing Cursors ───────────────────────────────
@@ -499,7 +544,7 @@ fi
 step "Applying Changes"
 note "Applies settings and tells KDE to reload"
 
-# ── phase 1: write config files (before layout, so new panels read them) ──
+# ── writing KDE config ──
 icon_theme=""
 cursor_theme=""
 
@@ -512,7 +557,7 @@ if command -v kwriteconfig6 &>/dev/null; then
     kwriteconfig6 --file kdeglobals --group General --key smallestReadableFont "SF Pro Text,8,-1,5,50,0,0,0,0,0"
     kwriteconfig6 --file kdeglobals --group General --key fixed                "SF Mono,10,-1,5,50,0,0,0,0,0"
     kwriteconfig6 --file kdeglobals --group WM      --key activeFont           "SF Pro Display,11,-1,5,63,0,0,0,0,0"
-    ok "KDE fonts configured"
+    ok "Fonts configured"
   fi
 
   if [[ "$(cfg cursors)" == "true" ]]; then
@@ -521,7 +566,7 @@ if command -v kwriteconfig6 &>/dev/null; then
     done
     if [[ -n "$cursor_theme" ]]; then
       kwriteconfig6 --file kcminputrc --group Mouse --key cursorTheme "$cursor_theme"
-      ok "Cursor config written"
+      ok "Cursor configured"
     else
       warn "cursor theme not found — set manually in System Settings"
     fi
@@ -533,14 +578,14 @@ if command -v kwriteconfig6 &>/dev/null; then
     done
     if [[ -n "$icon_theme" ]]; then
       kwriteconfig6 --file kdeglobals --group Icons --key Theme "$icon_theme"
-      ok "Icon config written"
+      ok "Icons configured"
     else
       warn "icon theme not found — set manually in System Settings"
     fi
   fi
 fi
 
-# ── phase 2: layout (new panels read the config we just wrote) ──
+# ── applying layout ──
 if [[ "$(cfg layout)" == "true" ]]; then
   _layout="$REPO/src/offline/layouts/mactahoe.js"
   if [[ -f "$_layout" ]]; then
@@ -548,7 +593,7 @@ if [[ "$(cfg layout)" == "true" ]]; then
     for _q in qdbus6 qdbus; do command -v "$_q" &>/dev/null && { _qdbus="$_q"; break; }; done
     if [[ -n "$_qdbus" ]]; then
       "$_qdbus" org.kde.plasmashell /PlasmaShell org.kde.PlasmaShell.evaluateScript "$(cat "$_layout")" &>/dev/null \
-        && ok "Layout applied (top bar + bottom dock)" \
+        && ok "Layout applied" \
         || warn "layout script failed — set layout manually"
       sleep 1
     else
@@ -557,15 +602,7 @@ if [[ "$(cfg layout)" == "true" ]]; then
   fi
 fi
 
-# ── phase 3: flush caches, rebuild, restart plasma ──
-rm -rf "$HOME/.cache/icon-cache.kcache" 2>/dev/null || true
-rm -rf "$HOME/.cache/plasma-svgelements-"* 2>/dev/null || true
-rm -rf "$HOME/.cache/plasma_theme_"* 2>/dev/null || true
-find "$HOME/.cache" -maxdepth 1 -name "ksycoca6*" -delete 2>/dev/null || true
-kbuildsycoca6 --noincremental 2>/dev/null || true
-ok "Caches flushed"
-
-# apply themes
+# ── applying themes ──
 if [[ -n "$icon_theme" ]] && command -v plasma-apply-icontheme &>/dev/null; then
   plasma-apply-icontheme "$icon_theme" &>/dev/null || true
   ok "Icon theme applied"
@@ -578,15 +615,21 @@ if [[ "$(cfg wallpapers)" == "true" ]]; then
   wp_path="$WALLPAPERS/MacTahoe"
   if [[ -d "$wp_path" ]] && command -v plasma-apply-wallpaperimage &>/dev/null; then
     plasma-apply-wallpaperimage "$wp_path" &>/dev/null || true
-    ok "Wallpaper set"
+    ok "Wallpaper applied"
   fi
 fi
 
-# restart plasmashell — picks up all changes including icons
+# ── restarting Plasma ──
+rm -rf "$HOME/.cache/icon-cache.kcache" 2>/dev/null || true
+rm -rf "$HOME/.cache/plasma-svgelements-"* 2>/dev/null || true
+rm -rf "$HOME/.cache/plasma_theme_"* 2>/dev/null || true
+find "$HOME/.cache" -maxdepth 1 -name "ksycoca6*" -delete 2>/dev/null || true
+kbuildsycoca6 --noincremental 2>/dev/null || true
+ok "Caches flushed"
+
 systemctl --user restart plasma-plasmashell 2>/dev/null || killall plasmashell 2>/dev/null || true
 ok "Plasma restarted"
 
-# reconfigure KWin
 for qdbus_cmd in qdbus6 qdbus; do
   command -v "$qdbus_cmd" &>/dev/null && {
     "$qdbus_cmd" org.kde.KWin /KWin org.kde.KWin.reconfigure &>/dev/null || true

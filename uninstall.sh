@@ -116,7 +116,29 @@ if [[ "$(cfg icons)" == "true" ]]; then
   info "$n icon themes removed"
 fi
 
-# ── Step 6: Removing Plasmoids ───────────────────────────────
+# ── Step 6: Removing Kvantum Theme ──────────────────────────
+if [[ "$(cfg kvantum)" == "true" ]]; then
+  step "Removing Kvantum Theme"
+  note "Removes MacTahoe Liquid KDE Kvantum theme (keeps Kvantum installed)"
+
+  _kv_dir="$HOME/.config/Kvantum/MacTahoeLiquidKde"
+  if [[ -d "$_kv_dir" ]]; then
+    # reset widget style back to Breeze
+    if command -v kwriteconfig6 &>/dev/null; then
+      kwriteconfig6 --file kdeglobals --group KDE --key widgetStyle Breeze
+      ok "Widget style reset to Breeze"
+    fi
+    # reset kvantum to default before removing
+    if command -v kvantummanager &>/dev/null; then
+      kvantummanager --set Default &>/dev/null || true
+    fi
+    rm -rf "$_kv_dir" 2>/dev/null && ok "MacTahoeLiquidKde theme removed" || fail "MacTahoeLiquidKde theme"
+  else
+    ok "MacTahoeLiquidKde theme (not installed)"
+  fi
+fi
+
+# ── Step 7: Removing Plasmoids ───────────────────────────────
 if [[ "$(cfg plasmoids)" == "true" ]]; then
   step "Removing Plasmoids"
   n=0
@@ -128,7 +150,7 @@ if [[ "$(cfg plasmoids)" == "true" ]]; then
   info "$n plasmoids removed"
 fi
 
-# ── Step 7: Removing Liquid Glass ────────────────────────────
+# ── Step 8: Removing Liquid Glass ────────────────────────────
 if [[ "$(cfg liquid_glass)" == "true" ]]; then
   step "Removing Liquid Glass"
 

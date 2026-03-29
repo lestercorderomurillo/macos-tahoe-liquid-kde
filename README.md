@@ -22,7 +22,7 @@ Inspired by [Pear OS](https://pearos.xyz) in spirit — a complete environment, 
 | **Liquid Glass** | KWin blur + rounded corners effect | 🔧 In Progress |
 | **Plasma theme** | Shell, panel, dock, look-and-feel | 🔲 Planned |
 | **GTK theme** | GTK2/3/4 window chrome and controls | 🔲 Planned |
-| **Kvantum theme** | Qt app theme | 🔲 Planned |
+| **Kvantum theme** | Qt app theme (light & dark) | ✅ Done |
 | **SDDM theme** | Login and lock screen | 🔲 Planned |
 | **Aurorae decorations** | Window title bar and borders | 🔲 Planned |
 | **Color schemes** | Tahoe Light & Dark palettes | 🔲 Planned |
@@ -70,6 +70,8 @@ macos-tahoe-liquid-kde/
     ├── offline/            # assets bundled in-repo (no download needed)
     │   ├── plasmoids/      # custom Plasma widgets
     │   │   └── org.kde.mactahoe-liquid-kde.trash/
+    │   ├── kvantum/        # Kvantum Qt theme (light & dark)
+    │   │   └── MacTahoeLiquidKde/
     │   ├── kwin-effects/   # KWin compositor effects (built from source)
     │   │   └── glass-kde-replica/
     │   └── layouts/        # panel layout scripts
@@ -90,6 +92,7 @@ macos-tahoe-liquid-kde/
 | `~/.config/kdeglobals` | Fonts, icon theme |
 | `~/.config/kcminputrc` | Cursor theme |
 | `~/.config/kwinrc` | Liquid Glass effect config |
+| `~/.config/Kvantum/MacTahoeLiquidKde/` | Kvantum theme (light & dark) |
 | `~/.local/share/plasma/plasmoids/` | Custom plasmoids |
 | Panel layout | Top bar (transparent) + bottom dock (floating) |
 | KWin effects | Liquid Glass blur + rounded corners |
