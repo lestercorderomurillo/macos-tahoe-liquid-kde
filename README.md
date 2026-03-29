@@ -32,6 +32,9 @@ Inspired by [Pear OS](https://pearos.xyz) in spirit — a complete environment, 
 | **Control Center plasmoid** | macOS-style quick settings panel | 🔲 Planned |
 | **Global Menu plasmoid** | macOS-style top bar app menu | 🔲 Planned |
 | **System Preferences plasmoid** | macOS-style settings launcher | 🔲 Planned |
+| **OS Selector** | Boot manager / OS picker screen | 🔲 Planned |
+| **Boot Screen** | Plymouth splash for startup | 🔲 Planned |
+| **Shutdown Screen** | Styled logout / shutdown sequence | 🔲 Planned |
 
 ---
 

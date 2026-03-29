@@ -660,6 +660,27 @@ if [[ "$(cfg layout)" == "true" ]]; then
         && ok "Layout installed" \
         || warn "layout failed — set layout manually"
       sleep 3
+      # set bottom dock panel opacity to translucent (JS API doesn't expose this)
+      # panelOpacity: 0=adaptive, 1=translucent, 2=opaque
+      _prc="$HOME/.config/plasmashellrc"
+      if [[ -f "$_prc" ]]; then
+        # find floating panels (bottom dock) and set panelOpacity=1
+        python3 -c "
+import re, sys
+text = open('$_prc').read()
+# match floating panel sections and inject/replace panelOpacity
+def fix(m):
+    section = m.group(0)
+    if 'floating=1' in section:
+        if 'panelOpacity=' in section:
+            section = re.sub(r'panelOpacity=\d+', 'panelOpacity=1', section)
+        else:
+            section = section.rstrip() + '\npanelOpacity=1\n'
+    return section
+result = re.sub(r'(\[PlasmaViews\]\[Panel \d+\]\n(?:[^\[]*\n)*)', fix, text)
+open('$_prc', 'w').write(result)
+" 2>/dev/null && ok "Dock opacity → translucent" || true
+      fi
     else
       warn "qdbus not found — layout not installed"
     fi

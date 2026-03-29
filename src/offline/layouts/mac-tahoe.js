@@ -67,6 +67,8 @@ dock.lengthMode = "fit";
 dock.floating = true;
 dock.hiding = "dodgewindows";
 dock.height = 2 * Math.ceil(gridUnit * 3.5 / 2);
+// opacity is set to translucent via plasmashellrc after layout apply
+// (JS scripting API does not expose panelOpacity)
 
 var launcher = dock.addWidget("org.kde.plasma.kickerdash");
 launcher.currentConfigGroup = ["General"];

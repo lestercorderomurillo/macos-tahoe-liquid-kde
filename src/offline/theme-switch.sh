@@ -147,8 +147,23 @@ apply() {
   fi
 }
 
+# ── wait for plasma to be ready (display server + plasmashell) ──
+wait_for_plasma() {
+  local tries=0
+  while [[ -z "${DISPLAY:-}${WAYLAND_DISPLAY:-}" ]] || ! pgrep -x plasmashell &>/dev/null; do
+    sleep 2
+    tries=$((tries + 1))
+    [[ $tries -ge 30 ]] && return 1   # give up after 60s
+    # re-import environment from systemd in case it was set after we started
+    eval "$(systemctl --user show-environment 2>/dev/null | grep -E '^(DISPLAY|WAYLAND_DISPLAY)=')" 2>/dev/null || true
+  done
+  return 0
+}
+
 # ── watch mode: monitor dbus for color scheme changes ──
 watch_loop() {
+  wait_for_plasma || { echo "Plasma not ready after 60s, exiting" >&2; exit 1; }
+
   local last_mode
   last_mode=$(detect_mode)
   apply "$last_mode"
