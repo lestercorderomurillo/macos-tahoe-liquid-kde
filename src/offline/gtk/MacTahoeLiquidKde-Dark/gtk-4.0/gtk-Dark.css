@@ -1,3 +1,22 @@
+/*
+ * ============================================================
+ * WINDOW TRANSPARENCY (BLUR)
+ * ============================================================
+ * Search for "@window_bg_color 25%" to find all window opacity values.
+ * The number controls how opaque the window background is:
+ *   100% = fully opaque (no transparency)
+ *    96% = subtle transparency (default, no blur needed)
+ *    75% = moderate transparency (blur recommended)
+ *    40% = high transparency (blur required)
+ *     0% = fully transparent
+ *
+ * Requires compositor blur (e.g. KWin "Force Blur") to look correct.
+ *
+ * Sidebar transparency is controlled separately by "@sidebar_bg_color".
+ * Currently set to "transparent" for full blur-through.
+ * ============================================================
+ */
+
 :root {
   --blue-1: #99c1f1;
   --blue-2: #62a0ea;
@@ -112,7 +131,7 @@
 /* This stylesheet is generated, DO NOT EDIT */
 window.background.csd > dialog-host > widget > widget > box > leaflet list.navigation-sidebar {
   background-image: linear-gradient(to left, rgba(0, 0, 0, 0.06), transparent 6px);
-  background-color: color-mix(in srgb, @sidebar_bg_color 96%, transparent);
+  background-color: transparent;
   box-shadow: none;
   border: none;
 }
@@ -120,7 +139,7 @@ window.background.csd > dialog-host > widget > widget > box > leaflet list.navig
 window.background.csd > dialog-host > widget > widget > box > leaflet > headerbar.titlebar.tweak-titlebar-left, window.background.csd > contents > leaflet.unfolded > box > headerbar,
 window.background.csd > widget > leaflet.unfolded > box > headerbar {
   background-image: linear-gradient(to left, rgba(0, 0, 0, 0.06), transparent 6px);
-  background-color: color-mix(in srgb, @sidebar_bg_color 96%, transparent);
+  background-color: transparent;
   border: none;
 }
 
@@ -135,7 +154,7 @@ window.background.csd > widget > leaflet.unfolded > box > stack > widget > overl
 
 window.background.csd > dialog-host > widget > widget > box > leaflet > box > searchbar > revealer > box, window.background.csd > contents > leaflet.unfolded > box > searchbar > revealer > box,
 window.background.csd > widget > leaflet.unfolded > box > searchbar > revealer > box {
-  background-color: color-mix(in srgb, @sidebar_bg_color 96%, transparent);
+  background-color: transparent;
   border-color: @headerbar_darker_shade_color;
 }
 
@@ -272,7 +291,7 @@ spinbutton.vertical > button:only-child, spinbutton.vertical > text:only-child, 
 }
 
 .background, .background.view {
-  background-color: color-mix(in srgb, @window_bg_color 96%, transparent);
+  background-color: color-mix(in srgb, @window_bg_color 25%, transparent);
 }
 
 .background:backdrop {
@@ -3071,7 +3090,7 @@ treeview.view > header > button:hover {
 
 columnview.view > header > button:disabled,
 treeview.view > header > button:disabled {
-  border-color: color-mix(in srgb, @window_bg_color 96%, transparent);
+  border-color: color-mix(in srgb, @window_bg_color 25%, transparent);
   background-image: none;
 }
 
@@ -3610,15 +3629,15 @@ scrollbar > range > trough > slider {
   box-shadow: none;
   outline: none;
   transition: all 200ms linear;
-  background-color: color-mix(in srgb, @window_fg_color 40%, color-mix(in srgb, @window_bg_color 96%, transparent));
+  background-color: color-mix(in srgb, @window_fg_color 40%, color-mix(in srgb, @window_bg_color 25%, transparent));
 }
 
 scrollbar > range > trough > slider:hover {
-  background-color: color-mix(in srgb, @window_fg_color 30%, color-mix(in srgb, @window_bg_color 96%, transparent));
+  background-color: color-mix(in srgb, @window_fg_color 30%, color-mix(in srgb, @window_bg_color 25%, transparent));
 }
 
 scrollbar > range > trough > slider:hover:active {
-  background-color: color-mix(in srgb, @window_fg_color 50%, color-mix(in srgb, @window_bg_color 96%, transparent));
+  background-color: color-mix(in srgb, @window_fg_color 50%, color-mix(in srgb, @window_bg_color 25%, transparent));
 }
 
 scrollbar > range > trough > slider:disabled {
@@ -3665,7 +3684,7 @@ scrollbar.overlay-indicator:not(.dragging):not(.hovering) > range > trough > sli
   margin: 0;
   min-width: 4px;
   min-height: 4px;
-  background-color: color-mix(in srgb, @window_fg_color 70%, color-mix(in srgb, @window_bg_color 96%, transparent));
+  background-color: color-mix(in srgb, @window_fg_color 70%, color-mix(in srgb, @window_bg_color 25%, transparent));
   border: none;
 }
 
@@ -5628,7 +5647,7 @@ filechooserbutton:drop(active) {
 
 .sidebar {
   border: none;
-  background-color: color-mix(in srgb, @window_bg_color 96%, transparent);
+  background-color: color-mix(in srgb, @window_bg_color 25%, transparent);
   color: @window_fg_color;
 }
 
@@ -6580,7 +6599,7 @@ popover.background.entry-completion treeview.view:selected {
 
 window.background.csd > contents > leaflet.unfolded > box > scrolledwindow > viewport > widget > stack > list.navigation-sidebar,
 window.background.csd > widget > leaflet.unfolded > box > scrolledwindow > viewport > widget > stack > list.navigation-sidebar {
-  background-color: color-mix(in srgb, @sidebar_bg_color 96%, transparent);
+  background-color: transparent;
 }
 
 window.background.csd > contents > leaflet.unfolded > box > scrolledwindow > viewport > widget > stack > list.navigation-sidebar > separator,
@@ -6592,7 +6611,7 @@ window.background.csd > widget > leaflet.unfolded > box > scrolledwindow > viewp
 
 window.background.csd > contents > leaflet.unfolded > box > scrolledwindow > viewport > widget > stack > box > list.navigation-sidebar,
 window.background.csd > widget > leaflet.unfolded > box > scrolledwindow > viewport > widget > stack > box > list.navigation-sidebar {
-  background-color: color-mix(in srgb, @sidebar_bg_color 96%, transparent);
+  background-color: transparent;
 }
 
 window.background.csd > contents > leaflet.unfolded > box > stack.background,
@@ -6749,7 +6768,7 @@ window.background > widget > toastoverlay > leaflet > box > headerbar:backdrop {
 
 window.background > contents > toastoverlay > leaflet > box + separator + box,
 window.background > widget > toastoverlay > leaflet > box + separator + box {
-  background-color: color-mix(in srgb, @sidebar_bg_color 96%, transparent);
+  background-color: transparent;
 }
 
 window.background > contents > toastoverlay > leaflet > box > .view,
@@ -7658,7 +7677,7 @@ panelstatusbar > paneltogglebutton button {
 }
 
 panelwidget entry.statusbar {
-  background-color: color-mix(in srgb, @window_bg_color 96%, transparent);
+  background-color: color-mix(in srgb, @window_bg_color 25%, transparent);
   border-radius: 0;
   outline: none;
   box-shadow: none;
@@ -9064,7 +9083,7 @@ dialog-host > dialog.background {
 }
 
 dialog-host > dialog.background sheet {
-  background-color: color-mix(in srgb, @window_bg_color 96%, transparent);
+  background-color: color-mix(in srgb, @window_bg_color 25%, transparent);
   color: @window_fg_color;
 }
 
@@ -9203,27 +9222,27 @@ themeswitcher checkbutton.dark {
   background-color: #1e1e1e;
 }
 
-@define-color theme_bg_color color-mix(in srgb, @window_bg_color 96%, transparent);
+@define-color theme_bg_color color-mix(in srgb, @window_bg_color 25%, transparent);
 @define-color theme_fg_color @window_fg_color;
 @define-color theme_base_color @view_bg_color;
 @define-color theme_text_color currentColor;
 @define-color theme_selected_bg_color @accent_bg_color;
 @define-color theme_selected_fg_color #ffffff;
-@define-color bg_color color-mix(in srgb, @window_bg_color 96%, transparent);
+@define-color bg_color color-mix(in srgb, @window_bg_color 25%, transparent);
 @define-color fg_color @window_fg_color;
 @define-color base_color @view_bg_color;
 @define-color text_color currentColor;
 @define-color selected_bg_color @accent_bg_color;
 @define-color selected_fg_color #ffffff;
-@define-color insensitive_bg_color mix(color-mix(in srgb, @window_bg_color 96%, transparent),@view_bg_color,0.4);
+@define-color insensitive_bg_color mix(color-mix(in srgb, @window_bg_color 25%, transparent),@view_bg_color,0.4);
 @define-color insensitive_fg_color color-mix(in srgb, @window_fg_color 45%, transparent);
 @define-color insensitive_base_color @view_bg_color;
-@define-color theme_unfocused_bg_color color-mix(in srgb, @window_bg_color 96%, transparent);
+@define-color theme_unfocused_bg_color color-mix(in srgb, @window_bg_color 25%, transparent);
 @define-color theme_unfocused_fg_color @window_fg_color;
 @define-color theme_unfocused_base_color @view_bg_color;
 @define-color theme_unfocused_text_color currentColor;
 @define-color borders alpha(currentColor,0.12);
-@define-color unfocused_insensitive_color mix(@window_fg_color,color-mix(in srgb, @window_bg_color 96%, transparent),0.65);
+@define-color unfocused_insensitive_color mix(@window_fg_color,color-mix(in srgb, @window_bg_color 25%, transparent),0.65);
 @define-color unfocused_borders alpha(currentColor,0.12);
 @define-color warning_color #E9873A;
 @define-color error_color #ED5F5D;

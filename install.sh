@@ -748,10 +748,10 @@ if [[ "$(cfg layout)" == "true" ]]; then
         || warn "layout failed — set layout manually"
       sleep 3
       # set bottom dock panel opacity to translucent (JS API doesn't expose this)
-      # panelOpacity: 0=adaptive, 1=translucent, 2=opaque
+      # panelOpacity: 0=adaptive, 1=opaque, 2=translucent
       _prc="$HOME/.config/plasmashellrc"
       if [[ -f "$_prc" ]]; then
-        # find floating panels (bottom dock) and set panelOpacity=1
+        # find floating panels (bottom dock) and set panelOpacity=2
         python3 -c "
 import re, sys
 text = open('$_prc').read()
@@ -760,9 +760,9 @@ def fix(m):
     section = m.group(0)
     if 'floating=1' in section:
         if 'panelOpacity=' in section:
-            section = re.sub(r'panelOpacity=\d+', 'panelOpacity=1', section)
+            section = re.sub(r'panelOpacity=\d+', 'panelOpacity=2', section)
         else:
-            section = section.rstrip() + '\npanelOpacity=1\n'
+            section = section.rstrip() + '\npanelOpacity=2\n'
     return section
 result = re.sub(r'(\[PlasmaViews\]\[Panel \d+\]\n(?:[^\[]*\n)*)', fix, text)
 open('$_prc', 'w').write(result)
@@ -814,16 +814,26 @@ if [[ "$(cfg wallpapers)" == "true" ]]; then
   fi
 fi
 
-# ── restarting Plasma ──
+# ── flushing caches ──
+# icon caches
 rm -rf "$HOME/.cache/icon-cache.kcache" 2>/dev/null || true
 rm -rf "$HOME/.cache/plasma-svgelements-"* 2>/dev/null || true
 rm -rf "$HOME/.cache/plasma_theme_"* 2>/dev/null || true
 find "$HOME/.cache" -maxdepth 1 -name "ksycoca6*" -delete 2>/dev/null || true
+# GTK caches
+rm -rf "$HOME/.cache/gtk-3.0/" 2>/dev/null || true
+rm -rf "$HOME/.cache/gtk-4.0/" 2>/dev/null || true
+# rebuild sycoca (app/icon database)
 kbuildsycoca6 --noincremental 2>/dev/null || true
 ok "Caches flushed"
 
 sleep 2
-systemctl --user restart plasma-plasmashell 2>/dev/null || killall plasmashell 2>/dev/null || true
+# kill plasmashell, wait for it to fully exit, then start fresh
+kquitapp6 plasmashell 2>/dev/null || killall plasmashell 2>/dev/null || true
+sleep 3
+# start plasmashell — try systemd first, fall back to direct launch
+systemctl --user start plasma-plasmashell 2>/dev/null || kstart plasmashell 2>/dev/null &
+sleep 2
 ok "Plasma restarted"
 
 for qdbus_cmd in qdbus6 qdbus; do
