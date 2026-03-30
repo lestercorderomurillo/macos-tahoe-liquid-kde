@@ -47,8 +47,12 @@ A complete environment, not just a coat of paint.
 <table>
   <tr>
     <td align="center">
-      <img src="src/images/calculator.png" alt="macOS Tahoe Calculator" width="400px"/><br/>
+      <img src="src/images/calculator.png" alt="macOS Tahoe Calculator" height="300px"/><br/>
       <sub><b>Acrylic Glass Calculator (Example)</b></sub>
+    </td>
+    <td align="center">
+      <img src="src/images/menu.png" alt="macOS Tahoe Calculator" height="300px"/><br/>
+      <sub><b>Acrylic Menu (Example)</b></sub>
     </td>
   </tr>
 </table>
