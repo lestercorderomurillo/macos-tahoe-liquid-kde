@@ -391,9 +391,9 @@ if [[ "$(cfg window_decorations)" == "true" ]]; then
       cp -f "$_au_src/${name}rc" "$_dest_dir/${name}rc" 2>/dev/null
       # button icons
       cp -f "$_au_src/icons-${_mode}"/*.svg "$_dest_dir/" 2>/dev/null
-      # metadata
-      cp -f "$_au_src/metadata.desktop" "$_dest_dir/" 2>/dev/null
-      cp -f "$_au_src/metadata.json" "$_dest_dir/" 2>/dev/null
+      # metadata (replace theme_name placeholder)
+      sed "s/theme_name/${name}/g" "$_au_src/metadata.desktop" > "$_dest_dir/metadata.desktop"
+      sed "s/theme_name/${name}/g" "$_au_src/metadata.json" > "$_dest_dir/metadata.json"
       if $_existed; then reinstall "$name"; else ok "$name installed"; fi
       _au_n=$((_au_n+1))
     done
