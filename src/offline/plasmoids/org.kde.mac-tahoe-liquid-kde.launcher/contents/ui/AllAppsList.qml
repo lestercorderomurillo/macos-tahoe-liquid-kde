@@ -50,9 +50,11 @@ ColumnLayout {
 	}
 
 	property var slicedCategories: {
-		var cats = appsCategoriesList.slice(1);
-		cats.unshift({ name: "Suggestions", modelIndex: 0, icon: "favorite" });
-		return cats;
+		// Keep Suggestions (index 0), skip "All Applications" (index 1), keep categories (2+)
+		if (appsCategoriesList.length > 2) {
+			return [appsCategoriesList[0]].concat(appsCategoriesList.slice(2));
+		}
+		return appsCategoriesList;
 	}
 
 	function updateShowedModel(index){

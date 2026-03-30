@@ -82,7 +82,7 @@ PlasmoidItem {
         showAllAppsCategorized: false
         showTopLevelItems: true//!kicker.isDash
         showRecentApps: true
-        showRecentDocs: true
+        showRecentDocs: false
         showPowerSession: false
        // showRecentContacts: true//Plasmoid.configuration.showRecentContacts
        // recentOrdering: 1 // Plasmoid.configuration.recentOrdering

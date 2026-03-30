@@ -83,7 +83,7 @@ Item {
 		width: parent.width - Kirigami.Units.smallSpacing * 2
 		height: parent.height - Kirigami.Units.smallSpacing * 2
 		radius: 12
-		color: main.isDarkTheme ? Qt.rgba(1, 1, 1, 0.08) : Qt.rgba(0, 0, 0, 0.06)
+		color: main.isDarkTheme ? Qt.rgba(1, 1, 1, 0.18) : Qt.rgba(0, 0, 0, 0.12)
 		border.width: 0
 
 		anchors.centerIn: parent
