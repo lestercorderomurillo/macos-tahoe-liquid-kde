@@ -79,16 +79,14 @@ Item {
 	
 	Rectangle {
 		id: appiconHighlight
-			
-		width: appicon.width + 4 * highlightItemSvg.margins.top
-		height: appicon.height + 4 * highlightItemSvg.margins.top
-		radius: 14
-		color: "transparent"
-		border.width: 2
-		border.color: main.dimmedTextColor
 
-		anchors.top: parent.top
-		anchors.horizontalCenter: parent.horizontalCenter
+		width: parent.width - Kirigami.Units.smallSpacing * 2
+		height: parent.height - Kirigami.Units.smallSpacing * 2
+		radius: 12
+		color: main.isDarkTheme ? Qt.rgba(1, 1, 1, 0.08) : Qt.rgba(0, 0, 0, 0.06)
+		border.width: 0
+
+		anchors.centerIn: parent
 	}
 
 	DropShadow {
