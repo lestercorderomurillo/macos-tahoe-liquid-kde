@@ -103,7 +103,10 @@ BlurEffect::BlurEffect()
                                                                                      QStringLiteral(":/effects/liquidglass/shaders/onscreen_rounded.vert"),
                                                                                      QStringLiteral(":/effects/liquidglass/shaders/onscreen_rounded.frag"));
     if (!m_roundedOnscreenPass.shader) {
-        qCWarning(KWIN_BLUR) << "Failed to load onscreen pass shader";
+        qCWarning(KWIN_BLUR) << "Failed to load onscreen pass shader (null)";
+        return;
+    } else if (!m_roundedOnscreenPass.shader->isValid()) {
+        qCWarning(KWIN_BLUR) << "Onscreen pass shader compiled but is NOT valid";
         return;
     } else {
         m_roundedOnscreenPass.mvpMatrixLocation = m_roundedOnscreenPass.shader->uniformLocation("modelViewProjectionMatrix");
@@ -114,6 +117,15 @@ BlurEffect::BlurEffect()
         m_roundedOnscreenPass.cornerRadiusLocation = m_roundedOnscreenPass.shader->uniformLocation("cornerRadius");
         m_roundedOnscreenPass.opacityLocation = m_roundedOnscreenPass.shader->uniformLocation("opacity");
         m_roundedOnscreenPass.blurSizeLocation = m_roundedOnscreenPass.shader->uniformLocation("blurSize");
+        qCWarning(KWIN_BLUR) << "Onscreen shader OK — uniforms:"
+            << "mvp=" << m_roundedOnscreenPass.mvpMatrixLocation
+            << "color=" << m_roundedOnscreenPass.colorMatrixLocation
+            << "offset=" << m_roundedOnscreenPass.offsetLocation
+            << "halfpx=" << m_roundedOnscreenPass.halfpixelLocation
+            << "box=" << m_roundedOnscreenPass.boxLocation
+            << "corner=" << m_roundedOnscreenPass.cornerRadiusLocation
+            << "opacity=" << m_roundedOnscreenPass.opacityLocation
+            << "blurSize=" << m_roundedOnscreenPass.blurSizeLocation;
     }
 
     m_downsamplePass.shader = ShaderManager::instance()->generateShaderFromFile(ShaderTrait::MapTexture,
@@ -985,7 +997,7 @@ void BlurEffect::blur(const RenderTarget &renderTarget, const RenderViewport &vi
     projectionMatrix.translate(scaledBackgroundRect.x(), scaledBackgroundRect.y());
 
     GLFramebuffer::popFramebuffer();
-    const auto &read = renderInfo.framebuffers[1];
+    const auto &read = renderInfo.framebuffers[0];
 
     const QVector2D halfpixel(0.5 / read->colorAttachment()->width(),
                               0.5 / read->colorAttachment()->height());

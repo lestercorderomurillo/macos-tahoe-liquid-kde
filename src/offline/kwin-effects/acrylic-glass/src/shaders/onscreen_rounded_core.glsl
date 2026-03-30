@@ -23,7 +23,7 @@ void main(void)
     vec2 halfBlurSize = blurSize * 0.5;
     float minHalfSize = min(halfBlurSize.x, halfBlurSize.y);
 
-    vec2 position = uv * blurSize - halfBlurSize.xy;
+    vec2 position = uv * blurSize - halfBlurSize;
     float dist = roundedRectangleDist(position, halfBlurSize, cornerRadius);
 
     if (dist >= 0.0) {
@@ -32,15 +32,45 @@ void main(void)
         return;
     }
 
-    vec4 sum = texture(texUnit, uv + vec2(-halfpixel.x * 2.0, 0.0) * offset);
-    sum += texture(texUnit, uv + vec2(-halfpixel.x, halfpixel.y) * offset) * 2.0;
-    sum += texture(texUnit, uv + vec2(0.0, halfpixel.y * 2.0) * offset);
-    sum += texture(texUnit, uv + vec2(halfpixel.x, halfpixel.y) * offset) * 2.0;
-    sum += texture(texUnit, uv + vec2(halfpixel.x * 2.0, 0.0) * offset);
-    sum += texture(texUnit, uv + vec2(halfpixel.x, -halfpixel.y) * offset) * 2.0;
-    sum += texture(texUnit, uv + vec2(0.0, -halfpixel.y * 2.0) * offset);
-    sum += texture(texUnit, uv + vec2(-halfpixel.x, -halfpixel.y) * offset) * 2.0;
+    vec2 fromCenter = uv - 0.5;
+
+    // Smooth circular falloff — 0 at center, 1 at edges (no quadrant seams)
+    float edgeFactor = smoothstep(0.0, 1.0, length(fromCenter * 2.0));
+
+    // Refraction — clear center, more distortion at edges
+    vec2 refractedUV = clamp(0.5 + fromCenter * (1.0 + 0.15 * edgeFactor), 0.0, 1.0);
+
+    // Border proximity from SDF
+    float borderBand = minHalfSize * 0.25;
+    float borderFactor = smoothstep(-borderBand, 0.0, dist);
+
+    // More blur near edges — scale kawase offset up to 3x at border
+    float scaledOffset = offset * (1.0 + borderFactor * 2.0);
+
+    // Kawase upsample with refraction + stronger blur near edges
+    vec4 sum = texture(texUnit, clamp(refractedUV + vec2(-halfpixel.x * 2.0, 0.0) * scaledOffset, 0.0, 1.0));
+    sum += texture(texUnit, clamp(refractedUV + vec2(-halfpixel.x, halfpixel.y) * scaledOffset, 0.0, 1.0)) * 2.0;
+    sum += texture(texUnit, clamp(refractedUV + vec2(0.0, halfpixel.y * 2.0) * scaledOffset, 0.0, 1.0));
+    sum += texture(texUnit, clamp(refractedUV + vec2(halfpixel.x, halfpixel.y) * scaledOffset, 0.0, 1.0)) * 2.0;
+    sum += texture(texUnit, clamp(refractedUV + vec2(halfpixel.x * 2.0, 0.0) * scaledOffset, 0.0, 1.0));
+    sum += texture(texUnit, clamp(refractedUV + vec2(halfpixel.x, -halfpixel.y) * scaledOffset, 0.0, 1.0)) * 2.0;
+    sum += texture(texUnit, clamp(refractedUV + vec2(0.0, -halfpixel.y * 2.0) * scaledOffset, 0.0, 1.0));
+    sum += texture(texUnit, clamp(refractedUV + vec2(-halfpixel.x, -halfpixel.y) * scaledOffset, 0.0, 1.0)) * 2.0;
     sum /= 12.0;
+
+    // Chromatic aberration — proportional to distance from center
+    vec2 caOffset = 0.01 * fromCenter;
+    sum.r = mix(sum.r, texture(texUnit, clamp(refractedUV + caOffset, 0.0, 1.0)).r, 0.5);
+    sum.b = mix(sum.b, texture(texUnit, clamp(refractedUV - caOffset, 0.0, 1.0)).b, 0.5);
+
+    // Border highlight — follows SDF shape including corner radius
+    float borderPx = -dist;
+    float borderHighlight = smoothstep(0.0, 2.0, borderPx) * (1.0 - smoothstep(2.0, 6.0, borderPx));
+    sum.rgb += borderHighlight * 0.08;
+
+    // Gradient lighting — glass catches light at top
+    float normInside = clamp(-dist / minHalfSize, 0.0, 1.0);
+    sum.rgb += mix(0.03, 0.0, uv.y) * normInside;
 
     sum = glass(sum, cornerRadius);
     float f = sdfRoundedBox(vertex, box.xy, box.zw, cornerRadius);
