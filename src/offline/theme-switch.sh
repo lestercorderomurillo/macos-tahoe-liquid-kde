@@ -13,7 +13,7 @@
 # Usage:
 #   mac-tahoe-theme-switch light
 #   mac-tahoe-theme-switch dark
-#   mac-tahoe-theme-switch auto    (time of day: 7AM–7PM light, else dark)
+#   mac-tahoe-theme-switch auto    (time of day: 6AM–6PM light, else dark)
 #   mac-tahoe-theme-switch watch   (monitor dbus and auto-switch on change)
 
 set -uo pipefail
@@ -26,7 +26,7 @@ _mode="${1:-auto}"
 detect_mode() {
   local hour
   hour=$(date +%H)
-  if [[ $hour -ge 7 && $hour -lt 19 ]]; then
+  if [[ $hour -ge 6 && $hour -lt 18 ]]; then
     echo "light"
   else
     echo "dark"

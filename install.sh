@@ -836,6 +836,11 @@ systemctl --user start plasma-plasmashell 2>/dev/null || kstart plasmashell 2>/d
 sleep 2
 ok "Plasma restarted"
 
+# restart nautilus if installed so GTK changes take effect
+if command -v nautilus &>/dev/null; then
+  nautilus -q 2>/dev/null || true
+fi
+
 for qdbus_cmd in qdbus6 qdbus; do
   command -v "$qdbus_cmd" &>/dev/null && {
     "$qdbus_cmd" org.kde.KWin /KWin org.kde.KWin.reconfigure &>/dev/null || true
