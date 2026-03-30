@@ -8,12 +8,12 @@ for (var i = 0; i < old.length; i++) {
 }
 
 // ── top menu bar ────────────────────────────────
-// flush with screen edge (not floating), thin, full width
+// floating top bar, full width
 var bar = new Panel("org.kde.panel");
 bar.location = "top";
 bar.screen = 0;
 bar.lengthMode = "fill";
-bar.floating = false;
+bar.floating = true;
 bar.hiding = "none";
 bar.height = 38;
 
@@ -23,7 +23,7 @@ colorizer.currentConfigGroup = ["General"];
 colorizer.writeConfig("globalSettings", JSON.stringify({
     "nativePanel": {
         "background": { "enabled": false, "opacity": 0, "shadow": false },
-        "floatingDialogs": false
+        "floatingDialogs": true
     }
 }));
 colorizer.currentConfigGroup = ["Configuration"];
