@@ -368,7 +368,55 @@ if [[ "$(cfg plasma_theme)" == "true" ]]; then
     fail "Plasma theme source not found at $_pt_src"
   fi
 fi
-# ── (future) Installing Window Decorations ───────────────────
+# ── Installing Window Decorations ────────────────────────────
+if [[ "$(cfg window_decorations)" == "true" ]]; then
+  step "Installing Window Decorations"
+  note "Installs macOS-style Aurorae window decorations (title bar buttons)"
+
+  _au_src="$OFFLINE/aurorae"
+  _au_dest="$HOME/.local/share/aurorae/themes"
+  _au_n=0
+
+  if [[ -d "$_au_src" ]]; then
+    mkdir -p "$_au_dest"
+    for _mode in Dark Light; do
+      name="MacTahoeLiquidKde-${_mode}"
+      _dest_dir="$_au_dest/$name"
+      _existed=false
+      [[ -d "$_dest_dir" ]] && _existed=true
+      mkdir -p "$_dest_dir"
+      # decoration SVG
+      cp -f "$_au_src/$name/decoration.svg" "$_dest_dir/" 2>/dev/null
+      # rc config
+      cp -f "$_au_src/${name}rc" "$_dest_dir/${name}rc" 2>/dev/null
+      # button icons
+      cp -f "$_au_src/icons-${_mode}"/*.svg "$_dest_dir/" 2>/dev/null
+      # metadata
+      cp -f "$_au_src/metadata.desktop" "$_dest_dir/" 2>/dev/null
+      cp -f "$_au_src/metadata.json" "$_dest_dir/" 2>/dev/null
+      if $_existed; then reinstall "$name"; else ok "$name installed"; fi
+      _au_n=$((_au_n+1))
+    done
+    info "$_au_n Aurorae themes installed"
+
+    # apply aurorae decoration to kwinrc
+    _kwinrc="$HOME/.config/kwinrc"
+    _theme_name="MacTahoeLiquidKde-Dark"
+    if [[ "$_theme_mode" == "light" ]]; then
+      _theme_name="MacTahoeLiquidKde-Light"
+    fi
+    kwriteconfig6 --file "$_kwinrc" --group "org.kde.kdecoration2" --key "library" "org.kde.kwin.aurorae" 2>/dev/null
+    kwriteconfig6 --file "$_kwinrc" --group "org.kde.kdecoration2" --key "theme" "__aurorae__svg__${_theme_name}" 2>/dev/null
+    kwriteconfig6 --file "$_kwinrc" --group "org.kde.kdecoration2" --key "ButtonsOnLeft" "XIA" 2>/dev/null
+    kwriteconfig6 --file "$_kwinrc" --group "org.kde.kdecoration2" --key "ButtonsOnRight" "" 2>/dev/null
+    for _q in qdbus6 qdbus; do
+      command -v "$_q" &>/dev/null && { "$_q" org.kde.KWin /KWin reconfigure 2>/dev/null || true; break; }
+    done
+    ok "Window decoration set to ${_theme_name}"
+  else
+    fail "Aurorae source not found at $_au_src"
+  fi
+fi
 # ── Installing Kvantum Theme ─────────────────────────────────
 if [[ "$(cfg kvantum)" == "true" ]]; then
   step "Installing Kvantum Theme"

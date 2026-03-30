@@ -181,6 +181,33 @@ if [[ "$(cfg plasma_theme)" == "true" ]]; then
   info "$n Plasma themes removed"
 fi
 
+# ── Removing Window Decorations ─────────────────────
+if [[ "$(cfg window_decorations)" == "true" ]]; then
+  step "Removing Window Decorations"
+  note "Removes MacTahoe Aurorae window decorations and resets to Breeze"
+  _au_dest="$HOME/.local/share/aurorae/themes"
+  n=0
+  for name in MacTahoeLiquidKde-Dark MacTahoeLiquidKde-Light; do
+    if [[ -d "$_au_dest/$name" ]]; then
+      rm -rf "$_au_dest/$name"
+      ok "$name removed"
+      n=$((n+1))
+    fi
+  done
+  # reset to Breeze decoration
+  if command -v kwriteconfig6 &>/dev/null; then
+    kwriteconfig6 --file kwinrc --group "org.kde.kdecoration2" --key "library" "org.kde.breeze"
+    kwriteconfig6 --file kwinrc --group "org.kde.kdecoration2" --key "theme" "Breeze"
+    kwriteconfig6 --file kwinrc --group "org.kde.kdecoration2" --key "ButtonsOnLeft" "M"
+    kwriteconfig6 --file kwinrc --group "org.kde.kdecoration2" --key "ButtonsOnRight" "IAX"
+    for _q in qdbus6 qdbus; do
+      command -v "$_q" &>/dev/null && { "$_q" org.kde.KWin /KWin reconfigure 2>/dev/null || true; break; }
+    done
+    ok "Window decoration reset to Breeze"
+  fi
+  info "$n Aurorae themes removed"
+fi
+
 # ── Removing Kvantum Theme ──────────────────────────
 if [[ "$(cfg kvantum)" == "true" ]]; then
   step "Removing Kvantum Theme"

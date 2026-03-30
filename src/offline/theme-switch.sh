@@ -150,6 +150,18 @@ apply() {
     fi
   fi
 
+  # window decoration (aurorae)
+  local au_theme
+  if [[ "$mode" == "dark" ]]; then
+    au_theme="MacTahoeLiquidKde-Dark"
+  else
+    au_theme="MacTahoeLiquidKde-Light"
+  fi
+  if [[ -d "$HOME/.local/share/aurorae/themes/$au_theme" ]] && command -v kwriteconfig6 &>/dev/null; then
+    kwriteconfig6 --file kwinrc --group "org.kde.kdecoration2" --key "library" "org.kde.kwin.aurorae"
+    kwriteconfig6 --file kwinrc --group "org.kde.kdecoration2" --key "theme" "__aurorae__svg__${au_theme}"
+  fi
+
   # final cache rebuild + KWin reconfigure so dock/panel reflect new theme
   flush_icon_caches
   for _q in qdbus6 qdbus; do
