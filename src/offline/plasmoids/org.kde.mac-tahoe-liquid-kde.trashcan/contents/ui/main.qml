@@ -1,8 +1,4 @@
 /*
-    SPDX-FileCopyrightText: 2013 Heena Mahour <heena393@gmail.com>
-    SPDX-FileCopyrightText: 2015, 2016 Kai Uwe Broulik <kde@privat.broulik.de>
-    SPDX-FileCopyrightText: 2023 Nate Graham <nate@kde.org>
-
     Fork: MacTahoe Liquid KDE — adds configurable empty/full icons.
     Replaces compiled C++ backend with shell commands so no build step
     is needed.

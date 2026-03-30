@@ -43,7 +43,7 @@ handle_mirror() {
   $installed
 }
 
-# ── source 1: MacTahoe cursors (vinceliuice) ──────────────────
+# ── source 1: MacTahoe cursors ─────────────────────────────────
 mapfile -t MIRRORS < <(grep '^mirror:' "src/mirrors/cursors.txt" | sed 's/^mirror: *//')
 run_mirrors && any_ok=true || warn "MacTahoeLiquidKde cursors — all mirrors failed"
 

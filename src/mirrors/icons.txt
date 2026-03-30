@@ -6,7 +6,6 @@
 source:   vinceliuice/MacTahoe-icon-theme
 url:      https://github.com/vinceliuice/MacTahoe-icon-theme
 license:  GPL-3.0
-author:   Vince Liu (vinceliuice)
 installs: MacTahoeLiquidKde-Icons  MacTahoeLiquidKde-Icons-dark
 
 mirror: https://github.com/vinceliuice/MacTahoe-icon-theme/archive/refs/heads/main.zip|zip|MacTahoeLiquidKde-Icons

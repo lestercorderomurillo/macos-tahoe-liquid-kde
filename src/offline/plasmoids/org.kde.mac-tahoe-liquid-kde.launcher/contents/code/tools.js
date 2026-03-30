@@ -1,11 +1,3 @@
-/*
-    SPDX-FileCopyrightText: 2013 Aurélien Gâteau <agateau@kde.org>
-    SPDX-FileCopyrightText: 2013-2015 Eike Hein <hein@kde.org>
-    SPDX-FileCopyrightText: 2017 Ivan Cukic <ivan.cukic@kde.org>
-
-    SPDX-License-Identifier: GPL-2.0-or-later
-*/
-
 .pragma library
 
 function fillActionMenu(i18n, actionMenu, actionList, favoriteModel, favoriteId) {

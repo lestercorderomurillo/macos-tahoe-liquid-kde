@@ -6,7 +6,6 @@
 source:   vinceliuice/MacTahoe-icon-theme — cursors/dist/
 url:      https://github.com/vinceliuice/MacTahoe-icon-theme
 license:  GPL-3.0
-author:   Vince Liu (vinceliuice)
 installs: MacTahoeLiquidKde  MacTahoeLiquidKde-Dark
 
 mirror: https://github.com/vinceliuice/MacTahoe-icon-theme/archive/refs/heads/main.zip|zip|MacTahoeLiquidKde
@@ -16,5 +15,4 @@ mirror: https://github.com/vinceliuice/MacTahoe-icon-theme/archive/refs/tags/202
 source:   ful1e5/apple_cursor
 url:      https://github.com/ful1e5/apple_cursor
 license:  GPL-3.0
-author:   ful1e5
 installs: MacTahoeLiquidKde-Apple  MacTahoeLiquidKde-Apple-White
