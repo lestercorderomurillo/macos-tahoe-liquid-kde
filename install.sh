@@ -853,19 +853,16 @@ rm -rf "$HOME/.cache/gtk-4.0/" 2>/dev/null || true
 kbuildsycoca6 --noincremental 2>/dev/null || true
 ok "Caches flushed"
 
-echo -ne "  …  Stopping Plasma"
-kquitapp6 plasmashell 2>/dev/null || killall plasmashell 2>/dev/null || true
-for _i in $(seq 1 10); do pgrep -x plasmashell &>/dev/null || break; sleep 1; done
-echo -e "\r  ${GREEN}✓${RESET}  Plasma stopped    "
+# apply theme BEFORE restarting Plasma so everything is configured
+if [[ -x "$_switch_dest" ]]; then
+  "$_switch_dest" "$_theme_mode" &>/dev/null
+  ok "Theme applied"
+fi
 
-# restart xdg-desktop-portal-gtk before Plasma comes back to prevent SEGV
-systemctl --user restart xdg-desktop-portal-gtk.service 2>/dev/null || true
-
-echo -ne "  …  Starting Plasma"
-systemctl --user start plasma-plasmashell 2>/dev/null || kstart plasmashell 2>/dev/null &
-for _i in $(seq 1 15); do pgrep -x plasmashell &>/dev/null && break; sleep 1; done
-sleep 3
-echo -e "\r  ${GREEN}✓${RESET}  Plasma started    "
+if command -v nautilus &>/dev/null; then
+  nautilus -q 2>/dev/null || true
+  ok "Nautilus restarted"
+fi
 
 echo -ne "  …  Reconfiguring KWin"
 for qdbus_cmd in qdbus6 qdbus; do
@@ -880,16 +877,16 @@ for qdbus_cmd in qdbus6 qdbus; do
 done
 echo -e "\r  ${GREEN}✓${RESET}  KWin reconfigured "
 
-# apply theme AFTER Plasma is fully loaded to avoid xsettingsd race
-if [[ -x "$_switch_dest" ]]; then
-  "$_switch_dest" "$_theme_mode" &>/dev/null
-  ok "Theme applied"
-fi
+# restart xdg-desktop-portal-gtk before Plasma comes back to prevent SEGV
+systemctl --user restart xdg-desktop-portal-gtk.service 2>/dev/null || true
 
-if command -v nautilus &>/dev/null; then
-  nautilus -q 2>/dev/null || true
-  ok "Nautilus restarted"
-fi
+echo -ne "  …  Restarting Plasma"
+kquitapp6 plasmashell 2>/dev/null || killall plasmashell 2>/dev/null || true
+for _i in $(seq 1 10); do pgrep -x plasmashell &>/dev/null || break; sleep 1; done
+systemctl --user start plasma-plasmashell 2>/dev/null || kstart plasmashell 2>/dev/null &
+for _i in $(seq 1 15); do pgrep -x plasmashell &>/dev/null && break; sleep 1; done
+sleep 3
+echo -e "\r  ${GREEN}✓${RESET}  Plasma restarted   "
 
 # ── Done ──────────────────────────────────────────────────────
 echo ""

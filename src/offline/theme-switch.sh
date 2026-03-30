@@ -22,16 +22,13 @@ ICONS_DIR="$HOME/.local/share/icons"
 
 _mode="${1:-auto}"
 
-# ── flush KDE/icon/Plasma caches ──
-flush_caches() {
+# ── flush icon caches (safe for live desktop) ──
+flush_icon_caches() {
+  # only flush icon lookup caches — do NOT run kbuildsycoca6 or touch
+  # plasmashell/plasma caches while the desktop is running, as that
+  # causes the dock/task manager to rebuild and reorder pinned items
   rm -rf "$HOME/.cache/icon-cache.kcache" 2>/dev/null || true
   rm -rf "$HOME/.cache/kiconthemes" 2>/dev/null || true
-  rm -rf "$HOME/.cache/ksvg-elements" 2>/dev/null || true
-  rm -rf "$HOME/.cache/plasma-svgelements-"* 2>/dev/null || true
-  rm -rf "$HOME/.cache/plasma_theme_"* 2>/dev/null || true
-  rm -rf "$HOME/.cache/plasmashell"* 2>/dev/null || true
-  find "$HOME/.cache" -maxdepth 1 -name "ksycoca6*" -delete 2>/dev/null || true
-  kbuildsycoca6 --noincremental 2>/dev/null || true
 }
 
 # ── detect mode from time of day ──
@@ -154,7 +151,7 @@ apply() {
   fi
 
   # final cache rebuild + KWin reconfigure so dock/panel reflect new theme
-  flush_caches
+  flush_icon_caches
   for _q in qdbus6 qdbus; do
     command -v "$_q" &>/dev/null && {
       "$_q" org.kde.KWin /KWin org.kde.KWin.reconfigure &>/dev/null || true
