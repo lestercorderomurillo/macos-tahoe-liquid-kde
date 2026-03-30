@@ -2,7 +2,7 @@
  * ============================================================
  * WINDOW TRANSPARENCY (BLUR)
  * ============================================================
- * Search for "@window_bg_color 65%" to find all window opacity values.
+ * Search for "@window_bg_color 30%" to find all window opacity values.
  * The number controls how opaque the window background is:
  *   100% = fully opaque (no transparency)
  *    96% = subtle transparency (default, no blur needed)
@@ -291,7 +291,7 @@ spinbutton.vertical > button:only-child, spinbutton.vertical > text:only-child, 
 }
 
 .background, .background.view {
-  background-color: color-mix(in srgb, @window_bg_color 65%, transparent);
+  background-color: color-mix(in srgb, @window_bg_color 30%, transparent);
 }
 
 .background:backdrop {
@@ -547,7 +547,7 @@ spinbutton > text, .linked > entry:not(:only-child) {
 spinbutton > text:focus-within, .linked > entry:focus-within:not(:only-child) {
   color: @window_fg_color;
   background-color: alpha(currentColor,0.06);
-  box-shadow: inset 0 0 0 2px color-mix(in srgb, @window_bg_color 65%, color-mix(in srgb, #ffffff 25%, @accent_bg_color));
+  box-shadow: inset 0 0 0 2px color-mix(in srgb, @window_bg_color 30%, color-mix(in srgb, #ffffff 25%, @accent_bg_color));
   transition-duration: 300ms;
 }
 
@@ -572,7 +572,7 @@ entry:hover {
 entry:focus-within {
   color: @window_fg_color;
   background-color: alpha(currentColor,0.06);
-  box-shadow: inset 0 0 0 2px color-mix(in srgb, @window_bg_color 65%, color-mix(in srgb, #ffffff 25%, @accent_bg_color));
+  box-shadow: inset 0 0 0 2px color-mix(in srgb, @window_bg_color 30%, color-mix(in srgb, #ffffff 25%, @accent_bg_color));
   transition-duration: 300ms;
 }
 
@@ -1644,7 +1644,7 @@ buttoncontent > label:dir(rtl) {
 }
 
 .linked:not(.vertical):not(.path-bar) > entry:focus-within:not(:only-child) {
-  box-shadow: inset 0 0 0 2px color-mix(in srgb, @window_bg_color 65%, color-mix(in srgb, #ffffff 25%, @accent_bg_color));
+  box-shadow: inset 0 0 0 2px color-mix(in srgb, @window_bg_color 30%, color-mix(in srgb, #ffffff 25%, @accent_bg_color));
 }
 
 .linked:not(.vertical):not(.path-bar) > entry:drop(active):not(:only-child) {
@@ -1668,7 +1668,7 @@ buttoncontent > label:dir(rtl) {
 }
 
 .linked.vertical > entry:focus-within:not(:only-child) {
-  box-shadow: inset 0 0 0 2px color-mix(in srgb, @window_bg_color 65%, color-mix(in srgb, #ffffff 25%, @accent_bg_color));
+  box-shadow: inset 0 0 0 2px color-mix(in srgb, @window_bg_color 30%, color-mix(in srgb, #ffffff 25%, @accent_bg_color));
 }
 
 .linked.vertical > entry:drop(active):not(:only-child) {
@@ -1819,7 +1819,7 @@ spinbutton > text {
 
 spinbutton > text:focus-within {
   outline: none;
-  box-shadow: inset 0 0 0 2px color-mix(in srgb, @window_bg_color 65%, color-mix(in srgb, #ffffff 25%, @accent_bg_color));
+  box-shadow: inset 0 0 0 2px color-mix(in srgb, @window_bg_color 30%, color-mix(in srgb, #ffffff 25%, @accent_bg_color));
 }
 
 spinbutton > text:drop(active) {
@@ -1872,7 +1872,7 @@ treeview spinbutton:not(.vertical):focus, treeview spinbutton:not(.vertical):hov
 }
 
 treeview spinbutton:not(.vertical):focus-within, row spinbutton:not(.vertical):focus-within {
-  box-shadow: inset 0 0 0 2px color-mix(in srgb, @window_bg_color 65%, color-mix(in srgb, #ffffff 25%, @accent_bg_color));
+  box-shadow: inset 0 0 0 2px color-mix(in srgb, @window_bg_color 30%, color-mix(in srgb, #ffffff 25%, @accent_bg_color));
   transition: box-shadow 150ms cubic-bezier(0, 0, 0.2, 1);
 }
 
@@ -2194,7 +2194,7 @@ headerbar entry:focus {
   color: @headerbar_fg_color;
   background-image: none;
   background-color: alpha(currentColor,0.06);
-  box-shadow: 0 5px 12px rgba(0, 0, 0, 0.2), inset 0 0 0 2px color-mix(in srgb, @window_bg_color 65%, color-mix(in srgb, #ffffff 25%, @accent_bg_color));
+  box-shadow: 0 5px 12px rgba(0, 0, 0, 0.2), inset 0 0 0 2px color-mix(in srgb, @window_bg_color 30%, color-mix(in srgb, #ffffff 25%, @accent_bg_color));
 }
 
 headerbar entry:disabled {
@@ -3090,7 +3090,7 @@ treeview.view > header > button:hover {
 
 columnview.view > header > button:disabled,
 treeview.view > header > button:disabled {
-  border-color: color-mix(in srgb, @window_bg_color 65%, transparent);
+  border-color: color-mix(in srgb, @window_bg_color 30%, transparent);
   background-image: none;
 }
 
@@ -3629,15 +3629,15 @@ scrollbar > range > trough > slider {
   box-shadow: none;
   outline: none;
   transition: all 200ms linear;
-  background-color: color-mix(in srgb, @window_fg_color 40%, color-mix(in srgb, @window_bg_color 65%, transparent));
+  background-color: color-mix(in srgb, @window_fg_color 40%, color-mix(in srgb, @window_bg_color 30%, transparent));
 }
 
 scrollbar > range > trough > slider:hover {
-  background-color: color-mix(in srgb, @window_fg_color 30%, color-mix(in srgb, @window_bg_color 65%, transparent));
+  background-color: color-mix(in srgb, @window_fg_color 30%, color-mix(in srgb, @window_bg_color 30%, transparent));
 }
 
 scrollbar > range > trough > slider:hover:active {
-  background-color: color-mix(in srgb, @window_fg_color 50%, color-mix(in srgb, @window_bg_color 65%, transparent));
+  background-color: color-mix(in srgb, @window_fg_color 50%, color-mix(in srgb, @window_bg_color 30%, transparent));
 }
 
 scrollbar > range > trough > slider:disabled {
@@ -3684,7 +3684,7 @@ scrollbar.overlay-indicator:not(.dragging):not(.hovering) > range > trough > sli
   margin: 0;
   min-width: 4px;
   min-height: 4px;
-  background-color: color-mix(in srgb, @window_fg_color 70%, color-mix(in srgb, @window_bg_color 65%, transparent));
+  background-color: color-mix(in srgb, @window_fg_color 70%, color-mix(in srgb, @window_bg_color 30%, transparent));
   border: none;
 }
 
@@ -5647,7 +5647,7 @@ filechooserbutton:drop(active) {
 
 .sidebar {
   border: none;
-  background-color: color-mix(in srgb, @window_bg_color 65%, transparent);
+  background-color: color-mix(in srgb, @window_bg_color 30%, transparent);
   color: @window_fg_color;
 }
 
@@ -7677,7 +7677,7 @@ panelstatusbar > paneltogglebutton button {
 }
 
 panelwidget entry.statusbar {
-  background-color: color-mix(in srgb, @window_bg_color 65%, transparent);
+  background-color: color-mix(in srgb, @window_bg_color 30%, transparent);
   border-radius: 0;
   outline: none;
   box-shadow: none;
@@ -9083,7 +9083,7 @@ dialog-host > dialog.background {
 }
 
 dialog-host > dialog.background sheet {
-  background-color: color-mix(in srgb, @window_bg_color 65%, transparent);
+  background-color: color-mix(in srgb, @window_bg_color 30%, transparent);
   color: @window_fg_color;
 }
 
@@ -9222,27 +9222,27 @@ themeswitcher checkbutton.dark {
   background-color: #1e1e1e;
 }
 
-@define-color theme_bg_color color-mix(in srgb, @window_bg_color 65%, transparent);
+@define-color theme_bg_color color-mix(in srgb, @window_bg_color 30%, transparent);
 @define-color theme_fg_color @window_fg_color;
 @define-color theme_base_color @view_bg_color;
 @define-color theme_text_color currentColor;
 @define-color theme_selected_bg_color @accent_bg_color;
 @define-color theme_selected_fg_color #ffffff;
-@define-color bg_color color-mix(in srgb, @window_bg_color 65%, transparent);
+@define-color bg_color color-mix(in srgb, @window_bg_color 30%, transparent);
 @define-color fg_color @window_fg_color;
 @define-color base_color @view_bg_color;
 @define-color text_color currentColor;
 @define-color selected_bg_color @accent_bg_color;
 @define-color selected_fg_color #ffffff;
-@define-color insensitive_bg_color mix(color-mix(in srgb, @window_bg_color 65%, transparent),@view_bg_color,0.4);
+@define-color insensitive_bg_color mix(color-mix(in srgb, @window_bg_color 30%, transparent),@view_bg_color,0.4);
 @define-color insensitive_fg_color color-mix(in srgb, @window_fg_color 45%, transparent);
 @define-color insensitive_base_color @view_bg_color;
-@define-color theme_unfocused_bg_color color-mix(in srgb, @window_bg_color 65%, transparent);
+@define-color theme_unfocused_bg_color color-mix(in srgb, @window_bg_color 30%, transparent);
 @define-color theme_unfocused_fg_color @window_fg_color;
 @define-color theme_unfocused_base_color @view_bg_color;
 @define-color theme_unfocused_text_color currentColor;
 @define-color borders alpha(currentColor,0.12);
-@define-color unfocused_insensitive_color mix(@window_fg_color,color-mix(in srgb, @window_bg_color 65%, transparent),0.65);
+@define-color unfocused_insensitive_color mix(@window_fg_color,color-mix(in srgb, @window_bg_color 30%, transparent),0.65);
 @define-color unfocused_borders alpha(currentColor,0.12);
 @define-color warning_color #E9873A;
 @define-color error_color #ED5F5D;
