@@ -3,7 +3,7 @@
  * WINDOW TRANSPARENCY (BLUR) - GTK3
  * ============================================================
  * Window background opacity:
- *   Search for "0.999" (original) or "0.30" (current) in .background.csd
+ *   Search for "0.999" (original) or "0.50" (current) in .background.csd
  *   Values: 1.0 = opaque, 0.96 = subtle, 0.75 = moderate, 0.40 = high, 0.0 = invisible
  *
  * Sidebar transparency:
@@ -470,7 +470,7 @@ modelbutton.flat {
 
 .background.csd {
   border-radius: 0 0 24px 24px;
-  background-color: rgba(255, 255, 255, 0.30);
+  background-color: rgba(255, 255, 255, 0.60);
 }
 
 .background.csd.maximized, .background.csd.tiled, .background.csd.fullscreen {

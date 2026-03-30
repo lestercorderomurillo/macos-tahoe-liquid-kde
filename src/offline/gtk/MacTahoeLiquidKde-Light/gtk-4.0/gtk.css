@@ -291,7 +291,7 @@ spinbutton.vertical > button:only-child, spinbutton.vertical > text:only-child, 
 }
 
 .background, .background.view {
-  background-color: color-mix(in srgb, @window_bg_color 30%, transparent);
+  background-color: color-mix(in srgb, @window_bg_color 60%, transparent);
 }
 
 .background:backdrop {

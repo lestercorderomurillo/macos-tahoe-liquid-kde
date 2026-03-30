@@ -52,27 +52,26 @@ void main()
     vec2 baseUV = center + fromCenter * (1.0 - magnify);
 
     // 5. Chromatic aberration — smooth spectral gradient along SDF contour
-    vec2 caDir = refractDir * 8.0 * edgeCurve / blurSize;
+    vec2 caDir = refractDir * 22.0 * edgeCurve / blurSize;
 
-    // 6. Spectral sampling: 5 positions for smooth prismatic gradient
-    //    Instead of hard R/G/B bands, sample intermediate wavelengths
-    vec3 c0 = texture(texUnit, clamp(baseUV - caDir,       0.0, 1.0)).rgb;
-    vec3 c1 = texture(texUnit, clamp(baseUV - caDir * 0.5, 0.0, 1.0)).rgb;
-    vec3 c2 = texture(texUnit, clamp(baseUV,               0.0, 1.0)).rgb;
-    vec3 c3 = texture(texUnit, clamp(baseUV + caDir * 0.5, 0.0, 1.0)).rgb;
-    vec3 c4 = texture(texUnit, clamp(baseUV + caDir,       0.0, 1.0)).rgb;
+    // 6. Spectral sampling: 5 positions for visible RGB prismatic separation
+    vec3 c0 = texture(texUnit, clamp(baseUV - caDir,            0.0, 1.0)).rgb;
+    vec3 c1 = texture(texUnit, clamp(baseUV - caDir * 0.5,      0.0, 1.0)).rgb;
+    vec3 c2 = texture(texUnit, clamp(baseUV,                    0.0, 1.0)).rgb;
+    vec3 c3 = texture(texUnit, clamp(baseUV + caDir * 0.5,      0.0, 1.0)).rgb;
+    vec3 c4 = texture(texUnit, clamp(baseUV + caDir,            0.0, 1.0)).rgb;
 
-    // Spectral weights — smooth distribution per channel
+    // Spectral weights — red at one end, blue at other, green centered
     vec3 spectral;
-    spectral.r = c0.r * 0.05 + c1.r * 0.10 + c2.r * 0.20 + c3.r * 0.30 + c4.r * 0.35;
-    spectral.g = c0.g * 0.10 + c1.g * 0.25 + c2.g * 0.30 + c3.g * 0.25 + c4.g * 0.10;
-    spectral.b = c0.b * 0.35 + c1.b * 0.30 + c2.b * 0.20 + c3.b * 0.10 + c4.b * 0.05;
+    spectral.r = c0.r*0.05 + c1.r*0.15 + c2.r*0.25 + c3.r*0.35 + c4.r*0.20;
+    spectral.g = c0.g*0.10 + c1.g*0.25 + c2.g*0.30 + c3.g*0.25 + c4.g*0.10;
+    spectral.b = c0.b*0.20 + c1.b*0.35 + c2.b*0.25 + c3.b*0.15 + c4.b*0.05;
 
-    // Bias toward white — mix spectral with neutral center
-    vec3 sharp = mix(c2, spectral, 0.45 * edgeCurve);
+    // Mix: vivid spectral at edges, neutral center
+    vec3 sharp = mix(c2, spectral, 0.85 * edgeCurve);
 
-    // 9-tap kawase upsample for gaussian blur at edges
-    float blurScale = offset * (1.0 + edgeCurve * 5.0);
+    // 9-tap kawase blur — stronger base for warmer center glow
+    float blurScale = offset * 3.0 * (1.0 + edgeCurve * 4.0);
     vec2 hp = halfpixel * blurScale;
 
     vec3 blur  = texture(texUnit, clamp(baseUV + vec2(-hp.x * 2.0, 0.0),  0.0, 1.0)).rgb;
