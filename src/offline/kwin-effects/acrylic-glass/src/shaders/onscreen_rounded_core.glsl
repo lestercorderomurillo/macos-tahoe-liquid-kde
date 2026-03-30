@@ -34,11 +34,11 @@ void main(void)
 
     vec2 fromCenter = uv - 0.5;
 
-    // Smooth circular falloff — 0 at center, 1 at edges (no quadrant seams)
-    float edgeFactor = smoothstep(0.0, 1.0, length(fromCenter * 2.0));
-
-    // Refraction — clear center, more distortion at edges
-    vec2 refractedUV = clamp(0.5 + fromCenter * (1.0 + 0.15 * edgeFactor), 0.0, 1.0);
+    // Glass refraction — curved glass pulls edges inward (Snell's law approx)
+    // n=1.5 (crown glass), displacement ~ (n-1) * r², quadratic falloff
+    const float refractiveIndex = 1.5;
+    float r2 = dot(fromCenter, fromCenter) * 4.0;
+    vec2 refractedUV = uv - fromCenter * (refractiveIndex - 1.0) * r2 * 0.3;
 
     // Border proximity from SDF
     float borderBand = minHalfSize * 0.25;
