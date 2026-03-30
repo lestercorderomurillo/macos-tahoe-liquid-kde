@@ -18,6 +18,25 @@ out vec4 fragColor;
 
 #include "glass.glsl"
 
+// Surface normal from SDF — models curved glass edge with circular cross-section
+vec3 glassNormal(float sd, float t)
+{
+    float dx = dFdx(sd);
+    float dy = dFdy(sd);
+    float nc = clamp((t + sd) / t, 0.0, 1.0);
+    float ns = sqrt(1.0 - nc * nc);
+    return normalize(vec3(dx * nc, dy * nc, ns));
+}
+
+// Glass surface height — circular cross-section at the edge
+float glassHeight(float sd, float t)
+{
+    if (sd >= 0.0) return 0.0;
+    if (sd < -t) return t;
+    float x = t + sd;
+    return sqrt(t * t - x * x);
+}
+
 void main(void)
 {
     vec2 halfBlurSize = blurSize * 0.5;
@@ -32,20 +51,30 @@ void main(void)
         return;
     }
 
-    vec2 fromCenter = uv - 0.5;
-
-    // Glass refraction — curved glass pulls edges inward (Snell's law approx)
-    // n=1.5 (crown glass), displacement ~ (n-1) * r², quadratic falloff
+    // Glass refraction — SDF-based surface normal + Snell's law via refract()
+    // Refraction follows the actual window shape including rounded corners
     const float refractiveIndex = 1.5;
-    float r2 = dot(fromCenter, fromCenter) * 4.0;
-    vec2 refractedUV = uv - fromCenter * (refractiveIndex - 1.0) * r2 * 0.3;
+    float thickness = 48.0;
+    float baseHeight = 75.0;
+
+    vec3 normal = glassNormal(dist, thickness);
+    // Blend normal toward center so top/bottom refraction isn't straight like a mirror
+    vec2 toCenter = -normalize(position + vec2(0.001));
+    normal.xy = mix(normal.xy, toCenter * length(normal.xy), 0.25);
+    normal = normalize(normal);
+
+    vec3 refractVec = refract(vec3(0.0, 0.0, -1.0), normal, 1.0 / refractiveIndex);
+    float h = glassHeight(dist, thickness);
+    float denom = dot(vec3(0.0, 0.0, -1.0), refractVec);
+    float refractLen = abs(denom) > 0.001 ? (h + baseHeight) / denom : 0.0;
+    vec2 refractedUV = uv + refractVec.xy * refractLen / blurSize;
 
     // Border proximity from SDF
     float borderBand = minHalfSize * 0.25;
     float borderFactor = smoothstep(-borderBand, 0.0, dist);
 
-    // More blur near edges — scale kawase offset up to 3x at border
-    float scaledOffset = offset * (1.0 + borderFactor * 2.0);
+    // Blur: subtle at center, heavy at edges
+    float scaledOffset = offset * (1.0 + borderFactor * 4.0);
 
     // Kawase upsample with refraction + stronger blur near edges
     vec4 sum = texture(texUnit, clamp(refractedUV + vec2(-halfpixel.x * 2.0, 0.0) * scaledOffset, 0.0, 1.0));
@@ -58,19 +87,24 @@ void main(void)
     sum += texture(texUnit, clamp(refractedUV + vec2(-halfpixel.x, -halfpixel.y) * scaledOffset, 0.0, 1.0)) * 2.0;
     sum /= 12.0;
 
-    // Chromatic aberration — proportional to distance from center
-    vec2 caOffset = 0.01 * fromCenter;
-    sum.r = mix(sum.r, texture(texUnit, clamp(refractedUV + caOffset, 0.0, 1.0)).r, 0.5);
-    sum.b = mix(sum.b, texture(texUnit, clamp(refractedUV - caOffset, 0.0, 1.0)).b, 0.5);
+    // Chromatic aberration — wide RGB split at borders, low mix to preserve blur
+    vec2 caDir = refractVec.xy * refractLen * 0.2 / blurSize;
+    float caStrength = borderFactor * 0.25;
+    sum.r = mix(sum.r, texture(texUnit, clamp(refractedUV + caDir, 0.0, 1.0)).r, caStrength);
+    sum.b = mix(sum.b, texture(texUnit, clamp(refractedUV - caDir, 0.0, 1.0)).b, caStrength);
 
     // Border highlight — follows SDF shape including corner radius
     float borderPx = -dist;
     float borderHighlight = smoothstep(0.0, 2.0, borderPx) * (1.0 - smoothstep(2.0, 6.0, borderPx));
     sum.rgb += borderHighlight * 0.08;
 
+    // Reflection — Fresnel at left/right edges only (horizontal normal)
+    float fresnel = abs(normal.x) * 2.0;
+    sum.rgb = mix(sum.rgb, vec3(1.0), fresnel * 0.08);
+
     // Gradient lighting — glass catches light at top
     float normInside = clamp(-dist / minHalfSize, 0.0, 1.0);
-    sum.rgb += mix(0.03, 0.0, uv.y) * normInside;
+    sum.rgb += mix(0.04, 0.0, uv.y) * normInside;
 
     sum = glass(sum, cornerRadius);
     float f = sdfRoundedBox(vertex, box.xy, box.zw, cornerRadius);
