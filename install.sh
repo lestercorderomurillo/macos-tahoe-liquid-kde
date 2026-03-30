@@ -876,20 +876,16 @@ if command -v nautilus &>/dev/null; then
 fi
 
 echo -ne "  …  Restarting KWin"
-if [[ "$(cfg acrylic_glass)" == "true" ]]; then
-  # Acrylic Glass requires a full KWin restart to load the new .so
-  nohup kwin_wayland --replace &>/dev/null &
-  disown
-  sleep 3
-else
-  for qdbus_cmd in qdbus6 qdbus; do
-    command -v "$qdbus_cmd" &>/dev/null && {
-      "$qdbus_cmd" org.kde.KWin /KWin org.kde.KWin.reconfigure &>/dev/null || true
-      sleep 2
-      break
-    }
-  done
-fi
+for qdbus_cmd in qdbus6 qdbus; do
+  command -v "$qdbus_cmd" &>/dev/null && {
+    if [[ "$(cfg acrylic_glass)" == "true" ]]; then
+      "$qdbus_cmd" org.kde.KWin /Effects org.kde.kwin.Effects.loadEffect liquidglass &>/dev/null || true
+    fi
+    "$qdbus_cmd" org.kde.KWin /KWin org.kde.KWin.reconfigure &>/dev/null || true
+    sleep 2
+    break
+  }
+done
 echo -e "\r  ${GREEN}✓${RESET}  KWin restarted "
 
 # ── applying layout ──

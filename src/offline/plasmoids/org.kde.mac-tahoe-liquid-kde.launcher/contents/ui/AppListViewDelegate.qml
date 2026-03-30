@@ -112,7 +112,7 @@ T.ItemDelegate {
 		acceptedButtons: Qt.LeftButton | Qt.RightButton
 		cursorShape: Qt.PointingHandCursor
 		hoverEnabled:  !listView.movedWithWheel && !listView.blockingHoverFocus
-		onClicked: {
+		onClicked: function(mouse) {
 			if (mouse.button == Qt.RightButton) {
 				if (listDelegate.hasActionList) {
 					var mapped = mapToItem(listDelegate, mouse.x, mouse.y);

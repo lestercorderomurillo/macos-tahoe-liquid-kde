@@ -125,7 +125,7 @@ Item {
 		acceptedButtons: Qt.LeftButton | Qt.RightButton
 		cursorShape: Qt.PointingHandCursor
 		hoverEnabled:  !grid.movedWithWheel
-		onClicked: {
+		onClicked: function(mouse) {
 			if (mouse.button == Qt.RightButton ) {
 				if (gridDelegate.hasActionList) {
 					var mapped = mapToItem(gridDelegate, mouse.x, mouse.y);
