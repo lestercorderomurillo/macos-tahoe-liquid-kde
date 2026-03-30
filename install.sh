@@ -744,7 +744,7 @@ if [[ "$(cfg acrylic_glass)" == "true" ]]; then
               ok "Acrylic Glass installed"
               # write clean preset — only settings the effect actually reads
               _lg_grp="Effect-liquidglass"
-              kwriteconfig6 --file kwinrc --group "$_lg_grp" --key BlurStrength 2 2>/dev/null || true
+              kwriteconfig6 --file kwinrc --group "$_lg_grp" --key BlurStrength 6 2>/dev/null || true
               kwriteconfig6 --file kwinrc --group "$_lg_grp" --key NoiseStrength 0 2>/dev/null || true
               kwriteconfig6 --file kwinrc --group "$_lg_grp" --key Saturation 1.0 2>/dev/null || true
               kwriteconfig6 --file kwinrc --group "$_lg_grp" --key Brightness 1.0 2>/dev/null || true
