@@ -30,8 +30,8 @@ LiquidGlassEffectConfig::~LiquidGlassEffectConfig()
 
 void LiquidGlassEffectConfig::applyPreset(int index)
 {
-    // Clear = 3, Frosted = 12
-    const int blurValues[] = { 3, 12 };
+    // Clear = 2 (subtle), Frosted = 8 (visible but not heavy)
+    const int blurValues[] = { 2, 8 };
     if (index < 0 || index >= 2) return;
 
     BlurConfig::setBlurStrength(blurValues[index]);
