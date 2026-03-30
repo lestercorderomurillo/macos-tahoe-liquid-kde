@@ -19,8 +19,8 @@ Inspired by [Pear OS](https://pearos.xyz) — a complete environment, not just a
 | **Cursors** | macOS-Tahoe style cursors | ✅ Implemented |
 | **Icons** | Full macOS-style icon set (light & dark) | 🔧 In Progress |
 | **Sounds** | Notification and event sounds | 🔧 In Progress |
-| **Plasma Theme** | Translucent panels + close/min/max buttons | ✅ Implemented |
-| **Kvantum Theme** | macOS-style Kvantum theme | ✅ Implemented |
+| **Plasma Theme** | Translucent panels + close/min/max buttons | 🔧 In Progress |
+| **Kvantum Theme** | macOS-style Kvantum theme | 🔧 In Progress |
 | **GTK Theme** | GTK2/3/4 window chrome and controls | 🔧 In Progress |
 | **Liquid Glass** | KWin blur, rounded corners, glass effect | 🔧 In Progress |
 | **TimeOfDay Switcher** | Auto light/dark themes based on time of day | ✅ Implemented |
