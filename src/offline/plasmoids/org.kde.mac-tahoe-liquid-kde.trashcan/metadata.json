@@ -9,7 +9,7 @@
         "Category": "File System",
         "Description": "Trash widget",
         "Icon": "user-trash",
-        "Id": "org.kde.mac-tahoe-liquid-kde.trash",
+        "Id": "org.kde.mac-tahoe-liquid-kde.trashcan",
         "License": "GPL-2.0+",
         "Name": "Trashcan (MacTahoe Liquid KDE)"
     },
