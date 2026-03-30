@@ -51,7 +51,6 @@ PlasmoidItem {
     readonly property var menuActions: [
         {
             text: "About This Computer",
-            icon: "help-about-symbolic",
             separator: false,
             action: function() {
                 executable.exec("kinfocenter");
@@ -60,16 +59,29 @@ PlasmoidItem {
         { separator: true },
         {
             text: "System Settings...",
-            icon: "preferences-system-symbolic",
             separator: false,
             action: function() {
                 executable.exec("systemsettings");
             }
         },
+        {
+            text: "App Store...",
+            separator: false,
+            action: function() {
+                executable.exec("plasma-discover");
+            }
+        },
+        { separator: true },
+        {
+            text: "Force Quit...",
+            separator: false,
+            action: function() {
+                executable.exec("xkill");
+            }
+        },
         { separator: true },
         {
             text: "Sleep",
-            icon: "system-suspend-symbolic",
             separator: false,
             action: function() {
                 executable.exec("systemctl suspend");
@@ -77,7 +89,6 @@ PlasmoidItem {
         },
         {
             text: "Restart...",
-            icon: "system-reboot-symbolic",
             separator: false,
             action: function() {
                 executable.exec("qdbus org.kde.LogoutPrompt /LogoutPrompt org.kde.LogoutPrompt.promptReboot");
@@ -85,7 +96,6 @@ PlasmoidItem {
         },
         {
             text: "Shut Down...",
-            icon: "system-shutdown-symbolic",
             separator: false,
             action: function() {
                 executable.exec("qdbus org.kde.LogoutPrompt /LogoutPrompt org.kde.LogoutPrompt.promptShutDown");
@@ -94,7 +104,6 @@ PlasmoidItem {
         { separator: true },
         {
             text: "Lock Screen",
-            icon: "system-lock-screen-symbolic",
             separator: false,
             action: function() {
                 executable.exec("loginctl lock-session");
@@ -102,7 +111,6 @@ PlasmoidItem {
         },
         {
             text: "Log Out...",
-            icon: "system-log-out-symbolic",
             separator: false,
             action: function() {
                 executable.exec("qdbus org.kde.LogoutPrompt /LogoutPrompt org.kde.LogoutPrompt.promptLogout");
@@ -158,7 +166,6 @@ PlasmoidItem {
                         visible: delegateItem.modelData.separator !== true
                         anchors { left: parent.left; right: parent.right }
                         text: delegateItem.modelData.text || ""
-                        icon.name: delegateItem.modelData.icon || ""
                         onClicked: {
                             delegateItem.modelData.action();
                             root.expanded = false;

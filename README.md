@@ -26,6 +26,7 @@ Inspired by [Pear OS](https://pearos.xyz) — a complete environment, not just a
 | **TimeOfDay Switcher** | Auto light/dark themes based on time of day | ✅ Implemented |
 | **Aurorae Decorations** | Window title bar and borders | 🔲 Planned |
 | **SDDM Theme** | macOS-style Login and lock screen | 🔲 Planned |
+| **Menu Plasmoid** | macOS-style Apple Menu with system actions | ✅ Implemented |
 | **Trashcan Plasmoid** | macOS-style trash widget with configurable icons | ✅ Implemented |
 | **Calendar Plasmoid** | macOS-style calendar dropdown | 🔲 Planned |
 | **Control Center Plasmoid** | macOS-style quick settings panel | 🔲 Planned |
@@ -146,6 +147,12 @@ macos-tahoe-liquid-kde/
 | KWin effects | Liquid Glass blur + rounded corners |
 
 The uninstaller reverses everything and resets to Breeze defaults.
+
+---
+
+## Disclaimer
+
+This project is an independent reimplementation inspired by the macOS aesthetic. No assets, code, or intellectual property from Apple Inc. have been copied or redistributed. All themes, icons, plasmoids, and configurations are original work or derived from open-source projects under compatible licenses. "macOS" and "Apple" are trademarks of Apple Inc. This project is not affiliated with or endorsed by Apple.
 
 ---
 

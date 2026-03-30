@@ -77,7 +77,7 @@ dock.addWidget("org.kde.plasma.marginsseparator");
 
 var tasks = dock.addWidget("org.kde.plasma.icontasks");
 tasks.currentConfigGroup = ["General"];
-tasks.writeConfig("launchers", "preferred://filemanager,preferred://browser,applications:systemsettings.desktop,applications:org.kde.discover.desktop,applications:steam.desktop");
+tasks.writeConfig("launchers", "preferred://filemanager,preferred://terminal,preferred://browser,applications:systemsettings.desktop,applications:org.kde.discover.desktop,applications:steam.desktop");
 
 dock.addWidget("org.kde.plasma.marginsseparator");
 dock.addWidget("org.kde.mac-tahoe-liquid-kde.trashcan");
