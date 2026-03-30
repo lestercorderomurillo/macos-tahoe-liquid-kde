@@ -29,7 +29,7 @@ colorizer.writeConfig("globalSettings", JSON.stringify({
 colorizer.currentConfigGroup = ["Configuration"];
 colorizer.writeConfig("hideWidget", "true");
 
-bar.addWidget("org.kde.plasma.kickoff");
+bar.addWidget("org.kde.mac-tahoe-liquid-kde.menu");
 bar.addWidget("org.kde.plasma.appmenu");
 bar.addWidget("org.kde.plasma.panelspacer");
 
@@ -80,4 +80,4 @@ tasks.currentConfigGroup = ["General"];
 tasks.writeConfig("launchers", "preferred://filemanager,preferred://browser,applications:systemsettings.desktop,applications:org.kde.discover.desktop,applications:steam.desktop");
 
 dock.addWidget("org.kde.plasma.marginsseparator");
-dock.addWidget("org.kde.mac-tahoe-liquid-kde.trash");
+dock.addWidget("org.kde.mac-tahoe-liquid-kde.trashcan");
