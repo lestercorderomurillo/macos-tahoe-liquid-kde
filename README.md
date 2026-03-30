@@ -79,7 +79,7 @@ bash install.sh --light                   # force light theme
 bash install.sh --auto                    # time-of-day switching (default)
 ```
 
-In `--auto` mode, the watcher service runs at login and switches themes automatically (light 7 AM–7 PM, dark at night). In `--light` or `--dark` mode, the watcher is disabled.
+In `--auto` mode, the watcher service runs at login and switches themes automatically (light 6 AM–6 PM, dark at night). In `--light` or `--dark` mode, the watcher is disabled.
 
 ### Save & Reset
 
