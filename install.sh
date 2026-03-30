@@ -569,6 +569,12 @@ if [[ "$(cfg icons)" == "true" ]]; then
       fail "$name (copy failed: ${err:-unknown error})"
     fi
   done
+  # ensure dark theme inherits from light so missing icons fall back correctly
+  _dark_idx="$ICONS_DIR/MacTahoeLiquidKde-Icons-dark/index.theme"
+  if [[ -f "$_dark_idx" ]] && ! grep -q "Inherits=MacTahoeLiquidKde-Icons," "$_dark_idx"; then
+    sed -i 's/^Inherits=.*/Inherits=MacTahoeLiquidKde-Icons,hicolor,breeze/' "$_dark_idx"
+  fi
+
   # rebuild per-theme icon caches so GTK/Qt apps pick up new icons immediately
   for theme in "$ICONS_DIR"/MacTahoeLiquidKde-Icons*/; do
     [[ -d "$theme" ]] || continue

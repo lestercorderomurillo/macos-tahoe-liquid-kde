@@ -36,6 +36,9 @@ assemble() {
   mkdir -p "$dk"/{actions,apps,categories,emblems,devices,mimes,places,status}
   cp -r "$repo/src/index.theme" "$dk/"
   sed -i "s/MacTahoe/${name}-dark/g" "$dk/index.theme"
+  # dark theme inherits light so missing icons (e.g. app icons) fall back to
+  # the themed version instead of skipping straight to hicolor
+  sed -i "s/^Inherits=.*/Inherits=$name,hicolor,breeze/" "$dk/index.theme"
   cp -r "$repo/src/actions"                               "$dk/"
   cp -r "$repo/src/apps/"{16,22,32,symbolic}              "$dk/apps/"
   cp -r "$repo/src/categories/"{22,symbolic}              "$dk/categories/"
