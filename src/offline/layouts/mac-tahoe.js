@@ -8,12 +8,13 @@ for (var i = 0; i < old.length; i++) {
 }
 
 // ── top menu bar ────────────────────────────────
-// floating top bar, full width
+// top bar, flush panel with applets-only floating
+// (floatingApplets=1 is set via plasmashellrc after layout apply)
 var bar = new Panel("org.kde.panel");
 bar.location = "top";
 bar.screen = 0;
 bar.lengthMode = "fill";
-bar.floating = true;
+bar.floating = false;
 bar.hiding = "none";
 bar.height = 38;
 

@@ -850,7 +850,7 @@ if [[ "$(cfg layout)" == "true" ]]; then
         && ok "Layout installed" \
         || warn "layout failed — set layout manually"
       sleep 3
-      # set bottom dock panel opacity to translucent (JS API doesn't expose this)
+      # patch plasmashellrc: JS scripting API doesn't expose panelOpacity or floatingApplets
       # panelOpacity: 0=adaptive, 1=opaque, 2=translucent
       _prc="$HOME/.config/plasmashellrc"
       if [[ -f "$_prc" ]]; then
@@ -859,11 +859,18 @@ import re, sys
 text = open('$_prc').read()
 def fix(m):
     section = m.group(0)
+    # dock (floating=1): translucent opacity
     if 'floating=1' in section:
         if 'panelOpacity=' in section:
             section = re.sub(r'panelOpacity=\d+', 'panelOpacity=2', section)
         else:
             section = section.rstrip() + '\npanelOpacity=2\n'
+    # top bar (floating=0): applets-only floating
+    if 'floating=0' in section:
+        if 'floatingApplets=' in section:
+            section = re.sub(r'floatingApplets=\d+', 'floatingApplets=1', section)
+        else:
+            section = section.rstrip() + '\nfloatingApplets=1\n'
     return section
 result = re.sub(r'(\[PlasmaViews\]\[Panel \d+\]\n(?:[^\[]*\n)*)', fix, text)
 open('$_prc', 'w').write(result)
