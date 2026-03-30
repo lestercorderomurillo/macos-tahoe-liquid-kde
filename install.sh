@@ -739,7 +739,8 @@ if [[ "$(cfg acrylic_glass)" == "true" ]]; then
             fi
             ok "Acrylic Glass unloaded for safe upgrade"
 
-            if sudo cp "$_effect_so" "$_dest_effect" && sudo cp "$_config_so" "$_dest_config" 2>/dev/null; then
+            if sudo cp "$_effect_so" "${_dest_effect}.tmp" && sudo mv -f "${_dest_effect}.tmp" "$_dest_effect" && \
+               sudo cp "$_config_so" "${_dest_config}.tmp" && sudo mv -f "${_dest_config}.tmp" "$_dest_config" 2>/dev/null; then
               ok "Acrylic Glass installed"
               # write clean preset — only settings the effect actually reads
               _lg_grp="Effect-liquidglass"
