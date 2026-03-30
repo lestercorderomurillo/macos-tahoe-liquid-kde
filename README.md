@@ -1,4 +1,4 @@
-# MacOS Tahoe Liquid Glass Theme for KDE Plasma
+# MacOS Tahoe Acrylic Glass Theme for KDE Plasma
 
 > [!CAUTION]
 > **Status: In development** — This package is functional but under active development. Some features may not work as expected or be broken in your system. I advice you to back up your system config before installing. Use at your own risk.
@@ -22,7 +22,7 @@ A complete environment, not just a coat of paint.
 | **Plasma Theme** | Translucent panels + close/min/max buttons | 🔧 In Progress |
 | **Kvantum Theme** | macOS-style Kvantum theme | 🔧 In Progress |
 | **GTK Theme** | GTK2/3/4 window chrome and controls | 🔧 In Progress |
-| **Liquid Glass** | KWin blur, rounded corners, glass effect | 🔧 In Progress |
+| **Acrylic Glass** | KWin blur, rounded corners, glass effect | 🔧 In Progress |
 | **TimeOfDay Switcher** | Auto light/dark themes based on time of day | ✅ Implemented |
 | **Aurorae Decorations** | Window title bar and borders | 🔧 In Progress |
 | **Firefox Theme** | macOS-style Firefox browser theme | 🔲 Planned |
@@ -71,7 +71,7 @@ bash install.sh --gtk --no-kvantum        # enable GTK, skip Kvantum
 bash uninstall.sh --icons --cursors       # only uninstall icons and cursors
 ```
 
-Available flags: `--wallpapers`, `--fonts`, `--cursors`, `--plasma-theme`, `--window-decorations`, `--kvantum`, `--color-schemes`, `--icons`, `--plasmoids`, `--liquid-glass`, `--layout`, `--sounds`, `--gtk`, `--sddm`, `--apps`, `--no-download`
+Available flags: `--wallpapers`, `--fonts`, `--cursors`, `--plasma-theme`, `--window-decorations`, `--kvantum`, `--color-schemes`, `--icons`, `--plasmoids`, `--acrylic-glass`, `--layout`, `--sounds`, `--gtk`, `--sddm`, `--apps`, `--no-download`
 
 Prefix any flag with `--no-` to disable it (e.g. `--no-fonts`).
 
@@ -125,7 +125,7 @@ macos-tahoe-liquid-kde/
     │   │   ├── MacTahoeLiquidKde-Light/
     │   │   └── MacTahoeLiquidKde-Dark/
     │   ├── plasmoids/      # custom Plasma widgets
-    │   ├── kwin-effects/   # Liquid Glass KWin effect (built from source)
+    │   ├── kwin-effects/   # Acrylic Glass KWin effect (built from source)
     │   ├── layouts/        # panel layout scripts
     │   ├── theme-switch.sh # TimeOfDay theme switcher
     │   └── mac-tahoe-liquid-kde-theme.service
@@ -147,9 +147,9 @@ macos-tahoe-liquid-kde/
 | `~/.themes/MacTahoeLiquidKde-*/` | GTK theme |
 | `~/.local/share/plasma/plasmoids/` | Custom plasmoids |
 | `~/.local/bin/mac-tahoe-theme-switch` | TimeOfDay theme switcher |
-| `~/.config/kwinrc` | Liquid Glass effect config |
+| `~/.config/kwinrc` | Acrylic Glass effect config |
 | Panel layout | Transparent top bar + floating glass dock |
-| KWin effects | Liquid Glass blur + rounded corners |
+| KWin effects | Acrylic Glass blur + rounded corners |
 
 The uninstaller reverses everything and resets to Breeze defaults.
 

@@ -27,7 +27,7 @@ step() {
 }
 
 # ── feature flags (same system as install.sh) ────────────
-_ALL_FEATURES=(wallpapers fonts cursors plasma_theme window_decorations kvantum color_schemes icons plasmoids liquid_glass layout sounds gtk sddm apps no_download)
+_ALL_FEATURES=(wallpapers fonts cursors plasma_theme window_decorations kvantum color_schemes icons plasmoids acrylic_glass layout sounds gtk sddm apps no_download)
 declare -A _feat=()
 declare -A _cli=()
 
@@ -285,10 +285,10 @@ if [[ "$(cfg plasmoids)" == "true" ]]; then
   info "$n plasmoids removed"
 fi
 
-# ── Removing Liquid Glass ───────────────────────────
-if [[ "$(cfg liquid_glass)" == "true" ]]; then
-  step "Removing Liquid Glass"
-  note "Unloads and removes the Liquid Glass KWin effect"
+# ── Removing Acrylic Glass ───────────────────────────
+if [[ "$(cfg acrylic_glass)" == "true" ]]; then
+  step "Removing Acrylic Glass"
+  note "Unloads and removes the Acrylic Glass KWin effect"
 
   # unload effect
   for _q in qdbus6 qdbus; do
@@ -305,7 +305,7 @@ if [[ "$(cfg liquid_glass)" == "true" ]]; then
   for _so in "$_plugin_dir/kwin/effects/plugins/liquidglass.so" "$_plugin_dir/kwin/effects/configs/kwin_liquidglass_config.so"; do
     [[ -f "$_so" ]] && sudo rm -f "$_so" 2>/dev/null && ok "$(basename "$_so")"
   done
-  info "Liquid Glass removed"
+  info "Acrylic Glass removed"
 fi
 
 # ── Reset to Breeze defaults ─────────────────────────────────

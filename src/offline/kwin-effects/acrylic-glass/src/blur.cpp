@@ -498,7 +498,7 @@ bool BlurEffect::eventFilter(QObject *watched, QEvent *event)
 
 bool BlurEffect::enabledByDefault()
 {
-    // Liquid Glass is opt-in — installer enables via kwinrc
+    // Acrylic Glass is opt-in — installer enables via kwinrc
     return false;
 }
 

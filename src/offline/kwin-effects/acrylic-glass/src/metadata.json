@@ -6,10 +6,10 @@
             }
         ],
         "Category": "Appearance",
-        "Description": "Liquid Glass — blur and rounded corners for KDE Plasma 6.",
+        "Description": "Acrylic Glass — blur and rounded corners for KDE Plasma 6.",
         "EnabledByDefault": false,
         "License": "GPL",
-        "Name": "Liquid Glass"
+        "Name": "Acrylic Glass"
     },
     "X-KDE-ConfigModule": "kwin_liquidglass_config"
 }

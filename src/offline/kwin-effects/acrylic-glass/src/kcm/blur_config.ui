@@ -8,7 +8,7 @@
   <layout class="QVBoxLayout">
    <item>
     <widget class="QLabel">
-     <property name="text"><string>Liquid Glass — blur and rounded corners for KDE Plasma 6.</string></property>
+     <property name="text"><string>Acrylic Glass — blur and rounded corners for KDE Plasma 6.</string></property>
      <property name="wordWrap"><bool>true</bool></property>
     </widget>
    </item>
@@ -30,12 +30,7 @@
      <layout class="QVBoxLayout">
       <item>
        <widget class="QCheckBox" name="kcfg_TransparentBlur">
-        <property name="text"><string>Enable on transparent windows</string></property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QCheckBox" name="kcfg_BlurDecorations">
-        <property name="text"><string>Enable on window decorations</string></property>
+        <property name="text"><string>Enable blur (windows and decorations)</string></property>
        </widget>
       </item>
      </layout>

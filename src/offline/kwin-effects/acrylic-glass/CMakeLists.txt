@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.16.0)
 
-project(kwin_liquid_glass)
+project(kwin_acrylic_glass)
 set(PROJECT_VERSION "1.0.0")
 set(PROJECT_VERSION_MAJOR 0)
 
@@ -12,11 +12,11 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
-set(CPACK_PACKAGE_NAME "kwin-liquid-glass")
+set(CPACK_PACKAGE_NAME "kwin-acrylic-glass")
 set(CPACK_PACKAGING_INSTALL_PREFIX "/usr")
-set(CPACK_PACKAGE_FILE_NAME "kwin-liquid-glass")
+set(CPACK_PACKAGE_FILE_NAME "kwin-acrylic-glass")
 set(CPACK_PACKAGE_VERSION "${PROJECT_VERSION}")
-set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "Liquid Glass — Apple-style glass material for KDE Plasma 6 (MacTahoe Liquid KDE)")
+set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "Acrylic Glass — blur and rounded corners for KDE Plasma 6 (MacTahoe Liquid KDE)")
 include(CPack)
 
 if(NOT CMAKE_BUILD_TYPE)
@@ -27,8 +27,8 @@ set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -DQT_NO_DEBUG_OUTPUT")
 find_package(ECM REQUIRED NO_MODULE)
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${ECM_MODULE_PATH} ${ECM_KDE_MODULE_DIR})
 
-option(GLASS_WAYLAND "Whether to build Liquid Glass for Wayland if present." ON)
-option(GLASS_X11 "Whether to build Liquid Glass for X11 if present." OFF)
+option(GLASS_WAYLAND "Whether to build Acrylic Glass for Wayland if present." ON)
+option(GLASS_X11 "Whether to build Acrylic Glass for X11 if present." OFF)
 
 include(FeatureSummary)
 include(KDEInstallDirs)
@@ -95,7 +95,7 @@ if(GLASS_X11)
 endif()
 
 if(${KWin_VERSION} VERSION_LESS 6.4)
-    message(FATAL_ERROR "Liquid Glass requires KDE Plasma 6.4+ (found ${KWin_VERSION}).")
+    message(FATAL_ERROR "Acrylic Glass requires KDE Plasma 6.4+ (found ${KWin_VERSION}).")
 endif()
 
 find_package(KDecoration3 REQUIRED)

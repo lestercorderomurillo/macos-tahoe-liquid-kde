@@ -1,4 +1,4 @@
-// MacTahoe Liquid KDE — Liquid Glass shader
+// MacTahoe Liquid KDE — Acrylic Glass shader
 
 float roundedRectangleDist(vec2 p, vec2 b, vec4 cornerRadius)
 {

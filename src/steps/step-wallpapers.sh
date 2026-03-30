@@ -45,9 +45,9 @@ meta() {
 METAEOF
 }
 
-# ── Tahoe Liquid Glass ────────────────────────────────────────
+# ── Tahoe ────────────────────────────────────────────────────
 dir="$DEST/MacTahoe"
-meta "$dir" "MacTahoe" "macOS Tahoe" "Liquid Glass — auto light/dark" true
+meta "$dir" "MacTahoe" "macOS Tahoe" "Auto light/dark wallpaper" true
 get "$BASE/26-Tahoe-Light-6K.png" "$dir/contents/images/3840x2160.png"      "MacTahoe — Light"
 get "$BASE/26-Tahoe-Dark-6K.png"  "$dir/contents/images_dark/3840x2160.png" "MacTahoe — Dark"
 

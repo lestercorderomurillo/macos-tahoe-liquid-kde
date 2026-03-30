@@ -8,7 +8,7 @@
   "color_schemes":       true,
   "icons":               true,
   "plasmoids":           true,
-  "liquid_glass":        true,
+  "acrylic_glass":        true,
   "layout":              true,
   "sounds":              true,
   "gtk":                 true,

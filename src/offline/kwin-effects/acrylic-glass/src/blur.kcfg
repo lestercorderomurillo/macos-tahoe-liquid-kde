@@ -15,7 +15,7 @@
             <default>true</default>
         </entry>
         <entry name="BlurDecorations" type="Bool">
-            <default>false</default>
+            <default>true</default>
         </entry>
         <entry name="WindowClasses" type="String">
             <default></default>

@@ -32,7 +32,7 @@ step() {
 
 # ── feature flags ────────────────────────────────────────
 # All features with their defaults
-_ALL_FEATURES=(wallpapers fonts cursors plasma_theme window_decorations kvantum color_schemes icons plasmoids liquid_glass layout sounds gtk sddm apps no_download)
+_ALL_FEATURES=(wallpapers fonts cursors plasma_theme window_decorations kvantum color_schemes icons plasmoids acrylic_glass layout sounds gtk sddm apps no_download)
 
 # declare associative arrays for feature state and CLI overrides
 declare -A _feat=()
@@ -96,7 +96,7 @@ if $_do_reset; then
   "color_schemes":       true,
   "icons":               true,
   "plasmoids":           true,
-  "liquid_glass":        true,
+  "acrylic_glass":        true,
   "layout":              true,
   "sounds":              true,
   "gtk":                 true,
@@ -680,18 +680,18 @@ if [[ "$(cfg plasmoids)" == "true" ]]; then
   unset _n _lbl
 fi
 
-# ── Installing Liquid Glass KWin Effect ────────────────
-if [[ "$(cfg liquid_glass)" == "true" ]]; then
-  step "Installing Liquid Glass"
-  note "Builds and installs the Liquid Glass KWin effect from source"
+# ── Installing Acrylic Glass KWin Effect ────────────────
+if [[ "$(cfg acrylic_glass)" == "true" ]]; then
+  step "Installing Acrylic Glass"
+  note "Builds and installs the Acrylic Glass KWin effect from source"
 
-  _lg_src="$OFFLINE/kwin-effects/glass-kde-replica"
+  _lg_src="$OFFLINE/kwin-effects/acrylic-glass"
   _lg_build="$_lg_src/build"
   if [[ -f "$_lg_src/CMakeLists.txt" ]]; then
     # check build deps
     _missing=false
     for _dep in cmake g++ pkg-config; do
-      command -v "$_dep" &>/dev/null || { warn "$_dep not found — needed to build Liquid Glass"; _missing=true; }
+      command -v "$_dep" &>/dev/null || { warn "$_dep not found — needed to build Acrylic Glass"; _missing=true; }
     done
 
     if ! $_missing; then
@@ -712,7 +712,7 @@ if [[ "$(cfg liquid_glass)" == "true" ]]; then
 
       if cmake -S "$_lg_src" -B "$_lg_build" -DCMAKE_BUILD_TYPE=Release &>/dev/null; then
         if make -C "$_lg_build" -j"$(nproc)" &>/dev/null; then
-          ok "Liquid Glass built"
+          ok "Acrylic Glass built"
           # install .so files (requires write access to plugin dir)
           _plugin_dir=$(qmake6 -query QT_INSTALL_PLUGINS 2>/dev/null \
             || qtpaths6 --plugin-dir 2>/dev/null \
@@ -737,10 +737,10 @@ if [[ "$(cfg liquid_glass)" == "true" ]]; then
               "$_qdbus_lg" org.kde.KWin /KWin org.kde.KWin.reconfigure &>/dev/null || true
               sleep 2
             fi
-            ok "Liquid Glass unloaded for safe upgrade"
+            ok "Acrylic Glass unloaded for safe upgrade"
 
             if sudo cp "$_effect_so" "$_dest_effect" && sudo cp "$_config_so" "$_dest_config" 2>/dev/null; then
-              ok "Liquid Glass installed"
+              ok "Acrylic Glass installed"
               # write clean preset — only settings the effect actually reads
               _lg_grp="Effect-liquidglass"
               kwriteconfig6 --file kwinrc --group "$_lg_grp" --key BlurStrength 2 2>/dev/null || true
@@ -752,22 +752,22 @@ if [[ "$(cfg liquid_glass)" == "true" ]]; then
               kwriteconfig6 --file kwinrc --group "$_lg_grp" --key BottomCornerRadius 22 2>/dev/null || true
               kwriteconfig6 --file kwinrc --group "$_lg_grp" --key MenuCornerRadius 14 2>/dev/null || true
               kwriteconfig6 --file kwinrc --group "$_lg_grp" --key DockCornerRadius 28 2>/dev/null || true
-              ok "Liquid Glass preset installed"
+              ok "Acrylic Glass preset installed"
               # enable in config — will load on next KWin start
               kwriteconfig6 --file kwinrc --group Plugins --key liquidglassEnabled true 2>/dev/null || true
-              ok "Liquid Glass installed (active after Plasma restart)"
+              ok "Acrylic Glass installed (active after Plasma restart)"
             else
-              warn "Liquid Glass built but install failed (needs sudo)"
+              warn "Acrylic Glass built but install failed (needs sudo)"
               info "Run manually:"
               echo "    sudo cp $_effect_so $_dest_effect"
               echo "    sudo cp $_config_so $_dest_config"
             fi
           fi
         else
-          fail "Liquid Glass build failed"
+          fail "Acrylic Glass build failed"
         fi
       else
-        fail "Liquid Glass cmake failed"
+        fail "Acrylic Glass cmake failed"
       fi
     fi
   fi
@@ -879,7 +879,7 @@ for qdbus_cmd in qdbus6 qdbus; do
   command -v "$qdbus_cmd" &>/dev/null && {
     "$qdbus_cmd" org.kde.KWin /KWin org.kde.KWin.reconfigure &>/dev/null || true
     sleep 2
-    if [[ "$(cfg liquid_glass)" == "true" ]]; then
+    if [[ "$(cfg acrylic_glass)" == "true" ]]; then
       "$qdbus_cmd" org.kde.KWin /Effects org.kde.kwin.Effects.loadEffect liquidglass &>/dev/null || true
     fi
     break
