@@ -285,20 +285,6 @@ fi
 step "Applying Changes"
 note "Resets to Breeze defaults and restarts Plasma"
 
-# layout — reset to default KDE panel
-if [[ "$(cfg layout)" == "true" ]]; then
-  _layout="$REPO/src/offline/layouts/default.js"
-  if [[ -f "$_layout" ]]; then
-    for _q in qdbus6 qdbus; do
-      command -v "$_q" &>/dev/null && {
-        "$_q" org.kde.plasmashell /PlasmaShell org.kde.PlasmaShell.evaluateScript "$(cat "$_layout")" &>/dev/null \
-          && ok "Layout reset" || warn "layout reset failed"
-        break
-      }
-    done
-  fi
-fi
-
 # reset configs
 if command -v kwriteconfig6 &>/dev/null; then
   if [[ "$(cfg fonts)" == "true" ]]; then
@@ -343,11 +329,35 @@ rm -rf "$HOME/.cache/gtk-4.0/" 2>/dev/null || true
 kbuildsycoca6 --noincremental 2>/dev/null || true
 ok "Caches flushed"
 
-# restart plasma + KWin
-systemctl --user restart plasma-plasmashell 2>/dev/null || killall plasmashell 2>/dev/null || true
-ok "Plasma restarted"
+# KWin reconfigure
 for _q in qdbus6 qdbus; do
   command -v "$_q" &>/dev/null && { "$_q" org.kde.KWin /KWin org.kde.KWin.reconfigure &>/dev/null || true; break; }
+done
+ok "KWin reconfigured"
+
+# layout reset (needs plasmashell running)
+if [[ "$(cfg layout)" == "true" ]]; then
+  _layout="$REPO/src/offline/layouts/default.js"
+  if [[ -f "$_layout" ]]; then
+    for _q in qdbus6 qdbus; do
+      command -v "$_q" &>/dev/null && {
+        "$_q" org.kde.plasmashell /PlasmaShell org.kde.PlasmaShell.evaluateScript "$(cat "$_layout")" &>/dev/null \
+          && ok "Layout reset" || warn "layout reset failed"
+        break
+      }
+    done
+  fi
+fi
+
+# reload panels and desktops without killing plasma
+for _q in qdbus6 qdbus; do
+  command -v "$_q" &>/dev/null && {
+    "$_q" org.kde.plasmashell /PlasmaShell org.kde.PlasmaShell.evaluateScript "
+      var ps = panels(); for (var i = 0; i < ps.length; i++) ps[i].reloadConfig();
+      var ds = desktops(); for (var i = 0; i < ds.length; i++) ds[i].reloadConfig();
+    " &>/dev/null && ok "Plasma reloaded" || true
+    break
+  }
 done
 
 # ── Done ──────────────────────────────────────────────────────

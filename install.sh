@@ -750,44 +750,6 @@ fi
 # icons, cursors, color scheme, plasma theme, kvantum, gtk
 # are all applied by theme-switch.sh (auto light/dark based on time of day)
 
-# ── applying layout ──
-if [[ "$(cfg layout)" == "true" ]]; then
-  _layout="$REPO/src/offline/layouts/mac-tahoe.js"
-  if [[ -f "$_layout" ]]; then
-    _qdbus=""
-    for _q in qdbus6 qdbus; do command -v "$_q" &>/dev/null && { _qdbus="$_q"; break; }; done
-    if [[ -n "$_qdbus" ]]; then
-      "$_qdbus" org.kde.plasmashell /PlasmaShell org.kde.PlasmaShell.evaluateScript "$(cat "$_layout")" &>/dev/null \
-        && ok "Layout installed" \
-        || warn "layout failed — set layout manually"
-      sleep 3
-      # set bottom dock panel opacity to translucent (JS API doesn't expose this)
-      # panelOpacity: 0=adaptive, 1=opaque, 2=translucent
-      _prc="$HOME/.config/plasmashellrc"
-      if [[ -f "$_prc" ]]; then
-        # find floating panels (bottom dock) and set panelOpacity=2
-        python3 -c "
-import re, sys
-text = open('$_prc').read()
-# match floating panel sections and inject/replace panelOpacity
-def fix(m):
-    section = m.group(0)
-    if 'floating=1' in section:
-        if 'panelOpacity=' in section:
-            section = re.sub(r'panelOpacity=\d+', 'panelOpacity=2', section)
-        else:
-            section = section.rstrip() + '\npanelOpacity=2\n'
-    return section
-result = re.sub(r'(\[PlasmaViews\]\[Panel \d+\]\n(?:[^\[]*\n)*)', fix, text)
-open('$_prc', 'w').write(result)
-" 2>/dev/null && ok "Dock installed" || true
-      fi
-    else
-      warn "qdbus not found — layout not installed"
-    fi
-  fi
-fi
-
 # ── applying themes (auto light/dark) ──
 _switch_src="$OFFLINE/theme-switch.sh"
 _switch_dest="$HOME/.local/bin/mac-tahoe-theme-switch"
@@ -877,9 +839,43 @@ for qdbus_cmd in qdbus6 qdbus; do
 done
 echo -e "\r  ${GREEN}✓${RESET}  KWin reconfigured "
 
-# restart xdg-desktop-portal-gtk before Plasma comes back to prevent SEGV
-systemctl --user restart xdg-desktop-portal-gtk.service 2>/dev/null || true
+# ── applying layout ──
+if [[ "$(cfg layout)" == "true" ]]; then
+  _layout="$REPO/src/offline/layouts/mac-tahoe.js"
+  if [[ -f "$_layout" ]]; then
+    _qdbus=""
+    for _q in qdbus6 qdbus; do command -v "$_q" &>/dev/null && { _qdbus="$_q"; break; }; done
+    if [[ -n "$_qdbus" ]]; then
+      "$_qdbus" org.kde.plasmashell /PlasmaShell org.kde.PlasmaShell.evaluateScript "$(cat "$_layout")" &>/dev/null \
+        && ok "Layout installed" \
+        || warn "layout failed — set layout manually"
+      sleep 3
+      # set bottom dock panel opacity to translucent (JS API doesn't expose this)
+      # panelOpacity: 0=adaptive, 1=opaque, 2=translucent
+      _prc="$HOME/.config/plasmashellrc"
+      if [[ -f "$_prc" ]]; then
+        python3 -c "
+import re, sys
+text = open('$_prc').read()
+def fix(m):
+    section = m.group(0)
+    if 'floating=1' in section:
+        if 'panelOpacity=' in section:
+            section = re.sub(r'panelOpacity=\d+', 'panelOpacity=2', section)
+        else:
+            section = section.rstrip() + '\npanelOpacity=2\n'
+    return section
+result = re.sub(r'(\[PlasmaViews\]\[Panel \d+\]\n(?:[^\[]*\n)*)', fix, text)
+open('$_prc', 'w').write(result)
+" 2>/dev/null && ok "Dock installed" || true
+      fi
+    else
+      warn "qdbus not found — layout not installed"
+    fi
+  fi
+fi
 
+# restart plasma so everything loads clean (launchers, icons, dock)
 echo -ne "  …  Restarting Plasma"
 kquitapp6 plasmashell 2>/dev/null || killall plasmashell 2>/dev/null || true
 for _i in $(seq 1 10); do pgrep -x plasmashell &>/dev/null || break; sleep 1; done
