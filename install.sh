@@ -766,7 +766,7 @@ def fix(m):
     return section
 result = re.sub(r'(\[PlasmaViews\]\[Panel \d+\]\n(?:[^\[]*\n)*)', fix, text)
 open('$_prc', 'w').write(result)
-" 2>/dev/null && ok "Dock opacity → translucent" || true
+" 2>/dev/null && ok "Dock installed" || true
       fi
     else
       warn "qdbus not found — layout not installed"
@@ -797,10 +797,9 @@ if [[ -f "$_svc_src" ]]; then
   fi
 fi
 if [[ -x "$_switch_dest" ]]; then
-  "$_switch_dest" "$_theme_mode" &>/dev/null
-  # wait for gtk-4.0 background overwrite to finish
-  wait 2>/dev/null
   ok "Theme switcher installed"
+  # NOTE: theme-switch is run AFTER Plasma restart to avoid heap corruption
+  # from xsettingsd reloads arriving during Plasma init
 else
   warn "Theme switcher not installed"
 fi
@@ -815,43 +814,56 @@ if [[ "$(cfg wallpapers)" == "true" ]]; then
 fi
 
 # ── flushing caches ──
-# icon caches
+# ── restarting desktop ──
+step "Restarting desktop"
+
+note "Flushing icon, Plasma, and GTK caches"
 rm -rf "$HOME/.cache/icon-cache.kcache" 2>/dev/null || true
 rm -rf "$HOME/.cache/plasma-svgelements-"* 2>/dev/null || true
 rm -rf "$HOME/.cache/plasma_theme_"* 2>/dev/null || true
 find "$HOME/.cache" -maxdepth 1 -name "ksycoca6*" -delete 2>/dev/null || true
-# GTK caches
 rm -rf "$HOME/.cache/gtk-3.0/" 2>/dev/null || true
 rm -rf "$HOME/.cache/gtk-4.0/" 2>/dev/null || true
-# rebuild sycoca (app/icon database)
 kbuildsycoca6 --noincremental 2>/dev/null || true
 ok "Caches flushed"
 
-sleep 2
-# kill plasmashell, wait for it to fully exit, then start fresh
+echo -ne "  …  Stopping Plasma"
 kquitapp6 plasmashell 2>/dev/null || killall plasmashell 2>/dev/null || true
-sleep 3
-# start plasmashell — try systemd first, fall back to direct launch
+for _i in $(seq 1 10); do pgrep -x plasmashell &>/dev/null || break; sleep 1; done
+echo -e "\r  ${GREEN}✓${RESET}  Plasma stopped    "
+
+# restart xdg-desktop-portal-gtk before Plasma comes back to prevent SEGV
+systemctl --user restart xdg-desktop-portal-gtk.service 2>/dev/null || true
+
+echo -ne "  …  Starting Plasma"
 systemctl --user start plasma-plasmashell 2>/dev/null || kstart plasmashell 2>/dev/null &
-sleep 2
-ok "Plasma restarted"
+for _i in $(seq 1 15); do pgrep -x plasmashell &>/dev/null && break; sleep 1; done
+sleep 3
+echo -e "\r  ${GREEN}✓${RESET}  Plasma started    "
 
-# restart nautilus if installed so GTK changes take effect
-if command -v nautilus &>/dev/null; then
-  nautilus -q 2>/dev/null || true
-fi
-
+echo -ne "  …  Reconfiguring KWin"
 for qdbus_cmd in qdbus6 qdbus; do
   command -v "$qdbus_cmd" &>/dev/null && {
     "$qdbus_cmd" org.kde.KWin /KWin org.kde.KWin.reconfigure &>/dev/null || true
     sleep 2
-    # make sure Liquid Glass loads after reconfigure
     if [[ "$(cfg liquid_glass)" == "true" ]]; then
       "$qdbus_cmd" org.kde.KWin /Effects org.kde.kwin.Effects.loadEffect liquidglass &>/dev/null || true
     fi
     break
   }
 done
+echo -e "\r  ${GREEN}✓${RESET}  KWin reconfigured "
+
+# apply theme AFTER Plasma is fully loaded to avoid xsettingsd race
+if [[ -x "$_switch_dest" ]]; then
+  "$_switch_dest" "$_theme_mode" &>/dev/null
+  ok "Theme applied"
+fi
+
+if command -v nautilus &>/dev/null; then
+  nautilus -q 2>/dev/null || true
+  ok "Nautilus restarted"
+fi
 
 # ── Done ──────────────────────────────────────────────────────
 echo ""

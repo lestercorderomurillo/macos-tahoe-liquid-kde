@@ -96,18 +96,20 @@ apply() {
     fi
     # 3. libadwaita/gtk4: overwrite ~/.config/gtk-4.0/ with compiled theme
     # wait for KDE's gtkconfig daemon to finish regenerating, then overwrite
+    # NOTE: runs synchronously to avoid race conditions with Plasma restart
     # NOTE: do NOT stop/start xdg-desktop-portal-gtk — it causes SEGV crashes
     local gtk4_dest="$HOME/.config/gtk-4.0"
     local gtk4_src="$gtk_dest/$gtk_theme/gtk-4.0"
     if [[ -d "$gtk4_src" ]]; then
-      (sleep 3 && \
-       cp -rf "$gtk4_src/assets" "$gtk4_dest/" 2>/dev/null; \
-       cp -rf "$gtk4_src/windows-assets" "$gtk4_dest/" 2>/dev/null; \
-       cp -f "$gtk4_src/gtk-Dark.css" "$gtk4_dest/" 2>/dev/null; \
-       cp -f "$gtk4_src/gtk-Light.css" "$gtk4_dest/" 2>/dev/null; \
-       cd "$gtk4_dest" && \
-       ln -sf "gtk-${mode^}.css" gtk.css 2>/dev/null; \
-       ln -sf gtk-Dark.css gtk-dark.css 2>/dev/null) &
+      sleep 3
+      mkdir -p "$gtk4_dest"
+      cp -rf "$gtk4_src/assets" "$gtk4_dest/" 2>/dev/null
+      cp -rf "$gtk4_src/windows-assets" "$gtk4_dest/" 2>/dev/null
+      cp -f "$gtk4_src/gtk-Dark.css" "$gtk4_dest/" 2>/dev/null
+      cp -f "$gtk4_src/gtk-Light.css" "$gtk4_dest/" 2>/dev/null
+      cd "$gtk4_dest" && \
+      ln -sf "gtk-${mode^}.css" gtk.css 2>/dev/null
+      ln -sf gtk-Dark.css gtk-dark.css 2>/dev/null
     fi
   fi
 
