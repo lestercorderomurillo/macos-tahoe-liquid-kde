@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   width="24"
+   height="24"
+   viewBox="0 0 24 24"
+   fill="none"
+   stroke="currentColor"
+   stroke-width="2"
+   stroke-linecap="round"
+   stroke-linejoin="round"
+   class="feather feather-trash-2"
+   version="1.1"
+   id="svg10"
+   sodipodi:docname="trash-2.svg"
+   inkscape:version="1.1.1 (3bf5ae0d25, 2021-09-20)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <defs
+     id="defs14" />
+  <sodipodi:namedview
+     id="namedview12"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     showgrid="false"
+     inkscape:zoom="26.25"
+     inkscape:cx="12.019048"
+     inkscape:cy="12"
+     inkscape:window-width="1920"
+     inkscape:window-height="992"
+     inkscape:window-x="1600"
+     inkscape:window-y="24"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="svg10" />
+  <polyline
+     points="3 6 5 6 21 6"
+     id="polyline2"
+     style="stroke:#ffffff" />
+  <path
+     d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"
+     id="path4"
+     style="stroke:#ffffff" />
+  <line
+     x1="10"
+     y1="11"
+     x2="10"
+     y2="17"
+     id="line6"
+     style="stroke:#ffffff" />
+  <line
+     x1="14"
+     y1="11"
+     x2="14"
+     y2="17"
+     id="line8"
+     style="stroke:#ffffff" />
+</svg>

@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   width="24"
+   height="24"
+   viewBox="0 0 24 24"
+   fill="currentColor"
+   stroke="none"
+   stroke-width="0"
+   version="1.1"
+   id="svg8"
+   sodipodi:docname="gamepad-2.svg"
+   inkscape:version="1.1.1 (3bf5ae0d25, 2021-09-20)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <defs
+     id="defs12" />
+  <sodipodi:namedview
+     id="namedview10"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     showgrid="false"
+     inkscape:zoom="26.25"
+     inkscape:cx="15.638095"
+     inkscape:cy="12.495238"
+     inkscape:window-width="1920"
+     inkscape:window-height="992"
+     inkscape:window-x="1600"
+     inkscape:window-y="24"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="svg8" />
+  <path
+     d="M6 10a1 1 0 0 0-1 1 1 1 0 0 0 1 1h4a1 1 0 0 0 1-1 1 1 0 0 0-1-1z"
+     id="path2"
+     style="fill:#ffffff" />
+  <path
+     d="M8 8a1 1 0 0 0-1 1v4a1 1 0 0 0 1 1 1 1 0 0 0 1-1V9a1 1 0 0 0-1-1zM15 11a1 1 0 0 0-1 1 1 1 0 0 0 1 1h.01a1 1 0 0 0 1-1 1 1 0 0 0-1-1zM18 9a1 1 0 0 0-1 1 1 1 0 0 0 1 1h.01a1 1 0 0 0 1-1 1 1 0 0 0-1-1z"
+     id="path4"
+     style="fill:#ffffff" />
+  <path
+     d="M6.68 4a5.013 5.013 0 0 0-4.973 4.486v.002l-.014.117a1 1 0 0 0-.002.018c-.04.338-.21 1.772-.373 3.318C1.156 13.488 1 15.098 1 16c0 2.197 1.803 4 4 4 1.333 0 2.207-.793 2.707-1.293l1.414-1.414A.999.999 0 0 1 9.828 17h4.344c.265 0 .52.105.707.293l1.414 1.414c.5.5 1.374 1.293 2.707 1.293 2.197 0 4-1.803 4-4 0-.903-.156-2.514-.318-4.06a239.334 239.334 0 0 0-.373-3.317 1 1 0 0 0-.004-.02l-.012-.115v-.002A5.012 5.012 0 0 0 17.32 4zm0 2h10.64a2.987 2.987 0 0 1 2.983 2.693 1 1 0 0 0 .002.014c.003.027.007.085.02.174.041.347.21 1.749.368 3.267.16 1.528.307 3.21.307 3.852 0 1.116-.884 2-2 2-.667 0-.793-.207-1.293-.707l-1.414-1.414A3.001 3.001 0 0 0 14.172 15H9.828c-.795 0-1.559.317-2.121.879l-1.414 1.414c-.5.5-.626.707-1.293.707-1.116 0-2-.884-2-2 0-.642.146-2.323.307-3.852.159-1.52.327-2.923.369-3.27l.002-.017c.009-.071.014-.128.017-.156a1 1 0 0 0 .002-.012A2.987 2.987 0 0 1 6.68 6z"
+     id="path6"
+     style="fill:#ffffff" />
+</svg>

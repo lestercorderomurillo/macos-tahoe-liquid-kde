@@ -71,7 +71,7 @@ dock.height = 64;
 // opacity is set to translucent via plasmashellrc after layout apply
 // (JS scripting API does not expose panelOpacity)
 
-var launcher = dock.addWidget("org.kde.plasma.kickerdash");
+var launcher = dock.addWidget("org.kde.mac-tahoe-liquid-kde.launcher");
 launcher.currentConfigGroup = ["General"];
 launcher.writeConfig("icon", "view-app-grid");
 dock.addWidget("org.kde.plasma.marginsseparator");

@@ -27,6 +27,7 @@ Inspired by [Pear OS](https://pearos.xyz) — a complete environment, not just a
 | **Aurorae Decorations** | Window title bar and borders | 🔲 Planned |
 | **SDDM Theme** | macOS-style Login and lock screen | 🔲 Planned |
 | **Menu Plasmoid** | macOS-style Apple Menu with system actions | ✅ Implemented |
+| **Launcher Plasmoid** | macOS-style app grid launcher (fork of [TahoeLauncher](https://github.com/EliverLara/TahoeLauncher)) | ✅ Implemented |
 | **Trashcan Plasmoid** | macOS-style trash widget with configurable icons | ✅ Implemented |
 | **Calendar Plasmoid** | macOS-style calendar dropdown | 🔲 Planned |
 | **Control Center Plasmoid** | macOS-style quick settings panel | 🔲 Planned |
@@ -158,7 +159,7 @@ This project is an independent reimplementation inspired by the macOS aesthetic.
 
 ## Credits
 
-Based on [vinceliuice/MacTahoe-kde](https://github.com/vinceliuice/MacTahoe-kde) by [vinceliuice](https://github.com/vinceliuice).
+- Launcher plasmoid forked from [EliverLara/TahoeLauncher](https://github.com/EliverLara/TahoeLauncher) (GPL-2.0).
 
 ---
 

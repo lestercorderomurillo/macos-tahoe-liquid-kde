@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kcfg xmlns="http://www.kde.org/standards/kcfg/1.0"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:schemaLocation="http://www.kde.org/standards/kcfg/1.0
+      http://www.kde.org/standards/kcfg/1.0/kcfg.xsd" >
+  <kcfgfile name=""/>
+
+  <group name="General">
+    <entry name="icon" type="String">
+      <label>The name of the icon to use for the compact representation (e.g. on a small panel).</label>
+      <default>view-app-grid</default>
+    </entry>
+    <entry name="useCustomButtonImage" type="Bool">
+      <label>Whether to use a custom image instead of an icon in the compact representation (e.g. on a small panel).</label>
+      <default>false</default>
+    </entry>
+    <entry name="customButtonImage" type="Url">
+      <label>The URL of the custtom image to use instead of an icon in the compact representation (e.g. on a small panel).</label>
+      <default></default>
+    </entry>
+
+    <entry name="showAllAppsCategorized" type="Bool">
+      <label>Show apps categorized.</label>
+      <default>false</default>
+    </entry>
+     <entry name="showAllAppsInList" type="Bool">
+      <label>Show apps in list.</label>
+      <default>false</default>
+    </entry>
+     <entry name="showAllAppsInGrid" type="Bool">
+      <label>Show apps in a grid.</label>
+      <default>true</default>
+    </entry>
+    <entry name="launcherPosition" type="Int">
+      <label>Where is the launcher supposed to open? 1: Auto (Bottom or Top panel) 2: Bottom or top center 3: Screen center</label>
+      <default>2</default>
+    </entry>
+    <entry name="offsetX" type="Int">
+      <label>Offset when floating 0 = 0.25 * Panel height</label>
+      <default>0</default>
+    </entry>
+    <entry name="offsetY" type="Int">
+      <label>Offset when floating 0 = 0.25 * Panel height</label>
+      <default>0</default>
+    </entry>
+    <entry name="floating" type="Bool">
+      <label>Gives the launcher some breathing room.</label>
+      <default>false</default>
+    </entry>
+    <entry name="useSystemFontSettings" type="Bool">
+      <label>Uses system font settings instead of themes's default.</label>
+      <default>false</default>
+    </entry>
+    <entry name="appsIconSize" type="Enum">
+      <label>Favorites apps icon size</label>
+      <default>3</default>
+    </entry>
+    <entry name="numberColumns" type="Int">
+      <label>Number of columns to favorites apps grid</label>
+      <default>5</default>
+    </entry>
+    <entry name="numberOfRows" type="Int">
+      <label>Number of rows to app grid</label>
+      <default>4</default>
+    </entry>
+    <entry name="compactListItems" type="Bool">
+      <label>Show list items in a compact format</label>
+      <default>false</default>
+    </entry>
+    <entry name="showListItemDescription" type="Bool">
+      <label>Show description in list items</label>
+      <default>true</default>
+    </entry>
+
+    <entry name="showSessionActionsButton" type="Bool">
+      <label>Show session actions button(shutdown, logout, restart...)</label>
+      <default>true</default>
+    </entry>
+  </group>
+</kcfg>

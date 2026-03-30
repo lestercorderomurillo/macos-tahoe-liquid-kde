@@ -1,0 +1,20 @@
+{
+    "KPackageStructure": "Plasma/Applet",
+    "KPlugin": {
+        "Authors": [
+            {
+                "Name": "Lester Cordero Murillo"
+            }
+        ],
+        "Category": "Application Launchers",
+        "Description": "macOS Tahoe-style fullscreen application launcher",
+        "Icon": "view-app-grid",
+        "Id": "org.kde.mac-tahoe-liquid-kde.launcher",
+        "License": "GPL-2.0+",
+        "Name": "Launcher (MacTahoe Liquid KDE)"
+    },
+    "X-Plasma-API-Minimum-Version": "6.0",
+    "X-Plasma-Provides": [
+        "org.kde.plasma.launchermenu"
+    ]
+}
