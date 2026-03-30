@@ -50,9 +50,9 @@ void main(void)
 
     // Glass refraction — SDF-based surface normal + Snell's law via refract()
     // Refraction follows the actual window shape including rounded corners
-    const float refractiveIndex = 1.5;
-    float thickness = 48.0;
-    float baseHeight = 75.0;
+    const float refractiveIndex = 1.77;
+    float thickness = 128.0;
+    float baseHeight = 96.0;
 
     vec3 normal = glassNormal(dist, thickness);
     // Blend normal toward center so top/bottom refraction isn't straight like a mirror

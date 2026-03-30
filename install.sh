@@ -751,7 +751,7 @@ if [[ "$(cfg acrylic_glass)" == "true" ]]; then
               kwriteconfig6 --file kwinrc --group "$_lg_grp" --key Contrast 1.0 2>/dev/null || true
               kwriteconfig6 --file kwinrc --group "$_lg_grp" --key TopCornerRadius 22 2>/dev/null || true
               kwriteconfig6 --file kwinrc --group "$_lg_grp" --key BottomCornerRadius 22 2>/dev/null || true
-              kwriteconfig6 --file kwinrc --group "$_lg_grp" --key MenuCornerRadius 22 2>/dev/null || true
+              kwriteconfig6 --file kwinrc --group "$_lg_grp" --key MenuCornerRadius 0 2>/dev/null || true
               kwriteconfig6 --file kwinrc --group "$_lg_grp" --key DockCornerRadius 22 2>/dev/null || true
               ok "Acrylic Glass preset installed"
               # enable in config — will load on next KWin start

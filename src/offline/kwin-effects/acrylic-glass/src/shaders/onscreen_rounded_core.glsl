@@ -7,7 +7,7 @@ uniform mat4 colorMatrix;
 uniform float offset;
 uniform vec2 halfpixel;
 uniform vec4 box;
-uniform vec4 cornerRadius;
+uniform vec4 cornerRadius; 
 uniform float opacity;
 uniform vec2 blurSize;
 
@@ -18,98 +18,74 @@ out vec4 fragColor;
 
 #include "glass.glsl"
 
-// Surface normal from SDF — models curved glass edge with circular cross-section
-vec3 glassNormal(float sd, float t)
-{
-    float dx = dFdx(sd);
-    float dy = dFdy(sd);
-    float nc = clamp((t + sd) / t, 0.0, 1.0);
-    float ns = sqrt(1.0 - nc * nc);
-    return normalize(vec3(dx * nc, dy * nc, ns));
-}
-
-// Glass surface height — circular cross-section at the edge
-float glassHeight(float sd, float t)
-{
-    if (sd >= 0.0) return 0.0;
-    if (sd < -t) return t;
-    float x = t + sd;
-    return sqrt(t * t - x * x);
-}
-
 void main(void)
 {
-    vec2 halfBlurSize = blurSize * 0.5;
-    float minHalfSize = min(halfBlurSize.x, halfBlurSize.y);
+    vec2 halfSize = blurSize * 0.5;
+    vec2 position = uv * blurSize - halfSize;
+    
+    float d = roundedRectangleDist(position, halfSize, cornerRadius);
+    // Gradiente radial para rotación 360° sin costuras
+    vec2 vGrad = normalize(vec2(dFdx(d), dFdy(d)));
 
-    vec2 position = uv * blurSize - halfBlurSize;
-    float dist = roundedRectangleDist(position, halfBlurSize, cornerRadius);
+    // Antialiasing exterior
+    float edgeAlpha = 1.0 - smoothstep(-1.0, 1.0, d);
+    if (edgeAlpha <= 0.0) discard;
 
-    if (dist >= 0.0) {
-        float df = fwidth(dist);
-        fragColor = texture(texUnit, uv) * (1.0 - clamp(0.5 + dist / df, 0.0, 1.0));
-        return;
-    }
+    // 1. Grosor del borde aumentado (Edge Zone)
+    // Usamos un multiplicador para que el efecto entre más hacia el centro que los 22pt
+    float edgeZone = cornerRadius.x * 3.5; 
+    float distFactor = clamp(-d / edgeZone, 0.0, 1.0);
+    
+    // Curva de inclinación: pow(x, 0.8) hace que el borde sea más "gordo" y presente
+    float tilt = pow(1.0 - distFactor, 0.8); 
+    vec3 normal = normalize(vec3(vGrad * tilt, 1.0 - tilt));
 
-    // Glass refraction — SDF-based surface normal + Snell's law via refract()
-    // Refraction follows the actual window shape including rounded corners
-    const float refractiveIndex = 1.5;
-    float thickness = 48.0;
-    float baseHeight = 75.0;
+    // 2. Refracción Base
+    const float ior = 1.45;
+    vec3 refractVec = refract(vec3(0.0, 0.0, -1.0), normal, 1.0 / ior);
+    
+    // Fuerza de distorsión (h)
+    float h = 70.0 * tilt;
+    vec2 baseRefUV = uv + (refractVec.xy * h / blurSize);
 
-    vec3 normal = glassNormal(dist, thickness);
-    // Blend normal toward center so top/bottom refraction isn't straight like a mirror
-    vec2 toCenter = -normalize(position + vec2(0.001));
-    normal.xy = mix(normal.xy, toCenter * length(normal.xy), 0.25);
-    normal = normalize(normal);
+    // 3. ABERRACIÓN CROMÁTICA VIVA (RGB Separación)
+    // Dispersión: cuánto se separan los colores. Aumenta este valor para más color.
+    float dispersion = 0.015 * tilt; 
+    
+    vec2 uvR = uv + (refractVec.xy * (h * (1.0 + dispersion)) / blurSize);
+    vec2 uvG = baseRefUV;
+    vec2 uvB = uv + (refractVec.xy * (h * (1.0 - dispersion)) / blurSize);
 
-    vec3 refractVec = refract(vec3(0.0, 0.0, -1.0), normal, 1.0 / refractiveIndex);
-    float h = glassHeight(dist, thickness);
-    float denom = dot(vec3(0.0, 0.0, -1.0), refractVec);
-    float refractLen = abs(denom) > 0.001 ? (h + baseHeight) / denom : 0.0;
-    vec2 refractedUV = uv + refractVec.xy * refractLen / blurSize;
+    // 4. Muestreo Kawase con Offset RGB (Simplificado para performance, manteniendo calidad)
+    float blurScale = offset * (1.0 + tilt * 2.5);
+    
+    // Función auxiliar interna para blur por canal
+    #define SAMPLE_CA(uv_target) (texture(texUnit, clamp(uv_target, 0.0, 1.0)).rgb)
+    
+    vec3 color;
+    color.r = texture(texUnit, clamp(uvR, 0.0, 1.0)).r;
+    color.g = texture(texUnit, clamp(uvG, 0.0, 1.0)).g;
+    color.b = texture(texUnit, clamp(uvB, 0.0, 1.0)).b;
 
-    // Border proximity from SDF
-    float borderBand = minHalfSize * 0.25;
-    float borderFactor = smoothstep(-borderBand, 0.0, dist);
+    // Aplicamos el Blur (Kawase) sobre el color base ya separado
+    // Para máximo "RGB vivo", el blur debe ser ligeramente menor que la separación
+    vec2 bOffset = halfpixel * blurScale;
+    vec4 sum = vec4(color, 1.0) * 4.0;
+    sum.rgb += texture(texUnit, clamp(uvG + vec2(bOffset.x, bOffset.y), 0.0, 1.0)).rgb * 2.0;
+    sum.rgb += texture(texUnit, clamp(uvG - vec2(bOffset.x, bOffset.y), 0.0, 1.0)).rgb * 2.0;
+    sum.rgb /= 8.0;
 
-    // Blur: subtle at center, heavy at edges
-    float scaledOffset = offset * (1.0 + borderFactor * 4.0);
+    // 5. Tint y Brillo (Espejo)
+    // Fresnel para el reflejo blanco en el borde curvo
+    float fresnel = pow(tilt, 2.5);
+    sum.rgb += vec3(0.2, 0.25, 0.3) * fresnel; // Brillo con ligero tinte azulado/frío
+    
+    // Tint global superior (aumentado para visibilidad)
+    sum.rgb += mix(0.12, 0.0, uv.y) * (1.0 - tilt);
 
-    // Kawase upsample with refraction + stronger blur near edges
-    vec4 sum = texture(texUnit, clamp(refractedUV + vec2(-halfpixel.x * 2.0, 0.0) * scaledOffset, 0.0, 1.0));
-    sum += texture(texUnit, clamp(refractedUV + vec2(-halfpixel.x, halfpixel.y) * scaledOffset, 0.0, 1.0)) * 2.0;
-    sum += texture(texUnit, clamp(refractedUV + vec2(0.0, halfpixel.y * 2.0) * scaledOffset, 0.0, 1.0));
-    sum += texture(texUnit, clamp(refractedUV + vec2(halfpixel.x, halfpixel.y) * scaledOffset, 0.0, 1.0)) * 2.0;
-    sum += texture(texUnit, clamp(refractedUV + vec2(halfpixel.x * 2.0, 0.0) * scaledOffset, 0.0, 1.0));
-    sum += texture(texUnit, clamp(refractedUV + vec2(halfpixel.x, -halfpixel.y) * scaledOffset, 0.0, 1.0)) * 2.0;
-    sum += texture(texUnit, clamp(refractedUV + vec2(0.0, -halfpixel.y * 2.0) * scaledOffset, 0.0, 1.0));
-    sum += texture(texUnit, clamp(refractedUV + vec2(-halfpixel.x, -halfpixel.y) * scaledOffset, 0.0, 1.0)) * 2.0;
-    sum /= 12.0;
-
-    // Chromatic aberration — wide RGB split at borders, low mix to preserve blur
-    vec2 caDir = refractVec.xy * refractLen * 0.2 / blurSize;
-    float caStrength = borderFactor * 0.25;
-    sum.r = mix(sum.r, texture(texUnit, clamp(refractedUV + caDir, 0.0, 1.0)).r, caStrength);
-    sum.b = mix(sum.b, texture(texUnit, clamp(refractedUV - caDir, 0.0, 1.0)).b, caStrength);
-
-    // Border highlight — follows SDF shape including corner radius
-    float borderPx = -dist;
-    float borderHighlight = smoothstep(0.0, 2.0, borderPx) * (1.0 - smoothstep(2.0, 6.0, borderPx));
-    sum.rgb += borderHighlight * 0.08;
-
-    // Reflection — Fresnel at left/right edges only (horizontal normal)
-    float fresnel = abs(normal.x) * 2.0;
-    sum.rgb = mix(sum.rgb, vec3(1.0), fresnel * 0.08);
-
-    // Gradient lighting — glass catches light at top
-    float normInside = clamp(-dist / minHalfSize, 0.0, 1.0);
-    sum.rgb += mix(0.04, 0.0, uv.y) * normInside;
-
+    // 6. Finalizado
     sum = glass(sum, cornerRadius);
-    float f = sdfRoundedBox(vertex, box.xy, box.zw, cornerRadius);
-    float df = fwidth(f);
-    sum *= 1.0 - clamp(0.5 + f / df, 0.0, 1.0);
-
-    fragColor = sum * colorMatrix * opacity;
+    float finalMask = 1.0 - smoothstep(-0.5, 0.5, d);
+    
+    fragColor = sum * colorMatrix * (opacity * finalMask);
 }

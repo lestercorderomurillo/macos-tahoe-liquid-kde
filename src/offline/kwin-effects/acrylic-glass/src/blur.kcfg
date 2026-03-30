@@ -6,10 +6,10 @@
     <kcfgfile arg="true"/>
     <group name="Effect-liquidglass">
         <entry name="BlurStrength" type="Int">
-            <default>1</default>
+            <default>2</default>
         </entry>
         <entry name="NoiseStrength" type="Int">
-            <default>0</default>
+            <default>2</default>
         </entry>
         <entry name="TransparentBlur" type="Bool">
             <default>true</default>
@@ -33,7 +33,7 @@
             <default>22.0</default>
         </entry>
         <entry name="MenuCornerRadius" type="Double">
-            <default>22.0</default>
+            <default>0.0</default>
         </entry>
         <entry name="DockCornerRadius" type="Double">
             <default>22.0</default>

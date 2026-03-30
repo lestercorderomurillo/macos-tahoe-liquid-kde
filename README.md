@@ -1,4 +1,4 @@
-# MacOS Tahoe Acrylic Glass Theme for KDE Plasma
+# MacOS Tahoe Glass Glass Theme for KDE Plasma
 
 > [!CAUTION]
 > **Status: In development** — This package is functional but under active development. Some features may not work as expected or be broken in your system. I advice you to back up your system config before installing. Use at your own risk.
@@ -41,6 +41,18 @@ A complete environment, not just a coat of paint.
 | **Shutdown Screen** | Styled logout / shutdown sequence | 🔲 Planned |
 
 ---
+
+## Screenshots
+
+<table>
+  <tr>
+    <td align="center">
+      <img src="src/images/calculator.png" alt="macOS Tahoe Calculator" width="400px"/><br/>
+      <sub><b>Acrylic Glass Calculator (Example)</b></sub>
+    </td>
+  </tr>
+</table>
+
 
 ## Requirements
 
