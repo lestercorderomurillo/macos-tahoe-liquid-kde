@@ -29,6 +29,7 @@ PlasmoidItem {
 
     switchWidth: Kirigami.Units.gridUnit * 14
     switchHeight: Kirigami.Units.gridUnit * 18
+    hideOnWindowDeactivate: true
 
     preferredRepresentation: compactRepresentation
 
@@ -132,18 +133,25 @@ PlasmoidItem {
         }
     }
 
-    // ── full: the dropdown menu ─────────────────────────────────────
+    // ── full: the dropdown menu ───────────────────────────────��─────
     fullRepresentation: Item {
         Layout.preferredWidth: Kirigami.Units.gridUnit * 16
-        Layout.preferredHeight: menuColumn.implicitHeight + Kirigami.Units.largeSpacing * 2
+        Layout.maximumWidth: Kirigami.Units.gridUnit * 16
+        Layout.minimumWidth: Kirigami.Units.gridUnit * 16
+        Layout.preferredHeight: menuColumn.implicitHeight + Kirigami.Units.gridUnit
+        Layout.maximumHeight: menuColumn.implicitHeight + Kirigami.Units.gridUnit
+        Layout.minimumHeight: menuColumn.implicitHeight + Kirigami.Units.gridUnit
 
         ColumnLayout {
             id: menuColumn
             anchors {
                 fill: parent
-                margins: Kirigami.Units.largeSpacing
+                topMargin: Kirigami.Units.smallSpacing * 2
+                bottomMargin: Kirigami.Units.smallSpacing * 2
+                leftMargin: Kirigami.Units.smallSpacing
+                rightMargin: Kirigami.Units.smallSpacing
             }
-            spacing: 0
+            spacing: Kirigami.Units.smallSpacing
 
             Repeater {
                 model: root.menuActions
@@ -152,12 +160,16 @@ PlasmoidItem {
                     id: delegateItem
                     required property var modelData
                     Layout.fillWidth: true
-                    implicitHeight: modelData.separator ? sep.implicitHeight : btn.implicitHeight
+                    implicitHeight: modelData.separator ? sep.height + Kirigami.Units.smallSpacing * 2 : btn.implicitHeight
 
                     Kirigami.Separator {
                         id: sep
                         visible: delegateItem.modelData.separator === true
-                        anchors { left: parent.left; right: parent.right }
+                        anchors {
+                            left: parent.left; right: parent.right
+                            leftMargin: Kirigami.Units.smallSpacing
+                            rightMargin: Kirigami.Units.smallSpacing
+                        }
                         anchors.verticalCenter: parent.verticalCenter
                     }
 
@@ -166,6 +178,23 @@ PlasmoidItem {
                         visible: delegateItem.modelData.separator !== true
                         anchors { left: parent.left; right: parent.right }
                         text: delegateItem.modelData.text || ""
+                        topPadding: Kirigami.Units.smallSpacing * 1.5
+                        bottomPadding: Kirigami.Units.smallSpacing * 1.5
+                        leftPadding: Kirigami.Units.largeSpacing
+                        rightPadding: Kirigami.Units.largeSpacing
+
+                        background: Rectangle {
+                            radius: Kirigami.Units.cornerRadius
+                            color: btn.hovered ? Kirigami.Theme.highlightColor : "transparent"
+                        }
+
+                        contentItem: Text {
+                            text: btn.text
+                            color: btn.hovered ? Kirigami.Theme.highlightedTextColor : Kirigami.Theme.textColor
+                            font: btn.font
+                            verticalAlignment: Text.AlignVCenter
+                        }
+
                         onClicked: {
                             delegateItem.modelData.action();
                             root.expanded = false;
