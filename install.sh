@@ -569,6 +569,14 @@ if [[ "$(cfg icons)" == "true" ]]; then
       fail "$name (copy failed: ${err:-unknown error})"
     fi
   done
+  # rebuild per-theme icon caches so GTK/Qt apps pick up new icons immediately
+  for theme in "$ICONS_DIR"/MacTahoeLiquidKde-Icons*/; do
+    [[ -d "$theme" ]] || continue
+    if command -v gtk-update-icon-cache &>/dev/null; then
+      gtk-update-icon-cache -f -t "$theme" 2>/dev/null || true
+    fi
+  done
+
   _n=$(( n_inst + n_re ))
   [[ $_n -eq 1 ]] && _lbl="icon theme" || _lbl="icon themes"
   info "$_n $_lbl — $n_inst installed, $n_re reinstalled"
@@ -818,12 +826,24 @@ fi
 step "Restarting desktop"
 
 note "Flushing icon, Plasma, and GTK caches"
+
+# KDE icon caches
 rm -rf "$HOME/.cache/icon-cache.kcache" 2>/dev/null || true
+rm -rf "$HOME/.cache/kiconthemes" 2>/dev/null || true
+rm -rf "$HOME/.cache/ksvg-elements" 2>/dev/null || true
+
+# Plasma theme / SVG caches
 rm -rf "$HOME/.cache/plasma-svgelements-"* 2>/dev/null || true
 rm -rf "$HOME/.cache/plasma_theme_"* 2>/dev/null || true
+rm -rf "$HOME/.cache/plasmashell"* 2>/dev/null || true
+
+# sycoca
 find "$HOME/.cache" -maxdepth 1 -name "ksycoca6*" -delete 2>/dev/null || true
+
+# GTK caches
 rm -rf "$HOME/.cache/gtk-3.0/" 2>/dev/null || true
 rm -rf "$HOME/.cache/gtk-4.0/" 2>/dev/null || true
+
 kbuildsycoca6 --noincremental 2>/dev/null || true
 ok "Caches flushed"
 

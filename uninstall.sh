@@ -318,7 +318,7 @@ if command -v kwriteconfig6 &>/dev/null; then
   fi
   if [[ "$(cfg icons)" == "true" ]]; then
     kwriteconfig6 --file kdeglobals --group Icons --key Theme "breeze"
-    plasma-apply-icontheme breeze &>/dev/null || true
+    dbus-send --session --type=signal /KIconLoader org.kde.KIconLoader.iconChanged int32:0 2>/dev/null || true
     ok "Icons reset"
   fi
   if [[ "$(cfg wallpapers)" == "true" ]]; then
@@ -332,9 +332,14 @@ fi
 
 # flush caches and restart
 rm -rf "$HOME/.cache/icon-cache.kcache" 2>/dev/null || true
+rm -rf "$HOME/.cache/kiconthemes" 2>/dev/null || true
+rm -rf "$HOME/.cache/ksvg-elements" 2>/dev/null || true
 rm -rf "$HOME/.cache/plasma-svgelements-"* 2>/dev/null || true
 rm -rf "$HOME/.cache/plasma_theme_"* 2>/dev/null || true
+rm -rf "$HOME/.cache/plasmashell"* 2>/dev/null || true
 find "$HOME/.cache" -maxdepth 1 -name "ksycoca6*" -delete 2>/dev/null || true
+rm -rf "$HOME/.cache/gtk-3.0/" 2>/dev/null || true
+rm -rf "$HOME/.cache/gtk-4.0/" 2>/dev/null || true
 kbuildsycoca6 --noincremental 2>/dev/null || true
 ok "Caches flushed"
 

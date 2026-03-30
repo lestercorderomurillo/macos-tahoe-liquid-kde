@@ -14,6 +14,6 @@
   "gtk":                 true,
   "sddm":                true,
   "apps":                true,
-  "no_download":         true,
+  "no_download":         false,
   "theme_mode":          "auto"
 }

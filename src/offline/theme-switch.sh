@@ -22,6 +22,18 @@ ICONS_DIR="$HOME/.local/share/icons"
 
 _mode="${1:-auto}"
 
+# ── flush KDE/icon/Plasma caches ──
+flush_caches() {
+  rm -rf "$HOME/.cache/icon-cache.kcache" 2>/dev/null || true
+  rm -rf "$HOME/.cache/kiconthemes" 2>/dev/null || true
+  rm -rf "$HOME/.cache/ksvg-elements" 2>/dev/null || true
+  rm -rf "$HOME/.cache/plasma-svgelements-"* 2>/dev/null || true
+  rm -rf "$HOME/.cache/plasma_theme_"* 2>/dev/null || true
+  rm -rf "$HOME/.cache/plasmashell"* 2>/dev/null || true
+  find "$HOME/.cache" -maxdepth 1 -name "ksycoca6*" -delete 2>/dev/null || true
+  kbuildsycoca6 --noincremental 2>/dev/null || true
+}
+
 # ── detect mode from time of day ──
 detect_mode() {
   local hour
@@ -107,25 +119,23 @@ apply() {
       cp -rf "$gtk4_src/windows-assets" "$gtk4_dest/" 2>/dev/null
       cp -f "$gtk4_src/gtk-Dark.css" "$gtk4_dest/" 2>/dev/null
       cp -f "$gtk4_src/gtk-Light.css" "$gtk4_dest/" 2>/dev/null
-      cd "$gtk4_dest" && \
-      ln -sf "gtk-${mode^}.css" gtk.css 2>/dev/null
-      ln -sf gtk-Dark.css gtk-dark.css 2>/dev/null
+      ln -sf "gtk-${mode^}.css" "$gtk4_dest/gtk.css" 2>/dev/null
+      ln -sf gtk-Dark.css "$gtk4_dest/gtk-dark.css" 2>/dev/null
     fi
   fi
 
-  # icons
+  # icons — plasma-apply-icontheme does not exist in KDE 6,
+  # so we write the config key and emit the dbus signal to notify all apps
   local icon_theme
   if [[ "$mode" == "dark" ]]; then
     icon_theme="MacTahoeLiquidKde-Icons-dark"
   else
     icon_theme="MacTahoeLiquidKde-Icons"
   fi
-  if [[ -d "$ICONS_DIR/$icon_theme" ]]; then
-    if command -v plasma-apply-icontheme &>/dev/null; then
-      plasma-apply-icontheme "$icon_theme" &>/dev/null
-    elif command -v kwriteconfig6 &>/dev/null; then
-      kwriteconfig6 --file kdeglobals --group Icons --key Theme "$icon_theme"
-    fi
+  if [[ -d "$ICONS_DIR/$icon_theme" ]] && command -v kwriteconfig6 &>/dev/null; then
+    kwriteconfig6 --file kdeglobals --group Icons --key Theme "$icon_theme"
+    # signal all KDE/Qt apps to reload icons
+    dbus-send --session --type=signal /KIconLoader org.kde.KIconLoader.iconChanged int32:0 2>/dev/null || true
   fi
 
   # cursors
@@ -142,6 +152,15 @@ apply() {
       kwriteconfig6 --file kcminputrc --group Mouse --key cursorTheme "$cursor_theme"
     fi
   fi
+
+  # final cache rebuild + KWin reconfigure so dock/panel reflect new theme
+  flush_caches
+  for _q in qdbus6 qdbus; do
+    command -v "$_q" &>/dev/null && {
+      "$_q" org.kde.KWin /KWin org.kde.KWin.reconfigure &>/dev/null || true
+      break
+    }
+  done
 }
 
 # ── wait for plasma to be ready (display server + plasmashell) ──
