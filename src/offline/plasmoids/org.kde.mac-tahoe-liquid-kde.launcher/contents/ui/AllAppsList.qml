@@ -32,7 +32,12 @@ ColumnLayout {
 		for (var i = 0; i < rootModel.count; i++) {
 			categoryName  = rootModel.data(rootModel.index(i, 0), Qt.DisplayRole);
 			categoryIcon  = rootModel.data(rootModel.index(i, 0), Qt.DecorationRole);
-					
+
+			// Rename "Recent Applications" / "Recent Documents" to "Suggestions"
+			if (categoryName.toLowerCase().indexOf("recent") !== -1) {
+				categoryName = "Suggestions";
+			}
+
 			categories.push({
 				name: categoryName,
 				modelIndex: i,
@@ -44,7 +49,11 @@ ColumnLayout {
 		return categories;
 	}
 
-	property var slicedCategories: appsCategoriesList.slice(1)
+	property var slicedCategories: {
+		var cats = appsCategoriesList.slice(1);
+		cats.unshift({ name: "Suggestions", modelIndex: 0, icon: "favorite" });
+		return cats;
+	}
 
 	function updateShowedModel(index){
 		currentModel = rootModel.modelForRow(index);

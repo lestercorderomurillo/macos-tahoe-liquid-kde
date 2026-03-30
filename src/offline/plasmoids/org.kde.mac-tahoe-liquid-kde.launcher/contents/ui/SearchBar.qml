@@ -29,7 +29,7 @@ RowLayout {
         Layout.fillWidth: true
         font.pointSize: 18
 
-        placeholderText: i18n("Applications")
+        placeholderText: i18n("Apps")
         placeholderTextColor: main.dimmedTextColor
         background: Rectangle{
             color: "transparent"
@@ -51,11 +51,6 @@ RowLayout {
             }
 
         }
-    }
-
-    SessionButtons {
-        id: sessionButtons
-        visible: plasmoid.configuration.showSessionActionsButton
     }
 
     MenuButton {

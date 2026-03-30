@@ -157,8 +157,8 @@ PlasmaCore.Dialog {
 		id: fs
 		focus: true
 		width:  (root.cellSizeWidth * Plasmoid.configuration.numberColumns)+ innerPadding*2//Kirigami.Units.gridUnit*2
-		// Searchbar.height + separator.height  + categories switcher.height 
-		height: 40 + 2 + 40 + (root.cellSizeHeight *rows) + innerPadding//550 * 1
+		// Searchbar + separator + categories + grid
+		height: 40 + 2 + 12 + 40 + (root.cellSizeHeight * rows) + innerPadding
 		
 		
 		// We want the MainView to have an uniform margin through different plasma themes

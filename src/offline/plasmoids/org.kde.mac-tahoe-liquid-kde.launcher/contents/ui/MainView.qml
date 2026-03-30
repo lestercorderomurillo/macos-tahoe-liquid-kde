@@ -33,8 +33,8 @@ Item {
 	property bool searching: (searchBar.textField.text != "")
 
 	readonly property color textColor: Kirigami.Theme.textColor
-	readonly property string textFont: Kirigami.Theme.defaultFont//plasmoid.configuration.useSystemFontSettings ? Kirigami.Theme.defaultFont : "SF Pro Text"
-	readonly property real textSize: 10//plasmoid.configuration.useSystemFontSettings ? Kirigami.Theme.defaultFont.pointSize : 11
+	readonly property string textFont: Kirigami.Theme.defaultFont.family
+	readonly property real textSize: Kirigami.Theme.defaultFont.pointSize
 	readonly property color bgColor: Kirigami.Theme.backgroundColor
 	readonly property color highlightColor: Kirigami.Theme.highlightColor
 	readonly property color highlightedTextColor: Kirigami.Theme.highlightedTextColor
@@ -78,6 +78,8 @@ Item {
 		Rectangle {
 			Layout.fillWidth: true
 			Layout.rightMargin: fs.innerPadding
+			Layout.topMargin: 6
+			Layout.bottomMargin: 6
 			height: 1.5
 			color: main.contrastBgColor
 		}

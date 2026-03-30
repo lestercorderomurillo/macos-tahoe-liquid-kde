@@ -25,26 +25,25 @@ AppListView {
 			width: parent.width
 			spacing: 10
 
-			/* 
-			* Provides appearance of spacing in the bottom of each category grid 
+			/*
+			* Provides appearance of spacing in the bottom of each category grid
 			*/
 			Item {
 				Layout.fillWidth: true
 				Layout.fillHeight: true
-				visible: index > 0  // not showing on the first item
+				visible: index > 0
 			}
 			Rectangle {
                 id: separator
 				width: parent.width
 				height: 1.5
-                // not showing on the first item to avoid duplicating with searchbar separator
 				color: index > 0 ? main.contrastBgColor : "transparent"
 			}
 			RowLayout {
 				Layout.fillWidth: true
 
 				Text {
-					text:currentCategory.name
+					text: currentCategory.name
 					font.bold: true
 					font.pixelSize: 15
 					color: main.textColor
@@ -57,11 +56,11 @@ AppListView {
 
 				Text {
 					Layout.alignment: Qt.AlignHCenter | Qt.AlignRight
-					text: category.expanded ? i18n("Show less") : i18n("Show more")
+					text: category.expanded ? i18n("Show Less") : i18n("Show All")
 					visible: grid.rows > 1
-					font.bold: true
-					font.pixelSize: 15
-					color: main.textColor
+					font.bold: false
+					font.pixelSize: 12
+					color: main.dimmedTextColor
 					MouseArea {
 						anchors.fill: parent
 						onClicked: {
@@ -70,11 +69,6 @@ AppListView {
 					}
 				}
 			}
-
-			/* 
-			* Provides appearance of spacing between category header
-			* and the start of each category grid 
-			*/
 
 			Item {
 				Layout.fillWidth: true
@@ -86,8 +80,8 @@ AppListView {
 		GridView {
 			id: grid
 
-			leftMargin: fs.innerPadding / 2 // Centers the grid
-			
+			leftMargin: fs.innerPadding / 2
+
 			property var rows: {
 				if(grid.model.count%root.columns == 0 )  {
 					return Math.floor(grid.model.count/root.columns);
@@ -111,7 +105,7 @@ AppListView {
 		}
 
 		onExpandedChanged: updateHeight()
-		
+
 		Behavior on height {
 			NumberAnimation { duration: 200 }
 		}
