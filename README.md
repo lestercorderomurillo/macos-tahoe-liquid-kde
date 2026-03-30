@@ -25,7 +25,10 @@ A complete environment, not just a coat of paint.
 | **Liquid Glass** | KWin blur, rounded corners, glass effect | 🔧 In Progress |
 | **TimeOfDay Switcher** | Auto light/dark themes based on time of day | ✅ Implemented |
 | **Aurorae Decorations** | Window title bar and borders | 🔧 In Progress |
-| **App Themes** | App-specific themes (Firefox, Safari, etc.) | 🔲 Planned |
+| **Firefox Theme** | macOS-style Firefox browser theme | 🔲 Planned |
+| **Thunderbird Theme** | macOS-style Thunderbird mail theme | 🔲 Planned |
+| **Konsole Theme** | macOS-style terminal profile | 🔲 Planned |
+| **Kate Theme** | macOS-style text editor theme | 🔲 Planned |
 | **SDDM Theme** | macOS-style Login and lock screen | 🔲 Planned |
 | **Menu Plasmoid** | macOS-style Apple Menu with system actions | ✅ Implemented |
 | **Launcher Plasmoid** | macOS-style app grid launcher | ✅ Implemented |
