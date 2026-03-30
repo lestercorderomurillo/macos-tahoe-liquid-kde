@@ -5,7 +5,7 @@
 
 A full macOS Tahoe-style desktop experience for KDE Plasma 6.6+.
 
-Inspired by [Pear OS](https://pearos.xyz) — a complete environment, not just a coat of paint.
+A complete environment, not just a coat of paint.
 
 ---
 
@@ -24,7 +24,8 @@ Inspired by [Pear OS](https://pearos.xyz) — a complete environment, not just a
 | **GTK Theme** | GTK2/3/4 window chrome and controls | 🔧 In Progress |
 | **Liquid Glass** | KWin blur, rounded corners, glass effect | 🔧 In Progress |
 | **TimeOfDay Switcher** | Auto light/dark themes based on time of day | ✅ Implemented |
-| **Aurorae Decorations** | Window title bar and borders | 🔲 Planned |
+| **Aurorae Decorations** | Window title bar and borders | 🔧 In Progress |
+| **App Themes** | App-specific themes (Firefox, Safari, etc.) | 🔲 Planned |
 | **SDDM Theme** | macOS-style Login and lock screen | 🔲 Planned |
 | **Menu Plasmoid** | macOS-style Apple Menu with system actions | ✅ Implemented |
 | **Launcher Plasmoid** | macOS-style app grid launcher | ✅ Implemented |
@@ -159,7 +160,6 @@ This project is an independent reimplementation inspired by the macOS aesthetic.
 
 ## Credits
 
-- Launcher plasmoid forked from [EliverLara/TahoeLauncher](https://github.com/EliverLara/TahoeLauncher) (GPL-2.0).
 
 ---
 
