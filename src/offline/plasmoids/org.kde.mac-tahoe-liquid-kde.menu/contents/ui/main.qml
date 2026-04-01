@@ -121,14 +121,16 @@ PlasmoidItem {
     ]
 
     // ── compact: just the icon ──────────────────────────────────────
-    compactRepresentation: MouseArea {
-        id: compactRoot
+    compactRepresentation: Item {
+        Layout.minimumWidth:  120
+        Layout.preferredWidth: 120
 
-        implicitWidth:  60
-        implicitHeight: 40
-
-        hoverEnabled: true
-        onClicked: root.expanded = !root.expanded
+        MouseArea {
+            id: compactRoot
+            anchors.fill: parent
+            hoverEnabled: true
+            onClicked: root.expanded = !root.expanded
+        }
 
         Kirigami.Icon {
             anchors.centerIn: parent
