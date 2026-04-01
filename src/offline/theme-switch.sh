@@ -42,6 +42,20 @@ detect_mode() {
   fi
 }
 
+# ── retry wrapper for plasma-apply-colorscheme ──
+# plasma-apply-colorscheme crashes when kded6 isn't ready yet.
+# Retry up to 4 times with a 3-second back-off before giving up.
+apply_colorscheme() {
+  local scheme="$1"
+  local attempt=0
+  while [[ $attempt -lt 4 ]]; do
+    plasma-apply-colorscheme "$scheme" &>/dev/null && return 0
+    attempt=$((attempt + 1))
+    sleep 3
+  done
+  return 1
+}
+
 # ── apply all themes ──
 apply() {
   local mode="$1"
@@ -49,11 +63,9 @@ apply() {
   # color scheme
   if command -v plasma-apply-colorscheme &>/dev/null; then
     if [[ "$mode" == "dark" ]]; then
-      plasma-apply-colorscheme MacTahoeLiquidKdeDark &>/dev/null || \
-        plasma-apply-colorscheme BreezeDark &>/dev/null
+      apply_colorscheme MacTahoeLiquidKdeDark || apply_colorscheme BreezeDark || true
     else
-      plasma-apply-colorscheme MacTahoeLiquidKdeLight &>/dev/null || \
-        plasma-apply-colorscheme BreezeLight &>/dev/null
+      apply_colorscheme MacTahoeLiquidKdeLight || apply_colorscheme BreezeLight || true
     fi
   fi
 
@@ -172,16 +184,27 @@ apply() {
   done
 }
 
-# ── wait for plasma to be ready (display server + plasmashell) ──
+# ── wait for plasma to be ready (display server + plasmashell + kded6) ──
+# kded6 hosts the color scheme daemon; plasma-apply-colorscheme crashes
+# if called before it finishes loading its modules.
 wait_for_plasma() {
   local tries=0
+  # 1. wait for display server + plasmashell
   while [[ -z "${DISPLAY:-}${WAYLAND_DISPLAY:-}" ]] || ! pgrep -x plasmashell &>/dev/null; do
     sleep 2
     tries=$((tries + 1))
-    [[ $tries -ge 30 ]] && return 1   # give up after 60s
-    # re-import environment from systemd in case it was set after we started
+    [[ $tries -ge 30 ]] && return 1   # give up after 60 s
     eval "$(systemctl --user show-environment 2>/dev/null | grep -E '^(DISPLAY|WAYLAND_DISPLAY)=')" 2>/dev/null || true
   done
+  # 2. wait for kded6 (color scheme + GTK config daemon lives here)
+  local kd=0
+  while ! pgrep -x kded6 &>/dev/null; do
+    sleep 1
+    kd=$((kd + 1))
+    [[ $kd -ge 20 ]] && break   # give up after 20 s — kded6 may not exist
+  done
+  # 3. brief settle so kded6 modules finish loading
+  sleep 3
   return 0
 }
 
