@@ -9,105 +9,115 @@ uniform vec2 halfpixel;
 uniform vec4 box;
 uniform vec4 cornerRadius;
 uniform float opacity;
+uniform float rgbDriftStrength;
+uniform float magnifyGlassStrength;
+uniform float refractionWidth;
+uniform float highlightWidth;
+uniform float highlightStrength;
+uniform float shadowStrength;
 
 varying vec2 uv;
 varying vec2 vertex;
 
-#include "glass.glsl"
+// MacTahoe Liquid KDE — Apple Liquid Glass shader (ES profile)
+// blurSize is declared by the sdf.glsl include.
 
-// Surface normal from SDF — models curved glass edge with circular cross-section
-vec3 glassNormal(float sd, float t)
+// ── SDF ───────────────────────────────────────────────────────────────────
+
+float rrDist(vec2 p, vec2 b, vec4 cr)
 {
-    float dx = dFdx(sd);
-    float dy = dFdy(sd);
-    float nc = clamp((t + sd) / t, 0.0, 1.0);
-    float ns = sqrt(1.0 - nc * nc);
-    return normalize(vec3(dx * nc, dy * nc, ns));
+    float r = p.x > 0.0
+        ? (p.y > 0.0 ? cr.y : cr.w)
+        : (p.y > 0.0 ? cr.x : cr.z);
+    vec2 q = abs(p) - b + r;
+    return min(max(q.x, q.y), 0.0) + length(max(q, 0.0)) - r;
 }
 
-// Glass surface height — circular cross-section at the edge
-float glassHeight(float sd, float t)
+vec2 rrNormal(vec2 pos, vec2 halfB, vec4 cr)
 {
-    if (sd >= 0.0) return 0.0;
-    if (sd < -t) return t;
-    float x = t + sd;
-    return sqrt(t * t - x * x);
+    float r = pos.x > 0.0
+        ? (pos.y > 0.0 ? cr.y : cr.w)
+        : (pos.y > 0.0 ? cr.x : cr.z);
+    vec2 q  = abs(pos) - halfB + r;
+    vec2 qc = max(q, 0.0);
+    float ql = length(qc);
+    vec2 n   = (ql > 0.001) ? qc / ql
+                             : (q.x > q.y ? vec2(1.0, 0.0) : vec2(0.0, 1.0));
+    return n * sign(pos + 0.0001);
 }
+
+// ── Gaussian blur ─────────────────────────────────────────────────────────
+#define SAMPLES 9
+#define GAUSS_SIGMA 0.33
+
+vec3 blur_gaussian(vec2 texel, vec2 uvCenter, vec2 rect)
+{
+    vec4  total = vec4(0.0);
+    float wsum  = 0.0;
+    float step  = inversesqrt(float(SAMPLES));
+    for (float i = -0.5; i <= 0.5; i += step)
+    for (float j = -0.5; j <= 0.5; j += step)
+    {
+        float w     = exp(-(i*i + j*j) / (2.0 * GAUSS_SIGMA * GAUSS_SIGMA));
+        vec2  coord = uvCenter + vec2(i, j) * rect * texel;
+        total += texture2D(texUnit, clamp(coord, 0.0, 1.0)) * w;
+        wsum  += w;
+    }
+    return (total / wsum).rgb;
+}
+
+// ─────────────────────────────────────────────────────────────────────────
 
 void main(void)
 {
-    vec2 halfBlurSize = blurSize * 0.5;
-    float minHalfSize = min(halfBlurSize.x, halfBlurSize.y);
+    vec2 halfSize = blurSize * 0.5;
+    vec2 pos      = uv * blurSize - halfSize;
 
-    vec2 position = uv * blurSize - halfBlurSize.xy;
-    float dist = roundedRectangleDist(position, halfBlurSize, cornerRadius);
+    // ── Shape mask ────────────────────────────────────────────────
+    float d = rrDist(pos, halfSize, cornerRadius);
+    if (d > 1.0) discard;
 
-    if (dist >= 0.0) {
-        float df = fwidth(dist);
-        gl_FragColor = texture2D(texUnit, uv) * (1.0 - clamp(0.5 + dist / df, 0.0, 1.0));
-        return;
-    }
+    vec2 outNorm = rrNormal(pos, halfSize, cornerRadius);
+    float inside = -d;
 
-    // Glass refraction — SDF-based surface normal + Snell's law via refract()
-    // Refraction follows the actual window shape including rounded corners
-    const float refractiveIndex = 1.77;
-    float thickness = 128.0;
-    float baseHeight = 96.0;
+    // ── Refraction band — controls lens distortion + chromatic drift ──
+    float refrBand = max(refractionWidth, 1.0);
+    float edgeT    = smoothstep(-refrBand, 0.0, d);
+    float edgeQ    = edgeT * edgeT;
 
-    vec3 normal = glassNormal(dist, thickness);
-    // Blend normal toward center so top/bottom refraction isn't straight like a mirror
-    vec2 toCenter = -normalize(position + vec2(0.001));
-    normal.xy = mix(normal.xy, toCenter * length(normal.xy), 0.25);
-    normal = normalize(normal);
+    // ── Convex-lens distortion ────────────────────────────────────
+    vec2  center   = vec2(0.5);
+    float totalMag = magnifyGlassStrength * (1.0 + edgeQ * 3.5);
+    vec2  lensUV   = center + (uv - center) * (1.0 - totalMag);
 
-    vec3 refractVec = refract(vec3(0.0, 0.0, -1.0), normal, 1.0 / refractiveIndex);
-    float h = glassHeight(dist, thickness);
-    float denom = dot(vec3(0.0, 0.0, -1.0), refractVec);
-    float refractLen = abs(denom) > 0.001 ? (h + baseHeight) / denom : 0.0;
-    vec2 refractedUV = uv + refractVec.xy * refractLen / blurSize;
+    // ── Gaussian blur base ────────────────────────────────────────
+    vec2 texel = halfpixel * 2.0;
+    vec3 col   = blur_gaussian(texel, lensUV, vec2(offset * 3.0));
 
-    // Border proximity from SDF
-    float borderBand = minHalfSize * 0.25;
-    float borderFactor = smoothstep(-borderBand, 0.0, dist);
+    // ── RGB chromatic drift ───────────────────────────────────────
+    vec2  drift = outNorm * (rgbDriftStrength / blurSize);
+    float rCh   = texture2D(texUnit, clamp(lensUV + drift,        0.0, 1.0)).r;
+    float gCh   = texture2D(texUnit, clamp(lensUV + drift * 0.30, 0.0, 1.0)).g;
+    float bCh   = texture2D(texUnit, clamp(lensUV - drift * 0.25, 0.0, 1.0)).b;
+    col = mix(col, vec3(rCh, gCh, bCh), edgeQ);
 
-    // Blur: subtle at center, heavy at edges
-    float scaledOffset = offset * (1.0 + borderFactor * 4.0);
+    // ── Specular rim highlight (independent highlightWidth band) ──
+    float hlBand  = max(highlightWidth, 1.0);
+    float rimSoft = smoothstep(0.0, hlBand,        inside) * (1.0 - smoothstep(hlBand * 0.5, hlBand * 2.0, inside));
+    float rimPeak = smoothstep(0.0, 2.0,            inside) * (1.0 - smoothstep(2.0,           6.0,          inside));
 
-    // Kawase upsample with refraction + stronger blur near edges
-    vec4 sum = texture2D(texUnit, clamp(refractedUV + vec2(-halfpixel.x * 2.0, 0.0) * scaledOffset, 0.0, 1.0));
-    sum += texture2D(texUnit, clamp(refractedUV + vec2(-halfpixel.x, halfpixel.y) * scaledOffset, 0.0, 1.0)) * 2.0;
-    sum += texture2D(texUnit, clamp(refractedUV + vec2(0.0, halfpixel.y * 2.0) * scaledOffset, 0.0, 1.0));
-    sum += texture2D(texUnit, clamp(refractedUV + vec2(halfpixel.x, halfpixel.y) * scaledOffset, 0.0, 1.0)) * 2.0;
-    sum += texture2D(texUnit, clamp(refractedUV + vec2(halfpixel.x * 2.0, 0.0) * scaledOffset, 0.0, 1.0));
-    sum += texture2D(texUnit, clamp(refractedUV + vec2(halfpixel.x, -halfpixel.y) * scaledOffset, 0.0, 1.0)) * 2.0;
-    sum += texture2D(texUnit, clamp(refractedUV + vec2(0.0, -halfpixel.y * 2.0) * scaledOffset, 0.0, 1.0));
-    sum += texture2D(texUnit, clamp(refractedUV + vec2(-halfpixel.x, -halfpixel.y) * scaledOffset, 0.0, 1.0)) * 2.0;
-    sum /= 12.0;
+    float litFacing = dot(outNorm, normalize(vec2(-0.5, -1.0)));
+    float litT      = 0.30 + 0.70 * clamp(litFacing, 0.0, 1.0);
 
-    // Chromatic aberration — wide RGB split at borders, low mix to preserve blur
-    vec2 caDir = refractVec.xy * refractLen * 0.2 / blurSize;
-    float caStrength = borderFactor * 0.25;
-    sum.r = mix(sum.r, texture2D(texUnit, clamp(refractedUV + caDir, 0.0, 1.0)).r, caStrength);
-    sum.b = mix(sum.b, texture2D(texUnit, clamp(refractedUV - caDir, 0.0, 1.0)).b, caStrength);
+    float specI = ((rimSoft * 0.20 + rimPeak * 0.80) * litT + rimPeak * 0.10) * highlightStrength;
+    col = mix(col, vec3(0.87, 0.93, 1.0), clamp(specI, 0.0, 0.95));
 
-    // Border highlight — follows SDF shape including corner radius
-    float borderPx = -dist;
-    float borderHighlight = smoothstep(0.0, 2.0, borderPx) * (1.0 - smoothstep(2.0, 6.0, borderPx));
-    sum.rgb += borderHighlight * 0.08;
+    // ── Ambient gradient (top bright / bottom shadow) ─────────────
+    float hlUV = highlightWidth / blurSize.y;
+    col += max(0.0, hlUV - uv.y)              * 0.06 * shadowStrength;
+    col  = max(col - max(0.0, uv.y - (1.0 - hlUV)) * 0.04 * shadowStrength, 0.0);
 
-    // Reflection — Fresnel at left/right edges only (horizontal normal)
-    float fresnel = abs(normal.x) * 2.0;
-    sum.rgb = mix(sum.rgb, vec3(1.0), fresnel * 0.08);
-
-    // Gradient lighting — glass catches light at top
-    float normInside = clamp(-dist / minHalfSize, 0.0, 1.0);
-    sum.rgb += mix(0.04, 0.0, uv.y) * normInside;
-
-    sum = glass(sum, cornerRadius);
-
-    float f = sdfRoundedBox(vertex, box.xy, box.zw, cornerRadius);
-    float df = fwidth(f);
-    sum *= 1.0 - clamp(0.5 + f / df, 0.0, 1.0);
-
-    gl_FragColor = sum * colorMatrix * opacity;
+    // ── Composite ─────────────────────────────────────────────────
+    float mask   = 1.0 - smoothstep(-0.5, 0.5, d);
+    gl_FragColor = vec4(col, mask) * colorMatrix * opacity;
 }
