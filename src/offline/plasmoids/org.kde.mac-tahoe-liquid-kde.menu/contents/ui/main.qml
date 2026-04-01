@@ -137,17 +137,12 @@ PlasmoidItem {
             onClicked: root.expanded = !root.expanded
         }
 
-        Rectangle {
-            anchors.fill: parent
-            radius: Kirigami.Units.cornerRadius
-            color: compactRoot.containsMouse ? Qt.rgba(0.5, 0.5, 0.5, 0.18) : "transparent"
-        }
-
         Kirigami.Icon {
             anchors.centerIn: parent
             width:  Math.round(compactTile.height * 0.924) + 4
             height: Math.round(compactTile.height * 0.924) + 4
             source: root.cfgIcon
+            active: compactRoot.containsMouse
         }
     }
 
@@ -203,12 +198,12 @@ PlasmoidItem {
 
                         background: Rectangle {
                             radius: Kirigami.Units.cornerRadius
-                            color: btn.hovered ? Qt.rgba(0.5, 0.5, 0.5, 0.18) : "transparent"
+                            color: btn.hovered ? Kirigami.Theme.highlightColor : "transparent"
                         }
 
                         contentItem: Text {
                             text: btn.text
-                            color: Kirigami.Theme.textColor
+                            color: btn.hovered ? Kirigami.Theme.highlightedTextColor : Kirigami.Theme.textColor
                             font: btn.font
                             verticalAlignment: Text.AlignVCenter
                         }
