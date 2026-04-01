@@ -127,8 +127,8 @@ PlasmoidItem {
     compactRepresentation: Item {
         id: compactTile
 
-        Layout.minimumWidth:  Math.round(parent.height * 2.275) - 20
-        Layout.preferredWidth: Math.round(parent.height * 2.275) - 20
+        Layout.minimumWidth:  Math.round(parent.height * 2.275) - 4
+        Layout.preferredWidth: Math.round(parent.height * 2.275) - 4
 
         MouseArea {
             id: compactRoot
@@ -139,8 +139,8 @@ PlasmoidItem {
 
         Kirigami.Icon {
             anchors.centerIn: parent
-            width:  Math.round(compactTile.height * 0.924)
-            height: Math.round(compactTile.height * 0.924)
+            width:  Math.round(compactTile.height * 0.924) + 4
+            height: Math.round(compactTile.height * 0.924) + 4
             source: root.cfgIcon
             active: compactRoot.containsMouse
         }
