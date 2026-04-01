@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    SPDX-FileCopyrightText: 2020 Kpple <info.kpple@gmail.com>
+    SPDX-FileCopyrightText: 2024 Christian Tallner <chrtall@gmx.de>
+
+    SPDX-License-Identifier: GPL-2.0-or-later
+-->
+<kcfg xmlns="http://www.kde.org/standards/kcfg/1.0"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:schemaLocation="http://www.kde.org/standards/kcfg/1.0
+      http://www.kde.org/standards/kcfg/1.0/kcfg.xsd" >
+  <kcfgfile name=""/>
+
+  <group name="General">
+    <entry name="icon" type="String">
+      <label>Icon name for the compact representation.</label>
+      <default>start-here-kde-symbolic</default>
+    </entry>
+    <entry name="toolTipTitle" type="String">
+      <label>Tooltip title text.</label>
+      <default>App Menu</default>
+    </entry>
+    <entry name="toolTipSubText" type="String">
+      <label>Tooltip description text.</label>
+      <default>Shortcuts for shutdown, reboot, logout, settings etc.</default>
+    </entry>
+    <entry name="menuItems" type="String">
+      <label>JSON array of menu items.</label>
+      <default>[{"type":"item","name":"About This Computer","command":"kinfocenter"},{"type":"divider"},{"type":"item","name":"System Settings...","command":"systemsettings"},{"type":"item","name":"App Store...","command":"plasma-discover"},{"type":"divider"},{"type":"item","name":"Force Quit...","command":"qdbus6 org.kde.KWin /KWin slotKillWindow || xkill"},{"type":"divider"},{"type":"item","name":"Sleep","command":"qdbus6 org.freedesktop.PowerManagement /org/freedesktop/PowerManagement Suspend"},{"type":"item","name":"Restart...","command":"qdbus6 org.kde.Shutdown /Shutdown logoutAndReboot"},{"type":"item","name":"Shut Down...","command":"qdbus6 org.kde.Shutdown /Shutdown logoutAndShutdown"},{"type":"divider"},{"type":"item","name":"Lock Screen","command":"qdbus6 org.freedesktop.ScreenSaver /ScreenSaver Lock","shortcut":"⌃⌘Q"},{"type":"item","name":"Log Out...","command":"qdbus6 org.kde.Shutdown /Shutdown logout","shortcut":"⇧⌘Q"}]</default>
+    </entry>
+  </group>
+
+</kcfg>

@@ -1,0 +1,14 @@
+{
+	"KPackageStructure": "Plasma/Applet",
+	"KPlugin": {
+		"Category": "Application Launchers",
+		"Description": "Global menu bar plasmoid — shows configurable app menu items in the panel.",
+		"EnabledByDefault": true,
+		"Icon": "application-menu",
+		"Id": "org.kde.mac-tahoe-liquid-kde.appmenu",
+		"License": "GPL-2.0-or-later",
+		"Name": "App Menu",
+		"Version": "1.0"
+	},
+	"X-Plasma-API-Minimum-Version": "6.0"
+}
