@@ -17,13 +17,15 @@ find_package(Qt6 ${QT_MIN_VERSION} CONFIG REQUIRED COMPONENTS
     Core Widgets Quick DBus
 )
 find_package(KF6 ${KF_MIN_VERSION} REQUIRED COMPONENTS
-    WindowSystem I18n CoreAddons
+    WindowSystem I18n CoreAddons Config
 )
 find_package(Plasma REQUIRED)
 find_package(PlasmaActivities)
 find_package(LibTaskManager REQUIRED)
 find_package(dbusmenu-lxqt REQUIRED)
 
+set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 add_definitions(-DTRANSLATION_DOMAIN="plasma_applet_org.kde.mac.tahoe.globalmenu")
 
 plasma_add_applet(org.kde.mac.tahoe.globalmenu

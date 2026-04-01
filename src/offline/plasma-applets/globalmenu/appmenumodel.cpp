@@ -296,9 +296,9 @@ void AppMenuModel::updateApplicationMenu(const QString &serviceName, const QStri
         m_importer = std::make_unique<KDBusMenuImporter>(serviceName, menuObjectPath);
         QMetaObject::invokeMethod(m_importer.get(), "updateMenu", Qt::QueuedConnection);
 
-        connect(m_importer.get(), &DBusMenuImporter::menuUpdated, this, [=, this](QMenu *menu) {
+        connect(m_importer.get(), &DBusMenuImporter::menuUpdated, this, [this]() {
             m_menu = m_importer->menu();
-            if (m_menu.isNull() || menu != m_menu) {
+            if (m_menu.isNull()) {
                 return;
             }
 
@@ -321,9 +321,6 @@ void AppMenuModel::updateApplicationMenu(const QString &serviceName, const QStri
                     }
                 });
                 connect(a, &QAction::destroyed, this, &AppMenuModel::modelNeedsUpdate);
-                if (a->menu()) {
-                    m_importer->updateMenu(a->menu());
-                }
             }
 
             setMenuAvailable(true);
@@ -335,7 +332,7 @@ void AppMenuModel::updateApplicationMenu(const QString &serviceName, const QStri
                 return;
             }
             const auto actions = m_menu->actions();
-            auto it = std::ranges::find(actions, action);
+            auto it = std::find(actions.begin(), actions.end(), action);
             if (it != actions.end()) {
                 Q_EMIT requestActivateIndex(it - actions.begin());
             }
