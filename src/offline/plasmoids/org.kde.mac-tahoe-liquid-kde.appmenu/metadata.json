@@ -1,6 +1,12 @@
 {
 	"KPackageStructure": "Plasma/Applet",
 	"KPlugin": {
+		"Authors": [
+			{
+				"Email": "",
+				"Name": "Lester Cordero Murillo"
+			}
+		],
 		"Category": "Application Launchers",
 		"Description": "Global menu bar plasmoid — shows configurable app menu items in the panel.",
 		"EnabledByDefault": true,
