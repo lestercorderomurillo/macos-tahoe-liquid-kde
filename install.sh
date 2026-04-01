@@ -742,17 +742,20 @@ if [[ "$(cfg acrylic_glass)" == "true" ]]; then
             if sudo cp "$_effect_so" "${_dest_effect}.tmp" && sudo mv -f "${_dest_effect}.tmp" "$_dest_effect" && \
                sudo cp "$_config_so" "${_dest_config}.tmp" && sudo mv -f "${_dest_config}.tmp" "$_dest_config" 2>/dev/null; then
               ok "Acrylic Glass installed"
-              # write clean preset — only settings the effect actually reads
+              # write clean preset — must match blur.kcfg defaults exactly
               _lg_grp="Effect-liquidglass"
-              kwriteconfig6 --file kwinrc --group "$_lg_grp" --key BlurStrength 6 2>/dev/null || true
-              kwriteconfig6 --file kwinrc --group "$_lg_grp" --key NoiseStrength 0 2>/dev/null || true
-              kwriteconfig6 --file kwinrc --group "$_lg_grp" --key Saturation 1.0 2>/dev/null || true
-              kwriteconfig6 --file kwinrc --group "$_lg_grp" --key Brightness 1.0 2>/dev/null || true
-              kwriteconfig6 --file kwinrc --group "$_lg_grp" --key Contrast 1.0 2>/dev/null || true
-              kwriteconfig6 --file kwinrc --group "$_lg_grp" --key TopCornerRadius 22 2>/dev/null || true
-              kwriteconfig6 --file kwinrc --group "$_lg_grp" --key BottomCornerRadius 22 2>/dev/null || true
-              kwriteconfig6 --file kwinrc --group "$_lg_grp" --key MenuCornerRadius 0 2>/dev/null || true
-              kwriteconfig6 --file kwinrc --group "$_lg_grp" --key DockCornerRadius 22 2>/dev/null || true
+              kwriteconfig6 --file kwinrc --group "$_lg_grp" --key BlurStrength       2.0  2>/dev/null || true
+              kwriteconfig6 --file kwinrc --group "$_lg_grp" --key NoiseStrength       2    2>/dev/null || true
+              kwriteconfig6 --file kwinrc --group "$_lg_grp" --key RgbDriftStrength    84.0 2>/dev/null || true
+              kwriteconfig6 --file kwinrc --group "$_lg_grp" --key MagnifyGlassStrength 0.025 2>/dev/null || true
+              kwriteconfig6 --file kwinrc --group "$_lg_grp" --key RefractionWidth     56.0 2>/dev/null || true
+              kwriteconfig6 --file kwinrc --group "$_lg_grp" --key HighlightWidth      12.0 2>/dev/null || true
+              kwriteconfig6 --file kwinrc --group "$_lg_grp" --key HighlightStrength   0.40 2>/dev/null || true
+              kwriteconfig6 --file kwinrc --group "$_lg_grp" --key ShadowStrength      2.50 2>/dev/null || true
+              kwriteconfig6 --file kwinrc --group "$_lg_grp" --key TopCornerRadius     22   2>/dev/null || true
+              kwriteconfig6 --file kwinrc --group "$_lg_grp" --key BottomCornerRadius  22   2>/dev/null || true
+              kwriteconfig6 --file kwinrc --group "$_lg_grp" --key MenuCornerRadius    0    2>/dev/null || true
+              kwriteconfig6 --file kwinrc --group "$_lg_grp" --key DockCornerRadius    22   2>/dev/null || true
               ok "Acrylic Glass preset installed"
               # enable in config — will load on next KWin start
               kwriteconfig6 --file kwinrc --group Plugins --key liquidglassEnabled true 2>/dev/null || true
