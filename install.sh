@@ -710,7 +710,7 @@ if [[ "$(cfg plasmoids)" == "true" ]]; then
           _plugin_dir=$(qmake6 -query QT_INSTALL_PLUGINS 2>/dev/null \
             || qtpaths6 --plugin-dir 2>/dev/null \
             || echo "/usr/lib/qt6/plugins")
-          _gm_so="$_gm_build/org.kde.mac.tahoe.globalmenu.so"
+          _gm_so="$_gm_build/bin/plasma/applets/org.kde.mac.tahoe.globalmenu.so"
           _gm_dest="$_plugin_dir/plasma/applets/org.kde.mac.tahoe.globalmenu.so"
 
           if [[ -f "$_gm_so" ]]; then
