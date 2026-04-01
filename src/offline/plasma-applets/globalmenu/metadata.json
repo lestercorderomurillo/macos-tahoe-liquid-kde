@@ -15,7 +15,7 @@
         "License": "GPL-2.0-or-later",
         "Name": "Global Menu",
         "Version": "1.0",
-        "Website": "https://github.com/lcm-linux/macos-tahoe-liquid-kde"
+        "Website": "https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde"
     },
     "X-Plasma-API-Minimum-Version": "6.0"
 }
