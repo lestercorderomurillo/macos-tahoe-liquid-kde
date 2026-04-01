@@ -8,5 +8,20 @@
     <entry name="menuIcon" type="String">
       <default>start-here-kde-symbolic</default>
     </entry>
+    <entry name="cmdSleep" type="String">
+      <default>qdbus6 org.kde.Solid.PowerManagement /org/kde/Solid/PowerManagement requestSuspend || systemctl suspend</default>
+    </entry>
+    <entry name="cmdRestart" type="String">
+      <default>qdbus6 org.kde.LogoutPrompt /LogoutPrompt org.kde.LogoutPrompt.promptReboot</default>
+    </entry>
+    <entry name="cmdShutDown" type="String">
+      <default>qdbus6 org.kde.LogoutPrompt /LogoutPrompt org.kde.LogoutPrompt.promptShutDown</default>
+    </entry>
+    <entry name="cmdLockScreen" type="String">
+      <default>qdbus6 org.freedesktop.ScreenSaver /ScreenSaver Lock || loginctl lock-session</default>
+    </entry>
+    <entry name="cmdLogOut" type="String">
+      <default>qdbus6 org.kde.LogoutPrompt /LogoutPrompt org.kde.LogoutPrompt.promptLogout</default>
+    </entry>
   </group>
 </kcfg>

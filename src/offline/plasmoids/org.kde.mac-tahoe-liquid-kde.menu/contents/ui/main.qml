@@ -77,7 +77,8 @@ PlasmoidItem {
             text: "Force Quit...",
             separator: false,
             action: function() {
-                executable.exec("xkill");
+                // qdbus6 slotKillWindow works on Wayland; xkill is the X11 fallback
+                executable.exec("qdbus6 org.kde.KWin /KWin slotKillWindow || xkill");
             }
         },
         { separator: true },
@@ -85,21 +86,21 @@ PlasmoidItem {
             text: "Sleep",
             separator: false,
             action: function() {
-                executable.exec("systemctl suspend");
+                executable.exec(Plasmoid.configuration.cmdSleep);
             }
         },
         {
             text: "Restart...",
             separator: false,
             action: function() {
-                executable.exec("qdbus org.kde.LogoutPrompt /LogoutPrompt org.kde.LogoutPrompt.promptReboot");
+                executable.exec(Plasmoid.configuration.cmdRestart);
             }
         },
         {
             text: "Shut Down...",
             separator: false,
             action: function() {
-                executable.exec("qdbus org.kde.LogoutPrompt /LogoutPrompt org.kde.LogoutPrompt.promptShutDown");
+                executable.exec(Plasmoid.configuration.cmdShutDown);
             }
         },
         { separator: true },
@@ -107,14 +108,14 @@ PlasmoidItem {
             text: "Lock Screen",
             separator: false,
             action: function() {
-                executable.exec("loginctl lock-session");
+                executable.exec(Plasmoid.configuration.cmdLockScreen);
             }
         },
         {
             text: "Log Out...",
             separator: false,
             action: function() {
-                executable.exec("qdbus org.kde.LogoutPrompt /LogoutPrompt org.kde.LogoutPrompt.promptLogout");
+                executable.exec(Plasmoid.configuration.cmdLogOut);
             }
         }
     ]
