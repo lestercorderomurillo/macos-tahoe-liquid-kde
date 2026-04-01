@@ -7,7 +7,7 @@
             }
         ],
         "Category": "System Information",
-        "Description": "macOS-style Apple Menu for the top bar",
+        "Description": "macOS-style Kpple Menu for the top bar",
         "Icon": "start-here-kde-symbolic",
         "Id": "org.kde.mac-tahoe-liquid-kde.menu",
         "License": "GPL-2.0+",

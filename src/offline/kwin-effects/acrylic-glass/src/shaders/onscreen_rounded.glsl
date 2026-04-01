@@ -19,7 +19,7 @@ uniform float shadowStrength;
 varying vec2 uv;
 varying vec2 vertex;
 
-// MacTahoe Liquid KDE — Apple Liquid Glass shader (ES profile)
+// MacTahoe Liquid KDE — Kpple Liquid Glass shader (ES profile)
 // blurSize is declared by the sdf.glsl include.
 
 // ── SDF ───────────────────────────────────────────────────────────────────

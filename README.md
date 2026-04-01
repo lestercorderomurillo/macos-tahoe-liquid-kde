@@ -30,7 +30,7 @@ A complete environment, not just a coat of paint.
 | **Konsole Theme** | macOS-style terminal profile | 🔲 Planned |
 | **Kate Theme** | macOS-style text editor theme | 🔲 Planned |
 | **SDDM Theme** | macOS-style Login and lock screen | 🔲 Planned |
-| **Menu Plasmoid** | macOS-style Apple Menu with system actions | ✅ Implemented |
+| **Menu Plasmoid** | macOS-style Kpple Menu with system actions | ✅ Implemented |
 | **Launcher Plasmoid** | macOS-style app grid launcher | ✅ Implemented |
 | **Trashcan Plasmoid** | macOS-style trash widget with configurable icons | ✅ Implemented |
 | **Calendar Plasmoid** | macOS-style calendar dropdown | 🔲 Planned |

@@ -21,7 +21,7 @@ in vec2 uv;
 in vec2 vertex;
 out vec4 fragColor;
 
-// MacTahoe Liquid KDE — Apple Liquid Glass shader (core profile)
+// MacTahoe Liquid KDE — Kpple Liquid Glass shader (core profile)
 
 // ── SDF ───────────────────────────────────────────────────────────────────
 
