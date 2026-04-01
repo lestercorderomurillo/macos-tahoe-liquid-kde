@@ -124,17 +124,16 @@ PlasmoidItem {
     compactRepresentation: MouseArea {
         id: compactRoot
 
-        // Tell the panel how wide the tile should be: icon + horizontal margins.
-        implicitWidth: Kirigami.Units.iconSizes.medium + Kirigami.Units.largeSpacing * 4
+        implicitWidth:  60
+        implicitHeight: 40
 
         hoverEnabled: true
         onClicked: root.expanded = !root.expanded
 
         Kirigami.Icon {
-            // Fixed size + centred — never collapses regardless of tile width.
             anchors.centerIn: parent
-            width:  Kirigami.Units.iconSizes.medium
-            height: Kirigami.Units.iconSizes.medium
+            width:  22
+            height: 22
             source: root.cfgIcon
             active: compactRoot.containsMouse
         }
