@@ -121,9 +121,14 @@ PlasmoidItem {
     ]
 
     // ── compact: just the icon ──────────────────────────────────────
+    // Proportions derived from macOS Tahoe menu bar:
+    //   tile width  ≈ 1.75 × panel height  (e.g. 77 px at 44 px panel)
+    //   icon size   ≈ 0.60 × panel height  (e.g. 26 px at 44 px panel)
     compactRepresentation: Item {
-        Layout.minimumWidth:  120
-        Layout.preferredWidth: 120
+        id: compactTile
+
+        Layout.minimumWidth:  Math.round(parent.height * 1.75)
+        Layout.preferredWidth: Math.round(parent.height * 1.75)
 
         MouseArea {
             id: compactRoot
@@ -134,8 +139,8 @@ PlasmoidItem {
 
         Kirigami.Icon {
             anchors.centerIn: parent
-            width:  22
-            height: 22
+            width:  Math.round(compactTile.height * 0.60)
+            height: Math.round(compactTile.height * 0.60)
             source: root.cfgIcon
             active: compactRoot.containsMouse
         }
