@@ -6,7 +6,6 @@
 import QtQuick
 import QtQuick.Controls
 
-import org.kde.ksvg as KSvg
 import org.kde.plasma.components as PC3
 import org.kde.kirigami as Kirigami
 
@@ -40,21 +39,18 @@ AbstractButton {
     Kirigami.MnemonicData.controlType: Kirigami.MnemonicData.SecondaryControl
     Kirigami.MnemonicData.label: text
 
-    topPadding: rest.margins.top
-    leftPadding: rest.margins.left
-    rightPadding: rest.margins.right
-    bottomPadding: rest.margins.bottom
+    topPadding: Kirigami.Units.smallSpacing
+    bottomPadding: Kirigami.Units.smallSpacing
+    leftPadding: Kirigami.Units.largeSpacing
+    rightPadding: Kirigami.Units.largeSpacing
 
     Accessible.description: i18nc("@info:usagetip", "Open a menu")
 
-    background: KSvg.FrameSvgItem {
-        id: rest
-        imagePath: "widgets/menubaritem"
-        prefix: switch (controlRoot.menuState) {
-            case MenuDelegate.State.Down: return "pressed";
-            case MenuDelegate.State.Hover: return "hover";
-            case MenuDelegate.State.Rest: return "normal";
-        }
+    background: Rectangle {
+        radius: Kirigami.Units.cornerRadius
+        color: controlRoot.menuState === MenuDelegate.State.Rest
+               ? "transparent"
+               : Qt.rgba(0.5, 0.5, 0.5, controlRoot.menuState === MenuDelegate.State.Down ? 0.25 : 0.18)
     }
 
     contentItem: PC3.Label {
@@ -62,6 +58,6 @@ AbstractButton {
         textFormat: Text.StyledText
         verticalAlignment: Text.AlignVCenter
         elide: Text.ElideRight
-        color: controlRoot.menuState === MenuDelegate.State.Rest ? Kirigami.Theme.textColor : Kirigami.Theme.highlightedTextColor
+        color: Kirigami.Theme.textColor
     }
 }
