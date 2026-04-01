@@ -707,17 +707,19 @@ if [[ "$(cfg plasmoids)" == "true" ]]; then
       if cmake -S "$_gm_src" -B "$_gm_build" -DCMAKE_BUILD_TYPE=Release &>/dev/null; then
         if make -C "$_gm_build" -j"$(nproc)" &>/dev/null; then
           ok "Global Menu built"
-          _plugin_dir=$(qmake6 -query QT_INSTALL_PLUGINS 2>/dev/null \
-            || qtpaths6 --plugin-dir 2>/dev/null \
-            || echo "/usr/lib/qt6/plugins")
           _gm_so="$_gm_build/bin/plasma/applets/org.kde.mac.tahoe.globalmenu.so"
-          _gm_dest="$_plugin_dir/plasma/applets/org.kde.mac.tahoe.globalmenu.so"
+          # prefer user-local path (no sudo); fall back to system path
+          _gm_dest_user="$HOME/.local/lib/qt6/plugins/plasma/applets/org.kde.mac.tahoe.globalmenu.so"
+          _gm_dest_sys="/usr/lib/qt6/plugins/plasma/applets/org.kde.mac.tahoe.globalmenu.so"
 
           if [[ -f "$_gm_so" ]]; then
-            if sudo cp "$_gm_so" "${_gm_dest}.tmp" && sudo mv -f "${_gm_dest}.tmp" "$_gm_dest"; then
-              ok "Global Menu installed"
+            mkdir -p "$(dirname "$_gm_dest_user")"
+            if cp "$_gm_so" "$_gm_dest_user"; then
+              ok "Global Menu installed (user-local)"
+            elif sudo cp "$_gm_so" "${_gm_dest_sys}.tmp" && sudo mv -f "${_gm_dest_sys}.tmp" "$_gm_dest_sys"; then
+              ok "Global Menu installed (system)"
             else
-              fail "Global Menu: could not install .so (sudo required)"
+              fail "Global Menu: could not install .so"
             fi
           else
             fail "Global Menu: .so not found after build — check cmake output"
