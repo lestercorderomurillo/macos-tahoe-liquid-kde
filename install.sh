@@ -685,7 +685,7 @@ if [[ "$(cfg plasmoids)" == "true" ]]; then
   step "Installing Global Menu"
   note "Builds and installs the Global Menu C++ Plasma applet from source"
 
-  _gm_src="$OFFLINE/plasma-applets/globalmenu"
+  _gm_src="$OFFLINE/plasmoids/org.kde.mac.tahoe.globalmenu"
   _gm_build="$_gm_src/build"
   if [[ -f "$_gm_src/CMakeLists.txt" ]]; then
     _missing=false
