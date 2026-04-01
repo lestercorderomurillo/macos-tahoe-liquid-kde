@@ -117,6 +117,12 @@ BlurEffect::BlurEffect()
         m_roundedOnscreenPass.cornerRadiusLocation = m_roundedOnscreenPass.shader->uniformLocation("cornerRadius");
         m_roundedOnscreenPass.opacityLocation = m_roundedOnscreenPass.shader->uniformLocation("opacity");
         m_roundedOnscreenPass.blurSizeLocation = m_roundedOnscreenPass.shader->uniformLocation("blurSize");
+        m_roundedOnscreenPass.rgbDriftStrengthLocation = m_roundedOnscreenPass.shader->uniformLocation("rgbDriftStrength");
+        m_roundedOnscreenPass.magnifyGlassStrengthLocation = m_roundedOnscreenPass.shader->uniformLocation("magnifyGlassStrength");
+        m_roundedOnscreenPass.refractionWidthLocation = m_roundedOnscreenPass.shader->uniformLocation("refractionWidth");
+        m_roundedOnscreenPass.highlightWidthLocation = m_roundedOnscreenPass.shader->uniformLocation("highlightWidth");
+        m_roundedOnscreenPass.highlightStrengthLocation = m_roundedOnscreenPass.shader->uniformLocation("highlightStrength");
+        m_roundedOnscreenPass.shadowStrengthLocation = m_roundedOnscreenPass.shader->uniformLocation("shadowStrength");
         qCWarning(KWIN_BLUR) << "Onscreen shader OK — uniforms:"
             << "mvp=" << m_roundedOnscreenPass.mvpMatrixLocation
             << "color=" << m_roundedOnscreenPass.colorMatrixLocation
@@ -234,7 +240,7 @@ void BlurEffect::initBlurStrengthValues()
     // This function creates an array of blur strength values that are evenly distributed
 
     // The range of the slider on the blur settings UI
-    int numOfBlurSteps = 15;
+    int numOfBlurSteps = 20;
     int remainingSteps = numOfBlurSteps;
 
     /*
@@ -257,12 +263,11 @@ void BlurEffect::initBlurStrengthValues()
      */
 
     // {minOffset, maxOffset, expandSize}
-    blurOffsets.append({1.0, 2.0, 10}); // Down sample size / 2
-    blurOffsets.append({2.0, 3.0, 20}); // Down sample size / 4
-    blurOffsets.append({2.0, 5.0, 50}); // Down sample size / 8
-    blurOffsets.append({3.0, 8.0, 150}); // Down sample size / 16
-    // blurOffsets.append({5.0, 10.0, 400}); // Down sample size / 32
-    // blurOffsets.append({7.0, ?.0});       // Down sample size / 64
+    blurOffsets.append({1.0, 2.0,  10});  // Down sample size / 2
+    blurOffsets.append({2.0, 3.0,  20});  // Down sample size / 4
+    blurOffsets.append({2.0, 5.0,  50});  // Down sample size / 8
+    blurOffsets.append({3.0, 8.0,  150}); // Down sample size / 16
+    blurOffsets.append({5.0, 10.0, 400}); // Down sample size / 32
 
     float offsetSum = 0;
 
@@ -291,12 +296,23 @@ void BlurEffect::reconfigure(ReconfigureFlags flags)
 {
     BlurConfig::self()->read();
 
-    int blurStrength = BlurConfig::blurStrength() - 1;
-    m_iterationCount = blurStrengthValues[blurStrength].iteration;
-    m_offset = blurStrengthValues[blurStrength].offset;
+    // Fractional blur strength: interpolate offset between neighbouring table entries.
+    double blurStrengthD = qBound(1.0, BlurConfig::blurStrength(), (double)blurStrengthValues.size());
+    double idx  = blurStrengthD - 1.0; // 0.0 … size-1
+    int    lo   = qBound(0, (int)std::floor(idx), (int)blurStrengthValues.size() - 1);
+    int    hi   = qBound(0, lo + 1,               (int)blurStrengthValues.size() - 1);
+    float  t    = (float)(idx - lo);
+    m_iterationCount = blurStrengthValues[hi].iteration; // enough Kawase passes for the higher level
+    m_offset     = blurStrengthValues[lo].offset + t * (blurStrengthValues[hi].offset - blurStrengthValues[lo].offset);
     m_expandSize = blurOffsets[m_iterationCount - 1].expandSize;
     m_noiseStrength = BlurConfig::noiseStrength();
     m_colorMatrix = QMatrix4x4(); // identity — no color transform
+    m_rgbDriftStrength = static_cast<float>(BlurConfig::rgbDriftStrength());
+    m_magnifyGlassStrength = static_cast<float>(BlurConfig::magnifyGlassStrength());
+    m_refractionWidth = static_cast<float>(BlurConfig::refractionWidth());
+    m_highlightWidth = static_cast<float>(BlurConfig::highlightWidth());
+    m_highlightStrength = static_cast<float>(BlurConfig::highlightStrength());
+    m_shadowStrength = static_cast<float>(BlurConfig::shadowStrength());
 
     m_whitelist = BlurConfig::blurMatching();
 
@@ -750,7 +766,12 @@ void BlurEffect::blur(const RenderTarget &renderTarget, const RenderViewport &vi
 
         glClearColor(0, 0, 0, 0);
         for (size_t i = 0; i <= m_iterationCount; ++i) {
-            auto texture = GLTexture::allocate(textureFormat, backgroundRect.size() / (1 << i));
+            // Ensure the texture is at least 1×1 — at high iteration counts (level 5 = /32)
+            // a small window could produce a zero-size texture and crash the driver.
+            QSize texSize = backgroundRect.size() / (1 << i);
+            texSize.setWidth(qMax(texSize.width(), 1));
+            texSize.setHeight(qMax(texSize.height(), 1));
+            auto texture = GLTexture::allocate(textureFormat, texSize);
             if (!texture) {
                 qCWarning(KWIN_BLUR) << "Failed to allocate an offscreen texture";
                 return;
@@ -997,7 +1018,10 @@ void BlurEffect::blur(const RenderTarget &renderTarget, const RenderViewport &vi
     projectionMatrix.translate(scaledBackgroundRect.x(), scaledBackgroundRect.y());
 
     GLFramebuffer::popFramebuffer();
-    const auto &read = renderInfo.framebuffers[0];
+    // framebuffers[0] is the original unblurred background capture.
+    // framebuffers[1] is the Kawase-blurred result (highest-resolution output of the
+    // dual-Kawase round-trip).  Reading [1] is what gives the blur effect.
+    const auto &read = renderInfo.framebuffers[1];
 
     const QVector2D halfpixel(0.5 / read->colorAttachment()->width(),
                               0.5 / read->colorAttachment()->height());
@@ -1020,6 +1044,12 @@ void BlurEffect::blur(const RenderTarget &renderTarget, const RenderViewport &vi
     m_roundedOnscreenPass.shader->setUniform(m_roundedOnscreenPass.cornerRadiusLocation, nativeCornerRadius.toVector());
     m_roundedOnscreenPass.shader->setUniform(m_roundedOnscreenPass.opacityLocation, modulation);
     m_roundedOnscreenPass.shader->setUniform(m_roundedOnscreenPass.blurSizeLocation, QVector2D(nativeBox.width(), nativeBox.height()));
+    m_roundedOnscreenPass.shader->setUniform(m_roundedOnscreenPass.rgbDriftStrengthLocation, m_rgbDriftStrength);
+    m_roundedOnscreenPass.shader->setUniform(m_roundedOnscreenPass.magnifyGlassStrengthLocation, m_magnifyGlassStrength);
+    m_roundedOnscreenPass.shader->setUniform(m_roundedOnscreenPass.refractionWidthLocation, m_refractionWidth);
+    m_roundedOnscreenPass.shader->setUniform(m_roundedOnscreenPass.highlightWidthLocation, m_highlightWidth);
+    m_roundedOnscreenPass.shader->setUniform(m_roundedOnscreenPass.highlightStrengthLocation, m_highlightStrength);
+    m_roundedOnscreenPass.shader->setUniform(m_roundedOnscreenPass.shadowStrengthLocation, m_shadowStrength);
 
     read->colorAttachment()->bind();
 

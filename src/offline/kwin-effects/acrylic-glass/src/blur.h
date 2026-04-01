@@ -113,6 +113,12 @@ private:
         int opacityLocation;
 
         int blurSizeLocation;
+        int rgbDriftStrengthLocation;
+        int magnifyGlassStrengthLocation;
+        int refractionWidthLocation;
+        int highlightWidthLocation;
+        int highlightStrengthLocation;
+        int shadowStrengthLocation;
     } m_roundedOnscreenPass;
 
     struct
@@ -151,8 +157,14 @@ private:
     RenderView *m_currentView = nullptr;
 
     QMatrix4x4 m_colorMatrix;
+    float m_rgbDriftStrength;
+    float m_magnifyGlassStrength;
+    float m_refractionWidth;
+    float m_highlightWidth;
+    float m_highlightStrength;
+    float m_shadowStrength;
     size_t m_iterationCount; // number of times the texture will be downsized to half size
-    int m_offset;
+    float m_offset;
     int m_expandSize;
     int m_noiseStrength;
     QStringList m_windowClasses;

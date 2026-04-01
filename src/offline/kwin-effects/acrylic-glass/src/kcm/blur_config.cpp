@@ -19,26 +19,10 @@ LiquidGlassEffectConfig::LiquidGlassEffectConfig(QObject *parent, const KPluginM
     ui.setupUi(widget());
     BlurConfig::instance("kwinrc");
     addConfig(BlurConfig::self(), widget());
-
-    connect(ui.presetCombo, QOverload<int>::of(&QComboBox::currentIndexChanged),
-            this, &LiquidGlassEffectConfig::applyPreset);
 }
 
 LiquidGlassEffectConfig::~LiquidGlassEffectConfig()
 {
-}
-
-void LiquidGlassEffectConfig::applyPreset(int index)
-{
-    // Clear = 2 (subtle), Frosted = 8 (visible but not heavy)
-    const int blurValues[] = { 2, 8 };
-    if (index < 0 || index >= 2) return;
-
-    BlurConfig::setBlurStrength(blurValues[index]);
-    BlurConfig::setNoiseStrength(0);
-    BlurConfig::self()->save();
-
-    markAsChanged();
 }
 
 void LiquidGlassEffectConfig::save()
