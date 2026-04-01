@@ -31,7 +31,7 @@ colorizer.currentConfigGroup = ["Configuration"];
 colorizer.writeConfig("hideWidget", "true");
 
 bar.addWidget("org.kde.mac-tahoe-liquid-kde.menu");
-bar.addWidget("org.kde.plasma.appmenu");
+bar.addWidget("org.kde.mac-tahoe-liquid-kde.globalmenu");
 bar.addWidget("org.kde.plasma.panelspacer");
 
 // system tray — macOS style: only bluetooth, wifi, brightness visible
