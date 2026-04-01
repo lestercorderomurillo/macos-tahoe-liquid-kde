@@ -680,6 +680,53 @@ if [[ "$(cfg plasmoids)" == "true" ]]; then
   unset _n _lbl
 fi
 
+# ── Installing Global Menu Plasma Applet ────────────────
+if [[ "$(cfg plasmoids)" == "true" ]]; then
+  step "Installing Global Menu"
+  note "Builds and installs the Global Menu C++ Plasma applet from source"
+
+  _gm_src="$OFFLINE/plasma-applets/globalmenu"
+  _gm_build="$_gm_src/build"
+  if [[ -f "$_gm_src/CMakeLists.txt" ]]; then
+    _missing=false
+    for _dep in cmake g++ pkg-config; do
+      command -v "$_dep" &>/dev/null || { warn "$_dep not found — needed to build Global Menu"; _missing=true; }
+    done
+
+    if ! $_missing; then
+      rm -rf "$_gm_build"
+      mkdir -p "$_gm_build"
+
+      if cmake -S "$_gm_src" -B "$_gm_build" -DCMAKE_BUILD_TYPE=Release &>/dev/null; then
+        if make -C "$_gm_build" -j"$(nproc)" &>/dev/null; then
+          ok "Global Menu built"
+          _plugin_dir=$(qmake6 -query QT_INSTALL_PLUGINS 2>/dev/null \
+            || qtpaths6 --plugin-dir 2>/dev/null \
+            || echo "/usr/lib/qt6/plugins")
+          _gm_so="$_gm_build/org.kde.mac.tahoe.globalmenu.so"
+          _gm_dest="$_plugin_dir/plasma/applets/org.kde.mac.tahoe.globalmenu.so"
+
+          if [[ -f "$_gm_so" ]]; then
+            if sudo cp "$_gm_so" "${_gm_dest}.tmp" && sudo mv -f "${_gm_dest}.tmp" "$_gm_dest"; then
+              ok "Global Menu installed"
+            else
+              fail "Global Menu: could not install .so (sudo required)"
+            fi
+          else
+            fail "Global Menu: .so not found after build — check cmake output"
+          fi
+        else
+          fail "Global Menu: build failed"
+        fi
+      else
+        fail "Global Menu: cmake configure failed"
+      fi
+    fi
+  else
+    warn "Global Menu source not found — skipping"
+  fi
+fi
+
 # ── Installing Acrylic Glass KWin Effect ────────────────
 if [[ "$(cfg acrylic_glass)" == "true" ]]; then
   step "Installing Acrylic Glass"

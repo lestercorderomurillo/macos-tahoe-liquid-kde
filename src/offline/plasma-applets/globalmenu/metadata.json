@@ -1,0 +1,21 @@
+{
+    "KPlugin": {
+        "Authors": [
+            {
+                "Email": "",
+                "Name": "Lester Cordero Murillo"
+            }
+        ],
+        "Category": "Windows and Tasks",
+        "Description": "Global menu bar — shows the active application's menu (File, Edit, View…) in the panel.",
+        "EnabledByDefault": true,
+        "FormFactors": ["desktop"],
+        "Icon": "show-menu",
+        "Id": "org.kde.mac.tahoe.globalmenu",
+        "License": "GPL-2.0-or-later",
+        "Name": "Global Menu",
+        "Version": "1.0",
+        "Website": "https://github.com/lcm-linux/macos-tahoe-liquid-kde"
+    },
+    "X-Plasma-API-Minimum-Version": "6.0"
+}
