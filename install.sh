@@ -692,6 +692,13 @@ if [[ "$(cfg plasmoids)" == "true" ]]; then
     for _dep in cmake g++ pkg-config; do
       command -v "$_dep" &>/dev/null || { warn "$_dep not found — needed to build Global Menu"; _missing=true; }
     done
+    pkg-config --exists dbusmenu-lxqt 2>/dev/null || {
+      warn "libdbusmenu-lxqt not found — installing"
+      sudo pacman -S --noconfirm libdbusmenu-lxqt 2>/dev/null \
+        || paru -S --noconfirm libdbusmenu-lxqt 2>/dev/null \
+        || yay -S --noconfirm libdbusmenu-lxqt 2>/dev/null \
+        || { warn "could not install libdbusmenu-lxqt — skipping Global Menu build"; _missing=true; }
+    }
 
     if ! $_missing; then
       rm -rf "$_gm_build"

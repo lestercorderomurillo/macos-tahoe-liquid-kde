@@ -22,7 +22,7 @@ find_package(KF6 ${KF_MIN_VERSION} REQUIRED COMPONENTS
 find_package(Plasma REQUIRED)
 find_package(PlasmaActivities)
 find_package(LibTaskManager REQUIRED)
-find_package(dbusmenu-qt6 REQUIRED)
+find_package(dbusmenu-lxqt REQUIRED)
 
 add_definitions(-DTRANSLATION_DOMAIN="plasma_applet_org.kde.mac.tahoe.globalmenu")
 
@@ -49,5 +49,5 @@ target_link_libraries(org.kde.mac.tahoe.globalmenu PRIVATE
     KF6::WindowSystem
     KF6::I18n
     PW::LibTaskManager
-    dbusmenuqt6
+    dbusmenu-lxqt
 )

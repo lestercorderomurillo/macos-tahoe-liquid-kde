@@ -19,7 +19,7 @@
 #include <algorithm>
 
 #include <abstracttasksmodel.h>
-#include <dbusmenuimporter.h>
+#include <dbusmenu-lxqt/dbusmenuimporter.h>
 
 class KDBusMenuImporter : public DBusMenuImporter
 {
