@@ -11,9 +11,9 @@
 		"Description": "Global menu bar plasmoid — shows configurable app menu items in the panel.",
 		"EnabledByDefault": true,
 		"Icon": "application-menu",
-		"Id": "org.kde.mac-tahoe-liquid-kde.appmenu",
+		"Id": "org.kde.mac-tahoe-liquid-kde.globalmenu",
 		"License": "GPL-2.0-or-later",
-		"Name": "App Menu",
+		"Name": "Global Menu",
 		"Version": "1.0"
 	},
 	"X-Plasma-API-Minimum-Version": "6.0"
