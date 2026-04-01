@@ -124,11 +124,18 @@ PlasmoidItem {
     compactRepresentation: MouseArea {
         id: compactRoot
 
+        // Extra horizontal padding so the tile is wider than the bare icon.
+        implicitWidth: Kirigami.Units.iconSizes.medium + Kirigami.Units.gridUnit * 2
+
         hoverEnabled: true
         onClicked: root.expanded = !root.expanded
 
         Kirigami.Icon {
-            anchors.fill: parent
+            anchors {
+                fill: parent
+                leftMargin:  Kirigami.Units.gridUnit
+                rightMargin: Kirigami.Units.gridUnit
+            }
             source: root.cfgIcon
             active: compactRoot.containsMouse
         }
