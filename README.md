@@ -23,16 +23,16 @@ A complete environment, not just a coat of paint.
 | **Kvantum Theme** | macOS-style Kvantum theme | 🔧 In Progress |
 | **GTK Theme** | GTK2/3/4 window chrome and controls | 🔧 In Progress |
 | **Acrylic Glass** | KWin blur, rounded corners, glass effect | 🔧 In Progress |
-| **TimeOfDay Switcher** | Auto light/dark themes based on time of day | ✅ Implemented |
+| **TimeOfDay Switcher** | Auto light/dark themes based on time of day | 🔧 In Progress |
 | **Aurorae Decorations** | Window title bar and borders | 🔧 In Progress |
 | **Firefox Theme** | macOS-style Firefox browser theme | 🔲 Planned |
 | **Thunderbird Theme** | macOS-style Thunderbird mail theme | 🔲 Planned |
 | **Konsole Theme** | macOS-style terminal profile | 🔲 Planned |
 | **Kate Theme** | macOS-style text editor theme | 🔲 Planned |
 | **SDDM Theme** | macOS-style Login and lock screen | 🔲 Planned |
-| **Menu Plasmoid** | macOS-style Kpple Menu with system actions | ✅ Implemented |
-| **Launcher Plasmoid** | macOS-style app grid launcher | ✅ Implemented |
-| **Trashcan Plasmoid** | macOS-style trash widget with configurable icons | ✅ Implemented |
+| **Menu Plasmoid** | macOS-style Menu with system actions | 🔧 In Progress |
+| **Launcher Plasmoid** | macOS-style app grid launcher | 🔧 In Progress |
+| **Trashcan Plasmoid** | macOS-style trash widget with configurable icons | 🔧 In Progress |
 | **Calendar Plasmoid** | macOS-style calendar dropdown | 🔲 Planned |
 | **Control Center Plasmoid** | macOS-style quick settings panel | 🔲 Planned |
 | **System Preferences Plasmoid** | macOS-style settings launcher | 🔲 Planned |
