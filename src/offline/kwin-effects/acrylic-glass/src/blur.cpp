@@ -263,11 +263,13 @@ void BlurEffect::initBlurStrengthValues()
      */
 
     // {minOffset, maxOffset, expandSize}
-    blurOffsets.append({1.0, 2.0,  10});  // Down sample size / 2
-    blurOffsets.append({2.0, 3.0,  20});  // Down sample size / 4
-    blurOffsets.append({2.0, 5.0,  50});  // Down sample size / 8
-    blurOffsets.append({3.0, 8.0,  150}); // Down sample size / 16
-    blurOffsets.append({5.0, 10.0, 400}); // Down sample size / 32
+    // Tuned for the hexagonal disc kernel which covers more area per tap
+    // than axis-aligned Kawase — offsets kept low for precise, subtle blur.
+    blurOffsets.append({0.5, 1.0,  10});  // Down sample size / 2
+    blurOffsets.append({1.0, 1.5,  20});  // Down sample size / 4
+    blurOffsets.append({1.0, 2.5,  50});  // Down sample size / 8
+    blurOffsets.append({1.5, 4.0,  150}); // Down sample size / 16
+    blurOffsets.append({2.5, 5.0,  400}); // Down sample size / 32
 
     float offsetSum = 0;
 
@@ -297,14 +299,21 @@ void BlurEffect::reconfigure(ReconfigureFlags flags)
     BlurConfig::self()->read();
 
     // Fractional blur strength: interpolate offset between neighbouring table entries.
-    double blurStrengthD = qBound(1.0, BlurConfig::blurStrength(), (double)blurStrengthValues.size());
-    double idx  = blurStrengthD - 1.0; // 0.0 … size-1
-    int    lo   = qBound(0, (int)std::floor(idx), (int)blurStrengthValues.size() - 1);
-    int    hi   = qBound(0, lo + 1,               (int)blurStrengthValues.size() - 1);
-    float  t    = (float)(idx - lo);
-    m_iterationCount = blurStrengthValues[hi].iteration; // enough Kawase passes for the higher level
-    m_offset     = blurStrengthValues[lo].offset + t * (blurStrengthValues[hi].offset - blurStrengthValues[lo].offset);
-    m_expandSize = blurOffsets[m_iterationCount - 1].expandSize;
+    // Strength 0 = no blur (passthrough).
+    double blurStrengthD = qBound(0.0, BlurConfig::blurStrength(), (double)blurStrengthValues.size());
+    if (blurStrengthD <= 0.0) {
+        m_iterationCount = 1;
+        m_offset = 0.0;
+        m_expandSize = 0;
+    } else {
+        double idx  = blurStrengthD - 1.0; // 0.0 … size-1
+        int    lo   = qBound(0, (int)std::floor(idx), (int)blurStrengthValues.size() - 1);
+        int    hi   = qBound(0, lo + 1,               (int)blurStrengthValues.size() - 1);
+        float  t    = (float)(idx - lo);
+        m_iterationCount = blurStrengthValues[hi].iteration; // enough Kawase passes for the higher level
+        m_offset     = blurStrengthValues[lo].offset + t * (blurStrengthValues[hi].offset - blurStrengthValues[lo].offset);
+        m_expandSize = blurOffsets[m_iterationCount - 1].expandSize;
+    }
     m_noiseStrength = BlurConfig::noiseStrength();
     m_colorMatrix = QMatrix4x4(); // identity — no color transform
     m_rgbDriftStrength = static_cast<float>(BlurConfig::rgbDriftStrength());
@@ -1018,10 +1027,12 @@ void BlurEffect::blur(const RenderTarget &renderTarget, const RenderViewport &vi
     projectionMatrix.translate(scaledBackgroundRect.x(), scaledBackgroundRect.y());
 
     GLFramebuffer::popFramebuffer();
-    // framebuffers[0] is the original unblurred background capture.
-    // framebuffers[1] is the Kawase-blurred result (highest-resolution output of the
-    // dual-Kawase round-trip).  Reading [1] is what gives the blur effect.
-    const auto &read = renderInfo.framebuffers[1];
+    // framebuffers[0] is the original unblurred background capture (full res).
+    // framebuffers[1] is the Kawase-blurred result (half res).
+    // At offset 0 (no blur) read the full-res original to avoid downscaling artifacts.
+    const auto &read = (m_offset > 0.0f && renderInfo.framebuffers.size() > 1)
+        ? renderInfo.framebuffers[1]
+        : renderInfo.framebuffers[0];
 
     const QVector2D halfpixel(0.5 / read->colorAttachment()->width(),
                               0.5 / read->colorAttachment()->height());
