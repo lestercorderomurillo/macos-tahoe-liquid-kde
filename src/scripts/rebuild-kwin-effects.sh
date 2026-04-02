@@ -3,7 +3,7 @@
 # Safe to run from any session (GNOME, TTY, etc).
 set -e
 
-SRC="$(cd "$(dirname "$0")/src/offline/kwin-effects/acrylic-glass" && pwd)"
+SRC="$(cd "$(dirname "$0")/../offline/kwin-effects/acrylic-glass" && pwd)"
 BUILD="$SRC/build"
 
 PLUGIN_DIR=$(qmake6 -query QT_INSTALL_PLUGINS 2>/dev/null \
