@@ -6,7 +6,7 @@
     <kcfgfile arg="true"/>
     <group name="Effect-liquidglass">
         <entry name="BlurStrength" type="Double">
-            <default>2.0</default>
+            <default>1.5</default>
         </entry>
         <entry name="NoiseStrength" type="Int">
             <default>2</default>
