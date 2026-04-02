@@ -166,25 +166,23 @@ PlasmoidItem {
         }
     }
 
-    // ── full: the dropdown menu ───────────────────────────────��─────
+    // ── full: the dropdown menu ───────────────────────────────────
     fullRepresentation: Item {
-        Layout.preferredWidth: Kirigami.Units.gridUnit * 16
-        Layout.maximumWidth: Kirigami.Units.gridUnit * 16
-        Layout.minimumWidth: Kirigami.Units.gridUnit * 16
-        Layout.preferredHeight: menuColumn.implicitHeight + Kirigami.Units.gridUnit
-        Layout.maximumHeight: menuColumn.implicitHeight + Kirigami.Units.gridUnit
-        Layout.minimumHeight: menuColumn.implicitHeight + Kirigami.Units.gridUnit
+        Layout.preferredWidth: Kirigami.Units.gridUnit * 13
+        Layout.maximumWidth: Kirigami.Units.gridUnit * 13
+        Layout.minimumWidth: Kirigami.Units.gridUnit * 13
+        Layout.preferredHeight: menuColumn.implicitHeight + Kirigami.Units.smallSpacing * 2
+        Layout.maximumHeight: menuColumn.implicitHeight + Kirigami.Units.smallSpacing * 2
+        Layout.minimumHeight: menuColumn.implicitHeight + Kirigami.Units.smallSpacing * 2
 
         ColumnLayout {
             id: menuColumn
             anchors {
                 fill: parent
-                topMargin: Kirigami.Units.smallSpacing * 2
-                bottomMargin: Kirigami.Units.smallSpacing * 2
-                leftMargin: Kirigami.Units.smallSpacing
-                rightMargin: Kirigami.Units.smallSpacing
+                topMargin: Kirigami.Units.smallSpacing
+                bottomMargin: Kirigami.Units.smallSpacing
             }
-            spacing: Kirigami.Units.smallSpacing
+            spacing: 0
 
             Repeater {
                 model: root.menuActions
@@ -194,8 +192,8 @@ PlasmoidItem {
                     required property var modelData
                     Layout.fillWidth: true
                     implicitHeight: modelData.separator
-                        ? sep.implicitHeight + Kirigami.Units.smallSpacing * 2
-                        : Kirigami.Units.gridUnit * 1.75
+                        ? sep.implicitHeight + Kirigami.Units.smallSpacing
+                        : Math.round(Kirigami.Units.gridUnit * 1.3)
 
                     // ── separator ───────────────────────────────────────
                     Kirigami.Separator {
@@ -203,8 +201,6 @@ PlasmoidItem {
                         visible: delegateItem.modelData.separator === true
                         anchors {
                             left: parent.left; right: parent.right
-                            leftMargin: Kirigami.Units.smallSpacing
-                            rightMargin: Kirigami.Units.smallSpacing
                             verticalCenter: parent.verticalCenter
                         }
                     }
@@ -224,9 +220,11 @@ PlasmoidItem {
 
                         Text {
                             anchors {
-                                fill: parent
-                                leftMargin: Kirigami.Units.largeSpacing
-                                rightMargin: Kirigami.Units.largeSpacing
+                                verticalCenter: parent.verticalCenter
+                                left: parent.left
+                                right: parent.right
+                                leftMargin: Kirigami.Units.mediumSpacing
+                                rightMargin: Kirigami.Units.mediumSpacing
                             }
                             text: delegateItem.modelData.text || ""
                             color: (ma.containsMouse || ma.containsPress)
