@@ -9,12 +9,9 @@ pragma ComponentBehavior: Bound
 
 import QtQuick
 import QtQuick.Layouts
-import QtQuick.Controls as QQC2
 
 import org.kde.plasma.plasmoid
 import org.kde.plasma.core as PlasmaCore
-import org.kde.plasma.components as PlasmaComponents
-import org.kde.plasma.extras as PlasmaExtras
 import org.kde.kirigami as Kirigami
 import org.kde.plasma.plasma5support as P5Support
 
@@ -130,6 +127,19 @@ PlasmoidItem {
         Layout.minimumWidth:  Math.round(parent.height * 2.275) - 4
         Layout.preferredWidth: Math.round(parent.height * 2.275) - 4
 
+        // Walk up to the panel applet container so the tile can
+        // extend to the full panel height (negative margins).
+        readonly property var containerMargins: {
+            let item = compactTile;
+            while (item.parent) {
+                item = item.parent;
+                if (item.isAppletContainer) {
+                    return item.getMargins;
+                }
+            }
+            return undefined;
+        }
+
         MouseArea {
             id: compactRoot
             anchors.fill: parent
@@ -138,9 +148,13 @@ PlasmoidItem {
         }
 
         Rectangle {
-            anchors.fill: parent
+            anchors {
+                fill: parent
+                topMargin:    compactTile.containerMargins ? -compactTile.containerMargins('top', true) : 0
+                bottomMargin: compactTile.containerMargins ? -compactTile.containerMargins('bottom', true) : 0
+            }
             radius: Kirigami.Units.cornerRadius
-            color: (compactRoot.containsMouse || root.expanded)
+            color: (compactRoot.containsMouse || compactRoot.containsPress || root.expanded)
                    ? Qt.rgba(0.5, 0.5, 0.5, 0.18) : "transparent"
         }
 
@@ -179,8 +193,11 @@ PlasmoidItem {
                     id: delegateItem
                     required property var modelData
                     Layout.fillWidth: true
-                    implicitHeight: modelData.separator ? sep.height + Kirigami.Units.smallSpacing * 2 : btn.implicitHeight
+                    implicitHeight: modelData.separator
+                        ? sep.implicitHeight + Kirigami.Units.smallSpacing * 2
+                        : Kirigami.Units.gridUnit * 1.75
 
+                    // ── separator ───────────────────────────────────────
                     Kirigami.Separator {
                         id: sep
                         visible: delegateItem.modelData.separator === true
@@ -188,35 +205,44 @@ PlasmoidItem {
                             left: parent.left; right: parent.right
                             leftMargin: Kirigami.Units.smallSpacing
                             rightMargin: Kirigami.Units.smallSpacing
+                            verticalCenter: parent.verticalCenter
                         }
-                        anchors.verticalCenter: parent.verticalCenter
                     }
 
-                    QQC2.ItemDelegate {
+                    // ── menu row ────────────────────────────────────────
+                    Item {
                         id: btn
-                        visible: delegateItem.modelData.separator !== true
-                        anchors { left: parent.left; right: parent.right }
-                        text: delegateItem.modelData.text || ""
-                        topPadding: Kirigami.Units.smallSpacing * 1.5
-                        bottomPadding: Kirigami.Units.smallSpacing * 1.5
-                        leftPadding: Kirigami.Units.largeSpacing
-                        rightPadding: Kirigami.Units.largeSpacing
+                        visible: !delegateItem.modelData.separator
+                        anchors.fill: parent
 
-                        background: Rectangle {
+                        Rectangle {
+                            anchors.fill: parent
                             radius: Kirigami.Units.cornerRadius
-                            color: btn.hovered ? Kirigami.Theme.highlightColor : "transparent"
+                            color: (ma.containsMouse || ma.containsPress)
+                                   ? Kirigami.Theme.highlightColor : "transparent"
                         }
 
-                        contentItem: Text {
-                            text: btn.text
-                            color: btn.hovered ? Kirigami.Theme.highlightedTextColor : Kirigami.Theme.textColor
-                            font: btn.font
+                        Text {
+                            anchors {
+                                fill: parent
+                                leftMargin: Kirigami.Units.largeSpacing
+                                rightMargin: Kirigami.Units.largeSpacing
+                            }
+                            text: delegateItem.modelData.text || ""
+                            color: (ma.containsMouse || ma.containsPress)
+                                   ? Kirigami.Theme.highlightedTextColor : Kirigami.Theme.textColor
+                            font: Kirigami.Theme.defaultFont
                             verticalAlignment: Text.AlignVCenter
                         }
 
-                        onClicked: {
-                            delegateItem.modelData.action();
-                            root.expanded = false;
+                        MouseArea {
+                            id: ma
+                            anchors.fill: parent
+                            hoverEnabled: true
+                            onClicked: {
+                                delegateItem.modelData.action();
+                                root.expanded = false;
+                            }
                         }
                     }
                 }
