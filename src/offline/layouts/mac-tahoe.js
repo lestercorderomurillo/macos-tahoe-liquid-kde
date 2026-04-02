@@ -16,7 +16,7 @@ bar.screen = 0;
 bar.lengthMode = "fill";
 bar.floating = false;
 bar.hiding = "none";
-bar.height = 38;
+bar.height = 32;
 
 // panel colorizer: transparent background
 var colorizer = bar.addWidget("luisbocanegra.panel.colorizer");
