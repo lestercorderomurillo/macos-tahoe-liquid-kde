@@ -1,7 +1,7 @@
 # MacOS Tahoe Glass Glass Theme for KDE Plasma
 
 > [!CAUTION]
-> **Status: In development** — This package is functional but under active development. Some features may not work as expected or be broken in your system. I advice you to back up your system config before installing. Use at your own risk.
+> **Very experimental** — Under heavy active development. Things will break. Back up your system config before installing. Use at your own risk.
 
 A full macOS Tahoe-style desktop experience for KDE Plasma 6.6+.
 
@@ -41,22 +41,6 @@ A complete environment, not just a coat of paint.
 | **Shutdown Screen** | Styled logout / shutdown sequence | 🔲 Planned |
 
 ---
-
-## Screenshots
-
-<table>
-  <tr>
-    <td align="center">
-      <img src="src/images/calculator.png" alt="macOS Tahoe Calculator" height="300px"/><br/>
-      <sub><b>Acrylic Glass Calculator (Example)</b></sub>
-    </td>
-    <td align="center">
-      <img src="src/images/menu.png" alt="macOS Tahoe Calculator" height="300px"/><br/>
-      <sub><b>Acrylic Menu (Example)</b></sub>
-    </td>
-  </tr>
-</table>
-
 
 ## Requirements
 
@@ -174,11 +158,6 @@ The uninstaller reverses everything and resets to Breeze defaults.
 ## Disclaimer
 
 This project is an independent reimplementation inspired by the macOS aesthetic. No assets, code, or intellectual property from Apple Inc. have been copied or redistributed. All themes, icons, plasmoids, and configurations are original work or derived from open-source projects under compatible licenses. "macOS" and "Apple" are trademarks of Apple Inc. This project is not affiliated with or endorsed by Apple.
-
----
-
-## Credits
-
 
 ---
 
