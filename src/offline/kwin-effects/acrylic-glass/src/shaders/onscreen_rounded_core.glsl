@@ -78,10 +78,13 @@ void main()
     vec2 pos      = uv * blurSize - halfSize;
 
     // ── Shape mask ────────────────────────────────────────────────
-    float d = rrDist(pos, halfSize, cornerRadius);
-    if (d > 1.0) discard;
+    // Inset by 1 px so highlight, refraction and blur never bleed
+    // outside the window bounds (avoids subpixel border artifacts).
+    vec2  insetHalf = halfSize - 1.0;
+    float d = rrDist(pos, insetHalf, cornerRadius);
+    if (d > 0.0) discard;
 
-    vec2 outNorm = rrNormal(pos, halfSize, cornerRadius);
+    vec2 outNorm = rrNormal(pos, insetHalf, cornerRadius);
     float inside = -d; // positive inside the shape
 
     // ── Refraction band — controls lens distortion + chromatic drift ──
@@ -125,6 +128,6 @@ void main()
     col  = max(col - max(0.0, uv.y - (1.0 - hlUV)) * 0.04 * shadowStrength, 0.0);
 
     // ── Composite ─────────────────────────────────────────────────
-    float mask = 1.0 - smoothstep(-0.5, 0.5, d);
+    float mask = 1.0 - smoothstep(-1.5, -0.5, d);
     fragColor  = vec4(col, mask) * colorMatrix * opacity;
 }

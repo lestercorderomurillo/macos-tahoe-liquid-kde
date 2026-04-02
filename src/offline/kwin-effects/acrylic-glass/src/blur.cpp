@@ -1043,8 +1043,13 @@ void BlurEffect::blur(const RenderTarget &renderTarget, const RenderViewport &vi
         w->frameGeometry().width() * data.xScale(),
         w->frameGeometry().height() * data.yScale(),
     };
-    const QRectF nativeBox = snapToPixelGridF(scaledRect(transformedRect, viewport.scale()))
-                                 .translated(-scaledBackgroundRect.topLeft());
+    // Floor to integer device pixels so the SDF rounded corners are always
+    // pixel-aligned — prevents subpixel border artifacts that shift with
+    // window position.
+    const QRectF nativeBoxF = snapToPixelGridF(scaledRect(transformedRect, viewport.scale()))
+                                  .translated(-scaledBackgroundRect.topLeft());
+    const QRectF nativeBox(std::floor(nativeBoxF.x()), std::floor(nativeBoxF.y()),
+                           std::floor(nativeBoxF.width()), std::floor(nativeBoxF.height()));
     const BorderRadius nativeCornerRadius = cornerRadius.scaled(viewport.scale()).rounded();
 
     m_roundedOnscreenPass.shader->setUniform(m_roundedOnscreenPass.mvpMatrixLocation, projectionMatrix);
