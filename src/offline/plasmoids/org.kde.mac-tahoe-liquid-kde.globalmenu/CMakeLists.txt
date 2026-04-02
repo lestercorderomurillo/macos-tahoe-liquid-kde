@@ -11,6 +11,7 @@ include(KDEInstallDirs6)
 include(KDECMakeSettings)
 include(KDECompilerSettings NO_POLICY_SCOPE)
 include(ECMQmlModule)
+include(ECMQtDeclareLoggingCategory)
 include(FeatureSummary)
 
 find_package(Qt6 ${QT_MIN_VERSION} CONFIG REQUIRED COMPONENTS
@@ -22,13 +23,17 @@ find_package(KF6 ${KF_MIN_VERSION} REQUIRED COMPONENTS
 find_package(Plasma REQUIRED)
 find_package(PlasmaActivities)
 find_package(LibTaskManager REQUIRED)
-find_package(dbusmenu-lxqt REQUIRED)
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-add_definitions(-DTRANSLATION_DOMAIN="plasma_applet_org.kde.mac.tahoe.globalmenu")
+add_definitions(-DTRANSLATION_DOMAIN="plasma_applet_org.kde.mac.tahoe.liquid.globalmenu")
 
-plasma_add_applet(org.kde.mac.tahoe.globalmenu
+add_subdirectory(libdbusmenuqt)
+
+# Note: plasma_add_applet requires a CMake-valid target name (no hyphens).
+# The QML module URI also cannot contain hyphens (QML syntax constraint).
+# For this C++ applet the ID uses dots: org.kde.mac.tahoe.liquid.globalmenu.
+plasma_add_applet(org.kde.mac.tahoe.liquid.globalmenu
     QML_SOURCES
         qml/config.qml
         qml/configGeneral.qml
@@ -42,7 +47,12 @@ plasma_add_applet(org.kde.mac.tahoe.globalmenu
     QML_ARGS DEPENDENCIES QtCore org.kde.plasma.core
 )
 
-target_link_libraries(org.kde.mac.tahoe.globalmenu PRIVATE
+target_include_directories(org.kde.mac.tahoe.liquid.globalmenu PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}/libdbusmenuqt
+    ${CMAKE_CURRENT_BINARY_DIR}/libdbusmenuqt
+)
+
+target_link_libraries(org.kde.mac.tahoe.liquid.globalmenu PRIVATE
     Qt::Core
     Qt::Widgets
     Qt::Quick
@@ -51,5 +61,5 @@ target_link_libraries(org.kde.mac.tahoe.globalmenu PRIVATE
     KF6::WindowSystem
     KF6::I18n
     PW::LibTaskManager
-    dbusmenu-lxqt
+    dbusmenuqt
 )

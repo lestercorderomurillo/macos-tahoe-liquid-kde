@@ -685,20 +685,13 @@ if [[ "$(cfg plasmoids)" == "true" ]]; then
   step "Installing Global Menu"
   note "Builds and installs the Global Menu C++ Plasma applet from source"
 
-  _gm_src="$OFFLINE/plasmoids/org.kde.mac.tahoe.globalmenu"
+  _gm_src="$OFFLINE/plasmoids/org.kde.mac-tahoe-liquid-kde.globalmenu"
   _gm_build="$_gm_src/build"
   if [[ -f "$_gm_src/CMakeLists.txt" ]]; then
     _missing=false
     for _dep in cmake g++ pkg-config; do
       command -v "$_dep" &>/dev/null || { warn "$_dep not found — needed to build Global Menu"; _missing=true; }
     done
-    pkg-config --exists dbusmenu-lxqt 2>/dev/null || {
-      warn "libdbusmenu-lxqt not found — installing"
-      sudo pacman -S --noconfirm libdbusmenu-lxqt 2>/dev/null \
-        || paru -S --noconfirm libdbusmenu-lxqt 2>/dev/null \
-        || yay -S --noconfirm libdbusmenu-lxqt 2>/dev/null \
-        || { warn "could not install libdbusmenu-lxqt — skipping Global Menu build"; _missing=true; }
-    }
 
     if ! $_missing; then
       rm -rf "$_gm_build"
@@ -707,19 +700,14 @@ if [[ "$(cfg plasmoids)" == "true" ]]; then
       if cmake -S "$_gm_src" -B "$_gm_build" -DCMAKE_BUILD_TYPE=Release &>/dev/null; then
         if make -C "$_gm_build" -j"$(nproc)" &>/dev/null; then
           ok "Global Menu built"
-          _gm_so="$_gm_build/bin/plasma/applets/org.kde.mac.tahoe.globalmenu.so"
-          # prefer user-local path (no sudo); fall back to system path
-          _gm_dest_user="$HOME/.local/lib/qt6/plugins/plasma/applets/org.kde.mac.tahoe.globalmenu.so"
-          _gm_dest_sys="/usr/lib/qt6/plugins/plasma/applets/org.kde.mac.tahoe.globalmenu.so"
+          _gm_so="$_gm_build/bin/plasma/applets/org.kde.mac.tahoe.liquid.globalmenu.so"
+          _gm_dest_sys="/usr/lib/qt6/plugins/plasma/applets/org.kde.mac.tahoe.liquid.globalmenu.so"
 
           if [[ -f "$_gm_so" ]]; then
-            mkdir -p "$(dirname "$_gm_dest_user")"
-            if cp "$_gm_so" "$_gm_dest_user"; then
-              ok "Global Menu installed (user-local)"
-            elif sudo cp "$_gm_so" "${_gm_dest_sys}.tmp" && sudo mv -f "${_gm_dest_sys}.tmp" "$_gm_dest_sys"; then
-              ok "Global Menu installed (system)"
+            if sudo cp "$_gm_so" "${_gm_dest_sys}.tmp" && sudo mv -f "${_gm_dest_sys}.tmp" "$_gm_dest_sys"; then
+              ok "Global Menu installed"
             else
-              fail "Global Menu: could not install .so"
+              fail "Global Menu: could not install .so (sudo required)"
             fi
           else
             fail "Global Menu: .so not found after build — check cmake output"

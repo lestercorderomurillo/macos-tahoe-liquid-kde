@@ -19,7 +19,7 @@
 #include <algorithm>
 
 #include <abstracttasksmodel.h>
-#include <dbusmenu-lxqt/dbusmenuimporter.h>
+#include "dbusmenuimporter.h"
 
 class KDBusMenuImporter : public DBusMenuImporter
 {
@@ -296,9 +296,9 @@ void AppMenuModel::updateApplicationMenu(const QString &serviceName, const QStri
         m_importer = std::make_unique<KDBusMenuImporter>(serviceName, menuObjectPath);
         QMetaObject::invokeMethod(m_importer.get(), "updateMenu", Qt::QueuedConnection);
 
-        connect(m_importer.get(), &DBusMenuImporter::menuUpdated, this, [this]() {
+        connect(m_importer.get(), &DBusMenuImporter::menuUpdated, this, [=, this](QMenu *menu) {
             m_menu = m_importer->menu();
-            if (m_menu.isNull()) {
+            if (m_menu.isNull() || menu != m_menu) {
                 return;
             }
 
@@ -321,6 +321,10 @@ void AppMenuModel::updateApplicationMenu(const QString &serviceName, const QStri
                     }
                 });
                 connect(a, &QAction::destroyed, this, &AppMenuModel::modelNeedsUpdate);
+
+                if (a->menu()) {
+                    m_importer->updateMenu(a->menu());
+                }
             }
 
             setMenuAvailable(true);

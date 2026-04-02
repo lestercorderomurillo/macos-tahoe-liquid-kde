@@ -1,20 +1,21 @@
 {
-	"KPackageStructure": "Plasma/Applet",
-	"KPlugin": {
-		"Authors": [
-			{
-				"Email": "",
-				"Name": "Lester Cordero Murillo"
-			}
-		],
-		"Category": "Application Launchers",
-		"Description": "Global menu bar plasmoid — shows configurable app menu items in the panel.",
-		"EnabledByDefault": true,
-		"Icon": "application-menu",
-		"Id": "org.kde.mac-tahoe-liquid-kde.globalmenu",
-		"License": "GPL-2.0-or-later",
-		"Name": "Global Menu",
-		"Version": "1.0"
-	},
-	"X-Plasma-API-Minimum-Version": "6.0"
+    "KPlugin": {
+        "Authors": [
+            {
+                "Email": "",
+                "Name": "Lester Cordero Murillo"
+            }
+        ],
+        "Category": "Windows and Tasks",
+        "Description": "Global menu bar — shows the active application's menu (File, Edit, View…) in the panel.",
+        "EnabledByDefault": true,
+        "FormFactors": ["desktop"],
+        "Icon": "show-menu",
+        "Id": "org.kde.mac.tahoe.liquid.globalmenu",
+        "License": "GPL-2.0-or-later",
+        "Name": "Global Menu",
+        "Version": "1.0",
+        "Website": "https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde"
+    },
+    "X-Plasma-API-Minimum-Version": "6.0"
 }

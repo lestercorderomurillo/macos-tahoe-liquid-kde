@@ -16,7 +16,7 @@ import org.kde.plasma.core as PlasmaCore
 import org.kde.plasma.private.keyboardindicator as KeyboardIndicator
 import org.kde.plasma.components as PlasmaComponents3
 import org.kde.kirigami as Kirigami
-import plasma.applet.org.kde.mac.tahoe.globalmenu
+import plasma.applet.org.kde.mac.tahoe.liquid.globalmenu
 
 PlasmoidItem {
     id: root

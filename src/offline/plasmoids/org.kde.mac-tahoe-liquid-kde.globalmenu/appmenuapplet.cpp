@@ -128,6 +128,8 @@ QMenu *AppMenuApplet::createMenu(int idx) const
 
 void AppMenuApplet::onMenuAboutToHide()
 {
+    auto menuAction = m_currentMenu->menuAction();
+    menuAction->setMenu(m_sourceMenu);
     setCurrentIndex(-1);
 }
 
@@ -168,10 +170,29 @@ void AppMenuApplet::trigger(QQuickItem *ctx, int idx)
             }
         };
 
-        // Popup actionMenu directly so the importer's aboutToShow handler
-        // fires and D-Bus fetches submenu items before display.
-        m_currentMenu = actionMenu;
-        m_sourceMenu  = actionMenu;
+        if (view() == FullView) {
+            if (!m_currentMenu) {
+                m_currentMenu = new QMenu(qobject_cast<QWidget *>(actionMenu->parent()));
+                connect(m_currentMenu, &QMenu::aboutToHide, this, &AppMenuApplet::onMenuAboutToHide, Qt::UniqueConnection);
+            } else if (m_sourceMenu != actionMenu) {
+                auto menuAction = m_currentMenu->menuAction();
+                for (QAction *action : m_currentMenu->actions()) {
+                    m_currentMenu->removeAction(action);
+                    m_sourceMenu->addAction(action);
+                }
+                menuAction->setMenu(m_sourceMenu);
+            }
+            m_sourceMenu = actionMenu;
+            auto menuAction = m_sourceMenu->menuAction();
+            for (QAction *action : m_sourceMenu->actions()) {
+                m_sourceMenu->removeAction(action);
+                m_currentMenu->addAction(action);
+            }
+            menuAction->setMenu(m_currentMenu);
+        } else {
+            m_currentMenu = actionMenu;
+            m_sourceMenu = actionMenu;
+        }
 
         QTimer::singleShot(0, ctx, ungrabMouseHack);
 
@@ -189,18 +210,22 @@ void AppMenuApplet::trigger(QQuickItem *ctx, int idx)
         pos = QPoint(qBound(geo.x(), pos.x(), geo.x() + geo.width() - m_currentMenu->width()),
                      qBound(geo.y(), pos.y(), geo.y() + geo.height() - m_currentMenu->height()));
 
-        if (m_currentMenu->isEmpty()) {
-            return;
-        }
-        if (m_currentMenu->isVisible()) {
-            m_currentMenu->move(pos);
-        } else {
-            m_currentMenu->installEventFilter(this);
-            m_currentMenu->winId();
-            m_currentMenu->windowHandle()->setTransientParent(ctx->window());
+        if (view() == FullView) {
+            if (m_currentMenu->isVisible()) {
+                m_currentMenu->move(pos);
+            } else {
+                m_currentMenu->installEventFilter(this);
+                m_currentMenu->winId();
+                m_currentMenu->windowHandle()->setTransientParent(ctx->window());
+                m_currentMenu->popup(pos);
+            }
+        } else if (view() == CompactView) {
+            if (m_currentMenu->isEmpty()) {
+                return;
+            }
             m_currentMenu->popup(pos);
+            connect(actionMenu, &QMenu::aboutToHide, this, &AppMenuApplet::onMenuAboutToHide, Qt::UniqueConnection);
         }
-        connect(actionMenu, &QMenu::aboutToHide, this, &AppMenuApplet::onMenuAboutToHide, Qt::UniqueConnection);
 
         setCurrentIndex(idx);
 

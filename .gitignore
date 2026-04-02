@@ -5,4 +5,4 @@ src/steps/wallpapers
 src/offline/kwin-effects/*/build/
 src/offline/kwin-effects/*/src/shaders/onscreen_rounded*.frag
 src/offline/plasmoids/*/build/
-.claudeCLAUDE.md
+.claude
