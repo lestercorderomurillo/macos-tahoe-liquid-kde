@@ -53,9 +53,10 @@ install() {
   q=$(qdbus_cmd) && {
     if [[ "${FEAT_ACRYLIC_GLASS:-true}" == "true" ]]; then
       "$q" org.kde.KWin /Effects org.kde.kwin.Effects.loadEffect liquidglass &>/dev/null || true
+      sleep 1
     fi
     "$q" org.kde.KWin /KWin org.kde.KWin.reconfigure &>/dev/null || true
-    sleep 2
+    sleep 3
   }
   echo -e "\r  ${GREEN}✓${RESET}  KWin restarted "
 
@@ -66,9 +67,10 @@ restart_plasma() {
   echo -ne "  …  Restarting Plasma"
   kquitapp6 plasmashell 2>/dev/null || killall plasmashell 2>/dev/null || true
   for _i in $(seq 1 10); do pgrep -x plasmashell &>/dev/null || break; sleep 1; done
+  sleep 2
   systemctl --user start plasma-plasmashell 2>/dev/null || kstart plasmashell 2>/dev/null &
   for _i in $(seq 1 15); do pgrep -x plasmashell &>/dev/null && break; sleep 1; done
-  sleep 3
+  sleep 4
   echo -e "\r  ${GREEN}✓${RESET}  Plasma restarted   "
 }
 
@@ -119,9 +121,11 @@ uninstall() {
 
   # ── restart ────────────────────────────────────────────────
   kwin_reconfigure
+  sleep 2
   ok "KWin reconfigured"
 
   # reload panels
+  sleep 1
   local q
   q=$(qdbus_cmd) && {
     "$q" org.kde.plasmashell /PlasmaShell org.kde.PlasmaShell.evaluateScript "
