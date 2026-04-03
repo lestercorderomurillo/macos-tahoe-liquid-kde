@@ -107,7 +107,7 @@ ok "KDE Plasma $plasma_ver"
 [[ -f "$CONFIG" ]] && ok "features.json loaded"
 
 # ── Uninstall each feature ───────────────────────────────────────
-_FEATURES=(wallpapers fonts cursors icons plasmoids globalmenu acrylic_glass plasma_theme window_decorations kvantum color_schemes gtk)
+_FEATURES=(wallpapers fonts cursors icons plasmoids globalmenu acrylic_glass plasma_theme window_decorations kvantum color_schemes gtk layout)
 
 for _feature in "${_FEATURES[@]}"; do
   case "$_feature" in
@@ -133,6 +133,7 @@ for _feature in "${_FEATURES[@]}"; do
     kvantum)             note "Removes Kvantum theme (keeps Kvantum installed)" ;;
     color_schemes)       note "Removes color schemes (light and dark)" ;;
     gtk)                 note "Removes GTK themes for GNOME apps" ;;
+    layout)              note "Resets panel layout to default" ;;
   esac
   run_step "$_sf" "uninstall"
 done
