@@ -107,27 +107,37 @@ ok "KDE Plasma $plasma_ver"
 [[ -f "$CONFIG" ]] && ok "features.json loaded"
 
 # ── Uninstall each feature ───────────────────────────────────────
-_UNINSTALL_FEATURES=(wallpapers fonts cursors icons plasmoids acrylic_glass plasma_theme window_decorations kvantum color_schemes gtk sounds sddm apps)
+_FEATURES=(wallpapers fonts cursors icons plasmoids globalmenu acrylic_glass plasma_theme window_decorations kvantum color_schemes gtk)
 
-for _feature in "${_UNINSTALL_FEATURES[@]}"; do
-  [[ "$(cfg "$_feature")" == "true" ]] || continue
+for _feature in "${_FEATURES[@]}"; do
+  case "$_feature" in
+    globalmenu) [[ "$(cfg plasmoids)" == "true" ]] || continue ;;
+    *)          [[ "$(cfg "$_feature")" == "true" ]] || continue ;;
+  esac
+
   _sf=$(step_file_for "$_feature")
   [[ -f "$_sf" ]] || continue
 
   _label="${_feature//_/ }"
   step "Removing ${_label}"
-  note "Removing ${_label}"
+  case "$_feature" in
+    wallpapers)          note "Removes all MacTahoe wallpaper packages" ;;
+    fonts)               note "Removes SF Pro and SF Mono font files" ;;
+    cursors)             note "Removes MacTahoe cursor themes" ;;
+    icons)               note "Removes MacTahoe icon themes" ;;
+    plasmoids)           note "Removes custom Plasma widgets" ;;
+    globalmenu)          note "Removes Global Menu C++ applet" ;;
+    acrylic_glass)       note "Unloads and removes Acrylic Glass KWin effect" ;;
+    plasma_theme)        note "Removes Plasma desktop theme and resets to Breeze" ;;
+    window_decorations)  note "Removes Aurorae window decorations and resets to Breeze" ;;
+    kvantum)             note "Removes Kvantum theme (keeps Kvantum installed)" ;;
+    color_schemes)       note "Removes color schemes (light and dark)" ;;
+    gtk)                 note "Removes GTK themes for GNOME apps" ;;
+  esac
   run_step "$_sf" "uninstall"
 done
 
-# globalmenu (under plasmoids flag)
-if [[ "$(cfg plasmoids)" == "true" ]] && [[ -f "$STEPS/globalmenu/step.sh" ]]; then
-  step "Removing Global Menu"
-  note "Removing Global Menu"
-  run_step "$STEPS/globalmenu/step.sh" "uninstall"
-fi
-
-# theme switcher (always)
+# ── Theme Switcher ───────────────────────────────────────────────
 step "Removing Theme Switcher"
 note "Stops and removes the auto light/dark theme switcher"
 run_step "$STEPS/theme-switch/step.sh" "uninstall"
