@@ -9,7 +9,8 @@ import org.kde.plasma.plasmoid
 KCM.SimpleKCM {
     id: configGeneral
 
-    property alias cfg_menuIcon:     iconButton.currentIcon
+    property alias cfg_menuIcon:      iconButton.currentIcon
+    property alias cfg_useSystemFont: useSystemFontCheck.checked
     property alias cfg_cmdSleep:     cmdSleepField.text
     property alias cfg_cmdRestart:   cmdRestartField.text
     property alias cfg_cmdShutDown:  cmdShutDownField.text
@@ -45,6 +46,19 @@ KCM.SimpleKCM {
             icon.name: currentIcon
             text: "Choose..."
             onClicked: iconDialog.open()
+        }
+
+        // ── Appearance ────────────────────────────────────────────
+        Kirigami.Separator {
+            Kirigami.FormData.isSection: true
+            Kirigami.FormData.label: "Appearance"
+        }
+
+        QQC2.CheckBox {
+            id: useSystemFontCheck
+            Kirigami.FormData.label: "About window:"
+            text: "Use system font instead of SF Pro"
+            checked: Plasmoid.configuration.useSystemFont
         }
 
         // ── Commands ──────────────────────────────────────────────

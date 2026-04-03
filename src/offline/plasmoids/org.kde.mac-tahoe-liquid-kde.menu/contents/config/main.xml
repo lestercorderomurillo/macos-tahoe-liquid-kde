@@ -8,6 +8,9 @@
     <entry name="menuIcon" type="String">
       <default>start-here-kde-symbolic</default>
     </entry>
+    <entry name="useSystemFont" type="Bool">
+      <default>false</default>
+    </entry>
     <entry name="cmdSleep" type="String">
       <default>qdbus6 org.kde.Solid.PowerManagement /org/kde/Solid/PowerManagement requestSuspend || systemctl suspend</default>
     </entry>
