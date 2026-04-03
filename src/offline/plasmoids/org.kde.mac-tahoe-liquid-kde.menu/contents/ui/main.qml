@@ -18,6 +18,9 @@ import org.kde.plasma.plasma5support as P5Support
 PlasmoidItem {
     id: root
 
+    // ── About This Computer window ─────────────────────────────────
+    AboutWindow { id: aboutWindow }
+
     readonly property string cfgIcon: Plasmoid.configuration.menuIcon || "start-here-kde-symbolic"
 
     Plasmoid.title: "Menu"
@@ -51,7 +54,9 @@ PlasmoidItem {
             text: "About This Computer",
             separator: false,
             action: function() {
-                executable.exec("kinfocenter");
+                aboutWindow.show();
+                aboutWindow.raise();
+                aboutWindow.requestActivate();
             }
         },
         { separator: true },
