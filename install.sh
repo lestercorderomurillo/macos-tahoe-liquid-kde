@@ -200,18 +200,22 @@ _auto_dep_dedup g++ gcc
 _auto_dep_dedup pkg-config pkgconf
 _auto_dep_dedup dbus-monitor dbus
 
-# step-specific deps
-_INSTALL_FEATURES=(wallpapers fonts cursors icons plasma_theme window_decorations kvantum color_schemes gtk plasmoids acrylic_glass layout sounds sddm apps)
+# ── single feature list (used for deps + install) ────────────────
+# layout is here for deps but handled separately after apply (needs plasmashell)
+# theme-switch and apply are always hardcoded at the end
+_FEATURES=(wallpapers fonts cursors icons plasma_theme window_decorations kvantum color_schemes gtk plasmoids globalmenu acrylic_glass layout)
 
-for _feature in "${_INSTALL_FEATURES[@]}"; do
-  [[ "$(cfg "$_feature")" == "true" ]] || continue
+# step-specific deps
+for _feature in "${_FEATURES[@]}"; do
+  case "$_feature" in
+    globalmenu) [[ "$(cfg plasmoids)" == "true" ]] || continue ;;
+    *)          [[ "$(cfg "$_feature")" == "true" ]] || continue ;;
+  esac
   _sf=$(step_file_for "$_feature")
   [[ -f "$_sf" ]] || continue
   while IFS= read -r dep; do
     [[ -z "$dep" ]] && continue
     _cmd="${dep%%:*}" _pkg="${dep#*:}"
-    [[ -n "${_deps_seen[$_cmd]:-}" ]] && continue
-    _deps_seen[$_cmd]=1
     _auto_dep_dedup "$_cmd" "$_pkg"
   done < <(
     source "$STEPS/functions.sh"
@@ -244,10 +248,11 @@ _has_cache() {
 
 # ── Install features ─────────────────────────────────────────────
 # One step per feature. Each step runs: download → build → install.
-# Layout runs after apply (needs plasmashell). Stubs are skipped.
-_FEATURES=(wallpapers fonts cursors icons plasma_theme window_decorations kvantum color_schemes gtk plasmoids globalmenu acrylic_glass)
+# Layout is skipped here — it runs after apply (needs plasmashell restarted).
 
 for _feature in "${_FEATURES[@]}"; do
+  # layout runs after apply, not here
+  [[ "$_feature" == "layout" ]] && continue
   # globalmenu is gated by the plasmoids flag
   case "$_feature" in
     globalmenu) [[ "$(cfg plasmoids)" == "true" ]] || continue ;;
