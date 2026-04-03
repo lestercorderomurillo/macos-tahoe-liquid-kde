@@ -100,8 +100,20 @@ Window {
             } else if (sourceName.indexOf("board_vendor") !== -1) {
                 let v = stdout.trim();
                 if (v && v !== "" && v !== "Default string"
-                    && v !== "To Be Filled By O.E.M.")
-                    aboutWindow.boardVendor = v;
+                    && v !== "To Be Filled By O.E.M.") {
+                    // Shorten known vendor names
+                    let shorts = {
+                        "ASUSTeK COMPUTER INC.": "ASUS",
+                        "Micro-Star International Co., Ltd.": "MSI",
+                        "LENOVO": "Lenovo",
+                        "Hewlett-Packard": "HP",
+                        "Dell Inc.": "Dell",
+                        "Gigabyte Technology Co., Ltd.": "Gigabyte",
+                        "ASRock": "ASRock",
+                        "Apple Inc.": "Apple"
+                    };
+                    aboutWindow.boardVendor = shorts[v] || v.replace(/\s*(Inc\.?|Co\.?,?\s*Ltd\.?|COMPUTER|Corporation|Corp\.?)$/gi, "").trim();
+                }
             } else if (sourceName.indexOf("board_name") !== -1) {
                 let name = stdout.trim();
                 if (name && name !== "" && name !== "Default string"
@@ -230,7 +242,7 @@ Window {
             Kirigami.Icon {
                 Layout.alignment: Qt.AlignHCenter
                 implicitWidth: 140; implicitHeight: 140
-                source: "computer-symbolic"
+                source: "computer"
             }
 
             Item { Layout.preferredHeight: 20 }
