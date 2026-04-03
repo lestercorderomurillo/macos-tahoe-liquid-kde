@@ -67,7 +67,7 @@ dock.alignment = "center";
 dock.lengthMode = "fit";
 dock.floating = true;
 dock.hiding = "dodgewindows";
-dock.height = 64;
+dock.height = 68;
 // opacity is set to translucent via plasmashellrc after layout apply
 // (JS scripting API does not expose panelOpacity)
 
