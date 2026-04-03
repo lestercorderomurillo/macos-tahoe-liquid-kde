@@ -9,18 +9,6 @@ A complete environment, not just a coat of paint.
 
 ---
 
-## Screenshots
-
-| | |
-|---|---|
-| ![Dock](src/screenshots/dock.png) | Glass floating dock with app icons |
-| ![About This Computer](src/screenshots/about_this_pc.png) | About This Computer — glass window with system info |
-| ![Launcher](src/screenshots/launcher.png) | App grid launcher with categories and search |
-| ![Finder](src/screenshots/finder.png) | Nautilus file manager with macOS-style sidebar |
-| ![Context Menu](src/screenshots/context_menu.png) | Native context menus with glass blur |
-
----
-
 ## Roadmap
 
 | Component | Description | Status |
@@ -58,6 +46,30 @@ A complete environment, not just a coat of paint.
 
 - KDE Plasma 6.6+
 - sudo access
+
+## Screenshots
+
+<img src="src/screenshots/dock.png" width="600">
+
+*Glass floating dock with app icons*
+
+<img src="src/screenshots/about_this_pc.png" width="600">
+
+*About This Computer — glass window with system info*
+
+<img src="src/screenshots/launcher.png" width="600">
+
+*App grid launcher with categories and search*
+
+<img src="src/screenshots/finder.png" width="600">
+
+*Nautilus file manager with macOS-style sidebar*
+
+<img src="src/screenshots/context_menu.png" width="600">
+
+*Native context menus with glass blur*
+
+---
 
 ## Usage
 
