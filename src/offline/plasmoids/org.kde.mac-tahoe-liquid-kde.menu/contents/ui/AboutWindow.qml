@@ -123,7 +123,7 @@ Window {
         anchors.fill: parent
         color: Qt.rgba(Kirigami.Theme.backgroundColor.r,
                        Kirigami.Theme.backgroundColor.g,
-                       Kirigami.Theme.backgroundColor.b, 0.75)
+                       Kirigami.Theme.backgroundColor.b, 0.82)
 
         ColumnLayout {
             anchors.fill: parent
