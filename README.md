@@ -9,6 +9,18 @@ A complete environment, not just a coat of paint.
 
 ---
 
+## Screenshots
+
+| | |
+|---|---|
+| ![Dock](src/screenshots/dock.png) | Glass floating dock with app icons |
+| ![About This Computer](src/screenshots/about_this_pc.png) | About This Computer — glass window with system info |
+| ![Launcher](src/screenshots/launcher.png) | App grid launcher with categories and search |
+| ![Finder](src/screenshots/finder.png) | Nautilus file manager with macOS-style sidebar |
+| ![Context Menu](src/screenshots/context_menu.png) | Native context menus with glass blur |
+
+---
+
 ## Roadmap
 
 | Component | Description | Status |
