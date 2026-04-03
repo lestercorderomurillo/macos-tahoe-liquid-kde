@@ -14,7 +14,7 @@ Item {
 	id: main
 	property bool searching: (searchBar.textField.text != "")
 
-	readonly property color textColor: Kirigami.Theme.textColor
+	readonly property color textColor: isDarkTheme ? Kirigami.Theme.textColor : "#555555"
 	readonly property string textFont: Kirigami.Theme.defaultFont.family
 	readonly property real textSize: Kirigami.Theme.defaultFont.pointSize
 	readonly property color bgColor: Kirigami.Theme.backgroundColor
