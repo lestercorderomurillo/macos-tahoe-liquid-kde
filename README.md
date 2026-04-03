@@ -49,25 +49,30 @@ A complete environment, not just a coat of paint.
 
 ## Screenshots
 
-<img src="src/screenshots/dock.png" width="600">
+<p align="center">
+  <img src="src/screenshots/dock.png" width="600"><br>
+  <sub>Glass floating dock with app icons</sub>
+</p>
 
-*Glass floating dock with app icons*
+<p align="center">
+  <img src="src/screenshots/about_this_pc.png" width="600"><br>
+  <sub>About This Computer — glass window with system info</sub>
+</p>
 
-<img src="src/screenshots/about_this_pc.png" width="600">
+<p align="center">
+  <img src="src/screenshots/launcher.png" width="600"><br>
+  <sub>App grid launcher with categories and search</sub>
+</p>
 
-*About This Computer — glass window with system info*
+<p align="center">
+  <img src="src/screenshots/finder.png" width="600"><br>
+  <sub>Nautilus file manager with macOS-style sidebar</sub>
+</p>
 
-<img src="src/screenshots/launcher.png" width="600">
-
-*App grid launcher with categories and search*
-
-<img src="src/screenshots/finder.png" width="600">
-
-*Nautilus file manager with macOS-style sidebar*
-
-<img src="src/screenshots/context_menu.png" width="600">
-
-*Native context menus with glass blur*
+<p align="center">
+  <img src="src/screenshots/context_menu.png" width="600"><br>
+  <sub>Native context menus with glass blur</sub>
+</p>
 
 ---
 
