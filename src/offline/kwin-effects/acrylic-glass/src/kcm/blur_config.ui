@@ -106,21 +106,6 @@
         <property name="decimals"><number>2</number></property>
        </widget>
       </item>
-      <item row="6" column="0">
-       <widget class="QLabel">
-        <property name="text"><string>Shadow strength</string></property>
-        <property name="toolTip"><string>Intensity of the ambient top-to-bottom gradient within the highlight width band. Brighter top, slightly darker bottom — as if lit from above.</string></property>
-       </widget>
-      </item>
-      <item row="6" column="1">
-       <widget class="QDoubleSpinBox" name="kcfg_ShadowStrength">
-        <property name="toolTip"><string>Intensity of the ambient top-to-bottom gradient within the highlight width band. Brighter top, slightly darker bottom — as if lit from above.</string></property>
-        <property name="minimum"><double>0.0</double></property>
-        <property name="maximum"><double>3.0</double></property>
-        <property name="singleStep"><double>0.05</double></property>
-        <property name="decimals"><number>2</number></property>
-       </widget>
-      </item>
      </layout>
     </widget>
    </item>

@@ -21,10 +21,10 @@
             <default></default>
         </entry>
         <entry name="BlurMatching" type="Bool">
-            <default>true</default>
+            <default>false</default>
         </entry>
         <entry name="BlurNonMatching" type="Bool">
-            <default>false</default>
+            <default>true</default>
         </entry>
         <entry name="TopCornerRadius" type="Double">
             <default>22.0</default>
@@ -55,9 +55,6 @@
         </entry>
         <entry name="HighlightStrength" type="Double">
             <default>0.22</default>
-        </entry>
-        <entry name="ShadowStrength" type="Double">
-            <default>2.50</default>
         </entry>
     </group>
 </kcfg>

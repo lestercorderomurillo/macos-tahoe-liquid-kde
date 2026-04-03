@@ -122,7 +122,6 @@ BlurEffect::BlurEffect()
         m_roundedOnscreenPass.refractionWidthLocation = m_roundedOnscreenPass.shader->uniformLocation("refractionWidth");
         m_roundedOnscreenPass.highlightWidthLocation = m_roundedOnscreenPass.shader->uniformLocation("highlightWidth");
         m_roundedOnscreenPass.highlightStrengthLocation = m_roundedOnscreenPass.shader->uniformLocation("highlightStrength");
-        m_roundedOnscreenPass.shadowStrengthLocation = m_roundedOnscreenPass.shader->uniformLocation("shadowStrength");
         qCWarning(KWIN_BLUR) << "Onscreen shader OK — uniforms:"
             << "mvp=" << m_roundedOnscreenPass.mvpMatrixLocation
             << "color=" << m_roundedOnscreenPass.colorMatrixLocation
@@ -321,7 +320,6 @@ void BlurEffect::reconfigure(ReconfigureFlags flags)
     m_refractionWidth = static_cast<float>(BlurConfig::refractionWidth());
     m_highlightWidth = static_cast<float>(BlurConfig::highlightWidth());
     m_highlightStrength = static_cast<float>(BlurConfig::highlightStrength());
-    m_shadowStrength = static_cast<float>(BlurConfig::shadowStrength());
 
     m_whitelist = BlurConfig::blurMatching();
 
@@ -1065,7 +1063,6 @@ void BlurEffect::blur(const RenderTarget &renderTarget, const RenderViewport &vi
     m_roundedOnscreenPass.shader->setUniform(m_roundedOnscreenPass.refractionWidthLocation, m_refractionWidth);
     m_roundedOnscreenPass.shader->setUniform(m_roundedOnscreenPass.highlightWidthLocation, m_highlightWidth);
     m_roundedOnscreenPass.shader->setUniform(m_roundedOnscreenPass.highlightStrengthLocation, m_highlightStrength);
-    m_roundedOnscreenPass.shader->setUniform(m_roundedOnscreenPass.shadowStrengthLocation, m_shadowStrength);
 
     read->colorAttachment()->bind();
 

@@ -14,7 +14,6 @@ uniform float magnifyGlassStrength;
 uniform float refractionWidth;
 uniform float highlightWidth;
 uniform float highlightStrength;
-uniform float shadowStrength;
 
 varying vec2 uv;
 varying vec2 vertex;
@@ -104,23 +103,18 @@ void main(void)
     float bCh   = texture2D(texUnit, clamp(lensUV - drift * 0.25, 0.0, 1.0)).b;
     col = mix(col, vec3(rCh, gCh, bCh), edgeQ);
 
-    // ── Specular rim highlight (independent highlightWidth band) ──
+    // ── Specular rim highlight (smooth gradient) ───────────────────
     float hlBand  = max(highlightWidth, 1.0);
-    float rimSoft = smoothstep(0.0, hlBand,        inside) * (1.0 - smoothstep(hlBand * 0.5, hlBand * 2.0, inside));
-    float rimPeak = smoothstep(0.0, 2.0,            inside) * (1.0 - smoothstep(2.0,           6.0,          inside));
+    float rimSoft = smoothstep(1.0, hlBand * 0.5, inside) * (1.0 - smoothstep(hlBand, hlBand * 3.0, inside));
+    float rimPeak = smoothstep(1.0, 4.0,          inside) * (1.0 - smoothstep(6.0,    16.0,          inside));
 
     float litFacing = dot(outNorm, normalize(vec2(-0.5, -1.0)));
-    float litT      = 0.30 + 0.70 * clamp(litFacing, 0.0, 1.0);
+    float litT      = 0.40 + 0.60 * clamp(litFacing, 0.0, 1.0);
 
-    float specI = ((rimSoft * 0.20 + rimPeak * 0.80) * litT + rimPeak * 0.10) * highlightStrength;
+    float specI = ((rimSoft * 0.60 + rimPeak * 0.40) * litT + rimPeak * 0.05) * highlightStrength;
     col = mix(col, vec3(0.87, 0.93, 1.0), clamp(specI, 0.0, 0.95));
 
-    // ── Ambient gradient (top bright / bottom shadow) ─────────────
-    float hlUV = highlightWidth / blurSize.y;
-    col += max(0.0, hlUV - uv.y)              * 0.06 * shadowStrength;
-    col  = max(col - max(0.0, uv.y - (1.0 - hlUV)) * 0.04 * shadowStrength, 0.0);
-
     // ── Composite ─────────────────────────────────────────────────
-    float mask   = 1.0 - smoothstep(-1.5, -0.5, d);
+    float mask   = 1.0 - smoothstep(-3.0, 0.0, d);
     gl_FragColor = vec4(col, mask) * colorMatrix * opacity;
 }

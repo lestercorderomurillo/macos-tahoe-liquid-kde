@@ -118,7 +118,6 @@ private:
         int refractionWidthLocation;
         int highlightWidthLocation;
         int highlightStrengthLocation;
-        int shadowStrengthLocation;
     } m_roundedOnscreenPass;
 
     struct
@@ -162,7 +161,6 @@ private:
     float m_refractionWidth;
     float m_highlightWidth;
     float m_highlightStrength;
-    float m_shadowStrength;
     size_t m_iterationCount; // number of times the texture will be downsized to half size
     float m_offset;
     int m_expandSize;
