@@ -9,6 +9,7 @@
 #   GTK             → MacTahoeLiquidKde-Light / MacTahoeLiquidKde-Dark
 #   Icons           → MacTahoeLiquidKde-Icons / MacTahoeLiquidKde-Icons-dark
 #   Cursors         → MacTahoeLiquidKde / MacTahoeLiquidKde-Dark
+#   Wallpapers      → automatic (KDE switches images/ ↔ images_dark/ via color scheme)
 #
 # Usage:
 #   mac-tahoe-theme-switch light
@@ -70,14 +71,17 @@ apply() {
   fi
 
   # plasma desktop theme
-  if command -v kwriteconfig6 &>/dev/null; then
-    local pt_dir="$HOME/.local/share/plasma/desktoptheme"
-    if [[ "$mode" == "dark" ]]; then
-      [[ -d "$pt_dir/MacTahoeLiquidKde-Dark" ]] && \
-        kwriteconfig6 --file plasmarc --group Theme --key name MacTahoeLiquidKde-Dark 2>/dev/null
-    else
-      [[ -d "$pt_dir/MacTahoeLiquidKde-Light" ]] && \
-        kwriteconfig6 --file plasmarc --group Theme --key name MacTahoeLiquidKde-Light 2>/dev/null
+  local pt_dir="$HOME/.local/share/plasma/desktoptheme"
+  if [[ "$mode" == "dark" ]]; then
+    local pt_name="MacTahoeLiquidKde-Dark"
+  else
+    local pt_name="MacTahoeLiquidKde-Light"
+  fi
+  if [[ -d "$pt_dir/$pt_name" ]]; then
+    if command -v plasma-apply-desktoptheme &>/dev/null; then
+      plasma-apply-desktoptheme "$pt_name" &>/dev/null
+    elif command -v kwriteconfig6 &>/dev/null; then
+      kwriteconfig6 --file plasmarc --group Theme --key name "$pt_name" 2>/dev/null
     fi
   fi
 
