@@ -109,27 +109,45 @@ mac-tahoe-theme-switch auto     # detect from time of day
 
 ```
 macos-tahoe-liquid-kde/
-├── install.sh              # main installer
+├── install.sh              # main installer (thin orchestrator)
 ├── uninstall.sh            # uninstaller (resets to Breeze)
 ├── features.json           # toggle individual components on/off
 └── src/
-    ├── mirrors/            # mirror lists and asset source metadata
+    ├── mirrors/            # download source definitions (JSON)
+    │   ├── wallpapers.json
+    │   ├── fonts.json
+    │   ├── icons.json
+    │   └── cursors.json
+    ├── screenshots/        # documentation screenshots
     ├── offline/            # assets bundled in-repo (no download needed)
     │   ├── plasma-theme/   # Plasma desktop theme (transparent glass dock)
-    │   │   ├── MacTahoeLiquidKde-Light/
-    │   │   └── MacTahoeLiquidKde-Dark/
     │   ├── color-schemes/  # KDE color schemes
     │   ├── kvantum/        # Kvantum Qt theme (blur + translucency)
-    │   │   └── mac-tahoe-liquid-kde/
     │   ├── gtk/            # GTK 2/3/4 theme
-    │   │   ├── MacTahoeLiquidKde-Light/
-    │   │   └── MacTahoeLiquidKde-Dark/
+    │   ├── aurorae/        # macOS-style window decorations
     │   ├── plasmoids/      # custom Plasma widgets
     │   ├── kwin-effects/   # Acrylic Glass KWin effect (built from source)
     │   ├── layouts/        # panel layout scripts
-    │   ├── theme-switch.sh # TimeOfDay theme switcher
-    │   └── mac-tahoe-liquid-kde-theme.service
-    └── steps/              # per-component download scripts
+    │   ├── sounds/         # notification and event sounds
+    │   ├── sddm/           # login screen theme
+    │   └── theme-switch.sh # TimeOfDay theme switcher
+    └── steps/              # self-contained installer steps
+        ├── functions.sh    # shared utilities (logging, fetch, extract, mirrors)
+        ├── wallpapers/     # each step is a folder with step.sh inside
+        ├── fonts/          # step.sh defines: deps(), download(), build(),
+        ├── cursors/        #   install(), uninstall()
+        ├── icons/
+        ├── plasma-theme/
+        ├── window-decorations/
+        ├── kvantum/
+        ├── color-schemes/
+        ├── gtk/
+        ├── plasmoids/
+        ├── globalmenu/
+        ├── acrylic-glass/
+        ├── layout/
+        ├── theme-switch/
+        └── apply/
 ```
 
 ---

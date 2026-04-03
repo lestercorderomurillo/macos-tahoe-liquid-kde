@@ -1,0 +1,24 @@
+{
+  "name": "icons",
+  "description": "MacTahoe icon themes",
+  "sources": [
+    {
+      "name": "vinceliuice/MacTahoe-icon-theme",
+      "url": "https://github.com/vinceliuice/MacTahoe-icon-theme",
+      "license": "GPL-3.0",
+      "installs": ["MacTahoeLiquidKde-Icons", "MacTahoeLiquidKde-Icons-dark"],
+      "mirrors": [
+        {
+          "url": "https://github.com/vinceliuice/MacTahoe-icon-theme/archive/refs/heads/main.zip",
+          "format": "zip",
+          "prefix": "MacTahoeLiquidKde-Icons"
+        },
+        {
+          "url": "https://github.com/vinceliuice/MacTahoe-icon-theme/archive/refs/tags/2025-10-16.zip",
+          "format": "zip",
+          "prefix": "MacTahoeLiquidKde-Icons"
+        }
+      ]
+    }
+  ]
+}

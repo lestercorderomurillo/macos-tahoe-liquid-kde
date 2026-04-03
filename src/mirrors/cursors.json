@@ -1,0 +1,31 @@
+{
+  "name": "cursors",
+  "description": "MacTahoe cursor themes",
+  "sources": [
+    {
+      "name": "vinceliuice/MacTahoe-icon-theme",
+      "url": "https://github.com/vinceliuice/MacTahoe-icon-theme",
+      "license": "GPL-3.0",
+      "installs": ["MacTahoeLiquidKde", "MacTahoeLiquidKde-Dark"],
+      "mirrors": [
+        {
+          "url": "https://github.com/vinceliuice/MacTahoe-icon-theme/archive/refs/heads/main.zip",
+          "format": "zip",
+          "prefix": "MacTahoeLiquidKde"
+        },
+        {
+          "url": "https://github.com/vinceliuice/MacTahoe-icon-theme/archive/refs/tags/2025-10-16.zip",
+          "format": "zip",
+          "prefix": "MacTahoeLiquidKde"
+        }
+      ]
+    },
+    {
+      "name": "ful1e5/apple_cursor",
+      "url": "https://github.com/ful1e5/apple_cursor",
+      "license": "GPL-3.0",
+      "installs": ["MacTahoeLiquidKde-Apple", "MacTahoeLiquidKde-Apple-White"],
+      "mirrors": []
+    }
+  ]
+}

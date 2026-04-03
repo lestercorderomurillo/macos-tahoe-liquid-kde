@@ -1,0 +1,37 @@
+{
+  "name": "wallpapers",
+  "description": "macOS wallpaper packages",
+  "sources": [
+    {
+      "name": "512pixels.net",
+      "url": "https://512pixels.net/projects/default-mac-wallpapers-in-5k/",
+      "license": "Apple Inc.",
+      "installs": ["MacTahoe", "MacTahoe-Beach-*", "MacHeritage-*"],
+      "mirrors": [
+        {
+          "url": "https://512pixels.net/downloads/macos-wallpapers-6k",
+          "format": "base",
+          "referer": "https://512pixels.net/projects/default-mac-wallpapers-in-5k/"
+        },
+        {
+          "url": "https://512pixels.net/downloads/macos-wallpapers",
+          "format": "base",
+          "referer": "https://512pixels.net/projects/default-mac-wallpapers-in-5k/"
+        }
+      ]
+    },
+    {
+      "name": "lowendmac.com",
+      "url": "https://lowendmac.com",
+      "license": "Apple Inc.",
+      "installs": ["MacTahoe-Landscape-*"],
+      "mirrors": [
+        {
+          "url": "https://lowendmac.com/wp-content/uploads/Lake-Tahoe-macOS-26-Beta-5-wallpapers.zip",
+          "format": "zip",
+          "prefix": "landscape"
+        }
+      ]
+    }
+  ]
+}

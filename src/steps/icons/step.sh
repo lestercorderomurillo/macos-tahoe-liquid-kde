@@ -1,21 +1,16 @@
 #!/usr/bin/env bash
-# MacTahoe Liquid KDE — step-icons (online installer step)
-# mirrors documented in src/mirrors/icons.txt
-set -uo pipefail
+# MacTahoe Liquid KDE — icons step
 
-DEST="$(pwd)/src/steps/icons"
-TMP="/tmp/tahoe-icons-$$"
+DEST="$STEPS/icons"
+DEST_DIR="$HOME/.local/share/icons"
+MIRROR_FILE="$SRC/mirrors/icons.json"
 
-source "$(dirname "$0")/utils.sh"
+deps() {
+  echo "curl"
+  echo "unzip"
+}
 
-[[ -d "src" ]] || { echo -e "\033[0;31m  run from repo root.\033[0m" >&2; exit 1; }
-trap 'rm -rf "$TMP"' EXIT
-mkdir -p "$TMP"
-
-rm -rf "$DEST"/MacTahoeLiquidKde-Icons*
-mkdir -p "$DEST"
-
-# ── assemble default + dark icon themes from extracted repo ───
+# ── assemble default + dark icon themes from extracted repo ──────
 assemble() {
   local repo="$1" name="$2"
 
@@ -36,8 +31,6 @@ assemble() {
   mkdir -p "$dk"/{actions,apps,categories,emblems,devices,mimes,places,status}
   cp -r "$repo/src/index.theme" "$dk/"
   sed -i "s/MacTahoe/${name}-dark/g" "$dk/index.theme"
-  # dark theme inherits light so missing icons (e.g. app icons) fall back to
-  # the themed version instead of skipping straight to hicolor
   sed -i "s/^Inherits=.*/Inherits=$name,hicolor,breeze/" "$dk/index.theme"
   cp -r "$repo/src/actions"                               "$dk/"
   cp -r "$repo/src/apps/"{16,22,32,symbolic}              "$dk/apps/"
@@ -71,25 +64,78 @@ assemble() {
       ln -sf "$c" "${c}@2x"; done )
 }
 
-# ── download, extract, assemble ───────────────────────────────
-any_ok=false
-i=0
-mapfile -t MIRRORS < <(grep '^mirror:' "src/mirrors/icons.txt" | sed 's/^mirror: *//')
+download() {
+  TMP="/tmp/tahoe-icons-$$"
+  trap 'rm -rf "$TMP"' RETURN
+  mkdir -p "$TMP"
 
-for entry in "${MIRRORS[@]}"; do
-  IFS='|' read -r url ext name <<< "$entry"
-  ((i++))
-  out="$TMP/mirror${i}.${ext}"
-  xdir="$TMP/extract${i}"
+  rm -rf "$DEST"/MacTahoeLiquidKde-Icons*
+  mkdir -p "$DEST"
 
-  fetch "$url" "$out"    || continue
-  extract "$out" "$xdir" || continue
+  local any_ok=false
 
-  repo=$(find "$xdir" -maxdepth 2 -name "src" -type d | head -1)
-  repo="${repo%/src}"
-  [[ -d "$repo/src" && -d "$repo/links" ]] || continue
+  handle_mirror() {
+    local xdir="$1" prefix="$2"
+    local repo
+    repo=$(find "$xdir" -maxdepth 2 -name "src" -type d | head -1)
+    repo="${repo%/src}"
+    [[ -d "$repo/src" && -d "$repo/links" ]] || return 1
+    assemble "$repo" "$prefix"
+  }
 
-  assemble "$repo" "$name" && { ok "mirror $i"; any_ok=true; break; }
-done
+  run_mirrors "$MIRROR_FILE" 0 && any_ok=true
 
-$any_ok || { fail "no icon themes installed — all mirrors failed"; exit 1; }
+  $any_ok || { fail "no icon themes installed — all mirrors failed"; return 1; }
+}
+
+install() {
+  # snapshot before
+  declare -A pre=()
+  for d in "$DEST_DIR"/*/; do [[ -d "$d" ]] && pre["$(basename "$d")"]=1; done
+
+  mkdir -p "$DEST_DIR"
+  local n_inst=0 n_re=0
+  for theme in "$DEST"/Mac*/; do
+    [[ -d "$theme" ]] || continue
+    local name
+    name=$(basename "$theme")
+    [[ -f "$theme/index.theme" ]] || { fail "$name (no index.theme — skipping)"; continue; }
+
+    if safe_copy "$theme" "$DEST_DIR/$name"; then
+      if [[ -n "${pre[$name]+_}" ]]; then
+        reinstall "$name"; n_re=$((n_re+1))
+      else
+        ok "$name (installed)"; n_inst=$((n_inst+1))
+      fi
+    else
+      fail "$name (copy failed)"
+    fi
+  done
+
+  # ensure dark theme inherits from light
+  local dark_idx="$DEST_DIR/MacTahoeLiquidKde-Icons-dark/index.theme"
+  if [[ -f "$dark_idx" ]] && ! grep -q "Inherits=MacTahoeLiquidKde-Icons," "$dark_idx"; then
+    sed -i 's/^Inherits=.*/Inherits=MacTahoeLiquidKde-Icons,hicolor,breeze/' "$dark_idx"
+  fi
+
+  # rebuild icon caches
+  for theme in "$DEST_DIR"/MacTahoeLiquidKde-Icons*/; do
+    [[ -d "$theme" ]] || continue
+    command -v gtk-update-icon-cache &>/dev/null && gtk-update-icon-cache -f -t "$theme" 2>/dev/null || true
+  done
+
+  local n=$(( n_inst + n_re ))
+  [[ $n -eq 1 ]] && info "1 icon theme — $n_inst installed, $n_re reinstalled" \
+                  || info "$n icon themes — $n_inst installed, $n_re reinstalled"
+}
+
+uninstall() {
+  local n=0
+  for theme in "$DEST_DIR"/MacTahoeLiquidKde-Icons*; do
+    [[ -d "$theme" ]] || continue
+    local name
+    name=$(basename "$theme")
+    rm -rf "$theme" 2>/dev/null && ok "$name" && n=$((n+1)) || fail "$name"
+  done
+  info "$n icon themes removed"
+}

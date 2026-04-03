@@ -1,0 +1,19 @@
+{
+  "name": "fonts",
+  "description": "SF Pro and SF Mono fonts",
+  "sources": [
+    {
+      "name": "sahibjotsaggu/San-Francisco-Pro-Fonts",
+      "url": "https://github.com/sahibjotsaggu/San-Francisco-Pro-Fonts",
+      "license": "Apple Inc.",
+      "installs": ["SF Pro Display", "SF Pro Text", "SF Pro Rounded", "SF Pro"],
+      "mirrors": [
+        {
+          "url": "https://github.com/sahibjotsaggu/San-Francisco-Pro-Fonts/archive/refs/heads/master.zip",
+          "format": "zip",
+          "prefix": "SF"
+        }
+      ]
+    }
+  ]
+}
