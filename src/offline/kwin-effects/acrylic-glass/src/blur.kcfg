@@ -54,7 +54,7 @@
             <default>12.0</default>
         </entry>
         <entry name="HighlightStrength" type="Double">
-            <default>0.30</default>
+            <default>0.22</default>
         </entry>
         <entry name="ShadowStrength" type="Double">
             <default>2.50</default>
