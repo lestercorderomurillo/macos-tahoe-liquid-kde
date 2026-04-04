@@ -178,11 +178,15 @@ apply() {
     kwriteconfig6 --file kwinrc --group "org.kde.kdecoration2" --key "theme" "__aurorae__svg__${au_theme}"
   fi
 
-  # final cache rebuild + KWin reconfigure so dock/panel reflect new theme
+  # flush caches and reconfigure running services
   flush_icon_caches
+  # clear plasma SVG/theme caches so plasmoids pick up the new theme
+  rm -f "$HOME/.cache/ksvg-elements" 2>/dev/null || true
+  rm -f "$HOME/.cache"/plasma_theme_*.kcache 2>/dev/null || true
   for _q in qdbus6 qdbus; do
     command -v "$_q" &>/dev/null && {
       "$_q" org.kde.KWin /KWin org.kde.KWin.reconfigure &>/dev/null || true
+      "$_q" org.kde.plasmashell /PlasmaShell org.kde.PlasmaShell.refreshCurrentShell &>/dev/null || true
       break
     }
   done
