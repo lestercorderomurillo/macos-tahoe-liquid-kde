@@ -14,7 +14,7 @@
 # Usage:
 #   mac-tahoe-theme-switch light
 #   mac-tahoe-theme-switch dark
-#   mac-tahoe-theme-switch auto    (time of day: 6AM–6PM light, else dark)
+#   mac-tahoe-theme-switch auto    (reads system preference, falls back to time of day)
 #   mac-tahoe-theme-switch watch   (monitor dbus and auto-switch on change)
 
 set -uo pipefail
@@ -22,6 +22,15 @@ set -uo pipefail
 ICONS_DIR="$HOME/.local/share/icons"
 
 _mode="${1:-auto}"
+_errors=()
+
+# ── qdbus wrapper ──
+_qdbus() {
+  for _q in qdbus6 qdbus; do
+    command -v "$_q" &>/dev/null && { "$_q" "$@"; return; }
+  done
+  return 1
+}
 
 # ── flush icon caches (safe for live desktop) ──
 flush_icon_caches() {
@@ -32,8 +41,8 @@ flush_icon_caches() {
   rm -rf "$HOME/.cache/kiconthemes" 2>/dev/null || true
 }
 
-# ── detect mode from time of day ──
-detect_mode() {
+# ── detect mode from time of day (fallback) ──
+detect_mode_by_time() {
   local hour
   hour=$(date +%H)
   if [[ $hour -ge 6 && $hour -lt 18 ]]; then
@@ -41,6 +50,30 @@ detect_mode() {
   else
     echo "dark"
   fi
+}
+
+# ── read system color-scheme preference via xdg portal ──
+# portal color-scheme values: 0 = no preference, 1 = dark, 2 = light
+get_system_preference() {
+  local reply
+  reply=$(dbus-send --session --print-reply \
+    --dest=org.freedesktop.portal.Desktop \
+    /org/freedesktop/portal/desktop \
+    org.freedesktop.portal.Settings.Read \
+    string:"org.freedesktop.appearance" string:"color-scheme" 2>/dev/null) || {
+    detect_mode_by_time
+    return
+  }
+  if echo "$reply" | grep -q "uint32 1"; then
+    echo "dark"
+  else
+    echo "light"
+  fi
+}
+
+# ── detect mode: system preference first, time-of-day fallback ──
+detect_mode() {
+  get_system_preference
 }
 
 # ── retry wrapper for plasma-apply-colorscheme ──
@@ -60,37 +93,38 @@ apply_colorscheme() {
 # ── apply all themes ──
 apply() {
   local mode="$1"
+  _errors=()
 
   # color scheme
   if command -v plasma-apply-colorscheme &>/dev/null; then
     if [[ "$mode" == "dark" ]]; then
-      apply_colorscheme MacTahoeLiquidKdeDark || apply_colorscheme BreezeDark || true
+      apply_colorscheme MacTahoeLiquidKdeDark || apply_colorscheme BreezeDark || _errors+=("color-scheme")
     else
-      apply_colorscheme MacTahoeLiquidKdeLight || apply_colorscheme BreezeLight || true
+      apply_colorscheme MacTahoeLiquidKdeLight || apply_colorscheme BreezeLight || _errors+=("color-scheme")
     fi
   fi
 
-  # plasma desktop theme
+  # plasma desktop theme — use kwriteconfig6 to write config only;
+  # the single refreshCurrentShell at the end handles notification
   local pt_dir="$HOME/.local/share/plasma/desktoptheme"
+  local pt_name
   if [[ "$mode" == "dark" ]]; then
-    local pt_name="MacTahoeLiquidKde-Dark"
+    pt_name="MacTahoeLiquidKde-Dark"
   else
-    local pt_name="MacTahoeLiquidKde-Light"
+    pt_name="MacTahoeLiquidKde-Light"
   fi
   if [[ -d "$pt_dir/$pt_name" ]]; then
-    if command -v plasma-apply-desktoptheme &>/dev/null; then
-      plasma-apply-desktoptheme "$pt_name" &>/dev/null
-    elif command -v kwriteconfig6 &>/dev/null; then
-      kwriteconfig6 --file plasmarc --group Theme --key name "$pt_name" 2>/dev/null
+    if command -v kwriteconfig6 &>/dev/null; then
+      kwriteconfig6 --file plasmarc --group Theme --key name "$pt_name" 2>/dev/null || _errors+=("plasma-theme")
     fi
   fi
 
   # kvantum
   if command -v kvantummanager &>/dev/null; then
     if [[ "$mode" == "dark" ]]; then
-      QT_QPA_PLATFORM=offscreen kvantummanager --set mac-tahoe-liquid-kdeDark &>/dev/null
+      QT_QPA_PLATFORM=offscreen kvantummanager --set mac-tahoe-liquid-kdeDark &>/dev/null || _errors+=("kvantum")
     else
-      QT_QPA_PLATFORM=offscreen kvantummanager --set mac-tahoe-liquid-kde &>/dev/null
+      QT_QPA_PLATFORM=offscreen kvantummanager --set mac-tahoe-liquid-kde &>/dev/null || _errors+=("kvantum")
     fi
   fi
 
@@ -103,14 +137,9 @@ apply() {
     gtk_theme="MacTahoeLiquidKde-Light"
   fi
   if [[ -d "$gtk_dest/$gtk_theme" ]]; then
-    # 1. KDE GTK config daemon — sets GTK3 theme + triggers gtk-4.0 regeneration
-    for _q in qdbus6 qdbus; do
-      command -v "$_q" &>/dev/null && {
-        "$_q" org.kde.GtkConfig /GtkConfig org.kde.GtkConfig.setGtkTheme "$gtk_theme" &>/dev/null || true
-        break
-      }
-    done
-    # 2. gsettings — color-scheme for libadwaita
+    # KDE GTK config daemon — sets GTK3 theme + triggers gtk-4.0 regeneration
+    _qdbus org.kde.GtkConfig /GtkConfig org.kde.GtkConfig.setGtkTheme "$gtk_theme" &>/dev/null || true
+    # gsettings — color-scheme for libadwaita
     if command -v gsettings &>/dev/null; then
       gsettings set org.gnome.desktop.interface gtk-theme "$gtk_theme" &>/dev/null || true
       if [[ "$mode" == "dark" ]]; then
@@ -119,7 +148,7 @@ apply() {
         gsettings set org.gnome.desktop.interface color-scheme 'prefer-light' &>/dev/null || true
       fi
     fi
-    # 3. libadwaita/gtk4: overwrite ~/.config/gtk-4.0/ with compiled theme
+    # libadwaita/gtk4: overwrite ~/.config/gtk-4.0/ with compiled theme
     # wait for KDE's gtkconfig daemon to finish regenerating, then overwrite
     # NOTE: runs synchronously to avoid race conditions with Plasma restart
     # NOTE: do NOT stop/start xdg-desktop-portal-gtk — it causes SEGV crashes
@@ -147,7 +176,6 @@ apply() {
   fi
   if [[ -d "$ICONS_DIR/$icon_theme" ]] && command -v kwriteconfig6 &>/dev/null; then
     kwriteconfig6 --file kdeglobals --group Icons --key Theme "$icon_theme"
-    # signal all KDE/Qt apps to reload icons
     dbus-send --session --type=signal /KIconLoader org.kde.KIconLoader.iconChanged int32:0 2>/dev/null || true
   fi
 
@@ -160,7 +188,7 @@ apply() {
   fi
   if [[ -d "$ICONS_DIR/$cursor_theme/cursors" ]]; then
     if command -v plasma-apply-cursortheme &>/dev/null; then
-      plasma-apply-cursortheme "$cursor_theme" &>/dev/null
+      plasma-apply-cursortheme "$cursor_theme" &>/dev/null || _errors+=("cursors")
     elif command -v kwriteconfig6 &>/dev/null; then
       kwriteconfig6 --file kcminputrc --group Mouse --key cursorTheme "$cursor_theme"
     fi
@@ -182,14 +210,14 @@ apply() {
   flush_icon_caches
   # clear plasma SVG/theme caches so plasmoids pick up the new theme
   rm -f "$HOME/.cache/ksvg-elements" 2>/dev/null || true
-  rm -f "$HOME/.cache"/plasma_theme_*.kcache 2>/dev/null || true
-  for _q in qdbus6 qdbus; do
-    command -v "$_q" &>/dev/null && {
-      "$_q" org.kde.KWin /KWin org.kde.KWin.reconfigure &>/dev/null || true
-      "$_q" org.kde.plasmashell /PlasmaShell org.kde.PlasmaShell.refreshCurrentShell &>/dev/null || true
-      break
-    }
-  done
+  rm -f "$HOME/.cache"/plasma_theme_* 2>/dev/null || true
+  _qdbus org.kde.KWin /KWin org.kde.KWin.reconfigure &>/dev/null || true
+  _qdbus org.kde.plasmashell /PlasmaShell org.kde.PlasmaShell.refreshCurrentShell &>/dev/null || true
+
+  if [[ ${#_errors[@]} -gt 0 ]]; then
+    echo "theme-switch: failed components: ${_errors[*]}" >&2
+    return 1
+  fi
 }
 
 # ── wait for plasma to be ready (display server + plasmashell + kded6) ──
@@ -220,16 +248,18 @@ wait_for_plasma() {
 watch_loop() {
   wait_for_plasma || { echo "Plasma not ready after 60s, exiting" >&2; exit 1; }
 
+  # read the actual system preference, not time-of-day
   local last_mode
-  last_mode=$(detect_mode)
+  last_mode=$(get_system_preference)
   apply "$last_mode"
 
   dbus-monitor --session "type='signal',interface='org.freedesktop.portal.Settings',member='SettingChanged'" 2>/dev/null | \
   while read -r line; do
     if [[ "$line" == *"color-scheme"* ]]; then
+      # brief settle — the portal value may not be updated yet
       sleep 0.5
       local new_mode
-      new_mode=$(detect_mode)
+      new_mode=$(get_system_preference)
       if [[ "$new_mode" != "$last_mode" ]]; then
         apply "$new_mode"
         last_mode="$new_mode"
