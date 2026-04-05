@@ -138,9 +138,18 @@ ok "KDE Plasma $plasma_ver"
 [[ -f "$CONFIG" ]] && ok "features.json loaded"
 
 # ── Uninstall each feature ───────────────────────────────────────
+#
+# Execution order (design invariant — do not reorder):
+#   1. Feature uninstall loop — removes files (layout skipped here)
+#   2. Theme switcher         — stops and removes the switcher
+#   3. Apply                  — resets to Breeze, flushes caches, restarts
+#   4. Layout                 — resets panel layout (needs live plasmashell)
+
 _FEATURES=(wallpapers fonts cursors icons plasmoids menu globalmenu acrylic_glass global_theme plasma_theme window_decorations kvantum color_schemes gtk layout)
 
 for _feature in "${_FEATURES[@]}"; do
+  # layout runs in phase 4, not here
+  [[ "$_feature" == "layout" ]] && continue
   case "$_feature" in
     menu|globalmenu) [[ "$(cfg plasmoids)" == "true" ]] || continue ;;
     *)               [[ "$(cfg "$_feature")" == "true" ]] || continue ;;
@@ -166,7 +175,6 @@ for _feature in "${_FEATURES[@]}"; do
     kvantum)             note "Removes Kvantum theme (keeps Kvantum installed)" ;;
     color_schemes)       note "Removes color schemes (light and dark)" ;;
     gtk)                 note "Removes GTK themes for GNOME apps" ;;
-    layout)              note "Resets panel layout to default" ;;
   esac
   run_step "$_sf" "uninstall"
 done
@@ -180,6 +188,13 @@ run_step "$STEPS/theme-switch/step.sh" "uninstall"
 step "Applying Changes"
 note "Resets to Breeze defaults and restarts Plasma"
 run_step "$STEPS/apply/step.sh" "uninstall"
+
+# ── Layout (after restart — needs live plasmashell) ──────────────
+if [[ "$(cfg layout)" == "true" ]] && [[ -f "$STEPS/layout/step.sh" ]]; then
+  step "Resetting Layout"
+  note "Resets panel layout to default"
+  run_step "$STEPS/layout/step.sh" "uninstall"
+fi
 
 # ── Done ─────────────────────────────────────────────────────────
 echo ""

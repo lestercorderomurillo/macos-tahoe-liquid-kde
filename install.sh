@@ -292,10 +292,19 @@ _has_cache() {
 
 # ── Install features ─────────────────────────────────────────────
 # One step per feature. Each step runs: download → build → install.
-# Layout is skipped here — it runs after apply (needs plasmashell restarted).
+#
+# Execution order (design invariant — do not reorder):
+#   1. Feature install loop  — installs files, builds C++ applets
+#   2. Theme switcher        — installs the light/dark switcher
+#   3. Apply                 — writes KDE config, flushes caches, restarts KWin
+#   4. Restart Plasma        — kills and restarts plasmashell
+#   5. Layout                — applies panel layout (needs live plasmashell)
+#
+# Layout MUST run after plasma restart. Any step that talks to
+# plasmashell via qdbus must run in phase 5 or later.
 
 for _feature in "${_FEATURES[@]}"; do
-  # layout runs after apply, not here
+  # layout runs in phase 5, not here
   [[ "$_feature" == "layout" ]] && continue
   # menu and globalmenu are gated by the plasmoids flag
   case "$_feature" in
