@@ -2,43 +2,8 @@
 # MacTahoe Liquid KDE — Uninstaller
 set -uo pipefail
 
-REPO="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-SRC="$REPO/src"
-STEPS="$SRC/steps"
-OFFLINE="$SRC/offline"
-BUILD="$REPO/build"
-CONFIG="$REPO/features.json"
-
-source "$STEPS/functions.sh"
-
-ERRORS=()
-STEP=0
-
-step() {
-  ((STEP++))
-  echo ""
-  echo -e "${GREEN}${BOLD}  Step ${STEP}: $*${RESET}"
-}
-
-# ── feature flags ────────────────────────────────────────────────
-_ALL_FEATURES=(wallpapers fonts cursors plasma_theme window_decorations kvantum color_schemes icons plasmoids acrylic_glass global_theme layout sounds gtk sddm apps no_download)
-declare -A _feat=()
-declare -A _cli=()
-
-_cfg_read() {
-  local key="$1"
-  [[ -f "$CONFIG" ]] || { echo "true"; return; }
-  local val
-  val=$(sed -n 's/.*"'"$key"'"[[:space:]]*:[[:space:]]*\("[^"]*"\|true\|false\).*/\1/p' "$CONFIG" | tr -d '"' | head -1)
-  echo "${val:-true}"
-}
-
-for _f in "${_ALL_FEATURES[@]}"; do _feat[$_f]="$(_cfg_read "$_f")"; done
-
-for _arg in "$@"; do
-  case "$_arg" in
-    -h|--help)
-      cat <<'HELPEOF'
+_show_help() {
+  cat <<'EOF'
 Usage: bash uninstall.sh [OPTIONS]
 
 Options:
@@ -63,81 +28,26 @@ Options:
     --apps             Reset app configuration
 
 Examples:
-  bash uninstall.sh                        # uninstall everything
-  bash uninstall.sh --icons --cursors      # only remove icons and cursors
-HELPEOF
-      exit 0
-      ;;
-    --no-*)
-      _key="${_arg#--no-}"; _key="${_key//-/_}"
-      for _f in "${_ALL_FEATURES[@]}"; do [[ "$_f" == "$_key" ]] && { _cli[$_f]="false"; break; }; done
-      ;;
-    --*)
-      _key="${_arg#--}"; _key="${_key//-/_}"
-      for _f in "${_ALL_FEATURES[@]}"; do [[ "$_f" == "$_key" ]] && { _cli[$_f]="true"; break; }; done
-      ;;
-  esac
-done
-
-for _f in "${_ALL_FEATURES[@]}"; do
-  [[ -n "${_cli[$_f]:-}" ]] && _feat[$_f]="${_cli[$_f]}"
-done
-
-cfg() { echo "${_feat[$1]:-true}"; }
-
-# export feature flags for apply.sh
-THEME_MODE="auto"
-for _f in "${_ALL_FEATURES[@]}"; do
-  _upper=$(echo "$_f" | tr '[:lower:]' '[:upper:]')
-  export "FEAT_${_upper}=${_feat[$_f]}"
-done
-export THEME_MODE REPO SRC STEPS OFFLINE BUILD
-
-# ── step runner ──────────────────────────────────────────────────
-run_step() {
-  local step_file="$1" phase="$2"
-  (
-    source "$STEPS/functions.sh"
-    ERRORS=()
-    source "$step_file"
-    if type -t "$phase" &>/dev/null; then
-      "$phase"
-    fi
-    [[ ${#ERRORS[@]} -eq 0 ]]
-  ) || ERRORS+=("$(basename "$(dirname "$step_file")"): $phase failed")
+  bash uninstall.sh                     # uninstall everything
+  bash uninstall.sh --icons --cursors   # only remove icons and cursors
+EOF
 }
 
-step_file_for() {
-  local feature="$1"
-  local name="${feature//_/-}"
-  echo "$STEPS/$name/step.sh"
-}
+source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/src/steps/core.sh"
+_parse_args "$@"
+_apply_flags
+_export_flags
 
-[[ -d "$REPO/src" ]] || { echo -e "${RED}  Run from repo root.${RESET}" >&2; exit 1; }
+[[ -d "$SRC" ]] || { echo -e "${RED}  Run from repo root.${RESET}" >&2; exit 1; }
 
-# ── confirm ──────────────────────────────────────────────────────
-echo ""
-echo -e "  ${RED}${BOLD}This will reset your desktop to Breeze defaults.${RESET}"
-echo ""
-read -p "  Continue? [Y/n] " _confirm
-[[ "$_confirm" =~ ^[Nn]$ ]] && { echo "  Aborted."; exit 0; }
-echo ""
-
-sudo -v || { echo -e "  ${RED}sudo required.${RESET}"; exit 1; }
+_confirm "This will reset your desktop to Breeze defaults."
 
 # ── Verification ─────────────────────────────────────────────────
 step "Verification"
 note "Checks KDE version"
+_verify_plasma
 
-if ! command -v plasmashell &>/dev/null; then
-  fail "KDE Plasma not found"; exit 1
-fi
-
-plasma_ver=$(plasmashell --version 2>/dev/null | grep -oP '[0-9]+[.][0-9]+[.][0-9]+' | head -1)
-ok "KDE Plasma $plasma_ver"
-[[ -f "$CONFIG" ]] && ok "features.json loaded"
-
-# ── Uninstall each feature ───────────────────────────────────────
+# ── Uninstall features ───────────────────────────────────────────
 #
 # Execution order (design invariant — do not reorder):
 #   1. Feature uninstall loop — removes files (layout skipped here)
@@ -146,37 +56,16 @@ ok "KDE Plasma $plasma_ver"
 #   4. Apply                  — resets to Breeze, flushes caches
 #   5. Restart Plasma         — ALWAYS LAST
 
-_FEATURES=(wallpapers fonts cursors icons plasmoids menu globalmenu acrylic_glass global_theme plasma_theme window_decorations kvantum color_schemes gtk layout)
-
 for _feature in "${_FEATURES[@]}"; do
-  # layout runs in phase 3, not here
   [[ "$_feature" == "layout" ]] && continue
-  case "$_feature" in
-    menu|globalmenu) [[ "$(cfg plasmoids)" == "true" ]] || continue ;;
-    *)               [[ "$(cfg "$_feature")" == "true" ]] || continue ;;
-  esac
+  _should_process "$_feature" || continue
 
   _sf=$(step_file_for "$_feature")
   [[ -f "$_sf" ]] || continue
 
   _label="${_feature//_/ }"
   step "Removing ${_label}"
-  case "$_feature" in
-    wallpapers)          note "Removes all MacTahoe wallpaper packages" ;;
-    fonts)               note "Removes SF Pro and SF Mono font files" ;;
-    cursors)             note "Removes MacTahoe cursor themes" ;;
-    icons)               note "Removes MacTahoe icon themes" ;;
-    plasmoids)           note "Removes custom Plasma widgets" ;;
-    menu)                note "Removes Menu C++ applet" ;;
-    globalmenu)          note "Removes Global Menu C++ applet" ;;
-    acrylic_glass)       note "Unloads and removes Acrylic Glass KWin effect" ;;
-    global_theme)        note "Removes Plasma global theme" ;;
-    plasma_theme)        note "Removes Plasma desktop theme and resets to Breeze" ;;
-    window_decorations)  note "Removes Aurorae window decorations and resets to Breeze" ;;
-    kvantum)             note "Removes Kvantum theme (keeps Kvantum installed)" ;;
-    color_schemes)       note "Removes color schemes (light and dark)" ;;
-    gtk)                 note "Removes GTK themes for GNOME apps" ;;
-  esac
+  note "${_FEAT_DESC[$_feature]:-}"
   run_step "$_sf" "uninstall"
 done
 
@@ -185,14 +74,14 @@ step "Removing Theme Switcher"
 note "Stops and removes the auto light/dark theme switcher"
 run_step "$STEPS/theme-switch/step.sh" "uninstall"
 
-# ── Layout (qdbus to running plasmashell — before restart) ───────
+# ── Layout ───────────────────────────────────────────────────────
 if [[ "$(cfg layout)" == "true" ]] && [[ -f "$STEPS/layout/step.sh" ]]; then
   step "Resetting Layout"
   note "Resets panel layout to default"
   run_step "$STEPS/layout/step.sh" "uninstall"
 fi
 
-# ── Apply (reset to Breeze, flush caches) ────────────────────────
+# ── Apply ────────────────────────────────────────────────────────
 step "Applying Changes"
 note "Resets to Breeze defaults and flushes caches"
 run_step "$STEPS/apply/step.sh" "uninstall"
