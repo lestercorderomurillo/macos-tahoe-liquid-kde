@@ -53,7 +53,10 @@ get_system_preference() {
   if echo "$reply" | grep -q "uint32 1"; then echo "dark"; else echo "light"; fi
 }
 
-detect_mode() { get_system_preference; }
+# auto mode uses time-of-day — the portal just echoes whatever was
+# last applied, so it can't tell us what SHOULD be set right now.
+# The watch loop uses get_system_preference for live dbus tracking.
+detect_mode() { detect_mode_by_time; }
 
 # ── apply all themes ──
 # $1 = light|dark
