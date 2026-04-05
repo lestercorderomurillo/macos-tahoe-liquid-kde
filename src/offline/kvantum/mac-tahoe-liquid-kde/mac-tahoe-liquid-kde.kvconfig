@@ -45,7 +45,7 @@ combo_menu=true
 combo_focus_rect=true
 groupbox_top_label=false
 inline_spin_indicators=true
-layout_spacing=6
+layout_spacing=3
 submenu_overlap=0
 tooltip_delay=-1
 button_contents_shift=false
@@ -523,11 +523,12 @@ text.margin.top=0
 text.margin.bottom=0
 text.margin.left=6
 text.margin.right=6
-frame.top=4
-frame.bottom=4
-frame.left=4
-frame.right=4
+frame.top=3
+frame.bottom=3
+frame.left=3
+frame.right=3
 frame.expansion=0
+min_height=6
 
 [ComboBox]
 inherits=PanelButtonCommand

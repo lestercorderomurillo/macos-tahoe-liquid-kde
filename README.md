@@ -70,6 +70,16 @@ A complete environment, not just a coat of paint.
 </p>
 
 <p align="center">
+  <img src="src/screenshots/menu.png" width="600"><br>
+  <sub>Menu — macOS-style system menu (light)</sub>
+</p>
+
+<p align="center">
+  <img src="src/screenshots/menu-dark.png" width="600"><br>
+  <sub>Menu — macOS-style system menu (dark)</sub>
+</p>
+
+<p align="center">
   <img src="src/screenshots/context_menu.png" width="600"><br>
   <sub>Context Menu — Native context menus with glass blur</sub>
 </p>
