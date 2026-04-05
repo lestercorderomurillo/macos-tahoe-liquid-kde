@@ -35,9 +35,16 @@ install() {
   local q
   q=$(qdbus_cmd) || { warn "qdbus not found — layout not installed"; return 0; }
 
-  "$q" org.kde.plasmashell /PlasmaShell org.kde.PlasmaShell.evaluateScript "$(cat "$LAYOUT_SCRIPT")" &>/dev/null \
-    && ok "Layout installed" \
-    || warn "layout failed — set layout manually"
+  # plasmashell may still be restarting from the apply step — retry
+  local attempt=0 success=false
+  while [[ $attempt -lt 5 ]]; do
+    if "$q" org.kde.plasmashell /PlasmaShell org.kde.PlasmaShell.evaluateScript "$(cat "$LAYOUT_SCRIPT")" &>/dev/null; then
+      success=true; break
+    fi
+    attempt=$((attempt + 1))
+    sleep 3
+  done
+  $success && ok "Layout installed" || warn "layout failed — set layout manually"
   sleep 3
 
   # patch plasmashellrc: JS scripting API doesn't expose panelOpacity or floatingApplets
