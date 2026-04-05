@@ -27,10 +27,10 @@ jobs:
           pacman -Syu --noconfirm \
             base-devel cmake extra-cmake-modules \
             qt6-base qt6-declarative qt6-wayland \
-            plasma-framework kconfig kcoreaddons \
+            libplasma kconfig kcoreaddons \
             kwindowsystem ki18n kdbusaddons \
             kcmutils kiconthemes \
-            kdecoration kwin plasma-workspace
+            kdecoration plasma-workspace
       - name: Build Menu applet
         run: |
           cd src/offline/plasmoids/org.kde.mac-tahoe-liquid-kde.menu
