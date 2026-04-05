@@ -66,16 +66,46 @@ install() {
     ok "Acrylic Glass installed"
     # write clean preset
     local grp="Effect-liquidglass"
-    kwriteconfig6 --file kwinrc --group "$grp" --key BlurStrength        3.5  2>/dev/null || true
-    kwriteconfig6 --file kwinrc --group "$grp" --key NoiseStrength       2    2>/dev/null || true
-    kwriteconfig6 --file kwinrc --group "$grp" --key RgbDriftStrength    48.0 2>/dev/null || true
-    kwriteconfig6 --file kwinrc --group "$grp" --key MagnifyGlassStrength 0.02 2>/dev/null || true
-    kwriteconfig6 --file kwinrc --group "$grp" --key RefractionWidth     24.0 2>/dev/null || true
-    kwriteconfig6 --file kwinrc --group "$grp" --key HighlightWidth      16.0 2>/dev/null || true
-    kwriteconfig6 --file kwinrc --group "$grp" --key HighlightStrength   0.22 2>/dev/null || true
-    kwriteconfig6 --file kwinrc --group "$grp" --key WindowCornerRadius  22   2>/dev/null || true
-    kwriteconfig6 --file kwinrc --group "$grp" --key DockCornerRadius    22   2>/dev/null || true
-    kwriteconfig6 --file kwinrc --group "$grp" --key PopupCornerRadius   6    2>/dev/null || true
+    kwriteconfig6 --file kwinrc --group "$grp" --key BevelStrength       0.22  2>/dev/null || true
+    kwriteconfig6 --file kwinrc --group "$grp" --key BlurDecorations     true  2>/dev/null || true
+    kwriteconfig6 --file kwinrc --group "$grp" --key BlurStrength        3     2>/dev/null || true
+    kwriteconfig6 --file kwinrc --group "$grp" --key BorderWidth         32    2>/dev/null || true
+    kwriteconfig6 --file kwinrc --group "$grp" --key BottomCornerRadius  22    2>/dev/null || true
+    kwriteconfig6 --file kwinrc --group "$grp" --key Brightness          1.0   2>/dev/null || true
+    kwriteconfig6 --file kwinrc --group "$grp" --key Contrast            1.0   2>/dev/null || true
+    kwriteconfig6 --file kwinrc --group "$grp" --key DialogCornerRadius  14    2>/dev/null || true
+    kwriteconfig6 --file kwinrc --group "$grp" --key DockCornerRadius    20    2>/dev/null || true
+    kwriteconfig6 --file kwinrc --group "$grp" --key EdgeBandFactor      0.24  2>/dev/null || true
+    kwriteconfig6 --file kwinrc --group "$grp" --key EdgeLighting        false 2>/dev/null || true
+    kwriteconfig6 --file kwinrc --group "$grp" --key ExcludeDocks        true  2>/dev/null || true
+    kwriteconfig6 --file kwinrc --group "$grp" --key GlassInactiveWindows true 2>/dev/null || true
+    kwriteconfig6 --file kwinrc --group "$grp" --key GlassThickness      0.2   2>/dev/null || true
+    kwriteconfig6 --file kwinrc --group "$grp" --key GlowColor           "#00000000" 2>/dev/null || true
+    kwriteconfig6 --file kwinrc --group "$grp" --key HighlightStrength   0.50  2>/dev/null || true
+    kwriteconfig6 --file kwinrc --group "$grp" --key HighlightWidth      24    2>/dev/null || true
+    kwriteconfig6 --file kwinrc --group "$grp" --key InnerShadowStrength 0.2   2>/dev/null || true
+    kwriteconfig6 --file kwinrc --group "$grp" --key IridescenceStrength 0.1   2>/dev/null || true
+    kwriteconfig6 --file kwinrc --group "$grp" --key MagnifyGlassStrength 0.03 2>/dev/null || true
+    kwriteconfig6 --file kwinrc --group "$grp" --key MenuCornerRadius    0     2>/dev/null || true
+    kwriteconfig6 --file kwinrc --group "$grp" --key NoiseStrength       2     2>/dev/null || true
+    kwriteconfig6 --file kwinrc --group "$grp" --key PopupCornerRadius   6     2>/dev/null || true
+    kwriteconfig6 --file kwinrc --group "$grp" --key RefractionEdgeSize  0     2>/dev/null || true
+    kwriteconfig6 --file kwinrc --group "$grp" --key RefractionNormalPow 6     2>/dev/null || true
+    kwriteconfig6 --file kwinrc --group "$grp" --key RefractionRGBFringing 0   2>/dev/null || true
+    kwriteconfig6 --file kwinrc --group "$grp" --key RefractionStrength  0     2>/dev/null || true
+    kwriteconfig6 --file kwinrc --group "$grp" --key RefractionWidth     96    2>/dev/null || true
+    kwriteconfig6 --file kwinrc --group "$grp" --key RgbRinging          12    2>/dev/null || true
+    kwriteconfig6 --file kwinrc --group "$grp" --key RimStrength         0.5   2>/dev/null || true
+    kwriteconfig6 --file kwinrc --group "$grp" --key RimWidth            32    2>/dev/null || true
+    kwriteconfig6 --file kwinrc --group "$grp" --key Saturation          1.0   2>/dev/null || true
+    kwriteconfig6 --file kwinrc --group "$grp" --key ShadowStrength      2.50  2>/dev/null || true
+    kwriteconfig6 --file kwinrc --group "$grp" --key SpectralMix         1     2>/dev/null || true
+    kwriteconfig6 --file kwinrc --group "$grp" --key SpecularStrength    0.08  2>/dev/null || true
+    kwriteconfig6 --file kwinrc --group "$grp" --key TintColor           "#00000000" 2>/dev/null || true
+    kwriteconfig6 --file kwinrc --group "$grp" --key TooltipCornerRadius 14    2>/dev/null || true
+    kwriteconfig6 --file kwinrc --group "$grp" --key WindowCornerRadius  22    2>/dev/null || true
+    kwriteconfig6 --file kwinrc --group "$grp" --key BlurMatching        false 2>/dev/null || true
+    kwriteconfig6 --file kwinrc --group "$grp" --key BlurNonMatching     true  2>/dev/null || true
     ok "Acrylic Glass preset installed"
     kwriteconfig6 --file kwinrc --group Plugins --key liquidglassEnabled true 2>/dev/null || true
     ok "Acrylic Glass installed (active after Plasma restart)"

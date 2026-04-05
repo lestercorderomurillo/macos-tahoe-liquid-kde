@@ -6,7 +6,7 @@
     <kcfgfile arg="true"/>
     <group name="Effect-liquidglass">
         <entry name="BlurStrength" type="Double">
-            <default>3.5</default>
+            <default>3.0</default>
         </entry>
         <entry name="NoiseStrength" type="Int">
             <default>2</default>
@@ -30,7 +30,7 @@
             <default>22.0</default>
         </entry>
         <entry name="DockCornerRadius" type="Double">
-            <default>22.0</default>
+            <default>20.0</default>
         </entry>
         <entry name="PopupCornerRadius" type="Double">
             <default>6.0</default>
@@ -38,20 +38,17 @@
         <entry name="RoundCornersOfMaximizedWindows" type="Bool">
             <default>false</default>
         </entry>
-        <entry name="RgbDriftStrength" type="Double">
-            <default>48.0</default>
-        </entry>
         <entry name="MagnifyGlassStrength" type="Double">
-            <default>0.02</default>
+            <default>0.03</default>
         </entry>
         <entry name="RefractionWidth" type="Double">
-            <default>24.0</default>
+            <default>96.0</default>
         </entry>
         <entry name="HighlightWidth" type="Double">
-            <default>16.0</default>
+            <default>24.0</default>
         </entry>
         <entry name="HighlightStrength" type="Double">
-            <default>0.15</default>
+            <default>0.50</default>
         </entry>
     </group>
 </kcfg>
