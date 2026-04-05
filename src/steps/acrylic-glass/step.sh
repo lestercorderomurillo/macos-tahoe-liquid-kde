@@ -81,7 +81,7 @@ install() {
     kwriteconfig6 --file kwinrc --group "$grp" --key GlassInactiveWindows true 2>/dev/null || true
     kwriteconfig6 --file kwinrc --group "$grp" --key GlassThickness      0.2   2>/dev/null || true
     kwriteconfig6 --file kwinrc --group "$grp" --key GlowColor           "#00000000" 2>/dev/null || true
-    kwriteconfig6 --file kwinrc --group "$grp" --key HighlightStrength   0.50  2>/dev/null || true
+    kwriteconfig6 --file kwinrc --group "$grp" --key HighlightStrength   0.30  2>/dev/null || true
     kwriteconfig6 --file kwinrc --group "$grp" --key HighlightWidth      24    2>/dev/null || true
     kwriteconfig6 --file kwinrc --group "$grp" --key InnerShadowStrength 0.2   2>/dev/null || true
     kwriteconfig6 --file kwinrc --group "$grp" --key IridescenceStrength 0.1   2>/dev/null || true
