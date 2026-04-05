@@ -66,7 +66,7 @@ install() {
     ok "Acrylic Glass installed"
     # write clean preset
     local grp="Effect-liquidglass"
-    kwriteconfig6 --file kwinrc --group "$grp" --key BlurStrength        3.0  2>/dev/null || true
+    kwriteconfig6 --file kwinrc --group "$grp" --key BlurStrength        3.5  2>/dev/null || true
     kwriteconfig6 --file kwinrc --group "$grp" --key NoiseStrength       2    2>/dev/null || true
     kwriteconfig6 --file kwinrc --group "$grp" --key RgbDriftStrength    48.0 2>/dev/null || true
     kwriteconfig6 --file kwinrc --group "$grp" --key MagnifyGlassStrength 0.02 2>/dev/null || true
