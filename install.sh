@@ -155,8 +155,38 @@ if [[ "$(cfg layout)" == "true" ]] && [[ -f "$STEPS/layout/step.sh" ]]; then
   run_step "$STEPS/layout/step.sh" "install"
 fi
 
-# ── Notify icon change (after layout, before restart) ───────────
+# ── Apply theme live (after layout, before restart) ─────────────
+rm -rf "$HOME/.cache/icon-cache.kcache" "$HOME/.cache/kiconthemes" 2>/dev/null || true
 dbus-send --session --type=signal /KIconLoader org.kde.KIconLoader.iconChanged int32:0 2>/dev/null || true
+
+# ── Verify config ────────────────────────────────────────────────
+step "Verification"
+note "Checking theme configuration was applied"
+_verify_config() {
+  local file="$1" group="$2" key="$3" expected="$4" label="$5"
+  local actual
+  actual=$(kreadconfig6 --file "$file" --group "$group" --key "$key" 2>/dev/null)
+  if [[ "$actual" == *"$expected"* ]]; then
+    ok "$label"
+  else
+    fail "$label (expected $expected, got ${actual:-empty})"
+  fi
+}
+if [[ "$(cfg icons)" == "true" ]]; then
+  _verify_config kdeglobals Icons Theme "MacTahoeLiquidKde-Icons" "Icon theme"
+fi
+if [[ "$(cfg color_schemes)" == "true" ]]; then
+  _verify_config kdeglobals General ColorScheme "MacTahoeLiquidKde" "Color scheme"
+fi
+if [[ "$(cfg cursors)" == "true" ]]; then
+  _verify_config kcminputrc Mouse cursorTheme "MacTahoeLiquidKde" "Cursor theme"
+fi
+if [[ "$(cfg plasma_theme)" == "true" ]]; then
+  _verify_config plasmarc Theme name "MacTahoeLiquidKde" "Plasma theme"
+fi
+if [[ "$(cfg window_decorations)" == "true" ]]; then
+  _verify_config kwinrc "org.kde.kdecoration2" theme "__aurorae__svg__MacTahoeLiquidKde" "Window decorations"
+fi
 
 # ── Restart Plasma (always last) ─────────────────────────────────
 step "Restarting Plasma"
