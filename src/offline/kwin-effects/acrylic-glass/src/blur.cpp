@@ -969,26 +969,15 @@ void BlurEffect::blur(const RenderTarget &renderTarget, const RenderViewport &vi
 
     float topCornerRadius = 0.0;
     float bottomCornerRadius = 0.0;
-    if (w->isOnScreenDisplay()) {
-        // window
-        topCornerRadius = BlurConfig::topCornerRadius();
-        bottomCornerRadius = BlurConfig::bottomCornerRadius();
-    } else if (w->isTooltip()) {
-        //window 
-        topCornerRadius = BlurConfig::topCornerRadius();
-        bottomCornerRadius = BlurConfig::bottomCornerRadius();
-    } else if (w->isDock()) {
-        //dock
+    if (w->isDock()) {
         topCornerRadius = BlurConfig::dockCornerRadius();
         bottomCornerRadius = BlurConfig::dockCornerRadius();
-    } else if (w->isMenu() || w->isDropdownMenu() || w->isPopupMenu() || w->isPopupWindow()) {
-        //menu radius
-        topCornerRadius = BlurConfig::menuCornerRadius();
-        bottomCornerRadius = BlurConfig::menuCornerRadius();
-    } else if ((!w->isFullScreen() /*&& !isMaximized*/) || BlurConfig::roundCornersOfMaximizedWindows()) {
-        //window
-        topCornerRadius = BlurConfig::topCornerRadius();
-        bottomCornerRadius = BlurConfig::bottomCornerRadius();
+    } else if (w->isTooltip() || w->isPopupWindow() || w->isMenu() || w->isDropdownMenu() || w->isPopupMenu()) {
+        topCornerRadius = BlurConfig::popupCornerRadius();
+        bottomCornerRadius = BlurConfig::popupCornerRadius();
+    } else if ((!w->isFullScreen()) || BlurConfig::roundCornersOfMaximizedWindows()) {
+        topCornerRadius = BlurConfig::windowCornerRadius();
+        bottomCornerRadius = BlurConfig::windowCornerRadius();
     }
 
     if (topCornerRadius > 0 || bottomCornerRadius > 0) {
@@ -1000,14 +989,9 @@ void BlurEffect::blur(const RenderTarget &renderTarget, const RenderViewport &vi
             (topCornerRadius * 2) > winWidth;
 
         if (isOverRounded) {
-            if (w->isDock()) {
-                topCornerRadius = 0;
-                bottomCornerRadius = 0;
-            } else {
-                float minRadius = std::min(winWidth, winHeight) / 2.0;
-                topCornerRadius = minRadius;
-                bottomCornerRadius = minRadius;
-            }
+            float minRadius = std::min(winWidth, winHeight) / 2.0f;
+            topCornerRadius = std::min(topCornerRadius, minRadius);
+            bottomCornerRadius = std::min(bottomCornerRadius, minRadius);
         }
 
         cornerRadius = BorderRadius(

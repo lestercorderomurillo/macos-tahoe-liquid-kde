@@ -37,10 +37,9 @@ struct ForceBlurSettings
 
 struct RoundedCornersSettings
 {
-    float windowTopRadius;
-    float windowBottomRadius;
-    float menuRadius;
+    float windowRadius;
     float dockRadius;
+    float popupRadius;
     bool roundMaximized;
 };
 

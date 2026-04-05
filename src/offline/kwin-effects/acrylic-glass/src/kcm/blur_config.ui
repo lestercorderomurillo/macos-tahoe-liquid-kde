@@ -145,18 +145,16 @@
      <layout class="QVBoxLayout">
       <item>
        <layout class="QHBoxLayout">
-        <item><widget class="QLabel"><property name="text"><string>Top</string></property></widget></item>
-        <item><widget class="QDoubleSpinBox" name="kcfg_TopCornerRadius"><property name="minimum"><double>0.0</double></property></widget></item>
-        <item><widget class="QLabel"><property name="text"><string>Bottom</string></property></widget></item>
-        <item><widget class="QDoubleSpinBox" name="kcfg_BottomCornerRadius"><property name="minimum"><double>0.0</double></property></widget></item>
+        <item><widget class="QLabel"><property name="text"><string>Windows</string></property></widget></item>
+        <item><widget class="QDoubleSpinBox" name="kcfg_WindowCornerRadius"><property name="minimum"><double>0.0</double></property></widget></item>
+        <item><widget class="QLabel"><property name="text"><string>Dock/Launcher</string></property></widget></item>
+        <item><widget class="QDoubleSpinBox" name="kcfg_DockCornerRadius"><property name="minimum"><double>0.0</double></property></widget></item>
        </layout>
       </item>
       <item>
        <layout class="QHBoxLayout">
-        <item><widget class="QLabel"><property name="text"><string>Menu</string></property></widget></item>
-        <item><widget class="QDoubleSpinBox" name="kcfg_MenuCornerRadius"><property name="minimum"><double>0.0</double></property></widget></item>
-        <item><widget class="QLabel"><property name="text"><string>Dock</string></property></widget></item>
-        <item><widget class="QDoubleSpinBox" name="kcfg_DockCornerRadius"><property name="minimum"><double>0.0</double></property></widget></item>
+        <item><widget class="QLabel"><property name="text"><string>Popups</string></property><property name="toolTip"><string>Tooltips, menus, dialogs, and applet popups</string></property></widget></item>
+        <item><widget class="QDoubleSpinBox" name="kcfg_PopupCornerRadius"><property name="minimum"><double>0.0</double></property></widget></item>
        </layout>
       </item>
       <item>

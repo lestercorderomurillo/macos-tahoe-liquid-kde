@@ -50,10 +50,9 @@ void BlurSettings::read()
     forceBlur.blurMenus = BlurConfig::blurMenus();
     forceBlur.blurDocks = BlurConfig::blurDocks();
 
-    roundedCorners.windowTopRadius = BlurConfig::topCornerRadius();
-    roundedCorners.windowBottomRadius = BlurConfig::bottomCornerRadius();
-    roundedCorners.menuRadius = BlurConfig::menuCornerRadius();
+    roundedCorners.windowRadius = BlurConfig::windowCornerRadius();
     roundedCorners.dockRadius = BlurConfig::dockCornerRadius();
+    roundedCorners.popupRadius = BlurConfig::popupCornerRadius();
     roundedCorners.roundMaximized = BlurConfig::roundCornersOfMaximizedWindows();
 
     refraction.edgeSizePixels = BlurConfig::refractionEdgeSize() * 10;
