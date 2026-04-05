@@ -22,6 +22,7 @@ set -uo pipefail
 ICONS_DIR="$HOME/.local/share/icons"
 
 _mode="${1:-auto}"
+_context="${2:-}"
 _errors=()
 
 # ── qdbus wrapper ──
@@ -91,8 +92,11 @@ apply_colorscheme() {
 }
 
 # ── apply all themes ──
+# $1 = light|dark
+# $2 = "boot" to skip shell refresh (plasmashell reads config during startup)
 apply() {
   local mode="$1"
+  local context="${2:-}"
   _errors=()
 
   # color scheme
@@ -212,7 +216,11 @@ apply() {
   rm -f "$HOME/.cache/ksvg-elements" 2>/dev/null || true
   rm -f "$HOME/.cache"/plasma_theme_* 2>/dev/null || true
   _qdbus org.kde.KWin /KWin org.kde.KWin.reconfigure &>/dev/null || true
-  _qdbus org.kde.plasmashell /PlasmaShell org.kde.PlasmaShell.refreshCurrentShell &>/dev/null || true
+  # skip shell refresh at boot — plasmashell reads configs during its own
+  # startup and refreshing mid-init causes heap corruption crashes
+  if [[ "$context" != "boot" ]]; then
+    _qdbus org.kde.plasmashell /PlasmaShell org.kde.PlasmaShell.refreshCurrentShell &>/dev/null || true
+  fi
 
   if [[ ${#_errors[@]} -gt 0 ]]; then
     echo "theme-switch: failed components: ${_errors[*]}" >&2
@@ -251,7 +259,7 @@ watch_loop() {
   # read the actual system preference, not time-of-day
   local last_mode
   last_mode=$(get_system_preference)
-  apply "$last_mode"
+  apply "$last_mode" boot
 
   dbus-monitor --session "type='signal',interface='org.freedesktop.portal.Settings',member='SettingChanged'" 2>/dev/null | \
   while read -r line; do
@@ -270,9 +278,9 @@ watch_loop() {
 
 # ── main ──
 case "$_mode" in
-  light) apply light ;;
-  dark)  apply dark  ;;
-  auto)  apply "$(detect_mode)" ;;
+  light) apply light "$_context" ;;
+  dark)  apply dark "$_context" ;;
+  auto)  apply "$(detect_mode)" "$_context" ;;
   watch) watch_loop ;;
-  *)     echo "Usage: $0 {light|dark|auto|watch}" >&2; exit 1 ;;
+  *)     echo "Usage: $0 {light|dark|auto|watch} [boot]" >&2; exit 1 ;;
 esac

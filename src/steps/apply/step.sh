@@ -41,7 +41,8 @@ install() {
   # ── apply theme ────────────────────────────────────────────
   local switch="$HOME/.local/bin/mac-tahoe-theme-switch"
   if [[ -x "$switch" ]]; then
-    "$switch" "$THEME_MODE" &>/dev/null
+    # "boot" skips refreshCurrentShell — the installer restarts plasma later
+    "$switch" "$THEME_MODE" boot &>/dev/null
     ok "Theme applied"
   fi
 
@@ -63,11 +64,17 @@ install() {
 }
 
 # restart plasma — called by orchestrator AFTER layout is applied
+# Must wait for panels to settle before killing, otherwise QAction
+# teardown races cause SIGABRT in org.kde.panel.so.
 restart_plasma() {
   echo -ne "  …  Restarting Plasma"
-  kquitapp6 plasmashell 2>/dev/null || killall plasmashell 2>/dev/null || true
-  for _i in $(seq 1 10); do pgrep -x plasmashell &>/dev/null || break; sleep 1; done
-  sleep 2
+  # let panels created by layout script fully initialise
+  sleep 6
+  # graceful quit — gives plasmashell time to serialise state
+  kquitapp6 plasmashell 2>/dev/null || true
+  for _i in $(seq 1 15); do pgrep -x plasmashell &>/dev/null || break; sleep 1; done
+  # force only if graceful quit didn't work
+  pgrep -x plasmashell &>/dev/null && { killall plasmashell 2>/dev/null || true; sleep 2; }
   systemctl --user start plasma-plasmashell 2>/dev/null || kstart plasmashell 2>/dev/null &
   for _i in $(seq 1 15); do pgrep -x plasmashell &>/dev/null && break; sleep 1; done
   sleep 4
