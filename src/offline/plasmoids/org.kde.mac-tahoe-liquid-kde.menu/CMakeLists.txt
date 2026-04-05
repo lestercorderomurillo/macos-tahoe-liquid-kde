@@ -41,5 +41,6 @@ target_link_libraries(org.kde.mac.tahoe.liquid.menu PRIVATE
     Qt::Core
     Qt::Widgets
     Qt::Quick
+    KF6::CoreAddons
     Plasma::Plasma
 )

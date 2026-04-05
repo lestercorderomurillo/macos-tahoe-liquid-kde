@@ -4,6 +4,7 @@
 
 #include "menuapplet.h"
 
+#include <KUser>
 #include <QIcon>
 #include <QMenu>
 #include <QProcess>
@@ -56,7 +57,7 @@ void MenuApplet::trigger(QQuickItem *ctx)
     });
 
     // ── build the menu ──────────────────────────────────────────────
-    menu->addAction(QIcon::fromTheme(QStringLiteral("help-about")),
+    menu->addAction(QIcon::fromTheme(QStringLiteral("computer")),
         QStringLiteral("About This Computer"), this, [this]() {
         Q_EMIT aboutRequested();
     });
@@ -105,8 +106,9 @@ void MenuApplet::trigger(QQuickItem *ctx)
         QStringLiteral("qdbus6 org.freedesktop.ScreenSaver /ScreenSaver Lock || loginctl lock-session"))]() {
         runCommand(cmd);
     });
-    menu->addAction(QIcon::fromTheme(QStringLiteral("system-log-out")),
-        QStringLiteral("Log Out\u2026"), [cmd = cfg.readEntry("cmdLogOut",
+    const QString firstName = KUser().property(KUser::FullName).toString().section(QLatin1Char(' '), 0, 0);
+    menu->addAction(QIcon::fromTheme(QStringLiteral("user-identity")),
+        QStringLiteral("Log Out %1\u2026").arg(firstName), [cmd = cfg.readEntry("cmdLogOut",
         QStringLiteral("qdbus6 org.kde.LogoutPrompt /LogoutPrompt org.kde.LogoutPrompt.promptLogout"))]() {
         runCommand(cmd);
     });
