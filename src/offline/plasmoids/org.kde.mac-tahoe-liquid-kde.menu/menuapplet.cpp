@@ -117,6 +117,7 @@ void MenuApplet::trigger(QQuickItem *ctx)
     if (location() == Plasma::Types::TopEdge)
         pos.setY(pos.y() + static_cast<int>(ctx->height()));
 
+    menu->setMinimumWidth(menu->sizeHint().width() + 55);
     menu->adjustSize();
     pos = QPoint(qBound(geo.x(), pos.x(), geo.x() + geo.width() - menu->width()),
                  qBound(geo.y(), pos.y(), geo.y() + geo.height() - menu->height()));
