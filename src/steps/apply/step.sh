@@ -142,18 +142,8 @@ uninstall() {
   kbuildsycoca6 --noincremental 2>/dev/null || true
   ok "Caches flushed"
 
-  # ── restart ────────────────────────────────────────────────
+  # ── reconfigure KWin (no plasma restart — caller handles that) ──
   kwin_reconfigure
   sleep 2
   ok "KWin reconfigured"
-
-  # reload panels
-  sleep 1
-  local q
-  q=$(qdbus_cmd) && {
-    "$q" org.kde.plasmashell /PlasmaShell org.kde.PlasmaShell.evaluateScript "
-      var ps = panels(); for (var i = 0; i < ps.length; i++) ps[i].reloadConfig();
-      var ds = desktops(); for (var i = 0; i < ds.length; i++) ds[i].reloadConfig();
-    " &>/dev/null && ok "Plasma reloaded" || true
-  }
 }

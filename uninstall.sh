@@ -142,13 +142,14 @@ ok "KDE Plasma $plasma_ver"
 # Execution order (design invariant — do not reorder):
 #   1. Feature uninstall loop — removes files (layout skipped here)
 #   2. Theme switcher         — stops and removes the switcher
-#   3. Apply                  — resets to Breeze, flushes caches, restarts
-#   4. Layout                 — resets panel layout (needs live plasmashell)
+#   3. Layout                 — resets panel layout (qdbus to running plasmashell)
+#   4. Apply                  — resets to Breeze, flushes caches
+#   5. Restart Plasma         — ALWAYS LAST
 
 _FEATURES=(wallpapers fonts cursors icons plasmoids menu globalmenu acrylic_glass global_theme plasma_theme window_decorations kvantum color_schemes gtk layout)
 
 for _feature in "${_FEATURES[@]}"; do
-  # layout runs in phase 4, not here
+  # layout runs in phase 3, not here
   [[ "$_feature" == "layout" ]] && continue
   case "$_feature" in
     menu|globalmenu) [[ "$(cfg plasmoids)" == "true" ]] || continue ;;
@@ -184,17 +185,22 @@ step "Removing Theme Switcher"
 note "Stops and removes the auto light/dark theme switcher"
 run_step "$STEPS/theme-switch/step.sh" "uninstall"
 
-# ── Apply (reset to Breeze, flush caches, restart) ───────────────
-step "Applying Changes"
-note "Resets to Breeze defaults and restarts Plasma"
-run_step "$STEPS/apply/step.sh" "uninstall"
-
-# ── Layout (after restart — needs live plasmashell) ──────────────
+# ── Layout (qdbus to running plasmashell — before restart) ───────
 if [[ "$(cfg layout)" == "true" ]] && [[ -f "$STEPS/layout/step.sh" ]]; then
   step "Resetting Layout"
   note "Resets panel layout to default"
   run_step "$STEPS/layout/step.sh" "uninstall"
 fi
+
+# ── Apply (reset to Breeze, flush caches) ────────────────────────
+step "Applying Changes"
+note "Resets to Breeze defaults and flushes caches"
+run_step "$STEPS/apply/step.sh" "uninstall"
+
+# ── Restart Plasma (always last) ─────────────────────────────────
+step "Restarting Plasma"
+note "Restarts Plasma shell to finalize changes"
+run_step "$STEPS/apply/step.sh" "restart_plasma"
 
 # ── Done ─────────────────────────────────────────────────────────
 echo ""

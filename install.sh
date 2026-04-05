@@ -297,11 +297,11 @@ _has_cache() {
 #   1. Feature install loop  — installs files, builds C++ applets
 #   2. Theme switcher        — installs the light/dark switcher
 #   3. Apply                 — writes KDE config, flushes caches, restarts KWin
-#   4. Restart Plasma        — kills and restarts plasmashell
-#   5. Layout                — applies panel layout (needs live plasmashell)
+#   4. Layout                — applies panel layout (qdbus to running plasmashell)
+#   5. Restart Plasma        — ALWAYS LAST
 #
-# Layout MUST run after plasma restart. Any step that talks to
-# plasmashell via qdbus must run in phase 5 or later.
+# Layout runs before restart so it talks to the current plasmashell.
+# Plasma restart is the final step — only disrupts the session once.
 
 for _feature in "${_FEATURES[@]}"; do
   # layout runs in phase 5, not here
@@ -357,22 +357,22 @@ step "Installing Theme Switcher"
 note "Installs the auto light/dark theme switcher"
 run_step "$STEPS/theme-switch/step.sh" "install"
 
-# ── Apply (config writes, cache flush, KWin restart — no plasma restart yet)
+# ── Apply (config writes, cache flush, KWin restart)
 step "Applying Changes"
 note "Applies settings, flushes caches, restarts KWin"
 run_step "$STEPS/apply/step.sh" "install"
 
-# ── Restart Plasma ────────────────────────────────────────────────
-step "Restarting Plasma"
-note "Restarts Plasma shell to load all changes"
-run_step "$STEPS/apply/step.sh" "restart_plasma"
-
-# ── Layout (after plasma restart — needs a live plasmashell) ─────
+# ── Layout (talks to running plasmashell via qdbus) ──────────────
 if [[ "$(cfg layout)" == "true" ]] && [[ -f "$STEPS/layout/step.sh" ]]; then
   step "Installing Layout"
   note "Applies panel layout and dock configuration"
   run_step "$STEPS/layout/step.sh" "install"
 fi
+
+# ── Restart Plasma (always last) ─────────────────────────────────
+step "Restarting Plasma"
+note "Restarts Plasma shell to load all changes"
+run_step "$STEPS/apply/step.sh" "restart_plasma"
 
 # ── Done ─────────────────────────────────────────────────────────
 echo ""
