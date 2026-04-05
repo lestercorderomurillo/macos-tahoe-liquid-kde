@@ -80,17 +80,18 @@ install() {
 }
 
 # restart plasma — called by orchestrator AFTER layout is applied
-# Must wait for panels to settle before killing, otherwise QAction
-# teardown races cause SIGABRT in org.kde.panel.so.
 restart_plasma() {
   echo -ne "  …  Restarting Plasma"
-  # let panels created by layout script fully initialise
+  # let panels created by layout script fully initialise and flush config
   sleep 6
-  # graceful quit — gives plasmashell time to serialise state
-  kquitapp6 plasmashell 2>/dev/null || true
-  for _i in $(seq 1 15); do pgrep -x plasmashell &>/dev/null || break; sleep 1; done
-  # force only if graceful quit didn't work
-  pgrep -x plasmashell &>/dev/null && { killall plasmashell 2>/dev/null || true; sleep 2; }
+  # SIGKILL skips the QML engine teardown race (SIGABRT/SIGSEGV in
+  # org.kde.panel.so → Applet::~Applet → deleteChildren cascade).
+  # kquitapp6/SIGTERM trigger a graceful quit that always crashes.
+  # Config is already on disk — layout JS + plasmashellrc patching ran above.
+  systemctl --user kill --signal=KILL plasma-plasmashell 2>/dev/null \
+    || kill -KILL "$(pgrep -x plasmashell)" 2>/dev/null || true
+  sleep 1
+  # systemd Restart=on-failure (100ms) handles restart; explicit start as fallback
   systemctl --user start plasma-plasmashell 2>/dev/null || kstart plasmashell 2>/dev/null &
   for _i in $(seq 1 15); do pgrep -x plasmashell &>/dev/null && break; sleep 1; done
   sleep 4
