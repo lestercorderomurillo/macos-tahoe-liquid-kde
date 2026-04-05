@@ -53,15 +53,10 @@ A complete environment, not just a coat of paint.
 
 System menu with native QMenu dropdown.
 
-<p align="center">
-  <img src="src/screenshots/menu.png" width="400"><br>
-  <sub>Light Variant</sub>
-</p>
-
-<p align="center">
-  <img src="src/screenshots/menu-dark.png" width="400"><br>
-  <sub>Dark Variant</sub>
-</p>
+<table align="center"><tr>
+<td align="center"><img src="src/screenshots/menu.png" width="300"><br><sub>Light Variant</sub></td>
+<td align="center"><img src="src/screenshots/menu-dark.png" width="300"><br><sub>Dark Variant</sub></td>
+</tr></table>
 
 ### Tahoe Dock
 
@@ -85,15 +80,10 @@ App grid with categories and search.
 
 Glass window with system info.
 
-<p align="center">
-  <img src="src/screenshots/about.png" width="600"><br>
-  <sub>Light Variant</sub>
-</p>
-
-<p align="center">
-  <img src="src/screenshots/about-dark.png" width="600"><br>
-  <sub>Dark Variant</sub>
-</p>
+<table align="center"><tr>
+<td align="center"><img src="src/screenshots/about.png" width="300"><br><sub>Light Variant</sub></td>
+<td align="center"><img src="src/screenshots/about-dark.png" width="300"><br><sub>Dark Variant</sub></td>
+</tr></table>
 
 ### Tahoe Finder
 
