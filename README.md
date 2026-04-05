@@ -60,6 +60,15 @@ System menu with native QMenu dropdown.
 <td align="center"><img src="src/screenshots/menu-dark.png" width="300"><br><sub>Dark Variant</sub></td>
 </tr></table>
 
+### About This Computer
+
+Glass window with system info.
+
+<table align="center"><tr>
+<td align="center"><img src="src/screenshots/about.png" width="300"><br><sub>Light Variant</sub></td>
+<td align="center"><img src="src/screenshots/about-dark.png" width="300"><br><sub>Dark Variant</sub></td>
+</tr></table>
+
 ### Tahoe Dock
 
 Floating glass dock with app icons.
@@ -77,15 +86,6 @@ App grid with categories and search.
   <img src="src/screenshots/launcher.png" width="600"><br>
   <sub>Light Variant</sub>
 </p>
-
-### About This Computer
-
-Glass window with system info.
-
-<table align="center"><tr>
-<td align="center"><img src="src/screenshots/about.png" width="300"><br><sub>Light Variant</sub></td>
-<td align="center"><img src="src/screenshots/about-dark.png" width="300"><br><sub>Dark Variant</sub></td>
-</tr></table>
 
 ### Tahoe Finder
 
