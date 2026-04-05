@@ -112,6 +112,31 @@ for variant in MacTahoeLiquidKde-Dark MacTahoeLiquidKde-Light; do
   echo "  ✓ $variant/widgets/panel-background → ${DOCK_OPACITY} (dock)"
 done
 
+# ── GTK CSS ─────────────────────────────────────────────────────
+GTK="$REPO/src/offline/gtk"
+OPACITY_DEC=$(printf '0.%02d' "$PCT")
+(( PCT == 100 )) && OPACITY_DEC="1"
+
+for variant in MacTahoeLiquidKde-Light MacTahoeLiquidKde-Dark; do
+  # GTK4: color-mix with @window_bg_color
+  for css in "$GTK/$variant/gtk-4.0/gtk.css" "$GTK/$variant/gtk-4.0/gtk-Light.css" "$GTK/$variant/gtk-4.0/gtk-Dark.css"; do
+    [[ -f "$css" ]] || continue
+    sed -i -E "s/@window_bg_color [0-9]+%/@window_bg_color ${PCT}%/g" "$css"
+    echo "  ✓ $(basename "$variant")/gtk-4.0/$(basename "$css") → ${PCT}%"
+  done
+
+  # GTK3: replace window bg rgba alpha and dialog alpha values
+  for css in "$GTK/$variant/gtk-3.0/gtk.css"; do
+    [[ -f "$css" ]] || continue
+    # .background.csd background-color: rgba(R, G, B, X.XX) — just the alpha
+    # Also matches .nautilus-window...background.csd lines
+    sed -i -E "/\.background\.csd/,/\}/ s/(background-color: rgba\([0-9]+, [0-9]+, [0-9]+, )0\.[0-9]+/\1${OPACITY_DEC}/" "$css"
+    # dialog.background.csd alpha(#hex, 0.XX)
+    sed -i -E "/dialog\.background\.csd/,/\}/ s/(alpha\(#[0-9a-fA-F]+,)0\.[0-9]+/\1${OPACITY_DEC}/" "$css"
+    echo "  ✓ $(basename "$variant")/gtk-3.0/gtk.css → ${OPACITY_DEC}"
+  done
+done
+
 echo ""
 echo "Done."
 
@@ -122,6 +147,8 @@ if $APPLY; then
   cp -r "$KVANTUM"/* "$HOME/.config/Kvantum/mac-tahoe-liquid-kde/"
   cp -r "$PLASMA/MacTahoeLiquidKde-Dark" "$HOME/.local/share/plasma/desktoptheme/"
   cp -r "$PLASMA/MacTahoeLiquidKde-Light" "$HOME/.local/share/plasma/desktoptheme/"
+  cp -r "$GTK/MacTahoeLiquidKde-Light" "$HOME/.themes/" 2>/dev/null
+  cp -r "$GTK/MacTahoeLiquidKde-Dark" "$HOME/.themes/" 2>/dev/null
   echo "  ✓ Files copied"
   echo "  Restarting plasmashell..."
   plasmashell --replace &>/dev/null &
