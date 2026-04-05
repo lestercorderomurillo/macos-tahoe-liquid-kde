@@ -88,8 +88,8 @@ PlasmoidItem {
 
         Kirigami.Icon {
             anchors.centerIn: parent
-            width:  Math.round(compactTile.height * 0.924) + 4
-            height: Math.round(compactTile.height * 0.924) + 4
+            width:  Math.round(compactTile.height * 0.924)
+            height: Math.round(compactTile.height * 0.924)
             source: root.cfgIcon
         }
     }

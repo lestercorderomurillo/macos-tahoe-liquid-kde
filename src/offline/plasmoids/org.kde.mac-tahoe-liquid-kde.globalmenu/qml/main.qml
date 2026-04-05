@@ -95,6 +95,19 @@ PlasmoidItem {
             }
         }
 
+        PlasmaComponents3.Label {
+            id: appNameLabel
+            visible: appMenuModel.activeAppName !== "" && buttonRepeater.count > 0
+            text: appMenuModel.activeAppName
+            font.weight: Font.ExtraBold
+            color: Kirigami.Theme.textColor
+            verticalAlignment: Text.AlignVCenter
+            topPadding: 1
+            leftPadding: Kirigami.Units.largeSpacing
+            rightPadding: Kirigami.Units.largeSpacing
+            Layout.fillHeight: !root.vertical
+        }
+
         PlasmaComponents3.ToolButton {
             id: noMenuPlaceholder
             visible: buttonRepeater.count === 0

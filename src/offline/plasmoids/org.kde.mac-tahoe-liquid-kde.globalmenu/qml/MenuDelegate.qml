@@ -39,8 +39,8 @@ AbstractButton {
     Kirigami.MnemonicData.controlType: Kirigami.MnemonicData.SecondaryControl
     Kirigami.MnemonicData.label: text
 
-    topPadding: Kirigami.Units.smallSpacing
-    bottomPadding: Kirigami.Units.smallSpacing
+    topPadding: Kirigami.Units.smallSpacing + 1
+    bottomPadding: Kirigami.Units.smallSpacing - 1
     leftPadding: Kirigami.Units.largeSpacing
     rightPadding: Kirigami.Units.largeSpacing
 
@@ -59,5 +59,6 @@ AbstractButton {
         verticalAlignment: Text.AlignVCenter
         elide: Text.ElideRight
         color: Kirigami.Theme.textColor
+        font.weight: Font.DemiBold
     }
 }

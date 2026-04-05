@@ -80,8 +80,8 @@ A complete environment, not just a coat of paint.
 
 **Install**
 ```bash
-bash install.sh            # install everything
-bash install.sh --help     # show all options
+bash install.sh        # install everything
+bash install.sh --help # show all options
 ```
 
 **Uninstall** (resets to Breeze defaults)
@@ -96,9 +96,9 @@ Both scripts ask for confirmation, request sudo upfront, and restart Plasma auto
 Every component in `features.json` has a corresponding CLI flag. Flags override the file:
 
 ```bash
-bash install.sh --no-gtk --no-sddm       # skip GTK and SDDM
-bash install.sh --gtk --no-kvantum        # enable GTK, skip Kvantum
-bash uninstall.sh --icons --cursors       # only uninstall icons and cursors
+bash install.sh --no-gtk --no-sddm    # skip GTK and SDDM
+bash install.sh --gtk --no-kvantum     # enable GTK, skip Kvantum
+bash uninstall.sh --icons --cursors    # only uninstall icons and cursors
 ```
 
 Available flags: `--wallpapers`, `--fonts`, `--cursors`, `--plasma-theme`, `--window-decorations`, `--kvantum`, `--color-schemes`, `--icons`, `--plasmoids`, `--acrylic-glass`, `--layout`, `--sounds`, `--gtk`, `--sddm`, `--apps`, `--no-download`
@@ -110,9 +110,9 @@ Prefix any flag with `--no-` to disable it (e.g. `--no-fonts`).
 Control light/dark behavior with `--light`, `--dark`, or `--auto`:
 
 ```bash
-bash install.sh --dark                    # force dark theme
-bash install.sh --light                   # force light theme
-bash install.sh --auto                    # time-of-day switching (default)
+bash install.sh --dark                 # force dark theme
+bash install.sh --light                # force light theme
+bash install.sh --auto                 # time-of-day switching (default)
 ```
 
 In `--auto` mode, the watcher service runs at login and switches themes automatically (light 6 AM–6 PM, dark at night). In `--light` or `--dark` mode, the watcher is disabled.
@@ -120,17 +120,17 @@ In `--auto` mode, the watcher service runs at login and switches themes automati
 ### Save & Reset
 
 ```bash
-bash install.sh --no-gtk --dark --save    # remember these settings for next run
-bash install.sh                           # uses saved features.json
-bash install.sh --reset                   # restore features.json to all-true defaults
+bash install.sh --no-gtk --dark --save # remember these settings for next run
+bash install.sh                        # uses saved features.json
+bash install.sh --reset                # restore features.json to all-true defaults
 ```
 
 ### Manual Theme Switching
 
 ```bash
-mac-tahoe-theme-switch light    # force light
-mac-tahoe-theme-switch dark     # force dark
-mac-tahoe-theme-switch auto     # detect from time of day
+mac-tahoe-theme-switch light   # force light
+mac-tahoe-theme-switch dark    # force dark
+mac-tahoe-theme-switch auto    # detect from time of day
 ```
 
 ---

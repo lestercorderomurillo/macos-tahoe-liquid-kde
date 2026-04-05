@@ -110,6 +110,14 @@ AppMenuModel::AppMenuModel(QObject *parent)
 
 AppMenuModel::~AppMenuModel() = default;
 
+QString AppMenuModel::activeAppName() const
+{
+    const QModelIndex idx = m_tasksModel->activeTask();
+    if (!idx.isValid())
+        return {};
+    return m_tasksModel->data(idx, TaskManager::AbstractTasksModel::AppName).toString();
+}
+
 bool AppMenuModel::menuAvailable() const
 {
     return m_menuAvailable;
@@ -211,6 +219,7 @@ void AppMenuModel::onActiveWindowChanged()
     const QString objectPath = m_tasksModel->data(activeTaskIndex, TaskManager::AbstractTasksModel::ApplicationMenuObjectPath).toString();
     const QString serviceName = m_tasksModel->data(activeTaskIndex, TaskManager::AbstractTasksModel::ApplicationMenuServiceName).toString();
     updateApplicationMenu(serviceName, objectPath);
+    Q_EMIT activeAppNameChanged();
 }
 
 QHash<int, QByteArray> AppMenuModel::roleNames() const

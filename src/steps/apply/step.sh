@@ -18,10 +18,24 @@ install() {
 
   # ── wallpaper ──────────────────────────────────────────────
   if [[ "${FEAT_WALLPAPERS:-true}" == "true" ]]; then
-    local wp_path="$HOME/.local/share/wallpapers/MacTahoe"
+    local wp_base="$HOME/.local/share/wallpapers"
+    local wp_path=""
+    case "${THEME_MODE:-auto}" in
+      light) wp_path="$wp_base/MacTahoe-Light" ;;
+      dark)  wp_path="$wp_base/MacTahoe-Dark" ;;
+      *)
+        # auto: pick based on time of day (light 6–18, dark otherwise)
+        local hour; hour=$(date +%H)
+        if (( 10#$hour >= 6 && 10#$hour < 18 )); then
+          wp_path="$wp_base/MacTahoe-Light"
+        else
+          wp_path="$wp_base/MacTahoe-Dark"
+        fi
+        ;;
+    esac
     if [[ -d "$wp_path" ]] && command -v plasma-apply-wallpaperimage &>/dev/null; then
       plasma-apply-wallpaperimage "$wp_path" &>/dev/null || true
-      ok "Wallpaper installed"
+      ok "Wallpaper applied ($(basename "$wp_path"))"
     fi
   fi
 

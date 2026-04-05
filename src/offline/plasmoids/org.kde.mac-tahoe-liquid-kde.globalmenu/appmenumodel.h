@@ -25,6 +25,7 @@ class AppMenuModel : public QAbstractListModel
     Q_OBJECT
     QML_ELEMENT
 
+    Q_PROPERTY(QString activeAppName READ activeAppName NOTIFY activeAppNameChanged)
     Q_PROPERTY(bool menuAvailable READ menuAvailable WRITE setMenuAvailable NOTIFY menuAvailableChanged)
     Q_PROPERTY(bool visible READ visible NOTIFY visibleChanged)
     Q_PROPERTY(bool allScreens READ allScreens WRITE setallScreens NOTIFY allScreensChanged)
@@ -46,6 +47,7 @@ public:
 
     void updateApplicationMenu(const QString &serviceName, const QString &menuObjectPath);
 
+    QString activeAppName() const;
     bool menuAvailable() const;
     void setMenuAvailable(bool set);
     bool allScreens() const;
@@ -58,6 +60,7 @@ public:
 Q_SIGNALS:
     void requestActivateIndex(int index);
     void bringToFocus(int index);
+    void activeAppNameChanged();
     void allScreensChanged();
     void menuAvailableChanged();
     void modelNeedsUpdate();
