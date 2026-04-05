@@ -55,9 +55,11 @@ install() {
   # ── apply theme ────────────────────────────────────────────
   local switch="$HOME/.local/bin/mac-tahoe-theme-switch"
   if [[ -x "$switch" ]]; then
-    # "boot" skips refreshCurrentShell — the installer restarts plasma later
-    "$switch" "$THEME_MODE" boot &>/dev/null
-    ok "Theme applied"
+    # Run without "boot" so refreshCurrentShell fires and all windows update.
+    # The installer restarts plasma later anyway, but this ensures already-open
+    # Qt/GTK windows pick up the color scheme immediately.
+    "$switch" "$THEME_MODE" &>/dev/null
+    ok "Theme applied ($THEME_MODE)"
   fi
 
   command -v nautilus &>/dev/null && { nautilus -q 2>/dev/null || true; ok "Nautilus restarted"; }
