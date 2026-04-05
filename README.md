@@ -49,42 +49,45 @@ A complete environment, not just a coat of paint.
 
 ## Screenshots
 
-### Menu
+### KMenu Tahoe
 
 System menu with native QMenu dropdown.
 
 <p align="center">
   <img src="src/screenshots/menu.png" width="600"><br>
-  <sub>Light</sub>
+  <sub>Light Variant</sub>
 </p>
 
 <p align="center">
   <img src="src/screenshots/menu-dark.png" width="600"><br>
-  <sub>Dark</sub>
+  <sub>Dark Variant</sub>
 </p>
 
-### Context Menu
+### Tahoe Context Menu
 
 Desktop right-click with translucent glass blur.
 
 <p align="center">
   <img src="src/screenshots/context_menu.png" width="600"><br>
+  <sub>Light Variant</sub>
 </p>
 
-### Dock
+### Tahoe Dock
 
 Floating glass dock with app icons.
 
 <p align="center">
   <img src="src/screenshots/dock.png" width="600"><br>
+  <sub>Light Variant</sub>
 </p>
 
-### Launcher
+### Tahoe Launcher
 
 App grid with categories and search.
 
 <p align="center">
   <img src="src/screenshots/launcher.png" width="600"><br>
+  <sub>Light Variant</sub>
 </p>
 
 ### About This Computer
@@ -93,14 +96,16 @@ Glass window with system info.
 
 <p align="center">
   <img src="src/screenshots/about_this_pc.png" width="600"><br>
+  <sub>Light Variant</sub>
 </p>
 
-### Finder
+### Tahoe Finder
 
 Nautilus file manager with macOS-style sidebar.
 
 <p align="center">
   <img src="src/screenshots/finder.png" width="600"><br>
+  <sub>Light Variant</sub>
 </p>
 
 ---
