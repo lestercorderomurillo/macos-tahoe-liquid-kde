@@ -10,6 +10,7 @@ Options:
   --help, -h           Show this help message and exit
 
   Feature flags (prefix with --no- to skip):
+    --only             Disable all features first, then enable only those listed
     --wallpapers       Remove wallpaper collection
     --fonts            Remove SF Pro and SF Mono fonts
     --cursors          Remove macOS-style cursors

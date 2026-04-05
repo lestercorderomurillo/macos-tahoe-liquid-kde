@@ -28,6 +28,7 @@ declare -A _cli=()
 THEME_MODE=""
 _do_save=false
 _do_reset=false
+_only_mode=false
 
 _cfg_read() {
   local key="$1"
@@ -73,6 +74,7 @@ _parse_args() {
       --light)       THEME_MODE="light" ;;
       --dark)        THEME_MODE="dark" ;;
       --auto)        THEME_MODE="auto" ;;
+      --only)        _only_mode=true ;;
       --save)        _do_save=true ;;
       --reset)       _do_reset=true ;;
       --no-download|--offline) _cli[no_download]="true" ;;
@@ -116,6 +118,14 @@ DEFAULTS
     ok "features.json reset to defaults"
     for _f in "${_ALL_FEATURES[@]}"; do _feat[$_f]="$(_cfg_read "$_f")"; done
     THEME_MODE="auto"
+  fi
+
+  # --only: start from all-false, then only enable explicitly listed features
+  if $_only_mode; then
+    for _f in "${_ALL_FEATURES[@]}"; do
+      [[ "$_f" == "no_download" ]] && continue
+      _feat[$_f]="false"
+    done
   fi
 
   for _f in "${_ALL_FEATURES[@]}"; do

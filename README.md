@@ -25,7 +25,7 @@ A complete environment, not just a coat of paint.
 | **Kvantum Theme** | macOS-style Kvantum theme | 🔧 In Progress |
 | **GTK Theme** | GTK2/3/4 window chrome and controls | 🔧 In Progress |
 | **Acrylic Glass** | KWin blur, rounded corners, glass effect | 🔧 In Progress |
-| **TimeOfDay Switcher** | Auto light/dark themes based on time of day | 🔧 In Progress |
+| **Auto Theme Switcher** | Auto light/dark via Plasma native sunrise/sunset | ✅ Implemented |
 | **Aurorae Decorations** | Window title bar and borders | 🔧 In Progress |
 | **Firefox Theme** | macOS-style Firefox browser theme | 🔲 Planned |
 | **Thunderbird Theme** | macOS-style Thunderbird mail theme | 🔲 Planned |
@@ -134,7 +134,12 @@ bash uninstall.sh --icons --cursors    # only uninstall icons and cursors
 
 Available flags: `--wallpapers`, `--fonts`, `--cursors`, `--plasma-theme`, `--window-decorations`, `--kvantum`, `--color-schemes`, `--icons`, `--plasmoids`, `--acrylic-glass`, `--layout`, `--sounds`, `--gtk`, `--sddm`, `--apps`, `--no-download`
 
-Prefix any flag with `--no-` to disable it (e.g. `--no-fonts`).
+Prefix any flag with `--no-` to disable it (e.g. `--no-fonts`). Use `--only` to disable everything first, then enable only the listed features:
+
+```bash
+bash install.sh --only --fonts --icons # install only fonts and icons
+bash uninstall.sh --only --cursors     # uninstall only cursors
+```
 
 ### Theme Mode
 
@@ -143,10 +148,10 @@ Control light/dark behavior with `--light`, `--dark`, or `--auto`:
 ```bash
 bash install.sh --dark                 # force dark theme
 bash install.sh --light                # force light theme
-bash install.sh --auto                 # time-of-day switching (default)
+bash install.sh --auto                 # automatic switching (default)
 ```
 
-In `--auto` mode, the watcher service runs at login and switches themes automatically (light 6 AM–6 PM, dark at night). In `--light` or `--dark` mode, the watcher is disabled.
+In `--auto` mode, Plasma's native autoswitcher handles light/dark transitions based on sunrise and sunset times. A watcher service runs at login to keep Kvantum and GTK themes in sync. In `--light` or `--dark` mode, the autoswitcher and watcher are both disabled.
 
 ### Save & Reset
 
@@ -159,9 +164,9 @@ bash install.sh --reset                # restore features.json to all-true defau
 ### Manual Theme Switching
 
 ```bash
-mac-tahoe-theme-switch light   # force light
-mac-tahoe-theme-switch dark    # force dark
-mac-tahoe-theme-switch auto    # detect from time of day
+mac-tahoe-theme-switch light   # force light (disables auto)
+mac-tahoe-theme-switch dark    # force dark (disables auto)
+mac-tahoe-theme-switch auto    # enable Plasma auto mode (sunrise/sunset)
 ```
 
 ---

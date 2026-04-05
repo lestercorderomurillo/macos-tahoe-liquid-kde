@@ -12,9 +12,10 @@ Options:
   Theme mode:
     --light            Force light theme
     --dark             Force dark theme
-    --auto             Time-of-day switching (default)
+    --auto             Automatic switching via sunrise/sunset (default)
 
   Feature flags (prefix with --no- to disable):
+    --only             Disable all features first, then enable only those listed
     --wallpapers       macOS wallpaper collection
     --fonts            SF Pro and SF Mono typefaces
     --cursors          macOS-style cursors
@@ -40,6 +41,7 @@ Options:
 Examples:
   bash install.sh                       # install everything
   bash install.sh --no-gtk --no-sddm    # skip GTK and SDDM
+  bash install.sh --only --fonts --icons # install only fonts and icons
   bash install.sh --dark --save         # dark mode, remember setting
   bash install.sh --reset               # restore defaults
 EOF
