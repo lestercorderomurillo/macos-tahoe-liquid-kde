@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     container: archlinux:latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - name: Install deps
         run: pacman -Syu --noconfirm python bash
       - name: Run tests
@@ -21,7 +21,7 @@ jobs:
     runs-on: ubuntu-latest
     container: archlinux:latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - name: Install KDE build deps
         run: |
           pacman -Syu --noconfirm \

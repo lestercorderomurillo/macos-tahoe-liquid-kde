@@ -115,10 +115,10 @@ done
 echo ""
 echo "plasma theme — parity"
 # Both variants must have the same set of SVGs
-# Compare only git-tracked SVGs (ignores build artifacts)
+# Compare only git-tracked SVGs (no globs — compatible with older git)
 assert "dark/light SVG parity" bash -c "
-  diff <(cd '$REPO' && git ls-files 'src/offline/plasma-theme/MacTahoeLiquidKde-Dark/**/*.svgz' | sed 's|.*/MacTahoeLiquidKde-Dark/||' | sort) \
-       <(cd '$REPO' && git ls-files 'src/offline/plasma-theme/MacTahoeLiquidKde-Light/**/*.svgz' | sed 's|.*/MacTahoeLiquidKde-Light/||' | sort)"
+  diff <(cd '$REPO' && git ls-files 'src/offline/plasma-theme/MacTahoeLiquidKde-Dark/' | grep '\.svgz$' | sed 's|.*/MacTahoeLiquidKde-Dark/||' | sort) \
+       <(cd '$REPO' && git ls-files 'src/offline/plasma-theme/MacTahoeLiquidKde-Light/' | grep '\.svgz$' | sed 's|.*/MacTahoeLiquidKde-Light/||' | sort)"
 
 # ═══════════════════════════════════════════════════════════════════
 echo ""
