@@ -155,6 +155,9 @@ if [[ "$(cfg layout)" == "true" ]] && [[ -f "$STEPS/layout/step.sh" ]]; then
   run_step "$STEPS/layout/step.sh" "install"
 fi
 
+# ── Notify icon change (after layout, before restart) ───────────
+dbus-send --session --type=signal /KIconLoader org.kde.KIconLoader.iconChanged int32:0 2>/dev/null || true
+
 # ── Restart Plasma (always last) ─────────────────────────────────
 step "Restarting Plasma"
 note "Restarts Plasma shell to load all changes"

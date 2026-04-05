@@ -143,10 +143,38 @@ apply() {
   [[ "$mode" == "dark" ]] && laf="$LAF_DARK" || laf="$LAF_LIGHT"
   if [[ "$context" == "install" ]]; then
     # Skip plasma-apply-lookandfeel during install — it triggers a QML engine
-    # teardown race (SIGABRT in org.kde.panel.so). Write LookAndFeelPackage
-    # directly; the plasma restart at end of install loads it from disk.
-    command -v kwriteconfig6 &>/dev/null && \
-      kwriteconfig6 --file kdeglobals --group KDE --key LookAndFeelPackage "$laf"
+    # teardown race (SIGABRT in org.kde.panel.so). Write all global-theme
+    # defaults directly; the plasma restart at end of install loads them.
+    if command -v kwriteconfig6 &>/dev/null; then
+      local icon_theme cursor_theme color_scheme plasma_theme widget_style aurorae_theme
+      if [[ "$mode" == "dark" ]]; then
+        icon_theme="MacTahoeLiquidKde-Icons-dark"
+        cursor_theme="MacTahoeLiquidKde-Dark"
+        color_scheme="MacTahoeLiquidKdeDark"
+        plasma_theme="MacTahoeLiquidKde-Dark"
+        widget_style="kvantum-dark"
+        aurorae_theme="__aurorae__svg__MacTahoeLiquidKde-Dark"
+      else
+        icon_theme="MacTahoeLiquidKde-Icons"
+        cursor_theme="MacTahoeLiquidKde"
+        color_scheme="MacTahoeLiquidKdeLight"
+        plasma_theme="MacTahoeLiquidKde-Light"
+        widget_style="kvantum"
+        aurorae_theme="__aurorae__svg__MacTahoeLiquidKde-Light"
+      fi
+      kwriteconfig6 --file kdeglobals --group KDE     --key LookAndFeelPackage "$laf"
+      kwriteconfig6 --file kdeglobals --group Icons   --key Theme "$icon_theme"
+      kwriteconfig6 --file kdeglobals --group General --key ColorScheme "$color_scheme"
+      kwriteconfig6 --file kdeglobals --group KDE     --key widgetStyle "$widget_style"
+      kwriteconfig6 --file kcminputrc --group Mouse   --key cursorTheme "$cursor_theme"
+      kwriteconfig6 --file plasmarc   --group Theme   --key name "$plasma_theme"
+      kwriteconfig6 --file kwinrc --group "org.kde.kdecoration2" --key library "org.kde.kwin.aurorae"
+      kwriteconfig6 --file kwinrc --group "org.kde.kdecoration2" --key theme "$aurorae_theme"
+      kwriteconfig6 --file kwinrc --group "org.kde.kdecoration2" --key BorderSize "Tiny"
+      kwriteconfig6 --file kwinrc --group "org.kde.kdecoration2" --key ButtonsOnLeft "XAI"
+      kwriteconfig6 --file kwinrc --group "org.kde.kdecoration2" --key ButtonsOnRight ""
+
+    fi
   elif command -v plasma-apply-lookandfeel &>/dev/null; then
     plasma-apply-lookandfeel -a "$laf" --keep-auto &>/dev/null || _errors+=("global-theme")
   fi
