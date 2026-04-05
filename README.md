@@ -54,22 +54,13 @@ A complete environment, not just a coat of paint.
 System menu with native QMenu dropdown.
 
 <p align="center">
-  <img src="src/screenshots/menu.png" width="600"><br>
+  <img src="src/screenshots/menu.png" width="400"><br>
   <sub>Light Variant</sub>
 </p>
 
 <p align="center">
-  <img src="src/screenshots/menu-dark.png" width="600"><br>
+  <img src="src/screenshots/menu-dark.png" width="400"><br>
   <sub>Dark Variant</sub>
-</p>
-
-### Tahoe Context Menu
-
-Desktop right-click with translucent glass blur.
-
-<p align="center">
-  <img src="src/screenshots/context_menu.png" width="600"><br>
-  <sub>Light Variant</sub>
 </p>
 
 ### Tahoe Dock
@@ -105,6 +96,15 @@ Nautilus file manager with macOS-style sidebar.
 
 <p align="center">
   <img src="src/screenshots/finder.png" width="600"><br>
+  <sub>Light Variant</sub>
+</p>
+
+### Plasma Theme
+
+Desktop right-click with translucent glass blur.
+
+<p align="center">
+  <img src="src/screenshots/context_menu.png" width="600"><br>
   <sub>Light Variant</sub>
 </p>
 
