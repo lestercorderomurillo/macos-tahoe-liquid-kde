@@ -11,5 +11,7 @@ src/offline/kwin-effects/*/src/shaders/onscreen_rounded*.frag
 src/offline/kwin-effects/*/src/shaders/onscreen_rounded*.glsl
 src/offline/plasmoids/*/build/
 
+svg-edit/
+
 .claude
 CLAUDE.md
