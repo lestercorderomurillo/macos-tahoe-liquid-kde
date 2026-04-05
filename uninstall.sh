@@ -107,12 +107,12 @@ ok "KDE Plasma $plasma_ver"
 [[ -f "$CONFIG" ]] && ok "features.json loaded"
 
 # ── Uninstall each feature ───────────────────────────────────────
-_FEATURES=(wallpapers fonts cursors icons plasmoids globalmenu acrylic_glass plasma_theme window_decorations kvantum color_schemes gtk layout)
+_FEATURES=(wallpapers fonts cursors icons plasmoids menu globalmenu acrylic_glass plasma_theme window_decorations kvantum color_schemes gtk layout)
 
 for _feature in "${_FEATURES[@]}"; do
   case "$_feature" in
-    globalmenu) [[ "$(cfg plasmoids)" == "true" ]] || continue ;;
-    *)          [[ "$(cfg "$_feature")" == "true" ]] || continue ;;
+    menu|globalmenu) [[ "$(cfg plasmoids)" == "true" ]] || continue ;;
+    *)               [[ "$(cfg "$_feature")" == "true" ]] || continue ;;
   esac
 
   _sf=$(step_file_for "$_feature")
@@ -126,6 +126,7 @@ for _feature in "${_FEATURES[@]}"; do
     cursors)             note "Removes MacTahoe cursor themes" ;;
     icons)               note "Removes MacTahoe icon themes" ;;
     plasmoids)           note "Removes custom Plasma widgets" ;;
+    menu)                note "Removes Menu C++ applet" ;;
     globalmenu)          note "Removes Global Menu C++ applet" ;;
     acrylic_glass)       note "Unloads and removes Acrylic Glass KWin effect" ;;
     plasma_theme)        note "Removes Plasma desktop theme and resets to Breeze" ;;

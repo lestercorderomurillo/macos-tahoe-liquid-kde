@@ -11,8 +11,8 @@ install() {
     [[ -d "$widget" ]] || continue
     local name
     name=$(basename "$widget")
-    # skip globalmenu — handled by its own step
-    [[ "$name" == *globalmenu* ]] && continue
+    # skip C++ applets — handled by their own build steps
+    [[ -f "$widget/CMakeLists.txt" ]] && continue
     [[ -f "$widget/metadata.json" ]] || { fail "$name (no metadata.json — skipping)"; continue; }
 
     local was_present=false

@@ -203,13 +203,13 @@ _auto_dep_dedup dbus-monitor dbus
 # ── single feature list (used for deps + install) ────────────────
 # layout is here for deps but handled separately after apply (needs plasmashell)
 # theme-switch and apply are always hardcoded at the end
-_FEATURES=(wallpapers fonts cursors icons plasma_theme window_decorations kvantum color_schemes gtk plasmoids globalmenu acrylic_glass layout)
+_FEATURES=(wallpapers fonts cursors icons plasma_theme window_decorations kvantum color_schemes gtk plasmoids menu globalmenu acrylic_glass layout)
 
 # step-specific deps
 for _feature in "${_FEATURES[@]}"; do
   case "$_feature" in
-    globalmenu) [[ "$(cfg plasmoids)" == "true" ]] || continue ;;
-    *)          [[ "$(cfg "$_feature")" == "true" ]] || continue ;;
+    menu|globalmenu) [[ "$(cfg plasmoids)" == "true" ]] || continue ;;
+    *)               [[ "$(cfg "$_feature")" == "true" ]] || continue ;;
   esac
   _sf=$(step_file_for "$_feature")
   [[ -f "$_sf" ]] || continue
@@ -253,10 +253,10 @@ _has_cache() {
 for _feature in "${_FEATURES[@]}"; do
   # layout runs after apply, not here
   [[ "$_feature" == "layout" ]] && continue
-  # globalmenu is gated by the plasmoids flag
+  # menu and globalmenu are gated by the plasmoids flag
   case "$_feature" in
-    globalmenu) [[ "$(cfg plasmoids)" == "true" ]] || continue ;;
-    *)          [[ "$(cfg "$_feature")" == "true" ]] || continue ;;
+    menu|globalmenu) [[ "$(cfg plasmoids)" == "true" ]] || continue ;;
+    *)               [[ "$(cfg "$_feature")" == "true" ]] || continue ;;
   esac
 
   _sf=$(step_file_for "$_feature")
@@ -275,6 +275,7 @@ for _feature in "${_FEATURES[@]}"; do
     color_schemes)       note "Installs color schemes (light and dark)" ;;
     gtk)                 note "Installs GTK theme for GNOME apps" ;;
     plasmoids)           note "Installs custom Plasma widgets" ;;
+    menu)                note "Builds and installs Menu C++ applet" ;;
     globalmenu)          note "Builds and installs Global Menu C++ applet" ;;
     acrylic_glass)       note "Builds and installs Acrylic Glass KWin effect" ;;
   esac

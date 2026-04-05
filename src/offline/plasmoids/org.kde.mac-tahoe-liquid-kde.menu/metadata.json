@@ -1,5 +1,4 @@
 {
-    "KPackageStructure": "Plasma/Applet",
     "KPlugin": {
         "Authors": [
             {
@@ -7,11 +6,15 @@
             }
         ],
         "Category": "System Information",
-        "Description": "macOS-style Kpple Menu for the top bar",
+        "Description": "macOS-style system menu for the top panel.",
+        "EnabledByDefault": true,
+        "FormFactors": ["desktop"],
         "Icon": "start-here-kde-symbolic",
-        "Id": "org.kde.mac-tahoe-liquid-kde.menu",
-        "License": "GPL-2.0+",
-        "Name": "Kpple Menu (MacTahoe Liquid KDE)"
+        "Id": "org.kde.mac.tahoe.liquid.menu",
+        "License": "GPL-2.0-or-later",
+        "Name": "Menu",
+        "Version": "1.0",
+        "Website": "https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde"
     },
     "X-Plasma-API-Minimum-Version": "6.0",
     "X-Plasma-Provides": [
