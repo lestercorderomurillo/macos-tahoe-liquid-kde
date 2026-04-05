@@ -1,5 +1,7 @@
 # macOS Tahoe Liquid Theme for KDE Plasma
 
+[![tests](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/actions/workflows/test.yml/badge.svg)](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/actions/workflows/test.yml)
+
 > [!CAUTION]
 > **Very experimental** — Under heavy active development. Things will break. Back up your system config before installing. Use at your own risk.
 
