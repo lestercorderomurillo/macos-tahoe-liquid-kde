@@ -122,14 +122,21 @@ Both scripts ask for confirmation, request sudo, and restart Plasma automaticall
 Every component has a CLI flag. Use `--no-` to skip, or `--only` to run just the listed ones:
 
 ```bash
-bash install.sh --no-gtk --no-sddm              # skip GTK and SDDM
-bash install.sh --only --fonts --icons           # install only fonts and icons
-bash uninstall.sh --only --cursors               # uninstall only cursors
+bash install.sh --no-gtk --no-sddm               # skip GTK and SDDM
+bash install.sh --only --fonts --icons            # install only fonts and icons
+bash uninstall.sh --only --cursors                # uninstall only cursors
 ```
 
 Available flags:
 
-`--wallpapers` `--fonts` `--cursors` `--plasma-theme` `--window-decorations` `--kvantum` `--color-schemes` `--icons` `--plasmoids` `--acrylic-glass` `--global-theme` `--layout` `--sounds` `--gtk` `--sddm` `--apps` `--no-download`
+| | | | |
+|---|---|---|---|
+| `--wallpapers` | `--fonts` | `--cursors` | `--plasma-theme` |
+| `--window-decorations` | `--kvantum` | `--color-schemes` | `--icons` |
+| `--plasmoids` | `--acrylic-glass` | `--global-theme` | `--layout` |
+| `--sounds` | `--gtk` | `--sddm` | `--apps` |
+
+Use `--no-download` to skip asset downloads and use cached files.
 
 ### Theme Mode
 
