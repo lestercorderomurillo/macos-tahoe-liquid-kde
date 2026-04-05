@@ -1,4 +1,4 @@
-# MacOS Tahoe Glass Glass Theme for KDE Plasma
+# macOS Tahoe Liquid Theme for KDE Plasma
 
 > [!CAUTION]
 > **Very experimental** — Under heavy active development. Things will break. Back up your system config before installing. Use at your own risk.
@@ -80,7 +80,8 @@ A complete environment, not just a coat of paint.
 
 **Install**
 ```bash
-bash install.sh
+bash install.sh            # install everything
+bash install.sh --help     # show all options
 ```
 
 **Uninstall** (resets to Breeze defaults)
@@ -172,6 +173,7 @@ macos-tahoe-liquid-kde/
         ├── color-schemes/
         ├── gtk/
         ├── plasmoids/
+        ├── menu/
         ├── globalmenu/
         ├── acrylic-glass/
         ├── layout/

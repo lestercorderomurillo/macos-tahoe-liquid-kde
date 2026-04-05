@@ -45,6 +45,48 @@ THEME_MODE="$(_cfg_read "theme_mode")"
 
 for _arg in "$@"; do
   case "$_arg" in
+    -h|--help)
+      cat <<'HELPEOF'
+Usage: bash install.sh [OPTIONS]
+
+Options:
+  --help, -h           Show this help message and exit
+
+  Theme mode:
+    --light            Force light theme
+    --dark             Force dark theme
+    --auto             Time-of-day switching (default)
+
+  Feature flags (prefix with --no- to disable):
+    --wallpapers       macOS wallpaper collection
+    --fonts            SF Pro and SF Mono typefaces
+    --cursors          macOS-style cursors
+    --plasma-theme     Translucent panels and dock
+    --window-decorations  Aurorae window title bars
+    --kvantum          Kvantum Qt widget style
+    --color-schemes    Light and Dark palettes
+    --icons            macOS-style icon set
+    --plasmoids        Custom Plasma widgets (Menu, Launcher, Trashcan)
+    --acrylic-glass    KWin blur + rounded corners effect
+    --layout           Panel layout (top bar + dock)
+    --sounds           Notification and event sounds
+    --gtk              GTK 2/3/4 theme
+    --sddm             Login screen theme
+    --apps             App configuration tweaks
+    --no-download      Skip downloads, use cached assets
+
+  Persistence:
+    --save             Save current flags to features.json
+    --reset            Reset features.json to all-true defaults
+
+Examples:
+  bash install.sh                          # install everything
+  bash install.sh --no-gtk --no-sddm      # skip GTK and SDDM
+  bash install.sh --dark --save            # dark mode, remember setting
+  bash install.sh --reset                  # restore defaults
+HELPEOF
+      exit 0
+      ;;
     --light)       THEME_MODE="light" ;;
     --dark)        THEME_MODE="dark" ;;
     --auto)        THEME_MODE="auto" ;;

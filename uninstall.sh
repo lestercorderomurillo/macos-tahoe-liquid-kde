@@ -37,6 +37,36 @@ for _f in "${_ALL_FEATURES[@]}"; do _feat[$_f]="$(_cfg_read "$_f")"; done
 
 for _arg in "$@"; do
   case "$_arg" in
+    -h|--help)
+      cat <<'HELPEOF'
+Usage: bash uninstall.sh [OPTIONS]
+
+Options:
+  --help, -h           Show this help message and exit
+
+  Feature flags (prefix with --no- to skip):
+    --wallpapers       Remove wallpaper collection
+    --fonts            Remove SF Pro and SF Mono fonts
+    --cursors          Remove macOS-style cursors
+    --plasma-theme     Remove Plasma desktop theme
+    --window-decorations  Remove Aurorae window decorations
+    --kvantum          Remove Kvantum theme
+    --color-schemes    Remove color schemes
+    --icons            Remove icon themes
+    --plasmoids        Remove custom Plasma widgets
+    --acrylic-glass    Remove KWin blur effect
+    --layout           Reset panel layout to default
+    --sounds           Remove notification sounds
+    --gtk              Remove GTK theme
+    --sddm             Remove login screen theme
+    --apps             Reset app configuration
+
+Examples:
+  bash uninstall.sh                        # uninstall everything
+  bash uninstall.sh --icons --cursors      # only remove icons and cursors
+HELPEOF
+      exit 0
+      ;;
     --no-*)
       _key="${_arg#--no-}"; _key="${_key//-/_}"
       for _f in "${_ALL_FEATURES[@]}"; do [[ "$_f" == "$_key" ]] && { _cli[$_f]="false"; break; }; done
