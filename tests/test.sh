@@ -80,6 +80,23 @@ assert "globalmenu metadata valid JSON"     python3 -c "import json; json.load(o
 assert "global theme Dark valid JSON"       python3 -c "import json; json.load(open('$OFFLINE/look-and-feel/MacTahoeLiquidKde-Dark/metadata.json'))"
 assert "global theme Light valid JSON"      python3 -c "import json; json.load(open('$OFFLINE/look-and-feel/MacTahoeLiquidKde-Light/metadata.json'))"
 
+# ── builds (only if cmake is available) ──────────────────────────
+if command -v cmake &>/dev/null; then
+  echo ""
+  echo "builds"
+  for applet in \
+    "$OFFLINE/plasmoids/org.kde.mac-tahoe-liquid-kde.menu" \
+    "$OFFLINE/plasmoids/org.kde.mac-tahoe-liquid-kde.globalmenu"; do
+    name=$(basename "$applet")
+    if [[ -f "$applet/CMakeLists.txt" ]]; then
+      tmpbuild=$(mktemp -d)
+      assert "$name configures" cmake -S "$applet" -B "$tmpbuild" -DCMAKE_BUILD_TYPE=Release
+      assert "$name builds"     cmake --build "$tmpbuild"
+      rm -rf "$tmpbuild"
+    fi
+  done
+fi
+
 # ── summary ─────────────────────────────────────────────────────
 echo ""
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
