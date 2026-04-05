@@ -9,30 +9,28 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
+    container: archlinux:latest
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
-        with:
-          python-version: '3.12'
+      - name: Install deps
+        run: pacman -Syu --noconfirm python bash
       - name: Run tests
         run: bash tests/test.sh
 
   build-check:
     runs-on: ubuntu-latest
+    container: archlinux:latest
     steps:
       - uses: actions/checkout@v4
       - name: Install KDE build deps
         run: |
-          sudo apt-get update
-          sudo apt-get install -y --no-install-recommends \
-            cmake g++ pkg-config extra-cmake-modules \
-            libkf6coreaddons-dev libkf6config-dev \
-            libplasma-dev qt6-base-dev qt6-declarative-dev \
-            libkf6windowsystem-dev libkf6i18n-dev \
-            libtaskmanager-dev libkf6dbusaddons-dev \
-            libkf6kcmutils-dev libkf6iconthemes-dev \
-            libkdecorations3-dev kwin-dev \
-            qt6-wayland-dev
+          pacman -Syu --noconfirm \
+            base-devel cmake extra-cmake-modules \
+            qt6-base qt6-declarative qt6-wayland \
+            plasma-framework kconfig kcoreaddons \
+            kwindowsystem ki18n kdbusaddons \
+            kcmutils kiconthemes \
+            kdecoration kwin plasma-workspace
       - name: Build Menu applet
         run: |
           cd src/offline/plasmoids/org.kde.mac-tahoe-liquid-kde.menu
