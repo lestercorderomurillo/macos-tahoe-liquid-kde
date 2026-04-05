@@ -1,52 +1,74 @@
 #!/usr/bin/env bash
 # MacTahoe Liquid KDE — set global background transparency
-# Usage: bash set-transparency.sh <percent> [--apply]
+# Usage: bash set-transparency.sh <percent> [--dock <percent>] [--apply]
 #
 # Examples:
-#   bash set-transparency.sh 60          # set to 60%, don't apply
-#   bash set-transparency.sh 75 --apply  # set to 75% and install to live system
+#   bash set-transparency.sh 60                  # everything at 60%
+#   bash set-transparency.sh 75 --dock 15        # 75% general, 15% dock
+#   bash set-transparency.sh 75 --dock 15 --apply  # same + install live
 #
 # Does NOT touch buttons, text, shadows, or highlight colors.
 set -uo pipefail
 
-REPO="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+REPO="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 KVANTUM="$REPO/src/offline/kvantum/mac-tahoe-liquid-kde"
 PLASMA="$REPO/src/offline/plasma-theme"
 
 if [[ $# -lt 1 ]] || [[ "$1" == "-h" ]] || [[ "$1" == "--help" ]]; then
-  echo "Usage: bash set-transparency.sh <percent> [--apply]"
-  echo ""
-  echo "  <percent>   Background opacity 0–100 (e.g. 60 = 60% opaque)"
-  echo "  --apply     Also install to live system and restart plasmashell"
+  cat <<'EOF'
+Usage: bash set-transparency.sh <percent> [--dock <percent>] [--apply]
+
+  <percent>          Background opacity 0–100 (e.g. 60 = 60% opaque)
+  --dock <percent>   Separate opacity for the dock panel (default: same as main)
+  --apply            Install to live system and restart plasmashell
+
+Examples:
+  bash set-transparency.sh 60                    # everything at 60%
+  bash set-transparency.sh 75 --dock 15          # 75% general, 15% dock
+  bash set-transparency.sh 75 --dock 15 --apply  # same + install live
+EOF
   exit 0
 fi
 
-PCT="$1"
+PCT="$1"; shift
+DOCK_PCT="$PCT"
 APPLY=false
-[[ "${2:-}" == "--apply" ]] && APPLY=true
 
-if ! [[ "$PCT" =~ ^[0-9]+$ ]] || (( PCT < 0 || PCT > 100 )); then
-  echo "Error: percent must be 0–100"
-  exit 1
-fi
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    --dock)   DOCK_PCT="$2"; shift 2 ;;
+    --apply)  APPLY=true; shift ;;
+    *)        shift ;;
+  esac
+done
+
+for v in "$PCT" "$DOCK_PCT"; do
+  if ! [[ "$v" =~ ^[0-9]+$ ]] || (( v < 0 || v > 100 )); then
+    echo "Error: percent must be 0–100 (got '$v')"
+    exit 1
+  fi
+done
+
+# ── helper: percent to SVG opacity string ───────────────────────
+to_svg() {
+  local p="$1"
+  if (( p == 100 )); then echo "1"
+  elif (( p < 10 )); then printf '0.0%d' "$p"
+  else printf '0.%02d' "$p"
+  fi
+}
 
 # ── derived values ──────────────────────────────────────────────
-# Kvantum reduce_menu_opacity: reduction amount (100 - target)
 MENU_REDUCE=$(( 100 - PCT ))
-
-# Kvantum color alpha: hex byte (0x00–0xFF)
 ALPHA_DEC=$(( PCT * 255 / 100 ))
 ALPHA_HEX=$(printf '%02X' "$ALPHA_DEC")
+SVG_OPACITY=$(to_svg "$PCT")
+DOCK_OPACITY=$(to_svg "$DOCK_PCT")
 
-# Plasma SVG opacity: decimal 0.00–1.00
-SVG_OPACITY=$(printf '0.%02d' "$PCT")
-# Handle 100% edge case
-(( PCT == 100 )) && SVG_OPACITY="1"
-
-echo "Setting transparency to ${PCT}%"
-echo "  Kvantum menu reduction: ${MENU_REDUCE}"
-echo "  Kvantum color alpha: 0x${ALPHA_HEX} (${ALPHA_DEC}/255)"
-echo "  Plasma SVG opacity: ${SVG_OPACITY}"
+echo "Setting transparency"
+echo "  General:  ${PCT}%  (SVG ${SVG_OPACITY}, alpha 0x${ALPHA_HEX})"
+echo "  Dock:     ${DOCK_PCT}%  (SVG ${DOCK_OPACITY})"
+echo "  Menu:     reduce_menu_opacity=${MENU_REDUCE}"
 echo ""
 
 # ── Kvantum configs ─────────────────────────────────────────────
@@ -54,11 +76,8 @@ for cfg in "$KVANTUM"/mac-tahoe-liquid-kde.kvconfig "$KVANTUM"/mac-tahoe-liquid-
   [[ -f "$cfg" ]] || continue
   name=$(basename "$cfg")
 
-  # reduce_menu_opacity
   sed -i "s/^reduce_menu_opacity=.*/reduce_menu_opacity=${MENU_REDUCE}/" "$cfg"
 
-  # Color alpha: replace 2-char hex suffix on colors that have alpha
-  # Match patterns like #RRGGBBAA where we only change AA
   sed -i -E "s/(window\.color=#[0-9a-fA-F]{6})[0-9a-fA-F]{2}/\1${ALPHA_HEX}/g" "$cfg"
   sed -i -E "s/(inactive\.window\.color=#[0-9a-fA-F]{6})[0-9a-fA-F]{2}/\1${ALPHA_HEX}/g" "$cfg"
   sed -i -E "s/(base\.color=#[0-9a-fA-F]{6})[0-9a-fA-F]{2}/\1${ALPHA_HEX}/g" "$cfg"
@@ -71,24 +90,26 @@ for cfg in "$KVANTUM"/mac-tahoe-liquid-kde.kvconfig "$KVANTUM"/mac-tahoe-liquid-
 done
 
 # ── Plasma SVGs ─────────────────────────────────────────────────
-# Replace the main fill opacity in each SVG.
-# Target pattern: opacity:X.XX;fill where X.XX was the previous value.
-# We only replace values that look like main fills (0.15–0.95 range),
-# not shadows (0.05, 0.06, 0.1) or hint rects (0.875).
+update_svg() {
+  local file="$1" opacity="$2"
+  [[ -f "$file" ]] || return
+  local tmp; tmp=$(mktemp)
+  gunzip -c "$file" > "$tmp"
+  sed -i -E "s/opacity:0\.(0[5-9]|[1-8][0-9]|9[0-5]);fill/opacity:${opacity};fill/g" "$tmp"
+  gzip -c "$tmp" > "$file"
+  rm -f "$tmp"
+}
+
 for variant in MacTahoeLiquidKde-Dark MacTahoeLiquidKde-Light; do
-  for svg in widgets/translucentbackground widgets/panel-background widgets/tooltip dialogs/background; do
-    file="$PLASMA/$variant/${svg}.svgz"
-    [[ -f "$file" ]] || continue
-    tmp=$(mktemp)
-    gunzip -c "$file" > "$tmp"
-
-    # Replace fill opacities in the 0.15–0.95 range (main fills)
-    sed -i -E "s/opacity:0\.(1[5-9]|[2-8][0-9]|9[0-5]);fill/opacity:${SVG_OPACITY};fill/g" "$tmp"
-
-    gzip -c "$tmp" > "$file"
-    rm -f "$tmp"
-    echo "  ✓ $variant/$svg"
+  # General SVGs at main opacity
+  for svg in widgets/translucentbackground widgets/tooltip dialogs/background; do
+    update_svg "$PLASMA/$variant/${svg}.svgz" "$SVG_OPACITY"
+    echo "  ✓ $variant/$svg → ${SVG_OPACITY}"
   done
+
+  # Dock/panel at its own opacity
+  update_svg "$PLASMA/$variant/widgets/panel-background.svgz" "$DOCK_OPACITY"
+  echo "  ✓ $variant/widgets/panel-background → ${DOCK_OPACITY} (dock)"
 done
 
 echo ""
