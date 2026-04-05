@@ -56,8 +56,8 @@ A complete environment, not just a coat of paint.
 System menu with native QMenu dropdown.
 
 <table align="center"><tr>
-<td align="center"><img src="src/screenshots/menu.png" width="300"><br><sub>Light Variant</sub></td>
-<td align="center"><img src="src/screenshots/menu-dark.png" width="300"><br><sub>Dark Variant</sub></td>
+<td align="center"><img src="src/screenshots/menu.png" width="250"><br><sub>Light Variant</sub></td>
+<td align="center"><img src="src/screenshots/menu-dark.png" width="250"><br><sub>Dark Variant</sub></td>
 </tr></table>
 
 ### About This Computer
@@ -65,8 +65,8 @@ System menu with native QMenu dropdown.
 Glass window with system info.
 
 <table align="center"><tr>
-<td align="center"><img src="src/screenshots/about.png" width="300"><br><sub>Light Variant</sub></td>
-<td align="center"><img src="src/screenshots/about-dark.png" width="300"><br><sub>Dark Variant</sub></td>
+<td align="center"><img src="src/screenshots/about.png" width="250"><br><sub>Light Variant</sub></td>
+<td align="center"><img src="src/screenshots/about-dark.png" width="250"><br><sub>Dark Variant</sub></td>
 </tr></table>
 
 ### Tahoe Dock
