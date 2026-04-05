@@ -51,7 +51,7 @@ PlasmoidItem {
 
         Layout.fillHeight: true
         Layout.minimumWidth:  parent && parent.height > 0
-            ? Math.round(parent.height * 2.6) - 4
+            ? Math.round(parent.height * 2.6) - 22
             : Kirigami.Units.gridUnit * 3
         Layout.preferredWidth: Layout.minimumWidth
 
