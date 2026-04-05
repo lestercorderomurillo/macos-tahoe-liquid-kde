@@ -115,9 +115,10 @@ done
 echo ""
 echo "plasma theme — parity"
 # Both variants must have the same set of SVGs
+# Compare only git-tracked SVGs (ignores build artifacts)
 assert "dark/light SVG parity" bash -c "
-  diff <(cd '$PT_DARK' && find . -name '*.svgz' | sort) \
-       <(cd '$PT_LIGHT' && find . -name '*.svgz' | sort)"
+  diff <(cd '$REPO' && git ls-files 'src/offline/plasma-theme/MacTahoeLiquidKde-Dark/**/*.svgz' | sed 's|.*/MacTahoeLiquidKde-Dark/||' | sort) \
+       <(cd '$REPO' && git ls-files 'src/offline/plasma-theme/MacTahoeLiquidKde-Light/**/*.svgz' | sed 's|.*/MacTahoeLiquidKde-Light/||' | sort)"
 
 # ═══════════════════════════════════════════════════════════════════
 echo ""
@@ -255,8 +256,9 @@ for key in BlurStrength NoiseStrength BlurDecorations WindowCornerRadius \
   assert_grep "kcfg has $key"              "$AG/src/blur.kcfg" "name=\"$key\""
 done
 # Shaders exist
-assert "onscreen_rounded_core.frag"         test -f "$AG/src/shaders/onscreen_rounded_core.frag"
-assert "onscreen_rounded.frag"              test -f "$AG/src/shaders/onscreen_rounded.frag"
+# onscreen_rounded*.frag are generated/gitignored — check texture shaders instead
+assert "texture_core.frag"                  test -f "$AG/src/shaders/texture_core.frag"
+assert "upsample_core.frag"                 test -f "$AG/src/shaders/upsample_core.frag"
 assert "downsample_core.frag"               test -f "$AG/src/shaders/downsample_core.frag"
 assert "noise_core.frag"                    test -f "$AG/src/shaders/noise_core.frag"
 
