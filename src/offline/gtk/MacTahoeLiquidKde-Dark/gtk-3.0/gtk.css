@@ -110,7 +110,7 @@ window.background.csd > leaflet frame:not(.view) list:not(.contacts-contact-list
 window.background.csd > box.horizontal > stack.background frame:not(.view) list:not(.contacts-contact-list), preferencesgroup list, list.content:not(.conversation-listbox), scrolledwindow viewport.frame > box.vertical list.frame {
   border-radius: 12px;
   box-shadow: inset 0 0 8px rgba(0, 0, 0, 0.03);
-  background-color: rgba(0, 0, 0, 0.60);
+  background-color: rgba(0, 0, 0, 0.65);
   border: 1px solid rgba(0, 0, 0, 0.25);
   color: #dadada;
   background-clip: border-box;
@@ -470,7 +470,7 @@ modelbutton.flat {
 
 .background.csd {
   border-radius: 0 0 24px 24px;
-  background-color: rgba(36, 36, 36, 0.60);
+  background-color: rgba(36, 36, 36, 0.65);
 }
 
 .background.csd.maximized, .background.csd.tiled, .background.csd.fullscreen {
@@ -971,17 +971,17 @@ window.background.csd.unified > deck > grid > paned > .sidebar actionbar button,
 
 window.background.csd.unified > deck > grid > paned > .sidebar actionbar button:hover, .nemo-window.background .primary-toolbar button:hover, .nemo-window.background .toolbar > button:hover, .raven .raven-header:not(.top) button.image-button:hover, .budgie-panel.background button.flat.launcher:hover, .budgie-popover.background button.budgie-menu-launcher:hover, .budgie-popover.background > frame > box.vertical > box.vertical > box.horizontal > button.image-button.toggle:hover, .budgie-popover.background.budgie-menu list.left-overlay-menu > row.activatable button.menuitem:hover, grid#CanvasGrid > button:hover:not(.flat), .geary-main-window leaflet > leaflet > box.vertical > revealer > components-conversation-actions button:hover, tabbox > tab button:hover, notebook > header button.image-button:hover, .background toolbar box:not(.linked) > button:hover, .inline-toolbar toolbutton > button:hover, button.flat:hover {
   color: #dedede;
-  background-color: rgba(255, 255, 255, 0.60);
+  background-color: rgba(255, 255, 255, 0.65);
 }
 
 window.background.csd.unified > deck > grid > paned > .sidebar actionbar button:active, .nemo-window.background .primary-toolbar button:active, .nemo-window.background .toolbar > button:active, .raven .raven-header:not(.top) button.image-button:active, .budgie-panel.background button.flat.launcher:active, .budgie-popover.background button.budgie-menu-launcher:active, .budgie-popover.background > frame > box.vertical > box.vertical > box.horizontal > button.image-button.toggle:active, .budgie-popover.background.budgie-menu list.left-overlay-menu > row.activatable button.menuitem:active, grid#CanvasGrid > button:active:not(.flat), .geary-main-window leaflet > leaflet > box.vertical > revealer > components-conversation-actions button:active, tabbox > tab button:active, notebook > header button.image-button:active, .background toolbar box:not(.linked) > button:active, .inline-toolbar toolbutton > button:active, button.flat:active {
   color: #dedede;
-  background-color: rgba(255, 255, 255, 0.60);
+  background-color: rgba(255, 255, 255, 0.65);
 }
 
 window.background.csd.unified > deck > grid > paned > .sidebar actionbar button:checked, .nemo-window.background .primary-toolbar button:checked, .nemo-window.background .toolbar > button:checked, .raven .raven-header:not(.top) button.image-button:checked, .budgie-panel.background button.flat.launcher:checked, .budgie-popover.background button.budgie-menu-launcher:checked, .budgie-popover.background > frame > box.vertical > box.vertical > box.horizontal > button.image-button.toggle:checked, .budgie-popover.background.budgie-menu list.left-overlay-menu > row.activatable button.menuitem:checked, grid#CanvasGrid > button:checked:not(.flat), .geary-main-window leaflet > leaflet > box.vertical > revealer > components-conversation-actions button:checked, tabbox > tab button:checked, notebook > header button.image-button:checked, .background toolbar box:not(.linked) > button:checked, .inline-toolbar toolbutton > button:checked, button.flat:checked {
   color: #dedede;
-  background-color: rgba(255, 255, 255, 0.60);
+  background-color: rgba(255, 255, 255, 0.65);
 }
 
 window.background.csd.unified > deck > grid > paned > .sidebar actionbar button:disabled, .nemo-window.background .primary-toolbar button:disabled, .nemo-window.background .toolbar > button:disabled, .raven .raven-header:not(.top) button.image-button:disabled, .budgie-panel.background button.flat.launcher:disabled, .budgie-popover.background button.budgie-menu-launcher:disabled, .budgie-popover.background > frame > box.vertical > box.vertical > box.horizontal > button.image-button.toggle:disabled, .budgie-popover.background.budgie-menu list.left-overlay-menu > row.activatable button.menuitem:disabled, grid#CanvasGrid > button:disabled:not(.flat), .geary-main-window leaflet > leaflet > box.vertical > revealer > components-conversation-actions button:disabled, tabbox > tab button:disabled, notebook > header button.image-button:disabled, .background toolbar box:not(.linked) > button:disabled, .inline-toolbar toolbutton > button:disabled, button.flat:disabled {
@@ -991,7 +991,7 @@ window.background.csd.unified > deck > grid > paned > .sidebar actionbar button:
 
 window.background.csd.unified > deck > grid > paned > .sidebar actionbar button:checked:disabled, .nemo-window.background .primary-toolbar button:checked:disabled, .nemo-window.background .toolbar > button:checked:disabled, .raven .raven-header:not(.top) button.image-button:checked:disabled, .budgie-panel.background button.flat.launcher:checked:disabled, .budgie-popover.background button.budgie-menu-launcher:checked:disabled, .budgie-popover.background > frame > box.vertical > box.vertical > box.horizontal > button.image-button.toggle:checked:disabled, .budgie-popover.background.budgie-menu list.left-overlay-menu > row.activatable button.menuitem:checked:disabled, grid#CanvasGrid > button:checked:disabled:not(.flat), .geary-main-window leaflet > leaflet > box.vertical > revealer > components-conversation-actions button:checked:disabled, tabbox > tab button:checked:disabled, notebook > header button.image-button:checked:disabled, .background toolbar box:not(.linked) > button:checked:disabled, .inline-toolbar toolbutton > button:checked:disabled, button.flat:checked:disabled {
   color: rgba(222, 222, 222, 0.35);
-  background-color: rgba(255, 255, 255, 0.60);
+  background-color: rgba(255, 255, 255, 0.65);
 }
 
 .raven .raven-notifications-view > .raven-background > viewport.frame > list > row.activatable button.image-button, .raven button.image-button, window.background.csd > overlay > hdyleaflet > overlay > scrolledwindow > viewport.frame > hdycolumn > stack > box.horizontal > box.vertical > box.horizontal > button.image-button,
@@ -4102,12 +4102,12 @@ list row {
 }
 
 .nemo-window.background .sidebar .has-open-popup.view, .nemo-window.background .sidebar row.has-open-popup, window.background.csd > box.vertical > paned.horizontal > scrolledwindow treeview.has-open-popup.view, row.has-open-popup.activatable, .nemo-window.background .sidebar .view:hover, .nemo-window.background .sidebar row:hover, window.background.csd > box.vertical > paned.horizontal > scrolledwindow treeview.view:hover, row.activatable:hover {
-  background-color: rgba(255, 255, 255, 0.60);
+  background-color: rgba(255, 255, 255, 0.65);
 }
 
 .nemo-window.background .sidebar .view:active, .nemo-window.background .sidebar row:active, window.background.csd > box.vertical > paned.horizontal > scrolledwindow treeview.view:active, row.activatable:active {
   color: #dedede;
-  background-color: rgba(255, 255, 255, 0.60);
+  background-color: rgba(255, 255, 255, 0.65);
   transition-duration: 200ms;
 }
 
@@ -4121,7 +4121,7 @@ list row {
 
 .nemo-window.background .sidebar .view:selected, .nemo-window.background .sidebar row:selected, window.background.csd > box.vertical > paned.horizontal > scrolledwindow treeview.view:selected, row.activatable:selected {
   color: #dedede;
-  background-color: rgba(255, 255, 255, 0.60);
+  background-color: rgba(255, 255, 255, 0.65);
 }
 
 .nemo-window.background .sidebar .view:selected label, .nemo-window.background .sidebar row:selected label, window.background.csd > box.vertical > paned.horizontal > scrolledwindow treeview.view:selected label, row.activatable:selected label {
@@ -4129,7 +4129,7 @@ list row {
 }
 
 .nemo-window.background .sidebar .view:selected.has-open-popup, .nemo-window.background .sidebar row:selected.has-open-popup, window.background.csd > box.vertical > paned.horizontal > scrolledwindow treeview.view:selected.has-open-popup, row.activatable:selected.has-open-popup, .nemo-window.background .sidebar .view:selected:hover, .nemo-window.background .sidebar row:selected:hover, window.background.csd > box.vertical > paned.horizontal > scrolledwindow treeview.view:selected:hover, row.activatable:selected:hover {
-  background-color: rgba(255, 255, 255, 0.60);
+  background-color: rgba(255, 255, 255, 0.65);
 }
 
 row:not(:hover) {
@@ -4522,7 +4522,7 @@ button.sidebar-button:not(.flat) > image {
 window.background.csd.unified > deck > grid > paned > .sidebar list > row.activatable button:active, placesview button.sidebar-button:active, window.background.csd.unified > deck > grid > paned > .sidebar list > row.activatable button:checked, placesview button.sidebar-button:checked,
 button.sidebar-button:not(.flat):active,
 button.sidebar-button:not(.flat):checked {
-  background-color: rgba(255, 255, 255, 0.60);
+  background-color: rgba(255, 255, 255, 0.65);
   border-color: rgba(0, 0, 0, 0.25);
 }
 
@@ -4703,7 +4703,7 @@ tooltip {
 }
 
 tooltip.background, tooltip.background.csd {
-  background-color: rgba(42, 42, 42, 0.60);
+  background-color: rgba(42, 42, 42, 0.65);
   background-clip: padding-box;
   border-radius: 12px;
   color: #d3d7df;
@@ -6442,7 +6442,7 @@ window.background.csd > hdyleaflet > stack.background > widget > box.horizontal 
 window.background.csd > box.horizontal > stack.background > widget > box.horizontal > box.horizontal > box.vertical > button:active {
   color: #dedede;
   background-image: none;
-  background-color: rgba(255, 255, 255, 0.60);
+  background-color: rgba(255, 255, 255, 0.65);
   border-color: rgba(0, 0, 0, 0.25);
 }
 
@@ -7673,7 +7673,7 @@ window.background.csd > overlay > stack.content-bg > notebook.frame > stack > bo
 
 dialog.background.csd {
   background-image: none;
-  background-color: alpha(#242424,0.60);
+  background-color: alpha(#242424,0.65);
   border-radius: 0 0 24px 24px;
 }
 
@@ -7754,7 +7754,7 @@ dialog.background.csd > box.vertical.dialog-vbox > notebook > stack > box.horizo
 }
 
 dialog.background.csd > box.vertical.dialog-vbox separator.vertical {
-  background-color: rgba(255, 255, 255, 0.60);
+  background-color: rgba(255, 255, 255, 0.65);
 }
 
 dialog.background.csd > box.vertical.dialog-vbox .lowres-icon {
@@ -8311,7 +8311,7 @@ window.background.csd.maximized > grid.vertical > overlay > grid.vertical > grid
 }
 
 window.background.csd revealer.default-banner > overlay > box > entry.search {
-  background-color: rgba(255, 255, 255, 0.60);
+  background-color: rgba(255, 255, 255, 0.65);
 }
 
 window.background.csd revealer.default-banner > overlay > box > entry.search, window.background.csd revealer.default-banner > overlay > box > entry.search image {
@@ -8319,7 +8319,7 @@ window.background.csd revealer.default-banner > overlay > box > entry.search, wi
 }
 
 window.background.csd revealer.default-banner > overlay > box > entry.search:focus {
-  background-color: rgba(255, 255, 255, 0.60);
+  background-color: rgba(255, 255, 255, 0.65);
 }
 
 window.background.csd revealer.default-banner > overlay > box > entry.search:focus, window.background.csd revealer.default-banner > overlay > box > entry.search:focus image {
@@ -11148,12 +11148,12 @@ window.background.csd > paned.horizontal > scrolledwindow > viewport.frame > box
 }
 
 window.background.csd > paned.horizontal > scrolledwindow > viewport.frame > box.vertical treeview.view:not(:selected):hover {
-  background-color: rgba(255, 255, 255, 0.60);
+  background-color: rgba(255, 255, 255, 0.65);
 }
 
 window.background.csd > paned.horizontal > scrolledwindow > viewport.frame > box.vertical treeview.view:selected, window.background.csd > paned.horizontal > scrolledwindow > viewport.frame > box.vertical treeview.view:selected:hover, window.background.csd > paned.horizontal > scrolledwindow > viewport.frame > box.vertical treeview.view:selected:focus {
   color: #dedede;
-  background-color: rgba(255, 255, 255, 0.60);
+  background-color: rgba(255, 255, 255, 0.65);
 }
 
 window.background.csd > paned.horizontal > scrolledwindow > viewport.frame > box.vertical treeview.view:selected, window.background.csd > paned.horizontal > scrolledwindow > viewport.frame > box.vertical treeview.view:selected label, window.background.csd > paned.horizontal > scrolledwindow > viewport.frame > box.vertical treeview.view:selected:hover, window.background.csd > paned.horizontal > scrolledwindow > viewport.frame > box.vertical treeview.view:selected:hover label, window.background.csd > paned.horizontal > scrolledwindow > viewport.frame > box.vertical treeview.view:selected:focus, window.background.csd > paned.horizontal > scrolledwindow > viewport.frame > box.vertical treeview.view:selected:focus label {
@@ -11174,14 +11174,14 @@ window.background.csd > paned.horizontal > scrolledwindow > viewport.frame > box
 
 window.background.csd > paned.horizontal > scrolledwindow > viewport.frame > box.vertical treeview.view.trough {
   color: #dedede;
-  background-color: rgba(255, 255, 255, 0.60);
+  background-color: rgba(255, 255, 255, 0.65);
   border-radius: 6px;
   border-width: 0;
 }
 
 window.background.csd > paned.horizontal > scrolledwindow > viewport.frame > box.vertical treeview.view.trough:selected, window.background.csd > paned.horizontal > scrolledwindow > viewport.frame > box.vertical treeview.view.trough:selected:focus {
   color: #ffffff;
-  background-color: rgba(0, 0, 0, 0.60);
+  background-color: rgba(0, 0, 0, 0.65);
   border-radius: 6px;
   border-width: 0;
 }
