@@ -353,17 +353,17 @@ step "Applying Changes"
 note "Applies settings, flushes caches, restarts KWin"
 run_step "$STEPS/apply/step.sh" "install"
 
-# ── Layout (after KWin restart, before plasma restart) ───────────
+# ── Restart Plasma ────────────────────────────────────────────────
+step "Restarting Plasma"
+note "Restarts Plasma shell to load all changes"
+run_step "$STEPS/apply/step.sh" "restart_plasma"
+
+# ── Layout (after plasma restart — needs a live plasmashell) ─────
 if [[ "$(cfg layout)" == "true" ]] && [[ -f "$STEPS/layout/step.sh" ]]; then
   step "Installing Layout"
   note "Applies panel layout and dock configuration"
   run_step "$STEPS/layout/step.sh" "install"
 fi
-
-# ── Restart Plasma (after layout is applied) ─────────────────────
-step "Restarting Plasma"
-note "Restarts Plasma shell to load all changes"
-run_step "$STEPS/apply/step.sh" "restart_plasma"
 
 # ── Done ─────────────────────────────────────────────────────────
 echo ""
