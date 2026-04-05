@@ -36,5 +36,11 @@ uninstall() {
   done
   systemctl --user daemon-reload 2>/dev/null || true
   rm -f "$HOME/.local/bin/mac-tahoe-theme-switch" "$HOME/.local/bin/mactahoe-theme-switch" 2>/dev/null
+  # Disable Plasma native auto mode
+  if command -v kwriteconfig6 &>/dev/null; then
+    kwriteconfig6 --file kdeglobals --group KDE --key AutomaticLookAndFeel false
+    kwriteconfig6 --file kdeglobals --group KDE --key DefaultLightLookAndFeel --delete 2>/dev/null || true
+    kwriteconfig6 --file kdeglobals --group KDE --key DefaultDarkLookAndFeel --delete 2>/dev/null || true
+  fi
   ok "Theme switcher removed"
 }
