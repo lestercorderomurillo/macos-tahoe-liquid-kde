@@ -131,26 +131,33 @@ apply_extras() {
 
 # ── apply all themes ──
 # $1 = light|dark
-# $2 = "boot" to skip shell refresh
+# $2 = context: "boot" skips shell refresh, "install" skips plasma-apply-lookandfeel
+#      (the installer restarts plasma at the end, which loads config from disk)
 apply() {
   local mode="$1"
   local context="${2:-}"
   _errors=()
 
   # ── global theme (color scheme, plasma theme, icons, cursors, aurorae, wallpaper)
-  if command -v plasma-apply-lookandfeel &>/dev/null; then
-    local laf
-    [[ "$mode" == "dark" ]] && laf="$LAF_DARK" || laf="$LAF_LIGHT"
+  local laf
+  [[ "$mode" == "dark" ]] && laf="$LAF_DARK" || laf="$LAF_LIGHT"
+  if [[ "$context" == "install" ]]; then
+    # Skip plasma-apply-lookandfeel during install — it triggers a QML engine
+    # teardown race (SIGABRT in org.kde.panel.so). Write LookAndFeelPackage
+    # directly; the plasma restart at end of install loads it from disk.
+    command -v kwriteconfig6 &>/dev/null && \
+      kwriteconfig6 --file kdeglobals --group KDE --key LookAndFeelPackage "$laf"
+  elif command -v plasma-apply-lookandfeel &>/dev/null; then
     plasma-apply-lookandfeel -a "$laf" --keep-auto &>/dev/null || _errors+=("global-theme")
   fi
 
-  # ── extras (kvantum + gtk)
+  # ── extras (kvantum + gtk) — always apply, even during install
   apply_extras "$mode"
 
   # ── reconfigure kwin
   _qdbus org.kde.KWin /KWin org.kde.KWin.reconfigure &>/dev/null || true
 
-  if [[ "$context" != "boot" ]]; then
+  if [[ "$context" != "boot" && "$context" != "install" ]]; then
     _qdbus org.kde.plasmashell /PlasmaShell org.kde.PlasmaShell.refreshCurrentShell &>/dev/null || true
   fi
 

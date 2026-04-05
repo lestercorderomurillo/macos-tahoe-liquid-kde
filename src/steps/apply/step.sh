@@ -55,10 +55,11 @@ install() {
   # ── apply theme ────────────────────────────────────────────
   local switch="$HOME/.local/bin/mac-tahoe-theme-switch"
   if [[ -x "$switch" ]]; then
-    # Run without "boot" so refreshCurrentShell fires and all windows update.
-    # The installer restarts plasma later anyway, but this ensures already-open
-    # Qt/GTK windows pick up the color scheme immediately.
-    "$switch" "$THEME_MODE" &>/dev/null
+    # "install" context skips plasma-apply-lookandfeel and refreshCurrentShell
+    # which crash plasmashell (QML teardown race). The plasma restart at the
+    # end of install loads the correct theme from config. Kvantum/GTK are
+    # applied immediately so already-open Qt/GTK windows pick up the change.
+    "$switch" "$THEME_MODE" install &>/dev/null
     ok "Theme applied ($THEME_MODE)"
   fi
 
