@@ -13,7 +13,7 @@ jobs:
     steps:
       - uses: actions/checkout@v5
       - name: Install deps
-        run: pacman -Syu --noconfirm python bash git
+        run: pacman -Syu --noconfirm python bash git diffutils findutils
       - name: Run tests
         run: bash tests/test.sh
 
