@@ -49,39 +49,58 @@ A complete environment, not just a coat of paint.
 
 ## Screenshots
 
-<p align="center">
-  <img src="src/screenshots/dock.png" width="600"><br>
-  <sub>Glass Dock — Floating glass dock with app icons</sub>
-</p>
+### Menu
 
-<p align="center">
-  <img src="src/screenshots/about_this_pc.png" width="600"><br>
-  <sub>About This Computer — Glass window with system info</sub>
-</p>
-
-<p align="center">
-  <img src="src/screenshots/launcher.png" width="600"><br>
-  <sub>Launcher — App grid with categories and search</sub>
-</p>
-
-<p align="center">
-  <img src="src/screenshots/finder.png" width="600"><br>
-  <sub>Finder — Nautilus file manager with macOS-style sidebar</sub>
-</p>
+System menu with native QMenu dropdown.
 
 <p align="center">
   <img src="src/screenshots/menu.png" width="600"><br>
-  <sub>Menu — macOS-style system menu (light)</sub>
+  <sub>Light</sub>
 </p>
 
 <p align="center">
   <img src="src/screenshots/menu-dark.png" width="600"><br>
-  <sub>Menu — macOS-style system menu (dark)</sub>
+  <sub>Dark</sub>
 </p>
+
+### Context Menu
+
+Desktop right-click with translucent glass blur.
 
 <p align="center">
   <img src="src/screenshots/context_menu.png" width="600"><br>
-  <sub>Context Menu — Native context menus with glass blur</sub>
+</p>
+
+### Dock
+
+Floating glass dock with app icons.
+
+<p align="center">
+  <img src="src/screenshots/dock.png" width="600"><br>
+</p>
+
+### Launcher
+
+App grid with categories and search.
+
+<p align="center">
+  <img src="src/screenshots/launcher.png" width="600"><br>
+</p>
+
+### About This Computer
+
+Glass window with system info.
+
+<p align="center">
+  <img src="src/screenshots/about_this_pc.png" width="600"><br>
+</p>
+
+### Finder
+
+Nautilus file manager with macOS-style sidebar.
+
+<p align="center">
+  <img src="src/screenshots/finder.png" width="600"><br>
 </p>
 
 ---
