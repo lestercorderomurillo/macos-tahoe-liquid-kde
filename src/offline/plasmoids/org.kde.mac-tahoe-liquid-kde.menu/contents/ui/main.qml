@@ -1,5 +1,5 @@
 /*
-    Kpple Menu — macOS-style system menu for the top panel.
+    Menu — macOS-style system menu for the top panel.
     Shows system actions: About, System Settings, Sleep, Restart,
     Shut Down, Lock Screen, Log Out.
 
