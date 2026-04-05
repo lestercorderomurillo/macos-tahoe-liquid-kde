@@ -592,8 +592,10 @@ interior=true
 interior.element=window
 frame=true
 frame.element=window
-frame.bottom=10
 frame.top=10
+frame.bottom=10
+frame.left=10
+frame.right=10
 
 [Dialog]
 interior=true

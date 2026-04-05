@@ -72,7 +72,7 @@ install() {
     kwriteconfig6 --file kwinrc --group "$grp" --key MagnifyGlassStrength 0.02 2>/dev/null || true
     kwriteconfig6 --file kwinrc --group "$grp" --key RefractionWidth     24.0 2>/dev/null || true
     kwriteconfig6 --file kwinrc --group "$grp" --key HighlightWidth      16.0 2>/dev/null || true
-    kwriteconfig6 --file kwinrc --group "$grp" --key HighlightStrength   0.15 2>/dev/null || true
+    kwriteconfig6 --file kwinrc --group "$grp" --key HighlightStrength   0.22 2>/dev/null || true
     kwriteconfig6 --file kwinrc --group "$grp" --key WindowCornerRadius  22   2>/dev/null || true
     kwriteconfig6 --file kwinrc --group "$grp" --key DockCornerRadius    22   2>/dev/null || true
     kwriteconfig6 --file kwinrc --group "$grp" --key PopupCornerRadius   6    2>/dev/null || true
