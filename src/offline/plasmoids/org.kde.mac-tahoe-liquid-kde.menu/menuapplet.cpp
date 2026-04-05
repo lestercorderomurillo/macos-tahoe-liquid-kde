@@ -4,6 +4,7 @@
 
 #include "menuapplet.h"
 
+#include <QIcon>
 #include <QMenu>
 #include <QProcess>
 #include <QQuickItem>
@@ -55,48 +56,57 @@ void MenuApplet::trigger(QQuickItem *ctx)
     });
 
     // ── build the menu ──────────────────────────────────────────────
-    menu->addAction(QStringLiteral("About This Computer"), this, [this]() {
+    menu->addAction(QIcon::fromTheme(QStringLiteral("help-about")),
+        QStringLiteral("About This Computer"), this, [this]() {
         Q_EMIT aboutRequested();
     });
 
     menu->addSeparator();
 
-    menu->addAction(QStringLiteral("System Settings\u2026"), []() {
+    menu->addAction(QIcon::fromTheme(QStringLiteral("preferences-system")),
+        QStringLiteral("System Settings\u2026"), []() {
         runCommand(QStringLiteral("systemsettings"));
     });
-    menu->addAction(QStringLiteral("App Store\u2026"), []() {
+    menu->addAction(QIcon::fromTheme(QStringLiteral("applications-other")),
+        QStringLiteral("App Store\u2026"), []() {
         runCommand(QStringLiteral("plasma-discover"));
     });
 
     menu->addSeparator();
 
-    menu->addAction(QStringLiteral("Force Quit\u2026"), []() {
+    menu->addAction(QIcon::fromTheme(QStringLiteral("dialog-cancel")),
+        QStringLiteral("Force Quit\u2026"), []() {
         runCommand(QStringLiteral("qdbus6 org.kde.KWin /KWin slotKillWindow || xkill"));
     });
 
     menu->addSeparator();
 
     const auto cfg = config();
-    menu->addAction(QStringLiteral("Sleep"), [cmd = cfg.readEntry("cmdSleep",
+    menu->addAction(QIcon::fromTheme(QStringLiteral("system-suspend")),
+        QStringLiteral("Sleep"), [cmd = cfg.readEntry("cmdSleep",
         QStringLiteral("qdbus6 org.kde.Solid.PowerManagement /org/kde/Solid/PowerManagement requestSuspend || systemctl suspend"))]() {
         runCommand(cmd);
     });
-    menu->addAction(QStringLiteral("Restart\u2026"), [cmd = cfg.readEntry("cmdRestart",
+    menu->addAction(QIcon::fromTheme(QStringLiteral("system-reboot")),
+        QStringLiteral("Restart\u2026"), [cmd = cfg.readEntry("cmdRestart",
         QStringLiteral("qdbus6 org.kde.LogoutPrompt /LogoutPrompt org.kde.LogoutPrompt.promptReboot"))]() {
         runCommand(cmd);
     });
-    menu->addAction(QStringLiteral("Shut Down\u2026"), [cmd = cfg.readEntry("cmdShutDown",
+    menu->addAction(QIcon::fromTheme(QStringLiteral("system-shutdown")),
+        QStringLiteral("Shut Down\u2026"), [cmd = cfg.readEntry("cmdShutDown",
         QStringLiteral("qdbus6 org.kde.LogoutPrompt /LogoutPrompt org.kde.LogoutPrompt.promptShutDown"))]() {
         runCommand(cmd);
     });
 
     menu->addSeparator();
 
-    menu->addAction(QStringLiteral("Lock Screen"), [cmd = cfg.readEntry("cmdLockScreen",
+    menu->addAction(QIcon::fromTheme(QStringLiteral("system-lock-screen")),
+        QStringLiteral("Lock Screen"), [cmd = cfg.readEntry("cmdLockScreen",
         QStringLiteral("qdbus6 org.freedesktop.ScreenSaver /ScreenSaver Lock || loginctl lock-session"))]() {
         runCommand(cmd);
     });
-    menu->addAction(QStringLiteral("Log Out\u2026"), [cmd = cfg.readEntry("cmdLogOut",
+    menu->addAction(QIcon::fromTheme(QStringLiteral("system-log-out")),
+        QStringLiteral("Log Out\u2026"), [cmd = cfg.readEntry("cmdLogOut",
         QStringLiteral("qdbus6 org.kde.LogoutPrompt /LogoutPrompt org.kde.LogoutPrompt.promptLogout"))]() {
         runCommand(cmd);
     });
