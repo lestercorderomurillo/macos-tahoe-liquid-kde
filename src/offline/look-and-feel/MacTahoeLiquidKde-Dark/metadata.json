@@ -1,0 +1,21 @@
+{
+    "KPackageStructure": "Plasma/LookAndFeel",
+    "KPlugin": {
+        "Authors": [
+            {
+                "Name": "Lester Cordero Murillo"
+            }
+        ],
+        "Category": "Global Themes (Plasma 6)",
+        "Description": "macOS Tahoe Liquid dark theme for KDE Plasma",
+        "EnabledByDefault": true,
+        "Id": "org.kde.mac-tahoe-liquid-kde.dark",
+        "License": "LGPL-3.0",
+        "Name": "MacTahoe Liquid (Dark)",
+        "Website": "https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde"
+    },
+    "Keywords": "Desktop;Workspace;Appearance;Look and Feel;macOS;Tahoe;Dark;",
+    "X-KDE-fallbackPackage": "org.kde.breezedark.desktop",
+    "X-Plasma-MainScript": "defaults",
+    "X-Plasma-APIVersion": "2"
+}

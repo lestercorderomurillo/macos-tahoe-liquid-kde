@@ -21,7 +21,7 @@ step() {
 }
 
 # ── feature flags ────────────────────────────────────────────────
-_ALL_FEATURES=(wallpapers fonts cursors plasma_theme window_decorations kvantum color_schemes icons plasmoids acrylic_glass layout sounds gtk sddm apps no_download)
+_ALL_FEATURES=(wallpapers fonts cursors plasma_theme window_decorations kvantum color_schemes icons plasmoids acrylic_glass global_theme layout sounds gtk sddm apps no_download)
 
 declare -A _feat=()
 declare -A _cli=()
@@ -68,6 +68,7 @@ Options:
     --icons            macOS-style icon set
     --plasmoids        Custom Plasma widgets (Menu, Launcher, Trashcan)
     --acrylic-glass    KWin blur + rounded corners effect
+    --global-theme     Plasma global theme (look-and-feel package)
     --layout           Panel layout (top bar + dock)
     --sounds           Notification and event sounds
     --gtk              GTK 2/3/4 theme
@@ -118,6 +119,7 @@ if $_do_reset; then
   "icons":               true,
   "plasmoids":           true,
   "acrylic_glass":       true,
+  "global_theme":        true,
   "layout":              true,
   "sounds":              true,
   "gtk":                 true,
@@ -245,7 +247,7 @@ _auto_dep_dedup dbus-monitor dbus
 # ── single feature list (used for deps + install) ────────────────
 # layout is here for deps but handled separately after apply (needs plasmashell)
 # theme-switch and apply are always hardcoded at the end
-_FEATURES=(wallpapers fonts cursors icons plasma_theme window_decorations kvantum color_schemes gtk plasmoids menu globalmenu acrylic_glass layout)
+_FEATURES=(wallpapers fonts cursors icons plasma_theme window_decorations kvantum color_schemes gtk plasmoids menu globalmenu acrylic_glass global_theme layout)
 
 # step-specific deps
 for _feature in "${_FEATURES[@]}"; do
@@ -320,6 +322,7 @@ for _feature in "${_FEATURES[@]}"; do
     menu)                note "Builds and installs Menu C++ applet" ;;
     globalmenu)          note "Builds and installs Global Menu C++ applet" ;;
     acrylic_glass)       note "Builds and installs Acrylic Glass KWin effect" ;;
+    global_theme)        note "Installs Plasma global theme (look-and-feel)" ;;
   esac
 
   # download (skippable via --no-download when cache exists)

@@ -21,7 +21,7 @@ step() {
 }
 
 # ── feature flags ────────────────────────────────────────────────
-_ALL_FEATURES=(wallpapers fonts cursors plasma_theme window_decorations kvantum color_schemes icons plasmoids acrylic_glass layout sounds gtk sddm apps no_download)
+_ALL_FEATURES=(wallpapers fonts cursors plasma_theme window_decorations kvantum color_schemes icons plasmoids acrylic_glass global_theme layout sounds gtk sddm apps no_download)
 declare -A _feat=()
 declare -A _cli=()
 
@@ -55,6 +55,7 @@ Options:
     --icons            Remove icon themes
     --plasmoids        Remove custom Plasma widgets
     --acrylic-glass    Remove KWin blur effect
+    --global-theme     Remove Plasma global theme
     --layout           Reset panel layout to default
     --sounds           Remove notification sounds
     --gtk              Remove GTK theme
@@ -137,7 +138,7 @@ ok "KDE Plasma $plasma_ver"
 [[ -f "$CONFIG" ]] && ok "features.json loaded"
 
 # ── Uninstall each feature ───────────────────────────────────────
-_FEATURES=(wallpapers fonts cursors icons plasmoids menu globalmenu acrylic_glass plasma_theme window_decorations kvantum color_schemes gtk layout)
+_FEATURES=(wallpapers fonts cursors icons plasmoids menu globalmenu acrylic_glass global_theme plasma_theme window_decorations kvantum color_schemes gtk layout)
 
 for _feature in "${_FEATURES[@]}"; do
   case "$_feature" in
@@ -159,6 +160,7 @@ for _feature in "${_FEATURES[@]}"; do
     menu)                note "Removes Menu C++ applet" ;;
     globalmenu)          note "Removes Global Menu C++ applet" ;;
     acrylic_glass)       note "Unloads and removes Acrylic Glass KWin effect" ;;
+    global_theme)        note "Removes Plasma global theme" ;;
     plasma_theme)        note "Removes Plasma desktop theme and resets to Breeze" ;;
     window_decorations)  note "Removes Aurorae window decorations and resets to Breeze" ;;
     kvantum)             note "Removes Kvantum theme (keeps Kvantum installed)" ;;
