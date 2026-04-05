@@ -39,11 +39,11 @@ Options:
     --reset            Reset features.json to all-true defaults
 
 Examples:
-  bash install.sh                       # install everything
-  bash install.sh --no-gtk --no-sddm    # skip GTK and SDDM
-  bash install.sh --only --fonts --icons # install only fonts and icons
-  bash install.sh --dark --save         # dark mode, remember setting
-  bash install.sh --reset               # restore defaults
+  bash install.sh                        # install everything
+  bash install.sh --no-gtk --no-sddm     # skip GTK and SDDM
+  bash install.sh --only --fonts --icons  # install only fonts and icons
+  bash install.sh --dark --save          # dark mode, remember setting
+  bash install.sh --reset                # restore defaults
 EOF
 }
 

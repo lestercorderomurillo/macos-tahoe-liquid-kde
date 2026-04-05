@@ -1,6 +1,6 @@
 # macOS Tahoe Liquid Theme for KDE Plasma
 
-[![tests](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/actions/workflows/test.yml/badge.svg)](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/actions/workflows/test.yml)
+**v0.1** &middot; [![tests](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/actions/workflows/test.yml/badge.svg)](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/actions/workflows/test.yml)
 
 > [!CAUTION]
 > **Very experimental** — Under heavy active development. Things will break. Back up your system config before installing. Use at your own risk.
@@ -109,64 +109,53 @@ Desktop right-click with translucent glass blur.
 
 ## Usage
 
-**Install**
 ```bash
-bash install.sh        # install everything
-bash install.sh --help # show all options
+bash install.sh                                 # install everything
+bash install.sh --help                          # show all options
+bash uninstall.sh                               # uninstall, reset to Breeze
 ```
 
-**Uninstall** (resets to Breeze defaults)
-```bash
-bash uninstall.sh
-```
-
-Both scripts ask for confirmation, request sudo upfront, and restart Plasma automatically.
+Both scripts ask for confirmation, request sudo, and restart Plasma automatically.
 
 ### Feature Flags
 
-Every component in `features.json` has a corresponding CLI flag. Flags override the file:
+Every component has a CLI flag. Use `--no-` to skip, or `--only` to run just the listed ones:
 
 ```bash
-bash install.sh --no-gtk --no-sddm    # skip GTK and SDDM
-bash install.sh --gtk --no-kvantum     # enable GTK, skip Kvantum
-bash uninstall.sh --icons --cursors    # only uninstall icons and cursors
+bash install.sh --no-gtk --no-sddm              # skip GTK and SDDM
+bash install.sh --only --fonts --icons           # install only fonts and icons
+bash uninstall.sh --only --cursors               # uninstall only cursors
 ```
 
-Available flags: `--wallpapers`, `--fonts`, `--cursors`, `--plasma-theme`, `--window-decorations`, `--kvantum`, `--color-schemes`, `--icons`, `--plasmoids`, `--acrylic-glass`, `--layout`, `--sounds`, `--gtk`, `--sddm`, `--apps`, `--no-download`
+Available flags:
 
-Prefix any flag with `--no-` to disable it (e.g. `--no-fonts`). Use `--only` to disable everything first, then enable only the listed features:
-
-```bash
-bash install.sh --only --fonts --icons # install only fonts and icons
-bash uninstall.sh --only --cursors     # uninstall only cursors
-```
+`--wallpapers` `--fonts` `--cursors` `--plasma-theme` `--window-decorations` `--kvantum` `--color-schemes` `--icons` `--plasmoids` `--acrylic-glass` `--global-theme` `--layout` `--sounds` `--gtk` `--sddm` `--apps` `--no-download`
 
 ### Theme Mode
 
-Control light/dark behavior with `--light`, `--dark`, or `--auto`:
-
 ```bash
-bash install.sh --dark                 # force dark theme
-bash install.sh --light                # force light theme
-bash install.sh --auto                 # automatic switching (default)
+bash install.sh                                  # auto (default)
+bash install.sh --dark                           # force dark
+bash install.sh --light                          # force light
 ```
 
-In `--auto` mode, Plasma's native autoswitcher handles light/dark transitions based on sunrise and sunset times. A watcher service runs at login to keep Kvantum and GTK themes in sync. In `--light` or `--dark` mode, the autoswitcher and watcher are both disabled.
+- **`--auto`** enables Plasma's native autoswitcher, which transitions between light and dark based on sunrise/sunset times. A watcher service keeps Kvantum and GTK in sync.
+- **`--light`** / **`--dark`** forces one mode and disables the autoswitcher.
 
-### Save & Reset
+After install, you can switch manually:
 
 ```bash
-bash install.sh --no-gtk --dark --save # remember these settings for next run
-bash install.sh                        # uses saved features.json
-bash install.sh --reset                # restore features.json to all-true defaults
+mac-tahoe-theme-switch light                     # force light (disables auto)
+mac-tahoe-theme-switch dark                      # force dark (disables auto)
+mac-tahoe-theme-switch auto                      # re-enable auto (sunrise/sunset)
 ```
 
-### Manual Theme Switching
+### Persistence
 
 ```bash
-mac-tahoe-theme-switch light   # force light (disables auto)
-mac-tahoe-theme-switch dark    # force dark (disables auto)
-mac-tahoe-theme-switch auto    # enable Plasma auto mode (sunrise/sunset)
+bash install.sh --no-gtk --dark --save           # save settings to features.json
+bash install.sh                                  # reuses saved features.json
+bash install.sh --reset                          # reset features.json to defaults
 ```
 
 ---
@@ -196,7 +185,7 @@ macos-tahoe-liquid-kde/
     │   ├── layouts/        # panel layout scripts
     │   ├── sounds/         # notification and event sounds
     │   ├── sddm/           # login screen theme
-    │   └── theme-switch.sh # TimeOfDay theme switcher
+    │   └── theme-switch.sh # auto light/dark theme switcher
     └── steps/              # self-contained installer steps
         ├── functions.sh    # shared utilities (logging, fetch, extract, mirrors)
         ├── wallpapers/     # each step is a folder with step.sh inside
@@ -221,22 +210,50 @@ macos-tahoe-liquid-kde/
 
 ## What the Installer Does
 
-| Area | What changes |
-|------|-------------|
-| `~/.local/share/wallpapers/` | Wallpaper collection |
-| `~/.local/share/fonts/` | SF Pro typefaces |
-| `~/.local/share/icons/` | Cursor and icon themes |
-| `~/.local/share/plasma/desktoptheme/` | Transparent glass dock + panels |
-| `~/.local/share/color-schemes/` | Tahoe Light & Dark palettes |
-| `~/.config/Kvantum/mac-tahoe-liquid-kde/` | Kvantum theme (blur + translucency) |
-| `~/.themes/MacTahoeLiquidKde-*/` | GTK theme |
-| `~/.local/share/plasma/plasmoids/` | Custom plasmoids |
-| `~/.local/bin/mac-tahoe-theme-switch` | TimeOfDay theme switcher |
-| `~/.config/kwinrc` | Acrylic Glass effect config |
-| Panel layout | Transparent top bar + floating glass dock |
-| KWin effects | Acrylic Glass blur + rounded corners |
+### Appearance
 
-The uninstaller reverses everything and resets to Breeze defaults.
+| Component | What it installs | Location |
+|-----------|-----------------|----------|
+| **Color Schemes** | Light and Dark palettes for all KDE apps | `~/.local/share/color-schemes/` |
+| **Global Theme** | Look-and-feel packages (light + dark variants) | `~/.local/share/plasma/look-and-feel/` |
+| **Plasma Theme** | Translucent glass panels and dock styling | `~/.local/share/plasma/desktoptheme/` |
+| **Kvantum** | Qt widget theme with blur and translucency | `~/.config/Kvantum/` |
+| **GTK** | GTK 2/3/4 theme for non-Qt apps (Nautilus, Firefox, etc.) | `~/.themes/` |
+| **Icons** | macOS-style icon set with light and dark variants | `~/.local/share/icons/` |
+| **Cursors** | macOS-style cursor theme | `~/.local/share/icons/` |
+| **Wallpapers** | Tahoe, Heritage, Beach, Landscape collections | `~/.local/share/wallpapers/` |
+| **Fonts** | SF Pro Display, Text, Rounded, and SF Mono | `~/.local/share/fonts/` |
+
+### Desktop
+
+| Component | What it installs | Location |
+|-----------|-----------------|----------|
+| **Layout** | Transparent top bar + floating glass dock | Panel config via JS scripting API |
+| **Menu** | macOS-style system menu with native QMenu | Compiled C++ plasmoid (system-wide) |
+| **Launcher** | App grid with categories and search | `~/.local/share/plasma/plasmoids/` |
+| **Trashcan** | Dock trash widget with configurable icons | `~/.local/share/plasma/plasmoids/` |
+| **Window Decorations** | macOS-style title bars (Aurorae) | `~/.local/share/aurorae/themes/` |
+
+### Effects and Services
+
+| Component | What it installs | Location |
+|-----------|-----------------|----------|
+| **Acrylic Glass** | KWin blur + rounded corners effect (built from source) | `/usr/lib/qt6/plugins/kwin/effects/` |
+| **Theme Switcher** | Auto light/dark via Plasma native sunrise/sunset | `~/.local/bin/mac-tahoe-theme-switch` |
+| **Watcher Service** | Keeps Kvantum and GTK in sync with Plasma theme | systemd user service |
+| **Sounds** | Notification and event sounds | `~/.local/share/sounds/` |
+| **SDDM** | macOS-style login screen | `/usr/share/sddm/themes/` |
+
+### Config Files Modified
+
+| File | What changes |
+|------|-------------|
+| `~/.config/kdeglobals` | Fonts, color scheme, icon theme, auto dark mode |
+| `~/.config/kwinrc` | Window decorations, Acrylic Glass effect |
+| `~/.config/plasmashellrc` | Panel opacity, floating dock style |
+| `~/.config/plasmarc` | Active Plasma theme |
+
+The uninstaller reverses all changes and resets to Breeze defaults.
 
 ---
 
