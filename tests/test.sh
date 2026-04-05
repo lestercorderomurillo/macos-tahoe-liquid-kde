@@ -13,11 +13,13 @@ PASS=0 FAIL=0 TOTAL=0
 assert() {
   local name="$1"; shift
   ((TOTAL++))
-  if "$@" &>/dev/null; then
+  local output
+  if output=$("$@" 2>&1); then
     echo -e "  \033[0;32m✓\033[0m  $name"
     ((PASS++))
   else
     echo -e "  \033[0;31m✗\033[0m  $name"
+    [[ -n "$output" ]] && echo -e "       \033[0;31m$output\033[0m" | head -5
     ((FAIL++))
   fi
 }
@@ -116,8 +118,11 @@ echo ""
 echo "plasma theme — parity"
 # Both variants must have the same set of SVGs
 assert "dark/light SVG parity" bash -c "
-  diff <(find '$PT_DARK' -name '*.svgz' -printf '%P\n' | sort) \
-       <(find '$PT_LIGHT' -name '*.svgz' -printf '%P\n' | sort)"
+  dark=\$(find '$PT_DARK' -name '*.svgz' | sed 's|.*/MacTahoeLiquidKde-Dark/||' | sort)
+  light=\$(find '$PT_LIGHT' -name '*.svgz' | sed 's|.*/MacTahoeLiquidKde-Light/||' | sort)
+  if [[ -z \"\$dark\" ]]; then echo 'ERROR: no dark SVGs found in $PT_DARK'; exit 1; fi
+  if [[ -z \"\$light\" ]]; then echo 'ERROR: no light SVGs found in $PT_LIGHT'; exit 1; fi
+  diff <(echo \"\$dark\") <(echo \"\$light\")"
 
 # ═══════════════════════════════════════════════════════════════════
 echo ""
