@@ -15,32 +15,32 @@ A complete environment, not just a coat of paint.
 
 | Component | Description | Status |
 |-----------|-------------|--------|
-| **Color schemes** | Light and Dark color palettes | ✅ Implemented |
-| **Wallpapers** | Tahoe, Heritage, Beach, Landscape | ✅ Implemented |
-| **Fonts** | SF Pro Display, Text, Rounded, Mono | ✅ Implemented |
-| **Cursors** | macOS-Tahoe style cursors | ✅ Implemented |
-| **Icons** | Full macOS-style icon set (light & dark) | 🔧 In Progress |
-| **Sounds** | Notification and event sounds | 🔧 In Progress |
-| **Plasma Theme** | Translucent panels + close/min/max buttons | 🔧 In Progress |
-| **Kvantum Theme** | macOS-style Kvantum theme | 🔧 In Progress |
-| **GTK Theme** | GTK2/3/4 window chrome and controls | 🔧 In Progress |
-| **Acrylic Glass** | KWin blur, rounded corners, glass effect | 🔧 In Progress |
-| **Auto Theme Switcher** | Auto light/dark via Plasma native sunrise/sunset | ✅ Implemented |
-| **Aurorae Decorations** | Window title bar and borders | 🔧 In Progress |
-| **Firefox Theme** | macOS-style Firefox browser theme | 🔲 Planned |
-| **Thunderbird Theme** | macOS-style Thunderbird mail theme | 🔲 Planned |
-| **Konsole Theme** | macOS-style terminal profile | 🔲 Planned |
-| **Kate Theme** | macOS-style text editor theme | 🔲 Planned |
-| **SDDM Theme** | macOS-style Login and lock screen | 🔲 Planned |
-| **Menu Plasmoid** | macOS-style Menu with system actions and configurable icons | 🔧 In Progress |
-| **Launcher Plasmoid** | macOS-style app grid launcher | 🔧 In Progress |
-| **Trashcan Plasmoid** | macOS-style trash widget with configurable icons | 🔧 In Progress |
-| **Calendar Plasmoid** | macOS-style calendar dropdown | 🔲 Planned |
-| **Control Center Plasmoid** | macOS-style quick settings panel | 🔲 Planned |
-| **System Preferences Plasmoid** | macOS-style settings launcher | 🔲 Planned |
-| **OS Selector** | Boot manager / OS picker screen | 🔲 Planned |
-| **Boot Screen** | Plymouth splash for startup | 🔲 Planned |
-| **Shutdown Screen** | Styled logout / shutdown sequence | 🔲 Planned |
+| **Color Schemes** | Light and Dark color palettes | ✅ |
+| **Wallpapers** | Tahoe, Heritage, Beach, Landscape | ✅ |
+| **Fonts** | SF Pro Display, Text, Rounded, Mono | ✅ |
+| **Cursors** | Tahoe style cursors | ✅ |
+| **Icons** | Full icon set (light & dark) | 🔧 |
+| **Sounds** | Notification and event sounds | 🔧 |
+| **Plasma Theme** | Translucent panels + close/min/max buttons | 🔧 |
+| **Kvantum Theme** | Kvantum theme | 🔧 |
+| **GTK Theme** | GTK2/3/4 window chrome and controls | 🔧 |
+| **Acrylic Glass** | KWin blur, rounded corners, glass effect | 🔧 |
+| **Auto Theme Switcher** | Auto light/dark via Plasma native sunrise/sunset | ✅ |
+| **Aurorae Decorations** | Window title bar and borders | 🔧 |
+| **Firefox Theme** | Firefox browser theme | 🔲 |
+| **Thunderbird Theme** | Thunderbird mail theme | 🔲 |
+| **Konsole Theme** | Terminal profile | 🔲 |
+| **Kate Theme** | Text editor theme | 🔲 |
+| **SDDM Theme** | Login and lock screen | 🔲 |
+| **Menu Plasmoid** | System menu with configurable icons | 🔧 |
+| **Launcher Plasmoid** | App grid launcher | 🔧 |
+| **Trashcan Plasmoid** | Trash widget with configurable icons | 🔧 |
+| **Calendar Plasmoid** | Calendar dropdown | 🔲 |
+| **Control Center Plasmoid** | Quick settings panel | 🔲 |
+| **System Preferences Plasmoid** | Settings launcher | 🔲 |
+| **OS Selector** | Boot manager / OS picker screen | 🔲 |
+| **Boot Screen** | Plymouth splash for startup | 🔲 |
+| **Shutdown Screen** | Styled logout / shutdown sequence | 🔲 |
 
 ---
 
