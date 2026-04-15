@@ -174,6 +174,12 @@ apply() {
       kwriteconfig6 --file kwinrc --group "org.kde.kdecoration2" --key ButtonsOnLeft "XAI"
       kwriteconfig6 --file kwinrc --group "org.kde.kdecoration2" --key ButtonsOnRight ""
 
+      # plasma-apply-colorscheme copies the actual [Colors:*] groups into
+      # kdeglobals. Without this, only the ColorScheme name is written but
+      # the color values stay stale after Plasma restarts.
+      if command -v plasma-apply-colorscheme &>/dev/null; then
+        plasma-apply-colorscheme "$color_scheme" &>/dev/null || true
+      fi
     fi
   elif command -v plasma-apply-lookandfeel &>/dev/null; then
     plasma-apply-lookandfeel -a "$laf" --keep-auto &>/dev/null || _errors+=("global-theme")
