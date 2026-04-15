@@ -11,6 +11,33 @@
     <entry name="useSystemFont" type="Bool">
       <default>false</default>
     </entry>
+    <entry name="iconAbout" type="String">
+      <default>computer</default>
+    </entry>
+    <entry name="iconSystemSettings" type="String">
+      <default>preferences-system</default>
+    </entry>
+    <entry name="iconAppStore" type="String">
+      <default>software-store-symbolic</default>
+    </entry>
+    <entry name="iconForceQuit" type="String">
+      <default>dialog-cancel</default>
+    </entry>
+    <entry name="iconSleep" type="String">
+      <default>system-suspend</default>
+    </entry>
+    <entry name="iconRestart" type="String">
+      <default>system-reboot</default>
+    </entry>
+    <entry name="iconShutDown" type="String">
+      <default>system-shutdown</default>
+    </entry>
+    <entry name="iconLockScreen" type="String">
+      <default>system-lock-screen</default>
+    </entry>
+    <entry name="iconLogOut" type="String">
+      <default>user-identity</default>
+    </entry>
     <entry name="cmdSleep" type="String">
       <default>qdbus6 org.kde.Solid.PowerManagement /org/kde/Solid/PowerManagement requestSuspend || systemctl suspend</default>
     </entry>

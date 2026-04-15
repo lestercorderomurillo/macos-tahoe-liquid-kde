@@ -13,7 +13,7 @@
         "Id": "org.kde.mac.tahoe.liquid.menu",
         "License": "GPL-2.0-or-later",
         "Name": "Menu",
-        "Version": "1.0",
+        "Version": "1.1",
         "Website": "https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde"
     },
     "X-Plasma-API-Minimum-Version": "6.0",

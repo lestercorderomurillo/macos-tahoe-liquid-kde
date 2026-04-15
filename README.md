@@ -1,6 +1,6 @@
 # macOS Tahoe Liquid Theme for KDE Plasma
 
-[![release](https://img.shields.io/github/v/release/lestercorderomurillo/macos-tahoe-liquid-kde?label=release)](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/releases) [![tests](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/actions/workflows/test.yml/badge.svg)](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/actions/workflows/test.yml)
+[![release](https://img.shields.io/github/v/release/lestercorderomurillo/macos-tahoe-liquid-kde?label=release)](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/releases) [![tests](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/actions/workflows/test.yml/badge.svg)](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/actions/workflows/test.yml) [![license](https://img.shields.io/github/license/lestercorderomurillo/macos-tahoe-liquid-kde)](LICENSE) [![plasma](https://img.shields.io/badge/KDE_Plasma-6.6%2B-1d99f3?logo=kde)](https://kde.org/plasma-desktop/) [![last commit](https://img.shields.io/github/last-commit/lestercorderomurillo/macos-tahoe-liquid-kde)](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/commits/) [![stars](https://img.shields.io/github/stars/lestercorderomurillo/macos-tahoe-liquid-kde)](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/stargazers) [![issues](https://img.shields.io/github/issues/lestercorderomurillo/macos-tahoe-liquid-kde)](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/issues)
 
 > [!CAUTION]
 > **Very experimental** — Under heavy active development. Things will break. Back up your system config before installing. Use at your own risk.
@@ -32,7 +32,7 @@ A complete environment, not just a coat of paint.
 | **Konsole Theme** | macOS-style terminal profile | 🔲 Planned |
 | **Kate Theme** | macOS-style text editor theme | 🔲 Planned |
 | **SDDM Theme** | macOS-style Login and lock screen | 🔲 Planned |
-| **Menu Plasmoid** | macOS-style Menu with system actions | 🔧 In Progress |
+| **Menu Plasmoid** | macOS-style Menu with system actions and configurable icons | 🔧 In Progress |
 | **Launcher Plasmoid** | macOS-style app grid launcher | 🔧 In Progress |
 | **Trashcan Plasmoid** | macOS-style trash widget with configurable icons | 🔧 In Progress |
 | **Calendar Plasmoid** | macOS-style calendar dropdown | 🔲 Planned |
@@ -236,7 +236,7 @@ macos-tahoe-liquid-kde/
 | Component | What it installs | Location |
 |-----------|-----------------|----------|
 | **Layout** | Transparent top bar + floating glass dock | Panel config via JS scripting API |
-| **Menu** | macOS-style system menu with native QMenu | Compiled C++ plasmoid (system-wide) |
+| **Menu** | macOS-style system menu with native QMenu and configurable icons | Compiled C++ plasmoid (system-wide) |
 | **Launcher** | App grid with categories and search | `~/.local/share/plasma/plasmoids/` |
 | **Trashcan** | Dock trash widget with configurable icons | `~/.local/share/plasma/plasmoids/` |
 | **Window Decorations** | macOS-style title bars (Aurorae) | `~/.local/share/aurorae/themes/` |

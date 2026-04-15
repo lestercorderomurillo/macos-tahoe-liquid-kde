@@ -9,13 +9,22 @@ import org.kde.plasma.plasmoid
 KCM.SimpleKCM {
     id: configGeneral
 
-    property alias cfg_menuIcon:      iconButton.currentIcon
-    property alias cfg_useSystemFont: useSystemFontCheck.checked
-    property alias cfg_cmdSleep:     cmdSleepField.text
-    property alias cfg_cmdRestart:   cmdRestartField.text
-    property alias cfg_cmdShutDown:  cmdShutDownField.text
-    property alias cfg_cmdLockScreen: cmdLockScreenField.text
-    property alias cfg_cmdLogOut:    cmdLogOutField.text
+    property alias cfg_menuIcon:         iconButton.currentIcon
+    property alias cfg_useSystemFont:    useSystemFontCheck.checked
+    property alias cfg_iconAbout:          iconAboutField.text
+    property alias cfg_iconSystemSettings: iconSystemSettingsField.text
+    property alias cfg_iconAppStore:       iconAppStoreField.text
+    property alias cfg_iconForceQuit:      iconForceQuitField.text
+    property alias cfg_iconSleep:          iconSleepField.text
+    property alias cfg_iconRestart:        iconRestartField.text
+    property alias cfg_iconShutDown:       iconShutDownField.text
+    property alias cfg_iconLockScreen:     iconLockScreenField.text
+    property alias cfg_iconLogOut:         iconLogOutField.text
+    property alias cfg_cmdSleep:         cmdSleepField.text
+    property alias cfg_cmdRestart:       cmdRestartField.text
+    property alias cfg_cmdShutDown:      cmdShutDownField.text
+    property alias cfg_cmdLockScreen:    cmdLockScreenField.text
+    property alias cfg_cmdLogOut:        cmdLogOutField.text
 
     Kirigami.FormLayout {
 
@@ -60,6 +69,84 @@ KCM.SimpleKCM {
             text: "Use system font instead of SF Pro"
             checked: Plasmoid.configuration.useSystemFont
         }
+
+        // ── Icons ─────────────────────────────────────────────────
+        Kirigami.Separator {
+            Kirigami.FormData.isSection: true
+            Kirigami.FormData.label: "Menu Item Icons"
+        }
+
+        Kirigami.ActionTextField {
+            id: iconAboutField
+            Kirigami.FormData.label: "About This Computer:"
+            text: Plasmoid.configuration.iconAbout
+            rightActions: [ Kirigami.Action { icon.name: "document-open"; onTriggered: { iconAboutDialog.open() } } ]
+        }
+        KIconThemes.IconDialog { id: iconAboutDialog; onIconNameChanged: iconAboutField.text = iconName }
+
+        Kirigami.ActionTextField {
+            id: iconSystemSettingsField
+            Kirigami.FormData.label: "System Settings:"
+            text: Plasmoid.configuration.iconSystemSettings
+            rightActions: [ Kirigami.Action { icon.name: "document-open"; onTriggered: { iconSystemSettingsDialog.open() } } ]
+        }
+        KIconThemes.IconDialog { id: iconSystemSettingsDialog; onIconNameChanged: iconSystemSettingsField.text = iconName }
+
+        Kirigami.ActionTextField {
+            id: iconAppStoreField
+            Kirigami.FormData.label: "App Store:"
+            text: Plasmoid.configuration.iconAppStore
+            rightActions: [ Kirigami.Action { icon.name: "document-open"; onTriggered: { iconAppStoreDialog.open() } } ]
+        }
+        KIconThemes.IconDialog { id: iconAppStoreDialog; onIconNameChanged: iconAppStoreField.text = iconName }
+
+        Kirigami.ActionTextField {
+            id: iconForceQuitField
+            Kirigami.FormData.label: "Force Quit:"
+            text: Plasmoid.configuration.iconForceQuit
+            rightActions: [ Kirigami.Action { icon.name: "document-open"; onTriggered: { iconForceQuitDialog.open() } } ]
+        }
+        KIconThemes.IconDialog { id: iconForceQuitDialog; onIconNameChanged: iconForceQuitField.text = iconName }
+
+        Kirigami.ActionTextField {
+            id: iconSleepField
+            Kirigami.FormData.label: "Sleep:"
+            text: Plasmoid.configuration.iconSleep
+            rightActions: [ Kirigami.Action { icon.name: "document-open"; onTriggered: { iconSleepDialog.open() } } ]
+        }
+        KIconThemes.IconDialog { id: iconSleepDialog; onIconNameChanged: iconSleepField.text = iconName }
+
+        Kirigami.ActionTextField {
+            id: iconRestartField
+            Kirigami.FormData.label: "Restart:"
+            text: Plasmoid.configuration.iconRestart
+            rightActions: [ Kirigami.Action { icon.name: "document-open"; onTriggered: { iconRestartDialog.open() } } ]
+        }
+        KIconThemes.IconDialog { id: iconRestartDialog; onIconNameChanged: iconRestartField.text = iconName }
+
+        Kirigami.ActionTextField {
+            id: iconShutDownField
+            Kirigami.FormData.label: "Shut Down:"
+            text: Plasmoid.configuration.iconShutDown
+            rightActions: [ Kirigami.Action { icon.name: "document-open"; onTriggered: { iconShutDownDialog.open() } } ]
+        }
+        KIconThemes.IconDialog { id: iconShutDownDialog; onIconNameChanged: iconShutDownField.text = iconName }
+
+        Kirigami.ActionTextField {
+            id: iconLockScreenField
+            Kirigami.FormData.label: "Lock Screen:"
+            text: Plasmoid.configuration.iconLockScreen
+            rightActions: [ Kirigami.Action { icon.name: "document-open"; onTriggered: { iconLockScreenDialog.open() } } ]
+        }
+        KIconThemes.IconDialog { id: iconLockScreenDialog; onIconNameChanged: iconLockScreenField.text = iconName }
+
+        Kirigami.ActionTextField {
+            id: iconLogOutField
+            Kirigami.FormData.label: "Log Out:"
+            text: Plasmoid.configuration.iconLogOut
+            rightActions: [ Kirigami.Action { icon.name: "document-open"; onTriggered: { iconLogOutDialog.open() } } ]
+        }
+        KIconThemes.IconDialog { id: iconLogOutDialog; onIconNameChanged: iconLogOutField.text = iconName }
 
         // ── Commands ──────────────────────────────────────────────
         Kirigami.Separator {

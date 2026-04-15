@@ -215,6 +215,12 @@ assert_grep "menu has fullRepresentation"   "$MENU/qml/main.qml" "fullRepresenta
 # C++ has QMenu
 assert_grep "menu uses QMenu"              "$MENU/menuapplet.cpp" "QMenu"
 assert_grep "menu has seamless edges"       "$MENU/menuapplet.cpp" "_breeze_menu_seamless_edges"
+# Icon config entries
+assert_grep "menu config iconAbout"        "$MENU/main.xml" "iconAbout"
+assert_grep "menu config iconAppStore"     "$MENU/main.xml" "iconAppStore"
+assert_grep "menu config iconLogOut"       "$MENU/main.xml" "iconLogOut"
+# C++ reads icon config
+assert_grep "menu reads icon config"       "$MENU/menuapplet.cpp" "cfg.readEntry"
 
 echo ""
 echo "plasmoids — globalmenu"
