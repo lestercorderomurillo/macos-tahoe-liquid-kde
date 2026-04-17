@@ -30,7 +30,6 @@ colorizer.writeConfig("globalSettings", JSON.stringify({
 colorizer.currentConfigGroup = ["Configuration"];
 colorizer.writeConfig("hideWidget", "true");
 
-bar.addWidget("org.kde.mac.tahoe.liquid.menu");
 bar.addWidget("org.kde.mac.tahoe.liquid.globalmenu");
 bar.addWidget("org.kde.plasma.panelspacer");
 

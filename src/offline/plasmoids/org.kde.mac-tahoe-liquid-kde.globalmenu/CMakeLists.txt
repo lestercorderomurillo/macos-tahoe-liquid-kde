@@ -39,6 +39,8 @@ plasma_add_applet(org.kde.mac.tahoe.liquid.globalmenu
         qml/configGeneral.qml
         qml/main.qml
         qml/MenuDelegate.qml
+        qml/AboutWindow.qml
+        qml/configSystemMenu.qml
     CPP_SOURCES
         appmenuapplet.cpp
         appmenumodel.cpp

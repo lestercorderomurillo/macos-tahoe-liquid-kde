@@ -32,7 +32,7 @@ A complete environment, not just a coat of paint.
 | **Konsole Theme** | Terminal profile | 🔲 |
 | **Kate Theme** | Text editor theme | 🔲 |
 | **SDDM Theme** | Login and lock screen | 🔲 |
-| **Menu Plasmoid** | System menu with configurable icons | 🔧 |
+| **Global Menu Plasmoid** | Unified menu bar: system menu, app name, window controls, app menus | 🔧 |
 | **Launcher Plasmoid** | App grid launcher | 🔧 |
 | **Trashcan Plasmoid** | Trash widget with configurable icons | 🔧 |
 | **Calendar Plasmoid** | Calendar dropdown | 🔲 |
@@ -236,7 +236,7 @@ macos-tahoe-liquid-kde/
 | Component | What it installs | Location |
 |-----------|-----------------|----------|
 | **Layout** | Transparent top bar + floating glass dock | Panel config via JS scripting API |
-| **Menu** | macOS-style system menu with native QMenu and configurable icons | Compiled C++ plasmoid (system-wide) |
+| **Global Menu** | Unified menu bar: system menu, app name with window controls, app menus | Compiled C++ plasmoid (system-wide) |
 | **Launcher** | App grid with categories and search | `~/.local/share/plasma/plasmoids/` |
 | **Trashcan** | Dock trash widget with configurable icons | `~/.local/share/plasma/plasmoids/` |
 | **Window Decorations** | macOS-style title bars (Aurorae) | `~/.local/share/aurorae/themes/` |

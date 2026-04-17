@@ -9,6 +9,7 @@ pragma ComponentBehavior: Bound
 
 import QtQuick
 import QtQuick.Layouts
+import QtQuick.Controls as QQC2
 import QtQml
 
 import org.kde.plasma.plasmoid
@@ -23,6 +24,18 @@ PlasmoidItem {
 
     readonly property bool vertical: Plasmoid.formFactor === PlasmaCore.Types.Vertical
     readonly property bool view: Plasmoid.configuration.compactView
+    readonly property string cfgIcon: Plasmoid.configuration.menuIcon || "start-here-kde-symbolic"
+
+    AboutWindow { id: aboutWindow }
+
+    Connections {
+        target: Plasmoid
+        function onAboutRequested() {
+            aboutWindow.show();
+            aboutWindow.raise();
+            aboutWindow.requestActivate();
+        }
+    }
 
     onViewChanged: {
         Plasmoid.view = view;
@@ -55,9 +68,8 @@ PlasmoidItem {
         Plasmoid.status: {
             if (appMenuModel.menuAvailable && Plasmoid.currentIndex > -1 && buttonRepeater.count > 0) {
                 return PlasmaCore.Types.NeedsAttentionStatus;
-            } else {
-                return buttonRepeater.count > 0 || Plasmoid.configuration.compactView ? PlasmaCore.Types.ActiveStatus : PlasmaCore.Types.HiddenStatus;
             }
+            return PlasmaCore.Types.ActiveStatus;
         }
 
         LayoutMirroring.enabled: Application.layoutDirection === Qt.RightToLeft
@@ -78,7 +90,9 @@ PlasmoidItem {
         Connections {
             target: Plasmoid
             function onRequestActivateIndex(index: int) {
-                if (index === -2) {
+                if (index === -3) {
+                    Plasmoid.triggerSystemMenu(systemMenuButton);
+                } else if (index === -2) {
                     appNameButton.activated();
                 } else {
                     const button = buttonRepeater.itemAt(index) as MenuDelegate;
@@ -99,6 +113,45 @@ PlasmoidItem {
             }
         }
 
+        QQC2.AbstractButton {
+            id: systemMenuButton
+            readonly property int buttonIndex: -3
+            property bool menuIsOpen: Plasmoid.currentIndex !== -1
+
+            Layout.fillHeight: !root.vertical
+
+            topPadding: Kirigami.Units.smallSpacing + 1
+            bottomPadding: Kirigami.Units.smallSpacing - 1
+            leftPadding: Kirigami.Units.largeSpacing
+            rightPadding: Kirigami.Units.largeSpacing
+
+            hoverEnabled: true
+            onHoveredChanged: if (hovered && menuIsOpen) { Plasmoid.triggerSystemMenu(this); }
+            onPressed: Plasmoid.triggerSystemMenu(this)
+
+            down: Plasmoid.currentIndex === -3
+
+            property int menuState: {
+                if (down) return 2;
+                if (hovered && !menuIsOpen) return 1;
+                return 0;
+            }
+
+            background: Rectangle {
+                radius: Kirigami.Units.cornerRadius
+                color: systemMenuButton.menuState === 0
+                       ? "transparent"
+                       : Qt.rgba(0.5, 0.5, 0.5, systemMenuButton.menuState === 2 ? 0.25 : 0.18)
+            }
+
+            contentItem: Kirigami.Icon {
+                source: root.cfgIcon
+                implicitWidth: Kirigami.Units.iconSizes.small
+                implicitHeight: Kirigami.Units.iconSizes.small
+                color: Kirigami.Theme.textColor
+            }
+        }
+
         MenuDelegate {
             id: appNameButton
             readonly property int buttonIndex: -2
@@ -110,14 +163,6 @@ PlasmoidItem {
             down: Plasmoid.currentIndex === -2
             menuIsOpen: Plasmoid.currentIndex !== -1
             onActivated: Plasmoid.triggerWindowMenu(this)
-        }
-
-        PlasmaComponents3.ToolButton {
-            id: noMenuPlaceholder
-            visible: buttonRepeater.count === 0
-            text: Plasmoid.title
-            Layout.fillWidth: root.vertical
-            Layout.fillHeight: !root.vertical
         }
 
         Repeater {

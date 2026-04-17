@@ -233,9 +233,26 @@ assert "globalmenu appmenumodel.h"          test -f "$GM/appmenumodel.h"
 assert_json "globalmenu metadata.json"      "$GM/metadata.json"
 assert "globalmenu qml/main.qml"            test -f "$GM/qml/main.qml"
 assert "globalmenu qml/MenuDelegate.qml"    test -f "$GM/qml/MenuDelegate.qml"
+assert "globalmenu qml/AboutWindow.qml"     test -f "$GM/qml/AboutWindow.qml"
+assert "globalmenu qml/configSystemMenu"    test -f "$GM/qml/configSystemMenu.qml"
 # App name button exists
 assert_grep "globalmenu has appNameButton"  "$GM/qml/main.qml" "appNameButton"
 assert_grep "globalmenu has activeAppName"  "$GM/appmenumodel.h" "activeAppName"
+# System menu button exists
+assert_grep "globalmenu has systemMenuBtn"  "$GM/qml/main.qml" "systemMenuButton"
+# C++ has system menu
+assert_grep "globalmenu triggerSystemMenu"  "$GM/appmenuapplet.cpp" "triggerSystemMenu"
+assert_grep "globalmenu aboutRequested"     "$GM/appmenuapplet.h" "aboutRequested"
+assert_grep "globalmenu has seamless edges" "$GM/appmenuapplet.cpp" "_breeze_menu_seamless_edges"
+assert_grep "globalmenu reads icon config"  "$GM/appmenuapplet.cpp" "cfg.readEntry"
+# Window menu
+assert_grep "globalmenu triggerWindowMenu"  "$GM/appmenuapplet.cpp" "triggerWindowMenu"
+# Icon config entries in merged config
+assert_grep "globalmenu config iconAbout"   "$GM/main.xml" "iconAbout"
+assert_grep "globalmenu config iconAppStore" "$GM/main.xml" "iconAppStore"
+assert_grep "globalmenu config iconLogOut"  "$GM/main.xml" "iconLogOut"
+assert_grep "globalmenu config menuIcon"    "$GM/main.xml" "menuIcon"
+assert_grep "globalmenu config cmdSleep"    "$GM/main.xml" "cmdSleep"
 # MenuDelegate has font weight
 assert_grep "delegate has font.weight"      "$GM/qml/MenuDelegate.qml" "font\.weight"
 
@@ -278,7 +295,6 @@ echo "layout"
 assert "layout mac-tahoe.js"                test -f "$OFFLINE/layouts/mac-tahoe.js"
 assert "layout default.js"                  test -f "$OFFLINE/layouts/default.js"
 # Layout must reference correct plasmoid IDs (dot-based for C++ applets)
-assert_grep "layout uses menu ID"           "$OFFLINE/layouts/mac-tahoe.js" "org\.kde\.mac\.tahoe\.liquid\.menu"
 assert_grep "layout uses globalmenu ID"     "$OFFLINE/layouts/mac-tahoe.js" "org\.kde\.mac\.tahoe\.liquid\.globalmenu"
 assert_grep "layout uses launcher ID"       "$OFFLINE/layouts/mac-tahoe.js" "org\.kde\.mac-tahoe-liquid-kde\.launcher"
 assert_grep "layout uses trashcan ID"       "$OFFLINE/layouts/mac-tahoe.js" "org\.kde\.mac-tahoe-liquid-kde\.trashcan"
@@ -296,6 +312,20 @@ for key in BlurStrength HighlightStrength HighlightWidth DockCornerRadius \
            WindowCornerRadius PopupCornerRadius RimStrength ShadowStrength; do
   assert_grep "step sets $key"             "$AG_STEP" "$key"
 done
+
+# ═══════════════════════════════════════════════════════════════════
+echo ""
+echo "installer steps"
+GM_STEP="$STEPS/globalmenu/step.sh"
+MENU_STEP="$STEPS/menu/step.sh"
+# globalmenu step cleans up old standalone menu
+assert_grep "gm step removes old menu so"  "$GM_STEP" "org\.kde\.mac\.tahoe\.liquid\.menu\.so"
+assert_grep "gm step removes old qml menu" "$GM_STEP" "org\.kde\.mac-tahoe-liquid-kde\.menu"
+# menu step is cleanup-only (no build function)
+assert "menu step has no build()" bash -c "! grep -q '^build()' '$MENU_STEP'"
+assert_grep "menu step removes old so"     "$MENU_STEP" "org\.kde\.mac\.tahoe\.liquid\.menu\.so"
+# layout only adds globalmenu (not standalone menu)
+assert "layout no standalone menu widget" bash -c "! grep -q 'org\.kde\.mac\.tahoe\.liquid\.menu' '$OFFLINE/layouts/mac-tahoe.js'"
 
 # ═══════════════════════════════════════════════════════════════════
 echo ""

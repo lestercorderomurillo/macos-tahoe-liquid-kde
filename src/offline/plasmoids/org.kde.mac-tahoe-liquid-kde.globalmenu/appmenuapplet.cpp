@@ -7,12 +7,14 @@
 #include "appmenumodel.h"
 
 #include <abstracttasksmodel.h>
+#include <KUser>
 #include <QAction>
 #include <QDBusConnection>
 #include <QDBusConnectionInterface>
 #include <QKeyEvent>
 #include <QMenu>
 #include <QMouseEvent>
+#include <QProcess>
 #include <QQuickItem>
 #include <QQuickWindow>
 #include <QScreen>
@@ -162,6 +164,9 @@ void AppMenuApplet::trigger(QQuickItem *ctx, int idx)
     if (m_windowMenu && m_windowMenu->isVisible()) {
         m_windowMenu->hide();
     }
+    if (m_systemMenu && m_systemMenu->isVisible()) {
+        m_systemMenu->hide();
+    }
 
     if (!ctx || !ctx->window() || !ctx->window()->screen()) {
         return;
@@ -256,6 +261,9 @@ void AppMenuApplet::triggerWindowMenu(QQuickItem *ctx)
 
     if (m_currentMenu && m_currentMenu->isVisible()) {
         m_currentMenu->hide();
+    }
+    if (m_systemMenu && m_systemMenu->isVisible()) {
+        m_systemMenu->hide();
     }
 
     auto *appModel = qobject_cast<AppMenuModel *>(m_model.data());
@@ -355,6 +363,135 @@ void AppMenuApplet::onWindowMenuAboutToHide()
     setCurrentIndex(-1);
 }
 
+static void runCommand(const QString &cmd)
+{
+    QProcess::startDetached(QStringLiteral("/bin/sh"), {QStringLiteral("-c"), cmd});
+}
+
+void AppMenuApplet::triggerSystemMenu(QQuickItem *ctx)
+{
+    static constexpr int SYSTEM_MENU_INDEX = -3;
+
+    if (m_currentIndex == SYSTEM_MENU_INDEX) {
+        return;
+    }
+
+    if (!ctx || !ctx->window() || !ctx->window()->screen()) {
+        return;
+    }
+
+    if (m_currentMenu && m_currentMenu->isVisible()) {
+        m_currentMenu->hide();
+    }
+    if (m_windowMenu && m_windowMenu->isVisible()) {
+        m_windowMenu->hide();
+    }
+
+    if (!m_systemMenu) {
+        m_systemMenu = std::make_unique<QMenu>();
+        connect(m_systemMenu.get(), &QMenu::aboutToHide, this, &AppMenuApplet::onSystemMenuAboutToHide);
+        m_systemMenu->installEventFilter(this);
+    }
+    m_systemMenu->clear();
+
+    const auto cfg = config();
+
+    auto icon = [&cfg](const char *key, const QString &fallback) {
+        return QIcon::fromTheme(cfg.readEntry(key, fallback));
+    };
+
+    m_systemMenu->addAction(icon("iconAbout", QStringLiteral("computer")),
+        QStringLiteral("About This Computer"), this, [this]() {
+        Q_EMIT aboutRequested();
+    });
+
+    m_systemMenu->addSeparator();
+
+    m_systemMenu->addAction(icon("iconSystemSettings", QStringLiteral("preferences-system")),
+        QStringLiteral("System Settings\u2026"), []() {
+        runCommand(QStringLiteral("systemsettings"));
+    });
+    m_systemMenu->addAction(icon("iconAppStore", QStringLiteral("software-store-symbolic")),
+        QStringLiteral("App Store\u2026"), []() {
+        runCommand(QStringLiteral("plasma-discover"));
+    });
+
+    m_systemMenu->addSeparator();
+
+    m_systemMenu->addAction(icon("iconForceQuit", QStringLiteral("dialog-cancel")),
+        QStringLiteral("Force Quit\u2026"), []() {
+        runCommand(QStringLiteral("qdbus6 org.kde.KWin /KWin slotKillWindow || xkill"));
+    });
+
+    m_systemMenu->addSeparator();
+
+    m_systemMenu->addAction(icon("iconSleep", QStringLiteral("system-suspend")),
+        QStringLiteral("Sleep"), [cmd = cfg.readEntry("cmdSleep",
+        QStringLiteral("qdbus6 org.kde.Solid.PowerManagement /org/kde/Solid/PowerManagement requestSuspend || systemctl suspend"))]() {
+        runCommand(cmd);
+    });
+    m_systemMenu->addAction(icon("iconRestart", QStringLiteral("system-reboot")),
+        QStringLiteral("Restart\u2026"), [cmd = cfg.readEntry("cmdRestart",
+        QStringLiteral("qdbus6 org.kde.LogoutPrompt /LogoutPrompt org.kde.LogoutPrompt.promptReboot"))]() {
+        runCommand(cmd);
+    });
+    m_systemMenu->addAction(icon("iconShutDown", QStringLiteral("system-shutdown")),
+        QStringLiteral("Shut Down\u2026"), [cmd = cfg.readEntry("cmdShutDown",
+        QStringLiteral("qdbus6 org.kde.LogoutPrompt /LogoutPrompt org.kde.LogoutPrompt.promptShutDown"))]() {
+        runCommand(cmd);
+    });
+
+    m_systemMenu->addSeparator();
+
+    m_systemMenu->addAction(icon("iconLockScreen", QStringLiteral("system-lock-screen")),
+        QStringLiteral("Lock Screen"), [cmd = cfg.readEntry("cmdLockScreen",
+        QStringLiteral("qdbus6 org.freedesktop.ScreenSaver /ScreenSaver Lock || loginctl lock-session"))]() {
+        runCommand(cmd);
+    });
+    const QString firstName = KUser().property(KUser::FullName).toString().section(QLatin1Char(' '), 0, 0);
+    m_systemMenu->addAction(icon("iconLogOut", QStringLiteral("user-identity")),
+        QStringLiteral("Log Out %1\u2026").arg(firstName), [cmd = cfg.readEntry("cmdLogOut",
+        QStringLiteral("qdbus6 org.kde.LogoutPrompt /LogoutPrompt org.kde.LogoutPrompt.promptLogout"))]() {
+        runCommand(cmd);
+    });
+
+    auto ungrabMouseHack = [ctx]() {
+        if (ctx && ctx->window() && ctx->window()->mouseGrabberItem()) {
+            ctx->window()->mouseGrabberItem()->ungrabMouse();
+        }
+    };
+
+    QTimer::singleShot(0, ctx, ungrabMouseHack);
+
+    const auto &geo = ctx->window()->screen()->availableVirtualGeometry();
+    QPoint pos = ctx->window()->mapToGlobal(ctx->mapToScene(QPointF()).toPoint());
+
+    const Qt::Edges edges = edgeFromLocation(location());
+    m_systemMenu->setProperty("_breeze_menu_seamless_edges", QVariant::fromValue(edges));
+
+    if (location() == Plasma::Types::TopEdge) {
+        pos.setY(pos.y() + ctx->height());
+    }
+
+    m_systemMenu->setMinimumWidth(0);
+    m_systemMenu->adjustSize();
+    pos = QPoint(qBound(geo.x(), pos.x(), geo.x() + geo.width() - m_systemMenu->width()),
+                 qBound(geo.y(), pos.y(), geo.y() + geo.height() - m_systemMenu->height()));
+
+    if (!m_systemMenu->isVisible()) {
+        m_systemMenu->winId();
+        m_systemMenu->windowHandle()->setTransientParent(ctx->window());
+        m_systemMenu->popup(pos);
+    }
+
+    setCurrentIndex(SYSTEM_MENU_INDEX);
+}
+
+void AppMenuApplet::onSystemMenuAboutToHide()
+{
+    setCurrentIndex(-1);
+}
+
 bool AppMenuApplet::eventFilter(QObject *watched, QEvent *event)
 {
     auto *menu = qobject_cast<QMenu *>(watched);
@@ -366,17 +503,31 @@ bool AppMenuApplet::eventFilter(QObject *watched, QEvent *event)
         auto *e = static_cast<QKeyEvent *>(event);
 
         if (e->key() == Qt::Key_Left) {
-            if (m_currentIndex == -2) {
+            if (m_currentIndex == -3) {
                 return true;
             }
-            const int desiredIndex = (m_currentIndex == 0) ? -2 : m_currentIndex - 1;
+            int desiredIndex;
+            if (m_currentIndex == -2) {
+                desiredIndex = -3;
+            } else if (m_currentIndex == 0) {
+                desiredIndex = -2;
+            } else {
+                desiredIndex = m_currentIndex - 1;
+            }
             Q_EMIT requestActivateIndex(desiredIndex);
             return true;
         } else if (e->key() == Qt::Key_Right) {
             if (menu->activeAction() && menu->activeAction()->menu()) {
                 return false;
             }
-            const int desiredIndex = (m_currentIndex == -2) ? 0 : m_currentIndex + 1;
+            int desiredIndex;
+            if (m_currentIndex == -3) {
+                desiredIndex = -2;
+            } else if (m_currentIndex == -2) {
+                desiredIndex = 0;
+            } else {
+                desiredIndex = m_currentIndex + 1;
+            }
             Q_EMIT requestActivateIndex(desiredIndex);
             return true;
         }

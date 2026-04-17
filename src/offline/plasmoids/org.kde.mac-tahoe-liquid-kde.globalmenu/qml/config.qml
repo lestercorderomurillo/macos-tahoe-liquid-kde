@@ -9,4 +9,9 @@ ConfigModel {
         icon: "preferences-desktop-color"
         source: "configGeneral.qml"
     }
+    ConfigCategory {
+        name: i18n("System Menu")
+        icon: "start-here-kde-symbolic"
+        source: "configSystemMenu.qml"
+    }
 }
