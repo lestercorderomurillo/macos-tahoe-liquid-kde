@@ -12,5 +12,9 @@
   <file>shaders/upsample_core.frag</file>
   <file>shaders/vertex.vert</file>
   <file>shaders/vertex_core.vert</file>
+  <file>shaders/sdf.glsl</file>
+  <file>shaders/blur.glsl</file>
+  <file>shaders/distort.glsl</file>
+  <file>shaders/highlight.glsl</file>
 </qresource>
 </RCC>

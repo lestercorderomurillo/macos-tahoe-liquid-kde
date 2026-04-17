@@ -122,7 +122,7 @@ BlurEffect::BlurEffect()
         m_roundedOnscreenPass.refractionWidthLocation = m_roundedOnscreenPass.shader->uniformLocation("refractionWidth");
         m_roundedOnscreenPass.highlightWidthLocation = m_roundedOnscreenPass.shader->uniformLocation("highlightWidth");
         m_roundedOnscreenPass.highlightStrengthLocation = m_roundedOnscreenPass.shader->uniformLocation("highlightStrength");
-        qCWarning(KWIN_BLUR) << "Onscreen shader OK — uniforms:"
+        qCDebug(KWIN_BLUR) << "Onscreen shader uniforms:"
             << "mvp=" << m_roundedOnscreenPass.mvpMatrixLocation
             << "color=" << m_roundedOnscreenPass.colorMatrixLocation
             << "offset=" << m_roundedOnscreenPass.offsetLocation
@@ -649,7 +649,7 @@ bool BlurEffect::shouldBlur(const EffectWindow *w, int mask, const WindowPaintDa
         return false;
     }
 
-    bool scaled = !qFuzzyCompare(data.xScale(), 1.0) && !qFuzzyCompare(data.yScale(), 1.0);
+    bool scaled = !qFuzzyCompare(data.xScale(), 1.0) || !qFuzzyCompare(data.yScale(), 1.0);
     bool translated = data.xTranslation() || data.yTranslation();
 
     if ((scaled || (translated || (mask & PAINT_WINDOW_TRANSFORMED))) && !w->data(WindowForceBlurRole).toBool()) {

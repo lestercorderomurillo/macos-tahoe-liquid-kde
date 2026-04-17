@@ -1,14 +1,24 @@
 add_subdirectory(kcm)
 
-function(replace_shader_include input output)
-    file(READ shaders/glass.glsl GLASS_SHADER)
-    file(READ "${input}" SHADER)
-    string(REPLACE "#include \"glass.glsl\"" "${GLASS_SHADER}" SHADER "${SHADER}")
-    file(WRITE "${output}" "${SHADER}")
+set(LIQUIDGLASS_SHADER_INCLUDES
+    sdf.glsl
+    blur.glsl
+    distort.glsl
+    highlight.glsl
+    glass.glsl
+)
+
+function(preprocess_shader_includes input output)
+    file(READ "${input}" SHADER_SOURCE)
+    foreach(include_file IN LISTS LIQUIDGLASS_SHADER_INCLUDES)
+        file(READ "shaders/${include_file}" INCLUDE_SOURCE)
+        string(REPLACE "#include \"${include_file}\"" "${INCLUDE_SOURCE}" SHADER_SOURCE "${SHADER_SOURCE}")
+    endforeach()
+    file(WRITE "${output}" "${SHADER_SOURCE}")
 endfunction()
 
-replace_shader_include(shaders/onscreen_rounded.glsl shaders/onscreen_rounded.frag)
-replace_shader_include(shaders/onscreen_rounded_core.glsl shaders/onscreen_rounded_core.frag)
+preprocess_shader_includes(shaders/onscreen_rounded.glsl shaders/onscreen_rounded.frag)
+preprocess_shader_includes(shaders/onscreen_rounded_core.glsl shaders/onscreen_rounded_core.frag)
 
 set(liquidglass_SOURCES
     blur.cpp

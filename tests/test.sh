@@ -307,18 +307,40 @@ assert "acrylic CMakeLists.txt"             test -f "$AG/CMakeLists.txt"
 assert "acrylic blur.cpp"                   test -f "$AG/src/blur.cpp"
 assert "acrylic blur.h"                     test -f "$AG/src/blur.h"
 assert "acrylic blur.kcfg"                  test -f "$AG/src/blur.kcfg"
+assert "acrylic blur_config.ui"             test -f "$AG/src/kcm/blur_config.ui"
 # kcfg must have all keys referenced by C++
 for key in BlurStrength NoiseStrength BlurDecorations WindowCornerRadius \
            DockCornerRadius PopupCornerRadius HighlightStrength HighlightWidth \
            MagnifyGlassStrength RefractionWidth RgbDriftStrength; do
   assert_grep "kcfg has $key"              "$AG/src/blur.kcfg" "name=\"$key\""
 done
+# KCM layout should be tab-based and expose core options.
+assert_grep "kcm has tab widget"            "$AG/src/kcm/blur_config.ui" "QTabWidget"
+assert_grep "kcm has Glass tab"             "$AG/src/kcm/blur_config.ui" "<string>Glass</string>"
+assert_grep "kcm has Corners tab"           "$AG/src/kcm/blur_config.ui" "<string>Corners</string>"
+assert_grep "kcm has Window Rules tab"      "$AG/src/kcm/blur_config.ui" "<string>Window Rules</string>"
+assert_grep "kcm exposes BlurDecorations"   "$AG/src/kcm/blur_config.ui" "name=\"kcfg_BlurDecorations\""
+assert_grep "kcm exposes NoiseStrength"     "$AG/src/kcm/blur_config.ui" "name=\"kcfg_NoiseStrength\""
 # Shaders exist
 # onscreen_rounded*.frag are generated/gitignored — check texture shaders instead
 assert "texture_core.frag"                  test -f "$AG/src/shaders/texture_core.frag"
 assert "upsample_core.frag"                 test -f "$AG/src/shaders/upsample_core.frag"
 assert "downsample_core.frag"               test -f "$AG/src/shaders/downsample_core.frag"
 assert "noise_core.frag"                    test -f "$AG/src/shaders/noise_core.frag"
+assert "sdf.glsl"                           test -f "$AG/src/shaders/sdf.glsl"
+assert "blur.glsl"                          test -f "$AG/src/shaders/blur.glsl"
+assert "distort.glsl"                       test -f "$AG/src/shaders/distort.glsl"
+assert "highlight.glsl"                     test -f "$AG/src/shaders/highlight.glsl"
+assert_grep "onscreen shader includes sdf"  "$AG/src/shaders/onscreen_rounded.glsl" "#include \"sdf\\.glsl\""
+assert_grep "onscreen shader includes blur" "$AG/src/shaders/onscreen_rounded.glsl" "#include \"blur\\.glsl\""
+assert_grep "onscreen shader includes distort" "$AG/src/shaders/onscreen_rounded.glsl" "#include \"distort\\.glsl\""
+assert_grep "onscreen shader includes highlight" "$AG/src/shaders/onscreen_rounded.glsl" "#include \"highlight\\.glsl\""
+assert_grep "cmake preprocesses shader includes" "$AG/src/CMakeLists.txt" "preprocess_shader_includes"
+assert_grep "cmake include list has sdf"    "$AG/src/CMakeLists.txt" "sdf\\.glsl"
+assert_grep "cmake include list has blur"   "$AG/src/CMakeLists.txt" "blur\\.glsl"
+assert_grep "cmake include list has distort" "$AG/src/CMakeLists.txt" "distort\\.glsl"
+assert_grep "cmake include list has highlight" "$AG/src/CMakeLists.txt" "highlight\\.glsl"
+assert_grep "blur scaling checks either axis" "$AG/src/blur.cpp" "xScale\\(\\), 1\\.0\\) \\|\\| !qFuzzyCompare\\(data\\.yScale\\(\\), 1\\.0\\)"
 
 # ═══════════════════════════════════════════════════════════════════
 echo ""

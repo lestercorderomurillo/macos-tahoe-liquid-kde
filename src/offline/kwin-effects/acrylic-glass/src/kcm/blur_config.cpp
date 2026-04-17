@@ -19,6 +19,11 @@ LiquidGlassEffectConfig::LiquidGlassEffectConfig(QObject *parent, const KPluginM
     ui.setupUi(widget());
     BlurConfig::instance("kwinrc");
     addConfig(BlurConfig::self(), widget());
+
+    // Keep the filtering mode deterministic even if older configs had both unset.
+    if (!ui.kcfg_BlurMatching->isChecked() && !ui.kcfg_BlurNonMatching->isChecked()) {
+        ui.kcfg_BlurNonMatching->setChecked(true);
+    }
 }
 
 LiquidGlassEffectConfig::~LiquidGlassEffectConfig()
