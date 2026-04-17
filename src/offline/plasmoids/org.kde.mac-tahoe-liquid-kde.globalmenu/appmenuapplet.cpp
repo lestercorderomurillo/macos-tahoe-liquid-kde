@@ -474,6 +474,7 @@ void AppMenuApplet::triggerSystemMenu(QQuickItem *ctx)
     }
 
     m_systemMenu->setMinimumWidth(0);
+    m_systemMenu->setMinimumWidth(m_systemMenu->sizeHint().width() + 30);
     m_systemMenu->adjustSize();
     pos = QPoint(qBound(geo.x(), pos.x(), geo.x() + geo.width() - m_systemMenu->width()),
                  qBound(geo.y(), pos.y(), geo.y() + geo.height() - m_systemMenu->height()));
