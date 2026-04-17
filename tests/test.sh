@@ -76,7 +76,7 @@ assert "set-transparency.sh --help exits 0" bash "$SRC/scripts/set-transparency.
 echo ""
 echo "steps (every feature has a step.sh)"
 for step in wallpapers fonts cursors icons plasma-theme window-decorations \
-            kvantum color-schemes gtk plasmoids menu globalmenu acrylic-glass \
+            kvantum color-schemes gtk plasmoids globalmenu acrylic-glass \
             global-theme layout theme-switch apply; do
   assert "step/$step/step.sh"               test -f "$STEPS/$step/step.sh"
 done
@@ -195,32 +195,9 @@ done
 
 # ═══════════════════════════════════════════════════════════════════
 echo ""
-echo "plasmoids — menu"
-MENU="$OFFLINE/plasmoids/org.kde.mac-tahoe-liquid-kde.menu"
-assert "menu CMakeLists.txt"                test -f "$MENU/CMakeLists.txt"
-assert "menu menuapplet.cpp"                test -f "$MENU/menuapplet.cpp"
-assert "menu menuapplet.h"                  test -f "$MENU/menuapplet.h"
-assert "menu main.xml"                      test -f "$MENU/main.xml"
-assert_json "menu metadata.json valid"      "$MENU/metadata.json"
-assert "menu qml/main.qml"                  test -f "$MENU/qml/main.qml"
-assert "menu qml/AboutWindow.qml"           test -f "$MENU/qml/AboutWindow.qml"
-assert "menu qml/config.qml"               test -f "$MENU/qml/config.qml"
-assert "menu qml/configGeneral.qml"         test -f "$MENU/qml/configGeneral.qml"
-# No old contents/ dir
-assert "menu no contents/ (migrated)"       test ! -d "$MENU/contents"
-# QML references correct module
-assert_grep "menu imports own module"       "$MENU/qml/main.qml" "plasma\.applet\.org\.kde\.mac\.tahoe\.liquid\.menu"
-# Has fullRepresentation (required for panel rendering)
-assert_grep "menu has fullRepresentation"   "$MENU/qml/main.qml" "fullRepresentation"
-# C++ has QMenu
-assert_grep "menu uses QMenu"              "$MENU/menuapplet.cpp" "QMenu"
-assert_grep "menu has seamless edges"       "$MENU/menuapplet.cpp" "_breeze_menu_seamless_edges"
-# Icon config entries
-assert_grep "menu config iconAbout"        "$MENU/main.xml" "iconAbout"
-assert_grep "menu config iconAppStore"     "$MENU/main.xml" "iconAppStore"
-assert_grep "menu config iconLogOut"       "$MENU/main.xml" "iconLogOut"
-# C++ reads icon config
-assert_grep "menu reads icon config"       "$MENU/menuapplet.cpp" "cfg.readEntry"
+echo "plasmoids — old menu removed"
+assert "no old menu plasmoid dir"    test ! -d "$OFFLINE/plasmoids/org.kde.mac-tahoe-liquid-kde.menu"
+assert "no old menu step dir"        test ! -d "$STEPS/menu"
 
 echo ""
 echo "plasmoids — globalmenu"
@@ -317,30 +294,26 @@ done
 echo ""
 echo "installer steps"
 GM_STEP="$STEPS/globalmenu/step.sh"
-MENU_STEP="$STEPS/menu/step.sh"
-# globalmenu step cleans up old standalone menu
+# globalmenu step cleans up old standalone menu on install and uninstall
 assert_grep "gm step removes old menu so"  "$GM_STEP" "org\.kde\.mac\.tahoe\.liquid\.menu\.so"
 assert_grep "gm step removes old qml menu" "$GM_STEP" "org\.kde\.mac-tahoe-liquid-kde\.menu"
-# menu step is cleanup-only (no build function)
-assert "menu step has no build()" bash -c "! grep -q '^build()' '$MENU_STEP'"
-assert_grep "menu step removes old so"     "$MENU_STEP" "org\.kde\.mac\.tahoe\.liquid\.menu\.so"
 # layout only adds globalmenu (not standalone menu)
 assert "layout no standalone menu widget" bash -c "! grep -q 'org\.kde\.mac\.tahoe\.liquid\.menu' '$OFFLINE/layouts/mac-tahoe.js'"
+# core.sh feature list no longer has standalone menu
+assert "core.sh no menu feature"     bash -c "! grep -qE '_FEATURES=.*\bmenu\b[^g]' '$STEPS/core.sh'"
 
 # ═══════════════════════════════════════════════════════════════════
 echo ""
 echo "naming conventions"
-# No references to old names (Kpple, kpple) in source files
+# No references to old names (Kpple, kpple) in globalmenu sources
 assert "no 'Kpple' in plasmoid sources" bash -c "
-  ! grep -rli 'kpple' '$OFFLINE/plasmoids/org.kde.mac-tahoe-liquid-kde.menu/' \
-    '$OFFLINE/plasmoids/org.kde.mac-tahoe-liquid-kde.globalmenu/' \
+  ! grep -rli 'kpple' '$OFFLINE/plasmoids/org.kde.mac-tahoe-liquid-kde.globalmenu/' \
     --include='*.qml' --include='*.cpp' --include='*.h' --include='*.json' 2>/dev/null"
-# No 'Kmenu' in commits-facing code
-assert "no 'Kmenu' in menu sources" bash -c "
-  ! grep -rli 'kmenu' '$OFFLINE/plasmoids/org.kde.mac-tahoe-liquid-kde.menu/' \
+# No 'Kmenu' in globalmenu sources
+assert "no 'Kmenu' in globalmenu sources" bash -c "
+  ! grep -rli 'kmenu' '$OFFLINE/plasmoids/org.kde.mac-tahoe-liquid-kde.globalmenu/' \
     --include='*.qml' --include='*.cpp' --include='*.h' --include='*.json' 2>/dev/null"
 # Metadata IDs follow convention
-assert_grep "menu ID uses dots"            "$MENU/metadata.json" '"Id": "org\.kde\.mac\.tahoe\.liquid\.menu"'
 assert_grep "globalmenu ID uses dots"      "$GM/metadata.json" '"Id": "org\.kde\.mac\.tahoe\.liquid\.globalmenu"'
 assert_grep "launcher ID uses kebab"       "$LAUNCHER/metadata.json" '"Id": "org\.kde\.mac-tahoe-liquid-kde\.launcher"'
 assert_grep "trashcan ID uses kebab"       "$TRASH/metadata.json" '"Id": "org\.kde\.mac-tahoe-liquid-kde\.trashcan"'
@@ -361,7 +334,7 @@ assert_grep "has --apply parameter"         "$TS" "\-\-apply"
 if command -v cmake &>/dev/null; then
   echo ""
   echo "builds"
-  for applet in "$MENU" "$GM"; do
+  for applet in "$GM"; do
     name=$(basename "$applet")
     tmpbuild=$(mktemp -d)
     assert "$name configures" cmake -S "$applet" -B "$tmpbuild" -DCMAKE_BUILD_TYPE=Release

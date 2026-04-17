@@ -69,6 +69,6 @@ private:
     QPointer<QQuickItem> m_buttonGrid;
     QPointer<QAbstractItemModel> m_model;
     std::unique_ptr<QMenu> m_windowMenu;
-    std::unique_ptr<QMenu> m_systemMenu;
+    QPointer<QMenu> m_systemMenu;
     static int s_refs;
 };

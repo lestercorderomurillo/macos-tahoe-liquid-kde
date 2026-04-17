@@ -387,12 +387,11 @@ void AppMenuApplet::triggerSystemMenu(QQuickItem *ctx)
         m_windowMenu->hide();
     }
 
-    if (!m_systemMenu) {
-        m_systemMenu = std::make_unique<QMenu>();
-        connect(m_systemMenu.get(), &QMenu::aboutToHide, this, &AppMenuApplet::onSystemMenuAboutToHide);
-        m_systemMenu->installEventFilter(this);
-    }
-    m_systemMenu->clear();
+    auto *menu = new QMenu;
+    menu->setAttribute(Qt::WA_DeleteOnClose);
+    m_systemMenu = menu;
+    connect(menu, &QMenu::aboutToHide, this, &AppMenuApplet::onSystemMenuAboutToHide);
+    menu->installEventFilter(this);
 
     const auto cfg = config();
 
@@ -400,56 +399,56 @@ void AppMenuApplet::triggerSystemMenu(QQuickItem *ctx)
         return QIcon::fromTheme(cfg.readEntry(key, fallback));
     };
 
-    m_systemMenu->addAction(icon("iconAbout", QStringLiteral("computer")),
+    menu->addAction(icon("iconAbout", QStringLiteral("computer")),
         QStringLiteral("About This Computer"), this, [this]() {
         Q_EMIT aboutRequested();
     });
 
-    m_systemMenu->addSeparator();
+    menu->addSeparator();
 
-    m_systemMenu->addAction(icon("iconSystemSettings", QStringLiteral("preferences-system")),
+    menu->addAction(icon("iconSystemSettings", QStringLiteral("preferences-system")),
         QStringLiteral("System Settings\u2026"), []() {
         runCommand(QStringLiteral("systemsettings"));
     });
-    m_systemMenu->addAction(icon("iconAppStore", QStringLiteral("software-store-symbolic")),
+    menu->addAction(icon("iconAppStore", QStringLiteral("software-store-symbolic")),
         QStringLiteral("App Store\u2026"), []() {
         runCommand(QStringLiteral("plasma-discover"));
     });
 
-    m_systemMenu->addSeparator();
+    menu->addSeparator();
 
-    m_systemMenu->addAction(icon("iconForceQuit", QStringLiteral("dialog-cancel")),
+    menu->addAction(icon("iconForceQuit", QStringLiteral("dialog-cancel")),
         QStringLiteral("Force Quit\u2026"), []() {
         runCommand(QStringLiteral("qdbus6 org.kde.KWin /KWin slotKillWindow || xkill"));
     });
 
-    m_systemMenu->addSeparator();
+    menu->addSeparator();
 
-    m_systemMenu->addAction(icon("iconSleep", QStringLiteral("system-suspend")),
+    menu->addAction(icon("iconSleep", QStringLiteral("system-suspend")),
         QStringLiteral("Sleep"), [cmd = cfg.readEntry("cmdSleep",
         QStringLiteral("qdbus6 org.kde.Solid.PowerManagement /org/kde/Solid/PowerManagement requestSuspend || systemctl suspend"))]() {
         runCommand(cmd);
     });
-    m_systemMenu->addAction(icon("iconRestart", QStringLiteral("system-reboot")),
+    menu->addAction(icon("iconRestart", QStringLiteral("system-reboot")),
         QStringLiteral("Restart\u2026"), [cmd = cfg.readEntry("cmdRestart",
         QStringLiteral("qdbus6 org.kde.LogoutPrompt /LogoutPrompt org.kde.LogoutPrompt.promptReboot"))]() {
         runCommand(cmd);
     });
-    m_systemMenu->addAction(icon("iconShutDown", QStringLiteral("system-shutdown")),
+    menu->addAction(icon("iconShutDown", QStringLiteral("system-shutdown")),
         QStringLiteral("Shut Down\u2026"), [cmd = cfg.readEntry("cmdShutDown",
         QStringLiteral("qdbus6 org.kde.LogoutPrompt /LogoutPrompt org.kde.LogoutPrompt.promptShutDown"))]() {
         runCommand(cmd);
     });
 
-    m_systemMenu->addSeparator();
+    menu->addSeparator();
 
-    m_systemMenu->addAction(icon("iconLockScreen", QStringLiteral("system-lock-screen")),
+    menu->addAction(icon("iconLockScreen", QStringLiteral("system-lock-screen")),
         QStringLiteral("Lock Screen"), [cmd = cfg.readEntry("cmdLockScreen",
         QStringLiteral("qdbus6 org.freedesktop.ScreenSaver /ScreenSaver Lock || loginctl lock-session"))]() {
         runCommand(cmd);
     });
     const QString firstName = KUser().property(KUser::FullName).toString().section(QLatin1Char(' '), 0, 0);
-    m_systemMenu->addAction(icon("iconLogOut", QStringLiteral("user-identity")),
+    menu->addAction(icon("iconLogOut", QStringLiteral("user-identity")),
         QStringLiteral("Log Out %1\u2026").arg(firstName), [cmd = cfg.readEntry("cmdLogOut",
         QStringLiteral("qdbus6 org.kde.LogoutPrompt /LogoutPrompt org.kde.LogoutPrompt.promptLogout"))]() {
         runCommand(cmd);
@@ -467,23 +466,20 @@ void AppMenuApplet::triggerSystemMenu(QQuickItem *ctx)
     QPoint pos = ctx->window()->mapToGlobal(ctx->mapToScene(QPointF()).toPoint());
 
     const Qt::Edges edges = edgeFromLocation(location());
-    m_systemMenu->setProperty("_breeze_menu_seamless_edges", QVariant::fromValue(edges));
+    menu->setProperty("_breeze_menu_seamless_edges", QVariant::fromValue(edges));
 
     if (location() == Plasma::Types::TopEdge) {
         pos.setY(pos.y() + ctx->height());
     }
 
-    m_systemMenu->setMinimumWidth(0);
-    m_systemMenu->setMinimumWidth(m_systemMenu->sizeHint().width() + 30);
-    m_systemMenu->adjustSize();
-    pos = QPoint(qBound(geo.x(), pos.x(), geo.x() + geo.width() - m_systemMenu->width()),
-                 qBound(geo.y(), pos.y(), geo.y() + geo.height() - m_systemMenu->height()));
+    menu->setMinimumWidth(menu->sizeHint().width() + 55);
+    menu->adjustSize();
+    pos = QPoint(qBound(geo.x(), pos.x(), geo.x() + geo.width() - menu->width()),
+                 qBound(geo.y(), pos.y(), geo.y() + geo.height() - menu->height()));
 
-    if (!m_systemMenu->isVisible()) {
-        m_systemMenu->winId();
-        m_systemMenu->windowHandle()->setTransientParent(ctx->window());
-        m_systemMenu->popup(pos);
-    }
+    menu->winId();
+    menu->windowHandle()->setTransientParent(ctx->window());
+    menu->popup(pos);
 
     setCurrentIndex(SYSTEM_MENU_INDEX);
 }

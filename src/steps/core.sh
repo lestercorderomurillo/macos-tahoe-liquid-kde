@@ -215,13 +215,13 @@ _confirm() {
 }
 
 # ── feature list for install/uninstall loop ──────────────────────
-_FEATURES=(wallpapers fonts cursors icons plasma_theme window_decorations kvantum color_schemes gtk plasmoids menu globalmenu acrylic_glass global_theme layout)
+_FEATURES=(wallpapers fonts cursors icons plasma_theme window_decorations kvantum color_schemes gtk plasmoids globalmenu acrylic_glass global_theme layout)
 
 # ── should feature be processed? ─────────────────────────────────
 _should_process() {
   local f="$1"
   case "$f" in
-    menu|globalmenu) [[ "$(cfg plasmoids)" == "true" ]] ;;
-    *)               [[ "$(cfg "$f")" == "true" ]] ;;
+    globalmenu) [[ "$(cfg plasmoids)" == "true" ]] ;;
+    *)          [[ "$(cfg "$f")" == "true" ]] ;;
   esac
 }
