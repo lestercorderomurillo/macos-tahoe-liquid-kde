@@ -78,9 +78,13 @@ PlasmoidItem {
         Connections {
             target: Plasmoid
             function onRequestActivateIndex(index: int) {
-                const button = buttonRepeater.itemAt(index) as MenuDelegate;
-                if (button) {
-                    button.activated();
+                if (index === -2) {
+                    appNameButton.activated();
+                } else {
+                    const button = buttonRepeater.itemAt(index) as MenuDelegate;
+                    if (button) {
+                        button.activated();
+                    }
                 }
             }
         }
@@ -95,17 +99,17 @@ PlasmoidItem {
             }
         }
 
-        PlasmaComponents3.Label {
-            id: appNameLabel
+        MenuDelegate {
+            id: appNameButton
+            readonly property int buttonIndex: -2
             visible: appMenuModel.activeAppName !== "" && buttonRepeater.count > 0
             text: appMenuModel.activeAppName
             font.weight: Font.ExtraBold
-            color: Kirigami.Theme.textColor
-            verticalAlignment: Text.AlignVCenter
-            topPadding: 1
-            leftPadding: Kirigami.Units.largeSpacing
-            rightPadding: Kirigami.Units.largeSpacing
             Layout.fillHeight: !root.vertical
+
+            down: Plasmoid.currentIndex === -2
+            menuIsOpen: Plasmoid.currentIndex !== -1
+            onActivated: Plasmoid.triggerWindowMenu(this)
         }
 
         PlasmaComponents3.ToolButton {

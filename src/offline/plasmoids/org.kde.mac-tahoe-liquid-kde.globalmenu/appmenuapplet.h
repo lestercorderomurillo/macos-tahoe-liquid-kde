@@ -8,6 +8,7 @@
 #include <Plasma/Applet>
 #include <QAbstractItemModel>
 #include <QPointer>
+#include <memory>
 
 class QQuickItem;
 class QMenu;
@@ -46,6 +47,7 @@ Q_SIGNALS:
 
 public Q_SLOTS:
     void trigger(QQuickItem *ctx, int idx);
+    void triggerWindowMenu(QQuickItem *ctx);
 
 protected:
     bool eventFilter(QObject *watched, QEvent *event) override;
@@ -54,6 +56,7 @@ private:
     QMenu *createMenu(int idx) const;
     void setCurrentIndex(int currentIndex);
     void onMenuAboutToHide();
+    void onWindowMenuAboutToHide();
 
     int m_currentIndex = -1;
     int m_viewType = FullView;
@@ -61,5 +64,6 @@ private:
     QPointer<QMenu> m_sourceMenu;
     QPointer<QQuickItem> m_buttonGrid;
     QPointer<QAbstractItemModel> m_model;
+    std::unique_ptr<QMenu> m_windowMenu;
     static int s_refs;
 };

@@ -6,6 +6,7 @@
 #include "appmenuapplet.h"
 #include "appmenumodel.h"
 
+#include <abstracttasksmodel.h>
 #include <QAction>
 #include <QDBusConnection>
 #include <QDBusConnectionInterface>
@@ -158,6 +159,10 @@ void AppMenuApplet::trigger(QQuickItem *ctx, int idx)
         return;
     }
 
+    if (m_windowMenu && m_windowMenu->isVisible()) {
+        m_windowMenu->hide();
+    }
+
     if (!ctx || !ctx->window() || !ctx->window()->screen()) {
         return;
     }
@@ -237,6 +242,119 @@ void AppMenuApplet::trigger(QQuickItem *ctx, int idx)
     }
 }
 
+void AppMenuApplet::triggerWindowMenu(QQuickItem *ctx)
+{
+    static constexpr int WINDOW_MENU_INDEX = -2;
+
+    if (m_currentIndex == WINDOW_MENU_INDEX) {
+        return;
+    }
+
+    if (!ctx || !ctx->window() || !ctx->window()->screen()) {
+        return;
+    }
+
+    if (m_currentMenu && m_currentMenu->isVisible()) {
+        m_currentMenu->hide();
+    }
+
+    auto *appModel = qobject_cast<AppMenuModel *>(m_model.data());
+    if (!appModel) {
+        return;
+    }
+
+    auto *tasks = appModel->tasksModel();
+    const QModelIndex activeTask = tasks->activeTask();
+    if (!activeTask.isValid()) {
+        return;
+    }
+
+    if (!m_windowMenu) {
+        m_windowMenu = std::make_unique<QMenu>();
+        connect(m_windowMenu.get(), &QMenu::aboutToHide, this, &AppMenuApplet::onWindowMenuAboutToHide);
+        m_windowMenu->installEventFilter(this);
+    }
+    m_windowMenu->clear();
+
+    const bool isClosable = tasks->data(activeTask, TaskManager::AbstractTasksModel::IsClosable).toBool();
+    const bool isMinimizable = tasks->data(activeTask, TaskManager::AbstractTasksModel::IsMinimizable).toBool();
+    const bool isMaximizable = tasks->data(activeTask, TaskManager::AbstractTasksModel::IsMaximizable).toBool();
+    const bool isMaximized = tasks->data(activeTask, TaskManager::AbstractTasksModel::IsMaximized).toBool();
+    const bool isFullScreenable = tasks->data(activeTask, TaskManager::AbstractTasksModel::IsFullScreenable).toBool();
+    const bool isFullScreen = tasks->data(activeTask, TaskManager::AbstractTasksModel::IsFullScreen).toBool();
+
+    auto *closeAction = m_windowMenu->addAction(
+        QIcon::fromTheme(QStringLiteral("window-close")),
+        QStringLiteral("Close"));
+    closeAction->setEnabled(isClosable);
+    connect(closeAction, &QAction::triggered, tasks, [tasks, activeTask]() {
+        tasks->requestClose(activeTask);
+    });
+
+    m_windowMenu->addSeparator();
+
+    auto *minimizeAction = m_windowMenu->addAction(
+        QIcon::fromTheme(QStringLiteral("window-minimize")),
+        QStringLiteral("Minimize"));
+    minimizeAction->setEnabled(isMinimizable);
+    connect(minimizeAction, &QAction::triggered, tasks, [tasks, activeTask]() {
+        tasks->requestToggleMinimized(activeTask);
+    });
+
+    auto *zoomAction = m_windowMenu->addAction(
+        QIcon::fromTheme(isMaximized ? QStringLiteral("window-restore") : QStringLiteral("window-maximize")),
+        isMaximized ? QStringLiteral("Restore") : QStringLiteral("Zoom"));
+    zoomAction->setEnabled(isMaximizable);
+    connect(zoomAction, &QAction::triggered, tasks, [tasks, activeTask]() {
+        tasks->requestToggleMaximized(activeTask);
+    });
+
+    m_windowMenu->addSeparator();
+
+    auto *fullScreenAction = m_windowMenu->addAction(
+        QIcon::fromTheme(QStringLiteral("view-fullscreen")),
+        isFullScreen ? QStringLiteral("Exit Full Screen") : QStringLiteral("Enter Full Screen"));
+    fullScreenAction->setEnabled(isFullScreenable);
+    connect(fullScreenAction, &QAction::triggered, tasks, [tasks, activeTask]() {
+        tasks->requestToggleFullScreen(activeTask);
+    });
+
+    auto ungrabMouseHack = [ctx]() {
+        if (ctx && ctx->window() && ctx->window()->mouseGrabberItem()) {
+            ctx->window()->mouseGrabberItem()->ungrabMouse();
+        }
+    };
+
+    QTimer::singleShot(0, ctx, ungrabMouseHack);
+
+    const auto &geo = ctx->window()->screen()->availableVirtualGeometry();
+    QPoint pos = ctx->window()->mapToGlobal(ctx->mapToScene(QPointF()).toPoint());
+
+    const Qt::Edges edges = edgeFromLocation(location());
+    m_windowMenu->setProperty("_breeze_menu_seamless_edges", QVariant::fromValue(edges));
+
+    if (location() == Plasma::Types::TopEdge) {
+        pos.setY(pos.y() + ctx->height());
+    }
+
+    m_windowMenu->adjustSize();
+    pos = QPoint(qBound(geo.x(), pos.x(), geo.x() + geo.width() - m_windowMenu->width()),
+                 qBound(geo.y(), pos.y(), geo.y() + geo.height() - m_windowMenu->height()));
+
+    if (!m_windowMenu->isVisible()) {
+        m_windowMenu->winId();
+        m_windowMenu->windowHandle()->setTransientParent(ctx->window());
+        m_windowMenu->popup(pos);
+    }
+
+    setCurrentIndex(WINDOW_MENU_INDEX);
+}
+
+void AppMenuApplet::onWindowMenuAboutToHide()
+{
+    setCurrentIndex(-1);
+}
+
 bool AppMenuApplet::eventFilter(QObject *watched, QEvent *event)
 {
     auto *menu = qobject_cast<QMenu *>(watched);
@@ -248,14 +366,17 @@ bool AppMenuApplet::eventFilter(QObject *watched, QEvent *event)
         auto *e = static_cast<QKeyEvent *>(event);
 
         if (e->key() == Qt::Key_Left) {
-            int desiredIndex = m_currentIndex - 1;
+            if (m_currentIndex == -2) {
+                return true;
+            }
+            const int desiredIndex = (m_currentIndex == 0) ? -2 : m_currentIndex - 1;
             Q_EMIT requestActivateIndex(desiredIndex);
             return true;
         } else if (e->key() == Qt::Key_Right) {
             if (menu->activeAction() && menu->activeAction()->menu()) {
                 return false;
             }
-            int desiredIndex = m_currentIndex + 1;
+            const int desiredIndex = (m_currentIndex == -2) ? 0 : m_currentIndex + 1;
             Q_EMIT requestActivateIndex(desiredIndex);
             return true;
         }

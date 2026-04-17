@@ -56,6 +56,7 @@ public:
     QRect screenGeometry() const;
     void setScreenGeometry(QRect geometry);
     QList<QAction *> flatActionList();
+    TaskManager::TasksModel *tasksModel() const;
 
 Q_SIGNALS:
     void requestActivateIndex(int index);

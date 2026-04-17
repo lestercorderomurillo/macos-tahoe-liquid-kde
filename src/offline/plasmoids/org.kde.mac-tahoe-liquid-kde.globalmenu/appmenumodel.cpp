@@ -245,6 +245,11 @@ QList<QAction *> AppMenuModel::flatActionList()
     return ret;
 }
 
+TaskManager::TasksModel *AppMenuModel::tasksModel() const
+{
+    return m_tasksModel;
+}
+
 QVariant AppMenuModel::data(const QModelIndex &index, int role) const
 {
     if (!m_menuAvailable || !m_menu) {
