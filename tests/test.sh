@@ -233,8 +233,8 @@ assert "globalmenu appmenumodel.h"          test -f "$GM/appmenumodel.h"
 assert_json "globalmenu metadata.json"      "$GM/metadata.json"
 assert "globalmenu qml/main.qml"            test -f "$GM/qml/main.qml"
 assert "globalmenu qml/MenuDelegate.qml"    test -f "$GM/qml/MenuDelegate.qml"
-# App name label exists
-assert_grep "globalmenu has appNameLabel"   "$GM/qml/main.qml" "appNameLabel"
+# App name button exists
+assert_grep "globalmenu has appNameButton"  "$GM/qml/main.qml" "appNameButton"
 assert_grep "globalmenu has activeAppName"  "$GM/appmenumodel.h" "activeAppName"
 # MenuDelegate has font weight
 assert_grep "delegate has font.weight"      "$GM/qml/MenuDelegate.qml" "font\.weight"
