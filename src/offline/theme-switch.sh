@@ -72,11 +72,14 @@ _kwrite() {
   sync
 }
 
-# ── force-write [Colors:*]/[ColorEffects:*] groups from a .colors file ──
+# ── force-write colour groups from a .colors file ──
 # plasma-apply-colorscheme is unreliable during install — it can silently
 # fail and leave stale values from a previous scheme in kdeglobals. We
 # parse the .colors file ourselves and write each group directly so the
 # colour values always match the active ColorScheme name.
+# Includes:
+#   [Colors:*], [ColorEffects:*], [WM]
+# Also supports nested sections like [Colors:Header][Inactive].
 _apply_color_groups_direct() {
   local scheme="$1"
   command -v kwriteconfig6 &>/dev/null || return 1
@@ -87,17 +90,51 @@ _apply_color_groups_direct() {
   done
   [[ -n "$scheme_file" ]] || return 1
 
-  # Parse each [Colors:X] / [ColorEffects:X] section and write its keys
-  local group=""
+  local kdeglobals_path="${XDG_CONFIG_HOME:-$HOME/.config}/kdeglobals"
+
+  # First remove old keys in all colour-related groups so stale values from a
+  # previous scheme cannot survive when the new scheme omits a key.
+  if [[ -f "$kdeglobals_path" ]]; then
+    while IFS=$'\t' read -r group key; do
+      [[ -n "$group" && -n "$key" ]] || continue
+      _kwrite --file kdeglobals --group "$group" --key "$key" --delete 2>/dev/null || true
+    done < <(
+      awk '
+        /^\[/{
+          sec=$0
+          sub(/^\[/, "", sec)
+          sub(/\]$/, "", sec)
+          next
+        }
+        sec ~ /^(Colors:|ColorEffects:|WM$)/ && /^[[:space:]]*[^#;[:space:]][^=]*=/ {
+          key=$0
+          sub(/[[:space:]]*=.*/, "", key)
+          gsub(/^[[:space:]]+|[[:space:]]+$/, "", key)
+          if (length(key) > 0) print sec "\t" key
+        }
+      ' "$kdeglobals_path" | sort -u
+    )
+  fi
+
+  # Parse colour-related groups and write each key
+  local group="" key value section
   while IFS= read -r line || [[ -n "$line" ]]; do
     line="${line%$'\r'}"
-    if [[ "$line" =~ ^\[(Colors:[^]]+|ColorEffects:[^]]+)\][[:space:]]*$ ]]; then
-      group="${BASH_REMATCH[1]}"
-    elif [[ "$line" =~ ^\[ ]]; then
-      group=""   # Non-color section — stop writing
+    [[ "$line" =~ ^[[:space:]]*([#;].*)?$ ]] && continue
+
+    if [[ "$line" =~ ^\[(.+)\][[:space:]]*$ ]]; then
+      section="${BASH_REMATCH[1]}"
+      case "$section" in
+        Colors:*|ColorEffects:*|WM) group="$section" ;;
+        *)                          group="" ;;
+      esac
     elif [[ -n "$group" && "$line" =~ ^([^=]+)=(.*)$ ]]; then
+      key="${BASH_REMATCH[1]}"
+      value="${BASH_REMATCH[2]}"
+      key="${key#"${key%%[![:space:]]*}"}"
+      key="${key%"${key##*[![:space:]]}"}"
       _kwrite --file kdeglobals --group "$group" \
-        --key "${BASH_REMATCH[1]}" "${BASH_REMATCH[2]}" 2>/dev/null || true
+        --key "$key" "$value" 2>/dev/null || true
     fi
   done < "$scheme_file"
 }
@@ -358,9 +395,8 @@ case "$_mode" in
     ;;
   auto)
     enable_auto_mode
-    # No preference — let the schedule decide. Plasma's autoswitcher takes
-    # over from here; time-of-day is a close-enough initial approximation.
-    apply "$(detect_mode_by_time)" "$_context"
+    # Apply current mode now; Plasma's autoswitcher keeps it in sync after.
+    apply "$(detect_mode)" "$_context"
     ;;
   watch) watch_loop ;;
   *)     echo "Usage: $0 {light|dark|auto|watch} [boot]" >&2; exit 1 ;;

@@ -56,6 +56,57 @@ assert_svgz() {
   fi
 }
 
+assert_color_key_parity() {
+  local name="$1" light_file="$2" dark_file="$3"
+  ((TOTAL++))
+  local output
+  if output=$(python3 - "$light_file" "$dark_file" <<'PY'
+import sys
+from pathlib import Path
+
+def parse(path):
+    sections = {}
+    sec = None
+    for raw in Path(path).read_text(encoding="utf-8").splitlines():
+        line = raw.strip()
+        if not line or line.startswith("#") or line.startswith(";"):
+            continue
+        if line.startswith("[") and line.endswith("]"):
+            sec = line[1:-1]
+            sections.setdefault(sec, {})
+            continue
+        if "=" in line and sec is not None:
+            key, value = line.split("=", 1)
+            sections[sec][key.strip()] = value.strip()
+    return sections
+
+light = parse(sys.argv[1])
+dark = parse(sys.argv[2])
+errors = []
+for sec in sorted(set(light) | set(dark)):
+    lkeys = set(light.get(sec, {}))
+    dkeys = set(dark.get(sec, {}))
+    if lkeys != dkeys:
+        errors.append(f"[{sec}]")
+        if lkeys - dkeys:
+            errors.append("  light-only: " + ", ".join(sorted(lkeys - dkeys)))
+        if dkeys - lkeys:
+            errors.append("  dark-only: " + ", ".join(sorted(dkeys - lkeys)))
+
+if errors:
+    print("\n".join(errors))
+    raise SystemExit(1)
+PY
+  ); then
+    echo -e "  \033[0;32m✓\033[0m  $name"
+    ((PASS++))
+  else
+    echo -e "  \033[0;31m✗\033[0m  $name"
+    [[ -n "$output" ]] && echo -e "       \033[0;31m$output\033[0m" | head -5
+    ((FAIL++))
+  fi
+}
+
 echo ""
 echo "MacTahoe Liquid KDE — Tests"
 
@@ -131,6 +182,9 @@ assert "light .colors file"                 test -f "$OFFLINE/color-schemes/MacT
 assert "dark .colors file"                  test -f "$OFFLINE/color-schemes/MacTahoeLiquidKdeDark.colors"
 assert_grep "light has [General]"           "$OFFLINE/color-schemes/MacTahoeLiquidKdeLight.colors" '^\[General\]'
 assert_grep "dark has [General]"            "$OFFLINE/color-schemes/MacTahoeLiquidKdeDark.colors" '^\[General\]'
+assert_color_key_parity "light/dark .colors key parity" \
+  "$OFFLINE/color-schemes/MacTahoeLiquidKdeLight.colors" \
+  "$OFFLINE/color-schemes/MacTahoeLiquidKdeDark.colors"
 
 # ═══════════════════════════════════════════════════════════════════
 echo ""
@@ -356,6 +410,8 @@ assert_grep "updates gtk3 background.csd"   "$TS" "background\.csd"
 TSW="$OFFLINE/theme-switch.sh"
 assert_grep "theme-switch has direct color fallback" "$TSW" "_apply_color_groups_direct"
 assert_grep "theme-switch reads .colors file"        "$TSW" "\.colors"
+assert_grep "theme-switch auto uses detect_mode"      "$TSW" 'apply "\$\(detect_mode\)"'
+assert_grep "theme-switch syncs WM colors"            "$TSW" 'Colors:\*|ColorEffects:\*|WM'
 assert_grep "has --dock parameter"          "$TS" "\-\-dock"
 assert_grep "has --apply parameter"         "$TS" "\-\-apply"
 

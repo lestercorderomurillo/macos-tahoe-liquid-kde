@@ -91,9 +91,17 @@ EOF
 # Read a key from a kdeglobals-style ini file (bash, no deps)
 _ini_get() {
   local file="$1" section="$2" key="$3"
-  awk -v s="[$section]" -v k="$key" '
+  awk -v s="$section" -v k="$key" '
     BEGIN{in_section=0}
-    /^\[/{in_section=($0==s)?1:0; next}
+    /^\[/{
+      sec=$0
+      sub(/^\[/, "", sec)
+      sub(/\]$/, "", sec)
+      gsub(/\\x5[dD]/, "]", sec)
+      gsub(/\\x5[bB]/, "[", sec)
+      in_section=(sec==s)?1:0
+      next
+    }
     in_section && $0 ~ "^"k"=" {
       sub("^"k"=",""); print; exit
     }
@@ -111,10 +119,25 @@ LIGHT_BTN_BG=$(_ini_get "$OFFLINE/color-schemes/MacTahoeLiquidKdeLight.colors" "
 DARK_BTN_BG=$(_ini_get "$OFFLINE/color-schemes/MacTahoeLiquidKdeDark.colors"  "Colors:Button" "BackgroundNormal")
 LIGHT_WIN_BG=$(_ini_get "$OFFLINE/color-schemes/MacTahoeLiquidKdeLight.colors" "Colors:Window" "BackgroundNormal")
 DARK_WIN_BG=$(_ini_get "$OFFLINE/color-schemes/MacTahoeLiquidKdeDark.colors"  "Colors:Window" "BackgroundNormal")
+LIGHT_TOOLTIP_BG=$(_ini_get "$OFFLINE/color-schemes/MacTahoeLiquidKdeLight.colors" "Colors:Tooltip" "BackgroundNormal")
+DARK_TOOLTIP_BG=$(_ini_get "$OFFLINE/color-schemes/MacTahoeLiquidKdeDark.colors"  "Colors:Tooltip" "BackgroundNormal")
+LIGHT_WM_ACTIVE_BG=$(_ini_get "$OFFLINE/color-schemes/MacTahoeLiquidKdeLight.colors" "WM" "activeBackground")
+DARK_WM_ACTIVE_BG=$(_ini_get "$OFFLINE/color-schemes/MacTahoeLiquidKdeDark.colors"  "WM" "activeBackground")
+LIGHT_HEADER_INACTIVE_FG=$(_ini_get "$OFFLINE/color-schemes/MacTahoeLiquidKdeLight.colors" "Colors:Header][Inactive" "ForegroundNormal")
+DARK_HEADER_INACTIVE_FG=$(_ini_get "$OFFLINE/color-schemes/MacTahoeLiquidKdeDark.colors"  "Colors:Header][Inactive" "ForegroundNormal")
+LIGHT_HEADER_INACTIVE_FOCUS=$(_ini_get "$OFFLINE/color-schemes/MacTahoeLiquidKdeLight.colors" "Colors:Header][Inactive" "DecorationFocus")
+DARK_HEADER_INACTIVE_FOCUS=$(_ini_get "$OFFLINE/color-schemes/MacTahoeLiquidKdeDark.colors"  "Colors:Header][Inactive" "DecorationFocus")
 
 assert "light scheme has Button BG"  test -n "$LIGHT_BTN_BG"
 assert "dark scheme has Button BG"   test -n "$DARK_BTN_BG"
 assert "light ≠ dark Button BG"      test "$LIGHT_BTN_BG" != "$DARK_BTN_BG"
+assert "light scheme has Tooltip BG" test -n "$LIGHT_TOOLTIP_BG"
+assert "dark scheme has Tooltip BG"  test -n "$DARK_TOOLTIP_BG"
+assert "light ≠ dark Tooltip BG"     test "$LIGHT_TOOLTIP_BG" != "$DARK_TOOLTIP_BG"
+assert "light scheme has WM color"   test -n "$LIGHT_WM_ACTIVE_BG"
+assert "dark scheme has WM color"    test -n "$DARK_WM_ACTIVE_BG"
+assert "light scheme has Header inactive FG" test -n "$LIGHT_HEADER_INACTIVE_FG"
+assert "dark scheme has Header inactive FG"  test -n "$DARK_HEADER_INACTIVE_FG"
 
 # Smoke test: theme-switch.sh sources without executing its main case
 _sandbox_setup
@@ -130,6 +153,14 @@ got=$(_ini_get "$HOME/.config/kdeglobals" "Colors:Button" "BackgroundNormal")
 assert "light→dark: Button BG changed"  test "$got" = "$DARK_BTN_BG"
 got=$(_ini_get "$HOME/.config/kdeglobals" "Colors:Window" "BackgroundNormal")
 assert "light→dark: Window BG changed"  test "$got" = "$DARK_WIN_BG"
+got=$(_ini_get "$HOME/.config/kdeglobals" "Colors:Tooltip" "BackgroundNormal")
+assert "light→dark: Tooltip BG changed" test "$got" = "$DARK_TOOLTIP_BG"
+got=$(_ini_get "$HOME/.config/kdeglobals" "WM" "activeBackground")
+assert "light→dark: WM activeBackground changed" test "$got" = "$DARK_WM_ACTIVE_BG"
+got=$(_ini_get "$HOME/.config/kdeglobals" "Colors:Header][Inactive" "ForegroundNormal")
+assert "light→dark: Header inactive FG changed" test "$got" = "$DARK_HEADER_INACTIVE_FG"
+got=$(_ini_get "$HOME/.config/kdeglobals" "Colors:Header][Inactive" "DecorationFocus")
+assert "light→dark: Header inactive focus matches dark (empty expected)" test "$got" = "$DARK_HEADER_INACTIVE_FOCUS"
 
 # Transition: BreezeDark → MacTahoeLiquidKdeLight
 _seed_kdeglobals_breezedark
@@ -138,6 +169,14 @@ got=$(_ini_get "$HOME/.config/kdeglobals" "Colors:Button" "BackgroundNormal")
 assert "dark→light: Button BG changed"  test "$got" = "$LIGHT_BTN_BG"
 got=$(_ini_get "$HOME/.config/kdeglobals" "Colors:Window" "BackgroundNormal")
 assert "dark→light: Window BG changed"  test "$got" = "$LIGHT_WIN_BG"
+got=$(_ini_get "$HOME/.config/kdeglobals" "Colors:Tooltip" "BackgroundNormal")
+assert "dark→light: Tooltip BG changed" test "$got" = "$LIGHT_TOOLTIP_BG"
+got=$(_ini_get "$HOME/.config/kdeglobals" "WM" "activeBackground")
+assert "dark→light: WM activeBackground changed" test "$got" = "$LIGHT_WM_ACTIVE_BG"
+got=$(_ini_get "$HOME/.config/kdeglobals" "Colors:Header][Inactive" "ForegroundNormal")
+assert "dark→light: Header inactive FG changed" test "$got" = "$LIGHT_HEADER_INACTIVE_FG"
+got=$(_ini_get "$HOME/.config/kdeglobals" "Colors:Header][Inactive" "DecorationFocus")
+assert "dark→light: Header inactive focus restored" test "$got" = "$LIGHT_HEADER_INACTIVE_FOCUS"
 
 # Transition: MacTahoeLiquidKdeLight → MacTahoeLiquidKdeDark
 _seed_kdeglobals_breezelight   # start clean
@@ -189,6 +228,60 @@ name=$(_ini_get "$HOME/.config/kdeglobals" "General" "ColorScheme")
 btn=$(_ini_get  "$HOME/.config/kdeglobals" "Colors:Button" "BackgroundNormal")
 assert "ColorScheme name is Dark"   test "$name" = "MacTahoeLiquidKdeDark"
 assert "Button BG matches Dark"     test "$btn"  = "$DARK_BTN_BG"
+
+_sandbox_teardown
+
+
+# ─────────────────────────────────────────────────────────────────
+echo ""
+echo "theme-switch step install/uninstall cycle"
+
+_sandbox_setup
+cat > "$HOME/.config/kdeglobals" <<'EOF'
+[KDE]
+AutomaticLookAndFeel=true
+DefaultLightLookAndFeel=org.kde.mac-tahoe-liquid-kde.light
+DefaultDarkLookAndFeel=org.kde.mac-tahoe-liquid-kde.dark
+EOF
+
+(
+  export OFFLINE="$SRC/offline"
+  export HOME="$SANDBOX"
+  export THEME_MODE=auto
+  source "$SRC/steps/functions.sh"
+  source "$SRC/steps/theme-switch/step.sh"
+  install &>/dev/null
+)
+assert "switch install: binary present"  test -x "$HOME/.local/bin/mac-tahoe-theme-switch"
+assert "switch install: service present" test -f "$HOME/.config/systemd/user/mac-tahoe-liquid-kde-theme.service"
+
+(
+  export OFFLINE="$SRC/offline"
+  export HOME="$SANDBOX"
+  source "$SRC/steps/functions.sh"
+  source "$SRC/steps/theme-switch/step.sh"
+  uninstall &>/dev/null
+)
+assert "switch uninstall: binary removed"  test ! -e "$HOME/.local/bin/mac-tahoe-theme-switch"
+assert "switch uninstall: service removed" test ! -e "$HOME/.config/systemd/user/mac-tahoe-liquid-kde-theme.service"
+val=$(_ini_get "$HOME/.config/kdeglobals" "KDE" "AutomaticLookAndFeel")
+assert "switch uninstall: auto mode disabled" test "$val" = "false"
+val=$(_ini_get "$HOME/.config/kdeglobals" "KDE" "DefaultLightLookAndFeel")
+assert "switch uninstall: light default removed" test -z "$val"
+val=$(_ini_get "$HOME/.config/kdeglobals" "KDE" "DefaultDarkLookAndFeel")
+assert "switch uninstall: dark default removed" test -z "$val"
+
+# reinstall after uninstall should recreate files cleanly
+(
+  export OFFLINE="$SRC/offline"
+  export HOME="$SANDBOX"
+  export THEME_MODE=dark
+  source "$SRC/steps/functions.sh"
+  source "$SRC/steps/theme-switch/step.sh"
+  install &>/dev/null
+)
+assert "switch reinstall: binary present"  test -x "$HOME/.local/bin/mac-tahoe-theme-switch"
+assert "switch reinstall: service present" test -f "$HOME/.config/systemd/user/mac-tahoe-liquid-kde-theme.service"
 
 _sandbox_teardown
 
