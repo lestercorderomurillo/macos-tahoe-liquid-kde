@@ -5,13 +5,13 @@ install() {
   # ── KDE config ─────────────────────────────────────────────
   if command -v kwriteconfig6 &>/dev/null; then
     if [[ "${FEAT_FONTS:-true}" == "true" ]]; then
-      kwriteconfig6 --notify --file kdeglobals --group General --key font                 "SF Pro Text,10,-1,5,50,0,0,0,0,0"
-      kwriteconfig6 --notify --file kdeglobals --group General --key menuFont             "SF Pro Text,10,-1,5,50,0,0,0,0,0"
-      kwriteconfig6 --notify --file kdeglobals --group General --key toolBarFont          "SF Pro Text,10,-1,5,50,0,0,0,0,0"
-      kwriteconfig6 --notify --file kdeglobals --group General --key taskbarFont          "SF Pro Text,10,-1,5,50,0,0,0,0,0"
-      kwriteconfig6 --notify --file kdeglobals --group General --key smallestReadableFont "SF Pro Text,8,-1,5,50,0,0,0,0,0"
-      kwriteconfig6 --notify --file kdeglobals --group General --key fixed                "SF Mono,10,-1,5,50,0,0,0,0,0"
-      kwriteconfig6 --notify --file kdeglobals --group WM      --key activeFont           "SF Pro Display,11,-1,5,63,0,0,0,0,0"
+      kw_write --file kdeglobals --group General --key font                 "SF Pro Text,10,-1,5,50,0,0,0,0,0"
+      kw_write --file kdeglobals --group General --key menuFont             "SF Pro Text,10,-1,5,50,0,0,0,0,0"
+      kw_write --file kdeglobals --group General --key toolBarFont          "SF Pro Text,10,-1,5,50,0,0,0,0,0"
+      kw_write --file kdeglobals --group General --key taskbarFont          "SF Pro Text,10,-1,5,50,0,0,0,0,0"
+      kw_write --file kdeglobals --group General --key smallestReadableFont "SF Pro Text,8,-1,5,50,0,0,0,0,0"
+      kw_write --file kdeglobals --group General --key fixed                "SF Mono,10,-1,5,50,0,0,0,0,0"
+      kw_write --file kdeglobals --group WM      --key activeFont           "SF Pro Display,11,-1,5,63,0,0,0,0,0"
       ok "Fonts installed"
     fi
   fi
@@ -103,22 +103,22 @@ uninstall() {
   # ── reset to Breeze defaults ───────────────────────────────
   if command -v kwriteconfig6 &>/dev/null; then
     if [[ "${FEAT_FONTS:-true}" == "true" ]]; then
-      kwriteconfig6 --notify --file kdeglobals --group General --key font                 "Noto Sans,10,-1,5,50,0,0,0,0,0"
-      kwriteconfig6 --notify --file kdeglobals --group General --key menuFont             "Noto Sans,10,-1,5,50,0,0,0,0,0"
-      kwriteconfig6 --notify --file kdeglobals --group General --key toolBarFont          "Noto Sans,10,-1,5,50,0,0,0,0,0"
-      kwriteconfig6 --notify --file kdeglobals --group General --key taskbarFont          "Noto Sans,10,-1,5,50,0,0,0,0,0"
-      kwriteconfig6 --notify --file kdeglobals --group General --key smallestReadableFont "Noto Sans,8,-1,5,50,0,0,0,0,0"
-      kwriteconfig6 --notify --file kdeglobals --group General --key fixed                "Hack,10,-1,5,50,0,0,0,0,0"
-      kwriteconfig6 --notify --file kdeglobals --group WM      --key activeFont           "Noto Sans,10,-1,5,50,0,0,0,0,0"
+      kw_write --file kdeglobals --group General --key font                 "Noto Sans,10,-1,5,50,0,0,0,0,0"
+      kw_write --file kdeglobals --group General --key menuFont             "Noto Sans,10,-1,5,50,0,0,0,0,0"
+      kw_write --file kdeglobals --group General --key toolBarFont          "Noto Sans,10,-1,5,50,0,0,0,0,0"
+      kw_write --file kdeglobals --group General --key taskbarFont          "Noto Sans,10,-1,5,50,0,0,0,0,0"
+      kw_write --file kdeglobals --group General --key smallestReadableFont "Noto Sans,8,-1,5,50,0,0,0,0,0"
+      kw_write --file kdeglobals --group General --key fixed                "Hack,10,-1,5,50,0,0,0,0,0"
+      kw_write --file kdeglobals --group WM      --key activeFont           "Noto Sans,10,-1,5,50,0,0,0,0,0"
       ok "Fonts reset"
     fi
     if [[ "${FEAT_CURSORS:-true}" == "true" ]]; then
-      kwriteconfig6 --notify --file kcminputrc --group Mouse --key cursorTheme "breeze_cursors"
+      kw_write --file kcminputrc --group Mouse --key cursorTheme "breeze_cursors"
       plasma-apply-cursortheme "breeze_cursors" &>/dev/null || true
       ok "Cursor reset"
     fi
     if [[ "${FEAT_ICONS:-true}" == "true" ]]; then
-      kwriteconfig6 --notify --file kdeglobals --group Icons --key Theme "breeze"
+      kw_write --file kdeglobals --group Icons --key Theme "breeze"
       dbus-send --session --type=signal /KIconLoader org.kde.KIconLoader.iconChanged int32:0 2>/dev/null || true
       ok "Icons reset"
     fi

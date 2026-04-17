@@ -34,10 +34,10 @@ install() {
   # apply aurorae decoration to kwinrc
   local theme_name="MacTahoeLiquidKde-Dark"
   [[ "$THEME_MODE" == "light" ]] && theme_name="MacTahoeLiquidKde-Light"
-  kwriteconfig6 --notify --file "$HOME/.config/kwinrc" --group "org.kde.kdecoration2" --key "library" "org.kde.kwin.aurorae" 2>/dev/null
-  kwriteconfig6 --notify --file "$HOME/.config/kwinrc" --group "org.kde.kdecoration2" --key "theme" "__aurorae__svg__${theme_name}" 2>/dev/null
-  kwriteconfig6 --notify --file "$HOME/.config/kwinrc" --group "org.kde.kdecoration2" --key "ButtonsOnLeft" "XIA" 2>/dev/null
-  kwriteconfig6 --notify --file "$HOME/.config/kwinrc" --group "org.kde.kdecoration2" --key "ButtonsOnRight" "" 2>/dev/null
+  kw_write --file "$HOME/.config/kwinrc" --group "org.kde.kdecoration2" --key "library" "org.kde.kwin.aurorae" 2>/dev/null
+  kw_write --file "$HOME/.config/kwinrc" --group "org.kde.kdecoration2" --key "theme" "__aurorae__svg__${theme_name}" 2>/dev/null
+  kw_write --file "$HOME/.config/kwinrc" --group "org.kde.kdecoration2" --key "ButtonsOnLeft" "XIA" 2>/dev/null
+  kw_write --file "$HOME/.config/kwinrc" --group "org.kde.kdecoration2" --key "ButtonsOnRight" "" 2>/dev/null
   kwin_reconfigure
   ok "Window decoration set to ${theme_name}"
 }
@@ -52,10 +52,10 @@ uninstall() {
     fi
   done
   if command -v kwriteconfig6 &>/dev/null; then
-    kwriteconfig6 --notify --file kwinrc --group "org.kde.kdecoration2" --key "library" "org.kde.breeze"
-    kwriteconfig6 --notify --file kwinrc --group "org.kde.kdecoration2" --key "theme" "Breeze"
-    kwriteconfig6 --notify --file kwinrc --group "org.kde.kdecoration2" --key "ButtonsOnLeft" "M"
-    kwriteconfig6 --notify --file kwinrc --group "org.kde.kdecoration2" --key "ButtonsOnRight" "IAX"
+    kw_write --file kwinrc --group "org.kde.kdecoration2" --key "library" "org.kde.breeze"
+    kw_write --file kwinrc --group "org.kde.kdecoration2" --key "theme" "Breeze"
+    kw_write --file kwinrc --group "org.kde.kdecoration2" --key "ButtonsOnLeft" "M"
+    kw_write --file kwinrc --group "org.kde.kdecoration2" --key "ButtonsOnRight" "IAX"
     kwin_reconfigure
     ok "Window decoration reset to Breeze"
   fi

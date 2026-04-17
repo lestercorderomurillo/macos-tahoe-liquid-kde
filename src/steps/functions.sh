@@ -163,3 +163,25 @@ kwin_reconfigure() {
   q=$(qdbus_cmd) || return 0
   "$q" org.kde.KWin /KWin org.kde.KWin.reconfigure &>/dev/null || true
 }
+
+# kw_write — kwriteconfig6 wrapper that uses --notify only when a session
+# dbus is reachable.  Without one, --notify fails silently and the write
+# gets dropped — breaks installs in TTY / ssh / systemd-run / CI contexts.
+# The result is probed once and cached.
+if [[ -z "${_KW_WRITE_HAS_DBUS+x}" ]]; then
+  if [[ -n "${DBUS_SESSION_BUS_ADDRESS:-}" ]] \
+     && command -v dbus-send &>/dev/null \
+     && dbus-send --session --print-reply --dest=org.freedesktop.DBus \
+          /org/freedesktop/DBus org.freedesktop.DBus.ListNames &>/dev/null; then
+    _KW_WRITE_HAS_DBUS=1
+  else
+    _KW_WRITE_HAS_DBUS=0
+  fi
+fi
+kw_write() {
+  if [[ "$_KW_WRITE_HAS_DBUS" == "1" ]]; then
+    kwriteconfig6 --notify "$@"
+  else
+    kwriteconfig6 "$@"
+  fi
+}

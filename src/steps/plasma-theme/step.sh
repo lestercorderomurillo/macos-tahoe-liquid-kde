@@ -38,7 +38,7 @@ uninstall() {
     rm -rf "$dir" 2>/dev/null && ok "$variant removed" && n=$((n+1)) || fail "$variant"
   done
   if command -v kwriteconfig6 &>/dev/null; then
-    kwriteconfig6 --notify --file plasmarc --group Theme --key name "default" 2>/dev/null || true
+    kw_write --file plasmarc --group Theme --key name "default" 2>/dev/null || true
   fi
   info "$n Plasma themes removed"
 }
