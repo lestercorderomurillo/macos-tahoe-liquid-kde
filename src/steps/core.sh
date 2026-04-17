@@ -21,7 +21,7 @@ step() {
 }
 
 # ── feature flags ────────────────────────────────────────────────
-_ALL_FEATURES=(wallpapers fonts cursors plasma_theme window_decorations kvantum color_schemes icons plasmoids acrylic_glass global_theme layout sounds gtk sddm apps no_download)
+_ALL_FEATURES=(wallpapers fonts cursors plasma_theme window_decorations kvantum color_schemes icons plasmoids acrylic_glass global_theme layout sounds gtk sddm apps nautilus no_download)
 
 declare -A _feat=()
 declare -A _cli=()
@@ -55,7 +55,6 @@ declare -A _FEAT_DESC=(
   [color_schemes]="Color schemes (light and dark)"
   [icons]="macOS-style icon set"
   [plasmoids]="Custom Plasma widgets"
-  [menu]="Menu C++ applet"
   [globalmenu]="Global Menu C++ applet"
   [acrylic_glass]="Acrylic Glass KWin blur effect"
   [global_theme]="Plasma global theme (look-and-feel)"
@@ -64,6 +63,7 @@ declare -A _FEAT_DESC=(
   [gtk]="GTK 2/3/4 theme"
   [sddm]="Login screen theme"
   [apps]="App configuration tweaks"
+  [nautilus]="Nautilus file manager (default on KDE)"
 )
 
 # ── CLI parsing ──────────────────────────────────────────────────
@@ -111,6 +111,7 @@ _apply_flags() {
   "gtk":                 true,
   "sddm":               true,
   "apps":                true,
+  "nautilus":            true,
   "no_download":         true,
   "theme_mode":          "auto"
 }
@@ -215,7 +216,7 @@ _confirm() {
 }
 
 # ── feature list for install/uninstall loop ──────────────────────
-_FEATURES=(wallpapers fonts cursors icons plasma_theme window_decorations kvantum color_schemes gtk plasmoids globalmenu acrylic_glass global_theme layout)
+_FEATURES=(wallpapers fonts cursors icons plasma_theme window_decorations kvantum color_schemes gtk plasmoids globalmenu acrylic_glass global_theme layout nautilus)
 
 # ── should feature be processed? ─────────────────────────────────
 _should_process() {

@@ -40,6 +40,49 @@ flush_icon_caches() {
   rm -rf "$HOME/.cache/kiconthemes" 2>/dev/null || true
 }
 
+# ── write a single config key, serialised to avoid concurrent-write loss ──
+# When kwriteconfig6 is invoked rapidly in succession on the same file,
+# its atomic .tmp → rename sequence can race and silently drop writes
+# (seen on systems where dbus notifications aren't immediate).  --notify
+# plus a short delay keeps writes ordered without needing a real lock.
+_kwrite() {
+  kwriteconfig6 --notify "$@"
+  # Block until the tmp→rename is durable on disk.  kwriteconfig6's
+  # --notify doesn't guarantee fsync; back-to-back callers can otherwise
+  # race and silently drop writes to the same file.
+  sync
+}
+
+# ── force-write [Colors:*]/[ColorEffects:*] groups from a .colors file ──
+# plasma-apply-colorscheme is unreliable during install — it can silently
+# fail and leave stale values from a previous scheme in kdeglobals. We
+# parse the .colors file ourselves and write each group directly so the
+# colour values always match the active ColorScheme name.
+_apply_color_groups_direct() {
+  local scheme="$1"
+  command -v kwriteconfig6 &>/dev/null || return 1
+
+  local scheme_file=""
+  for dir in "$HOME/.local/share/color-schemes" "/usr/share/color-schemes"; do
+    [[ -f "$dir/$scheme.colors" ]] && { scheme_file="$dir/$scheme.colors"; break; }
+  done
+  [[ -n "$scheme_file" ]] || return 1
+
+  # Parse each [Colors:X] / [ColorEffects:X] section and write its keys
+  local group=""
+  while IFS= read -r line || [[ -n "$line" ]]; do
+    line="${line%$'\r'}"
+    if [[ "$line" =~ ^\[(Colors:[^]]+|ColorEffects:[^]]+)\][[:space:]]*$ ]]; then
+      group="${BASH_REMATCH[1]}"
+    elif [[ "$line" =~ ^\[ ]]; then
+      group=""   # Non-color section — stop writing
+    elif [[ -n "$group" && "$line" =~ ^([^=]+)=(.*)$ ]]; then
+      _kwrite --file kdeglobals --group "$group" \
+        --key "${BASH_REMATCH[1]}" "${BASH_REMATCH[2]}" 2>/dev/null || true
+    fi
+  done < "$scheme_file"
+}
+
 # ── detect mode from time of day (fallback) ──
 detect_mode_by_time() {
   local hour; hour=$(date +%H)
@@ -63,8 +106,28 @@ get_system_preference() {
   fi
 }
 
-# ── detect current mode: portal first, time-of-day fallback ──
+# ── read active mode from kdeglobals ColorScheme (authoritative KDE state) ──
+# Preferred over the XDG portal because the portal backend can be stale right
+# after install (install writes kdeglobals + gsettings but the portal may
+# still report the previous mode until it refreshes).  Returns 1 if the
+# active scheme isn't one of ours.
+_current_theme_mode() {
+  command -v kreadconfig6 &>/dev/null || return 1
+  local scheme
+  scheme=$(kreadconfig6 --file kdeglobals --group General --key ColorScheme 2>/dev/null)
+  case "$scheme" in
+    *Dark|*dark)   echo "dark"  ;;
+    *Light|*light) echo "light" ;;
+    *)             return 1     ;;
+  esac
+}
+
+# ── detect current mode: kdeglobals → portal → time-of-day ──
+# kdeglobals is authoritative (written atomically by install / theme-switch);
+# portal is a secondary signal that can lag; time-of-day is last resort.
 detect_mode() {
+  local mode
+  mode=$(_current_theme_mode) && [[ -n "$mode" ]] && { echo "$mode"; return; }
   local pref; pref=$(get_system_preference)
   if [[ "$pref" != "none" ]]; then echo "$pref"; else detect_mode_by_time; fi
 }
@@ -72,14 +135,14 @@ detect_mode() {
 # ── Plasma native auto mode ──
 enable_auto_mode() {
   command -v kwriteconfig6 &>/dev/null || return 1
-  kwriteconfig6 --file kdeglobals --group KDE --key AutomaticLookAndFeel true
-  kwriteconfig6 --file kdeglobals --group KDE --key DefaultLightLookAndFeel "$LAF_LIGHT"
-  kwriteconfig6 --file kdeglobals --group KDE --key DefaultDarkLookAndFeel "$LAF_DARK"
+  _kwrite --file kdeglobals --group KDE --key AutomaticLookAndFeel true
+  _kwrite --file kdeglobals --group KDE --key DefaultLightLookAndFeel "$LAF_LIGHT"
+  _kwrite --file kdeglobals --group KDE --key DefaultDarkLookAndFeel "$LAF_DARK"
 }
 
 disable_auto_mode() {
   command -v kwriteconfig6 &>/dev/null || return 1
-  kwriteconfig6 --file kdeglobals --group KDE --key AutomaticLookAndFeel false
+  _kwrite --file kdeglobals --group KDE --key AutomaticLookAndFeel false
 }
 
 # ── apply extras only (Kvantum + GTK) ──
@@ -129,6 +192,54 @@ apply_extras() {
   rm -f "$HOME/.cache"/plasma_theme_* 2>/dev/null || true
 }
 
+# ── write all KDE config files for a given mode (no daemon calls) ──
+# $1 = light|dark
+# Writes: kdeglobals (ColorScheme + [Colors:*] groups + LookAndFeel + widgetStyle
+#         + Icons), kcminputrc (cursor), plasmarc (plasma theme), kwinrc
+#         (aurorae decoration).
+# Used by both install ("install" context) and live theme-switch, so the
+# resulting on-disk state is identical regardless of which entry point fired.
+write_kde_theme_config() {
+  local mode="$1"
+  command -v kwriteconfig6 &>/dev/null || return 1
+
+  local laf icon_theme cursor_theme color_scheme plasma_theme widget_style aurorae_theme
+  if [[ "$mode" == "dark" ]]; then
+    laf="$LAF_DARK"
+    icon_theme="MacTahoeLiquidKde-Icons-dark"
+    cursor_theme="MacTahoeLiquidKde-Dark"
+    color_scheme="MacTahoeLiquidKdeDark"
+    plasma_theme="MacTahoeLiquidKde-Dark"
+    widget_style="kvantum-dark"
+    aurorae_theme="__aurorae__svg__MacTahoeLiquidKde-Dark"
+  else
+    laf="$LAF_LIGHT"
+    icon_theme="MacTahoeLiquidKde-Icons"
+    cursor_theme="MacTahoeLiquidKde"
+    color_scheme="MacTahoeLiquidKdeLight"
+    plasma_theme="MacTahoeLiquidKde-Light"
+    widget_style="kvantum"
+    aurorae_theme="__aurorae__svg__MacTahoeLiquidKde-Light"
+  fi
+
+  # --notify forces kwriteconfig6 to flush before exiting; without it,
+  # rapid back-to-back calls to the same file race and silently lose writes.
+  _kwrite --file kdeglobals --group KDE     --key LookAndFeelPackage "$laf"
+  _kwrite --file kdeglobals --group Icons   --key Theme               "$icon_theme"
+  _kwrite --file kdeglobals --group General --key ColorScheme         "$color_scheme"
+  _kwrite --file kdeglobals --group KDE     --key widgetStyle         "$widget_style"
+  _kwrite --file kcminputrc --group Mouse   --key cursorTheme         "$cursor_theme"
+  _kwrite --file plasmarc   --group Theme   --key name                "$plasma_theme"
+  _kwrite --file kwinrc --group "org.kde.kdecoration2" --key library "org.kde.kwin.aurorae"
+  _kwrite --file kwinrc --group "org.kde.kdecoration2" --key theme    "$aurorae_theme"
+  _kwrite --file kwinrc --group "org.kde.kdecoration2" --key BorderSize     "Tiny"
+  _kwrite --file kwinrc --group "org.kde.kdecoration2" --key ButtonsOnLeft  "XAI"
+  _kwrite --file kwinrc --group "org.kde.kdecoration2" --key ButtonsOnRight ""
+
+  # Copy the actual [Colors:*] / [ColorEffects:*] groups into kdeglobals.
+  _apply_color_groups_direct "$color_scheme"
+}
+
 # ── apply all themes ──
 # $1 = light|dark
 # $2 = context: "boot" skips shell refresh, "install" skips plasma-apply-lookandfeel
@@ -138,48 +249,21 @@ apply() {
   local context="${2:-}"
   _errors=()
 
-  # ── global theme (color scheme, plasma theme, icons, cursors, aurorae, wallpaper)
   local laf
   [[ "$mode" == "dark" ]] && laf="$LAF_DARK" || laf="$LAF_LIGHT"
+
+  # Always write KDE config files (same path for install AND live switch —
+  # guarantees identical on-disk state regardless of which entry point fired).
+  write_kde_theme_config "$mode"
+
   if [[ "$context" == "install" ]]; then
     # Skip plasma-apply-lookandfeel during install — it triggers a QML engine
-    # teardown race (SIGABRT in org.kde.panel.so). Write all global-theme
-    # defaults directly; the plasma restart at end of install loads them.
-    if command -v kwriteconfig6 &>/dev/null; then
-      local icon_theme cursor_theme color_scheme plasma_theme widget_style aurorae_theme
-      if [[ "$mode" == "dark" ]]; then
-        icon_theme="MacTahoeLiquidKde-Icons-dark"
-        cursor_theme="MacTahoeLiquidKde-Dark"
-        color_scheme="MacTahoeLiquidKdeDark"
-        plasma_theme="MacTahoeLiquidKde-Dark"
-        widget_style="kvantum-dark"
-        aurorae_theme="__aurorae__svg__MacTahoeLiquidKde-Dark"
-      else
-        icon_theme="MacTahoeLiquidKde-Icons"
-        cursor_theme="MacTahoeLiquidKde"
-        color_scheme="MacTahoeLiquidKdeLight"
-        plasma_theme="MacTahoeLiquidKde-Light"
-        widget_style="kvantum"
-        aurorae_theme="__aurorae__svg__MacTahoeLiquidKde-Light"
-      fi
-      kwriteconfig6 --file kdeglobals --group KDE     --key LookAndFeelPackage "$laf"
-      kwriteconfig6 --file kdeglobals --group Icons   --key Theme "$icon_theme"
-      kwriteconfig6 --file kdeglobals --group General --key ColorScheme "$color_scheme"
-      kwriteconfig6 --file kdeglobals --group KDE     --key widgetStyle "$widget_style"
-      kwriteconfig6 --file kcminputrc --group Mouse   --key cursorTheme "$cursor_theme"
-      kwriteconfig6 --file plasmarc   --group Theme   --key name "$plasma_theme"
-      kwriteconfig6 --file kwinrc --group "org.kde.kdecoration2" --key library "org.kde.kwin.aurorae"
-      kwriteconfig6 --file kwinrc --group "org.kde.kdecoration2" --key theme "$aurorae_theme"
-      kwriteconfig6 --file kwinrc --group "org.kde.kdecoration2" --key BorderSize "Tiny"
-      kwriteconfig6 --file kwinrc --group "org.kde.kdecoration2" --key ButtonsOnLeft "XAI"
-      kwriteconfig6 --file kwinrc --group "org.kde.kdecoration2" --key ButtonsOnRight ""
-
-      # plasma-apply-colorscheme copies the actual [Colors:*] groups into
-      # kdeglobals. Without this, only the ColorScheme name is written but
-      # the color values stay stale after Plasma restarts.
-      if command -v plasma-apply-colorscheme &>/dev/null; then
-        plasma-apply-colorscheme "$color_scheme" &>/dev/null || true
-      fi
+    # teardown race (SIGABRT in org.kde.panel.so).  The plasma restart at end
+    # of install loads the on-disk config we just wrote.
+    if command -v plasma-apply-colorscheme &>/dev/null; then
+      local color_scheme
+      [[ "$mode" == "dark" ]] && color_scheme="MacTahoeLiquidKdeDark" || color_scheme="MacTahoeLiquidKdeLight"
+      plasma-apply-colorscheme "$color_scheme" &>/dev/null || true
     fi
   elif command -v plasma-apply-lookandfeel &>/dev/null; then
     plasma-apply-lookandfeel -a "$laf" --keep-auto &>/dev/null || _errors+=("global-theme")
@@ -240,6 +324,10 @@ watch_loop() {
 }
 
 # ── main ──
+# Skip execution when sourced (e.g. by tests) so callers can use the
+# helper functions without triggering disable_auto_mode / apply.
+(return 0 2>/dev/null) && return 0
+
 case "$_mode" in
   light)
     disable_auto_mode

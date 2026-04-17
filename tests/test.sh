@@ -77,7 +77,7 @@ echo ""
 echo "steps (every feature has a step.sh)"
 for step in wallpapers fonts cursors icons plasma-theme window-decorations \
             kvantum color-schemes gtk plasmoids globalmenu acrylic-glass \
-            global-theme layout theme-switch apply; do
+            global-theme layout theme-switch apply nautilus; do
   assert "step/$step/step.sh"               test -f "$STEPS/$step/step.sh"
 done
 
@@ -297,6 +297,8 @@ GM_STEP="$STEPS/globalmenu/step.sh"
 # globalmenu step cleans up old standalone menu on install and uninstall
 assert_grep "gm step removes old menu so"  "$GM_STEP" "org\.kde\.mac\.tahoe\.liquid\.menu\.so"
 assert_grep "gm step removes old qml menu" "$GM_STEP" "org\.kde\.mac-tahoe-liquid-kde\.menu"
+# cleans up pre-rename plugins (from before "liquid" was added to the ID)
+assert_grep "gm step removes pre-rename"   "$GM_STEP" "org\.kde\.mac\.tahoe\.globalmenu\.so"
 # layout only adds globalmenu (not standalone menu)
 assert "layout no standalone menu widget" bash -c "! grep -q 'org\.kde\.mac\.tahoe\.liquid\.menu' '$OFFLINE/layouts/mac-tahoe.js'"
 # core.sh feature list no longer has standalone menu
@@ -320,6 +322,28 @@ assert_grep "trashcan ID uses kebab"       "$TRASH/metadata.json" '"Id": "org\.k
 
 # ═══════════════════════════════════════════════════════════════════
 echo ""
+echo "nautilus step"
+N_STEP="$STEPS/nautilus/step.sh"
+assert "nautilus step exists"              test -f "$N_STEP"
+assert "nautilus offline dir exists"       test -d "$OFFLINE/nautilus"
+# deps() declares nautilus package
+assert_grep "nautilus step declares dep"   "$N_STEP" "^[[:space:]]*echo \"nautilus\""
+# KDE check
+assert_grep "nautilus step checks KDE"     "$N_STEP" "XDG_CURRENT_DESKTOP"
+# xdg-mime calls — the Nautilus .desktop used as default; Dolphin used in uninstall
+assert_grep "nautilus step refs Nautilus desktop" "$N_STEP" "org\.gnome\.Nautilus\.desktop"
+assert_grep "nautilus step refs Dolphin desktop"  "$N_STEP" "org\.kde\.dolphin\.desktop"
+assert_grep "nautilus step uses xdg-mime"         "$N_STEP" "xdg-mime default"
+# feature list includes nautilus
+assert_grep "core.sh has nautilus feature" "$STEPS/core.sh" "_FEATURES=.*\bnautilus\b"
+assert_grep "core.sh _ALL has nautilus"    "$STEPS/core.sh" "_ALL_FEATURES=.*\bnautilus\b"
+# features.json has nautilus
+assert_grep "features.json has nautilus"   "$REPO/features.json" '"nautilus"'
+# install.sh help mentions --nautilus
+assert_grep "install.sh doc --nautilus"    "$REPO/install.sh" "\-\-nautilus"
+
+# ═══════════════════════════════════════════════════════════════════
+echo ""
 echo "transparency script coverage"
 TS="$SRC/scripts/set-transparency.sh"
 assert_grep "updates kvantum menu opacity"  "$TS" "reduce_menu_opacity"
@@ -327,6 +351,11 @@ assert_grep "updates kvantum color alpha"   "$TS" "window\\\\\.color"
 assert_grep "updates plasma SVGs"           "$TS" "svgz"
 assert_grep "updates gtk4 color-mix"        "$TS" "window_bg_color"
 assert_grep "updates gtk3 background.csd"   "$TS" "background\.csd"
+
+# theme-switch has direct color scheme fallback (plasma-apply-colorscheme is unreliable)
+TSW="$OFFLINE/theme-switch.sh"
+assert_grep "theme-switch has direct color fallback" "$TSW" "_apply_color_groups_direct"
+assert_grep "theme-switch reads .colors file"        "$TSW" "\.colors"
 assert_grep "has --dock parameter"          "$TS" "\-\-dock"
 assert_grep "has --apply parameter"         "$TS" "\-\-apply"
 
@@ -344,6 +373,14 @@ if command -v cmake &>/dev/null; then
     rm -rf "$tmpbuild"
   done
 fi
+
+# ═══════════════════════════════════════════════════════════════════
+# integration tests (sandboxed HOME — safe to run anywhere)
+if [[ -f "$(dirname "${BASH_SOURCE[0]}")/test-integration.sh" ]]; then
+  # shellcheck disable=SC1090
+  source "$(dirname "${BASH_SOURCE[0]}")/test-integration.sh"
+fi
+
 
 # ═══════════════════════════════════════════════════════════════════
 echo ""

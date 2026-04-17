@@ -33,6 +33,7 @@ A complete environment, not just a coat of paint.
 | **Kate Theme** | Text editor theme | 🔲 |
 | **SDDM Theme** | Login and lock screen | 🔲 |
 | **Global Menu Plasmoid** | Unified menu bar: system menu, app name, window controls, app menus | 🔧 |
+| **Nautilus** | Install Nautilus and set as default file manager on KDE | 🔧 |
 | **Launcher Plasmoid** | App grid launcher | 🔧 |
 | **Trashcan Plasmoid** | Trash widget with configurable icons | 🔧 |
 | **Calendar Plasmoid** | Calendar dropdown | 🔲 |
@@ -135,6 +136,7 @@ Available flags:
 | `--window-decorations` | `--kvantum` | `--color-schemes` | `--icons` |
 | `--plasmoids` | `--acrylic-glass` | `--global-theme` | `--layout` |
 | `--sounds` | `--gtk` | `--sddm` | `--apps` |
+| `--nautilus` | | | |
 
 Use `--no-download` to skip asset downloads and use cached files.
 
@@ -240,6 +242,7 @@ macos-tahoe-liquid-kde/
 | **Launcher** | App grid with categories and search | `~/.local/share/plasma/plasmoids/` |
 | **Trashcan** | Dock trash widget with configurable icons | `~/.local/share/plasma/plasmoids/` |
 | **Window Decorations** | macOS-style title bars (Aurorae) | `~/.local/share/aurorae/themes/` |
+| **Nautilus** | Installs Nautilus, sets as default file manager, applies macOS-like Finder defaults | System package + xdg-mime |
 
 ### Effects and Services
 

@@ -32,6 +32,7 @@ Options:
     --gtk              GTK 2/3/4 theme
     --sddm             Login screen theme
     --apps             App configuration tweaks
+    --nautilus         Install Nautilus and set as default file manager
     --no-download      Skip downloads, use cached assets
 
   Persistence:

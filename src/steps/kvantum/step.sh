@@ -28,7 +28,7 @@ install() {
   fi
 
   if command -v kwriteconfig6 &>/dev/null; then
-    kwriteconfig6 --file kdeglobals --group KDE --key widgetStyle kvantum
+    kwriteconfig6 --notify --file kdeglobals --group KDE --key widgetStyle kvantum
     ok "Widget style installed"
   fi
 }
@@ -36,7 +36,7 @@ install() {
 uninstall() {
   if [[ -d "$DEST_DIR" ]]; then
     if command -v kwriteconfig6 &>/dev/null; then
-      kwriteconfig6 --file kdeglobals --group KDE --key widgetStyle Breeze
+      kwriteconfig6 --notify --file kdeglobals --group KDE --key widgetStyle Breeze
       ok "Widget style reset to Breeze"
     fi
     if command -v kvantummanager &>/dev/null; then
