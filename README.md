@@ -51,7 +51,7 @@ A complete environment, not just a coat of paint.
 
 ## Screenshots
 
-### KMenu Tahoe
+### Menu
 
 System menu with native QMenu dropdown.
 
