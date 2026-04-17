@@ -12,6 +12,7 @@ import org.kde.kirigami as Kirigami
 AbstractButton {
     id: controlRoot
 
+    font.weight: Font.DemiBold
     property bool menuIsOpen: false
 
     signal activated()
@@ -59,6 +60,6 @@ AbstractButton {
         verticalAlignment: Text.AlignVCenter
         elide: Text.ElideRight
         color: Kirigami.Theme.textColor
-        font.weight: Font.DemiBold
+        font.weight: controlRoot.font.weight
     }
 }
