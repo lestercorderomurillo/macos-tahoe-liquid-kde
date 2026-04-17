@@ -40,16 +40,35 @@ flush_icon_caches() {
   rm -rf "$HOME/.cache/kiconthemes" 2>/dev/null || true
 }
 
+# ── detect a usable session dbus once per shell ──
+# --notify on kwriteconfig6 requires a live session bus; without it the
+# call fails silently and the write gets dropped.  Detect at source time
+# and cache so we don't pay the probe cost on every _kwrite.
+if [[ -z "${_KWRITE_HAS_DBUS+x}" ]]; then
+  if [[ -n "${DBUS_SESSION_BUS_ADDRESS:-}" ]] \
+     && command -v dbus-send &>/dev/null \
+     && dbus-send --session --print-reply --dest=org.freedesktop.DBus \
+          /org/freedesktop/DBus org.freedesktop.DBus.ListNames &>/dev/null; then
+    _KWRITE_HAS_DBUS=1
+  else
+    _KWRITE_HAS_DBUS=0
+  fi
+fi
+
 # ── write a single config key, serialised to avoid concurrent-write loss ──
 # When kwriteconfig6 is invoked rapidly in succession on the same file,
-# its atomic .tmp → rename sequence can race and silently drop writes
-# (seen on systems where dbus notifications aren't immediate).  --notify
-# plus a short delay keeps writes ordered without needing a real lock.
+# its atomic .tmp → rename sequence can race and silently drop writes.
+# --notify adds a dbus round-trip that serialises them — but only works
+# with a live session bus.  Fall back to plain kwriteconfig6 + sync
+# elsewhere (TTY/ssh/systemd-run/sandboxed test contexts).
 _kwrite() {
-  kwriteconfig6 --notify "$@"
-  # Block until the tmp→rename is durable on disk.  kwriteconfig6's
-  # --notify doesn't guarantee fsync; back-to-back callers can otherwise
-  # race and silently drop writes to the same file.
+  if [[ "$_KWRITE_HAS_DBUS" == "1" ]]; then
+    kwriteconfig6 --notify "$@"
+  else
+    kwriteconfig6 "$@"
+  fi
+  # Block until the tmp→rename is durable on disk — without this,
+  # back-to-back callers race and silently drop writes.
   sync
 }
 
