@@ -9,7 +9,17 @@
 _sandbox_setup() {
   SANDBOX=$(mktemp -d) || return 1
   _ORIG_HOME="$HOME"
+  # kwriteconfig6 --file kdeglobals (no path) resolves against
+  # $XDG_CONFIG_HOME → defaults to $HOME/.config only when XDG_CONFIG_HOME
+  # is unset.  GitLab runners (and many CI systems) export XDG_CONFIG_HOME
+  # pointing at the runner user's real config — if we don't override it,
+  # every sandboxed write escapes the sandbox and the assertions read
+  # stale data.  Same story for XDG_DATA_HOME and .local/share/color-schemes.
+  _ORIG_XDG_CONFIG_HOME="${XDG_CONFIG_HOME-__unset__}"
+  _ORIG_XDG_DATA_HOME="${XDG_DATA_HOME-__unset__}"
   export HOME="$SANDBOX"
+  export XDG_CONFIG_HOME="$SANDBOX/.config"
+  export XDG_DATA_HOME="$SANDBOX/.local/share"
   mkdir -p "$SANDBOX/.local/share/color-schemes" \
            "$SANDBOX/.config"                      \
            "$SANDBOX/.cache"
@@ -20,6 +30,10 @@ _sandbox_setup() {
 }
 _sandbox_teardown() {
   export HOME="$_ORIG_HOME"
+  if [[ "$_ORIG_XDG_CONFIG_HOME" == "__unset__" ]]; then unset XDG_CONFIG_HOME
+  else export XDG_CONFIG_HOME="$_ORIG_XDG_CONFIG_HOME"; fi
+  if [[ "$_ORIG_XDG_DATA_HOME" == "__unset__" ]]; then unset XDG_DATA_HOME
+  else export XDG_DATA_HOME="$_ORIG_XDG_DATA_HOME"; fi
   rm -rf "$SANDBOX" 2>/dev/null
 }
 
