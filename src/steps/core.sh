@@ -30,17 +30,19 @@ _show_banner() {
   local line
   echo ""
   while IFS= read -r line; do
-    echo -e "  ${GREEN}${BOLD}${line}${RESET}"
+    echo -e "  ${RED}${BOLD}${line}${RESET}"
   done <<'EOF'
-             .:'
-         __ :'__
-      .'`__`-'__`'.
-     :__________.-'
-     :_________:
-      :_________`-;
-       `.__.-.__.'
+                   .:'
+                 __ :'__
+              .'`__`-'__`'.
+             :__________.-'
+             :_________:
+              :_________`-;
+               `.__.-.__.'
 EOF
-  echo -e "  ${GREEN}${BOLD}      MacTahoe Liquid KDE v${THEME_VERSION}${RESET}"
+  echo ""
+  echo -e "  ${GREEN}${BOLD}        MacTahoe Liquid KDE ${WHITE}v${THEME_VERSION}${RESET}"
+  echo -e "  ${WHITE}            Developed by Lester${RESET}"
   echo ""
 }
 

@@ -122,7 +122,7 @@ assert "uninstall.sh --help exits 0"        bash "$REPO/uninstall.sh" --help
 assert "core.sh exists"                     test -f "$STEPS/core.sh"
 assert "functions.sh exists"                test -f "$STEPS/functions.sh"
 assert_grep "core.sh has CLI banner"        "$STEPS/core.sh" '_show_banner\(\)'
-assert_grep "core.sh banner prints version" "$STEPS/core.sh" 'MacTahoe Liquid KDE v'
+assert_grep "core.sh banner prints version" "$STEPS/core.sh" 'MacTahoe Liquid KDE .*THEME_VERSION'
 assert "theme-switch.sh exists"             test -f "$OFFLINE/theme-switch.sh"
 assert "set-transparency.sh exists"         test -f "$SRC/scripts/set-transparency.sh"
 assert "set-transparency.sh --help exits 0" bash "$SRC/scripts/set-transparency.sh" --help

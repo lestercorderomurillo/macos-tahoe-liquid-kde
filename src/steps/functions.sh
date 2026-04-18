@@ -4,7 +4,7 @@
 
 # ── logging ──────────────────────────────────────────────────────
 GREEN='\033[0;32m'; YELLOW='\033[1;33m'
-RED='\033[0;31m'; RESET='\033[0m'; BOLD='\033[1m'
+RED='\033[0;31m'; WHITE='\033[1;37m'; RESET='\033[0m'; BOLD='\033[1m'
 
 ok()        { echo -e "  ${GREEN}✓${RESET}  $*"; }
 reinstall() { echo -e "  ${GREEN}↺${RESET}  $* (reinstalled)"; }

@@ -149,7 +149,7 @@ bash install.sh --light                          # force light
 ```
 
 - **`--auto`** enables Plasma's native autoswitcher, which transitions between light and dark based on sunrise/sunset times. A watcher service keeps Kvantum and GTK in sync.
-- In `v0.4.2`, the transparency helper keeps the dock at `0.12` unless `--dock` is set explicitly, and the CLI now shows a versioned ASCII Apple banner.
+- In `v0.5.0`, the transparency helper keeps the dock at `0.12` unless `--dock` is set explicitly, and the CLI now shows the refined versioned ASCII Apple banner.
 - **`--light`** / **`--dark`** forces one mode and disables the autoswitcher.
 
 After install, you can switch manually:
