@@ -65,9 +65,9 @@ System menu with native QMenu dropdown.
 <td align="center"><img src="src/screenshots/menu-dark.png" width="250"><br><sub>Dark Variant</sub></td>
 </tr></table>
 
-### About This Computer
+### System Information
 
-Glass window with system info.
+Glass window with the system information.
 
 <table align="center"><tr>
 <td align="center"><img src="src/screenshots/about.png" width="250"><br><sub>Light Variant</sub></td>
@@ -153,7 +153,7 @@ bash install.sh --light                          # force light
 ```
 
 - **`--auto`** enables Plasma's native autoswitcher, which transitions between light and dark based on sunrise/sunset times. A watcher service keeps Kvantum and GTK in sync.
-- In `v0.5.1`, the theme switcher now catches up correctly on login if Plasma crosses the scheduled sunrise/sunset boundary while you were logged out. The transparency helper still keeps the dock at `0.12` unless `--dock` is set explicitly, and the CLI keeps the refined versioned ASCII Apple banner.
+- In `v0.5.2`, the System Information docs now match the app naming, and the About window shows logical CPU threads with physical core counts when available. The theme switcher still catches up correctly on login after scheduled light/dark transitions, and the dock default remains `0.12` unless `--dock` is set explicitly.
 - **`--light`** / **`--dark`** forces one mode and disables the autoswitcher.
 
 After install, you can switch manually:

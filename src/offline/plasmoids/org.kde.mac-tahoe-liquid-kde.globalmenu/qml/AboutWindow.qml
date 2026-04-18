@@ -89,9 +89,16 @@ Window {
                     raw = raw.replace(/\s+/g, " ").trim();
                     aboutWindow.cpuInfo = raw;
                 }
-                let cores = stdout.match(/^CPU\(s\):\s+(\d+)/m);
-                if (cores)
-                    aboutWindow.cpuCores = cores[1];
+                let logicalCores = stdout.match(/^CPU\(s\):\s+(\d+)/m);
+                let coresPerSocket = stdout.match(/^Core\(s\) per socket:\s+(\d+)/m);
+                let sockets = stdout.match(/^Socket\(s\):\s+(\d+)/m);
+                if (logicalCores) {
+                    let logical = logicalCores[1];
+                    let physical = "";
+                    if (coresPerSocket && sockets)
+                        physical = String(parseInt(coresPerSocket[1]) * parseInt(sockets[1]));
+                    aboutWindow.cpuCores = physical ? (logical + " (" + physical + " physical)") : logical;
+                }
             } else if (sourceName.indexOf("board_serial") !== -1) {
                 let s = stdout.trim();
                 aboutWindow.serialNumber = (s && s !== "" && s !== "None"
