@@ -163,6 +163,24 @@ _sandbox_setup
 (source "$THEME_SWITCH" 2>/dev/null; type _apply_color_groups_direct &>/dev/null)
 rc=$?
 assert "theme-switch sourceable"     test $rc -eq 0
+assert "auto startup sync reapplies stale saved mode" bash -c '
+  source "'"$THEME_SWITCH"'" 2>/dev/null
+  get_system_preference(){ echo light; }
+  _current_theme_mode(){ echo dark; }
+  apply(){ printf "apply:%s:%s\n" "$1" "$2"; }
+  apply_extras(){ printf "extras:%s\n" "$1"; }
+  trace=$(sync_auto_mode_on_startup)
+  [[ "$trace" == *"apply:light:boot"* ]] && [[ "$trace" != *"extras:"* ]]
+'
+assert "auto startup sync skips full apply when mode already matches" bash -c '
+  source "'"$THEME_SWITCH"'" 2>/dev/null
+  get_system_preference(){ echo light; }
+  _current_theme_mode(){ echo light; }
+  apply(){ printf "apply:%s:%s\n" "$1" "$2"; }
+  apply_extras(){ printf "extras:%s\n" "$1"; }
+  trace=$(sync_auto_mode_on_startup)
+  [[ "$trace" == *"extras:light"* ]] && [[ "$trace" != *"apply:"* ]]
+'
 
 # Transition: BreezeLight → MacTahoeLiquidKdeDark
 _seed_kdeglobals_breezelight

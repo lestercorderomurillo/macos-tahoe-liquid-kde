@@ -247,6 +247,16 @@ detect_mode() {
   if [[ "$pref" != "none" ]]; then echo "$pref"; else detect_mode_by_time; fi
 }
 
+# ── detect the target mode for auto-mode startup ──
+# At login, kdeglobals can still reflect the previous session's mode until
+# Plasma's autoswitcher finishes reconciling sunrise/sunset. For startup
+# catch-up we prefer the live schedule signal (portal), then fall back to
+# time-of-day if the portal is unavailable.
+detect_auto_target_mode() {
+  local pref; pref=$(get_system_preference)
+  if [[ "$pref" != "none" ]]; then echo "$pref"; else detect_mode_by_time; fi
+}
+
 # ── Plasma native auto mode ──
 enable_auto_mode() {
   command -v kwriteconfig6 &>/dev/null || return 1
@@ -413,14 +423,32 @@ wait_for_plasma() {
   return 0
 }
 
+# ── sync auto mode on session start ──
+# If the user logs in after the scheduled light/dark transition, the last
+# saved ColorScheme in kdeglobals can be stale. Compare the current saved
+# mode against the current target mode and force a full apply only when they
+# differ; otherwise just refresh the extras.
+sync_auto_mode_on_startup() {
+  local target_mode current_mode
+  target_mode=$(detect_auto_target_mode)
+  current_mode=$(_current_theme_mode 2>/dev/null || true)
+
+  if [[ -n "$current_mode" && "$current_mode" == "$target_mode" ]]; then
+    apply_extras "$target_mode"
+  else
+    apply "$target_mode" boot
+  fi
+
+  echo "$target_mode"
+}
+
 # ── watch mode: monitor dbus for color scheme changes ──
 # Plasma's native autoswitcher drives the schedule; this applies
 # Kvantum + GTK extras whenever the color scheme changes.
 watch_loop() {
   wait_for_plasma || { echo "Plasma not ready after 60s, exiting" >&2; exit 1; }
 
-  local last_mode; last_mode=$(detect_mode)
-  apply_extras "$last_mode"
+  local last_mode; last_mode=$(sync_auto_mode_on_startup)
 
   dbus-monitor --session "type='signal',interface='org.freedesktop.portal.Settings',member='SettingChanged'" 2>/dev/null | \
   while read -r line; do
