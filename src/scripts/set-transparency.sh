@@ -5,7 +5,7 @@
 # Examples:
 #   bash set-transparency.sh 60                  # everything at 60%
 #   bash set-transparency.sh 75 --dock 15        # 75% general, 15% dock
-#   bash set-transparency.sh 75 --dock 15 --apply  # same + install live
+#   bash set-transparency.sh 75 --apply          # same + install live, dock stays at 12%
 #
 # Does NOT touch buttons, text, shadows, or highlight colors.
 set -uo pipefail
@@ -19,19 +19,20 @@ if [[ $# -lt 1 ]] || [[ "$1" == "-h" ]] || [[ "$1" == "--help" ]]; then
 Usage: bash set-transparency.sh <percent> [--dock <percent>] [--apply]
 
   <percent>          Background opacity 0–100 (e.g. 60 = 60% opaque)
-  --dock <percent>   Separate opacity for the dock panel (default: same as main)
+  --dock <percent>   Separate opacity for the dock panel (default: 12)
   --apply            Install to live system and restart plasmashell
 
 Examples:
   bash set-transparency.sh 60                    # everything at 60%
   bash set-transparency.sh 75 --dock 15          # 75% general, 15% dock
-  bash set-transparency.sh 75 --dock 15 --apply  # same + install live
+  bash set-transparency.sh 75 --apply            # same + install live, dock stays at 12%
 EOF
   exit 0
 fi
 
 PCT="$1"; shift
-DOCK_PCT="$PCT"
+DEFAULT_DOCK_PCT=12
+DOCK_PCT="$DEFAULT_DOCK_PCT"
 APPLY=false
 
 while [[ $# -gt 0 ]]; do
@@ -95,7 +96,7 @@ update_svg() {
   [[ -f "$file" ]] || return
   local tmp; tmp=$(mktemp)
   gunzip -c "$file" > "$tmp"
-  sed -i -E "s/opacity:0\.(0[5-9]|[1-8][0-9]|9[0-5]);fill/opacity:${opacity};fill/g" "$tmp"
+  sed -i -E "s/opacity:(0\.585|0\.(0[5-9]|[1-8][0-9]|9[0-5]));fill/opacity:${opacity};fill/g" "$tmp"
   gzip -c "$tmp" > "$file"
   rm -f "$tmp"
 }
@@ -107,7 +108,6 @@ for variant in MacTahoeLiquidKde-Dark MacTahoeLiquidKde-Light; do
     echo "  ✓ $variant/$svg → ${SVG_OPACITY}"
   done
 
-  # Dock/panel at its own opacity
   update_svg "$PLASMA/$variant/widgets/panel-background.svgz" "$DOCK_OPACITY"
   echo "  ✓ $variant/widgets/panel-background → ${DOCK_OPACITY} (dock)"
 done

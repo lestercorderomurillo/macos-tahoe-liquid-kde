@@ -55,6 +55,7 @@ _export_flags
 
 [[ -d "$SRC" ]] || { echo -e "${RED}  Run from repo root.${RESET}" >&2; exit 1; }
 
+_show_banner
 _confirm "In development — Install at your own risk."
 
 # ── Verification ─────────────────────────────────────────────────

@@ -8,16 +8,40 @@ STEPS="$SRC/steps"
 OFFLINE="$SRC/offline"
 BUILD="$REPO/build"
 CONFIG="$REPO/features.json"
+VERSION_FILE="$REPO/VERSION"
 
 source "$STEPS/functions.sh"
 
 ERRORS=()
 STEP=0
+THEME_VERSION="0.0.0"
+if [[ -f "$VERSION_FILE" ]]; then
+  THEME_VERSION=$(tr -d '[:space:]' < "$VERSION_FILE")
+fi
+[[ "$THEME_VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]] || THEME_VERSION="0.0.0"
 
 step() {
   ((STEP++))
   echo ""
   echo -e "${GREEN}${BOLD}  Step ${STEP}: $*${RESET}"
+}
+
+_show_banner() {
+  local line
+  echo ""
+  while IFS= read -r line; do
+    echo -e "  ${GREEN}${BOLD}${line}${RESET}"
+  done <<'EOF'
+             .:'
+         __ :'__
+      .'`__`-'__`'.
+     :__________.-'
+     :_________:
+      :_________`-;
+       `.__.-.__.'
+EOF
+  echo -e "  ${GREEN}${BOLD}      MacTahoe Liquid KDE v${THEME_VERSION}${RESET}"
+  echo ""
 }
 
 # ── feature flags ────────────────────────────────────────────────

@@ -41,6 +41,7 @@ _export_flags
 
 [[ -d "$SRC" ]] || { echo -e "${RED}  Run from repo root.${RESET}" >&2; exit 1; }
 
+_show_banner
 _confirm "This will reset your desktop to Breeze defaults."
 
 # ── Verification ─────────────────────────────────────────────────

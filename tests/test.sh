@@ -113,12 +113,16 @@ echo "MacTahoe Liquid KDE — Tests"
 # ═══════════════════════════════════════════════════════════════════
 echo ""
 echo "scripts"
+assert "VERSION file exists"                 test -f "$REPO/VERSION"
+assert_grep "VERSION is semver"             "$REPO/VERSION" '^[0-9]+\.[0-9]+\.[0-9]+$'
 assert "install.sh exists"                  test -f "$REPO/install.sh"
 assert "uninstall.sh exists"                test -f "$REPO/uninstall.sh"
 assert "install.sh --help exits 0"          bash "$REPO/install.sh" --help
 assert "uninstall.sh --help exits 0"        bash "$REPO/uninstall.sh" --help
 assert "core.sh exists"                     test -f "$STEPS/core.sh"
 assert "functions.sh exists"                test -f "$STEPS/functions.sh"
+assert_grep "core.sh has CLI banner"        "$STEPS/core.sh" '_show_banner\(\)'
+assert_grep "core.sh banner prints version" "$STEPS/core.sh" 'MacTahoe Liquid KDE v'
 assert "theme-switch.sh exists"             test -f "$OFFLINE/theme-switch.sh"
 assert "set-transparency.sh exists"         test -f "$SRC/scripts/set-transparency.sh"
 assert "set-transparency.sh --help exits 0" bash "$SRC/scripts/set-transparency.sh" --help
@@ -436,6 +440,9 @@ assert_grep "theme-switch auto uses detect_mode"      "$TSW" 'apply "\$\(detect_
 assert_grep "theme-switch syncs WM colors"            "$TSW" 'Colors:\*|ColorEffects:\*|WM'
 assert_grep "has --dock parameter"          "$TS" "\-\-dock"
 assert_grep "has --apply parameter"         "$TS" "\-\-apply"
+assert_grep "dock default constant is 12"   "$TS" '^DEFAULT_DOCK_PCT=12$'
+assert_grep "dock help text says default 12" "$TS" 'default: 12'
+assert_grep "reinstall icon is green"       "$STEPS/functions.sh" '^reinstall\(\).*GREEN'
 
 # ═══════════════════════════════════════════════════════════════════
 if command -v cmake &>/dev/null; then

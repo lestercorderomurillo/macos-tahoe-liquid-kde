@@ -108,6 +108,24 @@ _ini_get() {
   ' "$file"
 }
 
+_transparency_fixture_setup() {
+  TRANS_FIXTURE=$(mktemp -d) || return 1
+  mkdir -p "$TRANS_FIXTURE/src/scripts" "$TRANS_FIXTURE/src/offline" || return 1
+  cp "$SRC/scripts/set-transparency.sh" "$TRANS_FIXTURE/src/scripts/" || return 1
+  cp -R "$OFFLINE/kvantum" "$TRANS_FIXTURE/src/offline/" || return 1
+  cp -R "$OFFLINE/plasma-theme" "$TRANS_FIXTURE/src/offline/" || return 1
+  cp -R "$OFFLINE/gtk" "$TRANS_FIXTURE/src/offline/" || return 1
+}
+
+_transparency_fixture_teardown() {
+  rm -rf "$TRANS_FIXTURE" 2>/dev/null
+}
+
+_svg_has_fill_opacity() {
+  local file="$1" opacity="$2"
+  gunzip -c "$file" 2>/dev/null | grep -q "opacity:${opacity};fill"
+}
+
 # ── integration test runner ─────────────────────────────────────
 echo ""
 echo "color scheme: direct apply helper"
@@ -284,6 +302,45 @@ assert "switch reinstall: binary present"  test -x "$HOME/.local/bin/mac-tahoe-t
 assert "switch reinstall: service present" test -f "$HOME/.config/systemd/user/mac-tahoe-liquid-kde-theme.service"
 
 _sandbox_teardown
+
+
+# ─────────────────────────────────────────────────────────────────
+echo ""
+echo "transparency script business rules"
+
+_transparency_fixture_setup
+(
+  cd "$TRANS_FIXTURE" &&
+  bash src/scripts/set-transparency.sh 50 >/dev/null
+)
+assert "default dock stays 0.12 (light)" _svg_has_fill_opacity \
+  "$TRANS_FIXTURE/src/offline/plasma-theme/MacTahoeLiquidKde-Light/widgets/panel-background.svgz" "0.12"
+assert "default dock stays 0.12 (dark)" _svg_has_fill_opacity \
+  "$TRANS_FIXTURE/src/offline/plasma-theme/MacTahoeLiquidKde-Dark/widgets/panel-background.svgz" "0.12"
+assert "general opacity becomes 0.50 (light)" _svg_has_fill_opacity \
+  "$TRANS_FIXTURE/src/offline/plasma-theme/MacTahoeLiquidKde-Light/widgets/translucentbackground.svgz" "0.50"
+assert "general opacity becomes 0.50 (dark)" _svg_has_fill_opacity \
+  "$TRANS_FIXTURE/src/offline/plasma-theme/MacTahoeLiquidKde-Dark/widgets/translucentbackground.svgz" "0.50"
+assert "default run does not set dock to 0.50 (light)" bash -c \
+  "! gunzip -c '$TRANS_FIXTURE/src/offline/plasma-theme/MacTahoeLiquidKde-Light/widgets/panel-background.svgz' | grep -q 'opacity:0.50;fill'"
+assert "default run does not set dock to 0.50 (dark)" bash -c \
+  "! gunzip -c '$TRANS_FIXTURE/src/offline/plasma-theme/MacTahoeLiquidKde-Dark/widgets/panel-background.svgz' | grep -q 'opacity:0.50;fill'"
+_transparency_fixture_teardown
+
+_transparency_fixture_setup
+(
+  cd "$TRANS_FIXTURE" &&
+  bash src/scripts/set-transparency.sh 50 --dock 15 >/dev/null
+)
+assert "explicit dock override sets 0.15 (light)" _svg_has_fill_opacity \
+  "$TRANS_FIXTURE/src/offline/plasma-theme/MacTahoeLiquidKde-Light/widgets/panel-background.svgz" "0.15"
+assert "explicit dock override sets 0.15 (dark)" _svg_has_fill_opacity \
+  "$TRANS_FIXTURE/src/offline/plasma-theme/MacTahoeLiquidKde-Dark/widgets/panel-background.svgz" "0.15"
+assert "explicit dock override keeps general 0.50 (light)" _svg_has_fill_opacity \
+  "$TRANS_FIXTURE/src/offline/plasma-theme/MacTahoeLiquidKde-Light/widgets/translucentbackground.svgz" "0.50"
+assert "explicit dock override keeps general 0.50 (dark)" _svg_has_fill_opacity \
+  "$TRANS_FIXTURE/src/offline/plasma-theme/MacTahoeLiquidKde-Dark/widgets/translucentbackground.svgz" "0.50"
+_transparency_fixture_teardown
 
 
 # ─────────────────────────────────────────────────────────────────
