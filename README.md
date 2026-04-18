@@ -9,15 +9,6 @@ A full macOS Tahoe-style desktop experience for KDE Plasma 6.6+.
 
 A complete environment, not just a coat of paint.
 
-## Latest Release
-
-### v0.4.1
-
-- Fixed KDE color-scheme writes so nested groups like `[Colors:Header][Inactive]` are stored correctly instead of being escaped into malformed sections.
-- Added cleanup for stale malformed color groups in `kdeglobals`, preventing light/dark palette contamination after installs or theme switches.
-- Made install, uninstall, and theme switching use the same robust KDE color-config path instead of relying on flaky `plasma-apply-colorscheme` behavior.
-- Synced window controls to macOS order across KWin and GTK headerbars: `close, minimize, maximize`.
-
 ---
 
 ## Roadmap
