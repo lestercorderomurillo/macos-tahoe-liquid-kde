@@ -27,6 +27,8 @@ install() {
       fail "$variant (copy failed)"
     fi
   done
+  command -v gsettings &>/dev/null && \
+    gsettings set org.gnome.desktop.wm.preferences button-layout 'close,minimize,maximize:' &>/dev/null || true
   # NEVER write to ~/.config/gtk-4.0/ — KDE's plasma-integration manages it
   info "$((n_inst+n_re)) GTK themes — $n_inst installed, $n_re reinstalled"
 }
@@ -47,6 +49,7 @@ uninstall() {
   command -v gsettings &>/dev/null && {
     gsettings reset org.gnome.desktop.interface gtk-theme &>/dev/null || true
     gsettings reset org.gnome.desktop.interface color-scheme &>/dev/null || true
+    gsettings reset org.gnome.desktop.wm.preferences button-layout &>/dev/null || true
   }
   info "$n GTK themes removed"
 }

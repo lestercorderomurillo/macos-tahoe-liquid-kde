@@ -13,7 +13,7 @@ cursorTheme=MacTahoeLiquidKde-Dark
 
 [kwinrc][org.kde.kdecoration2]
 BorderSize=Tiny
-ButtonsOnLeft=XAI
+ButtonsOnLeft=XIA
 ButtonsOnRight=
 library=org.kde.kwin.aurorae
 theme=__aurorae__svg__MacTahoeLiquidKde-Dark

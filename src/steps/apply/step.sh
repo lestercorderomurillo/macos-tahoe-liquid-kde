@@ -127,7 +127,12 @@ uninstall() {
         [[ -d "$p" ]] && { plasma-apply-wallpaperimage "$p" &>/dev/null || true; ok "Wallpaper reset"; break; }
       done
     fi
-    plasma-apply-colorscheme BreezeLight &>/dev/null || true
+    if [[ -f "$OFFLINE/theme-switch.sh" ]]; then
+      source "$OFFLINE/theme-switch.sh"
+      reset_kde_color_scheme_config "BreezeLight"
+    else
+      kw_write --file kdeglobals --group General --key ColorScheme "BreezeLight"
+    fi
     ok "Color scheme reset"
   fi
 

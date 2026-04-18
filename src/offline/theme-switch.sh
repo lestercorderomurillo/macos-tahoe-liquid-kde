@@ -72,6 +72,84 @@ _kwrite() {
   sync
 }
 
+# ── convert a KDE config section path into repeated --group args ──
+# kwriteconfig6 expects nested groups to be passed as:
+#   --group "Colors:Header" --group "Inactive"
+# not as a single escaped string like "Colors:Header][Inactive".
+_build_group_args() {
+  local section="$1"
+  local rest="$section"
+  _GROUP_ARGS=()
+
+  while [[ "$rest" =~ ^([^\[]+)\]\[(.+)$ ]]; do
+    _GROUP_ARGS+=(--group "${BASH_REMATCH[1]}")
+    rest="${BASH_REMATCH[2]}"
+  done
+  _GROUP_ARGS+=(--group "$rest")
+}
+
+# ── remove malformed escaped nested color groups left by older writers ──
+# Older versions wrote nested sections like [Colors:Header][Inactive] as
+# [Colors:Header\x5d\x5bInactive]. Clean those sections out before applying
+# the correct palette so stale light/dark values cannot survive.
+_scrub_malformed_color_groups() {
+  local kdeglobals_path="${XDG_CONFIG_HOME:-$HOME/.config}/kdeglobals"
+  [[ -f "$kdeglobals_path" ]] || return 0
+
+  local tmp
+  tmp=$(mktemp "${TMPDIR:-/tmp}/kdeglobals.XXXXXX") || return 1
+
+  awk '
+    /^\[(Colors:|ColorEffects:).*(\\x5d\\x5b).*\]$/ { skip=1; next }
+    skip && /^\[/ { skip=0 }
+    !skip { print }
+  ' "$kdeglobals_path" > "$tmp" && mv "$tmp" "$kdeglobals_path"
+}
+
+# ── delete all explicit color keys from kdeglobals ──
+# Used before rewriting a palette, and during uninstall when resetting to a
+# system scheme such as BreezeLight. This leaves non-color settings intact.
+_delete_color_groups_direct() {
+  command -v kwriteconfig6 &>/dev/null || return 1
+
+  local kdeglobals_path="${XDG_CONFIG_HOME:-$HOME/.config}/kdeglobals"
+  [[ -f "$kdeglobals_path" ]] || return 0
+
+  _scrub_malformed_color_groups || true
+
+  while IFS=$'\t' read -r group key; do
+    [[ -n "$group" && -n "$key" ]] || continue
+    _build_group_args "$group"
+    _kwrite --file kdeglobals "${_GROUP_ARGS[@]}" --key "$key" --delete 2>/dev/null || true
+  done < <(
+    awk '
+      /^\[/{
+        sec=$0
+        sub(/^\[/, "", sec)
+        sub(/\]$/, "", sec)
+        next
+      }
+      sec ~ /^(Colors:|ColorEffects:|WM$)/ && /^[[:space:]]*[^#;[:space:]][^=]*=/ {
+        key=$0
+        sub(/[[:space:]]*=.*/, "", key)
+        gsub(/^[[:space:]]+|[[:space:]]+$/, "", key)
+        if (length(key) > 0) print sec "\t" key
+      }
+    ' "$kdeglobals_path" | sort -u
+  )
+}
+
+# ── reset kdeglobals to a named color scheme without leaving stale overrides ──
+# This writes only the scheme name and removes explicit [Colors:*] / [WM] /
+# [ColorEffects:*] overrides so KDE reloads the target scheme cleanly.
+reset_kde_color_scheme_config() {
+  local scheme="$1"
+  command -v kwriteconfig6 &>/dev/null || return 1
+
+  _delete_color_groups_direct || true
+  _kwrite --file kdeglobals --group General --key ColorScheme "$scheme"
+}
+
 # ── force-write colour groups from a .colors file ──
 # plasma-apply-colorscheme is unreliable during install — it can silently
 # fail and leave stale values from a previous scheme in kdeglobals. We
@@ -94,27 +172,7 @@ _apply_color_groups_direct() {
 
   # First remove old keys in all colour-related groups so stale values from a
   # previous scheme cannot survive when the new scheme omits a key.
-  if [[ -f "$kdeglobals_path" ]]; then
-    while IFS=$'\t' read -r group key; do
-      [[ -n "$group" && -n "$key" ]] || continue
-      _kwrite --file kdeglobals --group "$group" --key "$key" --delete 2>/dev/null || true
-    done < <(
-      awk '
-        /^\[/{
-          sec=$0
-          sub(/^\[/, "", sec)
-          sub(/\]$/, "", sec)
-          next
-        }
-        sec ~ /^(Colors:|ColorEffects:|WM$)/ && /^[[:space:]]*[^#;[:space:]][^=]*=/ {
-          key=$0
-          sub(/[[:space:]]*=.*/, "", key)
-          gsub(/^[[:space:]]+|[[:space:]]+$/, "", key)
-          if (length(key) > 0) print sec "\t" key
-        }
-      ' "$kdeglobals_path" | sort -u
-    )
-  fi
+  _delete_color_groups_direct || true
 
   # Parse colour-related groups and write each key
   local group="" key value section
@@ -133,7 +191,8 @@ _apply_color_groups_direct() {
       value="${BASH_REMATCH[2]}"
       key="${key#"${key%%[![:space:]]*}"}"
       key="${key%"${key##*[![:space:]]}"}"
-      _kwrite --file kdeglobals --group "$group" \
+      _build_group_args "$group"
+      _kwrite --file kdeglobals "${_GROUP_ARGS[@]}" \
         --key "$key" "$value" 2>/dev/null || true
     fi
   done < "$scheme_file"
@@ -221,6 +280,7 @@ apply_extras() {
     _qdbus org.kde.GtkConfig /GtkConfig org.kde.GtkConfig.setGtkTheme "$gtk_theme" &>/dev/null || true
     if command -v gsettings &>/dev/null; then
       gsettings set org.gnome.desktop.interface gtk-theme "$gtk_theme" &>/dev/null || true
+      gsettings set org.gnome.desktop.wm.preferences button-layout 'close,minimize,maximize:' &>/dev/null || true
       if [[ "$mode" == "dark" ]]; then
         gsettings set org.gnome.desktop.interface color-scheme 'prefer-dark' &>/dev/null || true
       else
@@ -289,7 +349,7 @@ write_kde_theme_config() {
   _kwrite --file kwinrc --group "org.kde.kdecoration2" --key library "org.kde.kwin.aurorae"
   _kwrite --file kwinrc --group "org.kde.kdecoration2" --key theme    "$aurorae_theme"
   _kwrite --file kwinrc --group "org.kde.kdecoration2" --key BorderSize     "Tiny"
-  _kwrite --file kwinrc --group "org.kde.kdecoration2" --key ButtonsOnLeft  "XAI"
+  _kwrite --file kwinrc --group "org.kde.kdecoration2" --key ButtonsOnLeft  "XIA"
   _kwrite --file kwinrc --group "org.kde.kdecoration2" --key ButtonsOnRight ""
 
   # Copy the actual [Colors:*] / [ColorEffects:*] groups into kdeglobals.
@@ -314,13 +374,9 @@ apply() {
 
   if [[ "$context" == "install" ]]; then
     # Skip plasma-apply-lookandfeel during install — it triggers a QML engine
-    # teardown race (SIGABRT in org.kde.panel.so).  The plasma restart at end
-    # of install loads the on-disk config we just wrote.
-    if command -v plasma-apply-colorscheme &>/dev/null; then
-      local color_scheme
-      [[ "$mode" == "dark" ]] && color_scheme="MacTahoeLiquidKdeDark" || color_scheme="MacTahoeLiquidKdeLight"
-      plasma-apply-colorscheme "$color_scheme" &>/dev/null || true
-    fi
+    # teardown race (SIGABRT in org.kde.panel.so). The Plasma restart at the
+    # end of install loads the on-disk theme and color config we just wrote.
+    :
   elif command -v plasma-apply-lookandfeel &>/dev/null; then
     plasma-apply-lookandfeel -a "$laf" --keep-auto &>/dev/null || _errors+=("global-theme")
   fi
