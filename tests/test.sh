@@ -478,7 +478,8 @@ assert_grep "updates gtk3 background.csd"   "$TS" "background\.csd"
 TSW="$OFFLINE/theme-switch.sh"
 assert_grep "theme-switch has direct color fallback" "$TSW" "_apply_color_groups_direct"
 assert_grep "theme-switch reads .colors file"        "$TSW" "\.colors"
-assert_grep "theme-switch auto uses detect_mode"      "$TSW" 'apply "\$\(detect_mode\)"'
+assert_grep "theme-switch auto is time-based"         "$TSW" 'apply "\$\(detect_mode_by_time\)"'
+assert_grep "theme-switch auto disables AutomaticLookAndFeel" "$TSW" 'AutomaticLookAndFeel false'
 assert_grep "theme-switch syncs WM colors"            "$TSW" 'Colors:\*|ColorEffects:\*|WM'
 assert_grep "has --dock parameter"          "$TS" "\-\-dock"
 assert_grep "has --apply parameter"         "$TS" "\-\-apply"

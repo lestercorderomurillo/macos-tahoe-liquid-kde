@@ -3,8 +3,16 @@
 
 SWITCH_SRC="$OFFLINE/theme-switch.sh"
 SWITCH_DEST="$HOME/.local/bin/mac-tahoe-theme-switch"
-SVC_SRC="$OFFLINE/mac-tahoe-liquid-kde-theme.service"
-SVC_DEST="$HOME/.config/systemd/user/mac-tahoe-liquid-kde-theme.service"
+SVC_DIR="$HOME/.config/systemd/user"
+
+# unit file pairs: watch service (reacts to manual overrides) + timer + oneshot
+# apply service (fires at 06:00 / 18:00). All three ship together so the
+# 6–18 schedule is enforced even across reboots, suspends, and late logins.
+UNITS=(
+  mac-tahoe-liquid-kde-theme.service
+  mac-tahoe-liquid-kde-theme.timer
+  mac-tahoe-liquid-kde-theme-apply.service
+)
 
 install() {
   if [[ -f "$SWITCH_SRC" ]]; then
@@ -12,16 +20,22 @@ install() {
     cp -f "$SWITCH_SRC" "$SWITCH_DEST"
     chmod +x "$SWITCH_DEST"
   fi
-  if [[ -f "$SVC_SRC" ]]; then
-    mkdir -p "$HOME/.config/systemd/user"
-    cp -f "$SVC_SRC" "$SVC_DEST"
-    systemctl --user daemon-reload 2>/dev/null || true
-    if [[ "$THEME_MODE" == "auto" ]]; then
-      systemctl --user enable --now mac-tahoe-liquid-kde-theme.service &>/dev/null || true
-    else
-      systemctl --user disable --now mac-tahoe-liquid-kde-theme.service &>/dev/null || true
-    fi
+
+  mkdir -p "$SVC_DIR"
+  for u in "${UNITS[@]}"; do
+    [[ -f "$OFFLINE/$u" ]] && cp -f "$OFFLINE/$u" "$SVC_DIR/$u"
+  done
+  systemctl --user daemon-reload 2>/dev/null || true
+
+  if [[ "$THEME_MODE" == "auto" ]]; then
+    systemctl --user enable --now mac-tahoe-liquid-kde-theme.service &>/dev/null || true
+    systemctl --user enable --now mac-tahoe-liquid-kde-theme.timer   &>/dev/null || true
+  else
+    # explicit light/dark: user owns the preference, no scheduler
+    systemctl --user disable --now mac-tahoe-liquid-kde-theme.service &>/dev/null || true
+    systemctl --user disable --now mac-tahoe-liquid-kde-theme.timer   &>/dev/null || true
   fi
+
   if [[ -x "$SWITCH_DEST" ]]; then
     ok "Theme switcher installed"
   else
@@ -30,9 +44,10 @@ install() {
 }
 
 uninstall() {
-  for svc in mac-tahoe-liquid-kde-theme.service mactahoe-theme-watcher.service; do
+  for svc in mac-tahoe-liquid-kde-theme.service mac-tahoe-liquid-kde-theme.timer \
+             mac-tahoe-liquid-kde-theme-apply.service mactahoe-theme-watcher.service; do
     systemctl --user disable --now "$svc" 2>/dev/null || true
-    rm -f "$HOME/.config/systemd/user/$svc" 2>/dev/null
+    rm -f "$SVC_DIR/$svc" 2>/dev/null
   done
   systemctl --user daemon-reload 2>/dev/null || true
   rm -f "$HOME/.local/bin/mac-tahoe-theme-switch" "$HOME/.local/bin/mactahoe-theme-switch" 2>/dev/null

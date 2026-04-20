@@ -290,6 +290,8 @@ EOF
 )
 assert "switch install: binary present"  test -x "$HOME/.local/bin/mac-tahoe-theme-switch"
 assert "switch install: service present" test -f "$HOME/.config/systemd/user/mac-tahoe-liquid-kde-theme.service"
+assert "switch install: timer present"   test -f "$HOME/.config/systemd/user/mac-tahoe-liquid-kde-theme.timer"
+assert "switch install: apply service present" test -f "$HOME/.config/systemd/user/mac-tahoe-liquid-kde-theme-apply.service"
 
 (
   export OFFLINE="$SRC/offline"
@@ -300,6 +302,8 @@ assert "switch install: service present" test -f "$HOME/.config/systemd/user/mac
 )
 assert "switch uninstall: binary removed"  test ! -e "$HOME/.local/bin/mac-tahoe-theme-switch"
 assert "switch uninstall: service removed" test ! -e "$HOME/.config/systemd/user/mac-tahoe-liquid-kde-theme.service"
+assert "switch uninstall: timer removed"   test ! -e "$HOME/.config/systemd/user/mac-tahoe-liquid-kde-theme.timer"
+assert "switch uninstall: apply service removed" test ! -e "$HOME/.config/systemd/user/mac-tahoe-liquid-kde-theme-apply.service"
 val=$(_ini_get "$HOME/.config/kdeglobals" "KDE" "AutomaticLookAndFeel")
 assert "switch uninstall: auto mode disabled" test "$val" = "false"
 val=$(_ini_get "$HOME/.config/kdeglobals" "KDE" "DefaultLightLookAndFeel")

@@ -11,6 +11,12 @@ install() {
   fi
 
   mkdir -p "$DEST_DIR"
+
+  # purge legacy names from pre-0.6.2 installs
+  for stale in MacTahoe-Dark MacTahoe-Light; do
+    [[ -d "$DEST_DIR/$stale" ]] && rm -rf "$DEST_DIR/$stale" 2>/dev/null || true
+  done
+
   local n_inst=0 n_re=0
   for variant in MacTahoeLiquidKde-Dark MacTahoeLiquidKde-Light; do
     [[ -d "$SRC_DIR/$variant" ]] || continue

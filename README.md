@@ -4,7 +4,7 @@
 
 # macOS Tahoe Liquid Theme for KDE Plasma
 
-[![release](https://img.shields.io/github/v/release/lestercorderomurillo/macos-tahoe-liquid-kde?label=release)](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/releases) [![tests](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/actions/workflows/test.yml/badge.svg)](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/actions/workflows/test.yml) [![tests count](https://img.shields.io/badge/tests-370_passing-brightgreen)](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/actions/workflows/test.yml) [![license](https://img.shields.io/badge/license-MIT-blue)](LICENSE) [![plasma](https://img.shields.io/badge/KDE_Plasma-6.6%2B-1d99f3?logo=kde)](https://kde.org/plasma-desktop/) [![last commit](https://img.shields.io/github/last-commit/lestercorderomurillo/macos-tahoe-liquid-kde)](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/commits/) [![stars](https://img.shields.io/github/stars/lestercorderomurillo/macos-tahoe-liquid-kde)](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/stargazers) [![issues](https://img.shields.io/github/issues/lestercorderomurillo/macos-tahoe-liquid-kde)](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/issues)
+[![release](https://img.shields.io/github/v/release/lestercorderomurillo/macos-tahoe-liquid-kde?label=release)](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/releases) [![tests](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/actions/workflows/test.yml/badge.svg)](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/actions/workflows/test.yml) [![tests count](https://img.shields.io/badge/tests-375_passing-brightgreen)](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/actions/workflows/test.yml) [![license](https://img.shields.io/badge/license-MIT-blue)](LICENSE) [![plasma](https://img.shields.io/badge/KDE_Plasma-6.6%2B-1d99f3?logo=kde)](https://kde.org/plasma-desktop/) [![last commit](https://img.shields.io/github/last-commit/lestercorderomurillo/macos-tahoe-liquid-kde)](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/commits/) [![stars](https://img.shields.io/github/stars/lestercorderomurillo/macos-tahoe-liquid-kde)](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/stargazers) [![issues](https://img.shields.io/github/issues/lestercorderomurillo/macos-tahoe-liquid-kde)](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/issues)
 
 > [!CAUTION]
 > **Very experimental** — Under heavy active development. Things will break. Back up your system config before installing. Use at your own risk.
@@ -153,16 +153,16 @@ bash install.sh --dark                           # force dark
 bash install.sh --light                          # force light
 ```
 
-- **`--auto`** enables Plasma's native autoswitcher, which transitions between light and dark based on sunrise/sunset times. A watcher service keeps Kvantum and GTK in sync.
+- **`--auto`** (default) — clock-based switching: light from 06:00 to 18:00, dark otherwise. A systemd timer fires the transitions, and `Persistent=true` catches missed firings (PC off at 06:00 / suspend across 18:00 / late login) so the mode is always correct on wake. We disable Plasma's sunrise/sunset autoswitcher so the XDG portal can't override the schedule. A watcher service keeps Kvantum and GTK in sync on manual overrides.
+- **`--light`** / **`--dark`** forces one mode and disables the timer — the user preference wins.
 - In `v0.6.0`, the dock ships its own task manager applet. App notification counts (Slack, Discord, Telegram, etc.) now render as macOS-style badges — solid red fill, white bold text, tighter pill proportions — replacing the stock blue KDE chip. The fork installs as a compiled system-wide applet and uninstalls cleanly, and the layout scripts point at the new applet id automatically.
-- **`--light`** / **`--dark`** forces one mode and disables the autoswitcher.
 
 After install, you can switch manually:
 
 ```bash
-mac-tahoe-theme-switch light                     # force light (disables auto)
-mac-tahoe-theme-switch dark                      # force dark (disables auto)
-mac-tahoe-theme-switch auto                      # re-enable auto (sunrise/sunset)
+mac-tahoe-theme-switch light                     # force light (disables timer)
+mac-tahoe-theme-switch dark                      # force dark (disables timer)
+mac-tahoe-theme-switch auto                      # re-enable clock-based 6–18
 ```
 
 ### Persistence

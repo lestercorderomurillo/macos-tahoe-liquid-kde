@@ -11,6 +11,13 @@ install() {
   fi
 
   mkdir -p "$DEST_DIR"
+
+  # purge legacy names from pre-0.6.2 installs (internal ColorScheme= was wrong
+  # and Plasma could pick those stale names up, keeping a split state)
+  for stale in MacTahoeDark.colors MacTahoeLight.colors; do
+    [[ -f "$DEST_DIR/$stale" ]] && rm -f "$DEST_DIR/$stale" 2>/dev/null || true
+  done
+
   local n_inst=0 n_re=0
   for cs in "$SRC_DIR"/*.colors; do
     [[ -f "$cs" ]] || continue

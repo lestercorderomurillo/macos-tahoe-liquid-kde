@@ -248,19 +248,20 @@ detect_mode() {
 }
 
 # ── detect the target mode for auto-mode startup ──
-# At login, kdeglobals can still reflect the previous session's mode until
-# Plasma's autoswitcher finishes reconciling sunrise/sunset. For startup
-# catch-up we prefer the live schedule signal (portal), then fall back to
-# time-of-day if the portal is unavailable.
+# Auto is time-based and authoritative (6–18 light, else dark). The portal
+# and kdeglobals can be stale or contradict us after a crash / external tool;
+# ignore them for auto so the 11-AM dark-mode trap can't happen.
 detect_auto_target_mode() {
-  local pref; pref=$(get_system_preference)
-  if [[ "$pref" != "none" ]]; then echo "$pref"; else detect_mode_by_time; fi
+  detect_mode_by_time
 }
 
-# ── Plasma native auto mode ──
+# ── auto mode (time-based, authoritative) ──
+# We explicitly DISABLE Plasma's AutomaticLookAndFeel so the portal / KDE
+# night-color scheduler can't override our 6–18 rule. Our timer + watch
+# service are the only source of truth for auto.
 enable_auto_mode() {
   command -v kwriteconfig6 &>/dev/null || return 1
-  _kwrite --file kdeglobals --group KDE --key AutomaticLookAndFeel true
+  _kwrite --file kdeglobals --group KDE --key AutomaticLookAndFeel false
   _kwrite --file kdeglobals --group KDE --key DefaultLightLookAndFeel "$LAF_LIGHT"
   _kwrite --file kdeglobals --group KDE --key DefaultDarkLookAndFeel "$LAF_DARK"
 }
@@ -479,8 +480,10 @@ case "$_mode" in
     ;;
   auto)
     enable_auto_mode
-    # Apply current mode now; Plasma's autoswitcher keeps it in sync after.
-    apply "$(detect_mode)" "$_context"
+    # Auto = time-based, authoritative (6–18 light, else dark).
+    # A systemd timer re-runs this at 06:00 and 18:00; the watch service
+    # reacts to manual user overrides between transitions.
+    apply "$(detect_mode_by_time)" "$_context"
     ;;
   watch) watch_loop ;;
   *)     echo "Usage: $0 {light|dark|auto|watch} [boot]" >&2; exit 1 ;;
