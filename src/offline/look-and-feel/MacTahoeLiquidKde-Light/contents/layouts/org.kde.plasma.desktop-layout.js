@@ -75,7 +75,7 @@ launcher.currentConfigGroup = ["General"];
 launcher.writeConfig("icon", "view-app-grid");
 dock.addWidget("org.kde.plasma.marginsseparator");
 
-var tasks = dock.addWidget("org.kde.plasma.icontasks");
+var tasks = dock.addWidget("org.kde.mac.tahoe.liquid.icontasks");
 tasks.currentConfigGroup = ["General"];
 tasks.writeConfig("launchers", "preferred://filemanager,preferred://terminal,preferred://browser,applications:systemsettings.desktop,applications:org.kde.discover.desktop,applications:steam.desktop");
 

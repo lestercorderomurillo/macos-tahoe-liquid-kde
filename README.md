@@ -4,7 +4,7 @@
 
 # macOS Tahoe Liquid Theme for KDE Plasma
 
-[![release](https://img.shields.io/github/v/release/lestercorderomurillo/macos-tahoe-liquid-kde?label=release)](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/releases) [![tests](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/actions/workflows/test.yml/badge.svg)](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/actions/workflows/test.yml) [![tests count](https://img.shields.io/badge/tests-328_passing-brightgreen)](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/actions/workflows/test.yml) [![license](https://img.shields.io/badge/license-MIT-blue)](LICENSE) [![plasma](https://img.shields.io/badge/KDE_Plasma-6.6%2B-1d99f3?logo=kde)](https://kde.org/plasma-desktop/) [![last commit](https://img.shields.io/github/last-commit/lestercorderomurillo/macos-tahoe-liquid-kde)](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/commits/) [![stars](https://img.shields.io/github/stars/lestercorderomurillo/macos-tahoe-liquid-kde)](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/stargazers) [![issues](https://img.shields.io/github/issues/lestercorderomurillo/macos-tahoe-liquid-kde)](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/issues)
+[![release](https://img.shields.io/github/v/release/lestercorderomurillo/macos-tahoe-liquid-kde?label=release)](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/releases) [![tests](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/actions/workflows/test.yml/badge.svg)](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/actions/workflows/test.yml) [![tests count](https://img.shields.io/badge/tests-370_passing-brightgreen)](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/actions/workflows/test.yml) [![license](https://img.shields.io/badge/license-MIT-blue)](LICENSE) [![plasma](https://img.shields.io/badge/KDE_Plasma-6.6%2B-1d99f3?logo=kde)](https://kde.org/plasma-desktop/) [![last commit](https://img.shields.io/github/last-commit/lestercorderomurillo/macos-tahoe-liquid-kde)](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/commits/) [![stars](https://img.shields.io/github/stars/lestercorderomurillo/macos-tahoe-liquid-kde)](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/stargazers) [![issues](https://img.shields.io/github/issues/lestercorderomurillo/macos-tahoe-liquid-kde)](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/issues)
 
 > [!CAUTION]
 > **Very experimental** — Under heavy active development. Things will break. Back up your system config before installing. Use at your own risk.
@@ -40,6 +40,7 @@ A complete environment, not just a coat of paint.
 | **Nautilus** | Install Nautilus and set as default file manager on KDE | 🔧 |
 | **Launcher Plasmoid** | App grid launcher | 🔧 |
 | **Trashcan Plasmoid** | Trash widget with configurable icons | 🔧 |
+| **Dock Task Manager** | Icons-only dock applet with macOS-style notification badges | ✅ |
 | **Calendar Plasmoid** | Calendar dropdown | 🔲 |
 | **Control Center Plasmoid** | Quick settings panel | 🔲 |
 | **System Preferences Plasmoid** | Settings launcher | 🔲 |
@@ -153,7 +154,7 @@ bash install.sh --light                          # force light
 ```
 
 - **`--auto`** enables Plasma's native autoswitcher, which transitions between light and dark based on sunrise/sunset times. A watcher service keeps Kvantum and GTK in sync.
-- In `v0.5.2`, the System Information docs now match the app naming, and the About window shows logical CPU threads with physical core counts when available. The theme switcher still catches up correctly on login after scheduled light/dark transitions, and the dock default remains `0.12` unless `--dock` is set explicitly.
+- In `v0.6.0`, the dock ships its own task manager applet. App notification counts (Slack, Discord, Telegram, etc.) now render as macOS-style badges — solid red fill, white bold text, tighter pill proportions — replacing the stock blue KDE chip. The fork installs as a compiled system-wide applet and uninstalls cleanly, and the layout scripts point at the new applet id automatically.
 - **`--light`** / **`--dark`** forces one mode and disables the autoswitcher.
 
 After install, you can switch manually:
@@ -244,6 +245,7 @@ macos-tahoe-liquid-kde/
 |-----------|-----------------|----------|
 | **Layout** | Transparent top bar + floating glass dock | Panel config via JS scripting API |
 | **Global Menu** | Unified menu bar: system menu, app name with window controls, app menus | Compiled C++ plasmoid (system-wide) |
+| **Dock Task Manager** | Icons-only dock task manager with macOS-style notification badges (solid red, white bold text) | Compiled C++ plasmoid (system-wide) |
 | **Launcher** | App grid with categories and search | `~/.local/share/plasma/plasmoids/` |
 | **Trashcan** | Dock trash widget with configurable icons | `~/.local/share/plasma/plasmoids/` |
 | **Window Decorations** | macOS-style title bars (Aurorae) | `~/.local/share/aurorae/themes/` |

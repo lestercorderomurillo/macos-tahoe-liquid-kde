@@ -1,0 +1,106 @@
+/*
+    SPDX-FileCopyrightText: 2016 Kai Uwe Broulik <kde@privat.broulik.de>
+
+    SPDX-License-Identifier: GPL-2.0-or-later
+*/
+
+import QtQuick
+import org.kde.kirigami as Kirigami
+import org.kde.graphicaleffects as KGraphicalEffects
+import org.kde.plasma.components as PlasmaComponents3
+import org.kde.plasma.plasmoid
+
+Item {
+    id: root
+
+    readonly property int iconWidthDelta: (icon.width - icon.paintedWidth) / 2
+    readonly property bool shiftBadgeDown: (Plasmoid.pluginName === "org.kde.mac.tahoe.liquid.icontasks") && task.audioStreamIcon !== null
+    readonly property int offset: Math.round(Math.max(Kirigami.Units.smallSpacing / 2, badgeMask.width / 32))
+
+    Item {
+        id: badgeMask
+        anchors.fill: parent
+
+        Rectangle {
+
+            anchors.right: parent.right
+            anchors.rightMargin: -root.offset
+            y: root.shiftBadgeDown ? (icon.height / 2) : 0
+
+            Behavior on y {
+                NumberAnimation { duration: Kirigami.Units.longDuration }
+            }
+
+            visible: task.smartLauncherItem.countVisible
+            width: badgeRect.width + root.offset * 2
+            height: badgeRect.height + root.offset * 2
+            radius: height
+
+            // Badge changes width based on number.
+            onWidthChanged: maskShaderSource.scheduleUpdate()
+            onVisibleChanged: maskShaderSource.scheduleUpdate()
+            onYChanged: maskShaderSource.scheduleUpdate()
+        }
+    }
+
+    ShaderEffectSource {
+        id: iconShaderSource
+        sourceItem: icon
+        hideSource: GraphicsInfo.api !== GraphicsInfo.Software
+    }
+
+    ShaderEffectSource {
+        id: maskShaderSource
+        sourceItem: badgeMask
+        hideSource: true
+        live: false
+    }
+
+    KGraphicalEffects.BadgeEffect {
+        id: shader
+
+        anchors.fill: parent
+        source: iconShaderSource
+        mask: maskShaderSource
+
+        onWidthChanged: maskShaderSource.scheduleUpdate()
+        onHeightChanged: maskShaderSource.scheduleUpdate()
+    }
+
+    Rectangle {
+        id: badgeRect
+
+        anchors.right: parent.right
+        y: root.offset + (root.shiftBadgeDown ? (icon.height / 2) : 0)
+
+        Behavior on y {
+            NumberAnimation { duration: Kirigami.Units.longDuration }
+        }
+
+        visible: task.smartLauncherItem.countVisible
+
+        readonly property string badgeText: task.smartLauncherItem.count > 9999
+            ? i18nc("Over 9999 new messages, overlay, keep short", "9,999+")
+            : task.smartLauncherItem.count.toLocaleString(Qt.locale(), 'f', 0)
+
+        readonly property int horizontalPadding: 5
+        width: Math.max(height, Math.round(badgeLabel.implicitWidth + horizontalPadding * 2))
+        height: Math.max(12, Math.min(18, Math.round(icon.paintedHeight * 0.34)))
+        radius: height / 2
+        color: "#ff3b30"
+        border.color: "#d92c24"
+        border.width: 1
+
+        PlasmaComponents3.Label {
+            id: badgeLabel
+            anchors.centerIn: parent
+            text: badgeRect.badgeText
+            color: "#ffffff"
+            font.bold: true
+            font.pixelSize: Math.max(8, Math.min(12, Math.round(parent.height * 0.62)))
+            textFormat: Text.PlainText
+            horizontalAlignment: Text.AlignHCenter
+            verticalAlignment: Text.AlignVCenter
+        }
+    }
+}

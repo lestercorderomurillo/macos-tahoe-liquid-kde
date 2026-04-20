@@ -1,0 +1,16 @@
+{
+    "KPackageStructure": "Plasma/Applet",
+    "KPlugin": {
+        "Category": "Windows and Tasks",
+        "Description": "MacTahoe Liquid KDE dock task manager with macOS-style badges",
+        "EnabledByDefault": false,
+        "Icon": "preferences-system-windows",
+        "Id": "org.kde.mac.tahoe.liquid.taskmanager",
+        "License": "GPL-2.0+",
+        "Name": "Task Manager"
+    },
+    "X-Plasma-API-Minimum-Version": "6.0",
+    "X-Plasma-Provides": [
+        "org.kde.plasma.multitasking"
+    ]
+}

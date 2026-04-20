@@ -303,6 +303,48 @@ TRASH="$OFFLINE/plasmoids/org.kde.mac-tahoe-liquid-kde.trashcan"
 assert_json "trashcan metadata.json"        "$TRASH/metadata.json"
 assert "trashcan has QML main"              test -f "$TRASH/contents/ui/main.qml"
 
+echo ""
+echo "plasmoids — dock task manager"
+DOCK_ICONTASKS="$OFFLINE/plasmoids/org.kde.mac.tahoe.liquid.icontasks"
+DOCK_TASKMANAGER="$OFFLINE/plasmoids/org.kde.mac.tahoe.liquid.taskmanager"
+assert_json "dock icontasks metadata.json" "$DOCK_ICONTASKS/metadata.json"
+assert_json "dock taskmanager metadata.json" "$DOCK_TASKMANAGER/metadata.json"
+assert "dock stock taskmanager override is not shipped" test ! -d "$OFFLINE/plasmoids/org.kde.plasma.taskmanager"
+assert "dock stock icontasks override is not shipped" test ! -d "$OFFLINE/plasmoids/org.kde.plasma.icontasks"
+assert "dock legacy taskmanager is not shipped" test ! -d "$OFFLINE/plasmoids/org.kde.mac-tahoe-liquid-kde.taskmanager"
+assert "dock legacy icontasks wrapper is not shipped" test ! -d "$OFFLINE/plasmoids/org.kde.mac-tahoe-liquid-kde.icontasks"
+assert "dock icontasks is wrapper-only"         test ! -d "$DOCK_ICONTASKS/contents"
+assert "dock taskmanager override is shipped"   test -d "$DOCK_TASKMANAGER"
+assert "dock taskmanager has CMakeLists"        test -f "$DOCK_TASKMANAGER/CMakeLists.txt"
+assert "dock taskmanager has backend header"    test -f "$DOCK_TASKMANAGER/backend.h"
+assert "dock taskmanager has backend source"    test -f "$DOCK_TASKMANAGER/backend.cpp"
+assert "dock taskmanager has smartlauncher backend header" test -f "$DOCK_TASKMANAGER/smartlauncherbackend.h"
+assert "dock taskmanager has smartlauncher backend source" test -f "$DOCK_TASKMANAGER/smartlauncherbackend.cpp"
+assert "dock taskmanager has smartlauncher item header" test -f "$DOCK_TASKMANAGER/smartlauncheritem.h"
+assert "dock taskmanager has smartlauncher item source" test -f "$DOCK_TASKMANAGER/smartlauncheritem.cpp"
+assert "dock taskmanager has kcfg"              test -f "$DOCK_TASKMANAGER/kactivitymanagerd_plugins_settings.kcfg"
+assert "dock taskmanager has kcfgc"             test -f "$DOCK_TASKMANAGER/kactivitymanagerd_plugins_settings.kcfgc"
+assert "dock taskmanager has badge component"   test -f "$DOCK_TASKMANAGER/contents/ui/Badge.qml"
+assert "dock taskmanager has QML main"          test -f "$DOCK_TASKMANAGER/contents/ui/main.qml"
+assert "dock taskmanager has task QML"          test -f "$DOCK_TASKMANAGER/contents/ui/Task.qml"
+assert "dock taskmanager has badge overlay"     test -f "$DOCK_TASKMANAGER/contents/ui/TaskBadgeOverlay.qml"
+assert "dock taskmanager has layout metrics"    test -f "$DOCK_TASKMANAGER/contents/ui/LayoutMetrics.js"
+assert "dock taskmanager has task tools"        test -f "$DOCK_TASKMANAGER/contents/ui/TaskTools.js"
+assert "dock taskmanager has no local shim qmldir" test ! -f "$DOCK_TASKMANAGER/contents/ui/plasma/applet/org/kde/plasma/taskmanager/qmldir"
+assert_grep "dock icontasks metadata uses custom ID" "$DOCK_ICONTASKS/metadata.json" "\"Id\": \"org\\.kde\\.mac\\.tahoe\\.liquid\\.icontasks\""
+assert_grep "dock icontasks wrapper points to custom taskmanager" "$DOCK_ICONTASKS/metadata.json" "\"X-Plasma-RootPath\": \"org\\.kde\\.mac\\.tahoe\\.liquid\\.taskmanager\""
+assert_grep "dock taskmanager metadata uses custom ID" "$DOCK_TASKMANAGER/metadata.json" "\"Id\": \"org\\.kde\\.mac\\.tahoe\\.liquid\\.taskmanager\""
+assert_grep "dock taskmanager badge uses red bg" "$DOCK_TASKMANAGER/contents/ui/TaskBadgeOverlay.qml" "#ff3b30"
+assert_grep "dock taskmanager badge uses white text" "$DOCK_TASKMANAGER/contents/ui/TaskBadgeOverlay.qml" "#ffffff"
+assert "dock tooltip avoids Kirigami.Badge" bash -c "! rg -q 'Kirigami\\.Badge' '$DOCK_TASKMANAGER/contents/ui/ToolTipInstance.qml'"
+assert_grep "dock taskmanager uses TasksModel.filterByVirtualDesktop" "$DOCK_TASKMANAGER/contents/ui/main.qml" "filterByVirtualDesktop:"
+assert "dock taskmanager does not use non-existent filterByCurrentVirtualDesktop" bash -c "! rg -q 'filterByCurrentVirtualDesktop' '$DOCK_TASKMANAGER/contents/ui/main.qml'"
+assert_grep "dock taskmanager main imports custom backend module" "$DOCK_TASKMANAGER/contents/ui/main.qml" "import plasma\\.applet\\.org\\.kde\\.mac\\.tahoe\\.liquid\\.taskmanager as TaskManagerApplet"
+assert_grep "dock taskmanager main imports local layout metrics" "$DOCK_TASKMANAGER/contents/ui/main.qml" "import \"LayoutMetrics\\.js\" as LayoutMetrics"
+assert_grep "dock taskmanager main imports local task tools" "$DOCK_TASKMANAGER/contents/ui/main.qml" "import \"TaskTools\\.js\" as TaskTools"
+assert_grep "dock taskmanager task imports custom backend module" "$DOCK_TASKMANAGER/contents/ui/Task.qml" "import plasma\\.applet\\.org\\.kde\\.mac\\.tahoe\\.liquid\\.taskmanager as TaskManagerApplet"
+assert_grep "dock taskmanager smartlauncher uses custom module uri" "$DOCK_TASKMANAGER/contents/ui/Task.qml" "Qt\\.createComponent\\(\"plasma\\.applet\\.org\\.kde\\.mac\\.tahoe\\.liquid\\.taskmanager\", \"SmartLauncherItem\"\\)"
+
 # ═══════════════════════════════════════════════════════════════════
 echo ""
 echo "acrylic glass"
@@ -358,7 +400,7 @@ assert_grep "layout uses trashcan ID"       "$OFFLINE/layouts/mac-tahoe.js" "org
 assert_grep "layout uses panelspacer"       "$OFFLINE/layouts/mac-tahoe.js" "org\.kde\.plasma\.panelspacer"
 assert_grep "layout uses systemtray"        "$OFFLINE/layouts/mac-tahoe.js" "org\.kde\.plasma\.systemtray"
 assert_grep "layout uses digitalclock"      "$OFFLINE/layouts/mac-tahoe.js" "org\.kde\.plasma\.digitalclock"
-assert_grep "layout uses icontasks"         "$OFFLINE/layouts/mac-tahoe.js" "org\.kde\.plasma\.icontasks"
+assert_grep "layout uses custom dock taskmanager"  "$OFFLINE/layouts/mac-tahoe.js" "org\.kde\.mac\.tahoe\.liquid\.icontasks"
 assert_grep "layout uses colorizer"         "$OFFLINE/layouts/mac-tahoe.js" "luisbocanegra\.panel\.colorizer"
 
 # ═══════════════════════════════════════════════════════════════════
@@ -448,13 +490,25 @@ assert_grep "reinstall icon is green"       "$STEPS/functions.sh" '^reinstall\(\
 if command -v cmake &>/dev/null; then
   echo ""
   echo "builds"
-  for applet in "$GM"; do
+  for applet in "$GM" "$DOCK_TASKMANAGER"; do
     name=$(basename "$applet")
     tmpbuild=$(mktemp -d)
     assert "$name configures" cmake -S "$applet" -B "$tmpbuild" -DCMAKE_BUILD_TYPE=Release
     assert "$name builds"     cmake --build "$tmpbuild"
     # Check .so was produced
     assert "$name produces .so" bash -c "find '$tmpbuild' -name '*.so' | grep -q ."
+    qml_target=""
+    case "$name" in
+      org.kde.mac-tahoe-liquid-kde.globalmenu)
+        qml_target="org.kde.mac.tahoe.liquid.globalmenu_qmllint"
+        ;;
+      org.kde.mac.tahoe.liquid.taskmanager)
+        qml_target="org.kde.mac.tahoe.liquid.taskmanager_qmllint"
+        ;;
+    esac
+    if [[ -n "$qml_target" ]]; then
+      assert "$name qmllint" cmake --build "$tmpbuild" --target "$qml_target"
+    fi
     rm -rf "$tmpbuild"
   done
 fi
