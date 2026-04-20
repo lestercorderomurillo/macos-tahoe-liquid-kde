@@ -47,7 +47,7 @@ EOF
 }
 
 # ── feature flags ────────────────────────────────────────────────
-_ALL_FEATURES=(wallpapers fonts cursors plasma_theme window_decorations kvantum color_schemes icons plasmoids acrylic_glass global_theme layout sounds gtk sddm apps nautilus no_download)
+_ALL_FEATURES=(wallpapers fonts cursors plasma_theme window_decorations kvantum color_schemes icons plasmoids acrylic_glass global_theme layout sounds gtk sddm apps nautilus portals no_download)
 
 declare -A _feat=()
 declare -A _cli=()
@@ -90,6 +90,7 @@ declare -A _FEAT_DESC=(
   [sddm]="Login screen theme"
   [apps]="App configuration tweaks"
   [nautilus]="Nautilus file manager (default on KDE)"
+  [portals]="Route FileChooser / AppChooser to KDE (fixes stale dialog colors)"
 )
 
 # ── CLI parsing ──────────────────────────────────────────────────
@@ -138,6 +139,7 @@ _apply_flags() {
   "sddm":               true,
   "apps":                true,
   "nautilus":            true,
+  "portals":             true,
   "no_download":         true,
   "theme_mode":          "auto"
 }
@@ -242,7 +244,7 @@ _confirm() {
 }
 
 # ── feature list for install/uninstall loop ──────────────────────
-_FEATURES=(wallpapers fonts cursors icons plasma_theme window_decorations kvantum color_schemes gtk plasmoids globalmenu acrylic_glass global_theme layout nautilus)
+_FEATURES=(wallpapers fonts cursors icons plasma_theme window_decorations kvantum color_schemes gtk plasmoids globalmenu acrylic_glass global_theme layout nautilus portals)
 
 # ── should feature be processed? ─────────────────────────────────
 _should_process() {

@@ -15,6 +15,7 @@
   "sddm":                true,
   "apps":                true,
   "nautilus":            true,
+  "portals":             true,
   "no_download":         true,
   "theme_mode":          "auto"
 }

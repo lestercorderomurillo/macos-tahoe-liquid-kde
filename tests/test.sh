@@ -466,6 +466,21 @@ assert_grep "install.sh doc --nautilus"    "$REPO/install.sh" "\-\-nautilus"
 
 # ═══════════════════════════════════════════════════════════════════
 echo ""
+echo "portals step (xdg-desktop-portal routing)"
+P_STEP="$STEPS/portals/step.sh"
+assert "portals step exists"              test -f "$P_STEP"
+assert_grep "portals writes kde-portals.conf" "$P_STEP" "kde-portals\.conf"
+assert_grep "portals routes FileChooser to kde" "$P_STEP" 'FileChooser=kde'
+assert_grep "portals routes AppChooser to kde"  "$P_STEP" 'AppChooser=kde'
+assert_grep "portals sets default=kde"    "$P_STEP" '^default=kde'
+assert_grep "portals restarts xdg service" "$P_STEP" "xdg-desktop-portal"
+assert_grep "core.sh has portals feature" "$STEPS/core.sh" "_FEATURES=.*\bportals\b"
+assert_grep "core.sh _ALL has portals"    "$STEPS/core.sh" "_ALL_FEATURES=.*\bportals\b"
+assert_grep "features.json has portals"   "$REPO/features.json" '"portals"'
+assert_grep "install.sh doc --portals"    "$REPO/install.sh" "\-\-portals"
+
+# ═══════════════════════════════════════════════════════════════════
+echo ""
 echo "transparency script coverage"
 TS="$SRC/scripts/set-transparency.sh"
 assert_grep "updates kvantum menu opacity"  "$TS" "reduce_menu_opacity"

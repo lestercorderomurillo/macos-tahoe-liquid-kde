@@ -33,6 +33,7 @@ Options:
     --sddm             Login screen theme
     --apps             App configuration tweaks
     --nautilus         Install Nautilus and set as default file manager
+    --portals          Route FileChooser/AppChooser to KDE (fixes stale dialogs)
     --no-download      Skip downloads, use cached assets
 
   Persistence:
