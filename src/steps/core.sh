@@ -237,10 +237,53 @@ _confirm() {
   echo ""
   echo -e "  ${RED}${BOLD}${msg}${RESET}"
   echo ""
-  read -p "  Continue? [Y/n] " _c
+  # Read directly from the controlling terminal. Some launchers (IDE
+  # integrated terminals, `bash install.sh < /dev/null` wrappers) detach
+  # stdin — without </dev/tty the read blocks until the user frees it
+  # with ^C. Explicit -r keeps backslashes literal.
+  local _c=""
+  if [[ -r /dev/tty ]]; then
+    read -r -p "  Continue? [Y/n] " _c </dev/tty
+  else
+    read -r -p "  Continue? [Y/n] " _c
+  fi
+  # N or n → abort. Everything else (including empty Enter) proceeds.
   [[ "$_c" =~ ^[Nn]$ ]] && { echo "  Aborted."; exit 0; }
   echo ""
-  sudo -v || { echo -e "  ${RED}sudo required.${RESET}"; exit 1; }
+  # Prime sudo credentials with an explicit, visible prompt, reading
+  # the password directly from /dev/tty. Without -p + </dev/tty, a
+  # launcher with a detached stdin (IDE terminals, wrappers, pipes)
+  # makes sudo fail silently — no "Password:" line, script appears
+  # stuck. Using /dev/tty also ensures the echo-off works.
+  local _sudo_prompt="  [sudo] password for %u: "
+  local _sudo_ok=1
+  if [[ -r /dev/tty ]]; then
+    sudo -v -p "$_sudo_prompt" </dev/tty || _sudo_ok=0
+  else
+    sudo -v -p "$_sudo_prompt" || _sudo_ok=0
+  fi
+  if (( _sudo_ok == 0 )); then
+    echo -e "  ${RED}sudo required.${RESET}" >&2
+    exit 1
+  fi
+  # Keep sudo's timestamp fresh for the rest of the run. Long downloads
+  # + C++ builds can exceed the default 15-minute timestamp_timeout, so
+  # `sudo cp` calls in later steps (plasmoids, globalmenu, acrylic
+  # glass) otherwise block on a silent password prompt that the user
+  # can't see because stdout is between step logs. The keepalive runs
+  # `sudo -nv` every 60 s — non-interactive, no prompt — and exits the
+  # moment the session is no longer valid. An EXIT trap reaps it so the
+  # shell doesn't leak background processes.
+  (
+    while true; do
+      sudo -nv 2>/dev/null || exit 0
+      sleep 60
+      # Stop if the parent install.sh has gone away.
+      kill -0 "$$" 2>/dev/null || exit 0
+    done
+  ) &
+  _SUDO_KEEPALIVE_PID=$!
+  trap '[[ -n "${_SUDO_KEEPALIVE_PID:-}" ]] && kill "$_SUDO_KEEPALIVE_PID" 2>/dev/null' EXIT
 }
 
 # ── feature list for install/uninstall loop ──────────────────────
