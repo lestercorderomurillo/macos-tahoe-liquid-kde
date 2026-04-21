@@ -77,12 +77,13 @@ Glass window with the system information.
 
 ### Tahoe Dock
 
-Floating glass dock with app icons.
+Floating glass dock with app icons and macOS-style badges.
 
-<p align="center">
-  <img src="src/screenshots/dock.png" width="600"><br>
-  <sub>Light Variant</sub>
-</p>
+<table align="center"><tr>
+<td align="center"><img src="src/screenshots/dock-1.png" width="250"><br><sub>Dock View 1</sub></td>
+<td align="center"><img src="src/screenshots/dock-2.png" width="250"><br><sub>Dock View 2</sub></td>
+<td align="center"><img src="src/screenshots/dock-3.png" width="250"><br><sub>Dock View 3</sub></td>
+</tr></table>
 
 ### Tahoe Launcher
 
