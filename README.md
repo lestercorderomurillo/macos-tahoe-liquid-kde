@@ -34,11 +34,6 @@ Floating liquid-glass dock with app icons, the red macOS-style notification bubb
   <sub>Dark dock variant with the same glass depth and refraction treatment</sub>
 </p>
 
-## Requirements
-
-- KDE Plasma 6.6+
-- sudo access
-
 ## Screenshots
 
 ### Menu
@@ -120,6 +115,13 @@ Desktop right-click with translucent glass blur.
 | **OS Selector** | Boot manager / OS picker screen | 🔲 |
 | **Boot Screen** | Plymouth splash for startup | 🔲 |
 | **Shutdown Screen** | Styled logout / shutdown sequence | 🔲 |
+
+---
+
+## Requirements
+
+- KDE Plasma 6.6+
+- sudo access
 
 ---
 
