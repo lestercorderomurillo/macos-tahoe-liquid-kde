@@ -15,6 +15,29 @@ A complete environment, not just a coat of paint.
 
 ---
 
+## Tahoe Dock
+
+Floating liquid-glass dock with app icons, the red macOS-style notification bubble, and background-aware refraction.
+
+This section is meant to show the dock surface itself, especially the liquid-glass behavior. The second screenshot is the clearest refraction example: the streaked wallpaper bends and diffuses through the dock body to demonstrate the glass layer instead of just showing a transparent bar.
+
+<p align="center">
+  <img src="src/screenshots/dock-1.png" width="720"><br>
+  <sub>Dock view with bright liquid-glass glow and the red macOS-style notification bubble</sub>
+</p>
+
+<p align="center">
+  <img src="src/screenshots/dock-2.png" width="720"><br>
+  <sub>Refraction example using liquid glass: the wallpaper streaks visibly warp through the dock surface</sub>
+</p>
+
+<p align="center">
+  <img src="src/screenshots/dock-3.png" width="720"><br>
+  <sub>Dark dock variant with the same glass depth and refraction treatment</sub>
+</p>
+
+---
+
 ## Roadmap
 
 | Component | Description | Status |
@@ -73,16 +96,6 @@ Glass window with the system information.
 <table align="center"><tr>
 <td align="center"><img src="src/screenshots/about.png" width="250"><br><sub>Light Variant</sub></td>
 <td align="center"><img src="src/screenshots/about-dark.png" width="250"><br><sub>Dark Variant</sub></td>
-</tr></table>
-
-### Tahoe Dock
-
-Floating glass dock with app icons and macOS-style badges.
-
-<table align="center"><tr>
-<td align="center"><img src="src/screenshots/dock-1.png" width="250"><br><sub>Dock View 1</sub></td>
-<td align="center"><img src="src/screenshots/dock-2.png" width="250"><br><sub>Dock View 2</sub></td>
-<td align="center"><img src="src/screenshots/dock-3.png" width="250"><br><sub>Dock View 3</sub></td>
 </tr></table>
 
 ### Tahoe Launcher
