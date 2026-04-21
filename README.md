@@ -15,44 +15,52 @@ A complete environment, not just a coat of paint.
 
 ---
 
-## Tahoe Dock
+## Features
 
-Floating liquid-glass dock with app icons, the red macOS-style notification bubble, and background-aware refraction.
+### Tahoe Dock
+
+Liquid-glass dock with macOS-style red notification bubbles and wallpaper refraction.
 
 <p align="center">
-  <img src="src/screenshots/dock-1.png" width="720"><br>
-  <sub>Dock view with bright liquid-glass glow and the red macOS-style notification bubble</sub>
+  <img src="src/screenshots/dock-1.png" width="600"><br>
+  <sub>Bright dock glow with the red macOS-style notification bubble.</sub>
 </p>
 
 <p align="center">
-  <img src="src/screenshots/dock-2.png" width="720"><br>
-  <sub>Refraction example using liquid glass: the wallpaper streaks visibly warp through the dock surface</sub>
+  <img src="src/screenshots/dock-2.png" width="600"><br>
+  <sub>Refraction example with the wallpaper visibly bending through the glass surface.</sub>
 </p>
 
 <p align="center">
-  <img src="src/screenshots/dock-3.png" width="720"><br>
-  <sub>Dark dock variant with the same glass depth and refraction treatment</sub>
+  <img src="src/screenshots/dock-3.png" width="600"><br>
+  <sub>Dark dock variant with the same liquid-glass depth.</sub>
 </p>
-
-## Screenshots
 
 ### Menu
 
 System menu with native QMenu dropdown.
 
-<table align="center"><tr>
-<td align="center"><img src="src/screenshots/menu.png" width="250"><br><sub>Light Variant</sub></td>
-<td align="center"><img src="src/screenshots/menu-dark.png" width="250"><br><sub>Dark Variant</sub></td>
-</tr></table>
+<p align="center">
+  <img src="src/screenshots/menu.png" width="290">
+  <img src="src/screenshots/menu-dark.png" width="290">
+</p>
+
+<p align="center">
+  <sub>Example of Light and Dark variant.</sub>
+</p>
 
 ### System Information
 
-Glass window with the system information.
+Glass system information window.
 
-<table align="center"><tr>
-<td align="center"><img src="src/screenshots/about.png" width="250"><br><sub>Light Variant</sub></td>
-<td align="center"><img src="src/screenshots/about-dark.png" width="250"><br><sub>Dark Variant</sub></td>
-</tr></table>
+<p align="center">
+  <img src="src/screenshots/about.png" width="290">
+  <img src="src/screenshots/about-dark.png" width="290">
+</p>
+
+<p align="center">
+  <sub>Example of Light and Dark variant.</sub>
+</p>
 
 ### Tahoe Launcher
 
@@ -60,7 +68,7 @@ App grid with categories and search.
 
 <p align="center">
   <img src="src/screenshots/launcher.png" width="600"><br>
-  <sub>Light Variant</sub>
+  <sub>App grid with categories and search.</sub>
 </p>
 
 ### Tahoe Finder
@@ -69,7 +77,7 @@ Nautilus file manager with macOS-style sidebar.
 
 <p align="center">
   <img src="src/screenshots/finder.png" width="600"><br>
-  <sub>Light Variant</sub>
+  <sub>Nautilus file manager with macOS-style sidebar.</sub>
 </p>
 
 ### Plasma Theme
@@ -78,7 +86,7 @@ Desktop right-click with translucent glass blur.
 
 <p align="center">
   <img src="src/screenshots/context_menu.png" width="600"><br>
-  <sub>Light Variant</sub>
+  <sub>Desktop right-click with translucent glass blur.</sub>
 </p>
 
 ---
