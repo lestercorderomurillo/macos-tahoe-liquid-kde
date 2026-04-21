@@ -19,8 +19,6 @@ A complete environment, not just a coat of paint.
 
 Floating liquid-glass dock with app icons, the red macOS-style notification bubble, and background-aware refraction.
 
-This section is meant to show the dock surface itself, especially the liquid-glass behavior. The second screenshot is the clearest refraction example: the streaked wallpaper bends and diffuses through the dock body to demonstrate the glass layer instead of just showing a transparent bar.
-
 <p align="center">
   <img src="src/screenshots/dock-1.png" width="720"><br>
   <sub>Dock view with bright liquid-glass glow and the red macOS-style notification bubble</sub>
@@ -35,43 +33,6 @@ This section is meant to show the dock surface itself, especially the liquid-gla
   <img src="src/screenshots/dock-3.png" width="720"><br>
   <sub>Dark dock variant with the same glass depth and refraction treatment</sub>
 </p>
-
----
-
-## Roadmap
-
-| Component | Description | Status |
-|-----------|-------------|--------|
-| **Color Schemes** | Light and Dark color palettes | ✅ |
-| **Wallpapers** | Tahoe, Heritage, Beach, Landscape | ✅ |
-| **Fonts** | SF Pro Display, Text, Rounded, Mono | ✅ |
-| **Cursors** | Tahoe style cursors | ✅ |
-| **Icons** | Full icon set (light & dark) | 🔧 |
-| **Sounds** | Notification and event sounds | 🔧 |
-| **Plasma Theme** | Translucent panels + close/min/max buttons | 🔧 |
-| **Kvantum Theme** | Kvantum theme | 🔧 |
-| **GTK Theme** | GTK2/3/4 window chrome and controls | 🔧 |
-| **Acrylic Glass** | KWin blur, rounded corners, glass effect | 🔧 |
-| **Auto Theme Switcher** | Auto light/dark via Plasma native sunrise/sunset | ✅ |
-| **Aurorae Decorations** | Window title bar and borders | 🔧 |
-| **Firefox Theme** | Firefox browser theme | 🔲 |
-| **Thunderbird Theme** | Thunderbird mail theme | 🔲 |
-| **Konsole Theme** | Terminal profile | 🔲 |
-| **Kate Theme** | Text editor theme | 🔲 |
-| **SDDM Theme** | Login and lock screen | 🔲 |
-| **Global Menu Plasmoid** | Unified menu bar: system menu, app name, window controls, app menus | 🔧 |
-| **Nautilus** | Install Nautilus and set as default file manager on KDE | 🔧 |
-| **Launcher Plasmoid** | App grid launcher | 🔧 |
-| **Trashcan Plasmoid** | Trash widget with configurable icons | 🔧 |
-| **Dock Task Manager** | Icons-only dock applet with macOS-style notification badges | ✅ |
-| **Calendar Plasmoid** | Calendar dropdown | 🔲 |
-| **Control Center Plasmoid** | Quick settings panel | 🔲 |
-| **System Preferences Plasmoid** | Settings launcher | 🔲 |
-| **OS Selector** | Boot manager / OS picker screen | 🔲 |
-| **Boot Screen** | Plymouth splash for startup | 🔲 |
-| **Shutdown Screen** | Styled logout / shutdown sequence | 🔲 |
-
----
 
 ## Requirements
 
@@ -127,6 +88,41 @@ Desktop right-click with translucent glass blur.
 
 ---
 
+## Roadmap
+
+| Component | Description | Status |
+|-----------|-------------|--------|
+| **Color Schemes** | Light and Dark color palettes | ✅ |
+| **Wallpapers** | Tahoe, Heritage, Beach, Landscape | ✅ |
+| **Fonts** | SF Pro Display, Text, Rounded, Mono | ✅ |
+| **Cursors** | Tahoe style cursors | ✅ |
+| **Icons** | Full icon set (light & dark) | 🔧 |
+| **Sounds** | Notification and event sounds | 🔧 |
+| **Plasma Theme** | Translucent panels + close/min/max buttons | 🔧 |
+| **Kvantum Theme** | Kvantum theme | 🔧 |
+| **GTK Theme** | GTK2/3/4 window chrome and controls | 🔧 |
+| **Acrylic Glass** | KWin blur, rounded corners, glass effect | 🔧 |
+| **Auto Theme Switcher** | Auto light/dark via Plasma native sunrise/sunset | ✅ |
+| **Aurorae Decorations** | Window title bar and borders | 🔧 |
+| **Firefox Theme** | Firefox browser theme | 🔲 |
+| **Thunderbird Theme** | Thunderbird mail theme | 🔲 |
+| **Konsole Theme** | Terminal profile | 🔲 |
+| **Kate Theme** | Text editor theme | 🔲 |
+| **SDDM Theme** | Login and lock screen | 🔲 |
+| **Global Menu Plasmoid** | Unified menu bar: system menu, app name, window controls, app menus | 🔧 |
+| **Nautilus** | Install Nautilus and set as default file manager on KDE | 🔧 |
+| **Launcher Plasmoid** | App grid launcher | 🔧 |
+| **Trashcan Plasmoid** | Trash widget with configurable icons | 🔧 |
+| **Dock Task Manager** | Icons-only dock applet with macOS-style notification badges | ✅ |
+| **Calendar Plasmoid** | Calendar dropdown | 🔲 |
+| **Control Center Plasmoid** | Quick settings panel | 🔲 |
+| **System Preferences Plasmoid** | Settings launcher | 🔲 |
+| **OS Selector** | Boot manager / OS picker screen | 🔲 |
+| **Boot Screen** | Plymouth splash for startup | 🔲 |
+| **Shutdown Screen** | Styled logout / shutdown sequence | 🔲 |
+
+---
+
 ## Usage
 
 ```bash
@@ -167,12 +163,8 @@ bash install.sh --dark                           # force dark
 bash install.sh --light                          # force light
 ```
 
-- **`--auto`** (default) — clock-based switching: light from 06:00 to 18:00, dark otherwise. A systemd timer fires the transitions, and `Persistent=true` catches missed firings (PC off at 06:00 / suspend across 18:00 / late login) so the mode is always correct on wake. We disable Plasma's sunrise/sunset autoswitcher so the XDG portal can't override the schedule. A watcher service keeps Kvantum and GTK in sync on manual overrides.
-- **`--light`** / **`--dark`** forces one mode and disables the timer — the user preference wins.
-- In `v0.6.0`, the dock ships its own task manager applet. App notification counts (Slack, Discord, Telegram, etc.) now render as macOS-style badges — solid red fill, white bold text, tighter pill proportions — replacing the stock blue KDE chip. The fork installs as a compiled system-wide applet and uninstalls cleanly, and the layout scripts point at the new applet id automatically.
-- In `v0.6.4`, GTK / libadwaita apps (Nautilus, GNOME Console, etc.) render the three macOS traffic lights on the left as intended. `v0.6.3` routed every `xdg-desktop-portal` call (including `org.freedesktop.impl.portal.Settings`) through the KDE backend, which answered libadwaita's button-layout query in KDE's Aurorae format. libadwaita couldn't parse it and fell back to right-side close-only controls. The fix pins `Settings` to the GTK backend — so libadwaita reads the gsettings layout — while keeping `FileChooser` / `AppChooser` on KDE for native file pickers. The uninstall path also grew a full sweep of `~/.config/kdedefaults/` and the lingering `[Effect-liquidglass]` / `[Theme-plasmathemeexplorer]` groups, so a clean uninstall leaves zero `MacTahoe` / `liquid` strings in Plasma's config tree.
-- In `v0.6.5`, notification badges (dock icons and task-manager tooltips) were flattened to match macOS Tahoe: single-tone `#ff3b30` fill with no contrasting border, slightly larger pill (14–20 px on the dock, 20 px minimum in tooltips), more horizontal padding, and the system font (SF Pro on a default install) at a stable 10–12 px weight-bold.
-- In `v0.6.6`, the installer's sudo flow was rewritten to survive long runs. `sudo -v` now uses an explicit prompt and reads directly from `/dev/tty` so IDE terminals and detached-stdin wrappers can't silence the password prompt. A background keep-alive refreshes sudo's timestamp every 60 s until the install exits, so the `sudo cp` calls in later steps (plasmoids, globalmenu, acrylic glass) never block silently mid-install after the default 15-minute timestamp expires.
+- **`--auto`** is the default. It switches between light mode at `06:00` and dark mode at `18:00` with a systemd timer, and `Persistent=true` catches missed transitions after suspend, shutdown, or late login.
+- **`--light`** / **`--dark`** lock the theme to one mode and disable the timer.
 
 After install, you can switch manually:
 
