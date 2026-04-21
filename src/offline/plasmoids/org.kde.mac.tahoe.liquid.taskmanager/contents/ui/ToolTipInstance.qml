@@ -180,21 +180,26 @@ ColumnLayout {
                     readonly property string badgeText: toolTipDelegate.smartLauncherCount > 9999
                         ? i18nc("Over 9999 new messages, tooltip badge, keep short", "9,999+")
                         : toolTipDelegate.smartLauncherCount.toLocaleString(Qt.locale(), "f", 0)
-                    readonly property int horizontalPadding: 6
+                    // Keep parity with TaskBadgeOverlay (dock badge): same
+                    // padding, same height clamp, same font sizing. The two
+                    // badges display the same count side-by-side when the
+                    // tooltip is open — any mismatch reads as a bug.
+                    readonly property int horizontalPadding: 7
                     width: Math.max(height, Math.round(badgeLabel.implicitWidth + horizontalPadding * 2))
-                    height: Math.max(18, closeButton.implicitHeight - 2)
+                    height: Math.max(14, Math.min(20, Math.round(closeButton.implicitHeight * 0.9)))
                     radius: height / 2
                     color: "#ff3b30"
-                    border.color: "#d92c24"
-                    border.width: 1
+                    border.color: color
+                    border.width: 0
 
                     PlasmaComponents3.Label {
                         id: badgeLabel
                         anchors.centerIn: parent
                         text: parent.badgeText
                         color: "#ffffff"
+                        font.family: Kirigami.Theme.defaultFont.family
                         font.bold: true
-                        font.pixelSize: Math.max(9, Math.round(parent.height * 0.58))
+                        font.pixelSize: Math.max(10, Math.min(12, Math.round(parent.height * 0.58)))
                         textFormat: Text.PlainText
                         horizontalAlignment: Text.AlignHCenter
                         verticalAlignment: Text.AlignVCenter

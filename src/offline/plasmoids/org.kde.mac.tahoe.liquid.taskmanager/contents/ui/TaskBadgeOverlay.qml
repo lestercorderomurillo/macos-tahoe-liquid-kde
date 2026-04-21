@@ -83,21 +83,22 @@ Item {
             ? i18nc("Over 9999 new messages, overlay, keep short", "9,999+")
             : task.smartLauncherItem.count.toLocaleString(Qt.locale(), 'f', 0)
 
-        readonly property int horizontalPadding: 5
+        readonly property int horizontalPadding: 7
         width: Math.max(height, Math.round(badgeLabel.implicitWidth + horizontalPadding * 2))
-        height: Math.max(12, Math.min(18, Math.round(icon.paintedHeight * 0.34)))
+        height: Math.max(14, Math.min(20, Math.round(icon.paintedHeight * 0.38)))
         radius: height / 2
         color: "#ff3b30"
-        border.color: "#d92c24"
-        border.width: 1
+        border.color: color
+        border.width: 0
 
         PlasmaComponents3.Label {
             id: badgeLabel
             anchors.centerIn: parent
             text: badgeRect.badgeText
             color: "#ffffff"
+            font.family: Kirigami.Theme.defaultFont.family
             font.bold: true
-            font.pixelSize: Math.max(8, Math.min(12, Math.round(parent.height * 0.62)))
+            font.pixelSize: Math.max(10, Math.min(12, Math.round(parent.height * 0.58)))
             textFormat: Text.PlainText
             horizontalAlignment: Text.AlignHCenter
             verticalAlignment: Text.AlignVCenter
