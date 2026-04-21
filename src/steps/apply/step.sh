@@ -100,6 +100,48 @@ restart_plasma() {
 }
 
 uninstall() {
+  # ── reset look-and-feel to Breeze (owns kdedefaults/ + LookAndFeelPackage) ─
+  # plasma-apply-lookandfeel rewrites the "defaults" layer from the applied
+  # LAF package; without this step, kdedefaults/ keeps pointing to our theme
+  # (ColorScheme, cursor, Aurorae, icons, ksplash) and Plasma re-resolves
+  # those on next login, so individual step uninstalls get undone.
+  if command -v plasma-apply-lookandfeel &>/dev/null; then
+    plasma-apply-lookandfeel -a org.kde.breeze.desktop &>/dev/null || true
+    ok "Look-and-feel reset to Breeze"
+  fi
+
+  # Clear LookAndFeelPackage from kdeglobals (plasma-apply-lookandfeel doesn't
+  # always reset this key — it gets re-written on next apply otherwise)
+  if command -v kwriteconfig6 &>/dev/null; then
+    kw_write --file kdeglobals --group KDE --key LookAndFeelPackage "org.kde.breeze.desktop"
+  fi
+
+  # Nuke any lingering mac/tahoe strings from the kdedefaults shadow dir —
+  # plasma-apply-lookandfeel usually covers this but the guarantee is weak
+  # when multiple LAF packages have been applied in the same session.
+  if [[ -d "$HOME/.config/kdedefaults" ]]; then
+    for f in "$HOME/.config/kdedefaults"/{package,kdeglobals,plasmarc,kcminputrc,kwinrc,ksplashrc,kscreenlockerrc}; do
+      [[ -f "$f" ]] || continue
+      if grep -qiE "mac[-.]?tahoe|mactahoe|liquid" "$f" 2>/dev/null; then
+        # `package` is a single-line file; kwriteconfig won't help — just
+        # rewrite it to breeze.
+        if [[ "$(basename "$f")" == "package" ]]; then
+          echo "org.kde.breeze.desktop" > "$f"
+        else
+          sed -i -E '/^(ColorScheme|Theme|name|cursorTheme|theme|library)\s*=.*(mac[-.]?tahoe|mactahoe|MacTahoe|liquid).*$/d' "$f" 2>/dev/null || true
+        fi
+      fi
+    done
+    ok "kdedefaults cleaned"
+  fi
+
+  # plasmarc has a [Theme-plasmathemeexplorer] section that caches the last
+  # browsed theme name — wipe it so a reinstall doesn't surface stale names.
+  if [[ -f "$HOME/.config/plasmarc" ]]; then
+    sed -i '/^\[Theme-plasmathemeexplorer\]/,/^\[/{/^\[Theme-plasmathemeexplorer\]/d; /^name=.*MacTahoe/d;}' \
+      "$HOME/.config/plasmarc" 2>/dev/null || true
+  fi
+
   # ── reset to Breeze defaults ───────────────────────────────
   if command -v kwriteconfig6 &>/dev/null; then
     if [[ "${FEAT_FONTS:-true}" == "true" ]]; then

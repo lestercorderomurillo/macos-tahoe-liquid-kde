@@ -165,7 +165,7 @@ rc=$?
 assert "theme-switch sourceable"     test $rc -eq 0
 assert "auto startup sync reapplies stale saved mode" bash -c '
   source "'"$THEME_SWITCH"'" 2>/dev/null
-  get_system_preference(){ echo light; }
+  detect_auto_target_mode(){ echo light; }
   _current_theme_mode(){ echo dark; }
   apply(){ printf "apply:%s:%s\n" "$1" "$2"; }
   apply_extras(){ printf "extras:%s\n" "$1"; }
@@ -174,7 +174,7 @@ assert "auto startup sync reapplies stale saved mode" bash -c '
 '
 assert "auto startup sync skips full apply when mode already matches" bash -c '
   source "'"$THEME_SWITCH"'" 2>/dev/null
-  get_system_preference(){ echo light; }
+  detect_auto_target_mode(){ echo light; }
   _current_theme_mode(){ echo light; }
   apply(){ printf "apply:%s:%s\n" "$1" "$2"; }
   apply_extras(){ printf "extras:%s\n" "$1"; }
@@ -552,5 +552,143 @@ btn_bg=$(_ini_get "$HOME/.config/kdeglobals" "Colors:Button" "BackgroundNormal")
 
 assert "e2e: scheme name = Light"       test "$scheme" = "MacTahoeLiquidKdeLight"
 assert "e2e: Button BG matches Light"   test "$btn_bg" = "$LIGHT_BTN_BG"
+
+_sandbox_teardown
+
+# ─────────────────────────────────────────────────────────────────
+echo ""
+echo "uninstall fully resets KDE state"
+# Guards the "half-uninstall" bug: kdedefaults/, plasmarc's
+# [Theme-plasmathemeexplorer], and kwinrc's [Effect-liquidglass] used to
+# keep mac/tahoe/liquid references after uninstall, causing Plasma to
+# re-apply our theme via the look-and-feel "defaults" layer on next login.
+
+_sandbox_setup
+
+# Seed realistic post-install residue across every file we touch.
+mkdir -p "$HOME/.config/kdedefaults"
+cat > "$HOME/.config/kdeglobals" <<'EOF'
+[General]
+ColorScheme=MacTahoeLiquidKdeDark
+
+[KDE]
+LookAndFeelPackage=org.kde.mac-tahoe-liquid-kde.dark
+widgetStyle=kvantum-dark
+EOF
+cat > "$HOME/.config/kdedefaults/kdeglobals" <<'EOF'
+[General]
+ColorScheme=MacTahoeLiquidKdeDark
+
+[Icons]
+Theme=MacTahoeLiquidKde-Icons-dark
+EOF
+cat > "$HOME/.config/kdedefaults/plasmarc" <<'EOF'
+[Theme]
+name=MacTahoeLiquidKde-Dark
+EOF
+cat > "$HOME/.config/kdedefaults/kcminputrc" <<'EOF'
+[Mouse]
+cursorTheme=MacTahoeLiquidKde-Dark
+EOF
+cat > "$HOME/.config/kdedefaults/kwinrc" <<'EOF'
+[org.kde.kdecoration2]
+library=org.kde.kwin.aurorae
+theme=__aurorae__svg__MacTahoeLiquidKde-Dark
+EOF
+cat > "$HOME/.config/kdedefaults/ksplashrc" <<'EOF'
+[KSplash]
+Theme=org.kde.mac-tahoe-liquid-kde.dark
+EOF
+echo "org.kde.mac-tahoe-liquid-kde.dark" > "$HOME/.config/kdedefaults/package"
+cat > "$HOME/.config/plasmarc" <<'EOF'
+[Theme]
+name=default
+
+[Theme-plasmathemeexplorer]
+name=MacTahoeLiquidKde-Dark
+
+[Wallpapers]
+usersWallpapers=/tmp/x
+EOF
+cat > "$HOME/.config/kwinrc" <<'EOF'
+[Effect-liquidglass]
+liquidglassEnabled=false
+macsimize6Enabled=false
+
+[Plugins]
+liquidglassEnabled=true
+EOF
+
+# Run the apply + acrylic-glass uninstall hooks in the sandbox. Stub
+# external binaries; use the real kwriteconfig6 + sed so we exercise the
+# actual cleanup paths.
+(
+  ok() { :; }; fail() { :; }; info() { :; }; warn() { :; }
+  kwin_reconfigure() { :; }
+  kw_write() { kwriteconfig6 "$@" 2>/dev/null || true; }
+  qdbus_cmd() { echo "true"; }
+  plasma-apply-lookandfeel() { :; }
+  plasma-apply-cursortheme()  { :; }
+  plasma-apply-wallpaperimage() { :; }
+  dbus-send() { :; }
+  kbuildsycoca6() { :; }
+  export -f ok fail info warn kwin_reconfigure kw_write qdbus_cmd \
+            plasma-apply-lookandfeel plasma-apply-cursortheme \
+            plasma-apply-wallpaperimage dbus-send kbuildsycoca6
+
+  OFFLINE="$REPO/src/offline"
+
+  source "$REPO/src/steps/apply/step.sh"
+  uninstall &>/dev/null
+
+  source "$REPO/src/steps/acrylic-glass/step.sh"
+  uninstall &>/dev/null
+) 2>/dev/null
+
+assert "uninstall: LookAndFeelPackage not mac-tahoe" bash -c "
+  v=\$(kwriteconfig6 --file '$HOME/.config/kdeglobals' --group KDE --key LookAndFeelPackage 2>/dev/null || true)
+  ! [[ \"\$v\" == *mac-tahoe-liquid* ]]
+"
+assert "uninstall: kdedefaults/package has no mac-tahoe" bash -c "
+  ! grep -q 'mac-tahoe-liquid' '$HOME/.config/kdedefaults/package' 2>/dev/null
+"
+assert "uninstall: kdedefaults/kdeglobals has no mac strings" bash -c "
+  ! grep -iE 'MacTahoe|mac-tahoe|liquid' '$HOME/.config/kdedefaults/kdeglobals' 2>/dev/null
+"
+assert "uninstall: kdedefaults/plasmarc has no mac strings" bash -c "
+  ! grep -iE 'MacTahoe|mac-tahoe|liquid' '$HOME/.config/kdedefaults/plasmarc' 2>/dev/null
+"
+assert "uninstall: kdedefaults/kcminputrc has no mac strings" bash -c "
+  ! grep -iE 'MacTahoe|mac-tahoe|liquid' '$HOME/.config/kdedefaults/kcminputrc' 2>/dev/null
+"
+assert "uninstall: kdedefaults/kwinrc has no mac strings" bash -c "
+  ! grep -iE 'MacTahoe|mac-tahoe|liquid' '$HOME/.config/kdedefaults/kwinrc' 2>/dev/null
+"
+assert "uninstall: kdedefaults/ksplashrc has no mac strings" bash -c "
+  ! grep -iE 'MacTahoe|mac-tahoe|liquid' '$HOME/.config/kdedefaults/ksplashrc' 2>/dev/null
+"
+assert "uninstall: plasmarc has no [Theme-plasmathemeexplorer]" bash -c "
+  ! grep -q '^\[Theme-plasmathemeexplorer\]' '$HOME/.config/plasmarc' 2>/dev/null
+"
+assert "uninstall: kwinrc has no [Effect-liquidglass] group" bash -c "
+  ! grep -q '^\[Effect-liquidglass\]' '$HOME/.config/kwinrc' 2>/dev/null
+"
+
+# portals uninstall deletes the routing conf so logins don't keep sending
+# Settings through portal-kde and breaking libadwaita button layout.
+mkdir -p "$HOME/.config/xdg-desktop-portal"
+cat > "$HOME/.config/xdg-desktop-portal/kde-portals.conf" <<'EOF'
+[preferred]
+org.freedesktop.impl.portal.Settings=gtk
+EOF
+(
+  ok() { :; }; fail() { :; }; info() { :; }; warn() { :; }
+  export -f ok fail info warn
+  source "$REPO/src/steps/portals/step.sh"
+  uninstall &>/dev/null
+) 2>/dev/null
+assert "uninstall: portals removes kde-portals.conf" bash -c "
+  ! test -f '$HOME/.config/xdg-desktop-portal/kde-portals.conf'
+"
 
 _sandbox_teardown

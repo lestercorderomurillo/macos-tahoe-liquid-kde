@@ -12,9 +12,23 @@ CONF_FILE="$CONF_DIR/kde-portals.conf"
 
 install() {
   mkdir -p "$CONF_DIR"
+  # Routing rules:
+  #   * Settings → gtk
+  #     libadwaita queries Settings for gtk-decoration-layout /
+  #     gtk-theme / color-scheme. portal-kde answers with KDE's own
+  #     schema (Aurorae "XIA" button layout), which libadwaita can't
+  #     parse → falls back to right-side close-only controls and
+  #     drops the mac traffic lights. portal-gtk reads gsettings and
+  #     returns the `close,minimize,maximize:` format libadwaita
+  #     expects, putting buttons on the left as configured.
+  #   * FileChooser / AppChooser → kde
+  #     "Open with…" and file pickers render as native Qt/KDE
+  #     dialogs instead of the stale GTK/Nautilus ones.
+  #   * No `default=…` — let other portals (Notification, Location,
+  #     etc.) use their compiled-in fallback.
   cat > "$CONF_FILE" <<'EOF'
 [preferred]
-default=kde
+org.freedesktop.impl.portal.Settings=gtk
 org.freedesktop.impl.portal.FileChooser=kde
 org.freedesktop.impl.portal.AppChooser=kde
 EOF

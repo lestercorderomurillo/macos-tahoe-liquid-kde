@@ -40,9 +40,13 @@ uninstall() {
     rm -rf "$DEST_DIR/$variant" 2>/dev/null && ok "$variant removed" && n=$((n+1)) || fail "$variant"
   done
 
+  # Wipe ~/.config/gtk-4.0/ completely — kde-gtk-config will regenerate its
+  # own minimal gtk.css / colors.css / window_decorations.css on next theme
+  # change. Leaving our files mixed with KDE's output creates split state.
   rm -rf "$HOME/.config/gtk-4.0/assets" "$HOME/.config/gtk-4.0/windows-assets" 2>/dev/null
   rm -f "$HOME/.config/gtk-4.0/gtk.css" "$HOME/.config/gtk-4.0/gtk-dark.css" \
-        "$HOME/.config/gtk-4.0/gtk-Dark.css" "$HOME/.config/gtk-4.0/gtk-Light.css" 2>/dev/null
+        "$HOME/.config/gtk-4.0/gtk-Dark.css" "$HOME/.config/gtk-4.0/gtk-Light.css" \
+        "$HOME/.config/gtk-4.0/colors.css" "$HOME/.config/gtk-4.0/window_decorations.css" 2>/dev/null
 
   local q
   q=$(qdbus_cmd) && "$q" org.kde.GtkConfig /GtkConfig org.kde.GtkConfig.setGtkTheme "Breeze" &>/dev/null || true

@@ -122,6 +122,19 @@ uninstall() {
   q=$(qdbus_cmd) && "$q" org.kde.KWin /Effects org.kde.kwin.Effects.unloadEffect liquidglass &>/dev/null || true
   kw_write --file kwinrc --group Plugins --key liquidglassEnabled false 2>/dev/null || true
 
+  # Remove the entire [Effect-liquidglass] group from kwinrc — setting keys
+  # to false leaves the group behind and reinstall won't reset tuned values.
+  if command -v kwriteconfig6 &>/dev/null; then
+    kw_write --file kwinrc --group "Effect-liquidglass" --group "" \
+      --key "" "" 2>/dev/null || true
+    # kwriteconfig6 has no "delete group" flag in some builds — fall back to sed
+    if [[ -f "$HOME/.config/kwinrc" ]] && \
+       grep -q '^\[Effect-liquidglass\]' "$HOME/.config/kwinrc" 2>/dev/null; then
+      sed -i '/^\[Effect-liquidglass\]/,/^\[/{/^\[Effect-liquidglass\]/d; /^\[/!d;}' \
+        "$HOME/.config/kwinrc" 2>/dev/null || true
+    fi
+  fi
+
   local plugin_dir
   plugin_dir=$(qmake6 -query QT_INSTALL_PLUGINS 2>/dev/null \
     || qtpaths6 --plugin-dir 2>/dev/null \

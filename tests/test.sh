@@ -472,7 +472,17 @@ assert "portals step exists"              test -f "$P_STEP"
 assert_grep "portals writes kde-portals.conf" "$P_STEP" "kde-portals\.conf"
 assert_grep "portals routes FileChooser to kde" "$P_STEP" 'FileChooser=kde'
 assert_grep "portals routes AppChooser to kde"  "$P_STEP" 'AppChooser=kde'
-assert_grep "portals sets default=kde"    "$P_STEP" '^default=kde'
+# Regression guard: default=kde routes org.freedesktop.impl.portal.Settings
+# to KDE's backend, which returns a schema libadwaita can't consume →
+# Nautilus loses traffic lights and falls back to Breeze folder icons.
+# Scope routing to the specific dialogs we want in KDE style instead.
+assert "portals does NOT set default=kde" bash -c "! grep -qE '^\s*default=kde' '$P_STEP'"
+# Regression guard: Settings MUST route to gtk, not kde.
+# libadwaita queries Settings for gtk-decoration-layout; portal-kde answers
+# in KDE's Aurorae "XIA" format that libadwaita can't parse, so controls
+# fall back to right-side close-only. portal-gtk returns the correct
+# `close,minimize,maximize:` format → traffic lights render on the left.
+assert_grep "portals routes Settings to gtk" "$P_STEP" 'Settings=gtk'
 assert_grep "portals restarts xdg service" "$P_STEP" "xdg-desktop-portal"
 assert_grep "core.sh has portals feature" "$STEPS/core.sh" "_FEATURES=.*\bportals\b"
 assert_grep "core.sh _ALL has portals"    "$STEPS/core.sh" "_ALL_FEATURES=.*\bportals\b"
