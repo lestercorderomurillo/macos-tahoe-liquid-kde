@@ -328,6 +328,42 @@ _sandbox_teardown
 
 # ─────────────────────────────────────────────────────────────────
 echo ""
+echo "last-run tracker"
+
+_sandbox_setup
+TRACK_FIXTURE=$(mktemp -d) || exit 1
+ln -s "$REPO/src" "$TRACK_FIXTURE/src"
+cat > "$TRACK_FIXTURE/install.sh" <<'EOF'
+#!/usr/bin/env bash
+set -uo pipefail
+source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/src/steps/core.sh"
+_parse_args "$@"
+_apply_flags
+_export_flags
+_start_run_tracking "$(basename "$0")" "$@"
+_mark_run_completed
+EOF
+chmod +x "$TRACK_FIXTURE/install.sh"
+(
+  export HOME="$SANDBOX"
+  export XDG_CONFIG_HOME="$SANDBOX/.config"
+  export XDG_DATA_HOME="$SANDBOX/.local/share"
+  unset XDG_STATE_HOME
+  cd "$TRACK_FIXTURE"
+  bash ./install.sh --dark --no-gtk --save
+)
+LAST_RUN_JSON="$HOME/.local/state/mac-tahoe-liquid-kde/last-run.json"
+assert "last-run tracker writes file"       test -f "$LAST_RUN_JSON"
+assert_grep "last-run tracker stores script" "$LAST_RUN_JSON" '"script": "install\.sh"'
+assert_grep "last-run tracker stores argv order" "$LAST_RUN_JSON" '"argv": \["--dark", "--no-gtk", "--save"\]'
+assert_grep "last-run tracker stores command" "$LAST_RUN_JSON" '"command": "bash install\.sh --dark --no-gtk --save"'
+assert_grep "last-run tracker stores completed status" "$LAST_RUN_JSON" '"status": "completed"'
+rm -rf "$TRACK_FIXTURE" 2>/dev/null
+_sandbox_teardown
+
+
+# ─────────────────────────────────────────────────────────────────
+echo ""
 echo "transparency script business rules"
 
 _transparency_fixture_setup

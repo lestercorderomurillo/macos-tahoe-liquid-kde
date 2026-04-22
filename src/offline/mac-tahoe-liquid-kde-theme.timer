@@ -1,6 +1,7 @@
 [Unit]
 Description=MacTahoe Liquid KDE — fire time-based light/dark transitions
-PartOf=graphical-session.target
+Wants=graphical-session.target
+After=graphical-session.target
 
 [Timer]
 # Fire at 06:00 (light) and 18:00 (dark) every day.
@@ -16,4 +17,4 @@ Persistent=true
 Unit=mac-tahoe-liquid-kde-theme-apply.service
 
 [Install]
-WantedBy=graphical-session.target
+WantedBy=timers.target

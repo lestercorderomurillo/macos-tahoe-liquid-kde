@@ -9,6 +9,8 @@ OFFLINE="$SRC/offline"
 BUILD="$REPO/build"
 CONFIG="$REPO/features.json"
 VERSION_FILE="$REPO/VERSION"
+STATE_DIR="${XDG_STATE_HOME:-$HOME/.local/state}/mac-tahoe-liquid-kde"
+LAST_RUN_FILE="$STATE_DIR/last-run.json"
 
 source "$STEPS/functions.sh"
 
@@ -55,6 +57,114 @@ THEME_MODE=""
 _do_save=false
 _do_reset=false
 _only_mode=false
+declare -a LAST_RUN_ARGS=()
+declare -a _EXIT_HOOKS=()
+LAST_RUN_SCRIPT=""
+LAST_RUN_STARTED_AT=""
+LAST_RUN_ACTIVE=false
+_RUN_COMPLETED=false
+_RUN_ABORTED=false
+
+_run_exit_hooks() {
+  local rc="${1:-$?}"
+  local hook
+  for hook in "${_EXIT_HOOKS[@]}"; do
+    "$hook" "$rc"
+  done
+  return "$rc"
+}
+
+_add_exit_hook() {
+  local hook="$1"
+  local existing=""
+  for existing in "${_EXIT_HOOKS[@]}"; do
+    [[ "$existing" == "$hook" ]] && return 0
+  done
+  _EXIT_HOOKS+=("$hook")
+  trap '_run_exit_hooks $?' EXIT
+}
+
+_json_escape() {
+  local s="${1-}"
+  s=${s//\\/\\\\}
+  s=${s//\"/\\\"}
+  s=${s//$'\n'/\\n}
+  s=${s//$'\r'/\\r}
+  s=${s//$'\t'/\\t}
+  printf '%s' "$s"
+}
+
+_last_run_command() {
+  local cmd="bash $LAST_RUN_SCRIPT"
+  local arg
+  for arg in "${LAST_RUN_ARGS[@]}"; do
+    cmd+=" $arg"
+  done
+  printf '%s' "$cmd"
+}
+
+_write_last_run_file() {
+  local status="$1" finished_at="${2:-}" exit_code="${3:-0}"
+  local i
+
+  mkdir -p "$STATE_DIR"
+  {
+    echo "{"
+    printf '  "script": "%s",\n' "$(_json_escape "$LAST_RUN_SCRIPT")"
+    printf '  "argv": ['
+    for i in "${!LAST_RUN_ARGS[@]}"; do
+      [[ "$i" -gt 0 ]] && printf ', '
+      printf '"%s"' "$(_json_escape "${LAST_RUN_ARGS[$i]}")"
+    done
+    echo "],"
+    printf '  "command": "%s",\n' "$(_json_escape "$(_last_run_command)")"
+    printf '  "cwd": "%s",\n' "$(_json_escape "$(pwd -P)")"
+    printf '  "theme_mode": "%s",\n' "$(_json_escape "$THEME_MODE")"
+    printf '  "status": "%s",\n' "$(_json_escape "$status")"
+    printf '  "started_at": "%s",\n' "$(_json_escape "$LAST_RUN_STARTED_AT")"
+    if [[ -n "$finished_at" ]]; then
+      printf '  "finished_at": "%s",\n' "$(_json_escape "$finished_at")"
+    else
+      printf '  "finished_at": null,\n'
+    fi
+    printf '  "exit_code": %s\n' "$exit_code"
+    echo "}"
+  } > "$LAST_RUN_FILE"
+}
+
+_finalize_last_run() {
+  local rc="${1:-0}"
+  local status="failed"
+  [[ "$LAST_RUN_ACTIVE" == "true" ]] || return 0
+
+  if [[ "$_RUN_ABORTED" == "true" ]]; then
+    status="aborted"
+  elif [[ "$_RUN_COMPLETED" == "true" && "$rc" -eq 0 ]]; then
+    status="completed"
+  elif [[ "$rc" -eq 0 ]]; then
+    status="exited"
+  fi
+
+  _write_last_run_file "$status" "$(date -Is)" "$rc"
+}
+
+_start_run_tracking() {
+  LAST_RUN_SCRIPT="$1"
+  shift
+  LAST_RUN_ARGS=("$@")
+  LAST_RUN_STARTED_AT="$(date -Is)"
+  LAST_RUN_ACTIVE=true
+  _write_last_run_file "running" "" 0
+  _add_exit_hook _finalize_last_run
+}
+
+_mark_run_completed() {
+  _RUN_COMPLETED=true
+}
+
+_stop_sudo_keepalive() {
+  [[ -n "${_SUDO_KEEPALIVE_PID:-}" ]] && kill "$_SUDO_KEEPALIVE_PID" 2>/dev/null
+}
 
 _cfg_read() {
   local key="$1"
@@ -95,6 +205,7 @@ declare -A _FEAT_DESC=(
 
 # ── CLI parsing ──────────────────────────────────────────────────
 _parse_args() {
+  LAST_RUN_ARGS=("$@")
   for _arg in "$@"; do
     case "$_arg" in
       -h|--help)     _show_help; exit 0 ;;
@@ -248,7 +359,7 @@ _confirm() {
     read -r -p "  Continue? [Y/n] " _c
   fi
   # N or n → abort. Everything else (including empty Enter) proceeds.
-  [[ "$_c" =~ ^[Nn]$ ]] && { echo "  Aborted."; exit 0; }
+  [[ "$_c" =~ ^[Nn]$ ]] && { _RUN_ABORTED=true; echo "  Aborted."; exit 0; }
   echo ""
   # Prime sudo credentials with an explicit, visible prompt, reading
   # the password directly from /dev/tty. Without -p + </dev/tty, a
@@ -283,7 +394,7 @@ _confirm() {
     done
   ) &
   _SUDO_KEEPALIVE_PID=$!
-  trap '[[ -n "${_SUDO_KEEPALIVE_PID:-}" ]] && kill "$_SUDO_KEEPALIVE_PID" 2>/dev/null' EXIT
+  _add_exit_hook _stop_sudo_keepalive
 }
 
 # ── feature list for install/uninstall loop ──────────────────────

@@ -28,8 +28,10 @@ install() {
   systemctl --user daemon-reload 2>/dev/null || true
 
   if [[ "$THEME_MODE" == "auto" ]]; then
-    systemctl --user enable --now mac-tahoe-liquid-kde-theme.service &>/dev/null || true
-    systemctl --user enable --now mac-tahoe-liquid-kde-theme.timer   &>/dev/null || true
+    systemctl --user enable mac-tahoe-liquid-kde-theme.service \
+      mac-tahoe-liquid-kde-theme.timer &>/dev/null || true
+    systemctl --user start mac-tahoe-liquid-kde-theme.service \
+      mac-tahoe-liquid-kde-theme.timer &>/dev/null || true
   else
     # explicit light/dark: user owns the preference, no scheduler
     systemctl --user disable --now mac-tahoe-liquid-kde-theme.service &>/dev/null || true

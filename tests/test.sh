@@ -506,6 +506,10 @@ assert_grep "theme-switch reads .colors file"        "$TSW" "\.colors"
 assert_grep "theme-switch auto is time-based"         "$TSW" 'apply "\$\(detect_mode_by_time\)"'
 assert_grep "theme-switch auto disables AutomaticLookAndFeel" "$TSW" 'AutomaticLookAndFeel false'
 assert_grep "theme-switch syncs WM colors"            "$TSW" 'Colors:\*|ColorEffects:\*|WM'
+assert_grep "theme service starts from default target" "$OFFLINE/mac-tahoe-liquid-kde-theme.service" '^WantedBy=default\.target$'
+assert_grep "theme service waits for graphical session" "$OFFLINE/mac-tahoe-liquid-kde-theme.service" '^Wants=graphical-session\.target$'
+assert_grep "theme timer starts from timers target"   "$OFFLINE/mac-tahoe-liquid-kde-theme.timer" '^WantedBy=timers\.target$'
+assert_grep "README documents last-run tracker"       "$REPO/README.md" 'last-run\.json'
 assert_grep "has --dock parameter"          "$TS" "\-\-dock"
 assert_grep "has --apply parameter"         "$TS" "\-\-apply"
 assert_grep "dock default constant is 12"   "$TS" '^DEFAULT_DOCK_PCT=12$'

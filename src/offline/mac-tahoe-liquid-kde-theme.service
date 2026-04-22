@@ -4,7 +4,7 @@ Description=MacTahoe Liquid KDE — auto light/dark theme switcher
 # graphical-session.target alone is not enough — plasma-apply-colorscheme
 # crashes when kded6 isn't ready yet.
 After=graphical-session.target
-PartOf=graphical-session.target
+Wants=graphical-session.target
 
 [Service]
 Type=simple
@@ -15,4 +15,4 @@ Restart=on-failure
 RestartSec=15
 
 [Install]
-WantedBy=graphical-session.target
+WantedBy=default.target

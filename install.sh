@@ -53,6 +53,7 @@ source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/src/steps/core.sh"
 _parse_args "$@"
 _apply_flags
 _export_flags
+_start_run_tracking "$(basename "$0")" "$@"
 
 [[ -d "$SRC" ]] || { echo -e "${RED}  Run from repo root.${RESET}" >&2; exit 1; }
 
@@ -205,4 +206,5 @@ else
   warn "${#ERRORS[@]} issue(s) — everything else installed fine:"
   for e in "${ERRORS[@]}"; do fail "$e"; done
 fi
+_mark_run_completed
 echo ""
