@@ -22,17 +22,17 @@ A complete environment, not just a coat of paint.
 Liquid-glass dock with macOS-style red notification bubbles and wallpaper refraction.
 
 <p align="center">
-  <img src="src/screenshots/dock-1.png" width="600"><br>
+  <img src="src/screenshots/dock-1.png" width="680"><br>
   <sub>Bright dock glow with the red macOS-style notification bubble.</sub>
 </p>
 
 <p align="center">
-  <img src="src/screenshots/dock-2.png" width="600"><br>
+  <img src="src/screenshots/dock-2.png" width="680"><br>
   <sub>Refraction example with the wallpaper visibly bending through the glass surface.</sub>
 </p>
 
 <p align="center">
-  <img src="src/screenshots/dock-3.png" width="600"><br>
+  <img src="src/screenshots/dock-3.png" width="680"><br>
   <sub>Dark dock variant with the same liquid-glass depth.</sub>
 </p>
 
