@@ -13,13 +13,15 @@ jobs:
     steps:
       - uses: actions/checkout@v5
       - name: Install deps
-        run: pacman -Syu --noconfirm python bash git diffutils findutils kconfig
+        run: pacman -Syu --noconfirm python python-pytest bash git diffutils findutils kconfig
       - name: Run tests
         run: |
-          output=$(bash tests/test.sh 2>&1) || exit_code=$?
+          output=$(python -m pytest tests -q 2>&1) || exit_code=$?
           echo "$output"
-          count=$(echo "$output" | grep -oP '\d+(?=/\d+ passed)')
-          echo "### Tests: $count passing" >> "$GITHUB_STEP_SUMMARY"
+          count=$(echo "$output" | grep -oE '[0-9]+ passed' | tail -n 1 | grep -oE '[0-9]+')
+          if [ -n "$count" ]; then
+            echo "### Tests: $count passing" >> "$GITHUB_STEP_SUMMARY"
+          fi
           exit ${exit_code:-0}
 
   build-check:

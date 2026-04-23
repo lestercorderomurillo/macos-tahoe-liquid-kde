@@ -6,7 +6,7 @@ from pathlib import Path
 from installer.steps._helpers import (
     HOME, fail, info, install_tree, ok, src_dir, steps_dir, temp_dir,
 )
-from installer.utils import run_mirrors
+from installer.utils import remove_path, run_mirrors
 
 CACHE = steps_dir("icons")
 DEST_DIR = HOME / ".local/share/icons"
@@ -39,6 +39,23 @@ def _copy_subset(repo: Path, dest: Path, subdirs) -> None:
             shutil.copytree(src, dest / Path(sub).name, dirs_exist_ok=True)
 
 
+def _overlay_links(src: Path, dest: Path) -> None:
+    for entry in src.iterdir():
+        target = dest / entry.name
+        if entry.is_symlink():
+            remove_path(target)
+            target.parent.mkdir(parents=True, exist_ok=True)
+            target.symlink_to(entry.readlink())
+            continue
+        if entry.is_dir():
+            target.mkdir(parents=True, exist_ok=True)
+            _overlay_links(entry, target)
+            continue
+        remove_path(target)
+        target.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(entry, target)
+
+
 def _assemble(repo: Path, name: str) -> None:
     light = CACHE / name
     light.mkdir(parents=True, exist_ok=True)
@@ -61,7 +78,10 @@ def _assemble(repo: Path, name: str) -> None:
     links_root = repo / "links"
     for sub in (*_DEFAULT_DIRS, "status"):
         if (links_root / sub).is_dir():
-            shutil.copytree(links_root / sub, light / sub, dirs_exist_ok=True)
+            # Upstream `links/` is a large alias tree made of relative symlinks
+            # like `add.svg -> list-add.svg`. These aliases must overwrite base
+            # files when present and keep their relative target unchanged.
+            _overlay_links(links_root / sub, light / sub)
 
     for fn in ("user-trash-dark.svg", "user-trash-full-dark.svg"):
         try: (light / "places/scalable" / fn).unlink()
@@ -140,7 +160,7 @@ def _assemble(repo: Path, name: str) -> None:
                 "mimes/symbolic", "status/symbolic"):
         link_src = links_root / sub
         if link_src.is_dir():
-            shutil.copytree(link_src, dark / sub, dirs_exist_ok=True)
+            _overlay_links(link_src, dark / sub)
 
     # @2x and cross-theme links.
     for sub, target in (
