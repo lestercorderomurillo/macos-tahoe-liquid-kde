@@ -5,11 +5,7 @@ __pycache__/
 *.pyc
 .pytest_cache/
 
-src/steps/wallpapers/Mac*
-src/steps/fonts/*.otf
-src/steps/fonts/*.ttf
-src/steps/icons/Mac*
-src/steps/cursors/Mac*
+src/steps/
 
 src/offline/kwin-effects/*/build/
 src/offline/kwin-effects/*/src/shaders/onscreen_rounded*.frag
