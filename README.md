@@ -136,21 +136,21 @@ Desktop right-click with translucent glass blur.
 ## Usage
 
 ```bash
-bash install.sh                                  # install everything
-bash install.sh --help                           # show all options
-bash uninstall.sh                                # uninstall, reset to Breeze
+./install                                        # install everything
+./install --help                                 # show all options
+./uninstall                                      # uninstall, reset to Breeze
 ```
 
-Both scripts ask for confirmation, request sudo, and restart Plasma automatically.
+Requires Python 3.10+. Both scripts ask for confirmation, request sudo, and restart Plasma automatically.
 
 ### Feature Flags
 
 Every component has a CLI flag. Use `--no-` to skip, or `--only` to run just the listed ones:
 
 ```bash
-bash install.sh --no-gtk --no-sddm               # skip GTK and SDDM
-bash install.sh --only --fonts --icons           # install only fonts and icons
-bash uninstall.sh --only --cursors               # uninstall only cursors
+./install --no-gtk --no-sddm                     # skip GTK and SDDM
+./install --only --fonts --icons                 # install only fonts and icons
+./uninstall --only --cursors                     # uninstall only cursors
 ```
 
 Available flags:
@@ -168,9 +168,9 @@ Use `--no-download` to skip asset downloads and use cached files.
 ### Theme Mode
 
 ```bash
-bash install.sh                                  # auto (default)
-bash install.sh --dark                           # force dark
-bash install.sh --light                          # force light
+./install                                        # auto (default)
+./install --dark                                 # force dark
+./install --light                                # force light
 ```
 
 - **`--auto`** is the default. It switches between light mode at `06:00` and dark mode at `18:00` with a systemd timer, and `Persistent=true` catches missed transitions after suspend, shutdown, or late login.
@@ -187,9 +187,9 @@ mac-tahoe-theme-switch auto                      # re-enable clock-based 6–18
 ### Persistence
 
 ```bash
-bash install.sh --no-gtk --dark --save           # save settings to features.json
-bash install.sh                                  # reuses saved features.json
-bash install.sh --reset                          # reset features.json to defaults
+./install --no-gtk --dark --save                 # save settings to features.json
+./install                                        # reuses saved features.json
+./install --reset                                # reset features.json to defaults
 ```
 
 Every install or uninstall run also records the exact CLI flags that were used in
@@ -201,9 +201,18 @@ Every install or uninstall run also records the exact CLI flags that were used i
 
 ```
 macos-tahoe-liquid-kde/
-├── install.sh              # main installer (thin orchestrator)
-├── uninstall.sh            # uninstaller (resets to Breeze)
+├── install                 # entry point → python3 -m installer install
+├── uninstall               # entry point → python3 -m installer uninstall
 ├── features.json           # toggle individual components on/off
+├── installer/              # Python orchestrator + per-feature step modules
+│   ├── cli.py              # argparse, feature flags, install/uninstall flow
+│   ├── theme_switch.py     # light/dark switcher (installed as ~/.local/bin)
+│   ├── transparency.py     # background opacity tuner
+│   ├── svgzc.py            # decode/encode .svgz for editing
+│   ├── utils.py, log.py, state.py, step_runner.py
+│   └── steps/              # one module per feature: install/uninstall/...
+│       ├── wallpapers.py, fonts.py, cursors.py, icons.py, ...
+│       └── (21 modules — apply, layout, plasmoids, theme_switch, ...)
 └── src/
     ├── mirrors/            # download source definitions (JSON)
     │   ├── wallpapers.json
@@ -211,36 +220,17 @@ macos-tahoe-liquid-kde/
     │   ├── icons.json
     │   └── cursors.json
     ├── screenshots/        # documentation screenshots
-    ├── offline/            # assets bundled in-repo (no download needed)
-    │   ├── plasma-theme/   # Plasma desktop theme (transparent glass dock)
-    │   ├── color-schemes/  # KDE color schemes
-    │   ├── kvantum/        # Kvantum Qt theme (blur + translucency)
-    │   ├── gtk/            # GTK 2/3/4 theme
-    │   ├── aurorae/        # macOS-style window decorations
-    │   ├── plasmoids/      # custom Plasma widgets
-    │   ├── kwin-effects/   # Acrylic Glass KWin effect (built from source)
-    │   ├── layouts/        # panel layout scripts
-    │   ├── sounds/         # notification and event sounds
-    │   ├── sddm/           # login screen theme
-    │   └── theme-switch.sh # auto light/dark theme switcher
-    └── steps/              # self-contained installer steps
-        ├── functions.sh    # shared utilities (logging, fetch, extract, mirrors)
-        ├── wallpapers/     # each step is a folder with step.sh inside
-        ├── fonts/          # step.sh defines: deps(), download(), build(),
-        ├── cursors/        #   install(), uninstall()
-        ├── icons/
-        ├── plasma-theme/
-        ├── window-decorations/
-        ├── kvantum/
-        ├── color-schemes/
-        ├── gtk/
-        ├── plasmoids/
-        ├── menu/
-        ├── globalmenu/
-        ├── acrylic-glass/
-        ├── layout/
-        ├── theme-switch/
-        └── apply/
+    └── offline/            # assets bundled in-repo (no download needed)
+        ├── plasma-theme/   # Plasma desktop theme (transparent glass dock)
+        ├── color-schemes/  # KDE color schemes
+        ├── kvantum/        # Kvantum Qt theme (blur + translucency)
+        ├── gtk/            # GTK 2/3/4 theme
+        ├── aurorae/        # macOS-style window decorations
+        ├── plasmoids/      # custom Plasma widgets
+        ├── kwin-effects/   # Acrylic Glass KWin effect (built from source)
+        ├── layouts/        # panel layout scripts
+        ├── nautilus/       # optional Nautilus overrides
+        └── *.service / *.timer  # systemd units for the theme switcher
 ```
 
 ---

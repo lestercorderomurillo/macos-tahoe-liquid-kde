@@ -1,0 +1,58 @@
+#!/usr/bin/env python3
+"""Run the pytest suite. Auto-installs pytest via the system package
+manager on first run (sudo will prompt for your password)."""
+
+import shutil
+import subprocess
+import sys
+from pathlib import Path
+
+
+REPO = Path(__file__).resolve().parent
+sys.path.insert(0, str(REPO))
+
+
+def _have_pytest() -> bool:
+    try:
+        import pytest  # noqa: F401
+        return True
+    except ImportError:
+        return False
+
+
+def _install_pytest() -> bool:
+    print("pytest not installed — installing now (sudo will prompt)...")
+    if shutil.which("pacman"):
+        cmd = ["sudo", "pacman", "-S", "--noconfirm", "python-pytest"]
+    elif shutil.which("apt"):
+        cmd = ["sudo", "apt", "install", "-y", "python3-pytest"]
+    elif shutil.which("dnf"):
+        cmd = ["sudo", "dnf", "install", "-y", "python3-pytest"]
+    elif shutil.which("zypper"):
+        cmd = ["sudo", "zypper", "--non-interactive", "install", "python3-pytest"]
+    else:
+        print("no supported package manager (pacman / apt / dnf / zypper) found.",
+              file=sys.stderr)
+        print("install pytest manually, e.g. `pip install --user pytest`",
+              file=sys.stderr)
+        return False
+    return subprocess.run(cmd, check=False).returncode == 0
+
+
+def main() -> int:
+    if not _have_pytest():
+        if not _install_pytest() or not _have_pytest():
+            return 1
+
+    tests_dir = REPO / "tests"
+    # Verbose by default (one line per test as it starts) and a short
+    # traceback on failure. Pass -q on the CLI to override.
+    return subprocess.run(
+        [sys.executable, "-m", "pytest", str(tests_dir),
+         "-v", "--tb=short", *sys.argv[1:]],
+        check=False,
+    ).returncode
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

@@ -1,0 +1,47 @@
+"""Configure + build the C++ plasmoids."""
+
+import shutil
+import subprocess
+
+import pytest
+
+from .conftest import has_command
+
+
+pytestmark = pytest.mark.skipif(
+    not has_command("cmake"),
+    reason="cmake not installed — skipping native build tests",
+)
+
+
+_APPLETS = (
+    ("plasmoids/org.kde.mac-tahoe-liquid-kde.globalmenu",
+     "org.kde.mac.tahoe.liquid.globalmenu_qmllint"),
+    ("plasmoids/org.kde.mac.tahoe.liquid.taskmanager",
+     "org.kde.mac.tahoe.liquid.taskmanager_qmllint"),
+)
+
+
+@pytest.mark.parametrize("rel,qml_target", _APPLETS)
+def test_applet_builds(offline, tmp_path, rel, qml_target):
+    src = offline / rel
+    build = tmp_path / "build"
+    rc = subprocess.run(
+        ["cmake", "-S", str(src), "-B", str(build),
+         "-DCMAKE_BUILD_TYPE=Release"],
+        check=False,
+    ).returncode
+    assert rc == 0, f"cmake configure failed for {src.name}"
+
+    rc = subprocess.run(
+        ["cmake", "--build", str(build)], check=False,
+    ).returncode
+    assert rc == 0, f"build failed for {src.name}"
+
+    assert any(build.rglob("*.so")), f"no .so produced under {build}"
+
+    rc = subprocess.run(
+        ["cmake", "--build", str(build), "--target", qml_target],
+        check=False,
+    ).returncode
+    assert rc == 0, f"qmllint failed for {src.name}"

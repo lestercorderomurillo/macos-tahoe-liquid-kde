@@ -1,0 +1,9 @@
+#!/usr/bin/env python3
+"""Forwarder to the root-level ./test (which handles auto-install)."""
+
+import os
+import sys
+from pathlib import Path
+
+root_test = Path(__file__).resolve().parent.parent / "test"
+os.execv(str(root_test), [str(root_test), *sys.argv[1:]])

@@ -1,5 +1,10 @@
 build/
 
+# Python bytecode + pytest cache
+__pycache__/
+*.pyc
+.pytest_cache/
+
 src/steps/wallpapers/Mac*
 src/steps/fonts/*.otf
 src/steps/fonts/*.ttf
