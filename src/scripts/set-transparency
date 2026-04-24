@@ -147,6 +147,7 @@ def _apply_to_live_system() -> None:
     subprocess.Popen(
         ["plasmashell", "--replace"],
         start_new_session=True,
+        stdin=subprocess.DEVNULL,
         stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
     )
     print("  ✓ Done")

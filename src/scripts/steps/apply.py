@@ -161,6 +161,7 @@ def restart_plasma() -> None:
     ).returncode != 0:
         subprocess.Popen(
             ["kstart", "plasmashell"],
+            stdin=subprocess.DEVNULL,
             stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
             start_new_session=True,
         )

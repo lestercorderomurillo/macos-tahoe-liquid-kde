@@ -282,6 +282,26 @@ def confirm(msg: str) -> bool:
 
 
 def _prime_sudo() -> bool:
+    # VSCode's integrated terminal (and other pty setups) can leave
+    # bytes in the TTY input buffer between commands — OSC 633 shell
+    # integration responses, mouse reporting, stray escapes. Sudo
+    # consumes those bytes as the start of the password and reports
+    # "Sorry, try again." on a correct password. Flush the input buffer
+    # and reset the TTY to canonical/echo mode before prompting.
+    try:
+        import termios
+        fd = os.open("/dev/tty", os.O_RDWR | os.O_NOCTTY)
+        try:
+            termios.tcflush(fd, termios.TCIFLUSH)
+        finally:
+            os.close(fd)
+    except (OSError, ImportError):
+        pass
+    subprocess.run(
+        ["stty", "sane"], check=False,
+        stderr=subprocess.DEVNULL,
+    )
+
     rc = subprocess.run(
         ["sudo", "-v", "-p", "  [sudo] password for %u: "],
         check=False,
