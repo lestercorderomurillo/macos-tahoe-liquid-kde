@@ -72,7 +72,7 @@ def _run_step_uninstall(step: str, sandbox: Path, repo: Path) -> None:
            "XDG_DATA_HOME": str(sandbox / ".local/share")}
     rc = subprocess.run(
         ["python3", "-c",
-         f"from installer.steps.{step} import uninstall; uninstall()"],
+         f"from steps.{step} import uninstall; uninstall()"],
         check=False, env=env, cwd=str(repo / "src/scripts"),
     ).returncode
     assert rc == 0

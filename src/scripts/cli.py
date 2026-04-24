@@ -6,11 +6,11 @@ import subprocess
 import sys
 from pathlib import Path
 
-from installer import CONFIG_FILE, OFFLINE_DIR, REPO_ROOT, SRC_DIR, STEPS_DIR, read_version
-from installer.log import banner, errors, fail, note, ok, step, warn
-from installer.state import RunTracker
-from installer.step_runner import run_phase, step_deps, step_exists, step_has_phase
-from installer.utils import auto_dep, have, kw_read
+from paths import CONFIG_FILE, OFFLINE_DIR, REPO_ROOT, SRC_DIR, STEPS_DIR, read_version
+from log import banner, errors, fail, note, ok, step, warn
+from state import RunTracker
+from step_runner import run_phase, step_deps, step_exists, step_has_phase
+from utils import auto_dep, have, kw_read
 
 
 ALL_FEATURES = [
@@ -225,7 +225,7 @@ def apply_overrides(feat: dict[str, object], parsed: ParsedArgs) -> dict[str, ob
 
 def export_env(feat: dict[str, object]) -> None:
     """Export FEAT_* and THEME_MODE into ``os.environ`` so step modules
-    can read them via installer.steps._helpers.feat_enabled / theme_mode."""
+    can read them via steps._helpers.feat_enabled / theme_mode."""
     os.environ["NO_DOWNLOAD"] = _b(feat.get("no_download", True))
     os.environ["THEME_MODE"] = str(feat.get("theme_mode", "auto"))
     for k in ALL_FEATURES:

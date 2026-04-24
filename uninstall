@@ -7,6 +7,6 @@ REPO = Path(__file__).resolve().parent
 os.chdir(REPO)
 sys.path.insert(0, str(REPO / "src" / "scripts"))
 
-from installer.cli import run_uninstall
+from cli import run_uninstall
 
 raise SystemExit(run_uninstall(sys.argv[1:]))

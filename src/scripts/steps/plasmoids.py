@@ -2,7 +2,7 @@ import re
 import shutil
 from pathlib import Path
 
-from installer.steps._helpers import (
+from steps._helpers import (
     HOME, cmake_build, fail, info, install_tree, ok, offline,
     sudo_install_file, sudo_remove,
     temp_dir,

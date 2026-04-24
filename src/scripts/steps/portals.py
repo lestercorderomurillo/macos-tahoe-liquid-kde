@@ -1,6 +1,6 @@
 import subprocess
 
-from installer.steps._helpers import HOME, fail, have, ok
+from steps._helpers import HOME, fail, have, ok
 
 CONF_DIR = HOME / ".config/xdg-desktop-portal"
 CONF_FILE = CONF_DIR / "kde-portals.conf"

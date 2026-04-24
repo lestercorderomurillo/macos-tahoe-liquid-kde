@@ -15,7 +15,7 @@ def test_last_run_records_completed(sandbox, repo, monkeypatch):
 
     rc = subprocess.run(
         ["python3", "-c",
-         "from installer.state import RunTracker;"
+         "from state import RunTracker;"
          "t = RunTracker('install', ['--dark', '--no-gtk', '--save'], 'dark');"
          "t.start(); t.mark_completed(); t.finalize(0)"],
         check=False, env={**os.environ,
@@ -40,7 +40,7 @@ def test_last_run_records_completed(sandbox, repo, monkeypatch):
 def test_last_run_records_aborted(sandbox, repo):
     rc = subprocess.run(
         ["python3", "-c",
-         "from installer.state import RunTracker;"
+         "from state import RunTracker;"
          "t = RunTracker('install', [], 'auto');"
          "t.start(); t.mark_aborted(); t.finalize(0)"],
         check=False, env={**os.environ, "HOME": str(sandbox)},
@@ -54,7 +54,7 @@ def test_last_run_records_aborted(sandbox, repo):
 def test_last_run_records_failure(sandbox, repo):
     rc = subprocess.run(
         ["python3", "-c",
-         "from installer.state import RunTracker;"
+         "from state import RunTracker;"
          "t = RunTracker('install', [], 'auto'); t.start(); t.finalize(1)"],
         check=False, env={**os.environ, "HOME": str(sandbox)},
         cwd=str(repo / "src/scripts"),

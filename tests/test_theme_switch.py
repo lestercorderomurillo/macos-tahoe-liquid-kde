@@ -1,4 +1,4 @@
-"""Behaviour tests for installer/theme_switch.py — color group surgery,
+"""Behaviour tests for src/scripts/theme_switch.py — color group surgery,
 mode detection, and the install/uninstall step."""
 
 import os
@@ -50,7 +50,7 @@ def test_color_files_have_distinct_values(colors):
 
 # ── apply_color_groups_direct round-trips ────────────────────────────────
 def _apply(scheme):
-    from installer.theme_switch import apply_color_groups_direct
+    from theme_switch import apply_color_groups_direct
     apply_color_groups_direct(scheme)
 
 
@@ -96,7 +96,7 @@ def test_double_apply_is_idempotent(seeded_color_schemes):
 
 
 def test_missing_scheme_no_crash(seeded_color_schemes):
-    from installer.theme_switch import apply_color_groups_direct
+    from theme_switch import apply_color_groups_direct
     # Should return False, not raise.
     assert apply_color_groups_direct("NonExistent") is False
 
@@ -124,7 +124,7 @@ def test_color_scheme_name_matches_palette(seeded_color_schemes, colors):
 
 # ── auto-mode startup sync ───────────────────────────────────────────────
 def test_auto_sync_reapplies_when_mode_changed(monkeypatch):
-    from installer import theme_switch
+    import theme_switch
 
     calls = []
     monkeypatch.setattr(theme_switch, "detect_auto_target_mode", lambda: "light")
@@ -140,7 +140,7 @@ def test_auto_sync_reapplies_when_mode_changed(monkeypatch):
 
 
 def test_auto_sync_skips_full_apply_when_unchanged(monkeypatch):
-    from installer import theme_switch
+    import theme_switch
 
     calls = []
     monkeypatch.setattr(theme_switch, "detect_auto_target_mode", lambda: "light")
@@ -156,7 +156,7 @@ def test_auto_sync_skips_full_apply_when_unchanged(monkeypatch):
 
 
 def test_wallpaper_path_prefers_auto_package(monkeypatch, tmp_path):
-    from installer import theme_switch
+    import theme_switch
 
     data = tmp_path / "data"
     wallpapers = data / "wallpapers"
@@ -170,7 +170,7 @@ def test_wallpaper_path_prefers_auto_package(monkeypatch, tmp_path):
 
 
 def test_apply_extras_syncs_wallpaper(monkeypatch, tmp_path):
-    from installer import theme_switch
+    import theme_switch
 
     calls = []
     monkeypatch.setenv("HOME", str(tmp_path / "home"))
@@ -184,7 +184,7 @@ def test_apply_extras_syncs_wallpaper(monkeypatch, tmp_path):
 
 
 def test_apply_skips_live_lookandfeel_during_boot(monkeypatch):
-    from installer import theme_switch
+    import theme_switch
 
     calls = []
     monkeypatch.setattr(theme_switch, "write_kde_theme_config",
@@ -205,7 +205,7 @@ def test_apply_skips_live_lookandfeel_during_boot(monkeypatch):
 
 
 def test_apply_uses_live_lookandfeel_after_boot(monkeypatch):
-    from installer import theme_switch
+    import theme_switch
 
     calls = []
     monkeypatch.setattr(theme_switch, "write_kde_theme_config",
@@ -224,7 +224,7 @@ def test_apply_uses_live_lookandfeel_after_boot(monkeypatch):
 
 
 def test_apply_skips_live_lookandfeel_for_scheduled_transition(monkeypatch):
-    from installer import theme_switch
+    import theme_switch
 
     calls = []
     monkeypatch.setattr(theme_switch, "write_kde_theme_config",
@@ -245,7 +245,7 @@ def test_apply_skips_live_lookandfeel_for_scheduled_transition(monkeypatch):
 
 
 def test_auto_mode_uses_scheduled_context(monkeypatch):
-    from installer import theme_switch
+    import theme_switch
 
     calls = []
     monkeypatch.setattr(theme_switch, "enable_auto_mode",
@@ -265,7 +265,7 @@ def _run_step(step_name: str, phase: str, env: dict[str, str]) -> None:
     full.update(env)
     rc = subprocess.run(
         ["python3", "-c",
-         f"from installer.steps.{step_name} import {phase}; {phase}()"],
+         f"from steps.{step_name} import {phase}; {phase}()"],
         check=False, env=full, cwd=str(Path(__file__).resolve().parent.parent / "src/scripts"),
     ).returncode
     assert rc == 0

@@ -7,9 +7,9 @@ from contextlib import contextmanager
 from pathlib import Path
 from typing import Iterator
 
-from installer import OFFLINE_DIR, STEPS_DIR
-from installer.log import fail, info, ok, reinstall, warn
-from installer.utils import have, kw_write, qdbus_call, safe_copy
+from paths import OFFLINE_DIR, STEPS_DIR
+from log import fail, info, ok, reinstall, warn
+from utils import have, kw_write, qdbus_call, safe_copy
 
 
 HOME = Path.home()

@@ -2,7 +2,7 @@ import os
 import shutil
 import subprocess
 
-from installer.steps._helpers import (
+from steps._helpers import (
     HOME, fail, have, kw_write, offline, ok, reinstall,
 )
 

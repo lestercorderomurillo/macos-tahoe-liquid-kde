@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from installer.steps import icons
+from steps import icons
 
 
 def test_assemble_preserves_upstream_alias_symlinks(tmp_path, monkeypatch):

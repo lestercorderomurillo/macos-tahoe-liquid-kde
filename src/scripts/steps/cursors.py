@@ -1,9 +1,9 @@
 import shutil
 
-from installer.steps._helpers import (
+from steps._helpers import (
     HOME, fail, info, install_tree, ok, src_dir, steps_dir, temp_dir,
 )
-from installer.utils import load_mirrors, run_mirrors
+from utils import load_mirrors, run_mirrors
 
 CACHE = steps_dir("cursors")
 DEST_DIR = HOME / ".local/share/icons"

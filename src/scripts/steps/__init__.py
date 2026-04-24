@@ -7,5 +7,5 @@ Each step is a module exporting some subset of:
     install()  -> None
     uninstall()-> None
 
-Failures are reported via installer.log.fail() and rolled into ``errors``.
+Failures are reported via log.fail() and rolled into ``errors``.
 """

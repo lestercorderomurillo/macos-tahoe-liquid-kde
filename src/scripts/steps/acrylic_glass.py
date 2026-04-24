@@ -3,7 +3,7 @@ import subprocess
 import time
 from pathlib import Path
 
-from installer.steps._helpers import (
+from steps._helpers import (
     cmake_build, fail, info, kw_write, ok, offline, qdbus_call, sudo_install_file, sudo_remove, warn,
 )
 

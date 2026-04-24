@@ -2,10 +2,10 @@ import json
 import shutil
 from pathlib import Path
 
-from installer.steps._helpers import (
+from steps._helpers import (
     HOME, fail, info, ok, reinstall, src_dir, steps_dir, temp_dir,
 )
-from installer.utils import fetch, run_mirrors, safe_copy
+from utils import fetch, run_mirrors, safe_copy
 
 CACHE = steps_dir("wallpapers")
 DEST_DIR = HOME / ".local/share/wallpapers"

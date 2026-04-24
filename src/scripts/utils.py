@@ -9,7 +9,7 @@ import zipfile
 from pathlib import Path
 from typing import Callable, Iterable
 
-from installer.log import fail, ok, warn
+from log import fail, ok, warn
 
 
 _USER_AGENT = (

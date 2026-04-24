@@ -1,6 +1,6 @@
 import json
 
-from installer.steps._helpers import (
+from steps._helpers import (
     HOME, install_tree, offline, ok, remove_tree,
 )
 

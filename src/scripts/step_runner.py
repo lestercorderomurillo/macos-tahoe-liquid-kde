@@ -1,9 +1,9 @@
-"""Run a feature step. Each step is a Python module under ``installer.steps``."""
+"""Run a feature step. Each step is a Python module under ``src/scripts/steps``."""
 
 import importlib
 from types import ModuleType
 
-from installer.log import errors
+from log import errors
 
 
 PHASES = ("deps", "download", "build", "install", "uninstall", "restart_plasma")
@@ -12,7 +12,7 @@ PHASES = ("deps", "download", "build", "install", "uninstall", "restart_plasma")
 def step_module(feature: str) -> ModuleType | None:
     name = feature.replace("-", "_")
     try:
-        return importlib.import_module(f"installer.steps.{name}")
+        return importlib.import_module(f"steps.{name}")
     except ModuleNotFoundError:
         return None
 
@@ -48,7 +48,7 @@ def run_phase(feature: str, phase: str) -> bool:
     try:
         getattr(mod, phase)()
     except Exception as exc:
-        from installer.log import fail
+        from log import fail
         fail(f"{feature}: {phase} raised {type(exc).__name__}: {exc}")
         return False
     return len(errors) == before

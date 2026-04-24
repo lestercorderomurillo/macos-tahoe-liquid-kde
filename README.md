@@ -201,22 +201,20 @@ Every install or uninstall run also records the exact CLI flags that were used i
 
 ```
 macos-tahoe-liquid-kde/
-├── install                 # entry point → src/scripts/installer
-├── uninstall               # entry point → src/scripts/installer
+├── install                 # entry point → src/scripts/cli.run_install
+├── uninstall               # entry point → src/scripts/cli.run_uninstall
 ├── features.json           # toggle individual components on/off
 └── src/
     ├── scripts/
-    │   ├── installer/      # Python orchestrator + per-feature step modules
-    │   │   ├── cli.py          # argparse, feature flags, install/uninstall flow
-    │   │   ├── theme_switch.py # light/dark switcher (installed as ~/.local/bin)
-    │   │   ├── transparency.py # background opacity tuner
-    │   │   ├── svgzc.py        # decode/encode .svgz for editing
-    │   │   ├── utils.py, log.py, state.py, step_runner.py
-    │   │   └── steps/          # one module per feature: install/uninstall/...
-    │   │       ├── wallpapers.py, fonts.py, cursors.py, icons.py, ...
-    │   │       └── (21 modules — apply, layout, plasmoids, theme_switch, ...)
-    │   ├── svgzc              # CLI shim → installer.svgzc
-    │   └── set-transparency   # CLI shim → installer.transparency
+    │   ├── cli.py              # argparse, feature flags, install/uninstall flow
+    │   ├── theme_switch.py     # light/dark switcher (installed as ~/.local/bin)
+    │   ├── set-transparency    # CLI: tune background opacity (Kvantum/Plasma/GTK)
+    │   ├── svgzc               # CLI: decode/encode .svgz for editing
+    │   ├── paths.py            # REPO_ROOT / SRC_DIR / OFFLINE_DIR / read_version()
+    │   ├── log.py, state.py, step_runner.py, utils.py
+    │   └── steps/              # one module per feature: install/uninstall/...
+    │       ├── wallpapers.py, fonts.py, cursors.py, icons.py, ...
+    │       └── (21 modules — apply, layout, plasmoids, theme_switch, ...)
     ├── mirrors/            # download source definitions (JSON)
     │   ├── wallpapers.json
     │   ├── fonts.json

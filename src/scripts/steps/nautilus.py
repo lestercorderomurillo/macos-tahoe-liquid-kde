@@ -2,7 +2,7 @@ import os
 import shutil
 import subprocess
 
-from installer.steps._helpers import HOME, fail, have, ok, offline, warn
+from steps._helpers import HOME, fail, have, ok, offline, warn
 
 NAUTILUS_DESKTOP = "org.gnome.Nautilus.desktop"
 DOLPHIN_DESKTOP = "org.kde.dolphin.desktop"

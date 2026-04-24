@@ -32,14 +32,14 @@ def test_help_exits_zero(repo, script):
 
 
 def test_installer_package(repo):
-    assert (repo / "src/scripts/installer/__init__.py").is_file()
-    assert (repo / "src/scripts/installer/cli.py").is_file()
-    assert (repo / "src/scripts/installer/theme_switch.py").is_file()
-    assert (repo / "src/scripts/installer/transparency.py").is_file()
+    assert (repo / "src/scripts/cli.py").is_file()
+    assert (repo / "src/scripts/theme_switch.py").is_file()
+    assert (repo / "src/scripts/set-transparency").is_file()
+    assert (repo / "src/scripts/steps/__init__.py").is_file()
 
 
 def test_theme_switch_python(repo):
-    text = (repo / "src/scripts/installer/theme_switch.py").read_text()
+    text = (repo / "src/scripts/theme_switch.py").read_text()
     assert "apply_color_groups_direct" in text
     assert ".colors" in text
     # Auto mode is strictly time-based — explicitly disables AutomaticLookAndFeel.
@@ -401,12 +401,12 @@ _ACRYLIC_STEP_KEYS = (
 
 @pytest.mark.parametrize("key", _ACRYLIC_STEP_KEYS)
 def test_acrylic_step_sets_key(repo, key):
-    text = (repo / "src/scripts/installer/steps/acrylic_glass.py").read_text()
+    text = (repo / "src/scripts/steps/acrylic_glass.py").read_text()
     assert key in text
 
 
 def test_globalmenu_step_cleans_old(repo):
-    text = (repo / "src/scripts/installer/steps/globalmenu.py").read_text()
+    text = (repo / "src/scripts/steps/globalmenu.py").read_text()
     assert "org.kde.mac.tahoe.liquid.menu.so" in text
     assert "org.kde.mac-tahoe-liquid-kde.menu" in text
     # Pre-rename plugins (April-1st builds, before "liquid" was added).
@@ -419,7 +419,7 @@ def test_layout_no_standalone_menu(offline):
 
 
 def test_cli_feature_lists(repo):
-    text = (repo / "src/scripts/installer/cli.py").read_text()
+    text = (repo / "src/scripts/cli.py").read_text()
     for f in ("nautilus", "portals", "wallpapers", "fonts", "cursors",
               "icons", "plasmoids", "globalmenu", "layout"):
         assert f'"{f}"' in text, f
@@ -433,7 +433,7 @@ def test_features_json_has_keys(repo):
 
 # ── nautilus / portals python steps reference KDE/dolphin ────────────────
 def test_nautilus_step(repo):
-    text = (repo / "src/scripts/installer/steps/nautilus.py").read_text()
+    text = (repo / "src/scripts/steps/nautilus.py").read_text()
     assert "XDG_CURRENT_DESKTOP" in text
     assert "org.gnome.Nautilus.desktop" in text
     assert "org.kde.dolphin.desktop" in text
@@ -441,7 +441,7 @@ def test_nautilus_step(repo):
 
 
 def test_portals_step(repo):
-    text = (repo / "src/scripts/installer/steps/portals.py").read_text()
+    text = (repo / "src/scripts/steps/portals.py").read_text()
     assert "kde-portals.conf" in text
     assert "FileChooser=kde" in text
     assert "AppChooser=kde" in text
@@ -454,7 +454,7 @@ def test_portals_step(repo):
 
 # ── transparency / theme-switch python ───────────────────────────────────
 def test_transparency_python(repo):
-    p = repo / "src/scripts/installer/transparency.py"
+    p = repo / "src/scripts/set-transparency"
     text = p.read_text()
     assert "reduce_menu_opacity" in text
     assert "window.color" in text
@@ -468,7 +468,7 @@ def test_transparency_python(repo):
 
 
 def test_theme_switch_invariants(repo):
-    text = (repo / "src/scripts/installer/theme_switch.py").read_text()
+    text = (repo / "src/scripts/theme_switch.py").read_text()
     assert "apply_color_groups_direct" in text
     assert "Auto = strictly time-based" in text or "detect_auto_target_mode" in text
     assert "AutomaticLookAndFeel" in text
@@ -493,5 +493,5 @@ def test_readme_documents_last_run(repo):
 
 # ── installer step naming convention ─────────────────────────────────────
 def test_install_helpers_have_reinstall(repo):
-    text = (repo / "src/scripts/installer/log.py").read_text()
+    text = (repo / "src/scripts/log.py").read_text()
     assert re.search(r"def reinstall.*GREEN", text, re.DOTALL)

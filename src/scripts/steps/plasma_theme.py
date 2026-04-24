@@ -1,6 +1,6 @@
 import shutil
 
-from installer.steps._helpers import (
+from steps._helpers import (
     HOME, fail, info, install_tree, kw_write, offline, remove_tree,
 )
 

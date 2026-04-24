@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from installer.steps import plasmoids
+from steps import plasmoids
 
 
 def test_install_copies_taskmanager_runtime_package(tmp_path, monkeypatch):

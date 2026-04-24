@@ -1,8 +1,134 @@
 #!/usr/bin/env python3
+"""Decode .svgz → .svg for editing, then recompile back.
+
+Decoded files live in ``svg-edit/`` at the repo root:
+
+    svg-edit/
+      Dark/widgets/button.svg
+      Light/widgets/button.svg
+      ...
+
+Usage:
+    svgzc decode          Decode all .svgz → svg-edit/
+    svgzc decode <file>   Decode one .svgz file
+    svgzc encode          Recompile every edited .svg back to .svgz
+    svgzc encode <file>   Recompile one .svg from svg-edit/
+    svgzc clean           Remove the svg-edit/ directory
+"""
+
+import gzip
+import shutil
 import sys
 from pathlib import Path
 
-sys.path.insert(0, str(Path(__file__).resolve().parent))
-from installer.svgzc import main
+from paths import OFFLINE_DIR, REPO_ROOT
 
-raise SystemExit(main(sys.argv[1:]))
+
+PLASMA_DIR = OFFLINE_DIR / "plasma-theme"
+EDIT_DIR = REPO_ROOT / "svg-edit"
+
+USAGE = "Usage: svgzc {decode|encode|clean} [file]"
+
+
+def _short_variant(path: Path) -> str:
+    s = str(path)
+    if "-Dark" in s:
+        return "Dark"
+    if "-Light" in s:
+        return "Light"
+    return "Other"
+
+
+def _inner_path(svgz: Path) -> Path:
+    """Path under the variant dir, e.g. ``widgets/button.svgz``."""
+    parts = svgz.parts
+    for i, p in enumerate(parts):
+        if p.startswith("MacTahoeLiquidKde-"):
+            return Path(*parts[i + 1:])
+    return Path(svgz.name)
+
+
+def _svg_to_svgz(svg: Path) -> Path | None:
+    rel = svg.relative_to(EDIT_DIR)
+    variant, *inner = rel.parts
+    full_variant = {
+        "Dark": "MacTahoeLiquidKde-Dark",
+        "Light": "MacTahoeLiquidKde-Light",
+    }.get(variant)
+    if full_variant is None:
+        print(f"  skip (unknown variant {variant}): {svg}")
+        return None
+    target = PLASMA_DIR / full_variant / Path(*inner).with_suffix(".svgz")
+    return target
+
+
+def _decode_one(svgz: Path) -> None:
+    variant = _short_variant(svgz)
+    inner = _inner_path(svgz).with_suffix(".svg")
+    out = EDIT_DIR / variant / inner
+    out.parent.mkdir(parents=True, exist_ok=True)
+    out.write_bytes(gzip.decompress(svgz.read_bytes()))
+    print(f"  decoded: {out}")
+
+
+def _encode_one(svg: Path) -> None:
+    target = _svg_to_svgz(svg)
+    if target is None:
+        return
+    if not target.is_file():
+        print(f"  skip (no matching .svgz): {target}")
+        return
+    target.write_bytes(gzip.compress(svg.read_bytes(), compresslevel=9))
+    print(f"  encoded: {target}")
+
+
+def decode_all() -> None:
+    n = 0
+    for svgz in PLASMA_DIR.rglob("*.svgz"):
+        _decode_one(svgz)
+        n += 1
+    print(f"Decoded {n} files into {EDIT_DIR}/")
+    print(f"Edit the .svg files, then run: svgzc encode")
+
+
+def encode_all() -> None:
+    n = 0
+    if EDIT_DIR.is_dir():
+        for svg in EDIT_DIR.rglob("*.svg"):
+            _encode_one(svg)
+            n += 1
+    print(f"Encoded {n} files. Run: svgzc clean")
+
+
+def clean() -> None:
+    if EDIT_DIR.exists():
+        shutil.rmtree(EDIT_DIR)
+    print(f"Removed {EDIT_DIR}/")
+
+
+def main(argv: list[str]) -> int:
+    if not argv:
+        print(USAGE, file=sys.stderr)
+        return 1
+    cmd, *rest = argv
+    if cmd == "decode":
+        if rest:
+            _decode_one(Path(rest[0]))
+        else:
+            decode_all()
+        return 0
+    if cmd == "encode":
+        if rest:
+            _encode_one(Path(rest[0]))
+        else:
+            encode_all()
+        return 0
+    if cmd == "clean":
+        clean()
+        return 0
+    print(USAGE, file=sys.stderr)
+    return 1
+
+
+if __name__ == "__main__":
+    raise SystemExit(main(sys.argv[1:]))

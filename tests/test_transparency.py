@@ -1,4 +1,4 @@
-"""set-transparency / installer.transparency end-to-end behaviour."""
+"""set-transparency / set-transparency end-to-end behaviour."""
 
 import gzip
 import shutil
@@ -11,7 +11,7 @@ import pytest
 
 @pytest.fixture
 def trans_fixture(tmp_path, repo, offline):
-    """Sandboxed copy of the offline subdirs + installer/ + entry script."""
+    """Sandboxed copy of the offline subdirs + src/scripts/ + entry script."""
     fx = tmp_path / "fx"
     (fx / "src/scripts").mkdir(parents=True)
     (fx / "src/offline").mkdir(parents=True)
@@ -21,7 +21,13 @@ def trans_fixture(tmp_path, repo, offline):
     target.chmod(0o755)
     for sub in ("kvantum", "plasma-theme", "gtk"):
         shutil.copytree(offline / sub, fx / "src/offline" / sub)
-    shutil.copytree(repo / "src/scripts/installer", fx / "src/scripts/installer")
+    for item in (repo / "src/scripts").iterdir():
+        if item.name not in ("__pycache__",):
+            dst = fx / "src/scripts" / item.name
+            if item.is_dir():
+                shutil.copytree(item, dst)
+            else:
+                shutil.copy2(item, dst)
     (fx / "VERSION").write_text("0.0.0\n")
     return fx
 

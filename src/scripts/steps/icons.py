@@ -3,10 +3,10 @@ import shutil
 import subprocess
 from pathlib import Path
 
-from installer.steps._helpers import (
+from steps._helpers import (
     HOME, fail, info, install_tree, ok, src_dir, steps_dir, temp_dir,
 )
-from installer.utils import remove_path, run_mirrors
+from utils import remove_path, run_mirrors
 
 CACHE = steps_dir("icons")
 DEST_DIR = HOME / ".local/share/icons"

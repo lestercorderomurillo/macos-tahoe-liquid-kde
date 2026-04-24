@@ -1,7 +1,7 @@
 import shutil
 import subprocess
 
-from installer.steps._helpers import (
+from steps._helpers import (
     HOME, fail, have, info, install_tree, offline, ok, qdbus_call, remove_tree,
 )
 

@@ -7,6 +7,6 @@ REPO = Path(__file__).resolve().parent
 os.chdir(REPO)
 sys.path.insert(0, str(REPO / "src" / "scripts"))
 
-from installer.cli import run_install
+from cli import run_install
 
 raise SystemExit(run_install(sys.argv[1:]))

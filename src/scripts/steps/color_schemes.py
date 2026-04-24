@@ -1,4 +1,4 @@
-from installer.steps._helpers import HOME, fail, info, ok, offline, reinstall
+from steps._helpers import HOME, fail, info, ok, offline, reinstall
 
 DEST_DIR = HOME / ".local/share/color-schemes"
 LEGACY = ("MacTahoeDark.colors", "MacTahoeLight.colors")

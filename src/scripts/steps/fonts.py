@@ -2,10 +2,10 @@ import shutil
 import subprocess
 from collections import defaultdict
 
-from installer.steps._helpers import (
+from steps._helpers import (
     HOME, fail, info, ok, reinstall, src_dir, steps_dir, temp_dir,
 )
-from installer.utils import run_mirrors
+from utils import run_mirrors
 
 CACHE = steps_dir("fonts")
 DEST_DIR = HOME / ".local/share/fonts"

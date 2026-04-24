@@ -1,6 +1,6 @@
 import shutil
 
-from installer.steps._helpers import (
+from steps._helpers import (
     HOME, fail, info, kw_write, offline, ok, qdbus_call, reinstall, theme_mode,
 )
 

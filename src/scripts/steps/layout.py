@@ -2,8 +2,8 @@ import re
 import subprocess
 import time
 
-from installer.steps._helpers import HOME, fail, have, ok, offline, qdbus_call, warn
-from installer.utils import qdbus_cmd
+from steps._helpers import HOME, fail, have, ok, offline, qdbus_call, warn
+from utils import qdbus_cmd
 
 LAYOUT_SCRIPT = offline("layouts/mac-tahoe.js")
 LAYOUT_RESET = offline("layouts/default.js")

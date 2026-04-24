@@ -6,10 +6,10 @@ import subprocess
 import time
 from pathlib import Path
 
-from installer.steps._helpers import (
+from steps._helpers import (
     HOME, fail, feat_enabled, have, info, kw_write, ok, qdbus_call, theme_mode, warn,
 )
-from installer.theme_switch import reset_kde_color_scheme_config
+from theme_switch import reset_kde_color_scheme_config
 
 # Cache files / dirs flushed during install + uninstall before Plasma reloads.
 _CACHES = (
