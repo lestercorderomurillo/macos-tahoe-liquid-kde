@@ -4,11 +4,12 @@ import subprocess
 from pathlib import Path
 
 from steps._helpers import (
-    HOME, fail, info, install_tree, ok, src_dir, steps_dir, temp_dir,
+    HOME, fail, info, install_tree, legacy_steps_dir, ok, src_dir, steps_dir, temp_dir,
 )
 from utils import remove_path, run_mirrors
 
 CACHE = steps_dir("icons")
+LEGACY_CACHE = legacy_steps_dir("icons")
 DEST_DIR = HOME / ".local/share/icons"
 MIRROR_FILE = src_dir("mirrors/icons.json")
 
@@ -25,6 +26,13 @@ _AT2X_DIRS = (*_DEFAULT_DIRS, "status")
 
 def deps():
     return ["curl", "unzip"]
+
+
+def _cache_root() -> Path:
+    for cache in (CACHE, LEGACY_CACHE):
+        if (cache / "MacTahoeLiquidKde-Icons").is_dir():
+            return cache
+    return CACHE
 
 
 def _copy_subset(repo: Path, dest: Path, subdirs) -> None:
@@ -232,7 +240,7 @@ def download() -> None:
 def install() -> None:
     DEST_DIR.mkdir(parents=True, exist_ok=True)
     n = 0
-    for theme in sorted(CACHE.glob("Mac*")):
+    for theme in sorted(_cache_root().glob("Mac*")):
         if not theme.is_dir():
             continue
         if not (theme / "index.theme").is_file():

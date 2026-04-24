@@ -2,9 +2,10 @@ from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parent.parent.parent
 SRC_DIR = REPO_ROOT / "src"
-STEPS_DIR = SRC_DIR / "steps"
-OFFLINE_DIR = SRC_DIR / "offline"
 BUILD_DIR = REPO_ROOT / "build"
+STEPS_DIR = BUILD_DIR / "steps"
+LEGACY_STEPS_DIR = SRC_DIR / "steps"
+OFFLINE_DIR = SRC_DIR / "offline"
 CONFIG_FILE = REPO_ROOT / "features.json"
 VERSION_FILE = REPO_ROOT / "VERSION"
 

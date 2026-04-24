@@ -27,8 +27,8 @@ def offline(src) -> Path:
 
 
 @pytest.fixture(scope="session")
-def steps_dir(src) -> Path:
-    return src / "steps"
+def steps_dir(repo) -> Path:
+    return repo / "build/steps"
 
 
 @pytest.fixture

@@ -6,7 +6,15 @@ import subprocess
 import sys
 from pathlib import Path
 
-from paths import CONFIG_FILE, OFFLINE_DIR, REPO_ROOT, SRC_DIR, STEPS_DIR, read_version
+from paths import (
+    CONFIG_FILE,
+    LEGACY_STEPS_DIR,
+    OFFLINE_DIR,
+    REPO_ROOT,
+    SRC_DIR,
+    STEPS_DIR,
+    read_version,
+)
 from log import banner, errors, fail, note, ok, step, warn
 from state import RunTracker
 from step_runner import run_phase, step_deps, step_exists, step_has_phase
@@ -340,15 +348,16 @@ def verify_config(feat: dict[str, object]) -> None:
 def has_cache(feature: str, no_download: bool) -> bool:
     if not no_download:
         return False
-    cache = STEPS_DIR / feature.replace("_", "-")
-    if feature == "wallpapers":
-        return any((cache / "MacTahoe/contents/images").glob("*"))
-    if feature == "fonts":
-        return any(cache.glob("*.otf"))
-    if feature == "cursors":
-        return (cache / "MacTahoeLiquidKde/cursors").is_dir()
-    if feature == "icons":
-        return (cache / "MacTahoeLiquidKde-Icons").is_dir()
+    for base in (STEPS_DIR, LEGACY_STEPS_DIR):
+        cache = base / feature.replace("_", "-")
+        if feature == "wallpapers" and any((cache / "MacTahoe/contents/images").glob("*")):
+            return True
+        if feature == "fonts" and any((*cache.glob("*.otf"), *cache.glob("*.ttf"))):
+            return True
+        if feature == "cursors" and (cache / "MacTahoeLiquidKde/cursors").is_dir():
+            return True
+        if feature == "icons" and (cache / "MacTahoeLiquidKde-Icons").is_dir():
+            return True
     return False
 
 

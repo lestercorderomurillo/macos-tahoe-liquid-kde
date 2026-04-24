@@ -3,7 +3,7 @@ import shutil
 from pathlib import Path
 
 from steps._helpers import (
-    HOME, cmake_build, fail, info, install_tree, ok, offline,
+    HOME, build_dir, cmake_build, fail, info, install_tree, ok, offline,
     sudo_install_file, sudo_remove,
     temp_dir,
 )
@@ -12,7 +12,7 @@ SRC_DIR = offline("plasmoids")
 DEST_DIR = HOME / ".local/share/plasma/plasmoids"
 
 TASKMANAGER_SRC = SRC_DIR / "org.kde.mac.tahoe.liquid.taskmanager"
-TASKMANAGER_BUILD = TASKMANAGER_SRC / "build"
+TASKMANAGER_BUILD = build_dir("plasmoids/org.kde.mac.tahoe.liquid.taskmanager")
 TASKMANAGER_DEST_SO = Path(
     "/usr/lib/qt6/plugins/plasma/applets/org.kde.mac.tahoe.liquid.taskmanager.so"
 )

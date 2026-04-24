@@ -4,11 +4,12 @@ import time
 from pathlib import Path
 
 from steps._helpers import (
-    cmake_build, fail, info, kw_write, ok, offline, qdbus_call, sudo_install_file, sudo_remove, warn,
+    build_dir, cmake_build, fail, info, kw_write, ok, offline, qdbus_call,
+    sudo_install_file, sudo_remove, warn,
 )
 
 SRC = offline("kwin-effects/acrylic-glass")
-BUILD = SRC / "build"
+BUILD = build_dir("kwin-effects/acrylic-glass")
 
 
 def deps():

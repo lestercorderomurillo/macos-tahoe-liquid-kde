@@ -1,3 +1,4 @@
+# Generated repo-local caches and native build outputs.
 build/
 
 # Python bytecode + pytest cache
@@ -5,8 +6,8 @@ __pycache__/
 *.pyc
 .pytest_cache/
 
+# Legacy cache/build locations kept ignored so older local checkouts stay quiet.
 src/steps/
-
 src/offline/kwin-effects/*/build/
 src/offline/kwin-effects/*/src/shaders/onscreen_rounded*.frag
 src/offline/kwin-effects/*/src/shaders/onscreen_rounded*.glsl

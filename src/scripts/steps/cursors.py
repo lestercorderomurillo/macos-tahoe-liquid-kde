@@ -1,16 +1,24 @@
 import shutil
 
 from steps._helpers import (
-    HOME, fail, info, install_tree, ok, src_dir, steps_dir, temp_dir,
+    HOME, fail, info, install_tree, legacy_steps_dir, ok, src_dir, steps_dir, temp_dir,
 )
 from utils import load_mirrors, run_mirrors
 
 CACHE = steps_dir("cursors")
+LEGACY_CACHE = legacy_steps_dir("cursors")
 DEST_DIR = HOME / ".local/share/icons"
 
 
 def deps():
     return ["curl", "unzip"]
+
+
+def _cache_root():
+    for cache in (CACHE, LEGACY_CACHE):
+        if (cache / "MacTahoeLiquidKde/cursors").is_dir():
+            return cache
+    return CACHE
 
 
 def _classify(raw: str, prefix: str) -> str | None:
@@ -71,7 +79,7 @@ def _sources(mirror_file):
 def install() -> None:
     DEST_DIR.mkdir(parents=True, exist_ok=True)
     n = 0
-    for theme in sorted(CACHE.glob("Mac*")):
+    for theme in sorted(_cache_root().glob("Mac*")):
         if not theme.is_dir():
             continue
         if not (theme / "cursors").is_dir():

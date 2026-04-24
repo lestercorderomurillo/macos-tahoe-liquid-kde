@@ -4,7 +4,7 @@
 
 # macOS Tahoe Liquid Theme for KDE Plasma
 
-[![release](https://img.shields.io/github/v/release/lestercorderomurillo/macos-tahoe-liquid-kde?label=release)](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/releases) [![tests](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/actions/workflows/test.yml/badge.svg)](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/actions/workflows/test.yml) [![tests count](https://img.shields.io/badge/tests-155_passing-brightgreen)](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/actions/workflows/test.yml) [![license](https://img.shields.io/badge/license-MIT-blue)](LICENSE) [![plasma](https://img.shields.io/badge/KDE_Plasma-6.6%2B-1d99f3?logo=kde)](https://kde.org/plasma-desktop/) [![last commit](https://img.shields.io/github/last-commit/lestercorderomurillo/macos-tahoe-liquid-kde)](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/commits/) [![stars](https://img.shields.io/github/stars/lestercorderomurillo/macos-tahoe-liquid-kde)](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/stargazers) [![issues](https://img.shields.io/github/issues/lestercorderomurillo/macos-tahoe-liquid-kde)](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/issues)
+[![release](https://img.shields.io/github/v/release/lestercorderomurillo/macos-tahoe-liquid-kde?label=release)](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/releases) [![tests](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/actions/workflows/test.yml/badge.svg)](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/actions/workflows/test.yml) [![tests count](https://img.shields.io/badge/tests-183_passing-brightgreen)](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/actions/workflows/test.yml) [![license](https://img.shields.io/badge/license-MIT-blue)](LICENSE) [![plasma](https://img.shields.io/badge/KDE_Plasma-6.6%2B-1d99f3?logo=kde)](https://kde.org/plasma-desktop/) [![last commit](https://img.shields.io/github/last-commit/lestercorderomurillo/macos-tahoe-liquid-kde)](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/commits/) [![stars](https://img.shields.io/github/stars/lestercorderomurillo/macos-tahoe-liquid-kde)](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/stargazers) [![issues](https://img.shields.io/github/issues/lestercorderomurillo/macos-tahoe-liquid-kde)](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/issues)
 
 > [!CAUTION]
 > **Very experimental** — Under heavy active development. Things will break. Back up your system config before installing. Use at your own risk.
@@ -204,13 +204,17 @@ macos-tahoe-liquid-kde/
 ├── install                 # entry point → src/scripts/cli.run_install
 ├── uninstall               # entry point → src/scripts/cli.run_uninstall
 ├── features.json           # toggle individual components on/off
+├── build/
+│   ├── steps/              # downloaded cache used by installer steps (ignored)
+│   ├── plasmoids/          # native plasmoid build outputs (ignored)
+│   └── kwin-effects/       # native KWin effect build outputs (ignored)
 └── src/
     ├── scripts/
     │   ├── cli.py              # argparse, feature flags, install/uninstall flow
     │   ├── theme_switch.py     # light/dark switcher (installed as ~/.local/bin)
     │   ├── set-transparency    # CLI: tune background opacity (Kvantum/Plasma/GTK)
     │   ├── svgzc               # CLI: decode/encode .svgz for editing
-    │   ├── paths.py            # REPO_ROOT / SRC_DIR / OFFLINE_DIR / read_version()
+    │   ├── paths.py            # REPO_ROOT / SRC_DIR / BUILD_DIR / OFFLINE_DIR / read_version()
     │   ├── log.py, state.py, step_runner.py, utils.py
     │   └── steps/              # one module per feature: install/uninstall/...
     │       ├── wallpapers.py, fonts.py, cursors.py, icons.py, ...

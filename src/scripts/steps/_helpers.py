@@ -7,7 +7,7 @@ from contextlib import contextmanager
 from pathlib import Path
 from typing import Iterator
 
-from paths import OFFLINE_DIR, STEPS_DIR
+from paths import BUILD_DIR, LEGACY_STEPS_DIR, OFFLINE_DIR, SRC_DIR, STEPS_DIR
 from log import fail, info, ok, reinstall, warn
 from utils import have, kw_write, qdbus_call, safe_copy
 
@@ -34,8 +34,16 @@ def steps_dir(*parts: str) -> Path:
     return Path(os.environ.get("STEPS", str(STEPS_DIR)), *parts)
 
 
+def build_dir(*parts: str) -> Path:
+    return Path(os.environ.get("BUILD", str(BUILD_DIR)), *parts)
+
+
+def legacy_steps_dir(*parts: str) -> Path:
+    return Path(str(LEGACY_STEPS_DIR), *parts)
+
+
 def src_dir(*parts: str) -> Path:
-    return Path(os.environ.get("SRC", str(STEPS_DIR.parent)), *parts)
+    return Path(os.environ.get("SRC", str(SRC_DIR)), *parts)
 
 
 def install_tree(src: Path, dest: Path, label: str | None = None) -> bool:
@@ -137,7 +145,9 @@ def cmake_build(src_dir_: Path, build_dir: Path, label: str) -> bool:
 
 
 __all__ = [
-    "HOME", "feat_enabled", "theme_mode", "offline", "steps_dir", "src_dir",
+    "HOME", "feat_enabled", "theme_mode", "offline", "steps_dir",
+    "build_dir",
+    "legacy_steps_dir", "src_dir",
     "install_tree", "remove_tree", "sudo_install_file", "sudo_remove",
     "temp_dir", "cmake_build",
     # re-exports for step modules

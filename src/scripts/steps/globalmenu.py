@@ -1,11 +1,11 @@
 import shutil
 
 from steps._helpers import (
-    HOME, cmake_build, fail, ok, offline, sudo_install_file, sudo_remove,
+    HOME, build_dir, cmake_build, fail, ok, offline, sudo_install_file, sudo_remove,
 )
 
 SRC = offline("plasmoids/org.kde.mac-tahoe-liquid-kde.globalmenu")
-BUILD = SRC / "build"
+BUILD = build_dir("plasmoids/org.kde.mac-tahoe-liquid-kde.globalmenu")
 DEST_SO = "/usr/lib/qt6/plugins/plasma/applets/org.kde.mac.tahoe.liquid.globalmenu.so"
 
 # Plasmoid IDs left by older builds. Their .so files cause duplicate-Id

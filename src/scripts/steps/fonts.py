@@ -3,16 +3,24 @@ import subprocess
 from collections import defaultdict
 
 from steps._helpers import (
-    HOME, fail, info, ok, reinstall, src_dir, steps_dir, temp_dir,
+    HOME, fail, info, legacy_steps_dir, ok, reinstall, src_dir, steps_dir, temp_dir,
 )
 from utils import run_mirrors
 
 CACHE = steps_dir("fonts")
+LEGACY_CACHE = legacy_steps_dir("fonts")
 DEST_DIR = HOME / ".local/share/fonts"
 
 
 def deps():
     return ["curl", "unzip", "fc-cache:fontconfig"]
+
+
+def _cache_root():
+    for cache in (CACHE, LEGACY_CACHE):
+        if any((*cache.glob("*.otf"), *cache.glob("*.ttf"))):
+            return cache
+    return CACHE
 
 
 def download() -> None:
@@ -53,8 +61,9 @@ def install() -> None:
     inst: dict[str, int] = defaultdict(int)
     re: dict[str, int] = defaultdict(int)
     any_copied = False
+    cache = _cache_root()
 
-    for f in (*CACHE.glob("*.otf"), *CACHE.glob("*.ttf")):
+    for f in (*cache.glob("*.otf"), *cache.glob("*.ttf")):
         target = DEST_DIR / f.name
         existed = target.is_file()
         try:

@@ -3,17 +3,25 @@ import shutil
 from pathlib import Path
 
 from steps._helpers import (
-    HOME, fail, info, ok, reinstall, src_dir, steps_dir, temp_dir,
+    HOME, fail, info, legacy_steps_dir, ok, reinstall, src_dir, steps_dir, temp_dir,
 )
 from utils import fetch, run_mirrors, safe_copy
 
 CACHE = steps_dir("wallpapers")
+LEGACY_CACHE = legacy_steps_dir("wallpapers")
 DEST_DIR = HOME / ".local/share/wallpapers"
 MIRROR_FILE = src_dir("mirrors/wallpapers.json")
 
 
 def deps():
     return ["curl", "unzip"]
+
+
+def _cache_root() -> Path:
+    for cache in (CACHE, LEGACY_CACHE):
+        if any((cache / "MacTahoe/contents/images").glob("*")):
+            return cache
+    return CACHE
 
 
 def _meta(dir_: Path, id_: str, name: str, desc: str, auto: bool = False) -> None:
@@ -146,9 +154,10 @@ def download() -> None:
 def install() -> None:
     pre = {p.name for p in DEST_DIR.glob("*/") if p.is_dir()}
     DEST_DIR.mkdir(parents=True, exist_ok=True)
+    cache = _cache_root()
 
     n_inst = n_re = 0
-    for wp in sorted(CACHE.glob("Mac*/")):
+    for wp in sorted(cache.glob("Mac*/")):
         if not wp.is_dir():
             continue
         contents = wp / "contents"
