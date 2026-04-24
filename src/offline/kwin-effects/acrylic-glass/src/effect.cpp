@@ -6,9 +6,9 @@
     SPDX-License-Identifier: GPL-2.0-or-later
 */
 
-#include "blur.h"
+#include "effect.h"
 // KConfigSkeleton
-#include "blurconfig.h"
+#include "glassconfig.h"
 
 #include "core/pixelgrid.h"
 #include "core/rendertarget.h"
@@ -100,8 +100,8 @@ BlurEffect::BlurEffect()
     ensureResources();
 
     m_roundedOnscreenPass.shader = ShaderManager::instance()->generateShaderFromFile(ShaderTrait::MapTexture,
-                                                                                     QStringLiteral(":/effects/liquidglass/shaders/onscreen_rounded.vert"),
-                                                                                     QStringLiteral(":/effects/liquidglass/shaders/onscreen_rounded.frag"));
+                                                                                     QStringLiteral(":/effects/liquidglass/shaders/glass.vert"),
+                                                                                     QStringLiteral(":/effects/liquidglass/shaders/glass.frag"));
     if (!m_roundedOnscreenPass.shader) {
         qCWarning(KWIN_BLUR) << "Failed to load onscreen pass shader (null)";
         return;
@@ -1104,4 +1104,4 @@ bool BlurEffect::blocksDirectScanout() const
 
 } // namespace KWin
 
-#include "moc_blur.cpp"
+#include "moc_effect.cpp"

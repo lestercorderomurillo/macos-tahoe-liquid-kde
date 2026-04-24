@@ -32,7 +32,7 @@ def _plugin_dir() -> Path:
 def build() -> None:
     if not (SRC / "CMakeLists.txt").is_file():
         return
-    for fn in ("onscreen_rounded_core.frag", "onscreen_rounded.frag"):
+    for fn in ("glass_core.frag", "glass.frag"):
         try: (SRC / "src/shaders" / fn).unlink()
         except FileNotFoundError: pass
         except OSError: pass

@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include "ui_blur_config.h"
+#include "ui_config.h"
 #include <KCModule>
 #include <QWidget>
 
@@ -24,7 +24,7 @@ public:
     void save() override;
 
 private:
-    ::Ui::BlurEffectConfig ui;
+    ::Ui::GlassEffectConfig ui;
 };
 
 } // namespace KWin

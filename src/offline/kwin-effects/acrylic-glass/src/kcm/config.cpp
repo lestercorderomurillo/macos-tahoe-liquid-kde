@@ -2,8 +2,8 @@
     SPDX-FileCopyrightText: 2010 Fredrik Höglund <fredrik@kde.org>
     SPDX-License-Identifier: GPL-2.0-or-later
 */
-#include "blur_config.h"
-#include "blurconfig.h"
+#include "config.h"
+#include "glassconfig.h"
 
 #include <KPluginFactory>
 #include "kwineffects_interface.h"
@@ -47,5 +47,5 @@ void LiquidGlassEffectConfig::save()
 
 } // namespace KWin
 
-#include "blur_config.moc"
-#include "moc_blur_config.cpp"
+#include "config.moc"
+#include "moc_config.cpp"

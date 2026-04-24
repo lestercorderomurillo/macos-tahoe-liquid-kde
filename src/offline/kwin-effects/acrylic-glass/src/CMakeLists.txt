@@ -5,7 +5,6 @@ set(LIQUIDGLASS_SHADER_INCLUDES
     blur.glsl
     distort.glsl
     highlight.glsl
-    glass.glsl
 )
 
 function(preprocess_shader_includes input output)
@@ -17,17 +16,17 @@ function(preprocess_shader_includes input output)
     file(WRITE "${output}" "${SHADER_SOURCE}")
 endfunction()
 
-preprocess_shader_includes(shaders/onscreen_rounded.glsl shaders/onscreen_rounded.frag)
-preprocess_shader_includes(shaders/onscreen_rounded_core.glsl shaders/onscreen_rounded_core.frag)
+preprocess_shader_includes(shaders/glass.glsl shaders/glass.frag)
+preprocess_shader_includes(shaders/glass_core.glsl shaders/glass_core.frag)
 
 set(liquidglass_SOURCES
-    blur.cpp
+    effect.cpp
     liquidglass.qrc
     main.cpp
 )
 
 kconfig_add_kcfg_files(liquidglass_SOURCES
-    blurconfig.kcfgc
+    glassconfig.kcfgc
 )
 
 if(GLASS_WAYLAND)

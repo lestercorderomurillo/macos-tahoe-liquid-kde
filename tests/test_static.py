@@ -324,19 +324,19 @@ _AG_KEYS = (
 
 def test_acrylic_glass_files(offline):
     base = offline / "kwin-effects/acrylic-glass"
-    for fn in ("CMakeLists.txt", "src/blur.cpp", "src/blur.h",
-               "src/blur.kcfg", "src/kcm/blur_config.ui"):
+    for fn in ("CMakeLists.txt", "src/effect.cpp", "src/effect.h",
+               "src/glass.kcfg", "src/kcm/config.ui"):
         assert (base / fn).is_file(), fn
 
 
 @pytest.mark.parametrize("key", _AG_KEYS)
 def test_acrylic_glass_kcfg(offline, key):
-    kcfg = (offline / "kwin-effects/acrylic-glass/src/blur.kcfg").read_text()
+    kcfg = (offline / "kwin-effects/acrylic-glass/src/glass.kcfg").read_text()
     assert f'name="{key}"' in kcfg
 
 
 def test_acrylic_glass_kcm_layout(offline):
-    ui = (offline / "kwin-effects/acrylic-glass/src/kcm/blur_config.ui").read_text()
+    ui = (offline / "kwin-effects/acrylic-glass/src/kcm/config.ui").read_text()
     for needle in ("QTabWidget",
                    "<string>Glass</string>",
                    "<string>Corners</string>",
@@ -352,9 +352,9 @@ def test_acrylic_glass_shaders(offline):
                "noise_core.frag", "sdf.glsl", "blur.glsl",
                "distort.glsl", "highlight.glsl"):
         assert (base / fn).is_file(), fn
-    onscreen = (base / "onscreen_rounded.glsl").read_text()
+    glass = (base / "glass.glsl").read_text()
     for inc in ("sdf.glsl", "blur.glsl", "distort.glsl", "highlight.glsl"):
-        assert f'#include "{inc}"' in onscreen
+        assert f'#include "{inc}"' in glass
 
 
 def test_acrylic_glass_cmake(offline):
@@ -365,7 +365,7 @@ def test_acrylic_glass_cmake(offline):
 
 
 def test_acrylic_glass_blur_scaling(offline):
-    cpp = (offline / "kwin-effects/acrylic-glass/src/blur.cpp").read_text()
+    cpp = (offline / "kwin-effects/acrylic-glass/src/effect.cpp").read_text()
     assert "xScale(), 1.0) || !qFuzzyCompare(data.yScale(), 1.0)" in cpp
 
 

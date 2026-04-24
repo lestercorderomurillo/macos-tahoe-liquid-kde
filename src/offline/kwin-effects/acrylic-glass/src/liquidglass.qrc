@@ -4,10 +4,10 @@
   <file>shaders/downsample_core.frag</file>
   <file>shaders/noise.frag</file>
   <file>shaders/noise_core.frag</file>
-  <file>shaders/onscreen_rounded_core.frag</file>
-  <file>shaders/onscreen_rounded.frag</file>
-  <file>shaders/onscreen_rounded_core.vert</file>
-  <file>shaders/onscreen_rounded.vert</file>
+  <file>shaders/glass_core.frag</file>
+  <file>shaders/glass.frag</file>
+  <file>shaders/glass_core.vert</file>
+  <file>shaders/glass.vert</file>
   <file>shaders/upsample.frag</file>
   <file>shaders/upsample_core.frag</file>
   <file>shaders/vertex.vert</file>
