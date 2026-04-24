@@ -1,7 +1,8 @@
 [Unit]
 Description=MacTahoe Liquid KDE — fire time-based light/dark transitions
-Wants=graphical-session.target
-After=graphical-session.target
+# Do not order the timer itself after graphical-session.target: that creates a
+# timers.target ordering cycle during login. The triggered apply service is the
+# piece that waits for the graphical session.
 
 [Timer]
 # Fire at 06:00 (light) and 18:00 (dark) every day.

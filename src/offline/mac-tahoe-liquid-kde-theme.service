@@ -1,10 +1,10 @@
 [Unit]
 Description=MacTahoe Liquid KDE — auto light/dark theme switcher
-# Wait for the full graphical session AND KDE's core daemons (kded6).
-# graphical-session.target alone is not enough — plasma-apply-colorscheme
-# crashes when kded6 isn't ready yet.
-After=graphical-session.target
-Wants=graphical-session.target
+# Tie the watcher to the actual graphical session instead of default.target.
+# The Python wrapper still waits for plasmashell/kded/XWayland readiness
+# before applying anything, but this avoids starting the unit too early.
+After=graphical-session.target plasma-plasmashell.service
+PartOf=graphical-session.target
 
 [Service]
 Type=simple
@@ -15,4 +15,4 @@ Restart=on-failure
 RestartSec=15
 
 [Install]
-WantedBy=default.target
+WantedBy=graphical-session.target

@@ -78,6 +78,8 @@ def test_plasma_theme_dir(offline, variant):
     base = offline / "plasma-theme" / f"MacTahoeLiquidKde-{variant}"
     assert base.is_dir()
     assert (base / "metadata.json").is_file()
+    assert (base / "plasmarc").is_file()
+    assert "defaultWallpaperTheme=MacTahoe" in (base / "plasmarc").read_text()
 
 
 @pytest.mark.parametrize("variant", ["Dark", "Light"])
@@ -174,6 +176,7 @@ def test_global_theme(offline, variant):
     assert f"name=MacTahoeLiquidKde-{variant}" in defaults
     assert f"MacTahoeLiquidKde-{variant}" in defaults
     assert "cursorTheme=" in defaults
+    assert "Image=MacTahoe" in defaults
 
 
 @pytest.mark.parametrize("variant", ["Dark", "Light"])
@@ -474,13 +477,14 @@ def test_theme_switch_invariants(repo):
 # ── systemd unit invariants ───────────────────────────────────────────────
 def test_theme_service(offline):
     s = (offline / "mac-tahoe-liquid-kde-theme.service").read_text()
-    assert "WantedBy=default.target" in s
-    assert "Wants=graphical-session.target" in s
+    assert "WantedBy=graphical-session.target" in s
+    assert "PartOf=graphical-session.target" in s
 
 
 def test_theme_timer(offline):
     t = (offline / "mac-tahoe-liquid-kde-theme.timer").read_text()
     assert "WantedBy=timers.target" in t
+    assert "After=graphical-session.target" not in t
 
 
 def test_readme_documents_last_run(repo):

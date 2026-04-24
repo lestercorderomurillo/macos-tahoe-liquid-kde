@@ -68,6 +68,41 @@ def _has_session_dbus() -> bool:
     return _HAS_DBUS
 
 
+def _sync_session_env() -> None:
+    """Refresh session env vars from the user systemd manager."""
+    res = subprocess.run(
+        ["systemctl", "--user", "show-environment"],
+        check=False, capture_output=True, text=True,
+    )
+    if res.returncode != 0:
+        return
+    wanted = {
+        "DBUS_SESSION_BUS_ADDRESS",
+        "DISPLAY",
+        "WAYLAND_DISPLAY",
+        "XAUTHORITY",
+        "XDG_CURRENT_DESKTOP",
+        "XDG_RUNTIME_DIR",
+        "XDG_SESSION_TYPE",
+    }
+    for line in res.stdout.splitlines():
+        key, _, value = line.partition("=")
+        if key in wanted and value:
+            os.environ[key] = value
+
+
+def _session_bus_has_name(name: str) -> bool:
+    if not _has_session_dbus():
+        return False
+    res = subprocess.run(
+        ["dbus-send", "--session", "--print-reply",
+         "--dest=org.freedesktop.DBus", "/org/freedesktop/DBus",
+         "org.freedesktop.DBus.NameHasOwner", f"string:{name}"],
+        check=False, capture_output=True, text=True,
+    )
+    return res.returncode == 0 and "boolean true" in res.stdout
+
+
 def _kwrite(*args: str) -> bool:
     """Write a kdeglobals key. ``--notify`` serialises rapid back-to-back
     writes against the same file so kwriteconfig6's atomic .tmp→rename
@@ -225,6 +260,30 @@ def detect_mode_by_time() -> str:
     return "light" if 6 <= h < 18 else "dark"
 
 
+def _wallpaper_path(mode: str) -> Path | None:
+    data_home = Path(os.environ.get("XDG_DATA_HOME") or
+                     str(Path.home() / ".local/share"))
+    base = data_home / "wallpapers"
+    auto = base / "MacTahoe"
+    if auto.is_dir():
+        return auto
+    legacy = base / ("MacTahoe-Dark" if mode == "dark" else "MacTahoe-Light")
+    return legacy if legacy.is_dir() else None
+
+
+def _apply_wallpaper(mode: str) -> bool:
+    wp = _wallpaper_path(mode)
+    if wp is None or not _have("plasma-apply-wallpaperimage"):
+        return False
+    if not wait_for_plasma(settle_seconds=1):
+        return False
+    return subprocess.run(
+        ["plasma-apply-wallpaperimage", str(wp)],
+        check=False,
+        stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
+    ).returncode == 0
+
+
 def get_system_preference() -> str:
     res = subprocess.run(
         ["dbus-send", "--session", "--print-reply",
@@ -299,6 +358,8 @@ def flush_icon_caches() -> None:
 
 
 def apply_extras(mode: str) -> None:
+    _apply_wallpaper(mode)
+
     if _have("kvantummanager"):
         kv = "mac-tahoe-liquid-kdeDark" if mode == "dark" else "mac-tahoe-liquid-kde"
         env = os.environ.copy()
@@ -405,12 +466,12 @@ def apply(mode: str, context: str = "") -> bool:
     # Skip plasma-apply-lookandfeel during install — it triggers a QML
     # engine teardown race (SIGABRT in org.kde.panel.so). The Plasma
     # restart at the end of install loads the on-disk theme + colour
-    # config we just wrote.
-    if context != "install" and _have("plasma-apply-lookandfeel"):
-        subprocess.run(
-            ["plasma-apply-lookandfeel", "-a", laf, "--keep-auto"],
-            check=False, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
-        )
+    # config we just wrote. Boot-time sync has the same hazard: plasmashell
+    # may exist already while XWayland/DISPLAY is still coming up. Scheduled
+    # timer transitions use the same safe path: refresh the shell after
+    # rewriting config, but don't invoke plasma-apply-lookandfeel.
+    if context not in ("boot", "install", "scheduled"):
+        _apply_lookandfeel_live(laf)
 
     apply_extras(mode)
     _qdbus("org.kde.KWin", "/KWin", "org.kde.KWin.reconfigure")
@@ -420,32 +481,55 @@ def apply(mode: str, context: str = "") -> bool:
     return True
 
 
-def wait_for_plasma() -> bool:
-    tries = 0
-    while not (os.environ.get("DISPLAY") or os.environ.get("WAYLAND_DISPLAY")) \
-            or subprocess.run(["pgrep", "-x", "plasmashell"],
-                              check=False, stdout=subprocess.DEVNULL).returncode != 0:
-        time.sleep(2)
-        tries += 1
-        if tries >= 30:
-            return False
-        res = subprocess.run(
-            ["systemctl", "--user", "show-environment"],
-            check=False, capture_output=True, text=True,
+def wait_for_plasma(require_display: bool = False, settle_seconds: int = 3) -> bool:
+    for _ in range(90):
+        _sync_session_env()
+        have_display = bool(
+            os.environ.get("DISPLAY") if require_display
+            else (os.environ.get("DISPLAY") or os.environ.get("WAYLAND_DISPLAY"))
         )
-        for line in res.stdout.splitlines():
-            if line.startswith(("DISPLAY=", "WAYLAND_DISPLAY=")):
-                k, _, v = line.partition("=")
-                os.environ[k] = v
-    kd = 0
-    while subprocess.run(["pgrep", "-x", "kded6"], check=False,
-                         stdout=subprocess.DEVNULL).returncode != 0:
-        time.sleep(1)
-        kd += 1
-        if kd >= 20:
+        have_shell = subprocess.run(
+            ["pgrep", "-x", "plasmashell"],
+            check=False, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
+        ).returncode == 0
+        if have_display and have_shell and _has_session_dbus() \
+                and _session_bus_has_name("org.kde.plasmashell") \
+                and _session_bus_has_name("org.kde.KWin"):
             break
-    time.sleep(3)
+        time.sleep(1)
+    else:
+        return False
+
+    for _ in range(30):
+        if subprocess.run(
+            ["pgrep", "-x", "kded6"],
+            check=False, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
+        ).returncode == 0:
+            break
+        time.sleep(1)
+
+    time.sleep(settle_seconds)
     return True
+
+
+def _apply_lookandfeel_live(laf: str) -> bool:
+    if not _have("plasma-apply-lookandfeel"):
+        return False
+    # On Wayland login, WAYLAND_DISPLAY often appears a few seconds before the
+    # X11 DISPLAY/XWayland bridge. plasma-apply-lookandfeel still aborts in
+    # QGuiApplication startup if that DISPLAY is missing or not ready yet.
+    if not wait_for_plasma(require_display=True, settle_seconds=5):
+        print("Skipping plasma-apply-lookandfeel: DISPLAY/session not ready",
+              file=sys.stderr)
+        return False
+    env = os.environ.copy()
+    if env.get("WAYLAND_DISPLAY") and not env.get("QT_QPA_PLATFORM"):
+        env["QT_QPA_PLATFORM"] = "wayland"
+    return subprocess.run(
+        ["plasma-apply-lookandfeel", "-a", laf, "--keep-auto"],
+        check=False, env=env,
+        stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
+    ).returncode == 0
 
 
 def sync_auto_mode_on_startup() -> str:
@@ -504,7 +588,7 @@ def main(argv: list[str]) -> int:
         return 0
     if mode == "auto":
         enable_auto_mode()
-        apply(detect_mode_by_time(), context)
+        apply(detect_mode_by_time(), context or "scheduled")
         return 0
     if mode == "watch":
         return watch_loop()

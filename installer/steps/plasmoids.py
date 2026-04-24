@@ -5,6 +5,7 @@ from pathlib import Path
 from installer.steps._helpers import (
     HOME, cmake_build, fail, info, install_tree, ok, offline,
     sudo_install_file, sudo_remove,
+    temp_dir,
 )
 
 SRC_DIR = offline("plasmoids")
@@ -59,6 +60,31 @@ def _migrate_appletsrc() -> None:
     ok("dock config migrated to MacTahoe dock fork")
 
 
+def _install_taskmanager_package() -> bool:
+    """Install the QML/runtime package for the compiled dock applet.
+
+    The .so alone is not enough: the icons-only wrapper resolves through
+    X-Plasma-RootPath and Plasma expects the taskmanager package metadata +
+    contents/ tree to exist in the local plasmoid dir as well.
+    """
+    metadata = TASKMANAGER_SRC / "metadata.json"
+    contents = TASKMANAGER_SRC / "contents"
+    if not metadata.is_file():
+        fail("org.kde.mac.tahoe.liquid.taskmanager (missing metadata.json)")
+        return False
+    if not contents.is_dir():
+        fail("org.kde.mac.tahoe.liquid.taskmanager (missing contents/)")
+        return False
+
+    with temp_dir("mttkde-taskmanager-package") as tmp:
+        runtime = tmp / TASKMANAGER_SRC.name
+        runtime.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(metadata, runtime / "metadata.json")
+        shutil.copytree(contents, runtime / "contents", symlinks=True)
+        return install_tree(runtime, DEST_DIR / TASKMANAGER_SRC.name,
+                            TASKMANAGER_SRC.name)
+
+
 def install() -> None:
     DEST_DIR.mkdir(parents=True, exist_ok=True)
 
@@ -74,6 +100,7 @@ def install() -> None:
     if artifact.is_file():
         sudo_install_file(artifact, TASKMANAGER_DEST_SO,
                           "org.kde.mac.tahoe.liquid.taskmanager (installed compiled dock base)")
+        _install_taskmanager_package()
     else:
         fail("org.kde.mac.tahoe.liquid.taskmanager (missing build artifact)")
 

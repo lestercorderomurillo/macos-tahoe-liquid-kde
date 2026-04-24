@@ -68,15 +68,18 @@ def _flush_caches() -> None:
 
 def _wallpaper_path() -> Path | None:
     base = HOME / ".local/share/wallpapers"
+    auto = base / "MacTahoe"
+    if auto.is_dir():
+        return auto
     mode = theme_mode()
     if mode == "light":
-        candidate = base / "MacTahoe-Light"
+        legacy = base / "MacTahoe-Light"
     elif mode == "dark":
-        candidate = base / "MacTahoe-Dark"
+        legacy = base / "MacTahoe-Dark"
     else:
         h = _dt.datetime.now().hour
-        candidate = base / ("MacTahoe-Light" if 6 <= h < 18 else "MacTahoe-Dark")
-    return candidate if candidate.is_dir() else None
+        legacy = base / ("MacTahoe-Light" if 6 <= h < 18 else "MacTahoe-Dark")
+    return legacy if legacy.is_dir() else None
 
 
 def install() -> None:

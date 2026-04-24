@@ -155,6 +155,110 @@ def test_auto_sync_skips_full_apply_when_unchanged(monkeypatch):
     assert not any(c[0] == "apply" for c in calls)
 
 
+def test_wallpaper_path_prefers_auto_package(monkeypatch, tmp_path):
+    from installer import theme_switch
+
+    data = tmp_path / "data"
+    wallpapers = data / "wallpapers"
+    (wallpapers / "MacTahoe").mkdir(parents=True)
+    (wallpapers / "MacTahoe-Light").mkdir()
+    (wallpapers / "MacTahoe-Dark").mkdir()
+    monkeypatch.setenv("XDG_DATA_HOME", str(data))
+
+    assert theme_switch._wallpaper_path("light") == wallpapers / "MacTahoe"
+    assert theme_switch._wallpaper_path("dark") == wallpapers / "MacTahoe"
+
+
+def test_apply_extras_syncs_wallpaper(monkeypatch, tmp_path):
+    from installer import theme_switch
+
+    calls = []
+    monkeypatch.setenv("HOME", str(tmp_path / "home"))
+    (tmp_path / "home/.cache").mkdir(parents=True, exist_ok=True)
+    monkeypatch.setattr(theme_switch, "_apply_wallpaper",
+                        lambda mode: calls.append(("wallpaper", mode)) or True)
+    monkeypatch.setattr(theme_switch, "_have", lambda cmd: False)
+
+    theme_switch.apply_extras("dark")
+    assert ("wallpaper", "dark") in calls
+
+
+def test_apply_skips_live_lookandfeel_during_boot(monkeypatch):
+    from installer import theme_switch
+
+    calls = []
+    monkeypatch.setattr(theme_switch, "write_kde_theme_config",
+                        lambda mode: calls.append(("write", mode)))
+    monkeypatch.setattr(theme_switch, "_apply_lookandfeel_live",
+                        lambda laf: calls.append(("laf", laf)))
+    monkeypatch.setattr(theme_switch, "apply_extras",
+                        lambda mode: calls.append(("extras", mode)))
+    monkeypatch.setattr(theme_switch, "_qdbus",
+                        lambda *args: calls.append(("qdbus", args)))
+
+    assert theme_switch.apply("dark", "boot") is True
+    assert ("write", "dark") in calls
+    assert ("extras", "dark") in calls
+    assert not any(c[0] == "laf" for c in calls)
+    assert not any(c[0] == "qdbus" and c[1][0] == "org.kde.plasmashell"
+                   for c in calls)
+
+
+def test_apply_uses_live_lookandfeel_after_boot(monkeypatch):
+    from installer import theme_switch
+
+    calls = []
+    monkeypatch.setattr(theme_switch, "write_kde_theme_config",
+                        lambda mode: calls.append(("write", mode)))
+    monkeypatch.setattr(theme_switch, "_apply_lookandfeel_live",
+                        lambda laf: calls.append(("laf", laf)))
+    monkeypatch.setattr(theme_switch, "apply_extras",
+                        lambda mode: calls.append(("extras", mode)))
+    monkeypatch.setattr(theme_switch, "_qdbus",
+                        lambda *args: calls.append(("qdbus", args)))
+
+    assert theme_switch.apply("light") is True
+    assert ("laf", theme_switch.LAF_LIGHT) in calls
+    assert any(c[0] == "qdbus" and c[1][0] == "org.kde.plasmashell"
+               for c in calls)
+
+
+def test_apply_skips_live_lookandfeel_for_scheduled_transition(monkeypatch):
+    from installer import theme_switch
+
+    calls = []
+    monkeypatch.setattr(theme_switch, "write_kde_theme_config",
+                        lambda mode: calls.append(("write", mode)))
+    monkeypatch.setattr(theme_switch, "_apply_lookandfeel_live",
+                        lambda laf: calls.append(("laf", laf)))
+    monkeypatch.setattr(theme_switch, "apply_extras",
+                        lambda mode: calls.append(("extras", mode)))
+    monkeypatch.setattr(theme_switch, "_qdbus",
+                        lambda *args: calls.append(("qdbus", args)))
+
+    assert theme_switch.apply("dark", "scheduled") is True
+    assert ("write", "dark") in calls
+    assert ("extras", "dark") in calls
+    assert not any(c[0] == "laf" for c in calls)
+    assert any(c[0] == "qdbus" and c[1][0] == "org.kde.plasmashell"
+               for c in calls)
+
+
+def test_auto_mode_uses_scheduled_context(monkeypatch):
+    from installer import theme_switch
+
+    calls = []
+    monkeypatch.setattr(theme_switch, "enable_auto_mode",
+                        lambda: calls.append(("enable",)))
+    monkeypatch.setattr(theme_switch, "detect_mode_by_time", lambda: "light")
+    monkeypatch.setattr(theme_switch, "apply",
+                        lambda mode, ctx="": calls.append(("apply", mode, ctx)))
+
+    assert theme_switch.main(["auto"]) == 0
+    assert ("enable",) in calls
+    assert ("apply", "light", "scheduled") in calls
+
+
 # ── theme-switch step install / uninstall cycle ──────────────────────────
 def _run_step(step_name: str, phase: str, env: dict[str, str]) -> None:
     full = os.environ.copy()
