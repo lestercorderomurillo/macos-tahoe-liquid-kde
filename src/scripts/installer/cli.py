@@ -289,17 +289,6 @@ def _prime_sudo() -> bool:
     if rc != 0:
         print("  \033[0;31msudo required.\033[0m", file=sys.stderr)
         return False
-    # Long downloads + C++ builds can exceed sudo's default 15-min timeout.
-    # Without this keep-alive, later `sudo cp` calls block on a silent
-    # password prompt buried between step logs.
-    parent_pid = os.getpid()
-    subprocess.Popen(
-        ["bash", "-c",
-         f"while sudo -nv 2>/dev/null; do sleep 60; "
-         f"kill -0 {parent_pid} 2>/dev/null || exit 0; done"],
-        start_new_session=True,
-        stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
-    )
     return True
 
 
