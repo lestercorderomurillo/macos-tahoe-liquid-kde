@@ -23,7 +23,7 @@ def test_last_run_records_completed(sandbox, repo, monkeypatch):
                           "XDG_STATE_HOME": "",
                           "XDG_DATA_HOME": str(sandbox / ".local/share"),
                           "XDG_CONFIG_HOME": str(sandbox / ".config")},
-        cwd=str(repo),
+        cwd=str(repo / "src/scripts"),
     ).returncode
     assert rc == 0
 
@@ -44,7 +44,7 @@ def test_last_run_records_aborted(sandbox, repo):
          "t = RunTracker('install', [], 'auto');"
          "t.start(); t.mark_aborted(); t.finalize(0)"],
         check=False, env={**os.environ, "HOME": str(sandbox)},
-        cwd=str(repo),
+        cwd=str(repo / "src/scripts"),
     ).returncode
     assert rc == 0
     last = sandbox / ".local/state/mac-tahoe-liquid-kde/last-run.json"
@@ -57,7 +57,7 @@ def test_last_run_records_failure(sandbox, repo):
          "from installer.state import RunTracker;"
          "t = RunTracker('install', [], 'auto'); t.start(); t.finalize(1)"],
         check=False, env={**os.environ, "HOME": str(sandbox)},
-        cwd=str(repo),
+        cwd=str(repo / "src/scripts"),
     ).returncode
     assert rc == 0
     last = sandbox / ".local/state/mac-tahoe-liquid-kde/last-run.json"

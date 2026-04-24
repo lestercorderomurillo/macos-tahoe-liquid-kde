@@ -266,7 +266,7 @@ def _run_step(step_name: str, phase: str, env: dict[str, str]) -> None:
     rc = subprocess.run(
         ["python3", "-c",
          f"from installer.steps.{step_name} import {phase}; {phase}()"],
-        check=False, env=full, cwd=str(Path(__file__).resolve().parent.parent),
+        check=False, env=full, cwd=str(Path(__file__).resolve().parent.parent / "src/scripts"),
     ).returncode
     assert rc == 0
 

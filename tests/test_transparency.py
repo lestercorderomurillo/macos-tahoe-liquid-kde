@@ -21,7 +21,7 @@ def trans_fixture(tmp_path, repo, offline):
     target.chmod(0o755)
     for sub in ("kvantum", "plasma-theme", "gtk"):
         shutil.copytree(offline / sub, fx / "src/offline" / sub)
-    shutil.copytree(repo / "installer", fx / "installer")
+    shutil.copytree(repo / "src/scripts/installer", fx / "src/scripts/installer")
     (fx / "VERSION").write_text("0.0.0\n")
     return fx
 

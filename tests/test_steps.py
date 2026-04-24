@@ -17,7 +17,7 @@ def _run(step: str, phase: str, env: dict[str, str] | None = None) -> int:
         ["python3", "-c",
          f"from installer.steps.{step} import {phase}; {phase}()"],
         check=False, env=full,
-        cwd=str(Path(__file__).resolve().parent.parent),
+        cwd=str(Path(__file__).resolve().parent.parent / "src/scripts"),
     ).returncode
 
 

@@ -1,7 +1,7 @@
 # Nautilus overrides
 
 This directory holds optional Nautilus-specific overrides picked up by
-`installer/steps/nautilus.py` on install.
+`src/scripts/installer/steps/nautilus.py` on install.
 
 Accepted files:
 

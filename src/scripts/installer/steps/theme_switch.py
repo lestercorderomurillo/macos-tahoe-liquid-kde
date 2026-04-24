@@ -9,7 +9,7 @@ from installer.steps._helpers import HOME, kw_write, ok, offline, theme_mode, wa
 
 BIN_DEST = HOME / ".local/bin/mac-tahoe-theme-switch"
 SVC_DIR = HOME / ".config/systemd/user"
-PY_SRC = REPO_ROOT / "installer/theme_switch.py"
+PY_SRC = REPO_ROOT / "src/scripts/installer/theme_switch.py"
 
 # The watch service handles manual user overrides; the timer + apply
 # service handle the 06:00 / 18:00 transitions even across reboots,

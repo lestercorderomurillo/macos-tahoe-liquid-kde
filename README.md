@@ -201,19 +201,22 @@ Every install or uninstall run also records the exact CLI flags that were used i
 
 ```
 macos-tahoe-liquid-kde/
-├── install                 # entry point → python3 -m installer install
-├── uninstall               # entry point → python3 -m installer uninstall
+├── install                 # entry point → src/scripts/installer
+├── uninstall               # entry point → src/scripts/installer
 ├── features.json           # toggle individual components on/off
-├── installer/              # Python orchestrator + per-feature step modules
-│   ├── cli.py              # argparse, feature flags, install/uninstall flow
-│   ├── theme_switch.py     # light/dark switcher (installed as ~/.local/bin)
-│   ├── transparency.py     # background opacity tuner
-│   ├── svgzc.py            # decode/encode .svgz for editing
-│   ├── utils.py, log.py, state.py, step_runner.py
-│   └── steps/              # one module per feature: install/uninstall/...
-│       ├── wallpapers.py, fonts.py, cursors.py, icons.py, ...
-│       └── (21 modules — apply, layout, plasmoids, theme_switch, ...)
 └── src/
+    ├── scripts/
+    │   ├── installer/      # Python orchestrator + per-feature step modules
+    │   │   ├── cli.py          # argparse, feature flags, install/uninstall flow
+    │   │   ├── theme_switch.py # light/dark switcher (installed as ~/.local/bin)
+    │   │   ├── transparency.py # background opacity tuner
+    │   │   ├── svgzc.py        # decode/encode .svgz for editing
+    │   │   ├── utils.py, log.py, state.py, step_runner.py
+    │   │   └── steps/          # one module per feature: install/uninstall/...
+    │   │       ├── wallpapers.py, fonts.py, cursors.py, icons.py, ...
+    │   │       └── (21 modules — apply, layout, plasmoids, theme_switch, ...)
+    │   ├── svgzc              # CLI shim → installer.svgzc
+    │   └── set-transparency   # CLI shim → installer.transparency
     ├── mirrors/            # download source definitions (JSON)
     │   ├── wallpapers.json
     │   ├── fonts.json
