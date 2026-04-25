@@ -66,11 +66,25 @@ def test_expected_file_present(effect_root, rel):
 
 
 # ── cross-file reference consistency ──────────────────────────────────────
+# glass.frag / glass_core.frag are produced at CMake configure time by
+# preprocess_shader_includes() from the matching .glsl sources, and are
+# gitignored. For those two, verify the .glsl source exists instead.
+_QRC_GENERATED = {
+    "shaders/glass.frag":      "shaders/glass.glsl",
+    "shaders/glass_core.frag": "shaders/glass_core.glsl",
+}
+
+
 def test_qrc_shader_paths_point_at_real_files(effect_src):
     qrc = ET.parse(effect_src / "liquidglass.qrc").getroot()
     refs = [f.text for f in qrc.findall(".//file")]
     assert refs, "qrc had no <file> entries"
     for ref in refs:
+        if ref in _QRC_GENERATED:
+            src = _QRC_GENERATED[ref]
+            assert (effect_src / src).is_file(), \
+                f"qrc references generated {ref} but source {src} missing"
+            continue
         assert (effect_src / ref).is_file(), \
             f"qrc references {ref} but file does not exist"
 
