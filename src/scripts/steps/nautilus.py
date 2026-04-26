@@ -1,6 +1,7 @@
 import os
 import shutil
 import subprocess
+import time
 
 from steps._helpers import HOME, fail, have, ok, offline, warn
 
@@ -59,6 +60,63 @@ _FINDER_GSETTINGS = (
 )
 
 
+def _nautilus_running() -> bool:
+    return subprocess.run(
+        ["pgrep", "-x", "nautilus"],
+        check=False,
+        stdout=subprocess.DEVNULL,
+        stderr=subprocess.DEVNULL,
+    ).returncode == 0
+
+
+def _restart_running_nautilus() -> bool:
+    if not _nautilus_running():
+        return False
+    if not have("gdbus"):
+        warn("gdbus not found — skipping live Nautilus restart")
+        return False
+    try:
+        rc = subprocess.run(
+            [
+                "gdbus", "call", "--session",
+                "--dest", "org.gnome.Nautilus",
+                "--object-path", "/org/gnome/Nautilus",
+                "--method", "org.freedesktop.Application.Quit",
+            ],
+            check=False,
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
+            timeout=10,
+        ).returncode
+    except subprocess.TimeoutExpired:
+        warn("Timed out waiting for Nautilus to quit")
+        return False
+    if rc != 0:
+        warn("Live Nautilus restart skipped")
+        return False
+    for _ in range(50):
+        if not _nautilus_running():
+            break
+        time.sleep(0.1)
+    else:
+        warn("Nautilus did not exit cleanly — leaving it alone")
+        return False
+
+    if have("gapplication"):
+        subprocess.Popen(
+            ["gapplication", "launch", "org.gnome.Nautilus"],
+            stdin=subprocess.DEVNULL,
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
+            start_new_session=True,
+        )
+        ok("Nautilus restarted")
+        return True
+
+    warn("gapplication not found — skipping Nautilus relaunch")
+    return False
+
+
 def _apply_gsettings() -> None:
     if not have("gsettings"):
         return
@@ -99,8 +157,8 @@ def install() -> None:
 
     _apply_overrides()
     _apply_gsettings()
-    subprocess.run(["nautilus", "-q"], check=False,
-                   stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    if _nautilus_running() and not _restart_running_nautilus():
+        warn("Nautilus left running — live restart skipped")
     ok("Nautilus configured")
 
 

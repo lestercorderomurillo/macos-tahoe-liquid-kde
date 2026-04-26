@@ -69,7 +69,8 @@ def _seed_residue(sandbox: Path) -> None:
 def _run_step_uninstall(step: str, sandbox: Path, repo: Path) -> None:
     env = {**os.environ, "HOME": str(sandbox),
            "XDG_CONFIG_HOME": str(sandbox / ".config"),
-           "XDG_DATA_HOME": str(sandbox / ".local/share")}
+           "XDG_DATA_HOME": str(sandbox / ".local/share"),
+           "MAC_TAHOE_SKIP_LIVE_APPLY": "true"}
     rc = subprocess.run(
         ["python3", "-c",
          f"from steps.{step} import uninstall; uninstall()"],

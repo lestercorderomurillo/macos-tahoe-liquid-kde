@@ -11,6 +11,7 @@ from .conftest import has_command
 
 def _run(step: str, phase: str, env: dict[str, str] | None = None) -> int:
     full = os.environ.copy()
+    full.setdefault("MAC_TAHOE_SKIP_LIVE_APPLY", "true")
     if env:
         full.update(env)
     return subprocess.run(
@@ -19,6 +20,19 @@ def _run(step: str, phase: str, env: dict[str, str] | None = None) -> int:
         check=False, env=full,
         cwd=str(Path(__file__).resolve().parent.parent / "src/scripts"),
     ).returncode
+
+
+def _journal_matches(pattern: str, since: str = "24 hours ago") -> list[str]:
+    res = subprocess.run(
+        ["journalctl", "--user", "-p", "err", "--since", since, "--no-pager"],
+        check=False,
+        capture_output=True,
+        text=True,
+    )
+    import re
+
+    bad = re.compile(pattern, re.IGNORECASE)
+    return [line for line in res.stdout.splitlines() if bad.search(line)]
 
 
 # ── color schemes ────────────────────────────────────────────────────────
@@ -64,16 +78,39 @@ def test_nautilus_no_fatal(sandbox, monkeypatch):
 def test_no_globalmenu_crashes_in_journal():
     if not has_command("journalctl"):
         pytest.skip("journalctl unavailable")
-    res = subprocess.run(
-        ["journalctl", "--user", "-p", "err",
-         "--since", "24 hours ago", "--no-pager"],
-        check=False, capture_output=True, text=True,
-    )
-    import re
-    bad = re.compile(
+    matches = _journal_matches(
         r"(org\.kde\.mac\.tahoe\.liquid\.(globalmenu|menu))\.so.*"
-        r"(segfault|coredump|terminated|aborted)",
-        re.IGNORECASE,
+        r"(segfault|coredump|terminated|aborted)"
     )
-    matches = [l for l in res.stdout.splitlines() if bad.search(l)]
+    assert not matches, "\n".join(matches[:5])
+
+
+def test_no_taskmanager_badge_crashes_in_journal():
+    if not has_command("journalctl"):
+        pytest.skip("journalctl unavailable")
+    matches = _journal_matches(
+        r"((org\.kde\.mac\.tahoe\.liquid\.taskmanager(\.so)?)|"
+        r"TaskBadgeOverlay\.qml|BadgeEffect).*"
+        r"(segfault|coredump|terminated|aborted|crash)"
+    )
+    assert not matches, "\n".join(matches[:5])
+
+
+def test_no_plasma_crashes_in_journal():
+    if not has_command("journalctl"):
+        pytest.skip("journalctl unavailable")
+    matches = _journal_matches(
+        r"((plasmashell|plasma-plasmashell|org\.kde\.plasma).*)"
+        r"(segfault|coredump|terminated|aborted|crash)"
+    )
+    assert not matches, "\n".join(matches[:5])
+
+
+def test_no_nautilus_crashes_in_journal():
+    if not has_command("journalctl"):
+        pytest.skip("journalctl unavailable")
+    matches = _journal_matches(
+        r"((nautilus|org\.gnome\.Nautilus).*)"
+        r"(segfault|coredump|terminated|aborted|crash)"
+    )
     assert not matches, "\n".join(matches[:5])

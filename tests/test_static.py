@@ -313,6 +313,35 @@ def test_dock_taskmanager(offline):
             ', "SmartLauncherItem")') in task
 
 
+def test_taskmanager_badge_overlay_guardrails(offline):
+    base = offline / "plasmoids/org.kde.mac.tahoe.liquid.taskmanager" / "contents/ui"
+    overlay = (base / "TaskBadgeOverlay.qml").read_text()
+    tooltip = (base / "ToolTipInstance.qml").read_text()
+    task = (base / "Task.qml").read_text()
+
+    # Only instantiate the badge overlay when the count bubble should exist.
+    assert "active: height >= Kirigami.Units.iconSizes.small" in task
+    assert "&& task.smartLauncherItem && task.smartLauncherItem.countVisible" in task
+    assert 'source: "TaskBadgeOverlay.qml"' in task
+
+    # Keep the dock badge self-contained and text-driven rather than relying
+    # on Kirigami.Badge's dot/overlay internals, which have been crash-prone.
+    assert "KGraphicalEffects.BadgeEffect" in overlay
+    assert "Kirigami.Badge" not in overlay
+    assert "visible: task.smartLauncherItem.countVisible" in overlay
+    assert "live: false" in overlay
+    assert "onVisibleChanged: maskShaderSource.scheduleUpdate()" in overlay
+    assert "onYChanged: maskShaderSource.scheduleUpdate()" in overlay
+    assert "width: Math.max(height, Math.round(badgeLabel.implicitWidth + horizontalPadding * 2))" in overlay
+    assert "height: Math.max(14, Math.min(20, Math.round(icon.paintedHeight * 0.38)))" in overlay
+    assert "textFormat: Text.PlainText" in overlay
+
+    # The tooltip badge should stay visually in sync with the dock badge.
+    assert "Keep parity with TaskBadgeOverlay (dock badge)" in tooltip
+    assert "width: Math.max(height, Math.round(badgeLabel.implicitWidth + horizontalPadding * 2))" in tooltip
+    assert "textFormat: Text.PlainText" in tooltip
+
+
 # ── acrylic glass ─────────────────────────────────────────────────────────
 _AG_KEYS = (
     "BlurStrength", "NoiseStrength", "BlurDecorations", "WindowCornerRadius",

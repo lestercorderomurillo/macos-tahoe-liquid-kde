@@ -9,7 +9,11 @@ from pathlib import Path
 from steps._helpers import (
     HOME, fail, feat_enabled, have, info, kw_write, ok, qdbus_call, theme_mode, warn,
 )
-from theme_switch import reset_kde_color_scheme_config
+from theme_switch import (
+    apply_cursortheme_live,
+    reset_kde_color_scheme_config,
+    _apply_lookandfeel_live,
+)
 
 # Cache files / dirs flushed during install + uninstall before Plasma reloads.
 _CACHES = (
@@ -114,10 +118,14 @@ def install() -> None:
         )
         ok(f"Theme applied ({theme_mode()})")
 
-    if have("nautilus"):
-        subprocess.run(["nautilus", "-q"], check=False,
-                       stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-        ok("Nautilus restarted")
+    # Avoid force-restarting Nautilus here. `nautilus -q` has been observed
+    # crashing on some systems; the overrides still apply on the next launch.
+    if subprocess.run(
+        ["pgrep", "-x", "nautilus"],
+        check=False,
+        stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
+    ).returncode == 0:
+        warn("Nautilus left running to avoid crash-prone forced restart")
 
     print("  …  Restarting KWin", end="\r", flush=True)
     if feat_enabled("ACRYLIC_GLASS"):
@@ -203,18 +211,8 @@ def _scrub_kdedefaults() -> None:
 
 
 def uninstall() -> None:
-    # Reset look-and-feel to Breeze. plasma-apply-lookandfeel rewrites the
-    # "defaults" layer from the applied LAF package; without it, kdedefaults/
-    # keeps pointing at our theme and Plasma re-resolves those values on
-    # next login, undoing individual step uninstalls.
-    if have("plasma-apply-lookandfeel"):
-        subprocess.run(
-            ["plasma-apply-lookandfeel", "-a", "org.kde.breeze.desktop"],
-            check=False,
-            stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
-        )
-        ok("Look-and-feel reset to Breeze")
-
+    # Keep Breeze on disk as the source of truth, then best-effort the live
+    # switch only when the full Plasma session is ready enough for it.
     if have("kwriteconfig6"):
         kw_write("--file", "kdeglobals", "--group", "KDE",
                  "--key", "LookAndFeelPackage", "org.kde.breeze.desktop")
@@ -242,11 +240,6 @@ def uninstall() -> None:
         if feat_enabled("CURSORS"):
             kw_write("--file", "kcminputrc", "--group", "Mouse",
                      "--key", "cursorTheme", "breeze_cursors")
-            if have("plasma-apply-cursortheme"):
-                subprocess.run(
-                    ["plasma-apply-cursortheme", "breeze_cursors"], check=False,
-                    stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
-                )
             ok("Cursor reset")
         if feat_enabled("ICONS"):
             kw_write("--file", "kdeglobals", "--group", "Icons",
@@ -273,6 +266,17 @@ def uninstall() -> None:
         ok("Color scheme reset")
 
     _flush_caches()
+
+    if _apply_lookandfeel_live("org.kde.breeze.desktop"):
+        ok("Look-and-feel applied live")
+    else:
+        warn("Live Breeze look-and-feel apply skipped")
+
+    if feat_enabled("CURSORS"):
+        if apply_cursortheme_live("breeze_cursors"):
+            ok("Cursor applied live")
+        else:
+            warn("Live cursor apply skipped")
 
     if have("qdbus6") or have("qdbus"):
         qdbus_call("org.kde.KWin", "/KWin", "org.kde.KWin.reconfigure")

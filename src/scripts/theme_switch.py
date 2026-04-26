@@ -512,24 +512,64 @@ def wait_for_plasma(require_display: bool = False, settle_seconds: int = 3) -> b
     return True
 
 
+def _live_tool_env() -> dict[str, str]:
+    _sync_session_env()
+    env = os.environ.copy()
+    if env.get("WAYLAND_DISPLAY") and not env.get("QT_QPA_PLATFORM"):
+        env["QT_QPA_PLATFORM"] = "wayland"
+    return env
+
+
+def _run_live_plasma_tool(
+    cmd: list[str],
+    *,
+    require_display: bool = True,
+    settle_seconds: int = 5,
+    timeout_seconds: int = 20,
+) -> bool:
+    if os.environ.get("MAC_TAHOE_SKIP_LIVE_APPLY", "").lower() == "true":
+        return False
+    if not wait_for_plasma(require_display=require_display,
+                           settle_seconds=settle_seconds):
+        return False
+    try:
+        return subprocess.run(
+            cmd,
+            check=False,
+            env=_live_tool_env(),
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
+            timeout=timeout_seconds,
+        ).returncode == 0
+    except subprocess.TimeoutExpired:
+        return False
+
+
 def _apply_lookandfeel_live(laf: str) -> bool:
     if not _have("plasma-apply-lookandfeel"):
         return False
     # On Wayland login, WAYLAND_DISPLAY often appears a few seconds before the
     # X11 DISPLAY/XWayland bridge. plasma-apply-lookandfeel still aborts in
     # QGuiApplication startup if that DISPLAY is missing or not ready yet.
-    if not wait_for_plasma(require_display=True, settle_seconds=5):
+    ok = _run_live_plasma_tool(
+        ["plasma-apply-lookandfeel", "-a", laf, "--keep-auto"],
+        require_display=True,
+        settle_seconds=5,
+    )
+    if not ok:
         print("Skipping plasma-apply-lookandfeel: DISPLAY/session not ready",
               file=sys.stderr)
+    return ok
+
+
+def apply_cursortheme_live(theme: str) -> bool:
+    if not _have("plasma-apply-cursortheme"):
         return False
-    env = os.environ.copy()
-    if env.get("WAYLAND_DISPLAY") and not env.get("QT_QPA_PLATFORM"):
-        env["QT_QPA_PLATFORM"] = "wayland"
-    return subprocess.run(
-        ["plasma-apply-lookandfeel", "-a", laf, "--keep-auto"],
-        check=False, env=env,
-        stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
-    ).returncode == 0
+    return _run_live_plasma_tool(
+        ["plasma-apply-cursortheme", theme],
+        require_display=True,
+        settle_seconds=5,
+    )
 
 
 def sync_auto_mode_on_startup() -> str:
