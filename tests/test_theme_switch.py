@@ -219,8 +219,10 @@ def test_apply_uses_live_lookandfeel_after_boot(monkeypatch):
 
     assert theme_switch.apply("light") is True
     assert ("laf", theme_switch.LAF_LIGHT) in calls
-    assert any(c[0] == "qdbus" and c[1][0] == "org.kde.plasmashell"
+    assert any(c[0] == "qdbus" and c[1][0] == "org.kde.KWin"
                for c in calls)
+    assert not any(c[0] == "qdbus" and c[1][0] == "org.kde.plasmashell"
+                   for c in calls)
 
 
 def test_apply_skips_live_lookandfeel_for_scheduled_transition(monkeypatch):
@@ -240,8 +242,31 @@ def test_apply_skips_live_lookandfeel_for_scheduled_transition(monkeypatch):
     assert ("write", "dark") in calls
     assert ("extras", "dark") in calls
     assert not any(c[0] == "laf" for c in calls)
-    assert any(c[0] == "qdbus" and c[1][0] == "org.kde.plasmashell"
+    assert any(c[0] == "qdbus" and c[1][0] == "org.kde.KWin"
                for c in calls)
+    assert not any(c[0] == "qdbus" and c[1][0] == "org.kde.plasmashell"
+                   for c in calls)
+
+
+def test_apply_never_refreshes_plasmashell_live(monkeypatch):
+    import theme_switch
+
+    calls = []
+    monkeypatch.setattr(theme_switch, "write_kde_theme_config",
+                        lambda mode: calls.append(("write", mode)))
+    monkeypatch.setattr(theme_switch, "_apply_lookandfeel_live",
+                        lambda laf: calls.append(("laf", laf)))
+    monkeypatch.setattr(theme_switch, "apply_extras",
+                        lambda mode: calls.append(("extras", mode)))
+    monkeypatch.setattr(theme_switch, "_qdbus",
+                        lambda *args: calls.append(("qdbus", args)))
+
+    for mode, context in (("light", ""), ("dark", "boot"),
+                          ("light", "install"), ("dark", "scheduled")):
+        calls.clear()
+        assert theme_switch.apply(mode, context) is True
+        assert not any(c[0] == "qdbus" and c[1][0] == "org.kde.plasmashell"
+                       for c in calls)
 
 
 def test_auto_mode_uses_scheduled_context(monkeypatch):

@@ -501,6 +501,7 @@ def test_theme_switch_invariants(repo):
     assert "apply_color_groups_direct" in text
     assert "Auto = strictly time-based" in text or "detect_auto_target_mode" in text
     assert "AutomaticLookAndFeel" in text
+    assert "refreshCurrentShell" not in text
 
 
 # ── systemd unit invariants ───────────────────────────────────────────────

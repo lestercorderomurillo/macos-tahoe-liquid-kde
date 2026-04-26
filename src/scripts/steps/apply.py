@@ -108,10 +108,11 @@ def install() -> None:
 
     switch = HOME / ".local/bin/mac-tahoe-theme-switch"
     if switch.is_file() and (switch.stat().st_mode & 0o111):
-        # "install" context skips plasma-apply-lookandfeel + refreshCurrentShell
-        # which crash plasmashell (QML teardown race). The plasma restart at
-        # the end of install loads the correct theme from config; Kvantum/GTK
-        # are still applied immediately so already-open windows update.
+        # "install" context skips live plasmashell mutation, which is where
+        # the first-session and QML teardown races have shown up. The Plasma
+        # restart at the end of install loads the correct theme from config;
+        # Kvantum/GTK are still applied immediately so already-open windows
+        # update.
         subprocess.run(
             [str(switch), theme_mode(), "install"], check=False,
             stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,

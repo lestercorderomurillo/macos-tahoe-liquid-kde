@@ -467,17 +467,18 @@ def apply(mode: str, context: str = "") -> bool:
     # engine teardown race (SIGABRT in org.kde.panel.so). The Plasma
     # restart at the end of install loads the on-disk theme + colour
     # config we just wrote. Boot-time sync has the same hazard: plasmashell
-    # may exist already while XWayland/DISPLAY is still coming up. Scheduled
-    # timer transitions use the same safe path: refresh the shell after
-    # rewriting config, but don't invoke plasma-apply-lookandfeel.
+    # may exist already while XWayland/DISPLAY is still coming up.
+    #
+    # Also avoid calling plasmashell's live refresh entrypoint directly.
+    # Late-login timer replays and first-session startup can still hit that
+    # path while the shell is settling, which is exactly the black-screen
+    # failure we want to prevent. For explicit manual switches, rely on
+    # plasma-apply-lookandfeel instead of forcing an extra shell rebuild.
     if context not in ("boot", "install", "scheduled"):
         _apply_lookandfeel_live(laf)
 
     apply_extras(mode)
     _qdbus("org.kde.KWin", "/KWin", "org.kde.KWin.reconfigure")
-    if context not in ("boot", "install"):
-        _qdbus("org.kde.plasmashell", "/PlasmaShell",
-               "org.kde.PlasmaShell.refreshCurrentShell")
     return True
 
 
