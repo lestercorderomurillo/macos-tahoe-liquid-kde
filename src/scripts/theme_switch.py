@@ -461,6 +461,7 @@ def write_kde_theme_config(mode: str) -> bool:
 
 def apply(mode: str, context: str = "") -> bool:
     laf = LAF_DARK if mode == "dark" else LAF_LIGHT
+    cursor = "MacTahoeLiquidKde-Dark" if mode == "dark" else "MacTahoeLiquidKde"
     write_kde_theme_config(mode)
 
     # Skip plasma-apply-lookandfeel during install — it triggers a QML
@@ -476,6 +477,12 @@ def apply(mode: str, context: str = "") -> bool:
     # plasma-apply-lookandfeel instead of forcing an extra shell rebuild.
     if context not in ("boot", "install", "scheduled"):
         _apply_lookandfeel_live(laf)
+    elif context == "scheduled":
+        # Cursor is the one extra that does NOT pick up from kwriteconfig
+        # --notify alone — Xcursor for running apps stays on the old theme
+        # until something pokes plasma-apply-cursortheme. Safe individually
+        # (no plasmashell rebuild, unlike the full LAF apply).
+        apply_cursortheme_live(cursor)
 
     apply_extras(mode)
     _qdbus("org.kde.KWin", "/KWin", "org.kde.KWin.reconfigure")

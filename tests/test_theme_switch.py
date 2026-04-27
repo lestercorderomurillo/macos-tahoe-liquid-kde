@@ -233,6 +233,8 @@ def test_apply_skips_live_lookandfeel_for_scheduled_transition(monkeypatch):
                         lambda mode: calls.append(("write", mode)))
     monkeypatch.setattr(theme_switch, "_apply_lookandfeel_live",
                         lambda laf: calls.append(("laf", laf)))
+    monkeypatch.setattr(theme_switch, "apply_cursortheme_live",
+                        lambda theme: calls.append(("cursor", theme)) or True)
     monkeypatch.setattr(theme_switch, "apply_extras",
                         lambda mode: calls.append(("extras", mode)))
     monkeypatch.setattr(theme_switch, "_qdbus",
@@ -241,6 +243,7 @@ def test_apply_skips_live_lookandfeel_for_scheduled_transition(monkeypatch):
     assert theme_switch.apply("dark", "scheduled") is True
     assert ("write", "dark") in calls
     assert ("extras", "dark") in calls
+    assert ("cursor", "MacTahoeLiquidKde-Dark") in calls
     assert not any(c[0] == "laf" for c in calls)
     assert any(c[0] == "qdbus" and c[1][0] == "org.kde.KWin"
                for c in calls)
@@ -256,6 +259,8 @@ def test_apply_never_refreshes_plasmashell_live(monkeypatch):
                         lambda mode: calls.append(("write", mode)))
     monkeypatch.setattr(theme_switch, "_apply_lookandfeel_live",
                         lambda laf: calls.append(("laf", laf)))
+    monkeypatch.setattr(theme_switch, "apply_cursortheme_live",
+                        lambda theme: calls.append(("cursor", theme)) or True)
     monkeypatch.setattr(theme_switch, "apply_extras",
                         lambda mode: calls.append(("extras", mode)))
     monkeypatch.setattr(theme_switch, "_qdbus",
