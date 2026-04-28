@@ -13,6 +13,7 @@ Usage:
 """
 
 import datetime as _dt
+import hashlib
 import os
 import re
 import shutil
@@ -252,6 +253,15 @@ def apply_color_groups_direct(scheme: str) -> bool:
         group_args = _build_group_args(section)
         for key, value in items.items():
             _kwrite("--file", "kdeglobals", *group_args, "--key", key, value)
+
+    # KColorSchemeManager and several Qt apps key cached palettes on
+    # ColorSchemeHash. plasma-apply-colorscheme is the only tool that
+    # rewrites it, and we deliberately bypass that tool — so without this,
+    # the hash desyncs on every dark↔light flip and apps serve cached
+    # colors from the previous scheme.
+    digest = hashlib.sha1(scheme_file.read_bytes()).hexdigest()
+    _kwrite("--file", "kdeglobals", "--group", "General",
+            "--key", "ColorSchemeHash", digest)
     return True
 
 

@@ -1,6 +1,7 @@
 """Behaviour tests for src/scripts/theme_switch.py — color group surgery,
 mode detection, and the install/uninstall step."""
 
+import hashlib
 import os
 import shutil
 import subprocess
@@ -107,6 +108,21 @@ def test_no_stale_breeze_values(seeded_color_schemes):
     kdeglobals = seeded_color_schemes / ".config/kdeglobals"
     assert ini_get(kdeglobals, "Colors:Window", "BackgroundNormal") != "239,240,241"
     assert ini_get(kdeglobals, "Colors:View", "BackgroundNormal") != "255,255,255"
+
+
+def test_color_scheme_hash_tracks_active_scheme(seeded_color_schemes, offline):
+    kdeglobals = seeded_color_schemes / ".config/kdeglobals"
+    seed_breeze_light(seeded_color_schemes)
+
+    _apply("MacTahoeLiquidKdeDark")
+    dark_src = offline / "color-schemes/MacTahoeLiquidKdeDark.colors"
+    expected = hashlib.sha1(dark_src.read_bytes()).hexdigest()
+    assert ini_get(kdeglobals, "General", "ColorSchemeHash") == expected
+
+    _apply("MacTahoeLiquidKdeLight")
+    light_src = offline / "color-schemes/MacTahoeLiquidKdeLight.colors"
+    expected = hashlib.sha1(light_src.read_bytes()).hexdigest()
+    assert ini_get(kdeglobals, "General", "ColorSchemeHash") == expected
 
 
 def test_color_scheme_name_matches_palette(seeded_color_schemes, colors):
