@@ -25,6 +25,7 @@ from pathlib import Path
 
 LAF_LIGHT = "org.kde.mac-tahoe-liquid-kde.light"
 LAF_DARK = "org.kde.mac-tahoe-liquid-kde.dark"
+_SETTLED_LIVE_APPLY_MIN_PLASMASHELL_AGE_SECONDS = 45
 
 
 def _have(cmd: str) -> bool:
@@ -477,15 +478,17 @@ def apply(mode: str, context: str = "") -> bool:
     # Skip plasma-apply-lookandfeel during install — it triggers a QML
     # engine teardown race (SIGABRT in org.kde.panel.so). The Plasma
     # restart at the end of install loads the on-disk theme + colour
-    # config we just wrote. Boot-time sync has the same hazard: plasmashell
-    # may exist already while XWayland/DISPLAY is still coming up.
+    # config we just wrote.
     #
-    # Also avoid calling plasmashell's live refresh entrypoint directly.
-    # Late-login timer replays and first-session startup can still hit that
-    # path while the shell is settling, which is exactly the black-screen
-    # failure we want to prevent. For explicit manual switches, rely on
-    # plasma-apply-lookandfeel instead of forcing an extra shell rebuild.
+    # Boot-time sync and replayed 06:00/18:00 timer firings are trickier:
+    # they can still happen during the fragile login window where a full
+    # live apply has black-screened Plasma in the past. Once the current
+    # plasmashell is clearly past that window, though, use the same live
+    # LAF apply as a manual switch so the running shell reloads the new
+    # palette instead of staying in a split light/dark state.
     if context not in ("boot", "install", "scheduled"):
+        _apply_lookandfeel_live(laf)
+    elif context in ("boot", "scheduled") and _can_apply_settled_live_lookandfeel():
         _apply_lookandfeel_live(laf)
     elif context == "scheduled":
         # Cursor is the one extra that does NOT pick up from kwriteconfig
@@ -578,6 +581,35 @@ def _apply_lookandfeel_live(laf: str) -> bool:
         print("Skipping plasma-apply-lookandfeel: DISPLAY/session not ready",
               file=sys.stderr)
     return ok
+
+
+def _plasmashell_age_seconds() -> int | None:
+    try:
+        res = subprocess.run(
+            ["ps", "-C", "plasmashell", "-o", "etimes="],
+            check=False, capture_output=True, text=True,
+        )
+    except OSError:
+        return None
+    if res.returncode != 0:
+        return None
+    ages: list[int] = []
+    for raw in res.stdout.splitlines():
+        raw = raw.strip()
+        if not raw:
+            continue
+        try:
+            ages.append(int(raw))
+        except ValueError:
+            continue
+    return min(ages) if ages else None
+
+
+def _can_apply_settled_live_lookandfeel() -> bool:
+    """Only do delayed live LAF applies once plasmashell is well past the
+    fragile login/startup window."""
+    age = _plasmashell_age_seconds()
+    return age is not None and age >= _SETTLED_LIVE_APPLY_MIN_PLASMASHELL_AGE_SECONDS
 
 
 def apply_cursortheme_live(theme: str) -> bool:

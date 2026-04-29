@@ -199,12 +199,28 @@ def test_apply_extras_syncs_wallpaper(monkeypatch, tmp_path):
     assert ("wallpaper", "dark") in calls
 
 
+def test_settled_live_lookandfeel_requires_old_enough_plasmashell(monkeypatch):
+    import theme_switch
+
+    monkeypatch.setattr(theme_switch, "_plasmashell_age_seconds", lambda: 44)
+    assert theme_switch._can_apply_settled_live_lookandfeel() is False
+
+    monkeypatch.setattr(
+        theme_switch,
+        "_plasmashell_age_seconds",
+        lambda: theme_switch._SETTLED_LIVE_APPLY_MIN_PLASMASHELL_AGE_SECONDS,
+    )
+    assert theme_switch._can_apply_settled_live_lookandfeel() is True
+
+
 def test_apply_skips_live_lookandfeel_during_boot(monkeypatch):
     import theme_switch
 
     calls = []
     monkeypatch.setattr(theme_switch, "write_kde_theme_config",
                         lambda mode: calls.append(("write", mode)))
+    monkeypatch.setattr(theme_switch, "_can_apply_settled_live_lookandfeel",
+                        lambda: False)
     monkeypatch.setattr(theme_switch, "_apply_lookandfeel_live",
                         lambda laf: calls.append(("laf", laf)))
     monkeypatch.setattr(theme_switch, "apply_extras",
@@ -241,12 +257,42 @@ def test_apply_uses_live_lookandfeel_after_boot(monkeypatch):
                    for c in calls)
 
 
-def test_apply_skips_live_lookandfeel_for_scheduled_transition(monkeypatch):
+def test_apply_uses_live_lookandfeel_for_settled_scheduled_transition(monkeypatch):
     import theme_switch
 
     calls = []
     monkeypatch.setattr(theme_switch, "write_kde_theme_config",
                         lambda mode: calls.append(("write", mode)))
+    monkeypatch.setattr(theme_switch, "_can_apply_settled_live_lookandfeel",
+                        lambda: True)
+    monkeypatch.setattr(theme_switch, "_apply_lookandfeel_live",
+                        lambda laf: calls.append(("laf", laf)))
+    monkeypatch.setattr(theme_switch, "apply_cursortheme_live",
+                        lambda theme: calls.append(("cursor", theme)) or True)
+    monkeypatch.setattr(theme_switch, "apply_extras",
+                        lambda mode: calls.append(("extras", mode)))
+    monkeypatch.setattr(theme_switch, "_qdbus",
+                        lambda *args: calls.append(("qdbus", args)))
+
+    assert theme_switch.apply("dark", "scheduled") is True
+    assert ("write", "dark") in calls
+    assert ("extras", "dark") in calls
+    assert ("laf", theme_switch.LAF_DARK) in calls
+    assert not any(c[0] == "cursor" for c in calls)
+    assert any(c[0] == "qdbus" and c[1][0] == "org.kde.KWin"
+               for c in calls)
+    assert not any(c[0] == "qdbus" and c[1][0] == "org.kde.plasmashell"
+                   for c in calls)
+
+
+def test_apply_falls_back_to_cursor_for_unsettled_scheduled_transition(monkeypatch):
+    import theme_switch
+
+    calls = []
+    monkeypatch.setattr(theme_switch, "write_kde_theme_config",
+                        lambda mode: calls.append(("write", mode)))
+    monkeypatch.setattr(theme_switch, "_can_apply_settled_live_lookandfeel",
+                        lambda: False)
     monkeypatch.setattr(theme_switch, "_apply_lookandfeel_live",
                         lambda laf: calls.append(("laf", laf)))
     monkeypatch.setattr(theme_switch, "apply_cursortheme_live",
