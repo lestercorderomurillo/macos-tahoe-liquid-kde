@@ -90,13 +90,23 @@ def _restart_running_nautilus() -> bool:
     if not have("gdbus"):
         warn("gdbus not found — skipping live Nautilus restart")
         return False
+    # Nautilus 50+ exposes its quit verb under ``org.gtk.Actions``
+    # (``Activate("quit", [], {})``), not the legacy
+    # ``org.freedesktop.Application.Quit`` method that older releases
+    # honoured. Calling Application.Quit on modern Nautilus comes back
+    # with ``UnknownMethod: No such method "Quit"`` and we surface the
+    # rc=1 as ``Live Nautilus restart skipped`` even though everything
+    # else is fine. Use the gtk.Actions path; the activation acks
+    # immediately but the process actually exits ~5-10s later as the
+    # open windows finish closing.
     try:
         rc = run_user(
             [
                 "gdbus", "call", "--session",
                 "--dest", "org.gnome.Nautilus",
                 "--object-path", "/org/gnome/Nautilus",
-                "--method", "org.freedesktop.Application.Quit",
+                "--method", "org.gtk.Actions.Activate",
+                "quit", "[]", "{}",
             ],
             check=False,
             stdout=subprocess.DEVNULL,
@@ -107,9 +117,13 @@ def _restart_running_nautilus() -> bool:
         warn("Timed out waiting for Nautilus to quit")
         return False
     if rc != 0:
-        warn("Live Nautilus restart skipped")
+        warn(f"Live Nautilus restart skipped (gdbus rc={rc})")
         return False
-    for _ in range(50):
+    # 15s exit window — Nautilus 50.1 with multiple windows takes ~10s
+    # to drain. The poll interval stays at 100ms so we react promptly
+    # when it does exit, and the gapplication relaunch downstream can
+    # start without an extra dead-time gap.
+    for _ in range(150):
         if not _nautilus_running():
             break
         time.sleep(0.1)

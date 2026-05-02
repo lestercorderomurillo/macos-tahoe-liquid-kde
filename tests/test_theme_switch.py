@@ -289,11 +289,14 @@ def test_apply_uses_live_lookandfeel_for_settled_scheduled_transition(monkeypatc
     assert ("write", "dark") in calls
     assert ("extras", "dark") in calls
     assert ("laf", theme_switch.LAF_DARK) in calls
-    # Scheduled (timer-fired) transitions must NOT cycle the widget style.
-    # The cycle stresses plasmashell and the inter-write sleep is a
-    # SIGTERM hazard (systemd KillSignal=TERM at unit stop = frozen
-    # widgetStyle=Breeze + dark colors = "Breeze night" regression).
-    assert not any(c[0] == "cycle" for c in calls)
+    # v0.11: scheduled (timer-fired and manual ``auto``) transitions DO
+    # cycle the widget style now. Without this, ``kvantummanager --set``
+    # writes the new theme to disk but every running Qt window keeps
+    # the previous Kvantum style — the "auto switched but Kvantum is
+    # still dark on a light desktop" mixed state. Cycle is still skipped
+    # for ``boot`` (plasmashell login fragility) and ``install`` (own
+    # plasmashell restart at end).
+    assert ("cycle", "kvantum-dark") in calls
     assert not any(c[0] == "cursor" for c in calls)
     assert any(c[0] == "qdbus" and c[1][0] == "org.kde.KWin"
                for c in calls)
@@ -324,8 +327,11 @@ def test_apply_falls_back_to_cursor_for_unsettled_scheduled_transition(monkeypat
     assert ("write", "dark") in calls
     assert ("extras", "dark") in calls
     assert ("cursor", "MacTahoeLiquidKde-Dark") in calls
-    # Scheduled context skips the cycle (see settled-transition test for why).
-    assert not any(c[0] == "cycle" for c in calls)
+    # v0.11: cycle runs even when LAF live-apply is skipped, because
+    # the kvconfig still flipped on disk and running Qt apps need to
+    # re-instantiate the Kvantum plugin to pick it up. Skipping the
+    # cycle here was the v0.10 mixed-state bug.
+    assert ("cycle", "kvantum-dark") in calls
     assert not any(c[0] == "laf" for c in calls)
     assert any(c[0] == "qdbus" and c[1][0] == "org.kde.KWin"
                for c in calls)

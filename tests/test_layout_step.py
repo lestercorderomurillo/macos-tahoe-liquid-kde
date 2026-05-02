@@ -107,6 +107,12 @@ def test_evaluate_layout_warns_without_qdbus(monkeypatch, tmp_path):
 
 
 def test_reset_layout_builtin_applies_breeze_and_rejects_help_output(monkeypatch):
+    """v0.10: ``_reset_layout_builtin`` invokes ``plasma-apply-lookandfeel``
+    via ``run_user`` so the child fully drops privileges (Qt6 binaries
+    abort otherwise). Assert the cmd and the privilege-drop kwarg, but
+    don't pin the entire kwargs dict — ``run_user`` injects
+    ``preexec_fn=drop_privs_in_child`` automatically and we want that
+    to be opaque to callers."""
     calls = []
 
     monkeypatch.setattr(layout, "have", lambda cmd: cmd == "plasma-apply-lookandfeel")
@@ -122,20 +128,20 @@ def test_reset_layout_builtin_applies_breeze_and_rejects_help_output(monkeypatch
     monkeypatch.setattr(layout.subprocess, "run", fake_run)
 
     assert layout._reset_layout_builtin() is False
-    assert calls == [(
-        (
-            "plasma-apply-lookandfeel",
-            "-a",
-            "org.kde.breeze.desktop",
-            "--resetLayout",
-        ),
-        {
-            "check": False,
-            "capture_output": True,
-            "text": True,
-            "timeout": 20,
-        },
-    )]
+    assert len(calls) == 1
+    cmd, kwargs = calls[0]
+    assert cmd == (
+        "plasma-apply-lookandfeel", "-a",
+        "org.kde.breeze.desktop", "--resetLayout",
+    )
+    assert kwargs["check"] is False
+    assert kwargs["capture_output"] is True
+    assert kwargs["text"] is True
+    assert kwargs["timeout"] == 20
+    # The drop-privs hook is mandatory under sudo so qtpaths/qdbus inside
+    # plasma-apply-lookandfeel don't trip Qt's setuid abort.
+    assert callable(kwargs.get("preexec_fn"))
+    assert kwargs["preexec_fn"].__name__ == "drop_privs_in_child"
 
 
 def test_reset_layout_builtin_succeeds_on_real_completion(monkeypatch):

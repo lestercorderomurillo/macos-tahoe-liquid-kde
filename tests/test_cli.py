@@ -291,11 +291,23 @@ def test_check_for_updates_does_not_sleep_in_silent_mode(
 # ── root precondition + privilege drop ───────────────────────────────────
 def test_require_root_refuses_when_euid_is_not_zero(monkeypatch, capsys, cli_module):
     """The whole point of the precondition: bail BEFORE doing anything
-    if uninstall wasn't launched via ``sudo ./uninstall``. Single
-    actionable error message, no banner, no tracker side effects, no
-    sudo prompts that could trigger pam_faillock."""
+    if install/uninstall wasn't launched via sudo. Single actionable
+    error message, no banner, no tracker side effects, no sudo prompts
+    that could trigger pam_faillock.
+
+    v0.10: ``_require_root_and_drop_to_user`` now takes an ``op`` arg
+    (``"install"`` or ``"uninstall"``) used in the error message. Both
+    install and uninstall require root."""
     monkeypatch.setattr(cli_module.os, "geteuid", lambda: 1000)
-    assert cli_module._require_root_and_drop_to_user() is False
+
+    # Install path
+    assert cli_module._require_root_and_drop_to_user("install") is False
+    err = capsys.readouterr().err
+    assert "Install must be run as root" in err
+    assert "sudo ./install" in err
+
+    # Uninstall path
+    assert cli_module._require_root_and_drop_to_user("uninstall") is False
     err = capsys.readouterr().err
     assert "Uninstall must be run as root" in err
     assert "sudo ./uninstall" in err
@@ -358,34 +370,47 @@ def test_require_root_drops_privileges_and_sets_home(monkeypatch, cli_module, tm
     assert calls == [("setegid", 1000), ("seteuid", 1000)]
 
 
-def test_run_install_does_not_require_root(monkeypatch, cli_module):
+def test_run_install_requires_root(monkeypatch, cli_module):
+    """v0.10: install REQUIRES sudo upfront. ``run_install`` calls
+    ``_require_root_and_drop_to_user("install")``; if it returns False
+    (not root), ``run_install`` exits 1 immediately without touching
+    apply_overrides / export_env / SRC_DIR.
+
+    Inverts the v0.8.6-era ``test_run_install_does_not_require_root``:
+    sudoless install was the regression that left the dock + global
+    menu unloaded under user paths Qt6 doesn't search."""
     called = []
     monkeypatch.setattr(cli_module, "_require_root_and_drop_to_user",
-                        lambda: called.append(True) or False)
+                        lambda op="install": called.append(op) or False)
     monkeypatch.setattr(cli_module, "parse_args", lambda _argv: type(
         "Parsed", (), {
             "help": False,
             "check_update": False,
+            "preflight_only": False,
             "do_save": False,
             "do_reset": False,
             "only_mode": False,
             "theme_mode": None,
             "cli_overrides": {},
         })())
-    monkeypatch.setattr(cli_module, "load_features", lambda: {"theme_mode": "auto"})
-    monkeypatch.setattr(cli_module, "apply_overrides", lambda feat, _parsed: feat)
-    monkeypatch.setattr(cli_module, "export_env", lambda _feat: None)
-    monkeypatch.setattr(cli_module, "SRC_DIR", Path("/definitely/missing"))
+    # apply_overrides should NOT be called — we bail before that.
+    apply_overrides_called = []
+    monkeypatch.setattr(cli_module, "apply_overrides",
+                        lambda feat, _parsed: apply_overrides_called.append(True) or feat)
 
     assert cli_module.run_install([]) == 1
-    assert called == []
+    assert called == ["install"]
+    assert apply_overrides_called == []
 
 
 def test_require_root_falls_back_when_pwd_lookup_fails(
         monkeypatch, cli_module):
     """If ``pwd.getpwuid`` raises (synthesised UID, sandbox, etc.), still
     succeed with a best-effort ``/home/<user>`` path so the install can
-    proceed for testing / containerised setups."""
+    proceed for testing / containerised setups.
+
+    v0.10: ``_require_root_and_drop_to_user`` accepts an ``op`` kwarg
+    (defaults to ``"install"``)."""
     monkeypatch.setenv("HOME", "/will-be-overwritten")
     monkeypatch.setenv("USER", "will-be-overwritten")
     monkeypatch.setenv("LOGNAME", "will-be-overwritten")
@@ -403,6 +428,9 @@ def test_require_root_falls_back_when_pwd_lookup_fails(
     monkeypatch.setattr(pwd, "getpwuid", boom)
     monkeypatch.setattr(cli_module.os, "setegid", lambda gid: None)
     monkeypatch.setattr(cli_module.os, "seteuid", lambda uid: None)
+    # _restore_user_session_env runs systemctl --user; stub it out so the
+    # test doesn't depend on the test runner having a user systemd session.
+    monkeypatch.setattr(cli_module, "_restore_user_session_env", lambda _uid: None)
 
-    assert cli_module._require_root_and_drop_to_user() is True
+    assert cli_module._require_root_and_drop_to_user("install") is True
     assert os.environ["HOME"] == "/home/ghost"

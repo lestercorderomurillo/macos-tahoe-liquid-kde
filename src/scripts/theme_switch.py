@@ -379,6 +379,26 @@ def detect_auto_target_mode() -> str:
     return detect_mode_by_time()
 
 
+_AUTO_TIMER_UNIT = "mac-tahoe-liquid-kde-theme.timer"
+
+
+def _systemctl_user(*args: str) -> bool:
+    """Best-effort ``systemctl --user`` wrapper. Returns False on no
+    systemctl, no user manager, or non-zero rc — never raises, since
+    a missing user systemd shouldn't break a manual theme switch."""
+    if not _have("systemctl"):
+        return False
+    try:
+        return subprocess.run(
+            ["systemctl", "--user", *args],
+            check=False,
+            stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
+            timeout=10,
+        ).returncode == 0
+    except subprocess.TimeoutExpired:
+        return False
+
+
 def enable_auto_mode() -> bool:
     if not _have("kwriteconfig6"):
         return False
@@ -391,12 +411,22 @@ def enable_auto_mode() -> bool:
             "--key", "DefaultLightLookAndFeel", LAF_LIGHT)
     _kwrite("--file", "kdeglobals", "--group", "KDE",
             "--key", "DefaultDarkLookAndFeel", LAF_DARK)
+    # Re-enable the timer so the 06:00 / 18:00 transitions fire. Calling
+    # ``mac-tahoe-theme-switch auto`` after a previous ``light`` / ``dark``
+    # invocation must restore the scheduled flip; without this the kdeglobals
+    # keys flip back to "auto" but the timer is still dead from the
+    # disable_auto_mode() call that ``light`` / ``dark`` made.
+    _systemctl_user("enable", "--now", _AUTO_TIMER_UNIT)
     return True
 
 
 def disable_auto_mode() -> bool:
     if not _have("kwriteconfig6"):
         return False
+    # Stop the scheduler too — README documents that ``light`` / ``dark``
+    # disable the auto timer, and the user expects the theme to stay put
+    # until they explicitly re-enable auto.
+    _systemctl_user("disable", "--now", _AUTO_TIMER_UNIT)
     return _kwrite("--file", "kdeglobals", "--group", "KDE",
                    "--key", "AutomaticLookAndFeel", "false")
 
@@ -555,15 +585,19 @@ def apply(mode: str, context: str = "") -> bool:
         _apply_local_extras(mode)
     else:
         apply_extras(mode)
-    # The widget-style cycle stresses plasmashell (every cycle round-trip
-    # asks Qt to destroy + recreate the Kvantum style plugin, which has
-    # crashed plasmashell in ``libplasma_wallpaper_image.so`` on a real
-    # machine) AND leaves ``widgetStyle=Breeze`` on disk if the process
-    # gets SIGTERM'd mid-sleep. Both are real regressions. Only run the
-    # cycle for explicit interactive light/dark calls — install does its
-    # own plasmashell restart at the end, and timer-fired transitions can
-    # wait until the user manually toggles.
-    if context == "":
+    # Widget-style cycle: forces Qt apps to re-instantiate the Kvantum
+    # plugin against the new kvconfig. Without this, ``kvantummanager
+    # --set`` writes the new theme to disk but every running Qt window
+    # keeps the previous style — the "auto switched but Kvantum is
+    # still dark on a light desktop" mixed state.
+    #
+    # Skip on ``boot`` (plasmashell during the login window has black-
+    # screened on the cycle before — see CLAUDE.md) and ``install``
+    # (the explicit plasmashell restart at the end of install loads the
+    # on-disk theme cleanly without needing a live cycle). Everything
+    # else — interactive ``light`` / ``dark`` / ``auto``, timer-fired
+    # ``auto scheduled`` — gets the cycle so running apps propagate.
+    if context not in ("boot", "install"):
         cycle_widget_style_live(widget)
     if context != "install":
         _qdbus("org.kde.KWin", "/KWin", "org.kde.KWin.reconfigure")

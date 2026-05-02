@@ -1,7 +1,43 @@
-# USELESS: monkeypatches TASKMANAGER_DEST_SO/_QML + sudo helpers — production user-path destinations Qt6 does not search are not asserted
+"""Static integration test for plasmoids.install().
+
+Confirms the wiring: taskmanager build artefact + runtime QML are
+copied to ``TASKMANAGER_DEST_SO`` / ``TASKMANAGER_DEST_QML``, and the
+package metadata + contents/ tree end up under ``DEST_DIR``. Sudo
+helpers are stubbed (the test runner is not root) — the real
+``sudo_install_file`` would call ``_as_root()`` → ``seteuid(0)`` and
+raise ``PermissionError``. Production destinations are pinned in a
+separate static test.
+"""
+import shutil
 from pathlib import Path
 
 from steps import plasmoids
+
+
+def _stub_sudo_helpers(monkeypatch):
+    def fake_install_file(src: Path, dest: Path, label: str) -> bool:
+        dest.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(str(src), str(dest))
+        return True
+
+    def fake_install_tree(src: Path, dest: Path, label: str | None = None) -> bool:
+        if dest.exists():
+            shutil.rmtree(dest)
+        shutil.copytree(str(src), str(dest))
+        return True
+
+    def fake_remove(path: Path, label: str | None = None) -> bool:
+        if not path.exists():
+            return False
+        if path.is_dir():
+            shutil.rmtree(path)
+        else:
+            path.unlink()
+        return True
+
+    monkeypatch.setattr(plasmoids, "sudo_install_file", fake_install_file)
+    monkeypatch.setattr(plasmoids, "sudo_install_tree", fake_install_tree)
+    monkeypatch.setattr(plasmoids, "sudo_remove", fake_remove)
 
 
 def test_install_copies_taskmanager_runtime_package(tmp_path, monkeypatch):
@@ -42,28 +78,26 @@ def test_install_copies_taskmanager_runtime_package(tmp_path, monkeypatch):
     monkeypatch.setattr(plasmoids, "DEST_DIR", dest)
     monkeypatch.setattr(plasmoids, "TASKMANAGER_SRC", taskmanager)
     monkeypatch.setattr(plasmoids, "TASKMANAGER_BUILD", taskmanager / "build")
-    # User-path .so destination, sandboxed under tmp_path. The real
-    # value is ``~/.local/lib/qt6/plugins/...`` — same shape, just under
-    # the test home so we don't actually write to the dev's plugin dir.
     monkeypatch.setattr(
         plasmoids,
         "TASKMANAGER_DEST_SO",
-        home / ".local/lib/qt6/plugins/plasma/applets/org.kde.mac.tahoe.liquid.taskmanager.so",
+        tmp_path / "fake-usr/lib/qt6/plugins/plasma/applets/org.kde.mac.tahoe.liquid.taskmanager.so",
     )
     monkeypatch.setattr(
         plasmoids,
         "TASKMANAGER_DEST_QML",
-        home / ".local/lib/qt6/qml/plasma/applet/org/kde/mac/tahoe/liquid/taskmanager",
+        tmp_path / "fake-usr/lib/qt6/qml/plasma/applet/org/kde/mac/tahoe/liquid/taskmanager",
     )
-    # Legacy /usr/lib path: redirect to a sandbox path that doesn't
-    # exist so the legacy-cleanup ``sudo_remove`` becomes a silent no-op
-    # (without it, the test would try to ``seteuid(0)`` against a real
-    # root-owned file on the dev's filesystem and fail).
+    # v0.10: ``LEGACY_TASKMANAGER_USER_SO`` is the v0.8.4-0.8.6 sudoless
+    # leftover under ``~/.local/lib/qt6/...``. Point it at a sandbox path
+    # that doesn't exist so the cleanup path no-ops.
     monkeypatch.setattr(
         plasmoids,
-        "LEGACY_TASKMANAGER_SYSTEM_SO",
-        tmp_path / "fake-usr-lib/no-such-taskmanager.so",
+        "LEGACY_TASKMANAGER_USER_SO",
+        tmp_path / "fake-user-lib/no-such-taskmanager.so",
     )
+
+    _stub_sudo_helpers(monkeypatch)
 
     failures = []
     monkeypatch.setattr(plasmoids, "fail", lambda msg: failures.append(msg))
@@ -71,16 +105,29 @@ def test_install_copies_taskmanager_runtime_package(tmp_path, monkeypatch):
     plasmoids.install()
 
     runtime = dest / "org.kde.mac.tahoe.liquid.taskmanager"
-    # User-path .so install (no sudo for the new file) — lands at the
-    # user-path destination, never under /usr/lib.
-    assert plasmoids.TASKMANAGER_DEST_SO.is_file(), (
-        "expected the .so to land at the user-path destination — install "
-        "is sudoless for new files, /usr/lib only gets touched for the "
-        "legacy-cleanup unlink"
-    )
-    assert (home / ".local/lib/qt6/qml/plasma/applet/org/kde/mac/tahoe/liquid/taskmanager/qmldir").is_file()
+    assert plasmoids.TASKMANAGER_DEST_SO.is_file()
+    assert (plasmoids.TASKMANAGER_DEST_QML / "qmldir").is_file()
     assert plasmoids.TASKMANAGER_DEST_SO.read_bytes() == b"so"
-    assert not failures
+    assert not failures, failures
     assert (runtime / "metadata.json").is_file()
     assert (runtime / "contents/ui/main.qml").is_file()
     assert not (runtime / "build").exists()
+
+
+def test_taskmanager_dest_paths_target_qt6_system_dirs():
+    """v0.10 contract: the dock taskmanager .so + QML module land
+    where Qt6 actually scans (``/usr/lib/qt6/{plugins,qml}/``). Pin
+    the production paths so a refactor that drifts them doesn't ship."""
+    assert str(plasmoids.TASKMANAGER_DEST_SO) == (
+        "/usr/lib/qt6/plugins/plasma/applets/"
+        "org.kde.mac.tahoe.liquid.taskmanager.so"
+    )
+    assert str(plasmoids.TASKMANAGER_DEST_QML) == (
+        "/usr/lib/qt6/qml/plasma/applet/org/kde/mac/tahoe/liquid/taskmanager"
+    )
+
+
+def test_taskmanager_build_artifacts_match_install_sources():
+    artifacts = plasmoids.build_artifacts()
+    assert plasmoids.TASKMANAGER_BUILD / "bin/plasma/applets/org.kde.mac.tahoe.liquid.taskmanager.so" in artifacts
+    assert plasmoids.TASKMANAGER_BUILD / "bin/plasma/applet/org/kde/mac/tahoe/liquid/taskmanager" in artifacts

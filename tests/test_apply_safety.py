@@ -92,6 +92,23 @@ def test_apply_uninstall_command_profile_is_safe(monkeypatch, tmp_path):
         "apply_cursortheme_live",
         lambda theme: live_calls.append(("cursor", theme)) or True,
     )
+    # cycle_widget_style_live and qdbus_call are imported at module level
+    # in apply.py and were previously NOT mocked. The real
+    # cycle_widget_style_live writes ``widgetStyle=Breeze`` to the
+    # invoking user's real ``~/.config/kdeglobals`` and broadcasts a
+    # KGlobalSettings refresh — which, combined with the
+    # LookAndFeelPackage=org.kde.breeze.desktop write earlier in
+    # uninstall(), causes plasmashell to swap the live wallpaper to
+    # Breeze's default. Mock both so the test is hermetic.
+    monkeypatch.setattr(
+        apply,
+        "cycle_widget_style_live",
+        lambda target: live_calls.append(("cycle", target)) or True,
+    )
+    monkeypatch.setattr(
+        apply, "qdbus_call",
+        lambda *args: live_calls.append(("qdbus", args)) or True,
+    )
     monkeypatch.setattr(apply.time, "sleep", lambda *_args: None)
     monkeypatch.setattr(apply, "ok", lambda _msg: None)
     monkeypatch.setattr(apply, "warn", lambda _msg: markers.append("warn"))
@@ -112,6 +129,7 @@ def test_apply_uninstall_command_profile_is_safe(monkeypatch, tmp_path):
             "plasma-apply-lookandfeel",
             "plasma-apply-cursortheme",
             "kwriteconfig6",
+            "qdbus6",
         },
     )
 
@@ -120,6 +138,8 @@ def test_apply_uninstall_command_profile_is_safe(monkeypatch, tmp_path):
         return _result()
 
     monkeypatch.setattr(apply.subprocess, "run", fake_run)
+    # run_user is the v0.10 wrapper used by apply.py; same fake.
+    monkeypatch.setattr(apply, "run_user", fake_run)
 
     apply.uninstall()
 
@@ -128,6 +148,11 @@ def test_apply_uninstall_command_profile_is_safe(monkeypatch, tmp_path):
     assert ("scheme", "BreezeLight") in markers
     assert ("laf", "org.kde.breeze.desktop") in live_calls
     assert ("cursor", "breeze_cursors") in live_calls
+    # The widget-style cycle is invoked with target Breeze (this is what
+    # forces running Qt apps off Kvantum onto plain Breeze). Pin it so a
+    # future "skip the cycle on uninstall" change leaves a regression
+    # trail in the test rather than in the user's right-click menus.
+    assert ("cycle", "Breeze") in live_calls
     assert "[Theme-plasmathemeexplorer]" not in plasmarc.read_text()
     assert not any("nautilus" in part for cmd in subprocess_calls for part in cmd)
     assert not any("plasma-plasmashell" in part for cmd in subprocess_calls for part in cmd)
@@ -284,10 +309,16 @@ def test_restart_plasma_falls_back_when_systemctl_hangs(monkeypatch):
 def test_nautilus_install_does_not_force_quit(monkeypatch):
     """Install must NEVER use ``nautilus -q``. The graceful gdbus
     Application.Quit + gapplication relaunch IS allowed and is what
-    actually picks up the new gsettings without leaving stale state."""
+    actually picks up the new gsettings without leaving stale state.
+
+    v0.10: default-handler binding is written via direct
+    ``kwriteconfig6 mimeapps.list`` (``_set_default``) instead of the
+    ``xdg-mime`` shell dispatcher; pgrep + gdbus go through ``run_user``
+    so the child fully drops privs. The fake unifies both paths so
+    ``gdbus_seen`` stays consistent across run_user and subprocess.run."""
     subprocess_calls = []
     popen_calls = []
-    nautilus_calls = {"count": 0}
+    set_default_calls = []
 
     monkeypatch.setattr(nautilus_step, "_is_kde", lambda: True)
     monkeypatch.setattr(nautilus_step, "_apply_overrides", lambda: None)
@@ -298,22 +329,27 @@ def test_nautilus_install_does_not_force_quit(monkeypatch):
     monkeypatch.setattr(
         nautilus_step,
         "have",
-        lambda cmd: cmd in {"nautilus", "xdg-mime", "gdbus", "gapplication"},
+        lambda cmd: cmd in {"nautilus", "gdbus", "gapplication"},
+    )
+    monkeypatch.setattr(
+        nautilus_step,
+        "_set_default",
+        lambda desktop, mime: set_default_calls.append((desktop, mime)) or True,
     )
 
     gdbus_seen = {"v": False}
 
-    def fake_run(cmd, **_kwargs):
+    def unified_run(cmd, **_kwargs):
         subprocess_calls.append(tuple(cmd))
         if cmd[:2] == ["pgrep", "-x"]:
-            # Nautilus reads as running until gdbus Quit has fired —
-            # after that, the poll loop sees it exit.
+            # Nautilus reports running until the gdbus Quit has fired.
             return _result(1 if gdbus_seen["v"] else 0)
         if cmd[:2] == ["gdbus", "call"]:
             gdbus_seen["v"] = True
         return _result(0)
 
-    monkeypatch.setattr(nautilus_step.subprocess, "run", fake_run)
+    monkeypatch.setattr(nautilus_step.subprocess, "run", unified_run)
+    monkeypatch.setattr(nautilus_step, "run_user", unified_run)
     monkeypatch.setattr(
         nautilus_step.subprocess,
         "Popen",
@@ -322,36 +358,49 @@ def test_nautilus_install_does_not_force_quit(monkeypatch):
 
     nautilus_step.install()
 
-    assert ("xdg-mime", "default", nautilus_step.NAUTILUS_DESKTOP, nautilus_step.MIME_FOLDER) in subprocess_calls
+    # mimeapps.list bindings are written via _set_default, not xdg-mime.
+    assert (nautilus_step.NAUTILUS_DESKTOP, nautilus_step.MIME_FOLDER) in set_default_calls
+    assert (nautilus_step.NAUTILUS_DESKTOP, nautilus_step.MIME_SEARCH) in set_default_calls
     # Force-quit is the unsafe path — must never appear.
     assert not any(cmd[:2] == ("nautilus", "-q") for cmd in subprocess_calls)
+    # No xdg-mime spawn — v0.10 went direct to kwriteconfig6.
+    assert not any(cmd[:1] == ("xdg-mime",) for cmd in subprocess_calls)
     # Graceful gdbus quit + relaunch IS expected when nautilus is running.
     assert any(cmd[:2] == ("gdbus", "call") for cmd in subprocess_calls)
     assert any(cmd[:2] == ("gapplication", "launch") for cmd in popen_calls)
 
 
-def test_nautilus_install_times_out_xdg_mime_instead_of_hanging(monkeypatch):
-    warnings = []
+def test_nautilus_install_writes_mimeapps_via_kwriteconfig6(monkeypatch):
+    """v0.10: ``_set_default`` calls ``kw_write`` against
+    ``mimeapps.list`` directly. Replaces the prior xdg-mime timeout
+    assertion — there is no xdg-mime path to time out anymore."""
+    kw_calls: list[tuple[str, ...]] = []
 
     monkeypatch.setattr(nautilus_step, "_is_kde", lambda: True)
     monkeypatch.setattr(nautilus_step, "_apply_overrides", lambda: None)
     monkeypatch.setattr(nautilus_step, "_apply_gsettings", lambda: None)
     monkeypatch.setattr(nautilus_step, "_nautilus_running", lambda: False)
     monkeypatch.setattr(nautilus_step, "ok", lambda _msg: None)
-    monkeypatch.setattr(nautilus_step, "warn", lambda msg: warnings.append(msg))
+    monkeypatch.setattr(nautilus_step, "warn", lambda _msg: None)
+    monkeypatch.setattr(nautilus_step, "have", lambda cmd: cmd == "nautilus")
     monkeypatch.setattr(
         nautilus_step,
-        "have",
-        lambda cmd: cmd in {"nautilus", "xdg-mime"},
+        "kw_write",
+        lambda *args: kw_calls.append(tuple(args)) or True,
     )
-
-    def fake_run(cmd, **_kwargs):
-        if cmd[:2] == ["xdg-mime", "default"]:
-            raise nautilus_step.subprocess.TimeoutExpired(cmd, timeout=5)
-        return _result(0)
-
-    monkeypatch.setattr(nautilus_step.subprocess, "run", fake_run)
 
     nautilus_step.install()
 
-    assert warnings == ["xdg-mime timed out — default file manager not changed"]
+    # Two mime bindings → two kwriteconfig6 invocations against mimeapps.list.
+    assert any(
+        "--file" in args and "mimeapps.list" in args and
+        "--key" in args and nautilus_step.MIME_FOLDER in args and
+        nautilus_step.NAUTILUS_DESKTOP in args
+        for args in kw_calls
+    )
+    assert any(
+        "--file" in args and "mimeapps.list" in args and
+        "--key" in args and nautilus_step.MIME_SEARCH in args and
+        nautilus_step.NAUTILUS_DESKTOP in args
+        for args in kw_calls
+    )
