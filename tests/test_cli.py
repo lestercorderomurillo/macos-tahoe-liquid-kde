@@ -204,6 +204,55 @@ def test_check_for_updates_inline_pauses_for_user_to_read(
     assert sleeps[0] >= 1.5
 
 
+def test_check_for_updates_inline_no_double_blank_line_before_verdict(
+        monkeypatch, capsys, cli_module):
+    """``confirm()`` already trails with a blank line. If
+    ``check_for_updates(inline=True)`` *also* prints one before the
+    transient 'Checking…' line, the user sees an awkward gap between
+    the [Y/n] prompt and the verdict. Output must start directly with
+    the Checking… line."""
+    monkeypatch.setattr(cli_module, "read_version", lambda: "0.8.0")
+    monkeypatch.setattr(cli_module, "fetch_latest_release", lambda **_: "0.8.0")
+    monkeypatch.setattr(cli_module.time, "sleep", lambda _: None)
+
+    cli_module.check_for_updates(inline=True)
+    out = capsys.readouterr().out
+    assert not out.startswith("\n"), (
+        "inline check_for_updates leaked a leading blank line — confirm() "
+        "already prints one and we're now stacking two."
+    )
+
+
+def test_check_for_updates_verdict_indent_matches_ok_calls(
+        monkeypatch, capsys, cli_module):
+    """The 'On the latest version' line lives in the same vertical column
+    as ``ok()`` output (``  ✓  msg``). If we drift by an extra two
+    spaces, the verdict no longer aligns with the install steps that
+    follow it and looks visually broken on the user's terminal."""
+    monkeypatch.setattr(cli_module, "read_version", lambda: "0.8.0")
+    monkeypatch.setattr(cli_module, "fetch_latest_release", lambda **_: "0.8.0")
+    monkeypatch.setattr(cli_module.time, "sleep", lambda _: None)
+
+    cli_module.check_for_updates(inline=True)
+    out = capsys.readouterr().out
+    # Strip ALL ANSI CSI sequences (colours, cursor motion, clear-line),
+    # not just SGR ``m`` — ``\033[2K`` is the clear-line we emit before
+    # the verdict and it would otherwise show up as visible characters.
+    import re
+    plain = re.sub(r"\x1b\[[0-9;]*[A-Za-z]", "", out)
+    verdict_line = next(
+        (line for line in plain.splitlines() if "On the latest version" in line),
+        None,
+    )
+    assert verdict_line is not None
+    # ok() format from log.py: ``  ✓  <msg>`` — 2 spaces, glyph, 2 spaces.
+    assert verdict_line.startswith("  ✓  "), (
+        f"verdict line indent drifted: {verdict_line!r}. Must match ok() "
+        f"output (two spaces, glyph, two spaces) or it stops aligning with "
+        f"the surrounding install step output."
+    )
+
+
 def test_check_for_updates_does_not_sleep_in_silent_mode(
         monkeypatch, cli_module):
     """Silent / verbose modes must not pause — they're scripted (CI,

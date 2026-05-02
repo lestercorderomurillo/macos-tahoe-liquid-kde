@@ -280,8 +280,9 @@ def check_for_updates(verbose: bool = False, inline: bool = False) -> bool:
     ``--check-update`` flag — it always announces the verdict, even when
     up to date or offline, but skips the pause."""
     if inline:
-        print()
-        print("  \033[2m  Checking for updates…\033[0m", end="", flush=True)
+        # confirm() already trails with a blank line, so we go straight
+        # into the transient "Checking…" line.
+        print("  \033[2mChecking for updates…\033[0m", end="", flush=True)
 
     current = read_version()
     latest = fetch_latest_release()
@@ -291,23 +292,24 @@ def check_for_updates(verbose: bool = False, inline: bool = False) -> bool:
 
     if latest is None:
         if verbose or inline:
-            print("  \033[2m  Could not reach GitHub — skipping update check\033[0m")
+            print("  \033[2mCould not reach GitHub — skipping update check\033[0m")
         if inline:
             time.sleep(_VERSION_CHECK_READ_PAUSE)
         return False
     if parse_semver(latest) > parse_semver(current):
-        print(f"  \033[1;33m  Update available: {current} → {latest}\033[0m")
-        print(f"  \033[2m  Updates fix style breakage when KDE / Plasma /"
+        print(f"  \033[1;33mUpdate available: {current} → {latest}\033[0m")
+        print(f"  \033[2mUpdates fix style breakage when KDE / Plasma /"
               f" Kvantum upstream changes\033[0m")
-        print(f"  \033[2m  break our overrides, plus crash fixes for"
+        print(f"  \033[2mbreak our overrides, plus crash fixes for"
               f" custom plasmoids.\033[0m")
-        print(f"  \033[2m  Run: git pull && ./install\033[0m")
-        print()
+        print(f"  \033[2mRun: git pull && ./install\033[0m")
         if inline:
             time.sleep(_VERSION_CHECK_READ_PAUSE)
         return True
     if verbose or inline:
-        print(f"  \033[0;32m  ✓\033[0m  On the latest version ({current})")
+        # Match ok() exactly: two spaces, ✓, two spaces, message — no
+        # extra padding before the glyph or doubled blank lines around it.
+        print(f"  \033[0;32m✓\033[0m  On the latest version ({current})")
     if inline:
         time.sleep(_VERSION_CHECK_READ_PAUSE)
     return False
