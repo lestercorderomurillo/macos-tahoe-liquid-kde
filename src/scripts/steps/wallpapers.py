@@ -11,7 +11,7 @@ CACHE = steps_dir("wallpapers")
 LEGACY_CACHE = legacy_steps_dir("wallpapers")
 DEST_DIR = HOME / ".local/share/wallpapers"
 MIRROR_FILE = src_dir("mirrors/wallpapers.json")
-OFFLINE_LANDSCAPES = offline("wallpapers")
+OFFLINE_DIR = offline("wallpapers")
 
 
 def deps():
@@ -104,7 +104,10 @@ def download() -> None:
         ext = Path(fn).suffix
         _wp_get(f"{base}/{fn}", d / f"contents/images/3840x2160{ext}", id_, referer)
 
-    for src in sorted(OFFLINE_LANDSCAPES.glob("MacTahoe-Landscape-*/")):
+    # Bundled offline wallpapers (landscapes, iridescence, future packs).
+    # Any ``Mac*/`` directory under src/offline/wallpapers/ ships as-is —
+    # adding a new bundled wallpaper is just dropping a directory.
+    for src in sorted(OFFLINE_DIR.glob("Mac*/")):
         if not src.is_dir():
             continue
         if not safe_copy(src, CACHE / src.name):
@@ -165,6 +168,7 @@ def install() -> None:
 _FIXED_NAMES = (
     "MacTahoe", "MacTahoe-Beach-Dawn", "MacTahoe-Beach-Day",
     "MacTahoe-Beach-Dusk", "MacTahoe-Beach-Night",
+    "MacTahoe-Iridescence",
     "MacTahoe-Landscape-Morning", "MacTahoe-Landscape-Evening",
     "MacTahoe-Landscape-Night",
     "MacHeritage-Sequoia", "MacHeritage-Sequoia-Sunrise",
