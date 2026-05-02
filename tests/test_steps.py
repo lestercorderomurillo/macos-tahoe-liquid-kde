@@ -65,6 +65,75 @@ def test_color_schemes_loop(sandbox, iteration):
 
 
 # ── nautilus ─────────────────────────────────────────────────────────────
+def test_install_syncs_offline_wallpapers_without_download(monkeypatch, tmp_path):
+    """A bundled wallpaper added in src/offline/wallpapers/ must land in
+    the install destination even when download() is skipped by a cache
+    shortcut. The 0.8.1 release shipped MacTahoe-Iridescence and the
+    initial cut got it wrong: download() owned the offline → cache copy,
+    so users with a populated cache from an earlier install never saw
+    the new wallpaper."""
+    from steps import wallpapers
+
+    home = tmp_path / "home"
+    cache = tmp_path / "cache"
+    offline = tmp_path / "offline"
+    dest = home / ".local/share/wallpapers"
+
+    bundled = offline / "MacTahoe-Bundled-Test"
+    (bundled / "contents/images").mkdir(parents=True, exist_ok=True)
+    (bundled / "contents/images/3840x2160.jpg").write_bytes(b"FAKE_JPEG")
+    (bundled / "metadata.json").write_text(
+        '{"KPlugin": {"Id": "MacTahoe-Bundled-Test"}}'
+    )
+
+    # Pre-populate the cache as if download() had already run earlier
+    # (the original triggering condition for the bug).
+    pre_cached = cache / "MacTahoe"
+    (pre_cached / "contents/images").mkdir(parents=True, exist_ok=True)
+    (pre_cached / "contents/images/3840x2160.png").write_bytes(b"OLD")
+
+    monkeypatch.setenv("HOME", str(home))
+    monkeypatch.setattr(wallpapers, "HOME", home)
+    monkeypatch.setattr(wallpapers, "CACHE", cache)
+    monkeypatch.setattr(wallpapers, "LEGACY_CACHE", tmp_path / "legacy")
+    monkeypatch.setattr(wallpapers, "DEST_DIR", dest)
+    monkeypatch.setattr(wallpapers, "OFFLINE_DIR", offline)
+
+    # Critically: do NOT call download(). install() must sync offline
+    # wallpapers on its own — that's the contract.
+    wallpapers.install()
+
+    assert (dest / "MacTahoe-Bundled-Test/metadata.json").is_file()
+    assert (dest / "MacTahoe-Bundled-Test/contents/images/3840x2160.jpg").read_bytes() == b"FAKE_JPEG"
+
+
+def test_install_picks_up_iridescence_from_repo_offline_dir(monkeypatch, tmp_path, repo):
+    """End-to-end check against the REAL repo offline tree — guards
+    against the bundled MacTahoe-Iridescence (or any future Mac*/ pack)
+    silently disappearing on a cache-hit install."""
+    from steps import wallpapers
+
+    home = tmp_path / "home"
+    cache = tmp_path / "cache"
+    dest = home / ".local/share/wallpapers"
+
+    pre_cached = cache / "MacTahoe"
+    (pre_cached / "contents/images").mkdir(parents=True, exist_ok=True)
+    (pre_cached / "contents/images/3840x2160.png").write_bytes(b"OLD")
+
+    monkeypatch.setenv("HOME", str(home))
+    monkeypatch.setattr(wallpapers, "HOME", home)
+    monkeypatch.setattr(wallpapers, "CACHE", cache)
+    monkeypatch.setattr(wallpapers, "LEGACY_CACHE", tmp_path / "legacy")
+    monkeypatch.setattr(wallpapers, "DEST_DIR", dest)
+    monkeypatch.setattr(wallpapers, "OFFLINE_DIR", repo / "src/offline/wallpapers")
+
+    wallpapers.install()
+
+    assert (dest / "MacTahoe-Iridescence/metadata.json").is_file()
+    assert (dest / "MacTahoe-Iridescence/contents/images").is_dir()
+
+
 def test_nautilus_no_fatal(sandbox, monkeypatch):
     monkeypatch.setenv("XDG_CURRENT_DESKTOP", "KDE")
     (sandbox / ".config/gtk-3.0").mkdir(parents=True, exist_ok=True)

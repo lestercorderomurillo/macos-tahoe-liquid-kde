@@ -55,6 +55,25 @@ def _wp_get(url: str, dest: Path, label: str, referer: str | None) -> None:
         fail(f"{label} (download failed)")
 
 
+def _sync_offline(cache: Path) -> None:
+    """Copy bundled offline wallpapers into the working cache.
+
+    Idempotent — must run on every install pass even when the network
+    download phase is skipped (``--no-download``, cache-hit fast path,
+    offline machine). Otherwise a freshly added bundled wallpaper never
+    reaches the install destination on machines that already cached the
+    download once: download() short-circuits, install() reads only the
+    cache, and the new repo asset is silently dropped.
+
+    Lives in ``src/offline/wallpapers/`` and globs any ``Mac*/`` dir, so
+    adding a new bundled pack is a one-step contribution."""
+    for src in sorted(OFFLINE_DIR.glob("Mac*/")):
+        if not src.is_dir():
+            continue
+        if not safe_copy(src, cache / src.name):
+            fail(f"{src.name} (copy from offline failed)")
+
+
 _BEACH = (
     ("MacTahoe-Beach-Dawn", "26-Tahoe-Beach-Dawn.png", "Tahoe Beach — Dawn"),
     ("MacTahoe-Beach-Day", "26-Tahoe-Beach-Day.png", "Tahoe Beach — Day"),
@@ -104,14 +123,7 @@ def download() -> None:
         ext = Path(fn).suffix
         _wp_get(f"{base}/{fn}", d / f"contents/images/3840x2160{ext}", id_, referer)
 
-    # Bundled offline wallpapers (landscapes, iridescence, future packs).
-    # Any ``Mac*/`` directory under src/offline/wallpapers/ ships as-is —
-    # adding a new bundled wallpaper is just dropping a directory.
-    for src in sorted(OFFLINE_DIR.glob("Mac*/")):
-        if not src.is_dir():
-            continue
-        if not safe_copy(src, CACHE / src.name):
-            fail(f"{src.name} (copy from offline failed)")
+    _sync_offline(CACHE)
 
     for id_, ul, ud, name in _PAIRS:
         d = CACHE / id_
@@ -145,6 +157,11 @@ def install() -> None:
     pre = {p.name for p in DEST_DIR.glob("*/") if p.is_dir()}
     DEST_DIR.mkdir(parents=True, exist_ok=True)
     cache = _cache_root()
+    cache.mkdir(parents=True, exist_ok=True)
+
+    # Always re-sync bundled wallpapers — download() may have been skipped
+    # by a cache-hit shortcut, but newly added repo assets must still land.
+    _sync_offline(cache)
 
     n_inst = n_re = 0
     for wp in sorted(cache.glob("Mac*/")):
