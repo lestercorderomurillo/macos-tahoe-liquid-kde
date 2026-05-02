@@ -393,7 +393,13 @@ def confirm(msg: str) -> bool:
         print("  Aborted.")
         return False
     print()
-    return _prime_sudo()
+    # Note: install is now sudo-free. C++ plasmoids and the KWin Acrylic
+    # Glass effect install to ``~/.local/lib/qt6/plugins`` instead of the
+    # system path, sidestepping the entire ``pam_unix conversation
+    # failed`` / ``pam_faillock`` cascade. Any best-effort cleanup of
+    # legacy system-path files prints a notice if it can't unlink
+    # without root rather than prompting.
+    return True
 
 
 def _prime_sudo() -> bool:

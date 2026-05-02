@@ -39,19 +39,19 @@ def test_install_copies_taskmanager_runtime_package(tmp_path, monkeypatch):
         tmp_path / "usr/lib/qt6/plugins/plasma/applets/org.kde.mac.tahoe.liquid.taskmanager.so",
     )
 
-    installed = []
     failures = []
-    monkeypatch.setattr(
-        plasmoids,
-        "sudo_install_file",
-        lambda src, dest, label: installed.append((Path(src), Path(dest), label)) or True,
-    )
     monkeypatch.setattr(plasmoids, "fail", lambda msg: failures.append(msg))
 
     plasmoids.install()
 
     runtime = dest / "org.kde.mac.tahoe.liquid.taskmanager"
-    assert installed
+    # User-path .so install (no sudo) — must land at the patched
+    # TASKMANAGER_DEST_SO and NOT touch /usr/lib.
+    assert plasmoids.TASKMANAGER_DEST_SO.is_file(), (
+        "expected the .so to land at the user-path destination — install "
+        "is now sudo-free, system-path /usr/lib must never be written to"
+    )
+    assert plasmoids.TASKMANAGER_DEST_SO.read_bytes() == b"so"
     assert not failures
     assert (runtime / "metadata.json").is_file()
     assert (runtime / "contents/ui/main.qml").is_file()
