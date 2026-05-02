@@ -1,3 +1,4 @@
+# USELESS: text content of kdedefaults/plasmarc/kwinrc — live Plasma session reset behavior is not validated
 """Uninstall fully resets KDE state — kdedefaults, plasmarc, kwinrc.
 
 Guards the "half-uninstall" bug: kdedefaults/, plasmarc's

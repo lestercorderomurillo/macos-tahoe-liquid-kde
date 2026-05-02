@@ -1,3 +1,4 @@
+# USELESS: kwriteconfig6 calls verified — Plasma actually picking up the live changes is not
 """Behaviour tests for src/scripts/theme_switch.py — color group surgery,
 mode detection, and the install/uninstall step."""
 

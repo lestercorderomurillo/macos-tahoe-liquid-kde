@@ -1,3 +1,4 @@
+# USELESS: JSON tracker behaviour — orthogonal to install / runtime correctness
 """Last-run JSON tracker."""
 
 import json

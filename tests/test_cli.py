@@ -1,3 +1,4 @@
+# USELESS: monkeypatches _require_root_and_drop_to_user — verifies the gate exists, not that the install is usable
 """Tests for the install/uninstall CLI: argument parsing, root
 precondition, GitHub version checker."""
 

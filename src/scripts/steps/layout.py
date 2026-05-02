@@ -150,16 +150,20 @@ _CUSTOM_PANEL_NEEDLES = (
 
 
 def _layout_looks_reset() -> bool:
+    """Layout is 'reset' when our custom widgets are gone from
+    appletsrc. We don't require the full default Breeze panel needles
+    to be present — plasma-apply-lookandfeel may write the layout
+    asynchronously and the final plasmashell restart picks up the
+    rest. The thing that actually matters here is: no MacTahoe-specific
+    plugin IDs left behind to fail loading on next start."""
     appletsrc = HOME / ".config/plasma-org.kde.plasma.desktop-appletsrc"
     if not appletsrc.is_file():
-        return False
+        return True
     try:
         text = appletsrc.read_text()
     except OSError:
         return False
-    if any(needle in text for needle in _CUSTOM_PANEL_NEEDLES):
-        return False
-    return all(needle in text for needle in _DEFAULT_PANEL_NEEDLES)
+    return not any(needle in text for needle in _CUSTOM_PANEL_NEEDLES)
 
 
 def _layout_looks_installed() -> bool:

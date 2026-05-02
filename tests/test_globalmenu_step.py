@@ -1,3 +1,4 @@
+# USELESS: monkeypatches DEST_SO/DEST_QML_DIR + sudo helpers — production user-path destinations Qt6 does not search are not asserted
 from pathlib import Path
 
 from steps import globalmenu

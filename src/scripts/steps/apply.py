@@ -292,10 +292,14 @@ def uninstall() -> None:
 
     live_ready = _live_plasma_ready_quick()
 
-    if live_ready and _apply_lookandfeel_live("org.kde.breeze.desktop"):
-        ok("Look-and-feel applied live")
-    else:
-        warn("Live Breeze look-and-feel apply skipped")
+    # If the session isn't responsive, the final plasmashell restart picks
+    # up the on-disk Breeze config — no warning needed, that path is by
+    # design (see ``_live_plasma_ready_quick``).
+    if live_ready:
+        if _apply_lookandfeel_live("org.kde.breeze.desktop"):
+            ok("Look-and-feel applied live")
+        else:
+            warn("Live Breeze look-and-feel apply skipped")
 
     # Even after switching to the Breeze LAF, Qt apps that were started
     # under Kvantum keep its style plugin instance alive — the right-click
@@ -304,8 +308,8 @@ def uninstall() -> None:
     if live_ready:
         cycle_widget_style_live("Breeze")
 
-    if feat_enabled("CURSORS"):
-        if live_ready and apply_cursortheme_live("breeze_cursors"):
+    if feat_enabled("CURSORS") and live_ready:
+        if apply_cursortheme_live("breeze_cursors"):
             ok("Cursor applied live")
         else:
             warn("Live cursor apply skipped")

@@ -1,3 +1,4 @@
+# USELESS: sandboxed step install/uninstall under tmp_path — production destinations differ and are unloadable by Plasma
 """Sandboxed install/uninstall behaviour for individual step modules."""
 
 import os

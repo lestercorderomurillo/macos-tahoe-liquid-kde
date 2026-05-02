@@ -481,27 +481,29 @@ def _restore_user_session_env(uid: int) -> None:
             os.environ[key] = value
 
 
-def _require_root_and_drop_to_user() -> bool:
-    """Hard precondition for uninstall: it only runs when invoked with root
-    privileges (``sudo ./uninstall``). This is enforced via the effective
-    UID — the script never tries to *acquire* privileges itself, so all
-    of the PAM ``conversation failed`` / ``faillock`` issues that lived
-    in the previous prompt-from-Python code paths simply cannot occur:
-    sudo authenticates the user *before* Python is invoked, in the
-    user's outer shell, where the prompt is reliable.
+def _require_root_and_drop_to_user(op: str = "install") -> bool:
+    """Hard precondition for install/uninstall: it only runs when
+    invoked with root privileges (``sudo ./install`` /
+    ``sudo ./uninstall``). Qt6 only walks ``/usr/lib/qt6/`` for plugins
+    and QML modules by default; user-path destinations are not
+    discoverable, so .so files and runtime QML for the C++ plasmoids
+    and KWin effect MUST land under /usr/lib. That means sudo upfront
+    is mandatory, not optional.
 
     Once root is verified, drop the effective UID/GID to ``SUDO_USER``
     so all file writes land with normal user ownership. The few
-    operations that genuinely need root (.so installs to /usr/lib, etc.)
-    re-elevate via the ``sudo_install_file`` / ``sudo_remove`` helpers,
-    which call ``os.seteuid(0)`` for the duration of one operation and
-    restore the user's UID immediately after. Real UID stays at 0
-    throughout, so the seteuid trip back to root always succeeds.
+    operations that genuinely need root (.so installs to /usr/lib, QML
+    modules, etc.) re-elevate via the ``sudo_install_file`` /
+    ``sudo_install_tree`` / ``sudo_remove`` helpers, which call
+    ``os.seteuid(0)`` for the duration of one operation and restore
+    the user's UID immediately after. Real UID stays at 0 throughout,
+    so the seteuid trip back to root always succeeds.
     """
     if os.geteuid() != 0:
         print(file=sys.stderr)
-        print("  \033[0;31mUninstall must be run as root.\033[0m", file=sys.stderr)
-        print("  \033[2mRe-run as:\033[0m  sudo ./uninstall", file=sys.stderr)
+        print(f"  \033[0;31m{op.capitalize()} must be run as root.\033[0m",
+              file=sys.stderr)
+        print(f"  \033[2mRe-run as:\033[0m  sudo ./{op}", file=sys.stderr)
         print(file=sys.stderr)
         return False
 
@@ -654,10 +656,28 @@ def run_install(argv: list[str]) -> int:
     if parsed.check_update:
         return 0 if not check_for_updates(verbose=True) else 0
 
-    # Install is intentionally sudoless: every new artefact lives under
-    # the user's home (~/.local/share, ~/.local/lib, ~/.config). Only the
-    # uninstall path needs root, to delete legacy ``/usr/lib`` files left
-    # by older releases. Keep install fresh and friction-free.
+    banner(read_version())
+    print(f"  \033[0;31m\033[1mInstall disabled — actively fixing regressions\033[0m")
+    print(f"  \033[2mv0.8.4-v0.9.0 shipped .so/QML to ~/.local/lib/qt6/{{plugins,qml}}/, paths\033[0m")
+    print(f"  \033[2mQt6 does NOT search by default — verified against ``qmake6 -query\033[0m")
+    print(f"  \033[2mQT_INSTALL_PLUGINS`` (returns /usr/lib/qt6/plugins) and the empty\033[0m")
+    print(f"  \033[2m``QT_PLUGIN_PATH`` env. Plasma never loaded the dock or global menu.\033[0m")
+    print()
+    print(f"  \033[2mInstall is locked on main while the proper sudo-upfront fix lands\033[0m")
+    print(f"  \033[2mwith real end-to-end tests. ``--check-update`` still works; you'll be\033[0m")
+    print(f"  \033[2mauto-pointed at the new release the moment it's published.\033[0m")
+    print()
+    print(f"  \033[2mTo see when a working version drops:\033[0m  ./install --check-update")
+    print(f"  \033[2mIf you have a previous install you want to remove:\033[0m  sudo ./uninstall")
+    print()
+    return 1
+
+    # Install needs root: the C++ plasmoids and KWin effect drop .so
+    # files into /usr/lib/qt6/plugins/ and runtime QML into
+    # /usr/lib/qt6/qml/ — Qt6's default search paths. User paths are
+    # not discoverable. ``sudo ./install`` is the supported entry.
+    if not _require_root_and_drop_to_user("install"):
+        return 1
 
     feat = apply_overrides(load_features(), parsed)
     export_env(feat)
@@ -754,7 +774,7 @@ def run_uninstall(argv: list[str]) -> int:
         print(UNINSTALL_HELP)
         return 0
 
-    if not _require_root_and_drop_to_user():
+    if not _require_root_and_drop_to_user("uninstall"):
         return 1
 
     feat = apply_overrides(load_features(), parsed)

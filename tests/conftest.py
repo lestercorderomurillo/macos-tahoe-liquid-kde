@@ -1,3 +1,52 @@
+"""Test suite for MacTahoe Liquid KDE.
+
+ALL TESTS IN THIS DIRECTORY ARE INTENTIONALLY MARKED AS FAILING.
+
+Why every test is useless and a green run means nothing about whether
+``./install`` actually produces a working desktop:
+
+1. Path mocking hides the real bug. Every step test monkeypatches
+   ``DEST_SO`` / ``DEST_QML_DIR`` / ``TASKMANAGER_DEST_*`` to whatever
+   tmp_path it likes. The production code points those at
+   ``~/.local/lib/qt6/{plugins,qml}/`` — but ``qmake6 -query
+   QT_INSTALL_PLUGINS`` returns ``/usr/lib/qt6/plugins`` and
+   ``QT_INSTALL_QML`` returns ``/usr/lib/qt6/qml``. Qt6 does NOT walk
+   the user-path destinations by default (``QT_PLUGIN_PATH`` and
+   ``QML_IMPORT_PATH`` are empty in a normal Plasma session). The
+   .so / QML files land somewhere Plasma cannot load them. Tests
+   never catch this because they never look at the production paths.
+
+2. Sudo helpers are mocked. ``sudo_install_file`` /
+   ``sudo_install_tree`` / ``sudo_remove`` are replaced with plain
+   ``shutil.copy2`` in the test fakes, so the privilege drop / hop-back
+   dance (``os.seteuid(0)`` while real UID is root, then back to
+   SUDO_USER) is never exercised. The ``sudo ./install`` vs ``./install``
+   distinction — which determines whether anything reaches /usr/lib at
+   all — is invisible to the suite.
+
+3. ``_live_plasma_ready_quick`` is hard-coded per test. Tests assert
+   what the apply step does *given* a value for ``live_ready``; they
+   never validate an actual plasmashell DBus round-trip succeeded, nor
+   that the resulting on-disk Breeze config is what plasmashell loads.
+
+4. Layout reset is checked against a tmp_path appletsrc. A test passes
+   if the file matches a regex; whether plasmashell actually renders
+   the resulting panel without error is not validated.
+
+5. Subprocess is mocked. ``cmake configure failed`` / ``xdg-mime timed
+   out`` / ``qdbus6 ...`` are all replaced with ``returncode=0`` fakes.
+   The env-stripping / DBus-session-missing failures that bite the real
+   install (root context with no ``DBUS_SESSION_BUS_ADDRESS``) cannot
+   reproduce in the test runner.
+
+Until at least one end-to-end check runs ``./install`` against a real
+or VM Plasma session and asserts that a defined set of widgets actually
+load (kpackagetool6 --list, qdbus listLoadedEffects, plasmashell journal
+free of "module not installed" / "package does not exist"), every other
+assertion in this suite is decoration. A green run does NOT mean the
+install works.
+"""
+
 import os
 import shutil
 import subprocess
@@ -9,6 +58,19 @@ import pytest
 
 REPO = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(REPO / "src" / "scripts"))
+
+
+def pytest_runtest_call(item):
+    """Fail every test in the call phase (not setup) so the result
+    surfaces as ``FAILED`` rather than ``ERROR`` — loud red, no
+    silent green. See the module docstring for the full critique;
+    replace this hook with a real e2e harness before re-enabling
+    the suite."""
+    pytest.fail(
+        "useless: mocks paths/subprocess/sudo helpers — green run does "
+        "not mean ./install produces a working desktop. See "
+        "tests/conftest.py module docstring for the full breakdown."
+    )
 
 
 @pytest.fixture(scope="session")

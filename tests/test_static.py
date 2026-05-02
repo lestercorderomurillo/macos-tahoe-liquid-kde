@@ -1,3 +1,4 @@
+# USELESS: file existence + JSON parse + SVG validity — none of this catches plugins/QML installed where Plasma cannot find them
 """File-existence, grep, JSON, and SVG validity checks."""
 
 import gzip

@@ -1,3 +1,4 @@
+# USELESS: SVG opacity values only — visual correctness on a real Plasma session is not validated
 """set-transparency / set-transparency end-to-end behaviour."""
 
 import gzip

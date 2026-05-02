@@ -5,13 +5,13 @@ from pathlib import Path
 
 from steps._helpers import (
     build_dir, cmake_build, fail, info, kw_write, ok, offline, qdbus_call,
-    sudo_remove, warn,
+    sudo_install_file, sudo_remove, warn,
 )
 
 SRC = offline("kwin-effects/acrylic-glass")
 BUILD = build_dir("kwin-effects/acrylic-glass")
 HOME = Path.home()
-USER_PLUGIN_DIR = HOME / ".local/lib/qt6/plugins"
+LEGACY_USER_PLUGIN_DIR = HOME / ".local/lib/qt6/plugins"
 
 
 def deps():
@@ -77,23 +77,12 @@ _PRESET = (
 )
 
 
-def _user_dest(rel: str) -> Path:
-    """User-path destination for a kwin effect .so. Qt6 plugin search
-    walks ``~/.local/lib/qt6/plugins`` by default (and we ensure it via
-    QT_PLUGIN_PATH on plasma restart anyway), so installing here makes
-    the entire install sudo-free — no more pam_unix conversation-failed
-    cascade just to drop a .so in /usr/lib."""
-    return USER_PLUGIN_DIR / rel
-
-
 def install() -> None:
     system_dir = _plugin_dir()
     effect_so = BUILD / "src/liquidglass.so"
     config_so = BUILD / "src/kcm/kwin_liquidglass_config.so"
-    dest_effect = _user_dest("kwin/effects/plugins/liquidglass.so")
-    dest_config = _user_dest("kwin/effects/configs/kwin_liquidglass_config.so")
-    legacy_effect = system_dir / "kwin/effects/plugins/liquidglass.so"
-    legacy_config = system_dir / "kwin/effects/configs/kwin_liquidglass_config.so"
+    dest_effect = system_dir / "kwin/effects/plugins/liquidglass.so"
+    dest_config = system_dir / "kwin/effects/configs/kwin_liquidglass_config.so"
 
     if not effect_so.is_file():
         return
@@ -107,25 +96,20 @@ def install() -> None:
     time.sleep(2)
     ok("Acrylic Glass unloaded for safe upgrade")
 
-    # Note: legacy /usr/lib cleanup intentionally lives in uninstall()
-    # only — install is sudoless. New install puts everything under
-    # ~/.local/lib/qt6/plugins/ which Plasma searches first, so a
-    # leftover system-path .so does not shadow the new install; it
-    # only persists until the user runs ``sudo ./uninstall``.
+    # Drop user-path leftovers from the v0.8.4-0.8.6 sudoless install.
+    for so in (LEGACY_USER_PLUGIN_DIR / "kwin/effects/plugins/liquidglass.so",
+               LEGACY_USER_PLUGIN_DIR / "kwin/effects/configs/kwin_liquidglass_config.so"):
+        if so.is_file():
+            try:
+                so.unlink()
+                ok(f"{so.name} (removed user-path leftover)")
+            except OSError:
+                pass
 
-    dest_effect.parent.mkdir(parents=True, exist_ok=True)
-    dest_config.parent.mkdir(parents=True, exist_ok=True)
-    try:
-        shutil.copy2(effect_so, dest_effect)
-        ok("Acrylic Glass installed")
-    except OSError as exc:
-        fail(f"Acrylic Glass install failed: {exc}")
+    if not sudo_install_file(effect_so, dest_effect, "Acrylic Glass installed"):
         return
-    try:
-        shutil.copy2(config_so, dest_config)
-        ok("Acrylic Glass KCM installed")
-    except OSError as exc:
-        warn(f"Acrylic Glass KCM install failed: {exc}")
+    if not sudo_install_file(config_so, dest_config, "Acrylic Glass KCM installed"):
+        warn("Acrylic Glass KCM install failed")
 
     for key, value in _PRESET:
         kw_write("--file", "kwinrc", "--group", "Effect-liquidglass",
@@ -161,20 +145,17 @@ def uninstall() -> None:
                     out.append(line)
             kwinrc.write_text("\n".join(out) + "\n")
 
-    # User-path uninstall (no sudo needed).
-    for so in (_user_dest("kwin/effects/plugins/liquidglass.so"),
-               _user_dest("kwin/effects/configs/kwin_liquidglass_config.so")):
-        if so.is_file():
-            try:
-                so.unlink()
-                ok(so.name)
-            except OSError as exc:
-                fail(f"{so.name} ({exc})")
-    # Clean up any leftover system-path install too. The uninstall path
-    # demands ``sudo ./uninstall`` so this can actually delete root-owned
-    # files.
     system_dir = _plugin_dir()
     for so in (system_dir / "kwin/effects/plugins/liquidglass.so",
                system_dir / "kwin/effects/configs/kwin_liquidglass_config.so"):
-        sudo_remove(so, f"{so.name} (legacy /usr/lib)")
+        sudo_remove(so, so.name)
+    # Drop user-path leftovers from the v0.8.4-0.8.6 sudoless install.
+    for so in (LEGACY_USER_PLUGIN_DIR / "kwin/effects/plugins/liquidglass.so",
+               LEGACY_USER_PLUGIN_DIR / "kwin/effects/configs/kwin_liquidglass_config.so"):
+        if so.is_file():
+            try:
+                so.unlink()
+                ok(f"{so.name} (legacy user-path)")
+            except OSError as exc:
+                fail(f"{so.name} ({exc})")
     info("Acrylic Glass removed")

@@ -1,3 +1,4 @@
+# USELESS: monkeypatches TASKMANAGER_DEST_SO/_QML + sudo helpers — production user-path destinations Qt6 does not search are not asserted
 from pathlib import Path
 
 from steps import plasmoids

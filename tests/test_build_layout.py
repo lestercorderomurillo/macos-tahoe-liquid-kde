@@ -1,3 +1,4 @@
+# USELESS: file-existence checks on offline/ — passes while runtime panel JS fails to resolve C++ plasmoid IDs
 from pathlib import Path
 
 import pytest

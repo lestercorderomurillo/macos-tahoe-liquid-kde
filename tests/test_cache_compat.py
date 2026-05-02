@@ -1,3 +1,4 @@
+# USELESS: legacy cache JSON format compat — orthogonal to install/runtime breakage
 from pathlib import Path
 
 import pytest

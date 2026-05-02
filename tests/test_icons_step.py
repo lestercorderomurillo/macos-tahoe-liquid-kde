@@ -1,3 +1,4 @@
+# USELESS: copy-to-tmp verification — does not validate icons resolve via real XDG_DATA_DIRS chain
 from pathlib import Path
 
 from steps import icons

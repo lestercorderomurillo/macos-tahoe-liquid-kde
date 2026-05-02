@@ -1,3 +1,4 @@
+# USELESS: kcfg/UI structure schema check only — never asserts the effect actually loads in KWin
 """Structure + schema checks for the Acrylic Glass KWin effect.
 
 Verifies the v0.7.7 layout: renamed shaders, no legacy files, consistent

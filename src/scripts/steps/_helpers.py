@@ -123,13 +123,43 @@ def sudo_install_file(src: Path, dest: Path, label: str) -> bool:
     return True
 
 
+def sudo_install_tree(src: Path, dest: Path, label: str | None = None) -> bool:
+    """Copy a directory tree to a root-owned destination via _as_root().
+    Stages the new tree at a sibling .mttkde-tmp path then renames into
+    place so the live destination is never half-written."""
+    label = label or dest.name
+    src = Path(src)
+    dest = Path(dest)
+    if not src.is_dir():
+        fail(f"{label} (source missing: {src})")
+        return False
+    try:
+        with _as_root():
+            dest.parent.mkdir(parents=True, exist_ok=True)
+            tmp = dest.with_name(dest.name + ".mttkde-tmp")
+            if tmp.exists():
+                shutil.rmtree(str(tmp))
+            shutil.copytree(str(src), str(tmp), symlinks=True)
+            if dest.exists():
+                shutil.rmtree(str(dest))
+            os.replace(str(tmp), str(dest))
+    except OSError as exc:
+        fail(f"{label} ({exc.__class__.__name__}: {exc})")
+        return False
+    ok(label)
+    return True
+
+
 def sudo_remove(path: Path, label: str | None = None) -> bool:
     label = label or path.name
     if not path.exists() and not path.is_symlink():
         return False
     try:
         with _as_root():
-            path.unlink()
+            if path.is_dir() and not path.is_symlink():
+                shutil.rmtree(str(path))
+            else:
+                path.unlink()
     except FileNotFoundError:
         return False
     except OSError as exc:
@@ -193,7 +223,8 @@ __all__ = [
     "HOME", "feat_enabled", "theme_mode", "offline", "steps_dir",
     "build_dir",
     "legacy_steps_dir", "src_dir",
-    "install_tree", "remove_tree", "sudo_install_file", "sudo_remove",
+    "install_tree", "remove_tree", "sudo_install_file", "sudo_install_tree",
+    "sudo_remove",
     "temp_dir", "cmake_build",
     # re-exports for step modules
     "fail", "info", "ok", "reinstall", "warn",

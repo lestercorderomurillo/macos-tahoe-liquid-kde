@@ -1,3 +1,4 @@
+# USELESS: end-to-end cmake build, but the resulting .so ships to a path Qt6/KWin does not walk — green means nothing
 """End-to-end build test for the Acrylic Glass KWin effect.
 
 Runs `cmake -S <effect> -B <tmp> && cmake --build <tmp>` and asserts that

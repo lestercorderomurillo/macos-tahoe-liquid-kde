@@ -1,3 +1,4 @@
+# USELESS: appletsrc text matches a regex — plasmashell ability to render the resulting panel is not validated
 import io
 import tarfile
 from types import SimpleNamespace

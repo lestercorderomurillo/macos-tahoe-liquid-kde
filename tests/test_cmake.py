@@ -1,3 +1,4 @@
+# USELESS: cmake configure-time check — green while the produced .so lands at a path Plasma will not load from
 """Configure + build the C++ plasmoids.
 
 These tests run a full cmake configure + native compile per applet (~33s

@@ -1,3 +1,4 @@
+# USELESS: subprocess + live_ready hard-coded per test — never exercises a real Plasma DBus round-trip
 from types import SimpleNamespace
 
 from steps import apply
@@ -204,8 +205,11 @@ def test_apply_uninstall_skips_live_mutation_when_plasma_not_ready(monkeypatch, 
 
     assert "flush" in markers
     assert ("scheme", "BreezeLight") in markers
-    assert "Live Breeze look-and-feel apply skipped" in markers
-    assert "Live cursor apply skipped" in markers
+    # When plasma session is not ready, the live mutations are intentionally
+    # silenced — the final plasmashell restart picks up on-disk Breeze state.
+    # No alarming ⚠ markers in this path.
+    assert "Live Breeze look-and-feel apply skipped" not in markers
+    assert "Live cursor apply skipped" not in markers
     assert live_calls == []
     assert qdbus_calls == []
 
