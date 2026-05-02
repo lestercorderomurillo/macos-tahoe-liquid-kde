@@ -6,8 +6,8 @@ from steps import globalmenu
 
 def test_install_copies_globalmenu_runtime_qml(tmp_path, monkeypatch):
     home = tmp_path / "home"
-    src = tmp_path / "offline/plasmoids/org.kde.mac-tahoe-liquid-kde.globalmenu"
-    build = tmp_path / "build/plasmoids/org.kde.mac-tahoe-liquid-kde.globalmenu"
+    src = tmp_path / "offline/plasmoids/org.kde.mac.tahoe.liquid.globalmenu"
+    build = tmp_path / "build/plasmoids/org.kde.mac.tahoe.liquid.globalmenu"
     artifact = build / "bin/plasma/applets/org.kde.mac.tahoe.liquid.globalmenu.so"
     runtime_dir = build / "bin/plasma/applet/org/kde/mac/tahoe/liquid/globalmenu"
 

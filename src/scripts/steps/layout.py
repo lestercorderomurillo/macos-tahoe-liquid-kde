@@ -7,7 +7,7 @@ import urllib.request
 from pathlib import Path
 
 from steps._helpers import HOME, fail, have, install_tree, ok, offline, qdbus_call, warn
-from utils import qdbus_cmd
+from utils import qdbus_cmd, run_user
 
 LAYOUT_SCRIPT = offline("layouts/mac-tahoe.js")
 LAYOUT_RESET = offline("layouts/default.js")
@@ -72,14 +72,14 @@ def _ensure_panel_colorizer() -> None:
             ["-i", "https://store.kde.org/p/2130967", "-t", "Plasma/Applet"],
             ["--install", COLORIZER_ID, "-t", "Plasma/Applet"],
         ):
-            if subprocess.run(["kpackagetool6", *args], check=False,
-                              stdout=subprocess.DEVNULL,
-                              stderr=subprocess.DEVNULL).returncode == 0:
+            if run_user(["kpackagetool6", *args], check=False,
+                        stdout=subprocess.DEVNULL,
+                        stderr=subprocess.DEVNULL).returncode == 0:
                 break
     if not _has_panel_colorizer():
         for pm in ("paru", "yay"):
             if have(pm):
-                subprocess.run(
+                run_user(
                     [pm, "-S", "--noconfirm", "plasma6-applets-panel-colorizer"],
                     check=False,
                     stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
@@ -116,7 +116,7 @@ def _reset_layout_builtin() -> bool:
     if not have("plasma-apply-lookandfeel"):
         return False
     try:
-        res = subprocess.run(
+        res = run_user(
             ["plasma-apply-lookandfeel", "-a", "org.kde.breeze.desktop", "--resetLayout"],
             check=False,
             capture_output=True,

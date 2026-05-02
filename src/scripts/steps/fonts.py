@@ -5,7 +5,7 @@ from collections import defaultdict
 from steps._helpers import (
     HOME, fail, info, legacy_steps_dir, ok, reinstall, src_dir, steps_dir, temp_dir,
 )
-from utils import run_mirrors
+from utils import run_mirrors, run_user
 
 CACHE = steps_dir("fonts")
 LEGACY_CACHE = legacy_steps_dir("fonts")
@@ -82,9 +82,9 @@ def install() -> None:
         if inst[grp] or re[grp]:
             info(f"{grp} — {inst[grp]} installed, {re[grp]} reinstalled")
     if any_copied:
-        subprocess.run(["fc-cache", "-f", str(DEST_DIR)],
-                       check=False,
-                       stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        run_user(["fc-cache", "-f", str(DEST_DIR)],
+                 check=False,
+                 stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
 
 def uninstall() -> None:
@@ -97,7 +97,7 @@ def uninstall() -> None:
             except OSError:
                 pass
     if n > 0:
-        subprocess.run(["fc-cache", "-f", str(DEST_DIR)],
-                       check=False,
-                       stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        run_user(["fc-cache", "-f", str(DEST_DIR)],
+                 check=False,
+                 stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
     info(f"{n} font files removed")

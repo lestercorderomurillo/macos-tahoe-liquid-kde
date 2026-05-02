@@ -62,6 +62,13 @@ def deps():
     return ["cmake", "g++:gcc", "pkg-config:pkgconf"]
 
 
+def build_artifacts() -> list[Path]:
+    return [
+        TASKMANAGER_BUILD / "bin/plasma/applets/org.kde.mac.tahoe.liquid.taskmanager.so",
+        TASKMANAGER_BUILD / "bin/plasma/applet/org/kde/mac/tahoe/liquid/taskmanager",
+    ]
+
+
 def build() -> None:
     if (TASKMANAGER_SRC / "CMakeLists.txt").is_file():
         cmake_build(TASKMANAGER_SRC, TASKMANAGER_BUILD, "Dock Task Manager")

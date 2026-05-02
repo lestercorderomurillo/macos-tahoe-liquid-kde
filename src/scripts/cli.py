@@ -17,9 +17,10 @@ from paths import (
     read_version,
 )
 from log import banner, errors, fail, note, ok, step, warn
+from preflight import run_preflight
 from state import RunTracker
 from step_runner import run_phase, step_deps, step_exists, step_has_phase, step_module
-from utils import auto_dep, have, kw_read
+from utils import auto_dep, have, kw_read, run_user
 
 
 ALL_FEATURES = [
@@ -103,6 +104,7 @@ Options:
     --save             Save current flags to features.json
     --reset            Reset features.json to all-true defaults
     --check-update     Check GitHub for a newer release and exit
+    --preflight        Run preflight checks (sudo, paths, Qt6, IDs) and exit
 
 Examples:
   ./install                              # install everything
@@ -179,6 +181,7 @@ class ParsedArgs:
         self.do_reset = False
         self.only_mode = False
         self.check_update = False
+        self.preflight_only = False
         self.cli_overrides: dict[str, bool] = {}
         self.help = False
 
@@ -202,6 +205,8 @@ def parse_args(argv: list[str]) -> ParsedArgs:
             p.do_reset = True
         elif arg == "--check-update":
             p.check_update = True
+        elif arg == "--preflight":
+            p.preflight_only = True
         elif arg in ("--no-download", "--offline"):
             p.cli_overrides["no_download"] = True
         elif arg == "--download":
@@ -377,7 +382,7 @@ def _detect_plasma_version() -> str | None:
         if not have(cmd[0]):
             continue
         try:
-            res = subprocess.run(
+            res = run_user(
                 cmd,
                 check=False,
                 capture_output=True,
@@ -454,7 +459,7 @@ def _restore_user_session_env(uid: int) -> None:
     if not have("systemctl"):
         return
     try:
-        res = subprocess.run(
+        res = run_user(
             ["systemctl", "--user", "show-environment"],
             check=False,
             capture_output=True,
@@ -597,6 +602,77 @@ def _layout_is_installed() -> bool:
     return bool(callable(probe) and probe())
 
 
+# Features whose install must succeed for the desktop to function.
+# These are the compiled .so + QML drops — the dock, the global menu,
+# the KWin glass effect. If any of these fails to install, abort the
+# whole installer rather than ship a half-broken desktop.
+CRITICAL_INSTALL_FEATURES = {"globalmenu", "plasmoids", "acrylic_glass"}
+
+
+def _build_features(feat: dict[str, object]) -> list[str]:
+    """Features whose step exposes a build() phase AND is enabled.
+
+    These are the C++ components — globalmenu, plasmoids (taskmanager),
+    acrylic_glass. Building these is mandatory: if any fails, the whole
+    install aborts before any artefact lands on disk."""
+    out: list[str] = []
+    for feature in INSTALL_ORDER:
+        if not should_process(feature, feat):
+            continue
+        if not step_has_phase(feature, "build"):
+            continue
+        out.append(feature)
+    return out
+
+
+def _run_builds_or_abort(feat: dict[str, object]) -> bool:
+    """Run every build phase upfront. If any build fails OR any expected
+    artefact is missing afterwards, return False — the caller aborts the
+    whole installer.
+
+    Build runs *before* the install loop so we never ship a half-built
+    desktop where some compiled .so landed but a sibling didn't. Each
+    step exposes ``build_artifacts() -> list[Path]`` for the post-build
+    check; modules without that helper just rely on errors[] surfacing."""
+    builds = _build_features(feat)
+    if not builds:
+        ok("no compiled components selected — skipping build phase")
+        return True
+
+    failed: list[str] = []
+    for i, feature in enumerate(builds):
+        label = feature.replace("_", " ")
+        # note() already trails with a blank line, so skip the leading
+        # blank for the first iteration to avoid a doubled gap below
+        # the step header.
+        if i:
+            print()
+        print(f"  \033[1mBuilding {label}\033[0m")
+        if not run_phase(feature, "build"):
+            failed.append(feature)
+            continue
+
+        mod = step_module(feature)
+        artifacts = getattr(mod, "build_artifacts", None) if mod else None
+        if not callable(artifacts):
+            continue
+        missing = [p for p in artifacts() if not p.exists()]
+        if missing:
+            for p in missing:
+                fail(f"{label}: build artefact missing: {p}")
+            failed.append(feature)
+
+    if failed:
+        print()
+        fail(f"build phase failed for: {', '.join(failed)}")
+        print("  \033[2mAll compiled components must build before any "
+              "install step runs.\033[0m")
+        print("  \033[2mFix the build errors above (typically missing KF6/Qt6 "
+              "dev packages) and re-run.\033[0m")
+        return False
+    return True
+
+
 _BASE_DEPS = [
     ("curl", "curl"), ("unzip", "unzip"),
     ("fc-cache", "fontconfig"), ("kwriteconfig6", "kconfig"),
@@ -629,7 +705,7 @@ def _flush_icon_cache_signal() -> None:
     home = Path.home()
     for sub in (".cache/icon-cache.kcache", ".cache/kiconthemes"):
         shutil.rmtree(home / sub, ignore_errors=True)
-    subprocess.run(
+    run_user(
         ["dbus-send", "--session", "--type=signal",
          "/KIconLoader", "org.kde.KIconLoader.iconChanged", "int32:0"],
         check=False, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
@@ -641,10 +717,14 @@ def _print_done(verb: str) -> None:
     print(f"\033[0;32m\033[1m  ── Done\033[0m")
     if not errors:
         ok(f"MacTahoe Liquid KDE {verb} successfully")
-    else:
-        warn(f"{len(errors)} issue(s):")
-        for e in errors:
-            fail(e)
+        print()
+        return
+    # Snapshot — fail() appends to errors, so iterating the live list
+    # while calling fail() is an infinite loop. Print directly here.
+    issues = list(errors)
+    warn(f"{len(issues)} issue(s):")
+    for e in issues:
+        print(f"  \033[0;31m✗\033[0m  {e}", file=sys.stderr)
     print()
 
 
@@ -656,22 +736,6 @@ def run_install(argv: list[str]) -> int:
     if parsed.check_update:
         return 0 if not check_for_updates(verbose=True) else 0
 
-    banner(read_version())
-    print(f"  \033[0;31m\033[1mInstall disabled — actively fixing regressions\033[0m")
-    print(f"  \033[2mv0.8.4-v0.9.0 shipped .so/QML to ~/.local/lib/qt6/{{plugins,qml}}/, paths\033[0m")
-    print(f"  \033[2mQt6 does NOT search by default — verified against ``qmake6 -query\033[0m")
-    print(f"  \033[2mQT_INSTALL_PLUGINS`` (returns /usr/lib/qt6/plugins) and the empty\033[0m")
-    print(f"  \033[2m``QT_PLUGIN_PATH`` env. Plasma never loaded the dock or global menu.\033[0m")
-    print()
-    print(f"  \033[2mInstall is locked on main while the proper sudo-upfront fix lands\033[0m")
-    print(f"  \033[2mwith real end-to-end tests. ``--check-update`` still works; you'll be\033[0m")
-    print(f"  \033[2mauto-pointed at the new release the moment it's published.\033[0m")
-    print()
-    print(f"  \033[2mTo see when a working version drops:\033[0m  ./install --check-update")
-    print(f"  \033[2mIf you have a previous install you want to remove:\033[0m  sudo ./uninstall")
-    print()
-    return 1
-
     # Install needs root: the C++ plasmoids and KWin effect drop .so
     # files into /usr/lib/qt6/plugins/ and runtime QML into
     # /usr/lib/qt6/qml/ — Qt6's default search paths. User paths are
@@ -681,6 +745,10 @@ def run_install(argv: list[str]) -> int:
 
     feat = apply_overrides(load_features(), parsed)
     export_env(feat)
+
+    if parsed.preflight_only:
+        banner(read_version())
+        return 0 if run_preflight("install") else 1
 
     tracker = RunTracker("install", argv, str(feat.get("theme_mode", "auto")))
     tracker.start()
@@ -696,6 +764,10 @@ def run_install(argv: list[str]) -> int:
             return 0
         check_for_updates(inline=True)
 
+        if not run_preflight("install"):
+            fail("preflight failed — refusing to install")
+            return 1
+
         step("Verification")
         note("Checks KDE version and required tools")
         if not verify_plasma():
@@ -704,6 +776,15 @@ def run_install(argv: list[str]) -> int:
         step("Dependencies")
         note("Checking and installing required tools")
         _check_deps(feat)
+
+        # Build all C++ components upfront. If any fails to compile or
+        # any expected artefact is missing, abort BEFORE the install
+        # loop runs — half-installed desktops are worse than a clean
+        # bail with a build log to follow.
+        step("Building Compiled Components")
+        note("Builds C++ plasmoids and KWin effects — must succeed before install")
+        if not _run_builds_or_abort(feat):
+            return 1
 
         for feature in INSTALL_ORDER:
             if feature == "layout":
@@ -721,9 +802,11 @@ def run_install(argv: list[str]) -> int:
                     ok(f"{label} already downloaded")
                 else:
                     run_phase(feature, "download")
-            if step_has_phase(feature, "build"):
-                run_phase(feature, "build")
-            run_phase(feature, "install")
+            # Build phase already ran in the dedicated step above.
+            if not run_phase(feature, "install") and feature in CRITICAL_INSTALL_FEATURES:
+                fail(f"{label} install failed — aborting "
+                     "(critical compiled component)")
+                return 1
 
         step("Installing Theme Switcher")
         note("Installs the auto light/dark theme switcher")
@@ -793,6 +876,10 @@ def run_uninstall(argv: list[str]) -> int:
             tracker.mark_aborted()
             return 0
         check_for_updates(inline=True)
+
+        if not run_preflight("uninstall"):
+            fail("preflight failed — refusing to uninstall")
+            return 1
 
         step("Verification")
         note("Checks KDE version")

@@ -6,7 +6,7 @@ from pathlib import Path
 from steps._helpers import (
     HOME, fail, info, install_tree, legacy_steps_dir, ok, src_dir, steps_dir, temp_dir,
 )
-from utils import remove_path, run_mirrors
+from utils import remove_path, run_mirrors, run_user
 
 CACHE = steps_dir("icons")
 LEGACY_CACHE = legacy_steps_dir("icons")
@@ -261,7 +261,7 @@ def install() -> None:
     if shutil.which("gtk-update-icon-cache"):
         for theme in DEST_DIR.glob("MacTahoeLiquidKde-Icons*"):
             if theme.is_dir():
-                subprocess.run(
+                run_user(
                     ["gtk-update-icon-cache", "-f", "-t", str(theme)],
                     check=False,
                     stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,

@@ -5,6 +5,7 @@ import subprocess
 from steps._helpers import (
     HOME, fail, have, kw_write, offline, ok, reinstall,
 )
+from utils import run_user
 
 DEST_DIR = HOME / ".config/Kvantum/mac-tahoe-liquid-kde"
 
@@ -49,7 +50,7 @@ def uninstall() -> None:
     if have("kvantummanager"):
         env = os.environ.copy()
         env["QT_QPA_PLATFORM"] = "offscreen"
-        subprocess.run(
+        run_user(
             ["kvantummanager", "--set", "Default"],
             check=False, env=env,
             stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,

@@ -6,8 +6,8 @@ from steps._helpers import (
     sudo_install_file, sudo_install_tree, sudo_remove,
 )
 
-SRC = offline("plasmoids/org.kde.mac-tahoe-liquid-kde.globalmenu")
-BUILD = build_dir("plasmoids/org.kde.mac-tahoe-liquid-kde.globalmenu")
+SRC = offline("plasmoids/org.kde.mac.tahoe.liquid.globalmenu")
+BUILD = build_dir("plasmoids/org.kde.mac.tahoe.liquid.globalmenu")
 # System-path install — Qt6's default plugin/QML search is
 # /usr/lib/qt6/{plugins,qml}/. User paths are NOT walked (no
 # QT_PLUGIN_PATH / QML_IMPORT_PATH set in a default Plasma session),
@@ -40,6 +40,13 @@ LEGACY_QML_MODULES_USER = (
 
 def deps():
     return ["cmake", "g++:gcc", "pkg-config:pkgconf"]
+
+
+def build_artifacts() -> list[Path]:
+    return [
+        BUILD / "bin/plasma/applets/org.kde.mac.tahoe.liquid.globalmenu.so",
+        BUILD / "bin/plasma/applet/org/kde/mac/tahoe/liquid/globalmenu",
+    ]
 
 
 def build() -> None:

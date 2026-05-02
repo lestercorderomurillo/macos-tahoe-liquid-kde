@@ -205,7 +205,7 @@ def test_old_menu_removed(offline, steps_dir):
     assert not (steps_dir / "menu").exists()
 
 
-_GLOBALMENU = "plasmoids/org.kde.mac-tahoe-liquid-kde.globalmenu"
+_GLOBALMENU = "plasmoids/org.kde.mac.tahoe.liquid.globalmenu"
 
 
 @pytest.mark.parametrize("rel", [

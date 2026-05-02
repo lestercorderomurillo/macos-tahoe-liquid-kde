@@ -30,7 +30,7 @@ pytestmark = [
 
 
 _APPLETS = (
-    ("plasmoids/org.kde.mac-tahoe-liquid-kde.globalmenu",
+    ("plasmoids/org.kde.mac.tahoe.liquid.globalmenu",
      "org.kde.mac.tahoe.liquid.globalmenu_qmllint"),
     ("plasmoids/org.kde.mac.tahoe.liquid.taskmanager",
      "org.kde.mac.tahoe.liquid.taskmanager_qmllint"),

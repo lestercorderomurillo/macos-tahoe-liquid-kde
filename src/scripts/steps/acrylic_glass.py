@@ -7,6 +7,7 @@ from steps._helpers import (
     build_dir, cmake_build, fail, info, kw_write, ok, offline, qdbus_call,
     sudo_install_file, sudo_remove, warn,
 )
+from utils import run_user
 
 SRC = offline("kwin-effects/acrylic-glass")
 BUILD = build_dir("kwin-effects/acrylic-glass")
@@ -18,6 +19,13 @@ def deps():
     return ["cmake", "g++:gcc", "pkg-config:pkgconf"]
 
 
+def build_artifacts() -> list[Path]:
+    return [
+        BUILD / "src/liquidglass.so",
+        BUILD / "src/kcm/kwin_liquidglass_config.so",
+    ]
+
+
 def _plugin_dir() -> Path:
     for cmd in (
         ["qmake6", "-query", "QT_INSTALL_PLUGINS"],
@@ -25,7 +33,7 @@ def _plugin_dir() -> Path:
         ["pkg-config", "--variable=plugindir", "Qt6Core"],
     ):
         if shutil.which(cmd[0]):
-            res = subprocess.run(cmd, check=False, capture_output=True, text=True)
+            res = run_user(cmd, check=False, capture_output=True, text=True)
             if res.returncode == 0 and res.stdout.strip():
                 return Path(res.stdout.strip())
     return Path("/usr/lib/qt6/plugins")

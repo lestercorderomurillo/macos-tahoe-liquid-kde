@@ -3,7 +3,8 @@ import shutil
 import subprocess
 import time
 
-from steps._helpers import HOME, fail, have, ok, offline, warn
+from steps._helpers import HOME, fail, have, kw_write, ok, offline, warn
+from utils import run_user
 
 NAUTILUS_DESKTOP = "org.gnome.Nautilus.desktop"
 DOLPHIN_DESKTOP = "org.kde.dolphin.desktop"
@@ -14,6 +15,19 @@ _NAUTILUS_TOOL_TIMEOUT_SECONDS = 5
 
 def deps():
     return ["nautilus"]
+
+
+def _set_default(desktop_id: str, mime: str) -> bool:
+    """Write a default-handler binding the way xdg-mime would, but
+    directly: kwriteconfig6 against ``~/.config/mimeapps.list``, group
+    ``[Default Applications]``. Avoids the xdg-mime shell dispatcher
+    (which can hang waiting for legacy Qt5 helpers in a Qt6-only
+    install) while landing the same file format Plasma reads."""
+    return kw_write(
+        "--file", "mimeapps.list",
+        "--group", "Default Applications",
+        "--key", mime, desktop_id,
+    )
 
 
 def _is_kde() -> bool:
@@ -62,7 +76,7 @@ _FINDER_GSETTINGS = (
 
 
 def _nautilus_running() -> bool:
-    return subprocess.run(
+    return run_user(
         ["pgrep", "-x", "nautilus"],
         check=False,
         stdout=subprocess.DEVNULL,
@@ -77,7 +91,7 @@ def _restart_running_nautilus() -> bool:
         warn("gdbus not found — skipping live Nautilus restart")
         return False
     try:
-        rc = subprocess.run(
+        rc = run_user(
             [
                 "gdbus", "call", "--session",
                 "--dest", "org.gnome.Nautilus",
@@ -104,12 +118,14 @@ def _restart_running_nautilus() -> bool:
         return False
 
     if have("gapplication"):
+        from utils import drop_privs_in_child as _drop
         subprocess.Popen(
             ["gapplication", "launch", "org.gnome.Nautilus"],
             stdin=subprocess.DEVNULL,
             stdout=subprocess.DEVNULL,
             stderr=subprocess.DEVNULL,
             start_new_session=True,
+            preexec_fn=_drop,
         )
         ok("Nautilus restarted")
         return True
@@ -123,7 +139,7 @@ def _apply_gsettings() -> None:
         return
     for schema, key, value in _FINDER_GSETTINGS:
         try:
-            subprocess.run(
+            run_user(
                 ["gsettings", "set", schema, key, value],
                 check=False,
                 stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
@@ -142,28 +158,14 @@ def install() -> None:
         fail("Nautilus not installed (expected deps to have provided it)")
         return
 
-    if have("xdg-mime"):
-        # xdg-mime spits out a `qtpaths: command not found` warning on
-        # Qt6-only systems (it greps for the legacy Qt5 helper). The
-        # default-handler write still succeeds, so we just hush stderr.
-        try:
-            if subprocess.run(
-                ["xdg-mime", "default", NAUTILUS_DESKTOP, MIME_FOLDER],
-                check=False,
-                stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
-                timeout=_NAUTILUS_TOOL_TIMEOUT_SECONDS,
-            ).returncode == 0:
-                ok("Nautilus set as default for folders")
-            subprocess.run(
-                ["xdg-mime", "default", NAUTILUS_DESKTOP, MIME_SEARCH],
-                check=False,
-                stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
-                timeout=_NAUTILUS_TOOL_TIMEOUT_SECONDS,
-            )
-        except subprocess.TimeoutExpired:
-            warn("xdg-mime timed out — default file manager not changed")
-    else:
-        warn("xdg-mime not found — default file manager not changed")
+    # ``xdg-mime`` is a shell dispatcher that, under KDE, calls
+    # ``kwriteconfig6 mimeapps.list`` and ``kbuildsycoca6`` — both of
+    # which we already have. Going direct shaves the 5s timeout window
+    # (xdg-mime's KDE backend can spend that just probing for legacy
+    # Qt5 helpers) and removes a transient dependency.
+    if _set_default(NAUTILUS_DESKTOP, MIME_FOLDER):
+        ok("Nautilus set as default for folders")
+    _set_default(NAUTILUS_DESKTOP, MIME_SEARCH)
 
     _apply_overrides()
     _apply_gsettings()
@@ -175,23 +177,10 @@ def install() -> None:
 def uninstall() -> None:
     if not _is_kde():
         return
-    if have("dolphin") and have("xdg-mime"):
-        try:
-            if subprocess.run(
-                ["xdg-mime", "default", DOLPHIN_DESKTOP, MIME_FOLDER],
-                check=False,
-                stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
-                timeout=_NAUTILUS_TOOL_TIMEOUT_SECONDS,
-            ).returncode == 0:
-                ok("Dolphin restored as default for folders")
-            subprocess.run(
-                ["xdg-mime", "default", DOLPHIN_DESKTOP, MIME_SEARCH],
-                check=False,
-                stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
-                timeout=_NAUTILUS_TOOL_TIMEOUT_SECONDS,
-            )
-        except subprocess.TimeoutExpired:
-            warn("xdg-mime timed out — Dolphin default restore skipped")
+    if have("dolphin"):
+        if _set_default(DOLPHIN_DESKTOP, MIME_FOLDER):
+            ok("Dolphin restored as default for folders")
+        _set_default(DOLPHIN_DESKTOP, MIME_SEARCH)
     nautilus_css = HOME / ".config/nautilus/gtk.css"
     if nautilus_css.is_file():
         try: nautilus_css.unlink()

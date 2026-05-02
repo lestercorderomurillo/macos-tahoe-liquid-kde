@@ -4,6 +4,7 @@ import subprocess
 from steps._helpers import (
     HOME, fail, have, info, install_tree, offline, ok, qdbus_call, remove_tree,
 )
+from utils import run_user
 
 DEST_DIR = HOME / ".themes"
 VARIANTS = ("MacTahoeLiquidKde-Light", "MacTahoeLiquidKde-Dark")
@@ -29,7 +30,7 @@ def install() -> None:
         if install_tree(src / v, DEST_DIR / v, v):
             n += 1
     if have("gsettings"):
-        subprocess.run(
+        run_user(
             ["gsettings", "set", "org.gnome.desktop.wm.preferences",
              "button-layout", "close,minimize,maximize:"],
             check=False,
@@ -63,7 +64,7 @@ def uninstall() -> None:
             ("org.gnome.desktop.interface", "color-scheme"),
             ("org.gnome.desktop.wm.preferences", "button-layout"),
         ):
-            subprocess.run(["gsettings", "reset", schema, key],
-                           check=False,
-                           stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+            run_user(["gsettings", "reset", schema, key],
+                     check=False,
+                     stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
     info(f"{n} GTK themes removed")

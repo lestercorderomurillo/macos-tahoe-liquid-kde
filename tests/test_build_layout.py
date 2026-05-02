@@ -63,7 +63,7 @@ def test_helper_dirs_honor_independent_env_overrides(monkeypatch, tmp_path):
 def test_native_steps_build_outside_source_tree(repo):
     expected = {
         plasmoids.TASKMANAGER_BUILD: repo / "build/plasmoids/org.kde.mac.tahoe.liquid.taskmanager",
-        globalmenu.BUILD: repo / "build/plasmoids/org.kde.mac-tahoe-liquid-kde.globalmenu",
+        globalmenu.BUILD: repo / "build/plasmoids/org.kde.mac.tahoe.liquid.globalmenu",
         acrylic_glass.BUILD: repo / "build/kwin-effects/acrylic-glass",
     }
 

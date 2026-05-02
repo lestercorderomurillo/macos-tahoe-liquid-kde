@@ -9,7 +9,7 @@ from typing import Iterator
 
 from paths import BUILD_DIR, LEGACY_STEPS_DIR, OFFLINE_DIR, SRC_DIR, STEPS_DIR
 from log import fail, info, ok, reinstall, warn
-from utils import have, kw_write, qdbus_call, safe_copy
+from utils import drop_privs_in_child, have, kw_write, qdbus_call, safe_copy
 
 
 HOME = Path.home()
@@ -77,6 +77,11 @@ def remove_tree(p: Path, label: str | None = None) -> bool:
     except OSError as exc:
         fail(f"{label}: {exc}")
         return False
+
+
+# Re-export the canonical drop_privs_in_child from utils for any step
+# module still importing it from here.
+_drop_privs_in_child = drop_privs_in_child
 
 
 @contextmanager
@@ -202,21 +207,45 @@ def cmake_build(src_dir_: Path, build_dir: Path, label: str) -> bool:
     cfg = subprocess.run(
         ["cmake", "-S", str(src_dir_), "-B", str(build_dir),
          "-DCMAKE_BUILD_TYPE=Release"],
-        check=False, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
+        check=False, capture_output=True, text=True,
+        preexec_fn=_drop_privs_in_child,
     )
     if cfg.returncode != 0:
         fail(f"{label}: cmake configure failed")
+        _emit_cmd_log(label, "cmake", cfg.stdout, cfg.stderr, build_dir / "cmake-configure.log")
         return False
     nproc = os.cpu_count() or 1
     mk = subprocess.run(
         ["make", "-C", str(build_dir), f"-j{nproc}"],
-        check=False, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
+        check=False, capture_output=True, text=True,
+        preexec_fn=_drop_privs_in_child,
     )
     if mk.returncode != 0:
         fail(f"{label}: build failed")
+        _emit_cmd_log(label, "make", mk.stdout, mk.stderr, build_dir / "make-build.log")
         return False
     ok(f"{label} built")
     return True
+
+
+def _emit_cmd_log(label: str, tool: str, stdout: str, stderr: str, log_path: Path) -> None:
+    """Print the trailing slice of stderr (the actual error) and persist
+    the full output for inspection. ``./install`` is too verbose to dump
+    a full cmake/make log inline, but the last ~25 lines almost always
+    contain the failing find_package() / missing-header line."""
+    blob = (stdout or "") + (stderr or "")
+    try:
+        log_path.parent.mkdir(parents=True, exist_ok=True)
+        log_path.write_text(blob)
+    except OSError:
+        log_path = None  # type: ignore[assignment]
+    tail = [line for line in blob.splitlines() if line.strip()][-25:]
+    if tail:
+        print(f"     \033[2m── {tool} output (tail) ──\033[0m")
+        for line in tail:
+            print(f"     \033[2m{line}\033[0m")
+    if log_path:
+        print(f"     \033[2mfull log: {log_path}\033[0m")
 
 
 __all__ = [

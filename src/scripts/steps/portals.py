@@ -1,6 +1,7 @@
 import subprocess
 
 from steps._helpers import HOME, fail, have, ok
+from utils import run_user
 
 CONF_DIR = HOME / ".config/xdg-desktop-portal"
 CONF_FILE = CONF_DIR / "kde-portals.conf"
@@ -34,7 +35,7 @@ def _bounce_services() -> None:
     if not have("systemctl"):
         return
     for svc in PORTAL_SERVICES:
-        subprocess.run(
+        run_user(
             ["systemctl", "--user", "restart", svc],
             check=False,
             stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,

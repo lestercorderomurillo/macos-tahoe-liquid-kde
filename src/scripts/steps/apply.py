@@ -9,6 +9,7 @@ from pathlib import Path
 from steps._helpers import (
     HOME, fail, feat_enabled, have, info, kw_write, ok, qdbus_call, theme_mode, warn,
 )
+from utils import run_user
 from theme_switch import (
     apply_cursortheme_live,
     cycle_widget_style_live,
@@ -66,9 +67,9 @@ def _flush_caches() -> None:
                 try: p.unlink()
                 except OSError: pass
     if have("kbuildsycoca6"):
-        subprocess.run(["kbuildsycoca6", "--noincremental"],
-                       check=False,
-                       stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        run_user(["kbuildsycoca6", "--noincremental"],
+                 check=False,
+                 stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
     ok("Caches flushed")
 
 
@@ -116,7 +117,7 @@ def install() -> None:
     if feat_enabled("WALLPAPERS"):
         wp = _wallpaper_path()
         if wp and have("plasma-apply-wallpaperimage"):
-            subprocess.run(
+            run_user(
                 ["plasma-apply-wallpaperimage", str(wp)], check=False,
                 stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
             )
@@ -131,7 +132,7 @@ def install() -> None:
         # restart at the end of install loads the correct theme from config;
         # Kvantum/GTK are still applied immediately so already-open windows
         # update.
-        subprocess.run(
+        run_user(
             [str(switch), theme_mode(), "install"], check=False,
             stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
         )
@@ -160,7 +161,7 @@ def restart_plasma() -> None:
             else:
                 kwargs["stdout"] = subprocess.DEVNULL
                 kwargs["stderr"] = subprocess.DEVNULL
-            return subprocess.run(cmd, **kwargs)
+            return run_user(cmd, **kwargs)
         except subprocess.TimeoutExpired:
             if capture_output:
                 return subprocess.CompletedProcess(cmd, 124, stdout="", stderr="")
@@ -191,11 +192,13 @@ def restart_plasma() -> None:
     if _run_quick(
         ["systemctl", "--user", "start", "plasma-plasmashell"],
     ).returncode != 0:
+        from utils import drop_privs_in_child as _drop
         subprocess.Popen(
             ["kstart", "plasmashell"],
             stdin=subprocess.DEVNULL,
             stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
             start_new_session=True,
+            preexec_fn=_drop,
         )
     for _ in range(15):
         if _run_quick(["pgrep", "-x", "plasmashell"]).returncode == 0:
@@ -267,7 +270,7 @@ def uninstall() -> None:
         if feat_enabled("ICONS"):
             kw_write("--file", "kdeglobals", "--group", "Icons",
                      "--key", "Theme", "breeze")
-            subprocess.run(
+            run_user(
                 ["dbus-send", "--session", "--type=signal",
                  "/KIconLoader", "org.kde.KIconLoader.iconChanged", "int32:0"],
                 check=False,
@@ -279,7 +282,7 @@ def uninstall() -> None:
                       "/usr/share/wallpapers/Flow"):
                 if Path(p).is_dir():
                     if have("plasma-apply-wallpaperimage"):
-                        subprocess.run(
+                        run_user(
                             ["plasma-apply-wallpaperimage", p], check=False,
                             stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
                         )

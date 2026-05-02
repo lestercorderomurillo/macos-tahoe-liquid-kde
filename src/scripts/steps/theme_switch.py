@@ -6,6 +6,7 @@ from pathlib import Path
 
 from paths import REPO_ROOT
 from steps._helpers import HOME, kw_write, ok, offline, theme_mode, warn
+from utils import run_user
 
 BIN_DEST = HOME / ".local/bin/mac-tahoe-theme-switch"
 SVC_DIR = HOME / ".config/systemd/user"
@@ -32,13 +33,13 @@ def install() -> None:
         if src.is_file():
             shutil.copy2(src, SVC_DIR / u)
 
-    subprocess.run(["systemctl", "--user", "daemon-reload"],
-                   check=False,
-                   stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    run_user(["systemctl", "--user", "daemon-reload"],
+             check=False,
+             stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
     if theme_mode() == "auto":
         for verb in ("enable", "start"):
-            subprocess.run(
+            run_user(
                 ["systemctl", "--user", verb,
                  "mac-tahoe-liquid-kde-theme.service",
                  "mac-tahoe-liquid-kde-theme.timer"],
@@ -49,7 +50,7 @@ def install() -> None:
         # Explicit light/dark: user owns the preference, no scheduler.
         for unit in ("mac-tahoe-liquid-kde-theme.service",
                      "mac-tahoe-liquid-kde-theme.timer"):
-            subprocess.run(
+            run_user(
                 ["systemctl", "--user", "disable", "--now", unit],
                 check=False,
                 stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
@@ -67,7 +68,7 @@ _LEGACY_BIN = HOME / ".local/bin/mactahoe-theme-switch"
 def uninstall() -> None:
     legacy_units = (*UNITS, "mactahoe-theme-watcher.service")
     for unit in legacy_units:
-        subprocess.run(
+        run_user(
             ["systemctl", "--user", "disable", "--now", unit],
             check=False,
             stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
@@ -75,9 +76,9 @@ def uninstall() -> None:
         try: (SVC_DIR / unit).unlink()
         except FileNotFoundError: pass
         except OSError: pass
-    subprocess.run(["systemctl", "--user", "daemon-reload"],
-                   check=False,
-                   stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    run_user(["systemctl", "--user", "daemon-reload"],
+             check=False,
+             stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
     for p in (BIN_DEST, _LEGACY_BIN):
         try: p.unlink()
         except FileNotFoundError: pass

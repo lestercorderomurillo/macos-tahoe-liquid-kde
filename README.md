@@ -130,39 +130,51 @@ Desktop right-click with translucent glass blur.
 
 - KDE Plasma 6.6+
 - Python 3.10+
-- `sudo` access *only for `./uninstall`* — see below
+- `sudo` for both `./install` and `./uninstall` — see below
 
 ---
 
 ## Usage
 
 ```bash
-./install                                        # install everything (sudoless)
-./install --help                                 # show all options
+sudo ./install                                   # install everything
+sudo ./install --help                            # show all options
+sudo ./install --preflight                       # dry-run the safety checks, exit
 sudo ./uninstall                                 # uninstall, reset to Breeze
 ```
 
-`./install` runs as your normal user. Every artefact lands under `~/.local/share`,
-`~/.local/lib`, or `~/.config` — nothing escapes your home, and there is no
-sudo prompt at any point. Both scripts restart Plasma automatically.
+Both scripts require `sudo` upfront. The C++ plasmoids (Global Menu, Dock
+Task Manager) and the KWin Acrylic Glass effect drop `.so` files into
+`/usr/lib/qt6/plugins/...` and runtime QML modules into
+`/usr/lib/qt6/qml/...` — Qt6's default search paths. User paths
+(`~/.local/lib/qt6/...`) are not discoverable, so a sudoless install
+silently leaves the dock and global menu unloaded. v0.10 went back to
+sudo-upfront with a strict privilege drop: the CLI verifies it's root,
+then drops effective UID to your user. Every subprocess (cmake, kwriteconfig6,
+qdbus, kvantummanager, plasma-apply-*, …) fully drops privileges in the
+forked child via `setresuid` so Qt6 binaries don't abort with `FATAL:
+running setuid`. Only the small handful of `/usr/lib` writes hop briefly
+back to root.
 
-`./uninstall` requires `sudo` because it cleans up files older releases
-dropped under `/usr/lib/qt6/plugins/...` (root-owned). If you started on
-v0.8.6 or later you have no such files, but `sudo ./uninstall` is still
-the supported entry point — it makes the legacy cleanup work for users
-upgrading from v0.7.x and earlier without surprising them mid-run.
+`sudo ./install --preflight` runs the four safety checks (sudo escalation
+probe, destination-path regex, Qt6 plugin search match, plasmoid ID
+consistency) and exits — useful for verifying your sudo + KDE dev
+environment before committing to a real install.
 
-If you try `./uninstall` without sudo, it refuses up front with a clear
-`Re-run as: sudo ./uninstall` message — no half-done state.
+`sudo ./uninstall` is symmetric: same privilege drop, and it cleans up
+both the v0.10 system-path drops and any leftovers from older releases
+that wrote under user paths. If you try either without sudo, the script
+refuses up front with a clear `Re-run as: sudo ./<install|uninstall>`
+message — no half-done state.
 
 ### Feature Flags
 
 Every component has a CLI flag. Use `--no-` to skip, or `--only` to run just the listed ones:
 
 ```bash
-./install --no-gtk --no-sddm                     # skip GTK and SDDM
-./install --only --fonts --icons                 # install only fonts and icons
-./uninstall --only --cursors                     # uninstall only cursors
+sudo ./install --no-gtk --no-sddm                # skip GTK and SDDM
+sudo ./install --only --fonts --icons            # install only fonts and icons
+sudo ./uninstall --only --cursors                # uninstall only cursors
 ```
 
 Available flags:
@@ -180,9 +192,9 @@ Use `--no-download` to skip asset downloads and use cached files.
 ### Theme Mode
 
 ```bash
-./install                                        # auto (default)
-./install --dark                                 # force dark
-./install --light                                # force light
+sudo ./install                                   # auto (default)
+sudo ./install --dark                            # force dark
+sudo ./install --light                           # force light
 ```
 
 - **`--auto`** is the default. It switches between light mode at `06:00` and dark mode at `18:00` with a systemd timer, and `Persistent=true` catches missed transitions after suspend, shutdown, or late login.
@@ -199,9 +211,9 @@ mac-tahoe-theme-switch auto                      # re-enable clock-based 6–18
 ### Persistence
 
 ```bash
-./install --no-gtk --dark --save                 # save settings to features.json
-./install                                        # reuses saved features.json
-./install --reset                                # reset features.json to defaults
+sudo ./install --no-gtk --dark --save            # save settings to features.json
+sudo ./install                                   # reuses saved features.json
+sudo ./install --reset                           # reset features.json to defaults
 ```
 
 Every install or uninstall run also records the exact CLI flags that were used in
@@ -213,13 +225,13 @@ Every install run silently checks the GitHub Releases API and prints an upgrade
 banner if a newer version is out. To check without installing:
 
 ```bash
-./install --check-update
+sudo ./install --check-update
 ```
 
 To disable the check (offline machines, CI):
 
 ```bash
-MAC_TAHOE_NO_UPDATE_CHECK=true ./install
+sudo MAC_TAHOE_NO_UPDATE_CHECK=true ./install
 ```
 
 **Why updates matter.** This theme overrides KDE/Plasma, Kvantum, GTK, and KWin
@@ -297,12 +309,12 @@ macos-tahoe-liquid-kde/
 | Component | What it installs | Location |
 |-----------|-----------------|----------|
 | **Layout** | Transparent top bar + floating glass dock | Panel config via JS scripting API |
-| **Global Menu** | Unified menu bar: system menu, app name with window controls, app menus | Compiled C++ plasmoid (system-wide) |
-| **Dock Task Manager** | Icons-only dock task manager with macOS-style notification badges (solid red, white bold text) | Compiled C++ plasmoid (system-wide) |
+| **Global Menu** | Unified menu bar: system menu, app name with window controls, app menus | `/usr/lib/qt6/plugins/plasma/applets/` + `/usr/lib/qt6/qml/...` |
+| **Dock Task Manager** | Icons-only dock task manager with macOS-style notification badges (solid red, white bold text) | `/usr/lib/qt6/plugins/plasma/applets/` + `/usr/lib/qt6/qml/...` |
 | **Launcher** | App grid with categories and search | `~/.local/share/plasma/plasmoids/` |
 | **Trashcan** | Dock trash widget with configurable icons | `~/.local/share/plasma/plasmoids/` |
 | **Window Decorations** | macOS-style title bars (Aurorae) | `~/.local/share/aurorae/themes/` |
-| **Nautilus** | Installs Nautilus, sets as default file manager, applies macOS-like Finder defaults | System package + xdg-mime |
+| **Nautilus** | Installs Nautilus, sets as default file manager, applies macOS-like Finder defaults | System package + `~/.config/mimeapps.list` |
 
 ### Effects and Services
 

@@ -13,6 +13,54 @@ from typing import Callable, Iterable
 from log import fail, ok, warn
 
 
+def drop_privs_in_child() -> None:
+    """``preexec_fn`` for subprocess: in the forked child, fully drop
+    real+effective+saved UID/GID to ``SUDO_USER`` before ``exec()``.
+
+    Mandatory for Qt6 binaries (qtpaths, qmake6, kwriteconfig6, qdbus6,
+    kreadconfig6, …). Qt6 ``QCoreApplication`` startup checks
+    ``getuid() != geteuid()`` — when true, it prints ``FATAL: The
+    application binary appears to be running setuid`` and aborts.
+
+    The CLI privilege-drop leaves the parent at real-UID 0 / effective-
+    UID user (intentional, so the few /usr/lib writes can hop back to
+    root via ``_as_root()``). Forked children inherit that mismatch and
+    every Qt6 binary refuses to run, which is why kwriteconfig6 has
+    been silently no-op'ing the theme writes — the post-install
+    verification reads back empty across the board.
+
+    ``setresuid(uid, uid, uid)`` is allowed for an unprivileged process
+    when each new value is one of the current real / effective / saved
+    UIDs. We pass ``uid == old effective UID``, so every slot gets a
+    valid value — permitted without CAP_SETUID. The child can never
+    re-elevate; the parent (real UID still 0) keeps its hop-back."""
+    sudo_uid = os.environ.get("SUDO_UID")
+    sudo_gid = os.environ.get("SUDO_GID")
+    if not sudo_uid or not sudo_gid:
+        return
+    uid = int(sudo_uid)
+    gid = int(sudo_gid)
+    # GID first: changing UID can drop the right to call setresgid.
+    os.setresgid(gid, gid, gid)
+    os.setresuid(uid, uid, uid)
+
+
+def run_user(*args, **kwargs):
+    """``subprocess.run`` wrapper that fully drops privileges in the
+    child before exec via ``drop_privs_in_child``. Use for every
+    subprocess that runs a Qt6 / KDE binary or anything else that
+    should execute under the invoking user's identity (kwriteconfig6,
+    kpackagetool6, plasma-apply-*, kvantummanager, kbuildsycoca6, etc.).
+
+    Skip this helper only when the child *needs* root (``sudo`` itself
+    in pkg_install, or commands that write under ``/usr`` from the
+    child — there are none of those today; ``/usr`` writes go through
+    ``_as_root()`` in the parent)."""
+    if "preexec_fn" not in kwargs:
+        kwargs["preexec_fn"] = drop_privs_in_child
+    return subprocess.run(*args, **kwargs)
+
+
 _USER_AGENT = (
     "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 "
     "MacTahoeLiquidKDE/installer"
@@ -287,6 +335,7 @@ def qdbus_call(*args: str) -> bool:
             [q, *args], check=False,
             stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
             timeout=15,
+            preexec_fn=drop_privs_in_child,
         ).returncode == 0
     except subprocess.TimeoutExpired:
         return False
@@ -313,6 +362,7 @@ def _has_session_dbus() -> bool:
          "--dest=org.freedesktop.DBus", "/org/freedesktop/DBus",
          "org.freedesktop.DBus.ListNames"],
         check=False, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
+        preexec_fn=drop_privs_in_child,
     ).returncode == 0
     return _HAS_DBUS
 
@@ -327,6 +377,7 @@ def kw_write(*args: str) -> bool:
     return subprocess.run(
         cmd, check=False,
         stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
+        preexec_fn=drop_privs_in_child,
     ).returncode == 0
 
 
@@ -336,6 +387,7 @@ def kw_read(file: str, group: str, key: str) -> str:
     return subprocess.run(
         ["kreadconfig6", "--file", file, "--group", group, "--key", key],
         check=False, capture_output=True, text=True,
+        preexec_fn=drop_privs_in_child,
     ).stdout.strip()
 
 
