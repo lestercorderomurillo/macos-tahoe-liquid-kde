@@ -1,5 +1,12 @@
-"""Configure + build the C++ plasmoids."""
+"""Configure + build the C++ plasmoids.
 
+These tests run a full cmake configure + native compile per applet (~33s
+combined on a modern laptop) and dominate the suite's wall-clock. They
+are guaranteed to run on CI and any release-time invocation
+(``MAC_TAHOE_RUN_SLOW=1 ./test``); local iteration skips them by default
+to keep the loop tight."""
+
+import os
 import shutil
 import subprocess
 
@@ -8,10 +15,17 @@ import pytest
 from .conftest import has_command
 
 
-pytestmark = pytest.mark.skipif(
-    not has_command("cmake"),
-    reason="cmake not installed — skipping native build tests",
-)
+pytestmark = [
+    pytest.mark.skipif(
+        not has_command("cmake"),
+        reason="cmake not installed — skipping native build tests",
+    ),
+    pytest.mark.skipif(
+        not os.environ.get("MAC_TAHOE_RUN_SLOW")
+        and not os.environ.get("CI"),
+        reason="slow C++ build — set MAC_TAHOE_RUN_SLOW=1 (or CI=1) to opt in",
+    ),
+]
 
 
 _APPLETS = (

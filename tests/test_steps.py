@@ -65,6 +65,53 @@ def test_color_schemes_loop(sandbox, iteration):
 
 
 # ── nautilus ─────────────────────────────────────────────────────────────
+def test_safe_copy_stages_outside_destination_directory(monkeypatch, tmp_path):
+    """plasmashell's KDirWatch lives on ``~/.local/share/wallpapers``. If
+    ``safe_copy`` writes its ``.tmp_*`` / ``.bak_*`` siblings inside that
+    dir, plasmashell scans them as half-built wallpaper packages and has
+    been observed crashing inside ``libplasma_wallpaper_image.so``.
+    Staging must happen elsewhere — verify by checking that no temp
+    artefacts ever appear next to the destination during the copy."""
+    import utils
+
+    monkeypatch.setenv("XDG_CACHE_HOME", str(tmp_path / "cache"))
+    # Force module-level re-evaluation of _STAGING_ROOT for this test.
+    monkeypatch.setattr(utils, "_STAGING_ROOT",
+                        Path(tmp_path / "cache" / "mac-tahoe-liquid-kde-staging"))
+
+    src = tmp_path / "src/MyPkg"
+    (src / "contents").mkdir(parents=True)
+    (src / "contents/file.txt").write_text("hi")
+    (src / "metadata.json").write_text("{}")
+
+    dest_parent = tmp_path / "dest"
+    dest = dest_parent / "MyPkg"
+
+    # Snapshot dest_parent BEFORE copy so we can list intermediate state
+    # by polling. We can't actually intercept mid-copy here, but we can
+    # check post-copy that no .tmp_* / .bak_* litter survives.
+    assert utils.safe_copy(src, dest) is True
+
+    siblings = [p.name for p in dest_parent.iterdir()]
+    assert siblings == ["MyPkg"], (
+        f"safe_copy left artefacts inside the destination dir: {siblings} — "
+        "those would be scanned by plasmashell's KDirWatch and could trip "
+        "the libplasma_wallpaper_image crash."
+    )
+
+    # The staging dir is allowed to retain residue (cleanup is best-effort
+    # and not security-relevant), but it MUST live outside dest_parent.
+    staging_root = utils._STAGING_ROOT
+    assert not str(staging_root).startswith(str(dest_parent)), (
+        "staging root is nested inside the destination tree — that defeats "
+        "the whole point of staging outside KDirWatch's view."
+    )
+
+    # Final state on disk must be a complete copy of src, not a partial.
+    assert (dest / "metadata.json").read_text() == "{}"
+    assert (dest / "contents/file.txt").read_text() == "hi"
+
+
 def test_install_syncs_offline_wallpapers_without_download(monkeypatch, tmp_path):
     """A bundled wallpaper added in src/offline/wallpapers/ must land in
     the install destination even when download() is skipped by a cache

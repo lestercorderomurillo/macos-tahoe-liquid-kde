@@ -499,10 +499,15 @@ def apply(mode: str, context: str = "") -> bool:
         apply_cursortheme_live(cursor)
 
     apply_extras(mode)
-    # Run AFTER apply_extras so kvantummanager has finished rewriting
-    # kvantum.kvconfig — the cycle then forces Qt to re-instantiate the
-    # Kvantum style plugin against the new on-disk theme.
-    if context != "boot":
+    # The widget-style cycle stresses plasmashell (every cycle round-trip
+    # asks Qt to destroy + recreate the Kvantum style plugin, which has
+    # crashed plasmashell in ``libplasma_wallpaper_image.so`` on a real
+    # machine) AND leaves ``widgetStyle=Breeze`` on disk if the process
+    # gets SIGTERM'd mid-sleep. Both are real regressions. Only run the
+    # cycle for explicit interactive light/dark calls — install does its
+    # own plasmashell restart at the end, and timer-fired transitions can
+    # wait until the user manually toggles.
+    if context == "":
         cycle_widget_style_live(widget)
     _qdbus("org.kde.KWin", "/KWin", "org.kde.KWin.reconfigure")
     return True
@@ -662,16 +667,47 @@ def cycle_widget_style_live(target: str) -> bool:
     https://github.com/tsujan/Kvantum/discussions/975 — the maintainer
     confirms only platform-theme plugins can hot-reload, so cycling is the
     only way to keep right-click QMenus / popups consistent across a
-    light/dark switch."""
+    light/dark switch.
+
+    SIGTERM / SIGINT delivered during the inter-write sleep would leave
+    ``widgetStyle=Breeze`` frozen on disk and the user effectively in
+    Breeze night the next time plasmashell reads the config — so install a
+    handler that flushes the target value before exiting. Safe even on a
+    crash: ``finally`` runs on any exception, the handler runs on signals,
+    so the on-disk state always ends at the target style."""
     if not _have("kwriteconfig6") or not _has_session_dbus():
         return False
     if not target:
         return False
-    for style in ("Breeze", target):
+
+    def _restore_target() -> None:
         _kwrite("--file", "kdeglobals", "--group", "KDE",
-                "--key", "widgetStyle", style)
-        _broadcast_widget_style_change(style)
+                "--key", "widgetStyle", target)
+        _broadcast_widget_style_change(target)
+
+    import signal
+    interrupted: list[int] = []
+
+    def _on_signal(signum, _frame):
+        interrupted.append(signum)
+
+    old_term = signal.signal(signal.SIGTERM, _on_signal)
+    old_int = signal.signal(signal.SIGINT, _on_signal)
+    try:
+        _kwrite("--file", "kdeglobals", "--group", "KDE",
+                "--key", "widgetStyle", "Breeze")
+        _broadcast_widget_style_change("Breeze")
         time.sleep(0.4)
+    finally:
+        # Restore target FIRST (the load-bearing invariant — disk state
+        # must end at target, never frozen at Breeze), THEN restore signal
+        # handlers, then propagate the signal-as-SystemExit so the caller
+        # actually exits if systemd sent SIGTERM.
+        _restore_target()
+        signal.signal(signal.SIGTERM, old_term)
+        signal.signal(signal.SIGINT, old_int)
+    if interrupted:
+        raise SystemExit(128 + interrupted[0])
     return True
 
 

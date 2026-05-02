@@ -2,6 +2,7 @@
 """Run the pytest suite. Auto-installs pytest via the system package
 manager on first run (sudo will prompt for your password)."""
 
+import os
 import shutil
 import subprocess
 import sys
@@ -44,13 +45,21 @@ def main() -> int:
         if not _install_pytest() or not _have_pytest():
             return 1
 
+    args = list(sys.argv[1:])
+    env = os.environ.copy()
+    if "--slow" in args:
+        # Opt-in to the C++ build tests (~30s) for a release run. They
+        # also run automatically when ``CI`` is set in the environment.
+        env["MAC_TAHOE_RUN_SLOW"] = "1"
+        args.remove("--slow")
+
     tests_dir = REPO / "tests"
     # Verbose by default (one line per test as it starts) and a short
     # traceback on failure. Pass -q on the CLI to override.
     return subprocess.run(
         [sys.executable, "-m", "pytest", str(tests_dir),
-         "-v", "--tb=short", *sys.argv[1:]],
-        check=False,
+         "-v", "--tb=short", *args],
+        check=False, env=env,
     ).returncode
 
 

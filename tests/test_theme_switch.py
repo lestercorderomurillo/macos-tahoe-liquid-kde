@@ -288,7 +288,11 @@ def test_apply_uses_live_lookandfeel_for_settled_scheduled_transition(monkeypatc
     assert ("write", "dark") in calls
     assert ("extras", "dark") in calls
     assert ("laf", theme_switch.LAF_DARK) in calls
-    assert ("cycle", "kvantum-dark") in calls
+    # Scheduled (timer-fired) transitions must NOT cycle the widget style.
+    # The cycle stresses plasmashell and the inter-write sleep is a
+    # SIGTERM hazard (systemd KillSignal=TERM at unit stop = frozen
+    # widgetStyle=Breeze + dark colors = "Breeze night" regression).
+    assert not any(c[0] == "cycle" for c in calls)
     assert not any(c[0] == "cursor" for c in calls)
     assert any(c[0] == "qdbus" and c[1][0] == "org.kde.KWin"
                for c in calls)
@@ -319,7 +323,8 @@ def test_apply_falls_back_to_cursor_for_unsettled_scheduled_transition(monkeypat
     assert ("write", "dark") in calls
     assert ("extras", "dark") in calls
     assert ("cursor", "MacTahoeLiquidKde-Dark") in calls
-    assert ("cycle", "kvantum-dark") in calls
+    # Scheduled context skips the cycle (see settled-transition test for why).
+    assert not any(c[0] == "cycle" for c in calls)
     assert not any(c[0] == "laf" for c in calls)
     assert any(c[0] == "qdbus" and c[1][0] == "org.kde.KWin"
                for c in calls)
@@ -438,6 +443,70 @@ def test_broadcast_sends_kglobalsettings_and_portal_signals(monkeypatch):
     # The variant payload has to carry the *target* widget style verbatim,
     # otherwise the portal listener can't tell what changed.
     assert any("variant:string:kvantum" in arg for c in runs for arg in c)
+
+
+def test_cycle_restores_target_on_sigterm(monkeypatch):
+    """If SIGTERM lands during the inter-write sleep (systemd stopping the
+    apply service mid-cycle is the documented trigger), the on-disk value
+    MUST end at the target, never frozen at Breeze. Otherwise the user
+    next-boots into 'Breeze night': MacTahoeLiquidKdeDark colors with
+    breeze widgets, which is what triggered this whole regression hunt."""
+    import signal as signal_mod
+
+    import theme_switch
+
+    writes: list[str] = []
+
+    def fake_kwrite(*args: str) -> bool:
+        if "widgetStyle" in args:
+            # Last positional arg is the value.
+            writes.append(args[-1])
+        return True
+
+    monkeypatch.setattr(theme_switch, "_kwrite", fake_kwrite)
+    monkeypatch.setattr(theme_switch, "_have", lambda cmd: True)
+    monkeypatch.setattr(theme_switch, "_has_session_dbus", lambda: True)
+    monkeypatch.setattr(theme_switch, "_broadcast_widget_style_change",
+                        lambda style: None)
+
+    def sleep_then_sigterm(_seconds):
+        # Simulate systemd sending SIGTERM partway through the cycle.
+        os.kill(os.getpid(), signal_mod.SIGTERM)
+
+    monkeypatch.setattr(theme_switch.time, "sleep", sleep_then_sigterm)
+
+    with pytest.raises(SystemExit):
+        theme_switch.cycle_widget_style_live("kvantum-dark")
+
+    # Most important assertion: the LAST widgetStyle written must be the
+    # target, never Breeze. That's the invariant that prevents the
+    # "Breeze night" regression.
+    assert writes, "expected at least one widgetStyle write"
+    assert writes[-1] == "kvantum-dark"
+
+
+def test_apply_skips_cycle_on_install_context(monkeypatch):
+    """Install ends with a full plasmashell restart (``apply.py
+    restart_plasma``), so the cycle's QApplication::setStyle hot-swap is
+    redundant during install and adds an extra plasmashell stress
+    immediately before the kill — bad ordering. Skip it."""
+    import theme_switch
+
+    calls: list = []
+    monkeypatch.setattr(theme_switch, "write_kde_theme_config",
+                        lambda mode: calls.append(("write", mode)))
+    monkeypatch.setattr(theme_switch, "_apply_lookandfeel_live",
+                        lambda laf: calls.append(("laf", laf)))
+    monkeypatch.setattr(theme_switch, "apply_extras",
+                        lambda mode: calls.append(("extras", mode)))
+    monkeypatch.setattr(theme_switch, "cycle_widget_style_live",
+                        lambda target: calls.append(("cycle", target)) or True)
+    monkeypatch.setattr(theme_switch, "_qdbus",
+                        lambda *args: calls.append(("qdbus", args)))
+
+    assert theme_switch.apply("dark", "install") is True
+    assert not any(c[0] == "cycle" for c in calls), \
+        "install context must not cycle widget style"
 
 
 def test_apply_cycles_kvantum_for_dark_manual_switch(monkeypatch):

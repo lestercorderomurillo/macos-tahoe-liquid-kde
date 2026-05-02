@@ -1,3 +1,4 @@
+import errno
 import json
 import os
 import shutil
@@ -152,20 +153,38 @@ def run_mirrors(json_file: Path | str, source_idx: int, tmp_dir: Path,
     return False
 
 
+_STAGING_ROOT = Path(
+    os.environ.get("XDG_CACHE_HOME") or str(Path.home() / ".cache")
+) / "mac-tahoe-liquid-kde-staging"
+
+
 def safe_copy(src: Path | str, dest: Path | str) -> bool:
-    """Atomic copy via tmp + rename, with rollback on failure.
+    """Atomic copy via staging dir + rename, with rollback on failure.
 
     ``symlinks=True`` matches GNU ``cp -r`` semantics. Without it the icon
     themes balloon to 2-3x their size — the @2x and dark→light inheritance
     symlinks get dereferenced into full duplicate trees, which also breaks
     the icon-theme lookup for anything resolving via the @2x convention.
-    """
+
+    Staging dir lives outside ``dest.parent`` because ``~/.local/share/wallpapers``
+    is watched live by plasmashell's KDirWatch. If we wrote ``.tmp_*`` /
+    ``.bak_*`` siblings of the final destination, plasmashell would scan
+    them mid-copy and crash inside ``libplasma_wallpaper_image.so`` trying
+    to load half-built packages. By staging in ``~/.cache/`` and moving the
+    fully-formed tree across only at the end, KDirWatch only ever sees
+    complete wallpaper packages.
+
+    Cross-filesystem ``Path.rename`` on Linux falls back to copy+unlink
+    (``EXDEV``); we catch that and use ``shutil.move``, which handles it
+    transparently. Same FS is the common case (cache and share both under
+    ``$HOME``)."""
     src = Path(src)
     dest = Path(dest)
     parent = dest.parent
     parent.mkdir(parents=True, exist_ok=True)
-    tmp = parent / f".tmp_{dest.name}_{os.getpid()}"
-    bak = parent / f".bak_{dest.name}_{os.getpid()}"
+    _STAGING_ROOT.mkdir(parents=True, exist_ok=True)
+    tmp = _STAGING_ROOT / f"tmp_{dest.name}_{os.getpid()}"
+    bak = _STAGING_ROOT / f"bak_{dest.name}_{os.getpid()}"
 
     if tmp.exists():
         shutil.rmtree(tmp, ignore_errors=True)
@@ -175,17 +194,26 @@ def safe_copy(src: Path | str, dest: Path | str) -> bool:
         shutil.rmtree(tmp, ignore_errors=True)
         return False
 
+    def _move(src_path: Path, dst_path: Path) -> None:
+        try:
+            src_path.rename(dst_path)
+        except OSError as exc:
+            if exc.errno == errno.EXDEV:
+                shutil.move(str(src_path), str(dst_path))
+            else:
+                raise
+
     try:
         if dest.exists():
             try:
-                dest.rename(bak)
+                _move(dest, bak)
             except OSError:
                 shutil.rmtree(dest, ignore_errors=True)
-        tmp.rename(dest)
+        _move(tmp, dest)
     except OSError:
         if bak.exists():
             try:
-                bak.rename(dest)
+                _move(bak, dest)
             except OSError:
                 pass
         shutil.rmtree(tmp, ignore_errors=True)
