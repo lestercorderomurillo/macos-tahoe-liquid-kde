@@ -16,6 +16,7 @@ def test_apply_install_command_profile_is_safe(monkeypatch, tmp_path):
     switch.chmod(0o755)
 
     subprocess_calls = []
+    subprocess_kwargs = []
     qdbus_calls = []
     markers = []
 
@@ -37,8 +38,9 @@ def test_apply_install_command_profile_is_safe(monkeypatch, tmp_path):
     )
     monkeypatch.setattr(apply, "have", lambda cmd: cmd == "nautilus")
 
-    def fake_run(cmd, **_kwargs):
+    def fake_run(cmd, **kwargs):
         subprocess_calls.append(tuple(cmd))
+        subprocess_kwargs.append(kwargs)
         return _result()
 
     monkeypatch.setattr(apply.subprocess, "run", fake_run)
@@ -47,6 +49,7 @@ def test_apply_install_command_profile_is_safe(monkeypatch, tmp_path):
 
     assert "flush" in markers
     assert (str(switch), "dark", "install") in subprocess_calls
+    assert not any("timeout" in kwargs for kwargs in subprocess_kwargs)
     assert ("org.kde.KWin", "/KWin", "org.kde.KWin.reconfigure") in qdbus_calls
     assert not any(cmd[0] == "plasma-apply-lookandfeel" for cmd in subprocess_calls)
     assert not any(cmd[0] == "nautilus" for cmd in subprocess_calls)
@@ -71,6 +74,7 @@ def test_apply_uninstall_command_profile_is_safe(monkeypatch, tmp_path):
     monkeypatch.setattr(apply, "HOME", home)
     monkeypatch.setattr(apply, "_scrub_kdedefaults", lambda: markers.append("scrub"))
     monkeypatch.setattr(apply, "_flush_caches", lambda: markers.append("flush"))
+    monkeypatch.setattr(apply, "_live_plasma_ready_quick", lambda: True)
     monkeypatch.setattr(apply, "kw_write", lambda *args: kw_writes.append(args))
     monkeypatch.setattr(
         apply,
@@ -136,6 +140,76 @@ def test_apply_uninstall_command_profile_is_safe(monkeypatch, tmp_path):
     ) in kw_writes
 
 
+def test_apply_uninstall_skips_live_mutation_when_plasma_not_ready(monkeypatch, tmp_path):
+    home = tmp_path / "home"
+    plasmarc = home / ".config/plasmarc"
+    plasmarc.parent.mkdir(parents=True, exist_ok=True)
+    plasmarc.write_text("[Theme]\nname=default\n")
+
+    markers = []
+    live_calls = []
+    qdbus_calls = []
+
+    monkeypatch.setattr(apply, "HOME", home)
+    monkeypatch.setattr(apply, "_scrub_kdedefaults", lambda: markers.append("scrub"))
+    monkeypatch.setattr(apply, "_flush_caches", lambda: markers.append("flush"))
+    monkeypatch.setattr(apply, "_live_plasma_ready_quick", lambda: False)
+    monkeypatch.setattr(apply, "kw_write", lambda *_args: True)
+    monkeypatch.setattr(
+        apply,
+        "reset_kde_color_scheme_config",
+        lambda scheme: markers.append(("scheme", scheme)),
+    )
+    monkeypatch.setattr(
+        apply,
+        "_apply_lookandfeel_live",
+        lambda laf: live_calls.append(("laf", laf)) or True,
+    )
+    monkeypatch.setattr(
+        apply,
+        "apply_cursortheme_live",
+        lambda theme: live_calls.append(("cursor", theme)) or True,
+    )
+    monkeypatch.setattr(
+        apply,
+        "cycle_widget_style_live",
+        lambda style: live_calls.append(("cycle", style)) or True,
+    )
+    monkeypatch.setattr(apply, "qdbus_call", lambda *args: qdbus_calls.append(args) or True)
+    monkeypatch.setattr(apply.time, "sleep", lambda *_args: None)
+    monkeypatch.setattr(apply, "ok", lambda _msg: None)
+    monkeypatch.setattr(apply, "warn", lambda msg: markers.append(msg))
+    monkeypatch.setattr(
+        apply,
+        "feat_enabled",
+        lambda name, default=True: {
+            "FONTS": False,
+            "CURSORS": True,
+            "ICONS": False,
+            "WALLPAPERS": False,
+        }.get(name, default),
+    )
+    monkeypatch.setattr(
+        apply,
+        "have",
+        lambda cmd: cmd in {
+            "plasma-apply-lookandfeel",
+            "plasma-apply-cursortheme",
+            "kwriteconfig6",
+            "qdbus6",
+        },
+    )
+
+    apply.uninstall()
+
+    assert "flush" in markers
+    assert ("scheme", "BreezeLight") in markers
+    assert "Live Breeze look-and-feel apply skipped" in markers
+    assert "Live cursor apply skipped" in markers
+    assert live_calls == []
+    assert qdbus_calls == []
+
+
 def test_restart_plasma_prefers_sigkill_over_sigterm(monkeypatch):
     subprocess_calls = []
     popen_calls = []
@@ -173,11 +247,40 @@ def test_restart_plasma_prefers_sigkill_over_sigterm(monkeypatch):
     assert not popen_calls
 
 
+def test_restart_plasma_falls_back_when_systemctl_hangs(monkeypatch):
+    subprocess_calls = []
+    popen_calls = []
+
+    monkeypatch.setattr(apply.time, "sleep", lambda *_args: None)
+    monkeypatch.setattr(apply, "ok", lambda _msg: None)
+
+    def fake_run(cmd, **_kwargs):
+        subprocess_calls.append(tuple(cmd))
+        if cmd[:4] == ["systemctl", "--user", "kill", "--signal=KILL"]:
+            raise apply.subprocess.TimeoutExpired(cmd, timeout=8)
+        if cmd[:4] == ["systemctl", "--user", "start", "plasma-plasmashell"]:
+            raise apply.subprocess.TimeoutExpired(cmd, timeout=8)
+        if cmd[:2] == ["pgrep", "-x"]:
+            return _result(1, stdout="")
+        return _result(0, stdout="")
+
+    monkeypatch.setattr(apply.subprocess, "run", fake_run)
+    monkeypatch.setattr(
+        apply.subprocess,
+        "Popen",
+        lambda cmd, **_kwargs: popen_calls.append(tuple(cmd)) or _result(),
+    )
+
+    apply.restart_plasma()
+
+    assert ("systemctl", "--user", "start", "plasma-plasmashell") in subprocess_calls
+    assert ("kstart", "plasmashell") in popen_calls
+
+
 def test_nautilus_install_does_not_force_quit(monkeypatch):
     subprocess_calls = []
     popen_calls = []
     warnings = []
-    running = {"value": True}
 
     monkeypatch.setattr(nautilus_step, "_is_kde", lambda: True)
     monkeypatch.setattr(nautilus_step, "_apply_overrides", lambda: None)
@@ -194,9 +297,7 @@ def test_nautilus_install_does_not_force_quit(monkeypatch):
     def fake_run(cmd, **_kwargs):
         subprocess_calls.append(tuple(cmd))
         if cmd[:2] == ["pgrep", "-x"]:
-            return _result(0 if running["value"] else 1)
-        if cmd[:2] == ["gdbus", "call"]:
-            running["value"] = False
+            return _result(0)
         return _result(0)
 
     monkeypatch.setattr(nautilus_step.subprocess, "run", fake_run)
@@ -209,7 +310,34 @@ def test_nautilus_install_does_not_force_quit(monkeypatch):
     nautilus_step.install()
 
     assert ("xdg-mime", "default", nautilus_step.NAUTILUS_DESKTOP, nautilus_step.MIME_FOLDER) in subprocess_calls
-    assert any(cmd[:2] == ("gdbus", "call") for cmd in subprocess_calls)
-    assert ("gapplication", "launch", "org.gnome.Nautilus") in popen_calls
+    assert not any(cmd[:2] == ("gdbus", "call") for cmd in subprocess_calls)
+    assert not popen_calls
     assert not any(cmd[:2] == ("nautilus", "-q") for cmd in subprocess_calls)
-    assert not warnings
+    assert warnings == ["Nautilus left running — live restart skipped"]
+
+
+def test_nautilus_install_times_out_xdg_mime_instead_of_hanging(monkeypatch):
+    warnings = []
+
+    monkeypatch.setattr(nautilus_step, "_is_kde", lambda: True)
+    monkeypatch.setattr(nautilus_step, "_apply_overrides", lambda: None)
+    monkeypatch.setattr(nautilus_step, "_apply_gsettings", lambda: None)
+    monkeypatch.setattr(nautilus_step, "_nautilus_running", lambda: False)
+    monkeypatch.setattr(nautilus_step, "ok", lambda _msg: None)
+    monkeypatch.setattr(nautilus_step, "warn", lambda msg: warnings.append(msg))
+    monkeypatch.setattr(
+        nautilus_step,
+        "have",
+        lambda cmd: cmd in {"nautilus", "xdg-mime"},
+    )
+
+    def fake_run(cmd, **_kwargs):
+        if cmd[:2] == ["xdg-mime", "default"]:
+            raise nautilus_step.subprocess.TimeoutExpired(cmd, timeout=5)
+        return _result(0)
+
+    monkeypatch.setattr(nautilus_step.subprocess, "run", fake_run)
+
+    nautilus_step.install()
+
+    assert warnings == ["xdg-mime timed out — default file manager not changed"]

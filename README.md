@@ -7,7 +7,7 @@
 [![release](https://img.shields.io/github/v/release/lestercorderomurillo/macos-tahoe-liquid-kde?label=release&cacheSeconds=0)](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/releases) [![tests](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/actions/workflows/test.yml/badge.svg)](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/actions/workflows/test.yml) [![tests count](https://img.shields.io/badge/tests-298_passing-brightgreen)](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/actions/workflows/test.yml) [![license](https://img.shields.io/badge/license-MIT-blue)](LICENSE) [![plasma](https://img.shields.io/badge/KDE_Plasma-6.6%2B-1d99f3?logo=kde)](https://kde.org/plasma-desktop/) [![last commit](https://img.shields.io/github/last-commit/lestercorderomurillo/macos-tahoe-liquid-kde)](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/commits/)
 
 > [!CAUTION]
-> **Very experimental** — Under heavy active development. Things will break. Back up your system config before installing. Use at your own risk.
+> **UNSTABLE — DO NOT UPDATE** — v0.8.6 is a known-broken prerelease with active regressions. **Stay on v0.8.5** or earlier. Updates are blocked: `releases/latest` will NOT advance to this tag. New install at your own risk; expect breakage and back up your system config first.
 
 A full macOS Tahoe-style desktop experience for KDE Plasma 6.6+.
 
@@ -129,19 +129,31 @@ Desktop right-click with translucent glass blur.
 ## Requirements
 
 - KDE Plasma 6.6+
-- sudo access
+- Python 3.10+
+- `sudo` access *only for `./uninstall`* — see below
 
 ---
 
 ## Usage
 
 ```bash
-./install                                        # install everything
+./install                                        # install everything (sudoless)
 ./install --help                                 # show all options
-./uninstall                                      # uninstall, reset to Breeze
+sudo ./uninstall                                 # uninstall, reset to Breeze
 ```
 
-Requires Python 3.10+. Both scripts ask for confirmation, request sudo, and restart Plasma automatically.
+`./install` runs as your normal user. Every artefact lands under `~/.local/share`,
+`~/.local/lib`, or `~/.config` — nothing escapes your home, and there is no
+sudo prompt at any point. Both scripts restart Plasma automatically.
+
+`./uninstall` requires `sudo` because it cleans up files older releases
+dropped under `/usr/lib/qt6/plugins/...` (root-owned). If you started on
+v0.8.6 or later you have no such files, but `sudo ./uninstall` is still
+the supported entry point — it makes the legacy cleanup work for users
+upgrading from v0.7.x and earlier without surprising them mid-run.
+
+If you try `./uninstall` without sudo, it refuses up front with a clear
+`Re-run as: sudo ./uninstall` message — no half-done state.
 
 ### Feature Flags
 

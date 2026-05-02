@@ -4,7 +4,8 @@ from pathlib import Path
 
 from steps._helpers import (
     HOME, build_dir, cmake_build, fail, info, install_tree, ok, offline,
-    temp_dir, warn,
+    remove_tree,
+    sudo_remove, temp_dir,
 )
 
 SRC_DIR = offline("plasmoids")
@@ -12,13 +13,16 @@ DEST_DIR = HOME / ".local/share/plasma/plasmoids"
 
 TASKMANAGER_SRC = SRC_DIR / "org.kde.mac.tahoe.liquid.taskmanager"
 TASKMANAGER_BUILD = build_dir("plasmoids/org.kde.mac.tahoe.liquid.taskmanager")
-# User-path install (matches globalmenu) — Qt6 searches
-# ~/.local/lib/qt6/plugins/ before the system path, so the entire install
-# stays sudo-free. Avoids the pam_unix / faillock cascade that bricked
-# install on terminals where sudo prompts can't read the password.
+# User-path install — Qt6 searches ~/.local/lib/qt6/plugins/ before the
+# system path, so the new install never writes outside the user's tree.
+# Sudo is still demanded by the CLI entry point, but only because we
+# need root to *remove* the leftover /usr/lib .so from older releases.
 TASKMANAGER_DEST_SO = HOME / (
     ".local/lib/qt6/plugins/plasma/applets/"
     "org.kde.mac.tahoe.liquid.taskmanager.so"
+)
+TASKMANAGER_DEST_QML = HOME / (
+    ".local/lib/qt6/qml/plasma/applet/org/kde/mac/tahoe/liquid/taskmanager"
 )
 LEGACY_TASKMANAGER_SYSTEM_SO = Path(
     "/usr/lib/qt6/plugins/plasma/applets/org.kde.mac.tahoe.liquid.taskmanager.so"
@@ -30,6 +34,14 @@ LEGACY_DIRS = (
     "org.kde.plasma.icontasks",
     "org.kde.mac-tahoe-liquid-kde.taskmanager",
     "org.kde.mac-tahoe-liquid-kde.icontasks",
+)
+LEGACY_TASKMANAGER_QML_DIRS = (
+    HOME / ".local/lib/qt6/qml/plasma/applet/org/kde/plasma/taskmanager",
+    HOME / ".local/lib/qt6/qml/plasma/applet/org/kde/plasma/icontasks",
+    HOME / ".local/lib/qt6/qml/plasma/applet/org/kde/mac/tahoe/liquid/taskmanager",
+    HOME / ".local/lib/qt6/qml/plasma/applet/org/kde/mac/tahoe/liquid/icontasks",
+    HOME / ".local/lib/qt6/qml/plasma/applet/org/kde/mac-tahoe-liquid-kde/taskmanager",
+    HOME / ".local/lib/qt6/qml/plasma/applet/org/kde/mac-tahoe-liquid-kde/icontasks",
 )
 
 # Older versions installed the dock under different IDs. Migrate any
@@ -92,16 +104,16 @@ def _install_taskmanager_package() -> bool:
                             TASKMANAGER_SRC.name)
 
 
-def _try_remove_root_owned(path: Path, label: str) -> None:
-    if not path.exists() and not path.is_symlink():
-        return
-    try:
-        path.unlink()
-        ok(label)
-    except PermissionError:
-        warn(f"{label} (left in place — needs `sudo rm {path}` to clean up)")
-    except OSError as exc:
-        warn(f"{label} ({exc.__class__.__name__})")
+def _install_taskmanager_qml() -> bool:
+    module_src = TASKMANAGER_BUILD / "bin/plasma/applet/org/kde/mac/tahoe/liquid/taskmanager"
+    if not module_src.is_dir():
+        fail("org.kde.mac.tahoe.liquid.taskmanager (missing runtime QML)")
+        return False
+    with temp_dir("mttkde-taskmanager-qml") as tmp:
+        runtime = tmp / TASKMANAGER_DEST_QML.name
+        shutil.copytree(module_src, runtime, symlinks=True)
+        return install_tree(runtime, TASKMANAGER_DEST_QML,
+                            "org.kde.mac.tahoe.liquid.taskmanager (installed runtime QML)")
 
 
 def install() -> None:
@@ -112,14 +124,16 @@ def install() -> None:
         if d.is_dir():
             shutil.rmtree(d, ignore_errors=True)
             ok(f"{name} (removed local override)")
+    for qml_dir in LEGACY_TASKMANAGER_QML_DIRS:
+        if qml_dir != TASKMANAGER_DEST_QML:
+            remove_tree(qml_dir, qml_dir.name)
 
     _migrate_appletsrc()
 
-    # Older installs put the .so in /usr/lib (system path, root-owned).
-    # Try to remove it so the user-path install is the only one Plasma
-    # sees — best-effort, no sudo prompt.
-    _try_remove_root_owned(LEGACY_TASKMANAGER_SYSTEM_SO,
-                           f"Removed {LEGACY_TASKMANAGER_SYSTEM_SO.name} (legacy system path)")
+    # Note: legacy ``/usr/lib`` cleanup intentionally lives in
+    # ``uninstall()`` only — install is sudoless and only writes new
+    # artefacts under the user's home. ``./uninstall`` is the path
+    # that's allowed to ask for root and clean up old root-owned files.
 
     artifact = TASKMANAGER_BUILD / "bin/plasma/applets/org.kde.mac.tahoe.liquid.taskmanager.so"
     if artifact.is_file():
@@ -130,6 +144,7 @@ def install() -> None:
         except OSError as exc:
             fail(f"taskmanager .so install failed: {exc}")
         _install_taskmanager_package()
+        _install_taskmanager_qml()
     else:
         fail("org.kde.mac.tahoe.liquid.taskmanager (missing build artifact)")
 
@@ -157,9 +172,10 @@ def uninstall() -> None:
             ok(TASKMANAGER_DEST_SO.name); n += 1
         except OSError as exc:
             fail(f"{TASKMANAGER_DEST_SO.name} ({exc})")
-    _try_remove_root_owned(LEGACY_TASKMANAGER_SYSTEM_SO,
-                           f"{LEGACY_TASKMANAGER_SYSTEM_SO.name} (legacy system path)")
+    sudo_remove(LEGACY_TASKMANAGER_SYSTEM_SO,
+                f"{LEGACY_TASKMANAGER_SYSTEM_SO.name} (legacy /usr/lib)")
     targets = [
+        TASKMANAGER_DEST_QML,
         DEST_DIR / "org.kde.mac.tahoe.liquid.taskmanager",
         DEST_DIR / "org.kde.mac.tahoe.liquid.icontasks",
         *DEST_DIR.glob("org.kde.mac-tahoe-liquid-kde.*"),

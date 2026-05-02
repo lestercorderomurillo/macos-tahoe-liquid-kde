@@ -1,4 +1,3 @@
-import os
 import shutil
 import subprocess
 import time
@@ -6,7 +5,7 @@ from pathlib import Path
 
 from steps._helpers import (
     build_dir, cmake_build, fail, info, kw_write, ok, offline, qdbus_call,
-    warn,
+    sudo_remove, warn,
 )
 
 SRC = offline("kwin-effects/acrylic-glass")
@@ -78,18 +77,6 @@ _PRESET = (
 )
 
 
-def _try_remove_root_owned(path: Path, label: str) -> None:
-    if not path.exists() and not path.is_symlink():
-        return
-    try:
-        path.unlink()
-        ok(label)
-    except PermissionError:
-        warn(f"{label} (left in place — needs `sudo rm {path}` to clean up)")
-    except OSError as exc:
-        warn(f"{label} ({exc.__class__.__name__})")
-
-
 def _user_dest(rel: str) -> Path:
     """User-path destination for a kwin effect .so. Qt6 plugin search
     walks ``~/.local/lib/qt6/plugins`` by default (and we ensure it via
@@ -120,10 +107,11 @@ def install() -> None:
     time.sleep(2)
     ok("Acrylic Glass unloaded for safe upgrade")
 
-    # Best-effort cleanup of any older system-path install — falls back
-    # to a warning if root permission isn't available, install proceeds.
-    _try_remove_root_owned(legacy_effect, "Removed old liquidglass.so (system path)")
-    _try_remove_root_owned(legacy_config, "Removed old kwin_liquidglass_config.so (system path)")
+    # Note: legacy /usr/lib cleanup intentionally lives in uninstall()
+    # only — install is sudoless. New install puts everything under
+    # ~/.local/lib/qt6/plugins/ which Plasma searches first, so a
+    # leftover system-path .so does not shadow the new install; it
+    # only persists until the user runs ``sudo ./uninstall``.
 
     dest_effect.parent.mkdir(parents=True, exist_ok=True)
     dest_config.parent.mkdir(parents=True, exist_ok=True)
@@ -182,9 +170,11 @@ def uninstall() -> None:
                 ok(so.name)
             except OSError as exc:
                 fail(f"{so.name} ({exc})")
-    # Clean up any leftover system-path install too — best-effort.
+    # Clean up any leftover system-path install too. The uninstall path
+    # demands ``sudo ./uninstall`` so this can actually delete root-owned
+    # files.
     system_dir = _plugin_dir()
     for so in (system_dir / "kwin/effects/plugins/liquidglass.so",
                system_dir / "kwin/effects/configs/kwin_liquidglass_config.so"):
-        _try_remove_root_owned(so, f"{so.name} (legacy system path)")
+        sudo_remove(so, f"{so.name} (legacy /usr/lib)")
     info("Acrylic Glass removed")

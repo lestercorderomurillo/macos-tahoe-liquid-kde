@@ -1,11 +1,9 @@
-import atexit
 import json
 import os
 import re
 import shutil
 import subprocess
 import sys
-import threading
 import time
 from pathlib import Path
 
@@ -20,7 +18,7 @@ from paths import (
 )
 from log import banner, errors, fail, note, ok, step, warn
 from state import RunTracker
-from step_runner import run_phase, step_deps, step_exists, step_has_phase
+from step_runner import run_phase, step_deps, step_exists, step_has_phase, step_module
 from utils import auto_dep, have, kw_read
 
 
@@ -31,13 +29,18 @@ ALL_FEATURES = [
     "portals", "no_download",
 ]
 
-# Walk order for the install/uninstall loop. ``layout`` is iterated here for
-# completeness but skipped during the loop — it runs after the apply step so
-# it sees the new panel/dock packages already on disk.
+# Walk order for the install/uninstall loop.
+# 1. Core visual foundations first.
+# 2. Shell components that the panel layout depends on next.
+# 3. App integrations last.
+# ``layout`` is iterated here for completeness but skipped during the loop —
+# it runs after the apply step so it sees the new panel/dock packages already
+# on disk, and may be retried once after the Plasma restart if the first pass
+# raced plasmashell's plugin discovery.
 INSTALL_ORDER = [
-    "wallpapers", "fonts", "cursors", "icons", "plasma_theme",
-    "window_decorations", "kvantum", "color_schemes", "gtk",
-    "plasmoids", "globalmenu", "acrylic_glass", "global_theme",
+    "fonts", "color_schemes", "plasma_theme", "window_decorations",
+    "kvantum", "gtk", "icons", "cursors", "global_theme", "wallpapers",
+    "plasmoids", "globalmenu", "acrylic_glass",
     "layout", "nautilus", "portals",
 ]
 
@@ -353,21 +356,55 @@ def _b(v: object) -> str:
     return "true" if v else "false"
 
 
+def _detect_plasma_version() -> str | None:
+    """Best-effort Plasma version probe.
+
+    Some distros / wrappers print the version to stderr instead of stdout,
+    and Qt can prepend warnings before the actual version line. Parse both
+    streams and accept either ``major.minor`` or ``major.minor.patch``.
+    If the binary output is weird, fall back to the installed package
+    version from the native distro package manager.
+    """
+    probes = (
+        ["plasmashell", "--version"],
+        ["plasmashell", "-v"],
+        ["pacman", "-Q", "plasma-workspace"],
+        ["rpm", "-q", "plasma-workspace"],
+        ["dpkg-query", "-W", "-f=${Version}", "plasma-workspace"],
+    )
+    pat = re.compile(r"(?<!\d)(\d+)\.(\d+)(?:\.(\d+))?(?!\d)")
+    for cmd in probes:
+        if not have(cmd[0]):
+            continue
+        try:
+            res = subprocess.run(
+                cmd,
+                check=False,
+                capture_output=True,
+                text=True,
+            )
+        except OSError:
+            continue
+        blob = "\n".join(part for part in (res.stdout, res.stderr) if part)
+        m = pat.search(blob)
+        if not m:
+            continue
+        patch = m.group(3) or "0"
+        return f"{m.group(1)}.{m.group(2)}.{patch}"
+    return None
+
+
 def verify_plasma() -> bool:
     if not have("plasmashell"):
         fail("KDE Plasma not found")
         print("     MacTahoe Liquid KDE requires KDE Plasma 6.6+.", file=sys.stderr)
         return False
-    res = subprocess.run(
-        ["plasmashell", "--version"],
-        check=False, capture_output=True, text=True,
-    )
-    m = re.search(r"(\d+)\.(\d+)\.(\d+)", res.stdout)
-    if not m:
+    ver = _detect_plasma_version()
+    if not ver:
         warn("Could not detect plasmashell version")
         return True
-    major, minor = int(m.group(1)), int(m.group(2))
-    ver = f"{major}.{minor}.{m.group(3)}"
+    major_s, minor_s, _ = ver.split(".", 2)
+    major, minor = int(major_s), int(minor_s)
     if (major, minor) < (6, 6):
         fail(f"KDE Plasma {ver} (6.6+ required)")
         return False
@@ -395,90 +432,114 @@ def confirm(msg: str) -> bool:
         print("  Aborted.")
         return False
     print()
-    # Note: install is now sudo-free. C++ plasmoids and the KWin Acrylic
-    # Glass effect install to ``~/.local/lib/qt6/plugins`` instead of the
-    # system path, sidestepping the entire ``pam_unix conversation
-    # failed`` / ``pam_faillock`` cascade. Any best-effort cleanup of
-    # legacy system-path files prints a notice if it can't unlink
-    # without root rather than prompting.
     return True
 
 
-def _prime_sudo() -> bool:
-    """Authenticate sudo once and start a daemon keep-alive thread so every
-    subsequent ``sudo cp / mv / rm`` reuses the cached credential.
+def _restore_user_session_env(uid: int) -> None:
+    """Best-effort recovery of the invoking user's graphical session env.
 
-    Why we read the password ourselves with ``getpass`` instead of letting
-    sudo prompt: VSCode's integrated terminal (and many other pty wrappers:
-    tmux with shell integration on, Konsole with OSC 133 enabled, ChatGPT
-    Code-Interpreter style sandboxes) leak escape sequences and OSC 633
-    responses into the TTY input buffer between commands. Sudo's own PAM
-    conversation function reads those leaked bytes as the *first character*
-    of the password, then PAM signals ``conversation failed``. Three of
-    those events in a row trip ``pam_faillock`` and lock the account out
-    for ~10 min — and a ``sudo -v`` retries internally up to 3 times, so
-    even one invocation can blow the budget.
+    ``sudo`` commonly strips ``XDG_RUNTIME_DIR`` / ``DBUS_SESSION_BUS_ADDRESS``
+    and display variables. That is enough to make ``plasmashell --version``
+    abort with no output and to leave later ``qdbus`` layout resets talking
+    to nowhere. Seed the well-known ``/run/user/<uid>`` paths first, then ask
+    the user systemd manager for the real session environment.
+    """
+    runtime_dir = Path(f"/run/user/{uid}")
+    bus = runtime_dir / "bus"
+    if runtime_dir.is_dir():
+        os.environ.setdefault("XDG_RUNTIME_DIR", str(runtime_dir))
+    if bus.exists():
+        os.environ.setdefault("DBUS_SESSION_BUS_ADDRESS", f"unix:path={bus}")
 
-    ``getpass.getpass`` reads from ``/dev/tty`` directly with echo
-    disabled, which bypasses whatever's polluting sudo's stdin. We then
-    pipe the password to ``sudo -S -v``; sudo only validates the cached
-    string and never touches the terminal. Up to 3 attempts, each one a
-    fresh Python read — no PAM conv-failed cascade possible."""
-    if not shutil.which("sudo"):
-        return True
-
+    if not have("systemctl"):
+        return
     try:
-        import termios
-        fd = os.open("/dev/tty", os.O_RDWR | os.O_NOCTTY)
-        try:
-            termios.tcflush(fd, termios.TCIFLUSH)
-        finally:
-            os.close(fd)
-    except (OSError, ImportError):
-        pass
-    subprocess.run(
-        ["stty", "sane"], check=False,
-        stderr=subprocess.DEVNULL,
-    )
-
-    import getpass
-    user = os.environ.get("USER") or os.environ.get("LOGNAME") or "user"
-    for attempt in range(3):
-        try:
-            password = getpass.getpass(f"  [sudo] password for {user}: ")
-        except (EOFError, KeyboardInterrupt):
-            print(file=sys.stderr)
-            return False
-        if not password:
-            print("  \033[0;31m  Empty password.\033[0m", file=sys.stderr)
-            continue
-        result = subprocess.run(
-            ["sudo", "-S", "-v"],
-            input=password + "\n",
+        res = subprocess.run(
+            ["systemctl", "--user", "show-environment"],
+            check=False,
+            capture_output=True,
             text=True,
-            stdout=subprocess.DEVNULL,
-            stderr=subprocess.PIPE,
+            timeout=5,
         )
-        if result.returncode == 0:
-            t = threading.Thread(target=_sudo_keepalive, daemon=True)
-            t.start()
-            atexit.register(_sudo_keepalive_stop.set)
-            return True
-        err = (result.stderr or "").strip()
-        if "incorrect password" in err.lower() or "Sorry, try again" in err:
-            remaining = 2 - attempt
-            if remaining > 0:
-                print(f"  \033[0;31m  Sorry, try again ({remaining} left).\033[0m",
-                      file=sys.stderr)
-            continue
-        # Sudoers config error, locked account, no tty in -S mode, etc.
-        # — retrying won't help.
-        print(f"  \033[0;31m  {err or 'sudo authentication failed'}\033[0m",
-              file=sys.stderr)
+    except subprocess.TimeoutExpired:
+        return
+    if res.returncode != 0:
+        return
+
+    wanted = {
+        "DBUS_SESSION_BUS_ADDRESS",
+        "DISPLAY",
+        "WAYLAND_DISPLAY",
+        "XAUTHORITY",
+        "XDG_CURRENT_DESKTOP",
+        "XDG_RUNTIME_DIR",
+        "XDG_SESSION_TYPE",
+    }
+    for line in res.stdout.splitlines():
+        key, _, value = line.partition("=")
+        if key in wanted and value:
+            os.environ[key] = value
+
+
+def _require_root_and_drop_to_user() -> bool:
+    """Hard precondition for uninstall: it only runs when invoked with root
+    privileges (``sudo ./uninstall``). This is enforced via the effective
+    UID — the script never tries to *acquire* privileges itself, so all
+    of the PAM ``conversation failed`` / ``faillock`` issues that lived
+    in the previous prompt-from-Python code paths simply cannot occur:
+    sudo authenticates the user *before* Python is invoked, in the
+    user's outer shell, where the prompt is reliable.
+
+    Once root is verified, drop the effective UID/GID to ``SUDO_USER``
+    so all file writes land with normal user ownership. The few
+    operations that genuinely need root (.so installs to /usr/lib, etc.)
+    re-elevate via the ``sudo_install_file`` / ``sudo_remove`` helpers,
+    which call ``os.seteuid(0)`` for the duration of one operation and
+    restore the user's UID immediately after. Real UID stays at 0
+    throughout, so the seteuid trip back to root always succeeds.
+    """
+    if os.geteuid() != 0:
+        print(file=sys.stderr)
+        print("  \033[0;31mUninstall must be run as root.\033[0m", file=sys.stderr)
+        print("  \033[2mRe-run as:\033[0m  sudo ./uninstall", file=sys.stderr)
+        print(file=sys.stderr)
         return False
-    print("  \033[0;31m  sudo required — too many failed attempts.\033[0m",
-          file=sys.stderr)
-    return False
+
+    sudo_user = os.environ.get("SUDO_USER")
+    sudo_uid_str = os.environ.get("SUDO_UID")
+    sudo_gid_str = os.environ.get("SUDO_GID")
+    if not sudo_user or not sudo_uid_str or not sudo_gid_str:
+        print(file=sys.stderr)
+        print("  \033[0;31mCould not determine the invoking user.\033[0m",
+              file=sys.stderr)
+        print("  \033[2m`SUDO_USER` is not set — running as the root login "
+              "directly is not supported.\033[0m", file=sys.stderr)
+        print(file=sys.stderr)
+        return False
+
+    sudo_uid = int(sudo_uid_str)
+    sudo_gid = int(sudo_gid_str)
+    try:
+        import pwd
+        user_home = pwd.getpwuid(sudo_uid).pw_dir
+    except KeyError:
+        user_home = f"/home/{sudo_user}"
+
+    # Point HOME / USER / LOGNAME at the real user so every later
+    # ``Path.home()`` / kwriteconfig6 invocation writes under the user's
+    # tree, not under /root.
+    os.environ["HOME"] = user_home
+    os.environ["USER"] = sudo_user
+    os.environ["LOGNAME"] = sudo_user
+
+    # Drop privileges with seteuid (reversible) — real UID stays 0 so
+    # ``sudo_install_file`` can hop back to root for /usr/lib writes.
+    # Group has to drop first so the effective uid switch doesn't lose
+    # the right to call setegid afterwards.
+    os.setegid(sudo_gid)
+    os.seteuid(sudo_uid)
+    _restore_user_session_env(sudo_uid)
+    return True
 
 
 _VERIFY_CHECKS = [
@@ -526,6 +587,12 @@ def should_process(feature: str, feat: dict[str, object]) -> bool:
     if feature == "globalmenu":
         return bool(feat.get("plasmoids", True))
     return bool(feat.get(feature, True))
+
+
+def _layout_is_installed() -> bool:
+    mod = step_module("layout")
+    probe = getattr(mod, "is_installed", None) if mod is not None else None
+    return bool(callable(probe) and probe())
 
 
 _BASE_DEPS = [
@@ -579,21 +646,6 @@ def _print_done(verb: str) -> None:
     print()
 
 
-_sudo_keepalive_stop = threading.Event()
-
-
-def _sudo_keepalive() -> None:
-    """Refresh the sudo timestamp every 60s so it never expires mid-install
-    (default ``/etc/sudoers`` ``timestamp_timeout`` is 5 min and the C++
-    plasmoid build alone can push past that on slower CPUs). Started by
-    ``_prime_sudo`` after a successful first auth — never independently."""
-    while not _sudo_keepalive_stop.wait(60):
-        subprocess.run(
-            ["sudo", "-n", "-v"], check=False,
-            stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
-        )
-
-
 def run_install(argv: list[str]) -> int:
     parsed = parse_args(argv)
     if parsed.help:
@@ -601,6 +653,11 @@ def run_install(argv: list[str]) -> int:
         return 0
     if parsed.check_update:
         return 0 if not check_for_updates(verbose=True) else 0
+
+    # Install is intentionally sudoless: every new artefact lives under
+    # the user's home (~/.local/share, ~/.local/lib, ~/.config). Only the
+    # uninstall path needs root, to delete legacy ``/usr/lib`` files left
+    # by older releases. Keep install fresh and friction-free.
 
     feat = apply_overrides(load_features(), parsed)
     export_env(feat)
@@ -614,7 +671,7 @@ def run_install(argv: list[str]) -> int:
             return 1
 
         banner(read_version())
-        if not confirm("In development — Install at your own risk."):
+        if not confirm("UNSTABLE PRERELEASE — Known regressions. Stay on v0.8.5. Continue anyway?"):
             tracker.mark_aborted()
             return 0
         check_for_updates(inline=True)
@@ -674,6 +731,11 @@ def run_install(argv: list[str]) -> int:
         note("Restarts Plasma shell to load all changes")
         run_phase("apply", "restart_plasma")
 
+        if feat.get("layout", True) and step_exists("layout") and not _layout_is_installed():
+            step("Retrying Layout")
+            note("Retries the panel layout after Plasma reloads new plasmoids")
+            run_phase("layout", "install")
+
         _print_done("installed")
         if not errors:
             tracker.mark_completed()
@@ -691,6 +753,9 @@ def run_uninstall(argv: list[str]) -> int:
     if parsed.help:
         print(UNINSTALL_HELP)
         return 0
+
+    if not _require_root_and_drop_to_user():
+        return 1
 
     feat = apply_overrides(load_features(), parsed)
     export_env(feat)
@@ -714,6 +779,22 @@ def run_uninstall(argv: list[str]) -> int:
         if not verify_plasma():
             return 1
 
+        # Uninstall is a two-stage flow: first put the user's desktop back
+        # into a working Breeze state while our assets still exist on disk,
+        # then remove the MacTahoe payload afterwards as cleanup.
+        step("Removing Theme Switcher")
+        note("Stops and removes the auto light/dark theme switcher")
+        run_phase("theme_switch", "uninstall")
+
+        if feat.get("layout", True) and step_exists("layout"):
+            step("Resetting Layout")
+            note("Resets panel layout to default")
+            run_phase("layout", "uninstall")
+
+        step("Applying Changes")
+        note("Resets to Breeze defaults before removing theme assets")
+        run_phase("apply", "uninstall")
+
         for feature in INSTALL_ORDER:
             if feature == "layout":
                 continue
@@ -725,19 +806,6 @@ def run_uninstall(argv: list[str]) -> int:
             step(f"Removing {label}")
             note(FEATURE_DESC.get(feature, ""))
             run_phase(feature, "uninstall")
-
-        step("Removing Theme Switcher")
-        note("Stops and removes the auto light/dark theme switcher")
-        run_phase("theme_switch", "uninstall")
-
-        if feat.get("layout", True) and step_exists("layout"):
-            step("Resetting Layout")
-            note("Resets panel layout to default")
-            run_phase("layout", "uninstall")
-
-        step("Applying Changes")
-        note("Resets to Breeze defaults and flushes caches")
-        run_phase("apply", "uninstall")
 
         step("Restarting Plasma")
         note("Restarts Plasma shell to finalize changes")

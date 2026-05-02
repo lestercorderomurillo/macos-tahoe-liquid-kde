@@ -14,6 +14,7 @@ from theme_switch import (
     cycle_widget_style_live,
     reset_kde_color_scheme_config,
     _apply_lookandfeel_live,
+    wait_for_plasma,
 )
 
 # Cache files / dirs flushed during install + uninstall before Plasma reloads.
@@ -87,6 +88,22 @@ def _wallpaper_path() -> Path | None:
     return legacy if legacy.is_dir() else None
 
 
+def _live_plasma_ready_quick() -> bool:
+    """Best-effort probe for whether live Plasma mutations are worth trying.
+
+    Uninstall restarts plasmashell at the end anyway, so spending minutes
+    waiting for DBus/display recovery after caches are flushed is pure UX
+    pain. Probe briefly; if the session is not ready now, skip the live
+    niceties and let the final Plasma restart pick up the on-disk Breeze
+    config."""
+    return wait_for_plasma(
+        require_display=True,
+        settle_seconds=0,
+        max_wait_seconds=3,
+        kded_wait_seconds=0,
+    )
+
+
 def install() -> None:
     if have("kwriteconfig6") and feat_enabled("FONTS"):
         for key, val in _FONTS_INSTALL.items():
@@ -140,6 +157,24 @@ def install() -> None:
 
 
 def restart_plasma() -> None:
+    def _run_quick(cmd: list[str], *, capture_output: bool = False):
+        try:
+            kwargs = {
+                "check": False,
+                "timeout": 8,
+            }
+            if capture_output:
+                kwargs["capture_output"] = True
+                kwargs["text"] = True
+            else:
+                kwargs["stdout"] = subprocess.DEVNULL
+                kwargs["stderr"] = subprocess.DEVNULL
+            return subprocess.run(cmd, **kwargs)
+        except subprocess.TimeoutExpired:
+            if capture_output:
+                return subprocess.CompletedProcess(cmd, 124, stdout="", stderr="")
+            return subprocess.CompletedProcess(cmd, 124)
+
     print("  …  Restarting Plasma", end="\r", flush=True)
     # let panels created by the layout script fully initialise
     time.sleep(6)
@@ -148,14 +183,12 @@ def restart_plasma() -> None:
     # org.kde.panel.so → Applet::~Applet → deleteChildren cascade) that
     # kquitapp6/SIGTERM consistently trigger. Config is already on disk
     # (layout JS + plasmashellrc patching ran above).
-    if subprocess.run(
+    if _run_quick(
         ["systemctl", "--user", "kill", "--signal=KILL", "plasma-plasmashell"],
-        check=False,
-        stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
     ).returncode != 0:
-        for line in subprocess.run(
+        for line in _run_quick(
             ["pgrep", "-x", "plasmashell"],
-            check=False, capture_output=True, text=True,
+            capture_output=True,
         ).stdout.splitlines():
             try:
                 import os as _os
@@ -164,10 +197,8 @@ def restart_plasma() -> None:
                 pass
 
     time.sleep(1)
-    if subprocess.run(
+    if _run_quick(
         ["systemctl", "--user", "start", "plasma-plasmashell"],
-        check=False,
-        stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
     ).returncode != 0:
         subprocess.Popen(
             ["kstart", "plasmashell"],
@@ -176,8 +207,7 @@ def restart_plasma() -> None:
             start_new_session=True,
         )
     for _ in range(15):
-        if subprocess.run(["pgrep", "-x", "plasmashell"], check=False,
-                          stdout=subprocess.DEVNULL).returncode == 0:
+        if _run_quick(["pgrep", "-x", "plasmashell"]).returncode == 0:
             break
         time.sleep(1)
     time.sleep(4)
@@ -269,7 +299,9 @@ def uninstall() -> None:
 
     _flush_caches()
 
-    if _apply_lookandfeel_live("org.kde.breeze.desktop"):
+    live_ready = _live_plasma_ready_quick()
+
+    if live_ready and _apply_lookandfeel_live("org.kde.breeze.desktop"):
         ok("Look-and-feel applied live")
     else:
         warn("Live Breeze look-and-feel apply skipped")
@@ -278,15 +310,16 @@ def uninstall() -> None:
     # under Kvantum keep its style plugin instance alive — the right-click
     # menus on plasmashell stay glass/translucent until something forces a
     # re-instantiation. Cycling widgetStyle does that without a restart.
-    cycle_widget_style_live("Breeze")
+    if live_ready:
+        cycle_widget_style_live("Breeze")
 
     if feat_enabled("CURSORS"):
-        if apply_cursortheme_live("breeze_cursors"):
+        if live_ready and apply_cursortheme_live("breeze_cursors"):
             ok("Cursor applied live")
         else:
             warn("Live cursor apply skipped")
 
-    if have("qdbus6") or have("qdbus"):
+    if live_ready and (have("qdbus6") or have("qdbus")):
         qdbus_call("org.kde.KWin", "/KWin", "org.kde.KWin.reconfigure")
-    time.sleep(2)
-    ok("KWin reconfigured")
+        time.sleep(2)
+        ok("KWin reconfigured")

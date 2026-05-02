@@ -51,7 +51,7 @@
             <default>24.0</default>
         </entry>
         <entry name="HighlightStrength" type="Double">
-            <default>0.50</default>
+            <default>0.30</default>
         </entry>
     </group>
 </kcfg>

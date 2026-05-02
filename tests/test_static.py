@@ -447,6 +447,12 @@ def test_layout_no_standalone_menu(offline):
     assert "org.kde.mac.tahoe.liquid.menu" not in text
 
 
+def test_layout_guards_optional_panel_colorizer(offline):
+    text = (offline / "layouts/mac-tahoe.js").read_text()
+    assert 'var colorizer = bar.addWidget("luisbocanegra.panel.colorizer");' in text
+    assert "if (colorizer) {" in text
+
+
 def test_cli_feature_lists(repo):
     text = (repo / "src/scripts/cli.py").read_text()
     for f in ("nautilus", "portals", "wallpapers", "fonts", "cursors",

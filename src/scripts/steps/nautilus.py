@@ -9,6 +9,7 @@ NAUTILUS_DESKTOP = "org.gnome.Nautilus.desktop"
 DOLPHIN_DESKTOP = "org.kde.dolphin.desktop"
 MIME_FOLDER = "inode/directory"
 MIME_SEARCH = "application/x-gnome-saved-search"
+_NAUTILUS_TOOL_TIMEOUT_SECONDS = 5
 
 
 def deps():
@@ -121,11 +122,15 @@ def _apply_gsettings() -> None:
     if not have("gsettings"):
         return
     for schema, key, value in _FINDER_GSETTINGS:
-        subprocess.run(
-            ["gsettings", "set", schema, key, value],
-            check=False,
-            stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
-        )
+        try:
+            subprocess.run(
+                ["gsettings", "set", schema, key, value],
+                check=False,
+                stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
+                timeout=_NAUTILUS_TOOL_TIMEOUT_SECONDS,
+            )
+        except subprocess.TimeoutExpired:
+            warn(f"gsettings timed out for {schema}:{key} — skipping")
 
 
 def install() -> None:
@@ -141,23 +146,28 @@ def install() -> None:
         # xdg-mime spits out a `qtpaths: command not found` warning on
         # Qt6-only systems (it greps for the legacy Qt5 helper). The
         # default-handler write still succeeds, so we just hush stderr.
-        if subprocess.run(
-            ["xdg-mime", "default", NAUTILUS_DESKTOP, MIME_FOLDER],
-            check=False,
-            stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
-        ).returncode == 0:
-            ok("Nautilus set as default for folders")
-        subprocess.run(
-            ["xdg-mime", "default", NAUTILUS_DESKTOP, MIME_SEARCH],
-            check=False,
-            stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
-        )
+        try:
+            if subprocess.run(
+                ["xdg-mime", "default", NAUTILUS_DESKTOP, MIME_FOLDER],
+                check=False,
+                stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
+                timeout=_NAUTILUS_TOOL_TIMEOUT_SECONDS,
+            ).returncode == 0:
+                ok("Nautilus set as default for folders")
+            subprocess.run(
+                ["xdg-mime", "default", NAUTILUS_DESKTOP, MIME_SEARCH],
+                check=False,
+                stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
+                timeout=_NAUTILUS_TOOL_TIMEOUT_SECONDS,
+            )
+        except subprocess.TimeoutExpired:
+            warn("xdg-mime timed out — default file manager not changed")
     else:
         warn("xdg-mime not found — default file manager not changed")
 
     _apply_overrides()
     _apply_gsettings()
-    if _nautilus_running() and not _restart_running_nautilus():
+    if _nautilus_running():
         warn("Nautilus left running — live restart skipped")
     ok("Nautilus configured")
 
@@ -166,17 +176,22 @@ def uninstall() -> None:
     if not _is_kde():
         return
     if have("dolphin") and have("xdg-mime"):
-        if subprocess.run(
-            ["xdg-mime", "default", DOLPHIN_DESKTOP, MIME_FOLDER],
-            check=False,
-            stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
-        ).returncode == 0:
-            ok("Dolphin restored as default for folders")
-        subprocess.run(
-            ["xdg-mime", "default", DOLPHIN_DESKTOP, MIME_SEARCH],
-            check=False,
-            stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
-        )
+        try:
+            if subprocess.run(
+                ["xdg-mime", "default", DOLPHIN_DESKTOP, MIME_FOLDER],
+                check=False,
+                stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
+                timeout=_NAUTILUS_TOOL_TIMEOUT_SECONDS,
+            ).returncode == 0:
+                ok("Dolphin restored as default for folders")
+            subprocess.run(
+                ["xdg-mime", "default", DOLPHIN_DESKTOP, MIME_SEARCH],
+                check=False,
+                stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
+                timeout=_NAUTILUS_TOOL_TIMEOUT_SECONDS,
+            )
+        except subprocess.TimeoutExpired:
+            warn("xdg-mime timed out — Dolphin default restore skipped")
     nautilus_css = HOME / ".config/nautilus/gtk.css"
     if nautilus_css.is_file():
         try: nautilus_css.unlink()

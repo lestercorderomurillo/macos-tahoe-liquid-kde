@@ -153,9 +153,18 @@ def run_mirrors(json_file: Path | str, source_idx: int, tmp_dir: Path,
     return False
 
 
-_STAGING_ROOT = Path(
-    os.environ.get("XDG_CACHE_HOME") or str(Path.home() / ".cache")
-) / "mac-tahoe-liquid-kde-staging"
+def _staging_root() -> Path:
+    """Resolve the staging dir lazily on every call. Eager evaluation at
+    module import bit us when the CLI used to invoke ``sudo ./install`` and
+    later drops privileges to ``SUDO_USER``: at import time HOME was
+    still ``/root``, so the cached path was ``/root/.cache/...`` and
+    every later ``safe_copy`` blew up with ``PermissionError`` once we
+    were no longer root."""
+    cache_home = (
+        os.environ.get("XDG_CACHE_HOME")
+        or os.path.expanduser("~/.cache")
+    )
+    return Path(cache_home) / "mac-tahoe-liquid-kde-staging"
 
 
 def safe_copy(src: Path | str, dest: Path | str) -> bool:
@@ -182,9 +191,10 @@ def safe_copy(src: Path | str, dest: Path | str) -> bool:
     dest = Path(dest)
     parent = dest.parent
     parent.mkdir(parents=True, exist_ok=True)
-    _STAGING_ROOT.mkdir(parents=True, exist_ok=True)
-    tmp = _STAGING_ROOT / f"tmp_{dest.name}_{os.getpid()}"
-    bak = _STAGING_ROOT / f"bak_{dest.name}_{os.getpid()}"
+    staging = _staging_root()
+    staging.mkdir(parents=True, exist_ok=True)
+    tmp = staging / f"tmp_{dest.name}_{os.getpid()}"
+    bak = staging / f"bak_{dest.name}_{os.getpid()}"
 
     if tmp.exists():
         shutil.rmtree(tmp, ignore_errors=True)
@@ -265,13 +275,21 @@ def qdbus_cmd() -> str | None:
 
 
 def qdbus_call(*args: str) -> bool:
+    """Fire-and-forget qdbus invocation. Bounded by a 15s timeout so a
+    degraded plasmashell / kwin DBus endpoint can never hang the
+    installer indefinitely — the longest legitimate response we've seen
+    is ~3s for ``KWin.reconfigure`` on a slow machine."""
     q = qdbus_cmd()
     if not q:
         return False
-    return subprocess.run(
-        [q, *args], check=False,
-        stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
-    ).returncode == 0
+    try:
+        return subprocess.run(
+            [q, *args], check=False,
+            stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
+            timeout=15,
+        ).returncode == 0
+    except subprocess.TimeoutExpired:
+        return False
 
 
 def kwin_reconfigure() -> None:

@@ -20,15 +20,17 @@ bar.height = 32;
 
 // panel colorizer: transparent background
 var colorizer = bar.addWidget("luisbocanegra.panel.colorizer");
-colorizer.currentConfigGroup = ["General"];
-colorizer.writeConfig("globalSettings", JSON.stringify({
-    "nativePanel": {
-        "background": { "enabled": false, "opacity": 0, "shadow": false },
-        "floatingDialogs": true
-    }
-}));
-colorizer.currentConfigGroup = ["Configuration"];
-colorizer.writeConfig("hideWidget", "true");
+if (colorizer) {
+    colorizer.currentConfigGroup = ["General"];
+    colorizer.writeConfig("globalSettings", JSON.stringify({
+        "nativePanel": {
+            "background": { "enabled": false, "opacity": 0, "shadow": false },
+            "floatingDialogs": true
+        }
+    }));
+    colorizer.currentConfigGroup = ["Configuration"];
+    colorizer.writeConfig("hideWidget", "true");
+}
 
 bar.addWidget("org.kde.mac.tahoe.liquid.globalmenu");
 bar.addWidget("org.kde.plasma.panelspacer");

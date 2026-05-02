@@ -1,13 +1,61 @@
 import re
 import subprocess
+import tarfile
+import tempfile
 import time
+import urllib.request
+from pathlib import Path
 
-from steps._helpers import HOME, fail, have, ok, offline, qdbus_call, warn
+from steps._helpers import HOME, fail, have, install_tree, ok, offline, qdbus_call, warn
 from utils import qdbus_cmd
 
 LAYOUT_SCRIPT = offline("layouts/mac-tahoe.js")
 LAYOUT_RESET = offline("layouts/default.js")
-COLORIZER_DIR = HOME / ".local/share/plasma/plasmoids/luisbocanegra.panel.colorizer"
+COLORIZER_ID = "luisbocanegra.panel.colorizer"
+COLORIZER_RELEASE_URL = (
+    "https://github.com/luisbocanegra/plasma-panel-colorizer/"
+    "archive/refs/tags/v7.0.1.tar.gz"
+)
+
+
+def _colorizer_dirs() -> list[Path]:
+    dirs = [HOME / ".local/share/plasma/plasmoids" / COLORIZER_ID]
+    for base in ("/usr/local/share", "/usr/share"):
+        dirs.append(Path(base) / "plasma/plasmoids" / COLORIZER_ID)
+    return dirs
+
+
+def _has_panel_colorizer() -> bool:
+    for path in _colorizer_dirs():
+        metadata = path / "metadata.json"
+        if path.is_dir() and metadata.is_file():
+            return True
+    return False
+
+
+def _install_panel_colorizer_from_release() -> bool:
+    dest = HOME / ".local/share/plasma/plasmoids" / COLORIZER_ID
+    with tempfile.TemporaryDirectory(prefix="mttkde-colorizer-") as tmpdir:
+        archive = Path(tmpdir) / "colorizer.tar.gz"
+        try:
+            with urllib.request.urlopen(COLORIZER_RELEASE_URL, timeout=30) as resp:
+                archive.write_bytes(resp.read())
+        except OSError:
+            return False
+        try:
+            with tarfile.open(archive, "r:gz") as tf:
+                tf.extractall(tmpdir, filter="data")
+        except (tarfile.TarError, OSError):
+            return False
+        package_dirs = list(Path(tmpdir).glob("*/package"))
+        if not package_dirs:
+            return False
+        package_dir = package_dirs[0]
+        metadata = package_dir / "metadata.json"
+        contents = package_dir / "contents"
+        if not metadata.is_file() or not contents.is_dir():
+            return False
+        return install_tree(package_dir, dest, "Panel Colorizer")
 
 
 def deps():
@@ -15,20 +63,20 @@ def deps():
 
 
 def _ensure_panel_colorizer() -> None:
-    if COLORIZER_DIR.is_dir():
+    if _has_panel_colorizer():
         ok("Panel Colorizer")
         return
     warn("Panel Colorizer not found — installing...")
     if have("kpackagetool6"):
         for args in (
             ["-i", "https://store.kde.org/p/2130967", "-t", "Plasma/Applet"],
-            ["--install", "luisbocanegra.panel.colorizer", "-t", "Plasma/Applet"],
+            ["--install", COLORIZER_ID, "-t", "Plasma/Applet"],
         ):
             if subprocess.run(["kpackagetool6", *args], check=False,
                               stdout=subprocess.DEVNULL,
                               stderr=subprocess.DEVNULL).returncode == 0:
                 break
-    if not COLORIZER_DIR.is_dir():
+    if not _has_panel_colorizer():
         for pm in ("paru", "yay"):
             if have(pm):
                 subprocess.run(
@@ -37,7 +85,9 @@ def _ensure_panel_colorizer() -> None:
                     stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
                 )
                 break
-    if COLORIZER_DIR.is_dir():
+    if not _has_panel_colorizer():
+        _install_panel_colorizer_from_release()
+    if _has_panel_colorizer():
         ok("Panel Colorizer (installed)")
     else:
         warn("Panel Colorizer not installed — top bar won't be transparent. "
@@ -45,22 +95,91 @@ def _ensure_panel_colorizer() -> None:
 
 
 def _evaluate_layout(script_path) -> bool:
-    q = qdbus_cmd()
-    if q is None:
+    if qdbus_cmd() is None:
         warn("qdbus not found — layout not installed")
         return False
     script = script_path.read_text()
     # plasmashell may still be restarting from the apply step — retry a few times.
     for _ in range(5):
-        if subprocess.run(
-            [q, "org.kde.plasmashell", "/PlasmaShell",
-             "org.kde.PlasmaShell.evaluateScript", script],
-            check=False,
-            stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
-        ).returncode == 0:
+        if qdbus_call(
+            "org.kde.plasmashell",
+            "/PlasmaShell",
+            "org.kde.PlasmaShell.evaluateScript",
+            script,
+        ):
             return True
         time.sleep(3)
     return False
+
+
+def _reset_layout_builtin() -> bool:
+    if not have("plasma-apply-lookandfeel"):
+        return False
+    try:
+        res = subprocess.run(
+            ["plasma-apply-lookandfeel", "-a", "org.kde.breeze.desktop", "--resetLayout"],
+            check=False,
+            capture_output=True,
+            text=True,
+            timeout=20,
+        )
+    except subprocess.TimeoutExpired:
+        return False
+    if res.returncode != 0:
+        return False
+    blob = "\n".join(part for part in (res.stdout, res.stderr) if part)
+    if "Usage: plasma-apply-lookandfeel" in blob:
+        return False
+    return True
+
+
+_DEFAULT_PANEL_NEEDLES = (
+    "plugin=org.kde.plasma.kickoff",
+    "plugin=org.kde.plasma.pager",
+    "plugin=org.kde.plasma.icontasks",
+    "plugin=org.kde.plasma.systemtray",
+    "plugin=org.kde.plasma.digitalclock",
+    "plugin=org.kde.plasma.showdesktop",
+)
+_CUSTOM_PANEL_NEEDLES = (
+    "plugin=org.kde.mac.tahoe.liquid.globalmenu",
+    "plugin=org.kde.mac.tahoe.liquid.icontasks",
+    "plugin=org.kde.mac-tahoe-liquid-kde.launcher",
+    "plugin=org.kde.mac-tahoe-liquid-kde.trashcan",
+)
+
+
+def _layout_looks_reset() -> bool:
+    appletsrc = HOME / ".config/plasma-org.kde.plasma.desktop-appletsrc"
+    if not appletsrc.is_file():
+        return False
+    try:
+        text = appletsrc.read_text()
+    except OSError:
+        return False
+    if any(needle in text for needle in _CUSTOM_PANEL_NEEDLES):
+        return False
+    return all(needle in text for needle in _DEFAULT_PANEL_NEEDLES)
+
+
+def _layout_looks_installed() -> bool:
+    appletsrc = HOME / ".config/plasma-org.kde.plasma.desktop-appletsrc"
+    if not appletsrc.is_file():
+        return False
+    try:
+        text = appletsrc.read_text()
+    except OSError:
+        return False
+    return all(needle in text for needle in _CUSTOM_PANEL_NEEDLES)
+
+
+def _wait_for_layout_install(timeout_seconds: float = 5.0) -> bool:
+    deadline = time.monotonic() + timeout_seconds
+    while time.monotonic() < deadline:
+        if _layout_looks_installed():
+            return True
+        time.sleep(0.2)
+    return _layout_looks_installed()
 
 
 # Plasma's JS scripting API doesn't expose panelOpacity / floatingApplets,
@@ -99,21 +218,41 @@ def _patch_plasmashellrc() -> None:
 
 def install() -> None:
     _ensure_panel_colorizer()
+    if _layout_looks_installed():
+        ok("Layout installed")
+        _patch_plasmashellrc()
+        return
     if not LAYOUT_SCRIPT.is_file():
         warn("Layout script not found — skipping")
         return
-    if _evaluate_layout(LAYOUT_SCRIPT):
+    applied = _evaluate_layout(LAYOUT_SCRIPT)
+    if applied and _wait_for_layout_install():
         ok("Layout installed")
     else:
         warn("layout failed — set layout manually")
+        return
     time.sleep(3)
     _patch_plasmashellrc()
 
 
+def is_installed() -> bool:
+    return _layout_looks_installed()
+
+
 def uninstall() -> None:
-    if not LAYOUT_RESET.is_file():
-        return
-    if _evaluate_layout(LAYOUT_RESET):
+    if _layout_looks_reset():
         ok("Layout reset")
-    else:
-        warn("layout reset failed")
+        return
+    if _reset_layout_builtin():
+        ok("Layout reset")
+        return
+    if _layout_looks_reset():
+        ok("Layout reset")
+        return
+    if LAYOUT_RESET.is_file() and _evaluate_layout(LAYOUT_RESET):
+        ok("Layout reset")
+        return
+    if _layout_looks_reset():
+        ok("Layout reset")
+        return
+    warn("layout reset failed")

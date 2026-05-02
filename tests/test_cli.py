@@ -1,11 +1,11 @@
-"""Tests for the install/uninstall CLI: argument parsing, sudo
-preauth, GitHub version checker."""
+"""Tests for the install/uninstall CLI: argument parsing, root
+precondition, GitHub version checker."""
 
 from __future__ import annotations
 
 import json
+import os
 from pathlib import Path
-from unittest.mock import MagicMock
 
 import pytest
 
@@ -25,6 +25,14 @@ def test_parse_args_recognizes_check_update(cli_module):
 def test_parse_args_default_check_update_false(cli_module):
     parsed = cli_module.parse_args([])
     assert parsed.check_update is False
+
+
+def test_install_order_puts_core_theme_steps_before_optional_integrations(cli_module):
+    order = cli_module.INSTALL_ORDER
+    assert order.index("color_schemes") < order.index("wallpapers")
+    assert order.index("plasma_theme") < order.index("nautilus")
+    assert order.index("global_theme") < order.index("portals")
+    assert order.index("nautilus") < order.index("portals")
 
 
 # ── parse_semver ────────────────────────────────────────────────────────
@@ -267,164 +275,121 @@ def test_check_for_updates_does_not_sleep_in_silent_mode(
     assert sleeps == []
 
 
-# ── sudo priming (auth + keepalive in one place) ────────────────────────
-class _FakeRunResult:
-    def __init__(self, returncode: int = 0, stderr: str = "") -> None:
-        self.returncode = returncode
-        self.stderr = stderr
+# ── root precondition + privilege drop ───────────────────────────────────
+def test_require_root_refuses_when_euid_is_not_zero(monkeypatch, capsys, cli_module):
+    """The whole point of the precondition: bail BEFORE doing anything
+    if uninstall wasn't launched via ``sudo ./uninstall``. Single
+    actionable error message, no banner, no tracker side effects, no
+    sudo prompts that could trigger pam_faillock."""
+    monkeypatch.setattr(cli_module.os, "geteuid", lambda: 1000)
+    assert cli_module._require_root_and_drop_to_user() is False
+    err = capsys.readouterr().err
+    assert "Uninstall must be run as root" in err
+    assert "sudo ./uninstall" in err
 
 
-class _FakeThread:
-    instances: list["_FakeThread"] = []
-
-    def __init__(self, *_a, **_kw):
-        self.started = False
-        _FakeThread.instances.append(self)
-
-    def start(self):
-        self.started = True
-
-
-@pytest.fixture
-def fake_thread(monkeypatch, cli_module):
-    _FakeThread.instances.clear()
-    monkeypatch.setattr(cli_module.threading, "Thread", _FakeThread)
-    monkeypatch.setattr(cli_module.atexit, "register", lambda *_: None)
-    return _FakeThread
+def test_require_root_refuses_when_sudo_user_missing(monkeypatch, capsys, cli_module):
+    """``sudo ./uninstall`` always sets ``SUDO_USER``. If we are root with
+    no SUDO_USER, the script was started directly as the root login
+    (``su -`` then ``./uninstall``) — refuse, because there's no real user
+    to drop privileges to and writes would land owned by root."""
+    monkeypatch.setattr(cli_module.os, "geteuid", lambda: 0)
+    monkeypatch.delenv("SUDO_USER", raising=False)
+    monkeypatch.delenv("SUDO_UID", raising=False)
+    monkeypatch.delenv("SUDO_GID", raising=False)
+    assert cli_module._require_root_and_drop_to_user() is False
+    err = capsys.readouterr().err
+    assert "Could not determine the invoking user" in err
 
 
-def test_prime_sudo_returns_true_without_sudo(monkeypatch, cli_module, fake_thread):
-    """If sudo isn't installed at all, install can still proceed for
-    user-only steps — return True so confirm() lets us through."""
-    monkeypatch.setattr(cli_module.shutil, "which", lambda _: None)
-    assert cli_module._prime_sudo() is True
-    assert all(not t.started for t in fake_thread.instances)
+def test_require_root_drops_privileges_and_sets_home(monkeypatch, cli_module, tmp_path):
+    """Happy path: euid is 0, SUDO_* present. The function:
+       1. updates HOME / USER / LOGNAME so user-side writes land under
+          the invoking user's home;
+       2. calls setegid then seteuid (in that order — the gid drop has
+          to happen before the uid drop to keep the privilege to drop
+          gid in the first place)."""
+    fake_home = tmp_path / "lester"
+    fake_home.mkdir()
+
+    # Pre-register HOME / USER / LOGNAME with monkeypatch so pytest
+    # auto-restores their pre-test values on teardown — otherwise the
+    # function-under-test's direct ``os.environ[...] = ...`` writes
+    # leak into every later test in the session.
+    monkeypatch.setenv("HOME", "/will-be-overwritten")
+    monkeypatch.setenv("USER", "will-be-overwritten")
+    monkeypatch.setenv("LOGNAME", "will-be-overwritten")
+
+    monkeypatch.setattr(cli_module.os, "geteuid", lambda: 0)
+    monkeypatch.setenv("SUDO_USER", "lester")
+    monkeypatch.setenv("SUDO_UID", "1000")
+    monkeypatch.setenv("SUDO_GID", "1000")
+
+    import pwd
+    real_pwent = pwd.getpwuid(os.geteuid())
+
+    class FakePwent:
+        pw_dir = str(fake_home)
+
+    monkeypatch.setattr(pwd, "getpwuid", lambda uid: FakePwent if uid == 1000 else real_pwent)
+
+    calls: list[tuple[str, int]] = []
+    monkeypatch.setattr(cli_module.os, "setegid", lambda gid: calls.append(("setegid", gid)))
+    monkeypatch.setattr(cli_module.os, "seteuid", lambda uid: calls.append(("seteuid", uid)))
+
+    assert cli_module._require_root_and_drop_to_user() is True
+    assert os.environ["HOME"] == str(fake_home)
+    assert os.environ["USER"] == "lester"
+    assert os.environ["LOGNAME"] == "lester"
+    # gid first, then uid — order matters for the privilege drop.
+    assert calls == [("setegid", 1000), ("seteuid", 1000)]
 
 
-def test_prime_sudo_reads_password_via_getpass_then_pipes_to_sudo(
-        monkeypatch, cli_module, fake_thread):
-    """Reading the password ourselves bypasses sudo's PAM conversation,
-    which is the bit that breaks under VSCode integrated terminals etc."""
-    import getpass as _gp
+def test_run_install_does_not_require_root(monkeypatch, cli_module):
+    called = []
+    monkeypatch.setattr(cli_module, "_require_root_and_drop_to_user",
+                        lambda: called.append(True) or False)
+    monkeypatch.setattr(cli_module, "parse_args", lambda _argv: type(
+        "Parsed", (), {
+            "help": False,
+            "check_update": False,
+            "do_save": False,
+            "do_reset": False,
+            "only_mode": False,
+            "theme_mode": None,
+            "cli_overrides": {},
+        })())
+    monkeypatch.setattr(cli_module, "load_features", lambda: {"theme_mode": "auto"})
+    monkeypatch.setattr(cli_module, "apply_overrides", lambda feat, _parsed: feat)
+    monkeypatch.setattr(cli_module, "export_env", lambda _feat: None)
+    monkeypatch.setattr(cli_module, "SRC_DIR", Path("/definitely/missing"))
 
-    monkeypatch.setattr(cli_module.shutil, "which", lambda _: "/usr/bin/sudo")
-    monkeypatch.setattr(cli_module.subprocess, "run",
-                        lambda *_a, **_kw: _FakeRunResult(0))
-    monkeypatch.setattr(_gp, "getpass", lambda *_a, **_kw: "hunter2")
-
-    runs: list[tuple] = []
-
-    def fake_run(cmd, **kw):
-        runs.append((tuple(cmd), kw.get("input"), kw.get("text")))
-        return _FakeRunResult(0)
-
-    monkeypatch.setattr(cli_module.subprocess, "run", fake_run)
-
-    assert cli_module._prime_sudo() is True
-    auth_calls = [r for r in runs if "sudo" in r[0] and "-S" in r[0]]
-    assert len(auth_calls) == 1
-    cmd, stdin, text = auth_calls[0]
-    assert cmd == ("sudo", "-S", "-v")
-    # Password must end with newline so sudo -S commits the line.
-    assert stdin == "hunter2\n"
-    assert text is True
-    # Keepalive thread must be started exactly once on success.
-    assert sum(t.started for t in fake_thread.instances) == 1
+    assert cli_module.run_install([]) == 1
+    assert called == []
 
 
-def test_prime_sudo_retries_on_wrong_password_then_succeeds(
-        monkeypatch, cli_module, fake_thread):
-    import getpass as _gp
+def test_require_root_falls_back_when_pwd_lookup_fails(
+        monkeypatch, cli_module):
+    """If ``pwd.getpwuid`` raises (synthesised UID, sandbox, etc.), still
+    succeed with a best-effort ``/home/<user>`` path so the install can
+    proceed for testing / containerised setups."""
+    monkeypatch.setenv("HOME", "/will-be-overwritten")
+    monkeypatch.setenv("USER", "will-be-overwritten")
+    monkeypatch.setenv("LOGNAME", "will-be-overwritten")
 
-    monkeypatch.setattr(cli_module.shutil, "which", lambda _: "/usr/bin/sudo")
-    passwords = iter(["wrong1", "right"])
-    monkeypatch.setattr(_gp, "getpass", lambda *_a, **_kw: next(passwords))
+    monkeypatch.setattr(cli_module.os, "geteuid", lambda: 0)
+    monkeypatch.setenv("SUDO_USER", "ghost")
+    monkeypatch.setenv("SUDO_UID", "60000")
+    monkeypatch.setenv("SUDO_GID", "60000")
 
-    results = iter([
-        _FakeRunResult(1, "Sorry, try again."),
-        _FakeRunResult(0),
-    ])
+    import pwd
 
-    def fake_run(cmd, **_kw):
-        if "sudo" in cmd and "-S" in cmd:
-            return next(results)
-        return _FakeRunResult(0)
+    def boom(_uid):
+        raise KeyError("no such uid")
 
-    monkeypatch.setattr(cli_module.subprocess, "run", fake_run)
-    assert cli_module._prime_sudo() is True
-    assert sum(t.started for t in fake_thread.instances) == 1
+    monkeypatch.setattr(pwd, "getpwuid", boom)
+    monkeypatch.setattr(cli_module.os, "setegid", lambda gid: None)
+    monkeypatch.setattr(cli_module.os, "seteuid", lambda uid: None)
 
-
-def test_prime_sudo_gives_up_after_three_wrong(monkeypatch, cli_module, fake_thread):
-    """Match sudo's classic 3-tries default — but each try is a fresh
-    Python read, so we can never trip ``conversation failed`` mid-prompt."""
-    import getpass as _gp
-
-    monkeypatch.setattr(cli_module.shutil, "which", lambda _: "/usr/bin/sudo")
-    monkeypatch.setattr(_gp, "getpass", lambda *_a, **_kw: "wrong")
-
-    sudo_calls: list = []
-
-    def fake_run(cmd, **_kw):
-        if "sudo" in cmd and "-S" in cmd:
-            sudo_calls.append(cmd)
-            return _FakeRunResult(1, "Sorry, try again.")
-        return _FakeRunResult(0)
-
-    monkeypatch.setattr(cli_module.subprocess, "run", fake_run)
-    assert cli_module._prime_sudo() is False
-    # Three tries, no more, no less. And the keepalive must NEVER start
-    # on a failed auth — otherwise the daemon thread would fire
-    # ``sudo -n -v`` every 60s and add to the faillock count silently.
-    assert len(sudo_calls) == 3
-    assert all(not t.started for t in fake_thread.instances)
-
-
-def test_prime_sudo_aborts_immediately_on_keyboard_interrupt(
-        monkeypatch, cli_module, fake_thread):
-    import getpass as _gp
-
-    monkeypatch.setattr(cli_module.shutil, "which", lambda _: "/usr/bin/sudo")
-
-    def raise_kb(*_a, **_kw): raise KeyboardInterrupt()
-
-    monkeypatch.setattr(_gp, "getpass", raise_kb)
-
-    sudo_calls: list = []
-
-    def fake_run(cmd, **_kw):
-        if "sudo" in cmd:
-            sudo_calls.append(cmd)
-        return _FakeRunResult(0)
-
-    monkeypatch.setattr(cli_module.subprocess, "run", fake_run)
-
-    assert cli_module._prime_sudo() is False
-    # Ctrl+C before typing anything must NOT result in a sudo call —
-    # otherwise we'd send an empty string as the password and PAM would
-    # count that toward the faillock threshold.
-    assert sudo_calls == []
-    assert all(not t.started for t in fake_thread.instances)
-
-
-def test_prime_sudo_does_not_retry_on_non_password_error(
-        monkeypatch, cli_module, fake_thread):
-    """Sudoers config errors, locked accounts, missing tty in -S mode —
-    none of those get fixed by retrying. Bail out fast so the user can
-    see the real error instead of three round-trips of the same."""
-    import getpass as _gp
-
-    monkeypatch.setattr(cli_module.shutil, "which", lambda _: "/usr/bin/sudo")
-    monkeypatch.setattr(_gp, "getpass", lambda *_a, **_kw: "anything")
-
-    sudo_calls: list = []
-
-    def fake_run(cmd, **_kw):
-        if "sudo" in cmd and "-S" in cmd:
-            sudo_calls.append(cmd)
-            return _FakeRunResult(1, "user lester is not in the sudoers file.")
-        return _FakeRunResult(0)
-
-    monkeypatch.setattr(cli_module.subprocess, "run", fake_run)
-    assert cli_module._prime_sudo() is False
-    assert len(sudo_calls) == 1
+    assert cli_module._require_root_and_drop_to_user() is True
+    assert os.environ["HOME"] == "/home/ghost"

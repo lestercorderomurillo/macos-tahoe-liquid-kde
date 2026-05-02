@@ -497,6 +497,8 @@ def test_apply_skips_cycle_on_install_context(monkeypatch):
                         lambda mode: calls.append(("write", mode)))
     monkeypatch.setattr(theme_switch, "_apply_lookandfeel_live",
                         lambda laf: calls.append(("laf", laf)))
+    monkeypatch.setattr(theme_switch, "_apply_local_extras",
+                        lambda mode: calls.append(("local_extras", mode)))
     monkeypatch.setattr(theme_switch, "apply_extras",
                         lambda mode: calls.append(("extras", mode)))
     monkeypatch.setattr(theme_switch, "cycle_widget_style_live",
@@ -505,8 +507,12 @@ def test_apply_skips_cycle_on_install_context(monkeypatch):
                         lambda *args: calls.append(("qdbus", args)))
 
     assert theme_switch.apply("dark", "install") is True
+    assert ("local_extras", "dark") in calls
+    assert not any(c[0] == "extras" for c in calls)
     assert not any(c[0] == "cycle" for c in calls), \
         "install context must not cycle widget style"
+    assert not any(c[0] == "qdbus" for c in calls), \
+        "install context must not wait on a live KWin session"
 
 
 def test_apply_cycles_kvantum_for_dark_manual_switch(monkeypatch):

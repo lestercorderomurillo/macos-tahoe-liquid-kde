@@ -74,10 +74,9 @@ def test_safe_copy_stages_outside_destination_directory(monkeypatch, tmp_path):
     artefacts ever appear next to the destination during the copy."""
     import utils
 
+    # Lazy ``_staging_root()`` reads XDG_CACHE_HOME on every call, so
+    # setting the env var is enough — no module-level monkeypatch needed.
     monkeypatch.setenv("XDG_CACHE_HOME", str(tmp_path / "cache"))
-    # Force module-level re-evaluation of _STAGING_ROOT for this test.
-    monkeypatch.setattr(utils, "_STAGING_ROOT",
-                        Path(tmp_path / "cache" / "mac-tahoe-liquid-kde-staging"))
 
     src = tmp_path / "src/MyPkg"
     (src / "contents").mkdir(parents=True)
@@ -87,9 +86,6 @@ def test_safe_copy_stages_outside_destination_directory(monkeypatch, tmp_path):
     dest_parent = tmp_path / "dest"
     dest = dest_parent / "MyPkg"
 
-    # Snapshot dest_parent BEFORE copy so we can list intermediate state
-    # by polling. We can't actually intercept mid-copy here, but we can
-    # check post-copy that no .tmp_* / .bak_* litter survives.
     assert utils.safe_copy(src, dest) is True
 
     siblings = [p.name for p in dest_parent.iterdir()]
@@ -99,9 +95,9 @@ def test_safe_copy_stages_outside_destination_directory(monkeypatch, tmp_path):
         "the libplasma_wallpaper_image crash."
     )
 
-    # The staging dir is allowed to retain residue (cleanup is best-effort
-    # and not security-relevant), but it MUST live outside dest_parent.
-    staging_root = utils._STAGING_ROOT
+    # Staging root MUST live outside dest_parent — that's the whole
+    # reason we route through XDG_CACHE_HOME instead of dest's sibling.
+    staging_root = utils._staging_root()
     assert not str(staging_root).startswith(str(dest_parent)), (
         "staging root is nested inside the destination tree — that defeats "
         "the whole point of staging outside KDirWatch's view."

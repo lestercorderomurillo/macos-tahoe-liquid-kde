@@ -42,12 +42,19 @@ def _kdeglobals_path() -> Path:
 
 
 def _qdbus(*args: str) -> bool:
+    """Fire-and-forget qdbus call bounded by 10s so a stuck KWin / plasma
+    DBus endpoint can't freeze the switcher (which would in turn freeze
+    the installer that's waiting on the switcher's exit)."""
     for q in ("qdbus6", "qdbus"):
         if _have(q):
-            return subprocess.run(
-                [q, *args], check=False,
-                stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
-            ).returncode == 0
+            try:
+                return subprocess.run(
+                    [q, *args], check=False,
+                    stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
+                    timeout=10,
+                ).returncode == 0
+            except subprocess.TimeoutExpired:
+                return False
     return False
 
 
@@ -61,21 +68,29 @@ def _has_session_dbus() -> bool:
     if not os.environ.get("DBUS_SESSION_BUS_ADDRESS") or not _have("dbus-send"):
         _HAS_DBUS = False
         return _HAS_DBUS
-    _HAS_DBUS = subprocess.run(
-        ["dbus-send", "--session", "--print-reply",
-         "--dest=org.freedesktop.DBus", "/org/freedesktop/DBus",
-         "org.freedesktop.DBus.ListNames"],
-        check=False, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
-    ).returncode == 0
+    try:
+        _HAS_DBUS = subprocess.run(
+            ["dbus-send", "--session", "--print-reply",
+             "--dest=org.freedesktop.DBus", "/org/freedesktop/DBus",
+             "org.freedesktop.DBus.ListNames"],
+            check=False, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
+            timeout=5,
+        ).returncode == 0
+    except subprocess.TimeoutExpired:
+        _HAS_DBUS = False
     return _HAS_DBUS
 
 
 def _sync_session_env() -> None:
     """Refresh session env vars from the user systemd manager."""
-    res = subprocess.run(
-        ["systemctl", "--user", "show-environment"],
-        check=False, capture_output=True, text=True,
-    )
+    try:
+        res = subprocess.run(
+            ["systemctl", "--user", "show-environment"],
+            check=False, capture_output=True, text=True,
+            timeout=5,
+        )
+    except subprocess.TimeoutExpired:
+        return
     if res.returncode != 0:
         return
     wanted = {
@@ -96,29 +111,45 @@ def _sync_session_env() -> None:
 def _session_bus_has_name(name: str) -> bool:
     if not _has_session_dbus():
         return False
-    res = subprocess.run(
-        ["dbus-send", "--session", "--print-reply",
-         "--dest=org.freedesktop.DBus", "/org/freedesktop/DBus",
-         "org.freedesktop.DBus.NameHasOwner", f"string:{name}"],
-        check=False, capture_output=True, text=True,
-    )
+    try:
+        res = subprocess.run(
+            ["dbus-send", "--session", "--print-reply",
+             "--dest=org.freedesktop.DBus", "/org/freedesktop/DBus",
+             "org.freedesktop.DBus.NameHasOwner", f"string:{name}"],
+            check=False, capture_output=True, text=True,
+            timeout=5,
+        )
+    except subprocess.TimeoutExpired:
+        return False
     return res.returncode == 0 and "boolean true" in res.stdout
 
 
 def _kwrite(*args: str) -> bool:
     """Write a kdeglobals key. ``--notify`` serialises rapid back-to-back
     writes against the same file so kwriteconfig6's atomic .tmp→rename
-    can't race; it requires a live session bus, so we probe once."""
+    can't race; it requires a live session bus, so we probe once.
+
+    Hard 5s timeout: ``--notify`` blocks on the session bus, and a
+    degraded plasmashell can leave the bus partially unresponsive,
+    which would hang the whole installer indefinitely. 5s is generous
+    for any legitimate kwriteconfig invocation; if it's not done by
+    then the bus is broken anyway and silently dropping the notify is
+    the right call (the on-disk file write succeeded before the notify
+    step)."""
     if not _have("kwriteconfig6"):
         return False
     cmd = ["kwriteconfig6"]
     if _has_session_dbus():
         cmd.append("--notify")
     cmd.extend(args)
-    rc = subprocess.run(
-        cmd, check=False,
-        stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
-    ).returncode
+    try:
+        rc = subprocess.run(
+            cmd, check=False,
+            stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
+            timeout=5,
+        ).returncode
+    except subprocess.TimeoutExpired:
+        rc = 1
     os.sync()
     return rc == 0
 
@@ -126,10 +157,14 @@ def _kwrite(*args: str) -> bool:
 def _kread(file: str, group: str, key: str) -> str:
     if not _have("kreadconfig6"):
         return ""
-    return subprocess.run(
-        ["kreadconfig6", "--file", file, "--group", group, "--key", key],
-        check=False, capture_output=True, text=True,
-    ).stdout.strip()
+    try:
+        return subprocess.run(
+            ["kreadconfig6", "--file", file, "--group", group, "--key", key],
+            check=False, capture_output=True, text=True,
+            timeout=5,
+        ).stdout.strip()
+    except subprocess.TimeoutExpired:
+        return ""
 
 
 def _build_group_args(section: str) -> list[str]:
@@ -288,11 +323,15 @@ def _apply_wallpaper(mode: str) -> bool:
         return False
     if not wait_for_plasma(settle_seconds=1):
         return False
-    return subprocess.run(
-        ["plasma-apply-wallpaperimage", str(wp)],
-        check=False,
-        stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
-    ).returncode == 0
+    try:
+        return subprocess.run(
+            ["plasma-apply-wallpaperimage", str(wp)],
+            check=False,
+            stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
+            timeout=20,
+        ).returncode == 0
+    except subprocess.TimeoutExpired:
+        return False
 
 
 def get_system_preference() -> str:
@@ -368,17 +407,19 @@ def flush_icon_caches() -> None:
         shutil.rmtree(home / sub, ignore_errors=True)
 
 
-def apply_extras(mode: str) -> None:
-    _apply_wallpaper(mode)
-
+def _apply_local_extras(mode: str) -> None:
     if _have("kvantummanager"):
         kv = "mac-tahoe-liquid-kdeDark" if mode == "dark" else "mac-tahoe-liquid-kde"
         env = os.environ.copy()
         env["QT_QPA_PLATFORM"] = "offscreen"
-        subprocess.run(
-            ["kvantummanager", "--set", kv], check=False, env=env,
-            stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
-        )
+        try:
+            subprocess.run(
+                ["kvantummanager", "--set", kv], check=False, env=env,
+                stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
+                timeout=15,
+            )
+        except subprocess.TimeoutExpired:
+            pass
 
     home = Path.home()
     gtk_dest = home / ".themes"
@@ -394,10 +435,14 @@ def apply_extras(mode: str) -> None:
                 ["set", "org.gnome.desktop.interface", "color-scheme",
                  "prefer-dark" if mode == "dark" else "prefer-light"],
             ):
-                subprocess.run(
-                    ["gsettings", *args], check=False,
-                    stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
-                )
+                try:
+                    subprocess.run(
+                        ["gsettings", *args], check=False,
+                        stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
+                        timeout=5,
+                    )
+                except subprocess.TimeoutExpired:
+                    pass
 
         gtk4_dest = home / ".config/gtk-4.0"
         gtk4_src = gtk_dest / gtk_theme / "gtk-4.0"
@@ -431,6 +476,11 @@ def apply_extras(mode: str) -> None:
     for f in cache.glob("plasma_theme_*"):
         try: f.unlink()
         except OSError: pass
+
+
+def apply_extras(mode: str) -> None:
+    _apply_wallpaper(mode)
+    _apply_local_extras(mode)
 
 
 def write_kde_theme_config(mode: str) -> bool:
@@ -498,7 +548,13 @@ def apply(mode: str, context: str = "") -> bool:
         # (no plasmashell rebuild, unlike the full LAF apply).
         apply_cursortheme_live(cursor)
 
-    apply_extras(mode)
+    # The installer already applies wallpaper up front and does its own KWin
+    # reload after the helper exits. Keep install-mode work local so a half-up
+    # Plasma session can't pin Step 19 inside wait_for_plasma().
+    if context == "install":
+        _apply_local_extras(mode)
+    else:
+        apply_extras(mode)
     # The widget-style cycle stresses plasmashell (every cycle round-trip
     # asks Qt to destroy + recreate the Kvantum style plugin, which has
     # crashed plasmashell in ``libplasma_wallpaper_image.so`` on a real
@@ -509,12 +565,18 @@ def apply(mode: str, context: str = "") -> bool:
     # wait until the user manually toggles.
     if context == "":
         cycle_widget_style_live(widget)
-    _qdbus("org.kde.KWin", "/KWin", "org.kde.KWin.reconfigure")
+    if context != "install":
+        _qdbus("org.kde.KWin", "/KWin", "org.kde.KWin.reconfigure")
     return True
 
 
-def wait_for_plasma(require_display: bool = False, settle_seconds: int = 3) -> bool:
-    for _ in range(90):
+def wait_for_plasma(
+    require_display: bool = False,
+    settle_seconds: int = 3,
+    max_wait_seconds: int = 90,
+    kded_wait_seconds: int = 30,
+) -> bool:
+    for _ in range(max(1, max_wait_seconds)):
         _sync_session_env()
         have_display = bool(
             os.environ.get("DISPLAY") if require_display
@@ -532,7 +594,7 @@ def wait_for_plasma(require_display: bool = False, settle_seconds: int = 3) -> b
     else:
         return False
 
-    for _ in range(30):
+    for _ in range(max(0, kded_wait_seconds)):
         if subprocess.run(
             ["pgrep", "-x", "kded6"],
             check=False, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
@@ -651,10 +713,14 @@ def _broadcast_widget_style_change(style: str) -> None:
          "string:org.kde.kdeglobals.KDE", "string:widgetStyle",
          f"variant:string:{style}"],
     ):
-        subprocess.run(
-            cmd, check=False,
-            stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
-        )
+        try:
+            subprocess.run(
+                cmd, check=False,
+                stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
+                timeout=5,
+            )
+        except subprocess.TimeoutExpired:
+            pass
 
 
 def cycle_widget_style_live(target: str) -> bool:

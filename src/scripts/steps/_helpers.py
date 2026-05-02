@@ -79,14 +79,45 @@ def remove_tree(p: Path, label: str | None = None) -> bool:
         return False
 
 
+@contextmanager
+def _as_root() -> Iterator[None]:
+    """Briefly re-elevate to root for one privileged operation. The CLI
+    uninstall entry point demands ``sudo ./uninstall`` (real UID stays 0) and then
+    drops the *effective* UID to ``SUDO_USER`` so user-side writes get
+    correct ownership. ``seteuid(0)`` is reversible because real UID is
+    still 0, so this hop is always safe."""
+    saved_euid = os.geteuid()
+    saved_egid = os.getegid()
+    if saved_euid == 0:
+        # Already root (script invoked as the real root login, no drop
+        # happened). Just run the body.
+        yield
+        return
+    try:
+        os.seteuid(0)
+        os.setegid(0)
+        yield
+    finally:
+        os.setegid(saved_egid)
+        os.seteuid(saved_euid)
+
+
 def sudo_install_file(src: Path, dest: Path, label: str) -> bool:
-    """``sudo cp`` with atomic .tmp → mv. Returns False if either step fails."""
-    tmp = f"{dest}.tmp"
-    if subprocess.run(["sudo", "cp", str(src), tmp], check=False).returncode != 0:
-        fail(f"{label} (sudo cp failed)")
-        return False
-    if subprocess.run(["sudo", "mv", "-f", tmp, str(dest)], check=False).returncode != 0:
-        fail(f"{label} (sudo mv failed)")
+    """Copy a file to a root-owned destination. The script is already
+    root-capable at this point (the CLI bailed early otherwise), so this
+    is just an atomic ``copy + rename`` performed under a transient
+    ``seteuid(0)`` — no sudo subprocess, no PAM conv, no faillock surface.
+    """
+    src = Path(src)
+    dest = Path(dest)
+    try:
+        with _as_root():
+            dest.parent.mkdir(parents=True, exist_ok=True)
+            tmp = dest.with_name(dest.name + ".mttkde-tmp")
+            shutil.copy2(str(src), str(tmp))
+            os.replace(str(tmp), str(dest))
+    except OSError as exc:
+        fail(f"{label} ({exc.__class__.__name__}: {exc})")
         return False
     ok(label)
     return True
@@ -94,15 +125,18 @@ def sudo_install_file(src: Path, dest: Path, label: str) -> bool:
 
 def sudo_remove(path: Path, label: str | None = None) -> bool:
     label = label or path.name
-    if not path.exists():
+    if not path.exists() and not path.is_symlink():
         return False
-    rc = subprocess.run(["sudo", "rm", "-f", str(path)],
-                        check=False).returncode
-    if rc == 0:
-        ok(label)
-        return True
-    fail(f"{label} (sudo rm failed)")
-    return False
+    try:
+        with _as_root():
+            path.unlink()
+    except FileNotFoundError:
+        return False
+    except OSError as exc:
+        fail(f"{label} ({exc.__class__.__name__}: {exc})")
+        return False
+    ok(label)
+    return True
 
 
 @contextmanager
@@ -122,8 +156,19 @@ def cmake_build(src_dir_: Path, build_dir: Path, label: str) -> bool:
     if not (src_dir_ / "CMakeLists.txt").is_file():
         warn(f"{label} source not found — skipping")
         return False
-    shutil.rmtree(build_dir, ignore_errors=True)
-    build_dir.mkdir(parents=True)
+    # Wipe stale build dirs. Earlier ``sudo ./install`` runs (before the
+    # CLI started dropping privileges) may have left root-owned files
+    # under build/. ignore_errors=True would silently skip them and the
+    # subsequent mkdir would then trip FileExistsError, which would
+    # surface as a confusing "cmake configure failed". Try as user
+    # first; if anything's left over, hop to root via _as_root for the
+    # cleanup so the new build starts from an empty dir.
+    if build_dir.exists():
+        shutil.rmtree(build_dir, ignore_errors=True)
+        if build_dir.exists():
+            with _as_root():
+                shutil.rmtree(build_dir, ignore_errors=True)
+    build_dir.mkdir(parents=True, exist_ok=True)
     cfg = subprocess.run(
         ["cmake", "-S", str(src_dir_), "-B", str(build_dir),
          "-DCMAKE_BUILD_TYPE=Release"],

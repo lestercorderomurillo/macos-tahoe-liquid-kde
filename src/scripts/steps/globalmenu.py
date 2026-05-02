@@ -2,28 +2,24 @@ import shutil
 from pathlib import Path
 
 from steps._helpers import (
-    HOME, build_dir, cmake_build, fail, ok, offline, warn,
+    HOME, build_dir, cmake_build, fail, install_tree, ok, offline, remove_tree,
+    sudo_remove, temp_dir,
 )
 
 SRC = offline("plasmoids/org.kde.mac-tahoe-liquid-kde.globalmenu")
 BUILD = build_dir("plasmoids/org.kde.mac-tahoe-liquid-kde.globalmenu")
-# User-path install — Qt6 searches ~/.local/lib/qt6/plugins/ before the
-# system path, so we never need sudo for the C++ plasmoid. This also
-# sidesteps the entire pam_unix conversation-failed / faillock cascade
-# that was making install unusable on terminals where sudo prompts can't
-# read the password reliably.
+# User-path install — Qt6 searches ~/.local/lib/qt6/plugins/ first, so
+# the new install never writes outside the user's tree. Sudo only comes
+# in for cleaning up legacy .so files that older releases dropped under
+# /usr/lib (root-owned).
 DEST_SO = HOME / ".local/lib/qt6/plugins/plasma/applets/org.kde.mac.tahoe.liquid.globalmenu.so"
+DEST_QML_DIR = HOME / ".local/lib/qt6/qml/plasma/applet/org/kde/mac/tahoe/liquid/globalmenu"
 
-# Older builds wrote .so files at these paths, both system-wide and
-# user-local. Duplicate IDs make plasmashell load the wrong applet on
-# resume, so we clean them up. System-wide ones obviously need root, but
-# we attempt the unlink anyway and only warn (not fail) on EACCES — the
-# user can mop them up with ``sudo rm`` if they care.
 LEGACY_SOS_SYSTEM = (
-    "/usr/lib/qt6/plugins/plasma/applets/org.kde.mac.tahoe.liquid.menu.so",
-    "/usr/lib/qt6/plugins/plasma/applets/org.kde.mac.tahoe.globalmenu.so",
-    "/usr/lib/qt6/plugins/plasma/applets/org.kde.mac.tahoe.menu.so",
-    "/usr/lib/qt6/plugins/plasma/applets/org.kde.mac.tahoe.liquid.globalmenu.so",
+    Path("/usr/lib/qt6/plugins/plasma/applets/org.kde.mac.tahoe.liquid.menu.so"),
+    Path("/usr/lib/qt6/plugins/plasma/applets/org.kde.mac.tahoe.globalmenu.so"),
+    Path("/usr/lib/qt6/plugins/plasma/applets/org.kde.mac.tahoe.menu.so"),
+    Path("/usr/lib/qt6/plugins/plasma/applets/org.kde.mac.tahoe.liquid.globalmenu.so"),
 )
 LEGACY_SOS_USER = (
     HOME / ".local/lib/qt6/plugins/plasma/applets/org.kde.mac.tahoe.liquid.menu.so",
@@ -31,6 +27,11 @@ LEGACY_SOS_USER = (
     HOME / ".local/lib/qt6/plugins/plasma/applets/org.kde.mac.tahoe.menu.so",
 )
 LEGACY_QML = HOME / ".local/share/plasma/plasmoids/org.kde.mac-tahoe-liquid-kde.menu"
+LEGACY_QML_MODULES = (
+    HOME / ".local/lib/qt6/qml/plasma/applet/org/kde/mac/tahoe/liquid/menu",
+    HOME / ".local/lib/qt6/qml/plasma/applet/org/kde/mac/tahoe/globalmenu",
+    HOME / ".local/lib/qt6/qml/plasma/applet/org/kde/mac/tahoe/liquid/globalmenu",
+)
 
 
 def deps():
@@ -41,23 +42,7 @@ def build() -> None:
     cmake_build(SRC, BUILD, "Global Menu")
 
 
-def _try_remove_root_owned(path: Path, label: str) -> None:
-    """Best-effort unlink for a path that may be root-owned. Silent on
-    'not there' and 'no permission' — just informative on PermissionError
-    so the user knows to run ``sudo rm`` manually if they care about the
-    leftover system-path .so."""
-    if not path.exists() and not path.is_symlink():
-        return
-    try:
-        path.unlink()
-        ok(label)
-    except PermissionError:
-        warn(f"{label} (left in place — needs `sudo rm {path}` to clean up)")
-    except OSError as exc:
-        warn(f"{label} ({exc.__class__.__name__})")
-
-
-def install() -> None:
+def _drop_user_legacy() -> None:
     for so in LEGACY_SOS_USER:
         if so.is_file():
             try:
@@ -65,8 +50,27 @@ def install() -> None:
                 ok(f"Removed {so.name}")
             except OSError:
                 pass
-    for so in LEGACY_SOS_SYSTEM:
-        _try_remove_root_owned(Path(so), f"Removed {Path(so).name}")
+    for qml_dir in LEGACY_QML_MODULES:
+        if qml_dir != DEST_QML_DIR:
+            remove_tree(qml_dir, qml_dir.name)
+
+
+def _install_runtime_qml() -> bool:
+    module_src = BUILD / "bin/plasma/applet/org/kde/mac/tahoe/liquid/globalmenu"
+    if not module_src.is_dir():
+        fail("Global Menu runtime QML missing")
+        return False
+    with temp_dir("mttkde-globalmenu-qml") as tmp:
+        runtime = tmp / DEST_QML_DIR.name
+        shutil.copytree(module_src, runtime, symlinks=True)
+        return install_tree(runtime, DEST_QML_DIR, "Global Menu runtime QML")
+
+
+def install() -> None:
+    # Sudoless install: only the user-path leftovers and the QML
+    # plasmoid dir. Legacy ``/usr/lib`` .so files are uninstall()'s
+    # problem — install never asks for root.
+    _drop_user_legacy()
     if LEGACY_QML.is_dir():
         shutil.rmtree(LEGACY_QML, ignore_errors=True)
         ok("Removed old QML menu")
@@ -80,6 +84,8 @@ def install() -> None:
         ok("Global Menu installed")
     except OSError as exc:
         fail(f"Global Menu install failed: {exc}")
+        return
+    _install_runtime_qml()
 
 
 def uninstall() -> None:
@@ -89,15 +95,10 @@ def uninstall() -> None:
             ok("Global Menu .so removed")
         except OSError as exc:
             fail(f"Global Menu remove failed: {exc}")
-    for so in LEGACY_SOS_USER:
-        if so.is_file():
-            try:
-                so.unlink()
-                ok(f"{so.name} removed")
-            except OSError:
-                pass
+    _drop_user_legacy()
     for so in LEGACY_SOS_SYSTEM:
-        _try_remove_root_owned(Path(so), f"{Path(so).name} removed")
+        sudo_remove(so, f"{so.name} (legacy /usr/lib)")
+    remove_tree(DEST_QML_DIR, "Global Menu runtime QML")
     if LEGACY_QML.is_dir():
         shutil.rmtree(LEGACY_QML, ignore_errors=True)
         ok("Removed old QML menu")
