@@ -192,6 +192,65 @@ def test_layout_looks_reset_rejects_custom_mactahoe_widgets(monkeypatch, tmp_pat
     assert layout._layout_looks_reset() is False
 
 
+def test_layout_looks_installed_detects_custom_panel_widgets(monkeypatch, tmp_path):
+    home = tmp_path / "home"
+    appletsrc = home / ".config/plasma-org.kde.plasma.desktop-appletsrc"
+    appletsrc.parent.mkdir(parents=True, exist_ok=True)
+    appletsrc.write_text(
+        "\n".join((
+            "plugin=org.kde.mac.tahoe.liquid.globalmenu",
+            "plugin=org.kde.mac.tahoe.liquid.icontasks",
+            "plugin=org.kde.mac-tahoe-liquid-kde.launcher",
+            "plugin=org.kde.mac-tahoe-liquid-kde.trashcan",
+        ))
+    )
+
+    monkeypatch.setattr(layout, "HOME", home)
+
+    assert layout._layout_looks_installed() is True
+
+
+def test_layout_looks_installed_rejects_partial_panel(monkeypatch, tmp_path):
+    home = tmp_path / "home"
+    appletsrc = home / ".config/plasma-org.kde.plasma.desktop-appletsrc"
+    appletsrc.parent.mkdir(parents=True, exist_ok=True)
+    appletsrc.write_text(
+        "\n".join((
+            "plugin=org.kde.mac.tahoe.liquid.icontasks",
+            "plugin=org.kde.plasma.kickoff",
+        ))
+    )
+
+    monkeypatch.setattr(layout, "HOME", home)
+
+    assert layout._layout_looks_installed() is False
+
+
+def test_install_accepts_layout_once_appletsrc_catches_up(monkeypatch, tmp_path):
+    script = tmp_path / "layout.js"
+    script.write_text("print('install');")
+
+    oks = []
+    warnings = []
+    patches = []
+    states = iter([False, True])
+
+    monkeypatch.setattr(layout, "LAYOUT_SCRIPT", script)
+    monkeypatch.setattr(layout, "_ensure_panel_colorizer", lambda: None)
+    monkeypatch.setattr(layout, "_evaluate_layout", lambda _path: True)
+    monkeypatch.setattr(layout, "_layout_looks_installed", lambda: next(states))
+    monkeypatch.setattr(layout, "_patch_plasmashellrc", lambda: patches.append(True))
+    monkeypatch.setattr(layout.time, "sleep", lambda *_args: None)
+    monkeypatch.setattr(layout, "ok", oks.append)
+    monkeypatch.setattr(layout, "warn", warnings.append)
+
+    layout.install()
+
+    assert oks == ["Layout installed"]
+    assert warnings == []
+    assert patches == [True]
+
+
 def test_uninstall_prefers_builtin_layout_reset(monkeypatch, tmp_path):
     script = tmp_path / "default.js"
     script.write_text("print('reset');")

@@ -278,15 +278,18 @@ def test_restart_plasma_falls_back_when_systemctl_hangs(monkeypatch):
 
 
 def test_nautilus_install_does_not_force_quit(monkeypatch):
+    """Install must NEVER use ``nautilus -q``. The graceful gdbus
+    Application.Quit + gapplication relaunch IS allowed and is what
+    actually picks up the new gsettings without leaving stale state."""
     subprocess_calls = []
     popen_calls = []
-    warnings = []
+    nautilus_calls = {"count": 0}
 
     monkeypatch.setattr(nautilus_step, "_is_kde", lambda: True)
     monkeypatch.setattr(nautilus_step, "_apply_overrides", lambda: None)
     monkeypatch.setattr(nautilus_step, "_apply_gsettings", lambda: None)
     monkeypatch.setattr(nautilus_step, "ok", lambda _msg: None)
-    monkeypatch.setattr(nautilus_step, "warn", lambda msg: warnings.append(msg))
+    monkeypatch.setattr(nautilus_step, "warn", lambda _msg: None)
     monkeypatch.setattr(nautilus_step.time, "sleep", lambda *_args: None)
     monkeypatch.setattr(
         nautilus_step,
@@ -294,10 +297,16 @@ def test_nautilus_install_does_not_force_quit(monkeypatch):
         lambda cmd: cmd in {"nautilus", "xdg-mime", "gdbus", "gapplication"},
     )
 
+    gdbus_seen = {"v": False}
+
     def fake_run(cmd, **_kwargs):
         subprocess_calls.append(tuple(cmd))
         if cmd[:2] == ["pgrep", "-x"]:
-            return _result(0)
+            # Nautilus reads as running until gdbus Quit has fired —
+            # after that, the poll loop sees it exit.
+            return _result(1 if gdbus_seen["v"] else 0)
+        if cmd[:2] == ["gdbus", "call"]:
+            gdbus_seen["v"] = True
         return _result(0)
 
     monkeypatch.setattr(nautilus_step.subprocess, "run", fake_run)
@@ -310,10 +319,11 @@ def test_nautilus_install_does_not_force_quit(monkeypatch):
     nautilus_step.install()
 
     assert ("xdg-mime", "default", nautilus_step.NAUTILUS_DESKTOP, nautilus_step.MIME_FOLDER) in subprocess_calls
-    assert not any(cmd[:2] == ("gdbus", "call") for cmd in subprocess_calls)
-    assert not popen_calls
+    # Force-quit is the unsafe path — must never appear.
     assert not any(cmd[:2] == ("nautilus", "-q") for cmd in subprocess_calls)
-    assert warnings == ["Nautilus left running — live restart skipped"]
+    # Graceful gdbus quit + relaunch IS expected when nautilus is running.
+    assert any(cmd[:2] == ("gdbus", "call") for cmd in subprocess_calls)
+    assert any(cmd[:2] == ("gapplication", "launch") for cmd in popen_calls)
 
 
 def test_nautilus_install_times_out_xdg_mime_instead_of_hanging(monkeypatch):

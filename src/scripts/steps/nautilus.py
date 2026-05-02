@@ -168,7 +168,7 @@ def install() -> None:
     _apply_overrides()
     _apply_gsettings()
     if _nautilus_running():
-        warn("Nautilus left running — live restart skipped")
+        _restart_running_nautilus()
     ok("Nautilus configured")
 
 

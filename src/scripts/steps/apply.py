@@ -137,15 +137,6 @@ def install() -> None:
         )
         ok(f"Theme applied ({theme_mode()})")
 
-    # Avoid force-restarting Nautilus here. `nautilus -q` has been observed
-    # crashing on some systems; the overrides still apply on the next launch.
-    if subprocess.run(
-        ["pgrep", "-x", "nautilus"],
-        check=False,
-        stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
-    ).returncode == 0:
-        warn("Nautilus left running to avoid crash-prone forced restart")
-
     print("  …  Restarting KWin", end="\r", flush=True)
     if feat_enabled("ACRYLIC_GLASS"):
         qdbus_call("org.kde.KWin", "/Effects",

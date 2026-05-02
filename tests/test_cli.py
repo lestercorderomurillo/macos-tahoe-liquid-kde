@@ -29,10 +29,22 @@ def test_parse_args_default_check_update_false(cli_module):
 
 def test_install_order_puts_core_theme_steps_before_optional_integrations(cli_module):
     order = cli_module.INSTALL_ORDER
+    assert order.index("global_theme") < order.index("plasmoids")
+    assert order.index("wallpapers") < order.index("plasmoids")
     assert order.index("color_schemes") < order.index("wallpapers")
     assert order.index("plasma_theme") < order.index("nautilus")
     assert order.index("global_theme") < order.index("portals")
     assert order.index("nautilus") < order.index("portals")
+
+
+def test_layout_is_installed_uses_step_probe(cli_module):
+    class FakeMod:
+        @staticmethod
+        def is_installed():
+            return True
+
+    cli_module.step_module = lambda _name: FakeMod
+    assert cli_module._layout_is_installed() is True
 
 
 # ── parse_semver ────────────────────────────────────────────────────────

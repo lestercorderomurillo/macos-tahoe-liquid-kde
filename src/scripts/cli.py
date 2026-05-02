@@ -671,7 +671,7 @@ def run_install(argv: list[str]) -> int:
             return 1
 
         banner(read_version())
-        if not confirm("UNSTABLE PRERELEASE — Known regressions. Stay on v0.8.5. Continue anyway?"):
+        if not confirm("In development — Install at your own risk."):
             tracker.mark_aborted()
             return 0
         check_for_updates(inline=True)
