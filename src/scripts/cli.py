@@ -594,6 +594,16 @@ def run_install(argv: list[str]) -> int:
     if parsed.check_update:
         return 0 if not check_for_updates(verbose=True) else 0
 
+    banner(read_version())
+    print(f"  \033[0;31m\033[1mInstall disabled\033[0m")
+    print(f"  \033[2mCannot be installed — developer disabled installing to fix regressions.\033[0m")
+    print(f"  \033[2mKeep auto-updated; a working release will replace this one.\033[0m")
+    print()
+    print(f"  \033[2mTo see when a working version drops:\033[0m  ./install --check-update")
+    print(f"  \033[2mIf you have a previous install you want to remove:\033[0m  sudo ./uninstall")
+    print()
+    return 1
+
     feat = apply_overrides(load_features(), parsed)
     export_env(feat)
 
