@@ -13,7 +13,15 @@ jobs:
     steps:
       - uses: actions/checkout@v5
       - name: Install deps
-        run: pacman -Syu --noconfirm python python-pytest bash git diffutils findutils kconfig
+        run: |
+          pacman -Syu --noconfirm \
+            python python-pytest bash git diffutils findutils \
+            base-devel cmake extra-cmake-modules \
+            qt6-base qt6-declarative qt6-wayland \
+            libplasma kconfig kcoreaddons \
+            kwindowsystem ki18n kdbusaddons \
+            kcmutils kiconthemes \
+            kdecoration plasma-workspace
       - name: Run tests
         run: |
           output=$(python -m pytest tests -q 2>&1) || exit_code=$?
@@ -23,23 +31,3 @@ jobs:
             echo "### Tests: $count passing" >> "$GITHUB_STEP_SUMMARY"
           fi
           exit ${exit_code:-0}
-
-  build-check:
-    runs-on: ubuntu-latest
-    container: archlinux:latest
-    steps:
-      - uses: actions/checkout@v5
-      - name: Install KDE build deps
-        run: |
-          pacman -Syu --noconfirm \
-            base-devel cmake extra-cmake-modules \
-            qt6-base qt6-declarative qt6-wayland \
-            libplasma kconfig kcoreaddons \
-            kwindowsystem ki18n kdbusaddons \
-            kcmutils kiconthemes \
-            kdecoration plasma-workspace
-      - name: Build Global Menu applet
-        run: |
-          cd src/offline/plasmoids/org.kde.mac-tahoe-liquid-kde.globalmenu
-          mkdir build && cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
-          cmake --build build
