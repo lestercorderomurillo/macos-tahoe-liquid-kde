@@ -1,9 +1,12 @@
+import atexit
 import json
 import os
 import re
 import shutil
 import subprocess
 import sys
+import threading
+import time
 from pathlib import Path
 
 from paths import (
@@ -96,6 +99,7 @@ Options:
   Persistence:
     --save             Save current flags to features.json
     --reset            Reset features.json to all-true defaults
+    --check-update     Check GitHub for a newer release and exit
 
 Examples:
   ./install                              # install everything
@@ -103,6 +107,7 @@ Examples:
   ./install --only --fonts --icons       # install only fonts and icons
   ./install --dark --save                # dark mode, remember setting
   ./install --reset                      # restore defaults
+  ./install --check-update               # see if a newer release is out
 """
 
 UNINSTALL_HELP = """\
@@ -170,6 +175,7 @@ class ParsedArgs:
         self.do_save = False
         self.do_reset = False
         self.only_mode = False
+        self.check_update = False
         self.cli_overrides: dict[str, bool] = {}
         self.help = False
 
@@ -191,6 +197,8 @@ def parse_args(argv: list[str]) -> ParsedArgs:
             p.do_save = True
         elif arg == "--reset":
             p.do_reset = True
+        elif arg == "--check-update":
+            p.check_update = True
         elif arg in ("--no-download", "--offline"):
             p.cli_overrides["no_download"] = True
         elif arg == "--download":
@@ -204,6 +212,105 @@ def parse_args(argv: list[str]) -> ParsedArgs:
             if key in ALL_FEATURES:
                 p.cli_overrides[key] = True
     return p
+
+
+# ── version checker ─────────────────────────────────────────────────────
+GITHUB_RELEASES_URL = (
+    "https://api.github.com/repos/"
+    "lestercorderomurillo/macos-tahoe-liquid-kde/releases/latest"
+)
+
+
+def parse_semver(version: str) -> tuple[int, int, int]:
+    """Permissive semver tuple. Strips a leading ``v``, ignores trailing
+    pre-release / build metadata (``-rc1``, ``+meta``), pads short versions
+    with zeros. Returns ``(0, 0, 0)`` on garbage rather than raising — a
+    bad release tag should never block the installer."""
+    if not version:
+        return (0, 0, 0)
+    s = version.strip().lstrip("vV").split("-", 1)[0].split("+", 1)[0]
+    parts = s.split(".")
+    out: list[int] = []
+    for p in parts[:3]:
+        try:
+            out.append(int(p))
+        except ValueError:
+            out.append(0)
+    while len(out) < 3:
+        out.append(0)
+    return (out[0], out[1], out[2])
+
+
+def fetch_latest_release(timeout: float = 2.5) -> str | None:
+    """Hit the GitHub releases API for the latest tag. Returns the bare
+    version string (``0.8.0``) or ``None`` if anything goes wrong — offline,
+    rate-limited, GitHub 5xx, JSON shape changed, …"""
+    if os.environ.get("MAC_TAHOE_NO_UPDATE_CHECK", "").lower() == "true":
+        return None
+    try:
+        import urllib.request
+        req = urllib.request.Request(
+            GITHUB_RELEASES_URL,
+            headers={"Accept": "application/vnd.github+json",
+                     "User-Agent": "mac-tahoe-liquid-kde-installer"},
+        )
+        with urllib.request.urlopen(req, timeout=timeout) as r:
+            data = json.loads(r.read().decode("utf-8"))
+    except Exception:
+        return None
+    tag = data.get("tag_name")
+    return tag.lstrip("vV") if isinstance(tag, str) else None
+
+
+_CLEAR_LINE = "\r\033[2K"
+_VERSION_CHECK_READ_PAUSE = 2.0
+
+
+def check_for_updates(verbose: bool = False, inline: bool = False) -> bool:
+    """Print an upgrade banner when GitHub has a newer release. Returns
+    ``True`` if an update is available.
+
+    ``inline=True`` prints a transient ``Checking for updates…`` line and
+    overwrites it in place with the verdict, then pauses ~2s so the
+    verdict has time to register before the install scrolls it away. Used
+    by the install flow so the user sees the network round-trip happen
+    and gets a confirmation of where they stand on every run.
+
+    ``verbose=True`` (without inline) is for the standalone
+    ``--check-update`` flag — it always announces the verdict, even when
+    up to date or offline, but skips the pause."""
+    if inline:
+        print()
+        print("  \033[2m  Checking for updates…\033[0m", end="", flush=True)
+
+    current = read_version()
+    latest = fetch_latest_release()
+
+    if inline:
+        print(_CLEAR_LINE, end="", flush=True)
+
+    if latest is None:
+        if verbose or inline:
+            print("  \033[2m  Could not reach GitHub — skipping update check\033[0m")
+        if inline:
+            time.sleep(_VERSION_CHECK_READ_PAUSE)
+        return False
+    if parse_semver(latest) > parse_semver(current):
+        print(f"  \033[1;33m  Update available: {current} → {latest}\033[0m")
+        print(f"  \033[2m  Updates fix style breakage when KDE / Plasma /"
+              f" Kvantum upstream changes\033[0m")
+        print(f"  \033[2m  break our overrides, plus crash fixes for"
+              f" custom plasmoids.\033[0m")
+        print(f"  \033[2m  Run: git pull && ./install\033[0m")
+        print()
+        if inline:
+            time.sleep(_VERSION_CHECK_READ_PAUSE)
+        return True
+    if verbose or inline:
+        print(f"  \033[0;32m  ✓\033[0m  On the latest version ({current})")
+    if inline:
+        time.sleep(_VERSION_CHECK_READ_PAUSE)
+    return False
 
 
 def apply_overrides(feat: dict[str, object], parsed: ParsedArgs) -> dict[str, object]:
@@ -290,12 +397,28 @@ def confirm(msg: str) -> bool:
 
 
 def _prime_sudo() -> bool:
-    # VSCode's integrated terminal (and other pty setups) can leave
-    # bytes in the TTY input buffer between commands — OSC 633 shell
-    # integration responses, mouse reporting, stray escapes. Sudo
-    # consumes those bytes as the start of the password and reports
-    # "Sorry, try again." on a correct password. Flush the input buffer
-    # and reset the TTY to canonical/echo mode before prompting.
+    """Authenticate sudo once and start a daemon keep-alive thread so every
+    subsequent ``sudo cp / mv / rm`` reuses the cached credential.
+
+    Why we read the password ourselves with ``getpass`` instead of letting
+    sudo prompt: VSCode's integrated terminal (and many other pty wrappers:
+    tmux with shell integration on, Konsole with OSC 133 enabled, ChatGPT
+    Code-Interpreter style sandboxes) leak escape sequences and OSC 633
+    responses into the TTY input buffer between commands. Sudo's own PAM
+    conversation function reads those leaked bytes as the *first character*
+    of the password, then PAM signals ``conversation failed``. Three of
+    those events in a row trip ``pam_faillock`` and lock the account out
+    for ~10 min — and a ``sudo -v`` retries internally up to 3 times, so
+    even one invocation can blow the budget.
+
+    ``getpass.getpass`` reads from ``/dev/tty`` directly with echo
+    disabled, which bypasses whatever's polluting sudo's stdin. We then
+    pipe the password to ``sudo -S -v``; sudo only validates the cached
+    string and never touches the terminal. Up to 3 attempts, each one a
+    fresh Python read — no PAM conv-failed cascade possible."""
+    if not shutil.which("sudo"):
+        return True
+
     try:
         import termios
         fd = os.open("/dev/tty", os.O_RDWR | os.O_NOCTTY)
@@ -310,14 +433,44 @@ def _prime_sudo() -> bool:
         stderr=subprocess.DEVNULL,
     )
 
-    rc = subprocess.run(
-        ["sudo", "-v", "-p", "  [sudo] password for %u: "],
-        check=False,
-    ).returncode
-    if rc != 0:
-        print("  \033[0;31msudo required.\033[0m", file=sys.stderr)
+    import getpass
+    user = os.environ.get("USER") or os.environ.get("LOGNAME") or "user"
+    for attempt in range(3):
+        try:
+            password = getpass.getpass(f"  [sudo] password for {user}: ")
+        except (EOFError, KeyboardInterrupt):
+            print(file=sys.stderr)
+            return False
+        if not password:
+            print("  \033[0;31m  Empty password.\033[0m", file=sys.stderr)
+            continue
+        result = subprocess.run(
+            ["sudo", "-S", "-v"],
+            input=password + "\n",
+            text=True,
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.PIPE,
+        )
+        if result.returncode == 0:
+            t = threading.Thread(target=_sudo_keepalive, daemon=True)
+            t.start()
+            atexit.register(_sudo_keepalive_stop.set)
+            return True
+        err = (result.stderr or "").strip()
+        if "incorrect password" in err.lower() or "Sorry, try again" in err:
+            remaining = 2 - attempt
+            if remaining > 0:
+                print(f"  \033[0;31m  Sorry, try again ({remaining} left).\033[0m",
+                      file=sys.stderr)
+            continue
+        # Sudoers config error, locked account, no tty in -S mode, etc.
+        # — retrying won't help.
+        print(f"  \033[0;31m  {err or 'sudo authentication failed'}\033[0m",
+              file=sys.stderr)
         return False
-    return True
+    print("  \033[0;31m  sudo required — too many failed attempts.\033[0m",
+          file=sys.stderr)
+    return False
 
 
 _VERIFY_CHECKS = [
@@ -418,11 +571,28 @@ def _print_done(verb: str) -> None:
     print()
 
 
+_sudo_keepalive_stop = threading.Event()
+
+
+def _sudo_keepalive() -> None:
+    """Refresh the sudo timestamp every 60s so it never expires mid-install
+    (default ``/etc/sudoers`` ``timestamp_timeout`` is 5 min and the C++
+    plasmoid build alone can push past that on slower CPUs). Started by
+    ``_prime_sudo`` after a successful first auth — never independently."""
+    while not _sudo_keepalive_stop.wait(60):
+        subprocess.run(
+            ["sudo", "-n", "-v"], check=False,
+            stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
+        )
+
+
 def run_install(argv: list[str]) -> int:
     parsed = parse_args(argv)
     if parsed.help:
         print(INSTALL_HELP)
         return 0
+    if parsed.check_update:
+        return 0 if not check_for_updates(verbose=True) else 0
 
     feat = apply_overrides(load_features(), parsed)
     export_env(feat)
@@ -439,6 +609,7 @@ def run_install(argv: list[str]) -> int:
         if not confirm("In development — Install at your own risk."):
             tracker.mark_aborted()
             return 0
+        check_for_updates(inline=True)
 
         step("Verification")
         note("Checks KDE version and required tools")
@@ -528,6 +699,7 @@ def run_uninstall(argv: list[str]) -> int:
         if not confirm("This will reset your desktop to Breeze defaults."):
             tracker.mark_aborted()
             return 0
+        check_for_updates(inline=True)
 
         step("Verification")
         note("Checks KDE version")

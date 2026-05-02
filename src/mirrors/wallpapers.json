@@ -19,19 +19,6 @@
           "referer": "https://512pixels.net/projects/default-mac-wallpapers-in-5k/"
         }
       ]
-    },
-    {
-      "name": "lowendmac.com",
-      "url": "https://lowendmac.com",
-      "license": "Apple Inc.",
-      "installs": ["MacTahoe-Landscape-*"],
-      "mirrors": [
-        {
-          "url": "https://lowendmac.com/wp-content/uploads/Lake-Tahoe-macOS-26-Beta-5-wallpapers.zip",
-          "format": "zip",
-          "prefix": "landscape"
-        }
-      ]
     }
   ]
 }

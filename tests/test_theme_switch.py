@@ -225,6 +225,8 @@ def test_apply_skips_live_lookandfeel_during_boot(monkeypatch):
                         lambda laf: calls.append(("laf", laf)))
     monkeypatch.setattr(theme_switch, "apply_extras",
                         lambda mode: calls.append(("extras", mode)))
+    monkeypatch.setattr(theme_switch, "cycle_widget_style_live",
+                        lambda target: calls.append(("cycle", target)) or True)
     monkeypatch.setattr(theme_switch, "_qdbus",
                         lambda *args: calls.append(("qdbus", args)))
 
@@ -232,6 +234,9 @@ def test_apply_skips_live_lookandfeel_during_boot(monkeypatch):
     assert ("write", "dark") in calls
     assert ("extras", "dark") in calls
     assert not any(c[0] == "laf" for c in calls)
+    # Boot is the only context that skips the cycle — plasmashell is too
+    # fragile during the login window for synthetic widget-style toggles.
+    assert not any(c[0] == "cycle" for c in calls)
     assert not any(c[0] == "qdbus" and c[1][0] == "org.kde.plasmashell"
                    for c in calls)
 
@@ -246,11 +251,14 @@ def test_apply_uses_live_lookandfeel_after_boot(monkeypatch):
                         lambda laf: calls.append(("laf", laf)))
     monkeypatch.setattr(theme_switch, "apply_extras",
                         lambda mode: calls.append(("extras", mode)))
+    monkeypatch.setattr(theme_switch, "cycle_widget_style_live",
+                        lambda target: calls.append(("cycle", target)) or True)
     monkeypatch.setattr(theme_switch, "_qdbus",
                         lambda *args: calls.append(("qdbus", args)))
 
     assert theme_switch.apply("light") is True
     assert ("laf", theme_switch.LAF_LIGHT) in calls
+    assert ("cycle", "kvantum") in calls
     assert any(c[0] == "qdbus" and c[1][0] == "org.kde.KWin"
                for c in calls)
     assert not any(c[0] == "qdbus" and c[1][0] == "org.kde.plasmashell"
@@ -271,6 +279,8 @@ def test_apply_uses_live_lookandfeel_for_settled_scheduled_transition(monkeypatc
                         lambda theme: calls.append(("cursor", theme)) or True)
     monkeypatch.setattr(theme_switch, "apply_extras",
                         lambda mode: calls.append(("extras", mode)))
+    monkeypatch.setattr(theme_switch, "cycle_widget_style_live",
+                        lambda target: calls.append(("cycle", target)) or True)
     monkeypatch.setattr(theme_switch, "_qdbus",
                         lambda *args: calls.append(("qdbus", args)))
 
@@ -278,6 +288,7 @@ def test_apply_uses_live_lookandfeel_for_settled_scheduled_transition(monkeypatc
     assert ("write", "dark") in calls
     assert ("extras", "dark") in calls
     assert ("laf", theme_switch.LAF_DARK) in calls
+    assert ("cycle", "kvantum-dark") in calls
     assert not any(c[0] == "cursor" for c in calls)
     assert any(c[0] == "qdbus" and c[1][0] == "org.kde.KWin"
                for c in calls)
@@ -299,6 +310,8 @@ def test_apply_falls_back_to_cursor_for_unsettled_scheduled_transition(monkeypat
                         lambda theme: calls.append(("cursor", theme)) or True)
     monkeypatch.setattr(theme_switch, "apply_extras",
                         lambda mode: calls.append(("extras", mode)))
+    monkeypatch.setattr(theme_switch, "cycle_widget_style_live",
+                        lambda target: calls.append(("cycle", target)) or True)
     monkeypatch.setattr(theme_switch, "_qdbus",
                         lambda *args: calls.append(("qdbus", args)))
 
@@ -306,6 +319,7 @@ def test_apply_falls_back_to_cursor_for_unsettled_scheduled_transition(monkeypat
     assert ("write", "dark") in calls
     assert ("extras", "dark") in calls
     assert ("cursor", "MacTahoeLiquidKde-Dark") in calls
+    assert ("cycle", "kvantum-dark") in calls
     assert not any(c[0] == "laf" for c in calls)
     assert any(c[0] == "qdbus" and c[1][0] == "org.kde.KWin"
                for c in calls)
@@ -325,6 +339,8 @@ def test_apply_never_refreshes_plasmashell_live(monkeypatch):
                         lambda theme: calls.append(("cursor", theme)) or True)
     monkeypatch.setattr(theme_switch, "apply_extras",
                         lambda mode: calls.append(("extras", mode)))
+    monkeypatch.setattr(theme_switch, "cycle_widget_style_live",
+                        lambda target: calls.append(("cycle", target)) or True)
     monkeypatch.setattr(theme_switch, "_qdbus",
                         lambda *args: calls.append(("qdbus", args)))
 
@@ -334,6 +350,117 @@ def test_apply_never_refreshes_plasmashell_live(monkeypatch):
         assert theme_switch.apply(mode, context) is True
         assert not any(c[0] == "qdbus" and c[1][0] == "org.kde.plasmashell"
                        for c in calls)
+
+
+# ── widget-style cycle (Kvantum live re-instantiation) ───────────────────
+def test_cycle_writes_breeze_then_target(monkeypatch):
+    """Kvantum's style plugin only re-reads its kvconfig when Qt instantiates
+    a new style instance, which requires writing a *different* widgetStyle
+    name and then writing the target back. Verify both writes happen in that
+    order."""
+    import theme_switch
+
+    writes: list[tuple[str, ...]] = []
+
+    def fake_kwrite(*args: str) -> bool:
+        writes.append(args)
+        return True
+
+    monkeypatch.setattr(theme_switch, "_kwrite", fake_kwrite)
+    monkeypatch.setattr(theme_switch, "_have", lambda cmd: True)
+    monkeypatch.setattr(theme_switch, "_has_session_dbus", lambda: True)
+    monkeypatch.setattr(theme_switch, "_broadcast_widget_style_change",
+                        lambda style: writes.append(("broadcast", style)))
+    monkeypatch.setattr(theme_switch.time, "sleep", lambda _: None)
+
+    assert theme_switch.cycle_widget_style_live("kvantum-dark") is True
+
+    style_writes = [a for a in writes
+                    if a and a[0] == "--file" and "widgetStyle" in a]
+    assert len(style_writes) == 2
+    assert style_writes[0][-1] == "Breeze"
+    assert style_writes[1][-1] == "kvantum-dark"
+    assert ("broadcast", "Breeze") in writes
+    assert ("broadcast", "kvantum-dark") in writes
+    # Breeze must come BEFORE the target, otherwise Qt sees the same style
+    # name twice in a row and skips re-instantiation.
+    assert writes.index(("broadcast", "Breeze")) < \
+        writes.index(("broadcast", "kvantum-dark"))
+
+
+def test_cycle_skips_without_kwriteconfig(monkeypatch):
+    import theme_switch
+    monkeypatch.setattr(theme_switch, "_have", lambda cmd: False)
+    assert theme_switch.cycle_widget_style_live("kvantum") is False
+
+
+def test_cycle_skips_without_session_bus(monkeypatch):
+    import theme_switch
+    monkeypatch.setattr(theme_switch, "_have", lambda cmd: True)
+    monkeypatch.setattr(theme_switch, "_has_session_dbus", lambda: False)
+    assert theme_switch.cycle_widget_style_live("kvantum") is False
+
+
+def test_cycle_skips_with_empty_target(monkeypatch):
+    import theme_switch
+    monkeypatch.setattr(theme_switch, "_have", lambda cmd: True)
+    monkeypatch.setattr(theme_switch, "_has_session_dbus", lambda: True)
+    assert theme_switch.cycle_widget_style_live("") is False
+
+
+def test_broadcast_sends_kglobalsettings_and_portal_signals(monkeypatch):
+    """The cycle is only effective if BOTH the legacy KGlobalSettings signal
+    *and* the xdg-portal SettingChanged signal go out — Plasma watches the
+    first, but bare Qt apps (and some kded modules) only watch the second."""
+    import theme_switch
+
+    runs: list[list[str]] = []
+
+    def fake_run(cmd, **_):
+        runs.append(cmd)
+
+        class R: returncode = 0
+        return R()
+
+    monkeypatch.setattr(theme_switch, "_has_session_dbus", lambda: True)
+    monkeypatch.setattr(theme_switch.subprocess, "run", fake_run)
+
+    theme_switch._broadcast_widget_style_change("kvantum")
+
+    # dbus-send layout: [dbus-send, --session, --type=signal, path, member, ...]
+    paths = [c[3] for c in runs]
+    members = [c[4] for c in runs]
+    assert "/KGlobalSettings" in paths
+    assert "/org/freedesktop/portal/desktop" in paths
+    assert "org.kde.KGlobalSettings.notifyChange" in members
+    assert "org.freedesktop.portal.Settings.SettingChanged" in members
+    assert "org.freedesktop.impl.portal.Settings.SettingChanged" in members
+    # The variant payload has to carry the *target* widget style verbatim,
+    # otherwise the portal listener can't tell what changed.
+    assert any("variant:string:kvantum" in arg for c in runs for arg in c)
+
+
+def test_apply_cycles_kvantum_for_dark_manual_switch(monkeypatch):
+    import theme_switch
+
+    calls = []
+    monkeypatch.setattr(theme_switch, "write_kde_theme_config",
+                        lambda mode: calls.append(("write", mode)))
+    monkeypatch.setattr(theme_switch, "_apply_lookandfeel_live",
+                        lambda laf: calls.append(("laf", laf)))
+    monkeypatch.setattr(theme_switch, "apply_extras",
+                        lambda mode: calls.append(("extras", mode)))
+    monkeypatch.setattr(theme_switch, "cycle_widget_style_live",
+                        lambda target: calls.append(("cycle", target)) or True)
+    monkeypatch.setattr(theme_switch, "_qdbus",
+                        lambda *args: calls.append(("qdbus", args)))
+
+    assert theme_switch.apply("dark") is True
+    assert ("cycle", "kvantum-dark") in calls
+    # Cycle must run AFTER apply_extras (which is what writes the new
+    # kvantum.kvconfig) — otherwise Kvantum re-instantiates against the
+    # *old* kvconfig and we end up exactly where we started.
+    assert calls.index(("extras", "dark")) < calls.index(("cycle", "kvantum-dark"))
 
 
 def test_auto_mode_uses_scheduled_context(monkeypatch):

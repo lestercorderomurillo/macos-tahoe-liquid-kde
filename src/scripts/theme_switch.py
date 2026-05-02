@@ -473,6 +473,7 @@ def write_kde_theme_config(mode: str) -> bool:
 def apply(mode: str, context: str = "") -> bool:
     laf = LAF_DARK if mode == "dark" else LAF_LIGHT
     cursor = "MacTahoeLiquidKde-Dark" if mode == "dark" else "MacTahoeLiquidKde"
+    widget = "kvantum-dark" if mode == "dark" else "kvantum"
     write_kde_theme_config(mode)
 
     # Skip plasma-apply-lookandfeel during install — it triggers a QML
@@ -498,6 +499,11 @@ def apply(mode: str, context: str = "") -> bool:
         apply_cursortheme_live(cursor)
 
     apply_extras(mode)
+    # Run AFTER apply_extras so kvantummanager has finished rewriting
+    # kvantum.kvconfig — the cycle then forces Qt to re-instantiate the
+    # Kvantum style plugin against the new on-disk theme.
+    if context != "boot":
+        cycle_widget_style_live(widget)
     _qdbus("org.kde.KWin", "/KWin", "org.kde.KWin.reconfigure")
     return True
 
@@ -620,6 +626,53 @@ def apply_cursortheme_live(theme: str) -> bool:
         require_display=True,
         settle_seconds=5,
     )
+
+
+def _broadcast_widget_style_change(style: str) -> None:
+    if not _has_session_dbus():
+        return
+    for cmd in (
+        ["dbus-send", "--session", "--type=signal",
+         "/KGlobalSettings", "org.kde.KGlobalSettings.notifyChange",
+         "int32:2", "int32:0"],
+        ["dbus-send", "--session", "--type=signal",
+         "/org/freedesktop/portal/desktop",
+         "org.freedesktop.impl.portal.Settings.SettingChanged",
+         "string:org.kde.kdeglobals.KDE", "string:widgetStyle",
+         f"variant:string:{style}"],
+        ["dbus-send", "--session", "--type=signal",
+         "/org/freedesktop/portal/desktop",
+         "org.freedesktop.portal.Settings.SettingChanged",
+         "string:org.kde.kdeglobals.KDE", "string:widgetStyle",
+         f"variant:string:{style}"],
+    ):
+        subprocess.run(
+            cmd, check=False,
+            stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
+        )
+
+
+def cycle_widget_style_live(target: str) -> bool:
+    """Force-reload Kvantum (or whatever style is in widgetStyle) in running
+    Qt apps without restarting plasmashell. Kvantum is a style plugin and
+    can't apply theme changes on the fly — only QApplication::setStyle()
+    re-instantiates the plugin and re-reads kvconfig. We trick Qt into doing
+    that by writing a different widgetStyle (Breeze), broadcasting the
+    KGlobalSettings + xdg-portal signals, then writing the target back. See
+    https://github.com/tsujan/Kvantum/discussions/975 — the maintainer
+    confirms only platform-theme plugins can hot-reload, so cycling is the
+    only way to keep right-click QMenus / popups consistent across a
+    light/dark switch."""
+    if not _have("kwriteconfig6") or not _has_session_dbus():
+        return False
+    if not target:
+        return False
+    for style in ("Breeze", target):
+        _kwrite("--file", "kdeglobals", "--group", "KDE",
+                "--key", "widgetStyle", style)
+        _broadcast_widget_style_change(style)
+        time.sleep(0.4)
+    return True
 
 
 def sync_auto_mode_on_startup() -> str:

@@ -11,6 +11,7 @@ from steps._helpers import (
 )
 from theme_switch import (
     apply_cursortheme_live,
+    cycle_widget_style_live,
     reset_kde_color_scheme_config,
     _apply_lookandfeel_live,
 )
@@ -272,6 +273,12 @@ def uninstall() -> None:
         ok("Look-and-feel applied live")
     else:
         warn("Live Breeze look-and-feel apply skipped")
+
+    # Even after switching to the Breeze LAF, Qt apps that were started
+    # under Kvantum keep its style plugin instance alive — the right-click
+    # menus on plasmashell stay glass/translucent until something forces a
+    # re-instantiation. Cycling widgetStyle does that without a restart.
+    cycle_widget_style_live("Breeze")
 
     if feat_enabled("CURSORS"):
         if apply_cursortheme_live("breeze_cursors"):

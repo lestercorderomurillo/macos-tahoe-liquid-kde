@@ -1,0 +1,17 @@
+{
+    "KPlugin": {
+        "Id": "MacTahoe-Landscape-Morning",
+        "Name": "Tahoe Landscape — Morning",
+        "Description": "Lake Tahoe landscape — Morning",
+        "Authors": [
+            {
+                "Name": "MacTahoe Liquid KDE",
+                "Email": ""
+            }
+        ],
+        "Category": "MacTahoe Liquid KDE",
+        "License": "Apple Inc. wallpapers extracted from macOS",
+        "Website": "https://github.com/lester-sudo/macos-tahoe-liquid-kde",
+        "Version": "1.0"
+    }
+}

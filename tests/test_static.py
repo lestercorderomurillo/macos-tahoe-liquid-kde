@@ -525,3 +525,58 @@ def test_readme_documents_last_run(repo):
 def test_install_helpers_have_reinstall(repo):
     text = (repo / "src/scripts/log.py").read_text()
     assert re.search(r"def reinstall.*GREEN", text, re.DOTALL)
+
+
+# ── per-step output ordering ─────────────────────────────────────────────
+def test_window_decorations_summary_is_last(repo):
+    """Step output convention: the ``info(...)`` summary count is the LAST
+    line printed by an install step. Window decorations historically had
+    the summary in the middle, sandwiched between per-item lines and the
+    'Window decoration set to ...' status — easy regression to repeat
+    when adding new ``ok()`` calls."""
+    src = (repo / "src/scripts/steps/window_decorations.py").read_text()
+    install_block = re.search(
+        r"def install\(.*?(?=\n(?:def [A-Za-z_]|\Z))", src, re.DOTALL
+    )
+    assert install_block is not None
+    body = install_block.group()
+    info_pos = body.rfind("info(")
+    last_ok_pos = body.rfind('ok(f"Window decoration set')
+    assert info_pos != -1, "expected info() summary in install()"
+    assert last_ok_pos != -1, "expected 'Window decoration set' ok() in install()"
+    assert info_pos > last_ok_pos, (
+        "info() summary must be the LAST line of install() — currently the "
+        "'Window decoration set to ...' status is being printed AFTER the "
+        "summary count, which is the regression we are guarding against."
+    )
+
+
+@pytest.mark.parametrize("step,marker", [
+    ("cursors", "cursor themes installed"),
+    ("gtk", "GTK themes installed"),
+    ("plasmoids", "installed/reinstalled"),
+    ("color_schemes", "color schemes"),
+    ("plasma_theme", "Plasma themes"),
+    ("icons", "installed/reinstalled"),
+])
+def test_step_summary_is_last_print(repo, step, marker):
+    """Sister regression for the other steps that emit a summary count —
+    no ``ok()`` / ``info()`` / ``warn()`` / ``fail()`` call may follow the
+    summary inside the same install function."""
+    src = (repo / f"src/scripts/steps/{step}.py").read_text()
+    install_block = re.search(
+        r"def install\(.*?(?=\n(?:def [A-Za-z_]|\Z))", src, re.DOTALL
+    )
+    assert install_block is not None, f"{step}: no install() function found"
+    body = install_block.group()
+    summary_pos = max(
+        body.rfind("info(f\""),
+        body.rfind("info(f'"),
+    )
+    assert summary_pos != -1, f"{step}: expected an info() summary line"
+    tail = body[summary_pos + 1:]
+    for forbidden in ("ok(", "info(", "fail(", "warn(", "reinstall("):
+        assert forbidden not in tail, (
+            f"{step}: found {forbidden!r} after the summary line — the "
+            f"summary must be the LAST log emitted by install()"
+        )

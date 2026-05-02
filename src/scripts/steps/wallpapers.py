@@ -3,18 +3,19 @@ import shutil
 from pathlib import Path
 
 from steps._helpers import (
-    HOME, fail, info, legacy_steps_dir, ok, reinstall, src_dir, steps_dir, temp_dir,
+    HOME, fail, info, legacy_steps_dir, offline, ok, reinstall, src_dir, steps_dir,
 )
-from utils import fetch, run_mirrors, safe_copy
+from utils import fetch, safe_copy
 
 CACHE = steps_dir("wallpapers")
 LEGACY_CACHE = legacy_steps_dir("wallpapers")
 DEST_DIR = HOME / ".local/share/wallpapers"
 MIRROR_FILE = src_dir("mirrors/wallpapers.json")
+OFFLINE_LANDSCAPES = offline("wallpapers")
 
 
 def deps():
-    return ["curl", "unzip"]
+    return ["curl"]
 
 
 def _cache_root() -> Path:
@@ -103,25 +104,11 @@ def download() -> None:
         ext = Path(fn).suffix
         _wp_get(f"{base}/{fn}", d / f"contents/images/3840x2160{ext}", id_, referer)
 
-    with temp_dir("tahoe-wallpapers") as tmp:
-        def handle_landscape(xdir, _prefix, *_referer):
-            i = 1
-            for img in sorted(p for p in xdir.rglob("*")
-                              if p.is_file() and p.suffix.lower() in (".jpg", ".png")
-                              and not p.name.startswith("._")):
-                id_ = f"MacTahoe-Landscape-{i:02d}"
-                d = CACHE / id_
-                _meta(d, id_, f"Tahoe Landscape — {img.stem}", "Lake Tahoe landscape")
-                dest = d / f"contents/images/3840x2160{img.suffix}"
-                try:
-                    shutil.copy2(img, dest)
-                    i += 1
-                except OSError:
-                    fail(f"{id_} (copy failed)")
-            return i > 1
-
-        if not run_mirrors(MIRROR_FILE, 1, tmp, handle_landscape):
-            fail("landscape zip — all mirrors failed")
+    for src in sorted(OFFLINE_LANDSCAPES.glob("MacTahoe-Landscape-*/")):
+        if not src.is_dir():
+            continue
+        if not safe_copy(src, CACHE / src.name):
+            fail(f"{src.name} (copy from offline failed)")
 
     for id_, ul, ud, name in _PAIRS:
         d = CACHE / id_
@@ -178,6 +165,8 @@ def install() -> None:
 _FIXED_NAMES = (
     "MacTahoe", "MacTahoe-Beach-Dawn", "MacTahoe-Beach-Day",
     "MacTahoe-Beach-Dusk", "MacTahoe-Beach-Night",
+    "MacTahoe-Landscape-Morning", "MacTahoe-Landscape-Evening",
+    "MacTahoe-Landscape-Night",
     "MacHeritage-Sequoia", "MacHeritage-Sequoia-Sunrise",
     "MacHeritage-Sonoma", "MacHeritage-Sonoma-Horizon",
     "MacHeritage-Ventura", "MacHeritage-Monterey", "MacHeritage-BigSur",
@@ -194,7 +183,8 @@ def uninstall() -> None:
                 ok(name); n += 1
             except OSError:
                 fail(name)
-    for d in DEST_DIR.glob("MacTahoe-Landscape-*/"):
+    # Legacy index-numbered landscapes from earlier releases.
+    for d in DEST_DIR.glob("MacTahoe-Landscape-[0-9][0-9]/"):
         try:
             shutil.rmtree(d)
             ok(d.name); n += 1

@@ -4,7 +4,7 @@
 
 # macOS Tahoe Liquid Theme for KDE Plasma
 
-[![release](https://img.shields.io/github/v/release/lestercorderomurillo/macos-tahoe-liquid-kde?label=release&cacheSeconds=0)](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/releases) [![tests](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/actions/workflows/test.yml/badge.svg)](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/actions/workflows/test.yml) [![tests count](https://img.shields.io/badge/tests-246_passing-brightgreen)](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/actions/workflows/test.yml) [![license](https://img.shields.io/badge/license-MIT-blue)](LICENSE) [![plasma](https://img.shields.io/badge/KDE_Plasma-6.6%2B-1d99f3?logo=kde)](https://kde.org/plasma-desktop/) [![last commit](https://img.shields.io/github/last-commit/lestercorderomurillo/macos-tahoe-liquid-kde)](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/commits/)
+[![release](https://img.shields.io/github/v/release/lestercorderomurillo/macos-tahoe-liquid-kde?label=release&cacheSeconds=0)](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/releases) [![tests](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/actions/workflows/test.yml/badge.svg)](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/actions/workflows/test.yml) [![tests count](https://img.shields.io/badge/tests-298_passing-brightgreen)](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/actions/workflows/test.yml) [![license](https://img.shields.io/badge/license-MIT-blue)](LICENSE) [![plasma](https://img.shields.io/badge/KDE_Plasma-6.6%2B-1d99f3?logo=kde)](https://kde.org/plasma-desktop/) [![last commit](https://img.shields.io/github/last-commit/lestercorderomurillo/macos-tahoe-liquid-kde)](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/commits/)
 
 > [!CAUTION]
 > **Very experimental** — Under heavy active development. Things will break. Back up your system config before installing. Use at your own risk.
@@ -195,6 +195,29 @@ mac-tahoe-theme-switch auto                      # re-enable clock-based 6–18
 Every install or uninstall run also records the exact CLI flags that were used in
 `~/.local/state/mac-tahoe-liquid-kde/last-run.json`.
 
+### Staying up to date
+
+Every install run silently checks the GitHub Releases API and prints an upgrade
+banner if a newer version is out. To check without installing:
+
+```bash
+./install --check-update
+```
+
+To disable the check (offline machines, CI):
+
+```bash
+MAC_TAHOE_NO_UPDATE_CHECK=true ./install
+```
+
+**Why updates matter.** This theme overrides KDE/Plasma, Kvantum, GTK, and KWin
+internals. When upstream Plasma or Kvantum ships a release that changes how
+those internals work, our overrides can quietly break — symptoms range from
+right-click QMenus rendering with the wrong palette, to plasmoid crashes, to
+the auto light/dark switch silently leaving you in the wrong mode after the
+6:00 / 18:00 timer fires. Updates here fix those breakages as soon as they're
+reported.
+
 ---
 
 ## Repository Structure
@@ -235,6 +258,7 @@ macos-tahoe-liquid-kde/
         ├── kwin-effects/   # Acrylic Glass KWin effect (built from source)
         ├── layouts/        # panel layout scripts
         ├── nautilus/       # optional Nautilus overrides
+        ├── wallpapers/     # Tahoe Landscape (Morning/Evening/Night) bundled
         └── *.service / *.timer  # systemd units for the theme switcher
 ```
 

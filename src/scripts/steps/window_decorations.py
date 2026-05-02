@@ -43,8 +43,6 @@ def install() -> None:
         else:
             ok(f"{name} (installed)"); n_inst += 1
 
-    info(f"{n_inst + n_re} Aurorae themes — {n_inst} installed, {n_re} reinstalled")
-
     chosen = "MacTahoeLiquidKde-Light" if theme_mode() == "light" else "MacTahoeLiquidKde-Dark"
     for key, value in (
         ("library", "org.kde.kwin.aurorae"),
@@ -57,6 +55,8 @@ def install() -> None:
                  "--key", key, value)
     qdbus_call("org.kde.KWin", "/KWin", "org.kde.KWin.reconfigure")
     ok(f"Window decoration set to {chosen}")
+
+    info(f"{n_inst + n_re} Aurorae themes — {n_inst} installed, {n_re} reinstalled")
 
 
 def uninstall() -> None:
