@@ -375,12 +375,24 @@ Window {
 
             Item { Layout.preferredHeight: 36 }
 
-            QQC2.Button {
+            RowLayout {
                 Layout.alignment: Qt.AlignHCenter
-                text: "More Info..."
-                onClicked: {
-                    launcher.exec("kinfocenter");
-                    aboutWindow.close();
+                spacing: 8
+
+                QQC2.Button {
+                    text: "More Info..."
+                    onClicked: {
+                        launcher.exec("kinfocenter");
+                        aboutWindow.close();
+                    }
+                }
+
+                QQC2.Button {
+                    text: "Report a Bug..."
+                    onClicked: {
+                        launcher.exec("xdg-open https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/issues/new");
+                        aboutWindow.close();
+                    }
                 }
             }
 

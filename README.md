@@ -1,21 +1,19 @@
 <p align="center">
-  <img src="src/screenshots/banner.png" alt="MacTahoe Liquid KDE banner" width="320">
+  <img src="src/screenshots/banner.svg" alt="tahoe 26" width="360">
 </p>
 
 # macOS Tahoe Liquid Theme for KDE Plasma
 
-[![release](https://img.shields.io/github/v/release/lestercorderomurillo/macos-tahoe-liquid-kde?label=release&cacheSeconds=0)](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/releases) [![tests](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/actions/workflows/test.yml/badge.svg)](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/actions/workflows/test.yml) [![tests count](https://img.shields.io/badge/tests-349_passing-brightgreen)](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/actions/workflows/test.yml) [![license](https://img.shields.io/badge/license-MIT-blue)](LICENSE) [![plasma](https://img.shields.io/badge/KDE_Plasma-6.6%2B-1d99f3?logo=kde)](https://kde.org/plasma-desktop/) [![last commit](https://img.shields.io/github/last-commit/lestercorderomurillo/macos-tahoe-liquid-kde)](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/commits/)
+[![release](https://img.shields.io/github/v/release/lestercorderomurillo/macos-tahoe-liquid-kde?label=release&cacheSeconds=0)](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/releases) [![tests](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/actions/workflows/test.yml/badge.svg)](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/actions/workflows/test.yml) [![tests count](https://img.shields.io/badge/tests-349_passing-brightgreen)](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/actions/workflows/test.yml) [![license](https://img.shields.io/badge/license-MIT-blue)](LICENSE) [![plasma](https://img.shields.io/badge/KDE_Plasma-6.6%2B-1d99f3?logo=kde)](https://kde.org/plasma-desktop/) [![last commit](https://img.shields.io/github/last-commit/lestercorderomurillo/macos-tahoe-liquid-kde)](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/commits/) [![report a bug](https://img.shields.io/badge/report-a%20bug-red?logo=github)](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/issues/new)
 
-> [!CAUTION]
-> **Very experimental** — Under heavy active development. Things will break. Back up your system config before installing. Use at your own risk.
+> [!NOTE]
+> Things break sometimes as KDE, KWin and friends update. The installer checks for updates on launch to stay in sync with upstream packages, which helps avoid crashes and breakages — please [report any issue](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/issues/new) you run into.
 
 A full macOS Tahoe-style desktop experience for KDE Plasma 6.6+.
 
-A complete environment, not just a coat of paint.
+<br>
 
----
-
-## Features
+# Features
 
 ### Tahoe Dock
 
@@ -85,8 +83,12 @@ Nautilus file manager with macOS-style sidebar.
 Desktop right-click with translucent glass blur.
 
 <p align="center">
-  <img src="src/screenshots/context_menu.png" width="600"><br>
-  <sub>Desktop right-click with translucent glass blur.</sub>
+  <img src="src/screenshots/context_menu.png" width="290">
+  <img src="src/screenshots/context_menu_dark.png" width="290">
+</p>
+
+<p align="center">
+  <sub>Example of Light and Dark variant.</sub>
 </p>
 
 ---
@@ -96,27 +98,26 @@ Desktop right-click with translucent glass blur.
 | Component | Description | Status |
 |-----------|-------------|--------|
 | **Color Schemes** | Light and Dark color palettes | ✅ |
-| **Wallpapers** | Tahoe, Heritage, Beach, Landscape | ✅ |
+| **Wallpapers** | Tahoe Iridescence + Landscape (Morning/Evening/Night) | ✅ |
 | **Fonts** | SF Pro Display, Text, Rounded, Mono | ✅ |
 | **Cursors** | Tahoe style cursors | ✅ |
-| **Icons** | Full icon set (light & dark) | 🔧 |
-| **Sounds** | Notification and event sounds | 🔧 |
-| **Plasma Theme** | Translucent panels + close/min/max buttons | 🔧 |
-| **Kvantum Theme** | Kvantum theme | 🔧 |
-| **GTK Theme** | GTK2/3/4 window chrome and controls | 🔧 |
-| **Acrylic Glass** | KWin blur, rounded corners, glass effect | 🔧 |
+| **Plasma Theme** | Translucent panels + close/min/max buttons | ✅ |
+| **Kvantum Theme** | Kvantum theme | ✅ |
+| **GTK Theme** | GTK2/3/4 window chrome and controls | ✅ |
+| **Acrylic Glass** | KWin blur, rounded corners, glass effect | ✅ |
 | **Auto Theme Switcher** | Auto light/dark via Plasma native sunrise/sunset | ✅ |
-| **Aurorae Decorations** | Window title bar and borders | 🔧 |
+| **Aurorae Decorations** | Window title bar and borders | ✅ |
+| **Global Menu Plasmoid** | Unified menu bar: system menu, app name, window controls, app menus | ✅ |
+| **Dock Task Manager** | Icons-only dock applet with macOS-style notification badges | ✅ |
+| **Nautilus** | Install Nautilus and set as default file manager on KDE | ✅ |
+| **Icons** | Full icon set (light & dark) | 🔧 |
+| **Launcher Plasmoid** | App grid launcher | 🔧 |
+| **Trashcan Plasmoid** | Trash widget with configurable icons | 🔧 |
+| **Sounds** | Notification and event sounds | 🔲 |
 | **Firefox Theme** | Firefox browser theme | 🔲 |
-| **Thunderbird Theme** | Thunderbird mail theme | 🔲 |
 | **Konsole Theme** | Terminal profile | 🔲 |
 | **Kate Theme** | Text editor theme | 🔲 |
 | **SDDM Theme** | Login and lock screen | 🔲 |
-| **Global Menu Plasmoid** | Unified menu bar: system menu, app name, window controls, app menus | 🔧 |
-| **Nautilus** | Install Nautilus and set as default file manager on KDE | 🔧 |
-| **Launcher Plasmoid** | App grid launcher | 🔧 |
-| **Trashcan Plasmoid** | Trash widget with configurable icons | 🔧 |
-| **Dock Task Manager** | Icons-only dock applet with macOS-style notification badges | ✅ |
 | **Calendar Plasmoid** | Calendar dropdown | 🔲 |
 | **Control Center Plasmoid** | Quick settings panel | 🔲 |
 | **System Preferences Plasmoid** | Settings launcher | 🔲 |
@@ -143,29 +144,12 @@ sudo ./install --preflight                       # dry-run the safety checks, ex
 sudo ./uninstall                                 # uninstall, reset to Breeze
 ```
 
-Both scripts require `sudo` upfront. The C++ plasmoids (Global Menu, Dock
-Task Manager) and the KWin Acrylic Glass effect drop `.so` files into
-`/usr/lib/qt6/plugins/...` and runtime QML modules into
-`/usr/lib/qt6/qml/...` — Qt6's default search paths. User paths
-(`~/.local/lib/qt6/...`) are not discoverable, so a sudoless install
-silently leaves the dock and global menu unloaded. v0.10 went back to
-sudo-upfront with a strict privilege drop: the CLI verifies it's root,
-then drops effective UID to your user. Every subprocess (cmake, kwriteconfig6,
-qdbus, kvantummanager, plasma-apply-*, …) fully drops privileges in the
-forked child via `setresuid` so Qt6 binaries don't abort with `FATAL:
-running setuid`. Only the small handful of `/usr/lib` writes hop briefly
-back to root.
+### Staying up to date
 
-`sudo ./install --preflight` runs the four safety checks (sudo escalation
-probe, destination-path regex, Qt6 plugin search match, plasmoid ID
-consistency) and exits — useful for verifying your sudo + KDE dev
-environment before committing to a real install.
-
-`sudo ./uninstall` is symmetric: same privilege drop, and it cleans up
-both the v0.10 system-path drops and any leftovers from older releases
-that wrote under user paths. If you try either without sudo, the script
-refuses up front with a clear `Re-run as: sudo ./<install|uninstall>`
-message — no half-done state.
+```bash
+sudo ./install --check-update                    # check without installing
+sudo MAC_TAHOE_NO_UPDATE_CHECK=true ./install    # disable the check
+```
 
 ### Feature Flags
 
@@ -216,31 +200,7 @@ sudo ./install                                   # reuses saved features.json
 sudo ./install --reset                           # reset features.json to defaults
 ```
 
-Every install or uninstall run also records the exact CLI flags that were used in
-`~/.local/state/mac-tahoe-liquid-kde/last-run.json`.
-
-### Staying up to date
-
-Every install run silently checks the GitHub Releases API and prints an upgrade
-banner if a newer version is out. To check without installing:
-
-```bash
-sudo ./install --check-update
-```
-
-To disable the check (offline machines, CI):
-
-```bash
-sudo MAC_TAHOE_NO_UPDATE_CHECK=true ./install
-```
-
-**Why updates matter.** This theme overrides KDE/Plasma, Kvantum, GTK, and KWin
-internals. When upstream Plasma or Kvantum ships a release that changes how
-those internals work, our overrides can quietly break — symptoms range from
-right-click QMenus rendering with the wrong palette, to plasmoid crashes, to
-the auto light/dark switch silently leaving you in the wrong mode after the
-6:00 / 18:00 timer fires. Updates here fix those breakages as soon as they're
-reported.
+Used flags are recorded at `~/.local/state/mac-tahoe-liquid-kde/last-run.json`.
 
 ---
 
@@ -282,7 +242,7 @@ macos-tahoe-liquid-kde/
         ├── kwin-effects/   # Acrylic Glass KWin effect (built from source)
         ├── layouts/        # panel layout scripts
         ├── nautilus/       # optional Nautilus overrides
-        ├── wallpapers/     # Tahoe Landscape (Morning/Evening/Night) bundled
+        ├── wallpapers/     # Tahoe Iridescence + Landscape (Morning/Evening/Night)
         └── *.service / *.timer  # systemd units for the theme switcher
 ```
 
@@ -301,7 +261,7 @@ macos-tahoe-liquid-kde/
 | **GTK** | GTK 2/3/4 theme for non-Qt apps (Nautilus, Firefox, etc.) | `~/.themes/` |
 | **Icons** | macOS-style icon set with light and dark variants | `~/.local/share/icons/` |
 | **Cursors** | macOS-style cursor theme | `~/.local/share/icons/` |
-| **Wallpapers** | Tahoe, Heritage, Beach, Landscape collections | `~/.local/share/wallpapers/` |
+| **Wallpapers** | Tahoe Iridescence + Landscape (Morning/Evening/Night) | `~/.local/share/wallpapers/` |
 | **Fonts** | SF Pro Display, Text, Rounded, and SF Mono | `~/.local/share/fonts/` |
 
 ### Desktop
@@ -339,9 +299,31 @@ The uninstaller reverses all changes, clears explicit KDE color overrides, and r
 
 ---
 
+## Reporting Bugs
+
+Found something broken? Please open a GitHub issue:
+
+**👉 [Report a bug](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/issues/new)**
+
+You can also reach the issue tracker straight from the desktop:
+
+- **Apple menu → About This Computer → Report a Bug…** opens the same form in your browser.
+- After every `./install` or `./uninstall` run, the final line of the output prints the issues URL.
+
+When filing, please include:
+
+- Your Plasma version (`plasmashell --version`) and distro (`cat /etc/os-release | grep PRETTY_NAME`)
+- The MacTahoe Liquid KDE version (`cat VERSION` in the repo, or the version shown in *About This Computer*)
+- The exact `./install` flags you used (also recorded in `~/.local/state/mac-tahoe-liquid-kde/last-run.json`)
+- A screenshot or recording if it's a visual regression
+
+---
+
 ## Disclaimer
 
 This project is an independent reimplementation inspired by the macOS aesthetic. No assets, code, or intellectual property from Apple Inc. have been copied or redistributed. All themes, icons, plasmoids, and configurations are original work or derived from open-source projects under compatible licenses. "macOS" and "Apple" are trademarks of Apple Inc. This project is not affiliated with or endorsed by Apple.
+
+If you like Apple, buy an Apple product.
 
 ---
 

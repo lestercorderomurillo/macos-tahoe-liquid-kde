@@ -1,0 +1,25 @@
+/* Nautilus-only opacity bump (~+15%).
+ *
+ * The shared GTK theme leaves the window background fully transparent so the
+ * KWin Acrylic Glass blur is the only thing tinting the chrome. On dark
+ * wallpapers that reads as "ghost window" — sidebar labels lose contrast
+ * and the chrome disappears. Add a thin dark fill on the window root and
+ * the navigation sidebar so the card is readable while the blur still
+ * does its work.
+ */
+
+.nautilus-window,
+.nautilus-window > * {
+    background-color: rgba(28, 28, 30, 0.65);
+}
+
+.nautilus-window .sidebar-pane,
+.nautilus-window placessidebar,
+.nautilus-window list.navigation-sidebar {
+    background-color: rgba(28, 28, 30, 0.55);
+}
+
+.nautilus-window headerbar,
+.nautilus-window .titlebar {
+    background-color: rgba(28, 28, 30, 0.55);
+}

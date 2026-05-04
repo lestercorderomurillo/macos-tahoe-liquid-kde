@@ -717,6 +717,7 @@ def _print_done(verb: str) -> None:
     print(f"\033[0;32m\033[1m  ── Done\033[0m")
     if not errors:
         ok(f"MacTahoe Liquid KDE {verb} successfully")
+        print(f"  \033[0;90mReport bugs at: https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/issues/new\033[0m")
         print()
         return
     # Snapshot — fail() appends to errors, so iterating the live list
@@ -725,6 +726,7 @@ def _print_done(verb: str) -> None:
     warn(f"{len(issues)} issue(s):")
     for e in issues:
         print(f"  \033[0;31m✗\033[0m  {e}", file=sys.stderr)
+    print(f"  \033[0;90mReport bugs at: https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/issues/new\033[0m")
     print()
 
 

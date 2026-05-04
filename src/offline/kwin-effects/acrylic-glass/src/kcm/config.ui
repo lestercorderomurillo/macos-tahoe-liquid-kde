@@ -38,13 +38,6 @@
          </property>
          <layout class="QVBoxLayout" name="verticalLayoutBehavior">
           <item>
-           <widget class="QCheckBox" name="kcfg_TransparentBlur">
-            <property name="text">
-             <string>Enable acrylic blur</string>
-            </property>
-           </widget>
-          </item>
-          <item>
            <widget class="QCheckBox" name="kcfg_BlurDecorations">
             <property name="text">
              <string>Blur window decorations</string>
@@ -54,6 +47,38 @@
           <item>
            <layout class="QFormLayout" name="formLayoutBehavior">
             <item row="0" column="0">
+             <widget class="QLabel" name="labelAcrylicGlassType">
+              <property name="text">
+               <string>Blur type</string>
+              </property>
+              <property name="toolTip">
+               <string>Kernel applied to the blurred backdrop. Gaussian is soft and centered, Box is uniform and frosted, Lens uses a circular kernel for rounder out-of-focus highlights.</string>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="1">
+             <widget class="QComboBox" name="kcfg_AcrylicGlassType">
+              <property name="toolTip">
+               <string>Kernel applied to the blurred backdrop. Gaussian is soft and centered, Box is uniform and frosted, Lens uses a circular kernel for rounder out-of-focus highlights.</string>
+              </property>
+              <item>
+               <property name="text">
+                <string>Gaussian</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>Box</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>Lens</string>
+               </property>
+              </item>
+             </widget>
+            </item>
+            <item row="1" column="0">
              <widget class="QLabel" name="labelBlurStrength">
               <property name="text">
                <string>Blur strength</string>
@@ -63,7 +88,7 @@
               </property>
              </widget>
             </item>
-            <item row="0" column="1">
+            <item row="1" column="1">
              <widget class="QDoubleSpinBox" name="kcfg_BlurStrength">
               <property name="toolTip">
                <string>Kawase downsample depth. Higher values produce a deeper blur. Fractional values interpolate smoothly.</string>
@@ -82,7 +107,7 @@
               </property>
              </widget>
             </item>
-            <item row="1" column="0">
+            <item row="2" column="0">
              <widget class="QLabel" name="labelNoiseStrength">
               <property name="text">
                <string>Noise strength</string>
@@ -92,7 +117,7 @@
               </property>
              </widget>
             </item>
-            <item row="1" column="1">
+            <item row="2" column="1">
              <widget class="QSpinBox" name="kcfg_NoiseStrength">
               <property name="toolTip">
                <string>Fine grain added to reduce color banding in smooth blur gradients. 0 disables grain.</string>

@@ -118,6 +118,7 @@ private:
         int refractionWidthLocation;
         int highlightWidthLocation;
         int highlightStrengthLocation;
+        int blurTypeLocation;
     } m_roundedOnscreenPass;
 
     struct
@@ -161,12 +162,14 @@ private:
     float m_refractionWidth;
     float m_highlightWidth;
     float m_highlightStrength;
+    int m_blurType;
     size_t m_iterationCount; // number of times the texture will be downsized to half size
     float m_offset;
     int m_expandSize;
     int m_noiseStrength;
     QStringList m_windowClasses;
     bool m_whitelist;
+    bool m_blurDecorations;
 
     struct OffsetStruct
     {

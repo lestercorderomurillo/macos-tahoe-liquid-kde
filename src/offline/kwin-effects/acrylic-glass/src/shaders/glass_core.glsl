@@ -20,6 +20,7 @@ uniform float magnifyGlassStrength;
 uniform float refractionWidth;
 uniform float highlightWidth;
 uniform float highlightStrength;
+uniform int blurType;
 
 in vec2 uv;
 in vec2 vertex;
@@ -44,11 +45,25 @@ void main()
     float edgeT = smoothstep(-refrBand, 0.0, d);
     float edgeQ = edgeT * edgeT;
 
-    vec2 lensUV = lgLensUV(uv, magnifyGlassStrength, edgeQ);
+    vec2 lensUV = (magnifyGlassStrength > 0.0)
+        ? lgLensUV(uv, magnifyGlassStrength, edgeQ)
+        : uv;
     vec2 texel = halfpixel * 2.0;
-    vec3 col = lgGaussianBlur(texUnit, texel, lensUV, vec2(offset * 3.0));
-    col = lgApplyRgbDrift(texUnit, col, lensUV, outNorm, blurSize, rgbDriftStrength, edgeQ);
-    col = lgApplyHighlight(col, inside, highlightWidth, highlightStrength);
+    vec3 col;
+    if (offset > 0.0) {
+        col = lgBlurDispatch(blurType, texUnit, texel, lensUV, vec2(offset * 3.0));
+    } else {
+        // Pixel-exact passthrough: snap to texel center so GL_LINEAR returns
+        // the underlying texel exactly instead of a sub-pixel bilinear blend.
+        vec2 snapped = (floor(lensUV / texel) + 0.5) * texel;
+        col = LG_SAMPLE(texUnit, clamp(snapped, 0.0, 1.0)).rgb;
+    }
+    if (rgbDriftStrength > 0.0) {
+        col = lgApplyRgbDrift(texUnit, col, lensUV, outNorm, blurSize, rgbDriftStrength, edgeQ);
+    }
+    if (highlightStrength > 0.0) {
+        col = lgApplyHighlight(col, inside, highlightWidth, highlightStrength);
+    }
 
     float mask = 1.0 - smoothstep(-3.0, 0.0, d);
     LG_OUT = vec4(col, mask) * colorMatrix * opacity;

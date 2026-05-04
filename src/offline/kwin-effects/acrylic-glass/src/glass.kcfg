@@ -5,14 +5,19 @@
     http://www.kde.org/standards/kcfg/1.0/kcfg.xsd" >
     <kcfgfile arg="true"/>
     <group name="Effect-liquidglass">
+        <entry name="AcrylicGlassType" type="Enum">
+            <choices>
+                <choice name="Gaussian"/>
+                <choice name="Box"/>
+                <choice name="Lens"/>
+            </choices>
+            <default>Gaussian</default>
+        </entry>
         <entry name="BlurStrength" type="Double">
-            <default>3.0</default>
+            <default>5.0</default>
         </entry>
         <entry name="NoiseStrength" type="Int">
             <default>2</default>
-        </entry>
-        <entry name="TransparentBlur" type="Bool">
-            <default>true</default>
         </entry>
         <entry name="BlurDecorations" type="Bool">
             <default>true</default>

@@ -122,6 +122,7 @@ BlurEffect::BlurEffect()
         m_roundedOnscreenPass.refractionWidthLocation = m_roundedOnscreenPass.shader->uniformLocation("refractionWidth");
         m_roundedOnscreenPass.highlightWidthLocation = m_roundedOnscreenPass.shader->uniformLocation("highlightWidth");
         m_roundedOnscreenPass.highlightStrengthLocation = m_roundedOnscreenPass.shader->uniformLocation("highlightStrength");
+        m_roundedOnscreenPass.blurTypeLocation = m_roundedOnscreenPass.shader->uniformLocation("blurType");
         qCDebug(KWIN_BLUR) << "Onscreen shader uniforms:"
             << "mvp=" << m_roundedOnscreenPass.mvpMatrixLocation
             << "color=" << m_roundedOnscreenPass.colorMatrixLocation
@@ -320,6 +321,8 @@ void BlurEffect::reconfigure(ReconfigureFlags flags)
     m_refractionWidth = static_cast<float>(BlurConfig::refractionWidth());
     m_highlightWidth = static_cast<float>(BlurConfig::highlightWidth());
     m_highlightStrength = static_cast<float>(BlurConfig::highlightStrength());
+    m_blurType = static_cast<int>(BlurConfig::acrylicGlassType());
+    m_blurDecorations = BlurConfig::blurDecorations();
 
     m_whitelist = BlurConfig::blurMatching();
 
@@ -400,12 +403,12 @@ void BlurEffect::updateBlurRegion(EffectWindow *w)
         }
     }
 
-    if (w->decorationHasAlpha() && decorationSupportsBlurBehind(w)) {
+    if (m_blurDecorations && w->decorationHasAlpha() && decorationSupportsBlurBehind(w)) {
         frame = decorationBlurRegion(w);
     }
 
     if (
-        BlurConfig::blurDecorations() &&
+        m_blurDecorations &&
         !(
             w->isDock() ||
             w->isMenu() ||
@@ -909,57 +912,61 @@ void BlurEffect::blur(const RenderTarget &renderTarget, const RenderViewport &vi
 
     vbo->bindArrays();
 
-    // The downsample pass of the dual Kawase algorithm: the background will be scaled down 50% every iteration.
-    {
-        ShaderManager::instance()->pushShader(m_downsamplePass.shader.get());
+    // At zero offset the final onscreen pass reads from framebuffers[0] (the
+    // unblurred original) directly, so the Kawase chain is wasted GPU work.
+    if (m_offset > 0.0f) {
+        // The downsample pass of the dual Kawase algorithm: the background will be scaled down 50% every iteration.
+        {
+            ShaderManager::instance()->pushShader(m_downsamplePass.shader.get());
 
-        QMatrix4x4 projectionMatrix;
-        projectionMatrix.ortho(QRectF(0.0, 0.0, backgroundRect.width(), backgroundRect.height()));
+            QMatrix4x4 projectionMatrix;
+            projectionMatrix.ortho(QRectF(0.0, 0.0, backgroundRect.width(), backgroundRect.height()));
 
-        m_downsamplePass.shader->setUniform(m_downsamplePass.mvpMatrixLocation, projectionMatrix);
-        m_downsamplePass.shader->setUniform(m_downsamplePass.offsetLocation, float(m_offset));
+            m_downsamplePass.shader->setUniform(m_downsamplePass.mvpMatrixLocation, projectionMatrix);
+            m_downsamplePass.shader->setUniform(m_downsamplePass.offsetLocation, float(m_offset));
 
-        for (size_t i = 1; i < renderInfo.framebuffers.size(); ++i) {
-            const auto &read = renderInfo.framebuffers[i - 1];
-            const auto &draw = renderInfo.framebuffers[i];
+            for (size_t i = 1; i < renderInfo.framebuffers.size(); ++i) {
+                const auto &read = renderInfo.framebuffers[i - 1];
+                const auto &draw = renderInfo.framebuffers[i];
 
-            const QVector2D halfpixel(0.5 / read->colorAttachment()->width(),
-                                      0.5 / read->colorAttachment()->height());
-            m_downsamplePass.shader->setUniform(m_downsamplePass.halfpixelLocation, halfpixel);
+                const QVector2D halfpixel(0.5 / read->colorAttachment()->width(),
+                                          0.5 / read->colorAttachment()->height());
+                m_downsamplePass.shader->setUniform(m_downsamplePass.halfpixelLocation, halfpixel);
 
-            read->colorAttachment()->bind();
+                read->colorAttachment()->bind();
 
-            GLFramebuffer::pushFramebuffer(draw.get());
-            vbo->draw(GL_TRIANGLES, 0, 6);
+                GLFramebuffer::pushFramebuffer(draw.get());
+                vbo->draw(GL_TRIANGLES, 0, 6);
+            }
+
+            ShaderManager::instance()->popShader();
         }
 
-        ShaderManager::instance()->popShader();
-    }
+        // The upsample pass of the dual Kawase algorithm: the background will be scaled up 200% every iteration.
+        {
+            ShaderManager::instance()->pushShader(m_upsamplePass.shader.get());
 
-    // The upsample pass of the dual Kawase algorithm: the background will be scaled up 200% every iteration.
-    {
-        ShaderManager::instance()->pushShader(m_upsamplePass.shader.get());
+            QMatrix4x4 projectionMatrix;
+            projectionMatrix.ortho(QRectF(0.0, 0.0, backgroundRect.width(), backgroundRect.height()));
 
-        QMatrix4x4 projectionMatrix;
-        projectionMatrix.ortho(QRectF(0.0, 0.0, backgroundRect.width(), backgroundRect.height()));
+            m_upsamplePass.shader->setUniform(m_upsamplePass.mvpMatrixLocation, projectionMatrix);
+            m_upsamplePass.shader->setUniform(m_upsamplePass.offsetLocation, float(m_offset));
 
-        m_upsamplePass.shader->setUniform(m_upsamplePass.mvpMatrixLocation, projectionMatrix);
-        m_upsamplePass.shader->setUniform(m_upsamplePass.offsetLocation, float(m_offset));
+            for (size_t i = renderInfo.framebuffers.size() - 1; i > 1; --i) {
+                GLFramebuffer::popFramebuffer();
+                const auto &read = renderInfo.framebuffers[i];
 
-        for (size_t i = renderInfo.framebuffers.size() - 1; i > 1; --i) {
-            GLFramebuffer::popFramebuffer();
-            const auto &read = renderInfo.framebuffers[i];
+                const QVector2D halfpixel(0.5 / read->colorAttachment()->width(),
+                                          0.5 / read->colorAttachment()->height());
+                m_upsamplePass.shader->setUniform(m_upsamplePass.halfpixelLocation, halfpixel);
 
-            const QVector2D halfpixel(0.5 / read->colorAttachment()->width(),
-                                      0.5 / read->colorAttachment()->height());
-            m_upsamplePass.shader->setUniform(m_upsamplePass.halfpixelLocation, halfpixel);
+                read->colorAttachment()->bind();
 
-            read->colorAttachment()->bind();
+                vbo->draw(GL_TRIANGLES, 0, 6);
+            }
 
-            vbo->draw(GL_TRIANGLES, 0, 6);
+            ShaderManager::instance()->popShader();
         }
-
-        ShaderManager::instance()->popShader();
     }
 
     const QMatrix4x4 &colorMatrix = m_colorMatrix;
@@ -1008,7 +1015,11 @@ void BlurEffect::blur(const RenderTarget &renderTarget, const RenderViewport &vi
     QMatrix4x4 projectionMatrix = viewport.projectionMatrix();
     projectionMatrix.translate(scaledBackgroundRect.x(), scaledBackgroundRect.y());
 
-    GLFramebuffer::popFramebuffer();
+    // Balance the final downsample push from the Kawase loop above. Skipped
+    // alongside it when offset=0 so the framebuffer stack stays balanced.
+    if (m_offset > 0.0f) {
+        GLFramebuffer::popFramebuffer();
+    }
     // framebuffers[0] is the original unblurred background capture (full res).
     // framebuffers[1] is the Kawase-blurred result (half res).
     // At offset 0 (no blur) read the full-res original to avoid downscaling artifacts.
@@ -1047,6 +1058,7 @@ void BlurEffect::blur(const RenderTarget &renderTarget, const RenderViewport &vi
     m_roundedOnscreenPass.shader->setUniform(m_roundedOnscreenPass.refractionWidthLocation, m_refractionWidth);
     m_roundedOnscreenPass.shader->setUniform(m_roundedOnscreenPass.highlightWidthLocation, m_highlightWidth);
     m_roundedOnscreenPass.shader->setUniform(m_roundedOnscreenPass.highlightStrengthLocation, m_highlightStrength);
+    m_roundedOnscreenPass.shader->setUniform(m_roundedOnscreenPass.blurTypeLocation, m_blurType);
 
     read->colorAttachment()->bind();
 

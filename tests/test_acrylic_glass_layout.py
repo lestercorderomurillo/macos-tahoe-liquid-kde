@@ -159,7 +159,7 @@ def test_kcfgc_references_renamed_kcfg(effect_src):
 # ── kcfg schema integrity ─────────────────────────────────────────────────
 _KCFG_NS = {"k": "http://www.kde.org/standards/kcfg/1.0"}
 _EXPECTED_KCFG_KEYS = {
-    "BlurStrength", "NoiseStrength", "TransparentBlur", "BlurDecorations",
+    "BlurStrength", "NoiseStrength", "BlurDecorations",
     "WindowClasses", "BlurMatching", "BlurNonMatching",
     "WindowCornerRadius", "DockCornerRadius", "PopupCornerRadius",
     "RoundCornersOfMaximizedWindows", "RgbDriftStrength",

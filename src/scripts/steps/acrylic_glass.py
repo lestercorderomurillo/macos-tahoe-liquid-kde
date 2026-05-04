@@ -63,7 +63,7 @@ def build() -> None:
 
 _PRESET = (
     ("BevelStrength", "0.22"), ("BlurDecorations", "true"),
-    ("BlurStrength", "3"), ("BorderWidth", "32"),
+    ("BlurStrength", "5"), ("BorderWidth", "32"),
     ("BottomCornerRadius", "22"), ("Brightness", "1.0"),
     ("Contrast", "1.0"), ("DialogCornerRadius", "14"),
     ("DockCornerRadius", "20"), ("EdgeBandFactor", "0.24"),
@@ -125,7 +125,35 @@ def install() -> None:
     ok("Acrylic Glass preset installed")
     kw_write("--file", "kwinrc", "--group", "Plugins",
              "--key", "liquidglassEnabled", "true")
-    ok("Acrylic Glass installed (active after Plasma restart)")
+
+    # Hot-load the freshly-written .so into the running KWin. The order
+    # matters: unload again to drop any handle KWin's effect loader may
+    # have kept on the previous binary, reconfigure so the new preset and
+    # liquidglassEnabled=true are picked up, then loadEffect against the
+    # file we just installed. Querying activeEffects afterwards is the
+    # only honest way to know it took — loadEffect itself returns true
+    # whether the effect was already loaded or freshly mapped.
+    qdbus_call("org.kde.KWin", "/Effects",
+               "org.kde.kwin.Effects.unloadEffect", "liquidglass")
+    qdbus_call("org.kde.KWin", "/KWin", "org.kde.KWin.reconfigure")
+    qdbus_call("org.kde.KWin", "/Effects",
+               "org.kde.kwin.Effects.loadEffect", "liquidglass")
+
+    q = shutil.which("qdbus6") or shutil.which("qdbus")
+    active = ""
+    if q:
+        try:
+            res = run_user([q, "org.kde.KWin", "/Effects",
+                            "org.kde.kwin.Effects.activeEffects"],
+                           check=False, capture_output=True, text=True,
+                           timeout=10)
+            active = res.stdout or ""
+        except subprocess.TimeoutExpired:
+            pass
+    if "liquidglass" in active:
+        ok("Acrylic Glass loaded")
+    else:
+        ok("Acrylic Glass installed (log out and back in to activate)")
 
 
 def uninstall() -> None:
