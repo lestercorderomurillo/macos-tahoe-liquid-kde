@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="src/screenshots/banner.svg" alt="tahoe 26" width="360">
+  <img src="src/screenshots/banner_v2.svg" alt="tahoe 26" width="360">
 </p>
 
 # macOS Tahoe Liquid Theme for KDE Plasma
@@ -20,8 +20,8 @@ A full macOS Tahoe-style desktop experience for KDE Plasma 6.6+.
 App grid with categories and search.
 
 <p align="center">
-  <img src="src/screenshots/launcher.png" width="415">
-  <img src="src/screenshots/launcher_dark.png" width="415">
+  <img src="src/screenshots/launcher_v2.png" width="415">
+  <img src="src/screenshots/launcher_dark_v2.png" width="415">
 </p>
 
 <p align="center">
@@ -33,17 +33,17 @@ App grid with categories and search.
 Liquid-glass dock with macOS-style red notification bubbles and wallpaper refraction.
 
 <p align="center">
-  <img src="src/screenshots/dock_1.png" width="840"><br>
+  <img src="src/screenshots/dock_1_v2.png" width="840"><br>
   <sub>Bright dock glow with the red macOS-style notification bubble.</sub>
 </p>
 
 <p align="center">
-  <img src="src/screenshots/dock_2.png" width="840"><br>
+  <img src="src/screenshots/dock_2_v2.png" width="840"><br>
   <sub>Refraction example with the wallpaper visibly bending through the glass surface.</sub>
 </p>
 
 <p align="center">
-  <img src="src/screenshots/dock_3.png" width="840"><br>
+  <img src="src/screenshots/dock_3_v2.png" width="840"><br>
   <sub>Dark dock variant with the same liquid-glass depth.</sub>
 </p>
 
@@ -52,8 +52,8 @@ Liquid-glass dock with macOS-style red notification bubbles and wallpaper refrac
 System menu with native QMenu dropdown.
 
 <p align="center">
-  <img src="src/screenshots/menu.png" width="415">
-  <img src="src/screenshots/menu_dark.png" width="415">
+  <img src="src/screenshots/menu_v2.png" width="415">
+  <img src="src/screenshots/menu_dark_v2.png" width="415">
 </p>
 
 <p align="center">
@@ -65,8 +65,8 @@ System menu with native QMenu dropdown.
 Glass system information window.
 
 <p align="center">
-  <img src="src/screenshots/about.png" width="415">
-  <img src="src/screenshots/about_dark.png" width="415">
+  <img src="src/screenshots/about_v2.png" width="415">
+  <img src="src/screenshots/about_dark_v2.png" width="415">
 </p>
 
 <p align="center">
@@ -78,8 +78,8 @@ Glass system information window.
 Nautilus file manager with macOS-style sidebar.
 
 <p align="center">
-  <img src="src/screenshots/finder.png" width="415">
-  <img src="src/screenshots/finder_dark.png" width="415">
+  <img src="src/screenshots/finder_v2.png" width="415">
+  <img src="src/screenshots/finder_dark_v2.png" width="415">
 </p>
 
 <p align="center">
@@ -91,8 +91,8 @@ Nautilus file manager with macOS-style sidebar.
 Desktop right-click with translucent glass blur.
 
 <p align="center">
-  <img src="src/screenshots/context_menu.png" width="415">
-  <img src="src/screenshots/context_menu_dark.png" width="415">
+  <img src="src/screenshots/context_menu_v2.png" width="415">
+  <img src="src/screenshots/context_menu_dark_v2.png" width="415">
 </p>
 
 <p align="center">
