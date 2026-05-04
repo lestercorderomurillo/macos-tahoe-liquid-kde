@@ -74,8 +74,12 @@ App grid with categories and search.
 Nautilus file manager with macOS-style sidebar.
 
 <p align="center">
-  <img src="src/screenshots/finder.png" width="600"><br>
-  <sub>Nautilus file manager with macOS-style sidebar.</sub>
+  <img src="src/screenshots/finder.png" width="290">
+  <img src="src/screenshots/finder_dark.png" width="290">
+</p>
+
+<p align="center">
+  <sub>Example of Light and Dark variant.</sub>
 </p>
 
 ### Plasma Theme
