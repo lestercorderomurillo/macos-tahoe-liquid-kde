@@ -47,6 +47,19 @@ Liquid-glass dock with macOS-style red notification bubbles and wallpaper refrac
   <sub>Dark dock variant with the same liquid-glass depth.</sub>
 </p>
 
+### Tahoe Finder
+
+Nautilus file manager with macOS-style sidebar.
+
+<p align="center">
+  <img src="src/screenshots/finder_v2.png" width="415">
+  <img src="src/screenshots/finder_dark_v2.png" width="415">
+</p>
+
+<p align="center">
+  <sub>Example of Light and Dark variant.</sub>
+</p>
+
 ### Menu
 
 System menu with native QMenu dropdown.
@@ -67,19 +80,6 @@ Glass system information window.
 <p align="center">
   <img src="src/screenshots/about_v2.png" width="415">
   <img src="src/screenshots/about_dark_v2.png" width="415">
-</p>
-
-<p align="center">
-  <sub>Example of Light and Dark variant.</sub>
-</p>
-
-### Tahoe Finder
-
-Nautilus file manager with macOS-style sidebar.
-
-<p align="center">
-  <img src="src/screenshots/finder_v2.png" width="415">
-  <img src="src/screenshots/finder_dark_v2.png" width="415">
 </p>
 
 <p align="center">
