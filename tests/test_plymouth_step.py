@@ -735,6 +735,97 @@ def test_prereqs_warn_directs_to_other_loaders_when_no_grub(tmp_path, monkeypatc
 # ──────────────────────── static safety net ─────────────────────────────
 
 
+def test_install_sets_use_simpledrm_in_plymouthd_conf(tmp_path, monkeypatch):
+    """Fixes the corner-rendered shutdown splash bug: at shutdown the
+    GPU driver unloads BEFORE plymouth shows the shutdown splash, the
+    kernel console framebuffer drops to ~1024x768, and the splash
+    renders in a tiny corner of the high-res panel. Forcing
+    UseSimpledrm=true keeps plymouth on the UEFI GOP framebuffer
+    which survives DRM driver unloads. Write it to plymouthd.conf
+    during install."""
+    conf = tmp_path / "plymouthd.conf"
+    monkeypatch.setattr(plymouth, "HOME", tmp_path)
+    monkeypatch.setattr(plymouth, "STATE_DIR", tmp_path / "state")
+    monkeypatch.setattr(plymouth, "PREV_THEME_FILE",
+                        tmp_path / "state/plymouth-previous-theme")
+    monkeypatch.setattr(plymouth, "DEST", tmp_path / "dest/MacTahoeLiquidKde")
+    monkeypatch.setattr(plymouth, "PLYMOUTHD_CONF", conf)
+    _stub(monkeypatch, have_bin=True, current_theme="breeze")
+    plymouth.install()
+
+    assert conf.is_file(), "install must create/touch plymouthd.conf"
+    text = conf.read_text(encoding="utf-8")
+    assert "[Daemon]" in text
+    assert "UseSimpledrm" in text
+    assert "true" in text.lower()
+
+
+def test_install_preserves_unrelated_plymouthd_conf_keys(tmp_path, monkeypatch):
+    """If the user (or distro) has other keys in plymouthd.conf, our
+    UseSimpledrm write must NOT clobber them. configparser round-trip
+    keeps every existing key intact."""
+    conf = tmp_path / "plymouthd.conf"
+    conf.write_text(
+        "[Daemon]\n"
+        "Theme=breeze\n"
+        "ShowDelay=0\n"
+        "\n"
+        "[Custom]\n"
+        "SomeUserKey=value\n",
+        encoding="utf-8",
+    )
+    monkeypatch.setattr(plymouth, "HOME", tmp_path)
+    monkeypatch.setattr(plymouth, "STATE_DIR", tmp_path / "state")
+    monkeypatch.setattr(plymouth, "PREV_THEME_FILE",
+                        tmp_path / "state/plymouth-previous-theme")
+    monkeypatch.setattr(plymouth, "DEST", tmp_path / "dest/MacTahoeLiquidKde")
+    monkeypatch.setattr(plymouth, "PLYMOUTHD_CONF", conf)
+    _stub(monkeypatch, have_bin=True, current_theme="breeze")
+    plymouth.install()
+
+    text = conf.read_text(encoding="utf-8")
+    # Our key landed.
+    assert "UseSimpledrm" in text
+    # Existing keys survived.
+    assert "Theme = breeze" in text or "Theme=breeze" in text
+    assert "ShowDelay" in text
+    assert "SomeUserKey" in text
+    assert "[Custom]" in text
+
+
+def test_uninstall_removes_use_simpledrm_override(tmp_path, monkeypatch):
+    """Uninstall should put plymouthd.conf back to a state that
+    doesn't reflect our override — the previous theme may not need
+    or want UseSimpledrm forced. Leaving our line behind is install-
+    state leak."""
+    conf = tmp_path / "plymouthd.conf"
+    conf.write_text(
+        "[Daemon]\n"
+        "Theme=MacTahoeLiquidKde\n"
+        "UseSimpledrm=true\n"
+        "ShowDelay=0\n",
+        encoding="utf-8",
+    )
+    state_dir = tmp_path / "state"
+    state_dir.mkdir()
+    prev_file = state_dir / "plymouth-previous-theme"
+    prev_file.write_text("breeze\n")
+    monkeypatch.setattr(plymouth, "HOME", tmp_path)
+    monkeypatch.setattr(plymouth, "STATE_DIR", state_dir)
+    monkeypatch.setattr(plymouth, "PREV_THEME_FILE", prev_file)
+    monkeypatch.setattr(plymouth, "DEST", tmp_path / "dest/MacTahoeLiquidKde")
+    monkeypatch.setattr(plymouth, "PLYMOUTHD_CONF", conf)
+    _stub(monkeypatch, have_bin=True)
+    plymouth.uninstall()
+
+    text = conf.read_text(encoding="utf-8")
+    assert "UseSimpledrm" not in text, (
+        f"uninstall left UseSimpledrm in plymouthd.conf: {text!r}"
+    )
+    # But unrelated keys (ShowDelay) survive.
+    assert "ShowDelay" in text
+
+
 def test_no_activation_call_in_source_lacks_R_flag():
     """Static scan: every ``plymouth-set-default-theme <name>`` call
     in the module must carry ``-R``. The query form (no name) is fine."""

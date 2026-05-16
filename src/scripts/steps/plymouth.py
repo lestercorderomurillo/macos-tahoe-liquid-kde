@@ -42,6 +42,7 @@ ACTIVATE_TIMEOUT_SEC = 60
 MKINITCPIO_CONF = Path("/etc/mkinitcpio.conf")
 GRUB_DEFAULT = Path("/etc/default/grub")
 PROC_CMDLINE = Path("/proc/cmdline")
+PLYMOUTHD_CONF = Path("/etc/plymouth/plymouthd.conf")
 
 
 def deps():
@@ -202,6 +203,62 @@ def _activate(theme: str) -> bool:
     return True
 
 
+def _set_plymouthd_simpledrm(enabled: bool) -> bool:
+    """Toggle ``[Daemon] UseSimpledrm`` in /etc/plymouth/plymouthd.conf.
+
+    Why: at shutdown, the GPU driver (amdgpu / nvidia-drm / i915) is
+    unloaded BEFORE plymouth shows the shutdown splash. plymouth then
+    falls back to whatever framebuffer the kernel console still has —
+    usually a tiny 1024x768 VGA — and the splash renders in a corner
+    of the high-res panel (~1/4 of the screen, bottom-left or wherever
+    fbcon parks it).
+
+    Forcing UseSimpledrm=true makes plymouth always use the UEFI GOP
+    framebuffer (which survives DRM driver unloads / re-inits), so the
+    shutdown splash stays fullscreen at native resolution — same as
+    boot. The boot path is unaffected since boot already uses simpledrm
+    before the real driver loads.
+
+    Safe to write: plymouth-set-default-theme already writes to this
+    same file (it sets ``Theme=``), so we're amending a file the
+    installer is already authoritative for. Uses configparser so we
+    don't clobber any unrelated lines a distro/user added.
+    """
+    cp = configparser.ConfigParser(strict=True)
+    # plymouthd's keys are case-sensitive (UseSimpledrm vs usesimpledrm
+    # is a different lookup). Override the default lowercase normalizer
+    # so we preserve the user's existing key casing AND write
+    # UseSimpledrm with its expected capitalization.
+    cp.optionxform = str
+    if PLYMOUTHD_CONF.is_file():
+        try:
+            cp.read(str(PLYMOUTHD_CONF), encoding="utf-8")
+        except configparser.Error as exc:
+            warn(f"plymouthd.conf unparseable ({exc.__class__.__name__}) — "
+                 "leaving UseSimpledrm setting unchanged")
+            return False
+    if not cp.has_section("Daemon"):
+        cp.add_section("Daemon")
+    if enabled:
+        cp.set("Daemon", "UseSimpledrm", "true")
+    elif cp.has_option("Daemon", "UseSimpledrm"):
+        cp.remove_option("Daemon", "UseSimpledrm")
+    else:
+        return True  # already absent, nothing to do
+
+    try:
+        with _as_root():
+            PLYMOUTHD_CONF.parent.mkdir(parents=True, exist_ok=True)
+            tmp = PLYMOUTHD_CONF.with_name(PLYMOUTHD_CONF.name + ".mttkde-tmp")
+            with tmp.open("w", encoding="utf-8") as fh:
+                cp.write(fh)
+            tmp.replace(PLYMOUTHD_CONF)
+    except OSError as exc:
+        warn(f"could not update {PLYMOUTHD_CONF} ({exc})")
+        return False
+    return True
+
+
 def _save_previous(name: str) -> None:
     try:
         STATE_DIR.mkdir(parents=True, exist_ok=True)
@@ -254,6 +311,9 @@ def install() -> None:
 
     ok("Boot splash activated")
 
+    if _set_plymouthd_simpledrm(True):
+        ok("Forced UseSimpledrm=true (fixes corner-rendered shutdown splash)")
+
     prereq_warnings = _check_prereqs()
     if prereq_warnings:
         # Theme is on disk + set as default + initrd was rebuilt with the
@@ -280,6 +340,12 @@ def uninstall() -> None:
             warn(f"could not restore boot splash to {previous} — continuing cleanup")
     else:
         warn(f"{PLYMOUTH_BIN} not available — skipping splash restore")
+
+    # Remove the UseSimpledrm override so the user's plymouthd.conf
+    # is back to whatever default their distro shipped. The previous
+    # theme may not need or want this forced.
+    if _set_plymouthd_simpledrm(False):
+        ok("UseSimpledrm override removed")
 
     sudo_remove(DEST, "Boot splash files")
 
