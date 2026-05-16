@@ -53,12 +53,14 @@ logo.SetOpacity(1);
 
 # ── progress bar: 20% screen-width pill below the logo (boot only) ──────
 
-bar_w = Math.Int(screen_w * 0.10);
+bar_w = Math.Int(screen_w * 0.07);
 bar_h = Math.Int(bar_w * 0.02);
 if (bar_h < 4)
   bar_h = 4;
 bar_x = Window.GetX() + screen_w / 2 - bar_w / 2;
-bar_y = logo.GetY() + logo_image.GetHeight() + Math.Int(screen_h * 0.08);
+# Position roughly 65% from top — bar in the lower third, not
+# glued directly under the logo.
+bar_y = logo.GetY() + logo_image.GetHeight() + Math.Int(screen_h * 0.12);
 
 track_source = Image("progress_track.png");
 track_image  = track_source.Scale(bar_w, bar_h);
