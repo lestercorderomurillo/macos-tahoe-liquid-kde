@@ -159,18 +159,16 @@ def test_plymouth_script_centers_logo_after_scale():
     off-centre at non-1080p resolutions. Compute against the SCALED
     sprite's GetWidth()/GetHeight(), not the source image dimensions."""
     text = (THEME_SRC / "MacTahoeLiquidKde.script").read_text(encoding="utf-8")
-    # Origin offset (per-monitor) + half the window width minus half the
-    # scaled image width. Same shape for SetY.
     assert re.search(
-        r"SetX\s*\(\s*origin_x\s*\+\s*screen_w\s*/\s*2"
+        r"SetX\s*\(\s*Window\.GetX\(\)\s*\+\s*screen_w\s*/\s*2"
         r"\s*-\s*logo_image\.GetWidth\(\)\s*/\s*2\s*\)",
         text,
-    ), "missing horizontally-centered SetX(origin_x + screen_w/2 - logo_image.GetWidth()/2)"
+    ), "missing horizontally-centered SetX(Window.GetX() + screen_w/2 - logo_image.GetWidth()/2)"
     assert re.search(
-        r"SetY\s*\(\s*origin_y\s*\+\s*screen_h\s*/\s*2"
+        r"SetY\s*\(\s*Window\.GetY\(\)\s*\+\s*screen_h\s*/\s*2"
         r"\s*-\s*logo_image\.GetHeight\(\)\s*/\s*2\s*\)",
         text,
-    ), "missing vertically-centered SetY(origin_y + screen_h/2 - logo_image.GetHeight()/2)"
+    ), "missing vertically-centered SetY(Window.GetY() + screen_h/2 - logo_image.GetHeight()/2)"
 
 
 def test_plymouth_script_handles_portrait_orientation():
@@ -249,30 +247,29 @@ def test_plymouth_script_message_state_initialised():
         assert sym in text, f"message bookkeeping symbol missing: {sym}"
 
 
-def test_plymouth_script_iterates_all_monitors():
-    """The upstream bug we're guarding against: boot rendered on every
-    monitor, shutdown on only the primary. Root cause was hardcoded
-    no-index ``Window.GetWidth()`` calls in the shutdown branch. A
-    single ``for (i = 0; i < Window.GetCount(); i++)`` loop running
-    for ALL modes guarantees parity."""
-    text = (THEME_SRC / "MacTahoeLiquidKde.script").read_text(encoding="utf-8")
-    assert "Window.GetCount()" in text, (
-        "script must enumerate monitors via Window.GetCount()"
+def test_plymouth_script_uses_single_window_logic():
+    """v0.13.0 tried to iterate Window.GetCount() and build per-monitor
+    sprite arrays. That works in plymouth's X11 plugin (used by our
+    render harness) but ships BLACK on plymouth's DRM renderer at real
+    boot — both monitors black, no logo. The DRM renderer mirrors a
+    single Sprite across every connected display automatically, so the
+    correct approach is single-Window logic with NO loop over heads."""
+    raw = (THEME_SRC / "MacTahoeLiquidKde.script").read_text(encoding="utf-8")
+    # Strip comments before forbidding patterns — the header comment
+    # explains the v0.13.0 mistake, those literal mentions are fine.
+    code = re.sub(r"#.*$", "", raw, flags=re.MULTILINE)
+    # The bare (no-index) Window calls — plymouth handles mirroring.
+    assert "Window.GetWidth()" in code
+    assert "Window.GetHeight()" in code
+    assert "Window.GetX()" in code
+    assert "Window.GetY()" in code
+    # Forbid the v0.13.0 multi-monitor approach as ACTUAL CODE.
+    assert "Window.GetCount()" not in code, (
+        "Window.GetCount() loop ships black on DRM renderer — see v0.13.0 regression"
     )
-    assert re.search(
-        r"for\s*\(\s*i\s*=\s*0\s*;\s*i\s*<\s*window_count", text,
-    ), "script must loop over per-monitor indices"
-    # Geometry queries must be indexed — bare GetWidth()/GetX() default
-    # to monitor 0 and silently skip the others.
-    for indexed_call in (
-        "Window.GetWidth(i)",
-        "Window.GetHeight(i)",
-        "Window.GetX(i)",
-        "Window.GetY(i)",
-    ):
-        assert indexed_call in text, (
-            f"missing indexed call {indexed_call} — multi-monitor breaks"
-        )
+    assert "window_count" not in code, (
+        "per-monitor enumeration broke real-boot rendering"
+    )
 
 
 def test_plymouth_script_shutdown_layout_shares_boot_path():
@@ -318,16 +315,13 @@ def test_plymouth_script_progress_visibility_gated_by_mode():
 
 def test_plymouth_script_progress_bar_scales_horizontally():
     """The fill grows in WIDTH only — height stays fixed. If you scale
-    both axes, the bar warps as progress advances. Pin the
-    width-only scale call."""
+    both axes, the bar warps as progress advances."""
     text = (THEME_SRC / "MacTahoeLiquidKde.script").read_text(encoding="utf-8")
-    # Inside the on_boot_progress callback, fill_source.Scale(...)
-    # multiplies bar_w[i] by progress for width, passes bar_h[i] verbatim.
     assert re.search(
-        r"fill_source\.Scale\(\s*Math\.Int\(\s*bar_w\[i\]\s*\*\s*progress\s*\)"
-        r"\s*,\s*bar_h\[i\]\s*\)",
+        r"fill_source\.Scale\(\s*Math\.Int\(\s*bar_w\s*\*\s*progress\s*\)"
+        r"\s*,\s*bar_h\s*\)",
         text,
-    ), "fill.Scale must be (bar_w[i] * progress, bar_h[i]) — width only"
+    ), "fill.Scale must be (bar_w * progress, bar_h) — width only"
 
 
 def test_plymouth_script_clamps_progress_range():
@@ -350,22 +344,9 @@ def test_plymouth_script_progress_bar_positioned_below_logo():
     below the logo regardless of resolution / aspect ratio."""
     text = (THEME_SRC / "MacTahoeLiquidKde.script").read_text(encoding="utf-8")
     assert re.search(
-        r"bar_y\s*=\s*logo_sprite\[i\]\.GetY\(\)\s*\+\s*logo_image\.GetHeight\(\)",
+        r"bar_y\s*=\s*logo\.GetY\(\)\s*\+\s*logo_image\.GetHeight\(\)",
         text,
     ), "bar_y must be derived from logo sprite + logo image height"
-
-
-def test_plymouth_script_progress_sprites_per_monitor():
-    """Per-monitor sprite arrays: every monitor gets its own track and
-    fill sprite so the bar lands at the correct centre on each. A
-    single global sprite would render on monitor 0 only."""
-    text = (THEME_SRC / "MacTahoeLiquidKde.script").read_text(encoding="utf-8")
-    for arr in ("logo_sprite[i]", "track_sprite[i]", "fill_sprite[i]"):
-        assert arr in text, f"missing per-monitor sprite array: {arr}"
-    # Per-monitor bar dimensions too: bar_w[i] and bar_h[i] differ on
-    # ultrawide + portrait mixed setups.
-    assert "bar_w[i]" in text
-    assert "bar_h[i]" in text
 
 
 def test_plymouth_step_module_has_install_paths_pinned():
