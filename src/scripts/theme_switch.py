@@ -17,6 +17,7 @@ import hashlib
 import os
 import re
 import shutil
+import signal
 import subprocess
 import sys
 import time
@@ -821,25 +822,109 @@ def sync_auto_mode_on_startup() -> str:
     return target
 
 
+def _spawn_dbus_monitor() -> subprocess.Popen | None:
+    """Start the portal Settings dbus-monitor or return None.
+
+    Separated out so watch_loop() can degrade gracefully when dbus-monitor
+    is missing (Popen would raise FileNotFoundError) or can't connect — the
+    bare ``subprocess.Popen(["dbus-monitor", ...])`` used to leak that
+    exception, the service exited rc=1, and systemd's Restart=on-failure
+    spun the unit every RestartSec=15s. Now the failure path is local: the
+    helper returns None, watch_loop blocks on signal, and the systemd timer
+    still owns 06:00/18:00 transitions.
+    """
+    if not _have("dbus-monitor"):
+        return None
+    try:
+        return subprocess.Popen(
+            ["dbus-monitor", "--session",
+             "type='signal',interface='org.freedesktop.portal.Settings',"
+             "member='SettingChanged'"],
+            stdout=subprocess.PIPE, stderr=subprocess.DEVNULL, text=True,
+        )
+    except OSError:
+        return None
+
+
+def _block_until_signal() -> None:
+    """Park the watcher forever; only SIGTERM/SIGINT wakes it.
+
+    Used by watch_loop when there is no portal listener to read (dbus-monitor
+    unavailable) or when the listener exited unexpectedly. Returning from
+    watch_loop in either of those cases would either restart-storm (with
+    Restart=on-failure) or leave the unit silently dead — neither is what
+    we want. The timer + apply.service still drive 06:00/18:00, so blocking
+    here keeps the unit honestly long-running until the session ends.
+    """
+    signal.pause()
+
+
+def _watch_consume(stdout, initial_mode: str) -> str:
+    """Iterate the dbus-monitor stdout and apply on color-scheme changes.
+
+    Pulled out of watch_loop so the test suite can drive it with a fake
+    iterable. ``last_mode`` tracks the most recent applied mode so a
+    burst of repeated SettingChanged signals (Plasma re-emits the same
+    setting several times during a single toggle) only causes one apply
+    per real transition.
+    """
+    last_mode = initial_mode
+    for line in stdout:
+        if "color-scheme" not in line:
+            continue
+        # Brief settle: portal often emits the signal a hair before the
+        # new color-scheme value is queryable from kdeglobals / portal.
+        time.sleep(0.5)
+        new = detect_mode()
+        if new != last_mode:
+            apply_extras(new)
+            last_mode = new
+    return last_mode
+
+
 def watch_loop() -> int:
+    """Long-running portal/Plasma watcher for the auto theme mode.
+
+    Return codes are deliberately always 0. Routinely-failing modes
+    (Plasma not up, dbus-monitor missing, dbus-monitor died) used to
+    return non-zero and trip the unit's Restart=on-failure into a
+    Started→Stopped storm every RestartSec. The unit is now Restart=no
+    and this function owns its own degraded-mode behaviour: when the
+    portal listener isn't available, it parks on signal.pause() instead
+    of bailing.
+    """
     if not wait_for_plasma():
-        print("Plasma not ready after 60s, exiting", file=sys.stderr)
-        return 1
+        print("Plasma not ready after 60s — staying alive for timer fallback",
+              file=sys.stderr)
+        _block_until_signal()
+        return 0
+
     last_mode = sync_auto_mode_on_startup()
-    proc = subprocess.Popen(
-        ["dbus-monitor", "--session",
-         "type='signal',interface='org.freedesktop.portal.Settings',"
-         "member='SettingChanged'"],
-        stdout=subprocess.PIPE, stderr=subprocess.DEVNULL, text=True,
-    )
-    assert proc.stdout is not None
-    for line in proc.stdout:
-        if "color-scheme" in line:
-            time.sleep(0.5)
-            new = detect_mode()
-            if new != last_mode:
-                apply_extras(new)
-                last_mode = new
+
+    proc = _spawn_dbus_monitor()
+    if proc is None or proc.stdout is None:
+        print("dbus-monitor unavailable — staying alive for timer fallback",
+              file=sys.stderr)
+        _block_until_signal()
+        return 0
+
+    try:
+        _watch_consume(proc.stdout, last_mode)
+    finally:
+        if proc.poll() is None:
+            proc.terminate()
+            try:
+                proc.wait(timeout=5)
+            except subprocess.TimeoutExpired:
+                proc.kill()
+
+    # dbus-monitor exited (bus restarted, OOM, etc.). Returning would let
+    # systemd notice the unit died and — if anyone re-adds Restart= in
+    # the future — fire the next iteration. Park here instead so the
+    # only way out is a real SIGTERM from `systemctl stop`.
+    print("dbus-monitor exited; staying alive for timer fallback",
+          file=sys.stderr)
+    _block_until_signal()
     return 0
 
 

@@ -1,0 +1,160 @@
+# MacTahoe Liquid KDE — Plymouth boot splash
+#
+# Black background with a centered logo at every monitor, scaled to
+# ~18% of the monitor's smaller dimension. The same proportions hold
+# whether plymouth lands at 1280×800 or 5120×2880, on 16:9 panels,
+# 32:9 ultrawides, or portrait orientations.
+#
+# Multi-monitor behaviour:
+#   We iterate ``Window.GetCount()`` and create one logo + progress
+#   sprite per output. Single-Window scripts that hardcode
+#   ``Window.GetWidth()`` (no index) render on the primary screen only
+#   — the other monitor stays black through boot. Always pass the
+#   index, always recompute geometry per-window.
+#
+# Mode handling:
+#   We honour ``Plymouth.GetMode()``. Boot gets the progress bar;
+#   shutdown and reboot share the boot layout but with the bar
+#   hidden, so the logo lands in exactly the same pixel on every
+#   mode — no "shutdown is misaligned vs boot" drift.
+#
+# Plymouth callbacks we wire:
+#   - SetQuitFunction          keep the logo at full opacity through
+#                              handoff to the DE so we never flash a
+#                              partial image during the final frame.
+#   - SetBootProgressFunction  grows the white fill across the track
+#                              as progress goes 0 → 1. Bound on boot
+#                              only — shutdown/reboot never animate
+#                              a fake progress bar.
+#   - SetDisplayMessage*       fsck warnings / LUKS hints / recovery
+#                              text get stacked in the top-left.
+#
+# Callbacks we deliberately do NOT wire:
+#   - SetPasswordFunction      LUKS prompts fall back to Plymouth's
+#                              built-in text dialog. We ship no
+#                              entry/bullet PNGs so we'd crash on the
+#                              first prompt if we wired this.
+#   - Refresh / Display*       modern systemd boots finish before the
+#                              first refresh tick can fire on cold
+#                              initramfs renders. Skip them.
+
+# ── background ──────────────────────────────────────────────────────────
+
+Window.SetBackgroundTopColor(0, 0, 0);
+Window.SetBackgroundBottomColor(0, 0, 0);
+
+# ── shared asset loads (once; sprites reference these) ──────────────────
+
+logo_source  = Image("boot.png");
+track_source = Image("progress_track.png");
+fill_source  = Image("progress_fill.png");
+
+window_count  = Window.GetCount();
+mode          = Plymouth.GetMode();
+show_progress = (mode == "boot");
+
+# ── per-monitor layout ──────────────────────────────────────────────────
+# Same code path for every mode. Boot and shutdown both land the logo
+# at the geometric centre of each output; only the bar visibility
+# differs.
+
+logo_sprite  = [];
+track_sprite = [];
+fill_sprite  = [];
+bar_w        = [];
+bar_h        = [];
+
+for (i = 0; i < window_count; i++)
+{
+  screen_w = Window.GetWidth(i);
+  screen_h = Window.GetHeight(i);
+  origin_x = Window.GetX(i);
+  origin_y = Window.GetY(i);
+
+  if (screen_w < screen_h)
+    logo_target = Math.Int(screen_w * 0.18);
+  else
+    logo_target = Math.Int(screen_h * 0.18);
+  logo_image = logo_source.Scale(logo_target, logo_target);
+
+  logo_sprite[i] = Sprite(logo_image);
+  logo_sprite[i].SetX(origin_x + screen_w / 2 - logo_image.GetWidth()  / 2);
+  logo_sprite[i].SetY(origin_y + screen_h / 2 - logo_image.GetHeight() / 2);
+  logo_sprite[i].SetOpacity(1);
+
+  bar_w[i] = Math.Int(screen_w * 0.20);
+  bar_h[i] = Math.Int(bar_w[i] * 0.02);
+  if (bar_h[i] < 4)
+    bar_h[i] = 4;
+  bar_x = origin_x + screen_w / 2 - bar_w[i] / 2;
+  bar_y = logo_sprite[i].GetY() + logo_image.GetHeight()
+          + Math.Int(screen_h * 0.08);
+
+  track_image     = track_source.Scale(bar_w[i], bar_h[i]);
+  track_sprite[i] = Sprite(track_image);
+  track_sprite[i].SetX(bar_x);
+  track_sprite[i].SetY(bar_y);
+  if (!show_progress)
+    track_sprite[i].SetOpacity(0);
+
+  # Fill starts empty; the callback assigns a scaled image on each tick.
+  fill_sprite[i] = Sprite();
+  fill_sprite[i].SetX(bar_x);
+  fill_sprite[i].SetY(bar_y);
+}
+
+# ── callbacks ───────────────────────────────────────────────────────────
+
+fun on_quit()
+{
+  # Boot is wrapping up; keep every logo solid for the final frame so
+  # we never flash a partial image during handoff to the DE.
+  for (i = 0; i < window_count; i++)
+    logo_sprite[i].SetOpacity(1);
+}
+Plymouth.SetQuitFunction(on_quit);
+
+fun on_boot_progress(duration, progress)
+{
+  if (progress < 0)
+    progress = 0;
+  if (progress > 1)
+    progress = 1;
+  for (i = 0; i < window_count; i++)
+  {
+    fill_image = fill_source.Scale(Math.Int(bar_w[i] * progress), bar_h[i]);
+    fill_sprite[i].SetImage(fill_image);
+  }
+}
+if (show_progress)
+  Plymouth.SetBootProgressFunction(on_boot_progress);
+
+# Console-style messages from the boot process get stacked in the
+# top-left so a stalled boot is still diagnosable without exiting
+# the splash. White text, transparent background, 10px insets.
+
+message_y       = 10;
+message_sprites = [];
+message_count   = 0;
+
+fun on_show_message(text)
+{
+  rendered = Image.Text(text, 1, 1, 1);
+  sprite   = Sprite(rendered);
+  sprite.SetPosition(10, message_y, 10000);
+  sprite.text = text;
+  message_sprites[message_count] = sprite;
+  message_count++;
+  message_y += rendered.GetHeight();
+}
+Plymouth.SetDisplayMessageFunction(on_show_message);
+
+fun on_hide_message(text)
+{
+  for (i = 0; i < message_count; i++)
+  {
+    if (message_sprites[i].text == text)
+      message_sprites[i] = NULL;
+  }
+}
+Plymouth.SetHideMessageFunction(on_hide_message);

@@ -91,7 +91,8 @@ def _allowed_roots() -> tuple[re.Pattern, ...]:
         re.compile(rf"^{home}/(\.local|\.config|\.cache)(/|$)"),
         re.compile(r"^/usr/lib/qt6/(plugins|qml)(/|$)"),
         re.compile(r"^/etc/sddm\.conf\.d(/|$)"),
-        re.compile(r"^/usr/share/(sounds|plasma|wallpapers)(/|$)"),
+        re.compile(r"^/etc/plymouth(/|$)"),
+        re.compile(r"^/usr/share/(sounds|plasma|plymouth|wallpapers)(/|$)"),
     )
 
 
@@ -111,7 +112,7 @@ def _validate_path(path: Path | str) -> str | None:
         if pat.search(s):
             return reason
     if not any(pat.search(s) for pat in _allowed_roots()):
-        return "outside allowed roots ($HOME, /usr/lib/qt6, /etc/sddm.conf.d, /usr/share)"
+        return "outside allowed roots ($HOME, /usr/lib/qt6, /etc/sddm.conf.d, /etc/plymouth, /usr/share)"
     return None
 
 

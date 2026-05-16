@@ -564,6 +564,14 @@ def test_auto_mode_uses_scheduled_context(monkeypatch):
 def _run_step(step_name: str, phase: str, env: dict[str, str]) -> None:
     full = os.environ.copy()
     full.update(env)
+    # Detach the subprocess from the host's user session bus. Without this,
+    # the install/uninstall step's ``systemctl --user enable/disable --now``
+    # calls reach the live user manager (which ignores the sandbox HOME),
+    # toggling the real mac-tahoe-liquid-kde-theme.service. Each pytest run
+    # then produces a Started→Stopped→Started cycle in the journal — which
+    # is the exact 40–60s storm regression we are guarding against.
+    full.pop("DBUS_SESSION_BUS_ADDRESS", None)
+    full.pop("XDG_RUNTIME_DIR", None)
     rc = subprocess.run(
         ["python3", "-c",
          f"from steps.{step_name} import {phase}; {phase}()"],
@@ -604,3 +612,211 @@ def test_switch_step_install_uninstall_reinstall(sandbox):
     _run_step("theme_switch", "install", {"THEME_MODE": "dark"})
     assert bin_path.is_file()
     assert (svc_dir / "mac-tahoe-liquid-kde-theme.service").is_file()
+
+
+# ── watch loop: long-running, no restart-storm regressions ───────────────
+class _FakeProc:
+    """Mock subprocess.Popen for dbus-monitor. ``stdout`` is any iterable;
+    when it's exhausted the loop body treats it the same as dbus-monitor
+    exiting (the regression scenario we used to crash on)."""
+
+    def __init__(self, lines):
+        self.stdout = iter(lines)
+        self._polled = None
+        self.terminated = False
+        self.killed = False
+        self.waited = False
+
+    def poll(self):
+        return self._polled
+
+    def terminate(self):
+        self.terminated = True
+        self._polled = 0
+
+    def wait(self, timeout=None):
+        self.waited = True
+        return 0
+
+    def kill(self):
+        self.killed = True
+
+
+def _patch_watch_loop_base(monkeypatch):
+    """Common monkeypatches: skip Plasma wait, skip startup sync, no sleeps."""
+    import theme_switch
+
+    monkeypatch.setattr(theme_switch, "wait_for_plasma", lambda **_kw: True)
+    monkeypatch.setattr(theme_switch, "sync_auto_mode_on_startup",
+                        lambda: "light")
+    monkeypatch.setattr(theme_switch.time, "sleep", lambda _s: None)
+    return theme_switch
+
+
+def test_watch_loop_stays_alive_when_dbus_monitor_missing(monkeypatch):
+    """Routine failure mode: dbus-monitor not installed. The old code
+    raised FileNotFoundError → rc=1 → Restart=on-failure storm. The new
+    contract is: spawn helper returns None, watch_loop parks on
+    _block_until_signal, returns rc=0."""
+    theme_switch = _patch_watch_loop_base(monkeypatch)
+
+    parked = []
+    monkeypatch.setattr(theme_switch, "_spawn_dbus_monitor", lambda: None)
+    monkeypatch.setattr(theme_switch, "_block_until_signal",
+                        lambda: parked.append(True))
+
+    assert theme_switch.watch_loop() == 0
+    assert parked == [True], \
+        "watch_loop must park on _block_until_signal, not return early"
+
+
+def test_watch_loop_stays_alive_when_plasma_never_ready(monkeypatch):
+    """The Plasma-not-ready exit used to return 1 → Restart=on-failure
+    fires every 15s → the unit reruns wait_for_plasma → still not ready
+    → loop. New contract: return 0 and park; the timer handles 06:00/18:00."""
+    theme_switch = _patch_watch_loop_base(monkeypatch)
+
+    parked = []
+    monkeypatch.setattr(theme_switch, "wait_for_plasma", lambda **_kw: False)
+    monkeypatch.setattr(theme_switch, "_block_until_signal",
+                        lambda: parked.append(True))
+
+    assert theme_switch.watch_loop() == 0
+    assert parked == [True]
+
+
+def test_watch_loop_parks_when_dbus_monitor_exits(monkeypatch):
+    """If dbus-monitor dies after start, the for-loop ends. We must NOT
+    let watch_loop return without parking — that would either restart-storm
+    (if Restart= ever gets re-added) or leave the service silently dead."""
+    theme_switch = _patch_watch_loop_base(monkeypatch)
+
+    proc = _FakeProc([])  # empty stdout → loop exits immediately
+    parked = []
+    monkeypatch.setattr(theme_switch, "_spawn_dbus_monitor", lambda: proc)
+    monkeypatch.setattr(theme_switch, "_block_until_signal",
+                        lambda: parked.append(True))
+
+    assert theme_switch.watch_loop() == 0
+    assert parked == [True], "must park after dbus-monitor exits"
+
+
+def test_watch_loop_applies_once_per_color_scheme_transition(monkeypatch):
+    """A real toggle: portal emits one or more SettingChanged signals with
+    color-scheme, we apply exactly once. Multiple repeats of the same
+    signal must not multi-apply."""
+    theme_switch = _patch_watch_loop_base(monkeypatch)
+
+    # Three color-scheme signals (Plasma re-emits) but only one real
+    # transition: light → dark.
+    proc = _FakeProc([
+        "signal interface=org.freedesktop.portal.Settings member=SettingChanged\n",
+        '  string "color-scheme"\n',
+        '  string "color-scheme"\n',
+        '  string "color-scheme"\n',
+    ])
+
+    applied = []
+    monkeypatch.setattr(theme_switch, "_spawn_dbus_monitor", lambda: proc)
+    monkeypatch.setattr(theme_switch, "_block_until_signal", lambda: None)
+    monkeypatch.setattr(theme_switch, "detect_mode", lambda: "dark")
+    monkeypatch.setattr(theme_switch, "apply_extras",
+                        lambda mode: applied.append(mode))
+
+    assert theme_switch.watch_loop() == 0
+    assert applied == ["dark"], \
+        "exactly one apply per real transition (not per signal)"
+
+
+def test_watch_loop_ignores_unrelated_signals(monkeypatch):
+    """SettingChanged is emitted for many things (font-name, contrast,
+    accent-color). The watcher must only react to color-scheme."""
+    theme_switch = _patch_watch_loop_base(monkeypatch)
+
+    proc = _FakeProc([
+        "signal interface=org.freedesktop.portal.Settings\n",
+        '  string "font-name"\n',
+        '  string "accent-color"\n',
+        '  string "high-contrast"\n',
+    ])
+
+    applied = []
+    monkeypatch.setattr(theme_switch, "_spawn_dbus_monitor", lambda: proc)
+    monkeypatch.setattr(theme_switch, "_block_until_signal", lambda: None)
+    monkeypatch.setattr(theme_switch, "detect_mode", lambda: "dark")
+    monkeypatch.setattr(theme_switch, "apply_extras",
+                        lambda mode: applied.append(mode))
+
+    theme_switch.watch_loop()
+    assert applied == [], "must not apply for non-color-scheme signals"
+
+
+def test_watch_loop_skips_apply_when_mode_unchanged(monkeypatch):
+    """Manual `light` followed by a color-scheme signal that already
+    matches: don't re-apply. The sync_auto_mode_on_startup() return value
+    seeds last_mode so the first signal cycle can short-circuit cleanly."""
+    theme_switch = _patch_watch_loop_base(monkeypatch)
+    # Override the base default: startup applied 'dark'.
+    monkeypatch.setattr(theme_switch, "sync_auto_mode_on_startup",
+                        lambda: "dark")
+
+    proc = _FakeProc([
+        '  string "color-scheme"\n',
+    ])
+
+    applied = []
+    monkeypatch.setattr(theme_switch, "_spawn_dbus_monitor", lambda: proc)
+    monkeypatch.setattr(theme_switch, "_block_until_signal", lambda: None)
+    monkeypatch.setattr(theme_switch, "detect_mode", lambda: "dark")
+    monkeypatch.setattr(theme_switch, "apply_extras",
+                        lambda mode: applied.append(mode))
+
+    theme_switch.watch_loop()
+    assert applied == [], "no re-apply when detected mode matches last_mode"
+
+
+def test_spawn_dbus_monitor_returns_none_when_command_missing(monkeypatch):
+    """The bare ``subprocess.Popen([...dbus-monitor...])`` form used to
+    raise FileNotFoundError. The helper now swallows it and returns None
+    so watch_loop can branch cleanly into the parked-fallback path."""
+    import theme_switch
+
+    monkeypatch.setattr(theme_switch, "_have", lambda cmd: False)
+    assert theme_switch._spawn_dbus_monitor() is None
+
+
+def test_spawn_dbus_monitor_handles_popen_oserror(monkeypatch):
+    """Even with dbus-monitor on PATH, Popen can raise OSError on a
+    file-descriptor exhaustion / sandbox / seccomp boundary. The helper
+    must absorb it instead of letting the watch service crash to rc=1."""
+    import theme_switch
+
+    def boom(*_a, **_kw):
+        raise OSError("simulated fd exhaustion")
+
+    monkeypatch.setattr(theme_switch, "_have", lambda cmd: True)
+    monkeypatch.setattr(theme_switch.subprocess, "Popen", boom)
+    assert theme_switch._spawn_dbus_monitor() is None
+
+
+def test_watch_service_unit_does_not_restart_on_failure():
+    """Regression guard: the user-facing storm symptom was Restart=on-failure
+    + RestartSec=15 turning every transient failure into a journal-spamming
+    cycle. Any change to the unit that re-introduces Restart=on-failure
+    must fail this test loudly."""
+    unit = Path(__file__).resolve().parent.parent \
+        / "src/offline/mac-tahoe-liquid-kde-theme.service"
+    directives = [
+        line.strip() for line in unit.read_text().splitlines()
+        if line.strip() and not line.lstrip().startswith("#")
+    ]
+    restart_lines = [d for d in directives if d.startswith("Restart=")]
+    assert restart_lines, "watch service must declare a Restart= policy"
+    for d in restart_lines:
+        assert d != "Restart=on-failure", \
+            "Restart=on-failure caused the 40-60s storm; use Restart=no instead"
+        assert not d.startswith("Restart=on-"), \
+            f"on-* restart policies recreate the storm risk: got {d!r}"
+    assert "Restart=no" in restart_lines, \
+        "watch service must declare Restart=no explicitly so a future " \
+        "systemd default change can't silently re-enable a restart loop"

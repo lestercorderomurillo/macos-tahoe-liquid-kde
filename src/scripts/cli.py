@@ -26,8 +26,8 @@ from utils import auto_dep, have, kw_read, run_user
 ALL_FEATURES = [
     "wallpapers", "fonts", "cursors", "plasma_theme", "window_decorations",
     "kvantum", "color_schemes", "icons", "plasmoids", "acrylic_glass",
-    "global_theme", "layout", "sounds", "gtk", "sddm", "apps", "nautilus",
-    "portals", "no_download",
+    "global_theme", "layout", "sounds", "gtk", "sddm", "plymouth", "apps",
+    "nautilus", "portals", "no_download",
 ]
 
 # Walk order for the install/uninstall loop.
@@ -42,7 +42,7 @@ INSTALL_ORDER = [
     "fonts", "color_schemes", "plasma_theme", "window_decorations",
     "kvantum", "gtk", "icons", "cursors", "global_theme", "wallpapers",
     "plasmoids", "globalmenu", "acrylic_glass",
-    "layout", "nautilus", "portals",
+    "layout", "nautilus", "portals", "plymouth",
 ]
 
 FEATURE_DESC = {
@@ -62,6 +62,7 @@ FEATURE_DESC = {
     "sounds": "Notification and event sounds",
     "gtk": "GTK 2/3/4 theme",
     "sddm": "Login screen theme",
+    "plymouth": "Boot splash screen (Plymouth)",
     "apps": "App configuration tweaks",
     "nautilus": "Nautilus file manager (default on KDE)",
     "portals": "Route FileChooser / AppChooser to KDE (fixes stale dialog colors)",
@@ -95,6 +96,7 @@ Options:
     --sounds           Notification and event sounds
     --gtk              GTK 2/3/4 theme
     --sddm             Login screen theme
+    --plymouth         Boot splash screen (Plymouth)
     --apps             App configuration tweaks
     --nautilus         Install Nautilus and set as default file manager
     --portals          Route FileChooser/AppChooser to KDE (fixes stale dialogs)
@@ -138,6 +140,7 @@ Options:
     --sounds           Remove notification sounds
     --gtk              Remove GTK theme
     --sddm             Remove login screen theme
+    --plymouth         Restore previous boot splash and rebuild initramfs
     --apps             Reset app configuration
 
 Examples:
@@ -400,6 +403,16 @@ def _detect_plasma_version() -> str | None:
 
 
 def verify_plasma() -> bool:
+    # Test-mode bypass for the VM boot-splash harness. The Plymouth step
+    # only needs plymouth-set-default-theme + a working initramfs path;
+    # KDE Plasma is irrelevant for boot-splash rendering. The harness
+    # sets this env var when SSH-driving `./install --only --plymouth`
+    # inside a vanilla Arch cloud image (which has no Plasma installed).
+    # NEVER set this in a real user-facing install — it would happily
+    # write KDE configs to a system that can't load them.
+    if os.environ.get("MTTKDE_SKIP_PLASMA_CHECK") == "1":
+        warn("MTTKDE_SKIP_PLASMA_CHECK=1 — bypassing Plasma version check (test mode)")
+        return True
     if not have("plasmashell"):
         fail("KDE Plasma not found")
         print("     MacTahoe Liquid KDE requires KDE Plasma 6.6+.", file=sys.stderr)
@@ -423,6 +436,13 @@ def confirm(msg: str) -> bool:
     print()
     print(f"  \033[0;31m\033[1m{msg}\033[0m")
     print()
+    # Test-mode bypass for the SSH-driven VM harness. Without this, a
+    # non-tty install session falls through to ``input()`` which reads
+    # from the bash heredoc — fragile and easy to deadlock.
+    if os.environ.get("MTTKDE_NO_CONFIRM") == "1":
+        print("  MTTKDE_NO_CONFIRM=1 — auto-accepting (test mode)")
+        print()
+        return True
     try:
         with open("/dev/tty", "r+") as tty:
             tty.write("  Continue? [Y/n] ")

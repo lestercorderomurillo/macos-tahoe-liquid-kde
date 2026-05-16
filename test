@@ -40,12 +40,58 @@ def _install_pytest() -> bool:
     return subprocess.run(cmd, check=False).returncode == 0
 
 
+def _run_vm_harness(extra_args: list[str]) -> int:
+    """Delegate to the Plymouth render harness and inherit its rc.
+
+    The harness runs plymouthd in debug mode on the host machine —
+    no Docker, no VM, no initramfs rebuild. Plymouth's X11 plugin
+    draws into your XWayland session and we screenshot via KDE's
+    spectacle (which talks to KWin's ScreenShot2 DBus interface;
+    X11 tools can't capture the composited Wayland display). PNGs
+    land in tests/vm/output/ — boot mode (logo + progress bar)
+    and shutdown mode (logo only).
+
+    Requires sudo because plymouthd refuses to run unless uid==0.
+    render.sh checks $EUID upfront and prints
+    `Re-run as: sudo ./test --vm` rather than prompting inline,
+    avoiding the pam_faillock cascade on terminals where sudo can't
+    read the password.
+
+    Kept out of pytest: needs sudo, flashes plymouth on screen,
+    produces image artifacts not pass/fail booleans."""
+    vm_dir = REPO / "tests" / "vm"
+    render_script = vm_dir / "render.sh"
+    if not render_script.is_file():
+        print(f"Render harness missing: {render_script}", file=sys.stderr)
+        return 1
+    proc = subprocess.Popen([str(render_script), *extra_args])
+    try:
+        return proc.wait()
+    except KeyboardInterrupt:
+        proc.terminate()
+        try:
+            return proc.wait(timeout=10)
+        except subprocess.TimeoutExpired:
+            proc.kill()
+            return proc.wait()
+
+
 def main() -> int:
+    args = list(sys.argv[1:])
+
+    # ``./test --vm`` short-circuits the pytest path entirely — the
+    # render harness produces image artifacts, not pass/fail booleans,
+    # and uses Docker which doesn't fit pytest's collection model.
+    # Strip --vm from argv so anything after it is forwarded to render.sh.
+    if "--vm" in args:
+        i = args.index("--vm")
+        args.pop(i)
+        return _run_vm_harness(args)
+
     if not _have_pytest():
         if not _install_pytest() or not _have_pytest():
             return 1
 
-    args = list(sys.argv[1:])
     env = os.environ.copy()
     if "--slow" in args:
         # Opt-in to the C++ build tests (~30s) for a release run. They

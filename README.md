@@ -130,7 +130,7 @@ Desktop right-click with translucent glass blur.
 | **Control Center Plasmoid** | Quick settings panel | 🔲 |
 | **System Preferences Plasmoid** | Settings launcher | 🔲 |
 | **OS Selector** | Boot manager / OS picker screen | 🔲 |
-| **Boot Screen** | Plymouth splash for startup | 🔲 |
+| **Boot Screen** | Plymouth splash for startup (1080p–4K) | ✅ |
 | **Shutdown Screen** | Styled logout / shutdown sequence | 🔲 |
 
 ---
@@ -328,6 +328,8 @@ When filing, please include:
 ---
 
 ## Disclaimer
+
+Build using AI tools.
 
 This project is an independent reimplementation inspired by the macOS aesthetic. No assets, code, or intellectual property from Apple Inc. have been copied or redistributed. All themes, icons, plasmoids, and configurations are original work or derived from open-source projects under compatible licenses. "macOS" and "Apple" are trademarks of Apple Inc. This project is not affiliated with or endorsed by Apple.
 

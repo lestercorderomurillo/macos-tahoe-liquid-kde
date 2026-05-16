@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Boot-progress fill: solid white pill, scaled horizontally by the
+     .script callback as `progress` advances 0 → 1. -->
+<svg xmlns="http://www.w3.org/2000/svg" width="320" height="6" viewBox="0 0 320 6">
+  <rect width="320" height="6" rx="3" ry="3" fill="#ffffff"/>
+</svg>

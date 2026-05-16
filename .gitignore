@@ -17,3 +17,6 @@ svg-edit/
 .claude
 CLAUDE.md
 .codex
+
+# VM test harness — captured plymouth render frames + debug logs.
+tests/vm/output/

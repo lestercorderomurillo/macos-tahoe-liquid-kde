@@ -13,6 +13,7 @@
   "sounds":              true,
   "gtk":                 true,
   "sddm":                true,
+  "plymouth":            true,
   "apps":                true,
   "nautilus":            true,
   "portals":             true,
