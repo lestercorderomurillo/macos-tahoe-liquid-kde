@@ -142,11 +142,13 @@ def test_plymouth_script_paints_black_background():
 def test_plymouth_script_scales_logo_dynamically():
     """The whole point of the rewrite was to drop the upstream's
     7-resolution if/elif ladder in favour of a single proportional
-    scale. The 0.10 factor matches macOS Tahoe's real boot
-    proportions — v0.13.0/.1/.2 used 0.18, which felt oversized
-    on a 4K display."""
+    scale. The 0.07 factor matches what upstream apple-mac-plymouth
+    shipped (hardcoded 100-220px depending on resolution); 0.10–0.18
+    looked oversized at real boot on 4K (the high-res source PNG
+    downscales crisper than upstream's tiny PNG, so visually
+    'bigger' at the same percentage)."""
     text = (THEME_SRC / "MacTahoeLiquidKde.script").read_text(encoding="utf-8")
-    assert "0.10" in text, "missing dynamic-scale ratio 0.10"
+    assert "0.07" in text, "missing dynamic-scale ratio 0.07"
     # Math.Int() rounds the float scale back to an int pixel size —
     # without it Plymouth refuses to render fractional pixel widths.
     assert "Math.Int" in text
