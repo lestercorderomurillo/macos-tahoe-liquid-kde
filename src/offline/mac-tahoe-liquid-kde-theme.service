@@ -5,24 +5,14 @@ Description=MacTahoe Liquid KDE — auto light/dark theme switcher
 # before applying anything, but this avoids starting the unit too early.
 After=graphical-session.target plasma-plasmashell.service
 PartOf=graphical-session.target
-# Belt-and-braces start limit in case Restart= is ever reintroduced: cap
-# any restart loop at 3 attempts per hour so a regression can't degrade
-# into a journal-spamming storm again.
-StartLimitIntervalSec=3600
-StartLimitBurst=3
 
 [Service]
 Type=simple
 ExecStart=%h/.local/bin/mac-tahoe-theme-switch watch
-# Restart=on-failure caused a Started→Stopped→Started cycle every
-# RestartSec=15s whenever the script exited non-zero (Plasma not ready,
-# dbus-monitor missing, dbus-monitor died). The Python side now handles
-# those modes itself by parking on signal.pause() so the unit stays
-# long-running. If the wrapper genuinely crashes (segfault, OOM, etc.),
-# leave the failure visible in `systemctl --user status` instead of
-# silently restarting — surfacing the error is more useful than a
-# restart loop that hides it.
-Restart=no
+# On-failure restart with a longer back-off so a crash during login does
+# not spin into a restart storm while Plasma is still settling.
+Restart=on-failure
+RestartSec=15
 
 [Install]
 WantedBy=graphical-session.target
