@@ -1,8 +1,8 @@
 # MacTahoe Liquid KDE — Plymouth boot splash
 #
-# Black background with a centered logo, scaled to ~18% of the
-# screen's smaller dimension. Same proportions hold at 1080p / 4K /
-# portrait / 32:9 ultrawide. On multi-monitor setups plymouth's
+# Black background with a centered logo, scaled to ~10% of the
+# screen's smaller dimension to match macOS Tahoe's actual boot
+# proportions. Same ratio holds at 1080p / 4K / portrait / 32:9. On multi-monitor setups plymouth's
 # renderer mirrors the script's output to every connected display,
 # so a single Sprite at the geometric centre lands centred on each
 # screen automatically — DO NOT iterate Window.GetCount() and build
@@ -40,9 +40,9 @@ show_progress = (mode == "boot");
 # ── logo: 18% of smaller axis, centred ──────────────────────────────────
 
 if (screen_w < screen_h)
-  logo_target = Math.Int(screen_w * 0.18);
+  logo_target = Math.Int(screen_w * 0.10);
 else
-  logo_target = Math.Int(screen_h * 0.18);
+  logo_target = Math.Int(screen_h * 0.10);
 
 logo_source = Image("boot.png");
 logo_image  = logo_source.Scale(logo_target, logo_target);
@@ -53,7 +53,7 @@ logo.SetOpacity(1);
 
 # ── progress bar: 20% screen-width pill below the logo (boot only) ──────
 
-bar_w = Math.Int(screen_w * 0.20);
+bar_w = Math.Int(screen_w * 0.13);
 bar_h = Math.Int(bar_w * 0.02);
 if (bar_h < 4)
   bar_h = 4;
