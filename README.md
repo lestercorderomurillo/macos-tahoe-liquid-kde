@@ -99,6 +99,19 @@ Desktop right-click with translucent glass blur.
   <sub>Example of Light and Dark variant.</sub>
 </p>
 
+### Boot Splash
+
+Plymouth boot screen with centered Apple-style logo on every monitor, scaled dynamically from 1080p to 4K. Boot mode shows a progress bar; shutdown / reboot share the same layout without the bar.
+
+<p align="center">
+  <img src="src/screenshots/boot_v2.png" width="415">
+  <img src="src/screenshots/boot_shutdown_v2.png" width="415">
+</p>
+
+<p align="center">
+  <sub>Boot mode (with progress bar) and Shutdown mode (logo only).</sub>
+</p>
+
 ---
 
 ## Roadmap
