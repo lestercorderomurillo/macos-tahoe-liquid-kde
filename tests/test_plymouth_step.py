@@ -23,6 +23,8 @@ import re
 from contextlib import contextmanager
 from pathlib import Path
 
+import pytest
+
 from steps import plymouth
 
 
@@ -654,12 +656,13 @@ def test_uninstall_continues_when_plymouth_binary_missing(tmp_path, monkeypatch)
 
 def _stub_prereq_paths(tmp_path, monkeypatch, *, cmdline="splash quiet",
                        mkinitcpio_hooks="HOOKS=(base udev plymouth filesystems)",
+                       mkinitcpio_modules="MODULES=()",
                        has_grub=True, has_mkinitcpio=True):
     proc_cmdline = tmp_path / "cmdline"
     proc_cmdline.write_text(cmdline + "\n")
     mki = tmp_path / "mkinitcpio.conf"
     if has_mkinitcpio:
-        mki.write_text(f"MODULES=()\nBINARIES=()\n{mkinitcpio_hooks}\n")
+        mki.write_text(f"{mkinitcpio_modules}\nBINARIES=()\n{mkinitcpio_hooks}\n")
     grub = tmp_path / "grub"
     if has_grub:
         grub.write_text('GRUB_CMDLINE_LINUX_DEFAULT="quiet splash"\n')
@@ -732,6 +735,106 @@ def test_prereqs_warn_directs_to_other_loaders_when_no_grub(tmp_path, monkeypatc
     assert any("systemd-boot" in w or "limine" in w for w in splash_warns)
 
 
+# ── corner-rendered shutdown splash: GPU module in MODULES blocks simpledrm ─
+
+
+@pytest.mark.parametrize("gpu_mod", ["amdgpu", "i915", "radeon", "nouveau"])
+def test_prereqs_warn_when_gpu_module_in_mkinitcpio_modules(
+    tmp_path, monkeypatch, gpu_mod,
+):
+    """``MODULES=(amdgpu)`` (or i915/radeon/nouveau) in mkinitcpio.conf is
+    the root cause of the corner-rendered shutdown splash on high-DPI
+    displays: amdgpu binds the PCIe GPU during initramfs before the
+    kernel can register the EFI simple-framebuffer device, so simpledrm
+    never gets a device. ``UseSimpledrm=true`` in plymouthd.conf is then
+    a no-op. At shutdown amdgpu unloads, fbcon falls back to a small
+    console framebuffer, and the splash renders in a corner of the
+    physical 4K panel.
+
+    Upstream Plymouth policy (Hans de Goede) is to KEEP GPU drivers
+    OUT of MODULES — the ``kms`` hook (default) loads them later.
+    Warn the user with the exact module name and a copy-pasteable sed
+    one-liner."""
+    _stub_prereq_paths(
+        tmp_path, monkeypatch,
+        mkinitcpio_modules=f"MODULES=({gpu_mod})",
+    )
+    warnings = plymouth._check_prereqs()
+    gpu_warns = [w for w in warnings if gpu_mod in w]
+    assert gpu_warns, f"expected a warning mentioning '{gpu_mod}'"
+    w = gpu_warns[0]
+    assert "shutdown" in w, "warning should explain WHEN this matters"
+    assert "simpledrm" in w, "warning should name the actual mechanism"
+    assert "mkinitcpio -P" in w, "warning must include the rebuild command"
+    assert "sed" in w and gpu_mod in w, \
+        "warning should give a sed one-liner that names the module"
+
+
+def test_prereqs_no_warning_when_modules_empty(tmp_path, monkeypatch):
+    """The check fires only when the corner-splash precondition (GPU
+    module in MODULES) is actually present."""
+    _stub_prereq_paths(tmp_path, monkeypatch, mkinitcpio_modules="MODULES=()")
+    warnings = plymouth._check_prereqs()
+    assert not any("simpledrm" in w for w in warnings)
+
+
+def test_prereqs_no_warning_when_modules_has_only_non_gpu(tmp_path, monkeypatch):
+    """Other modules (filesystem helpers, crypto, etc.) in MODULES don't
+    bind the GPU and don't block simpledrm."""
+    _stub_prereq_paths(
+        tmp_path, monkeypatch,
+        mkinitcpio_modules="MODULES=(crc32c-intel ext4)",
+    )
+    warnings = plymouth._check_prereqs()
+    assert not any("simpledrm" in w for w in warnings)
+
+
+def test_prereqs_detects_gpu_module_among_others(tmp_path, monkeypatch):
+    """Don't get fooled by other modules co-existing in the array."""
+    _stub_prereq_paths(
+        tmp_path, monkeypatch,
+        mkinitcpio_modules="MODULES=(crc32c-intel amdgpu ext4)",
+    )
+    warnings = plymouth._check_prereqs()
+    assert any("amdgpu" in w and "simpledrm" in w for w in warnings)
+
+
+def test_prereqs_handles_quoted_module_entries(tmp_path, monkeypatch):
+    """Some users quote module names. Strip the quotes."""
+    _stub_prereq_paths(
+        tmp_path, monkeypatch,
+        mkinitcpio_modules='MODULES=("amdgpu")',
+    )
+    warnings = plymouth._check_prereqs()
+    assert any("amdgpu" in w and "simpledrm" in w for w in warnings)
+
+
+def test_prereqs_ignores_commented_modules_line(tmp_path, monkeypatch):
+    """A commented-out MODULES line with amdgpu in it is not the active
+    config and must NOT trigger the warning."""
+    _stub_prereq_paths(
+        tmp_path, monkeypatch,
+        mkinitcpio_modules="# MODULES=(amdgpu)\nMODULES=()",
+    )
+    warnings = plymouth._check_prereqs()
+    assert not any("simpledrm" in w for w in warnings)
+
+
+def test_mkinitcpio_modules_helpers_parse_real_world_lines():
+    """Direct unit tests for the parsing helpers — these are the bedrock
+    the warning relies on, so cover the messy real-world variants."""
+    from steps.plymouth import _gpu_module_in_modules
+
+    assert _gpu_module_in_modules("MODULES=(amdgpu)") == "amdgpu"
+    assert _gpu_module_in_modules("MODULES=( amdgpu )") == "amdgpu"
+    assert _gpu_module_in_modules("MODULES=(crc32c-intel amdgpu ext4)") == "amdgpu"
+    assert _gpu_module_in_modules('MODULES=("amdgpu" "ext4")') == "amdgpu"
+    assert _gpu_module_in_modules("MODULES=(amdgpu,ext4)") == "amdgpu"
+    assert _gpu_module_in_modules("MODULES=()") is None
+    assert _gpu_module_in_modules("MODULES=(ext4 vfat)") is None
+    assert _gpu_module_in_modules("") is None
+
+
 # ──────────────────────── static safety net ─────────────────────────────
 
 
@@ -791,6 +894,52 @@ def test_install_preserves_unrelated_plymouthd_conf_keys(tmp_path, monkeypatch):
     assert "ShowDelay" in text
     assert "SomeUserKey" in text
     assert "[Custom]" in text
+
+
+def test_install_writes_plymouthd_conf_without_spaces_around_equals(tmp_path, monkeypatch):
+    """``plymouth-set-default-theme`` is a bash script that parses
+    plymouthd.conf with broken whitespace stripping: when the file has
+    ``Theme = Foo`` (spaces around ``=``), KEY_NAME comes out as ``Theme ``
+    (trailing space), the ``[[ "Theme " == "Theme" ]]`` comparison fails,
+    and the script falls through to the distro defaults file (which has
+    ``Theme=bgrt``). plymouthd at boot/shutdown then loads bgrt instead
+    of MacTahoeLiquidKde — exactly the shutdown splash regression that
+    shipped with v0.13.8 (configparser's default write format uses spaces).
+
+    Writing with ``space_around_delimiters=False`` produces the
+    ``Key=Value`` format plymouth-set-default-theme can actually read."""
+    conf = tmp_path / "plymouthd.conf"
+    monkeypatch.setattr(plymouth, "HOME", tmp_path)
+    monkeypatch.setattr(plymouth, "STATE_DIR", tmp_path / "state")
+    monkeypatch.setattr(plymouth, "PREV_THEME_FILE",
+                        tmp_path / "state/plymouth-previous-theme")
+    monkeypatch.setattr(plymouth, "DEST", tmp_path / "dest/MacTahoeLiquidKde")
+    monkeypatch.setattr(plymouth, "PLYMOUTHD_CONF", conf)
+    _stub(monkeypatch, have_bin=True, current_theme="MacTahoeLiquidKde")
+    plymouth.install()
+
+    text = conf.read_text(encoding="utf-8")
+    # Every key=value line uses Key=Value (no spaces). Section headers
+    # ([Daemon]) are allowed to be on their own line.
+    for line in text.splitlines():
+        if not line or line.startswith("[") or line.startswith("#"):
+            continue
+        assert "=" in line, f"unexpected non-INI line: {line!r}"
+        key, _, _value = line.partition("=")
+        # configparser writes 'key = value' by default. We need NO trailing
+        # space on the key — that's what plymouth-set-default-theme's
+        # broken parser chokes on.
+        assert not key.endswith(" "), (
+            f"plymouthd.conf line has trailing space on key — "
+            f"plymouth-set-default-theme will fail to find it: {line!r}"
+        )
+    # And there must be NO ' = ' anywhere in a value-bearing line.
+    for line in text.splitlines():
+        if line and not line.startswith("[") and not line.startswith("#"):
+            assert " = " not in line, (
+                f"plymouthd.conf line has ' = ' separator — "
+                f"plymouth-set-default-theme can't parse this: {line!r}"
+            )
 
 
 def test_install_survives_duplicate_theme_lines_in_plymouthd_conf(tmp_path, monkeypatch):

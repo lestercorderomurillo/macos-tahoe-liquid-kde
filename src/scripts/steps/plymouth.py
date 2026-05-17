@@ -54,6 +54,31 @@ def deps():
     return ["plymouth-set-default-theme:plymouth"]
 
 
+_GPU_MODULES_BLOCKING_SIMPLEDRM = ("amdgpu", "i915", "radeon", "nouveau")
+
+
+def _mkinitcpio_modules_line(mki_text: str) -> str:
+    for ln in mki_text.splitlines():
+        s = ln.strip()
+        if s.startswith("MODULES=") and not s.startswith("#"):
+            return s
+    return ""
+
+
+def _gpu_module_in_modules(modules_line: str) -> str | None:
+    """Return the first blocking GPU module found in a MODULES=(...) line,
+    or None. Whitespace-tolerant: ``MODULES=(amdgpu)``, ``MODULES=( amdgpu )``,
+    ``MODULES=(crc32c-intel amdgpu)`` all match ``amdgpu``."""
+    if "=" not in modules_line:
+        return None
+    body = modules_line.split("=", 1)[1].strip().strip("()").strip()
+    tokens = body.replace(",", " ").split()
+    for tok in tokens:
+        if tok.strip().strip('"\'') in _GPU_MODULES_BLOCKING_SIMPLEDRM:
+            return tok.strip().strip('"\'')
+    return None
+
+
 def _check_prereqs() -> list[str]:
     """Return a list of human-readable warnings for missing boot-side
     Plymouth prerequisites. We DO NOT auto-fix any of these — editing
@@ -88,7 +113,7 @@ def _check_prereqs() -> list[str]:
                 "limine: /boot/limine.conf)"
             )
 
-    # ── initramfs hook: arch / cachyos / manjaro use mkinitcpio ──
+    # ── initramfs hook + MODULES: arch / cachyos / manjaro use mkinitcpio ─
     # Other distros (fedora dracut, debian initramfs-tools) embed plymouth
     # support automatically once the package is installed, so we only
     # check the mkinitcpio path.
@@ -107,6 +132,36 @@ def _check_prereqs() -> list[str]:
                 "/etc/mkinitcpio.conf HOOKS line is missing 'plymouth' — "
                 "add it after 'udev' (or 'systemd' on systemd-init) and "
                 "BEFORE 'encrypt'/'filesystems', then run: "
+                "sudo mkinitcpio -P"
+            )
+
+        # ── shutdown splash on high-DPI displays: simpledrm gating ──────
+        # The corner-rendered shutdown splash (tiny logo in a corner of an
+        # otherwise blank high-res display) happens because the GPU driver
+        # (amdgpu / i915 / nouveau / radeon) binds the PCIe device in
+        # initramfs BEFORE the kernel registers the EFI simple-framebuffer
+        # device. simpledrm never gets a device to bind to, so the
+        # ``UseSimpledrm=true`` flag in plymouthd.conf is a no-op. When
+        # the GPU driver unloads at shutdown, fbcon falls back to a
+        # low-res console framebuffer (typically 1024x768) which the
+        # firmware then renders in a corner of the physical panel.
+        #
+        # The upstream Plymouth/Fedora policy (Hans de Goede,
+        # https://hansdegoede.livejournal.com) is to KEEP GPU drivers
+        # OUT of initramfs MODULES — let simpledrm register first, the
+        # ``kms`` hook (already in the default HOOKS line) loads the GPU
+        # driver later. Boot stays fast, simpledrm survives the GPU
+        # unload at shutdown, and the splash renders fullscreen at native
+        # resolution end-to-end.
+        gpu_mod = _gpu_module_in_modules(_mkinitcpio_modules_line(mki))
+        if gpu_mod:
+            warnings.append(
+                f"/etc/mkinitcpio.conf MODULES contains '{gpu_mod}' — at "
+                "shutdown the splash will render in a small corner of "
+                "high-res displays because simpledrm can't bind. Remove "
+                f"'{gpu_mod}' from MODULES (the 'kms' hook still loads it "
+                "later), then rebuild: "
+                f"sudo sed -i 's/\\b{gpu_mod}\\b//g' /etc/mkinitcpio.conf && "
                 "sudo mkinitcpio -P"
             )
 
@@ -263,7 +318,20 @@ def _set_plymouthd_simpledrm(enabled: bool) -> bool:
             PLYMOUTHD_CONF.parent.mkdir(parents=True, exist_ok=True)
             tmp = PLYMOUTHD_CONF.with_name(PLYMOUTHD_CONF.name + ".mttkde-tmp")
             with tmp.open("w", encoding="utf-8") as fh:
-                cp.write(fh)
+                # space_around_delimiters=False is LOAD-BEARING. The
+                # plymouth-set-default-theme shell script (the canonical
+                # reader of this file at boot/shutdown) has a broken bash
+                # whitespace strip: it splits on '=' but leaves trailing
+                # space on the key — ``KEY_NAME='Theme '`` — so the
+                # ``[[ "Theme " == "Theme" ]]`` comparison fails. The
+                # script then falls through to the distro defaults file
+                # (which has ``Theme=bgrt``) and reports our theme as
+                # ``bgrt``. plymouthd at shutdown loads what the script
+                # reports → shutdown splash is bgrt, not MacTahoeLiquidKde.
+                # Writing without spaces around ``=`` matches the format
+                # plymouth-set-default-theme itself writes and the parser
+                # it can actually read back.
+                cp.write(fh, space_around_delimiters=False)
             tmp.replace(PLYMOUTHD_CONF)
     except OSError as exc:
         warn(f"could not update {PLYMOUTHD_CONF} ({exc})")
