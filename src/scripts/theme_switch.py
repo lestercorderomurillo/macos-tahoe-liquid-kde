@@ -481,22 +481,44 @@ def _apply_local_extras(mode: str) -> None:
             gtk4_dest.mkdir(parents=True, exist_ok=True)
             for sub in ("assets", "windows-assets"):
                 src = gtk4_src / sub
-                if src.is_dir():
-                    dst = gtk4_dest / sub
+                if not src.is_dir():
+                    continue
+                dst = gtk4_dest / sub
+                # rmtree(ignore_errors=True) can silently leave the dir in
+                # place — an inotify watcher (file manager, GTK client,
+                # cache writer) recreating files during the iteration is
+                # enough to make rmdir fail with ENOTEMPTY. The 0.13.7
+                # boot-time crash was `FileExistsError` raised from a bare
+                # `copytree` here, which then skipped the widget-style
+                # cycle + KWin reconfigure and stranded plasmashell on the
+                # old palette ("light bg + dark panel + white text").
+                # dirs_exist_ok=True merges into whatever survived rmtree.
+                try:
                     shutil.rmtree(dst, ignore_errors=True)
-                    shutil.copytree(src, dst)
+                    shutil.copytree(src, dst, dirs_exist_ok=True)
+                except OSError as exc:
+                    print(f"theme apply: gtk4 {sub} copy skipped: {exc}",
+                          file=sys.stderr)
             for fn in ("gtk-Dark.css", "gtk-Light.css"):
                 src = gtk4_src / fn
                 if src.is_file():
-                    shutil.copy2(src, gtk4_dest / fn)
+                    try:
+                        shutil.copy2(src, gtk4_dest / fn)
+                    except OSError as exc:
+                        print(f"theme apply: gtk4 {fn} copy skipped: {exc}",
+                              file=sys.stderr)
             for link_name, target in (
                 ("gtk.css", f"gtk-{mode.capitalize()}.css"),
                 ("gtk-dark.css", "gtk-Dark.css"),
             ):
                 link = gtk4_dest / link_name
-                if link.is_symlink() or link.exists():
-                    link.unlink()
-                link.symlink_to(target)
+                try:
+                    if link.is_symlink() or link.exists():
+                        link.unlink()
+                    link.symlink_to(target)
+                except OSError as exc:
+                    print(f"theme apply: gtk4 {link_name} link skipped: {exc}",
+                          file=sys.stderr)
 
     flush_icon_caches()
     cache = home / ".cache"
@@ -581,10 +603,21 @@ def apply(mode: str, context: str = "") -> bool:
     # The installer already applies wallpaper up front and does its own KWin
     # reload after the helper exits. Keep install-mode work local so a half-up
     # Plasma session can't pin Step 19 inside wait_for_plasma().
-    if context == "install":
-        _apply_local_extras(mode)
-    else:
-        apply_extras(mode)
+    #
+    # An unhandled exception out of extras (GTK4 copytree FileExistsError,
+    # Kvantum / GtkConfig DBus timeouts, etc.) MUST NOT bypass the widget-
+    # style cycle and KWin reconfigure below. Without those two, running
+    # plasmashell keeps serving the old palette / plasma theme even though
+    # the on-disk config + wallpaper already flipped — exactly the
+    # 0.13.7 boot-time desync (light bg + dark panel + white text).
+    try:
+        if context == "install":
+            _apply_local_extras(mode)
+        else:
+            apply_extras(mode)
+    except Exception as exc:
+        print(f"theme apply: extras step failed, continuing: {exc!r}",
+              file=sys.stderr)
     # Widget-style cycle: forces Qt apps to re-instantiate the Kvantum
     # plugin against the new kvconfig. Without this, ``kvantummanager
     # --set`` writes the new theme to disk but every running Qt window

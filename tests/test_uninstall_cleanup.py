@@ -15,13 +15,19 @@ from pathlib import Path
 
 import pytest
 
-from .conftest import has_command
+from .conftest import has_command, make_live_shim_dir
 
 
 pytestmark = pytest.mark.skipif(
     not has_command("kwriteconfig6"),
     reason="kwriteconfig6 not available",
 )
+
+
+@pytest.fixture
+def live_shim(tmp_path):
+    """Shim dir for live-session binaries — see conftest.LIVE_SHIM_BINARIES."""
+    return make_live_shim_dir(tmp_path)
 
 
 def _seed_residue(sandbox: Path) -> None:
@@ -67,11 +73,20 @@ def _seed_residue(sandbox: Path) -> None:
     )
 
 
-def _run_step_uninstall(step: str, sandbox: Path, repo: Path) -> None:
+def _run_step_uninstall(step: str, sandbox: Path, repo: Path,
+                        shim_dir: Path | None = None) -> None:
     env = {**os.environ, "HOME": str(sandbox),
            "XDG_CONFIG_HOME": str(sandbox / ".config"),
            "XDG_DATA_HOME": str(sandbox / ".local/share"),
            "MAC_TAHOE_SKIP_LIVE_APPLY": "true"}
+    if shim_dir is not None:
+        # Prepend the shim dir so subprocesses spawned by the step (notably
+        # ``apply.uninstall`` invoking ``plasma-apply-wallpaperimage`` to
+        # revert the desktop wallpaper to ``/usr/share/wallpapers/Next``)
+        # hit our no-op shims instead of the maintainer's live plasmashell.
+        # MAC_TAHOE_SKIP_LIVE_APPLY only gates theme_switch's live-tool path
+        # — apply.py's WALLPAPERS reset is not behind that flag.
+        env["PATH"] = f"{shim_dir}{os.pathsep}{env.get('PATH', '')}"
     rc = subprocess.run(
         ["python3", "-c",
          f"from steps.{step} import uninstall; uninstall()"],
@@ -80,9 +95,9 @@ def _run_step_uninstall(step: str, sandbox: Path, repo: Path) -> None:
     assert rc == 0
 
 
-def test_apply_uninstall_cleans_kdedefaults(sandbox, repo):
+def test_apply_uninstall_cleans_kdedefaults(sandbox, repo, live_shim):
     _seed_residue(sandbox)
-    _run_step_uninstall("apply", sandbox, repo)
+    _run_step_uninstall("apply", sandbox, repo, shim_dir=live_shim)
 
     cfg = sandbox / ".config"
     pattern = re.compile(r"MacTahoe|mac-tahoe|liquid", re.IGNORECASE)
@@ -98,17 +113,17 @@ def test_apply_uninstall_cleans_kdedefaults(sandbox, repo):
     assert "[Theme-plasmathemeexplorer]" not in (cfg / "plasmarc").read_text()
 
 
-def test_acrylic_glass_uninstall_strips_group(sandbox, repo):
+def test_acrylic_glass_uninstall_strips_group(sandbox, repo, live_shim):
     _seed_residue(sandbox)
-    _run_step_uninstall("acrylic_glass", sandbox, repo)
+    _run_step_uninstall("acrylic_glass", sandbox, repo, shim_dir=live_shim)
     assert "[Effect-liquidglass]" not in (sandbox / ".config/kwinrc").read_text()
 
 
-def test_portals_uninstall_removes_conf(sandbox, repo):
+def test_portals_uninstall_removes_conf(sandbox, repo, live_shim):
     portal_dir = sandbox / ".config/xdg-desktop-portal"
     portal_dir.mkdir(parents=True, exist_ok=True)
     (portal_dir / "kde-portals.conf").write_text(
         "[preferred]\norg.freedesktop.impl.portal.Settings=gtk\n"
     )
-    _run_step_uninstall("portals", sandbox, repo)
+    _run_step_uninstall("portals", sandbox, repo, shim_dir=live_shim)
     assert not (portal_dir / "kde-portals.conf").exists()

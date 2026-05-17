@@ -793,6 +793,47 @@ def test_install_preserves_unrelated_plymouthd_conf_keys(tmp_path, monkeypatch):
     assert "[Custom]" in text
 
 
+def test_install_survives_duplicate_theme_lines_in_plymouthd_conf(tmp_path, monkeypatch):
+    """``plymouth-set-default-theme`` writes ``Theme=…`` on every -R run
+    WITHOUT deduping prior entries, and casual hand-edits often produce
+    ``Theme = …`` with surrounding whitespace — configparser treats both
+    forms as the same key, so the file gets ``DuplicateOptionError`` on
+    parse with ``strict=True``. That used to abort the UseSimpledrm write
+    entirely (visible as ``plymouthd.conf unparseable
+    (DuplicateOptionError) — leaving UseSimpledrm setting unchanged`` on
+    every install). Now the read uses ``strict=False``, which both
+    tolerates the duplicates AND collapses them on write-back."""
+    conf = tmp_path / "plymouthd.conf"
+    conf.write_text(
+        "[Daemon]\n"
+        "Theme=MacTahoeLiquidKde\n"
+        "Theme = MacTahoeLiquidKde\n"
+        "UseSimpledrm = true\n",
+        encoding="utf-8",
+    )
+    monkeypatch.setattr(plymouth, "HOME", tmp_path)
+    monkeypatch.setattr(plymouth, "STATE_DIR", tmp_path / "state")
+    monkeypatch.setattr(plymouth, "PREV_THEME_FILE",
+                        tmp_path / "state/plymouth-previous-theme")
+    monkeypatch.setattr(plymouth, "DEST", tmp_path / "dest/MacTahoeLiquidKde")
+    monkeypatch.setattr(plymouth, "PLYMOUTHD_CONF", conf)
+    _stub(monkeypatch, have_bin=True, current_theme="MacTahoeLiquidKde")
+    plymouth.install()
+
+    text = conf.read_text(encoding="utf-8")
+    # Duplicates collapsed: exactly one Theme= line and one UseSimpledrm.
+    assert text.count("Theme") == 1, \
+        f"expected exactly one Theme line, got:\n{text}"
+    assert text.count("UseSimpledrm") == 1, \
+        f"expected exactly one UseSimpledrm line, got:\n{text}"
+    # File is still parseable in strict mode after our normalization —
+    # the next install pass won't hit DuplicateOptionError either.
+    cp = configparser.ConfigParser(strict=True)
+    cp.optionxform = str
+    cp.read(str(conf), encoding="utf-8")
+    assert cp.get("Daemon", "UseSimpledrm") == "true"
+
+
 def test_uninstall_removes_use_simpledrm_override(tmp_path, monkeypatch):
     """Uninstall should put plymouthd.conf back to a state that
     doesn't reflect our override — the previous theme may not need

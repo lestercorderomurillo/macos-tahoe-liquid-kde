@@ -177,3 +177,221 @@ def kwriteconfig_required():
 
 def has_command(cmd: str) -> bool:
     return shutil.which(cmd) is not None
+
+
+# Binaries we shim with no-ops for any test that invokes step code in a
+# subprocess (where Python-level monkeypatching can't reach). Each is one
+# that has been observed to escape the sandbox at least once:
+#   systemctl               — disables the maintainer's live theme timer
+#   kvantummanager          — flips the live Kvantum theme
+#   gsettings               — writes to dconf (no XDG sandboxing possible)
+#   plasma-apply-*          — talks to live plasmashell over DBus
+#   kbuildsycoca6           — rebuilds the live KDE service cache
+LIVE_SHIM_BINARIES = (
+    "systemctl",
+    "kvantummanager",
+    "gsettings",
+    "plasma-apply-lookandfeel",
+    "plasma-apply-wallpaperimage",
+    "plasma-apply-cursortheme",
+    "kbuildsycoca6",
+)
+
+
+def make_live_shim_dir(tmp_path: Path) -> Path:
+    """Create a dir of no-op shims for LIVE_SHIM_BINARIES, suitable for
+    prepending to PATH in a subprocess. The shim logs each invocation to
+    ``calls.log`` in the same dir so tests can assert ``foo --user`` was
+    actually reached (catches the case where a future regression bypasses
+    PATH with an absolute path)."""
+    shim_dir = tmp_path / "shimbin"
+    shim_dir.mkdir(exist_ok=True)
+    log = shim_dir / "calls.log"
+    for name in LIVE_SHIM_BINARIES:
+        shim = shim_dir / name
+        shim.write_text(
+            f'#!/bin/sh\nprintf "%s %s\\n" "{name}" "$*" >> "{log}"\nexit 0\n'
+        )
+        shim.chmod(0o755)
+    return shim_dir
+
+
+# ── live-state safety net (session-scoped) ───────────────────────────────
+#
+# Tests should never modify the maintainer's live KDE/systemd state, but the
+# sandbox fixture only redirects HOME / XDG_*. Anything that contacts the
+# user systemd manager (``systemctl --user``), Kvantum config, dconf, or
+# uses an absolute path bypasses the sandbox. 0.13.7 silently disabled the
+# maintainer's ``mac-tahoe-liquid-kde-theme.timer`` for exactly this reason.
+#
+# This fixture snapshots a hand-picked set of live files + systemctl unit
+# state at session start, restores them at session end if they drifted,
+# and reports the drift loudly so the offending test can't hide.
+
+_LIVE_FILES = (
+    ".config/kdeglobals",
+    ".config/plasmarc",
+    ".config/kwinrc",
+    ".config/kcminputrc",
+    ".config/Kvantum/kvantum.kvconfig",
+    ".config/gtk-3.0/settings.ini",
+    ".config/gtk-4.0/settings.ini",
+    ".gtkrc-2.0",
+    ".config/plasma-org.kde.plasma.desktop-appletsrc",
+)
+
+_LIVE_UNITS = (
+    "mac-tahoe-liquid-kde-theme.timer",
+    "mac-tahoe-liquid-kde-theme.service",
+    "mac-tahoe-liquid-kde-theme-apply.service",
+)
+
+
+def _snapshot_file(path: Path) -> tuple[str, bytes | None]:
+    try:
+        return (str(path), path.read_bytes() if path.is_file() else None)
+    except OSError:
+        return (str(path), None)
+
+
+def _extract_wallpaper_path(appletsrc_bytes: bytes) -> str:
+    """Parse the first ``Image=...`` value out of a plasma appletsrc dump.
+    Returns the wallpaper path (file:// URL or plain path) or '' if none.
+    Used to re-issue the wallpaper apply after restoring a drifted file."""
+    for raw in appletsrc_bytes.decode("utf-8", errors="replace").splitlines():
+        line = raw.strip()
+        if line.startswith("Image="):
+            val = line[len("Image="):]
+            if val.startswith("file://"):
+                val = val[len("file://"):]
+            return val
+    return ""
+
+
+def _snapshot_unit(unit: str) -> dict[str, str]:
+    if not shutil.which("systemctl"):
+        return {}
+
+    def q(*verb: str) -> str:
+        try:
+            return subprocess.run(
+                ["systemctl", "--user", *verb, unit],
+                check=False, capture_output=True, text=True, timeout=5,
+            ).stdout.strip()
+        except (subprocess.TimeoutExpired, OSError):
+            return ""
+
+    return {"enabled": q("is-enabled"), "active": q("is-active")}
+
+
+def _restore_file(path: Path, original: bytes | None) -> tuple[bool, str]:
+    """Return (drifted, short-summary-of-diff)."""
+    current = path.read_bytes() if path.is_file() else None
+    if current == original:
+        return (False, "")
+    if original is None:
+        summary = f"+created ({len(current or b'')} bytes)"
+    elif current is None:
+        summary = f"-deleted ({len(original)} bytes)"
+    else:
+        diff = len(current) - len(original)
+        summary = f"{diff:+d} bytes"
+        # Dump the pre/post pair to /tmp so the maintainer can diff them.
+        dump = Path("/tmp") / f"mttkde-leak-{path.name}"
+        try:
+            dump.with_suffix(".before").write_bytes(original)
+            dump.with_suffix(".after").write_bytes(current)
+            summary += f" → diff /tmp/mttkde-leak-{path.name}.before .after"
+        except OSError:
+            pass
+    try:
+        if original is None:
+            if path.is_file():
+                path.unlink()
+        else:
+            path.parent.mkdir(parents=True, exist_ok=True)
+            path.write_bytes(original)
+        return (True, summary)
+    except OSError as exc:
+        return (True, f"{summary} (restore failed: {exc})")
+
+
+def _restore_unit(unit: str, original: dict[str, str]) -> bool:
+    if not original or not shutil.which("systemctl"):
+        return False
+    now = _snapshot_unit(unit)
+    drifted = False
+    if now.get("enabled") != original.get("enabled"):
+        drifted = True
+        verb = "enable" if original["enabled"] == "enabled" else "disable"
+        subprocess.run(["systemctl", "--user", verb, unit],
+                       check=False, capture_output=True, timeout=10)
+    if now.get("active") != original.get("active"):
+        drifted = True
+        verb = "start" if original["active"] == "active" else "stop"
+        subprocess.run(["systemctl", "--user", verb, unit],
+                       check=False, capture_output=True, timeout=10)
+    return drifted
+
+
+@pytest.fixture(autouse=True, scope="session")
+def _live_state_safety_net(request):
+    """Snapshot live KDE/systemd state at session start; restore on teardown.
+
+    Any drift triggers a session-finish printed warning naming the file or
+    unit that moved, so an escaping test is loud rather than silent — but
+    state is restored either way so the maintainer's desktop doesn't end
+    the test session in a half-broken configuration.
+
+    Opt out with ``MAC_TAHOE_SKIP_LIVE_SAFETY_NET=1`` (CI, where there is
+    no live session to protect)."""
+    if os.environ.get("MAC_TAHOE_SKIP_LIVE_SAFETY_NET") == "1":
+        yield
+        return
+
+    home = Path.home()
+    files_before = [_snapshot_file(home / rel) for rel in _LIVE_FILES]
+    units_before = {u: _snapshot_unit(u) for u in _LIVE_UNITS}
+
+    yield
+
+    drifted_files: list[tuple[str, str]] = []
+    for rel, (path_str, original) in zip(_LIVE_FILES, files_before):
+        drifted, summary = _restore_file(Path(path_str), original)
+        if drifted:
+            drifted_files.append((rel, summary))
+            # appletsrc holds the wallpaper path, but plasmashell caches the
+            # active wallpaper in memory — restoring the file alone leaves
+            # the screen on whatever the offending test commanded over DBus.
+            # Re-issue the wallpaper apply so the running session matches
+            # the restored file. Best-effort: missing tool / DBus failure
+            # is fine, the file is still the source of truth.
+            if rel == ".config/plasma-org.kde.plasma.desktop-appletsrc" \
+                    and original is not None and shutil.which("plasma-apply-wallpaperimage"):
+                wp = _extract_wallpaper_path(original)
+                if wp:
+                    subprocess.run(
+                        ["plasma-apply-wallpaperimage", wp],
+                        check=False, capture_output=True, timeout=15,
+                    )
+
+    drifted_units: list[str] = []
+    for unit, original in units_before.items():
+        if _restore_unit(unit, original):
+            drifted_units.append(unit)
+
+    if drifted_files or drifted_units:
+        rep = request.config.pluginmanager.get_plugin("terminalreporter")
+        msg = ["LIVE-STATE LEAK DETECTED — restored from snapshot:"]
+        for rel, summary in drifted_files:
+            msg.append(f"  file: {rel} ({summary})")
+        for unit in drifted_units:
+            msg.append(f"  unit: {unit}")
+        msg.append("  → a test escaped the sandbox, OR plasmashell wrote")
+        msg.append("    spontaneously during the run; track it down.")
+        if rep is not None:
+            rep.write_sep("=", "live-state safety net")
+            for line in msg:
+                rep.write_line(line)
+        else:
+            print("\n".join(msg), file=sys.stderr)

@@ -224,7 +224,19 @@ def _set_plymouthd_simpledrm(enabled: bool) -> bool:
     installer is already authoritative for. Uses configparser so we
     don't clobber any unrelated lines a distro/user added.
     """
-    cp = configparser.ConfigParser(strict=True)
+    # strict=False is mandatory here: ``plymouth-set-default-theme`` writes
+    # a fresh ``Theme=…`` line on every invocation WITHOUT deduping prior
+    # entries (and casual hand-edits use ``Theme = …`` with surrounding
+    # spaces, which look like a second key to the writer but the same one
+    # to configparser). Over time the file accumulates duplicates like:
+    #     [Daemon]
+    #     Theme=MacTahoeLiquidKde
+    #     Theme = MacTahoeLiquidKde
+    # strict=True raised DuplicateOptionError on those and we silently
+    # skipped applying UseSimpledrm — exactly the warning the user
+    # surfaced. strict=False keeps the last value (no semantic change),
+    # and the write-back below collapses the duplicates as a side effect.
+    cp = configparser.ConfigParser(strict=False)
     # plymouthd's keys are case-sensitive (UseSimpledrm vs usesimpledrm
     # is a different lookup). Override the default lowercase normalizer
     # so we preserve the user's existing key casing AND write
