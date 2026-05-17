@@ -70,9 +70,24 @@ if [[ ${#needed[@]} -gt 0 ]]; then
     ui_ok "deps installed"
 fi
 
-if [[ -e "$DEST" ]]; then
-    ui_fail "$DEST already exists — run ./uninstall first, or remove it manually"
-    exit 1
+# The harness ALWAYS renders against the source tree
+# (src/offline/plymouth/...), not whatever's currently installed —
+# the whole point of `./test --vm` is to see what your .script
+# changes look like BEFORE shipping a release.
+#
+# If the user already ran ./install, the system dir has the previous
+# version. Move it aside, drop our source in, render, restore on
+# cleanup. Standard transactional install pattern.
+BACKUP="$DEST.mttkde-test-backup"
+RESTORE_BACKUP=0
+if [[ -d "$DEST" ]]; then
+    if [[ -e "$BACKUP" ]]; then
+        # Stale backup from a crashed previous run — kill it so the mv works.
+        rm -rf "$BACKUP"
+    fi
+    mv "$DEST" "$BACKUP"
+    RESTORE_BACKUP=1
+    ui_info "moved existing $DEST aside (will restore on exit)"
 fi
 
 # The screenshot has to run as the invoking user (Wayland compositors
@@ -109,17 +124,20 @@ screenshot_as_user() {
 cleanup() {
     set +u
     plymouth --quit >/dev/null 2>&1
+    # Remove our test copy.
     [[ -d "$DEST" ]] && rm -rf "$DEST"
-    # We're root, the output dir was created by us → chown back to
-    # whoever invoked sudo so they can `xdg-open` / `cat` the files
-    # without another sudo.
+    # Restore the user's real install if we moved one aside.
+    if [[ "$RESTORE_BACKUP" == "1" && -d "$BACKUP" ]]; then
+        mv "$BACKUP" "$DEST"
+    fi
+    # Chown output back to invoking user.
     if [[ -d "$OUT" && -n "${SUDO_USER:-}" ]]; then
         chown -R "$SUDO_USER:$(id -gn "$SUDO_USER")" "$OUT" 2>/dev/null
     fi
 }
 trap cleanup EXIT INT TERM
 
-ui_step "copying theme into /usr/share/plymouth/themes/"
+ui_step "copying theme source into /usr/share/plymouth/themes/"
 cp -r "$SRC" "$DEST"
 
 # ── render boot + shutdown ──────────────────────────────────────────────

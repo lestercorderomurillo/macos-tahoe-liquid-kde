@@ -26,6 +26,7 @@ worth pinning:
   ``Plymouth.GetMode() == 'boot'`` branch is exercised on both sides.
 """
 
+import re
 from pathlib import Path
 
 
@@ -173,18 +174,26 @@ def test_render_sh_copies_theme_per_plymouth_dev_convention():
         "render.sh must clean up the copy on exit"
 
 
-def test_render_sh_refuses_to_clobber_real_install():
-    """If the user has already run ./install, /usr/share/plymouth/
-    themes/MacTahoeLiquidKde is a real directory with files we don't
-    own. cp -r would merge over it and the cleanup rm -rf would
-    delete their real install. Refuse instead."""
+def test_render_sh_always_renders_source_tree_not_installed_copy():
+    """The whole point of ./test --vm is to preview .script changes
+    BEFORE shipping a release. So the harness must render against
+    the SOURCE tree (src/offline/plymouth/...), not whatever's
+    currently installed via ./install. If a real install is in the
+    way, move it aside, render the source, restore on exit —
+    transactional swap. Never just 'use the installed copy'."""
     script = _read("render.sh")
-    assert "-e \"$DEST\"" in script or "-e $DEST" in script, (
-        "render.sh must check for an existing install before copying"
+    # Transactional swap pattern: move-aside + restore.
+    assert "mttkde-test-backup" in script, (
+        "render.sh must move the existing install aside, not skip the copy"
     )
-    assert "./uninstall" in script, (
-        "render.sh should point user at ./uninstall when refusing"
+    assert "RESTORE_BACKUP" in script, (
+        "cleanup must restore the user's real install on exit"
     )
+    # And it ALWAYS does the cp from source (no conditional skip).
+    assert re.search(
+        r'cp -r "\$SRC" "\$DEST"',
+        script,
+    ), "must cp from $SRC unconditionally — always test the source tree"
 
 
 def test_render_sh_avoids_initramfs_rebuild():
