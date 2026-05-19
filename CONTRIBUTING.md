@@ -6,7 +6,7 @@ Thanks for considering a contribution. This project is GPL-2.0 — forks are wel
 
 - **Open an issue first** for anything bigger than a one-line fix. I'd rather discuss the approach than reject a finished PR over scope.
 - **One concern per PR.** Bugfix + refactor + new feature in the same PR is three PRs.
-- **No AI slop.** Use an assistant if you want, but you're still the author — the code has to be code you understand and stand behind.
+- **AI assistants are fine** — just review what they produce. You're the author on the PR; make sure you can explain the change and that it actually fits the codebase.
 
 ## Setup
 
