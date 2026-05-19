@@ -14,10 +14,10 @@
             <default>Gaussian</default>
         </entry>
         <entry name="BlurStrength" type="Double">
-            <default>5.0</default>
+            <default>3.5</default>
         </entry>
         <entry name="NoiseStrength" type="Int">
-            <default>2</default>
+            <default>4</default>
         </entry>
         <entry name="BlurDecorations" type="Bool">
             <default>true</default>
@@ -44,7 +44,7 @@
             <default>false</default>
         </entry>
         <entry name="RgbDriftStrength" type="Double">
-            <default>12.0</default>
+            <default>45.0</default>
         </entry>
         <entry name="MagnifyGlassStrength" type="Double">
             <default>0.03</default>
