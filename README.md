@@ -112,8 +112,6 @@ Plymouth boot screen with centered Apple-style logo on every monitor, scaled dyn
   <sub>Boot mode (with progress bar) and Shutdown mode (logo only).</sub>
 </p>
 
-> **High-DPI shutdown splash showing in a corner?** If your `/etc/mkinitcpio.conf` has a GPU driver in `MODULES=(…)` (commonly `amdgpu`, `i915`, `radeon`, or `nouveau`), it binds the PCIe device before the kernel registers `simpledrm`. At shutdown the driver unloads, fbcon falls back to a low-res console framebuffer, and the splash lands in a corner of the physical panel. The installer prints the exact one-liner if it detects this. The fix is to remove the GPU module from `MODULES=()` (the `kms` hook still loads it later) and rebuild: `sudo mkinitcpio -P`. Upstream Plymouth policy — see Hans de Goede's "Moving GPU drivers out of the initramfs."
-
 ---
 
 ## Roadmap
