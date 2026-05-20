@@ -50,7 +50,7 @@ PlasmoidItem {
 
     Plasmoid.onActivated: Qt.openUrlExternally("trash:/")
 
-    // ── trash monitoring (polls every 3 s) ──────────────────────────
+    // trash monitoring (polls every 3 s)
     P5Support.DataSource {
         id: trashMonitor
         engine: "executable"
@@ -73,7 +73,7 @@ PlasmoidItem {
         }
     }
 
-    // ── command runner ───────────────────────────────────────────────
+    // command runner
     P5Support.DataSource {
         id: executable
         engine: "executable"
@@ -88,7 +88,7 @@ PlasmoidItem {
         }
     }
 
-    // ── keyboard ─────────────────────────────────────────────────────
+    // keyboard
     Keys.onPressed: event => {
         switch (event.key) {
         case Qt.Key_Space:
@@ -103,7 +103,7 @@ PlasmoidItem {
     Accessible.description: toolTipSubText
     Accessible.role: Accessible.Button
 
-    // ── context menu ─────────────────────────────────────────────────
+    // context menu
     Plasmoid.contextualActions: [
         PlasmaCore.Action {
             text: "Open"
@@ -125,7 +125,7 @@ PlasmoidItem {
         }
     ]
 
-    // ── representation ───────────────────────────────────────────────
+    // representation
     preferredRepresentation: fullRepresentation
     fullRepresentation: MouseArea {
         id: mouseArea

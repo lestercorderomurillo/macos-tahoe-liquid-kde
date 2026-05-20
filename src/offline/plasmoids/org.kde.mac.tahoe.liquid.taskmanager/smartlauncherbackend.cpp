@@ -25,7 +25,9 @@
 using namespace SmartLauncher;
 using namespace NotificationManager;
 
-Backend::Backend(QObject *parent)
+// Lifecycle
+
+Backend::Backend(QObject* parent)
     : QObject(parent)
     , m_watcher(new QDBusServiceWatcher(this))
     , m_jobsModel(nullptr)
@@ -43,13 +45,14 @@ Backend::Backend(QObject *parent)
 
 Backend::~Backend() = default;
 
+// Internal setup
+
 void Backend::reload()
 {
     m_badgeBlacklist = m_settings->badgeBlacklistedApplications();
 
-    std::transform(m_badgeBlacklist.begin(), m_badgeBlacklist.end(), m_badgeBlacklist.begin(), [](const QString &desktopEntry) -> QString {
-        return desktopEntry + QStringLiteral(".desktop");
-    });
+    std::transform(m_badgeBlacklist.begin(), m_badgeBlacklist.end(), m_badgeBlacklist.begin(),
+        [](const QString& desktopEntry) -> QString { return desktopEntry + QStringLiteral(".desktop"); });
 
     if (!m_jobsModel) {
         m_jobsModel = JobsModel::createJobsModel();
@@ -69,12 +72,8 @@ void Backend::setupUnity()
 {
     auto sessionBus = QDBusConnection::sessionBus();
 
-    if (!sessionBus.connect({},
-                            {},
-                            QStringLiteral("com.canonical.Unity.LauncherEntry"),
-                            QStringLiteral("Update"),
-                            this,
-                            SLOT(update(QString, QMap<QString, QVariant>)))) {
+    if (!sessionBus.connect(
+            {}, {}, QStringLiteral("com.canonical.Unity.LauncherEntry"), QStringLiteral("Update"), this, SLOT(update(QString, QMap<QString, QVariant>)))) {
         qCWarning(TASKMANAGER_DEBUG) << "failed to register Update signal";
         return;
     }
@@ -91,8 +90,8 @@ void Backend::setupUnity()
     KConfigGroup grp(KSharedConfig::openConfig(QStringLiteral("taskmanagerrulesrc")), QStringLiteral("Unity Launcher Mapping"));
 
     const QStringList keys = grp.keyList();
-    for (const QString &key : keys) {
-        const QString &value = grp.readEntry(key, QString());
+    for (const QString& key : keys) {
+        const QString& value = grp.readEntry(key, QString());
         if (value.isEmpty()) {
             continue;
         }
@@ -101,12 +100,14 @@ void Backend::setupUnity()
     }
 }
 
-bool Backend::hasLauncher(const QString &storageId) const
+// Per-launcher queries (DND-aware)
+
+bool Backend::hasLauncher(const QString& storageId) const
 {
     return m_launchers.contains(storageId);
 }
 
-int Backend::count(const QString &uri) const
+int Backend::count(const QString& uri) const
 {
     if (!m_settings->badgesInTaskManager() || doNotDisturbMode() || m_badgeBlacklist.contains(uri)) {
         return 0;
@@ -114,7 +115,7 @@ int Backend::count(const QString &uri) const
     return m_launchers.value(uri).count;
 }
 
-bool Backend::countVisible(const QString &uri) const
+bool Backend::countVisible(const QString& uri) const
 {
     if (!m_settings->badgesInTaskManager() || doNotDisturbMode() || m_badgeBlacklist.contains(uri)) {
         return false;
@@ -122,17 +123,17 @@ bool Backend::countVisible(const QString &uri) const
     return m_launchers.value(uri).countVisible;
 }
 
-int Backend::progress(const QString &uri) const
+int Backend::progress(const QString& uri) const
 {
     return m_launchers.value(uri).progress;
 }
 
-bool Backend::progressVisible(const QString &uri) const
+bool Backend::progressVisible(const QString& uri) const
 {
     return m_launchers.value(uri).progressVisible;
 }
 
-bool Backend::urgent(const QString &uri) const
+bool Backend::urgent(const QString& uri) const
 {
     return m_launchers.value(uri).urgent;
 }
@@ -142,7 +143,13 @@ QHash<QString, QString> Backend::unityMappingRules() const
     return m_unityMappingRules;
 }
 
-void Backend::update(const QString &uri, const QMap<QString, QVariant> &properties)
+// DBus event handlers
+
+/// Slot bound to Unity ``Update(string uri, dict<string,variant>)``.
+/// Walks the property dict and forwards each known key to
+/// updateLauncherProperty, which handles the "did the sanitised value
+/// change → emit changed signal" diff.
+void Backend::update(const QString& uri, const QMap<QString, QVariant>& properties)
 {
     Q_ASSERT(calledFromDBus());
 
@@ -193,12 +200,8 @@ void Backend::update(const QString &uri, const QMap<QString, QVariant> &properti
     }
 
     updateLauncherProperty(storageId, properties, QStringLiteral("count"), &foundEntry->count, &Backend::count, &Backend::countChanged);
-    updateLauncherProperty(storageId,
-                           properties,
-                           QStringLiteral("count-visible"),
-                           &foundEntry->countVisible,
-                           &Backend::countVisible,
-                           &Backend::countVisibleChanged);
+    updateLauncherProperty(
+        storageId, properties, QStringLiteral("count-visible"), &foundEntry->countVisible, &Backend::countVisible, &Backend::countVisibleChanged);
 
     auto foundProgress = properties.constFind(QStringLiteral("progress"));
     if (foundProgress != propertiesEnd) {
@@ -217,23 +220,19 @@ void Backend::update(const QString &uri, const QMap<QString, QVariant> &properti
         }
     }
 
-    updateLauncherProperty(storageId,
-                           properties,
-                           QStringLiteral("progress-visible"),
-                           &foundEntry->progressVisible,
-                           &Backend::progressVisible,
-                           &Backend::progressVisibleChanged);
+    updateLauncherProperty(
+        storageId, properties, QStringLiteral("progress-visible"), &foundEntry->progressVisible, &Backend::progressVisible, &Backend::progressVisibleChanged);
     updateLauncherProperty(storageId, properties, QStringLiteral("urgent"), &foundEntry->urgent, &Backend::urgent, &Backend::urgentChanged);
 }
 
-void Backend::onServiceUnregistered(const QString &service)
+void Backend::onServiceUnregistered(const QString& service)
 {
-    const QString &launcherUrl = m_dbusServiceToLauncherUrl.take(service);
+    const QString& launcherUrl = m_dbusServiceToLauncherUrl.take(service);
     if (launcherUrl.isEmpty()) {
         return;
     }
 
-    const QString &storageId = m_launcherUrlToStorageId.take(launcherUrl);
+    const QString& storageId = m_launcherUrlToStorageId.take(launcherUrl);
     if (storageId.isEmpty()) {
         return;
     }

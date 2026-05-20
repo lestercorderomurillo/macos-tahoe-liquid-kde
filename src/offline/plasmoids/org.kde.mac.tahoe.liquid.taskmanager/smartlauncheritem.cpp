@@ -15,7 +15,11 @@
 
 using namespace SmartLauncher;
 
-Item::Item(QObject *parent)
+// Lifecycle
+
+/// Hand out (or lazily create) the shared Backend. weak_ptr lets the
+/// Backend self-destruct once the last Item has been deleted.
+Item::Item(QObject* parent)
     : QObject(parent)
 {
     m_backendPtr = s_backend.lock();
@@ -28,49 +32,54 @@ Item::Item(QObject *parent)
 
 std::weak_ptr<Backend> Item::s_backend;
 
+// Backend subscription
+
+/// Wire signal forwarding from the shared Backend into this Item's
+/// per-launcher state. No-op when called twice or before launcherUrl
+/// has been set.
 void Item::init()
 {
     if (m_inited || m_storageId.isEmpty() || !m_backendPtr) {
         return;
     }
 
-    connect(m_backendPtr.get(), &Backend::reloadRequested, this, [this](const QString &uri) {
+    connect(m_backendPtr.get(), &Backend::reloadRequested, this, [this](const QString& uri) {
         if (uri.isEmpty() || m_storageId == uri) {
             populate();
         }
     });
 
-    connect(m_backendPtr.get(), &Backend::launcherRemoved, this, [this](const QString &uri) {
+    connect(m_backendPtr.get(), &Backend::launcherRemoved, this, [this](const QString& uri) {
         if (uri.isEmpty() || m_storageId == uri) {
             clear();
         }
     });
 
-    connect(m_backendPtr.get(), &Backend::countChanged, this, [this](const QString &uri, int count) {
+    connect(m_backendPtr.get(), &Backend::countChanged, this, [this](const QString& uri, int count) {
         if (uri.isEmpty() || m_storageId == uri) {
             setCount(count);
         }
     });
 
-    connect(m_backendPtr.get(), &Backend::countVisibleChanged, this, [this](const QString &uri, bool countVisible) {
+    connect(m_backendPtr.get(), &Backend::countVisibleChanged, this, [this](const QString& uri, bool countVisible) {
         if (uri.isEmpty() || m_storageId == uri) {
             setCountVisible(countVisible);
         }
     });
 
-    connect(m_backendPtr.get(), &Backend::progressChanged, this, [this](const QString &uri, int progress) {
+    connect(m_backendPtr.get(), &Backend::progressChanged, this, [this](const QString& uri, int progress) {
         if (uri.isEmpty() || m_storageId == uri) {
             setProgress(progress);
         }
     });
 
-    connect(m_backendPtr.get(), &Backend::progressVisibleChanged, this, [this](const QString &uri, bool progressVisible) {
+    connect(m_backendPtr.get(), &Backend::progressVisibleChanged, this, [this](const QString& uri, bool progressVisible) {
         if (uri.isEmpty() || m_storageId == uri) {
             setProgressVisible(progressVisible);
         }
     });
 
-    connect(m_backendPtr.get(), &Backend::urgentChanged, this, [this](const QString &uri, bool urgent) {
+    connect(m_backendPtr.get(), &Backend::urgentChanged, this, [this](const QString& uri, bool urgent) {
         if (uri.isEmpty() || m_storageId == uri) {
             setUrgent(urgent);
         }
@@ -105,12 +114,14 @@ void Item::clear()
     setUrgent(false);
 }
 
+// Property accessors / mutators
+
 QUrl Item::launcherUrl() const
 {
     return m_launcherUrl;
 }
 
-void Item::setLauncherUrl(const QUrl &launcherUrl)
+void Item::setLauncherUrl(const QUrl& launcherUrl)
 {
     if (launcherUrl != m_launcherUrl) {
         m_launcherUrl = launcherUrl;
@@ -141,7 +152,7 @@ void Item::setLauncherUrl(const QUrl &launcherUrl)
         }
 
         if (m_backendPtr) {
-            const QString &overrideStorageId = m_backendPtr->unityMappingRules().value(m_storageId);
+            const QString& overrideStorageId = m_backendPtr->unityMappingRules().value(m_storageId);
             if (!overrideStorageId.isEmpty()) {
                 m_storageId = overrideStorageId;
             }

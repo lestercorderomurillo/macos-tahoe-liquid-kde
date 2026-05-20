@@ -12,7 +12,7 @@ KCM.SimpleKCM {
 
     Kirigami.FormLayout {
 
-        // ── empty icon ──────────────────────────────────────────
+        // empty icon
         ColumnLayout {
             Kirigami.FormData.label: "Empty trash icon:"
             spacing: Kirigami.Units.smallSpacing
@@ -34,7 +34,7 @@ KCM.SimpleKCM {
             }
         }
 
-        // ── full icon ───────────────────────────────────────────
+        // full icon
         ColumnLayout {
             Kirigami.FormData.label: "Full trash icon:"
             spacing: Kirigami.Units.smallSpacing

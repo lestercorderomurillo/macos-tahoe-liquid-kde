@@ -18,41 +18,41 @@
 #include <QWidgetAction>
 #include <algorithm>
 
-#include <abstracttasksmodel.h>
 #include "dbusmenuimporter.h"
+#include <abstracttasksmodel.h>
 
 class KDBusMenuImporter : public DBusMenuImporter
 {
 public:
-    KDBusMenuImporter(const QString &service, const QString &path)
+    KDBusMenuImporter(const QString& service, const QString& path)
         : DBusMenuImporter(service, path)
-    {
-    }
+    { }
 
 protected:
-    QIcon iconForName(const QString &name) override
-    {
-        return QIcon::fromTheme(name);
-    }
+    QIcon iconForName(const QString& name) override { return QIcon::fromTheme(name); }
 };
 
-AppMenuModel::AppMenuModel(QObject *parent)
+// Lifecycle
+
+/// Wire up the TasksModel subscriptions + DBus service watcher. On
+/// Wayland we additionally build a search QMenu with a QLineEdit so
+/// the user can filter through deeply-nested menu actions.
+AppMenuModel::AppMenuModel(QObject* parent)
     : QAbstractListModel(parent)
     , m_tasksModel(new TaskManager::TasksModel(this))
     , m_serviceWatcher(new QDBusServiceWatcher(this))
 {
     m_tasksModel->setFilterByScreen(!m_allScreens);
     connect(m_tasksModel, &TaskManager::TasksModel::activeTaskChanged, this, &AppMenuModel::onActiveWindowChanged);
-    connect(m_tasksModel,
-            &TaskManager::TasksModel::dataChanged,
-            [this](const QModelIndex &topLeft, const QModelIndex &bottomRight, const QList<int> &roles = QList<int>()) {
-                Q_UNUSED(topLeft)
-                Q_UNUSED(bottomRight)
-                if (roles.contains(TaskManager::AbstractTasksModel::ApplicationMenuObjectPath)
-                    || roles.contains(TaskManager::AbstractTasksModel::ApplicationMenuServiceName) || roles.isEmpty()) {
-                    onActiveWindowChanged();
-                }
-            });
+    connect(m_tasksModel, &TaskManager::TasksModel::dataChanged,
+        [this](const QModelIndex& topLeft, const QModelIndex& bottomRight, const QList<int>& roles = QList<int>()) {
+            Q_UNUSED(topLeft)
+            Q_UNUSED(bottomRight)
+            if (roles.contains(TaskManager::AbstractTasksModel::ApplicationMenuObjectPath)
+                || roles.contains(TaskManager::AbstractTasksModel::ApplicationMenuServiceName) || roles.isEmpty()) {
+                onActiveWindowChanged();
+            }
+        });
     connect(m_tasksModel, &TaskManager::TasksModel::activityChanged, this, &AppMenuModel::onActiveWindowChanged);
     connect(m_tasksModel, &TaskManager::TasksModel::virtualDesktopChanged, this, &AppMenuModel::onActiveWindowChanged);
     connect(m_tasksModel, &TaskManager::TasksModel::countChanged, this, &AppMenuModel::onActiveWindowChanged);
@@ -68,7 +68,7 @@ AppMenuModel::AppMenuModel(QObject *parent)
     onActiveWindowChanged();
 
     m_serviceWatcher->setConnection(QDBusConnection::sessionBus());
-    connect(m_serviceWatcher, &QDBusServiceWatcher::serviceUnregistered, this, [this](const QString &serviceName) {
+    connect(m_serviceWatcher, &QDBusServiceWatcher::serviceUnregistered, this, [this](const QString& serviceName) {
         if (serviceName == m_serviceName) {
             setMenuAvailable(false);
             Q_EMIT modelNeedsUpdate();
@@ -87,20 +87,14 @@ AppMenuModel::AppMenuModel(QObject *parent)
         searchBar->setPlaceholderText(i18n("Search…"));
         searchBar->setMinimumWidth(200);
         searchBar->setContentsMargins(4, 4, 4, 4);
-        connect(m_tasksModel, &TaskManager::TasksModel::activeTaskChanged, searchBar, [searchBar]() {
-            searchBar->setText(QString());
-        });
-        connect(searchBar, &QLineEdit::textChanged, this, [searchBar, this]() mutable {
-            insertSearchActionsIntoMenu(searchBar->text());
-        });
+        connect(m_tasksModel, &TaskManager::TasksModel::activeTaskChanged, searchBar, [searchBar]() { searchBar->setText(QString()); });
+        connect(searchBar, &QLineEdit::textChanged, this, [searchBar, this]() mutable { insertSearchActionsIntoMenu(searchBar->text()); });
         connect(searchBar, &QLineEdit::returnPressed, this, [this]() mutable {
             if (!m_currentSearchActions.empty()) {
                 m_currentSearchActions.constFirst()->trigger();
             }
         });
-        connect(this, &AppMenuModel::modelNeedsUpdate, searchBar, [this, searchBar]() mutable {
-            insertSearchActionsIntoMenu(searchBar->text());
-        });
+        connect(this, &AppMenuModel::modelNeedsUpdate, searchBar, [this, searchBar]() mutable { insertSearchActionsIntoMenu(searchBar->text()); });
         searchAction->setDefaultWidget(searchBar);
         m_searchMenu->addAction(searchAction);
         m_searchMenu->addSeparator();
@@ -109,6 +103,8 @@ AppMenuModel::AppMenuModel(QObject *parent)
 }
 
 AppMenuModel::~AppMenuModel() = default;
+
+// Property accessors
 
 QString AppMenuModel::activeAppName() const
 {
@@ -170,7 +166,9 @@ void AppMenuModel::setScreenGeometry(QRect geometry)
     m_tasksModel->setScreenGeometry(geometry);
 }
 
-int AppMenuModel::rowCount(const QModelIndex &parent) const
+// QAbstractListModel overrides
+
+int AppMenuModel::rowCount(const QModelIndex& parent) const
 {
     Q_UNUSED(parent);
     if (!m_menuAvailable || !m_menu) {
@@ -179,28 +177,32 @@ int AppMenuModel::rowCount(const QModelIndex &parent) const
     return m_menu->actions().count() + (m_searchAction ? 1 : 0);
 }
 
+// Search-action helpers (Wayland-only path)
+
 void AppMenuModel::removeSearchActionsFromMenu()
 {
     for (auto action : std::as_const(m_currentSearchActions)) {
         m_searchAction->menu()->removeAction(action);
     }
-    m_currentSearchActions = QList<QAction *>();
+    m_currentSearchActions = QList<QAction*>();
 }
 
-void AppMenuModel::insertSearchActionsIntoMenu(const QString &filter)
+void AppMenuModel::insertSearchActionsIntoMenu(const QString& filter)
 {
     removeSearchActionsFromMenu();
     if (filter.isEmpty()) {
         return;
     }
     const auto actions = flatActionList();
-    for (const auto &action : actions) {
+    for (const auto& action : actions) {
         if (action->text().contains(filter, Qt::CaseInsensitive)) {
             m_searchAction->menu()->addAction(action);
             m_currentSearchActions << action;
         }
     }
 }
+
+// Window / model refresh
 
 void AppMenuModel::update()
 {
@@ -230,14 +232,14 @@ QHash<int, QByteArray> AppMenuModel::roleNames() const
     return roleNames;
 }
 
-QList<QAction *> AppMenuModel::flatActionList()
+QList<QAction*> AppMenuModel::flatActionList()
 {
-    QList<QAction *> ret;
+    QList<QAction*> ret;
     if (!m_menuAvailable || !m_menu) {
         return ret;
     }
-    const auto actions = m_menu->findChildren<QAction *>();
-    for (auto &action : actions) {
+    const auto actions = m_menu->findChildren<QAction*>();
+    for (auto& action : actions) {
         if (action->menu() == nullptr) {
             ret << action;
         }
@@ -245,12 +247,12 @@ QList<QAction *> AppMenuModel::flatActionList()
     return ret;
 }
 
-TaskManager::TasksModel *AppMenuModel::tasksModel() const
+TaskManager::TasksModel* AppMenuModel::tasksModel() const
 {
     return m_tasksModel;
 }
 
-QVariant AppMenuModel::data(const QModelIndex &index, int role) const
+QVariant AppMenuModel::data(const QModelIndex& index, int role) const
 {
     if (!m_menuAvailable || !m_menu) {
         return {};
@@ -286,7 +288,12 @@ QVariant AppMenuModel::data(const QModelIndex &index, int role) const
     return {};
 }
 
-void AppMenuModel::updateApplicationMenu(const QString &serviceName, const QString &menuObjectPath)
+// DBus importer attachment
+
+/// Swap the watched dbus service / object. The old importer is
+/// destroyed when ``m_importer`` is reassigned (unique_ptr); the new
+/// one starts publishing via ``modelNeedsUpdate``.
+void AppMenuModel::updateApplicationMenu(const QString& serviceName, const QString& menuObjectPath)
 {
     if (m_serviceName == serviceName && m_menuObjectPath == menuObjectPath) {
         if (m_importer) {
@@ -310,7 +317,7 @@ void AppMenuModel::updateApplicationMenu(const QString &serviceName, const QStri
         m_importer = std::make_unique<KDBusMenuImporter>(serviceName, menuObjectPath);
         QMetaObject::invokeMethod(m_importer.get(), "updateMenu", Qt::QueuedConnection);
 
-        connect(m_importer.get(), &DBusMenuImporter::menuUpdated, this, [=, this](QMenu *menu) {
+        connect(m_importer.get(), &DBusMenuImporter::menuUpdated, this, [=, this](QMenu* menu) {
             m_menu = m_importer->menu();
             if (m_menu.isNull() || menu != m_menu) {
                 return;
@@ -324,7 +331,7 @@ void AppMenuModel::updateApplicationMenu(const QString &serviceName, const QStri
             }
 
             const auto actions = m_menu->actions();
-            for (QAction *a : actions) {
+            for (QAction* a : actions) {
                 connect(a, &QAction::changed, this, [this, a] {
                     if (m_menuAvailable && m_menu) {
                         const int actionIdx = m_menu->actions().indexOf(a);
@@ -345,7 +352,7 @@ void AppMenuModel::updateApplicationMenu(const QString &serviceName, const QStri
             Q_EMIT modelNeedsUpdate();
         });
 
-        connect(m_importer.get(), &DBusMenuImporter::actionActivationRequested, this, [this](QAction *action) {
+        connect(m_importer.get(), &DBusMenuImporter::actionActivationRequested, this, [this](QAction* action) {
             if (!m_menuAvailable || !m_menu) {
                 return;
             }

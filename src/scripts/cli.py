@@ -107,6 +107,10 @@ Options:
     --reset            Reset features.json to all-true defaults
     --check-update     Check GitHub for a newer release and exit
     --preflight        Run preflight checks (sudo, paths, Qt6, IDs) and exit
+    --restart          Restart Plasma shell. Standalone (no other flags)
+                       skips install entirely; combined with --only or
+                       --no-X the install runs first and restart happens
+                       at the end (the install always restarts anyway)
 
 Examples:
   ./install                              # install everything
@@ -115,6 +119,7 @@ Examples:
   ./install --dark --save                # dark mode, remember setting
   ./install --reset                      # restore defaults
   ./install --check-update               # see if a newer release is out
+  ./install --restart                    # just kick plasmashell, don't reinstall
 """
 
 UNINSTALL_HELP = """\
@@ -185,6 +190,7 @@ class ParsedArgs:
         self.only_mode = False
         self.check_update = False
         self.preflight_only = False
+        self.restart_only = False
         self.cli_overrides: dict[str, bool] = {}
         self.help = False
 
@@ -210,6 +216,8 @@ def parse_args(argv: list[str]) -> ParsedArgs:
             p.check_update = True
         elif arg == "--preflight":
             p.preflight_only = True
+        elif arg == "--restart":
+            p.restart_only = True
         elif arg in ("--no-download", "--offline"):
             p.cli_overrides["no_download"] = True
         elif arg == "--download":
@@ -771,6 +779,22 @@ def run_install(argv: list[str]) -> int:
     if parsed.preflight_only:
         banner(read_version())
         return 0 if run_preflight("install") else 1
+
+    # ``--restart`` standalone (no install flags) bypasses every install
+    # step and just kicks plasmashell. When combined with install flags
+    # (``--only --acrylic-glass --restart``, ``--no-X --restart``, etc.)
+    # the install runs normally — the final ``run_phase("apply",
+    # "restart_plasma")`` at the end of run_install already restarts
+    # Plasma, so ``--restart`` in that combo is implicit. The standalone
+    # form is the useful one: iterating on a piece, you reinstall once
+    # with ``--only --X`` and then re-kick plasmashell with ``--restart``
+    # in subsequent runs without re-doing the install.
+    if parsed.restart_only and not parsed.only_mode and not parsed.cli_overrides:
+        banner(read_version())
+        step("Restarting Plasma")
+        note("Restarts Plasma shell — no install, no config changes")
+        run_phase("apply", "restart_plasma")
+        return 0
 
     tracker = RunTracker("install", argv, str(feat.get("theme_mode", "auto")))
     tracker.start()

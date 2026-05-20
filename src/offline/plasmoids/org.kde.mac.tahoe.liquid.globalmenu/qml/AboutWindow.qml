@@ -46,7 +46,7 @@ Window {
     property string serialNumber: ""
     property string osPrettyName: ""
 
-    // ── system info fetcher ────────────────────────────────────────
+    // system info fetcher
     P5Support.DataSource {
         id: infoSource
         engine: "executable"
@@ -166,7 +166,7 @@ Window {
         }
     }
 
-    // ── unified glass frame ────────────────────────────────────────
+    // unified glass frame
     Rectangle {
         id: glass
         anchors.fill: parent
@@ -181,7 +181,7 @@ Window {
 
         layer.enabled: true
 
-        // ── drag from anywhere ─────────────────────────────────────
+        // drag from anywhere
         MouseArea {
             anchors.fill: parent
             property point clickPos: Qt.point(0, 0)
@@ -192,7 +192,7 @@ Window {
             }
         }
 
-        // ── window buttons ─────────────────────────────────────────
+        // window buttons
         Row {
             anchors { left: parent.left; top: parent.top; leftMargin: 14; topMargin: 14 }
             spacing: 8
@@ -239,7 +239,7 @@ Window {
             }
         }
 
-        // ── content ────────────────────────────────────────────────
+        // content
         ColumnLayout {
             anchors.fill: parent
             spacing: 0

@@ -31,7 +31,7 @@ KCM.SimpleKCM {
 
     Kirigami.FormLayout {
 
-        // ── Icon ─────────────────────────────────────────────────
+        // Icon
         Kirigami.ActionTextField {
             id: iconField
             Kirigami.FormData.label: "Menu icon:"
@@ -60,7 +60,7 @@ KCM.SimpleKCM {
             onClicked: iconDialog.open()
         }
 
-        // ── Appearance ────────────────────────────────────────────
+        // Appearance
         Kirigami.Separator {
             Kirigami.FormData.isSection: true
             Kirigami.FormData.label: "Appearance"
@@ -73,7 +73,7 @@ KCM.SimpleKCM {
             checked: Plasmoid.configuration.useSystemFont
         }
 
-        // ── Icons ─────────────────────────────────────────────────
+        // Icons
         Kirigami.Separator {
             Kirigami.FormData.isSection: true
             Kirigami.FormData.label: "Menu Item Icons"
@@ -151,7 +151,7 @@ KCM.SimpleKCM {
         }
         KIconThemes.IconDialog { id: iconLogOutDialog; onIconNameChanged: iconLogOutField.text = iconName }
 
-        // ── Commands ──────────────────────────────────────────────
+        // Commands
         Kirigami.Separator {
             Kirigami.FormData.isSection: true
             Kirigami.FormData.label: "Commands"

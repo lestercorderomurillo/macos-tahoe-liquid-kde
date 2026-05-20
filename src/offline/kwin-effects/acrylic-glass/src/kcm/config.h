@@ -10,15 +10,14 @@
 #include <KCModule>
 #include <QWidget>
 
-namespace KWin
-{
+namespace KWin {
 
 class LiquidGlassEffectConfig : public KCModule
 {
     Q_OBJECT
 
 public:
-    explicit LiquidGlassEffectConfig(QObject *parent, const KPluginMetaData &data);
+    explicit LiquidGlassEffectConfig(QObject* parent, const KPluginMetaData& data);
     ~LiquidGlassEffectConfig() override;
 
     void save() override;

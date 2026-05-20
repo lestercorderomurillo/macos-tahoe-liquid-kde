@@ -5,15 +5,14 @@
 #include "config.h"
 #include "glassconfig.h"
 
-#include <KPluginFactory>
 #include "kwineffects_interface.h"
+#include <KPluginFactory>
 
-namespace KWin
-{
+namespace KWin {
 
 K_PLUGIN_CLASS(LiquidGlassEffectConfig)
 
-LiquidGlassEffectConfig::LiquidGlassEffectConfig(QObject *parent, const KPluginMetaData &data)
+LiquidGlassEffectConfig::LiquidGlassEffectConfig(QObject* parent, const KPluginMetaData& data)
     : KCModule(parent, data)
 {
     ui.setupUi(widget());
@@ -26,17 +25,13 @@ LiquidGlassEffectConfig::LiquidGlassEffectConfig(QObject *parent, const KPluginM
     }
 }
 
-LiquidGlassEffectConfig::~LiquidGlassEffectConfig()
-{
-}
+LiquidGlassEffectConfig::~LiquidGlassEffectConfig() { }
 
 void LiquidGlassEffectConfig::save()
 {
     KCModule::save();
 
-    OrgKdeKwinEffectsInterface interface(QStringLiteral("org.kde.KWin"),
-                                         QStringLiteral("/Effects"),
-                                         QDBusConnection::sessionBus());
+    OrgKdeKwinEffectsInterface interface(QStringLiteral("org.kde.KWin"), QStringLiteral("/Effects"), QDBusConnection::sessionBus());
 
     if (QGuiApplication::platformName() == QStringLiteral("xcb")) {
         interface.reconfigureEffect(QStringLiteral("liquidglass_x11"));

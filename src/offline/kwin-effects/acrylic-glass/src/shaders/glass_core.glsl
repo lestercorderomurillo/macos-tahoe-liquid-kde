@@ -66,7 +66,7 @@ void main()
         col = lgApplyRgbDrift(texUnit, col, lensUV, outNorm, blurSize, rgbDriftStrength, edgeQ);
     }
     if (highlightStrength > 0.0) {
-        col = lgApplyHighlight(col, inside, highlightWidth, highlightStrength);
+        col = lgApplyHighlight(col, inside, outNorm, highlightWidth, highlightStrength);
     }
 
     float mask = 1.0 - smoothstep(-3.0, 0.0, d);

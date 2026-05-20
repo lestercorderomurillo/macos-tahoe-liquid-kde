@@ -48,29 +48,34 @@ namespace KAStats = KActivities::Stats;
 using namespace KAStats;
 using namespace KAStats::Terms;
 
+// File-scope constants
+
+/// Sentinel for "no apps found" in the application-categories lookup
+/// (matches the upstream KDE TaskManager backend constant).
 static constexpr int NoApplications = 2;
 
-Backend::Backend(QObject *parent)
+// Lifecycle
+
+/// Hook the activity-manager plugin settings watcher so what-to-remember
+/// changes propagate live without a Plasma restart.
+Backend::Backend(QObject* parent)
     : QObject(parent)
     , m_actionGroup(new QActionGroup(this))
     , m_activityManagerPluginsSettingsWatcher(KConfigWatcher::create(m_activityManagerPluginsSettings.sharedConfig()))
 {
-    connect(m_activityManagerPluginsSettingsWatcher.get(),
-            &KConfigWatcher::configChanged,
-            this,
-            [this](const KConfigGroup &group, const QByteArrayList &names) {
-                if (group.name() == QLatin1String("Plugin-org.kde.ActivityManager.Resources.Scoring")
-                    && names.contains(QByteArrayLiteral("what-to-remember"))) {
-                    m_activityManagerPluginsSettings.load();
-                }
-            });
+    connect(
+        m_activityManagerPluginsSettingsWatcher.get(), &KConfigWatcher::configChanged, this, [this](const KConfigGroup& group, const QByteArrayList& names) {
+            if (group.name() == QLatin1String("Plugin-org.kde.ActivityManager.Resources.Scoring") && names.contains(QByteArrayLiteral("what-to-remember"))) {
+                m_activityManagerPluginsSettings.load();
+            }
+        });
 }
 
-Backend::~Backend()
-{
-}
+Backend::~Backend() { }
 
-QUrl Backend::tryDecodeApplicationsUrl(const QUrl &launcherUrl)
+// URL helpers
+
+QUrl Backend::tryDecodeApplicationsUrl(const QUrl& launcherUrl)
 {
     if (launcherUrl.isValid() && launcherUrl.scheme() == QLatin1String("applications")) {
         const KService::Ptr service = KService::serviceByMenuId(launcherUrl.path());
@@ -83,7 +88,7 @@ QUrl Backend::tryDecodeApplicationsUrl(const QUrl &launcherUrl)
     return launcherUrl;
 }
 
-QStringList Backend::applicationCategories(const QUrl &launcherUrl)
+QStringList Backend::applicationCategories(const QUrl& launcherUrl)
 {
     const QUrl desktopEntryUrl = tryDecodeApplicationsUrl(launcherUrl);
 
@@ -96,7 +101,9 @@ QStringList Backend::applicationCategories(const QUrl &launcherUrl)
     return desktopFile.desktopGroup().readXdgListEntry(QStringLiteral("Categories"));
 }
 
-QVariantList Backend::jumpListActions(const QUrl &launcherUrl, QObject *parent)
+// Right-click menu builders
+
+QVariantList Backend::jumpListActions(const QUrl& launcherUrl, QObject* parent)
 {
     QVariantList actions;
 
@@ -124,12 +131,12 @@ QVariantList Backend::jumpListActions(const QUrl &launcherUrl, QObject *parent)
 
     const auto jumpListActions = service->actions();
 
-    for (const KServiceAction &serviceAction : jumpListActions) {
+    for (const KServiceAction& serviceAction : jumpListActions) {
         if (serviceAction.noDisplay()) {
             continue;
         }
 
-        QAction *action = new QAction(parent);
+        QAction* action = new QAction(parent);
         action->setText(serviceAction.text());
         action->setIcon(QIcon::fromTheme(serviceAction.icon()));
         if (serviceAction.isSeparator()) {
@@ -137,20 +144,20 @@ QVariantList Backend::jumpListActions(const QUrl &launcherUrl, QObject *parent)
         }
 
         connect(action, &QAction::triggered, this, [serviceAction]() {
-            auto *job = new KIO::ApplicationLauncherJob(serviceAction);
-            auto *delegate = new KNotificationJobUiDelegate;
+            auto* job = new KIO::ApplicationLauncherJob(serviceAction);
+            auto* delegate = new KNotificationJobUiDelegate;
             delegate->setAutoErrorHandlingEnabled(true);
             job->setUiDelegate(delegate);
             job->start();
         });
 
-        actions << QVariant::fromValue<QAction *>(action);
+        actions << QVariant::fromValue<QAction*>(action);
     }
 
     return actions;
 }
 
-QVariantList Backend::systemSettingsActions(QObject *parent) const
+QVariantList Backend::systemSettingsActions(QObject* parent) const
 {
     QVariantList actions;
 
@@ -163,7 +170,7 @@ QVariantList Backend::systemSettingsActions(QObject *parent) const
     ResultSet results(query);
 
     QStringList ids;
-    for (const ResultSet::Result &result : results) {
+    for (const ResultSet::Result& result : results) {
         ids << QUrl(result.resource()).path();
     }
 
@@ -171,30 +178,30 @@ QVariantList Backend::systemSettingsActions(QObject *parent) const
         return actions;
     }
 
-    for (const QString &id : std::as_const(ids)) {
+    for (const QString& id : std::as_const(ids)) {
         KService::Ptr service = KService::serviceByStorageId(id);
         if (!service || !service->isValid()) {
             continue;
         }
 
-        QAction *action = new QAction(parent);
+        QAction* action = new QAction(parent);
         action->setText(service->name());
         action->setIcon(QIcon::fromTheme(service->icon()));
 
         connect(action, &QAction::triggered, this, [service]() {
-            auto *job = new KIO::ApplicationLauncherJob(service);
-            auto *delegate = new KNotificationJobUiDelegate;
+            auto* job = new KIO::ApplicationLauncherJob(service);
+            auto* delegate = new KNotificationJobUiDelegate;
             delegate->setAutoErrorHandlingEnabled(true);
             job->setUiDelegate(delegate);
             job->start();
         });
 
-        actions << QVariant::fromValue<QAction *>(action);
+        actions << QVariant::fromValue<QAction*>(action);
     }
     return actions;
 }
 
-QVariantList Backend::placesActions(const QUrl &launcherUrl, bool showAllPlaces, QObject *parent)
+QVariantList Backend::placesActions(const QUrl& launcherUrl, bool showAllPlaces, QObject* parent)
 {
     if (!parent) {
         return QVariantList();
@@ -213,7 +220,7 @@ QVariantList Backend::placesActions(const QUrl &launcherUrl, bool showAllPlaces,
     }
 
     QString previousGroup;
-    QMenu *subMenu = nullptr;
+    QMenu* subMenu = nullptr;
 
     std::unique_ptr<KFilePlacesModel> placesModel(new KFilePlacesModel());
     for (int i = 0; i < placesModel->rowCount(); ++i) {
@@ -223,11 +230,11 @@ QVariantList Backend::placesActions(const QUrl &launcherUrl, bool showAllPlaces,
             continue;
         }
 
-        const QString &title = idx.data(Qt::DisplayRole).toString();
-        const QIcon &icon = idx.data(Qt::DecorationRole).value<QIcon>();
-        const QUrl &url = idx.data(KFilePlacesModel::UrlRole).toUrl();
+        const QString& title = idx.data(Qt::DisplayRole).toString();
+        const QIcon& icon = idx.data(Qt::DecorationRole).value<QIcon>();
+        const QUrl& url = idx.data(KFilePlacesModel::UrlRole).toUrl();
 
-        QAction *placeAction = new QAction(icon, title, parent);
+        QAction* placeAction = new QAction(icon, title, parent);
 
         connect(placeAction, &QAction::triggered, this, [url, desktopEntryUrl] {
             KService::Ptr service = KService::serviceByDesktopPath(desktopEntryUrl.toLocalFile());
@@ -235,8 +242,8 @@ QVariantList Backend::placesActions(const QUrl &launcherUrl, bool showAllPlaces,
                 return;
             }
 
-            auto *job = new KIO::ApplicationLauncherJob(service);
-            auto *delegate = new KNotificationJobUiDelegate;
+            auto* job = new KIO::ApplicationLauncherJob(service);
+            auto* delegate = new KNotificationJobUiDelegate;
             delegate->setAutoErrorHandlingEnabled(true);
             job->setUiDelegate(delegate);
 
@@ -244,13 +251,13 @@ QVariantList Backend::placesActions(const QUrl &launcherUrl, bool showAllPlaces,
             job->start();
         });
 
-        const QString &groupName = idx.data(KFilePlacesModel::GroupRole).toString();
+        const QString& groupName = idx.data(KFilePlacesModel::GroupRole).toString();
         if (previousGroup.isEmpty()) {
             previousGroup = groupName;
         }
 
         if (previousGroup != groupName) {
-            QAction *subMenuAction = new QAction(groupName, parent);
+            QAction* subMenuAction = new QAction(groupName, parent);
             subMenu = new QMenu();
             subMenu->setAttribute(Qt::WA_TranslucentBackground);
             connect(parent, &QObject::destroyed, subMenu, &QObject::deleteLater);
@@ -275,7 +282,7 @@ QVariantList Backend::placesActions(const QUrl &launcherUrl, bool showAllPlaces,
             actions.removeLast();
         }
 
-        QAction *action = new QAction(parent);
+        QAction* action = new QAction(parent);
         action->setIcon(QIcon::fromTheme(QStringLiteral("view-more-symbolic")));
         action->setText(i18ncp("Show all user Places", "%1 more Place…", "%1 more Places…", totalActionCount - actions.count()));
         connect(action, &QAction::triggered, this, &Backend::showAllPlaces);
@@ -285,7 +292,7 @@ QVariantList Backend::placesActions(const QUrl &launcherUrl, bool showAllPlaces,
     return actions;
 }
 
-QVariantList Backend::recentDocumentActions(const QUrl &launcherUrl, QObject *parent)
+QVariantList Backend::recentDocumentActions(const QUrl& launcherUrl, QObject* parent)
 {
     QVariantList actions;
     if (!parent) {
@@ -343,7 +350,7 @@ QVariantList Backend::recentDocumentActions(const QUrl &launcherUrl, QObject *pa
             name = url.toDisplayString();
         }
 
-        QAction *action = new QAction(parent);
+        QAction* action = new QAction(parent);
         action->setText(name);
         action->setIcon(QIcon::fromTheme(KIO::iconNameForUrl(url)));
         action->setProperty("agent", storageId);
@@ -352,7 +359,7 @@ QVariantList Backend::recentDocumentActions(const QUrl &launcherUrl, QObject *pa
         action->setData(url);
         connect(action, &QAction::triggered, this, &Backend::handleRecentDocumentAction);
 
-        actions << QVariant::fromValue<QAction *>(action);
+        actions << QVariant::fromValue<QAction*>(action);
 
         ++actionCount;
     }
@@ -366,11 +373,11 @@ QVariantList Backend::recentDocumentActions(const QUrl &launcherUrl, QObject *pa
             actions.prepend(i18n("Recent Places"));
         }
 
-        QAction *separatorAction = new QAction(parent);
+        QAction* separatorAction = new QAction(parent);
         separatorAction->setSeparator(true);
-        actions << QVariant::fromValue<QAction *>(separatorAction);
+        actions << QVariant::fromValue<QAction*>(separatorAction);
 
-        QAction *action = new QAction(parent);
+        QAction* action = new QAction(parent);
         if (allDownloads) {
             action->setText(i18nc("@action:inmenu", "Forget Recent Downloads"));
         } else if (allRemoteWithoutFileName) {
@@ -383,15 +390,17 @@ QVariantList Backend::recentDocumentActions(const QUrl &launcherUrl, QObject *pa
         action->setIcon(QIcon::fromTheme(QStringLiteral("edit-clear-history")));
         action->setProperty("agent", storageId);
         connect(action, &QAction::triggered, this, &Backend::handleRecentDocumentAction);
-        actions << QVariant::fromValue<QAction *>(action);
+        actions << QVariant::fromValue<QAction*>(action);
     }
 
     return actions;
 }
 
+// Slot for the recent-document QActions built above
+
 void Backend::handleRecentDocumentAction() const
 {
-    const QAction *action = qobject_cast<QAction *>(sender());
+    const QAction* action = qobject_cast<QAction*>(sender());
 
     if (!action) {
         return;
@@ -433,22 +442,24 @@ void Backend::handleRecentDocumentAction() const
         }
     }
 
-    auto *job = new KIO::ApplicationLauncherJob(service);
-    auto *delegate = new KNotificationJobUiDelegate;
+    auto* job = new KIO::ApplicationLauncherJob(service);
+    auto* delegate = new KNotificationJobUiDelegate;
     delegate->setAutoErrorHandlingEnabled(true);
     job->setUiDelegate(delegate);
     job->setUrls({url});
     job->start();
 }
 
-void Backend::setActionGroup(QAction *action) const
+// Misc QML-callable helpers
+
+void Backend::setActionGroup(QAction* action) const
 {
     if (action) {
         action->setActionGroup(m_actionGroup);
     }
 }
 
-QRect Backend::globalRect(QQuickItem *item) const
+QRect Backend::globalRect(QQuickItem* item) const
 {
     if (!item || !item->window()) {
         return QRect();
@@ -461,13 +472,13 @@ QRect Backend::globalRect(QQuickItem *item) const
     return iconRect;
 }
 
-bool Backend::isApplication(const QUrl &url) const
+bool Backend::isApplication(const QUrl& url) const
 {
     if (!url.isValid() || !url.isLocalFile()) {
         return false;
     }
 
-    const QString &localPath = url.toLocalFile();
+    const QString& localPath = url.toLocalFile();
 
     if (!KDesktopFile::isDesktopFile(localPath)) {
         return false;
@@ -482,7 +493,7 @@ qint64 Backend::parentPid(qint64 pid) const
     KSysGuard::Processes procs;
     procs.updateOrAddProcess(pid);
 
-    KSysGuard::Process *proc = procs.getProcess(pid);
+    KSysGuard::Process* proc = procs.getProcess(pid);
     if (!proc) {
         return -1;
     }
@@ -491,7 +502,7 @@ qint64 Backend::parentPid(qint64 pid) const
     if (parentPid != -1) {
         procs.updateOrAddProcess(parentPid);
 
-        KSysGuard::Process *parentProc = procs.getProcess(parentPid);
+        KSysGuard::Process* parentProc = procs.getProcess(parentPid);
         if (!parentProc) {
             return -1;
         }

@@ -206,7 +206,11 @@ def cmake_build(src_dir_: Path, build_dir: Path, label: str) -> bool:
     build_dir.mkdir(parents=True, exist_ok=True)
     cfg = subprocess.run(
         ["cmake", "-S", str(src_dir_), "-B", str(build_dir),
-         "-DCMAKE_BUILD_TYPE=Release"],
+         "-DCMAKE_BUILD_TYPE=Release",
+         # Generate compile_commands.json so VSCode/clangd resolve
+         # Qt AUTOMOC-generated headers (main.moc, etc.) without manual
+         # includePath config.
+         "-DCMAKE_EXPORT_COMPILE_COMMANDS=ON"],
         check=False, capture_output=True, text=True,
         preexec_fn=_drop_privs_in_child,
     )

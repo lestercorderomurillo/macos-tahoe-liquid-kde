@@ -1,0 +1,98 @@
+# MacTahoe Liquid KDE — C++ style.
+#
+# Closely matches the KDE Frameworks / KWin style so contributions can
+# move between projects without restyling. Reformat with:
+#   clang-format -i path/to/file.cpp
+#
+# Scope: project-owned C++ only. Third-party trees (e.g.
+# src/offline/plasmoids/.../libdbusmenuqt/) carry their own license
+# and original formatting — do NOT reformat them.
+
+Language: Cpp
+BasedOnStyle: WebKit
+
+# Indentation
+IndentWidth: 4
+TabWidth: 4
+UseTab: Never
+ContinuationIndentWidth: 4
+AccessModifierOffset: -4
+NamespaceIndentation: None
+
+# Lines — 160 cols matches what fits comfortably in a 14-pt monospace
+# at 4K. Lower limits (KDE's 100, the old 120) fragment long member
+# chains across multiple lines, which fights readability when there's
+# horizontal real estate to spare.
+ColumnLimit: 160
+ReflowComments: false
+MaxEmptyLinesToKeep: 1
+KeepEmptyLinesAtTheStartOfBlocks: false
+
+# Penalties — biased against breaking around ``=`` and inside argument
+# lists so a single-assignment statement stays on one line when it fits
+# in ColumnLimit. Without this the WebKit baseline aggressively wraps
+# ``x.y.foo = bar->baz->thing(...)`` even when the unbroken form is
+# under 160 cols.
+PenaltyBreakAssignment: 1000
+PenaltyBreakBeforeFirstCallParameter: 500
+PenaltyReturnTypeOnItsOwnLine: 200
+
+# Braces — Allman for top-level functions/classes (KDE convention),
+# attached for blocks inside them.
+BreakBeforeBraces: Custom
+BraceWrapping:
+  AfterCaseLabel: false
+  AfterClass: true
+  AfterControlStatement: Never
+  AfterEnum: true
+  AfterFunction: true
+  AfterNamespace: false
+  AfterStruct: true
+  AfterUnion: true
+  AfterExternBlock: false
+  BeforeCatch: false
+  BeforeElse: false
+  BeforeLambdaBody: false
+  BeforeWhile: false
+  IndentBraces: false
+  SplitEmptyFunction: false
+  SplitEmptyRecord: false
+  SplitEmptyNamespace: true
+
+# Pointers / references — left-aligned with the type.
+PointerAlignment: Left
+DerivePointerAlignment: false
+ReferenceAlignment: Left
+
+# Includes — keep blocks but sort within each block, and let the user
+# group includes by intent (system / Qt / KF6 / project) instead of
+# letting clang-format invent its own ordering.
+SortIncludes: CaseSensitive
+IncludeBlocks: Preserve
+
+# Function and call sites
+AllowShortFunctionsOnASingleLine: Inline
+AllowShortLambdasOnASingleLine: All
+AllowShortIfStatementsOnASingleLine: Never
+AllowShortLoopsOnASingleLine: false
+AlwaysBreakAfterReturnType: None
+AlwaysBreakTemplateDeclarations: Yes
+BinPackArguments: true
+BinPackParameters: true
+
+# Spacing
+SpaceAfterCStyleCast: true
+SpaceBeforeParens: ControlStatements
+SpaceBeforeRangeBasedForLoopColon: true
+SpaceInEmptyParentheses: false
+SpacesBeforeTrailingComments: 1
+SpacesInAngles: false
+SpacesInCStyleCastParentheses: false
+SpacesInParentheses: false
+SpacesInSquareBrackets: false
+
+# Misc
+Cpp11BracedListStyle: true
+FixNamespaceComments: true
+SortUsingDeclarations: true
+Standard: c++20
