@@ -43,7 +43,11 @@ void main()
 
     float refrBand = max(refractionWidth, 1.0);
     float edgeT = smoothstep(-refrBand, 0.0, d);
-    float edgeQ = edgeT * edgeT;
+    // Cubic rim concentration — refraction / RGB drift / lens distortion fall
+    // off sharply away from the edge, leaving the centre of the glass clean.
+    // The day9 reference shader uses pow(...,20) for the same intent on its
+    // SDF demo; cubic is the conservative analogue for a window-sized effect.
+    float edgeQ = edgeT * edgeT * edgeT;
 
     vec2 lensUV = (magnifyGlassStrength > 0.0)
         ? lgLensUV(uv, magnifyGlassStrength, edgeQ)
