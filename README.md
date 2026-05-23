@@ -369,4 +369,4 @@ Thanks to the open-source authors whose work this project draws from. Some piece
 - **[sahibjotsaggu](https://github.com/sahibjotsaggu)** — `San-Francisco-Pro-Fonts`, the SF Pro / SF Mono font bundle.
 - **[512pixels.net](https://512pixels.net/projects/default-mac-wallpapers-in-5k/)** — high-resolution macOS wallpaper archive.
 
-Everything else (Plasma theme, Kvantum theme, GTK theme, Aurorae, Acrylic Glass KWin effect, Menu / Dock / Trashcan plasmoids, installer) is original work for this project. If a credit is missing, please [open an issue](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/issues/new).
+If a credit is missing, please [open an issue](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/issues/new).
