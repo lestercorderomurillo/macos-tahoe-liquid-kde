@@ -75,7 +75,11 @@ System menu with native QMenu dropdown.
 
 ### System Information
 
-Glass system information window.
+Glass system information window. CPU, cores, RAM, GPU, startup disk,
+network address, serial number and OS — every field cascades through
+multiple sources (lscpu → `/proc/cpuinfo` → dmidecode; lspci →
+`/sys/class/drm` → glxinfo; lsblk → df; etc.) so the panel works on
+every locale and every hardware mix.
 
 <p align="center">
   <img src="src/screenshots/about_v2.png" width="415">
@@ -303,6 +307,7 @@ macos-tahoe-liquid-kde/
 |-----------|-----------------|----------|
 | **Acrylic Glass** | KWin blur + rounded corners effect (built from source) | `/usr/lib/qt6/plugins/kwin/effects/` |
 | **Theme Switcher** | Auto light/dark via Plasma native sunrise/sunset | `~/.local/bin/mac-tahoe-theme-switch` |
+| **System Info Helper** | Powers the About panel's CPU / GPU / disk / network / OS fields with multi-source fallbacks | `~/.local/bin/mac-tahoe-about-info` |
 | **Watcher Service** | Keeps Kvantum and GTK in sync with Plasma theme | systemd user service |
 | **Sounds** | Notification and event sounds | `~/.local/share/sounds/` |
 | **SDDM** | macOS-style login screen | `/usr/share/sddm/themes/` |

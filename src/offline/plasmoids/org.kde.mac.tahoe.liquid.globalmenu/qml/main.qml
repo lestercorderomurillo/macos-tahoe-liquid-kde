@@ -26,7 +26,10 @@ PlasmoidItem {
     readonly property bool view: Plasmoid.configuration.compactView
     readonly property string cfgIcon: Plasmoid.configuration.menuIcon || "start-here-kde-symbolic"
 
-    AboutWindow { id: aboutWindow }
+    AboutWindow {
+        id: aboutWindow
+        useSystemFont: Plasmoid.configuration.useSystemFont
+    }
 
     Connections {
         target: Plasmoid

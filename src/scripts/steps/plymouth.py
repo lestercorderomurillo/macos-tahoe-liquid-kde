@@ -54,31 +54,6 @@ def deps():
     return ["plymouth-set-default-theme:plymouth"]
 
 
-_GPU_MODULES_BLOCKING_SIMPLEDRM = ("amdgpu", "i915", "radeon", "nouveau")
-
-
-def _mkinitcpio_modules_line(mki_text: str) -> str:
-    for ln in mki_text.splitlines():
-        s = ln.strip()
-        if s.startswith("MODULES=") and not s.startswith("#"):
-            return s
-    return ""
-
-
-def _gpu_module_in_modules(modules_line: str) -> str | None:
-    """Return the first blocking GPU module found in a MODULES=(...) line,
-    or None. Whitespace-tolerant: ``MODULES=(amdgpu)``, ``MODULES=( amdgpu )``,
-    ``MODULES=(crc32c-intel amdgpu)`` all match ``amdgpu``."""
-    if "=" not in modules_line:
-        return None
-    body = modules_line.split("=", 1)[1].strip().strip("()").strip()
-    tokens = body.replace(",", " ").split()
-    for tok in tokens:
-        if tok.strip().strip('"\'') in _GPU_MODULES_BLOCKING_SIMPLEDRM:
-            return tok.strip().strip('"\'')
-    return None
-
-
 def _check_prereqs() -> list[str]:
     """Return a list of human-readable warnings for missing boot-side
     Plymouth prerequisites. We DO NOT auto-fix any of these — editing
@@ -135,35 +110,19 @@ def _check_prereqs() -> list[str]:
                 "sudo mkinitcpio -P"
             )
 
-        # ── shutdown splash on high-DPI displays: simpledrm gating ──────
-        # The corner-rendered shutdown splash (tiny logo in a corner of an
-        # otherwise blank high-res display) happens because the GPU driver
-        # (amdgpu / i915 / nouveau / radeon) binds the PCIe device in
-        # initramfs BEFORE the kernel registers the EFI simple-framebuffer
-        # device. simpledrm never gets a device to bind to, so the
-        # ``UseSimpledrm=true`` flag in plymouthd.conf is a no-op. When
-        # the GPU driver unloads at shutdown, fbcon falls back to a
-        # low-res console framebuffer (typically 1024x768) which the
-        # firmware then renders in a corner of the physical panel.
-        #
-        # The upstream Plymouth/Fedora policy (Hans de Goede,
-        # https://hansdegoede.livejournal.com) is to KEEP GPU drivers
-        # OUT of initramfs MODULES — let simpledrm register first, the
-        # ``kms`` hook (already in the default HOOKS line) loads the GPU
-        # driver later. Boot stays fast, simpledrm survives the GPU
-        # unload at shutdown, and the splash renders fullscreen at native
-        # resolution end-to-end.
-        gpu_mod = _gpu_module_in_modules(_mkinitcpio_modules_line(mki))
-        if gpu_mod:
-            warnings.append(
-                f"/etc/mkinitcpio.conf MODULES contains '{gpu_mod}' — at "
-                "shutdown the splash will render in a small corner of "
-                "high-res displays because simpledrm can't bind. Remove "
-                f"'{gpu_mod}' from MODULES (the 'kms' hook still loads it "
-                "later), then rebuild: "
-                f"sudo sed -i 's/\\b{gpu_mod}\\b//g' /etc/mkinitcpio.conf && "
-                "sudo mkinitcpio -P"
-            )
+        # Note (no warning emitted): the corner-rendered shutdown splash
+        # on some high-DPI displays is *suspected* to correlate with a
+        # GPU driver (amdgpu / i915 / nouveau / radeon) listed in
+        # MODULES=(...). The hypothesis: the driver binds the PCIe GPU
+        # in initramfs before simpledrm can register the EFI simple-
+        # framebuffer, so UseSimpledrm=true becomes a no-op and the
+        # shutdown phase falls back to a low-res console framebuffer
+        # that the firmware renders in a corner. Upstream Plymouth
+        # policy (Hans de Goede) recommends keeping GPU drivers out of
+        # MODULES — the ``kms`` hook loads them later. We don't WARN on
+        # this anymore because the correlation isn't strong enough to
+        # be worth nagging users about during install. Kept as a note
+        # for whoever debugs the corner-splash next.
 
     return warnings
 

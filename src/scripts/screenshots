@@ -1,0 +1,231 @@
+#!/usr/bin/env python3
+"""Generate the README screenshots for plasmoids on this machine.
+
+Targets:
+    about     — AboutWindow ("System Information")
+    launcher  — Tahoe Launcher (Apps grid)
+    all       — every target above
+
+For each, captures both the ``_v2`` (light) and ``_dark_v2`` variant
+into ``src/screenshots/``. The active theme is restored at exit so the
+maintainer's running session is left as it was found.
+
+Mock data:
+    The About panel uses ``MAC_TAHOE_ABOUT_MOCK=1`` against the helper
+    so the captured PNG contains canned values from ``about_info.py:
+    _MOCK_DATA`` instead of the real MAC address, serial, hardware,
+    etc. — never leak hardware identifiers into a public screenshot.
+
+Requirements:
+    - Running KDE Plasma session (Wayland or X11).
+    - ``spectacle`` (kde-spectacle).
+    - ``qml6`` (qt6-declarative) for the standalone About preview.
+    - ``plasma-windowed`` (plasma-workspace) for the launcher.
+    - The theme installed (``mac-tahoe-theme-switch`` on PATH).
+
+Limitations:
+    - Plymouth (``boot_*``) is captured at physical boot, not here.
+    - Dock screenshots are live-desktop and not automated yet.
+    - Wayland's portal may ask once per session for screen-capture
+      permission — grant it, subsequent shots run silent.
+
+SPDX-License-Identifier: GPL-2.0-or-later
+"""
+
+from __future__ import annotations
+
+import argparse
+import os
+import shutil
+import signal
+import subprocess
+import sys
+import time
+from pathlib import Path
+
+from paths import REPO_ROOT
+
+
+SCREENSHOTS_DIR = REPO_ROOT / "src/screenshots"
+PREVIEW_QML = REPO_ROOT / "src/scripts/preview_about.qml"
+THEME_SWITCH = Path.home() / ".local/bin/mac-tahoe-theme-switch"
+LAUNCHER_ID = "org.kde.mac-tahoe-liquid-kde.launcher"
+
+
+# ── theme helpers ────────────────────────────────────────────────────────
+
+def _current_theme_mode() -> str | None:
+    """Read the live ColorScheme out of kdeglobals and bucket it."""
+    kdeglobals = Path.home() / ".config/kdeglobals"
+    if not kdeglobals.is_file():
+        return None
+    for line in kdeglobals.read_text(errors="replace").splitlines():
+        if line.startswith("ColorScheme="):
+            scheme = line.split("=", 1)[1].strip()
+            if "Dark" in scheme:
+                return "dark"
+            if "Light" in scheme:
+                return "light"
+    return None
+
+
+def _switch_theme(mode: str) -> None:
+    if not THEME_SWITCH.is_file():
+        sys.exit(f"theme switch not installed: {THEME_SWITCH}\n"
+                 f"run ./install first")
+    subprocess.run([str(THEME_SWITCH), mode], check=False, timeout=20)
+    # Theme switch is mostly synchronous, but Plasma needs a beat to
+    # re-render the active windows.
+    time.sleep(0.8)
+
+
+# ── capture primitives ──────────────────────────────────────────────────
+
+def _spectacle_activewindow(out: Path, delay_ms: int = 200) -> None:
+    """Capture the active window into ``out`` via spectacle's CLI
+    background mode. Wayland may prompt the portal once per session for
+    screen-capture permission — that has to be granted manually the
+    first time, after which subsequent runs are silent."""
+    out.parent.mkdir(parents=True, exist_ok=True)
+    if out.exists():
+        out.unlink()
+    cmd = [
+        "spectacle", "--activewindow", "--background",
+        "--nonotify", "--delay", str(delay_ms),
+        "--output", str(out),
+    ]
+    res = subprocess.run(cmd, capture_output=True, text=True, timeout=20)
+    if res.returncode != 0 or not out.is_file():
+        sys.exit(
+            f"spectacle failed (rc={res.returncode}):\n"
+            f"  stdout: {res.stdout.strip()}\n"
+            f"  stderr: {res.stderr.strip()}\n"
+            f"  expected output: {out}"
+        )
+
+
+def _spawn(cmd: list[str]) -> subprocess.Popen:
+    """Launch a helper process in its own process group so we can kill
+    the whole tree when capture is done (qml6/plasma-windowed sometimes
+    fork child processes that survive a plain SIGTERM)."""
+    return subprocess.Popen(
+        cmd,
+        stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
+        start_new_session=True,
+    )
+
+
+def _kill_group(proc: subprocess.Popen, timeout: float = 4.0) -> None:
+    try:
+        os.killpg(os.getpgid(proc.pid), signal.SIGTERM)
+    except (ProcessLookupError, OSError):
+        return
+    try:
+        proc.wait(timeout=timeout)
+    except subprocess.TimeoutExpired:
+        try:
+            os.killpg(os.getpgid(proc.pid), signal.SIGKILL)
+        except (ProcessLookupError, OSError):
+            pass
+
+
+# ── per-target captures ──────────────────────────────────────────────────
+
+def _out_path(name: str, theme: str) -> Path:
+    suffix = "_dark_v2" if theme == "dark" else "_v2"
+    return SCREENSHOTS_DIR / f"{name}{suffix}.png"
+
+
+def shoot_about(theme: str) -> Path:
+    """Render preview_about.qml as a standalone window via qml6, wait
+    for the helper to land mock data + the fade-in to finish, capture,
+    kill. The preview wrapper points the AboutWindow's data source at
+    the mock-emitter, so the screenshot never carries real MAC / serial
+    / hardware out into the README."""
+    if not shutil.which("qml6"):
+        sys.exit("qml6 not found — install qt6-declarative")
+
+    out = _out_path("about", theme)
+    proc = _spawn(["qml6", str(PREVIEW_QML)])
+    try:
+        # Window appears ~0.3s, helper finishes ~0.9s, fade-in is 260ms.
+        # Capture a bit after that so the grid is at full opacity.
+        time.sleep(1.6)
+        _spectacle_activewindow(out)
+    finally:
+        _kill_group(proc)
+    return out
+
+
+def shoot_launcher(theme: str) -> Path:
+    """plasma-windowed the launcher applet (it's a popup-type plasmoid,
+    so plasma-windowed renders the popup body as a standalone window),
+    capture, kill."""
+    if not shutil.which("plasma-windowed"):
+        sys.exit("plasma-windowed not found — install plasma-workspace")
+
+    out = _out_path("launcher", theme)
+    proc = _spawn(["plasma-windowed", LAUNCHER_ID])
+    try:
+        time.sleep(1.4)
+        _spectacle_activewindow(out)
+    finally:
+        _kill_group(proc)
+    return out
+
+
+TARGETS = {
+    "about": shoot_about,
+    "launcher": shoot_launcher,
+}
+
+
+# ── entry ────────────────────────────────────────────────────────────────
+
+def main(argv: list[str]) -> int:
+    parser = argparse.ArgumentParser(
+        prog="src/scripts/screenshots",
+        description=__doc__.split("\n\n")[0],
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+    )
+    parser.add_argument(
+        "target",
+        choices=sorted(TARGETS) + ["all"],
+        help="Which screenshot to (re)generate.",
+    )
+    parser.add_argument(
+        "--theme", choices=("light", "dark", "both"), default="both",
+        help="Capture only one variant, or both (default).",
+    )
+    args = parser.parse_args(argv)
+
+    if not shutil.which("spectacle"):
+        sys.exit("spectacle not found — install kde-spectacle")
+
+    targets = sorted(TARGETS) if args.target == "all" else [args.target]
+    themes = ("light", "dark") if args.theme == "both" else (args.theme,)
+
+    original = _current_theme_mode()
+    print(f"Original theme mode: {original or '(unknown)'}")
+
+    try:
+        for theme in themes:
+            print(f"\n→ Switching to {theme}…")
+            _switch_theme(theme)
+            for tgt in targets:
+                print(f"  capturing {tgt}…")
+                out = TARGETS[tgt](theme)
+                rel = out.relative_to(REPO_ROOT)
+                size = out.stat().st_size
+                print(f"  wrote {rel} ({size:,} bytes)")
+    finally:
+        if original in ("light", "dark"):
+            print(f"\nRestoring original theme ({original}).")
+            _switch_theme(original)
+
+    print("\nDone.")
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main(sys.argv[1:]))

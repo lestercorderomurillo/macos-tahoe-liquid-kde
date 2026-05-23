@@ -1,13 +1,20 @@
 import shutil
 from pathlib import Path
 
+from paths import REPO_ROOT
 from steps._helpers import (
     HOME, build_dir, cmake_build, fail, ok, offline,
-    sudo_install_file, sudo_install_tree, sudo_remove,
+    sudo_install_file, sudo_install_tree, sudo_remove, warn,
 )
 
 SRC = offline("plasmoids/org.kde.mac.tahoe.liquid.globalmenu")
 BUILD = build_dir("plasmoids/org.kde.mac.tahoe.liquid.globalmenu")
+
+# AboutWindow shells out to this helper for system info. It is plain
+# Python and lives in ~/.local/bin so the install stays sudoless for
+# the script side (only the C++ .so install above needs root).
+ABOUT_INFO_SRC = REPO_ROOT / "src/scripts/about_info.py"
+ABOUT_INFO_DEST = HOME / ".local/bin/mac-tahoe-about-info"
 # System-path install — Qt6's default plugin/QML search is
 # /usr/lib/qt6/{plugins,qml}/. User paths are NOT walked (no
 # QT_PLUGIN_PATH / QML_IMPORT_PATH set in a default Plasma session),
@@ -89,10 +96,29 @@ def install() -> None:
         return
     sudo_install_tree(module_src, DEST_QML_DIR, "Global Menu runtime QML")
 
+    _install_about_info()
+
+
+def _install_about_info() -> None:
+    if not ABOUT_INFO_SRC.is_file():
+        warn("System info helper source missing")
+        return
+    ABOUT_INFO_DEST.parent.mkdir(parents=True, exist_ok=True)
+    shutil.copy2(ABOUT_INFO_SRC, ABOUT_INFO_DEST)
+    ABOUT_INFO_DEST.chmod(0o755)
+    ok("System info helper installed")
+
 
 def uninstall() -> None:
     sudo_remove(DEST_SO, "Global Menu .so removed")
     sudo_remove(DEST_QML_DIR, "Global Menu runtime QML removed")
+    try:
+        ABOUT_INFO_DEST.unlink()
+        ok("System info helper removed")
+    except FileNotFoundError:
+        pass
+    except OSError:
+        pass
     _drop_legacy()
     if LEGACY_QML.is_dir():
         shutil.rmtree(LEGACY_QML, ignore_errors=True)
