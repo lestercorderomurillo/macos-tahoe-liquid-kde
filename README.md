@@ -356,3 +356,17 @@ If you like Apple, buy an Apple product.
 [GPL-2.0](LICENSE) — open-source, copyleft. Forks welcome, but anything you redistribute has to stay open under the same license and keep the copyright notices intact. No warranty, no liability — use it at your own risk.
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) for how to send changes back.
+
+---
+
+## Credits
+
+Thanks to the open-source authors whose work this project draws from. Some pieces are bundled as starting points, others provide inspiration, references, or assets that the installer pulls on demand:
+
+- **[EliverLara](https://github.com/EliverLara)** — TahoeLauncher, the original Plasma app-grid launcher the Launcher plasmoid was forked from (GPL-2.0).
+- **[vinceliuice](https://github.com/vinceliuice)** — `MacTahoe-icon-theme`, the upstream icon and cursor source.
+- **[ful1e5](https://github.com/ful1e5)** — `apple_cursor`, an alternate macOS-style cursor set.
+- **[sahibjotsaggu](https://github.com/sahibjotsaggu)** — `San-Francisco-Pro-Fonts`, the SF Pro / SF Mono font bundle.
+- **[512pixels.net](https://512pixels.net/projects/default-mac-wallpapers-in-5k/)** — high-resolution macOS wallpaper archive.
+
+Everything else (Plasma theme, Kvantum theme, GTK theme, Aurorae, Acrylic Glass KWin effect, Menu / Dock / Trashcan plasmoids, installer) is original work for this project. If a credit is missing, please [open an issue](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/issues/new).
