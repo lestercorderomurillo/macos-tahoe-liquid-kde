@@ -593,12 +593,21 @@ def apply(mode: str, context: str = "") -> bool:
         _apply_lookandfeel_live(laf)
     elif context in ("boot", "scheduled") and _can_apply_settled_live_lookandfeel():
         _apply_lookandfeel_live(laf)
-    elif context == "scheduled":
+    elif context in ("boot", "scheduled"):
         # Cursor is the one extra that does NOT pick up from kwriteconfig
         # --notify alone — Xcursor for running apps stays on the old theme
         # until something pokes plasma-apply-cursortheme. Safe individually
         # (no plasmashell rebuild, unlike the full LAF apply).
         apply_cursortheme_live(cursor)
+        # Plasmashell hasn't settled yet, so we can't run the full live
+        # LAF apply right now without risking the login-window black-
+        # screen. Schedule a detached helper to do it once plasmashell
+        # crosses the settle threshold — otherwise the running shell
+        # stays on the previous mode's LAF until the user re-applies
+        # the switcher by hand. This was the source of the boot-into-
+        # white-on-dark-mode bug after timer replays and watch-service
+        # startup syncs.
+        _spawn_deferred_live_apply(laf, cursor)
 
     # The installer already applies wallpaper up front and does its own KWin
     # reload after the helper exits. Keep install-mode work local so a half-up
@@ -750,6 +759,55 @@ def _can_apply_settled_live_lookandfeel() -> bool:
     fragile login/startup window."""
     age = _plasmashell_age_seconds()
     return age is not None and age >= _SETTLED_LIVE_APPLY_MIN_PLASMASHELL_AGE_SECONDS
+
+
+_DEFERRED_LIVE_APPLY_MAX_WAIT_SECONDS = 300
+
+
+def _spawn_deferred_live_apply(laf: str, cursor: str) -> bool:
+    """Fork a detached helper that waits for plasmashell to settle, then
+    runs the live LookAndFeel + cursor apply.
+
+    Why: scheduled fires (the systemd apply unit at boot replay, or a
+    06:00/18:00 trigger that races a fresh login) reach apply() while
+    plasmashell is still inside the fragile login window. We skip the live
+    LAF apply there to avoid black-screening the just-started shell — but
+    plasmashell has by then already loaded the previous mode's LAF
+    package, so without a deferred re-apply the running session stays
+    desynced from the on-disk kdeglobals until the user re-runs the
+    switcher by hand.
+    """
+    self_path = os.path.realpath(sys.argv[0]) if sys.argv and sys.argv[0] else ""
+    if not self_path or not os.path.isfile(self_path):
+        return False
+    try:
+        subprocess.Popen(
+            [sys.executable, self_path, "_deferred-live-apply", laf, cursor],
+            stdin=subprocess.DEVNULL,
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
+            start_new_session=True,
+            env=_live_tool_env(),
+        )
+        return True
+    except OSError:
+        return False
+
+
+def _deferred_live_apply_loop(laf: str, cursor: str) -> int:
+    """Block until plasmashell is past the settle threshold, then run the
+    live LAF + cursor apply. Bounded by a hard ceiling so we never hang
+    forever if the user logs out before the threshold is crossed."""
+    deadline = time.monotonic() + _DEFERRED_LIVE_APPLY_MAX_WAIT_SECONDS
+    while time.monotonic() < deadline:
+        if _can_apply_settled_live_lookandfeel():
+            break
+        time.sleep(2)
+    else:
+        return 1
+    _apply_lookandfeel_live(laf)
+    apply_cursortheme_live(cursor)
+    return 0
 
 
 def apply_cursortheme_live(theme: str) -> bool:
@@ -906,6 +964,10 @@ def main(argv: list[str]) -> int:
         return watch_loop()
     if mode == "reset":
         return 0 if reset_kde_color_scheme_config(rest[0] if rest else "BreezeLight") else 1
+    if mode == "_deferred-live-apply":
+        if len(rest) < 2:
+            return 1
+        return _deferred_live_apply_loop(rest[0], rest[1])
 
     print(USAGE, file=sys.stderr)
     return 1

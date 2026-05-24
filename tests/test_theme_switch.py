@@ -225,12 +225,16 @@ def test_apply_skips_live_lookandfeel_during_boot(monkeypatch):
                         lambda: False)
     monkeypatch.setattr(theme_switch, "_apply_lookandfeel_live",
                         lambda laf: calls.append(("laf", laf)))
+    monkeypatch.setattr(theme_switch, "apply_cursortheme_live",
+                        lambda theme: calls.append(("cursor", theme)) or True)
     monkeypatch.setattr(theme_switch, "apply_extras",
                         lambda mode: calls.append(("extras", mode)))
     monkeypatch.setattr(theme_switch, "cycle_widget_style_live",
                         lambda target: calls.append(("cycle", target)) or True)
     monkeypatch.setattr(theme_switch, "_qdbus",
                         lambda *args: calls.append(("qdbus", args)))
+    monkeypatch.setattr(theme_switch, "_spawn_deferred_live_apply",
+                        lambda laf, cursor: calls.append(("defer", laf, cursor)) or True)
 
     assert theme_switch.apply("dark", "boot") is True
     assert ("write", "dark") in calls
@@ -241,6 +245,11 @@ def test_apply_skips_live_lookandfeel_during_boot(monkeypatch):
     assert not any(c[0] == "cycle" for c in calls)
     assert not any(c[0] == "qdbus" and c[1][0] == "org.kde.plasmashell"
                    for c in calls)
+    # Boot also defers the live LAF apply to once plasmashell has settled —
+    # without that, the running shell stays on the previous mode's LAF
+    # and the user sees a white desktop after a dark-mode auto-apply at
+    # login (the bug that motivated the deferred-apply path).
+    assert ("defer", theme_switch.LAF_DARK, "MacTahoeLiquidKde-Dark") in calls
 
 
 def test_apply_uses_live_lookandfeel_after_boot(monkeypatch):
@@ -323,6 +332,8 @@ def test_apply_falls_back_to_cursor_for_unsettled_scheduled_transition(monkeypat
                         lambda target: calls.append(("cycle", target)) or True)
     monkeypatch.setattr(theme_switch, "_qdbus",
                         lambda *args: calls.append(("qdbus", args)))
+    monkeypatch.setattr(theme_switch, "_spawn_deferred_live_apply",
+                        lambda laf, cursor: calls.append(("defer", laf, cursor)) or True)
 
     assert theme_switch.apply("dark", "scheduled") is True
     assert ("write", "dark") in calls
@@ -338,6 +349,11 @@ def test_apply_falls_back_to_cursor_for_unsettled_scheduled_transition(monkeypat
                for c in calls)
     assert not any(c[0] == "qdbus" and c[1][0] == "org.kde.plasmashell"
                    for c in calls)
+    # The deferred-apply helper must be spawned so the running shell
+    # eventually picks up the new LookAndFeel package once plasmashell
+    # is past its fragile login window. Without this we re-introduce
+    # the "auto fired at 06:00 but desktop stays dark" desync.
+    assert ("defer", theme_switch.LAF_DARK, "MacTahoeLiquidKde-Dark") in calls
 
 
 def test_apply_never_refreshes_plasmashell_live(monkeypatch):
@@ -778,3 +794,77 @@ def test_switch_step_install_uninstall_reinstall(sandbox, tmp_path):
     _run_step("theme_switch", "install", {"THEME_MODE": "dark"}, shim_dir=shim_dir)
     assert bin_path.is_file()
     assert (svc_dir / "mac-tahoe-liquid-kde-theme.service").is_file()
+
+
+def test_deferred_live_apply_loop_runs_once_settled(monkeypatch):
+    """The deferred helper must wait until plasmashell crosses the settle
+    threshold, then call live LAF + cursor apply exactly once. This is
+    the path that rescues a scheduled/boot apply that landed during the
+    fragile login window."""
+    import theme_switch
+
+    ages = iter([10, 20, 60])
+    monkeypatch.setattr(theme_switch, "_plasmashell_age_seconds",
+                        lambda: next(ages))
+    sleeps: list[float] = []
+    monkeypatch.setattr(theme_switch.time, "sleep", lambda s: sleeps.append(s))
+    laf_calls: list[str] = []
+    cursor_calls: list[str] = []
+    monkeypatch.setattr(theme_switch, "_apply_lookandfeel_live",
+                        lambda laf: laf_calls.append(laf) or True)
+    monkeypatch.setattr(theme_switch, "apply_cursortheme_live",
+                        lambda theme: cursor_calls.append(theme) or True)
+
+    rc = theme_switch._deferred_live_apply_loop(
+        theme_switch.LAF_DARK, "MacTahoeLiquidKde-Dark",
+    )
+    assert rc == 0
+    assert laf_calls == [theme_switch.LAF_DARK]
+    assert cursor_calls == ["MacTahoeLiquidKde-Dark"]
+    # We polled twice (10, 20) before the third reading crossed the
+    # threshold — the loop must sleep between checks, not busy-spin.
+    assert len(sleeps) >= 2
+
+
+def test_deferred_live_apply_loop_bails_after_deadline(monkeypatch):
+    """If plasmashell never settles (user logs out, ps disappears), the
+    helper must give up after the bounded deadline instead of hanging
+    a stray process forever."""
+    import theme_switch
+
+    monkeypatch.setattr(theme_switch, "_plasmashell_age_seconds", lambda: 5)
+    monkeypatch.setattr(theme_switch.time, "sleep", lambda s: None)
+    # Fast-forward monotonic past the deadline on the second tick.
+    ticks = iter([0.0, 1.0, theme_switch._DEFERRED_LIVE_APPLY_MAX_WAIT_SECONDS + 1])
+    monkeypatch.setattr(theme_switch.time, "monotonic", lambda: next(ticks))
+    monkeypatch.setattr(theme_switch, "_apply_lookandfeel_live",
+                        lambda laf: pytest.fail("must not apply when deadline expired"))
+    monkeypatch.setattr(theme_switch, "apply_cursortheme_live",
+                        lambda theme: pytest.fail("must not apply when deadline expired"))
+
+    rc = theme_switch._deferred_live_apply_loop(
+        theme_switch.LAF_LIGHT, "MacTahoeLiquidKde",
+    )
+    assert rc == 1
+
+
+def test_main_dispatches_deferred_live_apply(monkeypatch):
+    """The detached helper re-enters this script via the
+    `_deferred-live-apply` subcommand. main() must route both required
+    args (LAF id + cursor theme) through to the loop, and reject the
+    half-argument form so a malformed exec doesn't fall through into
+    the usage banner and return 0."""
+    import theme_switch
+
+    received: list[tuple[str, str]] = []
+    monkeypatch.setattr(theme_switch, "_deferred_live_apply_loop",
+                        lambda laf, cursor: received.append((laf, cursor)) or 0)
+
+    assert theme_switch.main([
+        "_deferred-live-apply", theme_switch.LAF_DARK, "MacTahoeLiquidKde-Dark",
+    ]) == 0
+    assert received == [(theme_switch.LAF_DARK, "MacTahoeLiquidKde-Dark")]
+
+    # Half-spelled invocation must error out without invoking the loop.
+    assert theme_switch.main(["_deferred-live-apply", theme_switch.LAF_DARK]) == 1
+    assert len(received) == 1
