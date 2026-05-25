@@ -140,39 +140,7 @@ def test_color_scheme_name_matches_palette(seeded_color_schemes, colors):
     assert ini_get(kdeglobals, "Colors:Button", "BackgroundNormal") == colors["dark_btn"]
 
 
-# ── auto-mode startup sync ───────────────────────────────────────────────
-def test_auto_sync_reapplies_when_mode_changed(monkeypatch):
-    import theme_switch
-
-    calls = []
-    monkeypatch.setattr(theme_switch, "detect_auto_target_mode", lambda: "light")
-    monkeypatch.setattr(theme_switch, "current_theme_mode", lambda: "dark")
-    monkeypatch.setattr(theme_switch, "apply",
-                        lambda mode, ctx="": calls.append(("apply", mode, ctx)))
-    monkeypatch.setattr(theme_switch, "apply_extras",
-                        lambda mode: calls.append(("extras", mode)))
-
-    theme_switch.sync_auto_mode_on_startup()
-    assert ("apply", "light", "boot") in calls
-    assert not any(c[0] == "extras" for c in calls)
-
-
-def test_auto_sync_skips_full_apply_when_unchanged(monkeypatch):
-    import theme_switch
-
-    calls = []
-    monkeypatch.setattr(theme_switch, "detect_auto_target_mode", lambda: "light")
-    monkeypatch.setattr(theme_switch, "current_theme_mode", lambda: "light")
-    monkeypatch.setattr(theme_switch, "apply",
-                        lambda mode, ctx="": calls.append(("apply", mode, ctx)))
-    monkeypatch.setattr(theme_switch, "apply_extras",
-                        lambda mode: calls.append(("extras", mode)))
-
-    theme_switch.sync_auto_mode_on_startup()
-    assert ("extras", "light") in calls
-    assert not any(c[0] == "apply" for c in calls)
-
-
+# ── apply() — single code path, no contexts ──────────────────────────────
 def test_wallpaper_path_prefers_auto_package(monkeypatch, tmp_path):
     import theme_switch
 
@@ -187,205 +155,132 @@ def test_wallpaper_path_prefers_auto_package(monkeypatch, tmp_path):
     assert theme_switch._wallpaper_path("dark") == wallpapers / "MacTahoe"
 
 
-def test_apply_extras_syncs_wallpaper(monkeypatch, tmp_path):
+def _stub_apply_dependencies(monkeypatch, calls):
+    """Patch the side-effect functions apply() calls so a test can observe
+    the call sequence without touching the real session."""
     import theme_switch
 
-    calls = []
-    monkeypatch.setenv("HOME", str(tmp_path / "home"))
-    (tmp_path / "home/.cache").mkdir(parents=True, exist_ok=True)
+    monkeypatch.setattr(theme_switch, "write_kde_theme_config",
+                        lambda mode: calls.append(("write", mode)) or True)
     monkeypatch.setattr(theme_switch, "_apply_wallpaper",
                         lambda mode: calls.append(("wallpaper", mode)) or True)
-    monkeypatch.setattr(theme_switch, "_have", lambda cmd: False)
-
-    theme_switch.apply_extras("dark")
-    assert ("wallpaper", "dark") in calls
-
-
-def test_settled_live_lookandfeel_requires_old_enough_plasmashell(monkeypatch):
-    import theme_switch
-
-    monkeypatch.setattr(theme_switch, "_plasmashell_age_seconds", lambda: 44)
-    assert theme_switch._can_apply_settled_live_lookandfeel() is False
-
-    monkeypatch.setattr(
-        theme_switch,
-        "_plasmashell_age_seconds",
-        lambda: theme_switch._SETTLED_LIVE_APPLY_MIN_PLASMASHELL_AGE_SECONDS,
-    )
-    assert theme_switch._can_apply_settled_live_lookandfeel() is True
-
-
-def test_apply_skips_live_lookandfeel_during_boot(monkeypatch):
-    import theme_switch
-
-    calls = []
-    monkeypatch.setattr(theme_switch, "write_kde_theme_config",
-                        lambda mode: calls.append(("write", mode)))
-    monkeypatch.setattr(theme_switch, "_can_apply_settled_live_lookandfeel",
-                        lambda: False)
+    monkeypatch.setattr(theme_switch, "_apply_local_extras",
+                        lambda mode: calls.append(("local_extras", mode)))
     monkeypatch.setattr(theme_switch, "_apply_lookandfeel_live",
-                        lambda laf: calls.append(("laf", laf)))
+                        lambda laf: calls.append(("laf", laf)) or True)
     monkeypatch.setattr(theme_switch, "apply_cursortheme_live",
                         lambda theme: calls.append(("cursor", theme)) or True)
-    monkeypatch.setattr(theme_switch, "apply_extras",
-                        lambda mode: calls.append(("extras", mode)))
     monkeypatch.setattr(theme_switch, "cycle_widget_style_live",
                         lambda target: calls.append(("cycle", target)) or True)
     monkeypatch.setattr(theme_switch, "_qdbus",
-                        lambda *args: calls.append(("qdbus", args)))
-    monkeypatch.setattr(theme_switch, "_spawn_deferred_live_apply",
-                        lambda laf, cursor: calls.append(("defer", laf, cursor)) or True)
-
-    assert theme_switch.apply("dark", "boot") is True
-    assert ("write", "dark") in calls
-    assert ("extras", "dark") in calls
-    assert not any(c[0] == "laf" for c in calls)
-    # Boot is the only context that skips the cycle — plasmashell is too
-    # fragile during the login window for synthetic widget-style toggles.
-    assert not any(c[0] == "cycle" for c in calls)
-    assert not any(c[0] == "qdbus" and c[1][0] == "org.kde.plasmashell"
-                   for c in calls)
-    # Boot also defers the live LAF apply to once plasmashell has settled —
-    # without that, the running shell stays on the previous mode's LAF
-    # and the user sees a white desktop after a dark-mode auto-apply at
-    # login (the bug that motivated the deferred-apply path).
-    assert ("defer", theme_switch.LAF_DARK, "MacTahoeLiquidKde-Dark") in calls
+                        lambda *args: calls.append(("qdbus", args)) or True)
 
 
-def test_apply_uses_live_lookandfeel_after_boot(monkeypatch):
+def test_apply_runs_full_pipeline_in_order(monkeypatch):
+    """One entry point. apply(mode) always: write config → wallpaper →
+    local extras (Kvantum/GTK) → live LAF → live cursor → Kvantum cycle →
+    KWin reconfigure. No contexts, no skips, no defer. This is the
+    invariant the v0.14.2 rewrite is built around."""
     import theme_switch
 
-    calls = []
-    monkeypatch.setattr(theme_switch, "write_kde_theme_config",
-                        lambda mode: calls.append(("write", mode)))
-    monkeypatch.setattr(theme_switch, "_apply_lookandfeel_live",
-                        lambda laf: calls.append(("laf", laf)))
-    monkeypatch.setattr(theme_switch, "apply_extras",
-                        lambda mode: calls.append(("extras", mode)))
-    monkeypatch.setattr(theme_switch, "cycle_widget_style_live",
-                        lambda target: calls.append(("cycle", target)) or True)
-    monkeypatch.setattr(theme_switch, "_qdbus",
-                        lambda *args: calls.append(("qdbus", args)))
+    calls: list = []
+    _stub_apply_dependencies(monkeypatch, calls)
+
+    assert theme_switch.apply("dark") is True
+
+    write_idx = next(i for i, c in enumerate(calls) if c[0] == "write")
+    extras_idx = next(i for i, c in enumerate(calls) if c[0] == "local_extras")
+    laf_idx = next(i for i, c in enumerate(calls) if c[0] == "laf")
+    cursor_idx = next(i for i, c in enumerate(calls) if c[0] == "cursor")
+    cycle_idx = next(i for i, c in enumerate(calls) if c[0] == "cycle")
+    reconfigure_idx = next(
+        i for i, c in enumerate(calls)
+        if c[0] == "qdbus" and c[1][0] == "org.kde.KWin"
+    )
+
+    assert write_idx < extras_idx < laf_idx < cursor_idx < cycle_idx < reconfigure_idx
+    assert ("write", "dark") in calls
+    assert ("laf", theme_switch.LAF_DARK) in calls
+    assert ("cursor", "MacTahoeLiquidKde-Dark") in calls
+    assert ("cycle", "kvantum-dark") in calls
+
+
+def test_apply_light_uses_light_assets(monkeypatch):
+    """Light-mode invocation maps cleanly to the light LAF, light cursor,
+    and the plain (non-dark) Kvantum style. Guards against the
+    light-named-but-dark-config bugs from earlier versions."""
+    import theme_switch
+
+    calls: list = []
+    _stub_apply_dependencies(monkeypatch, calls)
 
     assert theme_switch.apply("light") is True
     assert ("laf", theme_switch.LAF_LIGHT) in calls
+    assert ("cursor", "MacTahoeLiquidKde") in calls
     assert ("cycle", "kvantum") in calls
-    assert any(c[0] == "qdbus" and c[1][0] == "org.kde.KWin"
-               for c in calls)
-    assert not any(c[0] == "qdbus" and c[1][0] == "org.kde.plasmashell"
-                   for c in calls)
 
 
-def test_apply_uses_live_lookandfeel_for_settled_scheduled_transition(monkeypatch):
+def test_apply_lookandfeel_retries_up_to_three_times(monkeypatch):
+    """plasma-apply-lookandfeel can race plasmashell's DBus registration
+    on a fresh login. The script must sleep then retry, up to 3 attempts,
+    stopping at the first success — otherwise a slow boot leaves the
+    running shell desynced from the on-disk LookAndFeel package."""
     import theme_switch
 
-    calls = []
-    monkeypatch.setattr(theme_switch, "write_kde_theme_config",
-                        lambda mode: calls.append(("write", mode)))
-    monkeypatch.setattr(theme_switch, "_can_apply_settled_live_lookandfeel",
-                        lambda: True)
-    monkeypatch.setattr(theme_switch, "_apply_lookandfeel_live",
-                        lambda laf: calls.append(("laf", laf)))
-    monkeypatch.setattr(theme_switch, "apply_cursortheme_live",
-                        lambda theme: calls.append(("cursor", theme)) or True)
-    monkeypatch.setattr(theme_switch, "apply_extras",
-                        lambda mode: calls.append(("extras", mode)))
-    monkeypatch.setattr(theme_switch, "cycle_widget_style_live",
-                        lambda target: calls.append(("cycle", target)) or True)
-    monkeypatch.setattr(theme_switch, "_qdbus",
-                        lambda *args: calls.append(("qdbus", args)))
+    attempts: list[list[str]] = []
+    sleeps: list[float] = []
 
-    assert theme_switch.apply("dark", "scheduled") is True
-    assert ("write", "dark") in calls
-    assert ("extras", "dark") in calls
-    assert ("laf", theme_switch.LAF_DARK) in calls
-    # v0.11: scheduled (timer-fired and manual ``auto``) transitions DO
-    # cycle the widget style now. Without this, ``kvantummanager --set``
-    # writes the new theme to disk but every running Qt window keeps
-    # the previous Kvantum style — the "auto switched but Kvantum is
-    # still dark on a light desktop" mixed state. Cycle is still skipped
-    # for ``boot`` (plasmashell login fragility) and ``install`` (own
-    # plasmashell restart at end).
-    assert ("cycle", "kvantum-dark") in calls
-    assert not any(c[0] == "cursor" for c in calls)
-    assert any(c[0] == "qdbus" and c[1][0] == "org.kde.KWin"
-               for c in calls)
-    assert not any(c[0] == "qdbus" and c[1][0] == "org.kde.plasmashell"
-                   for c in calls)
+    def fake_run_live(cmd, **_):
+        attempts.append(cmd)
+        # First two attempts fail (plasmashell not on the bus yet),
+        # third succeeds.
+        return len(attempts) >= 3
+
+    monkeypatch.setattr(theme_switch, "_have", lambda cmd: True)
+    monkeypatch.setattr(theme_switch, "_run_live_plasma_tool", fake_run_live)
+    monkeypatch.setattr(theme_switch.time, "sleep", lambda s: sleeps.append(s))
+
+    assert theme_switch._apply_lookandfeel_live(theme_switch.LAF_DARK) is True
+    assert len(attempts) == 3
+    # One sleep per attempt — sleep-then-try, three rounds.
+    assert sleeps == [theme_switch._LAF_APPLY_RETRY_SLEEP_SECONDS] * 3
 
 
-def test_apply_falls_back_to_cursor_for_unsettled_scheduled_transition(monkeypatch):
+def test_apply_lookandfeel_gives_up_after_three_failed_attempts(monkeypatch):
+    """If plasma-apply-lookandfeel never succeeds (plasmashell crashed,
+    DBus blocked, plasma binary missing), the helper returns False after
+    exactly 3 attempts — no infinite retry loop that would pin the
+    systemd unit indefinitely."""
     import theme_switch
 
-    calls = []
-    monkeypatch.setattr(theme_switch, "write_kde_theme_config",
-                        lambda mode: calls.append(("write", mode)))
-    monkeypatch.setattr(theme_switch, "_can_apply_settled_live_lookandfeel",
-                        lambda: False)
-    monkeypatch.setattr(theme_switch, "_apply_lookandfeel_live",
-                        lambda laf: calls.append(("laf", laf)))
-    monkeypatch.setattr(theme_switch, "apply_cursortheme_live",
-                        lambda theme: calls.append(("cursor", theme)) or True)
-    monkeypatch.setattr(theme_switch, "apply_extras",
-                        lambda mode: calls.append(("extras", mode)))
-    monkeypatch.setattr(theme_switch, "cycle_widget_style_live",
-                        lambda target: calls.append(("cycle", target)) or True)
-    monkeypatch.setattr(theme_switch, "_qdbus",
-                        lambda *args: calls.append(("qdbus", args)))
-    monkeypatch.setattr(theme_switch, "_spawn_deferred_live_apply",
-                        lambda laf, cursor: calls.append(("defer", laf, cursor)) or True)
+    attempts: list[list[str]] = []
+    monkeypatch.setattr(theme_switch, "_have", lambda cmd: True)
+    monkeypatch.setattr(theme_switch, "_run_live_plasma_tool",
+                        lambda cmd, **_: attempts.append(cmd) or False)
+    monkeypatch.setattr(theme_switch.time, "sleep", lambda _s: None)
 
-    assert theme_switch.apply("dark", "scheduled") is True
-    assert ("write", "dark") in calls
-    assert ("extras", "dark") in calls
-    assert ("cursor", "MacTahoeLiquidKde-Dark") in calls
-    # v0.11: cycle runs even when LAF live-apply is skipped, because
-    # the kvconfig still flipped on disk and running Qt apps need to
-    # re-instantiate the Kvantum plugin to pick it up. Skipping the
-    # cycle here was the v0.10 mixed-state bug.
-    assert ("cycle", "kvantum-dark") in calls
-    assert not any(c[0] == "laf" for c in calls)
-    assert any(c[0] == "qdbus" and c[1][0] == "org.kde.KWin"
-               for c in calls)
-    assert not any(c[0] == "qdbus" and c[1][0] == "org.kde.plasmashell"
-                   for c in calls)
-    # The deferred-apply helper must be spawned so the running shell
-    # eventually picks up the new LookAndFeel package once plasmashell
-    # is past its fragile login window. Without this we re-introduce
-    # the "auto fired at 06:00 but desktop stays dark" desync.
-    assert ("defer", theme_switch.LAF_DARK, "MacTahoeLiquidKde-Dark") in calls
+    assert theme_switch._apply_lookandfeel_live(theme_switch.LAF_LIGHT) is False
+    assert len(attempts) == theme_switch._LAF_APPLY_ATTEMPTS == 3
 
 
-def test_apply_never_refreshes_plasmashell_live(monkeypatch):
+def test_apply_never_restarts_plasmashell(monkeypatch):
+    """Plasmashell is fragile; live re-instantiation through
+    QApplication::setStyle (the Kvantum cycle) is the only legal hot-swap.
+    Anything reaching /plasmashell would mean we regressed back to the
+    'restart shell on every switch' anti-pattern that black-screened the
+    desktop during the v0.10 era."""
     import theme_switch
 
-    calls = []
-    monkeypatch.setattr(theme_switch, "write_kde_theme_config",
-                        lambda mode: calls.append(("write", mode)))
-    monkeypatch.setattr(theme_switch, "_apply_lookandfeel_live",
-                        lambda laf: calls.append(("laf", laf)))
-    monkeypatch.setattr(theme_switch, "apply_cursortheme_live",
-                        lambda theme: calls.append(("cursor", theme)) or True)
-    monkeypatch.setattr(theme_switch, "apply_extras",
-                        lambda mode: calls.append(("extras", mode)))
-    # Install context bypasses apply_extras and calls _apply_local_extras
-    # directly — patch BOTH or running the install branch will fire real
-    # kvantummanager / gsettings against the live session and silently
-    # flip the maintainer's Kvantum theme. The session-scoped safety net
-    # in conftest restores it, but the test itself is the offender.
-    monkeypatch.setattr(theme_switch, "_apply_local_extras",
-                        lambda mode: calls.append(("local_extras", mode)))
-    monkeypatch.setattr(theme_switch, "cycle_widget_style_live",
-                        lambda target: calls.append(("cycle", target)) or True)
-    monkeypatch.setattr(theme_switch, "_qdbus",
-                        lambda *args: calls.append(("qdbus", args)))
+    calls: list = []
+    _stub_apply_dependencies(monkeypatch, calls)
 
-    for mode, context in (("light", ""), ("dark", "boot"),
-                          ("light", "install"), ("dark", "scheduled")):
+    for mode in ("light", "dark"):
         calls.clear()
-        assert theme_switch.apply(mode, context) is True
-        assert not any(c[0] == "qdbus" and c[1][0] == "org.kde.plasmashell"
-                       for c in calls)
+        assert theme_switch.apply(mode) is True
+        assert not any(
+            c[0] == "qdbus" and c[1][0] == "org.kde.plasmashell"
+            for c in calls
+        ), f"apply({mode!r}) sent a qdbus call to plasmashell"
 
 
 # ── widget-style cycle (Kvantum live re-instantiation) ───────────────────
@@ -516,72 +411,54 @@ def test_cycle_restores_target_on_sigterm(monkeypatch):
     assert writes[-1] == "kvantum-dark"
 
 
-def test_apply_skips_cycle_on_install_context(monkeypatch):
-    """Install ends with a full plasmashell restart (``apply.py
-    restart_plasma``), so the cycle's QApplication::setStyle hot-swap is
-    redundant during install and adds an extra plasmashell stress
-    immediately before the kill — bad ordering. Skip it."""
+def test_main_auto_resolves_to_time_based_mode(monkeypatch):
+    """``mac-tahoe-theme-switch auto`` (what the systemd service and timer
+    fire) must resolve to whatever light/dark the wall clock indicates and
+    hand that straight to apply(). No other mode-decision input is
+    consulted — portal state and current kdeglobals are deliberately
+    ignored to avoid the stale-config feedback loop earlier versions hit."""
     import theme_switch
 
     calls: list = []
-    monkeypatch.setattr(theme_switch, "write_kde_theme_config",
-                        lambda mode: calls.append(("write", mode)))
-    monkeypatch.setattr(theme_switch, "_apply_lookandfeel_live",
-                        lambda laf: calls.append(("laf", laf)))
-    monkeypatch.setattr(theme_switch, "_apply_local_extras",
-                        lambda mode: calls.append(("local_extras", mode)))
-    monkeypatch.setattr(theme_switch, "apply_extras",
-                        lambda mode: calls.append(("extras", mode)))
-    monkeypatch.setattr(theme_switch, "cycle_widget_style_live",
-                        lambda target: calls.append(("cycle", target)) or True)
-    monkeypatch.setattr(theme_switch, "_qdbus",
-                        lambda *args: calls.append(("qdbus", args)))
-
-    assert theme_switch.apply("dark", "install") is True
-    assert ("local_extras", "dark") in calls
-    assert not any(c[0] == "extras" for c in calls)
-    assert not any(c[0] == "cycle" for c in calls), \
-        "install context must not cycle widget style"
-    assert not any(c[0] == "qdbus" for c in calls), \
-        "install context must not wait on a live KWin session"
-
-
-def test_apply_cycles_kvantum_for_dark_manual_switch(monkeypatch):
-    import theme_switch
-
-    calls = []
-    monkeypatch.setattr(theme_switch, "write_kde_theme_config",
-                        lambda mode: calls.append(("write", mode)))
-    monkeypatch.setattr(theme_switch, "_apply_lookandfeel_live",
-                        lambda laf: calls.append(("laf", laf)))
-    monkeypatch.setattr(theme_switch, "apply_extras",
-                        lambda mode: calls.append(("extras", mode)))
-    monkeypatch.setattr(theme_switch, "cycle_widget_style_live",
-                        lambda target: calls.append(("cycle", target)) or True)
-    monkeypatch.setattr(theme_switch, "_qdbus",
-                        lambda *args: calls.append(("qdbus", args)))
-
-    assert theme_switch.apply("dark") is True
-    assert ("cycle", "kvantum-dark") in calls
-    # Cycle must run AFTER apply_extras (which is what writes the new
-    # kvantum.kvconfig) — otherwise Kvantum re-instantiates against the
-    # *old* kvconfig and we end up exactly where we started.
-    assert calls.index(("extras", "dark")) < calls.index(("cycle", "kvantum-dark"))
-
-
-def test_auto_mode_uses_scheduled_context(monkeypatch):
-    import theme_switch
-
-    calls = []
-    monkeypatch.setattr(theme_switch, "enable_auto_mode",
-                        lambda: calls.append(("enable",)))
-    monkeypatch.setattr(theme_switch, "detect_mode_by_time", lambda: "light")
+    monkeypatch.setattr(theme_switch, "detect_mode_by_time", lambda: "dark")
     monkeypatch.setattr(theme_switch, "apply",
-                        lambda mode, ctx="": calls.append(("apply", mode, ctx)))
+                        lambda mode: calls.append(("apply", mode)) or True)
 
     assert theme_switch.main(["auto"]) == 0
-    assert ("enable",) in calls
-    assert ("apply", "light", "scheduled") in calls
+    assert calls == [("apply", "dark")]
+
+
+def test_main_rejects_invalid_mode(monkeypatch):
+    """The simplified surface accepts exactly light/dark/auto. Old
+    contexts like ``boot`` and ``scheduled``, plus the deferred-apply
+    subcommand from v0.14.1, must error out with a non-zero exit so a
+    stale systemd unit file from an upgrade can't silently no-op."""
+    import theme_switch
+
+    applied: list = []
+    monkeypatch.setattr(theme_switch, "apply",
+                        lambda mode: applied.append(mode) or True)
+
+    assert theme_switch.main([]) == 1
+    assert theme_switch.main(["watch"]) == 1
+    assert theme_switch.main(["boot"]) == 1
+    assert theme_switch.main(["_deferred-live-apply"]) == 1
+    assert applied == []
+
+
+def test_apply_cycles_kvantum_after_extras_write(monkeypatch):
+    """Cycle must run AFTER the extras step that writes the new
+    kvantum.kvconfig — otherwise Kvantum re-instantiates against the
+    *old* kvconfig and we end up exactly where we started."""
+    import theme_switch
+
+    calls: list = []
+    _stub_apply_dependencies(monkeypatch, calls)
+
+    assert theme_switch.apply("dark") is True
+    extras_idx = calls.index(("local_extras", "dark"))
+    cycle_idx = calls.index(("cycle", "kvantum-dark"))
+    assert extras_idx < cycle_idx
 
 
 # ── theme-switch step install / uninstall cycle ──────────────────────────
@@ -616,14 +493,18 @@ def test_apply_finishes_cycle_and_reconfigure_when_extras_raise(monkeypatch):
     calls: list = []
     monkeypatch.setattr(theme_switch, "write_kde_theme_config",
                         lambda mode: calls.append(("write", mode)))
+    monkeypatch.setattr(theme_switch, "_apply_wallpaper",
+                        lambda mode: calls.append(("wallpaper", mode)) or True)
     monkeypatch.setattr(theme_switch, "_apply_lookandfeel_live",
                         lambda laf: calls.append(("laf", laf)) or True)
+    monkeypatch.setattr(theme_switch, "apply_cursortheme_live",
+                        lambda theme: calls.append(("cursor", theme)) or True)
 
     def boom(_mode):
         calls.append(("extras-attempted",))
         raise OSError(17, "File exists", "/home/x/.config/gtk-4.0/assets")
 
-    monkeypatch.setattr(theme_switch, "apply_extras", boom)
+    monkeypatch.setattr(theme_switch, "_apply_local_extras", boom)
     monkeypatch.setattr(theme_switch, "cycle_widget_style_live",
                         lambda target: calls.append(("cycle", target)) or True)
     monkeypatch.setattr(theme_switch, "_qdbus",
@@ -636,38 +517,6 @@ def test_apply_finishes_cycle_and_reconfigure_when_extras_raise(monkeypatch):
         "extras failure must NOT skip the Kvantum re-instantiation cycle"
     assert any(c[0] == "qdbus" and c[1][0] == "org.kde.KWin" for c in calls), \
         "extras failure must NOT skip the KWin reconfigure"
-
-
-def test_apply_install_context_finishes_when_local_extras_raise(monkeypatch):
-    """Install path uses ``_apply_local_extras`` directly (no wallpaper).
-    Same invariant: the installer's own KWin reload runs after apply()
-    returns, but if apply() bails on an exception, the install step itself
-    crashes mid-pipeline and the user sees the half-applied state. Keep
-    going."""
-    import theme_switch
-
-    calls: list = []
-    monkeypatch.setattr(theme_switch, "write_kde_theme_config",
-                        lambda mode: calls.append(("write", mode)))
-    monkeypatch.setattr(theme_switch, "_apply_lookandfeel_live",
-                        lambda laf: calls.append(("laf", laf)) or True)
-
-    def boom(_mode):
-        calls.append(("local-extras-attempted",))
-        raise OSError(17, "File exists", "/x")
-
-    monkeypatch.setattr(theme_switch, "_apply_local_extras", boom)
-    monkeypatch.setattr(theme_switch, "cycle_widget_style_live",
-                        lambda target: calls.append(("cycle", target)) or True)
-    monkeypatch.setattr(theme_switch, "_qdbus",
-                        lambda *args: calls.append(("qdbus", args)) or True)
-
-    # Should NOT raise.
-    assert theme_switch.apply("dark", "install") is True
-    assert ("local-extras-attempted",) in calls
-    # Install context still legitimately skips cycle + KWin reconfigure
-    # (installer does its own plasmashell restart), so we only assert that
-    # apply() returned cleanly rather than re-raising the OSError.
 
 
 def test_local_extras_survives_undeletable_gtk4_assets(monkeypatch, tmp_path):
@@ -770,7 +619,12 @@ def test_switch_step_install_uninstall_reinstall(sandbox, tmp_path):
     assert bin_path.is_file() and bin_path.stat().st_mode & 0o111
     assert (svc_dir / "mac-tahoe-liquid-kde-theme.service").is_file()
     assert (svc_dir / "mac-tahoe-liquid-kde-theme.timer").is_file()
-    assert (svc_dir / "mac-tahoe-liquid-kde-theme-apply.service").is_file()
+
+    # Drop a leftover apply.service from a pre-v0.14.2 install. Uninstall
+    # must remove it (legacy_units list in steps/theme_switch.py).
+    (svc_dir / "mac-tahoe-liquid-kde-theme-apply.service").write_text(
+        "# legacy unit from a previous version\n"
+    )
 
     # Seed kdeglobals so uninstall has something to reset.
     (sandbox / ".config/kdeglobals").write_text(
@@ -793,78 +647,9 @@ def test_switch_step_install_uninstall_reinstall(sandbox, tmp_path):
 
     _run_step("theme_switch", "install", {"THEME_MODE": "dark"}, shim_dir=shim_dir)
     assert bin_path.is_file()
-    assert (svc_dir / "mac-tahoe-liquid-kde-theme.service").is_file()
-
-
-def test_deferred_live_apply_loop_runs_once_settled(monkeypatch):
-    """The deferred helper must wait until plasmashell crosses the settle
-    threshold, then call live LAF + cursor apply exactly once. This is
-    the path that rescues a scheduled/boot apply that landed during the
-    fragile login window."""
-    import theme_switch
-
-    ages = iter([10, 20, 60])
-    monkeypatch.setattr(theme_switch, "_plasmashell_age_seconds",
-                        lambda: next(ages))
-    sleeps: list[float] = []
-    monkeypatch.setattr(theme_switch.time, "sleep", lambda s: sleeps.append(s))
-    laf_calls: list[str] = []
-    cursor_calls: list[str] = []
-    monkeypatch.setattr(theme_switch, "_apply_lookandfeel_live",
-                        lambda laf: laf_calls.append(laf) or True)
-    monkeypatch.setattr(theme_switch, "apply_cursortheme_live",
-                        lambda theme: cursor_calls.append(theme) or True)
-
-    rc = theme_switch._deferred_live_apply_loop(
-        theme_switch.LAF_DARK, "MacTahoeLiquidKde-Dark",
-    )
-    assert rc == 0
-    assert laf_calls == [theme_switch.LAF_DARK]
-    assert cursor_calls == ["MacTahoeLiquidKde-Dark"]
-    # We polled twice (10, 20) before the third reading crossed the
-    # threshold — the loop must sleep between checks, not busy-spin.
-    assert len(sleeps) >= 2
-
-
-def test_deferred_live_apply_loop_bails_after_deadline(monkeypatch):
-    """If plasmashell never settles (user logs out, ps disappears), the
-    helper must give up after the bounded deadline instead of hanging
-    a stray process forever."""
-    import theme_switch
-
-    monkeypatch.setattr(theme_switch, "_plasmashell_age_seconds", lambda: 5)
-    monkeypatch.setattr(theme_switch.time, "sleep", lambda s: None)
-    # Fast-forward monotonic past the deadline on the second tick.
-    ticks = iter([0.0, 1.0, theme_switch._DEFERRED_LIVE_APPLY_MAX_WAIT_SECONDS + 1])
-    monkeypatch.setattr(theme_switch.time, "monotonic", lambda: next(ticks))
-    monkeypatch.setattr(theme_switch, "_apply_lookandfeel_live",
-                        lambda laf: pytest.fail("must not apply when deadline expired"))
-    monkeypatch.setattr(theme_switch, "apply_cursortheme_live",
-                        lambda theme: pytest.fail("must not apply when deadline expired"))
-
-    rc = theme_switch._deferred_live_apply_loop(
-        theme_switch.LAF_LIGHT, "MacTahoeLiquidKde",
-    )
-    assert rc == 1
-
-
-def test_main_dispatches_deferred_live_apply(monkeypatch):
-    """The detached helper re-enters this script via the
-    `_deferred-live-apply` subcommand. main() must route both required
-    args (LAF id + cursor theme) through to the loop, and reject the
-    half-argument form so a malformed exec doesn't fall through into
-    the usage banner and return 0."""
-    import theme_switch
-
-    received: list[tuple[str, str]] = []
-    monkeypatch.setattr(theme_switch, "_deferred_live_apply_loop",
-                        lambda laf, cursor: received.append((laf, cursor)) or 0)
-
-    assert theme_switch.main([
-        "_deferred-live-apply", theme_switch.LAF_DARK, "MacTahoeLiquidKde-Dark",
-    ]) == 0
-    assert received == [(theme_switch.LAF_DARK, "MacTahoeLiquidKde-Dark")]
-
-    # Half-spelled invocation must error out without invoking the loop.
-    assert theme_switch.main(["_deferred-live-apply", theme_switch.LAF_DARK]) == 1
-    assert len(received) == 1
+    # --light / --dark pin the mode, so the auto scheduler must not be
+    # installed. Earlier versions copied the unit unconditionally and
+    # left a dead timer enabled even when the user had explicitly opted
+    # out of auto switching.
+    assert not (svc_dir / "mac-tahoe-liquid-kde-theme.service").exists()
+    assert not (svc_dir / "mac-tahoe-liquid-kde-theme.timer").exists()

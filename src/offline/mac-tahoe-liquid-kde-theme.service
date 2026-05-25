@@ -1,18 +1,16 @@
 [Unit]
-Description=MacTahoe Liquid KDE — auto light/dark theme switcher
-# Tie the watcher to the actual graphical session instead of default.target.
-# The Python wrapper still waits for plasmashell/kded/XWayland readiness
-# before applying anything, but this avoids starting the unit too early.
-After=graphical-session.target plasma-plasmashell.service
+Description=MacTahoe Liquid KDE — apply auto light/dark theme
+# Run after the desktop is up — not at boot, not at the login screen.
+# plasma-plasmashell.service comes up once the user has logged in and
+# plasmashell is reachable. The script itself sleeps 10s before each
+# plasma-apply-lookandfeel attempt and retries up to 3 times, so no
+# ExecStartPre wait is needed here.
+After=plasma-plasmashell.service graphical-session.target
 PartOf=graphical-session.target
 
 [Service]
-Type=simple
-ExecStart=%h/.local/bin/mac-tahoe-theme-switch watch
-# On-failure restart with a longer back-off so a crash during login does
-# not spin into a restart storm while Plasma is still settling.
-Restart=on-failure
-RestartSec=15
+Type=oneshot
+ExecStart=%h/.local/bin/mac-tahoe-theme-switch auto
 
 [Install]
-WantedBy=graphical-session.target
+WantedBy=plasma-plasmashell.service

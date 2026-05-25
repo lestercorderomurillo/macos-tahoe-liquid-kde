@@ -15,7 +15,6 @@ from theme_switch import (
     cycle_widget_style_live,
     reset_kde_color_scheme_config,
     _apply_lookandfeel_live,
-    wait_for_plasma,
 )
 
 # Cache files / dirs flushed during install + uninstall before Plasma reloads.
@@ -94,15 +93,20 @@ def _live_plasma_ready_quick() -> bool:
 
     Uninstall restarts plasmashell at the end anyway, so spending minutes
     waiting for DBus/display recovery after caches are flushed is pure UX
-    pain. Probe briefly; if the session is not ready now, skip the live
-    niceties and let the final Plasma restart pick up the on-disk Breeze
-    config."""
-    return wait_for_plasma(
-        require_display=True,
-        settle_seconds=0,
-        max_wait_seconds=3,
-        kded_wait_seconds=0,
-    )
+    pain. Look for a display and a live plasmashell; if either is missing,
+    skip the live niceties and let the final Plasma restart pick up the
+    on-disk Breeze config."""
+    import os as _os
+    if not (_os.environ.get("DISPLAY") or _os.environ.get("WAYLAND_DISPLAY")):
+        return False
+    try:
+        return subprocess.run(
+            ["pgrep", "-x", "plasmashell"],
+            check=False, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
+            timeout=3,
+        ).returncode == 0
+    except (OSError, subprocess.TimeoutExpired):
+        return False
 
 
 def install() -> None:

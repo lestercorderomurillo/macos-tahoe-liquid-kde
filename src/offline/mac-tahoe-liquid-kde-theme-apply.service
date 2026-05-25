@@ -1,8 +1,0 @@
-[Unit]
-Description=MacTahoe Liquid KDE — apply time-based mode now
-After=graphical-session.target plasma-plasmashell.service
-PartOf=graphical-session.target
-
-[Service]
-Type=oneshot
-ExecStart=%h/.local/bin/mac-tahoe-theme-switch auto

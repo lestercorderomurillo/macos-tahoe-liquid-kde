@@ -506,22 +506,49 @@ def test_transparency_python(repo):
 def test_theme_switch_invariants(repo):
     text = (repo / "src/scripts/theme_switch.py").read_text()
     assert "apply_color_groups_direct" in text
-    assert "Auto = strictly time-based" in text or "detect_auto_target_mode" in text
+    # Single entry point — main() resolves auto via the wall clock and
+    # never re-enters its own dispatcher with secondary contexts.
+    assert "detect_mode_by_time" in text
     assert "AutomaticLookAndFeel" in text
+    # plasmashell is too fragile to restart on every switch; the cycle
+    # is the only legal hot-swap path.
     assert "refreshCurrentShell" not in text
+    # No legacy multi-entry-point surface left over from earlier versions.
+    for forbidden in ("watch_loop", "sync_auto_mode_on_startup",
+                      "_spawn_deferred_live_apply", "_deferred_live_apply_loop"):
+        assert forbidden not in text, \
+            f"{forbidden!r} is a deprecated entry point — the v0.14.2 rewrite collapsed everything into apply()"
 
 
 # ── systemd unit invariants ───────────────────────────────────────────────
 def test_theme_service(offline):
     s = (offline / "mac-tahoe-liquid-kde-theme.service").read_text()
-    assert "WantedBy=graphical-session.target" in s
-    assert "PartOf=graphical-session.target" in s
+    # The service fires once the desktop is up (the moment
+    # plasma-plasmashell.service comes alive), not at the login screen
+    # and not at boot. That's the whole reason the v0.14.2 rewrite
+    # exists.
+    assert "After=plasma-plasmashell.service" in s
+    assert "WantedBy=plasma-plasmashell.service" in s
+    # Oneshot, not watch loop — no long-running theme-switch daemon.
+    assert "Type=oneshot" in s
+    assert "mac-tahoe-theme-switch auto" in s
 
 
 def test_theme_timer(offline):
     t = (offline / "mac-tahoe-liquid-kde-theme.timer").read_text()
     assert "WantedBy=timers.target" in t
     assert "After=graphical-session.target" not in t
+    # Timer must point at the SAME unit the post-login service runs —
+    # one entry point, no separate -apply.service.
+    assert "Unit=mac-tahoe-liquid-kde-theme.service" in t
+
+
+def test_no_legacy_apply_service_in_offline(offline):
+    """The split apply.service / watch.service design from earlier
+    versions is gone. Only the single oneshot service file should
+    ship — leftover units would re-enable the dead watch path on
+    upgrade."""
+    assert not (offline / "mac-tahoe-liquid-kde-theme-apply.service").exists()
 
 
 def test_readme_documents_last_run(repo):

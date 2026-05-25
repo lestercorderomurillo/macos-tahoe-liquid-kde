@@ -1,21 +1,13 @@
 [Unit]
 Description=MacTahoe Liquid KDE — fire time-based light/dark transitions
-# Do not order the timer itself after graphical-session.target: that creates a
-# timers.target ordering cycle during login. The triggered apply service is the
-# piece that waits for the graphical session.
 
 [Timer]
-# Fire at 06:00 (light) and 18:00 (dark) every day.
-# Persistent=true catches missed firings when:
-#   * PC was off at 06:00 and boots at 10:00 → light applies at boot
-#   * Suspend crossed 18:00 → dark applies on resume
-#   * Session starts between transitions → last transition re-fires
-# Combined with watch service's sync_auto_mode_on_startup, late logins are
-# always reconciled.
+# Fire at 06:00 (light) and 18:00 (dark) every day. Triggers the same
+# service that runs after login — same entry point, same code path.
 OnCalendar=*-*-* 06:00:00
 OnCalendar=*-*-* 18:00:00
 Persistent=true
-Unit=mac-tahoe-liquid-kde-theme-apply.service
+Unit=mac-tahoe-liquid-kde-theme.service
 
 [Install]
 WantedBy=timers.target
