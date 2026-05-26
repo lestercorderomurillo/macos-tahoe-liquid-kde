@@ -168,12 +168,12 @@ and targeted for **v0.15.0**.
 |     | Distro | Supported yet? |
 |:---:|--------|:--------------:|
 | <img src="https://cdn.simpleicons.org/cachyos" width="22"> | CachyOS | ✅ YES |
-| <img src="https://cdn.simpleicons.org/archlinux" width="22"> | Arch Linux | ❌ NO (v0.15.0) |
-| <img src="https://cdn.simpleicons.org/gentoo" width="22"> | Gentoo | ❌ NO (v0.15.0) |
-| <img src="https://cdn.simpleicons.org/fedora" width="22"> | Fedora / RHEL | ❌ NO (v0.15.0) |
-| <img src="https://cdn.simpleicons.org/opensuse" width="22"> | openSUSE Tumbleweed | ❌ NO (v0.15.0) |
-| <img src="https://cdn.simpleicons.org/debian" width="22"> | Debian | ❌ NO (v0.15.0) |
-| <img src="https://cdn.simpleicons.org/ubuntu" width="22"> | Ubuntu | ❌ NO (v0.15.0) |
+| <img src="https://cdn.simpleicons.org/archlinux" width="22"> | Arch Linux | 🔧 Working |
+| <img src="https://cdn.simpleicons.org/gentoo" width="22"> | Gentoo | 🔧 Working |
+| <img src="https://cdn.simpleicons.org/fedora" width="22"> | Fedora / RHEL | 🔧 Working |
+| <img src="https://cdn.simpleicons.org/opensuse" width="22"> | openSUSE Tumbleweed | 🔧 Working |
+| <img src="https://cdn.simpleicons.org/debian" width="22"> | Debian | 🔧 Working |
+| <img src="https://cdn.simpleicons.org/ubuntu" width="22"> | Ubuntu | 🔧 Working |
 
 Report any issues you find on confirmed OSes.
 
