@@ -191,12 +191,14 @@ def test_qt6_falls_back_to_known_libdir_when_qmake6_missing(monkeypatch):
     monkeypatch.setattr(distro, "_fallback_qt6_libdir",
                         lambda: distro.Path("/usr/lib/qt6")
                                 if distro.Path("/usr/lib/qt6").is_dir() else None)
-    # Skip the assertion on a host where /usr/lib/qt6 doesn't exist;
-    # those hosts will hit Qt6PathsMissing instead (covered below).
-    if not distro.Path("/usr/lib/qt6").is_dir():
-        pytest.skip("/usr/lib/qt6 not present on this host")
-    assert str(distro.qt6_plugins_dir()) == "/usr/lib/qt6/plugins"
-    assert str(distro.qt6_qml_dir()) == "/usr/lib/qt6/qml"
+    # Each subdir is independent — qt6-tools brings /usr/lib/qt6/plugins
+    # but qt6-declarative is what installs /usr/lib/qt6/qml. The
+    # container CI image carries the former without the latter, so
+    # check each fallback against its own on-disk reality.
+    if distro.Path("/usr/lib/qt6/plugins").is_dir():
+        assert str(distro.qt6_plugins_dir()) == "/usr/lib/qt6/plugins"
+    if distro.Path("/usr/lib/qt6/qml").is_dir():
+        assert str(distro.qt6_qml_dir()) == "/usr/lib/qt6/qml"
 
 
 def test_qt6_raises_when_no_tools_and_no_fallback_dir(monkeypatch, tmp_path):
