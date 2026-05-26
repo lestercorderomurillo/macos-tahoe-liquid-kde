@@ -3,6 +3,7 @@ import subprocess
 import time
 from pathlib import Path
 
+from distro import qt6_plugins_dir
 from steps._helpers import (
     build_dir, cmake_build, fail, info, kw_write, ok, offline, qdbus_call,
     sudo_install_file, sudo_remove, warn,
@@ -27,16 +28,11 @@ def build_artifacts() -> list[Path]:
 
 
 def _plugin_dir() -> Path:
-    for cmd in (
-        ["qmake6", "-query", "QT_INSTALL_PLUGINS"],
-        ["qtpaths6", "--plugin-dir"],
-        ["pkg-config", "--variable=plugindir", "Qt6Core"],
-    ):
-        if shutil.which(cmd[0]):
-            res = run_user(cmd, check=False, capture_output=True, text=True)
-            if res.returncode == 0 and res.stdout.strip():
-                return Path(res.stdout.strip())
-    return Path("/usr/lib/qt6/plugins")
+    """Kept for preflight's _enumerate_destinations() which calls this
+    by name. Delegates to the shared discovery in paths.py so the same
+    qmake6 / qtpaths6 / pkg-config chain — and the same raise-on-missing
+    contract — applies across every step."""
+    return qt6_plugins_dir()
 
 
 def build() -> None:

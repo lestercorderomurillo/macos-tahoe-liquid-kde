@@ -517,17 +517,20 @@ def _restore_user_session_env(uid: int) -> None:
 def _require_root_and_drop_to_user(op: str = "install") -> bool:
     """Hard precondition for install/uninstall: it only runs when
     invoked with root privileges (``sudo ./install`` /
-    ``sudo ./uninstall``). Qt6 only walks ``/usr/lib/qt6/`` for plugins
-    and QML modules by default; user-path destinations are not
-    discoverable, so .so files and runtime QML for the C++ plasmoids
-    and KWin effect MUST land under /usr/lib. That means sudo upfront
-    is mandatory, not optional.
+    ``sudo ./uninstall``). Qt6 only walks the plugin + QML directories
+    its own build was configured against (queried from qmake6 via
+    ``paths.qt6_plugins_dir`` / ``qt6_qml_dir`` — typically under
+    ``/usr/lib`` or ``/usr/lib64`` depending on the distro); user-path
+    destinations are not discoverable, so .so files and runtime QML
+    for the C++ plasmoids and KWin effect MUST land in the
+    Qt-reported libdir. That means sudo upfront is mandatory.
 
     Once root is verified, drop the effective UID/GID to ``SUDO_USER``
     so all file writes land with normal user ownership. The few
-    operations that genuinely need root (.so installs to /usr/lib, QML
-    modules, etc.) re-elevate via the ``sudo_install_file`` /
-    ``sudo_install_tree`` / ``sudo_remove`` helpers, which call
+    operations that genuinely need root (.so installs to the system
+    Qt6 libdir, QML modules, etc.) re-elevate via the
+    ``sudo_install_file`` / ``sudo_install_tree`` / ``sudo_remove``
+    helpers, which call
     ``os.seteuid(0)`` for the duration of one operation and restore
     the user's UID immediately after. Real UID stays at 0 throughout,
     so the seteuid trip back to root always succeeds.
@@ -767,9 +770,11 @@ def run_install(argv: list[str]) -> int:
         return 0 if not check_for_updates(verbose=True) else 0
 
     # Install needs root: the C++ plasmoids and KWin effect drop .so
-    # files into /usr/lib/qt6/plugins/ and runtime QML into
-    # /usr/lib/qt6/qml/ — Qt6's default search paths. User paths are
-    # not discoverable. ``sudo ./install`` is the supported entry.
+    # files into the Qt6 plugin dir and runtime QML into the Qt6 QML
+    # dir (qmake6-reported; /usr/lib on Arch/Fedora, /usr/lib64 on
+    # Gentoo, /usr/lib/x86_64-linux-gnu on Debian-multiarch). User
+    # paths are not discoverable. ``sudo ./install`` is the supported
+    # entry.
     if not _require_root_and_drop_to_user("install"):
         return 1
 

@@ -5,13 +5,23 @@ copied to ``TASKMANAGER_DEST_SO`` / ``TASKMANAGER_DEST_QML``, and the
 package metadata + contents/ tree end up under ``DEST_DIR``. Sudo
 helpers are stubbed (the test runner is not root) — the real
 ``sudo_install_file`` would call ``_as_root()`` → ``seteuid(0)`` and
-raise ``PermissionError``. Production destinations are pinned in a
-separate static test.
+raise ``PermissionError``. The Qt6 plugin / QML dirs come from
+:mod:`distro` and are stubbed to a tmp tree so the test never writes
+under a real ``/usr/lib`` even when the sudo helpers are no-ops.
 """
 import shutil
 from pathlib import Path
 
+import distro
 from steps import plasmoids
+
+
+def _stub_qt6_paths(monkeypatch, tmp_path):
+    fake_plugins = tmp_path / "fake-qt6/plugins"
+    fake_qml = tmp_path / "fake-qt6/qml"
+    monkeypatch.setattr(distro, "_QT_PLUGINS_CACHE", fake_plugins)
+    monkeypatch.setattr(distro, "_QT_QML_CACHE", fake_qml)
+    return fake_plugins, fake_qml
 
 
 def _stub_sudo_helpers(monkeypatch):
@@ -73,21 +83,12 @@ def test_install_copies_taskmanager_runtime_package(tmp_path, monkeypatch):
 
     (home / ".config").mkdir(parents=True, exist_ok=True)
 
+    fake_plugins, fake_qml = _stub_qt6_paths(monkeypatch, tmp_path)
     monkeypatch.setattr(plasmoids, "HOME", home)
     monkeypatch.setattr(plasmoids, "SRC_DIR", src)
     monkeypatch.setattr(plasmoids, "DEST_DIR", dest)
     monkeypatch.setattr(plasmoids, "TASKMANAGER_SRC", taskmanager)
     monkeypatch.setattr(plasmoids, "TASKMANAGER_BUILD", taskmanager / "build")
-    monkeypatch.setattr(
-        plasmoids,
-        "TASKMANAGER_DEST_SO",
-        tmp_path / "fake-usr/lib/qt6/plugins/plasma/applets/org.kde.mac.tahoe.liquid.taskmanager.so",
-    )
-    monkeypatch.setattr(
-        plasmoids,
-        "TASKMANAGER_DEST_QML",
-        tmp_path / "fake-usr/lib/qt6/qml/plasma/applet/org/kde/mac/tahoe/liquid/taskmanager",
-    )
     # v0.10: ``LEGACY_TASKMANAGER_USER_SO`` is the v0.8.4-0.8.6 sudoless
     # leftover under ``~/.local/lib/qt6/...``. Point it at a sandbox path
     # that doesn't exist so the cleanup path no-ops.
@@ -104,26 +105,36 @@ def test_install_copies_taskmanager_runtime_package(tmp_path, monkeypatch):
 
     plasmoids.install()
 
+    expected_so = fake_plugins / (
+        "plasma/applets/org.kde.mac.tahoe.liquid.taskmanager.so"
+    )
+    expected_qml = fake_qml / (
+        "plasma/applet/org/kde/mac/tahoe/liquid/taskmanager"
+    )
     runtime = dest / "org.kde.mac.tahoe.liquid.taskmanager"
-    assert plasmoids.TASKMANAGER_DEST_SO.is_file()
-    assert (plasmoids.TASKMANAGER_DEST_QML / "qmldir").is_file()
-    assert plasmoids.TASKMANAGER_DEST_SO.read_bytes() == b"so"
+    assert expected_so.is_file()
+    assert (expected_qml / "qmldir").is_file()
+    assert expected_so.read_bytes() == b"so"
     assert not failures, failures
     assert (runtime / "metadata.json").is_file()
     assert (runtime / "contents/ui/main.qml").is_file()
     assert not (runtime / "build").exists()
 
 
-def test_taskmanager_dest_paths_target_qt6_system_dirs():
-    """v0.10 contract: the dock taskmanager .so + QML module land
-    where Qt6 actually scans (``/usr/lib/qt6/{plugins,qml}/``). Pin
-    the production paths so a refactor that drifts them doesn't ship."""
-    assert str(plasmoids.TASKMANAGER_DEST_SO) == (
-        "/usr/lib/qt6/plugins/plasma/applets/"
-        "org.kde.mac.tahoe.liquid.taskmanager.so"
+def test_taskmanager_dest_paths_anchor_to_qmake6_libdir(monkeypatch, tmp_path):
+    """v0.15 contract: the dock taskmanager .so + QML module land
+    under whatever the Qt6 plugin / QML dirs resolve to (qmake6-
+    reported, per distro). The suffix is pinned so a refactor that
+    mangles the package id can't silently ship to the wrong applet
+    path; the prefix comes from distro.qt6_* so this works on Arch
+    (/usr/lib/qt6), Gentoo (/usr/lib64/qt6), and Debian-multiarch
+    alike."""
+    fake_plugins, fake_qml = _stub_qt6_paths(monkeypatch, tmp_path)
+    assert plasmoids.TASKMANAGER_DEST_SO == fake_plugins / (
+        "plasma/applets/org.kde.mac.tahoe.liquid.taskmanager.so"
     )
-    assert str(plasmoids.TASKMANAGER_DEST_QML) == (
-        "/usr/lib/qt6/qml/plasma/applet/org/kde/mac/tahoe/liquid/taskmanager"
+    assert plasmoids.TASKMANAGER_DEST_QML == fake_qml / (
+        "plasma/applet/org/kde/mac/tahoe/liquid/taskmanager"
     )
 
 

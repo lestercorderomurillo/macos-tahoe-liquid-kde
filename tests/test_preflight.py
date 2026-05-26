@@ -17,8 +17,6 @@ from paths import OFFLINE_DIR
 # ── 1. destination-path regex ────────────────────────────────────────────
 
 @pytest.mark.parametrize("path", [
-    "/usr/lib/qt6/plugins/plasma/applets/foo.so",
-    "/usr/lib/qt6/qml/plasma/applet/org/kde/foo",
     "/etc/sddm.conf.d/mac-tahoe.conf",
     "/usr/share/sounds/MacTahoe",
     "/usr/share/wallpapers/MacTahoe",
@@ -27,8 +25,26 @@ def test_validate_path_accepts_allowed_roots(path):
     assert preflight._validate_path(path) is None
 
 
+def test_validate_path_accepts_qmake6_reported_qt6_roots():
+    """Qt6 plugin / QML roots come from distro.qt6_*_dir() at validate
+    time, so the allowed-roots list adapts to whatever libdir
+    convention this distro uses. On Arch that's /usr/lib/qt6, on
+    Fedora /usr/lib64/qt6, on Debian /usr/lib/x86_64-linux-gnu/qt6 —
+    all should validate cleanly."""
+    from distro import qt6_plugins_dir, qt6_qml_dir, Qt6PathsMissing
+    try:
+        plugins = str(qt6_plugins_dir())
+        qml = str(qt6_qml_dir())
+    except Qt6PathsMissing:
+        pytest.skip("qmake6 not on PATH in this test environment")
+    for path in (
+        f"{plugins}/plasma/applets/foo.so",
+        f"{qml}/plasma/applet/org/kde/foo",
+    ):
+        assert preflight._validate_path(path) is None, path
+
+
 @pytest.mark.parametrize("path,reason", [
-    ("/root/anything", "leaks /root home"),
     ("/tmp/payload", "tmp path used as install dest"),
     ("/usr/lib//qt6/plugins/foo", "double slash"),
     ("/usr/lib/qt6/plugins/../etc/passwd", "parent traversal"),
@@ -39,6 +55,28 @@ def test_validate_path_rejects_dangerous_paths(path, reason):
     got = preflight._validate_path(path)
     assert got is not None
     assert reason in got
+
+
+def test_validate_path_rejects_root_when_home_is_user(monkeypatch, tmp_path):
+    """/root paths leak the privilege-escalated user's home — ONLY a
+    problem when the real user's home is somewhere else (the typical
+    sudo-drop scenario). Pinning a user home explicitly so this stays
+    deterministic regardless of who runs the test."""
+    fake_home = tmp_path / "home/lester"
+    fake_home.mkdir(parents=True)
+    monkeypatch.setattr(preflight, "_HOME", fake_home)
+    got = preflight._validate_path("/root/.local/share/icons")
+    assert got is not None
+    assert "leaks /root home" in got
+
+
+def test_validate_path_accepts_root_when_home_is_root(monkeypatch, tmp_path):
+    """Container / embedded scenario: the only user IS root, /root IS
+    the legitimate home. /root paths must NOT be rejected then,
+    otherwise the installer can't run on those targets."""
+    monkeypatch.setattr(preflight, "_HOME", Path("/root"))
+    assert preflight._validate_path("/root/.local/share/icons") is None
+    assert preflight._validate_path("/root/.config/kdeglobals") is None
 
 
 def test_validate_path_accepts_user_home():
@@ -125,18 +163,66 @@ def test_layout_js_references_real_plasmoid_ids():
         )
 
 
-# ── 3. Qt6 plugin-path query ─────────────────────────────────────────────
+# ── 3. Qt6 path discovery (lives in distro.py now) ──────────────────────
 
-def test_qmake6_query_returns_none_when_qmake6_missing(monkeypatch):
-    monkeypatch.setattr(preflight.shutil, "which", lambda _: None)
-    assert preflight._qmake6_query("QT_INSTALL_PLUGINS") is None
+def test_qt6_query_returns_none_when_no_tools_present(monkeypatch):
+    """When neither qmake6, qtpaths6, nor pkg-config is on PATH, the
+    chain returns None and the public ``qt6_plugins_dir()`` raises
+    :class:`distro.Qt6PathsMissing` — the installer never silently
+    falls back to a hardcoded ``/usr/lib/qt6`` default."""
+    import distro
+    monkeypatch.setattr(distro.shutil, "which", lambda _: None)
+    monkeypatch.setattr(distro, "_QT_PLUGINS_CACHE", None)
+    monkeypatch.setattr(distro, "_QT_QML_CACHE", None)
+    assert distro._qt6_plugins_query() is None
+    assert distro._qt6_qml_query() is None
+    with pytest.raises(distro.Qt6PathsMissing):
+        distro.qt6_plugins_dir()
+    with pytest.raises(distro.Qt6PathsMissing):
+        distro.qt6_qml_dir()
 
 
-def test_qmake6_query_handles_subprocess_failure(monkeypatch):
+def test_install_destinations_anchor_to_qmake6_libdir(monkeypatch, tmp_path):
+    """The v0.14.x Gentoo regression was: qmake6 reports
+    ``/usr/lib64/qt6/plugins`` but the installer hardcoded
+    ``/usr/lib/qt6/plugins`` for its writes. After v0.15.0 every Qt
+    destination is rooted at the qmake6-reported dir; this test
+    pretends the libdir lives under a tmp path and asserts each step's
+    destination still resolves inside it.
+
+    If a future refactor silently re-introduces a ``/usr/lib`` literal,
+    relative_to() raises ValueError and the test pins it."""
+    import distro
+    fake_plugins = tmp_path / "fake-lib64/qt6/plugins"
+    fake_qml = tmp_path / "fake-lib64/qt6/qml"
+    monkeypatch.setattr(distro, "_QT_PLUGINS_CACHE", fake_plugins)
+    monkeypatch.setattr(distro, "_QT_QML_CACHE", fake_qml)
+
+    from steps import acrylic_glass, globalmenu, plasmoids
+    for label, dest, expected_root in (
+        ("globalmenu .so",       globalmenu.DEST_SO,             fake_plugins),
+        ("globalmenu QML",       globalmenu.DEST_QML_DIR,        fake_qml),
+        ("taskmanager .so",      plasmoids.TASKMANAGER_DEST_SO,  fake_plugins),
+        ("taskmanager QML",      plasmoids.TASKMANAGER_DEST_QML, fake_qml),
+        ("acrylic-glass plugin", acrylic_glass._plugin_dir(),    fake_plugins),
+    ):
+        # relative_to() raises ValueError if dest is not under root —
+        # that IS the failure mode the v0.14.x Gentoo bug hit.
+        dest.relative_to(expected_root)
+
+
+def test_qt6_query_skips_tools_that_exit_nonzero(monkeypatch):
+    """A qmake6 that exits non-zero (broken Qt install, sandboxed env)
+    must not be treated as a successful path discovery — fall through
+    to the next tool in the chain."""
     from types import SimpleNamespace
-    monkeypatch.setattr(preflight.shutil, "which", lambda _: "/usr/bin/qmake6")
+    import distro
+    monkeypatch.setattr(distro.shutil, "which", lambda cmd: f"/usr/bin/{cmd}")
     monkeypatch.setattr(
-        preflight, "run_user",
+        distro.subprocess, "run",
         lambda *a, **kw: SimpleNamespace(returncode=1, stdout="", stderr="oops"),
     )
-    assert preflight._qmake6_query("QT_INSTALL_PLUGINS") is None
+    monkeypatch.setattr(distro, "_QT_PLUGINS_CACHE", None)
+    assert distro._qt6_plugins_query() is None
+    with pytest.raises(distro.Qt6PathsMissing):
+        distro.qt6_plugins_dir()

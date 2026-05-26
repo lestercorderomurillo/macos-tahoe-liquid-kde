@@ -2,6 +2,7 @@ import re
 import shutil
 from pathlib import Path
 
+from distro import qt6_plugins_dir, qt6_qml_dir
 from steps._helpers import (
     HOME, build_dir, cmake_build, fail, info, install_tree, ok, offline,
     remove_tree,
@@ -13,16 +14,21 @@ DEST_DIR = HOME / ".local/share/plasma/plasmoids"
 
 TASKMANAGER_SRC = SRC_DIR / "org.kde.mac.tahoe.liquid.taskmanager"
 TASKMANAGER_BUILD = build_dir("plasmoids/org.kde.mac.tahoe.liquid.taskmanager")
-# System-path install — Qt6's default plugin/QML search is
-# /usr/lib/qt6/{plugins,qml}/. User paths are NOT walked, so .so + QML
-# module MUST live under /usr/lib for plasmashell to load the dock.
-TASKMANAGER_DEST_SO = Path(
-    "/usr/lib/qt6/plugins/plasma/applets/"
-    "org.kde.mac.tahoe.liquid.taskmanager.so"
-)
-TASKMANAGER_DEST_QML = Path(
-    "/usr/lib/qt6/qml/plasma/applet/org/kde/mac/tahoe/liquid/taskmanager"
-)
+# System-path install — Qt6 only walks the plugin / QML dirs its own
+# build was configured against (see paths.qt6_plugins_dir docstring for
+# the per-distro libdir map). Lazy resolution via __getattr__ so a
+# missing qmake6 surfaces as a preflight failure with a distro hint
+# rather than a module-import crash.
+_TASKMANAGER_SO_RELPATH = "plasma/applets/org.kde.mac.tahoe.liquid.taskmanager.so"
+_TASKMANAGER_QML_RELPATH = "plasma/applet/org/kde/mac/tahoe/liquid/taskmanager"
+
+
+def __getattr__(name: str):
+    if name == "TASKMANAGER_DEST_SO":
+        return qt6_plugins_dir() / _TASKMANAGER_SO_RELPATH
+    if name == "TASKMANAGER_DEST_QML":
+        return qt6_qml_dir() / _TASKMANAGER_QML_RELPATH
+    raise AttributeError(name)
 # v0.8.4-0.8.6 sudoless leftover under user path.
 LEGACY_TASKMANAGER_USER_SO = HOME / (
     ".local/lib/qt6/plugins/plasma/applets/"
@@ -118,7 +124,7 @@ def _install_taskmanager_qml() -> bool:
         fail("org.kde.mac.tahoe.liquid.taskmanager (missing runtime QML)")
         return False
     return sudo_install_tree(
-        module_src, TASKMANAGER_DEST_QML,
+        module_src, qt6_qml_dir() / _TASKMANAGER_QML_RELPATH,
         "org.kde.mac.tahoe.liquid.taskmanager (installed runtime QML)",
     )
 
@@ -126,13 +132,14 @@ def _install_taskmanager_qml() -> bool:
 def install() -> None:
     DEST_DIR.mkdir(parents=True, exist_ok=True)
 
+    dest_qml = qt6_qml_dir() / _TASKMANAGER_QML_RELPATH
     for name in LEGACY_DIRS:
         d = DEST_DIR / name
         if d.is_dir():
             shutil.rmtree(d, ignore_errors=True)
             ok(f"{name} (removed local override)")
     for qml_dir in LEGACY_TASKMANAGER_QML_DIRS:
-        if qml_dir != TASKMANAGER_DEST_QML:
+        if qml_dir != dest_qml:
             remove_tree(qml_dir, qml_dir.name)
     if LEGACY_TASKMANAGER_USER_SO.is_file():
         try:
@@ -146,7 +153,7 @@ def install() -> None:
     artifact = TASKMANAGER_BUILD / "bin/plasma/applets/org.kde.mac.tahoe.liquid.taskmanager.so"
     if artifact.is_file():
         if sudo_install_file(
-            artifact, TASKMANAGER_DEST_SO,
+            artifact, qt6_plugins_dir() / _TASKMANAGER_SO_RELPATH,
             "org.kde.mac.tahoe.liquid.taskmanager (installed compiled dock base)",
         ):
             _install_taskmanager_package()
@@ -172,9 +179,11 @@ def install() -> None:
 
 def uninstall() -> None:
     n = 0
-    if sudo_remove(TASKMANAGER_DEST_SO, TASKMANAGER_DEST_SO.name):
+    dest_so = qt6_plugins_dir() / _TASKMANAGER_SO_RELPATH
+    dest_qml = qt6_qml_dir() / _TASKMANAGER_QML_RELPATH
+    if sudo_remove(dest_so, dest_so.name):
         n += 1
-    if sudo_remove(TASKMANAGER_DEST_QML, TASKMANAGER_DEST_QML.name):
+    if sudo_remove(dest_qml, dest_qml.name):
         n += 1
     if LEGACY_TASKMANAGER_USER_SO.is_file():
         try:

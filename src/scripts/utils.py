@@ -287,25 +287,34 @@ def have(cmd: str) -> bool:
 
 
 def pkg_install(*pkgs: str) -> bool:
-    if have("pacman"):
-        cmd = ["sudo", "pacman", "-S", "--noconfirm", *pkgs]
-    elif have("yay"):
-        cmd = ["yay", "-S", "--noconfirm", *pkgs]
-    elif have("paru"):
-        cmd = ["paru", "-S", "--noconfirm", *pkgs]
-    else:
-        fail(f"no package manager found — install {' '.join(pkgs)} manually")
+    """Install one or more packages via the distro's native package
+    manager (resolved through :mod:`distro`). The caller passes the
+    *current-distro* package names — use :func:`auto_dep` if the
+    deps() token still needs translating."""
+    from distro import UnsupportedDistroError, package_manager_install_cmd
+    try:
+        base = package_manager_install_cmd()
+    except UnsupportedDistroError as exc:
+        fail(str(exc))
+        fail(f"install manually: {' '.join(pkgs)}")
         return False
+    # Prepend sudo when we're not already running as root.
+    cmd = base if os.geteuid() == 0 else ["sudo", *base]
+    cmd.extend(pkgs)
     return subprocess.run(cmd, check=False).returncode == 0
 
 
 def auto_dep(cmd: str, pkg: str | None = None) -> bool:
-    pkg = pkg or cmd
+    """Ensure ``cmd`` resolves on PATH, installing the per-distro
+    package if it doesn't. ``pkg`` is the Arch-flavoured package name
+    from the step's deps() token — distro.package_for() translates it
+    to the right name on the current host."""
+    from distro import package_for
     if have(cmd):
         ok(cmd)
         return True
     warn(f"{cmd} not found — installing...")
-    if pkg_install(pkg):
+    if pkg_install(package_for(cmd, pkg)):
         ok(f"{cmd} (installed)")
         return True
     fail(f"{cmd} (install failed)")

@@ -1,6 +1,7 @@
 import shutil
 from pathlib import Path
 
+from distro import qt6_plugins_dir, qt6_qml_dir
 from paths import REPO_ROOT
 from steps._helpers import (
     HOME, build_dir, cmake_build, fail, ok, offline,
@@ -15,20 +16,37 @@ BUILD = build_dir("plasmoids/org.kde.mac.tahoe.liquid.globalmenu")
 # the script side (only the C++ .so install above needs root).
 ABOUT_INFO_SRC = REPO_ROOT / "src/scripts/about_info.py"
 ABOUT_INFO_DEST = HOME / ".local/bin/mac-tahoe-about-info"
-# System-path install — Qt6's default plugin/QML search is
-# /usr/lib/qt6/{plugins,qml}/. User paths are NOT walked (no
-# QT_PLUGIN_PATH / QML_IMPORT_PATH set in a default Plasma session),
-# so the .so + QML module MUST live under /usr/lib for plasmashell to
-# discover them. Sudo upfront via the CLI gate; sudo_install_file/tree
-# hop back to root via _as_root() for these writes.
-DEST_SO = Path("/usr/lib/qt6/plugins/plasma/applets/org.kde.mac.tahoe.liquid.globalmenu.so")
-DEST_QML_DIR = Path("/usr/lib/qt6/qml/plasma/applet/org/kde/mac/tahoe/liquid/globalmenu")
+# System-path install — Qt6 only walks the plugin / QML dirs its own
+# build was configured against. User paths are NOT on the discovery
+# list, so the .so + QML module MUST live under the libdir qmake6
+# reports. paths.qt6_{plugins,qml}_dir() ask qmake6 directly so the
+# correct libdir is picked on Arch / Gentoo / Fedora / openSUSE /
+# Debian / Ubuntu regardless of multilib / multiarch layout. Sudo
+# upfront via the CLI gate; sudo_install_file/tree hop back to root
+# via _as_root() for these writes.
+_SO_RELPATH = "plasma/applets/org.kde.mac.tahoe.liquid.globalmenu.so"
+_QML_RELPATH = "plasma/applet/org/kde/mac/tahoe/liquid/globalmenu"
 
-LEGACY_SOS_SYSTEM = (
-    Path("/usr/lib/qt6/plugins/plasma/applets/org.kde.mac.tahoe.liquid.menu.so"),
-    Path("/usr/lib/qt6/plugins/plasma/applets/org.kde.mac.tahoe.globalmenu.so"),
-    Path("/usr/lib/qt6/plugins/plasma/applets/org.kde.mac.tahoe.menu.so"),
+_LEGACY_SO_BASENAMES = (
+    "org.kde.mac.tahoe.liquid.menu.so",
+    "org.kde.mac.tahoe.globalmenu.so",
+    "org.kde.mac.tahoe.menu.so",
 )
+
+
+def __getattr__(name: str):
+    """Lazy DEST_SO / DEST_QML_DIR / LEGACY_SOS_SYSTEM resolution so a
+    missing qmake6 surfaces as a preflight failure with a distro-
+    appropriate hint, not as a module-import crash that bypasses our
+    error message entirely."""
+    if name == "DEST_SO":
+        return qt6_plugins_dir() / _SO_RELPATH
+    if name == "DEST_QML_DIR":
+        return qt6_qml_dir() / _QML_RELPATH
+    if name == "LEGACY_SOS_SYSTEM":
+        base = qt6_plugins_dir() / "plasma/applets"
+        return tuple(base / fn for fn in _LEGACY_SO_BASENAMES)
+    raise AttributeError(name)
 # v0.8.4-0.8.6 sudoless leftovers under user paths. Plain unlink, no
 # sudo — they belong to the invoking user.
 LEGACY_SOS_USER = (
@@ -72,7 +90,9 @@ def _drop_legacy() -> None:
         if qml_dir.is_dir():
             shutil.rmtree(qml_dir, ignore_errors=True)
             ok(f"Removed {qml_dir.name} (user-path QML)")
-    for so in LEGACY_SOS_SYSTEM:
+    legacy_base = qt6_plugins_dir() / "plasma/applets"
+    for fn in _LEGACY_SO_BASENAMES:
+        so = legacy_base / fn
         if so.is_file():
             sudo_remove(so, f"{so.name} (legacy)")
 
@@ -87,14 +107,16 @@ def install() -> None:
     if not artifact.is_file():
         fail("Global Menu build artifact missing")
         return
-    if not sudo_install_file(artifact, DEST_SO, "Global Menu installed"):
+    dest_so = qt6_plugins_dir() / _SO_RELPATH
+    if not sudo_install_file(artifact, dest_so, "Global Menu installed"):
         return
 
     module_src = BUILD / "bin/plasma/applet/org/kde/mac/tahoe/liquid/globalmenu"
     if not module_src.is_dir():
         fail("Global Menu runtime QML missing")
         return
-    sudo_install_tree(module_src, DEST_QML_DIR, "Global Menu runtime QML")
+    sudo_install_tree(module_src, qt6_qml_dir() / _QML_RELPATH,
+                      "Global Menu runtime QML")
 
     _install_about_info()
 
@@ -110,8 +132,8 @@ def _install_about_info() -> None:
 
 
 def uninstall() -> None:
-    sudo_remove(DEST_SO, "Global Menu .so removed")
-    sudo_remove(DEST_QML_DIR, "Global Menu runtime QML removed")
+    sudo_remove(qt6_plugins_dir() / _SO_RELPATH, "Global Menu .so removed")
+    sudo_remove(qt6_qml_dir() / _QML_RELPATH, "Global Menu runtime QML removed")
     try:
         ABOUT_INFO_DEST.unlink()
         ok("System info helper removed")

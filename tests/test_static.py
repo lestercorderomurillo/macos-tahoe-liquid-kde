@@ -37,6 +37,122 @@ def test_installer_package(repo):
     assert (repo / "src/scripts/theme_switch.py").is_file()
     assert (repo / "src/scripts/set-transparency").is_file()
     assert (repo / "src/scripts/steps/__init__.py").is_file()
+    # v0.15: distro.py is the single layer for everything that varies
+    # between Linux distributions (Qt6 plugin / QML dirs, package
+    # manager hint, /etc/os-release id). No step is allowed to
+    # hardcode ``/usr/lib/qt6`` — see test_no_hardcoded_qt6_libdir.
+    assert (repo / "src/scripts/distro.py").is_file()
+
+
+def test_distro_layer_exposes_qt6_helpers(repo):
+    text = (repo / "src/scripts/distro.py").read_text()
+    for name in ("qt6_plugins_dir", "qt6_qml_dir", "Qt6PathsMissing",
+                 "current_distro", "qt6_install_hint",
+                 "package_for", "package_manager_install_cmd",
+                 "UnsupportedDistroError"):
+        assert f"def {name}" in text or f"class {name}" in text, name
+
+
+def test_no_hardcoded_package_manager_outside_distro_layer(repo):
+    """Same invariant as Qt6 paths: only ``distro.py`` is allowed to
+    name a specific package manager binary. Anything else has to go
+    through ``distro.package_manager_install_cmd()`` so adding a new
+    distro doesn't require hunting through every step.
+
+    ``pacman -Q`` (a query, not an install) is allowed in cli.py
+    because the update-check reads the local package version; only
+    INSTALL invocations are forbidden."""
+    scripts = repo / "src/scripts"
+    forbidden = re.compile(
+        r"\b(yay\s|paru\s|apt-get\s|dnf install|"
+        r"zypper install|emerge --|xbps-install|apk add)\b|"
+        r"\bpacman\s+-S\b"
+    )
+    allowlist = {scripts / "distro.py"}
+    offenders: list[str] = []
+    for py in scripts.rglob("*.py"):
+        if py in allowlist:
+            continue
+        text = py.read_text()
+        in_doc = False
+        doc_open = None
+        for line_no, line in enumerate(text.splitlines(), start=1):
+            stripped = line.lstrip()
+            if doc_open is None:
+                for q in ('"""', "'''"):
+                    if stripped.startswith(q):
+                        if stripped.count(q) >= 2:
+                            in_doc = False
+                            break
+                        doc_open = q
+                        in_doc = True
+                        break
+            elif doc_open in stripped:
+                in_doc = False
+                doc_open = None
+                continue
+            if in_doc:
+                continue
+            if stripped.startswith("#"):
+                continue
+            if forbidden.search(line):
+                offenders.append(f"{py.relative_to(repo)}:{line_no}: {line.strip()}")
+    assert not offenders, (
+        "Hardcoded package-manager INSTALL invocation outside the distro layer:\n  "
+        + "\n  ".join(offenders)
+    )
+
+
+def test_no_hardcoded_qt6_libdir(repo):
+    """Anywhere outside ``distro.py`` (the distro-detection layer) and
+    ``paths.py`` (where the per-distro libdir map is *documented* in a
+    comment), no executable line is allowed to hardcode
+    ``/usr/lib/qt6`` or ``/usr/lib64/qt6``. Production code MUST go
+    through ``distro.qt6_plugins_dir()`` / ``distro.qt6_qml_dir()``,
+    otherwise we re-ship the v0.14.x assumption that Arch's libdir
+    works everywhere (which broke installs on Gentoo and Debian).
+
+    Comment lines and docstrings are allowed to mention the example
+    paths — that's how we document the per-distro variation."""
+    scripts = repo / "src/scripts"
+    forbidden = re.compile(r"/usr/lib(?:64)?/qt6")
+    allowlist = {scripts / "distro.py", scripts / "paths.py"}
+    offenders: list[str] = []
+    for py in scripts.rglob("*.py"):
+        if py in allowlist:
+            continue
+        text = py.read_text()
+        in_docstring = False
+        docstring_open = None
+        for line_no, line in enumerate(text.splitlines(), start=1):
+            stripped = line.lstrip()
+            # Track triple-quoted docstring blocks (cheap: assumes well-
+            # formed triple quotes, which our codebase uses).
+            if docstring_open is None:
+                for quote in ('"""', "'''"):
+                    if stripped.startswith(quote):
+                        # Single-line docstring closes on same line.
+                        if stripped.count(quote) >= 2:
+                            in_docstring = False
+                            break
+                        docstring_open = quote
+                        in_docstring = True
+                        break
+            elif docstring_open in stripped:
+                in_docstring = False
+                docstring_open = None
+                continue
+            if in_docstring:
+                continue
+            if stripped.startswith("#"):
+                continue
+            if forbidden.search(line):
+                offenders.append(f"{py.relative_to(repo)}:{line_no}: {line.strip()}")
+    assert not offenders, (
+        "Hardcoded Qt6 libdir found outside the distro layer "
+        "(executable code, not comments/docstrings):\n  "
+        + "\n  ".join(offenders)
+    )
 
 
 def test_theme_switch_python(repo):
