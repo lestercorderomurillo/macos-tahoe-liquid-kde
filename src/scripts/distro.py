@@ -174,15 +174,34 @@ def qt6_install_hint() -> str:
 # Qt6PathsMissing — Plasma 6 won't load applets from a directory it
 # doesn't scan, so refusing to install is safer than guessing.
 _QT6_LIBDIR_FALLBACK: dict[str, str] = {
-    "arch":         "/usr/lib/qt6",
-    "cachyos":      "/usr/lib/qt6",
-    "manjaro":      "/usr/lib/qt6",
-    "endeavouros":  "/usr/lib/qt6",
-    "gentoo":       "/usr/lib64/qt6",
-    "fedora":       "/usr/lib64/qt6",
-    "rhel":         "/usr/lib64/qt6",
-    "centos":       "/usr/lib64/qt6",
-    "opensuse":     "/usr/lib64/qt6",
+    # Arch-family (all share /usr/lib/qt6 layout)
+    "arch":          "/usr/lib/qt6",
+    "cachyos":       "/usr/lib/qt6",
+    "manjaro":       "/usr/lib/qt6",
+    "endeavouros":   "/usr/lib/qt6",
+    "garuda":        "/usr/lib/qt6",
+    "artix":         "/usr/lib/qt6",
+    "kaos":          "/usr/lib/qt6",
+    # SteamOS 3.x is Arch-based + immutable; paths work, /usr writes
+    # need `steamos-readonly disable` first.
+    "steamos":       "/usr/lib/qt6",
+    "holoiso":       "/usr/lib/qt6",
+    # Gentoo-family
+    "gentoo":        "/usr/lib64/qt6",
+    # RPM-family (all use /usr/lib64)
+    "fedora":        "/usr/lib64/qt6",
+    "rhel":          "/usr/lib64/qt6",
+    "centos":        "/usr/lib64/qt6",
+    "nobara":        "/usr/lib64/qt6",
+    "bazzite":       "/usr/lib64/qt6",
+    "rocky":         "/usr/lib64/qt6",
+    "almalinux":     "/usr/lib64/qt6",
+    "openmandriva":  "/usr/lib64/qt6",
+    "mageia":        "/usr/lib64/qt6",
+    # SUSE-family
+    "opensuse":      "/usr/lib64/qt6",
+    "opensuse-tumbleweed": "/usr/lib64/qt6",
+    "opensuse-leap": "/usr/lib64/qt6",
 }
 
 
