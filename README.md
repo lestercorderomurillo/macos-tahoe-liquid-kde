@@ -176,7 +176,7 @@ The installer refuses to start without these. They are present on every default 
 
 - **KDE Plasma 6.6+** (`plasmashell`, `kwriteconfig6`, `kreadconfig6`, `plasma-apply-lookandfeel`, `plasma-apply-cursortheme`, `plasma-apply-wallpaperimage`, `kpackagetool6`, `kbuildsycoca6`, `qdbus6` *or* `qdbus`)
 - **Python 3.10+**
-- **`sudo`** (for both `./install` and `./uninstall` — see [the sudo policy](#install-vs-uninstall-split-sudo-policy) below)
+- **`sudo`** (for both `./install` and `./uninstall` — root needed to write the compiled plasmoids + KWin effect under the system Qt6 libdir)
 - **Qt6 path discovery** — one of: `qmake6`, `qtpaths6`, or `pkg-config` + `Qt6Core.pc`. The installer asks Qt where its plugin / QML directories live; it refuses to guess. If none of those tools are installed, the installer falls back to the known libdir convention for your distro **only when that directory actually exists on disk**.
 - **`dbus-send`** + **`systemctl`** — both ship with systemd, present on every supported distro.
 
@@ -316,11 +316,13 @@ macos-tahoe-liquid-kde/
     │   ├── theme_switch.py     # light/dark switcher (installed as ~/.local/bin)
     │   ├── set-transparency    # CLI: tune background opacity (Kvantum/Plasma/GTK)
     │   ├── svgzc               # CLI: decode/encode .svgz for editing
-    │   ├── paths.py            # REPO_ROOT / SRC_DIR / BUILD_DIR / OFFLINE_DIR / read_version()
+    │   ├── paths.py            # repo-relative paths (REPO_ROOT, SRC_DIR, ...)
+    │   ├── distro.py           # per-distro layer: Qt6 paths, package manager, install hints
+    │   ├── preflight.py        # sudo escalation, destination paths, Qt6 plugin search, plasmoid IDs
     │   ├── log.py, state.py, step_runner.py, utils.py
     │   └── steps/              # one module per feature: install/uninstall/...
     │       ├── wallpapers.py, fonts.py, cursors.py, icons.py, ...
-    │       └── (21 modules — apply, layout, plasmoids, theme_switch, ...)
+    │       └── (plasmoids, acrylic_glass, globalmenu, theme_switch, layout, …)
     ├── mirrors/            # download source definitions (JSON)
     │   ├── wallpapers.json
     │   ├── fonts.json
@@ -364,8 +366,8 @@ macos-tahoe-liquid-kde/
 | Component | What it installs | Location |
 |-----------|-----------------|----------|
 | **Layout** | Transparent top bar + floating glass dock | Panel config via JS scripting API |
-| **Global Menu** | Unified menu bar: system menu, app name with window controls, app menus | `/usr/lib/qt6/plugins/plasma/applets/` + `/usr/lib/qt6/qml/...` |
-| **Dock Task Manager** | Icons-only dock task manager with macOS-style notification badges (solid red, white bold text) | `/usr/lib/qt6/plugins/plasma/applets/` + `/usr/lib/qt6/qml/...` |
+| **Global Menu** | Unified menu bar: system menu, app name with window controls, app menus | Qt6 plugin dir + QML dir (`qmake6`-reported, per distro) |
+| **Dock Task Manager** | Icons-only dock task manager with macOS-style notification badges (solid red, white bold text) | Qt6 plugin dir + QML dir (`qmake6`-reported, per distro) |
 | **Launcher** | App grid with categories and search | `~/.local/share/plasma/plasmoids/` |
 | **Trashcan** | Dock trash widget with configurable icons | `~/.local/share/plasma/plasmoids/` |
 | **Window Decorations** | macOS-style title bars (Aurorae) | `~/.local/share/aurorae/themes/` |
@@ -375,10 +377,9 @@ macos-tahoe-liquid-kde/
 
 | Component | What it installs | Location |
 |-----------|-----------------|----------|
-| **Acrylic Glass** | KWin blur + rounded corners effect (built from source) | `/usr/lib/qt6/plugins/kwin/effects/` |
-| **Theme Switcher** | Auto light/dark via Plasma native sunrise/sunset | `~/.local/bin/mac-tahoe-theme-switch` |
+| **Acrylic Glass** | KWin blur + rounded corners effect (built from source) | Qt6 plugin dir / `kwin/effects/` (`qmake6`-reported, per distro) |
+| **Theme Switcher** | One-shot user service + 06:00 / 18:00 timer, single entry point | `~/.local/bin/mac-tahoe-theme-switch` + systemd user units |
 | **System Info Helper** | Powers the About panel's CPU / GPU / disk / network / OS fields with multi-source fallbacks | `~/.local/bin/mac-tahoe-about-info` |
-| **Watcher Service** | Keeps Kvantum and GTK in sync with Plasma theme | systemd user service |
 | **Sounds** | Notification and event sounds | `~/.local/share/sounds/` |
 | **SDDM** | macOS-style login screen | `/usr/share/sddm/themes/` |
 
@@ -386,7 +387,7 @@ macos-tahoe-liquid-kde/
 
 | File | What changes |
 |------|-------------|
-| `~/.config/kdeglobals` | Fonts, color scheme, icon theme, auto dark mode |
+| `~/.config/kdeglobals` | Fonts, color scheme, icon theme, widget style, look-and-feel package |
 | `~/.config/kwinrc` | Window decorations, Acrylic Glass effect |
 | `~/.config/plasmashellrc` | Panel opacity, floating dock style |
 | `~/.config/plasmarc` | Active Plasma theme |
