@@ -44,7 +44,17 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        distro: [arch, fedora, opensuse, gentoo]
+        distro:
+          - cachyos
+          - arch
+          - manjaro
+          - endeavouros
+          - garuda
+          - gentoo
+          - fedora
+          - nobara
+          - bazzite
+          - opensuse
     steps:
       - uses: actions/checkout@v5
       - name: Build and run ${{ matrix.distro }} container

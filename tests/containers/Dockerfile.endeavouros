@@ -1,0 +1,22 @@
+# EndeavourOS — Arch with installer + ARM repo. Identical /usr/lib/qt6
+# layout and pacman. No official Docker image, so use Arch base which
+# is the same userspace (EndeavourOS adds graphical installers, not a
+# distinct package set).
+FROM archlinux:latest
+
+# Add the EndeavourOS /etc/os-release so distro.current_distro() picks
+# the right row in _QT6_LIBDIR_FALLBACK + _PACKAGE_MAP. Real EndeavourOS
+# ships with this file from its base meta-package; we synthesise it
+# here because we're piggybacking on the Arch base image.
+RUN printf 'NAME="EndeavourOS"\nID=endeavouros\nID_LIKE=arch\nPRETTY_NAME="EndeavourOS"\n' > /etc/os-release
+
+RUN pacman -Sy --noconfirm --needed \
+    python python-pytest \
+    qt6-base qt6-tools \
+    pkgconf \
+    && pacman -Scc --noconfirm
+
+WORKDIR /repo
+COPY . /repo
+
+CMD ["python3", "tests/containers/run_in_container.py"]

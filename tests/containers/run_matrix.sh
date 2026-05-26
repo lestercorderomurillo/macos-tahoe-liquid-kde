@@ -16,7 +16,12 @@ shopt -s nullglob
 cd "$(dirname "$0")/../.."
 REPO_ROOT="$(pwd)"
 
-ALL_DISTROS=(arch gentoo fedora opensuse)
+ALL_DISTROS=(
+    cachyos arch manjaro endeavouros garuda
+    gentoo
+    fedora nobara bazzite
+    opensuse
+)
 if [[ $# -eq 0 ]]; then
     DISTROS=("${ALL_DISTROS[@]}")
 else

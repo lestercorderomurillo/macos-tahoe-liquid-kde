@@ -1,0 +1,16 @@
+# CachyOS — the maintainer's daily-driver. Arch-derived, same
+# /usr/lib/qt6 libdir, same pacman package names. Existing Arch
+# coverage already exercises this in practice, but a dedicated row
+# makes the CI matrix reflect the README claim.
+FROM cachyos/cachyos:latest
+
+RUN pacman -Sy --noconfirm --needed \
+    python python-pytest \
+    qt6-base qt6-tools \
+    pkgconf \
+    && pacman -Scc --noconfirm
+
+WORKDIR /repo
+COPY . /repo
+
+CMD ["python3", "tests/containers/run_in_container.py"]
