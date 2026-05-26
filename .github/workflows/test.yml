@@ -39,6 +39,16 @@ jobs:
   # works on every distro the README claims support for. Each leg
   # runs the same container test from tests/containers/, so a regression
   # that breaks one distro can't silently sneak through CI.
+  #
+  # Gentoo is deliberately NOT in the CI matrix: the stage3 image plus
+  # binhost is the only path that avoids a 25-min qtbase compile from
+  # source, and that binhost regularly lags the latest Qt6 release by
+  # a few weeks. Running Gentoo on every push would either burn ~30
+  # min of CI minutes per PR or fail noisily whenever upstream Qt
+  # bumped. The Gentoo Dockerfile (tests/containers/Dockerfile.gentoo)
+  # is kept and IS exercised by the local matrix runner
+  # (./tests/containers/run_matrix.sh — Gentoo is in ALL_DISTROS), so
+  # the maintainer can re-verify Gentoo manually before a release.
   cross-distro:
     runs-on: ubuntu-latest
     strategy:
@@ -50,7 +60,6 @@ jobs:
           - manjaro
           - endeavouros
           - garuda
-          - gentoo
           - fedora
           - nobara
           - bazzite
