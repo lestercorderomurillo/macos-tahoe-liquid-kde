@@ -122,7 +122,7 @@ Plymouth boot screen with centered Apple-style logo on every monitor, scaled dyn
 | <img src="https://cdn.simpleicons.org/archlinux" width="22"> | Arch Linux | ✅ YES |
 | <img src="https://cdn.simpleicons.org/manjaro" width="22"> | Manjaro | ✅ YES |
 | <img src="https://cdn.simpleicons.org/endeavouros" width="22"> | EndeavourOS | ✅ YES |
-| <img src="https://www.vectorlogo.zone/logos/garudalinux/garudalinux-icon.svg" width="22"> | Garuda Linux | ✅ YES |
+| <img src="https://cdn.simpleicons.org/linux" width="22"> | Garuda Linux | ✅ YES |
 | <img src="https://cdn.simpleicons.org/gentoo" width="22"> | Gentoo | ✅ YES |
 | <img src="https://cdn.simpleicons.org/fedora" width="22"> | Fedora / RHEL | ✅ YES |
 | <img src="https://cdn.simpleicons.org/fedora" width="22"> | Nobara | ✅ YES |
