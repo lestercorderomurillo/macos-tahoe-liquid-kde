@@ -5,14 +5,26 @@ install destinations, and the install step does not crash. Sudo helpers
 are stubbed with plain copies — the test runner is not root, so a real
 ``sudo_install_file`` (which calls ``_as_root()`` → ``seteuid(0)``) would
 raise ``PermissionError``. The destination *paths* are still asserted
-against the v0.10 ``DEST_SO`` / ``DEST_QML_DIR`` constants, which point
-at ``/usr/lib/qt6/...`` in production — those are validated separately
-by the preflight Qt6 path check.
+to live under whatever ``distro.qt6_plugins_dir()`` reports, which is
+where Qt6 actually scans (per-distro; queried from qmake6).
 """
 import shutil
 from pathlib import Path
 
+import distro
 from steps import globalmenu
+
+
+def _stub_qt6_paths(monkeypatch, tmp_path):
+    """Pin the qmake6-reported Qt6 plugin / QML dirs to writable tmp
+    locations for the duration of the test. Avoids depending on whether
+    qmake6 is on PATH in the test env, and avoids writes landing under
+    a real ``/usr/lib`` even when the sudo helpers are stubbed."""
+    fake_plugins = tmp_path / "fake-qt6/plugins"
+    fake_qml = tmp_path / "fake-qt6/qml"
+    monkeypatch.setattr(distro, "_QT_PLUGINS_CACHE", fake_plugins)
+    monkeypatch.setattr(distro, "_QT_QML_CACHE", fake_qml)
+    return fake_plugins, fake_qml
 
 
 def _stub_sudo_helpers(monkeypatch):
@@ -60,23 +72,12 @@ def test_install_copies_globalmenu_runtime_qml(tmp_path, monkeypatch):
     (runtime_dir / "qmldir").write_text("module plasma.applet.org.kde.mac.tahoe.liquid.globalmenu\n")
     (runtime_dir / "main.qml").write_text("import QtQuick\nItem {}\n")
 
+    fake_plugins, fake_qml = _stub_qt6_paths(monkeypatch, tmp_path)
     monkeypatch.setattr(globalmenu, "HOME", home)
     monkeypatch.setattr(globalmenu, "SRC", src)
     monkeypatch.setattr(globalmenu, "BUILD", build)
-    monkeypatch.setattr(
-        globalmenu,
-        "DEST_SO",
-        tmp_path / "fake-usr/lib/qt6/plugins/plasma/applets/org.kde.mac.tahoe.liquid.globalmenu.so",
-    )
-    monkeypatch.setattr(
-        globalmenu,
-        "DEST_QML_DIR",
-        tmp_path / "fake-usr/lib/qt6/qml/plasma/applet/org/kde/mac/tahoe/liquid/globalmenu",
-    )
     monkeypatch.setattr(globalmenu, "LEGACY_QML", tmp_path / "no-legacy-qml")
-    monkeypatch.setattr(globalmenu, "LEGACY_SOS_SYSTEM", ())
     monkeypatch.setattr(globalmenu, "LEGACY_SOS_USER", ())
-    # v0.10: legacy user-path QML modules — v0.8.4-0.8.6 leftovers.
     monkeypatch.setattr(globalmenu, "LEGACY_QML_MODULES_USER", ())
 
     _stub_sudo_helpers(monkeypatch)
@@ -87,25 +88,26 @@ def test_install_copies_globalmenu_runtime_qml(tmp_path, monkeypatch):
     globalmenu.install()
 
     assert not failures, failures
-    assert globalmenu.DEST_SO.is_file()
-    assert (globalmenu.DEST_QML_DIR / "qmldir").is_file()
-    assert (globalmenu.DEST_QML_DIR / "main.qml").is_file()
+    expected_so = fake_plugins / "plasma/applets/org.kde.mac.tahoe.liquid.globalmenu.so"
+    expected_qml = fake_qml / "plasma/applet/org/kde/mac/tahoe/liquid/globalmenu"
+    assert expected_so.is_file()
+    assert (expected_qml / "qmldir").is_file()
+    assert (expected_qml / "main.qml").is_file()
 
 
-def test_globalmenu_dest_paths_target_qt6_system_dirs():
-    """v0.10 contract: the .so + QML module land under the directory
-    Qt6 actually scans (``/usr/lib/qt6/{plugins,qml}/``). User paths
-    are not on Qt's discovery list — the v0.8.4-0.9.0 regression
-    that left the global menu unloaded came from shipping to
-    ``~/.local/lib/qt6/`` instead. Pin the production paths here so a
-    refactor that drifts them gets caught at test time, not after a
-    user-facing release."""
-    assert str(globalmenu.DEST_SO) == (
-        "/usr/lib/qt6/plugins/plasma/applets/"
-        "org.kde.mac.tahoe.liquid.globalmenu.so"
+def test_globalmenu_dest_paths_anchor_to_qmake6_libdir(monkeypatch, tmp_path):
+    """v0.15 contract: the .so + QML module land under whatever the Qt6
+    plugin / QML dirs resolve to (qmake6-reported, per distro). The
+    suffix is pinned so a refactor that mangles the package id can't
+    silently ship to the wrong applet path; the prefix comes from the
+    paths.py helper so this works on Arch (/usr/lib/qt6), Gentoo
+    (/usr/lib64/qt6), and Debian-multiarch alike."""
+    fake_plugins, fake_qml = _stub_qt6_paths(monkeypatch, tmp_path)
+    assert globalmenu.DEST_SO == fake_plugins / (
+        "plasma/applets/org.kde.mac.tahoe.liquid.globalmenu.so"
     )
-    assert str(globalmenu.DEST_QML_DIR) == (
-        "/usr/lib/qt6/qml/plasma/applet/org/kde/mac/tahoe/liquid/globalmenu"
+    assert globalmenu.DEST_QML_DIR == fake_qml / (
+        "plasma/applet/org/kde/mac/tahoe/liquid/globalmenu"
     )
 
 

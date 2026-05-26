@@ -7,6 +7,9 @@ on:
     branches: [main]
 
 jobs:
+  # Primary suite — runs on Arch (CachyOS's parent, the maintainer's
+  # daily-driver libdir convention). The full Plasma 6 dev SDK is
+  # available here so this is the broadest pytest run.
   test:
     runs-on: ubuntu-latest
     container: archlinux:latest
@@ -17,17 +20,37 @@ jobs:
           pacman -Syu --noconfirm \
             python python-pytest bash git diffutils findutils \
             base-devel cmake extra-cmake-modules \
-            qt6-base qt6-declarative qt6-wayland \
+            qt6-base qt6-declarative qt6-wayland qt6-tools \
             libplasma kconfig kcoreaddons \
             kwindowsystem ki18n kdbusaddons \
             kcmutils kiconthemes \
             kdecoration plasma-workspace
       - name: Run tests
         run: |
-          output=$(python -m pytest tests -q 2>&1) || exit_code=$?
+          output=$(python -m pytest tests -q --ignore=tests/containers 2>&1) || exit_code=$?
           echo "$output"
           count=$(echo "$output" | grep -oE '[0-9]+ passed' | tail -n 1 | grep -oE '[0-9]+')
           if [ -n "$count" ]; then
             echo "### Tests: $count passing" >> "$GITHUB_STEP_SUMMARY"
           fi
           exit ${exit_code:-0}
+
+  # Cross-distro matrix — proves the qmake6-driven path discovery
+  # works on every distro the README claims support for. Each leg
+  # runs the same container test from tests/containers/, so a regression
+  # that breaks one distro can't silently sneak through CI.
+  cross-distro:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        distro: [arch, fedora, opensuse, gentoo]
+    steps:
+      - uses: actions/checkout@v5
+      - name: Build and run ${{ matrix.distro }} container
+        run: |
+          docker build \
+            -f tests/containers/Dockerfile.${{ matrix.distro }} \
+            -t mttkde-test-${{ matrix.distro }}:ci \
+            .
+          docker run --rm mttkde-test-${{ matrix.distro }}:ci

@@ -4,7 +4,7 @@
 
 # macOS Tahoe Liquid Theme for KDE Plasma
 
-[![release](https://img.shields.io/badge/release-v0.14.2-blue)](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/releases) [![tests](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/actions/workflows/test.yml/badge.svg)](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/actions/workflows/test.yml) [![tests count](https://img.shields.io/badge/tests-640_passing-brightgreen)](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/actions/workflows/test.yml) [![license](https://img.shields.io/badge/license-GPL--2.0-blue)](LICENSE) [![plasma](https://img.shields.io/badge/KDE_Plasma-6.6%2B-1d99f3?logo=kde)](https://kde.org/plasma-desktop/) [![last commit](https://img.shields.io/github/last-commit/lestercorderomurillo/macos-tahoe-liquid-kde)](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/commits/) [![report a bug](https://img.shields.io/badge/report-a%20bug-red?logo=github)](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/issues/new)
+[![release](https://img.shields.io/badge/release-v0.15.0-blue)](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/releases) [![tests](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/actions/workflows/test.yml/badge.svg)](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/actions/workflows/test.yml) [![tests count](https://img.shields.io/badge/tests-644_passing-brightgreen)](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/actions/workflows/test.yml) [![license](https://img.shields.io/badge/license-GPL--2.0-blue)](LICENSE) [![plasma](https://img.shields.io/badge/KDE_Plasma-6.6%2B-1d99f3?logo=kde)](https://kde.org/plasma-desktop/) [![last commit](https://img.shields.io/github/last-commit/lestercorderomurillo/macos-tahoe-liquid-kde)](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/commits/) [![report a bug](https://img.shields.io/badge/report-a%20bug-red?logo=github)](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/issues/new)
 
 > [!NOTE]
 > Things break sometimes as KDE, KWin and friends update. The installer checks for updates on launch to stay in sync with upstream packages, which helps avoid crashes and breakages — please [report any issue](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/issues/new) you run into.
@@ -114,6 +114,22 @@ Plymouth boot screen with centered Apple-style logo on every monitor, scaled dyn
 
 ---
 
+## Tested distros
+
+|     | Distro | Supported yet? |
+|:---:|--------|:--------------:|
+| <img src="https://cdn.simpleicons.org/cachyos" width="22"> | CachyOS | ✅ YES |
+| <img src="https://cdn.simpleicons.org/archlinux" width="22"> | Arch Linux | ✅ YES |
+| <img src="https://cdn.simpleicons.org/gentoo" width="22"> | Gentoo | ✅ YES |
+| <img src="https://cdn.simpleicons.org/fedora" width="22"> | Fedora / RHEL | ✅ YES |
+| <img src="https://cdn.simpleicons.org/opensuse" width="22"> | openSUSE Tumbleweed | ✅ YES |
+| <img src="https://cdn.simpleicons.org/debian" width="22"> | Debian | ❌ NO |
+| <img src="https://cdn.simpleicons.org/ubuntu" width="22"> | Ubuntu | ❌ NO |
+
+Each ✅ distro is verified in CI on every push: `tests/containers/` runs the path-discovery layer, package-manager mapping, preflight destination checks, and the full pytest suite against the real distro environment. Report any issues you find on confirmed OSes.
+
+---
+
 ## Roadmap
 
 | Component | Description | Status |
@@ -126,7 +142,8 @@ Plymouth boot screen with centered Apple-style logo on every monitor, scaled dyn
 | **Kvantum Theme** | Kvantum theme | ✅ |
 | **GTK Theme** | GTK2/3/4 window chrome and controls | ✅ |
 | **Acrylic Glass** | KWin blur, rounded corners, glass effect | ✅ |
-| **Auto Theme Switcher** | Auto light/dark via Plasma native sunrise/sunset | ✅ |
+| **Auto Theme Switcher** | One-shot service + 06:00 / 18:00 timer, single entry point | ✅ |
+| **Multi-Distro Support** | See the *Tested distros* table below — confirmed on CachyOS, planned for Arch, Gentoo, Fedora, openSUSE, Debian, Ubuntu | 🔧 |
 | **Aurorae Decorations** | Window title bar and borders | ✅ |
 | **Global Menu Plasmoid** | Unified menu bar: system menu, app name, window controls, app menus | ✅ |
 | **Dock Task Manager** | Icons-only dock applet with macOS-style notification badges | ✅ |
@@ -153,6 +170,7 @@ Plymouth boot screen with centered Apple-style logo on every monitor, scaled dyn
 - KDE Plasma 6.6+
 - Python 3.10+
 - `sudo` for both `./install` and `./uninstall` — see below
+- Qt6 dev tooling on `PATH` (`qmake6`, `qtpaths6`, or `pkg-config Qt6Core`) — used to discover the per-distro Qt6 plugin / QML directories. The installer refuses to guess. Already required transitively by Plasma 6 on every supported distro, but installing `qt6-tools` (or your distro's equivalent) up front avoids the preflight bail-out.
 
 ---
 

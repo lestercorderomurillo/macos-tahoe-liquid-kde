@@ -6,14 +6,16 @@ Four checks, in order, all visible to the user:
 1. **Sudo escalation hop.** The CLI bailed unless invoked via
    ``sudo ./install`` (real UID 0) and then dropped effective UID to
    ``SUDO_USER``. Here we exercise the round trip: hop back to root via
-   ``_as_root()``, touch a probe under ``/usr/lib/qt6/plugins/``, drop
-   back. Catches read-only ``/usr``, missing dir, sandbox restrictions,
-   and broken sudo configs *before* a single artefact lands.
+   ``_as_root()``, touch a probe under the Qt6 plugin dir reported by
+   ``qmake6`` (``paths.qt6_plugins_dir()``), drop back. Catches read-
+   only ``/usr``, missing dir, sandbox restrictions, and broken sudo
+   configs *before* a single artefact lands.
 
 2. **Destination paths.** Walk every step's known destination, print it,
-   regex-validate against the allowed roots (``$HOME``, ``/usr/lib/qt6``,
-   ``/etc/sddm.conf.d``). Rejects ``/root/`` (means privilege drop didn't
-   happen), ``//``, ``..``, and stray ``/tmp/`` destinations.
+   regex-validate against the allowed roots (``$HOME``, the Qt6 plugin
+   / QML dirs discovered from ``qmake6``, ``/etc/sddm.conf.d``).
+   Rejects ``/root/`` (means privilege drop didn't happen), ``//``,
+   ``..``, and stray ``/tmp/`` destinations.
 
 3. **Qt6 plugin search path.** ``qmake6 -query QT_INSTALL_PLUGINS`` is
    the directory Qt6 actually walks at runtime. Our compiled ``.so``
@@ -32,16 +34,11 @@ Four checks, in order, all visible to the user:
 import json
 import os
 import re
-import shutil
-import subprocess
 from pathlib import Path
 
 from log import fail, note, ok, step, warn
+from distro import Qt6PathsMissing, qt6_plugins_dir, qt6_qml_dir
 from paths import OFFLINE_DIR
-from utils import run_user
-
-
-_PROBE_DIR = Path("/usr/lib/qt6/plugins")
 
 
 def _check_sudo_escalation() -> bool:
@@ -54,11 +51,17 @@ def _check_sudo_escalation() -> bool:
 
     from steps._helpers import _as_root
 
-    probe = _PROBE_DIR / f".mttkde-preflight-{os.getpid()}"
+    try:
+        probe_dir = qt6_plugins_dir()
+    except Qt6PathsMissing as exc:
+        fail(str(exc))
+        return False
+
+    probe = probe_dir / f".mttkde-preflight-{os.getpid()}"
     print(f"  probe path: {probe}")
     try:
         with _as_root():
-            _PROBE_DIR.mkdir(parents=True, exist_ok=True)
+            probe_dir.mkdir(parents=True, exist_ok=True)
             probe.write_text("ok\n")
             content = probe.read_text()
             probe.unlink()
@@ -87,9 +90,26 @@ def _home() -> Path:
 
 def _allowed_roots() -> tuple[re.Pattern, ...]:
     home = re.escape(str(_home()))
+    # Qt6 plugin / QML roots come from qmake6 so distros that put them
+    # under /usr/lib64/qt6 (Gentoo, openSUSE multilib) or
+    # /usr/lib/x86_64-linux-gnu/qt6 (Debian / Ubuntu multiarch) validate
+    # without a hand-maintained list of distro libdirs.
+    try:
+        qt_plugins = re.escape(str(qt6_plugins_dir()))
+        qt_qml = re.escape(str(qt6_qml_dir()))
+        qt_patterns = (
+            re.compile(rf"^{qt_plugins}(/|$)"),
+            re.compile(rf"^{qt_qml}(/|$)"),
+        )
+    except Qt6PathsMissing:
+        # The Qt path check (step 3/4) reports the missing qmake6 with a
+        # distro hint; here we just refuse to validate /usr/lib/qt6 by
+        # convention so we don't accidentally green-light writes that
+        # land outside the real Qt search path.
+        qt_patterns = ()
     return (
         re.compile(rf"^{home}/(\.local|\.config|\.cache)(/|$)"),
-        re.compile(r"^/usr/lib/qt6/(plugins|qml)(/|$)"),
+        *qt_patterns,
         re.compile(r"^/etc/sddm\.conf\.d(/|$)"),
         re.compile(r"^/etc/plymouth(/|$)"),
         re.compile(r"^/usr/share/(sounds|plasma|plymouth|wallpapers)(/|$)"),
@@ -99,7 +119,6 @@ def _allowed_roots() -> tuple[re.Pattern, ...]:
 _FORBIDDEN = (
     (re.compile(r"//"), "double slash"),
     (re.compile(r"/\.\./"), "parent traversal"),
-    (re.compile(r"^/root(/|$)"), "leaks /root home"),
     (re.compile(r"^/tmp(/|$)"), "tmp path used as install dest"),
 )
 
@@ -111,8 +130,18 @@ def _validate_path(path: Path | str) -> str | None:
     for pat, reason in _FORBIDDEN:
         if pat.search(s):
             return reason
+    # /root is forbidden ONLY when it isn't the real user's home dir.
+    # In production, sudo drops effective UID to SUDO_USER so Path.home()
+    # points at /home/<user>; a path starting with /root then means the
+    # sudo drop didn't apply and writes would land in root's home.
+    # In a container (or any single-user-as-root setup), root *is* the
+    # real user — its home is /root and writing there is legitimate.
+    home = str(_home())
+    if s.startswith("/root/") or s == "/root":
+        if home != "/root" and not s.startswith(home + "/"):
+            return "leaks /root home"
     if not any(pat.search(s) for pat in _allowed_roots()):
-        return "outside allowed roots ($HOME, /usr/lib/qt6, /etc/sddm.conf.d, /etc/plymouth, /usr/share)"
+        return "outside allowed roots ($HOME, Qt6 plugin/QML dirs from qmake6, /etc/sddm.conf.d, /etc/plymouth, /usr/share)"
     return None
 
 
@@ -149,51 +178,54 @@ def _check_paths() -> bool:
     return all_ok
 
 
-def _qmake6_query(key: str) -> str | None:
-    if not shutil.which("qmake6"):
-        return None
-    try:
-        res = run_user(
-            ["qmake6", "-query", key],
-            check=False, capture_output=True, text=True, timeout=10,
-        )
-    except (OSError, subprocess.TimeoutExpired):
-        return None
-    if res.returncode != 0:
-        return None
-    out = res.stdout.strip()
-    return out or None
-
-
 def _check_qt_paths() -> bool:
-    plugins = _qmake6_query("QT_INSTALL_PLUGINS")
-    qml = _qmake6_query("QT_INSTALL_QML")
-    if plugins is None and qml is None:
-        warn("qmake6 not available — cannot verify Qt6 paths "
-             "(install qt6-tools to enable this check)")
-        return True
+    """Confirm qmake6 reported the same Qt6 plugin / QML directories the
+    installer will write to. Since v0.15.0 the installer derives both
+    destinations from qmake6 itself (see distro.qt6_plugins_dir /
+    distro.qt6_qml_dir), so a mismatch here means qmake6 is missing or
+    the cached value drifted — not a Plasma-vs-installer disagreement.
 
-    print(f"  Qt plugins: {plugins or '(unknown)'}")
-    print(f"  Qt qml:     {qml or '(unknown)'}")
+    This is the check that catches the v0.14.x Gentoo bug: ``Qt scans
+    /usr/lib64/qt6/ but install writes to /usr/lib/qt6/``. With the
+    Qt path coming from qmake6 the bug is structurally impossible —
+    but we still cross-check every compiled-step destination so a
+    future refactor that hardcodes a path can't silently regress past
+    the layer."""
+    try:
+        plugins = qt6_plugins_dir()
+        qml = qt6_qml_dir()
+    except Qt6PathsMissing as exc:
+        fail(str(exc))
+        return False
 
-    expected_plugins = Path("/usr/lib/qt6/plugins")
-    expected_qml = Path("/usr/lib/qt6/qml")
+    # Cross-check: every destination that lives under "Qt's libdir" must
+    # actually be rooted at qmake6's reported plugin / QML dir. If a
+    # step still hardcodes /usr/lib/qt6 and we're on a /usr/lib64 distro,
+    # this catches the mismatch before any file lands.
+    from steps import acrylic_glass, globalmenu, plasmoids
+    qt_destinations = [
+        ("globalmenu .so", globalmenu.DEST_SO, plugins),
+        ("globalmenu QML module", globalmenu.DEST_QML_DIR, qml),
+        ("taskmanager .so", plasmoids.TASKMANAGER_DEST_SO, plugins),
+        ("taskmanager QML module", plasmoids.TASKMANAGER_DEST_QML, qml),
+        ("acrylic-glass plugin dir", acrylic_glass._plugin_dir(), plugins),
+    ]
+    cross_ok = True
+    for label, dest, expected_root in qt_destinations:
+        try:
+            dest.relative_to(expected_root)
+        except ValueError:
+            fail(f"{label}: {dest} is NOT under qmake6's {expected_root} — "
+                 f"hardcoded libdir slipped past the distro layer")
+            cross_ok = False
+    if not cross_ok:
+        return False
 
-    pl_ok = plugins is None or Path(plugins) == expected_plugins
-    ql_ok = qml is None or Path(qml) == expected_qml
-
-    if pl_ok and plugins is not None:
-        ok(f"Qt plugin path matches: {plugins}")
-    if ql_ok and qml is not None:
-        ok(f"Qt QML path matches: {qml}")
-
-    if not pl_ok:
-        fail(f"Qt plugin path mismatch — Qt scans {plugins} but install "
-             f"writes to {expected_plugins}")
-    if not ql_ok:
-        fail(f"Qt QML path mismatch — Qt scans {qml} but install writes "
-             f"to {expected_qml}")
-    return pl_ok and ql_ok
+    print(f"  Qt plugins: {plugins}")
+    print(f"  Qt qml:     {qml}")
+    ok(f"Qt plugin path discovered: {plugins}")
+    ok(f"Qt QML path discovered: {qml}")
+    return True
 
 
 _PLASMOID_DIR = OFFLINE_DIR / "plasmoids"

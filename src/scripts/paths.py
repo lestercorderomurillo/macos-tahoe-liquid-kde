@@ -19,3 +19,8 @@ def read_version() -> str:
     if len(parts) == 3 and all(p.isdigit() for p in parts):
         return v
     return "0.0.0"
+
+
+# Per-distro paths (Qt6 plugin / QML dirs, system libdir, package
+# manager hints) live in distro.py. paths.py is repo-relative only —
+# nothing here may shell out or read /etc/os-release.
