@@ -1,0 +1,27 @@
+# Gentoo base image with Qt6 pre-emerged. Built ONCE (manually or
+# monthly) by .github/workflows/build-gentoo-base.yml and pushed to
+# GHCR. The lightweight tests/containers/Dockerfile.gentoo FROMs this
+# so every PR runs in seconds instead of 25 minutes of qtbase compile.
+#
+# This Dockerfile is intentionally heavy: it emerges qtbase + qttools
+# with all the autounmask + USE flag fixes the source build needs.
+# Don't reference it from the cross-distro CI matrix directly — that
+# would defeat the whole point.
+
+FROM gentoo/stage3:systemd
+
+RUN emerge-webrsync && \
+    echo 'FEATURES="${FEATURES} getbinpkg binpkg-multi-instance"' >> /etc/portage/make.conf && \
+    echo '*/*  ~amd64' > /etc/portage/package.accept_keywords/all && \
+    echo 'x11-libs/libxkbcommon X' > /etc/portage/package.use/libxkbcommon && \
+    getuto && \
+    emerge --autounmask --autounmask-write --autounmask-continue \
+           --getbinpkg --quiet --noreplace \
+        dev-lang/python \
+        dev-python/pytest \
+        dev-qt/qtbase:6 \
+        dev-qt/qttools:6 && \
+    # Trim build artefacts to keep the published image small. The
+    # distfiles + binpkg cache + portage tree aren't needed at runtime
+    # (the tests only call qmake6 / kreadconfig6 — no further emerges).
+    rm -rf /var/cache/distfiles/* /var/cache/binpkgs/* /var/db/repos/gentoo

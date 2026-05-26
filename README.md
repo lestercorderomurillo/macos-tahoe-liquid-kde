@@ -125,8 +125,8 @@ Plymouth boot screen with centered Apple-style logo on every monitor, scaled dyn
 | <img src="https://cdn.simpleicons.org/linux" width="22"> | Garuda Linux | ✅ YES |
 | <img src="https://cdn.simpleicons.org/gentoo" width="22"> | Gentoo | ✅ YES |
 | <img src="https://cdn.simpleicons.org/fedora" width="22"> | Fedora / RHEL | ✅ YES |
-| <img src="https://cdn.simpleicons.org/fedora" width="22"> | Nobara | ✅ YES |
-| <img src="https://cdn.simpleicons.org/fedora" width="22"> | Bazzite | ✅ YES |
+| <img src="https://cdn.simpleicons.org/nobaralinux" width="22"> | Nobara | ✅ YES |
+| <img src="https://cdn.simpleicons.org/linux" width="22"> | Bazzite | ✅ YES |
 | <img src="https://cdn.simpleicons.org/opensuse" width="22"> | openSUSE Tumbleweed | ✅ YES |
 
 Each ✅ distro is verified in CI on every push: `tests/containers/` runs the path-discovery layer, package-manager mapping, preflight destination checks, and the full pytest suite against the real distro environment. Report any issues you find on confirmed OSes.

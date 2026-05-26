@@ -40,15 +40,10 @@ jobs:
   # runs the same container test from tests/containers/, so a regression
   # that breaks one distro can't silently sneak through CI.
   #
-  # Gentoo is deliberately NOT in the CI matrix: the stage3 image plus
-  # binhost is the only path that avoids a 25-min qtbase compile from
-  # source, and that binhost regularly lags the latest Qt6 release by
-  # a few weeks. Running Gentoo on every push would either burn ~30
-  # min of CI minutes per PR or fail noisily whenever upstream Qt
-  # bumped. The Gentoo Dockerfile (tests/containers/Dockerfile.gentoo)
-  # is kept and IS exercised by the local matrix runner
-  # (./tests/containers/run_matrix.sh — Gentoo is in ALL_DISTROS), so
-  # the maintainer can re-verify Gentoo manually before a release.
+  # Gentoo's Dockerfile FROMs a pre-built GHCR base image
+  # (ghcr.io/.../mttkde-gentoo-base) so the matrix leg runs in seconds
+  # instead of waiting for a source build of qtbase. The base image is
+  # built + refreshed by .github/workflows/build-gentoo-base.yml.
   cross-distro:
     runs-on: ubuntu-latest
     strategy:
@@ -60,13 +55,20 @@ jobs:
           - manjaro
           - endeavouros
           - garuda
+          - gentoo
           - fedora
           - nobara
           - bazzite
           - opensuse
     steps:
       - uses: actions/checkout@v5
+      # Gentoo's container FROMs a GHCR image that's built by a
+      # separate workflow. Until that image exists / for the brief
+      # window between Qt6 upstream bumps and the next monthly base
+      # rebuild, treat a Gentoo failure as a warning rather than a
+      # red X — every other distro still gates the merge.
       - name: Build and run ${{ matrix.distro }} container
+        continue-on-error: ${{ matrix.distro == 'gentoo' }}
         run: |
           docker build \
             -f tests/containers/Dockerfile.${{ matrix.distro }} \

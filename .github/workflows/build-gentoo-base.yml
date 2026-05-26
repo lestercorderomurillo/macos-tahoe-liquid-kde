@@ -1,0 +1,42 @@
+name: build-gentoo-base
+
+# Builds a Gentoo base image with Qt6 pre-installed and pushes it to
+# GHCR. The cross-distro CI matrix then pulls this image instead of
+# rebuilding Qt6 from source on every PR (which takes ~25 min per run
+# because the Gentoo binhost lags new Qt6 releases).
+#
+# Triggers:
+#   * workflow_dispatch — manual run from the Actions UI.
+#   * monthly schedule  — refresh against the latest portage tree.
+#
+# The cross-distro `tests` workflow does NOT trigger this — it pulls
+# whatever tag is currently on GHCR. Bump the image with a manual run
+# whenever Qt6 ships a major version you want to verify against.
+
+on:
+  workflow_dispatch: {}
+  schedule:
+    # 1st of every month at 03:00 UTC.
+    - cron: "0 3 1 * *"
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Log in to GHCR
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+
+      - name: Build Gentoo base image
+        run: |
+          docker build \
+            -f tests/containers/Dockerfile.gentoo-base \
+            -t ghcr.io/${{ github.repository_owner }}/mttkde-gentoo-base:latest \
+            .
+
+      - name: Push to GHCR
+        run: docker push ghcr.io/${{ github.repository_owner }}/mttkde-gentoo-base:latest

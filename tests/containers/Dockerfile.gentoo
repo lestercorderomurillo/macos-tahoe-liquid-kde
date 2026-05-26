@@ -1,35 +1,17 @@
-# Gentoo — the distro that broke the v0.14.x installer. /usr/lib64/qt6
-# is the expected libdir here; a pass proves the distro layer asks
-# qmake6 instead of assuming /usr/lib/qt6.
+# Gentoo CI container. FROMs a pre-built base image that already has
+# Qt6 emerged + binhost configured, so the test runs in seconds instead
+# of waiting for a 25-min source build of qtbase whenever the Gentoo
+# binhost lags upstream Qt6.
 #
-# We use stage3-systemd-binhost which ships pre-built binary packages
-# for most of Qt6 — without binhost, emerging qtbase from source takes
-# >15min and exceeds the CI budget. The `--getbinpkg` flag pulls from
-# the official binhost; we fall back to source for anything not
-# pre-built.
+# The base image is built (and refreshed monthly) by
+# .github/workflows/build-gentoo-base.yml and lives on GHCR. Bump it
+# manually from the Actions UI when you need to re-verify against a
+# newer Qt6 release.
+#
+# For LOCAL runs, ./tests/containers/run_matrix.sh gentoo will pull the
+# same image from GHCR — no source compile.
 
-FROM gentoo/stage3:systemd
-
-# Accept the USE-flag changes that Qt6 needs (GUI support for libxkbcommon).
-# Gentoo's stage3 ships with a profile that flips these off by default;
-# autounmask-write is the documented escape hatch for non-interactive
-# emerges.
-RUN emerge-webrsync && \
-    echo 'FEATURES="${FEATURES} getbinpkg binpkg-multi-instance"' >> /etc/portage/make.conf && \
-    echo '*/*  ~amd64' > /etc/portage/package.accept_keywords/all && \
-    echo 'x11-libs/libxkbcommon X' > /etc/portage/package.use/libxkbcommon && \
-    getuto && \
-    emerge --getbinpkg --quiet --noreplace \
-        dev-lang/python \
-        dev-python/pytest \
-        dev-qt/qtbase:6 \
-        dev-qt/qttools:6 \
-    || emerge --autounmask --autounmask-write --autounmask-continue \
-              --getbinpkg --quiet --noreplace \
-        dev-lang/python \
-        dev-python/pytest \
-        dev-qt/qtbase:6 \
-        dev-qt/qttools:6
+FROM ghcr.io/lestercorderomurillo/mttkde-gentoo-base:latest
 
 WORKDIR /repo
 COPY . /repo
