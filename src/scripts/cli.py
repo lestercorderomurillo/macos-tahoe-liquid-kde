@@ -594,11 +594,46 @@ _VERIFY_CHECKS = [
 ]
 
 
+def _read_config_cascade(file: str, group: str, prop: str) -> str:
+    """Read a KDE config key the same way Plasma resolves it: check
+    ``~/.config/kdedefaults/<file>`` (where ``plasma-apply-lookandfeel``
+    writes its keys) before ``~/.config/<file>``. ``kreadconfig6`` only
+    looks at the main file, so the post-install verification missed
+    every key the live LAF apply had stamped into kdedefaults instead."""
+    home = Path(os.environ.get("HOME") or str(Path.home()))
+    for candidate in (home / ".config/kdedefaults" / file,
+                      home / ".config" / file):
+        if not candidate.is_file():
+            continue
+        section = None
+        try:
+            text = candidate.read_text(encoding="utf-8", errors="replace")
+        except OSError:
+            continue
+        for raw in text.splitlines():
+            line = raw.strip()
+            if not line or line.startswith(("#", ";")):
+                continue
+            if line.startswith("[") and line.endswith("]"):
+                section = line[1:-1]
+                continue
+            if section == group and "=" in line:
+                k, _, v = line.partition("=")
+                if k.strip() == prop and v:
+                    return v
+    return ""
+
+
 def verify_config(feat: dict[str, object]) -> None:
     for key, file, group, prop, expected, label in _VERIFY_CHECKS:
         if not feat.get(key, True):
             continue
-        actual = kw_read(file, group, prop)
+        actual = _read_config_cascade(file, group, prop)
+        # Fall back to kreadconfig6 if the cascade scan came up empty —
+        # keeps the check resilient to whatever Plasma version
+        # rearrangement does next.
+        if not actual:
+            actual = kw_read(file, group, prop)
         if expected in actual:
             ok(label)
         else:
