@@ -129,12 +129,7 @@ Plymouth boot screen with centered Apple-style logo on every monitor, scaled dyn
 | <img src="https://cdn.simpleicons.org/fedora" width="22"> | Bazzite | ✅ YES |
 | <img src="https://cdn.simpleicons.org/opensuse" width="22"> | openSUSE Tumbleweed | ✅ YES |
 
-Each ✅ distro is verified in CI on every push (with the exception of Gentoo — see below): `tests/containers/` runs the path-discovery layer, package-manager mapping, preflight destination checks, and the full pytest suite against the real distro environment.
-
-> [!NOTE]
-> **Gentoo** is verified pre-release, not on every push: the stage3 + binhost path is the only one that avoids a ~25 min `qtbase` source compile, and the binhost lags new Qt6 releases by a few weeks. Running it on every PR would burn CI minutes or fail noisily for upstream timing. The Dockerfile is kept and the maintainer runs `./tests/containers/run_matrix.sh gentoo` before tagging a release.
-
-Report any issues you find on confirmed OSes.
+Each ✅ distro is verified in CI on every push: `tests/containers/` runs the path-discovery layer, package-manager mapping, preflight destination checks, and the full pytest suite against the real distro environment. Report any issues you find on confirmed OSes.
 
 ---
 
