@@ -166,16 +166,49 @@ def test_layout_js_references_real_plasmoid_ids():
 # ── 3. Qt6 path discovery (lives in distro.py now) ──────────────────────
 
 def test_qt6_query_returns_none_when_no_tools_present(monkeypatch):
-    """When neither qmake6, qtpaths6, nor pkg-config is on PATH, the
-    chain returns None and the public ``qt6_plugins_dir()`` raises
-    :class:`distro.Qt6PathsMissing` — the installer never silently
-    falls back to a hardcoded ``/usr/lib/qt6`` default."""
+    """When neither qmake6, qtpaths6, nor pkg-config is on PATH the
+    private query chain returns None. The public ``qt6_plugins_dir()``
+    then falls back to the per-distro libdir table (verified against
+    on-disk reality) — see the two tests below for both paths."""
+    import distro
+    monkeypatch.setattr(distro.shutil, "which", lambda _: None)
+    assert distro._qt6_plugins_query() is None
+    assert distro._qt6_qml_query() is None
+
+
+def test_qt6_falls_back_to_known_libdir_when_qmake6_missing(monkeypatch):
+    """v0.15.1: if qmake6 / qtpaths6 / pkg-config are all absent but
+    /etc/os-release identifies a distro whose Qt6 libdir we know AND
+    that libdir actually exists on disk, return it. Plasma 6 must
+    already be installed for the dir to exist, so we're not guessing
+    — just reading what's already there."""
     import distro
     monkeypatch.setattr(distro.shutil, "which", lambda _: None)
     monkeypatch.setattr(distro, "_QT_PLUGINS_CACHE", None)
     monkeypatch.setattr(distro, "_QT_QML_CACHE", None)
-    assert distro._qt6_plugins_query() is None
-    assert distro._qt6_qml_query() is None
+    monkeypatch.setattr(distro, "current_distro", lambda: "arch")
+    monkeypatch.setattr(distro, "distro_id_like", lambda: ())
+    monkeypatch.setattr(distro, "_fallback_qt6_libdir",
+                        lambda: distro.Path("/usr/lib/qt6")
+                                if distro.Path("/usr/lib/qt6").is_dir() else None)
+    # Skip the assertion on a host where /usr/lib/qt6 doesn't exist;
+    # those hosts will hit Qt6PathsMissing instead (covered below).
+    if not distro.Path("/usr/lib/qt6").is_dir():
+        pytest.skip("/usr/lib/qt6 not present on this host")
+    assert str(distro.qt6_plugins_dir()) == "/usr/lib/qt6/plugins"
+    assert str(distro.qt6_qml_dir()) == "/usr/lib/qt6/qml"
+
+
+def test_qt6_raises_when_no_tools_and_no_fallback_dir(monkeypatch, tmp_path):
+    """If qmake6 is missing AND the per-distro libdir doesn't exist on
+    disk (e.g. an unrecognised distro, or Plasma 6 isn't installed
+    yet), refuse to guess. Better to fail loudly than write .so files
+    to a directory Qt6 doesn't scan."""
+    import distro
+    monkeypatch.setattr(distro.shutil, "which", lambda _: None)
+    monkeypatch.setattr(distro, "_QT_PLUGINS_CACHE", None)
+    monkeypatch.setattr(distro, "_QT_QML_CACHE", None)
+    monkeypatch.setattr(distro, "_fallback_qt6_libdir", lambda: None)
     with pytest.raises(distro.Qt6PathsMissing):
         distro.qt6_plugins_dir()
     with pytest.raises(distro.Qt6PathsMissing):
@@ -214,7 +247,8 @@ def test_install_destinations_anchor_to_qmake6_libdir(monkeypatch, tmp_path):
 def test_qt6_query_skips_tools_that_exit_nonzero(monkeypatch):
     """A qmake6 that exits non-zero (broken Qt install, sandboxed env)
     must not be treated as a successful path discovery — fall through
-    to the next tool in the chain."""
+    to the next tool in the chain. With every tool failing AND the
+    libdir fallback stubbed out, qt6_plugins_dir() raises."""
     from types import SimpleNamespace
     import distro
     monkeypatch.setattr(distro.shutil, "which", lambda cmd: f"/usr/bin/{cmd}")
@@ -223,6 +257,7 @@ def test_qt6_query_skips_tools_that_exit_nonzero(monkeypatch):
         lambda *a, **kw: SimpleNamespace(returncode=1, stdout="", stderr="oops"),
     )
     monkeypatch.setattr(distro, "_QT_PLUGINS_CACHE", None)
+    monkeypatch.setattr(distro, "_fallback_qt6_libdir", lambda: None)
     assert distro._qt6_plugins_query() is None
     with pytest.raises(distro.Qt6PathsMissing):
         distro.qt6_plugins_dir()

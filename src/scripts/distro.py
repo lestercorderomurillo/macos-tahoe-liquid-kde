@@ -166,38 +166,88 @@ def qt6_install_hint() -> str:
             + " | ".join(f"{k}: {v}" for k, v in _QT6_TOOLS_HINTS.items()))
 
 
+# Per-distro Qt6 libdir fallback. Only consulted when none of the Qt6
+# query tools (qmake6 / qtpaths6 / pkg-config) are installed — in which
+# case we know the convention for this distro from /etc/os-release and
+# verify the directory actually exists on disk before returning it.
+# If neither qmake6 nor a real on-disk fallback exists, we raise
+# Qt6PathsMissing — Plasma 6 won't load applets from a directory it
+# doesn't scan, so refusing to install is safer than guessing.
+_QT6_LIBDIR_FALLBACK: dict[str, str] = {
+    "arch":         "/usr/lib/qt6",
+    "cachyos":      "/usr/lib/qt6",
+    "manjaro":      "/usr/lib/qt6",
+    "endeavouros":  "/usr/lib/qt6",
+    "gentoo":       "/usr/lib64/qt6",
+    "fedora":       "/usr/lib64/qt6",
+    "rhel":         "/usr/lib64/qt6",
+    "centos":       "/usr/lib64/qt6",
+    "opensuse":     "/usr/lib64/qt6",
+}
+
+
+def _fallback_qt6_libdir() -> Path | None:
+    distro = current_distro()
+    libdir = _QT6_LIBDIR_FALLBACK.get(distro)
+    if libdir is None:
+        for parent in distro_id_like():
+            libdir = _QT6_LIBDIR_FALLBACK.get(parent)
+            if libdir:
+                break
+    if libdir is None:
+        return None
+    p = Path(libdir)
+    return p if p.is_dir() else None
+
+
 def qt6_plugins_dir() -> Path:
     """The directory Qt6 actually scans for plugins. Queried from
-    qmake6 / qtpaths6 / pkg-config in that order — never assumed. Raises
-    :class:`Qt6PathsMissing` with the distro-appropriate install hint
-    when none of those tools are available."""
+    qmake6 / qtpaths6 / pkg-config in that order. If none of those
+    tools are installed, fall back to the per-distro libdir convention
+    (only when the directory actually exists on disk). Raises
+    :class:`Qt6PathsMissing` only when neither a query tool nor a real
+    fallback directory is available."""
     global _QT_PLUGINS_CACHE
-    if _QT_PLUGINS_CACHE is None:
-        reported = _qt6_plugins_query()
-        if reported is None:
-            raise Qt6PathsMissing(
-                "No Qt6 query tool found (qmake6 / qtpaths6 / pkg-config); "
-                f"cannot discover Qt6 plugin directory. Install with: "
-                f"{qt6_install_hint()}"
-            )
+    if _QT_PLUGINS_CACHE is not None:
+        return _QT_PLUGINS_CACHE
+    reported = _qt6_plugins_query()
+    if reported is not None:
         _QT_PLUGINS_CACHE = Path(reported)
-    return _QT_PLUGINS_CACHE
+        return _QT_PLUGINS_CACHE
+    libdir = _fallback_qt6_libdir()
+    if libdir is not None:
+        candidate = libdir / "plugins"
+        if candidate.is_dir():
+            _QT_PLUGINS_CACHE = candidate
+            return _QT_PLUGINS_CACHE
+    raise Qt6PathsMissing(
+        "No Qt6 query tool found (qmake6 / qtpaths6 / pkg-config) and no "
+        "fallback plugin directory exists on disk. Install with: "
+        f"{qt6_install_hint()}"
+    )
 
 
 def qt6_qml_dir() -> Path:
-    """The directory Qt6 scans for QML modules. Same detection + raise
-    rules as :func:`qt6_plugins_dir`."""
+    """The directory Qt6 scans for QML modules. Same detection +
+    fallback rules as :func:`qt6_plugins_dir`."""
     global _QT_QML_CACHE
-    if _QT_QML_CACHE is None:
-        reported = _qt6_qml_query()
-        if reported is None:
-            raise Qt6PathsMissing(
-                "No Qt6 query tool found (qmake6 / pkg-config); cannot "
-                f"discover Qt6 QML directory. Install with: "
-                f"{qt6_install_hint()}"
-            )
+    if _QT_QML_CACHE is not None:
+        return _QT_QML_CACHE
+    reported = _qt6_qml_query()
+    if reported is not None:
         _QT_QML_CACHE = Path(reported)
-    return _QT_QML_CACHE
+        return _QT_QML_CACHE
+    libdir = _fallback_qt6_libdir()
+    if libdir is not None:
+        candidate = libdir / "qml"
+        if candidate.is_dir():
+            _QT_QML_CACHE = candidate
+            return _QT_QML_CACHE
+    raise Qt6PathsMissing(
+        "No Qt6 query tool found (qmake6 / pkg-config) and no fallback "
+        "QML directory exists on disk. Install with: "
+        f"{qt6_install_hint()}"
+    )
 
 
 # ── System libdir (32-bit vs 64-bit vs multiarch) ────────────────────
