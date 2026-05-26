@@ -122,7 +122,7 @@ Plymouth boot screen with centered Apple-style logo on every monitor, scaled dyn
 | <img src="https://cdn.simpleicons.org/archlinux" width="22"> | Arch Linux | ✅ YES |
 | <img src="https://cdn.simpleicons.org/manjaro" width="22"> | Manjaro | ✅ YES |
 | <img src="https://cdn.simpleicons.org/endeavouros" width="22"> | EndeavourOS | ✅ YES |
-| <img src="https://cdn.simpleicons.org/garuda" width="22"> | Garuda Linux | ✅ YES |
+| <img src="https://www.vectorlogo.zone/logos/garudalinux/garudalinux-icon.svg" width="22"> | Garuda Linux | ✅ YES |
 | <img src="https://cdn.simpleicons.org/gentoo" width="22"> | Gentoo | ✅ YES |
 | <img src="https://cdn.simpleicons.org/fedora" width="22"> | Fedora / RHEL | ✅ YES |
 | <img src="https://cdn.simpleicons.org/fedora" width="22"> | Nobara | ✅ YES |
@@ -168,12 +168,65 @@ Each ✅ distro is verified in CI on every push: `tests/containers/` runs the pa
 
 ---
 
-## Requirements
+## Requirements & Dependencies
 
-- KDE Plasma 6.6+
-- Python 3.10+
-- `sudo` for both `./install` and `./uninstall` — see below
-- Qt6 dev tooling on `PATH` (`qmake6`, `qtpaths6`, or `pkg-config Qt6Core`) — used to discover the per-distro Qt6 plugin / QML directories. The installer refuses to guess. Already required transitively by Plasma 6 on every supported distro, but installing `qt6-tools` (or your distro's equivalent) up front avoids the preflight bail-out.
+### Hard requirements
+
+The installer refuses to start without these. They are present on every default Plasma 6 install on the [supported distros](#tested-distros) above, so usually you have them already.
+
+- **KDE Plasma 6.6+** (`plasmashell`, `kwriteconfig6`, `kreadconfig6`, `plasma-apply-lookandfeel`, `plasma-apply-cursortheme`, `plasma-apply-wallpaperimage`, `kpackagetool6`, `kbuildsycoca6`, `qdbus6` *or* `qdbus`)
+- **Python 3.10+**
+- **`sudo`** (for both `./install` and `./uninstall` — see [the sudo policy](#install-vs-uninstall-split-sudo-policy) below)
+- **Qt6 path discovery** — one of: `qmake6`, `qtpaths6`, or `pkg-config` + `Qt6Core.pc`. The installer asks Qt where its plugin / QML directories live; it refuses to guess. If none of those tools are installed, the installer falls back to the known libdir convention for your distro **only when that directory actually exists on disk**.
+- **`dbus-send`** + **`systemctl`** — both ship with systemd, present on every supported distro.
+
+### Build toolchain
+
+Needed for the compiled pieces (Global Menu plasmoid, Dock Task Manager plasmoid, Acrylic Glass KWin effect). Skipped automatically if you `./install --no-plasmoids --no-acrylic-glass`.
+
+- **`cmake`**
+- **`g++`** (GCC C++ compiler)
+- **`pkg-config`**
+
+### KDE / Qt6 development SDK
+
+Required by `find_package()` in the compiled units' `CMakeLists.txt`. Your distro's KDE Plasma 6 dev meta-package usually pulls all of these in one shot:
+
+- **Extra CMake Modules** (`ECM`)
+- **KF6**: `KCoreAddons`, `KConfig`, `KI18n`, `KWindowSystem`, `KDBusAddons`, `KCMUtils`, `KIconThemes`
+- **KDecoration3**, **KWin** headers (`KWinDBusInterface`, `KWinX11DBusInterface`)
+- **libplasma**, **libtaskmanager**, **libnotificationmanager**, **KSysGuard**
+- **PlasmaActivities**, **PlasmaActivitiesStats**
+- **Qt6 Base** + **Qt6 Declarative** + **Qt6 Wayland**
+- **libepoxy**, **X11**, **XCB**
+
+### Download toolchain
+
+The installer pulls fonts, icons, cursors, and wallpapers from upstream mirrors on first run (cached afterwards). Skipped with `--no-download` if you've already fetched them.
+
+- **`curl`**
+- **`unzip`**
+- **`fontconfig`** (`fc-cache`)
+
+### Optional integrations
+
+The installer probes for these and uses them if present; absence just disables the matching feature, never aborts.
+
+- **Kvantum** (`kvantummanager`) — Qt widget theme. Without it, Qt apps fall back to plain Breeze widgets while keeping the rest of the theme.
+- **Nautilus** — Tahoe Finder. Only relevant if you install with `--nautilus`.
+- **`gsettings`** + **`gtk-update-icon-cache`** — GTK app integration (color-scheme hint, GTK 3/4 theme load).
+- **`dolphin`**, **`spectacle`** — used by the "Report a Bug" → screenshot helper.
+
+### Quick install hints
+
+If your distro is supported and the preflight tells you a tool is missing:
+
+| Distro | Qt6 tools | KDE Plasma 6 dev |
+|--------|-----------|------------------|
+| Arch / CachyOS / Manjaro / EndeavourOS / Garuda | `pacman -S qt6-tools` | `pacman -S extra-cmake-modules plasma-workspace kdecoration libplasma libnotificationmanager libksysguard plasma-activities-stats` |
+| Gentoo | `emerge dev-qt/qttools:6` | `emerge kde-frameworks/extra-cmake-modules kde-plasma/plasma-workspace kde-plasma/kdecoration kde-plasma/libplasma kde-plasma/libnotificationmanager kde-plasma/libksysguard kde-plasma/plasma-activities-stats` |
+| Fedora / Nobara / Bazzite / RHEL | `dnf install qt6-qttools-devel` | `dnf install extra-cmake-modules plasma-workspace-devel kdecoration-devel libplasma-devel knotifications-devel libksysguard-devel kf6-plasma-activities-devel` |
+| openSUSE Tumbleweed | `zypper install qt6-tools-devel` | `zypper install extra-cmake-modules plasma6-workspace-devel kdecoration-devel libKF6Plasma-devel libnotificationmanager6-devel libksysguard6-devel libKF6PlasmaActivitiesStats6-devel` |
 
 ---
 
