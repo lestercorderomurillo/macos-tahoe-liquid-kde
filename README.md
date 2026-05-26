@@ -175,7 +175,7 @@ and targeted for **v0.15.0**.
 | <img src="https://cdn.simpleicons.org/debian" width="22"> | Debian | ❌ NO (v0.15.0) |
 | <img src="https://cdn.simpleicons.org/ubuntu" width="22"> | Ubuntu | ❌ NO (v0.15.0) |
 
-Once v0.15.0 lands, if you install on one of the ❌ distros and it works, please open an issue so it can move to ✅.
+Report any issues you find on confirmed OSes.
 
 ---
 
