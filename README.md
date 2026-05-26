@@ -172,8 +172,8 @@ and targeted for **v0.15.0**.
 | <img src="https://cdn.simpleicons.org/gentoo" width="22"> | Gentoo | 🔧 Working |
 | <img src="https://cdn.simpleicons.org/fedora" width="22"> | Fedora / RHEL | 🔧 Working |
 | <img src="https://cdn.simpleicons.org/opensuse" width="22"> | openSUSE Tumbleweed | 🔧 Working |
-| <img src="https://cdn.simpleicons.org/debian" width="22"> | Debian | 🔧 Working |
-| <img src="https://cdn.simpleicons.org/ubuntu" width="22"> | Ubuntu | 🔧 Working |
+| <img src="https://cdn.simpleicons.org/debian" width="22"> | Debian | ❌ NO |
+| <img src="https://cdn.simpleicons.org/ubuntu" width="22"> | Ubuntu | ❌ NO |
 
 Report any issues you find on confirmed OSes.
 
