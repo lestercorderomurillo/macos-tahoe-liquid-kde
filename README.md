@@ -114,6 +114,27 @@ Plymouth boot screen with centered Apple-style logo on every monitor, scaled dyn
 
 ---
 
+## Tested distros
+
+Currently confirmed on **CachyOS** (the maintainer's daily-driver box).
+Multi-distro support is in active development on
+[`feat/multi-distro-support`](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/tree/feat/multi-distro-support)
+and targeted for **v0.15.0**.
+
+|     | Distro | Supported yet? |
+|:---:|--------|:--------------:|
+| <img src="https://cdn.simpleicons.org/cachyos" width="22"> | CachyOS | ✅ YES |
+| <img src="https://cdn.simpleicons.org/archlinux" width="22"> | Arch Linux | 🔧 Working |
+| <img src="https://cdn.simpleicons.org/gentoo" width="22"> | Gentoo | 🔧 Working |
+| <img src="https://cdn.simpleicons.org/fedora" width="22"> | Fedora / RHEL | 🔧 Working |
+| <img src="https://cdn.simpleicons.org/opensuse" width="22"> | openSUSE Tumbleweed | 🔧 Working |
+| <img src="https://cdn.simpleicons.org/debian" width="22"> | Debian | ❌ NO |
+| <img src="https://cdn.simpleicons.org/ubuntu" width="22"> | Ubuntu | ❌ NO |
+
+Report any issues you find on confirmed OSes.
+
+---
+
 ## Roadmap
 
 | Component | Description | Status |
@@ -155,27 +176,6 @@ Plymouth boot screen with centered Apple-style logo on every monitor, scaled dyn
 - Python 3.10+
 - `sudo` for both `./install` and `./uninstall` — see below
 - *(v0.15.0)* Qt6 dev tooling on `PATH` (`qmake6`, `qtpaths6`, or `pkg-config Qt6Core`) — used to discover the per-distro Qt6 plugin / QML directories. The installer refuses to guess. Already required transitively by Plasma 6 on every supported distro, but installing `qt6-tools` (or your distro's equivalent — see the *Tested distros* table) up front avoids the preflight bail-out.
-
----
-
-## Tested distros
-
-Currently confirmed on **CachyOS** (the maintainer's daily-driver box).
-Multi-distro support is in active development on
-[`feat/multi-distro-support`](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/tree/feat/multi-distro-support)
-and targeted for **v0.15.0**.
-
-|     | Distro | Supported yet? |
-|:---:|--------|:--------------:|
-| <img src="https://cdn.simpleicons.org/cachyos" width="22"> | CachyOS | ✅ YES |
-| <img src="https://cdn.simpleicons.org/archlinux" width="22"> | Arch Linux | 🔧 Working |
-| <img src="https://cdn.simpleicons.org/gentoo" width="22"> | Gentoo | 🔧 Working |
-| <img src="https://cdn.simpleicons.org/fedora" width="22"> | Fedora / RHEL | 🔧 Working |
-| <img src="https://cdn.simpleicons.org/opensuse" width="22"> | openSUSE Tumbleweed | 🔧 Working |
-| <img src="https://cdn.simpleicons.org/debian" width="22"> | Debian | ❌ NO |
-| <img src="https://cdn.simpleicons.org/ubuntu" width="22"> | Ubuntu | ❌ NO |
-
-Report any issues you find on confirmed OSes.
 
 ---
 
