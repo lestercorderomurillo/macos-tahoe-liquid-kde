@@ -123,15 +123,11 @@ Plymouth boot screen with centered Apple-style logo on every monitor, scaled dyn
 | <img src="https://cdn.simpleicons.org/manjaro" width="22"> | Manjaro | ✅ YES |
 | <img src="https://cdn.simpleicons.org/endeavouros" width="22"> | EndeavourOS | ✅ YES |
 | <img src="https://cdn.simpleicons.org/garuda" width="22"> | Garuda Linux | ✅ YES |
-| <img src="https://cdn.simpleicons.org/steam" width="22"> | SteamOS 3.x | 🔧 Working* |
 | <img src="https://cdn.simpleicons.org/gentoo" width="22"> | Gentoo | ✅ YES |
 | <img src="https://cdn.simpleicons.org/fedora" width="22"> | Fedora / RHEL | ✅ YES |
 | <img src="https://cdn.simpleicons.org/fedora" width="22"> | Nobara | ✅ YES |
 | <img src="https://cdn.simpleicons.org/fedora" width="22"> | Bazzite | ✅ YES |
 | <img src="https://cdn.simpleicons.org/opensuse" width="22"> | openSUSE Tumbleweed | ✅ YES |
-| <img src="https://cdn.simpleicons.org/openmandriva" width="22"> | OpenMandriva | ✅ YES |
-
-<sub>* SteamOS rootfs is immutable. Run `sudo steamos-readonly disable` once before `./install` (and `sudo steamos-readonly enable` after if you want the lock back).</sub>
 
 Each ✅ distro is verified in CI on every push: `tests/containers/` runs the path-discovery layer, package-manager mapping, preflight destination checks, and the full pytest suite against the real distro environment. Report any issues you find on confirmed OSes.
 
