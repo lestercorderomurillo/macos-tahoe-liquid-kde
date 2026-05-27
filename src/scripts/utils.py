@@ -3,7 +3,9 @@ import json
 import os
 import shutil
 import subprocess
+import sys
 import tarfile
+import time
 import urllib.error
 import urllib.request
 import zipfile
@@ -69,24 +71,57 @@ _USER_AGENT = (
 
 def fetch(url: str, dest: Path | str, referer: str | None = None,
           retries: int = 3) -> bool:
+    """Download ``url`` to ``dest`` with exponential backoff between
+    attempts and Content-Length validation.
+
+    Returns True only when the full byte count promised by the server
+    actually landed on disk. A truncated download (server hung up
+    mid-stream without raising an exception — common on flaky CDN
+    edges) was previously silently treated as success; the wallpaper
+    step would then ``fail`` later with ``download incomplete — re-run
+    to retry`` because the on-disk file was empty / partial. We now
+    detect that here and retry with backoff.
+
+    Backoff schedule: 0s before the first attempt, then 1s, 2s, 4s
+    before each subsequent retry. The 7s total wall-clock added to a
+    full 3-retry failure is cheaper than asking the user to re-run the
+    whole installer for a transient network blip."""
     dest = Path(dest)
     dest.parent.mkdir(parents=True, exist_ok=True)
     headers = {"User-Agent": _USER_AGENT}
     if referer:
         headers["Referer"] = referer
     req = urllib.request.Request(url, headers=headers)
-    for _ in range(max(1, retries)):
+    last_err: str = ""
+    for attempt in range(max(1, retries)):
+        if attempt > 0:
+            time.sleep(2 ** (attempt - 1))  # 1s, 2s, 4s
         try:
-            with urllib.request.urlopen(req, timeout=60) as r, dest.open("wb") as f:
-                shutil.copyfileobj(r, f)
+            with urllib.request.urlopen(req, timeout=60) as r:
+                expected = r.headers.get("Content-Length")
+                expected_n = int(expected) if expected and expected.isdigit() else None
+                with dest.open("wb") as f:
+                    shutil.copyfileobj(r, f)
+            # Validate full body landed. Servers that omit Content-Length
+            # (chunked transfer, gzip-on-the-fly) just skip this check —
+            # we have no ground truth for those.
+            if expected_n is not None:
+                actual_n = dest.stat().st_size
+                if actual_n != expected_n:
+                    last_err = (f"truncated: got {actual_n} of {expected_n} "
+                                f"bytes")
+                    continue
             return True
-        except (urllib.error.URLError, OSError, TimeoutError):
+        except (urllib.error.URLError, OSError, TimeoutError) as exc:
+            last_err = f"{exc.__class__.__name__}: {exc}"
             continue
     if dest.exists():
         try:
             dest.unlink()
         except OSError:
             pass
+    if last_err:
+        print(f"     fetch {url}: {last_err}", file=sys.stderr)
     return False
 
 

@@ -16,10 +16,20 @@ Safety model:
 4. The step fails soft when ``plymouth-set-default-theme`` is missing —
    Plymouth is not universally installed on every Plasma distro and the
    rest of the desktop should still install cleanly.
+
+GRUB cmdline auto-patch:
+5. After the splash is installed + activated, if the running kernel
+   cmdline is missing ``splash``, append it to
+   ``GRUB_CMDLINE_LINUX_DEFAULT`` in ``/etc/default/grub`` and
+   regenerate the bootloader config. Opt out with
+   ``MTTKDE_NO_GRUB_MODIFY=1`` (passed by the CLI's ``--no-grub-modify``
+   flag) — the user gets a warning + manual instructions instead.
 """
 
 import configparser
+import os
 import re
+import shutil
 import subprocess
 from pathlib import Path
 
@@ -54,44 +64,31 @@ def deps():
     return ["plymouth-set-default-theme:plymouth"]
 
 
-def _check_prereqs() -> list[str]:
-    """Return a list of human-readable warnings for missing boot-side
-    Plymouth prerequisites. We DO NOT auto-fix any of these — editing
-    mkinitcpio.conf in the wrong order can brick encrypted boot, and
-    editing the kernel cmdline through /etc/default/grub assumes GRUB
-    (systemd-boot, refind, limine users all have different paths). We
-    detect, we warn, we tell the user the exact command to run.
+def _check_prereqs() -> tuple[bool, bool]:
+    """Return ``(splash_missing, mkinitcpio_missing_hook)``.
 
-    The current kernel cmdline lives in /proc/cmdline (reflects the
-    running boot — what the user is staring at right now). The
-    bootloader-side cmdline lives in /etc/default/grub for GRUB users.
-    Mismatch is fine; either having ``splash`` is enough to render the
-    splash on the next boot if the loader regenerates."""
-    warnings: list[str] = []
+    The current kernel cmdline lives in /proc/cmdline (the running
+    boot). The bootloader-side cmdline lives in /etc/default/grub for
+    GRUB users. Mismatch is fine; either having ``splash`` is enough
+    to render the splash on the next boot.
 
+    The corner-rendered shutdown splash on some high-DPI displays is
+    *suspected* to correlate with a GPU driver (amdgpu / i915 / etc.)
+    listed in MODULES=(...). Upstream Plymouth policy (Hans de Goede)
+    recommends keeping GPU drivers out of MODULES — the ``kms`` hook
+    loads them later. We don't warn on this because the correlation
+    isn't strong enough to be worth nagging about."""
     # ── kernel cmdline: need ``splash`` for plymouthd to actually draw ──
     try:
         cmdline = PROC_CMDLINE.read_text(encoding="utf-8", errors="ignore")
     except OSError:
         cmdline = ""
-    if " splash" not in (" " + cmdline):
-        if GRUB_DEFAULT.is_file():
-            warnings.append(
-                "kernel cmdline missing 'splash' — add it to "
-                "GRUB_CMDLINE_LINUX_DEFAULT in /etc/default/grub, then run: "
-                "sudo grub-mkconfig -o /boot/grub/grub.cfg"
-            )
-        else:
-            warnings.append(
-                "kernel cmdline missing 'splash' — add it to your bootloader "
-                "configuration (systemd-boot: /boot/loader/entries/*.conf, "
-                "limine: /boot/limine.conf)"
-            )
+    splash_missing = " splash" not in (" " + cmdline)
 
-    # ── initramfs hook + MODULES: arch / cachyos / manjaro use mkinitcpio ─
+    # ── initramfs hook: arch / cachyos / manjaro use mkinitcpio ─
     # Other distros (fedora dracut, debian initramfs-tools) embed plymouth
-    # support automatically once the package is installed, so we only
-    # check the mkinitcpio path.
+    # support automatically once the package is installed.
+    mkinitcpio_missing_hook = False
     if MKINITCPIO_CONF.is_file():
         try:
             mki = MKINITCPIO_CONF.read_text(encoding="utf-8", errors="ignore")
@@ -102,29 +99,111 @@ def _check_prereqs() -> list[str]:
              if ln.strip().startswith("HOOKS=") and not ln.strip().startswith("#")),
             "",
         )
-        if "plymouth" not in hooks_line:
-            warnings.append(
-                "/etc/mkinitcpio.conf HOOKS line is missing 'plymouth' — "
-                "add it after 'udev' (or 'systemd' on systemd-init) and "
-                "BEFORE 'encrypt'/'filesystems', then run: "
-                "sudo mkinitcpio -P"
-            )
+        mkinitcpio_missing_hook = "plymouth" not in hooks_line
 
-        # Note (no warning emitted): the corner-rendered shutdown splash
-        # on some high-DPI displays is *suspected* to correlate with a
-        # GPU driver (amdgpu / i915 / nouveau / radeon) listed in
-        # MODULES=(...). The hypothesis: the driver binds the PCIe GPU
-        # in initramfs before simpledrm can register the EFI simple-
-        # framebuffer, so UseSimpledrm=true becomes a no-op and the
-        # shutdown phase falls back to a low-res console framebuffer
-        # that the firmware renders in a corner. Upstream Plymouth
-        # policy (Hans de Goede) recommends keeping GPU drivers out of
-        # MODULES — the ``kms`` hook loads them later. We don't WARN on
-        # this anymore because the correlation isn't strong enough to
-        # be worth nagging users about during install. Kept as a note
-        # for whoever debugs the corner-splash next.
+    return splash_missing, mkinitcpio_missing_hook
 
-    return warnings
+
+def _grub_auto_patch_enabled() -> bool:
+    """The opt-out — users set MTTKDE_NO_GRUB_MODIFY=1 (or pass
+    --no-grub-modify to the installer, which exports the same env)
+    when they want to keep manual control over /etc/default/grub."""
+    return os.environ.get("MTTKDE_NO_GRUB_MODIFY", "").lower() not in (
+        "1", "true", "yes",
+    )
+
+
+_GRUB_CMDLINE_RE = re.compile(
+    r'^(\s*GRUB_CMDLINE_LINUX_DEFAULT\s*=\s*)(["\'])(.*?)\2(\s*)$',
+    re.MULTILINE,
+)
+
+
+def _patch_grub_add_splash() -> bool:
+    """Append ``splash`` to GRUB_CMDLINE_LINUX_DEFAULT in
+    /etc/default/grub iff it isn't already there. Keeps a ``.bak`` next
+    to the file in case the user wants to inspect/revert. Returns True
+    when the file ended in the expected state (already had splash, or
+    we successfully added it)."""
+    try:
+        with _as_root():
+            text = GRUB_DEFAULT.read_text(encoding="utf-8", errors="replace")
+    except OSError as exc:
+        warn(f"could not read {GRUB_DEFAULT} ({exc})")
+        return False
+
+    match = _GRUB_CMDLINE_RE.search(text)
+    if match is None:
+        # File has no GRUB_CMDLINE_LINUX_DEFAULT line at all — refuse
+        # to invent one. The user's GRUB config is non-standard, leave
+        # it alone.
+        warn(f"{GRUB_DEFAULT} has no GRUB_CMDLINE_LINUX_DEFAULT line — "
+             "skipping auto-patch")
+        return False
+
+    prefix, quote, params, suffix = match.groups()
+    tokens = params.split()
+    if "splash" in tokens:
+        return True  # already correct, nothing to write
+
+    tokens.append("splash")
+    new_line = f"{prefix}{quote}{' '.join(tokens)}{quote}{suffix}"
+    new_text = text[:match.start()] + new_line + text[match.end():]
+
+    backup = GRUB_DEFAULT.with_suffix(GRUB_DEFAULT.suffix + ".mttkde.bak")
+    try:
+        with _as_root():
+            # Best-effort backup. If it already exists from a prior run
+            # we keep the older copy (the truly-original one).
+            if not backup.exists():
+                shutil.copy2(GRUB_DEFAULT, backup)
+            tmp = GRUB_DEFAULT.with_name(GRUB_DEFAULT.name + ".mttkde-tmp")
+            tmp.write_text(new_text, encoding="utf-8")
+            shutil.copystat(GRUB_DEFAULT, tmp)
+            tmp.replace(GRUB_DEFAULT)
+    except OSError as exc:
+        warn(f"could not patch {GRUB_DEFAULT} ({exc})")
+        return False
+    return True
+
+
+# ``grub-mkconfig`` is Arch/CachyOS/Gentoo/openSUSE; ``grub2-mkconfig``
+# is Fedora/RHEL/Rocky. Either tool can write to either output path
+# depending on how the distro packaged it, so we try every binary +
+# every output combination in order.
+_GRUB_REGENERATE_CANDIDATES = (
+    ("grub-mkconfig",  "/boot/grub/grub.cfg"),
+    ("grub2-mkconfig", "/boot/grub2/grub.cfg"),
+    ("grub-mkconfig",  "/boot/grub2/grub.cfg"),
+    ("grub2-mkconfig", "/boot/grub/grub.cfg"),
+)
+
+
+def _regenerate_grub_config() -> bool:
+    """Run ``grub[2]-mkconfig -o <output>`` for whichever (binary,
+    output) pair exists on the system. Returns True on the first
+    success."""
+    for binary, output in _GRUB_REGENERATE_CANDIDATES:
+        if not have(binary):
+            continue
+        output_dir = Path(output).parent
+        if not output_dir.is_dir():
+            continue
+        try:
+            with _as_root():
+                res = subprocess.run(
+                    [binary, "-o", output],
+                    check=False, capture_output=True, text=True,
+                    timeout=120,
+                )
+        except (subprocess.TimeoutExpired, OSError) as exc:
+            warn(f"{binary} -o {output} failed: {exc}")
+            continue
+        if res.returncode == 0:
+            return True
+        warn(f"{binary} -o {output} exited {res.returncode}: "
+             f"{(res.stderr or '').strip().splitlines()[-1:] or ['(no output)']}")
+    return False
 
 
 def _current_default_theme() -> str | None:
@@ -353,17 +432,41 @@ def install() -> None:
     if _set_plymouthd_simpledrm(True):
         ok("Forced UseSimpledrm=true (fixes corner-rendered shutdown splash)")
 
-    prereq_warnings = _check_prereqs()
-    if prereq_warnings:
-        # Theme is on disk + set as default + initrd was rebuilt with the
-        # theme files. But plymouth still won't show at boot if the
-        # initramfs lacks the plymouth hook or the kernel has no `splash`
-        # flag. Tell the user exactly what to do — DO NOT auto-edit
-        # mkinitcpio.conf or grub config.
+    splash_missing, mkinitcpio_missing_hook = _check_prereqs()
+
+    # Auto-patch GRUB cmdline when ``splash`` is missing, unless the
+    # user opted out. Editing /etc/default/grub is a real mutation —
+    # we keep a backup and only touch GRUB_CMDLINE_LINUX_DEFAULT.
+    if splash_missing and _grub_auto_patch_enabled() and GRUB_DEFAULT.is_file():
+        if _patch_grub_add_splash():
+            ok("Added 'splash' to GRUB_CMDLINE_LINUX_DEFAULT")
+            if _regenerate_grub_config():
+                ok("Regenerated bootloader config")
+                splash_missing = False  # remediation succeeded
+            else:
+                warn("could not regenerate bootloader config — run "
+                     "grub-mkconfig manually before next reboot")
+
+    if splash_missing or mkinitcpio_missing_hook:
         warn("boot splash files are installed, but the splash will NOT "
              "appear at next boot until you fix the items below:")
-        for line in prereq_warnings:
-            warn(line)
+        if splash_missing:
+            if GRUB_DEFAULT.is_file():
+                warn("kernel cmdline missing 'splash' — add it to "
+                     "GRUB_CMDLINE_LINUX_DEFAULT in /etc/default/grub, "
+                     "then run: sudo grub-mkconfig -o /boot/grub/grub.cfg "
+                     "(or re-run the installer without "
+                     "MTTKDE_NO_GRUB_MODIFY=1)")
+            else:
+                warn("kernel cmdline missing 'splash' — add it to your "
+                     "bootloader configuration (systemd-boot: "
+                     "/boot/loader/entries/*.conf, limine: "
+                     "/boot/limine.conf)")
+        if mkinitcpio_missing_hook:
+            warn("/etc/mkinitcpio.conf HOOKS line is missing 'plymouth' "
+                 "— add it after 'udev' (or 'systemd' on systemd-init) "
+                 "and BEFORE 'encrypt'/'filesystems', then run: "
+                 "sudo mkinitcpio -P")
     else:
         info(f"Next reboot will show the {THEME_NAME} splash.")
     info(f"Rollback: sudo {PLYMOUTH_BIN} -R $(cat {PREV_THEME_FILE})")

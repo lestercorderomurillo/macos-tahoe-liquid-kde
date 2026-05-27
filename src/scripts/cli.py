@@ -101,6 +101,8 @@ Options:
     --nautilus         Install Nautilus and set as default file manager
     --portals          Route FileChooser/AppChooser to KDE (fixes stale dialogs)
     --no-download      Skip downloads, use cached assets
+    --no-grub-modify   Don't auto-edit /etc/default/grub for the boot
+                       splash kernel cmdline (prints manual fix instead)
 
   Persistence:
     --save             Save current flags to features.json
@@ -222,6 +224,12 @@ def parse_args(argv: list[str]) -> ParsedArgs:
             p.cli_overrides["no_download"] = True
         elif arg == "--download":
             p.cli_overrides["no_download"] = False
+        elif arg == "--no-grub-modify":
+            # Plymouth's GRUB cmdline auto-patch is opt-in by default;
+            # this flag turns it off so the installer prints the
+            # warning + manual instructions instead of editing
+            # /etc/default/grub.
+            os.environ["MTTKDE_NO_GRUB_MODIFY"] = "1"
         elif arg.startswith("--no-"):
             key = arg[5:].replace("-", "_")
             if key in ALL_FEATURES:

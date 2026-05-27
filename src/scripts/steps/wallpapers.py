@@ -170,7 +170,8 @@ def install() -> None:
         contents = wp / "contents"
         img_count = sum(1 for p in contents.rglob("*") if p.is_file()) if contents.is_dir() else 0
         if img_count == 0:
-            fail(f"{wp.name} (download incomplete — re-run to retry)")
+            fail(f"{wp.name} (no images on disk after download — the mirror "
+                 "may be unreachable; re-run after checking network)")
             continue
         if not safe_copy(wp, DEST_DIR / wp.name):
             fail(f"{wp.name} (copy failed)")

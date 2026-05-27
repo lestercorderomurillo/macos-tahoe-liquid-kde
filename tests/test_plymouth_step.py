@@ -396,7 +396,7 @@ def _stub(monkeypatch, *, have_bin=True, current_theme="breeze",
     # it here to prevent host-state leakage (real /proc/cmdline, real
     # /etc/mkinitcpio.conf) from flipping assertions on different CI
     # machines.
-    monkeypatch.setattr(plymouth, "_check_prereqs", lambda: [])
+    monkeypatch.setattr(plymouth, "_check_prereqs", lambda: (False, False))
 
     def fake_run(argv, **kwargs):
         calls["subprocess"].append((list(argv), kwargs))
@@ -675,22 +675,24 @@ def _stub_prereq_paths(tmp_path, monkeypatch, *, cmdline="splash quiet",
 def test_prereqs_no_warnings_when_splash_and_hook_present(tmp_path, monkeypatch):
     _stub_prereq_paths(tmp_path, monkeypatch,
                        cmdline="BOOT_IMAGE=/vmlinuz root=UUID=xxx rw quiet splash")
-    assert plymouth._check_prereqs() == []
+    splash_missing, hook_missing = plymouth._check_prereqs()
+    assert splash_missing is False
+    assert hook_missing is False
 
 
-def test_prereqs_warn_when_kernel_cmdline_lacks_splash(tmp_path, monkeypatch):
+def test_prereqs_flag_splash_missing_in_kernel_cmdline(tmp_path, monkeypatch):
     _stub_prereq_paths(tmp_path, monkeypatch, cmdline="quiet rw")
-    warnings = plymouth._check_prereqs()
-    assert any("splash" in w for w in warnings)
+    splash_missing, _hook_missing = plymouth._check_prereqs()
+    assert splash_missing is True
 
 
-def test_prereqs_warn_when_mkinitcpio_hooks_missing_plymouth(tmp_path, monkeypatch):
+def test_prereqs_flag_mkinitcpio_hooks_missing_plymouth(tmp_path, monkeypatch):
     _stub_prereq_paths(
         tmp_path, monkeypatch,
         mkinitcpio_hooks="HOOKS=(base udev autodetect modconf filesystems)",
     )
-    warnings = plymouth._check_prereqs()
-    assert any("mkinitcpio" in w for w in warnings)
+    _splash_missing, hook_missing = plymouth._check_prereqs()
+    assert hook_missing is True
 
 
 def test_prereqs_ignore_commented_hooks_line(tmp_path, monkeypatch):
@@ -704,8 +706,8 @@ def test_prereqs_ignore_commented_hooks_line(tmp_path, monkeypatch):
             "HOOKS=(base udev filesystems)"
         ),
     )
-    warnings = plymouth._check_prereqs()
-    assert any("mkinitcpio" in w for w in warnings)
+    _splash_missing, hook_missing = plymouth._check_prereqs()
+    assert hook_missing is True
 
 
 def test_prereqs_skip_mkinitcpio_check_when_file_absent(tmp_path, monkeypatch):
@@ -714,25 +716,81 @@ def test_prereqs_skip_mkinitcpio_check_when_file_absent(tmp_path, monkeypatch):
     don't have."""
     _stub_prereq_paths(tmp_path, monkeypatch, has_mkinitcpio=False,
                        cmdline="quiet splash")
-    assert plymouth._check_prereqs() == []
+    splash_missing, hook_missing = plymouth._check_prereqs()
+    assert splash_missing is False
+    assert hook_missing is False
 
 
-def test_prereqs_warn_directs_to_grub_when_grub_present(tmp_path, monkeypatch):
-    _stub_prereq_paths(tmp_path, monkeypatch, cmdline="quiet")
-    warnings = plymouth._check_prereqs()
-    # GRUB present → instruction should mention /etc/default/grub, not
-    # systemd-boot or limine.
-    splash_warns = [w for w in warnings if "splash" in w]
-    assert splash_warns
-    assert any("/etc/default/grub" in w for w in splash_warns)
+def test_grub_patch_appends_splash_when_missing(tmp_path, monkeypatch):
+    """v0.15.3: GRUB cmdline auto-patch. If GRUB_CMDLINE_LINUX_DEFAULT
+    is missing 'splash', the installer appends it (preserving every
+    other token), keeps a .mttkde.bak backup, and the new value lands
+    on disk. Existing 'splash' tokens are left alone — idempotent
+    re-runs don't duplicate the flag."""
+    grub = tmp_path / "etc/default/grub"
+    grub.parent.mkdir(parents=True, exist_ok=True)
+    grub.write_text(
+        'GRUB_DEFAULT=0\n'
+        'GRUB_TIMEOUT=5\n'
+        'GRUB_CMDLINE_LINUX_DEFAULT="quiet loglevel=3"\n'
+        'GRUB_CMDLINE_LINUX=""\n',
+        encoding="utf-8",
+    )
+    monkeypatch.setattr(plymouth, "GRUB_DEFAULT", grub)
+
+    # _patch_grub_add_splash uses _as_root() — stub it to a no-op
+    # context manager so the test doesn't need real root.
+    import contextlib
+    monkeypatch.setattr(plymouth, "_as_root", contextlib.nullcontext)
+
+    assert plymouth._patch_grub_add_splash() is True
+    text = grub.read_text(encoding="utf-8")
+    assert 'GRUB_CMDLINE_LINUX_DEFAULT="quiet loglevel=3 splash"' in text
+    # Backup landed alongside.
+    bak = grub.with_suffix(grub.suffix + ".mttkde.bak")
+    assert bak.is_file()
+    assert "quiet loglevel=3" in bak.read_text(encoding="utf-8")
+    assert "splash" not in bak.read_text(encoding="utf-8").split("\n")[2]
+
+    # Second invocation must be a no-op (idempotent).
+    assert plymouth._patch_grub_add_splash() is True
+    text2 = grub.read_text(encoding="utf-8")
+    # Still exactly one 'splash' token in the cmdline line.
+    cmdline_line = [ln for ln in text2.splitlines()
+                    if ln.startswith("GRUB_CMDLINE_LINUX_DEFAULT")][0]
+    assert cmdline_line.split().count("splash") == 0  # 'splash' is inside quotes
+    assert cmdline_line.count("splash") == 1
 
 
-def test_prereqs_warn_directs_to_other_loaders_when_no_grub(tmp_path, monkeypatch):
-    _stub_prereq_paths(tmp_path, monkeypatch, cmdline="quiet", has_grub=False)
-    warnings = plymouth._check_prereqs()
-    splash_warns = [w for w in warnings if "splash" in w]
-    assert splash_warns
-    assert any("systemd-boot" in w or "limine" in w for w in splash_warns)
+def test_grub_patch_refuses_to_invent_missing_cmdline_line(tmp_path, monkeypatch):
+    """If /etc/default/grub has no GRUB_CMDLINE_LINUX_DEFAULT line at
+    all, the user's config is non-standard. Refuse to invent one —
+    silently writing a new line could conflict with whatever
+    distro-specific cmdline mechanism they're using."""
+    import contextlib
+    grub = tmp_path / "etc/default/grub"
+    grub.parent.mkdir(parents=True, exist_ok=True)
+    grub.write_text(
+        'GRUB_DEFAULT=0\nGRUB_TIMEOUT=5\n',
+        encoding="utf-8",
+    )
+    monkeypatch.setattr(plymouth, "GRUB_DEFAULT", grub)
+    monkeypatch.setattr(plymouth, "_as_root", contextlib.nullcontext)
+
+    assert plymouth._patch_grub_add_splash() is False
+    # File unchanged.
+    assert "GRUB_CMDLINE_LINUX_DEFAULT" not in grub.read_text(encoding="utf-8")
+
+
+def test_grub_auto_patch_disabled_via_env(monkeypatch):
+    """The --no-grub-modify CLI flag exports MTTKDE_NO_GRUB_MODIFY=1.
+    Plymouth's gating helper must respect that so the auto-patch
+    branch is skipped and the warn() path runs instead."""
+    monkeypatch.setenv("MTTKDE_NO_GRUB_MODIFY", "1")
+    assert plymouth._grub_auto_patch_enabled() is False
+
+    monkeypatch.delenv("MTTKDE_NO_GRUB_MODIFY", raising=False)
+    assert plymouth._grub_auto_patch_enabled() is True
 
 
 # The "GPU module in MODULES blocks simpledrm" warning was removed:
