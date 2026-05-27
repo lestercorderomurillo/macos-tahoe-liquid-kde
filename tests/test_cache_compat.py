@@ -3,7 +3,10 @@ from pathlib import Path
 
 import pytest
 
-from steps import cursors, fonts, icons, wallpapers
+# wallpapers used to be parametrized here too, but since v0.17.0 the
+# step is fully offline (no download() phase, no CACHE/LEGACY_CACHE
+# attrs) so the legacy-cache contract simply doesn't apply.
+from steps import cursors, fonts, icons
 
 
 def _mute_step_logs(monkeypatch, module, failures):
@@ -38,23 +41,12 @@ def _seed_cursors(cache: Path) -> Path:
     return cursor
 
 
-def _seed_wallpapers(cache: Path) -> Path:
-    theme = cache / "MacTahoe"
-    images = theme / "contents/images"
-    images.mkdir(parents=True, exist_ok=True)
-    (theme / "metadata.json").write_text("{}\n")
-    wallpaper = images / "3840x2160.png"
-    wallpaper.write_bytes(b"png")
-    return wallpaper
-
-
 @pytest.mark.parametrize(
     "module,seeder,relative_output",
     [
         (fonts, _seed_fonts, Path("SF-Pro.ttf")),
         (icons, _seed_icons, Path("MacTahoeLiquidKde-Icons/index.theme")),
         (cursors, _seed_cursors, Path("MacTahoeLiquidKde/cursors/left_ptr")),
-        (wallpapers, _seed_wallpapers, Path("MacTahoe/contents/images/3840x2160.png")),
     ],
 )
 def test_install_uses_legacy_cache_when_new_build_cache_is_empty(

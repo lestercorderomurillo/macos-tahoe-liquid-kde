@@ -1,0 +1,17 @@
+{
+    "KPlugin": {
+        "Id": "MacHeritage-Ventura",
+        "Name": "macOS Ventura",
+        "Description": "macOS Ventura \u2014 auto light/dark",
+        "Authors": [
+            {
+                "Name": "MacTahoe Liquid KDE",
+                "Email": ""
+            }
+        ],
+        "Category": "MacTahoe Liquid KDE",
+        "License": "Apple Inc. wallpapers extracted from macOS",
+        "Website": "https://github.com/lester-sudo/macos-tahoe-liquid-kde",
+        "Version": "1.0"
+    }
+}

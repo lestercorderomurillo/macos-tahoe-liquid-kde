@@ -1,0 +1,17 @@
+{
+    "KPlugin": {
+        "Id": "MacTahoe",
+        "Name": "macOS Tahoe",
+        "Description": "Auto light/dark Tahoe wallpaper",
+        "Authors": [
+            {
+                "Name": "MacTahoe Liquid KDE",
+                "Email": ""
+            }
+        ],
+        "Category": "MacTahoe Liquid KDE",
+        "License": "Apple Inc. wallpapers extracted from macOS",
+        "Website": "https://github.com/lester-sudo/macos-tahoe-liquid-kde",
+        "Version": "1.0"
+    }
+}

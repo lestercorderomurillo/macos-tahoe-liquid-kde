@@ -109,17 +109,14 @@ def test_safe_copy_stages_outside_destination_directory(monkeypatch, tmp_path):
     assert (dest / "contents/file.txt").read_text() == "hi"
 
 
-def test_install_syncs_offline_wallpapers_without_download(monkeypatch, tmp_path):
-    """A bundled wallpaper added in src/offline/wallpapers/ must land in
-    the install destination even when download() is skipped by a cache
-    shortcut. The 0.8.1 release shipped MacTahoe-Iridescence and the
-    initial cut got it wrong: download() owned the offline → cache copy,
-    so users with a populated cache from an earlier install never saw
-    the new wallpaper."""
+def test_install_bundled_wallpaper_lands_in_dest(monkeypatch, tmp_path):
+    """v0.17: wallpapers are 100% offline. install() copies every
+    ``Mac*/`` directory under ``src/offline/wallpapers/`` straight into
+    ``~/.local/share/wallpapers/``. No download, no cache, no
+    network."""
     from steps import wallpapers
 
     home = tmp_path / "home"
-    cache = tmp_path / "cache"
     offline = tmp_path / "offline"
     dest = home / ".local/share/wallpapers"
 
@@ -130,45 +127,58 @@ def test_install_syncs_offline_wallpapers_without_download(monkeypatch, tmp_path
         '{"KPlugin": {"Id": "MacTahoe-Bundled-Test"}}'
     )
 
-    # Pre-populate the cache as if download() had already run earlier
-    # (the original triggering condition for the bug).
-    pre_cached = cache / "MacTahoe"
-    (pre_cached / "contents/images").mkdir(parents=True, exist_ok=True)
-    (pre_cached / "contents/images/3840x2160.png").write_bytes(b"OLD")
-
     monkeypatch.setenv("HOME", str(home))
     monkeypatch.setattr(wallpapers, "HOME", home)
-    monkeypatch.setattr(wallpapers, "CACHE", cache)
-    monkeypatch.setattr(wallpapers, "LEGACY_CACHE", tmp_path / "legacy")
     monkeypatch.setattr(wallpapers, "DEST_DIR", dest)
     monkeypatch.setattr(wallpapers, "OFFLINE_DIR", offline)
 
-    # Critically: do NOT call download(). install() must sync offline
-    # wallpapers on its own — that's the contract.
     wallpapers.install()
 
     assert (dest / "MacTahoe-Bundled-Test/metadata.json").is_file()
     assert (dest / "MacTahoe-Bundled-Test/contents/images/3840x2160.jpg").read_bytes() == b"FAKE_JPEG"
 
 
-def test_install_picks_up_iridescence_from_repo_offline_dir(monkeypatch, tmp_path, repo):
-    """End-to-end check against the REAL repo offline tree — guards
-    against the bundled MacTahoe-Iridescence (or any future Mac*/ pack)
-    silently disappearing on a cache-hit install."""
+def test_install_skips_bundle_with_no_metadata(monkeypatch, tmp_path):
+    """A Mac*/ dir without metadata.json is a half-finished commit (e.g.
+    someone added images but forgot the json). install() must skip it
+    with a clear fail() instead of landing a wallpaper Plasma can't
+    list."""
     from steps import wallpapers
 
     home = tmp_path / "home"
-    cache = tmp_path / "cache"
+    offline = tmp_path / "offline"
     dest = home / ".local/share/wallpapers"
 
-    pre_cached = cache / "MacTahoe"
-    (pre_cached / "contents/images").mkdir(parents=True, exist_ok=True)
-    (pre_cached / "contents/images/3840x2160.png").write_bytes(b"OLD")
+    broken = offline / "MacTahoe-Broken"
+    (broken / "contents/images").mkdir(parents=True, exist_ok=True)
+    (broken / "contents/images/3840x2160.jpg").write_bytes(b"x")
 
     monkeypatch.setenv("HOME", str(home))
     monkeypatch.setattr(wallpapers, "HOME", home)
-    monkeypatch.setattr(wallpapers, "CACHE", cache)
-    monkeypatch.setattr(wallpapers, "LEGACY_CACHE", tmp_path / "legacy")
+    monkeypatch.setattr(wallpapers, "DEST_DIR", dest)
+    monkeypatch.setattr(wallpapers, "OFFLINE_DIR", offline)
+
+    failures: list[str] = []
+    monkeypatch.setattr(wallpapers, "fail", lambda m: failures.append(m))
+    monkeypatch.setattr(wallpapers, "info", lambda _m: None)
+
+    wallpapers.install()
+
+    assert not (dest / "MacTahoe-Broken").exists()
+    assert any("metadata.json" in m for m in failures), failures
+
+
+def test_install_picks_up_iridescence_from_repo_offline_dir(monkeypatch, tmp_path, repo):
+    """End-to-end check against the REAL repo offline tree — guards
+    against the bundled MacTahoe-Iridescence (or any future Mac*/ pack)
+    silently disappearing."""
+    from steps import wallpapers
+
+    home = tmp_path / "home"
+    dest = home / ".local/share/wallpapers"
+
+    monkeypatch.setenv("HOME", str(home))
+    monkeypatch.setattr(wallpapers, "HOME", home)
     monkeypatch.setattr(wallpapers, "DEST_DIR", dest)
     monkeypatch.setattr(wallpapers, "OFFLINE_DIR", repo / "src/offline/wallpapers")
 
@@ -176,6 +186,23 @@ def test_install_picks_up_iridescence_from_repo_offline_dir(monkeypatch, tmp_pat
 
     assert (dest / "MacTahoe-Iridescence/metadata.json").is_file()
     assert (dest / "MacTahoe-Iridescence/contents/images").is_dir()
+
+
+def test_repo_ships_full_macos_wallpaper_set(repo):
+    """v0.17 contract: the install no longer downloads from
+    512pixels.net. Every wallpaper the README claims must therefore
+    be present in src/offline/wallpapers/ at commit time, with both a
+    metadata.json and at least one image file under contents/. If
+    someone adds a new entry to _FIXED_NAMES but forgets the bundle,
+    or vice versa, this test catches it."""
+    from steps import wallpapers as wp_mod
+    offline_dir = repo / "src/offline/wallpapers"
+    for name in wp_mod._FIXED_NAMES:
+        bundle = offline_dir / name
+        assert bundle.is_dir(), f"{name} listed in _FIXED_NAMES but not bundled at {bundle}"
+        assert (bundle / "metadata.json").is_file(), f"{name} missing metadata.json"
+        images = list((bundle / "contents").rglob("3840x2160.*"))
+        assert images, f"{name} has no 3840x2160 image under contents/"
 
 
 def test_nautilus_no_fatal(sandbox, monkeypatch):

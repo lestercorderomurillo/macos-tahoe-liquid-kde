@@ -174,7 +174,9 @@ def test_set_transparency_entry_runs(repo):
 
 
 # ── mirrors json validity ─────────────────────────────────────────────────
-@pytest.mark.parametrize("name", ["wallpapers", "fonts", "icons", "cursors"])
+# Wallpapers used to be on this list. Since v0.17.0 they ship fully
+# bundled in src/offline/wallpapers/ — no mirror JSON, no downloader.
+@pytest.mark.parametrize("name", ["fonts", "icons", "cursors"])
 def test_mirror_json_valid(src, name):
     p = src / "mirrors" / f"{name}.json"
     assert p.is_file()

@@ -649,12 +649,13 @@ def verify_config(feat: dict[str, object]) -> None:
 
 
 def has_cache(feature: str, no_download: bool) -> bool:
+    # Wallpapers are fully bundled offline since v0.17.0 — no download
+    # phase, no cache to check. The branch only matters for features
+    # that pull from upstream mirrors.
     if not no_download:
         return False
     for base in (STEPS_DIR, LEGACY_STEPS_DIR):
         cache = base / feature.replace("_", "-")
-        if feature == "wallpapers" and any((cache / "MacTahoe/contents/images").glob("*")):
-            return True
         if feature == "fonts" and any((*cache.glob("*.otf"), *cache.glob("*.ttf"))):
             return True
         if feature == "cursors" and (cache / "MacTahoeLiquidKde/cursors").is_dir():

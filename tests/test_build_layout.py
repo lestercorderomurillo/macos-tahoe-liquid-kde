@@ -10,11 +10,7 @@ from steps import _helpers, acrylic_glass, globalmenu, plasmoids
 
 def _seed_cache(base: Path, feature: str) -> None:
     cache = base / feature.replace("_", "-")
-    if feature == "wallpapers":
-        images = cache / "MacTahoe/contents/images"
-        images.mkdir(parents=True, exist_ok=True)
-        (images / "3840x2160.png").write_bytes(b"png")
-    elif feature == "fonts":
+    if feature == "fonts":
         cache.mkdir(parents=True, exist_ok=True)
         (cache / "SF-Pro.ttf").write_bytes(b"font")
     elif feature == "cursors":
@@ -73,7 +69,7 @@ def test_native_steps_build_outside_source_tree(repo):
         assert (repo / "src") not in actual.parents
 
 
-@pytest.mark.parametrize("feature", ["wallpapers", "fonts", "cursors", "icons"])
+@pytest.mark.parametrize("feature", ["fonts", "cursors", "icons"])
 @pytest.mark.parametrize("base_name", ["build", "legacy"])
 def test_has_cache_supports_build_and_legacy_locations(monkeypatch, tmp_path, feature, base_name):
     build_root = tmp_path / "build-steps"
@@ -88,7 +84,7 @@ def test_has_cache_supports_build_and_legacy_locations(monkeypatch, tmp_path, fe
     assert cli.has_cache(feature, no_download=False) is False
 
 
-@pytest.mark.parametrize("feature", ["wallpapers", "fonts", "cursors", "icons"])
+@pytest.mark.parametrize("feature", ["fonts", "cursors", "icons"])
 def test_has_cache_rejects_empty_caches(monkeypatch, tmp_path, feature):
     monkeypatch.setattr(cli, "STEPS_DIR", tmp_path / "build-steps")
     monkeypatch.setattr(cli, "LEGACY_STEPS_DIR", tmp_path / "legacy-steps")
