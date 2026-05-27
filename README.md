@@ -264,7 +264,7 @@ Available flags:
 | `--window-decorations` | `--kvantum` | `--color-schemes` | `--icons` |
 | `--plasmoids` | `--acrylic-glass` | `--global-theme` | `--layout` |
 | `--sounds` | `--gtk` | `--sddm` | `--apps` |
-| `--nautilus` | `--portals` | | |
+| `--nautilus` | `--portals` | `--plymouth` | |
 
 Use `--no-download` to skip asset downloads and use cached files.
 
@@ -278,8 +278,8 @@ sudo ./install --dark                            # force dark
 sudo ./install --light                           # force light
 ```
 
-- **`--auto`** is the default. It switches between light mode at `06:00` and dark mode at `18:00` with a systemd timer, and `Persistent=true` catches missed transitions after suspend, shutdown, or late login.
-- **`--light`** / **`--dark`** lock the theme to one mode and disable the timer.
+- **`--auto`** is the default. A oneshot systemd user service applies the right mode (`light` 06:00–17:59, `dark` otherwise) once after `plasma-plasmashell.service` comes up, and a timer re-runs the same service at 06:00 and 18:00 each day (`Persistent=true` so a missed transition fires on next login). One entry point, one code path — `mac-tahoe-theme-switch auto`.
+- **`--light`** / **`--dark`** lock the theme to one mode. The auto service + timer are NOT installed in this case; the mode is applied once and stays put until the user re-runs the installer or runs `mac-tahoe-theme-switch` manually.
 
 After install, you can switch manually:
 
@@ -316,15 +316,22 @@ macos-tahoe-liquid-kde/
     ├── scripts/
     │   ├── cli.py              # argparse, feature flags, install/uninstall flow
     │   ├── theme_switch.py     # light/dark switcher (installed as ~/.local/bin)
+    │   ├── about_info.py       # CPU/GPU/disk helper for the About panel
     │   ├── set-transparency    # CLI: tune background opacity (Kvantum/Plasma/GTK)
     │   ├── svgzc               # CLI: decode/encode .svgz for editing
     │   ├── paths.py            # repo-relative paths (REPO_ROOT, SRC_DIR, ...)
     │   ├── distro.py           # per-distro layer: Qt6 paths, package manager, install hints
-    │   ├── preflight.py        # sudo escalation, destination paths, Qt6 plugin search, plasmoid IDs
+    │   ├── preflight.py        # 9 checks: sudo, paths, Qt6, Plasma version, KDE
+    │   │                       #   config tools, DBus, kded6, disk space, plasmoid IDs
     │   ├── log.py, state.py, step_runner.py, utils.py
-    │   └── steps/              # one module per feature: install/uninstall/...
-    │       ├── wallpapers.py, fonts.py, cursors.py, icons.py, ...
-    │       └── (plasmoids, acrylic_glass, globalmenu, theme_switch, layout, …)
+    │   └── steps/              # one module per feature (install/uninstall/...)
+    │       ├── apply.py, layout.py, theme_switch.py
+    │       ├── wallpapers.py, fonts.py, cursors.py, icons.py
+    │       ├── color_schemes.py, plasma_theme.py, kvantum.py, gtk.py
+    │       ├── global_theme.py, window_decorations.py
+    │       ├── plasmoids.py, globalmenu.py, acrylic_glass.py
+    │       ├── plymouth.py, sddm.py, sounds.py
+    │       └── nautilus.py, portals.py, apps.py
     ├── mirrors/            # download source definitions (JSON)
     │   ├── wallpapers.json
     │   ├── fonts.json
@@ -337,12 +344,22 @@ macos-tahoe-liquid-kde/
         ├── kvantum/        # Kvantum Qt theme (blur + translucency)
         ├── gtk/            # GTK 2/3/4 theme
         ├── aurorae/        # macOS-style window decorations
+        ├── look-and-feel/  # Global Theme packages (light + dark variants)
         ├── plasmoids/      # custom Plasma widgets
         ├── kwin-effects/   # Acrylic Glass KWin effect (built from source)
         ├── layouts/        # panel layout scripts
         ├── nautilus/       # optional Nautilus overrides
+        ├── plymouth/       # boot splash theme
         ├── wallpapers/     # Tahoe Iridescence + Landscape (Morning/Evening/Night)
         └── *.service / *.timer  # systemd units for the theme switcher
+
+tests/
+├── containers/         # per-distro Dockerfiles + matrix runner
+│   ├── Dockerfile.<arch|cachyos|manjaro|endeavouros|garuda|...>
+│   ├── Dockerfile.<fedora|nobara|bazzite|opensuse|gentoo>
+│   ├── run_in_container.py   # qmake6 / distro layer / preflight / pytest probe
+│   └── run_matrix.sh         # build + run every container locally
+└── test_*.py            # 693 tests covering the install pipeline
 ```
 
 ---
