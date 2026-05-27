@@ -853,7 +853,8 @@ def run_install(argv: list[str]) -> int:
             return 1
 
         banner(read_version())
-        if not confirm("In development — Install at your own risk."):
+        if not confirm("In development — Install at your own risk. "
+                       "Do not install on production / work systems."):
             tracker.mark_aborted()
             return 0
         check_for_updates(inline=True)
