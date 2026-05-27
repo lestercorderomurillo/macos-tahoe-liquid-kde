@@ -793,6 +793,174 @@ def test_grub_auto_patch_disabled_via_env(monkeypatch):
     assert plymouth._grub_auto_patch_enabled() is True
 
 
+def test_grub_auto_patch_accepts_yes_and_true_for_opt_out(monkeypatch):
+    """Users might write MTTKDE_NO_GRUB_MODIFY=true or =yes — the env
+    parser should recognise the common forms so opt-out works
+    regardless of the value style the user picked."""
+    for val in ("1", "true", "TRUE", "yes", "YES"):
+        monkeypatch.setenv("MTTKDE_NO_GRUB_MODIFY", val)
+        assert plymouth._grub_auto_patch_enabled() is False, val
+    for val in ("0", "false", "no", "", "off"):
+        monkeypatch.setenv("MTTKDE_NO_GRUB_MODIFY", val)
+        # Anything not in the affirmative set means auto-patch stays on.
+        # ("off" isn't in the affirmative list either — silently fall
+        # through to enabled. Documented in plymouth.py.)
+        assert plymouth._grub_auto_patch_enabled() is True, val
+
+
+def test_grub_patch_preserves_existing_tokens(tmp_path, monkeypatch):
+    """Adding splash must not lose any of the user's other kernel
+    parameters. The v0.15.3 patcher splits on whitespace inside the
+    quotes — verify a realistic Fedora-style cmdline survives the
+    rewrite intact."""
+    import contextlib
+    grub = tmp_path / "etc/default/grub"
+    grub.parent.mkdir(parents=True, exist_ok=True)
+    grub.write_text(
+        'GRUB_CMDLINE_LINUX_DEFAULT="rhgb quiet rd.luks.uuid=luks-xx '
+        'rd.lvm.lv=fedora/root rd.lvm.lv=fedora/swap"\n',
+        encoding="utf-8",
+    )
+    monkeypatch.setattr(plymouth, "GRUB_DEFAULT", grub)
+    monkeypatch.setattr(plymouth, "_as_root", contextlib.nullcontext)
+
+    assert plymouth._patch_grub_add_splash() is True
+
+    line = [ln for ln in grub.read_text().splitlines()
+            if ln.startswith("GRUB_CMDLINE_LINUX_DEFAULT")][0]
+    # Every original token still present.
+    for tok in ("rhgb", "quiet", "rd.luks.uuid=luks-xx",
+                "rd.lvm.lv=fedora/root", "rd.lvm.lv=fedora/swap"):
+        assert tok in line, f"{tok} dropped from {line!r}"
+    # And splash appended.
+    assert "splash" in line
+
+
+def test_grub_patch_handles_single_quotes(tmp_path, monkeypatch):
+    """Some distros (Debian / SUSE templates) use single quotes around
+    the cmdline. The regex must match both quote styles or the patcher
+    silently does nothing on those distros."""
+    import contextlib
+    grub = tmp_path / "etc/default/grub"
+    grub.parent.mkdir(parents=True, exist_ok=True)
+    grub.write_text(
+        "GRUB_CMDLINE_LINUX_DEFAULT='quiet loglevel=3'\n",
+        encoding="utf-8",
+    )
+    monkeypatch.setattr(plymouth, "GRUB_DEFAULT", grub)
+    monkeypatch.setattr(plymouth, "_as_root", contextlib.nullcontext)
+
+    assert plymouth._patch_grub_add_splash() is True
+    assert "splash" in grub.read_text()
+
+
+def test_grub_patch_backup_keeps_truly_original(tmp_path, monkeypatch):
+    """The .mttkde.bak must be the file BEFORE any patcher run, even
+    across multiple install runs. If a user installs twice, the
+    second run must NOT overwrite the backup with the first run's
+    already-patched output — otherwise the rollback path is gone."""
+    import contextlib
+    grub = tmp_path / "etc/default/grub"
+    grub.parent.mkdir(parents=True, exist_ok=True)
+    original = 'GRUB_CMDLINE_LINUX_DEFAULT="quiet"\n'
+    grub.write_text(original, encoding="utf-8")
+    monkeypatch.setattr(plymouth, "GRUB_DEFAULT", grub)
+    monkeypatch.setattr(plymouth, "_as_root", contextlib.nullcontext)
+
+    plymouth._patch_grub_add_splash()
+    # Simulate a second invocation: re-modify the file, then run again.
+    grub.write_text(
+        'GRUB_CMDLINE_LINUX_DEFAULT="quiet splash extra_param"\n',
+        encoding="utf-8",
+    )
+    plymouth._patch_grub_add_splash()
+
+    bak = grub.with_suffix(grub.suffix + ".mttkde.bak")
+    assert bak.read_text() == original, (
+        "second run overwrote the original backup — rollback path lost"
+    )
+
+
+# ── GRUB regenerate fallback chain ──────────────────────────────────
+
+
+def test_grub_regenerate_picks_first_available_binary(tmp_path, monkeypatch):
+    """On Arch / openSUSE / Gentoo the binary is ``grub-mkconfig``; on
+    Fedora / RHEL it's ``grub2-mkconfig``. The regenerate helper
+    walks every (binary, output) candidate and uses the first match
+    whose binary is on PATH and whose output directory exists."""
+    import contextlib
+    import subprocess as sp
+    monkeypatch.setattr(plymouth, "_as_root", contextlib.nullcontext)
+
+    # Pretend only grub2-mkconfig + /boot/grub2 exist (Fedora layout).
+    monkeypatch.setattr(plymouth, "have", lambda c: c == "grub2-mkconfig")
+    real_is_dir = type(tmp_path).is_dir
+
+    def fake_is_dir(self):
+        if str(self) == "/boot/grub2":
+            return True
+        if str(self) == "/boot/grub":
+            return False
+        return real_is_dir(self)
+    monkeypatch.setattr("pathlib.Path.is_dir", fake_is_dir)
+
+    invocations: list[list[str]] = []
+
+    def fake_run(argv, **kwargs):
+        invocations.append(list(argv))
+        return sp.CompletedProcess(argv, 0, "", "")
+    monkeypatch.setattr(plymouth.subprocess, "run", fake_run)
+
+    assert plymouth._regenerate_grub_config() is True
+    assert invocations == [["grub2-mkconfig", "-o", "/boot/grub2/grub.cfg"]]
+
+
+def test_grub_regenerate_returns_false_when_nothing_matches(tmp_path, monkeypatch):
+    """If neither ``grub-mkconfig`` nor ``grub2-mkconfig`` is on PATH
+    (systemd-boot / refind / limine user, or stripped-down distro),
+    the helper returns False without crashing and the install step
+    surfaces a warning instead of an exception."""
+    monkeypatch.setattr(plymouth, "have", lambda _c: False)
+    # No subprocess.run should be reachable at all in this scenario.
+    monkeypatch.setattr(
+        plymouth.subprocess, "run",
+        lambda *a, **kw: (_ for _ in ()).throw(
+            AssertionError("subprocess.run called with no available binary")
+        ),
+    )
+    assert plymouth._regenerate_grub_config() is False
+
+
+def test_grub_regenerate_falls_through_when_first_binary_fails(tmp_path, monkeypatch):
+    """If the first matching binary exits non-zero (e.g. broken Fedora
+    grub2 stub), the helper must try the next (binary, output)
+    candidate before giving up. Otherwise a single distro-specific
+    quirk masks a working alternative."""
+    import contextlib
+    import subprocess as sp
+    monkeypatch.setattr(plymouth, "_as_root", contextlib.nullcontext)
+    # Both binaries on PATH, both output dirs exist.
+    monkeypatch.setattr(plymouth, "have", lambda _c: True)
+    monkeypatch.setattr("pathlib.Path.is_dir", lambda self: True)
+
+    invocations: list[list[str]] = []
+
+    def fake_run(argv, **kwargs):
+        invocations.append(list(argv))
+        # First call (grub-mkconfig → /boot/grub/grub.cfg) fails.
+        # Second call (grub2-mkconfig → /boot/grub2/grub.cfg) succeeds.
+        if len(invocations) == 1:
+            return sp.CompletedProcess(argv, 1, "", "boom")
+        return sp.CompletedProcess(argv, 0, "", "")
+    monkeypatch.setattr(plymouth.subprocess, "run", fake_run)
+
+    assert plymouth._regenerate_grub_config() is True
+    assert len(invocations) == 2
+    assert invocations[0][0] == "grub-mkconfig"
+    assert invocations[1][0] == "grub2-mkconfig"
+
+
 # The "GPU module in MODULES blocks simpledrm" warning was removed:
 # the correlation between MODULES=(amdgpu) and the corner-rendered
 # shutdown splash wasn't strong enough to justify nagging users about

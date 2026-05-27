@@ -69,6 +69,14 @@ _USER_AGENT = (
 )
 
 
+# Hard ceiling so a caller can never request unbounded retries. With
+# the default 60s socket timeout per attempt + the 0/1/2/4/8s backoff
+# schedule, MAX_FETCH_RETRIES=5 caps a single fetch at ~5 min worst-
+# case (60×5 + 1+2+4+8). Anything more than that and the user is
+# better served by failing fast and surfacing the error.
+MAX_FETCH_RETRIES = 5
+
+
 def fetch(url: str, dest: Path | str, referer: str | None = None,
           retries: int = 3) -> bool:
     """Download ``url`` to ``dest`` with exponential backoff between
@@ -82,10 +90,11 @@ def fetch(url: str, dest: Path | str, referer: str | None = None,
     to retry`` because the on-disk file was empty / partial. We now
     detect that here and retry with backoff.
 
-    Backoff schedule: 0s before the first attempt, then 1s, 2s, 4s
-    before each subsequent retry. The 7s total wall-clock added to a
-    full 3-retry failure is cheaper than asking the user to re-run the
-    whole installer for a transient network blip."""
+    Backoff schedule: 0s before the first attempt, then 1s, 2s, 4s, 8s
+    before each subsequent retry. ``retries`` is clamped to
+    ``[1, MAX_FETCH_RETRIES]`` so a caller can never request unbounded
+    work. On final failure the partial file is deleted (no half-baked
+    artefacts left behind) and an error line goes to stderr."""
     dest = Path(dest)
     dest.parent.mkdir(parents=True, exist_ok=True)
     headers = {"User-Agent": _USER_AGENT}
@@ -93,9 +102,10 @@ def fetch(url: str, dest: Path | str, referer: str | None = None,
         headers["Referer"] = referer
     req = urllib.request.Request(url, headers=headers)
     last_err: str = ""
-    for attempt in range(max(1, retries)):
+    capped_retries = min(MAX_FETCH_RETRIES, max(1, retries))
+    for attempt in range(capped_retries):
         if attempt > 0:
-            time.sleep(2 ** (attempt - 1))  # 1s, 2s, 4s
+            time.sleep(2 ** (attempt - 1))  # 1s, 2s, 4s, 8s
         try:
             with urllib.request.urlopen(req, timeout=60) as r:
                 expected = r.headers.get("Content-Length")
