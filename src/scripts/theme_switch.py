@@ -455,21 +455,32 @@ def _run_live_plasma_tool(cmd: list[str], *, timeout_seconds: int = 20) -> bool:
 
 
 _LAF_APPLY_ATTEMPTS = 3
-_LAF_APPLY_RETRY_SLEEP_SECONDS = 10
+_LAF_APPLY_FIRST_WAIT_SECONDS = 2
+_LAF_APPLY_RETRY_SLEEP_SECONDS = 6
 
 
 def _apply_lookandfeel_live(laf: str) -> bool:
-    """Run plasma-apply-lookandfeel against the running shell. Up to three
-    attempts spaced 10s apart, stopping at the first success. The wait is
-    deliberate: on a fresh login the systemd unit can race plasmashell's
-    DBus registration, and plasma-apply-lookandfeel exits 0 against a not-
-    yet-ready bus without actually re-rendering the desktop. Sleeping
-    first lets plasmashell finish settling; retrying covers the occasional
-    slow boot (HDD, encrypted home, heavy login program list)."""
+    """Run plasma-apply-lookandfeel against the running shell. Up to
+    three attempts. First attempt waits 2s (just enough for the
+    plasmashell DBus name to register after the service line ``After=
+    plasma-plasmashell.service`` clears); subsequent attempts wait 6s
+    before retrying.
+
+    The waits are deliberate: on a fresh login the systemd unit can
+    race plasmashell's DBus registration, and plasma-apply-lookandfeel
+    exits 0 against a not-yet-ready bus without actually re-rendering
+    the desktop. The 2s lead-in covers the common case (DBus is
+    already up by the time our service runs); the 6s gap between
+    retries covers the slow-boot tail (HDD, encrypted home, heavy
+    login program list). Total worst case: 2 + 6 + 6 = 14s of sleeps
+    plus three plasma-apply-lookandfeel invocations."""
     if not _have("plasma-apply-lookandfeel"):
         return False
-    for _ in range(_LAF_APPLY_ATTEMPTS):
-        time.sleep(_LAF_APPLY_RETRY_SLEEP_SECONDS)
+    for attempt in range(_LAF_APPLY_ATTEMPTS):
+        if attempt == 0:
+            time.sleep(_LAF_APPLY_FIRST_WAIT_SECONDS)
+        else:
+            time.sleep(_LAF_APPLY_RETRY_SLEEP_SECONDS)
         if _run_live_plasma_tool(
             ["plasma-apply-lookandfeel", "-a", laf, "--keep-auto"],
         ):

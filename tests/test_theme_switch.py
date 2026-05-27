@@ -224,7 +224,14 @@ def test_apply_lookandfeel_retries_up_to_three_times(monkeypatch):
     """plasma-apply-lookandfeel can race plasmashell's DBus registration
     on a fresh login. The script must sleep then retry, up to 3 attempts,
     stopping at the first success — otherwise a slow boot leaves the
-    running shell desynced from the on-disk LookAndFeel package."""
+    running shell desynced from the on-disk LookAndFeel package.
+
+    Schedule since v0.17.1: 2s before the first attempt (just enough
+    for the plasmashell DBus name to register after our service's
+    ``After=plasma-plasmashell.service`` clears), then 6s before each
+    subsequent retry. The first attempt fires quickly so the common
+    case (DBus already up) finishes in ~2-5s instead of the old 13s,
+    and the worst case is 2 + 6 + 6 = 14s of sleeps."""
     import theme_switch
 
     attempts: list[list[str]] = []
@@ -242,8 +249,30 @@ def test_apply_lookandfeel_retries_up_to_three_times(monkeypatch):
 
     assert theme_switch._apply_lookandfeel_live(theme_switch.LAF_DARK) is True
     assert len(attempts) == 3
-    # One sleep per attempt — sleep-then-try, three rounds.
-    assert sleeps == [theme_switch._LAF_APPLY_RETRY_SLEEP_SECONDS] * 3
+    # One sleep per attempt: 1s lead-in, then 10s + 10s between retries.
+    assert sleeps == [
+        theme_switch._LAF_APPLY_FIRST_WAIT_SECONDS,
+        theme_switch._LAF_APPLY_RETRY_SLEEP_SECONDS,
+        theme_switch._LAF_APPLY_RETRY_SLEEP_SECONDS,
+    ]
+
+
+def test_apply_lookandfeel_happy_path_only_sleeps_once(monkeypatch):
+    """v0.17.1 schedule: when the first attempt succeeds (the common
+    case — DBus is already up), we wait just the 1s lead-in and exit.
+    No 10s second-attempt sleep ever fires. Guards against a future
+    refactor that accidentally moves the schedule back to the old
+    'sleep 10s before every attempt' pattern."""
+    import theme_switch
+
+    sleeps: list[float] = []
+    monkeypatch.setattr(theme_switch, "_have", lambda cmd: True)
+    monkeypatch.setattr(theme_switch, "_run_live_plasma_tool",
+                        lambda *_a, **_kw: True)
+    monkeypatch.setattr(theme_switch.time, "sleep", lambda s: sleeps.append(s))
+
+    assert theme_switch._apply_lookandfeel_live(theme_switch.LAF_LIGHT) is True
+    assert sleeps == [theme_switch._LAF_APPLY_FIRST_WAIT_SECONDS]
 
 
 def test_apply_lookandfeel_gives_up_after_three_failed_attempts(monkeypatch):
