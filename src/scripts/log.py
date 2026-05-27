@@ -7,6 +7,18 @@ WHITE = "\033[1;37m"
 RESET = "\033[0m"
 BOLD = "\033[1m"
 
+# Apple Computer 1977-1998 rainbow logo (top → bottom): green, yellow,
+# orange, red, purple, blue. We use 256-color codes for orange and
+# purple since the basic ANSI palette has no orange or purple.
+_APPLE_RAINBOW = (
+    "\033[38;5;46m",   # green (leaf)
+    "\033[38;5;226m",  # yellow
+    "\033[38;5;208m",  # orange
+    "\033[38;5;196m",  # red
+    "\033[38;5;165m",  # purple / magenta
+    "\033[38;5;33m",   # blue
+)
+
 _step_counter = 0
 errors: list[str] = []
 # True when the most recent log.py emission ended with a blank line.
@@ -69,17 +81,25 @@ def fail(msg: str) -> None:
 
 def banner(version: str) -> None:
     art = (
-        "                   .:'\n"
-        "                 __ :'__\n"
-        "              .'`__`-'__`'.\n"
-        "             :__________.-'\n"
-        "             :_________:\n"
-        "              :_________`-;\n"
-        "               `.__.-.__.'\n"
+        "                   .:'",
+        "                 __ :'__",
+        "              .'`__`-'__`'.",
+        "             :__________.-'",
+        "             :_________:",
+        "              :_________`-;",
+        "               `.__.-.__.'",
     )
     print()
-    for line in art.splitlines():
-        print(f"  {RED}{BOLD}{line}{RESET}")
+    # Apple Computer rainbow: top line uses the leaf-green; the body's
+    # six rows map onto the six bands of the original logo (green,
+    # yellow, orange, red, purple, blue). One color per line so the
+    # gradient reads as a stripe.
+    for line, colour in zip(art, _APPLE_RAINBOW):
+        print(f"  {colour}{BOLD}{line}{RESET}")
+    # If we ever add more art rows than colours, fall through to the
+    # last colour so we never crash on a misaligned tuple.
+    for extra in art[len(_APPLE_RAINBOW):]:
+        print(f"  {_APPLE_RAINBOW[-1]}{BOLD}{extra}{RESET}")
     print()
     print(f"  {GREEN}{BOLD}        MacTahoe Liquid KDE {WHITE}v{version}{RESET}")
     print(f"  {WHITE}            Developed by Lester{RESET}")
