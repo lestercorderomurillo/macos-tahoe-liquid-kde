@@ -4,10 +4,19 @@
 # makes the CI matrix reflect the README claim.
 FROM cachyos/cachyos:latest
 
-RUN pacman -Sy --noconfirm --needed \
-    python python-pytest \
-    qt6-base qt6-tools \
-    pkgconf \
+# Base image ships pacman keyrings that drift out of date — pacman -Sy
+# then fails with ``signature from "CachyOS <admin@cachyos.org>" is
+# invalid``. Refresh the keyring before any sync so the rest of the
+# build is on current keys. Both keyrings are required (archlinux-
+# keyring for core/extra/multilib repos, cachyos-keyring for the
+# cachyos overlay).
+RUN pacman-key --init && \
+    pacman-key --populate archlinux cachyos && \
+    pacman -Sy --noconfirm archlinux-keyring cachyos-keyring && \
+    pacman -Sy --noconfirm --needed \
+        python python-pytest \
+        qt6-base qt6-tools \
+        pkgconf \
     && pacman -Scc --noconfirm
 
 WORKDIR /repo
