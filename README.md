@@ -13,9 +13,7 @@ A full macOS Tahoe-style desktop experience for KDE Plasma 6.6+.
 
 <br>
 
-<p align="center">
-  <img src="https://img.shields.io/badge/features-%26%20screenshots-4B6B8A?style=for-the-badge&logo=kde&logoColor=white" alt="Features and screenshots">
-</p>
+![Features and screenshots](https://img.shields.io/badge/features-%26%20screenshots-4B6B8A?style=for-the-badge&logo=kde&logoColor=white)
 
 ### Tahoe Launcher
 
@@ -116,9 +114,7 @@ Plymouth boot screen with centered Apple-style logo on every monitor, scaled dyn
 
 ---
 
-<p align="center">
-  <img src="https://img.shields.io/badge/tested-distros-4B6B8A?style=for-the-badge&logo=linux&logoColor=white" alt="Tested distros">
-</p>
+![Tested distros](https://img.shields.io/badge/tested-distros-4B6B8A?style=for-the-badge&logo=linux&logoColor=white)
 
 |     | Distro | Supported yet? |
 |:---:|--------|:--------------:|
@@ -137,9 +133,7 @@ Each ✅ distro is verified in CI on every push: `tests/containers/` runs the pa
 
 ---
 
-<p align="center">
-  <img src="https://img.shields.io/badge/project-roadmap-6B4B8A?style=for-the-badge&logo=github&logoColor=white" alt="Roadmap">
-</p>
+![Roadmap](https://img.shields.io/badge/project-roadmap-6B4B8A?style=for-the-badge&logo=github&logoColor=white)
 
 | Component | Description | Status |
 |-----------|-------------|--------|
@@ -174,9 +168,7 @@ Each ✅ distro is verified in CI on every push: `tests/containers/` runs the pa
 
 ---
 
-<p align="center">
-  <img src="https://img.shields.io/badge/requirements-%26%20dependencies-4B6B8A?style=for-the-badge&logo=linux&logoColor=white" alt="Requirements and dependencies">
-</p>
+![Requirements and dependencies](https://img.shields.io/badge/requirements-%26%20dependencies-4B6B8A?style=for-the-badge&logo=linux&logoColor=white)
 
 ### Hard requirements
 
@@ -238,9 +230,7 @@ If your distro is supported and the preflight tells you a tool is missing:
 
 ---
 
-<p align="center">
-  <img src="https://img.shields.io/badge/getting-started-3B7B5B?style=for-the-badge&logo=gnubash&logoColor=white" alt="Usage">
-</p>
+![Usage](https://img.shields.io/badge/getting-started-3B7B5B?style=for-the-badge&logo=gnubash&logoColor=white)
 
 ```bash
 sudo ./install              # install everything
@@ -300,9 +290,7 @@ The flags from the most recent run are also logged at `~/.local/state/mac-tahoe-
 
 ---
 
-<p align="center">
-  <img src="https://img.shields.io/badge/report-a%20bug-A04B4B?style=for-the-badge&logo=github&logoColor=white" alt="Report a bug">
-</p>
+![Report a bug](https://img.shields.io/badge/report-a%20bug-A04B4B?style=for-the-badge&logo=github&logoColor=white)
 
 Found something broken? Please open a GitHub issue:
 
@@ -322,9 +310,7 @@ When filing, please include:
 
 ---
 
-<p align="center">
-  <img src="https://img.shields.io/badge/disclaimer-not%20affiliated%20with%20apple-6B6B6B?style=for-the-badge&logo=apple&logoColor=white" alt="Disclaimer">
-</p>
+![Disclaimer](https://img.shields.io/badge/disclaimer-not%20affiliated%20with%20apple-6B6B6B?style=for-the-badge&logo=apple&logoColor=white)
 
 Build using AI tools.
 
@@ -334,9 +320,7 @@ If you like Apple, buy an Apple product.
 
 ---
 
-<p align="center">
-  <img src="https://img.shields.io/badge/license-GPL--2.0-3B7B3B?style=for-the-badge&logo=gnu&logoColor=white" alt="License">
-</p>
+![License](https://img.shields.io/badge/license-GPL--2.0-3B7B3B?style=for-the-badge&logo=gnu&logoColor=white)
 
 [GPL-2.0](LICENSE) — open-source, copyleft. Forks welcome, but anything you redistribute has to stay open under the same license and keep the copyright notices intact. No warranty, no liability — use it at your own risk.
 
@@ -344,9 +328,7 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for how to send changes back.
 
 ---
 
-<p align="center">
-  <img src="https://img.shields.io/badge/credits-%26%20inspiration-8A6B4B?style=for-the-badge&logo=apple&logoColor=white" alt="Credits and inspiration">
-</p>
+![Credits and inspiration](https://img.shields.io/badge/credits-%26%20inspiration-8A6B4B?style=for-the-badge&logo=apple&logoColor=white)
 
 Thanks to the open-source authors whose work inspired or fed this project:
 

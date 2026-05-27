@@ -12,11 +12,48 @@ src/offline/kwin-effects/*/build/
 src/offline/kwin-effects/*/src/shaders/glass*.frag
 src/offline/plasmoids/*/build/
 
+# Asset-editing scratch dir.
 svg-edit/
 
-.claude
-CLAUDE.md
+# AI agent local state (sessions, caches, scratch).
+# Note: CLAUDE.md / AGENTS.md / CODEX.md / GEMINI.md are NOT ignored —
+# they are checked-in project guidance documents. Only the per-agent
+# state directories below are local-only.
+.claude/
 .codex
+.codex/
+.gemini/
+.gemini
+.aider*
+.continue/
+.cursor/
+.copilot/
+
+# AI plan / scratch files some workflows write at the repo root.
+.plan.md
+.plans/
+PLAN.md
+SCRATCH.md
+
+# Editor + OS junk that occasionally leaks in.
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
 
 # VM test harness — captured plymouth render frames + debug logs.
 tests/vm/output/
+
+# Local Python venvs sometimes parked in-tree by contributors.
+.venv/
+venv/
+env/
+
+# Coverage + tox + mypy droppings if anyone runs them.
+.coverage
+htmlcov/
+.tox/
+.mypy_cache/
+.ruff_cache/
