@@ -159,12 +159,40 @@ def step_package_manager_layer() -> bool:
         res = subprocess.run(
             [*probe, pkg], check=False, capture_output=True, text=True,
         )
-        if res.returncode != 0:
-            print(f"     FAIL: probe returned {res.returncode}")
-            print(f"           stderr: {res.stderr.strip()[:200]}")
-            ok = False
-        else:
+        if res.returncode == 0:
             print(f"     PASS")
+            continue
+
+        # Distinguish "package genuinely missing from repo" (true
+        # negative — installer would fail at runtime, so we must FAIL
+        # the test) from "package manager couldn't reach the repo"
+        # (transient network / metadata issue inside the container —
+        # SKIP so flaky upstream repos don't tank CI). The signal is
+        # in stderr text, not just the returncode: zypper returns 106
+        # on metadata-fetch failures, apt returns 100 on similar
+        # network issues, etc. Match by string instead of code so we
+        # don't have to track every PM's exit-code table.
+        stderr = (res.stderr or "").strip()
+        transient_markers = (
+            "Failed to retrieve",      # zypper
+            "repository metadata",     # zypper / apt
+            "Could not resolve host",  # curl
+            "Temporary failure",       # apt
+            "404 Not Found",           # dead mirror
+            "Connection timed out",
+            "Cannot initiate the connection",
+            "No more mirrors to try",  # dnf
+            "Errors during downloading metadata",  # dnf
+        )
+        if any(m in stderr for m in transient_markers):
+            print(f"     SKIP: probe returned {res.returncode} but "
+                  f"stderr looks transient (network / metadata)")
+            print(f"           stderr: {stderr[:200]}")
+            continue
+
+        print(f"     FAIL: probe returned {res.returncode}")
+        print(f"           stderr: {stderr[:200]}")
+        ok = False
     return ok
 
 
