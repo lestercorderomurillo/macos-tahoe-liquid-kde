@@ -233,185 +233,60 @@ If your distro is supported and the preflight tells you a tool is missing:
 ## Usage
 
 ```bash
-sudo ./install                                   # install everything
-sudo ./install --help                            # show all options
-sudo ./install --preflight                       # dry-run the safety checks, exit
-sudo ./uninstall                                 # uninstall, reset to Breeze
+sudo ./install              # install everything
+sudo ./install --help       # show all options
+sudo ./install --preflight  # run only the safety checks
+sudo ./uninstall            # remove everything, reset to Breeze
 ```
 
-### Staying up to date
+Update check on launch is on by default. To bypass: `sudo MAC_TAHOE_NO_UPDATE_CHECK=true ./install`. To only check: `sudo ./install --check-update`.
+
+### Picking what to install
+
+Skip components with `--no-<name>`, or restrict to a few with `--only`:
 
 ```bash
-sudo ./install --check-update                    # check without installing
-sudo MAC_TAHOE_NO_UPDATE_CHECK=true ./install    # disable the check
+sudo ./install --no-gtk --no-sddm             # skip GTK and SDDM
+sudo ./install --only --fonts --icons         # only fonts and icons
+sudo ./uninstall --only --cursors             # uninstall just cursors
 ```
 
-### Feature Flags
+The available names:
 
-Every component has a CLI flag. Use `--no-` to skip, or `--only` to run just the listed ones:
+`wallpapers`, `fonts`, `cursors`, `plasma-theme`, `window-decorations`, `kvantum`, `color-schemes`, `icons`, `plasmoids`, `acrylic-glass`, `global-theme`, `layout`, `sounds`, `gtk`, `sddm`, `apps`, `nautilus`, `portals`, `plymouth`.
+
+Two extra knobs:
+
+- `--no-download` — use cached assets, don't hit the network.
+- `--no-grub-modify` — don't touch `/etc/default/grub`. (By default the Plymouth step appends `splash` and re-runs `grub-mkconfig` so the boot splash renders; with this flag you get a warning + the manual command instead.)
+
+### Light, dark, or auto
 
 ```bash
-sudo ./install --no-gtk --no-sddm                # skip GTK and SDDM
-sudo ./install --only --fonts --icons            # install only fonts and icons
-sudo ./uninstall --only --cursors                # uninstall only cursors
+sudo ./install            # auto (default)
+sudo ./install --dark
+sudo ./install --light
 ```
 
-Available flags:
+Auto means: light from 06:00 to 18:00, dark otherwise. The installer drops a systemd user service + timer that handles the flip on its own. `--light` / `--dark` pin the mode and skip the timer entirely.
 
-| | | | |
-|---|---|---|---|
-| `--wallpapers` | `--fonts` | `--cursors` | `--plasma-theme` |
-| `--window-decorations` | `--kvantum` | `--color-schemes` | `--icons` |
-| `--plasmoids` | `--acrylic-glass` | `--global-theme` | `--layout` |
-| `--sounds` | `--gtk` | `--sddm` | `--apps` |
-| `--nautilus` | `--portals` | `--plymouth` | |
-
-Use `--no-download` to skip asset downloads and use cached files.
-
-Use `--no-grub-modify` to keep the installer out of `/etc/default/grub`: the Plymouth step normally appends `splash` to `GRUB_CMDLINE_LINUX_DEFAULT` (with a `.mttkde.bak` backup) and runs `grub-mkconfig` so the boot splash actually renders. With the flag set, you get a warning + manual instructions instead.
-
-### Theme Mode
+Switch by hand anytime:
 
 ```bash
-sudo ./install                                   # auto (default)
-sudo ./install --dark                            # force dark
-sudo ./install --light                           # force light
+mac-tahoe-theme-switch light
+mac-tahoe-theme-switch dark
+mac-tahoe-theme-switch auto
 ```
 
-- **`--auto`** is the default. A oneshot systemd user service applies the right mode (`light` 06:00–17:59, `dark` otherwise) once after `plasma-plasmashell.service` comes up, and a timer re-runs the same service at 06:00 and 18:00 each day (`Persistent=true` so a missed transition fires on next login). One entry point, one code path — `mac-tahoe-theme-switch auto`.
-- **`--light`** / **`--dark`** lock the theme to one mode. The auto service + timer are NOT installed in this case; the mode is applied once and stays put until the user re-runs the installer or runs `mac-tahoe-theme-switch` manually.
-
-After install, you can switch manually:
+### Remembering your choices
 
 ```bash
-mac-tahoe-theme-switch light                     # force light (disables timer)
-mac-tahoe-theme-switch dark                      # force dark (disables timer)
-mac-tahoe-theme-switch auto                      # re-enable clock-based 6–18
+sudo ./install --no-gtk --dark --save   # write to features.json
+sudo ./install                          # next time, reuses features.json
+sudo ./install --reset                  # back to defaults
 ```
 
-### Persistence
-
-```bash
-sudo ./install --no-gtk --dark --save            # save settings to features.json
-sudo ./install                                   # reuses saved features.json
-sudo ./install --reset                           # reset features.json to defaults
-```
-
-Used flags are recorded at `~/.local/state/mac-tahoe-liquid-kde/last-run.json`.
-
----
-
-## Repository Structure
-
-```
-macos-tahoe-liquid-kde/
-├── install                 # entry point → src/scripts/cli.run_install
-├── uninstall               # entry point → src/scripts/cli.run_uninstall
-├── features.json           # toggle individual components on/off
-├── build/
-│   ├── steps/              # downloaded cache used by installer steps (ignored)
-│   ├── plasmoids/          # native plasmoid build outputs (ignored)
-│   └── kwin-effects/       # native KWin effect build outputs (ignored)
-└── src/
-    ├── scripts/
-    │   ├── cli.py              # argparse, feature flags, install/uninstall flow
-    │   ├── theme_switch.py     # light/dark switcher (installed as ~/.local/bin)
-    │   ├── about_info.py       # CPU/GPU/disk helper for the About panel
-    │   ├── set-transparency    # CLI: tune background opacity (Kvantum/Plasma/GTK)
-    │   ├── svgzc               # CLI: decode/encode .svgz for editing
-    │   ├── paths.py            # repo-relative paths (REPO_ROOT, SRC_DIR, ...)
-    │   ├── distro.py           # per-distro layer: Qt6 paths, package manager, install hints
-    │   ├── preflight.py        # 9 checks: sudo, paths, Qt6, Plasma version, KDE
-    │   │                       #   config tools, DBus, kded6, disk space, plasmoid IDs
-    │   ├── log.py, state.py, step_runner.py, utils.py
-    │   └── steps/              # one module per feature (install/uninstall/...)
-    │       ├── apply.py, layout.py, theme_switch.py
-    │       ├── wallpapers.py, fonts.py, cursors.py, icons.py
-    │       ├── color_schemes.py, plasma_theme.py, kvantum.py, gtk.py
-    │       ├── global_theme.py, window_decorations.py
-    │       ├── plasmoids.py, globalmenu.py, acrylic_glass.py
-    │       ├── plymouth.py, sddm.py, sounds.py
-    │       └── nautilus.py, portals.py, apps.py
-    ├── mirrors/            # download source definitions (JSON)
-    │   ├── wallpapers.json
-    │   ├── fonts.json
-    │   ├── icons.json
-    │   └── cursors.json
-    ├── screenshots/        # documentation screenshots
-    └── offline/            # assets bundled in-repo (no download needed)
-        ├── plasma-theme/   # Plasma desktop theme (transparent glass dock)
-        ├── color-schemes/  # KDE color schemes
-        ├── kvantum/        # Kvantum Qt theme (blur + translucency)
-        ├── gtk/            # GTK 2/3/4 theme
-        ├── aurorae/        # macOS-style window decorations
-        ├── look-and-feel/  # Global Theme packages (light + dark variants)
-        ├── plasmoids/      # custom Plasma widgets
-        ├── kwin-effects/   # Acrylic Glass KWin effect (built from source)
-        ├── layouts/        # panel layout scripts
-        ├── nautilus/       # optional Nautilus overrides
-        ├── plymouth/       # boot splash theme
-        ├── wallpapers/     # Tahoe Iridescence + Landscape (Morning/Evening/Night)
-        └── *.service / *.timer  # systemd units for the theme switcher
-
-tests/
-├── containers/         # per-distro Dockerfiles + matrix runner
-│   ├── Dockerfile.<arch|cachyos|manjaro|endeavouros|garuda|...>
-│   ├── Dockerfile.<fedora|nobara|bazzite|opensuse|gentoo>
-│   ├── run_in_container.py   # qmake6 / distro layer / preflight / pytest probe
-│   └── run_matrix.sh         # build + run every container locally
-└── test_*.py            # 693 tests covering the install pipeline
-```
-
----
-
-## What the Installer Does
-
-### Appearance
-
-| Component | What it installs | Location |
-|-----------|-----------------|----------|
-| **Color Schemes** | Light and Dark palettes for all KDE apps | `~/.local/share/color-schemes/` |
-| **Global Theme** | Look-and-feel packages (light + dark variants) | `~/.local/share/plasma/look-and-feel/` |
-| **Plasma Theme** | Translucent glass panels and dock styling | `~/.local/share/plasma/desktoptheme/` |
-| **Kvantum** | Qt widget theme with blur and translucency | `~/.config/Kvantum/` |
-| **GTK** | GTK 2/3/4 theme for non-Qt apps (Nautilus, Firefox, etc.) | `~/.themes/` |
-| **Icons** | macOS-style icon set with light and dark variants | `~/.local/share/icons/` |
-| **Cursors** | macOS-style cursor theme | `~/.local/share/icons/` |
-| **Wallpapers** | Tahoe Iridescence + Landscape (Morning/Evening/Night) | `~/.local/share/wallpapers/` |
-| **Fonts** | SF Pro Display, Text, Rounded, and SF Mono | `~/.local/share/fonts/` |
-
-### Desktop
-
-| Component | What it installs | Location |
-|-----------|-----------------|----------|
-| **Layout** | Transparent top bar + floating glass dock | Panel config via JS scripting API |
-| **Global Menu** | Unified menu bar: system menu, app name with window controls, app menus | Qt6 plugin dir + QML dir (`qmake6`-reported, per distro) |
-| **Dock Task Manager** | Icons-only dock task manager with macOS-style notification badges (solid red, white bold text) | Qt6 plugin dir + QML dir (`qmake6`-reported, per distro) |
-| **Launcher** | App grid with categories and search | `~/.local/share/plasma/plasmoids/` |
-| **Trashcan** | Dock trash widget with configurable icons | `~/.local/share/plasma/plasmoids/` |
-| **Window Decorations** | macOS-style title bars (Aurorae) | `~/.local/share/aurorae/themes/` |
-| **Nautilus** | Installs Nautilus, sets as default file manager, applies macOS-like Finder defaults | System package + `~/.config/mimeapps.list` |
-
-### Effects and Services
-
-| Component | What it installs | Location |
-|-----------|-----------------|----------|
-| **Acrylic Glass** | KWin blur + rounded corners effect (built from source) | Qt6 plugin dir / `kwin/effects/` (`qmake6`-reported, per distro) |
-| **Theme Switcher** | One-shot user service + 06:00 / 18:00 timer, single entry point | `~/.local/bin/mac-tahoe-theme-switch` + systemd user units |
-| **System Info Helper** | Powers the About panel's CPU / GPU / disk / network / OS fields with multi-source fallbacks | `~/.local/bin/mac-tahoe-about-info` |
-| **Sounds** | Notification and event sounds | `~/.local/share/sounds/` |
-| **SDDM** | macOS-style login screen | `/usr/share/sddm/themes/` |
-
-### Config Files Modified
-
-| File | What changes |
-|------|-------------|
-| `~/.config/kdeglobals` | Fonts, color scheme, icon theme, widget style, look-and-feel package |
-| `~/.config/kwinrc` | Window decorations, Acrylic Glass effect |
-| `~/.config/plasmashellrc` | Panel opacity, floating dock style |
-| `~/.config/plasmarc` | Active Plasma theme |
-
-The uninstaller reverses all changes, clears explicit KDE color overrides, and resets to Breeze defaults.
+The flags from the most recent run are also logged at `~/.local/state/mac-tahoe-liquid-kde/last-run.json` — handy when filing a bug.
 
 ---
 
