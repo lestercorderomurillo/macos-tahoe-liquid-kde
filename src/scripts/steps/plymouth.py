@@ -113,6 +113,26 @@ def _grub_auto_patch_enabled() -> bool:
     )
 
 
+def _grub_is_active_bootloader() -> bool:
+    """Both ``/etc/default/grub`` AND a regen binary
+    (``grub-mkconfig`` or ``grub2-mkconfig``) must be present before
+    we touch GRUB config. Either alone is not enough:
+
+    * ``GRUB_DEFAULT.is_file()`` alone is a leftover trap — many users
+      migrated from GRUB to systemd-boot / Limine / rEFInd and the
+      file is still on disk from the previous install, but patching
+      it does nothing because no regen tool exists to materialise it
+      into a loaded grub.cfg.
+    * a regen binary alone is meaningless without the config to
+      regenerate.
+
+    Together they're a strong signal that GRUB is the active loader
+    and the auto-patch will actually take effect on next boot."""
+    if not GRUB_DEFAULT.is_file():
+        return False
+    return have("grub-mkconfig") or have("grub2-mkconfig")
+
+
 _GRUB_CMDLINE_RE = re.compile(
     r'^(\s*GRUB_CMDLINE_LINUX_DEFAULT\s*=\s*)(["\'])(.*?)\2(\s*)$',
     re.MULTILINE,
@@ -435,9 +455,11 @@ def install() -> None:
     splash_missing, mkinitcpio_missing_hook = _check_prereqs()
 
     # Auto-patch GRUB cmdline when ``splash`` is missing, unless the
-    # user opted out. Editing /etc/default/grub is a real mutation —
-    # we keep a backup and only touch GRUB_CMDLINE_LINUX_DEFAULT.
-    if splash_missing and _grub_auto_patch_enabled() and GRUB_DEFAULT.is_file():
+    # user opted out or GRUB isn't actually the active bootloader.
+    # Editing /etc/default/grub is a real mutation — we keep a backup
+    # and only touch GRUB_CMDLINE_LINUX_DEFAULT.
+    grub_active = _grub_is_active_bootloader()
+    if splash_missing and _grub_auto_patch_enabled() and grub_active:
         if _patch_grub_add_splash():
             ok("Added 'splash' to GRUB_CMDLINE_LINUX_DEFAULT")
             if _regenerate_grub_config():
@@ -451,12 +473,26 @@ def install() -> None:
         warn("boot splash files are installed, but the splash will NOT "
              "appear at next boot until you fix the items below:")
         if splash_missing:
-            if GRUB_DEFAULT.is_file():
+            if grub_active:
+                # GRUB is real but either the user opted out or
+                # _patch_grub_add_splash() refused (non-standard config).
                 warn("kernel cmdline missing 'splash' — add it to "
                      "GRUB_CMDLINE_LINUX_DEFAULT in /etc/default/grub, "
                      "then run: sudo grub-mkconfig -o /boot/grub/grub.cfg "
                      "(or re-run the installer without "
                      "MTTKDE_NO_GRUB_MODIFY=1)")
+            elif GRUB_DEFAULT.is_file():
+                # File exists but no regen binary — leftover from a
+                # previous OS install, current system uses a different
+                # bootloader.
+                warn("kernel cmdline missing 'splash'. Found a leftover "
+                     "/etc/default/grub but no grub-mkconfig / "
+                     "grub2-mkconfig on PATH — your active bootloader is "
+                     "likely systemd-boot / Limine / rEFInd. Edit the "
+                     "appropriate loader config manually (systemd-boot: "
+                     "/boot/loader/entries/*.conf, limine: "
+                     "/boot/limine.conf, rEFInd: /boot/EFI/refind/"
+                     "refind.conf).")
             else:
                 warn("kernel cmdline missing 'splash' — add it to your "
                      "bootloader configuration (systemd-boot: "

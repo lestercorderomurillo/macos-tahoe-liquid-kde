@@ -3,7 +3,8 @@ import subprocess
 from collections import defaultdict
 
 from steps._helpers import (
-    HOME, fail, info, legacy_steps_dir, ok, reinstall, src_dir, steps_dir, temp_dir,
+    HOME, fail, have, info, legacy_steps_dir, ok, reinstall, src_dir, steps_dir,
+    temp_dir, warn,
 )
 from utils import run_mirrors, run_user
 
@@ -82,9 +83,24 @@ def install() -> None:
         if inst[grp] or re[grp]:
             info(f"{grp} — {inst[grp]} installed, {re[grp]} reinstalled")
     if any_copied:
-        run_user(["fc-cache", "-f", str(DEST_DIR)],
-                 check=False,
-                 stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        _refresh_font_cache()
+
+
+def _refresh_font_cache() -> None:
+    """Rebuild fontconfig's cache so newly-installed .otf/.ttf files
+    are visible to Qt / GTK apps without a logout. Guarded by
+    ``have('fc-cache')`` because fontconfig is technically optional on
+    minimal Plasma installs — fonts still copy to ~/.local/share/fonts,
+    they just don't show up until the next login (Qt re-scans the
+    font dir at session start)."""
+    if not have("fc-cache"):
+        warn("fc-cache not found (fontconfig package missing) — fonts "
+             "copied but cache not refreshed; they will appear after "
+             "the next login")
+        return
+    run_user(["fc-cache", "-f", str(DEST_DIR)],
+             check=False,
+             stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
 
 def uninstall() -> None:
@@ -97,7 +113,5 @@ def uninstall() -> None:
             except OSError:
                 pass
     if n > 0:
-        run_user(["fc-cache", "-f", str(DEST_DIR)],
-                 check=False,
-                 stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        _refresh_font_cache()
     info(f"{n} font files removed")

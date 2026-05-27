@@ -3,7 +3,7 @@ import shutil
 import subprocess
 
 from steps._helpers import (
-    HOME, fail, have, kw_write, offline, ok, reinstall,
+    HOME, fail, have, kw_write, offline, ok, reinstall, warn,
 )
 from utils import run_user
 
@@ -38,6 +38,9 @@ def install() -> None:
     if kw_write("--file", "kdeglobals", "--group", "KDE",
                 "--key", "widgetStyle", "kvantum"):
         ok("Widget style installed")
+    else:
+        warn("Widget style not applied — kwriteconfig6 unavailable "
+             "(install plasma-workspace or your distro's equivalent)")
 
 
 def uninstall() -> None:

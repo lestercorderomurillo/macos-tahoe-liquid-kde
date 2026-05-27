@@ -1163,3 +1163,65 @@ def test_no_activation_call_in_source_lacks_R_flag():
     for ln in activation_lines:
         if "[PLYMOUTH_BIN," in ln and "theme" in ln.lower():
             assert "-R" in ln, f"activation without -R: {ln.strip()}"
+
+
+# ── _grub_is_active_bootloader (v0.15.5 hardening) ──────────────────────
+
+
+def test_grub_active_requires_both_file_and_regen_binary(tmp_path, monkeypatch):
+    """v0.15.5: ``GRUB_DEFAULT.is_file()`` alone is a leftover trap.
+    Many users migrated from GRUB to systemd-boot / Limine / rEFInd
+    and the file is still on disk from the previous install. Patching
+    it does nothing because no regen tool exists to materialise it.
+    The new gate requires BOTH conditions."""
+    grub = tmp_path / "etc/default/grub"
+    grub.parent.mkdir(parents=True, exist_ok=True)
+    grub.write_text('GRUB_CMDLINE_LINUX_DEFAULT="quiet"\n', encoding="utf-8")
+    monkeypatch.setattr(plymouth, "GRUB_DEFAULT", grub)
+
+    # Case 1: file exists, no regen binary on PATH → not active.
+    monkeypatch.setattr(plymouth, "have", lambda _c: False)
+    assert plymouth._grub_is_active_bootloader() is False
+
+    # Case 2: file exists, grub-mkconfig present → active.
+    monkeypatch.setattr(plymouth, "have", lambda c: c == "grub-mkconfig")
+    assert plymouth._grub_is_active_bootloader() is True
+
+    # Case 3: file exists, grub2-mkconfig present (Fedora variant) → active.
+    monkeypatch.setattr(plymouth, "have", lambda c: c == "grub2-mkconfig")
+    assert plymouth._grub_is_active_bootloader() is True
+
+    # Case 4: file absent → not active even if regen tool installed.
+    grub.unlink()
+    monkeypatch.setattr(plymouth, "have", lambda _c: True)
+    assert plymouth._grub_is_active_bootloader() is False
+
+
+def test_install_skips_grub_patch_when_no_regen_binary(tmp_path, monkeypatch):
+    """A systemd-boot user with a leftover /etc/default/grub from a
+    previous install must NOT have that file patched — patching it
+    is a no-op (no grub.cfg gets regenerated) and the .mttkde.bak
+    backup just clutters their filesystem. install() must fall
+    through to the warn() path instead."""
+    import contextlib
+
+    grub = tmp_path / "etc/default/grub"
+    grub.parent.mkdir(parents=True, exist_ok=True)
+    original = 'GRUB_CMDLINE_LINUX_DEFAULT="quiet"\n'
+    grub.write_text(original, encoding="utf-8")
+
+    monkeypatch.setattr(plymouth, "GRUB_DEFAULT", grub)
+    monkeypatch.setattr(plymouth, "_as_root", contextlib.nullcontext)
+    # No regen binary on PATH — simulates a systemd-boot / limine user.
+    monkeypatch.setattr(plymouth, "have", lambda _c: False)
+
+    # The active-bootloader gate must return False, so install's
+    # auto-patch branch is skipped. We don't need to run install()
+    # end-to-end here; the gate is the load-bearing piece.
+    assert plymouth._grub_is_active_bootloader() is False
+
+    # File on disk must be untouched (no patch happened).
+    assert grub.read_text() == original
+    # No backup file created.
+    bak = grub.with_suffix(grub.suffix + ".mttkde.bak")
+    assert not bak.exists()

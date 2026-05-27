@@ -2,6 +2,7 @@ import shutil
 
 from steps._helpers import (
     HOME, fail, info, kw_write, offline, ok, qdbus_call, reinstall, theme_mode,
+    warn,
 )
 
 DEST_DIR = HOME / ".local/share/aurorae/themes"
@@ -44,17 +45,25 @@ def install() -> None:
             ok(f"{name} (installed)"); n_inst += 1
 
     chosen = "MacTahoeLiquidKde-Light" if theme_mode() == "light" else "MacTahoeLiquidKde-Dark"
+    write_failures = 0
     for key, value in (
         ("library", "org.kde.kwin.aurorae"),
         ("theme", f"__aurorae__svg__{chosen}"),
         ("ButtonsOnLeft", "XIA"),
         ("ButtonsOnRight", ""),
     ):
-        kw_write("--file", "kwinrc",
-                 "--group", "org.kde.kdecoration2",
-                 "--key", key, value)
+        if not kw_write("--file", "kwinrc",
+                        "--group", "org.kde.kdecoration2",
+                        "--key", key, value):
+            write_failures += 1
     qdbus_call("org.kde.KWin", "/KWin", "org.kde.KWin.reconfigure")
-    ok(f"Window decoration set to {chosen}")
+    if write_failures == 0:
+        ok(f"Window decoration set to {chosen}")
+    else:
+        warn(f"Window decoration files installed but {write_failures} "
+             "kwinrc key(s) could not be written — kwriteconfig6 "
+             "unavailable. Install plasma-workspace or your distro's "
+             "equivalent to apply the decoration on next login.")
 
     info(f"{n_inst + n_re} Aurorae themes — {n_inst} installed, {n_re} reinstalled")
 

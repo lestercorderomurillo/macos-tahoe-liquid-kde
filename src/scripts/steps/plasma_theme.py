@@ -1,7 +1,7 @@
 import shutil
 
 from steps._helpers import (
-    HOME, fail, info, install_tree, kw_write, offline, remove_tree,
+    HOME, fail, info, install_tree, kw_write, offline, remove_tree, warn,
 )
 
 DEST_DIR = HOME / ".local/share/plasma/desktoptheme"
@@ -34,5 +34,10 @@ def uninstall() -> None:
     for v in VARIANTS:
         if remove_tree(DEST_DIR / v, v):
             n += 1
-    kw_write("--file", "plasmarc", "--group", "Theme", "--key", "name", "default")
+    if not kw_write("--file", "plasmarc", "--group", "Theme",
+                    "--key", "name", "default"):
+        warn("Active Plasma theme not reset to 'default' — "
+             "kwriteconfig6 unavailable. Files are removed but "
+             "Plasma will still try to load MacTahoeLiquidKde "
+             "until you set plasmarc:Theme.name=default manually.")
     info(f"{n} Plasma themes removed")
