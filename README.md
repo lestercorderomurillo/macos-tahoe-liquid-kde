@@ -4,7 +4,7 @@
 
 # macOS Tahoe Liquid Theme for KDE Plasma
 
-[![release](https://img.shields.io/badge/release-v0.15.5-blue)](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/releases) [![tests](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/actions/workflows/test.yml/badge.svg)](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/actions/workflows/test.yml) [![tests count](https://img.shields.io/badge/tests-675_passing-brightgreen)](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/actions/workflows/test.yml) [![license](https://img.shields.io/badge/license-GPL--2.0-blue)](LICENSE) [![plasma](https://img.shields.io/badge/KDE_Plasma-6.6%2B-1d99f3?logo=kde)](https://kde.org/plasma-desktop/) [![last commit](https://img.shields.io/github/last-commit/lestercorderomurillo/macos-tahoe-liquid-kde)](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/commits/) [![report a bug](https://img.shields.io/badge/report-a%20bug-red?logo=github)](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/issues/new)
+[![release](https://img.shields.io/badge/release-v0.15.6-blue)](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/releases) [![tests](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/actions/workflows/test.yml/badge.svg)](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/actions/workflows/test.yml) [![tests count](https://img.shields.io/badge/tests-693_passing-brightgreen)](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/actions/workflows/test.yml) [![license](https://img.shields.io/badge/license-GPL--2.0-blue)](LICENSE) [![plasma](https://img.shields.io/badge/KDE_Plasma-6.6%2B-1d99f3?logo=kde)](https://kde.org/plasma-desktop/) [![last commit](https://img.shields.io/github/last-commit/lestercorderomurillo/macos-tahoe-liquid-kde)](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/commits/) [![report a bug](https://img.shields.io/badge/report-a%20bug-red?logo=github)](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/issues/new)
 
 > [!WARNING]
 > **Alpha / active development.** This project is under heavy development — things break as KDE, KWin and friends update. The installer pulls upstream changes on launch and may behave differently between runs. Expect rough edges, hold off on it for production desktops, and please [report any issue](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/issues/new) you run into.
@@ -164,7 +164,7 @@ Each ✅ distro is verified in CI on every push: `tests/containers/` runs the pa
 | **System Preferences Plasmoid** | Settings launcher | 🔲 |
 | **OS Selector** | Boot manager / OS picker screen | 🔲 |
 | **Boot Screen** | Plymouth splash for startup (1080p–4K) | ✅ |
-| **Shutdown Screen** | Styled logout / shutdown sequence | 🔲 |
+| **Shutdown Screen** | Styled logout / shutdown sequence | ✅ |
 
 ---
 

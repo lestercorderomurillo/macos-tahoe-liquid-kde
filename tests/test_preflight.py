@@ -263,3 +263,216 @@ def test_qt6_query_skips_tools_that_exit_nonzero(monkeypatch):
     assert distro._qt6_plugins_query() is None
     with pytest.raises(distro.Qt6PathsMissing):
         distro.qt6_plugins_dir()
+
+
+# ── 4. KDE Plasma version (v0.15.6) ─────────────────────────────────
+
+
+def test_plasma_version_accepts_6_6(monkeypatch):
+    """plasmashell --version output: "plasmashell 6.6.4". The version
+    extractor must accept the canonical form."""
+    from types import SimpleNamespace
+    monkeypatch.setattr(preflight.shutil, "which", lambda cmd: f"/usr/bin/{cmd}")
+    monkeypatch.setattr(
+        preflight, "run_user",
+        lambda *a, **kw: SimpleNamespace(
+            returncode=0, stdout="plasmashell 6.6.4\n", stderr="",
+        ),
+    )
+    assert preflight._check_plasma_version() is True
+
+
+def test_plasma_version_accepts_future_majors(monkeypatch):
+    """7.0+ must pass even though we compile against 6.6 — newer
+    Plasma is forward-compatible with our plasmoids."""
+    from types import SimpleNamespace
+    monkeypatch.setattr(preflight.shutil, "which", lambda cmd: f"/usr/bin/{cmd}")
+    monkeypatch.setattr(
+        preflight, "run_user",
+        lambda *a, **kw: SimpleNamespace(
+            returncode=0, stdout="plasmashell 7.0.0\n", stderr="",
+        ),
+    )
+    assert preflight._check_plasma_version() is True
+
+
+def test_plasma_version_rejects_too_old(monkeypatch):
+    """Plasma 6.5 (or earlier) is below our 6.6+ minimum. The check
+    must fail loudly with the actual detected version + the floor."""
+    from types import SimpleNamespace
+    monkeypatch.setattr(preflight.shutil, "which", lambda cmd: f"/usr/bin/{cmd}")
+    monkeypatch.setattr(
+        preflight, "run_user",
+        lambda *a, **kw: SimpleNamespace(
+            returncode=0, stdout="plasmashell 6.5.5\n", stderr="",
+        ),
+    )
+    assert preflight._check_plasma_version() is False
+
+
+def test_plasma_version_rejects_when_plasmashell_missing(monkeypatch):
+    monkeypatch.setattr(preflight.shutil, "which", lambda _cmd: None)
+    assert preflight._check_plasma_version() is False
+
+
+def test_plasma_version_rejects_unparseable_output(monkeypatch):
+    from types import SimpleNamespace
+    monkeypatch.setattr(preflight.shutil, "which", lambda cmd: f"/usr/bin/{cmd}")
+    monkeypatch.setattr(
+        preflight, "run_user",
+        lambda *a, **kw: SimpleNamespace(
+            returncode=0, stdout="garbage no numbers here\n", stderr="",
+        ),
+    )
+    assert preflight._check_plasma_version() is False
+
+
+def test_plasma_version_drops_privs_in_child(monkeypatch):
+    """Regression guard for the v0.15.6 setuid abort. When the
+    installer runs as sudo (real UID=0, effective UID=SUDO_USER),
+    Qt6's getuid()!=geteuid() guard aborts plasmashell --version with
+    a FATAL setuid error before parsing any args. The check MUST go
+    through ``utils.run_user`` (which sets preexec_fn=drop_privs_in_child
+    so the child has matching real/effective/saved UIDs)."""
+    from types import SimpleNamespace
+    monkeypatch.setattr(preflight.shutil, "which", lambda cmd: f"/usr/bin/{cmd}")
+
+    seen_runner = []
+
+    def fake_run_user(cmd, **kwargs):
+        seen_runner.append(cmd)
+        return SimpleNamespace(returncode=0, stdout="plasmashell 6.6\n", stderr="")
+
+    monkeypatch.setattr(preflight, "run_user", fake_run_user)
+    # If the implementation regressed to plain subprocess.run, this
+    # would still pass via the inherited subprocess mock, so trap
+    # subprocess.run to ensure it isn't reached.
+    def boom(*a, **kw):
+        raise AssertionError("plasmashell --version reached subprocess.run "
+                             "directly — must go through run_user to dodge "
+                             "Qt6's setuid abort under sudo")
+    monkeypatch.setattr(preflight.subprocess, "run", boom)
+
+    assert preflight._check_plasma_version() is True
+    assert seen_runner and seen_runner[0][0] == "plasmashell"
+
+
+# ── 5. KDE config tools ─────────────────────────────────────────────
+
+
+def test_kde_config_tools_pass_when_both_present(monkeypatch):
+    monkeypatch.setattr(preflight.shutil, "which", lambda cmd: f"/usr/bin/{cmd}")
+    assert preflight._check_kde_config_tools() is True
+
+
+def test_kde_config_tools_fail_when_kwriteconfig6_missing(monkeypatch):
+    monkeypatch.setattr(
+        preflight.shutil, "which",
+        lambda cmd: None if cmd == "kwriteconfig6" else f"/usr/bin/{cmd}",
+    )
+    assert preflight._check_kde_config_tools() is False
+
+
+def test_kde_config_tools_fail_when_kreadconfig6_missing(monkeypatch):
+    monkeypatch.setattr(
+        preflight.shutil, "which",
+        lambda cmd: None if cmd == "kreadconfig6" else f"/usr/bin/{cmd}",
+    )
+    assert preflight._check_kde_config_tools() is False
+
+
+# ── 6. DBus session bus ─────────────────────────────────────────────
+
+
+def test_dbus_session_passes_with_address_env(monkeypatch):
+    monkeypatch.setenv("DBUS_SESSION_BUS_ADDRESS",
+                       "unix:path=/run/user/1000/bus")
+    assert preflight._check_dbus_session() is True
+
+
+def test_dbus_session_falls_back_to_xdg_runtime_bus(monkeypatch, tmp_path):
+    """sudo can strip DBUS_SESSION_BUS_ADDRESS. The XDG_RUNTIME_DIR/bus
+    socket is the canonical fallback path systemd-user exposes."""
+    monkeypatch.delenv("DBUS_SESSION_BUS_ADDRESS", raising=False)
+    runtime = tmp_path / "run-user-1000"
+    runtime.mkdir()
+    (runtime / "bus").touch()
+    monkeypatch.setenv("XDG_RUNTIME_DIR", str(runtime))
+    assert preflight._check_dbus_session() is True
+
+
+def test_dbus_session_fails_when_both_address_and_socket_missing(monkeypatch, tmp_path):
+    monkeypatch.delenv("DBUS_SESSION_BUS_ADDRESS", raising=False)
+    monkeypatch.setenv("XDG_RUNTIME_DIR", str(tmp_path / "nonexistent"))
+    assert preflight._check_dbus_session() is False
+
+
+# ── 7. kded6 health (soft) ──────────────────────────────────────────
+
+
+def test_kded6_check_is_soft_when_not_running(monkeypatch):
+    """kded6 not running is a soft failure — install can still
+    complete, the user just may need to re-login. preflight returns
+    True so the install proceeds."""
+    from types import SimpleNamespace
+    monkeypatch.setattr(preflight.shutil, "which", lambda cmd: f"/usr/bin/{cmd}")
+    monkeypatch.setattr(
+        preflight.subprocess, "run",
+        lambda *a, **kw: SimpleNamespace(returncode=1, stdout="", stderr=""),
+    )
+    assert preflight._check_kded_running() is True
+
+
+def test_kded6_check_passes_when_running(monkeypatch):
+    from types import SimpleNamespace
+    monkeypatch.setattr(preflight.shutil, "which", lambda cmd: f"/usr/bin/{cmd}")
+    monkeypatch.setattr(
+        preflight.subprocess, "run",
+        lambda *a, **kw: SimpleNamespace(returncode=0, stdout="1234\n", stderr=""),
+    )
+    assert preflight._check_kded_running() is True
+
+
+def test_kded6_check_passes_when_pgrep_missing(monkeypatch):
+    """Skipping is also a soft pass — pgrep isn't strictly required
+    for the install."""
+    monkeypatch.setattr(preflight.shutil, "which",
+                        lambda cmd: None if cmd == "pgrep" else f"/usr/bin/{cmd}")
+    assert preflight._check_kded_running() is True
+
+
+# ── 8. disk space ───────────────────────────────────────────────────
+
+
+def test_disk_space_passes_with_plenty_free(monkeypatch, tmp_path):
+    from collections import namedtuple
+    Usage = namedtuple("Usage", "total used free")
+    monkeypatch.setattr(
+        preflight.shutil, "disk_usage",
+        lambda _p: Usage(total=10**12, used=0, free=10**12),
+    )
+    assert preflight._check_disk_space() is True
+
+
+def test_disk_space_fails_when_usr_below_floor(monkeypatch):
+    """Less than _MIN_FREE_USR_MB free where the Qt6 plugin dir
+    lives → fail (compiled .so won't fit / writes will EIO)."""
+    from collections import namedtuple
+    Usage = namedtuple("Usage", "total used free")
+    # 10 MB free — below the 50 MB floor.
+    monkeypatch.setattr(
+        preflight.shutil, "disk_usage",
+        lambda _p: Usage(total=10**9, used=10**9 - 10*1024*1024,
+                         free=10 * 1024 * 1024),
+    )
+    assert preflight._check_disk_space() is False
+
+
+def test_disk_space_soft_skip_when_qt6_paths_missing(monkeypatch):
+    """If Qt6 isn't discoverable, step 3 already failed with a hint.
+    Disk space probe shouldn't crash — just warn-and-skip."""
+    import distro
+    def boom():
+        raise distro.Qt6PathsMissing("no qt6")
+    monkeypatch.setattr(preflight, "qt6_plugins_dir", boom)
+    assert preflight._check_disk_space() is True  # soft — doesn't block
