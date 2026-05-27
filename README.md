@@ -13,7 +13,9 @@ A full macOS Tahoe-style desktop experience for KDE Plasma 6.6+.
 
 <br>
 
-# Features
+<p align="center">
+  <img src="https://img.shields.io/badge/features-%26%20screenshots-4B6B8A?style=for-the-badge&logo=kde&logoColor=white" alt="Features and screenshots">
+</p>
 
 ### Tahoe Launcher
 
@@ -114,7 +116,9 @@ Plymouth boot screen with centered Apple-style logo on every monitor, scaled dyn
 
 ---
 
-## Tested distros
+<p align="center">
+  <img src="https://img.shields.io/badge/tested-distros-4B6B8A?style=for-the-badge&logo=linux&logoColor=white" alt="Tested distros">
+</p>
 
 |     | Distro | Supported yet? |
 |:---:|--------|:--------------:|
@@ -133,7 +137,9 @@ Each ✅ distro is verified in CI on every push: `tests/containers/` runs the pa
 
 ---
 
-## Roadmap
+<p align="center">
+  <img src="https://img.shields.io/badge/project-roadmap-6B4B8A?style=for-the-badge&logo=github&logoColor=white" alt="Roadmap">
+</p>
 
 | Component | Description | Status |
 |-----------|-------------|--------|
@@ -168,11 +174,13 @@ Each ✅ distro is verified in CI on every push: `tests/containers/` runs the pa
 
 ---
 
-## Requirements & Dependencies
+<p align="center">
+  <img src="https://img.shields.io/badge/requirements-%26%20dependencies-4B6B8A?style=for-the-badge&logo=linux&logoColor=white" alt="Requirements and dependencies">
+</p>
 
 ### Hard requirements
 
-The installer refuses to start without these. They are present on every default Plasma 6 install on the [supported distros](#tested-distros) above, so usually you have them already.
+The installer refuses to start without these. They are present on every default Plasma 6 install on the supported distros above, so usually you have them already.
 
 - **KDE Plasma 6.6+** (`plasmashell`, `kwriteconfig6`, `kreadconfig6`, `plasma-apply-lookandfeel`, `plasma-apply-cursortheme`, `plasma-apply-wallpaperimage`, `kpackagetool6`, `kbuildsycoca6`, `qdbus6` *or* `qdbus`)
 - **Python 3.10+**
@@ -230,7 +238,9 @@ If your distro is supported and the preflight tells you a tool is missing:
 
 ---
 
-## Usage
+<p align="center">
+  <img src="https://img.shields.io/badge/getting-started-3B7B5B?style=for-the-badge&logo=gnubash&logoColor=white" alt="Usage">
+</p>
 
 ```bash
 sudo ./install              # install everything
@@ -290,7 +300,9 @@ The flags from the most recent run are also logged at `~/.local/state/mac-tahoe-
 
 ---
 
-## Reporting Bugs
+<p align="center">
+  <img src="https://img.shields.io/badge/report-a%20bug-A04B4B?style=for-the-badge&logo=github&logoColor=white" alt="Report a bug">
+</p>
 
 Found something broken? Please open a GitHub issue:
 
@@ -310,7 +322,9 @@ When filing, please include:
 
 ---
 
-## Disclaimer
+<p align="center">
+  <img src="https://img.shields.io/badge/disclaimer-not%20affiliated%20with%20apple-6B6B6B?style=for-the-badge&logo=apple&logoColor=white" alt="Disclaimer">
+</p>
 
 Build using AI tools.
 
@@ -320,7 +334,9 @@ If you like Apple, buy an Apple product.
 
 ---
 
-## License
+<p align="center">
+  <img src="https://img.shields.io/badge/license-GPL--2.0-3B7B3B?style=for-the-badge&logo=gnu&logoColor=white" alt="License">
+</p>
 
 [GPL-2.0](LICENSE) — open-source, copyleft. Forks welcome, but anything you redistribute has to stay open under the same license and keep the copyright notices intact. No warranty, no liability — use it at your own risk.
 
@@ -328,14 +344,16 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for how to send changes back.
 
 ---
 
-## Credits
+<p align="center">
+  <img src="https://img.shields.io/badge/credits-%26%20inspiration-8A6B4B?style=for-the-badge&logo=apple&logoColor=white" alt="Credits and inspiration">
+</p>
 
-Thanks to the open-source authors whose work this project draws from. Some pieces are bundled as starting points, others provide inspiration, references, or assets that the installer pulls on demand:
+Thanks to the open-source authors whose work inspired or fed this project:
 
-- **[EliverLara](https://github.com/EliverLara)** — TahoeLauncher, the original Plasma app-grid launcher the Launcher plasmoid was forked from (GPL-2.0).
-- **[vinceliuice](https://github.com/vinceliuice)** — `MacTahoe-icon-theme`, the upstream icon and cursor source.
-- **[ful1e5](https://github.com/ful1e5)** — `apple_cursor`, an alternate macOS-style cursor set.
-- **[sahibjotsaggu](https://github.com/sahibjotsaggu)** — `San-Francisco-Pro-Fonts`, the SF Pro / SF Mono font bundle.
+- **[EliverLara](https://github.com/EliverLara)** — TahoeLauncher inspired the Launcher plasmoid (GPL-2.0).
+- **[vinceliuice](https://github.com/vinceliuice)** — `MacTahoe-icon-theme`, the basis for the icon and cursor look.
+- **[ful1e5](https://github.com/ful1e5)** — `apple_cursor`, inspiration for an alternate macOS-style cursor.
+- **[sahibjotsaggu](https://github.com/sahibjotsaggu)** — `San-Francisco-Pro-Fonts`, where the SF Pro / SF Mono bundle comes from.
 - **[512pixels.net](https://512pixels.net/projects/default-mac-wallpapers-in-5k/)** — high-resolution macOS wallpaper archive.
 
 If a credit is missing, please [open an issue](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/issues/new).
