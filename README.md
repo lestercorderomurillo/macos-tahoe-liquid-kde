@@ -116,20 +116,18 @@ Plymouth boot screen with centered Apple-style logo on every monitor, scaled dyn
 
 ![Tested distros](https://img.shields.io/badge/tested-distros-4B6B8A?style=for-the-badge&logo=linux&logoColor=white)
 
-|     | Distro | Tested yet? |
-|:---:|--------|:-----------:|
-| <img src="https://cdn.simpleicons.org/cachyos" width="22"> | CachyOS | ✅ YES |
-| <img src="https://cdn.simpleicons.org/gentoo" width="22"> | Gentoo | ✅ YES |
-| <img src="https://cdn.simpleicons.org/archlinux" width="22"> | Arch Linux | 🔧 Work in progress |
-| <img src="https://cdn.simpleicons.org/manjaro" width="22"> | Manjaro | 🔧 Work in progress |
-| <img src="https://cdn.simpleicons.org/endeavouros" width="22"> | EndeavourOS | 🔧 Work in progress |
-| <img src="https://cdn.simpleicons.org/linux" width="22"> | Garuda Linux | 🔧 Work in progress |
-| <img src="https://cdn.simpleicons.org/fedora" width="22"> | Fedora / RHEL | 🔧 Work in progress |
-| <img src="https://cdn.simpleicons.org/nobaralinux" width="22"> | Nobara | 🔧 Work in progress |
-| <img src="https://cdn.simpleicons.org/linux" width="22"> | Bazzite | 🔧 Work in progress |
-| <img src="https://cdn.simpleicons.org/opensuse" width="22"> | openSUSE Tumbleweed | 🔧 Work in progress |
-
-✅ YES = run on bare metal through to a working desktop. 🔧 Work in progress = wired into `tests/containers/` and the package-manager mapping has been probed against fresh container images, but no bare-metal install reported yet. Container tests catch path/package-name drift; they do not exercise a live Plasma session. If you run on a 🔧 distro, please report the result — success or failure — in an issue.
+|     | Distro | Supported yet? | Tested yet? |
+|:---:|--------|:--------------:|:-----------:|
+| <img src="https://cdn.simpleicons.org/cachyos" width="22"> | CachyOS | ✅ YES | ✅ YES |
+| <img src="https://cdn.simpleicons.org/gentoo" width="22"> | Gentoo | ✅ YES | ✅ YES |
+| <img src="https://cdn.simpleicons.org/archlinux" width="22"> | Arch Linux | ✅ YES | 🔧 WIP |
+| <img src="https://cdn.simpleicons.org/manjaro" width="22"> | Manjaro | ✅ YES | 🔧 WIP |
+| <img src="https://cdn.simpleicons.org/endeavouros" width="22"> | EndeavourOS | ✅ YES | 🔧 WIP |
+| <img src="https://cdn.simpleicons.org/linux" width="22"> | Garuda Linux | ✅ YES | 🔧 WIP |
+| <img src="https://cdn.simpleicons.org/fedora" width="22"> | Fedora / RHEL | ✅ YES | 🔧 WIP |
+| <img src="https://cdn.simpleicons.org/nobaralinux" width="22"> | Nobara | ✅ YES | 🔧 WIP |
+| <img src="https://cdn.simpleicons.org/linux" width="22"> | Bazzite | ✅ YES | 🔧 WIP |
+| <img src="https://cdn.simpleicons.org/opensuse" width="22"> | openSUSE Tumbleweed | ✅ YES | 🔧 WIP |
 
 ---
 
@@ -146,7 +144,7 @@ Plymouth boot screen with centered Apple-style logo on every monitor, scaled dyn
 | **GTK Theme** | GTK2/3/4 window chrome and controls | ✅ |
 | **Acrylic Glass** | KWin blur, rounded corners, glass effect | ✅ |
 | **Auto Theme Switcher** | One-shot service + 06:00 / 18:00 timer, single entry point | ✅ |
-| **Multi-Distro Support** | Confirmed on CachyOS + Gentoo; others (Arch family, Fedora family, openSUSE) wired in CI but unverified on bare metal — see the *Tested distros* table | 🔧 |
+| **Multi-Distro Support** | KDE Plasma 6.6+ on the Arch, Fedora, openSUSE and Gentoo families | 🔧 |
 | **Aurorae Decorations** | Window title bar and borders | ✅ |
 | **Global Menu Plasmoid** | Unified menu bar: system menu, app name, window controls, app menus | ✅ |
 | **Dock Task Manager** | Icons-only dock applet with macOS-style notification badges | ✅ |
