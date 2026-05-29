@@ -7,7 +7,7 @@ from pathlib import Path
 
 import pytest
 
-from .conftest import has_command
+from .conftest import has_command, journal_session_cursor
 
 
 def _run(step: str, phase: str, env: dict[str, str] | None = None) -> int:
@@ -23,12 +23,31 @@ def _run(step: str, phase: str, env: dict[str, str] | None = None) -> int:
     ).returncode
 
 
-def _journal_matches(pattern: str, since: str = "24 hours ago") -> list[str]:
+def _journal_matches(pattern: str) -> list[str]:
+    """Scan the user journal for entries matching ``pattern`` (case
+    insensitive).
+
+    Bound to events recorded AFTER the pytest session started — see
+    conftest._capture_session_journal_cursor. Without that anchor,
+    these checks scanned a rolling 24h window and would flap on any
+    unrelated historical crash (and silently pass even if this
+    commit never loaded the plugin at all). With the cursor, a hit
+    is "something matched during this run" — a real signal.
+
+    Falls back to ``--since "24 hours ago"`` only when the session
+    cursor could not be captured (journalctl missing, returned an
+    error, etc.). In that fallback case the test is still better
+    than nothing but reproduces the old flap; in CI the journal is
+    usually absent and the tests skip via has_command()."""
+    cursor = journal_session_cursor()
+    if cursor:
+        cmd = ["journalctl", "--user", "-p", "err",
+               f"--after-cursor={cursor}", "--no-pager"]
+    else:
+        cmd = ["journalctl", "--user", "-p", "err",
+               "--since", "24 hours ago", "--no-pager"]
     res = subprocess.run(
-        ["journalctl", "--user", "-p", "err", "--since", since, "--no-pager"],
-        check=False,
-        capture_output=True,
-        text=True,
+        cmd, check=False, capture_output=True, text=True,
     )
     import re
 

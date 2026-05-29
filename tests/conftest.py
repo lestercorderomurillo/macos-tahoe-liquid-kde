@@ -191,6 +191,60 @@ def has_command(cmd: str) -> bool:
     return shutil.which(cmd) is not None
 
 
+_SESSION_JOURNAL_CURSOR: str | None = None
+
+
+def _capture_session_journal_cursor() -> str | None:
+    """Snapshot the user journal's current cursor at pytest session
+    start. Returned cursor strings are opaque tokens like
+    ``s=...;i=...;b=...;m=...;t=...;x=...`` — pass back via
+    ``--after-cursor=<token>`` to limit a query to events that came
+    AFTER this moment.
+
+    Why we need this: the previous ``_journal_matches`` default of
+    ``--since "24 hours ago"`` made the crash-guard tests flap when
+    yesterday's unrelated coredump happened to match the regex, and
+    made green runs misleading because they did not prove the
+    current commit's plugin ever loaded — only that nothing crashed
+    in the last 24h. Anchoring to the session cursor scopes the scan
+    to "events during this pytest run", which is what we actually
+    want to assert about."""
+    if not shutil.which("journalctl"):
+        return None
+    try:
+        res = subprocess.run(
+            ["journalctl", "--user", "-n", "1", "--show-cursor",
+             "--no-pager", "--output=cat"],
+            check=False, capture_output=True, text=True, timeout=10,
+        )
+    except (OSError, subprocess.TimeoutExpired):
+        return None
+    if res.returncode != 0:
+        return None
+    # Output ends with "-- cursor: <token>" on its own line.
+    for line in res.stdout.splitlines():
+        s = line.strip()
+        if s.startswith("-- cursor:"):
+            return s.split(":", 1)[1].strip()
+    return None
+
+
+@pytest.fixture(scope="session", autouse=True)
+def _journal_session_cursor():
+    """Pin a session-start cursor that journal-scanning tests can
+    pass to ``journalctl --after-cursor=...`` so their scans only
+    cover events that happened DURING the pytest run."""
+    global _SESSION_JOURNAL_CURSOR
+    _SESSION_JOURNAL_CURSOR = _capture_session_journal_cursor()
+    yield _SESSION_JOURNAL_CURSOR
+
+
+def journal_session_cursor() -> str | None:
+    """Public accessor — test modules call this to read the cursor
+    captured at session start without importing the module global."""
+    return _SESSION_JOURNAL_CURSOR
+
+
 @pytest.fixture(autouse=True)
 def _reset_preflight_home_cache():
     """Guarantee preflight._HOME starts every test at None.
