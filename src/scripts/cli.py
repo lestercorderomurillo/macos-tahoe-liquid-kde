@@ -27,7 +27,7 @@ ALL_FEATURES = [
     "wallpapers", "fonts", "cursors", "plasma_theme", "window_decorations",
     "kvantum", "color_schemes", "icons", "plasmoids", "acrylic_glass",
     "global_theme", "layout", "sounds", "gtk", "sddm", "plymouth", "apps",
-    "nautilus", "portals", "no_download",
+    "nautilus", "portals",
 ]
 
 # Walk order for the install/uninstall loop.
@@ -100,7 +100,6 @@ Options:
     --apps             App configuration tweaks
     --nautilus         Install Nautilus and set as default file manager
     --portals          Route FileChooser/AppChooser to KDE (fixes stale dialogs)
-    --no-download      Skip downloads, use cached assets
     --no-grub-modify   Don't auto-edit /etc/default/grub for the boot
                        splash kernel cmdline (prints manual fix instead)
 
@@ -220,10 +219,6 @@ def parse_args(argv: list[str]) -> ParsedArgs:
             p.preflight_only = True
         elif arg == "--restart":
             p.restart_only = True
-        elif arg in ("--no-download", "--offline"):
-            p.cli_overrides["no_download"] = True
-        elif arg == "--download":
-            p.cli_overrides["no_download"] = False
         elif arg == "--no-grub-modify":
             # Plymouth's GRUB cmdline auto-patch is opt-in by default;
             # this flag turns it off so the installer prints the
@@ -350,8 +345,7 @@ def apply_overrides(feat: dict[str, object], parsed: ParsedArgs) -> dict[str, ob
 
     if parsed.only_mode:
         for k in ALL_FEATURES:
-            if k != "no_download":
-                feat[k] = False
+            feat[k] = False
 
     for k, v in parsed.cli_overrides.items():
         feat[k] = v
@@ -370,7 +364,6 @@ def apply_overrides(feat: dict[str, object], parsed: ParsedArgs) -> dict[str, ob
 def export_env(feat: dict[str, object]) -> None:
     """Export FEAT_* and THEME_MODE into ``os.environ`` so step modules
     can read them via steps._helpers.feat_enabled / theme_mode."""
-    os.environ["NO_DOWNLOAD"] = _b(feat.get("no_download", True))
     os.environ["THEME_MODE"] = str(feat.get("theme_mode", "auto"))
     for k in ALL_FEATURES:
         os.environ[f"FEAT_{k.upper()}"] = _b(feat.get(k, True))
@@ -648,23 +641,6 @@ def verify_config(feat: dict[str, object]) -> None:
             fail(f"{label} (expected {expected}, got {actual or 'empty'})")
 
 
-def has_cache(feature: str, no_download: bool) -> bool:
-    # Wallpapers are fully bundled offline since v0.17.0 — no download
-    # phase, no cache to check. The branch only matters for features
-    # that pull from upstream mirrors.
-    if not no_download:
-        return False
-    for base in (STEPS_DIR, LEGACY_STEPS_DIR):
-        cache = base / feature.replace("_", "-")
-        if feature == "fonts" and any((*cache.glob("*.otf"), *cache.glob("*.ttf"))):
-            return True
-        if feature == "cursors" and (cache / "MacTahoeLiquidKde/cursors").is_dir():
-            return True
-        if feature == "icons" and (cache / "MacTahoeLiquidKde-Icons").is_dir():
-            return True
-    return False
-
-
 def should_process(feature: str, feat: dict[str, object]) -> bool:
     if feature == "globalmenu":
         return bool(feat.get("plasmoids", True))
@@ -893,12 +869,9 @@ def run_install(argv: list[str]) -> int:
             step(f"Installing {label}")
             note(FEATURE_DESC.get(feature, ""))
 
-            if step_has_phase(feature, "download"):
-                if has_cache(feature, bool(feat.get("no_download", True))):
-                    ok(f"{label} already downloaded")
-                else:
-                    run_phase(feature, "download")
             # Build phase already ran in the dedicated step above.
+            # No download phase any more — all assets are bundled under
+            # src/offline/ since v0.18.0 (wallpapers since v0.17.0).
             if not run_phase(feature, "install") and feature in CRITICAL_INSTALL_FEATURES:
                 fail(f"{label} install failed — aborting "
                      "(critical compiled component)")
