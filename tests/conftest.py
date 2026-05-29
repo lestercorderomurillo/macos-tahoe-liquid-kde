@@ -1,27 +1,39 @@
 """Test suite for MacTahoe Liquid KDE.
 
-Two layers:
+What is actually covered:
 
-1. **Static / shape tests.** Cheap, run in seconds, validate file
-   layout, ID consistency, regex shape of generated configs, and
-   the public surface of step modules. These cannot prove the install
-   works on a live KDE session, but they catch the kind of regression
-   that ships when someone renames a directory and forgets to update
-   the layout JS.
+1. **Static / shape tests** (this directory). Cheap, run in seconds,
+   validate file layout, plasmoid ID consistency, regex shape of
+   generated configs, the public surface of step modules, and the
+   per-distro package-name map. Catch directory-rename / metadata-Id
+   drift before it ships. They cannot prove the install works on a
+   live KDE session.
 
-2. **End-to-end tests.** Opt-in via ``MAC_TAHOE_E2E=1`` (only run on a
-   real Plasma session by the maintainer). Drive ``sudo ./install
-   --preflight`` against the host, then a full install + uninstall, and
-   assert that the .so files land where Qt6 actually scans, that
-   kwriteconfig6 wrote the keys verify_config reads back, and that
-   plasmashell loads our applets without ``module not installed``
-   errors in the journal.
+2. **Per-distro container matrix** at ``tests/containers/``. One
+   Dockerfile per supported distro (arch, cachyos, manjaro, garuda,
+   endeavouros, gentoo, fedora, nobara, bazzite, opensuse). Inside
+   each container, ``run_in_container.py`` runs the pytest suite
+   against that distro's real Python + Qt6 layout, then probes
+   ``distro.package_for(token)`` against the distro's real repo
+   metadata. Run with ``./tests/containers/run_matrix.sh``.
 
-The v0.10 work added the four preflight checks specifically to make
-the static layer meaningful: directory == metadata.Id, our destinations
-match ``qmake6 -query``, etc. Earlier critiques about path mocking
-hiding the real bug remain valid — the e2e layer is what closes that
-gap, not deletion of the static tests.
+What is NOT covered by any layer in this tree:
+
+- The full ``sudo ./install`` → preflight → step loop → uninstall
+  pipeline. That needs a live Plasma 6 session, KWin running, KDED
+  alive, and is only exercised by the maintainer on bare metal.
+- ``find_package(KF6 ...)`` for the C++ plugins (would require
+  pulling the full Plasma 6 dev SDK into every container image).
+- Live theme-switch DBus calls — preflight has a sudo-hop probe
+  but the actual ``plasma-apply-lookandfeel`` step is mocked.
+- Journal scans for crash signatures use ``--since "24 hours
+  ago"`` and so can flap on unrelated historical events; they are
+  symptom guards, not commit-tied regression tests.
+
+When something breaks on a real install that this suite did not
+catch, the right answer is usually a new probe in
+``tests/containers/run_in_container.py`` (per-distro repo / runtime
+behaviour) rather than another mocked sandbox test here.
 """
 
 import os
