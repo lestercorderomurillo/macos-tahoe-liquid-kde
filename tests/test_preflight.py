@@ -110,6 +110,56 @@ def test_check_paths_passes_for_production_destinations():
         assert reason is None, f"{label}: {path} → {reason}"
 
 
+def test_home_is_resolved_per_call_not_cached(monkeypatch, tmp_path):
+    """Regression for the container-matrix failure on Arch + Fedora:
+    a previous test would prime ``preflight._HOME`` to a sandbox
+    tmpdir (via the conftest sandbox fixture's ``$HOME`` setenv),
+    that tmpdir would survive into a later test that ran on a
+    different effective home, and ``_validate_path`` rejected
+    ``/root/.local/share/plasma/plasmoids`` with ``leaks /root home``
+    inside the container even though ``/root`` IS the real home
+    there. The fix is to stop caching: ``_home()`` resolves
+    ``Path.home()`` per call unless something has explicitly
+    overridden ``_HOME``. This test pins both halves of the contract.
+
+    Phase 1: with no override, two successive calls under different
+    ``$HOME`` env values must report different homes — proving the
+    cache is gone.
+
+    Phase 2: with ``_HOME`` explicitly set, calls must honour the
+    override — proving the test seam still works for the two existing
+    tests that pin ``_HOME`` to ``/root`` / a fake user dir.
+    """
+    # Phase 1 — env-driven, no cache
+    fake_a = tmp_path / "home-a"
+    fake_a.mkdir()
+    fake_b = tmp_path / "home-b"
+    fake_b.mkdir()
+    monkeypatch.setattr(preflight, "_HOME", None)
+    monkeypatch.setenv("HOME", str(fake_a))
+    first = preflight._home()
+    monkeypatch.setenv("HOME", str(fake_b))
+    second = preflight._home()
+    assert first == fake_a, f"first call should resolve to {fake_a}, got {first}"
+    assert second == fake_b, (
+        f"second call should resolve to {fake_b}, got {second} — "
+        "_home() is caching across calls, which is what broke the "
+        "container matrix"
+    )
+
+    # Phase 2 — explicit override still wins
+    pinned = tmp_path / "pinned"
+    pinned.mkdir()
+    monkeypatch.setattr(preflight, "_HOME", pinned)
+    monkeypatch.setenv("HOME", str(fake_a))
+    assert preflight._home() == pinned, (
+        "explicit preflight._HOME override should beat $HOME — the "
+        "two tests at test_validate_path_rejects_root_when_home_is_user "
+        "and test_validate_path_accepts_root_when_home_is_root depend "
+        "on this seam"
+    )
+
+
 # ── 2. plasmoid ID consistency ───────────────────────────────────────────
 
 def test_plasmoid_id_consistency_across_repo():

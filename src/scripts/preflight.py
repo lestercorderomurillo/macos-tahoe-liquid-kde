@@ -104,14 +104,21 @@ def _check_sudo_escalation() -> bool:
     return True
 
 
-_HOME = None
+# Resolved per-call, not cached. The previous module-global cache
+# leaked across pytest test boundaries: a test that legitimately
+# set $HOME via monkeypatch (sandbox fixture in conftest.py) would
+# prime _HOME to a tmpdir, monkeypatch would restore $HOME on
+# teardown but the module-global stayed, and the next test calling
+# _home() read the stale tmpdir. The cost of recomputing is a
+# single os.environ.get("HOME") — not worth the test-ordering
+# fragility. Keep the indirection so tests can still
+# monkeypatch.setattr(preflight, "_home", lambda: Path("/root"))
+# to exercise the /root-is-the-real-home branch.
+_HOME: Path | None = None
 
 
 def _home() -> Path:
-    global _HOME
-    if _HOME is None:
-        _HOME = Path.home()
-    return _HOME
+    return _HOME if _HOME is not None else Path.home()
 
 
 def _allowed_roots() -> tuple[re.Pattern, ...]:

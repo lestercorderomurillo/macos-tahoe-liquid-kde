@@ -179,6 +179,24 @@ def has_command(cmd: str) -> bool:
     return shutil.which(cmd) is not None
 
 
+@pytest.fixture(autouse=True)
+def _reset_preflight_home_cache():
+    """Guarantee preflight._HOME starts every test at None.
+
+    The cache (now drained per call, but kept as an override slot so
+    tests can pin a fake home) used to leak across tests: the sandbox
+    fixture's monkeypatch of $HOME would prime _HOME to a tmpdir,
+    and on teardown $HOME was restored but the module global was not.
+    A later test (test_check_paths_passes_for_production_destinations)
+    then read the stale tmpdir and rejected a legitimate production
+    destination. Reset before AND after so neither a careless test
+    nor a careless future fixture can poison the next case."""
+    import preflight
+    preflight._HOME = None
+    yield
+    preflight._HOME = None
+
+
 # Binaries we shim with no-ops for any test that invokes step code in a
 # subprocess (where Python-level monkeypatching can't reach). Each is one
 # that has been observed to escape the sandbox at least once:
