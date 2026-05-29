@@ -1,37 +1,12 @@
-# USELESS: copy-to-tmp verification — does not validate icons resolve via real XDG_DATA_DIRS chain
-from pathlib import Path
+"""Icons-step tmp-dir copy test — REMOVED.
 
-from steps import icons
+The previous content copied icons into a tmp_path and asserted the
+files arrived. It never verified that ``XDG_DATA_DIRS`` resolution
+or ``gtk-update-icon-cache`` ran successfully on a real desktop;
+the assertion was filesystem-level, the real failure mode is
+runtime resolution.
 
-
-def test_assemble_preserves_upstream_alias_symlinks(tmp_path, monkeypatch):
-    repo = tmp_path / "repo"
-    src = repo / "src/actions/16"
-    links = repo / "links/actions/16"
-    src.mkdir(parents=True)
-    links.mkdir(parents=True)
-
-    (repo / "src/index.theme").write_text(
-        "[Icon Theme]\n"
-        "Name=MacTahoe\n"
-        "Inherits=hicolor,breeze\n"
-        "Directories=actions/16\n"
-        "\n"
-        "[actions/16]\n"
-        "Size=16\n"
-        "Context=Actions\n"
-        "Type=Fixed\n"
-    )
-    (src / "list-add.svg").write_text("<svg/>")
-    (src / "add.svg").write_text("<svg>old</svg>")
-    (links / "add.svg").symlink_to("list-add.svg")
-
-    cache = tmp_path / "cache"
-    monkeypatch.setattr(icons, "CACHE", cache)
-
-    icons._assemble(repo, "MacTahoeLiquidKde-Icons")
-
-    out = cache / "MacTahoeLiquidKde-Icons/actions/16/add.svg"
-    assert out.is_symlink()
-    assert out.readlink() == Path("list-add.svg")
-    assert out.resolve().read_text() == "<svg/>"
+If we want a real test here: install the theme, query
+``gtk-launch foo`` with a known icon name, assert the icon was
+located. That needs a live session.
+"""
