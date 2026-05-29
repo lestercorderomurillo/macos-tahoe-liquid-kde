@@ -135,7 +135,7 @@ def install() -> None:
     qdbus_call("org.kde.KWin", "/Effects",
                "org.kde.kwin.Effects.loadEffect", "liquidglass")
 
-    q = shutil.which("qdbus6") or shutil.which("qdbus")
+    q = shutil.which("qdbus6") or shutil.which("qdbus-qt6") or shutil.which("qdbus")
     active = ""
     if q:
         try:

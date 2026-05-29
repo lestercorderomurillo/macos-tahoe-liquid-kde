@@ -300,32 +300,17 @@ _PACKAGE_MAP: dict[str, dict[str, str]] = {
     # whatever appears before the ``:`` in deps() — usually a binary
     # name (``g++``, ``cmake``) but occasionally a logical name
     # (``pkg-config``).
-    "cmake": {
-        "arch":     "cmake",
-        "debian":   "cmake",
-        "ubuntu":   "cmake",
-        "fedora":   "cmake",
-        "rhel":     "cmake",
-        "opensuse": "cmake",
-        "gentoo":   "dev-build/cmake",
-    },
     "g++": {
         "arch":     "gcc",
         "debian":   "g++",
         "ubuntu":   "g++",
         "fedora":   "gcc-c++",
         "rhel":     "gcc-c++",
+        "centos":   "gcc-c++",
         "opensuse": "gcc-c++",
+        "alpine":   "g++",
+        "void":     "gcc",
         "gentoo":   "sys-devel/gcc",
-    },
-    "pkg-config": {
-        "arch":     "pkgconf",
-        "debian":   "pkg-config",
-        "ubuntu":   "pkg-config",
-        "fedora":   "pkgconf-pkg-config",
-        "rhel":     "pkgconf-pkg-config",
-        "opensuse": "pkgconf-pkg-config",
-        "gentoo":   "dev-util/pkgconf",
     },
     # Qt6 dev tooling — separate row so qt6_install_hint() stays the
     # single source of truth for the human-facing install message.
@@ -337,6 +322,105 @@ _PACKAGE_MAP: dict[str, dict[str, str]] = {
         "rhel":     "qt6-qttools-devel",
         "opensuse": "qt6-tools-devel",
         "gentoo":   "dev-qt/qttools:6",
+    },
+    # qdbus6 lives in different packages — and under different *binary
+    # names* — per distro. Values below were confirmed against real
+    # container probes (2026-05) by running `dnf provides`, `apt-file
+    # search`, `zypper wp`, `pacman -F`, `apk search -e cmd:` against
+    # fresh images. Don't trust convention — the binary name itself
+    # varies (Fedora ships it as ``qdbus-qt6``, not ``qdbus6``), which
+    # is why ``utils.qdbus_cmd()`` checks multiple binary names.
+    "qdbus6": {
+        "arch":     "qt6-tools",
+        "debian":   "qdbus-qt6",          # was: qt6-tools-dev-tools (wrong)
+        "ubuntu":   "qdbus-qt6",          # was: qt6-tools-dev-tools (wrong)
+        "fedora":   "qt6-qttools",
+        "rhel":     "qt6-qttools",
+        "centos":   "qt6-qttools",
+        "opensuse": "qt6-tools-qdbus",    # was: qt6-tools (wrong)
+        "alpine":   "qt6-qttools",
+        "void":     "qt6-tools",
+        "gentoo":   "dev-qt/qttools",
+    },
+    # Kvantum Qt6 build. Probed names:
+    #   Arch:        kvantum (Qt5 + Qt6 together)
+    #   Fedora:      kvantum (single package, Qt5 + Qt6)
+    #   Debian/Ubuntu: qt-style-kvantum (Qt6 build)
+    #   openSUSE:    kvantum-manager
+    #   Alpine:      kvantum-qt6 (Qt5 build is kvantum-qt5)
+    #   Gentoo:      x11-themes/kvantum
+    "kvantummanager": {
+        "arch":     "kvantum",
+        "fedora":   "kvantum",
+        "rhel":     "kvantum",
+        "centos":   "kvantum",
+        "opensuse": "kvantum-manager",
+        "debian":   "qt-style-kvantum",
+        "ubuntu":   "qt-style-kvantum",
+        "alpine":   "kvantum-qt6",
+        "void":     "kvantum",
+        "gentoo":   "x11-themes/kvantum",
+    },
+    # Plymouth ships the helper script in different subpackages.
+    # On Arch + Debian + openSUSE + Alpine the main ``plymouth`` package
+    # carries ``plymouth-set-default-theme``; on Fedora it was split
+    # into ``plymouth-scripts``.
+    "plymouth-set-default-theme": {
+        "arch":     "plymouth",
+        "debian":   "plymouth",
+        "ubuntu":   "plymouth",
+        "fedora":   "plymouth-scripts",
+        "rhel":     "plymouth-scripts",
+        "centos":   "plymouth-scripts",
+        "opensuse": "plymouth",
+        "alpine":   "plymouth",
+        "void":     "plymouth",
+        "gentoo":   "sys-boot/plymouth",
+    },
+    # fontconfig + pkgconf shim: the *binary* names are the same
+    # everywhere but the package name varies, sometimes against the
+    # Arch fallback (Fedora's ``pkgconf-pkg-config`` shim is the
+    # canonical `/usr/bin/pkg-config` provider; plain ``pkgconf``
+    # doesn't exist there).
+    "pkg-config": {
+        "arch":     "pkgconf",
+        "debian":   "pkgconf",
+        "ubuntu":   "pkgconf",
+        "fedora":   "pkgconf-pkg-config",
+        "rhel":     "pkgconf-pkg-config",
+        "centos":   "pkgconf-pkg-config",
+        "opensuse": "pkgconf-pkg-config",
+        "alpine":   "pkgconf",
+        "void":     "pkgconf",
+        "gentoo":   "dev-util/pkgconf",
+    },
+    "fc-cache": {
+        "arch":     "fontconfig",
+        "debian":   "fontconfig",
+        "ubuntu":   "fontconfig",
+        "fedora":   "fontconfig",
+        "rhel":     "fontconfig",
+        "centos":   "fontconfig",
+        "opensuse": "fontconfig",
+        "alpine":   "fontconfig",
+        "void":     "fontconfig",
+        "gentoo":   "media-libs/fontconfig",
+    },
+    # cmake on openSUSE Tumbleweed is split — ``cmake-full`` includes
+    # the GUI / docs, ``cmake-mini`` is the build-only flavour. Plain
+    # ``cmake`` exists as a virtual that pulls full, so it's safe to
+    # keep "cmake" everywhere, but document the split.
+    "cmake": {
+        "arch":     "cmake",
+        "debian":   "cmake",
+        "ubuntu":   "cmake",
+        "fedora":   "cmake",
+        "rhel":     "cmake",
+        "centos":   "cmake",
+        "opensuse": "cmake",
+        "alpine":   "cmake",
+        "void":     "cmake",
+        "gentoo":   "dev-build/cmake",
     },
 }
 

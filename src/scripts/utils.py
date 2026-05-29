@@ -370,9 +370,13 @@ _QDBUS_CACHE: list[str] | None = None
 
 
 def qdbus_cmd() -> str | None:
+    # Binary name varies per distro: Arch / Alpine / Debian / openSUSE
+    # ship ``qdbus6`` on PATH; Fedora and RHEL ship the same tool as
+    # ``qdbus-qt6``; older systems expose only ``qdbus`` (Qt5). Check
+    # all three in preference order.
     global _QDBUS_CACHE
     if _QDBUS_CACHE is None:
-        _QDBUS_CACHE = [c for c in ("qdbus6", "qdbus") if have(c)]
+        _QDBUS_CACHE = [c for c in ("qdbus6", "qdbus-qt6", "qdbus") if have(c)]
     return _QDBUS_CACHE[0] if _QDBUS_CACHE else None
 
 

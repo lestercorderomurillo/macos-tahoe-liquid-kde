@@ -47,7 +47,9 @@ def _kdeglobals_path() -> Path:
 
 
 def _qdbus(*args: str) -> bool:
-    for q in ("qdbus6", "qdbus"):
+    # Same per-distro alias dance as utils.qdbus_cmd(): Fedora ships
+    # the Qt6 client as ``qdbus-qt6``, not ``qdbus6``.
+    for q in ("qdbus6", "qdbus-qt6", "qdbus"):
         if _have(q):
             try:
                 return subprocess.run(
