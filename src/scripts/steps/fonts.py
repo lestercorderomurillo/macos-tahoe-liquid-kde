@@ -1,52 +1,37 @@
+"""SF Pro fonts — fully bundled offline since v0.18.0.
+
+Earlier releases downloaded San Francisco Pro from
+github.com/sahibjotsaggu/San-Francisco-Pro-Fonts on first install
+and cached the result under ``~/.cache/mac-tahoe-liquid-kde/steps/
+fonts/``. Two problems:
+
+* Every fresh install hit the network for ~73 MB of OTFs before any
+  font appeared, slowing down installs and breaking on air-gapped
+  hosts.
+* If GitHub returned an HTML error page or the upstream renamed
+  files, the install partially succeeded with a font subset and
+  Plasma fell back to Noto Sans without telling the user.
+
+v0.18 ships the full 47-file SF Pro family in-repo under
+``src/offline/fonts/`` (~109 MB). No ``download()`` phase, no
+mirror JSON, no network dependency.
+"""
+
 import shutil
 import subprocess
 from collections import defaultdict
 
 from steps._helpers import (
-    HOME, fail, have, info, legacy_steps_dir, ok, reinstall, src_dir, steps_dir,
-    temp_dir, warn,
+    HOME, fail, have, info, ok, offline, reinstall, warn,
 )
-from utils import run_mirrors, run_user
+from utils import run_user
 
-CACHE = steps_dir("fonts")
-LEGACY_CACHE = legacy_steps_dir("fonts")
+OFFLINE_DIR = offline("fonts")
 DEST_DIR = HOME / ".local/share/fonts"
 
 
 def deps():
-    return ["curl", "unzip", "fc-cache:fontconfig"]
-
-
-def _cache_root():
-    for cache in (CACHE, LEGACY_CACHE):
-        if any((*cache.glob("*.otf"), *cache.glob("*.ttf"))):
-            return cache
-    return CACHE
-
-
-def download() -> None:
-    mirror = src_dir("mirrors/fonts.json")
-    CACHE.mkdir(parents=True, exist_ok=True)
-    for f in (*CACHE.glob("*.otf"), *CACHE.glob("*.ttf")):
-        f.unlink()
-
-    with temp_dir("tahoe-fonts") as tmp:
-        def handle(xdir, _prefix, *_referer):
-            installed = False
-            font_files = sorted(
-                p for p in xdir.rglob("*")
-                if p.is_file() and p.suffix.lower() in (".otf", ".ttf")
-            )
-            for f in font_files:
-                try:
-                    shutil.copy2(f, CACHE / f.name)
-                    installed = True
-                except OSError:
-                    fail(f"{f.name} (copy failed)")
-            return installed
-
-        if not run_mirrors(mirror, 0, tmp, handle):
-            fail("no fonts installed — all mirrors failed")
+    return ["fc-cache:fontconfig"]
 
 
 def _group(name: str) -> str:
@@ -60,11 +45,10 @@ def _group(name: str) -> str:
 def install() -> None:
     DEST_DIR.mkdir(parents=True, exist_ok=True)
     inst: dict[str, int] = defaultdict(int)
-    re: dict[str, int] = defaultdict(int)
+    re_: dict[str, int] = defaultdict(int)
     any_copied = False
-    cache = _cache_root()
 
-    for f in (*cache.glob("*.otf"), *cache.glob("*.ttf")):
+    for f in (*OFFLINE_DIR.glob("*.otf"), *OFFLINE_DIR.glob("*.ttf")):
         target = DEST_DIR / f.name
         existed = target.is_file()
         try:
@@ -75,13 +59,13 @@ def install() -> None:
             continue
         grp = _group(f.name)
         if existed:
-            reinstall(f.name); re[grp] += 1
+            reinstall(f.name); re_[grp] += 1
         else:
             ok(f"{f.name} (installed)"); inst[grp] += 1
 
     for grp in ("SF Pro", "SF Mono", "Other"):
-        if inst[grp] or re[grp]:
-            info(f"{grp} — {inst[grp]} installed, {re[grp]} reinstalled")
+        if inst[grp] or re_[grp]:
+            info(f"{grp} — {inst[grp]} installed, {re_[grp]} reinstalled")
     if any_copied:
         _refresh_font_cache()
 
