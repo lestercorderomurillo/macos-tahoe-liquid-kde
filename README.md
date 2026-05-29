@@ -116,20 +116,20 @@ Plymouth boot screen with centered Apple-style logo on every monitor, scaled dyn
 
 ![Tested distros](https://img.shields.io/badge/tested-distros-4B6B8A?style=for-the-badge&logo=linux&logoColor=white)
 
-|     | Distro | Supported yet? |
-|:---:|--------|:--------------:|
+|     | Distro | Tested yet? |
+|:---:|--------|:-----------:|
 | <img src="https://cdn.simpleicons.org/cachyos" width="22"> | CachyOS | ✅ YES |
-| <img src="https://cdn.simpleicons.org/archlinux" width="22"> | Arch Linux | ✅ YES |
-| <img src="https://cdn.simpleicons.org/manjaro" width="22"> | Manjaro | ✅ YES |
-| <img src="https://cdn.simpleicons.org/endeavouros" width="22"> | EndeavourOS | ✅ YES |
-| <img src="https://cdn.simpleicons.org/linux" width="22"> | Garuda Linux | ✅ YES |
 | <img src="https://cdn.simpleicons.org/gentoo" width="22"> | Gentoo | ✅ YES |
-| <img src="https://cdn.simpleicons.org/fedora" width="22"> | Fedora / RHEL | ✅ YES |
-| <img src="https://cdn.simpleicons.org/nobaralinux" width="22"> | Nobara | ✅ YES |
-| <img src="https://cdn.simpleicons.org/linux" width="22"> | Bazzite | ✅ YES |
-| <img src="https://cdn.simpleicons.org/opensuse" width="22"> | openSUSE Tumbleweed | ✅ YES |
+| <img src="https://cdn.simpleicons.org/archlinux" width="22"> | Arch Linux | 🔧 Work in progress |
+| <img src="https://cdn.simpleicons.org/manjaro" width="22"> | Manjaro | 🔧 Work in progress |
+| <img src="https://cdn.simpleicons.org/endeavouros" width="22"> | EndeavourOS | 🔧 Work in progress |
+| <img src="https://cdn.simpleicons.org/linux" width="22"> | Garuda Linux | 🔧 Work in progress |
+| <img src="https://cdn.simpleicons.org/fedora" width="22"> | Fedora / RHEL | 🔧 Work in progress |
+| <img src="https://cdn.simpleicons.org/nobaralinux" width="22"> | Nobara | 🔧 Work in progress |
+| <img src="https://cdn.simpleicons.org/linux" width="22"> | Bazzite | 🔧 Work in progress |
+| <img src="https://cdn.simpleicons.org/opensuse" width="22"> | openSUSE Tumbleweed | 🔧 Work in progress |
 
-Each ✅ distro is verified in CI on every push: `tests/containers/` runs the path-discovery layer, package-manager mapping, preflight destination checks, and the full pytest suite against the real distro environment. Report any issues you find on confirmed OSes.
+✅ YES = run on bare metal through to a working desktop. 🔧 Work in progress = wired into `tests/containers/` and the package-manager mapping has been probed against fresh container images, but no bare-metal install reported yet. Container tests catch path/package-name drift; they do not exercise a live Plasma session. If you run on a 🔧 distro, please report the result — success or failure — in an issue.
 
 ---
 
@@ -146,7 +146,7 @@ Each ✅ distro is verified in CI on every push: `tests/containers/` runs the pa
 | **GTK Theme** | GTK2/3/4 window chrome and controls | ✅ |
 | **Acrylic Glass** | KWin blur, rounded corners, glass effect | ✅ |
 | **Auto Theme Switcher** | One-shot service + 06:00 / 18:00 timer, single entry point | ✅ |
-| **Multi-Distro Support** | Confirmed on CachyOS, Arch, Gentoo, Fedora, openSUSE — see the *Tested distros* table | ✅ |
+| **Multi-Distro Support** | Confirmed on CachyOS + Gentoo; others (Arch family, Fedora family, openSUSE) wired in CI but unverified on bare metal — see the *Tested distros* table | 🔧 |
 | **Aurorae Decorations** | Window title bar and borders | ✅ |
 | **Global Menu Plasmoid** | Unified menu bar: system menu, app name, window controls, app menus | ✅ |
 | **Dock Task Manager** | Icons-only dock applet with macOS-style notification badges | ✅ |
