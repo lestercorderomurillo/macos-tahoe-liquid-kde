@@ -37,6 +37,60 @@ REPO = Path("/repo")
 sys.path.insert(0, str(REPO / "src/scripts"))
 
 
+def _collect_dep_tokens() -> list[tuple[str, str]]:
+    """Walk every step module's deps() and collect the unique
+    ``(cmd_token, arch_fallback)`` pairs.
+
+    Each step lists its deps as either ``"binary"`` (binary IS the
+    Arch package name) or ``"binary:arch-pkg"`` (binary differs from
+    the Arch package name). We probe the per-distro translation for
+    BOTH halves of the pair: the distro must have a row in
+    distro._PACKAGE_MAP or the literal Arch fallback must exist in
+    the repo. Either path lets the install actually succeed.
+
+    Source of truth: src/scripts/steps/*.py. Anything that returns
+    a list of strings from deps() is picked up automatically, so a
+    new step's tokens get probed without editing this file.
+
+    Plus qmake6, which has no step but is required by the build
+    helpers for path discovery.
+    """
+    import importlib
+    import pkgutil
+
+    seen: dict[str, str] = {}
+    # qmake6 isn't a step dep but is required by path discovery; pin
+    # explicitly so the probe always exercises it.
+    seen["qmake6"] = "qt6-tools"
+
+    steps_pkg = importlib.import_module("steps")
+    for mod_info in pkgutil.iter_modules(steps_pkg.__path__):
+        if mod_info.name.startswith("_"):
+            continue
+        try:
+            mod = importlib.import_module(f"steps.{mod_info.name}")
+        except Exception as exc:  # noqa: BLE001 — step modules may have heavy imports
+            print(f"  WARN: cannot import steps.{mod_info.name}: {exc}")
+            continue
+        deps_fn = getattr(mod, "deps", None)
+        if deps_fn is None:
+            continue
+        try:
+            tokens = deps_fn()
+        except Exception as exc:  # noqa: BLE001
+            print(f"  WARN: steps.{mod_info.name}.deps() raised {exc}")
+            continue
+        for tok in tokens or ():
+            if not isinstance(tok, str):
+                continue
+            cmd, _, arch_pkg = tok.partition(":")
+            cmd = cmd.strip()
+            arch_pkg = arch_pkg.strip() or cmd
+            if cmd and cmd not in seen:
+                seen[cmd] = arch_pkg
+    return sorted(seen.items())
+
+
 def _q(label: str, cmd: list[str]) -> str | None:
     print(f"  ── {label}")
     if not shutil.which(cmd[0]):
@@ -139,8 +193,8 @@ def step_package_manager_layer() -> bool:
         return True
 
     ok = True
-    for cmd_token in ("cmake", "g++", "pkg-config", "qmake6"):
-        pkg = distro.package_for(cmd_token, cmd_token)
+    for cmd_token, arch_fallback in _collect_dep_tokens():
+        pkg = distro.package_for(cmd_token, arch_fallback)
         print(f"  ── probe {cmd_token!r} → {pkg!r}")
         if d == "gentoo":
             # Gentoo doesn't have a clean info-only command; check
