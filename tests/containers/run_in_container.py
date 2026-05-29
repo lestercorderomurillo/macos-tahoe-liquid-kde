@@ -1,6 +1,6 @@
 """Cross-distro test runner. Lives inside each per-distro container.
 
-Tier 1 — the cheap stuff:
+Tier 1 — Qt6 path discovery + pytest suite:
   * qmake6 is on PATH and returns a non-empty plugin / QML directory.
   * distro.qt6_plugins_dir() / qt6_qml_dir() return exactly what
     qmake6 reports — no hardcoded assumption sneaked back in.
@@ -8,21 +8,32 @@ Tier 1 — the cheap stuff:
   * The full pytest suite passes against this distro's real Python +
     Qt6 layout.
 
-Tier 2 — the dep layer:
+Tier 2 — the dep layer (per-distro package mapping):
   * distro.package_manager_install_cmd() returns a real binary that
     exists on PATH (proves the table covers this distro).
-  * distro.package_for(...) maps the common deps() tokens to packages
-    that exist in the distro's repos (probes with pacman -Si / dnf
-    info / apt show / etc.).
+  * distro.package_for(...) translates EVERY step's deps() token to a
+    package that exists in the distro's real repo metadata. Tokens
+    are collected at runtime from steps/*.py — see _collect_dep_tokens
+    below — so adding a new step's deps() automatically extends this
+    coverage. The 4-token hardcoded list (cmake / g++ / pkg-config /
+    qmake6) that pre-v0.17.4 ran was the gap that let the Fedora 44
+    qdbus6 bug ship in v0.17.1; this probe now exercises qdbus6,
+    kvantummanager, plymouth-set-default-theme, fc-cache, nautilus,
+    curl, unzip, etc.
 
 What this still does NOT prove:
-  * The full ./install pipeline (needs plasmashell + KWin running).
-  * CMake find_package for KDE / KF6 / KWin — would require pulling
-    in the entire Plasma 6 dev SDK. Out of scope for v0.15.0.
+  * The full ``sudo ./install`` pipeline (needs plasmashell + KWin
+    running on the host — out of scope for any container).
+  * CMake find_package for KDE / KF6 / KWin (would require pulling
+    in the entire Plasma 6 dev SDK into every image).
+  * Live theme-switch DBus round-trips.
 
-If both tiers pass, the v0.15.0 install will (a) land .so / QML
-where Qt6 actually scans, and (b) know how to install its missing
-build deps via the right package manager.
+If both tiers pass, the install on this distro will: (a) land .so /
+QML artefacts where Qt6 actually scans for them, and (b) know how
+to install every missing build/runtime dep via the right package
+manager. Whether the resulting plasmoid loads in a live Plasma
+session is a maintainer-on-bare-metal check, documented in
+tests/conftest.py.
 """
 
 from __future__ import annotations
