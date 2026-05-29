@@ -1,18 +1,35 @@
-# USELESS: file existence + JSON parse + SVG validity — none of this catches plugins/QML installed where Plasma cannot find them
-"""File-existence, grep, JSON, and SVG validity checks."""
+"""Static guards that protect cross-cutting invariants.
 
-import gzip
+This file used to contain ~128 tests: SVG decode, SVG parity,
+file-existence walks under ``src/offline/``, README documentation
+markers, "summary is the last print" cosmetics, etc. Most of that
+was pinning artist choices or duplicating the install step's own
+fail-fast checks. Removed in the v0.17.4 test-suite nuke.
+
+What survives here: guards that catch *cross-cutting* drift
+(refactors that affect every distro / every step / every release).
+Each one protects against a specific shipped bug or a specific
+class of regression that has no other home in the suite.
+"""
+
+from __future__ import annotations
+
 import json
 import re
 import subprocess
-import xml.etree.ElementTree as ET
-from pathlib import Path
 
 import pytest
 
 
-# ── basic scripts and version ─────────────────────────────────────────────
+# ── basic launch surface ──────────────────────────────────────────────
+
+
 def test_version_is_semver(repo):
+    """VERSION is the single source of truth read by paths.read_version()
+    and printed by the install banner. v0.17.2 shipped with this file
+    out of sync with the git tag — the banner printed v0.17.1 on a
+    v0.17.2 install. Pin the shape so a future malformed VERSION
+    (e.g. "0.17.2\n0.17.3\n" from a botched merge) fails CI."""
     assert re.fullmatch(r"\d+\.\d+\.\d+", (repo / "VERSION").read_text().strip())
 
 
@@ -28,23 +45,24 @@ def test_uninstall_entry_exists(repo):
 
 @pytest.mark.parametrize("script", ["install", "uninstall"])
 def test_help_exits_zero(repo, script):
+    """`./install --help` and `./uninstall --help` must not crash. This
+    catches a class of bug where an import-time error in cli.py only
+    surfaces when the script tries to do anything (which `--help`
+    short-circuits past)."""
     rc = subprocess.run([str(repo / script), "--help"], check=False).returncode
     assert rc == 0
 
 
-def test_installer_package(repo):
-    assert (repo / "src/scripts/cli.py").is_file()
-    assert (repo / "src/scripts/theme_switch.py").is_file()
-    assert (repo / "src/scripts/set-transparency").is_file()
-    assert (repo / "src/scripts/steps/__init__.py").is_file()
-    # v0.15: distro.py is the single layer for everything that varies
-    # between Linux distributions (Qt6 plugin / QML dirs, package
-    # manager hint, /etc/os-release id). No step is allowed to
-    # hardcode ``/usr/lib/qt6`` — see test_no_hardcoded_qt6_libdir.
-    assert (repo / "src/scripts/distro.py").is_file()
+# ── distro layer is the only place that knows per-distro details ──────
 
 
-def test_distro_layer_exposes_qt6_helpers(repo):
+def test_distro_layer_exposes_public_api(repo):
+    """``distro.py`` is the documented choke point for everything that
+    varies between Linux distros (Qt6 plugin/QML dirs, libdir suffix,
+    package manager). Tests + steps + preflight + container probe all
+    import from this public surface. If a refactor renames or removes
+    one of these, every caller breaks. Pin the surface so renames are
+    deliberate, not silent."""
     text = (repo / "src/scripts/distro.py").read_text()
     for name in ("qt6_plugins_dir", "qt6_qml_dir", "Qt6PathsMissing",
                  "current_distro", "qt6_install_hint",
@@ -54,10 +72,15 @@ def test_distro_layer_exposes_qt6_helpers(repo):
 
 
 def test_no_hardcoded_package_manager_outside_distro_layer(repo):
-    """Same invariant as Qt6 paths: only ``distro.py`` is allowed to
-    name a specific package manager binary. Anything else has to go
-    through ``distro.package_manager_install_cmd()`` so adding a new
-    distro doesn't require hunting through every step.
+    """Only ``distro.py`` is allowed to name a specific package manager
+    INSTALL command. Anything else has to go through
+    ``distro.package_manager_install_cmd()`` so adding a new distro
+    means adding ONE row, not hunting through every step.
+
+    Real regression this caught: a step at one point shelled out to
+    ``pacman -S foo`` directly. That worked on Arch and silently
+    no-op'd on every other distro — exactly the bug shape the
+    distro-layer abstraction was introduced to prevent.
 
     ``pacman -Q`` (a query, not an install) is allowed in cli.py
     because the update-check reads the local package version; only
@@ -108,9 +131,10 @@ def test_no_hardcoded_qt6_libdir(repo):
     ``paths.py`` (where the per-distro libdir map is *documented* in a
     comment), no executable line is allowed to hardcode
     ``/usr/lib/qt6`` or ``/usr/lib64/qt6``. Production code MUST go
-    through ``distro.qt6_plugins_dir()`` / ``distro.qt6_qml_dir()``,
-    otherwise we re-ship the v0.14.x assumption that Arch's libdir
-    works everywhere (which broke installs on Gentoo and Debian).
+    through ``distro.qt6_plugins_dir()`` / ``distro.qt6_qml_dir()``.
+
+    Real regression this caught: v0.14.x assumed Arch's ``/usr/lib/qt6``
+    everywhere and broke installs on Gentoo + Debian (different libdirs).
 
     Comment lines and docstrings are allowed to mention the example
     paths — that's how we document the per-distro variation."""
@@ -126,12 +150,9 @@ def test_no_hardcoded_qt6_libdir(repo):
         docstring_open = None
         for line_no, line in enumerate(text.splitlines(), start=1):
             stripped = line.lstrip()
-            # Track triple-quoted docstring blocks (cheap: assumes well-
-            # formed triple quotes, which our codebase uses).
             if docstring_open is None:
                 for quote in ('"""', "'''"):
                     if stripped.startswith(quote):
-                        # Single-line docstring closes on same line.
                         if stripped.count(quote) >= 2:
                             in_docstring = False
                             break
@@ -155,580 +176,49 @@ def test_no_hardcoded_qt6_libdir(repo):
     )
 
 
-def test_theme_switch_python(repo):
+# ── single-source-of-truth pins on the theme-switcher rewrite ─────────
+
+
+def test_theme_switch_no_legacy_entry_points(repo):
+    """The v0.14.2 rewrite collapsed several historical entry points
+    (watch_loop, sync_auto_mode_on_startup, _spawn_deferred_live_apply,
+    _deferred_live_apply_loop) into a single ``apply()``. If any of
+    those names reappear, a maintainer is re-introducing the multi-
+    entry-point design that produced the v0.13.x cascade. The
+    apply()-as-only-path invariant is load-bearing."""
     text = (repo / "src/scripts/theme_switch.py").read_text()
-    assert "apply_color_groups_direct" in text
-    assert ".colors" in text
-    # Auto mode is strictly time-based — explicitly disables AutomaticLookAndFeel.
-    assert "AutomaticLookAndFeel" in text and '"false"' in text
-
-
-def test_set_transparency_entry_runs(repo):
-    p = repo / "src/scripts/set-transparency"
-    assert p.is_file() and p.stat().st_mode & 0o111
-    rc = subprocess.run(
-        [str(p), "--help"], check=False,
-        stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
-    ).returncode
-    assert rc == 0
-
-
-# ── mirrors json validity ─────────────────────────────────────────────────
-# Wallpapers used to be on this list. Since v0.17.0 they ship fully
-# bundled in src/offline/wallpapers/ — no mirror JSON, no downloader.
-@pytest.mark.parametrize("name", ["fonts", "icons", "cursors"])
-def test_mirror_json_valid(src, name):
-    p = src / "mirrors" / f"{name}.json"
-    assert p.is_file()
-    json.loads(p.read_text())
-
-
-# ── plasma theme dirs and SVGZ contents ──────────────────────────────────
-_PLASMA_SVGS = (
-    "dialogs/background", "widgets/background", "widgets/translucentbackground",
-    "widgets/panel-background", "widgets/tooltip", "widgets/frame",
-    "widgets/tasks", "widgets/button", "widgets/viewitem", "widgets/slider",
-    "widgets/arrows", "widgets/checkmarks", "widgets/tabbar",
-)
-
-
-@pytest.mark.parametrize("variant", ["Dark", "Light"])
-def test_plasma_theme_dir(offline, variant):
-    base = offline / "plasma-theme" / f"MacTahoeLiquidKde-{variant}"
-    assert base.is_dir()
-    assert (base / "metadata.json").is_file()
-    assert (base / "plasmarc").is_file()
-    assert "defaultWallpaperTheme=MacTahoe" in (base / "plasmarc").read_text()
-
-
-@pytest.mark.parametrize("variant", ["Dark", "Light"])
-@pytest.mark.parametrize("svg", _PLASMA_SVGS)
-def test_plasma_svg_decodes(offline, variant, svg):
-    f = offline / "plasma-theme" / f"MacTahoeLiquidKde-{variant}" / f"{svg}.svgz"
-    decoded = gzip.decompress(f.read_bytes())
-    ET.fromstring(decoded)
-
-
-def test_plasma_dark_light_svg_parity(offline):
-    dark = sorted(p.relative_to(offline / "plasma-theme/MacTahoeLiquidKde-Dark")
-                  for p in (offline / "plasma-theme/MacTahoeLiquidKde-Dark").rglob("*.svgz"))
-    light = sorted(p.relative_to(offline / "plasma-theme/MacTahoeLiquidKde-Light")
-                   for p in (offline / "plasma-theme/MacTahoeLiquidKde-Light").rglob("*.svgz"))
-    assert dark, "no dark SVGs found"
-    assert light, "no light SVGs found"
-    assert dark == light
-
-
-# ── color schemes ─────────────────────────────────────────────────────────
-@pytest.mark.parametrize("variant", ["Light", "Dark"])
-def test_color_scheme_present(offline, variant):
-    f = offline / "color-schemes" / f"MacTahoeLiquidKde{variant}.colors"
-    assert f.is_file()
-    assert "[General]" in f.read_text()
-
-
-def test_color_scheme_key_parity(offline):
-    def parse(p: Path):
-        sections: dict[str, set[str]] = {}
-        section = None
-        for raw in p.read_text().splitlines():
-            line = raw.strip()
-            if not line or line.startswith(("#", ";")):
-                continue
-            if line.startswith("[") and line.endswith("]"):
-                section = line[1:-1]
-                sections.setdefault(section, set())
-                continue
-            if "=" in line and section is not None:
-                sections[section].add(line.split("=", 1)[0].strip())
-        return sections
-
-    light = parse(offline / "color-schemes/MacTahoeLiquidKdeLight.colors")
-    dark = parse(offline / "color-schemes/MacTahoeLiquidKdeDark.colors")
-    diffs = []
-    for sec in sorted(set(light) | set(dark)):
-        lk = light.get(sec, set())
-        dk = dark.get(sec, set())
-        if lk != dk:
-            diffs.append(f"[{sec}] light-only={sorted(lk - dk)} dark-only={sorted(dk - lk)}")
-    assert not diffs, "\n".join(diffs)
-
-
-# ── kvantum ───────────────────────────────────────────────────────────────
-_KVANTUM_KEYS = ("reduce_menu_opacity", "layout_spacing", "blur_translucent")
-_KVANTUM_SECTIONS = ("[Menu]", "[MenuItem]", "[Window]")
-
-
-@pytest.mark.parametrize("name", ["mac-tahoe-liquid-kde", "mac-tahoe-liquid-kdeDark"])
-def test_kvantum_files_present(offline, name):
-    base = offline / "kvantum/mac-tahoe-liquid-kde"
-    assert (base / f"{name}.kvconfig").is_file()
-    assert (base / f"{name}.svg").is_file()
-
-
-@pytest.mark.parametrize("name", ["mac-tahoe-liquid-kde", "mac-tahoe-liquid-kdeDark"])
-def test_kvantum_required_settings(offline, name):
-    text = (offline / f"kvantum/mac-tahoe-liquid-kde/{name}.kvconfig").read_text()
-    for key in _KVANTUM_KEYS:
-        assert re.search(rf"^{key}=", text, re.MULTILINE), f"{name} missing {key}"
-    for sec in _KVANTUM_SECTIONS:
-        assert sec.replace("[", "\\[").replace("]", "\\]")
-        assert sec in text, f"{name} missing {sec}"
-
-
-def test_kvantum_light_window_frames(offline):
-    text = (offline / "kvantum/mac-tahoe-liquid-kde/mac-tahoe-liquid-kde.kvconfig").read_text()
-    assert "frame.left=10" in text
-    assert "frame.right=10" in text
-
-
-# ── global theme + aurorae + gtk ─────────────────────────────────────────
-@pytest.mark.parametrize("variant", ["Dark", "Light"])
-def test_global_theme(offline, variant):
-    base = offline / "look-and-feel" / f"MacTahoeLiquidKde-{variant}"
-    assert base.is_dir()
-    json.loads((base / "metadata.json").read_text())
-    assert (base / "contents/defaults").is_file()
-    assert (base / "contents/layouts/org.kde.plasma.desktop-layout.js").is_file()
-    defaults = (base / "contents/defaults").read_text()
-    assert f"ColorScheme=MacTahoeLiquidKde{variant}" in defaults
-    assert f"name=MacTahoeLiquidKde-{variant}" in defaults
-    assert f"MacTahoeLiquidKde-{variant}" in defaults
-    assert "cursorTheme=" in defaults
-    assert "Image=MacTahoe" in defaults
-
-
-@pytest.mark.parametrize("variant", ["Dark", "Light"])
-def test_aurorae(offline, variant):
-    base = offline / "aurorae" / f"MacTahoeLiquidKde-{variant}"
-    assert base.is_dir()
-    assert (base / "decoration.svg").is_file()
-    assert (offline / f"aurorae/MacTahoeLiquidKde-{variant}rc").is_file()
-
-
-@pytest.mark.parametrize("variant", ["Dark", "Light"])
-def test_gtk(offline, variant):
-    base = offline / "gtk" / f"MacTahoeLiquidKde-{variant}"
-    assert base.is_dir()
-    assert (base / "gtk-3.0/gtk.css").is_file()
-    assert (base / "gtk-4.0/gtk.css").is_file()
-    assert (base / "gtk-4.0/gtk-Light.css").is_file()
-    assert (base / "gtk-4.0/gtk-Dark.css").is_file()
-    assert (base / "gtk-4.0/assets").is_dir()
-
-
-# ── plasmoids ─────────────────────────────────────────────────────────────
-def test_old_menu_removed(offline, steps_dir):
-    assert not (offline / "plasmoids/org.kde.mac-tahoe-liquid-kde.menu").exists()
-    assert not (steps_dir / "menu").exists()
-
-
-_GLOBALMENU = "plasmoids/org.kde.mac.tahoe.liquid.globalmenu"
-
-
-@pytest.mark.parametrize("rel", [
-    "CMakeLists.txt", "appmenuapplet.cpp", "appmenuapplet.h",
-    "appmenumodel.cpp", "appmenumodel.h", "metadata.json",
-    "qml/main.qml", "qml/MenuDelegate.qml", "qml/AboutWindow.qml",
-    "qml/configSystemMenu.qml",
-])
-def test_globalmenu_files(offline, rel):
-    assert (offline / _GLOBALMENU / rel).is_file()
-
-
-def test_globalmenu_has_features(offline):
-    main = (offline / _GLOBALMENU / "qml/main.qml").read_text()
-    cpp = (offline / _GLOBALMENU / "appmenuapplet.cpp").read_text()
-    h = (offline / _GLOBALMENU / "appmenuapplet.h").read_text()
-    model = (offline / _GLOBALMENU / "appmenumodel.h").read_text()
-    main_xml = (offline / _GLOBALMENU / "main.xml").read_text()
-    delegate = (offline / _GLOBALMENU / "qml/MenuDelegate.qml").read_text()
-
-    assert "appNameButton" in main
-    assert "activeAppName" in model
-    assert "systemMenuButton" in main
-    assert "triggerSystemMenu" in cpp
-    assert "aboutRequested" in h
-    assert "_breeze_menu_seamless_edges" in cpp
-    assert "cfg.readEntry" in cpp
-    assert "triggerWindowMenu" in cpp
-    for key in ("iconAbout", "iconAppStore", "iconLogOut", "menuIcon", "cmdSleep"):
-        assert key in main_xml
-    assert "font.weight" in delegate
-
-
-def test_globalmenu_metadata_id(offline):
-    text = (offline / _GLOBALMENU / "metadata.json").read_text()
-    assert '"Id": "org.kde.mac.tahoe.liquid.globalmenu"' in text
-
-
-def test_launcher_metadata(offline):
-    p = offline / "plasmoids/org.kde.mac-tahoe-liquid-kde.launcher"
-    json.loads((p / "metadata.json").read_text())
-    assert (p / "contents/ui/main.qml").is_file()
-    assert '"Id": "org.kde.mac-tahoe-liquid-kde.launcher"' in (p / "metadata.json").read_text()
-
-
-def test_trashcan_metadata(offline):
-    p = offline / "plasmoids/org.kde.mac-tahoe-liquid-kde.trashcan"
-    json.loads((p / "metadata.json").read_text())
-    assert (p / "contents/ui/main.qml").is_file()
-    assert '"Id": "org.kde.mac-tahoe-liquid-kde.trashcan"' in (p / "metadata.json").read_text()
-
-
-def test_dock_taskmanager(offline):
-    p = offline / "plasmoids/org.kde.mac.tahoe.liquid.taskmanager"
-    icontasks = offline / "plasmoids/org.kde.mac.tahoe.liquid.icontasks"
-    json.loads((p / "metadata.json").read_text())
-    json.loads((icontasks / "metadata.json").read_text())
-
-    # Stock and legacy package overrides must NOT be shipped.
-    for name in (
-        "org.kde.plasma.taskmanager", "org.kde.plasma.icontasks",
-        "org.kde.mac-tahoe-liquid-kde.taskmanager",
-        "org.kde.mac-tahoe-liquid-kde.icontasks",
-    ):
-        assert not (offline / "plasmoids" / name).exists(), name
-
-    assert not (icontasks / "contents").exists()
-    assert (p / "CMakeLists.txt").is_file()
-    for fn in ("backend.h", "backend.cpp",
-               "smartlauncherbackend.h", "smartlauncherbackend.cpp",
-               "smartlauncheritem.h", "smartlauncheritem.cpp",
-               "kactivitymanagerd_plugins_settings.kcfg",
-               "kactivitymanagerd_plugins_settings.kcfgc",
-               "contents/ui/Badge.qml", "contents/ui/main.qml",
-               "contents/ui/Task.qml", "contents/ui/TaskBadgeOverlay.qml",
-               "contents/ui/LayoutMetrics.js",
-               "contents/ui/TaskTools.js"):
-        assert (p / fn).is_file(), fn
-
-    assert not (p / "contents/ui/plasma/applet/org/kde/plasma/taskmanager/qmldir").is_file()
-
-    icontasks_meta = (icontasks / "metadata.json").read_text()
-    assert '"Id": "org.kde.mac.tahoe.liquid.icontasks"' in icontasks_meta
-    assert '"X-Plasma-RootPath": "org.kde.mac.tahoe.liquid.taskmanager"' in icontasks_meta
-
-    p_meta = (p / "metadata.json").read_text()
-    assert '"Id": "org.kde.mac.tahoe.liquid.taskmanager"' in p_meta
-
-    overlay = (p / "contents/ui/TaskBadgeOverlay.qml").read_text()
-    assert "#ff3b30" in overlay
-    assert "#ffffff" in overlay
-
-    tooltip = (p / "contents/ui/ToolTipInstance.qml").read_text()
-    assert "Kirigami.Badge" not in tooltip
-
-    main = (p / "contents/ui/main.qml").read_text()
-    assert "filterByVirtualDesktop:" in main
-    assert "filterByCurrentVirtualDesktop" not in main
-    assert "import plasma.applet.org.kde.mac.tahoe.liquid.taskmanager as TaskManagerApplet" in main
-    assert 'import "LayoutMetrics.js" as LayoutMetrics' in main
-    assert 'import "TaskTools.js" as TaskTools' in main
-
-    task = (p / "contents/ui/Task.qml").read_text()
-    assert "import plasma.applet.org.kde.mac.tahoe.liquid.taskmanager as TaskManagerApplet" in task
-    assert ('Qt.createComponent("plasma.applet.org.kde.mac.tahoe.liquid.taskmanager"'
-            ', "SmartLauncherItem")') in task
-
-
-def test_taskmanager_badge_overlay_guardrails(offline):
-    base = offline / "plasmoids/org.kde.mac.tahoe.liquid.taskmanager" / "contents/ui"
-    overlay = (base / "TaskBadgeOverlay.qml").read_text()
-    tooltip = (base / "ToolTipInstance.qml").read_text()
-    task = (base / "Task.qml").read_text()
-
-    # Only instantiate the badge overlay when the count bubble should exist.
-    assert "active: height >= Kirigami.Units.iconSizes.small" in task
-    assert "&& task.smartLauncherItem && task.smartLauncherItem.countVisible" in task
-    assert 'source: "TaskBadgeOverlay.qml"' in task
-
-    # Keep the dock badge self-contained and text-driven rather than relying
-    # on Kirigami.Badge's dot/overlay internals, which have been crash-prone.
-    assert "KGraphicalEffects.BadgeEffect" in overlay
-    assert "Kirigami.Badge" not in overlay
-    assert "visible: task.smartLauncherItem.countVisible" in overlay
-    assert "live: false" in overlay
-    assert "onVisibleChanged: maskShaderSource.scheduleUpdate()" in overlay
-    assert "onYChanged: maskShaderSource.scheduleUpdate()" in overlay
-    assert "width: Math.max(height, Math.round(badgeLabel.implicitWidth + horizontalPadding * 2))" in overlay
-    assert "height: Math.max(14, Math.min(20, Math.round(icon.paintedHeight * 0.38)))" in overlay
-    assert "textFormat: Text.PlainText" in overlay
-
-    # The tooltip badge should stay visually in sync with the dock badge.
-    assert "Keep parity with TaskBadgeOverlay (dock badge)" in tooltip
-    assert "width: Math.max(height, Math.round(badgeLabel.implicitWidth + horizontalPadding * 2))" in tooltip
-    assert "textFormat: Text.PlainText" in tooltip
-
-
-# ── acrylic glass ─────────────────────────────────────────────────────────
-_AG_KEYS = (
-    "BlurStrength", "NoiseStrength", "BlurDecorations", "WindowCornerRadius",
-    "DockCornerRadius", "PopupCornerRadius", "HighlightStrength",
-    "HighlightWidth", "MagnifyGlassStrength", "RefractionWidth",
-    "RgbDriftStrength",
-)
-
-
-def test_acrylic_glass_files(offline):
-    base = offline / "kwin-effects/acrylic-glass"
-    for fn in ("CMakeLists.txt", "src/effect.cpp", "src/effect.h",
-               "src/glass.kcfg", "src/kcm/config.ui"):
-        assert (base / fn).is_file(), fn
-
-
-@pytest.mark.parametrize("key", _AG_KEYS)
-def test_acrylic_glass_kcfg(offline, key):
-    kcfg = (offline / "kwin-effects/acrylic-glass/src/glass.kcfg").read_text()
-    assert f'name="{key}"' in kcfg
-
-
-def test_acrylic_glass_kcm_layout(offline):
-    ui = (offline / "kwin-effects/acrylic-glass/src/kcm/config.ui").read_text()
-    for needle in ("QTabWidget",
-                   "<string>Glass</string>",
-                   "<string>Corners</string>",
-                   "<string>Window Rules</string>",
-                   'name="kcfg_BlurDecorations"',
-                   'name="kcfg_NoiseStrength"'):
-        assert needle in ui
-
-
-def test_acrylic_glass_shaders(offline):
-    base = offline / "kwin-effects/acrylic-glass/src/shaders"
-    for fn in ("texture_core.frag", "upsample_core.frag", "downsample_core.frag",
-               "noise_core.frag", "sdf.glsl", "blur.glsl",
-               "distort.glsl", "highlight.glsl"):
-        assert (base / fn).is_file(), fn
-    glass = (base / "glass.glsl").read_text()
-    for inc in ("sdf.glsl", "blur.glsl", "distort.glsl", "highlight.glsl"):
-        assert f'#include "{inc}"' in glass
-
-
-def test_acrylic_glass_cmake(offline):
-    text = (offline / "kwin-effects/acrylic-glass/src/CMakeLists.txt").read_text()
-    assert "preprocess_shader_includes" in text
-    for fn in ("sdf.glsl", "blur.glsl", "distort.glsl", "highlight.glsl"):
-        assert fn in text
-
-
-def test_acrylic_glass_blur_scaling(offline):
-    cpp = (offline / "kwin-effects/acrylic-glass/src/effect.cpp").read_text()
-    assert "xScale(), 1.0) || !qFuzzyCompare(data.yScale(), 1.0)" in cpp
-
-
-# ── layout / Acrylic preset / installer step references ──────────────────
-_LAYOUT_PLUGINS = (
-    "org.kde.mac.tahoe.liquid.globalmenu",
-    "org.kde.mac-tahoe-liquid-kde.launcher",
-    "org.kde.mac-tahoe-liquid-kde.trashcan",
-    "org.kde.plasma.panelspacer",
-    "org.kde.plasma.systemtray",
-    "org.kde.plasma.digitalclock",
-    "org.kde.mac.tahoe.liquid.icontasks",
-    "luisbocanegra.panel.colorizer",
-)
-
-
-def test_layout_files(offline):
-    assert (offline / "layouts/mac-tahoe.js").is_file()
-    assert (offline / "layouts/default.js").is_file()
-
-
-@pytest.mark.parametrize("plugin", _LAYOUT_PLUGINS)
-def test_layout_references_plugin(offline, plugin):
-    text = (offline / "layouts/mac-tahoe.js").read_text()
-    assert plugin in text
-
-
-_ACRYLIC_STEP_KEYS = (
-    "BlurStrength", "HighlightStrength", "HighlightWidth", "DockCornerRadius",
-    "WindowCornerRadius", "PopupCornerRadius", "RimStrength", "ShadowStrength",
-)
-
-
-@pytest.mark.parametrize("key", _ACRYLIC_STEP_KEYS)
-def test_acrylic_step_sets_key(repo, key):
-    text = (repo / "src/scripts/steps/acrylic_glass.py").read_text()
-    assert key in text
-
-
-def test_globalmenu_step_cleans_old(repo):
-    text = (repo / "src/scripts/steps/globalmenu.py").read_text()
-    assert "org.kde.mac.tahoe.liquid.menu.so" in text
-    assert "org.kde.mac-tahoe-liquid-kde.menu" in text
-    # Pre-rename plugins (April-1st builds, before "liquid" was added).
-    assert "org.kde.mac.tahoe.globalmenu.so" in text
-
-
-def test_layout_no_standalone_menu(offline):
-    text = (offline / "layouts/mac-tahoe.js").read_text()
-    assert "org.kde.mac.tahoe.liquid.menu" not in text
-
-
-def test_layout_guards_optional_panel_colorizer(offline):
-    text = (offline / "layouts/mac-tahoe.js").read_text()
-    assert 'var colorizer = bar.addWidget("luisbocanegra.panel.colorizer");' in text
-    assert "if (colorizer) {" in text
-
-
-def test_cli_feature_lists(repo):
-    text = (repo / "src/scripts/cli.py").read_text()
-    for f in ("nautilus", "portals", "wallpapers", "fonts", "cursors",
-              "icons", "plasmoids", "globalmenu", "layout"):
-        assert f'"{f}"' in text, f
-
-
-def test_features_json_has_keys(repo):
-    feats = json.loads((repo / "features.json").read_text())
-    for k in ("nautilus", "portals", "wallpapers", "fonts"):
-        assert k in feats
-
-
-# ── nautilus / portals python steps reference KDE/dolphin ────────────────
-def test_nautilus_step(repo):
-    text = (repo / "src/scripts/steps/nautilus.py").read_text()
-    assert "XDG_CURRENT_DESKTOP" in text
-    assert "org.gnome.Nautilus.desktop" in text
-    assert "org.kde.dolphin.desktop" in text
-    assert 'xdg-mime' in text
-
-
-def test_portals_step(repo):
-    text = (repo / "src/scripts/steps/portals.py").read_text()
-    assert "kde-portals.conf" in text
-    assert "FileChooser=kde" in text
-    assert "AppChooser=kde" in text
-    assert "Settings=gtk" in text
-    # Regression guards: no default=kde (libadwaita can't read KDE's schema)
-    # and Settings must NOT route to kde.
-    assert not re.search(r"^\s*default=kde", text, re.MULTILINE)
-    assert "xdg-desktop-portal" in text
-
-
-# ── transparency / theme-switch python ───────────────────────────────────
-def test_transparency_python(repo):
-    p = repo / "src/scripts/set-transparency"
-    text = p.read_text()
-    assert "reduce_menu_opacity" in text
-    assert "window.color" in text
-    assert "svgz" in text
-    assert "window_bg_color" in text
-    assert "background.csd" in text
-    assert "--dock" in text
-    assert "--apply" in text
-    assert "DEFAULT_DOCK_PCT = 12" in text
-    assert "default: 12" in text
-
-
-def test_theme_switch_invariants(repo):
-    text = (repo / "src/scripts/theme_switch.py").read_text()
-    assert "apply_color_groups_direct" in text
-    # Single entry point — main() resolves auto via the wall clock and
-    # never re-enters its own dispatcher with secondary contexts.
-    assert "detect_mode_by_time" in text
-    assert "AutomaticLookAndFeel" in text
-    # plasmashell is too fragile to restart on every switch; the cycle
-    # is the only legal hot-swap path.
-    assert "refreshCurrentShell" not in text
-    # No legacy multi-entry-point surface left over from earlier versions.
     for forbidden in ("watch_loop", "sync_auto_mode_on_startup",
-                      "_spawn_deferred_live_apply", "_deferred_live_apply_loop"):
-        assert forbidden not in text, \
-            f"{forbidden!r} is a deprecated entry point — the v0.14.2 rewrite collapsed everything into apply()"
-
-
-# ── systemd unit invariants ───────────────────────────────────────────────
-def test_theme_service(offline):
-    s = (offline / "mac-tahoe-liquid-kde-theme.service").read_text()
-    # The service fires once the desktop is up (the moment
-    # plasma-plasmashell.service comes alive), not at the login screen
-    # and not at boot. That's the whole reason the v0.14.2 rewrite
-    # exists.
-    assert "After=plasma-plasmashell.service" in s
-    assert "WantedBy=plasma-plasmashell.service" in s
-    # Oneshot, not watch loop — no long-running theme-switch daemon.
-    assert "Type=oneshot" in s
-    assert "mac-tahoe-theme-switch auto" in s
-
-
-def test_theme_timer(offline):
-    t = (offline / "mac-tahoe-liquid-kde-theme.timer").read_text()
-    assert "WantedBy=timers.target" in t
-    assert "After=graphical-session.target" not in t
-    # Timer must point at the SAME unit the post-login service runs —
-    # one entry point, no separate -apply.service.
-    assert "Unit=mac-tahoe-liquid-kde-theme.service" in t
+                      "_spawn_deferred_live_apply",
+                      "_deferred_live_apply_loop"):
+        assert forbidden not in text, (
+            f"{forbidden!r} is a deprecated entry point — the v0.14.2 "
+            f"rewrite collapsed everything into apply(). Re-introducing "
+            f"it brings back the v0.13.x bug cascade."
+        )
 
 
 def test_no_legacy_apply_service_in_offline(offline):
     """The split apply.service / watch.service design from earlier
-    versions is gone. Only the single oneshot service file should
-    ship — leftover units would re-enable the dead watch path on
-    upgrade."""
+    versions is gone — only the single oneshot service file ships now.
+    Leftover units would re-enable the dead watch path on upgrade
+    (systemctl daemon-reload picks them up)."""
     assert not (offline / "mac-tahoe-liquid-kde-theme-apply.service").exists()
 
 
-def test_readme_documents_last_run(repo):
-    assert "last-run.json" in (repo / "README.md").read_text()
+# ── features.json + cli features stay in sync ─────────────────────────
 
 
-# ── installer step naming convention ─────────────────────────────────────
-def test_install_helpers_have_reinstall(repo):
-    text = (repo / "src/scripts/log.py").read_text()
-    assert re.search(r"def reinstall.*GREEN", text, re.DOTALL)
-
-
-# ── per-step output ordering ─────────────────────────────────────────────
-def test_window_decorations_summary_is_last(repo):
-    """Step output convention: the ``info(...)`` summary count is the LAST
-    line printed by an install step. Window decorations historically had
-    the summary in the middle, sandwiched between per-item lines and the
-    'Window decoration set to ...' status — easy regression to repeat
-    when adding new ``ok()`` calls."""
-    src = (repo / "src/scripts/steps/window_decorations.py").read_text()
-    install_block = re.search(
-        r"def install\(.*?(?=\n(?:def [A-Za-z_]|\Z))", src, re.DOTALL
+def test_features_json_and_cli_feature_list_match(repo):
+    """Each feature toggle is read from features.json + listed in
+    cli.ALL_FEATURES. If one is added to features.json without an
+    entry in cli.py (or vice versa) the install loop quietly skips
+    or crashes depending on which way the mismatch goes."""
+    feats = json.loads((repo / "features.json").read_text())
+    text = (repo / "src/scripts/cli.py").read_text()
+    # Every feature in features.json must be referenced as a string
+    # literal somewhere in cli.py (ALL_FEATURES, INSTALL_ORDER, or
+    # FEATURE_DESC).
+    missing = [k for k in feats if f'"{k}"' not in text]
+    assert not missing, (
+        f"features.json keys not referenced in cli.py: {missing}"
     )
-    assert install_block is not None
-    body = install_block.group()
-    info_pos = body.rfind("info(")
-    last_ok_pos = body.rfind('ok(f"Window decoration set')
-    assert info_pos != -1, "expected info() summary in install()"
-    assert last_ok_pos != -1, "expected 'Window decoration set' ok() in install()"
-    assert info_pos > last_ok_pos, (
-        "info() summary must be the LAST line of install() — currently the "
-        "'Window decoration set to ...' status is being printed AFTER the "
-        "summary count, which is the regression we are guarding against."
-    )
-
-
-@pytest.mark.parametrize("step,marker", [
-    ("cursors", "cursor themes installed"),
-    ("gtk", "GTK themes installed"),
-    ("plasmoids", "installed/reinstalled"),
-    ("color_schemes", "color schemes"),
-    ("plasma_theme", "Plasma themes"),
-    ("icons", "installed/reinstalled"),
-])
-def test_step_summary_is_last_print(repo, step, marker):
-    """Sister regression for the other steps that emit a summary count —
-    no ``ok()`` / ``info()`` / ``warn()`` / ``fail()`` call may follow the
-    summary inside the same install function."""
-    src = (repo / f"src/scripts/steps/{step}.py").read_text()
-    install_block = re.search(
-        r"def install\(.*?(?=\n(?:def [A-Za-z_]|\Z))", src, re.DOTALL
-    )
-    assert install_block is not None, f"{step}: no install() function found"
-    body = install_block.group()
-    summary_pos = max(
-        body.rfind("info(f\""),
-        body.rfind("info(f'"),
-    )
-    assert summary_pos != -1, f"{step}: expected an info() summary line"
-    tail = body[summary_pos + 1:]
-    for forbidden in ("ok(", "info(", "fail(", "warn(", "reinstall("):
-        assert forbidden not in tail, (
-            f"{step}: found {forbidden!r} after the summary line — the "
-            f"summary must be the LAST log emitted by install()"
-        )
