@@ -1,50 +1,138 @@
+"""MacTahoe icon themes — fully bundled offline since v0.18.0.
+
+Earlier releases downloaded vinceliuice/MacTahoe-icon-theme from
+GitHub on first install, then ran a 200-line ``_assemble()`` step
+that cherry-picked subdirs, overlaid the upstream's symlink alias
+tree, generated the dark variant, recoloured symbolic SVGs from
+#363636 → #dedede, and rewrote ``Inherits=`` lines. Real problems:
+
+* The download + assemble took ~30s on a fast machine, longer on
+  slow CI.
+* Each upstream rename (tag bump, subdir restructure) silently
+  produced a half-built theme.
+* curl + unzip were build-time deps just for this step.
+
+v0.18 runs ``_assemble()`` ONCE at packaging time and ships the
+pre-built result as ``src/offline/icons/MacTahoeLiquidKde-Icons.tar.zst``
+(~6 MB compressed from 110 MB raw — zstd dedupes the 40k+
+identical SVG aliases very well). install() just extracts the
+tarball into ~/.local/share/icons.
+
+To refresh the bundled tarball (when the upstream ships notable
+new icons):
+
+  1. git clone https://github.com/vinceliuice/MacTahoe-icon-theme
+  2. python3 -c "
+       import sys; sys.path.insert(0, 'src/scripts');
+       from steps import icons; from pathlib import Path;
+       import shutil; out = Path('/tmp/icons-build');
+       shutil.rmtree(out, ignore_errors=True); out.mkdir();
+       icons.CACHE = out
+       icons._assemble(Path('MacTahoe-icon-theme'),
+                       'MacTahoeLiquidKde-Icons')"
+  3. cd /tmp/icons-build && tar --zstd -cf \
+       MacTahoeLiquidKde-Icons.tar.zst MacTahoeLiquidKde-Icons*
+  4. mv .../MacTahoeLiquidKde-Icons.tar.zst src/offline/icons/
+
+The _assemble() function below is preserved verbatim for that
+refresh workflow — it is NOT called at install time any more.
+"""
+
 import re
 import shutil
 import subprocess
+import tarfile
 from pathlib import Path
 
 from steps._helpers import (
-    HOME, fail, info, install_tree, legacy_steps_dir, ok, src_dir, steps_dir, temp_dir,
+    HOME, fail, info, install_tree, offline, ok,
 )
-from utils import remove_path, run_mirrors, run_user
+from utils import remove_path, run_user
 
-CACHE = steps_dir("icons")
-LEGACY_CACHE = legacy_steps_dir("icons")
+OFFLINE_DIR = offline("icons")
 DEST_DIR = HOME / ".local/share/icons"
-MIRROR_FILE = src_dir("mirrors/icons.json")
 
-# Subdirs copied from the upstream repo into the default theme.
+# Subdirs the refresh workflow's _assemble() cherry-picks from the
+# upstream into the default theme.
 _DEFAULT_DIRS = (
     "actions", "animations", "apps", "categories", "devices", "emotes",
     "emblems", "mimes", "places", "preferences",
 )
-# Status sizes that exist in the default theme (24 in dark too).
 _DEFAULT_STATUS_SIZES = ("16", "22", "24", "32", "symbolic")
-# Subdirs that get a "@2x" symlink for HiDPI.
 _AT2X_DIRS = (*_DEFAULT_DIRS, "status")
 
 
 def deps():
-    return ["curl", "unzip"]
+    # zstd is needed to extract the bundled tarball. Available in
+    # base/core on every distro we ship for; the distro layer's
+    # _PACKAGE_MAP carries the per-distro package name.
+    return ["zstd"]
 
 
-def _cache_root() -> Path:
-    for cache in (CACHE, LEGACY_CACHE):
-        if (cache / "MacTahoeLiquidKde-Icons").is_dir():
-            return cache
-    return CACHE
+def install() -> None:
+    """Extract the pre-built MacTahoeLiquidKde-Icons tarball into
+    ~/.local/share/icons, then rebuild GTK icon caches."""
+    DEST_DIR.mkdir(parents=True, exist_ok=True)
+    tarball = OFFLINE_DIR / "MacTahoeLiquidKde-Icons.tar.zst"
+    if not tarball.is_file():
+        fail(f"offline tarball missing: {tarball}")
+        return
+
+    # Wipe any pre-existing install of OUR themes so a half-installed
+    # state from a crashed previous run doesn't leak. We never touch
+    # other themes the user has installed (Breeze, Adwaita, etc.).
+    for old in DEST_DIR.glob("MacTahoeLiquidKde-Icons*"):
+        if old.is_dir():
+            shutil.rmtree(old, ignore_errors=True)
+
+    # tar --zstd handles the decompression in one shot. Falling back
+    # to Python's tarfile + zstandard module would avoid the binary
+    # dep but adds a Python package dep that's NOT in every distro's
+    # default Python.
+    res = subprocess.run(
+        ["tar", "--zstd", "-xf", str(tarball), "-C", str(DEST_DIR)],
+        check=False, capture_output=True, text=True,
+    )
+    if res.returncode != 0:
+        fail(f"tar --zstd failed ({res.returncode}): {res.stderr.strip()}")
+        return
+
+    n = 0
+    for theme in sorted(DEST_DIR.glob("MacTahoeLiquidKde-Icons*")):
+        if theme.is_dir() and (theme / "index.theme").is_file():
+            ok(f"{theme.name} (installed)")
+            n += 1
+
+    if shutil.which("gtk-update-icon-cache"):
+        for theme in DEST_DIR.glob("MacTahoeLiquidKde-Icons*"):
+            if theme.is_dir():
+                run_user(
+                    ["gtk-update-icon-cache", "-f", "-t", str(theme)],
+                    check=False,
+                    stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
+                )
+
+    label = "icon theme" if n == 1 else "icon themes"
+    info(f"{n} {label} installed/reinstalled")
 
 
-def _copy_subset(repo: Path, dest: Path, subdirs) -> None:
-    for sub in subdirs:
-        src = repo / sub
-        if src.is_dir():
-            target = dest / sub.split("/", 1)[0] if "/" in sub else dest / src.name
-            target.parent.mkdir(parents=True, exist_ok=True)
-            if "/" in sub:
-                # nested path like "src/status/16"
-                pass
-            shutil.copytree(src, dest / Path(sub).name, dirs_exist_ok=True)
+def uninstall() -> None:
+    n = 0
+    for theme in DEST_DIR.glob("MacTahoeLiquidKde-Icons*"):
+        if theme.is_dir():
+            try:
+                shutil.rmtree(theme)
+                ok(theme.name); n += 1
+            except OSError:
+                fail(theme.name)
+    info(f"{n} icon themes removed")
+
+
+# ─────────────────────────────────────────────────────────────────────
+# REFRESH WORKFLOW — kept here for the maintainer rebuilding the
+# bundled tarball after an upstream theme update. Not called at
+# install time. See the module docstring for usage.
+# ─────────────────────────────────────────────────────────────────────
 
 
 def _overlay_links(src: Path, dest: Path) -> None:
@@ -65,6 +153,12 @@ def _overlay_links(src: Path, dest: Path) -> None:
 
 
 def _assemble(repo: Path, name: str) -> None:
+    """Pre-build the icon theme tree from an upstream
+    vinceliuice/MacTahoe-icon-theme clone. Writes the assembled
+    theme to ``CACHE / <name>`` and ``CACHE / <name>-dark``.
+
+    Used by the maintainer to refresh src/offline/icons/*.tar.zst.
+    Not used at install time."""
     light = CACHE / name
     light.mkdir(parents=True, exist_ok=True)
 
@@ -86,9 +180,6 @@ def _assemble(repo: Path, name: str) -> None:
     links_root = repo / "links"
     for sub in (*_DEFAULT_DIRS, "status"):
         if (links_root / sub).is_dir():
-            # Upstream `links/` is a large alias tree made of relative symlinks
-            # like `add.svg -> list-add.svg`. These aliases must overwrite base
-            # files when present and keep their relative target unchanged.
             _overlay_links(links_root / sub, light / sub)
 
     for fn in ("user-trash-dark.svg", "user-trash-full-dark.svg"):
@@ -104,7 +195,7 @@ def _assemble(repo: Path, name: str) -> None:
                 link.unlink()
             link.symlink_to(sub)
 
-    # Dark variant.
+    # Dark variant
     dark = CACHE / f"{name}-dark"
     dark.mkdir(parents=True, exist_ok=True)
     if index.is_file():
@@ -170,7 +261,6 @@ def _assemble(repo: Path, name: str) -> None:
         if link_src.is_dir():
             _overlay_links(link_src, dark / sub)
 
-    # @2x and cross-theme links.
     for sub, target in (
         ("animations", f"../{name}/animations"),
         ("emotes", f"../{name}/emotes"),
@@ -215,69 +305,6 @@ def _assemble(repo: Path, name: str) -> None:
             link.symlink_to(sub)
 
 
-def download() -> None:
-    for d in CACHE.glob("MacTahoeLiquidKde-Icons*"):
-        shutil.rmtree(d, ignore_errors=True)
-    CACHE.mkdir(parents=True, exist_ok=True)
-
-    with temp_dir("tahoe-icons") as tmp:
-        any_ok = False
-
-        def handle(xdir, prefix, *_referer):
-            srcdir = next((p.parent for p in xdir.rglob("src") if p.is_dir()), None)
-            if srcdir is None or not (srcdir / "links").is_dir():
-                return False
-            _assemble(srcdir, prefix)
-            return True
-
-        if run_mirrors(MIRROR_FILE, 0, tmp, handle):
-            any_ok = True
-
-        if not any_ok:
-            fail("no icon themes installed — all mirrors failed")
-
-
-def install() -> None:
-    DEST_DIR.mkdir(parents=True, exist_ok=True)
-    n = 0
-    for theme in sorted(_cache_root().glob("Mac*")):
-        if not theme.is_dir():
-            continue
-        if not (theme / "index.theme").is_file():
-            fail(f"{theme.name} (no index.theme — skipping)")
-            continue
-        if install_tree(theme, DEST_DIR / theme.name):
-            n += 1
-
-    dark_idx = DEST_DIR / "MacTahoeLiquidKde-Icons-dark/index.theme"
-    if dark_idx.is_file():
-        text = dark_idx.read_text()
-        if "Inherits=MacTahoeLiquidKde-Icons," not in text:
-            text = re.sub(r"^Inherits=.*",
-                          "Inherits=MacTahoeLiquidKde-Icons,hicolor,breeze",
-                          text, flags=re.MULTILINE)
-            dark_idx.write_text(text)
-
-    if shutil.which("gtk-update-icon-cache"):
-        for theme in DEST_DIR.glob("MacTahoeLiquidKde-Icons*"):
-            if theme.is_dir():
-                run_user(
-                    ["gtk-update-icon-cache", "-f", "-t", str(theme)],
-                    check=False,
-                    stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
-                )
-
-    label = "icon theme" if n == 1 else "icon themes"
-    info(f"{n} {label} installed/reinstalled")
-
-
-def uninstall() -> None:
-    n = 0
-    for theme in DEST_DIR.glob("MacTahoeLiquidKde-Icons*"):
-        if theme.is_dir():
-            try:
-                shutil.rmtree(theme)
-                ok(theme.name); n += 1
-            except OSError:
-                fail(theme.name)
-    info(f"{n} icon themes removed")
+# CACHE — only used by _assemble() at refresh time. Maintainer
+# overrides this from the refresh script (see module docstring).
+CACHE = Path("/tmp/mttkde-icons-build")

@@ -422,6 +422,23 @@ _PACKAGE_MAP: dict[str, dict[str, str]] = {
         "void":     "cmake",
         "gentoo":   "dev-build/cmake",
     },
+    # zstd — needed by the icons step to extract the bundled
+    # offline tarball (src/offline/icons/*.tar.zst). Available in
+    # base/core on every supported distro; the binary is plain
+    # ``zstd`` everywhere and the package name matches except on
+    # Gentoo (which uses category/name atoms).
+    "zstd": {
+        "arch":     "zstd",
+        "debian":   "zstd",
+        "ubuntu":   "zstd",
+        "fedora":   "zstd",
+        "rhel":     "zstd",
+        "centos":   "zstd",
+        "opensuse": "zstd",
+        "alpine":   "zstd",
+        "void":     "zstd",
+        "gentoo":   "app-arch/zstd",
+    },
 }
 
 
