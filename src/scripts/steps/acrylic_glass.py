@@ -17,7 +17,16 @@ LEGACY_USER_PLUGIN_DIR = HOME / ".local/lib/qt6/plugins"
 
 
 def deps():
-    return ["qmake6", "cmake", "ecm:extra-cmake-modules", "make", "g++:gcc", "pkg-config:pkgconf"]
+    return [
+        "qmake6",
+        "qt6-gui-cmake:qt6-base",
+        "qt6-uitools-cmake:qt6-tools",
+        "cmake",
+        "ecm:extra-cmake-modules",
+        "make",
+        "g++:gcc",
+        "pkg-config:pkgconf",
+    ]
 
 
 def build_artifacts() -> list[Path]:

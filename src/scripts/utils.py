@@ -244,6 +244,16 @@ def _cmake_package_exists(name: str) -> bool:
 def _dep_available(cmd: str) -> bool:
     if cmd == "ecm":
         return _cmake_package_exists("ECM")
+    if cmd == "qt6-gui-cmake":
+        return _cmake_package_exists("Qt6Gui")
+    if cmd == "qt6-widgets-cmake":
+        return _cmake_package_exists("Qt6Widgets")
+    if cmd == "qt6-dbus-cmake":
+        return _cmake_package_exists("Qt6DBus")
+    if cmd == "qt6-qml-cmake":
+        return _cmake_package_exists("Qt6Qml")
+    if cmd == "qt6-uitools-cmake":
+        return _cmake_package_exists("Qt6UiTools")
     return have(cmd)
 
 

@@ -49,15 +49,60 @@ write_files:
           printf 'plasma.desktop\n'
       }
 
+      extract_pkg() {
+          local archive="$1"
+          local dest="$2"
+          mkdir -p "$dest"
+          if command -v bsdtar >/dev/null 2>&1; then
+              bsdtar -xf "$archive" -C "$dest"
+          else
+              tar --use-compress-program=unzstd -xf "$archive" -C "$dest"
+          fi
+      }
+
+      bootstrap_cachyos_keyring() {
+          local keyring_pkg="$1"
+          local keyring_root="$2"
+
+          extract_pkg "$keyring_pkg" "$keyring_root"
+          install -Dm0644 \
+              "$keyring_root/usr/share/pacman/keyrings/cachyos.gpg" \
+              /usr/share/pacman/keyrings/cachyos.gpg
+          install -Dm0644 \
+              "$keyring_root/usr/share/pacman/keyrings/cachyos-trusted" \
+              /usr/share/pacman/keyrings/cachyos-trusted
+          install -Dm0644 \
+              "$keyring_root/usr/share/pacman/keyrings/cachyos-revoked" \
+              /usr/share/pacman/keyrings/cachyos-revoked
+
+          if ! pacman-key -l >/dev/null 2>&1; then
+              pacman-key --init
+              pacman-key --populate archlinux
+          fi
+          pacman-key --populate cachyos
+          rm -f \
+              /usr/share/pacman/keyrings/cachyos.gpg \
+              /usr/share/pacman/keyrings/cachyos-trusted \
+              /usr/share/pacman/keyrings/cachyos-revoked
+      }
+
       install_cachyos_repos() {
           local tmp
+          local keyring_pkg
           tmp="$(mktemp -d)"
           trap 'rm -rf "$tmp"' RETURN
+          keyring_pkg="$tmp/cachyos-keyring.pkg.tar.zst"
+          curl -L --fail \
+              https://mirror.cachyos.org/repo/x86_64/cachyos/cachyos-keyring-20240331-1-any.pkg.tar.zst \
+              -o "$keyring_pkg"
+          bootstrap_cachyos_keyring "$keyring_pkg" "$tmp/cachyos-keyring"
           curl -L --fail \
               https://mirror.cachyos.org/cachyos-repo.tar.xz \
               -o "$tmp/cachyos-repo.tar.xz"
           tar -C "$tmp" -xf "$tmp/cachyos-repo.tar.xz"
           sed -i \
+              -e '/pacman-key --recv-keys /d' \
+              -e '/pacman-key --lsign-key /d' \
               -e 's/pacman -U /pacman -U --noconfirm /' \
               -e 's/pacman -Syu$/pacman -Syu --noconfirm/' \
               "$tmp/cachyos-repo/cachyos-repo.sh"

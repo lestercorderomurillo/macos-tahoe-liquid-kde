@@ -200,6 +200,82 @@ def test_ecm_package_per_distro(monkeypatch, distro_id, expected):
 
 
 @pytest.mark.parametrize("distro_id, expected", [
+    ("arch", "qt6-base"),
+    ("fedora", "qt6-qtbase-devel"),
+    ("debian", "qt6-base-dev"),
+    ("ubuntu", "qt6-base-dev"),
+    ("opensuse", "qt6-gui-devel"),
+    ("alpine", "qt6-qtbase-dev"),
+    ("rhel", "qt6-qtbase-devel"),
+    ("gentoo", "dev-qt/qtbase:6"),
+])
+def test_qt6_gui_cmake_package_per_distro(monkeypatch, distro_id, expected):
+    _force_distro(monkeypatch, distro_id)
+    assert distro.package_for("qt6-gui-cmake", "qt6-base") == expected
+
+
+@pytest.mark.parametrize("distro_id, expected", [
+    ("arch", "qt6-base"),
+    ("fedora", "qt6-qtbase-devel"),
+    ("debian", "qt6-base-dev"),
+    ("ubuntu", "qt6-base-dev"),
+    ("opensuse", "qt6-widgets-devel"),
+    ("alpine", "qt6-qtbase-dev"),
+    ("rhel", "qt6-qtbase-devel"),
+    ("gentoo", "dev-qt/qtbase:6"),
+])
+def test_qt6_widgets_cmake_package_per_distro(monkeypatch, distro_id, expected):
+    _force_distro(monkeypatch, distro_id)
+    assert (distro.package_for("qt6-widgets-cmake", "qt6-base")
+            == expected)
+
+
+@pytest.mark.parametrize("distro_id, expected", [
+    ("arch", "qt6-base"),
+    ("fedora", "qt6-qtbase-devel"),
+    ("debian", "qt6-base-dev"),
+    ("ubuntu", "qt6-base-dev"),
+    ("opensuse", "qt6-dbus-devel"),
+    ("alpine", "qt6-qtbase-dev"),
+    ("rhel", "qt6-qtbase-devel"),
+    ("gentoo", "dev-qt/qtbase:6"),
+])
+def test_qt6_dbus_cmake_package_per_distro(monkeypatch, distro_id, expected):
+    _force_distro(monkeypatch, distro_id)
+    assert distro.package_for("qt6-dbus-cmake", "qt6-base") == expected
+
+
+@pytest.mark.parametrize("distro_id, expected", [
+    ("arch", "qt6-declarative"),
+    ("fedora", "qt6-qtdeclarative-devel"),
+    ("debian", "qt6-declarative-dev"),
+    ("ubuntu", "qt6-declarative-dev"),
+    ("opensuse", "qt6-qml-devel"),
+    ("alpine", "qt6-qtdeclarative-dev"),
+    ("rhel", "qt6-qtdeclarative-devel"),
+    ("gentoo", "dev-qt/qtdeclarative:6"),
+])
+def test_qt6_qml_cmake_package_per_distro(monkeypatch, distro_id, expected):
+    _force_distro(monkeypatch, distro_id)
+    assert distro.package_for("qt6-qml-cmake", "qt6-declarative") == expected
+
+
+@pytest.mark.parametrize("distro_id, expected", [
+    ("arch", "qt6-tools"),
+    ("fedora", "qt6-qttools-devel"),
+    ("debian", "qt6-tools-dev"),
+    ("ubuntu", "qt6-tools-dev"),
+    ("opensuse", "qt6-uitools-devel"),
+    ("alpine", "qt6-qttools-dev"),
+    ("rhel", "qt6-qttools-devel"),
+    ("gentoo", "dev-qt/qttools:6"),
+])
+def test_qt6_uitools_cmake_package_per_distro(monkeypatch, distro_id, expected):
+    _force_distro(monkeypatch, distro_id)
+    assert distro.package_for("qt6-uitools-cmake", "qt6-tools") == expected
+
+
+@pytest.mark.parametrize("distro_id, expected", [
     ("arch", "make"),
     ("fedora", "make"),
     ("debian", "make"),
@@ -221,7 +297,7 @@ def test_make_package_per_distro(monkeypatch, distro_id, expected):
     ("arch",     "qt6-tools"),
     ("fedora",   "qt6-qttools-devel"),
     ("rhel",     "qt6-qttools-devel"),
-    ("opensuse", "qt6-base"),
+    ("opensuse", "qt6-core-devel"),
     ("debian",   "qt6-base-dev-tools"),
     ("ubuntu",   "qt6-base-dev-tools"),
 ])
@@ -258,6 +334,11 @@ def test_plasma_version_probe_cmds_per_distro(monkeypatch, distro_id, id_like, e
 _TOKENS_WITH_FEDORA_DIVERGENCE = {
     # token → Arch fallback that's wrong on Fedora
     "qdbus6": "qt6-tools",
+    "qt6-gui-cmake": "qt6-base",
+    "qt6-widgets-cmake": "qt6-base",
+    "qt6-dbus-cmake": "qt6-base",
+    "qt6-qml-cmake": "qt6-declarative",
+    "qt6-uitools-cmake": "qt6-tools",
     "g++": "gcc",
     "pkg-config": "pkgconf",
     "plymouth-set-default-theme": "plymouth",

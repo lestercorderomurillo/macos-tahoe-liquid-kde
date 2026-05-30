@@ -111,6 +111,10 @@ def test_cloud_init_profile_specific_kde_provisioning():
     assert "spectacle" in arch
 
     cachyos = _read("cloud-init-cachyos.yaml")
+    assert "bootstrap_cachyos_keyring" in cachyos
+    assert "cachyos-keyring-20240331-1-any.pkg.tar.zst" in cachyos
+    assert "pacman-key --populate cachyos" in cachyos
+    assert "'/pacman-key --recv-keys /d'" in cachyos
     assert "cachyos-repo.tar.xz" in cachyos
     assert "./cachyos-repo.sh --install" in cachyos
     assert "cachyos-settings" in cachyos
@@ -119,7 +123,10 @@ def test_cloud_init_profile_specific_kde_provisioning():
     opensuse = _read("cloud-init-opensuse.yaml")
     assert "zypper --non-interactive refresh" in opensuse
     assert "patterns-kde-kde_plasma" in opensuse
-    assert "qt6-tools-devel" in opensuse
+    assert "qt6-core-devel" in opensuse
+    assert "plasma6-workspace-devel" in opensuse
+    assert "kwin6-devel" in opensuse
+    assert "libplasma6-devel" in opensuse
     assert '/etc/sysconfig/displaymanager' in opensuse
     assert 'DISPLAYMANAGER_AUTOLOGIN="tester"' in opensuse
     assert 'DISPLAYMANAGER_PASSWORD_LESS_LOGIN="yes"' in opensuse
