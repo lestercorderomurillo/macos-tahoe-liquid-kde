@@ -1,4 +1,6 @@
-add_subdirectory(kcm)
+if(GLASS_WAYLAND OR GLASS_X11)
+    add_subdirectory(kcm)
+endif()
 
 set(LIQUIDGLASS_SHADER_INCLUDES
     sdf.glsl

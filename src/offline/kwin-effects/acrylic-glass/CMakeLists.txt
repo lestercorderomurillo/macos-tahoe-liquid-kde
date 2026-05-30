@@ -94,6 +94,13 @@ if(GLASS_X11)
     endif()
 endif()
 
+if(NOT GLASS_WAYLAND AND NOT GLASS_X11)
+    message(FATAL_ERROR
+        "Acrylic Glass requires KWin development files for Wayland or X11. "
+        "Install the missing KWin dependencies and re-run."
+    )
+endif()
+
 if(${KWin_VERSION} VERSION_LESS 6.4)
     message(FATAL_ERROR "Acrylic Glass requires KDE Plasma 6.4+ (found ${KWin_VERSION}).")
 endif()

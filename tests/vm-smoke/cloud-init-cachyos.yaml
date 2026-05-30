@@ -1,0 +1,229 @@
+#cloud-config
+# CachyOS smoke guest: start from the Arch cloud image, switch it to
+# the official CachyOS repos, then run the full install + uninstall
+# flow in a real Plasma session.
+
+users:
+  - default
+  - name: tester
+    gecos: CachyOS Smoke
+    groups: [wheel]
+    sudo: ALL=(ALL) NOPASSWD:ALL
+    shell: /bin/bash
+    lock_passwd: false
+    plain_text_passwd: tester
+
+ssh_pwauth: true
+chpasswd:
+  expire: false
+
+growpart:
+  mode: auto
+  devices: ["/"]
+
+resize_rootfs: true
+package_update: false
+package_upgrade: false
+
+write_files:
+  - path: /usr/local/bin/mttkde-provision.sh
+    permissions: "0755"
+    content: |
+      #!/bin/bash
+      set -euo pipefail
+      exec > >(tee -a /var/log/mttkde-provision.log) 2>&1
+
+      if [[ -f /var/lib/mttkde/provisioned ]]; then
+          exit 0
+      fi
+
+      select_plasma_session() {
+          local candidate
+          for candidate in plasma.desktop plasmawayland.desktop plasmax11.desktop; do
+              if [[ -f "/usr/share/wayland-sessions/${candidate}" ]] || \
+                 [[ -f "/usr/share/xsessions/${candidate}" ]]; then
+                  printf '%s\n' "$candidate"
+                  return 0
+              fi
+          done
+          printf 'plasma.desktop\n'
+      }
+
+      install_cachyos_repos() {
+          local tmp
+          tmp="$(mktemp -d)"
+          trap 'rm -rf "$tmp"' RETURN
+          curl -L --fail \
+              https://mirror.cachyos.org/cachyos-repo.tar.xz \
+              -o "$tmp/cachyos-repo.tar.xz"
+          tar -C "$tmp" -xf "$tmp/cachyos-repo.tar.xz"
+          sed -i \
+              -e 's/pacman -U /pacman -U --noconfirm /' \
+              -e 's/pacman -Syu$/pacman -Syu --noconfirm/' \
+              "$tmp/cachyos-repo/cachyos-repo.sh"
+          (
+              cd "$tmp/cachyos-repo"
+              ./cachyos-repo.sh --install
+          )
+          pacman -S --noconfirm --needed cachyos-settings
+      }
+
+      mkdir -p /var/lib/mttkde /repo
+      mkdir -p /home/tester/.config/autostart
+
+      pacman -Sy --noconfirm
+      pacman -S --noconfirm --needed \
+          base-devel \
+          curl \
+          gawk \
+          openssh \
+          rsync \
+          sudo
+
+      install_cachyos_repos
+
+      pacman -S --noconfirm --needed \
+          extra-cmake-modules \
+          kdecoration \
+          libksysguard \
+          libplasma \
+          plasma-activities-stats \
+          plasma-login-manager \
+          plasma-meta \
+          plasma-workspace \
+          qt6-tools \
+          sddm \
+          spectacle
+
+      systemctl enable sshd
+      systemctl daemon-reload || true
+      systemctl set-default graphical.target
+
+      session_name="$(select_plasma_session)"
+
+      if [[ -f /usr/lib/systemd/system/plasmalogin.service ]]; then
+          mkdir -p /etc/plasmalogin.conf.d
+          cat > /etc/plasmalogin.conf.d/autologin.conf <<EOF
+      [Autologin]
+      User=tester
+      Session=${session_name}
+      EOF
+          systemctl enable plasmalogin.service
+      elif [[ -f /usr/lib/systemd/system/sddm.service ]] || \
+           [[ -f /lib/systemd/system/sddm.service ]]; then
+          mkdir -p /etc/sddm.conf.d
+          cat > /etc/sddm.conf.d/autologin.conf <<EOF
+      [Autologin]
+      User=tester
+      Session=${session_name}
+      EOF
+          systemctl enable sddm.service
+      elif systemctl list-unit-files | grep -q '^display-manager\.service'; then
+          mkdir -p /etc/sddm.conf.d
+          cat > /etc/sddm.conf.d/autologin.conf <<EOF
+      [Autologin]
+      User=tester
+      Session=${session_name}
+      EOF
+          systemctl enable display-manager.service
+      else
+          echo "No KDE display manager unit found" >&2
+          exit 1
+      fi
+
+      cat > /home/tester/run-smoke.sh <<'EOF'
+      #!/bin/bash
+      set -euo pipefail
+
+      DONE=/home/tester/smoke.done
+      RUNNING=/home/tester/smoke.running
+      LOG=/home/tester/smoke.log
+
+      if [[ -e "$DONE" || -e "$RUNNING" ]]; then
+          exit 0
+      fi
+
+      touch "$RUNNING"
+      rm -f "$LOG" /home/tester/desktop.png
+      exec > >(tee -a "$LOG") 2>&1
+
+      cleanup() {
+          local rc=$?
+          rm -f "$RUNNING"
+          if (( rc != 0 )); then
+              echo "=== failure rc=${rc} ==="
+          fi
+          touch "$DONE"
+      }
+      trap cleanup EXIT
+
+      sleep 45
+      START_TS="$(date --iso-8601=seconds)"
+
+      echo "=== cachyos-repos ==="
+      grep -n '^\[cachyos' /etc/pacman.conf || true
+
+      sudo mkdir -p /repo
+      sudo modprobe 9p || true
+      sudo modprobe 9pnet_virtio || true
+      if ! sudo mountpoint -q /repo; then
+          sudo mount -t 9p \
+              -o trans=virtio,version=9p2000.L,msize=262144,ro \
+              repo /repo
+      fi
+
+      rm -rf /home/tester/repo
+      mkdir -p /home/tester/repo
+      tar -C /repo \
+          --exclude=.git \
+          --exclude=build \
+          --exclude=tests/vm-smoke/.work \
+          --exclude=tests/vm/output \
+          -cf - . \
+          | tar -C /home/tester/repo -xf -
+
+      cd /home/tester/repo
+      export MTTKDE_NO_CONFIRM=1
+
+      echo "=== preflight ==="
+      sudo --preserve-env=MTTKDE_NO_CONFIRM ./install --preflight
+
+      echo "=== install ==="
+      sudo --preserve-env=MTTKDE_NO_CONFIRM ./install
+
+      echo "=== journal-after-install ==="
+      journalctl --user --since="$START_TS" -p err --no-pager || true
+
+      echo "=== screenshot ==="
+      if command -v spectacle >/dev/null; then
+          spectacle --background --nonotify --fullscreen \
+              --output /home/tester/desktop.png || true
+      fi
+
+      echo "=== uninstall ==="
+      sudo --preserve-env=MTTKDE_NO_CONFIRM ./uninstall
+
+      echo "=== done ==="
+      EOF
+
+      chmod 0755 /home/tester/run-smoke.sh
+
+      cat > /home/tester/.config/autostart/mttkde-smoke.desktop <<'EOF'
+      [Desktop Entry]
+      Type=Application
+      Version=1.0
+      Name=MacTahoe Liquid KDE Smoke
+      Exec=/home/tester/run-smoke.sh
+      X-GNOME-Autostart-enabled=true
+      X-KDE-autostart-after=panel
+      Terminal=false
+      EOF
+
+      chown -R tester:tester /home/tester/run-smoke.sh /home/tester/.config
+
+      touch /var/lib/mttkde/provisioned
+      systemctl --no-block reboot
+
+runcmd:
+  - systemctl enable --now sshd || true
+  - /usr/local/bin/mttkde-provision.sh

@@ -125,6 +125,10 @@ def test_require_root_drops_privileges_in_correct_order(monkeypatch, cli_module,
     monkeypatch.setenv("HOME", "/will-be-overwritten")
     monkeypatch.setenv("USER", "will-be-overwritten")
     monkeypatch.setenv("LOGNAME", "will-be-overwritten")
+    monkeypatch.setenv("XDG_CONFIG_HOME", "/root/.config")
+    monkeypatch.setenv("XDG_DATA_HOME", "/root/.local/share")
+    monkeypatch.setenv("XDG_CACHE_HOME", "/root/.cache")
+    monkeypatch.setenv("XDG_STATE_HOME", "/root/.local/state")
     monkeypatch.setattr(cli_module.os, "geteuid", lambda: 0)
     monkeypatch.setenv("SUDO_USER", "lester")
     monkeypatch.setenv("SUDO_UID", "1000")
@@ -149,6 +153,10 @@ def test_require_root_drops_privileges_in_correct_order(monkeypatch, cli_module,
     assert os.environ["HOME"] == str(fake_home)
     assert os.environ["USER"] == "lester"
     assert os.environ["LOGNAME"] == "lester"
+    assert os.environ["XDG_CONFIG_HOME"] == str(fake_home / ".config")
+    assert os.environ["XDG_DATA_HOME"] == str(fake_home / ".local/share")
+    assert os.environ["XDG_CACHE_HOME"] == str(fake_home / ".cache")
+    assert os.environ["XDG_STATE_HOME"] == str(fake_home / ".local/state")
     assert calls == [("setegid", 1000), ("seteuid", 1000)]
 
 

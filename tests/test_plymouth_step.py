@@ -446,6 +446,7 @@ def _stub(monkeypatch, *, have_bin=True, current_theme="breeze",
         return True
 
     monkeypatch.setattr(plymouth, "sudo_remove", fake_remove)
+    monkeypatch.setattr(plymouth, "_ensure_script_plugin", lambda: True)
 
     return calls
 
@@ -576,6 +577,25 @@ def test_install_attempts_rollback_when_activation_fails(tmp_path, monkeypatch):
     # First activation: ours (failed). Second: rollback to breeze.
     assert activations[0] == [plymouth.PLYMOUTH_BIN, "-R", "MacTahoeLiquidKde"]
     assert activations[-1] == [plymouth.PLYMOUTH_BIN, "-R", "breeze"]
+
+
+def test_install_skips_activation_when_plymouth_script_plugin_is_missing(
+    tmp_path, monkeypatch,
+):
+    state_dir = tmp_path / "state"
+    monkeypatch.setattr(plymouth, "HOME", tmp_path)
+    monkeypatch.setattr(plymouth, "STATE_DIR", state_dir)
+    monkeypatch.setattr(
+        plymouth, "PREV_THEME_FILE", state_dir / "plymouth-previous-theme",
+    )
+    monkeypatch.setattr(plymouth, "DEST", tmp_path / "dest/MacTahoeLiquidKde")
+
+    calls = _stub(monkeypatch, have_bin=True, current_theme="breeze")
+    monkeypatch.setattr(plymouth, "_ensure_script_plugin", lambda: False)
+
+    plymouth.install()
+
+    assert _activation_calls(calls) == []
 
 
 def test_uninstall_restores_snapshot(tmp_path, monkeypatch):

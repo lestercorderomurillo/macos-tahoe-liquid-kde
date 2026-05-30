@@ -142,7 +142,7 @@ _QT6_TOOLS_HINTS: dict[str, str] = {
     "fedora":        "dnf install qt6-qttools-devel",
     "rhel":          "dnf install qt6-qttools-devel",
     "centos":        "dnf install qt6-qttools-devel",
-    "opensuse":      "zypper install qt6-tools-devel",
+    "opensuse":      "zypper install qt6-base",
     "debian":        "apt install qt6-base-dev-tools",
     "ubuntu":        "apt install qt6-base-dev-tools",
     "alpine":        "apk add qt6-qttools-dev",
@@ -320,7 +320,7 @@ _PACKAGE_MAP: dict[str, dict[str, str]] = {
         "ubuntu":   "qt6-base-dev-tools",
         "fedora":   "qt6-qttools-devel",
         "rhel":     "qt6-qttools-devel",
-        "opensuse": "qt6-tools-devel",
+        "opensuse": "qt6-base",
         "gentoo":   "dev-qt/qttools:6",
     },
     # qdbus6 lives in different packages — and under different *binary
@@ -377,6 +377,14 @@ _PACKAGE_MAP: dict[str, dict[str, str]] = {
         "void":     "plymouth",
         "gentoo":   "sys-boot/plymouth",
     },
+    # Fedora splits the script renderer used by our .plymouth theme out
+    # of the base package. Other distros fall back to the main plymouth
+    # package unless/until we prove they need a different subpackage.
+    "plymouth-script-plugin": {
+        "fedora":   "plymouth-plugin-script",
+        "rhel":     "plymouth-plugin-script",
+        "centos":   "plymouth-plugin-script",
+    },
     # fontconfig + pkgconf shim: the *binary* names are the same
     # everywhere but the package name varies, sometimes against the
     # Arch fallback (Fedora's ``pkgconf-pkg-config`` shim is the
@@ -421,6 +429,30 @@ _PACKAGE_MAP: dict[str, dict[str, str]] = {
         "alpine":   "cmake",
         "void":     "cmake",
         "gentoo":   "dev-build/cmake",
+    },
+    "ecm": {
+        "arch":     "extra-cmake-modules",
+        "debian":   "extra-cmake-modules",
+        "ubuntu":   "extra-cmake-modules",
+        "fedora":   "extra-cmake-modules",
+        "rhel":     "extra-cmake-modules",
+        "centos":   "extra-cmake-modules",
+        "opensuse": "kf6-extra-cmake-modules",
+        "alpine":   "extra-cmake-modules",
+        "void":     "extra-cmake-modules",
+        "gentoo":   "kde-frameworks/extra-cmake-modules",
+    },
+    "make": {
+        "arch":     "make",
+        "debian":   "make",
+        "ubuntu":   "make",
+        "fedora":   "make",
+        "rhel":     "make",
+        "centos":   "make",
+        "opensuse": "make",
+        "alpine":   "make",
+        "void":     "make",
+        "gentoo":   "sys-devel/make",
     },
     # zstd — needed by the icons step to extract the bundled
     # offline tarball (src/offline/icons/*.tar.zst). Available in
@@ -496,3 +528,53 @@ def package_manager_install_cmd() -> list[str]:
         f"No package manager mapping for distro {distro!r}. "
         f"Add a row to distro._PACKAGE_MANAGER_INSTALL."
     )
+
+
+_PLASMA_VERSION_PACKAGES: dict[str, tuple[str, ...]] = {
+    # Arch-family and most Debian / Fedora derivatives keep the
+    # workspace package under the historical name.
+    "arch": ("plasma-workspace",),
+    "fedora": ("plasma-workspace",),
+    "rhel": ("plasma-workspace",),
+    "centos": ("plasma-workspace",),
+    "debian": ("plasma-workspace",),
+    "ubuntu": ("plasma-workspace",),
+    # openSUSE renamed the Plasma 6 packages; prefer the workspace
+    # package but keep the desktop metapackage as a fallback.
+    "opensuse": ("plasma6-workspace", "plasma6-desktop", "plasma-workspace"),
+}
+
+
+def _package_version_query_builder():
+    distro = current_distro()
+    family = (distro, *distro_id_like())
+    if any(name in ("fedora", "rhel", "centos", "opensuse") for name in family):
+        return lambda pkg: ["rpm", "-q", "--qf", "%{VERSION}\n", pkg]
+    if "arch" in family:
+        return lambda pkg: ["pacman", "-Q", pkg]
+    if any(name in ("debian", "ubuntu") for name in family):
+        return lambda pkg: ["dpkg-query", "-W", "-f=${Version}\n", pkg]
+    return None
+
+
+def plasma_version_probe_cmds() -> tuple[list[str], ...]:
+    """Best-effort package-manager fallback probes for the installed
+    Plasma version.
+
+    ``plasmashell --version`` is still the primary source of truth, but
+    some real sessions hang or return nothing on certain distros. These
+    commands let preflight fall back to the installed package metadata
+    while keeping package-manager details inside this distro layer."""
+    distro = current_distro()
+    packages = _PLASMA_VERSION_PACKAGES.get(distro)
+    if packages is None:
+        for parent in distro_id_like():
+            packages = _PLASMA_VERSION_PACKAGES.get(parent)
+            if packages:
+                break
+    if not packages:
+        return ()
+    build_cmd = _package_version_query_builder()
+    if build_cmd is None:
+        return ()
+    return tuple(build_cmd(pkg) for pkg in packages)

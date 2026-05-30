@@ -115,6 +115,20 @@ def test_plymouth_package_per_distro(monkeypatch, distro_id, id_like, expected):
             == expected)
 
 
+@pytest.mark.parametrize("distro_id, id_like, expected", [
+    ("fedora",  (),           "plymouth-plugin-script"),
+    ("rhel",    (),           "plymouth-plugin-script"),
+    ("centos",  (),           "plymouth-plugin-script"),
+    ("nobara",  ("fedora",),  "plymouth-plugin-script"),
+])
+def test_plymouth_script_plugin_package_per_fedora_family(
+    monkeypatch, distro_id, id_like, expected,
+):
+    _force_distro(monkeypatch, distro_id, id_like)
+    assert (distro.package_for("plymouth-script-plugin", "plymouth")
+            == expected)
+
+
 # ── g++ — Arch's compiler package is named ``gcc``, others split ──────
 
 
@@ -170,6 +184,36 @@ def test_cmake_is_cmake_everywhere(monkeypatch, distro_id):
     assert distro.package_for("cmake", "cmake") == "cmake"
 
 
+@pytest.mark.parametrize("distro_id, expected", [
+    ("arch", "extra-cmake-modules"),
+    ("fedora", "extra-cmake-modules"),
+    ("debian", "extra-cmake-modules"),
+    ("ubuntu", "extra-cmake-modules"),
+    ("opensuse", "kf6-extra-cmake-modules"),
+    ("alpine", "extra-cmake-modules"),
+    ("rhel", "extra-cmake-modules"),
+    ("gentoo", "kde-frameworks/extra-cmake-modules"),
+])
+def test_ecm_package_per_distro(monkeypatch, distro_id, expected):
+    _force_distro(monkeypatch, distro_id)
+    assert distro.package_for("ecm", "extra-cmake-modules") == expected
+
+
+@pytest.mark.parametrize("distro_id, expected", [
+    ("arch", "make"),
+    ("fedora", "make"),
+    ("debian", "make"),
+    ("ubuntu", "make"),
+    ("opensuse", "make"),
+    ("alpine", "make"),
+    ("rhel", "make"),
+    ("gentoo", "sys-devel/make"),
+])
+def test_make_package_per_distro(monkeypatch, distro_id, expected):
+    _force_distro(monkeypatch, distro_id)
+    assert distro.package_for("make", "make") == expected
+
+
 # ── qmake6 (Qt6 dev tools) — distinct from qdbus6 row above ───────────
 
 
@@ -177,13 +221,33 @@ def test_cmake_is_cmake_everywhere(monkeypatch, distro_id):
     ("arch",     "qt6-tools"),
     ("fedora",   "qt6-qttools-devel"),
     ("rhel",     "qt6-qttools-devel"),
-    ("opensuse", "qt6-tools-devel"),
+    ("opensuse", "qt6-base"),
     ("debian",   "qt6-base-dev-tools"),
     ("ubuntu",   "qt6-base-dev-tools"),
 ])
 def test_qmake6_package_per_distro(monkeypatch, distro_id, expected):
     _force_distro(monkeypatch, distro_id)
     assert distro.package_for("qmake6", "qt6-tools") == expected
+
+
+@pytest.mark.parametrize("distro_id, id_like, expected", [
+    ("arch", (), (["pacman", "-Q", "plasma-workspace"],)),
+    ("cachyos", ("arch",), (["pacman", "-Q", "plasma-workspace"],)),
+    ("fedora", (), (["rpm", "-q", "--qf", "%{VERSION}\n", "plasma-workspace"],)),
+    (
+        "opensuse-tumbleweed",
+        ("opensuse",),
+        (
+            ["rpm", "-q", "--qf", "%{VERSION}\n", "plasma6-workspace"],
+            ["rpm", "-q", "--qf", "%{VERSION}\n", "plasma6-desktop"],
+            ["rpm", "-q", "--qf", "%{VERSION}\n", "plasma-workspace"],
+        ),
+    ),
+    ("ubuntu", (), (["dpkg-query", "-W", "-f=${Version}\n", "plasma-workspace"],)),
+])
+def test_plasma_version_probe_cmds_per_distro(monkeypatch, distro_id, id_like, expected):
+    _force_distro(monkeypatch, distro_id, id_like)
+    assert distro.plasma_version_probe_cmds() == expected
 
 
 # ── No deps() token may fall through with the Arch fallback on a

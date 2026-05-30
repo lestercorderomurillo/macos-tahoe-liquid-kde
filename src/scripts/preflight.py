@@ -62,7 +62,13 @@ import subprocess
 from pathlib import Path
 
 from log import fail, note, ok, step, warn
-from distro import Qt6PathsMissing, qt6_install_hint, qt6_plugins_dir, qt6_qml_dir
+from distro import (
+    Qt6PathsMissing,
+    plasma_version_probe_cmds,
+    qt6_install_hint,
+    qt6_plugins_dir,
+    qt6_qml_dir,
+)
 from paths import OFFLINE_DIR
 from utils import run_user
 
@@ -268,6 +274,56 @@ _MIN_PLASMA = (6, 6)
 _PLASMA_VERSION_RE = re.compile(r"\b(\d+)\.(\d+)(?:\.(\d+))?\b")
 
 
+def _probe_plasma_version() -> tuple[re.Match[str] | None, str | None]:
+    last_error: str | None = None
+    direct_probes = (
+        (["plasmashell", "--version"], "plasmashell --version"),
+        (["plasmashell", "-v"], "plasmashell -v"),
+    )
+    for cmd, label in direct_probes:
+        try:
+            res = run_user(
+                cmd,
+                check=False,
+                capture_output=True,
+                text=True,
+                timeout=10,
+            )
+        except subprocess.TimeoutExpired:
+            last_error = f"{label} timed out"
+            continue
+        except OSError as exc:
+            last_error = f"{label} failed: {exc}"
+            continue
+        out = (res.stdout or res.stderr or "").strip()
+        if not out:
+            last_error = f"{label} returned nothing"
+            continue
+        match = _PLASMA_VERSION_RE.search(out)
+        if match:
+            return match, label
+        last_error = f"{label} output unparseable: {out!r}"
+
+    for cmd in plasma_version_probe_cmds():
+        try:
+            res = run_user(
+                cmd,
+                check=False,
+                capture_output=True,
+                text=True,
+                timeout=10,
+            )
+        except (subprocess.TimeoutExpired, OSError):
+            continue
+        out = "\n".join(part.strip() for part in (res.stdout, res.stderr) if part).strip()
+        if not out:
+            continue
+        match = _PLASMA_VERSION_RE.search(out)
+        if match:
+            return match, "installed Plasma package metadata"
+    return None, last_error
+
+
 def _check_plasma_version() -> bool:
     """Confirm plasmashell reports ≥6.6. We compile against Plasma
     6.6+ headers, so an older runtime silently fails to load the
@@ -284,25 +340,15 @@ def _check_plasma_version() -> bool:
     if not shutil.which("plasmashell"):
         fail("plasmashell not on PATH — KDE Plasma is not installed")
         return False
-    try:
-        res = run_user(
-            ["plasmashell", "--version"],
-            check=False, capture_output=True, text=True, timeout=10,
-        )
-    except (subprocess.TimeoutExpired, OSError) as exc:
-        fail(f"plasmashell --version failed: {exc}")
-        return False
-    out = (res.stdout or res.stderr or "").strip()
-    if not out:
-        fail("plasmashell --version returned nothing")
-        return False
-    match = _PLASMA_VERSION_RE.search(out)
+    match, source = _probe_plasma_version()
     if not match:
-        fail(f"plasmashell --version output unparseable: {out!r}")
+        fail(source or "could not detect Plasma version")
         return False
     major = int(match.group(1))
     minor = int(match.group(2))
     print(f"  plasmashell {major}.{minor}")
+    if source and source != "plasmashell --version":
+        note(f"Plasma version source: {source}")
     if (major, minor) < _MIN_PLASMA:
         fail(f"Plasma {major}.{minor} is too old — need "
              f"{_MIN_PLASMA[0]}.{_MIN_PLASMA[1]}+ for the compiled "

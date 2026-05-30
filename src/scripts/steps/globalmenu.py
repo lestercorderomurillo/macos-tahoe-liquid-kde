@@ -64,7 +64,7 @@ LEGACY_QML_MODULES_USER = (
 
 
 def deps():
-    return ["cmake", "g++:gcc", "pkg-config:pkgconf"]
+    return ["qmake6", "cmake", "ecm:extra-cmake-modules", "make", "g++:gcc", "pkg-config:pkgconf"]
 
 
 def build_artifacts() -> list[Path]:

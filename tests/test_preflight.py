@@ -407,6 +407,40 @@ def test_plasma_version_drops_privs_in_child(monkeypatch):
     assert seen_runner and seen_runner[0][0] == "plasmashell"
 
 
+def test_plasma_version_falls_back_to_package_metadata_after_timeout(monkeypatch):
+    """Real openSUSE Plasma sessions can hang on ``plasmashell --version``
+    even though Plasma itself is up and running. Preflight should fall
+    back to distro package metadata before failing the whole install."""
+    from types import SimpleNamespace
+    monkeypatch.setattr(preflight.shutil, "which", lambda cmd: f"/usr/bin/{cmd}")
+    monkeypatch.setattr(
+        preflight,
+        "plasma_version_probe_cmds",
+        lambda: (["rpm", "-q", "--qf", "%{VERSION}\\n", "plasma6-workspace"],),
+    )
+
+    seen = []
+
+    def fake_run_user(cmd, **kwargs):
+        seen.append(cmd)
+        if cmd[:2] == ["plasmashell", "--version"]:
+            raise preflight.subprocess.TimeoutExpired(cmd, kwargs.get("timeout"))
+        if cmd[:2] == ["plasmashell", "-v"]:
+            return SimpleNamespace(returncode=0, stdout="", stderr="")
+        if cmd[:2] == ["rpm", "-q"]:
+            return SimpleNamespace(returncode=0, stdout="6.6.5\n", stderr="")
+        raise AssertionError(f"unexpected command: {cmd!r}")
+
+    monkeypatch.setattr(preflight, "run_user", fake_run_user)
+
+    assert preflight._check_plasma_version() is True
+    assert seen[:3] == [
+        ["plasmashell", "--version"],
+        ["plasmashell", "-v"],
+        ["rpm", "-q", "--qf", "%{VERSION}\\n", "plasma6-workspace"],
+    ]
+
+
 # ── 5. KDE config tools ─────────────────────────────────────────────
 
 

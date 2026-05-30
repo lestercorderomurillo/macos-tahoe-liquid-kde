@@ -33,10 +33,11 @@ import shutil
 import subprocess
 from pathlib import Path
 
+from distro import package_for, system_lib_dir
 from steps._helpers import (
     HOME, _as_root, fail, info, ok, offline, sudo_install_tree, sudo_remove, warn,
 )
-from utils import have
+from utils import have, pkg_install
 
 
 THEME_NAME = "MacTahoeLiquidKde"
@@ -282,6 +283,26 @@ def _validate_theme(theme_dir: Path) -> str | None:
     return None
 
 
+def _script_plugin_path() -> Path:
+    return system_lib_dir() / "plymouth/script.so"
+
+
+def _ensure_script_plugin() -> bool:
+    script_plugin = _script_plugin_path()
+    if script_plugin.is_file():
+        return True
+    pkg = package_for("plymouth-script-plugin", "plymouth")
+    warn(f"{script_plugin} missing — installing {pkg}...")
+    if not pkg_install(pkg):
+        warn("Plymouth script plugin install failed — leaving previous splash active")
+        return False
+    if script_plugin.is_file():
+        ok("Plymouth script plugin installed")
+        return True
+    warn(f"{script_plugin} still missing after installing {pkg} — leaving previous splash active")
+    return False
+
+
 def _run_as_root(cmd: list[str], timeout: int) -> subprocess.CompletedProcess:
     """Spawn ``cmd`` with effective UID 0 — the CLI dropped to the
     invoking user but kept real UID 0, so ``_as_root()`` flips euid back
@@ -434,6 +455,10 @@ def install() -> None:
     err = _validate_theme(DEST)
     if err:
         fail(f"Boot splash validation failed: {err}")
+        info("Theme files left on disk but NOT activated — previous splash still active")
+        return
+
+    if not _ensure_script_plugin():
         info("Theme files left on disk but NOT activated — previous splash still active")
         return
 

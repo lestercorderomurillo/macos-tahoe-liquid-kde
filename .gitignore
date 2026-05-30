@@ -45,6 +45,7 @@ Thumbs.db
 
 # VM test harness — captured plymouth render frames + debug logs.
 tests/vm/output/
+tests/vm-smoke/.work/
 
 # Local Python venvs sometimes parked in-tree by contributors.
 .venv/

@@ -218,6 +218,35 @@ def have(cmd: str) -> bool:
     return shutil.which(cmd) is not None
 
 
+def _cmake_package_exists(name: str) -> bool:
+    if not have("cmake"):
+        return False
+    try:
+        res = run_user(
+            [
+                "cmake",
+                "--find-package",
+                f"-DNAME={name}",
+                "-DCOMPILER_ID=GNU",
+                "-DLANGUAGE=CXX",
+                "-DMODE=EXIST",
+            ],
+            check=False,
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
+            timeout=15,
+        )
+    except (OSError, subprocess.TimeoutExpired):
+        return False
+    return res.returncode == 0
+
+
+def _dep_available(cmd: str) -> bool:
+    if cmd == "ecm":
+        return _cmake_package_exists("ECM")
+    return have(cmd)
+
+
 def pkg_install(*pkgs: str) -> bool:
     """Install one or more packages via the distro's native package
     manager (resolved through :mod:`distro`). The caller passes the
@@ -242,7 +271,7 @@ def auto_dep(cmd: str, pkg: str | None = None) -> bool:
     from the step's deps() token — distro.package_for() translates it
     to the right name on the current host."""
     from distro import package_for
-    if have(cmd):
+    if _dep_available(cmd):
         ok(cmd)
         return True
     warn(f"{cmd} not found — installing...")

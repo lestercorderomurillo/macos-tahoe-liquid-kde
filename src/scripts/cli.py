@@ -570,6 +570,20 @@ def _require_root_and_drop_to_user(op: str = "install") -> bool:
     os.environ["HOME"] = user_home
     os.environ["USER"] = sudo_user
     os.environ["LOGNAME"] = sudo_user
+    # Some sudo configs preserve root-owned XDG paths (notably
+    # XDG_STATE_HOME on openSUSE). If we leave those behind, helpers
+    # like RunTracker still try to write under /root even after HOME is
+    # corrected. Only rewrite values that are missing or still point at
+    # root so custom user XDG overrides survive.
+    for key, suffix in (
+        ("XDG_CONFIG_HOME", ".config"),
+        ("XDG_DATA_HOME", ".local/share"),
+        ("XDG_CACHE_HOME", ".cache"),
+        ("XDG_STATE_HOME", ".local/state"),
+    ):
+        value = os.environ.get(key, "")
+        if not value or value == "/root" or value.startswith("/root/"):
+            os.environ[key] = f"{user_home}/{suffix}"
 
     # Drop privileges with seteuid (reversible) — real UID stays 0 so
     # ``sudo_install_file`` can hop back to root for /usr/lib writes.
