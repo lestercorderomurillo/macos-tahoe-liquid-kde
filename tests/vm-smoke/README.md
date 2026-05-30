@@ -57,8 +57,15 @@ Real VM smoke implemented now:
 - `run-manjaro.sh` — Arch cloud image switched to Manjaro stable repos
 - `run-endeavouros.sh` — Arch cloud image + EndeavourOS repo overlay
 - `run-garuda.sh` — Arch cloud image + Chaotic-AUR + Garuda repo overlay
-- `run-nobara.sh` — Fedora cloud image switched to Nobara repos
-- `run-gentoo.sh` — official Gentoo systemd-cloudinit qcow2 + `--getbinpkg` binhost
+- `run-nobara.sh` — Fedora cloud image + Nobara repo overlay (Fyra Labs)
+
+Still a SKIP wrapper:
+
+- `run-gentoo.sh` — official Gentoo systemd-cloudinit qcow2 +
+  `--getbinpkg` against the canonical binhost is feasible but mixes a
+  binhost-built USE-flag set with the cloud profile's flags, so some
+  packages fall back to source-compile and the smoke can take hours
+  rather than minutes. Tracked separately.
 
 Immutable rpm-ostree distros (Bazzite, Silverblue, Kinoite) are out of
 scope: the installer writes into `/usr/lib*` and `/usr/share`, which

@@ -17,7 +17,10 @@ def test_vm_smoke_files_present():
         "cloud-init.yaml",
         "cloud-init-arch.yaml",
         "cloud-init-cachyos.yaml",
+        "cloud-init-endeavouros.yaml",
+        "cloud-init-garuda.yaml",
         "cloud-init-manjaro.yaml",
+        "cloud-init-nobara.yaml",
         "cloud-init-opensuse.yaml",
         "run-fedora.sh",
         "run-arch.sh",
@@ -39,6 +42,9 @@ def test_supported_vm_scripts_use_shared_runner():
         "run-arch.sh",
         "run-cachyos.sh",
         "run-manjaro.sh",
+        "run-endeavouros.sh",
+        "run-garuda.sh",
+        "run-nobara.sh",
         "run-opensuse.sh",
     ):
         script = _read(name)
@@ -79,6 +85,25 @@ def test_run_manjaro_uses_arch_cloud_image_plus_repo_bootstrap():
     assert "cloud-init-manjaro.yaml" in script
 
 
+def test_run_endeavouros_uses_arch_cloud_image_plus_repo_overlay():
+    script = _read("run-endeavouros.sh")
+    assert "Arch-Linux-x86_64-cloudimg.qcow2" in script
+    assert "cloud-init-endeavouros.yaml" in script
+
+
+def test_run_garuda_uses_arch_cloud_image_plus_chaotic_and_garuda():
+    script = _read("run-garuda.sh")
+    assert "Arch-Linux-x86_64-cloudimg.qcow2" in script
+    assert "cloud-init-garuda.yaml" in script
+
+
+def test_run_nobara_uses_fedora_cloud_image_plus_repo_overlay():
+    script = _read("run-nobara.sh")
+    assert "Fedora-Cloud-Base-Generic" in script
+    assert "fedora-cloud-44.qcow2" in script
+    assert "cloud-init-nobara.yaml" in script
+
+
 def test_lib_mounts_repo_and_collects_done_sentinel():
     script = _read("lib.sh")
     assert "-virtfs" in script
@@ -92,7 +117,10 @@ def test_cloud_init_profiles_share_smoke_guest_contract():
         "cloud-init.yaml",
         "cloud-init-arch.yaml",
         "cloud-init-cachyos.yaml",
+        "cloud-init-endeavouros.yaml",
+        "cloud-init-garuda.yaml",
         "cloud-init-manjaro.yaml",
+        "cloud-init-nobara.yaml",
         "cloud-init-opensuse.yaml",
     ):
         config = _read(name)
@@ -142,6 +170,34 @@ def test_cloud_init_profile_specific_kde_provisioning():
     assert "pacman -Syyuu --noconfirm" in manjaro
     assert "=== manjaro-repos ===" in manjaro
 
+    endeavouros = _read("cloud-init-endeavouros.yaml")
+    assert "install_endeavouros_repo" in endeavouros
+    assert "endeavouros-keyring-" in endeavouros
+    assert "endeavouros-mirrorlist-" in endeavouros
+    assert "pacman-key --populate endeavouros" in endeavouros
+    assert "[endeavouros]" in endeavouros
+    assert "=== endeavouros-repos ===" in endeavouros
+
+    garuda = _read("cloud-init-garuda.yaml")
+    assert "install_chaotic_aur" in garuda
+    assert "install_garuda_repo" in garuda
+    assert "chaotic-keyring-" in garuda
+    assert "garuda-mirrorlist-" in garuda
+    assert "pacman-key --populate chaotic" in garuda
+    assert "pacman-key --populate garuda" in garuda
+    assert "[chaotic-aur]" in garuda
+    assert "[garuda]" in garuda
+    assert "=== garuda-repos ===" in garuda
+
+    nobara = _read("cloud-init-nobara.yaml")
+    assert "install_nobara_repos" in nobara
+    assert "repos.fyralabs.com/nobara" in nobara
+    assert "RPM-GPG-KEY-nobara" in nobara
+    assert "[nobara-baseos]" in nobara
+    assert "[nobara-appstream]" in nobara
+    assert "--allowerasing" in nobara
+    assert "=== nobara-repos ===" in nobara
+
     opensuse = _read("cloud-init-opensuse.yaml")
     assert "zypper --non-interactive refresh" in opensuse
     assert "patterns-kde-kde_plasma" in opensuse
@@ -159,7 +215,10 @@ def test_guest_smoke_script_copies_repo_locally_and_bypasses_prompts():
         "cloud-init.yaml",
         "cloud-init-arch.yaml",
         "cloud-init-cachyos.yaml",
+        "cloud-init-endeavouros.yaml",
+        "cloud-init-garuda.yaml",
         "cloud-init-manjaro.yaml",
+        "cloud-init-nobara.yaml",
         "cloud-init-opensuse.yaml",
     ):
         config = _read(name)
@@ -191,15 +250,13 @@ def test_run_all_includes_real_and_skip_entries():
 
 
 def test_skip_wrappers_are_explicit():
-    # The remaining skip wrappers — these are distros where the smoke
-    # is still a placeholder waiting for a real cloud-init flow. As
-    # they land for real (like Manjaro did), drop their entry here and
-    # add a `test_run_<distro>_uses_*` counterpart above.
+    # The remaining skip wrappers — distros where the smoke is still
+    # a placeholder waiting for a real cloud-init flow. As they land
+    # for real (like Manjaro, EndeavourOS, Garuda, Nobara did), drop
+    # their entry here and add a `test_run_<distro>_uses_*` counterpart
+    # above.
     for name in (
-        "run-endeavouros.sh",
-        "run-garuda.sh",
         "run-gentoo.sh",
-        "run-nobara.sh",
     ):
         script = _read(name)
         assert "SKIP:" in script
