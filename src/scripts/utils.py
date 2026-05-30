@@ -4,6 +4,7 @@ import os
 import shutil
 import subprocess
 import sys
+import tempfile
 import time
 import urllib.error
 import urllib.request
@@ -222,20 +223,33 @@ def _cmake_package_exists(name: str) -> bool:
     if not have("cmake"):
         return False
     try:
-        res = run_user(
-            [
-                "cmake",
-                "--find-package",
-                f"-DNAME={name}",
-                "-DCOMPILER_ID=GNU",
-                "-DLANGUAGE=CXX",
-                "-DMODE=EXIST",
-            ],
-            check=False,
-            stdout=subprocess.DEVNULL,
-            stderr=subprocess.DEVNULL,
-            timeout=15,
-        )
+        with tempfile.TemporaryDirectory(prefix="mttkde-cmake-probe-") as tmp:
+            src = Path(tmp) / "src"
+            build = Path(tmp) / "build"
+            src.mkdir(parents=True, exist_ok=True)
+            (src / "CMakeLists.txt").write_text(
+                "\n".join((
+                    "cmake_minimum_required(VERSION 3.16)",
+                    "project(mttkde_dep_probe LANGUAGES CXX)",
+                    f"find_package({name} CONFIG QUIET)",
+                    f"if(NOT {name}_FOUND)",
+                    f'  message(FATAL_ERROR "{name} not found")',
+                    "endif()",
+                    "",
+                )),
+                encoding="utf-8",
+            )
+            res = run_user(
+                [
+                    "cmake",
+                    "-S", str(src),
+                    "-B", str(build),
+                ],
+                check=False,
+                stdout=subprocess.DEVNULL,
+                stderr=subprocess.DEVNULL,
+                timeout=15,
+            )
     except (OSError, subprocess.TimeoutExpired):
         return False
     return res.returncode == 0
