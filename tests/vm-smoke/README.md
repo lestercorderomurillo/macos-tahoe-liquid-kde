@@ -54,27 +54,17 @@ Real VM smoke implemented now:
 - `run-arch.sh` — official Arch cloud image
 - `run-cachyos.sh` — Arch cloud image switched to official CachyOS repos
 - `run-opensuse.sh` — openSUSE Tumbleweed Minimal-VM Cloud image
+- `run-manjaro.sh` — Arch cloud image switched to Manjaro stable repos
+- `run-endeavouros.sh` — Arch cloud image + EndeavourOS repo overlay
+- `run-garuda.sh` — Arch cloud image + Chaotic-AUR + Garuda repo overlay
+- `run-nobara.sh` — Fedora cloud image switched to Nobara repos
+- `run-gentoo.sh` — official Gentoo systemd-cloudinit qcow2 + `--getbinpkg` binhost
 
-Explicit `SKIP` wrappers exist for the rest of the support matrix so
-`run-all.sh` makes the current gaps obvious instead of silently
-ignoring them:
-
-- `run-manjaro.sh`
-- `run-endeavouros.sh`
-- `run-garuda.sh`
-- `run-gentoo.sh`
-- `run-nobara.sh`
-- `run-bazzite.sh`
-
-Those scripts all exit `2` with a reason:
-
-- Arch-family derivatives currently publish installer-first paths, not
-  official unattended cloud images.
-- Gentoo has an official cloud-init `qcow2`, but a first-boot Plasma
-  install is still too heavy without a prebuilt Plasma/binpkg path.
-- Nobara currently publishes installer ISOs rather than a cloud image.
-- Bazzite is immutable, and the current installer still assumes a
-  mutable `/usr/lib64/qt6`.
+Immutable rpm-ostree distros (Bazzite, Silverblue, Kinoite) are out of
+scope: the installer writes into `/usr/lib*` and `/usr/share`, which
+are read-only on those systems and need either an rpm-ostree layering
+path or a Flatpak-extension wrapper that this project does not
+maintain.
 
 ## CI
 

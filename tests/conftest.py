@@ -11,7 +11,7 @@ What is actually covered:
 
 2. **Per-distro container matrix** at ``tests/containers/``. One
    Dockerfile per supported distro (arch, cachyos, manjaro, garuda,
-   endeavouros, gentoo, fedora, nobara, bazzite, opensuse). Inside
+   endeavouros, gentoo, fedora, nobara, opensuse). Inside
    each container, ``run_in_container.py`` runs the pytest suite
    against that distro's real Python + Qt6 layout, then probes
    ``distro.package_for(token)`` against the distro's real repo

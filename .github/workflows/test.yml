@@ -58,7 +58,6 @@ jobs:
           - gentoo
           - fedora
           - nobara
-          - bazzite
           - opensuse
     steps:
       - uses: actions/checkout@v5

@@ -53,7 +53,6 @@ def _force_distro(monkeypatch, distro_id: str, id_like: tuple[str, ...] = ()):
     ("rhel",                (),           "qt6-qttools"),
     ("centos",              (),           "qt6-qttools"),
     ("nobara",              ("fedora",),  "qt6-qttools"),   # inherits
-    ("bazzite",             ("fedora",),  "qt6-qttools"),   # inherits
     ("arch",                (),           "qt6-tools"),
     ("cachyos",             ("arch",),    "qt6-tools"),     # inherits
     ("manjaro",             ("arch",),    "qt6-tools"),     # inherits

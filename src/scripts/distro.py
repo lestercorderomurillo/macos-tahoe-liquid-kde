@@ -193,7 +193,6 @@ _QT6_LIBDIR_FALLBACK: dict[str, str] = {
     "rhel":          "/usr/lib64/qt6",
     "centos":        "/usr/lib64/qt6",
     "nobara":        "/usr/lib64/qt6",
-    "bazzite":       "/usr/lib64/qt6",
     "rocky":         "/usr/lib64/qt6",
     "almalinux":     "/usr/lib64/qt6",
     "openmandriva":  "/usr/lib64/qt6",

@@ -19,7 +19,7 @@ REPO_ROOT="$(pwd)"
 ALL_DISTROS=(
     cachyos arch manjaro endeavouros garuda
     gentoo
-    fedora nobara bazzite
+    fedora nobara
     opensuse
 )
 if [[ $# -eq 0 ]]; then

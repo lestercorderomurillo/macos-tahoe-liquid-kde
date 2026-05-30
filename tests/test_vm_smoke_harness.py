@@ -17,6 +17,7 @@ def test_vm_smoke_files_present():
         "cloud-init.yaml",
         "cloud-init-arch.yaml",
         "cloud-init-cachyos.yaml",
+        "cloud-init-manjaro.yaml",
         "cloud-init-opensuse.yaml",
         "run-fedora.sh",
         "run-arch.sh",
@@ -28,13 +29,18 @@ def test_vm_smoke_files_present():
         "run-garuda.sh",
         "run-gentoo.sh",
         "run-nobara.sh",
-        "run-bazzite.sh",
     ):
         assert (VM_SMOKE_DIR / name).is_file(), f"missing tests/vm-smoke/{name}"
 
 
 def test_supported_vm_scripts_use_shared_runner():
-    for name in ("run-fedora.sh", "run-arch.sh", "run-cachyos.sh", "run-opensuse.sh"):
+    for name in (
+        "run-fedora.sh",
+        "run-arch.sh",
+        "run-cachyos.sh",
+        "run-manjaro.sh",
+        "run-opensuse.sh",
+    ):
         script = _read(name)
         assert 'source "$(cd "$(dirname "$0")" && pwd)/lib.sh"' in script
         assert "vm_smoke_main" in script
@@ -67,6 +73,12 @@ def test_run_cachyos_uses_arch_cloud_image_plus_repo_bootstrap():
     assert "cloud-init-cachyos.yaml" in script
 
 
+def test_run_manjaro_uses_arch_cloud_image_plus_repo_bootstrap():
+    script = _read("run-manjaro.sh")
+    assert "Arch-Linux-x86_64-cloudimg.qcow2" in script
+    assert "cloud-init-manjaro.yaml" in script
+
+
 def test_lib_mounts_repo_and_collects_done_sentinel():
     script = _read("lib.sh")
     assert "-virtfs" in script
@@ -80,6 +92,7 @@ def test_cloud_init_profiles_share_smoke_guest_contract():
         "cloud-init.yaml",
         "cloud-init-arch.yaml",
         "cloud-init-cachyos.yaml",
+        "cloud-init-manjaro.yaml",
         "cloud-init-opensuse.yaml",
     ):
         config = _read(name)
@@ -120,6 +133,15 @@ def test_cloud_init_profile_specific_kde_provisioning():
     assert "cachyos-settings" in cachyos
     assert "=== cachyos-repos ===" in cachyos
 
+    manjaro = _read("cloud-init-manjaro.yaml")
+    assert "install_manjaro_repos" in manjaro
+    assert "manjaro-keyring-" in manjaro
+    assert "manjaro-system-" in manjaro
+    assert "pacman-key --populate manjaro" in manjaro
+    assert "/etc/pacman.d/mirrorlist" in manjaro
+    assert "pacman -Syyuu --noconfirm" in manjaro
+    assert "=== manjaro-repos ===" in manjaro
+
     opensuse = _read("cloud-init-opensuse.yaml")
     assert "zypper --non-interactive refresh" in opensuse
     assert "patterns-kde-kde_plasma" in opensuse
@@ -137,6 +159,7 @@ def test_guest_smoke_script_copies_repo_locally_and_bypasses_prompts():
         "cloud-init.yaml",
         "cloud-init-arch.yaml",
         "cloud-init-cachyos.yaml",
+        "cloud-init-manjaro.yaml",
         "cloud-init-opensuse.yaml",
     ):
         config = _read(name)
@@ -161,20 +184,22 @@ def test_run_all_includes_real_and_skip_entries():
         "run-garuda.sh",
         "run-gentoo.sh",
         "run-nobara.sh",
-        "run-bazzite.sh",
     ):
         assert name in script
+    assert "run-bazzite.sh" not in script
     assert "status == 2" in script
 
 
 def test_skip_wrappers_are_explicit():
+    # The remaining skip wrappers — these are distros where the smoke
+    # is still a placeholder waiting for a real cloud-init flow. As
+    # they land for real (like Manjaro did), drop their entry here and
+    # add a `test_run_<distro>_uses_*` counterpart above.
     for name in (
-        "run-manjaro.sh",
         "run-endeavouros.sh",
         "run-garuda.sh",
         "run-gentoo.sh",
         "run-nobara.sh",
-        "run-bazzite.sh",
     ):
         script = _read(name)
         assert "SKIP:" in script

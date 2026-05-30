@@ -15,7 +15,6 @@ scripts=(
     run-garuda.sh
     run-gentoo.sh
     run-nobara.sh
-    run-bazzite.sh
 )
 
 rc=0
