@@ -17,7 +17,7 @@ A full macOS Tahoe-style desktop experience for KDE Plasma 6.6+.
 |:---:|--------|:--------------:|:-----------:|
 | <img src="https://cdn.simpleicons.org/cachyos" width="22"> | CachyOS | ✅ YES | ✅ YES |
 | <img src="https://cdn.simpleicons.org/gentoo" width="22"> | Gentoo | ✅ YES | ✅ YES |
-| <img src="https://cdn.simpleicons.org/archlinux" width="22"> | Arch Linux | ✅ YES | 🔧 WIP |
+| <img src="https://cdn.simpleicons.org/archlinux" width="22"> | Arch Linux | ✅ YES | ✅ YES |
 | <img src="https://cdn.simpleicons.org/manjaro" width="22"> | Manjaro | ✅ YES | 🔧 WIP |
 | <img src="https://cdn.simpleicons.org/endeavouros" width="22"> | EndeavourOS | ✅ YES | 🔧 WIP |
 | <img src="https://cdn.simpleicons.org/linux" width="22"> | Garuda Linux | ✅ YES | 🔧 WIP |
