@@ -67,8 +67,8 @@ Still a SKIP wrapper:
   packages fall back to source-compile and the smoke can take hours
   rather than minutes. Tracked separately.
 
-Immutable rpm-ostree distros (Bazzite, Silverblue, Kinoite) are out of
-scope: the installer writes into `/usr/lib*` and `/usr/share`, which
+Immutable rpm-ostree distros (Silverblue, Kinoite) are out of scope:
+the installer writes into `/usr/lib*` and `/usr/share`, which
 are read-only on those systems and need either an rpm-ostree layering
 path or a Flatpak-extension wrapper that this project does not
 maintain.

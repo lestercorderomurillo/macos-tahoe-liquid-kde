@@ -19,6 +19,7 @@ def test_vm_smoke_files_present():
         "cloud-init-cachyos.yaml",
         "cloud-init-endeavouros.yaml",
         "cloud-init-garuda.yaml",
+        "cloud-init-gentoo.yaml",
         "cloud-init-manjaro.yaml",
         "cloud-init-nobara.yaml",
         "cloud-init-opensuse.yaml",
@@ -44,6 +45,7 @@ def test_supported_vm_scripts_use_shared_runner():
         "run-manjaro.sh",
         "run-endeavouros.sh",
         "run-garuda.sh",
+        "run-gentoo.sh",
         "run-nobara.sh",
         "run-opensuse.sh",
     ):
@@ -97,6 +99,15 @@ def test_run_garuda_uses_arch_cloud_image_plus_chaotic_and_garuda():
     assert "cloud-init-garuda.yaml" in script
 
 
+def test_run_gentoo_uses_latest_official_cloudinit_image():
+    script = _read("run-gentoo.sh")
+    assert "latest-di-amd64-cloudinit.txt" in script
+    assert "di-amd64-cloudinit-" in script
+    assert "cloud-init-gentoo.yaml" in script
+    assert "snapshot_date" in script
+    assert "OVMF.4m.fd" in script
+
+
 def test_run_nobara_uses_fedora_cloud_image_plus_repo_overlay():
     script = _read("run-nobara.sh")
     assert "Fedora-Cloud-Base-Generic" in script
@@ -119,6 +130,7 @@ def test_cloud_init_profiles_share_smoke_guest_contract():
         "cloud-init-cachyos.yaml",
         "cloud-init-endeavouros.yaml",
         "cloud-init-garuda.yaml",
+        "cloud-init-gentoo.yaml",
         "cloud-init-manjaro.yaml",
         "cloud-init-nobara.yaml",
         "cloud-init-opensuse.yaml",
@@ -179,23 +191,58 @@ def test_cloud_init_profile_specific_kde_provisioning():
     assert "=== endeavouros-repos ===" in endeavouros
 
     garuda = _read("cloud-init-garuda.yaml")
+    # Garuda smoke: enable Chaotic-AUR (the repo every real Garuda
+    # install consumes) and rebrand /etc/os-release as ID=garuda so
+    # distro.current_distro() reports `garuda`. Garuda does NOT publish
+    # standalone keyring/mirrorlist .pkg.tar.zst files on its own repo
+    # (verified 2026-05-31 against builds.garudalinux.org/repos/garuda
+    # — zero matches), so the smoke deliberately skips the historical
+    # `garuda-keyring-` / `garuda-mirrorlist-` scrape path that was
+    # silently 404'ing the whole provisioning run.
     assert "install_chaotic_aur" in garuda
-    assert "install_garuda_repo" in garuda
+    assert "brand_as_garuda" in garuda
     assert "chaotic-keyring-" in garuda
-    assert "garuda-mirrorlist-" in garuda
     assert "pacman-key --populate chaotic" in garuda
-    assert "pacman-key --populate garuda" in garuda
     assert "[chaotic-aur]" in garuda
-    assert "[garuda]" in garuda
+    assert "ID=garuda" in garuda
     assert "=== garuda-repos ===" in garuda
 
+    gentoo = _read("cloud-init-gentoo.yaml")
+    assert "emerge-webrsync --revert=@GENTOO_SNAPSHOT_DATE@" in gentoo
+    assert "eselect profile list" in gentoo
+    assert "desktop/plasma/systemd" in gentoo
+    assert "distfiles.gentoo.org/releases/amd64/binpackages/23.0/x86-64/" in gentoo
+    assert "getbinpkg" in gentoo
+    assert "binpkg-respect-use=n" in gentoo
+    assert "binpkg-changed-deps=n" in gentoo
+    assert "--autounmask-write" in gentoo
+    assert "--update --deep --newuse" in gentoo
+    assert "etc-update --automode -5" in gentoo
+    assert "dev-qt/qttools:6" in gentoo
+    assert "kde-plasma/kwin" in gentoo
+    assert "kde-plasma/plasma-desktop" in gentoo
+    assert "kde-plasma/plasma-login-sessions" in gentoo
+    assert "kde-plasma/plasma-workspace" in gentoo
+    assert "x11-base/xorg-server" in gentoo
+    assert "x11-misc/sddm" in gentoo
+    assert "=== gentoo-profile ===" in gentoo
+
     nobara = _read("cloud-init-nobara.yaml")
+    # Nobara smoke: point at GloriousEggroll's COPR project on
+    # download.copr.fedorainfracloud.org/results/gloriouseggroll/
+    # nobara-<N>/ — the canonical source documented in
+    # Nobara-Project/nobara-repo-tools. Earlier revisions of this
+    # smoke pointed at repos.fyralabs.com/nobara<N>/, but Fyra Labs
+    # publishes Terra Linux (terra<N>/), not Nobara, and every key /
+    # repo URL under that namespace 404'd — every dnf install ran
+    # against an empty repo and the provisioning script crashed
+    # silently.
     assert "install_nobara_repos" in nobara
-    assert "repos.fyralabs.com/nobara" in nobara
+    assert "copr.fedorainfracloud.org/results/gloriouseggroll" in nobara
     assert "RPM-GPG-KEY-nobara" in nobara
-    assert "[nobara-baseos]" in nobara
-    assert "[nobara-appstream]" in nobara
+    assert "[nobara]" in nobara
     assert "--allowerasing" in nobara
+    assert "ID=nobara" in nobara
     assert "=== nobara-repos ===" in nobara
 
     opensuse = _read("cloud-init-opensuse.yaml")
@@ -217,6 +264,7 @@ def test_guest_smoke_script_copies_repo_locally_and_bypasses_prompts():
         "cloud-init-cachyos.yaml",
         "cloud-init-endeavouros.yaml",
         "cloud-init-garuda.yaml",
+        "cloud-init-gentoo.yaml",
         "cloud-init-manjaro.yaml",
         "cloud-init-nobara.yaml",
         "cloud-init-opensuse.yaml",
@@ -250,14 +298,17 @@ def test_run_all_includes_real_and_skip_entries():
 
 
 def test_skip_wrappers_are_explicit():
-    # The remaining skip wrappers — distros where the smoke is still
-    # a placeholder waiting for a real cloud-init flow. As they land
-    # for real (like Manjaro, EndeavourOS, Garuda, Nobara did), drop
-    # their entry here and add a `test_run_<distro>_uses_*` counterpart
-    # above.
     for name in (
+        "run-fedora.sh",
+        "run-arch.sh",
+        "run-cachyos.sh",
+        "run-manjaro.sh",
+        "run-endeavouros.sh",
+        "run-garuda.sh",
         "run-gentoo.sh",
+        "run-nobara.sh",
+        "run-opensuse.sh",
     ):
         script = _read(name)
-        assert "SKIP:" in script
-        assert "exit 2" in script
+        assert "SKIP:" not in script
+        assert "exit 2" not in script

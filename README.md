@@ -4,7 +4,7 @@
 
 # macOS Tahoe Liquid Theme for KDE Plasma
 
-[![release](https://img.shields.io/github/v/release/lestercorderomurillo/macos-tahoe-liquid-kde?label=release&color=blue)](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/releases) [![tests](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/actions/workflows/test.yml/badge.svg)](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/actions/workflows/test.yml) [![tests count](https://img.shields.io/badge/tests-581_passing-brightgreen)](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/actions/workflows/test.yml) [![license](https://img.shields.io/badge/license-GPL--2.0-blue)](LICENSE) [![plasma](https://img.shields.io/badge/KDE_Plasma-6.6%2B-1d99f3?logo=kde)](https://kde.org/plasma-desktop/) [![last commit](https://img.shields.io/github/last-commit/lestercorderomurillo/macos-tahoe-liquid-kde)](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/commits/) [![report a bug](https://img.shields.io/badge/report-a%20bug-red?logo=github)](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/issues/new)
+[![release](https://img.shields.io/github/v/release/lestercorderomurillo/macos-tahoe-liquid-kde?label=release&color=blue)](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/releases) [![tests](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/actions/workflows/test.yml/badge.svg)](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/actions/workflows/test.yml) [![tests count](https://img.shields.io/badge/tests-582_passing-brightgreen)](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/actions/workflows/test.yml) [![license](https://img.shields.io/badge/license-GPL--2.0-blue)](LICENSE) [![plasma](https://img.shields.io/badge/KDE_Plasma-6.6%2B-1d99f3?logo=kde)](https://kde.org/plasma-desktop/) [![last commit](https://img.shields.io/github/last-commit/lestercorderomurillo/macos-tahoe-liquid-kde)](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/commits/) [![report a bug](https://img.shields.io/badge/report-a%20bug-red?logo=github)](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/issues/new)
 
 > [!WARNING]
 > **Alpha / active development.** This project is under heavy development — things break as KDE, KWin and friends update. The installer pulls upstream changes on launch and may behave differently between runs. Expect rough edges, hold off on it for production desktops, and please [report any issue](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/issues/new) you run into.
@@ -16,14 +16,16 @@ A full macOS Tahoe-style desktop experience for KDE Plasma 6.6+.
 |     | Distro | Supported yet? | Tested yet? |
 |:---:|--------|:--------------:|:-----------:|
 | <img src="https://cdn.simpleicons.org/cachyos" width="22"> | CachyOS | ✅ YES | ✅ YES |
-| <img src="https://cdn.simpleicons.org/gentoo" width="22"> | Gentoo | ✅ YES | ✅ YES |
+| <img src="https://cdn.simpleicons.org/gentoo" width="22"> | Gentoo | ✅ YES | 🔧 WIP |
 | <img src="https://cdn.simpleicons.org/archlinux" width="22"> | Arch Linux | ✅ YES | ✅ YES |
 | <img src="https://cdn.simpleicons.org/manjaro" width="22"> | Manjaro | ✅ YES | ✅ YES |
 | <img src="https://cdn.simpleicons.org/endeavouros" width="22"> | EndeavourOS | ✅ YES | ✅ YES |
-| <img src="https://cdn.simpleicons.org/linux" width="22"> | Garuda Linux | ✅ YES | 🔧 WIP |
-| <img src="https://cdn.simpleicons.org/fedora" width="22"> | Fedora / RHEL | ✅ YES | 🔧 WIP |
-| <img src="https://cdn.simpleicons.org/nobaralinux" width="22"> | Nobara | ✅ YES | 🔧 WIP |
-| <img src="https://cdn.simpleicons.org/opensuse" width="22"> | openSUSE Tumbleweed | ✅ YES | 🔧 WIP |
+| <img src="https://cdn.simpleicons.org/linux" width="22"> | Garuda Linux | ✅ YES | ✅ YES |
+| <img src="https://cdn.simpleicons.org/fedora" width="22"> | Fedora | ✅ YES | ✅ YES |
+| <img src="https://cdn.simpleicons.org/nobaralinux" width="22"> | Nobara | ✅ YES | ✅ YES |
+| <img src="https://cdn.simpleicons.org/opensuse" width="22"> | openSUSE Tumbleweed | ✅ YES | ✅ YES |
+
+`Tested yet?` means a real end-to-end VM smoke pass. Fedora and openSUSE use native cloud images; Arch is native too; CachyOS, Manjaro, EndeavourOS, and Garuda are repo-backed Arch-cloud runs; Nobara is a repo-backed Fedora-cloud run. Gentoo is the remaining VM-smoke gap.
 
 ---
 

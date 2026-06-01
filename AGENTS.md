@@ -21,8 +21,8 @@ switching, wallpapers, fonts, cursors, and a Plymouth boot splash.
 **Target platforms.** systemd-based KDE Plasma 6.6+ distros only. The
 container matrix covers Arch, CachyOS, Manjaro, EndeavourOS, Garuda,
 Gentoo, Fedora, Nobara, and openSUSE Tumbleweed. Immutable rpm-ostree
-distros (Bazzite, Silverblue, Kinoite) are explicitly out of scope:
-the installer writes into `/usr/lib*` and `/usr/share`, which are
+distros (Silverblue, Kinoite) are explicitly out of scope: the
+installer writes into `/usr/lib*` and `/usr/share`, which are
 read-only on those systems and need either an rpm/Flatpak-extension
 wrapper or an rpm-ostree layering path that this project does not
 maintain. There is no non-systemd path (no Artix, no Devuan, no Void)

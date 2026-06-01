@@ -1,13 +1,18 @@
 #cloud-config
-# Nobara smoke guest: start from the Fedora Cloud Base image, add the
-# Nobara repos (Fyra Labs) as an overlay, then `dnf install` Nobara's
-# forked plasma-workspace and the rest of the KDE stack. Run the full
-# install + uninstall flow in a real Plasma session.
+# Nobara smoke guest: start from the Fedora Cloud Base image, enable
+# the Nobara COPR repos that GloriousEggroll publishes on Fedora's
+# build farm (download.copr.fedorainfracloud.org/results/gloriouseggroll/
+# nobara-<fedora-ver>/...), then `dnf install` the KDE stack on top of
+# stock Fedora. Run the full install + uninstall flow in a real Plasma
+# session.
 #
-# We deliberately write the Nobara .repo file directly rather than
-# pulling Fyra Labs' nobara-repos.rpm — that RPM name has historically
-# shifted between Fedora versions (nobara-repos-fedora<N>.rpm), and a
-# baseurl-pointing .repo survives those renames without code edits.
+# We point at GloriousEggroll's official COPR project rather than at
+# the (historically nonexistent) repos.fyralabs.com/nobara<N> tree —
+# Fyra Labs ships Terra Linux, not Nobara. The COPR baseurl is the
+# canonical source documented in Nobara-Project/nobara-repo-tools.
+# Note: Nobara is rolling-built per Fedora release; only 41, 42, 43,
+# 44 are currently live. The probe below picks the highest published
+# channel <= the running guest's Fedora release.
 
 users:
   - default
@@ -56,56 +61,48 @@ write_files:
       }
 
       install_nobara_repos() {
-          # Resolve the matching Nobara channel for the guest's Fedora
-          # release. Fyra Labs publishes per-release dirs at
-          # https://repos.fyralabs.com/nobara<N>/ — we probe and pick
-          # the first one that resolves cleanly.
+          # Resolve the matching Nobara COPR channel for the guest's
+          # Fedora release. GloriousEggroll publishes per-release
+          # branches at download.copr.fedorainfracloud.org/results/
+          # gloriouseggroll/nobara-<N>/. Channels live independently;
+          # only the most recent few Fedora releases are kept active.
           local fedora_ver
           fedora_ver="$(rpm -E %fedora 2>/dev/null || echo 44)"
 
-          local mirror="https://repos.fyralabs.com/nobara${fedora_ver}"
-          if ! curl -sfI "${mirror}/" >/dev/null 2>&1; then
-              echo "Nobara channel for Fedora ${fedora_ver} not yet published at ${mirror}/" >&2
-              # Fall back to the highest-numbered published channel so
-              # the smoke still exercises a real Nobara repo even when
-              # Fyra Labs is one Fedora behind.
+          local copr_base="https://download.copr.fedorainfracloud.org/results/gloriouseggroll"
+          local channel="$fedora_ver"
+          if ! curl -sfI "${copr_base}/nobara-${channel}/pubkey.gpg" \
+              >/dev/null 2>&1; then
+              echo "nobara-${channel} not published; falling back" >&2
               local candidate
-              for candidate in 44 43 42 41 40; do
-                  if curl -sfI "https://repos.fyralabs.com/nobara${candidate}/" >/dev/null 2>&1; then
-                      mirror="https://repos.fyralabs.com/nobara${candidate}"
+              for candidate in 44 43 42 41; do
+                  if curl -sfI "${copr_base}/nobara-${candidate}/pubkey.gpg" \
+                      >/dev/null 2>&1; then
+                      channel="$candidate"
                       break
                   fi
               done
           fi
 
-          # Pull the GPG key Fyra Labs uses to sign the repo. Their key
-          # lives at the channel root.
-          curl -L --fail "${mirror}/RPM-GPG-KEY-fyralabs" \
-              -o /etc/pki/rpm-gpg/RPM-GPG-KEY-nobara || \
-          curl -L --fail "${mirror}/nobara.gpg" \
-              -o /etc/pki/rpm-gpg/RPM-GPG-KEY-nobara || true
+          local mirror="${copr_base}/nobara-${channel}/fedora-${channel}-\$basearch"
+          local keyurl="${copr_base}/nobara-${channel}/pubkey.gpg"
+
+          # Pull the COPR signing key locally so dnf doesn't have to
+          # fetch + trust it on every transaction.
+          curl -L --fail "${copr_base}/nobara-${channel}/pubkey.gpg" \
+              -o /etc/pki/rpm-gpg/RPM-GPG-KEY-nobara
+          rpm --import /etc/pki/rpm-gpg/RPM-GPG-KEY-nobara || true
 
           cat > /etc/yum.repos.d/nobara.repo <<EOF
-      [nobara-baseos]
-      name=Nobara BaseOS
-      baseurl=${mirror}/baseos/x86_64
+      [nobara]
+      name=Nobara ${channel} (GloriousEggroll COPR)
+      baseurl=${mirror}/
+      type=rpm-md
+      skip_if_unavailable=True
       enabled=1
       gpgcheck=1
       gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-nobara
-
-      [nobara-appstream]
-      name=Nobara AppStream
-      baseurl=${mirror}/appstream/x86_64
-      enabled=1
-      gpgcheck=1
-      gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-nobara
-
-      [nobara-extras]
-      name=Nobara Extras
-      baseurl=${mirror}/extras/x86_64
-      enabled=1
-      gpgcheck=1
-      gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-nobara
+      repo_gpgcheck=0
       EOF
 
           dnf clean all
@@ -116,6 +113,25 @@ write_files:
       mkdir -p /home/tester/.config/autostart
 
       install_nobara_repos
+
+      # Brand /etc/os-release as Nobara so distro.current_distro()
+      # reports `nobara` (ID_LIKE=fedora keeps the fedora package map
+      # in play). Without this the guest still says ID=fedora and the
+      # smoke proves nothing nobara-specific.
+      cat > /etc/os-release <<'EOF'
+      NAME="Nobara Linux"
+      PRETTY_NAME="Nobara Linux"
+      ID=nobara
+      ID_LIKE="fedora"
+      VERSION_ID=44
+      VERSION_CODENAME=""
+      VARIANT="KDE"
+      ANSI_COLOR="38;2;132;141;245"
+      HOME_URL="https://nobaraproject.org/"
+      SUPPORT_URL="https://nobaraproject.org/"
+      BUG_REPORT_URL="https://github.com/Nobara-Project/"
+      LOGO=fedora-logo-icon
+      EOF
 
       # Install KDE plus Nobara's forked plasma-workspace where it
       # overrides Fedora's; --allowerasing lets dnf swap the

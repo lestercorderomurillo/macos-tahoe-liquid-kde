@@ -1,16 +1,13 @@
 #cloud-config
-# Garuda smoke guest: start from the Arch cloud image, add the
-# Chaotic-AUR repo and the Garuda repo overlay on top of Arch, then
-# run the full install + uninstall flow in a real Plasma session.
-#
-# Both keyrings are pulled as .pkg.tar.zst files directly from the
-# vendor mirrors and installed via `pacman -U` — this side-steps the
-# historical Chaotic-AUR `pacman-key --recv-keys` keyserver flake.
+# Gentoo cloud smoke guest: boot the official systemd cloud-init qcow2,
+# switch to the Plasma systemd profile, use the official binhost where
+# possible, then run the full install + uninstall flow in a real Plasma
+# session.
 
 users:
   - default
   - name: tester
-    gecos: Garuda Smoke
+    gecos: Gentoo Smoke
     groups: [wheel]
     sudo: ALL=(ALL) NOPASSWD:ALL
     shell: /bin/bash
@@ -53,101 +50,94 @@ write_files:
           printf 'plasma.desktop\n'
       }
 
-      install_chaotic_aur() {
-          local mirror="https://builds.garudalinux.org/repos/chaotic-aur/x86_64"
-          local tmp
-          tmp="$(mktemp -d)"
-          trap 'rm -rf "$tmp"' RETURN
-
-          local keyring_pkg mirrorlist_pkg
-          keyring_pkg="$(curl -sL "${mirror}/" \
-              | grep -oE 'chaotic-keyring-[0-9][^"<]*-any\.pkg\.tar\.zst' \
-              | sort -V | tail -1)"
-          mirrorlist_pkg="$(curl -sL "${mirror}/" \
-              | grep -oE 'chaotic-mirrorlist-[0-9][^"<]*-any\.pkg\.tar\.zst' \
-              | sort -V | tail -1)"
-          if [[ -z "$keyring_pkg" || -z "$mirrorlist_pkg" ]]; then
-              echo "could not resolve chaotic-keyring / -mirrorlist from ${mirror}" >&2
-              exit 1
-          fi
-
-          curl -L --fail "${mirror}/${keyring_pkg}" \
-              -o "$tmp/chaotic-keyring.pkg.tar.zst"
-          curl -L --fail "${mirror}/${mirrorlist_pkg}" \
-              -o "$tmp/chaotic-mirrorlist.pkg.tar.zst"
-
-          pacman -U --noconfirm \
-              "$tmp/chaotic-keyring.pkg.tar.zst" \
-              "$tmp/chaotic-mirrorlist.pkg.tar.zst"
-
-          if ! pacman-key -l >/dev/null 2>&1; then
-              pacman-key --init
-              pacman-key --populate archlinux
-          fi
-          pacman-key --populate chaotic
-
-          if ! grep -q '^\[chaotic-aur\]' /etc/pacman.conf; then
-              cat >> /etc/pacman.conf <<'EOF'
-
-      [chaotic-aur]
-      Include = /etc/pacman.d/chaotic-mirrorlist
-      EOF
+      append_make_conf() {
+          local line="$1"
+          if ! grep -Fqx "$line" /etc/portage/make.conf 2>/dev/null; then
+              printf '%s\n' "$line" >> /etc/portage/make.conf
           fi
       }
 
-      brand_as_garuda() {
-          # Garuda doesn't publish a standalone garuda-keyring /
-          # garuda-mirrorlist on builds.garudalinux.org/repos/garuda
-          # (verified 2026-05-31 — the directory has zero matching
-          # packages). Real Garuda installs source keyring + mirrorlist
-          # from chaotic-aur, which we already enable above. The
-          # remaining piece of being "Garuda" for installer purposes is
-          # the /etc/os-release ID — distro.current_distro() keys off
-          # that. Write a Garuda-flavoured os-release in place so the
-          # installer's distro layer hits its garuda branch (via
-          # ID_LIKE=arch) and any future explicit garuda row.
-          cat > /etc/os-release <<'EOF'
-      NAME="Garuda Linux"
-      PRETTY_NAME="Garuda Linux"
-      ID=garuda
-      ID_LIKE=arch
-      BUILD_ID=rolling
-      ANSI_COLOR="38;2;23;147;209"
-      HOME_URL="https://garudalinux.org/"
-      DOCUMENTATION_URL="https://wiki.garudalinux.org/"
-      SUPPORT_URL="https://forum.garudalinux.org/"
-      BUG_REPORT_URL="https://gitlab.com/garuda-linux/"
-      LOGO=garudalinux
+      select_plasma_profile() {
+          local profile_num
+          profile_num="$(
+              eselect profile list \
+                  | sed -n 's/^.*\[\([0-9][0-9]*\)\].*desktop\/plasma\/systemd.*$/\1/p' \
+                  | tail -n 1
+          )"
+          if [[ -z "$profile_num" ]]; then
+              echo "No desktop/plasma/systemd Gentoo profile found" >&2
+              exit 1
+          fi
+          eselect profile set "$profile_num"
+      }
+
+      configure_binhost() {
+          mkdir -p \
+              /etc/portage/binrepos.conf \
+              /etc/portage/package.accept_keywords \
+              /etc/portage/package.use
+
+          cat > /etc/portage/binrepos.conf/gentoo-binhost.conf <<'EOF'
+      [binhost]
+      priority = 9999
+      sync-uri = https://distfiles.gentoo.org/releases/amd64/binpackages/23.0/x86-64/
       EOF
-          pacman -Syy --noconfirm
+
+          cat > /etc/portage/package.accept_keywords/all <<'EOF'
+      */* ~amd64
+      EOF
+
+          cat > /etc/portage/package.use/libxkbcommon <<'EOF'
+      x11-libs/libxkbcommon X
+      EOF
+
+          if command -v getuto >/dev/null 2>&1; then
+              append_make_conf 'FEATURES="${FEATURES} getbinpkg binpkg-request-signature binpkg-multi-instance"'
+              getuto
+          else
+              append_make_conf 'FEATURES="${FEATURES} getbinpkg binpkg-multi-instance"'
+          fi
+          append_make_conf 'EMERGE_DEFAULT_OPTS="${EMERGE_DEFAULT_OPTS} --binpkg-respect-use=n --binpkg-changed-deps=n --usepkg --with-bdeps=y"'
+      }
+
+      emerge_binpkg() {
+          emerge --quiet --getbinpkg --usepkg \
+              --binpkg-respect-use=n --binpkg-changed-deps=n \
+              --with-bdeps=y "$@"
+      }
+
+      emerge_binpkg_with_autounmask() {
+          if emerge_binpkg "$@"; then
+              return 0
+          fi
+
+          emerge --quiet --noreplace --getbinpkg --usepkg \
+              --binpkg-respect-use=n --with-bdeps=y --autounmask-write \
+              "$@" || true
+          etc-update --automode -5 >/dev/null || true
+          emerge_binpkg "$@"
       }
 
       mkdir -p /var/lib/mttkde /repo
       mkdir -p /home/tester/.config/autostart
 
-      pacman -Sy --noconfirm
-      pacman -S --noconfirm --needed \
-          base-devel \
-          curl \
-          gawk \
-          openssh \
-          rsync \
-          sudo
+      emerge-webrsync --revert=@GENTOO_SNAPSHOT_DATE@
+      configure_binhost
+      select_plasma_profile
+      env-update
 
-      install_chaotic_aur
-      brand_as_garuda
-
-      pacman -S --noconfirm --needed \
-          extra-cmake-modules \
-          kdecoration \
-          libksysguard \
-          libplasma \
-          plasma-activities-stats \
-          plasma-meta \
-          plasma-workspace \
-          qt6-tools \
-          sddm \
-          spectacle
+      emerge_binpkg_with_autounmask --update --deep --newuse \
+          app-admin/sudo \
+          dev-qt/qtbase:6 \
+          dev-qt/qttools:6 \
+          kde-plasma/kwin \
+          kde-plasma/plasma-desktop \
+          kde-plasma/plasma-login-sessions \
+          kde-plasma/plasma-workspace \
+          net-misc/openssh \
+          net-misc/rsync \
+          x11-base/xorg-server \
+          x11-misc/sddm
 
       systemctl enable sshd
       systemctl daemon-reload || true
@@ -156,7 +146,8 @@ write_files:
       session_name="$(select_plasma_session)"
 
       if [[ -f /usr/lib/systemd/system/sddm.service ]] || \
-         [[ -f /lib/systemd/system/sddm.service ]]; then
+           [[ -f /lib/systemd/system/sddm.service ]] || \
+           [[ -f /etc/systemd/system/sddm.service ]]; then
           mkdir -p /etc/sddm.conf.d
           cat > /etc/sddm.conf.d/autologin.conf <<EOF
       [Autologin]
@@ -206,8 +197,12 @@ write_files:
       sleep 45
       START_TS="$(date --iso-8601=seconds)"
 
-      echo "=== garuda-repos ==="
-      grep -n '^\[' /etc/pacman.conf || true
+      echo "=== gentoo-profile ==="
+      eselect profile show || true
+
+      echo "=== gentoo-portage ==="
+      grep -nE '^(FEATURES|EMERGE_DEFAULT_OPTS)=' /etc/portage/make.conf || true
+      grep -n '^sync-uri = ' /etc/portage/binrepos.conf/gentoo-binhost.conf || true
 
       sudo mkdir -p /repo
       sudo modprobe 9p || true
