@@ -19,7 +19,7 @@ RUN dnf install -y --setopt=install_weak_deps=False \
         plasma-activities-stats-devel libksysguard-devel \
         plasma-workspace-devel \
         kwin-devel kdecoration-devel \
-        libepoxy-devel libX11-devel libxcb-devel \
+        libepoxy-devel libdrm-devel libX11-devel libxcb-devel \
     && dnf clean all
 
 WORKDIR /repo
