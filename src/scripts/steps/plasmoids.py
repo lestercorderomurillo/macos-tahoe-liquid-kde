@@ -84,6 +84,7 @@ def deps():
         "kf6-notifications-cmake:knotifications",
         "kf6-service-cmake:kservice",
         "kf6-windowsystem-cmake:kwindowsystem",
+        "kf6-itemmodels-cmake:kitemmodels",
         # Plasma / KSysGuard / plasma-workspace (provides
         # LibNotificationManager + LibTaskManager cmake config).
         "plasma-cmake:libplasma",

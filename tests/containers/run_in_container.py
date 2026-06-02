@@ -329,14 +329,37 @@ def step_cmake_configure() -> bool:
             continue
         ok_all = False
         tail = (res.stdout or "") + (res.stderr or "")
-        # Surface only the cmake error lines so a 200-line ECM log
-        # doesn't drown the actual signal.
-        for line in tail.splitlines():
-            if (line.startswith("CMake Error")
-                    or "Could NOT find" in line
-                    or "missing:" in line
-                    or "FATAL_ERROR" in line):
+        # Surface the cmake error lines plus enough context to name
+        # the missing package. CMake's "CMake Error at <file>:<line>
+        # (find_package):" lines are followed by the actual package
+        # name 2-4 lines later, often as a verbatim find_package
+        # argument inside a Config.cmake's find_dependency() call.
+        # Without that follow-up, the operator only sees the
+        # CMakeFindDependencyMacro line and has no idea which dep is
+        # missing.
+        lines = tail.splitlines()
+        in_error = False
+        error_lines_left = 0
+        for line in lines:
+            is_error_start = (
+                line.startswith("CMake Error")
+                or "Could NOT find" in line
+                or "missing:" in line
+                or "FATAL_ERROR" in line
+            )
+            if is_error_start:
+                in_error = True
+                error_lines_left = 8
                 print(f"     {line}")
+                continue
+            if in_error:
+                if error_lines_left > 0 and line.strip():
+                    print(f"     {line}")
+                    error_lines_left -= 1
+                elif not line.strip():
+                    # Blank line — end of this error block.
+                    in_error = False
+                    error_lines_left = 0
         print(f"     FAIL: cmake configure exited {res.returncode}")
     return ok_all
 

@@ -10,7 +10,7 @@ RUN pacman -Syu --noconfirm --needed \
     # KF6 frameworks required by deps() of the compiled steps.
     kconfig kconfigwidgets kcoreaddons kcrash kglobalaccel kguiaddons \
     ki18n kio kcmutils knotifications kservice kwidgetsaddons \
-    kwindowsystem \
+    kwindowsystem kitemmodels \
     # Plasma / KSysGuard / plasma-workspace cmake configs.
     libplasma plasma-activities plasma-activities-stats libksysguard \
     plasma-workspace \

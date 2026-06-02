@@ -20,7 +20,7 @@ RUN pacman-key --init && \
         pkgconf \
         kconfig kconfigwidgets kcoreaddons kcrash kglobalaccel kguiaddons \
         ki18n kio kcmutils knotifications kservice kwidgetsaddons \
-        kwindowsystem \
+        kwindowsystem kitemmodels \
         libplasma plasma-activities plasma-activities-stats libksysguard \
         plasma-workspace \
         kwin kdecoration \

@@ -658,6 +658,14 @@ _PACKAGE_MAP: dict[str, dict[str, str]] = {
         "opensuse": "kf6-kwindowsystem-devel",
         "gentoo":   "kde-frameworks/kwindowsystem:6",
     },
+    "kf6-itemmodels-cmake": {
+        "arch":     "kitemmodels",
+        "fedora":   "kf6-kitemmodels-devel",
+        "rhel":     "kf6-kitemmodels-devel",
+        "centos":   "kf6-kitemmodels-devel",
+        "opensuse": "kf6-kitemmodels-devel",
+        "gentoo":   "kde-frameworks/kitemmodels:6",
+    },
     # ── Plasma / KSysGuard / plasma-workspace ─────────────────────────
     #
     # The dock taskmanager links against PlasmaActivities + KSysGuard,

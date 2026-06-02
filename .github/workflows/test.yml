@@ -34,6 +34,7 @@ jobs:
             kconfig kconfigwidgets kcoreaddons kcrash kglobalaccel \
             kguiaddons ki18n kio kcmutils knotifications kservice \
             kwidgetsaddons kwindowsystem kdbusaddons kiconthemes \
+            kitemmodels \
             libplasma plasma-activities plasma-activities-stats \
             libksysguard plasma-workspace \
             kwin kdecoration \

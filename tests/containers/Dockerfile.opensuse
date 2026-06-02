@@ -14,7 +14,16 @@
 #   - libepoxy + libdrm + libX11 + libxcb (acrylic-glass effect)
 FROM opensuse/tumbleweed:latest
 
-RUN zypper --non-interactive refresh && \
+# `zypper refresh` against download.opensuse.org occasionally times out
+# from GitHub runners (curl error 28 after the 180s default). Retry up
+# to 3 times before giving up — every individual refresh is a clean
+# operation, and the cost of a redundant 5s refresh on a healthy mirror
+# is negligible compared to a flaky-mirror CI failure.
+RUN for i in 1 2 3; do \
+        zypper --non-interactive refresh && break; \
+        echo "zypper refresh attempt $i failed; retrying"; \
+        sleep 5; \
+    done && \
     zypper --non-interactive install --no-recommends \
         python3 python3-pytest \
         cmake make gcc-c++ kf6-extra-cmake-modules pkgconf-pkg-config \
@@ -25,6 +34,7 @@ RUN zypper --non-interactive refresh && \
         kf6-ki18n-devel kf6-kio-devel kf6-kcmutils-devel \
         kf6-knotifications-devel kf6-kservice-devel \
         kf6-kwidgetsaddons-devel kf6-kwindowsystem-devel \
+        kf6-kitemmodels-devel \
         libplasma6-devel plasma6-activities-devel \
         plasma6-activities-stats-devel libksysguard6-devel \
         plasma6-workspace-devel \

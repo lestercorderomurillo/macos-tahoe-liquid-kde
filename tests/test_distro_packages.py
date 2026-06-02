@@ -359,6 +359,7 @@ _TOKENS_WITH_FEDORA_DIVERGENCE = {
     "kf6-service-cmake": "kservice",
     "kf6-widgetsaddons-cmake": "kwidgetsaddons",
     "kf6-windowsystem-cmake": "kwindowsystem",
+    "kf6-itemmodels-cmake": "kitemmodels",
     "plasma-cmake": "libplasma",
     "plasma-activities-cmake": "plasma-activities",
     "plasma-activities-stats-cmake": "plasma-activities-stats",
@@ -420,6 +421,13 @@ _KF6_TOKENS = [
      "kf6-kwidgetsaddons-devel", "kde-frameworks/kwidgetsaddons:6"),
     ("kf6-windowsystem-cmake",  "kwindowsystem",
      "kf6-kwindowsystem-devel",  "kde-frameworks/kwindowsystem:6"),
+    # KItemModels: required by the dock-taskmanager + globalmenu plasmoid
+    # CMakeLists. Arch's `kcoreaddons` meta pulls it transitively so
+    # missing it from the Dockerfile silently worked there; Fedora's
+    # `kf6-kcoreaddons-devel` does NOT, which is how the regression
+    # surfaced as a `FindKF6ItemModels.cmake` failure in CI.
+    ("kf6-itemmodels-cmake",    "kitemmodels",
+     "kf6-kitemmodels-devel",    "kde-frameworks/kitemmodels:6"),
 ]
 
 

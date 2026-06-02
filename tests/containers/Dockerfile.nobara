@@ -15,6 +15,7 @@ RUN dnf install -y --setopt=install_weak_deps=False \
         kf6-ki18n-devel kf6-kio-devel kf6-kcmutils-devel \
         kf6-knotifications-devel kf6-kservice-devel \
         kf6-kwidgetsaddons-devel kf6-kwindowsystem-devel \
+        kf6-kitemmodels-devel \
         libplasma-devel plasma-activities-devel \
         plasma-activities-stats-devel libksysguard-devel \
         plasma-workspace-devel \

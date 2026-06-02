@@ -61,7 +61,7 @@ RUN emerge-webrsync && \
         kde-frameworks/ki18n:6 kde-frameworks/kio:6 \
         kde-frameworks/kcmutils:6 kde-frameworks/knotifications:6 \
         kde-frameworks/kservice:6 kde-frameworks/kwidgetsaddons:6 \
-        kde-frameworks/kwindowsystem:6 \
+        kde-frameworks/kwindowsystem:6 kde-frameworks/kitemmodels:6 \
         # Plasma / KSysGuard / plasma-workspace cmake configs.
         kde-plasma/libplasma kde-plasma/plasma-activities \
         kde-plasma/plasma-activities-stats kde-plasma/libksysguard \

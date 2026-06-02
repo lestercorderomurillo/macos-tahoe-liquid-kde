@@ -281,6 +281,7 @@ _CMAKE_PACKAGE_TOKENS: dict[str, str] = {
     "kf6-service-cmake":              "KF6Service",
     "kf6-widgetsaddons-cmake":        "KF6WidgetsAddons",
     "kf6-windowsystem-cmake":         "KF6WindowSystem",
+    "kf6-itemmodels-cmake":           "KF6ItemModels",
     # Plasma / KSysGuard / plasma-workspace cmake configs.
     "plasma-cmake":                   "Plasma",
     "plasma-activities-cmake":        "PlasmaActivities",
