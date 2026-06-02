@@ -107,9 +107,10 @@ write_files:
           # drops on this portage version.
           cat > /etc/portage/package.use/mttkde-plasma <<'EOF'
       dev-qt/qtbase opengl wayland cups
+      dev-qt/qt5compat qml
       dev-qt/qtmultimedia qml opengl
       dev-qt/qtquick3d opengl
-      kde-frameworks/kconfig qml
+      kde-frameworks/kconfig qml dbus
       kde-frameworks/kguiaddons wayland
       kde-frameworks/kidletime wayland
       kde-frameworks/kwindowsystem wayland X
@@ -117,8 +118,17 @@ write_files:
       kde-frameworks/prison qml
       kde-frameworks/sonnet qml
       media-libs/mesa wayland
+      media-libs/libglvnd X
+      media-libs/libepoxy X
+      media-libs/freetype X
+      media-libs/fontconfig X
+      x11-libs/cairo X opengl
       x11-base/xwayland libei
       sys-apps/dbus X
+      sys-apps/systemd policykit
+      sys-auth/polkit systemd
+      llvm-core/libclc spirv
+      dev-util/mesa_clc -debug
       EOF
 
           if command -v getuto >/dev/null 2>&1; then
@@ -127,12 +137,21 @@ write_files:
           else
               append_make_conf 'FEATURES="${FEATURES} getbinpkg binpkg-multi-instance"'
           fi
-          append_make_conf 'EMERGE_DEFAULT_OPTS="${EMERGE_DEFAULT_OPTS} --binpkg-respect-use=n --binpkg-changed-deps=n --usepkg --with-bdeps=y"'
+          append_make_conf 'EMERGE_DEFAULT_OPTS="${EMERGE_DEFAULT_OPTS} --binpkg-respect-use=y --binpkg-changed-deps=n --usepkg --with-bdeps=y"'
+          # Disable 32-bit ABI globally. The default multilib stage3
+          # has ABI_X86="64 32" which makes fontconfig / harfbuzz /
+          # freetype demand expat[abi_x86_32]; expat's local USE doesn't
+          # expose that, and the chain dead-ends in
+          # `>=dev-libs/expat-2.1.0-r3[abi_x86_32(-),abi_x86_64(-)]`
+          # autounmask that cannot resolve. The theme stack doesn't
+          # need 32-bit anywhere, so forcing the no-multilib ABI is
+          # the honest fix instead of papering over individual packages.
+          append_make_conf 'ABI_X86="64"'
       }
 
       emerge_binpkg() {
           emerge --quiet --getbinpkg --usepkg \
-              --binpkg-respect-use=n --binpkg-changed-deps=n \
+              --binpkg-respect-use=y --binpkg-changed-deps=n \
               --with-bdeps=y "$@"
       }
 
@@ -148,7 +167,7 @@ write_files:
           # then exits without merging anything, leaving us back at
           # square one after etc-update.
           emerge --quiet --getbinpkg --usepkg \
-              --binpkg-respect-use=n --binpkg-changed-deps=n \
+              --binpkg-respect-use=y --binpkg-changed-deps=n \
               --with-bdeps=y --keep-going=y \
               --autounmask-write --autounmask-continue=y \
               --autounmask-keep-keywords=y \
@@ -158,7 +177,7 @@ write_files:
           # Second pass: same again. The first pass writes config; the
           # second actually merges with those flags now visible.
           emerge --quiet --getbinpkg --usepkg \
-              --binpkg-respect-use=n --binpkg-changed-deps=n \
+              --binpkg-respect-use=y --binpkg-changed-deps=n \
               --with-bdeps=y --keep-going=y \
               --autounmask-write --autounmask-continue=y \
               "$@" || true

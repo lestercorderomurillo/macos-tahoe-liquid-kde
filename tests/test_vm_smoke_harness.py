@@ -213,8 +213,20 @@ def test_cloud_init_profile_specific_kde_provisioning():
     assert "desktop/plasma/systemd" in gentoo
     assert "distfiles.gentoo.org/releases/amd64/binpackages/23.0/x86-64/" in gentoo
     assert "getbinpkg" in gentoo
-    assert "binpkg-respect-use=n" in gentoo
+    # `--binpkg-respect-use=y` (was `=n`) forces source-rebuild of any
+    # binhost package whose USE doesn't match the local config rather
+    # than pretending the binhost USE doesn't matter. The `=n` path
+    # let portage accept binhost packages then fail later when the
+    # USE-dep tracker hit a `wayland?(opengl)`-style REQUIRED_USE on
+    # a parent — switching to `=y` gives portage room to source-build
+    # the mismatched package instead of dead-ending in autounmask.
+    assert "binpkg-respect-use=y" in gentoo
     assert "binpkg-changed-deps=n" in gentoo
+    # Disable 32-bit ABI to avoid the expat[abi_x86_32] multilib chain
+    # the default stage3 profile pulls through fontconfig/harfbuzz/
+    # freetype. The theme stack doesn't need 32-bit anywhere; forcing
+    # no-multilib via ABI_X86="64" is honest unblocking, not a hack.
+    assert 'ABI_X86="64"' in gentoo
     assert "--autounmask-write" in gentoo
     # autounmask must actually merge (continue=y) AND keep going past
     # individual package failures so a single broken atom doesn't

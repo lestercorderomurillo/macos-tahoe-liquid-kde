@@ -12,6 +12,15 @@ FROM gentoo/stage3:systemd
 
 RUN emerge-webrsync && \
     echo 'FEATURES="${FEATURES} getbinpkg binpkg-multi-instance"' >> /etc/portage/make.conf && \
+    # Disable 32-bit ABI globally. The default multilib stage3 has
+    # ABI_X86="64 32" which causes fontconfig / harfbuzz / freetype
+    # to demand expat[abi_x86_32]; expat's local USE doesn't expose
+    # that, and the chain dead-ends in
+    # `>=dev-libs/expat-2.1.0-r3[abi_x86_32(-),abi_x86_64(-)]`
+    # autounmask that cannot resolve. The theme stack doesn't need
+    # 32-bit anywhere, so forcing the no-multilib ABI is the
+    # honest fix instead of papering over individual packages.
+    echo 'ABI_X86="64"' >> /etc/portage/make.conf && \
     echo '*/*  ~amd64' > /etc/portage/package.accept_keywords/all && \
     echo 'x11-libs/libxkbcommon X' > /etc/portage/package.use/libxkbcommon && \
     # libcanberra is a kde-plasma/kwin dep; its USE="udev" requires
@@ -26,9 +35,10 @@ RUN emerge-webrsync && \
     # against a fresh ::gentoo snapshot.
     printf '%s\n' \
         'dev-qt/qtbase opengl wayland cups' \
+        'dev-qt/qt5compat qml' \
         'dev-qt/qtmultimedia qml opengl' \
         'dev-qt/qtquick3d opengl' \
-        'kde-frameworks/kconfig qml' \
+        'kde-frameworks/kconfig qml dbus' \
         'kde-frameworks/kguiaddons wayland' \
         'kde-frameworks/kidletime wayland' \
         'kde-frameworks/kwindowsystem wayland X' \
@@ -36,13 +46,22 @@ RUN emerge-webrsync && \
         'kde-frameworks/prison qml' \
         'kde-frameworks/sonnet qml' \
         'media-libs/mesa wayland' \
+        'media-libs/libglvnd X' \
+        'media-libs/libepoxy X' \
+        'media-libs/freetype X' \
+        'media-libs/fontconfig X' \
+        'x11-libs/cairo X opengl' \
         'x11-base/xwayland libei' \
         'sys-apps/dbus X' \
+        'sys-apps/systemd policykit' \
+        'sys-auth/polkit systemd' \
+        'llvm-core/libclc spirv' \
+        'dev-util/mesa_clc -debug' \
         > /etc/portage/package.use/mttkde-plasma && \
     getuto && \
     emerge --autounmask --autounmask-write --autounmask-continue=y \
            --getbinpkg --usepkg --quiet --noreplace \
-           --binpkg-respect-use=n --binpkg-changed-deps=n \
+           --binpkg-respect-use=y --binpkg-changed-deps=n \
            --keep-going=y \
         dev-lang/python \
         dev-python/pytest \
