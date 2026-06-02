@@ -4,15 +4,29 @@ FROM archlinux:latest
 
 RUN pacman -Syu --noconfirm --needed \
     python python-pytest \
-    qt6-base qt6-tools \
+    cmake make gcc extra-cmake-modules \
+    qt6-base qt6-tools qt6-declarative \
     pkgconf \
+    # KF6 frameworks required by deps() of the compiled steps.
+    kconfig kconfigwidgets kcoreaddons kcrash kglobalaccel kguiaddons \
+    ki18n kio kcmutils knotifications kservice kwidgetsaddons \
+    kwindowsystem \
+    # Plasma / KSysGuard / plasma-workspace cmake configs.
+    libplasma plasma-activities plasma-activities-stats libksysguard \
+    plasma-workspace \
+    # KWin + KDecoration3 (acrylic-glass effect).
+    kwin kdecoration \
+    # libepoxy + X11/XCB headers used by the acrylic-glass effect.
+    libepoxy libx11 libxcb \
     && pacman -Scc --noconfirm
 
 WORKDIR /repo
 COPY . /repo
 
-# Smoke-check the distro layer, then run the test suite. The full
-# installer needs plasmashell + KWin running so we don't execute it
-# here; the static + path-discovery tests are what prove a v0.15.0
-# install on this distro will land .so / QML under the right libdir.
+# Smoke-check the distro layer + cmake configure for the compiled
+# components, then run the test suite. The full installer needs
+# plasmashell + KWin running so we don't execute it here; the static +
+# path-discovery + cmake-configure tests are what prove an install on
+# this distro will configure cleanly and land artefacts under the
+# right libdir.
 CMD ["python3", "tests/containers/run_in_container.py"]

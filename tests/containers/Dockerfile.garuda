@@ -8,8 +8,16 @@ RUN printf 'NAME="Garuda Linux"\nID=garuda\nID_LIKE=arch\nPRETTY_NAME="Garuda Li
 
 RUN pacman -Sy --noconfirm --needed \
     python python-pytest \
-    qt6-base qt6-tools \
+    cmake make gcc extra-cmake-modules \
+    qt6-base qt6-tools qt6-declarative \
     pkgconf \
+    kconfig kconfigwidgets kcoreaddons kcrash kglobalaccel kguiaddons \
+    ki18n kio kcmutils knotifications kservice kwidgetsaddons \
+    kwindowsystem \
+    libplasma plasma-activities plasma-activities-stats libksysguard \
+    plasma-workspace \
+    kwin kdecoration \
+    libepoxy libx11 libxcb \
     && pacman -Scc --noconfirm
 
 WORKDIR /repo

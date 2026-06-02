@@ -255,19 +255,84 @@ def _cmake_package_exists(name: str) -> bool:
     return res.returncode == 0
 
 
+# deps() tokens that map to a cmake config package rather than a
+# binary on PATH. The value is the ``<Name>`` we pass to
+# ``find_package(<Name> CONFIG)`` — same string the failing CMakeLists
+# uses, so a missing-dep failure in preflight names exactly what cmake
+# would have complained about.
+_CMAKE_PACKAGE_TOKENS: dict[str, str] = {
+    "ecm":                            "ECM",
+    "qt6-gui-cmake":                  "Qt6Gui",
+    "qt6-widgets-cmake":              "Qt6Widgets",
+    "qt6-dbus-cmake":                 "Qt6DBus",
+    "qt6-qml-cmake":                  "Qt6Qml",
+    "qt6-uitools-cmake":              "Qt6UiTools",
+    # KF6 frameworks required by the compiled plasmoids + acrylic-glass.
+    "kf6-config-cmake":               "KF6Config",
+    "kf6-configwidgets-cmake":        "KF6ConfigWidgets",
+    "kf6-coreaddons-cmake":           "KF6CoreAddons",
+    "kf6-crash-cmake":                "KF6Crash",
+    "kf6-globalaccel-cmake":          "KF6GlobalAccel",
+    "kf6-guiaddons-cmake":            "KF6GuiAddons",
+    "kf6-i18n-cmake":                 "KF6I18n",
+    "kf6-kcmutils-cmake":             "KF6KCMUtils",
+    "kf6-kio-cmake":                  "KF6KIO",
+    "kf6-notifications-cmake":        "KF6Notifications",
+    "kf6-service-cmake":              "KF6Service",
+    "kf6-widgetsaddons-cmake":        "KF6WidgetsAddons",
+    "kf6-windowsystem-cmake":         "KF6WindowSystem",
+    # Plasma / KSysGuard / plasma-workspace cmake configs.
+    "plasma-cmake":                   "Plasma",
+    "plasma-activities-cmake":        "PlasmaActivities",
+    "plasma-activities-stats-cmake":  "PlasmaActivitiesStats",
+    "ksysguard-cmake":                "KSysGuard",
+    "libnotificationmanager-cmake":   "LibNotificationManager",
+    "libtaskmanager-cmake":           "LibTaskManager",
+    # KWin (Wayland) + KDecoration3 for the acrylic-glass effect.
+    "kwin-cmake":                     "KWin",
+    "kdecoration-cmake":              "KDecoration3",
+    # libepoxy / X11 / XCB are probed via pkg-config instead — see
+    # _PKGCONFIG_TOKENS below.
+}
+
+
+def _pkgconfig_available(name: str) -> bool:
+    """``pkg-config --exists`` probe. Used for X11 / XCB / epoxy where
+    the cmake module ships outside the package's own tree (ECM
+    FindXCB.cmake, /usr/share/cmake/Modules/FindX11.cmake) and a CONFIG
+    package probe would fail even though the dev files are installed.
+    """
+    if not have("pkg-config"):
+        return False
+    try:
+        res = run_user(
+            ["pkg-config", "--exists", name],
+            check=False,
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
+            timeout=5,
+        )
+    except (OSError, subprocess.TimeoutExpired):
+        return False
+    return res.returncode == 0
+
+
+# Tokens that should be probed via pkg-config rather than
+# ``find_package(... CONFIG)`` — see :func:`_pkgconfig_available`.
+_PKGCONFIG_TOKENS: dict[str, str] = {
+    "epoxy-cmake": "epoxy",
+    "x11-cmake":   "x11",
+    "xcb-cmake":   "xcb",
+}
+
+
 def _dep_available(cmd: str) -> bool:
-    if cmd == "ecm":
-        return _cmake_package_exists("ECM")
-    if cmd == "qt6-gui-cmake":
-        return _cmake_package_exists("Qt6Gui")
-    if cmd == "qt6-widgets-cmake":
-        return _cmake_package_exists("Qt6Widgets")
-    if cmd == "qt6-dbus-cmake":
-        return _cmake_package_exists("Qt6DBus")
-    if cmd == "qt6-qml-cmake":
-        return _cmake_package_exists("Qt6Qml")
-    if cmd == "qt6-uitools-cmake":
-        return _cmake_package_exists("Qt6UiTools")
+    pc_name = _PKGCONFIG_TOKENS.get(cmd)
+    if pc_name is not None:
+        return _pkgconfig_available(pc_name)
+    cmake_name = _CMAKE_PACKAGE_TOKENS.get(cmd)
+    if cmake_name is not None:
+        return _cmake_package_exists(cmake_name)
     return have(cmd)
 
 

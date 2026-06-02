@@ -21,11 +21,21 @@ Tier 2 — the dep layer (per-distro package mapping):
     kvantummanager, plymouth-set-default-theme, fc-cache, nautilus,
     curl, unzip, etc.
 
+Tier 3 — cmake configure for every compiled component:
+  * For each step that ships a CMakeLists.txt under src/offline (the
+    dock taskmanager, the globalmenu, the acrylic-glass KWin effect),
+    run ``cmake -S <src> -B <build>`` with no manual hints. The
+    configure step must succeed using ONLY packages discoverable via
+    ``deps()``. This catches the v0.17.5 regression class: deps() was
+    silent on the KF6 / Plasma / KWin frameworks that the CMakeLists
+    actually requires, so preflight passed, the installer auto-
+    installed only Qt6, then cmake exploded for the user. The Dockerfile
+    for each distro installs the union of all step deps() before this
+    runs so a missing token surfaces as a hard FAIL here.
+
 What this still does NOT prove:
   * The full ``sudo ./install`` pipeline (needs plasmashell + KWin
     running on the host — out of scope for any container).
-  * CMake find_package for KDE / KF6 / KWin (would require pulling
-    in the entire Plasma 6 dev SDK into every image).
   * Live theme-switch DBus round-trips.
 
 If both tiers pass, the install on this distro will: (a) land .so /
@@ -280,6 +290,57 @@ def step_preflight_destinations() -> bool:
     return ok
 
 
+_CMAKE_COMPONENTS = (
+    # (label, source path under repo)
+    ("dock-taskmanager",
+     "src/offline/plasmoids/org.kde.mac.tahoe.liquid.taskmanager"),
+    ("globalmenu",
+     "src/offline/plasmoids/org.kde.mac.tahoe.liquid.globalmenu"),
+    ("acrylic-glass",
+     "src/offline/kwin-effects/acrylic-glass"),
+)
+
+
+def step_cmake_configure() -> bool:
+    """Run cmake configure for every compiled component. Each component
+    is configured with no hints — the only thing keeping this honest is
+    that the Dockerfile installed exactly what ``deps()`` asks for. If
+    the configure fails because a KF6 / Plasma / KWin component is
+    missing, the corresponding ``deps()`` token is missing from the
+    step module — that's a real regression, not a flake."""
+    print("\n=== cmake configure (deps() coverage check) ===")
+    ok_all = True
+    for label, relpath in _CMAKE_COMPONENTS:
+        src = REPO / relpath
+        if not (src / "CMakeLists.txt").is_file():
+            print(f"  SKIP: {label} — no CMakeLists.txt at {src}")
+            continue
+        build = REPO / "build" / "container-cmake" / label
+        if build.is_dir():
+            shutil.rmtree(build, ignore_errors=True)
+        build.mkdir(parents=True, exist_ok=True)
+        print(f"  ── {label}: cmake -S {src} -B {build}")
+        res = subprocess.run(
+            ["cmake", "-S", str(src), "-B", str(build)],
+            check=False, capture_output=True, text=True, cwd=str(REPO),
+        )
+        if res.returncode == 0:
+            print(f"     PASS")
+            continue
+        ok_all = False
+        tail = (res.stdout or "") + (res.stderr or "")
+        # Surface only the cmake error lines so a 200-line ECM log
+        # doesn't drown the actual signal.
+        for line in tail.splitlines():
+            if (line.startswith("CMake Error")
+                    or "Could NOT find" in line
+                    or "missing:" in line
+                    or "FATAL_ERROR" in line):
+                print(f"     {line}")
+        print(f"     FAIL: cmake configure exited {res.returncode}")
+    return ok_all
+
+
 def step_pytest() -> bool:
     print("\n=== pytest ===")
     res = subprocess.run(
@@ -298,6 +359,7 @@ def main() -> int:
     layer_ok = step_distro_layer(plugins, qml)
     pkg_ok = step_package_manager_layer()
     preflight_ok = step_preflight_destinations()
+    cmake_ok = step_cmake_configure()
     tests_ok = step_pytest()
 
     print("\n=== summary ===")
@@ -306,12 +368,13 @@ def main() -> int:
     print(f"  Qt6 layer:          {'PASS' if layer_ok else 'FAIL'}")
     print(f"  Package mgr layer:  {'PASS' if pkg_ok else 'FAIL'}")
     print(f"  Preflight paths:    {'PASS' if preflight_ok else 'FAIL'}")
+    print(f"  CMake configure:    {'PASS' if cmake_ok else 'FAIL'}")
     print(f"  Pytest suite:       {'PASS' if tests_ok else 'FAIL'}")
 
     if plugins is None or qml is None:
         print("  → qmake6 not available — install qt6-tools (or equivalent)")
         return 1
-    if not (layer_ok and pkg_ok and preflight_ok and tests_ok):
+    if not (layer_ok and pkg_ok and preflight_ok and cmake_ok and tests_ok):
         return 1
     return 0
 

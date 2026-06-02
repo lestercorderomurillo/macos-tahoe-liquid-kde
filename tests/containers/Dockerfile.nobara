@@ -7,8 +7,19 @@ RUN printf 'NAME="Nobara Linux"\nID=nobara\nID_LIKE=fedora\nPRETTY_NAME="Nobara 
 
 RUN dnf install -y --setopt=install_weak_deps=False \
         python3 python3-pytest \
-        qt6-qtbase qt6-qttools-devel \
+        cmake make gcc-c++ extra-cmake-modules \
+        qt6-qtbase-devel qt6-qttools-devel qt6-qtdeclarative-devel \
         pkgconf-pkg-config \
+        kf6-kconfig-devel kf6-kconfigwidgets-devel kf6-kcoreaddons-devel \
+        kf6-kcrash-devel kf6-kglobalaccel-devel kf6-kguiaddons-devel \
+        kf6-ki18n-devel kf6-kio-devel kf6-kcmutils-devel \
+        kf6-knotifications-devel kf6-kservice-devel \
+        kf6-kwidgetsaddons-devel kf6-kwindowsystem-devel \
+        libplasma-devel plasma-activities-devel \
+        plasma-activities-stats-devel libksysguard-devel \
+        plasma-workspace-devel \
+        kwin-devel kdecoration-devel \
+        libepoxy-devel libX11-devel libxcb-devel \
     && dnf clean all
 
 WORKDIR /repo

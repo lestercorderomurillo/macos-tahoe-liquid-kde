@@ -19,9 +19,32 @@ RUN emerge-webrsync && \
            --getbinpkg --quiet --noreplace \
         dev-lang/python \
         dev-python/pytest \
+        dev-build/cmake \
+        sys-devel/make \
+        sys-devel/gcc \
+        kde-frameworks/extra-cmake-modules \
         dev-qt/qtbase:6 \
-        dev-qt/qttools:6 && \
+        dev-qt/qttools:6 \
+        dev-qt/qtdeclarative:6 \
+        dev-util/pkgconf \
+        # KF6 frameworks required by deps() of the compiled steps.
+        kde-frameworks/kconfig:6 kde-frameworks/kconfigwidgets:6 \
+        kde-frameworks/kcoreaddons:6 kde-frameworks/kcrash:6 \
+        kde-frameworks/kglobalaccel:6 kde-frameworks/kguiaddons:6 \
+        kde-frameworks/ki18n:6 kde-frameworks/kio:6 \
+        kde-frameworks/kcmutils:6 kde-frameworks/knotifications:6 \
+        kde-frameworks/kservice:6 kde-frameworks/kwidgetsaddons:6 \
+        kde-frameworks/kwindowsystem:6 \
+        # Plasma / KSysGuard / plasma-workspace cmake configs.
+        kde-plasma/libplasma kde-plasma/plasma-activities \
+        kde-plasma/plasma-activities-stats kde-plasma/libksysguard \
+        kde-plasma/plasma-workspace \
+        # KWin + KDecoration3 (acrylic-glass effect).
+        kde-plasma/kwin kde-plasma/kdecoration \
+        # libepoxy + X11/XCB headers used by the acrylic-glass effect.
+        media-libs/libepoxy x11-libs/libX11 x11-libs/libxcb && \
     # Trim build artefacts to keep the published image small. The
     # distfiles + binpkg cache + portage tree aren't needed at runtime
-    # (the tests only call qmake6 / kreadconfig6 — no further emerges).
+    # (the tests only call qmake6 / cmake / kreadconfig6 — no further
+    # emerges).
     rm -rf /var/cache/distfiles/* /var/cache/binpkgs/* /var/db/repos/gentoo

@@ -534,6 +534,237 @@ _PACKAGE_MAP: dict[str, dict[str, str]] = {
         "void":     "zstd",
         "gentoo":   "app-arch/zstd",
     },
+    # ── KF6 frameworks ────────────────────────────────────────────────
+    #
+    # Required by the compiled plasmoids (dock taskmanager, globalmenu)
+    # and the acrylic-glass KWin effect. Probed values (2026-06)
+    # against fresh container images: Arch ``pacman -F``, Fedora
+    # ``dnf repoquery --whatprovides``, openSUSE ``zypper search``.
+    # Naming patterns:
+    #   Arch family:        ``k<name>`` (kcoreaddons, ki18n, kio, …)
+    #   Fedora / Nobara:    ``kf6-k<name>-devel``
+    #   openSUSE Tumbleweed:``kf6-k<name>-devel`` (same as Fedora)
+    #   Gentoo:             ``kde-frameworks/k<name>:6``
+    # The cmd-token is the cmake component name kebab-cased and
+    # prefixed ``kf6-`` so it never collides with a real binary on
+    # ``$PATH`` — the installer's ``shutil.which`` probe is bypassed
+    # for any token starting with ``kf6-`` (see preflight).
+    "kf6-config-cmake": {
+        "arch":     "kconfig",
+        "fedora":   "kf6-kconfig-devel",
+        "rhel":     "kf6-kconfig-devel",
+        "centos":   "kf6-kconfig-devel",
+        "opensuse": "kf6-kconfig-devel",
+        "gentoo":   "kde-frameworks/kconfig:6",
+    },
+    "kf6-configwidgets-cmake": {
+        "arch":     "kconfigwidgets",
+        "fedora":   "kf6-kconfigwidgets-devel",
+        "rhel":     "kf6-kconfigwidgets-devel",
+        "centos":   "kf6-kconfigwidgets-devel",
+        "opensuse": "kf6-kconfigwidgets-devel",
+        "gentoo":   "kde-frameworks/kconfigwidgets:6",
+    },
+    "kf6-coreaddons-cmake": {
+        "arch":     "kcoreaddons",
+        "fedora":   "kf6-kcoreaddons-devel",
+        "rhel":     "kf6-kcoreaddons-devel",
+        "centos":   "kf6-kcoreaddons-devel",
+        "opensuse": "kf6-kcoreaddons-devel",
+        "gentoo":   "kde-frameworks/kcoreaddons:6",
+    },
+    "kf6-crash-cmake": {
+        "arch":     "kcrash",
+        "fedora":   "kf6-kcrash-devel",
+        "rhel":     "kf6-kcrash-devel",
+        "centos":   "kf6-kcrash-devel",
+        "opensuse": "kf6-kcrash-devel",
+        "gentoo":   "kde-frameworks/kcrash:6",
+    },
+    "kf6-globalaccel-cmake": {
+        "arch":     "kglobalaccel",
+        "fedora":   "kf6-kglobalaccel-devel",
+        "rhel":     "kf6-kglobalaccel-devel",
+        "centos":   "kf6-kglobalaccel-devel",
+        "opensuse": "kf6-kglobalaccel-devel",
+        "gentoo":   "kde-frameworks/kglobalaccel:6",
+    },
+    "kf6-guiaddons-cmake": {
+        "arch":     "kguiaddons",
+        "fedora":   "kf6-kguiaddons-devel",
+        "rhel":     "kf6-kguiaddons-devel",
+        "centos":   "kf6-kguiaddons-devel",
+        "opensuse": "kf6-kguiaddons-devel",
+        "gentoo":   "kde-frameworks/kguiaddons:6",
+    },
+    "kf6-i18n-cmake": {
+        "arch":     "ki18n",
+        "fedora":   "kf6-ki18n-devel",
+        "rhel":     "kf6-ki18n-devel",
+        "centos":   "kf6-ki18n-devel",
+        "opensuse": "kf6-ki18n-devel",
+        "gentoo":   "kde-frameworks/ki18n:6",
+    },
+    "kf6-kcmutils-cmake": {
+        "arch":     "kcmutils",
+        "fedora":   "kf6-kcmutils-devel",
+        "rhel":     "kf6-kcmutils-devel",
+        "centos":   "kf6-kcmutils-devel",
+        "opensuse": "kf6-kcmutils-devel",
+        "gentoo":   "kde-frameworks/kcmutils:6",
+    },
+    "kf6-kio-cmake": {
+        "arch":     "kio",
+        "fedora":   "kf6-kio-devel",
+        "rhel":     "kf6-kio-devel",
+        "centos":   "kf6-kio-devel",
+        "opensuse": "kf6-kio-devel",
+        "gentoo":   "kde-frameworks/kio:6",
+    },
+    "kf6-notifications-cmake": {
+        "arch":     "knotifications",
+        "fedora":   "kf6-knotifications-devel",
+        "rhel":     "kf6-knotifications-devel",
+        "centos":   "kf6-knotifications-devel",
+        "opensuse": "kf6-knotifications-devel",
+        "gentoo":   "kde-frameworks/knotifications:6",
+    },
+    "kf6-service-cmake": {
+        "arch":     "kservice",
+        "fedora":   "kf6-kservice-devel",
+        "rhel":     "kf6-kservice-devel",
+        "centos":   "kf6-kservice-devel",
+        "opensuse": "kf6-kservice-devel",
+        "gentoo":   "kde-frameworks/kservice:6",
+    },
+    "kf6-widgetsaddons-cmake": {
+        "arch":     "kwidgetsaddons",
+        "fedora":   "kf6-kwidgetsaddons-devel",
+        "rhel":     "kf6-kwidgetsaddons-devel",
+        "centos":   "kf6-kwidgetsaddons-devel",
+        "opensuse": "kf6-kwidgetsaddons-devel",
+        "gentoo":   "kde-frameworks/kwidgetsaddons:6",
+    },
+    "kf6-windowsystem-cmake": {
+        "arch":     "kwindowsystem",
+        "fedora":   "kf6-kwindowsystem-devel",
+        "rhel":     "kf6-kwindowsystem-devel",
+        "centos":   "kf6-kwindowsystem-devel",
+        "opensuse": "kf6-kwindowsystem-devel",
+        "gentoo":   "kde-frameworks/kwindowsystem:6",
+    },
+    # ── Plasma / KSysGuard / plasma-workspace ─────────────────────────
+    #
+    # The dock taskmanager links against PlasmaActivities + KSysGuard,
+    # the globalmenu links against Plasma + LibTaskManager, and both
+    # need LibNotificationManager / LibTaskManager from
+    # plasma-workspace's cmake config dir.
+    "plasma-cmake": {
+        "arch":     "libplasma",
+        "fedora":   "libplasma-devel",
+        "rhel":     "libplasma-devel",
+        "centos":   "libplasma-devel",
+        "opensuse": "libplasma6-devel",
+        "gentoo":   "kde-plasma/libplasma",
+    },
+    "plasma-activities-cmake": {
+        "arch":     "plasma-activities",
+        "fedora":   "plasma-activities-devel",
+        "rhel":     "plasma-activities-devel",
+        "centos":   "plasma-activities-devel",
+        "opensuse": "plasma6-activities-devel",
+        "gentoo":   "kde-plasma/plasma-activities",
+    },
+    "plasma-activities-stats-cmake": {
+        "arch":     "plasma-activities-stats",
+        "fedora":   "plasma-activities-stats-devel",
+        "rhel":     "plasma-activities-stats-devel",
+        "centos":   "plasma-activities-stats-devel",
+        "opensuse": "plasma6-activities-stats-devel",
+        "gentoo":   "kde-plasma/plasma-activities-stats",
+    },
+    "ksysguard-cmake": {
+        "arch":     "libksysguard",
+        "fedora":   "libksysguard-devel",
+        "rhel":     "libksysguard-devel",
+        "centos":   "libksysguard-devel",
+        "opensuse": "libksysguard6-devel",
+        "gentoo":   "kde-plasma/libksysguard",
+    },
+    # plasma-workspace ships BOTH LibNotificationManager and
+    # LibTaskManager cmake configs in the same -devel package — list
+    # both logical tokens so each step's deps() reads naturally and the
+    # preflight failure message names the right cmake config.
+    "libnotificationmanager-cmake": {
+        "arch":     "plasma-workspace",
+        "fedora":   "plasma-workspace-devel",
+        "rhel":     "plasma-workspace-devel",
+        "centos":   "plasma-workspace-devel",
+        "opensuse": "plasma6-workspace-devel",
+        "gentoo":   "kde-plasma/plasma-workspace",
+    },
+    "libtaskmanager-cmake": {
+        "arch":     "plasma-workspace",
+        "fedora":   "plasma-workspace-devel",
+        "rhel":     "plasma-workspace-devel",
+        "centos":   "plasma-workspace-devel",
+        "opensuse": "plasma6-workspace-devel",
+        "gentoo":   "kde-plasma/plasma-workspace",
+    },
+    # ── KWin + KDecoration (acrylic-glass effect) ─────────────────────
+    "kwin-cmake": {
+        "arch":     "kwin",
+        "fedora":   "kwin-devel",
+        "rhel":     "kwin-devel",
+        "centos":   "kwin-devel",
+        "opensuse": "kwin6-devel",
+        "gentoo":   "kde-plasma/kwin",
+    },
+    "kdecoration-cmake": {
+        "arch":     "kdecoration",
+        "fedora":   "kdecoration-devel",
+        "rhel":     "kdecoration-devel",
+        "centos":   "kdecoration-devel",
+        "opensuse": "kdecoration6-devel",
+        "gentoo":   "kde-plasma/kdecoration",
+    },
+    # ── libepoxy + X11 / XCB headers ──────────────────────────────────
+    "epoxy-cmake": {
+        "arch":     "libepoxy",
+        "debian":   "libepoxy-dev",
+        "ubuntu":   "libepoxy-dev",
+        "fedora":   "libepoxy-devel",
+        "rhel":     "libepoxy-devel",
+        "centos":   "libepoxy-devel",
+        "opensuse": "libepoxy-devel",
+        "alpine":   "libepoxy-dev",
+        "void":     "libepoxy-devel",
+        "gentoo":   "media-libs/libepoxy",
+    },
+    "x11-cmake": {
+        "arch":     "libx11",
+        "debian":   "libx11-dev",
+        "ubuntu":   "libx11-dev",
+        "fedora":   "libX11-devel",
+        "rhel":     "libX11-devel",
+        "centos":   "libX11-devel",
+        "opensuse": "libX11-devel",
+        "alpine":   "libx11-dev",
+        "void":     "libX11-devel",
+        "gentoo":   "x11-libs/libX11",
+    },
+    "xcb-cmake": {
+        "arch":     "libxcb",
+        "debian":   "libxcb1-dev",
+        "ubuntu":   "libxcb1-dev",
+        "fedora":   "libxcb-devel",
+        "rhel":     "libxcb-devel",
+        "centos":   "libxcb-devel",
+        "opensuse": "libxcb-devel",
+        "alpine":   "libxcb-dev",
+        "void":     "libxcb-devel",
+        "gentoo":   "x11-libs/libxcb",
+    },
 }
 
 

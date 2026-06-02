@@ -26,6 +26,29 @@ def deps():
         "make",
         "g++:gcc",
         "pkg-config:pkgconf",
+        # KF6 components required by the acrylic-glass CMakeLists.
+        "kf6-config-cmake:kconfig",
+        "kf6-configwidgets-cmake:kconfigwidgets",
+        "kf6-coreaddons-cmake:kcoreaddons",
+        "kf6-crash-cmake:kcrash",
+        "kf6-globalaccel-cmake:kglobalaccel",
+        "kf6-i18n-cmake:ki18n",
+        "kf6-kio-cmake:kio",
+        "kf6-service-cmake:kservice",
+        "kf6-notifications-cmake:knotifications",
+        "kf6-widgetsaddons-cmake:kwidgetsaddons",
+        "kf6-windowsystem-cmake:kwindowsystem",
+        "kf6-guiaddons-cmake:kguiaddons",
+        "kf6-kcmutils-cmake:kcmutils",
+        # KWin (Wayland) is mandatory: the effect refuses to configure
+        # if neither GLASS_WAYLAND nor GLASS_X11 ends up enabled.
+        "kwin-cmake:kwin",
+        "kdecoration-cmake:kdecoration",
+        # libepoxy + X11/XCB headers (XCB is REQUIRED even when X11
+        # path of the effect is off — it's used by the Wayland code).
+        "epoxy-cmake:libepoxy",
+        "x11-cmake:libx11",
+        "xcb-cmake:libxcb",
     ]
 
 

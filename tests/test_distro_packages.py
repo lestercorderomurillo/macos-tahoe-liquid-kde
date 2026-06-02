@@ -341,6 +341,32 @@ _TOKENS_WITH_FEDORA_DIVERGENCE = {
     "g++": "gcc",
     "pkg-config": "pkgconf",
     "plymouth-set-default-theme": "plymouth",
+    # v0.17.5: every compiled step's KF6 / Plasma / KWin token has a
+    # distinct Fedora name (kf6-...-devel / ...-devel / kwin-devel).
+    # If a future step adds a deps() token but forgets the _PACKAGE_MAP
+    # row, the Arch package leaks to dnf and the build dies the same
+    # way it did in v0.17.5. This list keeps the safety net wide.
+    "kf6-config-cmake": "kconfig",
+    "kf6-configwidgets-cmake": "kconfigwidgets",
+    "kf6-coreaddons-cmake": "kcoreaddons",
+    "kf6-crash-cmake": "kcrash",
+    "kf6-globalaccel-cmake": "kglobalaccel",
+    "kf6-guiaddons-cmake": "kguiaddons",
+    "kf6-i18n-cmake": "ki18n",
+    "kf6-kcmutils-cmake": "kcmutils",
+    "kf6-kio-cmake": "kio",
+    "kf6-notifications-cmake": "knotifications",
+    "kf6-service-cmake": "kservice",
+    "kf6-widgetsaddons-cmake": "kwidgetsaddons",
+    "kf6-windowsystem-cmake": "kwindowsystem",
+    "plasma-cmake": "libplasma",
+    "plasma-activities-cmake": "plasma-activities",
+    "plasma-activities-stats-cmake": "plasma-activities-stats",
+    "ksysguard-cmake": "libksysguard",
+    "libnotificationmanager-cmake": "plasma-workspace",
+    "libtaskmanager-cmake": "plasma-workspace",
+    "kwin-cmake": "kwin",
+    "kdecoration-cmake": "kdecoration",
 }
 
 
@@ -356,3 +382,178 @@ def test_no_arch_fallback_leaks_to_fedora(monkeypatch, token, arch_fallback):
         f"deps() token {token!r} leaks Arch fallback {arch_fallback!r} to "
         f"Fedora — add a row to distro._PACKAGE_MAP."
     )
+
+
+# ── KF6 frameworks — probed against fresh container images (2026-06):
+#   Arch (pacman -F):          ``k<name>``           (kcoreaddons, ki18n, …)
+#   Fedora (dnf repoquery):    ``kf6-k<name>-devel``
+#   openSUSE (zypper search):  ``kf6-k<name>-devel`` (same as Fedora)
+#   Gentoo:                    ``kde-frameworks/k<name>:6``
+# Don't re-shape the per-distro names from convention — every value
+# below was probed; the openSUSE prefix is ``kf6-`` (not ``kf6-k``),
+# so e.g. KIO is ``kf6-kio-devel`` not ``kf6-io-devel``.
+
+_KF6_TOKENS = [
+    ("kf6-config-cmake",        "kconfig",
+     "kf6-kconfig-devel",        "kde-frameworks/kconfig:6"),
+    ("kf6-configwidgets-cmake", "kconfigwidgets",
+     "kf6-kconfigwidgets-devel", "kde-frameworks/kconfigwidgets:6"),
+    ("kf6-coreaddons-cmake",    "kcoreaddons",
+     "kf6-kcoreaddons-devel",    "kde-frameworks/kcoreaddons:6"),
+    ("kf6-crash-cmake",         "kcrash",
+     "kf6-kcrash-devel",         "kde-frameworks/kcrash:6"),
+    ("kf6-globalaccel-cmake",   "kglobalaccel",
+     "kf6-kglobalaccel-devel",   "kde-frameworks/kglobalaccel:6"),
+    ("kf6-guiaddons-cmake",     "kguiaddons",
+     "kf6-kguiaddons-devel",     "kde-frameworks/kguiaddons:6"),
+    ("kf6-i18n-cmake",          "ki18n",
+     "kf6-ki18n-devel",          "kde-frameworks/ki18n:6"),
+    ("kf6-kcmutils-cmake",      "kcmutils",
+     "kf6-kcmutils-devel",       "kde-frameworks/kcmutils:6"),
+    ("kf6-kio-cmake",           "kio",
+     "kf6-kio-devel",            "kde-frameworks/kio:6"),
+    ("kf6-notifications-cmake", "knotifications",
+     "kf6-knotifications-devel", "kde-frameworks/knotifications:6"),
+    ("kf6-service-cmake",       "kservice",
+     "kf6-kservice-devel",       "kde-frameworks/kservice:6"),
+    ("kf6-widgetsaddons-cmake", "kwidgetsaddons",
+     "kf6-kwidgetsaddons-devel", "kde-frameworks/kwidgetsaddons:6"),
+    ("kf6-windowsystem-cmake",  "kwindowsystem",
+     "kf6-kwindowsystem-devel",  "kde-frameworks/kwindowsystem:6"),
+]
+
+
+@pytest.mark.parametrize("token,arch,fedora,gentoo", _KF6_TOKENS)
+def test_kf6_framework_packages_per_distro(monkeypatch, token, arch, fedora, gentoo):
+    # Arch / CachyOS / Manjaro / EndeavourOS / Garuda all share the
+    # Arch row through current_distro() or ID_LIKE; we pick the parent
+    # explicitly so the test fails loudly when the row is missing
+    # rather than silently falling back to the Arch token.
+    _force_distro(monkeypatch, "arch")
+    assert distro.package_for(token, arch) == arch
+    _force_distro(monkeypatch, "fedora")
+    assert distro.package_for(token, arch) == fedora
+    _force_distro(monkeypatch, "nobara", ("fedora",))
+    assert distro.package_for(token, arch) == fedora
+    _force_distro(monkeypatch, "opensuse")
+    assert distro.package_for(token, arch) == fedora
+    _force_distro(monkeypatch, "opensuse-tumbleweed", ("opensuse",))
+    assert distro.package_for(token, arch) == fedora
+    _force_distro(monkeypatch, "gentoo")
+    assert distro.package_for(token, arch) == gentoo
+
+
+# ── Plasma / KSysGuard / plasma-workspace cmake configs ──────────────
+
+
+_PLASMA_TOKENS = [
+    # token, arch, fedora, opensuse, gentoo
+    ("plasma-cmake",
+     "libplasma", "libplasma-devel", "libplasma6-devel",
+     "kde-plasma/libplasma"),
+    ("plasma-activities-cmake",
+     "plasma-activities", "plasma-activities-devel", "plasma6-activities-devel",
+     "kde-plasma/plasma-activities"),
+    ("plasma-activities-stats-cmake",
+     "plasma-activities-stats", "plasma-activities-stats-devel",
+     "plasma6-activities-stats-devel",
+     "kde-plasma/plasma-activities-stats"),
+    ("ksysguard-cmake",
+     "libksysguard", "libksysguard-devel", "libksysguard6-devel",
+     "kde-plasma/libksysguard"),
+    # LibNotificationManager and LibTaskManager both live in
+    # plasma-workspace's -devel package — preserved as two logical
+    # tokens so the deps() in plasmoids.py / globalmenu.py reads
+    # naturally and a failure names the right cmake config.
+    ("libnotificationmanager-cmake",
+     "plasma-workspace", "plasma-workspace-devel", "plasma6-workspace-devel",
+     "kde-plasma/plasma-workspace"),
+    ("libtaskmanager-cmake",
+     "plasma-workspace", "plasma-workspace-devel", "plasma6-workspace-devel",
+     "kde-plasma/plasma-workspace"),
+]
+
+
+@pytest.mark.parametrize("token,arch,fedora,opensuse,gentoo", _PLASMA_TOKENS)
+def test_plasma_packages_per_distro(
+    monkeypatch, token, arch, fedora, opensuse, gentoo,
+):
+    _force_distro(monkeypatch, "arch")
+    assert distro.package_for(token, arch) == arch
+    _force_distro(monkeypatch, "fedora")
+    assert distro.package_for(token, arch) == fedora
+    _force_distro(monkeypatch, "nobara", ("fedora",))
+    assert distro.package_for(token, arch) == fedora
+    _force_distro(monkeypatch, "opensuse")
+    assert distro.package_for(token, arch) == opensuse
+    _force_distro(monkeypatch, "gentoo")
+    assert distro.package_for(token, arch) == gentoo
+
+
+# ── KWin + KDecoration (acrylic-glass effect only) ───────────────────
+
+
+@pytest.mark.parametrize("distro_id, id_like, expected", [
+    ("arch",                (),             "kwin"),
+    ("cachyos",             ("arch",),      "kwin"),
+    ("fedora",              (),             "kwin-devel"),
+    ("nobara",              ("fedora",),    "kwin-devel"),
+    ("opensuse",            (),             "kwin6-devel"),
+    ("opensuse-tumbleweed", ("opensuse",),  "kwin6-devel"),
+    ("gentoo",              (),             "kde-plasma/kwin"),
+])
+def test_kwin_cmake_package_per_distro(monkeypatch, distro_id, id_like, expected):
+    _force_distro(monkeypatch, distro_id, id_like)
+    assert distro.package_for("kwin-cmake", "kwin") == expected
+
+
+@pytest.mark.parametrize("distro_id, id_like, expected", [
+    ("arch",                (),             "kdecoration"),
+    ("cachyos",             ("arch",),      "kdecoration"),
+    ("fedora",              (),             "kdecoration-devel"),
+    ("nobara",              ("fedora",),    "kdecoration-devel"),
+    ("opensuse",            (),             "kdecoration6-devel"),
+    ("opensuse-tumbleweed", ("opensuse",),  "kdecoration6-devel"),
+    ("gentoo",              (),             "kde-plasma/kdecoration"),
+])
+def test_kdecoration_cmake_package_per_distro(
+    monkeypatch, distro_id, id_like, expected,
+):
+    _force_distro(monkeypatch, distro_id, id_like)
+    assert distro.package_for("kdecoration-cmake", "kdecoration") == expected
+
+
+# ── libepoxy + X11 / XCB headers ─────────────────────────────────────
+
+
+@pytest.mark.parametrize("distro_id, expected", [
+    ("arch",     "libepoxy"),
+    ("fedora",   "libepoxy-devel"),
+    ("opensuse", "libepoxy-devel"),
+    ("gentoo",   "media-libs/libepoxy"),
+])
+def test_epoxy_cmake_package_per_distro(monkeypatch, distro_id, expected):
+    _force_distro(monkeypatch, distro_id)
+    assert distro.package_for("epoxy-cmake", "libepoxy") == expected
+
+
+@pytest.mark.parametrize("distro_id, expected", [
+    ("arch",     "libx11"),
+    ("fedora",   "libX11-devel"),
+    ("opensuse", "libX11-devel"),
+    ("gentoo",   "x11-libs/libX11"),
+])
+def test_x11_cmake_package_per_distro(monkeypatch, distro_id, expected):
+    _force_distro(monkeypatch, distro_id)
+    assert distro.package_for("x11-cmake", "libx11") == expected
+
+
+@pytest.mark.parametrize("distro_id, expected", [
+    ("arch",     "libxcb"),
+    ("fedora",   "libxcb-devel"),
+    ("opensuse", "libxcb-devel"),
+    ("gentoo",   "x11-libs/libxcb"),
+])
+def test_xcb_cmake_package_per_distro(monkeypatch, distro_id, expected):
+    _force_distro(monkeypatch, distro_id)
+    assert distro.package_for("xcb-cmake", "libxcb") == expected

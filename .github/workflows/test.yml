@@ -21,10 +21,18 @@ jobs:
             python python-pytest bash git diffutils findutils \
             base-devel cmake extra-cmake-modules \
             qt6-base qt6-declarative qt6-wayland qt6-tools \
-            libplasma kconfig kcoreaddons \
-            kwindowsystem ki18n kdbusaddons \
-            kcmutils kiconthemes \
-            kdecoration plasma-workspace
+            pkgconf \
+            # KF6 frameworks required by deps() of the compiled steps.
+            kconfig kconfigwidgets kcoreaddons kcrash kglobalaccel \
+            kguiaddons ki18n kio kcmutils knotifications kservice \
+            kwidgetsaddons kwindowsystem kdbusaddons kiconthemes \
+            # Plasma / KSysGuard / plasma-workspace cmake configs.
+            libplasma plasma-activities plasma-activities-stats \
+            libksysguard plasma-workspace \
+            # KWin + KDecoration3 (acrylic-glass effect).
+            kwin kdecoration \
+            # libepoxy + X11/XCB headers used by the acrylic-glass effect.
+            libepoxy libx11 libxcb
       - name: Run tests
         run: |
           output=$(python -m pytest tests -q --ignore=tests/containers 2>&1) || exit_code=$?
