@@ -91,6 +91,36 @@ write_files:
       x11-libs/libxkbcommon X
       EOF
 
+          # libcanberra is a kde-plasma/kwin dep; its USE="udev" requires
+          # USE="alsa" (REQUIRED_USE: udev? ( alsa )). Without this,
+          # emerge bails on a REQUIRED_USE constraint instead of letting
+          # autounmask resolve it (autounmask only touches USE flags, not
+          # REQUIRED_USE clauses, so the user has to pre-seed this).
+          cat > /etc/portage/package.use/libcanberra <<'EOF'
+      media-libs/libcanberra alsa
+      EOF
+
+          # Pre-seed the KDE Plasma USE flags portage's autounmask
+          # would otherwise demand. Sourced from the autounmask output
+          # of a fresh ::gentoo snapshot build; pre-seeding skips the
+          # write-then-rerun loop that autounmask-continue silently
+          # drops on this portage version.
+          cat > /etc/portage/package.use/mttkde-plasma <<'EOF'
+      dev-qt/qtbase opengl wayland cups
+      dev-qt/qtmultimedia qml opengl
+      dev-qt/qtquick3d opengl
+      kde-frameworks/kconfig qml
+      kde-frameworks/kguiaddons wayland
+      kde-frameworks/kidletime wayland
+      kde-frameworks/kwindowsystem wayland X
+      kde-frameworks/kcoreaddons dbus
+      kde-frameworks/prison qml
+      kde-frameworks/sonnet qml
+      media-libs/mesa wayland
+      x11-base/xwayland libei
+      sys-apps/dbus X
+      EOF
+
           if command -v getuto >/dev/null 2>&1; then
               append_make_conf 'FEATURES="${FEATURES} getbinpkg binpkg-request-signature binpkg-multi-instance"'
               getuto

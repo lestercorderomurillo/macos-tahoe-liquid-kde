@@ -14,9 +14,36 @@ RUN emerge-webrsync && \
     echo 'FEATURES="${FEATURES} getbinpkg binpkg-multi-instance"' >> /etc/portage/make.conf && \
     echo '*/*  ~amd64' > /etc/portage/package.accept_keywords/all && \
     echo 'x11-libs/libxkbcommon X' > /etc/portage/package.use/libxkbcommon && \
+    # libcanberra is a kde-plasma/kwin dep; its USE="udev" requires
+    # USE="alsa" (REQUIRED_USE: udev? ( alsa )). Without this, emerge
+    # bails on a REQUIRED_USE constraint instead of letting autounmask
+    # resolve it (autounmask doesn't touch REQUIRED_USE).
+    echo 'media-libs/libcanberra alsa' > /etc/portage/package.use/libcanberra && \
+    # Pre-seed the USE flags emerge would otherwise punt to autounmask.
+    # `--autounmask-continue` writes these and exits 1 on this portage
+    # version, so we skip the autounmask round-trip by writing them up
+    # front. Sourced from the autounmask output of the first build
+    # against a fresh ::gentoo snapshot.
+    printf '%s\n' \
+        'dev-qt/qtbase opengl wayland cups' \
+        'dev-qt/qtmultimedia qml opengl' \
+        'dev-qt/qtquick3d opengl' \
+        'kde-frameworks/kconfig qml' \
+        'kde-frameworks/kguiaddons wayland' \
+        'kde-frameworks/kidletime wayland' \
+        'kde-frameworks/kwindowsystem wayland X' \
+        'kde-frameworks/kcoreaddons dbus' \
+        'kde-frameworks/prison qml' \
+        'kde-frameworks/sonnet qml' \
+        'media-libs/mesa wayland' \
+        'x11-base/xwayland libei' \
+        'sys-apps/dbus X' \
+        > /etc/portage/package.use/mttkde-plasma && \
     getuto && \
-    emerge --autounmask --autounmask-write --autounmask-continue \
-           --getbinpkg --quiet --noreplace \
+    emerge --autounmask --autounmask-write --autounmask-continue=y \
+           --getbinpkg --usepkg --quiet --noreplace \
+           --binpkg-respect-use=n --binpkg-changed-deps=n \
+           --keep-going=y \
         dev-lang/python \
         dev-python/pytest \
         dev-build/cmake \
