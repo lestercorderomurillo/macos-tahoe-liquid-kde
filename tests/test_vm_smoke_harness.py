@@ -233,7 +233,13 @@ def test_cloud_init_profile_specific_kde_provisioning():
     # whole graph at once with a consistent slot set.
     assert "kde-plasma/plasma-meta" in gentoo
     assert "x11-misc/sddm" in gentoo
-    assert "kde-apps/spectacle" in gentoo
+    # spectacle lives under kde-plasma/ in the Gentoo ::gentoo repo,
+    # NOT kde-apps/ — the latter was the regression that wedged the
+    # autounmask helper in three retry loops with `emerge: there are
+    # no ebuilds to satisfy "kde-apps/spectacle"` before the smoke
+    # gave up.
+    assert "kde-plasma/spectacle" in gentoo
+    assert "kde-apps/spectacle" not in gentoo
     assert "=== gentoo-profile ===" in gentoo
 
     nobara = _read("cloud-init-nobara.yaml")

@@ -162,7 +162,7 @@ write_files:
       emerge_binpkg_with_autounmask --update --deep --newuse \
           kde-plasma/plasma-meta \
           x11-misc/sddm \
-          kde-apps/spectacle \
+          kde-plasma/spectacle \
           net-misc/openssh \
           net-misc/rsync \
           app-admin/sudo
