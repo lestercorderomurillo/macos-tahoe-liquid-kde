@@ -282,7 +282,7 @@ def test_qt6_uitools_cmake_package_per_distro(monkeypatch, distro_id, expected):
     ("opensuse", "make"),
     ("alpine", "make"),
     ("rhel", "make"),
-    ("gentoo", "sys-devel/make"),
+    ("gentoo", "dev-build/make"),
 ])
 def test_make_package_per_distro(monkeypatch, distro_id, expected):
     _force_distro(monkeypatch, distro_id)

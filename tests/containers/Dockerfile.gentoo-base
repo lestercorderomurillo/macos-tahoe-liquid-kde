@@ -20,7 +20,7 @@ RUN emerge-webrsync && \
         dev-lang/python \
         dev-python/pytest \
         dev-build/cmake \
-        sys-devel/make \
+        dev-build/make \
         sys-devel/gcc \
         kde-frameworks/extra-cmake-modules \
         dev-qt/qtbase:6 \

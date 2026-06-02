@@ -515,7 +515,12 @@ _PACKAGE_MAP: dict[str, dict[str, str]] = {
         "opensuse": "make",
         "alpine":   "make",
         "void":     "make",
-        "gentoo":   "sys-devel/make",
+        # 2026-06: Gentoo moved make from sys-devel/ to dev-build/
+        # (same relocation as cmake earlier). Probing
+        # `equery list sys-devel/make` against a fresh ::gentoo tree
+        # returns nothing; the suggestion list from emerge confirms
+        # dev-build/make is the new path.
+        "gentoo":   "dev-build/make",
     },
     # zstd — needed by the icons step to extract the bundled
     # offline tarball (src/offline/icons/*.tar.zst). Available in
