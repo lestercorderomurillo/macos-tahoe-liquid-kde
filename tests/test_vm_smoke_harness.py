@@ -216,15 +216,24 @@ def test_cloud_init_profile_specific_kde_provisioning():
     assert "binpkg-respect-use=n" in gentoo
     assert "binpkg-changed-deps=n" in gentoo
     assert "--autounmask-write" in gentoo
+    # autounmask must actually merge (continue=y) AND keep going past
+    # individual package failures so a single broken atom doesn't
+    # blow up the whole smoke. Without these the autounmask pass
+    # writes config files then exits without merging anything,
+    # leaving the guest unable to launch Plasma — the failure mode
+    # this clause was added to prevent.
+    assert "--autounmask-continue=y" in gentoo
+    assert "--keep-going=y" in gentoo
     assert "--update --deep --newuse" in gentoo
     assert "etc-update --automode -5" in gentoo
-    assert "dev-qt/qttools:6" in gentoo
-    assert "kde-plasma/kwin" in gentoo
-    assert "kde-plasma/plasma-desktop" in gentoo
-    assert "kde-plasma/plasma-login-sessions" in gentoo
-    assert "kde-plasma/plasma-workspace" in gentoo
-    assert "x11-base/xorg-server" in gentoo
+    # Single plasma-meta target instead of pinning plasma-workspace +
+    # plasma-desktop + kwin separately. The pinned variant triggers
+    # an unresolvable qtdeclarative:6 slot conflict between binhost
+    # qcoro and the ebuild tree; plasma-meta lets portage solve the
+    # whole graph at once with a consistent slot set.
+    assert "kde-plasma/plasma-meta" in gentoo
     assert "x11-misc/sddm" in gentoo
+    assert "kde-apps/spectacle" in gentoo
     assert "=== gentoo-profile ===" in gentoo
 
     nobara = _read("cloud-init-nobara.yaml")

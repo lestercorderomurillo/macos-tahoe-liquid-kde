@@ -107,15 +107,38 @@ write_files:
       }
 
       emerge_binpkg_with_autounmask() {
+          # Try the happy path first.
           if emerge_binpkg "$@"; then
               return 0
           fi
 
-          emerge --quiet --noreplace --getbinpkg --usepkg \
-              --binpkg-respect-use=n --with-bdeps=y --autounmask-write \
+          # First pass: write USE/keyword unmasks portage suggests, but
+          # also keep going so it actually merges what it can. Without
+          # --autounmask-continue=y emerge writes the config files and
+          # then exits without merging anything, leaving us back at
+          # square one after etc-update.
+          emerge --quiet --getbinpkg --usepkg \
+              --binpkg-respect-use=n --binpkg-changed-deps=n \
+              --with-bdeps=y --keep-going=y \
+              --autounmask-write --autounmask-continue=y \
+              --autounmask-keep-keywords=y \
               "$@" || true
           etc-update --automode -5 >/dev/null || true
-          emerge_binpkg "$@"
+
+          # Second pass: same again. The first pass writes config; the
+          # second actually merges with those flags now visible.
+          emerge --quiet --getbinpkg --usepkg \
+              --binpkg-respect-use=n --binpkg-changed-deps=n \
+              --with-bdeps=y --keep-going=y \
+              --autounmask-write --autounmask-continue=y \
+              "$@" || true
+          etc-update --automode -5 >/dev/null || true
+
+          # Final pass: plain emerge — anything still failing here is
+          # a real slot conflict and we want the non-zero exit so the
+          # smoke marks failure rather than booting into a half-broken
+          # system.
+          emerge_binpkg --keep-going=y "$@"
       }
 
       mkdir -p /var/lib/mttkde /repo
@@ -126,18 +149,23 @@ write_files:
       select_plasma_profile
       env-update
 
+      # Single meta target instead of individually-pinned plasma-*
+      # components. Pulling kde-plasma/plasma-workspace directly forces
+      # portage to satisfy dev-libs/qcoro and dev-qt/qtdeclarative
+      # against whichever slots happen to be in the binhost vs the
+      # ebuild tree at the moment, which has historically triggered
+      # an unresolvable qtdeclarative:6 slot conflict between binhost
+      # qcoro (~6.10.2) and tree qt5compat (~6.11.1). plasma-meta lets
+      # portage solve the whole graph at once with a consistent slot
+      # set. Build deps (sudo / ssh / rsync) come in as plasma-meta
+      # transitives or are already present on the cloudinit image.
       emerge_binpkg_with_autounmask --update --deep --newuse \
-          app-admin/sudo \
-          dev-qt/qtbase:6 \
-          dev-qt/qttools:6 \
-          kde-plasma/kwin \
-          kde-plasma/plasma-desktop \
-          kde-plasma/plasma-login-sessions \
-          kde-plasma/plasma-workspace \
+          kde-plasma/plasma-meta \
+          x11-misc/sddm \
+          kde-apps/spectacle \
           net-misc/openssh \
           net-misc/rsync \
-          x11-base/xorg-server \
-          x11-misc/sddm
+          app-admin/sudo
 
       systemctl enable sshd
       systemctl daemon-reload || true
