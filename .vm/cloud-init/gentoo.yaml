@@ -263,6 +263,29 @@ write_files:
       EOF
 
       chown -R tester:tester /home/tester/repo /home/tester/Desktop
+      # Auto-tail the provision log on TTY login until cloud-init is
+      # done. This way the user lands in a shell that SHOWS progress
+      # instead of a blinking cursor. The marker file at /var/lib/mttkde/
+      # provisioned is touched at the end of provision; once it exists,
+      # the next login skips the tail and behaves normally.
+      cat > /etc/profile.d/mttkde-vm-progress.sh <<'P'
+#!/bin/sh
+# Only run for the `tester` user, only on TTY logins, only while
+# provisioning is in flight.
+[ "$(id -un)" = "tester" ] || return 0
+case "$(tty)" in /dev/tty*) ;; *) return 0 ;; esac
+[ -f /var/lib/mttkde/provisioned ] && return 0
+[ -f /var/log/mttkde-provision.log ] || return 0
+clear
+echo "=== mttkde-vm: cloud-init is still installing KDE. ==="
+echo "=== Tail of /var/log/mttkde-provision.log below.   ==="
+echo "=== The VM will REBOOT into Plasma when finished.  ==="
+echo "=== (Ctrl-C to drop to shell; re-login to resume.) ==="
+echo
+tail -F /var/log/mttkde-provision.log
+P
+      chmod 0644 /etc/profile.d/mttkde-vm-progress.sh
+
 
       touch /var/lib/mttkde/provisioned
       systemctl --no-block reboot
