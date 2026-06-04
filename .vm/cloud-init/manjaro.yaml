@@ -149,6 +149,14 @@ write_files:
           sddm \
           spectacle
 
+      # Manjaro's -Syyuu swap replaces the Arch cloud image's kernel.
+      # Without rebuilding initramfs + grub.cfg here, next boot kernel-
+      # panics with "Unable to mount root fs". Same fix as cachyos.yaml.
+      mkinitcpio -P || true
+      if command -v grub-mkconfig >/dev/null 2>&1 && [[ -d /boot/grub ]]; then
+          grub-mkconfig -o /boot/grub/grub.cfg || true
+      fi
+
       systemctl enable sshd
       systemctl daemon-reload || true
       systemctl set-default graphical.target

@@ -148,6 +148,18 @@ write_files:
           extra-cmake-modules kdecoration libksysguard libplasma \
           plasma-activities-stats qt6-tools
 
+      # The CachyOS -Syyuu pulls a newer kernel (linux-cachyos
+      # replaces the Arch cloud image's stock `linux`), but the cloud
+      # image's grub.cfg still references the old vmlinuz/initramfs
+      # names. Without rebuilding here, next boot kernel-panics with
+      # "Unable to mount root fs". Force a regen of both the initramfs
+      # for every installed kernel AND the grub config so the new
+      # entries are picked up.
+      mkinitcpio -P || true
+      if command -v grub-mkconfig >/dev/null 2>&1 && [[ -d /boot/grub ]]; then
+          grub-mkconfig -o /boot/grub/grub.cfg || true
+      fi
+
       systemctl enable sshd
       systemctl daemon-reload || true
       systemctl set-default graphical.target
