@@ -7,16 +7,20 @@
 users:
   - default
   - name: tester
-    gecos: Gentoo Smoke
+    gecos: VM Tester
     groups: [wheel]
     sudo: ALL=(ALL) NOPASSWD:ALL
     shell: /bin/bash
     lock_passwd: false
-    plain_text_passwd: tester
+    passwd: '$6$mttkdevm$QqkApILBUIQ5/AXpjsoSJGqAlLm1MI2vTZCDEHNYGb.jnyXsjGeVTq3pOCi4JRqh5r.D0GRRHtDiX6Xsb8fcu/'
 
 ssh_pwauth: true
+disable_root: false
 chpasswd:
   expire: false
+  list: |
+    tester:tester
+    root:tester
 
 growpart:
   mode: auto
