@@ -245,99 +245,24 @@ write_files:
           exit 1
       fi
 
-      cat > /home/tester/run-smoke.sh <<'EOF'
-      #!/bin/bash
-      set -euo pipefail
+      # Mount the host repo into the tester's home + drop a Desktop
+      # shortcut so the user lands on a desktop with the project ready
+      # to `cd /home/tester/repo && sudo ./install` for manual review.
+      mkdir -p /home/tester/repo /home/tester/Desktop
+      modprobe 9p || true
+      modprobe 9pnet_virtio || true
+      grep -q '^repo /home/tester/repo' /etc/fstab \
+          || echo 'repo /home/tester/repo 9p trans=virtio,version=9p2000.L,msize=262144,ro,nofail 0 0' >> /etc/fstab
 
-      DONE=/home/tester/smoke.done
-      RUNNING=/home/tester/smoke.running
-      LOG=/home/tester/smoke.log
-
-      if [[ -e "$DONE" || -e "$RUNNING" ]]; then
-          exit 0
-      fi
-
-      touch "$RUNNING"
-      rm -f "$LOG" /home/tester/desktop.png
-      exec > >(tee -a "$LOG") 2>&1
-
-      cleanup() {
-          local rc=$?
-          rm -f "$RUNNING"
-          if (( rc != 0 )); then
-              echo "=== failure rc=${rc} ==="
-          fi
-          touch "$DONE"
-      }
-      trap cleanup EXIT
-
-      sleep 45
-      START_TS="$(date --iso-8601=seconds)"
-
-      echo "=== gentoo-profile ==="
-      eselect profile show || true
-
-      echo "=== gentoo-portage ==="
-      grep -nE '^(FEATURES|EMERGE_DEFAULT_OPTS)=' /etc/portage/make.conf || true
-      grep -n '^sync-uri = ' /etc/portage/binrepos.conf/gentoo-binhost.conf || true
-
-      sudo mkdir -p /repo
-      sudo modprobe 9p || true
-      sudo modprobe 9pnet_virtio || true
-      if ! sudo mountpoint -q /repo; then
-          sudo mount -t 9p \
-              -o trans=virtio,version=9p2000.L,msize=262144,ro \
-              repo /repo
-      fi
-
-      rm -rf /home/tester/repo
-      mkdir -p /home/tester/repo
-      tar -C /repo \
-          --exclude=.git \
-          --exclude=build \
-          --exclude=tests/vm-smoke/.work \
-          --exclude=tests/vm/output \
-          -cf - . \
-          | tar -C /home/tester/repo -xf -
-
-      cd /home/tester/repo
-      export MTTKDE_NO_CONFIRM=1
-
-      echo "=== preflight ==="
-      sudo --preserve-env=MTTKDE_NO_CONFIRM ./install --preflight
-
-      echo "=== install ==="
-      sudo --preserve-env=MTTKDE_NO_CONFIRM ./install
-
-      echo "=== journal-after-install ==="
-      journalctl --user --since="$START_TS" -p err --no-pager || true
-
-      echo "=== screenshot ==="
-      if command -v spectacle >/dev/null; then
-          spectacle --background --nonotify --fullscreen \
-              --output /home/tester/desktop.png || true
-      fi
-
-      echo "=== uninstall ==="
-      sudo --preserve-env=MTTKDE_NO_CONFIRM ./uninstall
-
-      echo "=== done ==="
-      EOF
-
-      chmod 0755 /home/tester/run-smoke.sh
-
-      cat > /home/tester/.config/autostart/mttkde-smoke.desktop <<'EOF'
+      cat > /home/tester/Desktop/macos-tahoe-liquid-kde.desktop <<'EOF'
       [Desktop Entry]
-      Type=Application
-      Version=1.0
-      Name=MacTahoe Liquid KDE Smoke
-      Exec=/home/tester/run-smoke.sh
-      X-GNOME-Autostart-enabled=true
-      X-KDE-autostart-after=panel
-      Terminal=false
+      Type=Link
+      Name=macos-tahoe-liquid-kde — cd repo && sudo ./install
+      Icon=folder
+      URL=file:///home/tester/repo
       EOF
 
-      chown -R tester:tester /home/tester/run-smoke.sh /home/tester/.config
+      chown -R tester:tester /home/tester/repo /home/tester/Desktop
 
       touch /var/lib/mttkde/provisioned
       systemctl --no-block reboot
