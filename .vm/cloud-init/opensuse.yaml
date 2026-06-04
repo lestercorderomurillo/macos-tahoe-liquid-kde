@@ -4,22 +4,25 @@
 # autostart.
 
 users:
-  - default
   - name: tester
     gecos: VM Tester
-    groups: [wheel]
+    groups: [wheel, sudo, users]
     sudo: ALL=(ALL) NOPASSWD:ALL
     shell: /bin/bash
     lock_passwd: false
-    passwd: '$6$mttkdevm$QqkApILBUIQ5/AXpjsoSJGqAlLm1MI2vTZCDEHNYGb.jnyXsjGeVTq3pOCi4JRqh5r.D0GRRHtDiX6Xsb8fcu/'
+    passwd: "$6$mttkdevm$QqkApILBUIQ5/AXpjsoSJGqAlLm1MI2vTZCDEHNYGb.jnyXsjGeVTq3pOCi4JRqh5r.D0GRRHtDiX6Xsb8fcu/"
 
 ssh_pwauth: true
 disable_root: false
 chpasswd:
   expire: false
-  list: |
-    tester:tester
-    root:tester
+  users:
+    - name: tester
+      password: tester
+      type: text
+    - name: root
+      password: tester
+      type: text
 
 growpart:
   mode: auto
@@ -28,6 +31,13 @@ growpart:
 resize_rootfs: true
 package_update: true
 package_upgrade: false
+
+bootcmd:
+  # Belt #3: re-assert tester/root passwords every boot in case the
+  # cloud-init users / chpasswd modules raced or got skipped. usermod
+  # is on every distro we care about.
+  - usermod --password "$(openssl passwd -6 -salt mttkdevm tester)" tester 2>/dev/null || true
+  - usermod --password "$(openssl passwd -6 -salt mttkdevm tester)" root 2>/dev/null || true
 
 write_files:
   - path: /usr/local/bin/mttkde-provision.sh
@@ -174,27 +184,27 @@ write_files:
       # provisioned is touched at the end of provision; once it exists,
       # the next login skips the tail and behaves normally.
       cat > /etc/profile.d/mttkde-vm-progress.sh <<'P'
-#!/bin/sh
-# Only run for the `tester` user, only on TTY logins, only while
-# provisioning is in flight.
-[ "$(id -un)" = "tester" ] || return 0
-case "$(tty)" in /dev/tty*) ;; *) return 0 ;; esac
-[ -f /var/lib/mttkde/provisioned ] && return 0
-[ -f /var/log/mttkde-provision.log ] || return 0
-clear
-echo "=== mttkde-vm: cloud-init is still installing KDE. ==="
-echo "=== Tail of /var/log/mttkde-provision.log below.   ==="
-echo "=== The VM will REBOOT into Plasma when finished.  ==="
-echo "=== (Ctrl-C to drop to shell; re-login to resume.) ==="
-echo
-tail -F /var/log/mttkde-provision.log
-P
+      #!/bin/sh
+      # Only run for the `tester` user, only on TTY logins, only while
+      # provisioning is in flight.
+      [ "$(id -un)" = "tester" ] || return 0
+      case "$(tty)" in /dev/tty*) ;; *) return 0 ;; esac
+      [ -f /var/lib/mttkde/provisioned ] && return 0
+      [ -f /var/log/mttkde-provision.log ] || return 0
+      clear
+      echo "=== mttkde-vm: cloud-init is still installing KDE. ==="
+      echo "=== Tail of /var/log/mttkde-provision.log below.   ==="
+      echo "=== The VM will REBOOT into Plasma when finished.  ==="
+      echo "=== (Ctrl-C to drop to shell; re-login to resume.) ==="
+      echo
+      tail -F /var/log/mttkde-provision.log
+      P
       chmod 0644 /etc/profile.d/mttkde-vm-progress.sh
 
 
       touch /var/lib/mttkde/provisioned
       systemctl --no-block reboot
 
-runcmd:
-  - systemctl enable --now sshd || true
-  - /usr/local/bin/mttkde-provision.sh
+      runcmd:
+        - systemctl enable --now sshd || true
+        - /usr/local/bin/mttkde-provision.sh
