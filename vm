@@ -1,8 +1,15 @@
 #!/bin/bash
-# ./vm <distro> — boot a graphical KDE Plasma VM with this repo
-# mounted at /repo. You log in as `tester` (password `tester`), open a
-# Konsole, and run `cd /repo && sudo ./install` to test the installer
-# on that distro.
+# ./vm <distro> [--clean]
+#   Boot a graphical KDE Plasma VM with this repo mounted at /repo.
+#   You log in as `tester` (password `tester`), open Konsole, and run
+#   `cd /repo && sudo ./install` to test the installer on that distro.
+#
+# ./vm list           list supported distros
+# ./vm --help         show this help
+#
+# Flags:
+#   --clean, -c       wipe the cached overlay before booting (fresh
+#                     install — picks up any cloud-init changes)
 #
 # Supported: cachyos arch manjaro endeavouros garuda
 #            fedora nobara opensuse gentoo
@@ -32,15 +39,27 @@ die()  { echo "✗ $*" >&2; exit 1; }
 say()  { printf "→ %s\n" "$*"; }
 
 case "${1:-}" in
-    ""|-h|--help) sed -n '2,8p' "$0"; exit 0 ;;
+    ""|-h|--help) sed -n '2,15p' "$0" | sed 's|^#||; s|^ ||'; exit 0 ;;
     list) printf '%s\n' "${!BASE[@]}" | sort; exit 0 ;;
-    clean) [[ -d "$RUN/${2:-}" ]] && rm -rf "$RUN/${2:-}" && echo "removed $RUN/${2:-}"; exit 0 ;;
 esac
 
-distro="$1"
+distro="$1"; shift || true
+clean=0
+for a in "$@"; do
+    case "$a" in
+        --clean|-c) clean=1 ;;
+        *) die "unknown flag: $a (try ./vm --help)" ;;
+    esac
+done
+
 base="${BASE[$distro]:-}"
 [[ -n "$base" ]] || die "unknown distro: $distro (try ./vm list)"
 port="${PORT[$distro]}"
+
+if (( clean )) && [[ -d "$RUN/$distro" ]]; then
+    say "wiping overlay $RUN/$distro"
+    rm -rf "$RUN/$distro"
+fi
 
 for c in qemu-system-x86_64 qemu-img genisoimage curl; do
     command -v "$c" >/dev/null 2>&1 || die "missing tool: $c"
@@ -88,6 +107,6 @@ exec qemu-system-x86_64 \
     -virtfs local,path="$REPO",mount_tag=repo,security_model=none,readonly=on \
     -netdev user,id=net0,hostfwd=tcp::"$port"-:22 \
     -device virtio-net-pci,netdev=net0 \
-    -device virtio-vga-gl \
-    -display "${VM_DISPLAY:-gtk}",gl=on \
+    -device virtio-vga-gl,xres="${VM_XRES:-1920}",yres="${VM_YRES:-1080}" \
+    -display "${VM_DISPLAY:-gtk}",gl=on,show-cursor=on \
     "${fw[@]}"

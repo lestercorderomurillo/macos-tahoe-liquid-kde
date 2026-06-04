@@ -127,18 +127,26 @@ write_files:
 
       install_cachyos_repos
 
+      # Real CachyOS KDE Plasma desktop, taken from
+      # https://github.com/CachyOS/install-scripts/blob/master/netinstall.yaml
+      # (the netinstall.yaml `kde-plasma` group — same list the
+      # CachyOS Calamares installer offers). Adds the CachyOS-flavored
+      # Emerald + Nord global themes and the Firefox/Octopi bits a
+      # fresh CachyOS install ships with.
       pacman -S --noconfirm --needed \
-          extra-cmake-modules \
-          kdecoration \
-          libksysguard \
-          libplasma \
-          plasma-activities-stats \
-          plasma-login-manager \
           plasma-meta \
-          plasma-workspace \
-          qt6-tools \
-          sddm \
-          spectacle
+          plasma-desktop plasma-workspace plasma-wayland-protocols plasma-wayland-session \
+          plasma-nm plasma-pa plasma-disks plasma-login-manager \
+          kwayland-integration egl-wayland \
+          sddm sddm-kcm \
+          dolphin konsole kate okular gwenview spectacle ark dragon kdeconnect kinfocenter \
+          audiocd-kio kio-fuse khotkeys kinit kwallet-pam \
+          breeze-gtk kde-gtk-config char-white xsettingsd \
+          kscreen powerdevil print-manager solid \
+          cachyos-emerald-kde-theme-git cachyos-nord-kde-theme-git \
+          firefox octopi \
+          extra-cmake-modules kdecoration libksysguard libplasma \
+          plasma-activities-stats qt6-tools
 
       systemctl enable sshd
       systemctl daemon-reload || true

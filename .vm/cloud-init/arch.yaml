@@ -63,6 +63,8 @@ write_files:
           plasma-login-manager \
           plasma-workspace \
           plasma-meta \
+          konsole \
+          dolphin \
           qt6-tools \
           rsync \
           sddm \

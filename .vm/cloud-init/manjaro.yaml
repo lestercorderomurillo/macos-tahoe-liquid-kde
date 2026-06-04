@@ -142,6 +142,8 @@ write_files:
           libplasma \
           plasma-activities-stats \
           plasma-meta \
+          konsole \
+          dolphin \
           plasma-workspace \
           qt6-tools \
           sddm \
