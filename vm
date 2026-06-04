@@ -1,0 +1,93 @@
+#!/bin/bash
+# ./vm <distro> — boot a graphical KDE Plasma VM with this repo
+# mounted at /repo. You log in as `tester` (password `tester`), open a
+# Konsole, and run `cd /repo && sudo ./install` to test the installer
+# on that distro.
+#
+# Supported: cachyos arch manjaro endeavouros garuda
+#            fedora nobara opensuse gentoo
+
+set -euo pipefail
+
+REPO="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+CACHE="$REPO/.vm/cache"
+CI="$REPO/.vm/cloud-init"
+RUN="$REPO/.vm/run"
+
+declare -A BASE=(
+    [arch]=arch.qcow2     [cachyos]=arch.qcow2  [manjaro]=arch.qcow2
+    [endeavouros]=arch.qcow2 [garuda]=arch.qcow2
+    [fedora]=fedora.qcow2 [nobara]=fedora.qcow2
+    [opensuse]=opensuse.qcow2 [gentoo]=gentoo.qcow2
+)
+declare -A URL=(
+    [arch.qcow2]="https://geo.mirror.pkgbuild.com/images/latest/Arch-Linux-x86_64-cloudimg.qcow2"
+    [fedora.qcow2]="https://download.fedoraproject.org/pub/fedora/linux/releases/44/Cloud/x86_64/images/Fedora-Cloud-Base-Generic-44-1.7.x86_64.qcow2"
+    [opensuse.qcow2]="https://download.opensuse.org/tumbleweed/appliances/openSUSE-Tumbleweed-Minimal-VM.x86_64-Cloud.qcow2"
+    [gentoo.qcow2]="https://distfiles.gentoo.org/releases/amd64/autobuilds/current-di-amd64-cloudinit/di-amd64-cloudinit-20260531T160106Z.qcow2"
+)
+declare -A PORT=([arch]=2221 [cachyos]=2222 [manjaro]=2223 [endeavouros]=2224 [garuda]=2225 [fedora]=2226 [nobara]=2227 [opensuse]=2228 [gentoo]=2229)
+
+die()  { echo "✗ $*" >&2; exit 1; }
+say()  { printf "→ %s\n" "$*"; }
+
+case "${1:-}" in
+    ""|-h|--help) sed -n '2,8p' "$0"; exit 0 ;;
+    list) printf '%s\n' "${!BASE[@]}" | sort; exit 0 ;;
+    clean) [[ -d "$RUN/${2:-}" ]] && rm -rf "$RUN/${2:-}" && echo "removed $RUN/${2:-}"; exit 0 ;;
+esac
+
+distro="$1"
+base="${BASE[$distro]:-}"
+[[ -n "$base" ]] || die "unknown distro: $distro (try ./vm list)"
+port="${PORT[$distro]}"
+
+for c in qemu-system-x86_64 qemu-img genisoimage curl; do
+    command -v "$c" >/dev/null 2>&1 || die "missing tool: $c"
+done
+
+# Download base image on first use.
+if [[ ! -f "$CACHE/$base" ]]; then
+    mkdir -p "$CACHE"
+    say "downloading $base (first run only)"
+    curl -L --fail -C - -o "$CACHE/$base.part" "${URL[$base]}"
+    mv "$CACHE/$base.part" "$CACHE/$base"
+fi
+
+work="$RUN/$distro"
+mkdir -p "$work"
+disk="$work/disk.qcow2"
+cidata="$work/cidata.iso"
+console="$work/console.log"
+
+[[ -f "$disk" ]] || qemu-img create -f qcow2 -F qcow2 -b "$CACHE/$base" "$disk" 60G >/dev/null
+
+ci="$CI/$distro.yaml"
+[[ -f "$ci" ]] || die "no cloud-init at $ci"
+
+tmp="$(mktemp -d)"
+trap 'rm -rf "$tmp"' EXIT
+cp "$ci" "$tmp/user-data"
+printf "instance-id: vm-%s-%s\nlocal-hostname: %s\n" "$distro" "$(date +%s)" "$distro" > "$tmp/meta-data"
+genisoimage -output "$cidata" -volid cidata -joliet -rock "$tmp/user-data" "$tmp/meta-data" 2>/dev/null
+
+fw=()
+if [[ "$distro" == "gentoo" ]]; then
+    [[ -f /usr/share/edk2/x64/OVMF.4m.fd ]] || die "Gentoo needs OVMF firmware — install edk2-ovmf"
+    fw=(-bios /usr/share/edk2/x64/OVMF.4m.fd)
+fi
+
+say "booting $distro VM (ssh: ssh -p $port tester@127.0.0.1, password tester)"
+say "inside the VM: cd /repo && sudo ./install"
+exec qemu-system-x86_64 \
+    -enable-kvm -cpu host -smp "${VM_CPUS:-4}" -m "${VM_MEM_MIB:-6144}" \
+    -drive file="$disk",if=virtio,format=qcow2 \
+    -drive file="$cidata",if=virtio,format=raw,readonly=on \
+    -boot c \
+    -serial file:"$console" \
+    -virtfs local,path="$REPO",mount_tag=repo,security_model=none,readonly=on \
+    -netdev user,id=net0,hostfwd=tcp::"$port"-:22 \
+    -device virtio-net-pci,netdev=net0 \
+    -device virtio-vga-gl \
+    -display "${VM_DISPLAY:-gtk}",gl=on \
+    "${fw[@]}"

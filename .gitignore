@@ -58,3 +58,11 @@ htmlcov/
 .tox/
 .mypy_cache/
 .ruff_cache/
+
+# ./vm <distro> tool — base qcow2 images and per-run overlays. Cloud-init
+# templates under .vm/cloud-init/ ARE tracked.
+.vm/cache/
+.vm/run/
+
+# Legacy local-only smoke harness work directory.
+tests/vm-smoke/

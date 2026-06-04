@@ -4,7 +4,7 @@
 
 # macOS Tahoe Liquid Theme for KDE Plasma
 
-[![release](https://img.shields.io/github/v/release/lestercorderomurillo/macos-tahoe-liquid-kde?label=release&color=blue)](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/releases) [![tests](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/actions/workflows/test.yml/badge.svg)](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/actions/workflows/test.yml) [![tests count](https://img.shields.io/badge/tests-650_passing-brightgreen)](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/actions/workflows/test.yml) [![license](https://img.shields.io/badge/license-GPL--2.0-blue)](LICENSE) [![plasma](https://img.shields.io/badge/KDE_Plasma-6.6%2B-1d99f3?logo=kde)](https://kde.org/plasma-desktop/) [![last commit](https://img.shields.io/github/last-commit/lestercorderomurillo/macos-tahoe-liquid-kde)](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/commits/) [![report a bug](https://img.shields.io/badge/report-a%20bug-red?logo=github)](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/issues/new)
+[![release](https://img.shields.io/github/v/release/lestercorderomurillo/macos-tahoe-liquid-kde?label=release&color=blue)](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/releases) [![tests](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/actions/workflows/test.yml/badge.svg)](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/actions/workflows/test.yml) [![tests count](https://img.shields.io/badge/tests-614_passing-brightgreen)](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/actions/workflows/test.yml) [![license](https://img.shields.io/badge/license-GPL--2.0-blue)](LICENSE) [![plasma](https://img.shields.io/badge/KDE_Plasma-6.6%2B-1d99f3?logo=kde)](https://kde.org/plasma-desktop/) [![last commit](https://img.shields.io/github/last-commit/lestercorderomurillo/macos-tahoe-liquid-kde)](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/commits/) [![report a bug](https://img.shields.io/badge/report-a%20bug-red?logo=github)](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/issues/new)
 
 > [!WARNING]
 > **Alpha / active development.** This project is under heavy development — things break as KDE, KWin and friends update. The installer pulls upstream changes on launch and may behave differently between runs. Expect rough edges, hold off on it for production desktops, and please [report any issue](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/issues/new) you run into.
@@ -16,16 +16,14 @@ A full macOS Tahoe-style desktop experience for KDE Plasma 6.6+.
 |     | Distro | Supported yet? | Tested yet? |
 |:---:|--------|:--------------:|:-----------:|
 | <img src="https://cdn.simpleicons.org/cachyos" width="22"> | CachyOS | ✅ YES | ✅ YES |
-| <img src="https://cdn.simpleicons.org/gentoo" width="22"> | Gentoo | ✅ YES | 🔧 WIP |
 | <img src="https://cdn.simpleicons.org/archlinux" width="22"> | Arch Linux | ✅ YES | ✅ YES |
-| <img src="https://cdn.simpleicons.org/manjaro" width="22"> | Manjaro | ✅ YES | ✅ YES |
-| <img src="https://cdn.simpleicons.org/endeavouros" width="22"> | EndeavourOS | ✅ YES | ✅ YES |
-| <img src="https://cdn.simpleicons.org/linux" width="22"> | Garuda Linux | ✅ YES | ✅ YES |
-| <img src="https://cdn.simpleicons.org/fedora" width="22"> | Fedora | ✅ YES | ✅ YES |
-| <img src="https://cdn.simpleicons.org/nobaralinux" width="22"> | Nobara | ✅ YES | ✅ YES |
-| <img src="https://cdn.simpleicons.org/opensuse" width="22"> | openSUSE Tumbleweed | ✅ YES | ✅ YES |
-
-`Tested yet?` means a real end-to-end VM smoke pass. Fedora and openSUSE use native cloud images; Arch is native too; CachyOS, Manjaro, EndeavourOS, and Garuda are repo-backed Arch-cloud runs; Nobara is a repo-backed Fedora-cloud run. Gentoo is the remaining VM-smoke gap.
+| <img src="https://cdn.simpleicons.org/manjaro" width="22"> | Manjaro | ✅ YES | 🔧 WIP |
+| <img src="https://cdn.simpleicons.org/endeavouros" width="22"> | EndeavourOS | ✅ YES | 🔧 WIP |
+| <img src="https://cdn.simpleicons.org/linux" width="22"> | Garuda Linux | ✅ YES | 🔧 WIP |
+| <img src="https://cdn.simpleicons.org/fedora" width="22"> | Fedora | ✅ YES | 🔧 WIP |
+| <img src="https://cdn.simpleicons.org/nobaralinux" width="22"> | Nobara | ✅ YES | 🔧 WIP |
+| <img src="https://cdn.simpleicons.org/opensuse" width="22"> | openSUSE Tumbleweed | ✅ YES | 🔧 WIP |
+| <img src="https://cdn.simpleicons.org/gentoo" width="22"> | Gentoo | ✅ YES | 🔧 WIP |
 
 ---
 
@@ -169,9 +167,8 @@ Plymouth boot screen with centered Apple-style logo on every monitor, scaled dyn
 
 ![Requirements and dependencies](https://img.shields.io/badge/requirements-%26%20dependencies-4B6B8A?style=for-the-badge&logo=linux&logoColor=white)
 
-### Hard requirements
-
-The installer refuses to start without these. They are present on every default Plasma 6 install on the supported distros above, so usually you have them already.
+<details>
+<summary><b>Hard requirements</b> — installer refuses to start without these</summary>
 
 - **KDE Plasma 6.6+** (`plasmashell`, `kwriteconfig6`, `kreadconfig6`, `plasma-apply-lookandfeel`, `plasma-apply-cursortheme`, `plasma-apply-wallpaperimage`, `kpackagetool6`, `kbuildsycoca6`, `qdbus6` *or* `qdbus`)
 - **Python 3.10+**
@@ -179,17 +176,23 @@ The installer refuses to start without these. They are present on every default 
 - **Qt6 path discovery** — one of: `qmake6`, `qtpaths6`, or `pkg-config` + `Qt6Core.pc`. The installer asks Qt where its plugin / QML directories live; it refuses to guess. If none of those tools are installed, the installer falls back to the known libdir convention for your distro **only when that directory actually exists on disk**.
 - **`dbus-send`** + **`systemctl`** — both ship with systemd, present on every supported distro.
 
-### Build toolchain
+</details>
 
-Needed for the compiled pieces (Global Menu plasmoid, Dock Task Manager plasmoid, Acrylic Glass KWin effect). Skipped automatically if you `./install --no-plasmoids --no-acrylic-glass`.
+<details>
+<summary><b>Build toolchain</b> — needed for the compiled plasmoids and KWin effect</summary>
+
+Skipped automatically if you `./install --no-plasmoids --no-acrylic-glass`.
 
 - **`cmake`**
 - **`g++`** (GCC C++ compiler)
 - **`pkg-config`**
 
-### KDE / Qt6 development SDK
+</details>
 
-Required by `find_package()` in the compiled units' `CMakeLists.txt`. Your distro's KDE Plasma 6 dev meta-package usually pulls all of these in one shot:
+<details>
+<summary><b>KDE / Qt6 development SDK</b> — required by find_package() in the compiled units</summary>
+
+Your distro's KDE Plasma 6 dev meta-package usually pulls all of these in one shot.
 
 - **Extra CMake Modules** (`ECM`)
 - **KF6**: `KCoreAddons`, `KConfig`, `KI18n`, `KWindowSystem`, `KDBusAddons`, `KCMUtils`, `KIconThemes`
@@ -199,26 +202,31 @@ Required by `find_package()` in the compiled units' `CMakeLists.txt`. Your distr
 - **Qt6 Base** + **Qt6 Declarative** + **Qt6 Wayland**
 - **libepoxy**, **X11**, **XCB**
 
-### Download toolchain
+</details>
 
-The installer pulls fonts, icons, cursors, and wallpapers from upstream mirrors on first run (cached afterwards). Skipped with `--no-download` if you've already fetched them.
+<details>
+<summary><b>Download toolchain</b> — for fetching fonts, icons, cursors, wallpapers on first run</summary>
+
+Skipped with `--no-download` if you've already fetched them.
 
 - **`curl`**
 - **`unzip`**
 - **`fontconfig`** (`fc-cache`)
 
-### Optional integrations
+</details>
 
-The installer probes for these and uses them if present; absence just disables the matching feature, never aborts.
+<details>
+<summary><b>Optional integrations</b> — probed and used if present, never required</summary>
 
 - **Kvantum** (`kvantummanager`) — Qt widget theme. Without it, Qt apps fall back to plain Breeze widgets while keeping the rest of the theme.
 - **Nautilus** — Tahoe Finder. Only relevant if you install with `--nautilus`.
 - **`gsettings`** + **`gtk-update-icon-cache`** — GTK app integration (color-scheme hint, GTK 3/4 theme load).
 - **`dolphin`**, **`spectacle`** — used by the "Report a Bug" → screenshot helper.
 
-### Quick install hints
+</details>
 
-If your distro is supported and the preflight tells you a tool is missing:
+<details>
+<summary><b>Quick install hints</b> — if preflight tells you a tool is missing</summary>
 
 | Distro | Qt6 tools | KDE Plasma 6 dev |
 |--------|-----------|------------------|
@@ -226,6 +234,8 @@ If your distro is supported and the preflight tells you a tool is missing:
 | Gentoo | `emerge dev-qt/qttools:6` | `emerge kde-frameworks/extra-cmake-modules kde-plasma/plasma-workspace kde-plasma/kdecoration kde-plasma/libplasma kde-plasma/libnotificationmanager kde-plasma/libksysguard kde-plasma/plasma-activities-stats` |
 | Fedora / Nobara / RHEL | `dnf install qt6-qttools-devel` | `dnf install extra-cmake-modules plasma-workspace-devel kdecoration-devel libplasma-devel knotifications-devel libksysguard-devel kf6-plasma-activities-devel` |
 | openSUSE Tumbleweed | `zypper install qt6-tools-devel` | `zypper install extra-cmake-modules plasma6-workspace-devel kdecoration-devel libKF6Plasma-devel libnotificationmanager6-devel libksysguard6-devel libKF6PlasmaActivitiesStats6-devel` |
+
+</details>
 
 ---
 
@@ -236,6 +246,22 @@ sudo ./install              # install everything
 sudo ./install --help       # show all options
 sudo ./install --preflight  # run only the safety checks
 sudo ./uninstall            # remove everything, reset to Breeze
+```
+
+### Try it in a VM, per OS
+
+`./vm <distro>` boots a graphical KDE Plasma VM on your host with this repo mounted at `/repo` and the `tester` user auto-logged in. Open a terminal, run `cd /repo && sudo ./install`, and review the result by eye.
+
+```bash
+./vm cachyos
+./vm arch
+./vm manjaro
+./vm endeavouros
+./vm garuda
+./vm fedora
+./vm nobara
+./vm opensuse
+./vm gentoo
 ```
 
 Update check on launch is on by default. To bypass: `sudo MAC_TAHOE_NO_UPDATE_CHECK=true ./install`. To only check: `sudo ./install --check-update`.
