@@ -188,32 +188,39 @@ BlurEffect::BlurEffect()
     }
 #endif
 
-    // Wayland blur manager singleton, with deferred teardown
-    if (!s_blurManagerRemoveTimer) {
-        s_blurManagerRemoveTimer = new QTimer(QCoreApplication::instance());
-        s_blurManagerRemoveTimer->setSingleShot(true);
-        s_blurManagerRemoveTimer->callOnTimeout([]() {
-            s_blurManager->remove();
-            s_blurManager = nullptr;
-        });
-    }
-    s_blurManagerRemoveTimer->stop();
-    if (!s_blurManager) {
-        s_blurManager = new BlurManagerInterface(effects->waylandDisplay(), s_blurManagerRemoveTimer);
-    }
+    // Wayland blur + contrast manager singletons, with deferred teardown.
+    // Only created under a Wayland session: effects->waylandDisplay() is
+    // null on pure X11, and the *ManagerInterface ctors dereference it
+    // immediately — so an unguarded `new` segfaults the effect at load on
+    // X11 logins. X11 surface blur comes from the net_wm_blur_region atom
+    // path above, not these protocol managers. Matches upstream Better Blur,
+    // which wraps the same block in this guard.
+    if (effects->waylandDisplay()) {
+        if (!s_blurManagerRemoveTimer) {
+            s_blurManagerRemoveTimer = new QTimer(QCoreApplication::instance());
+            s_blurManagerRemoveTimer->setSingleShot(true);
+            s_blurManagerRemoveTimer->callOnTimeout([]() {
+                s_blurManager->remove();
+                s_blurManager = nullptr;
+            });
+        }
+        s_blurManagerRemoveTimer->stop();
+        if (!s_blurManager) {
+            s_blurManager = new BlurManagerInterface(effects->waylandDisplay(), s_blurManagerRemoveTimer);
+        }
 
-    // Wayland contrast manager singleton (same lazy-teardown pattern)
-    if (!s_contrastManagerRemoveTimer) {
-        s_contrastManagerRemoveTimer = new QTimer(QCoreApplication::instance());
-        s_contrastManagerRemoveTimer->setSingleShot(true);
-        s_contrastManagerRemoveTimer->callOnTimeout([]() {
-            s_contrastManager->remove();
-            s_contrastManager = nullptr;
-        });
-    }
-    s_contrastManagerRemoveTimer->stop();
-    if (!s_contrastManager) {
-        s_contrastManager = new ContrastManagerInterface(effects->waylandDisplay(), s_contrastManagerRemoveTimer);
+        if (!s_contrastManagerRemoveTimer) {
+            s_contrastManagerRemoveTimer = new QTimer(QCoreApplication::instance());
+            s_contrastManagerRemoveTimer->setSingleShot(true);
+            s_contrastManagerRemoveTimer->callOnTimeout([]() {
+                s_contrastManager->remove();
+                s_contrastManager = nullptr;
+            });
+        }
+        s_contrastManagerRemoveTimer->stop();
+        if (!s_contrastManager) {
+            s_contrastManager = new ContrastManagerInterface(effects->waylandDisplay(), s_contrastManagerRemoveTimer);
+        }
     }
 
     // EffectsHandler signal wiring
@@ -367,6 +374,16 @@ void BlurEffect::reconfigure(ReconfigureFlags flags)
             unescaped += QChar('$');
         }
         m_windowClasses << unescaped;
+    }
+
+    // Re-evaluate the cached blur region of every open window. Without this,
+    // a settings change that affects which region is blurred (e.g. toggling
+    // BlurDecorations, or editing the window-class match list) would not take
+    // effect on already-open windows until each was next moved / resized /
+    // re-decorated. addRepaintFull alone only repaints — it reads the stale
+    // cached frame/content. Mirrors Better Blur's reconfigure loop.
+    for (EffectWindow* w : effects->stackingOrder()) {
+        updateBlurRegion(w);
     }
 
     // Update all windows for the blur to take effect
@@ -705,10 +722,10 @@ void BlurEffect::prePaintWindow(RenderView* view, EffectWindow* w, WindowPrePain
 }
 
 /// Master gate: every disqualifying condition (fullscreen effect active,
-/// desktop window, the xwaylandvideobridge screen-share helper, class-
-/// filter mismatch, transformed window) short-circuits to ``false``.
-/// ``WindowForceBlurRole`` is the per-window override Plasma uses to opt
-/// specific windows in regardless.
+/// desktop window, the xwaylandvideobridge screen-share helper, Spectacle's
+/// capture overlay, class-filter mismatch, transformed window) short-
+/// circuits to ``false``. ``WindowForceBlurRole`` is the per-window
+/// override Plasma uses to opt specific windows in regardless.
 bool BlurEffect::shouldBlur(const EffectWindow* w, int mask, const WindowPaintData& data) const
 {
     if (effects->activeFullScreenEffect() && !w->data(WindowForceBlurRole).toBool()) {
@@ -734,6 +751,18 @@ bool BlurEffect::shouldBlur(const EffectWindow* w, int mask, const WindowPaintDa
     // the hardcoded exclusion in upstream KWin / Better Blur — case-
     // sensitive against the lowercase resourceClass KWin reports.
     if (windowClass == QStringLiteral("xwaylandvideobridge")) {
+        return false;
+    }
+
+    // Spectacle's full-screen capture / rectangular-region overlay must
+    // never be blurred — otherwise the selector frosts the frozen desktop
+    // and the glass can bake into the saved screenshot. Gate on the
+    // overlay / active layer so Spectacle's ordinary settings window (in
+    // the normal layer) still blurs. Same unconditional placement as the
+    // bridge skip; mirrors the hardcoded exclusion in upstream Better Blur.
+    const auto layer = w->window()->layer();
+    if ((windowClass == QStringLiteral("spectacle") || windowClass == QStringLiteral("org.kde.spectacle"))
+        && (layer == OverlayLayer || layer == ActiveLayer)) {
         return false;
     }
     const auto matches = m_windowClasses.contains(windowClass) || m_windowClasses.contains(resourceName);
@@ -1146,9 +1175,19 @@ void BlurEffect::blur(
         topCornerRadius = BlurConfig::popupCornerRadius();
         bottomCornerRadius = BlurConfig::popupCornerRadius();
 
-    } else if ((!w->isFullScreen()) || BlurConfig::roundCornersOfMaximizedWindows()) {
-        topCornerRadius = BlurConfig::windowCornerRadius();
-        bottomCornerRadius = BlurConfig::windowCornerRadius();
+    } else {
+        // A window is "maximized" when its frame fills the maximize area of
+        // its own screen / desktop — checked live each frame (no cached
+        // state to lag a maximize/restore). isFullScreen() alone misses
+        // this, so without it a maximized window keeps rounded corners even
+        // when the user opted out via RoundCornersOfMaximizedWindows.
+        // Uses the per-window clientArea overload so multi-monitor setups
+        // resolve against the window's actual screen. Mirrors Better Blur.
+        const bool isMaximized = effects->clientArea(MaximizeArea, w).toRect() == w->frameGeometry().toRect();
+        if ((!w->isFullScreen() && !isMaximized) || BlurConfig::roundCornersOfMaximizedWindows()) {
+            topCornerRadius = BlurConfig::windowCornerRadius();
+            bottomCornerRadius = BlurConfig::windowCornerRadius();
+        }
     }
 
     // Clamp the radius for narrow / short windows so the SDF doesn't
