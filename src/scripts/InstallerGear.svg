@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Settings">
+  <!--
+    macOS System Settings-style gear. Eight teeth around a centered
+    circle, with a smaller concentric inner cutout. The fill is
+    "currentColor" so the QML side can recolor it through a
+    MultiEffect or simply by tinting via Image color overlays.
+  -->
+  <path fill="currentColor" fill-rule="evenodd" d="
+    M 32,3
+    L 36.2,3
+    L 38.0,10.3
+    A 22,22 0 0 1 43.5,12.6
+    L 49.4,7.9
+    L 56.1,14.6
+    L 51.4,20.5
+    A 22,22 0 0 1 53.7,26.0
+    L 61.0,27.8
+    L 61.0,36.2
+    L 53.7,38.0
+    A 22,22 0 0 1 51.4,43.5
+    L 56.1,49.4
+    L 49.4,56.1
+    L 43.5,51.4
+    A 22,22 0 0 1 38.0,53.7
+    L 36.2,61.0
+    L 27.8,61.0
+    L 26.0,53.7
+    A 22,22 0 0 1 20.5,51.4
+    L 14.6,56.1
+    L 7.9,49.4
+    L 12.6,43.5
+    A 22,22 0 0 1 10.3,38.0
+    L 3.0,36.2
+    L 3.0,27.8
+    L 10.3,26.0
+    A 22,22 0 0 1 12.6,20.5
+    L 7.9,14.6
+    L 14.6,7.9
+    L 20.5,12.6
+    A 22,22 0 0 1 26.0,10.3
+    L 27.8,3.0
+    Z
+    M 32,21
+    A 11,11 0 1 0 32,43
+    A 11,11 0 1 0 32,21
+    Z
+  "/>
+</svg>

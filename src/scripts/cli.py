@@ -27,8 +27,15 @@ ALL_FEATURES = [
     "wallpapers", "fonts", "cursors", "plasma_theme", "window_decorations",
     "kvantum", "color_schemes", "icons", "plasmoids", "acrylic_glass",
     "global_theme", "layout", "sounds", "gtk", "sddm", "plymouth", "apps",
-    "nautilus", "portals",
+    "nautilus", "portals", "apply_theme",
 ]
+
+# ``apply_theme`` is not an installable component — it has no module under
+# ``steps/`` and never appears in ``INSTALL_ORDER``. It is a behavioural gate:
+# when off, every component's files still land on disk, but the second half of
+# install (look-and-feel apply, panel layout, KWin restart, plasmashell
+# restart, config verification) is skipped so the running desktop is left
+# untouched. Flip it back on and re-run to activate a staged install.
 
 # Walk order for the install/uninstall loop.
 # 1. Core visual foundations first.
@@ -66,6 +73,7 @@ FEATURE_DESC = {
     "apps": "App configuration tweaks",
     "nautilus": "Nautilus file manager (default on KDE)",
     "portals": "Route FileChooser / AppChooser to KDE (fixes stale dialog colors)",
+    "apply_theme": "Set as default after install (switches Plasma to the new look)",
 }
 
 INSTALL_HELP = """\
@@ -100,6 +108,9 @@ Options:
     --apps             App configuration tweaks
     --nautilus         Install Nautilus and set as default file manager
     --portals          Route FileChooser/AppChooser to KDE (fixes stale dialogs)
+    --no-apply-theme   Install all files but DON'T switch Plasma over to the
+                       new look (no look-and-feel apply, layout, or restart).
+                       Stage the install now; re-run with --apply-theme later.
     --no-grub-modify   Don't auto-edit /etc/default/grub for the boot
                        splash kernel cmdline (prints manual fix instead)
 
@@ -895,32 +906,43 @@ def run_install(argv: list[str]) -> int:
         note("Installs the auto light/dark theme switcher")
         run_phase("theme_switch", "install")
 
-        step("Applying Changes")
-        note("Applies settings, flushes caches, restarts KWin")
-        run_phase("apply", "install")
+        # ``apply_theme`` gates the "set as default" half of install. The
+        # files always land above; flipping Plasma over (look-and-feel apply,
+        # layout, KWin restart, plasmashell restart, verification) only runs
+        # when this install should also become the active desktop. With it off
+        # the install stages without disrupting the running session — re-run
+        # with --apply-theme to activate.
+        if feat.get("apply_theme", True):
+            step("Applying Changes")
+            note("Applies settings, flushes caches, restarts KWin")
+            run_phase("apply", "install")
 
-        # Layout runs after apply so it sees the new panel/dock packages
-        # already on disk. The Plasma JS scripting API otherwise fails to
-        # find the custom plasmoids by ID.
-        if feat.get("layout", True) and step_exists("layout"):
-            step("Installing Layout")
-            note(FEATURE_DESC["layout"])
-            run_phase("layout", "install")
+            # Layout runs after apply so it sees the new panel/dock packages
+            # already on disk. The Plasma JS scripting API otherwise fails to
+            # find the custom plasmoids by ID.
+            if feat.get("layout", True) and step_exists("layout"):
+                step("Installing Layout")
+                note(FEATURE_DESC["layout"])
+                run_phase("layout", "install")
 
-        _flush_icon_cache_signal()
+            _flush_icon_cache_signal()
 
-        step("Verification")
-        note("Checking theme configuration was applied")
-        verify_config(feat)
+            step("Verification")
+            note("Checking theme configuration was applied")
+            verify_config(feat)
 
-        step("Restarting Plasma")
-        note("Restarts Plasma shell to load all changes")
-        run_phase("apply", "restart_plasma")
+            step("Restarting Plasma")
+            note("Restarts Plasma shell to load all changes")
+            run_phase("apply", "restart_plasma")
 
-        if feat.get("layout", True) and step_exists("layout") and not _layout_is_installed():
-            step("Retrying Layout")
-            note("Retries the panel layout after Plasma reloads new plasmoids")
-            run_phase("layout", "install")
+            if feat.get("layout", True) and step_exists("layout") and not _layout_is_installed():
+                step("Retrying Layout")
+                note("Retries the panel layout after Plasma reloads new plasmoids")
+                run_phase("layout", "install")
+        else:
+            step("Skipping Activation")
+            note("--no-apply-theme: files installed but Plasma left untouched. "
+                 "Re-run with --apply-theme to switch over.")
 
         _print_done("installed")
         if not errors:
