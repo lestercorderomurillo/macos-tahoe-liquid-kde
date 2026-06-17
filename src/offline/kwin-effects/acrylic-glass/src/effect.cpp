@@ -705,9 +705,10 @@ void BlurEffect::prePaintWindow(RenderView* view, EffectWindow* w, WindowPrePain
 }
 
 /// Master gate: every disqualifying condition (fullscreen effect active,
-/// desktop window, class-filter mismatch, transformed window) short-
-/// circuits to ``false``. ``WindowForceBlurRole`` is the per-window
-/// override Plasma uses to opt specific windows in regardless.
+/// desktop window, the xwaylandvideobridge screen-share helper, class-
+/// filter mismatch, transformed window) short-circuits to ``false``.
+/// ``WindowForceBlurRole`` is the per-window override Plasma uses to opt
+/// specific windows in regardless.
 bool BlurEffect::shouldBlur(const EffectWindow* w, int mask, const WindowPaintData& data) const
 {
     if (effects->activeFullScreenEffect() && !w->data(WindowForceBlurRole).toBool()) {
@@ -722,6 +723,19 @@ bool BlurEffect::shouldBlur(const EffectWindow* w, int mask, const WindowPaintDa
     // BlurMatching kcfg toggle.
     const auto windowClass = w->window()->resourceClass();
     const auto resourceName = w->window()->resourceName();
+
+    // xwaylandvideobridge is the helper that bridges Wayland windows into
+    // XWayland for screen sharing (Discord / OBS / browser capture). It
+    // maps an invisible, screen-sized surface that must never be blurred —
+    // otherwise it paints a fullscreen glass sheet over the whole desktop.
+    // This is an unconditional skip placed before the whitelist/blacklist
+    // branch so it holds in either matching mode (a default config entry
+    // would invert to "only blur the bridge" under whitelist mode). Matches
+    // the hardcoded exclusion in upstream KWin / Better Blur — case-
+    // sensitive against the lowercase resourceClass KWin reports.
+    if (windowClass == QStringLiteral("xwaylandvideobridge")) {
+        return false;
+    }
     const auto matches = m_windowClasses.contains(windowClass) || m_windowClasses.contains(resourceName);
 
     if ((m_whitelist && !matches) || (!m_whitelist && matches)) {
