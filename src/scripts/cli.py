@@ -16,7 +16,9 @@ from paths import (
     STEPS_DIR,
     read_version,
 )
-from log import banner, errors, fail, note, ok, step, warn
+from log import (
+    banner, errors, fail, note, ok, progress_done, progress_reset, step, warn,
+)
 from preflight import run_preflight
 from state import RunTracker
 from step_runner import run_phase, step_deps, step_exists, step_has_phase, step_module
@@ -848,11 +850,15 @@ def run_install(argv: list[str]) -> int:
 
     tracker = RunTracker("install", argv, str(feat.get("theme_mode", "auto")))
     tracker.start()
+    # Start a fresh progress file the UI can watch. Must precede the first
+    # step()/banner so the UI never reads a stale title from a prior run.
+    progress_reset()
     rc = 0
     try:
         if not SRC_DIR.is_dir():
             print("  \033[0;31m  Run from repo root.\033[0m", file=sys.stderr)
-            return 1
+            rc = 1
+            return rc
 
         banner(read_version())
         if not confirm("In development — Install at your own risk.\n"
@@ -863,7 +869,8 @@ def run_install(argv: list[str]) -> int:
 
         if not run_preflight("install"):
             fail("preflight failed — refusing to install")
-            return 1
+            rc = 1
+            return rc
 
         step("Verification")
         note("Checks KDE version and required tools")
@@ -947,12 +954,15 @@ def run_install(argv: list[str]) -> int:
         _print_done("installed")
         if not errors:
             tracker.mark_completed()
-        return 0
+        rc = 1 if errors else 0
+        return rc
     except KeyboardInterrupt:
         tracker.mark_aborted()
         print("\n  Aborted.", file=sys.stderr)
-        return 130
+        rc = 130
+        return rc
     finally:
+        progress_done(rc)
         tracker.finalize(rc)
 
 
@@ -970,11 +980,13 @@ def run_uninstall(argv: list[str]) -> int:
 
     tracker = RunTracker("uninstall", argv, str(feat.get("theme_mode", "auto")))
     tracker.start()
+    progress_reset()
     rc = 0
     try:
         if not SRC_DIR.is_dir():
             print("  \033[0;31m  Run from repo root.\033[0m", file=sys.stderr)
-            return 1
+            rc = 1
+            return rc
 
         banner(read_version())
         if not confirm("This will reset your desktop to Breeze defaults."):
@@ -984,12 +996,14 @@ def run_uninstall(argv: list[str]) -> int:
 
         if not run_preflight("uninstall"):
             fail("preflight failed — refusing to uninstall")
-            return 1
+            rc = 1
+            return rc
 
         step("Verification")
         note("Checks KDE version")
         if not verify_plasma():
-            return 1
+            rc = 1
+            return rc
 
         # Uninstall is a two-stage flow: first put the user's desktop back
         # into a working Breeze state while our assets still exist on disk,
@@ -1026,10 +1040,13 @@ def run_uninstall(argv: list[str]) -> int:
         _print_done("uninstalled")
         if not errors:
             tracker.mark_completed()
-        return 0
+        rc = 1 if errors else 0
+        return rc
     except KeyboardInterrupt:
         tracker.mark_aborted()
         print("\n  Aborted.", file=sys.stderr)
-        return 130
+        rc = 130
+        return rc
     finally:
+        progress_done(rc)
         tracker.finalize(rc)

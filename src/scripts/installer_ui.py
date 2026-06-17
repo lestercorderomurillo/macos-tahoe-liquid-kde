@@ -20,7 +20,6 @@ import argparse
 import json
 import os
 import pwd
-import re
 import shlex
 import shutil
 import subprocess
@@ -29,6 +28,7 @@ from pathlib import Path
 
 from paths import CONFIG_FILE, REPO_ROOT
 from cli import ALL_FEATURES, DEFAULT_FEATURES, FEATURE_DESC
+from log import DONE_MARKER, PROGRESS_FILE
 
 
 PREVIEW_QML = REPO_ROOT / "src/scripts/preview_installer.qml"
@@ -48,50 +48,72 @@ def command_for_action(action: str) -> str:
     return _ACTION_COMMANDS[action]
 
 
-def escalated_command_for_action(action: str) -> str:
-    """Shell command for the terminal — prefers pkexec over sudo.
+def escalated_command_for_action(action: str, headless: bool = False) -> str:
+    """Shell command to run an action as root — prefers pkexec over sudo.
 
     ``pkexec`` (polkit) pops a graphical password prompt and works on
     any host with a polkit agent, including users not in the sudoers
-    file. ``sudo`` is the fallback. The ``env SUDO_USER=… SUDO_UID=…``
-    shim bridges pkexec's wiped environment back to the variables the
+    file. ``sudo`` is the fallback. The ``SUDO_USER=… SUDO_UID=…`` shim
+    bridges the escalator's wiped environment back to the variables the
     install scripts rely on to drop privileges mid-install.
 
     For pkexec we expand ``./install`` to its absolute path because
     pkexec ignores the calling shell's cwd, so a bare ``./install``
     would fail with ``No such file or directory``.
+
+    ``headless=True`` is the in-UI path (the install runs in the
+    background and the UI watches the progress file): it adds
+    ``MTTKDE_NO_CONFIRM=1`` so the install's interactive confirm prompt
+    is skipped — there's no tty, and the UI shows its own warning — and
+    pins ``MTTKDE_PROGRESS_FILE`` so the root-side install writes the
+    very file this process watches. Without ``MTTKDE_NO_CONFIRM`` the
+    background install blocks forever on ``input()`` and the bar never
+    moves. The default (``headless=False``) is the terminal path, where
+    the confirm prompt is shown interactively.
     """
     base = _ACTION_COMMANDS[action]
     target = base[len("sudo "):] if base.startswith("sudo ") else base
 
-    if shutil.which("pkexec"):
-        # Replace the relative ``./install`` / ``./uninstall`` with the
-        # absolute path; everything after the binary stays as-is (e.g.
-        # ``--preflight``).
-        parts = target.split(" ", 1)
-        if parts[0].startswith("./"):
-            parts[0] = shlex.quote(str(REPO_ROOT / parts[0][2:]))
-        absolute_target = " ".join(parts)
+    # Headless vars apply to BOTH escalators: the background install must
+    # skip its tty confirm prompt and write the progress file we watch.
+    headless_pairs = []
+    if headless:
+        headless_pairs = [
+            "MTTKDE_NO_CONFIRM=1",
+            f"MTTKDE_PROGRESS_FILE={shlex.quote(PROGRESS_FILE)}",
+        ]
 
+    if shutil.which("pkexec"):
+        # pkexec wipes the environment, so it also needs the SUDO_* shim
+        # the install relies on to drop privileges mid-run.
         uid = os.getuid()
         try:
             pw = pwd.getpwuid(uid)
-            user = pw.pw_name
-            gid = pw.pw_gid
+            user, gid = pw.pw_name, pw.pw_gid
         except KeyError:
             user, gid = os.environ.get("USER", "user"), os.getgid()
-        env_pairs = " ".join([
+        env_str = " ".join([
             f"SUDO_USER={shlex.quote(user)}",
             f"SUDO_UID={uid}",
             f"SUDO_GID={gid}",
             f"HOME={shlex.quote(os.path.expanduser('~'))}",
-            # Force unbuffered stdout so the QML side sees "Step N:"
-            # lines as cli.py emits them, instead of waiting for the
-            # kernel pipe buffer to flush at install completion.
             "PYTHONUNBUFFERED=1",
+            *headless_pairs,
         ])
-        return f"pkexec env {env_pairs} {absolute_target}"
-    return base
+        # Replace the relative ``./install`` / ``./uninstall`` with the
+        # absolute path; everything after the binary stays as-is (e.g.
+        # ``--preflight``). pkexec ignores the caller's cwd.
+        parts = target.split(" ", 1)
+        if parts[0].startswith("./"):
+            parts[0] = shlex.quote(str(REPO_ROOT / parts[0][2:]))
+        absolute_target = " ".join(parts)
+        return f"pkexec env {env_str} {absolute_target}"
+
+    # sudo fallback: sudo already exports SUDO_USER / SUDO_UID itself, so
+    # only the headless vars need forcing (as leading NAME=value args,
+    # which sudo permits for non-protected vars).
+    prefix = (" ".join(headless_pairs) + " ") if headless_pairs else ""
+    return f"sudo {prefix}{target}"
 
 _TERMINAL_BUILDERS = (
     ("konsole", lambda shell_cmd: ["konsole", "--noclose", "-e",
@@ -109,10 +131,6 @@ _TERMINAL_BUILDERS = (
                                    "--always-new-process", "--",
                                    "bash", "-lc", shell_cmd]),
 )
-
-
-def command_for_action(action: str) -> str:
-    return _ACTION_COMMANDS[action]
 
 
 def _restore_user_session_env(uid: int) -> None:
@@ -257,32 +275,41 @@ def _enable_kwin_blur(window) -> None:
     fn(ctypes.c_void_p(window_ptr), True, ctypes.c_void_p(region_ptr))
 
 
-_ANSI_RE = re.compile(r"\x1b\[[0-9;]*m")
-_STEP_RE = re.compile(r"^\s*Step\s+\d+:\s+(.+?)\s*$")
-
-
 def _make_installer_bridge():
     """Build the QObject that the QML side drives the install through.
 
-    The QML calls ``installer.start("install" | "uninstall")``; the
-    bridge runs the corresponding command via ``pkexec`` (no terminal),
-    reads stdout incrementally, strips ANSI colors, and emits:
+    The QML calls ``installer.start("install" | "uninstall")``. The
+    bridge launches the existing CLI in the BACKGROUND (via pkexec/sudo,
+    no terminal) and does NOT parse its stdout — that path deadlocks the
+    moment the install hits its ``confirm()`` prompt with no controlling
+    tty, which is exactly why the bar used to freeze after the password
+    dialog.
 
-        currentStepChanged(str)   — most recent ``Step N: <title>`` line
-        runningChanged(bool)      — flips false on exit
-        finished(int exitCode)    — exit code; QML opens the error window
-                                    when non-zero
-        logAppended(str)          — every raw stdout line, for the error
-                                    window's tail
+    Instead the install mirrors each step title into a fixed progress
+    file (see ``log.PROGRESS_FILE``); the bridge watches that file and
+    reads the step titles as they appear. The install is launched with
+    ``MTTKDE_NO_CONFIRM=1`` so the in-terminal warning is skipped — the
+    UI shows its own confirmation up front.
+
+    Signals:
+        currentStepChanged()   — most recent step title (a property read)
+        progressChanged()      — 0.0-1.0 fraction
+        runningChanged()       — flips false when the run finishes
+        finished(int exitCode) — exit code from the ``__DONE__`` marker
+                                 (or the process, as a backstop); QML
+                                 opens the error window when non-zero
+        logAppended(str)       — step titles, for the error window's tail
     """
-    from PyQt6.QtCore import QObject, QProcess, pyqtProperty, pyqtSignal, pyqtSlot
+    from PyQt6.QtCore import (
+        QFileSystemWatcher, QObject, QProcess, QTimer,
+        pyqtProperty, pyqtSignal, pyqtSlot,
+    )
 
-    # Rough upper bound on the number of ``Step N:`` lines a full
-    # install can emit — used to project a 0.0-1.0 progress fraction
-    # without modifying ``cli.py``. The bar snaps to 1.0 on completion
-    # so a low estimate just means the bar moves faster, never that it
-    # overshoots: ``min(step / total, 0.95)`` keeps a little headroom
-    # so the bar always has somewhere to grow until ``finished`` fires.
+    # Rough upper bound on the number of steps a full install emits —
+    # used to project a 0.0-1.0 fraction. The bar snaps to 1.0 on the
+    # ``__DONE__`` marker, so a low estimate only means it moves faster,
+    # never that it overshoots: ``min(step / total, 0.95)`` keeps a
+    # little headroom so the bar always has somewhere to grow.
     _ESTIMATED_TOTAL_STEPS = 25
 
     class InstallerBridge(QObject):
@@ -300,7 +327,19 @@ def _make_installer_bridge():
             self._progress = 0.0
             self._running = False
             self._log_lines: list[str] = []
-            self._stdout_buf = b""
+            self._read_offset = 0
+            self._line_buf = ""
+            self._exit_code: int | None = None
+
+            # QFileSystemWatcher catches most writes, but it can coalesce
+            # rapid appends and drops the path when the file is truncated
+            # / recreated at run start. A short poll timer backs it up so
+            # no step title is ever missed.
+            self._watcher = QFileSystemWatcher(self)
+            self._watcher.fileChanged.connect(self._read_progress)
+            self._poll = QTimer(self)
+            self._poll.setInterval(250)
+            self._poll.timeout.connect(self._read_progress)
 
         @pyqtProperty(str, notify=currentStepChanged)
         def currentStep(self) -> str:
@@ -323,25 +362,37 @@ def _make_installer_bridge():
             if self._running or action not in _ACTION_COMMANDS:
                 return
             self._log_lines.clear()
-            self._stdout_buf = b""
             self._current_step = "Starting…"
             self._step_index = 0
             self._progress = 0.0
+            self._read_offset = 0
+            self._line_buf = ""
+            self._exit_code = None
             self.currentStepChanged.emit()
             self.progressChanged.emit()
 
-            shell_cmd = escalated_command_for_action(action)
+            # Truncate the progress file ourselves before launch so we
+            # never read a stale run's titles in the window before the
+            # root-side install calls progress_reset(). Best-effort.
+            try:
+                with open(PROGRESS_FILE, "w", encoding="utf-8"):
+                    pass
+            except OSError:
+                pass
 
+            # Watch the file (re-add each run — truncation can drop it).
+            if PROGRESS_FILE not in self._watcher.files():
+                self._watcher.addPath(PROGRESS_FILE)
+            self._poll.start()
+
+            shell_cmd = escalated_command_for_action(action, headless=True)
             self._proc = QProcess(self)
-            self._proc.setProcessChannelMode(QProcess.ProcessChannelMode.MergedChannels)
+            self._proc.setProcessChannelMode(
+                QProcess.ProcessChannelMode.MergedChannels)
             self._proc.setWorkingDirectory(str(REPO_ROOT))
-            self._proc.readyReadStandardOutput.connect(self._drain_output)
-            self._proc.finished.connect(self._on_finished)
-            # Run via bash -lc so the shell handles the
-            # "env KEY=val pkexec ..." composition uniformly across
-            # action types. ``-l`` loads the user's profile so PATH
-            # entries like ~/.local/bin (used by step_runner imports)
-            # are present.
+            self._proc.finished.connect(self._on_proc_finished)
+            # bash -lc so the shell composes "env KEY=val pkexec ..."
+            # uniformly; -l loads the profile so ~/.local/bin is on PATH.
             self._proc.start("bash", ["-lc", shell_cmd])
             self._running = True
             self.runningChanged.emit()
@@ -351,40 +402,67 @@ def _make_installer_bridge():
             if self._proc and self._proc.state() != QProcess.ProcessState.NotRunning:
                 self._proc.kill()
 
-        def _drain_output(self) -> None:
-            assert self._proc is not None
-            chunk = bytes(self._proc.readAllStandardOutput())
-            self._stdout_buf += chunk
-            while b"\n" in self._stdout_buf:
-                raw, self._stdout_buf = self._stdout_buf.split(b"\n", 1)
-                line = _ANSI_RE.sub("", raw.decode("utf-8", "replace"))
-                self._log_lines.append(line)
-                if len(self._log_lines) > 2000:
-                    # Keep memory bounded even on chatty installs.
-                    del self._log_lines[:1000]
-                self.logAppended.emit(line)
-                m = _STEP_RE.match(line)
-                if m:
-                    self._current_step = m.group(1)
-                    self._step_index += 1
-                    self._progress = min(
-                        self._step_index / _ESTIMATED_TOTAL_STEPS,
-                        0.95,
-                    )
-                    self.currentStepChanged.emit()
-                    self.progressChanged.emit()
+        def _read_progress(self) -> None:
+            """Read whatever new lines have been appended to the progress
+            file since last time and update step / progress / done."""
+            try:
+                with open(PROGRESS_FILE, "r", encoding="utf-8") as fh:
+                    fh.seek(self._read_offset)
+                    chunk = fh.read()
+                    self._read_offset = fh.tell()
+            except OSError:
+                return
 
-        def _on_finished(self, code: int, _status) -> None:
-            # Flush any trailing partial line.
-            if self._stdout_buf:
-                line = _ANSI_RE.sub(
-                    "", self._stdout_buf.decode("utf-8", "replace"))
-                if line:
-                    self._log_lines.append(line)
-                    self.logAppended.emit(line)
-                self._stdout_buf = b""
-            # Snap the bar to 100% so the success view sees a full bar
-            # for the brief moment before it fades out.
+            if not chunk:
+                return
+            self._line_buf += chunk
+            while "\n" in self._line_buf:
+                line, self._line_buf = self._line_buf.split("\n", 1)
+                self._handle_record(line.rstrip("\r"))
+
+        def _handle_record(self, record: str) -> None:
+            if not record:
+                return
+            parts = record.split("\t", 1)
+            head = parts[0]
+            if head == DONE_MARKER:
+                code = 0
+                if len(parts) > 1:
+                    try:
+                        code = int(parts[1])
+                    except ValueError:
+                        code = 0
+                self._finish(code)
+                return
+            # A step record: "<n>\t<title>".
+            title = parts[1] if len(parts) > 1 else head
+            self._log_lines.append(title)
+            if len(self._log_lines) > 2000:
+                del self._log_lines[:1000]
+            self.logAppended.emit(title)
+            self._current_step = title
+            self._step_index += 1
+            self._progress = min(
+                self._step_index / _ESTIMATED_TOTAL_STEPS, 0.95)
+            self.currentStepChanged.emit()
+            self.progressChanged.emit()
+
+        def _on_proc_finished(self, code: int, _status) -> None:
+            # Drain any final records the file write beat us to, then fall
+            # back to the process exit code if the install died before
+            # writing __DONE__ (crash / killed / pkexec auth declined).
+            self._read_progress()
+            if self._exit_code is None:
+                self._finish(code)
+
+        def _finish(self, code: int) -> None:
+            if self._exit_code is not None:
+                return
+            self._exit_code = code
+            self._poll.stop()
+            if PROGRESS_FILE in self._watcher.files():
+                self._watcher.removePath(PROGRESS_FILE)
+            # Snap to a full bar for the brief success-view moment.
             self._progress = 1.0
             self.progressChanged.emit()
             self._running = False

@@ -64,6 +64,26 @@ def test_launch_action_prefers_first_available_terminal(
     assert seen["start_new_session"] is True
 
 
+@pytest.mark.parametrize("action", ["install", "uninstall", "preflight"])
+def test_headless_command_skips_confirm_and_pins_progress_file(
+        installer_ui_module, action):
+    """The in-UI (background) launch MUST carry MTTKDE_NO_CONFIRM=1 — the
+    install has no tty, so without it the confirm prompt's input() blocks
+    forever and the progress bar never moves. It must also pin
+    MTTKDE_PROGRESS_FILE to the file the bridge watches."""
+    cmd = installer_ui_module.escalated_command_for_action(action, headless=True)
+    assert "MTTKDE_NO_CONFIRM=1" in cmd
+    assert f"MTTKDE_PROGRESS_FILE={installer_ui_module.PROGRESS_FILE}" in cmd
+
+
+@pytest.mark.parametrize("action", ["install", "uninstall", "preflight"])
+def test_terminal_command_keeps_interactive_confirm(
+        installer_ui_module, action):
+    """The terminal launch is interactive — it must NOT auto-skip confirm."""
+    cmd = installer_ui_module.escalated_command_for_action(action, headless=False)
+    assert "MTTKDE_NO_CONFIRM" not in cmd
+
+
 def test_launch_action_reports_when_no_terminal_is_available(
         installer_ui_module, monkeypatch):
     monkeypatch.setattr(installer_ui_module.shutil, "which", lambda _name: None)
@@ -157,3 +177,54 @@ def test_drop_root_to_invoking_user_sets_env_and_ids(
     assert os.environ["DBUS_SESSION_BUS_ADDRESS"] == f"unix:path={runtime_dir / 'bus'}"
     assert seen["gid"] == (1001, 1001, 1001)
     assert seen["uid"] == (1000, 1000, 1000)
+
+
+# ── progress file protocol ──────────────────────────────────────────────
+
+def test_log_step_writes_progress_records(monkeypatch, tmp_path):
+    """step() mirrors each title into the progress file; reset truncates
+    and done appends the terminal marker. This is the channel the UI
+    reads instead of parsing stdout."""
+    import importlib
+    progress = tmp_path / "progress"
+    monkeypatch.setenv("MTTKDE_PROGRESS_FILE", str(progress))
+    import log
+    importlib.reload(log)
+    try:
+        log.progress_reset()
+        log.step("Verification")
+        log.step("Installing fonts")
+        log.progress_done(0)
+
+        lines = progress.read_text().splitlines()
+        assert lines == ["1\tVerification", "2\tInstalling fonts", "__DONE__\t0"]
+    finally:
+        # Restore the module's default path for any later test.
+        monkeypatch.delenv("MTTKDE_PROGRESS_FILE", raising=False)
+        importlib.reload(log)
+
+
+def test_progress_helpers_never_raise_on_unwritable_path(monkeypatch, tmp_path):
+    """A progress-file hiccup must never abort an install."""
+    import importlib
+    bad = tmp_path / "nope" / "progress"  # parent dir doesn't exist
+    monkeypatch.setenv("MTTKDE_PROGRESS_FILE", str(bad))
+    import log
+    importlib.reload(log)
+    try:
+        log.progress_reset()
+        log.step("Verification")
+        log.progress_done(1)  # must not raise
+    finally:
+        monkeypatch.delenv("MTTKDE_PROGRESS_FILE", raising=False)
+        importlib.reload(log)
+
+
+def test_confirm_auto_accepts_in_no_confirm_mode(monkeypatch, capsys):
+    """The anti-hang: MTTKDE_NO_CONFIRM=1 makes confirm() return True
+    without ever touching the tty / stdin, so the background install
+    started by the UI doesn't deadlock on input()."""
+    monkeypatch.setenv("MTTKDE_NO_CONFIRM", "1")
+    import cli
+    assert cli.confirm("Install at your own risk.") is True
+    assert "auto-accepting" in capsys.readouterr().out
