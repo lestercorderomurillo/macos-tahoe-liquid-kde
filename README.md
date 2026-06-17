@@ -253,7 +253,7 @@ sudo ./uninstall            # remove everything, reset to Breeze
 
 ### Try it in a VM, per OS
 
-`./vm <distro>` boots a graphical KDE Plasma VM with this repo mounted at `/repo` and the `tester` user auto-logged in. In a terminal, run `cd /repo && sudo ./install` and review by eye.
+`./vm <distro>` boots a graphical KDE Plasma VM with this repo mounted, the `tester` user auto-logged in, and the installer UI opened automatically. Or run `cd /home/tester/repo && sudo ./install` in a terminal and review by eye.
 
 ```bash
 ./vm cachyos
@@ -265,7 +265,10 @@ sudo ./uninstall            # remove everything, reset to Breeze
 ./vm nobara
 ./vm opensuse
 ./vm gentoo
+./vm all                 # every distro at once, each in its own window
 ```
+
+`./vm all` trims each VM to 2 vCPU / 4 GiB so the fleet fits in RAM; override with `VM_CPUS` / `VM_MEM_MIB`. Ctrl-C in the launching terminal stops every VM.
 
 Update check on launch is on by default. To bypass: `sudo MAC_TAHOE_NO_UPDATE_CHECK=true ./install`. To only check: `sudo ./install --check-update`.
 

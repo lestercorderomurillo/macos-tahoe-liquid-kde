@@ -225,7 +225,21 @@ write_files:
       URL=file:///home/tester/repo
       EOF
 
-      chown -R tester:tester /home/tester/repo /home/tester/Desktop
+      # Open the installer UI automatically on first Plasma login so
+      # `./vm` / `./vm all` lands the tester straight on the installer.
+      cat > /home/tester/.config/autostart/mttkde-installer.desktop <<'EOF'
+      [Desktop Entry]
+      Type=Application
+      Name=macos-tahoe-liquid-kde Installer
+      Comment=Opens the macOS Tahoe installer UI
+      Exec=bash -lc 'sleep 8; cd /home/tester/repo && exec ./installer'
+      Icon=system-software-install
+      Terminal=false
+      X-KDE-autostart-phase=2
+      OnlyShowIn=KDE;
+      EOF
+
+      chown -R tester:tester /home/tester/repo /home/tester/Desktop /home/tester/.config
       # Auto-tail the provision log on TTY login until cloud-init is
       # done. This way the user lands in a shell that SHOWS progress
       # instead of a blinking cursor. The marker file at /var/lib/mttkde/
