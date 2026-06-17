@@ -7,7 +7,7 @@
 [![release](https://img.shields.io/github/v/release/lestercorderomurillo/macos-tahoe-liquid-kde?label=release&color=blue)](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/releases) [![tests](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/actions/workflows/test.yml/badge.svg)](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/actions/workflows/test.yml) [![tests count](https://img.shields.io/badge/tests-614_passing-brightgreen)](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/actions/workflows/test.yml) [![license](https://img.shields.io/badge/license-GPL--2.0-blue)](LICENSE) [![plasma](https://img.shields.io/badge/KDE_Plasma-6.6%2B-1d99f3?logo=kde)](https://kde.org/plasma-desktop/) [![last commit](https://img.shields.io/github/last-commit/lestercorderomurillo/macos-tahoe-liquid-kde)](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/commits/) [![report a bug](https://img.shields.io/badge/report-a%20bug-red?logo=github)](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/issues/new)
 
 > [!WARNING]
-> **Alpha / active development.** This project is under heavy development — things break as KDE, KWin and friends update. The installer pulls upstream changes on launch and may behave differently between runs. Expect rough edges, hold off on it for production desktops, and please [report any issue](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/issues/new) you run into.
+> **Alpha / active development.** Things break as KDE, KWin and friends update; the installer pulls upstream changes on launch and may behave differently between runs. Expect rough edges, hold off on production desktops, and please [report any issue](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/issues/new) you hit.
 
 A full macOS Tahoe-style desktop experience for KDE Plasma 6.6+.
 
@@ -192,7 +192,7 @@ Skipped automatically if you `./install --no-plasmoids --no-acrylic-glass`.
 <details>
 <summary><b>KDE / Qt6 development SDK</b> — required by find_package() in the compiled units</summary>
 
-Your distro's KDE Plasma 6 dev meta-package usually pulls all of these in one shot.
+Your distro's KDE Plasma 6 dev meta-package usually pulls these in one shot.
 
 - **Extra CMake Modules** (`ECM`)
 - **KF6**: `KCoreAddons`, `KConfig`, `KI18n`, `KWindowSystem`, `KDBusAddons`, `KCMUtils`, `KIconThemes`
@@ -250,7 +250,7 @@ sudo ./uninstall            # remove everything, reset to Breeze
 
 ### Try it in a VM, per OS
 
-`./vm <distro>` boots a graphical KDE Plasma VM on your host with this repo mounted at `/repo` and the `tester` user auto-logged in. Open a terminal, run `cd /repo && sudo ./install`, and review the result by eye.
+`./vm <distro>` boots a graphical KDE Plasma VM with this repo mounted at `/repo` and the `tester` user auto-logged in. In a terminal, run `cd /repo && sudo ./install` and review by eye.
 
 ```bash
 ./vm cachyos
@@ -276,7 +276,7 @@ sudo ./install --only --fonts --icons         # only fonts and icons
 sudo ./uninstall --only --cursors             # uninstall just cursors
 ```
 
-The available names:
+Available names:
 
 `wallpapers`, `fonts`, `cursors`, `plasma-theme`, `window-decorations`, `kvantum`, `color-schemes`, `icons`, `plasmoids`, `acrylic-glass`, `global-theme`, `layout`, `sounds`, `gtk`, `sddm`, `apps`, `nautilus`, `portals`, `plymouth`.
 
@@ -293,7 +293,7 @@ sudo ./install --dark
 sudo ./install --light
 ```
 
-Auto means: light from 06:00 to 18:00, dark otherwise. The installer drops a systemd user service + timer that handles the flip on its own. `--light` / `--dark` pin the mode and skip the timer entirely.
+Auto is light 06:00–18:00, dark otherwise, via a systemd user timer. `--light` / `--dark` pin the mode and skip the timer.
 
 Switch by hand anytime:
 
@@ -310,8 +310,6 @@ sudo ./install --no-gtk --dark --save   # write to features.json
 sudo ./install                          # next time, reuses features.json
 sudo ./install --reset                  # back to defaults
 ```
-
-The flags from the most recent run are also logged at `~/.local/state/mac-tahoe-liquid-kde/last-run.json` — handy when filing a bug.
 
 ---
 
@@ -330,26 +328,19 @@ When filing, please include:
 
 - Your Plasma version (`plasmashell --version`) and distro (`cat /etc/os-release | grep PRETTY_NAME`)
 - The MacTahoe Liquid KDE version (`cat VERSION` in the repo, or the version shown in *About This Computer*)
-- The exact `./install` flags you used (also recorded in `~/.local/state/mac-tahoe-liquid-kde/last-run.json`)
 - A screenshot or recording if it's a visual regression
 
 ---
 
 ![Disclaimer](https://img.shields.io/badge/disclaimer-not%20affiliated%20with%20apple-6B6B6B?style=for-the-badge&logo=apple&logoColor=white)
 
-Build using AI tools.
+Built using AI tools.
 
-This project is an independent reimplementation inspired by the macOS aesthetic. No assets, code, or intellectual property from Apple Inc. have been copied or redistributed. All themes, icons, plasmoids, and configurations are original work or derived from open-source projects under compatible licenses. "macOS" and "Apple" are trademarks of Apple Inc. This project is not affiliated with or endorsed by Apple.
+Independent reimplementation inspired by the macOS aesthetic — no Apple assets, code, or IP copied or redistributed; everything is original or derived from compatibly-licensed open-source work. "macOS" and "Apple" are trademarks of Apple Inc.; this project is not affiliated with or endorsed by Apple.
 
 If you like Apple, buy an Apple product.
 
----
-
-![License](https://img.shields.io/badge/license-GPL--2.0-3B7B3B?style=for-the-badge&logo=gnu&logoColor=white)
-
-[GPL-2.0](LICENSE) — open-source, copyleft. Forks welcome, but anything you redistribute has to stay open under the same license and keep the copyright notices intact. No warranty, no liability — use it at your own risk.
-
-See [CONTRIBUTING.md](CONTRIBUTING.md) for how to send changes back.
+Licensed [GPL-2.0](LICENSE). See [CONTRIBUTING.md](CONTRIBUTING.md) for how to send changes back.
 
 ---
 
@@ -359,8 +350,11 @@ Thanks to the open-source authors whose work inspired or fed this project:
 
 - **[EliverLara](https://github.com/EliverLara)** — TahoeLauncher inspired the Launcher plasmoid (GPL-2.0).
 - **[vinceliuice](https://github.com/vinceliuice)** — `MacTahoe-icon-theme`, the basis for the icon and cursor look.
+- **[luisbocanegra](https://github.com/luisbocanegra/plasma-panel-colorizer)** — `plasma-panel-colorizer`, installed by the layout step to tint the panels.
 - **[ful1e5](https://github.com/ful1e5)** — `apple_cursor`, inspiration for an alternate macOS-style cursor.
 - **[sahibjotsaggu](https://github.com/sahibjotsaggu)** — `San-Francisco-Pro-Fonts`, where the SF Pro / SF Mono bundle comes from.
+- **[Feather](https://github.com/feathericons/feather)** — icon set bundled in the Launcher (MIT, © Cole Bemis).
+- **[Lucide](https://github.com/lucide-icons/lucide)** — icon set bundled in the Launcher (ISC, © Lucide Contributors).
 - **[512pixels.net](https://512pixels.net/projects/default-mac-wallpapers-in-5k/)** — high-resolution macOS wallpaper archive.
 
 If a credit is missing, please [open an issue](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/issues/new).
