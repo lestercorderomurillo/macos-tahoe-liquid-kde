@@ -219,6 +219,46 @@ def have(cmd: str) -> bool:
     return shutil.which(cmd) is not None
 
 
+# Env vars that a live Plasma session exports. Any one of them is a
+# positive signal — but they are NOT load-bearing: ``sudo`` strips the
+# session environment, and the CLI's ``_restore_user_session_env`` only
+# recovers a subset, so an empty environment here means "couldn't tell",
+# not "not Plasma". See is_plasma_session() for why the binary wins.
+_PLASMA_SESSION_ENV = (
+    ("XDG_CURRENT_DESKTOP", "KDE"),
+    ("XDG_SESSION_DESKTOP", "plasma"),
+    ("KDE_FULL_SESSION", None),
+    ("KDE_SESSION_VERSION", None),
+)
+
+
+def is_plasma_session() -> bool:
+    """Single source of truth for "is this a KDE Plasma host?".
+
+    This installer hard-requires ``plasmashell`` at the preflight gate
+    (``verify_plasma``), so the presence of the binary is the canonical,
+    sudo-proof signal — it survives the environment stripping that
+    ``sudo`` performs, which the session env vars do not. We anchor on
+    the binary and treat the session env vars only as a corroborating
+    positive: if either says "yes", it's Plasma.
+
+    Previously the Nautilus step kept its own ``_is_kde()`` that read the
+    env vars *alone*; under ``sudo`` those came back empty and it falsely
+    reported "Not running under KDE Plasma" even though preflight had
+    just confirmed Plasma from the binary. Reusing one helper keeps the
+    two checks from ever disagreeing again.
+    """
+    if have("plasmashell"):
+        return True
+    for name, expected in _PLASMA_SESSION_ENV:
+        value = os.environ.get(name, "")
+        if not value:
+            continue
+        if expected is None or expected in value:
+            return True
+    return False
+
+
 def _cmake_package_exists(name: str) -> bool:
     if not have("cmake"):
         return False
@@ -334,6 +374,14 @@ def _dep_available(cmd: str) -> bool:
     cmake_name = _CMAKE_PACKAGE_TOKENS.get(cmd)
     if cmake_name is not None:
         return _cmake_package_exists(cmake_name)
+    # The ``qdbus6`` token names a binary whose on-PATH name varies per
+    # distro (Fedora/RHEL ship it as ``qdbus-qt6``, Qt5-only systems as
+    # ``qdbus``). A literal ``have("qdbus6")`` therefore reports "not
+    # found" on Fedora even when the tool is installed, so auto_dep() ran
+    # a noisy no-op reinstall every run. Reuse the same multi-name
+    # resolver the runtime callers use so detection and invocation agree.
+    if cmd == "qdbus6":
+        return qdbus_cmd() is not None
     return have(cmd)
 
 

@@ -1,10 +1,9 @@
-import os
 import shutil
 import subprocess
 import time
 
 from steps._helpers import HOME, fail, have, kw_write, ok, offline, warn
-from utils import run_user
+from utils import is_plasma_session, run_user
 
 NAUTILUS_DESKTOP = "org.gnome.Nautilus.desktop"
 DOLPHIN_DESKTOP = "org.kde.dolphin.desktop"
@@ -27,15 +26,6 @@ def _set_default(desktop_id: str, mime: str) -> bool:
         "--file", "mimeapps.list",
         "--group", "Default Applications",
         "--key", mime, desktop_id,
-    )
-
-
-def _is_kde() -> bool:
-    return (
-        "KDE" in os.environ.get("XDG_CURRENT_DESKTOP", "")
-        or "plasma" in os.environ.get("XDG_SESSION_DESKTOP", "")
-        or bool(os.environ.get("KDE_FULL_SESSION"))
-        or bool(os.environ.get("KDE_SESSION_VERSION"))
     )
 
 
@@ -164,7 +154,7 @@ def _apply_gsettings() -> None:
 
 
 def install() -> None:
-    if not _is_kde():
+    if not is_plasma_session():
         warn("Not running under KDE Plasma — skipping Nautilus setup")
         return
 
@@ -189,7 +179,7 @@ def install() -> None:
 
 
 def uninstall() -> None:
-    if not _is_kde():
+    if not is_plasma_session():
         return
     if have("dolphin"):
         if _set_default(DOLPHIN_DESKTOP, MIME_FOLDER):
