@@ -69,8 +69,6 @@ Window {
         const cmd = "python3 " + _shellQuote(launcherScriptPath)
                   + " --save-features " + _shellQuote(json);
         saver.connectSource(cmd + " # save " + Date.now());
-        featuresWindow.statusKind = "busy";
-        featuresWindow.statusMessage = "Saving…";
     }
 
     P5Support.DataSource {
@@ -98,15 +96,6 @@ Window {
         connectedSources: []
         onNewData: (sourceName, data) => {
             disconnectSource(sourceName);
-            const stdout = (data["stdout"] || "").trim();
-            try {
-                const parsed = JSON.parse(stdout);
-                featuresWindow.statusKind = parsed.ok ? "success" : "error";
-                featuresWindow.statusMessage = parsed.message || "";
-            } catch (e) {
-                featuresWindow.statusKind = "error";
-                featuresWindow.statusMessage = "Save response unreadable.";
-            }
         }
     }
 
@@ -226,8 +215,10 @@ Window {
             GridLayout {
                 Layout.fillWidth: true
                 Layout.fillHeight: true
+                Layout.leftMargin: 48
+                Layout.rightMargin: 48
                 columns: 2
-                columnSpacing: 28
+                columnSpacing: 16
                 rowSpacing: 8
                 flow: GridLayout.TopToBottom
                 rows: Math.ceil(featuresWindow.items.length / 2)
@@ -241,8 +232,17 @@ Window {
                         Layout.preferredWidth: 1   // forces equal column split
                         spacing: 10
 
+                        // Equal flexible spacers on both sides centre the
+                        // text+switch group within its column, while the
+                        // switch sits right next to the text instead of at
+                        // the column edge.
+                        Item { Layout.fillWidth: true }
+
                         ColumnLayout {
-                            Layout.fillWidth: true
+                            // Fixed text width so every row aligns and the
+                            // switch keeps a constant short gap from the
+                            // text across all rows.
+                            Layout.preferredWidth: 200
                             spacing: 1
 
                             Text {
@@ -275,8 +275,11 @@ Window {
                                 items[index] = Object.assign({}, items[index],
                                                              {enabled: checked});
                                 featuresWindow.items = items;
+                                featuresWindow.save();
                             }
                         }
+
+                        Item { Layout.fillWidth: true }
                     }
                 }
             }
@@ -295,23 +298,6 @@ Window {
                     : Kirigami.Theme.disabledTextColor
                 font.family: featuresWindow.fontFamily
                 font.pointSize: Kirigami.Theme.defaultFont.pointSize * 0.9
-            }
-
-            Item { Layout.preferredHeight: 8 }
-
-            RowLayout {
-                Layout.alignment: Qt.AlignHCenter
-                spacing: 10
-
-                QQC2.Button {
-                    text: "Cancel"
-                    onClicked: featuresWindow.close()
-                }
-
-                QQC2.Button {
-                    text: "Save"
-                    onClicked: featuresWindow.save()
-                }
             }
         }
     }

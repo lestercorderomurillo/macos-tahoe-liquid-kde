@@ -565,3 +565,36 @@ def test_x11_cmake_package_per_distro(monkeypatch, distro_id, expected):
 def test_xcb_cmake_package_per_distro(monkeypatch, distro_id, expected):
     _force_distro(monkeypatch, distro_id)
     assert distro.package_for("xcb-cmake", "libxcb") == expected
+
+
+# ── package-manager install command: supported families only ─────────
+#
+# The supported families (README support table + tests/containers/ CI
+# matrix) each resolve to a real, non-interactive install prefix.
+# Debian/Ubuntu/Alpine/Void are deliberately NOT in
+# _PACKAGE_MANAGER_INSTALL: they have no KF6/Plasma -cmake rows in
+# _PACKAGE_MAP, so auto-installing a missing C++ dep would shell out a
+# bogus Arch package name. They must raise UnsupportedDistroError up
+# front so pkg_install surfaces a clean "install manually" message
+# rather than dying half-way through.
+
+
+@pytest.mark.parametrize("distro_id, id_like, expected", [
+    ("arch",                (),            ["pacman", "-S", "--noconfirm", "--needed"]),
+    ("cachyos",             ("arch",),     ["pacman", "-S", "--noconfirm", "--needed"]),
+    ("fedora",              (),            ["dnf", "install", "-y"]),
+    ("nobara",              ("fedora",),   ["dnf", "install", "-y"]),
+    ("rhel",                (),            ["dnf", "install", "-y"]),
+    ("opensuse-tumbleweed", ("opensuse",), ["zypper", "--non-interactive", "install", "--no-recommends"]),
+    ("gentoo",              (),            ["emerge", "--quiet", "--noreplace"]),
+])
+def test_install_cmd_for_supported_families(monkeypatch, distro_id, id_like, expected):
+    _force_distro(monkeypatch, distro_id, id_like)
+    assert distro.package_manager_install_cmd() == expected
+
+
+@pytest.mark.parametrize("distro_id", ["debian", "ubuntu", "alpine", "void"])
+def test_install_cmd_raises_for_unsupported_distros(monkeypatch, distro_id):
+    _force_distro(monkeypatch, distro_id)
+    with pytest.raises(distro.UnsupportedDistroError):
+        distro.package_manager_install_cmd()

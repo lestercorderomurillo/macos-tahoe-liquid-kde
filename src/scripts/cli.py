@@ -32,13 +32,6 @@ ALL_FEATURES = [
     "nautilus", "portals", "apply_theme",
 ]
 
-# ``apply_theme`` is not an installable component — it has no module under
-# ``steps/`` and never appears in ``INSTALL_ORDER``. It is a behavioural gate:
-# when off, every component's files still land on disk, but the second half of
-# install (look-and-feel apply, panel layout, KWin restart, plasmashell
-# restart, config verification) is skipped so the running desktop is left
-# untouched. Flip it back on and re-run to activate a staged install.
-
 # Walk order for the install/uninstall loop.
 # 1. Core visual foundations first.
 # 2. Shell components that the panel layout depends on next.
@@ -55,27 +48,27 @@ INSTALL_ORDER = [
 ]
 
 FEATURE_DESC = {
-    "wallpapers": "macOS wallpaper collection",
-    "fonts": "SF Pro and SF Mono typefaces",
-    "cursors": "macOS-style cursors",
-    "plasma_theme": "Plasma desktop theme (light and dark)",
-    "window_decorations": "macOS-style Aurorae window decorations",
-    "kvantum": "Kvantum Qt widget style theme",
-    "color_schemes": "Color schemes (light and dark)",
-    "icons": "macOS-style icon set",
-    "plasmoids": "Custom Plasma widgets",
-    "globalmenu": "Global Menu C++ applet",
-    "acrylic_glass": "Acrylic Glass KWin blur effect",
-    "global_theme": "Plasma global theme (look-and-feel)",
-    "layout": "Panel layout (top bar + dock)",
-    "sounds": "Notification and event sounds",
-    "gtk": "GTK 2/3/4 theme",
-    "sddm": "Login screen theme",
-    "plymouth": "Boot splash screen (Plymouth)",
-    "apps": "App configuration tweaks",
-    "nautilus": "Nautilus file manager (default on KDE)",
-    "portals": "Route FileChooser / AppChooser to KDE (fixes stale dialog colors)",
-    "apply_theme": "Set as default after install (switches Plasma to the new look)",
+    "wallpapers": "Wallpaper collection",
+    "fonts": "SF Pro and SF Mono",
+    "cursors": "Cursor theme",
+    "plasma_theme": "Desktop theme",
+    "window_decorations": "Window decorations",
+    "kvantum": "Qt widget style",
+    "color_schemes": "Color schemes",
+    "icons": "Icon set",
+    "plasmoids": "Plasma widgets",
+    "globalmenu": "Global menu",
+    "acrylic_glass": "Blur effect",
+    "global_theme": "Global theme",
+    "layout": "Top bar and dock",
+    "sounds": "System sounds",
+    "gtk": "GTK theme",
+    "sddm": "Login screen",
+    "plymouth": "Boot splash",
+    "apps": "App tweaks",
+    "nautilus": "Nautilus file manager",
+    "portals": "Native KDE dialogs",
+    "apply_theme": "Set as default after install",
 }
 
 INSTALL_HELP = """\
@@ -850,8 +843,6 @@ def run_install(argv: list[str]) -> int:
 
     tracker = RunTracker("install", argv, str(feat.get("theme_mode", "auto")))
     tracker.start()
-    # Start a fresh progress file the UI can watch. Must precede the first
-    # step()/banner so the UI never reads a stale title from a prior run.
     progress_reset()
     rc = 0
     try:
@@ -913,12 +904,6 @@ def run_install(argv: list[str]) -> int:
         note("Installs the auto light/dark theme switcher")
         run_phase("theme_switch", "install")
 
-        # ``apply_theme`` gates the "set as default" half of install. The
-        # files always land above; flipping Plasma over (look-and-feel apply,
-        # layout, KWin restart, plasmashell restart, verification) only runs
-        # when this install should also become the active desktop. With it off
-        # the install stages without disrupting the running session — re-run
-        # with --apply-theme to activate.
         if feat.get("apply_theme", True):
             step("Applying Changes")
             note("Applies settings, flushes caches, restarts KWin")

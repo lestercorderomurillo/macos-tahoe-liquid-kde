@@ -62,7 +62,7 @@ Window {
     }
 
     function runAction(action: string): void {
-        if (typeof installer === "undefined") {
+        if (!installer) {
             console.warn("installer bridge missing — running without PyQt6?");
             return;
         }
@@ -72,7 +72,7 @@ Window {
     }
 
     Connections {
-        target: typeof installer !== "undefined" ? installer : null
+        target: installer ? installer : null
         function onFinished(code) {
             if (code === 0) {
                 installerWindow.viewMode = "success";
@@ -131,11 +131,13 @@ Window {
                 width: 14
                 height: 14
                 radius: 7
-                color: installerWindow.active ? "#FF5F57" : parent.inactiveColor
+                color: (installerWindow.active && !installerWindow.busy)
+                    ? "#FF5F57" : parent.inactiveColor
                 border.width: 0.5
-                border.color: installerWindow.active
+                border.color: (installerWindow.active && !installerWindow.busy)
                     ? Qt.rgba(0, 0, 0, 0.12)
                     : parent.inactiveBorder
+                Behavior on color { ColorAnimation { duration: 150 } }
 
                 HoverHandler { id: closeHover }
                 Text {
@@ -145,10 +147,14 @@ Window {
                     font.family: installerWindow.fontFamily
                     font.pointSize: Kirigami.Theme.defaultFont.pointSize * 0.95
                     font.weight: Font.Bold
-                    opacity: closeHover.hovered && installerWindow.active ? 1 : 0
+                    opacity: closeHover.hovered && installerWindow.active
+                        && !installerWindow.busy ? 1 : 0
                     Behavior on opacity { NumberAnimation { duration: 120 } }
                 }
-                TapHandler { onTapped: installerWindow.close() }
+                TapHandler {
+                    enabled: !installerWindow.busy
+                    onTapped: installerWindow.close()
+                }
             }
 
             Rectangle {
@@ -245,27 +251,34 @@ Window {
         }
 
         // ── installing view ──────────────────────────────────────────────
-        // macOS-style: just a centered progress bar that smoothly fills
-        // as cli.py emits "Step N:" lines. No labels, no spinner — the
-        // three traffic-light buttons in the corner are the only chrome.
         Item {
             anchors.fill: parent
             visible: installerWindow.viewMode === "installing"
 
-            QQC2.ProgressBar {
+            Rectangle {
+                id: progressTrack
                 anchors.centerIn: parent
                 width: 360
-                from: 0.0
-                to: 1.0
-                value: typeof installer !== "undefined" ? installer.progress : 0.0
+                height: 8
+                radius: height / 2
+                color: installerWindow.isDarkTheme ? "#5A5A5E" : "#B0B0B8"
 
-                // Smooth motion between discrete step jumps. ~600ms feels
-                // alive without crossing into sluggish.
-                Behavior on value {
+                property real fraction: installer ? installer.progress : 0.0
+                Behavior on fraction {
                     NumberAnimation {
                         duration: 600
                         easing.type: Easing.OutCubic
                     }
+                }
+
+                Rectangle {
+                    id: progressFill
+                    anchors.left: parent.left
+                    anchors.top: parent.top
+                    anchors.bottom: parent.bottom
+                    width: Math.max(parent.height, parent.width * progressTrack.fraction)
+                    radius: parent.radius
+                    color: "#007AFF"
                 }
             }
         }

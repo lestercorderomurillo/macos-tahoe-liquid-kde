@@ -1,18 +1,5 @@
 #!/usr/bin/env python3
-"""Thin QML wrapper for the existing install / uninstall commands.
-
-This does not replace the Python installer backend. It either:
-
-1. loads ``preview_installer.qml`` via PyQt6 (preferred) so we can
-   attach KWin's blur-behind effect to the window the same way the
-   AboutWindow gets it inside plasmashell — falling back to ``qml6``
-   as a subprocess if PyQt6 is not installed, or
-2. opens ``sudo ./install`` / ``sudo ./uninstall`` in a terminal.
-
-Keeping the real work in the existing CLI preserves the current sudo
-flow, including the ``SUDO_USER`` / ``SUDO_UID`` handoff that the
-installer relies on after privilege drop.
-"""
+"""QML wrapper for the install / uninstall commands."""
 
 from __future__ import annotations
 
@@ -22,6 +9,7 @@ import os
 import pwd
 import shlex
 import shutil
+import signal
 import subprocess
 import sys
 from pathlib import Path
@@ -42,40 +30,13 @@ _ACTION_COMMANDS = {
 
 
 def command_for_action(action: str) -> str:
-    """Display-friendly form, also what tests assert. Real launch uses
-    :func:`escalated_command_for_action` which picks pkexec when sudo
-    is unavailable so users who aren't in sudoers can still install."""
     return _ACTION_COMMANDS[action]
 
 
 def escalated_command_for_action(action: str, headless: bool = False) -> str:
-    """Shell command to run an action as root — prefers pkexec over sudo.
-
-    ``pkexec`` (polkit) pops a graphical password prompt and works on
-    any host with a polkit agent, including users not in the sudoers
-    file. ``sudo`` is the fallback. The ``SUDO_USER=… SUDO_UID=…`` shim
-    bridges the escalator's wiped environment back to the variables the
-    install scripts rely on to drop privileges mid-install.
-
-    For pkexec we expand ``./install`` to its absolute path because
-    pkexec ignores the calling shell's cwd, so a bare ``./install``
-    would fail with ``No such file or directory``.
-
-    ``headless=True`` is the in-UI path (the install runs in the
-    background and the UI watches the progress file): it adds
-    ``MTTKDE_NO_CONFIRM=1`` so the install's interactive confirm prompt
-    is skipped — there's no tty, and the UI shows its own warning — and
-    pins ``MTTKDE_PROGRESS_FILE`` so the root-side install writes the
-    very file this process watches. Without ``MTTKDE_NO_CONFIRM`` the
-    background install blocks forever on ``input()`` and the bar never
-    moves. The default (``headless=False``) is the terminal path, where
-    the confirm prompt is shown interactively.
-    """
     base = _ACTION_COMMANDS[action]
     target = base[len("sudo "):] if base.startswith("sudo ") else base
 
-    # Headless vars apply to BOTH escalators: the background install must
-    # skip its tty confirm prompt and write the progress file we watch.
     headless_pairs = []
     if headless:
         headless_pairs = [
@@ -84,8 +45,6 @@ def escalated_command_for_action(action: str, headless: bool = False) -> str:
         ]
 
     if shutil.which("pkexec"):
-        # pkexec wipes the environment, so it also needs the SUDO_* shim
-        # the install relies on to drop privileges mid-run.
         uid = os.getuid()
         try:
             pw = pwd.getpwuid(uid)
@@ -100,18 +59,12 @@ def escalated_command_for_action(action: str, headless: bool = False) -> str:
             "PYTHONUNBUFFERED=1",
             *headless_pairs,
         ])
-        # Replace the relative ``./install`` / ``./uninstall`` with the
-        # absolute path; everything after the binary stays as-is (e.g.
-        # ``--preflight``). pkexec ignores the caller's cwd.
         parts = target.split(" ", 1)
         if parts[0].startswith("./"):
             parts[0] = shlex.quote(str(REPO_ROOT / parts[0][2:]))
         absolute_target = " ".join(parts)
         return f"pkexec env {env_str} {absolute_target}"
 
-    # sudo fallback: sudo already exports SUDO_USER / SUDO_UID itself, so
-    # only the headless vars need forcing (as leading NAME=value args,
-    # which sudo permits for non-protected vars).
     prefix = (" ".join(headless_pairs) + " ") if headless_pairs else ""
     return f"sudo {prefix}{target}"
 
@@ -169,8 +122,6 @@ def drop_root_to_invoking_user() -> int:
     os.environ["LOGNAME"] = sudo_user
     _restore_user_session_env(sudo_uid)
 
-    # Drop real/effective/saved IDs permanently so Qt does not see a
-    # setuid-style mismatch when the preview window starts.
     os.setresgid(sudo_gid, sudo_gid, sudo_gid)
     os.setresuid(sudo_uid, sudo_uid, sudo_uid)
     return 0
@@ -229,24 +180,9 @@ def launch_action(action: str) -> dict[str, object]:
 
 
 def _enable_kwin_blur(window) -> None:
-    """Ask KWin to blur whatever sits behind ``window``.
-
-    The AboutWindow gets this for free because plasmashell loads it
-    inside Plasma's QML context, where KWin applies surface effects to
-    everything plasmashell owns. A standalone ``qml6`` window does not
-    — KWin treats it like any other unprivileged toplevel and skips
-    blur, which is why the installer otherwise renders opaque.
-
-    KWindowEffects::enableBlurBehind speaks the right protocol on both
-    X11 (sets ``_KDE_NET_WM_BLUR_BEHIND_REGION``) and Wayland (uses the
-    kde-wayland-blur protocol via the KDE Qt platform plugin). There
-    are no Python bindings for KF6 on Arch / CachyOS, so we call the
-    C++ symbol directly via ctypes. A failure here is non-fatal — the
-    window still works, it just renders without blur.
-    """
     import ctypes
     try:
-        import sip  # PyQt6's sip is exposed as a sibling module
+        import sip
     except ImportError:
         from PyQt6 import sip  # type: ignore
 
@@ -276,40 +212,11 @@ def _enable_kwin_blur(window) -> None:
 
 
 def _make_installer_bridge():
-    """Build the QObject that the QML side drives the install through.
-
-    The QML calls ``installer.start("install" | "uninstall")``. The
-    bridge launches the existing CLI in the BACKGROUND (via pkexec/sudo,
-    no terminal) and does NOT parse its stdout — that path deadlocks the
-    moment the install hits its ``confirm()`` prompt with no controlling
-    tty, which is exactly why the bar used to freeze after the password
-    dialog.
-
-    Instead the install mirrors each step title into a fixed progress
-    file (see ``log.PROGRESS_FILE``); the bridge watches that file and
-    reads the step titles as they appear. The install is launched with
-    ``MTTKDE_NO_CONFIRM=1`` so the in-terminal warning is skipped — the
-    UI shows its own confirmation up front.
-
-    Signals:
-        currentStepChanged()   — most recent step title (a property read)
-        progressChanged()      — 0.0-1.0 fraction
-        runningChanged()       — flips false when the run finishes
-        finished(int exitCode) — exit code from the ``__DONE__`` marker
-                                 (or the process, as a backstop); QML
-                                 opens the error window when non-zero
-        logAppended(str)       — step titles, for the error window's tail
-    """
     from PyQt6.QtCore import (
         QFileSystemWatcher, QObject, QProcess, QTimer,
         pyqtProperty, pyqtSignal, pyqtSlot,
     )
 
-    # Rough upper bound on the number of steps a full install emits —
-    # used to project a 0.0-1.0 fraction. The bar snaps to 1.0 on the
-    # ``__DONE__`` marker, so a low estimate only means it moves faster,
-    # never that it overshoots: ``min(step / total, 0.95)`` keeps a
-    # little headroom so the bar always has somewhere to grow.
     _ESTIMATED_TOTAL_STEPS = 25
 
     class InstallerBridge(QObject):
@@ -331,10 +238,6 @@ def _make_installer_bridge():
             self._line_buf = ""
             self._exit_code: int | None = None
 
-            # QFileSystemWatcher catches most writes, but it can coalesce
-            # rapid appends and drops the path when the file is truncated
-            # / recreated at run start. A short poll timer backs it up so
-            # no step title is ever missed.
             self._watcher = QFileSystemWatcher(self)
             self._watcher.fileChanged.connect(self._read_progress)
             self._poll = QTimer(self)
@@ -371,16 +274,12 @@ def _make_installer_bridge():
             self.currentStepChanged.emit()
             self.progressChanged.emit()
 
-            # Truncate the progress file ourselves before launch so we
-            # never read a stale run's titles in the window before the
-            # root-side install calls progress_reset(). Best-effort.
             try:
                 with open(PROGRESS_FILE, "w", encoding="utf-8"):
                     pass
             except OSError:
                 pass
 
-            # Watch the file (re-add each run — truncation can drop it).
             if PROGRESS_FILE not in self._watcher.files():
                 self._watcher.addPath(PROGRESS_FILE)
             self._poll.start()
@@ -391,8 +290,6 @@ def _make_installer_bridge():
                 QProcess.ProcessChannelMode.MergedChannels)
             self._proc.setWorkingDirectory(str(REPO_ROOT))
             self._proc.finished.connect(self._on_proc_finished)
-            # bash -lc so the shell composes "env KEY=val pkexec ..."
-            # uniformly; -l loads the profile so ~/.local/bin is on PATH.
             self._proc.start("bash", ["-lc", shell_cmd])
             self._running = True
             self.runningChanged.emit()
@@ -403,8 +300,6 @@ def _make_installer_bridge():
                 self._proc.kill()
 
         def _read_progress(self) -> None:
-            """Read whatever new lines have been appended to the progress
-            file since last time and update step / progress / done."""
             try:
                 with open(PROGRESS_FILE, "r", encoding="utf-8") as fh:
                     fh.seek(self._read_offset)
@@ -434,7 +329,6 @@ def _make_installer_bridge():
                         code = 0
                 self._finish(code)
                 return
-            # A step record: "<n>\t<title>".
             title = parts[1] if len(parts) > 1 else head
             self._log_lines.append(title)
             if len(self._log_lines) > 2000:
@@ -448,9 +342,6 @@ def _make_installer_bridge():
             self.progressChanged.emit()
 
         def _on_proc_finished(self, code: int, _status) -> None:
-            # Drain any final records the file write beat us to, then fall
-            # back to the process exit code if the install died before
-            # writing __DONE__ (crash / killed / pkexec auth declined).
             self._read_progress()
             if self._exit_code is None:
                 self._finish(code)
@@ -462,7 +353,6 @@ def _make_installer_bridge():
             self._poll.stop()
             if PROGRESS_FILE in self._watcher.files():
                 self._watcher.removePath(PROGRESS_FILE)
-            # Snap to a full bar for the brief success-view moment.
             self._progress = 1.0
             self.progressChanged.emit()
             self._running = False
@@ -473,24 +363,28 @@ def _make_installer_bridge():
 
 
 def _launch_preview_pyqt() -> int:
-    """Load InstallerWindow via PyQt6 so we can attach a KWin blur."""
-    # Force the Plasma desktop style so the installer's QQC2 buttons,
-    # switches, and scroll bars look exactly like the AboutWindow does
-    # inside plasmashell — same padding, corner radius, hover, accent
-    # color. Without this, standalone Qt apps default to the Fusion
-    # style and the installer reads as a foreign Qt window on KDE.
     os.environ.setdefault("QT_QUICK_CONTROLS_STYLE", "org.kde.desktop")
 
     try:
-        from PyQt6.QtCore import QUrl
+        from PyQt6.QtCore import QTimer, QUrl
         from PyQt6.QtGui import QGuiApplication
         from PyQt6.QtQml import QQmlApplicationEngine
     except ImportError:
-        return -1  # signal "PyQt6 unavailable" to the caller
+        return -1
 
+    # We ship no .desktop file, so Qt's startup attempt to register with
+    # xdg-desktop-portal always fails and logs
+    # `qt.qpa.services: Could not register app ID: App info not found`.
+    # The installer uses no portal features (file dialogs, screenshots),
+    # so turn the portal integration off entirely — this is Qt's real
+    # opt-out var (the old QT_DISABLE_PORTALS was a no-op). Must be set
+    # before the QGuiApplication is constructed.
+    os.environ.setdefault("QT_NO_XDG_DESKTOP_PORTAL", "1")
     app = QGuiApplication.instance() or QGuiApplication(sys.argv[:1])
+    app.setApplicationName("mac-tahoe-liquid-kde-installer")
     engine = QQmlApplicationEngine()
     bridge = _make_installer_bridge()
+    bridge.setParent(engine)
     engine.rootContext().setContextProperty("installer", bridge)
     engine.load(QUrl.fromLocalFile(str(PREVIEW_QML)))
     roots = engine.rootObjects()
@@ -498,7 +392,23 @@ def _launch_preview_pyqt() -> int:
         return 1
     window = roots[0]
     _enable_kwin_blur(window)
-    return app.exec()
+    app._installer_bridge = bridge
+
+    # Let Ctrl+C in the launching terminal close the window. Qt's C++ event
+    # loop blocks Python signal delivery, so a periodic idle timer hands
+    # control back to the interpreter often enough for SIGINT to land.
+    def _on_sigint(*_):
+        bridge.cancel()
+        app.quit()
+
+    prev_sigint = signal.signal(signal.SIGINT, _on_sigint)
+    wake = QTimer()
+    wake.start(200)
+    wake.timeout.connect(lambda: None)
+    try:
+        return app.exec()
+    finally:
+        signal.signal(signal.SIGINT, prev_sigint)
 
 
 def launch_preview() -> int:
@@ -513,20 +423,19 @@ def launch_preview() -> int:
     if not PREVIEW_QML.is_file():
         print(f"preview QML missing: {PREVIEW_QML}", file=sys.stderr)
         return 1
+    # qmlscene hits the same xdg-desktop-portal registration warning as
+    # the PyQt path; the portal is unused, so turn it off via Qt's real
+    # opt-out var (same flag set above).
+    env = {**os.environ, "QT_NO_XDG_DESKTOP_PORTAL": "1"}
     return subprocess.run(
         [runner, str(PREVIEW_QML)],
         check=False,
         cwd=str(REPO_ROOT),
+        env=env,
     ).returncode
 
 
 def dump_features() -> dict[str, object]:
-    """Return current feature state for the Features window.
-
-    Reads ``features.json`` if it exists; otherwise returns
-    DEFAULT_FEATURES. The QML side renders a toggle per entry in
-    ``items`` (order preserved) with the description below the label.
-    """
     state: dict[str, object] = dict(DEFAULT_FEATURES)
     if CONFIG_FILE.is_file():
         try:
@@ -546,13 +455,12 @@ def dump_features() -> dict[str, object]:
             "enabled": bool(state.get(key, True)),
         }
         for key in ALL_FEATURES
-        if key != "no_download"  # internal flag, not a user-facing feature
+        if key != "no_download"
     ]
     return {"items": items, "config_path": str(CONFIG_FILE)}
 
 
 def save_features(payload: dict[str, object]) -> dict[str, object]:
-    """Persist toggles received from the QML side into ``features.json``."""
     state: dict[str, object] = dict(DEFAULT_FEATURES)
     if CONFIG_FILE.is_file():
         try:

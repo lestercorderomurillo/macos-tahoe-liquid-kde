@@ -40,8 +40,6 @@ declare -A URL=(
 )
 declare -A PORT=([arch]=2221 [cachyos]=2222 [manjaro]=2223 [endeavouros]=2224 [garuda]=2225 [fedora]=2226 [nobara]=2227 [opensuse]=2228 [gentoo]=2229)
 
-# Fixed boot order so `all` lays windows out predictably and the same
-# distro always gets the same overlay / port.
 ORDER=(cachyos arch manjaro endeavouros garuda fedora nobara opensuse gentoo)
 
 die()  { echo "✗ $*" >&2; exit 1; }
@@ -54,9 +52,6 @@ require_tools() {
     done
 }
 
-# Download a base image if it isn't cached yet. Safe to call repeatedly;
-# in `all` mode we call it for every unique base BEFORE fanning out so
-# parallel boots never race on the same partial download.
 ensure_base() {
     local base="$1"
     [[ -f "$CACHE/$base" ]] && return 0
@@ -66,10 +61,6 @@ ensure_base() {
     mv "$CACHE/$base.part" "$CACHE/$base"
 }
 
-# Build the qemu argv for one distro into the global `QEMU_ARGV` array.
-# Prepares the overlay disk + cloud-init ISO as a side effect. Returns
-# non-zero (without exiting) when the distro can't boot, so `all` can
-# skip it instead of taking the whole fleet down.
 QEMU_ARGV=()
 prepare_one() {
     local distro="$1" clean="$2"
@@ -96,9 +87,6 @@ prepare_one() {
     ci="$CI/$distro.yaml"
     [[ -f "$ci" ]] || { warn "$distro: no cloud-init at $ci"; return 1; }
 
-    # Regenerate the cloud-init ISO every boot so edits to the yaml are
-    # picked up. The tmp dir is only needed while genisoimage runs, so
-    # clean it inline — no EXIT trap to race between parallel boots.
     tmp="$(mktemp -d)"
     cp "$ci" "$tmp/user-data"
     printf "instance-id: vm-%s-%s\nlocal-hostname: %s\n" \
@@ -138,8 +126,6 @@ boot_all() {
     local clean="$1"
     require_tools
 
-    # Pre-fetch every unique base image sequentially so parallel boots
-    # don't fight over the same partial download.
     local -A seen=()
     local d
     for d in "${ORDER[@]}"; do
@@ -162,15 +148,12 @@ boot_all() {
         "${QEMU_ARGV[@]}" &
         pids+=("$!")
         started=$((started + 1))
-        # Small stagger so nine qemu windows don't all grab the GL
-        # context in the same instant.
         sleep 2
     done
 
     (( started > 0 )) || die "no VMs could be started"
     say "$started VM(s) running. Close a window to stop that VM; Ctrl-C here stops all."
 
-    # Forward Ctrl-C to every child so one interrupt tears the fleet down.
     trap 'echo; say "stopping all VMs"; kill "${pids[@]}" 2>/dev/null || true' INT TERM
     wait
 }
@@ -199,8 +182,6 @@ for a in "$@"; do
 done
 
 if [[ "$target" == "all" ]]; then
-    # Trim per-VM resources for the fleet so nine VMs fit in RAM. A
-    # single ./vm <distro> keeps the roomier defaults.
     DEFAULT_CPUS=2
     DEFAULT_MEM=4096
     boot_all "$clean"

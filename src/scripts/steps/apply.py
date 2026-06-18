@@ -9,7 +9,7 @@ from pathlib import Path
 from steps._helpers import (
     HOME, fail, feat_enabled, have, info, kw_write, ok, qdbus_call, theme_mode, warn,
 )
-from utils import run_user
+from utils import qdbus_cmd, run_user
 from theme_switch import (
     apply_cursortheme_live,
     cycle_widget_style_live,
@@ -49,6 +49,30 @@ _FONTS_RESET = {
     "fixed":                "Hack,10,-1,5,50,0,0,0,0,0",
 }
 
+# Upper bound for the fire-and-forget live-apply calls below
+# (kbuildsycoca6, plasma-apply-wallpaperimage, the theme-switch binary,
+# dbus-send). run_user injects no timeout of its own, so a degraded
+# plasmashell / kwin / dbus endpoint could otherwise hang the whole
+# installer indefinitely. 15s matches the ceiling qdbus_call already
+# uses in utils for the same class of KDE-DBus round-trip.
+_LIVE_APPLY_TIMEOUT = 15
+
+
+def _run_live(cmd: list[str]) -> None:
+    """Fire a live-apply command under the user's identity, ignoring the
+    result and capping it at _LIVE_APPLY_TIMEOUT so a stuck KDE endpoint
+    can never freeze the installer. Output is discarded — these are
+    best-effort live refreshes; the authoritative state is the config
+    on disk, which the Plasma restart at the end of install re-reads."""
+    try:
+        run_user(
+            cmd, check=False,
+            stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
+            timeout=_LIVE_APPLY_TIMEOUT,
+        )
+    except subprocess.TimeoutExpired:
+        pass
+
 
 def _flush_caches() -> None:
     for sub in _CACHES:
@@ -66,9 +90,7 @@ def _flush_caches() -> None:
                 try: p.unlink()
                 except OSError: pass
     if have("kbuildsycoca6"):
-        run_user(["kbuildsycoca6", "--noincremental"],
-                 check=False,
-                 stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        _run_live(["kbuildsycoca6", "--noincremental"])
     ok("Caches flushed")
 
 
@@ -121,10 +143,7 @@ def install() -> None:
     if feat_enabled("WALLPAPERS"):
         wp = _wallpaper_path()
         if wp and have("plasma-apply-wallpaperimage"):
-            run_user(
-                ["plasma-apply-wallpaperimage", str(wp)], check=False,
-                stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
-            )
+            _run_live(["plasma-apply-wallpaperimage", str(wp)])
             ok(f"Wallpaper applied ({wp.name})")
 
     _flush_caches()
@@ -136,10 +155,7 @@ def install() -> None:
         # restart at the end of install loads the correct theme from config;
         # Kvantum/GTK are still applied immediately so already-open windows
         # update.
-        run_user(
-            [str(switch), theme_mode(), "install"], check=False,
-            stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
-        )
+        _run_live([str(switch), theme_mode(), "install"])
         ok(f"Theme applied ({theme_mode()})")
 
     print("  …  Restarting KWin", end="\r", flush=True)
@@ -274,11 +290,9 @@ def uninstall() -> None:
         if feat_enabled("ICONS"):
             kw_write("--file", "kdeglobals", "--group", "Icons",
                      "--key", "Theme", "breeze")
-            run_user(
+            _run_live(
                 ["dbus-send", "--session", "--type=signal",
-                 "/KIconLoader", "org.kde.KIconLoader.iconChanged", "int32:0"],
-                check=False,
-                stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
+                 "/KIconLoader", "org.kde.KIconLoader.iconChanged", "int32:0"]
             )
             ok("Icons reset")
         if feat_enabled("WALLPAPERS"):
@@ -286,10 +300,7 @@ def uninstall() -> None:
                       "/usr/share/wallpapers/Flow"):
                 if Path(p).is_dir():
                     if have("plasma-apply-wallpaperimage"):
-                        run_user(
-                            ["plasma-apply-wallpaperimage", p], check=False,
-                            stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
-                        )
+                        _run_live(["plasma-apply-wallpaperimage", p])
                     ok("Wallpaper reset")
                     break
         reset_kde_color_scheme_config("BreezeLight")
@@ -321,7 +332,7 @@ def uninstall() -> None:
         else:
             warn("Live cursor apply skipped")
 
-    if live_ready and (have("qdbus6") or have("qdbus")):
+    if live_ready and qdbus_cmd() is not None:
         qdbus_call("org.kde.KWin", "/KWin", "org.kde.KWin.reconfigure")
         time.sleep(2)
         ok("KWin reconfigured")

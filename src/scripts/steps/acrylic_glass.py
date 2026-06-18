@@ -1,4 +1,3 @@
-import shutil
 import subprocess
 import time
 from pathlib import Path
@@ -8,7 +7,7 @@ from steps._helpers import (
     build_dir, cmake_build, fail, info, kw_write, ok, offline, qdbus_call,
     sudo_install_file, sudo_remove, warn,
 )
-from utils import run_user
+from utils import qdbus_cmd, run_user
 
 SRC = offline("kwin-effects/acrylic-glass")
 BUILD = build_dir("kwin-effects/acrylic-glass")
@@ -167,7 +166,7 @@ def install() -> None:
     qdbus_call("org.kde.KWin", "/Effects",
                "org.kde.kwin.Effects.loadEffect", "liquidglass")
 
-    q = shutil.which("qdbus6") or shutil.which("qdbus-qt6") or shutil.which("qdbus")
+    q = qdbus_cmd()
     active = ""
     if q:
         try:
