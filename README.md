@@ -143,7 +143,7 @@ Plymouth boot screen with centered Apple-style logo on every monitor, scaled dyn
 | **GTK Theme** | GTK2/3/4 window chrome and controls | ✅ |
 | **Acrylic Glass** | KWin blur, rounded corners, glass effect | ✅ |
 | **Auto Theme Switcher** | One-shot service + 06:00 / 18:00 timer, single entry point | ✅ |
-| **Installer UI** | Glass window that drives install / uninstall and a per-feature picker | 🔧 |
+| **Installer UI** | Glass window that drives install / uninstall and a per-feature picker | ✅ |
 | **Multi-Distro Support** | KDE Plasma 6.6+ on the Arch, Fedora, openSUSE and Gentoo families | 🔧 |
 | **Aurorae Decorations** | Window title bar and borders | ✅ |
 | **Global Menu Plasmoid** | Unified menu bar: system menu, app name, window controls, app menus | ✅ |
@@ -250,6 +250,10 @@ sudo ./install --no-apply-theme  # install files, don't switch Plasma over yet
 sudo ./uninstall            # remove everything, reset to Breeze
 ./installer                 # graphical installer: install / uninstall + feature picker
 ```
+
+### Graphical installer
+
+`./installer` opens a glass launcher to install, uninstall, or open the feature picker — toggle which parts of the theme get applied (wallpapers, fonts, Plasma theme, Kvantum, Plymouth, …). It wraps the same `./install` / `./uninstall` commands, so the CLI stays the source of truth.
 
 ### Try it in a VM, per OS
 
