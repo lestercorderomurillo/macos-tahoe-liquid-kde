@@ -23,7 +23,7 @@ RUN pacman-key --init && \
         kwindowsystem kitemmodels \
         libplasma plasma-activities plasma-activities-stats libksysguard \
         plasma-workspace \
-        kwin kdecoration \
+        kwin kdecoration vulkan-headers \
         libepoxy libx11 libxcb \
     && pacman -Scc --noconfirm
 

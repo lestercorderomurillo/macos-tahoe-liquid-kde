@@ -14,8 +14,9 @@ RUN pacman -Syu --noconfirm --needed \
     # Plasma / KSysGuard / plasma-workspace cmake configs.
     libplasma plasma-activities plasma-activities-stats libksysguard \
     plasma-workspace \
-    # KWin + KDecoration3 (acrylic-glass effect).
-    kwin kdecoration \
+    # KWin + KDecoration3 (acrylic-glass effect). vulkan-headers:
+    # KWin 6.27+ pulls Vulkan into its cmake config.
+    kwin kdecoration vulkan-headers \
     # libepoxy + X11/XCB headers used by the acrylic-glass effect.
     libepoxy libx11 libxcb \
     && pacman -Scc --noconfirm
