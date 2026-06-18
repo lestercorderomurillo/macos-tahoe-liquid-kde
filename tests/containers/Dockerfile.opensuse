@@ -19,11 +19,18 @@ FROM opensuse/tumbleweed:latest
 # to 3 times before giving up — every individual refresh is a clean
 # operation, and the cost of a redundant 5s refresh on a healthy mirror
 # is negligible compared to a flaky-mirror CI failure.
+#
+# Tumbleweed is rolling: the `:latest` base image lags the live mirror,
+# so a plain install can resolve a package version whose RPM the mirror
+# has already rotated away (404). `zypper dup` first aligns the base
+# image to the current snapshot so installs only ever request packages
+# that still exist on the mirror.
 RUN for i in 1 2 3; do \
         zypper --non-interactive refresh && break; \
         echo "zypper refresh attempt $i failed; retrying"; \
         sleep 5; \
     done && \
+    zypper --non-interactive --gpg-auto-import-keys dup --no-recommends && \
     zypper --non-interactive install --no-recommends \
         python3 python3-pytest \
         cmake make gcc-c++ kf6-extra-cmake-modules pkgconf-pkg-config \
