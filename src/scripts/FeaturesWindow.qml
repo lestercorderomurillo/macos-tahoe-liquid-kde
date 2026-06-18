@@ -204,7 +204,7 @@ Window {
                 Layout.preferredWidth: 420
                 horizontalAlignment: Text.AlignHCenter
                 wrapMode: Text.WordWrap
-                text: "Choose what gets installed."
+                text: "Choose what gets installed"
                 color: Kirigami.Theme.disabledTextColor
                 font.family: featuresWindow.fontFamily
                 font.pointSize: Kirigami.Theme.defaultFont.pointSize * 0.9

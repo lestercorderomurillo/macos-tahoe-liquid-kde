@@ -39,12 +39,12 @@ Window {
     }
 
     title: "MacTahoe Liquid KDE Installer"
-    width: 760
-    height: 520
-    minimumWidth: 760
-    minimumHeight: 520
-    maximumWidth: 760
-    maximumHeight: 520
+    width: 860
+    height: 588
+    minimumWidth: 860
+    minimumHeight: 588
+    maximumWidth: 860
+    maximumHeight: 588
     flags: Qt.Window | Qt.FramelessWindowHint
     color: "transparent"
 
