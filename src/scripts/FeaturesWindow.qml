@@ -230,19 +230,19 @@ Window {
                         required property int index
                         Layout.fillWidth: true
                         Layout.preferredWidth: 1   // forces equal column split
-                        spacing: 10
+                        spacing: 0
 
-                        // Equal flexible spacers on both sides centre the
-                        // text+switch group within its column, while the
-                        // switch sits right next to the text instead of at
-                        // the column edge.
+                        // Leading flexible spacer centres the text+switch
+                        // group within its column.
                         Item { Layout.fillWidth: true }
 
                         ColumnLayout {
-                            // Fixed text width so every row aligns and the
-                            // switch keeps a constant short gap from the
-                            // text across all rows.
-                            Layout.preferredWidth: 200
+                            // Hug the text: the block takes the natural width
+                            // of its content (no fillWidth on the column),
+                            // capped so long descriptions wrap to two lines.
+                            // The switch then sits a fixed ~22px after the
+                            // actual text end of each row.
+                            Layout.maximumWidth: 170
                             spacing: 1
 
                             Text {
@@ -267,7 +267,11 @@ Window {
                             }
                         }
 
+                        // Fixed gap between the text block and the switch.
+                        Item { Layout.preferredWidth: 22 }
+
                         QQC2.Switch {
+                            id: featureSwitch
                             Layout.alignment: Qt.AlignVCenter
                             checked: modelData.enabled
                             onToggled: {
@@ -276,6 +280,41 @@ Window {
                                                              {enabled: checked});
                                 featuresWindow.items = items;
                                 featuresWindow.save();
+                            }
+
+                            // macOS-style filled switch: solid blue track
+                            // when on, neutral grey track when off, white
+                            // knob — no outline/border.
+                            indicator: Rectangle {
+                                implicitWidth: 38
+                                implicitHeight: 22
+                                radius: height / 2
+                                color: featureSwitch.checked
+                                    ? "#0A84FF"
+                                    : (featuresWindow.isDarkTheme ? "#5A5A5E" : "#D8D8DC")
+                                border.width: 0
+
+                                Behavior on color {
+                                    ColorAnimation { duration: 120 }
+                                }
+
+                                Rectangle {
+                                    width: 18
+                                    height: 18
+                                    radius: height / 2
+                                    y: (parent.height - height) / 2
+                                    x: featureSwitch.checked
+                                        ? parent.width - width - 2
+                                        : 2
+                                    color: "white"
+
+                                    Behavior on x {
+                                        NumberAnimation {
+                                            duration: 120
+                                            easing.type: Easing.OutQuad
+                                        }
+                                    }
+                                }
                             }
                         }
 
