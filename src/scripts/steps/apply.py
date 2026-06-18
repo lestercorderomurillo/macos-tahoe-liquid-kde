@@ -49,21 +49,13 @@ _FONTS_RESET = {
     "fixed":                "Hack,10,-1,5,50,0,0,0,0,0",
 }
 
-# Upper bound for the fire-and-forget live-apply calls below
-# (kbuildsycoca6, plasma-apply-wallpaperimage, the theme-switch binary,
-# dbus-send). run_user injects no timeout of its own, so a degraded
-# plasmashell / kwin / dbus endpoint could otherwise hang the whole
-# installer indefinitely. 15s matches the ceiling qdbus_call already
-# uses in utils for the same class of KDE-DBus round-trip.
+# Timeout for the fire-and-forget live-apply calls; run_user has none.
 _LIVE_APPLY_TIMEOUT = 15
 
 
 def _run_live(cmd: list[str]) -> None:
-    """Fire a live-apply command under the user's identity, ignoring the
-    result and capping it at _LIVE_APPLY_TIMEOUT so a stuck KDE endpoint
-    can never freeze the installer. Output is discarded — these are
-    best-effort live refreshes; the authoritative state is the config
-    on disk, which the Plasma restart at the end of install re-reads."""
+    """Run a best-effort live-apply command, bounded by a timeout so a
+    stuck KDE endpoint can't freeze the installer."""
     try:
         run_user(
             cmd, check=False,

@@ -372,13 +372,9 @@ def _launch_preview_pyqt() -> int:
     except ImportError:
         return -1
 
-    # We ship no .desktop file, so Qt's startup attempt to register with
-    # xdg-desktop-portal always fails and logs
-    # `qt.qpa.services: Could not register app ID: App info not found`.
-    # The installer uses no portal features (file dialogs, screenshots),
-    # so turn the portal integration off entirely — this is Qt's real
-    # opt-out var (the old QT_DISABLE_PORTALS was a no-op). Must be set
-    # before the QGuiApplication is constructed.
+    # No .desktop file ships, so disable the xdg-desktop-portal
+    # registration (unused here) to silence its failure warning. Must be
+    # set before the QGuiApplication is constructed.
     os.environ.setdefault("QT_NO_XDG_DESKTOP_PORTAL", "1")
     app = QGuiApplication.instance() or QGuiApplication(sys.argv[:1])
     app.setApplicationName("mac-tahoe-liquid-kde-installer")
@@ -423,9 +419,7 @@ def launch_preview() -> int:
     if not PREVIEW_QML.is_file():
         print(f"preview QML missing: {PREVIEW_QML}", file=sys.stderr)
         return 1
-    # qmlscene hits the same xdg-desktop-portal registration warning as
-    # the PyQt path; the portal is unused, so turn it off via Qt's real
-    # opt-out var (same flag set above).
+    # Disable the portal registration here too (see the PyQt path).
     env = {**os.environ, "QT_NO_XDG_DESKTOP_PORTAL": "1"}
     return subprocess.run(
         [runner, str(PREVIEW_QML)],

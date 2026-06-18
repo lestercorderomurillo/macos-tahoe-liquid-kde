@@ -149,6 +149,12 @@ def test_drop_root_to_invoking_user_sets_env_and_ids(
     monkeypatch.setenv("SUDO_USER", "lester")
     monkeypatch.setenv("SUDO_UID", "1000")
     monkeypatch.setenv("SUDO_GID", "1001")
+    # Register HOME/USER/LOGNAME so monkeypatch restores them: the
+    # function writes them straight to os.environ, which would otherwise
+    # leak into later tests.
+    monkeypatch.setenv("HOME", os.environ.get("HOME", "/root"))
+    monkeypatch.setenv("USER", os.environ.get("USER", "root"))
+    monkeypatch.setenv("LOGNAME", os.environ.get("LOGNAME", "root"))
 
     class DummyPw:
         pw_dir = "/home/lester"

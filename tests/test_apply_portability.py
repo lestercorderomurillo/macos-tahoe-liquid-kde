@@ -1,20 +1,6 @@
-"""Portability + hang-safety regressions for the apply step.
-
-Two fixes are pinned here:
-
-1. The live KWin-reconfigure guard in apply.py used to read
-   ``have("qdbus6") or have("qdbus")`` — missing the Fedora binary name
-   ``qdbus-qt6``. On Fedora the guard was False even though the
-   ``qdbus_call`` it guards would have resolved the binary fine, so the
-   reconfigure was silently skipped. It now routes through the canonical
-   ``utils.qdbus_cmd()`` resolver, which knows all three names.
-
-2. The fire-and-forget live-apply calls (kbuildsycoca6,
-   plasma-apply-wallpaperimage, the theme-switch binary, dbus-send) ran
-   through bare ``run_user`` with no timeout. ``run_user`` injects none,
-   so a degraded plasmashell/kwin/dbus endpoint could hang the whole
-   installer. They now go through ``apply._run_live``, which caps each
-   call and swallows the timeout.
+"""Portability + hang-safety tests for the apply step: the live
+KWin-reconfigure guard resolves qdbus via utils.qdbus_cmd() (Fedora's
+qdbus-qt6), and _run_live bounds its calls with a timeout.
 """
 
 import subprocess

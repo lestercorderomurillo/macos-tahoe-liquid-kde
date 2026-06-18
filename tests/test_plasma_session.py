@@ -1,22 +1,7 @@
-"""Regression tests for the single Plasma-session detector.
+"""Tests for utils.is_plasma_session() and its reuse in the Nautilus step.
 
-Step 2 (``verify_plasma``) and the Nautilus step used to answer "is this
-KDE Plasma?" with two unrelated mechanisms: the preflight gate probed the
-``plasmashell`` binary, while ``nautilus._is_kde`` read session env vars
-*alone*. ``sudo`` strips that environment, so on a real ``sudo ./install``
-the Nautilus step reported "Not running under KDE Plasma" even though
-preflight had just confirmed Plasma from the binary.
-
-The fix collapses both onto ``utils.is_plasma_session()``, which anchors
-on the sudo-proof binary and treats the env vars only as a corroborating
-positive. These tests pin that contract:
-
-  * binary present  → Plasma, even with the whole session env stripped
-    (the exact sudo regression);
-  * binary absent + a session env var set → still Plasma;
-  * binary absent + empty env → not Plasma;
-  * the Nautilus step delegates to the shared helper rather than
-    re-deriving the answer from the environment.
+The detector is anchored on the plasmashell binary (which survives sudo's
+env stripping) with the session env vars as a fallback.
 """
 
 import importlib

@@ -567,16 +567,8 @@ def test_xcb_cmake_package_per_distro(monkeypatch, distro_id, expected):
     assert distro.package_for("xcb-cmake", "libxcb") == expected
 
 
-# ── package-manager install command: supported families only ─────────
-#
-# The supported families (README support table + tests/containers/ CI
-# matrix) each resolve to a real, non-interactive install prefix.
-# Debian/Ubuntu/Alpine/Void are deliberately NOT in
-# _PACKAGE_MANAGER_INSTALL: they have no KF6/Plasma -cmake rows in
-# _PACKAGE_MAP, so auto-installing a missing C++ dep would shell out a
-# bogus Arch package name. They must raise UnsupportedDistroError up
-# front so pkg_install surfaces a clean "install manually" message
-# rather than dying half-way through.
+# package-manager install command: supported families resolve; the
+# unsupported ones raise UnsupportedDistroError.
 
 
 @pytest.mark.parametrize("distro_id, id_like, expected", [

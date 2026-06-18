@@ -232,16 +232,12 @@ Window {
                         Layout.preferredWidth: 1   // forces equal column split
                         spacing: 0
 
-                        // Leading flexible spacer centres the text+switch
-                        // group within its column.
+                        // Centre the text+switch group in the column.
                         Item { Layout.fillWidth: true }
 
                         ColumnLayout {
-                            // Hug the text: the block takes the natural width
-                            // of its content (no fillWidth on the column),
-                            // capped so long descriptions wrap to two lines.
-                            // The switch then sits a fixed ~22px after the
-                            // actual text end of each row.
+                            // Natural content width (capped so long
+                            // descriptions wrap) so the switch hugs the text.
                             Layout.maximumWidth: 170
                             spacing: 1
 
@@ -282,9 +278,8 @@ Window {
                                 featuresWindow.save();
                             }
 
-                            // macOS-style filled switch: solid blue track
-                            // when on, neutral grey track when off, white
-                            // knob — no outline/border.
+                            // macOS-style filled switch: blue track on,
+                            // grey off, white knob, no border.
                             indicator: Rectangle {
                                 implicitWidth: 38
                                 implicitHeight: 22

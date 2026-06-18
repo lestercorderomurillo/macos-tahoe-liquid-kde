@@ -798,21 +798,12 @@ def package_for(cmd: str, fallback_pkg: str | None = None) -> str:
 
 
 _PACKAGE_MANAGER_INSTALL: dict[str, list[str]] = {
-    # Each command is run as root. ``--noconfirm`` / ``-y`` / etc are
-    # included so the call works non-interactively in a container too.
-    #
-    # Scope: ONLY the supported families (Arch, Fedora, openSUSE, Gentoo
-    # and their ID_LIKE derivatives — see the README support table and
-    # tests/containers/ CI matrix). Debian/Ubuntu/Alpine/Void are
-    # deliberately absent: ``_PACKAGE_MAP`` has no KF6/Plasma ``-cmake``
-    # rows for them, so auto-installing a missing C++ dep would fall back
-    # to a bare Arch package name (``kio``, ``kconfig``) that does not
-    # exist on apt/apk/xbps and the install would die half-way with a
-    # confusing error. Leaving them out makes
-    # ``package_manager_install_cmd`` raise UnsupportedDistroError up
-    # front, which callers surface as a clear "install manually" hint.
-    # Re-add a row here only together with that distro's full KF6/Plasma
-    # entries in ``_PACKAGE_MAP``.
+    # Run as root, non-interactive. Supported families only (Arch,
+    # Fedora, openSUSE, Gentoo + ID_LIKE derivatives). Debian/Ubuntu/
+    # Alpine/Void are intentionally absent — they lack KF6/Plasma -cmake
+    # rows in _PACKAGE_MAP, so they raise UnsupportedDistroError instead
+    # of installing wrong package names. Only re-add one alongside its
+    # full _PACKAGE_MAP entries.
     "arch":     ["pacman", "-S", "--noconfirm", "--needed"],
     "gentoo":   ["emerge", "--quiet", "--noreplace"],
     "fedora":   ["dnf", "install", "-y"],
