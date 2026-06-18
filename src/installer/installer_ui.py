@@ -14,12 +14,17 @@ import subprocess
 import sys
 from pathlib import Path
 
+# The CLI engine (cli, paths, log, …) lives in src/scripts; make it
+# importable whether this module is launched via the root ./installer or
+# imported directly from src/installer.
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "scripts"))
+
 from paths import CONFIG_FILE, REPO_ROOT
 from cli import ALL_FEATURES, DEFAULT_FEATURES, FEATURE_DESC
 from log import DONE_MARKER, PROGRESS_FILE
 
 
-PREVIEW_QML = REPO_ROOT / "src/scripts/preview_installer.qml"
+PREVIEW_QML = Path(__file__).resolve().parent / "preview_installer.qml"
 _QML_RUNNERS = ("qmlscene6", "qmlscene", "qml6")
 
 _ACTION_COMMANDS = {

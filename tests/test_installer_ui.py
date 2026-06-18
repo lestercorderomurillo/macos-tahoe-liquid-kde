@@ -15,9 +15,9 @@ def installer_ui_module():
 
 
 def test_preview_qml_exists(repo):
-    assert (repo / "src/scripts/preview_installer.qml").is_file()
-    assert (repo / "src/scripts/InstallerWindow.qml").is_file()
-    assert (repo / "src/scripts/InstallerHello.png").is_file()
+    assert (repo / "src/installer/preview_installer.qml").is_file()
+    assert (repo / "src/installer/InstallerWindow.qml").is_file()
+    assert (repo / "src/installer/InstallerHello.png").is_file()
 
 
 def test_repo_installer_entry_exists(repo):

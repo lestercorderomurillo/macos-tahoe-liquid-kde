@@ -7,7 +7,7 @@ sys.dont_write_bytecode = True
 
 REPO = Path(__file__).resolve().parent
 os.chdir(REPO)
-sys.path.insert(0, str(REPO / "src" / "scripts"))
+sys.path.insert(0, str(REPO / "src" / "installer"))
 
 from installer_ui import main
 
