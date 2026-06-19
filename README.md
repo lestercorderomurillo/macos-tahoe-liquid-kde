@@ -30,7 +30,6 @@ A full macOS Tahoe-style desktop experience for KDE Plasma 6.6+.
 | ≤ 6.5 | ❌ NO | — |
 | 6.6 | ✅ YES | v0.1.0 |
 | 6.7 | ✅ YES | v0.19.0 |
-| 6.8+ | 🔧 Untested | — |
 
 ---
 
