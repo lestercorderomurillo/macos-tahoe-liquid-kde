@@ -101,8 +101,12 @@ if(NOT GLASS_WAYLAND AND NOT GLASS_X11)
     )
 endif()
 
-if(${KWin_VERSION} VERSION_LESS 6.4)
-    message(FATAL_ERROR "Acrylic Glass requires KDE Plasma 6.4+ (found ${KWin_VERSION}).")
+if(${KWin_VERSION} VERSION_LESS 6.6)
+    # 6.6 is the real floor: the effect only handles the prePaintWindow
+    # signature from 6.5.80 onward (RenderView* first arg), and the
+    # plasmoids link against Plasma 6.6+ headers. The installer preflight
+    # enforces the same 6.6 minimum at runtime.
+    message(FATAL_ERROR "Acrylic Glass requires KDE Plasma 6.6+ (found ${KWin_VERSION}).")
 endif()
 
 # KWin's private effect ABI changed at 6.7 (the proprietary blur

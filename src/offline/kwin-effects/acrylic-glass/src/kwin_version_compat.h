@@ -35,7 +35,8 @@
  * find_package(KWin) reports >= 6.7 — the same flag and threshold the
  * upstream kwin-effects-glass fork uses, kept identical on purpose so
  * the two trees stay easy to cross-reference. When the macro is absent
- * we are on 6.4–6.6: the old protocol with the presentTime parameter.
+ * we are on 6.6 (the supported floor): the old org_kde_kwin_blur
+ * protocol with the presentTime paint parameter.
  */
 
 #ifdef GLASS_KWIN_67
