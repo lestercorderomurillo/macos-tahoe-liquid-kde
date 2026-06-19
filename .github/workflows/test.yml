@@ -73,6 +73,11 @@ jobs:
           - fedora
           - nobara
           - opensuse
+          # Arch with [kde-unstable] — the newest-KWin compile target
+          # (currently Plasma 6.7). Compiles the acrylic-glass effect
+          # against the next KWin ABI before any release distro ships
+          # it, so a 6.6->6.7-style break fails CI here first.
+          - arch-kdeunstable
     steps:
       - uses: actions/checkout@v5
       # Gentoo's container FROMs a GHCR image that's built by a
@@ -80,8 +85,13 @@ jobs:
       # window between Qt6 upstream bumps and the next monthly base
       # rebuild, treat a Gentoo failure as a warning rather than a
       # red X — every other distro still gates the merge.
+      #
+      # arch-kdeunstable tracks Arch's [kde-unstable] staging repo, which
+      # can ship a transiently half-migrated Plasma that breaks the build
+      # through no fault of ours. It's a forward-looking signal, not a
+      # merge gate, so it's non-blocking too.
       - name: Build and run ${{ matrix.distro }} container
-        continue-on-error: ${{ matrix.distro == 'gentoo' }}
+        continue-on-error: ${{ matrix.distro == 'gentoo' || matrix.distro == 'arch-kdeunstable' }}
         run: |
           docker build \
             -f tests/containers/Dockerfile.${{ matrix.distro }} \
