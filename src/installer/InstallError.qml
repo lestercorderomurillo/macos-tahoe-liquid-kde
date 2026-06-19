@@ -160,29 +160,50 @@ Window {
                 font.pointSize: Kirigami.Theme.defaultFont.pointSize * 0.9
             }
 
-            QQC2.ScrollView {
+            // Log viewer. A plain Flickable + read-only TextEdit rather
+            // than QQC2.TextArea: the Breeze QQC2 style mis-binds its
+            // TextArea contentItem ("Unable to assign … to QQuickTextInput"
+            // warning in qqc2-breeze-style). TextEdit is a pure QtQuick
+            // type with no style hook, so it sidesteps that bug while
+            // keeping the same look (dark panel, monospace, scrollable).
+            Rectangle {
                 Layout.fillWidth: true
                 Layout.fillHeight: true
-                clip: true
+                radius: 8
+                color: Qt.rgba(0, 0, 0, errorWindow.isDarkTheme ? 0.25 : 0.05)
+                border.width: 0.5
+                border.color: errorWindow.isDarkTheme
+                    ? Qt.rgba(1, 1, 1, 0.08)
+                    : Qt.rgba(0, 0, 0, 0.08)
 
-                QQC2.TextArea {
-                    id: logArea
-                    text: errorWindow.logText
-                    readOnly: true
-                    selectByMouse: true
-                    wrapMode: TextEdit.NoWrap
-                    font.family: "monospace"
-                    font.pointSize: Kirigami.Theme.defaultFont.pointSize * 0.85
-                    color: Kirigami.Theme.textColor
-                    background: Rectangle {
-                        color: Qt.rgba(0, 0, 0, errorWindow.isDarkTheme ? 0.25 : 0.05)
-                        radius: 8
-                        border.width: 0.5
-                        border.color: errorWindow.isDarkTheme
-                            ? Qt.rgba(1, 1, 1, 0.08)
-                            : Qt.rgba(0, 0, 0, 0.08)
+                Flickable {
+                    id: logFlick
+                    anchors.fill: parent
+                    anchors.margins: 8
+                    clip: true
+                    contentWidth: logArea.contentWidth
+                    contentHeight: logArea.contentHeight
+                    boundsBehavior: Flickable.StopAtBounds
+
+                    QQC2.ScrollBar.vertical: QQC2.ScrollBar {}
+                    QQC2.ScrollBar.horizontal: QQC2.ScrollBar {}
+
+                    TextEdit {
+                        id: logArea
+                        width: Math.max(logFlick.width, contentWidth)
+                        text: errorWindow.logText
+                        readOnly: true
+                        selectByMouse: true
+                        wrapMode: TextEdit.NoWrap
+                        font.family: "monospace"
+                        font.pointSize: Kirigami.Theme.defaultFont.pointSize * 0.85
+                        color: Kirigami.Theme.textColor
+                        // Keep the latest log lines in view as text streams in.
+                        onTextChanged: {
+                            cursorPosition = length;
+                            logFlick.contentY = Math.max(0, contentHeight - logFlick.height);
+                        }
                     }
-                    onTextChanged: cursorPosition = length
                 }
             }
 
