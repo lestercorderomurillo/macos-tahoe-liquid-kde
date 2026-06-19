@@ -300,6 +300,47 @@ _CMAKE_COMPONENTS = (
      "src/offline/kwin-effects/acrylic-glass"),
 )
 
+# Components that must be *compiled*, not just configured. The
+# acrylic-glass effect links KWin's private effect ABI, which is not
+# stable across Plasma feature releases — a configure pass cannot catch
+# a removed header (wayland/blur.h) or a changed virtual signature
+# (prePaint* losing presentTime in 6.7). Compiling it here turns each
+# distro container into a real per-Plasma-version build gate, so the
+# matrix flags a 6.6→6.7-style break before a user hits it. Keep this
+# list tight: compiling is far slower than configuring, and only the
+# KWin-ABI component genuinely needs it.
+_COMPILE_COMPONENTS = frozenset({"acrylic-glass"})
+
+
+def _compile_component(label: str, build: Path) -> bool:
+    """``make`` an already-configured component and surface compiler
+    errors. Returns True on a clean build. Used for KWin-ABI components
+    where configure success does not imply the source still matches the
+    installed Plasma's private headers."""
+    nproc = os.cpu_count() or 1
+    print(f"     compiling ({label}: make -j{nproc}) …")
+    res = subprocess.run(
+        ["make", "-C", str(build), f"-j{nproc}"],
+        check=False, capture_output=True, text=True, cwd=str(REPO),
+    )
+    if res.returncode == 0:
+        print(f"     PASS (configure + compile)")
+        return True
+    tail = (res.stdout or "") + (res.stderr or "")
+    # Echo the compiler error lines (and the 'fatal error: ... No such
+    # file' for a removed header) so the matrix names the exact ABI break
+    # — the whole point of compiling here.
+    for line in tail.splitlines():
+        if (
+            "error:" in line
+            or "fatal error" in line
+            or line.startswith("make")
+            and "Error" in line
+        ):
+            print(f"     {line}")
+    print(f"     FAIL: compile exited {res.returncode}")
+    return False
+
 
 def step_cmake_configure() -> bool:
     """Run cmake configure for every compiled component. Each component
@@ -325,6 +366,13 @@ def step_cmake_configure() -> bool:
             check=False, capture_output=True, text=True, cwd=str(REPO),
         )
         if res.returncode == 0:
+            if label in _COMPILE_COMPONENTS:
+                # KWin-ABI component: configure isn't enough — compile it
+                # so a removed header / changed virtual signature on this
+                # distro's Plasma version actually fails the matrix.
+                if not _compile_component(label, build):
+                    ok_all = False
+                continue
             print(f"     PASS")
             continue
         ok_all = False
@@ -391,7 +439,7 @@ def main() -> int:
     print(f"  Qt6 layer:          {'PASS' if layer_ok else 'FAIL'}")
     print(f"  Package mgr layer:  {'PASS' if pkg_ok else 'FAIL'}")
     print(f"  Preflight paths:    {'PASS' if preflight_ok else 'FAIL'}")
-    print(f"  CMake configure:    {'PASS' if cmake_ok else 'FAIL'}")
+    print(f"  CMake cfg+compile:  {'PASS' if cmake_ok else 'FAIL'}")
     print(f"  Pytest suite:       {'PASS' if tests_ok else 'FAIL'}")
 
     if plugins is None or qml is None:

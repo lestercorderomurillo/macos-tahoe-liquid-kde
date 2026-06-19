@@ -21,6 +21,10 @@ ALL_DISTROS=(
     gentoo
     fedora nobara
     opensuse
+    # Arch with [kde-unstable] — the newest-KWin compile target. Keep it
+    # last; it pulls the staging Plasma so the acrylic-glass effect is
+    # compiled against the next ABI (6.7+) before any release distro has it.
+    arch-kdeunstable
 )
 if [[ $# -eq 0 ]]; then
     DISTROS=("${ALL_DISTROS[@]}")

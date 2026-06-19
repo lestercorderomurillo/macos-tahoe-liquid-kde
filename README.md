@@ -25,6 +25,11 @@ A full macOS Tahoe-style desktop experience for KDE Plasma 6.6+.
 | <img src="https://cdn.simpleicons.org/opensuse" width="22"> | openSUSE Tumbleweed | ✅ YES | 🔧 Testing |
 | <img src="https://cdn.simpleicons.org/gentoo" width="22"> | Gentoo | ✅ YES | 🔧 Testing |
 
+| Plasma | Supported yet? | Since |
+|--------|:--------------:|:-----:|
+| 6.6 | ✅ YES | v0.1.0 |
+| 6.7+ | ✅ YES | v0.19.0 |
+
 ---
 
 <br>

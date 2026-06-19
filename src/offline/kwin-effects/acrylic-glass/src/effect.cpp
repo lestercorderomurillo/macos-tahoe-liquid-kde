@@ -19,8 +19,16 @@
 #include "scene/scene.h"
 #include "scene/surfaceitem.h"
 #include "scene/windowitem.h"
+#if ACRYLIC_GLASS_KWIN_6_7
+// Plasma 6.7 merged blur + contrast into one background-effect protocol;
+// the dedicated blur.h / contrast.h managers are gone. Blur is announced
+// through waylandServer()->backgroundEffectManager() instead.
+#include "wayland/backgroundeffect_v1.h"
+#include "wayland_server.h"
+#else
 #include "wayland/blur.h"
 #include "wayland/contrast.h"
+#endif
 #include "wayland/display.h"
 #include "wayland/surface.h"
 #include "window.h"
@@ -56,16 +64,30 @@ static void ensureResources()
 
 namespace KWin {
 
+#if ACRYLIC_GLASS_KWIN_6_7
+/// 6.7 removed the global scaledRect() helper (it lived in
+/// effect/globals.h pre-6.7). Re-provide it verbatim so the three call
+/// sites below stay version-agnostic; snapToPixelGrid* are still in the
+/// KWin headers.
+inline QRectF scaledRect(const QRectF& rect, qreal scale)
+{
+    return QRectF{rect.x() * scale, rect.y() * scale, rect.width() * scale, rect.height() * scale};
+}
+#endif
+
 /// X11 atom name we listen to for the blur-behind property protocol.
 static const QByteArray s_blurAtomName = QByteArrayLiteral("_KDE_NET_WM_BLUR_BEHIND_REGION");
 
-// Static singleton storage (definitions live here, declarations in .h)
-
+// Static singleton storage (definitions live here, declarations in .h).
+// The protocol-manager singletons only exist on the pre-6.7 API; 6.7
+// registers a capability on the shared backgroundEffectManager instead.
+#if !ACRYLIC_GLASS_KWIN_6_7
 BlurManagerInterface* BlurEffect::s_blurManager = nullptr;
 QTimer* BlurEffect::s_blurManagerRemoveTimer = nullptr;
 
 ContrastManagerInterface* BlurEffect::s_contrastManager = nullptr;
 QTimer* BlurEffect::s_contrastManagerRemoveTimer = nullptr;
+#endif
 
 // Colour-transform helper
 
@@ -116,9 +138,13 @@ BlurEffect::BlurEffect()
     if (!m_roundedOnscreenPass.shader) {
         qCWarning(KWIN_BLUR) << "Failed to load onscreen pass shader (null)";
         return;
+#if !ACRYLIC_GLASS_KWIN_6_7
+        // GLShader::isValid() was removed in 6.7; a null return from
+        // generateShaderFromFile is the only failure signal there.
     } else if (!m_roundedOnscreenPass.shader->isValid()) {
         qCWarning(KWIN_BLUR) << "Onscreen pass shader compiled but is NOT valid";
         return;
+#endif
     } else {
         m_roundedOnscreenPass.mvpMatrixLocation = m_roundedOnscreenPass.shader->uniformLocation("modelViewProjectionMatrix");
         m_roundedOnscreenPass.colorMatrixLocation = m_roundedOnscreenPass.shader->uniformLocation("colorMatrix");
@@ -188,14 +214,21 @@ BlurEffect::BlurEffect()
     }
 #endif
 
-    // Wayland blur + contrast manager singletons, with deferred teardown.
-    // Only created under a Wayland session: effects->waylandDisplay() is
-    // null on pure X11, and the *ManagerInterface ctors dereference it
-    // immediately — so an unguarded `new` segfaults the effect at load on
-    // X11 logins. X11 surface blur comes from the net_wm_blur_region atom
-    // path above, not these protocol managers. Matches upstream Better Blur,
-    // which wraps the same block in this guard.
+    // Announce blur support to clients. Only under a Wayland session:
+    // effects->waylandDisplay() is null on pure X11, where surface blur
+    // comes from the net_wm_blur_region atom path above instead.
     if (effects->waylandDisplay()) {
+#if ACRYLIC_GLASS_KWIN_6_7
+        // Plasma 6.7: a single capability flag on the shared
+        // background-effect manager replaces the per-protocol singletons.
+        // Contrast/saturation is no longer a separate protocol.
+        waylandServer()->backgroundEffectManager()->addBlurCapability();
+#else
+        // Pre-6.7: dedicated blur + contrast manager singletons, with
+        // deferred teardown. The *ManagerInterface ctors dereference the
+        // display immediately — so an unguarded `new` segfaults the effect
+        // at load on X11 logins (hence the waylandDisplay() guard above).
+        // Matches upstream Better Blur.
         if (!s_blurManagerRemoveTimer) {
             s_blurManagerRemoveTimer = new QTimer(QCoreApplication::instance());
             s_blurManagerRemoveTimer->setSingleShot(true);
@@ -221,6 +254,7 @@ BlurEffect::BlurEffect()
         if (!s_contrastManager) {
             s_contrastManager = new ContrastManagerInterface(effects->waylandDisplay(), s_contrastManagerRemoveTimer);
         }
+#endif
     }
 
     // EffectsHandler signal wiring
@@ -242,11 +276,18 @@ BlurEffect::BlurEffect()
     m_valid = true;
 }
 
-/// Defer manager removal — KWin restarts compositing on backend swaps and
-/// recreating the BlurManagerInterface immediately would race the surface
-/// teardown. 1 s settle window matches the upstream blur effect.
+/// Tear down the blur announcement. On pre-6.7 we defer manager removal —
+/// KWin restarts compositing on backend swaps and recreating the
+/// BlurManagerInterface immediately would race the surface teardown; the
+/// 1 s settle window matches the upstream blur effect. On 6.7 the
+/// capability flag is just dropped from the shared manager.
 BlurEffect::~BlurEffect()
 {
+#if ACRYLIC_GLASS_KWIN_6_7
+    if (waylandServer()) {
+        waylandServer()->backgroundEffectManager()->removeBlurCapability();
+    }
+#else
     if (s_blurManager) {
         s_blurManagerRemoveTimer->start(1000);
     }
@@ -254,6 +295,7 @@ BlurEffect::~BlurEffect()
     if (s_contrastManager) {
         s_contrastManagerRemoveTimer->start(1000);
     }
+#endif
 }
 
 // Configuration
@@ -405,9 +447,12 @@ void BlurEffect::updateBlurRegion(EffectWindow* w)
     std::optional<qreal> saturation;
     std::optional<qreal> contrast;
 
-#if KWIN_BUILD_X11
     // X11: read the _KDE_NET_WM_BLUR_BEHIND_REGION cardinal array.
     // Layout is repeating (x, y, w, h) tuples of 32-bit cardinals.
+    // EffectWindow::readProperty() was removed from the Wayland build in
+    // 6.7, so this client-property path only compiles where it still
+    // exists: any pre-6.7 build, or a dedicated X11 (GLASS_X11) target.
+#if KWIN_BUILD_X11 && (!ACRYLIC_GLASS_KWIN_6_7 || defined(GLASS_X11))
     if (net_wm_blur_region != XCB_ATOM_NONE) {
         const QByteArray value = w->readProperty(net_wm_blur_region, XCB_ATOM_CARDINAL, 32);
         Region region;
@@ -431,6 +476,22 @@ void BlurEffect::updateBlurRegion(EffectWindow* w)
 
     // Wayland: prefer the protocol-driven blur/contrast surface state.
     if (SurfaceInterface* surface = w->surface()) {
+#if ACRYLIC_GLASS_KWIN_6_7
+        // 6.7 exposes the blur region directly as a floating-point
+        // RegionF (the ext_background_effect_v1 protocol). Convert it to
+        // our integer Region rect-by-rect via toAlignedRect(), matching
+        // upstream kwin-effects-glass. The contrast/saturation protocol
+        // was dropped, so those stay at their defaults (the global colour
+        // matrix still applies).
+        const RegionF surfaceBlurRegion = surface->blurRegion();
+        if (!surfaceBlurRegion.isEmpty()) {
+            Region region;
+            for (const RectF& rect : surfaceBlurRegion.rects()) {
+                region += rect.toAlignedRect();
+            }
+            content = region;
+        }
+#else
         if (surface->blur()) {
             content = surface->blur()->region();
         }
@@ -438,6 +499,7 @@ void BlurEffect::updateBlurRegion(EffectWindow* w)
             saturation = surface->contrast()->saturation();
             contrast = surface->contrast()->contrast();
         }
+#endif
     }
 
     // Internal QWindow fallback: Plasma's internal windows attach a
@@ -490,11 +552,14 @@ void BlurEffect::slotWindowAdded(EffectWindow* w)
             }
         });
 
+#if !ACRYLIC_GLASS_KWIN_6_7
+        // contrastChanged was removed with the 6.7 protocol merge.
         windowContrastChangedConnections[w] = connect(surf, &SurfaceInterface::contrastChanged, this, [this, w]() {
             if (w) {
                 updateBlurRegion(w);
             }
         });
+#endif
     }
 
     windowFrameGeometryChangedConnections[w] = connect(w, &EffectWindow::windowFrameGeometryChanged, this, [this, w]() {
@@ -531,10 +596,12 @@ void BlurEffect::slotWindowDeleted(EffectWindow* w)
         windowBlurChangedConnections.erase(it);
     }
 
+#if !ACRYLIC_GLASS_KWIN_6_7
     if (auto it = windowContrastChangedConnections.find(w); it != windowContrastChangedConnections.end()) {
         disconnect(*it);
         windowContrastChangedConnections.erase(it);
     }
+#endif
 
     if (auto it = windowFrameGeometryChangedConnections.find(w); it != windowFrameGeometryChangedConnections.end()) {
         disconnect(*it);
@@ -672,22 +739,33 @@ Region BlurEffect::blurRegion(EffectWindow* w) const
 
 /// Reset per-frame accumulators and remember which view we're painting
 /// so prePaintWindow / blur can attribute their dirty regions correctly.
-void BlurEffect::prePaintScreen(ScreenPrePaintData& data, std::chrono::milliseconds presentTime)
+void BlurEffect::prePaintScreen(ScreenPrePaintData& data ACRYLIC_GLASS_PRESENT_TIME_PARAM)
 {
     m_paintedDeviceArea = Region();
     m_currentDeviceBlur = Region();
     m_currentView = data.view;
 
-    effects->prePaintScreen(data, presentTime);
+    effects->prePaintScreen(data ACRYLIC_GLASS_PRESENT_TIME_ARG);
 }
 
 /// Expand the dirty / opaque regions so the Kawase chain has the
 /// surrounding pixels it needs to sample, and so KWin doesn't occlude
 /// (= skip) the background behind our blur area as a perf optimisation.
-void BlurEffect::prePaintWindow(RenderView* view, EffectWindow* w, WindowPrePaintData& data, std::chrono::milliseconds presentTime)
+void BlurEffect::prePaintWindow(RenderView* view, EffectWindow* w, WindowPrePaintData& data ACRYLIC_GLASS_PRESENT_TIME_PARAM)
 {
-    effects->prePaintWindow(view, w, data, presentTime);
+    effects->prePaintWindow(view, w, data ACRYLIC_GLASS_PRESENT_TIME_ARG);
 
+#if ACRYLIC_GLASS_KWIN_6_7
+    // 6.7: the ext_background_effect_v1 machinery owns the dirty/opaque
+    // bookkeeping the manual block below used to do by hand. The
+    // WindowPrePaintData::deviceOpaque / devicePaint members it poked are
+    // gone; the effect just marks the window translucent so KWin paints
+    // the background we sample. Matches upstream kwin-effects-glass.
+    Q_UNUSED(view)
+    if (!blurRegion(w).isEmpty()) {
+        data.setTranslucent();
+    }
+#else
     // 1. The visible blur area for this window, mapped to device px.
     const Region blurArea = view->mapToDeviceCoordinatesAligned(QRectF(blurRegion(w).boundingRect()).translated(w->pos()));
 
@@ -719,6 +797,7 @@ void BlurEffect::prePaintWindow(RenderView* view, EffectWindow* w, WindowPrePain
     m_currentDeviceBlur += blurArea;
     m_paintedDeviceArea -= data.deviceOpaque;
     m_paintedDeviceArea += data.devicePaint;
+#endif
 }
 
 /// Master gate: every disqualifying condition (fullscreen effect active,

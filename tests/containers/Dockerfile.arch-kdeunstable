@@ -1,0 +1,43 @@
+# Arch Linux with [kde-unstable] enabled — the staging repo where Arch
+# lands the next Plasma feature release before it reaches [extra]. This
+# is the closest available compile target for KWin 6.7+ while [extra]
+# (and most rolling distros) still ship 6.6, and it shares the pacman
+# libdir layout with CachyOS / Manjaro / EndeavourOS / Garuda.
+#
+# Its whole reason to exist is to compile the acrylic-glass KWin effect
+# against the *newest* KWin ABI, so a 6.6->6.7-style break (removed
+# wayland/blur.h, prePaint* losing presentTime) fails the matrix here
+# before a user on a fast-moving distro hits it. run_in_container.py
+# compiles the effect, not just configures it, which is what makes this
+# a real per-Plasma-version build gate.
+FROM archlinux:latest
+
+# Enable [kde-unstable] ABOVE [extra] (pacman is first-match-wins on repo
+# order for equal versions, and kde-unstable carries the higher version
+# anyway), then do a full -Syu so the whole KF6/Qt6/Plasma/KWin stack is
+# upgraded together. A partial upgrade (kwin from kde-unstable, frameworks
+# from extra) is unsupported and would mismatch the private effect ABI.
+RUN printf '\n[kde-unstable]\nInclude = /etc/pacman.d/mirrorlist\n' >> /etc/pacman.conf \
+    && pacman -Syu --noconfirm --needed \
+    python python-pytest \
+    cmake make gcc extra-cmake-modules \
+    qt6-base qt6-tools qt6-declarative \
+    pkgconf \
+    # KF6 frameworks required by deps() of the compiled steps.
+    kconfig kconfigwidgets kcoreaddons kcrash kglobalaccel kguiaddons \
+    ki18n kio kcmutils knotifications kservice kwidgetsaddons \
+    kwindowsystem kitemmodels \
+    # Plasma / KSysGuard / plasma-workspace cmake configs.
+    libplasma plasma-activities plasma-activities-stats libksysguard \
+    plasma-workspace \
+    # KWin + KDecoration3 (acrylic-glass effect). vulkan-headers:
+    # KWin 6.27+ pulls Vulkan into its cmake config.
+    kwin kdecoration vulkan-headers \
+    # libepoxy + X11/XCB headers used by the acrylic-glass effect.
+    libepoxy libx11 libxcb \
+    && pacman -Scc --noconfirm
+
+WORKDIR /repo
+COPY . /repo
+
+CMD ["python3", "tests/containers/run_in_container.py"]

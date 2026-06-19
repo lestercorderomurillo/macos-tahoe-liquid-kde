@@ -7,6 +7,8 @@
 
 #pragma once
 
+#include "kwin_version_compat.h"
+
 #include "effect/effect.h"
 #include "opengl/glutils.h"
 #include "scene/item.h"
@@ -18,8 +20,10 @@
 
 namespace KWin {
 
+#if !ACRYLIC_GLASS_KWIN_6_7
 class BlurManagerInterface;
 class ContrastManagerInterface;
+#endif
 
 // Per-view blur scratch space
 
@@ -130,12 +134,14 @@ public:
 
     /// Marks the whole screen as "dirty under our window" so KWin
     /// schedules a repaint of the area behind a window we'll blur.
-    void prePaintScreen(ScreenPrePaintData& data, std::chrono::milliseconds presentTime) override;
+    /// The trailing presentTime parameter was dropped in Plasma 6.7;
+    /// ACRYLIC_GLASS_PRESENT_TIME_PARAM expands to it only pre-6.7.
+    void prePaintScreen(ScreenPrePaintData& data ACRYLIC_GLASS_PRESENT_TIME_PARAM) override;
 
     /// Per-window setup before paint: extends the dirty region by the
     /// Kawase expand size so taps near the edges don't sample stale
     /// content from outside.
-    void prePaintWindow(RenderView* view, EffectWindow* w, WindowPrePaintData& data, std::chrono::milliseconds presentTime) override;
+    void prePaintWindow(RenderView* view, EffectWindow* w, WindowPrePaintData& data ACRYLIC_GLASS_PRESENT_TIME_PARAM) override;
 
     /// The main entry point — KWin asks us to paint window ``w``; we
     /// either delegate to ``blur()`` (when blur is wanted) or fall back
@@ -358,11 +364,18 @@ private:
     // Per-window state + signal bookkeeping
 
     QMap<EffectWindow*, QMetaObject::Connection> windowBlurChangedConnections;
+#if !ACRYLIC_GLASS_KWIN_6_7
+    // Per-surface contrast/saturation was removed with the 6.7 protocol
+    // merge, so there is no contrastChanged signal to track there.
     QMap<EffectWindow*, QMetaObject::Connection> windowContrastChangedConnections;
+#endif
     QMap<EffectWindow*, QMetaObject::Connection> windowFrameGeometryChangedConnections;
     std::unordered_map<EffectWindow*, BlurEffectData> m_windows;
 
-    // Wayland protocol managers (lazy-removed on idle)
+#if !ACRYLIC_GLASS_KWIN_6_7
+    // Wayland protocol managers (lazy-removed on idle). Gone in 6.7,
+    // which announces blur through backgroundEffectManager() instead
+    // and drops the contrast protocol entirely.
 
     /// Singleton blur-behind-region protocol handler. Created on first
     /// use, torn down after a settle delay so a no-blur window doesn't
@@ -373,6 +386,7 @@ private:
     /// Same idea for the contrast manager.
     static ContrastManagerInterface* s_contrastManager;
     static QTimer* s_contrastManagerRemoveTimer;
+#endif
 };
 
 inline bool BlurEffect::provides(Effect::Feature feature)

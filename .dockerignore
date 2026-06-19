@@ -1,0 +1,18 @@
+# Keep the container build context small. The container test harness
+# (tests/containers/run_in_container.py) needs the source tree, the
+# pytest suite, and src/scripts — but none of the heavy local artefacts
+# below, which otherwise balloon the build context to multiple GB and
+# slow every `docker build` in the matrix.
+
+# Local build output — the container regenerates its own under build/.
+build/
+
+# Git history (multi-GB) — never needed inside the container.
+.git/
+
+# VM smoke-test images / qcow2 / cloud-init work dirs (gigabytes).
+tests/vm-smoke/
+
+# Python bytecode caches.
+**/__pycache__/
+**/*.pyc

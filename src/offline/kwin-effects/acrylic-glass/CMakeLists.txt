@@ -105,6 +105,33 @@ if(${KWin_VERSION} VERSION_LESS 6.4)
     message(FATAL_ERROR "Acrylic Glass requires KDE Plasma 6.4+ (found ${KWin_VERSION}).")
 endif()
 
+# KWin's private effect ABI changed at 6.7 (the proprietary blur
+# protocol was replaced by ext_background_effect_v1, and the prePaint*
+# methods dropped their presentTime parameter). The effect sources
+# branch on a GLASS_KWIN_67 compile definition — same flag name and
+# >= 6.7 threshold as the upstream kwin-effects-glass fork, kept
+# identical so the two trees stay easy to cross-reference. The Wayland
+# and X11 KWin packages can in principle sit at different versions, so
+# the flag is evaluated per backend below.
+set(GLASS_KWIN_67_WAYLAND OFF)
+set(GLASS_KWIN_67_X11 OFF)
+# Nest the version test so the *_VERSION variable is only dereferenced
+# when its backend is actually enabled (and thus set). CMake's `AND`
+# does not short-circuit at parse time, so a single combined condition
+# would expand an unset KWinX11_VERSION to an empty left operand and
+# error out on a Wayland-only build.
+if(GLASS_WAYLAND)
+    if(${KWin_VERSION} VERSION_GREATER_EQUAL 6.7)
+        set(GLASS_KWIN_67_WAYLAND ON)
+    endif()
+endif()
+if(GLASS_X11)
+    if(${KWinX11_VERSION} VERSION_GREATER_EQUAL 6.7)
+        set(GLASS_KWIN_67_X11 ON)
+    endif()
+endif()
+message(STATUS "Acrylic Glass: KWin ${KWin_VERSION} (6.7 ABI: Wayland=${GLASS_KWIN_67_WAYLAND} X11=${GLASS_KWIN_67_X11})")
+
 find_package(KDecoration3 REQUIRED)
 
 add_subdirectory(src)

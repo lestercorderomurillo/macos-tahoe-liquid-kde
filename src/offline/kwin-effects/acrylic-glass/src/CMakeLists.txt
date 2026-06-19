@@ -38,6 +38,10 @@ if(GLASS_WAYLAND)
         KF6::ConfigGui
         KWin::kwin
     )
+    # GLASS_KWIN_67 drives the 6.6-vs-6.7 ABI gating in kwin_version_compat.h.
+    if(GLASS_KWIN_67_WAYLAND)
+        target_compile_definitions(liquidglass PRIVATE GLASS_KWIN_67)
+    endif()
     install(TARGETS liquidglass DESTINATION ${KDE_INSTALL_PLUGINDIR}/kwin/effects/plugins)
 endif()
 if(GLASS_X11)
@@ -49,5 +53,8 @@ if(GLASS_X11)
         XCB::XCB
     )
     target_compile_definitions(liquidglass_x11 PRIVATE GLASS_X11)
+    if(GLASS_KWIN_67_X11)
+        target_compile_definitions(liquidglass_x11 PRIVATE GLASS_KWIN_67)
+    endif()
     install(TARGETS liquidglass_x11 DESTINATION ${KDE_INSTALL_PLUGINDIR}/kwin-x11/effects/plugins)
 endif()
