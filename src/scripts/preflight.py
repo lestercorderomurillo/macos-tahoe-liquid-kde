@@ -556,8 +556,10 @@ def _check_plasmoid_ids() -> bool:
 
         if layout_text and plugin_id not in layout_text:
             # Not every plasmoid is referenced in the layout (some are
-            # optional / user-placed), so warn rather than fail.
-            print(f"     not referenced in layout JS (optional)")
+            # optional / user-placed), so note rather than fail. The
+            # tree-branch glyph ties the note to the ✓ line above it —
+            # without it the bare indented line reads as an orphan.
+            print(f"       └ not referenced in layout JS (optional)")
     return all_ok
 
 
