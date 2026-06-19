@@ -176,13 +176,54 @@ Window {
             }
         }
 
+        // ── flat squircle button (macOS-style, no accent, no gradient) ────
+        // White in light theme / dark grey in dark theme. The colour does
+        // NOT react to hover (that flickered as the cursor crossed button
+        // edges) and has no Behavior animation — only the pressed state
+        // swaps colour, instantly. hoverEnabled stays on so the gear's
+        // tooltip still works; it just no longer drives the background.
+        component FlatButton: QQC2.Button {
+            id: flatBtn
+
+            readonly property color baseColor: installerWindow.isDarkTheme
+                ? Qt.rgba(1, 1, 1, 0.10) : Qt.rgba(1, 1, 1, 1.0)
+            readonly property color pressColor: installerWindow.isDarkTheme
+                ? Qt.rgba(1, 1, 1, 0.22) : Qt.rgba(0, 0, 0, 0.09)
+
+            implicitHeight: 40
+            leftPadding: 22
+            rightPadding: 22
+            font.family: installerWindow.fontFamily
+            font.pointSize: Kirigami.Theme.defaultFont.pointSize
+            font.weight: Font.DemiBold
+            enabled: !installerWindow.busy
+
+            background: Rectangle {
+                radius: 13
+                color: flatBtn.down ? flatBtn.pressColor : flatBtn.baseColor
+                border.width: 1
+                border.color: installerWindow.isDarkTheme
+                    ? Qt.rgba(1, 1, 1, 0.14) : Qt.rgba(0, 0, 0, 0.13)
+            }
+
+            contentItem: Text {
+                text: flatBtn.text
+                font: flatBtn.font
+                color: Kirigami.Theme.textColor
+                horizontalAlignment: Text.AlignHCenter
+                verticalAlignment: Text.AlignVCenter
+            }
+        }
+
         // ── main view ────────────────────────────────────────────────────
         ColumnLayout {
-            anchors.fill: parent
+            anchors.left: parent.left
+            anchors.right: parent.right
+            anchors.top: parent.top
+            anchors.bottom: bottomBar.top
             anchors.leftMargin: 24
             anchors.rightMargin: 24
             anchors.topMargin: 52
-            anchors.bottomMargin: 24
             spacing: 0
             visible: installerWindow.viewMode === "main"
 
@@ -200,35 +241,83 @@ Window {
                 mipmap: true
             }
 
-            Item { Layout.preferredHeight: 28 }
+            Item { Layout.fillHeight: true }
+        }
+
+        // ── bottom toolbar (macOS-style action bar) ───────────────────────
+        // Pinned to the window bottom with a hairline divider above it.
+        // Buttons are centered. Only shown in the main view; the
+        // installing/success views own the full glass area.
+        Item {
+            id: bottomBar
+            anchors.left: parent.left
+            anchors.right: parent.right
+            anchors.bottom: parent.bottom
+            height: 88
+            visible: installerWindow.viewMode === "main"
+
+            // Solid (not glass) bar: full white in light theme, full dark
+            // in dark theme. Only the two BOTTOM corners are rounded (to
+            // match the window). A Rectangle can't round individual
+            // corners, so: one rounded rect (radius 22) gives the bottom
+            // corners, and a square rect over the top half squares off
+            // the top — both clipped to the bar, so nothing pokes above
+            // the divider. Colours are identical so the seam is invisible.
+            readonly property color barColor: installerWindow.isDarkTheme
+                ? "#2A2A2E" : "#FFFFFF"
+
+            Rectangle {
+                anchors.fill: parent
+                radius: 22
+                color: bottomBar.barColor
+            }
+            Rectangle {
+                anchors.left: parent.left
+                anchors.right: parent.right
+                anchors.top: parent.top
+                height: parent.height / 2
+                color: bottomBar.barColor
+            }
+
+            Rectangle {
+                anchors.top: parent.top
+                anchors.left: parent.left
+                anchors.right: parent.right
+                height: 1
+                color: installerWindow.isDarkTheme
+                    ? Qt.rgba(1, 1, 1, 0.10) : Qt.rgba(0, 0, 0, 0.08)
+            }
 
             RowLayout {
-                Layout.alignment: Qt.AlignHCenter
-                spacing: 8
+                anchors.centerIn: parent
+                spacing: 10
 
-                QQC2.Button {
+                FlatButton {
                     text: "Install"
                     onClicked: installerWindow.runAction("install")
                 }
 
-                QQC2.Button {
+                FlatButton {
                     text: "Uninstall"
                     onClicked: installerWindow.runAction("uninstall")
                 }
 
-                QQC2.Button {
+                FlatButton {
+                    id: gearButton
+                    leftPadding: 0
+                    rightPadding: 0
+                    implicitWidth: 46
                     QQC2.ToolTip.text: "Features..."
                     QQC2.ToolTip.visible: hovered
                     QQC2.ToolTip.delay: 400
                     onClicked: featuresLoader.open()
 
                     contentItem: Item {
-                        implicitWidth: 18
-                        implicitHeight: 18
-
                         Image {
                             id: gearImg
-                            anchors.fill: parent
+                            anchors.centerIn: parent
+                            width: 18
+                            height: 18
                             source: "InstallerGear.svg"
                             sourceSize.width: 36
                             sourceSize.height: 36
@@ -246,8 +335,6 @@ Window {
                     }
                 }
             }
-
-            Item { Layout.fillHeight: true }
         }
 
         // ── installing view ──────────────────────────────────────────────
