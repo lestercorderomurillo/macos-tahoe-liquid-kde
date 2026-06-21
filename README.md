@@ -248,18 +248,25 @@ Skipped with `--no-download` if you've already fetched them.
 
 ![Usage](https://img.shields.io/badge/getting-started-3B7B5B?style=for-the-badge&logo=gnubash&logoColor=white)
 
+The easiest way to install is the **graphical installer** — a glass window that drives install / uninstall and a per-feature picker:
+
+```bash
+./installer                 # graphical installer: install / uninstall + feature picker
+```
+
+It opens a glass launcher to install, uninstall, or open the feature picker — toggle which parts of the theme get applied (wallpapers, fonts, Plasma theme, Kvantum, Plymouth, …), checks for a newer release on launch, and shows live progress while it runs. It wraps the same `./install` / `./uninstall` commands, so the CLI stays the source of truth.
+
+### Command line
+
+Prefer the terminal, or scripting an install? Every option is available on the CLI:
+
 ```bash
 sudo ./install              # install everything
 sudo ./install --help       # show all options
 sudo ./install --preflight  # run only the safety checks
 sudo ./install --no-apply-theme  # install files, don't switch Plasma over yet
 sudo ./uninstall            # remove everything, reset to Breeze
-./installer                 # graphical installer: install / uninstall + feature picker
 ```
-
-### Graphical installer
-
-`./installer` opens a glass launcher to install, uninstall, or open the feature picker — toggle which parts of the theme get applied (wallpapers, fonts, Plasma theme, Kvantum, Plymouth, …). It wraps the same `./install` / `./uninstall` commands, so the CLI stays the source of truth.
 
 ### Try it in a VM, per OS
 
