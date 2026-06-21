@@ -19,8 +19,11 @@ from pathlib import Path
 # imported directly from src/installer.
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "scripts"))
 
-from paths import CONFIG_FILE, REPO_ROOT
-from cli import ALL_FEATURES, DEFAULT_FEATURES, FEATURE_DESC
+from paths import CONFIG_FILE, REPO_ROOT, read_version
+from cli import (
+    ALL_FEATURES, DEFAULT_FEATURES, FEATURE_DESC,
+    fetch_latest_release, parse_semver,
+)
 from log import DONE_MARKER, PROGRESS_FILE
 
 
@@ -218,11 +221,30 @@ def _enable_kwin_blur(window) -> None:
 
 def _make_installer_bridge():
     from PyQt6.QtCore import (
-        QFileSystemWatcher, QObject, QProcess, QTimer,
+        QFileSystemWatcher, QObject, QProcess, QThread, QTimer,
         pyqtProperty, pyqtSignal, pyqtSlot,
     )
 
     _ESTIMATED_TOTAL_STEPS = 25
+
+    class _UpdateCheckThread(QThread):
+        """Runs the GitHub round-trip off the GUI thread. ``update_status``
+        is pure / blocking (urllib with a 2.5s timeout); doing it on the
+        main thread would freeze the window for that long on a slow link.
+        The result is carried back via the bridge's ``updateChecked``
+        signal — Qt marshals the cross-thread emit onto the GUI thread."""
+
+        done = pyqtSignal("QVariantMap")
+
+        def run(self) -> None:
+            try:
+                self.done.emit(update_status())
+            except Exception:
+                # Never let a worker-thread exception escape into Qt.
+                self.done.emit({
+                    "current": read_version(), "latest": "",
+                    "available": False, "reachable": False,
+                })
 
     class InstallerBridge(QObject):
         currentStepChanged = pyqtSignal()
@@ -230,6 +252,7 @@ def _make_installer_bridge():
         runningChanged = pyqtSignal()
         finished = pyqtSignal(int)
         logAppended = pyqtSignal(str)
+        updateChecked = pyqtSignal("QVariantMap")
 
         def __init__(self, parent=None):
             super().__init__(parent)
@@ -242,6 +265,7 @@ def _make_installer_bridge():
             self._read_offset = 0
             self._line_buf = ""
             self._exit_code: int | None = None
+            self._update_thread: _UpdateCheckThread | None = None
 
             self._watcher = QFileSystemWatcher(self)
             self._watcher.fileChanged.connect(self._read_progress)
@@ -260,6 +284,13 @@ def _make_installer_bridge():
         @pyqtProperty(bool, notify=runningChanged)
         def running(self) -> bool:
             return self._running
+
+        @pyqtProperty(str, constant=True)
+        def version(self) -> str:
+            """The installed repo version (``VERSION`` file). Read once,
+            synchronously, with no network — so the window can show it on
+            the very first paint, independent of the GitHub update check."""
+            return read_version()
 
         @pyqtSlot(result=str)
         def logTail(self) -> str:
@@ -303,6 +334,20 @@ def _make_installer_bridge():
         def cancel(self) -> None:
             if self._proc and self._proc.state() != QProcess.ProcessState.NotRunning:
                 self._proc.kill()
+
+        @pyqtSlot()
+        def checkForUpdates(self) -> None:
+            """Kick off a one-shot background update check. The verdict
+            arrives via ``updateChecked``. Re-entrant calls while one is
+            already in flight are ignored — the window only asks once at
+            startup, but a stray double-call must not spawn two threads."""
+            if self._update_thread is not None and self._update_thread.isRunning():
+                return
+            thread = _UpdateCheckThread(self)
+            thread.done.connect(self.updateChecked)
+            thread.finished.connect(thread.deleteLater)
+            self._update_thread = thread
+            thread.start()
 
         def _read_progress(self) -> None:
             try:
@@ -480,6 +525,41 @@ def save_features(payload: dict[str, object]) -> dict[str, object]:
     return {"ok": True, "message": f"Saved to {CONFIG_FILE.name}"}
 
 
+def update_status() -> dict[str, object]:
+    """Mirror the CLI's ``--check-update`` verdict as a dict the UI can
+    render. Reuses the exact same engine pieces (``read_version``,
+    ``fetch_latest_release``, ``parse_semver``) so the GUI and CLI never
+    disagree on what "an update is available" means.
+
+    Network failures resolve to ``reachable=False`` rather than raising —
+    a flaky GitHub must never break the installer window. The
+    ``MAC_TAHOE_NO_UPDATE_CHECK`` opt-out is honoured inside
+    ``fetch_latest_release`` (it returns None), which surfaces here as
+    "could not reach GitHub", so the banner simply stays hidden.
+
+    Keys:
+      current    — installed version string
+      latest     — latest release tag, or "" when unreachable
+      available  — True only when latest > current
+      reachable  — False when the network round-trip yielded nothing
+    """
+    current = read_version()
+    latest = fetch_latest_release()
+    if latest is None:
+        return {
+            "current": current,
+            "latest": "",
+            "available": False,
+            "reachable": False,
+        }
+    return {
+        "current": current,
+        "latest": latest,
+        "available": parse_semver(latest) > parse_semver(current),
+        "reachable": True,
+    }
+
+
 def main(argv: list[str]) -> int:
     rc = drop_root_to_invoking_user()
     if rc != 0:
@@ -504,6 +584,11 @@ def main(argv: list[str]) -> int:
         metavar="JSON",
         help="Persist a JSON object of {feature: bool} into features.json.",
     )
+    parser.add_argument(
+        "--check-update",
+        action="store_true",
+        help="Print the update verdict as JSON (for the update banner).",
+    )
     args = parser.parse_args(argv)
 
     if args.launch:
@@ -513,6 +598,10 @@ def main(argv: list[str]) -> int:
 
     if args.dump_features:
         print(json.dumps(dump_features(), ensure_ascii=False))
+        return 0
+
+    if args.check_update:
+        print(json.dumps(update_status(), ensure_ascii=False))
         return 0
 
     if args.save_features is not None:

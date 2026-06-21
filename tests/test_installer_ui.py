@@ -226,6 +226,70 @@ def test_progress_helpers_never_raise_on_unwritable_path(monkeypatch, tmp_path):
         importlib.reload(log)
 
 
+# ── update banner ───────────────────────────────────────────────────────
+
+def test_update_status_reports_available_when_remote_is_newer(
+        installer_ui_module, monkeypatch):
+    """A strictly-newer GitHub tag flips available=True. Reuses the same
+    parse_semver / read_version the CLI uses, so the GUI and CLI verdicts
+    can never disagree."""
+    monkeypatch.setattr(installer_ui_module, "read_version", lambda: "0.20.1")
+    monkeypatch.setattr(installer_ui_module, "fetch_latest_release", lambda: "0.21.0")
+
+    status = installer_ui_module.update_status()
+
+    assert status == {
+        "current": "0.20.1",
+        "latest": "0.21.0",
+        "available": True,
+        "reachable": True,
+    }
+
+
+def test_update_status_not_available_when_on_latest(
+        installer_ui_module, monkeypatch):
+    monkeypatch.setattr(installer_ui_module, "read_version", lambda: "0.21.0")
+    monkeypatch.setattr(installer_ui_module, "fetch_latest_release", lambda: "0.21.0")
+
+    status = installer_ui_module.update_status()
+
+    assert status["available"] is False
+    assert status["reachable"] is True
+
+
+def test_update_status_unreachable_when_fetch_returns_none(
+        installer_ui_module, monkeypatch):
+    """Offline / rate-limited / opted-out (fetch returns None) must never
+    surface a banner and must never raise."""
+    monkeypatch.setattr(installer_ui_module, "read_version", lambda: "0.20.1")
+    monkeypatch.setattr(installer_ui_module, "fetch_latest_release", lambda: None)
+
+    status = installer_ui_module.update_status()
+
+    assert status == {
+        "current": "0.20.1",
+        "latest": "",
+        "available": False,
+        "reachable": False,
+    }
+
+
+def test_main_check_update_emits_json(installer_ui_module, monkeypatch, capsys):
+    monkeypatch.setattr(installer_ui_module, "drop_root_to_invoking_user", lambda: 0)
+    monkeypatch.setattr(
+        installer_ui_module,
+        "update_status",
+        lambda: {"current": "0.20.1", "latest": "0.21.0",
+                 "available": True, "reachable": True},
+    )
+
+    rc = installer_ui_module.main(["--check-update"])
+    out = capsys.readouterr().out.strip()
+
+    assert rc == 0
+    assert json.loads(out)["available"] is True
+
+
 def test_confirm_auto_accepts_in_no_confirm_mode(monkeypatch, capsys):
     """The anti-hang: MTTKDE_NO_CONFIRM=1 makes confirm() return True
     without ever touching the tty / stdin, so the background install

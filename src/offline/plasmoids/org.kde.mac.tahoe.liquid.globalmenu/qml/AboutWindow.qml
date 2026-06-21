@@ -154,6 +154,53 @@ Window {
         function exec(cmd: string): void { connectSource(cmd) }
     }
 
+    // ── clipboard ────────────────────────────────────────────────────────
+    // QtQuick has no clipboard API of its own, but TextEdit.copy() puts the
+    // selected text on the system clipboard with no external process and no
+    // polling (same trick as the installer's InstallError log viewer). We
+    // keep one off-screen, build the report into it on demand, select all,
+    // and copy. Plain QtQuick TextEdit — not a styled QQC2 control — so it
+    // never warns about a missing Breeze background.
+    TextEdit {
+        id: clipboardProxy
+        visible: false
+        width: 0; height: 0
+    }
+
+    // Assemble the same field set the grid renders, "Label: Value" per line,
+    // and place it on the clipboard. No-op until the helper has returned.
+    function copyDetails(): void {
+        if (!aboutWindow.infoReady)
+            return;
+        let header = aboutWindow.vendorDisplay;
+        let sub = [];
+        if (aboutWindow.modelDisplay && aboutWindow.modelDisplay.trim())
+            sub.push(aboutWindow.modelDisplay);
+        if (aboutWindow.yearDisplay)
+            sub.push(aboutWindow.yearDisplay);
+        if (sub.length)
+            header += " (" + sub.join(", ") + ")";
+
+        const rows = [
+            ["Chip", aboutWindow.chipDisplay],
+            ["Cores", aboutWindow.coresDisplay],
+            ["Memory", aboutWindow.memoryDisplay],
+            ["Graphics", aboutWindow.graphicsDisplay],
+            ["Startup disk", aboutWindow.diskDisplay],
+            ["Network", aboutWindow.networkDisplay],
+            ["Serial number", aboutWindow.serialDisplay],
+            ["OS", aboutWindow.osDisplay],
+        ];
+        let lines = [header, ""];
+        for (const [label, value] of rows)
+            lines.push(label + ": " + (value || "").trim());
+
+        clipboardProxy.text = lines.join("\n");
+        clipboardProxy.selectAll();
+        clipboardProxy.copy();
+        clipboardProxy.deselect();
+    }
+
     // Pre-warm the data the moment the applet loads, while the window
     // is still hidden. main.qml instantiates AboutWindow at startup so
     // ``Component.onCompleted`` fires once per plasmashell session —
@@ -485,6 +532,39 @@ Window {
                     onClicked: {
                         launcher.exec("xdg-open https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/issues/new");
                         aboutWindow.close();
+                    }
+                }
+
+                // Copy all the gathered details to the clipboard. Icon-only,
+                // placed last. NOT flat — it carries the same border and
+                // hover/pressed/disabled states as the two text buttons.
+                //
+                // The copy glyph is the bundled Lucide "copy" SVG (clean two
+                // rounded rectangles) rather than a theme icon, so it looks
+                // the same on every distro / icon theme. On a successful copy
+                // it flips to the theme checkmark for ~1.5s for confirmation.
+                QQC2.Button {
+                    id: copyButton
+                    property bool justCopied: false
+                    enabled: aboutWindow.infoReady
+                    implicitWidth: implicitHeight
+                    display: QQC2.AbstractButton.IconOnly
+                    icon.name: justCopied ? "dialog-ok" : ""
+                    icon.source: justCopied ? "" : Qt.resolvedUrl("copy.svg")
+                    icon.color: Kirigami.Theme.textColor
+                    QQC2.ToolTip.text: justCopied ? "Copied" : "Copy details"
+                    QQC2.ToolTip.visible: hovered
+                    QQC2.ToolTip.delay: 400
+                    onClicked: {
+                        aboutWindow.copyDetails();
+                        justCopied = true;
+                        copiedReset.restart();
+                    }
+
+                    Timer {
+                        id: copiedReset
+                        interval: 1500
+                        onTriggered: copyButton.justCopied = false
                     }
                 }
             }

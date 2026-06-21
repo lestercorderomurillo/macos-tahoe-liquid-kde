@@ -30,6 +30,16 @@ Window {
     property string viewMode: "main"
     property string currentAction: ""
 
+    // ── update banner state ──────────────────────────────────────────────
+    // Populated by installer.checkForUpdates() → onUpdateChecked. The
+    // banner stays hidden unless GitHub reports a strictly newer release,
+    // mirroring the CLI's `./install --check-update` verdict. Network
+    // failures (and the MAC_TAHOE_NO_UPDATE_CHECK opt-out) leave
+    // updateAvailable false, so the banner simply never appears.
+    property bool updateAvailable: false
+    property string updateCurrent: ""
+    property string updateLatest: ""
+
     readonly property bool busy: viewMode === "installing"
     readonly property string fontFamily: Kirigami.Theme.defaultFont.family
     readonly property string launcherScriptPath: _localPath(Qt.resolvedUrl("installer_ui.py"))
@@ -39,12 +49,12 @@ Window {
     }
 
     title: "MacTahoe Liquid KDE Installer"
-    width: 860
-    height: 588
-    minimumWidth: 860
-    minimumHeight: 588
-    maximumWidth: 860
-    maximumHeight: 588
+    width: 1000
+    height: 684
+    minimumWidth: 1000
+    minimumHeight: 684
+    maximumWidth: 1000
+    maximumHeight: 684
     flags: Qt.Window | Qt.FramelessWindowHint
     color: "transparent"
 
@@ -52,6 +62,10 @@ Window {
         const s = Screen;
         x = Math.round((s.width - width) / 2);
         y = Math.round((s.height - height) / 2);
+        // Fire the GitHub round-trip once, off the GUI thread. The verdict
+        // lands later via onUpdateChecked; nothing blocks the first paint.
+        if (installer)
+            installer.checkForUpdates();
     }
 
     function _localPath(url: url): string {
@@ -82,6 +96,11 @@ Window {
                                  installerWindow.currentAction);
                 installerWindow.viewMode = "main";
             }
+        }
+        function onUpdateChecked(status) {
+            installerWindow.updateCurrent = status.current || "";
+            installerWindow.updateLatest = status.latest || "";
+            installerWindow.updateAvailable = status.available === true;
         }
     }
 
@@ -229,6 +248,74 @@ Window {
 
             Item { Layout.fillHeight: true }
 
+            // ── update banner ─────────────────────────────────────────────
+            // A quiet macOS-style pill that fades in only when GitHub has a
+            // strictly newer release. Same verdict and copy as the CLI's
+            // `./install --check-update`. Clicking it copies the upgrade
+            // command; the user still upgrades via git pull && ./install.
+            Rectangle {
+                id: updateBanner
+                Layout.alignment: Qt.AlignHCenter
+                Layout.bottomMargin: 14
+                visible: installerWindow.updateAvailable
+                implicitWidth: updateRow.implicitWidth + 32
+                implicitHeight: 34
+                radius: height / 2
+                color: installerWindow.isDarkTheme
+                    ? Qt.rgba(0.0, 0.48, 1.0, 0.18)
+                    : Qt.rgba(0.0, 0.48, 1.0, 0.12)
+                border.width: 1
+                border.color: Qt.rgba(0.0, 0.48, 1.0, 0.35)
+
+                Row {
+                    id: updateRow
+                    anchors.centerIn: parent
+                    spacing: 8
+
+                    Kirigami.Icon {
+                        anchors.verticalCenter: parent.verticalCenter
+                        width: 16
+                        height: 16
+                        source: "arrow-up"
+                        color: "#007AFF"
+                    }
+
+                    Text {
+                        anchors.verticalCenter: parent.verticalCenter
+                        text: "Update available: " + installerWindow.updateCurrent
+                            + " → " + installerWindow.updateLatest
+                            + "   ·   run git pull && ./install"
+                        color: Kirigami.Theme.textColor
+                        font.family: installerWindow.fontFamily
+                        font.pointSize: Kirigami.Theme.defaultFont.pointSize * 0.95
+                        font.weight: Font.DemiBold
+                    }
+                }
+
+                HoverHandler {
+                    cursorShape: Qt.PointingHandCursor
+                    enabled: !installerWindow.busy
+                }
+                TapHandler {
+                    enabled: !installerWindow.busy
+                    onTapped: {
+                        updateClipboard.text = "git pull && ./install";
+                        updateClipboard.selectAll();
+                        updateClipboard.copy();
+                        updateClipboard.deselect();
+                    }
+                }
+
+                // Off-screen proxy so the tap can put the upgrade command on
+                // the clipboard (QtQuick has no clipboard API of its own).
+                TextEdit {
+                    id: updateClipboard
+                    visible: false
+                    width: 0
+                    height: 0
+                }
+            }
+
             Image {
                 Layout.alignment: Qt.AlignHCenter
                 Layout.preferredWidth: 560
@@ -241,7 +328,22 @@ Window {
                 mipmap: true
             }
 
+            // Installed version — quiet, muted, sitting low in the gap
+            // between the logo and the bottom action bar (outside the white
+            // card). The fillHeight spacer takes the slack above it and a
+            // small fixed gap below keeps it close to the bar rather than
+            // vertically centred. Read straight from the bridge's constant
+            // ``version`` property — shows on first paint, no network.
             Item { Layout.fillHeight: true }
+
+            Text {
+                Layout.alignment: Qt.AlignHCenter
+                Layout.bottomMargin: 16
+                text: installer ? installer.version : ""
+                color: Kirigami.Theme.disabledTextColor
+                font.family: installerWindow.fontFamily
+                font.pointSize: Kirigami.Theme.defaultFont.pointSize * 0.9
+            }
         }
 
         // ── bottom toolbar (macOS-style action bar) ───────────────────────
@@ -338,34 +440,91 @@ Window {
         }
 
         // ── installing view ──────────────────────────────────────────────
+        // [ spinner ]  [ progress bar ] — centred as one row, macOS-style.
         Item {
             anchors.fill: parent
             visible: installerWindow.viewMode === "installing"
 
-            Rectangle {
-                id: progressTrack
+            Row {
                 anchors.centerIn: parent
-                width: 360
-                height: 8
-                radius: height / 2
-                color: installerWindow.isDarkTheme ? "#5A5A5E" : "#B0B0B8"
+                spacing: 18
 
-                property real fraction: installer ? installer.progress : 0.0
-                Behavior on fraction {
-                    NumberAnimation {
-                        duration: 600
-                        easing.type: Easing.OutCubic
+                // Indeterminate spinner: a quiet gray ring with a single blue
+                // arc (same #007AFF as the progress fill) sweeping around it.
+                // Canvas draws both strokes once; a RotationAnimator spins the
+                // whole item so the blue arc orbits the ring continuously.
+                Item {
+                    id: spinner
+                    width: 16
+                    height: 16
+                    anchors.verticalCenter: parent.verticalCenter
+
+                    readonly property color ringColor: installerWindow.isDarkTheme
+                        ? "#5A5A5E" : "#B0B0B8"
+                    readonly property color arcColor: "#007AFF"
+                    onRingColorChanged: spinnerCanvas.requestPaint()
+
+                    Canvas {
+                        id: spinnerCanvas
+                        anchors.fill: parent
+                        antialiasing: true
+                        onPaint: {
+                            const ctx = getContext("2d");
+                            ctx.reset();
+                            const cx = width / 2;
+                            const cy = height / 2;
+                            const lw = 2.5;
+                            const r = Math.min(cx, cy) - lw;
+                            ctx.lineCap = "round";
+                            ctx.lineWidth = lw;
+                            // Full gray track.
+                            ctx.beginPath();
+                            ctx.strokeStyle = spinner.ringColor;
+                            ctx.arc(cx, cy, r, 0, 2 * Math.PI);
+                            ctx.stroke();
+                            // Blue sweep — a quarter-and-a-bit arc.
+                            ctx.beginPath();
+                            ctx.strokeStyle = spinner.arcColor;
+                            ctx.arc(cx, cy, r, -Math.PI / 2, -Math.PI / 2 + Math.PI * 0.45);
+                            ctx.stroke();
+                        }
+                    }
+
+                    RotationAnimator {
+                        target: spinner
+                        running: installerWindow.viewMode === "installing"
+                        from: 0
+                        to: 360
+                        duration: 900
+                        loops: Animation.Infinite
                     }
                 }
 
                 Rectangle {
-                    id: progressFill
-                    anchors.left: parent.left
-                    anchors.top: parent.top
-                    anchors.bottom: parent.bottom
-                    width: Math.max(parent.height, parent.width * progressTrack.fraction)
-                    radius: parent.radius
-                    color: "#007AFF"
+                    id: progressTrack
+                    anchors.verticalCenter: parent.verticalCenter
+                    width: 360
+                    height: 8
+                    radius: height / 2
+                    color: installerWindow.isDarkTheme ? "#5A5A5E" : "#B0B0B8"
+
+                    property real fraction: installer ? installer.progress : 0.0
+                    Behavior on fraction {
+                        NumberAnimation {
+                            duration: 600
+                            easing.type: Easing.OutCubic
+                        }
+                    }
+
+                    Rectangle {
+                        id: progressFill
+                        anchors.left: parent.left
+                        anchors.top: parent.top
+                        anchors.bottom: parent.bottom
+                        width: Math.max(parent.height, parent.width * progressTrack.fraction)
+                        radius: parent.radius
+                        color: "#007AFF"
+                    }
                 }
             }
         }
@@ -393,8 +552,8 @@ Window {
             Text {
                 Layout.alignment: Qt.AlignHCenter
                 text: installerWindow.currentAction === "uninstall"
-                    ? "Uninstalled."
-                    : "Installed."
+                    ? "Uninstalled"
+                    : "Installed"
                 color: Kirigami.Theme.textColor
                 font.family: installerWindow.fontFamily
                 font.pointSize: Kirigami.Theme.defaultFont.pointSize * 1.4

@@ -46,6 +46,7 @@ plasma_add_applet(org.kde.mac.tahoe.liquid.globalmenu
         appmenumodel.cpp
     RESOURCES
         main.xml
+        qml/copy.svg
     QML_ARGS DEPENDENCIES QtCore org.kde.plasma.core
 )
 
