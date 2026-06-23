@@ -186,3 +186,85 @@ def test_run_install_requires_root(monkeypatch, cli_module):
     assert cli_module.run_install([]) == 1
     assert called == ["install"]
     assert apply_overrides_called == []
+
+
+# ── auto-update on install (pull newer release, re-exec) ──────────────
+
+
+def test_auto_update_skips_when_recursion_guard_set(cli_module, monkeypatch):
+    """After a successful pull we re-exec with MAC_TAHOE_UPDATED=1; that
+    second run must NOT pull/re-exec again — it just installs."""
+    monkeypatch.setenv("MAC_TAHOE_UPDATED", "1")
+    execv_called: list = []
+    monkeypatch.setattr(cli_module.os, "execv",
+                        lambda *a: execv_called.append(a))
+    # _git must never be consulted on the guarded run.
+    monkeypatch.setattr(cli_module, "_git",
+                        lambda *a, **k: pytest.fail("git touched on guarded run"))
+
+    cli_module.auto_update_and_reexec([])
+    assert execv_called == []
+
+
+def test_auto_update_bails_when_not_a_clean_git_checkout(cli_module, monkeypatch):
+    """A tarball install / dirty tree must fall back to installing the
+    current version, never pull."""
+    monkeypatch.delenv("MAC_TAHOE_UPDATED", raising=False)
+    monkeypatch.setattr(cli_module, "_repo_is_clean_git_checkout", lambda: False)
+    pull_calls: list = []
+    monkeypatch.setattr(cli_module, "_git",
+                        lambda *a, **k: pull_calls.append(a))
+    execv_called: list = []
+    monkeypatch.setattr(cli_module.os, "execv",
+                        lambda *a: execv_called.append(a))
+
+    cli_module.auto_update_and_reexec([])
+    assert pull_calls == []      # never pulled
+    assert execv_called == []    # never re-exec'd
+
+
+def test_auto_update_bails_when_pull_fails(cli_module, monkeypatch):
+    """If git pull fails (conflict, offline, detached), install the
+    current version instead of re-exec'ing into a half-updated tree."""
+    monkeypatch.delenv("MAC_TAHOE_UPDATED", raising=False)
+    monkeypatch.setattr(cli_module, "_repo_is_clean_git_checkout", lambda: True)
+
+    class _Fail:
+        returncode = 1
+        stderr = "fatal: could not fast-forward"
+
+    monkeypatch.setattr(cli_module, "_git", lambda *a, **k: _Fail())
+    execv_called: list = []
+    monkeypatch.setattr(cli_module.os, "execv",
+                        lambda *a: execv_called.append(a))
+
+    cli_module.auto_update_and_reexec([])
+    assert execv_called == []
+    assert os.environ.get("MAC_TAHOE_UPDATED") != "1"  # guard not leaked
+
+
+def test_auto_update_pulls_and_reexecs_install(cli_module, monkeypatch):
+    """Happy path: clean checkout + successful pull → set the recursion
+    guard and re-exec ./install with the same argv."""
+    monkeypatch.delenv("MAC_TAHOE_UPDATED", raising=False)
+    monkeypatch.setattr(cli_module, "_repo_is_clean_git_checkout", lambda: True)
+
+    class _Ok:
+        returncode = 0
+        stdout = ""
+        stderr = ""
+
+    monkeypatch.setattr(cli_module, "_git", lambda *a, **k: _Ok())
+
+    execv_args: list = []
+    monkeypatch.setattr(cli_module.os, "execv",
+                        lambda path, argv: execv_args.append((path, argv)))
+
+    cli_module.auto_update_and_reexec(["--dark", "--no-gtk"])
+
+    assert os.environ.get("MAC_TAHOE_UPDATED") == "1"  # guard set before exec
+    assert len(execv_args) == 1
+    path, argv = execv_args[0]
+    assert path.endswith("/install")
+    # argv[0] is the program, the install flags follow verbatim.
+    assert argv[1:] == ["--dark", "--no-gtk"]

@@ -578,7 +578,7 @@ def test_xcb_cmake_package_per_distro(monkeypatch, distro_id, expected):
     ("arch",     (),         "vulkan-icd-loader"),
     ("cachyos",  ("arch",),  "vulkan-icd-loader"),   # the reported box
     ("fedora",   (),         "vulkan-loader-devel"),
-    ("opensuse", (),         "vulkan-loader"),
+    ("opensuse", (),         "vulkan-devel"),   # NOT vulkan-loader (404 on zypper)
     ("gentoo",   (),         "media-libs/vulkan-loader"),
 ])
 def test_vulkan_loader_package_per_distro(

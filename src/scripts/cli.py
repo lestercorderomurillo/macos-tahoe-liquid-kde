@@ -343,6 +343,85 @@ def check_for_updates(verbose: bool = False, inline: bool = False) -> bool:
     return False
 
 
+def _git(*args: str, capture: bool = False):
+    """Run a git command inside the repo as the invoking user (NOT root —
+    pulling as root would leave root-owned objects in the user's repo).
+    ``run_user`` drops privileges in the child. Returns the CompletedProcess
+    (or None if git isn't available / the call raised)."""
+    if not have("git"):
+        return None
+    try:
+        return run_user(
+            ["git", "-C", str(REPO_ROOT), *args],
+            check=False,
+            capture_output=capture,
+            text=True,
+            timeout=120,
+        )
+    except (OSError, subprocess.TimeoutExpired):
+        return None
+
+
+def _repo_is_clean_git_checkout() -> bool:
+    """True only when REPO_ROOT is a git working tree with NO uncommitted
+    changes. We refuse to auto-pull over local edits — a pull could fail
+    on conflicts or silently shadow the user's work."""
+    if not (REPO_ROOT / ".git").exists():
+        return False
+    inside = _git("rev-parse", "--is-inside-work-tree", capture=True)
+    if inside is None or inside.returncode != 0 or inside.stdout.strip() != "true":
+        return False
+    status = _git("status", "--porcelain", capture=True)
+    if status is None or status.returncode != 0:
+        return False
+    return status.stdout.strip() == ""
+
+
+def auto_update_and_reexec(argv: list[str]) -> None:
+    """When a newer release exists, pull it and re-exec ``./install`` so the
+    freshly-pulled code does the install — an in-flight ``git pull`` can't
+    upgrade the already-loaded installer otherwise.
+
+    Bails (and lets the current version install) on any of: the recursion
+    guard already set, not a clean git checkout, git missing, or the pull
+    failing. Every bail prints a one-line reason and the manual command, so
+    the user is never left stuck.
+
+    The recursion guard ``MAC_TAHOE_UPDATED`` is exported before the re-exec
+    so the new process skips the update check entirely and proceeds straight
+    to installing — no pull/re-exec loop."""
+    if os.environ.get("MAC_TAHOE_UPDATED") == "1":
+        return  # already re-exec'd after a successful pull; just install
+
+    if not _repo_is_clean_git_checkout():
+        note("Not a clean git checkout — skipping auto-update")
+        print("  \033[2mUpdate manually: git pull && ./install\033[0m")
+        return
+
+    print("  \033[2mPulling the latest release…\033[0m")
+    pull = _git("pull", "--ff-only", capture=True)
+    if pull is None or pull.returncode != 0:
+        warn("git pull failed — installing the current version")
+        if pull is not None and pull.stderr:
+            print(f"  \033[2m{pull.stderr.strip().splitlines()[-1]}\033[0m")
+        print("  \033[2mUpdate manually: git pull && ./install\033[0m")
+        return
+
+    ok(f"Updated to {read_version()} — restarting installer")
+
+    # Re-exec the ./install wrapper (REPO_ROOT/install) so the newly-pulled
+    # cli.py runs. Real UID is still 0 here, so the new process stays root
+    # and repeats the same euid-drop hop. argv is the install flags only;
+    # the wrapper re-derives its own path.
+    installer = REPO_ROOT / "install"
+    os.environ["MAC_TAHOE_UPDATED"] = "1"
+    try:
+        os.execv(str(installer), [str(installer), *argv])
+    except OSError as exc:
+        warn(f"could not restart installer ({exc}) — installing current version")
+        os.environ.pop("MAC_TAHOE_UPDATED", None)
+
+
 def apply_overrides(feat: dict[str, object], parsed: ParsedArgs) -> dict[str, object]:
     if parsed.do_reset:
         feat = dict(DEFAULT_FEATURES)
@@ -856,7 +935,11 @@ def run_install(argv: list[str]) -> int:
                        "  Do not install on production / work systems."):
             tracker.mark_aborted()
             return 0
-        check_for_updates(inline=True)
+        if check_for_updates(inline=True):
+            # Pull the newer release and re-exec so the new code installs.
+            # Returns (and we install the current version) if the repo isn't
+            # a clean git checkout, git is missing, or the pull fails.
+            auto_update_and_reexec(argv)
 
         if not run_preflight("install"):
             fail("preflight failed — refusing to install")

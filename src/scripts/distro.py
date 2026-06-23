@@ -788,7 +788,11 @@ _PACKAGE_MAP: dict[str, dict[str, str]] = {
         "fedora":   "vulkan-loader-devel",
         "rhel":     "vulkan-loader-devel",
         "centos":   "vulkan-loader-devel",
-        "opensuse": "vulkan-loader",
+        # openSUSE ships the loader dev files (libvulkan.so + vulkan.pc,
+        # Provides pkgconfig(vulkan)) in `vulkan-devel`, NOT `vulkan-loader`
+        # (that's the upstream project name, not a Tumbleweed RPM — a
+        # `zypper install vulkan-loader` returns "package not found"/104).
+        "opensuse": "vulkan-devel",
         "alpine":   "vulkan-loader-dev",
         "void":     "Vulkan-Loader-devel",
         "gentoo":   "media-libs/vulkan-loader",
