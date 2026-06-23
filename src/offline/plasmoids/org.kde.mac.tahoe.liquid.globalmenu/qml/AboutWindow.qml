@@ -535,23 +535,21 @@ Window {
                     }
                 }
 
-                // Copy all the gathered details to the clipboard. Icon-only,
-                // placed last. NOT flat — it carries the same border and
-                // hover/pressed/disabled states as the two text buttons.
-                //
-                // The copy glyph is the bundled Lucide "copy" SVG (clean two
-                // rounded rectangles) rather than a theme icon, so it looks
-                // the same on every distro / icon theme. On a successful copy
+                // Copy all the gathered details to the clipboard. Identical to
+                // the two text buttons above — a plain QQC2.Button with NO
+                // custom background or contentItem — so it inherits the exact
+                // same Breeze rounding, fill, hover/pressed, and click handling.
+                // The only difference is it shows an icon instead of text. The
+                // bundled Lucide "copy" SVG is monochrome, so the native style
+                // tints it to the button text colour automatically; on a copy
                 // it flips to the theme checkmark for ~1.5s for confirmation.
                 QQC2.Button {
                     id: copyButton
                     property bool justCopied: false
                     enabled: aboutWindow.infoReady
-                    implicitWidth: implicitHeight
                     display: QQC2.AbstractButton.IconOnly
                     icon.name: justCopied ? "dialog-ok" : ""
                     icon.source: justCopied ? "" : Qt.resolvedUrl("copy.svg")
-                    icon.color: Kirigami.Theme.textColor
                     QQC2.ToolTip.text: justCopied ? "Copied" : "Copy details"
                     QQC2.ToolTip.visible: hovered
                     QQC2.ToolTip.delay: 400

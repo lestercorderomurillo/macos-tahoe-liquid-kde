@@ -48,6 +48,12 @@ def deps():
         "epoxy-cmake:libepoxy",
         "x11-cmake:libx11",
         "xcb-cmake:libxcb",
+        # Vulkan loader + headers. KWin 6.7+ pulls find_dependency(Vulkan)
+        # into its exported CMake config, so find_package(KWin) fails at
+        # configure time without these — even on machines that never use
+        # the Vulkan backend (Intel Skylake, etc.). Vendor-independent.
+        "vulkan-loader-cmake:vulkan-icd-loader",
+        "vulkan-headers-cmake:vulkan-headers",
     ]
 
 

@@ -567,6 +567,41 @@ def test_xcb_cmake_package_per_distro(monkeypatch, distro_id, expected):
     assert distro.package_for("xcb-cmake", "libxcb") == expected
 
 
+# ── Vulkan loader + headers (KWin 6.7+ transitive build dep) ─────────
+# Regression: a CachyOS / Intel-Skylake user hit "KWin missing vulkan"
+# because KWin 6.7's exported config pulls find_dependency(Vulkan) and
+# the loader/headers weren't installed. These must resolve on every
+# supported distro, and CachyOS must inherit the arch names via ID_LIKE.
+
+
+@pytest.mark.parametrize("distro_id, id_like, expected", [
+    ("arch",     (),         "vulkan-icd-loader"),
+    ("cachyos",  ("arch",),  "vulkan-icd-loader"),   # the reported box
+    ("fedora",   (),         "vulkan-loader-devel"),
+    ("opensuse", (),         "vulkan-loader"),
+    ("gentoo",   (),         "media-libs/vulkan-loader"),
+])
+def test_vulkan_loader_package_per_distro(
+        monkeypatch, distro_id, id_like, expected):
+    _force_distro(monkeypatch, distro_id, id_like)
+    assert distro.package_for(
+        "vulkan-loader-cmake", "vulkan-icd-loader") == expected
+
+
+@pytest.mark.parametrize("distro_id, id_like, expected", [
+    ("arch",     (),         "vulkan-headers"),
+    ("cachyos",  ("arch",),  "vulkan-headers"),
+    ("fedora",   (),         "vulkan-headers"),
+    ("opensuse", (),         "vulkan-headers"),
+    ("gentoo",   (),         "dev-util/vulkan-headers"),
+])
+def test_vulkan_headers_package_per_distro(
+        monkeypatch, distro_id, id_like, expected):
+    _force_distro(monkeypatch, distro_id, id_like)
+    assert distro.package_for(
+        "vulkan-headers-cmake", "vulkan-headers") == expected
+
+
 # package-manager install command: supported families resolve; the
 # unsupported ones raise UnsupportedDistroError.
 

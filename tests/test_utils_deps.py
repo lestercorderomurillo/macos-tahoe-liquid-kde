@@ -1,6 +1,8 @@
 from pathlib import Path
 from types import SimpleNamespace
 
+import pytest
+
 import utils
 
 
@@ -85,6 +87,40 @@ def test_dep_available_treats_qt6_uitools_as_cmake_package(monkeypatch):
     assert "find_package(Qt6UiTools CONFIG QUIET)" in seen[0]
     assert seen[1][0] == "cmake"
     assert seen[1][1] == "-S"
+
+
+# ── Vulkan tokens probe via pkg-config, NOT find_package(... CONFIG) ──
+# FindVulkan is a CMake module (no CONFIG package), so a CONFIG probe
+# would false-negative even with the loader installed. The vulkan-*-cmake
+# tokens must route through _pkgconfig_available("vulkan") instead.
+
+
+@pytest.mark.parametrize("token", ["vulkan-loader-cmake", "vulkan-headers-cmake"])
+def test_dep_available_probes_vulkan_via_pkgconfig(monkeypatch, token):
+    seen = {}
+
+    def fake_pkgconfig(name):
+        seen["name"] = name
+        return True
+
+    # If a Vulkan token wrongly fell through to the CMake CONFIG probe,
+    # this would run cmake; make that path explode so the test catches it.
+    monkeypatch.setattr(utils, "_pkgconfig_available", fake_pkgconfig)
+    monkeypatch.setattr(
+        utils, "_cmake_package_exists",
+        lambda *a, **kw: (_ for _ in ()).throw(
+            AssertionError("Vulkan must not use the CONFIG probe")),
+    )
+
+    assert utils._dep_available(token) is True
+    assert seen["name"] == "vulkan"
+
+
+@pytest.mark.parametrize("token", ["vulkan-loader-cmake", "vulkan-headers-cmake"])
+def test_dep_available_reports_vulkan_missing_when_pkgconfig_absent(
+        monkeypatch, token):
+    monkeypatch.setattr(utils, "_pkgconfig_available", lambda name: False)
+    assert utils._dep_available(token) is False
 
 
 def _force_qdbus_binaries(monkeypatch, present):

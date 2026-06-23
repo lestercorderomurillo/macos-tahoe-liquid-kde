@@ -348,6 +348,15 @@ _PKGCONFIG_TOKENS: dict[str, str] = {
     "epoxy-cmake": "epoxy",
     "x11-cmake":   "x11",
     "xcb-cmake":   "xcb",
+    # KWin 6.7+ exports a transitive find_dependency(Vulkan), so building
+    # ANY effect against it needs the Vulkan loader + headers at configure
+    # time — regardless of GPU vendor (AMD / NVIDIA / Intel all hit this).
+    # FindVulkan is a CMake module, not a CONFIG package, so probe the
+    # loader's vulkan.pc instead of find_package(... CONFIG). Both the
+    # loader and headers tokens probe the same .pc: when it's absent both
+    # install; once present both skip.
+    "vulkan-loader-cmake":  "vulkan",
+    "vulkan-headers-cmake": "vulkan",
 }
 
 

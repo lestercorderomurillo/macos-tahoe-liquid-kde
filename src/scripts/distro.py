@@ -778,6 +778,35 @@ _PACKAGE_MAP: dict[str, dict[str, str]] = {
         "void":     "libxcb-devel",
         "gentoo":   "x11-libs/libxcb",
     },
+    # Vulkan loader dev files (libvulkan.so + the FindVulkan CMake target).
+    # Needed transitively by KWin 6.7+'s exported config — see the
+    # vulkan-*-cmake tokens in utils._PKGCONFIG_TOKENS.
+    "vulkan-loader-cmake": {
+        "arch":     "vulkan-icd-loader",
+        "debian":   "libvulkan-dev",
+        "ubuntu":   "libvulkan-dev",
+        "fedora":   "vulkan-loader-devel",
+        "rhel":     "vulkan-loader-devel",
+        "centos":   "vulkan-loader-devel",
+        "opensuse": "vulkan-loader",
+        "alpine":   "vulkan-loader-dev",
+        "void":     "Vulkan-Loader-devel",
+        "gentoo":   "media-libs/vulkan-loader",
+    },
+    # Vulkan headers (vulkan/vulkan.h). Split from the loader on several
+    # distros (Fedora, openSUSE, …), bundled into -dev on Debian/Ubuntu.
+    "vulkan-headers-cmake": {
+        "arch":     "vulkan-headers",
+        "debian":   "libvulkan-dev",
+        "ubuntu":   "libvulkan-dev",
+        "fedora":   "vulkan-headers",
+        "rhel":     "vulkan-headers",
+        "centos":   "vulkan-headers",
+        "opensuse": "vulkan-headers",
+        "alpine":   "vulkan-headers",
+        "void":     "Vulkan-Headers",
+        "gentoo":   "dev-util/vulkan-headers",
+    },
 }
 
 
