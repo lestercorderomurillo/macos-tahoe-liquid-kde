@@ -13,7 +13,6 @@
 pragma ComponentBehavior: Bound
 
 import QtQuick
-import QtQuick.Effects
 import QtQuick.Layouts
 import QtQuick.Controls as QQC2
 import QtQuick.Window
@@ -306,8 +305,7 @@ Window {
                     }
                 }
 
-                // Off-screen proxy so the tap can put the upgrade command on
-                // the clipboard (QtQuick has no clipboard API of its own).
+                // Off-screen TextEdit, used only as a clipboard via copy().
                 TextEdit {
                     id: updateClipboard
                     visible: false
@@ -420,19 +418,12 @@ Window {
                             anchors.centerIn: parent
                             width: 18
                             height: 18
-                            source: "InstallerGear.svg"
+                            source: Qt.resolvedUrl(installerWindow.isDarkTheme
+                                ? "InstallerGear-dark.svg" : "InstallerGear-light.svg")
                             sourceSize.width: 36
                             sourceSize.height: 36
                             fillMode: Image.PreserveAspectFit
                             smooth: true
-                            visible: false
-                        }
-
-                        MultiEffect {
-                            anchors.fill: gearImg
-                            source: gearImg
-                            colorization: 1.0
-                            colorizationColor: Kirigami.Theme.textColor
                         }
                     }
                 }
