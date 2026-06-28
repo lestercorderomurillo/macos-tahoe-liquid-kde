@@ -22,7 +22,7 @@ from log import (
 from preflight import run_preflight
 from state import RunTracker
 from step_runner import run_phase, step_deps, step_exists, step_has_phase, step_module
-from utils import auto_dep, have, kw_read, run_user
+from utils import have, kw_read, pkg_sync_install, run_user
 
 
 ALL_FEATURES = [
@@ -832,23 +832,31 @@ _BASE_DEPS = [
 
 
 def _check_deps(feat: dict[str, object]) -> None:
-    seen: set[str] = set()
+    # Collect every dep the selected features need, probe each PACKAGE
+    # directly (pacman -Q etc), and install only the genuinely-missing
+    # ones. Installing only what's absent avoids upgrading already-present
+    # packages — a -Sy upgrade of one KDE package against the rest of the
+    # system is the classic partial-upgrade file-conflict trap.
+    from distro import package_for, package_installed
 
-    def dep(cmd: str, pkg: str) -> None:
-        if cmd in seen:
-            return
-        seen.add(cmd)
-        auto_dep(cmd, pkg)
-
-    for cmd, pkg in _BASE_DEPS:
-        dep(cmd, pkg)
+    tokens: list[tuple[str, str]] = list(_BASE_DEPS)
     for feature in INSTALL_ORDER:
         if not should_process(feature, feat):
             continue
         if not step_exists(feature):
             continue
-        for cmd, pkg in step_deps(feature):
-            dep(cmd, pkg)
+        tokens.extend(step_deps(feature))
+
+    pkgs = sorted({package_for(cmd, pkg) for cmd, pkg in tokens})
+    missing = [p for p in pkgs if not package_installed(p)]
+    for p in pkgs:
+        if p not in missing:
+            ok(p)
+    if missing:
+        warn(f"installing missing: {', '.join(missing)}")
+        pkg_sync_install(*missing)
+    else:
+        ok("all dependencies present")
 
 
 def _flush_icon_cache_signal() -> None:

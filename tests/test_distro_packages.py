@@ -613,11 +613,51 @@ def test_vulkan_headers_package_per_distro(
     ("nobara",              ("fedora",),   ["dnf", "install", "-y"]),
     ("rhel",                (),            ["dnf", "install", "-y"]),
     ("opensuse-tumbleweed", ("opensuse",), ["zypper", "--non-interactive", "install", "--no-recommends"]),
-    ("gentoo",              (),            ["emerge", "--quiet", "--noreplace"]),
+    ("gentoo",              (),            ["emerge", "--ask=n", "--quiet", "--noreplace"]),
 ])
 def test_install_cmd_for_supported_families(monkeypatch, distro_id, id_like, expected):
     _force_distro(monkeypatch, distro_id, id_like)
     assert distro.package_manager_install_cmd() == expected
+
+
+# The user consents once when they launch the installer; no per-package
+# install may re-prompt [Y/n]. Every supported family's install command
+# must therefore carry that package manager's assume-yes / don't-ask flag.
+_NONINTERACTIVE_FLAGS = {
+    "pacman": "--noconfirm",
+    "dnf":    "-y",
+    "zypper": "--non-interactive",
+    "emerge": "--ask=n",
+}
+
+
+@pytest.mark.parametrize("distro_id, id_like", [
+    ("arch", ()), ("cachyos", ("arch",)), ("fedora", ()),
+    ("nobara", ("fedora",)), ("rhel", ()), ("centos", ()),
+    ("opensuse-tumbleweed", ("opensuse",)), ("gentoo", ()),
+])
+def test_install_cmd_is_always_non_interactive(monkeypatch, distro_id, id_like):
+    _force_distro(monkeypatch, distro_id, id_like)
+    cmd = distro.package_manager_install_cmd()
+    flag = _NONINTERACTIVE_FLAGS[cmd[0]]
+    assert flag in cmd, (
+        f"{cmd[0]} install command {cmd} is missing its non-interactive "
+        f"flag {flag!r} — it would re-prompt [Y/n] mid-install")
+
+
+# Sync refreshes the db before install, else a stale db 404s when mirrors
+# rotate past the version it knows. Arch needs -Sy; dnf/zypper refresh on
+# install, so their sync is None.
+@pytest.mark.parametrize("distro_id, id_like, expected", [
+    ("arch",                (),            ["pacman", "-Sy", "--noconfirm"]),
+    ("cachyos",             ("arch",),     ["pacman", "-Sy", "--noconfirm"]),
+    ("fedora",              (),            None),
+    ("opensuse-tumbleweed", ("opensuse",), None),
+    ("gentoo",              (),            None),
+])
+def test_sync_cmd_per_distro(monkeypatch, distro_id, id_like, expected):
+    _force_distro(monkeypatch, distro_id, id_like)
+    assert distro.package_manager_sync_cmd() == expected
 
 
 @pytest.mark.parametrize("distro_id", ["debian", "ubuntu", "alpine", "void"])
@@ -625,3 +665,34 @@ def test_install_cmd_raises_for_unsupported_distros(monkeypatch, distro_id):
     _force_distro(monkeypatch, distro_id)
     with pytest.raises(distro.UnsupportedDistroError):
         distro.package_manager_install_cmd()
+
+
+@pytest.mark.parametrize("distro_id", ["debian", "ubuntu", "alpine", "void"])
+def test_sync_cmd_raises_for_unsupported_distros(monkeypatch, distro_id):
+    _force_distro(monkeypatch, distro_id)
+    with pytest.raises(distro.UnsupportedDistroError):
+        distro.package_manager_sync_cmd()
+
+
+# package_installed probes the PACKAGE (pacman -Q etc): installed when the
+# query exits 0 with output, absent when it fails. This is what lets the
+# installer skip present packages instead of upgrading them.
+def test_package_installed_true_when_query_succeeds(monkeypatch):
+    _force_distro(monkeypatch, "arch")
+    monkeypatch.setattr(distro, "_run_query", lambda cmd: "6.6.4")
+    assert distro.package_installed("plasma-workspace") is True
+
+
+def test_package_installed_false_when_query_fails(monkeypatch):
+    _force_distro(monkeypatch, "arch")
+    monkeypatch.setattr(distro, "_run_query", lambda cmd: None)
+    assert distro.package_installed("not-a-package") is False
+
+
+def test_package_installed_uses_pacman_q_on_arch(monkeypatch):
+    _force_distro(monkeypatch, "arch")
+    seen = {}
+    monkeypatch.setattr(distro, "_run_query",
+                        lambda cmd: seen.update(cmd=cmd) or "x")
+    distro.package_installed("cmake")
+    assert seen["cmd"] == ["pacman", "-Q", "cmake"]

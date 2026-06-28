@@ -778,9 +778,7 @@ _PACKAGE_MAP: dict[str, dict[str, str]] = {
         "void":     "libxcb-devel",
         "gentoo":   "x11-libs/libxcb",
     },
-    # Vulkan loader dev files (libvulkan.so + the FindVulkan CMake target).
-    # Needed transitively by KWin 6.7+'s exported config — see the
-    # vulkan-*-cmake tokens in utils._PKGCONFIG_TOKENS.
+    # Vulkan loader + headers — needed transitively by KWin 6.7+'s config.
     "vulkan-loader-cmake": {
         "arch":     "vulkan-icd-loader",
         "debian":   "libvulkan-dev",
@@ -831,19 +829,43 @@ def package_for(cmd: str, fallback_pkg: str | None = None) -> str:
 
 
 _PACKAGE_MANAGER_INSTALL: dict[str, list[str]] = {
-    # Run as root, non-interactive. Supported families only (Arch,
-    # Fedora, openSUSE, Gentoo + ID_LIKE derivatives). Debian/Ubuntu/
-    # Alpine/Void are intentionally absent — they lack KF6/Plasma -cmake
-    # rows in _PACKAGE_MAP, so they raise UnsupportedDistroError instead
-    # of installing wrong package names. Only re-add one alongside its
-    # full _PACKAGE_MAP entries.
+    # Root, NON-INTERACTIVE — user consents once at launch, no per-package
+    # [Y/n]. Every entry carries its assume-yes flag (--noconfirm/-y/etc).
+    # Supported families only; Debian/Ubuntu/Alpine/Void absent on purpose
+    # (no KF6 -cmake rows in _PACKAGE_MAP) → UnsupportedDistroError.
     "arch":     ["pacman", "-S", "--noconfirm", "--needed"],
-    "gentoo":   ["emerge", "--quiet", "--noreplace"],
+    "gentoo":   ["emerge", "--ask=n", "--quiet", "--noreplace"],
     "fedora":   ["dnf", "install", "-y"],
     "rhel":     ["dnf", "install", "-y"],
     "centos":   ["dnf", "install", "-y"],
     "opensuse": ["zypper", "--non-interactive", "install", "--no-recommends"],
 }
+
+# Refresh the package db before installing, else a stale db 404s when
+# mirrors rotate past the version it knows. None = no separate sync needed
+# (dnf refreshes metadata on install; zypper refreshes stale repos).
+_PACKAGE_MANAGER_SYNC: dict[str, list[str] | None] = {
+    "arch":     ["pacman", "-Sy", "--noconfirm"],
+    "gentoo":   None,
+    "fedora":   None,
+    "rhel":     None,
+    "centos":   None,
+    "opensuse": None,
+}
+
+
+def package_manager_sync_cmd() -> list[str] | None:
+    """Db-refresh command for this distro, or None if install refreshes
+    on its own. Raises UnsupportedDistroError like the install variant."""
+    distro = current_distro()
+    for name in (distro, *distro_id_like()):
+        if name in _PACKAGE_MANAGER_SYNC:
+            cmd = _PACKAGE_MANAGER_SYNC[name]
+            return list(cmd) if cmd else None
+    raise UnsupportedDistroError(
+        f"No package manager mapping for distro {distro!r}. "
+        f"Add a row to distro._PACKAGE_MANAGER_SYNC."
+    )
 
 
 class UnsupportedDistroError(RuntimeError):
@@ -895,6 +917,16 @@ def _package_version_query_builder():
     if any(name in ("debian", "ubuntu") for name in family):
         return lambda pkg: ["dpkg-query", "-W", "-f=${Version}\n", pkg]
     return None
+
+
+def package_installed(pkg: str) -> bool:
+    """True if the package manager reports ``pkg`` installed (pacman -Q /
+    rpm -q / dpkg-query). Probes the PACKAGE directly. Returns False when
+    the distro has no query builder (caller then just attempts install)."""
+    build_cmd = _package_version_query_builder()
+    if build_cmd is None:
+        return False
+    return _run_query(build_cmd(pkg)) is not None
 
 
 def plasma_version_probe_cmds() -> tuple[list[str], ...]:

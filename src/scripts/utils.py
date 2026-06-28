@@ -4,14 +4,13 @@ import os
 import shutil
 import subprocess
 import sys
-import tempfile
 import time
 import urllib.error
 import urllib.request
 from pathlib import Path
 from typing import Iterable
 
-from log import fail, ok, warn
+from log import fail
 
 
 def drop_privs_in_child() -> None:
@@ -243,142 +242,24 @@ def is_plasma_session() -> bool:
     return False
 
 
-def _cmake_package_exists(name: str) -> bool:
-    if not have("cmake"):
-        return False
-    try:
-        with tempfile.TemporaryDirectory(prefix="mttkde-cmake-probe-") as tmp:
-            src = Path(tmp) / "src"
-            build = Path(tmp) / "build"
-            src.mkdir(parents=True, exist_ok=True)
-            (src / "CMakeLists.txt").write_text(
-                "\n".join((
-                    "cmake_minimum_required(VERSION 3.16)",
-                    "project(mttkde_dep_probe LANGUAGES CXX)",
-                    f"find_package({name} CONFIG QUIET)",
-                    f"if(NOT {name}_FOUND)",
-                    f'  message(FATAL_ERROR "{name} not found")',
-                    "endif()",
-                    "",
-                )),
-                encoding="utf-8",
-            )
-            res = run_user(
-                [
-                    "cmake",
-                    "-S", str(src),
-                    "-B", str(build),
-                ],
-                check=False,
-                stdout=subprocess.DEVNULL,
-                stderr=subprocess.DEVNULL,
-                timeout=15,
-            )
-    except (OSError, subprocess.TimeoutExpired):
-        return False
-    return res.returncode == 0
+# Force non-interactive frontends so no install can block on a prompt
+# (the GUI installer runs in an embedded terminal — a [Y/n] would hang).
+_NONINTERACTIVE_ENV = {"DEBIAN_FRONTEND": "noninteractive"}
 
 
-# deps() tokens that map to a cmake config package rather than a
-# binary on PATH. The value is the ``<Name>`` we pass to
-# ``find_package(<Name> CONFIG)`` — same string the failing CMakeLists
-# uses, so a missing-dep failure in preflight names exactly what cmake
-# would have complained about.
-_CMAKE_PACKAGE_TOKENS: dict[str, str] = {
-    "ecm":                            "ECM",
-    "qt6-gui-cmake":                  "Qt6Gui",
-    "qt6-widgets-cmake":              "Qt6Widgets",
-    "qt6-dbus-cmake":                 "Qt6DBus",
-    "qt6-qml-cmake":                  "Qt6Qml",
-    "qt6-uitools-cmake":              "Qt6UiTools",
-    # KF6 frameworks required by the compiled plasmoids + acrylic-glass.
-    "kf6-config-cmake":               "KF6Config",
-    "kf6-configwidgets-cmake":        "KF6ConfigWidgets",
-    "kf6-coreaddons-cmake":           "KF6CoreAddons",
-    "kf6-crash-cmake":                "KF6Crash",
-    "kf6-globalaccel-cmake":          "KF6GlobalAccel",
-    "kf6-guiaddons-cmake":            "KF6GuiAddons",
-    "kf6-i18n-cmake":                 "KF6I18n",
-    "kf6-kcmutils-cmake":             "KF6KCMUtils",
-    "kf6-kio-cmake":                  "KF6KIO",
-    "kf6-notifications-cmake":        "KF6Notifications",
-    "kf6-service-cmake":              "KF6Service",
-    "kf6-widgetsaddons-cmake":        "KF6WidgetsAddons",
-    "kf6-windowsystem-cmake":         "KF6WindowSystem",
-    "kf6-itemmodels-cmake":           "KF6ItemModels",
-    # Plasma / KSysGuard / plasma-workspace cmake configs.
-    "plasma-cmake":                   "Plasma",
-    "plasma-activities-cmake":        "PlasmaActivities",
-    "plasma-activities-stats-cmake":  "PlasmaActivitiesStats",
-    "ksysguard-cmake":                "KSysGuard",
-    "libnotificationmanager-cmake":   "LibNotificationManager",
-    "libtaskmanager-cmake":           "LibTaskManager",
-    # KWin (Wayland) + KDecoration3 for the acrylic-glass effect.
-    "kwin-cmake":                     "KWin",
-    "kdecoration-cmake":              "KDecoration3",
-    # libepoxy / X11 / XCB are probed via pkg-config instead — see
-    # _PKGCONFIG_TOKENS below.
-}
-
-
-def _pkgconfig_available(name: str) -> bool:
-    """``pkg-config --exists`` probe. Used for X11 / XCB / epoxy where
-    the cmake module ships outside the package's own tree (ECM
-    FindXCB.cmake, /usr/share/cmake/Modules/FindX11.cmake) and a CONFIG
-    package probe would fail even though the dev files are installed.
-    """
-    if not have("pkg-config"):
-        return False
-    try:
-        res = run_user(
-            ["pkg-config", "--exists", name],
-            check=False,
-            stdout=subprocess.DEVNULL,
-            stderr=subprocess.DEVNULL,
-            timeout=5,
-        )
-    except (OSError, subprocess.TimeoutExpired):
-        return False
-    return res.returncode == 0
-
-
-# Tokens that should be probed via pkg-config rather than
-# ``find_package(... CONFIG)`` — see :func:`_pkgconfig_available`.
-_PKGCONFIG_TOKENS: dict[str, str] = {
-    "epoxy-cmake": "epoxy",
-    "x11-cmake":   "x11",
-    "xcb-cmake":   "xcb",
-    # KWin 6.7+ exports a transitive find_dependency(Vulkan), so building
-    # ANY effect against it needs the Vulkan loader + headers at configure
-    # time — regardless of GPU vendor (AMD / NVIDIA / Intel all hit this).
-    # FindVulkan is a CMake module, not a CONFIG package, so probe the
-    # loader's vulkan.pc instead of find_package(... CONFIG). Both the
-    # loader and headers tokens probe the same .pc: when it's absent both
-    # install; once present both skip.
-    "vulkan-loader-cmake":  "vulkan",
-    "vulkan-headers-cmake": "vulkan",
-}
-
-
-def _dep_available(cmd: str) -> bool:
-    pc_name = _PKGCONFIG_TOKENS.get(cmd)
-    if pc_name is not None:
-        return _pkgconfig_available(pc_name)
-    cmake_name = _CMAKE_PACKAGE_TOKENS.get(cmd)
-    if cmake_name is not None:
-        return _cmake_package_exists(cmake_name)
-    # qdbus's binary name varies per distro (qdbus6 / qdbus-qt6 / qdbus);
-    # resolve it the same way the runtime callers do.
-    if cmd == "qdbus6":
-        return qdbus_cmd() is not None
-    return have(cmd)
+def _run_pkg_cmd(base: list[str], *args: str) -> bool:
+    cmd = base if os.geteuid() == 0 else ["sudo", *base]
+    cmd.extend(args)
+    env = {**os.environ, **_NONINTERACTIVE_ENV}
+    return subprocess.run(
+        cmd, check=False, env=env, stdin=subprocess.DEVNULL,
+    ).returncode == 0
 
 
 def pkg_install(*pkgs: str) -> bool:
-    """Install one or more packages via the distro's native package
-    manager (resolved through :mod:`distro`). The caller passes the
-    *current-distro* package names — use :func:`auto_dep` if the
-    deps() token still needs translating."""
+    """Install packages via the distro's native package manager (caller
+    passes current-distro names). Non-interactive; --needed lets the
+    package manager skip what's already current — no is-installed probe."""
     from distro import UnsupportedDistroError, package_manager_install_cmd
     try:
         base = package_manager_install_cmd()
@@ -386,27 +267,26 @@ def pkg_install(*pkgs: str) -> bool:
         fail(str(exc))
         fail(f"install manually: {' '.join(pkgs)}")
         return False
-    # Prepend sudo when we're not already running as root.
-    cmd = base if os.geteuid() == 0 else ["sudo", *base]
-    cmd.extend(pkgs)
-    return subprocess.run(cmd, check=False).returncode == 0
+    return _run_pkg_cmd(base, *pkgs)
 
 
-def auto_dep(cmd: str, pkg: str | None = None) -> bool:
-    """Ensure ``cmd`` resolves on PATH, installing the per-distro
-    package if it doesn't. ``pkg`` is the Arch-flavoured package name
-    from the step's deps() token — distro.package_for() translates it
-    to the right name on the current host."""
-    from distro import package_for
-    if _dep_available(cmd):
-        ok(cmd)
-        return True
-    warn(f"{cmd} not found — installing...")
-    if pkg_install(package_for(cmd, pkg)):
-        ok(f"{cmd} (installed)")
-        return True
-    fail(f"{cmd} (install failed)")
-    return False
+def pkg_sync_install(*pkgs: str) -> bool:
+    """Refresh the package db, then install every package in one shot.
+    --needed lets the package manager skip what's already current."""
+    from distro import (
+        UnsupportedDistroError, package_manager_install_cmd,
+        package_manager_sync_cmd,
+    )
+    try:
+        sync = package_manager_sync_cmd()
+        install = package_manager_install_cmd()
+    except UnsupportedDistroError as exc:
+        fail(str(exc))
+        fail(f"install manually: {' '.join(pkgs)}")
+        return False
+    if sync is not None:
+        _run_pkg_cmd(sync)
+    return _run_pkg_cmd(install, *pkgs)
 
 
 _QDBUS_CACHE: list[str] | None = None

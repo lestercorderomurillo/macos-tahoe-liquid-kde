@@ -1,173 +1,114 @@
-from pathlib import Path
-from types import SimpleNamespace
+import subprocess
 
 import pytest
 
 import utils
 
 
-def test_dep_available_treats_ecm_as_cmake_package(monkeypatch):
-    seen = []
-
-    monkeypatch.setattr(utils, "have", lambda cmd: cmd == "cmake")
-
-    def fake_run_user(cmd, **kwargs):
-        cmakelists = Path(cmd[2]) / "CMakeLists.txt"
-        seen.append(cmakelists.read_text())
-        seen.append(cmd)
-        return SimpleNamespace(returncode=0)
-
-    monkeypatch.setattr(utils, "run_user", fake_run_user)
-
-    assert utils._dep_available("ecm") is True
-    assert len(seen) == 2
-    assert "project(mttkde_dep_probe LANGUAGES CXX)" in seen[0]
-    assert "find_package(ECM CONFIG QUIET)" in seen[0]
-    assert seen[1][0] == "cmake"
-    assert seen[1][1] == "-S"
+# ── pkg_install / pkg_sync_install: non-interactive, db-refreshed ──────
 
 
-def test_dep_available_reports_ecm_missing_when_cmake_cannot_find_it(monkeypatch):
-    monkeypatch.setattr(utils, "have", lambda cmd: cmd == "cmake")
-    monkeypatch.setattr(
-        utils,
-        "run_user",
-        lambda *a, **kw: SimpleNamespace(returncode=1),
-    )
+@pytest.fixture
+def _record_run(monkeypatch):
+    """Capture every subprocess.run call utils makes, return a no-op success."""
+    calls: list = []
 
-    assert utils._dep_available("ecm") is False
+    class _Ok:
+        returncode = 0
 
+    def fake_run(cmd, **kw):
+        calls.append((cmd, kw))
+        return _Ok()
 
-def test_dep_available_treats_qt6_gui_cmake_as_component_probe(monkeypatch):
-    seen = []
-
-    monkeypatch.setattr(utils, "have", lambda cmd: cmd == "cmake")
-
-    def fake_run_user(cmd, **kwargs):
-        cmakelists = Path(cmd[2]) / "CMakeLists.txt"
-        seen.append(cmakelists.read_text())
-        seen.append(cmd)
-        return SimpleNamespace(returncode=0)
-
-    monkeypatch.setattr(utils, "run_user", fake_run_user)
-
-    assert utils._dep_available("qt6-gui-cmake") is True
-    assert len(seen) == 2
-    assert "find_package(Qt6Gui CONFIG QUIET)" in seen[0]
-    assert seen[1][0] == "cmake"
-    assert seen[1][1] == "-S"
+    monkeypatch.setattr(utils.subprocess, "run", fake_run)
+    monkeypatch.setattr(utils.os, "geteuid", lambda: 0)  # no sudo prefix
+    return calls
 
 
-def test_dep_available_reports_qt6_qml_missing_when_probe_fails(monkeypatch):
-    monkeypatch.setattr(utils, "have", lambda cmd: cmd == "cmake")
-    monkeypatch.setattr(
-        utils,
-        "run_user",
-        lambda *a, **kw: SimpleNamespace(returncode=1),
-    )
+def test_pkg_install_appends_packages_to_distro_command(monkeypatch, _record_run):
+    import distro
+    monkeypatch.setattr(distro, "package_manager_install_cmd",
+                        lambda: ["pacman", "-S", "--noconfirm", "--needed"])
 
-    assert utils._dep_available("qt6-qml-cmake") is False
-
-
-def test_dep_available_treats_qt6_uitools_as_cmake_package(monkeypatch):
-    seen = []
-
-    monkeypatch.setattr(utils, "have", lambda cmd: cmd == "cmake")
-
-    def fake_run_user(cmd, **kwargs):
-        cmakelists = Path(cmd[2]) / "CMakeLists.txt"
-        seen.append(cmakelists.read_text())
-        seen.append(cmd)
-        return SimpleNamespace(returncode=0)
-
-    monkeypatch.setattr(utils, "run_user", fake_run_user)
-
-    assert utils._dep_available("qt6-uitools-cmake") is True
-    assert len(seen) == 2
-    assert "find_package(Qt6UiTools CONFIG QUIET)" in seen[0]
-    assert seen[1][0] == "cmake"
-    assert seen[1][1] == "-S"
+    assert utils.pkg_install("vulkan-headers", "cmake") is True
+    cmd = _record_run[0][0]
+    assert cmd == ["pacman", "-S", "--noconfirm", "--needed",
+                   "vulkan-headers", "cmake"]
 
 
-# ── Vulkan tokens probe via pkg-config, NOT find_package(... CONFIG) ──
-# FindVulkan is a CMake module (no CONFIG package), so a CONFIG probe
-# would false-negative even with the loader installed. The vulkan-*-cmake
-# tokens must route through _pkgconfig_available("vulkan") instead.
+def test_pkg_install_is_non_interactive(monkeypatch, _record_run):
+    import distro
+    monkeypatch.setattr(distro, "package_manager_install_cmd",
+                        lambda: ["pacman", "-S", "--noconfirm", "--needed"])
+
+    utils.pkg_install("cmake")
+    kw = _record_run[0][1]
+    # stdin from /dev/null + non-interactive env so nothing can block on [Y/n].
+    assert kw["stdin"] is subprocess.DEVNULL
+    assert kw["env"]["DEBIAN_FRONTEND"] == "noninteractive"
 
 
-@pytest.mark.parametrize("token", ["vulkan-loader-cmake", "vulkan-headers-cmake"])
-def test_dep_available_probes_vulkan_via_pkgconfig(monkeypatch, token):
-    seen = {}
+def test_pkg_install_prepends_sudo_when_not_root(monkeypatch, _record_run):
+    import distro
+    monkeypatch.setattr(utils.os, "geteuid", lambda: 1000)
+    monkeypatch.setattr(distro, "package_manager_install_cmd",
+                        lambda: ["pacman", "-S", "--noconfirm", "--needed"])
 
-    def fake_pkgconfig(name):
-        seen["name"] = name
-        return True
-
-    # If a Vulkan token wrongly fell through to the CMake CONFIG probe,
-    # this would run cmake; make that path explode so the test catches it.
-    monkeypatch.setattr(utils, "_pkgconfig_available", fake_pkgconfig)
-    monkeypatch.setattr(
-        utils, "_cmake_package_exists",
-        lambda *a, **kw: (_ for _ in ()).throw(
-            AssertionError("Vulkan must not use the CONFIG probe")),
-    )
-
-    assert utils._dep_available(token) is True
-    assert seen["name"] == "vulkan"
+    utils.pkg_install("cmake")
+    assert _record_run[0][0][0] == "sudo"
 
 
-@pytest.mark.parametrize("token", ["vulkan-loader-cmake", "vulkan-headers-cmake"])
-def test_dep_available_reports_vulkan_missing_when_pkgconfig_absent(
-        monkeypatch, token):
-    monkeypatch.setattr(utils, "_pkgconfig_available", lambda name: False)
-    assert utils._dep_available(token) is False
+def test_pkg_install_fails_gracefully_on_unsupported_distro(monkeypatch):
+    import distro
+    monkeypatch.setattr(distro, "package_manager_install_cmd",
+                        lambda: (_ for _ in ()).throw(
+                            distro.UnsupportedDistroError("nope")))
+    assert utils.pkg_install("cmake") is False
+
+
+def test_pkg_sync_install_syncs_then_installs(monkeypatch, _record_run):
+    import distro
+    monkeypatch.setattr(distro, "package_manager_sync_cmd",
+                        lambda: ["pacman", "-Sy", "--noconfirm"])
+    monkeypatch.setattr(distro, "package_manager_install_cmd",
+                        lambda: ["pacman", "-S", "--noconfirm", "--needed"])
+
+    assert utils.pkg_sync_install("vulkan-headers", "cmake") is True
+    assert len(_record_run) == 2
+    assert _record_run[0][0] == ["pacman", "-Sy", "--noconfirm"]
+    assert _record_run[1][0] == ["pacman", "-S", "--noconfirm", "--needed",
+                                 "vulkan-headers", "cmake"]
+
+
+def test_pkg_sync_install_skips_sync_when_none(monkeypatch, _record_run):
+    import distro
+    monkeypatch.setattr(distro, "package_manager_sync_cmd", lambda: None)
+    monkeypatch.setattr(distro, "package_manager_install_cmd",
+                        lambda: ["dnf", "install", "-y"])
+
+    utils.pkg_sync_install("cmake")
+    assert len(_record_run) == 1  # install only, no sync step
+    assert _record_run[0][0] == ["dnf", "install", "-y", "cmake"]
+
+
+# ── qdbus binary resolution (name varies per distro) ──────────────────
 
 
 def _force_qdbus_binaries(monkeypatch, present):
-    """Pin which qdbus binary names ``have()`` reports and drain the
-    module-level qdbus cache so the new set is actually consulted."""
     monkeypatch.setattr(utils, "have", lambda cmd: cmd in present)
     monkeypatch.setattr(utils, "_QDBUS_CACHE", None)
 
 
-def test_dep_available_finds_qdbus_under_fedora_binary_name(monkeypatch):
-    # Regression: the dep token is ``qdbus6`` but Fedora/RHEL ship the
-    # tool on PATH as ``qdbus-qt6``. A literal have("qdbus6") missed it
-    # and auto_dep() then ran a noisy no-op reinstall on every run.
-    # _dep_available must route the token through the same multi-name
-    # resolver the runtime callers use.
-    _force_qdbus_binaries(monkeypatch, {"qdbus-qt6"})
-
-    assert utils.have("qdbus6") is False  # the literal name is genuinely absent
-    assert utils._dep_available("qdbus6") is True
+@pytest.mark.parametrize("present, expected", [
+    ({"qdbus6"},     "qdbus6"),       # Arch/Alpine/Debian/openSUSE
+    ({"qdbus-qt6"},  "qdbus-qt6"),    # Fedora/RHEL
+    ({"qdbus"},      "qdbus"),        # older Qt5-era systems
+])
+def test_qdbus_cmd_resolves_per_distro_name(monkeypatch, present, expected):
+    _force_qdbus_binaries(monkeypatch, present)
+    assert utils.qdbus_cmd() == expected
 
 
-def test_dep_available_finds_qdbus_under_qt5_fallback_name(monkeypatch):
-    # Older systems expose only the Qt5-era ``qdbus``.
-    _force_qdbus_binaries(monkeypatch, {"qdbus"})
-
-    assert utils._dep_available("qdbus6") is True
-
-
-def test_dep_available_finds_qdbus_under_canonical_name(monkeypatch):
-    _force_qdbus_binaries(monkeypatch, {"qdbus6"})
-
-    assert utils._dep_available("qdbus6") is True
-
-
-def test_dep_available_reports_qdbus_missing_when_no_variant_present(monkeypatch):
+def test_qdbus_cmd_none_when_no_variant_present(monkeypatch):
     _force_qdbus_binaries(monkeypatch, set())
-
-    assert utils._dep_available("qdbus6") is False
-
-
-def test_auto_dep_skips_reinstall_when_qdbus_present_under_alias(monkeypatch):
-    # End-to-end: with only the Fedora-named binary present, auto_dep
-    # must take the already-satisfied path (ok, no install) rather than
-    # the warn → pkg_install path that produced the noisy log.
-    _force_qdbus_binaries(monkeypatch, {"qdbus-qt6"})
-    installed = []
-    monkeypatch.setattr(utils, "pkg_install", lambda *p: installed.append(p) or True)
-
-    assert utils.auto_dep("qdbus6", "qt6-tools") is True
-    assert installed == []
+    assert utils.qdbus_cmd() is None

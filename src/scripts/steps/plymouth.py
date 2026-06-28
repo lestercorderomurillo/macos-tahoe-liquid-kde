@@ -57,11 +57,8 @@ PLYMOUTHD_CONF = Path("/etc/plymouth/plymouthd.conf")
 
 
 def deps():
-    # ``cmd:pkg`` form — the binary is ``plymouth-set-default-theme``
-    # but the package it ships in is just ``plymouth`` on every distro
-    # we've seen (arch, fedora, opensuse, debian/ubuntu, suse). Without
-    # the colon split, ``auto_dep`` would try to install a package named
-    # ``plymouth-set-default-theme`` and fail on every distro.
+    # ``cmd:pkg`` form — the binary is ``plymouth-set-default-theme`` but
+    # the package it ships in is just ``plymouth`` on every distro.
     return ["plymouth-set-default-theme:plymouth"]
 
 

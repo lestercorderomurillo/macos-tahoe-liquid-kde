@@ -268,3 +268,46 @@ def test_auto_update_pulls_and_reexecs_install(cli_module, monkeypatch):
     assert path.endswith("/install")
     # argv[0] is the program, the install flags follow verbatim.
     assert argv[1:] == ["--dark", "--no-gtk"]
+
+
+# ── _check_deps: probe each package, install ONLY the missing ones ──────
+
+
+@pytest.fixture
+def _deps_env(monkeypatch, cli_module):
+    import distro
+    monkeypatch.setattr(cli_module, "_BASE_DEPS", [("cmake", "cmake")])
+    monkeypatch.setattr(cli_module, "step_exists", lambda feature: True)
+    monkeypatch.setattr(cli_module, "should_process",
+                        lambda feature, feat: feat.get(feature, True))
+    monkeypatch.setattr(cli_module, "step_deps", lambda feature: [
+        ("vulkan-loader-cmake",  "vulkan-icd-loader"),
+        ("vulkan-headers-cmake", "vulkan-headers"),
+    ])
+    monkeypatch.setattr(distro, "package_for", lambda cmd, pkg=None: pkg or cmd)
+    return distro
+
+
+def test_check_deps_installs_only_missing_packages(monkeypatch, cli_module, _deps_env):
+    # vulkan-headers absent, the rest present → only it gets installed.
+    monkeypatch.setattr(_deps_env, "package_installed",
+                        lambda pkg: pkg != "vulkan-headers")
+    installed: list[tuple] = []
+    monkeypatch.setattr(cli_module, "pkg_sync_install",
+                        lambda *pkgs: installed.append(pkgs) or True)
+
+    cli_module._check_deps({"acrylic_glass": True})
+
+    assert installed == [("vulkan-headers",)]
+
+
+def test_check_deps_installs_nothing_when_all_present(monkeypatch, cli_module, _deps_env):
+    # All present → no install call at all (no -Sy, no upgrade, no conflict).
+    monkeypatch.setattr(_deps_env, "package_installed", lambda pkg: True)
+    called = []
+    monkeypatch.setattr(cli_module, "pkg_sync_install",
+                        lambda *pkgs: called.append(pkgs) or True)
+
+    cli_module._check_deps({"acrylic_glass": True})
+
+    assert called == []
