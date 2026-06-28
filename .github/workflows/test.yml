@@ -93,8 +93,21 @@ jobs:
       - name: Build and run ${{ matrix.distro }} container
         continue-on-error: ${{ matrix.distro == 'gentoo' || matrix.distro == 'arch-kdeunstable' }}
         run: |
-          docker build \
-            -f tests/containers/Dockerfile.${{ matrix.distro }} \
-            -t mttkde-test-${{ matrix.distro }}:ci \
-            .
+          # Retry the build: pulling the base image from Docker Hub can
+          # transiently time out / rate-limit from GitHub runners, which
+          # has nothing to do with our code. 3 attempts, 15s backoff.
+          for attempt in 1 2 3; do
+            if docker build \
+                -f tests/containers/Dockerfile.${{ matrix.distro }} \
+                -t mttkde-test-${{ matrix.distro }}:ci \
+                .; then
+              break
+            fi
+            if [ "$attempt" = 3 ]; then
+              echo "::error::docker build failed after 3 attempts"
+              exit 1
+            fi
+            echo "build attempt $attempt failed — retrying in 15s"
+            sleep 15
+          done
           docker run --rm mttkde-test-${{ matrix.distro }}:ci
