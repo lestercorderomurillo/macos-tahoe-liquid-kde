@@ -154,21 +154,13 @@ Window {
         function exec(cmd: string): void { connectSource(cmd) }
     }
 
-    // ── clipboard ────────────────────────────────────────────────────────
-    // QtQuick has no clipboard API of its own, but TextEdit.copy() puts the
-    // selected text on the system clipboard with no external process and no
-    // polling (same trick as the installer's InstallError log viewer). We
-    // keep one off-screen, build the report into it on demand, select all,
-    // and copy. Plain QtQuick TextEdit — not a styled QQC2 control — so it
-    // never warns about a missing Breeze background.
+    // Off-screen TextEdit, used only as a clipboard via copy().
     TextEdit {
         id: clipboardProxy
         visible: false
         width: 0; height: 0
     }
 
-    // Assemble the same field set the grid renders, "Label: Value" per line,
-    // and place it on the clipboard. No-op until the helper has returned.
     function copyDetails(): void {
         if (!aboutWindow.infoReady)
             return;
@@ -535,21 +527,11 @@ Window {
                     }
                 }
 
-                // Copy all the gathered details to the clipboard. Identical to
-                // the two text buttons above — a plain QQC2.Button with NO
-                // custom background or contentItem — so it inherits the exact
-                // same Breeze rounding, fill, hover/pressed, and click handling.
-                // The only difference is it shows an icon instead of text. The
-                // bundled Lucide "copy" SVG is monochrome, so the native style
-                // tints it to the button text colour automatically; on a copy
-                // it flips to the theme checkmark for ~1.5s for confirmation.
                 QQC2.Button {
                     id: copyButton
                     property bool justCopied: false
                     enabled: aboutWindow.infoReady
                     display: QQC2.AbstractButton.IconOnly
-                    icon.name: justCopied ? "dialog-ok" : ""
-                    icon.source: justCopied ? "" : Qt.resolvedUrl("copy.svg")
                     QQC2.ToolTip.text: justCopied ? "Copied" : "Copy details"
                     QQC2.ToolTip.visible: hovered
                     QQC2.ToolTip.delay: 400
@@ -557,6 +539,33 @@ Window {
                         aboutWindow.copyDetails();
                         justCopied = true;
                         copiedReset.restart();
+                    }
+
+                    contentItem: Item {
+                        implicitWidth: 18
+                        implicitHeight: 18
+
+                        Image {
+                            anchors.centerIn: parent
+                            width: 18
+                            height: 18
+                            source: Qt.resolvedUrl(aboutWindow.isDarkTheme
+                                ? "copy-dark.svg" : "copy-light.svg")
+                            sourceSize.width: 36
+                            sourceSize.height: 36
+                            fillMode: Image.PreserveAspectFit
+                            smooth: true
+                            opacity: copyButton.enabled ? 1.0 : 0.4
+                            visible: !copyButton.justCopied
+                        }
+                        Kirigami.Icon {
+                            anchors.centerIn: parent
+                            width: 18
+                            height: 18
+                            source: "dialog-ok"
+                            color: Kirigami.Theme.textColor
+                            visible: copyButton.justCopied
+                        }
                     }
 
                     Timer {
