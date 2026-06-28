@@ -828,6 +828,9 @@ _BASE_DEPS = [
     ("fc-cache", "fontconfig"), ("kwriteconfig6", "kconfig"),
     ("cmake", "cmake"), ("g++", "gcc"),
     ("pkg-config", "pkgconf"), ("dbus-monitor", "dbus"),
+    # update-desktop-database keeps the launcher/taskbar app list fresh
+    # after a theme switch.
+    ("update-desktop-database", "desktop-file-utils"),
 ]
 
 

@@ -401,6 +401,10 @@ _PACKAGE_MAP: dict[str, dict[str, str]] = {
         "void":     "pkgconf",
         "gentoo":   "dev-util/pkgconf",
     },
+    # desktop-file-utils everywhere; only Gentoo needs the category prefix.
+    "update-desktop-database": {
+        "gentoo":   "dev-util/desktop-file-utils",
+    },
     "fc-cache": {
         "arch":     "fontconfig",
         "debian":   "fontconfig",

@@ -66,6 +66,32 @@ def _run_live(cmd: list[str]) -> None:
         pass
 
 
+def _refresh_desktop_database() -> None:
+    """Rebuild mimeinfo.cache in the applications dirs. kbuildsycoca6
+    reads it to know which apps exist, so a stale cache leaves the
+    launcher/taskbar missing apps after a theme switch — this is the
+    update-desktop-database step users had to run by hand. User dir runs
+    as the user; the system dir needs root."""
+    from steps._helpers import _as_root
+    if not have("update-desktop-database"):
+        return
+    user_apps = HOME / ".local/share/applications"
+    if user_apps.is_dir():
+        _run_live(["update-desktop-database", str(user_apps)])
+    sys_apps = Path("/usr/share/applications")
+    if sys_apps.is_dir():
+        try:
+            with _as_root():
+                subprocess.run(
+                    ["update-desktop-database", str(sys_apps)],
+                    check=False,
+                    stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
+                    timeout=_LIVE_APPLY_TIMEOUT,
+                )
+        except (subprocess.TimeoutExpired, OSError, PermissionError):
+            pass
+
+
 def _flush_caches() -> None:
     for sub in _CACHES:
         p = HOME / sub
@@ -81,6 +107,8 @@ def _flush_caches() -> None:
             else:
                 try: p.unlink()
                 except OSError: pass
+    # Refresh mimeinfo.cache before sycoca so kbuildsycoca6 sees every app.
+    _refresh_desktop_database()
     if have("kbuildsycoca6"):
         _run_live(["kbuildsycoca6", "--noincremental"])
     ok("Caches flushed")
@@ -279,14 +307,18 @@ def uninstall() -> None:
             kw_write("--file", "kcminputrc", "--group", "Mouse",
                      "--key", "cursorTheme", "breeze_cursors")
             ok("Cursor reset")
-        if feat_enabled("ICONS"):
-            kw_write("--file", "kdeglobals", "--group", "Icons",
-                     "--key", "Theme", "breeze")
-            _run_live(
-                ["dbus-send", "--session", "--type=signal",
-                 "/KIconLoader", "org.kde.KIconLoader.iconChanged", "int32:0"]
-            )
-            ok("Icons reset")
+        # Reset the icon theme UNCONDITIONALLY (not gated on the ICONS
+        # feature): the MacTahoe icon dirs get deleted later in the
+        # uninstall, so if kdeglobals still named them KDE would log
+        # "Icon theme MacTahoeLiquidKde-Icons not found" against the gone
+        # dir. Always point config at breeze before the dirs vanish.
+        kw_write("--file", "kdeglobals", "--group", "Icons",
+                 "--key", "Theme", "breeze")
+        _run_live(
+            ["dbus-send", "--session", "--type=signal",
+             "/KIconLoader", "org.kde.KIconLoader.iconChanged", "int32:0"]
+        )
+        ok("Icons reset")
         if feat_enabled("WALLPAPERS"):
             for p in ("/usr/share/wallpapers/Next", "/usr/share/wallpapers/Breeze",
                       "/usr/share/wallpapers/Flow"):
