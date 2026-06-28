@@ -94,11 +94,10 @@ def _ensure_panel_colorizer() -> None:
              "Install manually from KDE Store.")
 
 
-def _evaluate_layout(script_path) -> bool:
+def _evaluate_layout_script(script: str) -> bool:
     if qdbus_cmd() is None:
         warn("qdbus not found — layout not installed")
         return False
-    script = script_path.read_text()
     # plasmashell may still be restarting from the apply step — retry a few times.
     for _ in range(5):
         if qdbus_call(
@@ -110,6 +109,59 @@ def _evaluate_layout(script_path) -> bool:
             return True
         time.sleep(3)
     return False
+
+
+def _evaluate_layout(script_path) -> bool:
+    return _evaluate_layout_script(script_path.read_text())
+
+
+def _capture_pinned_launchers() -> list[str]:
+    """User-pinned taskbar launchers from appletsrc, deduped in order.
+    Our own MacTahoe plasmoids are dropped so a reinstall doesn't double
+    them; preferred:// and applications: entries are kept."""
+    appletsrc = HOME / ".config/plasma-org.kde.plasma.desktop-appletsrc"
+    if not appletsrc.is_file():
+        return []
+    try:
+        text = appletsrc.read_text()
+    except OSError:
+        return []
+    seen: list[str] = []
+    for m in re.finditer(r"^launchers=(.*)$", text, re.MULTILINE):
+        for entry in m.group(1).split(","):
+            entry = entry.strip()
+            if entry and "mac.tahoe" not in entry and "mac-tahoe" not in entry:
+                if entry not in seen:
+                    seen.append(entry)
+    return seen
+
+
+def _reset_with_pins(pins: list[str]) -> bool:
+    """Run the default-layout reset, then pin the user's launchers onto the
+    fresh icontasks so they survive --resetLayout's panel rebuild."""
+    if not LAYOUT_RESET.is_file():
+        return False
+    script = LAYOUT_RESET.read_text()
+    if pins:
+        joined = ",".join(pins)
+        # Append a restore block: find the icontasks the reset just added
+        # and write the captured launchers onto it.
+        script += (
+            "\n(function () {\n"
+            "  var ps = panels();\n"
+            "  for (var i = 0; i < ps.length; i++) {\n"
+            "    var ws = ps[i].widgetIds;\n"
+            "    for (var j = 0; j < ws.length; j++) {\n"
+            "      var w = ps[i].widgetById(ws[j]);\n"
+            "      if (w && w.type === 'org.kde.plasma.icontasks') {\n"
+            "        w.currentConfigGroup = ['General'];\n"
+            f"        w.writeConfig('launchers', '{joined}');\n"
+            "      }\n"
+            "    }\n"
+            "  }\n"
+            "})();\n"
+        )
+    return _evaluate_layout_script(script)
 
 
 def _reset_layout_builtin() -> bool:
@@ -247,6 +299,16 @@ def uninstall() -> None:
     if _layout_looks_reset():
         ok("Layout reset")
         return
+
+    # Capture the user's pinned taskbar apps before any reset wipes them,
+    # then restore them onto the default panel. --resetLayout / default.js
+    # rebuild the panel from scratch, so without this the pins are lost.
+    pins = _capture_pinned_launchers()
+    if _reset_with_pins(pins):
+        ok(f"Layout reset (kept {len(pins)} pinned app(s))" if pins
+           else "Layout reset")
+        return
+
     if _reset_layout_builtin():
         ok("Layout reset")
         return
