@@ -22,8 +22,10 @@
         <entry name="BlurDecorations" type="Bool">
             <default>true</default>
         </entry>
+        <!-- cairo-dock ships excluded: its dock window otherwise renders
+             a phantom glass panel behind the dock (issue #13). -->
         <entry name="WindowClasses" type="String">
-            <default></default>
+            <default>cairo-dock</default>
         </entry>
         <entry name="BlurMatching" type="Bool">
             <default>false</default>
