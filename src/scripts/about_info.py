@@ -33,6 +33,26 @@ import subprocess
 import sys
 from pathlib import Path
 
+# Replaced with the real version by _install_about_info() when the helper
+# is copied to ~/.local/bin, so the installed copy reports the version
+# that installed it.
+_BAKED_VERSION = "@THEME_VERSION@"
+
+
+def theme_version() -> str:
+    """Theme version string, or "" when it can't be determined.
+
+    Repo checkouts read VERSION live (two parents up from src/scripts/);
+    the installed copy falls back to the version baked in at install."""
+    try:
+        v = (Path(__file__).resolve().parent.parent.parent / "VERSION").read_text().strip()
+        if v:
+            return v
+    except OSError:
+        pass
+    return "" if _BAKED_VERSION.startswith("@") else _BAKED_VERSION
+
+
 # ── helpers ──────────────────────────────────────────────────────────────
 
 _DMI_PLACEHOLDERS = frozenset(
@@ -1047,6 +1067,7 @@ def main(argv: list[str]) -> int:
             # schema so no field renders as ``undefined``.
             print(f"about_info: unexpected error: {exc}", file=sys.stderr)
             data = dict(_UNKNOWN_SCHEMA)
+    data["theme_version"] = theme_version()
     sys.stdout.write(json.dumps(data, indent=2 if pretty else None,
                                 ensure_ascii=False) + "\n")
     return 0

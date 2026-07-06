@@ -2,7 +2,7 @@ import shutil
 from pathlib import Path
 
 from distro import qt6_plugins_dir, qt6_qml_dir
-from paths import REPO_ROOT
+from paths import REPO_ROOT, read_version
 from steps._helpers import (
     HOME, build_dir, cmake_build, fail, ok, offline,
     sudo_install_file, sudo_install_tree, sudo_remove, warn,
@@ -146,7 +146,11 @@ def _install_about_info() -> None:
         warn("System info helper source missing")
         return
     ABOUT_INFO_DEST.parent.mkdir(parents=True, exist_ok=True)
-    shutil.copy2(ABOUT_INFO_SRC, ABOUT_INFO_DEST)
+    # Bake the version in: the installed copy sits outside the repo, so
+    # About This Computer reports whatever version installed it.
+    source = ABOUT_INFO_SRC.read_text(encoding="utf-8")
+    ABOUT_INFO_DEST.write_text(
+        source.replace("@THEME_VERSION@", read_version()), encoding="utf-8")
     ABOUT_INFO_DEST.chmod(0o755)
     ok("System info helper installed")
 

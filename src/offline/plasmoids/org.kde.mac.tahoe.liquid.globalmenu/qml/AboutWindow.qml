@@ -97,6 +97,7 @@ Window {
     property string networkDisplay: _placeholder
     property string serialDisplay: _placeholder
     property string osDisplay: _placeholder
+    property string themeVersionDisplay: _placeholder
 
     // ── data fetcher ─────────────────────────────────────────────────────
     // Single command, single JSON parse. The helper is installed to
@@ -131,6 +132,9 @@ Window {
             aboutWindow.networkDisplay = info.network || "Unknown";
             aboutWindow.serialDisplay = info.serial || "Not Available";
             aboutWindow.osDisplay = info.os || "Unknown";
+            aboutWindow.themeVersionDisplay = info.theme_version
+                ? "MacTahoe Liquid KDE " + info.theme_version
+                : aboutWindow._placeholder;
             aboutWindow.infoReady = true;
         }
 
@@ -574,6 +578,18 @@ Window {
                         onTriggered: copyButton.justCopied = false
                     }
                 }
+            }
+
+            Item { Layout.preferredHeight: 6 }
+
+            Text {
+                Layout.alignment: Qt.AlignHCenter
+                text: aboutWindow.themeVersionDisplay
+                color: Kirigami.Theme.disabledTextColor
+                font.family: aboutWindow.fontFamily
+                font.pointSize: Kirigami.Theme.defaultFont.pointSize - 1
+                opacity: aboutWindow.infoReady ? 1.0 : 0.0
+                Behavior on opacity { NumberAnimation { duration: 220; easing.type: Easing.OutQuad } }
             }
 
             Item { Layout.fillHeight: true }

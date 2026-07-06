@@ -118,3 +118,16 @@ def test_globalmenu_build_artifacts_match_install_sources():
     artifacts = globalmenu.build_artifacts()
     assert globalmenu.BUILD / "bin/plasma/applets/org.kde.mac.tahoe.liquid.globalmenu.so" in artifacts
     assert globalmenu.BUILD / "bin/plasma/applet/org/kde/mac/tahoe/liquid/globalmenu" in artifacts
+
+
+def test_install_about_info_bakes_version(tmp_path, monkeypatch):
+    from paths import read_version
+
+    dest = tmp_path / "bin/mac-tahoe-about-info"
+    monkeypatch.setattr(globalmenu, "ABOUT_INFO_DEST", dest)
+    globalmenu._install_about_info()
+
+    text = dest.read_text(encoding="utf-8")
+    assert "@THEME_VERSION@" not in text
+    assert f'_BAKED_VERSION = "{read_version()}"' in text
+    assert dest.stat().st_mode & 0o111, "helper must stay executable"

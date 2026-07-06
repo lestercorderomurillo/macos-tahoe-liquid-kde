@@ -920,7 +920,7 @@ def test_helper_emits_valid_json_to_stdout():
     info = json.loads(result.stdout)
     expected_keys = {
         "vendor", "model", "year", "chip", "cores", "memory",
-        "graphics", "disk", "network", "serial", "os",
+        "graphics", "disk", "network", "serial", "os", "theme_version",
     }
     assert set(info.keys()) == expected_keys
 
@@ -1074,7 +1074,7 @@ def test_helper_returns_full_schema_even_with_no_tools(tmp_path, monkeypatch):
     info = json.loads(result.stdout)
     expected_keys = {
         "vendor", "model", "year", "chip", "cores", "memory",
-        "graphics", "disk", "network", "serial", "os",
+        "graphics", "disk", "network", "serial", "os", "theme_version",
     }
     assert set(info.keys()) == expected_keys
     for key, value in info.items():
@@ -1181,3 +1181,44 @@ def test_lsblk_busybox_minimal_output():
     out = parse_lsblk("sda     34359738368 disk\n", "/dev/sda1")
     assert out  # non-empty
     assert "GB" in out or "TB" in out
+
+
+# ── theme version plumbing (About window footer) ─────────────────────────
+
+def test_theme_version_matches_repo_version():
+    import about_info
+    assert about_info.theme_version() == (REPO / "VERSION").read_text().strip()
+
+
+def test_emitted_json_carries_theme_version():
+    res = subprocess.run(
+        [sys.executable, str(SCRIPTS / "about_info.py"), "--mock"],
+        capture_output=True, text=True,
+    )
+    data = json.loads(res.stdout)
+    assert data["theme_version"] == (REPO / "VERSION").read_text().strip()
+
+
+def test_installed_copy_reports_baked_version(tmp_path):
+    """Outside the repo (no VERSION two parents up) the helper falls
+    back to the version _install_about_info() baked in."""
+    source = (SCRIPTS / "about_info.py").read_text(encoding="utf-8")
+    helper = tmp_path / "mac-tahoe-about-info"
+    helper.write_text(source.replace("@THEME_VERSION@", "9.9.9"),
+                      encoding="utf-8")
+    res = subprocess.run(
+        [sys.executable, str(helper), "--mock"],
+        capture_output=True, text=True,
+    )
+    assert json.loads(res.stdout)["theme_version"] == "9.9.9"
+
+
+def test_unbaked_copy_outside_repo_reports_empty(tmp_path):
+    source = (SCRIPTS / "about_info.py").read_text(encoding="utf-8")
+    helper = tmp_path / "mac-tahoe-about-info"
+    helper.write_text(source, encoding="utf-8")
+    res = subprocess.run(
+        [sys.executable, str(helper), "--mock"],
+        capture_output=True, text=True,
+    )
+    assert json.loads(res.stdout)["theme_version"] == ""
