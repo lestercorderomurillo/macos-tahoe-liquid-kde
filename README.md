@@ -212,13 +212,9 @@ Your distro's KDE Plasma 6 dev meta-package usually pulls these in one shot.
 </details>
 
 <details>
-<summary><b>Download toolchain</b> — for fetching fonts, icons, cursors, wallpapers on first run</summary>
+<summary><b>Bundled assets</b> — nothing is downloaded at install time</summary>
 
-Skipped with `--no-download` if you've already fetched them.
-
-- **`curl`**
-- **`unzip`**
-- **`fontconfig`** (`fc-cache`)
+Fonts, icons, cursors, and wallpapers all ship in the repo under `src/offline/`. The only network access is the update check on launch (and the `git pull` it runs when a newer release exists on a clean checkout).
 
 </details>
 
@@ -287,7 +283,7 @@ sudo ./uninstall            # remove everything, reset to Breeze
 
 `./vm all` trims each VM to 2 vCPU / 4 GiB so the fleet fits in RAM; override with `VM_CPUS` / `VM_MEM_MIB`. Ctrl-C in the launching terminal stops every VM.
 
-Update check on launch is on by default. To bypass: `sudo MAC_TAHOE_NO_UPDATE_CHECK=true ./install`. To only check: `sudo ./install --check-update`.
+Update check on launch is on by default; when a newer release exists and the checkout is a clean git tree, the installer pulls it and re-runs itself. To bypass: `sudo MAC_TAHOE_NO_UPDATE_CHECK=true ./install`. To only check: `sudo ./install --check-update`.
 
 ### Picking what to install
 
@@ -303,9 +299,8 @@ Available names:
 
 `wallpapers`, `fonts`, `cursors`, `plasma-theme`, `window-decorations`, `kvantum`, `color-schemes`, `icons`, `plasmoids`, `acrylic-glass`, `global-theme`, `layout`, `sounds`, `gtk`, `sddm`, `apps`, `nautilus`, `portals`, `plymouth`.
 
-Two extra knobs:
+One extra knob:
 
-- `--no-download` — use cached assets, don't hit the network.
 - `--no-grub-modify` — don't touch `/etc/default/grub`. (By default the Plymouth step appends `splash` and re-runs `grub-mkconfig` so the boot splash renders; with this flag you get a warning + the manual command instead.)
 
 ### Light, dark, or auto

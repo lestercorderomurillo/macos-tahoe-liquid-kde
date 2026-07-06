@@ -11,12 +11,14 @@
 > - Naming conventions (PascalCase themes, kebab-case IDs)
 > - Plasmoid + branding rules (no "fork-of-X" language, no Pear OS refs)
 > - macOS terminology mapping (Suggestions / Apps / Show All)
-> - Installer entry points (`install` / `uninstall`, sudo policy)
+> - Installer entry points (`install` / `uninstall` / `installer`,
+>   sudo policy, auto-update on install)
 > - Distro detection layer (`src/scripts/distro.py`) — the ONLY place
 >   per-distro paths or package manager commands are allowed
 > - Preflight contract (9 fail-fast checks, Qt6 setuid guard)
 > - Live theme switching (Kvantum cycle, LAF retry 2s + 6s + 6s)
-> - Wallpapers fully bundled offline since v0.17.0 — no `download()`
+> - All assets fully bundled offline — the pipeline has no download
+>   phase
 > - Dependency guards (kw_write returns, fc-cache, GRUB)
 > - Container CI matrix (`tests/containers/`)
 > - The "what NOT to do" list — read it twice

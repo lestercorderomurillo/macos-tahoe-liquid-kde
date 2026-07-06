@@ -31,10 +31,12 @@ and no non-KDE path.
 **Distribution target:** GitHub releases + AUR.
 **License:** GPL-2.0-or-later for forked components, original code as
 marked in the repo.
-**Stack:** Python 3.11+ installer dispatching into per-feature steps;
+**Stack:** Python 3.10+ CLI installer dispatching into per-feature
+steps; a PyQt6 graphical installer (`./installer`) that wraps the CLI;
 QML plasmoids; C++ Qt6 plasmoids (Global Menu, Dock Task Manager) and
 a KWin effect (Acrylic Glass) compiled at install time against the
-host's Qt6 / KDE Frameworks 6.
+host's Qt6 / KDE Frameworks 6. All theme assets are bundled offline in
+`src/offline/` — the install pipeline has no download phase.
 
 ## Naming Convention
 
@@ -44,7 +46,8 @@ host's Qt6 / KDE Frameworks 6.
 - Plasmoid suffixes are simple nouns: `.menu`, `.launcher`, `.trashcan`
   — not compound words like `.kpplemenu`.
 - The user-facing CLI binary is `mac-tahoe-theme-switch`. Repo entry
-  points are `./install` and `./uninstall` (no `.sh` extension).
+  points are `./install`, `./uninstall`, and `./installer` (graphical
+  UI) — no `.sh` extension.
 
 ## Branding
 
@@ -83,6 +86,9 @@ Store, Force Quit, Sleep, Restart, Shut Down, Lock Screen, Log Out.
 | Path                          | Contents |
 | ----------------------------- | -------- |
 | `install` / `uninstall`       | Thin shell wrappers that exec `src/scripts/cli.py`. Both require sudo. |
+| `installer`                   | Graphical installer entry point; execs `src/installer/installer_ui.py`. |
+| `vm`                          | Boots a graphical KDE Plasma VM per distro with the repo mounted (`./vm cachyos`, `./vm all`). |
+| `test`                        | Pytest runner for the full suite. |
 | `VERSION`                     | Single-line semver string read by `paths.read_version()`. |
 | `features.json`               | Per-feature enable flags, written by `--only` / `--no-*` and read on the next run. |
 | `src/scripts/`                | Installer Python. **Flat layout — no `installer/` subdir.** |
@@ -91,13 +97,14 @@ Store, Force Quit, Sleep, Restart, Shut Down, Lock Screen, Log Out.
 | `src/scripts/distro.py`       | The ONLY module that knows per-distro paths and package manager commands. |
 | `src/scripts/paths.py`        | Repo-relative paths only. Never shells out, never reads /etc/os-release. |
 | `src/scripts/step_runner.py`  | Imports and runs per-phase functions on each step module. |
-| `src/scripts/utils.py`        | `run_user`, `kw_write`, `kw_read`, `have`, `fetch`, `pkg_install`, `auto_dep`, `qdbus_call`. |
+| `src/scripts/utils.py`        | `run_user`, `kw_write`, `kw_read`, `have`, `fetch`, `safe_copy`, `pkg_install`, `pkg_sync_install`, `qdbus_call`. |
 | `src/scripts/theme_switch.py` | `mac-tahoe-theme-switch` implementation. Installed as a console script. |
-| `src/scripts/state.py`        | `RunTracker` — records last-run summary for `./install --status`. |
+| `src/scripts/state.py`        | `RunTracker` — writes the last-run summary (status, argv, timestamps) to `~/.local/state/mac-tahoe-liquid-kde/last-run.json`. |
 | `src/scripts/log.py`          | `banner`, `step`, `ok`, `warn`, `info`, `note`, `fail` — single source of UI styling. |
-| `src/scripts/steps/`          | One module per feature. Implements `deps`, `download`, `build`, `install`, `uninstall`, `restart_plasma` as needed. |
+| `src/scripts/steps/`          | One module per feature. Implements `deps`, `build`, `install`, `uninstall`, `restart_plasma` as needed. |
 | `src/scripts/steps/_helpers.py` | `sudo_install_file`, `sudo_install_tree`, `sudo_remove`, `_as_root` context manager. |
-| `src/offline/`                | All assets bundled in the repo: plasmoids, plasma theme, kwin-effects, aurorae, color-schemes, gtk, kvantum, look-and-feel, layouts, plymouth, nautilus, wallpapers, plus the systemd unit + timer. |
+| `src/installer/`              | Graphical installer UI: `installer_ui.py` (PyQt6) + QML windows + art. Wraps `./install` / `./uninstall`; the CLI stays the source of truth. |
+| `src/offline/`                | All assets bundled in the repo: plasmoids, plasma theme, kwin-effects, aurorae, color-schemes, cursors, fonts, gtk, icons, kvantum, look-and-feel, layouts, plymouth, nautilus, wallpapers, plus the systemd unit + timer. |
 | `src/offline/wallpapers/<id>/`| One folder per wallpaper, JPEG q90 + `metadata.json` (3840×2160 minimum). Fully offline — no `download()` phase. |
 | `tests/`                      | pytest suite. `./test` is the runner. |
 | `tests/containers/`           | One Dockerfile per supported distro + `run_in_container.py` + `run_matrix.sh`. |
@@ -110,9 +117,8 @@ functions; missing ones are skipped:
 
 | Phase            | When run                                  | Purpose |
 | ---------------- | ----------------------------------------- | ------- |
-| `deps()`         | Before any other phase, install-time only | Return list of `cmd:pkg` tokens; the runner resolves them via `distro.package_for()` and `auto_dep()` installs missing ones. |
-| `download()`     | After deps                                | Network fetches. Most steps have none (assets are bundled). |
-| `build()`        | After download                            | Compile C++ (Global Menu, Task Manager, Acrylic Glass effect). |
+| `deps()`         | Before any other phase, install-time only | Return list of `cmd:pkg` tokens; `cli.py` resolves them via `distro.package_for()`, probes each package with `distro.package_installed()`, and installs ONLY the genuinely-missing ones (installing present packages would risk the partial-upgrade file-conflict trap). |
+| `build()`        | After deps                                | Compile C++ (Global Menu, Task Manager, Acrylic Glass effect). |
 | `install()`      | Main pass                                 | Copy files, write configs, register kwin/plasma settings. |
 | `uninstall()`    | `./uninstall` run                         | Remove installed files; clean legacy `/usr/lib/qt6` artefacts. |
 | `restart_plasma()` | Final pass of `./install`               | The one allowed plasmashell restart per session. |
@@ -145,6 +151,18 @@ doesn't walk `~/.local/lib/qt6` in a default Plasma session.
   root, then drop back. Real UID stays at 0 the whole time so the
   trip back to root is always permitted.
 
+## Architecture — Auto-Update on Install
+
+`./install` checks GitHub releases on every launch.
+`MAC_TAHOE_NO_UPDATE_CHECK=true` skips the check; `--check-update`
+checks and exits. When a newer release exists and the repo is a clean
+git checkout, `auto_update_and_reexec` pulls `--ff-only` as the
+invoking user (never root — root-owned objects would wreck the user's
+repo) and re-execs `./install` so the freshly-pulled code performs the
+install. `MAC_TAHOE_UPDATED=1` is the recursion guard. A dirty
+checkout, missing git, or a failed pull falls back to installing the
+current version with a manual `git pull && ./install` hint.
+
 ## Architecture — Distro Detection Layer
 
 `src/scripts/distro.py` is the ONLY file allowed to know per-distro
@@ -157,6 +175,7 @@ hardcode `/usr/lib/qt6`, `pacman -S`, `dnf install`, etc.
 | `distro_id_like()`                    | ID_LIKE chain so downstream distros (Nobara → fedora, Garuda → arch) inherit the parent's package map. |
 | `qt6_plugins_dir()` / `qt6_qml_dir()` | Asks `qmake6` → `qtpaths6` → `pkg-config Qt6Core` in that order. Falls back to the per-distro libdir table only when that dir actually exists on disk. Otherwise raises `Qt6PathsMissing` with the distro-appropriate install hint. |
 | `package_for(token)`                  | Translates an Arch package name from a step's `deps()` token into the equivalent on the current distro (`g++:gcc` → `gcc-c++` on Fedora, `sys-devel/gcc` on Gentoo). |
+| `package_installed(pkg)`              | Direct package-database probe (`pacman -Q`, `rpm -q`, ...) so dep resolution installs only what's actually missing. |
 | `package_manager_install_cmd()`       | Non-interactive install prefix for the current distro. |
 
 Static guards in `tests/test_static.py`:
@@ -244,7 +263,8 @@ PNG / JPEG re-compression with zip / xz / zstd was tested empirically
 and saves 0% (the bytes are already entropy-coded). JPEG q90 is the
 only viable size reduction.
 
-`steps/wallpapers.py` has no `download()` phase. The static test
+The install pipeline has no download phase at all — icons, fonts, and
+cursors are bundled the same way. The static test
 `test_repo_ships_full_macos_wallpaper_set` enforces that every name in
 `_FIXED_NAMES` ships a `3840x2160` (or larger) image with a metadata
 file. Don't add a network-fetch fallback.
@@ -259,7 +279,7 @@ invoking it and surfaces a `warn()` when it doesn't:
 | `plymouth.py`           | `_grub_is_active_bootloader()` requires BOTH `/etc/default/grub` AND a regen binary (`grub-mkconfig` or `grub2-mkconfig`) on PATH. A leftover `/etc/default/grub` on a systemd-boot user is NOT a signal to patch GRUB. |
 | `kvantum.py`, `window_decorations.py`, `plasma_theme.py` | `kw_write()` returns are checked; failure emits an explicit `warn()` mentioning `kwriteconfig6`. |
 | `fonts.py`              | `fc-cache` is guarded by `have("fc-cache")`. Missing fontconfig is a warn, not a fail — fonts still copy and appear after re-login. |
-| `acrylic_glass.py`      | Build deps probed via `auto_dep()` before invoking cmake/make. |
+| `acrylic_glass.py`      | Build deps declared via `deps()` tokens and probed with `distro.package_installed()` before invoking cmake/make. |
 
 `tests/test_step_guards.py` covers the kwriteconfig6 missing path and
 the fc-cache missing path; `tests/test_plymouth_step.py` covers the
@@ -270,6 +290,7 @@ bootloader probe.
 | File                         | Role |
 | ---------------------------- | ---- |
 | `tests/containers/Dockerfile.<distro>` | One per supported distro. CachyOS pulls both `archlinux-keyring` and `cachyos-keyring` after `pacman-key --init && pacman-key --populate archlinux cachyos`. |
+| `tests/containers/Dockerfile.arch-kdeunstable` | Canary against Arch's `[kde-unstable]` staging repo — catches the next Plasma release early. `continue-on-error` in CI (like Gentoo). |
 | `tests/containers/Dockerfile.gentoo-base` | Builds the GHCR base image `ghcr.io/lestercorderomurillo/mttkde-gentoo-base` so qtbase doesn't compile from source on every PR. |
 | `tests/containers/run_in_container.py` | Per-distro probe: qmake6 resolves, the distro layer agrees with what qmake6 reports, every `package_for()` token resolves in the distro's repo (with a "transient network" skip so flaky upstream CDN edges don't tank CI), preflight destination checks, pytest. |
 | `tests/containers/run_matrix.sh` | Local runner. CI runs the same workflow via `.github/workflows/test.yml`. |
@@ -387,6 +408,8 @@ green   yellow   orange   red   purple   blue
 | zip / xz / zstd on JPEG-or-PNG                 | Saves 0%. Don't add a wrapped-archive transport for wallpapers — re-encode to JPEG q90 instead. |
 | `plasma-apply-lookandfeel` `--keep-auto`       | Required so the LaF apply doesn't blow away the user's color-scheme follow-the-system preference. |
 | `pacman-key` on stale CachyOS images           | Container Dockerfile must run `pacman-key --init && pacman-key --populate archlinux cachyos` before `pacman -Sy archlinux-keyring cachyos-keyring`. |
+| Apps vanish from launcher after theme switch   | `kbuildsycoca6` reads the app list from `mimeinfo.cache`; rebuilding sycoca against a stale cache drops apps. `_flush_caches()` runs `update-desktop-database` on both the user and system `applications/` dirs BEFORE `kbuildsycoca6` (`desktop-file-utils` is a base dep). |
+| Pinned taskbar apps wiped on uninstall         | `plasma-apply-lookandfeel --resetLayout` rebuilds the panel from scratch. `layout.uninstall()` captures every `launchers=` list from appletsrc first (deduped, minus our own plasmoids) and writes it back onto the default panel's icontasks. |
 
 ## Testing
 
@@ -429,8 +452,8 @@ Highlights:
   outside `distro.py` — static tests will reject it.
 - Don't call Qt6 binaries from preflight with bare `subprocess.run`
   — use `utils.run_user`.
-- Don't introduce a wallpaper `download()` phase — wallpapers are
-  bundled.
+- Don't introduce a download phase for any step — all assets are
+  bundled offline in `src/offline/`.
 - Don't centre tile section headers in README — they're left-aligned
   plain markdown image syntax (`![Alt](url)`), not
   `<p align="center">`.
