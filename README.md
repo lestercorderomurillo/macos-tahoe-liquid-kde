@@ -9,7 +9,7 @@
 > [!WARNING]
 > **Alpha / active development.** Things break as KDE, KWin and friends update; the installer pulls upstream changes on launch and may behave differently between runs. Expect rough edges, hold off on production desktops, and please [report any issue](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/issues/new) you hit.
 
-A full macOS Tahoe-style desktop experience for KDE Plasma 6.6+.
+A full macOS Tahoe-style desktop experience for KDE Plasma 6.6 and 6.7+.
 
 ![Tested distros](https://img.shields.io/badge/tested-distros-4B6B8A?style=for-the-badge&logo=linux&logoColor=white)
 
@@ -284,6 +284,8 @@ sudo ./uninstall            # remove everything, reset to Breeze
 `./vm all` trims each VM to 2 vCPU / 4 GiB so the fleet fits in RAM; override with `VM_CPUS` / `VM_MEM_MIB`. Ctrl-C in the launching terminal stops every VM.
 
 Update check on launch is on by default; when a newer release exists and the checkout is a clean git tree, the installer pulls it and re-runs itself. To bypass: `sudo MAC_TAHOE_NO_UPDATE_CHECK=true ./install`. To only check: `sudo ./install --check-update`.
+
+**After a system update** — if a Plasma / KDE / Kvantum upgrade breaks the look, run `sudo ./install` again. It reapplies every override and recompiles the native components against the updated libraries, restoring everything.
 
 ### Picking what to install
 
