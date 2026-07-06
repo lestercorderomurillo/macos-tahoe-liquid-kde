@@ -579,7 +579,7 @@ Window {
                 }
             }
 
-            Item { Layout.preferredHeight: 16 }
+            Item { Layout.fillHeight: true }
 
             Text {
                 Layout.alignment: Qt.AlignHCenter
@@ -591,7 +591,7 @@ Window {
                 Behavior on opacity { NumberAnimation { duration: 220; easing.type: Easing.OutQuad } }
             }
 
-            Item { Layout.fillHeight: true }
+            Item { Layout.preferredHeight: 12 }
         }
     }
 }
