@@ -591,7 +591,7 @@ Window {
                 Behavior on opacity { NumberAnimation { duration: 220; easing.type: Easing.OutQuad } }
             }
 
-            Item { Layout.preferredHeight: 12 }
+            Item { Layout.preferredHeight: 28 }
         }
     }
 }
