@@ -132,9 +132,8 @@ Window {
             aboutWindow.networkDisplay = info.network || "Unknown";
             aboutWindow.serialDisplay = info.serial || "Not Available";
             aboutWindow.osDisplay = info.os || "Unknown";
-            aboutWindow.themeVersionDisplay = info.theme_version
-                ? "MacTahoe Liquid KDE " + info.theme_version
-                : aboutWindow._placeholder;
+            aboutWindow.themeVersionDisplay =
+                info.theme_version || aboutWindow._placeholder;
             aboutWindow.infoReady = true;
         }
 
@@ -580,7 +579,7 @@ Window {
                 }
             }
 
-            Item { Layout.preferredHeight: 6 }
+            Item { Layout.preferredHeight: 16 }
 
             Text {
                 Layout.alignment: Qt.AlignHCenter
