@@ -410,6 +410,7 @@ green   yellow   orange   red   purple   blue
 | `pacman-key` on stale CachyOS images           | Container Dockerfile must run `pacman-key --init && pacman-key --populate archlinux cachyos` before `pacman -Sy archlinux-keyring cachyos-keyring`. |
 | Apps vanish from launcher after theme switch   | `kbuildsycoca6` reads the app list from `mimeinfo.cache`; rebuilding sycoca against a stale cache drops apps. `_flush_caches()` runs `update-desktop-database` on both the user and system `applications/` dirs BEFORE `kbuildsycoca6` (`desktop-file-utils` is a base dep). |
 | Pinned taskbar apps wiped on uninstall         | `plasma-apply-lookandfeel --resetLayout` rebuilds the panel from scratch. `layout.uninstall()` captures every `launchers=` list from appletsrc first (deduped, minus our own plasmoids) and writes it back onto the default panel's icontasks. |
+| GTK popups never get compositor blur           | Client-side popups (Firefox menus, popovers) receive no KWin blur, so GTK CSS popup surfaces must keep mirrored light/dark rgba alpha — literal `transparent` renders see-through (issue #11). The gtk-4.0 sheets must also define every libadwaita named color they reference; only libadwaita apps define those at runtime. `test_static.py` guards both. |
 
 ## Testing
 

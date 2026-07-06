@@ -65,6 +65,27 @@
   --dark-5: #000000;
 }
 
+/* libadwaita named colors — only libadwaita apps define these at
+   runtime; plain GTK4 apps need concrete values (issue #11). */
+@define-color window_bg_color #242424;
+@define-color window_fg_color #dedede;
+@define-color view_bg_color #1e1e1e;
+@define-color popover_bg_color #333333;
+@define-color dialog_bg_color #333333;
+@define-color sidebar_bg_color #2c2c2c;
+@define-color sidebar_fg_color #dedede;
+@define-color headerbar_bg_color #2c2c2c;
+@define-color headerbar_fg_color #dedede;
+@define-color headerbar_backdrop_color @window_bg_color;
+@define-color headerbar_shade_color rgba(0, 0, 0, 0.36);
+@define-color headerbar_darker_shade_color rgba(0, 0, 0, 0.36);
+@define-color shade_color rgba(0, 0, 0, 0.25);
+@define-color accent_bg_color #0088FF;
+@define-color accent_fg_color #ffffff;
+@define-color colorpad_color @view_bg_color;
+@define-color colorpad_fg_color @window_fg_color;
+@define-color colorsetter_color @view_bg_color;
+@define-color colorsetter_fg_color @window_fg_color;
 @define-color blue_1 #99c1f1;
 @define-color blue_2 #62a0ea;
 @define-color blue_3 #3584e4;

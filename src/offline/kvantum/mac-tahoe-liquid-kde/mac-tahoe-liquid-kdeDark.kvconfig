@@ -127,7 +127,7 @@ centered_forms=false
 kinetic_scrolling=false
 noninteger_translucency=false
 transparent_arrow_button=true
-blur_only_active_window=true
+blur_only_active_window=false
 style_vertical_toolbars=false
 
 [PanelButtonCommand]
@@ -466,8 +466,8 @@ frame.bottom=7
 
 [MenuBar]
 inherits=PanelButtonCommand
-frame.element=none
-interior.element=none
+frame.element=menubar
+interior.element=menubar
 frame.expansion=0
 
 [MenuBarItem]

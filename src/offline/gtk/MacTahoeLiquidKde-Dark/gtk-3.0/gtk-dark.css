@@ -11,6 +11,10 @@
  *   Search for sidebar occurrences near "window.background.csd" selectors.
  *
  * Requires compositor blur (e.g. KWin "Force Blur") to look correct.
+ *
+ * Popup surfaces (popover/menu) keep a real rgba fill — client-side
+ * popups never receive compositor blur, so "transparent" renders as
+ * see-through garbage (issue #11). Mirror the light variant's alpha.
  * ============================================================
  */
 
@@ -2598,7 +2602,7 @@ menu {
 .background.csd > menu, .background.popup > menu {
   border: none;
   border-radius: 12px;
-  background-color: transparent;
+  background-color: rgba(51, 51, 51, 0.55);
 }
 
 menu > separator {
@@ -2722,7 +2726,7 @@ popover.background {
   padding: 0;
   border-radius: 12px;
   background-clip: border-box;
-  background-color: transparent;
+  background-color: rgba(51, 51, 51, 0.96);
   box-shadow: 0 3px 6px 0 rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(0, 0, 0, 0.65);
 }
 
@@ -2741,7 +2745,7 @@ popover.background label.separator {
 }
 
 popover.background entry {
-  background-color: mix(#dedede,transparent,0.95);
+  background-color: mix(#dedede,rgba(51, 51, 51, 0.96),0.95);
 }
 
 popover.background > list,
@@ -4154,7 +4158,7 @@ row spinbutton {
   padding: 6px 6px 6px 15px;
   margin: 6px 20px 24px 20px;
   color: #dedede;
-  background-color: transparent;
+  background-color: rgba(51, 51, 51, 0.96);
   border-radius: 12px;
   border: none;
   box-shadow: 0 3px 10px 0 rgba(0, 0, 0, 0.25), inset 0 0 0 1px rgba(255, 255, 255, 0.06), 0 0 0 1px rgba(0, 0, 0, 0.75);
@@ -7911,7 +7915,7 @@ window.background:not(.csd):not(.popup) > widget > button > button label {
 
 window.background:not(.csd):not(.popup) > menu,
 window.background:not(.csd):not(.popup) > menu > menu {
-  background-color: transparent;
+  background-color: rgba(51, 51, 51, 0.96);
 }
 
 window.background:not(.csd):not(.popup) > menu > menuitem {
@@ -7970,7 +7974,7 @@ window.background:not(.csd):not(.popup) > window > menu menuitem {
 
 #MozillaGtkWidget > window.background > menu {
   border: none;
-  background-color: transparent;
+  background-color: rgba(51, 51, 51, 0.96);
   border-radius: 2px;
 }
 
@@ -7998,7 +8002,7 @@ window.background:not(.csd):not(.popup) > window > menu menuitem {
 }
 
 #MozillaGtkWidget > widget > scrolledwindow > textview {
-  background-color: transparent;
+  background-color: rgba(36, 36, 36, 0.96);
 }
 
 #MozillaGtkWidget > widget > scrolledwindow > textview text {
@@ -8880,7 +8884,7 @@ MsdOsdWindow.background.osd .trough {
   padding: 0;
   border: 1px solid mix(currentColor,transparent,0.94);
   border-radius: 24px;
-  background-color: transparent;
+  background-color: rgba(51, 51, 51, 0.96);
   background-clip: padding-box;
   box-shadow: 0 0 3px 0 rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(0, 0, 0, 0.65);
 }
@@ -9725,7 +9729,7 @@ box:not(.unpinned):not(.pinned) > revealer > button.flat.launcher {
 }
 
 .raven {
-  background-color: alpha(transparent,0.95);
+  background-color: alpha(rgba(51, 51, 51, 0.96),0.95);
   color: #dadada;
   box-shadow: 0 2px 3px 0 rgba(0, 0, 0, 0.2), 0 3px 5px 0 rgba(0, 0, 0, 0.25);
 }

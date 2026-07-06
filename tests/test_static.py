@@ -274,3 +274,112 @@ def test_readme_tests_count_badge_matches_collected_count(repo):
         f"{actual_count}. Edit the ``tests-NNN_passing`` badge in "
         f"README.md to {actual_count}."
     )
+
+
+# ── issue #11: dark popup surfaces keep mirrored light/dark alpha ─────
+#
+# GTK client-side popups never receive compositor blur, so a literal
+# ``transparent`` background on a popup surface renders as see-through
+# garbage. The dark sheets must mirror the light variant's alpha fills.
+
+_GTK3_POPUP_SELECTORS = (
+    "popover.background",
+    ".background.csd > menu, .background.popup > menu",
+    "window.background:not(.csd):not(.popup) > menu > menu",
+    "#MozillaGtkWidget > window.background > menu",
+    "#MozillaGtkWidget > widget > scrolledwindow > textview",
+    "popover.background entry",
+    ".app-notification",
+    ".budgie-popover.background",
+    ".raven",
+)
+
+_DARK_GTK3_SHEETS = (
+    "gtk/MacTahoeLiquidKde-Dark/gtk-3.0/gtk.css",
+    "gtk/MacTahoeLiquidKde-Dark/gtk-3.0/gtk-dark.css",
+    "gtk/MacTahoeLiquidKde-Light/gtk-3.0/gtk-dark.css",
+)
+
+
+def _css_background_colors(text: str) -> dict[str, list[str]]:
+    """Map selector line -> its ``background-color`` declarations."""
+    out: dict[str, list[str]] = {}
+    selector = None
+    for line in text.splitlines():
+        stripped = line.strip()
+        if stripped.endswith("{"):
+            selector = stripped[:-1].strip()
+        elif stripped == "}":
+            selector = None
+        elif selector and stripped.startswith("background-color:"):
+            out.setdefault(selector, []).append(stripped)
+    return out
+
+
+@pytest.mark.parametrize("sheet", _DARK_GTK3_SHEETS)
+def test_dark_gtk3_popup_surfaces_keep_alpha(offline, sheet):
+    decls = _css_background_colors((offline / sheet).read_text())
+    for sel in _GTK3_POPUP_SELECTORS:
+        assert sel in decls, (
+            f"{sheet}: selector ``{sel}`` lost its background-color "
+            f"declaration — popup surfaces need a real fill (issue #11)."
+        )
+        for d in decls[sel]:
+            assert not re.search(r"\btransparent\b", d), (
+                f"{sheet}: ``{sel}`` has ``{d}`` — popup surfaces must "
+                f"mirror the light variant's rgba alpha, never "
+                f"``transparent`` (issue #11)."
+            )
+
+
+def test_dark_gtk3_sheet_copies_stay_identical(offline):
+    dark = (offline / _DARK_GTK3_SHEETS[1]).read_bytes()
+    light_copy = (offline / _DARK_GTK3_SHEETS[2]).read_bytes()
+    assert dark == light_copy, (
+        "MacTahoeLiquidKde-Light/gtk-3.0/gtk-dark.css must stay a "
+        "byte-identical copy of MacTahoeLiquidKde-Dark/gtk-3.0/"
+        "gtk-dark.css — fix one, copy over the other."
+    )
+
+
+def test_kvantum_dark_popup_parity(offline):
+    kv = offline / "kvantum/mac-tahoe-liquid-kde"
+    conf = (kv / "mac-tahoe-liquid-kdeDark.kvconfig").read_text()
+    assert "blur_only_active_window=false" in conf, (
+        "Dark kvconfig must keep blur_only_active_window=false like the "
+        "light variant — true leaves unfocused popups unblurred AND "
+        "translucent (issue #11)."
+    )
+    menubar = conf.split("[MenuBar]", 1)[1].split("[", 1)[0]
+    for key in ("frame.element=menubar", "interior.element=menubar"):
+        assert key in menubar, (
+            f"Dark kvconfig [MenuBar] must carry {key} like the light "
+            f"variant — element=none renders no menubar surface at all."
+        )
+    for svg in ("mac-tahoe-liquid-kde.svg", "mac-tahoe-liquid-kdeDark.svg"):
+        text = (kv / svg).read_text()
+        elems = [e for e in re.findall(r"<[a-z]+[^>]*>", text)
+                 if 'id="tooltip-normal"' in e]
+        assert elems, f"{svg}: tooltip-normal element missing"
+        for e in elems:
+            assert re.search(r'style="[^"]*\bopacity:1\b', e), (
+                f"{svg}: tooltip-normal must be fully opaque "
+                f"(opacity:1) — tooltips get no reliable blur (issue #11)."
+            )
+
+
+def test_gtk4_named_colors_all_defined(offline):
+    sheets = sorted((offline / "gtk").glob("MacTahoeLiquidKde-*/gtk-4.0/*.css"))
+    assert sheets, "no gtk-4.0 sheets found"
+    skip = {"define", "import", "keyframes", "media", "charset"}
+    for f in sheets:
+        css = f.read_text()
+        defined = set(re.findall(r"@define-color ([a-z_0-9]+)", css))
+        refs = set(re.findall(r"@([a-z_][a-z_0-9]*)", css)) - skip
+        missing = sorted(refs - defined)
+        assert not missing, (
+            f"{f.name}: named colors referenced but never defined: "
+            f"{missing}. Only libadwaita apps define these at runtime; "
+            f"plain GTK4 apps get invalid declarations and popovers "
+            f"fall back to transparent (issue #11)."
+        )

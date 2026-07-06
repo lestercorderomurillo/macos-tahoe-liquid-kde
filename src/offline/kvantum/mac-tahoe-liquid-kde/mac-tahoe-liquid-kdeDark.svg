@@ -4642,7 +4642,7 @@
   <path
      d="m 129.7369,721.08119 h 48 v 48.00004 h -48 z"
      id="tooltip-normal"
-     style="opacity:0.75;fill:#333333;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:1" />
+     style="opacity:1;fill:#333333;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:1" />
   <g
      transform="translate(7.4798945,17.328239)"
      id="tooltip-normal-left"
