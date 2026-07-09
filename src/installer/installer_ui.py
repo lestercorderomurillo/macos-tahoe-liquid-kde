@@ -28,7 +28,6 @@ from log import DONE_MARKER, PROGRESS_FILE
 
 
 PREVIEW_QML = Path(__file__).resolve().parent / "preview_installer.qml"
-_QML_RUNNERS = ("qmlscene6", "qmlscene", "qml6")
 
 _ACTION_COMMANDS = {
     "install": "sudo ./install",
@@ -462,21 +461,23 @@ def launch_preview() -> int:
     if rc >= 0:
         return rc
 
-    runner = next((name for name in _QML_RUNNERS if shutil.which(name)), "")
-    if not runner:
-        print("qmlscene6/qmlscene/qml6 not found — install qt6-declarative", file=sys.stderr)
-        return 1
-    if not PREVIEW_QML.is_file():
-        print(f"preview QML missing: {PREVIEW_QML}", file=sys.stderr)
-        return 1
-    # Disable the portal registration here too (see the PyQt path).
-    env = {**os.environ, "QT_NO_XDG_DESKTOP_PORTAL": "1"}
-    return subprocess.run(
-        [runner, str(PREVIEW_QML)],
-        check=False,
-        cwd=str(REPO_ROOT),
-        env=env,
-    ).returncode
+    # _launch_preview_pyqt() returns -1 only when PyQt6 cannot be imported.
+    # The QML window depends on the ``installer`` context property that the
+    # PyQt6 bridge registers (engine.rootContext().setContextProperty), so a
+    # standalone qmlscene/qml launch would load preview_installer.qml with no
+    # bridge and emit "ReferenceError: installer is not defined" on every
+    # binding while rendering a dead window. Report the missing dependency
+    # clearly instead of launching that broken fallback — the CLI
+    # (./install, ./uninstall) is the supported path without PyQt6.
+    print(
+        "PyQt6 is required for the graphical installer but could not be "
+        "imported.\n"
+        "  Install the python-pyqt6 package for your distribution and "
+        "re-run ./installer,\n"
+        "  or run ./install / ./uninstall directly from a terminal.",
+        file=sys.stderr,
+    )
+    return 1
 
 
 def dump_features() -> dict[str, object]:

@@ -290,6 +290,24 @@ def test_main_check_update_emits_json(installer_ui_module, monkeypatch, capsys):
     assert json.loads(out)["available"] is True
 
 
+def test_launch_preview_reports_missing_pyqt6(
+        installer_ui_module, monkeypatch, capsys):
+    """When PyQt6 cannot be imported, launch_preview must report the
+    missing dependency clearly and return 1 instead of falling through to
+    a standalone qmlscene/qml launch. The QML window needs the `installer`
+    context property that only the PyQt6 bridge registers, so the
+    standalone harness only emits "ReferenceError: installer is not
+    defined" on every binding."""
+    monkeypatch.setattr(installer_ui_module, "_launch_preview_pyqt", lambda: -1)
+
+    rc = installer_ui_module.launch_preview()
+    err = capsys.readouterr().err
+
+    assert rc == 1
+    assert "PyQt6" in err
+    assert "./installer" in err
+
+
 def test_confirm_auto_accepts_in_no_confirm_mode(monkeypatch, capsys):
     """The anti-hang: MTTKDE_NO_CONFIRM=1 makes confirm() return True
     without ever touching the tty / stdin, so the background install
