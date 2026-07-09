@@ -40,9 +40,14 @@ def test_kvantum_warns_when_kwriteconfig6_missing(tmp_path, monkeypatch):
     fake_src.mkdir(parents=True)
     (fake_src / "mac-tahoe-liquid-kde.kvconfig").write_text("[General]\n")
     (fake_src / "mac-tahoe-liquid-kde.svg").write_text("<svg/>")
+    # kvantum.py now installs both light and dark themes
+    (fake_src / "mac-tahoe-liquid-kdeDark.kvconfig").write_text("[General]\n")
+    (fake_src / "mac-tahoe-liquid-kdeDark.svg").write_text("<svg/>")
 
     dest = tmp_path / "home/.config/Kvantum/mac-tahoe-liquid-kde"
+    dest_dark = tmp_path / "home/.config/Kvantum/mac-tahoe-liquid-kdeDark"
     monkeypatch.setattr(kvantum, "DEST_DIR", dest)
+    monkeypatch.setattr(kvantum, "DEST_DIR_DARK", dest_dark)
     monkeypatch.setattr(kvantum, "offline", lambda *_a: fake_src)
 
     # kwriteconfig6 missing → kw_write returns False.
@@ -69,9 +74,13 @@ def test_kvantum_does_not_warn_when_kwriteconfig6_present(tmp_path, monkeypatch)
     fake_src = tmp_path / "fake-offline" / "kvantum/mac-tahoe-liquid-kde"
     fake_src.mkdir(parents=True)
     (fake_src / "mac-tahoe-liquid-kde.kvconfig").write_text("[General]\n")
+    (fake_src / "mac-tahoe-liquid-kdeDark.kvconfig").write_text("[General]\n")
+    (fake_src / "mac-tahoe-liquid-kdeDark.svg").write_text("<svg/>")
 
     dest = tmp_path / "home/.config/Kvantum/mac-tahoe-liquid-kde"
+    dest_dark = tmp_path / "home/.config/Kvantum/mac-tahoe-liquid-kdeDark"
     monkeypatch.setattr(kvantum, "DEST_DIR", dest)
+    monkeypatch.setattr(kvantum, "DEST_DIR_DARK", dest_dark)
     monkeypatch.setattr(kvantum, "offline", lambda *_a: fake_src)
     monkeypatch.setattr(kvantum, "kw_write", lambda *_a, **_kw: True)
 
