@@ -38,6 +38,7 @@ Window {
     property bool updateAvailable: false
     property string updateCurrent: ""
     property string updateLatest: ""
+    property bool logoAnimating: true
 
     readonly property bool busy: viewMode === "installing"
     readonly property string fontFamily: Kirigami.Theme.defaultFont.family
@@ -314,24 +315,118 @@ Window {
                 }
             }
 
-            Image {
+            // ── logo area (Canvas 2D stroke-dasharray → crossfade to PNG) ──
+            // Qt's Image can't play SMIL animations, and ShapePath doesn't
+            // have strokeDashArray in this Qt version. Canvas 2D with
+            // setLineDash() gives the Apple drawing effect and stays fluid
+            // because only the dash array changes each frame, not the path.
+            Item {
                 Layout.alignment: Qt.AlignHCenter
                 Layout.preferredWidth: 560
                 Layout.preferredHeight: 252
-                source: "InstallerHello.png"
-                fillMode: Image.PreserveAspectFit
-                sourceSize.width: 1120
-                sourceSize.height: 504
-                smooth: true
-                mipmap: true
+
+                clip: true
+
+                Canvas {
+                    id: logoCanvas
+                    anchors.fill: parent
+                    antialiasing: true
+                    renderStrategy: Canvas.Cooperative
+
+                    readonly property real svgScaleX: width / 320
+                    readonly property real svgScaleY: height / 180
+                    // actual path length computed numerically: ≈1395.7 viewBox units
+                    readonly property real dashTotal: 1396
+                    property real dashProgress: 0
+
+                    opacity: installerWindow.logoAnimating ? 1 : 0
+                    visible: opacity > 0
+
+                    Behavior on opacity {
+                        NumberAnimation { duration: 100; easing: Easing.OutCubic }
+                    }
+
+                    // InQuad → starts slow on each letter, picks up speed.
+                    NumberAnimation on dashProgress {
+                        id: logoDrawAnim
+                        from: 0; to: 1
+                        duration: 5000
+                        easing.type: Easing.InQuad
+                        running: installerWindow.viewMode === "main"
+                                 && installerWindow.logoAnimating
+                        onFinished: installerWindow.logoAnimating = false
+                    }
+
+                    onDashProgressChanged: requestPaint()
+
+                    onPaint: {
+                        var ctx = logoCanvas.getContext('2d');
+                        if (!ctx) return;
+                        ctx.clearRect(0, 0, width, height);
+                        ctx.save();
+
+                        // centre the path in the canvas
+                        ctx.translate(
+                            width  / 2 - 168.7 * svgScaleX,
+                            height / 2 - 75.6  * svgScaleY
+                        );
+                        ctx.scale(svgScaleX, svgScaleY);
+
+                        ctx.strokeStyle = installerWindow.isDarkTheme
+                            ? 'rgba(255,255,255,0.85)'
+                            : 'rgba(0,0,0,0.70)';
+                        ctx.lineWidth = 2.5;
+                        ctx.lineCap = 'round';
+                        ctx.lineJoin = 'round';
+
+                        var drawn = dashProgress * dashTotal;
+                        ctx.setLineDash([drawn, dashTotal - drawn]);
+
+                        // 14 hardcoded bezier commands from the original SVG path,
+                        // all in absolute viewBox coords (avoids JS parser bugs).
+                        ctx.beginPath();
+                        ctx.moveTo(26.816767,36.748271);
+                        ctx.bezierCurveTo(43.203424,67.240957,66.474145,0.318121,55.270041,32.476855);
+                        ctx.bezierCurveTo(32.265545,98.505836,29.893572,143.91569,29.893572,143.91569);
+                        ctx.bezierCurveTo(29.893572,143.91569,34.478622,73.319575,63.739168,73.319575);
+                        ctx.bezierCurveTo(92.999759,73.319575,55.962041,142.42948,81.498551,144.65883);
+                        ctx.bezierCurveTo(107.03503,146.88818,149.25942,78.527398,122.65893,77.041175);
+                        ctx.bezierCurveTo(96.058441,75.554951,85.096643,140.94325,120.74129,143.1726);
+                        ctx.bezierCurveTo(156.38598,145.40195,207.35821,31.603066,175.96961,28.630598);
+                        ctx.bezierCurveTo(144.581,25.65813,143.41473,139.457,175.33529,142.42948);
+                        ctx.bezierCurveTo(207.25592,145.40195,260.69587,26.76471,228.24325,24.535359);
+                        ctx.bezierCurveTo(195.79064,22.306008,192.49628,138.33423,226.01293,139.07735);
+                        ctx.bezierCurveTo(247.29334,137.59111,243.22956,72.57647,270.8941,74.062713);
+                        ctx.bezierCurveTo(310.59618,77.372167,291.32616,150.90768,263.47925,141.68635);
+                        ctx.bezierCurveTo(242.1714,134.06489,243.88478,72.584657,271.01731,74.0709);
+                        ctx.bezierCurveTo(290.66644,76.633191,304.16617,102.41511,310.05704,83.78115);
+                        ctx.stroke();
+
+                        ctx.restore();
+                    }
+                }
+
+                Image {
+                    id: staticLogo
+                    anchors.fill: parent
+                    source: "InstallerHello.png"
+                    fillMode: Image.PreserveAspectFit
+                    sourceSize.width: 1120
+                    sourceSize.height: 504
+                    smooth: true
+                    mipmap: true
+                    opacity: installerWindow.logoAnimating ? 0 : 1
+                    Behavior on opacity {
+                        NumberAnimation { duration: 100 }
+                    }
+                }
             }
 
-            // Installed version — quiet, muted, sitting low in the gap
-            // between the logo and the bottom action bar (outside the white
-            // card). The fillHeight spacer takes the slack above it and a
-            // small fixed gap below keeps it close to the bar rather than
-            // vertically centred. Read straight from the bridge's constant
-            // ``version`` property — shows on first paint, no network.
+            // Installed version — sits low in the gap between logo and action
+            // bar, outside the white card. The fillHeight spacer pushes it
+            // down; a small bottom gap keeps it near the bar instead of
+            // centred. Reads straight from the bridge's ``version`` property,
+            // no network involved.
             Item { Layout.fillHeight: true }
 
             Text {
