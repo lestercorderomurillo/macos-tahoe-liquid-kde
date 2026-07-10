@@ -29,7 +29,7 @@ ALL_FEATURES = [
     "wallpapers", "fonts", "cursors", "plasma_theme", "window_decorations",
     "kvantum", "color_schemes", "icons", "plasmoids", "acrylic_glass",
     "global_theme", "layout", "sounds", "gtk", "sddm", "plymouth", "apps",
-    "nautilus", "nautilus_bookmarks", "portals", "apply_theme",
+    "nautilus", "nautilus_bookmarks", "portals", "oled_care", "apply_theme",
 ]
 
 # Walk order for the install/uninstall loop.
@@ -69,6 +69,7 @@ FEATURE_DESC = {
     "nautilus": "Nautilus file manager",
     "nautilus_bookmarks": "macOS-style sidebar bookmarks",
     "portals": "Native KDE dialogs",
+    "oled_care": "OLED care pixel shift",
     "apply_theme": "Set as default after install",
 }
 
@@ -106,6 +107,11 @@ Options:
     --nautilus-bookmarks  macOS-style sidebar bookmarks (backs up the
                        existing bookmarks; uninstall restores them)
     --portals          Route FileChooser/AppChooser to KDE (fixes stale dialogs)
+    --oled-care        OLED burn-in care: pixel-shift the panels every
+                       5 minutes (top bar height, dock offset). Default: off
+    --oled-interval=N  Minutes between pixel shifts (1-59, default 5)
+    --oled-max-shift=N Maximum shift distance in px (1-16, default 8;
+                       panels move in 2 px steps)
     --no-apply-theme   Install all files but DON'T switch Plasma over to the
                        new look (no look-and-feel apply, layout, or restart).
                        Stage the install now; re-run with --apply-theme later.
@@ -165,7 +171,19 @@ Examples:
 
 
 DEFAULT_FEATURES: dict[str, object] = {f: True for f in ALL_FEATURES}
+# Opt-in: shifts panel geometry on a timer — only wanted on OLED monitors.
+DEFAULT_FEATURES["oled_care"] = False
+DEFAULT_FEATURES["oled_interval"] = 5   # minutes between shifts (1-59)
+DEFAULT_FEATURES["oled_max_shift"] = 8  # max shift distance in px (1-16)
 DEFAULT_FEATURES["theme_mode"] = "auto"
+
+
+def _coerce_int(value: object, default: int, lo: int, hi: int) -> int:
+    try:
+        n = int(value)  # type: ignore[arg-type]
+    except (TypeError, ValueError):
+        return default
+    return max(lo, min(hi, n))
 
 
 def load_features() -> dict[str, object]:
@@ -187,6 +205,10 @@ def save_features(feat: dict[str, object]) -> None:
     for k in ALL_FEATURES:
         v = feat.get(k, True)
         lines.append(f'  "{k}":'.ljust(24) + f"{'true' if v else 'false'},")
+    lines.append('  "oled_interval":'.ljust(24) +
+                 f"{_coerce_int(feat.get('oled_interval'), 5, 1, 59)},")
+    lines.append('  "oled_max_shift":'.ljust(24) +
+                 f"{_coerce_int(feat.get('oled_max_shift'), 8, 1, 16)},")
     lines.append(f'  "theme_mode":'.ljust(24) + f'"{feat.get("theme_mode", "auto")}"')
     lines.append("}")
     CONFIG_FILE.write_text("\n".join(lines) + "\n", encoding="utf-8")
@@ -202,12 +224,35 @@ class ParsedArgs:
         self.preflight_only = False
         self.restart_only = False
         self.cli_overrides: dict[str, bool] = {}
+        self.oled_interval: int | None = None
+        self.oled_max_shift: int | None = None
         self.help = False
+
+
+# Flags that take a value: (attribute, default used only for clamping,
+# lo, hi). Both ``--flag=N`` and ``--flag N`` forms are accepted.
+_INT_FLAGS = {
+    "--oled-interval": ("oled_interval", 5, 1, 59),
+    "--oled-max-shift": ("oled_max_shift", 8, 1, 16),
+}
 
 
 def parse_args(argv: list[str]) -> ParsedArgs:
     p = ParsedArgs()
-    for arg in argv:
+    args = list(argv)
+    i = -1
+    while i + 1 < len(args):
+        i += 1
+        arg = args[i]
+        key, _, inline_value = arg.partition("=")
+        if key in _INT_FLAGS:
+            attr, default, lo, hi = _INT_FLAGS[key]
+            value = inline_value
+            if not inline_value and i + 1 < len(args):
+                i += 1
+                value = args[i]
+            setattr(p, attr, _coerce_int(value, default, lo, hi))
+            continue
         if arg in ("-h", "--help"):
             p.help = True
         elif arg == "--light":
@@ -443,6 +488,11 @@ def apply_overrides(feat: dict[str, object], parsed: ParsedArgs) -> dict[str, ob
     elif feat.get("theme_mode") not in ("auto", "light", "dark"):
         feat["theme_mode"] = "auto"
 
+    if parsed.oled_interval is not None:
+        feat["oled_interval"] = parsed.oled_interval
+    if parsed.oled_max_shift is not None:
+        feat["oled_max_shift"] = parsed.oled_max_shift
+
     if parsed.do_save:
         save_features(feat)
         ok("features.json saved")
@@ -453,6 +503,10 @@ def export_env(feat: dict[str, object]) -> None:
     """Export FEAT_* and THEME_MODE into ``os.environ`` so step modules
     can read them via steps._helpers.feat_enabled / theme_mode."""
     os.environ["THEME_MODE"] = str(feat.get("theme_mode", "auto"))
+    os.environ["OLED_INTERVAL"] = str(
+        _coerce_int(feat.get("oled_interval"), 5, 1, 59))
+    os.environ["OLED_MAX_SHIFT"] = str(
+        _coerce_int(feat.get("oled_max_shift"), 8, 1, 16))
     for k in ALL_FEATURES:
         os.environ[f"FEAT_{k.upper()}"] = _b(feat.get(k, True))
 
@@ -1001,6 +1055,10 @@ def run_install(argv: list[str]) -> int:
         note("Installs the auto light/dark theme switcher")
         run_phase("theme_switch", "install")
 
+        step("Installing OLED Care")
+        note("Opt-in pixel shift that guards OLED panels against burn-in")
+        run_phase("oled_care", "install")
+
         if feat.get("apply_theme", True):
             step("Applying Changes")
             note("Applies settings, flushes caches, restarts KWin")
@@ -1093,6 +1151,10 @@ def run_uninstall(argv: list[str]) -> int:
         step("Removing Theme Switcher")
         note("Stops and removes the auto light/dark theme switcher")
         run_phase("theme_switch", "uninstall")
+
+        step("Removing OLED Care")
+        note("Stops the pixel shift and restores panel geometry")
+        run_phase("oled_care", "uninstall")
 
         if feat.get("layout", True) and step_exists("layout"):
             step("Resetting Layout")

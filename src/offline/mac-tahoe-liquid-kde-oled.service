@@ -1,0 +1,14 @@
+[Unit]
+Description=MacTahoe Liquid KDE — OLED care pixel shift
+# Runs inside the desktop session only. The script exits quietly when
+# plasmashell is not reachable (timer fired before login finished), so
+# no ExecStartPre wait is needed here.
+After=plasma-plasmashell.service graphical-session.target
+PartOf=graphical-session.target
+
+[Service]
+Type=oneshot
+ExecStart=%h/.local/bin/mac-tahoe-oled-care shift
+
+[Install]
+WantedBy=plasma-plasmashell.service

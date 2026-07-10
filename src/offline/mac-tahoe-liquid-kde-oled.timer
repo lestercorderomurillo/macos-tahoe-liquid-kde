@@ -1,0 +1,13 @@
+[Unit]
+Description=MacTahoe Liquid KDE — OLED care pixel-shift cadence
+
+[Timer]
+# One geometry step per fire. The 5-minute default below is rewritten
+# at install time when --oled-interval is set. Missed fires are
+# meaningless — no catch-up on resume.
+OnCalendar=*:0/5
+Persistent=false
+Unit=mac-tahoe-liquid-kde-oled.service
+
+[Install]
+WantedBy=timers.target

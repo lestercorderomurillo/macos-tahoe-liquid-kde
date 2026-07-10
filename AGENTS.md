@@ -99,6 +99,7 @@ Store, Force Quit, Sleep, Restart, Shut Down, Lock Screen, Log Out.
 | `src/scripts/step_runner.py`  | Imports and runs per-phase functions on each step module. |
 | `src/scripts/utils.py`        | `run_user`, `kw_write`, `kw_read`, `have`, `fetch`, `safe_copy`, `pkg_install`, `pkg_sync_install`, `qdbus_call`. |
 | `src/scripts/theme_switch.py` | `mac-tahoe-theme-switch` implementation. Installed as a console script. |
+| `src/scripts/oled_care.py`    | `mac-tahoe-oled-care` implementation — opt-in panel pixel shift for OLED monitors. |
 | `src/scripts/state.py`        | `RunTracker` — writes the last-run summary (status, argv, timestamps) to `~/.local/state/mac-tahoe-liquid-kde/last-run.json`. |
 | `src/scripts/log.py`          | `banner`, `step`, `ok`, `warn`, `info`, `note`, `fail` — single source of UI styling. |
 | `src/scripts/steps/`          | One module per feature. Implements `deps`, `build`, `install`, `uninstall`, `restart_plasma` as needed. |
@@ -253,6 +254,27 @@ Worst case: 2 + 6 + 6 = 14s of sleeps. Don't shorten the 2s lead-in
 — `plasma-apply-lookandfeel` exits 0 against a not-yet-ready bus
 without actually re-rendering.
 
+## Architecture — OLED Care (opt-in)
+
+`mac-tahoe-oled-care {shift|restore|status}` guards OLED panels against
+burn-in. Off by default; `./install --oled-care` enables it. A systemd
+user timer (`mac-tahoe-liquid-kde-oled.timer`) fires `shift` every 5
+minutes: fill-length panels (the top bar) cycle height up in 2 px steps
+(32 → 34 → … → 40 → 38 → …) — a full-width panel cannot slide sideways,
+Plasma clamps its offset — and every other panel (the dock) cycles
+offset both directions the same way. One
+`plasmashell evaluateScript` call does the whole pass. Two install-time
+knobs: `--oled-interval=N` (minutes, 1-59, stamped into the timer's
+`OnCalendar`) and `--oled-max-shift=N` (px, 1-16, stamped into
+`ExecStart=... --max-px N`); both persist in `features.json`. The
+applied deltas are stored alongside the per-panel base geometry in
+`~/.local/state/mac-tahoe-liquid-kde/oled-care.json`, so `restore`
+stays correct even when the amplitude changed between runs. When
+current geometry ≠ base + last delta the panel was moved deliberately,
+so the base is re-captured instead of fought. `restore` undoes only the
+currently-applied delta; the step's install() with the flag off tears
+the units down, so a plain re-install is self-healing.
+
 ## Architecture — Wallpapers
 
 Wallpapers are fully bundled. Every entry under
@@ -317,6 +339,7 @@ a genuine missing package and fails CI.
 | `kvantum.py`                  | Kvantum Qt widget style. |
 | `layout.py`                   | Top panel + dock layout. May be retried once after `restart_plasma` if the first pass raced plasmashell's plugin discovery. |
 | `nautilus.py`                 | Nautilus integration (file manager set as default on KDE for users who prefer it). |
+| `oled_care.py` (step)         | Installs the opt-in OLED-care binary + systemd user timer; flag off tears them down; uninstall restores panel geometry. |
 | `plasma_theme.py`             | Translucent panels and dock SVGs. |
 | `plasmoids.py`                | QML plasmoids: Menu, Launcher, Trashcan, IconTasks. |
 | `plymouth.py`                 | Boot splash. GRUB patch behind `_grub_is_active_bootloader()`; `--no-grub-modify` opt-out exists. |
@@ -432,6 +455,8 @@ Highlights:
   cascade-aware reads.
 - `tests/test_apply_safety.py` — no plasmashell restart from
   `mac-tahoe-theme-switch`.
+- `tests/test_oled_care.py` — shift state machine, rebase-on-change
+  guards, unit files, step flag gating.
 - `tests/test_cmake.py` — the C++ plasmoids and KWin effect build
   configure cleanly.
 - `tests/containers/run_matrix.sh` — full per-distro probe.

@@ -4,7 +4,7 @@
 
 # macOS Tahoe Liquid Theme for KDE Plasma 6.6/6.7+
 
-[![release](https://img.shields.io/github/v/release/lestercorderomurillo/macos-tahoe-liquid-kde?label=release&color=blue)](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/releases) [![tests](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/actions/workflows/test.yml/badge.svg)](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/actions/workflows/test.yml) [![tests count](https://img.shields.io/badge/tests-736_passing-brightgreen)](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/actions/workflows/test.yml) [![license](https://img.shields.io/badge/license-GPL--2.0-blue)](LICENSE) [![plasma](https://img.shields.io/badge/KDE_Plasma-6.6%2B-1d99f3?logo=kde)](https://kde.org/plasma-desktop/) [![last commit](https://img.shields.io/github/last-commit/lestercorderomurillo/macos-tahoe-liquid-kde)](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/commits/) [![report a bug](https://img.shields.io/badge/report-a%20bug-red?logo=github)](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/issues/new)
+[![release](https://img.shields.io/github/v/release/lestercorderomurillo/macos-tahoe-liquid-kde?label=release&color=blue)](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/releases) [![tests](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/actions/workflows/test.yml/badge.svg)](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/actions/workflows/test.yml) [![tests count](https://img.shields.io/badge/tests-763_passing-brightgreen)](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/actions/workflows/test.yml) [![license](https://img.shields.io/badge/license-GPL--2.0-blue)](LICENSE) [![plasma](https://img.shields.io/badge/KDE_Plasma-6.6%2B-1d99f3?logo=kde)](https://kde.org/plasma-desktop/) [![last commit](https://img.shields.io/github/last-commit/lestercorderomurillo/macos-tahoe-liquid-kde)](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/commits/) [![report a bug](https://img.shields.io/badge/report-a%20bug-red?logo=github)](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/issues/new)
 
 A full macOS Tahoe-style desktop experience for KDE Plasma 6.6 and 6.7+.
 
@@ -149,6 +149,7 @@ Plymouth boot screen with centered Apple-style logo on every monitor, scaled dyn
 | **GTK Theme** | GTK2/3/4 window chrome and controls | ✅ |
 | **Acrylic Glass** | KWin blur, rounded corners, glass effect | ✅ |
 | **Auto Theme Switcher** | One-shot service + 06:00 / 18:00 timer, single entry point | ✅ |
+| **OLED Care** | Opt-in pixel-shift timer for the top bar and dock | ✅ |
 | **Installer UI** | Glass window that drives install / uninstall and a per-feature picker | ✅ |
 | **Multi-Distro Support** | KDE Plasma 6.6+ on the Arch, Fedora, openSUSE and Gentoo families | 🔧 |
 | **Aurorae Decorations** | Window title bar and borders | ✅ |
@@ -297,7 +298,7 @@ sudo ./uninstall --only --cursors             # uninstall just cursors
 
 Available names:
 
-`wallpapers`, `fonts`, `cursors`, `plasma-theme`, `window-decorations`, `kvantum`, `color-schemes`, `icons`, `plasmoids`, `acrylic-glass`, `global-theme`, `layout`, `sounds`, `gtk`, `sddm`, `apps`, `nautilus`, `portals`, `plymouth`.
+`wallpapers`, `fonts`, `cursors`, `plasma-theme`, `window-decorations`, `kvantum`, `color-schemes`, `icons`, `plasmoids`, `acrylic-glass`, `global-theme`, `layout`, `sounds`, `gtk`, `sddm`, `apps`, `nautilus`, `portals`, `oled-care`, `plymouth`.
 
 One extra knob:
 
@@ -320,6 +321,19 @@ mac-tahoe-theme-switch light
 mac-tahoe-theme-switch dark
 mac-tahoe-theme-switch auto
 ```
+
+### For OLED screens
+
+The top bar never moves, and OLED panels burn static content in. The opt-in **OLED care** service nudges panel geometry on a timer — the top bar's height by a few px (its menu, clock, and tray shift with it) and the dock's position by a few px sideways — so no pixel renders the same content for hours. Off by default; enable it from the graphical installer's feature picker (`./installer` → **OLED care pixel shift**) or on the CLI:
+
+```bash
+sudo ./install --oled-care                                  # enable (every 5 min, up to 8 px)
+sudo ./install --oled-care --save                           # enable and remember it
+sudo ./install --oled-care --oled-interval=3 --oled-max-shift=4   # custom cadence + distance
+sudo ./install --no-oled-care                               # back off
+```
+
+`--oled-interval=N` sets minutes between shifts (1–59, default 5); `--oled-max-shift=N` sets the maximum shift distance in px (1–16, default 8). Panels move one 2 px step per fire (the 32 px top bar walks 32 → 34 → … → 40 → 38 → … and back), matching manufacturer pixel-shift practice. Manual control anytime: `mac-tahoe-oled-care shift` steps once (`--max-px N` to override the distance), `restore` puts the panels back, `status` shows the stored geometry.
 
 ### Remembering your choices
 
