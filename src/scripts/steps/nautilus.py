@@ -5,7 +5,7 @@ import time
 from pathlib import Path
 from urllib.parse import quote
 
-from steps._helpers import HOME, fail, have, kw_write, ok, offline, warn
+from steps._helpers import HOME, fail, feat_enabled, have, kw_write, ok, offline, warn
 from utils import is_plasma_session, run_user
 
 NAUTILUS_DESKTOP = "org.gnome.Nautilus.desktop"
@@ -39,7 +39,11 @@ def _set_default(desktop_id: str, mime: str) -> bool:
 def _generate_bookmarks() -> None:
     """Read ~/.config/user-dirs.dirs and write ~/.config/gtk-3.0/bookmarks
     with the user's XDG directories. Labels match the actual folder names
-    on disk, which follow the system language (Desktop, Documentos, etc.)."""
+    on disk, which follow the system language (Desktop, Documentos, etc.).
+    Gated by the ``nautilus_bookmarks`` feature; the pre-existing bookmarks
+    file is backed up once and restored on uninstall."""
+    if not feat_enabled("nautilus_bookmarks"):
+        return
     src = HOME / ".config/user-dirs.dirs"
     if not src.is_file():
         warn("~/.config/user-dirs.dirs not found — skipping Nautilus bookmarks")
@@ -70,7 +74,16 @@ def _generate_bookmarks() -> None:
 
     dest = HOME / ".config/gtk-3.0"
     dest.mkdir(parents=True, exist_ok=True)
-    (dest / "bookmarks").write_text("\n".join(lines) + "\n", encoding="utf-8")
+    bookmarks = dest / "bookmarks"
+    backup = dest / "bookmarks.mac-tahoe-backup"
+    # Back up the user's own bookmarks once; reinstalls must not clobber
+    # the true original with our generated file.
+    if bookmarks.is_file() and not backup.is_file():
+        try:
+            shutil.copy2(bookmarks, backup)
+        except OSError:
+            pass
+    bookmarks.write_text("\n".join(lines) + "\n", encoding="utf-8")
     ok(f"Bookmarks written ({len(lines)} entries)")
 
 
@@ -228,3 +241,20 @@ def uninstall() -> None:
     if nautilus_css.is_file():
         try: nautilus_css.unlink()
         except OSError: pass
+    _restore_bookmarks()
+
+
+def _restore_bookmarks() -> None:
+    """Undo _generate_bookmarks(): put back the backed-up bookmarks, or
+    remove the generated file when the user had none before install."""
+    dest = HOME / ".config/gtk-3.0"
+    bookmarks = dest / "bookmarks"
+    backup = dest / "bookmarks.mac-tahoe-backup"
+    try:
+        if backup.is_file():
+            shutil.move(str(backup), str(bookmarks))
+            ok("Nautilus bookmarks restored")
+        elif bookmarks.is_file():
+            bookmarks.unlink()
+    except OSError:
+        pass

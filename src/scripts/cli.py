@@ -29,7 +29,7 @@ ALL_FEATURES = [
     "wallpapers", "fonts", "cursors", "plasma_theme", "window_decorations",
     "kvantum", "color_schemes", "icons", "plasmoids", "acrylic_glass",
     "global_theme", "layout", "sounds", "gtk", "sddm", "plymouth", "apps",
-    "nautilus", "portals", "apply_theme",
+    "nautilus", "nautilus_bookmarks", "portals", "apply_theme",
 ]
 
 # Walk order for the install/uninstall loop.
@@ -67,6 +67,7 @@ FEATURE_DESC = {
     "plymouth": "Boot splash",
     "apps": "App tweaks",
     "nautilus": "Nautilus file manager",
+    "nautilus_bookmarks": "macOS-style sidebar bookmarks",
     "portals": "Native KDE dialogs",
     "apply_theme": "Set as default after install",
 }
@@ -102,6 +103,8 @@ Options:
     --plymouth         Boot splash screen (Plymouth)
     --apps             App configuration tweaks
     --nautilus         Install Nautilus and set as default file manager
+    --nautilus-bookmarks  macOS-style sidebar bookmarks (backs up the
+                       existing bookmarks; uninstall restores them)
     --portals          Route FileChooser/AppChooser to KDE (fixes stale dialogs)
     --no-apply-theme   Install all files but DON'T switch Plasma over to the
                        new look (no look-and-feel apply, layout, or restart).
