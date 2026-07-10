@@ -236,3 +236,76 @@ def test_uninstall_removes_generated_bookmarks_without_backup(tmp_path, monkeypa
 
     assert not bookmarks.exists()
     assert not backup.exists()
+
+
+def test_bookmarks_cjk_labels(tmp_path, monkeypatch):
+    """Chinese locale: CJK directory names survive as labels."""
+    bookmarks = _run_generate_bookmarks(
+        tmp_path,
+        monkeypatch,
+        user_dirs_text=(
+            'XDG_DESKTOP_DIR="$HOME/桌面"\n'
+            'XDG_DOCUMENTS_DIR="$HOME/文档"\n'
+            'XDG_DOWNLOAD_DIR="$HOME/下载"\n'
+            'XDG_MUSIC_DIR="$HOME/音乐"\n'
+        ),
+    )
+
+    content = bookmarks.read_text(encoding="utf-8")
+    assert "桌面" in content
+    assert "下载" in content
+
+
+def test_bookmarks_cyrillic_labels(tmp_path, monkeypatch):
+    """Russian locale: Cyrillic names with spaces survive as labels."""
+    bookmarks = _run_generate_bookmarks(
+        tmp_path,
+        monkeypatch,
+        user_dirs_text=(
+            'XDG_DESKTOP_DIR="$HOME/Рабочий стол"\n'
+            'XDG_DOCUMENTS_DIR="$HOME/Документы"\n'
+            'XDG_DOWNLOAD_DIR="$HOME/Загрузки"\n'
+        ),
+    )
+
+    content = bookmarks.read_text(encoding="utf-8")
+    assert "Рабочий стол" in content
+    assert "Загрузки" in content
+
+
+def test_bookmarks_non_ascii_uri_is_percent_encoded(tmp_path, monkeypatch):
+    """GTK expects percent-encoded UTF-8 in the URI part; the label
+    part keeps the raw name. Both must hold for non-ASCII dirs."""
+    bookmarks = _run_generate_bookmarks(
+        tmp_path,
+        monkeypatch,
+        user_dirs_text='XDG_DOCUMENTS_DIR="$HOME/Documentos españoles"\n',
+    )
+
+    line = bookmarks.read_text(encoding="utf-8").strip()
+    uri, label = line.split(" ", 1)
+    assert uri.startswith("file://")
+    assert " " not in uri, "URI part must not contain raw spaces"
+    assert "%20" in uri and "%C3%B1" in uri, f"URI not percent-encoded: {uri}"
+    assert label == "Documentos españoles"
+
+
+def test_bookmarks_disabled_xdg_dir_is_skipped(tmp_path, monkeypatch):
+    """xdg-user-dirs disables a directory by pointing it at $HOME
+    itself. That entry must be skipped — never bookmark the whole
+    home directory."""
+    bookmarks = _run_generate_bookmarks(
+        tmp_path,
+        monkeypatch,
+        user_dirs_text=(
+            'XDG_DESKTOP_DIR="$HOME/Desktop"\n'
+            'XDG_MUSIC_DIR="$HOME/"\n'      # disabled → points at $HOME
+            'XDG_VIDEOS_DIR="$HOME"\n'      # variant without slash
+        ),
+    )
+
+    lines = bookmarks.read_text(encoding="utf-8").strip().splitlines()
+    labels = [line.split(" ", 1)[1] for line in lines]
+    assert labels == ["Desktop"], (
+        f"disabled dirs must be skipped, got: {labels}"
+    )

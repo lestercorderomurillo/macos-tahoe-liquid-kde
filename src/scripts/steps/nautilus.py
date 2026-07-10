@@ -65,6 +65,10 @@ def _generate_bookmarks() -> None:
         path = dirs.get(key)
         if path is None or not path.is_dir():
             continue
+        # xdg-user-dirs disables a dir by pointing it at $HOME itself —
+        # never bookmark the whole home directory.
+        if path == HOME:
+            continue
         uri = "file://" + quote(str(path), safe="/")
         lines.append(f"{uri} {path.name}")
 
