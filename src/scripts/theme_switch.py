@@ -567,10 +567,9 @@ def cycle_widget_style_live(target: str) -> bool:
     return True
 
 
-def apply(mode: str) -> bool:
-    """One code path. Same behaviour whether install, service, timer, or
-    a manual `light` / `dark` / `auto` invocation runs this. Writes config
-    + extras (Kvantum, GTK, caches) + live LAF + live cursor + Kvantum
+def apply(mode: str, context: str = "user") -> bool:
+    """Writes config + extras (Kvantum, GTK, caches) + live LAF (skipped
+    during install — Plasma restarts anyway) + live cursor + Kvantum
     cycle + KWin reconfigure."""
     cursor = "MacTahoeLiquidKde-Dark" if mode == "dark" else "MacTahoeLiquidKde"
     widget = "kvantum-dark" if mode == "dark" else "kvantum"
@@ -583,7 +582,8 @@ def apply(mode: str) -> bool:
     except Exception as exc:
         print(f"theme apply: extras step failed, continuing: {exc!r}",
               file=sys.stderr)
-    _apply_lookandfeel_live(laf)
+    if context != "install":
+        _apply_lookandfeel_live(laf)
     apply_cursortheme_live(cursor)
     cycle_widget_style_live(widget)
     _qdbus("org.kde.KWin", "/KWin", "org.kde.KWin.reconfigure")
@@ -605,8 +605,8 @@ def main(argv: list[str]) -> int:
         print(USAGE, file=sys.stderr)
         return 1
 
-    apply(mode)
-    return 0
+    context = argv[1] if len(argv) > 1 else "user"
+    return 0 if apply(mode, context=context) else 1
 
 
 if __name__ == "__main__":
