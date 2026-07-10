@@ -17,6 +17,7 @@
 #include <QQuickItem>
 #include <QQuickWindow>
 #include <QScreen>
+#include <QStandardPaths>
 #include <QTimer>
 #include <abstracttasksmodel.h>
 
@@ -405,8 +406,10 @@ void AppMenuApplet::triggerSystemMenu(QQuickItem* ctx)
 
     menu->addAction(icon("iconSystemSettings", QStringLiteral("preferences-system")), QStringLiteral("System Settings\u2026"),
         []() { runCommand(QStringLiteral("systemsettings")); });
-    menu->addAction(icon("iconAppStore", QStringLiteral("software-store-symbolic")), QStringLiteral("App Store\u2026"),
-        []() { runCommand(QStringLiteral("plasma-discover")); });
+    if (!QStandardPaths::findExecutable(QStringLiteral("plasma-discover")).isEmpty()) {
+        menu->addAction(icon("iconAppStore", QStringLiteral("software-store-symbolic")), QStringLiteral("App Store\u2026"),
+            []() { runCommand(QStringLiteral("plasma-discover")); });
+    }
 
     menu->addSeparator();
 
