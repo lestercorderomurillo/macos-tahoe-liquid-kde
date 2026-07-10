@@ -320,7 +320,7 @@ def test_main_auto_resolves_to_time_based_mode(monkeypatch):
     calls: list = []
     monkeypatch.setattr(theme_switch, "detect_mode_by_time", lambda: "dark")
     monkeypatch.setattr(theme_switch, "apply",
-                        lambda mode: calls.append(("apply", mode)) or True)
+                        lambda mode, **kw: calls.append(("apply", mode)) or True)
     assert theme_switch.main(["auto"]) == 0
     assert calls == [("apply", "dark")]
 
@@ -333,7 +333,7 @@ def test_main_rejects_invalid_mode(monkeypatch):
     import theme_switch
     applied: list = []
     monkeypatch.setattr(theme_switch, "apply",
-                        lambda mode: applied.append(mode) or True)
+                        lambda mode, **kw: applied.append(mode) or True)
     assert theme_switch.main([]) == 1
     assert theme_switch.main(["watch"]) == 1
     assert theme_switch.main(["boot"]) == 1
