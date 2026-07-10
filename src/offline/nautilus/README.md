@@ -8,12 +8,12 @@ Accepted files:
 | File         | Destination                         | Purpose                               |
 |--------------|-------------------------------------|---------------------------------------|
 | `gtk.css`    | `~/.config/nautilus/gtk.css`        | Nautilus-only CSS overrides (opt-in)  |
-| `bookmarks`  | `~/.config/gtk-3.0/bookmarks`       | Default sidebar bookmarks             |
 
-The `bookmarks` file supports a single `$HOME` token in each `file://`
-URI (e.g. `file://$HOME/Documentos Documentos`). `nautilus.py`
-substitutes the current user's home at install time, so the same
-bundled file works on every machine instead of hard-coding one path.
+Nautilus sidebar bookmarks are generated **dynamically** from
+`~/.config/user-dirs.dirs` at install time. The labels match the
+actual folder names on disk, which follow the system language
+(Desktop, Documentos, Downloads, …). This replaces the old static
+`bookmarks` template approach.
 
 The bulk of the macOS-style theming (sidebar, path bar, header buttons,
 window chrome) is delivered by the **GTK theme** at `src/offline/gtk/`,

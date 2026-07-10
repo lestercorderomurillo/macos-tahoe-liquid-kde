@@ -1,6 +1,9 @@
+import re
 import shutil
 import subprocess
 import time
+from pathlib import Path
+from urllib.parse import quote
 
 from steps._helpers import HOME, fail, have, kw_write, ok, offline, warn
 from utils import is_plasma_session, run_user
@@ -10,6 +13,10 @@ DOLPHIN_DESKTOP = "org.kde.dolphin.desktop"
 MIME_FOLDER = "inode/directory"
 MIME_SEARCH = "application/x-gnome-saved-search"
 _NAUTILUS_TOOL_TIMEOUT_SECONDS = 5
+
+# XDG directories to include in the Nautilus sidebar, in display order.
+# Keys correspond to XDG_xxx_DIR variables in ~/.config/user-dirs.dirs.
+_XDG_SIDEBAR_ORDER = ("DESKTOP", "DOCUMENTS", "DOWNLOAD", "PICTURES", "VIDEOS", "MUSIC")
 
 
 def deps():
@@ -29,6 +36,44 @@ def _set_default(desktop_id: str, mime: str) -> bool:
     )
 
 
+def _generate_bookmarks() -> None:
+    """Read ~/.config/user-dirs.dirs and write ~/.config/gtk-3.0/bookmarks
+    with the user's XDG directories. Labels match the actual folder names
+    on disk, which follow the system language (Desktop, Documentos, etc.)."""
+    src = HOME / ".config/user-dirs.dirs"
+    if not src.is_file():
+        warn("~/.config/user-dirs.dirs not found — skipping Nautilus bookmarks")
+        return
+
+    dirs: dict[str, Path] = {}
+    for line in src.read_text(encoding="utf-8").splitlines():
+        line = line.strip()
+        if not line or line.startswith("#"):
+            continue
+        m = re.match(r'^XDG_(\w+)_DIR="(.+)"$', line)
+        if m:
+            key = m.group(1)
+            path_str = m.group(2).replace("$HOME", str(HOME))
+            dirs[key] = Path(path_str)
+
+    lines: list[str] = []
+    for key in _XDG_SIDEBAR_ORDER:
+        path = dirs.get(key)
+        if path is None or not path.is_dir():
+            continue
+        uri = "file://" + quote(str(path), safe="/")
+        lines.append(f"{uri} {path.name}")
+
+    if not lines:
+        warn("No XDG directories found — skipping Nautilus bookmarks")
+        return
+
+    dest = HOME / ".config/gtk-3.0"
+    dest.mkdir(parents=True, exist_ok=True)
+    (dest / "bookmarks").write_text("\n".join(lines) + "\n", encoding="utf-8")
+    ok(f"Bookmarks written ({len(lines)} entries)")
+
+
 def _apply_overrides() -> None:
     src = offline("nautilus")
     if not src.is_dir():
@@ -37,22 +82,7 @@ def _apply_overrides() -> None:
     for item in src.iterdir():
         if item.name.startswith("README"):
             continue
-        if item.name == "bookmarks":
-            dest_dir = HOME / ".config/gtk-3.0"
-            dest_dir.mkdir(parents=True, exist_ok=True)
-            try:
-                # The bundled template uses a literal ``$HOME`` token so
-                # the sidebar bookmarks point at the *current* user's
-                # home rather than a path baked into the repo. Without
-                # this substitution the file would only work for the
-                # one user whose $HOME matches the checked-in copy.
-                text = item.read_text(encoding="utf-8")
-                text = text.replace("$HOME", str(HOME))
-                (dest_dir / "bookmarks").write_text(text, encoding="utf-8")
-                copied += 1
-            except OSError:
-                pass
-        elif item.name == "gtk.css":
+        if item.name == "gtk.css":
             (HOME / ".config/nautilus").mkdir(parents=True, exist_ok=True)
             try:
                 shutil.copy2(item, HOME / ".config/nautilus/gtk.css")
@@ -179,6 +209,7 @@ def install() -> None:
         ok("Nautilus set as default for folders")
     _set_default(NAUTILUS_DESKTOP, MIME_SEARCH)
 
+    _generate_bookmarks()
     _apply_overrides()
     _apply_gsettings()
     if _nautilus_running():
