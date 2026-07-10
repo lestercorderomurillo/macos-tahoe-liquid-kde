@@ -265,6 +265,8 @@ def test_step_install_disabled_tears_down_leftovers(tmp_path, monkeypatch):
     flagged install left behind — no orphaned timer keeps shifting."""
     step, home, calls = _wire_step(tmp_path, monkeypatch)
     monkeypatch.setenv("FEAT_OLED_CARE", "false")
+    monkeypatch.setattr(step, "_restore_panels",
+                        lambda: calls.append(["RESTORE"]))
     step.BIN_DEST.parent.mkdir(parents=True)
     step.BIN_DEST.write_text("#!stub")
     step.SVC_DIR.mkdir(parents=True)
@@ -275,7 +277,12 @@ def test_step_install_disabled_tears_down_leftovers(tmp_path, monkeypatch):
 
     assert not step.BIN_DEST.exists()
     assert not any((step.SVC_DIR / u).exists() for u in step.UNITS)
-    assert any("disable" in " ".join(c) for c in calls)
+    flat = [" ".join(c) for c in calls]
+    assert any("disable" in c for c in flat)
+    # timer must be stopped BEFORE geometry is restored — a fire landing
+    # in between would re-shift the panels we just put back
+    assert flat.index("RESTORE") > max(
+        i for i, c in enumerate(flat) if "disable" in c)
 
 
 def test_step_install_default_is_off(tmp_path, monkeypatch):

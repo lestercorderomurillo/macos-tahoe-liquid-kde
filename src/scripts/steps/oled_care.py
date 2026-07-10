@@ -98,8 +98,10 @@ def _restore_panels() -> None:
 
 def install() -> None:
     if not feat_enabled("oled_care", default=False):
-        _restore_panels()
+        # Stop the timer BEFORE restoring geometry — a fire landing in
+        # between would re-shift the panels we just put back.
         removed = _teardown_units()
+        _restore_panels()
         try:
             BIN_DEST.unlink()
             removed = True
@@ -134,8 +136,9 @@ def install() -> None:
 
 
 def uninstall() -> None:
-    _restore_panels()
+    # Same order as the disabled-install path: timer first, then restore.
     removed = _teardown_units()
+    _restore_panels()
     try:
         BIN_DEST.unlink()
         removed = True
