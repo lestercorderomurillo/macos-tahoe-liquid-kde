@@ -576,18 +576,22 @@ def apply(mode: str) -> bool:
     widget = "kvantum-dark" if mode == "dark" else "kvantum"
     laf = LAF_DARK if mode == "dark" else LAF_LIGHT
 
-    write_kde_theme_config(mode)
+    ok = write_kde_theme_config(mode)
     try:
         _apply_wallpaper(mode)
         _apply_local_extras(mode)
     except Exception as exc:
         print(f"theme apply: extras step failed, continuing: {exc!r}",
               file=sys.stderr)
-    _apply_lookandfeel_live(laf)
-    apply_cursortheme_live(cursor)
-    cycle_widget_style_live(widget)
+    if not _apply_lookandfeel_live(laf):
+        print("theme apply: live look-and-feel skipped (cold bus?)",
+              file=sys.stderr)
+    if not apply_cursortheme_live(cursor):
+        print("theme apply: live cursor skipped", file=sys.stderr)
+    if not cycle_widget_style_live(widget):
+        print("theme apply: widget style cycle skipped", file=sys.stderr)
     _qdbus("org.kde.KWin", "/KWin", "org.kde.KWin.reconfigure")
-    return True
+    return False if ok is False else True
 
 
 USAGE = "Usage: mac-tahoe-theme-switch {light|dark|auto}"
@@ -605,7 +609,8 @@ def main(argv: list[str]) -> int:
         print(USAGE, file=sys.stderr)
         return 1
 
-    apply(mode)
+    if not apply(mode):
+        return 1
     return 0
 
 
