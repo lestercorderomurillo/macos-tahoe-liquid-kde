@@ -27,7 +27,7 @@ from utils import have, kw_read, pkg_sync_install, run_user
 
 ALL_FEATURES = [
     "wallpapers", "fonts", "cursors", "plasma_theme", "window_decorations",
-    "kvantum", "color_schemes", "icons", "plasmoids", "acrylic_glass",
+    "kvantum", "color_schemes", "icons", "plasmoids", "globalmenu", "acrylic_glass",
     "global_theme", "layout", "sounds", "gtk", "sddm", "plymouth", "apps",
     "nautilus", "nautilus_bookmarks", "portals", "oled_care", "apply_theme",
 ]
