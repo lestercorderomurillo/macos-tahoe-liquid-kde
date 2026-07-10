@@ -8,10 +8,25 @@ from steps._helpers import (
 from utils import run_user
 
 DEST_DIR = HOME / ".config/Kvantum/mac-tahoe-liquid-kde"
+DEST_DIR_DARK = HOME / ".config/Kvantum/mac-tahoe-liquid-kdeDark"
+
+_THEMES = ("mac-tahoe-liquid-kde", "mac-tahoe-liquid-kdeDark")
 
 
 def deps():
     return ["kvantummanager:kvantum"]
+
+
+def _install_one(name: str) -> None:
+    src = offline("kvantum/mac-tahoe-liquid-kde")
+    dst = (DEST_DIR_DARK if "Dark" in name else DEST_DIR)
+    dst.mkdir(parents=True, exist_ok=True)
+    for ext in (".kvconfig", ".svg"):
+        f = src / f"{name}{ext}"
+        if f.is_file():
+            shutil.copy2(f, dst / f.name)
+        else:
+            warn(f"Kvantum file {f.name} not found")
 
 
 def install() -> None:
@@ -20,19 +35,27 @@ def install() -> None:
         fail(f"Kvantum theme source not found at {src}")
         return
 
-    existed = DEST_DIR.is_dir() and any(DEST_DIR.glob("*.kvconfig"))
-    DEST_DIR.mkdir(parents=True, exist_ok=True)
-    for pat in ("*.kvconfig", "*.svg"):
-        for f in src.glob(pat):
-            shutil.copy2(f, DEST_DIR / f.name)
+    existed = any(
+        (d.is_dir() and any(d.glob("*.kvconfig")))
+         for d in (DEST_DIR, DEST_DIR_DARK)
+    )
 
-    if any(DEST_DIR.glob("*.kvconfig")):
-        if existed:
-            reinstall("mac-tahoe-liquid-kde theme")
-        else:
-            ok("mac-tahoe-liquid-kde theme (installed)")
+    for name in _THEMES:
+        _install_one(name)
+
+    if any((DEST_DIR / f"{_THEMES[0]}{e}").is_file() for e in (".kvconfig", ".svg")):
+        ok("mac-tahoe-liquid-kde theme (installed)")
     else:
         fail("mac-tahoe-liquid-kde theme (copy failed)")
+        return
+
+    if any((DEST_DIR_DARK / f"{_THEMES[1]}{e}").is_file() for e in (".kvconfig", ".svg")):
+        if existed:
+            reinstall("mac-tahoe-liquid-kdeDark theme")
+        else:
+            ok("mac-tahoe-liquid-kdeDark theme (installed)")
+    else:
+        fail("mac-tahoe-liquid-kdeDark theme (copy failed)")
         return
 
     if kw_write("--file", "kdeglobals", "--group", "KDE",
@@ -44,9 +67,14 @@ def install() -> None:
 
 
 def uninstall() -> None:
-    if not DEST_DIR.is_dir():
-        ok("MacTahoeLiquidKde theme (not installed)")
+    any_was_installed = False
+    for d in (DEST_DIR, DEST_DIR_DARK):
+        if d.is_dir():
+            any_was_installed = True
+    if not any_was_installed:
+        ok("MacTahoeLiquidKde themes (not installed)")
         return
+
     if kw_write("--file", "kdeglobals", "--group", "KDE",
                 "--key", "widgetStyle", "Breeze"):
         ok("Widget style reset to Breeze")
@@ -58,8 +86,12 @@ def uninstall() -> None:
             check=False, env=env,
             stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
         )
-    try:
-        shutil.rmtree(DEST_DIR)
-        ok("MacTahoeLiquidKde theme removed")
-    except OSError:
-        fail("MacTahoeLiquidKde theme")
+    for d in (DEST_DIR, DEST_DIR_DARK):
+        try:
+            shutil.rmtree(d)
+        except OSError:
+            pass
+    if any(d.is_dir() for d in (DEST_DIR, DEST_DIR_DARK)):
+        fail("MacTahoeLiquidKde themes (some leftovers)")
+    else:
+        ok("MacTahoeLiquidKde themes removed")
