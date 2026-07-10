@@ -8,7 +8,12 @@ Accepted files:
 | File         | Destination                         | Purpose                               |
 |--------------|-------------------------------------|---------------------------------------|
 | `gtk.css`    | `~/.config/nautilus/gtk.css`        | Nautilus-only CSS overrides (opt-in)  |
-| `bookmarks`  | `~/.config/gtk-3.0/bookmarks`       | Default sidebar bookmarks             |
+
+Nautilus sidebar bookmarks are generated **dynamically** from
+`~/.config/user-dirs.dirs` at install time. The labels match the
+actual folder names on disk, which follow the system language
+(Desktop, Documentos, Downloads, …). This replaces the old static
+`bookmarks` template approach.
 
 The bulk of the macOS-style theming (sidebar, path bar, header buttons,
 window chrome) is delivered by the **GTK theme** at `src/offline/gtk/`,
