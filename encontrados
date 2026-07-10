@@ -1,0 +1,224 @@
+# Análise de Bugs — macos-tahoe-liquid-kde Installer
+
+37 bugs encontrados: 7 críticos, 7 graves, 23 médios/baixos.
+
+---
+
+## 🔴 Críticos
+
+### #1 — Feature `globalmenu` ausente de `ALL_FEATURES`
+**Arquivo:** `src/scripts/cli.py:28-33, 744-746`
+**Descrição:** `ALL_FEATURES` lista 20 features, mas `globalmenu` não está. Ele aparece apenas em `INSTALL_ORDER` (linha 46). O controle é indireto via `should_process()` que mapeia `globalmenu` para a flag `plasmoids`.
+**Impacto:** Usuário NÃO pode desabilitar o global menu individualmente via `--no-globalmenu`. `--save` não persiste o estado. `--only --globalmenu` não funciona.
+**Sugestão:** Adicionar `"globalmenu"` a `ALL_FEATURES` e remover o atalho em `should_process()`.
+
+---
+
+### #7 — `_enumerate_destinations()` propaga `Qt6PathsMissing` não tratado
+**Arquivo:** `src/scripts/preflight.py:187-205`
+**Descrição:** `_enumerate_destinations()` chama `qt6_plugins_dir()` que levanta `Qt6PathsMissing` se `qmake6` estiver ausente. A exceção NÃO é capturada em `_check_paths()`.
+**Impacto:** **CRASH.** Se `qmake6` estiver ausente, o step 1 do preflight falha (com try/except) mas o step 2 CRASHA com traceback em vez de mostrar a mensagem amigável.
+**Sugestão:** Envolver `_check_paths()` inteiro em try/except `Qt6PathsMissing`.
+
+---
+
+### #16 — `main()` ignora retorno de `apply()`
+**Arquivo:** `src/scripts/theme_switch.py:570-609`
+**Descrição:** `apply(mode)` retorna `True`/`False`, mas `main()` ignora o retorno e sempre retorna 0.
+**Impacto:** O systemd service (executado pós-login) reporta "bem-sucedido" mesmo sem ter aplicado o tema. Usuário loga e vê o tema antigo sem erro.
+**Sugestão:** `if not apply(mode): return 1`
+
+---
+
+### #17 — Contexto "install" passado mas ignorado
+**Arquivo:** `src/scripts/steps/apply.py:171-178`
+**Descrição:** `_run_live([str(switch), theme_mode(), "install"])` passa `"install"` como terceiro arg, mas `main()` do `theme_switch.py` só lê o primeiro. O comentário diz que "install context skips live plasmashell mutation" — mas essa lógica NUNCA foi implementada.
+**Impacto:** Live-apply roda durante install expondo races de QML teardown (exatamente o que deveria prevenir).
+**Sugestão:** Implementar a lógica de contexto ou remover o argumento `"install"` e o comentário enganoso.
+
+---
+
+### #19 — Build deleta shaders fonte permanentemente
+**Arquivo:** `src/scripts/steps/acrylic_glass.py:78-81`
+**Descrição:**
+```python
+for fn in ("glass_core.frag", "glass.frag"):
+    try: (SRC / "src/shaders" / fn).unlink()
+    except FileNotFoundError: pass
+    except OSError: pass
+```
+O step de BUILD deleta arquivos `.frag` da árvore fonte do repositório.
+**Impacto:** **Dano à árvore fonte.** Se o build falhar e o usuário reinstalar, os shaders já foram deletados e o build subsequente quebra de forma diferente. `git checkout` necessário para restaurar.
+**Sugestão:** Copiar os fontes para o diretório de build e modificar as cópias, não os originais.
+
+---
+
+### #21 — Download de rede no instalador
+**Arquivo:** `src/scripts/steps/layout.py:14-58`
+**Descrição:** O layout step baixa o Panel Colorizer do GitHub (`plasma-panel-colorizer` v7.0.1) durante a instalação:
+```python
+COLORIZER_RELEASE_URL = "https://github.com/luisbocanegra/plasma-panel-colorizer/archive/refs/tags/v7.0.1.tar.gz"
+```
+**Impacto:** Viola a regra arquitetural "no download phase" do AGENTS.md. Instalação falha em máquinas air-gapped. Versão v7.0.1 desatualizada. Se o GitHub renomear o repo, a instalação quebra.
+**Sugestão:** Bundlar o Panel Colorizer em `src/offline/` como todo o resto, ou torná-lo dependência opcional via package manager.
+
+---
+
+### #27 — Tema dark Kvantum nunca instalado
+**Arquivo:** `src/scripts/steps/kvantum.py:10` / `src/scripts/theme_switch.py:307`
+**Descrição:** `DEST_DIR = HOME / ".config/Kvantum/mac-tahoe-liquid-kde"` só cria o tema light. Em `theme_switch.py:307`:
+```python
+kv = "mac-tahoe-liquid-kdeDark" if mode == "dark" else "mac-tahoe-liquid-kde"
+```
+`kvantummanager --set mac-tahoe-liquid-kdeDark` procura por `~/.config/Kvantum/mac-tahoe-liquid-kdeDark/` que NUNCA foi criado.
+**Impacto:** **FALHA na alternância para tema escuro.** O tema dark do Kvantum simplesmente não funciona.
+**Sugestão:** Instalar ambos os temas (light e dark) no step `kvantum.py`, ou criar o diretório dark como parte do theme switch.
+
+---
+
+## 🟡 Graves
+
+### #10 — `step_module()` só captura `ModuleNotFoundError`, não `ImportError`
+**Arquivo:** `src/scripts/step_runner.py:12-17`
+**Descrição:**
+```python
+except ModuleNotFoundError:
+    return None
+```
+Se o módulo EXISTIR mas tiver erro de import interno, `ImportError` propaga sem tratamento.
+**Sugestão:** Capturar `ImportError` também.
+
+---
+
+### #11 — `run_phase()` depende de `errors[]` global para detectar falha
+**Arquivo:** `src/scripts/step_runner.py:43-53`
+**Descrição:** `len(errors) == before` é a única maneira de saber se a fase falhou. Mas se uma fase chama `fail()` como registro (ex.: "no metadata.json — skipping") e continua, `run_phase` retorna False mesmo que a fase considere-se bem-sucedida.
+**Impacto:** Plasmoids com `metadata.json` ausente fazem toda a instalação dos plasmoids ser reportada como falha.
+**Sugestão:** Separar "erro de log" de "erro fatal". Usar contador separado para fases.
+
+---
+
+### #12 — `safe_copy()` pode perder dados originais em erro de `_move()`
+**Arquivo:** `src/scripts/utils.py:196-209`
+**Descrição:** Se `_move(tmp, dest)` falhar com `EXDEV` (cross-filesystem), o código tenta restaurar `bak` para `dest`. Mas se `bak` também falhar ao mover de volta, o destino original é perdido e o backup fica órfão.
+**Sugestão:** Usar `shutil.move` com `copy_function=shutil.copy2` para garantir cópia completa antes de remover o original.
+
+---
+
+### #13 — `_run_pkg_cmd()` usa `sudo` desnecessariamente quando já é root
+**Arquivo:** `src/scripts/utils.py:250-256`
+**Descrição:** `os.geteuid() == 0` verifica effective UID. Após o privilege drop no CLI, effective UID = usuário, então `sudo` é adicionado mesmo com real UID = 0.
+**Sugestão:** Usar `os.getuid() == 0` (real UID).
+
+---
+
+### #15 — `last_run_file()` vai para `/root` se drop de privilégios falhar
+**Arquivo:** `src/scripts/state.py:11-17`
+**Descrição:** Se `SUDO_UID` ausente, `Path.home()` aponta para `/root`. `last-run.json` vai para `/root/.local/state/` que o usuário não consegue ler depois.
+**Sugestão:** Se o path começar com `/root/` e `HOME` do usuário não for `/root`, emitir warning e usar `~/.local/state/`.
+
+---
+
+### #22 — AUR helpers hardcoded para Arch
+**Arquivo:** `src/scripts/steps/layout.py:80-87`
+**Descrição:**
+```python
+for pm in ("paru", "yay"):
+    if have(pm):
+        run_user([pm, "-S", "--noconfirm", "plasma6-applets-panel-colorizer"])
+```
+Código específico Arch usando AUR helpers fora do distro layer.
+**Sugestão:** Usar o package manager da distro via `distro.py`.
+
+---
+
+### #33 — `featuresLoader.open()` acessa `item` antes do carregamento
+**Arquivo:** `src/installer/InstallerWindow.qml:563-570`
+**Descrição:** `active = true` inicia carregamento (assíncrono). Imediatamente `if (item)` — se o Loader não terminou, `item` é null e `launcherScriptPath` nunca é passado.
+**Sugestão:** Usar `Loader.onLoaded` em vez de verificar `item` imediatamente.
+
+---
+
+## 🟢 Médios
+
+### #3 — `check_for_updates()` retorna 0 sempre
+**Arquivo:** `src/scripts/cli.py:900`
+**Descrição:** Ambos os ramos retornam 0 — não há distinção entre "atualização disponível" e "sem atualização".
+**Sugestão:** Retornar 1 quando há atualização disponível.
+
+---
+
+### #5 — `_detect_plasma_version()` sem timeout
+**Arquivo:** `src/scripts/cli.py:487`
+**Descrição:** `plasmashell --version` não tem timeout. Se o binário travar, o instalador trava.
+**Sugestão:** Adicionar timeout de 15s.
+
+---
+
+### #9 — `_check_disk_space()` sem timeout
+**Arquivo:** `src/scripts/preflight.py:456-503`
+**Descrição:** `shutil.disk_usage()` pode travar em NFS/mounts remotos lentos.
+**Sugestão:** Usar thread com timeout ou documentar.
+
+---
+
+### #14 — `_HAS_DBUS` cacheado
+**Arquivo:** `src/scripts/utils.py:351-362`
+**Descrição:** `_has_session_dbus()` cacheia o resultado. Se DBus morrer entre chamadas, `kw_write` ainda usa `--notify`.
+**Sugestão:** Não cachear, ou invalidar o cache periodicamente.
+
+---
+
+### #20 — `time.sleep(2)` após `KWin.reconfigure`
+**Arquivo:** `src/scripts/steps/acrylic_glass.py:137`
+**Descrição:** `qdbus_call("...reconfigure")` é síncrono — o sleep de 2s é desnecessário.
+**Sugestão:** Remover `time.sleep(2)`.
+
+---
+
+### #25 — `_patch_grub_add_splash()` não trata continuação de linha
+**Arquivo:** `src/scripts/steps/plymouth.py:140-185`
+**Descrição:** Regex `re.MULTILINE` não captura linhas com continuação (`\`) em `/etc/default/grub`.
+**Sugestão:** Usar parser mais robusto ou tratar continuação de linha.
+
+---
+
+### #30 — Loop de 15s bloqueante
+**Arquivo:** `src/scripts/steps/nautilus.py:116-119`
+**Descrição:** `for _ in range(150): time.sleep(0.1)` — 15s bloqueando o install.
+**Sugestão:** Reduzir o número de tentativas.
+
+---
+
+### #31 — Symbol mangled do GCC para blur
+**Arquivo:** `src/installer/installer_ui.py:205`
+**Descrição:** `_ZN14KWindowEffects16enableBlurBehind...` — se KF6 mudar, o blur para de funcionar sem aviso.
+**Sugestão:** Usar `ctypes` com definição de assinatura mais robusta.
+
+---
+
+### #35 — Switcher instalado mesmo com `--no-apply-theme`
+**Arquivo:** `src/scripts/steps/theme_switch.py (step):25-71`
+**Descrição:** O step `theme_switch` é chamado incondicionalmente, mesmo se usuário usar `--no-apply-theme`.
+**Sugestão:** Pular instalação do switcher se `apply_theme` estiver desabilitado.
+
+---
+
+### Menores
+
+| # | Arquivo | Descrição |
+|---|---------|-----------|
+| 2 | `cli.py:697` | `_read_config_cascade()` usa `file` como nome de parâmetro (sombra built-in) |
+| 4 | `cli.py:449` | `export_env()` nunca define `FEAT_GLOBALMENU` |
+| 6 | `cli.py:431` | `apply_overrides()` não verifica `globalmenu` no modo `--only` |
+| 8 | `preflight.py:340` | `shutil.which("plasmashell")` sem `run_user()` (baixo risco) |
+| 18 | `theme_switch.py:346` | `rmtree` + `copytree` pode deixar arquivos órfãos no tema GTK |
+| 23 | `layout.py:97` | JS inteiro enviado por DBus sem verificação de tamanho |
+| 24 | `plasmoids.py:192` | Todos subdiretórios com `metadata.json` são instalados como plasmoid |
+| 26 | `plymouth.py:179` | Arquivo tmp com permissões potencialmente incorretas (janela, baixo risco) |
+| 28 | `apply.py:95` | `shutil.rmtree` com `ignore_errors=True` deixa cache inconsistente |
+| 29 | `apply.py:214` | `SIGKILL` em vez de `SIGTERM` no restart do plasma (design decision) |
+| 32 | `installer_ui.py:105` | `os.setresuid()` remove permanentemente privilégios (intencional) |
+| 34 | `FeaturesWindow.qml:59` | Reentrada de `refresh()` pode sobrescrever estado |
+| 36 | `wallpapers.py:45` | Glob `Mac*/` captura diretórios inesperados |
+| 37 | `globalmenu.py:51` | Legacy cleanup duplicado entre globalmenu.py e plasmoids.py |

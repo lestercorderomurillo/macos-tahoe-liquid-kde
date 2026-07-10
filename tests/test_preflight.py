@@ -110,6 +110,28 @@ def test_check_paths_passes_for_production_destinations():
         assert reason is None, f"{label}: {path} → {reason}"
 
 
+def test_check_paths_handles_missing_qmake6(monkeypatch):
+    """When qmake6 is absent, ``_enumerate_destinations()`` raises
+    ``Qt6PathsMissing``. ``_check_paths()`` must catch it and return
+    ``False`` with a user-friendly ``fail()`` that mentions
+    ``qmake6`` — not a crash with a raw traceback."""
+    from distro import Qt6PathsMissing
+
+    fails: list[str] = []
+    monkeypatch.setattr(preflight, "fail", fails.append)
+    monkeypatch.setattr(preflight, "ok", lambda _msg: None)
+    monkeypatch.setattr(preflight, "warn", lambda _msg: None)
+
+    def _raise_qm():
+        raise Qt6PathsMissing("qmake6 not found")
+    monkeypatch.setattr(preflight, "_enumerate_destinations", _raise_qm)
+
+    assert preflight._check_paths() is False
+    assert any("qmake6" in f for f in fails), (
+        f"expected fail() mentioning qmake6, got: {fails}"
+    )
+
+
 def test_home_is_resolved_per_call_not_cached(monkeypatch, tmp_path):
     """Regression for the container-matrix failure on Arch + Fedora:
     a previous test would prime ``preflight._HOME`` to a sandbox

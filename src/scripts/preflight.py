@@ -207,7 +207,13 @@ def _enumerate_destinations() -> list[tuple[str, Path]]:
 
 def _check_paths() -> bool:
     all_ok = True
-    for label, path in _enumerate_destinations():
+    try:
+        dests = _enumerate_destinations()
+    except Qt6PathsMissing:
+        fail("Qt6 installation paths not found — cannot verify install "
+             f"destinations. Install qmake6 with: {qt6_install_hint()}")
+        return False
+    for label, path in dests:
         reason = _validate_path(path)
         if reason is None:
             ok(f"{label}: {path}")
