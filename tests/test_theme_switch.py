@@ -205,7 +205,7 @@ def test_apply_finishes_cycle_and_reconfigure_when_extras_raise(monkeypatch):
 
     calls: list = []
     monkeypatch.setattr(theme_switch, "write_kde_theme_config",
-                        lambda mode: calls.append(("write", mode)))
+                        lambda mode: calls.append(("write", mode)) or True)
     monkeypatch.setattr(theme_switch, "_apply_wallpaper",
                         lambda mode: calls.append(("wallpaper", mode)) or True)
     monkeypatch.setattr(theme_switch, "_apply_lookandfeel_live",
@@ -339,6 +339,79 @@ def test_main_rejects_invalid_mode(monkeypatch):
     assert theme_switch.main(["boot"]) == 1
     assert theme_switch.main(["_deferred-live-apply"]) == 1
     assert applied == []
+
+
+_APPLY_SUBCALLS = (
+    "write_kde_theme_config", "_apply_wallpaper", "_apply_local_extras",
+    "_apply_lookandfeel_live", "apply_cursortheme_live",
+    "cycle_widget_style_live", "_qdbus",
+)
+
+
+def _stub_apply_subcalls(monkeypatch, calls, ret=True):
+    import theme_switch
+    for fn in _APPLY_SUBCALLS:
+        monkeypatch.setattr(
+            theme_switch, fn,
+            (lambda name: lambda *a, **k: calls.append(name) or ret)(fn))
+
+
+def test_apply_install_context_skips_live_lookandfeel(monkeypatch):
+    """Issue #32 (PR #33): the installer passes the ``install`` context
+    because its final Plasma restart loads the theme anyway — running
+    the live LAF apply too adds 2-14s of retry sleeps and races the
+    QML teardown. Every other sub-call still runs in both contexts."""
+    import theme_switch
+    calls: list = []
+    _stub_apply_subcalls(monkeypatch, calls)
+
+    assert theme_switch.apply("dark", context="install") is True
+    assert "_apply_lookandfeel_live" not in calls
+    assert "apply_cursortheme_live" in calls
+    assert "cycle_widget_style_live" in calls
+
+    calls.clear()
+    assert theme_switch.apply("dark") is True
+    assert "_apply_lookandfeel_live" in calls
+
+
+def test_main_passes_install_context_to_apply(monkeypatch):
+    import theme_switch
+    seen: dict = {}
+    monkeypatch.setattr(
+        theme_switch, "apply",
+        lambda mode, context="user": seen.update(mode=mode, context=context) or True)
+    assert theme_switch.main(["light", "install"]) == 0
+    assert seen == {"mode": "light", "context": "install"}
+
+
+def test_main_exit_code_reflects_apply_failure(monkeypatch):
+    """Issue #24: the systemd oneshot service and the install step can
+    only see failure through the exit code."""
+    import theme_switch
+    monkeypatch.setattr(theme_switch, "apply", lambda mode, **kw: False)
+    assert theme_switch.main(["dark"]) == 1
+
+
+def test_apply_fails_only_when_config_write_layer_missing(monkeypatch):
+    """Issue #24: write_kde_theme_config is the critical call — without
+    kwriteconfig6 nothing was applied, so apply() must return False.
+    The live sub-calls are best-effort and cannot fail the run."""
+    import theme_switch
+    calls: list = []
+    _stub_apply_subcalls(monkeypatch, calls)
+    monkeypatch.setattr(theme_switch, "write_kde_theme_config",
+                        lambda mode: False)
+    assert theme_switch.apply("dark") is False
+
+    # config ok + every live sub-call failing → still success
+    calls.clear()
+    _stub_apply_subcalls(monkeypatch, calls, ret=False)
+    monkeypatch.setattr(theme_switch, "write_kde_theme_config",
+                        lambda mode: True)
+    monkeypatch.setattr(theme_switch, "_apply_wallpaper", lambda mode: True)
+    monkeypatch.setattr(theme_switch, "_apply_local_extras", lambda mode: True)
+    assert theme_switch.apply("dark") is True
 
 
 # ── theme-switch step install / uninstall round-trip ─────────────────

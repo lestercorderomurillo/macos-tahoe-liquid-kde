@@ -1,12 +1,16 @@
 #!/usr/bin/env python3
 """Light/dark theme switcher for MacTahoe Liquid KDE.
 
-Single entry point: `mac-tahoe-theme-switch {light|dark|auto}`. Same binary
-runs from the install step, from the systemd service that fires after the
-desktop is up, from the 06:00 / 18:00 timer, and from the user when they
-flip the switch by hand. There are no contexts, no deferred re-applies,
-no watch loops — install only schedules this for `--auto`; `--light` and
-`--dark` apply once and stay put.
+Single entry point: `mac-tahoe-theme-switch {light|dark|auto} [install]`.
+Same binary runs from the install step (which passes the `install`
+context so the live look-and-feel apply is skipped — the Plasma restart
+at the end of install loads the theme anyway, and running both races
+plasmashell's QML teardown), from the systemd service that fires after
+the desktop is up, from the 06:00 / 18:00 timer, and from the user by
+hand. No deferred re-applies, no watch loops — install only schedules
+this for `--auto`; `--light` and `--dark` apply once and stay put.
+Exits non-zero when the config write layer (kwriteconfig6) is
+unavailable; the live niceties are best-effort and never fail the run.
 
 Plasma 6's lookandfeelautoswitcher KDED module touches color scheme,
 plasma theme, icons, cursors, aurorae, and wallpaper on its own when
@@ -570,12 +574,17 @@ def cycle_widget_style_live(target: str) -> bool:
 def apply(mode: str, context: str = "user") -> bool:
     """Writes config + extras (Kvantum, GTK, caches) + live LAF (skipped
     during install — Plasma restarts anyway) + live cursor + Kvantum
-    cycle + KWin reconfigure."""
+    cycle + KWin reconfigure. Returns False only when the config write
+    layer is unavailable — the live sub-calls are best-effort and just
+    note their failure on stderr (journald keeps it for the service)."""
     cursor = "MacTahoeLiquidKde-Dark" if mode == "dark" else "MacTahoeLiquidKde"
     widget = "kvantum-dark" if mode == "dark" else "kvantum"
     laf = LAF_DARK if mode == "dark" else LAF_LIGHT
 
-    write_kde_theme_config(mode)
+    config_ok = write_kde_theme_config(mode)
+    if not config_ok:
+        print("theme apply: kwriteconfig6 unavailable — theme config "
+              "not written", file=sys.stderr)
     try:
         _apply_wallpaper(mode)
         _apply_local_extras(mode)
@@ -583,14 +592,18 @@ def apply(mode: str, context: str = "user") -> bool:
         print(f"theme apply: extras step failed, continuing: {exc!r}",
               file=sys.stderr)
     if context != "install":
-        _apply_lookandfeel_live(laf)
-    apply_cursortheme_live(cursor)
-    cycle_widget_style_live(widget)
+        if not _apply_lookandfeel_live(laf):
+            print("theme apply: live look-and-feel apply skipped",
+                  file=sys.stderr)
+    if not apply_cursortheme_live(cursor):
+        print("theme apply: live cursor apply skipped", file=sys.stderr)
+    if not cycle_widget_style_live(widget):
+        print("theme apply: widget-style cycle skipped", file=sys.stderr)
     _qdbus("org.kde.KWin", "/KWin", "org.kde.KWin.reconfigure")
-    return True
+    return config_ok
 
 
-USAGE = "Usage: mac-tahoe-theme-switch {light|dark|auto}"
+USAGE = "Usage: mac-tahoe-theme-switch {light|dark|auto} [install]"
 
 
 def main(argv: list[str]) -> int:
