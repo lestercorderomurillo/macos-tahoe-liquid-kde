@@ -38,9 +38,17 @@ def _apply_overrides() -> None:
         if item.name.startswith("README"):
             continue
         if item.name == "bookmarks":
-            (HOME / ".config/gtk-3.0").mkdir(parents=True, exist_ok=True)
+            dest_dir = HOME / ".config/gtk-3.0"
+            dest_dir.mkdir(parents=True, exist_ok=True)
             try:
-                shutil.copy2(item, HOME / ".config/gtk-3.0/bookmarks")
+                # The bundled template uses a literal ``$HOME`` token so
+                # the sidebar bookmarks point at the *current* user's
+                # home rather than a path baked into the repo. Without
+                # this substitution the file would only work for the
+                # one user whose $HOME matches the checked-in copy.
+                text = item.read_text(encoding="utf-8")
+                text = text.replace("$HOME", str(HOME))
+                (dest_dir / "bookmarks").write_text(text, encoding="utf-8")
                 copied += 1
             except OSError:
                 pass
