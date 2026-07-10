@@ -110,6 +110,26 @@ def test_check_paths_passes_for_production_destinations():
         assert reason is None, f"{label}: {path} → {reason}"
 
 
+def test_check_paths_handles_missing_qmake6(monkeypatch):
+    """Issue #21 (PR #27): enumerating destinations resolves the lazy
+    ``DEST_*`` attributes, which call ``qt6_plugins_dir()`` — on a
+    system with no Qt6 query tool and no fallback libdir that raises
+    ``Qt6PathsMissing``. Check 2 must fail() cleanly with the install
+    hint instead of crashing preflight with a raw traceback (which
+    also killed check 3, the one that reports the same problem)."""
+    from distro import Qt6PathsMissing
+
+    failures: list[str] = []
+    monkeypatch.setattr(preflight, "fail", failures.append)
+
+    def _boom():
+        raise Qt6PathsMissing("no qmake6")
+
+    monkeypatch.setattr(preflight, "_enumerate_destinations", _boom)
+    assert preflight._check_paths() is False
+    assert any("qmake6" in msg for msg in failures)
+
+
 def test_home_is_resolved_per_call_not_cached(monkeypatch, tmp_path):
     """Regression for the container-matrix failure on Arch + Fedora:
     a previous test would prime ``preflight._HOME`` to a sandbox
