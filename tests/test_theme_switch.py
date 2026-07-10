@@ -205,7 +205,7 @@ def test_apply_finishes_cycle_and_reconfigure_when_extras_raise(monkeypatch):
 
     calls: list = []
     monkeypatch.setattr(theme_switch, "write_kde_theme_config",
-                        lambda mode: calls.append(("write", mode)))
+                        lambda mode: calls.append(("write", mode)) or True)
     monkeypatch.setattr(theme_switch, "_apply_wallpaper",
                         lambda mode: calls.append(("wallpaper", mode)) or True)
     monkeypatch.setattr(theme_switch, "_apply_lookandfeel_live",
@@ -339,6 +339,17 @@ def test_main_rejects_invalid_mode(monkeypatch):
     assert theme_switch.main(["boot"]) == 1
     assert theme_switch.main(["_deferred-live-apply"]) == 1
     assert applied == []
+
+
+def test_main_returns_1_when_apply_fails(monkeypatch):
+    """If apply() returns False (kwriteconfig6 missing, broken config, …),
+    main() must return 1 so the systemd service and timer report failure
+    instead of silently succeeding."""
+    import theme_switch
+    monkeypatch.setattr(theme_switch, "apply", lambda mode: False)
+    assert theme_switch.main(["light"]) == 1
+    assert theme_switch.main(["dark"]) == 1
+    assert theme_switch.main(["auto"]) == 1
 
 
 # ── theme-switch step install / uninstall round-trip ─────────────────
