@@ -39,7 +39,7 @@ A full macOS Tahoe-style desktop experience for KDE Plasma 6.6 and 6.7+.
 
 ### Acrylic Glass Tahoe Launcher
 
-Closer to the real design, quick search, favorites capsule and dual view mode.
+Closer to the real design. Quick search, a favorites capsule, and two view modes.
 
 <p align="center">
   <img src="src/screenshots/launcher_v3.png" width="415">
@@ -52,7 +52,7 @@ Closer to the real design, quick search, favorites capsule and dual view mode.
 
 ### Acrylic Glass Tahoe Dock
 
-True liquid-glass depth — the wallpaper bends through the surface, with red macOS-style notification badges.
+Real liquid-glass depth. The wallpaper bends through the surface, with red macOS-style notification badges.
 
 <p align="center">
   <img src="src/screenshots/dock_1_v3.png" width="840"><br>
@@ -61,7 +61,7 @@ True liquid-glass depth — the wallpaper bends through the surface, with red ma
 
 ### Acrylic Glass Tahoe Finder
 
-Nautilus reshaped into Finder — macOS-style sidebar, clean chrome, light and dark.
+Nautilus reshaped into Finder, with a macOS-style sidebar and clean chrome. Light and dark.
 
 <p align="center">
   <img src="src/screenshots/finder_v3.png" width="415">
@@ -74,7 +74,7 @@ Nautilus reshaped into Finder — macOS-style sidebar, clean chrome, light and d
 
 ### Acrylic Glass Tahoe Menu
 
-Unified menu bar with native dropdowns — system menu, app name and window controls in the top panel.
+Unified menu bar with native dropdowns. System menu, app name, and window controls in the top panel.
 
 <p align="center">
   <img src="src/screenshots/menu_v3.png" width="415">
