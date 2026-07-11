@@ -381,4 +381,6 @@ Thanks to the open-source projects that inspired this one or fed assets into it.
 - **[Lucide](https://github.com/lucide-icons/lucide)**: copy icons bundled in the global menu (ISC, © Lucide Contributors).
 - **[512pixels.net](https://512pixels.net/projects/default-mac-wallpapers-in-5k/)**: high-resolution macOS wallpaper archive.
 
+Please support their efforts too: star their repos, report bugs upstream, and contribute back when you can.
+
 If a credit is missing, please [open an issue](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/issues/new).
