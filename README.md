@@ -50,18 +50,18 @@ Closer to the real design, quick search, favorites capsule and dual view mode.
   <sub>Example of Light and Dark variant.</sub>
 </p>
 
-### Tahoe Dock
+### Acrylic Glass Tahoe Dock
 
-Liquid-glass dock with macOS-style red notification bubbles and wallpaper refraction.
+True liquid-glass depth — the wallpaper bends through the surface, with red macOS-style notification badges.
 
 <p align="center">
   <img src="src/screenshots/dock_1_v3.png" width="840"><br>
   <sub>Bright dock glow with the red macOS-style notification bubble.</sub>
 </p>
 
-### Tahoe Finder
+### Acrylic Glass Tahoe Finder
 
-Nautilus file manager with macOS-style sidebar.
+Nautilus reshaped into Finder — macOS-style sidebar, clean chrome, light and dark.
 
 <p align="center">
   <img src="src/screenshots/finder_v3.png" width="415">
@@ -72,9 +72,9 @@ Nautilus file manager with macOS-style sidebar.
   <sub>Example of Light and Dark variant.</sub>
 </p>
 
-### Menu
+### Acrylic Glass Tahoe Menu
 
-System menu with native QMenu dropdown.
+Unified menu bar with native dropdowns — system menu, app name and window controls in the top panel.
 
 <p align="center">
   <img src="src/screenshots/menu_v3.png" width="415">
