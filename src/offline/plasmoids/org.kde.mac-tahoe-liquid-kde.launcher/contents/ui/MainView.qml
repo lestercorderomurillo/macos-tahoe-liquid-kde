@@ -26,8 +26,6 @@ Item {
 	property color contrastBgColor: isDarkTheme ? Qt.rgba(255, 255, 255, 0.15) : Qt.rgba(0, 0, 0, 0.1)
 	property color dimmedTextColor: Qt.rgba(textColor.r, textColor.g, textColor.b, 0.7)
 
-	property bool showAllApps: true
-
 	function reload() {
 		searchBar.textField.clear()
 		appList.reset()

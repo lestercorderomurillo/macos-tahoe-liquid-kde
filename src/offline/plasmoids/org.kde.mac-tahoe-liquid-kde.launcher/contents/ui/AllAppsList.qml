@@ -30,6 +30,18 @@ ColumnLayout {
 		var categoryIcon;
 		var allAppsFound = null;
 
+		// Favorites is not a rootModel row; modelIndex -1 marks it.
+		// Reading count here keeps the list reactive to fav changes.
+		if (globalFavorites && globalFavorites.count > 0) {
+			categories.push({
+				name: i18n("Favorites"),
+				modelIndex: -1,
+				icon: "favorite",
+				isAllApps: false,
+				isFavorites: true
+			});
+		}
+
 		for (var i = 0; i < rootModel.count; i++) {
 			categoryName  = rootModel.data(rootModel.index(i, 0), Qt.DisplayRole);
 			categoryIcon  = rootModel.data(rootModel.index(i, 0), Qt.DecorationRole);
@@ -57,14 +69,33 @@ ColumnLayout {
 				name: categoryName,
 				modelIndex: i,
 				icon: categoryIcon,
-				isAllApps: isAllApps
+				isAllApps: isAllApps,
+				isFavorites: false
 			});
 		}
 		allApps.allAppsModel = allAppsFound;
-		allApps.currentModel = categories.length > 0
-			? rootModel.modelForRow(categories[0].modelIndex)
-			: rootModel.modelForRow(0);
 		return categories;
+	}
+
+	// Selected category's modelIndex; survives list rebuilds (e.g. the
+	// Favorites section appearing). null = pick the first category.
+	property var selectedModelIndex: null
+
+	onAppsCategoriesListChanged: syncSelection()
+
+	function syncSelection() {
+		if (!appsCategoriesList.length) {
+			return;
+		}
+		var pos = 0;
+		for (var i = 0; i < appsCategoriesList.length; i++) {
+			if (appsCategoriesList[i].modelIndex === selectedModelIndex) {
+				pos = i;
+				break;
+			}
+		}
+		categorySwitcher.currentIndex = pos;
+		updateShowedModel(appsCategoriesList[pos].modelIndex);
 	}
 
 	property var slicedCategories: {
@@ -73,26 +104,20 @@ ColumnLayout {
 		return appsCategoriesList.filter(function (c) { return !c.isAllApps; });
 	}
 
+	function modelForCategory(category) {
+		return category.isFavorites ? globalFavorites
+			: rootModel.modelForRow(category.modelIndex);
+	}
+
 	function updateShowedModel(index){
-		currentModel = rootModel.modelForRow(index);
+		selectedModelIndex = index;
+		currentModel = (index === -1) ? globalFavorites
+			: rootModel.modelForRow(index);
 	}
 
 	function reset(){
 		currentStateIndex = 0
 	}
-
-	Connections {
-		target: main
-
-		function onShowAllAppsChanged() {
-			// We can't show favorites/recent apps categorized
-			if(showItemsCategorized) {
-				plasmoid.configuration.showAllAppsCategorized = false;
-				plasmoid.configuration.showAllAppsInList = true;
-			}
-		}
-	}
-
 
 	AppCategorySwitcher {
 		id: categorySwitcher
@@ -100,7 +125,7 @@ ColumnLayout {
 		Layout.preferredWidth: parent.width-fs.innerPadding
     	Layout.preferredHeight: visible ? 40 : 0
 		model: appsCategoriesList
-		visible: !showItemsCategorized && main.showAllApps
+		visible: !showItemsCategorized
 
 		Component.onCompleted: {
 			categorySwitcher.categorySwitched.connect(updateShowedModel)
@@ -130,7 +155,7 @@ ColumnLayout {
 
 			showSectionSeparator: false
 
-			model: main.showAllApps ? currentModel : globalFavorites
+			model: currentModel
 		}
 	}
 
@@ -142,7 +167,7 @@ ColumnLayout {
 			anchors.fill: parent
 			anchors.leftMargin: fs.innerPadding / 2
 			
-			model: main.showAllApps ? currentModel : globalFavorites
+			model: currentModel
 			canMoveWithKeyboard: true
 			//viewItem.highlightFollowsCurrentItem: false
 		}
@@ -158,5 +183,6 @@ ColumnLayout {
 
 	Component.onCompleted: {
 		allApps.recentAppsModel = rootModel.modelForRow(0);
+		syncSelection();
 	}
 }

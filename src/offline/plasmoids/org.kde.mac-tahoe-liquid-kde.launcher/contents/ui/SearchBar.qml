@@ -11,16 +11,9 @@ RowLayout {
     Kirigami.Icon {
         id: searchIcon
         Layout.rightMargin: 0
-        source: main.showAllApps ? Qt.resolvedUrl('icons/AppsIcon.svg') : "favorite-symbolic"
-        isMask: main.showAllApps
+        source: Qt.resolvedUrl('icons/AppsIcon.svg')
+        isMask: true
         color: main.dimmedTextColor
-        MouseArea {
-            anchors.fill: parent
-            onClicked: {
-                main.showAllApps = !main.showAllApps;
-                textField.forceActiveFocus(Qt.BacktabFocusReason)
-            }
-        }
     }
 
     TextField {

@@ -99,7 +99,8 @@ AppListView {
 				: category.expanded ? expandedHeight : root.cellSizeHeight
 			cellWidth: root.cellSizeWidth
 			cellHeight: root.cellSizeHeight
-			model: rootModel.modelForRow(currentCategory.modelIndex);
+			model: currentCategory.isFavorites ? globalFavorites
+				: rootModel.modelForRow(currentCategory.modelIndex)
 
 			delegate: AppGridViewDelegate {
 				triggerModel: grid.model

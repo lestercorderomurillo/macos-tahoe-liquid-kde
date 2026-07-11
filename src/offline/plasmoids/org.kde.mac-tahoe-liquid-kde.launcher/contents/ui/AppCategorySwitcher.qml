@@ -5,6 +5,7 @@ Item {
     id: scrollview
 
     property alias model: categorySwitcher.model
+    property alias currentIndex: categorySwitcher.currentIndex
 
     signal categorySwitched(int index)
 
@@ -30,14 +31,17 @@ Item {
             selected: categorySwitcher.currentIndex == index
             text: model.name
 
-            onClicked: categorySwitcher.currentIndex = index
+            // Emit on click only: currentIndex also moves when the
+            // category list rebuilds, and that must not switch views.
+            onClicked: {
+                categorySwitcher.currentIndex = index
+                scrollview.categorySwitched(model.modelIndex)
+            }
 
             Component.onCompleted: {
                 categorySwitcher.contentHeight = del.height
             }
         }
-
-        onCurrentIndexChanged: categorySwitched(categorySwitcher.currentItem.model.modelIndex)
 
         WheelHandler {
             acceptedDevices: PointerDevice.Mouse | PointerDevice.TouchPad

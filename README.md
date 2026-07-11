@@ -39,7 +39,7 @@ A full macOS Tahoe-style desktop experience for KDE Plasma 6.6 and 6.7+.
 
 ### Tahoe Launcher
 
-App grid with categories and search.
+App grid with categories, a Favorites section, and search.
 
 <p align="center">
   <img src="src/screenshots/launcher_v2.png" width="415">
@@ -382,7 +382,6 @@ Licensed [GPL-2.0](LICENSE). See [CONTRIBUTING.md](CONTRIBUTING.md) for how to s
 
 Thanks to the open-source authors whose work inspired or fed this project:
 
-- **[EliverLara](https://github.com/EliverLara)** — TahoeLauncher inspired the Launcher plasmoid (GPL-2.0).
 - **[vinceliuice](https://github.com/vinceliuice)** — `MacTahoe-icon-theme`, the basis for the icon and cursor look.
 - **[luisbocanegra](https://github.com/luisbocanegra/plasma-panel-colorizer)** — `plasma-panel-colorizer`, installed by the layout step to tint the panels.
 - **[ful1e5](https://github.com/ful1e5)** — `apple_cursor`, inspiration for an alternate macOS-style cursor.

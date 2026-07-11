@@ -1,25 +1,29 @@
 .pragma library
 
 function fillActionMenu(i18n, actionMenu, actionList, favoriteModel, favoriteId) {
-    // Accessing actionList can be a costly operation, so we don't
-    // access it until we need the menu.
+    // Fixed menu: favorites toggle, Add to Desktop, Edit…, Uninstall….
+    // Everything else Kicker offers (jump lists, panel/task manager
+    // pins, recent docs…) is dropped.
+    var actions = createFavoriteActions(i18n, favoriteModel, favoriteId) || [];
 
-    var actions = createFavoriteActions(i18n, favoriteModel, favoriteId);
+    var kept = [
+        { actionId: "addToDesktop", text: null },
+        { actionId: "editApplication", text: i18n("Edit…") },
+        { actionId: "manageApplication", text: i18n("Uninstall…") }
+    ];
 
-    if (actions) {
-        if (actionList && actionList.length > 0) {
-            var actionListCopy = Array.from(actionList);
-            var separator = { "type": "separator" };
-            actionListCopy.push(separator);
-            // actionList = actions.concat(actionList); // this crashes Qt O.o
-            actionListCopy.push.apply(actionListCopy, actions);
-            actionList = actionListCopy;
-        } else {
-            actionList = actions;
-        }
-    }
+    kept.forEach(function(keep) {
+        (actionList || []).forEach(function(action) {
+            if (action.actionId === keep.actionId) {
+                if (keep.text) {
+                    action.text = keep.text;
+                }
+                actions.push(action);
+            }
+        });
+    });
 
-    actionMenu.actionList = actionList;
+    actionMenu.actionList = actions;
 }
 
 function createFavoriteActions(i18n, favoriteModel, favoriteId) {

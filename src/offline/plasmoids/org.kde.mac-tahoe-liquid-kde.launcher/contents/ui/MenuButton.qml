@@ -37,7 +37,7 @@ Item {
                 plasmoid.configuration.showAllAppsCategorized = true;
             },
             checked:  plasmoid.configuration.showAllAppsCategorized,
-            enabled: main.showAllApps
+            enabled: true
         }
     ]
 
