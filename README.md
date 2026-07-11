@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="src/screenshots/banner_v2.svg" alt="tahoe 26" width="360">
+  <img src="src/screenshots/banner_v3.svg" alt="tahoe 26" width="360">
 </p>
 
 # macOS Tahoe Liquid Theme for KDE Plasma 6.6/6.7+
@@ -42,8 +42,8 @@ A full macOS Tahoe-style desktop experience for KDE Plasma 6.6 and 6.7+.
 App grid with categories, a Favorites section, and search.
 
 <p align="center">
-  <img src="src/screenshots/launcher_v2.png" width="415">
-  <img src="src/screenshots/launcher_dark_v2.png" width="415">
+  <img src="src/screenshots/launcher_v3.png" width="415">
+  <img src="src/screenshots/launcher_dark_v3.png" width="415">
 </p>
 
 <p align="center">
@@ -55,18 +55,8 @@ App grid with categories, a Favorites section, and search.
 Liquid-glass dock with macOS-style red notification bubbles and wallpaper refraction.
 
 <p align="center">
-  <img src="src/screenshots/dock_1_v2.png" width="840"><br>
+  <img src="src/screenshots/dock_1_v3.png" width="840"><br>
   <sub>Bright dock glow with the red macOS-style notification bubble.</sub>
-</p>
-
-<p align="center">
-  <img src="src/screenshots/dock_2_v2.png" width="840"><br>
-  <sub>Refraction example with the wallpaper visibly bending through the glass surface.</sub>
-</p>
-
-<p align="center">
-  <img src="src/screenshots/dock_3_v2.png" width="840"><br>
-  <sub>Dark dock variant with the same liquid-glass depth.</sub>
 </p>
 
 ### Tahoe Finder
@@ -74,8 +64,8 @@ Liquid-glass dock with macOS-style red notification bubbles and wallpaper refrac
 Nautilus file manager with macOS-style sidebar.
 
 <p align="center">
-  <img src="src/screenshots/finder_v2.png" width="415">
-  <img src="src/screenshots/finder_dark_v2.png" width="415">
+  <img src="src/screenshots/finder_v3.png" width="415">
+  <img src="src/screenshots/finder_dark_v3.png" width="415">
 </p>
 
 <p align="center">
@@ -87,8 +77,8 @@ Nautilus file manager with macOS-style sidebar.
 System menu with native QMenu dropdown.
 
 <p align="center">
-  <img src="src/screenshots/menu_v2.png" width="415">
-  <img src="src/screenshots/menu_dark_v2.png" width="415">
+  <img src="src/screenshots/menu_v3.png" width="415">
+  <img src="src/screenshots/menu_dark_v3.png" width="415">
 </p>
 
 <p align="center">
@@ -100,8 +90,8 @@ System menu with native QMenu dropdown.
 Glass system information window.
 
 <p align="center">
-  <img src="src/screenshots/about_v2.png" width="415">
-  <img src="src/screenshots/about_dark_v2.png" width="415">
+  <img src="src/screenshots/about_v3.png" width="415">
+  <img src="src/screenshots/about_dark_v3.png" width="415">
 </p>
 
 <p align="center">
@@ -113,8 +103,8 @@ Glass system information window.
 Desktop right-click with translucent glass blur.
 
 <p align="center">
-  <img src="src/screenshots/context_menu_v2.png" width="415">
-  <img src="src/screenshots/context_menu_dark_v2.png" width="415">
+  <img src="src/screenshots/context_menu_v3.png" width="415">
+  <img src="src/screenshots/context_menu_dark_v3.png" width="415">
 </p>
 
 <p align="center">
@@ -126,8 +116,8 @@ Desktop right-click with translucent glass blur.
 Plymouth boot screen with centered Apple-style logo on every monitor, scaled dynamically from 1080p to 4K. Boot mode shows a progress bar; shutdown / reboot share the same layout without the bar.
 
 <p align="center">
-  <img src="src/screenshots/boot_v2.png" width="415">
-  <img src="src/screenshots/boot_shutdown_v2.png" width="415">
+  <img src="src/screenshots/boot_v3.png" width="415">
+  <img src="src/screenshots/boot_shutdown_v3.png" width="415">
 </p>
 
 <p align="center">
