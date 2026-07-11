@@ -13,13 +13,22 @@ ColumnLayout {
 
 	property var currentStateIndex: 0// Plasmoid.configuration.defaultPage
 
-	property bool showItemsInGrid: plasmoid.configuration.showAllAppsInGrid
-	property bool showItemsInList: plasmoid.configuration.showAllAppsInList 
-	property bool showItemsCategorized: plasmoid.configuration.showAllAppsCategorized
+	property bool showItemsInList: plasmoid.configuration.showAllAppsInList
+	property bool showItemsInGrid: !showItemsInList
 
-	property Component preferredAppsViewComponent: showItemsInGrid ? applicationsGridViewComponent 
-												: showItemsInList ? applicationsListViewComponent
-												: applicationsCategorizedViewComponent
+	// In grid mode the "All Applications" tab shows the categorized
+	// sections; every other tab (Favorites, Suggestions, a single
+	// category) is a plain grid. List mode is always a flat list.
+	property bool selectedIsAllApps: {
+		var pos = categorySwitcher.currentIndex;
+		return pos >= 0 && pos < appsCategoriesList.length
+			&& appsCategoriesList[pos].isAllApps;
+	}
+
+	property Component preferredAppsViewComponent:
+		showItemsInList ? applicationsListViewComponent
+		: selectedIsAllApps ? applicationsCategorizedViewComponent
+		: applicationsGridViewComponent
 
 	property alias viewItem: appViewLoader.item
 
@@ -99,9 +108,13 @@ ColumnLayout {
 	}
 
 	property var slicedCategories: {
-		// The categorized view builds its own sections, so drop the
-		// All Applications entry — identified by model, not position.
-		return appsCategoriesList.filter(function (c) { return !c.isAllApps; });
+		// Sections shown inside the "All Applications" tab: every real
+		// app category. Favorites, Suggestions and the All-Apps entry
+		// itself are their own tabs, so drop them here.
+		return appsCategoriesList.filter(function (c) {
+			return !c.isAllApps && !c.isFavorites
+				&& c.name !== "Suggestions";
+		});
 	}
 
 	function modelForCategory(category) {
@@ -125,7 +138,7 @@ ColumnLayout {
 		Layout.preferredWidth: parent.width-fs.innerPadding
     	Layout.preferredHeight: visible ? 40 : 0
 		model: appsCategoriesList
-		visible: !showItemsCategorized
+		visible: true
 
 		Component.onCompleted: {
 			categorySwitcher.categorySwitched.connect(updateShowedModel)

@@ -14,30 +14,18 @@ Item {
             action: () => {
                 plasmoid.configuration.showAllAppsInList = true;
                 plasmoid.configuration.showAllAppsInGrid = false;
-                plasmoid.configuration.showAllAppsCategorized = false;
             },
             checked: plasmoid.configuration.showAllAppsInList,
             enabled: true
-        }, 
+        },
         {
             title: i18n("Show apps in a grid"),
             action: () => {
                 plasmoid.configuration.showAllAppsInList = false;
                 plasmoid.configuration.showAllAppsInGrid = true;
-                plasmoid.configuration.showAllAppsCategorized = false;
             },
             checked: plasmoid.configuration.showAllAppsInGrid,
              enabled: true
-        },
-        {
-            title: i18n("Show apps categorized"),
-           action: () => {
-                plasmoid.configuration.showAllAppsInList = false;
-                plasmoid.configuration.showAllAppsInGrid = false;
-                plasmoid.configuration.showAllAppsCategorized = true;
-            },
-            checked:  plasmoid.configuration.showAllAppsCategorized,
-            enabled: true
         }
     ]
 

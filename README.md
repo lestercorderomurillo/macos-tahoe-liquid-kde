@@ -386,8 +386,7 @@ Thanks to the open-source authors whose work inspired or fed this project:
 - **[luisbocanegra](https://github.com/luisbocanegra/plasma-panel-colorizer)** — `plasma-panel-colorizer`, installed by the layout step to tint the panels.
 - **[ful1e5](https://github.com/ful1e5)** — `apple_cursor`, inspiration for an alternate macOS-style cursor.
 - **[sahibjotsaggu](https://github.com/sahibjotsaggu)** — `San-Francisco-Pro-Fonts`, where the SF Pro / SF Mono bundle comes from.
-- **[Feather](https://github.com/feathericons/feather)** — icon set bundled in the Launcher (MIT, © Cole Bemis).
-- **[Lucide](https://github.com/lucide-icons/lucide)** — icon set bundled in the Launcher (ISC, © Lucide Contributors).
+- **[Lucide](https://github.com/lucide-icons/lucide)** — copy icons bundled in the global menu (ISC, © Lucide Contributors).
 - **[512pixels.net](https://512pixels.net/projects/default-mac-wallpapers-in-5k/)** — high-resolution macOS wallpaper archive.
 
 If a credit is missing, please [open an issue](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/issues/new).

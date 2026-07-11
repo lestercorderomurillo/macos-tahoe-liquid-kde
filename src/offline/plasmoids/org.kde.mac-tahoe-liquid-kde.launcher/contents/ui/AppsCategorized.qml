@@ -17,7 +17,6 @@ AppListView {
 		id: category
 
 		property var currentCategory: slicedCategories[index]
-		property bool expanded: false
 		// Empty categories are filtered out of slicedCategories at the
 		// source; this guard only covers the moment one empties live.
 		property bool hasApps: grid.model && grid.model.count > 0
@@ -41,35 +40,11 @@ AppListView {
 				color: index > 0 ? main.contrastBgColor : "transparent"
 			}
 			Item { width: 1; height: 10 }
-			RowLayout {
-				width: parent.width
-
-				Text {
-					text: currentCategory.name
-					font.bold: true
-					font.pixelSize: 15
-					color: main.textColor
-				}
-
-				Item {
-					Layout.fillWidth: true
-					Layout.fillHeight: true
-				}
-
-				Text {
-					Layout.alignment: Qt.AlignHCenter | Qt.AlignRight
-					text: category.expanded ? i18n("Show Less") : i18n("Show All")
-					visible: grid.rows > 1
-					font.bold: false
-					font.pixelSize: 12
-					color: main.dimmedTextColor
-					MouseArea {
-						anchors.fill: parent
-						onClicked: {
-						    category.expanded = !category.expanded
-						}
-					}
-				}
+			Text {
+				text: currentCategory.name
+				font.bold: true
+				font.pixelSize: 15
+				color: main.textColor
 			}
 			Item { width: 1; height: 10 }
 		}
@@ -89,14 +64,13 @@ AppListView {
 				return Math.floor((grid.model.count/root.columns)+1);
 			}
 
-			property var expandedHeight: rows * root.cellSizeHeight
 			property bool canMoveWithKeyboard: false
 
+			// Always fully expanded — the outer view scrolls.
 			interactive: false
 			clip: true
 			width: appsCategorized.availableWidth
-			height: !category.hasApps ? 0
-				: category.expanded ? expandedHeight : root.cellSizeHeight
+			height: rows * root.cellSizeHeight
 			cellWidth: root.cellSizeWidth
 			cellHeight: root.cellSizeHeight
 			model: currentCategory.isFavorites ? globalFavorites
@@ -104,10 +78,6 @@ AppListView {
 
 			delegate: AppGridViewDelegate {
 				triggerModel: grid.model
-			}
-
-			Behavior on height {
-				NumberAnimation { duration: 200 }
 			}
 		}
 	}
