@@ -16,7 +16,7 @@ AppListView {
 		property bool expanded: false
 
 		width: appsCategorized.availableWidth
-		height: categoryHeader.height + root.cellSizeHeight
+		height: categoryHeader.height + (grid.model.count > 0 ? root.cellSizeHeight : 0)
 		clip: true
 		spacing: 0
 
@@ -114,7 +114,7 @@ AppListView {
 			if(category.expanded) {
 				category.height = grid.expandedHeight + categoryHeader.height;
 			}else {
-				category.height = root.cellSizeHeight + categoryHeader.height;
+				category.height = (grid.model.count > 0 ? root.cellSizeHeight : 0) + categoryHeader.height;
 			}
 		}
 	}
