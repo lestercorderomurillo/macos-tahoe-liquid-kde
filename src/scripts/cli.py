@@ -89,6 +89,7 @@ Options:
     --color-schemes    Light and Dark palettes
     --icons            macOS-style icon set
     --plasmoids        Custom Plasma widgets (Menu, Launcher, Trashcan)
+    --globalmenu       Global menu bar (app menus in the top panel)
     --acrylic-glass    KWin blur + rounded corners effect
     --global-theme     Plasma global theme (look-and-feel package)
     --layout           Panel layout (top bar + dock)
@@ -149,6 +150,7 @@ Options:
     --color-schemes    Remove color schemes
     --icons            Remove icon themes
     --plasmoids        Remove custom Plasma widgets
+    --globalmenu       Remove the global menu bar
     --acrylic-glass    Remove KWin blur effect
     --global-theme     Remove Plasma global theme
     --layout           Reset panel layout to default
@@ -722,8 +724,8 @@ def verify_config(feat: dict[str, object]) -> None:
 
 
 def should_process(feature: str, feat: dict[str, object]) -> bool:
-    if feature == "globalmenu":
-        return bool(feat.get("plasmoids", True))
+    # globalmenu used to piggyback on the plasmoids flag; since #28 it
+    # is a first-class feature governed by its own entry.
     return bool(feat.get(feature, True))
 
 

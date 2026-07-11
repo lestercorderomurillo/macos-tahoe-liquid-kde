@@ -311,3 +311,31 @@ def test_check_deps_installs_nothing_when_all_present(monkeypatch, cli_module, _
     cli_module._check_deps({"acrylic_glass": True})
 
     assert called == []
+
+
+# ── globalmenu as a first-class feature (#23, PR #28) ────────────────
+
+
+def test_globalmenu_flags_are_parsed(cli_module):
+    assert cli_module.parse_args(["--no-globalmenu"]).cli_overrides == \
+        {"globalmenu": False}
+    assert cli_module.parse_args(["--globalmenu"]).cli_overrides == \
+        {"globalmenu": True}
+
+
+def test_globalmenu_governed_by_its_own_flag(cli_module):
+    """PR #28 registered the flag but should_process still deferred to
+    the plasmoids shortcut — --no-globalmenu parsed fine and then got
+    ignored. Each feature obeys exactly its own entry now."""
+    assert cli_module.should_process(
+        "globalmenu", {"globalmenu": False, "plasmoids": True}) is False
+    assert cli_module.should_process(
+        "globalmenu", {"globalmenu": True, "plasmoids": False}) is True
+
+
+def test_only_globalmenu_selects_just_globalmenu(cli_module):
+    parsed = cli_module.parse_args(["--only", "--globalmenu"])
+    feat = cli_module.apply_overrides(dict(cli_module.DEFAULT_FEATURES), parsed)
+    assert cli_module.should_process("globalmenu", feat) is True
+    assert cli_module.should_process("plasmoids", feat) is False
+    assert cli_module.should_process("icons", feat) is False
