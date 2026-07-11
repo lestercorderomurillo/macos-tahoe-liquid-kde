@@ -10,11 +10,18 @@ and headless/CI runs are never affected.
 Everything here is stdlib (``curses``) so the install stays fully offline.
 """
 
-import curses
 import os
 import re
 import sys
 import threading
+
+# curses is stdlib on most distros, but openSUSE splits it into a separate
+# package (python3-curses). The wizard still works there via the classic
+# confirm() fallback, so this module must import even when curses is absent.
+try:
+    import curses
+except ImportError:
+    curses = None
 
 from cli import (
     ALL_FEATURES,
@@ -24,6 +31,21 @@ from cli import (
     save_features,
 )
 from log import DONE_MARKER, PROGRESS_FILE
+
+# Key/error constants that survive a missing curses module. The handlers are
+# only ever invoked when the wizard actually runs (curses present), but the
+# pure-logic tests import this module too, so they must not touch
+# ``curses.KEY_*`` directly.
+if curses is not None:
+    KEY_UP = curses.KEY_UP
+    KEY_DOWN = curses.KEY_DOWN
+    KEY_LEFT = curses.KEY_LEFT
+    KEY_RIGHT = curses.KEY_RIGHT
+    KEY_ENTER = curses.KEY_ENTER
+    CURSES_ERROR = curses.error
+else:
+    KEY_UP = KEY_DOWN = KEY_LEFT = KEY_RIGHT = KEY_ENTER = -1
+    CURSES_ERROR = Exception
 
 # Display grouping for the checklist. Every entry in ALL_FEATURES appears
 # exactly once; order here is presentation order only (build order lives in
@@ -104,15 +126,15 @@ def _norm(ch):
 
 
 def _is_enter(ch) -> bool:
-    return ch in (curses.KEY_ENTER, 10, "\n", 13, "\r")
+    return ch in (KEY_ENTER, 10, "\n", 13, "\r")
 
 
 def _handle_select(state: _WizardState, ch) -> str | None:
     c = _norm(ch)
     n = len(state.rows)
-    if c in (curses.KEY_UP, "k"):
+    if c in (KEY_UP, "k"):
         state.sel = (state.sel - 1) % n
-    elif c in (curses.KEY_DOWN, "j"):
+    elif c in (KEY_DOWN, "j"):
         state.sel = (state.sel + 1) % n
     elif c == " ":
         kind, gname, key = state.rows[state.sel]
@@ -135,10 +157,10 @@ def _handle_select(state: _WizardState, ch) -> str | None:
 
 def _handle_theme(state: _WizardState, ch) -> str | None:
     c = _norm(ch)
-    if c in (curses.KEY_RIGHT, curses.KEY_DOWN, "l"):
+    if c in (KEY_RIGHT, KEY_DOWN, "l"):
         i = (THEME_MODES.index(state.theme_mode) + 1) % len(THEME_MODES)
         state.theme_mode = THEME_MODES[i]
-    elif c in (curses.KEY_LEFT, curses.KEY_UP, "h"):
+    elif c in (KEY_LEFT, KEY_UP, "h"):
         i = (THEME_MODES.index(state.theme_mode) - 1) % len(THEME_MODES)
         state.theme_mode = THEME_MODES[i]
     elif _is_enter(ch):
