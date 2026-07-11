@@ -37,9 +37,9 @@ A full macOS Tahoe-style desktop experience for KDE Plasma 6.6 and 6.7+.
 
 ![Features and screenshots](https://img.shields.io/badge/features-%26%20screenshots-4B6B8A?style=for-the-badge&logo=kde&logoColor=white)
 
-### Tahoe Launcher
+### Acrylic Glass Tahoe Launcher
 
-App grid with categories, a Favorites section, and search.
+Closer to the real design, quick search, favorites capsule and dual view mode.
 
 <p align="center">
   <img src="src/screenshots/launcher_v3.png" width="415">
