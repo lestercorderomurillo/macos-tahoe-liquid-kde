@@ -145,6 +145,17 @@ ColumnLayout {
 		}
 	}
 
+	// Separator below the tabs, mirroring the one above them in
+	// MainView so the capsule row sits between two lines.
+	Rectangle {
+		Layout.fillWidth: true
+		Layout.rightMargin: fs.innerPadding
+		Layout.topMargin: 6
+		Layout.bottomMargin: 6
+		height: 1.5
+		color: main.contrastBgColor
+	}
+
 	Loader {
 		id: appViewLoader
 		
