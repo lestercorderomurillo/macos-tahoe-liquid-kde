@@ -158,11 +158,14 @@ def test_theme_cycle(tui_module, cli_module):
     state = _state(cli_module, tui_module)
     state.screen = "theme"
     assert state.theme_mode == "auto"
-    tui_module._handle(state, tui_module.KEY_RIGHT)
+    # Use the ASCII fallback keys ("l"/"h") so the test stays curses-independent:
+    # when python3-curses is absent (openSUSE) KEY_LEFT == KEY_RIGHT == -1 and the
+    # arrow-key path cannot distinguish directions. "l"/"h" always reach the handler.
+    tui_module._handle(state, "l")
     assert state.theme_mode == "light"
-    tui_module._handle(state, tui_module.KEY_RIGHT)
+    tui_module._handle(state, "l")
     assert state.theme_mode == "dark"
-    tui_module._handle(state, tui_module.KEY_LEFT)
+    tui_module._handle(state, "h")
     assert state.theme_mode == "light"
 
 
