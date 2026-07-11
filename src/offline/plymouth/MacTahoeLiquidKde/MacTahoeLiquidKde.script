@@ -103,6 +103,11 @@ message_y       = 10;
 message_sprites = [];
 message_count   = 0;
 
+# Password prompt sprite (LUKS2 / cryptsetup). NULL until the first
+# SetDisplayPasswordFunction call draws it; reused via SetImage so a
+# shorter mask on backspace leaves no ghost pixels on the black bg.
+pw_sprite       = NULL;
+
 fun on_show_message(text)
 {
   rendered = Image.Text(text, 1, 1, 1);
@@ -124,3 +129,26 @@ fun on_hide_message(text)
   }
 }
 Plymouth.SetHideMessageFunction(on_hide_message);
+
+# ── password prompt (LUKS2 / cryptsetup) ─────────────────────────────
+# Plymouth calls this on every keystroke while a passphrase is requested.
+# Without it the script plugin's handler stays a null object and draws
+# nothing, so the user types the LUKS2 password blind (see issue #48).
+# Signature is (prompt, bullets): `bullets` is the mask length; the typed
+# text is NOT passed, so we render `bullets` ASCII asterisks.
+
+fun on_password(prompt, bullets)
+{
+  mask = "";
+  if (bullets > 0)
+    for (i = 0; i < bullets; i++)
+      mask = mask + "*";
+  img = Image.Text(prompt + " " + mask, 1, 1, 1);
+  if (pw_sprite == NULL)
+    pw_sprite = Sprite(img);
+  pw_sprite.SetImage(img);
+  pw_sprite.SetX(Window.GetX() + screen_w / 2 - img.GetWidth() / 2);
+  pw_sprite.SetY(logo.GetY() + logo_image.GetHeight() + Math.Int(screen_h * 0.10));
+  pw_sprite.SetZ(10000);
+}
+Plymouth.SetDisplayPasswordFunction(on_password);
