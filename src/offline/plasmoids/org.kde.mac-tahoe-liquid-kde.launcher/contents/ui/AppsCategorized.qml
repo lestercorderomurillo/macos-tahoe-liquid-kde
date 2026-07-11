@@ -9,7 +9,11 @@ AppListView {
 	highlightFollowsCurrentItem: false
 	spacing: 0
 
-	delegate: ColumnLayout {
+	// Plain Column, not ColumnLayout: a fixed-height ColumnLayout inflates
+	// the header's fillHeight spacers, pushing the grid down so the tile
+	// row gets clipped at the bottom. Here every child owns its height and
+	// the category is just their sum.
+	delegate: Column {
 		id: category
 
 		property var currentCategory: slicedCategories[index]
@@ -19,34 +23,26 @@ AppListView {
 		property bool hasApps: grid.model && grid.model.count > 0
 
 		width: appsCategorized.availableWidth
-		height: hasApps ? categoryHeader.height + root.cellSizeHeight : 0
+		height: hasApps ? implicitHeight : 0
 		visible: hasApps
 		clip: true
 		spacing: 0
 
-		onHasAppsChanged: updateHeight()
-
-		ColumnLayout {
+		Column {
 			id: categoryHeader
 			width: parent.width
-			spacing: 10
+			spacing: 0
 
-			/*
-			* Provides appearance of spacing in the bottom of each category grid
-			*/
-			Item {
-				Layout.fillWidth: true
-				Layout.fillHeight: true
-				visible: index > 0
-			}
+			Item { width: 1; height: index > 0 ? 14 : 0 }
 			Rectangle {
-                id: separator
+				id: separator
 				width: parent.width
 				height: 1.5
 				color: index > 0 ? main.contrastBgColor : "transparent"
 			}
+			Item { width: 1; height: 10 }
 			RowLayout {
-				Layout.fillWidth: true
+				width: parent.width
 
 				Text {
 					text: currentCategory.name
@@ -75,13 +71,8 @@ AppListView {
 					}
 				}
 			}
-
-			Item {
-				Layout.fillWidth: true
-				Layout.fillHeight: true
-			}
+			Item { width: 1; height: 10 }
 		}
-
 
 		GridView {
 			id: grid
@@ -89,6 +80,9 @@ AppListView {
 			leftMargin: fs.innerPadding / 2
 
 			property var rows: {
+				if (!grid.model || !grid.model.count) {
+					return 0;
+				}
 				if(grid.model.count%root.columns == 0 )  {
 					return Math.floor(grid.model.count/root.columns);
 				}
@@ -99,8 +93,10 @@ AppListView {
 			property bool canMoveWithKeyboard: false
 
 			interactive: false
+			clip: true
 			width: appsCategorized.availableWidth
-			height: expandedHeight
+			height: !category.hasApps ? 0
+				: category.expanded ? expandedHeight : root.cellSizeHeight
 			cellWidth: root.cellSizeWidth
 			cellHeight: root.cellSizeHeight
 			model: rootModel.modelForRow(currentCategory.modelIndex);
@@ -108,21 +104,9 @@ AppListView {
 			delegate: AppGridViewDelegate {
 				triggerModel: grid.model
 			}
-		}
 
-		onExpandedChanged: updateHeight()
-
-		Behavior on height {
-			NumberAnimation { duration: 200 }
-		}
-
-		function updateHeight () {
-			if(!category.hasApps) {
-				category.height = 0;
-			}else if(category.expanded) {
-				category.height = grid.expandedHeight + categoryHeader.height;
-			}else {
-				category.height = root.cellSizeHeight + categoryHeader.height;
+			Behavior on height {
+				NumberAnimation { duration: 200 }
 			}
 		}
 	}
