@@ -70,11 +70,6 @@ def _plugin_dir() -> Path:
 def build() -> None:
     if not (SRC / "CMakeLists.txt").is_file():
         return
-    for fn in ("glass_core.frag", "glass.frag"):
-        try: (SRC / "src/shaders" / fn).unlink()
-        except FileNotFoundError: pass
-        except OSError: pass
-
     # Disable conflicting blur effects before build so the kwin plugin
     # loader doesn't keep the .so mapped while we replace it.
     kw_write("--file", "kwinrc", "--group", "Plugins",

@@ -29,8 +29,12 @@ maintain. There is no non-systemd path (no Artix, no Devuan, no Void)
 and no non-KDE path.
 
 **Distribution target:** GitHub releases + AUR.
-**License:** GPL-2.0-or-later for forked components, original code as
-marked in the repo.
+**License:** GPL-3.0 for the work as a whole — the bundled Acrylic
+Glass fork and several theme assets are GPL-3, and every other
+component's grant (GPL-2.0-or-later, LGPL-2.0-or-later, KDE
+tri-license) is GPL-3-compatible. Individual files keep their original
+SPDX headers; the Apple wallpaper imagery is not covered by the FOSS
+license.
 **Stack:** Python 3.10+ CLI installer dispatching into per-feature
 steps; a PyQt6 graphical installer (`./installer`) that wraps the CLI;
 QML plasmoids; C++ Qt6 plasmoids (Global Menu, Dock Task Manager) and

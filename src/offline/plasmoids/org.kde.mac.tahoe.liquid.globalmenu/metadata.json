@@ -12,7 +12,7 @@
         "FormFactors": ["desktop"],
         "Icon": "show-menu",
         "Id": "org.kde.mac.tahoe.liquid.globalmenu",
-        "License": "GPL-2.0-or-later",
+        "License": "GPL-3.0",
         "Name": "Global Menu",
         "Version": "1.0",
         "Website": "https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde"

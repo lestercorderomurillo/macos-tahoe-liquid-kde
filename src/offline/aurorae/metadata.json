@@ -15,7 +15,7 @@
         "Description" : "theme_name window decorations",
         "Id": "theme_name",
         "Version": "1.0",
-        "License": "GPL_V3",
+        "License": "GPL-3.0",
         "X-KDE-PluginInfo-blur": false,
         "X-KPackage-Dependencies": [
         ]

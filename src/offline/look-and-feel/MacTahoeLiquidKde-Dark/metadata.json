@@ -10,7 +10,7 @@
         "Description": "macOS Tahoe Liquid dark theme for KDE Plasma",
         "EnabledByDefault": true,
         "Id": "org.kde.mac-tahoe-liquid-kde.dark",
-        "License": "LGPL-3.0",
+        "License": "GPL-3.0",
         "Name": "MacTahoe Liquid (Dark)",
         "Website": "https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde"
     },

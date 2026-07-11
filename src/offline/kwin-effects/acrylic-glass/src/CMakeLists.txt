@@ -9,21 +9,50 @@ set(LIQUIDGLASS_SHADER_INCLUDES
     highlight.glsl
 )
 
+# Everything liquidglass.qrc references except the two preprocessed
+# .frag outputs generated below.
+set(LIQUIDGLASS_SHADER_STATIC
+    blur.glsl
+    distort.glsl
+    downsample.frag
+    downsample_core.frag
+    glass.vert
+    glass_core.vert
+    highlight.glsl
+    noise.frag
+    noise_core.frag
+    sdf.glsl
+    upsample.frag
+    upsample_core.frag
+    vertex.vert
+    vertex_core.vert
+)
+
+# Preprocess and stage into the build tree — never into the source
+# checkout (issue #26). rcc resolves qrc entries relative to the qrc
+# file, so the staged qrc sits next to the staged shaders.
 function(preprocess_shader_includes input output)
-    file(READ "${input}" SHADER_SOURCE)
+    file(READ "${CMAKE_CURRENT_SOURCE_DIR}/${input}" SHADER_SOURCE)
     foreach(include_file IN LISTS LIQUIDGLASS_SHADER_INCLUDES)
-        file(READ "shaders/${include_file}" INCLUDE_SOURCE)
+        file(READ "${CMAKE_CURRENT_SOURCE_DIR}/shaders/${include_file}" INCLUDE_SOURCE)
         string(REPLACE "#include \"${include_file}\"" "${INCLUDE_SOURCE}" SHADER_SOURCE "${SHADER_SOURCE}")
     endforeach()
-    file(WRITE "${output}" "${SHADER_SOURCE}")
+    file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/${output}" "${SHADER_SOURCE}")
 endfunction()
 
 preprocess_shader_includes(shaders/glass.glsl shaders/glass.frag)
 preprocess_shader_includes(shaders/glass_core.glsl shaders/glass_core.frag)
 
+foreach(shader_file IN LISTS LIQUIDGLASS_SHADER_STATIC)
+    configure_file("shaders/${shader_file}"
+                   "${CMAKE_CURRENT_BINARY_DIR}/shaders/${shader_file}" COPYONLY)
+endforeach()
+configure_file(liquidglass.qrc
+               "${CMAKE_CURRENT_BINARY_DIR}/liquidglass.qrc" COPYONLY)
+
 set(liquidglass_SOURCES
     effect.cpp
-    liquidglass.qrc
+    ${CMAKE_CURRENT_BINARY_DIR}/liquidglass.qrc
     main.cpp
 )
 

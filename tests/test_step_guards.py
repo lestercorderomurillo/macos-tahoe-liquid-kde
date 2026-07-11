@@ -251,3 +251,38 @@ def test_fonts_runs_fc_cache_when_present(tmp_path, monkeypatch):
     assert runs, "fc-cache was not invoked even though have() returned True"
     assert "fc-cache" in runs[0][0]
     assert not any("fc-cache not found" in w for w in warnings), warnings
+
+
+# ── acrylic_glass.py: build() must not mutate the source checkout ─────
+
+
+def test_acrylic_glass_build_leaves_source_tree_untouched(tmp_path, monkeypatch):
+    """Issue #26: build() used to delete glass{,_core}.frag from
+    src/offline/.../src/shaders before cmake ran. Shader preprocessing
+    now stages into the build dir, and the installer must never write
+    or delete anything under the bundled source tree."""
+    from steps import acrylic_glass
+
+    src = tmp_path / "acrylic-glass"
+    shaders = src / "src/shaders"
+    shaders.mkdir(parents=True)
+    (src / "CMakeLists.txt").write_text("# stub\n")
+    for fn in ("glass.frag", "glass_core.frag", "glass.glsl", "sdf.glsl"):
+        (shaders / fn).write_text(f"// {fn}\n")
+
+    def snapshot():
+        return {p.relative_to(src): p.read_text()
+                for p in sorted(src.rglob("*")) if p.is_file()}
+
+    before = snapshot()
+
+    monkeypatch.setattr(acrylic_glass, "SRC", src)
+    monkeypatch.setattr(acrylic_glass, "kw_write", lambda *a, **k: True)
+    monkeypatch.setattr(acrylic_glass, "qdbus_call", lambda *a: True)
+    monkeypatch.setattr(acrylic_glass, "cmake_build", lambda *a, **k: True)
+
+    acrylic_glass.build()
+
+    assert snapshot() == before, (
+        "build() modified the bundled source tree — issue #26 regression"
+    )

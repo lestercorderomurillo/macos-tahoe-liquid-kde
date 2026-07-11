@@ -10,7 +10,7 @@
         "Description": "Trash widget",
         "Icon": "user-trash",
         "Id": "org.kde.mac-tahoe-liquid-kde.trashcan",
-        "License": "GPL-2.0+",
+        "License": "GPL-3.0",
         "Name": "Trashcan (MacTahoe Liquid KDE)"
     },
     "X-Plasma-API-Minimum-Version": "6.0",
