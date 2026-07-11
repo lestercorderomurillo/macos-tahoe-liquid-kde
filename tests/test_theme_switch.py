@@ -393,10 +393,12 @@ def test_main_exit_code_reflects_apply_failure(monkeypatch):
     assert theme_switch.main(["dark"]) == 1
 
 
-def test_apply_fails_only_when_config_write_layer_missing(monkeypatch):
-    """Issue #24: write_kde_theme_config is the critical call — without
-    kwriteconfig6 nothing was applied, so apply() must return False.
-    The live sub-calls are best-effort and cannot fail the run."""
+def test_apply_fails_when_config_writes_fail(monkeypatch):
+    """Issues #24 + #37: write_kde_theme_config is the critical call —
+    False now means the core config writes failed (kwriteconfig6 missing
+    OR a write error, e.g. Qt6's setuid abort under the sudo'd
+    installer), and apply() must surface it. The live sub-calls stay
+    best-effort and cannot fail the run."""
     import theme_switch
     calls: list = []
     _stub_apply_subcalls(monkeypatch, calls)
@@ -412,6 +414,164 @@ def test_apply_fails_only_when_config_write_layer_missing(monkeypatch):
     monkeypatch.setattr(theme_switch, "_apply_wallpaper", lambda mode: True)
     monkeypatch.setattr(theme_switch, "_apply_local_extras", lambda mode: True)
     assert theme_switch.apply("dark") is True
+
+
+# ── issue #37: privilege drop + timeout on every child, honest returns ──
+
+
+def test_kwrite_drops_privs_bounds_timeout_no_sync(monkeypatch):
+    """Regression guard in the test_plasma_version_drops_privs_in_child
+    mold. steps/apply.py imports these helpers into the sudo'd installer
+    (real UID 0, effective UID user); a bare subprocess child trips Qt6's
+    setuid abort and the write is silently lost. Every kwriteconfig6
+    spawn must therefore carry preexec_fn=_drop_privs_in_child plus a 5s
+    bound, and never trigger the per-write os.sync() flush storm."""
+    import theme_switch
+
+    seen: dict = {}
+
+    def fake_run(cmd, **kw):
+        seen["cmd"] = cmd
+        seen["preexec_fn"] = kw.get("preexec_fn")
+        seen["timeout"] = kw.get("timeout")
+        return subprocess.CompletedProcess(cmd, 0)
+
+    monkeypatch.setattr(theme_switch.subprocess, "run", fake_run)
+    monkeypatch.setattr(theme_switch, "_have", lambda cmd: True)
+    monkeypatch.setattr(theme_switch, "_has_session_dbus", lambda: False)
+
+    def no_sync():
+        raise AssertionError("per-write os.sync() is the #36/#37 regression")
+
+    monkeypatch.setattr(theme_switch.os, "sync", no_sync)
+
+    assert theme_switch._kwrite("--file", "kdeglobals", "--group", "G",
+                                "--key", "k", "v") is True
+    assert seen["cmd"][0] == "kwriteconfig6"
+    assert seen["preexec_fn"] is theme_switch._drop_privs_in_child
+    assert seen["timeout"] == 5
+
+
+def test_run_live_plasma_tool_drops_privs_and_keeps_timeout(monkeypatch):
+    """plasma-apply-lookandfeel / plasma-apply-cursortheme ride this
+    transport from the sudo'd uninstall path — same setuid abort as
+    _kwrite without the child-side drop."""
+    import theme_switch
+
+    seen: dict = {}
+
+    def fake_run(cmd, **kw):
+        seen["preexec_fn"] = kw.get("preexec_fn")
+        seen["timeout"] = kw.get("timeout")
+        return subprocess.CompletedProcess(cmd, 0)
+
+    monkeypatch.setattr(theme_switch.subprocess, "run", fake_run)
+    monkeypatch.setattr(theme_switch, "_sync_session_env", lambda: None)
+    monkeypatch.delenv("MAC_TAHOE_SKIP_LIVE_APPLY", raising=False)
+
+    assert theme_switch._run_live_plasma_tool(
+        ["plasma-apply-cursortheme", "breeze_cursors"],
+        timeout_seconds=7) is True
+    assert seen["preexec_fn"] is theme_switch._drop_privs_in_child
+    assert seen["timeout"] == 7
+
+
+def test_reset_color_scheme_config_reports_write_failure(monkeypatch):
+    """The uninstall color reset used to fail silently under sudo while
+    the step printed success. Failed deletes or a failed final write
+    must return False so the caller can warn."""
+    import theme_switch
+    monkeypatch.setattr(theme_switch, "_have", lambda cmd: True)
+
+    monkeypatch.setattr(theme_switch, "_delete_color_groups_direct",
+                        lambda: False)
+    assert theme_switch.reset_kde_color_scheme_config("BreezeLight") is False
+
+    monkeypatch.setattr(theme_switch, "_delete_color_groups_direct",
+                        lambda: True)
+    monkeypatch.setattr(theme_switch, "_kwrite", lambda *a: False)
+    assert theme_switch.reset_kde_color_scheme_config("BreezeLight") is False
+
+    monkeypatch.setattr(theme_switch, "_kwrite", lambda *a: True)
+    assert theme_switch.reset_kde_color_scheme_config("BreezeLight") is True
+
+
+def test_apply_color_groups_direct_reports_write_failure(monkeypatch, tmp_path):
+    import theme_switch
+    scheme = tmp_path / "S.colors"
+    scheme.write_text("[Colors:Window]\nBackgroundNormal=1,2,3\n")
+    monkeypatch.setattr(theme_switch, "_have", lambda cmd: True)
+    monkeypatch.setattr(theme_switch, "_find_scheme_file", lambda s: scheme)
+    monkeypatch.setattr(theme_switch, "_delete_color_groups_direct",
+                        lambda: True)
+    monkeypatch.setattr(theme_switch, "_kwrite", lambda *a: False)
+    assert theme_switch.apply_color_groups_direct("S") is False
+    monkeypatch.setattr(theme_switch, "_kwrite", lambda *a: True)
+    assert theme_switch.apply_color_groups_direct("S") is True
+
+
+def test_write_kde_theme_config_reports_write_failure(monkeypatch):
+    import theme_switch
+    monkeypatch.setattr(theme_switch, "_have", lambda cmd: True)
+
+    monkeypatch.setattr(theme_switch, "_kwrite", lambda *a: False)
+    assert theme_switch.write_kde_theme_config("dark") is False
+
+    # fixed writes ok → the color-group stage decides the result
+    monkeypatch.setattr(theme_switch, "_kwrite", lambda *a: True)
+    monkeypatch.setattr(theme_switch, "apply_color_groups_direct",
+                        lambda s: False)
+    assert theme_switch.write_kde_theme_config("dark") is False
+    monkeypatch.setattr(theme_switch, "apply_color_groups_direct",
+                        lambda s: True)
+    assert theme_switch.write_kde_theme_config("dark") is True
+
+
+def test_cycle_reports_failure_but_still_restores(monkeypatch):
+    """Failed widgetStyle writes or a dead broadcast phase must return
+    False — while the finally-restore still runs so disk ends at the
+    target. cycle_widget_style_live used to return True unconditionally,
+    which is why the sudo'd uninstall breakage stayed invisible."""
+    import theme_switch
+    writes: list[str] = []
+    monkeypatch.setattr(theme_switch, "_have", lambda cmd: True)
+    monkeypatch.setattr(theme_switch, "_has_session_dbus", lambda: True)
+    monkeypatch.setattr(theme_switch.time, "sleep", lambda _s: None)
+
+    monkeypatch.setattr(theme_switch, "_kwrite",
+                        lambda *a: writes.append(a[-1]) or False)
+    monkeypatch.setattr(theme_switch, "_broadcast_widget_style_change",
+                        lambda style: True)
+    assert theme_switch.cycle_widget_style_live("kvantum") is False
+    assert writes[-1] == "kvantum", "restore must run even when writes fail"
+
+    monkeypatch.setattr(theme_switch, "_kwrite",
+                        lambda *a: writes.append(a[-1]) or True)
+    monkeypatch.setattr(theme_switch, "_broadcast_widget_style_change",
+                        lambda style: False)
+    assert theme_switch.cycle_widget_style_live("kvantum") is False
+
+    monkeypatch.setattr(theme_switch, "_broadcast_widget_style_change",
+                        lambda style: True)
+    assert theme_switch.cycle_widget_style_live("kvantum") is True
+
+
+def test_broadcast_succeeds_when_any_signal_lands(monkeypatch):
+    """The xdg-portal endpoints are optional: one delivered signal out of
+    the three sends is a delivered phase; all three failing is not."""
+    import theme_switch
+    monkeypatch.setattr(theme_switch, "_has_session_dbus", lambda: True)
+
+    results = iter([1, 0, 1])
+
+    def fake_run(cmd, **kw):
+        return subprocess.CompletedProcess(cmd, next(results))
+
+    monkeypatch.setattr(theme_switch.subprocess, "run", fake_run)
+    assert theme_switch._broadcast_widget_style_change("Breeze") is True
+
+    results = iter([1, 1, 1])
+    assert theme_switch._broadcast_widget_style_change("Breeze") is False
 
 
 # ── theme-switch step install / uninstall round-trip ─────────────────

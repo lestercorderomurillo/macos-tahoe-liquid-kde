@@ -103,6 +103,125 @@ def test_refresh_desktop_database_noop_without_tool(monkeypatch):
 # ── icon theme is reset to breeze even when the ICONS feature is OFF ────
 
 
+def _seed_install_env(monkeypatch, tmp_path):
+    """Shrink install() to the theme-switch spawn block: fonts, wallpaper,
+    caches, and the KWin tail are stubbed or feature-gated off."""
+    switch = tmp_path / ".local/bin/mac-tahoe-theme-switch"
+    switch.parent.mkdir(parents=True)
+    switch.write_text("#!/bin/sh\n")
+    switch.chmod(0o755)
+    monkeypatch.setattr(apply, "HOME", tmp_path)
+    monkeypatch.setattr(apply, "have", lambda cmd: False)
+    monkeypatch.setattr(apply, "feat_enabled",
+                        lambda name, default=True: False)
+    monkeypatch.setattr(apply, "_flush_caches", lambda: None)
+    monkeypatch.setattr(apply, "qdbus_call", lambda *a: True)
+    monkeypatch.setattr(apply.time, "sleep", lambda s: None)
+    monkeypatch.delenv("THEME_MODE", raising=False)
+    oks: list = []
+    warns: list = []
+    monkeypatch.setattr(apply, "ok", lambda m: oks.append(m))
+    monkeypatch.setattr(apply, "warn", lambda m: warns.append(m))
+    return switch, oks, warns
+
+
+def test_install_oks_theme_applied_only_on_zero_exit(monkeypatch, tmp_path):
+    """Issue #37: the switcher spawn must use the dedicated 90s bound
+    (its own subcalls are 15-20s each — the old shared 15s cap killed it
+    mid-apply) and report ok only on exit 0."""
+    switch, oks, warns = _seed_install_env(monkeypatch, tmp_path)
+    seen: dict = {}
+
+    def fake_run_user(cmd, **kw):
+        seen["cmd"] = cmd
+        seen["timeout"] = kw.get("timeout")
+        return subprocess.CompletedProcess(cmd, 0)
+
+    monkeypatch.setattr(apply, "run_user", fake_run_user)
+    apply.install()
+
+    assert seen["cmd"] == [str(switch), "auto", "install"]
+    assert seen["timeout"] == apply._THEME_SWITCH_TIMEOUT
+    assert any("Theme applied" in m for m in oks)
+    assert not any("Theme switch" in m for m in warns)
+
+
+def test_install_warns_on_nonzero_theme_switch_exit(monkeypatch, tmp_path):
+    _, oks, warns = _seed_install_env(monkeypatch, tmp_path)
+    monkeypatch.setattr(
+        apply, "run_user",
+        lambda cmd, **kw: subprocess.CompletedProcess(cmd, 1))
+    apply.install()
+    assert not any("Theme applied" in m for m in oks)
+    assert any("Theme switch failed" in m for m in warns)
+
+
+def test_install_warns_when_theme_switch_times_out(monkeypatch, tmp_path):
+    _, oks, warns = _seed_install_env(monkeypatch, tmp_path)
+
+    def fake_run_user(cmd, **kw):
+        raise subprocess.TimeoutExpired(cmd, kw.get("timeout", 0))
+
+    monkeypatch.setattr(apply, "run_user", fake_run_user)
+    apply.install()
+    assert not any("Theme applied" in m for m in oks)
+    assert any("Theme switch timed out" in m for m in warns)
+
+
+# ── uninstall reports reset/cycle failures instead of silent ok ────────
+
+
+def _seed_uninstall_env(monkeypatch, tmp_path):
+    monkeypatch.setattr(apply, "HOME", tmp_path)
+    monkeypatch.setattr(apply, "have", lambda cmd: cmd == "kwriteconfig6")
+    monkeypatch.setattr(apply, "kw_write", lambda *a, **k: True)
+    monkeypatch.setattr(apply, "feat_enabled",
+                        lambda name, default=True: False)
+    monkeypatch.setattr(apply, "_scrub_kdedefaults", lambda: None)
+    monkeypatch.setattr(apply, "_flush_caches", lambda: None)
+    monkeypatch.setattr(apply, "_run_live", lambda cmd: None)
+    monkeypatch.setattr(apply, "_live_plasma_ready_quick", lambda: False)
+    oks: list = []
+    warns: list = []
+    monkeypatch.setattr(apply, "ok", lambda m: oks.append(m))
+    monkeypatch.setattr(apply, "warn", lambda m: warns.append(m))
+    return oks, warns
+
+
+def test_uninstall_warns_when_color_reset_fails(monkeypatch, tmp_path):
+    """Issue #37: under the sudo'd installer every kwriteconfig6 child hit
+    Qt6's setuid abort, the reset silently no-opped, and the step still
+    printed 'Color scheme reset'. Failure must warn, never ok."""
+    oks, warns = _seed_uninstall_env(monkeypatch, tmp_path)
+    monkeypatch.setattr(apply, "reset_kde_color_scheme_config",
+                        lambda s: False)
+    apply.uninstall()
+    assert not any("Color scheme reset" == m for m in oks)
+    assert any("Color scheme reset failed" in m for m in warns)
+
+
+def test_uninstall_oks_color_reset_on_success(monkeypatch, tmp_path):
+    oks, warns = _seed_uninstall_env(monkeypatch, tmp_path)
+    monkeypatch.setattr(apply, "reset_kde_color_scheme_config",
+                        lambda s: True)
+    apply.uninstall()
+    assert any("Color scheme reset" == m for m in oks)
+    assert not any("Color scheme" in m for m in warns)
+
+
+def test_uninstall_warns_when_widget_cycle_fails(monkeypatch, tmp_path):
+    oks, warns = _seed_uninstall_env(monkeypatch, tmp_path)
+    monkeypatch.setattr(apply, "reset_kde_color_scheme_config",
+                        lambda s: True)
+    monkeypatch.setattr(apply, "_live_plasma_ready_quick", lambda: True)
+    monkeypatch.setattr(apply, "_apply_lookandfeel_live", lambda laf: True)
+    monkeypatch.setattr(apply, "cycle_widget_style_live", lambda t: False)
+    monkeypatch.setattr(apply, "apply_cursortheme_live", lambda t: True)
+    monkeypatch.setattr(apply, "qdbus_cmd", lambda: None)
+    apply.uninstall()
+    assert any("Widget style cycle failed" in m for m in warns)
+
+
 def test_uninstall_resets_icon_theme_even_when_icons_feature_disabled(
         monkeypatch, tmp_path):
     # The MacTahoe icon dirs get deleted later in the uninstall. If

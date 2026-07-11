@@ -273,13 +273,17 @@ def _has_session_dbus() -> bool:
     if not os.environ.get("DBUS_SESSION_BUS_ADDRESS") or not have("dbus-send"):
         _HAS_DBUS = False
         return _HAS_DBUS
-    _HAS_DBUS = subprocess.run(
-        ["dbus-send", "--session", "--print-reply",
-         "--dest=org.freedesktop.DBus", "/org/freedesktop/DBus",
-         "org.freedesktop.DBus.ListNames"],
-        check=False, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
-        preexec_fn=drop_privs_in_child,
-    ).returncode == 0
+    try:
+        _HAS_DBUS = subprocess.run(
+            ["dbus-send", "--session", "--print-reply",
+             "--dest=org.freedesktop.DBus", "/org/freedesktop/DBus",
+             "org.freedesktop.DBus.ListNames"],
+            check=False, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
+            timeout=5,
+            preexec_fn=drop_privs_in_child,
+        ).returncode == 0
+    except subprocess.TimeoutExpired:
+        _HAS_DBUS = False
     return _HAS_DBUS
 
 
@@ -290,21 +294,29 @@ def kw_write(*args: str) -> bool:
     if _has_session_dbus():
         cmd.append("--notify")
     cmd.extend(args)
-    return subprocess.run(
-        cmd, check=False,
-        stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
-        preexec_fn=drop_privs_in_child,
-    ).returncode == 0
+    try:
+        return subprocess.run(
+            cmd, check=False,
+            stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
+            timeout=5,
+            preexec_fn=drop_privs_in_child,
+        ).returncode == 0
+    except subprocess.TimeoutExpired:
+        return False
 
 
 def kw_read(file: str, group: str, key: str) -> str:
     if not have("kreadconfig6"):
         return ""
-    return subprocess.run(
-        ["kreadconfig6", "--file", file, "--group", group, "--key", key],
-        check=False, capture_output=True, text=True,
-        preexec_fn=drop_privs_in_child,
-    ).stdout.strip()
+    try:
+        return subprocess.run(
+            ["kreadconfig6", "--file", file, "--group", group, "--key", key],
+            check=False, capture_output=True, text=True,
+            timeout=5,
+            preexec_fn=drop_privs_in_child,
+        ).stdout.strip()
+    except subprocess.TimeoutExpired:
+        return ""
 
 
 def build_group_args(section: str) -> list[str]:

@@ -66,6 +66,23 @@ def _run_live(cmd: list[str]) -> None:
         pass
 
 
+# The standalone switcher chains its own 15-20s bounded subcalls (wallpaper,
+# cursor, kvantum); the shared 15s cap used to kill it mid-apply (#37).
+_THEME_SWITCH_TIMEOUT = 90
+
+
+def _run_theme_switch_install(switch: Path) -> int | None:
+    """Exit code of the standalone switcher, or None on timeout."""
+    try:
+        return run_user(
+            [str(switch), theme_mode(), "install"], check=False,
+            stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
+            timeout=_THEME_SWITCH_TIMEOUT,
+        ).returncode
+    except subprocess.TimeoutExpired:
+        return None
+
+
 def _refresh_desktop_database() -> None:
     """Rebuild mimeinfo.cache: a stale cache leaves launcher/taskbar apps
     missing after a theme switch. User dir as user; the system dir needs root."""
@@ -165,8 +182,13 @@ def install() -> None:
     if switch.is_file() and (switch.stat().st_mode & 0o111):
         # "install" context skips live plasmashell mutation (first-session and
         # QML teardown races); the final Plasma restart loads theme from config.
-        _run_live([str(switch), theme_mode(), "install"])
-        ok(f"Theme applied ({theme_mode()})")
+        rc = _run_theme_switch_install(switch)
+        if rc == 0:
+            ok(f"Theme applied ({theme_mode()})")
+        elif rc is None:
+            warn("Theme switch timed out, config may be partial")
+        else:
+            warn(f"Theme switch failed (exit {rc})")
 
     print("  …  Restarting KWin", end="\r", flush=True)
     if feat_enabled("ACRYLIC_GLASS"):
@@ -312,8 +334,10 @@ def uninstall() -> None:
                         _run_live(["plasma-apply-wallpaperimage", p])
                     ok("Wallpaper reset")
                     break
-        reset_kde_color_scheme_config("BreezeLight")
-        ok("Color scheme reset")
+        if reset_kde_color_scheme_config("BreezeLight"):
+            ok("Color scheme reset")
+        else:
+            warn("Color scheme reset failed")
 
     _flush_caches()
 
@@ -330,7 +354,8 @@ def uninstall() -> None:
     # Qt apps started under Kvantum keep its style instance alive after the
     # LAF switch; cycling widgetStyle forces re-instantiation without restart.
     if live_ready:
-        cycle_widget_style_live("Breeze")
+        if not cycle_widget_style_live("Breeze"):
+            warn("Widget style cycle failed")
 
     if feat_enabled("CURSORS") and live_ready:
         if apply_cursortheme_live("breeze_cursors"):

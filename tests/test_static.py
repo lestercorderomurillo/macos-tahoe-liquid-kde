@@ -199,6 +199,17 @@ def test_theme_switch_no_legacy_entry_points(repo):
         )
 
 
+def test_theme_switch_has_no_global_sync(repo):
+    """Issues #36/#37: _kwrite() used to os.sync() after every
+    kwriteconfig6 call — a machine-wide dirty-page flush repeated 130+
+    times per apply, slow enough to blow the installer's child timeout."""
+    text = (repo / "src/scripts/theme_switch.py").read_text()
+    assert "os.sync(" not in text, (
+        "os.sync() is back in theme_switch.py — per-write global flushes "
+        "are the issue #36/#37 regression"
+    )
+
+
 def test_no_legacy_apply_service_in_offline(offline):
     """The split apply.service / watch.service design from earlier
     versions is gone — only the single oneshot service file ships now.
