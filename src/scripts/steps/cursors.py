@@ -1,16 +1,6 @@
-"""MacTahoe cursor themes — fully bundled offline since v0.18.0.
-
-Earlier releases downloaded the cursor themes from
-github.com/vinceliuice/MacTahoe-icon-theme alongside the icon
-themes (same upstream repo, different subdir). Same shape of bug:
-network on every install, half-failed downloads silently shipped
-fewer cursor variants than intended.
-
-v0.18 ships the pre-renamed cursor themes as
-``src/offline/cursors/MacTahoeLiquidKde-Cursors.tar.zst``
-(~927 KB compressed from 16 MB raw). install() extracts the
-tarball directly into ~/.local/share/icons.
-"""
+"""MacTahoe cursor themes: extracts the bundled
+MacTahoeLiquidKde-Cursors.tar.zst into ~/.local/share/icons.
+Fully offline since v0.18.0 — no download phase."""
 
 import shutil
 import subprocess
@@ -34,10 +24,8 @@ def install() -> None:
         fail(f"offline tarball missing: {tarball}")
         return
 
-    # Wipe pre-existing installs of OUR cursor themes so a half-
-    # installed state from a crashed previous run doesn't leak.
-    # We do NOT touch theme dirs whose name contains "Icons" — those
-    # belong to the icons step.
+    # Wipe our own stale cursor dirs (crashed-run leftovers); dirs whose
+    # name contains "Icons" belong to the icons step — never touch them.
     for old in DEST_DIR.glob("MacTahoeLiquidKde*"):
         if old.is_dir() and "Icons" not in old.name:
             shutil.rmtree(old, ignore_errors=True)

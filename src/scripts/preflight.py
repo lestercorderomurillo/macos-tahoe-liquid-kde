@@ -1,58 +1,6 @@
 """Preflight: prove the basics work BEFORE any install/uninstall step
-touches disk.
-
-Nine checks, in order, all visible to the user:
-
-1. **Sudo escalation hop.** The CLI bailed unless invoked via
-   ``sudo ./install`` (real UID 0) and then dropped effective UID to
-   ``SUDO_USER``. Exercise the round trip: hop back to root via
-   ``_as_root()``, touch a probe under the Qt6 plugin dir reported by
-   ``qmake6`` (``distro.qt6_plugins_dir()``), drop back. Catches read-
-   only ``/usr``, missing dir, sandbox restrictions, and broken sudo
-   configs *before* a single artefact lands.
-
-2. **Destination paths.** Walk every step's known destination, print it,
-   regex-validate against the allowed roots (``$HOME``, the Qt6 plugin
-   / QML dirs discovered from ``qmake6``, ``/etc/sddm.conf.d``).
-
-3. **Qt6 plugin search path.** ``qmake6 -query QT_INSTALL_PLUGINS`` is
-   the directory Qt6 actually walks at runtime. Our compiled ``.so``
-   destinations must sit inside it. v0.8.4-0.8.6 shipped to
-   ``~/.local/lib/qt6/`` which isn't on Qt's path — Plasma silently
-   ignored the dock and global menu. Make that regression impossible.
-
-4. **KDE Plasma version.** Confirm ``plasmashell --version`` reports
-   ≥6.6. The compiled plasmoids link against Plasma 6.6+ headers, so
-   anything older silently fails to load with no useful error in the
-   installer's output.
-
-5. **KDE config tools.** ``kwriteconfig6`` and ``kreadconfig6`` are the
-   only way the installer writes / reads kdeglobals. v0.15.5 made
-   each step warn when these are missing, but having the preflight
-   bail with a single actionable message is friendlier than 12 warns
-   spread across the install run.
-
-6. **DBus session bus.** Live theme apply, KWin reconfigure, plasma-
-   apply-lookandfeel — all of them need a session bus. Without it the
-   install completes but Plasma never reloads the new theme until the
-   user logs out and back in (which they won't realise they need to
-   do, because the installer reported success).
-
-7. **kded6 running.** kded6 hosts the lookandfeelautoswitcher and the
-   notify-on-config-change service the install relies on. If it's
-   crashed (rare but happens after kded plugin updates), live applies
-   silently no-op.
-
-8. **Disk space for /usr writes.** The compiled .so / QML modules
-   total ~5-10 MB. If /usr is full or quota'd, the install fails
-   mid-stream and leaves the system half-themed. Better to fail
-   loudly at preflight.
-
-9. **Plasmoid ID consistency.** For each plasmoid in
-   ``src/offline/plasmoids/``, the directory name, the metadata.json
-   ``KPlugin.Id``, and the layout JS ``addWidget`` reference all have
-   to spell the same plugin id. Skipped on uninstall.
-"""
+touches disk. Nine fail-fast checks, in order, all visible to the user
+(see run_preflight; documented in AGENTS.md)."""
 
 import json
 import os
@@ -110,16 +58,8 @@ def _check_sudo_escalation() -> bool:
     return True
 
 
-# Resolved per-call, not cached. The previous module-global cache
-# leaked across pytest test boundaries: a test that legitimately
-# set $HOME via monkeypatch (sandbox fixture in conftest.py) would
-# prime _HOME to a tmpdir, monkeypatch would restore $HOME on
-# teardown but the module-global stayed, and the next test calling
-# _home() read the stale tmpdir. The cost of recomputing is a
-# single os.environ.get("HOME") — not worth the test-ordering
-# fragility. Keep the indirection so tests can still
-# monkeypatch.setattr(preflight, "_home", lambda: Path("/root"))
-# to exercise the /root-is-the-real-home branch.
+# Resolved per call — a module-global cache leaked monkeypatched $HOME
+# across pytest boundaries. Indirection kept so tests can patch _home().
 _HOME: Path | None = None
 
 
@@ -129,10 +69,8 @@ def _home() -> Path:
 
 def _allowed_roots() -> tuple[re.Pattern, ...]:
     home = re.escape(str(_home()))
-    # Qt6 plugin / QML roots come from qmake6 so distros that put them
-    # under /usr/lib64/qt6 (Gentoo, openSUSE multilib) or
-    # /usr/lib/x86_64-linux-gnu/qt6 (Debian / Ubuntu multiarch) validate
-    # without a hand-maintained list of distro libdirs.
+    # Qt roots come from qmake6 so nonstandard libdirs (Gentoo /usr/lib64,
+    # Debian multiarch) validate without a hand-maintained list.
     try:
         qt_plugins = re.escape(str(qt6_plugins_dir()))
         qt_qml = re.escape(str(qt6_qml_dir()))
@@ -141,10 +79,8 @@ def _allowed_roots() -> tuple[re.Pattern, ...]:
             re.compile(rf"^{qt_qml}(/|$)"),
         )
     except Qt6PathsMissing:
-        # The Qt path check (step 3/4) reports the missing qmake6 with a
-        # distro hint; here we just refuse to validate /usr/lib/qt6 by
-        # convention so we don't accidentally green-light writes that
-        # land outside the real Qt search path.
+        # Don't green-light /usr/lib/qt6 by convention when qmake6 is
+        # missing — the Qt path check reports it with a distro hint.
         qt_patterns = ()
     return (
         re.compile(rf"^{home}/(\.local|\.config|\.cache)(/|$)"),
@@ -169,12 +105,8 @@ def _validate_path(path: Path | str) -> str | None:
     for pat, reason in _FORBIDDEN:
         if pat.search(s):
             return reason
-    # /root is forbidden ONLY when it isn't the real user's home dir.
-    # In production, sudo drops effective UID to SUDO_USER so Path.home()
-    # points at /home/<user>; a path starting with /root then means the
-    # sudo drop didn't apply and writes would land in root's home.
-    # In a container (or any single-user-as-root setup), root *is* the
-    # real user — its home is /root and writing there is legitimate.
+    # /root is forbidden only when it isn't the real user's home — in a
+    # container root IS the user, so /root writes are legitimate there.
     home = str(_home())
     if s.startswith("/root/") or s == "/root":
         if home != "/root" and not s.startswith(home + "/"):
@@ -185,13 +117,8 @@ def _validate_path(path: Path | str) -> str | None:
 
 
 def _enumerate_destinations() -> list[tuple[str, Path]]:
-    """Collect known install destinations from each step module by
-    asking the module directly. Modules that don't expose destinations
-    (data-only steps, fonts, etc.) just don't show up here.
-
-    We import lazily so module-level ``Path.home()`` evaluations happen
-    AFTER the privilege drop (HOME is already pointed at the real user
-    by the CLI at this point)."""
+    """Known install destinations per step module. Imported lazily so
+    module-level ``Path.home()`` runs AFTER the privilege drop."""
     from steps import acrylic_glass, globalmenu, plasmoids
 
     dests: list[tuple[str, Path]] = [
@@ -224,18 +151,9 @@ def _check_paths() -> bool:
 
 
 def _check_qt_paths() -> bool:
-    """Confirm qmake6 reported the same Qt6 plugin / QML directories the
-    installer will write to. Since v0.15.0 the installer derives both
-    destinations from qmake6 itself (see distro.qt6_plugins_dir /
-    distro.qt6_qml_dir), so a mismatch here means qmake6 is missing or
-    the cached value drifted — not a Plasma-vs-installer disagreement.
-
-    This is the check that catches the v0.14.x Gentoo bug: ``Qt scans
-    /usr/lib64/qt6/ but install writes to /usr/lib/qt6/``. With the
-    Qt path coming from qmake6 the bug is structurally impossible —
-    but we still cross-check every compiled-step destination so a
-    future refactor that hardcodes a path can't silently regress past
-    the layer."""
+    """Cross-check every compiled-step destination against qmake6's
+    reported plugin / QML dirs so a hardcoded libdir can't regress past
+    the distro layer (the v0.14.x Gentoo /usr/lib64 bug)."""
     try:
         plugins = qt6_plugins_dir()
         qml = qt6_qml_dir()
@@ -243,10 +161,6 @@ def _check_qt_paths() -> bool:
         fail(str(exc))
         return False
 
-    # Cross-check: every destination that lives under "Qt's libdir" must
-    # actually be rooted at qmake6's reported plugin / QML dir. If a
-    # step still hardcodes /usr/lib/qt6 and we're on a /usr/lib64 distro,
-    # this catches the mismatch before any file lands.
     from steps import acrylic_glass, globalmenu, plasmoids
     qt_destinations = [
         ("globalmenu .so", globalmenu.DEST_SO, plugins),
@@ -331,18 +245,10 @@ def _probe_plasma_version() -> tuple[re.Match[str] | None, str | None]:
 
 
 def _check_plasma_version() -> bool:
-    """Confirm plasmashell reports ≥6.6. We compile against Plasma
-    6.6+ headers, so an older runtime silently fails to load the
-    applets (plasmashell logs at debug level and the user sees an
-    empty panel slot).
-
-    Must drop privileges in the child (real UID 0 + effective UID
-    SUDO_USER triggers Qt6's setuid guard — ``getuid() != geteuid()``
-    aborts with ``FATAL: The application binary appears to be running
-    setuid, this is a security hole.`` before reading any args). Use
-    ``run_user`` which sets ``preexec_fn=drop_privs_in_child`` so the
-    forked child runs as the invoking user with matching real / effective
-    / saved UIDs."""
+    """Confirm plasmashell reports ≥6.6 (we compile against 6.6+ headers;
+    older runtimes silently fail to load the applets). Must probe via
+    run_user: real UID 0 + effective SUDO_USER trips Qt6's setuid guard
+    (``getuid() != geteuid()`` aborts before parsing any args)."""
     if not shutil.which("plasmashell"):
         fail("plasmashell not on PATH — KDE Plasma is not installed")
         return False
@@ -368,17 +274,13 @@ def _check_plasma_version() -> bool:
 
 
 def _check_kde_config_tools() -> bool:
-    """kwriteconfig6 + kreadconfig6 ship together in plasma-workspace
-    on every supported distro. Each step that touches kdeglobals
-    already has a `kw_write()` -> `warn()` guard (v0.15.5), but
-    surfacing the gap here means one clear error instead of N
-    scattered warnings during install."""
+    """One clear preflight failure instead of N scattered kw_write()
+    warns (v0.15.5) when kwriteconfig6 / kreadconfig6 are missing."""
     missing = []
     for binary in ("kwriteconfig6", "kreadconfig6"):
         if not shutil.which(binary):
             missing.append(binary)
     if missing:
-        # Cross-distro hint via the same mechanism qt6 uses.
         fail(f"missing: {', '.join(missing)} — install plasma-workspace "
              "(or your distro's equivalent — same package that brings "
              "kded6 / plasmashell)")
@@ -391,18 +293,13 @@ def _check_kde_config_tools() -> bool:
 
 
 def _check_dbus_session() -> bool:
-    """Live theme apply, ``plasma-apply-lookandfeel``, ``KWin
-    reconfigure`` — they all dial the session bus. Without it the
-    install completes but Plasma never reloads the new theme until
-    the user logs out and back in. We don't want the install to
-    *silently* require a re-login."""
+    """Without a session bus the install succeeds but Plasma silently
+    needs a re-login to show the theme — fail loudly instead."""
     addr = os.environ.get("DBUS_SESSION_BUS_ADDRESS")
     if not addr:
-        # Some sudo configs strip DBUS_SESSION_BUS_ADDRESS. If the
-        # bus socket is at the canonical XDG path, accept that as
-        # proof the bus is up — the live-apply helpers in steps/
-        # already re-discover the address through `systemctl --user
-        # show-environment`.
+        # Some sudo configs strip the address; a socket at
+        # $XDG_RUNTIME_DIR/bus proves the bus is up (steps re-discover
+        # the address via `systemctl --user show-environment`).
         runtime_dir = os.environ.get("XDG_RUNTIME_DIR")
         if runtime_dir and Path(runtime_dir, "bus").exists():
             ok("DBus session bus reachable via XDG_RUNTIME_DIR/bus")
@@ -419,13 +316,9 @@ def _check_dbus_session() -> bool:
 
 
 def _check_kded_running() -> bool:
-    """kded6 hosts lookandfeelautoswitcher (the live-mode-switch
-    daemon) and the notify-on-config-change service. If it's not
-    running, our live ``plasma-apply-lookandfeel`` calls succeed but
-    silently no-op until the user restarts plasma."""
+    """kded6 hosts the live-apply services; when it's down, live
+    ``plasma-apply-lookandfeel`` calls succeed but silently no-op."""
     if not shutil.which("pgrep"):
-        # procps not installed — skip rather than fail, since pgrep
-        # isn't strictly required for the install.
         warn("pgrep not on PATH — skipping kded6 health check "
              "(install procps-ng to enable)")
         return True
@@ -441,8 +334,6 @@ def _check_kded_running() -> bool:
         warn("kded6 is not running — live theme apply may silently "
              "no-op. After install: `kquitapp6 kded6 && kded6 &` (or "
              "log out and back in).")
-        # Not a hard fail — install can still complete; user just may
-        # need to re-login to see the theme.
         return True
     ok("kded6 is running")
     return True
@@ -451,19 +342,14 @@ def _check_kded_running() -> bool:
 # ── disk space ──────────────────────────────────────────────────────
 
 
-# .so + QML modules total ~10 MB in production. We require 50 MB free
-# as a comfortable margin (the install also writes ~20 MB of icons /
-# wallpapers / kvantum theme into $HOME — different filesystem, but
-# we check both anyway).
+# Artefacts total ~10 MB on /usr, ~20 MB in $HOME; margins are generous.
 _MIN_FREE_USR_MB = 50
 _MIN_FREE_HOME_MB = 100
 
 
 def _check_disk_space() -> bool:
-    """Compiled artefacts go under Qt6's plugin dir (system, root-
-    owned). User assets go under $HOME. If either is full, the install
-    fails mid-stream and leaves the desktop half-themed. Better to
-    bail loud now."""
+    """Bail loudly now rather than fail mid-stream and leave the
+    desktop half-themed."""
     try:
         qt_dir = qt6_plugins_dir()
     except Qt6PathsMissing:
@@ -471,8 +357,7 @@ def _check_disk_space() -> bool:
         warn("disk space probe skipped — Qt6 plugin dir unknown")
         return True
 
-    # Walk up to the nearest existing parent if the leaf doesn't
-    # exist yet (Qt6 plugin dir may be missing on a brand-new system).
+    # Walk up to the nearest existing parent (leaf may not exist yet).
     probe = qt_dir
     while not probe.exists() and probe != probe.parent:
         probe = probe.parent
@@ -561,25 +446,16 @@ def _check_plasmoid_ids() -> bool:
         ok(f"{dir_name}: Id={plugin_id}")
 
         if layout_text and plugin_id not in layout_text:
-            # Not every plasmoid is referenced in the layout (some are
-            # optional / user-placed), so note rather than fail. The
-            # tree-branch glyph ties the note to the ✓ line above it —
-            # without it the bare indented line reads as an orphan.
+            # Optional / user-placed plasmoids aren't in the layout —
+            # note, don't fail.
             print(f"       └ not referenced in layout JS (optional)")
     return all_ok
 
 
 def run_preflight(op: str = "install") -> bool:
-    """Run all preflight checks. Returns ``True`` only if every
-    hard-fail check passes — caller bails otherwise.
-
-    Some checks are soft (kded6, disk-space-on-missing-paths) and emit
-    a warn() without failing the run; they're labelled as "soft" in
-    the inline notes.
-
-    Skips the plasmoid ID consistency check on uninstall (uninstall
-    doesn't reinstall packages, so an ID drift can't ship from there).
-    """
+    """Returns True only if every hard-fail check passes (kded6 and
+    missing-path disk probes are soft — warn only). The plasmoid ID
+    check is skipped on uninstall: an ID drift can't ship from there."""
     step("Preflight")
     note("Verifies sudo, paths, Qt6, KDE version, config tools, DBus, "
          "kded6, disk space, plasmoid IDs")

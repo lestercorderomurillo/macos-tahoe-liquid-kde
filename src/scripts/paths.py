@@ -21,6 +21,5 @@ def read_version() -> str:
     return "0.0.0"
 
 
-# Per-distro paths (Qt6 plugin / QML dirs, system libdir, package
-# manager hints) live in distro.py. paths.py is repo-relative only —
+# Per-distro paths live in distro.py. paths.py is repo-relative only —
 # nothing here may shell out or read /etc/os-release.

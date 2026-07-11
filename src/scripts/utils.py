@@ -14,26 +14,9 @@ from log import fail
 
 
 def drop_privs_in_child() -> None:
-    """``preexec_fn`` for subprocess: in the forked child, fully drop
-    real+effective+saved UID/GID to ``SUDO_USER`` before ``exec()``.
-
-    Mandatory for Qt6 binaries (qtpaths, qmake6, kwriteconfig6, qdbus6,
-    kreadconfig6, …). Qt6 ``QCoreApplication`` startup checks
-    ``getuid() != geteuid()`` — when true, it prints ``FATAL: The
-    application binary appears to be running setuid`` and aborts.
-
-    The CLI privilege-drop leaves the parent at real-UID 0 / effective-
-    UID user (intentional, so the few /usr/lib writes can hop back to
-    root via ``_as_root()``). Forked children inherit that mismatch and
-    every Qt6 binary refuses to run, which is why kwriteconfig6 has
-    been silently no-op'ing the theme writes — the post-install
-    verification reads back empty across the board.
-
-    ``setresuid(uid, uid, uid)`` is allowed for an unprivileged process
-    when each new value is one of the current real / effective / saved
-    UIDs. We pass ``uid == old effective UID``, so every slot gets a
-    valid value — permitted without CAP_SETUID. The child can never
-    re-elevate; the parent (real UID still 0) keeps its hop-back."""
+    """``preexec_fn``: fully drop real+effective+saved UID/GID to SUDO_USER
+    in the child. Mandatory — Qt6 aborts on ``getuid() != geteuid()``
+    ("running setuid"), which the parent's euid-only drop would trigger."""
     sudo_uid = os.environ.get("SUDO_UID")
     sudo_gid = os.environ.get("SUDO_GID")
     if not sudo_uid or not sudo_gid:
@@ -46,16 +29,8 @@ def drop_privs_in_child() -> None:
 
 
 def run_user(*args, **kwargs):
-    """``subprocess.run`` wrapper that fully drops privileges in the
-    child before exec via ``drop_privs_in_child``. Use for every
-    subprocess that runs a Qt6 / KDE binary or anything else that
-    should execute under the invoking user's identity (kwriteconfig6,
-    kpackagetool6, plasma-apply-*, kvantummanager, kbuildsycoca6, etc.).
-
-    Skip this helper only when the child *needs* root (``sudo`` itself
-    in pkg_install, or commands that write under ``/usr`` from the
-    child — there are none of those today; ``/usr`` writes go through
-    ``_as_root()`` in the parent)."""
+    """``subprocess.run`` that fully drops privileges in the child. Use for
+    every Qt6/KDE child; skip only when the child genuinely needs root."""
     if "preexec_fn" not in kwargs:
         kwargs["preexec_fn"] = drop_privs_in_child
     return subprocess.run(*args, **kwargs)
@@ -67,32 +42,16 @@ _USER_AGENT = (
 )
 
 
-# Hard ceiling so a caller can never request unbounded retries. With
-# the default 60s socket timeout per attempt + the 0/1/2/4/8s backoff
-# schedule, MAX_FETCH_RETRIES=5 caps a single fetch at ~5 min worst-
-# case (60×5 + 1+2+4+8). Anything more than that and the user is
-# better served by failing fast and surfacing the error.
+# Hard retry ceiling: 60s timeouts + 1/2/4/8s backoff caps one fetch at
+# ~5 min worst case.
 MAX_FETCH_RETRIES = 5
 
 
 def fetch(url: str, dest: Path | str, referer: str | None = None,
           retries: int = 3) -> bool:
-    """Download ``url`` to ``dest`` with exponential backoff between
-    attempts and Content-Length validation.
-
-    Returns True only when the full byte count promised by the server
-    actually landed on disk. A truncated download (server hung up
-    mid-stream without raising an exception — common on flaky CDN
-    edges) was previously silently treated as success; the wallpaper
-    step would then ``fail`` later with ``download incomplete — re-run
-    to retry`` because the on-disk file was empty / partial. We now
-    detect that here and retry with backoff.
-
-    Backoff schedule: 0s before the first attempt, then 1s, 2s, 4s, 8s
-    before each subsequent retry. ``retries`` is clamped to
-    ``[1, MAX_FETCH_RETRIES]`` so a caller can never request unbounded
-    work. On final failure the partial file is deleted (no half-baked
-    artefacts left behind) and an error line goes to stderr."""
+    """Download ``url`` to ``dest`` with 1/2/4/8s backoff and Content-Length
+    validation — flaky CDN edges truncate mid-stream without raising, so
+    byte-count is the only truth. Partial files are deleted on final failure."""
     dest = Path(dest)
     dest.parent.mkdir(parents=True, exist_ok=True)
     headers = {"User-Agent": _USER_AGENT}
@@ -103,16 +62,15 @@ def fetch(url: str, dest: Path | str, referer: str | None = None,
     capped_retries = min(MAX_FETCH_RETRIES, max(1, retries))
     for attempt in range(capped_retries):
         if attempt > 0:
-            time.sleep(2 ** (attempt - 1))  # 1s, 2s, 4s, 8s
+            time.sleep(2 ** (attempt - 1))
         try:
             with urllib.request.urlopen(req, timeout=60) as r:
                 expected = r.headers.get("Content-Length")
                 expected_n = int(expected) if expected and expected.isdigit() else None
                 with dest.open("wb") as f:
                     shutil.copyfileobj(r, f)
-            # Validate full body landed. Servers that omit Content-Length
-            # (chunked transfer, gzip-on-the-fly) just skip this check —
-            # we have no ground truth for those.
+            # Servers omitting Content-Length (chunked, gzip-on-the-fly)
+            # skip the check — no ground truth for those.
             if expected_n is not None:
                 actual_n = dest.stat().st_size
                 if actual_n != expected_n:
@@ -134,12 +92,9 @@ def fetch(url: str, dest: Path | str, referer: str | None = None,
 
 
 def _staging_root() -> Path:
-    """Resolve the staging dir lazily on every call. Eager evaluation at
-    module import bit us when the CLI used to invoke ``sudo ./install`` and
-    later drops privileges to ``SUDO_USER``: at import time HOME was
-    still ``/root``, so the cached path was ``/root/.cache/...`` and
-    every later ``safe_copy`` blew up with ``PermissionError`` once we
-    were no longer root."""
+    """Resolve lazily — at import time HOME may still be /root (pre
+    privilege-drop), which would cache a /root/.cache path and break
+    every later safe_copy with PermissionError."""
     cache_home = (
         os.environ.get("XDG_CACHE_HOME")
         or os.path.expanduser("~/.cache")
@@ -148,25 +103,10 @@ def _staging_root() -> Path:
 
 
 def safe_copy(src: Path | str, dest: Path | str) -> bool:
-    """Atomic copy via staging dir + rename, with rollback on failure.
-
-    ``symlinks=True`` matches GNU ``cp -r`` semantics. Without it the icon
-    themes balloon to 2-3x their size — the @2x and dark→light inheritance
-    symlinks get dereferenced into full duplicate trees, which also breaks
-    the icon-theme lookup for anything resolving via the @2x convention.
-
-    Staging dir lives outside ``dest.parent`` because ``~/.local/share/wallpapers``
-    is watched live by plasmashell's KDirWatch. If we wrote ``.tmp_*`` /
-    ``.bak_*`` siblings of the final destination, plasmashell would scan
-    them mid-copy and crash inside ``libplasma_wallpaper_image.so`` trying
-    to load half-built packages. By staging in ``~/.cache/`` and moving the
-    fully-formed tree across only at the end, KDirWatch only ever sees
-    complete wallpaper packages.
-
-    Cross-filesystem ``Path.rename`` on Linux falls back to copy+unlink
-    (``EXDEV``); we catch that and use ``shutil.move``, which handles it
-    transparently. Same FS is the common case (cache and share both under
-    ``$HOME``)."""
+    """Atomic copy via out-of-tree staging + rename, with rollback on failure.
+    ``symlinks=True`` or icon themes balloon 2-3x and @2x lookup breaks; staging
+    avoids dest.parent because plasmashell's KDirWatch scans sibling tmp dirs
+    mid-copy and crashes loading half-built wallpaper packages."""
     src = Path(src)
     dest = Path(dest)
     parent = dest.parent
@@ -258,8 +198,7 @@ def _run_pkg_cmd(base: list[str], *args: str) -> bool:
 
 def pkg_install(*pkgs: str) -> bool:
     """Install packages via the distro's native package manager (caller
-    passes current-distro names). Non-interactive; --needed lets the
-    package manager skip what's already current — no is-installed probe."""
+    passes current-distro names). Non-interactive; --needed skips current."""
     from distro import UnsupportedDistroError, package_manager_install_cmd
     try:
         base = package_manager_install_cmd()
@@ -293,10 +232,8 @@ _QDBUS_CACHE: list[str] | None = None
 
 
 def qdbus_cmd() -> str | None:
-    # Binary name varies per distro: Arch / Alpine / Debian / openSUSE
-    # ship ``qdbus6`` on PATH; Fedora and RHEL ship the same tool as
-    # ``qdbus-qt6``; older systems expose only ``qdbus`` (Qt5). Check
-    # all three in preference order.
+    # Arch/Alpine/Debian/openSUSE ship qdbus6; Fedora/RHEL ship qdbus-qt6;
+    # older systems only qdbus (Qt5).
     global _QDBUS_CACHE
     if _QDBUS_CACHE is None:
         _QDBUS_CACHE = [c for c in ("qdbus6", "qdbus-qt6", "qdbus") if have(c)]
@@ -304,10 +241,8 @@ def qdbus_cmd() -> str | None:
 
 
 def qdbus_call(*args: str) -> bool:
-    """Fire-and-forget qdbus invocation. Bounded by a 15s timeout so a
-    degraded plasmashell / kwin DBus endpoint can never hang the
-    installer indefinitely — the longest legitimate response we've seen
-    is ~3s for ``KWin.reconfigure`` on a slow machine."""
+    """Fire-and-forget qdbus, bounded at 15s so a degraded plasmashell/kwin
+    DBus endpoint can't hang the installer (longest legit response ~3s)."""
     q = qdbus_cmd()
     if not q:
         return False

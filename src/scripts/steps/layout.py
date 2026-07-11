@@ -116,9 +116,8 @@ def _evaluate_layout(script_path) -> bool:
 
 
 def _capture_pinned_launchers() -> list[str]:
-    """User-pinned taskbar launchers from appletsrc, deduped in order.
-    Our own MacTahoe plasmoids are dropped so a reinstall doesn't double
-    them; preferred:// and applications: entries are kept."""
+    """User-pinned launchers from appletsrc, deduped in order; MacTahoe's
+    own plasmoids are dropped so a reinstall doesn't double them."""
     appletsrc = HOME / ".config/plasma-org.kde.plasma.desktop-appletsrc"
     if not appletsrc.is_file():
         return []
@@ -144,8 +143,7 @@ def _reset_with_pins(pins: list[str]) -> bool:
     script = LAYOUT_RESET.read_text()
     if pins:
         joined = ",".join(pins)
-        # Append a restore block: find the icontasks the reset just added
-        # and write the captured launchers onto it.
+        # Restore block: write the captured launchers onto the fresh icontasks.
         script += (
             "\n(function () {\n"
             "  var ps = panels();\n"
@@ -202,12 +200,9 @@ _CUSTOM_PANEL_NEEDLES = (
 
 
 def _layout_looks_reset() -> bool:
-    """Layout is 'reset' when our custom widgets are gone from
-    appletsrc. We don't require the full default Breeze panel needles
-    to be present — plasma-apply-lookandfeel may write the layout
-    asynchronously and the final plasmashell restart picks up the
-    rest. The thing that actually matters here is: no MacTahoe-specific
-    plugin IDs left behind to fail loading on next start."""
+    """'Reset' = no MacTahoe plugin IDs left in appletsrc. Default Breeze
+    needles may land asynchronously (plasma-apply-lookandfeel), so their
+    presence is not required."""
     appletsrc = HOME / ".config/plasma-org.kde.plasma.desktop-appletsrc"
     if not appletsrc.is_file():
         return True
@@ -238,9 +233,8 @@ def _wait_for_layout_install(timeout_seconds: float = 5.0) -> bool:
     return _layout_looks_installed()
 
 
-# Plasma's JS scripting API doesn't expose panelOpacity / floatingApplets,
-# so the layout JS can't set them. Patch them into plasmashellrc directly
-# after the layout runs.
+# Plasma's JS API doesn't expose panelOpacity / floatingApplets, so they
+# are patched into plasmashellrc directly after the layout runs.
 _PRC_PANEL_RE = re.compile(
     r"(\[PlasmaViews\]\[Panel \d+\]\n(?:[^\[]*\n)*)", re.MULTILINE,
 )
@@ -300,9 +294,8 @@ def uninstall() -> None:
         ok("Layout reset")
         return
 
-    # Capture the user's pinned taskbar apps before any reset wipes them,
-    # then restore them onto the default panel. --resetLayout / default.js
-    # rebuild the panel from scratch, so without this the pins are lost.
+    # --resetLayout / default.js rebuild the panel from scratch — capture
+    # the user's pinned apps first or they're lost.
     pins = _capture_pinned_launchers()
     if _reset_with_pins(pins):
         ok(f"Layout reset (kept {len(pins)} pinned app(s))" if pins

@@ -8,9 +8,8 @@ WHITE = "\033[1;37m"
 RESET = "\033[0m"
 BOLD = "\033[1m"
 
-# Apple Computer 1977-1998 rainbow logo (top → bottom): green, yellow,
-# orange, red, purple, blue. We use 256-color codes for orange and
-# purple since the basic ANSI palette has no orange or purple.
+# Apple 1977-1998 rainbow logo bands, top → bottom. 256-color codes —
+# basic ANSI has no orange or purple.
 _APPLE_RAINBOW = (
     "\033[38;5;46m",   # green (leaf)
     "\033[38;5;226m",  # yellow
@@ -117,14 +116,9 @@ def banner(version: str) -> None:
         "               `.__.-.__.'",
     )
     print()
-    # Apple Computer rainbow: top line uses the leaf-green; the body's
-    # six rows map onto the six bands of the original logo (green,
-    # yellow, orange, red, purple, blue). One color per line so the
-    # gradient reads as a stripe.
     for line, colour in zip(art, _APPLE_RAINBOW):
         print(f"  {colour}{BOLD}{line}{RESET}")
-    # If we ever add more art rows than colours, fall through to the
-    # last colour so we never crash on a misaligned tuple.
+    # Extra art rows beyond the palette reuse the last colour.
     for extra in art[len(_APPLE_RAINBOW):]:
         print(f"  {_APPLE_RAINBOW[-1]}{BOLD}{extra}{RESET}")
     print()

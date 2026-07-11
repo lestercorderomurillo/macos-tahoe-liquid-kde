@@ -67,11 +67,8 @@ def _run_live(cmd: list[str]) -> None:
 
 
 def _refresh_desktop_database() -> None:
-    """Rebuild mimeinfo.cache in the applications dirs. kbuildsycoca6
-    reads it to know which apps exist, so a stale cache leaves the
-    launcher/taskbar missing apps after a theme switch — this is the
-    update-desktop-database step users had to run by hand. User dir runs
-    as the user; the system dir needs root."""
+    """Rebuild mimeinfo.cache: a stale cache leaves launcher/taskbar apps
+    missing after a theme switch. User dir as user; the system dir needs root."""
     from steps._helpers import _as_root
     if not have("update-desktop-database"):
         return
@@ -131,13 +128,9 @@ def _wallpaper_path() -> Path | None:
 
 
 def _live_plasma_ready_quick() -> bool:
-    """Best-effort probe for whether live Plasma mutations are worth trying.
-
-    Uninstall restarts plasmashell at the end anyway, so spending minutes
-    waiting for DBus/display recovery after caches are flushed is pure UX
-    pain. Look for a display and a live plasmashell; if either is missing,
-    skip the live niceties and let the final Plasma restart pick up the
-    on-disk Breeze config."""
+    """Probe whether live Plasma mutations are worth trying. Uninstall
+    restarts plasmashell anyway, so a missing display/shell means skip the
+    live niceties and let the restart pick up the on-disk config."""
     import os as _os
     if not (_os.environ.get("DISPLAY") or _os.environ.get("WAYLAND_DISPLAY")):
         return False
@@ -170,11 +163,8 @@ def install() -> None:
 
     switch = HOME / ".local/bin/mac-tahoe-theme-switch"
     if switch.is_file() and (switch.stat().st_mode & 0o111):
-        # "install" context skips live plasmashell mutation, which is where
-        # the first-session and QML teardown races have shown up. The Plasma
-        # restart at the end of install loads the correct theme from config;
-        # Kvantum/GTK are still applied immediately so already-open windows
-        # update.
+        # "install" context skips live plasmashell mutation (first-session and
+        # QML teardown races); the final Plasma restart loads theme from config.
         _run_live([str(switch), theme_mode(), "install"])
         ok(f"Theme applied ({theme_mode()})")
 
@@ -211,10 +201,8 @@ def restart_plasma() -> None:
     # let panels created by the layout script fully initialise
     time.sleep(6)
 
-    # SIGKILL skips the QML engine teardown race (SIGABRT/SIGSEGV in
-    # org.kde.panel.so → Applet::~Applet → deleteChildren cascade) that
-    # kquitapp6/SIGTERM consistently trigger. Config is already on disk
-    # (layout JS + plasmashellrc patching ran above).
+    # SIGKILL skips the QML teardown crash (Applet::~Applet cascade) that
+    # kquitapp6/SIGTERM reliably trigger; config is already on disk.
     if _run_quick(
         ["systemctl", "--user", "kill", "--signal=KILL", "plasma-plasmashell"],
     ).returncode != 0:
@@ -307,11 +295,8 @@ def uninstall() -> None:
             kw_write("--file", "kcminputrc", "--group", "Mouse",
                      "--key", "cursorTheme", "breeze_cursors")
             ok("Cursor reset")
-        # Reset the icon theme UNCONDITIONALLY (not gated on the ICONS
-        # feature): the MacTahoe icon dirs get deleted later in the
-        # uninstall, so if kdeglobals still named them KDE would log
-        # "Icon theme MacTahoeLiquidKde-Icons not found" against the gone
-        # dir. Always point config at breeze before the dirs vanish.
+        # Reset icons UNCONDITIONALLY (not gated on the ICONS feature): the
+        # MacTahoe icon dirs are deleted later, so point config at breeze first.
         kw_write("--file", "kdeglobals", "--group", "Icons",
                  "--key", "Theme", "breeze")
         _run_live(
@@ -334,19 +319,16 @@ def uninstall() -> None:
 
     live_ready = _live_plasma_ready_quick()
 
-    # If the session isn't responsive, the final plasmashell restart picks
-    # up the on-disk Breeze config — no warning needed, that path is by
-    # design (see ``_live_plasma_ready_quick``).
+    # Unresponsive session is fine by design — the final plasmashell restart
+    # picks up the on-disk Breeze config (see _live_plasma_ready_quick).
     if live_ready:
         if _apply_lookandfeel_live("org.kde.breeze.desktop"):
             ok("Look-and-feel applied live")
         else:
             warn("Live Breeze look-and-feel apply skipped")
 
-    # Even after switching to the Breeze LAF, Qt apps that were started
-    # under Kvantum keep its style plugin instance alive — the right-click
-    # menus on plasmashell stay glass/translucent until something forces a
-    # re-instantiation. Cycling widgetStyle does that without a restart.
+    # Qt apps started under Kvantum keep its style instance alive after the
+    # LAF switch; cycling widgetStyle forces re-instantiation without restart.
     if live_ready:
         cycle_widget_style_live("Breeze")
 

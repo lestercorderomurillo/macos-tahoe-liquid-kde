@@ -79,23 +79,17 @@ def remove_tree(p: Path, label: str | None = None) -> bool:
         return False
 
 
-# Re-export the canonical drop_privs_in_child from utils for any step
-# module still importing it from here.
+# Re-export for step modules still importing drop_privs_in_child from here.
 _drop_privs_in_child = drop_privs_in_child
 
 
 @contextmanager
 def _as_root() -> Iterator[None]:
-    """Briefly re-elevate to root for one privileged operation. The CLI
-    uninstall entry point demands ``sudo ./uninstall`` (real UID stays 0) and then
-    drops the *effective* UID to ``SUDO_USER`` so user-side writes get
-    correct ownership. ``seteuid(0)`` is reversible because real UID is
-    still 0, so this hop is always safe."""
+    """Briefly re-elevate to root: the CLI only drops the *effective* UID
+    (real UID stays 0), so seteuid(0) is always reversible."""
     saved_euid = os.geteuid()
     saved_egid = os.getegid()
     if saved_euid == 0:
-        # Already root (script invoked as the real root login, no drop
-        # happened). Just run the body.
         yield
         return
     try:
@@ -108,11 +102,8 @@ def _as_root() -> Iterator[None]:
 
 
 def sudo_install_file(src: Path, dest: Path, label: str) -> bool:
-    """Copy a file to a root-owned destination. The script is already
-    root-capable at this point (the CLI bailed early otherwise), so this
-    is just an atomic ``copy + rename`` performed under a transient
-    ``seteuid(0)`` — no sudo subprocess, no PAM conv, no faillock surface.
-    """
+    """Atomic copy+rename to a root-owned destination under a transient
+    seteuid(0) — no sudo subprocess, no PAM conv, no faillock surface."""
     src = Path(src)
     dest = Path(dest)
     try:
@@ -129,9 +120,8 @@ def sudo_install_file(src: Path, dest: Path, label: str) -> bool:
 
 
 def sudo_install_tree(src: Path, dest: Path, label: str | None = None) -> bool:
-    """Copy a directory tree to a root-owned destination via _as_root().
-    Stages the new tree at a sibling .mttkde-tmp path then renames into
-    place so the live destination is never half-written."""
+    """Copy a tree to a root-owned destination, staged at a sibling
+    .mttkde-tmp then renamed so the live destination is never half-written."""
     label = label or dest.name
     src = Path(src)
     dest = Path(dest)
@@ -191,13 +181,8 @@ def cmake_build(src_dir_: Path, build_dir: Path, label: str) -> bool:
     if not (src_dir_ / "CMakeLists.txt").is_file():
         warn(f"{label} source not found — skipping")
         return False
-    # Wipe stale build dirs. Earlier ``sudo ./install`` runs (before the
-    # CLI started dropping privileges) may have left root-owned files
-    # under build/. ignore_errors=True would silently skip them and the
-    # subsequent mkdir would then trip FileExistsError, which would
-    # surface as a confusing "cmake configure failed". Try as user
-    # first; if anything's left over, hop to root via _as_root for the
-    # cleanup so the new build starts from an empty dir.
+    # Root-owned leftovers from old sudo installs survive the user-level
+    # rmtree; retry the wipe as root so mkdir doesn't hit FileExistsError.
     if build_dir.exists():
         shutil.rmtree(build_dir, ignore_errors=True)
         if build_dir.exists():
@@ -207,9 +192,7 @@ def cmake_build(src_dir_: Path, build_dir: Path, label: str) -> bool:
     cfg = subprocess.run(
         ["cmake", "-S", str(src_dir_), "-B", str(build_dir),
          "-DCMAKE_BUILD_TYPE=Release",
-         # Generate compile_commands.json so VSCode/clangd resolve
-         # Qt AUTOMOC-generated headers (main.moc, etc.) without manual
-         # includePath config.
+         # compile_commands.json lets clangd resolve Qt AUTOMOC headers.
          "-DCMAKE_EXPORT_COMPILE_COMMANDS=ON"],
         check=False, capture_output=True, text=True,
         preexec_fn=_drop_privs_in_child,
@@ -233,10 +216,8 @@ def cmake_build(src_dir_: Path, build_dir: Path, label: str) -> bool:
 
 
 def _emit_cmd_log(label: str, tool: str, stdout: str, stderr: str, log_path: Path) -> None:
-    """Print the trailing slice of stderr (the actual error) and persist
-    the full output for inspection. ``./install`` is too verbose to dump
-    a full cmake/make log inline, but the last ~25 lines almost always
-    contain the failing find_package() / missing-header line."""
+    """Print the output tail (the last ~25 lines carry the actual
+    find_package()/header error) and persist the full log to disk."""
     blob = (stdout or "") + (stderr or "")
     try:
         log_path.parent.mkdir(parents=True, exist_ok=True)

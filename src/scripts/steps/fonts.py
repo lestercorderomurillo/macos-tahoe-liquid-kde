@@ -1,21 +1,6 @@
-"""SF Pro fonts — fully bundled offline since v0.18.0.
-
-Earlier releases downloaded San Francisco Pro from
-github.com/sahibjotsaggu/San-Francisco-Pro-Fonts on first install
-and cached the result under ``~/.cache/mac-tahoe-liquid-kde/steps/
-fonts/``. Two problems:
-
-* Every fresh install hit the network for ~73 MB of OTFs before any
-  font appeared, slowing down installs and breaking on air-gapped
-  hosts.
-* If GitHub returned an HTML error page or the upstream renamed
-  files, the install partially succeeded with a font subset and
-  Plasma fell back to Noto Sans without telling the user.
-
-v0.18 ships the full 47-file SF Pro family in-repo under
-``src/offline/fonts/`` (~109 MB). No ``download()`` phase, no
-mirror JSON, no network dependency.
-"""
+"""SF Pro / SF Mono fonts: copies src/offline/fonts/ into
+~/.local/share/fonts and refreshes the fontconfig cache.
+Fully offline since v0.18.0 — no download phase."""
 
 import shutil
 import subprocess
@@ -71,12 +56,8 @@ def install() -> None:
 
 
 def _refresh_font_cache() -> None:
-    """Rebuild fontconfig's cache so newly-installed .otf/.ttf files
-    are visible to Qt / GTK apps without a logout. Guarded by
-    ``have('fc-cache')`` because fontconfig is technically optional on
-    minimal Plasma installs — fonts still copy to ~/.local/share/fonts,
-    they just don't show up until the next login (Qt re-scans the
-    font dir at session start)."""
+    """Rebuild the fontconfig cache so new fonts show without a logout.
+    fc-cache is optional on minimal installs — fonts then appear at next login."""
     if not have("fc-cache"):
         warn("fc-cache not found (fontconfig package missing) — fonts "
              "copied but cache not refreshed; they will appear after "

@@ -24,11 +24,9 @@ def deps():
 
 
 def _set_default(desktop_id: str, mime: str) -> bool:
-    """Write a default-handler binding the way xdg-mime would, but
-    directly: kwriteconfig6 against ``~/.config/mimeapps.list``, group
-    ``[Default Applications]``. Avoids the xdg-mime shell dispatcher
-    (which can hang waiting for legacy Qt5 helpers in a Qt6-only
-    install) while landing the same file format Plasma reads."""
+    """Write the default-handler key straight to mimeapps.list — the
+    xdg-mime dispatcher can hang probing legacy Qt5 helpers on Qt6-only
+    installs, and this lands the same format Plasma reads."""
     return kw_write(
         "--file", "mimeapps.list",
         "--group", "Default Applications",
@@ -37,11 +35,9 @@ def _set_default(desktop_id: str, mime: str) -> bool:
 
 
 def _generate_bookmarks() -> None:
-    """Read ~/.config/user-dirs.dirs and write ~/.config/gtk-3.0/bookmarks
-    with the user's XDG directories. Labels match the actual folder names
-    on disk, which follow the system language (Desktop, Documentos, etc.).
-    Gated by the ``nautilus_bookmarks`` feature; the pre-existing bookmarks
-    file is backed up once and restored on uninstall."""
+    """Write ~/.config/gtk-3.0/bookmarks from the user's XDG dirs (labels
+    follow the on-disk folder names, i.e. the system language). The
+    pre-existing file is backed up once and restored on uninstall."""
     if not feat_enabled("nautilus_bookmarks"):
         return
     src = HOME / ".config/user-dirs.dirs"
@@ -135,15 +131,8 @@ def _restart_running_nautilus() -> bool:
     if not have("gdbus"):
         warn("gdbus not found — skipping live Nautilus restart")
         return False
-    # Nautilus 50+ exposes its quit verb under ``org.gtk.Actions``
-    # (``Activate("quit", [], {})``), not the legacy
-    # ``org.freedesktop.Application.Quit`` method that older releases
-    # honoured. Calling Application.Quit on modern Nautilus comes back
-    # with ``UnknownMethod: No such method "Quit"`` and we surface the
-    # rc=1 as ``Live Nautilus restart skipped`` even though everything
-    # else is fine. Use the gtk.Actions path; the activation acks
-    # immediately but the process actually exits ~5-10s later as the
-    # open windows finish closing.
+    # Nautilus 50+ quits via org.gtk.Actions Activate("quit"), not the legacy
+    # Application.Quit; the ack is immediate but exit takes ~5-10s.
     try:
         rc = run_user(
             [
@@ -164,10 +153,8 @@ def _restart_running_nautilus() -> bool:
     if rc != 0:
         warn(f"Live Nautilus restart skipped (gdbus rc={rc})")
         return False
-    # 15s exit window — Nautilus 50.1 with multiple windows takes ~10s
-    # to drain. The poll interval stays at 100ms so we react promptly
-    # when it does exit, and the gapplication relaunch downstream can
-    # start without an extra dead-time gap.
+    # 15s exit window — Nautilus 50.1 with multiple windows takes ~10s to
+    # drain; the 100ms poll lets the relaunch start promptly.
     for _ in range(150):
         if not _nautilus_running():
             break
@@ -217,11 +204,6 @@ def install() -> None:
         fail("Nautilus not installed (expected deps to have provided it)")
         return
 
-    # ``xdg-mime`` is a shell dispatcher that, under KDE, calls
-    # ``kwriteconfig6 mimeapps.list`` and ``kbuildsycoca6`` — both of
-    # which we already have. Going direct shaves the 5s timeout window
-    # (xdg-mime's KDE backend can spend that just probing for legacy
-    # Qt5 helpers) and removes a transient dependency.
     if _set_default(NAUTILUS_DESKTOP, MIME_FOLDER):
         ok("Nautilus set as default for folders")
     _set_default(NAUTILUS_DESKTOP, MIME_SEARCH)

@@ -1,25 +1,8 @@
 #!/usr/bin/env python3
-"""Light/dark theme switcher for MacTahoe Liquid KDE.
-
-Single entry point: `mac-tahoe-theme-switch {light|dark|auto} [install]`.
-Same binary runs from the install step (which passes the `install`
-context so the live look-and-feel apply is skipped — the Plasma restart
-at the end of install loads the theme anyway, and running both races
-plasmashell's QML teardown), from the systemd service that fires after
-the desktop is up, from the 06:00 / 18:00 timer, and from the user by
-hand. No deferred re-applies, no watch loops — install only schedules
-this for `--auto`; `--light` and `--dark` apply once and stay put.
-Exits non-zero when the config write layer (kwriteconfig6) is
-unavailable; the live niceties are best-effort and never fail the run.
-
-Plasma 6's lookandfeelautoswitcher KDED module touches color scheme,
-plasma theme, icons, cursors, aurorae, and wallpaper on its own when
-plasma-apply-lookandfeel runs. This script covers what Plasma does NOT
-switch automatically (Kvantum, GTK 2/3/4, icon caches) and rewrites the
-[Colors:*]/[ColorEffects:*]/[WM] groups in kdeglobals directly — relying
-on `plasma-apply-colorscheme` alone can leave stale palette values from
-the previous scheme.
-"""
+"""Light/dark theme switcher: `mac-tahoe-theme-switch {light|dark|auto}
+[install]`. Covers what Plasma's lookandfeelautoswitcher does NOT switch
+(Kvantum, GTK 2/3/4, icon caches) and rewrites the [Colors:*] groups
+directly — plasma-apply-colorscheme alone can leave stale palette values."""
 
 import datetime as _dt
 import hashlib
@@ -51,8 +34,7 @@ def _kdeglobals_path() -> Path:
 
 
 def _qdbus(*args: str) -> bool:
-    # Same per-distro alias dance as utils.qdbus_cmd(): Fedora ships
-    # the Qt6 client as ``qdbus-qt6``, not ``qdbus6``.
+    # Fedora ships the Qt6 client as qdbus-qt6, not qdbus6 (see utils.qdbus_cmd).
     for q in ("qdbus6", "qdbus-qt6", "qdbus"):
         if _have(q):
             try:
@@ -260,9 +242,8 @@ def apply_color_groups_direct(scheme: str) -> bool:
         group_args = _build_group_args(section)
         for key, value in items.items():
             _kwrite("--file", "kdeglobals", *group_args, "--key", key, value)
-    # KColorSchemeManager and several Qt apps key cached palettes on
-    # ColorSchemeHash. Without rewriting it, apps serve cached colors
-    # from the previous scheme after a flip.
+    # Qt apps key cached palettes on ColorSchemeHash — without rewriting
+    # it they keep serving the previous scheme's colors.
     digest = hashlib.sha1(scheme_file.read_bytes()).hexdigest()
     _kwrite("--file", "kdeglobals", "--group", "General",
             "--key", "ColorSchemeHash", digest)
@@ -352,11 +333,9 @@ def _apply_local_extras(mode: str) -> None:
                 if not src.is_dir():
                     continue
                 dst = gtk4_dest / sub
-                # rmtree(ignore_errors=True) can silently leave the dir in
-                # place — an inotify watcher (file manager, GTK client,
-                # cache writer) recreating files during the iteration is
-                # enough to make rmdir fail with ENOTEMPTY. dirs_exist_ok=True
-                # merges into whatever survived rmtree.
+                # rmtree(ignore_errors=True) can leave the dir behind (an
+                # inotify watcher recreating files mid-walk → ENOTEMPTY);
+                # dirs_exist_ok=True merges into whatever survived.
                 try:
                     shutil.rmtree(dst, ignore_errors=True)
                     shutil.copytree(src, dst, dirs_exist_ok=True)
@@ -409,9 +388,8 @@ def write_kde_theme_config(mode: str) -> bool:
 
     _kwrite("--file", "kdeglobals", "--group", "KDE",
             "--key", "LookAndFeelPackage", laf)
-    # Disable Plasma's built-in AutomaticLookAndFeel so the KDE sunrise/sunset
-    # scheduler can't fight our 06:00 / 18:00 timer. Idempotent — set on every
-    # apply rather than guarded by a separate enable/disable function.
+    # Disable Plasma's AutomaticLookAndFeel so its sunrise/sunset
+    # scheduler can't fight our 06:00 / 18:00 timer (idempotent).
     _kwrite("--file", "kdeglobals", "--group", "KDE",
             "--key", "AutomaticLookAndFeel", "false")
     _kwrite("--file", "kdeglobals", "--group", "Icons", "--key", "Theme", icon)
@@ -466,20 +444,9 @@ _LAF_APPLY_RETRY_SLEEP_SECONDS = 6
 
 
 def _apply_lookandfeel_live(laf: str) -> bool:
-    """Run plasma-apply-lookandfeel against the running shell. Up to
-    three attempts. First attempt waits 2s (just enough for the
-    plasmashell DBus name to register after the service line ``After=
-    plasma-plasmashell.service`` clears); subsequent attempts wait 6s
-    before retrying.
-
-    The waits are deliberate: on a fresh login the systemd unit can
-    race plasmashell's DBus registration, and plasma-apply-lookandfeel
-    exits 0 against a not-yet-ready bus without actually re-rendering
-    the desktop. The 2s lead-in covers the common case (DBus is
-    already up by the time our service runs); the 6s gap between
-    retries covers the slow-boot tail (HDD, encrypted home, heavy
-    login program list). Total worst case: 2 + 6 + 6 = 14s of sleeps
-    plus three plasma-apply-lookandfeel invocations."""
+    """Up to three attempts: 2s lead-in, then 6s between retries. On a
+    fresh login plasma-apply-lookandfeel exits 0 against a not-yet-ready
+    bus WITHOUT re-rendering — don't shorten the lead-in."""
     if not _have("plasma-apply-lookandfeel"):
         return False
     for attempt in range(_LAF_APPLY_ATTEMPTS):
@@ -529,17 +496,11 @@ def _broadcast_widget_style_change(style: str) -> None:
 
 
 def cycle_widget_style_live(target: str) -> bool:
-    """Force-reload Kvantum in running Qt apps without restarting plasmashell.
-    Kvantum is a style plugin and can't apply theme changes on the fly — only
-    QApplication::setStyle() re-instantiates the plugin and re-reads kvconfig.
-    Trick Qt by writing Breeze, broadcasting the signals, then writing the
-    target back. https://github.com/tsujan/Kvantum/discussions/975 — upstream
-    confirms only platform-theme plugins can hot-reload.
-
-    SIGTERM / SIGINT during the inter-write sleep would leave widgetStyle=Breeze
-    on disk and freeze the user in Breeze the next time plasmashell reads the
-    config. The finally + signal handler guarantee disk state always ends at
-    the target style."""
+    """Kvantum can't hot-reload kvconfig; only QApplication::setStyle()
+    re-instantiates the plugin — so write Breeze, broadcast, write the
+    target back (https://github.com/tsujan/Kvantum/discussions/975).
+    SIGTERM/SIGINT mid-cycle would strand widgetStyle=Breeze on disk;
+    the finally + signal handler guarantee disk ends at the target."""
     if not _have("kwriteconfig6") or not _has_session_dbus():
         return False
     if not target:
@@ -572,11 +533,10 @@ def cycle_widget_style_live(target: str) -> bool:
 
 
 def apply(mode: str, context: str = "user") -> bool:
-    """Writes config + extras (Kvantum, GTK, caches) + live LAF (skipped
-    during install — Plasma restarts anyway) + live cursor + Kvantum
-    cycle + KWin reconfigure. Returns False only when the config write
-    layer is unavailable — the live sub-calls are best-effort and just
-    note their failure on stderr (journald keeps it for the service)."""
+    """Config writes + best-effort live niceties. Returns False only when
+    the config write layer (kwriteconfig6) is unavailable. Live LAF is
+    skipped during install — Plasma restarts anyway and running both
+    races plasmashell's QML teardown."""
     cursor = "MacTahoeLiquidKde-Dark" if mode == "dark" else "MacTahoeLiquidKde"
     widget = "kvantum-dark" if mode == "dark" else "kvantum"
     laf = LAF_DARK if mode == "dark" else LAF_LIGHT

@@ -1,28 +1,8 @@
 #!/usr/bin/env python3
-"""OLED care pixel-shift for MacTahoe Liquid KDE.
-
-Single entry point: `mac-tahoe-oled-care {shift|restore|status}`. The
-same binary runs from the systemd user timer (every 5 minutes unless
-`--oled-interval` said otherwise at install time) and by hand. Static panel content is what burns OLED panels in — the top bar's
-menu text and clock never move, so the same subpixels drive the same
-values for hours.
-
-`shift` nudges panel geometry one step along a repeating pattern, all
-inside one `plasmashell evaluateScript` call:
-
-- fill-length panels (the top bar) cycle their thickness +0/+1/+2 px —
-  a full-width panel cannot slide sideways (Plasma clamps its offset),
-  but a height change moves the vertically-centered applets up and down.
-- everything else (the dock) cycles its offset ±2 px along the edge.
-
-Per-panel base geometry is captured on first touch and stored in
-`~/.local/state/mac-tahoe-liquid-kde/oled-care.json`. When a panel's
-current geometry no longer equals base + the last applied delta the
-user (or a layout re-apply) moved it, so the base is re-captured from
-the current value — the shift never fights a deliberate change and
-drift cannot accumulate. `restore` undoes the currently-applied delta
-and removes the state file.
-"""
+"""OLED care pixel-shift: `mac-tahoe-oled-care {shift|restore|status}`.
+Fill-length panels cycle height (Plasma clamps their offset); others
+cycle offset. When a panel's geometry != base + last delta the user
+moved it — re-capture the base, never fight a deliberate change."""
 
 import json
 import os
@@ -32,11 +12,8 @@ import sys
 from pathlib import Path
 
 
-# Amplitude is configurable (`shift --max-px N`, wired from the install
-# flag --oled-max-shift). Offsets walk a triangle wave both directions
-# around the base in 2 px steps (top bar: 32 → 34 → … → 40 → 38 → …);
-# heights are the |offset| wave so a panel only ever grows — it never
-# renders thinner than the user chose.
+# Offsets walk a triangle wave around the base; heights use the |offset|
+# wave so a panel only grows — it never renders thinner than its base.
 DEFAULT_MAX_SHIFT_PX = 8
 MAX_SHIFT_CEILING_PX = 16
 SHIFT_STEP_PX = 2
@@ -97,9 +74,8 @@ def _sync_session_env() -> None:
 
 
 def _evaluate_script(script: str) -> str | None:
-    """Run a Plasma scripting snippet via qdbus. Returns the script's
-    print() output, or None when plasmashell is unreachable (no session
-    bus, shell not up yet — normal when the timer fires early)."""
+    """Run a Plasma scripting snippet via qdbus; returns its print()
+    output, or None when plasmashell is unreachable (normal early in boot)."""
     _sync_session_env()
     for q in ("qdbus6", "qdbus-qt6", "qdbus"):
         if not _have(q):
@@ -121,9 +97,8 @@ _EMPTY_STATE = {"index": 0, "last_off": 0, "last_h": 0, "panels": {}}
 
 
 def load_state() -> dict:
-    """The applied deltas are stored, not recomputed from the pattern —
-    restore stays correct even when --oled-max-shift changed between
-    the last shift and now."""
+    """Applied deltas are stored, not recomputed — restore stays correct
+    even when --oled-max-shift changed since the last shift."""
     try:
         data = json.loads(_state_file().read_text(encoding="utf-8"))
     except (OSError, json.JSONDecodeError):
@@ -155,9 +130,8 @@ def save_state(state: dict) -> None:
 
 def build_shift_script(panels: dict, last_off: int, last_h: int,
                        next_off: int, next_h: int) -> str:
-    """One atomic read-rebase-apply pass inside plasmashell. The script
-    prints the (possibly rebased) base map back as JSON so the Python
-    side can persist it without a second round-trip."""
+    """One atomic read-rebase-apply pass inside plasmashell; prints the
+    rebased base map as JSON so Python persists it in one round-trip."""
     return f"""
 var bases = {json.dumps(panels)};
 var lastOff = {last_off}, nextOff = {next_off};
@@ -232,8 +206,7 @@ def shift(max_px: int = DEFAULT_MAX_SHIFT_PX) -> int:
         build_shift_script(state["panels"], state["last_off"],
                            state["last_h"], next_off, next_h))
     if output is None:
-        # plasmashell not reachable — nothing shifted, keep state as-is
-        # so the next fire resumes from the same step.
+        # Nothing shifted — keep state so the next fire resumes here.
         return 0
     panels = _parse_panel_map(output)
     if panels is None:
@@ -253,8 +226,7 @@ def restore() -> int:
         build_restore_script(state["panels"], state["last_off"],
                              state["last_h"]))
     if output is None:
-        # Session down — the ≤2 px residue is corrected on the next
-        # shift/restore; keep state so that remains possible.
+        # Keep state so the next shift/restore corrects the ≤2 px residue.
         print("oled care: plasmashell unreachable — geometry not restored",
               file=sys.stderr)
         return 0

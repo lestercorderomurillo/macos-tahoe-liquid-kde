@@ -32,14 +32,8 @@ ALL_FEATURES = [
     "nautilus", "nautilus_bookmarks", "portals", "oled_care", "apply_theme",
 ]
 
-# Walk order for the install/uninstall loop.
-# 1. Core visual foundations first.
-# 2. Shell components that the panel layout depends on next.
-# 3. App integrations last.
-# ``layout`` is iterated here for completeness but skipped during the loop —
-# it runs after the apply step so it sees the new panel/dock packages already
-# on disk, and may be retried once after the Plasma restart if the first pass
-# raced plasmashell's plugin discovery.
+# ``layout`` is listed but skipped in the loop — it runs after apply so it
+# sees the new panel/dock packages, and may be retried once after the restart.
 INSTALL_ORDER = [
     "fonts", "color_schemes", "plasma_theme", "window_decorations",
     "kvantum", "gtk", "icons", "cursors", "global_theme", "wallpapers",
@@ -229,8 +223,7 @@ class ParsedArgs:
         self.help = False
 
 
-# Flags that take a value: (attribute, default used only for clamping,
-# lo, hi). Both ``--flag=N`` and ``--flag N`` forms are accepted.
+# (attr, clamp default, lo, hi); accepts --flag=N and --flag N.
 _INT_FLAGS = {
     "--oled-interval": ("oled_interval", 5, 1, 59),
     "--oled-max-shift": ("oled_max_shift", 8, 1, 16),
@@ -274,10 +267,8 @@ def parse_args(argv: list[str]) -> ParsedArgs:
         elif arg == "--restart":
             p.restart_only = True
         elif arg == "--no-grub-modify":
-            # Plymouth's GRUB cmdline auto-patch is opt-in by default;
-            # this flag turns it off so the installer prints the
-            # warning + manual instructions instead of editing
-            # /etc/default/grub.
+            # Read by the plymouth step: print manual instructions
+            # instead of editing /etc/default/grub.
             os.environ["MTTKDE_NO_GRUB_MODIFY"] = "1"
         elif arg.startswith("--no-"):
             key = arg[5:].replace("-", "_")
@@ -298,10 +289,8 @@ GITHUB_RELEASES_URL = (
 
 
 def parse_semver(version: str) -> tuple[int, int, int]:
-    """Permissive semver tuple. Strips a leading ``v``, ignores trailing
-    pre-release / build metadata (``-rc1``, ``+meta``), pads short versions
-    with zeros. Returns ``(0, 0, 0)`` on garbage rather than raising — a
-    bad release tag should never block the installer."""
+    """Permissive semver tuple. Returns ``(0, 0, 0)`` on garbage rather
+    than raising — a bad release tag must never block the installer."""
     if not version:
         return (0, 0, 0)
     s = version.strip().lstrip("vV").split("-", 1)[0].split("+", 1)[0]
@@ -318,9 +307,8 @@ def parse_semver(version: str) -> tuple[int, int, int]:
 
 
 def fetch_latest_release(timeout: float = 2.5) -> str | None:
-    """Hit the GitHub releases API for the latest tag. Returns the bare
-    version string (``0.8.0``) or ``None`` if anything goes wrong — offline,
-    rate-limited, GitHub 5xx, JSON shape changed, …"""
+    """Latest release tag (bare version string) from GitHub, or ``None``
+    if anything goes wrong — offline, rate-limited, JSON shape changed."""
     if os.environ.get("MAC_TAHOE_NO_UPDATE_CHECK", "").lower() == "true":
         return None
     try:
@@ -343,21 +331,12 @@ _VERSION_CHECK_READ_PAUSE = 2.0
 
 
 def check_for_updates(verbose: bool = False, inline: bool = False) -> bool:
-    """Print an upgrade banner when GitHub has a newer release. Returns
-    ``True`` if an update is available.
-
-    ``inline=True`` prints a transient ``Checking for updates…`` line and
-    overwrites it in place with the verdict, then pauses ~2s so the
-    verdict has time to register before the install scrolls it away. Used
-    by the install flow so the user sees the network round-trip happen
-    and gets a confirmation of where they stand on every run.
-
-    ``verbose=True`` (without inline) is for the standalone
-    ``--check-update`` flag — it always announces the verdict, even when
-    up to date or offline, but skips the pause."""
+    """Print an upgrade banner when GitHub has a newer release; True if so.
+    ``inline`` overwrites a transient status line in place and pauses ~2s so
+    the verdict registers before install output scrolls it away; ``verbose``
+    (standalone --check-update) always announces, without the pause."""
     if inline:
-        # confirm() already trails with a blank line, so we go straight
-        # into the transient "Checking…" line.
+        # confirm() already trails a blank line.
         print("  \033[2mChecking for updates…\033[0m", end="", flush=True)
 
     current = read_version()
@@ -383,8 +362,7 @@ def check_for_updates(verbose: bool = False, inline: bool = False) -> bool:
             time.sleep(_VERSION_CHECK_READ_PAUSE)
         return True
     if verbose or inline:
-        # Match ok() exactly: two spaces, ✓, two spaces, message — no
-        # extra padding before the glyph or doubled blank lines around it.
+        # Match ok() formatting exactly.
         print(f"  \033[0;32m✓\033[0m  On the latest version ({current})")
     if inline:
         time.sleep(_VERSION_CHECK_READ_PAUSE)
@@ -392,10 +370,8 @@ def check_for_updates(verbose: bool = False, inline: bool = False) -> bool:
 
 
 def _git(*args: str, capture: bool = False):
-    """Run a git command inside the repo as the invoking user (NOT root —
-    pulling as root would leave root-owned objects in the user's repo).
-    ``run_user`` drops privileges in the child. Returns the CompletedProcess
-    (or None if git isn't available / the call raised)."""
+    """Run git in the repo as the invoking user — pulling as root would leave
+    root-owned objects. Returns the CompletedProcess, or None on failure."""
     if not have("git"):
         return None
     try:
@@ -411,9 +387,8 @@ def _git(*args: str, capture: bool = False):
 
 
 def _repo_is_clean_git_checkout() -> bool:
-    """True only when REPO_ROOT is a git working tree with NO uncommitted
-    changes. We refuse to auto-pull over local edits — a pull could fail
-    on conflicts or silently shadow the user's work."""
+    """True only when REPO_ROOT is a git working tree with no uncommitted
+    changes — never auto-pull over local edits."""
     if not (REPO_ROOT / ".git").exists():
         return False
     inside = _git("rev-parse", "--is-inside-work-tree", capture=True)
@@ -426,18 +401,10 @@ def _repo_is_clean_git_checkout() -> bool:
 
 
 def auto_update_and_reexec(argv: list[str]) -> None:
-    """When a newer release exists, pull it and re-exec ``./install`` so the
-    freshly-pulled code does the install — an in-flight ``git pull`` can't
-    upgrade the already-loaded installer otherwise.
-
-    Bails (and lets the current version install) on any of: the recursion
-    guard already set, not a clean git checkout, git missing, or the pull
-    failing. Every bail prints a one-line reason and the manual command, so
-    the user is never left stuck.
-
-    The recursion guard ``MAC_TAHOE_UPDATED`` is exported before the re-exec
-    so the new process skips the update check entirely and proceeds straight
-    to installing — no pull/re-exec loop."""
+    """Pull the newer release and re-exec ``./install`` — a git pull can't
+    upgrade the already-loaded installer. ``MAC_TAHOE_UPDATED`` guards against
+    a pull/re-exec loop; every bail falls through to installing the current
+    version with a one-line reason and the manual command."""
     if os.environ.get("MAC_TAHOE_UPDATED") == "1":
         return  # already re-exec'd after a successful pull; just install
 
@@ -457,10 +424,8 @@ def auto_update_and_reexec(argv: list[str]) -> None:
 
     ok(f"Updated to {read_version()} — restarting installer")
 
-    # Re-exec the ./install wrapper (REPO_ROOT/install) so the newly-pulled
-    # cli.py runs. Real UID is still 0 here, so the new process stays root
-    # and repeats the same euid-drop hop. argv is the install flags only;
-    # the wrapper re-derives its own path.
+    # Real UID is still 0, so the re-exec'd wrapper stays root and repeats
+    # the same euid-drop hop.
     installer = REPO_ROOT / "install"
     os.environ["MAC_TAHOE_UPDATED"] = "1"
     try:
@@ -516,14 +481,9 @@ def _b(v: object) -> str:
 
 
 def _detect_plasma_version() -> str | None:
-    """Best-effort Plasma version probe.
-
-    Some distros / wrappers print the version to stderr instead of stdout,
-    and Qt can prepend warnings before the actual version line. Parse both
-    streams and accept either ``major.minor`` or ``major.minor.patch``.
-    If the binary output is weird, fall back to the installed package
-    version from the native distro package manager.
-    """
+    """Best-effort Plasma version probe. Some wrappers print to stderr and
+    Qt can prepend warnings, so both streams are parsed; falls back to the
+    installed package version from the distro package manager."""
     probes = (
         ["plasmashell", "--version"],
         ["plasmashell", "-v"],
@@ -554,13 +514,8 @@ def _detect_plasma_version() -> str | None:
 
 
 def verify_plasma() -> bool:
-    # Test-mode bypass for the VM boot-splash harness. The Plymouth step
-    # only needs plymouth-set-default-theme + a working initramfs path;
-    # KDE Plasma is irrelevant for boot-splash rendering. The harness
-    # sets this env var when SSH-driving `./install --only --plymouth`
-    # inside a vanilla Arch cloud image (which has no Plasma installed).
-    # NEVER set this in a real user-facing install — it would happily
-    # write KDE configs to a system that can't load them.
+    # VM boot-splash harness bypass (Plymouth needs no Plasma). NEVER set
+    # on real installs — it would write KDE configs to a Plasma-less system.
     if os.environ.get("MTTKDE_SKIP_PLASMA_CHECK") == "1":
         warn("MTTKDE_SKIP_PLASMA_CHECK=1 — bypassing Plasma version check (test mode)")
         return True
@@ -587,9 +542,8 @@ def confirm(msg: str) -> bool:
     print()
     print(f"  \033[0;31m\033[1m{msg}\033[0m")
     print()
-    # Test-mode bypass for the SSH-driven VM harness. Without this, a
-    # non-tty install session falls through to ``input()`` which reads
-    # from the bash heredoc — fragile and easy to deadlock.
+    # VM harness bypass — non-tty ``input()`` reads the SSH heredoc and
+    # can deadlock.
     if os.environ.get("MTTKDE_NO_CONFIRM") == "1":
         print("  MTTKDE_NO_CONFIRM=1 — auto-accepting (test mode)")
         print()
@@ -612,14 +566,9 @@ def confirm(msg: str) -> bool:
 
 
 def _restore_user_session_env(uid: int) -> None:
-    """Best-effort recovery of the invoking user's graphical session env.
-
-    ``sudo`` commonly strips ``XDG_RUNTIME_DIR`` / ``DBUS_SESSION_BUS_ADDRESS``
-    and display variables. That is enough to make ``plasmashell --version``
-    abort with no output and to leave later ``qdbus`` layout resets talking
-    to nowhere. Seed the well-known ``/run/user/<uid>`` paths first, then ask
-    the user systemd manager for the real session environment.
-    """
+    """Recover the user's session env — sudo strips XDG_RUNTIME_DIR /
+    DBUS_SESSION_BUS_ADDRESS, leaving qdbus and plasmashell probes talking to
+    nowhere. Seeds /run/user/<uid>, then asks the user systemd manager."""
     runtime_dir = Path(f"/run/user/{uid}")
     bus = runtime_dir / "bus"
     if runtime_dir.is_dir():
@@ -658,26 +607,10 @@ def _restore_user_session_env(uid: int) -> None:
 
 
 def _require_root_and_drop_to_user(op: str = "install") -> bool:
-    """Hard precondition for install/uninstall: it only runs when
-    invoked with root privileges (``sudo ./install`` /
-    ``sudo ./uninstall``). Qt6 only walks the plugin + QML directories
-    its own build was configured against (queried from qmake6 via
-    ``paths.qt6_plugins_dir`` / ``qt6_qml_dir`` — typically under
-    ``/usr/lib`` or ``/usr/lib64`` depending on the distro); user-path
-    destinations are not discoverable, so .so files and runtime QML
-    for the C++ plasmoids and KWin effect MUST land in the
-    Qt-reported libdir. That means sudo upfront is mandatory.
-
-    Once root is verified, drop the effective UID/GID to ``SUDO_USER``
-    so all file writes land with normal user ownership. The few
-    operations that genuinely need root (.so installs to the system
-    Qt6 libdir, QML modules, etc.) re-elevate via the
-    ``sudo_install_file`` / ``sudo_install_tree`` / ``sudo_remove``
-    helpers, which call
-    ``os.seteuid(0)`` for the duration of one operation and restore
-    the user's UID immediately after. Real UID stays at 0 throughout,
-    so the seteuid trip back to root always succeeds.
-    """
+    """Require root, then seteuid/setegid down to SUDO_USER so writes land
+    user-owned. Root is mandatory — Qt6 only discovers its qmake-reported
+    plugin/QML dirs. Real UID stays 0 so the sudo_install_* helpers can
+    hop back to root per operation."""
     if os.geteuid() != 0:
         print(file=sys.stderr)
         print(f"  \033[0;31m{op.capitalize()} must be run as root.\033[0m",
@@ -706,17 +639,14 @@ def _require_root_and_drop_to_user(op: str = "install") -> bool:
     except KeyError:
         user_home = f"/home/{sudo_user}"
 
-    # Point HOME / USER / LOGNAME at the real user so every later
-    # ``Path.home()`` / kwriteconfig6 invocation writes under the user's
-    # tree, not under /root.
+    # Point HOME/USER/LOGNAME at the real user so later writes land under
+    # their tree, not /root.
     os.environ["HOME"] = user_home
     os.environ["USER"] = sudo_user
     os.environ["LOGNAME"] = sudo_user
-    # Some sudo configs preserve root-owned XDG paths (notably
-    # XDG_STATE_HOME on openSUSE). If we leave those behind, helpers
-    # like RunTracker still try to write under /root even after HOME is
-    # corrected. Only rewrite values that are missing or still point at
-    # root so custom user XDG overrides survive.
+    # Some sudo configs preserve root-owned XDG paths (XDG_STATE_HOME on
+    # openSUSE). Only rewrite missing/root-pointing values so custom user
+    # XDG overrides survive.
     for key, suffix in (
         ("XDG_CONFIG_HOME", ".config"),
         ("XDG_DATA_HOME", ".local/share"),
@@ -727,10 +657,8 @@ def _require_root_and_drop_to_user(op: str = "install") -> bool:
         if not value or value == "/root" or value.startswith("/root/"):
             os.environ[key] = f"{user_home}/{suffix}"
 
-    # Drop privileges with seteuid (reversible) — real UID stays 0 so
-    # ``sudo_install_file`` can hop back to root for /usr/lib writes.
-    # Group has to drop first so the effective uid switch doesn't lose
-    # the right to call setegid afterwards.
+    # Reversible drop — real UID stays 0 for the root hop-back. GID first:
+    # switching euid can lose the right to call setegid.
     os.setegid(sudo_gid)
     os.seteuid(sudo_uid)
     _restore_user_session_env(sudo_uid)
@@ -752,11 +680,9 @@ _VERIFY_CHECKS = [
 
 
 def _read_config_cascade(file: str, group: str, prop: str) -> str:
-    """Read a KDE config key the same way Plasma resolves it: check
-    ``~/.config/kdedefaults/<file>`` (where ``plasma-apply-lookandfeel``
-    writes its keys) before ``~/.config/<file>``. ``kreadconfig6`` only
-    looks at the main file, so the post-install verification missed
-    every key the live LAF apply had stamped into kdedefaults instead."""
+    """Read a KDE config key the way Plasma resolves it: kdedefaults/<file>
+    (where plasma-apply-lookandfeel writes) before ~/.config/<file>.
+    kreadconfig6 only reads the main file and misses LAF-stamped keys."""
     home = Path(os.environ.get("HOME") or str(Path.home()))
     for candidate in (home / ".config/kdedefaults" / file,
                       home / ".config" / file):
@@ -786,9 +712,7 @@ def verify_config(feat: dict[str, object]) -> None:
         if not feat.get(key, True):
             continue
         actual = _read_config_cascade(file, group, prop)
-        # Fall back to kreadconfig6 if the cascade scan came up empty —
-        # keeps the check resilient to whatever Plasma version
-        # rearrangement does next.
+        # Fall back to kreadconfig6 when the cascade scan comes up empty.
         if not actual:
             actual = kw_read(file, group, prop)
         if expected in actual:
@@ -809,19 +733,14 @@ def _layout_is_installed() -> bool:
     return bool(callable(probe) and probe())
 
 
-# Features whose install must succeed for the desktop to function.
-# These are the compiled .so + QML drops — the dock, the global menu,
-# the KWin glass effect. If any of these fails to install, abort the
-# whole installer rather than ship a half-broken desktop.
+# Compiled .so + QML drops — if any fails to install, abort rather than
+# ship a half-broken desktop.
 CRITICAL_INSTALL_FEATURES = {"globalmenu", "plasmoids", "acrylic_glass"}
 
 
 def _build_features(feat: dict[str, object]) -> list[str]:
-    """Features whose step exposes a build() phase AND is enabled.
-
-    These are the C++ components — globalmenu, plasmoids (taskmanager),
-    acrylic_glass. Building these is mandatory: if any fails, the whole
-    install aborts before any artefact lands on disk."""
+    """Enabled features whose step exposes a build() phase — the C++
+    components."""
     out: list[str] = []
     for feature in INSTALL_ORDER:
         if not should_process(feature, feat):
@@ -833,14 +752,9 @@ def _build_features(feat: dict[str, object]) -> list[str]:
 
 
 def _run_builds_or_abort(feat: dict[str, object]) -> bool:
-    """Run every build phase upfront. If any build fails OR any expected
-    artefact is missing afterwards, return False — the caller aborts the
-    whole installer.
-
-    Build runs *before* the install loop so we never ship a half-built
-    desktop where some compiled .so landed but a sibling didn't. Each
-    step exposes ``build_artifacts() -> list[Path]`` for the post-build
-    check; modules without that helper just rely on errors[] surfacing."""
+    """Run every build phase upfront; False if any build fails or an expected
+    artefact is missing. Runs before the install loop so a half-built desktop
+    never ships. Steps may expose build_artifacts() for the post-build check."""
     builds = _build_features(feat)
     if not builds:
         ok("no compiled components selected — skipping build phase")
@@ -849,9 +763,7 @@ def _run_builds_or_abort(feat: dict[str, object]) -> bool:
     failed: list[str] = []
     for i, feature in enumerate(builds):
         label = feature.replace("_", " ")
-        # note() already trails with a blank line, so skip the leading
-        # blank for the first iteration to avoid a doubled gap below
-        # the step header.
+        # note() already trails a blank line; skip the first leading blank.
         if i:
             print()
         print(f"  \033[1mBuilding {label}\033[0m")
@@ -885,18 +797,14 @@ _BASE_DEPS = [
     ("fc-cache", "fontconfig"), ("kwriteconfig6", "kconfig"),
     ("cmake", "cmake"), ("g++", "gcc"),
     ("pkg-config", "pkgconf"), ("dbus-monitor", "dbus"),
-    # update-desktop-database keeps the launcher/taskbar app list fresh
-    # after a theme switch.
+    # Keeps the launcher/taskbar app list fresh after a theme switch.
     ("update-desktop-database", "desktop-file-utils"),
 ]
 
 
 def _check_deps(feat: dict[str, object]) -> None:
-    # Collect every dep the selected features need, probe each PACKAGE
-    # directly (pacman -Q etc), and install only the genuinely-missing
-    # ones. Installing only what's absent avoids upgrading already-present
-    # packages — a -Sy upgrade of one KDE package against the rest of the
-    # system is the classic partial-upgrade file-conflict trap.
+    # Install only genuinely-missing packages — a -Sy upgrade of one KDE
+    # package against the rest is the classic partial-upgrade conflict trap.
     from distro import package_for, package_installed
 
     tokens: list[tuple[str, str]] = list(_BASE_DEPS)
@@ -938,8 +846,8 @@ def _print_done(verb: str) -> None:
         print(f"  \033[0;90mReport bugs at: https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/issues/new\033[0m")
         print()
         return
-    # Snapshot — fail() appends to errors, so iterating the live list
-    # while calling fail() is an infinite loop. Print directly here.
+    # Snapshot: fail() appends to errors, so iterating the live list while
+    # calling fail() loops forever.
     issues = list(errors)
     warn(f"{len(issues)} issue(s):")
     for e in issues:
@@ -956,12 +864,8 @@ def run_install(argv: list[str]) -> int:
     if parsed.check_update:
         return 0 if not check_for_updates(verbose=True) else 0
 
-    # Install needs root: the C++ plasmoids and KWin effect drop .so
-    # files into the Qt6 plugin dir and runtime QML into the Qt6 QML
-    # dir (qmake6-reported; /usr/lib on Arch/Fedora, /usr/lib64 on
-    # Gentoo, /usr/lib/x86_64-linux-gnu on Debian-multiarch). User
-    # paths are not discoverable. ``sudo ./install`` is the supported
-    # entry.
+    # Root required: .so and QML drops go into the qmake6-reported Qt6
+    # dirs; user paths aren't discoverable.
     if not _require_root_and_drop_to_user("install"):
         return 1
 
@@ -972,15 +876,8 @@ def run_install(argv: list[str]) -> int:
         banner(read_version())
         return 0 if run_preflight("install") else 1
 
-    # ``--restart`` standalone (no install flags) bypasses every install
-    # step and just kicks plasmashell. When combined with install flags
-    # (``--only --acrylic-glass --restart``, ``--no-X --restart``, etc.)
-    # the install runs normally — the final ``run_phase("apply",
-    # "restart_plasma")`` at the end of run_install already restarts
-    # Plasma, so ``--restart`` in that combo is implicit. The standalone
-    # form is the useful one: iterating on a piece, you reinstall once
-    # with ``--only --X`` and then re-kick plasmashell with ``--restart``
-    # in subsequent runs without re-doing the install.
+    # Standalone --restart just kicks plasmashell. Combined with install
+    # flags it is implicit — the install already ends with restart_plasma.
     if parsed.restart_only and not parsed.only_mode and not parsed.cli_overrides:
         banner(read_version())
         step("Restarting Plasma")
@@ -1004,9 +901,6 @@ def run_install(argv: list[str]) -> int:
             tracker.mark_aborted()
             return 0
         if check_for_updates(inline=True):
-            # Pull the newer release and re-exec so the new code installs.
-            # Returns (and we install the current version) if the repo isn't
-            # a clean git checkout, git is missing, or the pull fails.
             auto_update_and_reexec(argv)
 
         if not run_preflight("install"):
@@ -1023,10 +917,6 @@ def run_install(argv: list[str]) -> int:
         note("Checking and installing required tools")
         _check_deps(feat)
 
-        # Build all C++ components upfront. If any fails to compile or
-        # any expected artefact is missing, abort BEFORE the install
-        # loop runs — half-installed desktops are worse than a clean
-        # bail with a build log to follow.
         step("Building Compiled Components")
         note("Builds C++ plasmoids and KWin effects — must succeed before install")
         if not _run_builds_or_abort(feat):
@@ -1043,9 +933,7 @@ def run_install(argv: list[str]) -> int:
             step(f"Installing {label}")
             note(FEATURE_DESC.get(feature, ""))
 
-            # Build phase already ran in the dedicated step above.
-            # No download phase any more — all assets are bundled under
-            # src/offline/ since v0.18.0 (wallpapers since v0.17.0).
+            # No download phase — assets bundled under src/offline/ since v0.18.0.
             if not run_phase(feature, "install") and feature in CRITICAL_INSTALL_FEATURES:
                 fail(f"{label} install failed — aborting "
                      "(critical compiled component)")
@@ -1064,9 +952,8 @@ def run_install(argv: list[str]) -> int:
             note("Applies settings, flushes caches, restarts KWin")
             run_phase("apply", "install")
 
-            # Layout runs after apply so it sees the new panel/dock packages
-            # already on disk. The Plasma JS scripting API otherwise fails to
-            # find the custom plasmoids by ID.
+            # Layout runs after apply — the Plasma JS scripting API can't
+            # find the custom plasmoids by ID until their packages are on disk.
             if feat.get("layout", True) and step_exists("layout"):
                 step("Installing Layout")
                 note(FEATURE_DESC["layout"])
@@ -1145,9 +1032,8 @@ def run_uninstall(argv: list[str]) -> int:
             rc = 1
             return rc
 
-        # Uninstall is a two-stage flow: first put the user's desktop back
-        # into a working Breeze state while our assets still exist on disk,
-        # then remove the MacTahoe payload afterwards as cleanup.
+        # Two-stage: restore a working Breeze state while our assets still
+        # exist on disk, then remove the payload.
         step("Removing Theme Switcher")
         note("Stops and removes the auto light/dark theme switcher")
         run_phase("theme_switch", "uninstall")

@@ -45,10 +45,8 @@ def uninstall() -> None:
         if remove_tree(DEST_DIR / v, f"{v} removed"):
             n += 1
 
-    # Wipe ~/.config/gtk-4.0/* — kde-gtk-config will regenerate its own
-    # minimal gtk.css / colors.css / window_decorations.css on the next
-    # theme change. Leaving our files mixed with KDE's output causes
-    # split state.
+    # Wipe ~/.config/gtk-4.0/* — kde-gtk-config regenerates its own files on
+    # the next theme change; ours mixed with KDE's output causes split state.
     for sub in GTK4_DIRS_TO_REMOVE:
         shutil.rmtree(GTK4_DEST / sub, ignore_errors=True)
     for fn in GTK4_FILES_TO_REMOVE:

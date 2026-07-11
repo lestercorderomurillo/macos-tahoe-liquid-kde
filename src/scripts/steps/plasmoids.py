@@ -14,11 +14,9 @@ DEST_DIR = HOME / ".local/share/plasma/plasmoids"
 
 TASKMANAGER_SRC = SRC_DIR / "org.kde.mac.tahoe.liquid.taskmanager"
 TASKMANAGER_BUILD = build_dir("plasmoids/org.kde.mac.tahoe.liquid.taskmanager")
-# System-path install — Qt6 only walks the plugin / QML dirs its own
-# build was configured against (see paths.qt6_plugins_dir docstring for
-# the per-distro libdir map). Lazy resolution via __getattr__ so a
-# missing qmake6 surfaces as a preflight failure with a distro hint
-# rather than a module-import crash.
+# Qt6 never scans user paths for plugins/QML — these go under the qmake6-
+# reported libdir. Lazy __getattr__ keeps a missing qmake6 a preflight
+# failure, not a module-import crash.
 _TASKMANAGER_SO_RELPATH = "plasma/applets/org.kde.mac.tahoe.liquid.taskmanager.so"
 _TASKMANAGER_QML_RELPATH = "plasma/applet/org/kde/mac/tahoe/liquid/taskmanager"
 
@@ -51,9 +49,8 @@ LEGACY_TASKMANAGER_QML_DIRS = (
     HOME / ".local/lib/qt6/qml/plasma/applet/org/kde/mac-tahoe-liquid-kde/icontasks",
 )
 
-# Older versions installed the dock under different IDs. Migrate any
-# existing plasma-org.kde.plasma.desktop-appletsrc references so the dock
-# survives the upgrade with the user's pinned launchers intact.
+# Older releases used different dock IDs — rewrite appletsrc so the upgrade
+# keeps the dock and the user's pinned launchers.
 _APPLETSRC_RENAMES = (
     (r"org\.kde\.plasma\.icontasks", "org.kde.mac.tahoe.liquid.icontasks"),
     (r"org\.kde\.plasma\.taskmanager", "org.kde.mac.tahoe.liquid.taskmanager"),
@@ -121,12 +118,9 @@ def _migrate_appletsrc() -> None:
 
 
 def _install_taskmanager_package() -> bool:
-    """Install the QML/runtime package for the compiled dock applet.
-
-    The .so alone is not enough: the icons-only wrapper resolves through
-    X-Plasma-RootPath and Plasma expects the taskmanager package metadata +
-    contents/ tree to exist in the local plasmoid dir as well.
-    """
+    """Install the dock applet's QML/runtime package. The .so alone is not
+    enough: the icons-only wrapper resolves via X-Plasma-RootPath and needs
+    the package metadata + contents/ in the local plasmoid dir too."""
     metadata = TASKMANAGER_SRC / "metadata.json"
     contents = TASKMANAGER_SRC / "contents"
     if not metadata.is_file():

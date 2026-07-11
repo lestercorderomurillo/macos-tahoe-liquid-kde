@@ -1,27 +1,8 @@
 #!/usr/bin/env python3
-"""About This Computer — system information collector.
-
-Reads every public source of hardware/OS data the running user can see
-(DMI sysfs, ``/proc``, ``lscpu``, ``lspci``, ``lsblk``, ``glxinfo``,
-``free``, ``dmidecode``, …), picks the first non-empty answer from each
-source stack per field, and emits a JSON document on stdout that the
-AboutWindow QML consumes.
-
-Everything except serial-number is expected to resolve to a real value
-on a standard desktop Linux install — the install ships the helper into
-``~/.local/bin`` and the QML calls it via Plasma5Support's executable
-data source.
-
-Public functions (``parse_*``) are pure: they take a captured stdout
-string and return a parsed value or ``""``. ``collect()`` wires them to
-live commands. The test suite exercises ``parse_*`` directly with
-captured fixtures from CachyOS, Arch, Ubuntu, Fedora, openSUSE,
-locale-translated lscpu, and minimal VMs.
-
-Usage:
-    mac-tahoe-about-info               # JSON to stdout
-    mac-tahoe-about-info --pretty      # indented
-"""
+"""About This Computer — system info collector; emits JSON for AboutWindow QML.
+Each field cascades through source stacks (DMI sysfs, /proc, lscpu, lspci, …);
+first non-empty answer wins. ``parse_*`` functions are pure (captured stdout →
+value or "") so tests feed them distro fixtures; ``collect()`` wires live commands."""
 
 from __future__ import annotations
 
@@ -33,17 +14,13 @@ import subprocess
 import sys
 from pathlib import Path
 
-# Replaced with the real version by _install_about_info() when the helper
-# is copied to ~/.local/bin, so the installed copy reports the version
-# that installed it.
+# _install_about_info() bakes the real version in when copying to ~/.local/bin.
 _BAKED_VERSION = "@THEME_VERSION@"
 
 
 def theme_version() -> str:
-    """Theme version string, or "" when it can't be determined.
-
-    Repo checkouts read VERSION live (two parents up from src/scripts/);
-    the installed copy falls back to the version baked in at install."""
+    """Theme version, or "". Repo checkouts read VERSION live; the
+    installed copy falls back to the baked-in version."""
     try:
         v = (Path(__file__).resolve().parent.parent.parent / "VERSION").read_text().strip()
         if v:
@@ -71,8 +48,7 @@ def _is_placeholder(s: str) -> bool:
 
 
 def first_non_empty(*values: str) -> str:
-    """Return the first stripped, non-empty value. Used to collapse a
-    stack of (source → parsed) candidates into the rendered string."""
+    """First stripped, non-empty value from the candidate stack."""
     for v in values:
         if v is None:
             continue
@@ -90,10 +66,8 @@ def parse_dmi_string(stdout: str) -> str:
     return "" if _is_placeholder(s) else s
 
 
-# Vendor shortening table: DMI sys_vendor / board_vendor strings the way
-# OEMs report them on the left, the friendly form on the right. Keep
-# strings exactly as they appear in /sys/devices/virtual/dmi/id/* — DMI
-# whitespace and casing aren't normalized.
+# DMI vendor string → friendly name. Keys must match
+# /sys/devices/virtual/dmi/id/* exactly — whitespace/casing aren't normalized.
 _VENDOR_SHORTS = {
     # ── desktop / mobo majors (US/EU/Taiwan/Korea/Japan) ─────────────
     "ASUSTeK COMPUTER INC.": "ASUS",
@@ -300,18 +274,9 @@ _VENDOR_SHORTS = {
 
 
 def parse_vendor(stdout: str) -> str:
-    """Friendly vendor name from DMI sys_vendor / board_vendor.
-
-    If the OEM string is in the lookup table, swap it for the short form
-    (so "ASUSTeK COMPUTER INC." → "ASUS"). Otherwise return the raw DMI
-    string verbatim — every attempt to be "smart" about trimming
-    suffixes has at some point mangled a real vendor name. The goal is
-    to work on *every* system, not to look pretty on the known ones.
-
-    The DMI-placeholder filter still applies — "Default string" / "To
-    Be Filled By O.E.M." come back empty so the caller can fall through
-    to the next source.
-    """
+    """Friendly vendor name from DMI sys_vendor / board_vendor. Unknown
+    vendors return verbatim — suffix-trimming heuristics have mangled real
+    names before. Placeholders come back "" so callers fall through."""
     raw = parse_dmi_string(stdout)
     if not raw:
         return ""
@@ -339,20 +304,13 @@ def _clean_cpu_model(raw: str) -> str:
 
 
 def parse_lscpu(stdout: str) -> dict[str, str]:
-    """Parse ``LC_ALL=C lscpu`` output. Returns ``{"model", "cores"}``.
-
-    Caller is responsible for setting ``LC_ALL=C`` — without it, lscpu
-    translates the field labels ("Modèle de processeur :", etc.) and
-    the regex returns nothing. That mistake was the original bug behind
-    the v0.13.11 issue report.
-    """
+    """Parse ``LC_ALL=C lscpu`` output → ``{"model", "cores"}``. Caller must
+    force LC_ALL=C — translated labels defeat the regexes (the v0.13.11 bug)."""
     out = {"model": "", "cores": ""}
     if not stdout:
         return out
 
-    # util-linux 2.40+ ships a hierarchical "lscpu" that indents nested
-    # fields ("  Model name:"). Older releases output flush-left. Accept
-    # both so the parser matches no matter which release is installed.
+    # util-linux 2.40+ indents nested fields; older releases are flush-left.
     m = re.search(r"^[ \t]*Model name:\s+(.+)$", stdout, re.MULTILINE)
     if m:
         out["model"] = _clean_cpu_model(m.group(1))
@@ -380,10 +338,8 @@ def parse_cpuinfo(stdout: str) -> dict[str, str]:
 
     m = re.search(r"^model name\s*:\s*(.+)$", stdout, re.MULTILINE)
     if not m:
-        # ARM big.LITTLE / RISC-V: no model name field. Try ``Model``
-        # before ``Hardware`` — the former is usually the friendly
-        # board name ("Raspberry Pi 5 Model B Rev 1.0") while the
-        # latter is the SoC family ("BCM2835") which is less useful.
+        # ARM/RISC-V lack "model name"; prefer Model (friendly board name)
+        # over Hardware (SoC family).
         m = (re.search(r"^Model\s*:\s*(.+)$", stdout, re.MULTILINE)
              or re.search(r"^Hardware\s*:\s*(.+)$", stdout, re.MULTILINE))
     if m:
@@ -427,8 +383,7 @@ def parse_nproc(stdout: str) -> str:
 
 
 def merge_cpu(*candidates: dict[str, str]) -> dict[str, str]:
-    """First non-empty model wins; same for cores. Each candidate is
-    a ``{"model", "cores"}`` dict from one of the parse_* sources."""
+    """First non-empty model wins; same for cores."""
     model = first_non_empty(*(c.get("model", "") for c in candidates))
     cores = first_non_empty(*(c.get("cores", "") for c in candidates))
     return {"model": model, "cores": cores}
@@ -441,9 +396,8 @@ _MEM_SNAP_SIZES = (1, 2, 3, 4, 6, 8, 12, 16, 24, 32, 48, 64, 96, 128, 192,
 
 
 def _snap_gb(gb: float) -> str:
-    """OEM-reserved holes drop usable RAM by 100–500 MiB on most boards;
-    snap to the nearest commonly-installed size so "15.7 GiB" reads as
-    "16 GB". Outside the table we just round."""
+    """OEM-reserved holes shave 100–500 MiB off usable RAM; snap to common
+    sizes so "15.7 GiB" reads as "16 GB". Outside the table, plain round."""
     if gb <= 0:
         return ""
     best = min(_MEM_SNAP_SIZES, key=lambda s: abs(s - gb))
@@ -502,10 +456,8 @@ def _short_gpu_vendor(v: str) -> str:
     if not v:
         return ""
     s = v.strip()
-    # ``lspci -nn`` appends PCI vendor IDs in ``[...]`` brackets; the
-    # ``-mm`` form additionally keeps the ATI alias ("[AMD/ATI]"). Strip
-    # every trailing bracket pair before the friendly-name swap so the
-    # AMD/NVIDIA shorts don't leave residue like "AMD [AMD/ATI] [1002]".
+    # lspci -nn appends [vendor-id] brackets and -mm keeps the "[AMD/ATI]"
+    # alias — strip all brackets so the shorts leave no residue.
     s = re.sub(r"\s*\[[^\]]*\]\s*", " ", s).strip()
     s = re.sub(r"\s*Corporation\s*$", "", s, flags=re.IGNORECASE)
     s = s.replace("Advanced Micro Devices, Inc.", "AMD")
@@ -518,9 +470,8 @@ def _short_gpu_device(d: str) -> str:
     if not d:
         return ""
     s = d.strip()
-    # lspci device strings are typically "<codename> [<marketing>] [<id>]".
-    # Strip the trailing PCI id bracket first so we don't pick it instead
-    # of the marketing name, then take the first remaining bracket.
+    # Device strings are "<codename> [<marketing>] [<id>]" — strip the id
+    # bracket first so the marketing name gets picked.
     s = re.sub(r"\s*\[[0-9a-fA-F]{4}\]\s*$", "", s)
     br = re.search(r"\[([^\]]+)\]", s)
     if br:
@@ -530,9 +481,8 @@ def _short_gpu_device(d: str) -> str:
 
 
 def parse_lspci_gpu(stdout: str) -> str:
-    """``LC_ALL=C lspci -mm -nn`` — pick VGA / 3D / Display controllers
-    and produce "Vendor Device". Multiple GPUs join with " + ", with
-    adjacent duplicates removed."""
+    """``LC_ALL=C lspci -mm -nn`` — VGA / 3D / Display controllers as
+    "Vendor Device"; multiple GPUs join with " + ", duplicates removed."""
     if not stdout:
         return ""
     gpus: list[str] = []
@@ -577,8 +527,8 @@ _DRM_VENDORS = {
 
 
 def parse_drm_fallback(vendors_stdout: str) -> str:
-    """Concatenated ``/sys/class/drm/card*/device/vendor`` reads → list
-    of friendly vendor names. Cheap enough to use when lspci is gone."""
+    """Concatenated ``/sys/class/drm/card*/device/vendor`` reads → friendly
+    vendor names. Fallback when lspci is gone."""
     if not vendors_stdout:
         return ""
     found: list[str] = []
@@ -596,7 +546,7 @@ def parse_drm_fallback(vendors_stdout: str) -> str:
 
 def parse_glxinfo(stdout: str) -> str:
     """``LC_ALL=C glxinfo -B`` → OpenGL renderer string. Last-ditch GPU
-    source when neither lspci nor /sys/class/drm gave anything."""
+    source."""
     if not stdout:
         return ""
     m = re.search(r"^OpenGL renderer string:\s+(.+)$", stdout, re.MULTILINE)
@@ -626,30 +576,17 @@ def parse_proc_mounts_root(stdout: str) -> str:
 
 
 def _base_disk(dev_path: str) -> str:
-    """Trim a partition device path to its parent disk.
-
-        /dev/nvme0n1p2 → nvme0n1
-        /dev/mmcblk0p1 → mmcblk0
-        /dev/sda3      → sda
-        /dev/vda1      → vda
-        /dev/mapper/x  → mapper/x  (LUKS/LVM — can't trace without -s)
-
-    NVMe and eMMC follow the ``<base>p<N>`` partition convention, where
-    ``<base>`` itself ends in a digit (``nvme0n1``, ``mmcblk0``). SCSI /
-    SATA / VirtIO follow the older ``<letters><N>`` convention. Strip
-    one or the other — never both, or NVMe would lose its namespace
-    digit (``nvme0n1`` → ``nvme0n``, missing the parent disk).
-    """
+    """Trim a partition device path to its parent disk (/dev/nvme0n1p2 →
+    nvme0n1). NVMe/eMMC use "pN" suffixes, SCSI/SATA/VirtIO bare digits —
+    strip one or the other, never both, or nvme0n1 loses its namespace digit."""
     if not dev_path:
         return ""
     name = re.sub(r"^/dev/", "", dev_path)
     if name.startswith("mapper/") or name.startswith("dm-"):
         return name
-    # NVMe / eMMC / mmcblk: the partition suffix is "pN".
     m = re.sub(r"p\d+$", "", name)
     if m != name:
         return m
-    # SCSI / SATA / VirtIO: the partition suffix is bare digits.
     return re.sub(r"\d+$", "", name)
 
 
@@ -704,9 +641,8 @@ def parse_lsblk(stdout: str, root_device: str = "") -> str:
 
 
 def parse_df_root(stdout: str) -> str:
-    """``df -B1 --output=size /`` → root filesystem size in bytes.
-    Final fallback when lsblk isn't installed (some musl-based distros).
-    """
+    """``df -B1 --output=size /`` → root filesystem size. Final fallback
+    when lsblk isn't installed (some musl-based distros)."""
     if not stdout:
         return ""
     for line in stdout.splitlines()[1:]:
@@ -761,15 +697,9 @@ def parse_etc_issue(stdout: str) -> str:
 # ── network / MAC ────────────────────────────────────────────────────────
 
 def parse_default_iface(ip_route_stdout: str) -> str:
-    """``ip route get 1.1.1.1`` → name of the egress interface, e.g.
-    ``wlp3s0`` or ``eno1``. That single line of output looks like:
-
-        1.1.1.1 via 192.168.1.1 dev wlp3s0 src 192.168.1.42 uid 1000
-
-    We pull the token after ``dev``. The token must start with a
-    letter and contain only the characters Linux permits in interface
-    names — that rules out matching natural-language "dev token" pairs
-    in arbitrary text and keeps the parser strict."""
+    """``ip route get 1.1.1.1`` → egress interface (token after ``dev``).
+    The token must look like a valid Linux iface name so natural-language
+    "dev X" pairs in arbitrary text can't match."""
     if not ip_route_stdout:
         return ""
     m = re.search(r"\bdev\s+([A-Za-z][A-Za-z0-9._-]*)", ip_route_stdout)
@@ -777,9 +707,8 @@ def parse_default_iface(ip_route_stdout: str) -> str:
 
 
 def parse_proc_route_default(stdout: str) -> str:
-    """``/proc/net/route`` → name of the iface for destination 0.0.0.0
-    (the default route). Format is tab-separated columns; row with
-    ``Destination`` == ``00000000`` is the default."""
+    """``/proc/net/route`` → iface of the default route (the row with
+    Destination == 00000000)."""
     if not stdout:
         return ""
     for line in stdout.splitlines()[1:]:
@@ -790,9 +719,8 @@ def parse_proc_route_default(stdout: str) -> str:
 
 
 def parse_mac(stdout: str) -> str:
-    """``/sys/class/net/<iface>/address`` → 17-char MAC like
-    ``a8:7e:ea:12:34:56``. The ``00:00:00:00:00:00`` value some virtual
-    interfaces expose is filtered out."""
+    """``/sys/class/net/<iface>/address`` → MAC. The all-zero MAC some
+    virtual interfaces expose is filtered out."""
     if not stdout:
         return ""
     s = stdout.strip().lower()
@@ -814,9 +742,8 @@ def format_network(iface: str, mac: str) -> str:
 # ── live collection ──────────────────────────────────────────────────────
 
 def _read(path: str) -> str:
-    """Read a file as UTF-8 with replace-on-error so a corrupted byte
-    can't crash the collector. Any OSError (ENOENT, EACCES, EIO, …)
-    silently returns ``""`` so the caller can fall through."""
+    """Read UTF-8 with replace-on-error; any OSError returns ``""`` so the
+    caller falls through to the next source."""
     try:
         return Path(path).read_text(encoding="utf-8", errors="replace")
     except OSError:
@@ -824,18 +751,9 @@ def _read(path: str) -> str:
 
 
 def _sh(cmd: list[str], timeout: float = 4.0) -> str:
-    """Run a command with LC_ALL=C and UTF-8 decoding, swallow stderr,
-    return stdout. Any failure path returns ``""`` so the next source
-    in the cascade can answer:
-
-    - ``FileNotFoundError`` — binary not on PATH (busybox without lscpu, …)
-    - ``PermissionError`` / other ``OSError`` — sandboxed or SELinux-denied
-    - ``TimeoutExpired`` — glxinfo on broken Wayland, dmidecode on bad SMBIOS
-
-    ``LC_ALL=C`` is non-negotiable: lscpu and lspci translate their
-    labels under non-English locales, which silently broke every regex
-    in v0.13.11.
-    """
+    """Run a command with LC_ALL=C, swallow stderr, return stdout ("" on any
+    failure so the next source answers). LC_ALL=C is non-negotiable —
+    translated lscpu/lspci labels silently broke every regex in v0.13.11."""
     env = os.environ.copy()
     env["LC_ALL"] = "C"
     env["LANG"] = "C"
@@ -851,9 +769,8 @@ def _sh(cmd: list[str], timeout: float = 4.0) -> str:
 
 
 def _collect_drm_vendors() -> str:
-    """Concatenate /sys/class/drm/card*/device/vendor reads. Walk
-    glob() inside a try because /sys may be sandboxed away in some
-    containers."""
+    """Concatenate /sys/class/drm/card*/device/vendor reads; /sys may be
+    sandboxed away in containers."""
     try:
         drm_root = Path("/sys/class/drm")
         if not drm_root.is_dir():
@@ -864,11 +781,9 @@ def _collect_drm_vendors() -> str:
         return ""
 
 
-# Every live source — file or subprocess — declared as a (key, callable)
-# pair so they can be fanned out across a thread pool. Total wall time is
-# now ``max(per-source latency)`` rather than the sum, which matters when
-# dmidecode or glxinfo time out (4 s each, would otherwise add 8 s to a
-# user-facing modal).
+# (key, callable) pairs fanned across a thread pool — wall time becomes
+# max(per-source latency), not the sum (dmidecode + glxinfo timeouts alone
+# would add 8s to a user-facing modal).
 _LIVE_SOURCES: tuple[tuple[str, "callable"], ...] = (
     # DMI sysfs (all cheap, all sudoless except *_serial)
     ("sys_vendor",     lambda: _read("/sys/devices/virtual/dmi/id/sys_vendor")),
@@ -902,18 +817,15 @@ _LIVE_SOURCES: tuple[tuple[str, "callable"], ...] = (
     ("lsb_release_cmd", lambda: _sh(["lsb_release", "-ds"])),
     ("uname",          lambda: _sh(["uname", "-srm"])),
     ("dmi_serial",     lambda: _sh(["dmidecode", "-s", "system-serial-number"])),
-    # Network: pick the iface for the default route, then read its MAC.
-    # ``ip`` is the modern path; ``/proc/net/route`` is the kernel-side
-    # fallback that doesn't need iproute2 installed.
+    # Default-route iface → its MAC; /proc/net/route needs no iproute2.
     ("ip_route",       lambda: _sh(["ip", "route", "get", "1.1.1.1"])),
     ("proc_route",     lambda: _read("/proc/net/route")),
 )
 
 
 def _gather_raw() -> dict[str, str]:
-    """Run every live source in parallel. Each callable already swallows
-    its own errors and returns ``""`` on failure, so the futures here
-    never raise."""
+    """Run every live source in parallel. Callables swallow their own
+    errors and return ``""``, so the futures should never raise."""
     out: dict[str, str] = {key: "" for key, _ in _LIVE_SOURCES}
     with concurrent.futures.ThreadPoolExecutor(
             max_workers=len(_LIVE_SOURCES)) as pool:
@@ -922,20 +834,15 @@ def _gather_raw() -> dict[str, str]:
             try:
                 out[futures[fut]] = fut.result() or ""
             except Exception:
-                # _read / _sh already trap their own errors, but if a
-                # future raises for any reason (timeout from the pool
-                # itself, an unexpected callable) keep the empty default.
+                # Pool-level timeout or unexpected callable: keep "".
                 pass
     return out
 
 
 def collect() -> dict[str, str]:
     """Run every source, parse, and return the rendered display strings.
-
-    All live I/O happens in ``_gather_raw`` (parallel); this function is
-    pure parsing. ``parse_*`` functions never raise on malformed input
-    — they return ``""`` — so the cascade always lands on a string,
-    never a None or an exception."""
+    ``parse_*`` never raise on malformed input — the cascade always lands
+    on a string."""
     raw = _gather_raw()
 
     cpu = merge_cpu(parse_lscpu(raw["lscpu"]), parse_cpuinfo(raw["cpuinfo"]))
@@ -987,9 +894,8 @@ def collect() -> dict[str, str]:
     )
     year = parse_bios_year(raw["bios_date"])
 
-    # Serial — only field that may legitimately be unreadable. The
-    # kernel locks DMI serial files to root since 4.10; on a plain user
-    # account every cat returns "". dmidecode requires root too.
+    # Only field that may legitimately be unreadable: the kernel locks DMI
+    # serial files to root since 4.10, and dmidecode needs root too.
     serial = first_non_empty(
         parse_dmi_string(raw["product_serial"]),
         parse_dmi_string(raw["board_serial"]),
@@ -997,9 +903,7 @@ def collect() -> dict[str, str]:
         parse_dmi_string(raw["dmi_serial"]),
     ) or "Not Available"
 
-    # Network: read the MAC of whichever interface holds the default
-    # route. This is the macOS-style "Network address" — the one the
-    # user would actually identify their machine with on the LAN.
+    # MAC of the default-route iface — the macOS-style "Network address".
     iface = first_non_empty(
         parse_default_iface(raw["ip_route"]),
         parse_proc_route_default(raw["proc_route"]),
@@ -1030,12 +934,8 @@ _UNKNOWN_SCHEMA = {
 }
 
 
-# Canned values for the README screenshots. ``MAC_TAHOE_ABOUT_MOCK=1`` or
-# ``--mock`` short-circuits live collection and emits this instead, so
-# the captured PNGs don't leak the maintainer's MAC address / serial /
-# disk model. Chosen to look plausible on a Linux Plasma desktop while
-# matching the visual density of a real result (multi-line graphics row
-# wrapping, present-but-private serial, etc.).
+# Canned data for README screenshots (--mock / MAC_TAHOE_ABOUT_MOCK=1) so
+# captures don't leak the maintainer's MAC / serial / disk model.
 _MOCK_DATA = {
     "vendor": "ASUS",
     "model": "ROG Crosshair X870E HERO",
@@ -1061,10 +961,8 @@ def main(argv: list[str]) -> int:
         try:
             data = collect()
         except Exception as exc:
-            # collect() should never raise — parsers all return "" on
-            # bad input and _gather_raw traps subprocess errors — but
-            # if the impossible happens, the UI still gets a full
-            # schema so no field renders as ``undefined``.
+            # collect() should never raise, but if it does the UI still
+            # gets a full schema — no field renders as ``undefined``.
             print(f"about_info: unexpected error: {exc}", file=sys.stderr)
             data = dict(_UNKNOWN_SCHEMA)
     data["theme_version"] = theme_version()

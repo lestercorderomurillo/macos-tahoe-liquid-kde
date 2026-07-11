@@ -7,16 +7,11 @@ CONF_DIR = HOME / ".config/xdg-desktop-portal"
 CONF_FILE = CONF_DIR / "kde-portals.conf"
 
 
-# Routing rules:
-#   Settings → gtk : libadwaita queries Settings for gtk-decoration-layout /
-#       gtk-theme / color-scheme. portal-kde answers with KDE's own schema
-#       (Aurorae "XIA" button layout), which libadwaita can't parse → the
-#       buttons fall back to right-side close-only and the mac traffic
-#       lights disappear. portal-gtk reads gsettings and returns the
-#       "close,minimize,maximize:" format libadwaita expects.
-#   FileChooser / AppChooser → kde : "Open with…" and file pickers render
-#       as native Qt/KDE dialogs instead of the stale GTK/Nautilus ones.
-#   No `default=…` so other portals fall back to their compiled-in default.
+# Settings → gtk: portal-kde answers with Aurorae's "XIA" button layout, which
+# libadwaita can't parse (mac traffic lights vanish); portal-gtk returns the
+# "close,minimize,maximize:" form it expects.
+# FileChooser / AppChooser → kde: native Qt dialogs. No `default=` line so
+# other portals keep their compiled-in default.
 ROUTING = """\
 [preferred]
 org.freedesktop.impl.portal.Settings=gtk

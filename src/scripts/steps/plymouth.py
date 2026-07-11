@@ -1,30 +1,6 @@
-"""Plymouth boot splash — installs the MacTahoeLiquidKde theme to
-``/usr/share/plymouth/themes/`` and activates it via Plymouth's own
-``-R`` flag (which rebuilds the initramfs through whatever the distro
-uses: mkinitcpio / dracut / update-initramfs).
-
-Safety model:
-1. Snapshot the previously-active theme to a state file BEFORE activating
-   ours, so uninstall can restore it. Fallback target is ``bgrt`` — the
-   universal Plymouth theme present on every distro that ships plymouth.
-2. Validate the freshly-installed .plymouth metadata parses AND every
-   image referenced in the .script actually exists, BEFORE running
-   ``-R``. A broken theme that's never activated leaves the boot path
-   on the previous theme.
-3. ``plymouth-set-default-theme -R`` runs under a 60s timeout. If it
-   fails non-zero, we attempt to restore the snapshot before surfacing.
-4. The step fails soft when ``plymouth-set-default-theme`` is missing —
-   Plymouth is not universally installed on every Plasma distro and the
-   rest of the desktop should still install cleanly.
-
-GRUB cmdline auto-patch:
-5. After the splash is installed + activated, if the running kernel
-   cmdline is missing ``splash``, append it to
-   ``GRUB_CMDLINE_LINUX_DEFAULT`` in ``/etc/default/grub`` and
-   regenerate the bootloader config. Opt out with
-   ``MTTKDE_NO_GRUB_MODIFY=1`` (passed by the CLI's ``--no-grub-modify``
-   flag) — the user gets a warning + manual instructions instead.
-"""
+"""Plymouth boot splash: installs the theme to /usr/share/plymouth/themes/
+and activates via ``plymouth-set-default-theme -R`` (rebuilds the initramfs).
+Contract: snapshot the previous theme, then validate BEFORE activating."""
 
 import configparser
 import os
@@ -57,25 +33,14 @@ PLYMOUTHD_CONF = Path("/etc/plymouth/plymouthd.conf")
 
 
 def deps():
-    # ``cmd:pkg`` form — the binary is ``plymouth-set-default-theme`` but
-    # the package it ships in is just ``plymouth`` on every distro.
+    # cmd:pkg — the binary ships in the plain ``plymouth`` package everywhere.
     return ["plymouth-set-default-theme:plymouth"]
 
 
 def _check_prereqs() -> tuple[bool, bool]:
-    """Return ``(splash_missing, mkinitcpio_missing_hook)``.
-
-    The current kernel cmdline lives in /proc/cmdline (the running
-    boot). The bootloader-side cmdline lives in /etc/default/grub for
-    GRUB users. Mismatch is fine; either having ``splash`` is enough
-    to render the splash on the next boot.
-
-    The corner-rendered shutdown splash on some high-DPI displays is
-    *suspected* to correlate with a GPU driver (amdgpu / i915 / etc.)
-    listed in MODULES=(...). Upstream Plymouth policy (Hans de Goede)
-    recommends keeping GPU drivers out of MODULES — the ``kms`` hook
-    loads them later. We don't warn on this because the correlation
-    isn't strong enough to be worth nagging about."""
+    """Return ``(splash_missing, mkinitcpio_missing_hook)``. /proc/cmdline
+    and /etc/default/grub may disagree; either carrying ``splash`` is enough
+    for the next boot."""
     # ── kernel cmdline: need ``splash`` for plymouthd to actually draw ──
     try:
         cmdline = PROC_CMDLINE.read_text(encoding="utf-8", errors="ignore")
@@ -84,8 +49,8 @@ def _check_prereqs() -> tuple[bool, bool]:
     splash_missing = " splash" not in (" " + cmdline)
 
     # ── initramfs hook: arch / cachyos / manjaro use mkinitcpio ─
-    # Other distros (fedora dracut, debian initramfs-tools) embed plymouth
-    # support automatically once the package is installed.
+    # dracut / initramfs-tools embed plymouth automatically; only mkinitcpio
+    # needs the explicit HOOKS entry.
     mkinitcpio_missing_hook = False
     if MKINITCPIO_CONF.is_file():
         try:
@@ -103,29 +68,17 @@ def _check_prereqs() -> tuple[bool, bool]:
 
 
 def _grub_auto_patch_enabled() -> bool:
-    """The opt-out — users set MTTKDE_NO_GRUB_MODIFY=1 (or pass
-    --no-grub-modify to the installer, which exports the same env)
-    when they want to keep manual control over /etc/default/grub."""
+    """Opt-out: MTTKDE_NO_GRUB_MODIFY=1 (the CLI's --no-grub-modify) keeps
+    /etc/default/grub untouched."""
     return os.environ.get("MTTKDE_NO_GRUB_MODIFY", "").lower() not in (
         "1", "true", "yes",
     )
 
 
 def _grub_is_active_bootloader() -> bool:
-    """Both ``/etc/default/grub`` AND a regen binary
-    (``grub-mkconfig`` or ``grub2-mkconfig``) must be present before
-    we touch GRUB config. Either alone is not enough:
-
-    * ``GRUB_DEFAULT.is_file()`` alone is a leftover trap — many users
-      migrated from GRUB to systemd-boot / Limine / rEFInd and the
-      file is still on disk from the previous install, but patching
-      it does nothing because no regen tool exists to materialise it
-      into a loaded grub.cfg.
-    * a regen binary alone is meaningless without the config to
-      regenerate.
-
-    Together they're a strong signal that GRUB is the active loader
-    and the auto-patch will actually take effect on next boot."""
+    """GRUB counts as active only when BOTH /etc/default/grub AND a regen
+    binary exist — the file alone is a common leftover after migrating to
+    systemd-boot / Limine / rEFInd, and patching it would do nothing."""
     if not GRUB_DEFAULT.is_file():
         return False
     return have("grub-mkconfig") or have("grub2-mkconfig")
@@ -138,11 +91,8 @@ _GRUB_CMDLINE_RE = re.compile(
 
 
 def _patch_grub_add_splash() -> bool:
-    """Append ``splash`` to GRUB_CMDLINE_LINUX_DEFAULT in
-    /etc/default/grub iff it isn't already there. Keeps a ``.bak`` next
-    to the file in case the user wants to inspect/revert. Returns True
-    when the file ended in the expected state (already had splash, or
-    we successfully added it)."""
+    """Append ``splash`` to GRUB_CMDLINE_LINUX_DEFAULT iff missing, keeping
+    a .bak beside the file. True when the file ends in the expected state."""
     try:
         with _as_root():
             text = GRUB_DEFAULT.read_text(encoding="utf-8", errors="replace")
@@ -152,9 +102,7 @@ def _patch_grub_add_splash() -> bool:
 
     match = _GRUB_CMDLINE_RE.search(text)
     if match is None:
-        # File has no GRUB_CMDLINE_LINUX_DEFAULT line at all — refuse
-        # to invent one. The user's GRUB config is non-standard, leave
-        # it alone.
+        # Non-standard config — refuse to invent the line.
         warn(f"{GRUB_DEFAULT} has no GRUB_CMDLINE_LINUX_DEFAULT line — "
              "skipping auto-patch")
         return False
@@ -171,8 +119,7 @@ def _patch_grub_add_splash() -> bool:
     backup = GRUB_DEFAULT.with_suffix(GRUB_DEFAULT.suffix + ".mttkde.bak")
     try:
         with _as_root():
-            # Best-effort backup. If it already exists from a prior run
-            # we keep the older copy (the truly-original one).
+            # Keep the oldest backup — that's the true original.
             if not backup.exists():
                 shutil.copy2(GRUB_DEFAULT, backup)
             tmp = GRUB_DEFAULT.with_name(GRUB_DEFAULT.name + ".mttkde-tmp")
@@ -185,10 +132,8 @@ def _patch_grub_add_splash() -> bool:
     return True
 
 
-# ``grub-mkconfig`` is Arch/CachyOS/Gentoo/openSUSE; ``grub2-mkconfig``
-# is Fedora/RHEL/Rocky. Either tool can write to either output path
-# depending on how the distro packaged it, so we try every binary +
-# every output combination in order.
+# grub-mkconfig (Arch/Gentoo/openSUSE) vs grub2-mkconfig (Fedora/RHEL);
+# either tool can own either output path, so try every combination.
 _GRUB_REGENERATE_CANDIDATES = (
     ("grub-mkconfig",  "/boot/grub/grub.cfg"),
     ("grub2-mkconfig", "/boot/grub2/grub.cfg"),
@@ -198,9 +143,8 @@ _GRUB_REGENERATE_CANDIDATES = (
 
 
 def _regenerate_grub_config() -> bool:
-    """Run ``grub[2]-mkconfig -o <output>`` for whichever (binary,
-    output) pair exists on the system. Returns True on the first
-    success."""
+    """Run ``grub[2]-mkconfig -o <output>`` for whichever (binary, output)
+    pair exists; True on the first success."""
     for binary, output in _GRUB_REGENERATE_CANDIDATES:
         if not have(binary):
             continue
@@ -225,10 +169,8 @@ def _regenerate_grub_config() -> bool:
 
 
 def _current_default_theme() -> str | None:
-    """Read the currently-active Plymouth theme. The no-arg form of
-    ``plymouth-set-default-theme`` prints the name on stdout. Returns
-    None on any failure — uninstall callers treat that as "fall back
-    to bgrt" rather than crashing the run."""
+    """Currently-active theme (no-arg plymouth-set-default-theme prints it).
+    None on any failure — callers fall back to bgrt."""
     try:
         res = subprocess.run(
             [PLYMOUTH_BIN],
@@ -241,9 +183,8 @@ def _current_default_theme() -> str | None:
 
 
 def _validate_theme(theme_dir: Path) -> str | None:
-    """Return None if the theme on disk looks valid, otherwise a short
-    error string. Parses the .plymouth metadata and confirms every
-    Image("…") reference in the .script resolves."""
+    """None if the theme looks valid, else a short error. Parses the
+    .plymouth metadata and checks every Image("…") in the .script resolves."""
     meta_path = theme_dir / f"{THEME_NAME}.plymouth"
     script_path = theme_dir / f"{THEME_NAME}.script"
 
@@ -301,11 +242,8 @@ def _ensure_script_plugin() -> bool:
 
 
 def _run_as_root(cmd: list[str], timeout: int) -> subprocess.CompletedProcess:
-    """Spawn ``cmd`` with effective UID 0 — the CLI dropped to the
-    invoking user but kept real UID 0, so ``_as_root()`` flips euid back
-    for the duration of the subprocess. The child inherits euid=0 and
-    runs as root, which ``plymouth-set-default-theme`` requires (it
-    writes /etc/plymouth/plymouthd.conf and rebuilds the initramfs)."""
+    """Spawn ``cmd`` with euid 0 — plymouth-set-default-theme needs root
+    (it writes plymouthd.conf and rebuilds the initramfs)."""
     with _as_root():
         return subprocess.run(
             cmd, check=False, capture_output=True, text=True, timeout=timeout,
@@ -313,10 +251,8 @@ def _run_as_root(cmd: list[str], timeout: int) -> subprocess.CompletedProcess:
 
 
 def _activate(theme: str) -> bool:
-    """Set ``theme`` as the default AND rebuild the initramfs. The -R
-    flag is mandatory: without it the theme is changed in
-    /etc/plymouth/plymouthd.conf but the new images never make it into
-    the initrd, so the next boot keeps showing the previous splash."""
+    """Set ``theme`` as default AND rebuild the initramfs. -R is mandatory —
+    without it the new images never reach the initrd."""
     try:
         res = _run_as_root([PLYMOUTH_BIN, "-R", theme], ACTIVATE_TIMEOUT_SEC)
     except subprocess.TimeoutExpired:
@@ -335,43 +271,14 @@ def _activate(theme: str) -> bool:
 
 
 def _set_plymouthd_simpledrm(enabled: bool) -> bool:
-    """Toggle ``[Daemon] UseSimpledrm`` in /etc/plymouth/plymouthd.conf.
-
-    Why: at shutdown, the GPU driver (amdgpu / nvidia-drm / i915) is
-    unloaded BEFORE plymouth shows the shutdown splash. plymouth then
-    falls back to whatever framebuffer the kernel console still has —
-    usually a tiny 1024x768 VGA — and the splash renders in a corner
-    of the high-res panel (~1/4 of the screen, bottom-left or wherever
-    fbcon parks it).
-
-    Forcing UseSimpledrm=true makes plymouth always use the UEFI GOP
-    framebuffer (which survives DRM driver unloads / re-inits), so the
-    shutdown splash stays fullscreen at native resolution — same as
-    boot. The boot path is unaffected since boot already uses simpledrm
-    before the real driver loads.
-
-    Safe to write: plymouth-set-default-theme already writes to this
-    same file (it sets ``Theme=``), so we're amending a file the
-    installer is already authoritative for. Uses configparser so we
-    don't clobber any unrelated lines a distro/user added.
-    """
-    # strict=False is mandatory here: ``plymouth-set-default-theme`` writes
-    # a fresh ``Theme=…`` line on every invocation WITHOUT deduping prior
-    # entries (and casual hand-edits use ``Theme = …`` with surrounding
-    # spaces, which look like a second key to the writer but the same one
-    # to configparser). Over time the file accumulates duplicates like:
-    #     [Daemon]
-    #     Theme=MacTahoeLiquidKde
-    #     Theme = MacTahoeLiquidKde
-    # strict=True raised DuplicateOptionError on those and we silently
-    # skipped applying UseSimpledrm — exactly the warning the user
-    # surfaced. strict=False keeps the last value (no semantic change),
-    # and the write-back below collapses the duplicates as a side effect.
+    """Toggle ``[Daemon] UseSimpledrm``. The GPU driver unloads before the
+    shutdown splash, so plymouth falls back to a tiny fbcon framebuffer and
+    renders in a corner; UseSimpledrm=true pins the UEFI GOP framebuffer."""
+    # strict=False: plymouth-set-default-theme appends duplicate Theme= lines
+    # without deduping; strict=True raised DuplicateOptionError and we bailed.
     cp = configparser.ConfigParser(strict=False)
-    # plymouthd's keys are case-sensitive (UseSimpledrm vs usesimpledrm
-    # is a different lookup). Override the default lowercase normalizer
-    # so we preserve the user's existing key casing AND write
-    # UseSimpledrm with its expected capitalization.
+    # plymouthd keys are case-sensitive — preserve existing casing and write
+    # UseSimpledrm capitalized.
     cp.optionxform = str
     if PLYMOUTHD_CONF.is_file():
         try:
@@ -394,19 +301,9 @@ def _set_plymouthd_simpledrm(enabled: bool) -> bool:
             PLYMOUTHD_CONF.parent.mkdir(parents=True, exist_ok=True)
             tmp = PLYMOUTHD_CONF.with_name(PLYMOUTHD_CONF.name + ".mttkde-tmp")
             with tmp.open("w", encoding="utf-8") as fh:
-                # space_around_delimiters=False is LOAD-BEARING. The
-                # plymouth-set-default-theme shell script (the canonical
-                # reader of this file at boot/shutdown) has a broken bash
-                # whitespace strip: it splits on '=' but leaves trailing
-                # space on the key — ``KEY_NAME='Theme '`` — so the
-                # ``[[ "Theme " == "Theme" ]]`` comparison fails. The
-                # script then falls through to the distro defaults file
-                # (which has ``Theme=bgrt``) and reports our theme as
-                # ``bgrt``. plymouthd at shutdown loads what the script
-                # reports → shutdown splash is bgrt, not MacTahoeLiquidKde.
-                # Writing without spaces around ``=`` matches the format
-                # plymouth-set-default-theme itself writes and the parser
-                # it can actually read back.
+                # space_around_delimiters=False is LOAD-BEARING: plymouth's
+                # shell parser leaves trailing space on keys ("Theme ") and
+                # then falls back to the distro default (bgrt) at shutdown.
                 cp.write(fh, space_around_delimiters=False)
             tmp.replace(PLYMOUTHD_CONF)
     except OSError as exc:
@@ -460,10 +357,8 @@ def install() -> None:
         return
 
     if not _activate(THEME_NAME):
-        # Activation failed. Try to put the previous theme back so the
-        # next boot has a working splash. If we never snapshotted (first
-        # run with our theme name already active, somehow) the fallback
-        # is the universal bgrt.
+        # Roll back so the next boot has a working splash; with no snapshot
+        # the fallback is the universal bgrt.
         snapshot = _read_previous()
         warn(f"attempting rollback to {snapshot}")
         _activate(snapshot)
@@ -476,10 +371,8 @@ def install() -> None:
 
     splash_missing, mkinitcpio_missing_hook = _check_prereqs()
 
-    # Auto-patch GRUB cmdline when ``splash`` is missing, unless the
-    # user opted out or GRUB isn't actually the active bootloader.
-    # Editing /etc/default/grub is a real mutation — we keep a backup
-    # and only touch GRUB_CMDLINE_LINUX_DEFAULT.
+    # Auto-patch the GRUB cmdline only when ``splash`` is missing, the user
+    # hasn't opted out, and GRUB is genuinely the active bootloader.
     grub_active = _grub_is_active_bootloader()
     if splash_missing and _grub_auto_patch_enabled() and grub_active:
         if _patch_grub_add_splash():
@@ -496,17 +389,15 @@ def install() -> None:
              "appear at next boot until you fix the items below:")
         if splash_missing:
             if grub_active:
-                # GRUB is real but either the user opted out or
-                # _patch_grub_add_splash() refused (non-standard config).
+                # User opted out or _patch_grub_add_splash() refused.
                 warn("kernel cmdline missing 'splash' — add it to "
                      "GRUB_CMDLINE_LINUX_DEFAULT in /etc/default/grub, "
                      "then run: sudo grub-mkconfig -o /boot/grub/grub.cfg "
                      "(or re-run the installer without "
                      "MTTKDE_NO_GRUB_MODIFY=1)")
             elif GRUB_DEFAULT.is_file():
-                # File exists but no regen binary — leftover from a
-                # previous OS install, current system uses a different
-                # bootloader.
+                # Leftover /etc/default/grub, no regen binary — a different
+                # bootloader is active.
                 warn("kernel cmdline missing 'splash'. Found a leftover "
                      "/etc/default/grub but no grub-mkconfig / "
                      "grub2-mkconfig on PATH — your active bootloader is "
@@ -541,9 +432,7 @@ def uninstall() -> None:
     else:
         warn(f"{PLYMOUTH_BIN} not available — skipping splash restore")
 
-    # Remove the UseSimpledrm override so the user's plymouthd.conf
-    # is back to whatever default their distro shipped. The previous
-    # theme may not need or want this forced.
+    # Drop the UseSimpledrm override — the restored theme may not want it.
     if _set_plymouthd_simpledrm(False):
         ok("UseSimpledrm override removed")
 

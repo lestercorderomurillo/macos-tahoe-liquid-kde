@@ -43,15 +43,12 @@ def deps():
         # if neither GLASS_WAYLAND nor GLASS_X11 ends up enabled.
         "kwin-cmake:kwin",
         "kdecoration-cmake:kdecoration",
-        # libepoxy + X11/XCB headers (XCB is REQUIRED even when X11
-        # path of the effect is off — it's used by the Wayland code).
+        # XCB is REQUIRED even with the X11 path off — the Wayland code uses it.
         "epoxy-cmake:libepoxy",
         "x11-cmake:libx11",
         "xcb-cmake:libxcb",
-        # Vulkan loader + headers. KWin 6.7+ pulls find_dependency(Vulkan)
-        # into its exported CMake config, so find_package(KWin) fails at
-        # configure time without these — even on machines that never use
-        # the Vulkan backend (Intel Skylake, etc.). Vendor-independent.
+        # KWin 6.7+ exports find_dependency(Vulkan), so find_package(KWin)
+        # fails at configure time without these — even on non-Vulkan machines.
         "vulkan-loader-cmake:vulkan-icd-loader",
         "vulkan-headers-cmake:vulkan-headers",
     ]
@@ -65,10 +62,8 @@ def build_artifacts() -> list[Path]:
 
 
 def _plugin_dir() -> Path:
-    """Kept for preflight's _enumerate_destinations() which calls this
-    by name. Delegates to the shared discovery in paths.py so the same
-    qmake6 / qtpaths6 / pkg-config chain — and the same raise-on-missing
-    contract — applies across every step."""
+    """Kept by name for preflight's _enumerate_destinations(); delegates to
+    the shared qt6_plugins_dir() discovery (same raise-on-missing contract)."""
     return qt6_plugins_dir()
 
 
@@ -159,13 +154,8 @@ def install() -> None:
     kw_write("--file", "kwinrc", "--group", "Plugins",
              "--key", "liquidglassEnabled", "true")
 
-    # Hot-load the freshly-written .so into the running KWin. The order
-    # matters: unload again to drop any handle KWin's effect loader may
-    # have kept on the previous binary, reconfigure so the new preset and
-    # liquidglassEnabled=true are picked up, then loadEffect against the
-    # file we just installed. Querying activeEffects afterwards is the
-    # only honest way to know it took — loadEffect itself returns true
-    # whether the effect was already loaded or freshly mapped.
+    # Order matters: unload stale handle → reconfigure → loadEffect. loadEffect
+    # returns true even when nothing changed; only activeEffects proves it took.
     qdbus_call("org.kde.KWin", "/Effects",
                "org.kde.kwin.Effects.unloadEffect", "liquidglass")
     qdbus_call("org.kde.KWin", "/KWin", "org.kde.KWin.reconfigure")
@@ -195,9 +185,8 @@ def uninstall() -> None:
     kw_write("--file", "kwinrc", "--group", "Plugins",
              "--key", "liquidglassEnabled", "false")
 
-    # Strip the entire [Effect-liquidglass] group from kwinrc — setting
-    # keys to false would leave the group behind and a reinstall would
-    # not reset tuned values.
+    # Strip the whole [Effect-liquidglass] group — leaving it behind would
+    # let a reinstall keep stale tuned values.
     kwinrc = Path.home() / ".config/kwinrc"
     if kwinrc.is_file():
         text = kwinrc.read_text()

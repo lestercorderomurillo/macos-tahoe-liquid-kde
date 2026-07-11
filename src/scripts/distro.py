@@ -1,23 +1,7 @@
-"""Distro-detection layer.
-
-Everything that varies between Linux distributions lives here:
-
-* the Qt6 plugin / QML directories (Arch puts them under /usr/lib,
-  Gentoo under /usr/lib64, Debian under /usr/lib/x86_64-linux-gnu);
-* the system libdir suffix;
-* the package manager + the package name for Qt6 dev tools;
-* the /etc/os-release id used to pick the right package-manager hint.
-
-The rest of the codebase imports from here so a refactor that adds
-support for a new distro touches one file. Nothing else in the
-codebase is allowed to hardcode ``/usr/lib/qt6`` or shell out to
-``pacman`` / ``apt`` / ``dnf`` directly — call into this module.
-
-Hard rule: never assume a path. If a Qt6 query tool isn't available,
-raise :class:`Qt6PathsMissing` with a distro-appropriate hint instead
-of falling back to a default that happens to work for one maintainer's
-machine.
-"""
+"""Distro-detection layer: Qt6 dirs, libdir, package-manager commands.
+The ONLY place per-distro paths or package managers are allowed. Never
+assume a path — when no Qt6 query tool exists, raise Qt6PathsMissing
+with a distro hint instead of guessing."""
 
 from __future__ import annotations
 
@@ -27,10 +11,8 @@ from pathlib import Path
 
 
 class Qt6PathsMissing(RuntimeError):
-    """Qt6 plugin / QML directories could not be discovered because no
-    Qt6 query tool (qmake6, qtpaths6, pkg-config Qt6Core) is on PATH.
-    The installer refuses to guess — Plasma 6 won't load applets that
-    sit outside Qt's actual scan path."""
+    """No Qt6 query tool (qmake6 / qtpaths6 / pkg-config) on PATH — the
+    installer refuses to guess Qt's scan path."""
 
 
 # ── /etc/os-release ──────────────────────────────────────────────────
@@ -58,10 +40,8 @@ def _parse_os_release(text: str) -> dict[str, str]:
 
 
 def current_distro() -> str:
-    """Return the lowercase os-release ID (``arch``, ``cachyos``,
-    ``gentoo``, ``fedora``, ``opensuse-tumbleweed``, ``debian``,
-    ``ubuntu``, ...). Returns ``"unknown"`` when /etc/os-release is
-    missing or unreadable — callers fall back to a generic hint."""
+    """Lowercase os-release ID; ``"unknown"`` when /etc/os-release is
+    missing or unreadable (callers fall back to a generic hint)."""
     global _DISTRO_CACHE
     if _DISTRO_CACHE is not None:
         return _DISTRO_CACHE
@@ -76,10 +56,8 @@ def current_distro() -> str:
 
 
 def distro_id_like() -> tuple[str, ...]:
-    """Return the os-release ID_LIKE chain in lowercase
-    (``("arch",)`` for CachyOS, ``("debian",)`` for Ubuntu, ...). Used
-    so a one-off downstream distro inherits its parent's package-manager
-    hint without explicit per-id wiring."""
+    """Lowercase os-release ID_LIKE chain, so downstream distros inherit
+    their parent's package-manager mappings without per-id wiring."""
     try:
         text = _OS_RELEASE_PATH.read_text(encoding="utf-8", errors="replace")
     except OSError:
@@ -133,9 +111,8 @@ def _qt6_qml_query() -> str | None:
     return None
 
 
-# Per-distro package-manager hint surfaced when qmake6 is missing.
-# Keep the list short and grouped by base distro — downstreams reach
-# the right hint through ID_LIKE in :func:`qt6_install_hint`.
+# Hint surfaced when qmake6 is missing; downstreams reach their base
+# distro's row via ID_LIKE.
 _QT6_TOOLS_HINTS: dict[str, str] = {
     "arch":          "pacman -S qt6-tools",
     "gentoo":        "emerge dev-qt/qttools:6",
@@ -153,9 +130,8 @@ _QT6_TOOLS_HINTS: dict[str, str] = {
 
 
 def qt6_install_hint() -> str:
-    """One-line install command for Qt6 dev tools on the current
-    distro, falling back to the parent (ID_LIKE) and then to a generic
-    multi-distro hint when the distro is unknown."""
+    """Install command for Qt6 dev tools on this distro; falls back to
+    ID_LIKE parents, then a generic multi-distro hint."""
     distro = current_distro()
     if distro in _QT6_TOOLS_HINTS:
         return _QT6_TOOLS_HINTS[distro]
@@ -166,13 +142,8 @@ def qt6_install_hint() -> str:
             + " | ".join(f"{k}: {v}" for k, v in _QT6_TOOLS_HINTS.items()))
 
 
-# Per-distro Qt6 libdir fallback. Only consulted when none of the Qt6
-# query tools (qmake6 / qtpaths6 / pkg-config) are installed — in which
-# case we know the convention for this distro from /etc/os-release and
-# verify the directory actually exists on disk before returning it.
-# If neither qmake6 nor a real on-disk fallback exists, we raise
-# Qt6PathsMissing — Plasma 6 won't load applets from a directory it
-# doesn't scan, so refusing to install is safer than guessing.
+# Consulted only when no Qt6 query tool is installed AND the dir exists
+# on disk; otherwise Qt6PathsMissing — never guess a scan path.
 _QT6_LIBDIR_FALLBACK: dict[str, str] = {
     # Arch-family (all share /usr/lib/qt6 layout)
     "arch":          "/usr/lib/qt6",
@@ -219,12 +190,9 @@ def _fallback_qt6_libdir() -> Path | None:
 
 
 def qt6_plugins_dir() -> Path:
-    """The directory Qt6 actually scans for plugins. Queried from
-    qmake6 / qtpaths6 / pkg-config in that order. If none of those
-    tools are installed, fall back to the per-distro libdir convention
-    (only when the directory actually exists on disk). Raises
-    :class:`Qt6PathsMissing` only when neither a query tool nor a real
-    fallback directory is available."""
+    """The dir Qt6 actually scans for plugins: qmake6 / qtpaths6 /
+    pkg-config, else the on-disk per-distro fallback, else
+    :class:`Qt6PathsMissing`."""
     global _QT_PLUGINS_CACHE
     if _QT_PLUGINS_CACHE is not None:
         return _QT_PLUGINS_CACHE
@@ -246,8 +214,8 @@ def qt6_plugins_dir() -> Path:
 
 
 def qt6_qml_dir() -> Path:
-    """The directory Qt6 scans for QML modules. Same detection +
-    fallback rules as :func:`qt6_plugins_dir`."""
+    """Qt6 QML module dir; same detection + fallback rules as
+    :func:`qt6_plugins_dir`."""
     global _QT_QML_CACHE
     if _QT_QML_CACHE is not None:
         return _QT_QML_CACHE
@@ -272,14 +240,10 @@ def qt6_qml_dir() -> Path:
 
 
 def system_lib_dir() -> Path:
-    """The directory under /usr that holds the system's 64-bit shared
-    libraries. Derived from the Qt6 plugin dir (e.g. ``/usr/lib64/qt6``
-    → ``/usr/lib64``) so it matches whatever convention the distro
-    actually uses. Used by steps that drop helpers into a system
-    libexec / aux dir alongside the Qt6 plugins."""
+    """System 64-bit libdir, derived from the Qt6 plugin dir
+    (``/usr/lib64/qt6/plugins`` → ``/usr/lib64``) so it matches the
+    distro's actual convention."""
     parent = qt6_plugins_dir().parent
-    # qt6_plugins_dir() typically returns .../lib/qt6/plugins; .parent
-    # is .../lib/qt6, .parent.parent is .../lib (or .../lib64).
     if parent.name == "qt6":
         return parent.parent
     return parent
@@ -287,18 +251,10 @@ def system_lib_dir() -> Path:
 
 # ── Package manager + per-distro package name map ────────────────────
 #
-# Each step lists its build / runtime dependencies as ``<cmd>:<arch-pkg>``
-# tokens — ``g++:gcc`` means "we shell out to g++; on Arch the package
-# is ``gcc``". To install the missing package on a non-Arch host we
-# need to translate the Arch package name into the equivalent name on
-# the current distro. This table is the entire translation. Add a new
-# distro by adding a row.
+# deps() tokens are ``<cmd>:<arch-pkg>``; this table translates the Arch
+# package name to the current distro's. Add a distro by adding rows.
 
 _PACKAGE_MAP: dict[str, dict[str, str]] = {
-    # Each cmd-token maps distro-id → package name. The cmd-token is
-    # whatever appears before the ``:`` in deps() — usually a binary
-    # name (``g++``, ``cmake``) but occasionally a logical name
-    # (``pkg-config``).
     "g++": {
         "arch":     "gcc",
         "debian":   "g++",
@@ -311,8 +267,8 @@ _PACKAGE_MAP: dict[str, dict[str, str]] = {
         "void":     "gcc",
         "gentoo":   "sys-devel/gcc",
     },
-    # Qt6 dev tooling — separate row so qt6_install_hint() stays the
-    # single source of truth for the human-facing install message.
+    # Separate row so qt6_install_hint() stays the single source of the
+    # human-facing message.
     "qmake6": {
         "arch":     "qt6-tools",
         "debian":   "qt6-base-dev-tools",
@@ -322,32 +278,21 @@ _PACKAGE_MAP: dict[str, dict[str, str]] = {
         "opensuse": "qt6-core-devel",
         "gentoo":   "dev-qt/qttools:6",
     },
-    # qdbus6 lives in different packages — and under different *binary
-    # names* — per distro. Values below were confirmed against real
-    # container probes (2026-05) by running `dnf provides`, `apt-file
-    # search`, `zypper wp`, `pacman -F`, `apk search -e cmd:` against
-    # fresh images. Don't trust convention — the binary name itself
-    # varies (Fedora ships it as ``qdbus-qt6``, not ``qdbus6``), which
-    # is why ``utils.qdbus_cmd()`` checks multiple binary names.
+    # Package AND binary names vary per distro (Fedora ships
+    # ``qdbus-qt6``, not ``qdbus6`` — hence utils.qdbus_cmd() probes
+    # several names). Values confirmed via container probes (2026-05).
     "qdbus6": {
         "arch":     "qt6-tools",
-        "debian":   "qdbus-qt6",          # was: qt6-tools-dev-tools (wrong)
-        "ubuntu":   "qdbus-qt6",          # was: qt6-tools-dev-tools (wrong)
+        "debian":   "qdbus-qt6",
+        "ubuntu":   "qdbus-qt6",
         "fedora":   "qt6-qttools",
         "rhel":     "qt6-qttools",
         "centos":   "qt6-qttools",
-        "opensuse": "qt6-tools-qdbus",    # was: qt6-tools (wrong)
+        "opensuse": "qt6-tools-qdbus",
         "alpine":   "qt6-qttools",
         "void":     "qt6-tools",
         "gentoo":   "dev-qt/qttools",
     },
-    # Kvantum Qt6 build. Probed names:
-    #   Arch:        kvantum (Qt5 + Qt6 together)
-    #   Fedora:      kvantum (single package, Qt5 + Qt6)
-    #   Debian/Ubuntu: qt-style-kvantum (Qt6 build)
-    #   openSUSE:    kvantum-manager
-    #   Alpine:      kvantum-qt6 (Qt5 build is kvantum-qt5)
-    #   Gentoo:      x11-themes/kvantum
     "kvantummanager": {
         "arch":     "kvantum",
         "fedora":   "kvantum",
@@ -360,10 +305,7 @@ _PACKAGE_MAP: dict[str, dict[str, str]] = {
         "void":     "kvantum",
         "gentoo":   "x11-themes/kvantum",
     },
-    # Plymouth ships the helper script in different subpackages.
-    # On Arch + Debian + openSUSE + Alpine the main ``plymouth`` package
-    # carries ``plymouth-set-default-theme``; on Fedora it was split
-    # into ``plymouth-scripts``.
+    # Fedora splits plymouth-set-default-theme into plymouth-scripts.
     "plymouth-set-default-theme": {
         "arch":     "plymouth",
         "debian":   "plymouth",
@@ -376,19 +318,15 @@ _PACKAGE_MAP: dict[str, dict[str, str]] = {
         "void":     "plymouth",
         "gentoo":   "sys-boot/plymouth",
     },
-    # Fedora splits the script renderer used by our .plymouth theme out
-    # of the base package. Other distros fall back to the main plymouth
-    # package unless/until we prove they need a different subpackage.
+    # Fedora splits the script renderer out of base plymouth; other
+    # distros fall through to the main package.
     "plymouth-script-plugin": {
         "fedora":   "plymouth-plugin-script",
         "rhel":     "plymouth-plugin-script",
         "centos":   "plymouth-plugin-script",
     },
-    # fontconfig + pkgconf shim: the *binary* names are the same
-    # everywhere but the package name varies, sometimes against the
-    # Arch fallback (Fedora's ``pkgconf-pkg-config`` shim is the
-    # canonical `/usr/bin/pkg-config` provider; plain ``pkgconf``
-    # doesn't exist there).
+    # Fedora's canonical /usr/bin/pkg-config provider is the
+    # ``pkgconf-pkg-config`` shim; plain ``pkgconf`` doesn't exist there.
     "pkg-config": {
         "arch":     "pkgconf",
         "debian":   "pkgconf",
@@ -417,10 +355,8 @@ _PACKAGE_MAP: dict[str, dict[str, str]] = {
         "void":     "fontconfig",
         "gentoo":   "media-libs/fontconfig",
     },
-    # cmake on openSUSE Tumbleweed is split — ``cmake-full`` includes
-    # the GUI / docs, ``cmake-mini`` is the build-only flavour. Plain
-    # ``cmake`` exists as a virtual that pulls full, so it's safe to
-    # keep "cmake" everywhere, but document the split.
+    # openSUSE splits cmake-full / cmake-mini; the ``cmake`` virtual
+    # pulls full, so plain "cmake" stays safe everywhere.
     "cmake": {
         "arch":     "cmake",
         "debian":   "cmake",
@@ -445,10 +381,8 @@ _PACKAGE_MAP: dict[str, dict[str, str]] = {
         "void":     "extra-cmake-modules",
         "gentoo":   "kde-frameworks/extra-cmake-modules",
     },
-    # CMake component providers needed by the compiled Qt6 targets.
-    # Arch and Fedora bundle multiple components into qt6-base /
-    # qt6-qtbase-devel; openSUSE splits them into per-component -devel
-    # packages, so we model each component as its own logical dep.
+    # CMake component providers. openSUSE splits per-component -devel
+    # packages, so each component is its own logical dep.
     "qt6-gui-cmake": {
         "arch":     "qt6-base",
         "debian":   "qt6-base-dev",
@@ -519,18 +453,10 @@ _PACKAGE_MAP: dict[str, dict[str, str]] = {
         "opensuse": "make",
         "alpine":   "make",
         "void":     "make",
-        # 2026-06: Gentoo moved make from sys-devel/ to dev-build/
-        # (same relocation as cmake earlier). Probing
-        # `equery list sys-devel/make` against a fresh ::gentoo tree
-        # returns nothing; the suggestion list from emerge confirms
-        # dev-build/make is the new path.
+        # 2026-06: Gentoo moved make sys-devel/ → dev-build/ (like cmake).
         "gentoo":   "dev-build/make",
     },
-    # zstd — needed by the icons step to extract the bundled
-    # offline tarball (src/offline/icons/*.tar.zst). Available in
-    # base/core on every supported distro; the binary is plain
-    # ``zstd`` everywhere and the package name matches except on
-    # Gentoo (which uses category/name atoms).
+    # Extracts the bundled offline icon tarballs (src/offline/icons/*.tar.zst).
     "zstd": {
         "arch":     "zstd",
         "debian":   "zstd",
@@ -544,20 +470,9 @@ _PACKAGE_MAP: dict[str, dict[str, str]] = {
         "gentoo":   "app-arch/zstd",
     },
     # ── KF6 frameworks ────────────────────────────────────────────────
-    #
-    # Required by the compiled plasmoids (dock taskmanager, globalmenu)
-    # and the acrylic-glass KWin effect. Probed values (2026-06)
-    # against fresh container images: Arch ``pacman -F``, Fedora
-    # ``dnf repoquery --whatprovides``, openSUSE ``zypper search``.
-    # Naming patterns:
-    #   Arch family:        ``k<name>`` (kcoreaddons, ki18n, kio, …)
-    #   Fedora / Nobara:    ``kf6-k<name>-devel``
-    #   openSUSE Tumbleweed:``kf6-k<name>-devel`` (same as Fedora)
-    #   Gentoo:             ``kde-frameworks/k<name>:6``
-    # The cmd-token is the cmake component name kebab-cased and
-    # prefixed ``kf6-`` so it never collides with a real binary on
-    # ``$PATH`` — the installer's ``shutil.which`` probe is bypassed
-    # for any token starting with ``kf6-`` (see preflight).
+    # Tokens are cmake component names prefixed ``kf6-`` so they never
+    # collide with a real binary — the shutil.which probe is bypassed
+    # for them (see preflight). Values probed via containers (2026-06).
     "kf6-config-cmake": {
         "arch":     "kconfig",
         "fedora":   "kf6-kconfig-devel",
@@ -671,11 +586,6 @@ _PACKAGE_MAP: dict[str, dict[str, str]] = {
         "gentoo":   "kde-frameworks/kitemmodels:6",
     },
     # ── Plasma / KSysGuard / plasma-workspace ─────────────────────────
-    #
-    # The dock taskmanager links against PlasmaActivities + KSysGuard,
-    # the globalmenu links against Plasma + LibTaskManager, and both
-    # need LibNotificationManager / LibTaskManager from
-    # plasma-workspace's cmake config dir.
     "plasma-cmake": {
         "arch":     "libplasma",
         "fedora":   "libplasma-devel",
@@ -708,10 +618,8 @@ _PACKAGE_MAP: dict[str, dict[str, str]] = {
         "opensuse": "libksysguard6-devel",
         "gentoo":   "kde-plasma/libksysguard",
     },
-    # plasma-workspace ships BOTH LibNotificationManager and
-    # LibTaskManager cmake configs in the same -devel package — list
-    # both logical tokens so each step's deps() reads naturally and the
-    # preflight failure message names the right cmake config.
+    # plasma-workspace ships both cmake configs in one -devel package;
+    # separate tokens keep preflight failure messages precise.
     "libnotificationmanager-cmake": {
         "arch":     "plasma-workspace",
         "fedora":   "plasma-workspace-devel",
@@ -790,17 +698,14 @@ _PACKAGE_MAP: dict[str, dict[str, str]] = {
         "fedora":   "vulkan-loader-devel",
         "rhel":     "vulkan-loader-devel",
         "centos":   "vulkan-loader-devel",
-        # openSUSE ships the loader dev files (libvulkan.so + vulkan.pc,
-        # Provides pkgconfig(vulkan)) in `vulkan-devel`, NOT `vulkan-loader`
-        # (that's the upstream project name, not a Tumbleweed RPM — a
-        # `zypper install vulkan-loader` returns "package not found"/104).
+        # openSUSE ships the loader dev files in `vulkan-devel`, NOT
+        # `vulkan-loader` (`zypper install vulkan-loader` → not found/104).
         "opensuse": "vulkan-devel",
         "alpine":   "vulkan-loader-dev",
         "void":     "Vulkan-Loader-devel",
         "gentoo":   "media-libs/vulkan-loader",
     },
-    # Vulkan headers (vulkan/vulkan.h). Split from the loader on several
-    # distros (Fedora, openSUSE, …), bundled into -dev on Debian/Ubuntu.
+    # vulkan/vulkan.h — split from the loader on Fedora/openSUSE.
     "vulkan-headers-cmake": {
         "arch":     "vulkan-headers",
         "debian":   "libvulkan-dev",
@@ -817,11 +722,8 @@ _PACKAGE_MAP: dict[str, dict[str, str]] = {
 
 
 def package_for(cmd: str, fallback_pkg: str | None = None) -> str:
-    """Translate a deps() command token into the package name on the
-    current distro. ``fallback_pkg`` (typically the Arch package name
-    from the ``cmd:pkg`` token) is used when the command is unknown to
-    the map — most KDE-side deps share a name across all five distros,
-    so the table only needs entries where the names diverge."""
+    """Translate a deps() cmd token to this distro's package name;
+    ``fallback_pkg`` (the Arch name) covers tokens absent from the map."""
     distro = current_distro()
     row = _PACKAGE_MAP.get(cmd, {})
     if distro in row:
@@ -833,10 +735,9 @@ def package_for(cmd: str, fallback_pkg: str | None = None) -> str:
 
 
 _PACKAGE_MANAGER_INSTALL: dict[str, list[str]] = {
-    # Root, NON-INTERACTIVE — user consents once at launch, no per-package
-    # [Y/n]. Every entry carries its assume-yes flag (--noconfirm/-y/etc).
-    # Supported families only; Debian/Ubuntu/Alpine/Void absent on purpose
-    # (no KF6 -cmake rows in _PACKAGE_MAP) → UnsupportedDistroError.
+    # Root, NON-INTERACTIVE — every entry carries its assume-yes flag.
+    # Debian/Ubuntu/Alpine/Void absent on purpose (no KF6 -cmake rows
+    # in _PACKAGE_MAP) → UnsupportedDistroError.
     "arch":     ["pacman", "-S", "--noconfirm", "--needed"],
     "gentoo":   ["emerge", "--ask=n", "--quiet", "--noreplace"],
     "fedora":   ["dnf", "install", "-y"],
@@ -845,9 +746,8 @@ _PACKAGE_MANAGER_INSTALL: dict[str, list[str]] = {
     "opensuse": ["zypper", "--non-interactive", "install", "--no-recommends"],
 }
 
-# Refresh the package db before installing, else a stale db 404s when
-# mirrors rotate past the version it knows. None = no separate sync needed
-# (dnf refreshes metadata on install; zypper refreshes stale repos).
+# Sync the db first or a stale db 404s on rotated mirrors. None = the
+# install command refreshes on its own.
 _PACKAGE_MANAGER_SYNC: dict[str, list[str] | None] = {
     "arch":     ["pacman", "-Sy", "--noconfirm"],
     "gentoo":   None,
@@ -873,17 +773,13 @@ def package_manager_sync_cmd() -> list[str] | None:
 
 
 class UnsupportedDistroError(RuntimeError):
-    """Current /etc/os-release id has no package manager mapping in
-    :data:`_PACKAGE_MANAGER_INSTALL`. Surfaced so callers can decide
-    whether to bail with a clear message or fall through to a manual
-    install hint."""
+    """Current os-release id has no package-manager mapping; callers
+    bail cleanly or fall through to a manual install hint."""
 
 
 def package_manager_install_cmd() -> list[str]:
-    """Return the ``[binary, args...]`` prefix this distro's package
-    manager expects for a non-interactive install. The caller appends
-    package names. Raises :class:`UnsupportedDistroError` for any
-    distro the map does not cover."""
+    """Non-interactive install command prefix (caller appends packages).
+    Raises :class:`UnsupportedDistroError` for unmapped distros."""
     distro = current_distro()
     if distro in _PACKAGE_MANAGER_INSTALL:
         return list(_PACKAGE_MANAGER_INSTALL[distro])
@@ -897,16 +793,13 @@ def package_manager_install_cmd() -> list[str]:
 
 
 _PLASMA_VERSION_PACKAGES: dict[str, tuple[str, ...]] = {
-    # Arch-family and most Debian / Fedora derivatives keep the
-    # workspace package under the historical name.
     "arch": ("plasma-workspace",),
     "fedora": ("plasma-workspace",),
     "rhel": ("plasma-workspace",),
     "centos": ("plasma-workspace",),
     "debian": ("plasma-workspace",),
     "ubuntu": ("plasma-workspace",),
-    # openSUSE renamed the Plasma 6 packages; prefer the workspace
-    # package but keep the desktop metapackage as a fallback.
+    # openSUSE renamed the Plasma 6 packages; keep fallbacks.
     "opensuse": ("plasma6-workspace", "plasma6-desktop", "plasma-workspace"),
 }
 
@@ -924,9 +817,8 @@ def _package_version_query_builder():
 
 
 def package_installed(pkg: str) -> bool:
-    """True if the package manager reports ``pkg`` installed (pacman -Q /
-    rpm -q / dpkg-query). Probes the PACKAGE directly. Returns False when
-    the distro has no query builder (caller then just attempts install)."""
+    """True when the package manager reports ``pkg`` installed; False
+    when the distro has no query builder (caller just attempts install)."""
     build_cmd = _package_version_query_builder()
     if build_cmd is None:
         return False
@@ -934,13 +826,8 @@ def package_installed(pkg: str) -> bool:
 
 
 def plasma_version_probe_cmds() -> tuple[list[str], ...]:
-    """Best-effort package-manager fallback probes for the installed
-    Plasma version.
-
-    ``plasmashell --version`` is still the primary source of truth, but
-    some real sessions hang or return nothing on certain distros. These
-    commands let preflight fall back to the installed package metadata
-    while keeping package-manager details inside this distro layer."""
+    """Package-metadata fallback probes for the Plasma version —
+    ``plasmashell --version`` hangs or returns nothing on some sessions."""
     distro = current_distro()
     packages = _PLASMA_VERSION_PACKAGES.get(distro)
     if packages is None:

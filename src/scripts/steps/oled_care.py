@@ -1,10 +1,6 @@
-"""Installer step: opt-in OLED-care pixel-shift service (binary + timer).
-
-Runs unconditionally from the install/uninstall flow (like the theme
-switcher). ``install()`` reads the ``oled_care`` flag itself: enabled
-installs the binary + systemd user units; disabled tears down whatever
-a previous flagged install left behind, so a plain re-run without the
-flag is self-healing.
+"""Opt-in OLED-care pixel-shift service (binary + systemd user units).
+install() reads the ``oled_care`` flag itself: a disabled run tears down
+whatever a previous flagged install left, so a plain re-run is self-healing.
 """
 
 import os
@@ -125,9 +121,8 @@ def install() -> None:
     _write_units(interval, max_px)
     _systemctl("daemon-reload")
     _systemctl("enable", *UNITS)
-    # Only the timer starts (restart also picks up a changed interval);
-    # the service fires on its first boundary so the install's own
-    # Plasma restart isn't raced.
+    # Restart only the timer (also picks up a changed interval); the service
+    # fires on its first boundary so the install's Plasma restart isn't raced.
     _systemctl("restart", "mac-tahoe-liquid-kde-oled.timer")
 
     ok("OLED care service installed")

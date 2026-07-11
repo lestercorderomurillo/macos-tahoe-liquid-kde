@@ -1,29 +1,6 @@
-"""Wallpapers — fully bundled offline since v0.17.0.
-
-Earlier releases downloaded the macOS heritage wallpapers from
-512pixels.net on first install and cached them under
-``~/.cache/mac-tahoe-liquid-kde/steps/wallpapers/``. That broke twice:
-
-* 512pixels reorganised their CDN (``512pixels.net/downloads/...`` →
-  ``media.512pixels.net/downloads/...``) and renamed Monterey + Big
-  Sur, killing the install on v0.16.x.
-* Every fresh install hit the network for ~270 MB of source PNGs
-  before any wallpaper appeared.
-
-v0.17 ships the full set in-repo as ~5MB JPEG q90 (re-encoded from
-the 6K originals — visually indistinguishable on 4K monitors but
-46 MB total instead of 273 MB). No ``download()`` phase, no mirror
-JSON, no network dependency. The user always has the wallpapers
-even on an air-gapped machine.
-
-Each bundle directory follows the Plasma desktoptheme layout:
-
-  src/offline/wallpapers/<id>/
-    ├── metadata.json
-    └── contents/
-        ├── images/3840x2160.jpg          # light variant (or single)
-        └── images_dark/3840x2160.jpg     # dark variant (auto packs only)
-"""
+"""macOS wallpapers: copies src/offline/wallpapers/<id>/ bundles (Plasma
+layout: metadata.json + contents/images[_dark]/) into ~/.local/share/wallpapers.
+Fully offline since v0.17.0 — no download phase."""
 
 import shutil
 from pathlib import Path
@@ -45,9 +22,8 @@ def install() -> None:
     for wp in sorted(OFFLINE_DIR.glob("Mac*/")):
         if not wp.is_dir():
             continue
-        # Guard against an accidentally-empty bundle dir — the metadata
-        # is the only thing Plasma reads to list the wallpaper, so if
-        # it's missing we skip rather than ship a half-installed entry.
+        # metadata.json is what Plasma lists the wallpaper by — skip the
+        # bundle rather than ship a half-installed entry.
         if not (wp / "metadata.json").is_file():
             fail(f"{wp.name} (missing metadata.json in offline bundle)")
             continue

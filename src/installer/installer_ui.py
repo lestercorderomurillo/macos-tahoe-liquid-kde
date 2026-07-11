@@ -14,9 +14,8 @@ import subprocess
 import sys
 from pathlib import Path
 
-# The CLI engine (cli, paths, log, …) lives in src/scripts; make it
-# importable whether this module is launched via the root ./installer or
-# imported directly from src/installer.
+# Make the CLI engine (src/scripts) importable whether launched via the
+# root ./installer or imported directly.
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "scripts"))
 
 from paths import CONFIG_FILE, REPO_ROOT, read_version
@@ -227,11 +226,8 @@ def _make_installer_bridge():
     _ESTIMATED_TOTAL_STEPS = 25
 
     class _UpdateCheckThread(QThread):
-        """Runs the GitHub round-trip off the GUI thread. ``update_status``
-        is pure / blocking (urllib with a 2.5s timeout); doing it on the
-        main thread would freeze the window for that long on a slow link.
-        The result is carried back via the bridge's ``updateChecked``
-        signal — Qt marshals the cross-thread emit onto the GUI thread."""
+        """Runs the blocking GitHub round-trip off the GUI thread; the
+        cross-thread ``done`` emit is marshalled back onto the GUI thread."""
 
         done = pyqtSignal("QVariantMap")
 
@@ -286,9 +282,8 @@ def _make_installer_bridge():
 
         @pyqtProperty(str, constant=True)
         def version(self) -> str:
-            """The installed repo version (``VERSION`` file). Read once,
-            synchronously, with no network — so the window can show it on
-            the very first paint, independent of the GitHub update check."""
+            """VERSION file, read synchronously with no network so the
+            first paint can show it."""
             return read_version()
 
         @pyqtSlot(result=str)
@@ -336,10 +331,8 @@ def _make_installer_bridge():
 
         @pyqtSlot()
         def checkForUpdates(self) -> None:
-            """Kick off a one-shot background update check. The verdict
-            arrives via ``updateChecked``. Re-entrant calls while one is
-            already in flight are ignored — the window only asks once at
-            startup, but a stray double-call must not spawn two threads."""
+            """One-shot background update check; verdict via ``updateChecked``.
+            Re-entrant calls are ignored so a double-call can't spawn two threads."""
             if self._update_thread is not None and self._update_thread.isRunning():
                 return
             thread = _UpdateCheckThread(self)
@@ -421,9 +414,8 @@ def _launch_preview_pyqt() -> int:
     except ImportError:
         return -1
 
-    # No .desktop file ships, so disable the xdg-desktop-portal
-    # registration (unused here) to silence its failure warning. Must be
-    # set before the QGuiApplication is constructed.
+    # No .desktop file ships — silence the portal-registration warning.
+    # Must be set before QGuiApplication is constructed.
     os.environ.setdefault("QT_NO_XDG_DESKTOP_PORTAL", "1")
     app = QGuiApplication.instance() or QGuiApplication(sys.argv[:1])
     app.setApplicationName("mac-tahoe-liquid-kde-installer")
@@ -439,9 +431,8 @@ def _launch_preview_pyqt() -> int:
     _enable_kwin_blur(window)
     app._installer_bridge = bridge
 
-    # Let Ctrl+C in the launching terminal close the window. Qt's C++ event
-    # loop blocks Python signal delivery, so a periodic idle timer hands
-    # control back to the interpreter often enough for SIGINT to land.
+    # Qt's C++ event loop blocks Python signal delivery; the idle timer
+    # hands control back to the interpreter so SIGINT (Ctrl+C) can land.
     def _on_sigint(*_):
         bridge.cancel()
         app.quit()
@@ -461,14 +452,9 @@ def launch_preview() -> int:
     if rc >= 0:
         return rc
 
-    # _launch_preview_pyqt() returns -1 only when PyQt6 cannot be imported.
-    # The QML window depends on the ``installer`` context property that the
-    # PyQt6 bridge registers (engine.rootContext().setContextProperty), so a
-    # standalone qmlscene/qml launch would load preview_installer.qml with no
-    # bridge and emit "ReferenceError: installer is not defined" on every
-    # binding while rendering a dead window. Report the missing dependency
-    # clearly instead of launching that broken fallback — the CLI
-    # (./install, ./uninstall) is the supported path without PyQt6.
+    # rc == -1 → PyQt6 missing. A bare qmlscene/qml launch would render a
+    # dead window (the ``installer`` context property only exists via the
+    # PyQt6 bridge), so report the missing dependency instead.
     print(
         "PyQt6 is required for the graphical installer but could not be "
         "imported.\n"
@@ -527,23 +513,10 @@ def save_features(payload: dict[str, object]) -> dict[str, object]:
 
 
 def update_status() -> dict[str, object]:
-    """Mirror the CLI's ``--check-update`` verdict as a dict the UI can
-    render. Reuses the exact same engine pieces (``read_version``,
-    ``fetch_latest_release``, ``parse_semver``) so the GUI and CLI never
-    disagree on what "an update is available" means.
-
-    Network failures resolve to ``reachable=False`` rather than raising —
-    a flaky GitHub must never break the installer window. The
-    ``MAC_TAHOE_NO_UPDATE_CHECK`` opt-out is honoured inside
-    ``fetch_latest_release`` (it returns None), which surfaces here as
-    "could not reach GitHub", so the banner simply stays hidden.
-
-    Keys:
-      current    — installed version string
-      latest     — latest release tag, or "" when unreachable
-      available  — True only when latest > current
-      reachable  — False when the network round-trip yielded nothing
-    """
+    """Mirror the CLI's ``--check-update`` verdict via the same engine
+    pieces so GUI and CLI never disagree. Network failures and the
+    MAC_TAHOE_NO_UPDATE_CHECK opt-out resolve to ``reachable=False``
+    rather than raising — a flaky GitHub must never break the window."""
     current = read_version()
     latest = fetch_latest_release()
     if latest is None:

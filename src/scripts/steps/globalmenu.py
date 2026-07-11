@@ -11,19 +11,12 @@ from steps._helpers import (
 SRC = offline("plasmoids/org.kde.mac.tahoe.liquid.globalmenu")
 BUILD = build_dir("plasmoids/org.kde.mac.tahoe.liquid.globalmenu")
 
-# AboutWindow shells out to this helper for system info. It is plain
-# Python and lives in ~/.local/bin so the install stays sudoless for
-# the script side (only the C++ .so install above needs root).
+# AboutWindow shells out to this helper; it lives in ~/.local/bin so the
+# script side stays sudoless (only the C++ .so install needs root).
 ABOUT_INFO_SRC = REPO_ROOT / "src/scripts/about_info.py"
 ABOUT_INFO_DEST = HOME / ".local/bin/mac-tahoe-about-info"
-# System-path install — Qt6 only walks the plugin / QML dirs its own
-# build was configured against. User paths are NOT on the discovery
-# list, so the .so + QML module MUST live under the libdir qmake6
-# reports. paths.qt6_{plugins,qml}_dir() ask qmake6 directly so the
-# correct libdir is picked on Arch / Gentoo / Fedora / openSUSE /
-# Debian / Ubuntu regardless of multilib / multiarch layout. Sudo
-# upfront via the CLI gate; sudo_install_file/tree hop back to root
-# via _as_root() for these writes.
+# Qt6 never scans user paths for plugins/QML — the .so + QML module MUST
+# live under the qmake6-reported libdir (qt6_*_dir() handles per-distro).
 _SO_RELPATH = "plasma/applets/org.kde.mac.tahoe.liquid.globalmenu.so"
 _QML_RELPATH = "plasma/applet/org/kde/mac/tahoe/liquid/globalmenu"
 
@@ -35,10 +28,8 @@ _LEGACY_SO_BASENAMES = (
 
 
 def __getattr__(name: str):
-    """Lazy DEST_SO / DEST_QML_DIR / LEGACY_SOS_SYSTEM resolution so a
-    missing qmake6 surfaces as a preflight failure with a distro-
-    appropriate hint, not as a module-import crash that bypasses our
-    error message entirely."""
+    """Lazy resolution so a missing qmake6 surfaces as a preflight failure
+    with a distro hint, not a module-import crash."""
     if name == "DEST_SO":
         return qt6_plugins_dir() / _SO_RELPATH
     if name == "DEST_QML_DIR":

@@ -1,42 +1,6 @@
-"""MacTahoe icon themes — fully bundled offline since v0.18.0.
-
-Earlier releases downloaded vinceliuice/MacTahoe-icon-theme from
-GitHub on first install, then ran a 200-line ``_assemble()`` step
-that cherry-picked subdirs, overlaid the upstream's symlink alias
-tree, generated the dark variant, recoloured symbolic SVGs from
-#363636 → #dedede, and rewrote ``Inherits=`` lines. Real problems:
-
-* The download + assemble took ~30s on a fast machine, longer on
-  slow CI.
-* Each upstream rename (tag bump, subdir restructure) silently
-  produced a half-built theme.
-* curl + unzip were build-time deps just for this step.
-
-v0.18 runs ``_assemble()`` ONCE at packaging time and ships the
-pre-built result as ``src/offline/icons/MacTahoeLiquidKde-Icons.tar.zst``
-(~6 MB compressed from 110 MB raw — zstd dedupes the 40k+
-identical SVG aliases very well). install() just extracts the
-tarball into ~/.local/share/icons.
-
-To refresh the bundled tarball (when the upstream ships notable
-new icons):
-
-  1. git clone https://github.com/vinceliuice/MacTahoe-icon-theme
-  2. python3 -c "
-       import sys; sys.path.insert(0, 'src/scripts');
-       from steps import icons; from pathlib import Path;
-       import shutil; out = Path('/tmp/icons-build');
-       shutil.rmtree(out, ignore_errors=True); out.mkdir();
-       icons.CACHE = out
-       icons._assemble(Path('MacTahoe-icon-theme'),
-                       'MacTahoeLiquidKde-Icons')"
-  3. cd /tmp/icons-build && tar --zstd -cf \
-       MacTahoeLiquidKde-Icons.tar.zst MacTahoeLiquidKde-Icons*
-  4. mv .../MacTahoeLiquidKde-Icons.tar.zst src/offline/icons/
-
-The _assemble() function below is preserved verbatim for that
-refresh workflow — it is NOT called at install time any more.
-"""
+"""MacTahoe icon themes: extracts the pre-built
+MacTahoeLiquidKde-Icons.tar.zst into ~/.local/share/icons. The tarball is
+rebuilt offline via _assemble() (maintainer refresh workflow, see below)."""
 
 import re
 import shutil
@@ -52,8 +16,7 @@ from utils import remove_path, run_user
 OFFLINE_DIR = offline("icons")
 DEST_DIR = HOME / ".local/share/icons"
 
-# Subdirs the refresh workflow's _assemble() cherry-picks from the
-# upstream into the default theme.
+# Subdirs _assemble() cherry-picks from upstream into the default theme.
 _DEFAULT_DIRS = (
     "actions", "animations", "apps", "categories", "devices", "emotes",
     "emblems", "mimes", "places", "preferences",
@@ -63,9 +26,6 @@ _AT2X_DIRS = (*_DEFAULT_DIRS, "status")
 
 
 def deps():
-    # zstd is needed to extract the bundled tarball. Available in
-    # base/core on every distro we ship for; the distro layer's
-    # _PACKAGE_MAP carries the per-distro package name.
     return ["zstd"]
 
 
@@ -78,17 +38,14 @@ def install() -> None:
         fail(f"offline tarball missing: {tarball}")
         return
 
-    # Wipe any pre-existing install of OUR themes so a half-installed
-    # state from a crashed previous run doesn't leak. We never touch
-    # other themes the user has installed (Breeze, Adwaita, etc.).
+    # Wipe our own stale theme dirs (crashed-run leftovers); never touch
+    # the user's other themes (Breeze, Adwaita, etc.).
     for old in DEST_DIR.glob("MacTahoeLiquidKde-Icons*"):
         if old.is_dir():
             shutil.rmtree(old, ignore_errors=True)
 
-    # tar --zstd handles the decompression in one shot. Falling back
-    # to Python's tarfile + zstandard module would avoid the binary
-    # dep but adds a Python package dep that's NOT in every distro's
-    # default Python.
+    # tar --zstd over Python tarfile: the zstandard module isn't in every
+    # distro's default Python.
     res = subprocess.run(
         ["tar", "--zstd", "-xf", str(tarball), "-C", str(DEST_DIR)],
         check=False, capture_output=True, text=True,
@@ -129,9 +86,8 @@ def uninstall() -> None:
 
 
 # ─────────────────────────────────────────────────────────────────────
-# REFRESH WORKFLOW — kept here for the maintainer rebuilding the
-# bundled tarball after an upstream theme update. Not called at
-# install time. See the module docstring for usage.
+# REFRESH WORKFLOW — maintainer-only: rebuilds the bundled tarball after
+# an upstream theme update. Not called at install time.
 # ─────────────────────────────────────────────────────────────────────
 
 
@@ -153,12 +109,9 @@ def _overlay_links(src: Path, dest: Path) -> None:
 
 
 def _assemble(repo: Path, name: str) -> None:
-    """Pre-build the icon theme tree from an upstream
-    vinceliuice/MacTahoe-icon-theme clone. Writes the assembled
-    theme to ``CACHE / <name>`` and ``CACHE / <name>-dark``.
-
-    Used by the maintainer to refresh src/offline/icons/*.tar.zst.
-    Not used at install time."""
+    """Build ``CACHE/<name>`` + ``CACHE/<name>-dark`` from an upstream
+    vinceliuice/MacTahoe-icon-theme clone; override CACHE, then tar --zstd
+    the result into src/offline/icons/. Never runs at install time."""
     light = CACHE / name
     light.mkdir(parents=True, exist_ok=True)
 
@@ -236,7 +189,6 @@ def _assemble(repo: Path, name: str) -> None:
         shutil.copytree(src_root / "status/symbolic",
                         dark / "status/symbolic", dirs_exist_ok=True)
 
-    # Recolour symbolic SVGs from #363636 → #dedede.
     for svg in dark.rglob("*.svg"):
         try:
             text = svg.read_text(encoding="utf-8")
@@ -305,6 +257,5 @@ def _assemble(repo: Path, name: str) -> None:
             link.symlink_to(sub)
 
 
-# CACHE — only used by _assemble() at refresh time. Maintainer
-# overrides this from the refresh script (see module docstring).
+# Only _assemble() uses this; the maintainer refresh script overrides it.
 CACHE = Path("/tmp/mttkde-icons-build")
