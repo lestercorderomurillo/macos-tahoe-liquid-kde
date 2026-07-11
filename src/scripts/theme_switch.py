@@ -24,6 +24,34 @@ def _have(cmd: str) -> bool:
     return shutil.which(cmd) is not None
 
 
+def _drop_privs_in_child() -> None:
+    """Duplicate of utils.drop_privs_in_child (the canonical copy) — this
+    file ships standalone to ~/.local/bin and cannot import utils.
+    No-op without SUDO_UID/SUDO_GID, i.e. in plain user runs."""
+    sudo_uid = os.environ.get("SUDO_UID")
+    sudo_gid = os.environ.get("SUDO_GID")
+    if not sudo_uid or not sudo_gid:
+        return
+    # GID first: changing UID can drop the right to call setresgid.
+    os.setresgid(int(sudo_gid), int(sudo_gid), int(sudo_gid))
+    os.setresuid(int(sudo_uid), int(sudo_uid), int(sudo_uid))
+
+
+def _run_user(cmd: list[str], *, timeout: int,
+              env: dict[str, str] | None = None,
+              capture: bool = False) -> subprocess.CompletedProcess:
+    """Every child spawn goes through here. steps/apply.py imports these
+    helpers into the sudo'd installer (ruid=0, euid=user), where a bare
+    child trips Qt6's setuid abort and the call silently fails (#37)."""
+    kwargs: dict = {"check": False, "timeout": timeout, "env": env,
+                    "preexec_fn": _drop_privs_in_child}
+    if capture:
+        kwargs.update(capture_output=True, text=True)
+    else:
+        kwargs.update(stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    return subprocess.run(cmd, **kwargs)
+
+
 def _xdg_config() -> Path:
     return Path(os.environ.get("XDG_CONFIG_HOME") or
                 str(Path.home() / ".config"))
@@ -38,11 +66,7 @@ def _qdbus(*args: str) -> bool:
     for q in ("qdbus6", "qdbus-qt6", "qdbus"):
         if _have(q):
             try:
-                return subprocess.run(
-                    [q, *args], check=False,
-                    stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
-                    timeout=10,
-                ).returncode == 0
+                return _run_user([q, *args], timeout=10).returncode == 0
             except subprocess.TimeoutExpired:
                 return False
     return False
@@ -59,11 +83,10 @@ def _has_session_dbus() -> bool:
         _HAS_DBUS = False
         return _HAS_DBUS
     try:
-        _HAS_DBUS = subprocess.run(
+        _HAS_DBUS = _run_user(
             ["dbus-send", "--session", "--print-reply",
              "--dest=org.freedesktop.DBus", "/org/freedesktop/DBus",
              "org.freedesktop.DBus.ListNames"],
-            check=False, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
             timeout=5,
         ).returncode == 0
     except subprocess.TimeoutExpired:
@@ -73,11 +96,8 @@ def _has_session_dbus() -> bool:
 
 def _sync_session_env() -> None:
     try:
-        res = subprocess.run(
-            ["systemctl", "--user", "show-environment"],
-            check=False, capture_output=True, text=True,
-            timeout=5,
-        )
+        res = _run_user(["systemctl", "--user", "show-environment"],
+                        timeout=5, capture=True)
     except subprocess.TimeoutExpired:
         return
     if res.returncode != 0:
@@ -105,25 +125,18 @@ def _kwrite(*args: str) -> bool:
         cmd.append("--notify")
     cmd.extend(args)
     try:
-        rc = subprocess.run(
-            cmd, check=False,
-            stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
-            timeout=5,
-        ).returncode
+        return _run_user(cmd, timeout=5).returncode == 0
     except subprocess.TimeoutExpired:
-        rc = 1
-    os.sync()
-    return rc == 0
+        return False
 
 
 def _kread(file: str, group: str, key: str) -> str:
     if not _have("kreadconfig6"):
         return ""
     try:
-        return subprocess.run(
+        return _run_user(
             ["kreadconfig6", "--file", file, "--group", group, "--key", key],
-            check=False, capture_output=True, text=True,
-            timeout=5,
+            timeout=5, capture=True,
         ).stdout.strip()
     except subprocess.TimeoutExpired:
         return ""
@@ -187,12 +200,12 @@ def _scrub_malformed_color_groups() -> None:
                     encoding="utf-8")
 
 
-def _delete_color_groups_direct() -> None:
+def _delete_color_groups_direct() -> bool:
     if not _have("kwriteconfig6"):
-        return
+        return False
     path = _kdeglobals_path()
     if not path.is_file():
-        return
+        return True
     _scrub_malformed_color_groups()
     sections = _parse_ini(path)
     keys: set[tuple[str, str]] = set()
@@ -201,15 +214,18 @@ def _delete_color_groups_direct() -> None:
             for key in items:
                 keys.add((section, key))
     for section, key in sorted(keys):
-        _kwrite("--file", "kdeglobals",
-                *_build_group_args(section),
-                "--key", key, "--delete")
+        if not _kwrite("--file", "kdeglobals",
+                       *_build_group_args(section),
+                       "--key", key, "--delete"):
+            return False
+    return True
 
 
 def reset_kde_color_scheme_config(scheme: str) -> bool:
     if not _have("kwriteconfig6"):
         return False
-    _delete_color_groups_direct()
+    if not _delete_color_groups_direct():
+        return False
     return _kwrite("--file", "kdeglobals", "--group", "General",
                    "--key", "ColorScheme", scheme)
 
@@ -235,19 +251,21 @@ def apply_color_groups_direct(scheme: str) -> bool:
     if scheme_file is None:
         return False
     sections = _parse_ini(scheme_file)
-    _delete_color_groups_direct()
+    if not _delete_color_groups_direct():
+        return False
     for section, items in sections.items():
         if not _is_color_group(section):
             continue
         group_args = _build_group_args(section)
         for key, value in items.items():
-            _kwrite("--file", "kdeglobals", *group_args, "--key", key, value)
+            if not _kwrite("--file", "kdeglobals", *group_args,
+                           "--key", key, value):
+                return False
     # Qt apps key cached palettes on ColorSchemeHash — without rewriting
     # it they keep serving the previous scheme's colors.
     digest = hashlib.sha1(scheme_file.read_bytes()).hexdigest()
-    _kwrite("--file", "kdeglobals", "--group", "General",
-            "--key", "ColorSchemeHash", digest)
-    return True
+    return _kwrite("--file", "kdeglobals", "--group", "General",
+                   "--key", "ColorSchemeHash", digest)
 
 
 def detect_mode_by_time() -> str:
@@ -271,12 +289,8 @@ def _apply_wallpaper(mode: str) -> bool:
     if wp is None or not _have("plasma-apply-wallpaperimage"):
         return False
     try:
-        return subprocess.run(
-            ["plasma-apply-wallpaperimage", str(wp)],
-            check=False,
-            stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
-            timeout=20,
-        ).returncode == 0
+        return _run_user(["plasma-apply-wallpaperimage", str(wp)],
+                         timeout=20).returncode == 0
     except subprocess.TimeoutExpired:
         return False
 
@@ -293,11 +307,7 @@ def _apply_local_extras(mode: str) -> None:
         env = os.environ.copy()
         env["QT_QPA_PLATFORM"] = "offscreen"
         try:
-            subprocess.run(
-                ["kvantummanager", "--set", kv], check=False, env=env,
-                stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
-                timeout=15,
-            )
+            _run_user(["kvantummanager", "--set", kv], timeout=15, env=env)
         except subprocess.TimeoutExpired:
             pass
 
@@ -316,11 +326,7 @@ def _apply_local_extras(mode: str) -> None:
                  "prefer-dark" if mode == "dark" else "prefer-light"],
             ):
                 try:
-                    subprocess.run(
-                        ["gsettings", *args], check=False,
-                        stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
-                        timeout=5,
-                    )
+                    _run_user(["gsettings", *args], timeout=5)
                 except subprocess.TimeoutExpired:
                     pass
 
@@ -386,20 +392,21 @@ def write_kde_theme_config(mode: str) -> bool:
         scheme, plasma = "MacTahoeLiquidKdeLight", "MacTahoeLiquidKde-Light"
         widget, aurorae = "kvantum", "__aurorae__svg__MacTahoeLiquidKde-Light"
 
-    _kwrite("--file", "kdeglobals", "--group", "KDE",
-            "--key", "LookAndFeelPackage", laf)
-    # Disable Plasma's AutomaticLookAndFeel so its sunrise/sunset
-    # scheduler can't fight our 06:00 / 18:00 timer (idempotent).
-    _kwrite("--file", "kdeglobals", "--group", "KDE",
-            "--key", "AutomaticLookAndFeel", "false")
-    _kwrite("--file", "kdeglobals", "--group", "Icons", "--key", "Theme", icon)
-    _kwrite("--file", "kdeglobals", "--group", "General",
-            "--key", "ColorScheme", scheme)
-    _kwrite("--file", "kdeglobals", "--group", "KDE",
-            "--key", "widgetStyle", widget)
-    _kwrite("--file", "kcminputrc", "--group", "Mouse",
-            "--key", "cursorTheme", cursor)
-    _kwrite("--file", "plasmarc", "--group", "Theme", "--key", "name", plasma)
+    # AutomaticLookAndFeel=false: Plasma's sunrise/sunset scheduler must
+    # not fight our 06:00 / 18:00 timer (idempotent).
+    fixed = (
+        ("kdeglobals", "KDE", "LookAndFeelPackage", laf),
+        ("kdeglobals", "KDE", "AutomaticLookAndFeel", "false"),
+        ("kdeglobals", "Icons", "Theme", icon),
+        ("kdeglobals", "General", "ColorScheme", scheme),
+        ("kdeglobals", "KDE", "widgetStyle", widget),
+        ("kcminputrc", "Mouse", "cursorTheme", cursor),
+        ("plasmarc", "Theme", "name", plasma),
+    )
+    for file, group, key, value in fixed:
+        if not _kwrite("--file", file, "--group", group,
+                       "--key", key, value):
+            return False
     for key, value in (
         ("library", "org.kde.kwin.aurorae"),
         ("theme", aurorae),
@@ -407,11 +414,11 @@ def write_kde_theme_config(mode: str) -> bool:
         ("ButtonsOnLeft", "XIA"),
         ("ButtonsOnRight", ""),
     ):
-        _kwrite("--file", "kwinrc", "--group", "org.kde.kdecoration2",
-                "--key", key, value)
+        if not _kwrite("--file", "kwinrc", "--group", "org.kde.kdecoration2",
+                       "--key", key, value):
+            return False
 
-    apply_color_groups_direct(scheme)
-    return True
+    return apply_color_groups_direct(scheme)
 
 
 def _live_tool_env() -> dict[str, str]:
@@ -426,14 +433,8 @@ def _run_live_plasma_tool(cmd: list[str], *, timeout_seconds: int = 20) -> bool:
     if os.environ.get("MAC_TAHOE_SKIP_LIVE_APPLY", "").lower() == "true":
         return False
     try:
-        return subprocess.run(
-            cmd,
-            check=False,
-            env=_live_tool_env(),
-            stdout=subprocess.DEVNULL,
-            stderr=subprocess.DEVNULL,
-            timeout=timeout_seconds,
-        ).returncode == 0
+        return _run_user(cmd, timeout=timeout_seconds,
+                         env=_live_tool_env()).returncode == 0
     except subprocess.TimeoutExpired:
         return False
 
@@ -467,9 +468,12 @@ def apply_cursortheme_live(theme: str) -> bool:
     return _run_live_plasma_tool(["plasma-apply-cursortheme", theme])
 
 
-def _broadcast_widget_style_change(style: str) -> None:
+def _broadcast_widget_style_change(style: str) -> bool:
+    """True when at least one signal lands — the portal endpoints are
+    optional and must not turn a delivered change into a failure."""
     if not _has_session_dbus():
-        return
+        return False
+    sent = False
     for cmd in (
         ["dbus-send", "--session", "--type=signal",
          "/KGlobalSettings", "org.kde.KGlobalSettings.notifyChange",
@@ -486,13 +490,10 @@ def _broadcast_widget_style_change(style: str) -> None:
          f"variant:string:{style}"],
     ):
         try:
-            subprocess.run(
-                cmd, check=False,
-                stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
-                timeout=5,
-            )
+            sent = _run_user(cmd, timeout=5).returncode == 0 or sent
         except subprocess.TimeoutExpired:
             pass
+    return sent
 
 
 def cycle_widget_style_live(target: str) -> bool:
@@ -500,16 +501,20 @@ def cycle_widget_style_live(target: str) -> bool:
     re-instantiates the plugin — so write Breeze, broadcast, write the
     target back (https://github.com/tsujan/Kvantum/discussions/975).
     SIGTERM/SIGINT mid-cycle would strand widgetStyle=Breeze on disk;
-    the finally + signal handler guarantee disk ends at the target."""
+    the finally + signal handler guarantee disk ends at the target.
+    False when a widgetStyle write fails or a broadcast phase lands
+    nothing — silent-success here masked the sudo'd-uninstall bug (#37)."""
     if not _have("kwriteconfig6") or not _has_session_dbus():
         return False
     if not target:
         return False
 
+    phase_ok: list[bool] = []
+
     def _restore_target() -> None:
-        _kwrite("--file", "kdeglobals", "--group", "KDE",
-                "--key", "widgetStyle", target)
-        _broadcast_widget_style_change(target)
+        phase_ok.append(_kwrite("--file", "kdeglobals", "--group", "KDE",
+                                "--key", "widgetStyle", target))
+        phase_ok.append(bool(_broadcast_widget_style_change(target)))
 
     interrupted: list[int] = []
 
@@ -519,9 +524,9 @@ def cycle_widget_style_live(target: str) -> bool:
     old_term = signal.signal(signal.SIGTERM, _on_signal)
     old_int = signal.signal(signal.SIGINT, _on_signal)
     try:
-        _kwrite("--file", "kdeglobals", "--group", "KDE",
-                "--key", "widgetStyle", "Breeze")
-        _broadcast_widget_style_change("Breeze")
+        phase_ok.append(_kwrite("--file", "kdeglobals", "--group", "KDE",
+                                "--key", "widgetStyle", "Breeze"))
+        phase_ok.append(bool(_broadcast_widget_style_change("Breeze")))
         time.sleep(0.4)
     finally:
         _restore_target()
@@ -529,22 +534,22 @@ def cycle_widget_style_live(target: str) -> bool:
         signal.signal(signal.SIGINT, old_int)
     if interrupted:
         raise SystemExit(128 + interrupted[0])
-    return True
+    return all(phase_ok)
 
 
 def apply(mode: str, context: str = "user") -> bool:
-    """Config writes + best-effort live niceties. Returns False only when
-    the config write layer (kwriteconfig6) is unavailable. Live LAF is
-    skipped during install — Plasma restarts anyway and running both
-    races plasmashell's QML teardown."""
+    """Config writes + best-effort live niceties. Returns False when the
+    core config writes fail (kwriteconfig6 missing or a write error).
+    Live LAF is skipped during install — Plasma restarts anyway and
+    running both races plasmashell's QML teardown."""
     cursor = "MacTahoeLiquidKde-Dark" if mode == "dark" else "MacTahoeLiquidKde"
     widget = "kvantum-dark" if mode == "dark" else "kvantum"
     laf = LAF_DARK if mode == "dark" else LAF_LIGHT
 
     config_ok = write_kde_theme_config(mode)
     if not config_ok:
-        print("theme apply: kwriteconfig6 unavailable — theme config "
-              "not written", file=sys.stderr)
+        print("theme apply: core KDE config writes failed, theme not "
+              "fully applied", file=sys.stderr)
     try:
         _apply_wallpaper(mode)
         _apply_local_extras(mode)

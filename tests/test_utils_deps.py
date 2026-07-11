@@ -112,3 +112,68 @@ def test_qdbus_cmd_resolves_per_distro_name(monkeypatch, present, expected):
 def test_qdbus_cmd_none_when_no_variant_present(monkeypatch):
     _force_qdbus_binaries(monkeypatch, set())
     assert utils.qdbus_cmd() is None
+
+
+# ── kw_write / kw_read: privilege drop + bounded hang (issue #37) ─────
+
+
+def _raise_timeout(cmd, **kw):
+    raise subprocess.TimeoutExpired(cmd, kw.get("timeout", 0))
+
+
+def test_kw_write_drops_privs_and_bounds_timeout(monkeypatch):
+    """kw_write children must drop to SUDO_USER (Qt6 setuid abort) AND
+    carry a 5s bound — a hung kwriteconfig6 used to hang the installer."""
+    seen: dict = {}
+
+    def fake_run(cmd, **kw):
+        seen.update(kw, cmd=cmd)
+        return subprocess.CompletedProcess(cmd, 0)
+
+    monkeypatch.setattr(utils.subprocess, "run", fake_run)
+    monkeypatch.setattr(utils, "have", lambda cmd: True)
+    monkeypatch.setattr(utils, "_has_session_dbus", lambda: False)
+
+    assert utils.kw_write("--file", "f", "--group", "g",
+                          "--key", "k", "v") is True
+    assert seen["cmd"][0] == "kwriteconfig6"
+    assert seen["preexec_fn"] is utils.drop_privs_in_child
+    assert seen["timeout"] == 5
+
+
+def test_kw_write_returns_false_on_timeout(monkeypatch):
+    monkeypatch.setattr(utils.subprocess, "run", _raise_timeout)
+    monkeypatch.setattr(utils, "have", lambda cmd: True)
+    monkeypatch.setattr(utils, "_has_session_dbus", lambda: False)
+    assert utils.kw_write("--file", "f") is False
+
+
+def test_kw_read_drops_privs_and_bounds_timeout(monkeypatch):
+    seen: dict = {}
+
+    def fake_run(cmd, **kw):
+        seen.update(kw)
+        return subprocess.CompletedProcess(cmd, 0, stdout=" value \n",
+                                           stderr="")
+
+    monkeypatch.setattr(utils.subprocess, "run", fake_run)
+    monkeypatch.setattr(utils, "have", lambda cmd: True)
+    assert utils.kw_read("f", "g", "k") == "value"
+    assert seen["preexec_fn"] is utils.drop_privs_in_child
+    assert seen["timeout"] == 5
+
+
+def test_kw_read_returns_empty_on_timeout(monkeypatch):
+    monkeypatch.setattr(utils.subprocess, "run", _raise_timeout)
+    monkeypatch.setattr(utils, "have", lambda cmd: True)
+    assert utils.kw_read("f", "g", "k") == ""
+
+
+def test_has_session_dbus_returns_false_on_timeout(monkeypatch):
+    """kw_write probes the session bus first; without a bound here it was
+    still indirectly hangable before kwriteconfig6 even launched."""
+    monkeypatch.setattr(utils, "_HAS_DBUS", None)
+    monkeypatch.setenv("DBUS_SESSION_BUS_ADDRESS", "unix:path=/tmp/x")
+    monkeypatch.setattr(utils, "have", lambda cmd: True)
+    monkeypatch.setattr(utils.subprocess, "run", _raise_timeout)
+    assert utils._has_session_dbus() is False
