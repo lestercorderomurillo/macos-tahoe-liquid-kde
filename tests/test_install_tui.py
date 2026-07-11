@@ -158,11 +158,11 @@ def test_theme_cycle(tui_module, cli_module):
     state = _state(cli_module, tui_module)
     state.screen = "theme"
     assert state.theme_mode == "auto"
-    tui_module._handle(state, tui_module.curses.KEY_RIGHT)
+    tui_module._handle(state, tui_module.KEY_RIGHT)
     assert state.theme_mode == "light"
-    tui_module._handle(state, tui_module.curses.KEY_RIGHT)
+    tui_module._handle(state, tui_module.KEY_RIGHT)
     assert state.theme_mode == "dark"
-    tui_module._handle(state, tui_module.curses.KEY_LEFT)
+    tui_module._handle(state, tui_module.KEY_LEFT)
     assert state.theme_mode == "light"
 
 
