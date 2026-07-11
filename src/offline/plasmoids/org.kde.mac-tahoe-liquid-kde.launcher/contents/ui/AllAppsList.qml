@@ -7,7 +7,7 @@ ColumnLayout {
 	id: allApps
 	spacing: 0
 
-	property QtObject allAppsModel: rootModel.modelForRow(2)
+	property QtObject allAppsModel
 	property QtObject recentAppsModel
 	property QtObject currentModel: rootModel.modelForRow(0)
 
@@ -23,15 +23,30 @@ ColumnLayout {
 
 	property alias viewItem: appViewLoader.item
 
-	property var appsCategoriesList: { 
+	property var appsCategoriesList: {
 
 		var categories = [];
 		var categoryName;
 		var categoryIcon;
+		var allAppsFound = null;
 
 		for (var i = 0; i < rootModel.count; i++) {
 			categoryName  = rootModel.data(rootModel.index(i, 0), Qt.DisplayRole);
 			categoryIcon  = rootModel.data(rootModel.index(i, 0), Qt.DecorationRole);
+			var sub = rootModel.modelForRow(i);
+
+			// Skip anything empty or broken: separators (blank name,
+			// null model) and 0-item categories. sub.count is a live
+			// dependency — an empty Suggestions row reappears the
+			// moment recents exist.
+			if (!sub || !categoryName || categoryName.trim() === "" || !sub.count) {
+				continue;
+			}
+
+			var isAllApps = (sub.description === "KICKER_ALL_MODEL");
+			if (isAllApps) {
+				allAppsFound = sub;
+			}
 
 			// Rename "Recent Applications" / "Recent Documents" to "Suggestions"
 			if (categoryName.toLowerCase().indexOf("recent") !== -1) {
@@ -41,20 +56,21 @@ ColumnLayout {
 			categories.push({
 				name: categoryName,
 				modelIndex: i,
-				icon: categoryIcon
+				icon: categoryIcon,
+				isAllApps: isAllApps
 			});
 		}
-		allApps.allAppsModel =  rootModel.modelForRow(2)
-		allApps.currentModel =  rootModel.modelForRow(0)
+		allApps.allAppsModel = allAppsFound;
+		allApps.currentModel = categories.length > 0
+			? rootModel.modelForRow(categories[0].modelIndex)
+			: rootModel.modelForRow(0);
 		return categories;
 	}
 
 	property var slicedCategories: {
-		// Keep Suggestions (index 0), skip "All Applications" (index 1), keep categories (2+)
-		if (appsCategoriesList.length > 2) {
-			return [appsCategoriesList[0]].concat(appsCategoriesList.slice(2));
-		}
-		return appsCategoriesList;
+		// The categorized view builds its own sections, so drop the
+		// All Applications entry — identified by model, not position.
+		return appsCategoriesList.filter(function (c) { return !c.isAllApps; });
 	}
 
 	function updateShowedModel(index){

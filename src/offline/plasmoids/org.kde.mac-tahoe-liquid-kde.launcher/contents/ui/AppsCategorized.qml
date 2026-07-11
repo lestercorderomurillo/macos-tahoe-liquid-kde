@@ -9,19 +9,14 @@ AppListView {
 	highlightFollowsCurrentItem: false
 	spacing: 0
 
-	// Suggestions (always slicedCategories[0]) is the only category that
-	// can be empty; when it is, the section below it becomes the first
-	// visible one and must not draw a separator above itself.
-	property bool firstCategoryEmpty: slicedCategories.length > 0
-		&& rootModel.modelForRow(slicedCategories[0].modelIndex).count === 0
-
 	delegate: ColumnLayout {
 		id: category
 
 		property var currentCategory: slicedCategories[index]
 		property bool expanded: false
-		property bool hasApps: grid.model.count > 0
-		property bool belowVisibleCategory: index > (appsCategorized.firstCategoryEmpty ? 1 : 0)
+		// Empty categories are filtered out of slicedCategories at the
+		// source; this guard only covers the moment one empties live.
+		property bool hasApps: grid.model && grid.model.count > 0
 
 		width: appsCategorized.availableWidth
 		height: hasApps ? categoryHeader.height + root.cellSizeHeight : 0
@@ -42,13 +37,13 @@ AppListView {
 			Item {
 				Layout.fillWidth: true
 				Layout.fillHeight: true
-				visible: category.belowVisibleCategory
+				visible: index > 0
 			}
 			Rectangle {
                 id: separator
 				width: parent.width
 				height: 1.5
-				color: category.belowVisibleCategory ? main.contrastBgColor : "transparent"
+				color: index > 0 ? main.contrastBgColor : "transparent"
 			}
 			RowLayout {
 				Layout.fillWidth: true
