@@ -248,7 +248,7 @@ Fonts, icons, cursors, and wallpapers all ship in the repo under `src/offline/`.
 The easiest way to install is the **graphical installer** — a glass window that drives install / uninstall and a per-feature picker:
 
 ```bash
-./installer                 # graphical installer: install / uninstall + feature picker
+./installer   # graphical: install / uninstall + feature picker
 ```
 
 It opens a glass launcher to install, uninstall, or open the feature picker — toggle which parts of the theme get applied (wallpapers, fonts, Plasma theme, Kvantum, Plymouth, …), checks for a newer release on launch, and shows live progress while it runs. It wraps the same `./install` / `./uninstall` commands, so the CLI stays the source of truth.
@@ -258,11 +258,11 @@ It opens a glass launcher to install, uninstall, or open the feature picker — 
 Prefer the terminal, or scripting an install? Every option is available on the CLI:
 
 ```bash
-sudo ./install              # install everything
-sudo ./install --help       # show all options
-sudo ./install --preflight  # run only the safety checks
-sudo ./install --no-apply-theme  # install files, don't switch Plasma over yet
-sudo ./uninstall            # remove everything, reset to Breeze
+sudo ./install                   # install everything
+sudo ./install --help            # show all options
+sudo ./install --preflight       # run only the safety checks
+sudo ./install --no-apply-theme  # stage files, don't switch Plasma yet
+sudo ./uninstall                 # remove everything, reset to Breeze
 ```
 
 ### Try it in a VM, per OS
@@ -279,7 +279,7 @@ sudo ./uninstall            # remove everything, reset to Breeze
 ./vm nobara
 ./vm opensuse
 ./vm gentoo
-./vm all                 # every distro at once, each in its own window
+./vm all      # every distro at once, each in its own window
 ```
 
 `./vm all` trims each VM to 2 vCPU / 4 GiB so the fleet fits in RAM; override with `VM_CPUS` / `VM_MEM_MIB`. Ctrl-C in the launching terminal stops every VM.
@@ -327,10 +327,12 @@ mac-tahoe-theme-switch auto
 The top bar never moves, and OLED panels burn static content in. The opt-in **OLED care** service nudges panel geometry on a timer — the top bar's height by a few px (its menu, clock, and tray shift with it) and the dock's position by a few px sideways — so no pixel renders the same content for hours. Off by default; enable it from the graphical installer's feature picker (`./installer` → **OLED care pixel shift**) or on the CLI:
 
 ```bash
-sudo ./install --oled-care                                  # enable (every 5 min, up to 8 px)
-sudo ./install --oled-care --save                           # enable and remember it
-sudo ./install --oled-care --oled-interval=3 --oled-max-shift=4   # custom cadence + distance
-sudo ./install --no-oled-care                               # back off
+sudo ./install --oled-care          # enable (every 5 min, up to 8 px)
+sudo ./install --oled-care --save   # enable and remember it
+sudo ./install --no-oled-care       # back off
+
+# custom cadence + distance
+sudo ./install --oled-care --oled-interval=3 --oled-max-shift=4
 ```
 
 `--oled-interval=N` sets minutes between shifts (1–59, default 5); `--oled-max-shift=N` sets the maximum shift distance in px (1–16, default 8). Panels move one 2 px step per fire (the 32 px top bar walks 32 → 34 → … → 40 → 38 → … and back), matching manufacturer pixel-shift practice. Manual control anytime: `mac-tahoe-oled-care shift` steps once (`--max-px N` to override the distance), `restore` puts the panels back, `status` shows the stored geometry.
@@ -339,7 +341,7 @@ sudo ./install --no-oled-care                               # back off
 
 ```bash
 sudo ./install --no-gtk --dark --save   # write to features.json
-sudo ./install                          # next time, reuses features.json
+sudo ./install                          # next run reuses features.json
 sudo ./install --reset                  # back to defaults
 ```
 
