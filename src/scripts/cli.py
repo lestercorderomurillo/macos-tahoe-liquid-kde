@@ -858,6 +858,36 @@ def _print_done(verb: str) -> None:
     print()
 
 
+def _interactive_wizard_enabled(parsed: "ParsedArgs", argv: list[str]) -> bool:
+    """True only when the terminal UI should run: a real TTY on both
+    stdout/stdin, no ``MTTKDE_NO_CONFIRM`` (set by the GUI / CI / VM), and
+    no CLI flags (which already encode the user's choices). ``--preflight``
+    and ``--check-update`` take their own early paths."""
+    return (
+        sys.stdout.isatty()
+        and sys.stdin.isatty()
+        and os.environ.get("MTTKDE_NO_CONFIRM") != "1"
+        and not argv
+        and not parsed.preflight_only
+        and not parsed.check_update
+    )
+
+
+def _maybe_run_wizard(feat: dict[str, object], parsed: "ParsedArgs",
+                      argv: list[str]) -> tuple[dict[str, object], bool]:
+    """Run the interactive TUI when enabled; otherwise pass ``feat`` through
+    untouched. Any TUI failure (missing ``curses``, terminal error) falls
+    back to the classic ``confirm()`` path instead of aborting the install."""
+    if not _interactive_wizard_enabled(parsed, argv):
+        return feat, False
+    try:
+        from install_tui import run_wizard
+        feat = run_wizard(feat)
+    except Exception:
+        return feat, False
+    return feat, True
+
+
 def run_install(argv: list[str]) -> int:
     parsed = parse_args(argv)
     if parsed.help:
@@ -873,6 +903,10 @@ def run_install(argv: list[str]) -> int:
 
     feat = apply_overrides(load_features(), parsed)
     export_env(feat)
+
+    feat, interactive = _maybe_run_wizard(feat, parsed, argv)
+    if interactive:
+        export_env(feat)
 
     if parsed.preflight_only:
         banner(read_version())
@@ -897,93 +931,20 @@ def run_install(argv: list[str]) -> int:
             rc = 1
             return rc
 
-        banner(read_version())
-        if not confirm("In development — Install at your own risk.\n"
-                       "  Do not install on production / work systems."):
-            tracker.mark_aborted()
-            return 0
-        if check_for_updates(inline=True):
-            auto_update_and_reexec(argv)
-
-        if not run_preflight("install"):
-            fail("preflight failed — refusing to install")
-            rc = 1
-            return rc
-
-        step("Verification")
-        note("Checks KDE version and required tools")
-        if not verify_plasma():
-            return 1
-
-        step("Dependencies")
-        note("Checking and installing required tools")
-        _check_deps(feat)
-
-        step("Building Compiled Components")
-        note("Builds C++ plasmoids and KWin effects — must succeed before install")
-        if not _run_builds_or_abort(feat):
-            return 1
-
-        for feature in INSTALL_ORDER:
-            if feature == "layout":
-                continue
-            if not should_process(feature, feat):
-                continue
-            if not step_exists(feature):
-                continue
-            label = feature.replace("_", " ")
-            step(f"Installing {label}")
-            note(FEATURE_DESC.get(feature, ""))
-
-            # No download phase — assets bundled under src/offline/ since v0.18.0.
-            if not run_phase(feature, "install") and feature in CRITICAL_INSTALL_FEATURES:
-                fail(f"{label} install failed — aborting "
-                     "(critical compiled component)")
-                return 1
-
-        step("Installing Theme Switcher")
-        note("Installs the auto light/dark theme switcher")
-        run_phase("theme_switch", "install")
-
-        step("Installing OLED Care")
-        note("Opt-in pixel shift that guards OLED panels against burn-in")
-        run_phase("oled_care", "install")
-
-        if feat.get("apply_theme", True):
-            step("Applying Changes")
-            note("Applies settings, flushes caches, restarts KWin")
-            run_phase("apply", "install")
-
-            # Layout runs after apply — the Plasma JS scripting API can't
-            # find the custom plasmoids by ID until their packages are on disk.
-            if feat.get("layout", True) and step_exists("layout"):
-                step("Installing Layout")
-                note(FEATURE_DESC["layout"])
-                run_phase("layout", "install")
-
-            _flush_icon_cache_signal()
-
-            step("Verification")
-            note("Checking theme configuration was applied")
-            verify_config(feat)
-
-            step("Restarting Plasma")
-            note("Restarts Plasma shell to load all changes")
-            run_phase("apply", "restart_plasma")
-
-            if feat.get("layout", True) and step_exists("layout") and not _layout_is_installed():
-                step("Retrying Layout")
-                note("Retries the panel layout after Plasma reloads new plasmoids")
-                run_phase("layout", "install")
+        if interactive:
+            rc = _run_install_with_progress(feat)
         else:
-            step("Skipping Activation")
-            note("--no-apply-theme: files installed but Plasma left untouched. "
-                 "Re-run with --apply-theme to switch over.")
-
-        _print_done("installed")
-        if not errors:
+            banner(read_version())
+            if not confirm(
+                "In development — Install at your own risk.\n"
+                "  Do not install on production / work systems."):
+                tracker.mark_aborted()
+                return 0
+            if check_for_updates(inline=True):
+                auto_update_and_reexec(argv)
+            rc = _run_install_body(feat)
+        if rc == 0:
             tracker.mark_completed()
-        rc = 1 if errors else 0
         return rc
     except KeyboardInterrupt:
         tracker.mark_aborted()
@@ -993,6 +954,124 @@ def run_install(argv: list[str]) -> int:
     finally:
         progress_done(rc)
         tracker.finalize(rc)
+
+
+def _estimate_total_steps(feat: dict[str, object]) -> int:
+    """Best-effort count of the ``step()`` records the install will emit, so
+    the interactive progress bar can show a meaningful percentage. Mirrors the
+    loop in :func:`_run_install_body`."""
+    total = 0
+    total += 1  # Verification
+    total += 1  # Dependencies
+    total += 1  # Building Compiled Components
+    for feature in INSTALL_ORDER:
+        if feature == "layout":
+            continue
+        if should_process(feature, feat) and step_exists(feature):
+            total += 1
+    total += 1  # Theme Switcher
+    total += 1  # OLED Care
+    if feat.get("apply_theme", True):
+        total += 1  # Applying Changes
+        if feat.get("layout", True) and step_exists("layout"):
+            total += 1  # Installing Layout
+        total += 1  # Verification (re-verify)
+        total += 1  # Restarting Plasma
+        if feat.get("layout", True) and step_exists("layout"):
+            total += 1  # Retrying Layout (best-effort)
+    return total
+
+
+def _run_install_body(feat: dict[str, object]) -> int:
+    """The actual install sequence (no banner / confirm / progress UI). Used
+    both by the classic path and wrapped by the interactive progress screen."""
+    if not run_preflight("install"):
+        fail("preflight failed — refusing to install")
+        return 1
+
+    step("Verification")
+    note("Checks KDE version and required tools")
+    if not verify_plasma():
+        return 1
+
+    step("Dependencies")
+    note("Checking and installing required tools")
+    _check_deps(feat)
+
+    step("Building Compiled Components")
+    note("Builds C++ plasmoids and KWin effects — must succeed before install")
+    if not _run_builds_or_abort(feat):
+        return 1
+
+    for feature in INSTALL_ORDER:
+        if feature == "layout":
+            continue
+        if not should_process(feature, feat):
+            continue
+        if not step_exists(feature):
+            continue
+        label = feature.replace("_", " ")
+        step(f"Installing {label}")
+        note(FEATURE_DESC.get(feature, ""))
+
+        # No download phase — assets bundled under src/offline/ since v0.18.0.
+        if not run_phase(feature, "install") and feature in CRITICAL_INSTALL_FEATURES:
+            fail(f"{label} install failed — aborting "
+                 "(critical compiled component)")
+            return 1
+
+    step("Installing Theme Switcher")
+    note("Installs the auto light/dark theme switcher")
+    run_phase("theme_switch", "install")
+
+    step("Installing OLED Care")
+    note("Opt-in pixel shift that guards OLED panels against burn-in")
+    run_phase("oled_care", "install")
+
+    if feat.get("apply_theme", True):
+        step("Applying Changes")
+        note("Applies settings, flushes caches, restarts KWin")
+        run_phase("apply", "install")
+
+        # Layout runs after apply — the Plasma JS scripting API can't
+        # find the custom plasmoids by ID until their packages are on disk.
+        if feat.get("layout", True) and step_exists("layout"):
+            step("Installing Layout")
+            note(FEATURE_DESC["layout"])
+            run_phase("layout", "install")
+
+        _flush_icon_cache_signal()
+
+        step("Verification")
+        note("Checking theme configuration was applied")
+        verify_config(feat)
+
+        step("Restarting Plasma")
+        note("Restarts Plasma shell to load all changes")
+        run_phase("apply", "restart_plasma")
+
+        if feat.get("layout", True) and step_exists("layout") and not _layout_is_installed():
+            step("Retrying Layout")
+            note("Retries the panel layout after Plasma reloads new plasmoids")
+            run_phase("layout", "install")
+    else:
+        step("Skipping Activation")
+        note("--no-apply-theme: files installed but Plasma left untouched. "
+             "Re-run with --apply-theme to switch over.")
+
+    _print_done("installed")
+    return 1 if errors else 0
+
+
+def _run_install_with_progress(feat: dict[str, object]) -> int:
+    """Run the install body behind the live curses progress screen. Falls back
+    to the plain body if curses is unavailable or errors out."""
+    total = _estimate_total_steps(feat)
+    try:
+        from install_tui import run_progress
+        return run_progress(lambda: _run_install_body(feat), total)
+    except Exception:
+        return _run_install_body(feat)
 
 
 def run_uninstall(argv: list[str]) -> int:
