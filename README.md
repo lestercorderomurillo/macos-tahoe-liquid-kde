@@ -113,7 +113,7 @@ Desktop right-click with translucent glass blur.
 
 ### Boot Splash
 
-Plymouth boot screen with centered Apple-style logo on every monitor, scaled dynamically from 1080p to 4K. Boot mode shows a progress bar; shutdown / reboot share the same layout without the bar.
+Plymouth boot screen with centered Apple-style logo on every monitor, scaled dynamically from 1080p to 4K. Boot mode shows a progress bar; shutdown / reboot share the same layout without the bar. On LUKS2-encrypted installs the passphrase prompt renders under the logo with a masked field.
 
 <p align="center">
   <img src="src/screenshots/boot_v3.png" width="415">

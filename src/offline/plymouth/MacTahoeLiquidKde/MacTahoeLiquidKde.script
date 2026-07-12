@@ -103,6 +103,10 @@ message_y       = 10;
 message_sprites = [];
 message_count   = 0;
 
+# Password prompt sprite (LUKS2 / cryptsetup). Created on the first
+# prompt, hidden again when boot resumes (display-normal).
+pw_sprite       = NULL;
+
 fun on_show_message(text)
 {
   rendered = Image.Text(text, 1, 1, 1);
@@ -124,3 +128,35 @@ fun on_hide_message(text)
   }
 }
 Plymouth.SetHideMessageFunction(on_hide_message);
+
+# ── password prompt (LUKS2 / cryptsetup) ─────────────────────────────
+# Without this callback the script plugin draws nothing and the LUKS2
+# passphrase is typed blind (issue #48). Called on every keystroke;
+# `bullets` is the mask length — the typed text is never passed.
+
+fun on_password(prompt, bullets)
+{
+  if (!prompt)
+    prompt = "Password:";
+  mask = "";
+  for (i = 0; i < bullets; i++)
+    mask = mask + "*";
+  img = Image.Text(prompt + " " + mask, 1, 1, 1);
+  if (pw_sprite == NULL)
+    pw_sprite = Sprite(img);
+  pw_sprite.SetImage(img);
+  pw_sprite.SetOpacity(1);
+  pw_sprite.SetX(Window.GetX() + screen_w / 2 - img.GetWidth() / 2);
+  pw_sprite.SetY(logo.GetY() + logo_image.GetHeight() + Math.Int(screen_h * 0.10));
+  pw_sprite.SetZ(10000);
+}
+Plymouth.SetDisplayPasswordFunction(on_password);
+
+# Boot resumed (passphrase accepted) — hide the prompt so it doesn't
+# stay painted through the rest of boot and the SDDM handoff.
+fun on_normal()
+{
+  if (pw_sprite)
+    pw_sprite.SetOpacity(0);
+}
+Plymouth.SetDisplayNormalFunction(on_normal);
