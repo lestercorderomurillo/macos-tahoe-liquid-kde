@@ -1,0 +1,3 @@
+Id=mac-tahoe-migrate-appletsrc
+File=plasma-org.kde.plasma.desktop-appletsrc
+Script=mac-tahoe-migrate-appletsrc.sh

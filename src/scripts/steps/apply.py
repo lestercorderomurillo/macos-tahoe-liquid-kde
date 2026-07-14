@@ -259,30 +259,11 @@ def restart_plasma() -> None:
 
 
 def _scrub_kdedefaults() -> None:
-    base = HOME / ".config/kdedefaults"
-    if not base.is_dir():
-        return
-    pattern = re.compile(r"mac[-.]?tahoe|mactahoe|liquid", re.IGNORECASE)
-    decl = re.compile(
-        r"^(ColorScheme|Theme|name|cursorTheme|theme|library)\s*=.*"
-        r"(mac[-.]?tahoe|mactahoe|MacTahoe|liquid).*$",
-        re.MULTILINE,
-    )
-    for fn in ("package", "kdeglobals", "plasmarc", "kcminputrc",
-               "kwinrc", "ksplashrc", "kscreenlockerrc"):
-        f = base / fn
-        if not f.is_file():
-            continue
-        try:
-            text = f.read_text()
-        except OSError:
-            continue
-        if not pattern.search(text):
-            continue
-        if fn == "package":
-            f.write_text("org.kde.breeze.desktop\n")
-            continue
-        f.write_text(decl.sub("", text))
+    # Migrations moved to embedded kconf_update scripts (issue #56): install
+    # them and run kconf_update, which runs at login on every Plasma upgrade
+    # too. The helper scripts scrub MacTahoe leftovers from kdedefaults.
+    from steps.kconf_update import run_migrations
+    run_migrations()
     ok("kdedefaults cleaned")
 
 

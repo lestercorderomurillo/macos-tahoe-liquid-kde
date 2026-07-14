@@ -1,4 +1,3 @@
-import re
 import shutil
 from pathlib import Path
 
@@ -49,18 +48,6 @@ LEGACY_TASKMANAGER_QML_DIRS = (
     HOME / ".local/lib/qt6/qml/plasma/applet/org/kde/mac-tahoe-liquid-kde/icontasks",
 )
 
-# Older releases used different dock IDs — rewrite appletsrc so the upgrade
-# keeps the dock and the user's pinned launchers.
-_APPLETSRC_RENAMES = (
-    (r"org\.kde\.plasma\.icontasks", "org.kde.mac.tahoe.liquid.icontasks"),
-    (r"org\.kde\.plasma\.taskmanager", "org.kde.mac.tahoe.liquid.taskmanager"),
-    (r"org\.kde\.mac-tahoe-liquid-kde\.icontasks",
-     "org.kde.mac.tahoe.liquid.icontasks"),
-    (r"org\.kde\.mac-tahoe-liquid-kde\.taskmanager",
-     "org.kde.mac.tahoe.liquid.taskmanager"),
-)
-
-
 def deps():
     return [
         "qmake6",
@@ -105,15 +92,10 @@ def build() -> None:
 
 
 def _migrate_appletsrc() -> None:
-    appletsrc = HOME / ".config/plasma-org.kde.plasma.desktop-appletsrc"
-    if not appletsrc.is_file():
-        return
-    text = appletsrc.read_text()
-    if not any(re.search(p, text) for p, _ in _APPLETSRC_RENAMES):
-        return
-    for pat, repl in _APPLETSRC_RENAMES:
-        text = re.sub(pat, repl, text)
-    appletsrc.write_text(text)
+    # Dock ID renames moved to an embedded kconf_update script (issue #56):
+    # install it and run kconf_update so the rename survives Plasma upgrades.
+    from steps.kconf_update import run_migrations
+    run_migrations()
     ok("dock config migrated to MacTahoe dock fork")
 
 

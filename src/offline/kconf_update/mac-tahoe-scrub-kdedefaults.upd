@@ -1,0 +1,15 @@
+Id=mac-tahoe-scrub-kdedefaults
+File=kdedefaults/package
+Script=mac-tahoe-scrub-kdedefaults.sh
+File=kdedefaults/kdeglobals
+Script=mac-tahoe-scrub-kdedefaults.sh
+File=kdedefaults/plasmarc
+Script=mac-tahoe-scrub-kdedefaults.sh
+File=kdedefaults/kcminputrc
+Script=mac-tahoe-scrub-kdedefaults.sh
+File=kdedefaults/kwinrc
+Script=mac-tahoe-scrub-kdedefaults.sh
+File=kdedefaults/ksplashrc
+Script=mac-tahoe-scrub-kdedefaults.sh
+File=kdedefaults/kscreenlockerrc
+Script=mac-tahoe-scrub-kdedefaults.sh

@@ -30,6 +30,7 @@ ALL_FEATURES = [
     "kvantum", "color_schemes", "icons", "plasmoids", "globalmenu", "acrylic_glass",
     "global_theme", "layout", "sounds", "gtk", "sddm", "plymouth", "apps",
     "nautilus", "nautilus_bookmarks", "portals", "oled_care", "apply_theme",
+    "kconf_update",
 ]
 
 # ``layout`` is listed but skipped in the loop — it runs after apply so it
@@ -37,6 +38,7 @@ ALL_FEATURES = [
 INSTALL_ORDER = [
     "fonts", "color_schemes", "plasma_theme", "window_decorations",
     "kvantum", "gtk", "icons", "cursors", "global_theme", "wallpapers",
+    "kconf_update",
     "plasmoids", "globalmenu", "acrylic_glass",
     "layout", "nautilus", "portals", "plymouth",
 ]
@@ -65,6 +67,7 @@ FEATURE_DESC = {
     "portals": "Native KDE dialogs",
     "oled_care": "OLED care pixel shift",
     "apply_theme": "Set as default after install",
+    "kconf_update": "Config migrations (kconf_update)",
 }
 
 INSTALL_HELP = """\
