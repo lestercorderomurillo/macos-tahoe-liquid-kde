@@ -476,7 +476,7 @@ def test_run_live_plasma_tool_drops_privs_and_keeps_timeout(monkeypatch):
     assert seen["timeout"] == 7
 
 
-def test_reset_color_scheme_config_reports_write_failure(monkeypatch):
+def test_reset_color_scheme_config_reports_write_failure(monkeypatch, tmp_path):
     """The uninstall color reset used to fail silently under sudo while
     the step printed success. Failed deletes or a failed final write
     must return False so the caller can warn."""
@@ -485,6 +485,11 @@ def test_reset_color_scheme_config_reports_write_failure(monkeypatch):
     # so reset_kde_color_scheme_config exercises apply_color_groups_direct.
     monkeypatch.setattr(theme_switch, "_have",
                         lambda cmd: cmd == "kwriteconfig6")
+    # Supply a scheme file so the fallback does not early-out on a missing
+    # BreezeLight.colors (CI containers don't ship it).
+    scheme = tmp_path / "BreezeLight.colors"
+    scheme.write_text("[Colors:Window]\nBackgroundNormal=239,240,241\n")
+    monkeypatch.setattr(theme_switch, "_find_scheme_file", lambda s: scheme)
 
     monkeypatch.setattr(theme_switch, "_delete_color_groups_direct",
                         lambda: False)
