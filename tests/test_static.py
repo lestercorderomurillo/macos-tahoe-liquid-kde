@@ -297,11 +297,12 @@ def test_acrylic_glass_qrc_entries_all_staged_by_cmake(repo):
 
 def test_acrylic_glass_ships_default_blur_denylist(offline):
     """WindowClasses ships as a blacklist (BlurMatching defaults false) with
-    two entries baked in: cairo-dock (issue #13 — glassing the dock window
-    renders a phantom panel behind it) and kwin_wayland (issue #50 — KWin's
-    own input-method candidate popups report that resource class, and
-    glassing them produces a huge misplaced border). Both must survive
-    edits to the kcfg default."""
+    three entries baked in: cairo-dock (issue #13 — glassing the dock
+    window renders a phantom panel behind it), kwin_wayland (issue #50 —
+    KWin's own input-method candidate popups report that resource class,
+    and glassing them produces a huge misplaced border), and
+    linux-wallpaperengine (issue #50 — same artifact on its live-wallpaper
+    surface). All three must survive edits to the kcfg default."""
     kcfg = (offline / "kwin-effects/acrylic-glass/src/glass.kcfg").read_text()
     m = re.search(
         r'<entry name="WindowClasses" type="String">\s*'
@@ -312,6 +313,7 @@ def test_acrylic_glass_ships_default_blur_denylist(offline):
     denylist = [line.strip() for line in m.group(1).splitlines() if line.strip()]
     assert "cairo-dock" in denylist
     assert "kwin_wayland" in denylist
+    assert "linux-wallpaperengine" in denylist
 
     matching = re.search(
         r'<entry name="BlurMatching" type="Bool">\s*<default>(\w+)</default>',
@@ -319,7 +321,7 @@ def test_acrylic_glass_ships_default_blur_denylist(offline):
     )
     assert matching and matching.group(1) == "false", (
         "BlurMatching default flipped to true — WindowClasses would now "
-        "act as a whitelist, silently un-excluding cairo-dock/kwin_wayland"
+        "act as a whitelist, silently un-excluding the denylist entries"
     )
 
 

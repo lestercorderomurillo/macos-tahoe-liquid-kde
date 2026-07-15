@@ -26,10 +26,13 @@
              a phantom glass panel behind the dock (issue #13). kwin_wayland
              ships excluded too: KWin's own input-method candidate popups
              report that resource class, and glassing them produces a huge
-             misplaced border around the popup (issue #50). -->
+             misplaced border around the popup (issue #50). linux-wallpaperengine
+             ships excluded for the same reason — it renders its own live-
+             wallpaper surface and glassing it produces the same artifact. -->
         <entry name="WindowClasses" type="String">
             <default>cairo-dock
-kwin_wayland</default>
+kwin_wayland
+linux-wallpaperengine</default>
         </entry>
         <entry name="BlurMatching" type="Bool">
             <default>false</default>
