@@ -259,11 +259,10 @@ def restart_plasma() -> None:
 
 
 def _scrub_kdedefaults() -> None:
-    # Migrations moved to embedded kconf_update scripts (issue #56): install
-    # them and run kconf_update, which runs at login on every Plasma upgrade
-    # too. The helper scripts scrub MacTahoe leftovers from kdedefaults.
-    from steps.kconf_update import run_migrations
-    run_migrations()
+    # The scrub lives in a bundled kconf_update helper (issue #56); run just
+    # that one here — uninstall must not touch appletsrc or install anything.
+    from steps.kconf_update import run_migration
+    run_migration("mac-tahoe-scrub-kdedefaults.sh")
     ok("kdedefaults cleaned")
 
 

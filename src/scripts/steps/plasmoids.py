@@ -92,10 +92,10 @@ def build() -> None:
 
 
 def _migrate_appletsrc() -> None:
-    # Dock ID renames moved to an embedded kconf_update script (issue #56):
-    # install it and run kconf_update so the rename survives Plasma upgrades.
-    from steps.kconf_update import run_migrations
-    run_migrations()
+    # The rename lives in a bundled kconf_update helper (issue #56); run just
+    # that one so the upgrade keeps the dock and the user's pinned launchers.
+    from steps.kconf_update import run_migration
+    run_migration("mac-tahoe-migrate-appletsrc.sh")
     ok("dock config migrated to MacTahoe dock fork")
 
 
