@@ -1,0 +1,3 @@
+Version=6
+Id=mac-tahoe-scrub-colorgroups
+Script=mac-tahoe-scrub-colorgroups.sh,sh

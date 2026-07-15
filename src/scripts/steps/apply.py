@@ -259,30 +259,10 @@ def restart_plasma() -> None:
 
 
 def _scrub_kdedefaults() -> None:
-    base = HOME / ".config/kdedefaults"
-    if not base.is_dir():
-        return
-    pattern = re.compile(r"mac[-.]?tahoe|mactahoe|liquid", re.IGNORECASE)
-    decl = re.compile(
-        r"^(ColorScheme|Theme|name|cursorTheme|theme|library)\s*=.*"
-        r"(mac[-.]?tahoe|mactahoe|MacTahoe|liquid).*$",
-        re.MULTILINE,
-    )
-    for fn in ("package", "kdeglobals", "plasmarc", "kcminputrc",
-               "kwinrc", "ksplashrc", "kscreenlockerrc"):
-        f = base / fn
-        if not f.is_file():
-            continue
-        try:
-            text = f.read_text()
-        except OSError:
-            continue
-        if not pattern.search(text):
-            continue
-        if fn == "package":
-            f.write_text("org.kde.breeze.desktop\n")
-            continue
-        f.write_text(decl.sub("", text))
+    # The scrub lives in a bundled kconf_update helper (issue #56); run just
+    # that one here — uninstall must not touch appletsrc or install anything.
+    from steps.kconf_update import run_migration
+    run_migration("mac-tahoe-scrub-kdedefaults.sh")
     ok("kdedefaults cleaned")
 
 
