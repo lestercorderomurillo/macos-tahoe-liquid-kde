@@ -295,6 +295,34 @@ def test_acrylic_glass_qrc_entries_all_staged_by_cmake(repo):
     assert 'file(WRITE "${CMAKE_CURRENT_SOURCE_DIR}' not in cml
 
 
+def test_acrylic_glass_ships_default_blur_denylist(offline):
+    """WindowClasses ships as a blacklist (BlurMatching defaults false) with
+    two entries baked in: cairo-dock (issue #13 — glassing the dock window
+    renders a phantom panel behind it) and kwin_wayland (issue #50 — KWin's
+    own input-method candidate popups report that resource class, and
+    glassing them produces a huge misplaced border). Both must survive
+    edits to the kcfg default."""
+    kcfg = (offline / "kwin-effects/acrylic-glass/src/glass.kcfg").read_text()
+    m = re.search(
+        r'<entry name="WindowClasses" type="String">\s*'
+        r"<default>(.*?)</default>",
+        kcfg, re.DOTALL,
+    )
+    assert m, "WindowClasses entry not found in glass.kcfg"
+    denylist = [line.strip() for line in m.group(1).splitlines() if line.strip()]
+    assert "cairo-dock" in denylist
+    assert "kwin_wayland" in denylist
+
+    matching = re.search(
+        r'<entry name="BlurMatching" type="Bool">\s*<default>(\w+)</default>',
+        kcfg,
+    )
+    assert matching and matching.group(1) == "false", (
+        "BlurMatching default flipped to true — WindowClasses would now "
+        "act as a whitelist, silently un-excluding cairo-dock/kwin_wayland"
+    )
+
+
 def test_no_legacy_apply_service_in_offline(offline):
     """The split apply.service / watch.service design from earlier
     versions is gone — only the single oneshot service file ships now.
