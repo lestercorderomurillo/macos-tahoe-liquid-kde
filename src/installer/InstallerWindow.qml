@@ -331,10 +331,12 @@ Window {
                     id: logoCanvas
                     anchors.fill: parent
                     antialiasing: true
-                    renderStrategy: Canvas.Cooperative
 
-                    readonly property real svgScaleX: width / 320
-                    readonly property real svgScaleY: height / 180
+                    // Uniform scale: the path is authored in a 320×180
+                    // viewBox; scaling each axis to the 20:9 container
+                    // stretched the lettering and made the round pen
+                    // elliptical (lineWidth scales per-axis).
+                    readonly property real svgScale: Math.min(width / 320, height / 180)
                     // actual path length computed numerically: ≈1395.7 viewBox units
                     readonly property real dashTotal: 1396
                     property real dashProgress: 0
@@ -365,12 +367,13 @@ Window {
                         ctx.clearRect(0, 0, width, height);
                         ctx.save();
 
-                        // centre the path in the canvas
+                        // centre the path's bounding box (x 26.8–310.1,
+                        // y 23.5–144.7 in viewBox units) in the canvas
                         ctx.translate(
-                            width  / 2 - 168.7 * svgScaleX,
-                            height / 2 - 75.6  * svgScaleY
+                            width  / 2 - 168.45 * svgScale,
+                            height / 2 - 84.1   * svgScale
                         );
-                        ctx.scale(svgScaleX, svgScaleY);
+                        ctx.scale(svgScale, svgScale);
 
                         ctx.strokeStyle = installerWindow.isDarkTheme
                             ? 'rgba(255,255,255,0.85)'
