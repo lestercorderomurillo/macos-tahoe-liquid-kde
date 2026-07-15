@@ -1,22 +1,16 @@
 import re
 import subprocess
-import tarfile
-import tempfile
 import time
-import urllib.request
 from pathlib import Path
 
-from steps._helpers import HOME, fail, have, install_tree, ok, offline, qdbus_call, warn
+from steps._helpers import HOME, have, install_tree, ok, offline, qdbus_call, warn
 from utils import qdbus_cmd, run_user
 
 LAYOUT_SCRIPT = offline("layouts/mac-tahoe.js")
 LAYOUT_RESET = offline("layouts/default.js")
 _DISCOVER_DESKTOP = "applications:org.kde.discover.desktop"
 COLORIZER_ID = "luisbocanegra.panel.colorizer"
-COLORIZER_RELEASE_URL = (
-    "https://github.com/luisbocanegra/plasma-panel-colorizer/"
-    "archive/refs/tags/v7.0.1.tar.gz"
-)
+COLORIZER_SRC = offline("plasmoids") / COLORIZER_ID
 
 
 def _colorizer_dirs() -> list[Path]:
@@ -34,65 +28,21 @@ def _has_panel_colorizer() -> bool:
     return False
 
 
-def _install_panel_colorizer_from_release() -> bool:
-    dest = HOME / ".local/share/plasma/plasmoids" / COLORIZER_ID
-    with tempfile.TemporaryDirectory(prefix="mttkde-colorizer-") as tmpdir:
-        archive = Path(tmpdir) / "colorizer.tar.gz"
-        try:
-            with urllib.request.urlopen(COLORIZER_RELEASE_URL, timeout=30) as resp:
-                archive.write_bytes(resp.read())
-        except OSError:
-            return False
-        try:
-            with tarfile.open(archive, "r:gz") as tf:
-                tf.extractall(tmpdir, filter="data")
-        except (tarfile.TarError, OSError):
-            return False
-        package_dirs = list(Path(tmpdir).glob("*/package"))
-        if not package_dirs:
-            return False
-        package_dir = package_dirs[0]
-        metadata = package_dir / "metadata.json"
-        contents = package_dir / "contents"
-        if not metadata.is_file() or not contents.is_dir():
-            return False
-        return install_tree(package_dir, dest, "Panel Colorizer")
-
-
 def deps():
     return ["qdbus6:qt6-tools"]
 
 
 def _ensure_panel_colorizer() -> None:
+    # Bundled offline like every other asset (issue #55) — a copy already
+    # present system-wide or user-side is left untouched.
     if _has_panel_colorizer():
         ok("Panel Colorizer")
         return
-    warn("Panel Colorizer not found — installing...")
-    if have("kpackagetool6"):
-        for args in (
-            ["-i", "https://store.kde.org/p/2130967", "-t", "Plasma/Applet"],
-            ["--install", COLORIZER_ID, "-t", "Plasma/Applet"],
-        ):
-            if run_user(["kpackagetool6", *args], check=False,
-                        stdout=subprocess.DEVNULL,
-                        stderr=subprocess.DEVNULL).returncode == 0:
-                break
-    if not _has_panel_colorizer():
-        for pm in ("paru", "yay"):
-            if have(pm):
-                run_user(
-                    [pm, "-S", "--noconfirm", "plasma6-applets-panel-colorizer"],
-                    check=False,
-                    stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
-                )
-                break
-    if not _has_panel_colorizer():
-        _install_panel_colorizer_from_release()
-    if _has_panel_colorizer():
-        ok("Panel Colorizer (installed)")
-    else:
-        warn("Panel Colorizer not installed — top bar won't be transparent. "
-             "Install manually from KDE Store.")
+    dest = HOME / ".local/share/plasma/plasmoids" / COLORIZER_ID
+    if install_tree(COLORIZER_SRC, dest, "Panel Colorizer"):
+        return
+    warn("Panel Colorizer not installed — top bar won't be transparent. "
+         "Install manually from KDE Store.")
 
 
 def _evaluate_layout_script(script: str) -> bool:

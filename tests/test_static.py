@@ -178,6 +178,68 @@ def test_no_hardcoded_qt6_libdir(repo):
     )
 
 
+# ── issue #55: install steps have no download phase ───────────────────
+
+
+def test_steps_have_no_download_phase(repo):
+    """Every asset ships offline in ``src/offline/`` — no step may fetch
+    anything from the network at install time. The only network code in
+    the installer is the release update check (``cli.py`` via
+    ``utils.fetch``), which runs before the steps and is skippable.
+
+    Real regression this caught: ``layout.py`` used to pull the Panel
+    Colorizer plasmoid from the KDE Store / AUR / a GitHub tarball at
+    install time, so an offline host silently lost the transparent top
+    bar and two installs a month apart could extract different bytes."""
+    steps = repo / "src/scripts/steps"
+    # urllib.parse is string handling (nautilus.py URL-escapes paths);
+    # only the fetch machinery and literal URLs are download signals.
+    forbidden = re.compile(r"urllib\.(?:request|error)|\burlopen\b|https?://")
+    offenders: list[str] = []
+    for py in steps.rglob("*.py"):
+        text = py.read_text()
+        in_doc = False
+        doc_open = None
+        for line_no, line in enumerate(text.splitlines(), start=1):
+            stripped = line.lstrip()
+            if doc_open is None:
+                for q in ('"""', "'''"):
+                    if stripped.startswith(q):
+                        if stripped.count(q) >= 2:
+                            in_doc = False
+                            break
+                        doc_open = q
+                        in_doc = True
+                        break
+            elif doc_open in stripped:
+                in_doc = False
+                doc_open = None
+                continue
+            if in_doc:
+                continue
+            if stripped.startswith("#"):
+                continue
+            if forbidden.search(line):
+                offenders.append(f"{py.relative_to(repo)}:{line_no}: {line.strip()}")
+    assert not offenders, (
+        "Network fetch found in an install step (all assets must be "
+        "bundled offline in src/offline/):\n  "
+        + "\n  ".join(offenders)
+    )
+
+
+def test_panel_colorizer_bundled_offline(offline):
+    """The layout step installs Panel Colorizer from the offline bundle,
+    so the bundle must ship a complete kpackage: metadata.json whose
+    KPlugin.Id matches the directory name, plus contents/."""
+    bundle = offline / "plasmoids/luisbocanegra.panel.colorizer"
+    metadata = bundle / "metadata.json"
+    assert metadata.is_file(), f"missing {metadata}"
+    assert (bundle / "contents").is_dir(), f"missing {bundle / 'contents'}"
+    data = json.loads(metadata.read_text())
+    assert data["KPlugin"]["Id"] == bundle.name
+
+
 # ── single-source-of-truth pins on the theme-switcher rewrite ─────────
 
 

@@ -171,6 +171,10 @@ def install() -> None:
         # C++ applets are installed via their own build steps.
         if (widget / "CMakeLists.txt").is_file():
             continue
+        # Panel Colorizer is installed by the layout step behind a
+        # presence check so an existing copy isn't clobbered.
+        if widget.name == "luisbocanegra.panel.colorizer":
+            continue
         if not (widget / "metadata.json").is_file():
             fail(f"{widget.name} (no metadata.json — skipping)")
             continue
