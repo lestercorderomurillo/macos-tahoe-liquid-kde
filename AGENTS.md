@@ -50,8 +50,10 @@ host's Qt6 / KDE Frameworks 6. All theme assets are bundled offline in
 - Plasmoid suffixes are simple nouns: `.menu`, `.launcher`, `.trashcan`
   — not compound words like `.kpplemenu`.
 - The user-facing CLI binary is `mac-tahoe-theme-switch`. Repo entry
-  points are `./install`, `./uninstall`, and `./installer` (graphical
-  UI) — no `.sh` extension.
+  points are `./install`, `./uninstall` (TUI wizard on a bare TTY run,
+  classic flow otherwise), `./legacy-install`, `./legacy-uninstall`
+  (always the classic confirm-and-flags flow), and `./installer`
+  (graphical UI) — no `.sh` extension.
 
 ## Branding
 
@@ -89,7 +91,8 @@ Store, Force Quit, Sleep, Restart, Shut Down, Lock Screen, Log Out.
 
 | Path                          | Contents |
 | ----------------------------- | -------- |
-| `install` / `uninstall`       | Thin shell wrappers that exec `src/scripts/cli.py`. Both require sudo. |
+| `install` / `uninstall`       | Thin wrappers that exec `src/scripts/cli.py` with `tui=True`. Bare runs on a real TTY (no flags, no `MTTKDE_NO_CONFIRM`) open the curses selection wizard from `src/scripts/install_tui.py`; anything else falls through to the classic flow. Both require sudo. |
+| `legacy-install` / `legacy-uninstall` | Same engine with `tui=False` — always the classic confirm-and-flags flow, never the wizard. Both require sudo. |
 | `installer`                   | Graphical installer entry point; execs `src/installer/installer_ui.py`. |
 | `vm`                          | Boots a graphical KDE Plasma VM per distro with the repo mounted (`./vm cachyos`, `./vm all`). |
 | `test`                        | Pytest runner for the full suite. |
@@ -97,6 +100,7 @@ Store, Force Quit, Sleep, Restart, Shut Down, Lock Screen, Log Out.
 | `features.json`               | Per-feature enable flags, written by `--only` / `--no-*` and read on the next run. |
 | `src/scripts/`                | Installer Python. **Flat layout — no `installer/` subdir.** |
 | `src/scripts/cli.py`          | Entry point. Parses flags, runs preflight, dispatches steps. |
+| `src/scripts/install_tui.py`  | Curses selection wizard for bare `sudo ./install` / `sudo ./uninstall` TTY runs. Stdlib only; any failure falls back to the classic flow in `cli.py`. |
 | `src/scripts/preflight.py`    | 9-check fail-fast probe (sudo, paths, Qt6, Plasma, kwriteconfig6, DBus, kded6, disk, plasmoid IDs). |
 | `src/scripts/distro.py`       | The ONLY module that knows per-distro paths and package manager commands. |
 | `src/scripts/paths.py`        | Repo-relative paths only. Never shells out, never reads /etc/os-release. |

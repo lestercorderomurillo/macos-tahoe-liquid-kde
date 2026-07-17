@@ -405,7 +405,7 @@ def _repo_is_clean_git_checkout() -> bool:
     return status.stdout.strip() == ""
 
 
-def auto_update_and_reexec(argv: list[str]) -> None:
+def auto_update_and_reexec(argv: list[str], prog: str = "install") -> None:
     """Pull the newer release and re-exec ``./install`` — a git pull can't
     upgrade the already-loaded installer. ``MAC_TAHOE_UPDATED`` guards against
     a pull/re-exec loop; every bail falls through to installing the current
@@ -415,7 +415,7 @@ def auto_update_and_reexec(argv: list[str]) -> None:
 
     if not _repo_is_clean_git_checkout():
         note("Not a clean git checkout — skipping auto-update")
-        print("  \033[2mUpdate manually: git pull && ./install\033[0m")
+        print(f"  \033[2mUpdate manually: git pull && ./{prog}\033[0m")
         return
 
     print("  \033[2mPulling the latest release…\033[0m")
@@ -424,14 +424,14 @@ def auto_update_and_reexec(argv: list[str]) -> None:
         warn("git pull failed — installing the current version")
         if pull is not None and pull.stderr:
             print(f"  \033[2m{pull.stderr.strip().splitlines()[-1]}\033[0m")
-        print("  \033[2mUpdate manually: git pull && ./install\033[0m")
+        print(f"  \033[2mUpdate manually: git pull && ./{prog}\033[0m")
         return
 
     ok(f"Updated to {read_version()} — restarting installer")
 
     # Real UID is still 0, so the re-exec'd wrapper stays root and repeats
     # the same euid-drop hop.
-    installer = REPO_ROOT / "install"
+    installer = REPO_ROOT / prog
     os.environ["MAC_TAHOE_UPDATED"] = "1"
     try:
         os.execv(str(installer), [str(installer), *argv])
@@ -568,6 +568,38 @@ def confirm(msg: str) -> bool:
         return False
     print()
     return True
+
+
+# ── interactive TUI wizard (issue #44) ─────────────────────────────────
+
+_TUI_UNAVAILABLE = object()
+
+
+def _tui_active(argv: list[str], tui: bool) -> bool:
+    """The wizard runs only for a bare ``sudo ./install`` on a real
+    terminal. Any CLI flag, a headless env (GUI, CI, VM harness), or a
+    missing TTY keeps the classic confirm-and-flags flow — and the
+    ``legacy-install`` / ``legacy-uninstall`` entries never pass tui."""
+    if not tui or argv:
+        return False
+    if os.environ.get("MTTKDE_NO_CONFIRM") == "1":
+        return False
+    try:
+        return sys.stdin.isatty() and sys.stdout.isatty()
+    except ValueError:
+        return False
+
+
+def _tui_wizard(feat: dict[str, object], mode: str):
+    """Run the curses wizard. Returns the updated feature dict, None when
+    the user cancelled, or ``_TUI_UNAVAILABLE`` when curses can't run
+    (missing module, dumb terminal) so the caller falls back to
+    ``confirm()`` — the wizard must never block an install."""
+    try:
+        from install_tui import run_wizard
+        return run_wizard(dict(feat), mode)
+    except Exception:
+        return _TUI_UNAVAILABLE
 
 
 def _restore_user_session_env(uid: int) -> None:
@@ -861,7 +893,8 @@ def _print_done(verb: str) -> None:
     print()
 
 
-def run_install(argv: list[str]) -> int:
+def run_install(argv: list[str], tui: bool = False,
+                prog: str = "install") -> int:
     parsed = parse_args(argv)
     if parsed.help:
         print(INSTALL_HELP)
@@ -871,7 +904,7 @@ def run_install(argv: list[str]) -> int:
 
     # Root required: .so and QML drops go into the qmake6-reported Qt6
     # dirs; user paths aren't discoverable.
-    if not _require_root_and_drop_to_user("install"):
+    if not _require_root_and_drop_to_user(prog):
         return 1
 
     feat = apply_overrides(load_features(), parsed)
@@ -901,12 +934,33 @@ def run_install(argv: list[str]) -> int:
             return rc
 
         banner(read_version())
-        if not confirm("In development — Install at your own risk.\n"
-                       "  Do not install on production / work systems."):
+        if _tui_active(argv, tui):
+            # Update + re-exec BEFORE the wizard so a pull never throws
+            # away selections the user just made.
+            if check_for_updates(inline=True):
+                auto_update_and_reexec(argv, prog)
+            wizard = _tui_wizard(feat, "install")
+        else:
+            wizard = _TUI_UNAVAILABLE
+
+        if wizard is None:
             tracker.mark_aborted()
+            print("  Aborted.")
             return 0
-        if check_for_updates(inline=True):
-            auto_update_and_reexec(argv)
+        if wizard is _TUI_UNAVAILABLE:
+            if not confirm("In development — Install at your own risk.\n"
+                           "  Do not install on production / work systems."):
+                tracker.mark_aborted()
+                return 0
+            if not _tui_active(argv, tui) and check_for_updates(inline=True):
+                auto_update_and_reexec(argv, prog)
+        else:
+            # The wizard's summary screen already confirmed.
+            feat = wizard
+            if feat.pop("_save", False):
+                save_features(feat)
+                ok("features.json saved")
+            export_env(feat)
 
         if not run_preflight("install"):
             fail("preflight failed — refusing to install")
@@ -998,13 +1052,14 @@ def run_install(argv: list[str]) -> int:
         tracker.finalize(rc)
 
 
-def run_uninstall(argv: list[str]) -> int:
+def run_uninstall(argv: list[str], tui: bool = False,
+                  prog: str = "uninstall") -> int:
     parsed = parse_args(argv)
     if parsed.help:
         print(UNINSTALL_HELP)
         return 0
 
-    if not _require_root_and_drop_to_user("uninstall"):
+    if not _require_root_and_drop_to_user(prog):
         return 1
 
     feat = apply_overrides(load_features(), parsed)
@@ -1021,9 +1076,21 @@ def run_uninstall(argv: list[str]) -> int:
             return rc
 
         banner(read_version())
-        if not confirm("This will reset your desktop to Breeze defaults."):
+        wizard = (_tui_wizard(feat, "uninstall")
+                  if _tui_active(argv, tui) else _TUI_UNAVAILABLE)
+        if wizard is None:
             tracker.mark_aborted()
+            print("  Aborted.")
             return 0
+        if wizard is _TUI_UNAVAILABLE:
+            if not confirm("This will reset your desktop to Breeze defaults."):
+                tracker.mark_aborted()
+                return 0
+        else:
+            # The wizard's summary screen already confirmed.
+            feat = wizard
+            feat.pop("_save", False)
+            export_env(feat)
         check_for_updates(inline=True)
 
         if not run_preflight("uninstall"):

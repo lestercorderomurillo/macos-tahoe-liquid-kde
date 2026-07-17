@@ -11,6 +11,5 @@ sys.path.insert(0, str(REPO / "src" / "scripts"))
 
 from cli import run_uninstall
 
-# tui=True: bare runs on a real TTY get the selection wizard; flags,
-# headless envs, and ./legacy-uninstall keep the classic flow.
-raise SystemExit(run_uninstall(sys.argv[1:], tui=True))
+# Classic confirm-and-flags flow — never enters the TUI wizard.
+raise SystemExit(run_uninstall(sys.argv[1:], prog="legacy-uninstall"))

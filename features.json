@@ -8,6 +8,7 @@
   "color_schemes":      true,
   "icons":              true,
   "plasmoids":          true,
+  "globalmenu":         true,
   "acrylic_glass":      true,
   "global_theme":       true,
   "layout":             true,
@@ -21,6 +22,7 @@
   "portals":            true,
   "oled_care":          false,
   "apply_theme":        true,
+  "kconf_update":       true,
   "oled_interval":      5,
   "oled_max_shift":     8,
   "theme_mode":         "auto"

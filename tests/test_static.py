@@ -35,17 +35,15 @@ def test_version_is_semver(repo):
     assert re.fullmatch(r"\d+\.\d+\.\d+", (repo / "VERSION").read_text().strip())
 
 
-def test_install_entry_exists(repo):
-    p = repo / "install"
+@pytest.mark.parametrize(
+    "entry", ["install", "uninstall", "legacy-install", "legacy-uninstall"])
+def test_entry_point_exists(repo, entry):
+    p = repo / entry
     assert p.is_file() and p.stat().st_mode & 0o111
 
 
-def test_uninstall_entry_exists(repo):
-    p = repo / "uninstall"
-    assert p.is_file() and p.stat().st_mode & 0o111
-
-
-@pytest.mark.parametrize("script", ["install", "uninstall"])
+@pytest.mark.parametrize("script", ["install", "uninstall",
+                                    "legacy-install", "legacy-uninstall"])
 def test_help_exits_zero(repo, script):
     """`./install --help` and `./uninstall --help` must not crash. This
     catches a class of bug where an import-time error in cli.py only
