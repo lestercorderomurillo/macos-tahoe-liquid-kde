@@ -105,16 +105,20 @@ def fail(msg: str) -> None:
     _last_ended_blank = False
 
 
+# Shared with the install TUI (install_tui.py) so both render the same logo.
+APPLE_ART = (
+    "                   .:'",
+    "                 __ :'__",
+    "              .'`__`-'__`'.",
+    "             :__________.-'",
+    "             :_________:",
+    "              :_________`-;",
+    "               `.__.-.__.'",
+)
+
+
 def banner(version: str) -> None:
-    art = (
-        "                   .:'",
-        "                 __ :'__",
-        "              .'`__`-'__`'.",
-        "             :__________.-'",
-        "             :_________:",
-        "              :_________`-;",
-        "               `.__.-.__.'",
-    )
+    art = APPLE_ART
     print()
     for line, colour in zip(art, _APPLE_RAINBOW):
         print(f"  {colour}{BOLD}{line}{RESET}")

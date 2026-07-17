@@ -4,7 +4,7 @@
 
 # macOS Tahoe Liquid Theme for KDE Plasma 6.6/6.7+
 
-[![release](https://img.shields.io/github/v/release/lestercorderomurillo/macos-tahoe-liquid-kde?label=release&color=blue)](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/releases) [![tests](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/actions/workflows/test.yml/badge.svg)](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/actions/workflows/test.yml) [![tests count](https://img.shields.io/badge/tests-829_passing-brightgreen)](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/actions/workflows/test.yml) [![license](https://img.shields.io/badge/license-GPL--3.0-blue)](LICENSE) [![plasma](https://img.shields.io/badge/KDE_Plasma-6.6%2B-1d99f3?logo=kde)](https://kde.org/plasma-desktop/) [![last commit](https://img.shields.io/github/last-commit/lestercorderomurillo/macos-tahoe-liquid-kde)](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/commits/) [![report a bug](https://img.shields.io/badge/report-a%20bug-red?logo=github)](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/issues/new)
+[![release](https://img.shields.io/github/v/release/lestercorderomurillo/macos-tahoe-liquid-kde?label=release&color=blue)](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/releases) [![tests](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/actions/workflows/test.yml/badge.svg)](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/actions/workflows/test.yml) [![tests count](https://img.shields.io/badge/tests-847_passing-brightgreen)](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/actions/workflows/test.yml) [![license](https://img.shields.io/badge/license-GPL--3.0-blue)](LICENSE) [![plasma](https://img.shields.io/badge/KDE_Plasma-6.6%2B-1d99f3?logo=kde)](https://kde.org/plasma-desktop/) [![last commit](https://img.shields.io/github/last-commit/lestercorderomurillo/macos-tahoe-liquid-kde)](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/commits/) [![report a bug](https://img.shields.io/badge/report-a%20bug-red?logo=github)](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/issues/new)
 
 A full macOS Tahoe-style desktop experience for KDE Plasma 6.6 and 6.7+.
 
@@ -141,7 +141,7 @@ Plymouth boot screen with centered Apple-style logo on every monitor, scaled dyn
 | **Auto Theme Switcher** | One-shot service + 06:00 / 18:00 timer, single entry point | ✅ |
 | **OLED Care** | Opt-in pixel-shift timer for the top bar and dock | ✅ |
 | **Installer UI** | Glass window with an animated hello greeting; drives install / uninstall and a per-feature picker | ✅ |
-| **Installer TUI** | Terminal wizard on `sudo ./install`: component picker, theme mode, OLED care | ✅ |
+| **Installer TUI** | Terminal wizard on `sudo ./install`: component picker, theme mode, OLED care, live progress screen | ✅ |
 | **Aurorae Decorations** | Window title bar and borders | ✅ |
 | **Global Menu Plasmoid** | Unified menu bar: system menu, app name, window controls, app menus | ✅ |
 | **Dock Task Manager** | Icons-only dock applet with macOS-style notification badges | ✅ |
@@ -246,7 +246,7 @@ It opens a glass launcher to install, uninstall, or open the feature picker — 
 
 ### Command line
 
-Prefer the terminal? A bare `sudo ./install` opens an interactive wizard right in your terminal: pick components, theme mode and OLED care, review the summary, confirm. `sudo ./uninstall` does the same for removal. Arrow keys move, space toggles, Enter continues, q quits.
+Prefer the terminal? A bare `sudo ./install` opens an interactive wizard right in your terminal: pick components, theme mode and OLED care, review the summary, confirm, then watch a live progress screen with a step list, progress bar and install log. `sudo ./uninstall` does the same for removal. Arrow keys move, space toggles (on a group title it toggles the whole group), Enter continues, q quits.
 
 ```bash
 sudo ./install     # terminal wizard: pick components, then install

@@ -187,12 +187,28 @@ def is_plasma_session() -> bool:
 _NONINTERACTIVE_ENV = {"DEBIAN_FRONTEND": "noninteractive"}
 
 
+def _redirect_stream(stream):
+    """Children inherit fd 1/2, which bypasses a Python-level sys.stdout
+    redirect (the TUI progress screen routes install output to a log
+    file). Hand the current stream to subprocess when it is a real file
+    so package-manager output follows the redirect; None (= inherit)
+    when it has no usable fd (pytest capture, plain terminal runs are
+    unaffected either way)."""
+    try:
+        stream.fileno()
+        return stream
+    except (AttributeError, OSError, ValueError):
+        return None
+
+
 def _run_pkg_cmd(base: list[str], *args: str) -> bool:
     cmd = base if os.geteuid() == 0 else ["sudo", *base]
     cmd.extend(args)
     env = {**os.environ, **_NONINTERACTIVE_ENV}
     return subprocess.run(
         cmd, check=False, env=env, stdin=subprocess.DEVNULL,
+        stdout=_redirect_stream(sys.stdout),
+        stderr=_redirect_stream(sys.stderr),
     ).returncode == 0
 
 

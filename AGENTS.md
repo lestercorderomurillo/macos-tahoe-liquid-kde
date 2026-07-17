@@ -100,7 +100,7 @@ Store, Force Quit, Sleep, Restart, Shut Down, Lock Screen, Log Out.
 | `features.json`               | Per-feature enable flags, written by `--only` / `--no-*` and read on the next run. |
 | `src/scripts/`                | Installer Python. **Flat layout — no `installer/` subdir.** |
 | `src/scripts/cli.py`          | Entry point. Parses flags, runs preflight, dispatches steps. |
-| `src/scripts/install_tui.py`  | Curses selection wizard for bare `sudo ./install` / `sudo ./uninstall` TTY runs. Stdlib only; any failure falls back to the classic flow in `cli.py`. |
+| `src/scripts/install_tui.py`  | Curses selection wizard + live progress screen for bare `sudo ./install` / `sudo ./uninstall` TTY runs. Stdlib only (guarded import — openSUSE splits python3-curses); any failure falls back to the classic flow in `cli.py`. The progress screen runs the install body on a worker thread, redirects stdout/stderr to `/tmp/mttkde-install.log`, and polls the same progress file the GUI reads. |
 | `src/scripts/preflight.py`    | 9-check fail-fast probe (sudo, paths, Qt6, Plasma, kwriteconfig6, DBus, kded6, disk, plasmoid IDs). |
 | `src/scripts/distro.py`       | The ONLY module that knows per-distro paths and package manager commands. |
 | `src/scripts/paths.py`        | Repo-relative paths only. Never shells out, never reads /etc/os-release. |

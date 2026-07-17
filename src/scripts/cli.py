@@ -893,6 +893,187 @@ def _print_done(verb: str) -> None:
     print()
 
 
+def _run_install_body(feat: dict[str, object]) -> int:
+    """The actual install sequence — no banner, confirm, or progress UI.
+    Runs directly on the classic path and behind the TUI live progress
+    screen on the interactive path (issue #44 phase 2)."""
+    if not run_preflight("install"):
+        fail("preflight failed — refusing to install")
+        return 1
+
+    step("Verification")
+    note("Checks KDE version and required tools")
+    if not verify_plasma():
+        return 1
+
+    step("Dependencies")
+    note("Checking and installing required tools")
+    _check_deps(feat)
+
+    step("Building Compiled Components")
+    note("Builds C++ plasmoids and KWin effects — must succeed before install")
+    if not _run_builds_or_abort(feat):
+        return 1
+
+    for feature in INSTALL_ORDER:
+        if feature == "layout":
+            continue
+        if not should_process(feature, feat):
+            continue
+        if not step_exists(feature):
+            continue
+        label = feature.replace("_", " ")
+        step(f"Installing {label}")
+        note(FEATURE_DESC.get(feature, ""))
+
+        # No download phase — assets bundled under src/offline/ since v0.18.0.
+        if not run_phase(feature, "install") and feature in CRITICAL_INSTALL_FEATURES:
+            fail(f"{label} install failed — aborting "
+                 "(critical compiled component)")
+            return 1
+
+    step("Installing Theme Switcher")
+    note("Installs the auto light/dark theme switcher")
+    run_phase("theme_switch", "install")
+
+    step("Installing OLED Care")
+    note("Opt-in pixel shift that guards OLED panels against burn-in")
+    run_phase("oled_care", "install")
+
+    if feat.get("apply_theme", True):
+        step("Applying Changes")
+        note("Applies settings, flushes caches, restarts KWin")
+        run_phase("apply", "install")
+
+        # Layout runs after apply — the Plasma JS scripting API can't
+        # find the custom plasmoids by ID until their packages are on disk.
+        if feat.get("layout", True) and step_exists("layout"):
+            step("Installing Layout")
+            note(FEATURE_DESC["layout"])
+            run_phase("layout", "install")
+
+        _flush_icon_cache_signal()
+
+        step("Verification")
+        note("Checking theme configuration was applied")
+        verify_config(feat)
+
+        step("Restarting Plasma")
+        note("Restarts Plasma shell to load all changes")
+        run_phase("apply", "restart_plasma")
+
+        if feat.get("layout", True) and step_exists("layout") and not _layout_is_installed():
+            step("Retrying Layout")
+            note("Retries the panel layout after Plasma reloads new plasmoids")
+            run_phase("layout", "install")
+    else:
+        step("Skipping Activation")
+        note("--no-apply-theme: files installed but Plasma left untouched. "
+             "Re-run with --apply-theme to switch over.")
+
+    _print_done("installed")
+    return 1 if errors else 0
+
+
+def _run_uninstall_body(feat: dict[str, object]) -> int:
+    """The actual uninstall sequence — same split as _run_install_body."""
+    if not run_preflight("uninstall"):
+        fail("preflight failed — refusing to uninstall")
+        return 1
+
+    step("Verification")
+    note("Checks KDE version")
+    if not verify_plasma():
+        return 1
+
+    # Two-stage: restore a working Breeze state while our assets still
+    # exist on disk, then remove the payload.
+    step("Removing Theme Switcher")
+    note("Stops and removes the auto light/dark theme switcher")
+    run_phase("theme_switch", "uninstall")
+
+    step("Removing OLED Care")
+    note("Stops the pixel shift and restores panel geometry")
+    run_phase("oled_care", "uninstall")
+
+    if feat.get("layout", True) and step_exists("layout"):
+        step("Resetting Layout")
+        note("Resets panel layout to default")
+        run_phase("layout", "uninstall")
+
+    step("Applying Changes")
+    note("Resets to Breeze defaults before removing theme assets")
+    run_phase("apply", "uninstall")
+
+    for feature in INSTALL_ORDER:
+        if feature == "layout":
+            continue
+        if not should_process(feature, feat):
+            continue
+        if not step_exists(feature):
+            continue
+        label = feature.replace("_", " ")
+        step(f"Removing {label}")
+        note(FEATURE_DESC.get(feature, ""))
+        run_phase(feature, "uninstall")
+
+    step("Restarting Plasma")
+    note("Restarts Plasma shell to finalize changes")
+    run_phase("apply", "restart_plasma")
+
+    _print_done("uninstalled")
+    return 1 if errors else 0
+
+
+def _count_feature_steps(feat: dict[str, object]) -> int:
+    return sum(
+        1 for feature in INSTALL_ORDER
+        if feature != "layout"
+        and should_process(feature, feat) and step_exists(feature))
+
+
+def _estimate_install_steps(feat: dict[str, object]) -> int:
+    """Best-effort count of the step() records _run_install_body will
+    emit, so the TUI progress bar shows a meaningful percentage. The
+    layout retry only runs on failure and is deliberately not counted —
+    the progress screen clamps the counter and bar at the total."""
+    total = 1  # run_preflight emits step("Preflight")
+    total += 3  # Verification, Dependencies, Building Compiled Components
+    total += _count_feature_steps(feat)
+    total += 2  # Theme Switcher, OLED Care
+    if feat.get("apply_theme", True):
+        total += 3  # Applying Changes, Verification, Restarting Plasma
+        if feat.get("layout", True) and step_exists("layout"):
+            total += 1  # Installing Layout
+    else:
+        total += 1  # Skipping Activation
+    return total
+
+
+def _estimate_uninstall_steps(feat: dict[str, object]) -> int:
+    """Mirror of _run_uninstall_body's step() emissions."""
+    total = 1  # run_preflight emits step("Preflight")
+    total += 3  # Verification, Removing Theme Switcher, Removing OLED Care
+    if feat.get("layout", True) and step_exists("layout"):
+        total += 1  # Resetting Layout
+    total += 1  # Applying Changes
+    total += _count_feature_steps(feat)
+    total += 1  # Restarting Plasma
+    return total
+
+
+def _run_body_with_progress(body, feat: dict[str, object],
+                            mode: str, total: int) -> int:
+    """Run the install/uninstall body behind the TUI live progress
+    screen. Falls back to the plain body if the progress UI can't even
+    start — run_progress itself guards against dying mid-run."""
+    try:
+        from install_tui import run_progress
+    except Exception:
+        return body(feat)
+    return run_progress(lambda: body(feat), total, mode)
+
+
 def run_install(argv: list[str], tui: bool = False,
                 prog: str = "install") -> int:
     parsed = parse_args(argv)
@@ -954,6 +1135,7 @@ def run_install(argv: list[str], tui: bool = False,
                 return 0
             if not _tui_active(argv, tui) and check_for_updates(inline=True):
                 auto_update_and_reexec(argv, prog)
+            rc = _run_install_body(feat)
         else:
             # The wizard's summary screen already confirmed.
             feat = wizard
@@ -961,86 +1143,12 @@ def run_install(argv: list[str], tui: bool = False,
                 save_features(feat)
                 ok("features.json saved")
             export_env(feat)
+            rc = _run_body_with_progress(
+                _run_install_body, feat, "install",
+                _estimate_install_steps(feat))
 
-        if not run_preflight("install"):
-            fail("preflight failed — refusing to install")
-            rc = 1
-            return rc
-
-        step("Verification")
-        note("Checks KDE version and required tools")
-        if not verify_plasma():
-            return 1
-
-        step("Dependencies")
-        note("Checking and installing required tools")
-        _check_deps(feat)
-
-        step("Building Compiled Components")
-        note("Builds C++ plasmoids and KWin effects — must succeed before install")
-        if not _run_builds_or_abort(feat):
-            return 1
-
-        for feature in INSTALL_ORDER:
-            if feature == "layout":
-                continue
-            if not should_process(feature, feat):
-                continue
-            if not step_exists(feature):
-                continue
-            label = feature.replace("_", " ")
-            step(f"Installing {label}")
-            note(FEATURE_DESC.get(feature, ""))
-
-            # No download phase — assets bundled under src/offline/ since v0.18.0.
-            if not run_phase(feature, "install") and feature in CRITICAL_INSTALL_FEATURES:
-                fail(f"{label} install failed — aborting "
-                     "(critical compiled component)")
-                return 1
-
-        step("Installing Theme Switcher")
-        note("Installs the auto light/dark theme switcher")
-        run_phase("theme_switch", "install")
-
-        step("Installing OLED Care")
-        note("Opt-in pixel shift that guards OLED panels against burn-in")
-        run_phase("oled_care", "install")
-
-        if feat.get("apply_theme", True):
-            step("Applying Changes")
-            note("Applies settings, flushes caches, restarts KWin")
-            run_phase("apply", "install")
-
-            # Layout runs after apply — the Plasma JS scripting API can't
-            # find the custom plasmoids by ID until their packages are on disk.
-            if feat.get("layout", True) and step_exists("layout"):
-                step("Installing Layout")
-                note(FEATURE_DESC["layout"])
-                run_phase("layout", "install")
-
-            _flush_icon_cache_signal()
-
-            step("Verification")
-            note("Checking theme configuration was applied")
-            verify_config(feat)
-
-            step("Restarting Plasma")
-            note("Restarts Plasma shell to load all changes")
-            run_phase("apply", "restart_plasma")
-
-            if feat.get("layout", True) and step_exists("layout") and not _layout_is_installed():
-                step("Retrying Layout")
-                note("Retries the panel layout after Plasma reloads new plasmoids")
-                run_phase("layout", "install")
-        else:
-            step("Skipping Activation")
-            note("--no-apply-theme: files installed but Plasma left untouched. "
-                 "Re-run with --apply-theme to switch over.")
-
-        _print_done("installed")
-        if not errors:
+        if rc == 0:
             tracker.mark_completed()
-        rc = 1 if errors else 0
         return rc
     except KeyboardInterrupt:
         tracker.mark_aborted()
@@ -1086,63 +1194,20 @@ def run_uninstall(argv: list[str], tui: bool = False,
             if not confirm("This will reset your desktop to Breeze defaults."):
                 tracker.mark_aborted()
                 return 0
+            check_for_updates(inline=True)
+            rc = _run_uninstall_body(feat)
         else:
             # The wizard's summary screen already confirmed.
             feat = wizard
             feat.pop("_save", False)
             export_env(feat)
-        check_for_updates(inline=True)
+            check_for_updates(inline=True)
+            rc = _run_body_with_progress(
+                _run_uninstall_body, feat, "uninstall",
+                _estimate_uninstall_steps(feat))
 
-        if not run_preflight("uninstall"):
-            fail("preflight failed — refusing to uninstall")
-            rc = 1
-            return rc
-
-        step("Verification")
-        note("Checks KDE version")
-        if not verify_plasma():
-            rc = 1
-            return rc
-
-        # Two-stage: restore a working Breeze state while our assets still
-        # exist on disk, then remove the payload.
-        step("Removing Theme Switcher")
-        note("Stops and removes the auto light/dark theme switcher")
-        run_phase("theme_switch", "uninstall")
-
-        step("Removing OLED Care")
-        note("Stops the pixel shift and restores panel geometry")
-        run_phase("oled_care", "uninstall")
-
-        if feat.get("layout", True) and step_exists("layout"):
-            step("Resetting Layout")
-            note("Resets panel layout to default")
-            run_phase("layout", "uninstall")
-
-        step("Applying Changes")
-        note("Resets to Breeze defaults before removing theme assets")
-        run_phase("apply", "uninstall")
-
-        for feature in INSTALL_ORDER:
-            if feature == "layout":
-                continue
-            if not should_process(feature, feat):
-                continue
-            if not step_exists(feature):
-                continue
-            label = feature.replace("_", " ")
-            step(f"Removing {label}")
-            note(FEATURE_DESC.get(feature, ""))
-            run_phase(feature, "uninstall")
-
-        step("Restarting Plasma")
-        note("Restarts Plasma shell to finalize changes")
-        run_phase("apply", "restart_plasma")
-
-        _print_done("uninstalled")
-        if not errors:
+        if rc == 0:
             tracker.mark_completed()
-        rc = 1 if errors else 0
         return rc
     except KeyboardInterrupt:
         tracker.mark_aborted()
