@@ -165,7 +165,7 @@ def test_install_warns_when_theme_switch_times_out(monkeypatch, tmp_path):
     monkeypatch.setattr(apply, "run_user", fake_run_user)
     apply.install()
     assert not any("Theme applied" in m for m in oks)
-    assert any("Theme switch timed out" in m for m in warns)
+    assert any("Theme switch did not finish" in m for m in warns)
 
 
 # ── uninstall reports reset/cycle failures instead of silent ok ────────

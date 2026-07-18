@@ -284,3 +284,67 @@ def test_acrylic_glass_build_leaves_source_tree_untouched(tmp_path, monkeypatch)
     assert snapshot() == before, (
         "build() modified the bundled source tree — builds must stage into build/"
     )
+
+
+# ── apply.py: theme-switch launch failures must degrade, not crash ────
+
+
+def test_run_live_survives_launch_failures(monkeypatch):
+    """_run_live() is a best-effort nicety — a binary that vanished or
+    lost its exec bit between the have() check and the call must be a
+    silent skip, not an unhandled exception that aborts the install."""
+    from steps import apply
+
+    for exc in (FileNotFoundError("gone"), PermissionError("chmod -x")):
+        def _raise(*_a, **_kw):
+            raise exc
+        monkeypatch.setattr(apply, "run_user", _raise)
+        apply._run_live(["update-desktop-database"])  # must not raise
+
+
+def test_theme_switch_launch_failure_warns_and_returns_none(tmp_path,
+                                                            monkeypatch):
+    """A non-executable mac-tahoe-theme-switch must surface a warn()
+    and report failure (None), not crash the apply step."""
+    from steps import apply
+
+    def _raise(*_a, **_kw):
+        raise PermissionError("Permission denied")
+
+    monkeypatch.setattr(apply, "run_user", _raise)
+    warnings: list[str] = []
+    monkeypatch.setattr(apply, "warn", warnings.append)
+
+    rc = apply._run_theme_switch_install(tmp_path / "mac-tahoe-theme-switch")
+
+    assert rc is None
+    assert any("could not run" in w for w in warnings), warnings
+
+
+def test_apply_warns_when_theme_switch_missing_or_not_executable(
+        tmp_path, monkeypatch):
+    """The switcher guard in apply.install() must not skip silently —
+    a restored backup or stray chmod leaves the binary non-executable
+    and the user would see all-green output with no live theme."""
+    from steps import apply
+
+    home = tmp_path / "home"
+    (home / ".local/bin").mkdir(parents=True)
+    # Present but not executable.
+    switch = home / ".local/bin/mac-tahoe-theme-switch"
+    switch.write_text("#!/bin/sh\n")
+    switch.chmod(0o644)
+
+    monkeypatch.setattr(apply, "HOME", home)
+    monkeypatch.setattr(apply, "have", lambda *_a: False)
+    monkeypatch.setattr(apply, "feat_enabled", lambda *_a: False)
+    monkeypatch.setattr(apply, "qdbus_call", lambda *_a, **_kw: True)
+    monkeypatch.setattr(apply, "_flush_caches", lambda: None)
+    monkeypatch.setattr(apply.time, "sleep", lambda *_a: None)
+    monkeypatch.setattr(apply, "ok", lambda _msg: None)
+    warnings: list[str] = []
+    monkeypatch.setattr(apply, "warn", warnings.append)
+
+    apply.install()
+
+    assert any("not executable" in w for w in warnings), warnings

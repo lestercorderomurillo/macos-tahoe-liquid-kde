@@ -55,14 +55,16 @@ _LIVE_APPLY_TIMEOUT = 15
 
 def _run_live(cmd: list[str]) -> None:
     """Run a best-effort live-apply command, bounded by a timeout so a
-    stuck KDE endpoint can't freeze the installer."""
+    stuck KDE endpoint can't freeze the installer. OSError covers a
+    missing or non-executable binary — a live nicety must degrade to a
+    skip, never crash the install."""
     try:
         run_user(
             cmd, check=False,
             stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
             timeout=_LIVE_APPLY_TIMEOUT,
         )
-    except subprocess.TimeoutExpired:
+    except (subprocess.TimeoutExpired, OSError):
         pass
 
 
@@ -72,7 +74,8 @@ _THEME_SWITCH_TIMEOUT = 90
 
 
 def _run_theme_switch_install(switch: Path) -> int | None:
-    """Exit code of the standalone switcher, or None on timeout."""
+    """Exit code of the standalone switcher, or None when it could not
+    finish (timeout, or the binary failed to launch)."""
     try:
         return run_user(
             [str(switch), theme_mode(), "install"], check=False,
@@ -80,6 +83,9 @@ def _run_theme_switch_install(switch: Path) -> int | None:
             timeout=_THEME_SWITCH_TIMEOUT,
         ).returncode
     except subprocess.TimeoutExpired:
+        return None
+    except OSError as exc:
+        warn(f"theme switch could not run: {exc}")
         return None
 
 
@@ -186,9 +192,15 @@ def install() -> None:
         if rc == 0:
             ok(f"Theme applied ({theme_mode()})")
         elif rc is None:
-            warn("Theme switch timed out, config may be partial")
+            warn("Theme switch did not finish, config may be partial")
         else:
             warn(f"Theme switch failed (exit {rc})")
+    else:
+        # A restored backup or stray chmod can leave the switcher
+        # non-executable; a silent skip would show all-green output with
+        # the theme never live-applied.
+        warn(f"Theme switcher missing or not executable ({switch}) — "
+             "theme not live-applied")
 
     print("  …  Restarting KWin", end="\r", flush=True)
     if feat_enabled("ACRYLIC_GLASS"):
