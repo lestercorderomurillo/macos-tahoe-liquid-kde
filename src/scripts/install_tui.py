@@ -75,9 +75,12 @@ class Wizard:
     def _build_rows(self) -> list[tuple[str, str]]:
         rows: list[tuple[str, str]] = []
         for title, keys in GROUPS:
+            if rows:
+                rows.append(("spacer", ""))
             rows.append(("header", title))
             rows.extend(("toggle", k) for k in keys)
         if self.mode == "install":
+            rows.append(("spacer", ""))
             rows.append(("header", "Activation"))
             rows.append(("toggle", "apply_theme"))
             rows.append(("radio", "theme_mode"))
@@ -87,15 +90,21 @@ class Wizard:
         return rows
 
     def _selectable(self, i: int) -> bool:
-        return 0 <= i < len(self.rows)
+        return (0 <= i < len(self.rows)
+                and self.rows[i][0] != "spacer")
 
     def current(self) -> tuple[str, str]:
         return self.rows[self.cursor]
 
     def move(self, delta: int) -> None:
-        i = self.cursor + delta
-        if 0 <= i < len(self.rows):
-            self.cursor = i
+        i = self.cursor
+        while True:
+            i += delta
+            if not 0 <= i < len(self.rows):
+                return
+            if self._selectable(i):
+                self.cursor = i
+                return
 
     def _group_keys(self, header: str) -> list[str]:
         keys, active = [], False
@@ -256,6 +265,8 @@ def _draw_footer(scr, text: str) -> None:
 def _draw_row(scr, y: int, wiz: Wizard, i: int) -> None:
     kind, key = wiz.rows[i]
     sel = i == wiz.cursor
+    if kind == "spacer":
+        return
     if kind == "header":
         if sel:
             _put(scr, y, 0, "›", _c(_P_GREEN, curses.A_BOLD))
@@ -296,10 +307,19 @@ def _draw_row(scr, y: int, wiz: Wizard, i: int) -> None:
         _put(scr, y, x, "  (OLED care is off)", _c(_P_DIM))
 
 
+_SELECT_PROMPT = {
+    "install": "Please select the components you want to install",
+    "uninstall": "Please select the components you want to remove",
+}
+
+
 def _draw_select(scr, wiz: Wizard, top: int) -> int:
     scr.erase()
-    h, _ = scr.getmaxyx()
+    h, w = scr.getmaxyx()
     body_top = _draw_header(scr)
+    prompt = _SELECT_PROMPT.get(wiz.mode, _SELECT_PROMPT["install"])
+    _put(scr, body_top, max(2, (w - len(prompt)) // 2), prompt, _c(_P_DIM))
+    body_top += 2
     body_h = max(1, h - body_top - 2)
 
     # Keep the cursor visible.

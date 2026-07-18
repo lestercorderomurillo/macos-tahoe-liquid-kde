@@ -99,10 +99,13 @@ def test_tui_wizard_propagates_cancel_and_result(monkeypatch):
 
 
 def test_run_wizard_returns_wrapper_result(monkeypatch):
-    """run_wizard is a thin shell over curses.wrapper — patching the
-    wrapper simulates a full screen session without a terminal."""
+    """run_wizard is a thin shell over curses.wrapper. Fake the whole
+    module, not just the wrapper attribute — install_tui.curses is None
+    on distros without python3-curses (openSUSE CI) and the test must
+    run there too."""
     sentinel = {"sddm": False, "_save": False}
-    monkeypatch.setattr(install_tui.curses, "wrapper", lambda fn: sentinel)
+    fake = types.SimpleNamespace(wrapper=lambda fn: sentinel)
+    monkeypatch.setattr(install_tui, "curses", fake)
     assert install_tui.run_wizard(dict(cli.DEFAULT_FEATURES)) is sentinel
 
 
@@ -126,7 +129,16 @@ def test_install_rows_cover_every_feature():
 
 def test_uninstall_mode_has_no_settings_rows():
     kinds = {kind for kind, _ in _wizard("uninstall").rows}
-    assert kinds == {"header", "toggle"}
+    assert kinds == {"header", "toggle", "spacer"}
+
+
+def test_cursor_never_lands_on_spacers():
+    wiz = _wizard()
+    seen = set()
+    for _ in range(len(wiz.rows) * 2):
+        wiz.move(1)
+        seen.add(wiz.rows[wiz.cursor][0])
+    assert "spacer" not in seen
 
 
 def test_toggle_flips_value():
@@ -263,6 +275,8 @@ def test_read_log_tail_keeps_interior_blank_lines(tmp_path):
         "Step 1: Fonts", "", "  ✓  installed"]
 
 
+@pytest.mark.skipif(install_tui.curses is None,
+                    reason="python3-curses not installed (openSUSE split)")
 def test_ansi_segments_split_and_bold(monkeypatch):
     """Colour pairs need a live screen, but the segment split and the
     bold/dim/reset state machine are pure logic."""
