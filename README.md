@@ -30,8 +30,6 @@ A full macOS Tahoe-style desktop experience for KDE Plasma 6.6 and 6.7+.
 | systemd | ✅ YES | ✅ YES |
 | OpenRC | 🔧 Work in progress | 🔧 Testing |
 
-Gentoo defaults to OpenRC, and OpenRC support is still work in progress: the scheduled features (OLED care, timed light/dark switch) use a per-user crontab line there instead of a systemd user timer, and that path is not verified on real hardware yet. On systemd hosts everything is supported.
-
 | Plasma | Supported yet? | Since |
 |--------|:--------------:|:-----:|
 | ≤ 6.5 | ❌ NO | — |
