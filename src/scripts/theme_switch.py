@@ -1,8 +1,10 @@
 #!/usr/bin/env python3
 """Light/dark theme switcher: `mac-tahoe-theme-switch {light|dark|auto}
 [install]`. Covers what Plasma's lookandfeelautoswitcher does NOT switch
-(Kvantum, GTK 2/3/4, icon caches) and rewrites the [Colors:*] groups
-directly — plasma-apply-colorscheme alone can leave stale palette values."""
+(Kvantum, GTK 2/3/4, icon caches). Color schemes go through KDE's own
+plasma-apply-colorscheme (correct [Colors:*] groups + ColorSchemeHash so
+live Qt apps reload the palette); the manual [Colors:*] rewrite remains
+only as a fallback for systems without the tool."""
 
 import datetime as _dt
 import hashlib
@@ -222,12 +224,26 @@ def _delete_color_groups_direct() -> bool:
 
 
 def reset_kde_color_scheme_config(scheme: str) -> bool:
-    if not _have("kwriteconfig6"):
-        return False
-    if not _delete_color_groups_direct():
-        return False
-    return _kwrite("--file", "kdeglobals", "--group", "General",
-                   "--key", "ColorScheme", scheme)
+    return apply_color_scheme(scheme)
+
+
+def apply_color_scheme(scheme: str) -> bool:
+    """Apply a color scheme to kdeglobals.
+
+    Prefer KDE's own ``plasma-apply-colorscheme`` (same package as
+    kwriteconfig6): it rewrites the [Colors:*] groups and
+    ColorSchemeHash exactly the way the Colors KCM does, so live Qt
+    apps reload the palette instead of keeping the previous scheme.
+    Fall back to the manual rewrite only when the binary is missing
+    (minimal/CI systems)."""
+    if _have("plasma-apply-colorscheme"):
+        try:
+            return _run_user(
+                ["plasma-apply-colorscheme", scheme], timeout=15,
+            ).returncode == 0
+        except (subprocess.TimeoutExpired, OSError):
+            return False
+    return apply_color_groups_direct(scheme)
 
 
 def _find_scheme_file(scheme: str) -> Path | None:
@@ -418,7 +434,7 @@ def write_kde_theme_config(mode: str) -> bool:
                        "--key", key, value):
             return False
 
-    return apply_color_groups_direct(scheme)
+    return apply_color_scheme(scheme)
 
 
 def _live_tool_env() -> dict[str, str]:

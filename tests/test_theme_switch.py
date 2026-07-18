@@ -473,12 +473,21 @@ def test_run_live_plasma_tool_drops_privs_and_keeps_timeout(monkeypatch):
     assert seen["timeout"] == 7
 
 
-def test_reset_color_scheme_config_reports_write_failure(monkeypatch):
+def test_reset_color_scheme_config_reports_write_failure(monkeypatch,
+                                                         tmp_path):
     """Under sudo the uninstall color reset can fail while the step
     prints success. Failed deletes or a failed final write
     must return False so the caller can warn."""
     import theme_switch
-    monkeypatch.setattr(theme_switch, "_have", lambda cmd: True)
+    # Force the offline fallback: plasma-apply-colorscheme is "missing"
+    # so reset_kde_color_scheme_config exercises apply_color_groups_direct.
+    monkeypatch.setattr(theme_switch, "_have",
+                        lambda cmd: cmd == "kwriteconfig6")
+    # Supply a scheme file so the fallback does not early-out on a
+    # missing BreezeLight.colors (CI containers don't ship it).
+    scheme = tmp_path / "BreezeLight.colors"
+    scheme.write_text("[Colors:Window]\nBackgroundNormal=239,240,241\n")
+    monkeypatch.setattr(theme_switch, "_find_scheme_file", lambda s: scheme)
 
     monkeypatch.setattr(theme_switch, "_delete_color_groups_direct",
                         lambda: False)
@@ -507,9 +516,73 @@ def test_apply_color_groups_direct_reports_write_failure(monkeypatch, tmp_path):
     assert theme_switch.apply_color_groups_direct("S") is True
 
 
+class _FakeResult:
+    def __init__(self, returncode: int):
+        self.returncode = returncode
+
+
+def test_apply_color_scheme_prefers_plasma_apply_tool(monkeypatch):
+    """The official plasma-apply-colorscheme rewrites the [Colors:*]
+    groups and ColorSchemeHash exactly like the Colors KCM, so live Qt
+    apps reload the palette. When the binary is present we must call it
+    and not the manual rewrite."""
+    import theme_switch
+    seen: dict = {}
+    monkeypatch.setattr(theme_switch, "_have",
+                        lambda cmd: cmd == "plasma-apply-colorscheme")
+    monkeypatch.setattr(theme_switch, "_run_user",
+                        lambda cmd, **kw: seen.update(cmd=cmd) or
+                        _FakeResult(0))
+    assert theme_switch.apply_color_scheme("MacTahoeLiquidKdeDark") is True
+    assert seen["cmd"] == ["plasma-apply-colorscheme",
+                           "MacTahoeLiquidKdeDark"]
+
+
+def test_apply_color_scheme_reports_tool_failure(monkeypatch):
+    """A non-zero plasma-apply-colorscheme exit must propagate as False
+    rather than falling through to a silent manual apply."""
+    import theme_switch
+    monkeypatch.setattr(theme_switch, "_have",
+                        lambda cmd: cmd == "plasma-apply-colorscheme")
+    monkeypatch.setattr(theme_switch, "_run_user",
+                        lambda cmd, **kw: _FakeResult(1))
+    assert theme_switch.apply_color_scheme("MacTahoeLiquidKdeDark") is False
+
+
+def test_apply_color_scheme_survives_timeout(monkeypatch):
+    """A hung plasma-apply-colorscheme must report failure, not raise
+    through write_kde_theme_config into the apply step."""
+    import subprocess
+    import theme_switch
+
+    def _hang(cmd, **kw):
+        raise subprocess.TimeoutExpired(cmd, kw.get("timeout", 0))
+
+    monkeypatch.setattr(theme_switch, "_have",
+                        lambda cmd: cmd == "plasma-apply-colorscheme")
+    monkeypatch.setattr(theme_switch, "_run_user", _hang)
+    assert theme_switch.apply_color_scheme("MacTahoeLiquidKdeDark") is False
+
+
+def test_apply_color_scheme_falls_back_to_manual(monkeypatch):
+    """Offline / minimal systems without plasma-apply-colorscheme keep
+    the working manual rewrite. The fallback must be used and mirror
+    the scheme name straight through."""
+    import theme_switch
+    seen: dict = {}
+    monkeypatch.setattr(theme_switch, "_have", lambda cmd: False)
+    monkeypatch.setattr(theme_switch, "apply_color_groups_direct",
+                        lambda scheme: seen.update(scheme=scheme) or True)
+    assert theme_switch.apply_color_scheme("MacTahoeLiquidKdeLight") is True
+    assert seen["scheme"] == "MacTahoeLiquidKdeLight"
+
+
 def test_write_kde_theme_config_reports_write_failure(monkeypatch):
     import theme_switch
-    monkeypatch.setattr(theme_switch, "_have", lambda cmd: True)
+    # Force the offline fallback so the final color stage goes through
+    # apply_color_groups_direct, not plasma-apply-colorscheme.
+    monkeypatch.setattr(theme_switch, "_have",
+                        lambda cmd: cmd == "kwriteconfig6")
 
     monkeypatch.setattr(theme_switch, "_kwrite", lambda *a: False)
     assert theme_switch.write_kde_theme_config("dark") is False
