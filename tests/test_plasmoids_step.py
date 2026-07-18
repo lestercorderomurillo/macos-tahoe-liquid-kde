@@ -89,7 +89,7 @@ def test_install_copies_taskmanager_runtime_package(tmp_path, monkeypatch):
     monkeypatch.setattr(plasmoids, "DEST_DIR", dest)
     monkeypatch.setattr(plasmoids, "TASKMANAGER_SRC", taskmanager)
     monkeypatch.setattr(plasmoids, "TASKMANAGER_BUILD", taskmanager / "build")
-    # v0.10: ``LEGACY_TASKMANAGER_USER_SO`` is the v0.8.4-0.8.6 sudoless
+    # ``LEGACY_TASKMANAGER_USER_SO`` is the stale sudoless-install
     # leftover under ``~/.local/lib/qt6/...``. Point it at a sandbox path
     # that doesn't exist so the cleanup path no-ops.
     monkeypatch.setattr(
@@ -122,7 +122,7 @@ def test_install_copies_taskmanager_runtime_package(tmp_path, monkeypatch):
 
 
 def test_taskmanager_dest_paths_anchor_to_qmake6_libdir(monkeypatch, tmp_path):
-    """v0.15 contract: the dock taskmanager .so + QML module land
+    """The dock taskmanager .so + QML module land
     under whatever the Qt6 plugin / QML dirs resolve to (qmake6-
     reported, per distro). The suffix is pinned so a refactor that
     mangles the package id can't silently ship to the wrong applet

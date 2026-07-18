@@ -1,7 +1,7 @@
 """Regression tests for the embedded kconf_update config migrations.
 
-These cover issue #56: the hand-written regex migrations (kdedefaults scrub,
-malformed [Colors:*] scrub, appletsrc dock-ID rename) moved to kconf_update
+The hand-written regex migrations (kdedefaults scrub, malformed
+[Colors:*] scrub, appletsrc dock-ID rename) live in kconf_update
 scripts bundled under src/offline/kconf_update/. The helpers are exercised
 directly, both with an explicit target (installer contract) and argless via
 $HOME (KF6 kconf_update contract, which passes no arguments).

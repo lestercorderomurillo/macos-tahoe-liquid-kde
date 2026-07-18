@@ -42,7 +42,7 @@ def _run_user(cmd: list[str], *, timeout: int,
               capture: bool = False) -> subprocess.CompletedProcess:
     """Every child spawn goes through here. steps/apply.py imports these
     helpers into the sudo'd installer (ruid=0, euid=user), where a bare
-    child trips Qt6's setuid abort and the call silently fails (#37)."""
+    child trips Qt6's setuid abort and the call silently fails."""
     kwargs: dict = {"check": False, "timeout": timeout, "env": env,
                     "preexec_fn": _drop_privs_in_child}
     if capture:
@@ -503,7 +503,7 @@ def cycle_widget_style_live(target: str) -> bool:
     SIGTERM/SIGINT mid-cycle would strand widgetStyle=Breeze on disk;
     the finally + signal handler guarantee disk ends at the target.
     False when a widgetStyle write fails or a broadcast phase lands
-    nothing — silent-success here masked the sudo'd-uninstall bug (#37)."""
+    nothing — silent success here would mask a sudo'd-uninstall failure."""
     if not _have("kwriteconfig6") or not _has_session_dbus():
         return False
     if not target:

@@ -1,11 +1,10 @@
-"""Step-level dependency guards (v0.15.5).
+"""Step-level dependency guards.
 
 Every step that calls out to a tool we don't ship (``kwriteconfig6``,
 ``fc-cache``, ``grub-mkconfig``, ...) must explicitly check the tool
 exists and surface a clear ``warn()`` when it doesn't — instead of
-the silent-success-but-half-applied state the installer used to land
-in on minimal systemd+KDE installs where one of those binaries is
-missing.
+silently succeeding half-applied on minimal systemd+KDE installs
+where one of those binaries is missing.
 
 These tests stub the tool's presence + the helpers and assert the
 expected warn() message fires. They do not run the full install
@@ -30,9 +29,9 @@ def test_kvantum_warns_when_kwriteconfig6_missing(tmp_path, monkeypatch):
     """kvantum.install() copies the theme files (filesystem only —
     those always work) then writes ``widgetStyle=kvantum`` to
     kdeglobals. If kwriteconfig6 isn't installed, ``kw_write()``
-    returns False; the step used to silently skip the ``ok()``
-    confirmation, leaving the user wondering why Kvantum 'isn't
-    working'. Now it must surface an actionable warn()."""
+    returns False; silently skipping the ``ok()`` confirmation would
+    leave the user wondering why Kvantum 'isn't working'. The step
+    must surface an actionable warn()."""
     from steps import kvantum
 
     # Point kvantum at an offline source it can read.
@@ -257,10 +256,9 @@ def test_fonts_runs_fc_cache_when_present(tmp_path, monkeypatch):
 
 
 def test_acrylic_glass_build_leaves_source_tree_untouched(tmp_path, monkeypatch):
-    """Issue #26: build() used to delete glass{,_core}.frag from
-    src/offline/.../src/shaders before cmake ran. Shader preprocessing
-    now stages into the build dir, and the installer must never write
-    or delete anything under the bundled source tree."""
+    """Shader preprocessing stages into the build dir; the installer
+    must never write or delete anything (e.g. glass{,_core}.frag under
+    src/shaders) in the bundled source tree."""
     from steps import acrylic_glass
 
     src = tmp_path / "acrylic-glass"
@@ -284,5 +282,5 @@ def test_acrylic_glass_build_leaves_source_tree_untouched(tmp_path, monkeypatch)
     acrylic_glass.build()
 
     assert snapshot() == before, (
-        "build() modified the bundled source tree — issue #26 regression"
+        "build() modified the bundled source tree — builds must stage into build/"
     )

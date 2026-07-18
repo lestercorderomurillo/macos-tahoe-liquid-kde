@@ -341,11 +341,11 @@ _TOKENS_WITH_FEDORA_DIVERGENCE = {
     "g++": "gcc",
     "pkg-config": "pkgconf",
     "plymouth-set-default-theme": "plymouth",
-    # v0.17.5: every compiled step's KF6 / Plasma / KWin token has a
-    # distinct Fedora name (kf6-...-devel / ...-devel / kwin-devel).
-    # If a future step adds a deps() token but forgets the _PACKAGE_MAP
-    # row, the Arch package leaks to dnf and the build dies the same
-    # way it did in v0.17.5. This list keeps the safety net wide.
+    # Every compiled step's KF6 / Plasma / KWin token has a distinct
+    # Fedora name (kf6-...-devel / ...-devel / kwin-devel). If a step
+    # adds a deps() token but forgets the _PACKAGE_MAP row, the Arch
+    # package leaks to dnf and the build dies. This list keeps the
+    # safety net wide.
     "kf6-config-cmake": "kconfig",
     "kf6-configwidgets-cmake": "kconfigwidgets",
     "kf6-coreaddons-cmake": "kcoreaddons",

@@ -202,10 +202,10 @@ def _capture_session_journal_cursor() -> str | None:
     ``--after-cursor=<token>`` to limit a query to events that came
     AFTER this moment.
 
-    Why we need this: the previous ``_journal_matches`` default of
-    ``--since "24 hours ago"`` made the crash-guard tests flap when
-    yesterday's unrelated coredump happened to match the regex, and
-    made green runs misleading because they did not prove the
+    Why we need this: a wall-clock window like
+    ``--since "24 hours ago"`` makes the crash-guard tests flap when
+    yesterday's unrelated coredump happens to match the regex, and
+    makes green runs misleading because they don't prove the
     current commit's plugin ever loaded — only that nothing crashed
     in the last 24h. Anchoring to the session cursor scopes the scan
     to "events during this pytest run", which is what we actually
@@ -250,12 +250,12 @@ def journal_session_cursor() -> str | None:
 def _reset_preflight_home_cache():
     """Guarantee preflight._HOME starts every test at None.
 
-    The cache (now drained per call, but kept as an override slot so
-    tests can pin a fake home) used to leak across tests: the sandbox
-    fixture's monkeypatch of $HOME would prime _HOME to a tmpdir,
-    and on teardown $HOME was restored but the module global was not.
+    The slot (drained per call, but kept as an override so tests can
+    pin a fake home) can leak across tests: the sandbox fixture's
+    monkeypatch of $HOME primes _HOME to a tmpdir, and on teardown
+    $HOME is restored but the module global is not.
     A later test (test_check_paths_passes_for_production_destinations)
-    then read the stale tmpdir and rejected a legitimate production
+    then reads the stale tmpdir and rejects a legitimate production
     destination. Reset before AND after so neither a careless test
     nor a careless future fixture can poison the next case."""
     import preflight
@@ -306,8 +306,8 @@ def make_live_shim_dir(tmp_path: Path) -> Path:
 # Tests should never modify the maintainer's live KDE/systemd state, but the
 # sandbox fixture only redirects HOME / XDG_*. Anything that contacts the
 # user systemd manager (``systemctl --user``), Kvantum config, dconf, or
-# uses an absolute path bypasses the sandbox. 0.13.7 silently disabled the
-# maintainer's ``mac-tahoe-liquid-kde-theme.timer`` for exactly this reason.
+# uses an absolute path bypasses the sandbox and can silently disable the
+# maintainer's ``mac-tahoe-liquid-kde-theme.timer``.
 #
 # This fixture snapshots a hand-picked set of live files + systemctl unit
 # state at session start, restores them at session end if they drifted,

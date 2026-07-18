@@ -1,15 +1,11 @@
 """Static guards that protect cross-cutting invariants.
 
-This file used to contain ~128 tests: SVG decode, SVG parity,
-file-existence walks under ``src/offline/``, README documentation
-markers, "summary is the last print" cosmetics, etc. Most of that
-was pinning artist choices or duplicating the install step's own
-fail-fast checks. Removed in the v0.17.4 test-suite nuke.
-
-What survives here: guards that catch *cross-cutting* drift
-(refactors that affect every distro / every step / every release).
-Each one protects against a specific shipped bug or a specific
-class of regression that has no other home in the suite.
+Only guards that catch *cross-cutting* drift belong here (refactors
+that affect every distro / every step / every release). Don't add
+tests that pin artist choices or duplicate the install step's own
+fail-fast checks. Each guard protects against a specific real bug
+or a specific class of regression that has no other home in the
+suite.
 """
 
 from __future__ import annotations
@@ -28,10 +24,9 @@ import pytest
 
 def test_version_is_semver(repo):
     """VERSION is the single source of truth read by paths.read_version()
-    and printed by the install banner. v0.17.2 shipped with this file
-    out of sync with the git tag — the banner printed v0.17.1 on a
-    v0.17.2 install. Pin the shape so a future malformed VERSION
-    (e.g. "0.17.2\n0.17.3\n" from a botched merge) fails CI."""
+    and printed by the install banner. If this file drifts or gets
+    malformed (e.g. two lines from a botched merge), the banner
+    prints the wrong version. Pin the shape so that fails CI."""
     assert re.fullmatch(r"\d+\.\d+\.\d+", (repo / "VERSION").read_text().strip())
 
 
@@ -77,10 +72,10 @@ def test_no_hardcoded_package_manager_outside_distro_layer(repo):
     ``distro.package_manager_install_cmd()`` so adding a new distro
     means adding ONE row, not hunting through every step.
 
-    Real regression this caught: a step at one point shelled out to
-    ``pacman -S foo`` directly. That worked on Arch and silently
-    no-op'd on every other distro — exactly the bug shape the
-    distro-layer abstraction was introduced to prevent.
+    Failure mode: a step that shells out to ``pacman -S foo``
+    directly works on Arch and silently no-ops on every other
+    distro — exactly the bug shape the distro-layer abstraction
+    exists to prevent.
 
     ``pacman -Q`` (a query, not an install) is allowed in cli.py
     because the update-check reads the local package version; only
@@ -133,8 +128,8 @@ def test_no_hardcoded_qt6_libdir(repo):
     ``/usr/lib/qt6`` or ``/usr/lib64/qt6``. Production code MUST go
     through ``distro.qt6_plugins_dir()`` / ``distro.qt6_qml_dir()``.
 
-    Real regression this caught: v0.14.x assumed Arch's ``/usr/lib/qt6``
-    everywhere and broke installs on Gentoo + Debian (different libdirs).
+    Assuming Arch's ``/usr/lib/qt6`` everywhere breaks installs on
+    Gentoo + Debian (different libdirs).
 
     Comment lines and docstrings are allowed to mention the example
     paths — that's how we document the per-distro variation."""
@@ -176,7 +171,7 @@ def test_no_hardcoded_qt6_libdir(repo):
     )
 
 
-# ── issue #55: install steps have no download phase ───────────────────
+# ── install steps have no download phase ──────────────────────────────
 
 
 def test_steps_have_no_download_phase(repo):
@@ -185,10 +180,10 @@ def test_steps_have_no_download_phase(repo):
     the installer is the release update check (``cli.py`` via
     ``utils.fetch``), which runs before the steps and is skippable.
 
-    Real regression this caught: ``layout.py`` used to pull the Panel
-    Colorizer plasmoid from the KDE Store / AUR / a GitHub tarball at
-    install time, so an offline host silently lost the transparent top
-    bar and two installs a month apart could extract different bytes."""
+    Failure mode: a step that pulls a plasmoid from the KDE Store /
+    AUR / a GitHub tarball at install time means an offline host
+    silently loses the transparent top bar and two installs a month
+    apart can extract different bytes."""
     steps = repo / "src/scripts/steps"
     # urllib.parse is string handling (nautilus.py URL-escapes paths);
     # only the fetch machinery and literal URLs are download signals.
@@ -242,36 +237,36 @@ def test_panel_colorizer_bundled_offline(offline):
 
 
 def test_theme_switch_no_legacy_entry_points(repo):
-    """The v0.14.2 rewrite collapsed several historical entry points
-    (watch_loop, sync_auto_mode_on_startup, _spawn_deferred_live_apply,
-    _deferred_live_apply_loop) into a single ``apply()``. If any of
-    those names reappear, a maintainer is re-introducing the multi-
-    entry-point design that produced the v0.13.x cascade. The
-    apply()-as-only-path invariant is load-bearing."""
+    """``apply()`` is the theme switcher's single entry point. If any
+    of these names (watch_loop, sync_auto_mode_on_startup,
+    _spawn_deferred_live_apply, _deferred_live_apply_loop) reappear,
+    a maintainer is re-introducing the multi-entry-point design whose
+    racing paths cause stale-palette cascades. The apply()-as-only-
+    path invariant is load-bearing."""
     text = (repo / "src/scripts/theme_switch.py").read_text()
     for forbidden in ("watch_loop", "sync_auto_mode_on_startup",
                       "_spawn_deferred_live_apply",
                       "_deferred_live_apply_loop"):
         assert forbidden not in text, (
-            f"{forbidden!r} is a deprecated entry point — the v0.14.2 "
-            f"rewrite collapsed everything into apply(). Re-introducing "
-            f"it brings back the v0.13.x bug cascade."
+            f"{forbidden!r} is a removed entry point — everything is "
+            f"collapsed into apply(); separate live-apply paths race "
+            f"the config writes."
         )
 
 
 def test_theme_switch_has_no_global_sync(repo):
-    """Issues #36/#37: _kwrite() used to os.sync() after every
-    kwriteconfig6 call — a machine-wide dirty-page flush repeated 130+
-    times per apply, slow enough to blow the installer's child timeout."""
+    """_kwrite() must never os.sync() after each kwriteconfig6 call —
+    a machine-wide dirty-page flush repeated 130+ times per apply is
+    slow enough to blow the installer's child timeout."""
     text = (repo / "src/scripts/theme_switch.py").read_text()
     assert "os.sync(" not in text, (
         "os.sync() is back in theme_switch.py — per-write global flushes "
-        "are the issue #36/#37 regression"
+        "blow the installer child timeout"
     )
 
 
 def test_acrylic_glass_qrc_entries_all_staged_by_cmake(repo):
-    """The effect's qrc is compiled from the BUILD dir (issue #26: shader
+    """The effect's qrc is compiled from the BUILD dir (shader
     preprocessing must not write into the source checkout), so every
     shader the qrc references must be staged there by src/CMakeLists.txt,
     either copied via LIQUIDGLASS_SHADER_STATIC or generated by
@@ -295,11 +290,11 @@ def test_acrylic_glass_qrc_entries_all_staged_by_cmake(repo):
 
 def test_acrylic_glass_ships_default_blur_denylist(offline):
     """WindowClasses ships as a blacklist (BlurMatching defaults false) with
-    three entries baked in: cairo-dock (issue #13 — glassing the dock
-    window renders a phantom panel behind it), kwin_wayland (issue #50 —
-    KWin's own input-method candidate popups report that resource class,
-    and glassing them produces a huge misplaced border), and
-    linux-wallpaperengine (issue #50 — same artifact on its live-wallpaper
+    three entries baked in: cairo-dock (glassing the dock window
+    renders a phantom panel behind it), kwin_wayland (KWin's own
+    input-method candidate popups report that resource class, and
+    glassing them produces a huge misplaced border), and
+    linux-wallpaperengine (same artifact on its live-wallpaper
     surface). All three must survive edits to the kcfg default."""
     kcfg = (offline / "kwin-effects/acrylic-glass/src/glass.kcfg").read_text()
     m = re.search(
@@ -324,10 +319,10 @@ def test_acrylic_glass_ships_default_blur_denylist(offline):
 
 
 def test_no_legacy_apply_service_in_offline(offline):
-    """The split apply.service / watch.service design from earlier
-    versions is gone — only the single oneshot service file ships now.
-    Leftover units would re-enable the dead watch path on upgrade
-    (systemctl daemon-reload picks them up)."""
+    """Only the single oneshot service file ships — never a split
+    apply.service / watch.service pair. Leftover units would
+    re-enable the dead watch path on upgrade (systemctl
+    daemon-reload picks them up)."""
     assert not (offline / "mac-tahoe-liquid-kde-theme-apply.service").exists()
 
 
@@ -359,8 +354,7 @@ def test_readme_tests_count_badge_matches_collected_count(repo):
     endpoint pointing at a Gist updated by CI) needs infra for
     something that changes ~3 times a year.
 
-    To stop the badge from drifting (the previous 691_passing badge
-    was already stale by hundreds of tests), pin the number here.
+    To stop the badge from drifting, pin the number here.
     When the suite grows or shrinks, run ``./test`` to get the new
     count, edit the README badge, and re-run this test.
 
@@ -400,7 +394,7 @@ def test_readme_tests_count_badge_matches_collected_count(repo):
     )
 
 
-# ── issue #11: dark popup surfaces keep mirrored light/dark alpha ─────
+# ── dark popup surfaces keep mirrored light/dark alpha ────────────────
 #
 # GTK client-side popups never receive compositor blur, so a literal
 # ``transparent`` background on a popup surface renders as see-through
@@ -446,13 +440,13 @@ def test_dark_gtk3_popup_surfaces_keep_alpha(offline, sheet):
     for sel in _GTK3_POPUP_SELECTORS:
         assert sel in decls, (
             f"{sheet}: selector ``{sel}`` lost its background-color "
-            f"declaration — popup surfaces need a real fill (issue #11)."
+            f"declaration — popup surfaces need a real fill."
         )
         for d in decls[sel]:
             assert not re.search(r"\btransparent\b", d), (
                 f"{sheet}: ``{sel}`` has ``{d}`` — popup surfaces must "
                 f"mirror the light variant's rgba alpha, never "
-                f"``transparent`` (issue #11)."
+                f"``transparent``."
             )
 
 
@@ -472,7 +466,7 @@ def test_kvantum_dark_popup_parity(offline):
     assert "blur_only_active_window=false" in conf, (
         "Dark kvconfig must keep blur_only_active_window=false like the "
         "light variant — true leaves unfocused popups unblurred AND "
-        "translucent (issue #11)."
+        "translucent."
     )
     menubar = conf.split("[MenuBar]", 1)[1].split("[", 1)[0]
     for key in ("frame.element=menubar", "interior.element=menubar"):
@@ -488,7 +482,7 @@ def test_kvantum_dark_popup_parity(offline):
         for e in elems:
             assert re.search(r'style="[^"]*\bopacity:1\b', e), (
                 f"{svg}: tooltip-normal must be fully opaque "
-                f"(opacity:1) — tooltips get no reliable blur (issue #11)."
+                f"(opacity:1) — tooltips get no reliable blur."
             )
 
 
@@ -505,5 +499,5 @@ def test_gtk4_named_colors_all_defined(offline):
             f"{f.name}: named colors referenced but never defined: "
             f"{missing}. Only libadwaita apps define these at runtime; "
             f"plain GTK4 apps get invalid declarations and popovers "
-            f"fall back to transparent (issue #11)."
+            f"fall back to transparent."
         )

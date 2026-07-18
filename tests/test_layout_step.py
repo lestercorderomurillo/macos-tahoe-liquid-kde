@@ -67,7 +67,7 @@ def test_reset_with_pins_skips_restore_block_when_no_pins(monkeypatch):
     assert "writeConfig('launchers'" not in captured["script"]
 
 
-# ── Discover install check (issue #40) ──────────────────────────────────
+# ── Discover install check ──────────────────────────────────────────────
 
 _LAUNCHERS_LINE = (
     'tasks.writeConfig("launchers", "preferred://filemanager,'

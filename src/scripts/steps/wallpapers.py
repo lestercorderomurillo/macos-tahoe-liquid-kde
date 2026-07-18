@@ -1,6 +1,6 @@
 """macOS wallpapers: copies src/offline/wallpapers/<id>/ bundles (Plasma
 layout: metadata.json + contents/images[_dark]/) into ~/.local/share/wallpapers.
-Fully offline since v0.17.0 — no download phase."""
+Fully offline — no download phase."""
 
 import shutil
 from pathlib import Path

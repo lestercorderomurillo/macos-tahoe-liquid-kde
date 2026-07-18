@@ -1,13 +1,11 @@
 """Behaviour tests for src/scripts/theme_switch.py.
 
-Previously ~36 tests, with several layers of monkeypatched-call-order
-proofs (LAF retry schedule pinned to specific sleep counts, Kvantum
-cycle internals, DBus signal paths). Those exercised the test's mental
-model of the apply path, not the apply path itself, and required edits
-every time the schedule changed.
-
-What's kept: behaviour that traces to a specific shipped bug or a
-load-bearing invariant of the v0.14.2 rewrite.
+Only behaviour that traces to a specific real bug or a load-bearing
+invariant of the single-apply() design belongs here. Don't add
+monkeypatched call-order proofs of internals (retry schedules, cycle
+internals, DBus signal paths): those exercise the test's mental model
+of the apply path, not the apply path itself, and need edits every
+time the schedule changes.
 """
 
 from __future__ import annotations
@@ -51,9 +49,9 @@ def colors(offline):
 
 
 def test_color_files_have_distinct_values(colors):
-    """Real regression: a botched merge once shipped identical .colors
-    files for light and dark. Visually identical themes, theme switch
-    no-op — pin against it."""
+    """A botched merge can ship identical .colors files for light and
+    dark: visually identical themes, theme switch no-op — pin
+    against it."""
     assert colors["light_btn"] and colors["dark_btn"]
     assert colors["light_btn"] != colors["dark_btn"]
     assert colors["light_tip"] != colors["dark_tip"]
@@ -129,7 +127,7 @@ def test_color_scheme_hash_tracks_active_scheme(seeded_color_schemes, offline):
     """The ColorSchemeHash in kdeglobals must equal SHA-1 of the
     currently-active .colors file. KDE reads this to decide whether to
     reload colors; a stale hash means Plasma keeps showing the previous
-    palette even after a successful apply. Real shipped bug shape."""
+    palette even after a successful apply."""
     kdeglobals = seeded_color_schemes / ".config/kdeglobals"
     seed_breeze_light(seeded_color_schemes)
 
@@ -166,11 +164,10 @@ def _stub_apply_dependencies(monkeypatch, calls):
 
 
 def test_apply_runs_full_pipeline_in_order(monkeypatch):
-    """The v0.14.2 rewrite collapsed multiple contexts into a single
-    apply() that always runs: write → wallpaper → local extras → live
-    LAF → live cursor → Kvantum cycle → KWin reconfigure, in that
-    order. Reordering or skipping any step here brings back one of the
-    v0.13.x bugs (skipped cycle = stale palette in plasmashell, etc.)."""
+    """A single apply() always runs: write → wallpaper → local extras
+    → live LAF → live cursor → Kvantum cycle → KWin reconfigure, in
+    that order. Reordering or skipping any step here breaks the live
+    switch (skipped cycle = stale palette in plasmashell, etc.)."""
     import theme_switch
     calls: list = []
     _stub_apply_dependencies(monkeypatch, calls)
@@ -193,13 +190,13 @@ def test_apply_runs_full_pipeline_in_order(monkeypatch):
 
 
 def test_apply_finishes_cycle_and_reconfigure_when_extras_raise(monkeypatch):
-    """0.13.7 boot regression: ``_apply_local_extras`` crashed on
-    FileExistsError from copytree('~/.config/gtk-4.0/assets') because
-    rmtree(..., ignore_errors=True) had left the dir in place. The
-    unhandled exception bubbled out of apply() and skipped the widget-
+    """``_apply_local_extras`` can crash on FileExistsError from
+    copytree('~/.config/gtk-4.0/assets') when
+    rmtree(..., ignore_errors=True) leaves the dir in place. An
+    unhandled exception bubbling out of apply() skips the widget-
     style cycle + KWin.reconfigure, leaving plasmashell on the old
-    palette while wallpaper + on-disk config had already flipped —
-    that's the 'light bg, dark panel, white text' bug. Whatever extras
+    palette while wallpaper + on-disk config have already flipped —
+    the 'light bg, dark panel, white text' bug. Whatever extras
     raises, the cycle and reconfigure MUST still run."""
     import theme_switch
 
@@ -230,11 +227,11 @@ def test_apply_finishes_cycle_and_reconfigure_when_extras_raise(monkeypatch):
 
 
 def test_local_extras_survives_undeletable_gtk4_assets(monkeypatch, tmp_path):
-    """Root cause of the 0.13.7 crash: shutil.rmtree(...,
+    """shutil.rmtree(...,
     ignore_errors=True) can silently leave the destination in place
     (inotify watcher recreating files mid-iteration). Without
-    dirs_exist_ok=True on the follow-up copytree, that raised
-    FileExistsError and aborted the entire run."""
+    dirs_exist_ok=True on the follow-up copytree, that raises
+    FileExistsError and aborts the entire run."""
     import theme_switch
 
     home = tmp_path / "home"
@@ -277,7 +274,7 @@ def test_cycle_restores_target_on_sigterm(monkeypatch):
     the apply service mid-cycle is the documented trigger), the on-disk
     value MUST end at the target, never frozen at Breeze. Otherwise
     next boot is 'Breeze night': MacTahoeLiquidKdeDark colors with
-    breeze widgets, which is what triggered the v0.13.x regression hunt."""
+    breeze widgets."""
     import signal as signal_mod
     import theme_switch
 
@@ -314,8 +311,8 @@ def test_cycle_restores_target_on_sigterm(monkeypatch):
 def test_main_auto_resolves_to_time_based_mode(monkeypatch):
     """``mac-tahoe-theme-switch auto`` (what the systemd service + timer
     fire) must resolve via wall clock alone and hand that straight to
-    apply(). No other input is consulted to avoid the stale-config
-    feedback loop earlier versions hit."""
+    apply(). No other input is consulted — reading config back in
+    creates a stale-config feedback loop."""
     import theme_switch
     calls: list = []
     monkeypatch.setattr(theme_switch, "detect_mode_by_time", lambda: "dark")
@@ -326,7 +323,7 @@ def test_main_auto_resolves_to_time_based_mode(monkeypatch):
 
 
 def test_main_rejects_invalid_mode(monkeypatch):
-    """The simplified surface accepts exactly light / dark / auto. Old
+    """The surface accepts exactly light / dark / auto. Retired
     contexts (boot, scheduled, _deferred-live-apply, watch) must exit
     non-zero so a stale systemd unit from an upgrade can't silently
     no-op."""
@@ -357,7 +354,7 @@ def _stub_apply_subcalls(monkeypatch, calls, ret=True):
 
 
 def test_apply_install_context_skips_live_lookandfeel(monkeypatch):
-    """Issue #32 (PR #33): the installer passes the ``install`` context
+    """The installer passes the ``install`` context
     because its final Plasma restart loads the theme anyway — running
     the live LAF apply too adds 2-14s of retry sleeps and races the
     QML teardown. Every other sub-call still runs in both contexts."""
@@ -386,7 +383,7 @@ def test_main_passes_install_context_to_apply(monkeypatch):
 
 
 def test_main_exit_code_reflects_apply_failure(monkeypatch):
-    """Issue #24: the systemd oneshot service and the install step can
+    """The systemd oneshot service and the install step can
     only see failure through the exit code."""
     import theme_switch
     monkeypatch.setattr(theme_switch, "apply", lambda mode, **kw: False)
@@ -394,8 +391,8 @@ def test_main_exit_code_reflects_apply_failure(monkeypatch):
 
 
 def test_apply_fails_when_config_writes_fail(monkeypatch):
-    """Issues #24 + #37: write_kde_theme_config is the critical call —
-    False now means the core config writes failed (kwriteconfig6 missing
+    """write_kde_theme_config is the critical call —
+    False means the core config writes failed (kwriteconfig6 missing
     OR a write error, e.g. Qt6's setuid abort under the sudo'd
     installer), and apply() must surface it. The live sub-calls stay
     best-effort and cannot fail the run."""
@@ -416,7 +413,7 @@ def test_apply_fails_when_config_writes_fail(monkeypatch):
     assert theme_switch.apply("dark") is True
 
 
-# ── issue #37: privilege drop + timeout on every child, honest returns ──
+# ── privilege drop + timeout on every child, honest returns ────────────
 
 
 def test_kwrite_drops_privs_bounds_timeout_no_sync(monkeypatch):
@@ -477,8 +474,8 @@ def test_run_live_plasma_tool_drops_privs_and_keeps_timeout(monkeypatch):
 
 
 def test_reset_color_scheme_config_reports_write_failure(monkeypatch):
-    """The uninstall color reset used to fail silently under sudo while
-    the step printed success. Failed deletes or a failed final write
+    """Under sudo the uninstall color reset can fail while the step
+    prints success. Failed deletes or a failed final write
     must return False so the caller can warn."""
     import theme_switch
     monkeypatch.setattr(theme_switch, "_have", lambda cmd: True)
@@ -530,8 +527,8 @@ def test_write_kde_theme_config_reports_write_failure(monkeypatch):
 def test_cycle_reports_failure_but_still_restores(monkeypatch):
     """Failed widgetStyle writes or a dead broadcast phase must return
     False — while the finally-restore still runs so disk ends at the
-    target. cycle_widget_style_live used to return True unconditionally,
-    which is why the sudo'd uninstall breakage stayed invisible."""
+    target. An unconditional True here keeps sudo'd uninstall
+    breakage invisible."""
     import theme_switch
     writes: list[str] = []
     monkeypatch.setattr(theme_switch, "_have", lambda cmd: True)
@@ -593,10 +590,10 @@ def _run_step(step_name: str, phase: str, env: dict[str, str],
 
 
 def test_switch_step_does_not_touch_live_user_systemd(sandbox, tmp_path):
-    """Real safety guard. v0.13.7 silently disabled the maintainer's
-    live theme timer because the step shelled out to systemctl without
-    going through PATH (absolute /usr/bin/systemctl bypassed the test
-    shim). If a future regression reintroduces an absolute path, the
+    """Real safety guard. A step that shells out to systemctl without
+    going through PATH (absolute /usr/bin/systemctl) bypasses the test
+    shim and silently disables the maintainer's live theme timer.
+    If a regression reintroduces an absolute path, the
     maintainer's live systemd state gets clobbered every test run."""
     shim_dir = make_live_shim_dir(tmp_path)
     log_file = shim_dir / "calls.log"
@@ -616,7 +613,7 @@ def test_switch_step_install_uninstall_reinstall(sandbox, tmp_path):
     """Round-trip the install/uninstall step. Asserts:
     - install drops the script + service + timer under $XDG_CONFIG_HOME
     - uninstall removes them
-    - leftover apply.service (from a pre-v0.14.2 install) is cleaned up
+    - leftover apply.service (from an older install layout) is cleaned up
     - kdeglobals AutomaticLookAndFeel keys are reset on uninstall."""
     shim_dir = make_live_shim_dir(tmp_path)
 
@@ -628,8 +625,8 @@ def test_switch_step_install_uninstall_reinstall(sandbox, tmp_path):
     assert (svc_dir / "mac-tahoe-liquid-kde-theme.service").is_file()
     assert (svc_dir / "mac-tahoe-liquid-kde-theme.timer").is_file()
 
-    # Drop a leftover apply.service from a pre-v0.14.2 install. Uninstall
-    # must remove it.
+    # Drop a leftover apply.service from an older install layout.
+    # Uninstall must remove it.
     (svc_dir / "mac-tahoe-liquid-kde-theme-apply.service").write_text(
         "# legacy unit from a previous version\n"
     )

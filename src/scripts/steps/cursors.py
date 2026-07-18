@@ -1,6 +1,6 @@
 """MacTahoe cursor themes: extracts the bundled
 MacTahoeLiquidKde-Cursors.tar.zst into ~/.local/share/icons.
-Fully offline since v0.18.0 — no download phase."""
+Fully offline — no download phase."""
 
 import shutil
 import subprocess

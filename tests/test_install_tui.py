@@ -1,4 +1,4 @@
-"""Guards for the interactive install wizard (issue #44).
+"""Guards for the interactive install wizard.
 
 Two surfaces: the gate in ``cli.py`` (the wizard must NEVER run for the
 GUI, CI, the VM harness, flag invocations, or the legacy-* entries) and
@@ -129,16 +129,14 @@ def test_install_rows_cover_every_feature():
 
 def test_uninstall_mode_has_no_settings_rows():
     kinds = {kind for kind, _ in _wizard("uninstall").rows}
-    assert kinds == {"header", "toggle", "spacer"}
+    assert kinds == {"toggle"}
 
 
-def test_cursor_never_lands_on_spacers():
-    wiz = _wizard()
-    seen = set()
-    for _ in range(len(wiz.rows) * 2):
-        wiz.move(1)
-        seen.add(wiz.rows[wiz.cursor][0])
-    assert "spacer" not in seen
+def test_rows_are_one_flat_list():
+    """No group headers or spacers — every row is an interactive
+    control (toggle / radio / int)."""
+    kinds = {kind for kind, _ in _wizard().rows}
+    assert kinds == {"toggle", "radio", "int"}
 
 
 def test_toggle_flips_value():
@@ -189,14 +187,16 @@ def test_set_all_none_preserves_apply_theme():
     assert wiz.feat["gtk"] is False
 
 
-def test_result_filters_to_known_keys_and_carries_save():
+def test_result_filters_to_known_keys_and_always_saves_on_install():
+    """Install selections always persist to features.json — the save
+    checkbox is gone by design; uninstall never writes the file."""
     wiz = _wizard()
     wiz.feat["_bogus"] = 1
-    wiz.save = True
     res = wiz.result()
     assert res["_save"] is True
     assert "_bogus" not in res
     assert set(res) - {"_save"} == set(cli.DEFAULT_FEATURES)
+    assert _wizard("uninstall").result()["_save"] is False
 
 
 def test_cursor_stays_in_bounds():
@@ -209,32 +209,7 @@ def test_cursor_stays_in_bounds():
     assert wiz.cursor == 0
 
 
-def test_space_on_header_toggles_the_group():
-    """PR #45 tech: a group header is selectable and space flips every
-    toggle under it (all on → all off, mixed → all on)."""
-    wiz = _wizard()
-    _goto(wiz, ("header", "Theme"))
-    theme_keys = wiz._group_keys("Theme")
-    assert theme_keys
-    wiz.activate()
-    assert all(wiz.feat[k] is False for k in theme_keys)
-    wiz.activate()
-    assert all(wiz.feat[k] is True for k in theme_keys)
-    # Mixed state resolves to all-on.
-    wiz.feat[theme_keys[0]] = False
-    wiz.activate()
-    assert all(wiz.feat[k] is True for k in theme_keys)
-
-
-def test_group_toggle_does_not_leak_across_groups():
-    wiz = _wizard()
-    _goto(wiz, ("header", "Theme"))
-    wiz.activate()
-    assert wiz.feat["plasmoids"] is True  # KDE components untouched
-    assert wiz.feat["apply_theme"] is True  # Activation untouched
-
-
-# ── live progress screen (issue #44 phase 2) ──────────────────────────
+# ── live progress screen ──────────────────────────────────────────────
 
 
 def test_strip_ansi_removes_log_escapes():

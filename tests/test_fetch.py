@@ -1,17 +1,17 @@
 """Behaviour tests for utils.fetch().
 
-The function landed in v0.15.3 to fix two real bugs reported on
-Gentoo:
+Two real failure modes motivate the contract:
 
-  1. MacHeritage-BigSur / MacHeritage-Monterey downloads completed
-     "successfully" but landed truncated, then the wallpaper step
-     bailed downstream with "download incomplete — re-run to retry".
+  1. A download completes "successfully" but lands truncated (the
+     server closes early; urllib doesn't raise), and the wallpaper
+     step bails downstream with "download incomplete — re-run to
+     retry".
 
-  2. The retry loop ran 3 times back-to-back with no delay, so a
-     transient CDN hiccup that needed half a second to recover got
-     hit 3 times in a row and gave up.
+  2. A retry loop that runs back-to-back with no delay hits a
+     transient CDN hiccup that needs half a second to recover 3
+     times in a row and gives up.
 
-These tests pin the contract that fixed both:
+These tests pin the contract that prevents both:
   * Hard ceiling on retries (no unbounded work even if a caller
     passes ``retries=10000``).
   * Exponential backoff between attempts (1s, 2s, 4s, 8s).
@@ -132,13 +132,13 @@ def test_fetch_passes_when_server_omits_content_length(tmp_path, monkeypatch):
     assert dest.read_bytes() == body
 
 
-# ── the original Gentoo bug: truncated downloads ────────────────────
+# ── truncated downloads must trip the retry ─────────────────────────
 
 
 def test_fetch_retries_when_body_shorter_than_content_length(tmp_path, monkeypatch):
-    """The Gentoo regression: server returns Content-Length=2048 but
-    closes after writing 1024 bytes. urllib doesn't raise. v0.15.2
-    treated this as success; v0.15.3 must trip the retry."""
+    """Server returns Content-Length=2048 but closes after writing
+    1024 bytes. urllib doesn't raise, so treating a clean return as
+    success passes truncated files — this must trip the retry."""
     import utils
     dest = tmp_path / "wallpaper.jpg"
     # Two side effects: first truncated (1024 of claimed 2048),

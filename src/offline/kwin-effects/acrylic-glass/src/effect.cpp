@@ -756,8 +756,8 @@ void BlurEffect::prePaintWindow(RenderView* view, EffectWindow* w, WindowPrePain
     effects->prePaintWindow(view, w, data ACRYLIC_GLASS_PRESENT_TIME_ARG);
 
 #if ACRYLIC_GLASS_KWIN_6_7
-    // 6.7: the ext_background_effect_v1 machinery owns the dirty/opaque
-    // bookkeeping the manual block below used to do by hand. The
+    // On KWin 6.7+ the ext_background_effect_v1 machinery owns the
+    // dirty/opaque bookkeeping, so no manual pass is needed. The
     // WindowPrePaintData::deviceOpaque / devicePaint members it poked are
     // gone; the effect just marks the window translucent so KWin paints
     // the background we sample. Matches upstream kwin-effects-glass.

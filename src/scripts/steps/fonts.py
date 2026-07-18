@@ -1,6 +1,6 @@
 """SF Pro / SF Mono fonts: copies src/offline/fonts/ into
 ~/.local/share/fonts and refreshes the fontconfig cache.
-Fully offline since v0.18.0 — no download phase."""
+Fully offline — no download phase."""
 
 import shutil
 import subprocess

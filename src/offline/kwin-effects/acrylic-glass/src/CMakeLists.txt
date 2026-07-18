@@ -29,7 +29,7 @@ set(LIQUIDGLASS_SHADER_STATIC
 )
 
 # Preprocess and stage into the build tree — never into the source
-# checkout (issue #26). rcc resolves qrc entries relative to the qrc
+# checkout, which must stay clean. rcc resolves qrc entries relative to the qrc
 # file, so the staged qrc sits next to the staged shaders.
 function(preprocess_shader_includes input output)
     file(READ "${CMAKE_CURRENT_SOURCE_DIR}/${input}" SHADER_SOURCE)

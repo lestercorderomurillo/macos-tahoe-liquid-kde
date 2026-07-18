@@ -111,7 +111,7 @@ def test_check_paths_passes_for_production_destinations():
 
 
 def test_check_paths_handles_missing_qmake6(monkeypatch):
-    """Issue #21 (PR #27): enumerating destinations resolves the lazy
+    """Enumerating destinations resolves the lazy
     ``DEST_*`` attributes, which call ``qt6_plugins_dir()`` — on a
     system with no Qt6 query tool and no fallback libdir that raises
     ``Qt6PathsMissing``. Check 2 must fail() cleanly with the install
@@ -131,16 +131,16 @@ def test_check_paths_handles_missing_qmake6(monkeypatch):
 
 
 def test_home_is_resolved_per_call_not_cached(monkeypatch, tmp_path):
-    """Regression for the container-matrix failure on Arch + Fedora:
-    a previous test would prime ``preflight._HOME`` to a sandbox
-    tmpdir (via the conftest sandbox fixture's ``$HOME`` setenv),
-    that tmpdir would survive into a later test that ran on a
-    different effective home, and ``_validate_path`` rejected
+    """A cached home leaks across tests: a previous test primes
+    ``preflight._HOME`` to a sandbox tmpdir (via the conftest sandbox
+    fixture's ``$HOME`` setenv), the tmpdir survives into a later
+    test that runs on a different effective home, and
+    ``_validate_path`` rejects
     ``/root/.local/share/plasma/plasmoids`` with ``leaks /root home``
-    inside the container even though ``/root`` IS the real home
-    there. The fix is to stop caching: ``_home()`` resolves
-    ``Path.home()`` per call unless something has explicitly
-    overridden ``_HOME``. This test pins both halves of the contract.
+    inside a container even though ``/root`` IS the real home there.
+    So no caching: ``_home()`` resolves ``Path.home()`` per call
+    unless something has explicitly overridden ``_HOME``. This test
+    pins both halves of the contract.
 
     Phase 1: with no override, two successive calls under different
     ``$HOME`` env values must report different homes — proving the
@@ -184,10 +184,10 @@ def test_home_is_resolved_per_call_not_cached(monkeypatch, tmp_path):
 
 def test_plasmoid_id_consistency_across_repo():
     """For every plasmoid in ``src/offline/plasmoids/``: directory name
-    must equal ``metadata.json`` ``KPlugin.Id``. Was an actual bug in
-    v0.9.0 — globalmenu's source dir was kebab-case while the .so /
-    QML / layout JS / cmake target all used dotted form. v0.10 renamed
-    the dir; this test pins it so the drift can't come back."""
+    must equal ``metadata.json`` ``KPlugin.Id``. A kebab-case source
+    dir while the .so / QML / layout JS / cmake target all use dotted
+    form means the applet never loads; this test pins the match so
+    that drift can't creep in."""
     plasmoids = OFFLINE_DIR / "plasmoids"
     assert plasmoids.is_dir(), plasmoids
 
@@ -247,7 +247,7 @@ def test_qt6_query_returns_none_when_no_tools_present(monkeypatch):
 
 
 def test_qt6_falls_back_to_known_libdir_when_qmake6_missing(monkeypatch):
-    """v0.15.1: if qmake6 / qtpaths6 / pkg-config are all absent but
+    """If qmake6 / qtpaths6 / pkg-config are all absent but
     /etc/os-release identifies a distro whose Qt6 libdir we know AND
     that libdir actually exists on disk, return it. Plasma 6 must
     already be installed for the dir to exist, so we're not guessing
@@ -288,10 +288,10 @@ def test_qt6_raises_when_no_tools_and_no_fallback_dir(monkeypatch, tmp_path):
 
 
 def test_install_destinations_anchor_to_qmake6_libdir(monkeypatch, tmp_path):
-    """The v0.14.x Gentoo regression was: qmake6 reports
-    ``/usr/lib64/qt6/plugins`` but the installer hardcoded
-    ``/usr/lib/qt6/plugins`` for its writes. After v0.15.0 every Qt
-    destination is rooted at the qmake6-reported dir; this test
+    """Failure mode (Gentoo): qmake6 reports
+    ``/usr/lib64/qt6/plugins`` but the installer hardcodes
+    ``/usr/lib/qt6/plugins`` for its writes. Every Qt destination
+    must be rooted at the qmake6-reported dir; this test
     pretends the libdir lives under a tmp path and asserts each step's
     destination still resolves inside it.
 
@@ -312,7 +312,7 @@ def test_install_destinations_anchor_to_qmake6_libdir(monkeypatch, tmp_path):
         ("acrylic-glass plugin", acrylic_glass._plugin_dir(),    fake_plugins),
     ):
         # relative_to() raises ValueError if dest is not under root —
-        # that IS the failure mode the v0.14.x Gentoo bug hit.
+        # exactly the hardcoded-libdir failure mode.
         dest.relative_to(expected_root)
 
 
@@ -335,7 +335,7 @@ def test_qt6_query_skips_tools_that_exit_nonzero(monkeypatch):
         distro.qt6_plugins_dir()
 
 
-# ── 4. KDE Plasma version (v0.15.6) ─────────────────────────────────
+# ── 4. KDE Plasma version ───────────────────────────────────────────
 
 
 def test_plasma_version_accepts_6_6(monkeypatch):
@@ -398,7 +398,7 @@ def test_plasma_version_rejects_unparseable_output(monkeypatch):
 
 
 def test_plasma_version_drops_privs_in_child(monkeypatch):
-    """Regression guard for the v0.15.6 setuid abort. When the
+    """Regression guard for the Qt6 setuid abort. When the
     installer runs as sudo (real UID=0, effective UID=SUDO_USER),
     Qt6's getuid()!=geteuid() guard aborts plasmashell --version with
     a FATAL setuid error before parsing any args. The check MUST go

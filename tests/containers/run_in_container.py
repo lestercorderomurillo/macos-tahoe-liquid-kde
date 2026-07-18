@@ -15,9 +15,9 @@ Tier 2 — the dep layer (per-distro package mapping):
     package that exists in the distro's real repo metadata. Tokens
     are collected at runtime from steps/*.py — see _collect_dep_tokens
     below — so adding a new step's deps() automatically extends this
-    coverage. The 4-token hardcoded list (cmake / g++ / pkg-config /
-    qmake6) that pre-v0.17.4 ran was the gap that let the Fedora 44
-    qdbus6 bug ship in v0.17.1; this probe now exercises qdbus6,
+    coverage. A hardcoded token list leaves gaps: a runtime tool
+    missing from one distro's repo (e.g. qdbus6 on Fedora) sails
+    through unnoticed. This probe exercises qdbus6,
     kvantummanager, plymouth-set-default-theme, fc-cache, nautilus,
     curl, unzip, etc.
 
@@ -26,10 +26,10 @@ Tier 3 — cmake configure for every compiled component:
     dock taskmanager, the globalmenu, the acrylic-glass KWin effect),
     run ``cmake -S <src> -B <build>`` with no manual hints. The
     configure step must succeed using ONLY packages discoverable via
-    ``deps()``. This catches the v0.17.5 regression class: deps() was
+    ``deps()``. This catches the class of regression where deps() is
     silent on the KF6 / Plasma / KWin frameworks that the CMakeLists
-    actually requires, so preflight passed, the installer auto-
-    installed only Qt6, then cmake exploded for the user. The Dockerfile
+    actually requires: preflight passes, the installer auto-
+    installs only Qt6, then cmake explodes for the user. The Dockerfile
     for each distro installs the union of all step deps() before this
     runs so a missing token surfaces as a hard FAIL here.
 

@@ -1,18 +1,12 @@
 """CLI install/uninstall: argument parsing, install order, and the
 root-precondition that gates every run.
 
-Previously ~38 tests, mostly cosmetic banner behaviour (clear-line
-escapes, pause durations, indent column alignment, blank-line
-suppression) plus heavily-mocked GitHub fetch tests for the
-update-check banner. Those were pinning UI choices that any
-terminal-output refresh would have to update, with no impact on
-whether the install actually succeeds.
-
-What's kept: behaviour the install loop depends on — the root /
-privilege-drop gate (catches the v0.8.6-era sudoless-install
-regression), install-step ordering (the dependency graph between
+Only behaviour the install loop depends on belongs here — the root /
+privilege-drop gate (a sudoless install leaves the dock + global
+menu unloaded), install-step ordering (the dependency graph between
 steps), semver parsing (used to decide if a tag is newer), and
-basic argv parsing.
+basic argv parsing. Don't pin cosmetic banner behaviour: that's UI
+choice, not install correctness.
 """
 
 from __future__ import annotations
@@ -44,9 +38,9 @@ def test_parse_args_default_check_update_false(cli_module):
 
 def test_install_order_puts_core_theme_steps_before_optional_integrations(cli_module):
     """The install loop walks INSTALL_ORDER linearly. Steps that produce
-    artefacts depended on by later steps must come first. The original
-    bug this guards against: layout ran before plasmoids, so the JS
-    layout script couldn't find the plasmoid plugins it tried to add.
+    artefacts depended on by later steps must come first. Failure
+    mode: if layout runs before plasmoids, the JS layout script
+    can't find the plasmoid plugins it tries to add.
     Reordering this list silently breaks the post-install panel."""
     order = cli_module.INSTALL_ORDER
     assert order.index("global_theme") < order.index("plasmoids")
@@ -85,7 +79,7 @@ def test_parse_semver_orders_correctly(cli_module):
 
 
 def test_require_root_refuses_when_euid_is_not_zero(monkeypatch, capsys, cli_module):
-    """v0.10: install + uninstall require sudo upfront. Bail BEFORE
+    """Install + uninstall require sudo upfront. Bail BEFORE
     doing anything (no banner, no tracker writes, no sudo prompts that
     could trigger pam_faillock cascades on terminals where sudo can't
     read the password)."""
@@ -161,10 +155,9 @@ def test_require_root_drops_privileges_in_correct_order(monkeypatch, cli_module,
 
 
 def test_run_install_requires_root(monkeypatch, cli_module):
-    """v0.10 inverts the v0.8.6-era ``test_run_install_does_not_require_root``:
-    sudoless install was the regression that left the dock + global
-    menu unloaded under user paths Qt6 doesn't search. ``run_install``
-    must exit non-zero before touching any apply path when not root."""
+    """A sudoless install leaves the dock + global menu unloaded
+    under user paths Qt6 doesn't search. ``run_install`` must exit
+    non-zero before touching any apply path when not root."""
     called: list[str] = []
     monkeypatch.setattr(cli_module, "_require_root_and_drop_to_user",
                         lambda op="install": called.append(op) or False)
@@ -313,7 +306,7 @@ def test_check_deps_installs_nothing_when_all_present(monkeypatch, cli_module, _
     assert called == []
 
 
-# ── globalmenu as a first-class feature (#23, PR #28) ────────────────
+# ── globalmenu as a first-class feature ──────────────────────────────
 
 
 def test_globalmenu_flags_are_parsed(cli_module):
@@ -324,9 +317,9 @@ def test_globalmenu_flags_are_parsed(cli_module):
 
 
 def test_globalmenu_governed_by_its_own_flag(cli_module):
-    """PR #28 registered the flag but should_process still deferred to
-    the plasmoids shortcut — --no-globalmenu parsed fine and then got
-    ignored. Each feature obeys exactly its own entry now."""
+    """If should_process defers to the plasmoids shortcut,
+    --no-globalmenu parses fine and then gets ignored. Each feature
+    must obey exactly its own entry."""
     assert cli_module.should_process(
         "globalmenu", {"globalmenu": False, "plasmoids": True}) is False
     assert cli_module.should_process(

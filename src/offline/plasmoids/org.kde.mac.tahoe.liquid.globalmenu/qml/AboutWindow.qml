@@ -8,9 +8,9 @@
     field, and emits JSON. This QML just renders it.
 
     Why a separate helper instead of inline shell-outs:
-    - Locale: lscpu / lspci translate their labels when LANG != C, which
-      silently broke every regex in the v0.13.x window (issue: "only RAM
-      is shown"). The helper forces LC_ALL=C internally.
+    - Locale: lscpu / lspci translate their labels when LANG != C,
+      which silently breaks every regex (only RAM would show). The
+      helper forces LC_ALL=C internally.
     - Fallbacks: each field has 2-4 sources; cascading them inline would
       need that many separate DataSource connections.
     - Tests: parsing logic is pytest-covered with captured fixtures from

@@ -96,7 +96,7 @@ def test_install_copies_globalmenu_runtime_qml(tmp_path, monkeypatch):
 
 
 def test_globalmenu_dest_paths_anchor_to_qmake6_libdir(monkeypatch, tmp_path):
-    """v0.15 contract: the .so + QML module land under whatever the Qt6
+    """The .so + QML module land under whatever the Qt6
     plugin / QML dirs resolve to (qmake6-reported, per distro). The
     suffix is pinned so a refactor that mangles the package id can't
     silently ship to the wrong applet path; the prefix comes from the

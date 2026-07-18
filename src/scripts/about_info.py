@@ -305,7 +305,7 @@ def _clean_cpu_model(raw: str) -> str:
 
 def parse_lscpu(stdout: str) -> dict[str, str]:
     """Parse ``LC_ALL=C lscpu`` output → ``{"model", "cores"}``. Caller must
-    force LC_ALL=C — translated labels defeat the regexes (the v0.13.11 bug)."""
+    force LC_ALL=C — translated labels defeat the regexes."""
     out = {"model": "", "cores": ""}
     if not stdout:
         return out
@@ -753,7 +753,7 @@ def _read(path: str) -> str:
 def _sh(cmd: list[str], timeout: float = 4.0) -> str:
     """Run a command with LC_ALL=C, swallow stderr, return stdout ("" on any
     failure so the next source answers). LC_ALL=C is non-negotiable —
-    translated lscpu/lspci labels silently broke every regex in v0.13.11."""
+    translated lscpu/lspci labels silently break every regex."""
     env = os.environ.copy()
     env["LC_ALL"] = "C"
     env["LANG"] = "C"

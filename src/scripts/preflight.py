@@ -153,7 +153,7 @@ def _check_paths() -> bool:
 def _check_qt_paths() -> bool:
     """Cross-check every compiled-step destination against qmake6's
     reported plugin / QML dirs so a hardcoded libdir can't regress past
-    the distro layer (the v0.14.x Gentoo /usr/lib64 bug)."""
+    the distro layer — Gentoo reports /usr/lib64 while others report /usr/lib."""
     try:
         plugins = qt6_plugins_dir()
         qml = qt6_qml_dir()
@@ -275,7 +275,7 @@ def _check_plasma_version() -> bool:
 
 def _check_kde_config_tools() -> bool:
     """One clear preflight failure instead of N scattered kw_write()
-    warns (v0.15.5) when kwriteconfig6 / kreadconfig6 are missing."""
+    warns when kwriteconfig6 / kreadconfig6 are missing."""
     missing = []
     for binary in ("kwriteconfig6", "kreadconfig6"):
         if not shutil.which(binary):

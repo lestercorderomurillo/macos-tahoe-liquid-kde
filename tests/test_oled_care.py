@@ -1,4 +1,4 @@
-"""OLED care pixel-shift service (issue #16).
+"""OLED care pixel-shift service.
 
 Engine behaviour (state machine, plasmashell reply handling), the
 shipped systemd units, the installer step's flag gating, and the CLI

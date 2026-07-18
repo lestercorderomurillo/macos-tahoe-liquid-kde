@@ -26,7 +26,7 @@ def __getattr__(name: str):
     if name == "TASKMANAGER_DEST_QML":
         return qt6_qml_dir() / _TASKMANAGER_QML_RELPATH
     raise AttributeError(name)
-# v0.8.4-0.8.6 sudoless leftover under user path.
+# Leftover from old sudoless installs under the user path.
 LEGACY_TASKMANAGER_USER_SO = HOME / (
     ".local/lib/qt6/plugins/plasma/applets/"
     "org.kde.mac.tahoe.liquid.taskmanager.so"
@@ -92,7 +92,7 @@ def build() -> None:
 
 
 def _migrate_appletsrc() -> None:
-    # The rename lives in a bundled kconf_update helper (issue #56); run just
+    # The rename lives in a bundled kconf_update helper; run just
     # that one so the upgrade keeps the dock and the user's pinned launchers.
     from steps.kconf_update import run_migration
     run_migration("mac-tahoe-migrate-appletsrc.sh")

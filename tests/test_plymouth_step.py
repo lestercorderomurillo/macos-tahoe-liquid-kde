@@ -252,22 +252,22 @@ def test_plymouth_script_message_state_initialised():
 
 
 def test_plymouth_script_uses_single_window_logic():
-    """v0.13.0 tried to iterate Window.GetCount() and build per-monitor
-    sprite arrays. That works in plymouth's X11 plugin (used by our
-    render harness) but ships BLACK on plymouth's DRM renderer at real
-    boot — both monitors black, no logo. The DRM renderer mirrors a
-    single Sprite across every connected display automatically, so the
-    correct approach is single-Window logic with NO loop over heads."""
+    """Iterating Window.GetCount() to build per-monitor sprite arrays
+    works in plymouth's X11 plugin (used by our render harness) but
+    ships BLACK on plymouth's DRM renderer at real boot — both
+    monitors black, no logo. The DRM renderer mirrors a single Sprite
+    across every connected display automatically, so the correct
+    approach is single-Window logic with NO loop over heads."""
     raw = (THEME_SRC / "MacTahoeLiquidKde.script").read_text(encoding="utf-8")
-    # Strip comments before forbidding patterns — the header comment
-    # explains the v0.13.0 mistake, those literal mentions are fine.
+    # Strip comments before forbidding patterns — the script's header
+    # comment may mention the forbidden calls; those mentions are fine.
     code = re.sub(r"#.*$", "", raw, flags=re.MULTILINE)
     # The bare (no-index) Window calls — plymouth handles mirroring.
     assert "Window.GetWidth()" in code
     assert "Window.GetHeight()" in code
     assert "Window.GetX()" in code
     assert "Window.GetY()" in code
-    # Forbid the v0.13.0 multi-monitor approach as ACTUAL CODE.
+    # Forbid the multi-monitor approach as ACTUAL CODE.
     assert "Window.GetCount()" not in code, (
         "Window.GetCount() loop ships black on DRM renderer — see v0.13.0 regression"
     )
@@ -742,7 +742,7 @@ def test_prereqs_skip_mkinitcpio_check_when_file_absent(tmp_path, monkeypatch):
 
 
 def test_grub_patch_appends_splash_when_missing(tmp_path, monkeypatch):
-    """v0.15.3: GRUB cmdline auto-patch. If GRUB_CMDLINE_LINUX_DEFAULT
+    """GRUB cmdline auto-patch: if GRUB_CMDLINE_LINUX_DEFAULT
     is missing 'splash', the installer appends it (preserving every
     other token), keeps a .mttkde.bak backup, and the new value lands
     on disk. Existing 'splash' tokens are left alone — idempotent
@@ -830,7 +830,7 @@ def test_grub_auto_patch_accepts_yes_and_true_for_opt_out(monkeypatch):
 
 def test_grub_patch_preserves_existing_tokens(tmp_path, monkeypatch):
     """Adding splash must not lose any of the user's other kernel
-    parameters. The v0.15.3 patcher splits on whitespace inside the
+    parameters. The patcher splits on whitespace inside the
     quotes — verify a realistic Fedora-style cmdline survives the
     rewrite intact."""
     import contextlib
@@ -1056,8 +1056,8 @@ def test_install_writes_plymouthd_conf_without_spaces_around_equals(tmp_path, mo
     (trailing space), the ``[[ "Theme " == "Theme" ]]`` comparison fails,
     and the script falls through to the distro defaults file (which has
     ``Theme=bgrt``). plymouthd at boot/shutdown then loads bgrt instead
-    of MacTahoeLiquidKde — exactly the shutdown splash regression that
-    shipped with v0.13.8 (configparser's default write format uses spaces).
+    of MacTahoeLiquidKde — a silent shutdown-splash regression, and
+    configparser's default write format uses exactly those spaces.
 
     Writing with ``space_around_delimiters=False`` produces the
     ``Key=Value`` format plymouth-set-default-theme can actually read."""
@@ -1100,10 +1100,10 @@ def test_install_survives_duplicate_theme_lines_in_plymouthd_conf(tmp_path, monk
     WITHOUT deduping prior entries, and casual hand-edits often produce
     ``Theme = …`` with surrounding whitespace — configparser treats both
     forms as the same key, so the file gets ``DuplicateOptionError`` on
-    parse with ``strict=True``. That used to abort the UseSimpledrm write
+    parse with ``strict=True``. That aborts the UseSimpledrm write
     entirely (visible as ``plymouthd.conf unparseable
     (DuplicateOptionError) — leaving UseSimpledrm setting unchanged`` on
-    every install). Now the read uses ``strict=False``, which both
+    every install). The read must use ``strict=False``, which both
     tolerates the duplicates AND collapses them on write-back."""
     conf = tmp_path / "plymouthd.conf"
     conf.write_text(
@@ -1185,15 +1185,15 @@ def test_no_activation_call_in_source_lacks_R_flag():
             assert "-R" in ln, f"activation without -R: {ln.strip()}"
 
 
-# ── _grub_is_active_bootloader (v0.15.5 hardening) ──────────────────────
+# ── _grub_is_active_bootloader ──────────────────────────────────────────
 
 
 def test_grub_active_requires_both_file_and_regen_binary(tmp_path, monkeypatch):
-    """v0.15.5: ``GRUB_DEFAULT.is_file()`` alone is a leftover trap.
-    Many users migrated from GRUB to systemd-boot / Limine / rEFInd
-    and the file is still on disk from the previous install. Patching
-    it does nothing because no regen tool exists to materialise it.
-    The new gate requires BOTH conditions."""
+    """``GRUB_DEFAULT.is_file()`` alone is a trap: many users migrated
+    from GRUB to systemd-boot / Limine / rEFInd and the file is still
+    on disk from the previous install. Patching it does nothing
+    because no regen tool exists to materialise it. The gate requires
+    BOTH conditions."""
     grub = tmp_path / "etc/default/grub"
     grub.parent.mkdir(parents=True, exist_ok=True)
     grub.write_text('GRUB_CMDLINE_LINUX_DEFAULT="quiet"\n', encoding="utf-8")

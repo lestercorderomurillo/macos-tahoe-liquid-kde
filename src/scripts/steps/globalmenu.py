@@ -38,7 +38,7 @@ def __getattr__(name: str):
         base = qt6_plugins_dir() / "plasma/applets"
         return tuple(base / fn for fn in _LEGACY_SO_BASENAMES)
     raise AttributeError(name)
-# v0.8.4-0.8.6 sudoless leftovers under user paths. Plain unlink, no
+# Leftovers from old sudoless installs under user paths. Plain unlink, no
 # sudo — they belong to the invoking user.
 LEGACY_SOS_USER = (
     HOME / ".local/lib/qt6/plugins/plasma/applets/org.kde.mac.tahoe.liquid.menu.so",

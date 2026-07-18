@@ -114,7 +114,7 @@ def test_qdbus_cmd_none_when_no_variant_present(monkeypatch):
     assert utils.qdbus_cmd() is None
 
 
-# ── kw_write / kw_read: privilege drop + bounded hang (issue #37) ─────
+# ── kw_write / kw_read: privilege drop + bounded hang ─────────────────
 
 
 def _raise_timeout(cmd, **kw):
@@ -123,7 +123,7 @@ def _raise_timeout(cmd, **kw):
 
 def test_kw_write_drops_privs_and_bounds_timeout(monkeypatch):
     """kw_write children must drop to SUDO_USER (Qt6 setuid abort) AND
-    carry a 5s bound — a hung kwriteconfig6 used to hang the installer."""
+    carry a 5s bound so a hung kwriteconfig6 can't hang the installer."""
     seen: dict = {}
 
     def fake_run(cmd, **kw):

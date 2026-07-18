@@ -133,8 +133,8 @@ Core(s) per socket:      32
 Socket(s):               1
 """
 
-# Captured with LANG=fr_FR.UTF-8. Lscpu translates EVERY label. This is
-# the exact stdout that broke v0.13.11 for users in non-English locales.
+# Captured with LANG=fr_FR.UTF-8. Lscpu translates EVERY label, so any
+# parsing keyed on English label text breaks in non-English locales.
 LSCPU_LOCALE_FR = """\
 Architecture :              x86_64
 Mode(s) opératoire(s) des processeurs : 32-bit, 64-bit

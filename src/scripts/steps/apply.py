@@ -67,7 +67,7 @@ def _run_live(cmd: list[str]) -> None:
 
 
 # The standalone switcher chains its own 15-20s bounded subcalls (wallpaper,
-# cursor, kvantum); the shared 15s cap used to kill it mid-apply (#37).
+# cursor, kvantum); a shared 15s cap would kill it mid-apply.
 _THEME_SWITCH_TIMEOUT = 90
 
 
@@ -259,7 +259,7 @@ def restart_plasma() -> None:
 
 
 def _scrub_kdedefaults() -> None:
-    # The scrub lives in a bundled kconf_update helper (issue #56); run just
+    # The scrub lives in a bundled kconf_update helper; run just
     # that one here — uninstall must not touch appletsrc or install anything.
     from steps.kconf_update import run_migration
     run_migration("mac-tahoe-scrub-kdedefaults.sh")

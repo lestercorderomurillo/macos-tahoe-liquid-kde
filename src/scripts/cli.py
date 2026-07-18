@@ -570,7 +570,7 @@ def confirm(msg: str) -> bool:
     return True
 
 
-# ── interactive TUI wizard (issue #44) ─────────────────────────────────
+# ── interactive TUI wizard ─────────────────────────────────────────────
 
 _TUI_UNAVAILABLE = object()
 
@@ -759,8 +759,6 @@ def verify_config(feat: dict[str, object]) -> None:
 
 
 def should_process(feature: str, feat: dict[str, object]) -> bool:
-    # globalmenu used to piggyback on the plasmoids flag; since #28 it
-    # is a first-class feature governed by its own entry.
     return bool(feat.get(feature, True))
 
 
@@ -896,7 +894,7 @@ def _print_done(verb: str) -> None:
 def _run_install_body(feat: dict[str, object]) -> int:
     """The actual install sequence — no banner, confirm, or progress UI.
     Runs directly on the classic path and behind the TUI live progress
-    screen on the interactive path (issue #44 phase 2)."""
+    screen on the interactive path."""
     if not run_preflight("install"):
         fail("preflight failed — refusing to install")
         return 1
@@ -926,7 +924,7 @@ def _run_install_body(feat: dict[str, object]) -> int:
         step(f"Installing {label}")
         note(FEATURE_DESC.get(feature, ""))
 
-        # No download phase — assets bundled under src/offline/ since v0.18.0.
+        # No download phase — all assets are bundled under src/offline/.
         if not run_phase(feature, "install") and feature in CRITICAL_INSTALL_FEATURES:
             fail(f"{label} install failed — aborting "
                  "(critical compiled component)")

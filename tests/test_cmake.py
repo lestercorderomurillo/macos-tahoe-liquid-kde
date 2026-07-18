@@ -3,9 +3,8 @@
 The previous content ran ``cmake -S src/... -B build/...`` and
 asserted the configure step returned 0. Useless: a successful
 configure does NOT prove the produced .so lands at a path Plasma
-walks (the bug in v0.8.4-v0.8.6 was exactly that: cmake configured
-cleanly, compiled cleanly, but installed to ``~/.local/lib/qt6/``
-which Qt6 ignored).
+walks (a real failure mode: cmake configures cleanly, compiles
+cleanly, but installs to ``~/.local/lib/qt6/`` which Qt6 ignores).
 
 The real check is "did the compiled artefact end up where qmake6
 reports Qt6 walks?". That now lives in:

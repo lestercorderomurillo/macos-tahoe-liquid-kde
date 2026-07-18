@@ -1,4 +1,4 @@
-"""Nautilus sidebar bookmarks (v0.24.x).
+"""Nautilus sidebar bookmarks.
 
 ``nautilus._generate_bookmarks()`` writes ``~/.config/gtk-3.0/bookmarks``
 from ``~/.config/user-dirs.dirs`` so the labels follow the system

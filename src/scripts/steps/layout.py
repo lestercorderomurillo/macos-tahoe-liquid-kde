@@ -33,7 +33,7 @@ def deps():
 
 
 def _ensure_panel_colorizer() -> None:
-    # Bundled offline like every other asset (issue #55) — a copy already
+    # Bundled offline like every other asset — a copy already
     # present system-wide or user-side is left untouched.
     if _has_panel_colorizer():
         ok("Panel Colorizer")

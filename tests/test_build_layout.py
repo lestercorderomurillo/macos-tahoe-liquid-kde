@@ -9,6 +9,6 @@ install — the install step itself fail-fasts with a clear message
 duplicates that bail without adding signal.
 
 The plasmoid ID-vs-directory-name check survived because that one
-caught a real shipped bug (v0.9.0 globalmenu); it now lives in
-tests/test_preflight.py::test_plasmoid_id_consistency_across_repo.
+catches a real failure mode (plasmoid ID / directory mismatch); it
+lives in tests/test_preflight.py::test_plasmoid_id_consistency_across_repo.
 """

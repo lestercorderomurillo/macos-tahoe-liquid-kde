@@ -22,13 +22,11 @@
         <entry name="BlurDecorations" type="Bool">
             <default>true</default>
         </entry>
-        <!-- cairo-dock ships excluded: its dock window otherwise renders
-             a phantom glass panel behind the dock (issue #13). kwin_wayland
-             ships excluded too: KWin's own input-method candidate popups
-             report that resource class, and glassing them produces a huge
-             misplaced border around the popup (issue #50). linux-wallpaperengine
-             ships excluded for the same reason — it renders its own live-
-             wallpaper surface and glassing it produces the same artifact. -->
+        <!-- cairo-dock renders its own dock surface; glassing it draws a
+             phantom glass panel behind the dock. kwin_wayland is the
+             resource class of KWin's own input-method candidate popups;
+             glassing them draws a huge misplaced border. linux-wallpaperengine
+             renders its own live-wallpaper surface with the same artifact. -->
         <entry name="WindowClasses" type="String">
             <default>cairo-dock
 kwin_wayland

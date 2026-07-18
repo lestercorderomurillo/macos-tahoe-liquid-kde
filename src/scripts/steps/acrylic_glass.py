@@ -127,7 +127,7 @@ def install() -> None:
     time.sleep(2)
     ok("Acrylic Glass unloaded for safe upgrade")
 
-    # Drop user-path leftovers from the v0.8.4-0.8.6 sudoless install.
+    # Drop user-path leftovers from old sudoless installs.
     for so in (LEGACY_USER_PLUGIN_DIR / "kwin/effects/plugins/liquidglass.so",
                LEGACY_USER_PLUGIN_DIR / "kwin/effects/configs/kwin_liquidglass_config.so"):
         if so.is_file():
@@ -202,7 +202,7 @@ def uninstall() -> None:
     for so in (system_dir / "kwin/effects/plugins/liquidglass.so",
                system_dir / "kwin/effects/configs/kwin_liquidglass_config.so"):
         sudo_remove(so, so.name)
-    # Drop user-path leftovers from the v0.8.4-0.8.6 sudoless install.
+    # Drop user-path leftovers from old sudoless installs.
     for so in (LEGACY_USER_PLUGIN_DIR / "kwin/effects/plugins/liquidglass.so",
                LEGACY_USER_PLUGIN_DIR / "kwin/effects/configs/kwin_liquidglass_config.so"):
         if so.is_file():

@@ -14,7 +14,7 @@
  *
  * Popup surfaces (popover/menu) keep a real rgba fill — client-side
  * popups never receive compositor blur, so "transparent" renders as
- * see-through garbage (issue #11). Mirror the light variant's alpha.
+ * see-through garbage. Mirror the light variant's alpha.
  * ============================================================
  */
 

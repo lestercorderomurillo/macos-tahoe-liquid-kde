@@ -66,7 +66,7 @@
 }
 
 /* libadwaita named colors — only libadwaita apps define these at
-   runtime; plain GTK4 apps need concrete values (issue #11). */
+   runtime; plain GTK4 apps need concrete values. */
 @define-color window_bg_color #242424;
 @define-color window_fg_color #dedede;
 @define-color view_bg_color #1e1e1e;
