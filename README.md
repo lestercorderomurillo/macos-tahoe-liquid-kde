@@ -23,7 +23,14 @@ A full macOS Tahoe-style desktop experience for KDE Plasma 6.6 and 6.7+.
 | <img src="https://cdn.simpleicons.org/fedora" width="22"> | Fedora | ✅ YES | 🔧 Testing |
 | <img src="https://cdn.simpleicons.org/nobaralinux" width="22"> | Nobara | ✅ YES | 🔧 Testing |
 | <img src="https://cdn.simpleicons.org/opensuse" width="22"> | openSUSE Tumbleweed | ✅ YES | 🔧 Testing |
-| <img src="https://cdn.simpleicons.org/gentoo" width="22"> | Gentoo | ✅ YES | 🔧 Testing |
+| <img src="https://cdn.simpleicons.org/gentoo" width="22"> | Gentoo | 🔧 Work in progress | 🔧 Testing |
+
+| Init system | Supported yet? | Tested yet? |
+|-------------|:--------------------:|:-----------:|
+| systemd | ✅ YES | ✅ YES |
+| OpenRC | 🔧 Work in progress | 🔧 Testing |
+
+Gentoo defaults to OpenRC, and OpenRC support is still work in progress: the scheduled features (OLED care, timed light/dark switch) use a per-user crontab line there instead of a systemd user timer, and that path is not verified on real hardware yet. On systemd hosts everything is supported.
 
 | Plasma | Supported yet? | Since |
 |--------|:--------------:|:-----:|
@@ -173,7 +180,8 @@ Plymouth boot screen with centered Apple-style logo on every monitor, scaled dyn
 - **Python 3.10+**
 - **`sudo`** (for both `./install` and `./uninstall` — root needed to write the compiled plasmoids + KWin effect under the system Qt6 libdir)
 - **Qt6 path discovery** — one of: `qmake6`, `qtpaths6`, or `pkg-config` + `Qt6Core.pc`. The installer asks Qt where its plugin / QML directories live; it refuses to guess. If none of those tools are installed, the installer falls back to the known libdir convention for your distro **only when that directory actually exists on disk**.
-- **`dbus-send`** + **`systemctl`** — both ship with systemd, present on every supported distro.
+- **`dbus-send`** — session bus messaging, present on every supported distro.
+- **`systemctl`** (systemd hosts) or **`crontab`** (OpenRC hosts) — schedules the OLED-care and timed light/dark features. The installer detects the init system and uses whichever fits; `crontab` is pulled in automatically on OpenRC when a scheduled feature is enabled.
 
 </details>
 
@@ -310,7 +318,7 @@ sudo ./install --dark
 sudo ./install --light
 ```
 
-Auto is light 06:00–18:00, dark otherwise, via a systemd user timer. `--light` / `--dark` pin the mode and skip the timer.
+Auto is light 06:00–18:00, dark otherwise, via a systemd user timer (or a crontab line on OpenRC). `--light` / `--dark` pin the mode and skip the schedule.
 
 Switch by hand anytime:
 
