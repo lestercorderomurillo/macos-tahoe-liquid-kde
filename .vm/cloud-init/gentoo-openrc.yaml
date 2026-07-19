@@ -1,0 +1,552 @@
+#cloud-config
+# Gentoo cloud smoke guest (OpenRC), installed the OFFICIAL Handbook way.
+#
+# The di-amd64-cloudinit qcow2 we boot from ships systemd + cloud-init.
+# Here it acts ONLY as the installer / live environment (like a LiveCD):
+# a cloud VM cannot re-partition and re-install onto its own RUNNING root
+# disk, so we do NOT touch /dev/vda. Instead the provision script performs
+# a clean stage3 desktop-openrc chroot install onto the SECOND physical
+# disk /dev/vdb, exactly as the Gentoo Handbook describes
+# (partition -> mkfs -> extract stage3 -> chroot -> profile/kernel/grub).
+#
+# There is NO systemd->OpenRC conversion anywhere. The stage3 is already
+# OpenRC and ships no systemd; that is the whole point of this rewrite.
+#
+# !!! ./vm HARNESS NOTE !!!
+# The ./vm harness attaches an empty 30G qcow2 as /dev/vdb; the running
+# cloud image is /dev/vda and is NEVER touched. After this install pass
+# builds the target disk, the operator boots it separately with
+#   VM_BOOT_TARGET=1 ./vm gentoo-openrc
+# The install pass itself does NOT reboot.
+
+users:
+  - name: tester
+    gecos: VM Tester
+    groups: [wheel, sudo, users]
+    sudo: ALL=(ALL) NOPASSWD:ALL
+    shell: /bin/bash
+    lock_passwd: false
+    passwd: "$6$mttkdevm$QqkApILBUIQ5/AXpjsoSJGqAlLm1MI2vTZCDEHNYGb.jnyXsjGeVTq3pOCi4JRqh5r.D0GRRHtDiX6Xsb8fcu/"
+
+ssh_pwauth: true
+disable_root: false
+chpasswd:
+  expire: false
+  users:
+    - name: tester
+      password: tester
+      type: text
+    - name: root
+      password: tester
+      type: text
+
+growpart:
+  mode: auto
+  devices: ["/"]
+
+resize_rootfs: true
+package_update: false
+package_upgrade: false
+
+bootcmd:
+  # Belt #3: re-assert tester/root passwords every boot in case the
+  # cloud-init users / chpasswd modules raced or got skipped. usermod
+  # is on every distro we care about. (These apply to the LIVE cloud
+  # image; the installed system's tester password is set in the chroot.)
+  - usermod --password "$(openssl passwd -6 -salt mttkdevm tester)" tester 2>/dev/null || true
+  - usermod --password "$(openssl passwd -6 -salt mttkdevm tester)" root 2>/dev/null || true
+
+write_files:
+  - path: /usr/local/bin/mttkde-provision.sh
+    permissions: "0755"
+    content: |
+      #!/bin/bash
+      set -euo pipefail
+      exec > >(tee -a /var/log/mttkde-provision.log) 2>&1
+
+      if [[ -f /var/lib/mttkde/provisioned ]]; then
+          exit 0
+      fi
+
+      # ================================================================
+      # Config
+      # ================================================================
+      STAGE3_URL="https://distfiles.gentoo.org/releases/amd64/autobuilds/current-stage3-amd64-desktop-openrc/stage3-amd64-desktop-openrc-20260712T170110Z.tar.xz"
+      DISK=/dev/vdb
+      MNT=/mnt/gentoo
+
+      mkdir -p /var/lib/mttkde
+
+      # ================================================================
+      # Helpers that run INSIDE the chroot are written to files under
+      # ${MNT} and executed via `chroot ${MNT} /bin/bash ...`. The three
+      # portage-config emitters below (configure_binhost + the plasma
+      # package.use pre-seeds + emerge helpers + select_plasma_session)
+      # are reused VERBATIM from the previous file, but they now write to
+      # the CHROOT's /etc/portage (because the script itself runs inside
+      # the chroot). No systemd logic remains.
+      # ================================================================
+
+      select_plasma_session() {
+          local candidate
+          for candidate in plasma.desktop plasmawayland.desktop plasmax11.desktop; do
+              if [[ -f "/usr/share/wayland-sessions/${candidate}" ]] || \
+                 [[ -f "/usr/share/xsessions/${candidate}" ]]; then
+                  printf '%s\n' "$candidate"
+                  return 0
+              fi
+          done
+          printf 'plasma.desktop\n'
+      }
+
+      append_make_conf() {
+          local line="$1"
+          if ! grep -Fqx "$line" /etc/portage/make.conf 2>/dev/null; then
+              printf '%s\n' "$line" >> /etc/portage/make.conf
+          fi
+      }
+
+      select_plasma_profile() {
+          local profile_num
+          profile_num="$(
+              eselect profile list \
+                  | grep 'desktop/plasma' \
+                  | grep -v 'systemd' \
+                  | sed -n 's/^.*\[\([0-9][0-9]*\)\].*$/\1/p' \
+                  | tail -n 1
+          )"
+          if [[ -z "$profile_num" ]]; then
+              echo "No desktop/plasma (OpenRC) Gentoo profile found" >&2
+              exit 1
+          fi
+          eselect profile set "$profile_num"
+      }
+
+      configure_binhost() {
+          mkdir -p \
+              /etc/portage/binrepos.conf \
+              /etc/portage/package.accept_keywords \
+              /etc/portage/package.use
+
+          cat > /etc/portage/binrepos.conf/gentoo-binhost.conf <<'EOF'
+      [binhost]
+      priority = 9999
+      sync-uri = https://distfiles.gentoo.org/releases/amd64/binpackages/23.0/x86-64/
+      EOF
+
+          cat > /etc/portage/package.accept_keywords/all <<'EOF'
+      */* ~amd64
+      EOF
+
+          cat > /etc/portage/package.use/libxkbcommon <<'EOF'
+      x11-libs/libxkbcommon X
+      EOF
+
+          # libcanberra is a kde-plasma/kwin dep; its USE="udev" requires
+          # USE="alsa" (REQUIRED_USE: udev? ( alsa )). Without this,
+          # emerge bails on a REQUIRED_USE constraint instead of letting
+          # autounmask resolve it (autounmask only touches USE flags, not
+          # REQUIRED_USE clauses, so the user has to pre-seed this).
+          cat > /etc/portage/package.use/libcanberra <<'EOF'
+      media-libs/libcanberra alsa
+      EOF
+
+          # Pre-seed the KDE Plasma USE flags portage's autounmask
+          # would otherwise demand. Sourced from the autounmask output
+          # of a fresh ::gentoo snapshot build; pre-seeding skips the
+          # write-then-rerun loop that autounmask-continue silently
+          # drops on this portage version.
+          cat > /etc/portage/package.use/mttkde-plasma <<'EOF'
+      dev-qt/qtbase opengl wayland cups
+      dev-qt/qt5compat qml
+      dev-qt/qtmultimedia qml opengl
+      dev-qt/qtquick3d opengl
+      kde-frameworks/kconfig qml dbus
+      kde-frameworks/kguiaddons wayland
+      kde-frameworks/kidletime wayland
+      kde-frameworks/kwindowsystem wayland X
+      kde-frameworks/kcoreaddons dbus
+      kde-frameworks/prison qml
+      kde-frameworks/sonnet qml
+      media-libs/mesa wayland
+      media-libs/libglvnd X
+      media-libs/libepoxy X
+      media-libs/freetype X
+      media-libs/fontconfig X
+      x11-libs/cairo X opengl
+      x11-base/xwayland libei
+      sys-apps/dbus X
+      sys-auth/polkit
+      llvm-core/libclc spirv
+      dev-util/mesa_clc -debug
+      EOF
+
+          if command -v getuto >/dev/null 2>&1; then
+              append_make_conf 'FEATURES="${FEATURES} getbinpkg binpkg-request-signature binpkg-multi-instance"'
+              getuto
+          else
+              append_make_conf 'FEATURES="${FEATURES} getbinpkg binpkg-multi-instance"'
+          fi
+          append_make_conf 'EMERGE_DEFAULT_OPTS="${EMERGE_DEFAULT_OPTS} --binpkg-respect-use=y --binpkg-changed-deps=n --usepkg --with-bdeps=y"'
+          # Disable 32-bit ABI globally. The default multilib stage3
+          # has ABI_X86="64 32" which makes fontconfig / harfbuzz /
+          # freetype demand expat[abi_x86_32]; expat's local USE doesn't
+          # expose that, and the chain dead-ends in
+          # `>=dev-libs/expat-2.1.0-r3[abi_x86_32(-),abi_x86_64(-)]`
+          # autounmask that cannot resolve. The theme stack doesn't
+          # need 32-bit anywhere, so forcing the no-multilib ABI is
+          # the honest fix instead of papering over individual packages.
+          append_make_conf 'ABI_X86="64"'
+      }
+
+      emerge_binpkg() {
+          emerge --quiet --getbinpkg --usepkg \
+              --binpkg-respect-use=y --binpkg-changed-deps=n \
+              --with-bdeps=y "$@"
+      }
+
+      emerge_binpkg_with_autounmask() {
+          # Try the happy path first.
+          if emerge_binpkg "$@"; then
+              return 0
+          fi
+
+          # First pass: write USE/keyword unmasks portage suggests, but
+          # also keep going so it actually merges what it can. Without
+          # --autounmask-continue=y emerge writes the config files and
+          # then exits without merging anything, leaving us back at
+          # square one after etc-update.
+          emerge --quiet --getbinpkg --usepkg \
+              --binpkg-respect-use=y --binpkg-changed-deps=n \
+              --with-bdeps=y --keep-going=y \
+              --autounmask-write --autounmask-continue=y \
+              --autounmask-keep-keywords=y \
+              "$@" || true
+          etc-update --automode -5 >/dev/null || true
+
+          # Second pass: same again. The first pass writes config; the
+          # second actually merges with those flags now visible.
+          emerge --quiet --getbinpkg --usepkg \
+              --binpkg-respect-use=y --binpkg-changed-deps=n \
+              --with-bdeps=y --keep-going=y \
+              --autounmask-write --autounmask-continue=y \
+              "$@" || true
+          etc-update --automode -5 >/dev/null || true
+
+          # Final pass: plain emerge — anything still failing here is
+          # a real slot conflict and we want the non-zero exit so the
+          # smoke marks failure rather than booting into a half-broken
+          # system.
+          emerge_binpkg --keep-going=y "$@"
+      }
+
+      export -f append_make_conf select_plasma_profile configure_binhost \
+                emerge_binpkg emerge_binpkg_with_autounmask select_plasma_session
+
+      # ================================================================
+      # STAGE A (live env): fetch the stage3 desktop-openrc tarball.
+      # ================================================================
+      echo "=== [A] Fetching stage3 desktop-openrc tarball ==="
+      cd /var/lib/mttkde
+      STAGE3_TARBALL="/var/lib/mttkde/$(basename "$STAGE3_URL")"
+      # Prefer wget, fall back to curl (either ships on the cloud image).
+      if command -v wget >/dev/null 2>&1; then
+          wget -q -O "$STAGE3_TARBALL"          "$STAGE3_URL"
+          wget -q -O "${STAGE3_TARBALL}.DIGESTS" "${STAGE3_URL}.DIGESTS" || true
+      else
+          curl -fsSL -o "$STAGE3_TARBALL"          "$STAGE3_URL"
+          curl -fsSL -o "${STAGE3_TARBALL}.DIGESTS" "${STAGE3_URL}.DIGESTS" || true
+      fi
+      # Signature verification is skipped intentionally for a throwaway
+      # smoke VM. A sha512 sanity check against the DIGESTS if present:
+      if [[ -f "${STAGE3_TARBALL}.DIGESTS" ]]; then
+          ( cd /var/lib/mttkde && \
+            grep -A1 -i 'SHA512' "${STAGE3_TARBALL}.DIGESTS" \
+              | grep "$(basename "$STAGE3_TARBALL")" \
+              | sha512sum -c - ) || echo "WARNING: stage3 sha512 check skipped/failed (throwaway VM)" >&2
+      fi
+
+      # ================================================================
+      # STAGE B (live env): partition the SECOND physical disk /dev/vdb.
+      #   GPT: 512M EF00 EFI (vfat) + rest ext4 root.
+      # The ./vm harness attaches an empty 30G qcow2 as /dev/vdb. We do
+      # NOT touch the running root disk /dev/vda; a guard below refuses
+      # if /dev/vdb is somehow the mounted root.
+      # ================================================================
+      echo "=== [B] Partitioning ${DISK} ==="
+      command -v sgdisk >/dev/null 2>&1 || emerge --quiet sys-apps/gptfdisk 2>/dev/null || true
+
+      # Safety guards: the target disk must exist and must NOT be the
+      # running root disk. Refuse if /dev/vdb backs the mounted /.
+      if [[ ! -b "$DISK" ]]; then
+          echo "Target disk ${DISK} does not exist (block device missing)" >&2
+          exit 1
+      fi
+      ROOT_SRC="$(findmnt -no SOURCE / 2>/dev/null || true)"
+      case "$ROOT_SRC" in
+          "$DISK"|"$DISK"[0-9]*)
+              echo "REFUSING: ${DISK} is the mounted root disk (${ROOT_SRC})" >&2
+              exit 1
+              ;;
+      esac
+
+      # GPT layout: 1 = EFI (512M, EF00), 2 = root (rest, 8300).
+      sgdisk --zap-all "$DISK"
+      sgdisk --new=1:0:+512M --typecode=1:EF00 --change-name=1:EFI "$DISK"
+      sgdisk --new=2:0:0     --typecode=2:8300 --change-name=2:gentoo-root "$DISK"
+      partprobe "$DISK" 2>/dev/null || true
+      sleep 1
+      EFI_PART="${DISK}1"
+      ROOT_PART="${DISK}2"
+
+      echo "=== Formatting: ${EFI_PART}=vfat, ${ROOT_PART}=ext4 ==="
+      mkfs.vfat -F32 "$EFI_PART"
+      mkfs.ext4 -F   "$ROOT_PART"
+
+      # ================================================================
+      # STAGE C (live env): mount + extract stage3, mount pseudo-fs.
+      # ================================================================
+      echo "=== [C] Mounting ${ROOT_PART} at ${MNT} + extracting stage3 ==="
+      mkdir -p "$MNT"
+      mount "$ROOT_PART" "$MNT"
+      mkdir -p "$MNT/efi"
+      mount "$EFI_PART" "$MNT/efi"
+
+      # Handbook extraction flags: preserve perms/xattrs, numeric owner.
+      tar xpf "$STAGE3_TARBALL" --xattrs-include='*.*' --numeric-owner -C "$MNT"
+
+      cp --dereference /etc/resolv.conf "$MNT/etc/resolv.conf"
+
+      mount --types proc /proc "$MNT/proc"
+      mount --rbind /sys  "$MNT/sys"  && mount --make-rslave "$MNT/sys"
+      mount --rbind /dev  "$MNT/dev"  && mount --make-rslave "$MNT/dev"
+      mount --bind  /run  "$MNT/run"  && mount --make-slave  "$MNT/run" || true
+
+      # ================================================================
+      # STAGE D: write per-tester assets INTO the chroot's /home/tester
+      # (Desktop shortcut, autostart installer .desktop, 9p repo fstab
+      # line, profile.d progress tailer). These are the live file's
+      # assets, relocated under ${MNT} so they exist on the INSTALLED
+      # system, not the throwaway live env.
+      # ================================================================
+      echo "=== [D] Writing tester assets into the chroot ==="
+      mkdir -p "$MNT/home/tester/.config/autostart" \
+               "$MNT/home/tester/repo" \
+               "$MNT/home/tester/Desktop" \
+               "$MNT/etc/profile.d"
+
+      cat > "$MNT/home/tester/Desktop/macos-tahoe-liquid-kde.desktop" <<'EOF'
+      [Desktop Entry]
+      Type=Link
+      Name=macos-tahoe-liquid-kde — cd repo && sudo ./install
+      Icon=folder
+      URL=file:///home/tester/repo
+      EOF
+
+      cat > "$MNT/home/tester/.config/autostart/mttkde-installer.desktop" <<'EOF'
+      [Desktop Entry]
+      Type=Application
+      Name=macos-tahoe-liquid-kde Installer
+      Comment=Opens the macOS Tahoe installer UI
+      Exec=bash -lc 'sleep 8; cd /home/tester/repo && exec ./installer'
+      Icon=system-software-install
+      Terminal=false
+      X-KDE-autostart-phase=2
+      OnlyShowIn=KDE;
+      EOF
+
+      # 9p host-repo mount, written into the INSTALLED system's fstab so
+      # the repo shows up read-only under /home/tester/repo after boot.
+      grep -q '^repo /home/tester/repo' "$MNT/etc/fstab" \
+          || echo 'repo /home/tester/repo 9p trans=virtio,version=9p2000.L,msize=262144,ro,nofail 0 0' >> "$MNT/etc/fstab"
+
+      cat > "$MNT/etc/profile.d/mttkde-vm-progress.sh" <<'P'
+      #!/bin/sh
+      # Only run for the `tester` user, only on TTY logins, only while
+      # provisioning is in flight.
+      [ "$(id -un)" = "tester" ] || return 0
+      case "$(tty)" in /dev/tty*) ;; *) return 0 ;; esac
+      [ -f /var/lib/mttkde/provisioned ] && return 0
+      [ -f /var/log/mttkde-provision.log ] || return 0
+      clear
+      echo "=== mttkde-vm: cloud-init is still installing KDE. ==="
+      echo "=== Tail of /var/log/mttkde-provision.log below.   ==="
+      echo "=== The VM will REBOOT into Plasma when finished.  ==="
+      echo "=== (Ctrl-C to drop to shell; re-login to resume.) ==="
+      echo
+      tail -F /var/log/mttkde-provision.log
+      P
+      chmod 0644 "$MNT/home/tester/.config/autostart/mttkde-installer.desktop" \
+                 "$MNT/home/tester/Desktop/macos-tahoe-liquid-kde.desktop" \
+                 "$MNT/etc/profile.d/mttkde-vm-progress.sh"
+
+      # ================================================================
+      # STAGE E: the chroot install script itself. Written to
+      # ${MNT}/root/chroot-install.sh and run via `chroot`.
+      # Everything below runs INSIDE the fresh OpenRC stage3.
+      # ================================================================
+      echo "=== [E] Writing chroot install script ==="
+      cat > "$MNT/root/chroot-install.sh" <<'CHROOT_EOF'
+      #!/bin/bash
+      set -euo pipefail
+      source /root/mttkde-portage-helpers.sh
+
+      EFI_PART="__EFI_PART__"
+      ROOT_PART="__ROOT_PART__"
+      DISK="__DISK__"
+
+      # Handbook: sync tree, pick the OpenRC desktop/plasma profile,
+      # then configure binhost + accept-keywords + plasma package.use.
+      echo "--- emerge-webrsync ---"
+      emerge-webrsync
+      configure_binhost
+      select_plasma_profile
+      env-update
+      source /etc/profile
+
+      # fstab for the INSTALLED system. Use partition UUIDs so it is
+      # stable regardless of how ./vm names the disk after the swap.
+      echo "--- writing /etc/fstab ---"
+      EFI_UUID="$(blkid -s UUID -o value "$EFI_PART")"
+      ROOT_UUID="$(blkid -s UUID -o value "$ROOT_PART")"
+      {
+          echo "UUID=${ROOT_UUID}  /     ext4  defaults,noatime  0 1"
+          echo "UUID=${EFI_UUID}   /efi  vfat  defaults,noatime  0 2"
+      } >> /etc/fstab
+
+      # Kernel: prebuilt binary, no compile. Plus firmware + genfstab-less
+      # basics. gentoo-kernel-bin installs its own initramfs + kernel.
+      echo "--- kernel (gentoo-kernel-bin) ---"
+      emerge_binpkg_with_autounmask sys-kernel/gentoo-kernel-bin sys-kernel/linux-firmware
+
+      # Bootloader: grub with EFI + PC (BIOS) platforms, installed to the
+      # target disk /dev/vdb so both boot paths work whichever way ./vm
+      # attaches it.
+      echo "--- grub ---"
+      append_make_conf 'GRUB_PLATFORMS="efi pc"'
+      emerge_binpkg_with_autounmask sys-boot/grub
+
+      # Desktop stack. Single meta target instead of individually-pinned
+      # plasma-* components. Pulling kde-plasma/plasma-workspace directly
+      # forces portage to satisfy dev-libs/qcoro and dev-qt/qtdeclarative
+      # against whichever slots happen to be in the binhost vs the ebuild
+      # tree, which has historically triggered an unresolvable
+      # qtdeclarative:6 slot conflict. plasma-meta lets portage solve the
+      # whole graph at once with a consistent slot set.
+      echo "--- plasma-meta + sddm + support pkgs ---"
+      emerge_binpkg_with_autounmask --update --deep --newuse \
+          kde-plasma/plasma-meta \
+          x11-misc/sddm \
+          kde-plasma/spectacle \
+          net-misc/openssh \
+          net-misc/rsync \
+          net-misc/dhcpcd \
+          sys-process/cronie \
+          app-admin/sudo
+
+      # OpenRC runlevels. The desktop-openrc stage3 already ships
+      # sys-apps/systemd-utils[udev] (the standalone udev provider — eudev
+      # is gone from the tree) and elogind as the desktop profile default.
+      # We only need to ADD the services to runlevels; nothing to install
+      # beyond what plasma-meta/sddm dragged in. Every add is `|| true` so
+      # a service missing on this stage3 doesn't abort under -euo pipefail.
+      echo "--- rc-update ---"
+      rc-update add udev sysinit || true
+      rc-update add devfs sysinit || true
+      rc-update add sshd default || true
+      rc-update add elogind boot || true
+      rc-update add dbus default || true
+      rc-update add cronie default || true
+      rc-update add display-manager default || true
+      rc-update add dhcpcd default || true
+
+      session_name="$(select_plasma_session)"
+
+      # Gentoo OpenRC uses the generic `display-manager` service, driven
+      # by DISPLAYMANAGER in /etc/conf.d/display-manager, rather than an
+      # sddm-specific unit. The autologin config file itself is
+      # init-agnostic.
+      mkdir -p /etc/sddm.conf.d
+      cat > /etc/sddm.conf.d/autologin.conf <<EOF
+      [Autologin]
+      User=tester
+      Session=${session_name}
+      EOF
+
+      cat > /etc/conf.d/display-manager <<'EOF'
+      DISPLAYMANAGER="sddm"
+      EOF
+
+      # Ensure the tester user exists inside the installed system (stage3
+      # has no such account) with the same password the live env uses.
+      echo "--- tester account ---"
+      if ! id tester >/dev/null 2>&1; then
+          useradd -m -G wheel,users,video,audio,plugdev -s /bin/bash tester
+      fi
+      echo 'tester:tester' | chpasswd
+      echo 'root:tester'   | chpasswd
+      # Passwordless sudo for the smoke tester.
+      mkdir -p /etc/sudoers.d
+      echo 'tester ALL=(ALL) NOPASSWD:ALL' > /etc/sudoers.d/99-tester
+      chmod 0440 /etc/sudoers.d/99-tester
+
+      chown -R tester:tester /home/tester
+
+      # GRUB install to the target disk /dev/vdb + config. EFI first,
+      # then BIOS, so the disk boots under either QEMU firmware.
+      echo "--- grub-install + grub-mkconfig ---"
+      grub-install --target=x86_64-efi --efi-directory=/efi \
+          --removable "$DISK" \
+          || echo "WARNING: EFI grub-install failed" >&2
+      grub-install --target=i386-pc "$DISK" \
+          || echo "WARNING: BIOS grub-install failed" >&2
+      grub-mkconfig -o /boot/grub/grub.cfg
+
+      echo "--- chroot install complete ---"
+      CHROOT_EOF
+      chmod 0755 "$MNT/root/chroot-install.sh"
+
+      # Substitute the concrete device paths into the chroot script.
+      sed -i \
+          -e "s|__EFI_PART__|${EFI_PART}|g" \
+          -e "s|__ROOT_PART__|${ROOT_PART}|g" \
+          -e "s|__DISK__|${DISK}|g" \
+          "$MNT/root/chroot-install.sh"
+
+      # Export the portage helper functions into a file the chroot can
+      # source (function exports don't cross the chroot boundary via env).
+      cat > "$MNT/root/mttkde-portage-helpers.sh" <<HELPERS_EOF
+      $(declare -f append_make_conf select_plasma_profile configure_binhost \
+                  emerge_binpkg emerge_binpkg_with_autounmask select_plasma_session)
+      HELPERS_EOF
+
+      # ================================================================
+      # STAGE F: run the install inside the chroot.
+      # ================================================================
+      echo "=== [F] Entering chroot to install Gentoo OpenRC ==="
+      chroot "$MNT" /bin/bash /root/chroot-install.sh
+
+      # ================================================================
+      # STAGE G: unmount cleanly. /dev/vdb is now a bootable Gentoo
+      # OpenRC disk. A running cloud VM cannot boot into it, so we mark
+      # provisioning done and leave the disk for the operator to boot
+      # separately (see harness note at top). No reboot here.
+      # ================================================================
+      echo "=== [G] Unmounting ${MNT} ==="
+      umount -R "$MNT/run"  2>/dev/null || true
+      umount -R "$MNT/dev"  2>/dev/null || true
+      umount -R "$MNT/sys"  2>/dev/null || true
+      umount -R "$MNT/proc" 2>/dev/null || true
+      umount    "$MNT/efi"  2>/dev/null || true
+      umount -R "$MNT"      2>/dev/null || true
+
+      touch /var/lib/mttkde/provisioned
+      touch /var/lib/mttkde/installed
+
+      echo "======================================================================"
+      echo "=== Gentoo OpenRC installed to /dev/vdb. Re-run:"
+      echo "===   VM_BOOT_TARGET=1 ./vm gentoo-openrc"
+      echo "======================================================================"
+
+runcmd:
+  - /usr/local/bin/mttkde-provision.sh

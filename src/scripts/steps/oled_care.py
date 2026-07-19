@@ -10,7 +10,11 @@ import subprocess
 
 from paths import REPO_ROOT
 from steps._helpers import HOME, feat_enabled, info, ok, offline, warn
+from steps._scheduler import install_periodic, is_systemd, remove_periodic
 from utils import run_user
+
+# crontab tag identifying our managed line on OpenRC hosts.
+CRON_TAG = "oled"
 
 DEFAULT_INTERVAL_MINUTES = 5
 
@@ -23,6 +27,15 @@ UNITS = (
     "mac-tahoe-liquid-kde-oled.service",
     "mac-tahoe-liquid-kde-oled.timer",
 )
+
+
+def deps():
+    # crontab is only needed on OpenRC, where the timer falls back to a
+    # per-user cron line. systemd hosts schedule via the user manager and
+    # need nothing extra. The flag gates it further — no --oled-care, no dep.
+    if is_systemd() or not feat_enabled("oled_care", default=False):
+        return []
+    return ["crontab"]
 
 
 def _interval_minutes() -> int:
@@ -62,6 +75,9 @@ def _systemctl(*args: str) -> None:
 
 
 def _teardown_units() -> bool:
+    """Remove whatever backend a previous flagged install left — systemd
+    units and/or the OpenRC cron line. Both are attempted regardless of
+    the current init so a host that switched inits still cleans up fully."""
     removed = False
     for unit in UNITS:
         _systemctl("disable", "--now", unit)
@@ -73,7 +89,33 @@ def _teardown_units() -> bool:
         except OSError:
             pass
     _systemctl("daemon-reload")
+    if remove_periodic(CRON_TAG):
+        removed = True
     return removed
+
+
+def _schedule_systemd(interval: int, max_px: int) -> None:
+    SVC_DIR.mkdir(parents=True, exist_ok=True)
+    _write_units(interval, max_px)
+    _systemctl("daemon-reload")
+    _systemctl("enable", *UNITS)
+    # Restart only the timer (also picks up a changed interval); the service
+    # fires on its first boundary so the install's Plasma restart isn't raced.
+    _systemctl("restart", "mac-tahoe-liquid-kde-oled.timer")
+    info(f"Panels pixel-shift up to {max_px} px every {interval} min "
+         "(systemd user timer)")
+
+
+def _schedule_cron(interval: int, max_px: int) -> None:
+    # OpenRC: no systemd user timer. The shift binary recovers the desktop
+    # session env itself (see oled_care._sync_session_env), so a bare cron
+    # environment still reaches plasmashell.
+    command = f"{BIN_DEST} shift --max-px {max_px}"
+    if not install_periodic(CRON_TAG, interval, command):
+        warn("OLED care: crontab write failed — is a cron daemon installed?")
+        return
+    info(f"Panels pixel-shift up to {max_px} px every {interval} min "
+         "(user crontab)")
 
 
 def _restore_panels() -> None:
@@ -117,17 +159,12 @@ def install() -> None:
 
     interval = _interval_minutes()
     max_px = _max_shift_px()
-    SVC_DIR.mkdir(parents=True, exist_ok=True)
-    _write_units(interval, max_px)
-    _systemctl("daemon-reload")
-    _systemctl("enable", *UNITS)
-    # Restart only the timer (also picks up a changed interval); the service
-    # fires on its first boundary so the install's Plasma restart isn't raced.
-    _systemctl("restart", "mac-tahoe-liquid-kde-oled.timer")
+    if is_systemd():
+        _schedule_systemd(interval, max_px)
+    else:
+        _schedule_cron(interval, max_px)
 
     ok("OLED care service installed")
-    info(f"Panels pixel-shift up to {max_px} px every {interval} min "
-         "(systemd user timer)")
 
 
 def uninstall() -> None:

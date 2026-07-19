@@ -31,6 +31,7 @@ declare -A BASE=(
     [endeavouros]=arch.qcow2 [garuda]=arch.qcow2
     [fedora]=fedora.qcow2 [nobara]=fedora.qcow2
     [opensuse]=opensuse.qcow2 [gentoo]=gentoo.qcow2
+    [gentoo-openrc]=gentoo.qcow2
 )
 declare -A URL=(
     [arch.qcow2]="https://geo.mirror.pkgbuild.com/images/latest/Arch-Linux-x86_64-cloudimg.qcow2"
@@ -38,9 +39,9 @@ declare -A URL=(
     [opensuse.qcow2]="https://download.opensuse.org/tumbleweed/appliances/openSUSE-Tumbleweed-Minimal-VM.x86_64-Cloud.qcow2"
     [gentoo.qcow2]="https://distfiles.gentoo.org/releases/amd64/autobuilds/current-di-amd64-cloudinit/di-amd64-cloudinit-20260531T160106Z.qcow2"
 )
-declare -A PORT=([arch]=2221 [cachyos]=2222 [manjaro]=2223 [endeavouros]=2224 [garuda]=2225 [fedora]=2226 [nobara]=2227 [opensuse]=2228 [gentoo]=2229)
+declare -A PORT=([arch]=2221 [cachyos]=2222 [manjaro]=2223 [endeavouros]=2224 [garuda]=2225 [fedora]=2226 [nobara]=2227 [opensuse]=2228 [gentoo]=2229 [gentoo-openrc]=2230)
 
-ORDER=(cachyos arch manjaro endeavouros garuda fedora nobara opensuse gentoo)
+ORDER=(cachyos arch manjaro endeavouros garuda fedora nobara opensuse gentoo gentoo-openrc)
 
 die()  { echo "✗ $*" >&2; exit 1; }
 warn() { echo "⚠ $*" >&2; }
@@ -96,7 +97,7 @@ prepare_one() {
     rm -rf "$tmp"
 
     local fw=()
-    if [[ "$distro" == "gentoo" ]]; then
+    if [[ "$distro" == gentoo* ]]; then
         if [[ ! -f /usr/share/edk2/x64/OVMF.4m.fd ]]; then
             warn "$distro: needs OVMF firmware — install edk2-ovmf"
             return 1
@@ -104,19 +105,51 @@ prepare_one() {
         fw=(-bios /usr/share/edk2/x64/OVMF.4m.fd)
     fi
 
+    # gentoo-openrc installs the OFFICIAL Handbook way: the cloud image is
+    # the installer/live env and does a stage3 chroot install onto a SECOND
+    # empty disk (/dev/vdb -> target.qcow2). Boot order stays on the cloud
+    # disk for the install pass; once /var/lib/mttkde/installed exists the
+    # target holds a bootable Gentoo OpenRC. Re-run without --clean to boot
+    # the target (VM_BOOT_TARGET=1) once the install has finished.
+    local extra=()
+    if [[ "$distro" == "gentoo-openrc" ]]; then
+        local target="$work/target.qcow2"
+        [[ -f "$target" ]] || qemu-img create -f qcow2 "$target" 30G >/dev/null
+        if [[ "${VM_BOOT_TARGET:-0}" == "1" ]]; then
+            # Boot the installed OpenRC system: target disk first, no cidata.
+            extra=(-drive file="$target",if=virtio,format=qcow2 -boot c)
+        else
+            # Install pass: cloud disk (vda) boots, target is the empty
+            # vdb, cidata is last (vdc). Order matters — the install script
+            # partitions /dev/vdb, so the target MUST enumerate before the
+            # tiny cidata ISO, or sgdisk lands on the 388K cloud-init disk.
+            extra=(
+                -drive file="$disk",if=virtio,format=qcow2
+                -drive file="$target",if=virtio,format=qcow2
+                -drive file="$cidata",if=virtio,format=raw,readonly=on
+                -boot c
+            )
+        fi
+    else
+        extra=(
+            -drive file="$disk",if=virtio,format=qcow2
+            -drive file="$cidata",if=virtio,format=raw,readonly=on
+            -boot c
+        )
+    fi
+
     QEMU_ARGV=(
         qemu-system-x86_64
         -name "mttkde-$distro"
         -enable-kvm -cpu host -smp "${VM_CPUS:-$DEFAULT_CPUS}" -m "${VM_MEM_MIB:-$DEFAULT_MEM}"
-        -drive file="$disk",if=virtio,format=qcow2
-        -drive file="$cidata",if=virtio,format=raw,readonly=on
-        -boot c
+        "${extra[@]}"
         -serial file:"$console"
         -virtfs local,path="$REPO",mount_tag=repo,security_model=none,readonly=on
         -netdev user,id=net0,hostfwd=tcp::"$port"-:22
         -device virtio-net-pci,netdev=net0
         -device virtio-vga-gl,xres="${VM_XRES:-1920}",yres="${VM_YRES:-1080}"
         -display "${VM_DISPLAY:-gtk}",gl=on,show-cursor=on
+        -qmp unix:"$work/qmp.sock",server,nowait
         "${fw[@]}"
     )
     return 0

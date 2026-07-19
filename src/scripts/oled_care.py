@@ -49,7 +49,19 @@ def _state_file() -> Path:
     return state_home / "mac-tahoe-liquid-kde" / "oled-care.json"
 
 
-def _sync_session_env() -> None:
+_SESSION_ENV_KEYS = frozenset({
+    "DBUS_SESSION_BUS_ADDRESS",
+    "DISPLAY",
+    "WAYLAND_DISPLAY",
+    "XAUTHORITY",
+    "XDG_RUNTIME_DIR",
+})
+
+
+def _sync_session_env_systemd() -> bool:
+    """Pull the session env out of the systemd user manager. Returns True
+    only if the query succeeded, so the caller knows whether to try the
+    init-agnostic fallback."""
     try:
         res = subprocess.run(
             ["systemctl", "--user", "show-environment"],
@@ -57,20 +69,48 @@ def _sync_session_env() -> None:
             timeout=5,
         )
     except (OSError, subprocess.TimeoutExpired):
-        return
+        return False
     if res.returncode != 0:
-        return
-    wanted = {
-        "DBUS_SESSION_BUS_ADDRESS",
-        "DISPLAY",
-        "WAYLAND_DISPLAY",
-        "XAUTHORITY",
-        "XDG_RUNTIME_DIR",
-    }
+        return False
     for line in res.stdout.splitlines():
         key, _, value = line.partition("=")
-        if key in wanted and value:
+        if key in _SESSION_ENV_KEYS and value:
             os.environ.setdefault(key, value)
+    return True
+
+
+def _sync_session_env_runtime_dir() -> None:
+    """Reconstruct the session env from ``/run/user/$UID`` for hosts with
+    no systemd user manager (OpenRC), where this runs from a bare cron
+    environment. XDG_RUNTIME_DIR is fixed by the kernel/elogind; the
+    Wayland socket and DBus bus live inside it under well-known names, so
+    we can recover DISPLAY-less Wayland sessions without systemd."""
+    xrd = os.environ.get("XDG_RUNTIME_DIR") or f"/run/user/{os.getuid()}"
+    if not Path(xrd).is_dir():
+        return
+    os.environ.setdefault("XDG_RUNTIME_DIR", xrd)
+
+    if "WAYLAND_DISPLAY" not in os.environ:
+        # Sockets are named wayland-0, wayland-1, …; pick the lowest that
+        # exists. Store the bare name — Qt resolves it against XDG_RUNTIME_DIR.
+        for sock in sorted(Path(xrd).glob("wayland-*")):
+            if sock.is_socket() and not sock.name.endswith(".lock"):
+                os.environ["WAYLAND_DISPLAY"] = sock.name
+                break
+
+    if "DBUS_SESSION_BUS_ADDRESS" not in os.environ:
+        bus = Path(xrd) / "bus"
+        if bus.is_socket():
+            os.environ["DBUS_SESSION_BUS_ADDRESS"] = f"unix:path={bus}"
+
+
+def _sync_session_env() -> None:
+    """Best-effort recovery of the desktop session env for scheduled
+    fires. Tries the systemd user manager first, then an init-agnostic
+    ``/run/user/$UID`` probe so the OpenRC/cron path still reaches
+    plasmashell instead of silently no-op'ing."""
+    if not _sync_session_env_systemd():
+        _sync_session_env_runtime_dir()
 
 
 def _evaluate_script(script: str) -> str | None:

@@ -18,15 +18,23 @@ Aurorae window decorations, Plasma + Kvantum + GTK + icon themes,
 Acrylic Glass KWin effect, light/dark global theme with timed
 switching, wallpapers, fonts, cursors, and a Plymouth boot splash.
 
-**Target platforms.** systemd-based KDE Plasma 6.6+ distros only. The
+**Target platforms.** KDE Plasma 6.6+ distros on either systemd or
+OpenRC. The init system is a supported *dimension*, not a distro
+boundary — the two scheduled features (OLED care, timed theme switch)
+install a systemd user timer under systemd and a per-user `crontab`
+line under OpenRC, chosen by `init_system()` in the distro layer.
+OpenRC is supported generically across distros; it is verified by hand
+in a Gentoo OpenRC VM (`./vm`), not in the container matrix. The
 container matrix covers Arch, CachyOS, Manjaro, EndeavourOS, Garuda,
-Gentoo, Fedora, Nobara, and openSUSE Tumbleweed. Immutable rpm-ostree
-distros (Silverblue, Kinoite) are explicitly out of scope: the
-installer writes into `/usr/lib*` and `/usr/share`, which are
-read-only on those systems and need either an rpm/Flatpak-extension
-wrapper or an rpm-ostree layering path that this project does not
-maintain. There is no non-systemd path (no Artix, no Devuan, no Void)
-and no non-KDE path.
+Gentoo, Fedora, Nobara, and openSUSE Tumbleweed on their default
+(systemd) profiles; of these only **Arch and CachyOS are marked
+*tested* in the README — every other distro is *testing* / work in
+progress**. Immutable rpm-ostree distros
+(Silverblue, Kinoite) are explicitly out of scope: the installer
+writes into `/usr/lib*` and `/usr/share`, which are read-only on those
+systems and need either an rpm/Flatpak-extension wrapper or an
+rpm-ostree layering path that this project does not maintain. There is
+no non-KDE path.
 
 **Distribution target:** GitHub releases + AUR.
 **License:** GPL-3.0 for the work as a whole — the bundled Acrylic
@@ -175,13 +183,16 @@ current version with a manual `git pull && ./install` hint.
 ## Architecture — Distro Detection Layer
 
 `src/scripts/distro.py` is the ONLY file allowed to know per-distro
-paths or package manager commands. Steps and preflight must never
-hardcode `/usr/lib/qt6`, `pacman -S`, `dnf install`, etc.
+paths, package manager commands, or the host init system. Steps and
+preflight must never hardcode `/usr/lib/qt6`, `pacman -S`, `dnf
+install`, or probe for systemd/OpenRC themselves — call
+`init_system()`.
 
 | Function                              | Returns |
 | ------------------------------------- | ------- |
 | `current_distro()`                    | Lowercase `/etc/os-release` ID (`arch`, `cachyos`, `gentoo`, `fedora`, `opensuse-tumbleweed`, ...). |
 | `distro_id_like()`                    | ID_LIKE chain so downstream distros (Nobara → fedora, Garuda → arch) inherit the parent's package map. |
+| `init_system()`                       | `"systemd"` when `/run/systemd/system` is present, else `"openrc"`. The ONLY sanctioned init probe — the scheduled-feature steps branch on it to pick a systemd user timer vs. a per-user crontab line. |
 | `qt6_plugins_dir()` / `qt6_qml_dir()` | Asks `qmake6` → `qtpaths6` → `pkg-config Qt6Core` in that order. Falls back to the per-distro libdir table only when that dir actually exists on disk. Otherwise raises `Qt6PathsMissing` with the distro-appropriate install hint. |
 | `package_for(token)`                  | Translates an Arch package name from a step's `deps()` token into the equivalent on the current distro (`g++:gcc` → `gcc-c++` on Fedora, `sys-devel/gcc` on Gentoo). |
 | `package_installed(pkg)`              | Direct package-database probe (`pacman -Q`, `rpm -q`, ...) so dep resolution installs only what's actually missing. |

@@ -5,6 +5,7 @@ with a distro hint instead of guessing."""
 
 from __future__ import annotations
 
+import os
 import shutil
 import subprocess
 from pathlib import Path
@@ -64,6 +65,33 @@ def distro_id_like() -> tuple[str, ...]:
         return ()
     fields = _parse_os_release(text)
     return tuple(s for s in fields.get("ID_LIKE", "").lower().split() if s)
+
+
+# ── Init system ──────────────────────────────────────────────────────
+
+
+_INIT_CACHE: str | None = None
+_SYSTEMD_MARKER = Path("/run/systemd/system")
+
+
+def init_system() -> str:
+    """``"systemd"`` when systemd is the running init, else ``"openrc"``.
+    The single sanctioned init probe — scheduled-feature steps branch on
+    this to pick a systemd user timer vs. a per-user crontab line. The
+    ``/run/systemd/system`` directory exists iff systemd is PID 1 (the
+    canonical sd_booted() check), so a systemd package merely installed
+    but not booted still reads as openrc, which is correct.
+
+    ``MTTKDE_INIT=openrc|systemd`` forces the answer — the only supported
+    way to exercise the OpenRC path on a systemd CI host (mirrors the
+    OFFLINE/STEPS test overrides). It is not cached, so a test can flip it."""
+    forced = os.environ.get("MTTKDE_INIT")
+    if forced in ("systemd", "openrc"):
+        return forced
+    global _INIT_CACHE
+    if _INIT_CACHE is None:
+        _INIT_CACHE = "systemd" if _SYSTEMD_MARKER.is_dir() else "openrc"
+    return _INIT_CACHE
 
 
 # ── Qt6 plugin / QML directories ─────────────────────────────────────
@@ -292,6 +320,22 @@ _PACKAGE_MAP: dict[str, dict[str, str]] = {
         "alpine":   "qt6-qttools",
         "void":     "qt6-tools",
         "gentoo":   "dev-qt/qttools",
+    },
+    # Only pulled in on OpenRC hosts, where the scheduled features fall
+    # back to a per-user crontab line. On systemd hosts init_system()
+    # picks the user timer instead and this token is never resolved.
+    # Arch/CachyOS ship the cronie provider of /usr/bin/crontab.
+    "crontab": {
+        "arch":     "cronie",
+        "fedora":   "cronie",
+        "rhel":     "cronie",
+        "centos":   "cronie",
+        "opensuse": "cron",
+        "debian":   "cron",
+        "ubuntu":   "cron",
+        "alpine":   "cronie",
+        "void":     "cronie",
+        "gentoo":   "sys-process/cronie",
     },
     "kvantummanager": {
         "arch":     "kvantum",

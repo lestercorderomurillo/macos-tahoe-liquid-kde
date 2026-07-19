@@ -274,6 +274,10 @@ def _reset_preflight_home_cache():
 #   kbuildsycoca6           — rebuilds the live KDE service cache
 LIVE_SHIM_BINARIES = (
     "systemctl",
+    # crontab: the OpenRC scheduling backend reads/rewrites the user
+    # crontab. Shimmed so an init-forced step test can never touch the
+    # maintainer's real crontab.
+    "crontab",
     "kvantummanager",
     "gsettings",
     "plasma-apply-lookandfeel",
