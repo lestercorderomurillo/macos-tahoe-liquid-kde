@@ -4,7 +4,7 @@
 
 # macOS Tahoe Liquid Theme for KDE Plasma 6.6/6.7+
 
-[![release](https://img.shields.io/github/v/release/lestercorderomurillo/macos-tahoe-liquid-kde?label=release&color=blue)](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/releases) [![tests](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/actions/workflows/test.yml/badge.svg)](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/actions/workflows/test.yml) [![tests count](https://img.shields.io/badge/tests-853_passing-brightgreen)](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/actions/workflows/test.yml) [![license](https://img.shields.io/badge/license-GPL--3.0-blue)](LICENSE) [![plasma](https://img.shields.io/badge/KDE_Plasma-6.6%2B-1d99f3?logo=kde)](https://kde.org/plasma-desktop/) [![last commit](https://img.shields.io/github/last-commit/lestercorderomurillo/macos-tahoe-liquid-kde)](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/commits/) [![report a bug](https://img.shields.io/badge/report-a%20bug-red?logo=github)](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/issues/new)
+[![release](https://img.shields.io/github/v/release/lestercorderomurillo/macos-tahoe-liquid-kde?label=release&color=blue)](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/releases) [![tests](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/actions/workflows/test.yml/badge.svg)](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/actions/workflows/test.yml) [![tests count](https://img.shields.io/badge/tests-882_passing-brightgreen)](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/actions/workflows/test.yml) [![license](https://img.shields.io/badge/license-GPL--3.0-blue)](LICENSE) [![plasma](https://img.shields.io/badge/KDE_Plasma-6.6%2B-1d99f3?logo=kde)](https://kde.org/plasma-desktop/) [![last commit](https://img.shields.io/github/last-commit/lestercorderomurillo/macos-tahoe-liquid-kde)](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/commits/) [![report a bug](https://img.shields.io/badge/report-a%20bug-red?logo=github)](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/issues/new)
 
 A full macOS Tahoe-style desktop experience for KDE Plasma 6.6 and 6.7+.
 
@@ -29,8 +29,6 @@ A full macOS Tahoe-style desktop experience for KDE Plasma 6.6 and 6.7+.
 |-------------|:--------------------:|:-----------:|
 | systemd | ✅ YES | ✅ YES |
 | OpenRC | 🔧 Work in progress | 🔧 Testing |
-
-Gentoo defaults to OpenRC, and OpenRC support is still work in progress: the scheduled features (OLED care, timed light/dark switch) use a per-user crontab line there instead of a systemd user timer, and that path is not verified on real hardware yet. On systemd hosts everything is supported.
 
 | Plasma | Supported yet? | Since |
 |--------|:--------------:|:-----:|
@@ -145,7 +143,7 @@ Plymouth boot screen with centered Apple-style logo on every monitor, scaled dyn
 | **Kvantum Theme** | Kvantum theme | ✅ |
 | **GTK Theme** | GTK2/3/4 window chrome and controls | ✅ |
 | **Acrylic Glass** | KWin blur, rounded corners, glass effect | ✅ |
-| **Auto Theme Switcher** | One-shot service + 06:00 / 18:00 timer, single entry point | ✅ |
+| **Auto Theme Switcher** | 06:00 / 18:00 timer plus a native light/dark bridge: toggling the mode in System Settings pulls GTK apps (Nautilus) along | ✅ |
 | **OLED Care** | Opt-in pixel-shift timer for the top bar and dock | ✅ |
 | **Installer UI** | Glass window with an animated hello greeting; drives install / uninstall and a per-feature picker | ✅ |
 | **Installer TUI** | Terminal wizard on `sudo ./install`: component picker, theme mode, OLED care, live progress screen | ✅ |

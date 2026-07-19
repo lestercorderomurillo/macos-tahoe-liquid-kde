@@ -189,6 +189,84 @@ def test_apply_runs_full_pipeline_in_order(monkeypatch):
     assert ("cycle", "kvantum-dark") in calls
 
 
+def _prep_effect_warn_case(monkeypatch, tmp_path, kwinrc_body):
+    """Shared setup for the #46 effect-warning tests: an isolated kwinrc, all
+    live sub-calls stubbed to no-op, and stderr captured. Returns (theme_switch
+    module, kwinrc path)."""
+    import theme_switch
+    home = tmp_path / "home"
+    (home / ".config").mkdir(parents=True)
+    monkeypatch.setenv("HOME", str(home))
+    monkeypatch.setenv("XDG_CONFIG_HOME", str(home / ".config"))
+    kwinrc = home / ".config/kwinrc"
+    kwinrc.write_text(kwinrc_body)
+    for fn in ("write_kde_theme_config", "_apply_wallpaper",
+               "apply_cursortheme_live", "cycle_widget_style_live"):
+        monkeypatch.setattr(theme_switch, fn, lambda *a, **k: True)
+    monkeypatch.setattr(theme_switch, "_apply_local_extras", lambda m: None)
+    monkeypatch.setattr(theme_switch, "_apply_lookandfeel_live", lambda laf: True)
+    monkeypatch.setattr(theme_switch, "_qdbus", lambda *a: True)
+    monkeypatch.setattr(theme_switch.time, "sleep", lambda _s: None)
+    return theme_switch, kwinrc
+
+
+def test_apply_warns_when_third_party_effect_fails_to_load(
+        monkeypatch, tmp_path, capsys):
+    """Regression for #46: after a theme switch, KWin re-scans effects; a
+    third-party COMPILED effect (KDE-Rounded-Corners' shapecornersEnabled=true)
+    whose .so is ABI-incompatible fails to load. We proved on a live session
+    that its config key survives, so this is a runtime-load failure, not config
+    loss. The installer must WARN by name rather than let it break silently —
+    and must NOT touch the on-disk key (so it returns once rebuilt)."""
+    ts, kwinrc = _prep_effect_warn_case(
+        monkeypatch, tmp_path,
+        "[Plugins]\nshapecornersEnabled=true\nliquidglassEnabled=true\n")
+    # KWin reloaded everything EXCEPT the third-party effect.
+    monkeypatch.setattr(ts, "_kwin_loaded_effects",
+                        lambda: {"liquidglass", "blur", "kwin4_effect_slide"})
+
+    assert ts.apply("dark") is True
+    err = capsys.readouterr().err
+    assert "shapecorners" in err and "did not load it" in err
+    # The user's config key is left exactly as it was — never disabled.
+    assert ts._parse_ini(kwinrc)["Plugins"]["shapecornersEnabled"] == "true"
+
+
+def test_apply_no_warn_when_effect_loads_fine(monkeypatch, tmp_path, capsys):
+    """The warning must never cry wolf: a healthy third-party effect that KWin
+    loads back produces no warning. Verified live — a compatible effect stays
+    in loadedEffects across reconfigure."""
+    ts, _ = _prep_effect_warn_case(
+        monkeypatch, tmp_path, "[Plugins]\nshapecornersEnabled=true\n")
+    monkeypatch.setattr(ts, "_kwin_loaded_effects",
+                        lambda: {"kwin4_effect_shapecorners", "liquidglass"})
+    assert ts.apply("dark") is True
+    assert "did not load" not in capsys.readouterr().err
+
+
+def test_apply_no_warn_for_user_disabled_effect(monkeypatch, tmp_path, capsys):
+    """An effect the user themselves DISABLED (Enabled=false) is not one we
+    watch — its absence from the loaded set is expected, not a failure. No
+    warning, and obviously no re-enabling."""
+    ts, kwinrc = _prep_effect_warn_case(
+        monkeypatch, tmp_path, "[Plugins]\nshapecornersEnabled=false\n")
+    monkeypatch.setattr(ts, "_kwin_loaded_effects", lambda: {"liquidglass"})
+    assert ts.apply("dark") is True
+    assert "shapecorners" not in capsys.readouterr().err
+    assert ts._parse_ini(kwinrc)["Plugins"]["shapecornersEnabled"] == "false"
+
+
+def test_apply_no_warn_when_loaded_set_unreadable(monkeypatch, tmp_path, capsys):
+    """No session bus / qdbus / a timeout means the loaded set is unknown. We
+    degrade to SILENCE — never a false 'your effect broke' on headless CI or a
+    first-login install where KWin isn't answering yet."""
+    ts, _ = _prep_effect_warn_case(
+        monkeypatch, tmp_path, "[Plugins]\nshapecornersEnabled=true\n")
+    monkeypatch.setattr(ts, "_kwin_loaded_effects", lambda: None)
+    assert ts.apply("dark") is True
+    assert "did not load" not in capsys.readouterr().err
+
+
 def test_apply_finishes_cycle_and_reconfigure_when_extras_raise(monkeypatch):
     """``_apply_local_extras`` can crash on FileExistsError from
     copytree('~/.config/gtk-4.0/assets') when
@@ -305,6 +383,93 @@ def test_cycle_restores_target_on_sigterm(monkeypatch):
     )
 
 
+def test_cycle_widget_style_works_off_main_thread(monkeypatch):
+    """Real regression: cycle_widget_style_live registers SIGTERM/SIGINT
+    handlers, but signal.signal() only works on the MAIN thread. The
+    installer UI and the portal watcher run steps off-thread, where the bare
+    signal.signal() raised 'ValueError: signal only works in main thread of
+    the main interpreter' and crashed uninstall. It must run to completion on
+    a worker thread (skipping only the mid-cycle SIGTERM interception).
+
+    NOTE: this test does NOT monkeypatch cycle_widget_style_live — it runs the
+    REAL function on a real worker thread, because the crash lived in exactly
+    the code the other tests stub away."""
+    import threading as _threading
+    import theme_switch
+
+    monkeypatch.setattr(theme_switch, "_have", lambda cmd: True)
+    monkeypatch.setattr(theme_switch, "_has_session_dbus", lambda: True)
+    monkeypatch.setattr(theme_switch, "_kwrite", lambda *a: True)
+    monkeypatch.setattr(theme_switch, "_broadcast_widget_style_change",
+                        lambda style: True)
+    monkeypatch.setattr(theme_switch.time, "sleep", lambda _s: None)
+
+    result: dict = {}
+
+    def run():
+        try:
+            result["ok"] = theme_switch.cycle_widget_style_live("kvantum")
+        except BaseException as exc:  # ValueError would fail the test
+            result["err"] = repr(exc)
+
+    t = _threading.Thread(target=run)
+    t.start()
+    t.join(timeout=10)
+
+    assert "err" not in result, (
+        f"cycle_widget_style_live crashed off-thread: {result.get('err')}"
+    )
+    assert result.get("ok") is True
+
+
+def test_patch_dock_transparency_reasserts_panel_opacity(monkeypatch, tmp_path):
+    """The dock goes black when panelOpacity is dropped (a Global Theme apply
+    from System Settings drops it), because the opaque panel background paints
+    over the Acrylic Glass. patch_dock_transparency must re-assert
+    panelOpacity=2 on floating panels and floatingApplets=1 on non-floating —
+    on install, on switch, and on the manual System Settings path. Real run
+    against a real plasmashellrc, no mocking of the patch itself."""
+    import theme_switch
+    cfg = tmp_path / ".config"
+    cfg.mkdir()
+    monkeypatch.setenv("XDG_CONFIG_HOME", str(cfg))
+    prc = cfg / "plasmashellrc"
+    prc.write_text(
+        "[PlasmaViews][Panel 1]\n"
+        "floating=0\n"
+        "shell=org.kde.plasma.desktop\n"
+        "\n"
+        "[PlasmaViews][Panel 2]\n"
+        "alignment=132\n"
+        "floating=1\n"
+        "shell=org.kde.plasma.desktop\n"
+        "\n"
+        "[PlasmaViews][Panel 2][Defaults]\n"
+        "thickness=68\n"
+    )
+
+    assert theme_switch.patch_dock_transparency() is True
+    text = prc.read_text()
+    # Floating dock got the translucency that lets the glass show through.
+    assert "panelOpacity=2" in text
+    # Non-floating panel got floatingApplets.
+    assert "floatingApplets=1" in text
+    # The [Defaults] subsection is untouched (regex must not swallow it).
+    assert "[PlasmaViews][Panel 2][Defaults]\nthickness=68" in text
+
+    # Idempotent: a second run makes no further change.
+    assert theme_switch.patch_dock_transparency() is False
+
+
+def test_patch_dock_transparency_no_file_is_safe(monkeypatch, tmp_path):
+    """No plasmashellrc yet (fresh account / CI) → no crash, returns False."""
+    import theme_switch
+    cfg = tmp_path / ".config"
+    cfg.mkdir()
+    monkeypatch.setenv("XDG_CONFIG_HOME", str(cfg))
+    assert theme_switch.patch_dock_transparency() is False
+
+
 # ── main() entry-point invariants ─────────────────────────────────────
 
 
@@ -336,6 +501,121 @@ def test_main_rejects_invalid_mode(monkeypatch):
     assert theme_switch.main(["boot"]) == 1
     assert theme_switch.main(["_deferred-live-apply"]) == 1
     assert applied == []
+
+
+# ── native light/dark follow (GTK sync, issue #46 part 2) ─────────────
+
+
+def test_detect_mode_by_system_prefers_portal(monkeypatch):
+    """The portal color-scheme (what the native quick-settings toggle sets:
+    1=dark, 2=light) wins over KDE's ColorScheme name. This is the value that
+    actually changed when the user toggled, so Nautilus/GTK follows it."""
+    import theme_switch
+    monkeypatch.setattr(theme_switch, "_read_portal_color_scheme", lambda: 2)
+    assert theme_switch.detect_mode_by_system() == "light"
+    monkeypatch.setattr(theme_switch, "_read_portal_color_scheme", lambda: 1)
+    assert theme_switch.detect_mode_by_system() == "dark"
+
+
+def test_detect_mode_by_system_falls_back_to_colorscheme_name(monkeypatch):
+    """No portal (0/no-preference or unreadable) → fall back to KDE's active
+    ColorScheme name. None only when NEITHER can be read, so the caller
+    leaves the mode untouched rather than guessing."""
+    import theme_switch
+    monkeypatch.setattr(theme_switch, "_read_portal_color_scheme", lambda: None)
+    monkeypatch.setattr(theme_switch, "_kread",
+                        lambda f, g, k: "MacTahoeLiquidKdeDark")
+    assert theme_switch.detect_mode_by_system() == "dark"
+    monkeypatch.setattr(theme_switch, "_kread",
+                        lambda f, g, k: "MacTahoeLiquidKdeLight")
+    assert theme_switch.detect_mode_by_system() == "light"
+    monkeypatch.setattr(theme_switch, "_kread", lambda f, g, k: "")
+    assert theme_switch.detect_mode_by_system() is None
+
+
+def test_follow_system_applies_detected_mode(monkeypatch):
+    """follow-system applies whatever mode the desktop currently wants, so a
+    native toggle drives our full theme (GTK included)."""
+    import theme_switch
+    seen: list = []
+    monkeypatch.setattr(theme_switch, "detect_mode_by_system", lambda: "light")
+    monkeypatch.setattr(theme_switch, "apply",
+                        lambda mode, **kw: seen.append((mode, kw)) or True)
+    assert theme_switch.follow_system() == 0
+    assert seen == [("light", {"context": "user"})]
+
+
+def test_follow_system_light_syncs_all_pieces_not_just_gtk(monkeypatch):
+    """The portal-watcher path (light=True) must sync EVERY per-mode piece —
+    a native toggle flips only the KDE color scheme, leaving Kvantum, cursor,
+    icons, LAF and GTK stale (the '#46 menus are dark / kvantum lagged' bug).
+    It writes the full config + live GTK/cursor/Kvantum + a SAFE kwin
+    reconfigure (repaints Aurorae window decorations), and skips ONLY the full
+    LAF-apply retries. It must NEVER touch plasmashell — refreshCurrentShell is
+    an internal API that drops the panel (it crashed a live session once)."""
+    import theme_switch
+    calls: list = []
+    qdbus_targets: list = []
+    monkeypatch.setattr(theme_switch, "detect_mode_by_system", lambda: "dark")
+    for fn in ("write_kde_theme_config", "_apply_wallpaper",
+               "_apply_local_extras", "apply_cursortheme_live",
+               "cycle_widget_style_live"):
+        monkeypatch.setattr(
+            theme_switch, fn,
+            (lambda name: lambda *a, **k: calls.append(name) or True)(fn))
+    # The full LAF apply must NOT run in the light path.
+    monkeypatch.setattr(theme_switch, "_apply_lookandfeel_live",
+                        lambda laf: calls.append("laf") or True)
+    monkeypatch.setattr(theme_switch, "_qdbus",
+                        lambda *a: qdbus_targets.append(a) or True)
+
+    assert theme_switch.follow_system(light=True) == 0
+    # Full per-mode sync ran…
+    assert "write_kde_theme_config" in calls   # LAF + icons + cursor + scheme
+    assert "_apply_local_extras" in calls       # GTK swap + Kvantum set
+    assert "apply_cursortheme_live" in calls    # live cursor
+    assert "cycle_widget_style_live" in calls   # live Kvantum widget-style
+    # …the full LAF-apply retry loop is skipped (native toggle already did it).
+    assert "laf" not in calls
+    # A SAFE kwin reconfigure repaints the window decorations…
+    assert any(t[:2] == ("org.kde.KWin", "/KWin") for t in qdbus_targets), (
+        "light sync must reconfigure KWin so Aurorae decorations repaint"
+    )
+    # …but plasmashell is NEVER touched (refreshCurrentShell drops the panel).
+    assert not any("plasmashell" in str(t) or "PlasmaShell" in str(t)
+                   for t in qdbus_targets), (
+        "must not call plasmashell — refreshCurrentShell restarts the shell"
+    )
+
+
+def test_follow_system_noop_when_mode_unknown(monkeypatch):
+    """When the current mode can't be read, follow-system does NOT guess and
+    apply a mode — that would fight the user's real state. Success, no apply."""
+    import theme_switch
+    called: list = []
+    monkeypatch.setattr(theme_switch, "detect_mode_by_system", lambda: None)
+    monkeypatch.setattr(theme_switch, "apply",
+                        lambda *a, **k: called.append(1) or True)
+    assert theme_switch.follow_system() == 0
+    assert called == []
+
+
+def test_main_routes_follow_system_and_watch_portal(monkeypatch):
+    """`follow-system` and `watch-portal` are valid subcommands (the GTK-sync
+    bridge), routed to their own handlers — not rejected like retired modes."""
+    import theme_switch
+    monkeypatch.setattr(theme_switch, "follow_system", lambda: 0)
+    monkeypatch.setattr(theme_switch, "watch_portal", lambda: 0)
+    assert theme_switch.main(["follow-system"]) == 0
+    assert theme_switch.main(["watch-portal"]) == 0
+
+
+def test_watch_portal_needs_session_bus(monkeypatch):
+    """Without gdbus / a session bus the watcher can't run — it must report
+    failure, not spin. (Autostart on a headless or bus-less session.)"""
+    import theme_switch
+    monkeypatch.setattr(theme_switch, "_have", lambda cmd: False)
+    assert theme_switch.watch_portal() == 1
 
 
 _APPLY_SUBCALLS = (
@@ -694,9 +974,14 @@ def test_switch_step_install_uninstall_reinstall(sandbox, tmp_path):
     _run_step("theme_switch", "install", env, shim_dir=shim_dir)
     bin_path = sandbox / ".local/bin/mac-tahoe-theme-switch"
     svc_dir = sandbox / ".config/systemd/user"
+    autostart = (sandbox / ".config/autostart"
+                 / "mac-tahoe-liquid-kde-gtk-sync.desktop")
     assert bin_path.is_file() and bin_path.stat().st_mode & 0o111
     assert (svc_dir / "mac-tahoe-liquid-kde-theme.service").is_file()
     assert (svc_dir / "mac-tahoe-liquid-kde-theme.timer").is_file()
+    # The GTK-follows-native-toggle autostart is installed (#46).
+    assert autostart.is_file()
+    assert "watch-portal" in autostart.read_text()
 
     # Drop a leftover apply.service from an older install layout.
     # Uninstall must remove it.
@@ -715,3 +1000,39 @@ def test_switch_step_install_uninstall_reinstall(sandbox, tmp_path):
     assert not (svc_dir / "mac-tahoe-liquid-kde-theme.service").exists()
     assert not (svc_dir / "mac-tahoe-liquid-kde-theme.timer").exists()
     assert not (svc_dir / "mac-tahoe-liquid-kde-theme-apply.service").exists()
+    assert not autostart.exists()
+
+
+def test_switch_step_openrc_schedules_via_crontab_not_systemd(sandbox, tmp_path):
+    """On OpenRC (forced) the auto theme flip installs a crontab line at
+    06:00/18:00 and never installs a systemd timer. The shimmed crontab
+    logs the stdin write so we can confirm both times were scheduled."""
+    shim_dir = make_live_shim_dir(tmp_path)
+    log_file = shim_dir / "calls.log"
+
+    _run_step("theme_switch", "install",
+              {"THEME_MODE": "auto", "MTTKDE_INIT": "openrc"},
+              shim_dir=shim_dir)
+
+    calls = log_file.read_text()
+    assert "crontab -" in calls          # stdin write happened
+    # No systemd timer file on disk under OpenRC.
+    svc_dir = sandbox / ".config/systemd/user"
+    assert not (svc_dir / "mac-tahoe-liquid-kde-theme.timer").exists()
+    # enable/start of the user timer must not have been attempted.
+    assert "systemctl --user enable" not in calls
+    # The GTK-sync autostart is init-agnostic — installed on OpenRC too,
+    # since it's plain XDG autostart, not a systemd unit (#46).
+    assert (sandbox / ".config/autostart"
+            / "mac-tahoe-liquid-kde-gtk-sync.desktop").is_file()
+    assert "systemctl --user start" not in calls
+
+
+def test_switch_step_openrc_uninstall_strips_crontab(sandbox, tmp_path):
+    shim_dir = make_live_shim_dir(tmp_path)
+    log_file = shim_dir / "calls.log"
+    _run_step("theme_switch", "uninstall",
+              {"THEME_MODE": "auto", "MTTKDE_INIT": "openrc"},
+              shim_dir=shim_dir)
+    # uninstall reads the crontab (to filter our tag) on the OpenRC path.
+    assert "crontab -l" in log_file.read_text()

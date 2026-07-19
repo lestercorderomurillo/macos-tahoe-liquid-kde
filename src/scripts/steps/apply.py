@@ -202,14 +202,14 @@ def install() -> None:
         warn(f"Theme switcher missing or not executable ({switch}) — "
              "theme not live-applied")
 
-    print("  …  Restarting KWin", end="\r", flush=True)
+    print("  …  Reconfiguring KWin", end="\r", flush=True)
     if feat_enabled("ACRYLIC_GLASS"):
         qdbus_call("org.kde.KWin", "/Effects",
                    "org.kde.kwin.Effects.loadEffect", "liquidglass")
         time.sleep(1)
     qdbus_call("org.kde.KWin", "/KWin", "org.kde.KWin.reconfigure")
     time.sleep(3)
-    ok("KWin restarted ")
+    ok("KWin reconfigured ")
 
 
 def restart_plasma() -> None:
@@ -235,11 +235,17 @@ def restart_plasma() -> None:
     # let panels created by the layout script fully initialise
     time.sleep(6)
 
+    from distro import init_system
+    systemd = init_system() == "systemd"
+
     # SIGKILL skips the QML teardown crash (Applet::~Applet cascade) that
-    # kquitapp6/SIGTERM reliably trigger; config is already on disk.
-    if _run_quick(
+    # kquitapp6/SIGTERM reliably trigger; config is already on disk. On
+    # OpenRC there is no `systemctl --user`, so pgrep+SIGKILL is the
+    # primary path, not a fallback.
+    killed_via_systemd = systemd and _run_quick(
         ["systemctl", "--user", "kill", "--signal=KILL", "plasma-plasmashell"],
-    ).returncode != 0:
+    ).returncode == 0
+    if not killed_via_systemd:
         for line in _run_quick(
             ["pgrep", "-x", "plasmashell"],
             capture_output=True,
@@ -251,9 +257,10 @@ def restart_plasma() -> None:
                 pass
 
     time.sleep(1)
-    if _run_quick(
+    started_via_systemd = systemd and _run_quick(
         ["systemctl", "--user", "start", "plasma-plasmashell"],
-    ).returncode != 0:
+    ).returncode == 0
+    if not started_via_systemd:
         from utils import drop_privs_in_child as _drop
         subprocess.Popen(
             ["kstart", "plasmashell"],

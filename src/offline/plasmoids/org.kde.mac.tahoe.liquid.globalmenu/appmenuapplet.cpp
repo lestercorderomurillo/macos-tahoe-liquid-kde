@@ -6,8 +6,10 @@
 #include "appmenuapplet.h"
 #include "appmenumodel.h"
 
+#include <KColorScheme>
 #include <KUser>
 #include <QAction>
+#include <QApplication>
 #include <QDBusConnection>
 #include <QDBusConnectionInterface>
 #include <QKeyEvent>
@@ -32,6 +34,36 @@ namespace {
 QString viewService()
 {
     return QStringLiteral("org.kde.kappmenuview");
+}
+
+/// Force a menu to follow the ACTIVE KDE colour scheme (light/dark).
+///
+/// The system / window menus are plain QWidget QMenus, so they inherit
+/// plasmashell's widget-style palette (Kvantum). Kvantum does not hot-reload
+/// its kvconfig, so after a live light↔dark switch a freshly-opened menu can
+/// still paint with the previous mode's palette — the "About This Computer"
+/// popup staying light in dark mode. KColorScheme reads the scheme from
+/// kdeglobals on disk (always current), so applying it here makes the menu
+/// track the mode regardless of what the running widget style cached. Safe:
+/// it only sets this widget's palette, touches nothing global, and needs no
+/// plasmashell restart.
+void applyActiveColorScheme(QWidget* menu)
+{
+    if (!menu) {
+        return;
+    }
+    QPalette pal = menu->palette();
+    const KColorScheme window(QPalette::Active, KColorScheme::Window);
+    const KColorScheme view(QPalette::Active, KColorScheme::View);
+    pal.setBrush(QPalette::Window, window.background());
+    pal.setBrush(QPalette::WindowText, window.foreground());
+    pal.setBrush(QPalette::Base, view.background());
+    pal.setBrush(QPalette::Text, view.foreground());
+    pal.setBrush(QPalette::ButtonText, window.foreground());
+    const KColorScheme selection(QPalette::Active, KColorScheme::Selection);
+    pal.setBrush(QPalette::Highlight, selection.background());
+    pal.setBrush(QPalette::HighlightedText, selection.foreground());
+    menu->setPalette(pal);
 }
 } // namespace
 
@@ -300,6 +332,8 @@ void AppMenuApplet::triggerWindowMenu(QQuickItem* ctx)
         m_windowMenu->installEventFilter(this);
     }
     m_windowMenu->clear();
+    // Reused across light↔dark switches, so refresh the palette on every open.
+    applyActiveColorScheme(m_windowMenu.get());
 
     const bool isClosable = tasks->data(activeTask, TaskManager::AbstractTasksModel::IsClosable).toBool();
     const bool isMinimizable = tasks->data(activeTask, TaskManager::AbstractTasksModel::IsMinimizable).toBool();
@@ -392,6 +426,7 @@ void AppMenuApplet::triggerSystemMenu(QQuickItem* ctx)
 
     auto* menu = new QMenu;
     menu->setAttribute(Qt::WA_DeleteOnClose);
+    applyActiveColorScheme(menu);
     m_systemMenu = menu;
     connect(menu, &QMenu::aboutToHide, this, &AppMenuApplet::onSystemMenuAboutToHide);
     menu->installEventFilter(this);

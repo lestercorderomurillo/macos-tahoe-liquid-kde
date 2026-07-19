@@ -14,6 +14,7 @@ import shutil
 import signal
 import subprocess
 import sys
+import threading
 import time
 from pathlib import Path
 
@@ -289,6 +290,109 @@ def detect_mode_by_time() -> str:
     return "light" if 6 <= h < 18 else "dark"
 
 
+def detect_mode_by_system() -> str | None:
+    """The light/dark mode the DESKTOP currently wants, read from the live
+    system rather than the clock. Used by the portal watcher so a manual flip
+    in System Settings / quick-settings drives our full theme (GTK included).
+
+    Source of truth order:
+    1. The xdg-desktop-portal appearance ``color-scheme`` (1=dark, 2=light) —
+       what the native quick-settings toggle actually sets, and what libadwaita
+       reads. This is the value that changed when the user toggled.
+    2. Fall back to KDE's active ColorScheme name (…Dark / …Light).
+    None when neither can be read (caller then leaves the mode unchanged)."""
+    scheme = _read_portal_color_scheme()
+    if scheme == 1:
+        return "dark"
+    if scheme == 2:
+        return "light"
+    name = _kread("kdeglobals", "General", "ColorScheme")
+    if name:
+        low = name.lower()
+        if "dark" in low:
+            return "dark"
+        if "light" in low:
+            return "light"
+    return None
+
+
+_PRC_PANEL_RE = re.compile(
+    r"(\[PlasmaViews\]\[Panel \d+\]\n(?:[^\[]*\n)*)", re.MULTILINE,
+)
+
+
+def patch_dock_transparency() -> bool:
+    """Re-assert the dock's translucency in plasmashellrc so the Acrylic Glass
+    shows through instead of an opaque (black) panel background painting over
+    it. floating panels get panelOpacity=2 (adaptive), non-floating get
+    floatingApplets=1. Applying a Global Theme from System Settings drops these,
+    so we re-write them on every theme switch AND at install. Plasma's JS layout
+    API can't set panelOpacity, hence the direct rc edit. Returns True if the
+    file changed."""
+    prc = _xdg_config() / "plasmashellrc"
+    if not prc.is_file():
+        return False
+    try:
+        text = prc.read_text()
+    except OSError:
+        return False
+
+    def fix(m: "re.Match[str]") -> str:
+        section = m.group(0)
+        if "floating=1" in section:
+            if "panelOpacity=" in section:
+                section = re.sub(r"panelOpacity=\d+", "panelOpacity=2", section)
+            else:
+                section = section.rstrip() + "\npanelOpacity=2\n"
+        if "floating=0" in section:
+            if "floatingApplets=" in section:
+                section = re.sub(r"floatingApplets=\d+", "floatingApplets=1",
+                                 section)
+            else:
+                section = section.rstrip() + "\nfloatingApplets=1\n"
+        return section
+
+    new_text = _PRC_PANEL_RE.sub(fix, text)
+    if new_text != text:
+        try:
+            prc.write_text(new_text)
+        except OSError:
+            return False
+        return True
+    return False
+
+
+def _read_portal_color_scheme() -> int | None:
+    """The freedesktop appearance ``color-scheme`` as an int (0 no-pref,
+    1 prefer-dark, 2 prefer-light), or None if the portal can't be read."""
+    if not _has_session_dbus():
+        return None
+    for tool in (
+        ["gdbus", "call", "--session", "--dest",
+         "org.freedesktop.portal.Desktop", "--object-path",
+         "/org/freedesktop/portal/desktop", "--method",
+         "org.freedesktop.portal.Settings.ReadOne",
+         "org.freedesktop.appearance", "color-scheme"],
+        ["gdbus", "call", "--session", "--dest",
+         "org.freedesktop.portal.Desktop", "--object-path",
+         "/org/freedesktop/portal/desktop", "--method",
+         "org.freedesktop.portal.Settings.Read",
+         "org.freedesktop.appearance", "color-scheme"],
+    ):
+        if not _have("gdbus"):
+            return None
+        try:
+            res = _run_user(tool, timeout=5, capture=True)
+        except subprocess.TimeoutExpired:
+            return None
+        if res.returncode != 0:
+            continue
+        m = re.search(r"uint32\s+(\d+)", res.stdout)
+        if m:
+            return int(m.group(1))
+    return None
+
+
 def _wallpaper_path(mode: str) -> Path | None:
     data_home = Path(os.environ.get("XDG_DATA_HOME") or
                      str(Path.home() / ".local/share"))
@@ -459,6 +563,98 @@ _LAF_APPLY_ATTEMPTS = 3
 _LAF_APPLY_FIRST_WAIT_SECONDS = 2
 _LAF_APPLY_RETRY_SLEEP_SECONDS = 6
 
+# Our own KWin effects: we manage these on purpose, so they're never treated
+# as user effects to watch over. Everything else the user enabled in [Plugins]
+# is a third-party effect we must not silently break.
+_OWN_KWIN_EFFECT_KEYS = frozenset({
+    "liquidglassEnabled", "glassEnabled", "blurEnabled",
+})
+
+
+def _kwinrc_path() -> Path:
+    return _xdg_config() / "kwinrc"
+
+
+def _effect_id_for_key(key: str) -> str:
+    """kwinrc [Plugins] key -> KWin effect id. Third-party binary effects use
+    the ``kwin4_effect_<name>`` id (e.g. shapecornersEnabled -> the effect KWin
+    reports as ``kwin4_effect_shapecorners`` or, on some builds, ``shapecorners``
+    -- we match either)."""
+    return key[:-len("Enabled")] if key.endswith("Enabled") else key
+
+
+def _snapshot_foreign_effects() -> list[str]:
+    """The effect ids the user has ENABLED in kwinrc [Plugins] that aren't ours.
+    A theme switch fires org.kde.KWin.reconfigure, which makes KWin re-scan and
+    re-load effects; a third-party COMPILED effect whose .so is ABI-incompatible
+    with the running KWin (common after a KWin update) fails to load and drops
+    out of the live effect list. The user's config key stays true, so this is a
+    runtime-load failure, not a config loss -- we can't fix their binary, but we
+    must not let it happen SILENTLY (#46)."""
+    plugins = _parse_ini(_kwinrc_path()).get("Plugins", {})
+    return [
+        _effect_id_for_key(key)
+        for key, value in plugins.items()
+        if key.endswith("Enabled") and key not in _OWN_KWIN_EFFECT_KEYS
+        and value.strip().lower() == "true"
+    ]
+
+
+def _kwin_loaded_effects() -> set[str] | None:
+    """KWin's currently-LOADED effect ids (not activeEffects -- an enabled but
+    idle effect is loaded yet not active). None when the query can't run (no
+    session bus / no qdbus / timeout), so callers degrade to silence rather
+    than a false 'effect broke' warning on headless or first-login installs."""
+    if not _has_session_dbus():
+        return None
+    for q in ("qdbus6", "qdbus-qt6", "qdbus"):
+        if not _have(q):
+            continue
+        try:
+            res = _run_user(
+                [q, "org.kde.KWin", "/Effects",
+                 "org.kde.kwin.Effects.loadedEffects"],
+                timeout=10, capture=True)
+        except subprocess.TimeoutExpired:
+            return None
+        if res.returncode != 0:
+            return None
+        return {e.strip() for e in res.stdout.replace("\n", ",").split(",")
+                if e.strip()}
+    return None
+
+
+def _warn_dropped_foreign_effects(enabled_before: list[str]) -> None:
+    """After the reconfigure that re-scans effects, warn (by name) about any
+    third-party effect the user had enabled that KWin did not load back. We
+    leave the on-disk key untouched: once the user rebuilds the effect against
+    the current KWin it returns on its own. Never warns when the effect is fine
+    or when the loaded set can't be read."""
+    if not enabled_before:
+        return
+    loaded: set[str] | None = None
+    # Loading is async after a fire-and-forget reconfigure; sample a few times.
+    for _ in range(3):
+        loaded = _kwin_loaded_effects()
+        if loaded is not None:
+            break
+        time.sleep(1)
+    if not loaded:
+        return
+    for effect in enabled_before:
+        # Match either the bare name or the kwin4_effect_<name> id.
+        if effect in loaded or f"kwin4_effect_{effect}" in loaded:
+            continue
+        if any(effect in e for e in loaded):
+            continue
+        print(
+            f"theme apply: your KWin effect '{effect}' is enabled but KWin "
+            "did not load it after the theme switch. It is likely built for "
+            "an older KWin; rebuild/reinstall it to restore it. Your setting "
+            "was left untouched.",
+            file=sys.stderr,
+        )
+
 
 def _apply_lookandfeel_live(laf: str) -> bool:
     """Up to three attempts: 2s lead-in, then 6s between retries. On a
@@ -537,8 +733,19 @@ def cycle_widget_style_live(target: str) -> bool:
     def _on_signal(signum, _frame):
         interrupted.append(signum)
 
-    old_term = signal.signal(signal.SIGTERM, _on_signal)
-    old_int = signal.signal(signal.SIGINT, _on_signal)
+    # signal.signal() only works on the main thread. The installer UI and the
+    # portal watcher run steps off-thread, where registering a handler raises
+    # ValueError; guard it so the cycle still runs (it just can't intercept a
+    # mid-cycle SIGTERM there — the finally still restores the target on disk).
+    handlers_installed = False
+    old_term = old_int = None
+    if threading.current_thread() is threading.main_thread():
+        try:
+            old_term = signal.signal(signal.SIGTERM, _on_signal)
+            old_int = signal.signal(signal.SIGINT, _on_signal)
+            handlers_installed = True
+        except ValueError:
+            handlers_installed = False
     try:
         phase_ok.append(_kwrite("--file", "kdeglobals", "--group", "KDE",
                                 "--key", "widgetStyle", "Breeze"))
@@ -546,8 +753,9 @@ def cycle_widget_style_live(target: str) -> bool:
         time.sleep(0.4)
     finally:
         _restore_target()
-        signal.signal(signal.SIGTERM, old_term)
-        signal.signal(signal.SIGINT, old_int)
+        if handlers_installed:
+            signal.signal(signal.SIGTERM, old_term)
+            signal.signal(signal.SIGINT, old_int)
     if interrupted:
         raise SystemExit(128 + interrupted[0])
     return all(phase_ok)
@@ -561,6 +769,12 @@ def apply(mode: str, context: str = "user") -> bool:
     cursor = "MacTahoeLiquidKde-Dark" if mode == "dark" else "MacTahoeLiquidKde"
     widget = "kvantum-dark" if mode == "dark" else "kvantum"
     laf = LAF_DARK if mode == "dark" else LAF_LIGHT
+
+    # Record which third-party KWin effects the user has enabled before we
+    # trigger the reconfigure that makes KWin re-scan effects. If one fails to
+    # reload (an ABI-incompatible third-party .so), we warn by name instead of
+    # letting it break silently (#46). We never touch its config key.
+    foreign_effects = _snapshot_foreign_effects()
 
     config_ok = write_kde_theme_config(mode)
     if not config_ok:
@@ -580,11 +794,111 @@ def apply(mode: str, context: str = "user") -> bool:
         print("theme apply: live cursor apply skipped", file=sys.stderr)
     if not cycle_widget_style_live(widget):
         print("theme apply: widget-style cycle skipped", file=sys.stderr)
+    # Keep the dock translucent so the glass shows through (a theme apply can
+    # drop panelOpacity, painting an opaque black panel over the effect).
+    patch_dock_transparency()
     _qdbus("org.kde.KWin", "/KWin", "org.kde.KWin.reconfigure")
+    # After KWin re-scans effects, warn if a user's third-party effect didn't
+    # load back (best-effort; silent when the live effect list can't be read).
+    _warn_dropped_foreign_effects(foreign_effects)
     return config_ok
 
 
-USAGE = "Usage: mac-tahoe-theme-switch {light|dark|auto} [install]"
+def follow_system(light: bool = False) -> int:
+    """Apply whichever mode the desktop currently wants (System Settings /
+    quick-settings choice), so a NATIVE light/dark toggle drives our full
+    theme. No-op success when the current mode can't be read (don't guess and
+    fight the user's real state).
+
+    light=True is the portal-watcher path. A native toggle flips ONLY the KDE
+    color scheme, leaving our other per-mode pieces on the previous variant:
+    the GTK theme, the Kvantum theme, the icon theme, the cursor, the LAF
+    package AND the Aurorae window-decoration theme all lag behind. So we sync
+    EVERY piece — write_kde_theme_config covers LAF/icons/scheme/widgetStyle/
+    cursor/aurorae, the live GTK/icon/Kvantum/cursor niceties bring running
+    apps up to date, and a KWin reconfigure + Plasma-shell refresh repaint the
+    window decorations (X/maximise buttons) and the global menu / panels, which
+    do NOT follow a bare color-scheme change on their own. We only SKIP the full
+    LAF-apply retries (the native toggle already applied the look-and-feel), so
+    this stays fast and doesn't fight the session."""
+    mode = detect_mode_by_system()
+    if mode is None:
+        return 0
+    if not light:
+        return 0 if apply(mode, context="user") else 1
+
+    cursor = "MacTahoeLiquidKde-Dark" if mode == "dark" else "MacTahoeLiquidKde"
+    widget = "kvantum-dark" if mode == "dark" else "kvantum"
+    ok = write_kde_theme_config(mode)
+    try:
+        _apply_wallpaper(mode)
+        _apply_local_extras(mode)   # GTK swap + icon-cache flush + Kvantum set
+    except Exception as exc:
+        print(f"theme follow: extras failed: {exc!r}", file=sys.stderr)
+        ok = False
+    # Live niceties so running apps catch up without a logout. Best-effort:
+    # a missing tool must not fail the sync.
+    apply_cursortheme_live(cursor)
+    cycle_widget_style_live(widget)
+    # A manual theme change from System Settings drops the dock's panelOpacity,
+    # so re-assert it here too — this is the path the portal watcher runs.
+    patch_dock_transparency()
+    # Repaint the window decorations: Aurorae reads its theme from kwinrc and
+    # only restyles on a reconfigure. This is the SAFE reload path — it does
+    # NOT restart KWin (verified against KWin's D-Bus docs). We deliberately do
+    # NOT touch plasmashell here: refreshCurrentShell() is an internal API that
+    # reloads the whole shell and drops the panel, so the global menu is left
+    # to follow the color scheme on its own.
+    _qdbus("org.kde.KWin", "/KWin", "org.kde.KWin.reconfigure")
+    return 0 if ok else 1
+
+
+def watch_portal() -> int:
+    """Block on the freedesktop appearance ``color-scheme`` change signal and
+    apply the matching theme each time the user toggles light/dark natively.
+    Event-driven (a blocking D-Bus signal read), never a poll loop — this is
+    the init-agnostic bridge (systemd AND OpenRC) that makes GTK apps like
+    Nautilus follow the native toggle, which on its own only flips Qt colors
+    and leaves the GTK theme on the wrong variant (#46)."""
+    if not _have("gdbus") or not _has_session_dbus():
+        print("theme watch: no session bus / gdbus — portal watch unavailable",
+              file=sys.stderr)
+        return 1
+    # Converge once up front (a toggle may have happened before we started, e.g.
+    # autostart lag): make GTK match the current mode.
+    follow_system(light=True)
+    proc = subprocess.Popen(
+        ["gdbus", "monitor", "--session",
+         "--dest", "org.freedesktop.portal.Desktop"],
+        stdout=subprocess.PIPE, stderr=subprocess.DEVNULL, text=True,
+        bufsize=1,  # line-buffered: react per line, don't wait for a full block
+        preexec_fn=_drop_privs_in_child,
+    )
+    last = 0.0
+    try:
+        for line in proc.stdout:
+            # Only react to the appearance color-scheme change, nothing else
+            # the portal emits.
+            if "SettingChanged" in line and "color-scheme" in line \
+                    and "appearance" in line:
+                # Debounce: a single toggle can emit the signal more than once;
+                # coalesce bursts so we don't stack GTK swaps.
+                now = time.monotonic()
+                if now - last < 1.0:
+                    continue
+                last = now
+                follow_system(light=True)
+    except KeyboardInterrupt:
+        pass
+    finally:
+        proc.terminate()
+    # for-loop ends only if gdbus monitor died; non-zero so a supervisor/user
+    # knows the watch stopped rather than assuming it's still live.
+    return 0
+
+
+USAGE = ("Usage: mac-tahoe-theme-switch "
+         "{light|dark|auto|follow-system|watch-portal} [install]")
 
 
 def main(argv: list[str]) -> int:
@@ -593,6 +907,10 @@ def main(argv: list[str]) -> int:
         return 1
 
     mode = argv[0]
+    if mode == "watch-portal":
+        return watch_portal()
+    if mode == "follow-system":
+        return follow_system()
     if mode == "auto":
         mode = detect_mode_by_time()
     if mode not in ("light", "dark"):
