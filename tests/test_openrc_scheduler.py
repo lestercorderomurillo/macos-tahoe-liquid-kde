@@ -81,6 +81,10 @@ class _Result:
 def fake_cron(monkeypatch):
     fake = FakeCrontab()
     monkeypatch.setattr(_scheduler, "run_user", fake)
+    # The fake stands in for a REAL crontab client, so report one present —
+    # otherwise the _have_crontab() guard (which shutil.which's the binary,
+    # absent on the CI host) short-circuits before the fake runs.
+    monkeypatch.setattr(_scheduler, "_have_crontab", lambda: True)
     monkeypatch.setenv("MTTKDE_INIT", "openrc")
     return fake
 

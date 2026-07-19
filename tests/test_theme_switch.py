@@ -970,7 +970,9 @@ def test_switch_step_install_uninstall_reinstall(sandbox, tmp_path):
     - kdeglobals AutomaticLookAndFeel keys are reset on uninstall."""
     shim_dir = make_live_shim_dir(tmp_path)
 
-    env = {"THEME_MODE": "auto"}
+    # Pin systemd so this exercises the timer path regardless of the CI host
+    # (which resolves to OpenRC). The OpenRC crontab path has its own tests.
+    env = {"THEME_MODE": "auto", "MTTKDE_INIT": "systemd"}
     _run_step("theme_switch", "install", env, shim_dir=shim_dir)
     bin_path = sandbox / ".local/bin/mac-tahoe-theme-switch"
     svc_dir = sandbox / ".config/systemd/user"

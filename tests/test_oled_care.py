@@ -194,6 +194,12 @@ def test_offline_units_ship_and_point_at_the_binary(offline):
 def _wire_step(tmp_path, monkeypatch):
     from steps import oled_care as step
 
+    # These tests assert the systemd artefacts (.service/.timer) + enable
+    # calls. Pin the init to systemd so they exercise that path regardless of
+    # the CI host, which resolves to OpenRC (no /run/systemd/system) and would
+    # otherwise take the crontab branch. The OpenRC branch has its own tests.
+    monkeypatch.setenv("MTTKDE_INIT", "systemd")
+
     home = tmp_path / "home"
     bin_dest = home / ".local/bin/mac-tahoe-oled-care"
     svc_dir = home / ".config/systemd/user"

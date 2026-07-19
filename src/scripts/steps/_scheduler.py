@@ -9,6 +9,7 @@ which init is live. The crontab writer is marker-delimited so it only
 ever touches its own block — a user's unrelated cron lines are preserved.
 """
 
+import shutil
 import subprocess
 
 from distro import init_system
@@ -17,6 +18,13 @@ from utils import run_user
 
 def is_systemd() -> bool:
     return init_system() == "systemd"
+
+
+def _have_crontab() -> bool:
+    """Whether a crontab client is on PATH. OpenRC hosts without a cron
+    daemon (and the CI runner) have none — calling it would raise
+    FileNotFoundError, so every crontab op guards on this first."""
+    return shutil.which("crontab") is not None
 
 
 # ── crontab backend ──────────────────────────────────────────────────
@@ -34,7 +42,10 @@ def _marker(tag: str) -> str:
 def _read_crontab() -> list[str]:
     """Current user crontab lines, or [] when none is installed. A missing
     crontab exits non-zero with "no crontab for <user>" on stderr — that's
-    not an error, it's the empty case."""
+    not an error, it's the empty case. No crontab client at all (no cron
+    daemon / CI) is also just the empty case, not a crash."""
+    if not _have_crontab():
+        return []
     res = run_user(
         ["crontab", "-l"],
         check=False, capture_output=True, text=True,
@@ -46,7 +57,11 @@ def _read_crontab() -> list[str]:
 
 def _write_crontab(lines: list[str]) -> bool:
     """Replace the user crontab. An empty list removes it entirely
-    (``crontab -r``) rather than installing a blank one."""
+    (``crontab -r``) rather than installing a blank one. Returns False when
+    no crontab client is available (nothing was scheduled) so the caller can
+    warn instead of crashing."""
+    if not _have_crontab():
+        return False
     if not any(line.strip() for line in lines):
         run_user(
             ["crontab", "-r"],
