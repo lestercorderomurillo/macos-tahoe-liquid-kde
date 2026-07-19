@@ -23,12 +23,16 @@ A full macOS Tahoe-style desktop experience for KDE Plasma 6.6 and 6.7+.
 | <img src="https://cdn.simpleicons.org/fedora" width="22"> | Fedora | ✅ YES | 🔧 Testing |
 | <img src="https://cdn.simpleicons.org/nobaralinux" width="22"> | Nobara | ✅ YES | 🔧 Testing |
 | <img src="https://cdn.simpleicons.org/opensuse" width="22"> | openSUSE Tumbleweed | ✅ YES | 🔧 Testing |
-| <img src="https://cdn.simpleicons.org/gentoo" width="22"> | Gentoo | 🔧 Work in progress | 🔧 Testing |
+| <img src="https://cdn.simpleicons.org/gentoo" width="22"> | Gentoo | ✅ YES | 🔧 Testing |
 
 | Init system | Supported yet? | Tested yet? |
 |-------------|:--------------------:|:-----------:|
 | systemd | ✅ YES | ✅ YES |
-| OpenRC | 🔧 Work in progress | 🔧 Testing |
+| OpenRC | ✅ YES | 🔧 Testing |
+
+The installer detects the host init system automatically. Timed theme
+switching and OLED care use systemd user timers on systemd and a guarded
+per-user `crontab` block on OpenRC.
 
 | Plasma | Supported yet? | Since |
 |--------|:--------------:|:-----:|
