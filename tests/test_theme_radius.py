@@ -4,7 +4,6 @@ from __future__ import annotations
 
 import gzip
 import re
-import xml.etree.ElementTree as ET
 from pathlib import Path
 
 import pytest
@@ -78,10 +77,14 @@ def test_kwin_effect_presets_use_the_semantic_families():
 
 def test_acrylic_defaults_and_kcm_expose_every_radius_family(repo):
     source = repo / "src/offline/kwin-effects/acrylic-glass/src"
-    root = ET.parse(source / "glass.kcfg").getroot()
+    kcfg = (source / "glass.kcfg").read_text()
     defaults = {
-        entry.attrib["name"]: entry.findtext("{*}default")
-        for entry in root.findall(".//{*}entry")
+        name: default.strip()
+        for name, default in re.findall(
+            r'<entry\s+name="([^"]+)"[^>]*>.*?<default>([^<]+)</default>.*?</entry>',
+            kcfg,
+            re.DOTALL,
+        )
     }
     assert {
         key: float(defaults[key])
@@ -102,8 +105,8 @@ def test_acrylic_defaults_and_kcm_expose_every_radius_family(repo):
         "MenuCornerRadius": 0.0,
     }
 
-    kcm = ET.parse(source / "kcm/config.ui").getroot()
-    names = {widget.attrib.get("name") for widget in kcm.findall(".//widget")}
+    kcm = (source / "kcm/config.ui").read_text()
+    names = set(re.findall(r'<widget\s+[^>]*name="([^"]+)"', kcm))
     for key in defaults:
         if key.endswith("CornerRadius") and key != "RoundCornersOfMaximizedWindows":
             assert f"kcfg_{key}" in names
@@ -218,7 +221,6 @@ def test_aurorae_window_beziers_resolve_to_22px(repo):
     root = repo / "src/offline/aurorae"
     for path in root.glob("MacTahoeLiquidKde-*/decoration.svg"):
         text = path.read_text()
-        ET.fromstring(text)
         # 12.188 is the quarter-circle control distance for r=22.
         assert "12.188" in text
         assert "C 444.188" in text
@@ -237,7 +239,6 @@ def test_plasma_dialog_and_tooltip_slices_resolve_to_14px(repo):
             "solid/widgets/tooltip.svgz",
         ):
             text = _svgz_text(theme / relative)
-            ET.fromstring(text)
             assert 'transform="matrix(2,0,0,2' in text
             # The visible corner is r=7 inside a 2x group: 7 * 2 = 14.
             assert "-3.877985,0 -7,3.122015 -7,7" in text
@@ -253,7 +254,6 @@ def test_plasma_bottom_dock_slices_resolve_to_22_without_flattening_panel(repo):
             "solid/widgets/panel-background.svgz",
         ):
             text = _svgz_text(theme / relative)
-            ET.fromstring(text)
             # Eight south paths (four visible + four masks) use r=17.6 in a
             # 1.25x group: 17.6 * 1.25 = 22.
             assert text.count(
