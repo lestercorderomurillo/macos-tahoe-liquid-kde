@@ -4,7 +4,7 @@
 
 # macOS Tahoe Liquid Theme for KDE Plasma 6.6/6.7+
 
-[![release](https://img.shields.io/github/v/release/lestercorderomurillo/macos-tahoe-liquid-kde?label=release&color=blue)](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/releases) [![tests](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/actions/workflows/test.yml/badge.svg)](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/actions/workflows/test.yml) [![tests count](https://img.shields.io/badge/tests-882_passing-brightgreen)](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/actions/workflows/test.yml) [![license](https://img.shields.io/badge/license-GPL--3.0-blue)](LICENSE) [![plasma](https://img.shields.io/badge/KDE_Plasma-6.6%2B-1d99f3?logo=kde)](https://kde.org/plasma-desktop/) [![last commit](https://img.shields.io/github/last-commit/lestercorderomurillo/macos-tahoe-liquid-kde)](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/commits/) [![report a bug](https://img.shields.io/badge/report-a%20bug-red?logo=github)](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/issues/new)
+[![release](https://img.shields.io/github/v/release/lestercorderomurillo/macos-tahoe-liquid-kde?label=release&color=blue)](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/releases) [![tests](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/actions/workflows/test.yml/badge.svg)](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/actions/workflows/test.yml) [![tests count](https://img.shields.io/badge/tests-937_passing-brightgreen)](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/actions/workflows/test.yml) [![license](https://img.shields.io/badge/license-GPL--3.0-blue)](LICENSE) [![plasma](https://img.shields.io/badge/KDE_Plasma-6.6%2B-1d99f3?logo=kde)](https://kde.org/plasma-desktop/) [![last commit](https://img.shields.io/github/last-commit/lestercorderomurillo/macos-tahoe-liquid-kde)](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/commits/) [![report a bug](https://img.shields.io/badge/report-a%20bug-red?logo=github)](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/issues/new)
 
 A full macOS Tahoe-style desktop experience for KDE Plasma 6.6 and 6.7+.
 
@@ -62,6 +62,8 @@ Closer to the real design. Quick search, a favorites capsule, and two view modes
 ### Acrylic Glass Tahoe Dock
 
 Real liquid-glass depth. The wallpaper bends through the surface, with red macOS-style notification badges.
+The dock's glass opacity is re-applied after every theme change so switching a
+Global Theme in System Settings cannot leave an opaque panel behind.
 
 <p align="center">
   <img src="src/screenshots/dock_1_v3.png" width="840"><br>
@@ -80,6 +82,22 @@ Nautilus reshaped into Finder, with a macOS-style sidebar and clean chrome. Ligh
 <p align="center">
   <sub>Example of Light and Dark variant.</sub>
 </p>
+
+### Rounded corners and KWin effect safety
+
+The bundled Acrylic Glass effect rounds windows, dialogs, popups, tooltips and
+the Dock with separate radius controls. Theme changes preserve enabled
+third-party KWin effects, including standalone rounded-corner effects. If a
+KWin update leaves one of those compiled effects ABI-incompatible, the theme
+switcher names it in a warning and leaves its setting enabled for after it is
+rebuilt.
+
+### Native light and dark synchronization
+
+The light/dark control in KDE System Settings drives the whole theme through
+the desktop portal: Plasma, Kvantum, GTK apps such as Nautilus, icons, cursors,
+Aurorae decorations and the wallpaper switch together. The bridge is
+event-driven and uses no polling.
 
 ### Acrylic Glass Tahoe Menu
 
@@ -146,8 +164,8 @@ Plymouth boot screen with centered Apple-style logo on every monitor, scaled dyn
 | **Plasma Theme** | Translucent panels + close/min/max buttons | ✅ |
 | **Kvantum Theme** | Kvantum theme | ✅ |
 | **GTK Theme** | GTK2/3/4 window chrome and controls | ✅ |
-| **Acrylic Glass** | KWin blur, rounded corners, glass effect | ✅ |
-| **Auto Theme Switcher** | 06:00 / 18:00 timer plus a native light/dark bridge: toggling the mode in System Settings pulls GTK apps (Nautilus) along | ✅ |
+| **Acrylic Glass** | KWin blur, per-surface rounded corners, persistent Dock glass and third-party effect safety | ✅ |
+| **Auto Theme Switcher** | 06:00 / 18:00 schedule plus an event-driven System Settings bridge for Plasma, Kvantum, GTK, icons, cursors, decorations and wallpaper | ✅ |
 | **OLED Care** | Opt-in pixel-shift timer for the top bar and dock | ✅ |
 | **Installer UI** | Glass window with an animated hello greeting; drives install / uninstall and a per-feature picker | ✅ |
 | **Installer TUI** | Terminal wizard on `sudo ./install`: component picker, theme mode, OLED care, live progress screen | ✅ |
@@ -287,10 +305,15 @@ sudo ./legacy-uninstall          # classic prompt, reset to Breeze
 ./vm nobara
 ./vm opensuse
 ./vm gentoo
+./vm gentoo-openrc
 ./vm all      # every distro at once, each in its own window
 ```
 
 `./vm all` trims each VM to 2 vCPU / 4 GiB so the fleet fits in RAM; override with `VM_CPUS` / `VM_MEM_MIB`. Ctrl-C in the launching terminal stops every VM.
+
+The first `./vm gentoo-openrc` pass installs Gentoo onto its persistent test
+disk. Boot that installed OpenRC system afterward with
+`VM_BOOT_TARGET=1 ./vm gentoo-openrc`.
 
 Update check on launch is on by default; when a newer release exists and the checkout is a clean git tree, the installer pulls it and re-runs itself. To bypass: `sudo MAC_TAHOE_NO_UPDATE_CHECK=true ./install`. To only check: `sudo ./install --check-update`.
 
@@ -308,9 +331,14 @@ Available names:
 
 `wallpapers`, `fonts`, `cursors`, `plasma-theme`, `window-decorations`, `kvantum`, `color-schemes`, `icons`, `plasmoids`, `globalmenu`, `acrylic-glass`, `global-theme`, `layout`, `sounds`, `gtk`, `sddm`, `apps`, `nautilus`, `portals`, `oled-care`, `plymouth`.
 
-One extra knob:
+Upgrade and boot-splash knobs:
 
 - `--no-grub-modify` — don't touch `/etc/default/grub`. (By default the Plymouth step appends `splash` and re-runs `grub-mkconfig` so the boot splash renders; with this flag you get a warning + the manual command instead.)
+- `--reset-wallpapers` — forget the saved light/dark wallpaper choices and apply the bundled wallpaper once.
+- `--reset-layout` — rebuild the bundled top bar and Dock once, replacing the current panel layout.
+
+Normal upgrades preserve deliberate wallpaper choices and panel edits. The two
+reset flags are one-shot actions and are not saved to `features.json`.
 
 ### Light, dark, or auto
 

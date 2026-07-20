@@ -1,6 +1,6 @@
 """Init-agnostic scheduling for the two timed features (OLED care, timed
 theme switch). Under systemd each feature installs a user timer; under
-OpenRC there is no ``systemctl --user``, so we fall back to a per-user
+OpenRC there is no user service manager, so we fall back to a per-user
 ``crontab`` line running the same binary on the same cadence.
 
 The backend is chosen once by :func:`distro.init_system`. Steps call
@@ -136,8 +136,10 @@ def install_at_times(tag: str, times: list[tuple[int, int]], command: str) -> bo
 
 
 def remove_periodic(tag: str) -> bool:
-    """Remove the crontab line for ``tag`` if present. Safe to call on
-    systemd (returns False — nothing was ours to remove)."""
-    if is_systemd():
-        return False
+    """Remove our crontab line regardless of the currently-running init.
+
+    A user can switch init systems between installs. Looking only at today's
+    backend would strand an old OpenRC cron entry on a later systemd boot.
+    The marker filter touches no unrelated user lines.
+    """
     return _cron_remove(tag)

@@ -572,7 +572,7 @@ ColumnLayout {
             visible: (root.showFontConfig) && root.currentTab === 4
             text: i18n("A plasmashell restart is required to restore the original values after disabling any font setting. <a href=\"#\">Restart now</a>.")
             onLinkActivated: {
-                runCommand.exec("systemctl restart --user plasma-plasmashell");
+                runCommand.exec("(sleep 1; kstart plasmashell >/dev/null 2>&1) & kquitapp6 plasmashell");
             }
             font: Kirigami.Theme.smallFont
             color: Kirigami.Theme.disabledTextColor

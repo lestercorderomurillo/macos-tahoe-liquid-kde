@@ -283,6 +283,7 @@ LIVE_SHIM_BINARIES = (
     "plasma-apply-lookandfeel",
     "plasma-apply-wallpaperimage",
     "plasma-apply-cursortheme",
+    "plasma-changeicons",
     "kbuildsycoca6",
 )
 
@@ -427,10 +428,9 @@ def _restore_unit(unit: str, original: dict[str, str]) -> bool:
 def _live_state_safety_net(request):
     """Snapshot live KDE/systemd state at session start; restore on teardown.
 
-    Any drift triggers a session-finish printed warning naming the file or
-    unit that moved, so an escaping test is loud rather than silent — but
-    state is restored either way so the maintainer's desktop doesn't end
-    the test session in a half-broken configuration.
+    Any drift triggers a session-finish failure naming the file or unit that
+    moved. State is restored before failing so the maintainer's desktop does
+    not end the test session in a half-broken configuration.
 
     Opt out with ``MAC_TAHOE_SKIP_LIVE_SAFETY_NET=1`` (CI, where there is
     no live session to protect)."""
@@ -484,3 +484,4 @@ def _live_state_safety_net(request):
                 rep.write_line(line)
         else:
             print("\n".join(msg), file=sys.stderr)
+        pytest.fail("\n".join(msg), pytrace=False)

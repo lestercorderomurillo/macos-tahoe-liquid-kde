@@ -1,3 +1,4 @@
+import os
 import re
 import subprocess
 import time
@@ -162,6 +163,43 @@ _CUSTOM_PANEL_NEEDLES = (
 )
 
 
+def _layout_marker() -> Path:
+    return HOME / ".local/state/mac-tahoe-liquid-kde/layout-installed"
+
+
+def _mark_layout_installed() -> None:
+    marker = _layout_marker()
+    try:
+        marker.parent.mkdir(parents=True, exist_ok=True)
+        marker.write_text("1\n", encoding="utf-8")
+    except OSError:
+        pass
+
+
+def _clear_layout_marker() -> None:
+    try:
+        _layout_marker().unlink()
+    except OSError:
+        pass
+
+
+def _layout_has_any_theme_widget() -> bool:
+    appletsrc = HOME / ".config/plasma-org.kde.plasma.desktop-appletsrc"
+    try:
+        text = appletsrc.read_text(encoding="utf-8", errors="replace")
+    except OSError:
+        return False
+    return any(needle in text for needle in _CUSTOM_PANEL_NEEDLES)
+
+
+def _preserve_existing_layout() -> bool:
+    if os.environ.get("MTTKDE_RESET_LAYOUT", "").lower() == "true":
+        return False
+    if _layout_marker().is_file() or _layout_has_any_theme_widget():
+        return True
+    return os.environ.get("MTTKDE_EXISTING_INSTALL", "").lower() == "true"
+
+
 def _layout_looks_reset() -> bool:
     """'Reset' = no MacTahoe plugin IDs left in appletsrc. Default Breeze
     needles may land asynchronously (plasma-apply-lookandfeel), so their
@@ -231,8 +269,9 @@ def _patch_plasmashellrc() -> None:
 
 def install() -> None:
     _ensure_panel_colorizer()
-    if _layout_looks_installed():
-        ok("Layout installed")
+    if _preserve_existing_layout():
+        _mark_layout_installed()
+        ok("Layout preserved")
         _patch_plasmashellrc()
         return
     if not LAYOUT_SCRIPT.is_file():
@@ -240,6 +279,7 @@ def install() -> None:
         return
     applied = _evaluate_layout(LAYOUT_SCRIPT)
     if applied and _wait_for_layout_install():
+        _mark_layout_installed()
         ok("Layout installed")
     else:
         warn("layout failed — set layout manually")
@@ -249,10 +289,11 @@ def install() -> None:
 
 
 def is_installed() -> bool:
-    return _layout_looks_installed()
+    return _layout_marker().is_file() or _layout_looks_installed()
 
 
 def uninstall() -> None:
+    _clear_layout_marker()
     if _layout_looks_reset():
         ok("Layout reset")
         return

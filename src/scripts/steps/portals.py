@@ -1,6 +1,10 @@
+import os
+import signal
 import subprocess
+from pathlib import Path
 
-from steps._helpers import HOME, fail, have, ok
+from distro import user_service_manager_command
+from steps._helpers import HOME, fail, ok
 from utils import run_user
 
 CONF_DIR = HOME / ".config/xdg-desktop-portal"
@@ -24,17 +28,50 @@ PORTAL_SERVICES = (
     "xdg-desktop-portal-kde",
     "xdg-desktop-portal-gtk",
 )
+_PROC_ROOT = Path("/proc")
 
 
 def _bounce_services() -> None:
-    if not have("systemctl"):
+    command_prefix = user_service_manager_command("restart")
+    if command_prefix is not None:
+        manager_ok = True
+        for svc in PORTAL_SERVICES:
+            try:
+                result = run_user(
+                    [*command_prefix, svc], check=False, timeout=8,
+                    stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
+                )
+                manager_ok = result.returncode == 0 and manager_ok
+            except (OSError, subprocess.TimeoutExpired):
+                manager_ok = False
+        if manager_ok:
+            return
+
+    # OpenRC and other non-systemd sessions rely on D-Bus activation. This is
+    # also the fallback for a temporarily unavailable systemd user manager.
+    # Stop only matching same-user portal processes; the next portal request
+    # starts them again with the new routing config.
+    try:
+        uid = int(os.environ.get("SUDO_UID") or os.getuid())
+    except ValueError:
+        uid = os.getuid()
+    wanted = set(PORTAL_SERVICES)
+    try:
+        processes = list(_PROC_ROOT.iterdir())
+    except OSError:
         return
-    for svc in PORTAL_SERVICES:
-        run_user(
-            ["systemctl", "--user", "restart", svc],
-            check=False,
-            stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
-        )
+    for process in processes:
+        if not process.name.isdigit():
+            continue
+        try:
+            if process.stat().st_uid != uid:
+                continue
+            argv0 = (process / "cmdline").read_bytes().split(b"\0", 1)[0]
+            name = Path(os.fsdecode(argv0)).name
+            if name in wanted:
+                os.kill(int(process.name), signal.SIGTERM)
+        except (OSError, ValueError):
+            continue
 
 
 def install() -> None:

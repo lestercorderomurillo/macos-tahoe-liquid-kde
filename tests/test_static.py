@@ -30,6 +30,35 @@ def test_version_is_semver(repo):
     assert re.fullmatch(r"\d+\.\d+\.\d+", (repo / "VERSION").read_text().strip())
 
 
+def test_look_and_feel_does_not_bypass_smart_wallpaper_owner(repo):
+    """KDE applies a look-and-feel package before the portal watcher runs.
+    Wallpaper defaults here would erase the outgoing custom background before
+    the switcher could save its independent light/dark choice."""
+    root = repo / "src/offline/look-and-feel"
+    defaults = sorted(root.glob("*/contents/defaults"))
+    assert defaults
+    for path in defaults:
+        assert "[Wallpaper]" not in path.read_text()
+
+
+def test_init_specific_user_manager_calls_stay_in_distro_layer(repo):
+    """Executable source must ask distro.py for the active user manager.
+    Direct calls silently break OpenRC when the systemd package happens to be
+    installed but is not PID 1."""
+    offenders = []
+    source = repo / "src"
+    checked_suffixes = {".py", ".qml", ".cpp", ".h", ".xml"}
+    for path in source.rglob("*"):
+        if not path.is_file() or path.suffix not in checked_suffixes:
+            continue
+        if path.name == "distro.py":
+            continue
+        for lineno, line in enumerate(path.read_text().splitlines(), 1):
+            if "systemctl" in line:
+                offenders.append(f"{path.relative_to(repo)}:{lineno}")
+    assert not offenders, "direct user-manager calls: " + ", ".join(offenders)
+
+
 @pytest.mark.parametrize(
     "entry", ["install", "uninstall", "legacy-install", "legacy-uninstall"])
 def test_entry_point_exists(repo, entry):
@@ -462,6 +491,14 @@ def test_dark_gtk3_sheet_copies_stay_identical(offline):
 
 def test_kvantum_dark_popup_parity(offline):
     kv = offline / "kvantum/mac-tahoe-liquid-kde"
+    dark_defaults = (
+        offline / "look-and-feel/MacTahoeLiquidKde-Dark/contents/defaults"
+    ).read_text()
+    assert "widgetStyle=kvantum\n" in dark_defaults
+    assert "widgetStyle=kvantum-dark" not in dark_defaults, (
+        "The dark look-and-feel must keep the palette-following base Kvantum "
+        "style; kvantum-dark pins a second palette and breaks native sync."
+    )
     conf = (kv / "mac-tahoe-liquid-kdeDark.kvconfig").read_text()
     assert "blur_only_active_window=false" in conf, (
         "Dark kvconfig must keep blur_only_active_window=false like the "

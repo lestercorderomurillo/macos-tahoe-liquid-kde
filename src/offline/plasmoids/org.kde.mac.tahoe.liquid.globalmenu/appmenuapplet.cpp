@@ -455,7 +455,7 @@ void AppMenuApplet::triggerSystemMenu(QQuickItem* ctx)
 
     menu->addAction(icon("iconSleep", QStringLiteral("system-suspend")), QStringLiteral("Sleep"),
         [cmd = cfg.readEntry(
-             "cmdSleep", QStringLiteral("qdbus6 org.kde.Solid.PowerManagement /org/kde/Solid/PowerManagement requestSuspend || systemctl suspend"))]() {
+             "cmdSleep", QStringLiteral("qdbus6 org.kde.Solid.PowerManagement /org/kde/Solid/PowerManagement requestSuspend || qdbus-qt6 org.kde.Solid.PowerManagement /org/kde/Solid/PowerManagement requestSuspend || qdbus org.kde.Solid.PowerManagement /org/kde/Solid/PowerManagement requestSuspend"))]() {
             runCommand(cmd);
         });
     menu->addAction(icon("iconRestart", QStringLiteral("system-reboot")), QStringLiteral("Restart\u2026"),

@@ -9,6 +9,7 @@ import shutil
 import subprocess
 
 from paths import REPO_ROOT
+from distro import user_service_manager_command
 from steps._helpers import HOME, feat_enabled, info, ok, offline, warn
 from steps._scheduler import install_periodic, is_systemd, remove_periodic
 from utils import run_user
@@ -68,10 +69,17 @@ def _write_units(interval: int, max_px: int) -> None:
         (SVC_DIR / unit).write_text(text, encoding="utf-8")
 
 
-def _systemctl(*args: str) -> None:
-    run_user(["systemctl", "--user", *args],
-             check=False,
-             stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+def _user_service(*args: str) -> bool:
+    command = user_service_manager_command(*args)
+    if command is None:
+        return False
+    try:
+        return run_user(
+            command, check=False, timeout=10,
+            stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
+        ).returncode == 0
+    except (OSError, subprocess.TimeoutExpired):
+        return False
 
 
 def _teardown_units() -> bool:
@@ -80,7 +88,7 @@ def _teardown_units() -> bool:
     the current init so a host that switched inits still cleans up fully."""
     removed = False
     for unit in UNITS:
-        _systemctl("disable", "--now", unit)
+        _user_service("disable", "--now", unit)
         try:
             (SVC_DIR / unit).unlink()
             removed = True
@@ -88,22 +96,28 @@ def _teardown_units() -> bool:
             pass
         except OSError:
             pass
-    _systemctl("daemon-reload")
+    _user_service("daemon-reload")
     if remove_periodic(CRON_TAG):
         removed = True
     return removed
 
 
-def _schedule_systemd(interval: int, max_px: int) -> None:
+def _schedule_systemd(interval: int, max_px: int) -> bool:
     SVC_DIR.mkdir(parents=True, exist_ok=True)
     _write_units(interval, max_px)
-    _systemctl("daemon-reload")
-    _systemctl("enable", *UNITS)
+    results = [
+        _user_service("daemon-reload"),
+        _user_service("enable", *UNITS),
+    ]
     # Restart only the timer (also picks up a changed interval); the service
     # fires on its first boundary so the install's Plasma restart isn't raced.
-    _systemctl("restart", "mac-tahoe-liquid-kde-oled.timer")
-    info(f"Panels pixel-shift up to {max_px} px every {interval} min "
-         "(systemd user timer)")
+    results.append(
+        _user_service("restart", "mac-tahoe-liquid-kde-oled.timer"))
+    scheduled = all(results)
+    if scheduled:
+        info(f"Panels pixel-shift up to {max_px} px every {interval} min "
+             "(systemd user timer)")
+    return scheduled
 
 
 def _schedule_cron(interval: int, max_px: int) -> None:
@@ -159,8 +173,12 @@ def install() -> None:
 
     interval = _interval_minutes()
     max_px = _max_shift_px()
+    # Clean whichever backend a previous boot used, then install exactly one
+    # active scheduler for the init system detected by the distro layer.
+    _teardown_units()
     if is_systemd():
-        _schedule_systemd(interval, max_px)
+        if not _schedule_systemd(interval, max_px):
+            warn("OLED care: systemd user timer could not be enabled")
     else:
         _schedule_cron(interval, max_px)
 

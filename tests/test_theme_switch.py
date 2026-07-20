@@ -147,10 +147,12 @@ def test_color_scheme_hash_tracks_active_scheme(seeded_color_schemes, offline):
 
 def _stub_apply_dependencies(monkeypatch, calls):
     import theme_switch
+    monkeypatch.setattr(theme_switch, "_current_wallpapers", lambda: [])
     monkeypatch.setattr(theme_switch, "write_kde_theme_config",
                         lambda mode: calls.append(("write", mode)) or True)
     monkeypatch.setattr(theme_switch, "_apply_wallpaper",
-                        lambda mode: calls.append(("wallpaper", mode)) or True)
+                        lambda mode, **kw:
+                        calls.append(("wallpaper", mode)) or True)
     monkeypatch.setattr(theme_switch, "_apply_local_extras",
                         lambda mode: calls.append(("local_extras", mode)))
     monkeypatch.setattr(theme_switch, "_apply_lookandfeel_live",
@@ -164,10 +166,10 @@ def _stub_apply_dependencies(monkeypatch, calls):
 
 
 def test_apply_runs_full_pipeline_in_order(monkeypatch):
-    """A single apply() always runs: write → wallpaper → local extras
-    → live LAF → live cursor → Kvantum cycle → KWin reconfigure, in
-    that order. Reordering or skipping any step here breaks the live
-    switch (skipped cycle = stale palette in plasmashell, etc.)."""
+    """Capture first, then write → local extras → live LAF → wallpaper
+    → live cursor → Kvantum cycle → KWin reconfigure.  Applying the
+    wallpaper after LAF prevents its defaults from clobbering a saved custom
+    choice, while the earlier capture preserves the outgoing mode."""
     import theme_switch
     calls: list = []
     _stub_apply_dependencies(monkeypatch, calls)
@@ -177,6 +179,8 @@ def test_apply_runs_full_pipeline_in_order(monkeypatch):
     write_idx = next(i for i, c in enumerate(calls) if c[0] == "write")
     extras_idx = next(i for i, c in enumerate(calls) if c[0] == "local_extras")
     laf_idx = next(i for i, c in enumerate(calls) if c[0] == "laf")
+    wallpaper_idx = next(i for i, c in enumerate(calls)
+                         if c[0] == "wallpaper")
     cursor_idx = next(i for i, c in enumerate(calls) if c[0] == "cursor")
     cycle_idx = next(i for i, c in enumerate(calls) if c[0] == "cycle")
     reconfigure_idx = next(
@@ -184,9 +188,10 @@ def test_apply_runs_full_pipeline_in_order(monkeypatch):
         if c[0] == "qdbus" and c[1][0] == "org.kde.KWin"
     )
 
-    assert write_idx < extras_idx < laf_idx < cursor_idx < cycle_idx < reconfigure_idx
+    assert (write_idx < extras_idx < laf_idx < wallpaper_idx < cursor_idx
+            < cycle_idx < reconfigure_idx)
     assert ("laf", theme_switch.LAF_DARK) in calls
-    assert ("cycle", "kvantum-dark") in calls
+    assert ("cycle", "kvantum") in calls
 
 
 def _prep_effect_warn_case(monkeypatch, tmp_path, kwinrc_body):
@@ -227,7 +232,7 @@ def test_apply_warns_when_third_party_effect_fails_to_load(
 
     assert ts.apply("dark") is True
     err = capsys.readouterr().err
-    assert "shapecorners" in err and "did not load it" in err
+    assert "shapecorners" in err and "could not load it" in err
     # The user's config key is left exactly as it was — never disabled.
     assert ts._parse_ini(kwinrc)["Plugins"]["shapecornersEnabled"] == "true"
 
@@ -241,7 +246,30 @@ def test_apply_no_warn_when_effect_loads_fine(monkeypatch, tmp_path, capsys):
     monkeypatch.setattr(ts, "_kwin_loaded_effects",
                         lambda: {"kwin4_effect_shapecorners", "liquidglass"})
     assert ts.apply("dark") is True
-    assert "did not load" not in capsys.readouterr().err
+    assert "could not load" not in capsys.readouterr().err
+
+
+def test_apply_reloads_third_party_effect_before_warning(
+        monkeypatch, tmp_path, capsys):
+    """A temporarily unloaded compatible effect is actively restored. The
+    warning is reserved for effects that remain absent after that retry."""
+    ts, _ = _prep_effect_warn_case(
+        monkeypatch, tmp_path, "[Plugins]\nshapecornersEnabled=true\n")
+    loaded = iter([
+        {"liquidglass"},
+        {"liquidglass", "kwin4_effect_shapecorners"},
+    ])
+    monkeypatch.setattr(ts, "_kwin_loaded_effects", lambda: next(loaded))
+    calls = []
+    monkeypatch.setattr(ts, "_qdbus",
+                        lambda *args: calls.append(args) or True)
+
+    assert ts.apply("dark") is True
+    assert any(
+        call[-2:] == ("org.kde.kwin.Effects.loadEffect", "shapecorners")
+        for call in calls
+    )
+    assert "shapecorners" not in capsys.readouterr().err
 
 
 def test_apply_no_warn_for_user_disabled_effect(monkeypatch, tmp_path, capsys):
@@ -264,25 +292,20 @@ def test_apply_no_warn_when_loaded_set_unreadable(monkeypatch, tmp_path, capsys)
         monkeypatch, tmp_path, "[Plugins]\nshapecornersEnabled=true\n")
     monkeypatch.setattr(ts, "_kwin_loaded_effects", lambda: None)
     assert ts.apply("dark") is True
-    assert "did not load" not in capsys.readouterr().err
+    assert "could not load" not in capsys.readouterr().err
 
 
 def test_apply_finishes_cycle_and_reconfigure_when_extras_raise(monkeypatch):
-    """``_apply_local_extras`` can crash on FileExistsError from
-    copytree('~/.config/gtk-4.0/assets') when
-    rmtree(..., ignore_errors=True) leaves the dir in place. An
-    unhandled exception bubbling out of apply() skips the widget-
-    style cycle + KWin.reconfigure, leaving plasmashell on the old
-    palette while wallpaper + on-disk config have already flipped —
-    the 'light bg, dark panel, white text' bug. Whatever extras
-    raises, the cycle and reconfigure MUST still run."""
+    """An unexpected local-extras failure must not skip the widget-style
+    cycle or KWin reconfigure after the on-disk theme has already changed."""
     import theme_switch
 
     calls: list = []
     monkeypatch.setattr(theme_switch, "write_kde_theme_config",
                         lambda mode: calls.append(("write", mode)) or True)
     monkeypatch.setattr(theme_switch, "_apply_wallpaper",
-                        lambda mode: calls.append(("wallpaper", mode)) or True)
+                        lambda mode, **kw:
+                        calls.append(("wallpaper", mode)) or True)
     monkeypatch.setattr(theme_switch, "_apply_lookandfeel_live",
                         lambda laf: calls.append(("laf", laf)) or True)
     monkeypatch.setattr(theme_switch, "apply_cursortheme_live",
@@ -304,12 +327,10 @@ def test_apply_finishes_cycle_and_reconfigure_when_extras_raise(monkeypatch):
     assert any(c[0] == "qdbus" and c[1][0] == "org.kde.KWin" for c in calls)
 
 
-def test_local_extras_survives_undeletable_gtk4_assets(monkeypatch, tmp_path):
-    """shutil.rmtree(...,
-    ignore_errors=True) can silently leave the destination in place
-    (inotify watcher recreating files mid-iteration). Without
-    dirs_exist_ok=True on the follow-up copytree, that raises
-    FileExistsError and aborts the entire run."""
+def test_local_extras_removes_legacy_gtk4_override(monkeypatch, tmp_path):
+    """The 0.36.x gtk.css symlink overrode KDE's selected GTK theme and kept
+    Nautilus pinned to one mode. Theme selection now stays in GtkConfig and
+    gsettings, while the old project-managed symlink is migrated away."""
     import theme_switch
 
     home = tmp_path / "home"
@@ -317,34 +338,68 @@ def test_local_extras_survives_undeletable_gtk4_assets(monkeypatch, tmp_path):
     monkeypatch.setenv("HOME", str(home))
 
     gtk_theme = "MacTahoeLiquidKde-Dark"
-    src_root = home / ".themes" / gtk_theme / "gtk-4.0"
-    (src_root / "assets" / "scalable").mkdir(parents=True)
-    (src_root / "assets" / "combobox.png").write_bytes(b"x")
-    (src_root / "assets" / "scalable" / "icon.svg").write_bytes(b"<svg/>")
-    (src_root / "windows-assets").mkdir()
-    (src_root / "windows-assets" / "frame.png").write_bytes(b"y")
-    (src_root / "gtk-Dark.css").write_text("/* dark */")
-    (src_root / "gtk-Light.css").write_text("/* light */")
+    (home / ".themes" / gtk_theme).mkdir(parents=True)
 
     dest_root = home / ".config" / "gtk-4.0"
-    (dest_root / "assets").mkdir(parents=True)
-    (dest_root / "assets" / "stale.png").write_bytes(b"stale")
+    dest_root.mkdir(parents=True)
+    (dest_root / "gtk-Dark.css").write_text("/* old managed copy */")
+    (dest_root / "gtk.css").symlink_to("gtk-Dark.css")
 
     monkeypatch.setattr(theme_switch, "_have",
                         lambda cmd: cmd not in ("kvantummanager", "gsettings"))
     monkeypatch.setattr(theme_switch, "_qdbus", lambda *args: True)
-    monkeypatch.setattr(theme_switch.time, "sleep", lambda _: None)
     monkeypatch.setattr(theme_switch, "flush_icon_caches", lambda: None)
-    # rmtree silently fails — exactly the production failure mode.
-    monkeypatch.setattr(theme_switch.shutil, "rmtree",
-                        lambda *_a, **_kw: None)
 
     theme_switch._apply_local_extras("dark")
 
-    assert (dest_root / "assets" / "combobox.png").is_file()
-    assert (dest_root / "assets" / "scalable" / "icon.svg").is_file()
-    assert (dest_root / "gtk.css").is_symlink()
-    assert (dest_root / "gtk.css").readlink().name == "gtk-Dark.css"
+    assert not (dest_root / "gtk.css").is_symlink()
+    assert not (dest_root / "gtk.css").exists()
+
+
+def test_local_extras_preserves_user_owned_gtk4_css(monkeypatch, tmp_path):
+    import theme_switch
+
+    home = tmp_path / "home"
+    (home / ".themes/MacTahoeLiquidKde-Light").mkdir(parents=True)
+    gtk4 = home / ".config/gtk-4.0"
+    gtk4.mkdir(parents=True)
+    custom = gtk4 / "gtk.css"
+    custom.write_text("/* my custom overrides */\n")
+    monkeypatch.setenv("HOME", str(home))
+    monkeypatch.setattr(theme_switch, "_have", lambda _cmd: False)
+    monkeypatch.setattr(theme_switch, "_qdbus", lambda *args: True)
+    monkeypatch.setattr(theme_switch, "flush_icon_caches", lambda: None)
+
+    theme_switch._apply_local_extras("light")
+
+    assert custom.read_text() == "/* my custom overrides */\n"
+
+
+@pytest.mark.parametrize("mode", ["light", "dark"])
+def test_local_extras_uses_palette_following_kvantum_theme(
+        monkeypatch, tmp_path, mode):
+    import theme_switch
+
+    home = tmp_path / "home"
+    gtk_theme = f"MacTahoeLiquidKde-{mode.capitalize()}"
+    (home / ".themes" / gtk_theme).mkdir(parents=True)
+    monkeypatch.setenv("HOME", str(home))
+    monkeypatch.setattr(
+        theme_switch, "_have",
+        lambda cmd: cmd == "kvantummanager",
+    )
+    calls = []
+    monkeypatch.setattr(
+        theme_switch, "_run_user",
+        lambda cmd, **kwargs:
+        calls.append(cmd) or subprocess.CompletedProcess(cmd, 0),
+    )
+    monkeypatch.setattr(theme_switch, "_qdbus", lambda *args: True)
+    monkeypatch.setattr(theme_switch, "flush_icon_caches", lambda: None)
+
+    theme_switch._apply_local_extras(mode)
+
+    assert ["kvantummanager", "--set", "mac-tahoe-liquid-kde"] in calls
 
 
 def test_cycle_restores_target_on_sigterm(monkeypatch):
@@ -568,6 +623,12 @@ def test_follow_system_light_syncs_all_pieces_not_just_gtk(monkeypatch):
                         lambda laf: calls.append("laf") or True)
     monkeypatch.setattr(theme_switch, "_qdbus",
                         lambda *a: qdbus_targets.append(a) or True)
+    monkeypatch.setattr(
+        theme_switch, "reconfigure_kwin_preserving_foreign_effects",
+        lambda: qdbus_targets.append(
+            ("org.kde.KWin", "/KWin", "org.kde.KWin.reconfigure"),
+        ) or [],
+    )
 
     assert theme_switch.follow_system(light=True) == 0
     # Full per-mode sync ran…
@@ -610,6 +671,30 @@ def test_main_routes_follow_system_and_watch_portal(monkeypatch):
     assert theme_switch.main(["watch-portal"]) == 0
 
 
+def test_session_env_uses_runtime_fallback_without_systemd(monkeypatch):
+    """OpenRC cron has no user systemd manager.  A missing systemctl binary
+    must fall back cleanly and invalidate an earlier bus-less cache."""
+    import theme_switch
+    called = []
+    monkeypatch.delenv("DBUS_SESSION_BUS_ADDRESS", raising=False)
+    monkeypatch.setattr(
+        theme_switch, "_run_user",
+        lambda *args, **kwargs: (_ for _ in ()).throw(OSError("no systemctl")),
+    )
+
+    def recover():
+        called.append(True)
+        os.environ["DBUS_SESSION_BUS_ADDRESS"] = "unix:path=/run/user/1000/bus"
+
+    monkeypatch.setattr(theme_switch, "_sync_session_env_runtime_dir", recover)
+    theme_switch._HAS_DBUS = False
+
+    theme_switch._sync_session_env()
+
+    assert called == [True]
+    assert theme_switch._HAS_DBUS is None
+
+
 def test_watch_portal_needs_session_bus(monkeypatch):
     """Without gdbus / a session bus the watcher can't run — it must report
     failure, not spin. (Autostart on a headless or bus-less session.)"""
@@ -627,6 +712,7 @@ _APPLY_SUBCALLS = (
 
 def _stub_apply_subcalls(monkeypatch, calls, ret=True):
     import theme_switch
+    monkeypatch.setattr(theme_switch, "_current_wallpapers", lambda: [])
     for fn in _APPLY_SUBCALLS:
         monkeypatch.setattr(
             theme_switch, fn,
@@ -670,6 +756,233 @@ def test_main_exit_code_reflects_apply_failure(monkeypatch):
     assert theme_switch.main(["dark"]) == 1
 
 
+# ── smart per-mode wallpaper ownership ───────────────────────────────
+
+
+def _smart_wallpaper_env(monkeypatch, tmp_path):
+    import theme_switch
+
+    home = tmp_path / "home"
+    data = home / ".local/share"
+    state = home / ".local/state"
+    config = home / ".config"
+    for path in (data / "wallpapers/MacTahoe", state, config):
+        path.mkdir(parents=True, exist_ok=True)
+    monkeypatch.setenv("HOME", str(home))
+    monkeypatch.setenv("XDG_DATA_HOME", str(data))
+    monkeypatch.setenv("XDG_STATE_HOME", str(state))
+    monkeypatch.setenv("XDG_CONFIG_HOME", str(config))
+    monkeypatch.delenv("FEAT_WALLPAPERS", raising=False)
+    monkeypatch.delenv("MTTKDE_RESET_WALLPAPERS", raising=False)
+    monkeypatch.delenv("MTTKDE_EXISTING_INSTALL", raising=False)
+    return theme_switch, data / "wallpapers/MacTahoe"
+
+
+def _wp(image, screen=0):
+    return [{"screen": screen, "image": image}]
+
+
+def test_first_install_applies_theme_wallpaper(monkeypatch, tmp_path):
+    ts, theme = _smart_wallpaper_env(monkeypatch, tmp_path)
+    custom = _wp("file:///pictures/first-install-custom.jpg")
+    calls = []
+    monkeypatch.setenv("FEAT_WALLPAPERS", "true")
+    monkeypatch.setenv("MTTKDE_EXISTING_INSTALL", "false")
+    monkeypatch.setattr(ts, "_current_wallpapers", lambda: custom)
+    monkeypatch.setattr(
+        ts, "_apply_theme_wallpaper",
+        lambda mode: calls.append(mode) or (True, theme),
+    )
+    monkeypatch.setattr(
+        ts, "_apply_wallpaper_snapshot",
+        lambda snapshot: (_ for _ in ()).throw(
+            AssertionError("first install must use the theme wallpaper")),
+    )
+
+    assert ts._apply_wallpaper("light", context="install") is True
+    state = ts._load_wallpaper_state()
+    assert calls == ["light"]
+    assert state["modes"]["light"] == []
+    assert state["last_applied"] == _wp(f"file://{theme}")
+
+
+def test_theme_wallpaper_helper_failure_uses_config_fallback(
+        monkeypatch, tmp_path):
+    ts, theme = _smart_wallpaper_env(monkeypatch, tmp_path)
+    current = _wp("file:///pictures/before-install.jpg")
+    expected = _wp(f"file://{theme}")
+    restored = []
+    monkeypatch.setenv("FEAT_WALLPAPERS", "true")
+    monkeypatch.setenv("MTTKDE_EXISTING_INSTALL", "false")
+    monkeypatch.setattr(ts, "_current_wallpapers", lambda: current)
+    monkeypatch.setattr(ts, "_apply_theme_wallpaper",
+                        lambda mode: (False, theme))
+    monkeypatch.setattr(
+        ts, "_apply_wallpaper_snapshot",
+        lambda snapshot: restored.append(snapshot) or True,
+    )
+
+    assert ts._apply_wallpaper("light", context="install") is True
+    assert restored == [expected]
+    assert ts._load_wallpaper_state()["last_applied"] == expected
+
+
+def test_failed_wallpaper_switch_does_not_advance_active_mode(
+        monkeypatch, tmp_path):
+    ts, theme = _smart_wallpaper_env(monkeypatch, tmp_path)
+    light = _wp(f"file://{theme}")
+    ts._save_wallpaper_state({
+        "version": 1,
+        "initialized": True,
+        "enabled": True,
+        "active_mode": "light",
+        "last_applied": light,
+        "modes": {"light": [], "dark": []},
+    })
+    monkeypatch.setattr(ts, "_current_wallpapers", lambda: light)
+    monkeypatch.setattr(ts, "_apply_theme_wallpaper",
+                        lambda mode: (False, theme))
+    monkeypatch.setattr(ts, "_apply_wallpaper_snapshot", lambda snapshot: False)
+
+    assert ts._apply_wallpaper("dark") is False
+    state = ts._load_wallpaper_state()
+    assert state["active_mode"] == "light"
+    assert state["last_applied"] == light
+
+
+def test_reinstall_without_state_preserves_custom_wallpaper(
+        monkeypatch, tmp_path):
+    ts, _theme = _smart_wallpaper_env(monkeypatch, tmp_path)
+    custom = _wp("file:///pictures/my-light-wallpaper.jpg")
+    monkeypatch.setenv("FEAT_WALLPAPERS", "true")
+    monkeypatch.setenv("MTTKDE_EXISTING_INSTALL", "true")
+    monkeypatch.setattr(ts, "_current_wallpapers", lambda: custom)
+    monkeypatch.setattr(
+        ts, "_apply_theme_wallpaper",
+        lambda mode: (_ for _ in ()).throw(
+            AssertionError("reinstall overwrote a custom wallpaper")),
+    )
+
+    assert ts._apply_wallpaper("light", context="install") is True
+    state = ts._load_wallpaper_state()
+    assert state["modes"]["light"] == custom
+    assert state["last_applied"] == custom
+
+
+def test_switcher_remembers_different_custom_wallpapers_per_mode(
+        monkeypatch, tmp_path):
+    ts, theme = _smart_wallpaper_env(monkeypatch, tmp_path)
+    theme_snapshot = _wp(f"file://{theme}")
+    light_custom = _wp("file:///pictures/custom-light.jpg")
+    dark_custom = _wp("file:///pictures/custom-dark.jpg")
+    ts._save_wallpaper_state({
+        "version": 1,
+        "initialized": True,
+        "enabled": True,
+        "active_mode": "light",
+        "last_applied": theme_snapshot,
+        "modes": {"light": [], "dark": []},
+    })
+    current = {"value": light_custom}
+    restored = []
+    monkeypatch.setattr(ts, "_current_wallpapers",
+                        lambda: current["value"])
+    monkeypatch.setattr(ts, "_apply_theme_wallpaper",
+                        lambda mode: (True, theme))
+    monkeypatch.setattr(
+        ts, "_apply_wallpaper_snapshot",
+        lambda snapshot: restored.append(snapshot) or True,
+    )
+
+    # Leaving light captures the manual light choice; dark has no saved
+    # choice yet, so it receives the bundled default.
+    assert ts._apply_wallpaper("dark") is True
+    assert ts._load_wallpaper_state()["modes"]["light"] == light_custom
+
+    # The user chooses a different dark wallpaper. Returning to light saves
+    # it, then restores the independent light choice.
+    current["value"] = dark_custom
+    assert ts._apply_wallpaper("light") is True
+    state = ts._load_wallpaper_state()
+    assert state["modes"]["dark"] == dark_custom
+    assert restored == [light_custom]
+    assert state["last_applied"] == light_custom
+
+
+def test_explicit_wallpaper_reset_clears_both_custom_modes(
+        monkeypatch, tmp_path):
+    ts, theme = _smart_wallpaper_env(monkeypatch, tmp_path)
+    light_custom = _wp("file:///pictures/custom-light.jpg")
+    dark_custom = _wp("file:///pictures/custom-dark.jpg")
+    ts._save_wallpaper_state({
+        "version": 1,
+        "initialized": True,
+        "enabled": True,
+        "active_mode": "light",
+        "last_applied": light_custom,
+        "modes": {"light": light_custom, "dark": dark_custom},
+    })
+    monkeypatch.setenv("FEAT_WALLPAPERS", "true")
+    monkeypatch.setenv("MTTKDE_EXISTING_INSTALL", "true")
+    monkeypatch.setenv("MTTKDE_RESET_WALLPAPERS", "true")
+    monkeypatch.setattr(ts, "_current_wallpapers", lambda: light_custom)
+    calls = []
+    monkeypatch.setattr(
+        ts, "_apply_theme_wallpaper",
+        lambda mode: calls.append(mode) or (True, theme),
+    )
+
+    assert ts._apply_wallpaper("light", context="install") is True
+    state = ts._load_wallpaper_state()
+    assert calls == ["light"]
+    assert state["modes"] == {"light": [], "dark": []}
+    assert state["last_applied"] == _wp(f"file://{theme}")
+
+
+def test_disabled_wallpaper_feature_never_changes_background(
+        monkeypatch, tmp_path):
+    ts, _theme = _smart_wallpaper_env(monkeypatch, tmp_path)
+    custom = _wp("file:///pictures/leave-me-alone.jpg")
+    monkeypatch.setenv("FEAT_WALLPAPERS", "false")
+    monkeypatch.setattr(ts, "_current_wallpapers", lambda: custom)
+    monkeypatch.setattr(
+        ts, "_apply_theme_wallpaper",
+        lambda mode: (_ for _ in ()).throw(AssertionError("wallpaper touched")),
+    )
+    monkeypatch.setattr(
+        ts, "_apply_wallpaper_snapshot",
+        lambda snapshot: (_ for _ in ()).throw(AssertionError("wallpaper touched")),
+    )
+
+    assert ts._apply_wallpaper("dark", context="install") is True
+    state = ts._load_wallpaper_state()
+    assert state["enabled"] is False
+    assert state["last_applied"] == custom
+
+
+def test_wallpaper_config_fallback_captures_each_desktop_screen(
+        monkeypatch, tmp_path):
+    ts, _theme = _smart_wallpaper_env(monkeypatch, tmp_path)
+    appletsrc = (Path(os.environ["XDG_CONFIG_HOME"])
+                 / "plasma-org.kde.plasma.desktop-appletsrc")
+    appletsrc.write_text(
+        "[Containments][10]\nplugin=org.kde.plasma.folder\nlastScreen=1\n"
+        "[Containments][10][Wallpaper][org.kde.image][General]\n"
+        "Image=file:///pictures/right.jpg\n"
+        "[Containments][11]\nplugin=org.kde.plasma.folder\nlastScreen=0\n"
+        "[Containments][11][Wallpaper][org.kde.image][General]\n"
+        "Image=file:///pictures/left.jpg\n"
+        "[Containments][12]\nplugin=org.kde.panel\nlastScreen=0\n",
+        encoding="utf-8",
+    )
+    monkeypatch.setattr(ts, "_evaluate_plasma_script", lambda script: None)
+
+    assert ts._current_wallpapers() == [
+        {"screen": 0, "image": "file:///pictures/left.jpg"},
+        {"screen": 1, "image": "file:///pictures/right.jpg"},
+    ]
+
+
 def test_apply_fails_when_config_writes_fail(monkeypatch):
     """write_kde_theme_config is the critical call —
     False means the core config writes failed (kwriteconfig6 missing
@@ -688,7 +1001,8 @@ def test_apply_fails_when_config_writes_fail(monkeypatch):
     _stub_apply_subcalls(monkeypatch, calls, ret=False)
     monkeypatch.setattr(theme_switch, "write_kde_theme_config",
                         lambda mode: True)
-    monkeypatch.setattr(theme_switch, "_apply_wallpaper", lambda mode: True)
+    monkeypatch.setattr(theme_switch, "_apply_wallpaper",
+                        lambda mode, **kwargs: True)
     monkeypatch.setattr(theme_switch, "_apply_local_extras", lambda mode: True)
     assert theme_switch.apply("dark") is True
 
@@ -985,6 +1299,13 @@ def test_switch_step_install_uninstall_reinstall(sandbox, tmp_path):
     assert autostart.is_file()
     assert "watch-portal" in autostart.read_text()
 
+    state_dir = sandbox / ".local/state/mac-tahoe-liquid-kde"
+    state_dir.mkdir(parents=True)
+    wallpaper_state = state_dir / "wallpapers.json"
+    layout_marker = state_dir / "layout-installed"
+    wallpaper_state.write_text("{}\n")
+    layout_marker.write_text("1\n")
+
     # Drop a leftover apply.service from an older install layout.
     # Uninstall must remove it.
     (svc_dir / "mac-tahoe-liquid-kde-theme-apply.service").write_text(
@@ -1003,6 +1324,8 @@ def test_switch_step_install_uninstall_reinstall(sandbox, tmp_path):
     assert not (svc_dir / "mac-tahoe-liquid-kde-theme.timer").exists()
     assert not (svc_dir / "mac-tahoe-liquid-kde-theme-apply.service").exists()
     assert not autostart.exists()
+    assert not wallpaper_state.exists()
+    assert not layout_marker.exists()
 
 
 def test_switch_step_openrc_schedules_via_crontab_not_systemd(sandbox, tmp_path):

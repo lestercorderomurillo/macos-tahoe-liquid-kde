@@ -33,6 +33,35 @@ def test_parse_args_default_check_update_false(cli_module):
     assert cli_module.parse_args([]).check_update is False
 
 
+def test_parse_args_recognizes_one_shot_update_resets(cli_module):
+    parsed = cli_module.parse_args(["--reset-wallpapers", "--reset-layout"])
+    assert parsed.reset_wallpapers is True
+    assert parsed.reset_layout is True
+
+
+def test_existing_install_detects_current_state_marker(
+        cli_module, monkeypatch, tmp_path):
+    home = tmp_path / "home"
+    marker = home / ".local/state/mac-tahoe-liquid-kde/wallpapers.json"
+    marker.parent.mkdir(parents=True)
+    marker.write_text("{}\n")
+    monkeypatch.setenv("HOME", str(home))
+
+    assert cli_module._theme_is_already_installed() is True
+
+
+def test_existing_install_detects_legacy_applet_without_state(
+        cli_module, monkeypatch, tmp_path):
+    home = tmp_path / "home"
+    config = home / ".config"
+    config.mkdir(parents=True)
+    (config / "plasma-org.kde.plasma.desktop-appletsrc").write_text(
+        "plugin=org.kde.mac-tahoe-liquid-kde.launcher\n")
+    monkeypatch.setenv("HOME", str(home))
+
+    assert cli_module._theme_is_already_installed() is True
+
+
 # ── install order — the inter-step dependency graph ───────────────────
 
 

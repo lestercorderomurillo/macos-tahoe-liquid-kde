@@ -1,6 +1,6 @@
 # Contributing
 
-Thanks for considering a contribution. This project is GPL-2.0 — forks are welcome, but anything you redistribute has to stay open under the same license and keep the copyright notices intact. No warranty, no liability.
+Thanks for considering a contribution. This project is GPL-3.0 — forks are welcome, but anything you redistribute has to stay open under the same license and keep the copyright notices intact. No warranty, no liability.
 
 ## Before you start
 
@@ -26,8 +26,8 @@ KDE Plasma 6.6+ is required to actually exercise the desktop pieces. Most static
 git clone https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde
 cd macos-tahoe-liquid-kde
 
-./install            # user-scope, no sudo (artefacts under ~/.local, ~/.config)
-sudo ./uninstall     # sudo only for legacy /usr/lib cleanup
+sudo ./install       # installs user assets plus compiled system Qt6 plugins
+sudo ./uninstall     # removes current and legacy system Qt6 plugins
 ./test               # full pytest suite (~20s)
 ./test --vm          # plymouth render harness (requires root, see tests/vm/)
 ```
@@ -43,7 +43,9 @@ mac-tahoe-theme-switch auto      # re-enable the 06:00 / 18:00 timer
 Reload Plasma after a manual fix without a full logout:
 
 ```sh
-systemctl --user restart plasma-plasmashell.service
+kquitapp6 plasmashell
+sleep 1
+kstart plasmashell
 ```
 
 ## Project layout
@@ -85,13 +87,13 @@ Feature-based, NOT layer-based: a step owns its slice end-to-end. Don't dump eve
 
 ## Tests
 
-**Run `./test` before every PR.** No exceptions. The suite is fast (~20s, 420+ tests).
+**Run `./test` before every PR.** No exceptions. The suite is fast (~20s, 900+ tests).
 
 The session-scoped safety net in [tests/conftest.py](tests/conftest.py) snapshots live KDE config + systemd unit state at session start and restores any drift on teardown. If your change leaks, you'll see a `LIVE-STATE LEAK DETECTED` banner naming the file or unit that moved. Track it down — don't suppress the warning.
 
 Add a regression test for every bug you fix and every behaviour you add. PRs without tests get bounced unless there's a real reason testing is impossible (and that reason goes in the PR description).
 
-If you add a step that talks to the live session (`systemctl --user`, `kvantummanager`, `plasma-apply-*`, dconf), shim it via `make_live_shim_dir` in `tests/conftest.py` — don't let tests touch the maintainer's real desktop.
+If you add a step that talks to the live session (`user_service_manager_command`, `kvantummanager`, `plasma-apply-*`, dconf), shim it via `make_live_shim_dir` in `tests/conftest.py` — don't let tests touch the maintainer's real desktop.
 
 ```sh
 ./test                                          # full suite

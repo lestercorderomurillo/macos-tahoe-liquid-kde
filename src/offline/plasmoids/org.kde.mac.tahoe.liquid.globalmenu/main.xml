@@ -53,7 +53,7 @@
     </entry>
 
     <entry name="cmdSleep" type="String">
-      <default>qdbus6 org.kde.Solid.PowerManagement /org/kde/Solid/PowerManagement requestSuspend || systemctl suspend</default>
+      <default>qdbus6 org.kde.Solid.PowerManagement /org/kde/Solid/PowerManagement requestSuspend || qdbus-qt6 org.kde.Solid.PowerManagement /org/kde/Solid/PowerManagement requestSuspend || qdbus org.kde.Solid.PowerManagement /org/kde/Solid/PowerManagement requestSuspend</default>
     </entry>
     <entry name="cmdRestart" type="String">
       <default>qdbus6 org.kde.LogoutPrompt /LogoutPrompt org.kde.LogoutPrompt.promptReboot</default>

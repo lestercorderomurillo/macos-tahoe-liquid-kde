@@ -45,6 +45,13 @@ _NAME_OVERRIDES = {
     "sddm": "SDDM Login",
     "oled_care": "OLED Care",
     "kconf_update": "Config Migrations",
+    "_reset_wallpapers": "Reset Saved Wallpapers",
+    "_reset_layout": "Reset Panel Layout",
+}
+
+_ACTION_DESC = {
+    "_reset_wallpapers": "replace custom light/dark choices once",
+    "_reset_layout": "replace the current panels once",
 }
 
 
@@ -52,7 +59,7 @@ def _name(key: str) -> str:
     return _NAME_OVERRIDES.get(key, key.replace("_", " ").title())
 
 
-_NAME_WIDTH = max(len(_name(k)) for k in ALL_FEATURES)
+_NAME_WIDTH = max(len(_name(k)) for k in (*ALL_FEATURES, *_ACTION_DESC))
 
 # (key, label, lo, hi, unit)
 _INT_ROWS = {
@@ -74,6 +81,9 @@ class Wizard:
     def __init__(self, feat: dict[str, object], mode: str = "install"):
         self.mode = mode
         self.feat: dict[str, object] = dict(feat)
+        self.existing_install = bool(self.feat.get("_existing_install", False))
+        self.feat.setdefault("_reset_wallpapers", False)
+        self.feat.setdefault("_reset_layout", False)
         self.rows: list[tuple[str, str]] = self._build_rows()
         self.cursor = 0
 
@@ -83,6 +93,9 @@ class Wizard:
             rows.append(("radio", "theme_mode"))
         rows.extend(("toggle", k) for k in FEATURE_ORDER)
         if self.mode == "install":
+            if self.existing_install:
+                rows.append(("action", "_reset_wallpapers"))
+                rows.append(("action", "_reset_layout"))
             rows.append(("toggle", "apply_theme"))
             rows.append(("toggle", "oled_care"))
             rows.append(("int", "oled_interval"))
@@ -100,7 +113,7 @@ class Wizard:
     def activate(self) -> None:
         """Space: flip a toggle or cycle the radio."""
         kind, key = self.current()
-        if kind == "toggle":
+        if kind in ("toggle", "action"):
             self.feat[key] = not bool(self.feat.get(key, True))
         elif kind == "radio":
             self.adjust(1)
@@ -116,7 +129,7 @@ class Wizard:
             _, lo, hi, _ = _INT_ROWS[key]
             cur = _coerce_int(self.feat.get(key), lo, lo, hi)
             self.feat[key] = max(lo, min(hi, cur + delta))
-        elif kind == "toggle":
+        elif kind in ("toggle", "action"):
             self.feat[key] = not bool(self.feat.get(key, True))
 
     def set_all(self, value: bool) -> None:
@@ -127,6 +140,8 @@ class Wizard:
     def reset(self) -> None:
         for k, v in DEFAULT_FEATURES.items():
             self.feat[k] = v
+        self.feat["_reset_wallpapers"] = False
+        self.feat["_reset_layout"] = False
 
     def enabled_count(self) -> tuple[int, int]:
         toggles = [key for kind, key in self.rows if kind == "toggle"]
@@ -134,6 +149,10 @@ class Wizard:
 
     def result(self) -> dict[str, object]:
         out = {k: v for k, v in self.feat.items() if k in DEFAULT_FEATURES}
+        out["_existing_install"] = self.existing_install
+        out["_reset_wallpapers"] = bool(
+            self.feat.get("_reset_wallpapers", False))
+        out["_reset_layout"] = bool(self.feat.get("_reset_layout", False))
         # Selections always persist to features.json on install so the
         # next run (and the GUI picker) starts from the same state.
         out["_save"] = self.mode == "install"
@@ -270,6 +289,15 @@ def _draw_row(scr, y: int, wiz: Wizard, i: int, margin: int) -> None:
                  focus if on else _c(_P_DIM, focus))
         _put(scr, y, x, FEATURE_DESC.get(key, ""), _c(_P_DIM))
         return
+    if kind == "action":
+        on = bool(wiz.feat.get(key, False))
+        x = _put(scr, y, margin, "[", focus)
+        x = _put(scr, y, x, "✓" if on else " ",
+                 _c(_P_YELLOW, curses.A_BOLD))
+        x = _put(scr, y, x, "]  ", focus)
+        x = _put(scr, y, x, _name(key).ljust(_NAME_WIDTH + 2), focus)
+        _put(scr, y, x, _ACTION_DESC[key], _c(_P_DIM))
+        return
     if kind == "radio":
         mode = str(wiz.feat.get(key, "auto"))
         x = _put(scr, y, margin, "     ")
@@ -363,6 +391,22 @@ def _draw_summary(scr, wiz: Wizard, cursor: int) -> int:
                  f"every {wiz.feat.get('oled_interval', 5)} min, "
                  f"max {wiz.feat.get('oled_max_shift', 8)} px",
                  _c(_P_YELLOW, curses.A_BOLD))
+            y += 1
+        if wiz.existing_install:
+            reset_wp = bool(wiz.feat.get("_reset_wallpapers"))
+            x = _put(scr, y, margin, "Wallpapers: ")
+            _put(scr, y, x,
+                 "Reset to theme defaults" if reset_wp
+                 else "Keep smart light/dark choices",
+                 _c(_P_YELLOW if reset_wp else _P_GREEN, curses.A_BOLD))
+            y += 1
+            reset_layout = bool(wiz.feat.get("_reset_layout"))
+            x = _put(scr, y, margin, "Panel Layout: ")
+            _put(scr, y, x,
+                 "Rebuild from theme" if reset_layout
+                 else "Keep user changes",
+                 _c(_P_YELLOW if reset_layout else _P_GREEN,
+                    curses.A_BOLD))
             y += 1
         y += 1
         _put(scr, y, margin, "Your selection is saved to features.json",

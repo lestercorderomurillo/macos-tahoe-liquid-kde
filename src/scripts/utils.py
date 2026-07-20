@@ -36,6 +36,71 @@ def run_user(*args, **kwargs):
     return subprocess.run(*args, **kwargs)
 
 
+_DESKTOP_ENV_KEYS = frozenset({
+    "DBUS_SESSION_BUS_ADDRESS",
+    "DISPLAY",
+    "WAYLAND_DISPLAY",
+    "XAUTHORITY",
+    "XDG_CURRENT_DESKTOP",
+    "XDG_RUNTIME_DIR",
+    "XDG_SESSION_TYPE",
+})
+_PROC_ROOT = Path("/proc")
+
+
+def restore_desktop_session_env(uid: int | None = None) -> None:
+    """Recover a Plasma session environment without assuming an init system.
+
+    ``sudo`` and cron strip the display and bus variables. The runtime-dir
+    sockets recover Wayland/DBus on systemd and OpenRC/elogind; reading a
+    same-user plasmashell's ``/proc/<pid>/environ`` fills X11/Xauthority and
+    any remaining values. Permission and process-race failures are harmless.
+    """
+    if uid is None:
+        try:
+            uid = int(os.environ.get("SUDO_UID") or os.getuid())
+        except ValueError:
+            uid = os.getuid()
+    runtime = Path(os.environ.get("XDG_RUNTIME_DIR") or f"/run/user/{uid}")
+    if runtime.is_dir():
+        os.environ.setdefault("XDG_RUNTIME_DIR", str(runtime))
+        bus = runtime / "bus"
+        if "DBUS_SESSION_BUS_ADDRESS" not in os.environ and bus.is_socket():
+            os.environ["DBUS_SESSION_BUS_ADDRESS"] = f"unix:path={bus}"
+        if "WAYLAND_DISPLAY" not in os.environ:
+            for socket in sorted(runtime.glob("wayland-*")):
+                if socket.is_socket() and not socket.name.endswith(".lock"):
+                    os.environ["WAYLAND_DISPLAY"] = socket.name
+                    break
+
+    try:
+        candidates = list(_PROC_ROOT.iterdir())
+    except OSError:
+        return
+    for process in candidates:
+        if not process.name.isdigit():
+            continue
+        try:
+            if process.stat().st_uid != uid:
+                continue
+            if (process / "comm").read_text().strip() != "plasmashell":
+                continue
+            raw = (process / "environ").read_bytes()
+        except OSError:
+            continue
+        for entry in raw.split(b"\0"):
+            key_raw, sep, value_raw = entry.partition(b"=")
+            if not sep:
+                continue
+            key = key_raw.decode(errors="ignore")
+            if key not in _DESKTOP_ENV_KEYS or key in os.environ:
+                continue
+            value = value_raw.decode(errors="ignore")
+            if value:
+                os.environ[key] = value
+        break
+
+
 _USER_AGENT = (
     "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 "
     "MacTahoeLiquidKDE/installer"

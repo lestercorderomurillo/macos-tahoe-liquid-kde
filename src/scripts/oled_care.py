@@ -56,35 +56,16 @@ _SESSION_ENV_KEYS = frozenset({
     "XAUTHORITY",
     "XDG_RUNTIME_DIR",
 })
-
-
-def _sync_session_env_systemd() -> bool:
-    """Pull the session env out of the systemd user manager. Returns True
-    only if the query succeeded, so the caller knows whether to try the
-    init-agnostic fallback."""
-    try:
-        res = subprocess.run(
-            ["systemctl", "--user", "show-environment"],
-            check=False, capture_output=True, text=True,
-            timeout=5,
-        )
-    except (OSError, subprocess.TimeoutExpired):
-        return False
-    if res.returncode != 0:
-        return False
-    for line in res.stdout.splitlines():
-        key, _, value = line.partition("=")
-        if key in _SESSION_ENV_KEYS and value:
-            os.environ.setdefault(key, value)
-    return True
+_PROC_ROOT = Path("/proc")
 
 
 def _sync_session_env_runtime_dir() -> None:
-    """Reconstruct the session env from ``/run/user/$UID`` for hosts with
-    no systemd user manager (OpenRC), where this runs from a bare cron
-    environment. XDG_RUNTIME_DIR is fixed by the kernel/elogind; the
-    Wayland socket and DBus bus live inside it under well-known names, so
-    we can recover DISPLAY-less Wayland sessions without systemd."""
+    """Reconstruct the session env from ``/run/user/$UID``.
+
+    XDG_RUNTIME_DIR is provided by the session runtime (systemd-logind or
+    elogind); its well-known Wayland and DBus sockets work without knowing
+    which init launched the scheduled command.
+    """
     xrd = os.environ.get("XDG_RUNTIME_DIR") or f"/run/user/{os.getuid()}"
     if not Path(xrd).is_dir():
         return
@@ -104,13 +85,44 @@ def _sync_session_env_runtime_dir() -> None:
             os.environ["DBUS_SESSION_BUS_ADDRESS"] = f"unix:path={bus}"
 
 
+def _sync_session_env_from_plasmashell() -> None:
+    """Recover X11 and any missing values from a same-user Plasma shell."""
+    try:
+        uid = int(os.environ.get("SUDO_UID") or os.getuid())
+    except ValueError:
+        uid = os.getuid()
+    try:
+        processes = list(_PROC_ROOT.iterdir())
+    except OSError:
+        return
+    for process in processes:
+        if not process.name.isdigit():
+            continue
+        try:
+            if process.stat().st_uid != uid:
+                continue
+            if (process / "comm").read_text().strip() != "plasmashell":
+                continue
+            raw = (process / "environ").read_bytes()
+        except OSError:
+            continue
+        for entry in raw.split(b"\0"):
+            key_raw, sep, value_raw = entry.partition(b"=")
+            key = key_raw.decode(errors="ignore")
+            if not sep or key not in _SESSION_ENV_KEYS or key in os.environ:
+                continue
+            value = value_raw.decode(errors="ignore")
+            if value:
+                os.environ[key] = value
+        break
+
+
 def _sync_session_env() -> None:
     """Best-effort recovery of the desktop session env for scheduled
-    fires. Tries the systemd user manager first, then an init-agnostic
-    ``/run/user/$UID`` probe so the OpenRC/cron path still reaches
-    plasmashell instead of silently no-op'ing."""
-    if not _sync_session_env_systemd():
-        _sync_session_env_runtime_dir()
+    fires. Runtime sockets cover Wayland/DBus, while a same-user plasmashell
+    supplies X11/Xauthority. Neither path depends on the host init system."""
+    _sync_session_env_runtime_dir()
+    _sync_session_env_from_plasmashell()
 
 
 def _evaluate_script(script: str) -> str | None:

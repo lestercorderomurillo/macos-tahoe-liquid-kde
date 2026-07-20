@@ -22,7 +22,9 @@ from log import (
 from preflight import run_preflight
 from state import RunTracker
 from step_runner import run_phase, step_deps, step_exists, step_has_phase, step_module
-from utils import have, kw_read, pkg_sync_install, run_user
+from utils import (
+    have, kw_read, pkg_sync_install, restore_desktop_session_env, run_user,
+)
 
 
 ALL_FEATURES = [
@@ -115,6 +117,10 @@ Options:
                        Stage the install now; re-run with --apply-theme later.
     --no-grub-modify   Don't auto-edit /etc/default/grub for the boot
                        splash kernel cmdline (prints manual fix instead)
+    --reset-wallpapers Forget saved light/dark wallpaper choices and apply
+                       the bundled wallpaper once
+    --reset-layout     Rebuild the bundled top bar and Dock once, replacing
+                       the current panel layout
 
   Persistence:
     --save             Save current flags to features.json
@@ -222,6 +228,8 @@ class ParsedArgs:
         self.check_update = False
         self.preflight_only = False
         self.restart_only = False
+        self.reset_wallpapers = False
+        self.reset_layout = False
         self.cli_overrides: dict[str, bool] = {}
         self.oled_interval: int | None = None
         self.oled_max_shift: int | None = None
@@ -271,6 +279,10 @@ def parse_args(argv: list[str]) -> ParsedArgs:
             p.preflight_only = True
         elif arg == "--restart":
             p.restart_only = True
+        elif arg == "--reset-wallpapers":
+            p.reset_wallpapers = True
+        elif arg == "--reset-layout":
+            p.reset_layout = True
         elif arg == "--no-grub-modify":
             # Read by the plymouth step: print manual instructions
             # instead of editing /etc/default/grub.
@@ -463,6 +475,10 @@ def apply_overrides(feat: dict[str, object], parsed: ParsedArgs) -> dict[str, ob
     if parsed.oled_max_shift is not None:
         feat["oled_max_shift"] = parsed.oled_max_shift
 
+    # One-shot update actions: deliberately not written to features.json.
+    feat["_reset_wallpapers"] = parsed.reset_wallpapers
+    feat["_reset_layout"] = parsed.reset_layout
+
     if parsed.do_save:
         save_features(feat)
         ok("features.json saved")
@@ -477,6 +493,12 @@ def export_env(feat: dict[str, object]) -> None:
         _coerce_int(feat.get("oled_interval"), 5, 1, 59))
     os.environ["OLED_MAX_SHIFT"] = str(
         _coerce_int(feat.get("oled_max_shift"), 8, 1, 16))
+    os.environ["MTTKDE_EXISTING_INSTALL"] = _b(
+        feat.get("_existing_install", False))
+    os.environ["MTTKDE_RESET_WALLPAPERS"] = _b(
+        feat.get("_reset_wallpapers", False))
+    os.environ["MTTKDE_RESET_LAYOUT"] = _b(
+        feat.get("_reset_layout", False))
     for k in ALL_FEATURES:
         os.environ[f"FEAT_{k.upper()}"] = _b(feat.get(k, True))
 
@@ -602,45 +624,40 @@ def _tui_wizard(feat: dict[str, object], mode: str):
         return _TUI_UNAVAILABLE
 
 
+def _theme_is_already_installed() -> bool:
+    """Detect an update before this run copies any assets.
+
+    The explicit state markers cover current releases. The binary, look-and-
+    feel packages and applet IDs recognize older installs that predate those
+    markers, so an upgrade defaults to preserving the user's wallpaper and
+    panel edits.
+    """
+    home = Path.home()
+    candidates = (
+        home / ".local/state/mac-tahoe-liquid-kde/wallpapers.json",
+        home / ".local/state/mac-tahoe-liquid-kde/layout-installed",
+        home / ".local/bin/mac-tahoe-theme-switch",
+        home / ".local/share/plasma/look-and-feel/"
+        "org.kde.mac-tahoe-liquid-kde.light",
+        home / ".local/share/plasma/look-and-feel/"
+        "org.kde.mac-tahoe-liquid-kde.dark",
+    )
+    if any(path.exists() for path in candidates):
+        return True
+    appletsrc = home / ".config/plasma-org.kde.plasma.desktop-appletsrc"
+    try:
+        text = appletsrc.read_text(encoding="utf-8", errors="replace")
+    except OSError:
+        return False
+    return "org.kde.mac-tahoe" in text or "org.kde.mac.tahoe" in text
+
+
 def _restore_user_session_env(uid: int) -> None:
     """Recover the user's session env — sudo strips XDG_RUNTIME_DIR /
     DBUS_SESSION_BUS_ADDRESS, leaving qdbus and plasmashell probes talking to
-    nowhere. Seeds /run/user/<uid>, then asks the user systemd manager."""
-    runtime_dir = Path(f"/run/user/{uid}")
-    bus = runtime_dir / "bus"
-    if runtime_dir.is_dir():
-        os.environ.setdefault("XDG_RUNTIME_DIR", str(runtime_dir))
-    if bus.exists():
-        os.environ.setdefault("DBUS_SESSION_BUS_ADDRESS", f"unix:path={bus}")
-
-    if not have("systemctl"):
-        return
-    try:
-        res = run_user(
-            ["systemctl", "--user", "show-environment"],
-            check=False,
-            capture_output=True,
-            text=True,
-            timeout=5,
-        )
-    except subprocess.TimeoutExpired:
-        return
-    if res.returncode != 0:
-        return
-
-    wanted = {
-        "DBUS_SESSION_BUS_ADDRESS",
-        "DISPLAY",
-        "WAYLAND_DISPLAY",
-        "XAUTHORITY",
-        "XDG_CURRENT_DESKTOP",
-        "XDG_RUNTIME_DIR",
-        "XDG_SESSION_TYPE",
-    }
-    for line in res.stdout.splitlines():
-        key, _, value = line.partition("=")
-        if key in wanted and value:
-            os.environ[key] = value
+    nowhere. Uses runtime sockets and the user's plasmashell process, so this
+    works with systemd, OpenRC/elogind, and other session launchers."""
+    restore_desktop_session_env(uid)
 
 
 def _require_root_and_drop_to_user(op: str = "install") -> bool:
@@ -1087,6 +1104,7 @@ def run_install(argv: list[str], tui: bool = False,
         return 1
 
     feat = apply_overrides(load_features(), parsed)
+    feat["_existing_install"] = _theme_is_already_installed()
     export_env(feat)
 
     if parsed.preflight_only:
@@ -1095,7 +1113,8 @@ def run_install(argv: list[str], tui: bool = False,
 
     # Standalone --restart just kicks plasmashell. Combined with install
     # flags it is implicit — the install already ends with restart_plasma.
-    if parsed.restart_only and not parsed.only_mode and not parsed.cli_overrides:
+    if (parsed.restart_only and not parsed.only_mode and not parsed.cli_overrides
+            and not parsed.reset_wallpapers and not parsed.reset_layout):
         banner(read_version())
         step("Restarting Plasma")
         note("Restarts Plasma shell — no install, no config changes")

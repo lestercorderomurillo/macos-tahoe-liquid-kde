@@ -30,6 +30,15 @@ def test_init_system_env_override(monkeypatch):
     assert _scheduler.is_systemd()
 
 
+def test_user_service_manager_command_is_init_gated(monkeypatch):
+    monkeypatch.setenv("MTTKDE_INIT", "openrc")
+    assert distro.user_service_manager_command("restart", "example") is None
+    monkeypatch.setenv("MTTKDE_INIT", "systemd")
+    assert distro.user_service_manager_command("restart", "example") == [
+        "systemctl", "--user", "restart", "example",
+    ]
+
+
 def test_init_system_ignores_garbage_override(monkeypatch):
     monkeypatch.setenv("MTTKDE_INIT", "upstart")
     # Falls through to the real probe rather than honoring a bad value.
@@ -148,9 +157,24 @@ def test_scheduler_is_noop_on_systemd(monkeypatch):
     # No-op on systemd, but still reports success so the caller doesn't warn.
     assert _scheduler.install_periodic("oled", 5, "/bin/oled") is True
     assert _scheduler.install_at_times("theme", [(6, 0)], "/bin/theme") is True
-    # Never touched crontab at all.
+    # Nothing was installed; cleanup finds no marked line.
     assert fake.lines is None
     assert _scheduler.remove_periodic("oled") is False
+
+
+def test_systemd_cleanup_removes_cron_left_by_previous_openrc_boot(
+        monkeypatch):
+    fake = FakeCrontab()
+    fake.lines = [
+        "*/5 * * * * /bin/oled # mac-tahoe-liquid-kde:oled",
+        "30 3 * * * /home/u/backup.sh",
+    ]
+    monkeypatch.setattr(_scheduler, "run_user", fake)
+    monkeypatch.setattr(_scheduler, "_have_crontab", lambda: True)
+    monkeypatch.setenv("MTTKDE_INIT", "systemd")
+
+    assert _scheduler.remove_periodic("oled") is True
+    assert fake.lines == ["30 3 * * * /home/u/backup.sh"]
 
 
 def test_install_reports_failure_when_crontab_write_fails(monkeypatch):
@@ -191,16 +215,64 @@ def test_session_env_runtime_dir_recovers_wayland_and_bus(monkeypatch, tmp_path)
     assert os.environ["DBUS_SESSION_BUS_ADDRESS"] == f"unix:path={xrd / 'bus'}"
 
 
-def test_session_env_falls_back_when_systemd_query_fails(monkeypatch, tmp_path):
-    """_sync_session_env tries systemd first; when that fails (OpenRC has
-    no user manager) it must reach the runtime-dir probe."""
+def test_session_env_combines_runtime_and_process_sources(monkeypatch, tmp_path):
+    """Scheduled jobs recover the session without querying an init-specific
+    user manager: sockets provide DBus/Wayland and plasmashell fills X11."""
     import oled_care
 
-    monkeypatch.setattr(oled_care, "_sync_session_env_systemd", lambda: False)
-    called = {"runtime": False}
+    called = {"runtime": False, "process": False}
     monkeypatch.setattr(
         oled_care, "_sync_session_env_runtime_dir",
         lambda: called.__setitem__("runtime", True),
     )
+    monkeypatch.setattr(
+        oled_care, "_sync_session_env_from_plasmashell",
+        lambda: called.__setitem__("process", True),
+    )
     oled_care._sync_session_env()
-    assert called["runtime"] is True
+    assert called == {"runtime": True, "process": True}
+
+
+def test_generic_session_env_recovers_x11_from_plasmashell(
+        monkeypatch, tmp_path):
+    import utils
+
+    proc = tmp_path / "proc"
+    shell = proc / "123"
+    shell.mkdir(parents=True)
+    (shell / "comm").write_text("plasmashell\n")
+    (shell / "environ").write_bytes(
+        b"DISPLAY=:9\0XAUTHORITY=/tmp/xauth-test\0XDG_SESSION_TYPE=x11\0")
+    runtime = tmp_path / "runtime"
+    runtime.mkdir()
+    monkeypatch.setattr(utils, "_PROC_ROOT", proc)
+    monkeypatch.setenv("XDG_RUNTIME_DIR", str(runtime))
+    for key in ("DISPLAY", "XAUTHORITY", "XDG_SESSION_TYPE"):
+        monkeypatch.delenv(key, raising=False)
+
+    utils.restore_desktop_session_env(os.getuid())
+
+    assert os.environ["DISPLAY"] == ":9"
+    assert os.environ["XAUTHORITY"] == "/tmp/xauth-test"
+    assert os.environ["XDG_SESSION_TYPE"] == "x11"
+
+
+@pytest.mark.parametrize("module_name", ["oled_care", "theme_switch"])
+def test_standalone_helpers_recover_x11_without_init_manager(
+        monkeypatch, tmp_path, module_name):
+    module = __import__(module_name)
+    proc = tmp_path / f"proc-{module_name}"
+    shell = proc / "321"
+    shell.mkdir(parents=True)
+    (shell / "comm").write_text("plasmashell\n")
+    (shell / "environ").write_bytes(
+        b"DISPLAY=:7\0XAUTHORITY=/tmp/xauth-standalone\0")
+    monkeypatch.setattr(module, "_PROC_ROOT", proc)
+    monkeypatch.setenv("SUDO_UID", str(os.getuid()))
+    monkeypatch.delenv("DISPLAY", raising=False)
+    monkeypatch.delenv("XAUTHORITY", raising=False)
+
+    module._sync_session_env_from_plasmashell()
+
+    assert os.environ["DISPLAY"] == ":7"
+    assert os.environ["XAUTHORITY"] == "/tmp/xauth-standalone"

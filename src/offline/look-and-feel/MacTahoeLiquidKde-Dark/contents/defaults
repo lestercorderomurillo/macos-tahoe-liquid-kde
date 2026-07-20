@@ -5,7 +5,7 @@ ColorScheme=MacTahoeLiquidKdeDark
 Theme=MacTahoeLiquidKde-Icons-dark
 
 [kdeglobals][KDE]
-widgetStyle=kvantum-dark
+widgetStyle=kvantum
 LookAndFeelPackage=org.kde.mac-tahoe-liquid-kde.dark
 
 [kcminputrc][Mouse]
@@ -26,6 +26,3 @@ LayoutName=org.kde.breeze.desktop
 
 [plasmarc][Theme]
 name=MacTahoeLiquidKde-Dark
-
-[Wallpaper]
-Image=MacTahoe

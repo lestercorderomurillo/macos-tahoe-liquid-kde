@@ -195,8 +195,33 @@ def test_result_filters_to_known_keys_and_always_saves_on_install():
     res = wiz.result()
     assert res["_save"] is True
     assert "_bogus" not in res
-    assert set(res) - {"_save"} == set(cli.DEFAULT_FEATURES)
+    transient = {"_save", "_existing_install", "_reset_wallpapers",
+                 "_reset_layout"}
+    assert set(res) - transient == set(cli.DEFAULT_FEATURES)
     assert _wizard("uninstall").result()["_save"] is False
+
+
+def test_existing_install_offers_safe_one_shot_reset_actions():
+    feat = dict(cli.DEFAULT_FEATURES)
+    feat["_existing_install"] = True
+    wiz = install_tui.Wizard(feat, "install")
+
+    assert ("action", "_reset_wallpapers") in wiz.rows
+    assert ("action", "_reset_layout") in wiz.rows
+    assert wiz.feat["_reset_wallpapers"] is False
+    assert wiz.feat["_reset_layout"] is False
+
+    _goto(wiz, ("action", "_reset_wallpapers"))
+    wiz.activate()
+    result = wiz.result()
+    assert result["_existing_install"] is True
+    assert result["_reset_wallpapers"] is True
+    assert result["_reset_layout"] is False
+
+
+def test_first_install_does_not_show_update_reset_actions():
+    wiz = _wizard()
+    assert not any(kind == "action" for kind, _ in wiz.rows)
 
 
 def test_cursor_stays_in_bounds():

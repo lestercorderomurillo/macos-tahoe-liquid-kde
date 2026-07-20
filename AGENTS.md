@@ -193,6 +193,7 @@ install`, or probe for systemd/OpenRC themselves — call
 | `current_distro()`                    | Lowercase `/etc/os-release` ID (`arch`, `cachyos`, `gentoo`, `fedora`, `opensuse-tumbleweed`, ...). |
 | `distro_id_like()`                    | ID_LIKE chain so downstream distros (Nobara → fedora, Garuda → arch) inherit the parent's package map. |
 | `init_system()`                       | `"systemd"` when `/run/systemd/system` is present, else `"openrc"`. The ONLY sanctioned init probe — the scheduled-feature steps branch on it to pick a systemd user timer vs. a per-user crontab line. |
+| `user_service_manager_command(*args)` | A `systemctl --user ...` argv only when systemd is the running init; `None` on OpenRC. All user-service operations go through this wrapper and provide an init-agnostic fallback. |
 | `qt6_plugins_dir()` / `qt6_qml_dir()` | Asks `qmake6` → `qtpaths6` → `pkg-config Qt6Core` in that order. Falls back to the per-distro libdir table only when that dir actually exists on disk. Otherwise raises `Qt6PathsMissing` with the distro-appropriate install hint. |
 | `package_for(token)`                  | Translates an Arch package name from a step's `deps()` token into the equivalent on the current distro (`g++:gcc` → `gcc-c++` on Fedora, `sys-devel/gcc` on Gentoo). |
 | `package_installed(pkg)`              | Direct package-database probe (`pacman -Q`, `rpm -q`, ...) so dep resolution installs only what's actually missing. |
@@ -495,6 +496,8 @@ Highlights:
   invocation.
 - Don't hardcode `/usr/lib/qt6` or call `pacman -S` / `dnf install`
   outside `distro.py` — static tests will reject it.
+- Don't invoke a user service manager directly outside `distro.py` — use
+  `user_service_manager_command()` and provide an OpenRC-safe fallback.
 - Don't call Qt6 binaries from preflight with bare `subprocess.run`
   — use `utils.run_user`.
 - Don't introduce a download phase for any step — all assets are

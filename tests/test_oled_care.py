@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import json
 import os
+import subprocess
 
 import oled_care
 
@@ -210,7 +211,10 @@ def _wire_step(tmp_path, monkeypatch):
     monkeypatch.setattr(step, "SVC_DIR", svc_dir)
     monkeypatch.setattr(step, "STATE_FILE", state)
     monkeypatch.setattr(step, "run_user",
-                        lambda cmd, **_kw: calls.append(list(cmd)))
+                        lambda cmd, **_kw: (
+                            calls.append(list(cmd))
+                            or subprocess.CompletedProcess(cmd, 0)
+                        ))
     for fn in ("ok", "info", "warn"):
         monkeypatch.setattr(step, fn, lambda _msg: None)
     return step, home, calls
@@ -376,3 +380,18 @@ def test_cli_export_env_publishes_oled_settings(monkeypatch):
     assert os.environ["FEAT_OLED_CARE"] == "true"
     assert os.environ["OLED_INTERVAL"] == "9"
     assert os.environ["OLED_MAX_SHIFT"] == "8"
+    assert os.environ["MTTKDE_EXISTING_INSTALL"] == "false"
+    assert os.environ["MTTKDE_RESET_WALLPAPERS"] == "false"
+    assert os.environ["MTTKDE_RESET_LAYOUT"] == "false"
+
+
+def test_cli_export_env_publishes_one_shot_update_actions(monkeypatch):
+    import cli
+
+    monkeypatch.setattr(os, "environ", dict(os.environ))
+    cli.export_env({"_existing_install": True,
+                    "_reset_wallpapers": True,
+                    "_reset_layout": True})
+    assert os.environ["MTTKDE_EXISTING_INSTALL"] == "true"
+    assert os.environ["MTTKDE_RESET_WALLPAPERS"] == "true"
+    assert os.environ["MTTKDE_RESET_LAYOUT"] == "true"

@@ -131,3 +131,79 @@ def test_evaluate_layout_keeps_discover_when_installed(monkeypatch):
     layout._evaluate_layout(_FakeScript(_LAUNCHERS_LINE))
 
     assert "applications:org.kde.discover.desktop" in captured["script"]
+
+
+# ── update-safe layout ownership ─────────────────────────────────────
+
+
+def _quiet_layout_install(monkeypatch, tmp_path):
+    monkeypatch.setattr(layout, "HOME", tmp_path)
+    monkeypatch.setattr(layout, "_ensure_panel_colorizer", lambda: None)
+    monkeypatch.setattr(layout, "_patch_plasmashellrc", lambda: None)
+    monkeypatch.setattr(layout, "ok", lambda message: None)
+    monkeypatch.setattr(layout, "warn", lambda message: None)
+    monkeypatch.setattr(layout.time, "sleep", lambda seconds: None)
+
+
+def test_reinstall_preserves_layout_even_after_user_removes_theme_widget(
+        monkeypatch, tmp_path):
+    _quiet_layout_install(monkeypatch, tmp_path)
+    marker = layout._layout_marker()
+    marker.parent.mkdir(parents=True)
+    marker.write_text("1\n")
+    monkeypatch.delenv("MTTKDE_RESET_LAYOUT", raising=False)
+    monkeypatch.setattr(
+        layout, "_evaluate_layout",
+        lambda script: (_ for _ in ()).throw(
+            AssertionError("reinstall rebuilt the user's panels")),
+    )
+
+    layout.install()
+
+    assert marker.is_file()
+
+
+def test_upgrade_from_old_release_preserves_partial_layout(
+        monkeypatch, tmp_path):
+    _quiet_layout_install(monkeypatch, tmp_path)
+    monkeypatch.setenv("MTTKDE_EXISTING_INSTALL", "true")
+    monkeypatch.delenv("MTTKDE_RESET_LAYOUT", raising=False)
+    monkeypatch.setattr(
+        layout, "_evaluate_layout",
+        lambda script: (_ for _ in ()).throw(
+            AssertionError("upgrade rebuilt the user's panels")),
+    )
+
+    layout.install()
+
+    assert layout._layout_marker().is_file()
+
+
+def test_explicit_layout_reset_rebuilds_and_refreshes_marker(
+        monkeypatch, tmp_path):
+    _quiet_layout_install(monkeypatch, tmp_path)
+    marker = layout._layout_marker()
+    marker.parent.mkdir(parents=True)
+    marker.write_text("1\n")
+    monkeypatch.setenv("MTTKDE_RESET_LAYOUT", "true")
+    calls = []
+    monkeypatch.setattr(layout, "_evaluate_layout",
+                        lambda script: calls.append(script) or True)
+    monkeypatch.setattr(layout, "_wait_for_layout_install", lambda: True)
+
+    layout.install()
+
+    assert calls == [layout.LAYOUT_SCRIPT]
+    assert marker.is_file()
+
+
+def test_layout_uninstall_removes_update_marker(monkeypatch, tmp_path):
+    monkeypatch.setattr(layout, "HOME", tmp_path)
+    monkeypatch.setattr(layout, "ok", lambda message: None)
+    marker = layout._layout_marker()
+    marker.parent.mkdir(parents=True)
+    marker.write_text("1\n")
+
+    layout.uninstall()
+
+    assert not marker.exists()

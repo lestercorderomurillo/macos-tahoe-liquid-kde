@@ -696,3 +696,21 @@ def test_package_installed_uses_pacman_q_on_arch(monkeypatch):
                         lambda cmd: seen.update(cmd=cmd) or "x")
     distro.package_installed("cmake")
     assert seen["cmd"] == ["pacman", "-Q", "cmake"]
+
+
+def test_kde_libexec_binary_prefers_an_executable_on_path(monkeypatch):
+    monkeypatch.setattr(
+        distro.shutil,
+        "which",
+        lambda name: f"/custom/libexec/{name}",
+    )
+    assert distro.kde_libexec_binary("plasma-changeicons") == \
+        distro.Path("/custom/libexec/plasma-changeicons")
+
+
+def test_kde_libexec_binary_rejects_paths_as_helper_names(monkeypatch):
+    def unexpected_lookup(_name):
+        raise AssertionError("unsafe helper name reached PATH lookup")
+
+    monkeypatch.setattr(distro.shutil, "which", unexpected_lookup)
+    assert distro.kde_libexec_binary("../plasma-changeicons") is None

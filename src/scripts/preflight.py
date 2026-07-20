@@ -298,8 +298,8 @@ def _check_dbus_session() -> bool:
     addr = os.environ.get("DBUS_SESSION_BUS_ADDRESS")
     if not addr:
         # Some sudo configs strip the address; a socket at
-        # $XDG_RUNTIME_DIR/bus proves the bus is up (steps re-discover
-        # the address via `systemctl --user show-environment`).
+        # $XDG_RUNTIME_DIR/bus proves the bus is up (the installer recovers
+        # the address from that socket without assuming an init system).
         runtime_dir = os.environ.get("XDG_RUNTIME_DIR")
         if runtime_dir and Path(runtime_dir, "bus").exists():
             ok("DBus session bus reachable via XDG_RUNTIME_DIR/bus")

@@ -94,6 +94,20 @@ def init_system() -> str:
     return _INIT_CACHE
 
 
+def user_service_manager_command(*args: str) -> list[str] | None:
+    """Build a command for the active per-user service manager.
+
+    OpenRC has no systemd user manager, so callers receive ``None`` and use
+    their init-agnostic fallback (cron, process termination, or ``kstart``).
+    Keeping the executable name here makes :func:`init_system` the sole init
+    decision point and keeps every step safe on hosts that merely have the
+    systemd package installed without booting it.
+    """
+    if init_system() != "systemd":
+        return None
+    return ["systemctl", "--user", *args]
+
+
 # ── Qt6 plugin / QML directories ─────────────────────────────────────
 
 
@@ -114,6 +128,32 @@ def _run_query(cmd: list[str]) -> str | None:
         return None
     out = res.stdout.strip()
     return out or None
+
+
+def kde_libexec_binary(name: str) -> Path | None:
+    """Resolve a KDE helper that distributions may keep outside ``PATH``.
+
+    Plasma installs helpers such as ``plasma-changeicons`` in KDE's libexec
+    directory; that is ``/usr/lib`` on Arch, while other families commonly
+    use ``/usr/lib64`` or ``/usr/libexec``. Keep those system-layout details
+    in the distro layer and only accept a real executable file.
+    """
+    if not name or Path(name).name != name:
+        return None
+    on_path = shutil.which(name)
+    if on_path:
+        return Path(on_path)
+    for directory in (
+        Path("/usr/lib"),
+        Path("/usr/lib64"),
+        Path("/usr/libexec"),
+        Path("/usr/lib/qt6/libexec"),
+        Path("/usr/lib64/qt6/libexec"),
+    ):
+        candidate = directory / name
+        if candidate.is_file() and os.access(candidate, os.X_OK):
+            return candidate
+    return None
 
 
 def _qt6_plugins_query() -> str | None:

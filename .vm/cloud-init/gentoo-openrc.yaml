@@ -71,7 +71,8 @@ write_files:
       # ================================================================
       # Config
       # ================================================================
-      STAGE3_URL="https://distfiles.gentoo.org/releases/amd64/autobuilds/current-stage3-amd64-desktop-openrc/stage3-amd64-desktop-openrc-20260712T170110Z.tar.xz"
+      STAGE3_DIR="https://distfiles.gentoo.org/releases/amd64/autobuilds/current-stage3-amd64-desktop-openrc"
+      STAGE3_POINTER="${STAGE3_DIR}/latest-stage3-amd64-desktop-openrc.txt"
       DISK=/dev/vdb
       MNT=/mnt/gentoo
 
@@ -112,11 +113,12 @@ write_files:
               eselect profile list \
                   | grep 'desktop/plasma' \
                   | grep -v 'systemd' \
+                  | grep -v 'split-usr' \
                   | sed -n 's/^.*\[\([0-9][0-9]*\)\].*$/\1/p' \
                   | tail -n 1
           )"
           if [[ -z "$profile_num" ]]; then
-              echo "No desktop/plasma (OpenRC) Gentoo profile found" >&2
+              echo "No merged-usr desktop/plasma (OpenRC) Gentoo profile found" >&2
               exit 1
           fi
           eselect profile set "$profile_num"
@@ -126,6 +128,7 @@ write_files:
           mkdir -p \
               /etc/portage/binrepos.conf \
               /etc/portage/package.accept_keywords \
+              /etc/portage/package.license \
               /etc/portage/package.use
 
           cat > /etc/portage/binrepos.conf/gentoo-binhost.conf <<'EOF'
@@ -136,6 +139,13 @@ write_files:
 
           cat > /etc/portage/package.accept_keywords/all <<'EOF'
       */* ~amd64
+      EOF
+
+          # The prebuilt kernel's firmware is redistributable but not under
+          # Gentoo's default @FREE license group. Accept only that package's
+          # own license; never widen ACCEPT_LICENSE globally in a smoke VM.
+          cat > /etc/portage/package.license/linux-firmware <<'EOF'
+      sys-kernel/linux-firmware linux-fw-redistributable
       EOF
 
           cat > /etc/portage/package.use/libxkbcommon <<'EOF'
@@ -179,6 +189,7 @@ write_files:
       sys-auth/polkit
       llvm-core/libclc spirv
       dev-util/mesa_clc -debug
+      sys-kernel/installkernel dracut
       EOF
 
           if command -v getuto >/dev/null 2>&1; then
@@ -248,8 +259,23 @@ write_files:
       # ================================================================
       echo "=== [A] Fetching stage3 desktop-openrc tarball ==="
       cd /var/lib/mttkde
-      STAGE3_TARBALL="/var/lib/mttkde/$(basename "$STAGE3_URL")"
+      STAGE3_POINTER_FILE="/var/lib/mttkde/latest-stage3-amd64-desktop-openrc.txt"
       # Prefer wget, fall back to curl (either ships on the cloud image).
+      if command -v wget >/dev/null 2>&1; then
+          wget -q -O "$STAGE3_POINTER_FILE" "$STAGE3_POINTER"
+      else
+          curl -fsSL -o "$STAGE3_POINTER_FILE" "$STAGE3_POINTER"
+      fi
+      STAGE3_NAME="$(
+          awk '$1 ~ /^stage3-amd64-desktop-openrc-[0-9TZ]+\.tar\.xz$/ && $2 ~ /^[0-9]+$/ { print $1; exit }' \
+              "$STAGE3_POINTER_FILE"
+      )"
+      if [[ ! "$STAGE3_NAME" =~ ^stage3-amd64-desktop-openrc-[0-9]{8}T[0-9]{6}Z\.tar\.xz$ ]]; then
+          echo "Could not resolve the current desktop-openrc stage3" >&2
+          exit 1
+      fi
+      STAGE3_URL="${STAGE3_DIR}/${STAGE3_NAME}"
+      STAGE3_TARBALL="/var/lib/mttkde/${STAGE3_NAME}"
       if command -v wget >/dev/null 2>&1; then
           wget -q -O "$STAGE3_TARBALL"          "$STAGE3_URL"
           wget -q -O "${STAGE3_TARBALL}.DIGESTS" "${STAGE3_URL}.DIGESTS" || true
@@ -260,15 +286,21 @@ write_files:
       # Signature verification is skipped intentionally for a throwaway
       # smoke VM. A sha512 sanity check against the DIGESTS if present:
       if [[ -f "${STAGE3_TARBALL}.DIGESTS" ]]; then
-          ( cd /var/lib/mttkde && \
-            grep -A1 -i 'SHA512' "${STAGE3_TARBALL}.DIGESTS" \
-              | grep "$(basename "$STAGE3_TARBALL")" \
-              | sha512sum -c - ) || echo "WARNING: stage3 sha512 check skipped/failed (throwaway VM)" >&2
+          DIGEST_LINE="$(
+              awk -v name="$STAGE3_NAME" '$2 == name { print; exit }' \
+                  "${STAGE3_TARBALL}.DIGESTS"
+          )"
+          if [[ -n "$DIGEST_LINE" ]]; then
+              ( cd /var/lib/mttkde && printf '%s\n' "$DIGEST_LINE" | sha512sum -c - ) \
+                  || echo "WARNING: stage3 sha512 check failed (throwaway VM)" >&2
+          else
+              echo "WARNING: stage3 sha512 digest not found (throwaway VM)" >&2
+          fi
       fi
 
       # ================================================================
       # STAGE B (live env): partition the SECOND physical disk /dev/vdb.
-      #   GPT: 512M EF00 EFI (vfat) + rest ext4 root.
+      #   GPT: 1M EF02 BIOS boot + 512M EF00 EFI (vfat) + rest ext4 root.
       # The ./vm harness attaches an empty 30G qcow2 as /dev/vdb. We do
       # NOT touch the running root disk /dev/vda; a guard below refuses
       # if /dev/vdb is somehow the mounted root.
@@ -290,14 +322,18 @@ write_files:
               ;;
       esac
 
-      # GPT layout: 1 = EFI (512M, EF00), 2 = root (rest, 8300).
+      # GPT layout: 1 = BIOS boot (1M, EF02), 2 = EFI (512M, EF00),
+      # 3 = root (rest, 8300). The EF02 partition is required for GRUB's
+      # i386-pc core image on GPT; without it the advertised BIOS fallback
+      # can never install.
       sgdisk --zap-all "$DISK"
-      sgdisk --new=1:0:+512M --typecode=1:EF00 --change-name=1:EFI "$DISK"
-      sgdisk --new=2:0:0     --typecode=2:8300 --change-name=2:gentoo-root "$DISK"
+      sgdisk --new=1:0:+1M   --typecode=1:EF02 --change-name=1:BIOS-boot "$DISK"
+      sgdisk --new=2:0:+512M --typecode=2:EF00 --change-name=2:EFI "$DISK"
+      sgdisk --new=3:0:0     --typecode=3:8300 --change-name=3:gentoo-root "$DISK"
       partprobe "$DISK" 2>/dev/null || true
       sleep 1
-      EFI_PART="${DISK}1"
-      ROOT_PART="${DISK}2"
+      EFI_PART="${DISK}2"
+      ROOT_PART="${DISK}3"
 
       echo "=== Formatting: ${EFI_PART}=vfat, ${ROOT_PART}=ext4 ==="
       mkfs.vfat -F32 "$EFI_PART"
@@ -402,7 +438,12 @@ write_files:
       configure_binhost
       select_plasma_profile
       env-update
+      # Gentoo profile.d snippets are not written for `set -u`; the desktop
+      # stage3's debuginfod.sh reads DEBUGINFOD_URLS before defining it. Keep
+      # strict mode everywhere else, but disable nounset around profile load.
+      set +u
       source /etc/profile
+      set -u
 
       # fstab for the INSTALLED system. Use partition UUIDs so it is
       # stable regardless of how ./vm names the disk after the swap.

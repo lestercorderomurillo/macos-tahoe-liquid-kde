@@ -11,13 +11,15 @@
 #                     RAM — override with VM_CPUS / VM_MEM_MIB.
 # ./vm list           list supported distros
 # ./vm --help         show this help
+# VM_BOOT_TARGET=1 ./vm gentoo-openrc
+#                     boot the OpenRC disk produced by the install pass
 #
 # Flags:
 #   --clean, -c       wipe the cached overlay before booting (fresh
 #                     install — picks up any cloud-init changes)
 #
 # Supported: cachyos arch manjaro endeavouros garuda
-#            fedora nobara opensuse gentoo
+#            fedora nobara opensuse gentoo gentoo-openrc
 
 set -euo pipefail
 
@@ -37,8 +39,9 @@ declare -A URL=(
     [arch.qcow2]="https://geo.mirror.pkgbuild.com/images/latest/Arch-Linux-x86_64-cloudimg.qcow2"
     [fedora.qcow2]="https://download.fedoraproject.org/pub/fedora/linux/releases/44/Cloud/x86_64/images/Fedora-Cloud-Base-Generic-44-1.7.x86_64.qcow2"
     [opensuse.qcow2]="https://download.opensuse.org/tumbleweed/appliances/openSUSE-Tumbleweed-Minimal-VM.x86_64-Cloud.qcow2"
-    [gentoo.qcow2]="https://distfiles.gentoo.org/releases/amd64/autobuilds/current-di-amd64-cloudinit/di-amd64-cloudinit-20260531T160106Z.qcow2"
 )
+GENTOO_CLOUD_DIR="https://distfiles.gentoo.org/releases/amd64/autobuilds/current-di-amd64-cloudinit"
+GENTOO_CLOUD_POINTER="$GENTOO_CLOUD_DIR/latest-di-amd64-cloudinit.txt"
 declare -A PORT=([arch]=2221 [cachyos]=2222 [manjaro]=2223 [endeavouros]=2224 [garuda]=2225 [fedora]=2226 [nobara]=2227 [opensuse]=2228 [gentoo]=2229 [gentoo-openrc]=2230)
 
 ORDER=(cachyos arch manjaro endeavouros garuda fedora nobara opensuse gentoo gentoo-openrc)
@@ -53,12 +56,33 @@ require_tools() {
     done
 }
 
+resolve_gentoo_cloud_url() {
+    local pointer filename
+    pointer="$(curl -fsSL "$GENTOO_CLOUD_POINTER")" || return 1
+    filename="$(
+        printf '%s\n' "$pointer" \
+            | awk '$1 ~ /^di-amd64-cloudinit-[0-9TZ]+\.qcow2$/ && $2 ~ /^[0-9]+$/ { print $1; exit }'
+    )"
+    [[ "$filename" =~ ^di-amd64-cloudinit-[0-9]{8}T[0-9]{6}Z\.qcow2$ ]] \
+        || return 1
+    printf '%s/%s\n' "$GENTOO_CLOUD_DIR" "$filename"
+}
+
 ensure_base() {
     local base="$1"
+    local source_url
     [[ -f "$CACHE/$base" ]] && return 0
     mkdir -p "$CACHE"
+    if [[ "$base" == "gentoo.qcow2" ]]; then
+        source_url="$(resolve_gentoo_cloud_url)" || {
+            warn "could not resolve the current Gentoo cloud image"
+            return 1
+        }
+    else
+        source_url="${URL[$base]}"
+    fi
     say "downloading $base (first run only)"
-    curl -L --fail -C - -o "$CACHE/$base.part" "${URL[$base]}"
+    curl -L --fail -C - -o "$CACHE/$base.part" "$source_url"
     mv "$CACHE/$base.part" "$CACHE/$base"
 }
 
