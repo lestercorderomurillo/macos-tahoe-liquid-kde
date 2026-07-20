@@ -59,21 +59,11 @@ def _enabled_scripts() -> tuple[str, ...]:
 
 
 def rollback_v038_border_sync() -> bool:
-    """Disable stacked rounding and remove only our exact v0.38 preset.
+    """Remove only the exact cross-theme border preset shipped in v0.38.
 
     If any preset value differs, the Round-Corners group is user-customized
-    and remains untouched.  The effect itself is still disabled so it cannot
-    render a second border on top of Acrylic Glass after an update.
+    and remains untouched. The effect's enabled state is always preserved.
     """
-    kw_write(
-        "--file", "kwinrc", "--group", "Plugins",
-        "--key", "shapecornersEnabled", "false",
-    )
-    qdbus_call(
-        "org.kde.KWin", "/Effects",
-        "org.kde.kwin.Effects.unloadEffect", "kwin4_effect_shapecorners",
-    )
-
     exact_match = all(
         kw_read("kwinrc", "Round-Corners", key) == value
         for key, value in _V038_ROUNDED_CORNERS_PRESET

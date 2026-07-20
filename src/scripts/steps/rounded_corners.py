@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import hashlib
 import shutil
+import subprocess
 import tarfile
 import time
 from pathlib import Path, PurePosixPath
@@ -27,7 +28,7 @@ from steps._helpers import (
     sudo_remove,
     warn,
 )
-from utils import fetch
+from utils import fetch, qdbus_cmd, run_user
 
 
 UPSTREAM_VERSION = "0.9.0"
@@ -180,6 +181,23 @@ def build() -> None:
     cmake_build(SOURCE, BUILD, "KDE Rounded Corners")
 
 
+def _effect_active() -> bool:
+    qdbus = qdbus_cmd()
+    if not qdbus:
+        return False
+    try:
+        result = run_user(
+            [qdbus, "org.kde.KWin", "/Effects", "org.kde.kwin.Effects.activeEffects"],
+            check=False,
+            capture_output=True,
+            text=True,
+            timeout=10,
+        )
+    except (OSError, subprocess.TimeoutExpired):
+        return False
+    return EFFECT_ID in (result.stdout or "")
+
+
 def _locale_artifacts() -> list[tuple[Path, Path]]:
     out: list[tuple[Path, Path]] = []
     locale_root = BUILD / "locale"
@@ -241,11 +259,18 @@ def install() -> None:
 
     if not kw_write(
         "--file", "kwinrc", "--group", "Plugins",
-        "--key", "shapecornersEnabled", "false",
+        "--key", "shapecornersEnabled", "true",
     ):
-        warn("KDE Rounded Corners could not be left disabled — kwriteconfig6 failed")
+        warn("KDE Rounded Corners could not be enabled — kwriteconfig6 failed")
     qdbus_call("org.kde.KWin", "/KWin", "org.kde.KWin.reconfigure")
-    ok("KDE Rounded Corners installed but left disabled to avoid stacked borders")
+    qdbus_call(
+        "org.kde.KWin", "/Effects",
+        "org.kde.kwin.Effects.loadEffect", EFFECT_ID,
+    )
+    if _effect_active():
+        ok("KDE Rounded Corners loaded")
+    else:
+        ok("KDE Rounded Corners installed (log out and back in to activate)")
     info(f"KDE Rounded Corners v{UPSTREAM_VERSION} installed from verified upstream source")
 
 

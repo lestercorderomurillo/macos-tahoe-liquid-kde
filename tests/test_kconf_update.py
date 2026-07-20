@@ -131,7 +131,7 @@ def test_install_skips_appletsrc_when_plasmoids_disabled(tmp_path, monkeypatch):
     assert appletsrc.read_text() == "plugin=org.kde.plasma.icontasks\n"
 
 
-def test_v038_border_sync_rollback_is_exact_and_disables_stacked_effect(monkeypatch):
+def test_v038_border_sync_rollback_is_exact_and_preserves_effect_state(monkeypatch):
     import steps.kconf_update as kc
 
     values = dict(kc._V038_ROUNDED_CORNERS_PRESET)
@@ -145,10 +145,10 @@ def test_v038_border_sync_rollback_is_exact_and_disables_stacked_effect(monkeypa
     monkeypatch.setattr(kc, "ok", lambda _message: None)
 
     assert kc.rollback_v038_border_sync() is True
-    assert any("shapecornersEnabled" in write and "false" in write for write in writes)
+    assert not any("shapecornersEnabled" in write for write in writes)
     deleted = [write for write in writes if "--delete" in write]
     assert len(deleted) == len(kc._V038_ROUNDED_CORNERS_PRESET)
-    assert any(
+    assert not any(
         any("unloadEffect" in argument for argument in call)
         for call in calls
     )
@@ -156,7 +156,7 @@ def test_v038_border_sync_rollback_is_exact_and_disables_stacked_effect(monkeypa
     writes.clear()
     values["Size"] = "24"
     assert kc.rollback_v038_border_sync() is False
-    assert any("shapecornersEnabled" in write and "false" in write for write in writes)
+    assert not any("shapecornersEnabled" in write for write in writes)
     assert not any("--delete" in write for write in writes)
 
 

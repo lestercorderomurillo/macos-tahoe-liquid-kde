@@ -195,12 +195,12 @@ failure is soft: `cli.py` disables `rounded_corners` for that invocation,
 clears only that optional phase's errors, warns, and continues installing
 the bundled theme. A successful download makes later build/install failure
 critical, because replacing only half of a compiled KWin effect is unsafe.
-The effect and its KCM are installed but left disabled so they do not stack
-window borders with the bundled Acrylic Glass effect. Users may enable and
-configure it manually in System Settings. The bundled `kconf_update` step
-also disables the v0.38.x auto-enabled effect and removes the old synchronized
-border preset only when every value still matches exactly, so recovery works
-even if the next online download is unavailable and custom settings survive.
+The effect and its KCM are installed and enabled, but their radius settings
+stay independent from GTK, Plasma SVG, Aurorae, and Acrylic geometry. The
+bundled `kconf_update` step removes the old v0.38.x synchronized border preset
+only when every value still matches exactly; it never changes whether the
+effect is enabled, so recovery works even if the next online download is
+unavailable and custom settings survive.
 
 Updating the pin requires all three values together: tag, immutable commit,
 and archive SHA-256. Never follow `main`, `master`, or `latest`.
@@ -393,7 +393,7 @@ a genuine missing package and fails CI.
 | `plasma_theme.py`             | Translucent panels and dock SVGs. |
 | `plasmoids.py`                | QML plasmoids: Menu, Launcher, Trashcan, IconTasks. |
 | `plymouth.py`                 | Boot splash. GRUB patch behind `_grub_is_active_bootloader()`; `--no-grub-modify` opt-out exists. |
-| `rounded_corners.py`          | Best-effort verified download of KDE Rounded Corners v0.9.0; compile/install effect, KCM, shaders, locales, and license while leaving the effect disabled to avoid stacked borders. |
+| `rounded_corners.py`          | Best-effort verified download of KDE Rounded Corners v0.9.0; compile/install and enable the effect, KCM, shaders, locales, and license without synchronizing other theme geometry. |
 | `portals.py`                  | Route xdg-portal FileChooser / AppChooser to KDE (fixes stale dialog colors). |
 | `sddm.py`                     | Login screen theme. |
 | `sounds.py`                   | Notification and event sounds. |
@@ -511,8 +511,8 @@ Highlights:
 - `tests/test_cmake.py` — the C++ plasmoids and KWin effect build
   configure cleanly.
 - `tests/test_rounded_corners_step.py` — immutable upstream pin, checksum
-  and traversal rejection, best-effort orchestration, safe disabled state,
-  v0.38 preset cleanup, and lifecycle.
+  and traversal rejection, best-effort orchestration, enabled state,
+  v0.38 preset cleanup without effect-state changes, and lifecycle.
 - `tests/containers/run_matrix.sh` — full per-distro probe.
 
 ## What NOT to Do

@@ -149,7 +149,7 @@ Plymouth boot screen with centered Apple-style logo on every monitor, scaled dyn
 | **Kvantum Theme** | Kvantum theme | ✅ |
 | **GTK Theme** | GTK2/3/4 window chrome and controls | ✅ |
 | **Acrylic Glass** | KWin blur, per-surface rounded corners, persistent Dock glass and third-party effect safety | ✅ |
-| **KDE Rounded Corners** | Verified online source build, installed as a manual opt-in to avoid stacking borders with Acrylic Glass | ✅ |
+| **KDE Rounded Corners** | Verified online source build, enabled without forcing synchronized radii onto the other theme stacks | ✅ |
 | **Auto Theme Switcher** | 06:00 / 18:00 schedule plus an event-driven System Settings bridge for Plasma, Kvantum, GTK, icons, cursors, decorations and wallpaper | ✅ |
 | **OLED Care** | Opt-in pixel-shift timer for the top bar and dock | ✅ |
 | **Installer UI** | Glass window with an animated hello greeting; drives install / uninstall and a per-feature picker | ✅ |
@@ -225,10 +225,11 @@ repo under `src/offline/`. **KDE Rounded Corners is the sole online feature:**
 the installer downloads the pinned v0.9.0 source archive, verifies its SHA-256,
 then compiles it against the installed KWin. A failed or unavailable download
 only skips Rounded Corners; the bundled theme continues installing. Verified
-archives are cached under `build/online/`. The effect is left disabled so it
-does not stack window borders with Acrylic Glass; enable it manually in System
-Settings if you prefer it. The release update check on launch may also access
-GitHub and pull a newer project release on a clean checkout.
+archives are cached under `build/online/`. A successful build installs and
+enables the effect while leaving its radius configuration independent from
+GTK, Plasma SVG, Aurorae, and Acrylic geometry. The release update check on
+launch may also access GitHub and pull a newer project release on a clean
+checkout.
 
 </details>
 

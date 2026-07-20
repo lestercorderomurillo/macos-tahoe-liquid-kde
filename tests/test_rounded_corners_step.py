@@ -137,7 +137,7 @@ def _seed_artifacts(monkeypatch, tmp_path: Path) -> None:
     (rounded.SOURCE / "LICENSE").write_text("GPL-3.0\n")
 
 
-def test_install_places_artifacts_but_leaves_effect_disabled(monkeypatch, tmp_path):
+def test_install_places_artifacts_and_enables_effect(monkeypatch, tmp_path):
     _seed_artifacts(monkeypatch, tmp_path)
     plugins = tmp_path / "qt/plugins"
     shaders = tmp_path / "share/kwin/shaders"
@@ -159,6 +159,7 @@ def test_install_places_artifacts_but_leaves_effect_disabled(monkeypatch, tmp_pa
     monkeypatch.setattr(
         rounded, "qdbus_call", lambda *args: dbus_calls.append(args) or True,
     )
+    monkeypatch.setattr(rounded, "_effect_active", lambda: True)
     monkeypatch.setattr(rounded.time, "sleep", lambda _: None)
     monkeypatch.setattr(rounded, "ok", lambda _: None)
     monkeypatch.setattr(rounded, "info", lambda _: None)
@@ -173,8 +174,12 @@ def test_install_places_artifacts_but_leaves_effect_disabled(monkeypatch, tmp_pa
     assert license_file in destinations
     plugin_writes = [write for write in writes if "shapecornersEnabled" in write]
     assert plugin_writes
-    assert all("false" in write for write in plugin_writes)
-    assert not any("loadEffect" in call for call in dbus_calls)
+    assert "false" in plugin_writes[0]
+    assert "true" in plugin_writes[-1]
+    assert any(
+        any(argument.endswith(".loadEffect") for argument in call)
+        for call in dbus_calls
+    )
 
 
 def test_uninstall_disables_effect_and_removes_owned_files(monkeypatch, tmp_path):
