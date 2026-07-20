@@ -1265,10 +1265,12 @@ def test_switch_step_does_not_touch_live_user_systemd(sandbox, tmp_path):
     shim_dir = make_live_shim_dir(tmp_path)
     log_file = shim_dir / "calls.log"
 
-    _run_step("theme_switch", "install", {"THEME_MODE": "auto"},
-              shim_dir=shim_dir)
-    _run_step("theme_switch", "uninstall", {"THEME_MODE": "auto"},
-              shim_dir=shim_dir)
+    # This guard specifically verifies the systemd command path. Pin the
+    # backend because container runners have no booted init and correctly
+    # resolve to the separately-tested OpenRC/crontab path.
+    env = {"THEME_MODE": "auto", "MTTKDE_INIT": "systemd"}
+    _run_step("theme_switch", "install", env, shim_dir=shim_dir)
+    _run_step("theme_switch", "uninstall", env, shim_dir=shim_dir)
 
     assert log_file.exists(), (
         "shim was never invoked — step bypassed PATH (absolute path?)"
