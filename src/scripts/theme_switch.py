@@ -841,21 +841,6 @@ def _apply_local_extras(mode: str) -> None:
     gtk_dest = home / ".themes"
     gtk_theme = "MacTahoeLiquidKde-Dark" if mode == "dark" else "MacTahoeLiquidKde-Light"
 
-    # Releases 0.36.0-0.36.2 installed gtk.css as a per-user symlink. GTK
-    # loads that file after the selected theme, so it permanently overrode
-    # kde-gtk-config/gsettings and prevented Nautilus from following Plasma's
-    # native appearance toggle. Remove only the symlink shape created by those
-    # releases; never delete a user's own regular gtk.css.
-    gtk4_css = home / ".config/gtk-4.0/gtk.css"
-    try:
-        if gtk4_css.is_symlink() and gtk4_css.readlink().name in {
-            "gtk-Dark.css", "gtk-Light.css",
-        }:
-            gtk4_css.unlink()
-    except OSError as exc:
-        print(f"theme apply: legacy gtk4 override cleanup skipped: {exc}",
-              file=sys.stderr)
-
     if (gtk_dest / gtk_theme).is_dir():
         _qdbus("org.kde.GtkConfig", "/GtkConfig",
                "org.kde.GtkConfig.setGtkTheme", gtk_theme)
@@ -871,6 +856,59 @@ def _apply_local_extras(mode: str) -> None:
                     _run_user(["gsettings", *args], timeout=5)
                 except subprocess.TimeoutExpired:
                     pass
+
+        # Nautilus is a libadwaita application. It follows the system
+        # light/dark preference, but it does not consume a third-party GTK
+        # theme deeply enough to get our window chrome. GTK's user stylesheet
+        # is therefore the compatibility layer. The portal watcher calls this
+        # function for every native appearance change, so the link follows the
+        # selected mode instead of remaining pinned as it did before 0.37.0.
+        gtk4_src = gtk_dest / gtk_theme / "gtk-4.0"
+        gtk4_dest = home / ".config/gtk-4.0"
+        if gtk4_src.is_dir():
+            gtk4_dest.mkdir(parents=True, exist_ok=True)
+            for sub in ("assets", "windows-assets"):
+                src = gtk4_src / sub
+                if not src.is_dir():
+                    continue
+                try:
+                    shutil.copytree(src, gtk4_dest / sub, dirs_exist_ok=True)
+                except OSError as exc:
+                    print(f"theme apply: gtk4 {sub} copy skipped: {exc}",
+                          file=sys.stderr)
+            for fn in ("gtk-Dark.css", "gtk-Light.css"):
+                src = gtk4_src / fn
+                if src.is_file():
+                    try:
+                        shutil.copy2(src, gtk4_dest / fn)
+                    except OSError as exc:
+                        print(f"theme apply: gtk4 {fn} copy skipped: {exc}",
+                              file=sys.stderr)
+
+            gtk4_css = gtk4_dest / "gtk.css"
+            replaceable = not gtk4_css.exists() and not gtk4_css.is_symlink()
+            try:
+                if gtk4_css.is_symlink():
+                    replaceable = gtk4_css.readlink().name in {
+                        "gtk-Dark.css", "gtk-Light.css",
+                    }
+                elif gtk4_css.is_file():
+                    # kde-gtk-config generates exactly this import. Preserve
+                    # any regular file containing additional user CSS.
+                    replaceable = (
+                        gtk4_css.read_text(encoding="utf-8").strip()
+                        == "@import 'colors.css';"
+                    )
+                if replaceable:
+                    if gtk4_css.is_symlink() or gtk4_css.exists():
+                        gtk4_css.unlink()
+                    gtk4_css.symlink_to(f"gtk-{mode.capitalize()}.css")
+                else:
+                    print("theme apply: custom gtk4 gtk.css preserved; "
+                          "Nautilus theme override skipped", file=sys.stderr)
+            except OSError as exc:
+                print(f"theme apply: gtk4 gtk.css link skipped: {exc}",
+                      file=sys.stderr)
 
     flush_icon_caches()
     cache = home / ".cache"

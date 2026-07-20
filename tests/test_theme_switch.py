@@ -327,23 +327,31 @@ def test_apply_finishes_cycle_and_reconfigure_when_extras_raise(monkeypatch):
     assert any(c[0] == "qdbus" and c[1][0] == "org.kde.KWin" for c in calls)
 
 
-def test_local_extras_removes_legacy_gtk4_override(monkeypatch, tmp_path):
-    """The 0.36.x gtk.css symlink overrode KDE's selected GTK theme and kept
-    Nautilus pinned to one mode. Theme selection now stays in GtkConfig and
-    gsettings, while the old project-managed symlink is migrated away."""
+def test_local_extras_switches_libadwaita_gtk4_override(monkeypatch, tmp_path):
+    """Modern Nautilus needs GTK's user stylesheet in addition to the GTK
+    theme setting. The portal watcher runs this path on every native switch,
+    so the project-managed link must track both modes."""
     import theme_switch
 
     home = tmp_path / "home"
     home.mkdir()
     monkeypatch.setenv("HOME", str(home))
 
-    gtk_theme = "MacTahoeLiquidKde-Dark"
-    (home / ".themes" / gtk_theme).mkdir(parents=True)
+    for variant in ("Dark", "Light"):
+        src = (home / ".themes" / f"MacTahoeLiquidKde-{variant}"
+               / "gtk-4.0")
+        (src / "assets").mkdir(parents=True)
+        (src / "windows-assets").mkdir()
+        (src / "assets" / "button.png").write_bytes(variant.encode())
+        (src / "windows-assets" / "frame.png").write_bytes(
+            variant.encode())
+        (src / "gtk-Dark.css").write_text("/* dark */")
+        (src / "gtk-Light.css").write_text("/* light */")
 
     dest_root = home / ".config" / "gtk-4.0"
     dest_root.mkdir(parents=True)
-    (dest_root / "gtk-Dark.css").write_text("/* old managed copy */")
-    (dest_root / "gtk.css").symlink_to("gtk-Dark.css")
+    # This is the regular stub kde-gtk-config writes on the live desktop.
+    (dest_root / "gtk.css").write_text("@import 'colors.css';")
 
     monkeypatch.setattr(theme_switch, "_have",
                         lambda cmd: cmd not in ("kvantummanager", "gsettings"))
@@ -352,8 +360,17 @@ def test_local_extras_removes_legacy_gtk4_override(monkeypatch, tmp_path):
 
     theme_switch._apply_local_extras("dark")
 
-    assert not (dest_root / "gtk.css").is_symlink()
-    assert not (dest_root / "gtk.css").exists()
+    assert (dest_root / "gtk.css").is_symlink()
+    assert (dest_root / "gtk.css").readlink().name == "gtk-Dark.css"
+    assert (dest_root / "gtk-Dark.css").read_text() == "/* dark */"
+    assert (dest_root / "assets/button.png").read_bytes() == b"Dark"
+
+    theme_switch._apply_local_extras("light")
+
+    assert (dest_root / "gtk.css").is_symlink()
+    assert (dest_root / "gtk.css").readlink().name == "gtk-Light.css"
+    assert (dest_root / "gtk-Light.css").read_text() == "/* light */"
+    assert (dest_root / "assets/button.png").read_bytes() == b"Light"
 
 
 def test_local_extras_preserves_user_owned_gtk4_css(monkeypatch, tmp_path):
