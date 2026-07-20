@@ -118,6 +118,7 @@ def test_install_skips_appletsrc_when_plasmoids_disabled(tmp_path, monkeypatch):
     monkeypatch.setenv("FEAT_PLASMOIDS", "false")
     monkeypatch.setattr(kc, "KCONF_UPDATE_DIR", tmp_path / "kconf_update")
     monkeypatch.setattr(kc, "HOME", tmp_path)
+    monkeypatch.setattr(kc, "rollback_v038_border_sync", lambda: False)
     cfg = tmp_path / ".config"
     cfg.mkdir()
     appletsrc = cfg / "plasma-org.kde.plasma.desktop-appletsrc"
@@ -128,6 +129,35 @@ def test_install_skips_appletsrc_when_plasmoids_disabled(tmp_path, monkeypatch):
     assert not (installed / "mac-tahoe-migrate-appletsrc.sh").exists()
     assert not (installed / "mac-tahoe-migrate-appletsrc.upd").exists()
     assert appletsrc.read_text() == "plugin=org.kde.plasma.icontasks\n"
+
+
+def test_v038_border_sync_rollback_is_exact_and_disables_stacked_effect(monkeypatch):
+    import steps.kconf_update as kc
+
+    values = dict(kc._V038_ROUNDED_CORNERS_PRESET)
+    writes: list[tuple[str, ...]] = []
+    calls: list[tuple[str, ...]] = []
+    monkeypatch.setattr(
+        kc, "kw_read", lambda _file, _group, key: values.get(key, ""),
+    )
+    monkeypatch.setattr(kc, "kw_write", lambda *args: writes.append(args) or True)
+    monkeypatch.setattr(kc, "qdbus_call", lambda *args: calls.append(args) or True)
+    monkeypatch.setattr(kc, "ok", lambda _message: None)
+
+    assert kc.rollback_v038_border_sync() is True
+    assert any("shapecornersEnabled" in write and "false" in write for write in writes)
+    deleted = [write for write in writes if "--delete" in write]
+    assert len(deleted) == len(kc._V038_ROUNDED_CORNERS_PRESET)
+    assert any(
+        any("unloadEffect" in argument for argument in call)
+        for call in calls
+    )
+
+    writes.clear()
+    values["Size"] = "24"
+    assert kc.rollback_v038_border_sync() is False
+    assert any("shapecornersEnabled" in write and "false" in write for write in writes)
+    assert not any("--delete" in write for write in writes)
 
 
 def test_helpers_self_locate_when_run_argless(tmp_path, offline):

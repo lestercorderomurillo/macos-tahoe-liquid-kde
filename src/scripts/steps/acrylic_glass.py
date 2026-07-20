@@ -7,15 +7,6 @@ from steps._helpers import (
     build_dir, cmake_build, fail, info, kw_write, ok, offline, qdbus_call,
     sudo_install_file, sudo_remove, warn,
 )
-from theme_metrics import (
-    DIALOG_CORNER_RADIUS,
-    DOCK_CORNER_RADIUS,
-    MENU_CORNER_RADIUS,
-    POPUP_CORNER_RADIUS,
-    TOOLTIP_CORNER_RADIUS,
-    WINDOW_CORNER_RADIUS,
-    config_value,
-)
 from utils import qdbus_cmd, run_user
 
 SRC = offline("kwin-effects/acrylic-glass")
@@ -96,27 +87,23 @@ def build() -> None:
 _PRESET = (
     ("BevelStrength", "0.22"), ("BlurDecorations", "true"),
     ("BlurStrength", "5"), ("BorderWidth", "32"),
-    ("Brightness", "1.0"), ("Contrast", "1.0"),
-    ("DialogCornerRadius", config_value(DIALOG_CORNER_RADIUS)),
-    ("DockCornerRadius", config_value(DOCK_CORNER_RADIUS)),
-    ("EdgeBandFactor", "0.24"),
+    ("BottomCornerRadius", "22"), ("Brightness", "1.0"),
+    ("Contrast", "1.0"), ("DialogCornerRadius", "14"),
+    ("DockCornerRadius", "20"), ("EdgeBandFactor", "0.24"),
     ("EdgeLighting", "false"), ("ExcludeDocks", "true"),
     ("GlassInactiveWindows", "true"), ("GlassThickness", "0.2"),
     ("GlowColor", "#00000000"), ("HighlightStrength", "0.30"),
     ("HighlightWidth", "24"), ("InnerShadowStrength", "0.2"),
     ("IridescenceStrength", "0.1"), ("MagnifyGlassStrength", "0.03"),
-    ("MenuCornerRadius", config_value(MENU_CORNER_RADIUS)),
-    ("NoiseStrength", "2"),
-    ("PopupCornerRadius", config_value(POPUP_CORNER_RADIUS)),
-    ("RefractionEdgeSize", "0"),
+    ("MenuCornerRadius", "0"), ("NoiseStrength", "2"),
+    ("PopupCornerRadius", "6"), ("RefractionEdgeSize", "0"),
     ("RefractionNormalPow", "6"), ("RefractionRGBFringing", "0"),
     ("RefractionStrength", "0"), ("RefractionWidth", "96"),
     ("RgbRinging", "12"), ("RimStrength", "0.5"),
     ("RimWidth", "32"), ("Saturation", "1.0"),
     ("ShadowStrength", "2.50"), ("SpectralMix", "1"),
     ("SpecularStrength", "0.08"), ("TintColor", "#00000000"),
-    ("TooltipCornerRadius", config_value(TOOLTIP_CORNER_RADIUS)),
-    ("WindowCornerRadius", config_value(WINDOW_CORNER_RADIUS)),
+    ("TooltipCornerRadius", "14"), ("WindowCornerRadius", "22"),
     ("BlurMatching", "false"), ("BlurNonMatching", "true"),
 )
 

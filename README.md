@@ -4,7 +4,7 @@
 
 # macOS Tahoe Liquid Theme for KDE Plasma 6.6/6.7+
 
-[![release](https://img.shields.io/github/v/release/lestercorderomurillo/macos-tahoe-liquid-kde?label=release&color=blue)](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/releases) [![tests](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/actions/workflows/test.yml/badge.svg)](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/actions/workflows/test.yml) [![tests count](https://img.shields.io/badge/tests-969_passing-brightgreen)](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/actions/workflows/test.yml) [![license](https://img.shields.io/badge/license-GPL--3.0-blue)](LICENSE) [![plasma](https://img.shields.io/badge/KDE_Plasma-6.6%2B-1d99f3?logo=kde)](https://kde.org/plasma-desktop/) [![last commit](https://img.shields.io/github/last-commit/lestercorderomurillo/macos-tahoe-liquid-kde)](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/commits/) [![report a bug](https://img.shields.io/badge/report-a%20bug-red?logo=github)](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/issues/new)
+[![release](https://img.shields.io/github/v/release/lestercorderomurillo/macos-tahoe-liquid-kde?label=release&color=blue)](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/releases) [![tests](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/actions/workflows/test.yml/badge.svg)](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/actions/workflows/test.yml) [![tests count](https://img.shields.io/badge/tests-952_passing-brightgreen)](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/actions/workflows/test.yml) [![license](https://img.shields.io/badge/license-GPL--3.0-blue)](LICENSE) [![plasma](https://img.shields.io/badge/KDE_Plasma-6.6%2B-1d99f3?logo=kde)](https://kde.org/plasma-desktop/) [![last commit](https://img.shields.io/github/last-commit/lestercorderomurillo/macos-tahoe-liquid-kde)](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/commits/) [![report a bug](https://img.shields.io/badge/report-a%20bug-red?logo=github)](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/issues/new)
 
 A full macOS Tahoe-style desktop experience for KDE Plasma 6.6 and 6.7+.
 
@@ -149,7 +149,7 @@ Plymouth boot screen with centered Apple-style logo on every monitor, scaled dyn
 | **Kvantum Theme** | Kvantum theme | ✅ |
 | **GTK Theme** | GTK2/3/4 window chrome and controls | ✅ |
 | **Acrylic Glass** | KWin blur, per-surface rounded corners, persistent Dock glass and third-party effect safety | ✅ |
-| **KDE Rounded Corners** | Verified online source build with a 22 px squircle/no-outline Tahoe preset | ✅ |
+| **KDE Rounded Corners** | Verified online source build, installed as a manual opt-in to avoid stacking borders with Acrylic Glass | ✅ |
 | **Auto Theme Switcher** | 06:00 / 18:00 schedule plus an event-driven System Settings bridge for Plasma, Kvantum, GTK, icons, cursors, decorations and wallpaper | ✅ |
 | **OLED Care** | Opt-in pixel-shift timer for the top bar and dock | ✅ |
 | **Installer UI** | Glass window with an animated hello greeting; drives install / uninstall and a per-feature picker | ✅ |
@@ -225,8 +225,10 @@ repo under `src/offline/`. **KDE Rounded Corners is the sole online feature:**
 the installer downloads the pinned v0.9.0 source archive, verifies its SHA-256,
 then compiles it against the installed KWin. A failed or unavailable download
 only skips Rounded Corners; the bundled theme continues installing. Verified
-archives are cached under `build/online/`. The release update check on launch
-may also access GitHub and pull a newer project release on a clean checkout.
+archives are cached under `build/online/`. The effect is left disabled so it
+does not stack window borders with Acrylic Glass; enable it manually in System
+Settings if you prefer it. The release update check on launch may also access
+GitHub and pull a newer project release on a clean checkout.
 
 </details>
 

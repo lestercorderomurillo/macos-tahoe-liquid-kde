@@ -91,12 +91,6 @@ Store, Force Quit, Sleep, Restart, Shut Down, Lock Screen, Log Out.
   Apple menu).
 - Hover tiles: glass effect (semi-transparent fill, 0.5px micro
   border, 22px radius) — not outlined borders.
-- Corner radii are semantic, not global search-and-replace values. Normal
-  windows and the bottom Dock use 22px; dialogs and tooltips use 14px;
-  Acrylic popups use 6px and menus use 0px. Compact controls, pills,
-  generic widget backgrounds, and non-Dock panel slices keep their existing
-  role-specific geometry. For scaled SVG paths, compare the rendered radius
-  (path radius multiplied by its transform), not the raw path number.
 - System font always — never hardcode font names or sizes.
 - Popup plasmoids are fixed-size, not resizable.
 - Top panel is applets-only floating (not full-floating).
@@ -125,7 +119,6 @@ Store, Force Quit, Sleep, Restart, Shut Down, Lock Screen, Log Out.
 | `src/scripts/oled_care.py`    | `mac-tahoe-oled-care` implementation — opt-in panel pixel shift for OLED monitors. |
 | `src/scripts/state.py`        | `RunTracker` — writes the last-run summary (status, argv, timestamps) to `~/.local/state/mac-tahoe-liquid-kde/last-run.json`. |
 | `src/scripts/log.py`          | `banner`, `step`, `ok`, `warn`, `info`, `note`, `fail` — single source of UI styling. |
-| `src/scripts/theme_metrics.py` | Semantic corner-radius constants shared by generated KWin configuration. Static QML/CSS/SVG assets are checked against the same families by tests. |
 | `src/scripts/steps/`          | One module per feature. Implements `deps`, `download`, `build`, `install`, `uninstall`, `restart_plasma` as needed. `rounded_corners.py` is the sole online step. |
 | `src/scripts/steps/_helpers.py` | `sudo_install_file`, `sudo_install_tree`, `sudo_remove`, `_as_root` context manager. |
 | `src/installer/`              | Graphical installer UI: `installer_ui.py` (PyQt6) + QML windows + art. Wraps `./install` / `./uninstall`; the CLI stays the source of truth. |
@@ -202,6 +195,12 @@ failure is soft: `cli.py` disables `rounded_corners` for that invocation,
 clears only that optional phase's errors, warns, and continues installing
 the bundled theme. A successful download makes later build/install failure
 critical, because replacing only half of a compiled KWin effect is unsafe.
+The effect and its KCM are installed but left disabled so they do not stack
+window borders with the bundled Acrylic Glass effect. Users may enable and
+configure it manually in System Settings. The bundled `kconf_update` step
+also disables the v0.38.x auto-enabled effect and removes the old synchronized
+border preset only when every value still matches exactly, so recovery works
+even if the next online download is unavailable and custom settings survive.
 
 Updating the pin requires all three values together: tag, immutable commit,
 and archive SHA-256. Never follow `main`, `master`, or `latest`.
@@ -394,7 +393,7 @@ a genuine missing package and fails CI.
 | `plasma_theme.py`             | Translucent panels and dock SVGs. |
 | `plasmoids.py`                | QML plasmoids: Menu, Launcher, Trashcan, IconTasks. |
 | `plymouth.py`                 | Boot splash. GRUB patch behind `_grub_is_active_bootloader()`; `--no-grub-modify` opt-out exists. |
-| `rounded_corners.py`          | Best-effort verified download of KDE Rounded Corners v0.9.0; compile/install effect, KCM, shaders, locales, license, and no-outline Tahoe preset. |
+| `rounded_corners.py`          | Best-effort verified download of KDE Rounded Corners v0.9.0; compile/install effect, KCM, shaders, locales, and license while leaving the effect disabled to avoid stacked borders. |
 | `portals.py`                  | Route xdg-portal FileChooser / AppChooser to KDE (fixes stale dialog colors). |
 | `sddm.py`                     | Login screen theme. |
 | `sounds.py`                   | Notification and event sounds. |
@@ -512,9 +511,8 @@ Highlights:
 - `tests/test_cmake.py` — the C++ plasmoids and KWin effect build
   configure cleanly.
 - `tests/test_rounded_corners_step.py` — immutable upstream pin, checksum
-  and traversal rejection, best-effort orchestration, preset, and lifecycle.
-- `tests/test_theme_radius.py` — semantic radius families across Acrylic,
-  Rounded Corners, Aurorae, GTK, QML, and transformed Plasma SVG slices.
+  and traversal rejection, best-effort orchestration, safe disabled state,
+  v0.38 preset cleanup, and lifecycle.
 - `tests/containers/run_matrix.sh` — full per-distro probe.
 
 ## What NOT to Do

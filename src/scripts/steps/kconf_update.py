@@ -19,8 +19,8 @@ kconf_update pass is a harmless re-run.
 import subprocess
 from pathlib import Path
 
-from steps._helpers import HOME, feat_enabled, install_tree, offline
-from utils import run_user
+from steps._helpers import HOME, feat_enabled, install_tree, offline, ok
+from utils import kw_read, kw_write, qdbus_call, run_user
 
 KCONF_UPDATE_DIR = HOME / ".local/share/kconf_update"
 BUNDLE = offline("kconf_update")
@@ -29,6 +29,20 @@ _SCRIPTS = (
     "mac-tahoe-scrub-kdedefaults.sh",
     "mac-tahoe-scrub-colorgroups.sh",
     "mac-tahoe-migrate-appletsrc.sh",
+)
+
+_V038_ROUNDED_CORNERS_PRESET = (
+    ("Size", "22"),
+    ("InactiveCornerRadius", "22"),
+    ("UseSquircleShape", "true"),
+    ("Squircleness", "0.55"),
+    ("IncludeDialogs", "false"),
+    ("OutlineThickness", "0"),
+    ("InactiveOutlineThickness", "0"),
+    ("SecondOutlineThickness", "0"),
+    ("InactiveSecondOutlineThickness", "0"),
+    ("OuterOutlineThickness", "0"),
+    ("InactiveOuterOutlineThickness", "0"),
 )
 
 
@@ -44,7 +58,40 @@ def _enabled_scripts() -> tuple[str, ...]:
     return tuple(s for s in _SCRIPTS if s != "mac-tahoe-migrate-appletsrc.sh")
 
 
+def rollback_v038_border_sync() -> bool:
+    """Disable stacked rounding and remove only our exact v0.38 preset.
+
+    If any preset value differs, the Round-Corners group is user-customized
+    and remains untouched.  The effect itself is still disabled so it cannot
+    render a second border on top of Acrylic Glass after an update.
+    """
+    kw_write(
+        "--file", "kwinrc", "--group", "Plugins",
+        "--key", "shapecornersEnabled", "false",
+    )
+    qdbus_call(
+        "org.kde.KWin", "/Effects",
+        "org.kde.kwin.Effects.unloadEffect", "kwin4_effect_shapecorners",
+    )
+
+    exact_match = all(
+        kw_read("kwinrc", "Round-Corners", key) == value
+        for key, value in _V038_ROUNDED_CORNERS_PRESET
+    )
+    if exact_match:
+        for key, _value in _V038_ROUNDED_CORNERS_PRESET:
+            kw_write(
+                "--file", "kwinrc", "--group", "Round-Corners",
+                "--key", key, "--delete",
+            )
+        ok("v0.38 Rounded Corners border preset removed")
+
+    qdbus_call("org.kde.KWin", "/KWin", "org.kde.KWin.reconfigure")
+    return exact_match
+
+
 def install() -> None:
+    rollback_v038_border_sync()
     if not BUNDLE.is_dir():
         return
     install_tree(BUNDLE, KCONF_UPDATE_DIR, "kconf_update scripts")

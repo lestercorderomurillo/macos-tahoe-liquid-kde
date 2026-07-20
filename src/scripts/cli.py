@@ -58,7 +58,7 @@ FEATURE_DESC = {
     "plasmoids": "Plasma widgets",
     "globalmenu": "Global menu",
     "acrylic_glass": "Blur effect",
-    "rounded_corners": "Online KWin rounded-window effect",
+    "rounded_corners": "Online optional KWin rounded-window effect",
     "global_theme": "Global theme",
     "layout": "Top bar and dock",
     "sounds": "System sounds",
@@ -98,7 +98,7 @@ Options:
     --plasmoids        Custom Plasma widgets (Menu, Launcher, Trashcan)
     --globalmenu       Global menu bar (app menus in the top panel)
     --acrylic-glass    KWin blur + rounded corners effect
-    --rounded-corners  Download, build, and enable KDE Rounded Corners
+    --rounded-corners  Download and build KDE Rounded Corners (manual opt-in)
     --global-theme     Plasma global theme (look-and-feel package)
     --layout           Panel layout (top bar + dock)
     --sounds           Notification and event sounds

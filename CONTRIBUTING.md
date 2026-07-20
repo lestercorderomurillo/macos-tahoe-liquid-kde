@@ -137,7 +137,6 @@ plymouth: tighter logo+bar layout + render harness fix
 - **Plasmoids must NOT depend on third-party C++ plugins.** The only exception is `org.kde.plasma.private.kicker` (ships with plasma-workspace, always present).
 - Always system font — never hardcode font names or sizes.
 - Hover tiles use the glass effect (semi-transparent fill, 0.5px border, 22px radius), not outlined borders.
-- Keep corner-radius families distinct: normal windows and the bottom Dock are 22px, dialogs/tooltips are 14px, and compact controls/popup assets retain their smaller values. SVG radii must be compared after applying their group transform.
 - Use `Kirigami.Theme.*` for colors, not hardcoded hex.
 
 ### Naming

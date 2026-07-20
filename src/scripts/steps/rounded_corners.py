@@ -10,7 +10,6 @@ from __future__ import annotations
 
 import hashlib
 import shutil
-import subprocess
 import tarfile
 import time
 from pathlib import Path, PurePosixPath
@@ -28,8 +27,7 @@ from steps._helpers import (
     sudo_remove,
     warn,
 )
-from theme_metrics import WINDOW_CORNER_RADIUS, config_value
-from utils import fetch, qdbus_cmd, run_user
+from utils import fetch
 
 
 UPSTREAM_VERSION = "0.9.0"
@@ -182,43 +180,6 @@ def build() -> None:
     cmake_build(SOURCE, BUILD, "KDE Rounded Corners")
 
 
-_PRESET = (
-    ("Size", config_value(WINDOW_CORNER_RADIUS)),
-    ("InactiveCornerRadius", config_value(WINDOW_CORNER_RADIUS)),
-    ("UseSquircleShape", "true"),
-    ("Squircleness", "0.55"),
-    # Dialogs have their own 14 px family in Acrylic, Plasma SVG and GTK.
-    # Excluding them prevents this window-only effect from flattening that
-    # intentional distinction back to the 22 px normal-window radius.
-    ("IncludeDialogs", "false"),
-    # Tahoe supplies its own subtle window border. Keeping all three
-    # upstream outlines off avoids the doubled halo reported by users.
-    ("OutlineThickness", "0"),
-    ("InactiveOutlineThickness", "0"),
-    ("SecondOutlineThickness", "0"),
-    ("InactiveSecondOutlineThickness", "0"),
-    ("OuterOutlineThickness", "0"),
-    ("InactiveOuterOutlineThickness", "0"),
-)
-
-
-def _effect_active() -> bool:
-    qdbus = qdbus_cmd()
-    if not qdbus:
-        return False
-    try:
-        result = run_user(
-            [qdbus, "org.kde.KWin", "/Effects", "org.kde.kwin.Effects.activeEffects"],
-            check=False,
-            capture_output=True,
-            text=True,
-            timeout=10,
-        )
-    except (OSError, subprocess.TimeoutExpired):
-        return False
-    return EFFECT_ID in (result.stdout or "")
-
-
 def _locale_artifacts() -> list[tuple[Path, Path]]:
     out: list[tuple[Path, Path]] = []
     locale_root = BUILD / "locale"
@@ -278,31 +239,13 @@ def install() -> None:
             "KDE Rounded Corners GPL-3.0 license installed",
         )
 
-    preset_ok = True
-    for key, value in _PRESET:
-        preset_ok = kw_write(
-            "--file", "kwinrc", "--group", "Round-Corners",
-            "--key", key, value,
-        ) and preset_ok
-    if preset_ok:
-        ok("KDE Rounded Corners Tahoe preset installed")
-    else:
-        warn("KDE Rounded Corners preset incomplete — kwriteconfig6 failed")
-
     if not kw_write(
         "--file", "kwinrc", "--group", "Plugins",
-        "--key", "shapecornersEnabled", "true",
+        "--key", "shapecornersEnabled", "false",
     ):
-        warn("KDE Rounded Corners could not be enabled — kwriteconfig6 failed")
+        warn("KDE Rounded Corners could not be left disabled — kwriteconfig6 failed")
     qdbus_call("org.kde.KWin", "/KWin", "org.kde.KWin.reconfigure")
-    qdbus_call(
-        "org.kde.KWin", "/Effects",
-        "org.kde.kwin.Effects.loadEffect", EFFECT_ID,
-    )
-    if _effect_active():
-        ok("KDE Rounded Corners loaded")
-    else:
-        ok("KDE Rounded Corners installed (log out and back in to activate)")
+    ok("KDE Rounded Corners installed but left disabled to avoid stacked borders")
     info(f"KDE Rounded Corners v{UPSTREAM_VERSION} installed from verified upstream source")
 
 
