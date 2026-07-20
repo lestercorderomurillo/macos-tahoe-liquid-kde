@@ -32,7 +32,7 @@ from paths import read_version
 FEATURE_ORDER = [
     "fonts", "color_schemes", "plasma_theme", "window_decorations",
     "kvantum", "icons", "cursors", "wallpapers", "global_theme",
-    "layout", "plasmoids", "globalmenu", "acrylic_glass", "sounds",
+    "layout", "plasmoids", "globalmenu", "acrylic_glass", "rounded_corners", "sounds",
     "gtk", "sddm", "plymouth", "apps", "nautilus",
     "nautilus_bookmarks", "portals", "kconf_update",
 ]
@@ -44,6 +44,7 @@ _NAME_OVERRIDES = {
     "gtk": "GTK Theme",
     "sddm": "SDDM Login",
     "oled_care": "OLED Care",
+    "rounded_corners": "Rounded Corners",
     "kconf_update": "Config Migrations",
     "_reset_wallpapers": "Reset Saved Wallpapers",
     "_reset_layout": "Reset Panel Layout",

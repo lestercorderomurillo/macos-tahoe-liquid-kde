@@ -6,7 +6,7 @@ from types import ModuleType
 from log import errors
 
 
-PHASES = ("deps", "build", "install", "uninstall", "restart_plasma")
+PHASES = ("deps", "download", "build", "install", "uninstall", "restart_plasma")
 
 
 def step_module(feature: str) -> ModuleType | None:

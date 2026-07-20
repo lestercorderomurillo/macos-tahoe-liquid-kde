@@ -503,6 +503,21 @@ _PACKAGE_MAP: dict[str, dict[str, str]] = {
         "void":     "qt6-base-devel",
         "gentoo":   "dev-qt/qtbase:6",
     },
+    # KDE Rounded Corners needs Qt's private Core headers on Qt 6.10+.
+    # Earlier Qt 6 releases resolve the same package harmlessly while CMake
+    # leaves the CorePrivate component unused.
+    "qt6-coreprivate-cmake": {
+        "arch":     "qt6-base",
+        "debian":   "qt6-base-private-dev",
+        "ubuntu":   "qt6-base-private-dev",
+        "fedora":   "qt6-qtbase-private-devel",
+        "rhel":     "qt6-qtbase-private-devel",
+        "centos":   "qt6-qtbase-private-devel",
+        "opensuse": "qt6-core-private-devel",
+        "alpine":   "qt6-qtbase-private-dev",
+        "void":     "qt6-base-devel",
+        "gentoo":   "dev-qt/qtbase:6",
+    },
     "qt6-qml-cmake": {
         "arch":     "qt6-declarative",
         "debian":   "qt6-declarative-dev",
@@ -773,6 +788,30 @@ _PACKAGE_MAP: dict[str, dict[str, str]] = {
         "alpine":   "libxcb-dev",
         "void":     "libxcb-devel",
         "gentoo":   "x11-libs/libxcb",
+    },
+    "wayland-cmake": {
+        "arch":     "wayland",
+        "debian":   "libwayland-dev",
+        "ubuntu":   "libwayland-dev",
+        "fedora":   "wayland-devel",
+        "rhel":     "wayland-devel",
+        "centos":   "wayland-devel",
+        "opensuse": "wayland-devel",
+        "alpine":   "wayland-dev",
+        "void":     "wayland-devel",
+        "gentoo":   "dev-libs/wayland",
+    },
+    "drm-cmake": {
+        "arch":     "libdrm",
+        "debian":   "libdrm-dev",
+        "ubuntu":   "libdrm-dev",
+        "fedora":   "libdrm-devel",
+        "rhel":     "libdrm-devel",
+        "centos":   "libdrm-devel",
+        "opensuse": "libdrm-devel",
+        "alpine":   "libdrm-dev",
+        "void":     "libdrm-devel",
+        "gentoo":   "x11-libs/libdrm",
     },
     # Vulkan loader + headers — needed transitively by KWin 6.7+'s config.
     "vulkan-loader-cmake": {

@@ -4,7 +4,7 @@
 
 # macOS Tahoe Liquid Theme for KDE Plasma 6.6/6.7+
 
-[![release](https://img.shields.io/github/v/release/lestercorderomurillo/macos-tahoe-liquid-kde?label=release&color=blue)](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/releases) [![tests](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/actions/workflows/test.yml/badge.svg)](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/actions/workflows/test.yml) [![tests count](https://img.shields.io/badge/tests-937_passing-brightgreen)](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/actions/workflows/test.yml) [![license](https://img.shields.io/badge/license-GPL--3.0-blue)](LICENSE) [![plasma](https://img.shields.io/badge/KDE_Plasma-6.6%2B-1d99f3?logo=kde)](https://kde.org/plasma-desktop/) [![last commit](https://img.shields.io/github/last-commit/lestercorderomurillo/macos-tahoe-liquid-kde)](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/commits/) [![report a bug](https://img.shields.io/badge/report-a%20bug-red?logo=github)](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/issues/new)
+[![release](https://img.shields.io/github/v/release/lestercorderomurillo/macos-tahoe-liquid-kde?label=release&color=blue)](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/releases) [![tests](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/actions/workflows/test.yml/badge.svg)](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/actions/workflows/test.yml) [![tests count](https://img.shields.io/badge/tests-969_passing-brightgreen)](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/actions/workflows/test.yml) [![license](https://img.shields.io/badge/license-GPL--3.0-blue)](LICENSE) [![plasma](https://img.shields.io/badge/KDE_Plasma-6.6%2B-1d99f3?logo=kde)](https://kde.org/plasma-desktop/) [![last commit](https://img.shields.io/github/last-commit/lestercorderomurillo/macos-tahoe-liquid-kde)](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/commits/) [![report a bug](https://img.shields.io/badge/report-a%20bug-red?logo=github)](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/issues/new)
 
 A full macOS Tahoe-style desktop experience for KDE Plasma 6.6 and 6.7+.
 
@@ -83,22 +83,6 @@ Nautilus reshaped into Finder, with a macOS-style sidebar and clean chrome. Ligh
   <sub>Example of Light and Dark variant.</sub>
 </p>
 
-### Rounded corners and KWin effect safety
-
-The bundled Acrylic Glass effect rounds windows, dialogs, popups, tooltips and
-the Dock with separate radius controls. Theme changes preserve enabled
-third-party KWin effects, including standalone rounded-corner effects. If a
-KWin update leaves one of those compiled effects ABI-incompatible, the theme
-switcher names it in a warning and leaves its setting enabled for after it is
-rebuilt.
-
-### Native light and dark synchronization
-
-The light/dark control in KDE System Settings drives the whole theme through
-the desktop portal: Plasma, Kvantum, GTK apps such as Nautilus, icons, cursors,
-Aurorae decorations and the wallpaper switch together. The bridge is
-event-driven and uses no polling.
-
 ### Acrylic Glass Tahoe Menu
 
 Unified menu bar with native dropdowns. System menu, app name, and window controls in the top panel.
@@ -165,6 +149,7 @@ Plymouth boot screen with centered Apple-style logo on every monitor, scaled dyn
 | **Kvantum Theme** | Kvantum theme | ✅ |
 | **GTK Theme** | GTK2/3/4 window chrome and controls | ✅ |
 | **Acrylic Glass** | KWin blur, per-surface rounded corners, persistent Dock glass and third-party effect safety | ✅ |
+| **KDE Rounded Corners** | Verified online source build with a 22 px squircle/no-outline Tahoe preset | ✅ |
 | **Auto Theme Switcher** | 06:00 / 18:00 schedule plus an event-driven System Settings bridge for Plasma, Kvantum, GTK, icons, cursors, decorations and wallpaper | ✅ |
 | **OLED Care** | Opt-in pixel-shift timer for the top bar and dock | ✅ |
 | **Installer UI** | Glass window with an animated hello greeting; drives install / uninstall and a per-feature picker | ✅ |
@@ -208,7 +193,8 @@ Plymouth boot screen with centered Apple-style logo on every monitor, scaled dyn
 <details>
 <summary><b>Build toolchain</b> — needed for the compiled plasmoids and KWin effect</summary>
 
-Skipped automatically if you `./install --no-plasmoids --no-acrylic-glass`.
+Skipped automatically when every compiled feature is disabled, including
+`--no-plasmoids --no-globalmenu --no-acrylic-glass --no-rounded-corners`.
 
 - **`cmake`**
 - **`g++`** (GCC C++ compiler)
@@ -232,9 +218,15 @@ Your distro's KDE Plasma 6 dev meta-package usually pulls these in one shot.
 </details>
 
 <details>
-<summary><b>Bundled assets</b> — nothing is downloaded at install time</summary>
+<summary><b>Bundled assets and one online integration</b></summary>
 
-Fonts, icons, cursors, wallpapers, and plasmoids all ship in the repo under `src/offline/`. The only network access is the update check on launch (and the `git pull` it runs when a newer release exists on a clean checkout).
+Fonts, icons, cursors, wallpapers, plasmoids, and Acrylic Glass all ship in the
+repo under `src/offline/`. **KDE Rounded Corners is the sole online feature:**
+the installer downloads the pinned v0.9.0 source archive, verifies its SHA-256,
+then compiles it against the installed KWin. A failed or unavailable download
+only skips Rounded Corners; the bundled theme continues installing. Verified
+archives are cached under `build/online/`. The release update check on launch
+may also access GitHub and pull a newer project release on a clean checkout.
 
 </details>
 
@@ -329,7 +321,7 @@ sudo ./uninstall --only --cursors             # uninstall just cursors
 
 Available names:
 
-`wallpapers`, `fonts`, `cursors`, `plasma-theme`, `window-decorations`, `kvantum`, `color-schemes`, `icons`, `plasmoids`, `globalmenu`, `acrylic-glass`, `global-theme`, `layout`, `sounds`, `gtk`, `sddm`, `apps`, `nautilus`, `portals`, `oled-care`, `plymouth`.
+`wallpapers`, `fonts`, `cursors`, `plasma-theme`, `window-decorations`, `kvantum`, `color-schemes`, `icons`, `plasmoids`, `globalmenu`, `acrylic-glass`, `rounded-corners`, `global-theme`, `layout`, `sounds`, `gtk`, `sddm`, `apps`, `nautilus`, `portals`, `oled-care`, `plymouth`.
 
 Upgrade and boot-splash knobs:
 
@@ -422,6 +414,7 @@ Thanks to the open-source projects that inspired this one or fed assets into it.
 - **[vinceliuice](https://github.com/vinceliuice)**: `MacTahoe-icon-theme`, the basis for the icons and cursors, and inspiration for the GTK look.
 - **[taj-ny](https://github.com/taj-ny/kwin-effects-forceblur)** and **[4v3ngR](https://github.com/4v3ngR/kwin-effects-glass)**: Better Blur and its glass fork, the starting point of the Acrylic Glass effect (the KWin blur authors stay credited in the source headers).
 - **[luisbocanegra](https://github.com/luisbocanegra/plasma-panel-colorizer)**: `plasma-panel-colorizer` v7.0.1, bundled offline and installed by the layout step to tint the panels (GPL-3.0, license shipped alongside).
+- **[Matin Lotfaliei / KDE-Rounded-Corners](https://github.com/matinlotfali/KDE-Rounded-Corners)**: the GPL-3.0 KWin rounded-window effect, fetched from the pinned v0.9.0 release and built online against the host KWin SDK (license installed alongside).
 - **[ful1e5](https://github.com/ful1e5)**: `apple_cursor`, inspiration for an alternate macOS-style cursor.
 - **[sahibjotsaggu](https://github.com/sahibjotsaggu)**: `San-Francisco-Pro-Fonts`, where the SF Pro / SF Mono bundle comes from.
 - **[Lucide](https://github.com/lucide-icons/lucide)**: copy icons bundled in the global menu (ISC, © Lucide Contributors).

@@ -87,7 +87,7 @@ def _allowed_roots() -> tuple[re.Pattern, ...]:
         *qt_patterns,
         re.compile(r"^/etc/sddm\.conf\.d(/|$)"),
         re.compile(r"^/etc/plymouth(/|$)"),
-        re.compile(r"^/usr/share/(sounds|plasma|plymouth|wallpapers)(/|$)"),
+        re.compile(r"^/usr/share/(kwin|licenses|locale|sounds|plasma|plymouth|wallpapers)(/|$)"),
     )
 
 
@@ -119,7 +119,7 @@ def _validate_path(path: Path | str) -> str | None:
 def _enumerate_destinations() -> list[tuple[str, Path]]:
     """Known install destinations per step module. Imported lazily so
     module-level ``Path.home()`` runs AFTER the privilege drop."""
-    from steps import acrylic_glass, globalmenu, plasmoids
+    from steps import acrylic_glass, globalmenu, plasmoids, rounded_corners
 
     dests: list[tuple[str, Path]] = [
         ("globalmenu .so", globalmenu.DEST_SO),
@@ -128,6 +128,10 @@ def _enumerate_destinations() -> list[tuple[str, Path]]:
         ("taskmanager .so", plasmoids.TASKMANAGER_DEST_SO),
         ("taskmanager QML module", plasmoids.TASKMANAGER_DEST_QML),
         ("acrylic-glass plugin dir", acrylic_glass._plugin_dir()),
+        ("rounded-corners plugin dir", rounded_corners._plugin_dir()),
+        ("rounded-corners shader dir", rounded_corners.SHADER_DIR),
+        ("rounded-corners locale dir", rounded_corners.LOCALE_DIR),
+        ("rounded-corners license", rounded_corners.LICENSE_FILE),
     ]
     return dests
 
@@ -161,13 +165,14 @@ def _check_qt_paths() -> bool:
         fail(str(exc))
         return False
 
-    from steps import acrylic_glass, globalmenu, plasmoids
+    from steps import acrylic_glass, globalmenu, plasmoids, rounded_corners
     qt_destinations = [
         ("globalmenu .so", globalmenu.DEST_SO, plugins),
         ("globalmenu QML module", globalmenu.DEST_QML_DIR, qml),
         ("taskmanager .so", plasmoids.TASKMANAGER_DEST_SO, plugins),
         ("taskmanager QML module", plasmoids.TASKMANAGER_DEST_QML, qml),
         ("acrylic-glass plugin dir", acrylic_glass._plugin_dir(), plugins),
+        ("rounded-corners plugin dir", rounded_corners._plugin_dir(), plugins),
     ]
     cross_ok = True
     for label, dest, expected_root in qt_destinations:

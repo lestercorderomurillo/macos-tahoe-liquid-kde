@@ -469,6 +469,40 @@ def test_uninstall_prefers_official_icon_and_cursor_tools(monkeypatch,
                    for write in writes)
 
 
+def test_uninstall_uses_official_icon_and_cursor_tools_before_shell_ready(
+        monkeypatch, tmp_path):
+    """Issue #60: the helpers also own the on-disk update, so a session
+    startup race must not divert uninstall straight to manual INI writes."""
+    writes: list = []
+    calls: list[list[str]] = []
+    monkeypatch.setattr(apply, "HOME", tmp_path)
+    monkeypatch.setattr(
+        apply, "have",
+        lambda cmd: cmd in {"kwriteconfig6", "plasma-apply-cursortheme"},
+    )
+    changeicons = Path("/usr/lib/plasma-changeicons")
+    monkeypatch.setattr(apply, "kde_libexec_binary", lambda _: changeicons)
+    monkeypatch.setattr(
+        apply, "feat_enabled", lambda name, default=True: name == "CURSORS",
+    )
+    monkeypatch.setattr(apply, "kw_write", lambda *a, **k: writes.append(a) or True)
+    monkeypatch.setattr(apply, "_run_live", lambda cmd: calls.append(cmd) or True)
+    monkeypatch.setattr(apply, "_live_plasma_ready_quick", lambda: False)
+    monkeypatch.setattr(apply, "_scrub_kdedefaults", lambda: None)
+    monkeypatch.setattr(apply, "_flush_caches", lambda: None)
+    monkeypatch.setattr(apply, "reset_kde_color_scheme_config", lambda s: True)
+    monkeypatch.setattr(apply, "_apply_lookandfeel_live", lambda laf: True)
+    monkeypatch.setattr(apply, "cycle_widget_style_live", lambda style: True)
+    monkeypatch.setattr(apply, "qdbus_cmd", lambda: None)
+
+    apply.uninstall()
+
+    assert [str(changeicons), "breeze"] in calls
+    assert ["plasma-apply-cursortheme", "breeze_cursors"] in calls
+    assert not any("Icons" in write or "cursorTheme" in write
+                   for write in writes)
+
+
 def test_uninstall_keeps_config_writes_as_official_tool_fallback(
         monkeypatch, tmp_path):
     writes: list = []

@@ -32,6 +32,10 @@ Tier 3 — cmake configure for every compiled component:
     installs only Qt6, then cmake explodes for the user. The Dockerfile
     for each distro installs the union of all step deps() before this
     runs so a missing token surfaces as a hard FAIL here.
+  * KDE Rounded Corners is not downloaded in the matrix: its online
+    phase is intentionally best-effort. Supply-chain/extraction behavior
+    is unit-tested, and release validation performs one real pinned-source
+    build against the maintainer's installed KWin SDK.
 
 What this still does NOT prove:
   * The full ``sudo ./install`` pipeline (needs plasmashell + KWin

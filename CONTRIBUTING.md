@@ -58,11 +58,12 @@ src/
     steps/              One module per install/uninstall step
       apply.py          Live LAF + colour scheme apply
       plymouth.py       Boot splash
-      acrylic_glass.py  KWin glass effect
+      acrylic_glass.py  Bundled KWin glass effect
+      rounded_corners.py  Verified online KWin rounded-corners build
       layout.py         Panel + applet layout
       theme_switch.py   Installs the theme-switch units + bin
       ...
-  offline/              Bundled assets (no network needed at install time)
+  offline/              Bundled assets (Rounded Corners is the sole online exception)
     plasmoids/          Self-contained QML plasmoids (menu, launcher, trashcan, ...)
     color-schemes/      MacTahoeLiquidKdeLight.colors / Dark.colors
     look-and-feel/      LAF packages (light + dark)
@@ -136,6 +137,7 @@ plymouth: tighter logo+bar layout + render harness fix
 - **Plasmoids must NOT depend on third-party C++ plugins.** The only exception is `org.kde.plasma.private.kicker` (ships with plasma-workspace, always present).
 - Always system font — never hardcode font names or sizes.
 - Hover tiles use the glass effect (semi-transparent fill, 0.5px border, 22px radius), not outlined borders.
+- Keep corner-radius families distinct: normal windows and the bottom Dock are 22px, dialogs/tooltips are 14px, and compact controls/popup assets retain their smaller values. SVG radii must be compared after applying their group transform.
 - Use `Kirigami.Theme.*` for colors, not hardcoded hex.
 
 ### Naming
@@ -156,7 +158,7 @@ User-facing strings in QML go through `i18n("…")` from `org.kde.kirigami` / `Q
 - Don't `--amend` published commits or force-push to `main` / `master`.
 - Don't add external author names to file headers, plasmoid metadata, or screenshots. Attribution lives in the README and is managed by the maintainer.
 - Don't reference any third-party operating system or vendor by name in code, comments, commit messages, or PR titles. The README is the only place that mentions inspirations.
-- Don't add EAS / paid services / phone-home telemetry / network calls outside the explicit mirror download step.
+- Don't add EAS / paid services / phone-home telemetry / network calls outside the release updater and the pinned, checksum-verified Rounded Corners download step.
 - Don't open a PR that disables tests instead of fixing them.
 - Don't auto-edit `/etc/mkinitcpio.conf`, `/etc/default/grub`, or other system files outside the explicit `sudo_install_file` / `sudo_remove` helpers in `steps/_helpers.py` — the `_check_prereqs` policy is detect-and-warn, not auto-fix.
 

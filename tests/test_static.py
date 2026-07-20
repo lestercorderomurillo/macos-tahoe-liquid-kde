@@ -200,25 +200,20 @@ def test_no_hardcoded_qt6_libdir(repo):
     )
 
 
-# ── install steps have no download phase ──────────────────────────────
+# ── online-step allowlist ─────────────────────────────────────────────
 
 
-def test_steps_have_no_download_phase(repo):
-    """Every asset ships offline in ``src/offline/`` — no step may fetch
-    anything from the network at install time. The only network code in
-    the installer is the release update check (``cli.py`` via
-    ``utils.fetch``), which runs before the steps and is skippable.
-
-    Failure mode: a step that pulls a plasmoid from the KDE Store /
-    AUR / a GitHub tarball at install time means an offline host
-    silently loses the transparent top bar and two installs a month
-    apart can extract different bytes."""
+def test_only_rounded_corners_step_may_download(repo):
+    """Rounded Corners is the sole, explicit online exception. Everything
+    else must remain reproducibly bundled under ``src/offline``."""
     steps = repo / "src/scripts/steps"
     # urllib.parse is string handling (nautilus.py URL-escapes paths);
     # only the fetch machinery and literal URLs are download signals.
     forbidden = re.compile(r"urllib\.(?:request|error)|\burlopen\b|https?://")
     offenders: list[str] = []
     for py in steps.rglob("*.py"):
+        if py.name == "rounded_corners.py":
+            continue
         text = py.read_text()
         in_doc = False
         doc_open = None
@@ -244,10 +239,22 @@ def test_steps_have_no_download_phase(repo):
             if forbidden.search(line):
                 offenders.append(f"{py.relative_to(repo)}:{line_no}: {line.strip()}")
     assert not offenders, (
-        "Network fetch found in an install step (all assets must be "
-        "bundled offline in src/offline/):\n  "
+        "Network fetch found outside the rounded-corners allowlist:\n  "
         + "\n  ".join(offenders)
     )
+
+
+def test_rounded_corners_online_source_is_immutable(repo):
+    """An online step may never track a moving branch or unverified bytes."""
+    text = (repo / "src/scripts/steps/rounded_corners.py").read_text()
+    assert 'UPSTREAM_VERSION = "0.9.0"' in text
+    assert re.search(r'UPSTREAM_COMMIT = "[0-9a-f]{40}"', text)
+    assert re.search(r'UPSTREAM_SHA256 = "[0-9a-f]{64}"', text)
+    assert "archive/refs/tags/v{UPSTREAM_VERSION}.tar.gz" in text
+    assert "def download()" in text
+    assert "fetch(UPSTREAM_URL" in text
+    assert "latest" not in text.lower()
+    assert "/master" not in text and "/main" not in text
 
 
 def test_panel_colorizer_bundled_offline(offline):

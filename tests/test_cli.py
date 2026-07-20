@@ -78,6 +78,55 @@ def test_install_order_puts_core_theme_steps_before_optional_integrations(cli_mo
     assert order.index("plasma_theme") < order.index("nautilus")
     assert order.index("global_theme") < order.index("portals")
     assert order.index("nautilus") < order.index("portals")
+    assert order.index("acrylic_glass") < order.index("rounded_corners")
+
+
+def test_rounded_corners_flag_is_first_class(cli_module):
+    parsed = cli_module.parse_args(["--no-rounded-corners"])
+    assert parsed.cli_overrides == {"rounded_corners": False}
+    assert cli_module.DEFAULT_FEATURES["rounded_corners"] is True
+
+
+def test_online_download_failure_skips_feature_without_blocking(
+        cli_module, monkeypatch):
+    feature = "rounded_corners"
+
+    class _OnlineStep:
+        @staticmethod
+        def download_ready():
+            return False
+
+    feat = {feature: True}
+    warnings: list[str] = []
+    monkeypatch.setenv("FEAT_ROUNDED_CORNERS", "true")
+    monkeypatch.setattr(cli_module, "_download_features", lambda _: [feature])
+    monkeypatch.setattr(cli_module, "run_phase", lambda *args: False)
+    monkeypatch.setattr(cli_module, "step_module", lambda _: _OnlineStep)
+    monkeypatch.setattr(cli_module, "warn", warnings.append)
+
+    assert cli_module._run_optional_downloads(feat) is True
+    assert feat[feature] is False
+    assert cli_module.os.environ["FEAT_ROUNDED_CORNERS"] == "false"
+    assert any("install continues" in message for message in warnings)
+
+
+def test_successful_online_download_keeps_feature_enabled(
+        cli_module, monkeypatch):
+    feature = "rounded_corners"
+
+    class _OnlineStep:
+        @staticmethod
+        def download_ready():
+            return True
+
+    feat = {feature: True}
+    monkeypatch.setenv("FEAT_ROUNDED_CORNERS", "true")
+    monkeypatch.setattr(cli_module, "_download_features", lambda _: [feature])
+    monkeypatch.setattr(cli_module, "run_phase", lambda *args: True)
+    monkeypatch.setattr(cli_module, "step_module", lambda _: _OnlineStep)
+
+    assert cli_module._run_optional_downloads(feat) is True
+    assert feat[feature] is True
 
 
 # ── semver — used by the update checker to compare local vs latest ────

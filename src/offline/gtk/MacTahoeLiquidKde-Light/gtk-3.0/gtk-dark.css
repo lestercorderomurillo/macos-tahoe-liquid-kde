@@ -473,7 +473,7 @@ modelbutton.flat {
 }
 
 .background.csd {
-  border-radius: 0 0 24px 24px;
+  border-radius: 0 0 22px 22px;
   background-color: rgba(36, 36, 36, 0.60);
 }
 
@@ -1777,7 +1777,7 @@ actionbar > revealer > box {
 }
 
 .background.csd > box.vertical > actionbar > revealer > box, .background.csd > box > box > box > actionbar > revealer > box, .background.csd stack revealer > actionbar > revealer > box {
-  border-radius: 0 0 24px 24px;
+  border-radius: 0 0 22px 22px;
 }
 
 headerbar separator.titlebutton, headerbar.windowhandle > box > separator.titlebutton {
@@ -2248,7 +2248,7 @@ headerbar.default-decoration, headerbar.default-decoration:backdrop {
 }
 
 separator:first-child + headerbar, separator:first-child + headerbar:backdrop, headerbar:first-child, headerbar:first-child:backdrop {
-  border-top-left-radius: 24px;
+  border-top-left-radius: 22px;
 }
 
 .maximized separator:first-child + headerbar, .tiled separator:first-child + headerbar, .maximized separator:first-child + headerbar:backdrop, .tiled separator:first-child + headerbar:backdrop, .maximized headerbar:first-child, .tiled headerbar:first-child, .maximized headerbar:first-child:backdrop, .tiled headerbar:first-child:backdrop {
@@ -2256,7 +2256,7 @@ separator:first-child + headerbar, separator:first-child + headerbar:backdrop, h
 }
 
 headerbar:last-child, headerbar:last-child:backdrop {
-  border-top-right-radius: 24px;
+  border-top-right-radius: 22px;
 }
 
 .maximized headerbar:last-child, .tiled headerbar:last-child, .maximized headerbar:last-child:backdrop, .tiled headerbar:last-child:backdrop {
@@ -2264,21 +2264,21 @@ headerbar:last-child, headerbar:last-child:backdrop {
 }
 
 stack headerbar:first-child, stack headerbar:last-child {
-  border-top-left-radius: 24px;
-  border-top-right-radius: 24px;
+  border-top-left-radius: 22px;
+  border-top-right-radius: 22px;
 }
 
 window separator:first-child + headerbar:backdrop, window separator:first-child + headerbar, window headerbar:first-child:backdrop, window headerbar:first-child {
-  border-top-left-radius: 24px;
+  border-top-left-radius: 22px;
 }
 
 window headerbar:last-child:backdrop, window headerbar:last-child {
-  border-top-right-radius: 24px;
+  border-top-right-radius: 22px;
 }
 
 window stack headerbar:first-child:backdrop, window stack headerbar:first-child, window stack headerbar:last-child:backdrop, window stack headerbar:last-child {
-  border-top-left-radius: 24px;
-  border-top-right-radius: 24px;
+  border-top-left-radius: 22px;
+  border-top-right-radius: 22px;
 }
 
 window.tiled headerbar, window.tiled headerbar:first-child, window.tiled headerbar:last-child, window.tiled headerbar:only-child, window.tiled-top headerbar, window.tiled-top headerbar:first-child, window.tiled-top headerbar:last-child, window.tiled-top headerbar:only-child, window.tiled-right headerbar, window.tiled-right headerbar:first-child, window.tiled-right headerbar:last-child, window.tiled-right headerbar:only-child, window.tiled-bottom headerbar, window.tiled-bottom headerbar:first-child, window.tiled-bottom headerbar:last-child, window.tiled-bottom headerbar:only-child, window.tiled-left headerbar, window.tiled-left headerbar:first-child, window.tiled-left headerbar:last-child, window.tiled-left headerbar:only-child, window.maximized headerbar, window.maximized headerbar:first-child, window.maximized headerbar:last-child, window.maximized headerbar:only-child {
@@ -2296,8 +2296,8 @@ window.fullscreen headerbar, window.fullscreen headerbar:first-child, window.ful
 }
 
 .titlebar, .titlebar.background {
-  border-top-left-radius: 24px;
-  border-top-right-radius: 24px;
+  border-top-left-radius: 22px;
+  border-top-right-radius: 22px;
 }
 
 .tiled .titlebar, .maximized .titlebar, .fullscreen .titlebar, .tiled .titlebar headerbar, .maximized .titlebar headerbar, .fullscreen .titlebar headerbar {
@@ -2826,7 +2826,7 @@ notebook > stack:not(:only-child) {
 }
 
 .background.csd > notebook:not(.frame), .background.csd > notebook:not(.frame) > stack {
-  border-radius: 0 0 24px 24px;
+  border-radius: 0 0 22px 22px;
 }
 
 notebook > header {
@@ -4019,8 +4019,8 @@ scrolledwindow viewport.frame scrolledwindow.frame {
 }
 
 scrolledwindow viewport.frame > box.vertical list.content.view {
-  border-top-left-radius: 24px;
-  border-top-right-radius: 24px;
+  border-top-left-radius: 22px;
+  border-top-right-radius: 22px;
 }
 
 scrolledwindow viewport.frame > box.vertical list.frame {
@@ -4267,6 +4267,8 @@ messagedialog.background {
 }
 
 messagedialog .titlebar {
+  border-top-left-radius: 14px;
+  border-top-right-radius: 14px;
   min-height: 28px;
   background-color: rgba(51, 51, 51, 0.97);
   border: none;
@@ -4359,8 +4361,8 @@ messagedialog .dialog-action-area button.destructive-action:disabled {
 }
 
 messagedialog.csd.background {
-  border-bottom-left-radius: 24px;
-  border-bottom-right-radius: 24px;
+  border-bottom-left-radius: 14px;
+  border-bottom-right-radius: 14px;
   border: none;
 }
 
@@ -4370,24 +4372,24 @@ messagedialog.csd.background, messagedialog.csd .titlebar {
 
 .csd filechooser {
   background-color: transparent;
-  border-radius: 0 0 24px 24px;
+  border-radius: 0 0 14px 14px;
 }
 
 .csd filechooser placessidebar {
   background-color: transparent;
-  border-bottom-left-radius: 24px;
+  border-bottom-left-radius: 14px;
 }
 
 .csd filechooser placessidebar list {
   background-color: transparent;
-  border-bottom-left-radius: 24px;
+  border-bottom-left-radius: 14px;
 }
 
 .csd filechooser > actionbar > revealer > box {
   border-top: 1px solid mix(black,#333333,0.25);
   background-color: transparent;
   color: #dadada;
-  border-radius: 0 0 24px 24px;
+  border-radius: 0 0 14px 14px;
 }
 
 .csd filechooser > actionbar label, .csd filechooser > actionbar combobox {
@@ -4395,11 +4397,11 @@ messagedialog.csd.background, messagedialog.csd .titlebar {
 }
 
 .csd filechooser > box:only-child > paned stack.view:dir(ltr) {
-  border-radius: 0 0 24px 0;
+  border-radius: 0 0 14px 0;
 }
 
 .csd filechooser > box:only-child > paned stack.view:dir(rtl) {
-  border-radius: 0 0 0 24px;
+  border-radius: 0 0 0 14px;
 }
 
 .csd filechooser stack.view {
@@ -4702,14 +4704,14 @@ infobar.info > revealer > box selection, infobar.info:hover > revealer > box sel
 }
 
 tooltip {
-  border-radius: 12px;
+  border-radius: 14px;
   box-shadow: none;
 }
 
 tooltip.background, tooltip.background.csd {
   background-color: rgba(42, 42, 42, 0.96);
   background-clip: padding-box;
-  border-radius: 12px;
+  border-radius: 14px;
   color: #d3d7df;
   border: 1px solid rgba(0, 0, 0, 0.75);
   box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.1);
@@ -4889,7 +4891,7 @@ viewswitcher button > stack > box.narrow {
 
 decoration {
   transition: none;
-  border-radius: 24px;
+  border-radius: 22px;
   border-width: 0px;
   box-shadow: 0 3px 3px 0 rgba(0, 0, 0, 0.2), 0 8px 8px 0 rgba(0, 0, 0, 0.2), 0 16px 16px 0 rgba(0, 0, 0, 0.2), 0 0 0 2px rgba(0, 0, 0, 0.1), 0 0 0 1px rgba(0, 0, 0, 0.75);
   margin: 10px;
@@ -4925,7 +4927,7 @@ decoration:backdrop {
 }
 
 .ssd decoration {
-  border-radius: 24px 24px 0 0;
+  border-radius: 22px 22px 0 0;
 }
 
 .ssd decoration, .ssd decoration.backdrop {
@@ -4948,12 +4950,12 @@ decoration:backdrop {
 }
 
 tooltip.csd decoration {
-  border-radius: 24px;
+  border-radius: 14px;
   box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.25);
 }
 
 messagedialog.csd decoration {
-  border-radius: 24px;
+  border-radius: 14px;
 }
 
 .solid-csd decoration {
@@ -5204,11 +5206,11 @@ window#ValaPanel.background button.flat.-panel-icon-button:active {
 .nautilus-window.background.csd {
   background-color: transparent;
   background-image: linear-gradient(90deg, transparent 0%, transparent 200px, mix(black,#333333,0.25) 200px, mix(black,#333333,0.25) 201px, #242424 201px, #242424 100%);
-  border-radius: 0 0 24px 24px;
+  border-radius: 0 0 22px 22px;
 }
 
 .nautilus-window.background.csd.unified {
-  border-radius: 24px;
+  border-radius: 22px;
 }
 
 .nautilus-window.background.csd.unified > deck > box.vertical > headerbar.titlebar {
@@ -5245,7 +5247,7 @@ window#ValaPanel.background button.flat.-panel-icon-button:active {
 .nautilus-window.background.csd placessidebar.sidebar {
   background-color: transparent;
   border: none;
-  border-bottom-left-radius: 24px;
+  border-bottom-left-radius: 22px;
   min-width: 200px;
   background-image: none;
 }
@@ -5455,7 +5457,7 @@ window#ValaPanel.background button.flat.-panel-icon-button:active {
 
 .nautilus-window notebook,
 .nautilus-window notebook > stack {
-  border-radius: 0 0 24px 24px;
+  border-radius: 0 0 22px 22px;
 }
 
 .nautilus-window notebook > stack {
@@ -5631,7 +5633,7 @@ preferencesgroup list list {
 
 .nautilus-list-view {
   background-color: #242424;
-  border-radius: 0 0 24px 24px;
+  border-radius: 0 0 22px 22px;
 }
 
 .nautilus-list-view treeview.view:not(:hover):not(:active):not(:selected) {
@@ -5702,7 +5704,7 @@ terminal-window.background.csd {
 }
 
 terminal-window decoration {
-  border-radius: 24px 24px 0 0;
+  border-radius: 22px 22px 0 0;
 }
 
 terminal-window.background.csd.maximized {
@@ -5714,7 +5716,7 @@ window.background.csd > box.vertical > box.horizontal > frame > border {
 }
 
 window.background.csd > box.vertical > box.horizontal > frame > scrolledwindow > viewport.frame list {
-  border-bottom-left-radius: 24px;
+  border-bottom-left-radius: 22px;
 }
 
 window.background.csd > box.vertical > box.horizontal > stack > widget > notebook.frame {
@@ -5722,7 +5724,7 @@ window.background.csd > box.vertical > box.horizontal > stack > widget > noteboo
 }
 
 window.background.csd > box.vertical > box.horizontal > stack > widget > notebook.frame > stack {
-  border-bottom-right-radius: 24px;
+  border-bottom-right-radius: 22px;
 }
 
 paned.titlebar > headerbar button.flat.toggle.popup:not(.image-button) box > .title {
@@ -5735,7 +5737,7 @@ paned.gedit-side-panel-paned > box.vertical > stack > grid.horizontal > box.hori
 }
 
 paned.gedit-side-panel-paned > box.vertical > stack > grid.horizontal > scrolledwindow {
-  border-bottom-left-radius: 24px;
+  border-bottom-left-radius: 22px;
 }
 
 paned.gedit-side-panel-paned > box.vertical > stack > grid.horizontal > scrolledwindow treeview.view:not(:hover):not(:selected) {
@@ -5829,7 +5831,7 @@ window.background.csd.fullscreen .gedit-side-panel-paned statusbar {
 .gedit-side-panel-paned statusbar {
   border-top: 1px solid rgba(255, 255, 255, 0.12);
   background-color: #333333;
-  border-radius: 0 0 24px 24px;
+  border-radius: 0 0 22px 22px;
 }
 
 .gedit-side-panel-paned statusbar frame > border {
@@ -5841,7 +5843,7 @@ window.background.csd.fullscreen .gedit-side-panel-paned statusbar {
   color: #FDFDFD;
   padding: 6px;
   margin: 0 8px 13px;
-  border-radius: 0 0 24px 24px;
+  border-radius: 0 0 22px 22px;
   border: solid #474747;
   border-width: 0 1px 1px;
   box-shadow: 0 3px 3px 0 rgba(0, 0, 0, 0.25), 0 5px 8px 0 rgba(0, 0, 0, 0.05), 0 0 0 2px rgba(0, 0, 0, 0.1), 0 0 0 1px rgba(0, 0, 0, 0.75);
@@ -6056,19 +6058,19 @@ preferencesbin entry.search {
 }
 
 dzlpreferencesview stacksidebar.sidebar {
-  border-bottom-left-radius: 24px;
+  border-bottom-left-radius: 22px;
 }
 
 dzlpreferencesview stacksidebar.sidebar > scrolledwindow > viewport.frame > list {
-  border-bottom-left-radius: 24px;
+  border-bottom-left-radius: 22px;
 }
 
 dzldockbin#buildui.buildui list.sidebar {
-  border-bottom-left-radius: 24px;
+  border-bottom-left-radius: 22px;
 }
 
 dzldockbin#editor > ideeditorsidebar.left.pinned.dzldockbinedge {
-  border-bottom-left-radius: 24px;
+  border-bottom-left-radius: 22px;
 }
 
 dzldockbin#editor > ideeditorsidebar.left.pinned.dzldockbinedge > dzldockpaned treeview.view.project-tree.i-wanna-be-list-box:not(:hover):not(:selected) {
@@ -6076,7 +6078,7 @@ dzldockbin#editor > ideeditorsidebar.left.pinned.dzldockbinedge > dzldockpaned t
 }
 
 ideeditorutilities.bottom.pinned.dzldockbinedge {
-  border-bottom-right-radius: 24px;
+  border-bottom-right-radius: 22px;
 }
 
 gstyleslidein #scale_box button.toggle:checked,
@@ -6095,7 +6097,7 @@ configurationview list {
 }
 
 dzldockbin actionbar > revealer > box {
-  border-radius: 0 0 24px 24px;
+  border-radius: 0 0 22px 22px;
 }
 
 workbench.csd > stack.titlebar:not(headerbar) {
@@ -6106,7 +6108,7 @@ workbench.csd > stack.titlebar:not(headerbar) {
 }
 
 workbench.csd > stack.titlebar:not(headerbar) headerbar, workbench.csd > stack.titlebar:not(headerbar) headerbar:first-child, workbench.csd > stack.titlebar:not(headerbar) headerbar:last-child {
-  border-radius: 24px 24px 0 0;
+  border-radius: 22px 22px 0 0;
 }
 
 window.org-gnome-Builder.workspace > stack#titlebar_container.titlebar > headerbar > omnibar > .linked > entry {
@@ -6132,11 +6134,11 @@ window.org-gnome-Builder.workspace > popover.dzlmenubutton > box.vertical > dzlm
 
 window.org-gnome-Builder.workspace treeview.view.i-wanna-be-listbox:not(:hover):not(:selected),
 window.org-gnome-Builder.workspace dzlmultipaned > notebook > stack > scrolledwindow > treeview.view:not(:hover):not(:selected) {
-  border-bottom-left-radius: 24px;
+  border-bottom-left-radius: 22px;
 }
 
 window.background > box.vertical box.horizontal list.categories {
-  border-radius: 0 0 0 24px;
+  border-radius: 0 0 0 22px;
 }
 
 window.background > box.vertical box.horizontal > box.vertical > scrolledwindow > viewport.frame > list row.event.activatable {
@@ -6237,7 +6239,7 @@ widget#PERFORMANCE searchbar button {
 
 widget#PERFORMANCE .sidebar {
   background-color: #242424;
-  border-bottom-left-radius: 24px;
+  border-bottom-left-radius: 22px;
 }
 
 graph-switcher-button.toggle {
@@ -6393,12 +6395,12 @@ window.background.csd > hdyleaflet > box.vertical > stack.main-container,
 window.background.csd > leaflet > box.vertical > stack.main-container,
 window.background.csd > leaflet > box.vertical:last-child > scrolledwindow {
   background-color: #242424;
-  border-bottom-right-radius: 24px;
+  border-bottom-right-radius: 22px;
 }
 
 window.background.csd list.tweak-categories,
 window.background.csd > leaflet > box > scrolledwindow > viewport > list.navigation-sidebar {
-  border-radius: 0 0 0 24px;
+  border-radius: 0 0 0 22px;
 }
 
 window.background.csd list.tweak-categories > row:not(:selected):not(:hover),
@@ -6431,14 +6433,14 @@ window.background.csd.fullscreen leaflet > box > scrolledwindow > viewport > lis
 }
 
 window.background.csd > stack {
-  border-radius: 0 0 24px 24px;
+  border-radius: 0 0 22px 22px;
 }
 
 window.background.csd > leaflet > stack.background,
 window.background.csd > hdyleaflet > stack.background,
 window.background.csd > box.horizontal > stack.background {
   background-color: #242424;
-  border-bottom-right-radius: 24px;
+  border-bottom-right-radius: 22px;
 }
 
 window.background.csd > leaflet > stack.background > widget > box.horizontal > box.horizontal > box.vertical > button:active,
@@ -6454,7 +6456,7 @@ window.background.csd > leaflet > stack.background > widget > box.vertical > box
 window.background.csd > hdyleaflet > stack.background > widget > box.vertical > box.vertical > scrolledwindow > viewport.frame,
 window.background.csd > box.horizontal > stack.background > widget > box.vertical > box.vertical > scrolledwindow > viewport.frame {
   background-color: #242424;
-  border-bottom-right-radius: 25px;
+  border-bottom-right-radius: 23px;
 }
 
 window.background.csd > leaflet > stack.background > widget > box.vertical > box.vertical > scrolledwindow > viewport.frame > box.vertical,
@@ -6485,25 +6487,25 @@ window.background.csd > box.horizontal > stack.background > widget > scrolledwin
 window.background.csd > leaflet > stack.background > widget > scrolledwindow > viewport > clamp.medium > box > box > box > frame > box > box.vertical:first-child:last-child > list,
 window.background.csd > hdyleaflet > stack.background > widget > scrolledwindow > viewport > clamp.medium > box > box > box > frame > box > box.vertical:first-child:last-child > list,
 window.background.csd > box.horizontal > stack.background > widget > scrolledwindow > viewport > clamp.medium > box > box > box > frame > box > box.vertical:first-child:last-child > list {
-  border-radius: 24px;
+  border-radius: 22px;
 }
 
 window.background.csd > leaflet > stack.background > widget > scrolledwindow > viewport > clamp.medium > box > box > box > frame > box > box.vertical:first-child > list,
 window.background.csd > hdyleaflet > stack.background > widget > scrolledwindow > viewport > clamp.medium > box > box > box > frame > box > box.vertical:first-child > list,
 window.background.csd > box.horizontal > stack.background > widget > scrolledwindow > viewport > clamp.medium > box > box > box > frame > box > box.vertical:first-child > list {
-  border-radius: 24px 24px 4px 4px;
+  border-radius: 22px 22px 4px 4px;
 }
 
 window.background.csd > leaflet > stack.background > widget > scrolledwindow > viewport > clamp.medium > box > box > box > frame > box > box.vertical:not(:first-child):last-child > list,
 window.background.csd > hdyleaflet > stack.background > widget > scrolledwindow > viewport > clamp.medium > box > box > box > frame > box > box.vertical:not(:first-child):last-child > list,
 window.background.csd > box.horizontal > stack.background > widget > scrolledwindow > viewport > clamp.medium > box > box > box > frame > box > box.vertical:not(:first-child):last-child > list {
-  border-radius: 4px 4px 24px 24px;
+  border-radius: 4px 4px 22px 22px;
 }
 
 window.background.csd > leaflet > box.vertical > scrolledwindow.view,
 window.background.csd > hdyleaflet > box.vertical > scrolledwindow.view,
 window.background.csd > box.horizontal > box.vertical > scrolledwindow.view {
-  border-bottom-left-radius: 25px;
+  border-bottom-left-radius: 23px;
 }
 
 window.background.csd > leaflet > box.vertical > scrolledwindow.view > viewport.frame > stack,
@@ -6566,7 +6568,7 @@ window.background.csd.fullscreen > box.horizontal > box.vertical > scrolledwindo
 
 window#gnome-system-monitor.background.csd > box.vertical > stack {
   background-color: #242424;
-  border-radius: 0 0 24px 24px;
+  border-radius: 0 0 22px 22px;
 }
 
 window#gnome-system-monitor.background.csd > box.vertical > stack > box.vertical > scrolledwindow treeview.view:not(:hover):not(:selected):not(.progressbar):not(.trough) {
@@ -6579,11 +6581,11 @@ window#gnome-system-monitor.background.csd.maximized > box.vertical > stack, win
 
 window.background.csd > stack > grid.vertical > scrolledwindow {
   border: none;
-  border-radius: 0 0 24px 24px;
+  border-radius: 0 0 22px 22px;
 }
 
 window.background.csd > stack > grid.vertical > scrolledwindow > viewport.frame list {
-  border-radius: 0 0 24px 24px;
+  border-radius: 0 0 22px 22px;
 }
 
 window.background.csd > stack > grid.vertical scrolledwindow.frame.emptyGrid {
@@ -6624,20 +6626,20 @@ window.background.csd > overlay > grid.horizontal > frame:dir(ltr) > border {
 }
 
 window.background.csd > overlay > grid.horizontal > overlay > stack > box.horizontal > grid.horizontal > scrolledwindow.contacts-contact-form {
-  border-bottom-right-radius: 25px;
+  border-bottom-right-radius: 23px;
 }
 
 window.background.csd > overlay > hdyleaflet > stack,
 window.background.csd > overlay > leaflet > stack,
 window.background.csd > deck > box > overlay > leaflet > stack {
-  border-bottom-left-radius: 24px;
+  border-bottom-left-radius: 22px;
 }
 
 window.background.csd > overlay > hdyleaflet > overlay > scrolledwindow > viewport.frame,
 window.background.csd > overlay > leaflet > overlay > scrolledwindow > viewport.frame,
 window.background.csd > deck > box > overlay > leaflet > overlay > scrolledwindow > viewport.frame {
   background-color: alpha(#242424,1);
-  border-bottom-right-radius: 24px;
+  border-bottom-right-radius: 22px;
 }
 
 window.background.csd > overlay > hdyleaflet > overlay > scrolledwindow > viewport.frame > hdycolumn > stack > box.horizontal > box.vertical > box.horizontal > button.image-button,
@@ -6815,7 +6817,7 @@ notebook.main-notebook > header.top > tabs > tab:first-child {
 }
 
 notebook.main-notebook webkitwebview {
-  border-radius: 0 0 24px 24px;
+  border-radius: 0 0 22px 22px;
 }
 
 window.background.csd > deck > deck > fullscreenbox > flap > box > windowhandle > headerbar.titlebar {
@@ -6854,7 +6856,7 @@ tabbox > tab button.tab-close-button {
 }
 
 window.background.csd > box.vertical > overlay > stack.background {
-  border-radius: 0 0 24px 24px;
+  border-radius: 0 0 22px 22px;
 }
 
 window.background.csd.maximized > box.vertical > overlay > stack.background, window.background.csd.tiled > box.vertical > overlay > stack.background, window.background.csd.fullscreen > box.vertical > overlay > stack.background {
@@ -6863,7 +6865,7 @@ window.background.csd.maximized > box.vertical > overlay > stack.background, win
 
 #weather-page,
 #weekly-forecast-frame {
-  border-bottom-right-radius: 24px;
+  border-bottom-right-radius: 22px;
 }
 
 .maximized #weather-page, .tiled #weather-page, .fullscreen #weather-page, .maximized #weekly-forecast-frame, .tiled #weekly-forecast-frame, .fullscreen #weekly-forecast-frame {
@@ -6871,8 +6873,8 @@ window.background.csd.maximized > box.vertical > overlay > stack.background, win
 }
 
 #weather-page-content-view {
-  border-bottom-right-radius: 24px;
-  border-bottom-left-radius: 24px;
+  border-bottom-right-radius: 22px;
+  border-bottom-left-radius: 22px;
 }
 
 .maximized #weather-page-content-view, .tiled #weather-page-content-view, .fullscreen #weather-page-content-view {
@@ -6900,7 +6902,7 @@ window.background.org-gnome-Calendar .week-view weekgrid event.color-dark, windo
 
 .polari-room-list .sidebar {
   background-color: transparent;
-  border-bottom-left-radius: 24px;
+  border-bottom-left-radius: 22px;
 }
 
 .polari-room-list.maximized .sidebar, .polari-room-list.tiled .sidebar, .polari-room-list.fullscreen .sidebar {
@@ -6910,7 +6912,7 @@ window.background.org-gnome-Calendar .week-view weekgrid event.color-dark, windo
 stack.view.polari-entry-area {
   background-color: #333333;
   border-top: 1px solid rgba(255, 255, 255, 0.12);
-  border-bottom-right-radius: 24px;
+  border-bottom-right-radius: 22px;
 }
 
 stack.view.polari-entry-area button.popup.flat.toggle.polari-nick-button:hover {
@@ -7129,7 +7131,7 @@ window.background > grid.vertical > box.vertical grid.math-buttons button:not(.s
 }
 
 .background.csd.main-window .sidebar.rooms-sidebar {
-  border-bottom-left-radius: 24px;
+  border-bottom-left-radius: 22px;
 }
 
 .background.csd.main-window.maximized .sidebar.rooms-sidebar, .background.csd.main-window.tiled .sidebar.rooms-sidebar, .background.csd.main-window.fullscreen .sidebar.rooms-sidebar {
@@ -7138,12 +7140,12 @@ window.background > grid.vertical > box.vertical grid.math-buttons button:not(.s
 
 window.background.csd > leaflet.unfolded > scrolledwindow > viewport.frame > list {
   background-color: transparent;
-  border-bottom-left-radius: 24px;
+  border-bottom-left-radius: 22px;
 }
 
 window.background.csd > leaflet.unfolded > box.vertical > stack {
   background-color: #242424;
-  border-bottom-right-radius: 24px;
+  border-bottom-right-radius: 22px;
 }
 
 .documents-scrolledwin {
@@ -7171,7 +7173,7 @@ window.background.csd > leaflet.unfolded > box.vertical > stack {
 }
 
 window.background.csd > box.vertical > overlay > stack > box.vertical > actionbar > revealer > box {
-  border-radius: 0 0 24px 24px;
+  border-radius: 0 0 22px 22px;
 }
 
 window.background.csd.maximized > box.vertical > overlay > stack > box.vertical > actionbar > revealer > box, window.background.csd.tiled > box.vertical > overlay > stack > box.vertical > actionbar > revealer > box, window.background.csd.fullscreen > box.vertical > overlay > stack > box.vertical > actionbar > revealer > box {
@@ -7180,7 +7182,7 @@ window.background.csd.maximized > box.vertical > overlay > stack > box.vertical 
 
 window.background.csd > box.vertical > scrolledwindow > iconview.view.content-view:not(:hover):not(:selected) {
   background-color: transparent;
-  border-radius: 24px;
+  border-radius: 22px;
 }
 
 window.background.csd > box.vertical > paned.horizontal > box.vertical > scrolledwindow > treeview.view:not(:hover):not(:selected) {
@@ -7189,7 +7191,7 @@ window.background.csd > box.vertical > paned.horizontal > box.vertical > scrolle
 
 window.background.csd evview.view.content-view {
   background-color: transparent;
-  border-radius: 0 0 24px 24px;
+  border-radius: 0 0 22px 22px;
 }
 
 window.background.csd.maximized > box.vertical > scrolledwindow > iconview.view.content-view:not(:hover):not(:selected), window.background.csd.tiled > box.vertical > scrolledwindow > iconview.view.content-view:not(:hover):not(:selected), window.background.csd.fullscreen > box.vertical > scrolledwindow > iconview.view.content-view:not(:hover):not(:selected) {
@@ -7201,7 +7203,7 @@ window.background.csd.maximized evview.view.content-view, window.background.csd.
 }
 
 window.background.csd > grid.horizontal > paned.horizontal > scrolledwindow {
-  border-radius: 0 0 24px 24px;
+  border-radius: 0 0 22px 22px;
   background-color: #242424;
 }
 
@@ -7214,7 +7216,7 @@ window.background.csd > grid.horizontal > paned.horizontal > scrolledwindow > tr
 }
 
 window.background.csd > grid.horizontal > paned.horizontal > box.vertical > scrolledwindow {
-  border-radius: 0 0 0 24px;
+  border-radius: 0 0 0 22px;
   background-color: #333333;
 }
 
@@ -7267,7 +7269,7 @@ window.background.csd > paned.titlebar > separator {
 }
 
 .org-gnome-Todo stack.background tasklistview .view {
-  border-radius: 0 0 24px 24px;
+  border-radius: 0 0 22px 22px;
 }
 
 .org-gnome-Todo stack.background tasklistview .view .new-task-row button,
@@ -7288,7 +7290,7 @@ window.background.csd > paned.titlebar > separator {
 
 .geary-main-window.background.csd > overlay > box.vertical > paned > .sidebar,
 window#GearyMainWindow.background.csd > overlay > box.vertical > paned > .sidebar {
-  border-bottom-left-radius: 24px;
+  border-bottom-left-radius: 22px;
 }
 
 .geary-main-window.background.csd > overlay > box.vertical > paned > .sidebar treeview.view.sidebar,
@@ -7319,7 +7321,7 @@ window#GearyMainWindow.background.csd paned.geary-sidebar-pane-separator statusb
   margin: -8px -12px;
   border: none;
   background-color: alpha(transparent,1);
-  border-bottom-left-radius: 24px;
+  border-bottom-left-radius: 22px;
 }
 
 .geary-main-window.background.csd paned.geary-sidebar-pane-separator statusbar frame > border,
@@ -7370,13 +7372,13 @@ window#GearyMainWindow.background.csd paned.geary-sidebar-pane-separator frame.g
 .geary-main-window.background.csd stack#conversation_viewer,
 window#GearyMainWindow.background.csd stack#conversation_viewer {
   background-color: #242424;
-  border-bottom-right-radius: 25px;
+  border-bottom-right-radius: 23px;
 }
 
 .geary-main-window.background.csd stack#conversation_viewer scrolledwindow.geary-conversation-scroller viewport.frame,
 window#GearyMainWindow.background.csd stack#conversation_viewer scrolledwindow.geary-conversation-scroller viewport.frame {
   background-color: #242424;
-  border-bottom-right-radius: 24px;
+  border-bottom-right-radius: 22px;
 }
 
 .geary-main-window.background.csd stack#conversation_viewer scrolledwindow.geary-conversation-scroller viewport.frame list.conversation-listbox,
@@ -7633,7 +7635,7 @@ geary-composer-box.background.csd geary-composer-editor > box.background {
 }
 
 geary-composer-box.background.csd geary-composer-editor > box.background > actionbar > revealer > box {
-  border-radius: 0 0 24px 24px;
+  border-radius: 0 0 22px 22px;
 }
 
 .geary-accounts-editor-pane-content frame:not(.geary-signature) > border {
@@ -7646,7 +7648,7 @@ geary-composer-box.background.csd geary-composer-editor > box.background > actio
 
 window.background.csd > overlay > stack.content-bg {
   background-color: transparent;
-  border-radius: 0 0 24px 24px;
+  border-radius: 0 0 22px 22px;
 }
 
 window.background.csd > overlay > stack.content-bg > notebook.frame {
@@ -7654,7 +7656,7 @@ window.background.csd > overlay > stack.content-bg > notebook.frame {
 }
 
 window.background.csd > overlay > stack.content-bg > notebook.frame > stack {
-  border-radius: 0 0 24px 24px;
+  border-radius: 0 0 22px 22px;
 }
 
 window.background.csd > overlay > stack.content-bg > notebook.frame > stack > box.transparent-bg > scrolledwindow > viewport.frame > grid > stack > box > frame > border {
@@ -7678,7 +7680,7 @@ window.background.csd > overlay > stack.content-bg > notebook.frame > stack > bo
 dialog.background.csd {
   background-image: none;
   background-color: alpha(#242424,0.96);
-  border-radius: 0 0 24px 24px;
+  border-radius: 0 0 14px 14px;
 }
 
 dialog.background.csd.maximized {
@@ -7706,11 +7708,11 @@ dialog.background.csd > box.vertical.dialog-vbox > grid.horizontal > scrolledwin
 }
 
 dialog.background.csd > box.vertical.dialog-vbox > grid.horizontal > scrolledwindow.frame > viewport.frame list:first-child {
-  border-radius: 0 0 0 24px;
+  border-radius: 0 0 0 14px;
 }
 
 dialog.background.csd > box.vertical.dialog-vbox > grid.horizontal > scrolledwindow.frame > viewport.frame list:last-child {
-  border-radius: 0 0 24px 0;
+  border-radius: 0 0 14px 0;
 }
 
 dialog.background.csd > box.vertical.dialog-vbox > grid.horizontal > stack > scrolledwindow.frame {
@@ -7719,7 +7721,7 @@ dialog.background.csd > box.vertical.dialog-vbox > grid.horizontal > stack > scr
 
 dialog.background.csd > box.vertical.dialog-vbox > stack > scrolledwindow,
 dialog.background.csd > box.vertical.dialog-vbox > stack > stack > scrolledwindow {
-  border-radius: 0 0 24px 24px;
+  border-radius: 0 0 14px 14px;
   background-color: #242424;
 }
 
@@ -7729,7 +7731,7 @@ dialog.background.csd > box.vertical.dialog-vbox > stack > stack > scrolledwindo
 }
 
 dialog.background.csd > box.vertical.dialog-vbox > stack > scrolledwindow > viewport.frame > list {
-  border-radius: 0 0 24px 24px;
+  border-radius: 0 0 14px 14px;
 }
 
 dialog.background.csd > box.vertical.dialog-vbox > stack > scrolledwindow > viewport.frame > list row.activatable:not(:hover):not(:selected):not(:active) {
@@ -7741,20 +7743,20 @@ dialog.background.csd > box.vertical.dialog-vbox > stack > box.vertical > stack.
 }
 
 dialog.background.csd > box.vertical.dialog-vbox > stack toolbar.toolbar {
-  border-radius: 0 0 24px 24px;
+  border-radius: 0 0 14px 14px;
   border-width: 1px 0 0 0;
 }
 
 dialog.background.csd > box.vertical.dialog-vbox > stack > notebook > stack {
-  border-radius: 0 0 24px 24px;
+  border-radius: 0 0 14px 14px;
 }
 
 dialog.background.csd > box.vertical.dialog-vbox > notebook > stack {
-  border-radius: 0 0 24px 24px;
+  border-radius: 0 0 14px 14px;
 }
 
 dialog.background.csd > box.vertical.dialog-vbox > notebook > stack > box.horizontal > notebook > stack {
-  border-radius: 0 0 24px 24px;
+  border-radius: 0 0 14px 14px;
 }
 
 dialog.background.csd > box.vertical.dialog-vbox separator.vertical {
@@ -7809,7 +7811,7 @@ window.background.csd > stack > grid > scrolledwindow > viewport > box > frame >
 
 window.background.csd > stack > box > box > list,
 window.background.csd > stack > box > stack > scrolledwindow > viewport > list {
-  border-bottom-left-radius: 24px;
+  border-bottom-left-radius: 22px;
 }
 
 window.background.csd.maximized > stack > box > box > list,
@@ -7830,7 +7832,7 @@ window.background.csd.unified > decoration-overlay {
 window.background.csd.unified,
 window.background.csd.unified > decoration,
 window.background.csd.unified > decoration-overlay {
-  border-radius: 24px;
+  border-radius: 22px;
 }
 
 window.background.csd.unified.tiled > decoration-overlay, window.background.csd.unified.tiled-top > decoration-overlay, window.background.csd.unified.tiled-right > decoration-overlay, window.background.csd.unified.tiled-bottom > decoration-overlay, window.background.csd.unified.tiled-left > decoration-overlay, window.background.csd.unified.maximized > decoration-overlay, window.background.csd.unified.fullscreen > decoration-overlay {
@@ -8240,7 +8242,7 @@ widget > box.terminal-titlebar > button.image-button, widget > box.terminal-titl
 
 list.tilix-session-sidebar {
   background-image: image(transparent);
-  border-bottom-left-radius: 24px;
+  border-bottom-left-radius: 22px;
 }
 
 list.tilix-session-sidebar button.tilix-sidebar-close-button {
@@ -8265,27 +8267,27 @@ list.tilix-session-sidebar button.tilix-sidebar-close-button:active, list.tilix-
 }
 
 window.background.csd > box.horizontal > stack > box.vertical > notebook > stack {
-  border-bottom-right-radius: 24px;
+  border-bottom-right-radius: 22px;
 }
 
 window.background.csd > overlay > notebook > stack > .tilix-background {
   background-color: #151515;
-  border-radius: 0 0 24px 24px;
+  border-radius: 0 0 22px 22px;
 }
 
 window.background.csd > overlay > notebook > stack > .tilix-background > .tilix-background {
   background-color: #151515;
-  border-radius: 0 0 24px 24px;
+  border-radius: 0 0 22px 22px;
 }
 
 window.background.csd > overlay > notebook > stack > .tilix-background > .tilix-background .tilix-terminal-scrolledwindow {
   padding-bottom: 24px;
   background-color: #151515;
-  border-radius: 0 0 24px 24px;
+  border-radius: 0 0 22px 22px;
 }
 
 window.background.csd > overlay > notebook > stack > .tilix-background > .tilix-background .tilix-terminal-scrolledwindow > vte-terminal {
-  border-radius: 0 0 24px 24px;
+  border-radius: 0 0 22px 22px;
 }
 
 window.background.csd.maximized > box.horizontal > stack > box.vertical > notebook > stack, window.background.csd.tiled > box.horizontal > stack > box.vertical > notebook > stack, window.background.csd.fullscreen > box.horizontal > stack > box.vertical > notebook > stack {
@@ -8299,11 +8301,11 @@ notebook.tilix-background > header > tabs > tab button.tilix-small-button {
 }
 
 window.background.csd > grid.vertical > overlay > grid.vertical > grid.horizontal > .sidebar {
-  border-bottom-left-radius: 24px;
+  border-bottom-left-radius: 22px;
 }
 
 window.background.csd > grid.vertical > overlay > grid.vertical > grid.horizontal > paned.horizontal > stack {
-  border-bottom-right-radius: 24px;
+  border-bottom-right-radius: 22px;
 }
 
 window.background.csd.maximized > grid.vertical > overlay > grid.vertical > grid.horizontal > .sidebar, window.background.csd.tiled > grid.vertical > overlay > grid.vertical > grid.horizontal > .sidebar, window.background.csd.fullscreen > grid.vertical > overlay > grid.vertical > grid.horizontal > .sidebar {
@@ -10198,7 +10200,7 @@ window.budgie-switcher-window flowboxchild {
 
 .background.csd.budgie-run-dialog, .background.csd.budgie-session-dialog,
 .background.csd.budgie-polkit-dialog {
-  border-radius: 24px;
+  border-radius: 14px;
 }
 
 .budgie-run-dialog > box > grid, .budgie-session-dialog > box > grid,
@@ -10260,7 +10262,7 @@ window.budgie-switcher-window flowboxchild {
 }
 
 .budgie-power-dialog.background.csd {
-  border-radius: 24px;
+  border-radius: 14px;
   box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.1);
 }
 
@@ -10501,7 +10503,7 @@ window#whiskermenu-window .title-area > .commands-area > button.flat.command-but
 }
 
 window.background.csd.thunar > grid.horizontal > paned.horizontal > scrolledwindow.frame.sidebar.shortcuts-pane {
-  border-bottom-left-radius: 24px;
+  border-bottom-left-radius: 22px;
   background-color: transparent;
 }
 
@@ -10646,7 +10648,7 @@ window.background.csd > box.vertical > notebook > stack > scrolledwindow.frame >
 
 window.background.csd > box.vertical > notebook > stack > scrolledwindow.frame > textview > text {
   background-color: transparent;
-  border-radius: 0 0 24px 24px;
+  border-radius: 0 0 22px 22px;
 }
 
 .nemo-window.background .nemo-places-sidebar.frame {
@@ -10817,7 +10819,7 @@ menu#selection menuitem,
 }
 
 .view.cs-category-view {
-  border-bottom-right-radius: 24px;
+  border-bottom-right-radius: 22px;
 }
 
 .menubar.panel .panel, .menubar.panel .panel.color-light, .menubar.panel .panel.color-dark {
@@ -11147,7 +11149,7 @@ window.background.csd > paned.horizontal > scrolledwindow > viewport.frame > box
 }
 
 window.background.csd > paned.horizontal > scrolledwindow > viewport.frame > box.vertical treeview.view:not(:hover):not(:selected) {
-  border-bottom-left-radius: 24px;
+  border-bottom-left-radius: 22px;
   background: none;
 }
 
@@ -11191,7 +11193,7 @@ window.background.csd > paned.horizontal > scrolledwindow > viewport.frame > box
 }
 
 window.background.csd > stack > stack > paned.horizontal > scrolledwindow > viewport.frame list {
-  border-bottom-left-radius: 24px;
+  border-bottom-left-radius: 22px;
 }
 
 window.background.csd.unified > deck > grid > paned > separator {
@@ -11275,7 +11277,7 @@ label.keycap {
 }
 
 .dynamic-notebook > notebook > stack {
-  border-bottom-right-radius: 24px;
+  border-bottom-right-radius: 22px;
   background-color: #242424;
 }
 

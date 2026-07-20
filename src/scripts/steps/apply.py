@@ -389,8 +389,7 @@ def uninstall() -> None:
             ok("Fonts reset")
         if feat_enabled("CURSORS"):
             cursor_reset = (
-                live_ready
-                and have("plasma-apply-cursortheme")
+                have("plasma-apply-cursortheme")
                 and _run_live(["plasma-apply-cursortheme", "breeze_cursors"])
             )
             if not cursor_reset:
@@ -406,8 +405,7 @@ def uninstall() -> None:
         # MacTahoe icon dirs are deleted later, so point config at breeze first.
         changeicons = kde_libexec_binary("plasma-changeicons")
         icons_reset = (
-            live_ready
-            and changeicons is not None
+            changeicons is not None
             and _run_live([str(changeicons), "breeze"])
         )
         if not icons_reset:

@@ -98,6 +98,10 @@ def test_enumerate_destinations_covers_all_compiled_steps():
     assert "taskmanager .so" in labels
     assert "taskmanager QML module" in labels
     assert "acrylic-glass plugin dir" in labels
+    assert "rounded-corners plugin dir" in labels
+    assert "rounded-corners shader dir" in labels
+    assert "rounded-corners locale dir" in labels
+    assert "rounded-corners license" in labels
 
 
 def test_check_paths_passes_for_production_destinations():
@@ -303,13 +307,14 @@ def test_install_destinations_anchor_to_qmake6_libdir(monkeypatch, tmp_path):
     monkeypatch.setattr(distro, "_QT_PLUGINS_CACHE", fake_plugins)
     monkeypatch.setattr(distro, "_QT_QML_CACHE", fake_qml)
 
-    from steps import acrylic_glass, globalmenu, plasmoids
+    from steps import acrylic_glass, globalmenu, plasmoids, rounded_corners
     for label, dest, expected_root in (
         ("globalmenu .so",       globalmenu.DEST_SO,             fake_plugins),
         ("globalmenu QML",       globalmenu.DEST_QML_DIR,        fake_qml),
         ("taskmanager .so",      plasmoids.TASKMANAGER_DEST_SO,  fake_plugins),
         ("taskmanager QML",      plasmoids.TASKMANAGER_DEST_QML, fake_qml),
         ("acrylic-glass plugin", acrylic_glass._plugin_dir(),    fake_plugins),
+        ("rounded-corners plugin", rounded_corners._plugin_dir(), fake_plugins),
     ):
         # relative_to() raises ValueError if dest is not under root —
         # exactly the hardcoded-libdir failure mode.

@@ -41,11 +41,20 @@ linux-wallpaperengine</default>
         <entry name="WindowCornerRadius" type="Double">
             <default>22.0</default>
         </entry>
+        <entry name="DialogCornerRadius" type="Double">
+            <default>14.0</default>
+        </entry>
         <entry name="DockCornerRadius" type="Double">
-            <default>20.0</default>
+            <default>22.0</default>
+        </entry>
+        <entry name="MenuCornerRadius" type="Double">
+            <default>0.0</default>
         </entry>
         <entry name="PopupCornerRadius" type="Double">
             <default>6.0</default>
+        </entry>
+        <entry name="TooltipCornerRadius" type="Double">
+            <default>14.0</default>
         </entry>
         <entry name="RoundCornersOfMaximizedWindows" type="Bool">
             <default>false</default>

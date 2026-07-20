@@ -1236,7 +1236,9 @@ void BlurEffect::blur(
 
     // 7. Resolve per-window corner radius
     // KDecoration provides the client-declared corner radius; we override
-    // it with kcfg values keyed by window type (dock / popup / normal).
+    // it with semantic kcfg values keyed by window type. Keep these branches
+    // separate: Tahoe dialogs/tooltips are intentionally tighter than normal
+    // windows and docks, while menus and popups keep their compact geometry.
     // Maximized full-screen apps keep sharp corners unless the user
     // opts in via RoundCornersOfMaximizedWindows.
     const QMatrix4x4& colorMatrix = m_colorMatrix;
@@ -1250,9 +1252,21 @@ void BlurEffect::blur(
         topCornerRadius = BlurConfig::dockCornerRadius();
         bottomCornerRadius = BlurConfig::dockCornerRadius();
 
-    } else if (w->isTooltip() || w->isPopupWindow() || w->isMenu() || w->isDropdownMenu() || w->isPopupMenu()) {
+    } else if (w->isTooltip()) {
+        topCornerRadius = BlurConfig::tooltipCornerRadius();
+        bottomCornerRadius = BlurConfig::tooltipCornerRadius();
+
+    } else if (w->isMenu() || w->isDropdownMenu() || w->isPopupMenu()) {
+        topCornerRadius = BlurConfig::menuCornerRadius();
+        bottomCornerRadius = BlurConfig::menuCornerRadius();
+
+    } else if (w->isPopupWindow()) {
         topCornerRadius = BlurConfig::popupCornerRadius();
         bottomCornerRadius = BlurConfig::popupCornerRadius();
+
+    } else if (w->isDialog()) {
+        topCornerRadius = BlurConfig::dialogCornerRadius();
+        bottomCornerRadius = BlurConfig::dialogCornerRadius();
 
     } else {
         // A window is "maximized" when its frame fills the maximize area of

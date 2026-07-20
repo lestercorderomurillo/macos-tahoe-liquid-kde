@@ -30,6 +30,7 @@ from utils import (
 ALL_FEATURES = [
     "wallpapers", "fonts", "cursors", "plasma_theme", "window_decorations",
     "kvantum", "color_schemes", "icons", "plasmoids", "globalmenu", "acrylic_glass",
+    "rounded_corners",
     "global_theme", "layout", "sounds", "gtk", "sddm", "plymouth", "apps",
     "nautilus", "nautilus_bookmarks", "portals", "oled_care", "apply_theme",
     "kconf_update",
@@ -41,7 +42,7 @@ INSTALL_ORDER = [
     "fonts", "color_schemes", "plasma_theme", "window_decorations",
     "kvantum", "gtk", "icons", "cursors", "global_theme", "wallpapers",
     "kconf_update",
-    "plasmoids", "globalmenu", "acrylic_glass",
+    "plasmoids", "globalmenu", "acrylic_glass", "rounded_corners",
     "layout", "nautilus", "portals", "plymouth",
 ]
 
@@ -57,6 +58,7 @@ FEATURE_DESC = {
     "plasmoids": "Plasma widgets",
     "globalmenu": "Global menu",
     "acrylic_glass": "Blur effect",
+    "rounded_corners": "Online KWin rounded-window effect",
     "global_theme": "Global theme",
     "layout": "Top bar and dock",
     "sounds": "System sounds",
@@ -96,6 +98,7 @@ Options:
     --plasmoids        Custom Plasma widgets (Menu, Launcher, Trashcan)
     --globalmenu       Global menu bar (app menus in the top panel)
     --acrylic-glass    KWin blur + rounded corners effect
+    --rounded-corners  Download, build, and enable KDE Rounded Corners
     --global-theme     Plasma global theme (look-and-feel package)
     --layout           Panel layout (top bar + dock)
     --sounds           Notification and event sounds
@@ -161,6 +164,7 @@ Options:
     --plasmoids        Remove custom Plasma widgets
     --globalmenu       Remove the global menu bar
     --acrylic-glass    Remove KWin blur effect
+    --rounded-corners  Remove KDE Rounded Corners effect
     --global-theme     Remove Plasma global theme
     --layout           Reset panel layout to default
     --sounds           Remove notification sounds
@@ -730,6 +734,8 @@ _VERIFY_CHECKS = [
      "MacTahoeLiquidKde", "Plasma theme"),
     ("window_decorations", "kwinrc", "org.kde.kdecoration2", "theme",
      "__aurorae__svg__MacTahoeLiquidKde", "Window decorations"),
+    ("rounded_corners", "kwinrc", "Plugins", "shapecornersEnabled",
+     "true", "KDE Rounded Corners"),
 ]
 
 
@@ -787,7 +793,49 @@ def _layout_is_installed() -> bool:
 
 # Compiled .so + QML drops — if any fails to install, abort rather than
 # ship a half-broken desktop.
-CRITICAL_INSTALL_FEATURES = {"globalmenu", "plasmoids", "acrylic_glass"}
+CRITICAL_INSTALL_FEATURES = {
+    "globalmenu", "plasmoids", "acrylic_glass", "rounded_corners",
+}
+
+
+def _download_features(feat: dict[str, object]) -> list[str]:
+    """Enabled features with an explicit online download phase."""
+    return [
+        feature for feature in INSTALL_ORDER
+        if should_process(feature, feat) and step_has_phase(feature, "download")
+    ]
+
+
+def _run_optional_downloads(feat: dict[str, object]) -> bool:
+    """Run optional online phases.
+
+    Network availability must never block the core, fully bundled theme. Any
+    error emitted by an online step is downgraded to a warning and that one
+    feature is disabled for the current invocation.
+    """
+    downloads = _download_features(feat)
+    if not downloads:
+        ok("no online components selected — skipping download phase")
+        return True
+    for i, feature in enumerate(downloads):
+        if i:
+            print()
+        label = feature.replace("_", " ")
+        print(f"  \033[1mDownloading {label}\033[0m")
+        before = len(errors)
+        phase_ok = run_phase(feature, "download")
+        mod = step_module(feature)
+        ready_probe = getattr(mod, "download_ready", None) if mod else None
+        ready = phase_ok and (not callable(ready_probe) or ready_probe())
+        if ready:
+            continue
+        # run_phase() records fail() output globally. This online component is
+        # explicitly best-effort, so remove only errors created by its phase.
+        del errors[before:]
+        feat[feature] = False
+        os.environ[f"FEAT_{feature.upper()}"] = "false"
+        warn(f"{label} unavailable — skipping it; bundled theme install continues")
+    return True
 
 
 def _build_features(feat: dict[str, object]) -> list[str]:
@@ -925,6 +973,10 @@ def _run_install_body(feat: dict[str, object]) -> int:
     note("Checking and installing required tools")
     _check_deps(feat)
 
+    step("Downloading Online Components")
+    note("Fetches the pinned KDE Rounded Corners source and verifies SHA-256")
+    _run_optional_downloads(feat)
+
     step("Building Compiled Components")
     note("Builds C++ plasmoids and KWin effects — must succeed before install")
     if not _run_builds_or_abort(feat):
@@ -941,7 +993,6 @@ def _run_install_body(feat: dict[str, object]) -> int:
         step(f"Installing {label}")
         note(FEATURE_DESC.get(feature, ""))
 
-        # No download phase — all assets are bundled under src/offline/.
         if not run_phase(feature, "install") and feature in CRITICAL_INSTALL_FEATURES:
             fail(f"{label} install failed — aborting "
                  "(critical compiled component)")
@@ -1053,7 +1104,7 @@ def _estimate_install_steps(feat: dict[str, object]) -> int:
     layout retry only runs on failure and is deliberately not counted —
     the progress screen clamps the counter and bar at the total."""
     total = 1  # run_preflight emits step("Preflight")
-    total += 3  # Verification, Dependencies, Building Compiled Components
+    total += 4  # Verification, Dependencies, Downloading, Building
     total += _count_feature_steps(feat)
     total += 2  # Theme Switcher, OLED Care
     if feat.get("apply_theme", True):

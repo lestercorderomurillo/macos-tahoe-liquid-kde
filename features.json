@@ -10,6 +10,7 @@
   "plasmoids":          true,
   "globalmenu":         true,
   "acrylic_glass":      true,
+  "rounded_corners":    true,
   "global_theme":       true,
   "layout":             true,
   "sounds":             true,

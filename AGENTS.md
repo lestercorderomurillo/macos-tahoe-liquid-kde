@@ -15,7 +15,7 @@ the filename it expects.
 macos-tahoe-liquid-kde is an installer + theme pack that turns a stock
 KDE Plasma 6 desktop into a macOS Tahoe lookalike: top menu bar, Dock,
 Aurorae window decorations, Plasma + Kvantum + GTK + icon themes,
-Acrylic Glass KWin effect, light/dark global theme with timed
+Acrylic Glass and KDE Rounded Corners KWin effects, light/dark global theme with timed
 switching, wallpapers, fonts, cursors, and a Plymouth boot splash.
 
 **Target platforms.** KDE Plasma 6.6+ distros on either systemd or
@@ -46,9 +46,10 @@ license.
 **Stack:** Python 3.10+ CLI installer dispatching into per-feature
 steps; a PyQt6 graphical installer (`./installer`) that wraps the CLI;
 QML plasmoids; C++ Qt6 plasmoids (Global Menu, Dock Task Manager) and
-a KWin effect (Acrylic Glass) compiled at install time against the
-host's Qt6 / KDE Frameworks 6. All theme assets are bundled offline in
-`src/offline/` — the install pipeline has no download phase.
+KWin effects compiled at install time against the host's Qt6 / KDE
+Frameworks 6. Theme assets are bundled offline in `src/offline/`, with
+one explicit online exception: the pinned KDE Rounded Corners source
+release is downloaded, checksum-verified, and built best-effort.
 
 ## Naming Convention
 
@@ -90,6 +91,12 @@ Store, Force Quit, Sleep, Restart, Shut Down, Lock Screen, Log Out.
   Apple menu).
 - Hover tiles: glass effect (semi-transparent fill, 0.5px micro
   border, 22px radius) — not outlined borders.
+- Corner radii are semantic, not global search-and-replace values. Normal
+  windows and the bottom Dock use 22px; dialogs and tooltips use 14px;
+  Acrylic popups use 6px and menus use 0px. Compact controls, pills,
+  generic widget backgrounds, and non-Dock panel slices keep their existing
+  role-specific geometry. For scaled SVG paths, compare the rendered radius
+  (path radius multiplied by its transform), not the raw path number.
 - System font always — never hardcode font names or sizes.
 - Popup plasmoids are fixed-size, not resizable.
 - Top panel is applets-only floating (not full-floating).
@@ -118,10 +125,11 @@ Store, Force Quit, Sleep, Restart, Shut Down, Lock Screen, Log Out.
 | `src/scripts/oled_care.py`    | `mac-tahoe-oled-care` implementation — opt-in panel pixel shift for OLED monitors. |
 | `src/scripts/state.py`        | `RunTracker` — writes the last-run summary (status, argv, timestamps) to `~/.local/state/mac-tahoe-liquid-kde/last-run.json`. |
 | `src/scripts/log.py`          | `banner`, `step`, `ok`, `warn`, `info`, `note`, `fail` — single source of UI styling. |
-| `src/scripts/steps/`          | One module per feature. Implements `deps`, `build`, `install`, `uninstall`, `restart_plasma` as needed. |
+| `src/scripts/theme_metrics.py` | Semantic corner-radius constants shared by generated KWin configuration. Static QML/CSS/SVG assets are checked against the same families by tests. |
+| `src/scripts/steps/`          | One module per feature. Implements `deps`, `download`, `build`, `install`, `uninstall`, `restart_plasma` as needed. `rounded_corners.py` is the sole online step. |
 | `src/scripts/steps/_helpers.py` | `sudo_install_file`, `sudo_install_tree`, `sudo_remove`, `_as_root` context manager. |
 | `src/installer/`              | Graphical installer UI: `installer_ui.py` (PyQt6) + QML windows + art. Wraps `./install` / `./uninstall`; the CLI stays the source of truth. |
-| `src/offline/`                | All assets bundled in the repo: plasmoids, plasma theme, kwin-effects, aurorae, color-schemes, cursors, fonts, gtk, icons, kvantum, look-and-feel, layouts, plymouth, nautilus, wallpapers, plus the systemd unit + timer. |
+| `src/offline/`                | Bundled assets: plasmoids, plasma theme, Acrylic Glass, aurorae, color-schemes, cursors, fonts, gtk, icons, kvantum, look-and-feel, layouts, plymouth, nautilus, wallpapers, plus the systemd unit + timer. KDE Rounded Corners is intentionally not mirrored here. |
 | `src/offline/wallpapers/<id>/`| One folder per wallpaper, JPEG q90 + `metadata.json` (3840×2160 minimum). Fully offline — no `download()` phase. |
 | `tests/`                      | pytest suite. `./test` is the runner. |
 | `tests/containers/`           | One Dockerfile per supported distro + `run_in_container.py` + `run_matrix.sh`. |
@@ -135,7 +143,8 @@ functions; missing ones are skipped:
 | Phase            | When run                                  | Purpose |
 | ---------------- | ----------------------------------------- | ------- |
 | `deps()`         | Before any other phase, install-time only | Return list of `cmd:pkg` tokens; `cli.py` resolves them via `distro.package_for()`, probes each package with `distro.package_installed()`, and installs ONLY the genuinely-missing ones (installing present packages would risk the partial-upgrade file-conflict trap). |
-| `build()`        | After deps                                | Compile C++ (Global Menu, Task Manager, Acrylic Glass effect). |
+| `download()`     | After deps, before any build              | Online components only. Currently restricted to KDE Rounded Corners; exact release tag + SHA-256 required. Failure disables that feature for the current run and the bundled install continues. |
+| `build()`        | After deps/download                       | Compile C++ (Global Menu, Task Manager, Acrylic Glass and Rounded Corners effects). |
 | `install()`      | Main pass                                 | Copy files, write configs, register kwin/plasma settings. |
 | `uninstall()`    | `./uninstall` run                         | Remove installed files; clean legacy `/usr/lib/qt6` artefacts. |
 | `restart_plasma()` | Final pass of `./install`               | The one allowed plasmashell restart per session. |
@@ -180,6 +189,23 @@ install. `MAC_TAHOE_UPDATED=1` is the recursion guard. A dirty
 checkout, missing git, or a failed pull falls back to installing the
 current version with a manual `git pull && ./install` hint.
 
+## Architecture — Optional Online Rounded Corners
+
+`rounded_corners.py` is the only feature allowed to implement
+`download()`. It fetches KDE-Rounded-Corners v0.9.0 from the upstream
+GitHub tag, verifies the pinned SHA-256 before extraction, rejects
+links/special nodes/path traversal, then compiles against the host KWin
+SDK. The verified archive is cached under
+`build/online/kde-rounded-corners/`; it is never copied into
+`src/offline/`. Network, checksum, extraction, or other download-phase
+failure is soft: `cli.py` disables `rounded_corners` for that invocation,
+clears only that optional phase's errors, warns, and continues installing
+the bundled theme. A successful download makes later build/install failure
+critical, because replacing only half of a compiled KWin effect is unsafe.
+
+Updating the pin requires all three values together: tag, immutable commit,
+and archive SHA-256. Never follow `main`, `master`, or `latest`.
+
 ## Architecture — Distro Detection Layer
 
 `src/scripts/distro.py` is the ONLY file allowed to know per-distro
@@ -206,6 +232,9 @@ Static guards in `tests/test_static.py`:
   `/usr/lib64/qt6`.
 - `test_no_hardcoded_package_manager_outside_distro_layer` rejects
   `pacman -S` / `dnf install` / etc. anywhere else.
+- `test_only_rounded_corners_step_may_download` rejects network URLs in
+  every other step; `test_rounded_corners_online_source_is_immutable`
+  requires a pinned tag, commit, and SHA-256.
 
 Don't fight these — add a row to `distro.py` instead.
 
@@ -305,8 +334,9 @@ PNG / JPEG re-compression with zip / xz / zstd was tested empirically
 and saves 0% (the bytes are already entropy-coded). JPEG q90 is the
 only viable size reduction.
 
-The install pipeline has no download phase at all — icons, fonts, and
-cursors are bundled the same way. The static test
+Icons, fonts, cursors, and every other visual asset are bundled the same
+way. KDE Rounded Corners is the sole online step; it must never become a
+wallpaper or asset-fetch fallback. The static test
 `test_repo_ships_full_macos_wallpaper_set` enforces that every name in
 `_FIXED_NAMES` ships a `3840x2160` (or larger) image with a metadata
 file. Don't add a network-fetch fallback.
@@ -322,6 +352,7 @@ invoking it and surfaces a `warn()` when it doesn't:
 | `kvantum.py`, `window_decorations.py`, `plasma_theme.py` | `kw_write()` returns are checked; failure emits an explicit `warn()` mentioning `kwriteconfig6`. |
 | `fonts.py`              | `fc-cache` is guarded by `have("fc-cache")`. Missing fontconfig is a warn, not a fail — fonts still copy and appear after re-login. |
 | `acrylic_glass.py`      | Build deps declared via `deps()` tokens and probed with `distro.package_installed()` before invoking cmake/make. |
+| `rounded_corners.py`    | Download is pinned + SHA-256 verified and soft-failing; after download, build artefacts are mandatory before install. |
 
 `tests/test_step_guards.py` covers the kwriteconfig6 missing path and
 the fc-cache missing path; `tests/test_plymouth_step.py` covers the
@@ -363,6 +394,7 @@ a genuine missing package and fails CI.
 | `plasma_theme.py`             | Translucent panels and dock SVGs. |
 | `plasmoids.py`                | QML plasmoids: Menu, Launcher, Trashcan, IconTasks. |
 | `plymouth.py`                 | Boot splash. GRUB patch behind `_grub_is_active_bootloader()`; `--no-grub-modify` opt-out exists. |
+| `rounded_corners.py`          | Best-effort verified download of KDE Rounded Corners v0.9.0; compile/install effect, KCM, shaders, locales, license, and no-outline Tahoe preset. |
 | `portals.py`                  | Route xdg-portal FileChooser / AppChooser to KDE (fixes stale dialog colors). |
 | `sddm.py`                     | Login screen theme. |
 | `sounds.py`                   | Notification and event sounds. |
@@ -479,6 +511,10 @@ Highlights:
   guards, unit files, step flag gating.
 - `tests/test_cmake.py` — the C++ plasmoids and KWin effect build
   configure cleanly.
+- `tests/test_rounded_corners_step.py` — immutable upstream pin, checksum
+  and traversal rejection, best-effort orchestration, preset, and lifecycle.
+- `tests/test_theme_radius.py` — semantic radius families across Acrylic,
+  Rounded Corners, Aurorae, GTK, QML, and transformed Plasma SVG slices.
 - `tests/containers/run_matrix.sh` — full per-distro probe.
 
 ## What NOT to Do
@@ -500,8 +536,8 @@ Highlights:
   `user_service_manager_command()` and provide an OpenRC-safe fallback.
 - Don't call Qt6 binaries from preflight with bare `subprocess.run`
   — use `utils.run_user`.
-- Don't introduce a download phase for any step — all assets are
-  bundled offline in `src/offline/`.
+- Don't introduce another download phase. KDE Rounded Corners is the sole
+  allowlisted online step; all other assets stay bundled in `src/offline/`.
 - Don't centre tile section headers in README — they're left-aligned
   plain markdown image syntax (`![Alt](url)`), not
   `<p align="center">`.
