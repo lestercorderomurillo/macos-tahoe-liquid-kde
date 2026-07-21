@@ -176,6 +176,13 @@ def test_install_places_artifacts_and_enables_effect(monkeypatch, tmp_path):
     assert plugin_writes
     assert "false" in plugin_writes[0]
     assert "true" in plugin_writes[-1]
+    radius_writes = [write for write in writes if "Round-Corners" in write]
+    assert rounded.CORNER_RADIUS == 28
+    assert any("Size" in write and "28" in write for write in radius_writes)
+    assert any(
+        "InactiveCornerRadius" in write and "28" in write
+        for write in radius_writes
+    )
     assert any(
         any(argument.endswith(".loadEffect") for argument in call)
         for call in dbus_calls

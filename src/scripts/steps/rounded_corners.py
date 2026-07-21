@@ -41,6 +41,7 @@ UPSTREAM_SHA256 = "4acaf2dad31a22cbfa009bdce836b969177996527237eb8c62c8393e03622
 UPSTREAM_PROJECT_URL = "https://github.com/matinlotfali/KDE-Rounded-Corners"
 
 EFFECT_ID = "kwin4_effect_shapecorners"
+CORNER_RADIUS = 28
 WORK = build_dir("online/kde-rounded-corners")
 ARCHIVE = WORK / f"KDE-Rounded-Corners-{UPSTREAM_VERSION}.tar.gz"
 SOURCE = WORK / f"KDE-Rounded-Corners-{UPSTREAM_VERSION}"
@@ -256,6 +257,18 @@ def install() -> None:
             LICENSE_FILE,
             "KDE Rounded Corners GPL-3.0 license installed",
         )
+
+    radius_configured = True
+    for key in ("Size", "InactiveCornerRadius"):
+        if not kw_write(
+            "--file", "kwinrc", "--group", "Round-Corners",
+            "--key", key, str(CORNER_RADIUS),
+        ):
+            radius_configured = False
+    if radius_configured:
+        ok(f"KDE Rounded Corners radius set to {CORNER_RADIUS}")
+    else:
+        warn("KDE Rounded Corners radius could not be set — kwriteconfig6 failed")
 
     if not kw_write(
         "--file", "kwinrc", "--group", "Plugins",
