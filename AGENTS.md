@@ -302,6 +302,12 @@ again. Run the cycle AFTER `apply_extras()` so `kvantummanager --set`
 has rewritten the kvconfig; otherwise Kvantum re-instantiates against
 the old config and the menu visuals stay stale.
 
+`widgetStyle` is always the plugin name `kvantum`; its selected profile is
+mode-specific: `mac-tahoe-liquid-kde` for light and
+`mac-tahoe-liquid-kdeDark` for dark. `respect_DE=true` supplies palette
+colors but does not recolor literal SVG menu surfaces, so using the light
+profile in dark mode produces white QMenus.
+
 **Look-and-feel retry schedule.** `_apply_lookandfeel_live` waits 2s
 before the first attempt (DBus name registration race after
 `After=plasma-plasmashell.service` clears), then 6s between retries.

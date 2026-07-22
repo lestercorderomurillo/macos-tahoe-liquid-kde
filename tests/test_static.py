@@ -503,8 +503,8 @@ def test_kvantum_dark_popup_parity(offline):
     ).read_text()
     assert "widgetStyle=kvantum\n" in dark_defaults
     assert "widgetStyle=kvantum-dark" not in dark_defaults, (
-        "The dark look-and-feel must keep the palette-following base Kvantum "
-        "style; kvantum-dark pins a second palette and breaks native sync."
+        "widgetStyle is the Qt plugin name; the light/dark Kvantum profile is "
+        "selected separately by mac-tahoe-theme-switch."
     )
     conf = (kv / "mac-tahoe-liquid-kdeDark.kvconfig").read_text()
     assert "blur_only_active_window=false" in conf, (
@@ -528,6 +528,23 @@ def test_kvantum_dark_popup_parity(offline):
                 f"{svg}: tooltip-normal must be fully opaque "
                 f"(opacity:1) — tooltips get no reliable blur."
             )
+
+
+def test_kvantum_mode_profiles_have_matching_surface_colors(offline):
+    """Kvantum's SVG assets have literal menu fills, so respect_DE alone
+    cannot make the light profile render dark. Keep the mode/profile mapping
+    tied to their actual surface colors."""
+    import theme_switch
+
+    kv = offline / "kvantum/mac-tahoe-liquid-kde"
+    expected = {
+        "light": ("mac-tahoe-liquid-kde", "#f5f5f58C"),
+        "dark": ("mac-tahoe-liquid-kdeDark", "#2424248C"),
+    }
+    for mode, (profile, surface) in expected.items():
+        assert theme_switch._kvantum_theme(mode) == profile
+        config = (kv / f"{profile}.kvconfig").read_text()
+        assert f"window.color={surface}" in config
 
 
 def test_gtk4_named_colors_all_defined(offline):

@@ -24,7 +24,8 @@ from pathlib import Path
 
 LAF_LIGHT = "org.kde.mac-tahoe-liquid-kde.light"
 LAF_DARK = "org.kde.mac-tahoe-liquid-kde.dark"
-KVANTUM_THEME = "mac-tahoe-liquid-kde"
+KVANTUM_THEME_LIGHT = "mac-tahoe-liquid-kde"
+KVANTUM_THEME_DARK = "mac-tahoe-liquid-kdeDark"
 KVANTUM_STYLE = "kvantum"
 _PROC_ROOT = Path("/proc")
 
@@ -872,17 +873,61 @@ def flush_icon_caches() -> None:
         shutil.rmtree(home / sub, ignore_errors=True)
 
 
+def _kvantum_theme(mode: str) -> str:
+    return KVANTUM_THEME_DARK if mode == "dark" else KVANTUM_THEME_LIGHT
+
+
+def _gtk4_css_is_replaceable(path: Path, themes_root: Path) -> bool:
+    """Whether gtk.css is generated/project-owned rather than user CSS.
+
+    kde-gtk-config may write either a one-line colors import or the selected
+    theme's complete stylesheet followed by that import. Releases 0.37.x-
+    0.38.x recognized only the first form, so a generated LIGHT sheet was
+    mistaken for user CSS and survived every dark apply.
+    """
+    if not path.exists() and not path.is_symlink():
+        return True
+    if path.is_symlink():
+        try:
+            return path.readlink().name in {"gtk-Dark.css", "gtk-Light.css"}
+        except OSError:
+            return False
+    if not path.is_file():
+        return False
+    try:
+        text = path.read_text(encoding="utf-8").strip()
+    except OSError:
+        return False
+    import_line = "@import 'colors.css';"
+    if text == import_line:
+        return True
+    if text.endswith(import_line):
+        text = text[:-len(import_line)].rstrip()
+    for variant in ("MacTahoeLiquidKde-Light", "MacTahoeLiquidKde-Dark"):
+        gtk4 = themes_root / variant / "gtk-4.0"
+        for name in ("gtk.css", "gtk-Light.css", "gtk-Dark.css",
+                     "gtk-dark.css"):
+            candidate = gtk4 / name
+            try:
+                if candidate.is_file() and candidate.read_text(
+                        encoding="utf-8").strip() == text:
+                    return True
+            except OSError:
+                continue
+    return False
+
+
 def _apply_local_extras(mode: str) -> None:
     if _have("kvantummanager"):
         env = os.environ.copy()
         env["QT_QPA_PLATFORM"] = "offscreen"
         try:
-            # The base profile has respect_DE=true, so KDE's active palette is
-            # the light/dark source of truth.  Selecting the separate Dark
-            # profile pins Kvantum's own colors and leaves mixed surfaces when
-            # Plasma's native appearance toggle changes the KDE palette.
+            # widgetStyle remains the Qt plugin name "kvantum", but the
+            # Kvantum profile itself must match the mode. Both SVGs contain
+            # literal surface colors; respect_DE=true does not turn the light
+            # SVG's #f5f5f5 menu assets into the dark SVG's #242424 assets.
             _run_user(
-                ["kvantummanager", "--set", KVANTUM_THEME],
+                ["kvantummanager", "--set", _kvantum_theme(mode)],
                 timeout=15, env=env,
             )
         except subprocess.TimeoutExpired:
@@ -936,20 +981,8 @@ def _apply_local_extras(mode: str) -> None:
                               file=sys.stderr)
 
             gtk4_css = gtk4_dest / "gtk.css"
-            replaceable = not gtk4_css.exists() and not gtk4_css.is_symlink()
             try:
-                if gtk4_css.is_symlink():
-                    replaceable = gtk4_css.readlink().name in {
-                        "gtk-Dark.css", "gtk-Light.css",
-                    }
-                elif gtk4_css.is_file():
-                    # kde-gtk-config generates exactly this import. Preserve
-                    # any regular file containing additional user CSS.
-                    replaceable = (
-                        gtk4_css.read_text(encoding="utf-8").strip()
-                        == "@import 'colors.css';"
-                    )
-                if replaceable:
+                if _gtk4_css_is_replaceable(gtk4_css, gtk_dest):
                     if gtk4_css.is_symlink() or gtk4_css.exists():
                         gtk4_css.unlink()
                     gtk4_css.symlink_to(f"gtk-{mode.capitalize()}.css")

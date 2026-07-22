@@ -429,9 +429,12 @@ def test_local_extras_preserves_user_owned_gtk4_css(monkeypatch, tmp_path):
     assert custom.read_text() == "/* my custom overrides */\n"
 
 
-@pytest.mark.parametrize("mode", ["light", "dark"])
-def test_local_extras_uses_palette_following_kvantum_theme(
-        monkeypatch, tmp_path, mode):
+@pytest.mark.parametrize(("mode", "expected"), [
+    ("light", "mac-tahoe-liquid-kde"),
+    ("dark", "mac-tahoe-liquid-kdeDark"),
+])
+def test_local_extras_selects_matching_kvantum_profile(
+        monkeypatch, tmp_path, mode, expected):
     import theme_switch
 
     home = tmp_path / "home"
@@ -453,7 +456,34 @@ def test_local_extras_uses_palette_following_kvantum_theme(
 
     theme_switch._apply_local_extras(mode)
 
-    assert ["kvantummanager", "--set", "mac-tahoe-liquid-kde"] in calls
+    assert ["kvantummanager", "--set", expected] in calls
+
+
+def test_local_extras_replaces_kde_generated_light_gtk4_sheet_in_dark_mode(
+        monkeypatch, tmp_path):
+    """kde-gtk-config expands the light sheet and appends colors.css. That is
+    generated state, not user CSS, and must not remain active in dark mode."""
+    import theme_switch
+
+    home = tmp_path / "home"
+    for variant, content in (("Light", "LIGHT"), ("Dark", "DARK")):
+        root = (home / ".themes" / f"MacTahoeLiquidKde-{variant}"
+                / "gtk-4.0")
+        root.mkdir(parents=True)
+        (root / f"gtk-{variant}.css").write_text(content)
+    gtk4 = home / ".config/gtk-4.0"
+    gtk4.mkdir(parents=True)
+    (gtk4 / "gtk.css").write_text("LIGHT\n@import 'colors.css';")
+
+    monkeypatch.setenv("HOME", str(home))
+    monkeypatch.setattr(theme_switch, "_have", lambda _cmd: False)
+    monkeypatch.setattr(theme_switch, "_qdbus", lambda *args: True)
+    monkeypatch.setattr(theme_switch, "flush_icon_caches", lambda: None)
+
+    theme_switch._apply_local_extras("dark")
+
+    assert (gtk4 / "gtk.css").is_symlink()
+    assert (gtk4 / "gtk.css").readlink().name == "gtk-Dark.css"
 
 
 def test_cycle_restores_target_on_sigterm(monkeypatch):
