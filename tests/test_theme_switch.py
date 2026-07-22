@@ -14,6 +14,8 @@ import hashlib
 import os
 import shutil
 import subprocess
+import threading
+import time
 from pathlib import Path
 
 import pytest
@@ -166,10 +168,10 @@ def _stub_apply_dependencies(monkeypatch, calls):
 
 
 def test_apply_runs_full_pipeline_in_order(monkeypatch):
-    """Capture first, then write → local extras → live LAF → wallpaper
-    → live cursor → Kvantum cycle → KWin reconfigure.  Applying the
-    wallpaper after LAF prevents its defaults from clobbering a saved custom
-    choice, while the earlier capture preserves the outgoing mode."""
+    """Capture first, then live LAF → write → local extras → wallpaper
+    → live cursor → Kvantum cycle → KWin reconfigure. Applying LAF
+    before stamping its target into kdeglobals makes Plasma observe a real
+    transition; wallpaper capture still precedes it so custom state survives."""
     import theme_switch
     calls: list = []
     _stub_apply_dependencies(monkeypatch, calls)
@@ -188,10 +190,45 @@ def test_apply_runs_full_pipeline_in_order(monkeypatch):
         if c[0] == "qdbus" and c[1][0] == "org.kde.KWin"
     )
 
-    assert (write_idx < extras_idx < laf_idx < wallpaper_idx < cursor_idx
+    assert (laf_idx < write_idx < extras_idx < wallpaper_idx < cursor_idx
             < cycle_idx < reconfigure_idx)
     assert ("laf", theme_switch.LAF_DARK) in calls
     assert ("cycle", "kvantum") in calls
+
+
+def test_apply_serializes_overlapping_theme_transitions(monkeypatch, tmp_path):
+    """The timer's LAF apply emits a portal signal, so the portal watcher can
+    enter while the scheduled pipeline is still running. The second pipeline
+    must wait rather than interleave panel config and cache changes."""
+    import theme_switch
+
+    runtime = tmp_path / "runtime"
+    runtime.mkdir()
+    monkeypatch.setenv("XDG_RUNTIME_DIR", str(runtime))
+    entered: list[str] = []
+    first_inside = threading.Event()
+    release_first = threading.Event()
+
+    def fake_apply(mode, context="user"):
+        entered.append(mode)
+        if mode == "dark":
+            first_inside.set()
+            assert release_first.wait(timeout=2)
+        return True
+
+    monkeypatch.setattr(theme_switch, "_apply_unlocked", fake_apply)
+    first = threading.Thread(target=theme_switch.apply, args=("dark",))
+    second = threading.Thread(target=theme_switch.apply, args=("light",))
+    first.start()
+    assert first_inside.wait(timeout=2)
+    second.start()
+    time.sleep(0.05)
+    assert entered == ["dark"]
+    release_first.set()
+    first.join(timeout=2)
+    second.join(timeout=2)
+    assert not first.is_alive() and not second.is_alive()
+    assert entered == ["dark", "light"]
 
 
 def _prep_effect_warn_case(monkeypatch, tmp_path, kwinrc_body):
@@ -611,7 +648,7 @@ def test_follow_system_applies_detected_mode(monkeypatch):
     import theme_switch
     seen: list = []
     monkeypatch.setattr(theme_switch, "detect_mode_by_system", lambda: "light")
-    monkeypatch.setattr(theme_switch, "apply",
+    monkeypatch.setattr(theme_switch, "_apply_unlocked",
                         lambda mode, **kw: seen.append((mode, kw)) or True)
     assert theme_switch.follow_system() == 0
     assert seen == [("light", {"context": "user"})]
@@ -629,6 +666,7 @@ def test_follow_system_light_syncs_all_pieces_not_just_gtk(monkeypatch):
     calls: list = []
     qdbus_targets: list = []
     monkeypatch.setattr(theme_switch, "detect_mode_by_system", lambda: "dark")
+    monkeypatch.setattr(theme_switch, "_managed_mode_matches", lambda mode: False)
     for fn in ("write_kde_theme_config", "_apply_wallpaper",
                "_apply_local_extras", "apply_cursortheme_live",
                "cycle_widget_style_live"):
@@ -664,6 +702,27 @@ def test_follow_system_light_syncs_all_pieces_not_just_gtk(monkeypatch):
                    for t in qdbus_targets), (
         "must not call plasmashell — refreshCurrentShell restarts the shell"
     )
+
+
+def test_portal_watcher_ignores_switchers_own_converged_signal(monkeypatch):
+    """A timer/manual apply emits the portal signal watched here. Once the
+    transition lock is released every managed setting already matches, so the
+    watcher must not replay the full pipeline or fight the requested mode."""
+    import theme_switch
+
+    monkeypatch.setattr(theme_switch, "detect_mode_by_system", lambda: "dark")
+    monkeypatch.setattr(theme_switch, "_managed_mode_matches", lambda mode: True)
+
+    def unexpected(*_args, **_kwargs):
+        raise AssertionError("converged self-generated signal was replayed")
+
+    for fn in ("write_kde_theme_config", "_apply_wallpaper",
+               "_apply_local_extras", "apply_cursortheme_live",
+               "cycle_widget_style_live",
+               "reconfigure_kwin_preserving_foreign_effects"):
+        monkeypatch.setattr(theme_switch, fn, unexpected)
+
+    assert theme_switch.follow_system(light=True) == 0
 
 
 def test_follow_system_noop_when_mode_unknown(monkeypatch):

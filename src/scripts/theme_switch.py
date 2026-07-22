@@ -18,6 +18,7 @@ import subprocess
 import sys
 import threading
 import time
+from contextlib import contextmanager
 from pathlib import Path
 
 
@@ -175,6 +176,57 @@ def _sync_session_env() -> None:
     if os.environ.get("DBUS_SESSION_BUS_ADDRESS") != old_bus:
         # A pre-sync probe may have cached a sparse cron env as bus-less.
         _HAS_DBUS = None
+
+
+def _theme_transition_lock_path() -> Path:
+    """One lock shared by timer, manual, and portal-watcher transitions."""
+    try:
+        uid = int(os.environ.get("SUDO_UID") or os.getuid())
+    except ValueError:
+        uid = os.getuid()
+    runtime = Path(os.environ.get("XDG_RUNTIME_DIR") or f"/run/user/{uid}")
+    if runtime.is_dir():
+        return runtime / "mac-tahoe-liquid-kde-theme-apply.lock"
+    state = Path(os.environ.get("XDG_STATE_HOME") or
+                 str(Path.home() / ".local/state"))
+    return state / "mac-tahoe-liquid-kde" / "theme-apply.lock"
+
+
+@contextmanager
+def _theme_transition_lock():
+    """Prevent two live theme pipelines from interleaving.
+
+    Applying a look-and-feel emits the same portal appearance signal watched
+    by ``watch-portal``.  Without a cross-process lock, the scheduled pipeline
+    and the watcher can rewrite Plasma settings and caches at the same time,
+    leaving different panel containments rendered from different variants.
+    Lock setup is best-effort so an unusual read-only state/runtime directory
+    never makes an otherwise usable switcher fail.
+    """
+    lock = None
+    locked = False
+    try:
+        path = _theme_transition_lock_path()
+        path.parent.mkdir(parents=True, exist_ok=True)
+        lock = path.open("w", encoding="utf-8")
+        fcntl.flock(lock, fcntl.LOCK_EX)
+        locked = True
+        lock.write(f"{os.getpid()}\n")
+        lock.flush()
+    except OSError:
+        if lock is not None:
+            lock.close()
+            lock = None
+    try:
+        yield
+    finally:
+        if lock is not None:
+            if locked:
+                try:
+                    fcntl.flock(lock, fcntl.LOCK_UN)
+                except OSError:
+                    pass
+            lock.close()
 
 
 def _kwrite(*args: str) -> bool:
@@ -1214,7 +1266,7 @@ def cycle_widget_style_live(target: str) -> bool:
     return all(phase_ok)
 
 
-def apply(mode: str, context: str = "user") -> bool:
+def _apply_unlocked(mode: str, context: str = "user") -> bool:
     """Config writes + best-effort live niceties. Returns False when the
     core config writes fail (kwriteconfig6 missing or a write error).
     Live LAF is skipped during install — Plasma restarts anyway and
@@ -1233,6 +1285,16 @@ def apply(mode: str, context: str = "user") -> bool:
     # carries wallpaper defaults, it must not erase the outgoing custom choice
     # before our per-mode state has seen it.
     wallpaper_before = _current_wallpapers()
+
+    # Apply the live look-and-feel while Plasma still sees the outgoing
+    # package in kdeglobals.  Writing the target package first can make the
+    # live tool treat parts of the transition as already current, leaving
+    # individual panel containments on the outgoing Plasma theme.
+    if context != "install":
+        if not _apply_lookandfeel_live(laf):
+            print("theme apply: live look-and-feel apply skipped",
+                  file=sys.stderr)
+
     config_ok = write_kde_theme_config(mode)
     if not config_ok:
         print("theme apply: core KDE config writes failed, theme not "
@@ -1242,10 +1304,6 @@ def apply(mode: str, context: str = "user") -> bool:
     except Exception as exc:
         print(f"theme apply: extras step failed, continuing: {exc!r}",
               file=sys.stderr)
-    if context != "install":
-        if not _apply_lookandfeel_live(laf):
-            print("theme apply: live look-and-feel apply skipped",
-                  file=sys.stderr)
     try:
         _apply_wallpaper(mode, context=context,
                          current_snapshot=wallpaper_before)
@@ -1266,6 +1324,48 @@ def apply(mode: str, context: str = "user") -> bool:
     return config_ok
 
 
+def apply(mode: str, context: str = "user") -> bool:
+    """Run one complete, cross-process-serialized theme transition."""
+    with _theme_transition_lock():
+        return _apply_unlocked(mode, context=context)
+
+
+def _gtk_theme_name() -> str:
+    settings = _parse_ini(_xdg_config() / "gtk-3.0" / "settings.ini")
+    return settings.get("Settings", {}).get("gtk-theme-name", "")
+
+
+def _managed_mode_matches(mode: str) -> bool:
+    """Whether every mode-specific setting already matches ``mode``.
+
+    The timer's own apply emits a portal ``SettingChanged`` signal too. The
+    watcher receives it only after the transition lock is released, so this
+    complete convergence check distinguishes that self-generated event from a
+    native System Settings toggle, which initially changes only a subset.
+    """
+    dark = mode == "dark"
+    suffix = "Dark" if dark else "Light"
+    expected = (
+        ("kdeglobals", "KDE", "LookAndFeelPackage",
+         LAF_DARK if dark else LAF_LIGHT),
+        ("kdeglobals", "General", "ColorScheme",
+         f"MacTahoeLiquidKde{suffix}"),
+        ("kdeglobals", "Icons", "Theme",
+         "MacTahoeLiquidKde-Icons-dark" if dark
+         else "MacTahoeLiquidKde-Icons"),
+        ("kcminputrc", "Mouse", "cursorTheme",
+         "MacTahoeLiquidKde-Dark" if dark else "MacTahoeLiquidKde"),
+        ("plasmarc", "Theme", "name",
+         f"MacTahoeLiquidKde-{suffix}"),
+        ("kwinrc", "org.kde.kdecoration2", "theme",
+         f"__aurorae__svg__MacTahoeLiquidKde-{suffix}"),
+    )
+    if any(_kread(file, group, key) != value
+           for file, group, key, value in expected):
+        return False
+    return _gtk_theme_name() == f"MacTahoeLiquidKde-{suffix}"
+
+
 def follow_system(light: bool = False) -> int:
     """Apply whichever mode the desktop currently wants (System Settings /
     quick-settings choice), so a NATIVE light/dark toggle drives our full
@@ -1278,41 +1378,44 @@ def follow_system(light: bool = False) -> int:
     package AND the Aurorae window-decoration theme all lag behind. So we sync
     EVERY piece — write_kde_theme_config covers LAF/icons/scheme/widgetStyle/
     cursor/aurorae, the live GTK/icon/Kvantum/cursor niceties bring running
-    apps up to date, and a KWin reconfigure + Plasma-shell refresh repaint the
-    window decorations (X/maximise buttons) and the global menu / panels, which
-    do NOT follow a bare color-scheme change on their own. We only SKIP the full
-    LAF-apply retries (the native toggle already applied the look-and-feel), so
-    this stays fast and doesn't fight the session."""
-    mode = detect_mode_by_system()
-    if mode is None:
-        return 0
-    if not light:
-        return 0 if apply(mode, context="user") else 1
+    apps up to date, and a KWin reconfigure repaints the window decorations.
+    The watcher no-ops when every managed setting already matches: that is the
+    timer/manual switcher's own portal signal, not a System Settings change.
+    We only SKIP the full LAF-apply retries (the native toggle already applied
+    the look-and-feel), so this stays fast and doesn't fight the session."""
+    with _theme_transition_lock():
+        # Detect only after acquiring the lock. A scheduled transition may be
+        # in flight; reading before waiting could replay its outgoing mode.
+        mode = detect_mode_by_system()
+        if mode is None:
+            return 0
+        if not light:
+            return 0 if _apply_unlocked(mode, context="user") else 1
+        if _managed_mode_matches(mode):
+            return 0
 
-    cursor = "MacTahoeLiquidKde-Dark" if mode == "dark" else "MacTahoeLiquidKde"
-    widget = KVANTUM_STYLE
-    ok = write_kde_theme_config(mode)
-    try:
-        _apply_wallpaper(mode, context="user")
-        _apply_local_extras(mode)   # GTK swap + icon-cache flush + Kvantum set
-    except Exception as exc:
-        print(f"theme follow: extras failed: {exc!r}", file=sys.stderr)
-        ok = False
-    # Live niceties so running apps catch up without a logout. Best-effort:
-    # a missing tool must not fail the sync.
-    apply_cursortheme_live(cursor)
-    cycle_widget_style_live(widget)
-    # A manual theme change from System Settings drops the dock's panelOpacity,
-    # so re-assert it here too — this is the path the portal watcher runs.
-    patch_dock_transparency()
-    # Repaint the window decorations: Aurorae reads its theme from kwinrc and
-    # only restyles on a reconfigure. This is the SAFE reload path — it does
-    # NOT restart KWin (verified against KWin's D-Bus docs). We deliberately do
-    # NOT touch plasmashell here: refreshCurrentShell() is an internal API that
-    # reloads the whole shell and drops the panel, so the global menu is left
-    # to follow the color scheme on its own.
-    reconfigure_kwin_preserving_foreign_effects()
-    return 0 if ok else 1
+        cursor = ("MacTahoeLiquidKde-Dark" if mode == "dark"
+                  else "MacTahoeLiquidKde")
+        widget = KVANTUM_STYLE
+        ok = write_kde_theme_config(mode)
+        try:
+            _apply_wallpaper(mode, context="user")
+            _apply_local_extras(mode)  # GTK + icon caches + Kvantum set
+        except Exception as exc:
+            print(f"theme follow: extras failed: {exc!r}", file=sys.stderr)
+            ok = False
+        # Live niceties so running apps catch up without a logout. Best-effort:
+        # a missing tool must not fail the sync.
+        apply_cursortheme_live(cursor)
+        cycle_widget_style_live(widget)
+        # A manual theme change from System Settings drops the dock's
+        # panelOpacity, so re-assert it here too — this is the watcher path.
+        patch_dock_transparency()
+        # Repaint Aurorae through KWin's safe reconfigure path. Never call
+        # refreshCurrentShell(): that internal API reloads the whole shell and
+        # can drop the panel.
+        reconfigure_kwin_preserving_foreign_effects()
+        return 0 if ok else 1
 
 
 def watch_portal() -> int:
