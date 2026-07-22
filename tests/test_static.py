@@ -31,9 +31,9 @@ def test_version_is_semver(repo):
 
 
 def test_look_and_feel_does_not_bypass_smart_wallpaper_owner(repo):
-    """KDE applies a look-and-feel package before the portal watcher runs.
+    """KDE applies a look-and-feel package before the switcher saves state.
     Wallpaper defaults here would erase the outgoing custom background before
-    the switcher could save its independent light/dark choice."""
+    its independent light/dark choice could be preserved."""
     root = repo / "src/offline/look-and-feel"
     defaults = sorted(root.glob("*/contents/defaults"))
     assert defaults

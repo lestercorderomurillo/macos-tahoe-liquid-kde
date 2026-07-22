@@ -22,7 +22,6 @@ from theme_switch import (
     _apply_lookandfeel_live,
     reconfigure_kwin_preserving_foreign_effects,
 )
-from steps.theme_switch import start_gtk_sync_watcher
 
 # Cache files / dirs flushed during install + uninstall before Plasma reloads.
 _CACHES = (
@@ -342,16 +341,6 @@ def restart_plasma() -> None:
         ok("Plasma restarted ")
     else:
         warn("Plasma restart did not produce a running shell")
-
-    # Start the portal watcher only after the shell has loaded the final
-    # on-disk theme. Starting it in install() let its initial convergence pass
-    # overlap this restart and replay a stale portal value over the target.
-    watcher = start_gtk_sync_watcher()
-    if watcher is True:
-        ok("Native light/dark sync active")
-    elif watcher is False:
-        warn("Native light/dark sync could not start; it will retry at login")
-
 
 def _scrub_kdedefaults() -> None:
     # The scrub lives in a bundled kconf_update helper; run just

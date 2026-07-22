@@ -198,9 +198,8 @@ def test_apply_runs_full_pipeline_in_order(monkeypatch):
 
 
 def test_apply_serializes_overlapping_theme_transitions(monkeypatch, tmp_path):
-    """The timer's LAF apply emits a portal signal, so the portal watcher can
-    enter while the scheduled pipeline is still running. The second pipeline
-    must wait rather than interleave panel config and cache changes."""
+    """A login service, timer and manual apply can overlap. The second
+    pipeline must wait rather than interleave panel config and cache changes."""
     import theme_switch
 
     runtime = tmp_path / "runtime"
@@ -368,8 +367,7 @@ def test_apply_finishes_cycle_and_reconfigure_when_extras_raise(monkeypatch):
 
 def test_local_extras_switches_libadwaita_gtk4_override(monkeypatch, tmp_path):
     """Modern Nautilus needs GTK's user stylesheet in addition to the GTK
-    theme setting. The portal watcher runs this path on every native switch,
-    so the project-managed link must track both modes."""
+    theme setting, so the project-managed link must track both modes."""
     import theme_switch
 
     home = tmp_path / "home"
@@ -497,10 +495,10 @@ def test_cycle_restores_target_on_sigterm(monkeypatch):
 def test_cycle_widget_style_works_off_main_thread(monkeypatch):
     """Real regression: cycle_widget_style_live registers SIGTERM/SIGINT
     handlers, but signal.signal() only works on the MAIN thread. The
-    installer UI and the portal watcher run steps off-thread, where the bare
-    signal.signal() raised 'ValueError: signal only works in main thread of
-    the main interpreter' and crashed uninstall. It must run to completion on
-    a worker thread (skipping only the mid-cycle SIGTERM interception).
+    installer UI runs steps off-thread, where the bare signal.signal() raised
+    'ValueError: signal only works in main thread of the main interpreter' and
+    crashed uninstall. It must run to completion on a worker thread (skipping
+    only the mid-cycle SIGTERM interception).
 
     NOTE: this test does NOT monkeypatch cycle_widget_style_live — it runs the
     REAL function on a real worker thread, because the crash lived in exactly
@@ -614,7 +612,7 @@ def test_main_rejects_invalid_mode(monkeypatch):
     assert applied == []
 
 
-# ── native light/dark follow (GTK sync, issue #46 part 2) ─────────────
+# ── explicit native light/dark follow (one-shot; no watcher) ──────────
 
 
 def test_detect_mode_by_system_prefers_portal(monkeypatch):
@@ -656,77 +654,6 @@ def test_follow_system_applies_detected_mode(monkeypatch):
     assert seen == [("light", {"context": "user"})]
 
 
-def test_follow_system_light_syncs_all_pieces_not_just_gtk(monkeypatch):
-    """The portal-watcher path (light=True) must sync EVERY per-mode piece —
-    a native toggle flips only the KDE color scheme, leaving Kvantum, cursor,
-    icons, LAF and GTK stale (the '#46 menus are dark / kvantum lagged' bug).
-    It writes the full config + live GTK/cursor/Kvantum + a SAFE kwin
-    reconfigure (repaints Aurorae window decorations), and skips ONLY the full
-    LAF-apply retries. It must NEVER touch plasmashell — refreshCurrentShell is
-    an internal API that drops the panel (it crashed a live session once)."""
-    import theme_switch
-    calls: list = []
-    qdbus_targets: list = []
-    monkeypatch.setattr(theme_switch, "detect_mode_by_system", lambda: "dark")
-    monkeypatch.setattr(theme_switch, "_managed_mode_matches", lambda mode: False)
-    for fn in ("write_kde_theme_config", "_apply_wallpaper",
-               "_apply_local_extras", "apply_cursortheme_live",
-               "cycle_widget_style_live"):
-        monkeypatch.setattr(
-            theme_switch, fn,
-            (lambda name: lambda *a, **k: calls.append(name) or True)(fn))
-    # The full LAF apply must NOT run in the light path.
-    monkeypatch.setattr(theme_switch, "_apply_lookandfeel_live",
-                        lambda laf: calls.append("laf") or True)
-    monkeypatch.setattr(theme_switch, "_qdbus",
-                        lambda *a: qdbus_targets.append(a) or True)
-    monkeypatch.setattr(
-        theme_switch, "reconfigure_kwin_preserving_foreign_effects",
-        lambda: qdbus_targets.append(
-            ("org.kde.KWin", "/KWin", "org.kde.KWin.reconfigure"),
-        ) or [],
-    )
-
-    assert theme_switch.follow_system(light=True) == 0
-    # Full per-mode sync ran…
-    assert "write_kde_theme_config" in calls   # LAF + icons + cursor + scheme
-    assert "_apply_local_extras" in calls       # GTK swap + Kvantum set
-    assert "apply_cursortheme_live" in calls    # live cursor
-    assert "cycle_widget_style_live" in calls   # live Kvantum widget-style
-    # …the full LAF-apply retry loop is skipped (native toggle already did it).
-    assert "laf" not in calls
-    # A SAFE kwin reconfigure repaints the window decorations…
-    assert any(t[:2] == ("org.kde.KWin", "/KWin") for t in qdbus_targets), (
-        "light sync must reconfigure KWin so Aurorae decorations repaint"
-    )
-    # …but plasmashell is NEVER touched (refreshCurrentShell drops the panel).
-    assert not any("plasmashell" in str(t) or "PlasmaShell" in str(t)
-                   for t in qdbus_targets), (
-        "must not call plasmashell — refreshCurrentShell restarts the shell"
-    )
-
-
-def test_portal_watcher_ignores_switchers_own_converged_signal(monkeypatch):
-    """A timer/manual apply emits the portal signal watched here. Once the
-    transition lock is released every managed setting already matches, so the
-    watcher must not replay the full pipeline or fight the requested mode."""
-    import theme_switch
-
-    monkeypatch.setattr(theme_switch, "detect_mode_by_system", lambda: "dark")
-    monkeypatch.setattr(theme_switch, "_managed_mode_matches", lambda mode: True)
-
-    def unexpected(*_args, **_kwargs):
-        raise AssertionError("converged self-generated signal was replayed")
-
-    for fn in ("write_kde_theme_config", "_apply_wallpaper",
-               "_apply_local_extras", "apply_cursortheme_live",
-               "cycle_widget_style_live",
-               "reconfigure_kwin_preserving_foreign_effects"):
-        monkeypatch.setattr(theme_switch, fn, unexpected)
-
-    assert theme_switch.follow_system(light=True) == 0
-
-
 def test_follow_system_noop_when_mode_unknown(monkeypatch):
     """When the current mode can't be read, follow-system does NOT guess and
     apply a mode — that would fight the user's real state. Success, no apply."""
@@ -739,14 +666,13 @@ def test_follow_system_noop_when_mode_unknown(monkeypatch):
     assert called == []
 
 
-def test_main_routes_follow_system_and_watch_portal(monkeypatch):
-    """`follow-system` and `watch-portal` are valid subcommands (the GTK-sync
-    bridge), routed to their own handlers — not rejected like retired modes."""
+def test_main_routes_follow_system_and_rejects_retired_watcher(monkeypatch):
+    """follow-system remains an explicit one-shot command; the background
+    watch-portal entry point is retired and must not be startable."""
     import theme_switch
     monkeypatch.setattr(theme_switch, "follow_system", lambda: 0)
-    monkeypatch.setattr(theme_switch, "watch_portal", lambda: 0)
     assert theme_switch.main(["follow-system"]) == 0
-    assert theme_switch.main(["watch-portal"]) == 0
+    assert theme_switch.main(["watch-portal"]) == 1
 
 
 def test_session_env_uses_runtime_fallback_without_systemd(monkeypatch):
@@ -771,14 +697,6 @@ def test_session_env_uses_runtime_fallback_without_systemd(monkeypatch):
 
     assert called == [True]
     assert theme_switch._HAS_DBUS is None
-
-
-def test_watch_portal_needs_session_bus(monkeypatch):
-    """Without gdbus / a session bus the watcher can't run — it must report
-    failure, not spin. (Autostart on a headless or bus-less session.)"""
-    import theme_switch
-    monkeypatch.setattr(theme_switch, "_have", lambda cmd: False)
-    assert theme_switch.watch_portal() == 1
 
 
 _APPLY_SUBCALLS = (
@@ -1422,10 +1340,10 @@ def test_switch_step_does_not_touch_live_user_systemd(sandbox, tmp_path):
     assert "systemctl --user" in log_file.read_text()
 
 
-def test_switch_step_stops_old_watcher_before_replacing_binary(
+def test_switch_step_removes_old_watcher_before_replacing_binary(
         monkeypatch, tmp_path):
-    """An upgrade must silence the previous release before copying the new
-    switcher, otherwise its portal callback can overwrite the install mode."""
+    """An upgrade must stop the old process and remove its autostart before
+    copying the new switcher."""
     import steps.theme_switch as step
 
     source = tmp_path / "theme_switch.py"
@@ -1440,10 +1358,11 @@ def test_switch_step_stops_old_watcher_before_replacing_binary(
     monkeypatch.setattr(step, "stop_gtk_sync_watcher",
                         lambda: events.append("stop"))
     monkeypatch.setattr(step, "_watcher_pids", lambda: [])
+    monkeypatch.setattr(step, "_teardown_gtk_sync_autostart",
+                        lambda: events.append("teardown"))
     monkeypatch.setattr(step.shutil, "copy2",
                         lambda src, dst:
                         events.append("copy") or original_copy(src, dst))
-    monkeypatch.setattr(step, "_install_gtk_sync_autostart", lambda: None)
     monkeypatch.setattr(step, "theme_mode", lambda: "dark")
     monkeypatch.setattr(step, "_teardown_units", lambda: None)
     monkeypatch.setattr(step, "remove_periodic", lambda tag: None)
@@ -1452,7 +1371,7 @@ def test_switch_step_stops_old_watcher_before_replacing_binary(
 
     step.install()
 
-    assert events[:2] == ["stop", "copy"]
+    assert events[:3] == ["stop", "teardown", "copy"]
 
 
 def test_switch_step_install_uninstall_reinstall(sandbox, tmp_path):
@@ -1466,17 +1385,18 @@ def test_switch_step_install_uninstall_reinstall(sandbox, tmp_path):
     # Pin systemd so this exercises the timer path regardless of the CI host
     # (which resolves to OpenRC). The OpenRC crontab path has its own tests.
     env = {"THEME_MODE": "auto", "MTTKDE_INIT": "systemd"}
-    _run_step("theme_switch", "install", env, shim_dir=shim_dir)
     bin_path = sandbox / ".local/bin/mac-tahoe-theme-switch"
     svc_dir = sandbox / ".config/systemd/user"
     autostart = (sandbox / ".config/autostart"
                  / "mac-tahoe-liquid-kde-gtk-sync.desktop")
+    # Seed the file left by 0.36.x-0.38.x; install must remove it.
+    autostart.parent.mkdir(parents=True, exist_ok=True)
+    autostart.write_text("Exec=watch-portal\n")
+    _run_step("theme_switch", "install", env, shim_dir=shim_dir)
     assert bin_path.is_file() and bin_path.stat().st_mode & 0o111
     assert (svc_dir / "mac-tahoe-liquid-kde-theme.service").is_file()
     assert (svc_dir / "mac-tahoe-liquid-kde-theme.timer").is_file()
-    # The GTK-follows-native-toggle autostart is installed (#46).
-    assert autostart.is_file()
-    assert "watch-portal" in autostart.read_text()
+    assert not autostart.exists()
 
     state_dir = sandbox / ".local/state/mac-tahoe-liquid-kde"
     state_dir.mkdir(parents=True)
@@ -1525,10 +1445,8 @@ def test_switch_step_openrc_schedules_via_crontab_not_systemd(sandbox, tmp_path)
     assert not (svc_dir / "mac-tahoe-liquid-kde-theme.timer").exists()
     # enable/start of the user timer must not have been attempted.
     assert "systemctl --user enable" not in calls
-    # The GTK-sync autostart is init-agnostic — installed on OpenRC too,
-    # since it's plain XDG autostart, not a systemd unit (#46).
-    assert (sandbox / ".config/autostart"
-            / "mac-tahoe-liquid-kde-gtk-sync.desktop").is_file()
+    assert not (sandbox / ".config/autostart"
+                / "mac-tahoe-liquid-kde-gtk-sync.desktop").exists()
     assert "systemctl --user start" not in calls
 
 

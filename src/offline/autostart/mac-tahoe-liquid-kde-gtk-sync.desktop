@@ -1,9 +1,0 @@
-[Desktop Entry]
-Type=Application
-Name=MacTahoe Liquid KDE — GTK light/dark sync
-Comment=Keeps GTK apps (Nautilus, etc.) following the native light/dark toggle
-Exec=%h/.local/bin/mac-tahoe-theme-switch watch-portal
-OnlyShowIn=KDE
-X-KDE-autostart-phase=2
-NoDisplay=true
-Terminal=false

@@ -11,7 +11,7 @@ from paths import REPO_ROOT
 from distro import user_service_manager_command
 from steps._helpers import HOME, kw_write, ok, offline, theme_mode, warn
 from steps._scheduler import install_at_times, is_systemd, remove_periodic
-from utils import drop_privs_in_child, run_user
+from utils import run_user
 
 BIN_DEST = HOME / ".local/bin/mac-tahoe-theme-switch"
 SVC_DIR = HOME / ".config/systemd/user"
@@ -22,10 +22,8 @@ MANAGED_STATE_FILES = (
     STATE_DIR / "layout-installed",
 )
 
-# XDG autostart launcher for the portal watcher that makes GTK apps follow the
-# NATIVE light/dark toggle. Init-agnostic: Plasma runs ~/.config/autostart/*
-# on both systemd and OpenRC sessions, so this is the one piece that works the
-# same on Gentoo/OpenRC as on systemd (#46).
+# Legacy 0.36.x-0.38.x portal watcher. Current installs remove this autostart
+# and stop the process; the names stay here solely for upgrade cleanup.
 AUTOSTART_DIR = HOME / ".config/autostart"
 GTK_SYNC_DESKTOP = "mac-tahoe-liquid-kde-gtk-sync.desktop"
 
@@ -107,46 +105,6 @@ def stop_gtk_sync_watcher() -> None:
             pass
 
 
-def start_gtk_sync_watcher() -> bool | None:
-    """Start native appearance sync in the current Plasma session.
-
-    The XDG autostart file covers later logins.  Starting here closes the gap
-    between installation and the next login, which previously made the quick
-    settings toggle appear unsupported. ``None`` means there is no live
-    graphical session and autostart will handle it later.
-    """
-    if os.environ.get("MAC_TAHOE_SKIP_LIVE_APPLY", "").lower() == "true":
-        return None
-    if not os.environ.get("DBUS_SESSION_BUS_ADDRESS") or not (
-            os.environ.get("DISPLAY") or os.environ.get("WAYLAND_DISPLAY")):
-        return None
-    if not BIN_DEST.is_file() or not BIN_DEST.stat().st_mode & 0o111:
-        return False
-
-    # Replace a watcher from an older installed script so an upgrade takes
-    # effect immediately. The standalone watcher also holds a lock to prevent
-    # an install/autostart race from leaving duplicates behind.
-    stop_gtk_sync_watcher()
-    for _ in range(10):
-        if not _watcher_pids():
-            break
-        time.sleep(0.05)
-    try:
-        process = subprocess.Popen(
-            [str(BIN_DEST), "watch-portal"],
-            stdin=subprocess.DEVNULL,
-            stdout=subprocess.DEVNULL,
-            stderr=subprocess.DEVNULL,
-            env=os.environ.copy(),
-            start_new_session=True,
-            preexec_fn=drop_privs_in_child,
-        )
-    except OSError:
-        return False
-    time.sleep(0.15)
-    return process.poll() is None
-
-
 def _user_service(*args: str) -> bool:
     command = user_service_manager_command(*args)
     if command is None:
@@ -188,17 +146,6 @@ def _teardown_units() -> None:
     _user_service("daemon-reload")
 
 
-def _install_gtk_sync_autostart() -> None:
-    """Drop the portal-watcher autostart .desktop so GTK apps follow the
-    native light/dark toggle. Works on systemd and OpenRC alike — it's plain
-    XDG autostart, not a systemd unit."""
-    src = offline("autostart", GTK_SYNC_DESKTOP)
-    if not src.is_file():
-        return
-    AUTOSTART_DIR.mkdir(parents=True, exist_ok=True)
-    shutil.copy2(src, AUTOSTART_DIR / GTK_SYNC_DESKTOP)
-
-
 def _teardown_gtk_sync_autostart() -> None:
     try: (AUTOSTART_DIR / GTK_SYNC_DESKTOP).unlink()
     except FileNotFoundError: pass
@@ -206,24 +153,21 @@ def _teardown_gtk_sync_autostart() -> None:
 
 
 def install() -> None:
-    # An upgrade/reinstall can otherwise leave the watcher from the previous
-    # release applying a portal event while this run replaces the binary and
-    # writes the target theme. Keep it stopped until the final Plasma restart,
-    # where steps.apply starts the freshly-installed watcher.
+    # 0.36.x-0.38.x installed a portal watcher that could replay a stale
+    # appearance value over the scheduled/install target. It is no longer part
+    # of the product: kill it and remove its autostart on every upgrade.
     stop_gtk_sync_watcher()
     for _ in range(40):
         if not _watcher_pids():
             break
         time.sleep(0.05)
+    _teardown_gtk_sync_autostart()
 
     BIN_DEST.parent.mkdir(parents=True, exist_ok=True)
     if PY_SRC.is_file():
         shutil.copy2(PY_SRC, BIN_DEST)
         BIN_DEST.chmod(0o755)
     SVC_DIR.mkdir(parents=True, exist_ok=True)
-    # The GTK-follows-native-toggle watcher is useful in every mode (pinned or
-    # auto): the user can still flip light/dark from System Settings.
-    _install_gtk_sync_autostart()
 
     auto = theme_mode() == "auto"
 

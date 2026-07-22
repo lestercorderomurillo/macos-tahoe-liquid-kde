@@ -277,6 +277,13 @@ The same binary runs:
 `./install` writes both the service and the timer (under
 `~/.config/systemd/user/`) and enables them.
 
+There is no background xdg-portal appearance watcher. Automatic mode is
+driven only by the post-login service and the 06:00 / 18:00 scheduler;
+`follow-system` remains an explicit one-shot command. Install and uninstall
+remove the legacy `mac-tahoe-liquid-kde-gtk-sync.desktop` autostart and stop
+any `watch-portal` process left by v0.36.x-v0.38.x so it cannot race or undo
+the scheduled target.
+
 Light/dark switching applies:
 
 1. Look-and-feel package (`plasma-apply-lookandfeel -a <pkg> --keep-auto`).

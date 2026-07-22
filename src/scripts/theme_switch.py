@@ -179,7 +179,7 @@ def _sync_session_env() -> None:
 
 
 def _theme_transition_lock_path() -> Path:
-    """One lock shared by timer, manual, and portal-watcher transitions."""
+    """One lock shared by timer and manual theme transitions."""
     try:
         uid = int(os.environ.get("SUDO_UID") or os.getuid())
     except ValueError:
@@ -196,12 +196,11 @@ def _theme_transition_lock_path() -> Path:
 def _theme_transition_lock():
     """Prevent two live theme pipelines from interleaving.
 
-    Applying a look-and-feel emits the same portal appearance signal watched
-    by ``watch-portal``.  Without a cross-process lock, the scheduled pipeline
-    and the watcher can rewrite Plasma settings and caches at the same time,
-    leaving different panel containments rendered from different variants.
-    Lock setup is best-effort so an unusual read-only state/runtime directory
-    never makes an otherwise usable switcher fail.
+    A login service, timer and manual command can overlap. Without a
+    cross-process lock they can rewrite Plasma settings and caches at the same
+    time, leaving different panel containments rendered from different
+    variants. Lock setup is best-effort so an unusual read-only state/runtime
+    directory never makes an otherwise usable switcher fail.
     """
     lock = None
     locked = False
@@ -401,8 +400,8 @@ def detect_mode_by_time() -> str:
 
 def detect_mode_by_system() -> str | None:
     """The light/dark mode the DESKTOP currently wants, read from the live
-    system rather than the clock. Used by the portal watcher so a manual flip
-    in System Settings / quick-settings drives our full theme (GTK included).
+    system rather than the clock. Used only by the explicit ``follow-system``
+    one-shot command; no background portal watcher is installed.
 
     Source of truth order:
     1. The xdg-desktop-portal appearance ``color-scheme`` (1=dark, 2=light) —
@@ -584,9 +583,9 @@ def _load_wallpaper_state() -> dict:
 
 def _save_wallpaper_state(state: dict) -> bool:
     path = _wallpaper_state_file()
-    # The portal watcher and the scheduled switch may overlap briefly. Give
-    # each writer its own temporary file so one process cannot rename away
-    # another process's pending write.
+    # A login apply and the scheduled switch may overlap briefly. Give each
+    # writer its own temporary file so one process cannot rename away another
+    # process's pending write.
     tmp = path.with_name(f".{path.name}.{os.getpid()}.tmp")
     try:
         path.parent.mkdir(parents=True, exist_ok=True)
@@ -912,9 +911,8 @@ def _apply_local_extras(mode: str) -> None:
         # Nautilus is a libadwaita application. It follows the system
         # light/dark preference, but it does not consume a third-party GTK
         # theme deeply enough to get our window chrome. GTK's user stylesheet
-        # is therefore the compatibility layer. The portal watcher calls this
-        # function for every native appearance change, so the link follows the
-        # selected mode instead of remaining pinned as it did before 0.37.0.
+        # is therefore the compatibility layer and is refreshed by every
+        # explicit or scheduled theme switch.
         gtk4_src = gtk_dest / gtk_theme / "gtk-4.0"
         gtk4_dest = home / ".config/gtk-4.0"
         if gtk4_src.is_dir():
@@ -1255,10 +1253,10 @@ def cycle_widget_style_live(target: str) -> bool:
     def _on_signal(signum, _frame):
         interrupted.append(signum)
 
-    # signal.signal() only works on the main thread. The installer UI and the
-    # portal watcher run steps off-thread, where registering a handler raises
-    # ValueError; guard it so the cycle still runs (it just can't intercept a
-    # mid-cycle SIGTERM there — the finally still restores the target on disk).
+    # signal.signal() only works on the main thread. The installer UI runs
+    # steps off-thread, where registering a handler raises ValueError; guard it
+    # so the cycle still runs (it just can't intercept a mid-cycle SIGTERM
+    # there — the finally still restores the target on disk).
     handlers_installed = False
     old_term = old_int = None
     if threading.current_thread() is threading.main_thread():
@@ -1349,180 +1347,23 @@ def apply(mode: str, context: str = "user") -> bool:
         return _apply_unlocked(mode, context=context)
 
 
-def _gtk_theme_name() -> str:
-    settings = _parse_ini(_xdg_config() / "gtk-3.0" / "settings.ini")
-    return settings.get("Settings", {}).get("gtk-theme-name", "")
-
-
-def _managed_mode_matches(mode: str) -> bool:
-    """Whether every mode-specific setting already matches ``mode``.
-
-    The timer's own apply emits a portal ``SettingChanged`` signal too. The
-    watcher receives it only after the transition lock is released, so this
-    complete convergence check distinguishes that self-generated event from a
-    native System Settings toggle, which initially changes only a subset.
-    """
-    dark = mode == "dark"
-    suffix = "Dark" if dark else "Light"
-    expected = (
-        ("kdeglobals", "KDE", "LookAndFeelPackage",
-         LAF_DARK if dark else LAF_LIGHT),
-        ("kdeglobals", "General", "ColorScheme",
-         f"MacTahoeLiquidKde{suffix}"),
-        ("kdeglobals", "Icons", "Theme",
-         "MacTahoeLiquidKde-Icons-dark" if dark
-         else "MacTahoeLiquidKde-Icons"),
-        ("kcminputrc", "Mouse", "cursorTheme",
-         "MacTahoeLiquidKde-Dark" if dark else "MacTahoeLiquidKde"),
-        ("plasmarc", "Theme", "name",
-         f"MacTahoeLiquidKde-{suffix}"),
-        ("kwinrc", "org.kde.kdecoration2", "theme",
-         f"__aurorae__svg__MacTahoeLiquidKde-{suffix}"),
-    )
-    if any(_kread(file, group, key) != value
-           for file, group, key, value in expected):
-        return False
-    return _gtk_theme_name() == f"MacTahoeLiquidKde-{suffix}"
-
-
-def follow_system(light: bool = False) -> int:
+def follow_system() -> int:
     """Apply whichever mode the desktop currently wants (System Settings /
     quick-settings choice), so a NATIVE light/dark toggle drives our full
     theme. No-op success when the current mode can't be read (don't guess and
     fight the user's real state).
 
-    light=True is the portal-watcher path. A native toggle flips ONLY the KDE
-    color scheme, leaving our other per-mode pieces on the previous variant:
-    the GTK theme, the Kvantum theme, the icon theme, the cursor, the LAF
-    package AND the Aurorae window-decoration theme all lag behind. So we sync
-    EVERY piece — write_kde_theme_config covers LAF/icons/scheme/widgetStyle/
-    cursor/aurorae, the live GTK/icon/Kvantum/cursor niceties bring running
-    apps up to date, and a KWin reconfigure repaints the window decorations.
-    The watcher no-ops when every managed setting already matches: that is the
-    timer/manual switcher's own portal signal, not a System Settings change.
-    We only SKIP the full LAF-apply retries (the native toggle already applied
-    the look-and-feel), so this stays fast and doesn't fight the session."""
+    This is an explicit one-shot command, not a background watcher. Automatic
+    switching remains controlled only by the 06:00/18:00 scheduler."""
     with _theme_transition_lock():
-        # Detect only after acquiring the lock. A scheduled transition may be
-        # in flight; reading before waiting could replay its outgoing mode.
         mode = detect_mode_by_system()
         if mode is None:
             return 0
-        if not light:
-            return 0 if _apply_unlocked(mode, context="user") else 1
-        if _managed_mode_matches(mode):
-            return 0
-
-        cursor = ("MacTahoeLiquidKde-Dark" if mode == "dark"
-                  else "MacTahoeLiquidKde")
-        widget = KVANTUM_STYLE
-        ok = write_kde_theme_config(mode)
-        try:
-            _apply_wallpaper(mode, context="user")
-            _apply_local_extras(mode)  # GTK + icon caches + Kvantum set
-        except Exception as exc:
-            print(f"theme follow: extras failed: {exc!r}", file=sys.stderr)
-            ok = False
-        # Live niceties so running apps catch up without a logout. Best-effort:
-        # a missing tool must not fail the sync.
-        apply_cursortheme_live(cursor)
-        cycle_widget_style_live(widget)
-        # A manual theme change from System Settings drops the dock's
-        # panelOpacity, so re-assert it here too — this is the watcher path.
-        patch_dock_transparency()
-        # Repaint Aurorae through KWin's safe reconfigure path. Never call
-        # refreshCurrentShell(): that internal API reloads the whole shell and
-        # can drop the panel.
-        reconfigure_kwin_preserving_foreign_effects()
-        return 0 if ok else 1
-
-
-def watch_portal() -> int:
-    """Block on the freedesktop appearance ``color-scheme`` change signal and
-    apply the matching theme each time the user toggles light/dark natively.
-    Event-driven (a blocking D-Bus signal read), never a poll loop — this is
-    the init-agnostic bridge (systemd AND OpenRC) that makes GTK apps like
-    Nautilus follow the native toggle, which on its own only flips Qt colors
-    and leaves the GTK theme on the wrong variant (#46)."""
-    if not _have("gdbus") or not _has_session_dbus():
-        print("theme watch: no session bus / gdbus — portal watch unavailable",
-              file=sys.stderr)
-        return 1
-    runtime_value = os.environ.get("XDG_RUNTIME_DIR")
-    runtime = Path(runtime_value) if runtime_value else None
-    lock_dir = runtime if runtime is not None and runtime.is_dir() else (
-        Path(os.environ.get("XDG_STATE_HOME") or
-             str(Path.home() / ".local/state")) / "mac-tahoe-liquid-kde"
-    )
-    try:
-        lock_dir.mkdir(parents=True, exist_ok=True)
-        lock = (lock_dir / "mac-tahoe-liquid-kde-gtk-sync.lock").open(
-            "w", encoding="utf-8",
-        )
-        fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
-        lock.write(f"{os.getpid()}\n")
-        lock.flush()
-    except (OSError, BlockingIOError):
-        # XDG autostart and an install-time launch can overlap. The process
-        # already holding the lock owns the portal subscription.
-        return 0
-    # Converge once up front (a toggle may have happened before we started, e.g.
-    # autostart lag): make GTK match the current mode.
-    follow_system(light=True)
-    proc = subprocess.Popen(
-        ["gdbus", "monitor", "--session",
-         "--dest", "org.freedesktop.portal.Desktop"],
-        stdout=subprocess.PIPE, stderr=subprocess.DEVNULL, text=True,
-        bufsize=1,  # line-buffered: react per line, don't wait for a full block
-        preexec_fn=_drop_privs_in_child,
-    )
-    stop_requested = False
-
-    def _stop_monitor(_signum=None, _frame=None):
-        nonlocal stop_requested
-        stop_requested = True
-        try:
-            proc.terminate()
-        except OSError:
-            pass
-
-    old_term = signal.signal(signal.SIGTERM, _stop_monitor)
-    old_int = signal.signal(signal.SIGINT, _stop_monitor)
-    last = 0.0
-    try:
-        for line in proc.stdout:
-            # Only react to the appearance color-scheme change, nothing else
-            # the portal emits.
-            if "SettingChanged" in line and "color-scheme" in line \
-                    and "appearance" in line:
-                # Debounce: a single toggle can emit the signal more than once;
-                # coalesce bursts so we don't stack GTK swaps.
-                now = time.monotonic()
-                if now - last < 1.0:
-                    continue
-                last = now
-                follow_system(light=True)
-    except KeyboardInterrupt:
-        stop_requested = True
-    finally:
-        if proc.poll() is None:
-            try:
-                proc.terminate()
-            except OSError:
-                pass
-        try:
-            proc.wait(timeout=2)
-        except subprocess.TimeoutExpired:
-            proc.kill()
-        signal.signal(signal.SIGTERM, old_term)
-        signal.signal(signal.SIGINT, old_int)
-    # A requested stop is clean. If gdbus died independently, report failure
-    # so a future supervisor can restart the watcher.
-    return 0 if stop_requested else 1
+        return 0 if _apply_unlocked(mode, context="user") else 1
 
 
 USAGE = ("Usage: mac-tahoe-theme-switch "
-         "{light|dark|auto|follow-system|watch-portal} [install]")
+         "{light|dark|auto|follow-system} [install]")
 
 
 def main(argv: list[str]) -> int:
@@ -1532,8 +1373,6 @@ def main(argv: list[str]) -> int:
 
     _sync_session_env()
     mode = argv[0]
-    if mode == "watch-portal":
-        return watch_portal()
     if mode == "follow-system":
         return follow_system()
     if mode == "auto":
