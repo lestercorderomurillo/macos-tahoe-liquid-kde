@@ -208,13 +208,6 @@ def install() -> None:
     time.sleep(3)
     ok("KWin reconfigured ")
 
-    watcher = start_gtk_sync_watcher()
-    if watcher is True:
-        ok("Native light/dark sync active")
-    elif watcher is False:
-        warn("Native light/dark sync could not start; it will retry at login")
-
-
 def _run_quick(cmd: list[str], *, capture_output: bool = False):
     try:
         kwargs = {"check": False, "timeout": 8}
@@ -349,6 +342,15 @@ def restart_plasma() -> None:
         ok("Plasma restarted ")
     else:
         warn("Plasma restart did not produce a running shell")
+
+    # Start the portal watcher only after the shell has loaded the final
+    # on-disk theme. Starting it in install() let its initial convergence pass
+    # overlap this restart and replay a stale portal value over the target.
+    watcher = start_gtk_sync_watcher()
+    if watcher is True:
+        ok("Native light/dark sync active")
+    elif watcher is False:
+        warn("Native light/dark sync could not start; it will retry at login")
 
 
 def _scrub_kdedefaults() -> None:

@@ -206,6 +206,16 @@ def _teardown_gtk_sync_autostart() -> None:
 
 
 def install() -> None:
+    # An upgrade/reinstall can otherwise leave the watcher from the previous
+    # release applying a portal event while this run replaces the binary and
+    # writes the target theme. Keep it stopped until the final Plasma restart,
+    # where steps.apply starts the freshly-installed watcher.
+    stop_gtk_sync_watcher()
+    for _ in range(40):
+        if not _watcher_pids():
+            break
+        time.sleep(0.05)
+
     BIN_DEST.parent.mkdir(parents=True, exist_ok=True)
     if PY_SRC.is_file():
         shutil.copy2(PY_SRC, BIN_DEST)

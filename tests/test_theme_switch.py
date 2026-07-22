@@ -151,7 +151,8 @@ def _stub_apply_dependencies(monkeypatch, calls):
     import theme_switch
     monkeypatch.setattr(theme_switch, "_current_wallpapers", lambda: [])
     monkeypatch.setattr(theme_switch, "write_kde_theme_config",
-                        lambda mode: calls.append(("write", mode)) or True)
+                        lambda mode, **kw:
+                        calls.append(("write", mode, kw)) or True)
     monkeypatch.setattr(theme_switch, "_apply_wallpaper",
                         lambda mode, **kw:
                         calls.append(("wallpaper", mode)) or True)
@@ -339,7 +340,8 @@ def test_apply_finishes_cycle_and_reconfigure_when_extras_raise(monkeypatch):
 
     calls: list = []
     monkeypatch.setattr(theme_switch, "write_kde_theme_config",
-                        lambda mode: calls.append(("write", mode)) or True)
+                        lambda mode, **kw:
+                        calls.append(("write", mode, kw)) or True)
     monkeypatch.setattr(theme_switch, "_apply_wallpaper",
                         lambda mode, **kw:
                         calls.append(("wallpaper", mode)) or True)
@@ -802,16 +804,24 @@ def test_apply_install_context_skips_live_lookandfeel(monkeypatch):
     QML teardown. Every other sub-call still runs in both contexts."""
     import theme_switch
     calls: list = []
+    write_kwargs: list[dict] = []
     _stub_apply_subcalls(monkeypatch, calls)
+    monkeypatch.setattr(
+        theme_switch, "write_kde_theme_config",
+        lambda mode, **kw: write_kwargs.append(kw) or True,
+    )
 
     assert theme_switch.apply("dark", context="install") is True
     assert "_apply_lookandfeel_live" not in calls
     assert "apply_cursortheme_live" in calls
     assert "cycle_widget_style_live" in calls
+    assert write_kwargs == [{"force_color_reload": True}]
 
     calls.clear()
+    write_kwargs.clear()
     assert theme_switch.apply("dark") is True
     assert "_apply_lookandfeel_live" in calls
+    assert write_kwargs == [{"force_color_reload": False}]
 
 
 def test_main_passes_install_context_to_apply(monkeypatch):
@@ -1069,14 +1079,14 @@ def test_apply_fails_when_config_writes_fail(monkeypatch):
     calls: list = []
     _stub_apply_subcalls(monkeypatch, calls)
     monkeypatch.setattr(theme_switch, "write_kde_theme_config",
-                        lambda mode: False)
+                        lambda mode, **kw: False)
     assert theme_switch.apply("dark") is False
 
     # config ok + every live sub-call failing → still success
     calls.clear()
     _stub_apply_subcalls(monkeypatch, calls, ret=False)
     monkeypatch.setattr(theme_switch, "write_kde_theme_config",
-                        lambda mode: True)
+                        lambda mode, **kw: True)
     monkeypatch.setattr(theme_switch, "_apply_wallpaper",
                         lambda mode, **kwargs: True)
     monkeypatch.setattr(theme_switch, "_apply_local_extras", lambda mode: True)
@@ -1267,6 +1277,64 @@ def test_write_kde_theme_config_reports_write_failure(monkeypatch):
     assert theme_switch.write_kde_theme_config("dark") is True
 
 
+def test_color_scheme_is_applied_before_target_name_is_stamped(monkeypatch):
+    """KDE must see the outgoing scheme name when its color tool applies the
+    target; stamping first left Plasma menus on the old live palette."""
+    import theme_switch
+    events: list[tuple[str, str]] = []
+    monkeypatch.setattr(theme_switch, "_have",
+                        lambda cmd: cmd == "kwriteconfig6")
+    monkeypatch.setattr(
+        theme_switch, "apply_color_scheme",
+        lambda scheme: events.append(("apply", scheme)) or True,
+    )
+
+    def write(*args):
+        if args[1:7] == ("kdeglobals", "--group", "General", "--key",
+                         "ColorScheme", "MacTahoeLiquidKdeDark"):
+            events.append(("stamp", "MacTahoeLiquidKdeDark"))
+        return True
+
+    monkeypatch.setattr(theme_switch, "_kwrite", write)
+    assert theme_switch.write_kde_theme_config("dark") is True
+    assert events == [
+        ("apply", "MacTahoeLiquidKdeDark"),
+        ("stamp", "MacTahoeLiquidKdeDark"),
+    ]
+
+
+def test_install_forces_real_color_transition_when_target_is_already_named(
+        monkeypatch):
+    """A reinstall heals an on-disk-dark/runtime-light split by making KDE
+    observe a real light-to-dark transition."""
+    import theme_switch
+    events: list[tuple[str, str]] = []
+    monkeypatch.setattr(theme_switch, "_have",
+                        lambda cmd: cmd == "kwriteconfig6")
+    monkeypatch.setattr(theme_switch, "_kread",
+                        lambda file, group, key: "MacTahoeLiquidKdeDark")
+    monkeypatch.setattr(
+        theme_switch, "apply_color_scheme",
+        lambda scheme: events.append(("apply", scheme)) or True,
+    )
+
+    def write(*args):
+        if args[1:7] == ("kdeglobals", "--group", "General", "--key",
+                         "ColorScheme", "MacTahoeLiquidKdeDark"):
+            events.append(("stamp", "MacTahoeLiquidKdeDark"))
+        return True
+
+    monkeypatch.setattr(theme_switch, "_kwrite", write)
+    assert theme_switch.write_kde_theme_config(
+        "dark", force_color_reload=True,
+    ) is True
+    assert events == [
+        ("apply", "MacTahoeLiquidKdeLight"),
+        ("apply", "MacTahoeLiquidKdeDark"),
+        ("stamp", "MacTahoeLiquidKdeDark"),
+    ]
+
+
 def test_cycle_reports_failure_but_still_restores(monkeypatch):
     """Failed widgetStyle writes or a dead broadcast phase must return
     False — while the finally-restore still runs so disk ends at the
@@ -1352,6 +1420,39 @@ def test_switch_step_does_not_touch_live_user_systemd(sandbox, tmp_path):
         "shim was never invoked — step bypassed PATH (absolute path?)"
     )
     assert "systemctl --user" in log_file.read_text()
+
+
+def test_switch_step_stops_old_watcher_before_replacing_binary(
+        monkeypatch, tmp_path):
+    """An upgrade must silence the previous release before copying the new
+    switcher, otherwise its portal callback can overwrite the install mode."""
+    import steps.theme_switch as step
+
+    source = tmp_path / "theme_switch.py"
+    source.write_text("#!/usr/bin/env python3\n", encoding="utf-8")
+    destination = tmp_path / "bin/mac-tahoe-theme-switch"
+    events: list[str] = []
+    original_copy = shutil.copy2
+
+    monkeypatch.setattr(step, "PY_SRC", source)
+    monkeypatch.setattr(step, "BIN_DEST", destination)
+    monkeypatch.setattr(step, "SVC_DIR", tmp_path / "systemd")
+    monkeypatch.setattr(step, "stop_gtk_sync_watcher",
+                        lambda: events.append("stop"))
+    monkeypatch.setattr(step, "_watcher_pids", lambda: [])
+    monkeypatch.setattr(step.shutil, "copy2",
+                        lambda src, dst:
+                        events.append("copy") or original_copy(src, dst))
+    monkeypatch.setattr(step, "_install_gtk_sync_autostart", lambda: None)
+    monkeypatch.setattr(step, "theme_mode", lambda: "dark")
+    monkeypatch.setattr(step, "_teardown_units", lambda: None)
+    monkeypatch.setattr(step, "remove_periodic", lambda tag: None)
+    monkeypatch.setattr(step, "ok", lambda message: None)
+    monkeypatch.setattr(step, "warn", lambda message: None)
+
+    step.install()
+
+    assert events[:2] == ["stop", "copy"]
 
 
 def test_switch_step_install_uninstall_reinstall(sandbox, tmp_path):

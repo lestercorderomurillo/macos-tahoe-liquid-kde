@@ -972,7 +972,8 @@ def _apply_local_extras(mode: str) -> None:
         except OSError: pass
 
 
-def write_kde_theme_config(mode: str) -> bool:
+def write_kde_theme_config(
+        mode: str, *, force_color_reload: bool = False) -> bool:
     if not _have("kwriteconfig6"):
         return False
 
@@ -984,6 +985,22 @@ def write_kde_theme_config(mode: str) -> bool:
         laf, icon, cursor = LAF_LIGHT, "MacTahoeLiquidKde-Icons", "MacTahoeLiquidKde"
         scheme, plasma = "MacTahoeLiquidKdeLight", "MacTahoeLiquidKde-Light"
         widget, aurorae = KVANTUM_STYLE, "__aurorae__svg__MacTahoeLiquidKde-Light"
+
+    # Ask KDE to apply the palette while kdeglobals still names the outgoing
+    # scheme.  If we stamp General/ColorScheme first, KDE can conclude the
+    # target is already active and skip its live palette notification, leaving
+    # plasmashell popups on the previous colors even though disk is correct.
+    #
+    # Reinstall is the self-healing path for an already-mixed session.  When
+    # the requested name is already on disk, briefly apply the opposite scheme
+    # first so KDE observes a real transition; the installer's final Plasma
+    # restart then loads the converged target into every containment.
+    if force_color_reload and _kread(
+            "kdeglobals", "General", "ColorScheme") == scheme:
+        opposite = ("MacTahoeLiquidKdeLight" if mode == "dark"
+                    else "MacTahoeLiquidKdeDark")
+        apply_color_scheme(opposite)
+    color_ok = apply_color_scheme(scheme)
 
     # AutomaticLookAndFeel=false: Plasma's sunrise/sunset scheduler must
     # not fight our 06:00 / 18:00 timer (idempotent).
@@ -1011,7 +1028,7 @@ def write_kde_theme_config(mode: str) -> bool:
                        "--key", key, value):
             return False
 
-    return apply_color_scheme(scheme)
+    return color_ok
 
 
 def _live_tool_env() -> dict[str, str]:
@@ -1295,7 +1312,9 @@ def _apply_unlocked(mode: str, context: str = "user") -> bool:
             print("theme apply: live look-and-feel apply skipped",
                   file=sys.stderr)
 
-    config_ok = write_kde_theme_config(mode)
+    config_ok = write_kde_theme_config(
+        mode, force_color_reload=context == "install",
+    )
     if not config_ok:
         print("theme apply: core KDE config writes failed, theme not "
               "fully applied", file=sys.stderr)

@@ -78,6 +78,7 @@ def _restart_env(monkeypatch, *, systemd=True):
     monkeypatch.setattr(apply, "have", lambda command: command == "kquitapp6")
     monkeypatch.setattr(apply, "_plasma_pids", lambda: {42})
     monkeypatch.setattr(apply, "_wait_for_plasma_start", lambda attempts=30: True)
+    monkeypatch.setattr(apply, "start_gtk_sync_watcher", lambda: None)
     monkeypatch.setattr(apply, "ok", lambda message: calls.append(("ok", message)))
     monkeypatch.setattr(apply, "warn",
                         lambda message: calls.append(("warn", message)))
@@ -108,6 +109,22 @@ def test_restart_prefers_kquitapp_and_never_hard_kills_on_success(monkeypatch):
     assert commands == [["kquitapp6", "plasmashell"]]
     assert starts == [True]
     assert any(kind == "ok" for kind, _ in calls)
+
+
+def test_restart_starts_native_sync_only_after_shell_is_ready(monkeypatch):
+    calls = _restart_env(monkeypatch)
+    monkeypatch.setattr(apply, "_plasma_pids", lambda: set())
+    monkeypatch.setattr(apply, "_start_plasma", lambda systemd: True)
+    started = []
+    monkeypatch.setattr(
+        apply, "start_gtk_sync_watcher",
+        lambda: started.append("watcher") or True,
+    )
+
+    apply.restart_plasma()
+
+    assert started == ["watcher"]
+    assert ("ok", "Native light/dark sync active") in calls
 
 
 def test_restart_uses_systemd_restart_when_kquitapp_fails(monkeypatch):
@@ -302,7 +319,7 @@ def test_install_surfaces_third_party_effect_warning(monkeypatch, tmp_path):
     assert any("shapecorners" in message for message in warns)
 
 
-def test_install_starts_native_theme_sync_in_current_session(
+def test_install_defers_native_theme_sync_until_plasma_restart(
         monkeypatch, tmp_path):
     _, oks, _ = _seed_install_env(monkeypatch, tmp_path)
     monkeypatch.setattr(
@@ -319,8 +336,8 @@ def test_install_starts_native_theme_sync_in_current_session(
 
     apply.install()
 
-    assert started == [True]
-    assert "Native light/dark sync active" in oks
+    assert started == []
+    assert "Native light/dark sync active" not in oks
 
 
 def test_install_warns_when_theme_switch_times_out(monkeypatch, tmp_path):
