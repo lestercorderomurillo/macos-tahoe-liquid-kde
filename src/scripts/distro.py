@@ -191,15 +191,15 @@ def _qt6_qml_query() -> str | None:
 
 # Hint surfaced when qmake6 is missing; downstreams reach their base
 # distro's row via ID_LIKE.
-_QT6_TOOLS_HINTS: dict[str, str] = {
-    "arch":          "pacman -S qt6-tools",
-    "gentoo":        "emerge dev-qt/qttools:6",
-    "fedora":        "dnf install qt6-qttools-devel",
-    "rhel":          "dnf install qt6-qttools-devel",
-    "centos":        "dnf install qt6-qttools-devel",
-    "opensuse":      "zypper install qt6-core-devel",
-    "debian":        "apt install qt6-base-dev-tools",
-    "ubuntu":        "apt install qt6-base-dev-tools",
+_QT6_QMAKE_HINTS: dict[str, str] = {
+    "arch":          "pacman -S qt6-base",
+    "gentoo":        "emerge dev-qt/qtbase:6",
+    "fedora":        "dnf install qt6-qtbase-devel",
+    "rhel":          "dnf install qt6-qtbase-devel",
+    "centos":        "dnf install qt6-qtbase-devel",
+    "opensuse":      "zypper install qt6-base-common-devel",
+    "debian":        "apt install qmake6",
+    "ubuntu":        "apt install qmake6",
     "alpine":        "apk add qt6-qttools-dev",
     "void":          "xbps-install -S qt6-tools-devel",
     "nixos":         "nix-shell -p qt6.qttools",
@@ -211,13 +211,13 @@ def qt6_install_hint() -> str:
     """Install command for Qt6 dev tools on this distro; falls back to
     ID_LIKE parents, then a generic multi-distro hint."""
     distro = current_distro()
-    if distro in _QT6_TOOLS_HINTS:
-        return _QT6_TOOLS_HINTS[distro]
+    if distro in _QT6_QMAKE_HINTS:
+        return _QT6_QMAKE_HINTS[distro]
     for parent in distro_id_like():
-        if parent in _QT6_TOOLS_HINTS:
-            return _QT6_TOOLS_HINTS[parent]
+        if parent in _QT6_QMAKE_HINTS:
+            return _QT6_QMAKE_HINTS[parent]
     return ("Install Qt6 dev tooling for your distro. "
-            + " | ".join(f"{k}: {v}" for k, v in _QT6_TOOLS_HINTS.items()))
+            + " | ".join(f"{k}: {v}" for k, v in _QT6_QMAKE_HINTS.items()))
 
 
 # Consulted only when no Qt6 query tool is installed AND the dir exists
@@ -385,14 +385,14 @@ _PACKAGE_MAP: dict[str, dict[str, str]] = {
     # Separate row so qt6_install_hint() stays the single source of the
     # human-facing message.
     "qmake6": {
-        "arch":     "qt6-tools",
-        "debian":   "qt6-base-dev-tools",
-        "ubuntu":   "qt6-base-dev-tools",
-        "fedora":   "qt6-qttools-devel",
-        "rhel":     "qt6-qttools-devel",
-        "centos":   "qt6-qttools-devel",
-        "opensuse": "qt6-core-devel",
-        "gentoo":   "dev-qt/qttools:6",
+        "arch":     "qt6-base",
+        "debian":   "qmake6",
+        "ubuntu":   "qmake6",
+        "fedora":   "qt6-qtbase-devel",
+        "rhel":     "qt6-qtbase-devel",
+        "centos":   "qt6-qtbase-devel",
+        "opensuse": "qt6-base-common-devel",
+        "gentoo":   "dev-qt/qtbase:6",
     },
     # Package AND binary names vary per distro (Fedora ships
     # ``qdbus-qt6``, not ``qdbus6`` — hence utils.qdbus_cmd() probes

@@ -56,7 +56,7 @@ LEGACY_QML_MODULES_USER = (
 
 def deps():
     return [
-        "qmake6:qt6-tools",
+        "qmake6:qt6-base",
         "qt6-gui-cmake:qt6-base",
         "qt6-widgets-cmake:qt6-base",
         "qt6-dbus-cmake:qt6-base",

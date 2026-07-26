@@ -179,7 +179,7 @@ def _collect_dep_tokens() -> list[tuple[str, str]]:
     # qmake6 is required by path discovery independently of feature
     # selection. Route it through remember() so a compiled step cannot
     # silently declare a conflicting Arch fallback.
-    remember("qmake6", "qt6-tools", "Qt6 path discovery")
+    remember("qmake6", "qt6-base", "Qt6 path discovery")
     return sorted(seen.items())
 
 
@@ -521,7 +521,7 @@ def main() -> int:
     print(f"  Pytest suite:       {'PASS' if tests_ok else 'FAIL'}")
 
     if plugins is None or qml is None:
-        print("  → qmake6 not available — install qt6-tools (or equivalent)")
+        print("  → qmake6 not available — install the Qt6 base development package")
         return 1
     if not (layer_ok and pkg_ok and preflight_ok and cmake_ok and tests_ok):
         return 1

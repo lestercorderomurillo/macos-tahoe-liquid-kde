@@ -465,20 +465,20 @@ def test_make_package_per_distro(monkeypatch, distro_id, expected):
     assert distro.package_for("make", "make") == expected
 
 
-# ── qmake6 (Qt6 dev tools) — distinct from qdbus6 row above ───────────
+# ── qmake6 (Qt6 base development) — distinct from qdbus6 above ────────
 
 
 @pytest.mark.parametrize("distro_id, expected", [
-    ("arch",     "qt6-tools"),
-    ("fedora",   "qt6-qttools-devel"),
-    ("rhel",     "qt6-qttools-devel"),
-    ("opensuse", "qt6-core-devel"),
-    ("debian",   "qt6-base-dev-tools"),
-    ("ubuntu",   "qt6-base-dev-tools"),
+    ("arch",     "qt6-base"),
+    ("fedora",   "qt6-qtbase-devel"),
+    ("rhel",     "qt6-qtbase-devel"),
+    ("opensuse", "qt6-base-common-devel"),
+    ("debian",   "qmake6"),
+    ("ubuntu",   "qmake6"),
 ])
 def test_qmake6_package_per_distro(monkeypatch, distro_id, expected):
     _force_distro(monkeypatch, distro_id)
-    assert distro.package_for("qmake6", "qt6-tools") == expected
+    assert distro.package_for("qmake6", "qt6-base") == expected
 
 
 @pytest.mark.parametrize("distro_id, id_like, expected", [
