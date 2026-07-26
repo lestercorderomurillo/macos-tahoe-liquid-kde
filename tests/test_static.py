@@ -326,12 +326,14 @@ def test_acrylic_glass_qrc_entries_all_staged_by_cmake(repo):
 
 def test_acrylic_glass_ships_default_blur_denylist(offline):
     """WindowClasses ships as a blacklist (BlurMatching defaults false) with
-    three entries baked in: cairo-dock (glassing the dock window
+    four entries baked in: cairo-dock (glassing the dock window
     renders a phantom panel behind it), kwin_wayland (KWin's own
     input-method candidate popups report that resource class, and
     glassing them produces a huge misplaced border), and
     linux-wallpaperengine (same artifact on its live-wallpaper
-    surface). All three must survive edits to the kcfg default."""
+    surface), and xembedsniproxy (its offscreen legacy-tray windows
+    produce a stray glass circle). All four must survive edits to the
+    kcfg default."""
     kcfg = (offline / "kwin-effects/acrylic-glass/src/glass.kcfg").read_text()
     m = re.search(
         r'<entry name="WindowClasses" type="String">\s*'
@@ -343,6 +345,7 @@ def test_acrylic_glass_ships_default_blur_denylist(offline):
     assert "cairo-dock" in denylist
     assert "kwin_wayland" in denylist
     assert "linux-wallpaperengine" in denylist
+    assert "xembedsniproxy" in denylist
 
     matching = re.search(
         r'<entry name="BlurMatching" type="Bool">\s*<default>(\w+)</default>',

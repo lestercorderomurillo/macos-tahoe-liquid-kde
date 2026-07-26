@@ -26,11 +26,14 @@
              phantom glass panel behind the dock. kwin_wayland is the
              resource class of KWin's own input-method candidate popups;
              glassing them draws a huge misplaced border. linux-wallpaperengine
-             renders its own live-wallpaper surface with the same artifact. -->
+             renders its own live-wallpaper surface with the same artifact.
+             xembedsniproxy's offscreen legacy-tray windows otherwise produce
+             a stray glass circle around the pointer. -->
         <entry name="WindowClasses" type="String">
             <default>cairo-dock
 kwin_wayland
-linux-wallpaperengine</default>
+linux-wallpaperengine
+xembedsniproxy</default>
         </entry>
         <entry name="BlurMatching" type="Bool">
             <default>false</default>
