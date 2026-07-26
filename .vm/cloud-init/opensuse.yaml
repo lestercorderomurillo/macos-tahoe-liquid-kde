@@ -219,6 +219,6 @@ write_files:
       touch /var/lib/mttkde/provisioned
       systemctl --no-block reboot
 
-      runcmd:
-        - systemctl enable --now sshd || true
-        - /usr/local/bin/mttkde-provision.sh
+runcmd:
+  - systemctl enable --now sshd || true
+  - /usr/local/bin/mttkde-provision.sh

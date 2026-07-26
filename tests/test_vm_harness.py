@@ -1,4 +1,4 @@
-"""Regression coverage for the two-pass Gentoo/OpenRC VM harness."""
+"""Regression coverage for the graphical VM harness."""
 
 from __future__ import annotations
 
@@ -11,6 +11,11 @@ REPO = Path(__file__).resolve().parents[1]
 VM = (REPO / "vm").read_text()
 CLOUD_PATH = REPO / ".vm/cloud-init/gentoo-openrc.yaml"
 CLOUD = CLOUD_PATH.read_text()
+SYSTEMD_CLOUD_PATHS = tuple(
+    path
+    for path in sorted((REPO / ".vm/cloud-init").glob("*.yaml"))
+    if path != CLOUD_PATH
+)
 
 
 def _provision_script() -> str:
@@ -31,6 +36,28 @@ def test_vm_lists_gentoo_openrc():
         text=True,
     )
     assert "gentoo-openrc" in result.stdout.splitlines()
+
+
+def test_systemd_cloud_images_dispatch_their_provisioner():
+    """The provision script is a YAML block scalar.  ``runcmd`` must be a
+    root key after that block, or cloud-init writes the dispatcher into the
+    script instead of ever executing it and the guest stops at a bare login.
+    """
+    failures = []
+    for path in SYSTEMD_CLOUD_PATHS:
+        text = path.read_text()
+        root_marker = "\nruncmd:\n"
+        if root_marker not in text:
+            failures.append(f"{path.name}: missing root runcmd")
+            continue
+        commands = text.rsplit(root_marker, 1)[1]
+        if not re.search(
+            r"(?m)^  - /usr/local/bin/mttkde-provision\.sh$",
+            commands,
+        ):
+            failures.append(f"{path.name}: provisioner is not dispatched")
+
+    assert not failures, "\n".join(failures)
 
 
 def test_gentoo_openrc_provision_script_is_valid_bash():
