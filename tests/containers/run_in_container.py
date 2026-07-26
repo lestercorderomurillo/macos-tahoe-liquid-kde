@@ -11,15 +11,15 @@ Tier 1 — Qt6 path discovery + pytest suite:
 Tier 2 — the dep layer (per-distro package mapping):
   * distro.package_manager_install_cmd() returns a real binary that
     exists on PATH (proves the table covers this distro).
-  * distro.package_for(...) translates EVERY step's deps() token to a
-    package that exists in the distro's real repo metadata. Tokens
-    are collected at runtime from steps/*.py — see _collect_dep_tokens
-    below — so adding a new step's deps() automatically extends this
-    coverage. A hardcoded token list leaves gaps: a runtime tool
-    missing from one distro's repo (e.g. qdbus6 on Fedora) sails
-    through unnoticed. This probe exercises qdbus6,
-    kvantummanager, plymouth-set-default-theme, fc-cache, nautilus,
-    curl, unzip, etc.
+  * distro.package_for(...) translates EVERY base/step dependency and direct
+    package token to a package that exists in the distro's real repo metadata.
+    Tokens are collected from cli._BASE_DEPS and steps/*.py — see
+    _collect_dep_tokens below — so adding a dependency automatically extends
+    this coverage. A hardcoded token list leaves gaps: a runtime tool missing
+    from one distro's repo (e.g. qdbus6 on Fedora) sails through unnoticed.
+    This probe exercises qdbus6, kwriteconfig6, dbus-send,
+    update-desktop-database, kvantummanager, plymouth-set-default-theme,
+    plymouth-script-plugin, fc-cache, nautilus, etc.
 
 Tier 3 — cmake configure for every compiled component:
   * For each step that ships a CMakeLists.txt under src/offline (the
@@ -52,6 +52,7 @@ tests/conftest.py.
 
 from __future__ import annotations
 
+import ast
 import os
 import shutil
 import subprocess
@@ -67,26 +68,37 @@ def _collect_dep_tokens() -> list[tuple[str, str]]:
     ``(cmd_token, arch_fallback)`` pairs.
 
     Each step lists its deps as either ``"binary"`` (binary IS the
-    Arch package name) or ``"binary:arch-pkg"`` (binary differs from
-    the Arch package name). We probe the per-distro translation for
-    BOTH halves of the pair: the distro must have a row in
-    distro._PACKAGE_MAP or the literal Arch fallback must exist in
-    the repo. Either path lets the install actually succeed.
+    Arch package name), ``"binary:arch-pkg"`` (binary differs from
+    the Arch package name), or an equivalent two-string tuple. We probe
+    the translated package: non-Arch families require an explicit
+    distro._PACKAGE_MAP row, while Arch and its descendants may use the
+    declared Arch fallback.
 
-    Source of truth: src/scripts/steps/*.py. Anything that returns
-    a list of strings from deps() is picked up automatically, so a
-    new step's tokens get probed without editing this file.
+    Sources of truth: ``cli._BASE_DEPS`` and src/scripts/steps/*.py.
+    String and tuple tokens returned from deps(), plus literal direct
+    ``package_for()`` calls, are picked up automatically, so a new package
+    dependency gets probed without editing this file.
 
-    Plus qmake6, which has no step but is required by the build
-    helpers for path discovery.
+    Plus qmake6, which is required by the build helpers for path
+    discovery even if no compiled step happens to declare it.
     """
     import importlib
     import pkgutil
 
     seen: dict[str, str] = {}
-    # qmake6 isn't a step dep but is required by path discovery; pin
-    # explicitly so the probe always exercises it.
-    seen["qmake6"] = "qt6-tools"
+
+    def remember(cmd: str, arch_pkg: str, source: str) -> None:
+        previous = seen.get(cmd)
+        if previous is not None and previous != arch_pkg:
+            raise RuntimeError(
+                f"conflicting Arch fallbacks for {cmd!r}: "
+                f"{previous!r} versus {arch_pkg!r} in {source}"
+            )
+        seen[cmd] = arch_pkg
+
+    cli = importlib.import_module("cli")
+    for cmd, arch_pkg in cli._BASE_DEPS:
+        remember(cmd, arch_pkg, "cli._BASE_DEPS")
 
     steps_pkg = importlib.import_module("steps")
     for mod_info in pkgutil.iter_modules(steps_pkg.__path__):
@@ -97,6 +109,42 @@ def _collect_dep_tokens() -> list[tuple[str, str]]:
         except Exception as exc:  # noqa: BLE001 — step modules may have heavy imports
             print(f"  WARN: cannot import steps.{mod_info.name}: {exc}")
             continue
+
+        source_path = Path(mod.__file__)
+        tree = ast.parse(
+            source_path.read_text(encoding="utf-8"),
+            filename=str(source_path),
+        )
+        for node in ast.walk(tree):
+            if not isinstance(node, ast.Call):
+                continue
+            func = node.func
+            is_package_for = (
+                isinstance(func, ast.Name) and func.id == "package_for"
+            ) or (
+                isinstance(func, ast.Attribute) and func.attr == "package_for"
+            )
+            if not is_package_for or not node.args:
+                continue
+            fallback_node = node.args[1] if len(node.args) > 1 else node.args[0]
+            try:
+                cmd = ast.literal_eval(node.args[0])
+                arch_pkg = ast.literal_eval(fallback_node)
+            except (TypeError, ValueError) as exc:
+                raise RuntimeError(
+                    f"{source_path.name}:{node.lineno}: direct package_for() "
+                    "arguments must be literal strings"
+                ) from exc
+            if not isinstance(cmd, str) or not isinstance(arch_pkg, str):
+                raise RuntimeError(
+                    f"{source_path.name}:{node.lineno}: direct package_for() "
+                    "arguments must be strings"
+                )
+            remember(
+                cmd.strip(), arch_pkg.strip(),
+                f"{source_path.name}:{node.lineno} package_for()",
+            )
+
         deps_fn = getattr(mod, "deps", None)
         if deps_fn is None:
             continue
@@ -106,13 +154,32 @@ def _collect_dep_tokens() -> list[tuple[str, str]]:
             print(f"  WARN: steps.{mod_info.name}.deps() raised {exc}")
             continue
         for tok in tokens or ():
-            if not isinstance(tok, str):
+            if isinstance(tok, tuple) and len(tok) == 2:
+                cmd, arch_pkg = tok
+                if not isinstance(cmd, str) or not isinstance(arch_pkg, str):
+                    print(
+                        f"  WARN: steps.{mod_info.name}.deps() returned "
+                        f"malformed tuple {tok!r}"
+                    )
+                    continue
+            elif isinstance(tok, str):
+                cmd, _, arch_pkg = tok.partition(":")
+                arch_pkg = arch_pkg.strip() or cmd
+            else:
+                print(
+                    f"  WARN: steps.{mod_info.name}.deps() returned "
+                    f"unsupported token {tok!r}"
+                )
                 continue
-            cmd, _, arch_pkg = tok.partition(":")
             cmd = cmd.strip()
-            arch_pkg = arch_pkg.strip() or cmd
-            if cmd and cmd not in seen:
-                seen[cmd] = arch_pkg
+            arch_pkg = arch_pkg.strip()
+            if cmd:
+                remember(cmd, arch_pkg, f"steps.{mod_info.name}.deps()")
+
+    # qmake6 is required by path discovery independently of feature
+    # selection. Route it through remember() so a compiled step cannot
+    # silently declare a conflicting Arch fallback.
+    remember("qmake6", "qt6-tools", "Qt6 path discovery")
     return sorted(seen.items())
 
 
@@ -219,14 +286,21 @@ def step_package_manager_layer() -> bool:
 
     ok = True
     for cmd_token, arch_fallback in _collect_dep_tokens():
-        pkg = distro.package_for(cmd_token, arch_fallback)
+        try:
+            pkg = distro.package_for(cmd_token, arch_fallback)
+        except distro.PackageMappingError as exc:
+            print(f"  ── probe {cmd_token!r}")
+            print(f"     FAIL: {exc}")
+            ok = False
+            continue
         print(f"  ── probe {cmd_token!r} → {pkg!r}")
         if d == "gentoo":
             # Gentoo doesn't have a clean info-only command; check
             # /var/db/repos/gentoo/<category>/<name> instead.
             cat, _, name = pkg.partition("/")
             if not cat or not name:
-                print(f"     SKIP: cannot parse gentoo atom {pkg!r}")
+                print(f"     FAIL: cannot parse gentoo atom {pkg!r}")
+                ok = False
                 continue
             ebuild_dir = Path(f"/var/db/repos/gentoo/{cat}/{name.split(':')[0]}")
             if ebuild_dir.is_dir():

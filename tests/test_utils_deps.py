@@ -80,6 +80,24 @@ def test_pkg_sync_install_syncs_then_installs(monkeypatch, _record_run):
                                  "vulkan-headers", "cmake"]
 
 
+def test_pkg_sync_install_does_not_install_when_sync_fails(monkeypatch):
+    import distro
+    sync = ["package-manager", "sync"]
+    install = ["package-manager", "install"]
+    monkeypatch.setattr(distro, "package_manager_sync_cmd", lambda: sync)
+    monkeypatch.setattr(distro, "package_manager_install_cmd", lambda: install)
+    calls: list[tuple[list[str], tuple[str, ...]]] = []
+
+    def fail_sync(base, *args):
+        calls.append((base, args))
+        return False
+
+    monkeypatch.setattr(utils, "_run_pkg_cmd", fail_sync)
+
+    assert utils.pkg_sync_install("cmake") is False
+    assert calls == [(sync, ())]
+
+
 def test_pkg_sync_install_skips_sync_when_none(monkeypatch, _record_run):
     import distro
     monkeypatch.setattr(distro, "package_manager_sync_cmd", lambda: None)

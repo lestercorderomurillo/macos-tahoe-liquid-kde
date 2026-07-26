@@ -20,8 +20,12 @@ case here and probe the value first. Don't guess.
 
 from __future__ import annotations
 
+import ast
+from pathlib import Path
+
 import pytest
 
+import cli
 import distro
 
 
@@ -35,6 +39,173 @@ def _clear_distro_cache():
 def _force_distro(monkeypatch, distro_id: str, id_like: tuple[str, ...] = ()):
     monkeypatch.setattr(distro, "current_distro", lambda: distro_id)
     monkeypatch.setattr(distro, "distro_id_like", lambda: id_like)
+
+
+def _declared_dependency_tokens() -> dict[str, set[str]]:
+    """Return every package token and all of its declared Arch fallbacks.
+
+    The base dependencies do not belong to a step, so they must be included
+    explicitly. Step dependencies are read from the AST instead of calling
+    ``deps()``: both scheduler steps conditionally return ``crontab`` only on
+    OpenRC, and the test host's init system or feature flags must not make that
+    declaration disappear from this exhaustive check. Direct ``package_for()``
+    calls are collected too (Plymouth's script plugin currently uses one).
+    """
+    declared: dict[str, set[str]] = {}
+
+    def remember(raw: object, source: str) -> None:
+        if isinstance(raw, tuple) and len(raw) == 2:
+            cmd, fallback = raw
+            assert isinstance(cmd, str) and isinstance(fallback, str), (
+                f"malformed dependency tuple {raw!r} in {source}"
+            )
+        else:
+            assert isinstance(raw, str), (
+                f"dependency token {raw!r} in {source} is neither a string "
+                "nor a (command, Arch package) tuple"
+            )
+            cmd, separator, fallback = raw.partition(":")
+            fallback = fallback if separator else cmd
+        cmd = cmd.strip()
+        fallback = fallback.strip()
+        assert cmd and fallback, f"malformed dependency token {raw!r} in {source}"
+        declared.setdefault(cmd, set()).add(fallback)
+
+    for entry in cli._BASE_DEPS:
+        remember(entry, "cli._BASE_DEPS")
+
+    steps_dir = Path(cli.__file__).resolve().parent / "steps"
+    for source_path in sorted(steps_dir.glob("*.py")):
+        tree = ast.parse(
+            source_path.read_text(encoding="utf-8"),
+            filename=str(source_path),
+        )
+        deps_functions = [
+            node for node in tree.body
+            if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef))
+            and node.name == "deps"
+        ]
+        for deps_function in deps_functions:
+            for node in ast.walk(deps_function):
+                if not isinstance(node, ast.Return) or node.value is None:
+                    continue
+                try:
+                    value = ast.literal_eval(node.value)
+                except (TypeError, ValueError) as exc:
+                    raise AssertionError(
+                        f"{source_path.name}: deps() return on line "
+                        f"{node.lineno} is not a literal dependency list; "
+                        "extend this collector so exhaustive mapping coverage "
+                        "cannot silently omit it"
+                    ) from exc
+                assert isinstance(value, (list, tuple)), (
+                    f"{source_path.name}: deps() return on line {node.lineno} "
+                    "must be a list or tuple"
+                )
+                for raw in value:
+                    remember(raw, f"{source_path.name}:{node.lineno}")
+
+        for node in ast.walk(tree):
+            if not isinstance(node, ast.Call):
+                continue
+            func = node.func
+            is_package_for = (
+                isinstance(func, ast.Name) and func.id == "package_for"
+            ) or (
+                isinstance(func, ast.Attribute) and func.attr == "package_for"
+            )
+            if not is_package_for or not node.args:
+                continue
+            fallback_node = node.args[1] if len(node.args) > 1 else node.args[0]
+            try:
+                cmd = ast.literal_eval(node.args[0])
+                fallback = ast.literal_eval(fallback_node)
+            except (TypeError, ValueError) as exc:
+                raise AssertionError(
+                    f"{source_path.name}:{node.lineno}: direct package_for() "
+                    "arguments must be literal strings so mapping coverage "
+                    "cannot silently omit them"
+                ) from exc
+            remember((cmd, fallback),
+                     f"{source_path.name}:{node.lineno} package_for()")
+
+    return declared
+
+
+def test_declared_dependencies_have_one_arch_fallback_each():
+    conflicts = {
+        cmd: sorted(fallbacks)
+        for cmd, fallbacks in _declared_dependency_tokens().items()
+        if len(fallbacks) != 1
+    }
+    assert not conflicts, (
+        "the same dependency token declares conflicting Arch fallbacks: "
+        f"{conflicts}"
+    )
+
+
+def test_every_declared_package_token_is_mapped_for_supported_non_arch_distros():
+    declared = _declared_dependency_tokens()
+    supported = set(distro._PACKAGE_MANAGER_INSTALL)
+    non_arch = supported - {"arch"}
+    missing = {
+        cmd: sorted(non_arch - set(distro._PACKAGE_MAP.get(cmd, {})))
+        for cmd in declared
+        if non_arch - set(distro._PACKAGE_MAP.get(cmd, {}))
+    }
+    assert not missing, (
+        "every declared dependency needs an explicit _PACKAGE_MAP entry for "
+        f"every supported non-Arch distro; missing mappings: {missing}"
+    )
+
+
+@pytest.mark.parametrize("distro_id,id_like", [
+    *[
+        (distro_id, ())
+        for distro_id in distro._PACKAGE_MANAGER_INSTALL
+        if distro_id != "arch"
+    ],
+    ("nobara", ("fedora",)),
+    ("opensuse-tumbleweed", ("opensuse",)),
+])
+def test_unmapped_dependency_raises_off_arch_family(
+    monkeypatch, distro_id, id_like,
+):
+    _force_distro(monkeypatch, distro_id, id_like)
+    with pytest.raises(distro.PackageMappingError, match="unmapped-test-command"):
+        distro.package_for("unmapped-test-command", "arch-only-package")
+
+
+@pytest.mark.parametrize("distro_id,id_like", [
+    ("arch", ()),
+    ("cachyos", ("arch",)),
+])
+def test_unmapped_dependency_may_use_fallback_on_arch_family(
+    monkeypatch, distro_id, id_like,
+):
+    _force_distro(monkeypatch, distro_id, id_like)
+    assert (
+        distro.package_for("unmapped-test-command", "arch-only-package")
+        == "arch-only-package"
+    )
+
+
+@pytest.mark.parametrize("distro_id,id_like,expected", [
+    ("arch", (), "kconfig"),
+    ("cachyos", ("arch",), "kconfig"),
+    ("fedora", (), "kf6-kconfig"),
+    ("rhel", (), "kf6-kconfig"),
+    ("centos", (), "kf6-kconfig"),
+    ("nobara", ("fedora",), "kf6-kconfig"),
+    ("opensuse", (), "kf6-kconfig"),
+    ("opensuse-tumbleweed", ("opensuse",), "kf6-kconfig"),
+    ("gentoo", (), "kde-frameworks/kconfig:6"),
+])
+def test_kwriteconfig6_package_per_distro(
+    monkeypatch, distro_id, id_like, expected,
+):
+    _force_distro(monkeypatch, distro_id, id_like)
+    assert distro.package_for("kwriteconfig6", "kconfig") == expected
 
 
 # ── qdbus6: the regression the user hit on Fedora 44 ──────────────────
@@ -115,12 +286,17 @@ def test_plymouth_package_per_distro(monkeypatch, distro_id, id_like, expected):
 
 
 @pytest.mark.parametrize("distro_id, id_like, expected", [
+    ("arch",    (),           "plymouth"),
+    ("cachyos", ("arch",),    "plymouth"),
     ("fedora",  (),           "plymouth-plugin-script"),
     ("rhel",    (),           "plymouth-plugin-script"),
     ("centos",  (),           "plymouth-plugin-script"),
     ("nobara",  ("fedora",),  "plymouth-plugin-script"),
+    ("opensuse", (),          "plymouth-plugin-script"),
+    ("opensuse-tumbleweed", ("opensuse",), "plymouth-plugin-script"),
+    ("gentoo",  (),           "sys-boot/plymouth"),
 ])
-def test_plymouth_script_plugin_package_per_fedora_family(
+def test_plymouth_script_plugin_package_per_distro(
     monkeypatch, distro_id, id_like, expected,
 ):
     _force_distro(monkeypatch, distro_id, id_like)

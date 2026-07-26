@@ -17,7 +17,7 @@ LEGACY_USER_PLUGIN_DIR = HOME / ".local/lib/qt6/plugins"
 
 def deps():
     return [
-        "qmake6",
+        "qmake6:qt6-tools",
         "qt6-gui-cmake:qt6-base",
         "qt6-uitools-cmake:qt6-tools",
         "cmake",

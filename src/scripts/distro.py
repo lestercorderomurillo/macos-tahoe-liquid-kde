@@ -18,6 +18,14 @@ class Qt6PathsMissing(RuntimeError):
     installer refuses to guess Qt's scan path."""
 
 
+class PackageMappingError(RuntimeError):
+    """A dependency token has no verified package name for this distro."""
+
+
+class UnsupportedDistroError(RuntimeError):
+    """Current os-release id has no supported package-manager mapping."""
+
+
 # ── /etc/os-release ──────────────────────────────────────────────────
 
 
@@ -322,9 +330,46 @@ def system_lib_dir() -> Path:
 # ── Package manager + per-distro package name map ────────────────────
 #
 # deps() tokens are ``<cmd>:<arch-pkg>``; this table translates the Arch
-# package name to the current distro's. Add a distro by adding rows.
+# package name to the current distro's. Non-Arch families must have an
+# explicit, verified row — package_for() never guesses that the Arch name
+# is portable.
 
 _PACKAGE_MAP: dict[str, dict[str, str]] = {
+    # Base/runtime tools whose package names are not portable even when the
+    # executable name is. Keep identity mappings explicit so a newly-added
+    # token cannot silently leak its Arch fallback to dnf/zypper/emerge.
+    "dbus-send": {
+        "arch":     "dbus",
+        "debian":   "dbus-bin",
+        "ubuntu":   "dbus-bin",
+        "fedora":   "dbus-tools",
+        "rhel":     "dbus-tools",
+        "centos":   "dbus-tools",
+        "opensuse": "dbus-1-tools",
+        "alpine":   "dbus",
+        "void":     "dbus",
+        "gentoo":   "sys-apps/dbus",
+    },
+    "kwriteconfig6": {
+        "arch":     "kconfig",
+        "fedora":   "kf6-kconfig",
+        "rhel":     "kf6-kconfig",
+        "centos":   "kf6-kconfig",
+        "opensuse": "kf6-kconfig",
+        "gentoo":   "kde-frameworks/kconfig:6",
+    },
+    "nautilus": {
+        "arch":     "nautilus",
+        "debian":   "nautilus",
+        "ubuntu":   "nautilus",
+        "fedora":   "nautilus",
+        "rhel":     "nautilus",
+        "centos":   "nautilus",
+        "opensuse": "nautilus",
+        "alpine":   "nautilus",
+        "void":     "nautilus",
+        "gentoo":   "gnome-base/nautilus",
+    },
     "g++": {
         "arch":     "gcc",
         "debian":   "g++",
@@ -345,6 +390,7 @@ _PACKAGE_MAP: dict[str, dict[str, str]] = {
         "ubuntu":   "qt6-base-dev-tools",
         "fedora":   "qt6-qttools-devel",
         "rhel":     "qt6-qttools-devel",
+        "centos":   "qt6-qttools-devel",
         "opensuse": "qt6-core-devel",
         "gentoo":   "dev-qt/qttools:6",
     },
@@ -404,12 +450,14 @@ _PACKAGE_MAP: dict[str, dict[str, str]] = {
         "void":     "plymouth",
         "gentoo":   "sys-boot/plymouth",
     },
-    # Fedora splits the script renderer out of base plymouth; other
-    # distros fall through to the main package.
+    # Fedora and openSUSE split the script renderer out of base Plymouth.
     "plymouth-script-plugin": {
+        "arch":     "plymouth",
         "fedora":   "plymouth-plugin-script",
         "rhel":     "plymouth-plugin-script",
         "centos":   "plymouth-plugin-script",
+        "opensuse": "plymouth-plugin-script",
+        "gentoo":   "sys-boot/plymouth",
     },
     # Fedora's canonical /usr/bin/pkg-config provider is the
     # ``pkgconf-pkg-config`` shim; plain ``pkgconf`` doesn't exist there.
@@ -427,6 +475,15 @@ _PACKAGE_MAP: dict[str, dict[str, str]] = {
     },
     # desktop-file-utils everywhere; only Gentoo needs the category prefix.
     "update-desktop-database": {
+        "arch":     "desktop-file-utils",
+        "debian":   "desktop-file-utils",
+        "ubuntu":   "desktop-file-utils",
+        "fedora":   "desktop-file-utils",
+        "rhel":     "desktop-file-utils",
+        "centos":   "desktop-file-utils",
+        "opensuse": "desktop-file-utils",
+        "alpine":   "desktop-file-utils",
+        "void":     "desktop-file-utils",
         "gentoo":   "dev-util/desktop-file-utils",
     },
     "fc-cache": {
@@ -847,16 +904,30 @@ _PACKAGE_MAP: dict[str, dict[str, str]] = {
 
 
 def package_for(cmd: str, fallback_pkg: str | None = None) -> str:
-    """Translate a deps() cmd token to this distro's package name;
-    ``fallback_pkg`` (the Arch name) covers tokens absent from the map."""
+    """Translate a dependency token to a verified package name.
+
+    ``fallback_pkg`` is the package declared by the step for Arch and is
+    therefore safe only on Arch or an Arch-derived distro. Every other
+    package-manager family needs an explicit ``_PACKAGE_MAP`` entry; failing
+    here prevents one bad name from cancelling an entire package transaction.
+    """
     distro = current_distro()
+    parents = distro_id_like()
     row = _PACKAGE_MAP.get(cmd, {})
     if distro in row:
         return row[distro]
-    for parent in distro_id_like():
+    for parent in parents:
         if parent in row:
             return row[parent]
-    return fallback_pkg or cmd
+    if "arch" in (distro, *parents):
+        return fallback_pkg or cmd
+    fallback = fallback_pkg or cmd
+    family = ", ".join(parents) if parents else "none"
+    raise PackageMappingError(
+        f"No package mapping for dependency token {cmd!r} on distro "
+        f"{distro!r} (ID_LIKE: {family}); refusing Arch fallback "
+        f"{fallback!r}. Add a row to distro._PACKAGE_MAP."
+    )
 
 
 _PACKAGE_MANAGER_INSTALL: dict[str, list[str]] = {
@@ -895,11 +966,6 @@ def package_manager_sync_cmd() -> list[str] | None:
         f"No package manager mapping for distro {distro!r}. "
         f"Add a row to distro._PACKAGE_MANAGER_SYNC."
     )
-
-
-class UnsupportedDistroError(RuntimeError):
-    """Current os-release id has no package-manager mapping; callers
-    bail cleanly or fall through to a manual install hint."""
 
 
 def package_manager_install_cmd() -> list[str]:

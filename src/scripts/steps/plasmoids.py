@@ -50,7 +50,7 @@ LEGACY_TASKMANAGER_QML_DIRS = (
 
 def deps():
     return [
-        "qmake6",
+        "qmake6:qt6-tools",
         "qt6-gui-cmake:qt6-base",
         "qt6-widgets-cmake:qt6-base",
         "qt6-dbus-cmake:qt6-base",

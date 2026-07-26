@@ -897,38 +897,65 @@ def _run_builds_or_abort(feat: dict[str, object]) -> bool:
 
 
 _BASE_DEPS = [
-    ("curl", "curl"), ("unzip", "unzip"),
     ("fc-cache", "fontconfig"), ("kwriteconfig6", "kconfig"),
     ("cmake", "cmake"), ("g++", "gcc"),
-    ("pkg-config", "pkgconf"), ("dbus-monitor", "dbus"),
+    ("pkg-config", "pkgconf"), ("dbus-send", "dbus"),
     # Keeps the launcher/taskbar app list fresh after a theme switch.
     ("update-desktop-database", "desktop-file-utils"),
 ]
 
 
-def _check_deps(feat: dict[str, object]) -> None:
+def _check_deps(feat: dict[str, object]) -> bool:
     # Install only genuinely-missing packages — a -Sy upgrade of one KDE
     # package against the rest is the classic partial-upgrade conflict trap.
-    from distro import package_for, package_installed
+    from distro import (
+        PackageMappingError, UnsupportedDistroError, package_for,
+        package_installed, package_manager_install_cmd,
+    )
+
+    # Reject unsupported systems before resolving package names. In
+    # particular, never print an Arch fallback as a manual-install hint on an
+    # apt-based distro that this installer does not support.
+    try:
+        package_manager_install_cmd()
+    except UnsupportedDistroError as exc:
+        fail(str(exc))
+        return False
 
     tokens: list[tuple[str, str]] = list(_BASE_DEPS)
-    for feature in INSTALL_ORDER:
+    # These two steps run outside INSTALL_ORDER but still own conditional
+    # OpenRC dependencies (crontab). Keep their deps in the same atomic
+    # resolution pass as every regular install step.
+    dependency_features = dict.fromkeys(
+        (*INSTALL_ORDER, "theme_switch", "oled_care")
+    )
+    for feature in dependency_features:
         if not should_process(feature, feat):
             continue
         if not step_exists(feature):
             continue
         tokens.extend(step_deps(feature))
 
-    pkgs = sorted({package_for(cmd, pkg) for cmd, pkg in tokens})
+    try:
+        # Resolve the complete set before probing or mutating anything: one
+        # missing mapping must leave the package database untouched.
+        pkgs = sorted({package_for(cmd, pkg) for cmd, pkg in tokens})
+    except PackageMappingError as exc:
+        fail(str(exc))
+        return False
+
     missing = [p for p in pkgs if not package_installed(p)]
     for p in pkgs:
         if p not in missing:
             ok(p)
     if missing:
         warn(f"installing missing: {', '.join(missing)}")
-        pkg_sync_install(*missing)
+        if not pkg_sync_install(*missing):
+            fail("dependency package transaction failed — refusing to continue")
+            return False
     else:
         ok("all dependencies present")
+    return True
 
 
 def _flush_icon_cache_signal() -> None:
@@ -975,7 +1002,8 @@ def _run_install_body(feat: dict[str, object]) -> int:
 
     step("Dependencies")
     note("Checking and installing required tools")
-    _check_deps(feat)
+    if not _check_deps(feat):
+        return 1
 
     step("Downloading Online Components")
     note("Fetches the pinned KDE Rounded Corners source and verifies SHA-256")

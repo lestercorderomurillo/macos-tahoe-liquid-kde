@@ -58,7 +58,7 @@ LICENSE_FILE = Path(
 
 def deps():
     return [
-        "qmake6",
+        "qmake6:qt6-tools",
         "qt6-dbus-cmake:qt6-base",
         "qt6-coreprivate-cmake:qt6-base",
         "cmake",

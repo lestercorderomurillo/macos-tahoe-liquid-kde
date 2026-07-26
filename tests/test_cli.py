@@ -355,6 +355,8 @@ def _deps_env(monkeypatch, cli_module):
         ("vulkan-loader-cmake",  "vulkan-icd-loader"),
         ("vulkan-headers-cmake", "vulkan-headers"),
     ])
+    monkeypatch.setattr(distro, "package_manager_install_cmd",
+                        lambda: ["package-manager", "install"])
     monkeypatch.setattr(distro, "package_for", lambda cmd, pkg=None: pkg or cmd)
     return distro
 
@@ -367,7 +369,7 @@ def test_check_deps_installs_only_missing_packages(monkeypatch, cli_module, _dep
     monkeypatch.setattr(cli_module, "pkg_sync_install",
                         lambda *pkgs: installed.append(pkgs) or True)
 
-    cli_module._check_deps({"acrylic_glass": True})
+    assert cli_module._check_deps({"acrylic_glass": True}) is True
 
     assert installed == [("vulkan-headers",)]
 
@@ -379,9 +381,135 @@ def test_check_deps_installs_nothing_when_all_present(monkeypatch, cli_module, _
     monkeypatch.setattr(cli_module, "pkg_sync_install",
                         lambda *pkgs: called.append(pkgs) or True)
 
-    cli_module._check_deps({"acrylic_glass": True})
+    assert cli_module._check_deps({"acrylic_glass": True}) is True
 
     assert called == []
+
+
+def test_check_deps_rejects_unsupported_package_manager_before_translation(
+        monkeypatch, cli_module, _deps_env):
+    support_checks: list[bool] = []
+
+    def unsupported():
+        support_checks.append(True)
+        raise _deps_env.UnsupportedDistroError("unsupported test distro")
+
+    monkeypatch.setattr(_deps_env, "package_manager_install_cmd", unsupported)
+    monkeypatch.setattr(
+        _deps_env, "package_for",
+        lambda *_args: pytest.fail("package translation ran before support check"),
+    )
+    monkeypatch.setattr(
+        _deps_env, "package_installed",
+        lambda _pkg: pytest.fail("package probe ran for unsupported distro"),
+    )
+    monkeypatch.setattr(
+        cli_module, "pkg_sync_install",
+        lambda *_pkgs: pytest.fail("package install ran for unsupported distro"),
+    )
+    monkeypatch.setattr(cli_module, "fail", lambda _message: None)
+
+    assert cli_module._check_deps({"acrylic_glass": True}) is False
+    assert support_checks == [True]
+
+
+def test_check_deps_resolves_every_package_before_any_probe(
+        monkeypatch, cli_module, _deps_env):
+    monkeypatch.setattr(cli_module, "_BASE_DEPS", [
+        ("aaa-good-command", "good-package"),
+        ("zzz-unmapped-command", "arch-only-package"),
+    ])
+    monkeypatch.setattr(cli_module, "INSTALL_ORDER", [])
+    probes: list[str] = []
+    installs: list[tuple[str, ...]] = []
+
+    def package_for(command, fallback_pkg=None):
+        if command == "zzz-unmapped-command":
+            raise _deps_env.PackageMappingError("missing package mapping")
+        return fallback_pkg or command
+
+    monkeypatch.setattr(_deps_env, "package_for", package_for)
+    monkeypatch.setattr(
+        _deps_env, "package_installed",
+        lambda pkg: probes.append(pkg) or False,
+    )
+    monkeypatch.setattr(
+        cli_module, "pkg_sync_install",
+        lambda *pkgs: installs.append(pkgs) or True,
+    )
+    monkeypatch.setattr(cli_module, "fail", lambda _message: None)
+
+    assert cli_module._check_deps({}) is False
+    assert probes == []
+    assert installs == []
+
+
+def test_check_deps_returns_false_when_missing_package_install_fails(
+        monkeypatch, cli_module, _deps_env):
+    monkeypatch.setattr(
+        _deps_env, "package_installed",
+        lambda pkg: pkg != "cmake",
+    )
+    attempts: list[tuple[str, ...]] = []
+    monkeypatch.setattr(
+        cli_module, "pkg_sync_install",
+        lambda *pkgs: attempts.append(pkgs) or False,
+    )
+    monkeypatch.setattr(cli_module, "fail", lambda _message: None)
+
+    assert cli_module._check_deps({"acrylic_glass": True}) is False
+    assert attempts == [("cmake",)]
+
+
+def test_check_deps_collects_deps_from_separately_run_steps(
+        monkeypatch, cli_module, _deps_env):
+    monkeypatch.setattr(cli_module, "_BASE_DEPS", [])
+    deps_calls: list[str] = []
+    probes: list[str] = []
+
+    def deps_for(feature):
+        deps_calls.append(feature)
+        if feature in {"theme_switch", "oled_care"}:
+            return [(f"{feature}-command", f"{feature}-package")]
+        return []
+
+    monkeypatch.setattr(cli_module, "step_deps", deps_for)
+    monkeypatch.setattr(
+        _deps_env, "package_installed",
+        lambda pkg: probes.append(pkg) or True,
+    )
+    monkeypatch.setattr(
+        cli_module, "pkg_sync_install",
+        lambda *_pkgs: pytest.fail("present dependencies were reinstalled"),
+    )
+
+    assert cli_module._check_deps({
+        "theme_switch": True,
+        "oled_care": True,
+    }) is True
+    assert {"theme_switch", "oled_care"} <= set(deps_calls)
+    assert set(probes) == {
+        "theme_switch-package",
+        "oled_care-package",
+    }
+
+
+def test_run_install_body_stops_before_download_when_deps_fail(
+        monkeypatch, cli_module):
+    monkeypatch.setattr(cli_module, "run_preflight", lambda _operation: True)
+    monkeypatch.setattr(cli_module, "verify_plasma", lambda: True)
+    monkeypatch.setattr(cli_module, "_check_deps", lambda _feat: False)
+    monkeypatch.setattr(
+        cli_module, "_run_optional_downloads",
+        lambda _feat: pytest.fail("download ran after dependency failure"),
+    )
+    monkeypatch.setattr(
+        cli_module, "_run_builds_or_abort",
+        lambda _feat: pytest.fail("build ran after dependency failure"),
+    )
+    monkeypatch.setattr(cli_module, "fail", lambda _message: None)
+
+    assert cli_module._run_install_body({}) == 1
 
 
 # ── globalmenu as a first-class feature ──────────────────────────────

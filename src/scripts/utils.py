@@ -304,8 +304,8 @@ def pkg_sync_install(*pkgs: str) -> bool:
         fail(str(exc))
         fail(f"install manually: {' '.join(pkgs)}")
         return False
-    if sync is not None:
-        _run_pkg_cmd(sync)
+    if sync is not None and not _run_pkg_cmd(sync):
+        return False
     return _run_pkg_cmd(install, *pkgs)
 
 
