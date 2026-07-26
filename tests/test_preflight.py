@@ -340,6 +340,41 @@ def test_qt6_query_skips_tools_that_exit_nonzero(monkeypatch):
         distro.qt6_plugins_dir()
 
 
+def test_qt6_query_drops_privs_in_child(monkeypatch):
+    """Regression guard for the Qt6 setuid abort during path discovery.
+
+    The installer keeps real UID 0 while dropping effective UID to
+    ``SUDO_USER``. Qt binaries reject that mismatch, so qmake6 and qtpaths6
+    must run through ``utils.run_user`` just like the Plasma version probe.
+    """
+    from types import SimpleNamespace
+    import distro
+
+    monkeypatch.setattr(distro.shutil, "which", lambda cmd: f"/usr/bin/{cmd}")
+    seen_runner = []
+
+    def fake_run_user(cmd, **kwargs):
+        seen_runner.append(cmd)
+        return SimpleNamespace(
+            returncode=0,
+            stdout="/usr/lib/qt6/plugins\n",
+            stderr="",
+        )
+
+    monkeypatch.setattr(distro, "run_user", fake_run_user)
+
+    def boom(*args, **kwargs):
+        raise AssertionError(
+            "Qt6 path query reached subprocess.run directly — it must use "
+            "run_user to avoid Qt's setuid abort under sudo"
+        )
+
+    monkeypatch.setattr(distro.subprocess, "run", boom)
+
+    assert distro._qt6_plugins_query() == "/usr/lib/qt6/plugins"
+    assert seen_runner == [["qmake6", "-query", "QT_INSTALL_PLUGINS"]]
+
+
 # ── 4. KDE Plasma version ───────────────────────────────────────────
 
 

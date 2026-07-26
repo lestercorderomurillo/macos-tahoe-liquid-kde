@@ -10,6 +10,8 @@ import shutil
 import subprocess
 from pathlib import Path
 
+from utils import run_user
+
 
 class Qt6PathsMissing(RuntimeError):
     """No Qt6 query tool (qmake6 / qtpaths6 / pkg-config) on PATH — the
@@ -119,7 +121,7 @@ def _run_query(cmd: list[str]) -> str | None:
     if not shutil.which(cmd[0]):
         return None
     try:
-        res = subprocess.run(
+        res = run_user(
             cmd, check=False, capture_output=True, text=True, timeout=10,
         )
     except (OSError, subprocess.TimeoutExpired):
