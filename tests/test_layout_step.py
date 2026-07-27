@@ -6,7 +6,21 @@ logic that keeps the user's pinned taskbar apps alive when --resetLayout
 rebuilds the panel from scratch.
 """
 
+import pytest
+
 import steps.layout as layout
+
+
+@pytest.fixture(autouse=True)
+def _never_touch_live_plasma(monkeypatch):
+    """No layout unit test may evaluate JavaScript in the real Plasma session.
+
+    Tests that exercise script construction replace this stub with a local
+    capture function. Keeping the default inert prevents a newly-reachable
+    uninstall fallback from rebuilding the maintainer's live panels.
+    """
+    monkeypatch.setattr(layout, "_evaluate_layout_script", lambda script: False)
+    monkeypatch.setattr(layout, "_reset_layout_builtin", lambda: False)
 
 
 _APPLETSRC = """\
