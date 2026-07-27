@@ -382,7 +382,6 @@ def test_cli_export_env_publishes_oled_settings(monkeypatch):
     assert os.environ["OLED_MAX_SHIFT"] == "8"
     assert os.environ["MTTKDE_EXISTING_INSTALL"] == "false"
     assert os.environ["MTTKDE_RESET_WALLPAPERS"] == "false"
-    assert os.environ["MTTKDE_RESET_LAYOUT"] == "false"
 
 
 def test_cli_export_env_publishes_one_shot_update_actions(monkeypatch):
@@ -390,8 +389,6 @@ def test_cli_export_env_publishes_one_shot_update_actions(monkeypatch):
 
     monkeypatch.setattr(os, "environ", dict(os.environ))
     cli.export_env({"_existing_install": True,
-                    "_reset_wallpapers": True,
-                    "_reset_layout": True})
+                    "_reset_wallpapers": True})
     assert os.environ["MTTKDE_EXISTING_INSTALL"] == "true"
     assert os.environ["MTTKDE_RESET_WALLPAPERS"] == "true"
-    assert os.environ["MTTKDE_RESET_LAYOUT"] == "true"

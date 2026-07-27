@@ -77,6 +77,60 @@ def distro_id_like() -> tuple[str, ...]:
     return tuple(s for s in fields.get("ID_LIKE", "").lower().split() if s)
 
 
+# ── Portable desktop defaults ────────────────────────────────────────
+
+
+# Last-resort wallpaper package IDs observed across the distro families the
+# project supports, plus Debian/Ubuntu/KDE neon for users running the theme
+# there.  These are hints, never assumptions: apply.py verifies that each
+# candidate is a complete installed wallpaper package before using it.
+_DISTRO_WALLPAPER_FALLBACKS: dict[str, tuple[str, ...]] = {
+    "arch":                 ("Next", "Opal", "Flow"),
+    "cachyos":              ("Next", "Opal", "Flow"),
+    "manjaro":              ("Next", "Opal", "Flow"),
+    "endeavouros":          ("Next", "Opal", "Flow"),
+    "garuda":               ("Next", "Opal", "Flow"),
+    "gentoo":               ("Next", "Flow", "Opal"),
+    "fedora":               ("Next", "Flow", "Opal"),
+    "nobara":               ("Next", "Flow", "Opal"),
+    "opensuse":             ("Next", "Flow", "Opal"),
+    "opensuse-tumbleweed":  ("Next", "Flow", "Opal"),
+    "debian":               ("Next", "Flow"),
+    "ubuntu":               ("Next", "Flow"),
+    "neon":                 ("Next", "Flow"),
+}
+
+_COMMON_KDE_WALLPAPER_FALLBACKS = (
+    "Next",
+    "Flow",
+    "Opal",
+    "ScarletTree",
+    "Honeywave",
+    "Mountain",
+    "Cascade",
+    "Cluster",
+    "ColdRipple",
+    "SafeLanding",
+    "OneStandsOut",
+    "Altai",
+)
+
+
+def wallpaper_fallback_ids() -> tuple[str, ...]:
+    """Ordered, deduplicated last-resort wallpaper IDs for this distro.
+
+    The installed Breeze look-and-feel remains the source of truth. These
+    candidates are consulted only when that package has no usable declaration,
+    and callers must verify them on disk before applying one.
+    """
+    keys = (current_distro(), *distro_id_like())
+    candidates: list[str] = []
+    for key in keys:
+        candidates.extend(_DISTRO_WALLPAPER_FALLBACKS.get(key, ()))
+    candidates.extend(_COMMON_KDE_WALLPAPER_FALLBACKS)
+    return tuple(dict.fromkeys(candidates))
+
+
 # ── Init system ──────────────────────────────────────────────────────
 
 

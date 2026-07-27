@@ -79,7 +79,8 @@ dock.addWidget("org.kde.plasma.marginsseparator");
 
 var tasks = dock.addWidget("org.kde.mac.tahoe.liquid.icontasks");
 tasks.currentConfigGroup = ["General"];
-tasks.writeConfig("launchers", "preferred://filemanager,preferred://terminal,preferred://browser,applications:systemsettings.desktop,applications:org.kde.discover.desktop,applications:steam.desktop");
+// Filled by layout.py from the user's existing taskbar pins.
+tasks.writeConfig("launchers", "");
 
 dock.addWidget("org.kde.plasma.marginsseparator");
 dock.addWidget("org.kde.mac-tahoe-liquid-kde.trashcan");

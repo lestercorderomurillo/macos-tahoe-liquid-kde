@@ -47,12 +47,10 @@ _NAME_OVERRIDES = {
     "rounded_corners": "Rounded Corners",
     "kconf_update": "Config Migrations",
     "_reset_wallpapers": "Reset Saved Wallpapers",
-    "_reset_layout": "Reset Panel Layout",
 }
 
 _ACTION_DESC = {
     "_reset_wallpapers": "replace custom light/dark choices once",
-    "_reset_layout": "replace the current panels once",
 }
 
 
@@ -84,7 +82,6 @@ class Wizard:
         self.feat: dict[str, object] = dict(feat)
         self.existing_install = bool(self.feat.get("_existing_install", False))
         self.feat.setdefault("_reset_wallpapers", False)
-        self.feat.setdefault("_reset_layout", False)
         self.rows: list[tuple[str, str]] = self._build_rows()
         self.cursor = 0
 
@@ -96,7 +93,6 @@ class Wizard:
         if self.mode == "install":
             if self.existing_install:
                 rows.append(("action", "_reset_wallpapers"))
-                rows.append(("action", "_reset_layout"))
             rows.append(("toggle", "apply_theme"))
             rows.append(("toggle", "oled_care"))
             rows.append(("int", "oled_interval"))
@@ -142,7 +138,6 @@ class Wizard:
         for k, v in DEFAULT_FEATURES.items():
             self.feat[k] = v
         self.feat["_reset_wallpapers"] = False
-        self.feat["_reset_layout"] = False
 
     def enabled_count(self) -> tuple[int, int]:
         toggles = [key for kind, key in self.rows if kind == "toggle"]
@@ -153,7 +148,6 @@ class Wizard:
         out["_existing_install"] = self.existing_install
         out["_reset_wallpapers"] = bool(
             self.feat.get("_reset_wallpapers", False))
-        out["_reset_layout"] = bool(self.feat.get("_reset_layout", False))
         # Selections always persist to features.json on install so the
         # next run (and the GUI picker) starts from the same state.
         out["_save"] = self.mode == "install"
@@ -400,14 +394,6 @@ def _draw_summary(scr, wiz: Wizard, cursor: int) -> int:
                  "Reset to theme defaults" if reset_wp
                  else "Keep smart light/dark choices",
                  _c(_P_YELLOW if reset_wp else _P_GREEN, curses.A_BOLD))
-            y += 1
-            reset_layout = bool(wiz.feat.get("_reset_layout"))
-            x = _put(scr, y, margin, "Panel Layout: ")
-            _put(scr, y, x,
-                 "Rebuild from theme" if reset_layout
-                 else "Keep user changes",
-                 _c(_P_YELLOW if reset_layout else _P_GREEN,
-                    curses.A_BOLD))
             y += 1
         y += 1
         _put(scr, y, margin, "Your selection is saved to features.json",

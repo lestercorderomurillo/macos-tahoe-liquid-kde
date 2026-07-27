@@ -41,6 +41,23 @@ def _force_distro(monkeypatch, distro_id: str, id_like: tuple[str, ...] = ()):
     monkeypatch.setattr(distro, "distro_id_like", lambda: id_like)
 
 
+@pytest.mark.parametrize("distro_id, id_like, expected_prefix", [
+    ("cachyos", ("arch",), ("Next", "Opal", "Flow")),
+    ("neon", ("ubuntu", "debian"), ("Next", "Flow")),
+    ("nobara", ("fedora",), ("Next", "Flow", "Opal")),
+    ("opensuse-tumbleweed", ("opensuse",), ("Next", "Flow", "Opal")),
+    ("gentoo", (), ("Next", "Flow", "Opal")),
+])
+def test_wallpaper_fallback_ids_cover_common_distro_families(
+        monkeypatch, distro_id, id_like, expected_prefix):
+    _force_distro(monkeypatch, distro_id, id_like)
+
+    candidates = distro.wallpaper_fallback_ids()
+
+    assert candidates[:len(expected_prefix)] == expected_prefix
+    assert len(candidates) == len(set(candidates))
+
+
 def _declared_dependency_tokens() -> dict[str, set[str]]:
     """Return every package token and all of its declared Arch fallbacks.
 

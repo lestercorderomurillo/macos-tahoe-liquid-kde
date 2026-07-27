@@ -400,7 +400,7 @@ a genuine missing package and fails CI.
 | `gtk.py`                      | GTK 2/3/4 theme. |
 | `icons.py`                    | macOS-style icon set. |
 | `kvantum.py`                  | Kvantum Qt widget style. |
-| `layout.py`                   | Top panel + dock layout. May be retried once after `restart_plasma` if the first pass raced plasmashell's plugin discovery. |
+| `layout.py`                   | Top panel + dock layout. Rebuilt on every install from the user's existing pinned apps, adding only the Mac Launcher/Trash widgets; uninstall always removes the Mac top bar/Dock and restores those pins on the Breeze panel. May be retried once after `restart_plasma` if the first pass raced plasmashell's plugin discovery. |
 | `nautilus.py`                 | Nautilus integration (file manager set as default on KDE for users who prefer it). |
 | `oled_care.py` (step)         | Installs the opt-in OLED-care binary + systemd user timer; flag off tears them down; uninstall restores panel geometry. |
 | `plasma_theme.py`             | Translucent panels and dock SVGs. |
@@ -496,7 +496,7 @@ green   yellow   orange   red   purple   blue
 | `plasma-apply-lookandfeel` `--keep-auto`       | Required so the LaF apply doesn't blow away the user's color-scheme follow-the-system preference. |
 | `pacman-key` on stale CachyOS images           | Container Dockerfile must run `pacman-key --init && pacman-key --populate archlinux cachyos` before `pacman -Sy archlinux-keyring cachyos-keyring`. |
 | Apps vanish from launcher after theme switch   | `kbuildsycoca6` reads the app list from `mimeinfo.cache`; rebuilding sycoca against a stale cache drops apps. `_flush_caches()` runs `update-desktop-database` on both the user and system `applications/` dirs BEFORE `kbuildsycoca6` (`desktop-file-utils` is a base dep). |
-| Pinned taskbar apps wiped on uninstall         | `plasma-apply-lookandfeel --resetLayout` rebuilds the panel from scratch. `layout.uninstall()` captures every `launchers=` list from appletsrc first (deduped, minus our own plasmoids) and writes it back onto the default panel's icontasks. |
+| Pinned taskbar apps wiped during layout rebuild | Both install and uninstall rebuild panels from scratch. `layout.py` captures every `launchers=` list from appletsrc first (deduped, minus our own plasmoids), writes it onto the new Mac Dock during install, and restores it onto the default Breeze icontasks during uninstall. The Mac layout itself adds no application launchers. |
 | GTK popups never get compositor blur           | Client-side popups (Firefox menus, popovers) receive no KWin blur, so GTK CSS popup surfaces must keep mirrored light/dark rgba alpha — literal `transparent` renders see-through (issue #11). The gtk-4.0 sheets must also define every libadwaita named color they reference; only libadwaita apps define those at runtime. `test_static.py` guards both. |
 
 ## Testing

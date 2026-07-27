@@ -5,16 +5,22 @@ import signal
 import subprocess
 import time
 from pathlib import Path
+from urllib.parse import unquote, urlsplit
 
 from steps._helpers import (
     HOME, fail, feat_enabled, have, info, kw_write, ok, qdbus_call, theme_mode, warn,
 )
-from distro import kde_libexec_binary, user_service_manager_command
+from distro import (
+    kde_libexec_binary,
+    user_service_manager_command,
+    wallpaper_fallback_ids,
+)
 from utils import qdbus_cmd, run_user
 from theme_switch import (
     _apply_wallpaper_snapshot,
     cycle_widget_style_live,
     _current_wallpapers,
+    _parse_ini,
     _wallpapers_from_config,
     _write_wallpapers_to_config,
     reset_kde_color_scheme_config,
@@ -57,7 +63,150 @@ _FONTS_RESET = {
 
 # Timeout for the fire-and-forget live-apply calls; run_user has none.
 _LIVE_APPLY_TIMEOUT = 15
-_BREEZE_WALLPAPER = Path("/usr/share/wallpapers/Next")
+_BREEZE_LOOK_AND_FEEL = "org.kde.breeze.desktop"
+_WALLPAPER_IMAGE_SUFFIXES = {
+    ".avif", ".bmp", ".gif", ".heif", ".heic", ".jpeg", ".jpg",
+    ".jxl", ".png", ".svg", ".svgz", ".webp",
+}
+
+
+def _xdg_data_dirs() -> tuple[Path, ...]:
+    """System data roots in the same precedence order KDE uses.
+
+    Wallpaper package names and the distro packages that ship them are not
+    portable.  XDG_DATA_DIRS is: it lets us ask the installed Breeze
+    look-and-feel which wallpaper it owns instead of guessing names such as
+    Next, Breeze or Flow.
+    """
+    raw = os.environ.get("XDG_DATA_DIRS") or "/usr/local/share:/usr/share"
+    return tuple(
+        Path(entry) for entry in raw.split(":")
+        if entry and Path(entry).is_absolute()
+    )
+
+
+def _lookandfeel_default_wallpaper(package: str) -> Path | None:
+    """Resolve an installed look-and-feel's declared default wallpaper."""
+    data_dirs = _xdg_data_dirs()
+    image = ""
+    for root in data_dirs:
+        defaults = (
+            root / "plasma/look-and-feel" / package / "contents/defaults"
+        )
+        image = (
+            _parse_ini(defaults).get("Wallpaper", {}).get("Image", "").strip()
+        )
+        if image:
+            break
+    if not image:
+        return None
+    return _resolve_wallpaper_value(image, data_dirs)
+
+
+def _resolve_wallpaper_value(
+        image: str, data_dirs: tuple[Path, ...]) -> Path | None:
+    if image.startswith("file://"):
+        parsed = urlsplit(image)
+        if parsed.netloc not in ("", "localhost"):
+            return None
+        candidate = Path(unquote(parsed.path))
+        return candidate if _wallpaper_is_usable(candidate) else None
+
+    candidate = Path(image)
+    if candidate.is_absolute():
+        return candidate if _wallpaper_is_usable(candidate) else None
+
+    for root in data_dirs:
+        candidate = root / "wallpapers" / image
+        if _wallpaper_is_usable(candidate):
+            return candidate
+    return None
+
+
+def _wallpaper_is_usable(candidate: Path) -> bool:
+    """Accept a real image or a complete Plasma image-wallpaper package."""
+    if candidate.is_file():
+        return candidate.suffix.lower() in _WALLPAPER_IMAGE_SUFFIXES
+    if not candidate.is_dir():
+        return False
+    if not (
+        (candidate / "metadata.json").is_file()
+        or (candidate / "metadata.desktop").is_file()
+    ):
+        return False
+    for subdir in ("contents/images", "contents/images_dark"):
+        images = candidate / subdir
+        if not images.is_dir():
+            continue
+        if any(
+            path.is_file() and path.suffix.lower() in _WALLPAPER_IMAGE_SUFFIXES
+            for path in images.rglob("*")
+        ):
+            return True
+    return False
+
+
+def _is_project_wallpaper(candidate: Path) -> bool:
+    return any(
+        part.casefold().startswith(("mactahoe", "mac-tahoe"))
+        for part in candidate.parts
+    )
+
+
+def _wallpaper_reset_candidates(package: str) -> tuple[Path, ...]:
+    """All safe reset candidates, most authoritative first.
+
+    1. The installed Breeze look-and-feel declaration.
+    2. Distro/common KDE IDs, but only when installed and complete.
+    3. Any other complete system wallpaper package as a final safety net.
+    """
+    data_dirs = _xdg_data_dirs()
+    candidates: list[Path] = []
+
+    declared = _lookandfeel_default_wallpaper(package)
+    if declared is not None and not _is_project_wallpaper(declared):
+        candidates.append(declared)
+
+    for wallpaper_id in wallpaper_fallback_ids():
+        resolved = _resolve_wallpaper_value(wallpaper_id, data_dirs)
+        if resolved is not None:
+            candidates.append(resolved)
+
+    for root in data_dirs:
+        wallpaper_root = root / "wallpapers"
+        try:
+            installed = sorted(
+                wallpaper_root.iterdir(), key=lambda path: path.name.casefold(),
+            )
+        except OSError:
+            continue
+        for candidate in installed:
+            if _is_project_wallpaper(candidate):
+                continue
+            if _wallpaper_is_usable(candidate):
+                candidates.append(candidate)
+
+    return tuple(dict.fromkeys(candidates))
+
+
+def _snapshot_uses_candidates(
+        snapshot: list[dict[str, object]],
+        candidates: tuple[Path, ...]) -> bool:
+    """Verify every desktop points at one of the accepted reset candidates."""
+    if not snapshot or not candidates:
+        return False
+    roots = tuple(str(path.resolve()).rstrip("/") for path in candidates)
+    for item in snapshot:
+        image = str(item.get("image", ""))
+        if image.startswith("file://"):
+            parsed = urlsplit(image)
+            if parsed.netloc not in ("", "localhost"):
+                return False
+            image = unquote(parsed.path)
+        image = image.rstrip("/")
+        if not any(image == root or image.startswith(root + "/") for root in roots):
+            return False
+    return True
 
 
 def _run_live(cmd: list[str]) -> bool:
@@ -350,12 +499,63 @@ def _scrub_kdedefaults() -> None:
     ok("kdedefaults cleaned")
 
 
+def _reset_wallpaper(*, live_ready: bool, native_reset: bool) -> None:
+    """Restore a system wallpaper through every safe KDE path available."""
+    declared = _lookandfeel_default_wallpaper(_BREEZE_LOOK_AND_FEEL)
+    if declared is not None and _is_project_wallpaper(declared):
+        declared = None
+    candidates = _wallpaper_reset_candidates(_BREEZE_LOOK_AND_FEEL)
+    if not candidates:
+        warn("Wallpaper reset failed: Breeze declared no usable wallpaper "
+             "and no installed fallback package was found")
+        return
+
+    current: list[dict[str, object]] | None = None
+    if native_reset and live_ready:
+        # plasma-apply-lookandfeel is KDE's authoritative first attempt, but
+        # it has historically exited 0 against a session that did not redraw.
+        # Verify the live result before printing an honest success line.
+        current = _current_wallpapers()
+        expected = (declared,) if declared is not None else candidates
+        if _snapshot_uses_candidates(current, expected):
+            ok("Wallpaper reset")
+            return
+
+    # Native single-purpose helper. Try every verified path because a package
+    # may exist yet be rejected by a particular Plasma version.
+    if live_ready and have("plasma-apply-wallpaperimage"):
+        for wallpaper in candidates:
+            if _run_live(["plasma-apply-wallpaperimage", str(wallpaper)]):
+                ok("Wallpaper reset")
+                return
+
+    # DBus/evaluateScript when the shell is live, then kwriteconfig6 against
+    # every desktop containment. _apply_wallpaper_snapshot() already falls
+    # through from DBus to the same on-disk writer if the script call fails.
+    if current is None:
+        current = (
+            _current_wallpapers() if live_ready else _wallpapers_from_config()
+        )
+    for wallpaper in candidates:
+        snapshot = _theme_wallpaper_snapshot(current, wallpaper)
+        reset = (
+            _apply_wallpaper_snapshot(snapshot)
+            if live_ready else _write_wallpapers_to_config(snapshot)
+        )
+        if reset:
+            ok("Wallpaper reset")
+            return
+
+    warn("Wallpaper reset failed after native, path, DBus, and on-disk "
+         "fallbacks")
+
+
 def uninstall() -> None:
     # Keep Breeze on disk as the source of truth, then best-effort the live
     # switch only when the full Plasma session is ready enough for it.
     if have("kwriteconfig6"):
         kw_write("--file", "kdeglobals", "--group", "KDE",
-                 "--key", "LookAndFeelPackage", "org.kde.breeze.desktop")
+                 "--key", "LookAndFeelPackage", _BREEZE_LOOK_AND_FEEL)
 
     _scrub_kdedefaults()
     live_ready = _live_plasma_ready_quick()
@@ -408,40 +608,6 @@ def uninstall() -> None:
             ok("Icons reset")
         else:
             warn("Icons reset failed")
-        if feat_enabled("WALLPAPERS"):
-            if not _BREEZE_WALLPAPER.is_dir():
-                warn("Wallpaper reset skipped: Breeze wallpaper not found")
-            else:
-                live_reset = (
-                    live_ready
-                    and have("plasma-apply-wallpaperimage")
-                    and _run_live([
-                        "plasma-apply-wallpaperimage",
-                        str(_BREEZE_WALLPAPER),
-                    ])
-                )
-                # If the supported live helper is unavailable or fails, write
-                # each desktop containment through kwriteconfig6.  The final
-                # Plasma restart then loads Breeze without depending on DBus.
-                disk_reset = False
-                if not live_reset:
-                    current = (_current_wallpapers() if live_ready
-                               else _wallpapers_from_config())
-                    snapshot = _theme_wallpaper_snapshot(
-                        current, _BREEZE_WALLPAPER)
-                    disk_reset = (_apply_wallpaper_snapshot(snapshot)
-                                  if live_ready
-                                  else _write_wallpapers_to_config(snapshot))
-                if live_reset or disk_reset:
-                    ok("Wallpaper reset")
-                elif not have("plasma-apply-wallpaperimage"):
-                    warn("Wallpaper reset failed: live helper not found and "
-                         "desktop config could not be updated")
-                elif not live_ready:
-                    warn("Wallpaper reset failed: no live Plasma session and "
-                         "desktop config could not be updated")
-                else:
-                    warn("Wallpaper reset failed")
         if reset_kde_color_scheme_config("BreezeLight"):
             ok("Color scheme reset")
         else:
@@ -451,11 +617,19 @@ def uninstall() -> None:
 
     # Unresponsive session is fine by design — the final plasmashell restart
     # picks up the on-disk Breeze config (see _live_plasma_ready_quick).
+    native_laf_reset = False
     if live_ready:
-        if _apply_lookandfeel_live("org.kde.breeze.desktop"):
+        native_laf_reset = _apply_lookandfeel_live(_BREEZE_LOOK_AND_FEEL)
+        if native_laf_reset:
             ok("Look-and-feel applied live")
         else:
             warn("Live Breeze look-and-feel apply skipped")
+
+    if feat_enabled("WALLPAPERS"):
+        _reset_wallpaper(
+            live_ready=live_ready,
+            native_reset=native_laf_reset,
+        )
 
     # Qt apps started under Kvantum keep its style instance alive after the
     # LAF switch; cycling widgetStyle forces re-instantiation without restart.

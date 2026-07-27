@@ -122,9 +122,6 @@ Options:
                        splash kernel cmdline (prints manual fix instead)
     --reset-wallpapers Forget saved light/dark wallpaper choices and apply
                        the bundled wallpaper once
-    --reset-layout     Rebuild the bundled top bar and Dock once, replacing
-                       the current panel layout
-
   Persistence:
     --save             Save current flags to features.json
     --reset            Reset features.json to all-true defaults
@@ -233,7 +230,6 @@ class ParsedArgs:
         self.preflight_only = False
         self.restart_only = False
         self.reset_wallpapers = False
-        self.reset_layout = False
         self.cli_overrides: dict[str, bool] = {}
         self.oled_interval: int | None = None
         self.oled_max_shift: int | None = None
@@ -285,8 +281,6 @@ def parse_args(argv: list[str]) -> ParsedArgs:
             p.restart_only = True
         elif arg == "--reset-wallpapers":
             p.reset_wallpapers = True
-        elif arg == "--reset-layout":
-            p.reset_layout = True
         elif arg == "--no-grub-modify":
             # Read by the plymouth step: print manual instructions
             # instead of editing /etc/default/grub.
@@ -481,7 +475,6 @@ def apply_overrides(feat: dict[str, object], parsed: ParsedArgs) -> dict[str, ob
 
     # One-shot update actions: deliberately not written to features.json.
     feat["_reset_wallpapers"] = parsed.reset_wallpapers
-    feat["_reset_layout"] = parsed.reset_layout
 
     if parsed.do_save:
         save_features(feat)
@@ -501,8 +494,6 @@ def export_env(feat: dict[str, object]) -> None:
         feat.get("_existing_install", False))
     os.environ["MTTKDE_RESET_WALLPAPERS"] = _b(
         feat.get("_reset_wallpapers", False))
-    os.environ["MTTKDE_RESET_LAYOUT"] = _b(
-        feat.get("_reset_layout", False))
     for k in ALL_FEATURES:
         os.environ[f"FEAT_{k.upper()}"] = _b(feat.get(k, True))
 
@@ -633,8 +624,8 @@ def _theme_is_already_installed() -> bool:
 
     The explicit state markers cover current releases. The binary, look-and-
     feel packages and applet IDs recognize older installs that predate those
-    markers, so an upgrade defaults to preserving the user's wallpaper and
-    panel edits.
+    markers, so an upgrade defaults to preserving the user's wallpaper
+    choices. Layout is rebuilt separately while carrying taskbar pins across.
     """
     home = Path.home()
     candidates = (
@@ -1094,9 +1085,11 @@ def _run_uninstall_body(feat: dict[str, object]) -> int:
     note("Stops the pixel shift and restores panel geometry")
     run_phase("oled_care", "uninstall")
 
-    if feat.get("layout", True) and step_exists("layout"):
+    # Always remove MacTahoe's top bar/Dock, even when the saved feature
+    # selection has since disabled layout.
+    if step_exists("layout"):
         step("Resetting Layout")
-        note("Resets panel layout to default")
+        note("Removes the Mac top bar/Dock and preserves pinned applications")
         run_phase("layout", "uninstall")
 
     step("Applying Changes")
@@ -1152,8 +1145,8 @@ def _estimate_uninstall_steps(feat: dict[str, object]) -> int:
     """Mirror of _run_uninstall_body's step() emissions."""
     total = 1  # run_preflight emits step("Preflight")
     total += 3  # Verification, Removing Theme Switcher, Removing OLED Care
-    if feat.get("layout", True) and step_exists("layout"):
-        total += 1  # Resetting Layout
+    if step_exists("layout"):
+        total += 1  # Resetting Layout is unconditional on uninstall
     total += 1  # Applying Changes
     total += _count_feature_steps(feat)
     total += 1  # Restarting Plasma
@@ -1197,7 +1190,7 @@ def run_install(argv: list[str], tui: bool = False,
     # Standalone --restart just kicks plasmashell. Combined with install
     # flags it is implicit — the install already ends with restart_plasma.
     if (parsed.restart_only and not parsed.only_mode and not parsed.cli_overrides
-            and not parsed.reset_wallpapers and not parsed.reset_layout):
+            and not parsed.reset_wallpapers):
         banner(read_version())
         step("Restarting Plasma")
         note("Restarts Plasma shell — no install, no config changes")

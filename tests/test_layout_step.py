@@ -67,6 +67,14 @@ def test_reset_with_pins_skips_restore_block_when_no_pins(monkeypatch):
     assert "writeConfig('launchers'" not in captured["script"]
 
 
+def test_mac_layout_adds_no_application_launchers_of_its_own():
+    script = layout.LAYOUT_SCRIPT.read_text()
+
+    assert 'tasks.writeConfig("launchers", "");' in script
+    assert "preferred://filemanager" not in script
+    assert "applications:steam.desktop" not in script
+
+
 # ── Discover install check ──────────────────────────────────────────────
 
 _LAUNCHERS_LINE = (
@@ -145,61 +153,58 @@ def _quiet_layout_install(monkeypatch, tmp_path):
     monkeypatch.setattr(layout.time, "sleep", lambda seconds: None)
 
 
-def test_reinstall_preserves_layout_even_after_user_removes_theme_widget(
-        monkeypatch, tmp_path):
+def test_install_always_rebuilds_layout_from_user_pins(monkeypatch, tmp_path):
     _quiet_layout_install(monkeypatch, tmp_path)
+    _write_appletsrc(tmp_path, _APPLETSRC)
     marker = layout._layout_marker()
     marker.parent.mkdir(parents=True)
     marker.write_text("1\n")
-    monkeypatch.delenv("MTTKDE_RESET_LAYOUT", raising=False)
-    monkeypatch.setattr(
-        layout, "_evaluate_layout",
-        lambda script: (_ for _ in ()).throw(
-            AssertionError("reinstall rebuilt the user's panels")),
-    )
-
-    layout.install()
-
-    assert marker.is_file()
-
-
-def test_upgrade_from_old_release_preserves_partial_layout(
-        monkeypatch, tmp_path):
-    _quiet_layout_install(monkeypatch, tmp_path)
-    monkeypatch.setenv("MTTKDE_EXISTING_INSTALL", "true")
-    monkeypatch.delenv("MTTKDE_RESET_LAYOUT", raising=False)
-    monkeypatch.setattr(
-        layout, "_evaluate_layout",
-        lambda script: (_ for _ in ()).throw(
-            AssertionError("upgrade rebuilt the user's panels")),
-    )
-
-    layout.install()
-
-    assert layout._layout_marker().is_file()
-
-
-def test_explicit_layout_reset_rebuilds_and_refreshes_marker(
-        monkeypatch, tmp_path):
-    _quiet_layout_install(monkeypatch, tmp_path)
-    marker = layout._layout_marker()
-    marker.parent.mkdir(parents=True)
-    marker.write_text("1\n")
-    monkeypatch.setenv("MTTKDE_RESET_LAYOUT", "true")
     calls = []
-    monkeypatch.setattr(layout, "_evaluate_layout",
-                        lambda script: calls.append(script) or True)
+    monkeypatch.setattr(
+        layout, "_evaluate_layout_with_launchers",
+        lambda script, pins, widget:
+        calls.append((script, pins, widget)) or True,
+    )
     monkeypatch.setattr(layout, "_wait_for_layout_install", lambda: True)
 
     layout.install()
 
-    assert calls == [layout.LAYOUT_SCRIPT]
+    assert calls == [(
+        layout.LAYOUT_SCRIPT,
+        [
+            "preferred://filemanager",
+            "applications:steam.desktop",
+            "preferred://browser",
+        ],
+        layout.MAC_TASKS_ID,
+    )]
     assert marker.is_file()
+
+
+def test_uninstall_always_rebuilds_bottom_panel_with_same_pins(
+        monkeypatch, tmp_path):
+    monkeypatch.setattr(layout, "HOME", tmp_path)
+    _write_appletsrc(tmp_path, _APPLETSRC)
+    calls = []
+    monkeypatch.setattr(
+        layout, "_reset_with_pins",
+        lambda pins: calls.append(pins) or True,
+    )
+    monkeypatch.setattr(layout, "ok", lambda message: None)
+
+    layout.uninstall()
+
+    assert calls == [[
+        "preferred://filemanager",
+        "applications:steam.desktop",
+        "preferred://browser",
+    ]]
 
 
 def test_layout_uninstall_removes_update_marker(monkeypatch, tmp_path):
     monkeypatch.setattr(layout, "HOME", tmp_path)
     monkeypatch.setattr(layout, "ok", lambda message: None)
+    monkeypatch.setattr(layout, "_reset_with_pins", lambda pins: True)
     marker = layout._layout_marker()
     marker.parent.mkdir(parents=True)
     marker.write_text("1\n")

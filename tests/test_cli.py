@@ -33,10 +33,9 @@ def test_parse_args_default_check_update_false(cli_module):
     assert cli_module.parse_args([]).check_update is False
 
 
-def test_parse_args_recognizes_one_shot_update_resets(cli_module):
-    parsed = cli_module.parse_args(["--reset-wallpapers", "--reset-layout"])
+def test_parse_args_recognizes_one_shot_wallpaper_reset(cli_module):
+    parsed = cli_module.parse_args(["--reset-wallpapers"])
     assert parsed.reset_wallpapers is True
-    assert parsed.reset_layout is True
 
 
 def test_existing_install_detects_current_state_marker(

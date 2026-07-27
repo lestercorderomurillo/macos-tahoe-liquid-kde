@@ -1,4 +1,3 @@
-import os
 import re
 import subprocess
 import time
@@ -12,6 +11,8 @@ LAYOUT_RESET = offline("layouts/default.js")
 _DISCOVER_DESKTOP = "applications:org.kde.discover.desktop"
 COLORIZER_ID = "luisbocanegra.panel.colorizer"
 COLORIZER_SRC = offline("plasmoids") / COLORIZER_ID
+MAC_TASKS_ID = "org.kde.mac.tahoe.liquid.icontasks"
+DEFAULT_TASKS_ID = "org.kde.plasma.icontasks"
 
 
 def _colorizer_dirs() -> list[Path]:
@@ -99,15 +100,11 @@ def _capture_pinned_launchers() -> list[str]:
     return seen
 
 
-def _reset_with_pins(pins: list[str]) -> bool:
-    """Run the default-layout reset, then pin the user's launchers onto the
-    fresh icontasks so they survive --resetLayout's panel rebuild."""
-    if not LAYOUT_RESET.is_file():
-        return False
-    script = LAYOUT_RESET.read_text()
+def _append_launcher_restore(
+        script: str, pins: list[str], widget_type: str) -> str:
     if pins:
-        joined = ",".join(pins)
-        # Restore block: write the captured launchers onto the fresh icontasks.
+        joined = repr(",".join(pins))
+        widget = repr(widget_type)
         script += (
             "\n(function () {\n"
             "  var ps = panels();\n"
@@ -115,14 +112,49 @@ def _reset_with_pins(pins: list[str]) -> bool:
             "    var ws = ps[i].widgetIds;\n"
             "    for (var j = 0; j < ws.length; j++) {\n"
             "      var w = ps[i].widgetById(ws[j]);\n"
-            "      if (w && w.type === 'org.kde.plasma.icontasks') {\n"
+            f"      if (w && w.type === {widget}) {{\n"
             "        w.currentConfigGroup = ['General'];\n"
-            f"        w.writeConfig('launchers', '{joined}');\n"
+            f"        w.writeConfig('launchers', {joined});\n"
             "      }\n"
             "    }\n"
             "  }\n"
             "})();\n"
         )
+    return script
+
+
+def _layout_script_with_launchers(
+        script_path: Path, pins: list[str], widget_type: str) -> str | None:
+    if not script_path.is_file():
+        return None
+    script = script_path.read_text()
+    if not _discover_is_installed():
+        script = script.replace(_DISCOVER_DESKTOP + ",", "")
+        script = script.replace("," + _DISCOVER_DESKTOP, "")
+    return _append_launcher_restore(script, pins, widget_type)
+
+
+def _evaluate_layout_with_launchers(
+        script_path: Path, pins: list[str], widget_type: str) -> bool:
+    script = _layout_script_with_launchers(script_path, pins, widget_type)
+    return script is not None and _evaluate_layout_script(script)
+
+
+def _restore_pins(pins: list[str], widget_type: str) -> bool:
+    if not pins:
+        return True
+    return _evaluate_layout_script(
+        _append_launcher_restore("", pins, widget_type),
+    )
+
+
+def _reset_with_pins(pins: list[str]) -> bool:
+    """Build the bundled Breeze panel and restore only user launchers."""
+    script = _layout_script_with_launchers(
+        LAYOUT_RESET, pins, DEFAULT_TASKS_ID,
+    )
+    if script is None:
+        return False
     return _evaluate_layout_script(script)
 
 
@@ -190,14 +222,6 @@ def _layout_has_any_theme_widget() -> bool:
     except OSError:
         return False
     return any(needle in text for needle in _CUSTOM_PANEL_NEEDLES)
-
-
-def _preserve_existing_layout() -> bool:
-    if os.environ.get("MTTKDE_RESET_LAYOUT", "").lower() == "true":
-        return False
-    if _layout_marker().is_file() or _layout_has_any_theme_widget():
-        return True
-    return os.environ.get("MTTKDE_EXISTING_INSTALL", "").lower() == "true"
 
 
 def _layout_looks_reset() -> bool:
@@ -269,18 +293,17 @@ def _patch_plasmashellrc() -> None:
 
 def install() -> None:
     _ensure_panel_colorizer()
-    if _preserve_existing_layout():
-        _mark_layout_installed()
-        ok("Layout preserved")
-        _patch_plasmashellrc()
-        return
     if not LAYOUT_SCRIPT.is_file():
         warn("Layout script not found — skipping")
         return
-    applied = _evaluate_layout(LAYOUT_SCRIPT)
+    pins = _capture_pinned_launchers()
+    applied = _evaluate_layout_with_launchers(
+        LAYOUT_SCRIPT, pins, MAC_TASKS_ID,
+    )
     if applied and _wait_for_layout_install():
         _mark_layout_installed()
-        ok("Layout installed")
+        ok(f"Layout installed (kept {len(pins)} pinned app(s))" if pins
+           else "Layout installed")
     else:
         warn("layout failed — set layout manually")
         return
@@ -294,12 +317,8 @@ def is_installed() -> bool:
 
 def uninstall() -> None:
     _clear_layout_marker()
-    if _layout_looks_reset():
-        ok("Layout reset")
-        return
-
-    # --resetLayout / default.js rebuild the panel from scratch — capture
-    # the user's pinned apps first or they're lost.
+    # Always remove the Mac top bar and Dock. Preserve only the applications
+    # the user pinned; Launcher and Trash are widgets and disappear with Dock.
     pins = _capture_pinned_launchers()
     if _reset_with_pins(pins):
         ok(f"Layout reset (kept {len(pins)} pinned app(s))" if pins
@@ -307,15 +326,14 @@ def uninstall() -> None:
         return
 
     if _reset_layout_builtin():
-        ok("Layout reset")
+        if _restore_pins(pins, DEFAULT_TASKS_ID):
+            ok(f"Layout reset (kept {len(pins)} pinned app(s))" if pins
+               else "Layout reset")
+        else:
+            warn("Layout reset, but pinned applications could not be restored")
         return
     if _layout_looks_reset():
-        ok("Layout reset")
-        return
-    if LAYOUT_RESET.is_file() and _evaluate_layout(LAYOUT_RESET):
-        ok("Layout reset")
-        return
-    if _layout_looks_reset():
-        ok("Layout reset")
+        warn("Layout reset fallback was not confirmed; pinned applications "
+             "may need to be restored manually")
         return
     warn("layout reset failed")

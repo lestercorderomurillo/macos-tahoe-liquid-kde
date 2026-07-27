@@ -313,6 +313,107 @@ def test_install_warns_when_theme_switch_times_out(monkeypatch, tmp_path):
     assert any("Theme switch did not finish" in m for m in warns)
 
 
+# ── distro-independent Breeze wallpaper discovery ────────────────────
+
+
+def _write_laf_wallpaper_default(root: Path, image: str) -> None:
+    defaults = (
+        root / "plasma/look-and-feel/org.kde.breeze.desktop/contents/defaults"
+    )
+    defaults.parent.mkdir(parents=True)
+    defaults.write_text(f"[Wallpaper]\nImage={image}\n")
+
+
+def _make_wallpaper_package(path: Path) -> Path:
+    image = path / "contents/images/3840x2160.jpg"
+    image.parent.mkdir(parents=True)
+    image.write_bytes(b"test image")
+    (path / "metadata.json").write_text('{"KPlugin": {"Id": "test"}}\n')
+    return path
+
+
+def test_default_wallpaper_comes_from_installed_breeze_laf(
+        monkeypatch, tmp_path):
+    """KDE neon ships a real Flow package; CachyOS does not. The installed
+    Breeze defaults, rather than a distro-specific fallback list, own the
+    choice."""
+    data = tmp_path / "neon-share"
+    wallpaper = _make_wallpaper_package(data / "wallpapers/Flow")
+    _write_laf_wallpaper_default(data, "Flow")
+    monkeypatch.setenv("XDG_DATA_DIRS", str(data))
+
+    assert (
+        apply._lookandfeel_default_wallpaper("org.kde.breeze.desktop")
+        == wallpaper
+    )
+
+
+def test_default_wallpaper_searches_all_xdg_data_roots(
+        monkeypatch, tmp_path):
+    laf_data = tmp_path / "local-share"
+    wallpaper_data = tmp_path / "system-share"
+    wallpaper = _make_wallpaper_package(
+        wallpaper_data / "wallpapers/DistroDefault",
+    )
+    _write_laf_wallpaper_default(laf_data, "DistroDefault")
+    monkeypatch.setenv(
+        "XDG_DATA_DIRS", f"{laf_data}:{wallpaper_data}",
+    )
+
+    assert (
+        apply._lookandfeel_default_wallpaper("org.kde.breeze.desktop")
+        == wallpaper
+    )
+
+
+def test_default_wallpaper_supports_file_url(monkeypatch, tmp_path):
+    data = tmp_path / "share"
+    wallpaper = tmp_path / "wallpapers with spaces/default image.png"
+    wallpaper.parent.mkdir(parents=True)
+    wallpaper.write_bytes(b"test image")
+    _write_laf_wallpaper_default(
+        data, wallpaper.as_uri(),
+    )
+    monkeypatch.setenv("XDG_DATA_DIRS", str(data))
+
+    assert (
+        apply._lookandfeel_default_wallpaper("org.kde.breeze.desktop")
+        == wallpaper
+    )
+
+
+def test_default_wallpaper_returns_none_when_laf_has_no_usable_default(
+        monkeypatch, tmp_path):
+    monkeypatch.setenv("XDG_DATA_DIRS", str(tmp_path))
+
+    assert (
+        apply._lookandfeel_default_wallpaper("org.kde.breeze.desktop")
+        is None
+    )
+
+
+def test_wallpaper_candidates_use_verified_distro_list_fallback(
+        monkeypatch, tmp_path):
+    data = tmp_path / "share"
+    flow = _make_wallpaper_package(data / "wallpapers/Flow")
+    monkeypatch.setenv("XDG_DATA_DIRS", str(data))
+    monkeypatch.setattr(apply, "wallpaper_fallback_ids", lambda: ("Flow",))
+
+    assert apply._wallpaper_reset_candidates("missing.laf")[0] == flow
+
+
+def test_wallpaper_candidates_discover_any_safe_system_package(
+        monkeypatch, tmp_path):
+    data = tmp_path / "share"
+    _make_wallpaper_package(data / "wallpapers/MacTahoe-Dark")
+    vendor = _make_wallpaper_package(data / "wallpapers/VendorDefault")
+    (data / "wallpapers/Broken/contents/images").mkdir(parents=True)
+    monkeypatch.setenv("XDG_DATA_DIRS", str(data))
+    monkeypatch.setattr(apply, "wallpaper_fallback_ids", lambda: ())
+
+    assert apply._wallpaper_reset_candidates("missing.laf") == (vendor,)
+
+
 # ── uninstall reports reset/cycle failures instead of silent ok ────────
 
 
@@ -515,12 +616,118 @@ def test_uninstall_keeps_config_writes_as_official_tool_fallback(
                    or "Icons reset failed" in message for message in warns)
 
 
+def test_uninstall_wallpaper_prefers_native_breeze_laf(monkeypatch,
+                                                        tmp_path):
+    wallpaper = tmp_path / "DistroDefault"
+    oks, warns = _seed_uninstall_env(monkeypatch, tmp_path)
+    monkeypatch.setattr(
+        apply, "feat_enabled",
+        lambda name, default=True: name == "WALLPAPERS",
+    )
+    monkeypatch.setattr(apply, "_live_plasma_ready_quick", lambda: True)
+    monkeypatch.setattr(apply, "_apply_lookandfeel_live", lambda laf: True)
+    monkeypatch.setattr(
+        apply, "_wallpaper_reset_candidates",
+        lambda package: (wallpaper,),
+    )
+    monkeypatch.setattr(
+        apply, "_lookandfeel_default_wallpaper", lambda package: wallpaper,
+    )
+    monkeypatch.setattr(
+        apply, "_current_wallpapers",
+        lambda: [{"screen": 0, "image": wallpaper.as_uri()}],
+    )
+    monkeypatch.setattr(
+        apply, "_run_live",
+        lambda command: (
+            (_ for _ in ()).throw(
+                AssertionError(
+                    "helper fallback used after verified native success",
+                ),
+            )
+            if command[0] == "plasma-apply-wallpaperimage" else False
+        ),
+    )
+    monkeypatch.setattr(
+        apply, "reset_kde_color_scheme_config", lambda scheme: True,
+    )
+
+    apply.uninstall()
+
+    assert "Wallpaper reset" in oks
+    assert not any("Wallpaper reset" in message for message in warns)
+
+
+def test_wallpaper_native_helper_tries_every_verified_candidate(
+        monkeypatch, tmp_path):
+    first = tmp_path / "First"
+    second = tmp_path / "Second"
+    calls = []
+    oks, warns = [], []
+    monkeypatch.setattr(
+        apply, "_wallpaper_reset_candidates",
+        lambda package: (first, second),
+    )
+    monkeypatch.setattr(
+        apply, "have",
+        lambda command: command == "plasma-apply-wallpaperimage",
+    )
+    monkeypatch.setattr(
+        apply, "_run_live",
+        lambda command: calls.append(command) or command[-1] == str(second),
+    )
+    monkeypatch.setattr(
+        apply, "_current_wallpapers",
+        lambda: (_ for _ in ()).throw(
+            AssertionError("code fallback used after helper success"),
+        ),
+    )
+    monkeypatch.setattr(apply, "ok", lambda message: oks.append(message))
+    monkeypatch.setattr(apply, "warn", lambda message: warns.append(message))
+
+    apply._reset_wallpaper(live_ready=True, native_reset=False)
+
+    assert calls == [
+        ["plasma-apply-wallpaperimage", str(first)],
+        ["plasma-apply-wallpaperimage", str(second)],
+    ]
+    assert oks == ["Wallpaper reset"]
+    assert warns == []
+
+
+def test_wallpaper_does_not_trust_unverified_native_success(
+        monkeypatch, tmp_path):
+    wallpaper = tmp_path / "DistroDefault"
+    calls = []
+    monkeypatch.setattr(
+        apply, "_wallpaper_reset_candidates", lambda package: (wallpaper,),
+    )
+    monkeypatch.setattr(
+        apply, "_current_wallpapers",
+        lambda: [{"screen": 0, "image": "file:///old/MacTahoe-Dark"}],
+    )
+    monkeypatch.setattr(
+        apply, "have",
+        lambda command: command == "plasma-apply-wallpaperimage",
+    )
+    monkeypatch.setattr(
+        apply, "_run_live", lambda command: calls.append(command) or True,
+    )
+    monkeypatch.setattr(apply, "ok", lambda message: None)
+
+    apply._reset_wallpaper(live_ready=True, native_reset=True)
+
+    assert calls == [["plasma-apply-wallpaperimage", str(wallpaper)]]
+
+
 def test_uninstall_wallpaper_failure_warns_instead_of_ok(monkeypatch,
                                                           tmp_path):
     wallpaper = tmp_path / "Next"
     wallpaper.mkdir()
     oks, warns = _seed_uninstall_env(monkeypatch, tmp_path)
-    monkeypatch.setattr(apply, "_BREEZE_WALLPAPER", wallpaper)
+    monkeypatch.setattr(
+        apply, "_wallpaper_reset_candidates", lambda package: (wallpaper,),
+    )
     monkeypatch.setattr(
         apply, "have",
         lambda cmd: cmd in {"kwriteconfig6", "plasma-apply-wallpaperimage"},
@@ -530,6 +737,7 @@ def test_uninstall_wallpaper_failure_warns_instead_of_ok(monkeypatch,
         lambda name, default=True: name == "WALLPAPERS",
     )
     monkeypatch.setattr(apply, "_live_plasma_ready_quick", lambda: True)
+    monkeypatch.setattr(apply, "_apply_lookandfeel_live", lambda laf: False)
     monkeypatch.setattr(apply, "_run_live", lambda cmd: False)
     monkeypatch.setattr(apply, "reset_kde_color_scheme_config", lambda s: True)
 
@@ -546,7 +754,9 @@ def test_uninstall_wallpaper_uses_disk_fallback_when_live_apply_fails(
     oks, warns = _seed_uninstall_env(monkeypatch, tmp_path)
     current = [{"screen": 0, "image": "file:///old.jpg"}]
     snapshots = []
-    monkeypatch.setattr(apply, "_BREEZE_WALLPAPER", wallpaper)
+    monkeypatch.setattr(
+        apply, "_wallpaper_reset_candidates", lambda package: (wallpaper,),
+    )
     monkeypatch.setattr(
         apply, "have",
         lambda cmd: cmd in {"kwriteconfig6", "plasma-apply-wallpaperimage"},
@@ -554,6 +764,7 @@ def test_uninstall_wallpaper_uses_disk_fallback_when_live_apply_fails(
     monkeypatch.setattr(apply, "feat_enabled",
                         lambda name, default=True: name == "WALLPAPERS")
     monkeypatch.setattr(apply, "_live_plasma_ready_quick", lambda: True)
+    monkeypatch.setattr(apply, "_apply_lookandfeel_live", lambda laf: False)
     monkeypatch.setattr(apply, "_run_live", lambda cmd: False)
     monkeypatch.setattr(apply, "_current_wallpapers", lambda: current)
     monkeypatch.setattr(
@@ -575,7 +786,9 @@ def test_uninstall_wallpaper_headless_writes_config_without_live_dbus(
     wallpaper.mkdir()
     oks, warns = _seed_uninstall_env(monkeypatch, tmp_path)
     written = []
-    monkeypatch.setattr(apply, "_BREEZE_WALLPAPER", wallpaper)
+    monkeypatch.setattr(
+        apply, "_wallpaper_reset_candidates", lambda package: (wallpaper,),
+    )
     monkeypatch.setattr(apply, "feat_enabled",
                         lambda name, default=True: name == "WALLPAPERS")
     monkeypatch.setattr(apply, "_wallpapers_from_config", lambda: [])
@@ -605,7 +818,9 @@ def test_uninstall_wallpaper_missing_tool_warns_instead_of_ok(
     wallpaper = tmp_path / "Next"
     wallpaper.mkdir()
     oks, warns = _seed_uninstall_env(monkeypatch, tmp_path)
-    monkeypatch.setattr(apply, "_BREEZE_WALLPAPER", wallpaper)
+    monkeypatch.setattr(
+        apply, "_wallpaper_reset_candidates", lambda package: (wallpaper,),
+    )
     monkeypatch.setattr(apply, "feat_enabled",
                         lambda name, default=True: name == "WALLPAPERS")
     monkeypatch.setattr(apply, "reset_kde_color_scheme_config",
@@ -614,11 +829,32 @@ def test_uninstall_wallpaper_missing_tool_warns_instead_of_ok(
     apply.uninstall()
 
     assert "Wallpaper reset" not in oks
-    assert any("live helper not found" in message
+    assert any("native, path, DBus, and on-disk" in message
                for message in warns)
 
 
-def test_uninstall_wallpaper_has_no_fake_fallback_directories():
+def test_uninstall_wallpaper_missing_laf_default_warns_instead_of_ok(
+        monkeypatch, tmp_path):
+    oks, warns = _seed_uninstall_env(monkeypatch, tmp_path)
+    monkeypatch.setattr(
+        apply, "_wallpaper_reset_candidates", lambda package: (),
+    )
+    monkeypatch.setattr(
+        apply, "feat_enabled",
+        lambda name, default=True: name == "WALLPAPERS",
+    )
+    monkeypatch.setattr(
+        apply, "reset_kde_color_scheme_config", lambda scheme: True,
+    )
+
+    apply.uninstall()
+
+    assert "Wallpaper reset" not in oks
+    assert any("no installed fallback package" in message for message in warns)
+
+
+def test_uninstall_wallpaper_has_no_hardcoded_fallback_directories():
     source = Path(apply.__file__).read_text()
+    assert "/usr/share/wallpapers/Next" not in source
     assert "/usr/share/wallpapers/Breeze" not in source
     assert "/usr/share/wallpapers/Flow" not in source
