@@ -193,6 +193,14 @@ _CUSTOM_PANEL_NEEDLES = (
     "plugin=org.kde.mac-tahoe-liquid-kde.launcher",
     "plugin=org.kde.mac-tahoe-liquid-kde.trashcan",
 )
+_THEME_PLUGIN_RE = re.compile(
+    r"^plugin=org\.kde\.(?:"
+    r"mac-tahoe-liquid-kde|"
+    r"mac\.tahoe(?:\.liquid)?|"
+    r"mactahoe-liquid-kde"
+    r")\.",
+    re.MULTILINE,
+)
 
 
 def _layout_marker() -> Path:
@@ -221,7 +229,7 @@ def _layout_has_any_theme_widget() -> bool:
         text = appletsrc.read_text(encoding="utf-8", errors="replace")
     except OSError:
         return False
-    return any(needle in text for needle in _CUSTOM_PANEL_NEEDLES)
+    return _THEME_PLUGIN_RE.search(text) is not None
 
 
 def _layout_looks_reset() -> bool:
@@ -235,7 +243,7 @@ def _layout_looks_reset() -> bool:
         text = appletsrc.read_text()
     except OSError:
         return False
-    return not any(needle in text for needle in _CUSTOM_PANEL_NEEDLES)
+    return _THEME_PLUGIN_RE.search(text) is None
 
 
 def _layout_looks_installed() -> bool:
@@ -292,6 +300,9 @@ def _patch_plasmashellrc() -> None:
 
 
 def install() -> None:
+    # A failed rebuild must leave is_installed() false so cli.py retries after
+    # Plasma restarts instead of trusting a marker from the previous run.
+    _clear_layout_marker()
     _ensure_panel_colorizer()
     if not LAYOUT_SCRIPT.is_file():
         warn("Layout script not found — skipping")
@@ -316,7 +327,11 @@ def is_installed() -> bool:
 
 
 def uninstall() -> None:
+    has_theme_widgets = _layout_has_any_theme_widget()
     _clear_layout_marker()
+    if not has_theme_widgets:
+        ok("Layout already clean")
+        return
     # Always remove the Mac top bar and Dock. Preserve only the applications
     # the user pinned; Launcher and Trash are widgets and disappear with Dock.
     pins = _capture_pinned_launchers()

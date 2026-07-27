@@ -676,11 +676,12 @@ def test_wallpaper_native_helper_tries_every_verified_candidate(
         apply, "_run_live",
         lambda command: calls.append(command) or command[-1] == str(second),
     )
+    captures = []
     monkeypatch.setattr(
         apply, "_current_wallpapers",
-        lambda: (_ for _ in ()).throw(
-            AssertionError("code fallback used after helper success"),
-        ),
+        lambda: captures.append(True) or [
+            {"screen": 0, "image": second.as_uri()},
+        ],
     )
     monkeypatch.setattr(apply, "ok", lambda message: oks.append(message))
     monkeypatch.setattr(apply, "warn", lambda message: warns.append(message))
@@ -691,6 +692,7 @@ def test_wallpaper_native_helper_tries_every_verified_candidate(
         ["plasma-apply-wallpaperimage", str(first)],
         ["plasma-apply-wallpaperimage", str(second)],
     ]
+    assert captures == [True]
     assert oks == ["Wallpaper reset"]
     assert warns == []
 
@@ -699,6 +701,7 @@ def test_wallpaper_does_not_trust_unverified_native_success(
         monkeypatch, tmp_path):
     wallpaper = tmp_path / "DistroDefault"
     calls = []
+    snapshots = []
     monkeypatch.setattr(
         apply, "_wallpaper_reset_candidates", lambda package: (wallpaper,),
     )
@@ -713,11 +716,21 @@ def test_wallpaper_does_not_trust_unverified_native_success(
     monkeypatch.setattr(
         apply, "_run_live", lambda command: calls.append(command) or True,
     )
-    monkeypatch.setattr(apply, "ok", lambda message: None)
+    monkeypatch.setattr(
+        apply, "_apply_wallpaper_snapshot",
+        lambda snapshot: snapshots.append(snapshot) or True,
+    )
+    oks = []
+    monkeypatch.setattr(apply, "ok", oks.append)
 
     apply._reset_wallpaper(live_ready=True, native_reset=True)
 
     assert calls == [["plasma-apply-wallpaperimage", str(wallpaper)]]
+    assert snapshots == [[{
+        "screen": 0,
+        "image": f"file://{wallpaper}",
+    }]]
+    assert oks == ["Wallpaper reset"]
 
 
 def test_uninstall_wallpaper_failure_warns_instead_of_ok(monkeypatch,

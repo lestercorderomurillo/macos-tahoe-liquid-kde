@@ -6,21 +6,7 @@ logic that keeps the user's pinned taskbar apps alive when --resetLayout
 rebuilds the panel from scratch.
 """
 
-import pytest
-
 import steps.layout as layout
-
-
-@pytest.fixture(autouse=True)
-def _never_touch_live_plasma(monkeypatch):
-    """No layout unit test may evaluate JavaScript in the real Plasma session.
-
-    Tests that exercise script construction replace this stub with a local
-    capture function. Keeping the default inert prevents a newly-reachable
-    uninstall fallback from rebuilding the maintainer's live panels.
-    """
-    monkeypatch.setattr(layout, "_evaluate_layout_script", lambda script: False)
-    monkeypatch.setattr(layout, "_reset_layout_builtin", lambda: False)
 
 
 _APPLETSRC = """\
@@ -195,11 +181,28 @@ def test_install_always_rebuilds_layout_from_user_pins(monkeypatch, tmp_path):
     assert marker.is_file()
 
 
+def test_failed_install_clears_stale_marker_for_retry(monkeypatch, tmp_path):
+    _quiet_layout_install(monkeypatch, tmp_path)
+    marker = layout._layout_marker()
+    marker.parent.mkdir(parents=True)
+    marker.write_text("1\n")
+    monkeypatch.setattr(
+        layout, "_evaluate_layout_with_launchers",
+        lambda script, pins, widget: False,
+    )
+
+    layout.install()
+
+    assert not marker.exists()
+    assert layout.is_installed() is False
+
+
 def test_uninstall_always_rebuilds_bottom_panel_with_same_pins(
         monkeypatch, tmp_path):
     monkeypatch.setattr(layout, "HOME", tmp_path)
     _write_appletsrc(tmp_path, _APPLETSRC)
     calls = []
+    monkeypatch.setattr(layout, "_layout_has_any_theme_widget", lambda: True)
     monkeypatch.setattr(
         layout, "_reset_with_pins",
         lambda pins: calls.append(pins) or True,
@@ -215,9 +218,50 @@ def test_uninstall_always_rebuilds_bottom_panel_with_same_pins(
     ]]
 
 
+def test_uninstall_leaves_unrelated_custom_layout_untouched(
+        monkeypatch, tmp_path):
+    monkeypatch.setattr(layout, "HOME", tmp_path)
+    _write_appletsrc(tmp_path, "plugin=org.example.custom.panel\n")
+    monkeypatch.setattr(
+        layout, "_reset_with_pins",
+        lambda pins: (_ for _ in ()).throw(
+            AssertionError("unrelated layout was rebuilt"),
+        ),
+    )
+    messages = []
+    monkeypatch.setattr(layout, "ok", messages.append)
+
+    layout.uninstall()
+
+    assert messages == ["Layout already clean"]
+
+
+def test_uninstall_recognizes_legacy_mac_layout_ids(monkeypatch, tmp_path):
+    monkeypatch.setattr(layout, "HOME", tmp_path)
+    _write_appletsrc(
+        tmp_path,
+        "\n".join([
+            "plugin=org.kde.mac-tahoe-liquid-kde.menu",
+            "plugin=org.kde.mac.tahoe.globalmenu",
+            "plugin=org.kde.mactahoe-liquid-kde.trash",
+        ]),
+    )
+    calls = []
+    monkeypatch.setattr(
+        layout, "_reset_with_pins",
+        lambda pins: calls.append(pins) or True,
+    )
+    monkeypatch.setattr(layout, "ok", lambda message: None)
+
+    layout.uninstall()
+
+    assert calls == [[]]
+
+
 def test_layout_uninstall_removes_update_marker(monkeypatch, tmp_path):
     monkeypatch.setattr(layout, "HOME", tmp_path)
     monkeypatch.setattr(layout, "ok", lambda message: None)
+    monkeypatch.setattr(layout, "_layout_has_any_theme_widget", lambda: True)
     monkeypatch.setattr(layout, "_reset_with_pins", lambda pins: True)
     marker = layout._layout_marker()
     marker.parent.mkdir(parents=True)

@@ -695,6 +695,7 @@ def _build_wallpaper_apply_script(
 var wanted = {json.dumps(by_screen)};
 var fallback = {json.dumps(fallback)};
 var all = desktops();
+var applied = 0;
 for (var i = 0; i < all.length; i++) {{
     var d = all[i];
     var image = wanted[String(d.screen)] || fallback;
@@ -702,8 +703,9 @@ for (var i = 0; i < all.length; i++) {{
     d.wallpaperPlugin = 'org.kde.image';
     d.currentConfigGroup = ['Wallpaper', 'org.kde.image', 'General'];
     d.writeConfig('Image', image);
+    applied++;
 }}
-print('applied');
+print(applied > 0 ? 'applied' : 'no-desktops');
 """
 
 
@@ -742,8 +744,9 @@ def _apply_wallpaper_snapshot(
     snapshot = _normalize_wallpaper_snapshot(snapshot)
     if not snapshot:
         return False
-    if _evaluate_plasma_script(
-            _build_wallpaper_apply_script(snapshot)) is not None:
+    reply = _evaluate_plasma_script(_build_wallpaper_apply_script(snapshot))
+    if any(line.strip() == "applied"
+           for line in (reply or "").splitlines()):
         return True
     return _write_wallpapers_to_config(snapshot)
 

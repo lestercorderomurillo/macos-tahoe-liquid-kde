@@ -522,10 +522,15 @@ def _reset_wallpaper(*, live_ready: bool, native_reset: bool) -> None:
             return
 
     # Native single-purpose helper. Try every verified path because a package
-    # may exist yet be rejected by a particular Plasma version.
+    # may exist yet be rejected by a particular Plasma version. Like the
+    # look-and-feel helper, exit 0 is not proof that Plasma changed anything.
     if live_ready and have("plasma-apply-wallpaperimage"):
         for wallpaper in candidates:
-            if _run_live(["plasma-apply-wallpaperimage", str(wallpaper)]):
+            if not _run_live(
+                    ["plasma-apply-wallpaperimage", str(wallpaper)]):
+                continue
+            current = _current_wallpapers()
+            if _snapshot_uses_candidates(current, (wallpaper,)):
                 ok("Wallpaper reset")
                 return
 

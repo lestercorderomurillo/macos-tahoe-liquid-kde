@@ -50,6 +50,19 @@ sys.path.insert(0, str(REPO / "src" / "scripts"))
 sys.path.insert(0, str(REPO / "src" / "installer"))
 
 
+@pytest.fixture(autouse=True)
+def never_touch_live_plasma_layout(monkeypatch):
+    """Unit tests must never rebuild panels in the developer's real session.
+
+    Individual layout tests may replace these inert boundaries with local
+    capture fakes, but no test starts with access to DBus layout mutation.
+    """
+    import steps.layout as layout
+
+    monkeypatch.setattr(layout, "_evaluate_layout_script", lambda script: False)
+    monkeypatch.setattr(layout, "_reset_layout_builtin", lambda: False)
+
+
 @pytest.fixture(scope="session")
 def repo() -> Path:
     return REPO

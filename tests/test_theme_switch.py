@@ -1017,6 +1017,27 @@ def test_wallpaper_config_fallback_captures_each_desktop_screen(
     ]
 
 
+def test_wallpaper_apply_with_no_live_desktops_uses_config_fallback(
+        monkeypatch, tmp_path):
+    ts, _theme = _smart_wallpaper_env(monkeypatch, tmp_path)
+    snapshot = _wp("file:///pictures/fallback.jpg")
+    scripts = []
+    writes = []
+    monkeypatch.setattr(
+        ts, "_evaluate_plasma_script",
+        lambda script: scripts.append(script) or "no-desktops\n",
+    )
+    monkeypatch.setattr(
+        ts, "_write_wallpapers_to_config",
+        lambda value: writes.append(value) or True,
+    )
+
+    assert ts._apply_wallpaper_snapshot(snapshot) is True
+    assert writes == [snapshot]
+    assert "var applied = 0;" in scripts[0]
+    assert "print(applied > 0 ? 'applied' : 'no-desktops');" in scripts[0]
+
+
 def test_apply_fails_when_config_writes_fail(monkeypatch):
     """write_kde_theme_config is the critical call —
     False means the core config writes failed (kwriteconfig6 missing
