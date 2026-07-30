@@ -36,18 +36,6 @@ ColumnLayout {
         return false;
     }
 
-    property var fontsModel: {
-        let arr = [];
-        const fonts = Qt.fontFamilies();
-        for (var i = 0; i < fonts.length; i++) {
-            arr.push({
-                text: fonts[i],
-                value: fonts[i]
-            });
-        }
-        return arr;
-    }
-
     property string stateName: {
         if (elementState === Enum.WidgetStates.Normal) {
             return "normal";
@@ -118,15 +106,31 @@ ColumnLayout {
     signal updateConfigString(string configString, var config)
     signal tabChanged(int currentTab)
 
+    Timer {
+        id: delayedUpdateTimer
+        interval: 100
+        repeat: false
+        onTriggered: {
+            Qt.callLater(() => {
+                if (elementName) {
+                    config[elementName][stateName] = configLocal;
+                } else {
+                    config[stateName] = configLocal;
+                }
+                updateConfigString(JSON.stringify(config, null, null), config);
+            });
+        }
+    }
+
     function updateConfig() {
-        Qt.callLater(() => {
-            if (elementName) {
-                config[elementName][stateName] = configLocal;
-            } else {
-                config[stateName] = configLocal;
-            }
-            updateConfigString(JSON.stringify(config, null, null), config);
-        });
+        if (!ready) {
+            return;
+        }
+        if (delayedUpdateTimer.running) {
+            delayedUpdateTimer.restart();
+        } else {
+            delayedUpdateTimer.start();
+        }
     }
 
     onCurrentTabChanged: {
@@ -138,9 +142,9 @@ ColumnLayout {
     }
 
     Kirigami.FormLayout {
+        id: mainForm
         // required to align with parent form
         property alias formLayout: root
-        twinFormLayouts: parentLayout
         Layout.fillWidth: true
 
         RowLayout {
@@ -161,7 +165,7 @@ ColumnLayout {
             }
         }
         Label {
-            visible: !!!root.config.nativePanel.background.enabled && elementName === "panel" && root.elementState === Enum.WidgetStates.Normal
+            visible: (!!!root.config?.nativePanel?.background?.enabled) && elementName === "panel" && root.elementState === Enum.WidgetStates.Normal
             text: i18n("⚠️ Disabling this breaks the panel clickable area and applet dialogs positioning when the panel is in floating mode! See <a href=\"%1\">#80</a>.", "https://github.com/luisbocanegra/plasma-panel-colorizer/issues/80")
             onLinkActivated: link => Qt.openUrlExternally(link)
             font: Kirigami.Theme.smallFont
@@ -327,6 +331,17 @@ ColumnLayout {
             }
         }
 
+        CheckBox {
+            Kirigami.FormData.label: i18n("Hide panel:")
+            text: i18n("When there are no widgets visible")
+            checked: root.config.nativePanel.hideWhenNoWidgetsAreVisible
+            onCheckedChanged: {
+                root.config.nativePanel.hideWhenNoWidgetsAreVisible = checked;
+                root.updateConfig();
+            }
+            visible: root.elementName === "panel" && root.elementState === Enum.WidgetStates.Normal
+        }
+
         Kirigami.Separator {
             Kirigami.FormData.isSection: true
             Kirigami.FormData.label: i18n("Customization")
@@ -474,6 +489,11 @@ ColumnLayout {
                 cursorShape: Qt.PointingHandCursor
             }
         }
+        Component.onCompleted: function () {
+            if (typeof appearanceRoot !== "undefined") {
+                twinFormLayouts.push(appearanceRoot.parentLayout);
+            }
+        }
     }
 
     Kirigami.NavigationTabBar {
@@ -539,7 +559,7 @@ ColumnLayout {
                 from: 0
                 to: 999
                 onValueModified: {
-                    if (!enabled)
+                    if (!enabled || !root.ready)
                         return;
 
                     configLocal.spacing = value;
@@ -563,6 +583,8 @@ ColumnLayout {
             text: i18n("Enable")
             checked: root.configLocal.fontConfig.enabled
             onCheckedChanged: {
+                if (!root.ready)
+                    return;
                 root.configLocal.fontConfig.enabled = checked;
                 root.updateConfig();
             }
@@ -570,16 +592,28 @@ ColumnLayout {
         }
         Label {
             visible: (root.showFontConfig) && root.currentTab === 4
-            text: i18n("A plasmashell restart is required to restore the original values after disabling any font setting. <a href=\"#\">Restart now</a>.")
-            onLinkActivated: {
-                runCommand.exec("(sleep 1; kstart plasmashell >/dev/null 2>&1) & kquitapp6 plasmashell");
-            }
+            text: i18n("Log out and log back in to restore the original values after disabling any font setting.")
             font: Kirigami.Theme.smallFont
             color: Kirigami.Theme.disabledTextColor
             wrapMode: Label.Wrap
             Layout.maximumWidth: 400
-            HoverHandler {
-                cursorShape: Qt.PointingHandCursor
+        }
+        // preview
+        TextArea {
+            visible: (root.showFontConfig) && root.currentTab === 4
+            text: "12345678900\nABCDEFGHIJKLMNOPQRSTUVWXYZ\nabcdefghijklmnopqrstuvwxyz"
+            Kirigami.SpellCheck.enabled: false
+            function reload() {
+                font.family = root.configLocal.fontConfig.font.familyOverride ? root.configLocal.fontConfig.font.family : Kirigami.Theme.defaultFont.family;
+                font.italic = root.configLocal.fontConfig.font.italicOverride ? root.configLocal.fontConfig.font.italic : Kirigami.Theme.defaultFont.italic;
+                font.underline = root.configLocal.fontConfig.font.underlineOverride ? root.configLocal.fontConfig.font.underline : Kirigami.Theme.defaultFont.underline;
+                font.weight = root.configLocal.fontConfig.font.weightOverride ? root.configLocal.fontConfig.font.weight : Kirigami.Theme.defaultFont.weight;
+                font.pointSize = root.configLocal.fontConfig.font.pointSizeOverride ? root.configLocal.fontConfig.font.pointSize : Kirigami.Theme.defaultFont.pointSize;
+            }
+            Component.onCompleted: {
+                root.updateConfigString.connect(() => {
+                    reload();
+                });
             }
         }
         RowLayout {
@@ -591,24 +625,43 @@ ColumnLayout {
                 text: i18n("Override")
                 checked: root.configLocal.fontConfig.font.familyOverride
                 onCheckedChanged: {
+                    if (!root.ready)
+                        return;
                     root.configLocal.fontConfig.font.familyOverride = checked;
                     root.updateConfig();
                 }
             }
-            ComboBox {
-                model: root.fontsModel
-                textRole: "text"
-                valueRole: "value"
-                popup.height: 200
-                currentIndex: {
-                    let newValue = indexOfValue(root.configLocal.fontConfig.font.family);
-                    return newValue !== -1 ? newValue : 0;
-                }
-                onActivated: {
-                    root.configLocal.fontConfig.font.family = currentValue;
+        }
+
+        Component {
+            id: fontFamilyPicker
+            FontFamilyChooser {
+                Layout.fillWidth: true
+                height: 200
+                enabled: familyOverride.checked
+                selectedFont: root.configLocal.fontConfig.font.family
+                onFontSelected: font => {
+                    if (!root.ready)
+                        return;
+                    root.configLocal.fontConfig.font.family = font;
                     root.updateConfig();
                 }
-                enabled: familyOverride.checked
+            }
+        }
+
+        Loader {
+            sourceComponent: fontFamilyPicker
+            active: (root.showFontConfig) && root.currentTab === 4
+            Layout.fillWidth: true
+            visible: active
+            onLoaded: {
+                item.selectedFont = root.configLocal.fontConfig.font.family;
+                item.fontSelected.connect(function (font) {
+                    if (!root.ready)
+                        return;
+                    root.configLocal.fontConfig.font.family = font;
+                    root.updateConfig();
+                });
             }
         }
 
@@ -621,6 +674,8 @@ ColumnLayout {
                 text: i18n("Override")
                 checked: root.configLocal.fontConfig.font.italicOverride
                 onCheckedChanged: {
+                    if (!root.ready)
+                        return;
                     root.configLocal.fontConfig.font.italicOverride = checked;
                     root.updateConfig();
                 }
@@ -629,6 +684,8 @@ ColumnLayout {
                 text: i18n("Enable")
                 checked: root.configLocal.fontConfig.font.italic
                 onCheckedChanged: {
+                    if (!root.ready)
+                        return;
                     root.configLocal.fontConfig.font.italic = checked;
                     root.updateConfig();
                 }
@@ -644,6 +701,8 @@ ColumnLayout {
                 text: i18n("Override")
                 checked: root.configLocal.fontConfig.font.underlineOverride
                 onCheckedChanged: {
+                    if (!root.ready)
+                        return;
                     root.configLocal.fontConfig.font.underlineOverride = checked;
                     root.updateConfig();
                 }
@@ -652,6 +711,8 @@ ColumnLayout {
                 text: i18n("Enable")
                 checked: root.configLocal.fontConfig.font.underline
                 onCheckedChanged: {
+                    if (!root.ready)
+                        return;
                     root.configLocal.fontConfig.font.underline = checked;
                     root.updateConfig();
                 }
@@ -667,6 +728,8 @@ ColumnLayout {
                 text: i18n("Override")
                 checked: root.configLocal.fontConfig.font.weightOverride
                 onCheckedChanged: {
+                    if (!root.ready)
+                        return;
                     root.configLocal.fontConfig.font.weightOverride = checked;
                     root.updateConfig();
                 }
@@ -677,6 +740,8 @@ ColumnLayout {
                 stepSize: 100
                 value: root.configLocal.fontConfig.font.weight
                 onValueChanged: {
+                    if (!root.ready)
+                        return;
                     root.configLocal.fontConfig.font.weight = value;
                     root.updateConfig();
                 }
@@ -692,6 +757,8 @@ ColumnLayout {
                 text: i18n("Override")
                 checked: root.configLocal.fontConfig.font.pointSizeOverride
                 onCheckedChanged: {
+                    if (!root.ready)
+                        return;
                     root.configLocal.fontConfig.font.pointSizeOverride = checked;
                     root.updateConfig();
                 }
@@ -702,6 +769,8 @@ ColumnLayout {
                 stepSize: 1
                 value: root.configLocal.fontConfig.font.pointSize
                 onValueChanged: {
+                    if (!root.ready)
+                        return;
                     root.configLocal.fontConfig.font.pointSize = value;
                     root.updateConfig();
                 }
@@ -716,10 +785,13 @@ ColumnLayout {
     }
 
     FormColors {
+        twinFormLayouts: [mainForm]
         enabled: root.isEnabled
         visible: currentTab === 0
         config: root.configLocal.backgroundColor
         onUpdateConfigString: (newString, newConfig) => {
+            if (!root.ready)
+                return;
             root.configLocal.backgroundColor = newConfig;
             root.updateConfig();
         }
@@ -731,12 +803,15 @@ ColumnLayout {
     }
 
     FormColors {
+        twinFormLayouts: [mainForm]
         enabled: root.isEnabled
         // the panel does not support foreground customization
         visible: currentTab === 0 && elementName !== "panel"
         config: root.configLocal.foregroundColor
         isSection: true
         onUpdateConfigString: (newString, newConfig) => {
+            if (!root.ready)
+                return;
             root.configLocal.foregroundColor = newConfig;
             root.updateConfig();
         }
@@ -745,10 +820,13 @@ ColumnLayout {
     }
 
     FormShape {
+        twinFormLayouts: [mainForm]
         enabled: root.isEnabled
         visible: currentTab === 1
         config: root.configLocal
         onUpdateConfigString: (newString, newConfig) => {
+            if (!root.ready)
+                return;
             root.configLocal = newConfig;
             root.updateConfig();
         }
@@ -756,22 +834,28 @@ ColumnLayout {
     }
 
     FormPadding {
+        twinFormLayouts: [mainForm]
         enabled: root.isEnabled
         visible: currentTab === 1 && elementName === "panel"
         config: root.configLocal
         onUpdateConfigString: (newString, newConfig) => {
+            if (!root.ready)
+                return;
             root.configLocal = newConfig;
             root.updateConfig();
         }
     }
 
     FormBorder {
+        twinFormLayouts: [mainForm]
         isSection: true
         sectionName: i18n("Primary Border")
         enabled: root.isEnabled
         visible: currentTab === 2
         config: root.configLocal.border
         onUpdateConfigString: (newString, newConfig) => {
+            if (!root.ready)
+                return;
             root.configLocal.border = newConfig;
             root.updateConfig();
         }
@@ -779,11 +863,14 @@ ColumnLayout {
     }
 
     FormColors {
+        twinFormLayouts: [mainForm]
         isSection: false
         enabled: root.isEnabled
         visible: currentTab === 2
         config: root.configLocal.border.color
         onUpdateConfigString: (newString, newConfig) => {
+            if (!root.ready)
+                return;
             root.configLocal.border.color = newConfig;
             root.updateConfig();
         }
@@ -791,12 +878,15 @@ ColumnLayout {
     }
 
     FormBorder {
+        twinFormLayouts: [mainForm]
         isSection: true
         sectionName: i18n("Secondary Border")
         enabled: root.isEnabled
         visible: currentTab === 2
         config: root.configLocal.borderSecondary
         onUpdateConfigString: (newString, newConfig) => {
+            if (!root.ready)
+                return;
             root.configLocal.borderSecondary = newConfig;
             root.updateConfig();
         }
@@ -804,11 +894,14 @@ ColumnLayout {
     }
 
     FormColors {
+        twinFormLayouts: [mainForm]
         isSection: false
         enabled: root.isEnabled
         visible: currentTab === 2
         config: root.configLocal.borderSecondary.color
         onUpdateConfigString: (newString, newConfig) => {
+            if (!root.ready)
+                return;
             root.configLocal.borderSecondary.color = newConfig;
             root.updateConfig();
         }
@@ -816,10 +909,13 @@ ColumnLayout {
     }
 
     FormShadow {
+        twinFormLayouts: [mainForm]
         enabled: root.isEnabled
         visible: currentTab === 3
         config: root.configLocal.shadow.background
         onUpdateConfigString: (newString, newConfig) => {
+            if (!root.ready)
+                return;
             root.configLocal.shadow.background = newConfig;
             root.updateConfig();
         }
@@ -827,10 +923,13 @@ ColumnLayout {
     }
 
     FormColors {
+        twinFormLayouts: [mainForm]
         enabled: root.isEnabled
         visible: currentTab === 3
         config: root.configLocal.shadow.background.color
         onUpdateConfigString: (newString, newConfig) => {
+            if (!root.ready)
+                return;
             root.configLocal.shadow.background.color = newConfig;
             root.updateConfig();
         }
@@ -840,10 +939,13 @@ ColumnLayout {
     }
 
     FormShadow {
+        twinFormLayouts: [mainForm]
         enabled: root.isEnabled
         visible: currentTab === 3 && elementName !== "panel"
         config: root.configLocal.shadow.foreground
         onUpdateConfigString: (newString, newConfig) => {
+            if (!root.ready)
+                return;
             root.configLocal.shadow.foreground = newConfig;
             root.updateConfig();
         }
@@ -851,10 +953,13 @@ ColumnLayout {
     }
 
     FormColors {
+        twinFormLayouts: [mainForm]
         enabled: root.isEnabled
         visible: currentTab === 3 && elementName !== "panel"
         config: root.configLocal.shadow.foreground.color
         onUpdateConfigString: (newString, newConfig) => {
+            if (!root.ready)
+                return;
             root.configLocal.shadow.foreground.color = newConfig;
             root.updateConfig();
         }

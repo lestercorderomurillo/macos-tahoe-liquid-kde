@@ -9,6 +9,7 @@ import org.kde.plasma.core as PlasmaCore
 import org.kde.plasma.plasmoid
 import "../code/utils.js" as Utils
 import "../code/enum.js" as Enum
+import "../code/globals.js" as Globals
 import "../code/statusNotifierItemIconRules.js" as SNIIconRules
 import "../"
 
@@ -48,25 +49,30 @@ Rectangle {
                 "id": -1,
                 "name": "org.kde.plasma.systemtray.expand",
                 "hovered": hovered,
-                "expanded": (systemTrayState?.expanded) && systemTrayState?.activeApplet === null,
+                "expanded": (systemTrayState?.expanded ?? false) && systemTrayState?.activeApplet === null,
                 "needsAttention": false,
                 "busy": false,
                 "trayIconHash": "",
-                "title": ""
+                "title": "",
+                "iconName": ""
             };
         } else {
-            return Utils.getWidgetProperties(target, PlasmaCore.Types, hovered, main.plasmaVersion, inTray, main.panelColorizer, main.logSystemTrayIconChanges && rect.hovered);
+            return Utils.getWidgetProperties(target, PlasmaCore.Types, hovered, main.plasmaVersion, inTray, main.panelColorizer);
         }
     }
     property string widgetName: widgetProperties.name
     property string widgetTitle: widgetProperties.title
     property int widgetId: widgetProperties.id
     property string trayIconHash: widgetProperties.trayIconHash
-    onTrayIconHashChanged: {
+    property string iconName: widgetProperties.iconName
+    function logTrayIcon() {
         if (main.logSystemTrayIconChanges) {
-            console.log("Tray icon changed, title:", rect.widgetTitle, "name:", rect.widgetName, "\nSHA1:", rect.trayIconHash, "\nReplacement:", rect.customIcon);
+            console.log("Tray icon, title:", rect.widgetTitle, "name:", rect.widgetName, "\nSHA1:", rect.trayIconHash, "\nIcon Name:", rect.iconName, "\nReplacement:", rect.customIcon);
         }
     }
+    onTrayIconHashChanged: Qt.callLater(logTrayIcon)
+
+    onIconNameChanged: Qt.callLater(logTrayIcon)
 
     property string customIcon: {
         if (!main.systemTrayIconsReplacementEnabled || !main.isEnabled) {
@@ -88,7 +94,6 @@ Rectangle {
         property: "source"
         value: rect.customIcon
         when: rect.customIcon !== ""
-        delayed: true
     }
     property var wRecolorCfg: Utils.getForceFgWidgetConfig(widgetId, widgetName, main.forceRecolorList)
     property bool requiresRefresh: wRecolorCfg?.reload ?? false
@@ -105,7 +110,6 @@ Rectangle {
     property int maxDepth: 0
     opacity: cfgEnabled ? 1 : 0
     property bool isVisible: opacity !== 0
-    property bool isHidden: (rect.target.applet?.plasmoid?.status ?? null) === PlasmaCore.Types.HiddenStatus
     property bool cfgEnabled: cfg.enabled && main.isEnabled && !blacklisted && !(isIslandSeparator && blacklistIslandSeparator && islandsEnabled)
     property bool bgEnabled: bgColorCfg.enabled
     property bool fgEnabled: fgColorCfg.enabled
@@ -120,8 +124,13 @@ Rectangle {
     property bool panelTouchingLeft: isPanel && main.panelElement && !main.panelIsFloating && main.panelPosition.location === "left"
     property bool panelTouchingRight: isPanel && main.panelElement && !main.panelIsFloating && main.panelPosition.location === "right"
 
-    property var hideCfg: main.hiddenWidgets.widgets.find(widget => widget.id === widgetId && widget.name === widgetName)
-    property var blacklisted: main.blacklistedWidgets.widgets.find(widget => widget.id === widgetId && widget.name === widgetName)?.blacklisted ?? false
+    property var hideCfg: main.isEnabled ? main.hiddenWidgets.widgets.find(widget => widget.id === widgetId && widget.name === widgetName) : undefined
+    property bool shouldHide: hideCfg?.hide ?? false
+    property var widgetStatus: rect.target.applet?.plasmoid?.status ?? null
+    property bool isHidden: widgetStatus === PlasmaCore.Types.HiddenStatus
+    property bool blacklistSpacers: Plasmoid.configuration.blacklistSpacers
+    property bool isSpacer: Globals.spacerWidgets.includes(widgetName)
+    property var blacklisted: (main.blacklistedWidgets.widgets.find(widget => widget.id === widgetId && widget.name === widgetName)?.blacklisted ?? false) || (isSpacer && blacklistSpacers)
 
     function cornerForcedZero(cornerName) {
         if (!isPanel || !(cfg.flattenOnDeFloat ?? false))
@@ -259,7 +268,7 @@ Rectangle {
 
     Kirigami.Theme.colorSet: Kirigami.Theme[bgColorCfg.systemColorSet]
     color: {
-        if (bgEnabled && rect.bgColorCfg.sourceType !== 5) {
+        if (bgEnabled && rect.bgColorCfg.sourceType < 5) {
             return Utils.getColor(bgColorCfg, targetIndex, null, itemType, rect);
         } else {
             return "transparent";
@@ -276,6 +285,7 @@ Rectangle {
             "bottomLeftRadius": rect.bottomLeftRadius,
             "bottomRightRadius": rect.bottomRightRadius
         }
+        opacity: rect.bgColorCfg.alpha
     }
 
     ImageRoundedRectangle {
@@ -300,6 +310,7 @@ Rectangle {
                 playing = true;
             }
         }
+        opacity: rect.bgColorCfg.alpha
     }
 
     Behavior on color {
@@ -371,7 +382,6 @@ Rectangle {
                 main.noBgTracker.add(widgetId);
             }
         }
-
         main.recolorCountChanged.connect(recolorTimer.restart);
         main.updateMasks.connect(updateMaskDebounced);
         recolorTimer.start();
@@ -384,7 +394,9 @@ Rectangle {
         main.recolorCountChanged.disconnect(recolorTimer.restart);
         main.updateMasks.disconnect(updateMaskDebounced);
         main.refreshNeeded.disconnect(recolorTimer.restart);
-        main.trayInitTimer.restart();
+        if (inTray) {
+            Qt.callLater(main.updateTray);
+        }
     }
 
     height: inTray ? (target?.height ?? 0) : parent.height
@@ -664,8 +676,14 @@ Rectangle {
     Binding {
         target: rect.target.applet?.plasmoid ?? null
         property: "status"
-        when: (rect.hideCfg?.hide ?? false) && !rect.main.editMode
+        when: rect.shouldHide && !rect.main.editMode
         value: PlasmaCore.Types.HiddenStatus
+    }
+
+    onWidgetStatusChanged: {
+        if (widgetStatus !== PlasmaCore.Types.HiddenStatus) {
+            recolorTimer.restart();
+        }
     }
 
     Item {
@@ -1083,13 +1101,14 @@ Rectangle {
 
     property bool hovered: hoverHandler.hovered
     onHoveredChanged: {
-        if (main.logSystemTrayIconChanges && hovered && rect.inTray && rect.trayIconHash) {
-            console.log("Hovered tray item, title:", rect.widgetTitle, "name:", rect.widgetName, "\nSHA1:", rect.trayIconHash, "\nReplacement:", rect.customIcon);
+        if (hovered) {
+            logTrayIcon();
         }
     }
     HoverHandler {
         id: hoverHandler
         parent: rect.target
+        enabled: rect.inTray && (rect.iconName || rect.trayIconHash)
     }
 
     Rectangle {

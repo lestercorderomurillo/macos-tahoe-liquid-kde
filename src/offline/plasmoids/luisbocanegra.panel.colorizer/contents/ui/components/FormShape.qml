@@ -7,8 +7,6 @@ import "../"
 Kirigami.FormLayout {
     id: shapeRoot
 
-    // required to align with parent form
-    property alias formLayout: shapeRoot
     property bool isSection: true
     // wether read from the string or existing config object
     property bool handleString
@@ -22,9 +20,6 @@ Kirigami.FormLayout {
     function updateConfig() {
         updateConfigString(configString, config);
     }
-
-    twinFormLayouts: parentLayout
-    Layout.fillWidth: true
 
     Kirigami.Separator {
         Kirigami.FormData.isSection: true
@@ -179,22 +174,12 @@ Kirigami.FormLayout {
         }
     }
 
-    RunCommand {
-        id: runCommand
-    }
-
     Label {
         visible: root.elementName === "widgets"
-        text: i18n("Requires plasmashell restart after disabling to restore the default. <a href=\"#\">Restart now</a>.")
-        onLinkActivated: {
-            runCommand.exec("(sleep 1; kstart plasmashell >/dev/null 2>&1) & kquitapp6 plasmashell");
-        }
+        text: i18n("Requires a logout after disabling to restore the default. Log out and log back in.")
         font: Kirigami.Theme.smallFont
         Layout.maximumWidth: 400
         wrapMode: Label.Wrap
         Layout.alignment: Qt.AlignTop
-        HoverHandler {
-            cursorShape: Qt.PointingHandCursor
-        }
     }
 }

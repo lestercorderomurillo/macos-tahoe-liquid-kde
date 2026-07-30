@@ -1,3 +1,4 @@
+import json
 import re
 import subprocess
 import time
@@ -22,12 +23,21 @@ def _colorizer_dirs() -> list[Path]:
     return dirs
 
 
-def _has_panel_colorizer() -> bool:
-    for path in _colorizer_dirs():
-        metadata = path / "metadata.json"
-        if path.is_dir() and metadata.is_file():
-            return True
-    return False
+def _colorizer_version(path: Path) -> tuple[int, ...] | None:
+    """Return a comparable version from a Panel Colorizer package."""
+    try:
+        version = json.loads(
+            (path / "metadata.json").read_text(encoding="utf-8")
+        )["KPlugin"]["Version"]
+    except (OSError, KeyError, TypeError, json.JSONDecodeError):
+        return None
+    if (
+        not isinstance(version, str)
+        or not re.fullmatch(r"\d+(?:\.\d+)*", version)
+    ):
+        return None
+    parts = tuple(int(part) for part in version.split("."))
+    return parts + (0,) * (3 - len(parts))
 
 
 def deps():
@@ -35,12 +45,30 @@ def deps():
 
 
 def _ensure_panel_colorizer() -> None:
-    # Bundled offline like every other asset — a copy already
-    # present system-wide or user-side is left untouched.
-    if _has_panel_colorizer():
+    # A user package shadows system packages, so check it first. Replace an
+    # outdated user copy; otherwise preserve an equal/newer installed release.
+    bundled_version = _colorizer_version(COLORIZER_SRC)
+    if bundled_version is None:
+        warn("Panel Colorizer not installed — bundled metadata is invalid.")
+        return
+
+    dirs = _colorizer_dirs()
+    dest = dirs[0]
+    user_version = _colorizer_version(dest)
+    if user_version is not None and user_version >= bundled_version:
         ok("Panel Colorizer")
         return
-    dest = HOME / ".local/share/plasma/plasmoids" / COLORIZER_ID
+
+    if user_version is None and not dest.exists():
+        for path in dirs[1:]:
+            installed_version = _colorizer_version(path)
+            if (
+                installed_version is not None
+                and installed_version >= bundled_version
+            ):
+                ok("Panel Colorizer")
+                return
+
     if install_tree(COLORIZER_SRC, dest, "Panel Colorizer"):
         return
     warn("Panel Colorizer not installed — top bar won't be transparent. "
