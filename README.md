@@ -137,8 +137,6 @@ Fonts, icons, cursors, wallpapers, plasmoids, and Acrylic Glass ship with the re
 
 </details>
 
-<br>
-
 <details>
 <summary><b>Choose features and theme mode</b></summary>
 
@@ -187,8 +185,6 @@ Useful maintenance options:
 
 </details>
 
-<br>
-
 <details>
 <summary><b>OLED care</b></summary>
 
@@ -210,8 +206,6 @@ mac-tahoe-oled-care status
 ```
 
 </details>
-
-<br>
 
 <details>
 <summary><b>Test in a virtual machine</b></summary>
@@ -240,21 +234,20 @@ Supported names: `cachyos`, `arch`, `manjaro`, `endeavouros`, `garuda`, `fedora`
 
 ![Compatibility](https://img.shields.io/badge/compatibility-tested%20systems-4B6B8A?style=for-the-badge&logo=linux&logoColor=white)
 
-Arch Linux and CachyOS are tested. The other listed distributions are supported but still being verified.
-
 **Distributions**
 
-| Distro | Support | Testing |
-|--------|---------|---------|
-| CachyOS | Supported | Completed |
-| Arch Linux | Supported | Completed |
-| Manjaro | Supported | In progress |
-| EndeavourOS | Supported | In progress |
-| Garuda Linux | Supported | In progress |
-| Fedora | Supported | In progress |
-| Nobara | Supported | In progress |
-| openSUSE Tumbleweed | Supported | In progress |
-| Gentoo | Supported | In progress |
+| | Name | Harness |
+|:--:|------|---------|
+| <img src="https://cdn.simpleicons.org/cachyos" width="22"> | CachyOS | ![Heavily tested](https://img.shields.io/badge/heavily%20tested-1A7F37) |
+| <img src="https://cdn.simpleicons.org/archlinux" width="22"> | Arch Linux | ![Stable](https://img.shields.io/badge/stable-1A7F37) |
+| <img src="https://cdn.simpleicons.org/endeavouros" width="22"> | EndeavourOS | ![Relatively stable](https://img.shields.io/badge/relatively%20stable-D4A72C) |
+| <img src="https://cdn.simpleicons.org/fedora" width="22"> | Fedora | ![Relatively stable](https://img.shields.io/badge/relatively%20stable-D4A72C) |
+| <img src="https://cdn.simpleicons.org/manjaro" width="22"> | Manjaro | ![Needs more testing](https://img.shields.io/badge/needs%20more%20testing-B42318) |
+| <img src="https://cdn.simpleicons.org/linux" width="22"> | Garuda Linux | ![Needs more testing](https://img.shields.io/badge/needs%20more%20testing-B42318) |
+| <img src="https://cdn.simpleicons.org/nobaralinux" width="22"> | Nobara | ![Needs more testing](https://img.shields.io/badge/needs%20more%20testing-B42318) |
+| <img src="https://cdn.simpleicons.org/opensuse" width="22"> | openSUSE Tumbleweed | ![Needs more testing](https://img.shields.io/badge/needs%20more%20testing-B42318) |
+| <img src="https://cdn.simpleicons.org/gentoo" width="22"> | Gentoo | ![Needs more testing](https://img.shields.io/badge/needs%20more%20testing-B42318) |
+| <img src="https://cdn.simpleicons.org/kde" width="22"> | [KDE neon](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/issues/64) | ![Untested](https://img.shields.io/badge/untested-B42318) |
 
 <br>
 
