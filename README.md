@@ -95,90 +95,6 @@ Plymouth boot screen with centered Apple-style logo on every monitor, scaled dyn
 
 <br>
 
-![Compatibility](https://img.shields.io/badge/compatibility-tested%20systems-4B6B8A?style=for-the-badge&logo=linux&logoColor=white)
-
-Arch Linux and CachyOS are tested. The other listed distributions are supported but still being verified.
-
-<details>
-<summary><b>Supported distributions, init systems, and Plasma versions</b></summary>
-
-| Distro | Supported | Tested |
-|--------|:---------:|:------:|
-| CachyOS | ✅ | ✅ |
-| Arch Linux | ✅ | ✅ |
-| Manjaro | ✅ | 🔧 |
-| EndeavourOS | ✅ | 🔧 |
-| Garuda Linux | ✅ | 🔧 |
-| Fedora | ✅ | 🔧 |
-| Nobara | ✅ | 🔧 |
-| openSUSE Tumbleweed | ✅ | 🔧 |
-| Gentoo | ✅ | 🔧 |
-
-<br>
-
-| Init system | Supported | Tested |
-|-------------|:---------:|:------:|
-| systemd | ✅ | ✅ |
-| OpenRC | ✅ | 🔧 |
-
-<br>
-
-| Plasma | Supported | Since |
-|--------|:---------:|:-----:|
-| 6.5 and older | ❌ | Not supported |
-| 6.6 | ✅ | v0.1.0 |
-| 6.7+ | ✅ | v0.19.0 |
-
-</details>
-
-<br>
-
-![Roadmap](https://img.shields.io/badge/project-roadmap-6B4B8A?style=for-the-badge&logo=github&logoColor=white)
-
-Most of the desktop is ready. Icons and multi-distro support are still being polished; the remaining app themes and plasmoids are planned.
-
-<details>
-<summary><b>Open the full roadmap</b></summary>
-
-| Component | Description | Status |
-|-----------|-------------|:------:|
-| Color Schemes | Light and dark desktop palettes | Completed |
-| Wallpapers | Tahoe Iridescence and Landscape variants | Completed |
-| Fonts | SF Pro Display, Text, Rounded, and Mono | Completed |
-| Cursors | Tahoe-style pointers | Completed |
-| Plasma Theme | Translucent panels and shell surfaces | Completed |
-| Kvantum Theme | Matching Qt app styling | Completed |
-| GTK Theme | Matching GTK 2, 3, and 4 styling | Completed |
-| Acrylic Glass | Blur and glass effects across the desktop | Completed |
-| KDE Rounded Corners | Rounded windows built for the installed KWin | Completed |
-| Auto Theme Switcher | Scheduled light and dark desktop modes | Completed |
-| OLED Care | Optional panel pixel shifting | Completed |
-| Installer UI | Graphical installer with a feature picker | Completed |
-| Installer TUI | Terminal feature picker and live progress | Completed |
-| Aurorae Decorations | macOS-style title bars and controls | Completed |
-| Global Menu | App menus in the top bar | Completed |
-| Dock Task Manager | Dock with notification badges | Completed |
-| Nautilus | Finder-style file manager setup | Completed |
-| Launcher | Searchable app grid | Completed |
-| Trash | Dock Trash widget | Completed |
-| Sounds | Notification and event sounds | Completed |
-| Boot Screen | Plymouth startup splash | Completed |
-| Shutdown Screen | Matching shutdown sequence | Completed |
-| Icons | Complete light and dark icon set | In progress |
-| Multi-Distro Support | Arch, Fedora, openSUSE, and Gentoo families | In progress |
-| Firefox Theme | Matching browser theme | Planned |
-| Konsole Theme | Matching terminal profile | Planned |
-| Kate Theme | Matching editor theme | Planned |
-| SDDM Theme | Login and lock screen | Planned |
-| Calendar | Calendar dropdown | Planned |
-| Control Center | Quick settings panel | Planned |
-| System Preferences | macOS-style settings launcher | Planned |
-| OS Selector | Boot manager and OS picker | Planned |
-
-</details>
-
-<br>
-
 ![Getting started](https://img.shields.io/badge/getting-started-3B7B5B?style=for-the-badge&logo=gnubash&logoColor=white)
 
 Use the graphical installer to choose what to install or remove:
@@ -317,6 +233,91 @@ mac-tahoe-oled-care status
 ```
 
 Supported names: `cachyos`, `arch`, `manjaro`, `endeavouros`, `garuda`, `fedora`, `nobara`, `opensuse`, `gentoo`, and `gentoo-openrc`.
+
+</details>
+
+<br>
+
+![Compatibility](https://img.shields.io/badge/compatibility-tested%20systems-4B6B8A?style=for-the-badge&logo=linux&logoColor=white)
+
+Arch Linux and CachyOS are tested. The other listed distributions are supported but still being verified.
+
+**Distributions**
+
+| Distro | Support | Testing |
+|--------|---------|---------|
+| CachyOS | Supported | Completed |
+| Arch Linux | Supported | Completed |
+| Manjaro | Supported | In progress |
+| EndeavourOS | Supported | In progress |
+| Garuda Linux | Supported | In progress |
+| Fedora | Supported | In progress |
+| Nobara | Supported | In progress |
+| openSUSE Tumbleweed | Supported | In progress |
+| Gentoo | Supported | In progress |
+
+<br>
+
+**Init systems**
+
+| Init system | Support | Testing |
+|-------------|---------|---------|
+| systemd | Supported | Completed |
+| OpenRC | Supported | In progress |
+
+<br>
+
+**Plasma versions**
+
+| Plasma | Support | Since |
+|--------|---------|-------|
+| 6.5 and older | Not supported | Not applicable |
+| 6.6 | Supported | v0.1.0 |
+| 6.7+ | Supported | v0.19.0 |
+
+<br>
+
+![Roadmap](https://img.shields.io/badge/project-roadmap-6B4B8A?style=for-the-badge&logo=github&logoColor=white)
+
+Most of the desktop is ready. Icons and multi-distro support are still being polished; the remaining app themes and plasmoids are planned.
+
+<details>
+<summary><b>Open the full roadmap</b></summary>
+
+| Component | Description | Status |
+|-----------|-------------|:------:|
+| Color Schemes | Light and dark desktop palettes | Completed |
+| Wallpapers | Tahoe Iridescence and Landscape variants | Completed |
+| Fonts | SF Pro Display, Text, Rounded, and Mono | Completed |
+| Cursors | Tahoe-style pointers | Completed |
+| Plasma Theme | Translucent panels and shell surfaces | Completed |
+| Kvantum Theme | Matching Qt app styling | Completed |
+| GTK Theme | Matching GTK 2, 3, and 4 styling | Completed |
+| Acrylic Glass | Blur and glass effects across the desktop | Completed |
+| KDE Rounded Corners | Rounded windows built for the installed KWin | Completed |
+| Auto Theme Switcher | Scheduled light and dark desktop modes | Completed |
+| OLED Care | Optional panel pixel shifting | Completed |
+| Installer UI | Graphical installer with a feature picker | Completed |
+| Installer TUI | Terminal feature picker and live progress | Completed |
+| Aurorae Decorations | macOS-style title bars and controls | Completed |
+| Global Menu | App menus in the top bar | Completed |
+| Dock Task Manager | Dock with notification badges | Completed |
+| Nautilus | Finder-style file manager setup | Completed |
+| Launcher | Searchable app grid | Completed |
+| Trash | Dock Trash widget | Completed |
+| Sounds | Notification and event sounds | Completed |
+| Boot Screen | Plymouth startup splash | Completed |
+| Shutdown Screen | Matching shutdown sequence | Completed |
+| Icons | Complete light and dark icon set | In progress |
+| Multi-Distro Support | Arch, Fedora, openSUSE, and Gentoo families | In progress |
+| Firefox Theme | Matching browser theme | Planned |
+| Konsole Theme | Matching terminal profile | Planned |
+| Kate Theme | Matching editor theme | Planned |
+| SDDM Theme | Login and lock screen | Planned |
+| Calendar | Calendar dropdown | Planned |
+| Control Center | Quick settings panel | Planned |
+| System Preferences | macOS-style settings launcher | Planned |
+| OS Selector | Boot manager and OS picker | Planned |
 
 </details>
 
