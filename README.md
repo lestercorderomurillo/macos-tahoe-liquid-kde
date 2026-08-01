@@ -8,10 +8,115 @@
 
 Introducing macOS Tahoe, reimagined for Linux.
 
-The complete Tahoe experience—from liquid glass and the top menu bar to the Dock, apps, sounds, and boot screen—brought natively to KDE Plasma 6.6 and 6.7+.
+The complete Tahoe experience, from liquid glass and the top menu bar to the Dock, apps, sounds, and boot screen, brought natively to KDE Plasma 6.6 and 6.7+.
 
 > [!CAUTION]
 > This project is experimental and under active development. Don't use it on a production system yet. KDE, KWin, or Kvantum updates may temporarily break parts of the theme; running `sudo ./install` again usually restores them. If something goes wrong, please [open an issue](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/issues/new).
+
+<br>
+
+![Features and screenshots](https://img.shields.io/badge/features-%26%20screenshots-4B6B8A?style=for-the-badge&logo=kde&logoColor=white)
+
+### Acrylic Glass Tahoe Launcher
+
+Closer to the real design. Quick search, a favorites capsule, and two view modes.
+
+<p align="center">
+  <img src="src/screenshots/launcher_v3.png" width="415">
+  <img src="src/screenshots/launcher_dark_v3.png" width="415">
+</p>
+
+<p align="center">
+  <sub>Example of Light and Dark variant.</sub>
+</p>
+
+<br>
+
+### Acrylic Glass Tahoe Dock
+
+Real liquid-glass depth. The wallpaper bends through the surface, with red macOS-style notification badges.
+The dock's glass opacity is re-applied after every theme change so switching a
+Global Theme in System Settings cannot leave an opaque panel behind.
+
+<p align="center">
+  <img src="src/screenshots/dock_1_v3.png" width="840"><br>
+  <sub>Bright dock glow with the red macOS-style notification bubble.</sub>
+</p>
+
+<br>
+
+### Acrylic Glass Tahoe Finder
+
+Nautilus reshaped into Finder, with a macOS-style sidebar and clean chrome. Light and dark.
+
+<p align="center">
+  <img src="src/screenshots/finder_v3.png" width="415">
+  <img src="src/screenshots/finder_dark_v3.png" width="415">
+</p>
+
+<p align="center">
+  <sub>Example of Light and Dark variant.</sub>
+</p>
+
+<br>
+
+### Acrylic Glass Tahoe Menu
+
+Unified menu bar with native dropdowns. System menu, app name, and window controls in the top panel.
+
+<p align="center">
+  <img src="src/screenshots/menu_v3.png" width="415">
+  <img src="src/screenshots/menu_dark_v3.png" width="415">
+</p>
+
+<p align="center">
+  <sub>Example of Light and Dark variant.</sub>
+</p>
+
+<br>
+
+### System Information
+
+Glass system information window.
+
+<p align="center">
+  <img src="src/screenshots/about_v3.png" width="415">
+  <img src="src/screenshots/about_dark_v3.png" width="415">
+</p>
+
+<p align="center">
+  <sub>Example of Light and Dark variant.</sub>
+</p>
+
+<br>
+
+### Plasma Theme
+
+Desktop right-click with translucent glass blur.
+
+<p align="center">
+  <img src="src/screenshots/context_menu_v3.png" width="415">
+  <img src="src/screenshots/context_menu_dark_v3.png" width="415">
+</p>
+
+<p align="center">
+  <sub>Example of Light and Dark variant.</sub>
+</p>
+
+<br>
+
+### Boot Splash
+
+Plymouth boot screen with centered Apple-style logo on every monitor, scaled dynamically from 1080p to 4K. Boot mode shows a progress bar; shutdown / reboot share the same layout without the bar. On LUKS2-encrypted installs the passphrase prompt renders under the logo with a masked field.
+
+<p align="center">
+  <img src="src/screenshots/boot_v3.png" width="415">
+  <img src="src/screenshots/boot_shutdown_v3.png" width="415">
+</p>
+
+<p align="center">
+  <sub>Boot mode (with progress bar) and Shutdown mode (logo only).</sub>
+</p>
 
 <br>
 
@@ -34,111 +139,22 @@ Arch Linux and CachyOS are tested. The other listed distributions are supported 
 | openSUSE Tumbleweed | ✅ | 🔧 |
 | Gentoo | ✅ | 🔧 |
 
+<br>
+
 | Init system | Supported | Tested |
 |-------------|:---------:|:------:|
 | systemd | ✅ | ✅ |
 | OpenRC | ✅ | 🔧 |
 
+<br>
+
 | Plasma | Supported | Since |
 |--------|:---------:|:-----:|
-| 6.5 and older | ❌ | — |
+| 6.5 and older | ❌ | Not supported |
 | 6.6 | ✅ | v0.1.0 |
 | 6.7+ | ✅ | v0.19.0 |
 
 </details>
-
-<br>
-
-![Features and screenshots](https://img.shields.io/badge/features-%26%20screenshots-4B6B8A?style=for-the-badge&logo=kde&logoColor=white)
-
-### Acrylic Glass Tahoe Launcher
-
-Closer to the real design. Quick search, a favorites capsule, and two view modes.
-
-<p align="center">
-  <img src="src/screenshots/launcher_v3.png" width="415">
-  <img src="src/screenshots/launcher_dark_v3.png" width="415">
-</p>
-
-<p align="center">
-  <sub>Example of Light and Dark variant.</sub>
-</p>
-
-### Acrylic Glass Tahoe Dock
-
-Real liquid-glass depth. The wallpaper bends through the surface, with red macOS-style notification badges.
-The dock's glass opacity is re-applied after every theme change so switching a
-Global Theme in System Settings cannot leave an opaque panel behind.
-
-<p align="center">
-  <img src="src/screenshots/dock_1_v3.png" width="840"><br>
-  <sub>Bright dock glow with the red macOS-style notification bubble.</sub>
-</p>
-
-### Acrylic Glass Tahoe Finder
-
-Nautilus reshaped into Finder, with a macOS-style sidebar and clean chrome. Light and dark.
-
-<p align="center">
-  <img src="src/screenshots/finder_v3.png" width="415">
-  <img src="src/screenshots/finder_dark_v3.png" width="415">
-</p>
-
-<p align="center">
-  <sub>Example of Light and Dark variant.</sub>
-</p>
-
-### Acrylic Glass Tahoe Menu
-
-Unified menu bar with native dropdowns. System menu, app name, and window controls in the top panel.
-
-<p align="center">
-  <img src="src/screenshots/menu_v3.png" width="415">
-  <img src="src/screenshots/menu_dark_v3.png" width="415">
-</p>
-
-<p align="center">
-  <sub>Example of Light and Dark variant.</sub>
-</p>
-
-### System Information
-
-Glass system information window.
-
-<p align="center">
-  <img src="src/screenshots/about_v3.png" width="415">
-  <img src="src/screenshots/about_dark_v3.png" width="415">
-</p>
-
-<p align="center">
-  <sub>Example of Light and Dark variant.</sub>
-</p>
-
-### Plasma Theme
-
-Desktop right-click with translucent glass blur.
-
-<p align="center">
-  <img src="src/screenshots/context_menu_v3.png" width="415">
-  <img src="src/screenshots/context_menu_dark_v3.png" width="415">
-</p>
-
-<p align="center">
-  <sub>Example of Light and Dark variant.</sub>
-</p>
-
-### Boot Splash
-
-Plymouth boot screen with centered Apple-style logo on every monitor, scaled dynamically from 1080p to 4K. Boot mode shows a progress bar; shutdown / reboot share the same layout without the bar. On LUKS2-encrypted installs the passphrase prompt renders under the logo with a masked field.
-
-<p align="center">
-  <img src="src/screenshots/boot_v3.png" width="415">
-  <img src="src/screenshots/boot_shutdown_v3.png" width="415">
-</p>
-
-<p align="center">
-  <sub>Boot mode (with progress bar) and Shutdown mode (logo only).</sub>
-</p>
 
 <br>
 
@@ -168,11 +184,13 @@ Most of the desktop is ready. Icons and multi-distro support are still being pol
 | Global Menu | App menus in the top bar | Completed |
 | Dock Task Manager | Dock with notification badges | Completed |
 | Nautilus | Finder-style file manager setup | Completed |
-| Icons | Complete light and dark icon set | In progress |
-| Multi-Distro Support | Arch, Fedora, openSUSE, and Gentoo families | In progress |
 | Launcher | Searchable app grid | Completed |
 | Trash | Dock Trash widget | Completed |
 | Sounds | Notification and event sounds | Completed |
+| Boot Screen | Plymouth startup splash | Completed |
+| Shutdown Screen | Matching shutdown sequence | Completed |
+| Icons | Complete light and dark icon set | In progress |
+| Multi-Distro Support | Arch, Fedora, openSUSE, and Gentoo families | In progress |
 | Firefox Theme | Matching browser theme | Planned |
 | Konsole Theme | Matching terminal profile | Planned |
 | Kate Theme | Matching editor theme | Planned |
@@ -181,8 +199,6 @@ Most of the desktop is ready. Icons and multi-distro support are still being pol
 | Control Center | Quick settings panel | Planned |
 | System Preferences | macOS-style settings launcher | Planned |
 | OS Selector | Boot manager and OS picker | Planned |
-| Boot Screen | Plymouth startup splash | Completed |
-| Shutdown Screen | Matching shutdown sequence | Completed |
 
 </details>
 
@@ -204,6 +220,8 @@ sudo ./uninstall
 ```
 
 Both installers use the same feature system and show live progress. Run `sudo ./install --help` for every command-line option.
+
+<br>
 
 <details>
 <summary><b>Requirements</b></summary>
@@ -227,6 +245,8 @@ Fonts, icons, cursors, wallpapers, plasmoids, and Acrylic Glass ship with the re
 | openSUSE Tumbleweed | `zypper install qt6-tools-devel` | `zypper install extra-cmake-modules plasma6-workspace-devel kdecoration-devel libKF6Plasma-devel libnotificationmanager6-devel libksysguard6-devel libKF6PlasmaActivitiesStats6-devel` |
 
 </details>
+
+<br>
 
 <details>
 <summary><b>Choose features and theme mode</b></summary>
@@ -276,6 +296,8 @@ Useful maintenance options:
 
 </details>
 
+<br>
+
 <details>
 <summary><b>OLED care</b></summary>
 
@@ -297,6 +319,8 @@ mac-tahoe-oled-care status
 ```
 
 </details>
+
+<br>
 
 <details>
 <summary><b>Test in a virtual machine</b></summary>
