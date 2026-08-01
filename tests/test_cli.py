@@ -73,6 +73,7 @@ def test_install_order_puts_core_theme_steps_before_optional_integrations(cli_mo
     order = cli_module.INSTALL_ORDER
     assert order.index("global_theme") < order.index("plasmoids")
     assert order.index("wallpapers") < order.index("plasmoids")
+    assert order.index("sounds") < order.index("plasmoids")
     assert order.index("color_schemes") < order.index("wallpapers")
     assert order.index("plasma_theme") < order.index("nautilus")
     assert order.index("global_theme") < order.index("portals")

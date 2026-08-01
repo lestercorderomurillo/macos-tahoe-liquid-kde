@@ -1,0 +1,23 @@
+MacTahoe Liquid KDE sound-theme notice
+=======================================
+
+The recordings in stereo/ are derived from system audio resources extracted
+from the stable macOS Tahoe 26.6 Internet Recovery image (build 25G72) and
+converted to Ogg Vorbis for freedesktop sound-theme compatibility. They remain
+the property of Apple Inc. and are not covered by this project's GPL-3.0
+license. Apple does not sponsor or endorse this project.
+
+Apple Internet Recovery product:
+122-26025
+
+Apple source image:
+http://oscdn.apple.com/content/downloads/02/41/122-26025/2vlx5jlkxyvs17osgxvvqujnj21gey3fus/RecoveryImage/BaseSystem.dmg
+
+Source image SHA-256:
+7ff36da0dee7334aa90056e3cd5a3435deb9e5f74e344561618016cd26034d12
+
+The event-name mapping uses audio resources from PowerChime,
+SecurityInterface, FindMyDevice, Sharing, Assistive Control,
+AccessibilitySupport, and ScreenReader inside that image. The empty
+SoundActivateItem resource in 26.6 is replaced by AccessibilitySupport's
+Click resource. No Big Sur sound-theme payload is included.

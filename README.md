@@ -4,7 +4,7 @@
 
 # macOS Tahoe Liquid Theme for KDE Plasma 6.6/6.7+
 
-[![release](https://img.shields.io/github/v/release/lestercorderomurillo/macos-tahoe-liquid-kde?label=release&color=blue)](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/releases) [![tests](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/actions/workflows/test.yml/badge.svg)](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/actions/workflows/test.yml) [![tests count](https://img.shields.io/badge/tests-1009_passing-brightgreen)](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/actions/workflows/test.yml) [![license](https://img.shields.io/badge/license-GPL--3.0-blue)](LICENSE) [![plasma](https://img.shields.io/badge/KDE_Plasma-6.6%2B-1d99f3?logo=kde)](https://kde.org/plasma-desktop/) [![last commit](https://img.shields.io/github/last-commit/lestercorderomurillo/macos-tahoe-liquid-kde)](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/commits/) [![report a bug](https://img.shields.io/badge/report-a%20bug-red?logo=github)](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/issues/new)
+[![release](https://img.shields.io/github/v/release/lestercorderomurillo/macos-tahoe-liquid-kde?label=release&color=blue)](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/releases) [![tests](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/actions/workflows/test.yml/badge.svg)](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/actions/workflows/test.yml) [![tests count](https://img.shields.io/badge/tests-1014_passing-brightgreen)](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/actions/workflows/test.yml) [![license](https://img.shields.io/badge/license-GPL--3.0-blue)](LICENSE) [![plasma](https://img.shields.io/badge/KDE_Plasma-6.6%2B-1d99f3?logo=kde)](https://kde.org/plasma-desktop/) [![last commit](https://img.shields.io/github/last-commit/lestercorderomurillo/macos-tahoe-liquid-kde)](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/commits/) [![report a bug](https://img.shields.io/badge/report-a%20bug-red?logo=github)](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/issues/new)
 
 A full macOS Tahoe-style desktop experience for KDE Plasma 6.6 and 6.7+.
 
@@ -135,6 +135,14 @@ Plymouth boot screen with centered Apple-style logo on every monitor, scaled dyn
   <sub>Boot mode (with progress bar) and Shutdown mode (logo only).</sub>
 </p>
 
+### System Sounds
+
+The installer includes 44 notification and event sounds derived from the
+stable macOS Tahoe 26.6 recovery resources. They are bundled offline as a
+freedesktop sound theme, selected automatically with the rest of the desktop,
+and removed safely without overwriting a sound theme chosen later by the user.
+The source build and checksum are recorded in the bundled sound-theme notice.
+
 ---
 
 ![Roadmap](https://img.shields.io/badge/project-roadmap-6B4B8A?style=for-the-badge&logo=github&logoColor=white)
@@ -162,7 +170,7 @@ Plymouth boot screen with centered Apple-style logo on every monitor, scaled dyn
 | **Multi-Distro Support** | KDE Plasma 6.6+ on the Arch, Fedora, openSUSE and Gentoo families | 🔧 |
 | **Launcher Plasmoid** | App grid launcher | ✅ |
 | **Trashcan Plasmoid** | Trash widget with configurable icons | ✅ |
-| **Sounds** | Notification and event sounds | 🔲 |
+| **Sounds** | Notification and event sounds | ✅ |
 | **Firefox Theme** | Firefox browser theme | 🔲 |
 | **Konsole Theme** | Terminal profile | 🔲 |
 | **Kate Theme** | Text editor theme | 🔲 |
@@ -403,7 +411,7 @@ When filing, please include:
 
 Built using AI tools.
 
-Independent reimplementation inspired by the macOS aesthetic. All code and theme assets are original or derived from compatibly licensed open-source work. The bundled wallpapers and the SF Pro / SF Mono fonts remain Apple's property, are redistributed from public archives, and are not covered by this project's license. "macOS" and "Apple" are trademarks of Apple Inc.; this project is not affiliated with or endorsed by Apple.
+Independent reimplementation inspired by the macOS aesthetic. All code and theme assets are original or derived from compatibly licensed open-source work. The bundled wallpapers, system sounds, and SF Pro / SF Mono fonts remain Apple's property, are redistributed from publicly available sources for personal use, and are not covered by this project's license. "macOS" and "Apple" are trademarks of Apple Inc.; this project is not affiliated with or endorsed by Apple.
 
 If you like Apple, buy an Apple product.
 

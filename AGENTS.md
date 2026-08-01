@@ -41,8 +41,8 @@ no non-KDE path.
 Glass fork and several theme assets are GPL-3, and every other
 component's grant (GPL-2.0-or-later, LGPL-2.0-or-later, KDE
 tri-license) is GPL-3-compatible. Individual files keep their original
-SPDX headers; the Apple wallpaper imagery is not covered by the FOSS
-license.
+SPDX headers; the Apple wallpaper imagery, SF Pro / SF Mono fonts, and
+Apple system sounds are not covered by the FOSS license.
 **Stack:** Python 3.10+ CLI installer dispatching into per-feature
 steps; a PyQt6 graphical installer (`./installer`) that wraps the CLI;
 QML plasmoids; C++ Qt6 plasmoids (Global Menu, Dock Task Manager) and

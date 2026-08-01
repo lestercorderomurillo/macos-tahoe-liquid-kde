@@ -1,0 +1,8 @@
+[Sound Theme]
+Name=MacTahoe Liquid KDE
+Comment=macOS Tahoe notification and event sounds for MacTahoe Liquid KDE
+Directories=stereo
+Example=theme-demo
+
+[stereo]
+OutputProfile=stereo

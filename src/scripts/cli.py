@@ -41,6 +41,7 @@ ALL_FEATURES = [
 INSTALL_ORDER = [
     "fonts", "color_schemes", "plasma_theme", "window_decorations",
     "kvantum", "gtk", "icons", "cursors", "global_theme", "wallpapers",
+    "sounds",
     "kconf_update",
     "plasmoids", "globalmenu", "acrylic_glass", "rounded_corners",
     "layout", "nautilus", "portals", "plymouth",
