@@ -2,45 +2,50 @@
   <img src="src/screenshots/banner_v3.svg" alt="tahoe 26" width="360">
 </p>
 
-# macOS Tahoe Liquid Theme for KDE Plasma 6.6/6.7+
+# macOS Tahoe Liquid Theme for Plasma 6.6/6.7+
 
-[![release](https://img.shields.io/github/v/release/lestercorderomurillo/macos-tahoe-liquid-kde?label=release&color=blue)](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/releases) [![tests](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/actions/workflows/test.yml/badge.svg)](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/actions/workflows/test.yml) [![tests count](https://img.shields.io/badge/tests-1014_passing-brightgreen)](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/actions/workflows/test.yml) [![license](https://img.shields.io/badge/license-GPL--3.0-blue)](LICENSE) [![plasma](https://img.shields.io/badge/KDE_Plasma-6.6%2B-1d99f3?logo=kde)](https://kde.org/plasma-desktop/) [![last commit](https://img.shields.io/github/last-commit/lestercorderomurillo/macos-tahoe-liquid-kde)](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/commits/) [![report a bug](https://img.shields.io/badge/report-a%20bug-red?logo=github)](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/issues/new)
+[![release](https://img.shields.io/github/v/release/lestercorderomurillo/macos-tahoe-liquid-kde?label=release&color=blue)](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/releases) [![tests](https://img.shields.io/badge/tests-1014_passing-brightgreen)](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/actions/workflows/test.yml) [![plasma](https://img.shields.io/badge/Plasma-6.6%2B-1d99f3?logo=kde)](https://kde.org/plasma-desktop/) [![license](https://img.shields.io/badge/license-GPL--3.0-blue)](LICENSE) [![report a bug](https://img.shields.io/badge/report-a%20bug-red?logo=github)](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/issues/new)
 
-A full macOS Tahoe-style desktop experience for KDE Plasma 6.6 and 6.7+.
+Introducing macOS Tahoe, reimagined for Linux.
 
-> [!WARNING]
-> **Alpha / active development.** Things break as KDE, KWin and friends update; the installer pulls upstream changes on launch and may behave differently between runs. If a Plasma / KDE / Kvantum upgrade breaks the look, run `sudo ./install` again — it reapplies every override and recompiles the native components against the updated libraries, restoring everything. Expect rough edges, hold off on production desktops, and please [report any issue](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/issues/new) you hit.
+The complete Tahoe experience—from liquid glass and the top menu bar to the Dock, apps, sounds, and boot screen—brought natively to KDE Plasma 6.6 and 6.7+.
 
-![Tested distros](https://img.shields.io/badge/tested-distros-4B6B8A?style=for-the-badge&logo=linux&logoColor=white)
+> [!CAUTION]
+> This project is experimental and under active development. Don't use it on a production system yet. KDE, KWin, or Kvantum updates may temporarily break parts of the theme; running `sudo ./install` again usually restores them. If something goes wrong, please [open an issue](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/issues/new).
 
-|     | Distro | Supported yet? | Tested yet? |
-|:---:|--------|:--------------:|:-----------:|
-| <img src="https://cdn.simpleicons.org/cachyos" width="22"> | CachyOS | ✅ YES | ✅ YES |
-| <img src="https://cdn.simpleicons.org/archlinux" width="22"> | Arch Linux | ✅ YES | ✅ YES |
-| <img src="https://cdn.simpleicons.org/manjaro" width="22"> | Manjaro | ✅ YES | 🔧 Testing |
-| <img src="https://cdn.simpleicons.org/endeavouros" width="22"> | EndeavourOS | ✅ YES | 🔧 Testing |
-| <img src="https://cdn.simpleicons.org/linux" width="22"> | Garuda Linux | ✅ YES | 🔧 Testing |
-| <img src="https://cdn.simpleicons.org/fedora" width="22"> | Fedora | ✅ YES | 🔧 Testing |
-| <img src="https://cdn.simpleicons.org/nobaralinux" width="22"> | Nobara | ✅ YES | 🔧 Testing |
-| <img src="https://cdn.simpleicons.org/opensuse" width="22"> | openSUSE Tumbleweed | ✅ YES | 🔧 Testing |
-| <img src="https://cdn.simpleicons.org/gentoo" width="22"> | Gentoo | ✅ YES | 🔧 Testing |
+<br>
 
-| Init system | Supported yet? | Tested yet? |
-|-------------|:--------------------:|:-----------:|
-| systemd | ✅ YES | ✅ YES |
-| OpenRC | ✅ YES | 🔧 Testing |
+![Compatibility](https://img.shields.io/badge/compatibility-tested%20systems-4B6B8A?style=for-the-badge&logo=linux&logoColor=white)
 
-The installer detects the host init system automatically. Timed theme
-switching and OLED care use systemd user timers on systemd and a guarded
-per-user `crontab` block on OpenRC.
+Arch Linux and CachyOS are tested. The other listed distributions are supported but still being verified.
 
-| Plasma | Supported yet? | Since |
-|--------|:--------------:|:-----:|
-| ≤ 6.5 | ❌ NO | — |
-| 6.6 | ✅ YES | v0.1.0 |
-| 6.7 | ✅ YES | v0.19.0 |
+<details>
+<summary><b>Supported distributions, init systems, and Plasma versions</b></summary>
 
----
+| Distro | Supported | Tested |
+|--------|:---------:|:------:|
+| CachyOS | ✅ | ✅ |
+| Arch Linux | ✅ | ✅ |
+| Manjaro | ✅ | 🔧 |
+| EndeavourOS | ✅ | 🔧 |
+| Garuda Linux | ✅ | 🔧 |
+| Fedora | ✅ | 🔧 |
+| Nobara | ✅ | 🔧 |
+| openSUSE Tumbleweed | ✅ | 🔧 |
+| Gentoo | ✅ | 🔧 |
+
+| Init system | Supported | Tested |
+|-------------|:---------:|:------:|
+| systemd | ✅ | ✅ |
+| OpenRC | ✅ | 🔧 |
+
+| Plasma | Supported | Since |
+|--------|:---------:|:-----:|
+| 6.5 and older | ❌ | — |
+| 6.6 | ✅ | v0.1.0 |
+| 6.7+ | ✅ | v0.19.0 |
+
+</details>
 
 <br>
 
@@ -135,169 +140,168 @@ Plymouth boot screen with centered Apple-style logo on every monitor, scaled dyn
   <sub>Boot mode (with progress bar) and Shutdown mode (logo only).</sub>
 </p>
 
-### System Sounds
-
-The installer includes 44 notification and event sounds derived from the
-stable macOS Tahoe 26.6 recovery resources. They are bundled offline as a
-freedesktop sound theme, selected automatically with the rest of the desktop,
-and removed safely without overwriting a sound theme chosen later by the user.
-The source build and checksum are recorded in the bundled sound-theme notice.
-
----
+<br>
 
 ![Roadmap](https://img.shields.io/badge/project-roadmap-6B4B8A?style=for-the-badge&logo=github&logoColor=white)
 
+Most of the desktop is ready. Icons and multi-distro support are still being polished; the remaining app themes and plasmoids are planned.
+
+<details>
+<summary><b>Open the full roadmap</b></summary>
+
 | Component | Description | Status |
-|-----------|-------------|--------|
-| **Color Schemes** | Light and Dark color palettes | ✅ |
-| **Wallpapers** | Tahoe Iridescence + Landscape (Morning/Evening/Night) | ✅ |
-| **Fonts** | SF Pro Display, Text, Rounded, Mono | ✅ |
-| **Cursors** | Tahoe style cursors | ✅ |
-| **Plasma Theme** | Translucent panels + close/min/max buttons | ✅ |
-| **Kvantum Theme** | Kvantum theme | ✅ |
-| **GTK Theme** | GTK2/3/4 window chrome and controls | ✅ |
-| **Acrylic Glass** | KWin blur, per-surface rounded corners, persistent Dock glass and third-party effect safety | ✅ |
-| **KDE Rounded Corners** | Verified online source build, enabled with a 28 px active/inactive window radius | ✅ |
-| **Auto Theme Switcher** | 06:00 / 18:00 schedule plus an event-driven System Settings bridge for Plasma, Kvantum, GTK, icons, cursors, decorations and wallpaper | ✅ |
-| **OLED Care** | Opt-in pixel-shift timer for the top bar and dock | ✅ |
-| **Installer UI** | Glass window with an animated hello greeting; drives install / uninstall and a per-feature picker | ✅ |
-| **Installer TUI** | Terminal wizard on `sudo ./install`: component picker, theme mode, OLED care, live progress screen | ✅ |
-| **Aurorae Decorations** | Window title bar and borders | ✅ |
-| **Global Menu Plasmoid** | Unified menu bar: system menu, app name, window controls, app menus | ✅ |
-| **Dock Task Manager** | Icons-only dock applet with macOS-style notification badges | ✅ |
-| **Nautilus** | Install Nautilus and set as default file manager on KDE | ✅ |
-| **Icons** | Full icon set (light & dark) | 🔧 |
-| **Multi-Distro Support** | KDE Plasma 6.6+ on the Arch, Fedora, openSUSE and Gentoo families | 🔧 |
-| **Launcher Plasmoid** | App grid launcher | ✅ |
-| **Trashcan Plasmoid** | Trash widget with configurable icons | ✅ |
-| **Sounds** | Notification and event sounds | ✅ |
-| **Firefox Theme** | Firefox browser theme | 🔲 |
-| **Konsole Theme** | Terminal profile | 🔲 |
-| **Kate Theme** | Text editor theme | 🔲 |
-| **SDDM Theme** | Login and lock screen | 🔲 |
-| **Calendar Plasmoid** | Calendar dropdown | 🔲 |
-| **Control Center Plasmoid** | Quick settings panel | 🔲 |
-| **System Preferences Plasmoid** | Settings launcher | 🔲 |
-| **OS Selector** | Boot manager / OS picker screen | 🔲 |
-| **Boot Screen** | Plymouth splash for startup (1080p–4K) | ✅ |
-| **Shutdown Screen** | Styled logout / shutdown sequence | ✅ |
-
----
-
-![Requirements and dependencies](https://img.shields.io/badge/requirements-%26%20dependencies-4B6B8A?style=for-the-badge&logo=linux&logoColor=white)
-
-<details>
-<summary><b>Hard requirements</b> — installer refuses to start without these</summary>
-
-- **KDE Plasma 6.6+** (`plasmashell`, `kwriteconfig6`, `kreadconfig6`, `plasma-apply-lookandfeel`, `plasma-apply-cursortheme`, `plasma-apply-wallpaperimage`, `kpackagetool6`, `kbuildsycoca6`, `qdbus6` *or* `qdbus`)
-- **Python 3.10+**
-- **`sudo`** (for both `./install` and `./uninstall` — root needed to write the compiled plasmoids + KWin effect under the system Qt6 libdir)
-- **Qt6 path discovery** — one of: `qmake6`, `qtpaths6`, or `pkg-config` + `Qt6Core.pc`. The installer asks Qt where its plugin / QML directories live; it refuses to guess. If none of those tools are installed, the installer falls back to the known libdir convention for your distro **only when that directory actually exists on disk**.
-- **`dbus-send`** — session bus messaging, present on every supported distro.
-- **`systemctl`** (systemd hosts) or **`crontab`** (OpenRC hosts) — schedules the OLED-care and timed light/dark features. The installer detects the init system and uses whichever fits; `crontab` is pulled in automatically on OpenRC when a scheduled feature is enabled.
+|-----------|-------------|:------:|
+| Color Schemes | Light and dark desktop palettes | Completed |
+| Wallpapers | Tahoe Iridescence and Landscape variants | Completed |
+| Fonts | SF Pro Display, Text, Rounded, and Mono | Completed |
+| Cursors | Tahoe-style pointers | Completed |
+| Plasma Theme | Translucent panels and shell surfaces | Completed |
+| Kvantum Theme | Matching Qt app styling | Completed |
+| GTK Theme | Matching GTK 2, 3, and 4 styling | Completed |
+| Acrylic Glass | Blur and glass effects across the desktop | Completed |
+| KDE Rounded Corners | Rounded windows built for the installed KWin | Completed |
+| Auto Theme Switcher | Scheduled light and dark desktop modes | Completed |
+| OLED Care | Optional panel pixel shifting | Completed |
+| Installer UI | Graphical installer with a feature picker | Completed |
+| Installer TUI | Terminal feature picker and live progress | Completed |
+| Aurorae Decorations | macOS-style title bars and controls | Completed |
+| Global Menu | App menus in the top bar | Completed |
+| Dock Task Manager | Dock with notification badges | Completed |
+| Nautilus | Finder-style file manager setup | Completed |
+| Icons | Complete light and dark icon set | In progress |
+| Multi-Distro Support | Arch, Fedora, openSUSE, and Gentoo families | In progress |
+| Launcher | Searchable app grid | Completed |
+| Trash | Dock Trash widget | Completed |
+| Sounds | Notification and event sounds | Completed |
+| Firefox Theme | Matching browser theme | Planned |
+| Konsole Theme | Matching terminal profile | Planned |
+| Kate Theme | Matching editor theme | Planned |
+| SDDM Theme | Login and lock screen | Planned |
+| Calendar | Calendar dropdown | Planned |
+| Control Center | Quick settings panel | Planned |
+| System Preferences | macOS-style settings launcher | Planned |
+| OS Selector | Boot manager and OS picker | Planned |
+| Boot Screen | Plymouth startup splash | Completed |
+| Shutdown Screen | Matching shutdown sequence | Completed |
 
 </details>
 
-<details>
-<summary><b>Build toolchain</b> — needed for the compiled plasmoids and KWin effect</summary>
+<br>
 
-Skipped automatically when every compiled feature is disabled, including
-`--no-plasmoids --no-globalmenu --no-acrylic-glass --no-rounded-corners`.
+![Getting started](https://img.shields.io/badge/getting-started-3B7B5B?style=for-the-badge&logo=gnubash&logoColor=white)
 
-- **`cmake`**
-- **`g++`** (GCC C++ compiler)
-- **`pkg-config`**
+Use the graphical installer to choose what to install or remove:
 
-</details>
+```bash
+./installer
+```
 
-<details>
-<summary><b>KDE / Qt6 development SDK</b> — required by find_package() in the compiled units</summary>
+For the terminal wizard:
 
-Your distro's KDE Plasma 6 dev meta-package usually pulls these in one shot.
+```bash
+sudo ./install
+sudo ./uninstall
+```
 
-- **Extra CMake Modules** (`ECM`)
-- **KF6**: `KCoreAddons`, `KConfig`, `KI18n`, `KWindowSystem`, `KDBusAddons`, `KCMUtils`, `KIconThemes`
-- **KDecoration3**, **KWin** headers (`KWinDBusInterface`, `KWinX11DBusInterface`)
-- **libplasma**, **libtaskmanager**, **libnotificationmanager**, **KSysGuard**
-- **PlasmaActivities**, **PlasmaActivitiesStats**
-- **Qt6 Base** + **Qt6 Declarative** + **Qt6 Wayland**
-- **libepoxy**, **X11**, **XCB**
-
-</details>
+Both installers use the same feature system and show live progress. Run `sudo ./install --help` for every command-line option.
 
 <details>
-<summary><b>Bundled assets and one online integration</b></summary>
+<summary><b>Requirements</b></summary>
 
-Fonts, icons, cursors, wallpapers, plasmoids, and Acrylic Glass all ship in the
-repo under `src/offline/`. **KDE Rounded Corners is the sole online feature:**
-the installer downloads the pinned v0.9.0 source archive, verifies its SHA-256,
-then compiles it against the installed KWin. A failed or unavailable download
-only skips Rounded Corners; the bundled theme continues installing. Verified
-archives are cached under `build/online/`. A successful build installs and
-enables the effect with its active and inactive window radii set to 28 px;
-the setting remains independent from GTK, Plasma SVG, Aurorae, and Acrylic
-geometry. The release update check on
-launch may also access GitHub and pull a newer project release on a clean
-checkout.
+- KDE Plasma 6.6+
+- Python 3.10+
+- `sudo`
+- Qt 6 path discovery: `qmake6`, `qtpaths6`, `pkg-config` with `Qt6Core.pc`, or a recognized distro layout
+- KDE and Qt 6 development packages for the compiled plasmoids and KWin effects
+- `cmake`, `g++`, and `pkg-config` when compiled features are selected
+- `dbus-send`
+- `systemctl` or `crontab` for scheduled features
 
-</details>
+Fonts, icons, cursors, wallpapers, plasmoids, and Acrylic Glass ship with the repository. KDE Rounded Corners is downloaded from a pinned release, checksum-verified, and skipped cleanly when unavailable.
 
-<details>
-<summary><b>Optional integrations</b> — probed and used if present, never required</summary>
-
-- **Kvantum** (`kvantummanager`) — Qt widget theme. Without it, Qt apps fall back to plain Breeze widgets while keeping the rest of the theme.
-- **Nautilus** — Tahoe Finder. Only relevant if you install with `--nautilus`.
-- **`gsettings`** + **`gtk-update-icon-cache`** — GTK app integration (color-scheme hint, GTK 3/4 theme load).
-- **`dolphin`**, **`spectacle`** — used by the "Report a Bug" → screenshot helper.
-
-</details>
-
-<details>
-<summary><b>Quick install hints</b> — if preflight tells you a tool is missing</summary>
-
-| Distro | Qt6 tools | KDE Plasma 6 dev |
-|--------|-----------|------------------|
-| Arch / CachyOS / Manjaro / EndeavourOS / Garuda | `pacman -S qt6-tools` | `pacman -S extra-cmake-modules plasma-workspace kdecoration libplasma libnotificationmanager libksysguard plasma-activities-stats` |
+| Distro | Qt 6 tools | KDE Plasma 6 development packages |
+|--------|------------|-----------------------------------|
+| Arch family | `pacman -S qt6-tools` | `pacman -S extra-cmake-modules plasma-workspace kdecoration libplasma libnotificationmanager libksysguard plasma-activities-stats` |
 | Gentoo | `emerge dev-qt/qttools:6` | `emerge kde-frameworks/extra-cmake-modules kde-plasma/plasma-workspace kde-plasma/kdecoration kde-plasma/libplasma kde-plasma/libnotificationmanager kde-plasma/libksysguard kde-plasma/plasma-activities-stats` |
-| Fedora / Nobara / RHEL | `dnf install qt6-qttools-devel` | `dnf install extra-cmake-modules plasma-workspace-devel kdecoration-devel libplasma-devel knotifications-devel libksysguard-devel kf6-plasma-activities-devel` |
+| Fedora family | `dnf install qt6-qttools-devel` | `dnf install extra-cmake-modules plasma-workspace-devel kdecoration-devel libplasma-devel knotifications-devel libksysguard-devel kf6-plasma-activities-devel` |
 | openSUSE Tumbleweed | `zypper install qt6-tools-devel` | `zypper install extra-cmake-modules plasma6-workspace-devel kdecoration-devel libKF6Plasma-devel libnotificationmanager6-devel libksysguard6-devel libKF6PlasmaActivitiesStats6-devel` |
 
 </details>
 
----
+<details>
+<summary><b>Choose features and theme mode</b></summary>
 
-![Usage](https://img.shields.io/badge/getting-started-3B7B5B?style=for-the-badge&logo=gnubash&logoColor=white)
-
-The easiest way to install is the **graphical installer** — a glass window that drives install / uninstall and a per-feature picker:
-
-```bash
-./installer   # graphical: install / uninstall + feature picker
-```
-
-It opens a glass launcher to install, uninstall, or open the feature picker — toggle which parts of the theme get applied (wallpapers, fonts, Plasma theme, Kvantum, Plymouth, …), checks for a newer release on launch, and shows live progress while it runs. It wraps the same `./install` / `./uninstall` commands, so the CLI stays the source of truth.
-
-### Command line
-
-Prefer the terminal? A bare `sudo ./install` opens an interactive wizard right in your terminal: pick components, theme mode and OLED care, review the summary, confirm, then watch a live progress screen with a step list, progress bar and install log. `sudo ./uninstall` does the same for removal. Arrow keys move, space toggles (on a group title it toggles the whole group), Enter continues, q quits.
+Any flag skips the terminal wizard. Use `--no-<name>` to leave out a component, or `--only` to install or remove selected components:
 
 ```bash
-sudo ./install     # terminal wizard: pick components, then install
-sudo ./uninstall   # terminal wizard: pick components, then remove
+sudo ./install --no-gtk --no-sddm
+sudo ./install --only --fonts --icons
+sudo ./uninstall --only --cursors
 ```
 
-Any flag skips the wizard, so scripted installs behave exactly as before. `./legacy-install` and `./legacy-uninstall` never show the wizard at all, only the classic `[Y/n]` prompt:
+Available feature names:
+
+`wallpapers`, `fonts`, `cursors`, `plasma-theme`, `window-decorations`, `kvantum`, `color-schemes`, `icons`, `plasmoids`, `globalmenu`, `acrylic-glass`, `rounded-corners`, `global-theme`, `layout`, `sounds`, `gtk`, `sddm`, `apps`, `nautilus`, `nautilus-bookmarks`, `portals`, `oled-care`, `plymouth`.
+
+Choose the initial theme mode:
 
 ```bash
-sudo ./install --help            # show all options
-sudo ./install --preflight       # run only the safety checks
-sudo ./install --no-apply-theme  # stage files, don't switch Plasma yet
-sudo ./legacy-install            # classic prompt, install everything
-sudo ./legacy-uninstall          # classic prompt, reset to Breeze
+sudo ./install          # automatic light/dark schedule
+sudo ./install --light
+sudo ./install --dark
 ```
 
-### Try it in a VM, per OS
+Switch later with:
 
-`./vm <distro>` boots a graphical KDE Plasma VM with this repo mounted, the `tester` user auto-logged in, and the installer UI opened automatically. Or run `cd /home/tester/repo && sudo ./install` in a terminal and review by eye.
+```bash
+mac-tahoe-theme-switch light
+mac-tahoe-theme-switch dark
+mac-tahoe-theme-switch auto
+```
+
+Save or reset installer choices:
+
+```bash
+sudo ./install --no-gtk --dark --save
+sudo ./install --reset
+```
+
+Useful maintenance options:
+
+- `--preflight` checks the system without installing.
+- `--no-apply-theme` stages files without switching the desktop.
+- `--no-grub-modify` leaves `/etc/default/grub` unchanged.
+- `--reset-wallpapers` restores the bundled wallpaper choice.
+- `./legacy-install` and `./legacy-uninstall` use the classic prompt instead of the terminal wizard.
+
+</details>
+
+<details>
+<summary><b>OLED care</b></summary>
+
+OLED care is off by default. Enable it in the graphical feature picker or from the command line:
+
+```bash
+sudo ./install --oled-care
+sudo ./install --oled-care --save
+sudo ./install --no-oled-care
+sudo ./install --oled-care --oled-interval=3 --oled-max-shift=4
+```
+
+Manual controls:
+
+```bash
+mac-tahoe-oled-care shift
+mac-tahoe-oled-care restore
+mac-tahoe-oled-care status
+```
+
+</details>
+
+<details>
+<summary><b>Test in a virtual machine</b></summary>
+
+`./vm <distro>` opens a disposable graphical Plasma machine with the repository mounted and the installer ready. `./vm all` launches the whole matrix.
 
 ```bash
 ./vm cachyos
@@ -310,114 +314,39 @@ sudo ./legacy-uninstall          # classic prompt, reset to Breeze
 ./vm opensuse
 ./vm gentoo
 ./vm gentoo-openrc
-./vm all      # every distro at once, each in its own window
+./vm all
 ```
 
-`./vm all` trims each VM to 2 vCPU / 4 GiB so the fleet fits in RAM; override with `VM_CPUS` / `VM_MEM_MIB`. Ctrl-C in the launching terminal stops every VM.
+Supported names: `cachyos`, `arch`, `manjaro`, `endeavouros`, `garuda`, `fedora`, `nobara`, `opensuse`, `gentoo`, and `gentoo-openrc`.
 
-The first `./vm gentoo-openrc` pass installs Gentoo onto its persistent test
-disk. Boot that installed OpenRC system afterward with
-`VM_BOOT_TARGET=1 ./vm gentoo-openrc`.
+</details>
 
-Update check on launch is on by default; when a newer release exists and the checkout is a clean git tree, the installer pulls it and re-runs itself. To bypass: `sudo MAC_TAHOE_NO_UPDATE_CHECK=true ./install`. To only check: `sudo ./install --check-update`.
+<br>
 
-### Picking what to install
+![Contributing](https://img.shields.io/badge/contributing-A04B4B?style=for-the-badge&logo=github&logoColor=white)
 
-Skip components with `--no-<name>`, or restrict to a few with `--only`:
+Bug reports are the most valuable contribution right now: **[open an issue](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/issues/new)** or choose **Apple menu → About This Computer → Report a Bug…** from the desktop.
 
-```bash
-sudo ./install --no-gtk --no-sddm             # skip GTK and SDDM
-sudo ./install --only --fonts --icons         # only fonts and icons
-sudo ./uninstall --only --cursors             # uninstall just cursors
-```
+Please include:
 
-Available names:
+- Your Plasma version: `plasmashell --version`
+- Your distro: `grep PRETTY_NAME /etc/os-release`
+- The theme version: `cat VERSION`
+- A screenshot or recording for visual issues
 
-`wallpapers`, `fonts`, `cursors`, `plasma-theme`, `window-decorations`, `kvantum`, `color-schemes`, `icons`, `plasmoids`, `globalmenu`, `acrylic-glass`, `rounded-corners`, `global-theme`, `layout`, `sounds`, `gtk`, `sddm`, `apps`, `nautilus`, `portals`, `oled-care`, `plymouth`.
+Pull requests are welcome. Keep them focused and test them with the `./vm` harness before submitting. See [CONTRIBUTING.md](CONTRIBUTING.md) for the project workflow.
 
-Upgrade and boot-splash knobs:
-
-- `--no-grub-modify` — don't touch `/etc/default/grub`. (By default the Plymouth step appends `splash` and re-runs `grub-mkconfig` so the boot splash renders; with this flag you get a warning + the manual command instead.)
-- `--reset-wallpapers` — forget the saved light/dark wallpaper choices and apply the bundled wallpaper once.
-
-Normal upgrades preserve deliberate wallpaper choices and pinned taskbar apps.
-The Mac panel layout is rebuilt on every install; uninstall always removes its
-top bar, Dock, Launcher, and Trash while restoring the user's pinned apps.
-`--reset-wallpapers` is a one-shot action and is not saved to `features.json`.
-
-### Light, dark, or auto
-
-```bash
-sudo ./install            # auto (default)
-sudo ./install --dark
-sudo ./install --light
-```
-
-Auto is light 06:00–18:00, dark otherwise, via a systemd user timer (or a crontab line on OpenRC). `--light` / `--dark` pin the mode and skip the schedule.
-
-Switch by hand anytime:
-
-```bash
-mac-tahoe-theme-switch light
-mac-tahoe-theme-switch dark
-mac-tahoe-theme-switch auto
-```
-
-### For OLED screens
-
-The top bar never moves, and OLED panels burn static content in. The opt-in **OLED care** service nudges panel geometry on a timer — the top bar's height by a few px (its menu, clock, and tray shift with it) and the dock's position by a few px sideways — so no pixel renders the same content for hours. Off by default; enable it from the graphical installer's feature picker (`./installer` → **OLED care pixel shift**) or on the CLI:
-
-```bash
-sudo ./install --oled-care          # enable (every 5 min, up to 8 px)
-sudo ./install --oled-care --save   # enable and remember it
-sudo ./install --no-oled-care       # back off
-
-# custom cadence + distance
-sudo ./install --oled-care --oled-interval=3 --oled-max-shift=4
-```
-
-`--oled-interval=N` sets minutes between shifts (1–59, default 5); `--oled-max-shift=N` sets the maximum shift distance in px (1–16, default 8). Panels move one 2 px step per fire (the 32 px top bar walks 32 → 34 → … → 40 → 38 → … and back), matching manufacturer pixel-shift practice. Manual control anytime: `mac-tahoe-oled-care shift` steps once (`--max-px N` to override the distance), `restore` puts the panels back, `status` shows the stored geometry.
-
-### Remembering your choices
-
-```bash
-sudo ./install --no-gtk --dark --save   # write to features.json
-sudo ./install                          # next run reuses features.json
-sudo ./install --reset                  # back to defaults
-```
-
----
-
-![Report a bug](https://img.shields.io/badge/report-a%20bug-A04B4B?style=for-the-badge&logo=github&logoColor=white)
-
-Found something broken? Please open a GitHub issue:
-
-**👉 [Report a bug](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/issues/new)**
-
-You can also reach the issue tracker straight from the desktop:
-
-- **Apple menu → About This Computer → Report a Bug…** opens the same form in your browser.
-- After every `./install` or `./uninstall` run, the final line of the output prints the issues URL.
-
-When filing, please include:
-
-- Your Plasma version (`plasmashell --version`) and distro (`cat /etc/os-release | grep PRETTY_NAME`)
-- The MacTahoe Liquid KDE version (`cat VERSION` in the repo, or the version shown in *About This Computer*)
-- A screenshot or recording if it's a visual regression
-
----
+<br>
 
 ![Disclaimer](https://img.shields.io/badge/disclaimer-not%20affiliated%20with%20apple-6B6B6B?style=for-the-badge&logo=apple&logoColor=white)
 
-Built using AI tools.
+This is an independent reimplementation inspired by the macOS aesthetic. It is not affiliated with or endorsed by Apple or KDE. "macOS" and "Apple" are trademarks of Apple Inc.
 
-Independent reimplementation inspired by the macOS aesthetic. All code and theme assets are original or derived from compatibly licensed open-source work. The bundled wallpapers, system sounds, and SF Pro / SF Mono fonts remain Apple's property, are redistributed from publicly available sources for personal use, and are not covered by this project's license. "macOS" and "Apple" are trademarks of Apple Inc.; this project is not affiliated with or endorsed by Apple.
+The bundled wallpapers, system sounds, and SF Pro / SF Mono fonts remain Apple's property and are not covered by this project's license. All other code and theme assets are original or derived from compatibly licensed open-source work.
 
-If you like Apple, buy an Apple product.
+Licensed [GPL-3.0](LICENSE).
 
-Licensed [GPL-3.0](LICENSE). See [CONTRIBUTING.md](CONTRIBUTING.md) for how to send changes back.
-
----
+<br>
 
 ![Credits and inspiration](https://img.shields.io/badge/credits-%26%20inspiration-8A6B4B?style=for-the-badge&logo=apple&logoColor=white)
 
