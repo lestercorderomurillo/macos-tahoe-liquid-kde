@@ -26,10 +26,6 @@ Closer to the real design. Quick search, a favorites capsule, and two view modes
   <img src="src/screenshots/launcher_dark_v3.png" width="415">
 </p>
 
-<p align="center">
-  <sub>Example of Light and Dark variant.</sub>
-</p>
-
 <br>
 
 ### Acrylic Glass Tahoe Dock
@@ -39,8 +35,7 @@ The dock's glass opacity is re-applied after every theme change so switching a
 Global Theme in System Settings cannot leave an opaque panel behind.
 
 <p align="center">
-  <img src="src/screenshots/dock_1_v3.png" width="840"><br>
-  <sub>Bright dock glow with the red macOS-style notification bubble.</sub>
+  <img src="src/screenshots/dock_1_v3.png" width="840">
 </p>
 
 <br>
@@ -54,10 +49,6 @@ Nautilus reshaped into Finder, with a macOS-style sidebar and clean chrome. Ligh
   <img src="src/screenshots/finder_dark_v3.png" width="415">
 </p>
 
-<p align="center">
-  <sub>Example of Light and Dark variant.</sub>
-</p>
-
 <br>
 
 ### Acrylic Glass Tahoe Menu
@@ -67,10 +58,6 @@ Unified menu bar with native dropdowns. System menu, app name, and window contro
 <p align="center">
   <img src="src/screenshots/menu_v3.png" width="415">
   <img src="src/screenshots/menu_dark_v3.png" width="415">
-</p>
-
-<p align="center">
-  <sub>Example of Light and Dark variant.</sub>
 </p>
 
 <br>
@@ -84,10 +71,6 @@ Glass system information window.
   <img src="src/screenshots/about_dark_v3.png" width="415">
 </p>
 
-<p align="center">
-  <sub>Example of Light and Dark variant.</sub>
-</p>
-
 <br>
 
 ### Plasma Theme
@@ -99,10 +82,6 @@ Desktop right-click with translucent glass blur.
   <img src="src/screenshots/context_menu_dark_v3.png" width="415">
 </p>
 
-<p align="center">
-  <sub>Example of Light and Dark variant.</sub>
-</p>
-
 <br>
 
 ### Boot Splash
@@ -112,10 +91,6 @@ Plymouth boot screen with centered Apple-style logo on every monitor, scaled dyn
 <p align="center">
   <img src="src/screenshots/boot_v3.png" width="415">
   <img src="src/screenshots/boot_shutdown_v3.png" width="415">
-</p>
-
-<p align="center">
-  <sub>Boot mode (with progress bar) and Shutdown mode (logo only).</sub>
 </p>
 
 <br>
