@@ -31,18 +31,21 @@ Window {
     property string statusKind: "idle"
 
     readonly property string fontFamily: Kirigami.Theme.defaultFont.family
+    readonly property int windowWidth: Math.min(1120, Screen.desktopAvailableWidth - 48)
+    readonly property int windowHeight: Math.min(760, Screen.desktopAvailableHeight - 48)
+    readonly property int featureColumns: windowWidth >= 1000 ? 3 : 2
     readonly property bool isDarkTheme: {
         const bg = Kirigami.Theme.backgroundColor;
         return (bg.r * 0.299 + bg.g * 0.587 + bg.b * 0.114) < 0.5;
     }
 
     title: "Features"
-    width: 880
-    height: 640
-    minimumWidth: 880
-    minimumHeight: 640
-    maximumWidth: 880
-    maximumHeight: 640
+    width: windowWidth
+    height: windowHeight
+    minimumWidth: windowWidth
+    minimumHeight: windowHeight
+    maximumWidth: windowWidth
+    maximumHeight: windowHeight
     flags: Qt.Window | Qt.FramelessWindowHint
     color: "transparent"
 
@@ -215,13 +218,14 @@ Window {
             GridLayout {
                 Layout.fillWidth: true
                 Layout.fillHeight: true
-                Layout.leftMargin: 48
-                Layout.rightMargin: 48
-                columns: 2
-                columnSpacing: 16
-                rowSpacing: 8
+                Layout.leftMargin: 24
+                Layout.rightMargin: 24
+                columns: featuresWindow.featureColumns
+                columnSpacing: 20
+                rowSpacing: 12
                 flow: GridLayout.TopToBottom
-                rows: Math.ceil(featuresWindow.items.length / 2)
+                rows: Math.ceil(featuresWindow.items.length
+                                / featuresWindow.featureColumns)
 
                 Repeater {
                     model: featuresWindow.items
@@ -238,7 +242,8 @@ Window {
                         ColumnLayout {
                             // Natural content width (capped so long
                             // descriptions wrap) so the switch hugs the text.
-                            Layout.maximumWidth: 170
+                            Layout.maximumWidth: featuresWindow.featureColumns === 3
+                                ? 200 : 230
                             spacing: 1
 
                             Text {

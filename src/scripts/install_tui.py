@@ -33,7 +33,7 @@ FEATURE_ORDER = [
     "fonts", "color_schemes", "plasma_theme", "window_decorations",
     "kvantum", "icons", "cursors", "wallpapers", "global_theme",
     "layout", "plasmoids", "globalmenu", "acrylic_glass", "rounded_corners", "sounds",
-    "gtk", "sddm", "plymouth", "apps", "nautilus",
+    "gtk", "firefox", "sddm", "plymouth", "apps", "nautilus",
     "nautilus_bookmarks", "portals", "kconf_update",
 ]
 
@@ -42,6 +42,7 @@ THEME_MODES = ("auto", "light", "dark")
 # title() gets acronyms wrong; keep the handful of names it can't build.
 _NAME_OVERRIDES = {
     "gtk": "GTK Theme",
+    "firefox": "Firefox Theme",
     "sddm": "SDDM Login",
     "oled_care": "OLED Care",
     "rounded_corners": "Rounded Corners",

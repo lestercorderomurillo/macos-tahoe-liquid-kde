@@ -122,7 +122,7 @@ Store, Force Quit, Sleep, Restart, Shut Down, Lock Screen, Log Out.
 | `src/scripts/steps/`          | One module per feature. Implements `deps`, `download`, `build`, `install`, `uninstall`, `restart_plasma` as needed. `rounded_corners.py` is the sole online step. |
 | `src/scripts/steps/_helpers.py` | `sudo_install_file`, `sudo_install_tree`, `sudo_remove`, `_as_root` context manager. |
 | `src/installer/`              | Graphical installer UI: `installer_ui.py` (PyQt6) + QML windows + art. Wraps `./install` / `./uninstall`; the CLI stays the source of truth. |
-| `src/offline/`                | Bundled assets: plasmoids, plasma theme, Acrylic Glass, aurorae, color-schemes, cursors, fonts, gtk, icons, kvantum, look-and-feel, layouts, plymouth, nautilus, wallpapers, plus the systemd unit + timer. KDE Rounded Corners is intentionally not mirrored here. |
+| `src/offline/`                | Bundled assets: plasmoids, plasma theme, Acrylic Glass, aurorae, color-schemes, cursors, fonts, Firefox CSS/SVG, gtk, icons, kvantum, look-and-feel, layouts, plymouth, nautilus, wallpapers, plus the systemd unit + timer. KDE Rounded Corners is intentionally not mirrored here. |
 | `src/offline/wallpapers/<id>/`| One folder per wallpaper, JPEG q90 + `metadata.json` (3840×2160 minimum). Fully offline — no `download()` phase. |
 | `tests/`                      | pytest suite. `./test` is the runner. |
 | `tests/containers/`           | One Dockerfile per supported distro + `run_in_container.py` + `run_matrix.sh`. |
@@ -395,6 +395,7 @@ a genuine missing package and fails CI.
 | `color_schemes.py`            | Installs `MacTahoeLiquidKde-{Light,Dark}.colors` under `~/.local/share/color-schemes/`. |
 | `cursors.py`                  | Cursor theme install. |
 | `fonts.py`                    | SF Pro / SF Mono → `~/.local/share/fonts/`, `fc-cache` if available. |
+| `firefox.py`                  | Installs the bundled vinceliuice MacTahoe CSS/SVG fork into every initialized native, Flatpak, or Snap Firefox-family profile. Takes a timestamped UI-config backup before each change, injects ownership-marked CSS/user.js blocks, never kills Firefox or touches browser databases, and surgically restores on uninstall. |
 | `globalmenu.py`               | Build + install the Global Menu C++ plasmoid. |
 | `global_theme.py`             | Plasma look-and-feel package (`MacTahoeLiquidKde-{Light,Dark}`). |
 | `gtk.py`                      | GTK 2/3/4 theme. |

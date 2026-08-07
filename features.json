@@ -15,6 +15,7 @@
   "layout":             true,
   "sounds":             true,
   "gtk":                true,
+  "firefox":            true,
   "sddm":               true,
   "plymouth":           true,
   "apps":               true,

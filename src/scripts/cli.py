@@ -31,7 +31,7 @@ ALL_FEATURES = [
     "wallpapers", "fonts", "cursors", "plasma_theme", "window_decorations",
     "kvantum", "color_schemes", "icons", "plasmoids", "globalmenu", "acrylic_glass",
     "rounded_corners",
-    "global_theme", "layout", "sounds", "gtk", "sddm", "plymouth", "apps",
+    "global_theme", "layout", "sounds", "gtk", "firefox", "sddm", "plymouth", "apps",
     "nautilus", "nautilus_bookmarks", "portals", "oled_care", "apply_theme",
     "kconf_update",
 ]
@@ -40,7 +40,7 @@ ALL_FEATURES = [
 # sees the new panel/dock packages, and may be retried once after the restart.
 INSTALL_ORDER = [
     "fonts", "color_schemes", "plasma_theme", "window_decorations",
-    "kvantum", "gtk", "icons", "cursors", "global_theme", "wallpapers",
+    "kvantum", "gtk", "firefox", "icons", "cursors", "global_theme", "wallpapers",
     "sounds",
     "kconf_update",
     "plasmoids", "globalmenu", "acrylic_glass", "rounded_corners",
@@ -48,31 +48,32 @@ INSTALL_ORDER = [
 ]
 
 FEATURE_DESC = {
-    "wallpapers": "Wallpaper collection",
+    "wallpapers": "Desktop backgrounds",
     "fonts": "SF Pro and SF Mono",
-    "cursors": "Cursor theme",
-    "plasma_theme": "Desktop theme",
-    "window_decorations": "Window decorations",
-    "kvantum": "Qt widget style",
-    "color_schemes": "Color schemes",
-    "icons": "Icon set",
-    "plasmoids": "Plasma widgets",
-    "globalmenu": "Global menu",
-    "acrylic_glass": "Blur effect",
-    "rounded_corners": "Online KWin rounded-window effect",
-    "global_theme": "Global theme",
-    "layout": "Top bar and dock",
-    "sounds": "System sounds",
-    "gtk": "GTK theme",
+    "cursors": "Pointer theme",
+    "plasma_theme": "Panels and widgets",
+    "window_decorations": "Window frames",
+    "kvantum": "Qt app styling",
+    "color_schemes": "Light and dark palettes",
+    "icons": "App and system icons",
+    "plasmoids": "Desktop widgets",
+    "globalmenu": "Application menu bar",
+    "acrylic_glass": "Window blur",
+    "rounded_corners": "Rounded windows",
+    "global_theme": "Plasma look and feel",
+    "layout": "Top bar and Dock",
+    "sounds": "System sound theme",
+    "gtk": "GTK app styling",
+    "firefox": "Browser theme",
     "sddm": "Login screen",
-    "plymouth": "Boot splash",
-    "apps": "App tweaks",
-    "nautilus": "Nautilus file manager",
-    "nautilus_bookmarks": "macOS-style sidebar bookmarks",
-    "portals": "Native KDE dialogs",
-    "oled_care": "OLED care pixel shift",
-    "apply_theme": "Set as default after install",
-    "kconf_update": "Config migrations (kconf_update)",
+    "plymouth": "Boot animation",
+    "apps": "Application settings",
+    "nautilus": "File manager",
+    "nautilus_bookmarks": "Sidebar shortcuts",
+    "portals": "KDE file dialogs",
+    "oled_care": "Panel pixel shift",
+    "apply_theme": "Activate after install",
+    "kconf_update": "Settings migrations",
 }
 
 INSTALL_HELP = """\
@@ -104,6 +105,8 @@ Options:
     --layout           Panel layout (top bar + dock)
     --sounds           Notification and event sounds
     --gtk              GTK 2/3/4 theme
+    --firefox          Matching Firefox-family browser CSS (native, Flatpak,
+                       and Snap; backs up every profile before changing it)
     --sddm             Login screen theme
     --plymouth         Boot splash screen (Plymouth)
     --apps             App configuration tweaks
@@ -167,6 +170,7 @@ Options:
     --layout           Reset panel layout to default
     --sounds           Remove notification sounds
     --gtk              Remove GTK theme
+    --firefox          Restore every themed browser profile (backups retained)
     --sddm             Remove login screen theme
     --plymouth         Restore previous boot splash and rebuild initramfs
     --apps             Reset app configuration

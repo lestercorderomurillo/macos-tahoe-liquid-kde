@@ -4,7 +4,7 @@
 
 # macOS Tahoe Liquid Theme for Plasma 6.6/6.7+
 
-[![release](https://img.shields.io/github/v/release/lestercorderomurillo/macos-tahoe-liquid-kde?label=release&color=blue)](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/releases) [![tests](https://img.shields.io/badge/tests-1014_passing-brightgreen)](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/actions/workflows/test.yml) [![plasma](https://img.shields.io/badge/Plasma-6.6%2B-1d99f3?logo=kde)](https://kde.org/plasma-desktop/) [![license](https://img.shields.io/badge/license-GPL--3.0-blue)](LICENSE) [![report a bug](https://img.shields.io/badge/report-a%20bug-red?logo=github)](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/issues/new)
+[![release](https://img.shields.io/github/v/release/lestercorderomurillo/macos-tahoe-liquid-kde?label=release&color=blue)](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/releases) [![tests](https://img.shields.io/badge/tests-1027_passing-brightgreen)](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/actions/workflows/test.yml) [![plasma](https://img.shields.io/badge/Plasma-6.6%2B-1d99f3?logo=kde)](https://kde.org/plasma-desktop/) [![license](https://img.shields.io/badge/license-GPL--3.0-blue)](LICENSE) [![report a bug](https://img.shields.io/badge/report-a%20bug-red?logo=github)](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/issues/new)
 
 Introducing macOS Tahoe, reimagined for Linux.
 
@@ -150,7 +150,7 @@ sudo ./uninstall --only --cursors
 
 Available feature names:
 
-`wallpapers`, `fonts`, `cursors`, `plasma-theme`, `window-decorations`, `kvantum`, `color-schemes`, `icons`, `plasmoids`, `globalmenu`, `acrylic-glass`, `rounded-corners`, `global-theme`, `layout`, `sounds`, `gtk`, `sddm`, `apps`, `nautilus`, `nautilus-bookmarks`, `portals`, `oled-care`, `plymouth`.
+`wallpapers`, `fonts`, `cursors`, `plasma-theme`, `window-decorations`, `kvantum`, `color-schemes`, `icons`, `plasmoids`, `globalmenu`, `acrylic-glass`, `rounded-corners`, `global-theme`, `layout`, `sounds`, `gtk`, `firefox`, `sddm`, `apps`, `nautilus`, `nautilus-bookmarks`, `portals`, `oled-care`, `plymouth`.
 
 Choose the initial theme mode:
 
@@ -182,6 +182,25 @@ Useful maintenance options:
 - `--no-grub-modify` leaves `/etc/default/grub` unchanged.
 - `--reset-wallpapers` restores the bundled wallpaper choice.
 - `./legacy-install` and `./legacy-uninstall` use the classic prompt instead of the terminal wizard.
+
+</details>
+
+<details>
+<summary><b>Firefox theme and profile safety</b></summary>
+
+The installer themes every initialized Firefox-family profile it finds in
+native, Flatpak, and Snap locations. It does not stop Firefox, invoke an
+upstream installer, replace a profile, or touch bookmarks, history, cookies,
+passwords, extensions, or session data. Restart each running browser when
+convenient to load the CSS.
+
+Before every change it snapshots `profiles.ini`, `prefs.js`, `user.js`, and the
+complete `chrome` tree under
+`~/.local/state/mac-tahoe-liquid-kde/firefox/snapshots/`. If a backup fails,
+that profile is skipped. A recognized legacy vinceliuice `chrome` symlink is
+detached without deleting its shared target. Uninstall removes only this
+project's marked imports, preference block, and owned payload; the retained
+snapshots provide an additional manual recovery path.
 
 </details>
 
@@ -303,7 +322,7 @@ Most of the desktop is ready. Icons and multi-distro support are still being pol
 | Shutdown Screen | Matching shutdown sequence | Completed |
 | Icons | Complete light and dark icon set | In progress |
 | Multi-Distro Support | Arch, Fedora, openSUSE, and Gentoo families | In progress |
-| Firefox Theme | Matching browser theme | Planned |
+| Firefox Theme | Matching browser CSS with per-profile backup and restore | Completed |
 | Konsole Theme | Matching terminal profile | Planned |
 | Kate Theme | Matching editor theme | Planned |
 | SDDM Theme | Login and lock screen | Planned |
@@ -346,7 +365,7 @@ Licensed [GPL-3.0](LICENSE).
 Thanks to the open-source projects that inspired this one or fed assets into it. Everything here is maintained independently:
 
 - **[EliverLara](https://github.com/EliverLara/TahoeLauncher)**: `TahoeLauncher`, the inspiration for the Launcher plasmoid.
-- **[vinceliuice](https://github.com/vinceliuice)**: `MacTahoe-icon-theme`, the basis for the icons and cursors, and inspiration for the GTK look.
+- **[vinceliuice](https://github.com/vinceliuice)**: `MacTahoe-icon-theme`, the basis for the icons and cursors and inspiration for the GTK look; and the [`MacTahoe-gtk-theme` Firefox CSS/SVG](https://github.com/vinceliuice/MacTahoe-gtk-theme/tree/main/other/firefox), maintained here as a bundled MIT-licensed fork. We use the CSS and SVG assets, but deliberately do not ship or run its installer script—our installer discovers native, Flatpak, and Snap profiles, backs up every profile's UI configuration, and restores only the files and marked blocks it owns.
 - **[taj-ny](https://github.com/taj-ny/kwin-effects-forceblur)** and **[4v3ngR](https://github.com/4v3ngR/kwin-effects-glass)**: Better Blur and its glass fork, the starting point of the Acrylic Glass effect (the KWin blur authors stay credited in the source headers).
 - **[luisbocanegra](https://github.com/luisbocanegra/plasma-panel-colorizer)**: `plasma-panel-colorizer` v7.3.0, bundled offline and installed by the layout step to tint the panels (GPL-3.0, license shipped alongside).
 - **[Matin Lotfaliei / KDE-Rounded-Corners](https://github.com/matinlotfali/KDE-Rounded-Corners)**: the GPL-3.0 KWin rounded-window effect, fetched from the pinned v0.9.0 release and built online against the host KWin SDK (license installed alongside).
