@@ -30,9 +30,7 @@ Closer to the real design. Quick search, a favorites capsule, and two view modes
 
 ### Acrylic Glass Tahoe Dock
 
-Real liquid-glass depth. The wallpaper bends through the surface, with red macOS-style notification badges.
-The dock's glass opacity is re-applied after every theme change so switching a
-Global Theme in System Settings cannot leave an opaque panel behind.
+Liquid-glass depth with wallpaper refraction and macOS-style notification badges.
 
 <p align="center">
   <img src="src/screenshots/dock_1_v3.png" width="840">
@@ -189,18 +187,16 @@ Useful maintenance options:
 <summary><b>Firefox theme and profile safety</b></summary>
 
 The installer themes every initialized Firefox-family profile it finds in
-native, Flatpak, and Snap locations. It does not stop Firefox, invoke an
-upstream installer, replace a profile, or touch bookmarks, history, cookies,
-passwords, extensions, or session data. Restart each running browser when
-convenient to load the CSS.
+native, Flatpak, and Snap locations while preserving the profile's browser
+data and existing customizations. Restart each running browser when convenient
+to load the CSS.
 
-Before every change it snapshots `profiles.ini`, `prefs.js`, `user.js`, and the
-complete `chrome` tree under
-`~/.local/state/mac-tahoe-liquid-kde/firefox/snapshots/`. If a backup fails,
-that profile is skipped. A recognized legacy vinceliuice `chrome` symlink is
-detached without deleting its shared target. Uninstall removes only this
-project's marked imports, preference block, and owned payload; the retained
-snapshots provide an additional manual recovery path.
+Each profile receives a timestamped snapshot of `profiles.ini`, `prefs.js`,
+`user.js`, and its complete `chrome` tree under
+`~/.local/state/mac-tahoe-liquid-kde/firefox/snapshots/`. Changes begin only
+after the backup completes. Existing shared-theme layouts are preserved during
+migration, and the project's marked additions can be cleanly removed on
+uninstall. Snapshots remain available for manual recovery.
 
 </details>
 
@@ -365,7 +361,7 @@ Licensed [GPL-3.0](LICENSE).
 Thanks to the open-source projects that inspired this one or fed assets into it. Everything here is maintained independently:
 
 - **[EliverLara](https://github.com/EliverLara/TahoeLauncher)**: `TahoeLauncher`, the inspiration for the Launcher plasmoid.
-- **[vinceliuice](https://github.com/vinceliuice)**: `MacTahoe-icon-theme`, the basis for the icons and cursors and inspiration for the GTK look; and the [`MacTahoe-gtk-theme` Firefox CSS/SVG](https://github.com/vinceliuice/MacTahoe-gtk-theme/tree/main/other/firefox), maintained here as a bundled MIT-licensed fork. We use the CSS and SVG assets, but deliberately do not ship or run its installer script—our installer discovers native, Flatpak, and Snap profiles, backs up every profile's UI configuration, and restores only the files and marked blocks it owns.
+- **[vinceliuice](https://github.com/vinceliuice)**: `MacTahoe-icon-theme` for the icons, cursors, and GTK inspiration; and the [`MacTahoe-gtk-theme` Firefox CSS/SVG](https://github.com/vinceliuice/MacTahoe-gtk-theme/tree/main/other/firefox), maintained here as an MIT-licensed fork and integrated with this project's profile backup and restore system.
 - **[taj-ny](https://github.com/taj-ny/kwin-effects-forceblur)** and **[4v3ngR](https://github.com/4v3ngR/kwin-effects-glass)**: Better Blur and its glass fork, the starting point of the Acrylic Glass effect (the KWin blur authors stay credited in the source headers).
 - **[luisbocanegra](https://github.com/luisbocanegra/plasma-panel-colorizer)**: `plasma-panel-colorizer` v7.3.0, bundled offline and installed by the layout step to tint the panels (GPL-3.0, license shipped alongside).
 - **[Matin Lotfaliei / KDE-Rounded-Corners](https://github.com/matinlotfali/KDE-Rounded-Corners)**: the GPL-3.0 KWin rounded-window effect, fetched from the pinned v0.9.0 release and built online against the host KWin SDK (license installed alongside).
