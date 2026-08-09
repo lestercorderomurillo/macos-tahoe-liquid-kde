@@ -65,6 +65,23 @@ def test_run_live_swallows_timeout(monkeypatch):
     assert apply._run_live(["plasma-apply-wallpaperimage", "/x"]) is False
 
 
+def test_flush_caches_warns_when_application_cache_rebuild_fails(
+        monkeypatch, tmp_path):
+    monkeypatch.setattr(apply, "HOME", tmp_path)
+    monkeypatch.setattr(apply, "have", lambda cmd: cmd == "kbuildsycoca6")
+    monkeypatch.setattr(apply, "_refresh_desktop_database", lambda: None)
+    monkeypatch.setattr(apply, "_run_live", lambda cmd: False)
+    oks = []
+    warns = []
+    monkeypatch.setattr(apply, "ok", lambda message: oks.append(message))
+    monkeypatch.setattr(apply, "warn", lambda message: warns.append(message))
+
+    apply._flush_caches()
+
+    assert "Caches flushed" not in oks
+    assert any("application cache rebuild failed" in item for item in warns)
+
+
 # ── graceful Plasma restart with hard-stop fallback ──────────────────
 
 

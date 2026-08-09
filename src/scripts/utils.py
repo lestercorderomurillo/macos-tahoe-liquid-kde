@@ -42,6 +42,9 @@ _DESKTOP_ENV_KEYS = frozenset({
     "WAYLAND_DISPLAY",
     "XAUTHORITY",
     "XDG_CURRENT_DESKTOP",
+    # kbuildsycoca6 uses this to select plasma-applications.menu. sudo strips
+    # it; without the prefix the rebuild succeeds but registers zero apps.
+    "XDG_MENU_PREFIX",
     "XDG_RUNTIME_DIR",
     "XDG_SESSION_TYPE",
 })

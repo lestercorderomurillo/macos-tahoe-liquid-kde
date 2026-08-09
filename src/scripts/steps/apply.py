@@ -292,8 +292,11 @@ def _flush_caches() -> None:
                 except OSError: pass
     # Refresh mimeinfo.cache before sycoca so kbuildsycoca6 sees every app.
     _refresh_desktop_database()
-    if have("kbuildsycoca6"):
-        _run_live(["kbuildsycoca6", "--noincremental"])
+    if have("kbuildsycoca6") and not _run_live(
+            ["kbuildsycoca6", "--noincremental"]):
+        warn("KDE application cache rebuild failed — app launchers may be "
+             "unavailable until the next successful rebuild")
+        return
     ok("Caches flushed")
 
 
