@@ -242,12 +242,14 @@ def test_generic_session_env_recovers_x11_from_plasmashell(
     shell.mkdir(parents=True)
     (shell / "comm").write_text("plasmashell\n")
     (shell / "environ").write_bytes(
-        b"DISPLAY=:9\0XAUTHORITY=/tmp/xauth-test\0XDG_SESSION_TYPE=x11\0")
+        b"DISPLAY=:9\0XAUTHORITY=/tmp/xauth-test\0XDG_SESSION_TYPE=x11\0"
+        b"XDG_MENU_PREFIX=plasma-\0")
     runtime = tmp_path / "runtime"
     runtime.mkdir()
     monkeypatch.setattr(utils, "_PROC_ROOT", proc)
     monkeypatch.setenv("XDG_RUNTIME_DIR", str(runtime))
-    for key in ("DISPLAY", "XAUTHORITY", "XDG_SESSION_TYPE"):
+    for key in ("DISPLAY", "XAUTHORITY", "XDG_SESSION_TYPE",
+                "XDG_MENU_PREFIX"):
         monkeypatch.delenv(key, raising=False)
 
     utils.restore_desktop_session_env(os.getuid())
@@ -255,6 +257,7 @@ def test_generic_session_env_recovers_x11_from_plasmashell(
     assert os.environ["DISPLAY"] == ":9"
     assert os.environ["XAUTHORITY"] == "/tmp/xauth-test"
     assert os.environ["XDG_SESSION_TYPE"] == "x11"
+    assert os.environ["XDG_MENU_PREFIX"] == "plasma-"
 
 
 @pytest.mark.parametrize("module_name", ["oled_care", "theme_switch"])
