@@ -69,6 +69,11 @@ def _theme_source() -> Path:
     return offline(THEME_SOURCE_NAME, THEME_DIRNAME)
 
 
+def _xdg_config_home() -> Path:
+    configured = os.environ.get("XDG_CONFIG_HOME")
+    return Path(configured).expanduser() if configured else HOME / ".config"
+
+
 def _profile_id(profile: Path) -> str:
     digest = hashlib.sha256(os.fsencode(str(profile))).hexdigest()[:16]
     safe_name = re.sub(r"[^A-Za-z0-9_.-]+", "-", profile.name).strip("-")
@@ -124,6 +129,7 @@ def _candidate_roots() -> list[Path]:
     uniform fingerprint.
     """
     roots = [
+        _xdg_config_home() / "mozilla/firefox",
         HOME / ".mozilla/firefox",
         HOME / ".librewolf",
         HOME / ".floorp",

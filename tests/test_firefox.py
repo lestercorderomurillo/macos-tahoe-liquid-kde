@@ -29,13 +29,19 @@ def firefox_home(tmp_path, monkeypatch, offline) -> Path:
     home = tmp_path / "home"
     home.mkdir()
     monkeypatch.setattr(firefox, "HOME", home)
+    monkeypatch.setenv("XDG_CONFIG_HOME", str(home / "xdg-config"))
     monkeypatch.setattr(
         firefox, "offline", lambda *parts: Path(offline, *parts)
     )
     return home
 
 
-def test_discovers_native_flatpak_snap_and_orphan_profiles(firefox_home):
+def test_discovers_xdg_native_flatpak_snap_and_orphan_profiles(
+    firefox_home, monkeypatch,
+):
+    xdg_native = _seed_profile(
+        firefox_home / "xdg-config/mozilla/firefox", "xdg.default"
+    )
     native = _seed_profile(firefox_home / ".mozilla/firefox", "native.default")
     flatpak = _seed_profile(
         firefox_home / ".var/app/org.mozilla.firefox/.mozilla/firefox",
@@ -50,7 +56,22 @@ def test_discovers_native_flatpak_snap_and_orphan_profiles(firefox_home):
     (orphan / "prefs.js").write_text("", encoding="utf-8")
 
     assert firefox.discover_profiles() == sorted(
-        (native.resolve(), flatpak.resolve(), orphan.resolve(), snap.resolve()),
+        (
+            xdg_native.resolve(), native.resolve(), flatpak.resolve(),
+            orphan.resolve(), snap.resolve(),
+        ),
+        key=str,
+    )
+
+    monkeypatch.delenv("XDG_CONFIG_HOME")
+    default_xdg = _seed_profile(
+        firefox_home / ".config/mozilla/firefox", "xdg.default"
+    )
+    assert firefox.discover_profiles() == sorted(
+        (
+            default_xdg.resolve(), native.resolve(), flatpak.resolve(),
+            orphan.resolve(), snap.resolve(),
+        ),
         key=str,
     )
 
