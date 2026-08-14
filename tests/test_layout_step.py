@@ -283,6 +283,34 @@ def test_uninstall_leaves_unrelated_custom_layout_untouched(
     assert messages == ["Layout already clean"]
 
 
+def test_uninstall_scrubs_only_our_stale_panel_transparency(
+        monkeypatch, tmp_path):
+    monkeypatch.setattr(layout, "HOME", tmp_path)
+    _write_appletsrc(tmp_path, "plugin=org.example.custom.panel\n")
+    prc = tmp_path / ".config/plasmashellrc"
+    prc.write_text(
+        "[PlasmaViews][Panel 1]\n"
+        "floating=1\n"
+        "panelOpacity=2\n"
+        "floatingApplets=1\n"
+        "visibilityMode=0\n\n"
+        "[PlasmaViews][Panel 2]\n"
+        "floating=1\n"
+        "panelOpacity=1\n"
+        "floatingApplets=0\n"
+    )
+    messages = []
+    monkeypatch.setattr(layout, "ok", messages.append)
+
+    layout.uninstall()
+
+    text = prc.read_text()
+    assert "[PlasmaViews][Panel 1]\nfloating=1\nvisibilityMode=0" in text
+    assert "[PlasmaViews][Panel 2]\nfloating=1\npanelOpacity=1" in text
+    assert "floatingApplets=0" in text
+    assert messages == ["Panel transparency reset", "Layout already clean"]
+
+
 def test_uninstall_recognizes_legacy_mac_layout_ids(monkeypatch, tmp_path):
     monkeypatch.setattr(layout, "HOME", tmp_path)
     _write_appletsrc(

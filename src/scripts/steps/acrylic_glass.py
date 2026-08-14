@@ -175,10 +175,28 @@ def install() -> None:
 
 
 def uninstall() -> None:
-    qdbus_call("org.kde.KWin", "/Effects",
-               "org.kde.kwin.Effects.unloadEffect", "liquidglass")
-    kw_write("--file", "kwinrc", "--group", "Plugins",
-             "--key", "liquidglassEnabled", "false")
+    # Persist the disabled state before asking KWin to unload the effect.
+    # Unloading first can race a config notification/reconfigure and let KWin
+    # immediately load the still-enabled plugin again, leaving every window
+    # translucent until the user logs out even though the .so was removed.
+    disabled = kw_write(
+        "--file", "kwinrc", "--group", "Plugins",
+        "--key", "liquidglassEnabled", "false",
+    )
+    unloaded = qdbus_call(
+        "org.kde.KWin", "/Effects",
+        "org.kde.kwin.Effects.unloadEffect", "liquidglass",
+    )
+    reconfigured = qdbus_call(
+        "org.kde.KWin", "/KWin", "org.kde.KWin.reconfigure",
+    )
+    if not disabled:
+        warn("Acrylic Glass could not be disabled in kwinrc")
+    if not unloaded and not reconfigured:
+        # A reconfigure with liquidglassEnabled=false is an equivalent live
+        # unload.  Only warn when neither live path reached KWin.
+        warn("Acrylic Glass live unload was not confirmed — log out once if "
+             "window transparency remains")
 
     # Strip the whole [Effect-liquidglass] group — leaving it behind would
     # let a reinstall keep stale tuned values.
@@ -211,4 +229,9 @@ def uninstall() -> None:
                 ok(f"{so.name} (legacy user-path)")
             except OSError as exc:
                 fail(f"{so.name} ({exc})")
+
+    # Refresh KWin's effect catalogue after the plugin files disappear.  This
+    # also repaints windows immediately on sessions where unloadEffect is
+    # asynchronous, instead of leaving the old effect mapped until logout.
+    qdbus_call("org.kde.KWin", "/KWin", "org.kde.KWin.reconfigure")
     info("Acrylic Glass removed")

@@ -327,6 +327,40 @@ def _patch_plasmashellrc() -> None:
         ok("Dock installed")
 
 
+def _reset_plasmashellrc() -> bool:
+    """Remove only the panel values written by this project.
+
+    Rebuilding the panel layout does not clear ``plasmashellrc``'s per-panel
+    view state.  Plasma can reuse the same panel id for the new Breeze panel,
+    so our translucent opacity survives uninstall unless it is removed
+    explicitly.  Values other than our exact preset are user-owned and stay.
+    """
+    prc = HOME / ".config/plasmashellrc"
+    if not prc.is_file():
+        return False
+    try:
+        text = prc.read_text()
+    except OSError:
+        return False
+
+    def reset(m: re.Match) -> str:
+        section = m.group(0)
+        section = re.sub(r"^panelOpacity=2\n?", "", section,
+                         flags=re.MULTILINE)
+        section = re.sub(r"^floatingApplets=1\n?", "", section,
+                         flags=re.MULTILINE)
+        return section
+
+    new_text = _PRC_PANEL_RE.sub(reset, text)
+    if new_text == text:
+        return False
+    try:
+        prc.write_text(new_text)
+    except OSError:
+        return False
+    return True
+
+
 def install() -> None:
     # A failed rebuild must leave is_installed() false so cli.py retries after
     # Plasma restarts instead of trusting a marker from the previous run.
@@ -357,6 +391,8 @@ def is_installed() -> bool:
 def uninstall() -> None:
     has_theme_widgets = _layout_has_any_theme_widget()
     _clear_layout_marker()
+    if _reset_plasmashellrc():
+        ok("Panel transparency reset")
     if not has_theme_widgets:
         ok("Layout already clean")
         return
