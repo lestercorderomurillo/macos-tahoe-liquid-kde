@@ -11,6 +11,7 @@ REPO = Path(__file__).resolve().parents[1]
 VM = (REPO / "vm").read_text()
 CLOUD_PATH = REPO / ".vm/cloud-init/gentoo-openrc.yaml"
 CLOUD = CLOUD_PATH.read_text()
+NEON_CLOUD_PATH = REPO / ".vm/cloud-init/neon.yaml"
 SYSTEMD_CLOUD_PATHS = tuple(
     path
     for path in sorted((REPO / ".vm/cloud-init").glob("*.yaml"))
@@ -18,9 +19,9 @@ SYSTEMD_CLOUD_PATHS = tuple(
 )
 
 
-def _provision_script() -> str:
+def _provision_script(path: Path = CLOUD_PATH) -> str:
     """Return cloud-init's YAML block scalar exactly as bash receives it."""
-    content = CLOUD.split("    content: |\n", 1)[1]
+    content = path.read_text().split("    content: |\n", 1)[1]
     content = content.split("\nruncmd:\n", 1)[0]
     return "\n".join(
         line[6:] if line.startswith("      ") else line
@@ -36,6 +37,43 @@ def test_vm_lists_gentoo_openrc():
         text=True,
     )
     assert "gentoo-openrc" in result.stdout.splitlines()
+
+
+def test_vm_lists_neon():
+    result = subprocess.run(
+        [str(REPO / "vm"), "list"],
+        check=True,
+        capture_output=True,
+        text=True,
+    )
+    assert "neon" in result.stdout.splitlines()
+
+
+def test_neon_vm_uses_signed_official_sources_and_qt6_build_deps():
+    cloud = NEON_CLOUD_PATH.read_text()
+
+    assert "cloud-images.ubuntu.com/noble/current" in VM
+    assert "http://archive.neon.kde.org/user" in cloud
+    assert "444DABCF3667D0283F894EDDE6D4736255751E5D" in cloud
+    assert "Signed-By: /etc/apt/keyrings/mttkde-neon-archive-keyring.asc" in cloud
+    assert "base-files" in cloud
+    assert "neon-desktop" in cloud and "plasmalogin" in cloud
+    assert "python3-pyqt6.qtqml" in cloud
+    assert "qt6-svg-dev" in cloud and "libxext-dev" in cloud
+    assert "/home/tester/macos-tahoe-liquid-kde" in cloud
+    assert "--exclude=.vm" in cloud and "--exclude=build" in cloud
+    assert "trusted=yes" not in cloud
+    assert "add-apt-repository" not in cloud
+
+
+def test_neon_provision_script_is_valid_bash():
+    result = subprocess.run(
+        ["bash", "-n"],
+        input=_provision_script(NEON_CLOUD_PATH),
+        capture_output=True,
+        text=True,
+    )
+    assert result.returncode == 0, result.stderr
 
 
 def test_systemd_cloud_images_dispatch_their_provisioner():

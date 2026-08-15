@@ -1,0 +1,240 @@
+#cloud-config
+# KDE neon User Edition smoke guest. Start from Ubuntu's official Noble cloud
+# image, verify KDE neon's published archive-key fingerprint, add only the
+# official User Edition repository, install Plasma, and reboot into a real
+# graphical session with this repository mounted read-only.
+
+users:
+  - name: tester
+    gecos: VM Tester
+    groups: [sudo, users]
+    sudo: ALL=(ALL) NOPASSWD:ALL
+    shell: /bin/bash
+    lock_passwd: false
+    passwd: "$6$mttkdevm$QqkApILBUIQ5/AXpjsoSJGqAlLm1MI2vTZCDEHNYGb.jnyXsjGeVTq3pOCi4JRqh5r.D0GRRHtDiX6Xsb8fcu/"
+
+ssh_pwauth: true
+disable_root: false
+chpasswd:
+  expire: false
+  users:
+    - name: tester
+      password: tester
+      type: text
+    - name: root
+      password: tester
+      type: text
+
+growpart:
+  mode: auto
+  devices: ["/"]
+
+resize_rootfs: true
+package_update: false
+package_upgrade: false
+
+bootcmd:
+  - usermod --password "$(openssl passwd -6 -salt mttkdevm tester)" tester 2>/dev/null || true
+  - usermod --password "$(openssl passwd -6 -salt mttkdevm tester)" root 2>/dev/null || true
+
+write_files:
+  - path: /usr/local/bin/mttkde-provision.sh
+    permissions: "0755"
+    content: |
+      #!/bin/bash
+      set -euo pipefail
+      exec > >(tee -a /var/log/mttkde-provision.log) 2>&1
+
+      if [[ -f /var/lib/mttkde/provisioned ]]; then
+          exit 0
+      fi
+
+      select_plasma_session() {
+          local candidate
+          for candidate in plasma.desktop plasmawayland.desktop plasmax11.desktop; do
+              if [[ -f "/usr/share/wayland-sessions/${candidate}" ]] || \
+                 [[ -f "/usr/share/xsessions/${candidate}" ]]; then
+                  printf '%s\n' "$candidate"
+                  return 0
+              fi
+          done
+          printf 'plasma.desktop\n'
+      }
+
+      mkdir -p /var/lib/mttkde /home/tester/.config/autostart
+
+      export DEBIAN_FRONTEND=noninteractive
+      apt-get update
+      apt-get install -y --no-install-recommends ca-certificates curl gnupg
+
+      key_tmp="$(mktemp)"
+      trap 'rm -f "$key_tmp"' EXIT
+      curl -L --fail --proto '=https' --tlsv1.2 \
+          https://archive.neon.kde.org/public.key -o "$key_tmp"
+      fingerprint="$(
+          gpg --show-keys --with-colons "$key_tmp" 2>/dev/null \
+              | awk -F: '$1 == "fpr" { print $10; exit }'
+      )"
+      if [[ "$fingerprint" != "444DABCF3667D0283F894EDDE6D4736255751E5D" ]]; then
+          echo "KDE neon archive-key fingerprint mismatch: $fingerprint" >&2
+          exit 1
+      fi
+      # Keep the bootstrap key under a harness-owned name.  neon-keyring later
+      # installs /etc/apt/keyrings/neon-archive-keyring.asc as a conffile; using
+      # that path here makes dpkg stop for an interactive conffile prompt.
+      install -Dm644 "$key_tmp" /etc/apt/keyrings/mttkde-neon-archive-keyring.asc
+      rm -f "$key_tmp"
+      trap - EXIT
+
+      cat > /etc/apt/sources.list.d/neon.sources <<'EOF'
+      Types: deb
+      URIs: http://archive.neon.kde.org/user
+      Suites: noble
+      Components: main
+      Signed-By: /etc/apt/keyrings/mttkde-neon-archive-keyring.asc
+      EOF
+
+      apt-get update
+      apt-get install -y \
+          base-files \
+          neon-keyring \
+          neon-desktop \
+          plasmalogin \
+          openssh-server \
+          python3-pyqt6 \
+          python3-pyqt6.qtqml \
+          cmake \
+          make \
+          g++ \
+          extra-cmake-modules \
+          pkgconf \
+          qmake6 \
+          qdbus-qt6 \
+          qt6-base-dev \
+          qt6-base-private-dev \
+          qt6-declarative-dev \
+          qt6-tools-dev \
+          qt6-svg-dev \
+          libkf6config-bin \
+          libkf6config-dev \
+          libkf6configwidgets-dev \
+          libkf6coreaddons-dev \
+          libkf6crash-dev \
+          libkf6globalaccel-dev \
+          libkf6guiaddons-dev \
+          libkf6i18n-dev \
+          libkf6itemmodels-dev \
+          libkf6kcmutils-dev \
+          libkf6kio-dev \
+          libkf6notifications-dev \
+          libkf6service-dev \
+          libkf6widgetsaddons-dev \
+          libkf6windowsystem-dev \
+          libplasma-dev \
+          plasma-activities-dev \
+          plasma-activities-stats-dev \
+          libksysguard-dev \
+          plasma-workspace-dev \
+          kwin-dev \
+          libkdecorations3-dev \
+          libepoxy-dev \
+          libdrm-dev \
+          libwayland-dev \
+          libx11-dev \
+          libxext-dev \
+          libxcb1-dev \
+          libvulkan-dev \
+          desktop-file-utils \
+          fontconfig \
+          nautilus \
+          plymouth \
+          rsync \
+          zstd
+
+      systemctl enable ssh
+      systemctl daemon-reload || true
+      systemctl set-default graphical.target
+
+      session_name="$(select_plasma_session)"
+      if [[ ! -f /usr/lib/systemd/system/plasmalogin.service ]]; then
+          echo "Plasma Login Manager unit not found" >&2
+          exit 1
+      fi
+      mkdir -p /etc/plasmalogin.conf.d
+      cat > /etc/plasmalogin.conf.d/autologin.conf <<EOF
+      [Autologin]
+      User=tester
+      Session=${session_name}
+      EOF
+      systemctl enable plasmalogin.service
+
+      mkdir -p /home/tester/repo /home/tester/Desktop
+      modprobe 9p || true
+      modprobe 9pnet_virtio || true
+      grep -q '^repo /home/tester/repo' /etc/fstab \
+          || echo 'repo /home/tester/repo 9p trans=virtio,version=9p2000.L,msize=262144,ro,nofail 0 0' >> /etc/fstab
+
+      cat > /usr/local/bin/mttkde-vm-installer <<'EOF'
+      #!/bin/bash
+      set -euo pipefail
+      source_dir=/home/tester/repo
+      worktree=/home/tester/macos-tahoe-liquid-kde
+      for _attempt in $(seq 1 30); do
+          [[ -f "$source_dir/install" ]] && break
+          sleep 1
+      done
+      [[ -f "$source_dir/install" ]] || exit 1
+      mkdir -p "$worktree"
+      rsync -a --delete \
+          --exclude=.git --exclude=.vm --exclude=build \
+          "$source_dir/" "$worktree/"
+      cd "$worktree"
+      exec ./installer
+      EOF
+      chmod 0755 /usr/local/bin/mttkde-vm-installer
+
+      cat > /home/tester/Desktop/macos-tahoe-liquid-kde.desktop <<'EOF'
+      [Desktop Entry]
+      Type=Link
+      Name=macos-tahoe-liquid-kde — writable VM copy
+      Icon=folder
+      URL=file:///home/tester/macos-tahoe-liquid-kde
+      EOF
+
+      cat > /home/tester/.config/autostart/mttkde-installer.desktop <<'EOF'
+      [Desktop Entry]
+      Type=Application
+      Name=macos-tahoe-liquid-kde Installer
+      Comment=Opens the macOS Tahoe installer UI
+      Exec=bash -lc 'sleep 8; exec /usr/local/bin/mttkde-vm-installer'
+      Icon=system-software-install
+      Terminal=false
+      X-KDE-autostart-phase=2
+      OnlyShowIn=KDE;
+      EOF
+
+      chown -R tester:tester \
+          /home/tester/repo /home/tester/Desktop /home/tester/.config
+
+      cat > /etc/profile.d/mttkde-vm-progress.sh <<'EOF'
+      #!/bin/sh
+      [ "$(id -un)" = "tester" ] || return 0
+      case "$(tty)" in /dev/tty*) ;; *) return 0 ;; esac
+      [ -f /var/lib/mttkde/provisioned ] && return 0
+      [ -f /var/log/mttkde-provision.log ] || return 0
+      clear
+      echo "=== mttkde-vm: cloud-init is installing KDE neon. ==="
+      echo "=== Tail of /var/log/mttkde-provision.log below.  ==="
+      echo "=== The VM will REBOOT into Plasma when finished. ==="
+      echo "=== (Ctrl-C to drop to shell; re-login to resume.) ==="
+      echo
+      tail -F /var/log/mttkde-provision.log
+      EOF
+      chmod 0644 /etc/profile.d/mttkde-vm-progress.sh
+
+      touch /var/lib/mttkde/provisioned
+      systemctl --no-block reboot
+
+runcmd:
+  - systemctl enable --now ssh || true
+  - /usr/local/bin/mttkde-provision.sh

@@ -19,7 +19,7 @@
 #                     install — picks up any cloud-init changes)
 #
 # Supported: cachyos arch manjaro endeavouros garuda
-#            fedora nobara opensuse gentoo gentoo-openrc
+#            fedora nobara opensuse neon gentoo gentoo-openrc
 
 set -euo pipefail
 
@@ -33,18 +33,20 @@ declare -A BASE=(
     [endeavouros]=arch.qcow2 [garuda]=arch.qcow2
     [fedora]=fedora.qcow2 [nobara]=fedora.qcow2
     [opensuse]=opensuse.qcow2 [gentoo]=gentoo.qcow2
+    [neon]=ubuntu-noble.qcow2
     [gentoo-openrc]=gentoo.qcow2
 )
 declare -A URL=(
     [arch.qcow2]="https://geo.mirror.pkgbuild.com/images/latest/Arch-Linux-x86_64-cloudimg.qcow2"
     [fedora.qcow2]="https://download.fedoraproject.org/pub/fedora/linux/releases/44/Cloud/x86_64/images/Fedora-Cloud-Base-Generic-44-1.7.x86_64.qcow2"
     [opensuse.qcow2]="https://download.opensuse.org/tumbleweed/appliances/openSUSE-Tumbleweed-Minimal-VM.x86_64-Cloud.qcow2"
+    [ubuntu-noble.qcow2]="https://cloud-images.ubuntu.com/noble/current/noble-server-cloudimg-amd64.img"
 )
 GENTOO_CLOUD_DIR="https://distfiles.gentoo.org/releases/amd64/autobuilds/current-di-amd64-cloudinit"
 GENTOO_CLOUD_POINTER="$GENTOO_CLOUD_DIR/latest-di-amd64-cloudinit.txt"
-declare -A PORT=([arch]=2221 [cachyos]=2222 [manjaro]=2223 [endeavouros]=2224 [garuda]=2225 [fedora]=2226 [nobara]=2227 [opensuse]=2228 [gentoo]=2229 [gentoo-openrc]=2230)
+declare -A PORT=([arch]=2221 [cachyos]=2222 [manjaro]=2223 [endeavouros]=2224 [garuda]=2225 [fedora]=2226 [nobara]=2227 [opensuse]=2228 [gentoo]=2229 [gentoo-openrc]=2230 [neon]=2231)
 
-ORDER=(cachyos arch manjaro endeavouros garuda fedora nobara opensuse gentoo gentoo-openrc)
+ORDER=(cachyos arch manjaro endeavouros garuda fedora nobara opensuse neon gentoo gentoo-openrc)
 
 die()  { echo "✗ $*" >&2; exit 1; }
 warn() { echo "⚠ $*" >&2; }
@@ -220,7 +222,11 @@ boot_one() {
     require_tools
     prepare_one "$distro" "$clean" || die "cannot boot $distro"
     say "booting $distro VM (ssh: ssh -p ${PORT[$distro]} tester@127.0.0.1, password tester)"
-    say "the installer UI opens automatically; or run cd /repo && sudo ./install"
+    if [[ "$distro" == "neon" ]]; then
+        say "the installer UI opens from a writable copy; manual path: /home/tester/macos-tahoe-liquid-kde"
+    else
+        say "the installer UI opens automatically; or run cd /home/tester/repo && sudo ./install"
+    fi
     exec "${QEMU_ARGV[@]}"
 }
 

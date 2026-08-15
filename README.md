@@ -4,7 +4,7 @@
 
 # macOS Tahoe Liquid Theme for Plasma 6.6/6.7+
 
-[![release](https://img.shields.io/github/v/release/lestercorderomurillo/macos-tahoe-liquid-kde?label=release&color=blue)](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/releases) [![tests](https://img.shields.io/badge/tests-1076_passing-brightgreen)](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/actions/workflows/test.yml) [![plasma](https://img.shields.io/badge/Plasma-6.6%2B-1d99f3?logo=kde)](https://kde.org/plasma-desktop/) [![license](https://img.shields.io/badge/license-GPL--3.0-blue)](LICENSE) [![report a bug](https://img.shields.io/badge/report-a%20bug-red?logo=github)](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/issues/new)
+[![release](https://img.shields.io/github/v/release/lestercorderomurillo/macos-tahoe-liquid-kde?label=release&color=blue)](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/releases) [![tests](https://img.shields.io/badge/tests-1079_passing-brightgreen)](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/actions/workflows/test.yml) [![plasma](https://img.shields.io/badge/Plasma-6.6%2B-1d99f3?logo=kde)](https://kde.org/plasma-desktop/) [![license](https://img.shields.io/badge/license-GPL--3.0-blue)](LICENSE) [![report a bug](https://img.shields.io/badge/report-a%20bug-red?logo=github)](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/issues/new)
 
 Introducing macOS Tahoe, reimagined for Linux.
 
@@ -227,6 +227,10 @@ mac-tahoe-oled-care status
 
 `./vm <distro>` opens a disposable graphical Plasma machine with the repository mounted and the installer ready. `./vm all` launches the whole matrix.
 
+The Neon profile keeps the host mount read-only and refreshes a writable guest
+copy at `/home/tester/macos-tahoe-liquid-kde` on login, because its source-built
+Qt6 components need a writable `build/` directory.
+
 ```bash
 ./vm cachyos
 ./vm arch
@@ -236,12 +240,13 @@ mac-tahoe-oled-care status
 ./vm fedora
 ./vm nobara
 ./vm opensuse
+./vm neon
 ./vm gentoo
 ./vm gentoo-openrc
 ./vm all
 ```
 
-Supported names: `cachyos`, `arch`, `manjaro`, `endeavouros`, `garuda`, `fedora`, `nobara`, `opensuse`, `gentoo`, and `gentoo-openrc`.
+Supported names: `cachyos`, `arch`, `manjaro`, `endeavouros`, `garuda`, `fedora`, `nobara`, `opensuse`, `neon`, `gentoo`, and `gentoo-openrc`.
 
 </details>
 
@@ -262,7 +267,7 @@ Supported names: `cachyos`, `arch`, `manjaro`, `endeavouros`, `garuda`, `fedora`
 | <img src="https://cdn.simpleicons.org/nobaralinux" width="22"> | Nobara | ![Needs more testing](https://img.shields.io/badge/needs%20more%20testing-B42318) |
 | <img src="https://cdn.simpleicons.org/opensuse" width="22"> | openSUSE Tumbleweed | ![Needs more testing](https://img.shields.io/badge/needs%20more%20testing-B42318) |
 | <img src="https://cdn.simpleicons.org/gentoo" width="22"> | Gentoo | ![Needs more testing](https://img.shields.io/badge/needs%20more%20testing-B42318) |
-| <img src="https://cdn.simpleicons.org/kde" width="22"> | [KDE neon](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/issues/64) | ![Container qualified, VM pending](https://img.shields.io/badge/container%20qualified%2C%20VM%20pending-D4A72C) |
+| <img src="https://cdn.simpleicons.org/kde" width="22"> | [KDE neon](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/issues/64) | ![Container + VM qualified](https://img.shields.io/badge/container%20%2B%20VM%20qualified-D4A72C) |
 
 <br>
 

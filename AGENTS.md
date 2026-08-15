@@ -26,7 +26,7 @@ line under OpenRC, chosen by `init_system()` in the distro layer.
 OpenRC is supported generically across distros; it is verified by hand
 in a Gentoo OpenRC VM (`./vm`), not in the container matrix. The
 container matrix covers Arch, CachyOS, Manjaro, EndeavourOS, Garuda,
-Gentoo, Fedora, Nobara, and openSUSE Tumbleweed on their default
+Gentoo, Fedora, Nobara, openSUSE Tumbleweed, and KDE neon on their default
 (systemd) profiles; of these only **Arch and CachyOS are marked
 *tested* in the README — every other distro is *testing* / work in
 progress**. Immutable rpm-ostree distros
