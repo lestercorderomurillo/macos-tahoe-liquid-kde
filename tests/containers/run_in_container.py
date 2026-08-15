@@ -490,6 +490,53 @@ def step_cmake_configure() -> bool:
     return ok_all
 
 
+def step_bundled_kvantum_build() -> bool:
+    """Compile the offline Qt 6 engine where no distro engine is present."""
+    print("\n=== bundled Kvantum Qt 6 fallback ===")
+    from steps import kvantum
+
+    if not kvantum._bundled_engine_required():
+        print("  SKIP: distro-owned Qt 6 engine/package path")
+        return True
+    kvantum.build()
+    missing = [path for path in kvantum.build_artifacts() if not path.is_file()]
+    if missing:
+        for path in missing:
+            print(f"  FAIL: missing build artefact {path}")
+        return False
+
+    if not kvantum._install_bundled_engine():
+        print("  FAIL: bundled engine install returned false")
+        return False
+    destination = kvantum._engine_destination()
+    installed = (destination, kvantum.ENGINE_MARKER, kvantum.ENGINE_LICENSE)
+    missing = [path for path in installed if not path.is_file()]
+    if missing:
+        for path in missing:
+            print(f"  FAIL: missing installed file {path}")
+        return False
+
+    linkage = subprocess.run(
+        ["ldd", str(destination)], check=False, capture_output=True, text=True,
+    )
+    if linkage.returncode != 0 or "not found" in linkage.stdout:
+        print("  FAIL: installed Kvantum plugin has unresolved libraries")
+        print(linkage.stdout)
+        return False
+
+    kvantum._remove_bundled_engine()
+    leftovers = [path for path in installed if path.exists()]
+    if leftovers:
+        for path in leftovers:
+            print(f"  FAIL: uninstall leftover {path}")
+        return False
+    print(
+        f"  PASS: Kvantum Qt 6 engine v{kvantum.ENGINE_VERSION} "
+        "compiled, linked, installed, and removed"
+    )
+    return True
+
+
 def step_pytest() -> bool:
     print("\n=== pytest ===")
     res = subprocess.run(
@@ -509,6 +556,7 @@ def main() -> int:
     pkg_ok = step_package_manager_layer()
     preflight_ok = step_preflight_destinations()
     cmake_ok = step_cmake_configure()
+    kvantum_ok = step_bundled_kvantum_build()
     tests_ok = step_pytest()
 
     print("\n=== summary ===")
@@ -518,12 +566,15 @@ def main() -> int:
     print(f"  Package mgr layer:  {'PASS' if pkg_ok else 'FAIL'}")
     print(f"  Preflight paths:    {'PASS' if preflight_ok else 'FAIL'}")
     print(f"  CMake cfg+compile:  {'PASS' if cmake_ok else 'FAIL'}")
+    print(f"  Kvantum Qt6 build:  {'PASS' if kvantum_ok else 'FAIL'}")
     print(f"  Pytest suite:       {'PASS' if tests_ok else 'FAIL'}")
 
     if plugins is None or qml is None:
         print("  → qmake6 not available — install the Qt6 base development package")
         return 1
-    if not (layer_ok and pkg_ok and preflight_ok and cmake_ok and tests_ok):
+    if not all((
+        layer_ok, pkg_ok, preflight_ok, cmake_ok, kvantum_ok, tests_ok,
+    )):
         return 1
     return 0
 

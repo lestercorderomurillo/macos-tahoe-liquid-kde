@@ -459,6 +459,37 @@ def test_local_extras_selects_matching_kvantum_profile(
     assert ["kvantummanager", "--set", expected] in calls
 
 
+def test_local_extras_sets_kvantum_profile_without_manager(monkeypatch, tmp_path):
+    """The bundled Neon engine reads kvantum.kvconfig directly, so theme
+    switching must not depend on the unavailable manager package."""
+    import theme_switch
+
+    config_home = tmp_path / "config"
+    monkeypatch.setenv("XDG_CONFIG_HOME", str(config_home))
+    monkeypatch.setattr(
+        theme_switch, "_have", lambda cmd: cmd == "kwriteconfig6"
+    )
+    calls = []
+    monkeypatch.setattr(
+        theme_switch,
+        "_run_user",
+        lambda cmd, **kwargs:
+        calls.append(cmd) or subprocess.CompletedProcess(cmd, 0),
+    )
+    monkeypatch.setattr(theme_switch, "_qdbus", lambda *args: True)
+    monkeypatch.setattr(theme_switch, "flush_icon_caches", lambda: None)
+
+    theme_switch._apply_local_extras("dark")
+
+    assert config_home.joinpath("Kvantum").is_dir()
+    assert [
+        "kwriteconfig6", "--file",
+        str(config_home / "Kvantum/kvantum.kvconfig"),
+        "--group", "General", "--key", "theme",
+        "mac-tahoe-liquid-kdeDark",
+    ] in calls
+
+
 def test_local_extras_replaces_kde_generated_light_gtk4_sheet_in_dark_mode(
         monkeypatch, tmp_path):
     """kde-gtk-config expands the light sheet and appends colors.css. That is

@@ -12,15 +12,15 @@ ENV PYTHONUNBUFFERED=1
 # a bad distro.py mapping fails even when that package is not needed to
 # configure CMake in this stripped-down container.
 #
-# Do not install Noble's qt5-style-kvantum to silence that probe: it does not
-# ship a Qt 6 style plugin. The experimental lane must keep reporting that
-# real repository gap until Neon gains a Qt 6 package or we bundle the engine.
+# Noble's qt5-style-kvantum does not ship a Qt 6 style plugin. The installer
+# therefore builds the pinned, bundled Qt 6 engine instead of adding a PPA.
 RUN apt-get update && \
     DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
         python3 python3-pytest \
         cmake make g++ extra-cmake-modules pkgconf \
         qmake6 qdbus-qt6 \
         qt6-base-dev qt6-base-private-dev qt6-declarative-dev qt6-tools-dev \
+        qt6-svg-dev \
         libkf6config-bin libkf6config-dev libkf6configwidgets-dev \
         libkf6coreaddons-dev libkf6crash-dev libkf6globalaccel-dev \
         libkf6guiaddons-dev libkf6i18n-dev libkf6itemmodels-dev \
@@ -29,7 +29,8 @@ RUN apt-get update && \
         libplasma-dev plasma-activities-dev plasma-activities-stats-dev \
         libksysguard-dev plasma-workspace-dev \
         kwin-dev libkdecorations3-dev \
-        libepoxy-dev libdrm-dev libwayland-dev libx11-dev libxcb1-dev \
+        libepoxy-dev libdrm-dev libwayland-dev libx11-dev libxext-dev \
+        libxcb1-dev \
         libvulkan-dev zstd && \
     apt-get clean
 

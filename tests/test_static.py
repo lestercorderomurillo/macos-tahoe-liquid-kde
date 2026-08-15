@@ -257,6 +257,26 @@ def test_rounded_corners_online_source_is_immutable(repo):
     assert "/master" not in text and "/main" not in text
 
 
+def test_kvantum_qt6_fallback_is_pinned_and_offline(repo):
+    """The Debian-family engine fallback must be the exact upstream release
+    asset and remain available without network access during installation."""
+    import hashlib
+
+    archive = repo / "src/offline/kvantum-engine/Kvantum-1.1.8.tar.xz"
+    metadata = (repo / "src/offline/kvantum-engine/UPSTREAM.md").read_text()
+    source = (repo / "src/scripts/steps/kvantum.py").read_text()
+    expected = "7aa9099345e48048ebdad768f583944ac042f87b216fa0b26a169c7e05425047"
+
+    assert archive.is_file()
+    assert hashlib.sha256(archive.read_bytes()).hexdigest() == expected
+    assert "V1.1.8" in metadata and expected in metadata
+    assert "058534fc15d1798c3887590166f05c598e8e946c" in metadata
+    assert 'ENGINE_VERSION = "1.1.8"' in source
+    assert re.search(r'ENGINE_COMMIT = "[0-9a-f]{40}"', source)
+    assert f'ENGINE_SHA256 = "{expected}"' in source
+    assert "def download()" not in source
+
+
 def test_panel_colorizer_bundled_offline(offline):
     """The layout step installs Panel Colorizer from the offline bundle,
     so the bundle must ship a complete kpackage: metadata.json whose

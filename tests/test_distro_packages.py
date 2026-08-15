@@ -502,6 +502,21 @@ def test_qt6_uitools_cmake_package_per_distro(monkeypatch, distro_id, expected):
 
 
 @pytest.mark.parametrize("distro_id, expected", [
+    ("arch", "qt6-svg"),
+    ("fedora", "qt6-qtsvg-devel"),
+    ("debian", "qt6-svg-dev"),
+    ("ubuntu", "qt6-svg-dev"),
+    ("opensuse", "qt6-svg-devel"),
+    ("alpine", "qt6-qtsvg-dev"),
+    ("rhel", "qt6-qtsvg-devel"),
+    ("gentoo", "dev-qt/qtsvg:6"),
+])
+def test_qt6_svg_cmake_package_per_distro(monkeypatch, distro_id, expected):
+    _force_distro(monkeypatch, distro_id)
+    assert distro.package_for("qt6-svg-cmake", "qt6-svg") == expected
+
+
+@pytest.mark.parametrize("distro_id, expected", [
     ("arch", "make"),
     ("fedora", "make"),
     ("debian", "make"),
@@ -781,6 +796,19 @@ def test_epoxy_cmake_package_per_distro(monkeypatch, distro_id, expected):
 def test_x11_cmake_package_per_distro(monkeypatch, distro_id, expected):
     _force_distro(monkeypatch, distro_id)
     assert distro.package_for("x11-cmake", "libx11") == expected
+
+
+@pytest.mark.parametrize("distro_id, expected", [
+    ("arch",     "libxext"),
+    ("debian",   "libxext-dev"),
+    ("ubuntu",   "libxext-dev"),
+    ("fedora",   "libXext-devel"),
+    ("opensuse", "libXext-devel"),
+    ("gentoo",   "x11-libs/libXext"),
+])
+def test_xext_cmake_package_per_distro(monkeypatch, distro_id, expected):
+    _force_distro(monkeypatch, distro_id)
+    assert distro.package_for("xext-cmake", "libxext") == expected
 
 
 @pytest.mark.parametrize("distro_id, expected", [

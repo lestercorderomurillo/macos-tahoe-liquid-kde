@@ -93,11 +93,8 @@ jobs:
       # can ship a transiently half-migrated Plasma that breaks the build
       # through no fault of ours. It's a forward-looking signal, not a
       # merge gate, so it's non-blocking too.
-      # Neon Noble currently exposes only the Qt 5 Kvantum engine. Keep its
-      # qualification lane visible but non-blocking until a real Qt 6 engine
-      # package (or a bundled build) closes issue #64's final dependency gap.
       - name: Build and run ${{ matrix.distro }} container
-        continue-on-error: ${{ matrix.distro == 'gentoo' || matrix.distro == 'arch-kdeunstable' || matrix.distro == 'neon' }}
+        continue-on-error: ${{ matrix.distro == 'gentoo' || matrix.distro == 'arch-kdeunstable' }}
         run: |
           # Retry the build: pulling the base image from Docker Hub can
           # transiently time out / rate-limit from GitHub runners, which

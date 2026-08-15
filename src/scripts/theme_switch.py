@@ -880,6 +880,42 @@ def _kvantum_theme(mode: str) -> str:
     return KVANTUM_THEME_DARK if mode == "dark" else KVANTUM_THEME_LIGHT
 
 
+def _set_kvantum_theme(mode: str) -> None:
+    """Select the mode-specific profile with or without Kvantum Manager.
+
+    KDE neon Noble has no Qt 6 Kvantum package. Its bundled engine does not
+    need the manager GUI; the engine reads this same config key directly.
+    """
+    theme = _kvantum_theme(mode)
+    if _have("kvantummanager"):
+        env = os.environ.copy()
+        env["QT_QPA_PLATFORM"] = "offscreen"
+        try:
+            _run_user(
+                ["kvantummanager", "--set", theme],
+                timeout=15,
+                env=env,
+            )
+        except subprocess.TimeoutExpired:
+            pass
+        return
+
+    if not _have("kwriteconfig6"):
+        return
+    config = _xdg_config() / "Kvantum/kvantum.kvconfig"
+    try:
+        config.parent.mkdir(parents=True, exist_ok=True)
+        _run_user(
+            [
+                "kwriteconfig6", "--file", str(config),
+                "--group", "General", "--key", "theme", theme,
+            ],
+            timeout=10,
+        )
+    except (OSError, subprocess.TimeoutExpired):
+        pass
+
+
 def _gtk4_css_is_replaceable(path: Path, themes_root: Path) -> bool:
     """Whether gtk.css is generated/project-owned rather than user CSS.
 
@@ -921,20 +957,10 @@ def _gtk4_css_is_replaceable(path: Path, themes_root: Path) -> bool:
 
 
 def _apply_local_extras(mode: str) -> None:
-    if _have("kvantummanager"):
-        env = os.environ.copy()
-        env["QT_QPA_PLATFORM"] = "offscreen"
-        try:
-            # widgetStyle remains the Qt plugin name "kvantum", but the
-            # Kvantum profile itself must match the mode. Both SVGs contain
-            # literal surface colors; respect_DE=true does not turn the light
-            # SVG's #f5f5f5 menu assets into the dark SVG's #242424 assets.
-            _run_user(
-                ["kvantummanager", "--set", _kvantum_theme(mode)],
-                timeout=15, env=env,
-            )
-        except subprocess.TimeoutExpired:
-            pass
+    # widgetStyle remains the Qt plugin name "kvantum", but the profile
+    # itself must match the mode. Both SVGs contain literal surface colors;
+    # respect_DE=true cannot recolor those assets.
+    _set_kvantum_theme(mode)
 
     home = Path.home()
     gtk_dest = home / ".themes"

@@ -177,7 +177,13 @@ def temp_dir(prefix: str) -> Iterator[Path]:
         shutil.rmtree(p, ignore_errors=True)
 
 
-def cmake_build(src_dir_: Path, build_dir: Path, label: str) -> bool:
+def cmake_build(
+    src_dir_: Path,
+    build_dir: Path,
+    label: str,
+    *,
+    targets: tuple[str, ...] = (),
+) -> bool:
     if not (src_dir_ / "CMakeLists.txt").is_file():
         warn(f"{label} source not found — skipping")
         return False
@@ -203,7 +209,7 @@ def cmake_build(src_dir_: Path, build_dir: Path, label: str) -> bool:
         return False
     nproc = os.cpu_count() or 1
     mk = subprocess.run(
-        ["make", "-C", str(build_dir), f"-j{nproc}"],
+        ["make", "-C", str(build_dir), f"-j{nproc}", *targets],
         check=False, capture_output=True, text=True,
         preexec_fn=_drop_privs_in_child,
     )

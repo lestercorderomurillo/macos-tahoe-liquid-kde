@@ -659,6 +659,20 @@ _PACKAGE_MAP: dict[str, dict[str, str]] = {
         "void":     "qt6-tools",
         "gentoo":   "dev-qt/qttools:6",
     },
+    # Qt6SvgConfig.cmake — required by the bundled Kvantum Qt 6 fallback
+    # used when a Debian-family repository still ships only the Qt 5 engine.
+    "qt6-svg-cmake": {
+        "arch":     "qt6-svg",
+        "debian":   "qt6-svg-dev",
+        "ubuntu":   "qt6-svg-dev",
+        "fedora":   "qt6-qtsvg-devel",
+        "rhel":     "qt6-qtsvg-devel",
+        "centos":   "qt6-qtsvg-devel",
+        "opensuse": "qt6-svg-devel",
+        "alpine":   "qt6-qtsvg-dev",
+        "void":     "qt6-svg-devel",
+        "gentoo":   "dev-qt/qtsvg:6",
+    },
     "make": {
         "arch":     "make",
         "debian":   "make",
@@ -939,6 +953,20 @@ _PACKAGE_MAP: dict[str, dict[str, str]] = {
         "alpine":   "libx11-dev",
         "void":     "libX11-devel",
         "gentoo":   "x11-libs/libX11",
+    },
+    # Xext is part of Kvantum's documented source-build prerequisites and
+    # CMake's FindX11 links it while probing XOpenDisplay.
+    "xext-cmake": {
+        "arch":     "libxext",
+        "debian":   "libxext-dev",
+        "ubuntu":   "libxext-dev",
+        "fedora":   "libXext-devel",
+        "rhel":     "libXext-devel",
+        "centos":   "libXext-devel",
+        "opensuse": "libXext-devel",
+        "alpine":   "libxext-dev",
+        "void":     "libXext-devel",
+        "gentoo":   "x11-libs/libXext",
     },
     "xcb-cmake": {
         "arch":     "libxcb",
