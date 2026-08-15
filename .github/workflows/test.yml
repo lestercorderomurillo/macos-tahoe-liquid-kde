@@ -73,6 +73,9 @@ jobs:
           - fedora
           - nobara
           - opensuse
+          # KDE's current User Edition container. This proves APT package
+          # names and the Neon Qt/KF6/Plasma SDK before VM qualification.
+          - neon
           # Arch with [kde-unstable] — the newest-KWin compile target
           # (currently Plasma 6.7). Compiles the acrylic-glass effect
           # against the next KWin ABI before any release distro ships
@@ -90,8 +93,11 @@ jobs:
       # can ship a transiently half-migrated Plasma that breaks the build
       # through no fault of ours. It's a forward-looking signal, not a
       # merge gate, so it's non-blocking too.
+      # Neon Noble currently exposes only the Qt 5 Kvantum engine. Keep its
+      # qualification lane visible but non-blocking until a real Qt 6 engine
+      # package (or a bundled build) closes issue #64's final dependency gap.
       - name: Build and run ${{ matrix.distro }} container
-        continue-on-error: ${{ matrix.distro == 'gentoo' || matrix.distro == 'arch-kdeunstable' }}
+        continue-on-error: ${{ matrix.distro == 'gentoo' || matrix.distro == 'arch-kdeunstable' || matrix.distro == 'neon' }}
         run: |
           # Retry the build: pulling the base image from Docker Hub can
           # transiently time out / rate-limit from GitHub runners, which

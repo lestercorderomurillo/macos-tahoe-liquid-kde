@@ -217,12 +217,46 @@ def test_unmapped_dependency_may_use_fallback_on_arch_family(
     ("opensuse", (), "kf6-kconfig"),
     ("opensuse-tumbleweed", ("opensuse",), "kf6-kconfig"),
     ("gentoo", (), "kde-frameworks/kconfig:6"),
+    ("debian", (), "libkf6config-bin"),
+    ("ubuntu", (), "libkf6config-bin"),
+    ("neon", ("ubuntu", "debian"), "libkf6config-bin"),
 ])
 def test_kwriteconfig6_package_per_distro(
     monkeypatch, distro_id, id_like, expected,
 ):
     _force_distro(monkeypatch, distro_id, id_like)
     assert distro.package_for("kwriteconfig6", "kconfig") == expected
+
+
+@pytest.mark.parametrize("token, fallback, expected", [
+    ("kf6-config-cmake", "kconfig", "libkf6config-dev"),
+    ("kf6-kio-cmake", "kio", "libkf6kio-dev"),
+    ("plasma-cmake", "libplasma", "libplasma-dev"),
+    ("libtaskmanager-cmake", "plasma-workspace", "plasma-workspace-dev"),
+    ("kwin-cmake", "kwin", "kwin-dev"),
+    ("kdecoration-cmake", "kdecoration", "libkdecorations3-dev"),
+])
+@pytest.mark.parametrize("distro_id", ["debian", "ubuntu"])
+def test_debian_family_development_packages(
+    monkeypatch, distro_id, token, fallback, expected,
+):
+    _force_distro(monkeypatch, distro_id)
+    assert distro.package_for(token, fallback) == expected
+
+
+@pytest.mark.parametrize("token, fallback, expected", [
+    ("plasma-activities-cmake", "plasma-activities", "plasma-activities-dev"),
+    (
+        "plasma-activities-stats-cmake",
+        "plasma-activities-stats",
+        "plasma-activities-stats-dev",
+    ),
+])
+def test_neon_uses_native_plasma_activities_development_packages(
+    monkeypatch, token, fallback, expected,
+):
+    _force_distro(monkeypatch, "neon", ("ubuntu", "debian"))
+    assert distro.package_for(token, fallback) == expected
 
 
 # ── qdbus6: the regression the user hit on Fedora 44 ──────────────────
@@ -807,6 +841,9 @@ def test_vulkan_headers_package_per_distro(
     ("rhel",                (),            ["dnf", "install", "-y"]),
     ("opensuse-tumbleweed", ("opensuse",), ["zypper", "--non-interactive", "install", "--no-recommends"]),
     ("gentoo",              (),            ["emerge", "--ask=n", "--quiet", "--noreplace"]),
+    ("debian",              (),            ["apt-get", "install", "-y"]),
+    ("ubuntu",              (),            ["apt-get", "install", "-y"]),
+    ("neon",                ("ubuntu", "debian"), ["apt-get", "install", "-y"]),
 ])
 def test_install_cmd_for_supported_families(monkeypatch, distro_id, id_like, expected):
     _force_distro(monkeypatch, distro_id, id_like)
@@ -821,6 +858,7 @@ _NONINTERACTIVE_FLAGS = {
     "dnf":    "-y",
     "zypper": "--non-interactive",
     "emerge": "--ask=n",
+    "apt-get": "-y",
 }
 
 
@@ -828,6 +866,7 @@ _NONINTERACTIVE_FLAGS = {
     ("arch", ()), ("cachyos", ("arch",)), ("fedora", ()),
     ("nobara", ("fedora",)), ("rhel", ()), ("centos", ()),
     ("opensuse-tumbleweed", ("opensuse",)), ("gentoo", ()),
+    ("debian", ()), ("ubuntu", ()), ("neon", ("ubuntu", "debian")),
 ])
 def test_install_cmd_is_always_non_interactive(monkeypatch, distro_id, id_like):
     _force_distro(monkeypatch, distro_id, id_like)
@@ -847,20 +886,23 @@ def test_install_cmd_is_always_non_interactive(monkeypatch, distro_id, id_like):
     ("fedora",              (),            None),
     ("opensuse-tumbleweed", ("opensuse",), None),
     ("gentoo",              (),            None),
+    ("debian",              (),            ["apt-get", "update"]),
+    ("ubuntu",              (),            ["apt-get", "update"]),
+    ("neon",                ("ubuntu", "debian"), ["apt-get", "update"]),
 ])
 def test_sync_cmd_per_distro(monkeypatch, distro_id, id_like, expected):
     _force_distro(monkeypatch, distro_id, id_like)
     assert distro.package_manager_sync_cmd() == expected
 
 
-@pytest.mark.parametrize("distro_id", ["debian", "ubuntu", "alpine", "void"])
+@pytest.mark.parametrize("distro_id", ["alpine", "void"])
 def test_install_cmd_raises_for_unsupported_distros(monkeypatch, distro_id):
     _force_distro(monkeypatch, distro_id)
     with pytest.raises(distro.UnsupportedDistroError):
         distro.package_manager_install_cmd()
 
 
-@pytest.mark.parametrize("distro_id", ["debian", "ubuntu", "alpine", "void"])
+@pytest.mark.parametrize("distro_id", ["alpine", "void"])
 def test_sync_cmd_raises_for_unsupported_distros(monkeypatch, distro_id):
     _force_distro(monkeypatch, distro_id)
     with pytest.raises(distro.UnsupportedDistroError):

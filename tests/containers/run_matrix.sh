@@ -5,7 +5,7 @@
 #
 # Usage:  ./tests/containers/run_matrix.sh [distro ...]
 #   With no args, runs the full matrix. Otherwise runs just the named
-#   distros (arch, gentoo, fedora, opensuse).
+#   distros (arch, neon, gentoo, fedora, opensuse).
 #
 # Each distro is independent — one failure does not abort the rest.
 # Exit status is 0 only if every requested distro passes.
@@ -21,6 +21,7 @@ ALL_DISTROS=(
     gentoo
     fedora nobara
     opensuse
+    neon
     # Arch with [kde-unstable] — the newest-KWin compile target. Keep it
     # last; it pulls the staging Plasma so the acrylic-glass effect is
     # compiled against the next ABI (6.7+) before any release distro has it.

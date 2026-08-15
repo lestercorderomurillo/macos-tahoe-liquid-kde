@@ -406,6 +406,8 @@ _PACKAGE_MAP: dict[str, dict[str, str]] = {
     },
     "kwriteconfig6": {
         "arch":     "kconfig",
+        "debian":   "libkf6config-bin",
+        "ubuntu":   "libkf6config-bin",
         "fedora":   "kf6-kconfig",
         "rhel":     "kf6-kconfig",
         "centos":   "kf6-kconfig",
@@ -507,6 +509,8 @@ _PACKAGE_MAP: dict[str, dict[str, str]] = {
     # Fedora and openSUSE split the script renderer out of base Plymouth.
     "plymouth-script-plugin": {
         "arch":     "plymouth",
+        "debian":   "plymouth",
+        "ubuntu":   "plymouth",
         "fedora":   "plymouth-plugin-script",
         "rhel":     "plymouth-plugin-script",
         "centos":   "plymouth-plugin-script",
@@ -684,9 +688,11 @@ _PACKAGE_MAP: dict[str, dict[str, str]] = {
     # ── KF6 frameworks ────────────────────────────────────────────────
     # Tokens are cmake component names prefixed ``kf6-`` so they never
     # collide with a real binary — the shutil.which probe is bypassed
-    # for them (see preflight). Values probed via containers (2026-06).
+    # for them (see preflight). Values probed via containers (2026-08).
     "kf6-config-cmake": {
         "arch":     "kconfig",
+        "debian":   "libkf6config-dev",
+        "ubuntu":   "libkf6config-dev",
         "fedora":   "kf6-kconfig-devel",
         "rhel":     "kf6-kconfig-devel",
         "centos":   "kf6-kconfig-devel",
@@ -695,6 +701,8 @@ _PACKAGE_MAP: dict[str, dict[str, str]] = {
     },
     "kf6-configwidgets-cmake": {
         "arch":     "kconfigwidgets",
+        "debian":   "libkf6configwidgets-dev",
+        "ubuntu":   "libkf6configwidgets-dev",
         "fedora":   "kf6-kconfigwidgets-devel",
         "rhel":     "kf6-kconfigwidgets-devel",
         "centos":   "kf6-kconfigwidgets-devel",
@@ -703,6 +711,8 @@ _PACKAGE_MAP: dict[str, dict[str, str]] = {
     },
     "kf6-coreaddons-cmake": {
         "arch":     "kcoreaddons",
+        "debian":   "libkf6coreaddons-dev",
+        "ubuntu":   "libkf6coreaddons-dev",
         "fedora":   "kf6-kcoreaddons-devel",
         "rhel":     "kf6-kcoreaddons-devel",
         "centos":   "kf6-kcoreaddons-devel",
@@ -711,6 +721,8 @@ _PACKAGE_MAP: dict[str, dict[str, str]] = {
     },
     "kf6-crash-cmake": {
         "arch":     "kcrash",
+        "debian":   "libkf6crash-dev",
+        "ubuntu":   "libkf6crash-dev",
         "fedora":   "kf6-kcrash-devel",
         "rhel":     "kf6-kcrash-devel",
         "centos":   "kf6-kcrash-devel",
@@ -719,6 +731,8 @@ _PACKAGE_MAP: dict[str, dict[str, str]] = {
     },
     "kf6-globalaccel-cmake": {
         "arch":     "kglobalaccel",
+        "debian":   "libkf6globalaccel-dev",
+        "ubuntu":   "libkf6globalaccel-dev",
         "fedora":   "kf6-kglobalaccel-devel",
         "rhel":     "kf6-kglobalaccel-devel",
         "centos":   "kf6-kglobalaccel-devel",
@@ -727,6 +741,8 @@ _PACKAGE_MAP: dict[str, dict[str, str]] = {
     },
     "kf6-guiaddons-cmake": {
         "arch":     "kguiaddons",
+        "debian":   "libkf6guiaddons-dev",
+        "ubuntu":   "libkf6guiaddons-dev",
         "fedora":   "kf6-kguiaddons-devel",
         "rhel":     "kf6-kguiaddons-devel",
         "centos":   "kf6-kguiaddons-devel",
@@ -735,6 +751,8 @@ _PACKAGE_MAP: dict[str, dict[str, str]] = {
     },
     "kf6-i18n-cmake": {
         "arch":     "ki18n",
+        "debian":   "libkf6i18n-dev",
+        "ubuntu":   "libkf6i18n-dev",
         "fedora":   "kf6-ki18n-devel",
         "rhel":     "kf6-ki18n-devel",
         "centos":   "kf6-ki18n-devel",
@@ -743,6 +761,8 @@ _PACKAGE_MAP: dict[str, dict[str, str]] = {
     },
     "kf6-kcmutils-cmake": {
         "arch":     "kcmutils",
+        "debian":   "libkf6kcmutils-dev",
+        "ubuntu":   "libkf6kcmutils-dev",
         "fedora":   "kf6-kcmutils-devel",
         "rhel":     "kf6-kcmutils-devel",
         "centos":   "kf6-kcmutils-devel",
@@ -751,6 +771,8 @@ _PACKAGE_MAP: dict[str, dict[str, str]] = {
     },
     "kf6-kio-cmake": {
         "arch":     "kio",
+        "debian":   "libkf6kio-dev",
+        "ubuntu":   "libkf6kio-dev",
         "fedora":   "kf6-kio-devel",
         "rhel":     "kf6-kio-devel",
         "centos":   "kf6-kio-devel",
@@ -759,6 +781,8 @@ _PACKAGE_MAP: dict[str, dict[str, str]] = {
     },
     "kf6-notifications-cmake": {
         "arch":     "knotifications",
+        "debian":   "libkf6notifications-dev",
+        "ubuntu":   "libkf6notifications-dev",
         "fedora":   "kf6-knotifications-devel",
         "rhel":     "kf6-knotifications-devel",
         "centos":   "kf6-knotifications-devel",
@@ -767,6 +791,8 @@ _PACKAGE_MAP: dict[str, dict[str, str]] = {
     },
     "kf6-service-cmake": {
         "arch":     "kservice",
+        "debian":   "libkf6service-dev",
+        "ubuntu":   "libkf6service-dev",
         "fedora":   "kf6-kservice-devel",
         "rhel":     "kf6-kservice-devel",
         "centos":   "kf6-kservice-devel",
@@ -775,6 +801,8 @@ _PACKAGE_MAP: dict[str, dict[str, str]] = {
     },
     "kf6-widgetsaddons-cmake": {
         "arch":     "kwidgetsaddons",
+        "debian":   "libkf6widgetsaddons-dev",
+        "ubuntu":   "libkf6widgetsaddons-dev",
         "fedora":   "kf6-kwidgetsaddons-devel",
         "rhel":     "kf6-kwidgetsaddons-devel",
         "centos":   "kf6-kwidgetsaddons-devel",
@@ -783,6 +811,8 @@ _PACKAGE_MAP: dict[str, dict[str, str]] = {
     },
     "kf6-windowsystem-cmake": {
         "arch":     "kwindowsystem",
+        "debian":   "libkf6windowsystem-dev",
+        "ubuntu":   "libkf6windowsystem-dev",
         "fedora":   "kf6-kwindowsystem-devel",
         "rhel":     "kf6-kwindowsystem-devel",
         "centos":   "kf6-kwindowsystem-devel",
@@ -791,6 +821,8 @@ _PACKAGE_MAP: dict[str, dict[str, str]] = {
     },
     "kf6-itemmodels-cmake": {
         "arch":     "kitemmodels",
+        "debian":   "libkf6itemmodels-dev",
+        "ubuntu":   "libkf6itemmodels-dev",
         "fedora":   "kf6-kitemmodels-devel",
         "rhel":     "kf6-kitemmodels-devel",
         "centos":   "kf6-kitemmodels-devel",
@@ -800,6 +832,8 @@ _PACKAGE_MAP: dict[str, dict[str, str]] = {
     # ── Plasma / KSysGuard / plasma-workspace ─────────────────────────
     "plasma-cmake": {
         "arch":     "libplasma",
+        "debian":   "libplasma-dev",
+        "ubuntu":   "libplasma-dev",
         "fedora":   "libplasma-devel",
         "rhel":     "libplasma-devel",
         "centos":   "libplasma-devel",
@@ -808,6 +842,9 @@ _PACKAGE_MAP: dict[str, dict[str, str]] = {
     },
     "plasma-activities-cmake": {
         "arch":     "plasma-activities",
+        "debian":   "libplasmaactivities-dev",
+        "ubuntu":   "libplasmaactivities-dev",
+        "neon":     "plasma-activities-dev",
         "fedora":   "plasma-activities-devel",
         "rhel":     "plasma-activities-devel",
         "centos":   "plasma-activities-devel",
@@ -816,6 +853,9 @@ _PACKAGE_MAP: dict[str, dict[str, str]] = {
     },
     "plasma-activities-stats-cmake": {
         "arch":     "plasma-activities-stats",
+        "debian":   "libplasmaactivitiesstats-dev",
+        "ubuntu":   "libplasmaactivitiesstats-dev",
+        "neon":     "plasma-activities-stats-dev",
         "fedora":   "plasma-activities-stats-devel",
         "rhel":     "plasma-activities-stats-devel",
         "centos":   "plasma-activities-stats-devel",
@@ -824,6 +864,8 @@ _PACKAGE_MAP: dict[str, dict[str, str]] = {
     },
     "ksysguard-cmake": {
         "arch":     "libksysguard",
+        "debian":   "libksysguard-dev",
+        "ubuntu":   "libksysguard-dev",
         "fedora":   "libksysguard-devel",
         "rhel":     "libksysguard-devel",
         "centos":   "libksysguard-devel",
@@ -834,6 +876,8 @@ _PACKAGE_MAP: dict[str, dict[str, str]] = {
     # separate tokens keep preflight failure messages precise.
     "libnotificationmanager-cmake": {
         "arch":     "plasma-workspace",
+        "debian":   "plasma-workspace-dev",
+        "ubuntu":   "plasma-workspace-dev",
         "fedora":   "plasma-workspace-devel",
         "rhel":     "plasma-workspace-devel",
         "centos":   "plasma-workspace-devel",
@@ -842,6 +886,8 @@ _PACKAGE_MAP: dict[str, dict[str, str]] = {
     },
     "libtaskmanager-cmake": {
         "arch":     "plasma-workspace",
+        "debian":   "plasma-workspace-dev",
+        "ubuntu":   "plasma-workspace-dev",
         "fedora":   "plasma-workspace-devel",
         "rhel":     "plasma-workspace-devel",
         "centos":   "plasma-workspace-devel",
@@ -851,6 +897,8 @@ _PACKAGE_MAP: dict[str, dict[str, str]] = {
     # ── KWin + KDecoration (acrylic-glass effect) ─────────────────────
     "kwin-cmake": {
         "arch":     "kwin",
+        "debian":   "kwin-dev",
+        "ubuntu":   "kwin-dev",
         "fedora":   "kwin-devel",
         "rhel":     "kwin-devel",
         "centos":   "kwin-devel",
@@ -859,6 +907,8 @@ _PACKAGE_MAP: dict[str, dict[str, str]] = {
     },
     "kdecoration-cmake": {
         "arch":     "kdecoration",
+        "debian":   "libkdecorations3-dev",
+        "ubuntu":   "libkdecorations3-dev",
         "fedora":   "kdecoration-devel",
         "rhel":     "kdecoration-devel",
         "centos":   "kdecoration-devel",
@@ -986,9 +1036,9 @@ def package_for(cmd: str, fallback_pkg: str | None = None) -> str:
 
 _PACKAGE_MANAGER_INSTALL: dict[str, list[str]] = {
     # Root, NON-INTERACTIVE — every entry carries its assume-yes flag.
-    # Debian/Ubuntu/Alpine/Void absent on purpose (no KF6 -cmake rows
-    # in _PACKAGE_MAP) → UnsupportedDistroError.
     "arch":     ["pacman", "-S", "--noconfirm", "--needed"],
+    "debian":   ["apt-get", "install", "-y"],
+    "ubuntu":   ["apt-get", "install", "-y"],
     "gentoo":   ["emerge", "--ask=n", "--quiet", "--noreplace"],
     "fedora":   ["dnf", "install", "-y"],
     "rhel":     ["dnf", "install", "-y"],
@@ -1000,6 +1050,8 @@ _PACKAGE_MANAGER_INSTALL: dict[str, list[str]] = {
 # install command refreshes on its own.
 _PACKAGE_MANAGER_SYNC: dict[str, list[str] | None] = {
     "arch":     ["pacman", "-Sy", "--noconfirm"],
+    "debian":   ["apt-get", "update"],
+    "ubuntu":   ["apt-get", "update"],
     "gentoo":   None,
     "fedora":   None,
     "rhel":     None,

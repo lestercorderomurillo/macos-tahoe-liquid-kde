@@ -12,6 +12,8 @@ build/
 
 # VM smoke-test images / qcow2 / cloud-init work dirs (gigabytes).
 tests/vm-smoke/
+.vm/cache/
+.vm/run/
 
 # Python bytecode caches.
 **/__pycache__/
