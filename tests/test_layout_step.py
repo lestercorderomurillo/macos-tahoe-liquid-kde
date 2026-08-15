@@ -188,6 +188,58 @@ def test_evaluate_layout_keeps_discover_when_installed(monkeypatch):
     assert "applications:org.kde.discover.desktop" in captured["script"]
 
 
+# ── plasmashellrc panel opacity ──────────────────────────────────────
+
+
+def _write_plasmashellrc(tmp_path, text):
+    cfg = tmp_path / ".config"
+    cfg.mkdir(parents=True, exist_ok=True)
+    (cfg / "plasmashellrc").write_text(text)
+
+
+def test_patch_plasmashellrc_forces_translucent_on_non_floating_top_bar(
+        monkeypatch, tmp_path):
+    # The top bar is floating=0 (fill panel, continuous background — not
+    # per-icon floating pills, which don't actually blur; see
+    # _patch_plasmashellrc). Leaving panelOpacity unset falls back to
+    # Plasma's Adaptive default,
+    # which goes opaque whenever a window touches the screen edge under it —
+    # so the top bar must get the same forced Translucent (2) as the dock.
+    monkeypatch.setattr(layout, "HOME", tmp_path)
+    _write_plasmashellrc(
+        tmp_path,
+        "[PlasmaViews][Panel 238]\n"
+        "floating=0\n"
+        "shell=org.kde.plasma.desktop\n"
+        "\n"
+        "[PlasmaViews][Panel 259]\n"
+        "floating=1\n"
+        "shell=org.kde.plasma.desktop\n",
+    )
+    layout._patch_plasmashellrc()
+    text = (tmp_path / ".config/plasmashellrc").read_text()
+    top_section, dock_section = text.split("[PlasmaViews][Panel 259]")
+    assert "panelOpacity=2" in top_section
+    assert "floatingApplets=0" in top_section
+    assert "panelOpacity=2" in dock_section
+
+
+def test_patch_plasmashellrc_overwrites_stale_opacity_value(
+        monkeypatch, tmp_path):
+    monkeypatch.setattr(layout, "HOME", tmp_path)
+    _write_plasmashellrc(
+        tmp_path,
+        "[PlasmaViews][Panel 238]\n"
+        "floating=0\n"
+        "panelOpacity=1\n"
+        "shell=org.kde.plasma.desktop\n",
+    )
+    layout._patch_plasmashellrc()
+    text = (tmp_path / ".config/plasmashellrc").read_text()
+    assert "panelOpacity=2" in text
+    assert "panelOpacity=1" not in text
+
+
 # ── update-safe layout ownership ─────────────────────────────────────
 
 

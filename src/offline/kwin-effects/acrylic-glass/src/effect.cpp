@@ -378,7 +378,7 @@ void BlurEffect::reconfigure(ReconfigureFlags flags)
 
     // Per-pass tuning knobs.
     m_noiseStrength = BlurConfig::noiseStrength();
-    m_colorMatrix = QMatrix4x4(); // identity — no color transform
+    m_colorMatrix = colorTransformMatrix(BlurConfig::saturation(), BlurConfig::contrast(), BlurConfig::brightness());
     m_rgbDriftStrength = static_cast<float>(BlurConfig::rgbDriftStrength());
     m_magnifyGlassStrength = static_cast<float>(BlurConfig::magnifyGlassStrength());
     m_refractionWidth = static_cast<float>(BlurConfig::refractionWidth());

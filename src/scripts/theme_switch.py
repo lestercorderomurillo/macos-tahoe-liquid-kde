@@ -1235,7 +1235,46 @@ def reconfigure_kwin_preserving_foreign_effects() -> list[str]:
     """Reconfigure KWin, then restore every enabled third-party effect."""
     foreign_effects = _snapshot_foreign_effects()
     _qdbus("org.kde.KWin", "/KWin", "org.kde.KWin.reconfigure")
-    return _restore_or_warn_foreign_effects(foreign_effects)
+    missing = _restore_or_warn_foreign_effects(foreign_effects)
+    _restore_own_compiled_effects()
+    return missing
+
+
+# Our own compiled effects are just as exposed to the reconfigure ABI-drop
+# risk documented on _snapshot_foreign_effects as any third-party one --
+# being "ours" doesn't make the .so any less likely to fall out of KWin's
+# loaded-effect list. apply.py's install() reloads liquidglass once at
+# install time, but every routine light/dark switch reconfigures KWin too
+# (see above), so this path needs the same protection or the effect can go
+# dark until the next ./install.
+_OWN_COMPILED_EFFECTS = ("liquidglass",)
+
+
+def _restore_own_compiled_effects() -> None:
+    plugins = _parse_ini(_kwinrc_path()).get("Plugins", {})
+    loaded = _kwin_loaded_effects()
+    if loaded is None:
+        return
+    for effect in _OWN_COMPILED_EFFECTS:
+        if plugins.get(f"{effect}Enabled", "").strip().lower() != "true":
+            continue
+        if _effect_is_loaded(effect, loaded):
+            continue
+        _qdbus("org.kde.KWin", "/Effects",
+               "org.kde.kwin.Effects.loadEffect", effect)
+        for attempt in range(3):
+            time.sleep(1)
+            refreshed = _kwin_loaded_effects()
+            if refreshed is not None and _effect_is_loaded(effect, refreshed):
+                break
+        else:
+            print(
+                f"theme apply: your KWin effect '{effect}' is enabled but "
+                "KWin could not load it after the theme switch. Rebuild/"
+                "reinstall the effect for the current KWin if it remains "
+                "absent.",
+                file=sys.stderr,
+            )
 
 
 def _apply_lookandfeel_live(laf: str) -> bool:

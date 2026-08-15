@@ -85,22 +85,27 @@ def build() -> None:
 
 
 _PRESET = (
+    # Lens is the bokeh-style final-pass kernel (effect.h: 0=Gaussian,
+    # 1=Box, 2=Lens) — Gaussian alone reads as flat "frosted glass" instead
+    # of the intended liquid-glass look.
+    ("AcrylicGlassType", "Lens"),
     ("BevelStrength", "0.22"), ("BlurDecorations", "true"),
-    ("BlurStrength", "5"), ("BorderWidth", "32"),
+    ("BlurStrength", "3"), ("BorderWidth", "32"),
     ("BottomCornerRadius", "22"), ("Brightness", "1.0"),
     ("Contrast", "1.0"), ("DialogCornerRadius", "14"),
     ("DockCornerRadius", "20"), ("EdgeBandFactor", "0.24"),
     ("EdgeLighting", "false"), ("ExcludeDocks", "true"),
     ("GlassInactiveWindows", "true"), ("GlassThickness", "0.2"),
-    ("GlowColor", "#00000000"), ("HighlightStrength", "0.30"),
-    ("HighlightWidth", "24"), ("InnerShadowStrength", "0.2"),
-    ("IridescenceStrength", "0.1"), ("MagnifyGlassStrength", "0.03"),
+    ("GlowColor", "#00000000"), ("HighlightStrength", "0.6"),
+    ("HighlightWidth", "36"), ("InnerShadowStrength", "0.2"),
+    ("IridescenceStrength", "0.1"), ("MagnifyGlassStrength", "0.15"),
     ("MenuCornerRadius", "0"), ("NoiseStrength", "2"),
     ("PopupCornerRadius", "6"), ("RefractionEdgeSize", "0"),
     ("RefractionNormalPow", "6"), ("RefractionRGBFringing", "0"),
-    ("RefractionStrength", "0"), ("RefractionWidth", "96"),
+    ("RefractionStrength", "0"), ("RefractionWidth", "150"),
+    ("RgbDriftStrength", "120"),
     ("RgbRinging", "12"), ("RimStrength", "0.5"),
-    ("RimWidth", "32"), ("Saturation", "1.0"),
+    ("RimWidth", "32"), ("Saturation", "1.1"),
     ("ShadowStrength", "2.50"), ("SpectralMix", "1"),
     ("SpecularStrength", "0.08"), ("TintColor", "#00000000"),
     ("TooltipCornerRadius", "14"), ("WindowCornerRadius", "22"),
