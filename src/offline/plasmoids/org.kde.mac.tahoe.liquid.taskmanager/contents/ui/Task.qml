@@ -543,6 +543,18 @@ PlasmaCore.ToolTipArea {
         height: task.inPopup ? width : (parent.height - adjustMargin(false, parent.height, taskFrame.margins.top)
                  - adjustMargin(false, parent.height, taskFrame.margins.bottom))
 
+        // macOS-style dock magnification: grow the hovered icon from its
+        // bottom edge (not the neighbour-wave falloff of the real Dock —
+        // that needs continuous cross-item mouse tracking, out of scope
+        // here) and raise it above siblings so it isn't clipped by them.
+        readonly property bool magnify: !task.inPopup && !tasksRoot.vertical && task.containsMouse
+        scale: magnify ? 1.35 : 1.0
+        transformOrigin: Item.Bottom
+        z: magnify ? 10 : 0
+        Behavior on scale {
+            NumberAnimation { duration: 120; easing.type: Easing.OutCubic }
+        }
+
         asynchronous: true
         active: height >= Kirigami.Units.iconSizes.small
                 && task.smartLauncherItem && task.smartLauncherItem.countVisible
@@ -571,6 +583,32 @@ PlasmaCore.ToolTipArea {
             enabled: true
 
             source: task.model.decoration
+
+            transform: Translate { id: bounceTransform }
+
+            // macOS-style launch bounce: hop while the app is starting,
+            // mirroring the busy spinner it sits alongside above.
+            SequentialAnimation {
+                running: task.model.IsStartup
+                loops: Animation.Infinite
+                onRunningChanged: if (!running) bounceTransform.y = 0
+
+                NumberAnimation {
+                    target: bounceTransform
+                    property: "y"
+                    to: -Math.max(10, icon.height * 0.22)
+                    duration: 220
+                    easing.type: Easing.OutQuad
+                }
+                NumberAnimation {
+                    target: bounceTransform
+                    property: "y"
+                    to: 0
+                    duration: 260
+                    easing.type: Easing.OutBounce
+                }
+                PauseAnimation { duration: 320 }
+            }
         }
 
         states: [
