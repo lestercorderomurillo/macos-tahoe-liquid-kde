@@ -2,7 +2,7 @@
 # slightly older package set. Same /usr/lib/qt6 libdir, same pacman.
 FROM manjarolinux/base:latest
 
-RUN pacman -Sy --noconfirm --needed \
+RUN pacman -Syu --noconfirm --needed \
     python python-pytest \
     cmake make gcc extra-cmake-modules \
     qt6-base qt6-tools qt6-declarative \

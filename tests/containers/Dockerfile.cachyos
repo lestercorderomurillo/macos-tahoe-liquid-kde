@@ -13,7 +13,7 @@ FROM cachyos/cachyos:latest
 RUN pacman-key --init && \
     pacman-key --populate archlinux cachyos && \
     pacman -Sy --noconfirm archlinux-keyring cachyos-keyring && \
-    pacman -Sy --noconfirm --needed \
+    pacman -Syu --noconfirm --needed \
         python python-pytest \
         cmake make gcc extra-cmake-modules \
         qt6-base qt6-tools qt6-declarative \

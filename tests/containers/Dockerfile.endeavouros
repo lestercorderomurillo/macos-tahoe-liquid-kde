@@ -10,7 +10,7 @@ FROM archlinux:latest
 # here because we're piggybacking on the Arch base image.
 RUN printf 'NAME="EndeavourOS"\nID=endeavouros\nID_LIKE=arch\nPRETTY_NAME="EndeavourOS"\n' > /etc/os-release
 
-RUN pacman -Sy --noconfirm --needed \
+RUN pacman -Syu --noconfirm --needed \
     python python-pytest \
     cmake make gcc extra-cmake-modules \
     qt6-base qt6-tools qt6-declarative \
