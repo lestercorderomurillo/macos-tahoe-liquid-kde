@@ -81,7 +81,9 @@ PlasmaCore.ToolTipArea {
         || (task.contextMenu && task.contextMenu.status === PlasmaExtras.Menu.Open)
         || (!!tasksRoot.groupDialog && tasksRoot.groupDialog.visualParent === task)
     readonly property bool dockMagnified: !inPopup && !tasksRoot.vertical && containsMouse
-    readonly property real dockScale: dockMagnified ? 1.20 : 1.0
+    readonly property real configuredDockScale: Math.max(
+        1.0, Math.min(1.5, Number(Plasmoid.configuration.dockMagnification) / 100.0))
+    readonly property real dockScale: dockMagnified ? configuredDockScale : 1.0
 
     // Transform the complete delegate so badges, audio/mute controls, progress,
     // and group indicators stay attached to the icon during magnification.

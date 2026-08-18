@@ -29,6 +29,7 @@ KCMUtils.SimpleKCM {
     property alias cfg_forceStripes: forceStripes.checked
     property alias cfg_taskMaxWidth: taskMaxWidth.currentIndex
     property int cfg_iconSpacing: 0
+    property alias cfg_dockMagnification: dockMagnification.value
 
     Component.onCompleted: {
         /* Don't rely on bindings for checking the radiobuttons
@@ -183,6 +184,20 @@ KCMUtils.SimpleKCM {
             onActivated: index => {
                 root.cfg_iconSpacing = model[currentIndex]["spacing"];
             }
+        }
+
+        QQC2.SpinBox {
+            id: dockMagnification
+            visible: root.iconOnly
+            Kirigami.FormData.label: i18nc("@label:spinbox", "Hover magnification:")
+            from: 100
+            to: 150
+            stepSize: 5
+            editable: true
+
+            textFromValue: (value, locale) => i18nc(
+                "@item:intext percentage used to magnify a Dock icon", "%1%", value)
+            valueFromText: (text, locale) => Math.max(from, Math.min(to, parseInt(text)))
         }
     }
 }

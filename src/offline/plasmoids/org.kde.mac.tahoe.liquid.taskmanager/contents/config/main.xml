@@ -154,7 +154,12 @@
       <label> Spacing between icons in task manager. Margin is multiplied by this value.</label>
       <default>1</default>
     </entry>
+    <entry name="dockMagnification" type="Int">
+      <label>Percentage used to magnify a hovered Dock task and its overlays.</label>
+      <default>110</default>
+      <min>100</min>
+      <max>150</max>
+    </entry>
   </group>
 
 </kcfg>
-

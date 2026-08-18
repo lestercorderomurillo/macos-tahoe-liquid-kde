@@ -43,8 +43,20 @@ def test_acrylic_glass_preset_fits_kcm_ranges():
     from steps import acrylic_glass
 
     preset = dict(acrylic_glass._PRESET)
+    # Contributor/MR tuning is not part of the project preset.
+    assert "AcrylicGlassType" not in preset
+    assert "RgbDriftStrength" not in preset
+    assert preset["BlurStrength"] == "5"
+    assert preset["HighlightStrength"] == "0.30"
+    assert preset["HighlightWidth"] == "24"
+    assert preset["MagnifyGlassStrength"] == "0.03"
+    assert preset["RefractionWidth"] == "96"
+    assert preset["Saturation"] == "1.0"
+
     root = ET.parse(ROOT / "src/kcm/config.ui").getroot()
     for key in ("RgbDriftStrength", "MagnifyGlassStrength"):
+        if key not in preset:
+            continue
         widget = root.find(f".//widget[@name='kcfg_{key}']")
         assert widget is not None
         maximum = widget.find("./property[@name='maximum']/double")

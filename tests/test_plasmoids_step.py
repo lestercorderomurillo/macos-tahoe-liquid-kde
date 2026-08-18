@@ -145,6 +145,19 @@ def test_taskmanager_build_artifacts_match_install_sources():
 
     task_qml = (plasmoids.TASKMANAGER_SRC / "contents/ui/Task.qml").read_text()
     assert "z: dockMagnified ? 10 : 0" in task_qml
-    assert "readonly property real dockScale: dockMagnified ? 1.20 : 1.0" in task_qml
+    assert "Plasmoid.configuration.dockMagnification" in task_qml
+    assert "readonly property real dockScale: dockMagnified ? configuredDockScale : 1.0" in task_qml
     assert "scale: dockScale" in task_qml
     assert "scale: task.dockMagnified" not in task_qml
+
+    config_xml = (plasmoids.TASKMANAGER_SRC / "contents/config/main.xml").read_text()
+    assert '<entry name="dockMagnification" type="Int">' in config_xml
+    assert "<default>110</default>" in config_xml
+
+    appearance_qml = (
+        plasmoids.TASKMANAGER_SRC / "contents/ui/ConfigAppearance.qml"
+    ).read_text()
+    assert "property alias cfg_dockMagnification" in appearance_qml
+    assert 'i18nc("@label:spinbox", "Hover magnification:")' in appearance_qml
+    assert "from: 100" in appearance_qml
+    assert "to: 150" in appearance_qml
