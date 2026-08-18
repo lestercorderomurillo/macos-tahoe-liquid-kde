@@ -81,10 +81,17 @@ PlasmaCore.ToolTipArea {
         || (task.contextMenu && task.contextMenu.status === PlasmaExtras.Menu.Open)
         || (!!tasksRoot.groupDialog && tasksRoot.groupDialog.visualParent === task)
     readonly property bool dockMagnified: !inPopup && !tasksRoot.vertical && containsMouse
+    readonly property real dockScale: dockMagnified ? 1.20 : 1.0
 
-    // Raise the whole delegate, not merely the nested icon, so the enlarged
-    // icon paints above adjacent Task delegates on both sides.
+    // Transform the complete delegate so badges, audio/mute controls, progress,
+    // and group indicators stay attached to the icon during magnification.
+    // Layout geometry remains unchanged, so neighbouring tasks do not jump.
     z: dockMagnified ? 10 : 0
+    scale: dockScale
+    transformOrigin: Item.Bottom
+    Behavior on scale {
+        NumberAnimation { duration: 140; easing.type: Easing.OutCubic }
+    }
 
     active: !inPopup && !tasksRoot.groupDialog && task.contextMenu?.status !== PlasmaExtras.Menu.Open
     interactive: model.IsWindow || mainItem.playerData
@@ -547,16 +554,6 @@ PlasmaCore.ToolTipArea {
         width: task.inPopup ? Math.max(Kirigami.Units.iconSizes.sizeForLabels, Kirigami.Units.iconSizes.medium) : Math.min(task.parent?.minimumWidth ?? 0, task.height)
         height: task.inPopup ? width : (parent.height - adjustMargin(false, parent.height, taskFrame.margins.top)
                  - adjustMargin(false, parent.height, taskFrame.margins.bottom))
-
-        // macOS-style dock magnification: grow the hovered icon from its
-        // bottom edge (not the neighbour-wave falloff of the real Dock —
-        // that needs continuous cross-item mouse tracking, out of scope
-        // here) and raise it above siblings so it isn't clipped by them.
-        scale: task.dockMagnified ? 1.35 : 1.0
-        transformOrigin: Item.Bottom
-        Behavior on scale {
-            NumberAnimation { duration: 120; easing.type: Easing.OutCubic }
-        }
 
         asynchronous: true
         active: height >= Kirigami.Units.iconSizes.small
