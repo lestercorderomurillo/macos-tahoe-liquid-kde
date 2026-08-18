@@ -80,6 +80,11 @@ PlasmaCore.ToolTipArea {
     readonly property bool highlighted: (inPopup && activeFocus) || (!inPopup && containsMouse)
         || (task.contextMenu && task.contextMenu.status === PlasmaExtras.Menu.Open)
         || (!!tasksRoot.groupDialog && tasksRoot.groupDialog.visualParent === task)
+    readonly property bool dockMagnified: !inPopup && !tasksRoot.vertical && containsMouse
+
+    // Raise the whole delegate, not merely the nested icon, so the enlarged
+    // icon paints above adjacent Task delegates on both sides.
+    z: dockMagnified ? 10 : 0
 
     active: !inPopup && !tasksRoot.groupDialog && task.contextMenu?.status !== PlasmaExtras.Menu.Open
     interactive: model.IsWindow || mainItem.playerData
@@ -547,10 +552,8 @@ PlasmaCore.ToolTipArea {
         // bottom edge (not the neighbour-wave falloff of the real Dock —
         // that needs continuous cross-item mouse tracking, out of scope
         // here) and raise it above siblings so it isn't clipped by them.
-        readonly property bool magnify: !task.inPopup && !tasksRoot.vertical && task.containsMouse
-        scale: magnify ? 1.35 : 1.0
+        scale: task.dockMagnified ? 1.35 : 1.0
         transformOrigin: Item.Bottom
-        z: magnify ? 10 : 0
         Behavior on scale {
             NumberAnimation { duration: 120; easing.type: Easing.OutCubic }
         }

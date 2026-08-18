@@ -1,6 +1,7 @@
 """Static guards for the Acrylic Glass CMake fallback paths."""
 
 import sys
+import xml.etree.ElementTree as ET
 from pathlib import Path
 
 
@@ -35,3 +36,17 @@ def test_acrylic_glass_version_floor_matches_preflight():
     assert "requires KDE Plasma 6.6+" in top
     # The retired 6.4 floor must not creep back.
     assert "VERSION_LESS 6.4" not in top
+
+
+def test_acrylic_glass_preset_fits_kcm_ranges():
+    """Installer tuning must remain representable in the effect KCM."""
+    from steps import acrylic_glass
+
+    preset = dict(acrylic_glass._PRESET)
+    root = ET.parse(ROOT / "src/kcm/config.ui").getroot()
+    for key in ("RgbDriftStrength", "MagnifyGlassStrength"):
+        widget = root.find(f".//widget[@name='kcfg_{key}']")
+        assert widget is not None
+        maximum = widget.find("./property[@name='maximum']/double")
+        assert maximum is not None and maximum.text is not None
+        assert float(preset[key]) <= float(maximum.text)

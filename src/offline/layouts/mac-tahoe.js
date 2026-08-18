@@ -11,8 +11,8 @@ for (var i = 0; i < old.length; i++) {
 
 for (var screen = 0; screen < screenCount; screen++) {
     // ── top menu bar ────────────────────────────────
-    // top bar, flush panel with applets-only floating
-    // (floatingApplets=1 is set via plasmashellrc after layout apply)
+    // Top bar, flush panel with applets-only floating. floatingApplets=1 is
+    // reasserted via plasmashellrc after layout apply and every theme switch.
     var bar = new Panel("org.kde.panel");
     bar.location = "top";
     bar.screen = screen;
@@ -21,18 +21,17 @@ for (var screen = 0; screen < screenCount; screen++) {
     bar.hiding = "none";
     bar.height = 32;
 
-    // panel colorizer: transparent background
-    // Hiding the native panel background isn't enough on its own — Plasma's
+    // Panel Colorizer: transparent native background + per-applet glass.
+    // Making the native background invisible isn't enough on its own — Plasma's
     // Adaptive opacity mode (the default when a fill panel has no explicit
     // panelOpacity override) renders opaque whenever a window touches the
     // screen edge under it, which is most of the time in real use. The
-    // colorizer's own blurBehind + translucent fill is what actually keeps
-    // the top bar glass regardless of what's open (issue: top bar reads
-    // opaque despite the liquidglass KWin effect being active). Both
-    // "panel" (continuous background) and "widgets" (the floating-applets
-    // per-icon pills this bar actually renders) need the same treatment —
-    // only "widgets" is live here since floatingApplets=1, but "panel" is
-    // kept so the bar still glasses if floatingApplets is ever turned off.
+    // colorizer's own blurBehind + translucent fill keeps the top bar glass
+    // regardless of what's open. Panel Colorizer requires the native panel
+    // background to stay ENABLED at opacity 0 to publish its custom KWin blur
+    // mask; disabling it makes floating-applet backgrounds render as flat
+    // opaque pills. Both the continuous panel and per-applet paths carry the
+    // same glass preset, while floatingApplets=1 selects the latter.
     // sourceType:0 forces the literal "custom" hex color instead of a
     // systemColor/Kirigami.Theme lookup (sourceType:1) — that lookup was
     // resolving to a near-white color regardless of the active color
@@ -44,7 +43,7 @@ for (var screen = 0; screen < screenCount; screen++) {
         colorizer.currentConfigGroup = ["General"];
         colorizer.writeConfig("globalSettings", JSON.stringify({
             "nativePanel": {
-                "background": { "enabled": false, "opacity": 0, "shadow": false },
+                "background": { "enabled": true, "opacity": 0, "shadow": false },
                 "floatingDialogs": true
             },
             "panel": {

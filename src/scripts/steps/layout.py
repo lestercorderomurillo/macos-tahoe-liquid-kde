@@ -318,21 +318,13 @@ def _patch_plasmashellrc() -> None:
         else:
             section = section.rstrip() + "\npanelOpacity=2\n"
         if "floating=0" in section:
-            # floatingApplets=1 (per-icon floating pills, matching the
-            # macOS grouped-icon look) relies on Panel Colorizer's
-            # "widgets" blurBehind mode. That mode doesn't actually
-            # register a KWin blur region for the floating pills — they
-            # render as flat opaque #1c1c1e boxes instead of glass
-            # (visible around the system tray / clock). The Dock doesn't
-            # hit this because it's a single floating panel using the
-            # native translucent background, not per-widget pills.
-            # floatingApplets=0 falls back to one continuous panel
-            # background, which uses Colorizer's "panel" blurBehind mode
-            # and actually blurs correctly.
+            # Keep the top bar applets-only floating. Panel Colorizer can
+            # publish the per-applet blur mask as long as its native panel
+            # background stays enabled at opacity zero (see mac-tahoe.js).
             if "floatingApplets=" in section:
-                section = re.sub(r"floatingApplets=\d+", "floatingApplets=0", section)
+                section = re.sub(r"floatingApplets=\d+", "floatingApplets=1", section)
             else:
-                section = section.rstrip() + "\nfloatingApplets=0\n"
+                section = section.rstrip() + "\nfloatingApplets=1\n"
         return section
 
     new_text = _PRC_PANEL_RE.sub(fix, text)

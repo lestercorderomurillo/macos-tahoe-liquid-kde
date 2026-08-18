@@ -309,6 +309,26 @@ def test_apply_reloads_third_party_effect_before_warning(
     assert "shapecorners" not in capsys.readouterr().err
 
 
+def test_apply_reloads_own_compiled_effect_after_reconfigure(
+        monkeypatch, tmp_path, capsys):
+    """Routine light/dark switches must restore liquidglass too, not only
+    third-party effects or the install-time apply wrapper."""
+    ts, _ = _prep_effect_warn_case(
+        monkeypatch, tmp_path, "[Plugins]\nliquidglassEnabled=true\n")
+    loaded = iter([set(), {"liquidglass"}])
+    monkeypatch.setattr(ts, "_kwin_loaded_effects", lambda: next(loaded))
+    calls = []
+    monkeypatch.setattr(ts, "_qdbus",
+                        lambda *args: calls.append(args) or True)
+
+    assert ts.apply("dark") is True
+    assert any(
+        call[-2:] == ("org.kde.kwin.Effects.loadEffect", "liquidglass")
+        for call in calls
+    )
+    assert "liquidglass" not in capsys.readouterr().err
+
+
 def test_apply_no_warn_for_user_disabled_effect(monkeypatch, tmp_path, capsys):
     """An effect the user themselves DISABLED (Enabled=false) is not one we
     watch — its absence from the loaded set is expected, not a failure. No
@@ -596,7 +616,7 @@ def test_patch_dock_transparency_reasserts_panel_opacity(monkeypatch, tmp_path):
     """The dock goes black when panelOpacity is dropped (a Global Theme apply
     from System Settings drops it), because the opaque panel background paints
     over the Acrylic Glass. patch_dock_transparency must re-assert
-    panelOpacity=2 on floating panels and floatingApplets=1 on non-floating —
+    panelOpacity=2 on every panel and floatingApplets=1 on non-floating —
     on install, on switch, and on the manual System Settings path. Real run
     against a real plasmashellrc, no mocking of the patch itself."""
     import theme_switch
@@ -620,10 +640,10 @@ def test_patch_dock_transparency_reasserts_panel_opacity(monkeypatch, tmp_path):
 
     assert theme_switch.patch_dock_transparency() is True
     text = prc.read_text()
-    # Floating dock got the translucency that lets the glass show through.
-    assert "panelOpacity=2" in text
-    # Non-floating panel got floatingApplets.
-    assert "floatingApplets=1" in text
+    top_section, dock_section = text.split("[PlasmaViews][Panel 2]", 1)
+    assert "panelOpacity=2" in top_section
+    assert "floatingApplets=1" in top_section
+    assert "panelOpacity=2" in dock_section
     # The [Defaults] subsection is untouched (regex must not swallow it).
     assert "[PlasmaViews][Panel 2][Defaults]\nthickness=68" in text
 

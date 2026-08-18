@@ -142,3 +142,7 @@ def test_taskmanager_build_artifacts_match_install_sources():
     artifacts = plasmoids.build_artifacts()
     assert plasmoids.TASKMANAGER_BUILD / "bin/plasma/applets/org.kde.mac.tahoe.liquid.taskmanager.so" in artifacts
     assert plasmoids.TASKMANAGER_BUILD / "bin/plasma/applet/org/kde/mac/tahoe/liquid/taskmanager" in artifacts
+
+    task_qml = (plasmoids.TASKMANAGER_SRC / "contents/ui/Task.qml").read_text()
+    assert "z: dockMagnified ? 10 : 0" in task_qml
+    assert "scale: task.dockMagnified ? 1.35 : 1.0" in task_qml

@@ -431,13 +431,13 @@ _PRC_PANEL_RE = re.compile(
 
 
 def patch_dock_transparency() -> bool:
-    """Re-assert the dock's translucency in plasmashellrc so the Acrylic Glass
-    shows through instead of an opaque (black) panel background painting over
-    it. floating panels get panelOpacity=2 (adaptive), non-floating get
-    floatingApplets=1. Applying a Global Theme from System Settings drops these,
-    so we re-write them on every theme switch AND at install. Plasma's JS layout
-    API can't set panelOpacity, hence the direct rc edit. Returns True if the
-    file changed."""
+    """Re-assert panel glass settings after a Global Theme apply.
+
+    Every panel is explicitly translucent so Plasma's Adaptive mode cannot
+    turn the top bar opaque when a window touches it. Non-floating panels also
+    keep applets-only floating. Global Theme applies can drop these view-state
+    keys, so every theme switch restores them. Returns True if the file changed.
+    """
     prc = _xdg_config() / "plasmashellrc"
     if not prc.is_file():
         return False
@@ -448,11 +448,10 @@ def patch_dock_transparency() -> bool:
 
     def fix(m: "re.Match[str]") -> str:
         section = m.group(0)
-        if "floating=1" in section:
-            if "panelOpacity=" in section:
-                section = re.sub(r"panelOpacity=\d+", "panelOpacity=2", section)
-            else:
-                section = section.rstrip() + "\npanelOpacity=2\n"
+        if "panelOpacity=" in section:
+            section = re.sub(r"panelOpacity=\d+", "panelOpacity=2", section)
+        else:
+            section = section.rstrip() + "\npanelOpacity=2\n"
         if "floating=0" in section:
             if "floatingApplets=" in section:
                 section = re.sub(r"floatingApplets=\d+", "floatingApplets=1",
@@ -1252,12 +1251,16 @@ _OWN_COMPILED_EFFECTS = ("liquidglass",)
 
 def _restore_own_compiled_effects() -> None:
     plugins = _parse_ini(_kwinrc_path()).get("Plugins", {})
+    enabled = [
+        effect for effect in _OWN_COMPILED_EFFECTS
+        if plugins.get(f"{effect}Enabled", "").strip().lower() == "true"
+    ]
+    if not enabled:
+        return
     loaded = _kwin_loaded_effects()
     if loaded is None:
         return
-    for effect in _OWN_COMPILED_EFFECTS:
-        if plugins.get(f"{effect}Enabled", "").strip().lower() != "true":
-            continue
+    for effect in enabled:
         if _effect_is_loaded(effect, loaded):
             continue
         _qdbus("org.kde.KWin", "/Effects",
@@ -1439,6 +1442,7 @@ def _apply_unlocked(mode: str, context: str = "user") -> bool:
     # After KWin re-scans effects, restore a user's third-party effects and
     # warn if one still cannot load (best-effort when KWin is unavailable).
     _restore_or_warn_foreign_effects(foreign_effects)
+    _restore_own_compiled_effects()
     return config_ok
 
 

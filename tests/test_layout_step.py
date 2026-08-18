@@ -118,6 +118,10 @@ def test_mac_layout_adds_no_application_launchers_of_its_own():
     script = layout.LAYOUT_SCRIPT.read_text()
 
     assert 'tasks.writeConfig("launchers", "");' in script
+    # Panel Colorizer needs an enabled, fully-transparent native background
+    # to publish the per-applet KWin blur mask.
+    assert ('"background": { "enabled": true, "opacity": 0, '
+            '"shadow": false }') in script
     assert "preferred://filemanager" not in script
     assert "applications:steam.desktop" not in script
 
@@ -199,10 +203,8 @@ def _write_plasmashellrc(tmp_path, text):
 
 def test_patch_plasmashellrc_forces_translucent_on_non_floating_top_bar(
         monkeypatch, tmp_path):
-    # The top bar is floating=0 (fill panel, continuous background — not
-    # per-icon floating pills, which don't actually blur; see
-    # _patch_plasmashellrc). Leaving panelOpacity unset falls back to
-    # Plasma's Adaptive default,
+    # The top bar is floating=0 with applets-only floating. Leaving
+    # panelOpacity unset falls back to Plasma's Adaptive default,
     # which goes opaque whenever a window touches the screen edge under it —
     # so the top bar must get the same forced Translucent (2) as the dock.
     monkeypatch.setattr(layout, "HOME", tmp_path)
@@ -220,7 +222,7 @@ def test_patch_plasmashellrc_forces_translucent_on_non_floating_top_bar(
     text = (tmp_path / ".config/plasmashellrc").read_text()
     top_section, dock_section = text.split("[PlasmaViews][Panel 259]")
     assert "panelOpacity=2" in top_section
-    assert "floatingApplets=0" in top_section
+    assert "floatingApplets=1" in top_section
     assert "panelOpacity=2" in dock_section
 
 
