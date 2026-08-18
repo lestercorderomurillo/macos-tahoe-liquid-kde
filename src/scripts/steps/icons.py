@@ -9,12 +9,16 @@ import tarfile
 from pathlib import Path
 
 from steps._helpers import (
-    HOME, fail, info, install_tree, offline, ok,
+    HOME, fail, info, install_tree, offline, ok, temp_dir,
 )
 from utils import remove_path, run_user
 
 OFFLINE_DIR = offline("icons")
 DEST_DIR = HOME / ".local/share/icons"
+_THEME_NAMES = (
+    "MacTahoeLiquidKde-Icons",
+    "MacTahoeLiquidKde-Icons-dark",
+)
 
 # Subdirs _assemble() cherry-picks from upstream into the default theme.
 _DEFAULT_DIRS = (
@@ -38,27 +42,35 @@ def install() -> None:
         fail(f"offline tarball missing: {tarball}")
         return
 
-    # Wipe our own stale theme dirs (crashed-run leftovers); never touch
-    # the user's other themes (Breeze, Adwaita, etc.).
-    for old in DEST_DIR.glob("MacTahoeLiquidKde-Icons*"):
-        if old.is_dir():
-            shutil.rmtree(old, ignore_errors=True)
-
-    # tar --zstd over Python tarfile: the zstandard module isn't in every
-    # distro's default Python.
-    res = subprocess.run(
-        ["tar", "--zstd", "-xf", str(tarball), "-C", str(DEST_DIR)],
-        check=False, capture_output=True, text=True,
-    )
-    if res.returncode != 0:
-        fail(f"tar --zstd failed ({res.returncode}): {res.stderr.strip()}")
-        return
-
     n = 0
-    for theme in sorted(DEST_DIR.glob("MacTahoeLiquidKde-Icons*")):
-        if theme.is_dir() and (theme / "index.theme").is_file():
-            ok(f"{theme.name} (installed)")
-            n += 1
+    with temp_dir("mttkde-icons") as staging:
+        # Extract away from the live icon path. Removing an active theme before
+        # this completes makes every running KDE process report
+        # "Icon theme ... not found" and briefly fall back to Breeze.
+        # tar --zstd is used over Python tarfile because the zstandard module
+        # isn't in every distro's default Python.
+        res = subprocess.run(
+            ["tar", "--zstd", "-xf", str(tarball), "-C", str(staging)],
+            check=False, capture_output=True, text=True,
+        )
+        if res.returncode != 0:
+            fail(f"tar --zstd failed ({res.returncode}): {res.stderr.strip()}")
+            return
+
+        for name in _THEME_NAMES:
+            source = staging / name
+            if not (source / "index.theme").is_file():
+                fail(f"{name} (index.theme missing from offline archive)")
+                continue
+            if install_tree(source, DEST_DIR / name, name):
+                n += 1
+
+    # Clean only our own obsolete variants, and only after both current themes
+    # are safely live. A failed extraction must leave the installed theme intact.
+    if n == len(_THEME_NAMES):
+        for old in DEST_DIR.glob("MacTahoeLiquidKde-Icons*"):
+            if old.is_dir() and old.name not in _THEME_NAMES:
+                shutil.rmtree(old, ignore_errors=True)
 
     if shutil.which("gtk-update-icon-cache"):
         for theme in DEST_DIR.glob("MacTahoeLiquidKde-Icons*"):
