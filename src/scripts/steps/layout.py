@@ -318,9 +318,8 @@ def _patch_plasmashellrc() -> None:
         else:
             section = section.rstrip() + "\npanelOpacity=2\n"
         if "floating=0" in section:
-            # Keep the top bar applets-only floating. Panel Colorizer can
-            # publish the per-applet blur mask as long as its native panel
-            # background stays enabled at opacity zero (see mac-tahoe.js).
+            # Keep the top bar applets-only floating while Panel Colorizer
+            # hides the continuous native panel background (see mac-tahoe.js).
             if "floatingApplets=" in section:
                 section = re.sub(r"floatingApplets=\d+", "floatingApplets=1", section)
             else:

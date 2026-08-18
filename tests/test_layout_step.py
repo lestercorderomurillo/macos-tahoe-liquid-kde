@@ -118,10 +118,14 @@ def test_mac_layout_adds_no_application_launchers_of_its_own():
     script = layout.LAYOUT_SCRIPT.read_text()
 
     assert 'tasks.writeConfig("launchers", "");' in script
-    # Panel Colorizer needs an enabled, fully-transparent native background
-    # to publish the per-applet KWin blur mask.
-    assert ('"background": { "enabled": true, "opacity": 0, '
+    # Keep the full-width panel invisible and let Plasma draw its own
+    # light/dark-aware floating-applet surfaces. Custom panel/widget layers
+    # stack and recreate an opaque strip plus mismatched dark tiles.
+    assert ('"background": { "enabled": false, "opacity": 0, '
             '"shadow": false }') in script
+    assert '"panel": {' not in script
+    assert '"widgets": {' not in script
+    assert '"custom": "#1c1c1e"' not in script
     assert "preferred://filemanager" not in script
     assert "applications:steam.desktop" not in script
 

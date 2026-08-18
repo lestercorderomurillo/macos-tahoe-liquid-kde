@@ -21,54 +21,18 @@ for (var screen = 0; screen < screenCount; screen++) {
     bar.hiding = "none";
     bar.height = 32;
 
-    // Panel Colorizer: transparent native background + per-applet glass.
-    // Making the native background invisible isn't enough on its own — Plasma's
-    // Adaptive opacity mode (the default when a fill panel has no explicit
-    // panelOpacity override) renders opaque whenever a window touches the
-    // screen edge under it, which is most of the time in real use. The
-    // colorizer's own blurBehind + translucent fill keeps the top bar glass
-    // regardless of what's open. Panel Colorizer requires the native panel
-    // background to stay ENABLED at opacity 0 to publish its custom KWin blur
-    // mask; disabling it makes floating-applet backgrounds render as flat
-    // opaque pills. Both the continuous panel and per-applet paths carry the
-    // same glass preset, while floatingApplets=1 selects the latter.
-    // sourceType:0 forces the literal "custom" hex color instead of a
-    // systemColor/Kirigami.Theme lookup (sourceType:1) — that lookup was
-    // resolving to a near-white color regardless of the active color
-    // scheme, which made the bar read as a faint, washed-out tint instead
-    // of proper dark glass (mirrors the same bug found in the native
-    // panel-background.svgz "ColorScheme-Background" recolor path).
+    // Panel Colorizer hides the continuous native panel background. Do not add
+    // panel/widgets color layers here: both render at once with applets-only
+    // floating and produce a full-width gray strip plus dark blocks behind
+    // individual applets. Plasma's own floating-applet surfaces provide the
+    // intended light/dark-aware glass treatment.
     var colorizer = bar.addWidget("luisbocanegra.panel.colorizer");
     if (colorizer) {
         colorizer.currentConfigGroup = ["General"];
         colorizer.writeConfig("globalSettings", JSON.stringify({
             "nativePanel": {
-                "background": { "enabled": true, "opacity": 0, "shadow": false },
+                "background": { "enabled": false, "opacity": 0, "shadow": false },
                 "floatingDialogs": true
-            },
-            "panel": {
-                "normal": {
-                    "enabled": true,
-                    "blurBehind": true,
-                    "backgroundColor": {
-                        "enabled": true,
-                        "alpha": 0.55,
-                        "custom": "#1c1c1e",
-                        "sourceType": 0
-                    }
-                }
-            },
-            "widgets": {
-                "normal": {
-                    "enabled": true,
-                    "blurBehind": true,
-                    "backgroundColor": {
-                        "enabled": true,
-                        "alpha": 0.55,
-                        "custom": "#1c1c1e",
-                        "sourceType": 0
-                    }
-                }
             }
         }));
         colorizer.currentConfigGroup = ["Configuration"];
