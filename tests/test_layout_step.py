@@ -130,6 +130,17 @@ def test_mac_layout_adds_no_application_launchers_of_its_own():
     assert "applications:steam.desktop" not in script
 
 
+def test_panel_background_keeps_light_dark_surface_parity(offline):
+    panel = "widgets/panel-background.svgz"
+    dark = offline / "plasma-theme/MacTahoeLiquidKde-Dark" / panel
+    light = offline / "plasma-theme/MacTahoeLiquidKde-Light" / panel
+
+    # Both packages map the same neutral SVG through their active color
+    # scheme. A separate hardcoded dark asset caused 55% square tiles on the
+    # top bar and made the Dock inherit the same heavy tint in v0.48.0.
+    assert dark.read_bytes() == light.read_bytes()
+
+
 # ── Discover install check ──────────────────────────────────────────────
 
 _LAUNCHERS_LINE = (
