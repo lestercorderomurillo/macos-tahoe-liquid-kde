@@ -841,7 +841,7 @@ def test_main_exit_code_reflects_apply_failure(monkeypatch):
     assert theme_switch.main(["dark"]) == 1
 
 
-# ── smart per-mode wallpaper ownership ───────────────────────────────
+# ── sticky user wallpaper ownership ─────────────────────────────────
 
 
 def _smart_wallpaper_env(monkeypatch, tmp_path):
@@ -887,7 +887,7 @@ def test_first_install_applies_theme_wallpaper(monkeypatch, tmp_path):
     assert ts._apply_wallpaper("light", context="install") is True
     state = ts._load_wallpaper_state()
     assert calls == ["light"]
-    assert state["modes"]["light"] == []
+    assert state["user_override"] is False
     assert state["last_applied"] == _wp(f"file://{theme}")
 
 
@@ -912,17 +912,16 @@ def test_theme_wallpaper_helper_failure_uses_config_fallback(
     assert ts._load_wallpaper_state()["last_applied"] == expected
 
 
-def test_failed_wallpaper_switch_does_not_advance_active_mode(
+def test_failed_wallpaper_switch_keeps_last_successful_snapshot(
         monkeypatch, tmp_path):
     ts, theme = _smart_wallpaper_env(monkeypatch, tmp_path)
     light = _wp(f"file://{theme}")
     ts._save_wallpaper_state({
-        "version": 1,
+        "version": 2,
         "initialized": True,
         "enabled": True,
-        "active_mode": "light",
+        "user_override": False,
         "last_applied": light,
-        "modes": {"light": [], "dark": []},
     })
     monkeypatch.setattr(ts, "_current_wallpapers", lambda: light)
     monkeypatch.setattr(ts, "_apply_theme_wallpaper",
@@ -931,7 +930,7 @@ def test_failed_wallpaper_switch_does_not_advance_active_mode(
 
     assert ts._apply_wallpaper("dark") is False
     state = ts._load_wallpaper_state()
-    assert state["active_mode"] == "light"
+    assert state["user_override"] is False
     assert state["last_applied"] == light
 
 
@@ -950,62 +949,80 @@ def test_reinstall_without_state_preserves_custom_wallpaper(
 
     assert ts._apply_wallpaper("light", context="install") is True
     state = ts._load_wallpaper_state()
-    assert state["modes"]["light"] == custom
+    assert state["user_override"] is True
     assert state["last_applied"] == custom
 
 
-def test_switcher_remembers_different_custom_wallpapers_per_mode(
+def test_scheduled_switch_preserves_user_wallpaper_across_modes(
         monkeypatch, tmp_path):
     ts, theme = _smart_wallpaper_env(monkeypatch, tmp_path)
     theme_snapshot = _wp(f"file://{theme}")
-    light_custom = _wp("file:///pictures/custom-light.jpg")
-    dark_custom = _wp("file:///pictures/custom-dark.jpg")
+    custom = _wp("file:///pictures/keep-this-wallpaper.jpg")
+    ts._save_wallpaper_state({
+        "version": 2,
+        "initialized": True,
+        "enabled": True,
+        "user_override": False,
+        "last_applied": theme_snapshot,
+    })
+    monkeypatch.setattr(ts, "_current_wallpapers", lambda: custom)
+    monkeypatch.setattr(
+        ts, "_apply_theme_wallpaper",
+        lambda mode: (_ for _ in ()).throw(
+            AssertionError("scheduled switch replaced user wallpaper")),
+    )
+    monkeypatch.setattr(
+        ts, "_apply_wallpaper_snapshot",
+        lambda snapshot: (_ for _ in ()).throw(
+            AssertionError("scheduled switch restored another wallpaper")),
+    )
+
+    # The first transition notices that Plasma no longer has our last-applied
+    # wallpaper. Every later transition keeps that user choice as-is.
+    assert ts._apply_wallpaper("dark") is True
+    assert ts._apply_wallpaper("light") is True
+    state = ts._load_wallpaper_state()
+    assert state["user_override"] is True
+    assert state["last_applied"] == custom
+
+
+def test_v1_custom_mode_migrates_to_sticky_user_override(
+        monkeypatch, tmp_path):
+    ts, theme = _smart_wallpaper_env(monkeypatch, tmp_path)
+    theme_snapshot = _wp(f"file://{theme}")
+    custom = _wp("file:///pictures/legacy-custom.jpg")
     ts._save_wallpaper_state({
         "version": 1,
         "initialized": True,
         "enabled": True,
-        "active_mode": "light",
+        "active_mode": "dark",
         "last_applied": theme_snapshot,
-        "modes": {"light": [], "dark": []},
+        "modes": {"light": custom, "dark": []},
     })
-    current = {"value": light_custom}
-    restored = []
-    monkeypatch.setattr(ts, "_current_wallpapers",
-                        lambda: current["value"])
-    monkeypatch.setattr(ts, "_apply_theme_wallpaper",
-                        lambda mode: (True, theme))
+    monkeypatch.setattr(ts, "_current_wallpapers", lambda: theme_snapshot)
     monkeypatch.setattr(
-        ts, "_apply_wallpaper_snapshot",
-        lambda snapshot: restored.append(snapshot) or True,
+        ts, "_apply_theme_wallpaper",
+        lambda mode: (_ for _ in ()).throw(
+            AssertionError("migration resumed wallpaper management")),
     )
 
-    # Leaving light captures the manual light choice; dark has no saved
-    # choice yet, so it receives the bundled default.
-    assert ts._apply_wallpaper("dark") is True
-    assert ts._load_wallpaper_state()["modes"]["light"] == light_custom
-
-    # The user chooses a different dark wallpaper. Returning to light saves
-    # it, then restores the independent light choice.
-    current["value"] = dark_custom
     assert ts._apply_wallpaper("light") is True
     state = ts._load_wallpaper_state()
-    assert state["modes"]["dark"] == dark_custom
-    assert restored == [light_custom]
-    assert state["last_applied"] == light_custom
+    assert state["version"] == 2
+    assert state["user_override"] is True
+    assert state["last_applied"] == theme_snapshot
 
 
-def test_explicit_wallpaper_reset_clears_both_custom_modes(
+def test_explicit_wallpaper_reset_resumes_theme_management(
         monkeypatch, tmp_path):
     ts, theme = _smart_wallpaper_env(monkeypatch, tmp_path)
     light_custom = _wp("file:///pictures/custom-light.jpg")
-    dark_custom = _wp("file:///pictures/custom-dark.jpg")
     ts._save_wallpaper_state({
-        "version": 1,
+        "version": 2,
         "initialized": True,
         "enabled": True,
-        "active_mode": "light",
+        "user_override": True,
         "last_applied": light_custom,
-        "modes": {"light": light_custom, "dark": dark_custom},
     })
     monkeypatch.setenv("FEAT_WALLPAPERS", "true")
     monkeypatch.setenv("MTTKDE_EXISTING_INSTALL", "true")
@@ -1020,7 +1037,7 @@ def test_explicit_wallpaper_reset_clears_both_custom_modes(
     assert ts._apply_wallpaper("light", context="install") is True
     state = ts._load_wallpaper_state()
     assert calls == ["light"]
-    assert state["modes"] == {"light": [], "dark": []}
+    assert state["user_override"] is False
     assert state["last_applied"] == _wp(f"file://{theme}")
 
 

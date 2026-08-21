@@ -124,8 +124,8 @@ Options:
                        Stage the install now; re-run with --apply-theme later.
     --no-grub-modify   Don't auto-edit /etc/default/grub for the boot
                        splash kernel cmdline (prints manual fix instead)
-    --reset-wallpapers Forget saved light/dark wallpaper choices and apply
-                       the bundled wallpaper once
+    --reset-wallpapers Let timed theme changes manage the background again
+                       and apply the bundled wallpaper once
   Persistence:
     --save             Save current flags to features.json
     --reset            Reset features.json to all-true defaults

@@ -312,6 +312,12 @@ Light/dark switching applies:
    theme, Aurorae window decoration, GTK theme, wallpaper.
 3. The Kvantum widget-style cycle (see below).
 
+Wallpaper ownership is sticky. The switcher records the last background it
+applied; once Plasma reports a different background, that is treated as a user
+choice and login plus the 06:00/18:00 transitions leave it untouched. A user
+opts back into managed bundled wallpapers only with the installer's explicit
+`--reset-wallpapers` action.
+
 **Kvantum cycle.** Kvantum is a Qt style plugin and cannot reload its
 kvconfig in a running app — only `QApplication::setStyle()`
 re-instantiates the plugin. Confirmed upstream:

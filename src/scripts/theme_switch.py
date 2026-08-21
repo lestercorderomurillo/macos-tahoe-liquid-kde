@@ -512,7 +512,7 @@ def _wallpaper_path(mode: str) -> Path | None:
     return legacy if legacy.is_dir() else None
 
 
-_WALLPAPER_STATE_VERSION = 1
+_WALLPAPER_STATE_VERSION = 2
 
 
 def _wallpaper_state_file() -> Path:
@@ -526,9 +526,8 @@ def _empty_wallpaper_state() -> dict:
         "version": _WALLPAPER_STATE_VERSION,
         "initialized": False,
         "enabled": True,
-        "active_mode": None,
+        "user_override": False,
         "last_applied": [],
-        "modes": {"light": [], "dark": []},
     }
 
 
@@ -569,15 +568,21 @@ def _load_wallpaper_state() -> dict:
     state["initialized"] = raw.get("initialized") is True
     if isinstance(raw.get("enabled"), bool):
         state["enabled"] = raw["enabled"]
-    if raw.get("active_mode") in ("light", "dark"):
-        state["active_mode"] = raw["active_mode"]
+    if isinstance(raw.get("user_override"), bool):
+        state["user_override"] = raw["user_override"]
     state["last_applied"] = _normalize_wallpaper_snapshot(
         raw.get("last_applied"))
+
+    # Version 1 remembered a separate custom wallpaper for each color mode.
+    # A non-empty slot meant the user had deliberately replaced a wallpaper.
+    # Migrate that ownership signal to the sticky, mode-independent override
+    # instead of letting the first v2 scheduled transition erase their choice.
     modes = raw.get("modes")
-    if isinstance(modes, dict):
-        for mode in ("light", "dark"):
-            state["modes"][mode] = _normalize_wallpaper_snapshot(
-                modes.get(mode))
+    if raw.get("version") != _WALLPAPER_STATE_VERSION \
+            and isinstance(modes, dict) \
+            and any(_normalize_wallpaper_snapshot(modes.get(mode))
+                    for mode in ("light", "dark")):
+        state["user_override"] = True
     return state
 
 
@@ -800,12 +805,12 @@ def _apply_theme_wallpaper(mode: str) -> tuple[bool, Path | None]:
 def _apply_wallpaper(
         mode: str, context: str = "user",
         current_snapshot: list[dict[str, object]] | None = None) -> bool:
-    """Preserve deliberate wallpapers and remember one set per mode.
+    """Apply bundled wallpapers only while this project still owns them.
 
     The last snapshot this switcher applied is the ownership boundary. If the
-    live/config snapshot has changed since then, the user changed it, so save
-    it for the outgoing light/dark mode. Reinstalls therefore never overwrite
-    a custom wallpaper unless the one-shot reset action was explicitly chosen.
+    live/config snapshot has changed since then, the user changed it. That
+    choice is sticky across login and the 06:00/18:00 color-mode transitions;
+    only the explicit one-shot wallpaper reset opts back into management.
     """
     state = _load_wallpaper_state()
     was_initialized = bool(state["initialized"])
@@ -818,52 +823,46 @@ def _apply_wallpaper(
         if existing_env is None else existing_env
     current = (_current_wallpapers() if current_snapshot is None
                else _normalize_wallpaper_snapshot(current_snapshot))
-    outgoing = state.get("active_mode")
     last_applied = _normalize_wallpaper_snapshot(state.get("last_applied"))
-    modes = state["modes"]
 
     state["initialized"] = True
     state["enabled"] = bool(enabled)
 
     if not enabled:
-        state["active_mode"] = mode
         state["last_applied"] = current
         _save_wallpaper_state(state)
         return True
 
     if reset:
-        modes["light"] = []
-        modes["dark"] = []
+        state["user_override"] = False
         last_applied = []
 
     if current and not reset:
-        if outgoing in ("light", "dark") and last_applied \
-                and current != last_applied:
-            modes[outgoing] = current
+        if last_applied and current != last_applied:
+            state["user_override"] = True
         elif (not was_initialized and existing
               and not _snapshot_is_theme_managed(current)):
             # Upgrade from a release that predates smart state: a non-theme
-            # wallpaper is presumed deliberate and belongs to the current mode.
-            modes[mode] = current
+            # wallpaper is presumed deliberate and remains user-owned.
+            state["user_override"] = True
         elif not was_enabled and not _snapshot_is_theme_managed(current):
             # Wallpaper management was disabled and is being re-enabled.
-            modes[mode] = current
+            state["user_override"] = True
 
-    target = _normalize_wallpaper_snapshot(modes.get(mode))
-    if target:
-        success = current == target or _apply_wallpaper_snapshot(target)
-        applied = target
-    else:
-        success, wp = _apply_theme_wallpaper(mode)
-        applied = _theme_wallpaper_snapshot(current, wp) if wp else []
-        if not success and applied:
-            # The official helper is preferred, but a headless install or a
-            # temporarily unavailable session bus must still leave correct
-            # on-disk per-screen config for the final Plasma restart.
-            success = _apply_wallpaper_snapshot(applied)
+    if state["user_override"]:
+        state["last_applied"] = current
+        _save_wallpaper_state(state)
+        return True
+
+    success, wp = _apply_theme_wallpaper(mode)
+    applied = _theme_wallpaper_snapshot(current, wp) if wp else []
+    if not success and applied:
+        # The official helper is preferred, but a headless install or a
+        # temporarily unavailable session bus must still leave correct
+        # on-disk per-screen config for the final Plasma restart.
+        success = _apply_wallpaper_snapshot(applied)
 
     if success:
-        state["active_mode"] = mode
         state["last_applied"] = applied
     _save_wallpaper_state(state)
     return success
