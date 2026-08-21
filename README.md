@@ -4,7 +4,7 @@
 
 # macOS Tahoe Liquid Theme for Plasma 6.6/6.7+
 
-[![release](https://img.shields.io/github/v/release/lestercorderomurillo/macos-tahoe-liquid-kde?label=release&color=blue)](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/releases) [![tests](https://img.shields.io/badge/tests-1088_passing-brightgreen)](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/actions/workflows/test.yml) [![plasma](https://img.shields.io/badge/Plasma-6.6%2B-1d99f3?logo=kde)](https://kde.org/plasma-desktop/) [![license](https://img.shields.io/badge/license-GPL--3.0-blue)](LICENSE) [![report a bug](https://img.shields.io/badge/report-a%20bug-red?logo=github)](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/issues/new)
+[![release](https://img.shields.io/github/v/release/lestercorderomurillo/macos-tahoe-liquid-kde?label=release&color=blue)](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/releases) [![tests](https://img.shields.io/badge/tests-1091_passing-brightgreen)](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/actions/workflows/test.yml) [![plasma](https://img.shields.io/badge/Plasma-6.6%2B-1d99f3?logo=kde)](https://kde.org/plasma-desktop/) [![license](https://img.shields.io/badge/license-GPL--3.0-blue)](LICENSE) [![report a bug](https://img.shields.io/badge/report-a%20bug-red?logo=github)](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/issues/new)
 
 Introducing macOS Tahoe, reimagined for Linux.
 
@@ -178,8 +178,8 @@ Useful maintenance options:
 - `--preflight` checks the system without installing.
 - `--no-apply-theme` stages files without switching the desktop.
 - `--no-grub-modify` leaves `/etc/default/grub` unchanged.
-- A wallpaper chosen in Plasma remains unchanged at login and during the
-  06:00/18:00 theme transitions.
+- A wallpaper chosen for a monitor in Plasma remains unchanged at login and
+  during the 06:00/18:00 theme transitions; other monitors keep switching.
 - `--reset-wallpapers` restores the bundled wallpaper and lets timed theme
   changes manage it again.
 - `./legacy-install` and `./legacy-uninstall` use the classic prompt instead of the terminal wizard.

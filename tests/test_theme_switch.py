@@ -887,7 +887,7 @@ def test_first_install_applies_theme_wallpaper(monkeypatch, tmp_path):
     assert ts._apply_wallpaper("light", context="install") is True
     state = ts._load_wallpaper_state()
     assert calls == ["light"]
-    assert state["user_override"] is False
+    assert state["user_screens"] == []
     assert state["last_applied"] == _wp(f"file://{theme}")
 
 
@@ -930,7 +930,7 @@ def test_failed_wallpaper_switch_keeps_last_successful_snapshot(
 
     assert ts._apply_wallpaper("dark") is False
     state = ts._load_wallpaper_state()
-    assert state["user_override"] is False
+    assert state["user_screens"] == []
     assert state["last_applied"] == light
 
 
@@ -949,7 +949,7 @@ def test_reinstall_without_state_preserves_custom_wallpaper(
 
     assert ts._apply_wallpaper("light", context="install") is True
     state = ts._load_wallpaper_state()
-    assert state["user_override"] is True
+    assert state["user_screens"] == [0]
     assert state["last_applied"] == custom
 
 
@@ -982,11 +982,94 @@ def test_scheduled_switch_preserves_user_wallpaper_across_modes(
     assert ts._apply_wallpaper("dark") is True
     assert ts._apply_wallpaper("light") is True
     state = ts._load_wallpaper_state()
-    assert state["user_override"] is True
+    assert state["user_screens"] == [0]
     assert state["last_applied"] == custom
 
 
-def test_v1_custom_mode_migrates_to_sticky_user_override(
+def test_custom_screen_stays_while_other_screen_keeps_switching(
+        monkeypatch, tmp_path):
+    ts, theme = _smart_wallpaper_env(monkeypatch, tmp_path)
+    light = theme.parent / "LightPerScreen"
+    dark = theme.parent / "DarkPerScreen"
+    light.mkdir()
+    dark.mkdir()
+    custom = "file:///pictures/keep-monitor-zero.jpg"
+    current = {"value": [
+        {"screen": 0, "image": custom},
+        {"screen": 1, "image": f"file://{light}"},
+    ]}
+    ts._save_wallpaper_state({
+        "version": 3,
+        "initialized": True,
+        "enabled": True,
+        "user_screens": [],
+        "last_applied": [
+            {"screen": 0, "image": f"file://{light}"},
+            {"screen": 1, "image": f"file://{light}"},
+        ],
+    })
+    monkeypatch.setattr(ts, "_current_wallpapers",
+                        lambda: current["value"])
+    monkeypatch.setattr(ts, "_wallpaper_path",
+                        lambda mode: dark if mode == "dark" else light)
+    monkeypatch.setattr(
+        ts, "_apply_theme_wallpaper",
+        lambda mode: (_ for _ in ()).throw(
+            AssertionError("global helper would overwrite custom screen")),
+    )
+    applied = []
+
+    def apply_snapshot(snapshot):
+        applied.append(snapshot)
+        current["value"] = snapshot
+        return True
+
+    monkeypatch.setattr(ts, "_apply_wallpaper_snapshot", apply_snapshot)
+
+    assert ts._apply_wallpaper("dark") is True
+    assert ts._apply_wallpaper("light") is True
+    assert applied == [
+        [
+            {"screen": 0, "image": custom},
+            {"screen": 1, "image": f"file://{dark}"},
+        ],
+        [
+            {"screen": 0, "image": custom},
+            {"screen": 1, "image": f"file://{light}"},
+        ],
+    ]
+    state = ts._load_wallpaper_state()
+    assert state["user_screens"] == [0]
+    assert state["last_applied"] == applied[-1]
+
+
+def test_mixed_snapshot_reapplies_auto_package_to_refresh_managed_screen(
+        monkeypatch, tmp_path):
+    ts, theme = _smart_wallpaper_env(monkeypatch, tmp_path)
+    custom = "file:///pictures/custom-left.jpg"
+    mixed = [
+        {"screen": 0, "image": custom},
+        {"screen": 1, "image": f"file://{theme}"},
+    ]
+    ts._save_wallpaper_state({
+        "version": 3,
+        "initialized": True,
+        "enabled": True,
+        "user_screens": [0],
+        "last_applied": mixed,
+    })
+    monkeypatch.setattr(ts, "_current_wallpapers", lambda: mixed)
+    applied = []
+    monkeypatch.setattr(
+        ts, "_apply_wallpaper_snapshot",
+        lambda snapshot: applied.append(snapshot) or True,
+    )
+
+    assert ts._apply_wallpaper("dark") is True
+    assert applied == [mixed]
+
+
+def test_v1_custom_mode_migrates_to_sticky_screen_override(
         monkeypatch, tmp_path):
     ts, theme = _smart_wallpaper_env(monkeypatch, tmp_path)
     theme_snapshot = _wp(f"file://{theme}")
@@ -1008,9 +1091,30 @@ def test_v1_custom_mode_migrates_to_sticky_user_override(
 
     assert ts._apply_wallpaper("light") is True
     state = ts._load_wallpaper_state()
-    assert state["version"] == 2
-    assert state["user_override"] is True
+    assert state["version"] == 3
+    assert state["user_screens"] == [0]
     assert state["last_applied"] == theme_snapshot
+
+
+def test_v2_global_override_migrates_every_recorded_screen(
+        monkeypatch, tmp_path):
+    ts, _theme = _smart_wallpaper_env(monkeypatch, tmp_path)
+    snapshot = [
+        {"screen": 0, "image": "file:///pictures/left.jpg"},
+        {"screen": 1, "image": "file:///pictures/right.jpg"},
+    ]
+    ts._save_wallpaper_state({
+        "version": 2,
+        "initialized": True,
+        "enabled": True,
+        "user_override": True,
+        "last_applied": snapshot,
+    })
+
+    state = ts._load_wallpaper_state()
+    assert state["version"] == 3
+    assert state["user_screens"] == [0, 1]
+    assert state["last_applied"] == snapshot
 
 
 def test_explicit_wallpaper_reset_resumes_theme_management(
@@ -1037,7 +1141,7 @@ def test_explicit_wallpaper_reset_resumes_theme_management(
     assert ts._apply_wallpaper("light", context="install") is True
     state = ts._load_wallpaper_state()
     assert calls == ["light"]
-    assert state["user_override"] is False
+    assert state["user_screens"] == []
     assert state["last_applied"] == _wp(f"file://{theme}")
 
 

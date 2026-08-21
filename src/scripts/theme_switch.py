@@ -512,7 +512,7 @@ def _wallpaper_path(mode: str) -> Path | None:
     return legacy if legacy.is_dir() else None
 
 
-_WALLPAPER_STATE_VERSION = 2
+_WALLPAPER_STATE_VERSION = 3
 
 
 def _wallpaper_state_file() -> Path:
@@ -526,7 +526,7 @@ def _empty_wallpaper_state() -> dict:
         "version": _WALLPAPER_STATE_VERSION,
         "initialized": False,
         "enabled": True,
-        "user_override": False,
+        "user_screens": [],
         "last_applied": [],
     }
 
@@ -557,6 +557,14 @@ def _normalize_wallpaper_snapshot(value: object) -> list[dict[str, object]]:
     ]
 
 
+def _normalize_wallpaper_screens(value: object) -> list[int]:
+    if not isinstance(value, list):
+        return []
+    return sorted({screen for screen in value
+                   if isinstance(screen, int) and not isinstance(screen, bool)
+                   and screen >= 0})
+
+
 def _load_wallpaper_state() -> dict:
     state = _empty_wallpaper_state()
     try:
@@ -568,21 +576,28 @@ def _load_wallpaper_state() -> dict:
     state["initialized"] = raw.get("initialized") is True
     if isinstance(raw.get("enabled"), bool):
         state["enabled"] = raw["enabled"]
-    if isinstance(raw.get("user_override"), bool):
-        state["user_override"] = raw["user_override"]
     state["last_applied"] = _normalize_wallpaper_snapshot(
         raw.get("last_applied"))
+    if raw.get("version") == _WALLPAPER_STATE_VERSION:
+        state["user_screens"] = _normalize_wallpaper_screens(
+            raw.get("user_screens"))
+        return state
 
     # Version 1 remembered a separate custom wallpaper for each color mode.
-    # A non-empty slot meant the user had deliberately replaced a wallpaper.
-    # Migrate that ownership signal to the sticky, mode-independent override
-    # instead of letting the first v2 scheduled transition erase their choice.
+    # Preserve ownership only for the screens present in those custom slots.
     modes = raw.get("modes")
-    if raw.get("version") != _WALLPAPER_STATE_VERSION \
-            and isinstance(modes, dict) \
-            and any(_normalize_wallpaper_snapshot(modes.get(mode))
-                    for mode in ("light", "dark")):
-        state["user_override"] = True
+    if raw.get("version") == 1 and isinstance(modes, dict):
+        state["user_screens"] = sorted({
+            int(item["screen"])
+            for mode in ("light", "dark")
+            for item in _normalize_wallpaper_snapshot(modes.get(mode))
+        })
+    elif raw.get("version") == 2 and raw.get("user_override") is True:
+        # v2 ownership was global. Treat every screen in its last snapshot as
+        # user-owned so upgrading cannot overwrite a wallpaper it preserved.
+        state["user_screens"] = [
+            int(item["screen"]) for item in state["last_applied"]
+        ]
     return state
 
 
@@ -763,24 +778,17 @@ def _theme_wallpaper_snapshot(
     return [{"screen": screen, "image": image} for screen in sorted(screens)]
 
 
-def _snapshot_is_theme_managed(
-        snapshot: list[dict[str, object]]) -> bool:
-    if not snapshot:
-        return False
-    managed = []
+def _wallpaper_image_is_theme_managed(
+        image: str) -> bool:
     base = Path(os.environ.get("XDG_DATA_HOME") or
                 str(Path.home() / ".local/share")) / "wallpapers"
-    for name in ("MacTahoe", "MacTahoe-Light", "MacTahoe-Dark"):
-        managed.append(str(base / name).rstrip("/"))
-    for item in snapshot:
-        image = str(item["image"])
-        if image.startswith("file://"):
-            image = image[7:]
-        image = image.rstrip("/")
-        if not any(image == path or image.startswith(path + "/contents/")
-                   for path in managed):
-            return False
-    return True
+    managed = [str(base / name).rstrip("/") for name in (
+        "MacTahoe", "MacTahoe-Light", "MacTahoe-Dark")]
+    if image.startswith("file://"):
+        image = image[7:]
+    image = image.rstrip("/")
+    return any(image == path or image.startswith(path + "/contents/")
+               for path in managed)
 
 
 def _env_bool(name: str) -> bool | None:
@@ -805,12 +813,12 @@ def _apply_theme_wallpaper(mode: str) -> tuple[bool, Path | None]:
 def _apply_wallpaper(
         mode: str, context: str = "user",
         current_snapshot: list[dict[str, object]] | None = None) -> bool:
-    """Apply bundled wallpapers only while this project still owns them.
+    """Apply bundled wallpapers only on screens this project still owns.
 
-    The last snapshot this switcher applied is the ownership boundary. If the
-    live/config snapshot has changed since then, the user changed it. That
-    choice is sticky across login and the 06:00/18:00 color-mode transitions;
-    only the explicit one-shot wallpaper reset opts back into management.
+    Each screen is compared with the last snapshot this switcher applied. A
+    changed screen becomes user-owned and stays untouched while other screens
+    continue following the 06:00/18:00 transitions. The explicit one-shot
+    wallpaper reset opts every screen back into management.
     """
     state = _load_wallpaper_state()
     was_initialized = bool(state["initialized"])
@@ -824,6 +832,14 @@ def _apply_wallpaper(
     current = (_current_wallpapers() if current_snapshot is None
                else _normalize_wallpaper_snapshot(current_snapshot))
     last_applied = _normalize_wallpaper_snapshot(state.get("last_applied"))
+    user_screens = set(_normalize_wallpaper_screens(
+        state.get("user_screens")))
+    current_by_screen = {
+        int(item["screen"]): str(item["image"]) for item in current
+    }
+    last_by_screen = {
+        int(item["screen"]): str(item["image"]) for item in last_applied
+    }
 
     state["initialized"] = True
     state["enabled"] = bool(enabled)
@@ -834,33 +850,48 @@ def _apply_wallpaper(
         return True
 
     if reset:
-        state["user_override"] = False
+        user_screens.clear()
         last_applied = []
+        last_by_screen.clear()
 
     if current and not reset:
-        if last_applied and current != last_applied:
-            state["user_override"] = True
-        elif (not was_initialized and existing
-              and not _snapshot_is_theme_managed(current)):
-            # Upgrade from a release that predates smart state: a non-theme
-            # wallpaper is presumed deliberate and remains user-owned.
-            state["user_override"] = True
-        elif not was_enabled and not _snapshot_is_theme_managed(current):
-            # Wallpaper management was disabled and is being re-enabled.
-            state["user_override"] = True
+        for screen, image in current_by_screen.items():
+            if screen in user_screens:
+                continue
+            if screen in last_by_screen and image != last_by_screen[screen]:
+                user_screens.add(screen)
+            elif ((not was_initialized and existing) or not was_enabled) \
+                    and not _wallpaper_image_is_theme_managed(image):
+                # Preserve deliberate pre-state and feature-disabled choices
+                # per screen instead of disabling every monitor.
+                user_screens.add(screen)
 
-    if state["user_override"]:
+    state["user_screens"] = sorted(user_screens)
+    current_user_screens = user_screens.intersection(current_by_screen)
+    if current and current_user_screens == set(current_by_screen):
         state["last_applied"] = current
         _save_wallpaper_state(state)
         return True
 
-    success, wp = _apply_theme_wallpaper(mode)
-    applied = _theme_wallpaper_snapshot(current, wp) if wp else []
-    if not success and applied:
-        # The official helper is preferred, but a headless install or a
-        # temporarily unavailable session bus must still leave correct
-        # on-disk per-screen config for the final Plasma restart.
-        success = _apply_wallpaper_snapshot(applied)
+    if current_user_screens:
+        wp = _wallpaper_path(mode)
+        applied = _theme_wallpaper_snapshot(current, wp) if wp else []
+        for item in applied:
+            screen = int(item["screen"])
+            if screen in current_user_screens:
+                item["image"] = current_by_screen[screen]
+        # Reapply even when the package URL is unchanged: MacTahoe contains
+        # both images/ and images_dark/, so rewriting the mixed snapshot makes
+        # Plasma refresh the managed screens after the color-mode transition.
+        success = bool(applied) and _apply_wallpaper_snapshot(applied)
+    else:
+        success, wp = _apply_theme_wallpaper(mode)
+        applied = _theme_wallpaper_snapshot(current, wp) if wp else []
+        if not success and applied:
+            # The official helper is preferred, but a headless install or a
+            # temporarily unavailable session bus must still leave correct
+            # on-disk per-screen config for the final Plasma restart.
+            success = _apply_wallpaper_snapshot(applied)
 
     if success:
         state["last_applied"] = applied
