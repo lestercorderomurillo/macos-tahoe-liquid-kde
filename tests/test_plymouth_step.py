@@ -154,7 +154,7 @@ def test_plymouth_script_scales_logo_dynamically():
     # Math.Int() rounds the float scale back to an int pixel size —
     # without it Plymouth refuses to render fractional pixel widths.
     assert "Math.Int" in text
-    # Source loaded once, scaled per-monitor inside the for loop.
+    # Source loaded once, then rescaled only when display geometry changes.
     assert "logo_source.Scale(logo_target, logo_target)" in text
 
 
@@ -164,15 +164,30 @@ def test_plymouth_script_centers_logo_after_scale():
     sprite's GetWidth()/GetHeight(), not the source image dimensions."""
     text = (THEME_SRC / "MacTahoeLiquidKde.script").read_text(encoding="utf-8")
     assert re.search(
-        r"SetX\s*\(\s*Window\.GetX\(\)\s*\+\s*screen_w\s*/\s*2"
+        r"SetX\s*\(\s*layout_x\s*\+\s*screen_w\s*/\s*2"
         r"\s*-\s*logo_image\.GetWidth\(\)\s*/\s*2\s*\)",
         text,
-    ), "missing horizontally-centered SetX(Window.GetX() + screen_w/2 - logo_image.GetWidth()/2)"
+    ), "missing horizontally-centered SetX(layout_x + screen_w/2 - logo_image.GetWidth()/2)"
     assert re.search(
-        r"SetY\s*\(\s*Window\.GetY\(\)\s*\+\s*screen_h\s*/\s*2"
+        r"SetY\s*\(\s*layout_y\s*\+\s*screen_h\s*/\s*2"
         r"\s*-\s*logo_image\.GetHeight\(\)\s*/\s*2\s*\)",
         text,
-    ), "missing vertically-centered SetY(Window.GetY() + screen_h/2 - logo_image.GetHeight()/2)"
+    ), "missing vertically-centered SetY(layout_y + screen_h/2 - logo_image.GetHeight()/2)"
+
+
+def test_plymouth_script_reflows_after_framebuffer_handoff():
+    """Firmware/simpledrm can be replaced by the native DRM framebuffer after
+    the script starts. Geometry captured once makes the logo shrink and jump;
+    the refresh callback must re-run a cached layout when any dimension moves."""
+    text = (THEME_SRC / "MacTahoeLiquidKde.script").read_text(encoding="utf-8")
+    assert "Plymouth.SetRefreshFunction(on_refresh)" in text
+    for dimension in ("GetX", "GetY", "GetWidth", "GetHeight"):
+        assert f"Window.{dimension}()" in text
+    assert re.search(
+        r"next_w\s*==\s*layout_w.*next_h\s*==\s*layout_h",
+        text,
+        flags=re.DOTALL,
+    ), "refresh path must avoid rescaling unchanged frames"
 
 
 def test_plymouth_script_handles_portrait_orientation():
