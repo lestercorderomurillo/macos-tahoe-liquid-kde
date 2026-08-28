@@ -1,11 +1,11 @@
 import shutil
 
 from steps._helpers import (
-    HOME, fail, info, kw_write, offline, ok, qdbus_call, reinstall, theme_mode,
+    DATA_HOME, fail, info, kw_write, offline, ok, qdbus_call, reinstall, theme_mode,
     warn,
 )
 
-DEST_DIR = HOME / ".local/share/aurorae/themes"
+DEST_DIR = DATA_HOME / "aurorae/themes"
 VARIANTS = ("Dark", "Light")
 
 

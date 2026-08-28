@@ -6,11 +6,11 @@ import shutil
 from pathlib import Path
 
 from steps._helpers import (
-    HOME, fail, info, offline, ok, reinstall,
+    DATA_HOME, fail, info, offline, ok, reinstall,
 )
 from utils import safe_copy
 
-DEST_DIR = HOME / ".local/share/wallpapers"
+DEST_DIR = DATA_HOME / "wallpapers"
 OFFLINE_DIR = offline("wallpapers")
 
 

@@ -1,10 +1,10 @@
 import shutil
 
 from steps._helpers import (
-    HOME, fail, info, install_tree, kw_write, offline, remove_tree, warn,
+    DATA_HOME, fail, info, install_tree, kw_write, offline, remove_tree, warn,
 )
 
-DEST_DIR = HOME / ".local/share/plasma/desktoptheme"
+DEST_DIR = DATA_HOME / "plasma/desktoptheme"
 LEGACY = ("MacTahoe-Dark", "MacTahoe-Light")
 VARIANTS = ("MacTahoeLiquidKde-Dark", "MacTahoeLiquidKde-Light")
 

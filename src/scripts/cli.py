@@ -699,23 +699,29 @@ def _require_root_and_drop_to_user(op: str = "install") -> bool:
     os.environ["USER"] = sudo_user
     os.environ["LOGNAME"] = sudo_user
     # Some sudo configs preserve root-owned XDG paths (XDG_STATE_HOME on
-    # openSUSE). Only rewrite missing/root-pointing values so custom user
-    # XDG overrides survive.
-    for key, suffix in (
+    # openSUSE), while others strip the invoking user's custom XDG paths.
+    # Remove only root values now; after dropping privileges, session-env
+    # recovery gets a chance to restore the user's values from plasmashell.
+    xdg_defaults = (
         ("XDG_CONFIG_HOME", ".config"),
         ("XDG_DATA_HOME", ".local/share"),
         ("XDG_CACHE_HOME", ".cache"),
         ("XDG_STATE_HOME", ".local/state"),
-    ):
+    )
+    for key, _suffix in xdg_defaults:
         value = os.environ.get(key, "")
-        if not value or value == "/root" or value.startswith("/root/"):
-            os.environ[key] = f"{user_home}/{suffix}"
+        if value == "/root" or value.startswith("/root/"):
+            os.environ.pop(key, None)
 
     # Reversible drop — real UID stays 0 for the root hop-back. GID first:
     # switching euid can lose the right to call setegid.
     os.setegid(sudo_gid)
     os.seteuid(sudo_uid)
     _restore_user_session_env(sudo_uid)
+    for key, suffix in xdg_defaults:
+        value = os.environ.get(key, "")
+        if not value or value == "/root" or value.startswith("/root/"):
+            os.environ[key] = f"{user_home}/{suffix}"
     return True
 
 
@@ -744,8 +750,9 @@ def _read_config_cascade(file: str, group: str, prop: str) -> str:
     (where plasma-apply-lookandfeel writes) before ~/.config/<file>.
     kreadconfig6 only reads the main file and misses LAF-stamped keys."""
     home = Path(os.environ.get("HOME") or str(Path.home()))
-    for candidate in (home / ".config/kdedefaults" / file,
-                      home / ".config" / file):
+    config_home = Path(os.environ.get("XDG_CONFIG_HOME") or home / ".config")
+    for candidate in (config_home / "kdedefaults" / file,
+                      config_home / file):
         if not candidate.is_file():
             continue
         section = None

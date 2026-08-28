@@ -5,11 +5,10 @@ fully offline under ``src/offline/sounds``.  Plasma 6 stores the selected
 theme in ``kdeglobals`` rather than in an app-specific notification file.
 """
 
-import os
 from pathlib import Path
 
 from steps._helpers import (
-    HOME, feat_enabled, info, install_tree, offline, ok, remove_tree, warn,
+    DATA_HOME, feat_enabled, info, install_tree, offline, ok, remove_tree, warn,
 )
 from utils import kw_read, kw_write
 
@@ -17,9 +16,6 @@ from utils import kw_read, kw_write
 THEME_ID = "MacTahoeLiquidKde"
 FALLBACK_THEME_ID = "ocean"
 OFFLINE_DIR = offline("sounds", THEME_ID)
-DATA_HOME = Path(
-    os.environ.get("XDG_DATA_HOME") or HOME / ".local/share"
-)
 DEST_DIR = DATA_HOME / "sounds" / THEME_ID
 
 

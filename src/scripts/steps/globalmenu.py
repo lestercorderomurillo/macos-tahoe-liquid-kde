@@ -4,7 +4,7 @@ from pathlib import Path
 from distro import qt6_plugins_dir, qt6_qml_dir
 from paths import REPO_ROOT, read_version
 from steps._helpers import (
-    HOME, build_dir, cmake_build, fail, ok, offline,
+    DATA_HOME, HOME, build_dir, cmake_build, fail, ok, offline,
     sudo_install_file, sudo_install_tree, sudo_remove, warn,
 )
 
@@ -46,7 +46,7 @@ LEGACY_SOS_USER = (
     HOME / ".local/lib/qt6/plugins/plasma/applets/org.kde.mac.tahoe.menu.so",
     HOME / ".local/lib/qt6/plugins/plasma/applets/org.kde.mac.tahoe.liquid.globalmenu.so",
 )
-LEGACY_QML = HOME / ".local/share/plasma/plasmoids/org.kde.mac-tahoe-liquid-kde.menu"
+LEGACY_QML = DATA_HOME / "plasma/plasmoids/org.kde.mac-tahoe-liquid-kde.menu"
 LEGACY_QML_MODULES_USER = (
     HOME / ".local/lib/qt6/qml/plasma/applet/org/kde/mac/tahoe/liquid/menu",
     HOME / ".local/lib/qt6/qml/plasma/applet/org/kde/mac/tahoe/globalmenu",

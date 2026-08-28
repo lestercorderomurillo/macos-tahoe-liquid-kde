@@ -9,12 +9,12 @@ import tarfile
 from pathlib import Path
 
 from steps._helpers import (
-    HOME, fail, info, install_tree, offline, ok, temp_dir,
+    DATA_HOME, fail, info, install_tree, offline, ok, temp_dir,
 )
 from utils import remove_path, run_user
 
 OFFLINE_DIR = offline("icons")
-DEST_DIR = HOME / ".local/share/icons"
+DEST_DIR = DATA_HOME / "icons"
 _THEME_NAMES = (
     "MacTahoeLiquidKde-Icons",
     "MacTahoeLiquidKde-Icons-dark",

@@ -4,7 +4,9 @@ import subprocess
 import time
 from pathlib import Path
 
-from steps._helpers import HOME, have, install_tree, ok, offline, qdbus_call, warn
+from steps._helpers import (
+    DATA_HOME, HOME, have, install_tree, ok, offline, qdbus_call, warn,
+)
 from utils import qdbus_cmd, run_user
 
 LAYOUT_SCRIPT = offline("layouts/mac-tahoe.js")
@@ -17,7 +19,7 @@ DEFAULT_TASKS_ID = "org.kde.plasma.icontasks"
 
 
 def _colorizer_dirs() -> list[Path]:
-    dirs = [HOME / ".local/share/plasma/plasmoids" / COLORIZER_ID]
+    dirs = [DATA_HOME / "plasma/plasmoids" / COLORIZER_ID]
     for base in ("/usr/local/share", "/usr/share"):
         dirs.append(Path(base) / "plasma/plasmoids" / COLORIZER_ID)
     return dirs
@@ -94,7 +96,7 @@ def _evaluate_layout_script(script: str) -> bool:
 
 def _discover_is_installed() -> bool:
     """Check if org.kde.discover.desktop exists in any XDG applications dir."""
-    for prefix in (HOME / ".local/share", Path("/usr/local/share"), Path("/usr/share")):
+    for prefix in (DATA_HOME, Path("/usr/local/share"), Path("/usr/share")):
         if (prefix / "applications/org.kde.discover.desktop").is_file():
             return True
     return False

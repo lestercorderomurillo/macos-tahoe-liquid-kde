@@ -61,6 +61,25 @@ def test_existing_install_detects_legacy_applet_without_state(
     assert cli_module._theme_is_already_installed() is True
 
 
+def test_config_verifier_honors_xdg_config_home(
+        cli_module, monkeypatch, tmp_path):
+    """KDE writes configs under XDG_CONFIG_HOME when it is set. Reading only
+    ~/.config reports a false Breeze result after an otherwise valid install."""
+    home = tmp_path / "home"
+    xdg = home / "settings"
+    (xdg / "kdedefaults").mkdir(parents=True)
+    (home / ".config").mkdir(parents=True)
+    (xdg / "kdedefaults/kdeglobals").write_text(
+        "[Icons]\nTheme=MacTahoeLiquidKde-Icons\n")
+    (home / ".config/kdeglobals").write_text(
+        "[Icons]\nTheme=breeze-dark\n")
+    monkeypatch.setenv("HOME", str(home))
+    monkeypatch.setenv("XDG_CONFIG_HOME", str(xdg))
+
+    assert cli_module._read_config_cascade(
+        "kdeglobals", "Icons", "Theme") == "MacTahoeLiquidKde-Icons"
+
+
 # ── install order — the inter-step dependency graph ───────────────────
 
 
@@ -220,13 +239,21 @@ def test_require_root_drops_privileges_in_correct_order(monkeypatch, cli_module,
                         lambda gid: calls.append(("setegid", gid)))
     monkeypatch.setattr(cli_module.os, "seteuid",
                         lambda uid: calls.append(("seteuid", uid)))
+    recovered_data = fake_home / "session-data"
+
+    def restore_session(uid):
+        assert uid == 1000
+        assert "XDG_DATA_HOME" not in os.environ
+        os.environ["XDG_DATA_HOME"] = str(recovered_data)
+
+    monkeypatch.setattr(cli_module, "_restore_user_session_env", restore_session)
 
     assert cli_module._require_root_and_drop_to_user() is True
     assert os.environ["HOME"] == str(fake_home)
     assert os.environ["USER"] == "lester"
     assert os.environ["LOGNAME"] == "lester"
     assert os.environ["XDG_CONFIG_HOME"] == str(fake_home / ".config")
-    assert os.environ["XDG_DATA_HOME"] == str(fake_home / ".local/share")
+    assert os.environ["XDG_DATA_HOME"] == str(recovered_data)
     assert os.environ["XDG_CACHE_HOME"] == str(fake_home / ".cache")
     assert os.environ["XDG_STATE_HOME"] == str(fake_home / ".local/state")
     assert calls == [("setegid", 1000), ("seteuid", 1000)]

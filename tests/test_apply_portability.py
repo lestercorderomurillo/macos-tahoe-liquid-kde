@@ -218,6 +218,7 @@ def test_refresh_desktop_database_runs_update_for_both_dirs(monkeypatch, tmp_pat
     user_apps = tmp_path / ".local/share/applications"
     user_apps.mkdir(parents=True)
     monkeypatch.setattr(apply, "HOME", tmp_path)
+    monkeypatch.setattr(apply, "DATA_HOME", tmp_path / ".local/share")
     monkeypatch.setattr(apply, "have", lambda cmd: cmd == "update-desktop-database")
     # Neutralise the real seteuid(0) hop — tests don't run as root.
     monkeypatch.setattr("steps._helpers._as_root", contextlib.nullcontext)

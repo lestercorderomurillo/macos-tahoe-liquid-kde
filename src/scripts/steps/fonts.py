@@ -7,12 +7,12 @@ import subprocess
 from collections import defaultdict
 
 from steps._helpers import (
-    HOME, fail, have, info, ok, offline, reinstall, warn,
+    DATA_HOME, fail, have, info, ok, offline, reinstall, warn,
 )
 from utils import run_user
 
 OFFLINE_DIR = offline("fonts")
-DEST_DIR = HOME / ".local/share/fonts"
+DEST_DIR = DATA_HOME / "fonts"
 
 
 def deps():

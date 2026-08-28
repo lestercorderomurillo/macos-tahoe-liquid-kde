@@ -13,6 +13,7 @@ from utils import drop_privs_in_child, have, kw_write, qdbus_call, safe_copy
 
 
 HOME = Path.home()
+DATA_HOME = Path(os.environ.get("XDG_DATA_HOME") or HOME / ".local/share")
 
 
 def feat_enabled(name: str, default: bool = True) -> bool:
@@ -240,7 +241,7 @@ def _emit_cmd_log(label: str, tool: str, stdout: str, stderr: str, log_path: Pat
 
 
 __all__ = [
-    "HOME", "feat_enabled", "theme_mode", "offline", "steps_dir",
+    "HOME", "DATA_HOME", "feat_enabled", "theme_mode", "offline", "steps_dir",
     "build_dir",
     "legacy_steps_dir", "src_dir",
     "install_tree", "remove_tree", "sudo_install_file", "sudo_install_tree",

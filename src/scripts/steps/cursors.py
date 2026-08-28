@@ -6,11 +6,11 @@ import shutil
 import subprocess
 
 from steps._helpers import (
-    HOME, fail, info, ok, offline,
+    DATA_HOME, fail, info, ok, offline,
 )
 
 OFFLINE_DIR = offline("cursors")
-DEST_DIR = HOME / ".local/share/icons"
+DEST_DIR = DATA_HOME / "icons"
 
 
 def deps():

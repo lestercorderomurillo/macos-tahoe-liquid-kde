@@ -19,10 +19,10 @@ kconf_update pass is a harmless re-run.
 import subprocess
 from pathlib import Path
 
-from steps._helpers import HOME, feat_enabled, install_tree, offline, ok
+from steps._helpers import DATA_HOME, HOME, feat_enabled, install_tree, offline, ok
 from utils import kw_read, kw_write, qdbus_call, run_user
 
-KCONF_UPDATE_DIR = HOME / ".local/share/kconf_update"
+KCONF_UPDATE_DIR = DATA_HOME / "kconf_update"
 BUNDLE = offline("kconf_update")
 
 _SCRIPTS = (

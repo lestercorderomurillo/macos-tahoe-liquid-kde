@@ -8,7 +8,8 @@ from pathlib import Path
 from urllib.parse import unquote, urlsplit
 
 from steps._helpers import (
-    HOME, fail, feat_enabled, have, info, kw_write, ok, qdbus_call, theme_mode, warn,
+    DATA_HOME, HOME, fail, feat_enabled, have, info, kw_write, ok, qdbus_call,
+    theme_mode, warn,
 )
 from distro import (
     kde_libexec_binary,
@@ -258,7 +259,7 @@ def _refresh_desktop_database() -> None:
     from steps._helpers import _as_root
     if not have("update-desktop-database"):
         return
-    user_apps = HOME / ".local/share/applications"
+    user_apps = DATA_HOME / "applications"
     if user_apps.is_dir():
         _run_live(["update-desktop-database", str(user_apps)])
     sys_apps = Path("/usr/share/applications")

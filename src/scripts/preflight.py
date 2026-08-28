@@ -68,7 +68,27 @@ def _home() -> Path:
 
 
 def _allowed_roots() -> tuple[re.Pattern, ...]:
-    home = re.escape(str(_home()))
+    home = _home()
+    user_roots = {
+        home / ".local",
+        home / ".config",
+        home / ".cache",
+    }
+    for key in (
+        "XDG_CONFIG_HOME", "XDG_DATA_HOME", "XDG_CACHE_HOME", "XDG_STATE_HOME",
+    ):
+        value = os.environ.get(key)
+        if not value:
+            continue
+        candidate = Path(value)
+        # The project contract limits user writes to $HOME. Preserve a custom
+        # XDG directory only when it is absolute and remains beneath that home.
+        if candidate.is_absolute() and candidate != home and home in candidate.parents:
+            user_roots.add(candidate)
+    user_patterns = tuple(
+        re.compile(rf"^{re.escape(str(root))}(/|$)")
+        for root in sorted(user_roots, key=str)
+    )
     # Qt roots come from qmake6 so nonstandard libdirs (Gentoo /usr/lib64,
     # Debian multiarch) validate without a hand-maintained list.
     try:
@@ -83,7 +103,7 @@ def _allowed_roots() -> tuple[re.Pattern, ...]:
         # missing — the Qt path check reports it with a distro hint.
         qt_patterns = ()
     return (
-        re.compile(rf"^{home}/(\.local|\.config|\.cache)(/|$)"),
+        *user_patterns,
         *qt_patterns,
         re.compile(r"^/etc/sddm\.conf\.d(/|$)"),
         re.compile(r"^/etc/plymouth(/|$)"),
@@ -112,7 +132,7 @@ def _validate_path(path: Path | str) -> str | None:
         if home != "/root" and not s.startswith(home + "/"):
             return "leaks /root home"
     if not any(pat.search(s) for pat in _allowed_roots()):
-        return "outside allowed roots ($HOME, Qt6 plugin/QML dirs from qmake6, /etc/sddm.conf.d, /etc/plymouth, /usr/share)"
+        return "outside allowed roots (user XDG dirs, Qt6 plugin/QML dirs from qmake6, /etc/sddm.conf.d, /etc/plymouth, /usr/share)"
     return None
 
 

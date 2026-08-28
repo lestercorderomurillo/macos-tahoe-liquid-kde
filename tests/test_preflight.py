@@ -86,6 +86,18 @@ def test_validate_path_accepts_user_home():
     assert preflight._validate_path(str(home / ".cache/foo")) is None
 
 
+def test_validate_path_accepts_custom_xdg_root_only(monkeypatch):
+    home = Path("/home/test-user")
+    data_home = home / "theme-data"
+    monkeypatch.setattr(preflight, "_HOME", home)
+    monkeypatch.setenv("XDG_DATA_HOME", str(data_home))
+
+    assert preflight._validate_path(data_home / "icons/MacTahoe") is None
+    got = preflight._validate_path(home / "Downloads/payload")
+    assert got is not None
+    assert "outside allowed roots" in got
+
+
 def test_enumerate_destinations_covers_all_compiled_steps():
     """Every step that ships a compiled artefact must have its install
     destination listed in ``_enumerate_destinations`` — otherwise a new

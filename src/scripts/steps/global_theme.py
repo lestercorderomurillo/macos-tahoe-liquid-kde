@@ -1,10 +1,10 @@
 import json
 
 from steps._helpers import (
-    HOME, install_tree, offline, ok, remove_tree,
+    DATA_HOME, install_tree, offline, ok, remove_tree,
 )
 
-DEST_DIR = HOME / ".local/share/plasma/look-and-feel"
+DEST_DIR = DATA_HOME / "plasma/look-and-feel"
 
 
 def install() -> None:

@@ -3,13 +3,13 @@ from pathlib import Path
 
 from distro import qt6_plugins_dir, qt6_qml_dir
 from steps._helpers import (
-    HOME, build_dir, cmake_build, fail, info, install_tree, ok, offline,
+    DATA_HOME, HOME, build_dir, cmake_build, fail, info, install_tree, ok, offline,
     remove_tree,
     sudo_install_file, sudo_install_tree, sudo_remove, temp_dir,
 )
 
 SRC_DIR = offline("plasmoids")
-DEST_DIR = HOME / ".local/share/plasma/plasmoids"
+DEST_DIR = DATA_HOME / "plasma/plasmoids"
 
 TASKMANAGER_SRC = SRC_DIR / "org.kde.mac.tahoe.liquid.taskmanager"
 TASKMANAGER_BUILD = build_dir("plasmoids/org.kde.mac.tahoe.liquid.taskmanager")
