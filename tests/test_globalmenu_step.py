@@ -74,6 +74,10 @@ def test_install_copies_globalmenu_runtime_qml(tmp_path, monkeypatch):
 
     fake_plugins, fake_qml = _stub_qt6_paths(monkeypatch, tmp_path)
     monkeypatch.setattr(globalmenu, "HOME", home)
+    monkeypatch.setattr(
+        globalmenu, "ABOUT_INFO_DEST",
+        home / ".local/bin/mac-tahoe-about-info",
+    )
     monkeypatch.setattr(globalmenu, "SRC", src)
     monkeypatch.setattr(globalmenu, "BUILD", build)
     monkeypatch.setattr(globalmenu, "LEGACY_QML", tmp_path / "no-legacy-qml")
@@ -118,6 +122,22 @@ def test_globalmenu_build_artifacts_match_install_sources():
     artifacts = globalmenu.build_artifacts()
     assert globalmenu.BUILD / "bin/plasma/applets/org.kde.mac.tahoe.liquid.globalmenu.so" in artifacts
     assert globalmenu.BUILD / "bin/plasma/applet/org/kde/mac/tahoe/liquid/globalmenu" in artifacts
+
+
+def test_system_session_actions_use_qtdbus_not_distro_binary_names():
+    """Fedora exposes qdbus-qt6 while Arch exposes qdbus6. Built-in power
+    actions run inside a QtDBus-linked applet, so they must not depend on either
+    executable; legacy configured defaults are recognized only for migration."""
+    source = (
+        globalmenu.SRC / "appmenuapplet.cpp"
+    ).read_text(encoding="utf-8")
+    assert "QDBusMessage::createMethodCall" in source
+    assert "QDBusConnection::sessionBus().asyncCall" in source
+    for method in ("suspendToRam", "promptReboot", "promptShutDown"):
+        assert f'QStringLiteral("{method}")' in source
+    assert "/org/kde/Solid/PowerManagement/Actions/SuspendSession" in source
+    assert "org.kde.Solid.PowerManagement.Actions.SuspendSession" in source
+    assert "isLegacyDBusCommand" in source
 
 
 def test_install_about_info_bakes_version(tmp_path, monkeypatch):

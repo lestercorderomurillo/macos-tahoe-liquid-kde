@@ -118,6 +118,7 @@ def test_install_skips_appletsrc_when_plasmoids_disabled(tmp_path, monkeypatch):
     monkeypatch.setenv("FEAT_PLASMOIDS", "false")
     monkeypatch.setattr(kc, "KCONF_UPDATE_DIR", tmp_path / "kconf_update")
     monkeypatch.setattr(kc, "HOME", tmp_path)
+    monkeypatch.setenv("XDG_CACHE_HOME", str(tmp_path / ".cache"))
     monkeypatch.setattr(kc, "rollback_v038_border_sync", lambda: False)
     cfg = tmp_path / ".config"
     cfg.mkdir()

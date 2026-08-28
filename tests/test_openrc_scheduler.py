@@ -11,6 +11,7 @@ maintainer's real crontab is never read or written.
 from __future__ import annotations
 
 import os
+from pathlib import Path
 
 import pytest
 
@@ -200,11 +201,17 @@ def test_session_env_runtime_dir_recovers_wayland_and_bus(monkeypatch, tmp_path)
 
     xrd = tmp_path / "run-user"
     xrd.mkdir()
-    # A wayland socket + dbus bus, as elogind lays them out.
-    import socket
-    for name in ("wayland-1", "wayland-0", "bus"):
-        s = socket.socket(socket.AF_UNIX)
-        s.bind(str(xrd / name))
+    # Model the Wayland + DBus sockets elogind lays out.  Some hardened test
+    # sandboxes forbid AF_UNIX bind even below tmp_path, so keep this unit test
+    # focused on discovery/selection and mock only the file-type predicate.
+    sockets = {xrd / name for name in ("wayland-1", "wayland-0", "bus")}
+    for path in sockets:
+        path.touch()
+    real_is_socket = Path.is_socket
+    monkeypatch.setattr(
+        Path, "is_socket",
+        lambda path: path in sockets or real_is_socket(path),
+    )
     monkeypatch.setenv("XDG_RUNTIME_DIR", str(xrd))
     for k in ("WAYLAND_DISPLAY", "DBUS_SESSION_BUS_ADDRESS"):
         monkeypatch.delenv(k, raising=False)

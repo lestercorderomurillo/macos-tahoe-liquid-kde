@@ -54,6 +54,7 @@ def test_install_copies_taskmanager_runtime_package(tmp_path, monkeypatch):
     home = tmp_path / "home"
     src = tmp_path / "offline/plasmoids"
     dest = home / ".local/share/plasma/plasmoids"
+    monkeypatch.setenv("XDG_CACHE_HOME", str(home / ".cache"))
 
     taskmanager = src / "org.kde.mac.tahoe.liquid.taskmanager"
     artifact = (taskmanager / "build/bin/plasma/applets" /

@@ -1398,7 +1398,7 @@ def test_apply_color_scheme_falls_back_to_manual(monkeypatch):
     assert seen["scheme"] == "MacTahoeLiquidKdeLight"
 
 
-def test_write_kde_theme_config_reports_write_failure(monkeypatch):
+def test_write_kde_theme_config_reports_write_failure(monkeypatch, sandbox):
     import theme_switch
     # Force the offline fallback so the final color stage goes through
     # apply_color_groups_direct, not plasma-apply-colorscheme.

@@ -12,6 +12,7 @@
 #include <QApplication>
 #include <QDBusConnection>
 #include <QDBusConnectionInterface>
+#include <QDBusMessage>
 #include <QKeyEvent>
 #include <QMenu>
 #include <QMouseEvent>
@@ -405,6 +406,95 @@ static void runCommand(const QString& cmd)
     QProcess::startDetached(QStringLiteral("/bin/sh"), {QStringLiteral("-c"), cmd});
 }
 
+static bool isLegacyDBusCommand(const QString& command,
+                                const QString& service,
+                                const QString& path,
+                                const QString& interface,
+                                const QString& method)
+{
+    const QStringList clients = {
+        QStringLiteral("qdbus6"),
+        QStringLiteral("qdbus-qt6"),
+        QStringLiteral("qdbus"),
+    };
+    const QStringList calls = command.split(QStringLiteral("||"), Qt::SkipEmptyParts);
+    if (calls.isEmpty()) {
+        return false;
+    }
+    for (const QString& rawCall : calls) {
+        const QString call = rawCall.simplified();
+        bool matches = false;
+        for (const QString& client : clients) {
+            const QString prefix = QStringLiteral("%1 %2 %3 ").arg(client, service, path);
+            if (call == prefix + method || call == prefix + interface + QLatin1Char('.') + method) {
+                matches = true;
+                break;
+            }
+        }
+        if (!matches) {
+            return false;
+        }
+    }
+    return true;
+}
+
+static void callSessionDBus(const QString& service,
+                            const QString& path,
+                            const QString& interface,
+                            const QString& method)
+{
+    QTimer::singleShot(0, qApp, [service, path, interface, method]() {
+        const QDBusMessage message = QDBusMessage::createMethodCall(
+            service, path, interface, method);
+        QDBusConnection::sessionBus().asyncCall(message);
+    });
+}
+
+static void runSystemAction(const QString& configuredCommand,
+                            const QString& service,
+                            const QString& path,
+                            const QString& interface,
+                            const QString& method)
+{
+    // Older releases stored qdbus shell commands as the defaults.  Invoke the
+    // same methods through QtDBus instead: Fedora names the client qdbus-qt6,
+    // while Arch names it qdbus6, and neither executable is needed in-process.
+    // Queue the call so QMenu can release its grabs before a confirmation dialog
+    // appears.  A genuinely customized command remains an explicit user override.
+    if (configuredCommand.trimmed().isEmpty()
+        || isLegacyDBusCommand(configuredCommand, service, path, interface, method)) {
+        callSessionDBus(service, path, interface, method);
+        return;
+    }
+    runCommand(configuredCommand);
+}
+
+static void runSuspendAction(const QString& configuredCommand)
+{
+    const QString service = QStringLiteral("org.kde.Solid.PowerManagement");
+    const QString path = QStringLiteral(
+        "/org/kde/Solid/PowerManagement/Actions/SuspendSession");
+    const QString interface = QStringLiteral(
+        "org.kde.Solid.PowerManagement.Actions.SuspendSession");
+    const QString method = QStringLiteral("suspendToRam");
+
+    // Plasma 6 moved suspend off the PowerManagement root object. Recognize
+    // both the current built-in command and our pre-v0.49.2 default so an old
+    // applet configuration migrates without executing a dead shell command.
+    const bool oldDefault = isLegacyDBusCommand(
+        configuredCommand,
+        service,
+        QStringLiteral("/org/kde/Solid/PowerManagement"),
+        service,
+        QStringLiteral("requestSuspend"));
+    if (configuredCommand.trimmed().isEmpty() || oldDefault
+        || isLegacyDBusCommand(configuredCommand, service, path, interface, method)) {
+        callSessionDBus(service, path, interface, method);
+        return;
+    }
+    runCommand(configuredCommand);
+}
+
 void AppMenuApplet::triggerSystemMenu(QQuickItem* ctx)
 {
     static constexpr int SYSTEM_MENU_INDEX = -3;
@@ -455,16 +545,24 @@ void AppMenuApplet::triggerSystemMenu(QQuickItem* ctx)
 
     menu->addAction(icon("iconSleep", QStringLiteral("system-suspend")), QStringLiteral("Sleep"),
         [cmd = cfg.readEntry(
-             "cmdSleep", QStringLiteral("qdbus6 org.kde.Solid.PowerManagement /org/kde/Solid/PowerManagement requestSuspend || qdbus-qt6 org.kde.Solid.PowerManagement /org/kde/Solid/PowerManagement requestSuspend || qdbus org.kde.Solid.PowerManagement /org/kde/Solid/PowerManagement requestSuspend"))]() {
-            runCommand(cmd);
+             "cmdSleep", QStringLiteral("qdbus6 org.kde.Solid.PowerManagement /org/kde/Solid/PowerManagement/Actions/SuspendSession org.kde.Solid.PowerManagement.Actions.SuspendSession.suspendToRam || qdbus-qt6 org.kde.Solid.PowerManagement /org/kde/Solid/PowerManagement/Actions/SuspendSession org.kde.Solid.PowerManagement.Actions.SuspendSession.suspendToRam || qdbus org.kde.Solid.PowerManagement /org/kde/Solid/PowerManagement/Actions/SuspendSession org.kde.Solid.PowerManagement.Actions.SuspendSession.suspendToRam"))]() {
+            runSuspendAction(cmd);
         });
     menu->addAction(icon("iconRestart", QStringLiteral("system-reboot")), QStringLiteral("Restart\u2026"),
         [cmd = cfg.readEntry("cmdRestart", QStringLiteral("qdbus6 org.kde.LogoutPrompt /LogoutPrompt org.kde.LogoutPrompt.promptReboot"))]() {
-            runCommand(cmd);
+            runSystemAction(cmd,
+                QStringLiteral("org.kde.LogoutPrompt"),
+                QStringLiteral("/LogoutPrompt"),
+                QStringLiteral("org.kde.LogoutPrompt"),
+                QStringLiteral("promptReboot"));
         });
     menu->addAction(icon("iconShutDown", QStringLiteral("system-shutdown")), QStringLiteral("Shut Down\u2026"),
         [cmd = cfg.readEntry("cmdShutDown", QStringLiteral("qdbus6 org.kde.LogoutPrompt /LogoutPrompt org.kde.LogoutPrompt.promptShutDown"))]() {
-            runCommand(cmd);
+            runSystemAction(cmd,
+                QStringLiteral("org.kde.LogoutPrompt"),
+                QStringLiteral("/LogoutPrompt"),
+                QStringLiteral("org.kde.LogoutPrompt"),
+                QStringLiteral("promptShutDown"));
         });
 
     menu->addSeparator();
@@ -476,7 +574,11 @@ void AppMenuApplet::triggerSystemMenu(QQuickItem* ctx)
     const QString firstName = KUser().property(KUser::FullName).toString().section(QLatin1Char(' '), 0, 0);
     menu->addAction(icon("iconLogOut", QStringLiteral("user-identity")), QStringLiteral("Log Out %1\u2026").arg(firstName),
         [cmd = cfg.readEntry("cmdLogOut", QStringLiteral("qdbus6 org.kde.LogoutPrompt /LogoutPrompt org.kde.LogoutPrompt.promptLogout"))]() {
-            runCommand(cmd);
+            runSystemAction(cmd,
+                QStringLiteral("org.kde.LogoutPrompt"),
+                QStringLiteral("/LogoutPrompt"),
+                QStringLiteral("org.kde.LogoutPrompt"),
+                QStringLiteral("promptLogout"));
         });
 
     auto ungrabMouseHack = [ctx]() {
