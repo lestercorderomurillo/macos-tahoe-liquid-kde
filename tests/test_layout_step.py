@@ -167,9 +167,10 @@ class _FakeScript:
         return self._text
 
 
-def test_discover_installed_detected_in_local_share(monkeypatch, tmp_path):
-    monkeypatch.setattr(layout, "HOME", tmp_path)
-    apps = tmp_path / ".local/share/applications"
+def test_discover_installed_detected_in_xdg_data_home(monkeypatch, tmp_path):
+    data_home = tmp_path / "xdg-data"
+    monkeypatch.setattr(layout, "DATA_HOME", data_home)
+    apps = data_home / "applications"
     apps.mkdir(parents=True)
     (apps / "org.kde.discover.desktop").write_text("[Desktop Entry]\n")
 
@@ -177,9 +178,24 @@ def test_discover_installed_detected_in_local_share(monkeypatch, tmp_path):
 
 
 def test_discover_absent_when_no_desktop_file(monkeypatch, tmp_path):
-    # HOME has no discover .desktop; force the system prefixes to a bare
-    # tmp dir so a Discover actually installed on the test host can't leak in.
+    # XDG_DATA_HOME has no Discover desktop file; force the system prefixes to
+    # a bare tmp dir so a host installation cannot leak into this unit test.
+    monkeypatch.setattr(layout, "DATA_HOME", tmp_path / "xdg-data")
+    monkeypatch.setattr(layout, "Path", lambda p: tmp_path / "nonexistent")
+
+    assert layout._discover_is_installed() is False
+
+
+def test_discover_does_not_probe_legacy_home_when_xdg_data_home_is_custom(
+        monkeypatch, tmp_path):
+    # A custom XDG_DATA_HOME replaces ~/.local/share; silently probing both
+    # would make the installer select launchers that Plasma cannot discover.
+    legacy_apps = tmp_path / ".local/share/applications"
+    legacy_apps.mkdir(parents=True)
+    (legacy_apps / "org.kde.discover.desktop").write_text("[Desktop Entry]\n")
+
     monkeypatch.setattr(layout, "HOME", tmp_path)
+    monkeypatch.setattr(layout, "DATA_HOME", tmp_path / "custom-data")
     monkeypatch.setattr(layout, "Path", lambda p: tmp_path / "nonexistent")
 
     assert layout._discover_is_installed() is False
