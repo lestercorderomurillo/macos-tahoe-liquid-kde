@@ -77,6 +77,19 @@ def distro_id_like() -> tuple[str, ...]:
     return tuple(s for s in fields.get("ID_LIKE", "").lower().split() if s)
 
 
+def plymouth_use_simpledrm() -> bool:
+    """Whether this distro should keep Plymouth on ``simpledrm``.
+
+    Fedora's firmware framebuffer can begin at a low resolution and then be
+    replaced by the native DRM framebuffer, producing a visible splash jump.
+    Fedora's supported opt-out is ``UseSimpledrm=0``. Other families keep
+    the existing project behaviour because simpledrm helps the shutdown splash
+    survive after the native GPU driver unloads.
+    """
+    family = (current_distro(), *distro_id_like())
+    return "fedora" not in family
+
+
 # ── Portable desktop defaults ────────────────────────────────────────
 
 

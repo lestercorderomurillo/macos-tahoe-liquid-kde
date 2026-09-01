@@ -9,6 +9,7 @@ from pathlib import Path
 
 REPO = Path(__file__).resolve().parents[1]
 VM = (REPO / "vm").read_text()
+PLYMOUTH_RENDER = (REPO / "tests/vm/render.sh").read_text()
 CLOUD_PATH = REPO / ".vm/cloud-init/gentoo-openrc.yaml"
 CLOUD = CLOUD_PATH.read_text()
 NEON_CLOUD_PATH = REPO / ".vm/cloud-init/neon.yaml"
@@ -156,3 +157,28 @@ def test_gentoo_images_resolve_through_official_latest_pointers():
         r"stage3-amd64-desktop-openrc-\d{8}T\d{6}Z",
         CLOUD,
     )
+
+
+def test_plymouth_render_harness_does_not_depend_on_active_window_focus():
+    assert 'scrot --overwrite --window "$window_id"' in PLYMOUTH_RENDER
+    assert "spectacle --background --nonotify --activewindow" not in PLYMOUTH_RENDER
+    assert "xdotool windowactivate" not in PLYMOUTH_RENDER
+
+
+def test_plymouth_render_harness_forces_visible_progress():
+    assert "on_boot_progress(0, 0.65)" in PLYMOUTH_RENDER
+    assert "Plymouth.SetBootProgressFunction(mttkde_harness_progress)" in PLYMOUTH_RENDER
+    assert "on_boot_progress(duration, 0.65)" in PLYMOUTH_RENDER
+    assert "apply_layout" not in PLYMOUTH_RENDER
+
+
+def test_plymouth_render_harness_validates_pixels_and_propagates_failure():
+    for invariant in (
+        "captured the desktop, not Plymouth",
+        "logo is missing or off-centre",
+        "boot progress fill is missing",
+        "shutdown unexpectedly shows a progress bar",
+        "Plymouth log contains a script error",
+    ):
+        assert invariant in PLYMOUTH_RENDER
+    assert "exit 1" in PLYMOUTH_RENDER

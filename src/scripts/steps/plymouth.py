@@ -3,13 +3,14 @@ and activates via ``plymouth-set-default-theme -R`` (rebuilds the initramfs).
 Contract: snapshot the previous theme, then validate BEFORE activating."""
 
 import configparser
+import json
 import os
 import re
 import shutil
 import subprocess
 from pathlib import Path
 
-from distro import package_for, system_lib_dir
+from distro import package_for, plymouth_use_simpledrm, system_lib_dir
 from steps._helpers import (
     HOME, _as_root, fail, info, ok, offline, sudo_install_tree, sudo_remove, warn,
 )
@@ -22,6 +23,7 @@ SYSTEM_THEMES_DIR = Path("/usr/share/plymouth/themes")
 DEST = SYSTEM_THEMES_DIR / THEME_NAME
 STATE_DIR = HOME / ".local/state/mac-tahoe-liquid-kde"
 PREV_THEME_FILE = STATE_DIR / "plymouth-previous-theme"
+PREV_SIMPLEDRM_NAME = "plymouth-previous-simpledrm.json"
 
 PLYMOUTH_BIN = "plymouth-set-default-theme"
 ACTIVATE_TIMEOUT_SEC = 60
@@ -270,10 +272,7 @@ def _activate(theme: str) -> bool:
     return True
 
 
-def _set_plymouthd_simpledrm(enabled: bool) -> bool:
-    """Toggle ``[Daemon] UseSimpledrm``. The GPU driver unloads before the
-    shutdown splash, so plymouth falls back to a tiny fbcon framebuffer and
-    renders in a corner; UseSimpledrm=true pins the UEFI GOP framebuffer."""
+def _read_plymouthd_config() -> configparser.ConfigParser | None:
     # strict=False: plymouth-set-default-theme appends duplicate Theme= lines
     # without deduping; strict=True raised DuplicateOptionError and we bailed.
     cp = configparser.ConfigParser(strict=False)
@@ -286,15 +285,31 @@ def _set_plymouthd_simpledrm(enabled: bool) -> bool:
         except configparser.Error as exc:
             warn(f"plymouthd.conf unparseable ({exc.__class__.__name__}) — "
                  "leaving UseSimpledrm setting unchanged")
-            return False
+            return None
+    return cp
+
+
+def _set_plymouthd_simpledrm(value: bool | str | None) -> bool:
+    """Set or remove ``[Daemon] UseSimpledrm`` without clobbering config.
+
+    ``None`` removes the key. A string is used only when restoring the exact
+    value captured before install.
+    """
+    cp = _read_plymouthd_config()
+    if cp is None:
+        return False
     if not cp.has_section("Daemon"):
         cp.add_section("Daemon")
-    if enabled:
-        cp.set("Daemon", "UseSimpledrm", "true")
-    elif cp.has_option("Daemon", "UseSimpledrm"):
+    if value is None and cp.has_option("Daemon", "UseSimpledrm"):
         cp.remove_option("Daemon", "UseSimpledrm")
-    else:
+    elif value is None:
         return True  # already absent, nothing to do
+    else:
+        if isinstance(value, bool):
+            rendered = "true" if value else "0"
+        else:
+            rendered = value
+        cp.set("Daemon", "UseSimpledrm", rendered)
 
     try:
         with _as_root():
@@ -310,6 +325,56 @@ def _set_plymouthd_simpledrm(enabled: bool) -> bool:
         warn(f"could not update {PLYMOUTHD_CONF} ({exc})")
         return False
     return True
+
+
+def _previous_simpledrm_file() -> Path:
+    return STATE_DIR / PREV_SIMPLEDRM_NAME
+
+
+def _save_previous_simpledrm(*, legacy_override: bool) -> bool:
+    """Snapshot the pre-install key once, preserving repeated-install state.
+
+    Older releases tracked only the previous theme and always forced ``true``.
+    When upgrading an already-active MacTahoe theme, treat that untracked value
+    as our legacy override so uninstall removes it.
+    """
+    state_file = _previous_simpledrm_file()
+    if state_file.is_file():
+        return True
+    cp = _read_plymouthd_config()
+    if cp is None:
+        return False
+    present = cp.has_option("Daemon", "UseSimpledrm") and not legacy_override
+    value = cp.get("Daemon", "UseSimpledrm") if present else None
+    try:
+        STATE_DIR.mkdir(parents=True, exist_ok=True)
+        state_file.write_text(
+            json.dumps({"present": present, "value": value}) + "\n",
+            encoding="utf-8",
+        )
+    except OSError as exc:
+        warn(f"could not snapshot previous UseSimpledrm setting ({exc})")
+        return False
+    return True
+
+
+def _restore_previous_simpledrm() -> bool:
+    """Restore the captured value; remove untracked legacy overrides."""
+    state_file = _previous_simpledrm_file()
+    try:
+        payload = json.loads(state_file.read_text(encoding="utf-8"))
+    except FileNotFoundError:
+        return _set_plymouthd_simpledrm(None)
+    except (OSError, json.JSONDecodeError, TypeError) as exc:
+        warn(f"could not read previous UseSimpledrm setting ({exc})")
+        return False
+
+    if not isinstance(payload, dict):
+        warn("previous UseSimpledrm state has an invalid shape")
+        return False
+    if payload.get("present") is True and isinstance(payload.get("value"), str):
+        return _set_plymouthd_simpledrm(payload["value"])
+    return _set_plymouthd_simpledrm(None)
 
 
 def _save_previous(name: str) -> None:
@@ -356,18 +421,33 @@ def install() -> None:
         info("Theme files left on disk but NOT activated — previous splash still active")
         return
 
+    # This must be written before -R: plymouth-set-default-theme rebuilds the
+    # initramfs, so writing it afterward does not affect the next boot.
+    if not _save_previous_simpledrm(legacy_override=previous == THEME_NAME):
+        info("Theme files left on disk but NOT activated — "
+             "previous Plymouth renderer policy could not be saved")
+        return
+    use_simpledrm = plymouth_use_simpledrm()
+    if not _set_plymouthd_simpledrm(use_simpledrm):
+        info("Theme files left on disk but NOT activated — "
+             "Plymouth renderer policy could not be applied")
+        return
+
     if not _activate(THEME_NAME):
         # Roll back so the next boot has a working splash; with no snapshot
         # the fallback is the universal bgrt.
         snapshot = _read_previous()
+        _restore_previous_simpledrm()
         warn(f"attempting rollback to {snapshot}")
         _activate(snapshot)
         return
 
     ok("Boot splash activated")
-
-    if _set_plymouthd_simpledrm(True):
-        ok("Forced UseSimpledrm=true (fixes corner-rendered shutdown splash)")
+    if use_simpledrm:
+        ok("Forced UseSimpledrm=true (keeps the shutdown splash full-size)")
+    else:
+        ok("Set UseSimpledrm=0 for this distro "
+           "(avoids the boot framebuffer jump)")
 
     splash_missing, mkinitcpio_missing_hook = _check_prereqs()
 
@@ -424,6 +504,12 @@ def install() -> None:
 def uninstall() -> None:
     previous = _read_previous()
 
+    # Restore the renderer policy before -R rebuilds the previous theme into
+    # the initramfs.
+    simpledrm_restored = _restore_previous_simpledrm()
+    if simpledrm_restored:
+        ok("Previous UseSimpledrm setting restored")
+
     if have(PLYMOUTH_BIN):
         if _activate(previous):
             ok(f"Boot splash restored to {previous}")
@@ -432,15 +518,19 @@ def uninstall() -> None:
     else:
         warn(f"{PLYMOUTH_BIN} not available — skipping splash restore")
 
-    # Drop the UseSimpledrm override — the restored theme may not want it.
-    if _set_plymouthd_simpledrm(False):
-        ok("UseSimpledrm override removed")
-
     sudo_remove(DEST, "Boot splash files")
 
     try:
         if PREV_THEME_FILE.is_file():
             PREV_THEME_FILE.unlink()
+        previous_simpledrm = _previous_simpledrm_file()
+        if simpledrm_restored and previous_simpledrm.is_file():
+            previous_simpledrm.unlink()
+        if simpledrm_restored:
             ok("Plymouth state cleared")
+        else:
+            ok("Previous Plymouth theme state cleared")
     except OSError:
         pass
+    if not simpledrm_restored:
+        warn("Plymouth renderer recovery state retained because restoration failed")

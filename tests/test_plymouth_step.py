@@ -19,6 +19,7 @@ Two flavours:
 """
 
 import configparser
+import hashlib
 import re
 from contextlib import contextmanager
 from pathlib import Path
@@ -30,6 +31,12 @@ from steps import plymouth
 
 REPO = Path(__file__).resolve().parent.parent
 THEME_SRC = REPO / "src/offline/plymouth/MacTahoeLiquidKde"
+
+
+@pytest.fixture(autouse=True)
+def _isolate_plymouthd_conf(tmp_path, monkeypatch):
+    """Never let an install-flow unit test read or write the host config."""
+    monkeypatch.setattr(plymouth, "PLYMOUTHD_CONF", tmp_path / "plymouthd.conf")
 
 
 # ──────────────────────── theme-file integrity ──────────────────────────
@@ -81,6 +88,13 @@ def test_plymouth_script_brackets_balanced():
         assert n_open == n_close, (
             f"unbalanced {name}: open={n_open} close={n_close}"
         )
+
+
+def test_plymouth_script_is_the_known_working_og_version():
+    """Issue #76 is distro policy; do not mutate the generally-working UI."""
+    script = THEME_SRC / "MacTahoeLiquidKde.script"
+    digest = hashlib.sha256(script.read_bytes()).hexdigest()
+    assert digest == "e0b8fa931fcf02e77e9944c469557927ffcd27df84820c0aa3909c3aab678b6b"
 
 
 def test_plymouth_theme_directory_is_minimal():
@@ -154,7 +168,7 @@ def test_plymouth_script_scales_logo_dynamically():
     # Math.Int() rounds the float scale back to an int pixel size —
     # without it Plymouth refuses to render fractional pixel widths.
     assert "Math.Int" in text
-    # Source loaded once, then rescaled only when display geometry changes.
+    # Source loaded once, then scaled from the initial renderer geometry.
     assert "logo_source.Scale(logo_target, logo_target)" in text
 
 
@@ -164,30 +178,15 @@ def test_plymouth_script_centers_logo_after_scale():
     sprite's GetWidth()/GetHeight(), not the source image dimensions."""
     text = (THEME_SRC / "MacTahoeLiquidKde.script").read_text(encoding="utf-8")
     assert re.search(
-        r"SetX\s*\(\s*layout_x\s*\+\s*screen_w\s*/\s*2"
+        r"SetX\s*\(\s*Window\.GetX\(\)\s*\+\s*screen_w\s*/\s*2"
         r"\s*-\s*logo_image\.GetWidth\(\)\s*/\s*2\s*\)",
         text,
-    ), "missing horizontally-centered SetX(layout_x + screen_w/2 - logo_image.GetWidth()/2)"
+    ), "missing horizontally-centered SetX(Window.GetX() + screen_w/2 - logo_image.GetWidth()/2)"
     assert re.search(
-        r"SetY\s*\(\s*layout_y\s*\+\s*screen_h\s*/\s*2"
+        r"SetY\s*\(\s*Window\.GetY\(\)\s*\+\s*screen_h\s*/\s*2"
         r"\s*-\s*logo_image\.GetHeight\(\)\s*/\s*2\s*\)",
         text,
-    ), "missing vertically-centered SetY(layout_y + screen_h/2 - logo_image.GetHeight()/2)"
-
-
-def test_plymouth_script_reflows_after_framebuffer_handoff():
-    """Firmware/simpledrm can be replaced by the native DRM framebuffer after
-    the script starts. Geometry captured once makes the logo shrink and jump;
-    the refresh callback must re-run a cached layout when any dimension moves."""
-    text = (THEME_SRC / "MacTahoeLiquidKde.script").read_text(encoding="utf-8")
-    assert "Plymouth.SetRefreshFunction(on_refresh)" in text
-    for dimension in ("GetX", "GetY", "GetWidth", "GetHeight"):
-        assert f"Window.{dimension}()" in text
-    assert re.search(
-        r"next_w\s*==\s*layout_w.*next_h\s*==\s*layout_h",
-        text,
-        flags=re.DOTALL,
-    ), "refresh path must avoid rescaling unchanged frames"
+    ), "missing vertically-centered SetY(Window.GetY() + screen_h/2 - logo_image.GetHeight()/2)"
 
 
 def test_plymouth_script_handles_portrait_orientation():
@@ -1006,8 +1005,8 @@ def test_grub_regenerate_falls_through_when_first_binary_fails(tmp_path, monkeyp
 # ──────────────────────── static safety net ─────────────────────────────
 
 
-def test_install_sets_use_simpledrm_in_plymouthd_conf(tmp_path, monkeypatch):
-    """Fixes the corner-rendered shutdown splash bug: at shutdown the
+def test_install_sets_use_simpledrm_true_outside_fedora(tmp_path, monkeypatch):
+    """Keep the established shutdown fix on non-Fedora distro families: the
     GPU driver unloads BEFORE plymouth shows the shutdown splash, the
     kernel console framebuffer drops to ~1024x768, and the splash
     renders in a tiny corner of the high-res panel. Forcing
@@ -1021,6 +1020,7 @@ def test_install_sets_use_simpledrm_in_plymouthd_conf(tmp_path, monkeypatch):
                         tmp_path / "state/plymouth-previous-theme")
     monkeypatch.setattr(plymouth, "DEST", tmp_path / "dest/MacTahoeLiquidKde")
     monkeypatch.setattr(plymouth, "PLYMOUTHD_CONF", conf)
+    monkeypatch.setattr(plymouth, "plymouth_use_simpledrm", lambda: True)
     _stub(monkeypatch, have_bin=True, current_theme="breeze")
     plymouth.install()
 
@@ -1029,6 +1029,180 @@ def test_install_sets_use_simpledrm_in_plymouthd_conf(tmp_path, monkeypatch):
     assert "[Daemon]" in text
     assert "UseSimpledrm" in text
     assert "true" in text.lower()
+
+
+def test_fedora_sets_simpledrm_zero_before_initramfs_rebuild(
+    tmp_path, monkeypatch,
+):
+    """Issue #76 is the Fedora framebuffer path, not theme layout code."""
+    conf = tmp_path / "plymouthd.conf"
+    state_dir = tmp_path / "state"
+    monkeypatch.setattr(plymouth, "STATE_DIR", state_dir)
+    monkeypatch.setattr(
+        plymouth, "PREV_THEME_FILE", state_dir / "plymouth-previous-theme",
+    )
+    monkeypatch.setattr(plymouth, "DEST", tmp_path / "dest/MacTahoeLiquidKde")
+    monkeypatch.setattr(plymouth, "PLYMOUTHD_CONF", conf)
+    monkeypatch.setattr(plymouth, "plymouth_use_simpledrm", lambda: False)
+    _stub(monkeypatch, have_bin=True, current_theme="breeze")
+
+    values_seen_by_rebuild = []
+
+    def activate(theme):
+        cp = configparser.ConfigParser()
+        cp.optionxform = str
+        cp.read(conf, encoding="utf-8")
+        values_seen_by_rebuild.append(
+            (theme, cp.get("Daemon", "UseSimpledrm", fallback=None))
+        )
+        return True
+
+    monkeypatch.setattr(plymouth, "_activate", activate)
+    plymouth.install()
+
+    assert values_seen_by_rebuild == [(plymouth.THEME_NAME, "0")]
+
+
+def test_install_refuses_renderer_override_when_snapshot_fails(
+    tmp_path, monkeypatch,
+):
+    """Never overwrite a user policy that we cannot later restore."""
+    state_dir = tmp_path / "state"
+    monkeypatch.setattr(plymouth, "STATE_DIR", state_dir)
+    monkeypatch.setattr(
+        plymouth, "PREV_THEME_FILE", state_dir / "plymouth-previous-theme",
+    )
+    monkeypatch.setattr(plymouth, "DEST", tmp_path / "dest/MacTahoeLiquidKde")
+    monkeypatch.setattr(plymouth, "PLYMOUTHD_CONF", tmp_path / "plymouthd.conf")
+    monkeypatch.setattr(plymouth, "_save_previous_simpledrm", lambda **_kw: False)
+    writes = []
+    activations = []
+    monkeypatch.setattr(
+        plymouth, "_set_plymouthd_simpledrm", lambda value: writes.append(value),
+    )
+    monkeypatch.setattr(
+        plymouth, "_activate", lambda theme: activations.append(theme) or True,
+    )
+    _stub(monkeypatch, have_bin=True, current_theme="breeze")
+
+    plymouth.install()
+
+    assert writes == []
+    assert activations == []
+
+
+def test_uninstall_restores_exact_previous_simpledrm_before_rebuild(
+    tmp_path, monkeypatch,
+):
+    conf = tmp_path / "plymouthd.conf"
+    conf.write_text("[Daemon]\nUseSimpledrm=yes\n", encoding="utf-8")
+    state_dir = tmp_path / "state"
+    monkeypatch.setattr(plymouth, "STATE_DIR", state_dir)
+    monkeypatch.setattr(
+        plymouth, "PREV_THEME_FILE", state_dir / "plymouth-previous-theme",
+    )
+    monkeypatch.setattr(plymouth, "DEST", tmp_path / "dest/MacTahoeLiquidKde")
+    monkeypatch.setattr(plymouth, "PLYMOUTHD_CONF", conf)
+    monkeypatch.setattr(plymouth, "plymouth_use_simpledrm", lambda: False)
+    _stub(monkeypatch, have_bin=True, current_theme="breeze")
+    plymouth.install()
+
+    assert "UseSimpledrm=0" in conf.read_text(encoding="utf-8")
+    values_seen_by_rebuild = []
+
+    def activate(theme):
+        cp = configparser.ConfigParser()
+        cp.optionxform = str
+        cp.read(conf, encoding="utf-8")
+        values_seen_by_rebuild.append(
+            (theme, cp.get("Daemon", "UseSimpledrm", fallback=None))
+        )
+        return True
+
+    monkeypatch.setattr(plymouth, "_activate", activate)
+    plymouth.uninstall()
+
+    assert values_seen_by_rebuild == [("breeze", "yes")]
+    assert "UseSimpledrm=yes" in conf.read_text(encoding="utf-8")
+
+
+def test_failed_activation_restores_simpledrm_before_rollback_rebuild(
+    tmp_path, monkeypatch,
+):
+    conf = tmp_path / "plymouthd.conf"
+    conf.write_text("[Daemon]\nUseSimpledrm=yes\n", encoding="utf-8")
+    state_dir = tmp_path / "state"
+    monkeypatch.setattr(plymouth, "STATE_DIR", state_dir)
+    monkeypatch.setattr(
+        plymouth, "PREV_THEME_FILE", state_dir / "plymouth-previous-theme",
+    )
+    monkeypatch.setattr(plymouth, "DEST", tmp_path / "dest/MacTahoeLiquidKde")
+    monkeypatch.setattr(plymouth, "PLYMOUTHD_CONF", conf)
+    monkeypatch.setattr(plymouth, "plymouth_use_simpledrm", lambda: False)
+    _stub(monkeypatch, have_bin=True, current_theme="breeze")
+    values_seen_by_rebuild = []
+
+    def activate(theme):
+        cp = configparser.ConfigParser()
+        cp.optionxform = str
+        cp.read(conf, encoding="utf-8")
+        values_seen_by_rebuild.append(
+            (theme, cp.get("Daemon", "UseSimpledrm", fallback=None))
+        )
+        return len(values_seen_by_rebuild) > 1
+
+    monkeypatch.setattr(plymouth, "_activate", activate)
+    plymouth.install()
+
+    assert values_seen_by_rebuild == [
+        (plymouth.THEME_NAME, "0"),
+        ("breeze", "yes"),
+    ]
+
+
+def test_upgrade_removes_legacy_project_owned_simpledrm_override(
+    tmp_path, monkeypatch,
+):
+    """Old releases forced true but did not record a prior user value."""
+    conf = tmp_path / "plymouthd.conf"
+    conf.write_text("[Daemon]\nUseSimpledrm=true\n", encoding="utf-8")
+    state_dir = tmp_path / "state"
+    monkeypatch.setattr(plymouth, "STATE_DIR", state_dir)
+    monkeypatch.setattr(
+        plymouth, "PREV_THEME_FILE", state_dir / "plymouth-previous-theme",
+    )
+    monkeypatch.setattr(plymouth, "DEST", tmp_path / "dest/MacTahoeLiquidKde")
+    monkeypatch.setattr(plymouth, "PLYMOUTHD_CONF", conf)
+    monkeypatch.setattr(plymouth, "plymouth_use_simpledrm", lambda: False)
+    _stub(monkeypatch, have_bin=True, current_theme=plymouth.THEME_NAME)
+
+    plymouth.install()
+    plymouth.uninstall()
+
+    assert "UseSimpledrm" not in conf.read_text(encoding="utf-8")
+
+
+def test_uninstall_retains_renderer_state_when_restore_fails(
+    tmp_path, monkeypatch,
+):
+    """A failed restore must remain recoverable on the next uninstall run."""
+    conf = tmp_path / "plymouthd.conf"
+    conf.write_text("[Daemon]\nUseSimpledrm=0\n", encoding="utf-8")
+    state_dir = tmp_path / "state"
+    state_dir.mkdir()
+    previous_theme = state_dir / "plymouth-previous-theme"
+    previous_theme.write_text("breeze\n", encoding="utf-8")
+    renderer_state = state_dir / plymouth.PREV_SIMPLEDRM_NAME
+    renderer_state.write_text("{not-json}\n", encoding="utf-8")
+    monkeypatch.setattr(plymouth, "STATE_DIR", state_dir)
+    monkeypatch.setattr(plymouth, "PREV_THEME_FILE", previous_theme)
+    monkeypatch.setattr(plymouth, "DEST", tmp_path / "dest/MacTahoeLiquidKde")
+    monkeypatch.setattr(plymouth, "PLYMOUTHD_CONF", conf)
+    _stub(monkeypatch, have_bin=True)
+
+    plymouth.uninstall()
+
+    assert renderer_state.read_text(encoding="utf-8") == "{not-json}\n"
 
 
 def test_install_preserves_unrelated_plymouthd_conf_keys(tmp_path, monkeypatch):

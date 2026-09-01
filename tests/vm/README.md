@@ -1,12 +1,13 @@
 # Plymouth render harness
 
-A quick visual check of the MacTahoe Plymouth theme without rebooting.
+A rendered-pixel integration check of the MacTahoe Plymouth theme without
+rebooting.
 
 ```bash
 sudo ./test --vm
 ```
 
-Two PNG screenshots land in `tests/vm/output/`:
+Two pixel-validated PNG screenshots land in `tests/vm/output/`:
 
 - `plymouth-boot-splash.png` — boot mode (logo + progress bar)
 - `plymouth-shutdown-splash.png` — shutdown mode (logo only)
@@ -24,30 +25,29 @@ with OSC133, sandboxed shells).
 
 ## How it works
 
-1. Copies `src/offline/plymouth/MacTahoeLiquidKde` into
-   `/usr/share/plymouth/themes/` (refuses if a real install is
-   already there — run `./uninstall` first).
+1. Starts a private 1920×1080 Xvfb framebuffer, then copies
+   `src/offline/plymouth/MacTahoeLiquidKde` into
+   `/usr/share/plymouth/themes/`. An existing installed copy is moved aside
+   transactionally and restored during cleanup.
 2. Loops over `boot` and `shutdown`. For each:
    - Spawns `plymouthd --no-daemon --debug --mode=$MODE
      --kernel-command-line="splash plymouth.theme=MacTahoeLiquidKde"`.
      The `--kernel-command-line` flag pins the theme without touching
      `/etc/plymouth/plymouthd.conf` — so we don’t trigger
      `mkinitcpio -P` and don’t rewrite your real initramfs.
-   - `plymouth show-splash` — plymouth’s window flashes on screen.
-   - `xdotool windowactivate $WID` forces focus to plymouth so
-     `--activewindow` captures the right thing (without this,
-     shutdown mode often loses focus and the screenshot grabs your
-     code editor instead).
-   - `spectacle --background --nonotify --activewindow --output …`
-     captures via KDE’s `org.kde.KWin.ScreenShot2` DBus interface.
-     X11 tools (`scrot`, `import`, `xwd`) can’t do this on Wayland —
-     they only see XWayland’s internal framebuffer, which stays
-     black even when plymouth is visibly on screen.
-   - Spectacle runs as `$SUDO_USER`, not root: KWin refuses
-     screenshot requests from non-session-owning UIDs. Session env
-     (`XDG_RUNTIME_DIR`, `DBUS_SESSION_BUS_ADDRESS`,
-     `WAYLAND_DISPLAY`) is reconstructed because sudo strips it.
-   - `plymouth --quit` brings your desktop back.
+   - `plymouth show-splash` renders only inside the nested framebuffer; the
+     host desktop never flashes or changes focus.
+   - The temporary staged script forces 65% boot progress without modifying
+     the source theme. This makes a missing progress bar a deterministic test
+     failure instead of relying on Plymouth's timing.
+   - `scrot --window <plymouth-window-id> …` captures Plymouth's own X11
+     test-window pixmap. It does not depend on the host compositor,
+     screenshot permission, active application, or monitor layout.
+   - ImageMagick rejects the capture unless the frame is black, the logo
+     is centred, boot has a visible fill, and shutdown
+     has no bar. A desktop/app screenshot is a hard failure.
+   - The daemon log is scanned for script errors before
+     `plymouth --quit` brings your desktop back.
 3. Cleanup trap on `EXIT/INT/TERM` removes the copied theme dir
    and `chown`s the output back to `$SUDO_USER` so you can read
    the logs without another sudo.
@@ -67,26 +67,23 @@ tests/vm/
 Auto-installed on first run via `pacman`:
 
 - `plymouth`
-- `spectacle` (Wayland-native screenshot via KWin DBus)
-- `xorg-xwininfo` (locate plymouth’s X window)
-- `xdotool` (force-activate plymouth before the capture)
+- `xorg-server-xvfb` (isolated 1920×1080 framebuffer)
+- `xorg-xwininfo` (resolve Plymouth's exact test window)
+- `scrot` (capture that exact X11 window)
+- `imagemagick` (validate the captured pixels)
 
 ## Multi-monitor
 
-We capture `--activewindow` (the focused plymouth window),
-**not** `--fullscreen` — otherwise you’d get plymouth on one screen
-and whatever your other monitor was showing on the other.
+The host's outputs are irrelevant: Plymouth renders on one private Xvfb screen.
+The harness captures Plymouth's exact nested-X window ID, preventing the false
+passing launcher/browser screenshots produced by the former host-focus path.
 
 ## Caveats
 
-- Plymouth’s splash briefly takes over your screen (~5s per mode).
-  This is normal — plymouth’s X11 plugin maps a fullscreen window
-  so it can render as if it were on the boot console.
-- Visual confirmation here is **not** the same as the real boot
-  path. The actual `mkinitcpio` rebuild, kernel cmdline, and DRM
-  renderer only fire on a real reboot. The render harness verifies
-  the theme renders correctly under plymouth’s engine; reboot
-  verifies the rest.
+- The harness runs Plymouth's real script engine but uses Plymouth's X11
+  renderer. The Fedora fix is installer policy that prevents the problematic
+  simpledrm/native-DRM handoff; its actual initramfs and boot timing still
+  require a Fedora VM or hardware reboot.
 
 ## Troubleshooting
 
@@ -95,5 +92,6 @@ The output dir is your forensics trail.
 - `plymouthd-boot.log` / `plymouthd-shutdown.log` — plymouthd’s
   `--debug-file` output. Shows what theme it loaded, which renderer
   plugin (`x11.so`), and any script errors.
-- `spectacle-boot.err` / `spectacle-shutdown.err` — spectacle’s
-  stderr. If a screenshot failed, this is why.
+- `capture-boot.err` / `capture-shutdown.err` — X11 capture stderr.
+- `xwin-tree-*.log` / `xwininfo-*.log` — exact nested window selection.
+- `xvfb.log` — private framebuffer startup diagnostics.

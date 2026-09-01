@@ -41,6 +41,19 @@ def _force_distro(monkeypatch, distro_id: str, id_like: tuple[str, ...] = ()):
     monkeypatch.setattr(distro, "distro_id_like", lambda: id_like)
 
 
+@pytest.mark.parametrize("distro_id,id_like,expected", [
+    ("fedora", (), False),
+    ("nobara", ("fedora",), False),
+    ("arch", (), True),
+    ("cachyos", ("arch",), True),
+])
+def test_plymouth_simpledrm_policy_is_fedora_specific(
+    monkeypatch, distro_id, id_like, expected,
+):
+    _force_distro(monkeypatch, distro_id, id_like)
+    assert distro.plymouth_use_simpledrm() is expected
+
+
 @pytest.mark.parametrize("distro_id, id_like, expected_prefix", [
     ("cachyos", ("arch",), ("Next", "Opal", "Flow")),
     ("neon", ("ubuntu", "debian"), ("Next", "Flow")),

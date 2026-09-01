@@ -2,7 +2,7 @@
 #
 # Black background with a centered logo, scaled to ~7% of the
 # screen's smaller dimension. 4K screen → ~150px logo. Matches
-# macOS Tahoe's actual boot-time logo proportions. On multi-monitor setups Plymouth's
+# macOS Tahoe's actual boot-time logo proportions. On multi-monitor setups plymouth's
 # renderer mirrors the script's output to every connected display,
 # so a single Sprite at the geometric centre lands centred on each
 # screen automatically — DO NOT iterate Window.GetCount() and build
@@ -30,106 +30,50 @@
 Window.SetBackgroundTopColor(0, 0, 0);
 Window.SetBackgroundBottomColor(0, 0, 0);
 
-# ── assets + mode ───────────────────────────────────────────────────────
+# ── screen + mode ───────────────────────────────────────────────────────
 
-mode          = Plymouth.GetMode();
+screen_w = Window.GetWidth();
+screen_h = Window.GetHeight();
+mode     = Plymouth.GetMode();
 show_progress = (mode == "boot");
 
-logo_source  = Image("boot.png");
+# ── logo: 18% of smaller axis, centred ──────────────────────────────────
+
+if (screen_w < screen_h)
+  logo_target = Math.Int(screen_w * 0.07);
+else
+  logo_target = Math.Int(screen_h * 0.07);
+
+logo_source = Image("boot.png");
+logo_image  = logo_source.Scale(logo_target, logo_target);
+logo        = Sprite(logo_image);
+logo.SetX(Window.GetX() + screen_w / 2 - logo_image.GetWidth()  / 2);
+logo.SetY(Window.GetY() + screen_h / 2 - logo_image.GetHeight() / 2);
+logo.SetOpacity(1);
+
+# ── progress bar: 20% screen-width pill below the logo (boot only) ──────
+
+bar_w = Math.Int(screen_w * 0.072);
+bar_h = Math.Int(bar_w * 0.02);
+if (bar_h < 4)
+  bar_h = 4;
+bar_x = Window.GetX() + screen_w / 2 - bar_w / 2;
+# Bar sits just under the logo — 3.5% screen-height gap → ~75px on
+# 4K, ~38px on 1080p. Compact logo+bar stack like macOS.
+bar_y = logo.GetY() + logo_image.GetHeight() + Math.Int(screen_h * 0.035);
+
 track_source = Image("progress_track.png");
-fill_source  = Image("progress_fill.png");
+track_image  = track_source.Scale(bar_w, bar_h);
+track_sprite = Sprite(track_image);
+track_sprite.SetX(bar_x);
+track_sprite.SetY(bar_y);
+if (!show_progress)
+  track_sprite.SetOpacity(0);
 
-logo         = Sprite();
-track_sprite = Sprite();
-fill_sprite  = Sprite();
-
-# Plymouth can start on a firmware/simpledrm framebuffer and then replace it
-# with the native DRM mode. The old one-shot geometry made the splash visibly
-# shrink and jump when that handoff changed Window.GetWidth()/GetHeight(). Keep
-# the expensive image scaling cached, but recompute it whenever the renderer's
-# geometry changes.
-layout_x = -1;
-layout_y = -1;
-layout_w = -1;
-layout_h = -1;
-current_progress = 0;
-pw_sprite = NULL;
-pw_image = NULL;
-
-fun update_layout()
-{
-  next_x = Window.GetX();
-  next_y = Window.GetY();
-  next_w = Window.GetWidth();
-  next_h = Window.GetHeight();
-
-  if (next_w < 1 || next_h < 1)
-    return;
-  if (next_x == layout_x && next_y == layout_y &&
-      next_w == layout_w && next_h == layout_h)
-    return;
-
-  layout_x = next_x;
-  layout_y = next_y;
-  layout_w = next_w;
-  layout_h = next_h;
-  screen_w = next_w;
-  screen_h = next_h;
-
-  # Logo: 7% of the smaller axis, centred.
-  if (screen_w < screen_h)
-    logo_target = Math.Int(screen_w * 0.07);
-  else
-    logo_target = Math.Int(screen_h * 0.07);
-
-  logo_image = logo_source.Scale(logo_target, logo_target);
-  logo.SetImage(logo_image);
-  logo.SetX(layout_x + screen_w / 2 - logo_image.GetWidth()  / 2);
-  logo.SetY(layout_y + screen_h / 2 - logo_image.GetHeight() / 2);
-  logo.SetOpacity(1);
-
-  # Progress bar: 7.2% of screen width, just below the logo (boot only).
-  bar_w = Math.Int(screen_w * 0.072);
-  bar_h = Math.Int(bar_w * 0.02);
-  if (bar_h < 4)
-    bar_h = 4;
-  bar_x = layout_x + screen_w / 2 - bar_w / 2;
-  bar_y = logo.GetY() + logo_image.GetHeight() + Math.Int(screen_h * 0.035);
-
-  track_image = track_source.Scale(bar_w, bar_h);
-  track_sprite.SetImage(track_image);
-  track_sprite.SetX(bar_x);
-  track_sprite.SetY(bar_y);
-  if (!show_progress)
-    track_sprite.SetOpacity(0);
-  else
-    track_sprite.SetOpacity(1);
-
-  fill_sprite.SetX(bar_x);
-  fill_sprite.SetY(bar_y);
-  if (show_progress && current_progress > 0)
-  {
-    fill_image = fill_source.Scale(Math.Int(bar_w * current_progress), bar_h);
-    fill_sprite.SetImage(fill_image);
-    fill_sprite.SetOpacity(1);
-  }
-  else
-    fill_sprite.SetOpacity(0);
-
-  if (pw_sprite && pw_image)
-  {
-    pw_sprite.SetX(layout_x + screen_w / 2 - pw_image.GetWidth() / 2);
-    pw_sprite.SetY(logo.GetY() + logo_image.GetHeight() + Math.Int(screen_h * 0.10));
-  }
-}
-
-update_layout();
-
-fun on_refresh()
-{
-  update_layout();
-}
-Plymouth.SetRefreshFunction(on_refresh);
+fill_source = Image("progress_fill.png");
+fill_sprite = Sprite();
+fill_sprite.SetX(bar_x);
+fill_sprite.SetY(bar_y);
 
 # ── callbacks ───────────────────────────────────────────────────────────
 
@@ -145,10 +89,8 @@ fun on_boot_progress(duration, progress)
     progress = 0;
   if (progress > 1)
     progress = 1;
-  current_progress = progress;
   fill_image = fill_source.Scale(Math.Int(bar_w * progress), bar_h);
   fill_sprite.SetImage(fill_image);
-  fill_sprite.SetOpacity(1);
 }
 if (show_progress)
   Plymouth.SetBootProgressFunction(on_boot_progress);
@@ -160,6 +102,10 @@ if (show_progress)
 message_y       = 10;
 message_sprites = [];
 message_count   = 0;
+
+# Password prompt sprite (LUKS2 / cryptsetup). Created on the first
+# prompt, hidden again when boot resumes (display-normal).
+pw_sprite       = NULL;
 
 fun on_show_message(text)
 {
@@ -195,12 +141,12 @@ fun on_password(prompt, bullets)
   mask = "";
   for (i = 0; i < bullets; i++)
     mask = mask + "*";
-  pw_image = Image.Text(prompt + " " + mask, 1, 1, 1);
+  img = Image.Text(prompt + " " + mask, 1, 1, 1);
   if (pw_sprite == NULL)
-    pw_sprite = Sprite(pw_image);
-  pw_sprite.SetImage(pw_image);
+    pw_sprite = Sprite(img);
+  pw_sprite.SetImage(img);
   pw_sprite.SetOpacity(1);
-  pw_sprite.SetX(layout_x + screen_w / 2 - pw_image.GetWidth() / 2);
+  pw_sprite.SetX(Window.GetX() + screen_w / 2 - img.GetWidth() / 2);
   pw_sprite.SetY(logo.GetY() + logo_image.GetHeight() + Math.Int(screen_h * 0.10));
   pw_sprite.SetZ(10000);
 }
