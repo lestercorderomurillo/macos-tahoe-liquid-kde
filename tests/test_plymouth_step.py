@@ -1308,6 +1308,9 @@ def test_install_survives_duplicate_theme_lines_in_plymouthd_conf(tmp_path, monk
                         tmp_path / "state/plymouth-previous-theme")
     monkeypatch.setattr(plymouth, "DEST", tmp_path / "dest/MacTahoeLiquidKde")
     monkeypatch.setattr(plymouth, "PLYMOUTHD_CONF", conf)
+    # This test covers duplicate-key normalization, not distro policy. Keep
+    # its expected value deterministic inside Fedora/Nobara containers too.
+    monkeypatch.setattr(plymouth, "plymouth_use_simpledrm", lambda: True)
     _stub(monkeypatch, have_bin=True, current_theme="MacTahoeLiquidKde")
     plymouth.install()
 
