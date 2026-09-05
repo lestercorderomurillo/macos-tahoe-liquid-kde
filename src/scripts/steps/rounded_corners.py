@@ -296,6 +296,15 @@ def uninstall() -> None:
         "--file", "kwinrc", "--group", "Plugins",
         "--key", "shapecornersEnabled", "false",
     )
+    # install() writes [Round-Corners] Size/InactiveCornerRadius directly
+    # (there's no per-plugin config namespace to scope them under) — strip
+    # both back out so a stock KDE Rounded Corners KCM installed later
+    # doesn't inherit our radius as its default.
+    for key in ("Size", "InactiveCornerRadius"):
+        kw_write(
+            "--file", "kwinrc", "--group", "Round-Corners",
+            "--key", key, "--delete",
+        )
     qdbus_call("org.kde.KWin", "/KWin", "org.kde.KWin.reconfigure")
 
     plugin_dir = _plugin_dir()

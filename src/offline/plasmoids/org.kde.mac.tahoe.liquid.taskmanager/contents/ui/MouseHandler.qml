@@ -148,6 +148,14 @@ DropArea {
         repeat: false
 
         onTriggered: {
+            // hoveredItem's delegate can be gone by the time this fires
+            // (task removed/reordered while animating suppressed
+            // onPositionChanged's own null handling) — QML nulls out a
+            // destroyed QObject reference rather than leaving it
+            // dangling, so guard instead of dereferencing blindly.
+            if (!parent.hoveredItem) {
+                return;
+            }
             if (parent.hoveredItem.model.IsGroupParent) {
                 TaskTools.createGroupDialog(parent.hoveredItem, tasks);
             } else if (!parent.hoveredItem.model.IsLauncher) {

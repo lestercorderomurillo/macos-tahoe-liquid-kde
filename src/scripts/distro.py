@@ -90,6 +90,14 @@ def plymouth_use_simpledrm() -> bool:
     return "fedora" not in family
 
 
+def is_debian_family() -> bool:
+    """True on Debian, Ubuntu, or a distro whose ID_LIKE chain includes
+    one of them (e.g. KDE neon) — the only per-distro-family predicate
+    step modules need so far. Lives here, not in the step module that
+    uses it, so a future downstream addition is wired in one place."""
+    return bool({current_distro(), *distro_id_like()} & {"debian", "ubuntu", "neon"})
+
+
 # ── Portable desktop defaults ────────────────────────────────────────
 
 

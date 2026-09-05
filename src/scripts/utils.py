@@ -1,3 +1,4 @@
+import contextlib
 import errno
 import json
 import os
@@ -8,7 +9,7 @@ import time
 import urllib.error
 import urllib.request
 from pathlib import Path
-from typing import Iterable
+from typing import Iterable, Iterator
 
 from log import fail
 
@@ -273,15 +274,44 @@ def _redirect_stream(stream):
         return None
 
 
+@contextlib.contextmanager
+def _pkg_cmd_root() -> Iterator[None]:
+    """Briefly re-elevate to root for a privileged package-manager call.
+    Mirrors steps/_helpers.py's _as_root (utils.py can't import it back
+    without a cycle): the CLI only drops the *effective* UID after its
+    root check, real UID stays 0, so seteuid(0) here is always
+    reversible. Only used mid-install (see _run_pkg_cmd) — never called
+    when the real UID isn't already 0."""
+    saved_euid, saved_egid = os.geteuid(), os.getegid()
+    os.seteuid(0)
+    os.setegid(0)
+    try:
+        yield
+    finally:
+        os.setegid(saved_egid)
+        os.seteuid(saved_euid)
+
+
 def _run_pkg_cmd(base: list[str], *args: str) -> bool:
-    cmd = base if os.geteuid() == 0 else ["sudo", *base]
+    # Mid-install, the CLI has already dropped effective UID to the
+    # invoking user (real UID stays 0 — see cli.py's
+    # _require_root_and_drop_to_user). Re-running the package manager
+    # through a nested `sudo` from there only "works" because sudo
+    # special-cases a real UID of 0 and skips authentication; it's an
+    # undocumented reliance on that behaviour and would hang/fail under
+    # `requiretty` or a hardened sudo config. Hop back to root the same
+    # way every other privileged write in this codebase does instead.
+    elevate = os.getuid() == 0 and os.geteuid() != 0
+    cmd = list(base) if (os.geteuid() == 0 or elevate) else ["sudo", *base]
     cmd.extend(args)
     env = {**os.environ, **_NONINTERACTIVE_ENV}
-    return subprocess.run(
-        cmd, check=False, env=env, stdin=subprocess.DEVNULL,
-        stdout=_redirect_stream(sys.stdout),
-        stderr=_redirect_stream(sys.stderr),
-    ).returncode == 0
+    ctx = _pkg_cmd_root() if elevate else contextlib.nullcontext()
+    with ctx:
+        return subprocess.run(
+            cmd, check=False, env=env, stdin=subprocess.DEVNULL,
+            stdout=_redirect_stream(sys.stdout),
+            stderr=_redirect_stream(sys.stderr),
+        ).returncode == 0
 
 
 def pkg_install(*pkgs: str) -> bool:

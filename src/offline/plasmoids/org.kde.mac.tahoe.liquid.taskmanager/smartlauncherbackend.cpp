@@ -199,7 +199,6 @@ void Backend::update(const QString& uri, const QMap<QString, QVariant>& properti
         }
     }
 
-    updateLauncherProperty(storageId, properties, QStringLiteral("count"), &foundEntry->count, &Backend::count, &Backend::countChanged);
     updateLauncherProperty(
         storageId, properties, QStringLiteral("count-visible"), &foundEntry->countVisible, &Backend::countVisible, &Backend::countVisibleChanged);
 

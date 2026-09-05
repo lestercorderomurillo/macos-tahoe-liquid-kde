@@ -34,14 +34,18 @@ LEGACY_TASKMANAGER_USER_SO = HOME / (
 
 LEGACY_DIRS = (
     "org.kde.mac.tahoe.liquid.taskmanager",
-    "org.kde.plasma.taskmanager",
-    "org.kde.plasma.icontasks",
     "org.kde.mac-tahoe-liquid-kde.taskmanager",
     "org.kde.mac-tahoe-liquid-kde.icontasks",
 )
+# org.kde.plasma.taskmanager / org.kde.plasma.icontasks used to be in this
+# tuple (this project briefly overlaid the stock IDs before it had its own
+# namespace) — dropped because those IDs aren't ours: they're the real
+# upstream Plasma applet IDs, and "install a local QML override at
+# ~/.local/share/plasma/plasmoids/<id>" is a documented, common KDE
+# customisation. Cleanup here can't tell "our old leftover" apart from a
+# user's own override of the same stock plasmoid, so it must not touch
+# them at all rather than risk deleting someone else's customization.
 LEGACY_TASKMANAGER_QML_DIRS = (
-    HOME / ".local/lib/qt6/qml/plasma/applet/org/kde/plasma/taskmanager",
-    HOME / ".local/lib/qt6/qml/plasma/applet/org/kde/plasma/icontasks",
     HOME / ".local/lib/qt6/qml/plasma/applet/org/kde/mac/tahoe/liquid/taskmanager",
     HOME / ".local/lib/qt6/qml/plasma/applet/org/kde/mac/tahoe/liquid/icontasks",
     HOME / ".local/lib/qt6/qml/plasma/applet/org/kde/mac-tahoe-liquid-kde/taskmanager",
@@ -203,8 +207,6 @@ def uninstall() -> None:
         DEST_DIR / "org.kde.mac.tahoe.liquid.icontasks",
         *DEST_DIR.glob("org.kde.mac-tahoe-liquid-kde.*"),
         *DEST_DIR.glob("org.kde.mactahoe-liquid-kde.*"),
-        DEST_DIR / "org.kde.plasma.icontasks",
-        DEST_DIR / "org.kde.plasma.taskmanager",
     ]
     for d in targets:
         if d.is_dir():

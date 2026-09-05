@@ -3,6 +3,7 @@
 import os
 import shutil
 import subprocess
+import tempfile
 from contextlib import contextmanager
 from pathlib import Path
 from typing import Iterator
@@ -167,11 +168,15 @@ def sudo_remove(path: Path, label: str | None = None) -> bool:
 
 @contextmanager
 def temp_dir(prefix: str) -> Iterator[Path]:
-    """Self-cleaning ``/tmp/<prefix>-<pid>`` directory."""
-    p = Path(f"/tmp/{prefix}-{os.getpid()}")
-    if p.exists():
-        shutil.rmtree(p, ignore_errors=True)
-    p.mkdir(parents=True)
+    """Self-cleaning, uniquely-named temp directory under /tmp.
+
+    mkdtemp creates it atomically with a random suffix and 0700 perms,
+    so a pre-existing file/symlink left at a guessable ``prefix-pid``
+    path (stale run under a recycled PID, or planted by another local
+    user) can't make this raise instead of failing cleanly, or resolve
+    into an attacker-controlled location.
+    """
+    p = Path(tempfile.mkdtemp(prefix=f"{prefix}-"))
     try:
         yield p
     finally:

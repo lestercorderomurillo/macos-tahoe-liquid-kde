@@ -461,7 +461,7 @@ void Backend::setActionGroup(QAction* action) const
 
 QRect Backend::globalRect(QQuickItem* item) const
 {
-    if (!item || !item->window()) {
+    if (!item || !item->window() || !item->parentItem()) {
         return QRect();
     }
 

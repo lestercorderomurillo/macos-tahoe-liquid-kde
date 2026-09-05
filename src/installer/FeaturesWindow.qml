@@ -29,6 +29,8 @@ Window {
     property bool loaded: false
     property string statusMessage: ""
     property string statusKind: "idle"
+    property bool saveInFlight: false
+    property bool savePending: false
 
     readonly property string fontFamily: Kirigami.Theme.defaultFont.family
     readonly property int windowWidth: Math.min(1120, Screen.desktopAvailableWidth - 48)
@@ -64,7 +66,25 @@ Window {
         loader.connectSource(cmd + " # dump " + Date.now());
     }
 
+    // connectSource() spawns a new "--save-features" process every call
+    // rather than replacing an in-flight one; two calls fired close
+    // together (rapid toggles) race as independent async processes with
+    // no ordering guarantee, so the one holding the *older* snapshot of
+    // items can finish last and clobber the newer one in features.json.
+    // Serialize instead: while a save is running, just remember that
+    // another is owed and re-issue it (with then-current items) once
+    // the running one reports back, so the last write always reflects
+    // the last toggle.
     function save(): void {
+        if (saveInFlight) {
+            savePending = true;
+            return;
+        }
+        saveInFlight = true;
+        _runSave();
+    }
+
+    function _runSave(): void {
         const payload = {};
         for (let i = 0; i < items.length; ++i)
             payload[items[i].key] = items[i].enabled;
@@ -99,6 +119,11 @@ Window {
         connectedSources: []
         onNewData: (sourceName, data) => {
             disconnectSource(sourceName);
+            featuresWindow.saveInFlight = false;
+            if (featuresWindow.savePending) {
+                featuresWindow.savePending = false;
+                featuresWindow.save();
+            }
         }
     }
 

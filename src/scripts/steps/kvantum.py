@@ -8,7 +8,7 @@ import subprocess
 import tarfile
 from pathlib import Path, PurePosixPath
 
-from distro import current_distro, distro_id_like, qt6_plugins_dir
+from distro import is_debian_family, qt6_plugins_dir
 from steps._helpers import (
     HOME, build_dir, cmake_build, fail, have, info, kw_write, offline, ok,
     reinstall, sudo_install_file, sudo_remove, warn,
@@ -45,13 +45,6 @@ def _engine_destination() -> Path:
     return qt6_plugins_dir() / "styles/libkvantum.so"
 
 
-def _debian_family() -> bool:
-    return bool(
-        {current_distro(), *distro_id_like()}
-        & {"debian", "ubuntu", "neon"}
-    )
-
-
 def _engine_matches_ownership_marker() -> bool:
     destination = _engine_destination()
     if not ENGINE_MARKER.is_file() or not destination.is_file():
@@ -70,7 +63,7 @@ def _bundled_engine_required() -> bool:
     overwrite an unmarked distro-owned Qt 6 plugin; keep rebuilding only a
     plugin whose ownership marker and digest prove that we installed it.
     """
-    if not _debian_family():
+    if not is_debian_family():
         return False
     destination = _engine_destination()
     if not destination.is_file():
@@ -90,7 +83,7 @@ def deps():
             "x11-cmake:libx11",
             "xext-cmake:libxext",
         ]
-    if _debian_family():
+    if is_debian_family():
         # A distro-owned Qt 6 style plugin is sufficient. Theme selection has
         # a kwriteconfig6 fallback and does not require Kvantum Manager.
         return []

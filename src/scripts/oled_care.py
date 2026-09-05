@@ -177,7 +177,19 @@ def load_state() -> dict:
 def save_state(state: dict) -> None:
     path = _state_file()
     path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(json.dumps(state) + "\n", encoding="utf-8")
+    # Write-then-rename: this fires unattended on a timer indefinitely,
+    # so a kill/crash mid-write shouldn't be able to leave a torn file
+    # (load_state() tolerates that via _EMPTY_STATE, but a clean
+    # rename avoids the corrupt-then-reset blip entirely).
+    tmp = path.with_name(f".{path.name}.{os.getpid()}.tmp")
+    try:
+        tmp.write_text(json.dumps(state) + "\n", encoding="utf-8")
+        os.replace(tmp, path)
+    except OSError:
+        try:
+            tmp.unlink()
+        except OSError:
+            pass
 
 
 def build_shift_script(panels: dict, last_off: int, last_h: int,

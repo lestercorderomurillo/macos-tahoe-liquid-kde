@@ -1184,7 +1184,7 @@ def run_install(argv: list[str], tui: bool = False,
         print(INSTALL_HELP)
         return 0
     if parsed.check_update:
-        return 0 if not check_for_updates(verbose=True) else 0
+        return 1 if check_for_updates(verbose=True) else 0
 
     # Root required: .so and QML drops go into the qmake6-reported Qt6
     # dirs; user paths aren't discoverable.

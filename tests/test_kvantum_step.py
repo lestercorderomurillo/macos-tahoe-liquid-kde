@@ -7,8 +7,7 @@ import json
 
 
 def _neon(monkeypatch, kvantum, destination):
-    monkeypatch.setattr(kvantum, "current_distro", lambda: "neon")
-    monkeypatch.setattr(kvantum, "distro_id_like", lambda: ("ubuntu", "debian"))
+    monkeypatch.setattr(kvantum, "is_debian_family", lambda: True)
     monkeypatch.setattr(kvantum, "_engine_destination", lambda: destination)
 
 

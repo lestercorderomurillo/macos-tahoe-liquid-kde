@@ -326,6 +326,19 @@ def _make_installer_bridge():
 
         @pyqtSlot()
         def cancel(self) -> None:
+            # self._proc is bash running "pkexec ... install" (or "sudo
+            # ... install") as its only command — kill() only reaches
+            # that direct child, not the privileged install process
+            # pkexec/sudo forked underneath it, leaving it running as
+            # root in the background. SIGTERM is what pkexec and sudo
+            # both forward to their child; kill() (SIGKILL) can't be
+            # forwarded at all. Fall back to kill() after a grace period
+            # in case the privileged side is unresponsive.
+            if self._proc and self._proc.state() != QProcess.ProcessState.NotRunning:
+                self._proc.terminate()
+                QTimer.singleShot(5000, self._kill_if_still_running)
+
+        def _kill_if_still_running(self) -> None:
             if self._proc and self._proc.state() != QProcess.ProcessState.NotRunning:
                 self._proc.kill()
 
@@ -385,6 +398,14 @@ def _make_installer_bridge():
 
         def _on_proc_finished(self, code: int, _status) -> None:
             self._read_progress()
+            # _read_progress only turns complete lines into records; a
+            # final line with no trailing newline (e.g. the process was
+            # killed mid-write) would otherwise sit in _line_buf and
+            # never reach the log view, hiding the most diagnostic line
+            # on a failure.
+            if self._line_buf:
+                self._handle_record(self._line_buf.rstrip("\r"))
+                self._line_buf = ""
             if self._exit_code is None:
                 self._finish(code)
 

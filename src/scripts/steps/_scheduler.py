@@ -46,10 +46,13 @@ def _read_crontab() -> list[str]:
     daemon / CI) is also just the empty case, not a crash."""
     if not _have_crontab():
         return []
-    res = run_user(
-        ["crontab", "-l"],
-        check=False, capture_output=True, text=True,
-    )
+    try:
+        res = run_user(
+            ["crontab", "-l"],
+            check=False, capture_output=True, text=True, timeout=10,
+        )
+    except subprocess.TimeoutExpired:
+        return []
     if res.returncode != 0:
         return []
     return res.stdout.splitlines()
@@ -62,19 +65,22 @@ def _write_crontab(lines: list[str]) -> bool:
     warn instead of crashing."""
     if not _have_crontab():
         return False
-    if not any(line.strip() for line in lines):
-        run_user(
-            ["crontab", "-r"],
-            check=False,
+    try:
+        if not any(line.strip() for line in lines):
+            run_user(
+                ["crontab", "-r"],
+                check=False, timeout=10,
+                stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
+            )
+            return True
+        body = "\n".join(lines).rstrip("\n") + "\n"
+        res = run_user(
+            ["crontab", "-"],
+            check=False, input=body, text=True, timeout=10,
             stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
         )
-        return True
-    body = "\n".join(lines).rstrip("\n") + "\n"
-    res = run_user(
-        ["crontab", "-"],
-        check=False, input=body, text=True,
-        stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
-    )
+    except subprocess.TimeoutExpired:
+        return False
     return res.returncode == 0
 
 

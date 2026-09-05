@@ -148,6 +148,14 @@ PlasmoidItem {
                     }
                 }
                 root.containsAcceptableDrag = dominated;
+                if (!dominated) {
+                    // DropArea defaults to accepting a drag unless told
+                    // otherwise — without this, non-file drags (plain
+                    // text, a browser URL) keep this DropArea as their
+                    // accepted target instead of passing through to
+                    // whatever's behind the trash icon.
+                    event.ignore();
+                }
             }
             onDragLeave: root.containsAcceptableDrag = false
 

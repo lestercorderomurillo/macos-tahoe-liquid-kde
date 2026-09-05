@@ -73,7 +73,18 @@ class RunTracker:
             "finished_at": finished_at,
             "exit_code": exit_code,
         }
-        out.write_text(
-            json.dumps(payload, indent=2, ensure_ascii=False) + "\n",
-            encoding="utf-8",
-        )
+        # Write-then-rename so a crash/kill mid-write (OOM, power loss)
+        # can't leave last-run.json truncated — same pattern as
+        # theme_switch.py's _save_wallpaper_state.
+        tmp = out.with_name(f".{out.name}.{os.getpid()}.tmp")
+        try:
+            tmp.write_text(
+                json.dumps(payload, indent=2, ensure_ascii=False) + "\n",
+                encoding="utf-8",
+            )
+            os.replace(tmp, out)
+        except OSError:
+            try:
+                tmp.unlink()
+            except OSError:
+                pass
