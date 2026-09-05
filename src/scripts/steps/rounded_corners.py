@@ -9,6 +9,7 @@ allowed to run.
 from __future__ import annotations
 
 import hashlib
+import json
 import shutil
 import subprocess
 import tarfile
@@ -17,6 +18,7 @@ from pathlib import Path, PurePosixPath
 
 from distro import qt6_plugins_dir
 from steps._helpers import (
+    HOME,
     build_dir,
     cmake_build,
     fail,
@@ -28,7 +30,7 @@ from steps._helpers import (
     sudo_remove,
     warn,
 )
-from utils import fetch, qdbus_cmd, run_user
+from utils import fetch, kw_read, qdbus_cmd, run_user
 
 
 UPSTREAM_VERSION = "0.9.0"
@@ -54,6 +56,10 @@ LOCALES = ("de", "es", "hu", "nl", "ru", "zh")
 LICENSE_FILE = Path(
     "/usr/share/licenses/mac-tahoe-liquid-kde/KDE-Rounded-Corners.txt"
 )
+
+STATE_DIR = HOME / ".local/state/mac-tahoe-liquid-kde"
+PREV_ROUND_CORNERS_FILE = STATE_DIR / "rounded-corners-previous.json"
+_ROUND_CORNERS_KEYS = ("Size", "InactiveCornerRadius")
 
 
 def deps():
@@ -214,6 +220,67 @@ def _locale_destinations() -> list[Path]:
     return [LOCALE_DIR / lang / "LC_MESSAGES/kcmcorners.mo" for lang in LOCALES]
 
 
+def _snapshot_round_corners_keys() -> None:
+    """Record whatever [Round-Corners] Size/InactiveCornerRadius were
+    before install() overwrites them, so uninstall() can restore that
+    exact state instead of unconditionally deleting the keys. Those
+    keys may predate this installer — a user could have an existing
+    stock KDE Rounded Corners KCM setup with its own radius — so
+    blindly stripping them on uninstall would destroy settings we
+    don't own. Snapshot once: like Plymouth's UseSimpledrm snapshot,
+    a second install() must not overwrite an already-captured
+    pre-install value with our own radius.
+    """
+    if PREV_ROUND_CORNERS_FILE.is_file():
+        return
+    snapshot = {}
+    for key in _ROUND_CORNERS_KEYS:
+        value = kw_read("kwinrc", "Round-Corners", key)
+        snapshot[key] = value if value else None
+    try:
+        STATE_DIR.mkdir(parents=True, exist_ok=True)
+        PREV_ROUND_CORNERS_FILE.write_text(
+            json.dumps(snapshot) + "\n", encoding="utf-8",
+        )
+    except OSError as exc:
+        warn(f"could not snapshot previous Rounded Corners settings ({exc})")
+
+
+def _restore_round_corners_keys() -> None:
+    """Restore the captured [Round-Corners] keys (or remove them, if
+    they were absent before install()) instead of always deleting."""
+    try:
+        snapshot = json.loads(
+            PREV_ROUND_CORNERS_FILE.read_text(encoding="utf-8")
+        )
+    except FileNotFoundError:
+        snapshot = {key: None for key in _ROUND_CORNERS_KEYS}
+    except (OSError, json.JSONDecodeError, TypeError):
+        warn("previous Rounded Corners settings unreadable — "
+             "removing our keys instead of restoring")
+        snapshot = {key: None for key in _ROUND_CORNERS_KEYS}
+    if not isinstance(snapshot, dict):
+        snapshot = {key: None for key in _ROUND_CORNERS_KEYS}
+
+    for key in _ROUND_CORNERS_KEYS:
+        value = snapshot.get(key)
+        if isinstance(value, str) and value:
+            kw_write(
+                "--file", "kwinrc", "--group", "Round-Corners",
+                "--key", key, value,
+            )
+        else:
+            kw_write(
+                "--file", "kwinrc", "--group", "Round-Corners",
+                "--key", key, "--delete",
+            )
+    try:
+        if PREV_ROUND_CORNERS_FILE.is_file():
+            PREV_ROUND_CORNERS_FILE.unlink()
+    except OSError:
+        pass
+
+
 def install() -> None:
     effect, config, *shaders = build_artifacts()
     if not all(path.is_file() for path in (effect, config, *shaders)):
@@ -258,8 +325,9 @@ def install() -> None:
             "KDE Rounded Corners GPL-3.0 license installed",
         )
 
+    _snapshot_round_corners_keys()
     radius_configured = True
-    for key in ("Size", "InactiveCornerRadius"):
+    for key in _ROUND_CORNERS_KEYS:
         if not kw_write(
             "--file", "kwinrc", "--group", "Round-Corners",
             "--key", key, str(CORNER_RADIUS),
@@ -297,14 +365,12 @@ def uninstall() -> None:
         "--key", "shapecornersEnabled", "false",
     )
     # install() writes [Round-Corners] Size/InactiveCornerRadius directly
-    # (there's no per-plugin config namespace to scope them under) — strip
-    # both back out so a stock KDE Rounded Corners KCM installed later
-    # doesn't inherit our radius as its default.
-    for key in ("Size", "InactiveCornerRadius"):
-        kw_write(
-            "--file", "kwinrc", "--group", "Round-Corners",
-            "--key", key, "--delete",
-        )
+    # (there's no per-plugin config namespace to scope them under) —
+    # restore whatever was there before install() (or remove the keys,
+    # if they were absent) rather than always deleting: those keys may
+    # predate this installer and belong to a user's own KDE Rounded
+    # Corners KCM setup.
+    _restore_round_corners_keys()
     qdbus_call("org.kde.KWin", "/KWin", "org.kde.KWin.reconfigure")
 
     plugin_dir = _plugin_dir()

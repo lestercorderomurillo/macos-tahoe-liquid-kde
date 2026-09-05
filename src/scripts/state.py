@@ -4,6 +4,8 @@ import os
 from pathlib import Path
 from typing import Literal
 
+from log import warn
+
 
 Status = Literal["running", "completed", "exited", "failed", "aborted"]
 
@@ -31,10 +33,13 @@ class RunTracker:
         self.aborted = False
         self.active = False
 
-    def start(self) -> None:
+    def start(self) -> bool:
         self.started_at = _now_iso()
         self.active = True
-        self._write("running", finished_at=None, exit_code=0)
+        ok = self._write("running", finished_at=None, exit_code=0)
+        if not ok:
+            warn(f"could not record run state to {last_run_file()}")
+        return ok
 
     def mark_completed(self) -> None:
         self.completed = True
@@ -42,9 +47,9 @@ class RunTracker:
     def mark_aborted(self) -> None:
         self.aborted = True
 
-    def finalize(self, exit_code: int) -> None:
+    def finalize(self, exit_code: int) -> bool:
         if not self.active:
-            return
+            return True
         if self.aborted:
             status: Status = "aborted"
         elif self.completed and exit_code == 0:
@@ -53,13 +58,16 @@ class RunTracker:
             status = "exited"
         else:
             status = "failed"
-        self._write(status, finished_at=_now_iso(), exit_code=exit_code)
+        ok = self._write(status, finished_at=_now_iso(), exit_code=exit_code)
+        if not ok:
+            warn(f"could not record run state to {last_run_file()}")
+        return ok
 
     def _command(self) -> str:
         return "./" + " ".join([self.script, *self.argv]).rstrip()
 
     def _write(self, status: Status, finished_at: str | None,
-               exit_code: int) -> None:
+               exit_code: int) -> bool:
         out = last_run_file()
         out.parent.mkdir(parents=True, exist_ok=True)
         payload = {
@@ -75,7 +83,10 @@ class RunTracker:
         }
         # Write-then-rename so a crash/kill mid-write (OOM, power loss)
         # can't leave last-run.json truncated — same pattern as
-        # theme_switch.py's _save_wallpaper_state.
+        # theme_switch.py's _save_wallpaper_state. Failure is reported
+        # to the caller (not swallowed): this is diagnostic state, but a
+        # silent failure here means support tooling reads a stale or
+        # missing last-run.json without any indication why.
         tmp = out.with_name(f".{out.name}.{os.getpid()}.tmp")
         try:
             tmp.write_text(
@@ -83,8 +94,10 @@ class RunTracker:
                 encoding="utf-8",
             )
             os.replace(tmp, out)
+            return True
         except OSError:
             try:
                 tmp.unlink()
             except OSError:
                 pass
+            return False

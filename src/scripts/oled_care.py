@@ -174,22 +174,29 @@ def load_state() -> dict:
     }
 
 
-def save_state(state: dict) -> None:
+def save_state(state: dict) -> bool:
     path = _state_file()
     path.parent.mkdir(parents=True, exist_ok=True)
     # Write-then-rename: this fires unattended on a timer indefinitely,
     # so a kill/crash mid-write shouldn't be able to leave a torn file
     # (load_state() tolerates that via _EMPTY_STATE, but a clean
-    # rename avoids the corrupt-then-reset blip entirely).
+    # rename avoids the corrupt-then-reset blip entirely). Failure is
+    # reported to the caller: shift() has already rebased the panel(s)
+    # on-screen at this point, so if the new offsets can't be
+    # persisted, the caller must not report success — the next fire
+    # would resume from stale state and mis-rebase.
     tmp = path.with_name(f".{path.name}.{os.getpid()}.tmp")
     try:
         tmp.write_text(json.dumps(state) + "\n", encoding="utf-8")
         os.replace(tmp, path)
-    except OSError:
+        return True
+    except OSError as exc:
+        print(f"oled care: could not save panel state ({exc})", file=sys.stderr)
         try:
             tmp.unlink()
         except OSError:
             pass
+        return False
 
 
 def build_shift_script(panels: dict, last_off: int, last_h: int,
@@ -277,8 +284,9 @@ def shift(max_px: int = DEFAULT_MAX_SHIFT_PX) -> int:
         print("oled care: could not parse panel state from plasmashell",
               file=sys.stderr)
         return 1
-    save_state({"index": next_index, "last_off": next_off,
-                "last_h": next_h, "panels": panels})
+    if not save_state({"index": next_index, "last_off": next_off,
+                       "last_h": next_h, "panels": panels}):
+        return 1
     return 0
 
 

@@ -87,6 +87,33 @@ def test_shift_persists_plasmashell_reply(tmp_path, monkeypatch):
     assert state["panels"] == {"5": {"offset": 0, "height": 32}}
 
 
+def test_save_state_reports_and_returns_false_on_write_failure(
+        tmp_path, monkeypatch, capsys):
+    """A write/replace failure must not look like success — the caller
+    (shift()) has already rebased on-screen panel geometry by the time
+    it calls save_state(), so silently swallowing this would let the
+    next timer fire resume from stale state and mis-rebase."""
+    _state_env(tmp_path, monkeypatch)
+
+    def fail_replace(_src, _dst):
+        raise OSError("simulated disk full")
+
+    monkeypatch.setattr(oled_care.os, "replace", fail_replace)
+
+    assert oled_care.save_state({"index": 0, "last_off": 0, "last_h": 0,
+                                 "panels": {}}) is False
+    assert "could not save panel state" in capsys.readouterr().err
+
+
+def test_shift_reports_failure_when_state_cannot_be_saved(tmp_path, monkeypatch):
+    _state_env(tmp_path, monkeypatch)
+    reply = json.dumps({"5": {"offset": 0, "height": 32}})
+    monkeypatch.setattr(oled_care, "_evaluate_script", lambda _s: reply)
+    monkeypatch.setattr(oled_care, "save_state", lambda _state: False)
+
+    assert oled_care.shift() == 1
+
+
 def test_shift_without_plasmashell_is_quiet_noop(tmp_path, monkeypatch):
     """Timer fires before login / after logout: no error, no state
     change — the cycle resumes from the same step next fire."""
