@@ -155,6 +155,9 @@ def test_remove_periodic_removes_empty_crontab_entirely(fake_cron):
 def test_scheduler_is_noop_on_systemd(monkeypatch):
     fake = FakeCrontab()
     monkeypatch.setattr(_scheduler, "run_user", fake)
+    # Make the intended no-client cleanup branch independent of the host
+    # image: KDE neon ships ``crontab``, while several other CI images do not.
+    monkeypatch.setattr(_scheduler, "_have_crontab", lambda: False)
     monkeypatch.setenv("MTTKDE_INIT", "systemd")
     # No-op on systemd, but still reports success so the caller doesn't warn.
     assert _scheduler.install_periodic("oled", 5, "/bin/oled") is True
