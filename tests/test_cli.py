@@ -45,6 +45,27 @@ def test_cancellable_entrypoint_does_not_print_aborted_twice(
     assert capsys.readouterr().err.count("Aborted.") == 1
 
 
+def test_cancellable_entrypoint_reports_real_result_after_success_races_cancel(
+        cli_module, monkeypatch, capsys):
+    checks = {"count": 0}
+
+    def check():
+        checks["count"] += 1
+        if checks["count"] == 2:
+            raise cli_module.CancellationRequested
+
+    monkeypatch.setattr(
+        cli_module, "cancellation_scope", contextlib.nullcontext)
+    monkeypatch.setattr(cli_module, "check_cancelled", check)
+
+    @cli_module._cancellable_entrypoint
+    def finished_successfully():
+        return 0
+
+    assert finished_successfully() == 0
+    assert "Aborted." not in capsys.readouterr().err
+
+
 def test_step_runner_checks_cancellation_around_each_phase(monkeypatch):
     import step_runner
 

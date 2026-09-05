@@ -48,7 +48,10 @@ def _cancellable_entrypoint(func):
                 # the earlier help/root/preflight window without a traceback.
                 if not result_ready:
                     print("\n  Aborted.", file=sys.stderr)
-                return 130
+                    return 130
+                # A cancellation that lands after func() completed must not
+                # replace its real outcome or invite a needless GUI retry.
+                return result
     return wrapped
 
 
