@@ -780,6 +780,35 @@ def test_session_env_uses_runtime_fallback_without_systemd(monkeypatch):
     assert theme_switch._HAS_DBUS is None
 
 
+def test_session_env_recovers_custom_xdg_paths_for_openrc_cron(
+        monkeypatch, tmp_path):
+    import theme_switch
+
+    proc = tmp_path / "proc"
+    process = proc / "12345"
+    process.mkdir(parents=True)
+    (process / "comm").write_text("plasmashell\n", encoding="utf-8")
+    values = {
+        "XDG_CONFIG_HOME": tmp_path / "xdg/config",
+        "XDG_DATA_HOME": tmp_path / "xdg/data",
+        "XDG_CACHE_HOME": tmp_path / "xdg/cache",
+        "XDG_STATE_HOME": tmp_path / "xdg/state",
+    }
+    (process / "environ").write_bytes(b"\0".join(
+        os.fsencode(f"{key}={value}") for key, value in values.items()
+    ) + b"\0")
+    for key in values:
+        monkeypatch.delenv(key, raising=False)
+    monkeypatch.setenv("SUDO_UID", str(os.getuid()))
+    monkeypatch.setattr(theme_switch, "_PROC_ROOT", proc)
+
+    theme_switch._sync_session_env_from_plasmashell()
+
+    assert {key: os.environ[key] for key in values} == {
+        key: str(value) for key, value in values.items()
+    }
+
+
 _APPLY_SUBCALLS = (
     "write_kde_theme_config", "_apply_wallpaper", "_apply_local_extras",
     "_apply_lookandfeel_live", "apply_cursortheme_live",
@@ -1625,6 +1654,263 @@ def test_pinned_switch_mode_neutralizes_binary_when_cron_cleanup_fails(
 
     assert not destination.exists()
     assert any("previous schedule" in message for message in failures)
+
+
+def test_switch_teardown_stops_timer_before_services(monkeypatch, tmp_path):
+    import steps.theme_switch as step
+
+    service_dir = tmp_path / "systemd"
+    service_dir.mkdir()
+    for unit in step.UNITS:
+        (service_dir / unit).write_text("[Unit]\n", encoding="utf-8")
+    calls: list[tuple[str, ...]] = []
+    monkeypatch.setattr(step, "SVC_DIR", service_dir)
+    monkeypatch.setattr(step, "is_systemd", lambda: True)
+    monkeypatch.setattr(
+        step, "_user_service",
+        lambda *args: calls.append(args) or True,
+    )
+
+    assert step._teardown_units() is True
+
+    stopped = [args[-1] for args in calls if args[:2] == ("disable", "--now")]
+    assert stopped == [
+        "mac-tahoe-liquid-kde-theme.timer",
+        "mac-tahoe-liquid-kde-theme.service",
+    ]
+
+
+def test_switch_teardown_checks_loaded_unit_when_file_is_absent(
+        monkeypatch, tmp_path):
+    import steps.theme_switch as step
+
+    probes: list[str] = []
+    calls: list[tuple[str, ...]] = []
+    monkeypatch.setattr(step, "SVC_DIR", tmp_path / "missing-systemd-dir")
+    monkeypatch.setattr(step, "is_systemd", lambda: True)
+    monkeypatch.setattr(
+        step, "_user_service",
+        lambda *args: calls.append(args) or False,
+    )
+    monkeypatch.setattr(
+        step, "_systemd_unit_stopped_and_disabled",
+        lambda unit: probes.append(unit) or False,
+    )
+
+    assert step._teardown_units(("loaded-without-file.timer",)) is False
+    assert probes == ["loaded-without-file.timer"]
+    assert ("daemon-reload",) in calls
+
+
+def test_switch_teardown_accepts_explicit_inactive_missing_unit(
+        monkeypatch, tmp_path):
+    import steps.theme_switch as step
+
+    calls: list[tuple[str, ...]] = []
+    monkeypatch.setattr(step, "SVC_DIR", tmp_path / "missing-systemd-dir")
+    monkeypatch.setattr(step, "is_systemd", lambda: True)
+    monkeypatch.setattr(
+        step, "_user_service",
+        lambda *args: calls.append(args) or args == ("daemon-reload",),
+    )
+    monkeypatch.setattr(
+        step, "_systemd_unit_stopped_and_disabled", lambda _unit: True,
+    )
+
+    assert step._teardown_units(("not-loaded.service",)) is True
+    assert ("daemon-reload",) in calls
+
+
+def test_switch_systemd_probe_requires_inactive_and_not_enabled(monkeypatch):
+    import steps.theme_switch as step
+
+    results = iter((
+        subprocess.CompletedProcess([], 3, stdout="inactive\n", stderr=""),
+        subprocess.CompletedProcess([], 1, stdout="disabled\n", stderr=""),
+        subprocess.CompletedProcess([], 3, stdout="inactive\n", stderr=""),
+        subprocess.CompletedProcess([], 0, stdout="enabled\n", stderr=""),
+        subprocess.CompletedProcess([], 1, stdout="", stderr="bus unavailable"),
+        subprocess.CompletedProcess([], 1, stdout="disabled\n", stderr=""),
+    ))
+    monkeypatch.setattr(
+        step, "user_service_manager_command",
+        lambda *args: ["systemctl", "--user", *args],
+    )
+    monkeypatch.setattr(step, "run_user", lambda *_args, **_kwargs: next(results))
+
+    assert step._systemd_unit_stopped_and_disabled("clean.service") is True
+    assert step._systemd_unit_stopped_and_disabled("enabled.timer") is False
+    assert step._systemd_unit_stopped_and_disabled("unproven.service") is False
+
+
+def test_switch_uninstall_retains_state_when_execution_cannot_be_neutralized(
+        monkeypatch, tmp_path):
+    import steps.theme_switch as step
+
+    # Directories make unlink() fail without monkeypatching pathlib globally.
+    binary = tmp_path / "bin/mac-tahoe-theme-switch"
+    legacy_binary = tmp_path / "bin/mactahoe-theme-switch"
+    binary.mkdir(parents=True)
+    legacy_binary.mkdir()
+    state_files = (
+        tmp_path / "state/wallpapers.json",
+        tmp_path / "state/layout-installed",
+    )
+    for state_file in state_files:
+        state_file.parent.mkdir(parents=True, exist_ok=True)
+        state_file.write_text("owned\n", encoding="utf-8")
+
+    failures: list[str] = []
+    config_writes: list[tuple[str, ...]] = []
+    monkeypatch.setattr(step, "BIN_DEST", binary)
+    monkeypatch.setattr(step, "_LEGACY_BIN", legacy_binary)
+    monkeypatch.setattr(step, "_managed_state_files", lambda: state_files)
+    monkeypatch.setattr(step, "_teardown_units", lambda _units: False)
+    monkeypatch.setattr(
+        step, "remove_periodic", lambda _tag: step.RemovalStatus.ERROR,
+    )
+    monkeypatch.setattr(step, "stop_gtk_sync_watcher", lambda: None)
+    monkeypatch.setattr(step, "_teardown_gtk_sync_autostart", lambda: None)
+    monkeypatch.setattr(step, "kw_write", lambda *args: config_writes.append(args))
+    monkeypatch.setattr(step, "fail", failures.append)
+
+    step.uninstall()
+
+    assert all(path.read_text(encoding="utf-8") == "owned\n"
+               for path in state_files)
+    assert config_writes == []
+    assert any("could not be neutralized" in message for message in failures)
+
+
+def test_switch_uninstall_reports_state_cleanup_failure(monkeypatch, tmp_path):
+    import steps.theme_switch as step
+
+    bad_state = tmp_path / "state-as-directory"
+    bad_state.mkdir()
+    failures: list[str] = []
+    successes: list[str] = []
+    monkeypatch.setattr(step, "BIN_DEST", tmp_path / "bin/switcher")
+    monkeypatch.setattr(step, "_LEGACY_BIN", tmp_path / "bin/legacy-switcher")
+    monkeypatch.setattr(step, "_teardown_units", lambda _units: True)
+    monkeypatch.setattr(
+        step, "remove_periodic", lambda _tag: step.RemovalStatus.ABSENT,
+    )
+    monkeypatch.setattr(step, "stop_gtk_sync_watcher", lambda: None)
+    monkeypatch.setattr(step, "_teardown_gtk_sync_autostart", lambda: None)
+    monkeypatch.setattr(step, "_managed_state_files", lambda: (bad_state,))
+    monkeypatch.setattr(step, "kw_write", lambda *_args: True)
+    monkeypatch.setattr(step, "fail", failures.append)
+    monkeypatch.setattr(step, "ok", successes.append)
+
+    step.uninstall()
+
+    assert bad_state.is_dir()
+    assert any("local state or KDE settings" in item for item in failures)
+    assert successes == []
+
+
+def test_switch_uninstall_reports_kde_config_cleanup_failure(
+        monkeypatch, tmp_path):
+    import steps.theme_switch as step
+
+    failures: list[str] = []
+    successes: list[str] = []
+    writes: list[tuple[str, ...]] = []
+    monkeypatch.setattr(step, "BIN_DEST", tmp_path / "bin/switcher")
+    monkeypatch.setattr(step, "_LEGACY_BIN", tmp_path / "bin/legacy-switcher")
+    monkeypatch.setattr(step, "_teardown_units", lambda _units: True)
+    monkeypatch.setattr(
+        step, "remove_periodic", lambda _tag: step.RemovalStatus.ABSENT,
+    )
+    monkeypatch.setattr(step, "stop_gtk_sync_watcher", lambda: None)
+    monkeypatch.setattr(step, "_teardown_gtk_sync_autostart", lambda: None)
+    monkeypatch.setattr(step, "_managed_state_files", lambda: ())
+    monkeypatch.setattr(
+        step, "kw_write",
+        lambda *args: writes.append(args) or len(writes) != 2,
+    )
+    monkeypatch.setattr(step, "fail", failures.append)
+    monkeypatch.setattr(step, "ok", successes.append)
+
+    step.uninstall()
+
+    assert len(writes) == 3
+    assert any("local state or KDE settings" in item for item in failures)
+    assert successes == []
+
+
+def test_switch_uninstall_targets_xdg_wallpaper_state_and_fixed_layout_state(
+        monkeypatch, tmp_path):
+    import steps.theme_switch as step
+
+    custom = tmp_path / "custom-state"
+    monkeypatch.setenv("XDG_STATE_HOME", str(custom))
+    monkeypatch.setattr(
+        step, "LAYOUT_STATE_FILE", tmp_path / "fixed/layout-installed",
+    )
+
+    assert step._managed_state_files() == (
+        custom / "mac-tahoe-liquid-kde/wallpapers.json",
+        tmp_path / "fixed/layout-installed",
+    )
+
+
+def test_switcher_scan_matches_only_exact_same_user_installed_paths(
+        monkeypatch, tmp_path):
+    import steps.theme_switch as step
+
+    current = tmp_path / "bin/mac-tahoe-theme-switch"
+    legacy = tmp_path / "bin/mactahoe-theme-switch"
+    proc = tmp_path / "proc"
+    proc.mkdir()
+    commands = {
+        "9876501": ["python3", str(current), "auto"],
+        "9876502": [str(legacy), "dark"],
+        "9876503": ["python3", str(current) + "-other", "auto"],
+    }
+    for pid, argv in commands.items():
+        process = proc / pid
+        process.mkdir()
+        (process / "cmdline").write_bytes(
+            b"\0".join(os.fsencode(arg) for arg in argv) + b"\0")
+
+    monkeypatch.setenv("SUDO_UID", str(os.getuid()))
+    monkeypatch.setattr(step, "BIN_DEST", current)
+    monkeypatch.setattr(step, "_LEGACY_BIN", legacy)
+    monkeypatch.setattr(step, "_PROC_ROOT", proc)
+
+    assert step._running_switcher_pids() == {9876501, 9876502}
+
+
+def test_switch_uninstall_retains_state_until_running_switcher_drains(
+        monkeypatch, tmp_path):
+    import steps.theme_switch as step
+
+    state_file = tmp_path / "state/wallpapers.json"
+    state_file.parent.mkdir(parents=True)
+    state_file.write_text("owned\n", encoding="utf-8")
+    failures: list[str] = []
+    config_writes: list[tuple[str, ...]] = []
+    monkeypatch.setattr(step, "BIN_DEST", tmp_path / "bin/switcher")
+    monkeypatch.setattr(step, "_LEGACY_BIN", tmp_path / "bin/legacy")
+    monkeypatch.setattr(step, "_teardown_units", lambda _units: True)
+    monkeypatch.setattr(
+        step, "remove_periodic", lambda _tag: step.RemovalStatus.ABSENT,
+    )
+    monkeypatch.setattr(step, "stop_gtk_sync_watcher", lambda: None)
+    monkeypatch.setattr(step, "_teardown_gtk_sync_autostart", lambda: None)
+    monkeypatch.setattr(step, "_wait_for_switchers", lambda: False)
+    monkeypatch.setattr(step, "_managed_state_files", lambda: (state_file,))
+    monkeypatch.setattr(
+        step, "kw_write", lambda *args: config_writes.append(args) or True,
+    )
+    monkeypatch.setattr(step, "fail", failures.append)
+
+    step.uninstall()
+
+    assert state_file.read_text(encoding="utf-8") == "owned\n"
+    assert config_writes == []
+    assert any("already-running switcher" in message for message in failures)
 
 
 def test_switch_step_install_uninstall_reinstall(sandbox, tmp_path):

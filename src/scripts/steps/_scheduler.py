@@ -9,6 +9,8 @@ which init is live. The crontab writer is marker-delimited so it only
 ever touches its own block — a user's unrelated cron lines are preserved.
 """
 
+import os
+import shlex
 import shutil
 import subprocess
 from enum import Enum
@@ -43,6 +45,30 @@ def _have_crontab() -> bool:
     return shutil.which("crontab") is not None
 
 
+def _crontab_env() -> dict[str, str]:
+    """Preserve the user environment but stabilize crontab diagnostics.
+
+    ``crontab -l`` uses a non-zero status for both an empty spool and real
+    errors, so the ordinary "no crontab" message is the only portable way to
+    distinguish them. Force that one subprocess family to the C locale so a
+    translated diagnostic cannot turn a first install into a false failure.
+    """
+    env = os.environ.copy()
+    env["LANG"] = "C"
+    env["LC_ALL"] = "C"
+    return env
+
+
+def cron_command(*argv: object) -> str:
+    """Render argv for cron's shell without losing valid path characters.
+
+    Cron treats an unescaped ``%`` as a newline before invoking the shell,
+    even inside quotes. Quote each argument for the shell first, then escape
+    percent signs for cron's own parser.
+    """
+    return " ".join(shlex.quote(str(arg)).replace("%", r"\%") for arg in argv)
+
+
 # ── crontab backend ──────────────────────────────────────────────────
 #
 # Each managed line is tagged with a trailing marker comment so we can
@@ -69,6 +95,7 @@ def _read_crontab() -> list[str] | None:
         res = run_user(
             ["crontab", "-l"],
             check=False, capture_output=True, text=True, timeout=10,
+            env=_crontab_env(),
         )
     except (OSError, subprocess.TimeoutExpired):
         return None
@@ -96,6 +123,7 @@ def _write_crontab(lines: list[str]) -> bool:
                 ["crontab", "-r"],
                 check=False, timeout=10,
                 stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
+                env=_crontab_env(),
             )
             return res.returncode == 0
         body = "\n".join(lines).rstrip("\n") + "\n"
@@ -103,6 +131,7 @@ def _write_crontab(lines: list[str]) -> bool:
             ["crontab", "-"],
             check=False, input=body, text=True, timeout=10,
             stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
+            env=_crontab_env(),
         )
     except (OSError, subprocess.TimeoutExpired):
         return False

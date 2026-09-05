@@ -140,8 +140,9 @@ def _sync_session_env_from_plasmashell() -> None:
         uid = os.getuid()
     wanted = {
         "DBUS_SESSION_BUS_ADDRESS", "DISPLAY", "WAYLAND_DISPLAY",
-        "XAUTHORITY", "XDG_CURRENT_DESKTOP", "XDG_RUNTIME_DIR",
-        "XDG_SESSION_TYPE",
+        "XAUTHORITY", "XDG_CACHE_HOME", "XDG_CONFIG_HOME",
+        "XDG_CURRENT_DESKTOP", "XDG_DATA_HOME", "XDG_RUNTIME_DIR",
+        "XDG_SESSION_TYPE", "XDG_STATE_HOME",
     }
     try:
         processes = list(_PROC_ROOT.iterdir())

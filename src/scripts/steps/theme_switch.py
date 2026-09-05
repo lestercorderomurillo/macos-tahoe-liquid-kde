@@ -11,18 +11,21 @@ from paths import REPO_ROOT
 from distro import user_service_manager_command
 from steps._helpers import HOME, fail, kw_write, ok, offline, theme_mode, warn
 from steps._scheduler import (
-    RemovalStatus, install_at_times, is_systemd, remove_periodic,
+    RemovalStatus, cron_command, install_at_times, is_systemd, remove_periodic,
 )
 from utils import run_user
 
 BIN_DEST = HOME / ".local/bin/mac-tahoe-theme-switch"
 SVC_DIR = HOME / ".config/systemd/user"
 PY_SRC = REPO_ROOT / "src/scripts/theme_switch.py"
-STATE_DIR = HOME / ".local/state/mac-tahoe-liquid-kde"
-MANAGED_STATE_FILES = (
-    STATE_DIR / "wallpapers.json",
-    STATE_DIR / "layout-installed",
-)
+LAYOUT_STATE_FILE = HOME / ".local/state/mac-tahoe-liquid-kde/layout-installed"
+
+
+def _managed_state_files() -> tuple[Path, Path]:
+    state_home = Path(os.environ.get("XDG_STATE_HOME") or
+                      HOME / ".local/state")
+    wallpaper_state = state_home / "mac-tahoe-liquid-kde/wallpapers.json"
+    return wallpaper_state, LAYOUT_STATE_FILE
 
 # Legacy 0.36.x-0.38.x portal watcher. Current installs remove this autostart
 # and stop the process; the names stay here solely for upgrade cleanup.
@@ -41,6 +44,10 @@ UNITS = (
 # mode from the wall clock, so both fires run the same `auto` command.
 CRON_TAG = "theme"
 CRON_TIMES = [(6, 0), (18, 0)]
+
+_PROC_ROOT = Path("/proc")
+_SWITCHER_DRAIN_SECONDS = 35.0
+_SWITCHER_DRAIN_POLL_SECONDS = 0.05
 
 
 def _watcher_pids() -> list[int]:
@@ -120,6 +127,39 @@ def _user_service(*args: str) -> bool:
         return False
 
 
+def _systemd_unit_state(unit: str, query: str) -> str | None:
+    """Return one explicit systemd state, or ``None`` on manager failure."""
+    command = user_service_manager_command(query, unit)
+    if command is None:
+        return None
+    try:
+        result = run_user(
+            command, check=False, capture_output=True, text=True, timeout=10,
+        )
+    except (OSError, subprocess.TimeoutExpired):
+        return None
+    return (result.stdout or "").strip() or None
+
+
+def _systemd_unit_stopped_and_disabled(unit: str) -> bool:
+    """Prove that ``unit`` cannot run after a failed stop attempt.
+
+    ``disable --now`` can fail merely because an already-clean unit has no
+    file, but file absence alone is not proof: systemd may still have a
+    deleted unit loaded. Keep manager/bus failures distinct from explicit
+    stopped and disabled/not-found states. Both probes are required: an
+    inactive but enabled timer can fire later, while a disabled active service
+    is already executing.
+    """
+    active_state = _systemd_unit_state(unit, "is-active")
+    enabled_state = _systemd_unit_state(unit, "is-enabled")
+    inactive = active_state in {"inactive", "failed", "unknown"}
+    not_enabled = enabled_state in {
+        "disabled", "masked", "masked-runtime", "not-found",
+    }
+    return inactive and not_enabled
+
+
 def deps():
     # OpenRC + auto mode needs crontab for the timed flip; systemd and
     # pinned modes need nothing extra.
@@ -143,20 +183,31 @@ def _teardown_units(units=UNITS) -> bool:
     complete = True
     systemd = is_systemd()
     had_unit_files = False
-    for unit in units:
+    failed_stops: list[str] = []
+    # Stop every trigger before its service. Otherwise a timer can fire after
+    # the service stop returned but before the timer itself is stopped.
+    ordered_units = sorted(units, key=lambda unit: not unit.endswith(".timer"))
+    for unit in ordered_units:
         unit_path = SVC_DIR / unit
         existed = unit_path.exists() or unit_path.is_symlink()
         had_unit_files = had_unit_files or existed
         stopped = _user_service("disable", "--now", unit)
-        if systemd and existed and not stopped:
-            complete = False
+        if systemd and not stopped:
+            # Even with no file on disk, the manager can retain a deleted unit
+            # until reload. Probe its runtime and enablement states first, then
+            # reload after all local definitions have been removed.
+            failed_stops.append(unit)
         try: unit_path.unlink()
         except FileNotFoundError: pass
         except OSError:
             if existed:
                 complete = False
-    if systemd and had_unit_files and not _user_service("daemon-reload"):
+    if systemd and (had_unit_files or failed_stops) \
+            and not _user_service("daemon-reload"):
         complete = False
+    for unit in failed_stops:
+        if not _systemd_unit_stopped_and_disabled(unit):
+            complete = False
     return complete
 
 
@@ -222,7 +273,8 @@ def install() -> None:
             # OpenRC: fixed-time cron lines at 06:00/18:00. There is no
             # login-time oneshot equivalent, but the binary is idempotent
             # and the timed flips are what matter.
-            if not install_at_times(CRON_TAG, CRON_TIMES, f"{BIN_DEST} auto"):
+            command = cron_command(BIN_DEST, "auto")
+            if not install_at_times(CRON_TAG, CRON_TIMES, command):
                 warn("Theme switch: crontab write failed — "
                      "is a cron daemon installed?")
     else:
@@ -234,7 +286,13 @@ def install() -> None:
             # An unremoved schedule calling this binary would override the
             # pinned choice later. Remove its command target and fail closed.
             neutralized = _neutralize_switcher()
-            detail = " (switcher neutralized)" if neutralized else ""
+            drained = _wait_for_switchers() if neutralized else False
+            if neutralized and drained:
+                detail = " (switcher neutralized)"
+            elif neutralized:
+                detail = " (running switcher still draining)"
+            else:
+                detail = ""
             fail("Theme switch pinned mode not installed — previous schedule "
                  f"could not be stopped safely{detail}")
             return
@@ -246,6 +304,61 @@ def install() -> None:
 
 
 _LEGACY_BIN = HOME / ".local/bin/mactahoe-theme-switch"
+
+
+def _running_switcher_pids() -> set[int] | None:
+    """Find same-user processes executing either installed switcher path."""
+    try:
+        uid = int(os.environ.get("SUDO_UID") or os.geteuid())
+    except ValueError:
+        uid = os.geteuid()
+    targets = {
+        os.path.normpath(os.fspath(BIN_DEST)),
+        os.path.normpath(os.fspath(_LEGACY_BIN)),
+    }
+    try:
+        entries = list(_PROC_ROOT.iterdir())
+    except OSError:
+        return None
+    found: set[int] = set()
+    for entry in entries:
+        if not entry.name.isdigit():
+            continue
+        pid = int(entry.name)
+        if pid == os.getpid():
+            continue
+        try:
+            if entry.stat().st_uid != uid:
+                continue
+            raw = (entry / "cmdline").read_bytes()
+        except (FileNotFoundError, ProcessLookupError):
+            continue
+        except OSError:
+            return None
+        argv = [part.decode(errors="surrogateescape")
+                for part in raw.split(b"\0") if part]
+        for index in (0, 1):
+            if len(argv) <= index:
+                continue
+            candidate = argv[index]
+            if (os.path.isabs(candidate) and
+                    os.path.normpath(candidate) in targets):
+                found.add(pid)
+                break
+    return found
+
+
+def _wait_for_switchers(timeout: float = _SWITCHER_DRAIN_SECONDS) -> bool:
+    """Wait for already-exec'd switchers after their launch paths are gone."""
+    deadline = time.monotonic() + max(0.0, timeout)
+    while True:
+        pids = _running_switcher_pids()
+        if pids == set():
+            return True
+        if pids is None or time.monotonic() >= deadline:
+            return False
+        time.sleep(min(_SWITCHER_DRAIN_POLL_SECONDS,
+                       max(0.0, deadline - time.monotonic())))
 
 
 def uninstall() -> None:
@@ -269,23 +382,43 @@ def uninstall() -> None:
         except FileNotFoundError: pass
         except OSError:
             binaries_neutralized = False
-    for p in MANAGED_STATE_FILES:
-        try: p.unlink()
-        except FileNotFoundError: pass
-        except OSError: pass
 
-    cleanup_complete = units_stopped and cron_complete and binaries_neutralized
+    schedules_stopped = units_stopped and cron_complete
+    switchers_drained = _wait_for_switchers() if binaries_neutralized else False
+    cleanup_complete = schedules_stopped and binaries_neutralized \
+        and switchers_drained
     if not cleanup_complete:
-        detail = "installed command was neutralized" if binaries_neutralized \
-            else "installed command could not be neutralized"
+        if not binaries_neutralized:
+            detail = "installed command could not be neutralized"
+        elif not switchers_drained:
+            detail = "an already-running switcher could not be drained"
+        else:
+            detail = "installed command was neutralized"
         fail("Theme switch removal incomplete — a previous schedule could "
              f"not be removed safely ({detail})")
+        # Unlinking a script does not stop a process which already exec'd it.
+        # Until both the schedule and command are proven inert, retain the
+        # ownership/config state that such a process can still read or rewrite.
+        return
 
-    kw_write("--file", "kdeglobals", "--group", "KDE",
-             "--key", "AutomaticLookAndFeel", "false")
-    kw_write("--file", "kdeglobals", "--group", "KDE",
-             "--key", "DefaultLightLookAndFeel", "--delete")
-    kw_write("--file", "kdeglobals", "--group", "KDE",
-             "--key", "DefaultDarkLookAndFeel", "--delete")
-    if cleanup_complete:
-        ok("Theme switcher removed")
+    state_cleanup_ok = True
+    for p in _managed_state_files():
+        try: p.unlink()
+        except FileNotFoundError: pass
+        except OSError as exc:
+            warn(f"Theme switch state could not be removed ({p}: {exc})")
+            state_cleanup_ok = False
+
+    config_cleanup_ok = all((
+        kw_write("--file", "kdeglobals", "--group", "KDE",
+                 "--key", "AutomaticLookAndFeel", "false"),
+        kw_write("--file", "kdeglobals", "--group", "KDE",
+                 "--key", "DefaultLightLookAndFeel", "--delete"),
+        kw_write("--file", "kdeglobals", "--group", "KDE",
+                 "--key", "DefaultDarkLookAndFeel", "--delete"),
+    ))
+    if not state_cleanup_ok or not config_cleanup_ok:
+        fail("Theme switch removal incomplete — local state or KDE settings "
+             "could not be cleared")
+        return
+    ok("Theme switcher removed")

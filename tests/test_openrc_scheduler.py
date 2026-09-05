@@ -110,6 +110,49 @@ def test_install_periodic_writes_marked_interval_line(fake_cron):
     ]
 
 
+def test_crontab_read_write_and_remove_force_c_locale(fake_cron, monkeypatch):
+    calls: list[tuple[list[str], dict[str, str]]] = []
+    real_call = fake_cron.__call__
+    monkeypatch.setenv("LANG", "es_CR.UTF-8")
+    monkeypatch.setenv("LC_ALL", "es_CR.UTF-8")
+    monkeypatch.setenv("MTTKDE_CRON_ENV_SENTINEL", "preserved")
+
+    def capture_env(argv, **kwargs):
+        calls.append((list(argv), kwargs["env"]))
+        return real_call(argv, **kwargs)
+
+    monkeypatch.setattr(_scheduler, "run_user", capture_env)
+
+    assert _scheduler.install_periodic("oled", 5, "/bin/oled") is True
+    assert _scheduler.remove_periodic(
+        "oled",
+    ) == _scheduler.RemovalStatus.REMOVED
+
+    assert [argv for argv, _env in calls] == [
+        ["crontab", "-l"],
+        ["crontab", "-"],
+        ["crontab", "-l"],
+        ["crontab", "-r"],
+    ]
+    assert all(env["LANG"] == "C" and env["LC_ALL"] == "C"
+               for _argv, env in calls)
+    assert all(env["MTTKDE_CRON_ENV_SENTINEL"] == "preserved"
+               for _argv, env in calls)
+
+
+def test_cron_command_quotes_shell_arguments_and_escapes_percent():
+    rendered = _scheduler.cron_command(
+        "/home/Test User/100%/bin/switcher", "auto", "quote'value",
+    )
+
+    assert r"\%" in rendered
+    # Cron consumes the percent escape before passing the command to /bin/sh.
+    import shlex
+    assert shlex.split(rendered.replace(r"\%", "%")) == [
+        "/home/Test User/100%/bin/switcher", "auto", "quote'value",
+    ]
+
+
 def test_install_periodic_clamps_interval(fake_cron):
     _scheduler.install_periodic("oled", 0, "/bin/oled")
     assert fake_cron.lines[0].startswith("*/1 ")

@@ -340,6 +340,25 @@ def test_uninstall_restores_preexisting_round_corners_value(monkeypatch, tmp_pat
     assert not rounded.PREV_ROUND_CORNERS_FILE.exists()
 
 
+def test_restore_treats_option_like_snapshot_as_literal_value(
+        monkeypatch, tmp_path):
+    state_dir = _pin_round_corners_state(monkeypatch, tmp_path)
+    state_dir.mkdir(parents=True)
+    rounded.PREV_ROUND_CORNERS_FILE.write_text(
+        json.dumps(_snapshot_payload(
+            size=(True, "--delete"), inactive=(False, None),
+        ))
+    )
+    writes: list[tuple[str, ...]] = []
+    monkeypatch.setattr(
+        rounded, "kw_write", lambda *args: writes.append(args) or True,
+    )
+
+    assert rounded._restore_round_corners_keys(legacy_install=False) is True
+    size_write = next(write for write in writes if "Size" in write)
+    assert size_write[-2:] == ("--", "--delete")
+
+
 def test_key_reader_distinguishes_absent_from_present_empty(monkeypatch):
     monkeypatch.setattr(rounded, "have", lambda command: command == "kreadconfig6")
     calls: list[list[str]] = []

@@ -388,7 +388,7 @@ def _restore_round_corners_keys(*, legacy_install: bool) -> bool:
         if entry["present"]:
             args = (
                 "--file", "kwinrc", "--group", "Round-Corners",
-                "--key", key, entry["value"],
+                "--key", key, "--", entry["value"],
             )
         else:
             args = (
