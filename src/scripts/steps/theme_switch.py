@@ -281,11 +281,20 @@ def uninstall() -> None:
         fail("Theme switch removal incomplete — a previous schedule could "
              f"not be removed safely ({detail})")
 
-    kw_write("--file", "kdeglobals", "--group", "KDE",
-             "--key", "AutomaticLookAndFeel", "false")
-    kw_write("--file", "kdeglobals", "--group", "KDE",
-             "--key", "DefaultLightLookAndFeel", "--delete")
-    kw_write("--file", "kdeglobals", "--group", "KDE",
-             "--key", "DefaultDarkLookAndFeel", "--delete")
-    if cleanup_complete:
+    kdeglobals_reverted = kw_write(
+        "--file", "kdeglobals", "--group", "KDE",
+        "--key", "AutomaticLookAndFeel", "false",
+    )
+    kdeglobals_reverted &= kw_write(
+        "--file", "kdeglobals", "--group", "KDE",
+        "--key", "DefaultLightLookAndFeel", "--delete",
+    )
+    kdeglobals_reverted &= kw_write(
+        "--file", "kdeglobals", "--group", "KDE",
+        "--key", "DefaultDarkLookAndFeel", "--delete",
+    )
+    if not kdeglobals_reverted:
+        warn("kdeglobals could not be fully reverted — AutomaticLookAndFeel "
+             "or a Default*LookAndFeel override may still be set")
+    if cleanup_complete and kdeglobals_reverted:
         ok("Theme switcher removed")

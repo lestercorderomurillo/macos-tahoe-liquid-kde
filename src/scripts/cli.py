@@ -46,9 +46,17 @@ def _cancellable_entrypoint(func):
                 # Cancellations after RunTracker starts are handled by the
                 # function's existing KeyboardInterrupt path.  This catches
                 # the earlier help/root/preflight window without a traceback.
+                # If func() already returned (result_ready), the trailing
+                # check_cancelled() above raced a cancel request that
+                # landed after the real work finished — the install
+                # already fully succeeded/failed on its own terms, so
+                # report that outcome rather than clobbering it with 130
+                # (which the GUI treats as a failure and offers to retry
+                # an already-completed, possibly destructive operation).
                 if not result_ready:
                     print("\n  Aborted.", file=sys.stderr)
-                return 130
+                    return 130
+                return result
     return wrapped
 
 
