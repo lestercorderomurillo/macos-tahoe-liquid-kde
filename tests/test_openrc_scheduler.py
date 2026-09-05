@@ -11,6 +11,7 @@ maintainer's real crontab is never read or written.
 from __future__ import annotations
 
 import os
+import subprocess
 from pathlib import Path
 
 import pytest
@@ -138,10 +139,10 @@ def test_install_replaces_our_own_tag_only(fake_cron):
 def test_remove_periodic_strips_only_our_line(fake_cron):
     fake_cron.lines = ["30 3 * * * /home/u/backup.sh"]
     _scheduler.install_periodic("oled", 5, "/bin/oled")
-    assert _scheduler.remove_periodic("oled") is True
+    assert _scheduler.remove_periodic("oled") == _scheduler.RemovalStatus.REMOVED
     assert fake_cron.lines == ["30 3 * * * /home/u/backup.sh"]
     # Idempotent: a second remove reports nothing was ours.
-    assert _scheduler.remove_periodic("oled") is False
+    assert _scheduler.remove_periodic("oled") == _scheduler.RemovalStatus.ABSENT
 
 
 def test_remove_periodic_removes_empty_crontab_entirely(fake_cron):
@@ -160,7 +161,8 @@ def test_scheduler_is_noop_on_systemd(monkeypatch):
     assert _scheduler.install_at_times("theme", [(6, 0)], "/bin/theme") is True
     # Nothing was installed; cleanup finds no marked line.
     assert fake.lines is None
-    assert _scheduler.remove_periodic("oled") is False
+    assert (_scheduler.remove_periodic("oled")
+            == _scheduler.RemovalStatus.UNAVAILABLE)
 
 
 def test_systemd_cleanup_removes_cron_left_by_previous_openrc_boot(
@@ -174,7 +176,7 @@ def test_systemd_cleanup_removes_cron_left_by_previous_openrc_boot(
     monkeypatch.setattr(_scheduler, "_have_crontab", lambda: True)
     monkeypatch.setenv("MTTKDE_INIT", "systemd")
 
-    assert _scheduler.remove_periodic("oled") is True
+    assert _scheduler.remove_periodic("oled") == _scheduler.RemovalStatus.REMOVED
     assert fake.lines == ["30 3 * * * /home/u/backup.sh"]
 
 
@@ -191,6 +193,80 @@ def test_install_reports_failure_when_crontab_write_fails(monkeypatch):
     monkeypatch.setattr(_scheduler, "run_user", failing)
     assert _scheduler.install_periodic("oled", 5, "/bin/oled") is False
     assert _scheduler.install_at_times("theme", [(6, 0)], "/bin/x") is False
+
+
+def test_read_timeout_never_replaces_the_user_crontab(monkeypatch):
+    """A failed read is not proof that the crontab is empty. In particular,
+    never feed it into the read/modify/replace path and erase unrelated jobs."""
+    calls: list[list[str]] = []
+
+    def timeout(argv, **_kwargs):
+        calls.append(argv)
+        raise subprocess.TimeoutExpired(argv, 10)
+
+    monkeypatch.setenv("MTTKDE_INIT", "openrc")
+    monkeypatch.setattr(_scheduler, "_have_crontab", lambda: True)
+    monkeypatch.setattr(_scheduler, "run_user", timeout)
+
+    assert _scheduler.install_periodic("oled", 5, "/bin/oled") is False
+    assert _scheduler.install_at_times(
+        "theme", [(6, 0)], "/bin/theme auto",
+    ) is False
+    assert calls == [["crontab", "-l"], ["crontab", "-l"]]
+
+
+def test_nonempty_crontab_read_error_never_triggers_a_write(monkeypatch):
+    calls: list[list[str]] = []
+
+    def denied(argv, **_kwargs):
+        calls.append(argv)
+        return _Result(2, "", "permission denied reading cron spool\n")
+
+    monkeypatch.setenv("MTTKDE_INIT", "openrc")
+    monkeypatch.setattr(_scheduler, "_have_crontab", lambda: True)
+    monkeypatch.setattr(_scheduler, "run_user", denied)
+
+    assert _scheduler.install_periodic("oled", 5, "/bin/oled") is False
+    assert calls == [["crontab", "-l"]]
+
+
+def test_remove_reports_write_timeout_and_preserves_existing_jobs(
+        fake_cron, monkeypatch):
+    fake_cron.lines = [
+        "*/5 * * * * /bin/oled # mac-tahoe-liquid-kde:oled",
+        "30 3 * * * /home/u/backup.sh",
+    ]
+    real_call = fake_cron.__call__
+
+    def timeout_write(argv, **kwargs):
+        if argv[1] == "-":
+            raise subprocess.TimeoutExpired(argv, 10)
+        return real_call(argv, **kwargs)
+
+    monkeypatch.setattr(_scheduler, "run_user", timeout_write)
+
+    assert _scheduler.remove_periodic("oled") == _scheduler.RemovalStatus.ERROR
+    assert fake_cron.lines == [
+        "*/5 * * * * /bin/oled # mac-tahoe-liquid-kde:oled",
+        "30 3 * * * /home/u/backup.sh",
+    ]
+
+
+def test_remove_empty_crontab_propagates_remove_failure(fake_cron, monkeypatch):
+    fake_cron.lines = [
+        "*/5 * * * * /bin/oled # mac-tahoe-liquid-kde:oled",
+    ]
+    real_call = fake_cron.__call__
+
+    def reject_remove(argv, **kwargs):
+        if argv[1] == "-r":
+            return _Result(1, "", "could not remove crontab\n")
+        return real_call(argv, **kwargs)
+
+    monkeypatch.setattr(_scheduler, "run_user", reject_remove)
+
+    assert _scheduler.remove_periodic("oled") == _scheduler.RemovalStatus.ERROR
+    assert fake_cron.lines is not None
 
 
 # ── session-env fallback (OpenRC/cron path reaches the desktop) ───────

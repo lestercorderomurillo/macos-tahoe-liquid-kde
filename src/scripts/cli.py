@@ -1,3 +1,4 @@
+import functools
 import json
 import os
 import re
@@ -23,8 +24,32 @@ from preflight import run_preflight
 from state import RunTracker
 from step_runner import run_phase, step_deps, step_exists, step_has_phase, step_module
 from utils import (
-    have, kw_read, pkg_sync_install, restore_desktop_session_env, run_user,
+    CancellationRequested, cancellation_requested, cancellation_scope,
+    check_cancelled, have, kw_read, pkg_sync_install,
+    restore_desktop_session_env, run_user,
 )
+
+
+def _cancellable_entrypoint(func):
+    """Give GUI launches a private process group and token monitor."""
+    @functools.wraps(func)
+    def wrapped(*args, **kwargs):
+        result_ready = False
+        with cancellation_scope():
+            try:
+                check_cancelled()
+                result = func(*args, **kwargs)
+                result_ready = True
+                check_cancelled()
+                return result
+            except CancellationRequested:
+                # Cancellations after RunTracker starts are handled by the
+                # function's existing KeyboardInterrupt path.  This catches
+                # the earlier help/root/preflight window without a traceback.
+                if not result_ready:
+                    print("\n  Aborted.", file=sys.stderr)
+                return 130
+    return wrapped
 
 
 ALL_FEATURES = [
@@ -776,6 +801,7 @@ def _read_config_cascade(file: str, group: str, prop: str) -> str:
 
 def verify_config(feat: dict[str, object]) -> None:
     for key, file, group, prop, expected, label in _VERIFY_CHECKS:
+        check_cancelled()
         if not feat.get(key, True):
             continue
         actual = _read_config_cascade(file, group, prop)
@@ -825,6 +851,7 @@ def _run_optional_downloads(feat: dict[str, object]) -> bool:
         ok("no online components selected — skipping download phase")
         return True
     for i, feature in enumerate(downloads):
+        check_cancelled()
         if i:
             print()
         label = feature.replace("_", " ")
@@ -869,6 +896,7 @@ def _run_builds_or_abort(feat: dict[str, object]) -> bool:
 
     failed: list[str] = []
     for i, feature in enumerate(builds):
+        check_cancelled()
         label = feature.replace("_", " ")
         # note() already trails a blank line; skip the first leading blank.
         if i:
@@ -909,6 +937,7 @@ _BASE_DEPS = [
 
 
 def _check_deps(feat: dict[str, object]) -> bool:
+    check_cancelled()
     # Install only genuinely-missing packages — a -Sy upgrade of one KDE
     # package against the rest is the classic partial-upgrade conflict trap.
     from distro import (
@@ -947,13 +976,20 @@ def _check_deps(feat: dict[str, object]) -> bool:
         fail(str(exc))
         return False
 
-    missing = [p for p in pkgs if not package_installed(p)]
+    missing: list[str] = []
+    for package in pkgs:
+        check_cancelled()
+        if not package_installed(package):
+            missing.append(package)
     for p in pkgs:
+        check_cancelled()
         if p not in missing:
             ok(p)
     if missing:
         warn(f"installing missing: {', '.join(missing)}")
-        if not pkg_sync_install(*missing):
+        transaction_ok = pkg_sync_install(*missing)
+        check_cancelled()
+        if not transaction_ok:
             fail("dependency package transaction failed — refusing to continue")
             return False
     else:
@@ -970,6 +1006,7 @@ def _flush_icon_cache_signal() -> None:
          "/KIconLoader", "org.kde.KIconLoader.iconChanged", "int32:0"],
         check=False, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
     )
+    check_cancelled()
 
 
 def _print_done(verb: str) -> None:
@@ -994,30 +1031,41 @@ def _run_install_body(feat: dict[str, object]) -> int:
     """The actual install sequence — no banner, confirm, or progress UI.
     Runs directly on the classic path and behind the TUI live progress
     screen on the interactive path."""
-    if not run_preflight("install"):
+    check_cancelled()
+    preflight_ok = run_preflight("install")
+    check_cancelled()
+    if not preflight_ok:
         fail("preflight failed — refusing to install")
         return 1
 
     step("Verification")
     note("Checks KDE version and required tools")
-    if not verify_plasma():
+    plasma_ok = verify_plasma()
+    check_cancelled()
+    if not plasma_ok:
         return 1
 
     step("Dependencies")
     note("Checking and installing required tools")
-    if not _check_deps(feat):
+    deps_ok = _check_deps(feat)
+    check_cancelled()
+    if not deps_ok:
         return 1
 
     step("Downloading Online Components")
     note("Fetches the pinned KDE Rounded Corners source and verifies SHA-256")
     _run_optional_downloads(feat)
+    check_cancelled()
 
     step("Building Compiled Components")
     note("Builds C++ plasmoids and KWin effects — must succeed before install")
-    if not _run_builds_or_abort(feat):
+    builds_ok = _run_builds_or_abort(feat)
+    check_cancelled()
+    if not builds_ok:
         return 1
 
     for feature in INSTALL_ORDER:
+        check_cancelled()
         if feature == "layout":
             continue
         if not should_process(feature, feat):
@@ -1078,13 +1126,18 @@ def _run_install_body(feat: dict[str, object]) -> int:
 
 def _run_uninstall_body(feat: dict[str, object]) -> int:
     """The actual uninstall sequence — same split as _run_install_body."""
-    if not run_preflight("uninstall"):
+    check_cancelled()
+    preflight_ok = run_preflight("uninstall")
+    check_cancelled()
+    if not preflight_ok:
         fail("preflight failed — refusing to uninstall")
         return 1
 
     step("Verification")
     note("Checks KDE version")
-    if not verify_plasma():
+    plasma_ok = verify_plasma()
+    check_cancelled()
+    if not plasma_ok:
         return 1
 
     # Two-stage: restore a working Breeze state while our assets still
@@ -1109,6 +1162,7 @@ def _run_uninstall_body(feat: dict[str, object]) -> int:
     run_phase("apply", "uninstall")
 
     for feature in INSTALL_ORDER:
+        check_cancelled()
         if feature == "layout":
             continue
         if not should_process(feature, feat):
@@ -1177,6 +1231,7 @@ def _run_body_with_progress(body, feat: dict[str, object],
     return run_progress(lambda: body(feat), total, mode)
 
 
+@_cancellable_entrypoint
 def run_install(argv: list[str], tui: bool = False,
                 prog: str = "install") -> int:
     parsed = parse_args(argv)
@@ -1190,6 +1245,7 @@ def run_install(argv: list[str], tui: bool = False,
     # dirs; user paths aren't discoverable.
     if not _require_root_and_drop_to_user(prog):
         return 1
+    check_cancelled()
 
     feat = apply_overrides(load_features(), parsed)
     feat["_existing_install"] = _theme_is_already_installed()
@@ -1197,7 +1253,9 @@ def run_install(argv: list[str], tui: bool = False,
 
     if parsed.preflight_only:
         banner(read_version())
-        return 0 if run_preflight("install") else 1
+        result = run_preflight("install")
+        check_cancelled()
+        return 0 if result else 1
 
     # Standalone --restart just kicks plasmashell. Combined with install
     # flags it is implicit — the install already ends with restart_plasma.
@@ -1214,6 +1272,7 @@ def run_install(argv: list[str], tui: bool = False,
     progress_reset()
     rc = 0
     try:
+        check_cancelled()
         if not SRC_DIR.is_dir():
             print("  \033[0;31m  Run from repo root.\033[0m", file=sys.stderr)
             rc = 1
@@ -1252,6 +1311,7 @@ def run_install(argv: list[str], tui: bool = False,
                 _run_install_body, feat, "install",
                 _estimate_install_steps(feat))
 
+        check_cancelled()
         if rc == 0:
             tracker.mark_completed()
         return rc
@@ -1261,10 +1321,14 @@ def run_install(argv: list[str], tui: bool = False,
         rc = 130
         return rc
     finally:
+        if cancellation_requested():
+            rc = 130
+            tracker.mark_aborted()
         progress_done(rc)
         tracker.finalize(rc)
 
 
+@_cancellable_entrypoint
 def run_uninstall(argv: list[str], tui: bool = False,
                   prog: str = "uninstall") -> int:
     parsed = parse_args(argv)
@@ -1274,6 +1338,7 @@ def run_uninstall(argv: list[str], tui: bool = False,
 
     if not _require_root_and_drop_to_user(prog):
         return 1
+    check_cancelled()
 
     feat = apply_overrides(load_features(), parsed)
     export_env(feat)
@@ -1283,6 +1348,7 @@ def run_uninstall(argv: list[str], tui: bool = False,
     progress_reset()
     rc = 0
     try:
+        check_cancelled()
         if not SRC_DIR.is_dir():
             print("  \033[0;31m  Run from repo root.\033[0m", file=sys.stderr)
             rc = 1
@@ -1311,6 +1377,7 @@ def run_uninstall(argv: list[str], tui: bool = False,
                 _run_uninstall_body, feat, "uninstall",
                 _estimate_uninstall_steps(feat))
 
+        check_cancelled()
         if rc == 0:
             tracker.mark_completed()
         return rc
@@ -1320,5 +1387,8 @@ def run_uninstall(argv: list[str], tui: bool = False,
         rc = 130
         return rc
     finally:
+        if cancellation_requested():
+            rc = 130
+            tracker.mark_aborted()
         progress_done(rc)
         tracker.finalize(rc)

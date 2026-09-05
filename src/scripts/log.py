@@ -1,4 +1,8 @@
+import atexit
+import errno
 import os
+import secrets
+import stat
 import sys
 
 GREEN = "\033[0;32m"
@@ -22,33 +26,101 @@ _APPLE_RAINBOW = (
 _step_counter = 0
 errors: list[str] = []
 
-PROGRESS_FILE = os.environ.get(
-    "MTTKDE_PROGRESS_FILE", "/tmp/mttkde-install-progress")
+_CONFIGURED_PROGRESS_FILE = os.environ.get("MTTKDE_PROGRESS_FILE")
+PROGRESS_FILE = _CONFIGURED_PROGRESS_FILE or (
+    f"/tmp/mttkde-install-progress-{os.getpid()}-{secrets.token_hex(8)}"
+)
 DONE_MARKER = "__DONE__"
 
 
-def _progress_write(record: str) -> None:
+def _open_progress_file(*, truncate: bool) -> int:
+    """Open the progress channel without following or damaging hostile paths.
+
+    The GUI creates this file with ``mkstemp`` before privilege escalation.
+    Classic/TUI runs lazily create their per-process random path here.  Never
+    use O_TRUNC until fstat has proved that the opened inode is a regular,
+    single-link file owned by the effective user.
+    """
+    flags = os.O_WRONLY
+    # GUI runs create and own this channel before privilege escalation.  If
+    # the GUI has already reaped its supervisor and removed the channel, a
+    # still-unwinding privileged CLI must not resurrect a stale file that no
+    # process will watch or clean up.  Classic/TUI runs retain lazy creation
+    # for their private, random per-process path.
+    if _CONFIGURED_PROGRESS_FILE is None:
+        flags |= os.O_CREAT
+    flags |= getattr(os, "O_CLOEXEC", 0)
+    flags |= getattr(os, "O_NOFOLLOW", 0)
+    flags |= getattr(os, "O_NONBLOCK", 0)
+    if not truncate:
+        flags |= os.O_APPEND
+
+    fd = os.open(PROGRESS_FILE, flags, 0o600)
     try:
-        with open(PROGRESS_FILE, "a", encoding="utf-8") as fh:
-            fh.write(record + "\n")
-            fh.flush()
+        info = os.fstat(fd)
+        if not stat.S_ISREG(info.st_mode):
+            raise OSError(errno.EPERM, "progress path is not a regular file")
+        if info.st_uid != os.geteuid():
+            raise OSError(errno.EPERM, "progress file has the wrong owner")
+        if info.st_nlink != 1:
+            raise OSError(errno.EPERM, "progress file has multiple links")
+        os.fchmod(fd, 0o600)
+        if truncate:
+            os.ftruncate(fd, 0)
+        return fd
+    except BaseException:
+        os.close(fd)
+        raise
+
+
+def _write_all(fd: int, payload: bytes) -> None:
+    view = memoryview(payload)
+    while view:
+        written = os.write(fd, view)
+        if written <= 0:
+            raise OSError(errno.EIO, "short progress-file write")
+        view = view[written:]
+
+
+def _progress_write(record: str) -> None:
+    fd: int | None = None
+    try:
+        fd = _open_progress_file(truncate=False)
+        _write_all(fd, (record + "\n").encode("utf-8"))
     except OSError:
         pass
+    finally:
+        if fd is not None:
+            os.close(fd)
 
 
 def progress_reset() -> None:
     global _step_counter
     _step_counter = 0
+    fd: int | None = None
     try:
-        with open(PROGRESS_FILE, "w", encoding="utf-8") as fh:
-            fh.write("")
-        os.chmod(PROGRESS_FILE, 0o644)
+        fd = _open_progress_file(truncate=True)
     except OSError:
         pass
+    finally:
+        if fd is not None:
+            os.close(fd)
 
 
 def progress_done(exit_code: int) -> None:
     _progress_write(f"{DONE_MARKER}\t{int(exit_code)}")
+
+
+if _CONFIGURED_PROGRESS_FILE is None:
+    # GUI-owned paths are removed by the GUI after QProcess completion.  The
+    # classic/TUI path only needs to survive until this interpreter exits.
+    def _cleanup_default_progress_file(path: str = PROGRESS_FILE) -> None:
+        try:
+            os.unlink(path)
+        except OSError:
+            pass
+
+    atexit.register(_cleanup_default_progress_file)
 
 
 _last_ended_blank = False

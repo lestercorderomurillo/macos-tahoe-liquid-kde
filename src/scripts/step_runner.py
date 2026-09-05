@@ -4,6 +4,7 @@ import importlib
 from types import ModuleType
 
 from log import errors
+from utils import check_cancelled
 
 
 PHASES = ("deps", "download", "build", "install", "uninstall", "restart_plasma")
@@ -41,6 +42,7 @@ def step_deps(feature: str) -> list[tuple[str, str]]:
 
 
 def run_phase(feature: str, phase: str) -> bool:
+    check_cancelled()
     mod = step_module(feature)
     if mod is None or not callable(getattr(mod, phase, None)):
         return True
@@ -51,4 +53,5 @@ def run_phase(feature: str, phase: str) -> bool:
         from log import fail
         fail(f"{feature}: {phase} raised {type(exc).__name__}: {exc}")
         return False
+    check_cancelled()
     return len(errors) == before

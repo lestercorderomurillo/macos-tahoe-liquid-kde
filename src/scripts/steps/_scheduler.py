@@ -11,9 +11,25 @@ ever touches its own block — a user's unrelated cron lines are preserved.
 
 import shutil
 import subprocess
+from enum import Enum
 
 from distro import init_system
 from utils import run_user
+
+
+class RemovalStatus(str, Enum):
+    """Outcome of removing one managed cron entry.
+
+    ``ABSENT`` is a proven clean state; ``UNAVAILABLE`` means no crontab
+    client exists to inspect the spool; ``ERROR`` means a present client
+    failed to read or rewrite it. Callers need this distinction when an old
+    schedule could keep invoking a retained helper.
+    """
+
+    REMOVED = "removed"
+    ABSENT = "absent"
+    UNAVAILABLE = "unavailable"
+    ERROR = "error"
 
 
 def is_systemd() -> bool:
@@ -39,22 +55,31 @@ def _marker(tag: str) -> str:
     return f"# mac-tahoe-liquid-kde:{tag}"
 
 
-def _read_crontab() -> list[str]:
-    """Current user crontab lines, or [] when none is installed. A missing
-    crontab exits non-zero with "no crontab for <user>" on stderr — that's
-    not an error, it's the empty case. No crontab client at all (no cron
-    daemon / CI) is also just the empty case, not a crash."""
+def _read_crontab() -> list[str] | None:
+    """Current user crontab lines, ``[]`` when none is installed, or
+    ``None`` when the current crontab could not be read safely.
+
+    Read failure must stay distinct from an empty crontab: callers perform a
+    read/modify/replace operation, so treating a timeout or arbitrary error as
+    empty would replace all unrelated user jobs with only our managed line.
+    """
     if not _have_crontab():
-        return []
+        return None
     try:
         res = run_user(
             ["crontab", "-l"],
             check=False, capture_output=True, text=True, timeout=10,
         )
-    except subprocess.TimeoutExpired:
-        return []
+    except (OSError, subprocess.TimeoutExpired):
+        return None
     if res.returncode != 0:
-        return []
+        # Cron implementations differ slightly, but all supported clients
+        # include "no crontab" in the ordinary first-use diagnostic. Refuse
+        # to rewrite on every other error (locked/corrupt spool, permissions,
+        # daemon failure, etc.).
+        if "no crontab" in (res.stderr or "").lower():
+            return []
+        return None
     return res.stdout.splitlines()
 
 
@@ -67,19 +92,19 @@ def _write_crontab(lines: list[str]) -> bool:
         return False
     try:
         if not any(line.strip() for line in lines):
-            run_user(
+            res = run_user(
                 ["crontab", "-r"],
                 check=False, timeout=10,
                 stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
             )
-            return True
+            return res.returncode == 0
         body = "\n".join(lines).rstrip("\n") + "\n"
         res = run_user(
             ["crontab", "-"],
             check=False, input=body, text=True, timeout=10,
             stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
         )
-    except subprocess.TimeoutExpired:
+    except (OSError, subprocess.TimeoutExpired):
         return False
     return res.returncode == 0
 
@@ -93,7 +118,10 @@ def _cron_install(tag: str, minutes: int, command: str) -> bool:
     """Install (or replace) a ``*/minutes`` cron line for ``tag``. Clamped
     to 1..59 so the ``*/N`` field stays valid."""
     minutes = max(1, min(59, minutes))
-    lines = _strip_tag(_read_crontab(), tag)
+    current = _read_crontab()
+    if current is None:
+        return False
+    lines = _strip_tag(current, tag)
     lines.append(f"*/{minutes} * * * * {command} {_marker(tag)}")
     return _write_crontab(lines)
 
@@ -101,7 +129,10 @@ def _cron_install(tag: str, minutes: int, command: str) -> bool:
 def _cron_install_at(tag: str, times: list[tuple[int, int]], command: str) -> bool:
     """Install one fixed-time (``MM HH * * *``) cron line per (hour, minute)
     in ``times``, replacing any previous lines for ``tag``."""
-    lines = _strip_tag(_read_crontab(), tag)
+    current = _read_crontab()
+    if current is None:
+        return False
+    lines = _strip_tag(current, tag)
     for hour, minute in times:
         h = max(0, min(23, hour))
         m = max(0, min(59, minute))
@@ -109,13 +140,18 @@ def _cron_install_at(tag: str, times: list[tuple[int, int]], command: str) -> bo
     return _write_crontab(lines)
 
 
-def _cron_remove(tag: str) -> bool:
+def _cron_remove(tag: str) -> RemovalStatus:
+    if not _have_crontab():
+        return RemovalStatus.UNAVAILABLE
     before = _read_crontab()
+    if before is None:
+        return RemovalStatus.ERROR
     after = _strip_tag(before, tag)
     if after == before:
-        return False
-    _write_crontab(after)
-    return True
+        return RemovalStatus.ABSENT
+    if not _write_crontab(after):
+        return RemovalStatus.ERROR
+    return RemovalStatus.REMOVED
 
 
 # ── public API ───────────────────────────────────────────────────────
@@ -141,7 +177,7 @@ def install_at_times(tag: str, times: list[tuple[int, int]], command: str) -> bo
     return _cron_install_at(tag, times, command)
 
 
-def remove_periodic(tag: str) -> bool:
+def remove_periodic(tag: str) -> RemovalStatus:
     """Remove our crontab line regardless of the currently-running init.
 
     A user can switch init systems between installs. Looking only at today's

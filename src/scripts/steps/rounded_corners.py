@@ -10,10 +10,12 @@ from __future__ import annotations
 
 import hashlib
 import json
+import os
 import shutil
 import subprocess
 import tarfile
 import time
+import uuid
 from pathlib import Path, PurePosixPath
 
 from distro import qt6_plugins_dir
@@ -22,6 +24,7 @@ from steps._helpers import (
     build_dir,
     cmake_build,
     fail,
+    have,
     info,
     kw_write,
     ok,
@@ -30,7 +33,7 @@ from steps._helpers import (
     sudo_remove,
     warn,
 )
-from utils import fetch, kw_read, qdbus_cmd, run_user
+from utils import fetch, qdbus_cmd, run_user
 
 
 UPSTREAM_VERSION = "0.9.0"
@@ -60,6 +63,7 @@ LICENSE_FILE = Path(
 STATE_DIR = HOME / ".local/state/mac-tahoe-liquid-kde"
 PREV_ROUND_CORNERS_FILE = STATE_DIR / "rounded-corners-previous.json"
 _ROUND_CORNERS_KEYS = ("Size", "InactiveCornerRadius")
+_ROUND_CORNERS_STATE_VERSION = 1
 
 
 def deps():
@@ -220,7 +224,125 @@ def _locale_destinations() -> list[Path]:
     return [LOCALE_DIR / lang / "LC_MESSAGES/kcmcorners.mo" for lang in LOCALES]
 
 
-def _snapshot_round_corners_keys() -> None:
+def _read_round_corners_key(key: str) -> tuple[bool, str | None] | None:
+    """Return ``(present, value)`` without collapsing an empty value into
+    an absent key. ``None`` means the read itself failed.
+
+    ``kw_read`` deliberately exposes a simple string API and therefore uses
+    ``""`` for both an absent key and a failed read. Ownership snapshots need
+    a stronger contract, so use kreadconfig's per-call default sentinel here.
+    """
+    if not have("kreadconfig6"):
+        warn("could not snapshot Rounded Corners settings — "
+             "kreadconfig6 is unavailable")
+        return None
+
+    sentinel = f"__mttkde_absent_{uuid.uuid4().hex}__"
+    try:
+        result = run_user(
+            [
+                "kreadconfig6", "--file", "kwinrc",
+                "--group", "Round-Corners", "--key", key,
+                "--default", sentinel,
+            ],
+            check=False,
+            capture_output=True,
+            text=True,
+            timeout=5,
+        )
+    except (OSError, subprocess.TimeoutExpired) as exc:
+        warn(f"could not read Rounded Corners setting {key} ({exc})")
+        return None
+    if result.returncode != 0:
+        warn(f"could not read Rounded Corners setting {key} "
+             f"(kreadconfig6 exited {result.returncode})")
+        return None
+
+    value = result.stdout or ""
+    # kreadconfig prints one trailing line ending. Preserve every other byte,
+    # including an intentionally-empty value, for an exact semantic restore.
+    if value.endswith("\n"):
+        value = value[:-1]
+        if value.endswith("\r"):
+            value = value[:-1]
+    if value == sentinel:
+        return False, None
+    return True, value
+
+
+def _validate_round_corners_snapshot(payload: object) -> dict | None:
+    if not isinstance(payload, dict):
+        return None
+    if payload.get("version") != _ROUND_CORNERS_STATE_VERSION:
+        return None
+    keys = payload.get("keys")
+    if not isinstance(keys, dict):
+        return None
+
+    validated: dict[str, dict[str, object]] = {}
+    for key in _ROUND_CORNERS_KEYS:
+        entry = keys.get(key)
+        if not isinstance(entry, dict) or not isinstance(entry.get("present"), bool):
+            return None
+        present = entry["present"]
+        value = entry.get("value")
+        if present:
+            if not isinstance(value, str):
+                return None
+        elif value is not None:
+            return None
+        validated[key] = {"present": present, "value": value}
+    return validated
+
+
+def _load_round_corners_snapshot() -> dict | None:
+    try:
+        payload = json.loads(
+            PREV_ROUND_CORNERS_FILE.read_text(encoding="utf-8")
+        )
+    except (OSError, json.JSONDecodeError, TypeError) as exc:
+        warn(f"could not read previous Rounded Corners settings ({exc})")
+        return None
+    snapshot = _validate_round_corners_snapshot(payload)
+    if snapshot is None:
+        warn("previous Rounded Corners settings have an invalid shape")
+    return snapshot
+
+
+def _write_round_corners_snapshot(snapshot: dict) -> bool:
+    payload = {
+        "version": _ROUND_CORNERS_STATE_VERSION,
+        "keys": snapshot,
+    }
+    tmp = PREV_ROUND_CORNERS_FILE.with_name(
+        f".{PREV_ROUND_CORNERS_FILE.name}.{os.getpid()}.tmp"
+    )
+    try:
+        STATE_DIR.mkdir(parents=True, exist_ok=True)
+        tmp.write_text(json.dumps(payload) + "\n", encoding="utf-8")
+        os.replace(tmp, PREV_ROUND_CORNERS_FILE)
+        return True
+    except OSError as exc:
+        warn(f"could not snapshot previous Rounded Corners settings ({exc})")
+        try:
+            tmp.unlink()
+        except OSError:
+            pass
+        return False
+
+
+def _capture_round_corners_snapshot() -> dict | None:
+    snapshot: dict[str, dict[str, object]] = {}
+    for key in _ROUND_CORNERS_KEYS:
+        current = _read_round_corners_key(key)
+        if current is None:
+            return None
+        present, value = current
+        snapshot[key] = {"present": present, "value": value}
+    return snapshot
+
+
+def _snapshot_round_corners_keys() -> bool:
     """Record whatever [Round-Corners] Size/InactiveCornerRadius were
     before install() overwrites them, so uninstall() can restore that
     exact state instead of unconditionally deleting the keys. Those
@@ -231,60 +353,66 @@ def _snapshot_round_corners_keys() -> None:
     a second install() must not overwrite an already-captured
     pre-install value with our own radius.
     """
-    if PREV_ROUND_CORNERS_FILE.is_file():
-        return
-    snapshot = {}
-    for key in _ROUND_CORNERS_KEYS:
-        value = kw_read("kwinrc", "Round-Corners", key)
-        snapshot[key] = value if value else None
-    try:
-        STATE_DIR.mkdir(parents=True, exist_ok=True)
-        PREV_ROUND_CORNERS_FILE.write_text(
-            json.dumps(snapshot) + "\n", encoding="utf-8",
-        )
-    except OSError as exc:
-        warn(f"could not snapshot previous Rounded Corners settings ({exc})")
+    if PREV_ROUND_CORNERS_FILE.exists():
+        # Snapshot once, but never trust a corrupt/unreadable marker as proof
+        # that it is safe to overwrite the live user settings.
+        return _load_round_corners_snapshot() is not None
+    snapshot = _capture_round_corners_snapshot()
+    return snapshot is not None and _write_round_corners_snapshot(snapshot)
 
 
-def _restore_round_corners_keys() -> None:
+def _restore_round_corners_keys(*, legacy_install: bool) -> bool:
     """Restore the captured [Round-Corners] keys (or remove them, if
     they were absent before install()) instead of always deleting."""
-    try:
-        snapshot = json.loads(
-            PREV_ROUND_CORNERS_FILE.read_text(encoding="utf-8")
-        )
-    except FileNotFoundError:
-        snapshot = {key: None for key in _ROUND_CORNERS_KEYS}
-    except (OSError, json.JSONDecodeError, TypeError):
-        warn("previous Rounded Corners settings unreadable — "
-             "removing our keys instead of restoring")
-        snapshot = {key: None for key in _ROUND_CORNERS_KEYS}
-    if not isinstance(snapshot, dict):
-        snapshot = {key: None for key in _ROUND_CORNERS_KEYS}
+    if PREV_ROUND_CORNERS_FILE.exists():
+        snapshot = _load_round_corners_snapshot()
+        if snapshot is None:
+            return False
+    elif legacy_install:
+        # A project-specific license proves only that an older installer ran;
+        # it cannot prove whether a live value (even our preset 28) predated
+        # that install. Migrate conservatively by preserving the exact current
+        # presence/value. Only a real pre-install snapshot may authorize a
+        # later deletion.
+        snapshot = _capture_round_corners_snapshot()
+        if snapshot is None or not _write_round_corners_snapshot(snapshot):
+            return False
+    else:
+        # No snapshot and no project ownership marker: these settings may
+        # belong entirely to an independent Rounded Corners installation.
+        return True
 
+    restored = True
     for key in _ROUND_CORNERS_KEYS:
-        value = snapshot.get(key)
-        if isinstance(value, str) and value:
-            kw_write(
+        entry = snapshot[key]
+        if entry["present"]:
+            args = (
                 "--file", "kwinrc", "--group", "Round-Corners",
-                "--key", key, value,
+                "--key", key, entry["value"],
             )
         else:
-            kw_write(
+            args = (
                 "--file", "kwinrc", "--group", "Round-Corners",
                 "--key", key, "--delete",
             )
-    try:
-        if PREV_ROUND_CORNERS_FILE.is_file():
-            PREV_ROUND_CORNERS_FILE.unlink()
-    except OSError:
-        pass
+        if not kw_write(*args):
+            restored = False
+    if not restored:
+        warn("previous Rounded Corners settings could not be restored — "
+             "recovery state retained")
+        return False
+    return True
 
 
 def install() -> None:
     effect, config, *shaders = build_artifacts()
     if not all(path.is_file() for path in (effect, config, *shaders)):
         fail("KDE Rounded Corners build artefacts missing")
+        return
+
+    if not _snapshot_round_corners_keys():
+        fail("KDE Rounded Corners not installed — previous radius settings "
+             "could not be preserved")
         return
 
     kw_write(
@@ -325,7 +453,6 @@ def install() -> None:
             "KDE Rounded Corners GPL-3.0 license installed",
         )
 
-    _snapshot_round_corners_keys()
     radius_configured = True
     for key in _ROUND_CORNERS_KEYS:
         if not kw_write(
@@ -356,6 +483,15 @@ def install() -> None:
 
 
 def uninstall() -> None:
+    # Restore first. If any read/write fails, leave both recovery state and
+    # installed ownership markers in place so a later uninstall can retry.
+    if not _restore_round_corners_keys(
+        legacy_install=LICENSE_FILE.is_file(),
+    ):
+        fail("KDE Rounded Corners removal stopped — previous radius settings "
+             "could not be restored")
+        return
+
     qdbus_call(
         "org.kde.KWin", "/Effects",
         "org.kde.kwin.Effects.unloadEffect", EFFECT_ID,
@@ -364,16 +500,10 @@ def uninstall() -> None:
         "--file", "kwinrc", "--group", "Plugins",
         "--key", "shapecornersEnabled", "false",
     )
-    # install() writes [Round-Corners] Size/InactiveCornerRadius directly
-    # (there's no per-plugin config namespace to scope them under) —
-    # restore whatever was there before install() (or remove the keys,
-    # if they were absent) rather than always deleting: those keys may
-    # predate this installer and belong to a user's own KDE Rounded
-    # Corners KCM setup.
-    _restore_round_corners_keys()
     qdbus_call("org.kde.KWin", "/KWin", "org.kde.KWin.reconfigure")
 
     plugin_dir = _plugin_dir()
+    cleanup_ok = True
     for path in (
         plugin_dir / "kwin/effects/plugins/kwin4_effect_shapecorners.so",
         plugin_dir / "kwin/effects/configs/kwin_shapecorners_config.so",
@@ -381,8 +511,29 @@ def uninstall() -> None:
         SHADER_DIR / "shapecorners_core.frag",
         LICENSE_FILE,
     ):
-        sudo_remove(path, path.name)
+        existed = path.exists() or path.is_symlink()
+        if not sudo_remove(path, path.name) and existed:
+            cleanup_ok = False
     for destination in _locale_destinations():
-        sudo_remove(destination, f"Rounded Corners locale: {destination.parts[-3]}")
+        existed = destination.exists() or destination.is_symlink()
+        if not sudo_remove(
+            destination,
+            f"Rounded Corners locale: {destination.parts[-3]}",
+        ) and existed:
+            cleanup_ok = False
+    if not cleanup_ok:
+        fail("KDE Rounded Corners removal incomplete — recovery state retained")
+        return
+
+    # Clear the ownership snapshot last. If the process is interrupted during
+    # artifact/license cleanup, a retry must use this exact snapshot rather
+    # than mistake the still-present legacy license for proof that an original
+    # user value equal to our old preset (28) belongs to the project.
+    if PREV_ROUND_CORNERS_FILE.exists():
+        try:
+            PREV_ROUND_CORNERS_FILE.unlink()
+        except OSError as exc:
+            fail(f"could not clear Rounded Corners recovery state ({exc})")
+            return
     shutil.rmtree(WORK, ignore_errors=True)
     info("KDE Rounded Corners removed")

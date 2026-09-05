@@ -2,7 +2,10 @@ import contextlib
 import errno
 import json
 import os
+import select
 import shutil
+import signal
+import stat
 import subprocess
 import sys
 import time
@@ -12,6 +15,222 @@ from pathlib import Path
 from typing import Iterable, Iterator
 
 from log import fail
+
+
+class CancellationRequested(KeyboardInterrupt):
+    """A GUI-requested cooperative cancellation at a safe boundary."""
+
+
+_CANCEL_FILE_ENV = "MTTKDE_CANCEL_FILE"
+_cancel_signal_requested = False
+
+
+def _cancel_file_owner() -> int:
+    """UID that created the GUI's private cancellation token."""
+    try:
+        return int(os.environ.get("SUDO_UID") or os.getuid())
+    except ValueError:
+        return os.getuid()
+
+
+def cancellation_requested() -> bool:
+    """Return whether this GUI run requested cancellation.
+
+    The token starts as an empty, user-owned 0600 regular file.  Any content
+    means cancel.  Once a token was configured, disappearance or a change to
+    an unsafe inode also means cancel: continuing a privileged install after
+    its control channel was replaced would fail open.
+    """
+    if _cancel_signal_requested:
+        return True
+    path = os.environ.get(_CANCEL_FILE_ENV)
+    if not path:
+        return False
+
+    flags = os.O_RDONLY
+    flags |= getattr(os, "O_CLOEXEC", 0)
+    flags |= getattr(os, "O_NOFOLLOW", 0)
+    flags |= getattr(os, "O_NONBLOCK", 0)
+    fd: int | None = None
+    try:
+        fd = os.open(path, flags)
+        info = os.fstat(fd)
+        if not stat.S_ISREG(info.st_mode):
+            return True
+        if (info.st_uid != _cancel_file_owner() or info.st_nlink != 1
+                or stat.S_IMODE(info.st_mode) != 0o600):
+            return True
+        return bool(os.read(fd, 1))
+    except OSError:
+        return True
+    finally:
+        if fd is not None:
+            try:
+                os.close(fd)
+            except OSError:
+                pass
+
+
+def check_cancelled() -> None:
+    if cancellation_requested():
+        raise CancellationRequested
+
+
+def _record_cancel_signal(_signum, _frame) -> None:
+    """Keep SIGINT/SIGTERM cooperative for GUI-launched installs.
+
+    In particular, letting KeyboardInterrupt escape from subprocess.run()
+    makes Python immediately SIGKILL that child.  Package-manager and
+    initramfs processes instead receive the monitor's group SIGINT and get a
+    chance to unwind; the parent raises at the next explicit safe boundary.
+    """
+    global _cancel_signal_requested
+    _cancel_signal_requested = True
+
+
+def _new_cloexec_pipe() -> tuple[int, int]:
+    if hasattr(os, "pipe2"):
+        return os.pipe2(getattr(os, "O_CLOEXEC", 0))
+    read_fd, write_fd = os.pipe()
+    os.set_inheritable(read_fd, False)
+    os.set_inheritable(write_fd, False)
+    return read_fd, write_fd
+
+
+def _cancel_monitor(read_fd: int, parent_pid: int,
+                    isolated_group: bool) -> None:
+    """Poll the private token in a process, never a preexec-unsafe thread."""
+    try:
+        # The monitor is in the isolated group it signals.  Only the installer
+        # and its executable children should act on Ctrl+C.
+        signal.signal(signal.SIGINT, signal.SIG_IGN)
+        signal.signal(signal.SIGTERM, signal.SIG_DFL)
+        while True:
+            try:
+                readable, _, _ = select.select([read_fd], [], [], 0.1)
+            except InterruptedError:
+                continue
+            if readable:
+                try:
+                    os.read(read_fd, 1)
+                except OSError:
+                    pass
+                return
+            if not cancellation_requested():
+                continue
+            try:
+                if isolated_group:
+                    os.killpg(parent_pid, signal.SIGINT)
+                else:
+                    # Never signal a group we failed to isolate: it may still
+                    # contain the GUI or its desktop launcher.
+                    os.kill(parent_pid, signal.SIGINT)
+            except (OSError, ProcessLookupError):
+                pass
+            return
+    finally:
+        try:
+            os.close(read_fd)
+        except OSError:
+            pass
+
+
+def _isolate_cancel_process_group() -> bool:
+    """Create, or prove ownership of, the group cancellation will signal."""
+    try:
+        os.setsid()
+    except OSError:
+        # setsid() rejects an existing process-group leader.  pid == pgrp
+        # still proves this run owns the group it would signal.
+        pass
+    return os.getpgrp() == os.getpid()
+
+
+@contextlib.contextmanager
+def cancellation_scope() -> Iterator[None]:
+    """Arm GUI cancellation without making later preexec_fn forks unsafe.
+
+    ``setsid`` gives the privileged CLI and every normal child a private
+    process group.  A tiny forked monitor watches the exact token and sends
+    SIGINT to that group.  A process is used deliberately: this installer
+    drops child credentials with ``preexec_fn``, which can deadlock after a
+    Python thread has been started.
+    """
+    global _cancel_signal_requested
+    if not os.environ.get(_CANCEL_FILE_ENV):
+        yield
+        return
+
+    previous_requested = _cancel_signal_requested
+    _cancel_signal_requested = False
+    # On failure, boundary polling still works.  Most importantly, the
+    # monitor never signals a group this run did not prove it owns.
+    isolated_group = _isolate_cancel_process_group()
+
+    handlers_installed = False
+    previous_int = previous_term = None
+    try:
+        previous_int = signal.signal(signal.SIGINT, _record_cancel_signal)
+    except ValueError:
+        # signal.signal is main-thread only.  Entry points run on the main
+        # thread, but retain safe boundary polling if an embedding calls one
+        # elsewhere.
+        pass
+    else:
+        try:
+            previous_term = signal.signal(
+                signal.SIGTERM, _record_cancel_signal)
+        except ValueError:
+            signal.signal(signal.SIGINT, previous_int)
+        else:
+            handlers_installed = True
+
+    monitor_pid: int | None = None
+    read_fd: int | None = None
+    write_fd: int | None = None
+    if handlers_installed:
+        try:
+            read_fd, write_fd = _new_cloexec_pipe()
+            parent_pid = os.getpid()
+            monitor_pid = os.fork()
+        except OSError:
+            if read_fd is not None:
+                os.close(read_fd)
+            if write_fd is not None:
+                os.close(write_fd)
+            read_fd = write_fd = None
+        else:
+            if monitor_pid == 0:
+                assert read_fd is not None and write_fd is not None
+                os.close(write_fd)
+                _cancel_monitor(read_fd, parent_pid, isolated_group)
+                os._exit(0)
+            assert read_fd is not None
+            os.close(read_fd)
+            read_fd = None
+
+    try:
+        yield
+    finally:
+        if write_fd is not None:
+            try:
+                os.write(write_fd, b"x")
+            except OSError:
+                pass
+            try:
+                os.close(write_fd)
+            except OSError:
+                pass
+        if monitor_pid:
+            try:
+                os.waitpid(monitor_pid, 0)
+            except (ChildProcessError, OSError):
+                pass
+        if handlers_installed:
+            assert previous_int is not None and previous_term is not None
+            signal.signal(signal.SIGINT, previous_int)
+            signal.signal(signal.SIGTERM, previous_term)
+        _cancel_signal_requested = previous_requested
 
 
 def drop_privs_in_child() -> None:
@@ -259,6 +478,48 @@ def is_plasma_session() -> bool:
 # (the GUI installer runs in an embedded terminal — a [Y/n] would hang).
 _NONINTERACTIVE_ENV = {"DEBIAN_FRONTEND": "noninteractive"}
 
+# Package managers and the helper programs they launch must never resolve
+# through a user-writable PATH while this process has temporarily regained
+# euid 0. These are the conventional root-owned executable locations on every
+# distro supported by distro.py.
+_ROOT_PKG_PATH = "/usr/sbin:/usr/bin:/sbin:/bin"
+_ROOT_PKG_ENV_PASSTHROUGH = (
+    "LANG", "LANGUAGE", "LC_ALL", "TERM",
+    "http_proxy", "https_proxy", "ftp_proxy", "no_proxy",
+    "HTTP_PROXY", "HTTPS_PROXY", "FTP_PROXY", "NO_PROXY",
+)
+
+
+def _trusted_pkg_executable(name: str) -> str | None:
+    """Resolve a bare package-manager name only through trusted system dirs."""
+    if not name or Path(name).name != name:
+        return None
+    return shutil.which(name, path=_ROOT_PKG_PATH)
+
+
+def _root_pkg_env() -> dict[str, str]:
+    """Minimal environment for a package-manager process running as root.
+
+    The installer deliberately changes HOME/XDG variables to the invoking
+    user's paths after dropping privileges. Do not carry those, PATH-based
+    command hooks, or language-runtime injection variables back across the
+    root hop. Locale and proxy settings are sufficient for normal package
+    transactions, including hosts that require an outbound proxy.
+    """
+    env = {
+        key: os.environ[key]
+        for key in _ROOT_PKG_ENV_PASSTHROUGH
+        if os.environ.get(key)
+    }
+    env.update({
+        "PATH": _ROOT_PKG_PATH,
+        "HOME": "/root",
+        "USER": "root",
+        "LOGNAME": "root",
+        **_NONINTERACTIVE_ENV,
+    })
+    return env
+
 
 def _redirect_stream(stream):
     """Children inherit fd 1/2, which bypasses a Python-level sys.stdout
@@ -283,13 +544,17 @@ def _pkg_cmd_root() -> Iterator[None]:
     reversible. Only used mid-install (see _run_pkg_cmd) — never called
     when the real UID isn't already 0."""
     saved_euid, saved_egid = os.geteuid(), os.getegid()
-    os.seteuid(0)
-    os.setegid(0)
     try:
+        os.seteuid(0)
+        os.setegid(0)
         yield
     finally:
-        os.setegid(saved_egid)
-        os.seteuid(saved_euid)
+        # Keep the uid restoration in its own finally so a failed group
+        # restoration cannot strand the remaining installer at euid 0.
+        try:
+            os.setegid(saved_egid)
+        finally:
+            os.seteuid(saved_euid)
 
 
 def _run_pkg_cmd(base: list[str], *args: str) -> bool:
@@ -301,10 +566,21 @@ def _run_pkg_cmd(base: list[str], *args: str) -> bool:
     # undocumented reliance on that behaviour and would hang/fail under
     # `requiretty` or a hardened sudo config. Hop back to root the same
     # way every other privileged write in this codebase does instead.
-    elevate = os.getuid() == 0 and os.geteuid() != 0
-    cmd = list(base) if (os.geteuid() == 0 or elevate) else ["sudo", *base]
+    if not base:
+        return False
+    effective_uid = os.geteuid()
+    elevate = os.getuid() == 0 and effective_uid != 0
+    direct_root = effective_uid == 0 or elevate
+    if direct_root:
+        executable = _trusted_pkg_executable(base[0])
+        if executable is None:
+            return False
+        cmd = [executable, *base[1:]]
+        env = _root_pkg_env()
+    else:
+        cmd = ["sudo", *base]
+        env = {**os.environ, **_NONINTERACTIVE_ENV}
     cmd.extend(args)
-    env = {**os.environ, **_NONINTERACTIVE_ENV}
     ctx = _pkg_cmd_root() if elevate else contextlib.nullcontext()
     with ctx:
         return subprocess.run(

@@ -148,21 +148,15 @@ def _evaluate_script(script: str) -> str | None:
 _EMPTY_STATE = {"index": 0, "last_off": 0, "last_h": 0, "panels": {}}
 
 
-def load_state() -> dict:
-    """Applied deltas are stored, not recomputed — restore stays correct
-    even when --oled-max-shift changed since the last shift."""
-    try:
-        data = json.loads(_state_file().read_text(encoding="utf-8"))
-    except (OSError, json.JSONDecodeError):
-        return dict(_EMPTY_STATE)
+def _normalise_state(data: object) -> dict:
     if not isinstance(data, dict):
         return dict(_EMPTY_STATE)
 
     def _delta(key: str) -> int:
-        v = data.get(key)
-        if not isinstance(v, int):
+        value = data.get(key)
+        if not isinstance(value, int):
             return 0
-        return max(-MAX_SHIFT_CEILING_PX, min(MAX_SHIFT_CEILING_PX, v))
+        return max(-MAX_SHIFT_CEILING_PX, min(MAX_SHIFT_CEILING_PX, value))
 
     index = data.get("index")
     panels = data.get("panels")
@@ -174,9 +168,18 @@ def load_state() -> dict:
     }
 
 
+def load_state() -> dict:
+    """Applied deltas are stored, not recomputed — restore stays correct
+    even when --oled-max-shift changed since the last shift."""
+    try:
+        data = json.loads(_state_file().read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        return dict(_EMPTY_STATE)
+    return _normalise_state(data)
+
+
 def save_state(state: dict) -> bool:
     path = _state_file()
-    path.parent.mkdir(parents=True, exist_ok=True)
     # Write-then-rename: this fires unattended on a timer indefinitely,
     # so a kill/crash mid-write shouldn't be able to leave a torn file
     # (load_state() tolerates that via _EMPTY_STATE, but a clean
@@ -187,6 +190,7 @@ def save_state(state: dict) -> bool:
     # would resume from stale state and mis-rebase.
     tmp = path.with_name(f".{path.name}.{os.getpid()}.tmp")
     try:
+        path.parent.mkdir(parents=True, exist_ok=True)
         tmp.write_text(json.dumps(state) + "\n", encoding="utf-8")
         os.replace(tmp, path)
         return True
@@ -286,26 +290,68 @@ def shift(max_px: int = DEFAULT_MAX_SHIFT_PX) -> int:
         return 1
     if not save_state({"index": next_index, "last_off": next_off,
                        "last_h": next_h, "panels": panels}):
+        # The Plasma script has already moved the panels.  A non-zero exit
+        # status alone does not stop the recurring timer, so undo this exact
+        # delta immediately instead of letting the next fire load stale state
+        # and mistake our unsaved movement for a deliberate user change.
+        rollback = _evaluate_script(
+            build_restore_script(panels, next_off, next_h))
+        if rollback is None or not any(
+            line.strip() == "restored" for line in rollback.splitlines()
+        ):
+            print("oled care: state save failed and panel geometry could not "
+                  "be rolled back", file=sys.stderr)
         return 1
     return 0
 
 
 def restore() -> int:
-    state = load_state()
+    path = _state_file()
+    try:
+        raw_state = json.loads(path.read_text(encoding="utf-8"))
+    except FileNotFoundError:
+        return 0
+    except (OSError, json.JSONDecodeError) as exc:
+        print(f"oled care: recovery state could not be read ({exc})",
+              file=sys.stderr)
+        return 1
+    if not isinstance(raw_state, dict) or not isinstance(
+        raw_state.get("panels"), dict
+    ):
+        print("oled care: recovery state is invalid", file=sys.stderr)
+        return 1
+    state = _normalise_state(raw_state)
     if not state["panels"]:
+        # A timer can legitimately fire while Plasma has no panels and save an
+        # empty map. There is no geometry to undo, but the existing state file
+        # must still be consumed so disable/uninstall does not wait forever.
+        try:
+            path.unlink()
+        except OSError as exc:
+            print(f"oled care: empty panel state cleanup failed ({exc})",
+                  file=sys.stderr)
+            return 1
         return 0
     output = _evaluate_script(
         build_restore_script(state["panels"], state["last_off"],
                              state["last_h"]))
     if output is None:
-        # Keep state so the next shift/restore corrects the ≤2 px residue.
+        # Keep state so a later restore can correct the residue. This command
+        # is also used by uninstall/disable, which must know not to delete the
+        # only recovery data or helper binary yet.
         print("oled care: plasmashell unreachable — geometry not restored",
               file=sys.stderr)
-        return 0
+        return 1
+    if not any(line.strip() == "restored" for line in output.splitlines()):
+        print("oled care: plasmashell did not confirm geometry restoration",
+              file=sys.stderr)
+        return 1
     try:
-        _state_file().unlink()
-    except OSError:
-        pass
+        path.unlink()
+    except OSError as exc:
+        print(f"oled care: geometry restored but state cleanup failed ({exc})",
+              file=sys.stderr)
+        return 1
     return 0
 
 

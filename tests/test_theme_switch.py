@@ -1587,14 +1587,44 @@ def test_switch_step_removes_old_watcher_before_replacing_binary(
                         lambda src, dst:
                         events.append("copy") or original_copy(src, dst))
     monkeypatch.setattr(step, "theme_mode", lambda: "dark")
-    monkeypatch.setattr(step, "_teardown_units", lambda: None)
-    monkeypatch.setattr(step, "remove_periodic", lambda tag: None)
+    monkeypatch.setattr(step, "_teardown_units", lambda: True)
+    monkeypatch.setattr(
+        step, "remove_periodic",
+        lambda tag: step.RemovalStatus.ABSENT,
+    )
     monkeypatch.setattr(step, "ok", lambda message: None)
     monkeypatch.setattr(step, "warn", lambda message: None)
 
     step.install()
 
     assert events[:3] == ["stop", "teardown", "copy"]
+
+
+def test_pinned_switch_mode_neutralizes_binary_when_cron_cleanup_fails(
+        monkeypatch, tmp_path):
+    import steps.theme_switch as step
+
+    source = tmp_path / "theme_switch.py"
+    source.write_text("#!/usr/bin/env python3\n", encoding="utf-8")
+    destination = tmp_path / "bin/mac-tahoe-theme-switch"
+    failures: list[str] = []
+    monkeypatch.setattr(step, "PY_SRC", source)
+    monkeypatch.setattr(step, "BIN_DEST", destination)
+    monkeypatch.setattr(step, "SVC_DIR", tmp_path / "systemd")
+    monkeypatch.setattr(step, "AUTOSTART_DIR", tmp_path / "autostart")
+    monkeypatch.setattr(step, "stop_gtk_sync_watcher", lambda: None)
+    monkeypatch.setattr(step, "_watcher_pids", lambda: [])
+    monkeypatch.setattr(step, "theme_mode", lambda: "dark")
+    monkeypatch.setattr(step, "_teardown_units", lambda: True)
+    monkeypatch.setattr(
+        step, "remove_periodic", lambda _tag: step.RemovalStatus.ERROR,
+    )
+    monkeypatch.setattr(step, "fail", failures.append)
+
+    step.install()
+
+    assert not destination.exists()
+    assert any("previous schedule" in message for message in failures)
 
 
 def test_switch_step_install_uninstall_reinstall(sandbox, tmp_path):

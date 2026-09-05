@@ -4,14 +4,18 @@
 from __future__ import annotations
 
 import argparse
+import errno
 import json
 import os
 import pwd
 import shlex
 import shutil
 import signal
+import stat
 import subprocess
 import sys
+import tempfile
+import time
 from pathlib import Path
 
 # Make the CLI engine (src/scripts) importable whether launched via the
@@ -23,7 +27,7 @@ from cli import (
     ALL_FEATURES, DEFAULT_FEATURES, FEATURE_DESC,
     fetch_latest_release, parse_semver,
 )
-from log import DONE_MARKER, PROGRESS_FILE
+from log import DONE_MARKER
 
 
 PREVIEW_QML = Path(__file__).resolve().parent / "preview_installer.qml"
@@ -34,20 +38,176 @@ _ACTION_COMMANDS = {
     "preflight": "sudo ./install --preflight",
 }
 
+_SUPERVISOR_POLL_SECONDS = 0.05
+
+
+def _create_private_run_file(prefix: str) -> str:
+    """Create one private control channel before privilege escalation."""
+    fd, path = tempfile.mkstemp(prefix=prefix, dir="/tmp")
+    try:
+        os.fchmod(fd, 0o600)
+        info = os.fstat(fd)
+        if not stat.S_ISREG(info.st_mode):
+            raise OSError(errno.EPERM, "secure run file is not regular")
+        if info.st_uid != os.geteuid():
+            raise OSError(errno.EPERM, "secure run file has the wrong owner")
+        if info.st_nlink != 1:
+            raise OSError(errno.EPERM, "secure run file has extra links")
+    except BaseException:
+        try:
+            os.close(fd)
+        finally:
+            try:
+                os.unlink(path)
+            except OSError:
+                pass
+        raise
+    try:
+        os.close(fd)
+    except OSError:
+        try:
+            os.unlink(path)
+        except OSError:
+            pass
+        raise
+    return path
+
+
+def _create_progress_file() -> str:
+    return _create_private_run_file("mttkde-install-progress-")
+
+
+def _create_cancel_file() -> str:
+    return _create_private_run_file("mttkde-install-cancel-")
+
+
+def _secure_run_file_fd(path: str, *, write: bool) -> int:
+    flags = os.O_WRONLY if write else os.O_RDONLY
+    flags |= getattr(os, "O_CLOEXEC", 0)
+    flags |= getattr(os, "O_NOFOLLOW", 0)
+    flags |= getattr(os, "O_NONBLOCK", 0)
+    fd = os.open(path, flags)
+    try:
+        info = os.fstat(fd)
+        if not stat.S_ISREG(info.st_mode):
+            raise OSError(errno.EPERM, "run file is not regular")
+        if (info.st_uid != os.geteuid() or info.st_nlink != 1
+                or stat.S_IMODE(info.st_mode) != 0o600):
+            raise OSError(
+                errno.EPERM, "run file owner, mode, or link count changed")
+        return fd
+    except BaseException:
+        os.close(fd)
+        raise
+
+
+def _mark_cancel_requested(path: str | None) -> bool:
+    if path is None:
+        return False
+    fd: int | None = None
+    try:
+        fd = _secure_run_file_fd(path, write=True)
+        os.ftruncate(fd, 0)
+        payload = b"cancel\n"
+        while payload:
+            written = os.write(fd, payload)
+            if written <= 0:
+                raise OSError(errno.EIO, "short cancellation-token write")
+            payload = payload[written:]
+        return True
+    except OSError:
+        return False
+    finally:
+        if fd is not None:
+            try:
+                os.close(fd)
+            except OSError:
+                pass
+
+
+def _cancel_file_requested(path: str) -> bool:
+    """Fail closed if the supervisor's exact control inode was replaced."""
+    fd: int | None = None
+    try:
+        fd = _secure_run_file_fd(path, write=False)
+        return bool(os.read(fd, 1))
+    except OSError:
+        return True
+    finally:
+        if fd is not None:
+            try:
+                os.close(fd)
+            except OSError:
+                pass
+
+
+def _isolate_supervisor_process_group() -> bool:
+    """Detach the supervisor/escalator from the GUI's terminal group.
+
+    Terminal Ctrl+C must reach the GUI, which records cancellation in the
+    private token; it must not independently interrupt pkexec/sudo before the
+    root CLI has armed its cooperative monitor. Only being the leader of a new
+    session proves detachment from the GUI's controlling terminal.
+    """
+    try:
+        os.setsid()
+    except OSError:
+        pass
+    try:
+        return os.getsid(0) == os.getpid()
+    except OSError:
+        return False
+
+
+def _parse_done_record(record: str, *, terminated: bool = True) -> int | None:
+    """Return a complete progress-protocol DONE record's exit code.
+
+    A trailing buffer without a newline is not a complete protocol record:
+    the writer may have been killed between writing the marker and its code.
+    Likewise, a missing or malformed code must fall back to QProcess's real
+    exit status rather than turning an interrupted install into GUI success.
+    """
+    if not terminated:
+        return None
+    head, separator, value = record.partition("\t")
+    if head != DONE_MARKER or not separator:
+        return None
+    try:
+        return int(value)
+    except ValueError:
+        return None
+
+
+def _request_app_quit(app, bridge, shutdown: dict[str, bool]) -> None:
+    """Keep Qt alive long enough for a cancelled install to be reaped."""
+    if bridge.running:
+        if not shutdown["requested"]:
+            shutdown["requested"] = True
+            bridge.cancel()
+        return
+    app.quit()
+
 
 def command_for_action(action: str) -> str:
     return _ACTION_COMMANDS[action]
 
 
-def escalated_command_for_action(action: str, headless: bool = False) -> str:
+def escalated_command_for_action(
+        action: str, headless: bool = False,
+        progress_file: str | None = None,
+        cancel_file: str | None = None) -> str:
     base = _ACTION_COMMANDS[action]
     target = base[len("sudo "):] if base.startswith("sudo ") else base
 
     headless_pairs = []
     if headless:
+        if progress_file is None or cancel_file is None:
+            raise ValueError(
+                "headless installer launch requires progress and cancel files")
         headless_pairs = [
             "MTTKDE_NO_CONFIRM=1",
-            f"MTTKDE_PROGRESS_FILE={shlex.quote(PROGRESS_FILE)}",
+            f"MTTKDE_PROGRESS_FILE={shlex.quote(progress_file)}",
+            f"MTTKDE_CANCEL_FILE={shlex.quote(cancel_file)}",
         ]
 
     if shutil.which("pkexec"):
@@ -73,6 +233,72 @@ def escalated_command_for_action(action: str, headless: bool = False) -> str:
 
     prefix = (" ".join(headless_pairs) + " ") if headless_pairs else ""
     return f"sudo {prefix}{target}"
+
+
+def _supervise_action(action: str, progress_file: str,
+                      cancel_file: str) -> int:
+    """Run privilege escalation while remaining a signalable GUI child.
+
+    pkexec replaces its caller with a real-root process, which a user-owned
+    QProcess can no longer terminate.  This small same-user supervisor stays
+    as QProcess's direct child.  The CLI's private token monitor owns actual
+    cooperative cancellation, while the supervisor stays alive until the
+    privileged child is reaped.  The GUI therefore never reports completion,
+    removes the run's control files, or permits a second transaction while
+    the first one can still change the system.
+    """
+    if action not in _ACTION_COMMANDS:
+        return 2
+    if not _isolate_supervisor_process_group():
+        print("Could not isolate privileged installer supervisor",
+              file=sys.stderr)
+        return 1
+    if _cancel_file_requested(cancel_file):
+        return 130
+
+    shell_cmd = escalated_command_for_action(
+        action,
+        headless=True,
+        progress_file=progress_file,
+        cancel_file=cancel_file,
+    )
+    try:
+        child = subprocess.Popen(
+            ["bash", "-lc", shell_cmd],
+            cwd=str(REPO_ROOT),
+        )
+    except OSError as exc:
+        print(f"Could not start privileged installer: {exc}", file=sys.stderr)
+        return 1
+
+    signal_cancelled = False
+
+    def request_cancel(_signum, _frame) -> None:
+        nonlocal signal_cancelled
+        signal_cancelled = True
+
+    previous_int = signal.signal(signal.SIGINT, request_cancel)
+    previous_term = signal.signal(signal.SIGTERM, request_cancel)
+    cancellation_seen = False
+    try:
+        while True:
+            code = child.poll()
+            if code is not None:
+                cancelled = (
+                    cancellation_seen
+                    or signal_cancelled
+                    or _cancel_file_requested(cancel_file)
+                )
+                return 130 if cancelled else code
+
+            if not cancellation_seen and (
+                    signal_cancelled or _cancel_file_requested(cancel_file)):
+                cancellation_seen = True
+                _mark_cancel_requested(cancel_file)
+            time.sleep(_SUPERVISOR_POLL_SECONDS)
+    finally:
+        signal.signal(signal.SIGINT, previous_int)
+        signal.signal(signal.SIGTERM, previous_term)
 
 _TERMINAL_BUILDERS = (
     ("konsole", lambda shell_cmd: ["konsole", "--noclose", "-e",
@@ -260,6 +486,9 @@ def _make_installer_bridge():
             self._read_offset = 0
             self._line_buf = ""
             self._exit_code: int | None = None
+            self._progress_exit_code: int | None = None
+            self._progress_file: str | None = None
+            self._cancel_file: str | None = None
             self._update_thread: _UpdateCheckThread | None = None
 
             self._watcher = QFileSystemWatcher(self)
@@ -301,46 +530,62 @@ def _make_installer_bridge():
             self._read_offset = 0
             self._line_buf = ""
             self._exit_code = None
+            self._progress_exit_code = None
             self.currentStepChanged.emit()
             self.progressChanged.emit()
 
             try:
-                with open(PROGRESS_FILE, "w", encoding="utf-8"):
-                    pass
-            except OSError:
-                pass
+                self._progress_file = _create_progress_file()
+                self._cancel_file = _create_cancel_file()
+            except OSError as exc:
+                message = f"Could not create secure installer channel: {exc}"
+                self._log_lines.append(message)
+                self._current_step = message
+                self.logAppended.emit(message)
+                self.currentStepChanged.emit()
+                self._finish(1)
+                return
 
-            if PROGRESS_FILE not in self._watcher.files():
-                self._watcher.addPath(PROGRESS_FILE)
+            if self._progress_file not in self._watcher.files():
+                self._watcher.addPath(self._progress_file)
             self._poll.start()
 
-            shell_cmd = escalated_command_for_action(action, headless=True)
             self._proc = QProcess(self)
             self._proc.setProcessChannelMode(
-                QProcess.ProcessChannelMode.MergedChannels)
+                QProcess.ProcessChannelMode.ForwardedChannels)
             self._proc.setWorkingDirectory(str(REPO_ROOT))
             self._proc.finished.connect(self._on_proc_finished)
-            self._proc.start("bash", ["-lc", shell_cmd])
+            self._proc.errorOccurred.connect(self._on_proc_error)
+            # Mark busy before start(): FailedToStart may be delivered as soon
+            # as Qt attempts the fork/exec, and its handler must be the final
+            # writer of the state rather than being overwritten below.
             self._running = True
             self.runningChanged.emit()
+            self._proc.start(
+                sys.executable,
+                [
+                    str(Path(__file__).resolve()),
+                    "--supervise", action,
+                    "--progress-file", self._progress_file,
+                    "--cancel-file", self._cancel_file,
+                ],
+            )
 
         @pyqtSlot()
         def cancel(self) -> None:
-            # self._proc is bash running "pkexec ... install" (or "sudo
-            # ... install") as its only command — kill() only reaches
-            # that direct child, not the privileged install process
-            # pkexec/sudo forked underneath it, leaving it running as
-            # root in the background. SIGTERM is what pkexec and sudo
-            # both forward to their child; kill() (SIGKILL) can't be
-            # forwarded at all. Fall back to kill() after a grace period
-            # in case the privileged side is unresponsive.
-            if self._proc and self._proc.state() != QProcess.ProcessState.NotRunning:
-                self._proc.terminate()
-                QTimer.singleShot(5000, self._kill_if_still_running)
-
-        def _kill_if_still_running(self) -> None:
-            if self._proc and self._proc.state() != QProcess.ProcessState.NotRunning:
-                self._proc.kill()
+            if not self._running:
+                return
+            _mark_cancel_requested(self._cancel_file)
+            # Keep the supervisor (and therefore the busy state and private
+            # channels) alive until the privileged transaction really exits.
+            # A package manager or initramfs rebuild may need time to unwind.
+            message = ("Cancelling… waiting for the current operation to stop "
+                       "safely; dismiss any authentication prompt")
+            if self._current_step != message:
+                self._log_lines.append(message)
+                self._current_step = message
+                self.logAppended.emit(message)
+                self.currentStepChanged.emit()
 
         @pyqtSlot()
         def checkForUpdates(self) -> None:
@@ -355,8 +600,11 @@ def _make_installer_bridge():
             thread.start()
 
         def _read_progress(self) -> None:
+            progress_file = self._progress_file
+            if progress_file is None:
+                return
             try:
-                with open(PROGRESS_FILE, "r", encoding="utf-8") as fh:
+                with open(progress_file, "r", encoding="utf-8") as fh:
                     fh.seek(self._read_offset)
                     chunk = fh.read()
                     self._read_offset = fh.tell()
@@ -370,19 +618,19 @@ def _make_installer_bridge():
                 line, self._line_buf = self._line_buf.split("\n", 1)
                 self._handle_record(line.rstrip("\r"))
 
-        def _handle_record(self, record: str) -> None:
+        def _handle_record(self, record: str, *, terminated: bool = True) -> None:
             if not record:
                 return
             parts = record.split("\t", 1)
             head = parts[0]
             if head == DONE_MARKER:
-                code = 0
-                if len(parts) > 1:
-                    try:
-                        code = int(parts[1])
-                    except ValueError:
-                        code = 0
-                self._finish(code)
+                code = _parse_done_record(record, terminated=terminated)
+                if code is not None:
+                    # The CLI writes the marker in its finally block before
+                    # persisting final RunTracker state and exiting. Cache the
+                    # verdict, but keep the bridge busy until this run's
+                    # QProcess really terminates.
+                    self._progress_exit_code = code
                 return
             title = parts[1] if len(parts) > 1 else head
             self._log_lines.append(title)
@@ -404,18 +652,50 @@ def _make_installer_bridge():
             # never reach the log view, hiding the most diagnostic line
             # on a failure.
             if self._line_buf:
-                self._handle_record(self._line_buf.rstrip("\r"))
+                self._handle_record(
+                    self._line_buf.rstrip("\r"), terminated=False)
                 self._line_buf = ""
             if self._exit_code is None:
-                self._finish(code)
+                # A non-zero process status wins over an earlier success
+                # marker (for example, if it was killed during finalization).
+                final_code = (
+                    self._progress_exit_code
+                    if code == 0 and self._progress_exit_code is not None
+                    else code
+                )
+                self._finish(final_code)
+
+        def _on_proc_error(self, error) -> None:
+            if error != QProcess.ProcessError.FailedToStart:
+                return
+            detail = self._proc.errorString() if self._proc is not None else ""
+            message = "Could not start installer supervisor"
+            if detail:
+                message += f": {detail}"
+            self._log_lines.append(message)
+            self._current_step = message
+            self.logAppended.emit(message)
+            self.currentStepChanged.emit()
+            self._finish(1)
 
         def _finish(self, code: int) -> None:
             if self._exit_code is not None:
                 return
             self._exit_code = code
             self._poll.stop()
-            if PROGRESS_FILE in self._watcher.files():
-                self._watcher.removePath(PROGRESS_FILE)
+            progress_file = self._progress_file
+            cancel_file = self._cancel_file
+            self._progress_file = None
+            self._cancel_file = None
+            for path in (progress_file, cancel_file):
+                if path is None:
+                    continue
+                if path in self._watcher.files():
+                    self._watcher.removePath(path)
+                try:
+                    os.unlink(path)
+                except OSError:
+                    pass
             self._progress = 1.0
             self.progressChanged.emit()
             self._running = False
@@ -440,6 +720,9 @@ def _launch_preview_pyqt() -> int:
     os.environ.setdefault("QT_NO_XDG_DESKTOP_PORTAL", "1")
     app = QGuiApplication.instance() or QGuiApplication(sys.argv[:1])
     app.setApplicationName("mac-tahoe-liquid-kde-installer")
+    # A close request during an install must leave the event loop running so
+    # the privileged child can stop safely and be reaped.
+    app.setQuitOnLastWindowClosed(False)
     engine = QQmlApplicationEngine()
     bridge = _make_installer_bridge()
     bridge.setParent(engine)
@@ -454,9 +737,18 @@ def _launch_preview_pyqt() -> int:
 
     # Qt's C++ event loop blocks Python signal delivery; the idle timer
     # hands control back to the interpreter so SIGINT (Ctrl+C) can land.
+    shutdown = {"requested": False}
+
     def _on_sigint(*_):
-        bridge.cancel()
-        app.quit()
+        _request_app_quit(app, bridge, shutdown)
+
+    def _quit_after_cancel(_code: int) -> None:
+        if shutdown["requested"]:
+            app.quit()
+
+    app.lastWindowClosed.connect(
+        lambda: _request_app_quit(app, bridge, shutdown))
+    bridge.finished.connect(_quit_after_cancel)
 
     prev_sigint = signal.signal(signal.SIGINT, _on_sigint)
     wake = QTimer()
@@ -584,7 +876,24 @@ def main(argv: list[str]) -> int:
         action="store_true",
         help="Print the update verdict as JSON (for the update banner).",
     )
+    parser.add_argument(
+        "--supervise",
+        choices=sorted(_ACTION_COMMANDS),
+        help=argparse.SUPPRESS,
+    )
+    parser.add_argument("--progress-file", help=argparse.SUPPRESS)
+    parser.add_argument("--cancel-file", help=argparse.SUPPRESS)
     args = parser.parse_args(argv)
+
+    if args.supervise:
+        if not args.progress_file or not args.cancel_file:
+            print(
+                "internal supervisor requires progress and cancel files",
+                file=sys.stderr,
+            )
+            return 2
+        return _supervise_action(
+            args.supervise, args.progress_file, args.cancel_file)
 
     if args.launch:
         payload = launch_action(args.launch)

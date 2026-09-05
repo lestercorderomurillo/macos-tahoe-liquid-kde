@@ -103,15 +103,101 @@ def test_save_state_reports_and_returns_false_on_write_failure(
     assert oled_care.save_state({"index": 0, "last_off": 0, "last_h": 0,
                                  "panels": {}}) is False
     assert "could not save panel state" in capsys.readouterr().err
+    state_dir = oled_care._state_file().parent
+    assert list(state_dir.glob("*.tmp")) == []
+
+
+def test_save_state_reports_temporary_file_write_failure(
+        tmp_path, monkeypatch, capsys):
+    _state_env(tmp_path, monkeypatch)
+    real_write_text = oled_care.Path.write_text
+
+    def fail_temp_write(path, *args, **kwargs):
+        if path.name.endswith(".tmp"):
+            raise OSError("simulated write failure")
+        return real_write_text(path, *args, **kwargs)
+
+    monkeypatch.setattr(oled_care.Path, "write_text", fail_temp_write)
+
+    assert oled_care.save_state({"index": 0, "last_off": 0, "last_h": 0,
+                                 "panels": {}}) is False
+    assert "could not save panel state" in capsys.readouterr().err
+    assert list(oled_care._state_file().parent.glob("*.tmp")) == []
+
+
+def test_save_state_reports_directory_creation_failure(
+        tmp_path, monkeypatch, capsys):
+    _state_env(tmp_path, monkeypatch)
+    real_mkdir = oled_care.Path.mkdir
+
+    def fail_state_mkdir(path, *args, **kwargs):
+        if path == oled_care._state_file().parent:
+            raise OSError("read-only state directory")
+        return real_mkdir(path, *args, **kwargs)
+
+    monkeypatch.setattr(oled_care.Path, "mkdir", fail_state_mkdir)
+
+    assert oled_care.save_state({"index": 0, "last_off": 0, "last_h": 0,
+                                 "panels": {}}) is False
+    assert "could not save panel state" in capsys.readouterr().err
+
+
+def test_replace_failure_preserves_previous_panel_state(
+        tmp_path, monkeypatch):
+    state_file = _state_env(tmp_path, monkeypatch)
+    state_file.parent.mkdir(parents=True)
+    previous = '{"index":1,"last_off":2,"last_h":2,"panels":{}}\n'
+    state_file.write_text(previous)
+    monkeypatch.setattr(
+        oled_care.os, "replace",
+        lambda _src, _dst: (_ for _ in ()).throw(OSError("disk full")),
+    )
+
+    assert oled_care.save_state({"index": 2, "last_off": 4, "last_h": 4,
+                                 "panels": {}}) is False
+    assert state_file.read_text() == previous
 
 
 def test_shift_reports_failure_when_state_cannot_be_saved(tmp_path, monkeypatch):
     _state_env(tmp_path, monkeypatch)
     reply = json.dumps({"5": {"offset": 0, "height": 32}})
-    monkeypatch.setattr(oled_care, "_evaluate_script", lambda _s: reply)
+    scripts: list[str] = []
+
+    def evaluate(script):
+        scripts.append(script)
+        return reply if len(scripts) == 1 else "restored\n"
+
+    monkeypatch.setattr(oled_care, "_evaluate_script", evaluate)
     monkeypatch.setattr(oled_care, "save_state", lambda _state: False)
 
     assert oled_care.shift() == 1
+    assert len(scripts) == 2
+    assert 'var lastOff = 2;' in scripts[1]
+    assert 'var lastH = 2;' in scripts[1]
+
+
+def test_shift_reports_failed_rollback_after_state_save_failure(
+        tmp_path, monkeypatch, capsys):
+    _state_env(tmp_path, monkeypatch)
+    reply = json.dumps({"5": {"offset": 0, "height": 32}})
+    responses = iter((reply, None))
+    monkeypatch.setattr(oled_care, "_evaluate_script", lambda _s: next(responses))
+    monkeypatch.setattr(oled_care, "save_state", lambda _state: False)
+
+    assert oled_care.shift() == 1
+    assert "could not be rolled back" in capsys.readouterr().err
+
+
+def test_shift_rejects_rollback_without_script_confirmation(
+        tmp_path, monkeypatch, capsys):
+    _state_env(tmp_path, monkeypatch)
+    reply = json.dumps({"5": {"offset": 0, "height": 32}})
+    responses = iter((reply, "Error: evaluateScript failed\n"))
+    monkeypatch.setattr(oled_care, "_evaluate_script", lambda _s: next(responses))
+    monkeypatch.setattr(oled_care, "save_state", lambda _state: False)
+
+    assert oled_care.shift() == 1
+    assert "could not be rolled back" in capsys.readouterr().err
 
 
 def test_shift_without_plasmashell_is_quiet_noop(tmp_path, monkeypatch):
@@ -172,8 +258,38 @@ def test_restore_without_session_keeps_state(tmp_path, monkeypatch):
                           "panels": {"5": {"offset": 0, "height": 32}}})
     monkeypatch.setattr(oled_care, "_evaluate_script", lambda _s: None)
 
-    assert oled_care.restore() == 0
+    assert oled_care.restore() == 1
     assert state_file.exists()
+
+
+def test_restore_keeps_state_without_script_confirmation(
+        tmp_path, monkeypatch, capsys):
+    state_file = _state_env(tmp_path, monkeypatch)
+    oled_care.save_state({"index": 3, "last_off": 1, "last_h": 2,
+                          "panels": {"5": {"offset": 0, "height": 32}}})
+    monkeypatch.setattr(
+        oled_care, "_evaluate_script",
+        lambda _s: "Error: evaluateScript failed\n",
+    )
+
+    assert oled_care.restore() == 1
+    assert state_file.exists()
+    assert "did not confirm" in capsys.readouterr().err
+
+
+def test_restore_reports_state_cleanup_failure(tmp_path, monkeypatch, capsys):
+    state_file = _state_env(tmp_path, monkeypatch)
+    oled_care.save_state({"index": 3, "last_off": 1, "last_h": 2,
+                          "panels": {"5": {"offset": 0, "height": 32}}})
+    monkeypatch.setattr(oled_care, "_evaluate_script", lambda _s: "restored\n")
+    monkeypatch.setattr(
+        oled_care.Path, "unlink",
+        lambda _path: (_ for _ in ()).throw(OSError("read-only state")),
+    )
+
+    assert oled_care.restore() == 1
+    assert state_file.exists()
+    assert "state cleanup failed" in capsys.readouterr().err
 
 
 def test_restore_noop_without_state(tmp_path, monkeypatch):
@@ -184,6 +300,34 @@ def test_restore_noop_without_state(tmp_path, monkeypatch):
 
     monkeypatch.setattr(oled_care, "_evaluate_script", _boom)
     assert oled_care.restore() == 0
+
+
+def test_restore_consumes_existing_valid_empty_panel_state(
+        tmp_path, monkeypatch):
+    state_file = _state_env(tmp_path, monkeypatch)
+    assert oled_care.save_state({
+        "index": 1, "last_off": 2, "last_h": 2, "panels": {},
+    }) is True
+    monkeypatch.setattr(
+        oled_care,
+        "_evaluate_script",
+        lambda _script: (_ for _ in ()).throw(
+            AssertionError("no geometry should be restored for an empty map")
+        ),
+    )
+
+    assert oled_care.restore() == 0
+    assert not state_file.exists()
+
+
+def test_restore_retains_corrupt_recovery_state(tmp_path, monkeypatch, capsys):
+    state_file = _state_env(tmp_path, monkeypatch)
+    state_file.parent.mkdir(parents=True)
+    state_file.write_text("{not json\n")
+
+    assert oled_care.restore() == 1
+    assert state_file.is_file()
+    assert "could not be read" in capsys.readouterr().err
 
 
 def test_main_rejects_unknown_command(capsys):
@@ -236,7 +380,7 @@ def _wire_step(tmp_path, monkeypatch):
 
     monkeypatch.setattr(step, "BIN_DEST", bin_dest)
     monkeypatch.setattr(step, "SVC_DIR", svc_dir)
-    monkeypatch.setattr(step, "STATE_FILE", state)
+    monkeypatch.setenv("XDG_STATE_HOME", str(state.parents[1]))
     monkeypatch.setattr(step, "run_user",
                         lambda cmd, **_kw: (
                             calls.append(list(cmd))
@@ -303,7 +447,7 @@ def test_step_install_disabled_tears_down_leftovers(tmp_path, monkeypatch):
     step, home, calls = _wire_step(tmp_path, monkeypatch)
     monkeypatch.setenv("FEAT_OLED_CARE", "false")
     monkeypatch.setattr(step, "_restore_panels",
-                        lambda: calls.append(["RESTORE"]))
+                        lambda: calls.append(["RESTORE"]) or True)
     step.BIN_DEST.parent.mkdir(parents=True)
     step.BIN_DEST.write_text("#!stub")
     step.SVC_DIR.mkdir(parents=True)
@@ -344,6 +488,126 @@ def test_step_uninstall_removes_everything(tmp_path, monkeypatch):
     assert not step.BIN_DEST.exists()
     assert not any((step.SVC_DIR / u).exists() for u in step.UNITS)
     assert any("disable" in " ".join(c) for c in calls)
+
+
+def test_step_uninstall_retains_recovery_when_panels_cannot_restore(
+        tmp_path, monkeypatch):
+    step, _home, calls = _wire_step(tmp_path, monkeypatch)
+    step.BIN_DEST.parent.mkdir(parents=True)
+    step.BIN_DEST.write_text("#!stub")
+    state_file = step._state_file()
+    state_file.parent.mkdir(parents=True)
+    state_file.write_text("{}\n")
+    step.SVC_DIR.mkdir(parents=True)
+    for unit in step.UNITS:
+        (step.SVC_DIR / unit).write_text("[Unit]")
+    monkeypatch.setattr(step, "_restore_panels", lambda: False)
+    failures: list[str] = []
+    monkeypatch.setattr(step, "fail", failures.append)
+
+    step.uninstall()
+
+    # Even though geometry recovery remains pending, removing the command
+    # target guarantees a scheduler teardown error cannot shift it again.
+    assert not step.BIN_DEST.exists()
+    assert state_file.is_file()
+    assert not any((step.SVC_DIR / unit).exists() for unit in step.UNITS)
+    assert any("disable" in " ".join(call) for call in calls)
+    assert any("removal incomplete" in message for message in failures)
+
+
+def test_step_uninstall_neutralizes_helper_when_cron_removal_fails(
+        tmp_path, monkeypatch):
+    step, _home, _calls = _wire_step(tmp_path, monkeypatch)
+    monkeypatch.setenv("MTTKDE_INIT", "openrc")
+    step.BIN_DEST.parent.mkdir(parents=True)
+    step.BIN_DEST.write_text("#!stub")
+    restored: list[bool] = []
+    failures: list[str] = []
+    monkeypatch.setattr(
+        step, "remove_periodic",
+        lambda _tag: step.RemovalStatus.ERROR,
+    )
+    monkeypatch.setattr(
+        step, "_restore_panels", lambda: restored.append(True) or True,
+    )
+    monkeypatch.setattr(step, "fail", failures.append)
+
+    step.uninstall()
+
+    assert not step.BIN_DEST.exists()
+    assert restored == [True]
+    assert any("removal incomplete" in message for message in failures)
+
+
+def test_step_does_not_restore_if_schedule_and_helper_cannot_be_stopped(
+        tmp_path, monkeypatch):
+    step, _home, _calls = _wire_step(tmp_path, monkeypatch)
+    monkeypatch.setattr(step, "_teardown_units", lambda: (False, False))
+    monkeypatch.setattr(step, "_remove_helper", lambda: (False, False))
+    monkeypatch.setattr(
+        step, "_restore_panels",
+        lambda: (_ for _ in ()).throw(
+            AssertionError("unsafe restore must not start")
+        ),
+    )
+    failures: list[str] = []
+    monkeypatch.setattr(step, "fail", failures.append)
+
+    step.uninstall()
+
+    assert any("scheduling could not be neutralized" in message
+               for message in failures)
+
+
+def test_systemd_stop_failure_marks_oled_teardown_incomplete(
+        tmp_path, monkeypatch):
+    step, _home, _calls = _wire_step(tmp_path, monkeypatch)
+    step.SVC_DIR.mkdir(parents=True)
+    (step.SVC_DIR / step.UNITS[0]).write_text("[Unit]\n")
+    monkeypatch.setattr(step, "_user_service", lambda *_args: False)
+    monkeypatch.setattr(
+        step, "remove_periodic",
+        lambda _tag: step.RemovalStatus.UNAVAILABLE,
+    )
+
+    removed, complete = step._teardown_units()
+
+    assert removed is True
+    assert complete is False
+
+
+def test_step_restore_panels_propagates_unreachable_session(
+        tmp_path, monkeypatch):
+    step, _home, _calls = _wire_step(tmp_path, monkeypatch)
+    state_file = step._state_file()
+    state_file.parent.mkdir(parents=True)
+    state_file.write_text("{}\n")
+    monkeypatch.setattr(oled_care, "restore", lambda: 1)
+
+    assert step._restore_panels() is False
+    assert state_file.is_file()
+
+
+def test_step_restore_uses_custom_xdg_state_home(tmp_path, monkeypatch):
+    step, _home, _calls = _wire_step(tmp_path, monkeypatch)
+    custom = tmp_path / "custom-state"
+    monkeypatch.setenv("XDG_STATE_HOME", str(custom))
+    state_file = custom / "mac-tahoe-liquid-kde/oled-care.json"
+    state_file.parent.mkdir(parents=True)
+    state_file.write_text("{}\n")
+    called: list[bool] = []
+
+    def restore_custom():
+        called.append(True)
+        state_file.unlink()
+        return 0
+
+    monkeypatch.setattr(oled_care, "restore", restore_custom)
+
+    assert step._restore_panels() is True
+    assert called == [True]
+    assert not state_file.exists()
 
 
 # ── CLI flag registration ─────────────────────────────────────────────

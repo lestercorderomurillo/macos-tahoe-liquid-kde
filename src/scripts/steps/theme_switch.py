@@ -9,8 +9,10 @@ from pathlib import Path
 
 from paths import REPO_ROOT
 from distro import user_service_manager_command
-from steps._helpers import HOME, kw_write, ok, offline, theme_mode, warn
-from steps._scheduler import install_at_times, is_systemd, remove_periodic
+from steps._helpers import HOME, fail, kw_write, ok, offline, theme_mode, warn
+from steps._scheduler import (
+    RemovalStatus, install_at_times, is_systemd, remove_periodic,
+)
 from utils import run_user
 
 BIN_DEST = HOME / ".local/bin/mac-tahoe-theme-switch"
@@ -137,13 +139,45 @@ def _install_units() -> bool:
     return all(results)
 
 
-def _teardown_units() -> None:
-    for unit in UNITS:
-        _user_service("disable", "--now", unit)
-        try: (SVC_DIR / unit).unlink()
+def _teardown_units(units=UNITS) -> bool:
+    complete = True
+    systemd = is_systemd()
+    had_unit_files = False
+    for unit in units:
+        unit_path = SVC_DIR / unit
+        existed = unit_path.exists() or unit_path.is_symlink()
+        had_unit_files = had_unit_files or existed
+        stopped = _user_service("disable", "--now", unit)
+        if systemd and existed and not stopped:
+            complete = False
+        try: unit_path.unlink()
         except FileNotFoundError: pass
-        except OSError: pass
-    _user_service("daemon-reload")
+        except OSError:
+            if existed:
+                complete = False
+    if systemd and had_unit_files and not _user_service("daemon-reload"):
+        complete = False
+    return complete
+
+
+def _cron_removal_complete(status: RemovalStatus) -> bool:
+    if status in (RemovalStatus.REMOVED, RemovalStatus.ABSENT):
+        return True
+    # A systemd-only host commonly has no crontab client at all. There is no
+    # runnable OpenRC backend to clean in that case; an actual read/write error
+    # from a present client remains unsafe.
+    return status == RemovalStatus.UNAVAILABLE and is_systemd()
+
+
+def _neutralize_switcher() -> bool:
+    try:
+        BIN_DEST.unlink()
+        return True
+    except FileNotFoundError:
+        return True
+    except OSError as exc:
+        warn(f"Theme switcher could not be neutralized ({exc})")
+        return False
 
 
 def _teardown_gtk_sync_autostart() -> None:
@@ -174,12 +208,17 @@ def install() -> None:
     if auto:
         if is_systemd():
             # A previous OpenRC boot may have left our marked cron lines.
-            remove_periodic(CRON_TAG)
+            cron_status = remove_periodic(CRON_TAG)
+            if not _cron_removal_complete(cron_status):
+                warn("Theme switch: previous cron schedule could not be "
+                     "removed; duplicate auto transitions may remain")
             if not _install_units():
                 warn("Theme switch: user timer could not be enabled")
         else:
             # Conversely, remove stale user units before scheduling cron.
-            _teardown_units()
+            if not _teardown_units():
+                warn("Theme switch: stale systemd unit files could not be "
+                     "removed")
             # OpenRC: fixed-time cron lines at 06:00/18:00. There is no
             # login-time oneshot equivalent, but the binary is idempotent
             # and the timed flips are what matter.
@@ -189,8 +228,16 @@ def install() -> None:
     else:
         # Pinned --light/--dark: tear down any schedule a previous --auto
         # install left so it can't fight the pinned mode at next login.
-        _teardown_units()
-        remove_periodic(CRON_TAG)
+        units_stopped = _teardown_units()
+        cron_status = remove_periodic(CRON_TAG)
+        if not units_stopped or not _cron_removal_complete(cron_status):
+            # An unremoved schedule calling this binary would override the
+            # pinned choice later. Remove its command target and fail closed.
+            neutralized = _neutralize_switcher()
+            detail = " (switcher neutralized)" if neutralized else ""
+            fail("Theme switch pinned mode not installed — previous schedule "
+                 f"could not be stopped safely{detail}")
+            return
 
     if BIN_DEST.is_file() and BIN_DEST.stat().st_mode & 0o111:
         ok("Theme switcher installed")
@@ -209,25 +256,30 @@ def uninstall() -> None:
         "mac-tahoe-liquid-kde-theme-apply.service",
         "mactahoe-theme-watcher.service",
     )
-    for unit in legacy_units:
-        _user_service("disable", "--now", unit)
-        try: (SVC_DIR / unit).unlink()
-        except FileNotFoundError: pass
-        except OSError: pass
-    _user_service("daemon-reload")
+    units_stopped = _teardown_units(legacy_units)
     # Strip the OpenRC cron line too, so an uninstall on either init leaves
     # no orphaned schedule behind.
-    remove_periodic(CRON_TAG)
+    cron_status = remove_periodic(CRON_TAG)
+    cron_complete = _cron_removal_complete(cron_status)
     stop_gtk_sync_watcher()
     _teardown_gtk_sync_autostart()
+    binaries_neutralized = True
     for p in (BIN_DEST, _LEGACY_BIN):
         try: p.unlink()
         except FileNotFoundError: pass
-        except OSError: pass
+        except OSError:
+            binaries_neutralized = False
     for p in MANAGED_STATE_FILES:
         try: p.unlink()
         except FileNotFoundError: pass
         except OSError: pass
+
+    cleanup_complete = units_stopped and cron_complete and binaries_neutralized
+    if not cleanup_complete:
+        detail = "installed command was neutralized" if binaries_neutralized \
+            else "installed command could not be neutralized"
+        fail("Theme switch removal incomplete — a previous schedule could "
+             f"not be removed safely ({detail})")
 
     kw_write("--file", "kdeglobals", "--group", "KDE",
              "--key", "AutomaticLookAndFeel", "false")
@@ -235,4 +287,5 @@ def uninstall() -> None:
              "--key", "DefaultLightLookAndFeel", "--delete")
     kw_write("--file", "kdeglobals", "--group", "KDE",
              "--key", "DefaultDarkLookAndFeel", "--delete")
-    ok("Theme switcher removed")
+    if cleanup_complete:
+        ok("Theme switcher removed")

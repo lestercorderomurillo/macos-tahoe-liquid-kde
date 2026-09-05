@@ -54,6 +54,19 @@ def test_plymouth_simpledrm_policy_is_fedora_specific(
     assert distro.plymouth_use_simpledrm() is expected
 
 
+@pytest.mark.parametrize("distro_id,id_like,expected", [
+    ("debian", (), True),
+    ("ubuntu", ("debian",), True),
+    ("neon", ("ubuntu", "debian"), True),
+    ("arch", (), False),
+    ("nobara", ("fedora",), False),
+])
+def test_debian_family_predicate_stays_in_distro_layer(
+        monkeypatch, distro_id, id_like, expected):
+    _force_distro(monkeypatch, distro_id, id_like)
+    assert distro.is_debian_family() is expected
+
+
 @pytest.mark.parametrize("distro_id, id_like, expected_prefix", [
     ("cachyos", ("arch",), ("Next", "Opal", "Flow")),
     ("neon", ("ubuntu", "debian"), ("Next", "Flow")),

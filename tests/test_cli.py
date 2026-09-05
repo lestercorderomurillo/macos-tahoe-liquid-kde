@@ -11,6 +11,7 @@ choice, not install correctness.
 
 from __future__ import annotations
 
+import contextlib
 import os
 
 import pytest
@@ -22,6 +23,46 @@ def cli_module():
     return cli
 
 
+def test_cancellable_entrypoint_does_not_print_aborted_twice(
+        cli_module, monkeypatch, capsys):
+    checks = {"count": 0}
+
+    def check():
+        checks["count"] += 1
+        if checks["count"] == 2:
+            raise cli_module.CancellationRequested
+
+    monkeypatch.setattr(
+        cli_module, "cancellation_scope", contextlib.nullcontext)
+    monkeypatch.setattr(cli_module, "check_cancelled", check)
+
+    @cli_module._cancellable_entrypoint
+    def already_handled():
+        print("  Aborted.", file=cli_module.sys.stderr)
+        return 130
+
+    assert already_handled() == 130
+    assert capsys.readouterr().err.count("Aborted.") == 1
+
+
+def test_step_runner_checks_cancellation_around_each_phase(monkeypatch):
+    import step_runner
+
+    events: list[str] = []
+
+    class Module:
+        @staticmethod
+        def install():
+            events.append("phase")
+
+    monkeypatch.setattr(step_runner, "step_module", lambda _feature: Module)
+    monkeypatch.setattr(
+        step_runner, "check_cancelled", lambda: events.append("check"))
+
+    assert step_runner.run_phase("icons", "install") is True
+    assert events == ["check", "phase", "check"]
+
+
 # ── argv parsing ──────────────────────────────────────────────────────
 
 
@@ -31,6 +72,18 @@ def test_parse_args_recognizes_check_update(cli_module):
 
 def test_parse_args_default_check_update_false(cli_module):
     assert cli_module.parse_args([]).check_update is False
+
+
+@pytest.mark.parametrize("available,expected", [(False, 0), (True, 1)])
+def test_check_update_exit_status_reports_available_update(
+        cli_module, monkeypatch, available, expected):
+    """The one-shot command is scriptable: exit 1 means an update exists."""
+    monkeypatch.setattr(
+        cli_module, "check_for_updates",
+        lambda *, verbose: available and verbose,
+    )
+
+    assert cli_module.run_install(["--check-update"]) == expected
 
 
 def test_parse_args_recognizes_one_shot_wallpaper_reset(cli_module):
@@ -486,6 +539,32 @@ def test_check_deps_returns_false_when_missing_package_install_fails(
 
     assert cli_module._check_deps({"acrylic_glass": True}) is False
     assert attempts == [("cmake",)]
+
+
+def test_check_deps_reports_cancel_not_transaction_failure(
+        monkeypatch, cli_module, _deps_env):
+    monkeypatch.setattr(
+        _deps_env, "package_installed",
+        lambda pkg: pkg != "cmake",
+    )
+    cancelled = {"value": False}
+    failures: list[str] = []
+
+    def cancelled_transaction(*_pkgs):
+        cancelled["value"] = True
+        return False
+
+    def check_cancelled():
+        if cancelled["value"]:
+            raise cli_module.CancellationRequested
+
+    monkeypatch.setattr(cli_module, "pkg_sync_install", cancelled_transaction)
+    monkeypatch.setattr(cli_module, "check_cancelled", check_cancelled)
+    monkeypatch.setattr(cli_module, "fail", failures.append)
+
+    with pytest.raises(cli_module.CancellationRequested):
+        cli_module._check_deps({"acrylic_glass": True})
+    assert not any("transaction failed" in message for message in failures)
 
 
 def test_check_deps_collects_deps_from_separately_run_steps(

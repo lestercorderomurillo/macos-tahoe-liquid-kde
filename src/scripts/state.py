@@ -69,7 +69,6 @@ class RunTracker:
     def _write(self, status: Status, finished_at: str | None,
                exit_code: int) -> bool:
         out = last_run_file()
-        out.parent.mkdir(parents=True, exist_ok=True)
         payload = {
             "script": self.script,
             "argv": self.argv,
@@ -89,6 +88,7 @@ class RunTracker:
         # missing last-run.json without any indication why.
         tmp = out.with_name(f".{out.name}.{os.getpid()}.tmp")
         try:
+            out.parent.mkdir(parents=True, exist_ok=True)
             tmp.write_text(
                 json.dumps(payload, indent=2, ensure_ascii=False) + "\n",
                 encoding="utf-8",

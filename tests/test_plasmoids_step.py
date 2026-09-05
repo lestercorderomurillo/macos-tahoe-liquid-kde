@@ -162,3 +162,43 @@ def test_taskmanager_build_artifacts_match_install_sources():
     assert 'i18nc("@label:spinbox", "Hover magnification:")' in appearance_qml
     assert "from: 100" in appearance_qml
     assert "to: 150" in appearance_qml
+
+
+def test_taskmanager_badge_count_checks_full_int_range(repo):
+    source = (repo / "src/offline/plasmoids"
+              / "org.kde.mac.tahoe.liquid.taskmanager"
+              / "smartlauncherbackend.cpp").read_text()
+
+    assert "newCount >= std::numeric_limits<int>::min()" in source
+    assert "newCount <= std::numeric_limits<int>::max()" in source
+
+
+def test_uninstall_preserves_user_overrides_of_upstream_plasmoid_ids(
+        tmp_path, monkeypatch):
+    """Stock KDE IDs are not ours, even when installed below user data."""
+    dest = tmp_path / "plasmoids"
+    stock_taskmanager = dest / "org.kde.plasma.taskmanager"
+    stock_icontasks = dest / "org.kde.plasma.icontasks"
+    owned = dest / "org.kde.mac.tahoe.liquid.taskmanager"
+    for directory in (stock_taskmanager, stock_icontasks, owned):
+        directory.mkdir(parents=True)
+        (directory / "marker").write_text("keep" if "plasma." in directory.name else "remove")
+
+    monkeypatch.setattr(plasmoids, "DEST_DIR", dest)
+    monkeypatch.setattr(
+        plasmoids, "LEGACY_TASKMANAGER_USER_SO",
+        tmp_path / "missing-user-plugin.so",
+    )
+    monkeypatch.setattr(plasmoids, "qt6_plugins_dir", lambda: tmp_path / "plugins")
+    monkeypatch.setattr(plasmoids, "qt6_qml_dir", lambda: tmp_path / "qml")
+    monkeypatch.setattr(plasmoids, "sudo_remove", lambda *_args, **_kwargs: False)
+    monkeypatch.setattr(plasmoids, "ok", lambda _message: None)
+    monkeypatch.setattr(plasmoids, "info", lambda _message: None)
+
+    plasmoids.uninstall()
+
+    assert stock_taskmanager.is_dir()
+    assert stock_icontasks.is_dir()
+    assert not owned.exists()
+    assert "org.kde.plasma.taskmanager" not in plasmoids.LEGACY_DIRS
+    assert "org.kde.plasma.icontasks" not in plasmoids.LEGACY_DIRS

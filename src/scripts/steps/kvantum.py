@@ -45,14 +45,56 @@ def _engine_destination() -> Path:
     return qt6_plugins_dir() / "styles/libkvantum.so"
 
 
-def _engine_matches_ownership_marker() -> bool:
-    destination = _engine_destination()
-    if not ENGINE_MARKER.is_file() or not destination.is_file():
-        return False
+def _marker_plugin_hashes(marker: object) -> set[str]:
+    """Return plugin digests that a valid marker currently owns.
+
+    A reinstall publishes a pending marker before replacing the plugin.  That
+    marker accepts both the old and new digest, so an interruption on either
+    side of the atomic plugin rename cannot strand an unowned system file.
+    Final markers retain the original single-digest schema for compatibility.
+    """
+    if not isinstance(marker, dict):
+        return set()
+
+    def valid_digest(value: object) -> bool:
+        return (
+            isinstance(value, str)
+            and len(value) == 64
+            and all(char in "0123456789abcdef" for char in value)
+        )
+
+    hashes: set[str] = set()
+    current = marker.get("plugin_sha256")
+    if valid_digest(current):
+        hashes.add(current)
+    if marker.get("state") == "pending":
+        previous = marker.get("previous_plugin_sha256")
+        if valid_digest(previous):
+            hashes.add(previous)
+    return hashes
+
+
+def _read_engine_marker() -> dict | None:
     try:
         marker = json.loads(ENGINE_MARKER.read_text(encoding="utf-8"))
-        return marker.get("plugin_sha256") == _sha256(destination)
     except (OSError, ValueError, TypeError):
+        return None
+    return marker if isinstance(marker, dict) else None
+
+
+def _engine_matches_ownership_marker() -> bool:
+    destination = _engine_destination()
+    if (
+        not ENGINE_MARKER.is_file()
+        or not destination.is_file()
+        or destination.is_symlink()
+    ):
+        return False
+    try:
+        return _sha256(destination) in _marker_plugin_hashes(
+            _read_engine_marker()
+        )
+    except OSError:
         return False
 
 
@@ -164,6 +206,59 @@ def _install_bundled_engine() -> bool:
         return False
 
     destination = _engine_destination()
+    previous_hash: str | None = None
+    if destination.is_file() and not destination.is_symlink():
+        if not _engine_matches_ownership_marker():
+            warn(
+                "A distro/user-owned Kvantum Qt 6 engine appeared during the "
+                "build — leaving it unchanged"
+            )
+            return True
+        try:
+            previous_hash = _sha256(destination)
+        except OSError as exc:
+            fail(f"Kvantum Qt 6 engine could not be read ({exc})")
+            return False
+    elif destination.exists() or destination.is_symlink():
+        fail("Kvantum Qt 6 engine destination is not a regular owned file")
+        return False
+
+    # Prepare both marker states before any system mutation. The pending marker
+    # is published first and recognizes the plugin on either side of its atomic
+    # replacement. A crash or later copy failure therefore leaves enough proof
+    # for the next install/uninstall to recover safely.
+    plugin_hash = _sha256(artifact)
+    marker_data = {
+        "version": ENGINE_VERSION,
+        "commit": ENGINE_COMMIT,
+        "source_sha256": ENGINE_SHA256,
+        "plugin_sha256": plugin_hash,
+    }
+    pending_data = {**marker_data, "state": "pending"}
+    if previous_hash and previous_hash != plugin_hash:
+        pending_data["previous_plugin_sha256"] = previous_hash
+    pending_marker_source = ENGINE_WORK / "kvantum-engine.pending.json"
+    final_marker_source = ENGINE_WORK / "kvantum-engine.json"
+    try:
+        final_marker_source.parent.mkdir(parents=True, exist_ok=True)
+        pending_marker_source.write_text(
+            json.dumps(pending_data, indent=2, sort_keys=True) + "\n",
+            encoding="utf-8",
+        )
+        final_marker_source.write_text(
+            json.dumps(marker_data, indent=2, sort_keys=True) + "\n",
+            encoding="utf-8",
+        )
+    except OSError as exc:
+        fail(f"Kvantum ownership marker could not be prepared ({exc})")
+        return False
+
+    if not sudo_install_file(
+        pending_marker_source,
+        ENGINE_MARKER,
+        "Kvantum ownership transaction prepared",
+    ):
+        return False
     if not sudo_install_file(
         artifact, destination, f"Kvantum Qt 6 engine v{ENGINE_VERSION} installed"
     ):
@@ -171,28 +266,17 @@ def _install_bundled_engine() -> bool:
     if not sudo_install_file(
         license_source, ENGINE_LICENSE, "Kvantum GPL-3.0 license installed"
     ):
-        sudo_remove(destination, "incomplete Kvantum Qt 6 engine")
+        # Keep the pending marker and installed engine together. Removing the
+        # new plugin here would also lose the previous version it atomically
+        # replaced; the next run can safely finish or uninstall this state.
         return False
 
-    marker_source = ENGINE_WORK / "kvantum-engine.json"
-    marker_source.write_text(
-        json.dumps(
-            {
-                "version": ENGINE_VERSION,
-                "commit": ENGINE_COMMIT,
-                "source_sha256": ENGINE_SHA256,
-                "plugin_sha256": _sha256(artifact),
-            },
-            indent=2,
-            sort_keys=True,
-        ) + "\n",
-        encoding="utf-8",
-    )
     if not sudo_install_file(
-        marker_source, ENGINE_MARKER, "Kvantum bundled-source marker installed"
+        final_marker_source, ENGINE_MARKER,
+        "Kvantum bundled-source marker installed",
     ):
-        sudo_remove(destination, "incomplete Kvantum Qt 6 engine")
-        sudo_remove(ENGINE_LICENSE, "incomplete Kvantum license")
+        # The pending marker already recognizes the installed digest. Retain it
+        # as recovery state instead of creating an unmarked system plugin.
         return False
     return True
 
@@ -256,13 +340,45 @@ def _remove_bundled_engine() -> None:
     destination = _engine_destination()
     try:
         marker = json.loads(ENGINE_MARKER.read_text(encoding="utf-8"))
-        expected = marker.get("plugin_sha256")
-    except (OSError, ValueError, TypeError):
-        expected = None
+    except OSError as exc:
+        fail(
+            "Kvantum ownership marker could not be read — retaining the "
+            f"engine, marker, and license for recovery ({exc})"
+        )
+        return
+    except (ValueError, TypeError) as exc:
+        fail(
+            "Kvantum ownership marker is invalid — retaining the engine, "
+            f"marker, and license for recovery ({exc})"
+        )
+        return
+    owned_hashes = _marker_plugin_hashes(marker)
+    if not owned_hashes:
+        fail(
+            "Kvantum ownership marker has no valid plugin digest — retaining "
+            "the engine, marker, and license for recovery"
+        )
+        return
+    owned = False
+    if destination.is_file() and not destination.is_symlink() and owned_hashes:
+        try:
+            owned = _sha256(destination) in owned_hashes
+        except OSError as exc:
+            fail(
+                "Kvantum Qt 6 engine ownership could not be verified — "
+                f"retaining its marker and license for recovery ({exc})"
+            )
+            return
 
-    if destination.is_file() and expected and _sha256(destination) == expected:
-        sudo_remove(destination, "bundled Kvantum Qt 6 engine")
-    elif destination.exists():
+    if owned:
+        removed = sudo_remove(destination, "bundled Kvantum Qt 6 engine")
+        if not removed and destination.exists():
+            fail(
+                "Kvantum Qt 6 engine could not be removed — retaining its "
+                "ownership marker and license for recovery"
+            )
+            return
+    elif destination.exists() or destination.is_symlink():
         warn(
             "Kvantum Qt 6 engine changed since installation — leaving the "
             "distro/user-owned plugin in place"
