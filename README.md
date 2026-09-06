@@ -93,20 +93,6 @@ An Apple-style logo sits at the center of each monitor, scaling to fit displays 
 
 <br>
 
-![Contributors](https://img.shields.io/badge/contributors-4B6B8A?style=for-the-badge&logo=github&logoColor=white)
-
-<p>
-  <a href="https://github.com/lestercorderomurillo"><img src="https://avatars.githubusercontent.com/u/24488981?v=4&amp;s=160" width="40" height="40" alt="@lestercorderomurillo" title="@lestercorderomurillo"></a>
-  <a href="https://github.com/yanhenrique-dev"><img src="https://avatars.githubusercontent.com/u/228758946?v=4&amp;s=160" width="40" height="40" alt="@yanhenrique-dev" title="@yanhenrique-dev"></a>
-  <a href="https://github.com/tuxkt"><img src="https://avatars.githubusercontent.com/u/194412810?v=4&amp;s=160" width="40" height="40" alt="@tuxkt" title="@tuxkt"></a>
-  <a href="https://github.com/caioniehues"><img src="https://avatars.githubusercontent.com/u/66445709?v=4&amp;s=160" width="40" height="40" alt="@caioniehues" title="@caioniehues"></a>
-  <a href="https://github.com/404-not-found129"><img src="https://avatars.githubusercontent.com/u/215424551?v=4&amp;s=160" width="40" height="40" alt="@404-not-found129" title="@404-not-found129"></a>
-</p>
-
-[All contributors](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/graphs/contributors)
-
-<br>
-
 ![Getting started](https://img.shields.io/badge/getting-started-3B7B5B?style=for-the-badge&logo=gnubash&logoColor=white)
 
 Open the graphical installer and choose what you'd like to install or remove:
@@ -333,6 +319,14 @@ Still to come: icon polish, broader distro testing, and more app themes and widg
 <br>
 
 ![Contributing](https://img.shields.io/badge/contributing-A04B4B?style=for-the-badge&logo=github&logoColor=white)
+
+<p>
+  <a href="https://github.com/lestercorderomurillo"><img src="src/screenshots/contributors/lestercorderomurillo.svg" width="40" height="40" alt="@lestercorderomurillo" title="@lestercorderomurillo"></a>
+  <a href="https://github.com/yanhenrique-dev"><img src="src/screenshots/contributors/yanhenrique-dev.svg" width="40" height="40" alt="@yanhenrique-dev" title="@yanhenrique-dev"></a>
+  <a href="https://github.com/tuxkt"><img src="src/screenshots/contributors/tuxkt.svg" width="40" height="40" alt="@tuxkt" title="@tuxkt"></a>
+  <a href="https://github.com/caioniehues"><img src="src/screenshots/contributors/caioniehues.svg" width="40" height="40" alt="@caioniehues" title="@caioniehues"></a>
+  <a href="https://github.com/404-not-found129"><img src="src/screenshots/contributors/404-not-found129.svg" width="40" height="40" alt="@404-not-found129" title="@404-not-found129"></a>
+</p>
 
 Thanks to everyone helping with code, translations, bug reports, and testing. You don't need to write code to contribute.
 
