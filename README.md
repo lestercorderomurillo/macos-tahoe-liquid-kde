@@ -95,8 +95,6 @@ An Apple-style logo sits at the center of each monitor, scaling to fit displays 
 
 ![Contributors](https://img.shields.io/badge/contributors-4B6B8A?style=for-the-badge&logo=github&logoColor=white)
 
-Thanks to everyone helping with code, translations, bug reports, and testing.
-
 <p>
   <a href="https://github.com/lestercorderomurillo"><img src="https://avatars.githubusercontent.com/u/24488981?v=4&amp;s=160" width="40" height="40" alt="@lestercorderomurillo" title="@lestercorderomurillo"></a>
   <a href="https://github.com/yanhenrique-dev"><img src="https://avatars.githubusercontent.com/u/228758946?v=4&amp;s=160" width="40" height="40" alt="@yanhenrique-dev" title="@yanhenrique-dev"></a>
@@ -106,8 +104,6 @@ Thanks to everyone helping with code, translations, bug reports, and testing.
 </p>
 
 [All contributors](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/graphs/contributors)
-
-Want to help? Take a look at [CONTRIBUTING.md](CONTRIBUTING.md). You don't need to write code to contribute.
 
 <br>
 
@@ -254,20 +250,18 @@ Use `all` to launch every distro.
 
 **Distributions**
 
-Tested on Arch and CachyOS. The other distributions still need more testing.
-
 | | Name | Status |
 |:--:|------|---------|
-| <img src="https://cdn.simpleicons.org/cachyos" alt="CachyOS" width="22"> | CachyOS | ![Tested](https://img.shields.io/badge/tested-1A7F37) |
-| <img src="https://cdn.simpleicons.org/archlinux" alt="Arch Linux" width="22"> | Arch Linux | ![Tested](https://img.shields.io/badge/tested-1A7F37) |
-| <img src="https://cdn.simpleicons.org/endeavouros" alt="EndeavourOS" width="22"> | EndeavourOS | ![Testing](https://img.shields.io/badge/testing-D4A72C) |
-| <img src="https://cdn.simpleicons.org/fedora" alt="Fedora" width="22"> | Fedora | ![Testing](https://img.shields.io/badge/testing-D4A72C) |
-| <img src="https://cdn.simpleicons.org/manjaro" alt="Manjaro" width="22"> | Manjaro | ![Testing](https://img.shields.io/badge/testing-D4A72C) |
-| <img src="https://cdn.simpleicons.org/linux" alt="Linux" width="22"> | Garuda Linux | ![Testing](https://img.shields.io/badge/testing-D4A72C) |
-| <img src="https://cdn.simpleicons.org/nobaralinux" alt="Nobara" width="22"> | Nobara | ![Testing](https://img.shields.io/badge/testing-D4A72C) |
-| <img src="https://cdn.simpleicons.org/opensuse" alt="openSUSE" width="22"> | openSUSE Tumbleweed | ![Testing](https://img.shields.io/badge/testing-D4A72C) |
-| <img src="https://cdn.simpleicons.org/gentoo" alt="Gentoo" width="22"> | Gentoo | ![Testing](https://img.shields.io/badge/testing-D4A72C) |
-| <img src="https://cdn.simpleicons.org/kde" alt="KDE" width="22"> | KDE neon | ![Testing](https://img.shields.io/badge/testing-D4A72C) |
+| <img src="https://cdn.simpleicons.org/cachyos" alt="CachyOS" width="22"> | CachyOS | ![Heavily tested](https://img.shields.io/badge/heavily%20tested-1A7F37) |
+| <img src="https://cdn.simpleicons.org/archlinux" alt="Arch Linux" width="22"> | Arch Linux | ![Stable](https://img.shields.io/badge/stable-1A7F37) |
+| <img src="https://cdn.simpleicons.org/endeavouros" alt="EndeavourOS" width="22"> | EndeavourOS | ![Relatively stable](https://img.shields.io/badge/relatively%20stable-D4A72C) |
+| <img src="https://cdn.simpleicons.org/fedora" alt="Fedora" width="22"> | Fedora | ![Relatively stable](https://img.shields.io/badge/relatively%20stable-D4A72C) |
+| <img src="https://cdn.simpleicons.org/manjaro" alt="Manjaro" width="22"> | Manjaro | ![Needs more testing](https://img.shields.io/badge/needs%20more%20testing-B42318) |
+| <img src="https://cdn.simpleicons.org/linux" alt="Linux" width="22"> | Garuda Linux | ![Needs more testing](https://img.shields.io/badge/needs%20more%20testing-B42318) |
+| <img src="https://cdn.simpleicons.org/nobaralinux" alt="Nobara" width="22"> | Nobara | ![Needs more testing](https://img.shields.io/badge/needs%20more%20testing-B42318) |
+| <img src="https://cdn.simpleicons.org/opensuse" alt="openSUSE" width="22"> | openSUSE Tumbleweed | ![Needs more testing](https://img.shields.io/badge/needs%20more%20testing-B42318) |
+| <img src="https://cdn.simpleicons.org/gentoo" alt="Gentoo" width="22"> | Gentoo | ![Needs more testing](https://img.shields.io/badge/needs%20more%20testing-B42318) |
+| <img src="https://cdn.simpleicons.org/kde" alt="KDE" width="22"> | KDE neon | ![Container + VM qualified](https://img.shields.io/badge/container%20%2B%20VM%20qualified-D4A72C) |
 
 <br>
 
@@ -339,6 +333,8 @@ Still to come: icon polish, broader distro testing, and more app themes and widg
 <br>
 
 ![Contributing](https://img.shields.io/badge/contributing-A04B4B?style=for-the-badge&logo=github&logoColor=white)
+
+Thanks to everyone helping with code, translations, bug reports, and testing. You don't need to write code to contribute.
 
 Bug reports are the most valuable contribution right now: **[open an issue](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/issues/new)** or choose **Apple menu → About This Computer → Report a Bug…** from the desktop.
 
