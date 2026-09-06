@@ -6,9 +6,9 @@
 
 [![release](https://img.shields.io/github/v/release/lestercorderomurillo/macos-tahoe-liquid-kde?label=release&color=blue)](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/releases) [![tests](https://img.shields.io/badge/tests-1280_passing-brightgreen)](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/actions/workflows/test.yml) [![plasma](https://img.shields.io/badge/Plasma-6.6%2B-1d99f3?logo=kde)](https://kde.org/plasma-desktop/) [![license](https://img.shields.io/badge/license-GPL--3.0-blue)](LICENSE) [![report a bug](https://img.shields.io/badge/report-a%20bug-red?logo=github)](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/issues/new)
 
-Introducing macOS Tahoe, reimagined for Linux.
+Bring a little Tahoe to your Linux desktop.
 
-The complete Tahoe experience, from liquid glass and the top menu bar to the Dock, apps, sounds, and boot screen, brought natively to KDE Plasma 6.6 and 6.7+.
+A macOS Tahoe-inspired theme for KDE Plasma 6.6 and 6.7+, with liquid glass, a top menu bar, a Dock, matching app themes, sounds, and a boot screen. Pick the parts you like in the installer.
 
 > [!CAUTION]
 > This project is experimental and under active development. Don't use it on a production system yet. KDE, KWin, or Kvantum updates may temporarily break parts of the theme; running `sudo ./install` again usually restores them. If something goes wrong, please [open an issue](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/issues/new).
@@ -19,7 +19,7 @@ The complete Tahoe experience, from liquid glass and the top menu bar to the Doc
 
 ### Acrylic Glass Tahoe Launcher
 
-Closer to the real design. Quick search, a favorites capsule, and two view modes.
+Find an app with a quick search, keep your favorites close, or browse with a choice of two views.
 
 <p align="center">
   <img src="src/screenshots/launcher_v3.png" width="415">
@@ -30,7 +30,7 @@ Closer to the real design. Quick search, a favorites capsule, and two view modes
 
 ### Acrylic Glass Tahoe Dock
 
-Liquid-glass depth with wallpaper refraction and macOS-style notification badges.
+Your apps sit on a glass Dock that refracts the wallpaper, with hover zoom and notification badges to show what needs your attention.
 
 <p align="center">
   <img src="src/screenshots/dock_1_v3.png" width="840">
@@ -40,7 +40,7 @@ Liquid-glass depth with wallpaper refraction and macOS-style notification badges
 
 ### Acrylic Glass Tahoe Finder
 
-Nautilus reshaped into Finder, with a macOS-style sidebar and clean chrome. Light and dark.
+Give Nautilus a familiar Finder feel, with a macOS-style sidebar and a simpler toolbar in both light and dark modes.
 
 <p align="center">
   <img src="src/screenshots/finder_v3.png" width="415">
@@ -51,7 +51,7 @@ Nautilus reshaped into Finder, with a macOS-style sidebar and clean chrome. Ligh
 
 ### Acrylic Glass Tahoe Menu
 
-Unified menu bar with native dropdowns. System menu, app name, and window controls in the top panel.
+Keep the system menu, active app name, and window controls together in the top bar, with app menus available for applications that support the global menu.
 
 <p align="center">
   <img src="src/screenshots/menu_v3.png" width="415">
@@ -62,7 +62,7 @@ Unified menu bar with native dropdowns. System menu, app name, and window contro
 
 ### System Information
 
-Glass system information window.
+Check your computer's details in a glass window that fits the rest of the desktop.
 
 <p align="center">
   <img src="src/screenshots/about_v3.png" width="415">
@@ -73,7 +73,7 @@ Glass system information window.
 
 ### Plasma Theme
 
-Desktop right-click with translucent glass blur.
+Even the desktop's right-click menu gets the glass treatment, with a translucent background and blur.
 
 <p align="center">
   <img src="src/screenshots/context_menu_v3.png" width="415">
@@ -84,7 +84,7 @@ Desktop right-click with translucent glass blur.
 
 ### Boot Splash
 
-Plymouth boot screen with centered Apple-style logo on every monitor, scaled dynamically from 1080p to 4K. Boot mode shows a progress bar; shutdown / reboot share the same layout without the bar. On LUKS2-encrypted installs the passphrase prompt renders under the logo with a masked field.
+An Apple-style logo sits at the center of each monitor, scaling to fit displays from 1080p to 4K. A progress bar appears during startup; shutdown and reboot keep the same layout without it. If your disk uses LUKS2 encryption, Plymouth shows a masked passphrase field below the logo.
 
 <p align="center">
   <img src="src/screenshots/boot_v3.png" width="415">
@@ -93,27 +93,32 @@ Plymouth boot screen with centered Apple-style logo on every monitor, scaled dyn
 
 <br>
 
+![Contributors](https://img.shields.io/badge/contributors-4B6B8A?style=for-the-badge&logo=github&logoColor=white)
+
+Thanks to everyone helping with code, translations, bug reports, and testing.
+
+[![Project contributors](https://contrib.rocks/image?repo=lestercorderomurillo/macos-tahoe-liquid-kde)](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/graphs/contributors)
+
+Want to help? Take a look at [CONTRIBUTING.md](CONTRIBUTING.md). You don't need to write code to contribute.
+
+<br>
+
 ![Getting started](https://img.shields.io/badge/getting-started-3B7B5B?style=for-the-badge&logo=gnubash&logoColor=white)
 
-Use the graphical installer to choose what to install or remove:
+Open the graphical installer and choose what you'd like to install or remove:
 
 ```bash
 ./installer
 ```
 
-For the terminal wizard:
+For the same choices in a terminal wizard:
 
 ```bash
 sudo ./install
 sudo ./uninstall
 ```
 
-Both installers use the same feature system and show live progress. English,
-Spanish, and Simplified Chinese are built in; choose a language in the GUI's
-bottom-right selector or the first row of the terminal wizard. “System default”
-follows the current desktop locale. Installed Plasma widgets follow the Plasma
-session language automatically. Run `sudo ./install --help` for every
-command-line option.
+Both installers show live progress and support English, Spanish, and Simplified Chinese. Run `sudo ./install --help` for all options.
 
 <br>
 
@@ -123,13 +128,13 @@ command-line option.
 - KDE Plasma 6.6+
 - Python 3.10+
 - `sudo`
-- Qt 6 path discovery: `qmake6`, `qtpaths6`, `pkg-config` with `Qt6Core.pc`, or a recognized distro layout
+- Qt 6 development tools
 - KDE and Qt 6 development packages for the compiled plasmoids and KWin effects
 - `cmake`, `g++`, and `pkg-config` when compiled features are selected
 - `dbus-send`
 - `systemctl` or `crontab` for scheduled features
 
-Fonts, icons, cursors, wallpapers, plasmoids, and Acrylic Glass ship with the repository. KDE Rounded Corners is downloaded from a pinned release, checksum-verified, and skipped cleanly when unavailable.
+Theme assets are bundled. The optional KDE Rounded Corners effect needs an internet connection; the rest installs without it.
 
 | Distro | Qt 6 tools | KDE Plasma 6 development packages |
 |--------|------------|-----------------------------------|
@@ -183,10 +188,8 @@ Useful maintenance options:
 - `--preflight` checks the system without installing.
 - `--no-apply-theme` stages files without switching the desktop.
 - `--no-grub-modify` leaves `/etc/default/grub` unchanged.
-- A wallpaper chosen for a monitor in Plasma remains unchanged at login and
-  during the 06:00/18:00 theme transitions; other monitors keep switching.
-- `--reset-wallpapers` restores the bundled wallpaper and lets timed theme
-  changes manage it again.
+- Theme changes keep any wallpaper you've chosen for each monitor.
+- `--reset-wallpapers` returns all monitors to the bundled light/dark wallpapers.
 - `./legacy-install` and `./legacy-uninstall` use the classic prompt instead of the terminal wizard.
 
 </details>
@@ -194,17 +197,9 @@ Useful maintenance options:
 <details>
 <summary><b>Firefox theme and profile safety</b></summary>
 
-The installer themes every initialized Firefox-family profile it finds in
-native, Flatpak, and Snap locations while preserving the profile's browser
-data and existing customizations. Restart each running browser when convenient
-to load the CSS.
+The Firefox theme works with native, Flatpak, and Snap profiles. Your browser data and existing customizations are preserved. Restart the browser to see the changes.
 
-Each profile receives a timestamped snapshot of `profiles.ini`, `prefs.js`,
-`user.js`, and its complete `chrome` tree under
-`~/.local/state/mac-tahoe-liquid-kde/firefox/snapshots/`. Changes begin only
-after the backup completes. Existing shared-theme layouts are preserved during
-migration, and the project's marked additions can be cleanly removed on
-uninstall. Snapshots remain available for manual recovery.
+UI settings are backed up before changes, and uninstall removes the theme's additions. Backups remain in `~/.local/state/mac-tahoe-liquid-kde/firefox/snapshots/` for recovery.
 
 </details>
 
@@ -233,49 +228,38 @@ mac-tahoe-oled-care status
 <details>
 <summary><b>Test in a virtual machine</b></summary>
 
-`./vm <distro>` opens a disposable graphical Plasma machine with the repository mounted and the installer ready. `./vm all` launches the whole matrix.
-
-The Neon profile keeps the host mount read-only and refreshes a writable guest
-copy at `/home/tester/macos-tahoe-liquid-kde` on login, because its source-built
-Qt6 components need a writable `build/` directory.
+Try the theme in a disposable Plasma VM:
 
 ```bash
-./vm cachyos
-./vm arch
-./vm manjaro
-./vm endeavouros
-./vm garuda
-./vm fedora
-./vm nobara
-./vm opensuse
-./vm neon
-./vm gentoo
-./vm gentoo-openrc
-./vm all
+./vm <os>
 ```
 
-Supported names: `cachyos`, `arch`, `manjaro`, `endeavouros`, `garuda`, `fedora`, `nobara`, `opensuse`, `neon`, `gentoo`, and `gentoo-openrc`.
+**Choose your OS:** `cachyos` · `arch` · `manjaro` · `endeavouros` · `garuda` · `fedora` · `nobara` · `opensuse` · `neon` · `gentoo` · `gentoo-openrc`
+
+Use `all` to launch every distro.
 
 </details>
 
 <br>
 
-![Compatibility](https://img.shields.io/badge/compatibility-tested%20systems-4B6B8A?style=for-the-badge&logo=linux&logoColor=white)
+![Compatibility](https://img.shields.io/badge/compatibility-system%20support-4B6B8A?style=for-the-badge&logo=linux&logoColor=white)
 
 **Distributions**
 
-| | Name | Harness |
+Tested on Arch and CachyOS. The other distributions still need more testing.
+
+| | Name | Status |
 |:--:|------|---------|
-| <img src="https://cdn.simpleicons.org/cachyos" width="22"> | CachyOS | ![Heavily tested](https://img.shields.io/badge/heavily%20tested-1A7F37) |
-| <img src="https://cdn.simpleicons.org/archlinux" width="22"> | Arch Linux | ![Stable](https://img.shields.io/badge/stable-1A7F37) |
-| <img src="https://cdn.simpleicons.org/endeavouros" width="22"> | EndeavourOS | ![Relatively stable](https://img.shields.io/badge/relatively%20stable-D4A72C) |
-| <img src="https://cdn.simpleicons.org/fedora" width="22"> | Fedora | ![Relatively stable](https://img.shields.io/badge/relatively%20stable-D4A72C) |
-| <img src="https://cdn.simpleicons.org/manjaro" width="22"> | Manjaro | ![Needs more testing](https://img.shields.io/badge/needs%20more%20testing-B42318) |
-| <img src="https://cdn.simpleicons.org/linux" width="22"> | Garuda Linux | ![Needs more testing](https://img.shields.io/badge/needs%20more%20testing-B42318) |
-| <img src="https://cdn.simpleicons.org/nobaralinux" width="22"> | Nobara | ![Needs more testing](https://img.shields.io/badge/needs%20more%20testing-B42318) |
-| <img src="https://cdn.simpleicons.org/opensuse" width="22"> | openSUSE Tumbleweed | ![Needs more testing](https://img.shields.io/badge/needs%20more%20testing-B42318) |
-| <img src="https://cdn.simpleicons.org/gentoo" width="22"> | Gentoo | ![Needs more testing](https://img.shields.io/badge/needs%20more%20testing-B42318) |
-| <img src="https://cdn.simpleicons.org/kde" width="22"> | [KDE neon](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/issues/64) | ![Container + VM qualified](https://img.shields.io/badge/container%20%2B%20VM%20qualified-D4A72C) |
+| <img src="https://cdn.simpleicons.org/cachyos" alt="CachyOS" width="22"> | CachyOS | ![Tested](https://img.shields.io/badge/tested-1A7F37) |
+| <img src="https://cdn.simpleicons.org/archlinux" alt="Arch Linux" width="22"> | Arch Linux | ![Tested](https://img.shields.io/badge/tested-1A7F37) |
+| <img src="https://cdn.simpleicons.org/endeavouros" alt="EndeavourOS" width="22"> | EndeavourOS | ![Testing](https://img.shields.io/badge/testing-D4A72C) |
+| <img src="https://cdn.simpleicons.org/fedora" alt="Fedora" width="22"> | Fedora | ![Testing](https://img.shields.io/badge/testing-D4A72C) |
+| <img src="https://cdn.simpleicons.org/manjaro" alt="Manjaro" width="22"> | Manjaro | ![Testing](https://img.shields.io/badge/testing-D4A72C) |
+| <img src="https://cdn.simpleicons.org/linux" alt="Linux" width="22"> | Garuda Linux | ![Testing](https://img.shields.io/badge/testing-D4A72C) |
+| <img src="https://cdn.simpleicons.org/nobaralinux" alt="Nobara" width="22"> | Nobara | ![Testing](https://img.shields.io/badge/testing-D4A72C) |
+| <img src="https://cdn.simpleicons.org/opensuse" alt="openSUSE" width="22"> | openSUSE Tumbleweed | ![Testing](https://img.shields.io/badge/testing-D4A72C) |
+| <img src="https://cdn.simpleicons.org/gentoo" alt="Gentoo" width="22"> | Gentoo | ![Testing](https://img.shields.io/badge/testing-D4A72C) |
+| <img src="https://cdn.simpleicons.org/kde" alt="KDE" width="22"> | KDE neon | ![Testing](https://img.shields.io/badge/testing-D4A72C) |
 
 <br>
 
@@ -300,46 +284,47 @@ Supported names: `cachyos`, `arch`, `manjaro`, `endeavouros`, `garuda`, `fedora`
 
 ![Roadmap](https://img.shields.io/badge/project-roadmap-6B4B8A?style=for-the-badge&logo=github&logoColor=white)
 
-Most of the desktop is ready. Icons and multi-distro support are still being polished; the remaining app themes and plasmoids are planned.
+Still to come: icon polish, broader distro testing, and more app themes and widgets.
 
 <details>
 <summary><b>Open the full roadmap</b></summary>
 
 | Component | Description | Status |
 |-----------|-------------|:------:|
-| Color Schemes | Light and dark desktop palettes | Completed |
-| Wallpapers | Tahoe Iridescence and Landscape variants | Completed |
-| Fonts | SF Pro Display, Text, Rounded, and Mono | Completed |
-| Cursors | Tahoe-style pointers | Completed |
-| Plasma Theme | Translucent panels and shell surfaces | Completed |
-| Kvantum Theme | Matching Qt app styling | Completed |
-| GTK Theme | Matching GTK 2, 3, and 4 styling | Completed |
-| Acrylic Glass | Blur and glass effects across the desktop | Completed |
-| KDE Rounded Corners | Rounded windows built for the installed KWin | Completed |
-| Auto Theme Switcher | Scheduled light and dark desktop modes | Completed |
-| OLED Care | Optional panel pixel shifting | Completed |
-| Installer UI | Graphical installer with a feature picker | Completed |
-| Installer TUI | Terminal feature picker and live progress | Completed |
-| Localization | English, Spanish, and Simplified Chinese installer and widget UI | Completed |
-| Aurorae Decorations | macOS-style title bars and controls | Completed |
-| Global Menu | App menus in the top bar | Completed |
-| Dock Task Manager | Dock with notification badges | Completed |
-| Nautilus | Finder-style file manager setup | Completed |
-| Launcher | Searchable app grid | Completed |
-| Trash | Dock Trash widget | Completed |
-| Sounds | Notification and event sounds | Completed |
-| Boot Screen | Plymouth startup splash | Completed |
-| Shutdown Screen | Matching shutdown sequence | Completed |
-| Icons | Complete light and dark icon set | In progress |
-| Multi-Distro Support | Arch, Fedora, openSUSE, and Gentoo families | In progress |
-| Firefox Theme | Matching browser CSS with per-profile backup and restore | Completed |
-| Konsole Theme | Matching terminal profile | Planned |
-| Kate Theme | Matching editor theme | Planned |
-| SDDM Theme | Login and lock screen | Planned |
-| Calendar | Calendar dropdown | Planned |
-| Control Center | Quick settings panel | Planned |
-| System Preferences | macOS-style settings launcher | Planned |
-| OS Selector | Boot manager and OS picker | Planned |
+| Color Schemes | Light and dark colors that carry across the desktop | Available |
+| Wallpapers | Bundled Tahoe Iridescence and Landscape wallpapers | Available |
+| Fonts | SF Pro Display, Text, Rounded, and Mono | Available |
+| Cursors | Tahoe-style pointers to match the desktop | Available |
+| Plasma Theme | Glass panels and desktop menus | Available |
+| Kvantum Theme | A matching look for Qt apps in light and dark modes | Available |
+| GTK Theme | Matching themes for GTK 2, 3, and 4 apps | Available |
+| Acrylic Glass | Blur and wallpaper refraction for the glass look | Available |
+| KDE Rounded Corners | Rounded window corners | Available |
+| Auto Theme Switcher | Light at 06:00, dark at 18:00, while keeping wallpapers you choose | Available |
+| OLED Care | Small, optional panel shifts to help reduce burn-in risk | Available |
+| Installer UI | Choose what to install or remove in a graphical window | Available |
+| Installer TUI | Make the same choices in the terminal and follow live progress | Available |
+| Localization | Installers and widgets in English, Spanish, and Simplified Chinese | Available |
+| Aurorae Decorations | macOS-style title bars and window buttons | Available |
+| Global Menu | Menus from compatible apps in the top bar | Available |
+| Dock Task Manager | Your pinned apps, hover zoom, and notification badges | Available |
+| Nautilus | A Finder-style layout for browsing your files | Available |
+| Launcher | Search for apps or browse the grid | Available |
+| Trash | Open or empty the Trash from the Dock | Available |
+| Sounds | Matching notification and system sounds | Available |
+| Boot Screen | A logo on every monitor, a progress bar, and a masked LUKS2 unlock prompt | Available |
+| Shutdown Screen | The same splash during shutdown and reboot, without the progress bar | Available |
+| Firefox Theme | Matching browser styling, with backups and cleanup for each profile | Available |
+| Icons | Light and dark icons are bundled; coverage and consistency still need polish | In progress |
+| Multi-Distro Support | More desktop testing across the listed distros, including KDE neon | In progress |
+| OpenRC Testing | Scheduled theme changes and OLED care on OpenRC | In progress |
+| Konsole Theme | A terminal profile that matches the desktop | Planned |
+| Kate Theme | Matching colors for the text editor | Planned |
+| SDDM Theme | A matching login screen | Planned |
+| Calendar | A calendar you can open from the top bar | Planned |
+| Control Center | Quick access to common desktop settings | Planned |
+| System Preferences | A macOS-style launcher for system settings | Planned |
+| OS Selector | A boot menu for choosing your operating system | Planned |
 
 </details>
 
