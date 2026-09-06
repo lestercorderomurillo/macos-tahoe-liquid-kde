@@ -2,12 +2,18 @@
     "KPackageStructure": "Plasma/Applet",
     "KPlugin": {
         "Category": "Windows and Tasks",
+        "Category[es]": "Ventanas y tareas",
+        "Category[zh_CN]": "窗口和任务",
         "Description": "MacTahoe Liquid KDE icons-only dock task manager with macOS-style badges",
+        "Description[es]": "Gestor de tareas del Dock de MacTahoe Liquid KDE de solo iconos con insignias de estilo macOS",
+        "Description[zh_CN]": "带 macOS 风格徽标的 MacTahoe Liquid KDE 纯图标 Dock 任务管理器",
         "EnabledByDefault": false,
         "Icon": "preferences-system-windows",
         "Id": "org.kde.mac.tahoe.liquid.icontasks",
         "License": "GPL-3.0",
-        "Name": "Icons-Only Task Manager"
+        "Name": "Icons-Only Task Manager",
+        "Name[es]": "Gestor de tareas de solo iconos",
+        "Name[zh_CN]": "纯图标任务管理器"
     },
     "X-Plasma-API-Minimum-Version": "6.0",
     "X-Plasma-Provides": [

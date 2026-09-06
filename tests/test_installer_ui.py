@@ -15,6 +15,14 @@ def installer_ui_module():
     return installer_ui
 
 
+
+@pytest.fixture(autouse=True)
+def stable_installer_language(monkeypatch):
+    """A user's persisted GUI choice must not change test expectations."""
+    import installer_ui
+    monkeypatch.setattr(installer_ui, "get_language", lambda: "en")
+
+
 def test_preview_qml_exists(repo):
     assert (repo / "src/installer/preview_installer.qml").is_file()
     assert (repo / "src/installer/InstallerWindow.qml").is_file()

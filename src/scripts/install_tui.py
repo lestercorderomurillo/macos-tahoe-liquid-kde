@@ -13,6 +13,7 @@ import os
 import re
 import sys
 import threading
+import unicodedata
 
 # curses is stdlib on most distros, but openSUSE splits it into a
 # separate package (python3-curses). This module must still import so
@@ -23,6 +24,10 @@ except ImportError:
     curses = None  # type: ignore[assignment]
 
 from cli import ALL_FEATURES, DEFAULT_FEATURES, FEATURE_DESC, _coerce_int
+from localization import (
+    LANGUAGE_CODES, feature_label, get_language,
+    language_options, set_language, translate,
+)
 from log import DONE_MARKER, PROGRESS_FILE
 from paths import read_version
 
@@ -56,10 +61,8 @@ _ACTION_DESC = {
 
 
 def _name(key: str) -> str:
-    return _NAME_OVERRIDES.get(key, key.replace("_", " ").title())
+    return _NAME_OVERRIDES.get(key, feature_label(key, "en"))
 
-
-_NAME_WIDTH = max(len(_name(k)) for k in (*ALL_FEATURES, *_ACTION_DESC))
 
 # (key, label, lo, hi, unit)
 _INT_ROWS = {
@@ -83,11 +86,12 @@ class Wizard:
         self.feat: dict[str, object] = dict(feat)
         self.existing_install = bool(self.feat.get("_existing_install", False))
         self.feat.setdefault("_reset_wallpapers", False)
+        self.feat.setdefault("_language", get_language())
         self.rows: list[tuple[str, str]] = self._build_rows()
         self.cursor = 0
 
     def _build_rows(self) -> list[tuple[str, str]]:
-        rows: list[tuple[str, str]] = []
+        rows: list[tuple[str, str]] = [("language", "_language")]
         if self.mode == "install":
             rows.append(("radio", "theme_mode"))
         rows.extend(("toggle", k) for k in FEATURE_ORDER)
@@ -113,7 +117,7 @@ class Wizard:
         kind, key = self.current()
         if kind in ("toggle", "action"):
             self.feat[key] = not bool(self.feat.get(key, True))
-        elif kind == "radio":
+        elif kind in ("radio", "language"):
             self.adjust(1)
 
     def adjust(self, delta: int) -> None:
@@ -123,6 +127,10 @@ class Wizard:
             mode = str(self.feat.get(key, "auto"))
             i = THEME_MODES.index(mode) if mode in THEME_MODES else 0
             self.feat[key] = THEME_MODES[(i + delta) % len(THEME_MODES)]
+        elif kind == "language":
+            language = str(self.feat.get(key, "auto"))
+            i = LANGUAGE_CODES.index(language) if language in LANGUAGE_CODES else 0
+            self.feat[key] = LANGUAGE_CODES[(i + delta) % len(LANGUAGE_CODES)]
         elif kind == "int":
             _, lo, hi, _ = _INT_ROWS[key]
             cur = _coerce_int(self.feat.get(key), lo, lo, hi)
@@ -149,6 +157,7 @@ class Wizard:
         out["_existing_install"] = self.existing_install
         out["_reset_wallpapers"] = bool(
             self.feat.get("_reset_wallpapers", False))
+        out["_language"] = str(self.feat.get("_language", "auto"))
         # Selections always persist to features.json on install so the
         # next run (and the GUI picker) starts from the same state.
         out["_save"] = self.mode == "install"
@@ -232,7 +241,25 @@ def _put(scr, y: int, x: int, text: str, attr: int = 0) -> int:
         scr.addnstr(y, x, text, max(0, w - x - 1), attr)
     except (curses.error, UnicodeEncodeError):
         pass
-    return x + len(text)
+    return x + _display_width(text)
+
+
+def _display_width(text: str) -> int:
+    """Terminal cell width without a third-party wcwidth dependency."""
+    return sum(
+        0 if unicodedata.combining(char)
+        else 2 if unicodedata.east_asian_width(char) in ("W", "F")
+        else 1
+        for char in text
+    )
+
+
+def _pad(text: str, width: int) -> str:
+    return text + " " * max(0, width - _display_width(text))
+
+
+def _center_x(screen_width: int, text: str, minimum: int = 0) -> int:
+    return max(minimum, (screen_width - _display_width(text)) // 2)
 
 
 def _draw_header(scr) -> int:
@@ -254,7 +281,7 @@ def _draw_footer(scr, hints: list[tuple[str, str]]) -> None:
     edge so it breathes."""
     h, w = scr.getmaxyx()
     y = h - 2
-    width = sum(len(k) + 1 + len(lb) for k, lb in hints) \
+    width = sum(_display_width(k) + 1 + _display_width(lb) for k, lb in hints) \
         + 3 * (len(hints) - 1)
     x = max(2, (w - width) // 2)
     for i, (k, label) in enumerate(hints):
@@ -264,13 +291,31 @@ def _draw_footer(scr, hints: list[tuple[str, str]]) -> None:
             x = _put(scr, y, x, "   ")
 
 
+def _wiz_language(wiz: Wizard) -> str:
+    return str(wiz.feat.get("_language", "auto"))
+
+
+def _t(wiz: Wizard, message: str, **values: object) -> str:
+    return translate(message, _wiz_language(wiz), **values)
+
+
+def _translated_name(wiz: Wizard, key: str) -> str:
+    return translate(_name(key), _wiz_language(wiz))
+
+
+def _name_width(wiz: Wizard) -> int:
+    return max(_display_width(_translated_name(wiz, key))
+               for key in (*ALL_FEATURES, *_ACTION_DESC))
+
+
 # Left margin that centres the widest checklist row.
-def _list_margin(w: int) -> int:
-    return max(4, (w - (_NAME_WIDTH + 40)) // 2)
+def _list_margin(w: int, wiz: Wizard) -> int:
+    return max(4, (w - (_name_width(wiz) + 40)) // 2)
 
 
 def _draw_row(scr, y: int, wiz: Wizard, i: int, margin: int) -> None:
     kind, key = wiz.rows[i]
+    name_width = _name_width(wiz)
     sel = i == wiz.cursor
     if sel:
         _put(scr, y, margin - 2, "›", _c(_P_GREEN, curses.A_BOLD))
@@ -281,9 +326,9 @@ def _draw_row(scr, y: int, wiz: Wizard, i: int, margin: int) -> None:
         x = _put(scr, y, margin, "[", focus)
         x = _put(scr, y, x, "✓" if on else " ", _c(_P_GREEN, curses.A_BOLD))
         x = _put(scr, y, x, "]  ", focus)
-        x = _put(scr, y, x, _name(key).ljust(_NAME_WIDTH + 2),
+        x = _put(scr, y, x, _pad(_translated_name(wiz, key), name_width + 2),
                  focus if on else _c(_P_DIM, focus))
-        _put(scr, y, x, FEATURE_DESC.get(key, ""), _c(_P_DIM))
+        _put(scr, y, x, _t(wiz, FEATURE_DESC.get(key, "")), _c(_P_DIM))
         return
     if kind == "action":
         on = bool(wiz.feat.get(key, False))
@@ -291,31 +336,43 @@ def _draw_row(scr, y: int, wiz: Wizard, i: int, margin: int) -> None:
         x = _put(scr, y, x, "✓" if on else " ",
                  _c(_P_YELLOW, curses.A_BOLD))
         x = _put(scr, y, x, "]  ", focus)
-        x = _put(scr, y, x, _name(key).ljust(_NAME_WIDTH + 2), focus)
-        _put(scr, y, x, _ACTION_DESC[key], _c(_P_DIM))
+        x = _put(scr, y, x, _pad(_translated_name(wiz, key), name_width + 2), focus)
+        _put(scr, y, x, _t(wiz, _ACTION_DESC[key]), _c(_P_DIM))
+        return
+    if kind == "language":
+        selected = str(wiz.feat.get(key, "auto"))
+        labels = {item["code"]: item["label"]
+                  for item in language_options(_wiz_language(wiz))}
+        display = labels.get(selected, labels["auto"])
+        if selected == "auto":
+            display = _t(wiz, display)
+        x = _put(scr, y, margin, "     ")
+        x = _put(scr, y, x, _pad(_t(wiz, "Language"), name_width + 2), focus)
+        _put(scr, y, x, f"‹ {display} ›", _c(_P_YELLOW, curses.A_BOLD | focus))
         return
     if kind == "radio":
         mode = str(wiz.feat.get(key, "auto"))
         x = _put(scr, y, margin, "     ")
-        x = _put(scr, y, x, "Theme Mode".ljust(_NAME_WIDTH + 2), focus)
+        x = _put(scr, y, x, _pad(_t(wiz, "Theme Mode"), name_width + 2), focus)
         for m in THEME_MODES:
+            label = _t(wiz, m.title())
             if m == mode:
-                x = _put(scr, y, x, f"(•) {m.title()}",
+                x = _put(scr, y, x, f"(•) {label}",
                          _c(_P_YELLOW, curses.A_BOLD | focus))
             else:
-                x = _put(scr, y, x, f"( ) {m.title()}", _c(_P_DIM, focus))
+                x = _put(scr, y, x, f"( ) {label}", _c(_P_DIM, focus))
             x = _put(scr, y, x, "  ")
         return
     label, lo, hi, unit = _INT_ROWS[key]
     val = _coerce_int(wiz.feat.get(key), lo, lo, hi)
     oled_on = bool(wiz.feat.get("oled_care", False))
     x = _put(scr, y, margin, "     ")
-    x = _put(scr, y, x, label.ljust(_NAME_WIDTH + 2),
+    x = _put(scr, y, x, _pad(_t(wiz, label), name_width + 2),
              focus if oled_on else _c(_P_DIM))
     x = _put(scr, y, x, f"‹ {val} {unit} ›",
              _c(_P_YELLOW, curses.A_BOLD | focus) if oled_on else _c(_P_DIM))
     if not oled_on:
-        _put(scr, y, x, "   needs OLED Care", _c(_P_DIM))
+        _put(scr, y, x, "   " + _t(wiz, "needs OLED Care"), _c(_P_DIM))
 
 
 _SELECT_PROMPT = {
@@ -328,11 +385,11 @@ def _draw_select(scr, wiz: Wizard, top: int) -> int:
     scr.erase()
     h, w = scr.getmaxyx()
     body_top = _draw_header(scr)
-    prompt = _SELECT_PROMPT.get(wiz.mode, _SELECT_PROMPT["install"])
-    _put(scr, body_top, max(2, (w - len(prompt)) // 2), prompt)
+    prompt = _t(wiz, _SELECT_PROMPT.get(wiz.mode, _SELECT_PROMPT["install"]))
+    _put(scr, body_top, _center_x(w, prompt, 2), prompt)
     body_top += 2
     body_h = max(1, h - body_top - 2)
-    margin = _list_margin(w)
+    margin = _list_margin(w, wiz)
 
     # Keep the cursor visible.
     if wiz.cursor < top:
@@ -346,9 +403,9 @@ def _draw_select(scr, wiz: Wizard, top: int) -> int:
 
     if top + body_h < len(wiz.rows):
         _put(scr, body_top + body_h, margin, "…", _c(_P_DIM))
-    _draw_footer(scr, [("↑↓", "Move"), ("Space", "Toggle"),
-                       ("←→", "Adjust"), ("Enter", "Continue"),
-                       ("Q", "Quit")])
+    _draw_footer(scr, [("↑↓", _t(wiz, "Move")), ("Space", _t(wiz, "Toggle")),
+                       ("←→", _t(wiz, "Adjust")), ("Enter", _t(wiz, "Continue")),
+                       ("Q", _t(wiz, "Quit"))])
     return top
 
 
@@ -358,51 +415,55 @@ def _draw_summary(scr, wiz: Wizard, cursor: int) -> int:
     scr.erase()
     _, w = scr.getmaxyx()
     y = _draw_header(scr)
-    margin = _list_margin(w)
+    margin = _list_margin(w, wiz)
 
     for line in _WARNING[wiz.mode]:
-        _put(scr, y, margin, line, _c(_P_RED, curses.A_BOLD))
+        _put(scr, y, margin, _t(wiz, line), _c(_P_RED, curses.A_BOLD))
         y += 1
     y += 1
 
     on, total = wiz.enabled_count()
-    verb = "Installing" if wiz.mode == "install" else "Removing"
     x = _put(scr, y, margin, "✓ ", _c(_P_GREEN, curses.A_BOLD))
-    _put(scr, y, x, f"{verb} {on} of {total} components", curses.A_BOLD)
+    summary = ("Installing {enabled} of {total} components"
+               if wiz.mode == "install"
+               else "Removing {enabled} of {total} components")
+    _put(scr, y, x, _t(wiz, summary, enabled=on, total=total), curses.A_BOLD)
     y += 1
     off = [key for kind, key in wiz.rows
            if kind == "toggle" and not wiz.feat.get(key, True)]
     if off:
-        skipped = "Skipped: " + ", ".join(_name(k) for k in off)
+        skipped = _t(
+            wiz, "Skipped: {items}",
+            items=", ".join(_translated_name(wiz, k) for k in off))
         _put(scr, y, margin, skipped, _c(_P_DIM))
         y += 1
     if wiz.mode == "install":
-        x = _put(scr, y, margin, "Theme Mode: ")
-        _put(scr, y, x, str(wiz.feat.get("theme_mode", "auto")).title(),
+        mode = _t(wiz, str(wiz.feat.get("theme_mode", "auto")).title())
+        _put(scr, y, margin, _t(wiz, "Theme Mode: {mode}", mode=mode),
              _c(_P_YELLOW, curses.A_BOLD))
         y += 1
         if wiz.feat.get("oled_care"):
-            x = _put(scr, y, margin, "OLED Care: ")
-            _put(scr, y, x,
-                 f"every {wiz.feat.get('oled_interval', 5)} min, "
-                 f"max {wiz.feat.get('oled_max_shift', 8)} px",
-                 _c(_P_YELLOW, curses.A_BOLD))
+            _put(scr, y, margin, _t(
+                wiz, "OLED Care: every {interval} min, max {shift} px",
+                interval=wiz.feat.get("oled_interval", 5),
+                shift=wiz.feat.get("oled_max_shift", 8)),
+                _c(_P_YELLOW, curses.A_BOLD))
             y += 1
         if wiz.existing_install:
             reset_wp = bool(wiz.feat.get("_reset_wallpapers"))
-            x = _put(scr, y, margin, "Wallpapers: ")
-            _put(scr, y, x,
-                 "Reset to theme defaults" if reset_wp
-                 else "Keep smart light/dark choices",
+            choice = ("Reset to theme defaults" if reset_wp
+                      else "Keep smart light/dark choices")
+            _put(scr, y, margin, _t(
+                wiz, "Wallpapers: {choice}", choice=_t(wiz, choice)),
                  _c(_P_YELLOW if reset_wp else _P_GREEN, curses.A_BOLD))
             y += 1
         y += 1
-        _put(scr, y, margin, "Your selection is saved to features.json",
+        _put(scr, y, margin, _t(wiz, "Your selection is saved to features.json"),
              _c(_P_DIM))
         y += 1
     y += 1
 
-    for i, item in enumerate(("Confirm", "Back")):
+    for i, item in enumerate((_t(wiz, "Confirm"), _t(wiz, "Back"))):
         sel = i == cursor
         if sel:
             _put(scr, y, margin, "•", _c(_P_WHITE, curses.A_BOLD))
@@ -410,8 +471,8 @@ def _draw_summary(scr, wiz: Wizard, cursor: int) -> int:
              _c(_P_WHITE, curses.A_BOLD if sel else 0))
         y += 1
 
-    _draw_footer(scr, [("↑↓", "Move"), ("Enter", "Select"),
-                       ("Esc", "Back"), ("Q", "Quit")])
+    _draw_footer(scr, [("↑↓", _t(wiz, "Move")), ("Enter", _t(wiz, "Select")),
+                       ("Esc", _t(wiz, "Back")), ("Q", _t(wiz, "Quit"))])
     return 2
 
 
@@ -488,7 +549,11 @@ def run_wizard(feat: dict[str, object],
     if curses is None:
         raise RuntimeError("curses unavailable")
     wiz = Wizard(feat, mode)
-    return curses.wrapper(lambda scr: _run(scr, wiz))
+    result = curses.wrapper(lambda scr: _run(scr, wiz))
+    if result is not None:
+        language = str(result.pop("_language", "auto"))
+        set_language(language)
+    return result
 
 
 # ── live progress screen ──────────────────────────────────────────────
@@ -678,11 +743,14 @@ def _phase_index(mode: str, records: list[str]) -> int:
 
 
 def _draw_phases(scr, y: int, w: int, mode: str, phase: int,
-                 finished: bool, rc_ok: bool, frame: int) -> None:
+                 finished: bool, rc_ok: bool, frame: int,
+                 language: str = "auto") -> None:
     labels = _PHASES.get(mode, _PHASES["install"])
+    labels = tuple(translate(label, language) for label in labels)
     spinner = _SPINNER[frame % len(_SPINNER)]
     gap = "     "
-    width = sum(len(lb) + 2 for lb in labels) + len(gap) * (len(labels) - 1)
+    width = sum(_display_width(lb) + 2 for lb in labels) \
+        + len(gap) * (len(labels) - 1)
     x = max(2, (w - width) // 2)
     for i, label in enumerate(labels):
         if finished and not rc_ok and i == phase:
@@ -703,7 +771,7 @@ def _draw_phases(scr, y: int, w: int, mode: str, phase: int,
 
 def _draw_progress(scr, mode: str, records: list[str], total: int,
                    finished: bool, rc_ok: bool, frame: int,
-                   log_path: str) -> None:
+                   log_path: str, language: str = "auto") -> None:
     scr.erase()
     h, w = scr.getmaxyx()
     y = _draw_header(scr)
@@ -718,7 +786,7 @@ def _draw_progress(scr, mode: str, records: list[str], total: int,
                 x = _put(scr, y + i, x, text, attr)
 
     _draw_phases(scr, h - 4, w, mode, _phase_index(mode, records),
-                 finished, rc_ok, frame)
+                 finished, rc_ok, frame, language)
 
     # The estimate can miss best-effort steps (the layout retry only
     # runs on failure), so clamp — never show 27/26.
@@ -733,15 +801,17 @@ def _draw_progress(scr, mode: str, records: list[str], total: int,
 
     # Centred status line at the very bottom.
     if finished and rc_ok:
-        msg = "✓ Done — press any key to exit."
+        msg = "✓ " + translate("Done — press any key to exit.", language)
         attr = _c(_P_GREEN, curses.A_BOLD)
     elif finished:
-        msg = f"✗ Finished with errors — full log: {log_path}"
+        msg = "✗ " + translate(
+            "Finished with errors — full log: {path}", language,
+            path=log_path)
         attr = _c(_P_RED, curses.A_BOLD)
     else:
-        msg = "Working…  press Ctrl-C to abort"
+        msg = translate("Working…  press Ctrl-C to abort", language)
         attr = _c(_P_DIM)
-    _put(scr, h - 1, max(2, (w - len(msg)) // 2), msg, attr)
+    _put(scr, h - 1, _center_x(w, msg, 2), msg, attr)
     scr.refresh()
 
 
@@ -760,7 +830,7 @@ def _disable_flow_control() -> None:
 
 
 def _progress_main(scr, thread, result: dict, total: int, mode: str,
-                   log_path: str) -> None:
+                   log_path: str, language: str = "auto") -> None:
     _init_colors()
     try:
         curses.curs_set(0)
@@ -777,7 +847,8 @@ def _progress_main(scr, thread, result: dict, total: int, mode: str,
         # not kill the screen; skip it and retry on the next tick.
         try:
             _draw_progress(scr, mode, _read_progress_records(), total,
-                           finished, result.get("rc") == 0, frame, log_path)
+                           finished, result.get("rc") == 0, frame, log_path,
+                           language)
         except Exception:
             pass
         frame += 1
@@ -816,6 +887,7 @@ def run_progress(runner, total: int, mode: str = "install") -> int:
         return int(runner())
 
     result: dict = {"rc": None}
+    language = get_language()
 
     def work() -> None:
         try:
@@ -834,7 +906,7 @@ def run_progress(runner, total: int, mode: str = "install") -> int:
     try:
         curses.wrapper(
             lambda scr: _progress_main(scr, thread, result, total, mode,
-                                       log_path))
+                                       log_path, language))
     except KeyboardInterrupt:
         # Match classic-flow semantics: Ctrl-C aborts the whole process
         # (cli.run_install prints Aborted / rc 130); the daemon worker

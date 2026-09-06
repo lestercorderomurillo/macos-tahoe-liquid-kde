@@ -41,7 +41,7 @@ Window {
         return (bg.r * 0.299 + bg.g * 0.587 + bg.b * 0.114) < 0.5;
     }
 
-    title: "Features"
+    title: t("Features")
     width: windowWidth
     height: windowHeight
     minimumWidth: windowWidth
@@ -59,6 +59,13 @@ Window {
 
     function _shellQuote(text: string): string {
         return "'" + text.replace(/'/g, "'\"'\"'") + "'";
+    }
+
+    function t(message: string): string {
+        if (!installer)
+            return message;
+        const languageRevision = installer.language;
+        return installer.translate(message);
     }
 
     function refresh(): void {
@@ -108,7 +115,7 @@ Window {
                 featuresWindow.loaded = true;
             } catch (e) {
                 featuresWindow.statusKind = "error";
-                featuresWindow.statusMessage = "Could not load features.";
+                featuresWindow.statusMessage = featuresWindow.t("Could not load features.");
             }
         }
     }
@@ -129,6 +136,14 @@ Window {
 
     onVisibleChanged: {
         if (visible) refresh();
+    }
+
+    Connections {
+        target: installer ? installer : null
+        function onLanguageChanged() {
+            if (featuresWindow.visible)
+                featuresWindow.refresh();
+        }
     }
 
     Rectangle {
@@ -220,7 +235,7 @@ Window {
 
             Text {
                 Layout.alignment: Qt.AlignHCenter
-                text: "Features"
+                text: featuresWindow.t("Features")
                 color: Kirigami.Theme.textColor
                 font.family: featuresWindow.fontFamily
                 font.pointSize: Kirigami.Theme.defaultFont.pointSize * 1.4
@@ -232,7 +247,7 @@ Window {
                 Layout.preferredWidth: 420
                 horizontalAlignment: Text.AlignHCenter
                 wrapMode: Text.WordWrap
-                text: "Choose what gets installed"
+                text: featuresWindow.t("Choose what gets installed")
                 color: Kirigami.Theme.disabledTextColor
                 font.family: featuresWindow.fontFamily
                 font.pointSize: Kirigami.Theme.defaultFont.pointSize * 0.9

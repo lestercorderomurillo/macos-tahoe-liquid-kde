@@ -170,12 +170,12 @@ PlasmaCore.ToolTipArea {
         }
 
         if (model.IsLauncher) {
-            return i18nc("@info:usagetip %1 application name", "Launch %1", model.display)
+            return i18ndc("plasma_applet_org.kde.plasma.taskmanager", "@info:usagetip %1 application name", "Launch %1", model.display)
         }
 
         let smartLauncherDescription = "";
         if (iconBox.active) {
-            smartLauncherDescription += i18ncp("@info:tooltip", "There is %1 new message.", "There are %1 new messages.", task.smartLauncherItem.count);
+            smartLauncherDescription += i18ndcp("plasma_applet_org.kde.plasma.taskmanager", "@info:tooltip", "There is %1 new message.", "There are %1 new messages.", task.smartLauncherItem.count);
         }
 
         if (model.IsGroupParent) {
@@ -183,20 +183,20 @@ PlasmaCore.ToolTipArea {
             case 0:
                 break; // Use the default description
             case 1: {
-                return `${i18nc("@info:usagetip %1 task name", "Show Task tooltip for %1", model.display)}; ${smartLauncherDescription}`;
+                return `${i18ndc("plasma_applet_org.kde.plasma.taskmanager", "@info:usagetip %1 task name", "Show Task tooltip for %1", model.display)}; ${smartLauncherDescription}`;
             }
             case 2: {
                 if (effectWatcher.registered) {
-                    return `${i18nc("@info:usagetip %1 task name", "Show windows side by side for %1", model.display)}; ${smartLauncherDescription}`;
+                    return `${i18ndc("plasma_applet_org.kde.plasma.taskmanager", "@info:usagetip %1 task name", "Show windows side by side for %1", model.display)}; ${smartLauncherDescription}`;
                 }
                 // fallthrough
             }
             default:
-                return `${i18nc("@info:usagetip %1 task name", "Open textual list of windows for %1", model.display)}; ${smartLauncherDescription}`;
+                return `${i18ndc("plasma_applet_org.kde.plasma.taskmanager", "@info:usagetip %1 task name", "Open textual list of windows for %1", model.display)}; ${smartLauncherDescription}`;
             }
         }
 
-        return `${i18nc("@info:usagetip %1 task name", "Activate %1", model.display)}; ${smartLauncherDescription}`;
+        return `${i18ndc("plasma_applet_org.kde.plasma.taskmanager", "@info:usagetip %1 task name", "Activate %1", model.display)}; ${smartLauncherDescription}`;
     }
     Accessible.role: Accessible.Button
     Accessible.onPressAction: leftTapHandler.leftClick()

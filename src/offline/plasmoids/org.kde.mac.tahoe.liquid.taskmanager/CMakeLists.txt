@@ -37,7 +37,10 @@ find_package(LibNotificationManager REQUIRED)
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-add_definitions(-DTRANSLATION_DOMAIN="plasma_applet_org.kde.mac.tahoe.liquid.taskmanager")
+# The dock is based on Plasma's task manager and deliberately reuses its
+# complete, distribution-provided translation catalogs. Project-only strings
+# name their custom domain explicitly with i18nd().
+add_definitions(-DTRANSLATION_DOMAIN="plasma_applet_org.kde.plasma.taskmanager")
 
 file(GLOB_RECURSE TASKMANAGER_QML CONFIGURE_DEPENDS
     RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}"

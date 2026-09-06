@@ -34,7 +34,7 @@ KCM.SimpleKCM {
         // Icon
         Kirigami.ActionTextField {
             id: iconField
-            Kirigami.FormData.label: "Menu icon:"
+            Kirigami.FormData.label: i18n("Menu icon:")
             text: cfg_menuIcon
             readOnly: true
 
@@ -56,32 +56,32 @@ KCM.SimpleKCM {
             property string currentIcon: Plasmoid.configuration.menuIcon
 
             icon.name: currentIcon
-            text: "Choose..."
+            text: i18n("Choose…")
             onClicked: iconDialog.open()
         }
 
         // Appearance
         Kirigami.Separator {
             Kirigami.FormData.isSection: true
-            Kirigami.FormData.label: "Appearance"
+            Kirigami.FormData.label: i18n("Appearance")
         }
 
         QQC2.CheckBox {
             id: useSystemFontCheck
-            Kirigami.FormData.label: "About window:"
-            text: "Use system font instead of SF Pro"
+            Kirigami.FormData.label: i18n("About window:")
+            text: i18n("Use system font instead of SF Pro")
             checked: Plasmoid.configuration.useSystemFont
         }
 
         // Icons
         Kirigami.Separator {
             Kirigami.FormData.isSection: true
-            Kirigami.FormData.label: "Menu Item Icons"
+            Kirigami.FormData.label: i18n("Menu Item Icons")
         }
 
         Kirigami.ActionTextField {
             id: iconAboutField
-            Kirigami.FormData.label: "About This Computer:"
+            Kirigami.FormData.label: i18n("About This Computer:")
             text: Plasmoid.configuration.iconAbout
             rightActions: [ Kirigami.Action { icon.name: "document-open"; onTriggered: { iconAboutDialog.open() } } ]
         }
@@ -89,7 +89,7 @@ KCM.SimpleKCM {
 
         Kirigami.ActionTextField {
             id: iconSystemSettingsField
-            Kirigami.FormData.label: "System Settings:"
+            Kirigami.FormData.label: i18n("System Settings:")
             text: Plasmoid.configuration.iconSystemSettings
             rightActions: [ Kirigami.Action { icon.name: "document-open"; onTriggered: { iconSystemSettingsDialog.open() } } ]
         }
@@ -97,7 +97,7 @@ KCM.SimpleKCM {
 
         Kirigami.ActionTextField {
             id: iconAppStoreField
-            Kirigami.FormData.label: "App Store:"
+            Kirigami.FormData.label: i18n("App Store:")
             text: Plasmoid.configuration.iconAppStore
             rightActions: [ Kirigami.Action { icon.name: "document-open"; onTriggered: { iconAppStoreDialog.open() } } ]
         }
@@ -105,7 +105,7 @@ KCM.SimpleKCM {
 
         Kirigami.ActionTextField {
             id: iconForceQuitField
-            Kirigami.FormData.label: "Force Quit:"
+            Kirigami.FormData.label: i18n("Force Quit:")
             text: Plasmoid.configuration.iconForceQuit
             rightActions: [ Kirigami.Action { icon.name: "document-open"; onTriggered: { iconForceQuitDialog.open() } } ]
         }
@@ -113,7 +113,7 @@ KCM.SimpleKCM {
 
         Kirigami.ActionTextField {
             id: iconSleepField
-            Kirigami.FormData.label: "Sleep:"
+            Kirigami.FormData.label: i18n("Sleep:")
             text: Plasmoid.configuration.iconSleep
             rightActions: [ Kirigami.Action { icon.name: "document-open"; onTriggered: { iconSleepDialog.open() } } ]
         }
@@ -121,7 +121,7 @@ KCM.SimpleKCM {
 
         Kirigami.ActionTextField {
             id: iconRestartField
-            Kirigami.FormData.label: "Restart:"
+            Kirigami.FormData.label: i18n("Restart:")
             text: Plasmoid.configuration.iconRestart
             rightActions: [ Kirigami.Action { icon.name: "document-open"; onTriggered: { iconRestartDialog.open() } } ]
         }
@@ -129,7 +129,7 @@ KCM.SimpleKCM {
 
         Kirigami.ActionTextField {
             id: iconShutDownField
-            Kirigami.FormData.label: "Shut Down:"
+            Kirigami.FormData.label: i18n("Shut Down:")
             text: Plasmoid.configuration.iconShutDown
             rightActions: [ Kirigami.Action { icon.name: "document-open"; onTriggered: { iconShutDownDialog.open() } } ]
         }
@@ -137,7 +137,7 @@ KCM.SimpleKCM {
 
         Kirigami.ActionTextField {
             id: iconLockScreenField
-            Kirigami.FormData.label: "Lock Screen:"
+            Kirigami.FormData.label: i18n("Lock Screen:")
             text: Plasmoid.configuration.iconLockScreen
             rightActions: [ Kirigami.Action { icon.name: "document-open"; onTriggered: { iconLockScreenDialog.open() } } ]
         }
@@ -145,7 +145,7 @@ KCM.SimpleKCM {
 
         Kirigami.ActionTextField {
             id: iconLogOutField
-            Kirigami.FormData.label: "Log Out:"
+            Kirigami.FormData.label: i18n("Log Out:")
             text: Plasmoid.configuration.iconLogOut
             rightActions: [ Kirigami.Action { icon.name: "document-open"; onTriggered: { iconLogOutDialog.open() } } ]
         }
@@ -154,40 +154,40 @@ KCM.SimpleKCM {
         // Commands
         Kirigami.Separator {
             Kirigami.FormData.isSection: true
-            Kirigami.FormData.label: "Commands"
+            Kirigami.FormData.label: i18n("Commands")
         }
 
         QQC2.TextField {
             id: cmdSleepField
-            Kirigami.FormData.label: "Sleep:"
+            Kirigami.FormData.label: i18n("Sleep:")
             text: Plasmoid.configuration.cmdSleep
             Layout.fillWidth: true
         }
 
         QQC2.TextField {
             id: cmdRestartField
-            Kirigami.FormData.label: "Restart:"
+            Kirigami.FormData.label: i18n("Restart:")
             text: Plasmoid.configuration.cmdRestart
             Layout.fillWidth: true
         }
 
         QQC2.TextField {
             id: cmdShutDownField
-            Kirigami.FormData.label: "Shut Down:"
+            Kirigami.FormData.label: i18n("Shut Down:")
             text: Plasmoid.configuration.cmdShutDown
             Layout.fillWidth: true
         }
 
         QQC2.TextField {
             id: cmdLockScreenField
-            Kirigami.FormData.label: "Lock Screen:"
+            Kirigami.FormData.label: i18n("Lock Screen:")
             text: Plasmoid.configuration.cmdLockScreen
             Layout.fillWidth: true
         }
 
         QQC2.TextField {
             id: cmdLogOutField
-            Kirigami.FormData.label: "Log Out:"
+            Kirigami.FormData.label: i18n("Log Out:")
             text: Plasmoid.configuration.cmdLogOut
             Layout.fillWidth: true
         }

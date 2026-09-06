@@ -19,6 +19,8 @@ ABOUT_INFO_DEST = HOME / ".local/bin/mac-tahoe-about-info"
 # live under the qmake6-reported libdir (qt6_*_dir() handles per-distro).
 _SO_RELPATH = "plasma/applets/org.kde.mac.tahoe.liquid.globalmenu.so"
 _QML_RELPATH = "plasma/applet/org/kde/mac/tahoe/liquid/globalmenu"
+TRANSLATION_DOMAIN = "plasma_applet_org.kde.mac.tahoe.liquid.globalmenu.mo"
+TRANSLATION_LANGUAGES = ("es", "zh_CN")
 
 _LEGACY_SO_BASENAMES = (
     "org.kde.mac.tahoe.liquid.menu.so",
@@ -129,7 +131,27 @@ def install() -> None:
     sudo_install_tree(module_src, qt6_qml_dir() / _QML_RELPATH,
                       "Global Menu runtime QML")
 
+    _install_translations()
     _install_about_info()
+
+
+def _translation_dest(language: str) -> Path:
+    return DATA_HOME / "locale" / language / "LC_MESSAGES" / TRANSLATION_DOMAIN
+
+
+def _install_translations() -> None:
+    """Install only our uniquely-named catalogs into the user data tree."""
+    for language in TRANSLATION_LANGUAGES:
+        source = SRC / "locale" / language / "LC_MESSAGES" / TRANSLATION_DOMAIN
+        if not source.is_file():
+            continue
+        dest = _translation_dest(language)
+        try:
+            dest.parent.mkdir(parents=True, exist_ok=True)
+            shutil.copy2(source, dest)
+            ok(f"Global Menu {language} translation installed")
+        except OSError as exc:
+            warn(f"Global Menu {language} translation: {exc}")
 
 
 def _install_about_info() -> None:
@@ -149,6 +171,14 @@ def _install_about_info() -> None:
 def uninstall() -> None:
     sudo_remove(qt6_plugins_dir() / _SO_RELPATH, "Global Menu .so removed")
     sudo_remove(qt6_qml_dir() / _QML_RELPATH, "Global Menu runtime QML removed")
+    for language in TRANSLATION_LANGUAGES:
+        try:
+            _translation_dest(language).unlink()
+            ok(f"Global Menu {language} translation removed")
+        except FileNotFoundError:
+            pass
+        except OSError:
+            pass
     try:
         ABOUT_INFO_DEST.unlink()
         ok("System info helper removed")

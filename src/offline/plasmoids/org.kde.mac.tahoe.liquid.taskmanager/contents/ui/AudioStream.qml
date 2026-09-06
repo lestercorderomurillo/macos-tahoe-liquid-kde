@@ -91,8 +91,8 @@ Item {
 
     Accessible.checkable: true
     Accessible.checked: task.muted
-    Accessible.name: task.muted ? i18nc("@action:button", "Unmute") : i18nc("@action:button", "Mute")
-    Accessible.description: task.muted ? i18nc("@info:tooltip %1 is the window title", "Unmute %1", model.display) : i18nc("@info:tooltip %1 is the window title", "Mute %1", model.display)
+    Accessible.name: task.muted ? i18ndc("plasma_applet_org.kde.plasma.taskmanager", "@action:button", "Unmute") : i18ndc("plasma_applet_org.kde.plasma.taskmanager", "@action:button", "Mute")
+    Accessible.description: task.muted ? i18ndc("plasma_applet_org.kde.plasma.taskmanager", "@info:tooltip %1 is the window title", "Unmute %1", model.display) : i18ndc("plasma_applet_org.kde.plasma.taskmanager", "@info:tooltip %1 is the window title", "Mute %1", model.display)
     Accessible.role: Accessible.Button
 
     HoverHandler {

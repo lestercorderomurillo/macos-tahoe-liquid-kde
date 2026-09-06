@@ -7,6 +7,7 @@
 #include "appmenumodel.h"
 
 #include <KColorScheme>
+#include <KLocalizedString>
 #include <KUser>
 #include <QAction>
 #include <QApplication>
@@ -343,25 +344,25 @@ void AppMenuApplet::triggerWindowMenu(QQuickItem* ctx)
     const bool isFullScreenable = tasks->data(activeTask, TaskManager::AbstractTasksModel::IsFullScreenable).toBool();
     const bool isFullScreen = tasks->data(activeTask, TaskManager::AbstractTasksModel::IsFullScreen).toBool();
 
-    auto* closeAction = m_windowMenu->addAction(QIcon::fromTheme(QStringLiteral("window-close")), QStringLiteral("Close"));
+    auto* closeAction = m_windowMenu->addAction(QIcon::fromTheme(QStringLiteral("window-close")), i18n("Close"));
     closeAction->setEnabled(isClosable);
     connect(closeAction, &QAction::triggered, tasks, [tasks, activeTask]() { tasks->requestClose(activeTask); });
 
     m_windowMenu->addSeparator();
 
-    auto* minimizeAction = m_windowMenu->addAction(QIcon::fromTheme(QStringLiteral("window-minimize")), QStringLiteral("Minimize"));
+    auto* minimizeAction = m_windowMenu->addAction(QIcon::fromTheme(QStringLiteral("window-minimize")), i18n("Minimize"));
     minimizeAction->setEnabled(isMinimizable);
     connect(minimizeAction, &QAction::triggered, tasks, [tasks, activeTask]() { tasks->requestToggleMinimized(activeTask); });
 
     auto* zoomAction = m_windowMenu->addAction(QIcon::fromTheme(isMaximized ? QStringLiteral("window-restore") : QStringLiteral("window-maximize")),
-        isMaximized ? QStringLiteral("Restore") : QStringLiteral("Zoom"));
+        isMaximized ? i18n("Restore") : i18n("Zoom"));
     zoomAction->setEnabled(isMaximizable);
     connect(zoomAction, &QAction::triggered, tasks, [tasks, activeTask]() { tasks->requestToggleMaximized(activeTask); });
 
     m_windowMenu->addSeparator();
 
     auto* fullScreenAction = m_windowMenu->addAction(
-        QIcon::fromTheme(QStringLiteral("view-fullscreen")), isFullScreen ? QStringLiteral("Exit Full Screen") : QStringLiteral("Enter Full Screen"));
+        QIcon::fromTheme(QStringLiteral("view-fullscreen")), isFullScreen ? i18n("Exit Full Screen") : i18n("Enter Full Screen"));
     fullScreenAction->setEnabled(isFullScreenable);
     connect(fullScreenAction, &QAction::triggered, tasks, [tasks, activeTask]() { tasks->requestToggleFullScreen(activeTask); });
 
@@ -525,30 +526,30 @@ void AppMenuApplet::triggerSystemMenu(QQuickItem* ctx)
 
     auto icon = [&cfg](const char* key, const QString& fallback) { return QIcon::fromTheme(cfg.readEntry(key, fallback)); };
 
-    menu->addAction(icon("iconAbout", QStringLiteral("computer")), QStringLiteral("About This Computer"), this, [this]() { Q_EMIT aboutRequested(); });
+    menu->addAction(icon("iconAbout", QStringLiteral("computer")), i18n("About This Computer"), this, [this]() { Q_EMIT aboutRequested(); });
 
     menu->addSeparator();
 
-    menu->addAction(icon("iconSystemSettings", QStringLiteral("preferences-system")), QStringLiteral("System Settings\u2026"),
+    menu->addAction(icon("iconSystemSettings", QStringLiteral("preferences-system")), i18n("System Settings…"),
         []() { runCommand(QStringLiteral("systemsettings")); });
     if (!QStandardPaths::findExecutable(QStringLiteral("plasma-discover")).isEmpty()) {
-        menu->addAction(icon("iconAppStore", QStringLiteral("software-store-symbolic")), QStringLiteral("App Store\u2026"),
+        menu->addAction(icon("iconAppStore", QStringLiteral("software-store-symbolic")), i18n("App Store…"),
             []() { runCommand(QStringLiteral("plasma-discover")); });
     }
 
     menu->addSeparator();
 
-    menu->addAction(icon("iconForceQuit", QStringLiteral("dialog-cancel")), QStringLiteral("Force Quit\u2026"),
+    menu->addAction(icon("iconForceQuit", QStringLiteral("dialog-cancel")), i18n("Force Quit…"),
         []() { runCommand(QStringLiteral("qdbus6 org.kde.KWin /KWin slotKillWindow || xkill")); });
 
     menu->addSeparator();
 
-    menu->addAction(icon("iconSleep", QStringLiteral("system-suspend")), QStringLiteral("Sleep"),
+    menu->addAction(icon("iconSleep", QStringLiteral("system-suspend")), i18n("Sleep"),
         [cmd = cfg.readEntry(
              "cmdSleep", QStringLiteral("qdbus6 org.kde.Solid.PowerManagement /org/kde/Solid/PowerManagement/Actions/SuspendSession org.kde.Solid.PowerManagement.Actions.SuspendSession.suspendToRam || qdbus-qt6 org.kde.Solid.PowerManagement /org/kde/Solid/PowerManagement/Actions/SuspendSession org.kde.Solid.PowerManagement.Actions.SuspendSession.suspendToRam || qdbus org.kde.Solid.PowerManagement /org/kde/Solid/PowerManagement/Actions/SuspendSession org.kde.Solid.PowerManagement.Actions.SuspendSession.suspendToRam"))]() {
             runSuspendAction(cmd);
         });
-    menu->addAction(icon("iconRestart", QStringLiteral("system-reboot")), QStringLiteral("Restart\u2026"),
+    menu->addAction(icon("iconRestart", QStringLiteral("system-reboot")), i18n("Restart…"),
         [cmd = cfg.readEntry("cmdRestart", QStringLiteral("qdbus6 org.kde.LogoutPrompt /LogoutPrompt org.kde.LogoutPrompt.promptReboot"))]() {
             runSystemAction(cmd,
                 QStringLiteral("org.kde.LogoutPrompt"),
@@ -556,7 +557,7 @@ void AppMenuApplet::triggerSystemMenu(QQuickItem* ctx)
                 QStringLiteral("org.kde.LogoutPrompt"),
                 QStringLiteral("promptReboot"));
         });
-    menu->addAction(icon("iconShutDown", QStringLiteral("system-shutdown")), QStringLiteral("Shut Down\u2026"),
+    menu->addAction(icon("iconShutDown", QStringLiteral("system-shutdown")), i18n("Shut Down…"),
         [cmd = cfg.readEntry("cmdShutDown", QStringLiteral("qdbus6 org.kde.LogoutPrompt /LogoutPrompt org.kde.LogoutPrompt.promptShutDown"))]() {
             runSystemAction(cmd,
                 QStringLiteral("org.kde.LogoutPrompt"),
@@ -567,12 +568,12 @@ void AppMenuApplet::triggerSystemMenu(QQuickItem* ctx)
 
     menu->addSeparator();
 
-    menu->addAction(icon("iconLockScreen", QStringLiteral("system-lock-screen")), QStringLiteral("Lock Screen"),
+    menu->addAction(icon("iconLockScreen", QStringLiteral("system-lock-screen")), i18n("Lock Screen"),
         [cmd = cfg.readEntry("cmdLockScreen", QStringLiteral("qdbus6 org.freedesktop.ScreenSaver /ScreenSaver Lock || loginctl lock-session"))]() {
             runCommand(cmd);
         });
     const QString firstName = KUser().property(KUser::FullName).toString().section(QLatin1Char(' '), 0, 0);
-    menu->addAction(icon("iconLogOut", QStringLiteral("user-identity")), QStringLiteral("Log Out %1\u2026").arg(firstName),
+    menu->addAction(icon("iconLogOut", QStringLiteral("user-identity")), i18n("Log Out %1…", firstName),
         [cmd = cfg.readEntry("cmdLogOut", QStringLiteral("qdbus6 org.kde.LogoutPrompt /LogoutPrompt org.kde.LogoutPrompt.promptLogout"))]() {
             runSystemAction(cmd,
                 QStringLiteral("org.kde.LogoutPrompt"),

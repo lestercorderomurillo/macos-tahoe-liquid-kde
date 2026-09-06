@@ -48,7 +48,7 @@ Window {
         return (bg.r * 0.299 + bg.g * 0.587 + bg.b * 0.114) < 0.5;
     }
 
-    title: "MacTahoe Liquid KDE Installer"
+    title: t("MacTahoe Liquid KDE Installer")
     width: 1000
     height: 684
     minimumWidth: 1000
@@ -73,6 +73,26 @@ Window {
         if (text.startsWith("file://"))
             return decodeURIComponent(text.slice(7));
         return text;
+    }
+
+    function t(message: string): string {
+        if (!installer)
+            return message;
+        // Reading the notify-backed property makes every binding using t()
+        // refresh immediately when the selector changes.
+        const languageRevision = installer.language;
+        return installer.translate(message);
+    }
+
+    function languageLabel(code: string): string {
+        if (!installer)
+            return "English";
+        const options = installer.languages;
+        for (let i = 0; i < options.length; ++i) {
+            if (options[i].code === code)
+                return code === "auto" ? t(options[i].label) : options[i].label;
+        }
+        return "English";
     }
 
     function runAction(action: string): void {
@@ -282,7 +302,7 @@ Window {
 
                     Text {
                         anchors.verticalCenter: parent.verticalCenter
-                        text: "Update available: " + installerWindow.updateCurrent
+                        text: installerWindow.t("Update available:") + " " + installerWindow.updateCurrent
                             + " → " + installerWindow.updateLatest
                             + "   ·   run git pull && ./install"
                         color: Kirigami.Theme.textColor
@@ -491,12 +511,12 @@ Window {
                 spacing: 10
 
                 FlatButton {
-                    text: "Install"
+                    text: installerWindow.t("Install")
                     onClicked: installerWindow.runAction("install")
                 }
 
                 FlatButton {
-                    text: "Uninstall"
+                    text: installerWindow.t("Uninstall")
                     onClicked: installerWindow.runAction("uninstall")
                 }
 
@@ -505,7 +525,7 @@ Window {
                     leftPadding: 0
                     rightPadding: 0
                     implicitWidth: 46
-                    QQC2.ToolTip.text: "Features..."
+                    QQC2.ToolTip.text: installerWindow.t("Features…")
                     QQC2.ToolTip.visible: hovered
                     QQC2.ToolTip.delay: 400
                     onClicked: featuresLoader.open()
@@ -522,6 +542,69 @@ Window {
                             sourceSize.height: 36
                             fillMode: Image.PreserveAspectFit
                             smooth: true
+                        }
+                    }
+                }
+            }
+
+            FlatButton {
+                id: languageButton
+                objectName: "languageButton"
+                anchors.right: parent.right
+                anchors.rightMargin: 22
+                anchors.verticalCenter: parent.verticalCenter
+                width: 152
+                text: "◀  " + installerWindow.languageLabel(
+                    installer ? installer.language : "en") + "  ▶"
+                onClicked: languagePopup.open()
+
+                QQC2.ToolTip.text: installerWindow.t("Language")
+                QQC2.ToolTip.visible: hovered
+                QQC2.ToolTip.delay: 400
+            }
+
+            QQC2.Popup {
+                id: languagePopup
+                objectName: "languagePopup"
+                parent: bottomBar
+                x: bottomBar.width - width - 22
+                y: -implicitHeight - 8
+                width: 190
+                padding: 6
+                focus: true
+                closePolicy: QQC2.Popup.CloseOnEscape
+                    | QQC2.Popup.CloseOnPressOutside
+
+                background: Rectangle {
+                    radius: 13
+                    color: installerWindow.isDarkTheme ? "#35353A" : "#FFFFFF"
+                    border.width: 1
+                    border.color: installerWindow.isDarkTheme
+                        ? Qt.rgba(1, 1, 1, 0.14) : Qt.rgba(0, 0, 0, 0.13)
+                }
+
+                contentItem: Column {
+                    spacing: 2
+
+                    Repeater {
+                        model: installer ? installer.languages : []
+
+                        delegate: QQC2.ItemDelegate {
+                            required property var modelData
+                            width: 178
+                            height: 36
+                            text: modelData.code === "auto"
+                                ? installerWindow.t(modelData.label)
+                                : modelData.label
+                            checkable: true
+                            checked: installer
+                                && modelData.code === installer.language
+                            font.family: installerWindow.fontFamily
+                            onClicked: {
+                                if (installer)
+                                    installer.setLanguage(modelData.code);
+                                languagePopup.close();
+                            }
                         }
                     }
                 }
@@ -641,8 +724,8 @@ Window {
             Text {
                 Layout.alignment: Qt.AlignHCenter
                 text: installerWindow.currentAction === "uninstall"
-                    ? "Uninstalled"
-                    : "Installed"
+                    ? installerWindow.t("Uninstalled")
+                    : installerWindow.t("Installed")
                 color: Kirigami.Theme.textColor
                 font.family: installerWindow.fontFamily
                 font.pointSize: Kirigami.Theme.defaultFont.pointSize * 1.4

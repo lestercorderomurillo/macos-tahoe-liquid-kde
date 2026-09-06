@@ -35,7 +35,7 @@ Window {
         return (bg.r * 0.299 + bg.g * 0.587 + bg.b * 0.114) < 0.5;
     }
 
-    title: "Install Failed"
+    title: t("Install Failed")
     width: 720
     height: 520
     minimumWidth: 720
@@ -49,6 +49,13 @@ Window {
         const s = Screen;
         x = Math.round((s.width - width) / 2);
         y = Math.round((s.height - height) / 2);
+    }
+
+    function t(message: string): string {
+        if (!installer)
+            return message;
+        const languageRevision = installer.language;
+        return installer.translate(message);
     }
 
     Rectangle {
@@ -141,8 +148,8 @@ Window {
             Text {
                 Layout.alignment: Qt.AlignHCenter
                 text: errorWindow.action === "uninstall"
-                    ? "Uninstall failed"
-                    : "Install failed"
+                    ? errorWindow.t("Uninstall failed")
+                    : errorWindow.t("Install failed")
                 color: "#D85D63"
                 font.family: errorWindow.fontFamily
                 font.pointSize: Kirigami.Theme.defaultFont.pointSize * 1.4
@@ -153,8 +160,8 @@ Window {
                 Layout.fillWidth: true
                 horizontalAlignment: Text.AlignHCenter
                 wrapMode: Text.WordWrap
-                text: "Below is the tail of the install log. "
-                    + "Retry runs the same action again; Close dismisses."
+                text: errorWindow.t("Below is the tail of the install log. "
+                    + "Retry runs the same action again; Close dismisses.")
                 color: Kirigami.Theme.disabledTextColor
                 font.family: errorWindow.fontFamily
                 font.pointSize: Kirigami.Theme.defaultFont.pointSize * 0.9
@@ -212,12 +219,12 @@ Window {
                 spacing: 8
 
                 QQC2.Button {
-                    text: "Close"
+                    text: errorWindow.t("Close")
                     onClicked: errorWindow.close()
                 }
 
                 QQC2.Button {
-                    text: "Retry"
+                    text: errorWindow.t("Retry")
                     onClicked: {
                         retryRequested(errorWindow.action);
                         errorWindow.close();

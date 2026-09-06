@@ -14,7 +14,7 @@ KCM.SimpleKCM {
 
         // empty icon
         ColumnLayout {
-            Kirigami.FormData.label: "Empty trash icon:"
+            Kirigami.FormData.label: i18n("Empty trash icon:")
             spacing: Kirigami.Units.smallSpacing
 
             RowLayout {
@@ -36,7 +36,7 @@ KCM.SimpleKCM {
 
         // full icon
         ColumnLayout {
-            Kirigami.FormData.label: "Full trash icon:"
+            Kirigami.FormData.label: i18n("Full trash icon:")
             spacing: Kirigami.Units.smallSpacing
 
             RowLayout {
@@ -63,12 +63,12 @@ KCM.SimpleKCM {
         QQC2.Label {
             Layout.fillWidth: true
             wrapMode: Text.WordWrap
-            text: "Enter any icon name from your current icon theme."
+            text: i18n("Enter any icon name from your current icon theme.")
         }
 
         QQC2.Button {
             icon.name: "configure"
-            text: "Trash Settings\u2026"
+            text: i18n("Trash Settings…")
             onClicked: KCM.KCMLauncher.open("kcm_trash")
         }
     }

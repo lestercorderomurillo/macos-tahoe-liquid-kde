@@ -178,7 +178,7 @@ ColumnLayout {
                 Rectangle {
                     anchors.centerIn: parent
                     readonly property string badgeText: toolTipDelegate.smartLauncherCount > 9999
-                        ? i18nc("Over 9999 new messages, tooltip badge, keep short", "9,999+")
+                        ? i18ndc("plasma_applet_org.kde.plasma.taskmanager", "Over 9999 new messages, tooltip badge, keep short", "9,999+")
                         : toolTipDelegate.smartLauncherCount.toLocaleString(Qt.locale(), "f", 0)
                     // Keep parity with TaskBadgeOverlay (dock badge): same
                     // padding, same height clamp, same font sizing. The two
@@ -224,7 +224,7 @@ ColumnLayout {
                     tasks.cancelHighlightWindows();
                     tasksModel.requestClose(root.submodelIndex);
                 }
-                PlasmaComponents3.ToolTip.text: i18nc("@info:tooltip Close this window", "Close window")
+                PlasmaComponents3.ToolTip.text: i18ndc("plasma_applet_org.kde.plasma.taskmanager", "@info:tooltip Close this window", "Close window")
                 PlasmaComponents3.ToolTip.visible: root.visible && hovered
                 PlasmaComponents3.ToolTip.delay: Kirigami.Units.toolTipDelay
             }
@@ -494,8 +494,8 @@ ColumnLayout {
 
                 PlasmaComponents3.ToolTip {
                     text: muteButton.checked
-                        ? i18nc("button to unmute app", "Unmute %1", toolTipDelegate.parentTask.appName)
-                        : i18nc("button to mute app", "Mute %1", toolTipDelegate.parentTask.appName)
+                        ? i18ndc("plasma_applet_org.kde.plasma.taskmanager", "button to unmute app", "Unmute %1", toolTipDelegate.parentTask.appName)
+                        : i18ndc("plasma_applet_org.kde.plasma.taskmanager", "button to mute app", "Mute %1", toolTipDelegate.parentTask.appName)
                 }
             }
 
@@ -513,7 +513,7 @@ ColumnLayout {
                 stepSize: to / 100
                 opacity: toolTipDelegate.parentTask.muted ? 0.5 : 1
 
-                Accessible.name: i18nc("Accessibility data on volume slider", "Adjust volume for %1", toolTipDelegate.parentTask.appName)
+                Accessible.name: i18ndc("plasma_applet_org.kde.plasma.taskmanager", "Accessibility data on volume slider", "Adjust volume for %1", toolTipDelegate.parentTask.appName)
 
                 onMoved: toolTipDelegate.parentTask.audioStreams.forEach((stream) => {
                     let v = Math.max(from, value)
@@ -529,11 +529,11 @@ ColumnLayout {
                 Layout.alignment: Qt.AlignHCenter
                 Layout.minimumWidth: percentMetrics.advanceWidth
                 horizontalAlignment: Qt.AlignRight
-                text: i18nc("volume percentage", "%1%", slider.displayValue)
+                text: i18ndc("plasma_applet_org.kde.plasma.taskmanager", "volume percentage", "%1%", slider.displayValue)
                 textFormat: Text.PlainText
                 TextMetrics {
                     id: percentMetrics
-                    text: i18nc("only used for sizing, should be widest possible string", "100%")
+                    text: i18ndc("plasma_applet_org.kde.plasma.taskmanager", "only used for sizing, should be widest possible string", "100%")
                 }
             }
         }
@@ -549,15 +549,15 @@ ColumnLayout {
                     return virtualDesktopInfo.desktopNames[index];
                 });
 
-                subTextEntries.push(i18nc("Comma-separated list of desktops", "On %1",
+                subTextEntries.push(i18ndc("plasma_applet_org.kde.plasma.taskmanager", "Comma-separated list of desktops", "On %1",
                     virtualDesktopNameList.join(", ")));
             } else if (isOnAllVirtualDesktops) {
-                subTextEntries.push(i18nc("Comma-separated list of desktops", "Pinned to all desktops"));
+                subTextEntries.push(i18ndc("plasma_applet_org.kde.plasma.taskmanager", "Comma-separated list of desktops", "Pinned to all desktops"));
             }
         }
 
         if (activities.length === 0 && activityInfo.numberOfRunningActivities > 1) {
-            subTextEntries.push(i18nc("Which virtual desktop a window is currently on",
+            subTextEntries.push(i18ndc("plasma_applet_org.kde.plasma.taskmanager", "Which virtual desktop a window is currently on",
                 "Available on all activities"));
         } else if (activities.length > 0) {
             const activityNames = activities
@@ -567,11 +567,11 @@ ColumnLayout {
 
             if (Plasmoid.configuration.showOnlyCurrentActivity) {
                 if (activityNames.length > 0) {
-                    subTextEntries.push(i18nc("Activities a window is currently on (apart from the current one)",
+                    subTextEntries.push(i18ndc("plasma_applet_org.kde.plasma.taskmanager", "Activities a window is currently on (apart from the current one)",
                         "Also available on %1", activityNames.join(", ")));
                 }
             } else if (activityNames.length > 0) {
-                subTextEntries.push(i18nc("Which activities a window is currently on",
+                subTextEntries.push(i18ndc("plasma_applet_org.kde.plasma.taskmanager", "Which activities a window is currently on",
                     "Available on %1", activityNames.join(", ")));
             }
         }

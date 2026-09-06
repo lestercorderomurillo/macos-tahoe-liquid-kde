@@ -7,11 +7,17 @@
             }
         ],
         "Category": "Application Launchers",
+        "Category[es]": "Lanzadores de aplicaciones",
+        "Category[zh_CN]": "应用程序启动器",
         "Description": "macOS Tahoe-style fullscreen application launcher",
+        "Description[es]": "Lanzador de aplicaciones a pantalla completa con estilo macOS Tahoe",
+        "Description[zh_CN]": "macOS Tahoe 风格的全屏应用程序启动器",
         "Icon": "view-app-grid",
         "Id": "org.kde.mac-tahoe-liquid-kde.launcher",
         "License": "GPL-3.0",
-        "Name": "Launcher (MacTahoe Liquid KDE)"
+        "Name": "Launcher (MacTahoe Liquid KDE)",
+        "Name[es]": "Lanzador (MacTahoe Liquid KDE)",
+        "Name[zh_CN]": "启动器 (MacTahoe Liquid KDE)"
     },
     "X-Plasma-API-Minimum-Version": "6.0",
     "X-Plasma-Provides": [

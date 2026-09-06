@@ -2,12 +2,18 @@
     "KPackageStructure": "Plasma/Applet",
     "KPlugin": {
         "Category": "Windows and Tasks",
+        "Category[es]": "Ventanas y tareas",
+        "Category[zh_CN]": "窗口和任务",
         "Description": "MacTahoe Liquid KDE dock task manager with macOS-style badges",
+        "Description[es]": "Gestor de tareas del Dock de MacTahoe Liquid KDE con insignias de estilo macOS",
+        "Description[zh_CN]": "带 macOS 风格徽标的 MacTahoe Liquid KDE Dock 任务管理器",
         "EnabledByDefault": false,
         "Icon": "preferences-system-windows",
         "Id": "org.kde.mac.tahoe.liquid.taskmanager",
         "License": "GPL-3.0",
-        "Name": "Task Manager"
+        "Name": "Task Manager",
+        "Name[es]": "Gestor de tareas",
+        "Name[zh_CN]": "任务管理器"
     },
     "X-Plasma-API-Minimum-Version": "6.0",
     "X-Plasma-Provides": [

@@ -7,11 +7,17 @@
             }
         ],
         "Category": "File System",
+        "Category[es]": "Sistema de archivos",
+        "Category[zh_CN]": "文件系统",
         "Description": "Trash widget",
+        "Description[es]": "Widget de papelera",
+        "Description[zh_CN]": "回收站小组件",
         "Icon": "user-trash",
         "Id": "org.kde.mac-tahoe-liquid-kde.trashcan",
         "License": "GPL-3.0",
-        "Name": "Trashcan (MacTahoe Liquid KDE)"
+        "Name": "Trashcan (MacTahoe Liquid KDE)",
+        "Name[es]": "Papelera (MacTahoe Liquid KDE)",
+        "Name[zh_CN]": "回收站 (MacTahoe Liquid KDE)"
     },
     "X-Plasma-API-Minimum-Version": "6.0",
     "X-Plasma-DropUrlPatterns": [

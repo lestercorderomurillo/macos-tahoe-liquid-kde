@@ -109,11 +109,28 @@ def test_run_wizard_returns_wrapper_result(monkeypatch):
     assert install_tui.run_wizard(dict(cli.DEFAULT_FEATURES)) is sentinel
 
 
+def test_run_wizard_persists_confirmed_language(monkeypatch):
+    selected = dict(cli.DEFAULT_FEATURES)
+    selected["_language"] = "zh_CN"
+    selected["_save"] = True
+    fake = types.SimpleNamespace(wrapper=lambda fn: selected)
+    saved = []
+    monkeypatch.setattr(install_tui, "curses", fake)
+    monkeypatch.setattr(install_tui, "set_language", saved.append)
+
+    result = install_tui.run_wizard(dict(cli.DEFAULT_FEATURES))
+
+    assert saved == ["zh_CN"]
+    assert "_language" not in result
+
+
 # ── the Wizard model (curses-free) ────────────────────────────────────
 
 
 def _wizard(mode: str = "install") -> install_tui.Wizard:
-    return install_tui.Wizard(dict(cli.DEFAULT_FEATURES), mode)
+    features = dict(cli.DEFAULT_FEATURES)
+    features["_language"] = "auto"
+    return install_tui.Wizard(features, mode)
 
 
 def _goto(wiz: install_tui.Wizard, row: tuple[str, str]) -> None:
@@ -129,14 +146,14 @@ def test_install_rows_cover_every_feature():
 
 def test_uninstall_mode_has_no_settings_rows():
     kinds = {kind for kind, _ in _wizard("uninstall").rows}
-    assert kinds == {"toggle"}
+    assert kinds == {"toggle", "language"}
 
 
 def test_rows_are_one_flat_list():
     """No group headers or spacers — every row is an interactive
     control (toggle / radio / int)."""
     kinds = {kind for kind, _ in _wizard().rows}
-    assert kinds == {"toggle", "radio", "int"}
+    assert kinds == {"toggle", "radio", "int", "language"}
 
 
 def test_toggle_flips_value():
@@ -157,6 +174,15 @@ def test_radio_cycles_theme_mode():
     assert wiz.feat["theme_mode"] == "dark"
     wiz.adjust(1)
     assert wiz.feat["theme_mode"] == "auto"
+
+
+def test_language_row_cycles_all_supported_languages():
+    wiz = _wizard()
+    _goto(wiz, ("language", "_language"))
+    assert wiz.feat["_language"] == "auto"
+    for expected in ("en", "es", "zh_CN", "auto"):
+        wiz.adjust(1)
+        assert wiz.feat["_language"] == expected
 
 
 def test_int_adjust_clamps_to_bounds():
@@ -195,7 +221,7 @@ def test_result_filters_to_known_keys_and_always_saves_on_install():
     res = wiz.result()
     assert res["_save"] is True
     assert "_bogus" not in res
-    transient = {"_save", "_existing_install", "_reset_wallpapers"}
+    transient = {"_save", "_existing_install", "_reset_wallpapers", "_language"}
     assert set(res) - transient == set(cli.DEFAULT_FEATURES)
     assert _wizard("uninstall").result()["_save"] is False
 

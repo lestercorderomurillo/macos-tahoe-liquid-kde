@@ -4,7 +4,7 @@
 
 # macOS Tahoe Liquid Theme for Plasma 6.6/6.7+
 
-[![release](https://img.shields.io/github/v/release/lestercorderomurillo/macos-tahoe-liquid-kde?label=release&color=blue)](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/releases) [![tests](https://img.shields.io/badge/tests-1270_passing-brightgreen)](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/actions/workflows/test.yml) [![plasma](https://img.shields.io/badge/Plasma-6.6%2B-1d99f3?logo=kde)](https://kde.org/plasma-desktop/) [![license](https://img.shields.io/badge/license-GPL--3.0-blue)](LICENSE) [![report a bug](https://img.shields.io/badge/report-a%20bug-red?logo=github)](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/issues/new)
+[![release](https://img.shields.io/github/v/release/lestercorderomurillo/macos-tahoe-liquid-kde?label=release&color=blue)](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/releases) [![tests](https://img.shields.io/badge/tests-1280_passing-brightgreen)](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/actions/workflows/test.yml) [![plasma](https://img.shields.io/badge/Plasma-6.6%2B-1d99f3?logo=kde)](https://kde.org/plasma-desktop/) [![license](https://img.shields.io/badge/license-GPL--3.0-blue)](LICENSE) [![report a bug](https://img.shields.io/badge/report-a%20bug-red?logo=github)](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/issues/new)
 
 Introducing macOS Tahoe, reimagined for Linux.
 
@@ -108,7 +108,12 @@ sudo ./install
 sudo ./uninstall
 ```
 
-Both installers use the same feature system and show live progress. Run `sudo ./install --help` for every command-line option.
+Both installers use the same feature system and show live progress. English,
+Spanish, and Simplified Chinese are built in; choose a language in the GUI's
+bottom-right selector or the first row of the terminal wizard. “System default”
+follows the current desktop locale. Installed Plasma widgets follow the Plasma
+session language automatically. Run `sudo ./install --help` for every
+command-line option.
 
 <br>
 
@@ -315,6 +320,7 @@ Most of the desktop is ready. Icons and multi-distro support are still being pol
 | OLED Care | Optional panel pixel shifting | Completed |
 | Installer UI | Graphical installer with a feature picker | Completed |
 | Installer TUI | Terminal feature picker and live progress | Completed |
+| Localization | English, Spanish, and Simplified Chinese installer and widget UI | Completed |
 | Aurorae Decorations | macOS-style title bars and controls | Completed |
 | Global Menu | App menus in the top bar | Completed |
 | Dock Task Manager | Dock with notification badges | Completed |

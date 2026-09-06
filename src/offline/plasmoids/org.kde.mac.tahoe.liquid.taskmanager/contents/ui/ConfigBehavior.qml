@@ -47,7 +47,7 @@ KCMUtils.SimpleKCM {
             Layout.fillWidth: true
             position: Kirigami.InlineMessage.Position.Header
 
-            text: i18nc("@info", "If you're using this setting to work around an application that demands attention too often, first look for a setting in the app to disable that behavior. If you don't find one, consider reporting this as a bug to the app's developer.")
+            text: i18ndc("plasma_applet_org.kde.plasma.taskmanager", "@info", "If you're using this setting to work around an application that demands attention too often, first look for a setting in the app to disable that behavior. If you don't find one, consider reporting this as a bug to the app's developer.")
         }
     }
 
@@ -63,28 +63,28 @@ KCMUtils.SimpleKCM {
 
         QQC2.ComboBox {
             id: groupingStrategy
-            Kirigami.FormData.label: i18nc("@label:listbox how to group tasks", "Group:")
+            Kirigami.FormData.label: i18ndc("plasma_applet_org.kde.plasma.taskmanager", "@label:listbox how to group tasks", "Group:")
             Layout.fillWidth: true
             Layout.minimumWidth: Kirigami.Units.gridUnit * 14
             model: [
-                i18nc("@item:inlistbox how to group tasks", "Do not group"),
-                i18nc("@item:inlistbox how to group tasks", "By program name")
+                i18ndc("plasma_applet_org.kde.plasma.taskmanager", "@item:inlistbox how to group tasks", "Do not group"),
+                i18ndc("plasma_applet_org.kde.plasma.taskmanager", "@item:inlistbox how to group tasks", "By program name")
             ]
         }
 
         QQC2.ComboBox {
             id: groupedTaskVisualization
-            Kirigami.FormData.label: i18nc("@label:listbox completes sentence like: … cycles through tasks", "Clicking grouped task:")
+            Kirigami.FormData.label: i18ndc("plasma_applet_org.kde.plasma.taskmanager", "@label:listbox completes sentence like: … cycles through tasks", "Clicking grouped task:")
             Layout.fillWidth: true
             Layout.minimumWidth: Kirigami.Units.gridUnit * 14
 
             enabled: groupingStrategy.currentIndex !== 0
 
             model: [
-                i18nc("@item:inlistbox Completes the sentence 'Clicking grouped task cycles through tasks' ", "Cycles through tasks"),
-                i18nc("@item:inlistbox Completes the sentence 'Clicking grouped task shows small window previews' ", "Shows small window previews"),
-                i18nc("@item:inlistbox Completes the sentence 'Clicking grouped task shows large window previews' ", "Shows large window previews"),
-                i18nc("@item:inlistbox Completes the sentence 'Clicking grouped task shows textual list' ", "Shows textual list"),
+                i18ndc("plasma_applet_org.kde.plasma.taskmanager", "@item:inlistbox Completes the sentence 'Clicking grouped task cycles through tasks' ", "Cycles through tasks"),
+                i18ndc("plasma_applet_org.kde.plasma.taskmanager", "@item:inlistbox Completes the sentence 'Clicking grouped task shows small window previews' ", "Shows small window previews"),
+                i18ndc("plasma_applet_org.kde.plasma.taskmanager", "@item:inlistbox Completes the sentence 'Clicking grouped task shows large window previews' ", "Shows large window previews"),
+                i18ndc("plasma_applet_org.kde.plasma.taskmanager", "@item:inlistbox Completes the sentence 'Clicking grouped task shows textual list' ", "Shows textual list"),
             ]
 
             Accessible.name: currentText
@@ -95,7 +95,7 @@ KCMUtils.SimpleKCM {
             Layout.fillWidth: true
             visible: groupedTaskVisualization.currentIndex === 2 && !effectWatcher.registered
             type: Kirigami.MessageType.Warning
-            text: i18nc("@info displayed as InlineMessage", "The compositor does not support displaying windows side by side, so a textual list will be displayed instead.")
+            text: i18ndc("plasma_applet_org.kde.plasma.taskmanager", "@info displayed as InlineMessage", "The compositor does not support displaying windows side by side, so a textual list will be displayed instead.")
         }
 
         Item {
@@ -105,14 +105,14 @@ KCMUtils.SimpleKCM {
         QQC2.CheckBox {
             id: groupPopups
             visible: (Plasmoid.pluginName !== "org.kde.mac.tahoe.liquid.icontasks")
-            text: i18nc("@option:check grouped task", "Combine into single button")
+            text: i18ndc("plasma_applet_org.kde.plasma.taskmanager", "@option:check grouped task", "Combine into single button")
             enabled: groupingStrategy.currentIndex > 0
         }
 
         QQC2.CheckBox {
             id: onlyGroupWhenFull
             visible: (Plasmoid.pluginName !== "org.kde.mac.tahoe.liquid.icontasks")
-            text: i18nc("@option:check grouped task","Group only when the Task Manager is full")
+            text: i18ndc("plasma_applet_org.kde.plasma.taskmanager", "@option:check grouped task","Group only when the Task Manager is full")
             enabled: groupingStrategy.currentIndex > 0 && groupPopups.checked
             Accessible.onPressAction: toggle()
         }
@@ -124,34 +124,34 @@ KCMUtils.SimpleKCM {
 
         QQC2.ComboBox {
             id: sortingStrategy
-            Kirigami.FormData.label: i18nc("@label:listbox sort tasks in grouped task", "Sort:")
+            Kirigami.FormData.label: i18ndc("plasma_applet_org.kde.plasma.taskmanager", "@label:listbox sort tasks in grouped task", "Sort:")
             Layout.fillWidth: true
             Layout.minimumWidth: Kirigami.Units.gridUnit * 14
             textRole: "text"
             valueRole: "value"
             model: [
                 {
-                    "text": i18nc("@item:inlistbox sort tasks in grouped task", "Do not sort"),
+                    "text": i18ndc("plasma_applet_org.kde.plasma.taskmanager", "@item:inlistbox sort tasks in grouped task", "Do not sort"),
                     "value": TaskManager.TasksModel.SortDisabled,
                 },
                 {
-                    "text": i18nc("@item:inlistbox sort tasks in grouped task", "Manually"),
+                    "text": i18ndc("plasma_applet_org.kde.plasma.taskmanager", "@item:inlistbox sort tasks in grouped task", "Manually"),
                     "value": TaskManager.TasksModel.SortManual,
                 },
                 {
-                    "text": i18nc("@item:inlistbox sort tasks in grouped task", "Alphabetically"),
+                    "text": i18ndc("plasma_applet_org.kde.plasma.taskmanager", "@item:inlistbox sort tasks in grouped task", "Alphabetically"),
                     "value": TaskManager.TasksModel.SortAlpha,
                 },
                 {
-                    "text": i18nc("@item:inlistbox sort tasks in grouped task", "By desktop"),
+                    "text": i18ndc("plasma_applet_org.kde.plasma.taskmanager", "@item:inlistbox sort tasks in grouped task", "By desktop"),
                     "value": TaskManager.TasksModel.SortVirtualDesktop,
                 },
                 {
-                    "text": i18nc("@item:inlistbox sort tasks in grouped task", "By activity"),
+                    "text": i18ndc("plasma_applet_org.kde.plasma.taskmanager", "@item:inlistbox sort tasks in grouped task", "By activity"),
                     "value": TaskManager.TasksModel.SortActivity,
                 },
                 {
-                    "text": i18nc("@item:inlistbox sort tasks in grouped task", "By horizontal window position"),
+                    "text": i18ndc("plasma_applet_org.kde.plasma.taskmanager", "@item:inlistbox sort tasks in grouped task", "By horizontal window position"),
                     "value": TaskManager.TasksModel.SortWindowPositionHorizontal,
                 },
             ]
@@ -162,14 +162,14 @@ KCMUtils.SimpleKCM {
         QQC2.CheckBox {
             id: separateLaunchers
             visible: (Plasmoid.pluginName !== "org.kde.mac.tahoe.liquid.icontasks")
-            text: i18nc("@option:check configure task sorting", "Keep launchers separate")
+            text: i18ndc("plasma_applet_org.kde.plasma.taskmanager", "@option:check configure task sorting", "Keep launchers separate")
             enabled: sortingStrategy.currentValue === TaskManager.TasksModel.SortManual
         }
 
         QQC2.CheckBox {
             id: hideLauncherOnStart
             visible: (Plasmoid.pluginName !== "org.kde.mac.tahoe.liquid.icontasks")
-            text: i18nc("@option:check for icons-and-text task manager", "Hide launchers after application startup")
+            text: i18ndc("plasma_applet_org.kde.plasma.taskmanager", "@option:check for icons-and-text task manager", "Hide launchers after application startup")
         }
 
         Item {
@@ -179,22 +179,22 @@ KCMUtils.SimpleKCM {
 
         QQC2.CheckBox {
             id: minimizeActive
-            Kirigami.FormData.label: i18nc("@label for checkbox Part of a sentence: 'Clicking active task minimizes the task'", "Clicking active task:")
-            text: i18nc("@option:check Part of a sentence: 'Clicking active task minimizes the task'", "Minimizes the task")
+            Kirigami.FormData.label: i18ndc("plasma_applet_org.kde.plasma.taskmanager", "@label for checkbox Part of a sentence: 'Clicking active task minimizes the task'", "Clicking active task:")
+            text: i18ndc("plasma_applet_org.kde.plasma.taskmanager", "@option:check Part of a sentence: 'Clicking active task minimizes the task'", "Minimizes the task")
         }
 
         QQC2.ComboBox {
             id: middleClickAction
-            Kirigami.FormData.label: i18nc("@label:listbox completes sentence like: … does nothing", "Middle-clicking any task:")
+            Kirigami.FormData.label: i18ndc("plasma_applet_org.kde.plasma.taskmanager", "@label:listbox completes sentence like: … does nothing", "Middle-clicking any task:")
             Layout.fillWidth: true
             Layout.minimumWidth: Kirigami.Units.gridUnit * 14
             model: [
-                i18nc("@item:inlistbox Part of a sentence: 'Middle-clicking any task does nothing'", "Does nothing"),
-                i18nc("@item:inlistbox Part of a sentence: 'Middle-clicking any task closes window or group'", "Closes window or group"),
-                i18nc("@item:inlistbox Part of a sentence: 'Middle-clicking any task opens a new window'", "Opens a new window"),
-                i18nc("@item:inlistbox Part of a sentence: 'Middle-clicking any task minimizes/restores window or group'", "Minimizes/Restores window or group"),
-                i18nc("@item:inlistbox Part of a sentence: 'Middle-clicking any task toggles grouping'", "Toggles grouping"),
-                i18nc("@item:inlistbox Part of a sentence: 'Middle-clicking any task brings it to the current virtual desktop'", "Brings it to the current virtual desktop")
+                i18ndc("plasma_applet_org.kde.plasma.taskmanager", "@item:inlistbox Part of a sentence: 'Middle-clicking any task does nothing'", "Does nothing"),
+                i18ndc("plasma_applet_org.kde.plasma.taskmanager", "@item:inlistbox Part of a sentence: 'Middle-clicking any task closes window or group'", "Closes window or group"),
+                i18ndc("plasma_applet_org.kde.plasma.taskmanager", "@item:inlistbox Part of a sentence: 'Middle-clicking any task opens a new window'", "Opens a new window"),
+                i18ndc("plasma_applet_org.kde.plasma.taskmanager", "@item:inlistbox Part of a sentence: 'Middle-clicking any task minimizes/restores window or group'", "Minimizes/Restores window or group"),
+                i18ndc("plasma_applet_org.kde.plasma.taskmanager", "@item:inlistbox Part of a sentence: 'Middle-clicking any task toggles grouping'", "Toggles grouping"),
+                i18ndc("plasma_applet_org.kde.plasma.taskmanager", "@item:inlistbox Part of a sentence: 'Middle-clicking any task brings it to the current virtual desktop'", "Brings it to the current virtual desktop")
             ]
         }
 
@@ -204,14 +204,14 @@ KCMUtils.SimpleKCM {
 
         QQC2.ComboBox {
             id: wheelEnabled
-            Kirigami.FormData.label: i18nc("@label:listbox Part of a sentence: 'Scrolling behavior does nothing/cycles through tasks/cycles through the selected task's windows/adjusts the hovered task’s volume''", "Scrolling behavior:")
+            Kirigami.FormData.label: i18ndc("plasma_applet_org.kde.plasma.taskmanager", "@label:listbox Part of a sentence: 'Scrolling behavior does nothing/cycles through tasks/cycles through the selected task's windows/adjusts the hovered task’s volume''", "Scrolling behavior:")
             Layout.fillWidth: true
             Layout.minimumWidth: Kirigami.Units.gridUnit * 14
             model: [
-                i18nc("@item:inlistbox Part of a sentence: 'Scrolling behavior does nothing'", "Does nothing"),
-                i18nc("@item:inlistbox Part of a sentence: 'Scrolling behavior cycles through all tasks'", "Cycles through all tasks"),
-                i18nc("@item:inlistbox Part of a sentence: 'Scrolling behavior cycles through the hovered task's windows'", "Cycles through the hovered task’s windows"),
-                i18nc("@item:inlistbox Part of a sentence: 'Scrolling behavior adjusts the hovered task’s volume'", "Adjusts the hovered task’s volume"),
+                i18ndc("plasma_applet_org.kde.plasma.taskmanager", "@item:inlistbox Part of a sentence: 'Scrolling behavior does nothing'", "Does nothing"),
+                i18ndc("plasma_applet_org.kde.plasma.taskmanager", "@item:inlistbox Part of a sentence: 'Scrolling behavior cycles through all tasks'", "Cycles through all tasks"),
+                i18ndc("plasma_applet_org.kde.plasma.taskmanager", "@item:inlistbox Part of a sentence: 'Scrolling behavior cycles through the hovered task's windows'", "Cycles through the hovered task’s windows"),
+                i18ndc("plasma_applet_org.kde.plasma.taskmanager", "@item:inlistbox Part of a sentence: 'Scrolling behavior adjusts the hovered task’s volume'", "Adjusts the hovered task’s volume"),
             ]
         }
 
@@ -219,7 +219,7 @@ KCMUtils.SimpleKCM {
             id: wheelSkipMinimized
             leftPadding: mirrored ? 0 : (wheelEnabled.indicator.width + wheelEnabled.spacing)
             rightPadding: mirrored ? (wheelEnabled.indicator.width + wheelEnabled.spacing) : 0
-            text: i18nc("@option:check mouse wheel task cycling", "Skip minimized tasks")
+            text: i18ndc("plasma_applet_org.kde.plasma.taskmanager", "@option:check mouse wheel task cycling", "Skip minimized tasks")
             enabled: wheelEnabled.currentIndex !== 0 // None
         }
 
@@ -229,23 +229,23 @@ KCMUtils.SimpleKCM {
 
         QQC2.CheckBox {
             id: showOnlyCurrentDesktop
-            Kirigami.FormData.label: i18nc("@label for checkbox group, completes sentence like: … from current screen", "Show only tasks:")
-            text: i18nc("@option:check completes sentence: show only tasks", "From the current desktop")
+            Kirigami.FormData.label: i18ndc("plasma_applet_org.kde.plasma.taskmanager", "@label for checkbox group, completes sentence like: … from current screen", "Show only tasks:")
+            text: i18ndc("plasma_applet_org.kde.plasma.taskmanager", "@option:check completes sentence: show only tasks", "From the current desktop")
         }
 
         QQC2.CheckBox {
             id: showOnlyCurrentActivity
-            text: i18nc("@option:check completes sentence: show only tasks", "From the current activity")
+            text: i18ndc("plasma_applet_org.kde.plasma.taskmanager", "@option:check completes sentence: show only tasks", "From the current activity")
         }
 
         QQC2.CheckBox {
             id: showOnlyCurrentScreen
-            text: i18nc("@option:check completes sentence: show only tasks", "From the current screen")
+            text: i18ndc("plasma_applet_org.kde.plasma.taskmanager", "@option:check completes sentence: show only tasks", "From the current screen")
         }
 
         QQC2.CheckBox {
             id: showOnlyMinimized
-            text: i18nc("@option:check completes sentence: show only tasks", "That are minimized")
+            text: i18ndc("plasma_applet_org.kde.plasma.taskmanager", "@option:check completes sentence: show only tasks", "That are minimized")
         }
 
         Item {
@@ -254,8 +254,8 @@ KCMUtils.SimpleKCM {
 
         QQC2.CheckBox {
             id: unhideOnAttention
-            Kirigami.FormData.label: i18nc("@label for checkbox, completes sentence: … unhide if window wants attention", "When panel is hidden:")
-            text: i18nc("@option:check completes sentence: When panel is hidden", "Unhide when a window wants attention")
+            Kirigami.FormData.label: i18ndc("plasma_applet_org.kde.plasma.taskmanager", "@label for checkbox, completes sentence: … unhide if window wants attention", "When panel is hidden:")
+            text: i18ndc("plasma_applet_org.kde.plasma.taskmanager", "@option:check completes sentence: When panel is hidden", "Unhide when a window wants attention")
             onToggled: {
                 annoyingAppWorkaroundMessage.visible = !unhideOnAttention.checked;
             }
@@ -270,17 +270,17 @@ KCMUtils.SimpleKCM {
         }
 
         QQC2.RadioButton {
-            Kirigami.FormData.label: i18nc("@label for radiobutton group completes sentence like: … on the bottom", "New tasks appear:")
+            Kirigami.FormData.label: i18ndc("plasma_applet_org.kde.plasma.taskmanager", "@label for radiobutton group completes sentence like: … on the bottom", "New tasks appear:")
             checked: !reverseMode.checked
             text: {
                 if (Plasmoid.formFactor === PlasmaCore.Types.Vertical) {
-                    return i18nc("@option:check completes sentence: New tasks appear", "On the bottom")
+                    return i18ndc("plasma_applet_org.kde.plasma.taskmanager", "@option:check completes sentence: New tasks appear", "On the bottom")
                 }
                 // horizontal
                 if (Application.layoutDirection === Qt.LeftToRight) {
-                    return i18nc("@option:check completes sentence: New tasks appear", "To the right");
+                    return i18ndc("plasma_applet_org.kde.plasma.taskmanager", "@option:check completes sentence: New tasks appear", "To the right");
                 } else {
-                    return i18nc("@option:check completes sentence: New tasks appear", "To the left")
+                    return i18ndc("plasma_applet_org.kde.plasma.taskmanager", "@option:check completes sentence: New tasks appear", "To the left")
                 }
             }
             QQC2.ButtonGroup.group: reverseModeRadioButtonGroup
@@ -291,13 +291,13 @@ KCMUtils.SimpleKCM {
             checked: Plasmoid.configuration.reverseMode === true
             text: {
                 if (Plasmoid.formFactor === PlasmaCore.Types.Vertical) {
-                    return i18nc("@option:check completes sentence: New tasks appear", "On the top")
+                    return i18ndc("plasma_applet_org.kde.plasma.taskmanager", "@option:check completes sentence: New tasks appear", "On the top")
                 }
                 // horizontal
                 if (Application.layoutDirection === Qt.LeftToRight) {
-                    return i18nc("@option:check completes sentence: New tasks appear", "To the left");
+                    return i18ndc("plasma_applet_org.kde.plasma.taskmanager", "@option:check completes sentence: New tasks appear", "To the left");
                 } else {
-                    return i18nc("@option:check completes sentence: New tasks appear", "To the right");
+                    return i18ndc("plasma_applet_org.kde.plasma.taskmanager", "@option:check completes sentence: New tasks appear", "To the right");
                 }
             }
             QQC2.ButtonGroup.group: reverseModeRadioButtonGroup

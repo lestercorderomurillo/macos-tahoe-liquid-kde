@@ -80,7 +80,7 @@ Item {
         visible: task.smartLauncherItem.countVisible
 
         readonly property string badgeText: task.smartLauncherItem.count > 9999
-            ? i18nc("Over 9999 new messages, overlay, keep short", "9,999+")
+            ? i18ndc("plasma_applet_org.kde.plasma.taskmanager", "Over 9999 new messages, overlay, keep short", "9,999+")
             : task.smartLauncherItem.count.toLocaleString(Qt.locale(), 'f', 0)
 
         readonly property int horizontalPadding: 7

@@ -151,3 +151,17 @@ def test_install_about_info_bakes_version(tmp_path, monkeypatch):
     assert "@THEME_VERSION@" not in text
     assert f'_BAKED_VERSION = "{read_version()}"' in text
     assert dest.stat().st_mode & 0o111, "helper must stay executable"
+
+
+def test_globalmenu_translations_install_to_user_locale(tmp_path, monkeypatch):
+    data_home = tmp_path / "share"
+    monkeypatch.setattr(globalmenu, "DATA_HOME", data_home)
+
+    globalmenu._install_translations()
+
+    for language in globalmenu.TRANSLATION_LANGUAGES:
+        installed = (data_home / "locale" / language / "LC_MESSAGES"
+                     / globalmenu.TRANSLATION_DOMAIN)
+        source = (globalmenu.SRC / "locale" / language / "LC_MESSAGES"
+                  / globalmenu.TRANSLATION_DOMAIN)
+        assert installed.read_bytes() == source.read_bytes()

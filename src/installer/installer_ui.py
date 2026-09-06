@@ -28,6 +28,9 @@ from cli import (
     fetch_latest_release, parse_semver,
 )
 from log import DONE_MARKER
+from localization import (
+    feature_label, get_language, language_options, set_language, translate,
+)
 
 
 PREVIEW_QML = Path(__file__).resolve().parent / "preview_installer.qml"
@@ -474,6 +477,7 @@ def _make_installer_bridge():
         finished = pyqtSignal(int)
         logAppended = pyqtSignal(str)
         updateChecked = pyqtSignal("QVariantMap")
+        languageChanged = pyqtSignal()
 
         def __init__(self, parent=None):
             super().__init__(parent)
@@ -490,6 +494,7 @@ def _make_installer_bridge():
             self._progress_file: str | None = None
             self._cancel_file: str | None = None
             self._update_thread: _UpdateCheckThread | None = None
+            self._language = get_language()
 
             self._watcher = QFileSystemWatcher(self)
             self._watcher.fileChanged.connect(self._read_progress)
@@ -515,6 +520,28 @@ def _make_installer_bridge():
             first paint can show it."""
             return read_version()
 
+        @pyqtProperty(str, notify=languageChanged)
+        def language(self) -> str:
+            return self._language
+
+        @pyqtProperty("QVariantList", constant=True)
+        def languages(self):
+            return language_options("en")
+
+        @pyqtSlot(str, result=str)
+        def translate(self, message: str) -> str:
+            return translate(message, self._language)
+
+        @pyqtSlot(str, result=bool)
+        def setLanguage(self, code: str) -> bool:
+            if code == self._language:
+                return True
+            if not set_language(code):
+                return False
+            self._language = code
+            self.languageChanged.emit()
+            return True
+
         @pyqtSlot(result=str)
         def logTail(self) -> str:
             return "\n".join(self._log_lines[-200:])
@@ -524,7 +551,7 @@ def _make_installer_bridge():
             if self._running or action not in _ACTION_COMMANDS:
                 return
             self._log_lines.clear()
-            self._current_step = "Starting…"
+            self._current_step = translate("Starting…", self._language)
             self._step_index = 0
             self._progress = 0.0
             self._read_offset = 0
@@ -579,8 +606,11 @@ def _make_installer_bridge():
             # Keep the supervisor (and therefore the busy state and private
             # channels) alive until the privileged transaction really exits.
             # A package manager or initramfs rebuild may need time to unwind.
-            message = ("Cancelling… waiting for the current operation to stop "
-                       "safely; dismiss any authentication prompt")
+            message = translate(
+                "Cancelling… waiting for the current operation to stop safely; "
+                "dismiss any authentication prompt",
+                self._language,
+            )
             if self._current_step != message:
                 self._log_lines.append(message)
                 self._current_step = message
@@ -780,6 +810,7 @@ def launch_preview() -> int:
 
 
 def dump_features() -> dict[str, object]:
+    language = get_language()
     state: dict[str, object] = dict(DEFAULT_FEATURES)
     if CONFIG_FILE.is_file():
         try:
@@ -794,8 +825,8 @@ def dump_features() -> dict[str, object]:
     items = [
         {
             "key": key,
-            "label": key.replace("_", " ").title(),
-            "description": FEATURE_DESC.get(key, ""),
+            "label": feature_label(key, language),
+            "description": translate(FEATURE_DESC.get(key, ""), language),
             "enabled": bool(state.get(key, True)),
         }
         for key in ALL_FEATURES

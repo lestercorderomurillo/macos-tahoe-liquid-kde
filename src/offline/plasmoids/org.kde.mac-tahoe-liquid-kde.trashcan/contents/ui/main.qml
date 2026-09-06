@@ -32,7 +32,7 @@ PlasmoidItem {
     property bool emptying: false
     property bool containsAcceptableDrag: false
 
-    Plasmoid.title: "Trash"
+    Plasmoid.title: i18n("Trash")
     toolTipSubText: {
         if (emptying) {
             return "Emptying\u2026";
@@ -106,12 +106,12 @@ PlasmoidItem {
     // context menu
     Plasmoid.contextualActions: [
         PlasmaCore.Action {
-            text: "Open"
+            text: i18n("Open")
             icon.name: "document-open-symbolic"
             onTriggered: Plasmoid.activated()
         },
         PlasmaCore.Action {
-            text: "Empty Trash"
+            text: i18n("Empty Trash")
             icon.name: "trash-empty-symbolic"
             enabled: root.hasContents && !root.emptying
             onTriggered: {

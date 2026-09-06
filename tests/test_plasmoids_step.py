@@ -159,7 +159,8 @@ def test_taskmanager_build_artifacts_match_install_sources():
         plasmoids.TASKMANAGER_SRC / "contents/ui/ConfigAppearance.qml"
     ).read_text()
     assert "property alias cfg_dockMagnification" in appearance_qml
-    assert 'i18nc("@label:spinbox", "Hover magnification:")' in appearance_qml
+    assert '"plasma_applet_org.kde.mac.tahoe.liquid.taskmanager"' in appearance_qml
+    assert '"Hover magnification:")' in appearance_qml
     assert "from: 100" in appearance_qml
     assert "to: 150" in appearance_qml
 

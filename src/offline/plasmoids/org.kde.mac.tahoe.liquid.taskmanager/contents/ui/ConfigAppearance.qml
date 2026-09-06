@@ -47,18 +47,18 @@ KCMUtils.SimpleKCM {
     Kirigami.FormLayout {
         QQC2.CheckBox {
             id: showToolTips
-            Kirigami.FormData.label: i18nc("@label for several checkboxes", "General:")
-            text: i18nc("@option:check section General", "Show small window previews when hovering over tasks")
+            Kirigami.FormData.label: i18ndc("plasma_applet_org.kde.plasma.taskmanager", "@label for several checkboxes", "General:")
+            text: i18ndc("plasma_applet_org.kde.plasma.taskmanager", "@option:check section General", "Show small window previews when hovering over tasks")
         }
 
         QQC2.CheckBox {
             id: highlightWindows
-            text: showToolTips.checked ? i18nc("@option:check section General", "Hide other windows when hovering over previews") : i18nc("@option:check section General", "Hide other windows when hovering over tooltips")
+            text: showToolTips.checked ? i18ndc("plasma_applet_org.kde.plasma.taskmanager", "@option:check section General", "Hide other windows when hovering over previews") : i18ndc("plasma_applet_org.kde.plasma.taskmanager", "@option:check section General", "Hide other windows when hovering over tooltips")
         }
 
         QQC2.CheckBox {
             id: indicateAudioStreams
-            text: i18nc("@option:check section General", "Show an indicator when a task is playing audio")
+            text: i18ndc("plasma_applet_org.kde.plasma.taskmanager", "@option:check section General", "Show an indicator when a task is playing audio")
             checked: root.cfg_indicateAudioStreams && root.plasmaPaAvailable
             onToggled: root.cfg_indicateAudioStreams = checked
             enabled: root.plasmaPaAvailable
@@ -68,7 +68,7 @@ KCMUtils.SimpleKCM {
             id: interactiveMute
             leftPadding: mirrored ? 0 : (indicateAudioStreams.indicator.width + indicateAudioStreams.spacing)
             rightPadding: mirrored ? (indicateAudioStreams.indicator.width + indicateAudioStreams.spacing) : 0
-            text: i18nc("@option:check section General", "Mute task when clicking indicator")
+            text: i18ndc("plasma_applet_org.kde.plasma.taskmanager", "@option:check section General", "Mute task when clicking indicator")
             checked: root.cfg_interactiveMute && root.plasmaPaAvailable
             onToggled: root.cfg_interactiveMute = checked
             enabled: indicateAudioStreams.checked && root.plasmaPaAvailable
@@ -76,7 +76,7 @@ KCMUtils.SimpleKCM {
 
         QQC2.CheckBox {
             id: tooltipControls
-            text: i18nc("@option:check section General", "Show media and volume controls in tooltip")
+            text: i18ndc("plasma_applet_org.kde.plasma.taskmanager", "@option:check section General", "Show media and volume controls in tooltip")
             checked: root.cfg_tooltipControls && root.plasmaPaAvailable
             onToggled: root.cfg_tooltipControls = checked
             enabled: root.plasmaPaAvailable
@@ -84,7 +84,7 @@ KCMUtils.SimpleKCM {
 
         QQC2.CheckBox {
             id: fill
-            text: i18nc("@option:check section General", "Fill free space on panel")
+            text: i18ndc("plasma_applet_org.kde.plasma.taskmanager", "@option:check section General", "Fill free space on panel")
         }
 
         Item {
@@ -96,12 +96,12 @@ KCMUtils.SimpleKCM {
             id: taskMaxWidth
             visible: !root.iconOnly && !root.plasmoidVertical
 
-            Kirigami.FormData.label: i18nc("@label:listbox", "Maximum task width:")
+            Kirigami.FormData.label: i18ndc("plasma_applet_org.kde.plasma.taskmanager", "@label:listbox", "Maximum task width:")
 
             model: [
-                i18nc("@item:inlistbox how wide a task item should be", "Narrow"),
-                i18nc("@item:inlistbox how wide a task item should be", "Medium"),
-                i18nc("@item:inlistbox how wide a task item should be", "Wide")
+                i18ndc("plasma_applet_org.kde.plasma.taskmanager", "@item:inlistbox how wide a task item should be", "Narrow"),
+                i18ndc("plasma_applet_org.kde.plasma.taskmanager", "@item:inlistbox how wide a task item should be", "Medium"),
+                i18ndc("plasma_applet_org.kde.plasma.taskmanager", "@item:inlistbox how wide a task item should be", "Wide")
             ]
         }
 
@@ -112,14 +112,14 @@ KCMUtils.SimpleKCM {
         QQC2.RadioButton {
             id: forbidStripes
             Kirigami.FormData.label: root.plasmoidVertical
-                ? i18nc("@label for radio button group, completes sentence: … when panel is low on space etc.", "Use multi-column view:")
-                : i18nc("@label for radio button group, completes sentence: … when panel is low on space etc.", "Use multi-row view:")
+                ? i18ndc("plasma_applet_org.kde.plasma.taskmanager", "@label for radio button group, completes sentence: … when panel is low on space etc.", "Use multi-column view:")
+                : i18ndc("plasma_applet_org.kde.plasma.taskmanager", "@label for radio button group, completes sentence: … when panel is low on space etc.", "Use multi-row view:")
             onToggled: {
                 if (checked) {
                     maxStripes.value = 1
                 }
             }
-            text: i18nc("@option:radio Never use multi-column view for Task Manager", "Never")
+            text: i18ndc("plasma_applet_org.kde.plasma.taskmanager", "@option:radio Never use multi-column view for Task Manager", "Never")
         }
 
         QQC2.RadioButton {
@@ -129,7 +129,7 @@ KCMUtils.SimpleKCM {
                     maxStripes.value = Math.max(2, maxStripes.value)
                 }
             }
-            text: i18nc("@option:radio completes sentence: Use multi-column/row view", "When panel is low on space and thick enough")
+            text: i18ndc("plasma_applet_org.kde.plasma.taskmanager", "@option:radio completes sentence: Use multi-column/row view", "When panel is low on space and thick enough")
         }
 
         QQC2.RadioButton {
@@ -139,15 +139,15 @@ KCMUtils.SimpleKCM {
                     maxStripes.value = Math.max(2, maxStripes.value)
                 }
             }
-            text: i18nc("@option:radio completes sentence: Use multi-column/row view", "Always when panel is thick enough")
+            text: i18ndc("plasma_applet_org.kde.plasma.taskmanager", "@option:radio completes sentence: Use multi-column/row view", "Always when panel is thick enough")
         }
 
         QQC2.SpinBox {
             id: maxStripes
             enabled: maxStripes.value > 1
             Kirigami.FormData.label: root.plasmoidVertical
-                ? i18nc("@label:spinbox maximum number of columns for tasks", "Maximum columns:")
-                : i18nc("@label:spinbox maximum number of rows for tasks", "Maximum rows:")
+                ? i18ndc("plasma_applet_org.kde.plasma.taskmanager", "@label:spinbox maximum number of columns for tasks", "Maximum columns:")
+                : i18ndc("plasma_applet_org.kde.plasma.taskmanager", "@label:spinbox maximum number of rows for tasks", "Maximum rows:")
             from: 1
         }
 
@@ -157,19 +157,19 @@ KCMUtils.SimpleKCM {
 
         QQC2.ComboBox {
             visible: root.iconOnly
-            Kirigami.FormData.label: i18nc("@label:listbox", "Spacing between icons:")
+            Kirigami.FormData.label: i18ndc("plasma_applet_org.kde.plasma.taskmanager", "@label:listbox", "Spacing between icons:")
 
             model: [
                 {
-                    "label": i18nc("@item:inlistbox Icon spacing", "Small"),
+                    "label": i18ndc("plasma_applet_org.kde.plasma.taskmanager", "@item:inlistbox Icon spacing", "Small"),
                     "spacing": 0
                 },
                 {
-                    "label": i18nc("@item:inlistbox Icon spacing", "Normal"),
+                    "label": i18ndc("plasma_applet_org.kde.plasma.taskmanager", "@item:inlistbox Icon spacing", "Normal"),
                     "spacing": 1
                 },
                 {
-                    "label": i18nc("@item:inlistbox Icon spacing", "Large"),
+                    "label": i18ndc("plasma_applet_org.kde.plasma.taskmanager", "@item:inlistbox Icon spacing", "Large"),
                     "spacing": 3
                 },
             ]
@@ -189,13 +189,15 @@ KCMUtils.SimpleKCM {
         QQC2.SpinBox {
             id: dockMagnification
             visible: root.iconOnly
-            Kirigami.FormData.label: i18nc("@label:spinbox", "Hover magnification:")
+            Kirigami.FormData.label: i18nd(
+                "plasma_applet_org.kde.mac.tahoe.liquid.taskmanager",
+                "Hover magnification:")
             from: 100
             to: 150
             stepSize: 5
             editable: true
 
-            textFromValue: (value, locale) => i18nc(
+            textFromValue: (value, locale) => i18ndc("plasma_applet_org.kde.plasma.taskmanager",
                 "@item:intext percentage used to magnify a Dock icon", "%1%", value)
             valueFromText: (text, locale) => Math.max(from, Math.min(to, parseInt(text)))
         }
