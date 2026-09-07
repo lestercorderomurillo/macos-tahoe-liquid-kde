@@ -1,11 +1,13 @@
+import os
+import shlex
 import shutil
 from pathlib import Path
 
-from distro import qt6_plugins_dir, qt6_qml_dir
+from distro import gtk3_appmenu_module, qt6_plugins_dir, qt6_qml_dir
 from paths import REPO_ROOT, read_version
 from steps._helpers import (
     DATA_HOME, HOME, build_dir, cmake_build, fail, ok, offline,
-    sudo_install_file, sudo_install_tree, sudo_remove, warn,
+    sudo_install_file, sudo_install_tree, sudo_remove, temp_dir, warn,
 )
 
 SRC = offline("plasmoids/org.kde.mac.tahoe.liquid.globalmenu")
@@ -21,6 +23,8 @@ _SO_RELPATH = "plasma/applets/org.kde.mac.tahoe.liquid.globalmenu.so"
 _QML_RELPATH = "plasma/applet/org/kde/mac/tahoe/liquid/globalmenu"
 TRANSLATION_DOMAIN = "plasma_applet_org.kde.mac.tahoe.liquid.globalmenu.mo"
 TRANSLATION_LANGUAGES = ("es", "zh_CN")
+GTK_ENV_MARKER = "# Managed by mac-tahoe-liquid-kde: GTK appmenu lifetime\n"
+GTK_ENV_TEMPLATE = offline("plasma-env/mac-tahoe-gtk-appmenu.sh.in")
 
 _LEGACY_SO_BASENAMES = (
     "org.kde.mac.tahoe.liquid.menu.so",
@@ -133,6 +137,67 @@ def install() -> None:
 
     _install_translations()
     _install_about_info()
+    _install_gtk_appmenu_environment()
+
+
+def gtk_appmenu_env_path() -> Path:
+    config_home = Path(os.environ.get("XDG_CONFIG_HOME") or HOME / ".config")
+    return config_home / "plasma-workspace/env/mac-tahoe-gtk-appmenu.sh"
+
+
+def _gtk_appmenu_environment(module: Path) -> str:
+    return GTK_ENV_TEMPLATE.read_text(encoding="utf-8").replace(
+        "@APPMENU_MODULE@", shlex.quote(str(module)))
+
+
+def _gtk_appmenu_environment_owned(path: Path) -> bool:
+    return not path.is_symlink() and path.read_text(encoding="utf-8").startswith(
+        GTK_ENV_MARKER)
+
+
+def _install_gtk_appmenu_environment() -> None:
+    """Keep GTK's own lifetime reference across settings/theme changes.
+
+    A login hook reaches both direct and D-Bus/systemd-activated apps on
+    systemd and OpenRC. Updating only the install process or one activation
+    environment would leave other launch paths vulnerable until next login.
+    Never remove the module from a running application's settings: its
+    callbacks may still point into the unloaded library (issue #81).
+    """
+    module = gtk3_appmenu_module()
+    if module is None:
+        warn("GTK appmenu module not found; GTK startup integration skipped")
+        return
+    destination = gtk_appmenu_env_path()
+    try:
+        if (destination.exists() or destination.is_symlink()) and not \
+                _gtk_appmenu_environment_owned(destination):
+            warn(f"Custom GTK environment file preserved: {destination}")
+            return
+        with temp_dir("mttkde-gtk-appmenu-") as staging:
+            source = staging / destination.name
+            source.write_text(_gtk_appmenu_environment(module), encoding="utf-8")
+            source.chmod(0o644)
+            if not sudo_install_file(source, destination, "GTK Global Menu startup integration",
+                                     user_owned=True):
+                return
+        warn("Log out and back in to enable GTK Global Menu crash protection")
+    except (OSError, UnicodeError) as exc:
+        warn(f"GTK Global Menu startup integration could not be installed: {exc}")
+
+
+def _remove_gtk_appmenu_environment() -> None:
+    destination = gtk_appmenu_env_path()
+    try:
+        if not destination.exists() and not destination.is_symlink():
+            return
+        if not _gtk_appmenu_environment_owned(destination):
+            warn(f"Custom GTK environment file preserved: {destination}")
+            return
+        if sudo_remove(destination, "GTK Global Menu startup integration removed"):
+            warn("Log out and back in to remove GTK startup integration from this session")
+    except (OSError, UnicodeError) as exc:
+        warn(f"GTK Global Menu startup integration could not be removed: {exc}")
 
 
 def _translation_dest(language: str) -> Path:
@@ -169,6 +234,7 @@ def _install_about_info() -> None:
 
 
 def uninstall() -> None:
+    _remove_gtk_appmenu_environment()
     sudo_remove(qt6_plugins_dir() / _SO_RELPATH, "Global Menu .so removed")
     sudo_remove(qt6_qml_dir() / _QML_RELPATH, "Global Menu runtime QML removed")
     for language in TRANSLATION_LANGUAGES:

@@ -144,6 +144,7 @@ def _enumerate_destinations() -> list[tuple[str, Path]]:
     dests: list[tuple[str, Path]] = [
         ("globalmenu .so", globalmenu.DEST_SO),
         ("globalmenu QML module", globalmenu.DEST_QML_DIR),
+        ("globalmenu GTK login environment", globalmenu.gtk_appmenu_env_path()),
         ("plasmoids share dir", plasmoids.DEST_DIR),
         ("taskmanager .so", plasmoids.TASKMANAGER_DEST_SO),
         ("taskmanager QML module", plasmoids.TASKMANAGER_DEST_QML),

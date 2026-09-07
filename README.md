@@ -4,7 +4,7 @@
 
 # macOS Tahoe Liquid Theme for Plasma 6.6/6.7+
 
-[![release](https://img.shields.io/github/v/release/lestercorderomurillo/macos-tahoe-liquid-kde?label=release&color=blue)](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/releases) [![tests](https://img.shields.io/badge/tests-1304_passing-brightgreen)](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/actions/workflows/test.yml) [![plasma](https://img.shields.io/badge/Plasma-6.6%2B-1d99f3?logo=kde)](https://kde.org/plasma-desktop/) [![license](https://img.shields.io/badge/license-GPL--3.0-blue)](LICENSE) [![report a bug](https://img.shields.io/badge/report-a%20bug-red?logo=github)](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/issues/new)
+[![release](https://img.shields.io/github/v/release/lestercorderomurillo/macos-tahoe-liquid-kde?label=release&color=blue)](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/releases) [![tests](https://img.shields.io/badge/tests-1328_passing-brightgreen)](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/actions/workflows/test.yml) [![plasma](https://img.shields.io/badge/Plasma-6.6%2B-1d99f3?logo=kde)](https://kde.org/plasma-desktop/) [![license](https://img.shields.io/badge/license-GPL--3.0-blue)](LICENSE) [![report a bug](https://img.shields.io/badge/report-a%20bug-red?logo=github)](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/issues/new)
 
 Bring a little Tahoe to your Linux desktop.
 
@@ -271,32 +271,37 @@ Use `all` to launch every distro.
 <details>
 <summary><b>Chromium-based app crashes with Global Menu</b></summary>
 
-A launch crash involving the GTK3 `appmenu-gtk-module` was reported with a
-Chromium-based app on Ubuntu 26.04.1 / Plasma 6.6.6. It has not been established
-that all Chromium or Electron apps are affected. See [issue #81](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/issues/81)
-for the reproducer and diagnostic results.
+A GTK3 module lifetime defect causes the startup crash reproduced from
+[issue #81](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/issues/81).
+The affected Chromium startup code clears `gtk-modules` after GTK initializes.
+Older `appmenu-gtk-module` builds then unload while their D-Bus callbacks and GTK
+menu hooks remain registered. The next callback crashes the app. Upstream
+addresses this by [making the module resident](https://gitlab.com/vala-panel-project/vala-panel-appmenu/-/commit/a783b01c8b653349843fac9bbd075dac52cdc9de).
 
-The reporter's workaround is to back up
-`${XDG_CONFIG_HOME:-$HOME/.config}/gtk-3.0/settings.ini`, then edit its
-`[Settings]` group and remove only `appmenu-gtk-module` from the colon-separated
-`gtk-modules=` value. Keep the other modules and settings. For example:
+The Global Menu installer now adds a Plasma login hook that includes the
+installed module in `GTK3_MODULES`. GTK retains this startup reference for the
+application's lifetime, including across light/dark switches. Existing module
+choices are preserved, and the protection keeps GTK global menus available.
 
-```ini
-# Before
-gtk-modules=colorreload-gtk-module:window-decorations-gtk-module:appmenu-gtk-module
-# After
-gtk-modules=colorreload-gtk-module:window-decorations-gtk-module
+Run `sudo ./install` with Global Menu selected, then **log out and back in**.
+The hook lives at
+`${XDG_CONFIG_HOME:-$HOME/.config}/plasma-workspace/env/mac-tahoe-gtk-appmenu.sh`;
+uninstall removes the project's hook. A fresh login is also required after
+removal, because existing processes retain their startup environment.
+
+To test one app before logging out, replace `your-application` below with its
+executable:
+
+```bash
+env GTK3_MODULES="${GTK3_MODULES:+$GTK3_MODULES:}appmenu-gtk-module" your-application
 ```
 
-If it is the only module, leave `gtk-modules=` empty. Relaunch the affected app.
-This disables GTK menu export through that module for newly launched GTK apps;
-Qt global menus use separate integration. To undo it, add the removed token
-back to the current list and relaunch the apps.
-
-KDE may add the token again after a look-and-feel reapply, including a scheduled
-light/dark switch, so this is a temporary workaround. Setting `GTK_MODULES=`
-alone does not override the list in `settings.ini`. The installer does not
-automatically strip the module or remove its package.
+Both reported ChatGPT builds, **26.831.21537 and 26.901.51231**, were tested
+with fresh isolated profiles: each crashes without the hook and opens a visible
+window with it. GDB traces match both application offsets in the report. See the
+[validation record and repeatable probes](tests/native/gtk_appmenu_validation.md)
+for the tested environment and scope. Avoid removing the module from live GTK
+settings: that can itself trigger the unload defect in running apps.
 
 </details>
 

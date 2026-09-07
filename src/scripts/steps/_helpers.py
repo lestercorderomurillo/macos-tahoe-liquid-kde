@@ -103,16 +103,27 @@ def _as_root() -> Iterator[None]:
         os.seteuid(saved_euid)
 
 
-def sudo_install_file(src: Path, dest: Path, label: str) -> bool:
-    """Atomic copy+rename to a root-owned destination under a transient
-    seteuid(0) — no sudo subprocess, no PAM conv, no faillock surface."""
+def sudo_install_file(src: Path, dest: Path, label: str, *, user_owned: bool = False) -> bool:
+    """Atomic copy+rename under a transient seteuid(0).
+
+    Destinations default to root ownership. For per-user configuration,
+    user_owned keeps the invoking effective UID/GID on the staged file and
+    creates its parent directories before elevation.
+    """
     src = Path(src)
     dest = Path(dest)
     try:
+        owner = (os.geteuid(), os.getegid()) if user_owned else None
+        if user_owned:
+            # Create per-user directories before elevation so the user can
+            # keep managing other files in the same configuration directory.
+            dest.parent.mkdir(parents=True, exist_ok=True)
         with _as_root():
             dest.parent.mkdir(parents=True, exist_ok=True)
             tmp = dest.with_name(dest.name + ".mttkde-tmp")
             shutil.copy2(str(src), str(tmp))
+            if owner is not None:
+                os.chown(tmp, *owner, follow_symlinks=False)
             os.replace(str(tmp), str(dest))
     except OSError as exc:
         fail(f"{label} ({exc.__class__.__name__}: {exc})")

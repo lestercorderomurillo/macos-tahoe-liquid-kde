@@ -34,7 +34,8 @@ def _stub_sudo_helpers(monkeypatch):
     helpers express (atomic copy + correct ownership at the destination)
     is real-system territory; in the test we just want to verify the
     install code targets the right paths and copies the right bytes."""
-    def fake_install_file(src: Path, dest: Path, label: str) -> bool:
+    def fake_install_file(src: Path, dest: Path, label: str, *, user_owned=False) -> bool:
+        assert user_owned == (dest.name == "mac-tahoe-gtk-appmenu.sh")
         dest.parent.mkdir(parents=True, exist_ok=True)
         shutil.copy2(str(src), str(dest))
         return True
@@ -74,6 +75,11 @@ def test_install_copies_globalmenu_runtime_qml(tmp_path, monkeypatch):
 
     fake_plugins, fake_qml = _stub_qt6_paths(monkeypatch, tmp_path)
     monkeypatch.setattr(globalmenu, "HOME", home)
+    monkeypatch.setenv("XDG_CONFIG_HOME", str(home / ".config"))
+    monkeypatch.setattr(globalmenu, "DATA_HOME", home / ".local/share")
+    gtk_module = tmp_path / "libappmenu-gtk-module.so"
+    gtk_module.touch()
+    monkeypatch.setattr(globalmenu, "gtk3_appmenu_module", lambda: gtk_module)
     monkeypatch.setattr(
         globalmenu, "ABOUT_INFO_DEST",
         home / ".local/bin/mac-tahoe-about-info",
@@ -97,6 +103,14 @@ def test_install_copies_globalmenu_runtime_qml(tmp_path, monkeypatch):
     assert expected_so.is_file()
     assert (expected_qml / "qmldir").is_file()
     assert (expected_qml / "main.qml").is_file()
+    gtk_environment = home / ".config/plasma-workspace/env/mac-tahoe-gtk-appmenu.sh"
+    assert str(gtk_module) in gtk_environment.read_text()
+
+    globalmenu.uninstall()
+
+    assert not gtk_environment.exists()
+    assert not expected_so.exists()
+    assert not expected_qml.exists()
 
 
 def test_globalmenu_dest_paths_anchor_to_qmake6_libdir(monkeypatch, tmp_path):

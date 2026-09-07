@@ -354,6 +354,42 @@ Worst case: 2 + 6 + 6 = 14s of sleeps. Don't shorten the 2s lead-in
 — `plasma-apply-lookandfeel` exits 0 against a not-yet-ready bus
 without actually re-rendering.
 
+## Architecture — GTK Global Menu Lifetime
+
+Older distro `appmenu-gtk-module` builds register process-lifetime D-Bus
+callbacks and GtkMenuBar vfuncs without marking the module resident. GTK can
+unload a module loaded only through `gtk-3.0/settings.ini` when settings change;
+the next callback then jumps into unmapped memory (issue #81). The reported
+ChatGPT builds explicitly clear `gtk-modules` during Chromium initialization;
+GDB reproduced both reported application offsets at the subsequent GIO crash.
+
+The Global Menu step installs an ownership-marked, per-user Plasma environment
+hook at `$XDG_CONFIG_HOME/plasma-workspace/env/mac-tahoe-gtk-appmenu.sh` when
+`distro.gtk3_appmenu_module()` finds the native GTK3 module. The hook appends it
+once to `GTK3_MODULES`, preserving existing entries and leaving `GTK_MODULES`
+and GTK2 untouched. Chromium clears `GTK_MODULES`, so the GTK3-specific variable
+is required. GTK holds a lifetime reference for modules named in the
+startup environment, so look-and-feel/XSettings changes cannot unload it.
+Plasma sources the hook on both systemd and OpenRC before starting apps.
+Installation and removal require a fresh login to change all launch paths;
+the installer must not claim to repair already-running processes. Uninstall
+removes only the marked hook, preserving custom files and symlinks.
+The hook uses `sudo_install_file(..., user_owned=True)` so its file and newly
+created configuration directories remain manageable by the invoking user.
+
+Never strip `appmenu-gtk-module` from live GTK settings as a crash guard: the
+removal can trigger the very unload fault it is meant to prevent. Do not
+replace distro libraries or set process-wide `G_DEBUG=resident-modules`.
+`tests/gtk_appmenu_probe.py` is an opt-in native reproducer with its own Xvfb,
+D-Bus session, temporary config/runtime, and disabled core dumps. Its control
+may SIGSEGV with an old module; the generated hook must keep the module loaded
+across settings/registrar changes and subsequent GTK menu calls.
+`tests/gtk_appmenu_app_probe.py` accepts an already-extracted official ChatGPT
+package and compares unprotected/protected launches in Bubblewrap namespaces,
+without network access or the user's home. It requires a visible main window,
+the loaded appmenu module, and survival for the observation period. A control
+that does not reproduce the SIGSEGV is inconclusive, never a passing fix test.
+
 ## Architecture — OLED Care (opt-in)
 
 `mac-tahoe-oled-care {shift|restore|status}` guards OLED panels against

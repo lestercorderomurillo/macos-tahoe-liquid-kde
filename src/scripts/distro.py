@@ -8,6 +8,7 @@ from __future__ import annotations
 import os
 import shutil
 import subprocess
+import sysconfig
 from pathlib import Path
 
 from utils import run_user
@@ -400,6 +401,33 @@ def system_lib_dir() -> Path:
     if parent.name == "qt6":
         return parent.parent
     return parent
+
+
+def gtk3_appmenu_module() -> Path | None:
+    """Find the installed native GTK3 appmenu module without loading it.
+
+    GTK's pkg-config file may be absent on runtime-only installations, or
+    Qt may use a separate prefix (notably on Neon). In that case inspect
+    the native system library directories, including Debian multiarch.
+    """
+    roots: list[Path] = []
+    reported = _run_query(["pkg-config", "--variable=libdir", "gtk+-3.0"])
+    if reported and Path(reported).is_absolute():
+        roots.append(Path(reported))
+    try:
+        roots.append(system_lib_dir())
+    except Qt6PathsMissing:
+        pass
+    multiarch = sysconfig.get_config_var("MULTIARCH")
+    if multiarch and Path(multiarch).name == multiarch:
+        roots.append(Path("/usr/lib") / multiarch)
+    roots.extend((Path("/usr/lib64"), Path("/usr/lib")))
+    for root in dict.fromkeys(roots):
+        for suffix in ("gtk-3.0/3.0.0/modules", "gtk-3.0/modules"):
+            candidate = root / suffix / "libappmenu-gtk-module.so"
+            if candidate.is_file():
+                return candidate
+    return None
 
 
 # ── Package manager + per-distro package name map ────────────────────
