@@ -47,6 +47,12 @@ def deps():
         "epoxy-cmake:libepoxy",
         "x11-cmake:libx11",
         "xcb-cmake:libxcb",
+        # Extension headers included transitively by KWin's public SDK.
+        "xcb-composite-cmake:libxcb",
+        "xcb-randr-cmake:libxcb",
+        "xcb-res-cmake:libxcb",
+        "xcb-shm-cmake:libxcb",
+        "xcb-sync-cmake:libxcb",
         # KWin 6.7+ exports find_dependency(Vulkan), so find_package(KWin)
         # fails at configure time without these — even on non-Vulkan machines.
         "vulkan-loader-cmake:vulkan-icd-loader",

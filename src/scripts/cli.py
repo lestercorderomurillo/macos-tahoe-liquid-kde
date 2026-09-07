@@ -773,14 +773,16 @@ _VERIFY_CHECKS = [
 ]
 
 
-def _read_config_cascade(file: str, group: str, prop: str) -> str:
-    """Read a KDE config key the way Plasma resolves it: kdedefaults/<file>
-    (where plasma-apply-lookandfeel writes) before ~/.config/<file>.
-    kreadconfig6 only reads the main file and misses LAF-stamped keys."""
+def _read_config_cascade(file: str, group: str, prop: str) -> str | None:
+    """Read the user override before the look-and-feel's kdedefaults layer.
+
+    Fall back per key, even when the user file exists. None means absent
+    from both files; an explicitly empty value still overrides defaults.
+    """
     home = Path(os.environ.get("HOME") or str(Path.home()))
     config_home = Path(os.environ.get("XDG_CONFIG_HOME") or home / ".config")
-    for candidate in (config_home / "kdedefaults" / file,
-                      config_home / file):
+    for candidate in (config_home / file,
+                      config_home / "kdedefaults" / file):
         if not candidate.is_file():
             continue
         section = None
@@ -797,9 +799,9 @@ def _read_config_cascade(file: str, group: str, prop: str) -> str:
                 continue
             if section == group and "=" in line:
                 k, _, v = line.partition("=")
-                if k.strip() == prop and v:
+                if k.strip() == prop:
                     return v
-    return ""
+    return None
 
 
 def verify_config(feat: dict[str, object]) -> None:
@@ -808,8 +810,8 @@ def verify_config(feat: dict[str, object]) -> None:
         if not feat.get(key, True):
             continue
         actual = _read_config_cascade(file, group, prop)
-        # Fall back to kreadconfig6 when the cascade scan comes up empty.
-        if not actual:
+        # Consult other KConfig layers only when neither file has the key.
+        if actual is None:
             actual = kw_read(file, group, prop)
         if expected in actual:
             ok(label)

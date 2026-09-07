@@ -4,7 +4,7 @@
 
 # macOS Tahoe Liquid Theme for Plasma 6.6/6.7+
 
-[![release](https://img.shields.io/github/v/release/lestercorderomurillo/macos-tahoe-liquid-kde?label=release&color=blue)](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/releases) [![tests](https://img.shields.io/badge/tests-1280_passing-brightgreen)](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/actions/workflows/test.yml) [![plasma](https://img.shields.io/badge/Plasma-6.6%2B-1d99f3?logo=kde)](https://kde.org/plasma-desktop/) [![license](https://img.shields.io/badge/license-GPL--3.0-blue)](LICENSE) [![report a bug](https://img.shields.io/badge/report-a%20bug-red?logo=github)](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/issues/new)
+[![release](https://img.shields.io/github/v/release/lestercorderomurillo/macos-tahoe-liquid-kde?label=release&color=blue)](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/releases) [![tests](https://img.shields.io/badge/tests-1304_passing-brightgreen)](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/actions/workflows/test.yml) [![plasma](https://img.shields.io/badge/Plasma-6.6%2B-1d99f3?logo=kde)](https://kde.org/plasma-desktop/) [![license](https://img.shields.io/badge/license-GPL--3.0-blue)](LICENSE) [![report a bug](https://img.shields.io/badge/report-a%20bug-red?logo=github)](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/issues/new)
 
 Bring a little Tahoe to your Linux desktop.
 
@@ -267,6 +267,38 @@ Use `all` to launch every distro.
 | 6.5 and older | Not supported | Not applicable |
 | 6.6 | Supported | v0.1.0 |
 | 6.7+ | Supported | v0.19.0 |
+
+<details>
+<summary><b>Chromium-based app crashes with Global Menu</b></summary>
+
+A launch crash involving the GTK3 `appmenu-gtk-module` was reported with a
+Chromium-based app on Ubuntu 26.04.1 / Plasma 6.6.6. It has not been established
+that all Chromium or Electron apps are affected. See [issue #81](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/issues/81)
+for the reproducer and diagnostic results.
+
+The reporter's workaround is to back up
+`${XDG_CONFIG_HOME:-$HOME/.config}/gtk-3.0/settings.ini`, then edit its
+`[Settings]` group and remove only `appmenu-gtk-module` from the colon-separated
+`gtk-modules=` value. Keep the other modules and settings. For example:
+
+```ini
+# Before
+gtk-modules=colorreload-gtk-module:window-decorations-gtk-module:appmenu-gtk-module
+# After
+gtk-modules=colorreload-gtk-module:window-decorations-gtk-module
+```
+
+If it is the only module, leave `gtk-modules=` empty. Relaunch the affected app.
+This disables GTK menu export through that module for newly launched GTK apps;
+Qt global menus use separate integration. To undo it, add the removed token
+back to the current list and relaunch the apps.
+
+KDE may add the token again after a look-and-feel reapply, including a scheduled
+light/dark switch, so this is a temporary workaround. Setting `GTK_MODULES=`
+alone does not override the list in `settings.ini`. The installer does not
+automatically strip the module or remove its package.
+
+</details>
 
 <br>
 

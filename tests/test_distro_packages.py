@@ -848,6 +848,38 @@ def test_xcb_cmake_package_per_distro(monkeypatch, distro_id, expected):
     assert distro.package_for("xcb-cmake", "libxcb") == expected
 
 
+@pytest.mark.parametrize("distro_id,id_like,base_package", [
+    ("debian", (), "libxcb1-dev"),
+    ("ubuntu", ("debian",), "libxcb1-dev"),
+    ("neon", ("ubuntu", "debian"), "libxcb1-dev"),
+    ("arch", (), "libxcb"),
+    ("cachyos", ("arch",), "libxcb"),
+    ("fedora", (), "libxcb-devel"),
+    ("opensuse-tumbleweed", ("opensuse",), "libxcb-devel"),
+    ("gentoo", (), "x11-libs/libxcb"),
+])
+@pytest.mark.parametrize("feature", ["acrylic_glass", "rounded_corners"])
+def test_kwin_effect_dependencies_include_xcb_extension_headers(
+        monkeypatch, distro_id, id_like, base_package, feature):
+    """Issue #82: base XCB alone cannot satisfy KWin's exported headers."""
+    from step_runner import step_deps
+
+    _force_distro(monkeypatch, distro_id, id_like)
+    xcb_deps = [
+        (token, fallback) for token, fallback in step_deps(feature)
+        if token.startswith("xcb-")
+    ]
+    packages = {distro.package_for(*dep) for dep in xcb_deps}
+    if base_package == "libxcb1-dev":
+        assert packages == {
+            "libxcb1-dev", "libxcb-composite0-dev", "libxcb-randr0-dev",
+            "libxcb-res0-dev", "libxcb-shm0-dev", "libxcb-sync-dev",
+        }
+    else:
+        # Families bundling these headers still install just one package.
+        assert packages == {base_package}
+
+
 # ── Vulkan loader + headers (KWin 6.7+ transitive build dep) ─────────
 # Regression: a CachyOS / Intel-Skylake user hit "KWin missing vulkan"
 # because KWin 6.7's exported config pulls find_dependency(Vulkan) and

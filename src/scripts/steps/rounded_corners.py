@@ -82,6 +82,12 @@ def deps():
         "kwin-cmake:kwin",
         "epoxy-cmake:libepoxy",
         "xcb-cmake:libxcb",
+        # Extension headers included transitively by KWin's public SDK.
+        "xcb-composite-cmake:libxcb",
+        "xcb-randr-cmake:libxcb",
+        "xcb-res-cmake:libxcb",
+        "xcb-shm-cmake:libxcb",
+        "xcb-sync-cmake:libxcb",
         "wayland-cmake:wayland",
         "drm-cmake:libdrm",
     ]

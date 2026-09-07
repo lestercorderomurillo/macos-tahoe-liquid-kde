@@ -511,8 +511,10 @@ green   yellow   orange   red   purple   blue
 - Don't open and rewrite an INI file by hand — `kwriteconfig6`
   preserves comments and case.
 - `plasma-apply-lookandfeel` writes into `~/.config/kdedefaults/<file>`.
-  When reading, check `kdedefaults/` first before the top-level config
-  (`_read_config_cascade` in the verifier).
+  When reading, check the top-level user config first and fall back to
+  `kdedefaults/` only when that key is absent, including when the user file
+  exists (`_read_config_cascade` in the verifier). An explicitly empty user
+  value still overrides defaults.
 
 ### kdecoration2
 
@@ -527,7 +529,7 @@ green   yellow   orange   red   purple   blue
 | Qt6 setuid abort                               | Calling `qmake6` / `qtpaths6` / `kreadconfig6` from a process where `getuid() != geteuid()` aborts with `FATAL: ... appears to be running setuid`. Use `utils.run_user`, never bare `subprocess.run`. |
 | Kvantum signal-only refresh                    | Sending `KGlobalSettings.notifyChange(StyleChanged)` alone does NOT reload kvconfig. Use `cycle_widget_style_live()` — Qt apps observe the cycle, not just the signal. |
 | `plasma-apply-lookandfeel` against cold bus    | Exits 0 against a not-yet-ready DBus session without actually re-rendering. The 2s lead-in in `_apply_lookandfeel_live` exists for this — don't shorten it. |
-| `kdedefaults` cascade                          | The verifier must check `~/.config/kdedefaults/<file>` first, then the top-level config. `plasma-apply-lookandfeel` writes to the kdedefaults copy, so a naive `kreadconfig6 --file kdeglobals --key ColorScheme` returns empty. |
+| `kdedefaults` cascade                          | User config overrides `~/.config/kdedefaults/<file>`. The verifier falls back to kdedefaults per missing key so LAF-only values remain visible, but stale distro defaults cannot shadow live user settings (issue #83). |
 | Legacy `/usr/lib/qt6/.../*.so`                 | Pre-current-release installs wrote compiled plasmoids to `/usr/lib/qt6`. New installs don't, but uninstall has to remove those leftovers to leave the system in a clean Breeze state. That's why `./uninstall` also requires sudo. |
 | Stale `/etc/default/grub`                      | A user who switched from GRUB to systemd-boot / Limine / rEFInd may have the file lying around. `GRUB_DEFAULT.is_file()` alone is NOT proof GRUB is active — `_grub_is_active_bootloader()` requires a regen binary on PATH too. |
 | Layout race after plasmashell restart          | Applying the panel layout immediately after `plasmashell --replace` sometimes races plasmashell's plugin discovery. `layout.py` is retried once after `restart_plasma`. |

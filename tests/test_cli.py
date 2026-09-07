@@ -154,6 +154,80 @@ def test_config_verifier_honors_xdg_config_home(
         "kdeglobals", "Icons", "Theme") == "MacTahoeLiquidKde-Icons"
 
 
+@pytest.mark.parametrize("user_value,default_value", [
+    ("MacTahoeLiquidKde-Icons-dark", "breeze-dark"),
+    ("breeze-dark", "MacTahoeLiquidKde-Icons-dark"),
+    ("", "MacTahoeLiquidKde-Icons-dark"),
+])
+def test_config_verifier_user_value_overrides_kdedefaults(
+        cli_module, sandbox, user_value, default_value):
+    config = sandbox / ".config"
+    (config / "kdedefaults").mkdir()
+    (config / "kdeglobals").write_text(f"[Icons]\nTheme={user_value}\n")
+    (config / "kdedefaults/kdeglobals").write_text(
+        f"[Icons]\nTheme={default_value}\n")
+
+    assert cli_module._read_config_cascade(
+        "kdeglobals", "Icons", "Theme") == user_value
+
+
+def test_config_verifier_falls_back_for_missing_key_in_existing_user_file(
+        cli_module, sandbox):
+    config = sandbox / ".config"
+    (config / "kdedefaults").mkdir()
+    (config / "kdeglobals").write_text("[Icons]\nOtherSetting=keep\n")
+    (config / "kdedefaults/kdeglobals").write_text(
+        "[Icons]\nTheme=MacTahoeLiquidKde-Icons-dark\n")
+
+    assert cli_module._read_config_cascade(
+        "kdeglobals", "Icons", "Theme") == "MacTahoeLiquidKde-Icons-dark"
+
+
+@pytest.mark.parametrize("user_value,passes", [
+    ("MacTahoeLiquidKde-Icons-dark", True),
+    ("breeze-dark", False),
+    ("", False),
+])
+def test_verify_config_uses_live_user_value(
+        cli_module, monkeypatch, sandbox, user_value, passes):
+    config = sandbox / ".config"
+    (config / "kdedefaults").mkdir()
+    (config / "kdeglobals").write_text(f"[Icons]\nTheme={user_value}\n")
+    (config / "kdedefaults/kdeglobals").write_text(
+        "[Icons]\nTheme=MacTahoeLiquidKde-Icons-light\n")
+    monkeypatch.setattr(cli_module, "kw_read", lambda *args: pytest.fail(
+        "An explicit user value, including empty, must not fall back"))
+    failures = []
+    successes = []
+    monkeypatch.setattr(cli_module, "fail", failures.append)
+    monkeypatch.setattr(cli_module, "ok", successes.append)
+    features = {key: key == "icons" for key, *_ in cli_module._VERIFY_CHECKS}
+
+    cli_module.verify_config(features)
+
+    assert successes == (["Icon theme"] if passes else [])
+    assert len(failures) == (0 if passes else 1)
+
+
+def test_verify_config_reads_other_layers_when_key_is_absent(
+        cli_module, monkeypatch, sandbox):
+    assert cli_module._read_config_cascade("kdeglobals", "Icons", "Theme") is None
+    reads = []
+
+    def read(file, group, prop):
+        reads.append((file, group, prop))
+        return "MacTahoeLiquidKde-Icons-dark"
+
+    monkeypatch.setattr(cli_module, "kw_read", read)
+    monkeypatch.setattr(cli_module, "fail", pytest.fail)
+    monkeypatch.setattr(cli_module, "ok", lambda message: None)
+    features = {key: key == "icons" for key, *_ in cli_module._VERIFY_CHECKS}
+
+    cli_module.verify_config(features)
+
+    assert reads == [("kdeglobals", "Icons", "Theme")]
+
+
 # ── install order — the inter-step dependency graph ───────────────────
 
 
