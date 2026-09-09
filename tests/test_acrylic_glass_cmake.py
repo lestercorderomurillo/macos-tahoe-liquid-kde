@@ -46,7 +46,10 @@ def test_acrylic_glass_preset_fits_kcm_ranges():
     # Contributor/MR tuning is not part of the project preset.
     assert "AcrylicGlassType" not in preset
     assert "RgbDriftStrength" not in preset
-    assert preset["BlurStrength"] == "5"
+    # The install preset must not override the effect's two-pass default with
+    # strength 5, which reaches the third downsample level and can cause
+    # severe compositor lag on integrated GPUs / HiDPI outputs.
+    assert preset["BlurStrength"] == "3.5"
     assert preset["HighlightStrength"] == "0.30"
     assert preset["HighlightWidth"] == "24"
     assert preset["MagnifyGlassStrength"] == "0.03"

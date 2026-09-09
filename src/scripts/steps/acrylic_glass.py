@@ -92,7 +92,10 @@ def build() -> None:
 
 _PRESET = (
     ("BevelStrength", "0.22"), ("BlurDecorations", "true"),
-    ("BlurStrength", "5"), ("BorderWidth", "32"),
+    # Keep the shipped preset at the effect's two-pass default.  Strength 5
+    # enters the third Kawase downsample level, which can make KWin sluggish
+    # on integrated GPUs and high-resolution displays.
+    ("BlurStrength", "3.5"), ("BorderWidth", "32"),
     ("BottomCornerRadius", "22"), ("Brightness", "1.0"),
     ("Contrast", "1.0"), ("DialogCornerRadius", "14"),
     ("DockCornerRadius", "20"), ("EdgeBandFactor", "0.24"),
