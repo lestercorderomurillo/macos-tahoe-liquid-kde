@@ -92,7 +92,9 @@ def build() -> None:
 
 _PRESET = (
     ("BevelStrength", "0.22"), ("BlurDecorations", "true"),
-    ("BlurStrength", "5"), ("BorderWidth", "32"),
+    # Match the effect's default: two Kawase downsample levels. Strength 5
+    # enters a third level and adds compositor work on every blurred frame.
+    ("BlurStrength", "3.5"), ("BorderWidth", "32"),
     ("BottomCornerRadius", "22"), ("Brightness", "1.0"),
     ("Contrast", "1.0"), ("DialogCornerRadius", "14"),
     ("DockCornerRadius", "20"), ("EdgeBandFactor", "0.24"),

@@ -192,6 +192,15 @@ doesn't walk `~/.local/lib/qt6` in a default Plasma session.
   root, then drop back. Real UID stays at 0 the whole time so the
   trip back to root is always permitted.
 
+Before preflight or any step runs, `utils.restore_desktop_session_env()`
+recovers the invoking user's session. Empty variables count as missing;
+runtime directories must be absolute, accessible, and owned by that user.
+Preserved explicit values take precedence, followed by the same-user
+plasmashell environment, then runtime socket discovery. This ordering handles
+custom Plasma sessions and sudo's empty/stale environment without requiring
+manual DBus variable forwarding (issue #85). Keep OLED retirement fail-closed
+when the recovered session still cannot reach the user service manager.
+
 ## Architecture — Auto-Update on Install
 
 `./install` checks GitHub releases on every launch.

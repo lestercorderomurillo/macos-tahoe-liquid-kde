@@ -275,35 +275,40 @@ _DESKTOP_ENV_KEYS = frozenset({
 _PROC_ROOT = Path("/proc")
 
 
+def _user_runtime_dir(value: str | None, uid: int) -> Path | None:
+    """Ignore stale sudo paths and runtime directories belonging to root."""
+    if not value:
+        return None
+    path = Path(value)
+    try:
+        if path.is_absolute() and path.is_dir() and path.stat().st_uid == uid:
+            return path
+    except OSError:
+        pass
+    return None
+
+
 def restore_desktop_session_env(uid: int | None = None) -> None:
     """Recover a Plasma session environment without assuming an init system.
 
-    ``sudo`` and cron strip the display and bus variables. The runtime-dir
-    sockets recover Wayland/DBus on systemd and OpenRC/elogind; reading a
-    same-user plasmashell's ``/proc/<pid>/environ`` fills X11/Xauthority and
-    any remaining values. Permission and process-race failures are harmless.
+    ``sudo`` and cron strip or empty the display and bus variables. Preserve
+    explicit values, then prefer the same-user plasmashell environment over
+    guessed socket paths (Plasma can use a custom runtime or bus address).
+    Runtime sockets provide the fallback on systemd and OpenRC/elogind when
+    /proc is unavailable. Permission and process-race failures are harmless.
     """
     if uid is None:
         try:
             uid = int(os.environ.get("SUDO_UID") or os.getuid())
         except ValueError:
             uid = os.getuid()
-    runtime = Path(os.environ.get("XDG_RUNTIME_DIR") or f"/run/user/{uid}")
-    if runtime.is_dir():
-        os.environ.setdefault("XDG_RUNTIME_DIR", str(runtime))
-        bus = runtime / "bus"
-        if "DBUS_SESSION_BUS_ADDRESS" not in os.environ and bus.is_socket():
-            os.environ["DBUS_SESSION_BUS_ADDRESS"] = f"unix:path={bus}"
-        if "WAYLAND_DISPLAY" not in os.environ:
-            for socket in sorted(runtime.glob("wayland-*")):
-                if socket.is_socket() and not socket.name.endswith(".lock"):
-                    os.environ["WAYLAND_DISPLAY"] = socket.name
-                    break
+    if _user_runtime_dir(os.environ.get("XDG_RUNTIME_DIR"), uid) is None:
+        os.environ.pop("XDG_RUNTIME_DIR", None)
 
     try:
         candidates = list(_PROC_ROOT.iterdir())
     except OSError:
-        return
+        candidates = []
     for process in candidates:
         if not process.name.isdigit():
             continue
@@ -320,12 +325,31 @@ def restore_desktop_session_env(uid: int | None = None) -> None:
             if not sep:
                 continue
             key = key_raw.decode(errors="ignore")
-            if key not in _DESKTOP_ENV_KEYS or key in os.environ:
+            if key not in _DESKTOP_ENV_KEYS or os.environ.get(key):
                 continue
             value = value_raw.decode(errors="ignore")
             if value:
                 os.environ[key] = value
         break
+
+    runtime = _user_runtime_dir(os.environ.get("XDG_RUNTIME_DIR"), uid)
+    if runtime is None:
+        os.environ.pop("XDG_RUNTIME_DIR", None)
+        runtime = _user_runtime_dir(f"/run/user/{uid}", uid)
+    if runtime is None:
+        return
+    os.environ["XDG_RUNTIME_DIR"] = str(runtime)
+    try:
+        bus = runtime / "bus"
+        if not os.environ.get("DBUS_SESSION_BUS_ADDRESS") and bus.is_socket():
+            os.environ["DBUS_SESSION_BUS_ADDRESS"] = f"unix:path={bus}"
+        if not os.environ.get("WAYLAND_DISPLAY"):
+            for socket in sorted(runtime.glob("wayland-*")):
+                if socket.is_socket() and not socket.name.endswith(".lock"):
+                    os.environ["WAYLAND_DISPLAY"] = socket.name
+                    break
+    except OSError:
+        pass
 
 
 _USER_AGENT = (

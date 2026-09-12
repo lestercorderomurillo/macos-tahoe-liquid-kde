@@ -46,7 +46,7 @@ def test_acrylic_glass_preset_fits_kcm_ranges():
     # Contributor/MR tuning is not part of the project preset.
     assert "AcrylicGlassType" not in preset
     assert "RgbDriftStrength" not in preset
-    assert preset["BlurStrength"] == "5"
+    assert preset["BlurStrength"] == "3.5"
     assert preset["HighlightStrength"] == "0.30"
     assert preset["HighlightWidth"] == "24"
     assert preset["MagnifyGlassStrength"] == "0.03"
@@ -62,3 +62,35 @@ def test_acrylic_glass_preset_fits_kcm_ranges():
         maximum = widget.find("./property[@name='maximum']/double")
         assert maximum is not None and maximum.text is not None
         assert float(preset[key]) <= float(maximum.text)
+
+
+def test_acrylic_glass_installs_the_effect_default_blur(monkeypatch, tmp_path):
+    """The real install path must not replace the KCM default with strength 5."""
+    from steps import acrylic_glass
+
+    build = tmp_path / "build"
+    for name in ("src/liquidglass.so", "src/kcm/kwin_liquidglass_config.so"):
+        artifact = build / name
+        artifact.parent.mkdir(parents=True, exist_ok=True)
+        artifact.touch()
+    monkeypatch.setattr(acrylic_glass, "BUILD", build)
+    monkeypatch.setattr(acrylic_glass, "_plugin_dir", lambda: tmp_path / "plugins")
+    monkeypatch.setattr(acrylic_glass, "LEGACY_USER_PLUGIN_DIR", tmp_path / "legacy")
+    monkeypatch.setattr(acrylic_glass, "sudo_install_file", lambda *args: True)
+    monkeypatch.setattr(acrylic_glass, "qdbus_call", lambda *args: True)
+    monkeypatch.setattr(acrylic_glass, "qdbus_cmd", lambda: None)
+    monkeypatch.setattr(acrylic_glass.time, "sleep", lambda seconds: None)
+    writes = []
+    monkeypatch.setattr(acrylic_glass, "kw_write",
+                        lambda *args: writes.append(args) or True)
+
+    acrylic_glass.install()
+
+    config = ET.parse(ROOT / "src/glass.kcfg").getroot()
+    entry = config.find(".//{*}entry[@name='BlurStrength']/{*}default")
+    assert entry is not None
+    default = entry.text
+    assert default == "3.5"
+    blur_writes = [args for args in writes if "BlurStrength" in args]
+    assert blur_writes == [("--file", "kwinrc", "--group", "Effect-liquidglass",
+                           "--key", "BlurStrength", default)]

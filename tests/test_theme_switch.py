@@ -784,6 +784,9 @@ def test_session_env_recovers_custom_xdg_paths_for_openrc_cron(
         monkeypatch, tmp_path):
     import theme_switch
 
+    # Recovery adds initially absent keys directly; keep them out of later
+    # preflight tests regardless of the order these modules are run in.
+    monkeypatch.setattr(os, "environ", os.environ.copy())
     proc = tmp_path / "proc"
     process = proc / "12345"
     process.mkdir(parents=True)
