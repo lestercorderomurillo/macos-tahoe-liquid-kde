@@ -94,6 +94,13 @@ release is downloaded, checksum-verified, and built best-effort.
   add regression coverage for every accepted change.
 - Preserve legitimate contributor authorship and attribution after review;
   attribution never replaces security validation.
+- Keep the README's **Contributing** avatar row updated when incorporating
+  reviewed contributions, including work credited through human
+  `Co-authored-by` trailers. Verify GitHub identities from the relevant PR or
+  commit, reuse the local circular SVG avatar format in
+  `src/screenshots/contributors/`, and preserve existing contributors. Do not
+  list AI tools as contributors. The separate **Credits and inspiration**
+  section remains manually managed by the user.
 
 ## macOS Terminology
 

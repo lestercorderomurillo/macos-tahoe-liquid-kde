@@ -363,6 +363,7 @@ Still to come: icon polish, broader distro testing, and more app themes and widg
   <a href="https://github.com/tuxkt"><img src="src/screenshots/contributors/tuxkt.svg" width="40" height="40" alt="@tuxkt" title="@tuxkt"></a>
   <a href="https://github.com/caioniehues"><img src="src/screenshots/contributors/caioniehues.svg" width="40" height="40" alt="@caioniehues" title="@caioniehues"></a>
   <a href="https://github.com/404-not-found129"><img src="src/screenshots/contributors/404-not-found129.svg" width="40" height="40" alt="@404-not-found129" title="@404-not-found129"></a>
+  <a href="https://github.com/myakupozluk"><img src="src/screenshots/contributors/myakupozluk.svg" width="40" height="40" alt="@myakupozluk" title="@myakupozluk"></a>
 </p>
 
 Thanks to everyone helping with code, translations, bug reports, and testing. You don't need to write code to contribute.
