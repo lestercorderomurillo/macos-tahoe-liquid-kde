@@ -4,6 +4,7 @@ import shutil
 from pathlib import Path
 
 from distro import gtk3_appmenu_module, qt6_plugins_dir, qt6_qml_dir
+from log import note
 from paths import REPO_ROOT, read_version
 from steps._helpers import (
     DATA_HOME, HOME, build_dir, cmake_build, fail, ok, offline,
@@ -181,7 +182,7 @@ def _install_gtk_appmenu_environment() -> None:
             if not sudo_install_file(source, destination, "GTK Global Menu startup integration",
                                      user_owned=True):
                 return
-        warn("Log out and back in to enable GTK Global Menu crash protection")
+        note("Log out and back in to enable GTK Global Menu crash protection")
     except (OSError, UnicodeError) as exc:
         warn(f"GTK Global Menu startup integration could not be installed: {exc}")
 
@@ -195,7 +196,7 @@ def _remove_gtk_appmenu_environment() -> None:
             warn(f"Custom GTK environment file preserved: {destination}")
             return
         if sudo_remove(destination, "GTK Global Menu startup integration removed"):
-            warn("Log out and back in to remove GTK startup integration from this session")
+            note("Log out and back in to remove GTK startup integration from this session")
     except (OSError, UnicodeError) as exc:
         warn(f"GTK Global Menu startup integration could not be removed: {exc}")
 
