@@ -6,6 +6,8 @@ logic that keeps the user's pinned taskbar apps alive when --resetLayout
 rebuilds the panel from scratch.
 """
 
+import pytest
+
 import steps.layout as layout
 
 
@@ -128,6 +130,23 @@ def test_mac_layout_adds_no_application_launchers_of_its_own():
     assert '"custom": "#1c1c1e"' not in script
     assert "preferred://filemanager" not in script
     assert "applications:steam.desktop" not in script
+
+
+@pytest.mark.parametrize("relative_path", [
+    "layouts/mac-tahoe.js",
+    "look-and-feel/MacTahoeLiquidKde-Light/contents/layouts/"
+    "org.kde.plasma.desktop-layout.js",
+    "look-and-feel/MacTahoeLiquidKde-Dark/contents/layouts/"
+    "org.kde.plasma.desktop-layout.js",
+])
+def test_bundled_layouts_autohide_dock_and_keep_top_bar_visible(
+        offline, relative_path):
+    script = (offline / relative_path).read_text()
+
+    # Issue #87: dodge can leave the Dock stuck over maximized windows.
+    assert 'dock.hiding = "autohide";' in script
+    assert 'bar.hiding = "none";' in script
+    assert '"dodgewindows"' not in script
 
 
 def test_panel_background_keeps_light_dark_surface_parity(offline):
@@ -310,6 +329,26 @@ def test_install_always_rebuilds_layout_from_user_pins(monkeypatch, tmp_path):
         ],
         layout.MAC_TASKS_ID,
     )]
+    assert marker.is_file()
+
+
+def test_reinstall_applies_autohide_with_preserved_pins(monkeypatch, tmp_path):
+    _quiet_layout_install(monkeypatch, tmp_path)
+    _write_appletsrc(tmp_path, _APPLETSRC)
+    marker = layout._layout_marker()
+    marker.parent.mkdir(parents=True)
+    marker.write_text("1\n")
+    captured = _capture_evaluated_script(monkeypatch)
+    monkeypatch.setattr(layout, "_discover_is_installed", lambda: False)
+    monkeypatch.setattr(layout, "_wait_for_layout_install", lambda: True)
+
+    layout.install()
+
+    script = captured["script"]
+    assert 'dock.hiding = "autohide";' in script
+    assert 'bar.hiding = "none";' in script
+    assert "writeConfig('launchers', 'preferred://filemanager," in script
+    assert "applications:steam.desktop,preferred://browser')" in script
     assert marker.is_file()
 
 
