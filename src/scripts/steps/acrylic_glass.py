@@ -95,23 +95,27 @@ _PRESET = (
     # Match the effect's default: two Kawase downsample levels. Strength 5
     # enters a third level and adds compositor work on every blurred frame.
     ("BlurStrength", "3.5"), ("BorderWidth", "32"),
-    ("BottomCornerRadius", "22"), ("Brightness", "1.0"),
-    ("Contrast", "1.0"), ("DialogCornerRadius", "14"),
-    ("DockCornerRadius", "20"), ("EdgeBandFactor", "0.24"),
+    # All *CornerRadius keys below are pinned to 28 to match
+    # rounded_corners.CORNER_RADIUS: the rim/shadow band this effect draws
+    # is cut at the window's own radius, so any mismatch between the two
+    # effects leaves a sliver of the sharper corner poking out (issue #89).
+    ("BottomCornerRadius", "28"), ("Brightness", "1.0"),
+    ("Contrast", "1.0"), ("DialogCornerRadius", "28"),
+    ("DockCornerRadius", "28"), ("EdgeBandFactor", "0.24"),
     ("EdgeLighting", "false"), ("ExcludeDocks", "true"),
     ("GlassInactiveWindows", "true"), ("GlassThickness", "0.2"),
     ("GlowColor", "#00000000"), ("HighlightStrength", "0.30"),
     ("HighlightWidth", "24"), ("InnerShadowStrength", "0.2"),
     ("IridescenceStrength", "0.1"), ("MagnifyGlassStrength", "0.03"),
-    ("MenuCornerRadius", "0"), ("NoiseStrength", "2"),
-    ("PopupCornerRadius", "6"), ("RefractionEdgeSize", "0"),
+    ("MenuCornerRadius", "28"), ("NoiseStrength", "2"),
+    ("PopupCornerRadius", "28"), ("RefractionEdgeSize", "0"),
     ("RefractionNormalPow", "6"), ("RefractionRGBFringing", "0"),
     ("RefractionStrength", "0"), ("RefractionWidth", "96"),
     ("RgbRinging", "12"), ("RimStrength", "0.5"),
     ("RimWidth", "32"), ("Saturation", "1.0"),
     ("ShadowStrength", "2.50"), ("SpectralMix", "1"),
     ("SpecularStrength", "0.08"), ("TintColor", "#00000000"),
-    ("TooltipCornerRadius", "14"), ("WindowCornerRadius", "22"),
+    ("TooltipCornerRadius", "28"), ("WindowCornerRadius", "28"),
     ("BlurMatching", "false"), ("BlurNonMatching", "true"),
 )
 

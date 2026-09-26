@@ -64,6 +64,26 @@ def test_acrylic_glass_preset_fits_kcm_ranges():
         assert float(preset[key]) <= float(maximum.text)
 
 
+def test_acrylic_glass_corner_radii_match_rounded_corners():
+    """Both KWin effects cut the same window at the same corner radius.
+
+    Acrylic Glass draws the rim/shadow band around the window at its own
+    *CornerRadius keys, but KWin Rounded Corners clips the window body at
+    CORNER_RADIUS. A mismatch leaves a triangle of the sharper corner
+    poking out past the rounder one (issue #89) — worst on menus, which
+    used to ship with MenuCornerRadius=0.
+    """
+    from steps import acrylic_glass, rounded_corners
+
+    preset = dict(acrylic_glass._PRESET)
+    radius_keys = [k for k in preset if k.endswith("CornerRadius")]
+    assert radius_keys, "no *CornerRadius keys found in the preset"
+    for key in radius_keys:
+        assert preset[key] == str(rounded_corners.CORNER_RADIUS), (
+            f"{key} is {preset[key]!r}, expected {rounded_corners.CORNER_RADIUS}"
+        )
+
+
 def test_acrylic_glass_installs_the_effect_default_blur(monkeypatch, tmp_path):
     """The real install path must not replace the KCM default with strength 5."""
     from steps import acrylic_glass
