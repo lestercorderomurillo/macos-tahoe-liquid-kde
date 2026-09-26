@@ -818,6 +818,17 @@ bool BlurEffect::shouldBlur(const EffectWindow* w, int mask, const WindowPaintDa
     const auto windowClass = w->window()->resourceClass();
     const auto resourceName = w->window()->resourceName();
 
+    // VirtualBox's VM surface carries the guest's fullscreen/seamless
+    // content and transparent cutouts. Painting forced glass behind it
+    // fills those cutouts with a desktop-sized sheet (issue #90). Keep
+    // this outside the configurable match modes so existing installs
+    // and custom lists are protected too. The VirtualBox manager has a
+    // different class and keeps its normal appearance.
+    if (windowClass.compare(QStringLiteral("VirtualBoxVM"), Qt::CaseInsensitive) == 0
+        || resourceName.compare(QStringLiteral("VirtualBoxVM"), Qt::CaseInsensitive) == 0) {
+        return false;
+    }
+
     // xwaylandvideobridge is the helper that bridges Wayland windows into
     // XWayland for screen sharing (Discord / OBS / browser capture). It
     // maps an invisible, screen-sized surface that must never be blurred —

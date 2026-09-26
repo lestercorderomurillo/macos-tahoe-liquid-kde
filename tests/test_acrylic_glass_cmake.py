@@ -67,6 +67,7 @@ def test_acrylic_glass_preset_fits_kcm_ranges():
 def test_acrylic_glass_installs_the_effect_default_blur(monkeypatch, tmp_path):
     """The real install path must not replace the KCM default with strength 5."""
     from steps import acrylic_glass
+    from subprocess import CompletedProcess
 
     build = tmp_path / "build"
     for name in ("src/liquidglass.so", "src/kcm/kwin_liquidglass_config.so"):
@@ -79,6 +80,9 @@ def test_acrylic_glass_installs_the_effect_default_blur(monkeypatch, tmp_path):
     monkeypatch.setattr(acrylic_glass, "sudo_install_file", lambda *args: True)
     monkeypatch.setattr(acrylic_glass, "qdbus_call", lambda *args: True)
     monkeypatch.setattr(acrylic_glass, "qdbus_cmd", lambda: None)
+    monkeypatch.setattr(acrylic_glass, "have", lambda command: True)
+    monkeypatch.setattr(acrylic_glass, "run_user",
+                        lambda command, **kwargs: CompletedProcess(command, 0, "28\n"))
     monkeypatch.setattr(acrylic_glass.time, "sleep", lambda seconds: None)
     writes = []
     monkeypatch.setattr(acrylic_glass, "kw_write",
@@ -94,3 +98,85 @@ def test_acrylic_glass_installs_the_effect_default_blur(monkeypatch, tmp_path):
     blur_writes = [args for args in writes if "BlurStrength" in args]
     assert blur_writes == [("--file", "kwinrc", "--group", "Effect-liquidglass",
                            "--key", "BlurStrength", default)]
+    # The complete install must preserve the #89 workaround, including
+    # avoiding the obsolete Menu/Dialog/Tooltip/Bottom radius keys.
+    assert not any(args[-2].endswith("CornerRadius") for args in writes)
+
+
+def test_corner_defaults_only_seed_missing_keys(monkeypatch):
+    from subprocess import CompletedProcess
+    from steps import acrylic_glass
+
+    values = {"WindowCornerRadius": "28", "DockCornerRadius": ""}
+    writes = []
+    monkeypatch.setattr(acrylic_glass, "have", lambda command: True)
+
+    def read(command, **kwargs):
+        assert command[:5] == ["kreadconfig6", "--file", "kwinrc", "--group",
+                               "Effect-liquidglass"]
+        key = command[command.index("--key") + 1]
+        return CompletedProcess(command, 0, values.get(key, command[-1]) + "\n")
+
+    monkeypatch.setattr(acrylic_glass, "run_user", read)
+    monkeypatch.setattr(acrylic_glass, "kw_write", lambda *args: writes.append(args) or True)
+    acrylic_glass._install_corner_defaults()
+    assert [args[-2:] for args in writes] == [("PopupCornerRadius", "6")]
+
+
+def test_corner_defaults_do_not_replace_custom_values(monkeypatch):
+    from subprocess import CompletedProcess
+    from steps import acrylic_glass
+
+    monkeypatch.setattr(acrylic_glass, "have", lambda command: True)
+    monkeypatch.setattr(acrylic_glass, "run_user",
+                        lambda command, **kwargs: CompletedProcess(command, 0, "28\n"))
+    writes = []
+    monkeypatch.setattr(acrylic_glass, "kw_write", lambda *args: writes.append(args) or True)
+    acrylic_glass._install_corner_defaults()
+    acrylic_glass._install_corner_defaults()
+    assert writes == []
+
+
+def test_corner_defaults_fail_closed_on_missing_reader(monkeypatch, capsys):
+    from steps import acrylic_glass
+
+    monkeypatch.setattr(acrylic_glass, "have", lambda command: False)
+    writes = []
+    monkeypatch.setattr(acrylic_glass, "kw_write", lambda *args: writes.append(args) or True)
+    acrylic_glass._install_corner_defaults()
+    assert writes == []
+    assert "kreadconfig6" in capsys.readouterr().out
+
+
+def test_corner_defaults_fail_closed_on_read_errors(monkeypatch, capsys):
+    import subprocess
+    from steps import acrylic_glass
+
+    def read(command, **kwargs):
+        key = command[command.index("--key") + 1]
+        if key == "WindowCornerRadius":
+            raise OSError("reader unavailable")
+        if key == "DockCornerRadius":
+            raise subprocess.TimeoutExpired(command, 5)
+        return subprocess.CompletedProcess(command, 1, command[-1] + "\n")
+
+    monkeypatch.setattr(acrylic_glass, "have", lambda command: True)
+    monkeypatch.setattr(acrylic_glass, "run_user", read)
+    writes = []
+    monkeypatch.setattr(acrylic_glass, "kw_write", lambda *args: writes.append(args) or True)
+    acrylic_glass._install_corner_defaults()
+    assert writes == []
+    output = capsys.readouterr().out
+    assert all(key in output for key, _ in acrylic_glass._CORNER_DEFAULTS)
+
+
+def test_corner_defaults_warn_on_failed_write(monkeypatch, capsys):
+    from subprocess import CompletedProcess
+    from steps import acrylic_glass
+
+    monkeypatch.setattr(acrylic_glass, "have", lambda command: True)
+    monkeypatch.setattr(acrylic_glass, "run_user",
+                        lambda command, **kwargs: CompletedProcess(command, 0, command[-1] + "\n"))
+    monkeypatch.setattr(acrylic_glass, "kw_write", lambda *args: False)
+    acrylic_glass._install_corner_defaults()
+    assert "kwriteconfig6" in capsys.readouterr().out

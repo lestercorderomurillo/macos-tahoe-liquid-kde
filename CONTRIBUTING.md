@@ -103,6 +103,27 @@ If you add a step that talks to the live session (`user_service_manager_command`
 MAC_TAHOE_SKIP_LIVE_SAFETY_NET=1 ./test         # CI / no-live-session
 ```
 
+For Acrylic Glass rendering changes, run the opt-in pixel probe as well:
+
+```sh
+cmake -S src/offline/kwin-effects/acrylic-glass -B build/capture-build -DCMAKE_BUILD_TYPE=Release
+cmake --build build/capture-build -j 2
+python tests/acrylic_glass_capture.py --plugin build/capture-build/src/liquidglass.so --output build/acrylic-capture --scale 2
+```
+
+It starts a separate KWin/Wayland compositor with private configuration and
+D-Bus, loads the specified plugin without installing it, and captures a
+synthetic transparent `VirtualBoxVM` surface with the effect off and on.
+KWin, Spectacle, qdbus6, PyQt6 and Pillow are required. The output directory
+must be new. PNGs, plugin identity, compositor logs and pixel counts remain
+there for review. A fixed build must leave every pixel unchanged; run a
+reviewed pre-fix build with `--expect changed` as the positive control.
+Add `--backend xcb` to exercise Xwayland clients (requires Xwayland), or
+`--identity VirtualBox --expect changed` to verify that the manager's identity
+still receives glass. The probe checks the compositor's D-Bus owner PID
+before toggling effects. This checks the glass interference from #90, not
+a real VirtualBox guest or the separate rounded-corner reports.
+
 ## Branching and commits
 
 - `main` is always releasable. Direct commits are fine for small fixes.

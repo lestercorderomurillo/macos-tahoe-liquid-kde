@@ -225,6 +225,17 @@ current version with a manual `git pull && ./install` hint.
 
 ## Architecture — Optional Online Rounded Corners
 
+Acrylic Glass's supported radius controls (`WindowCornerRadius`,
+`DockCornerRadius`, `PopupCornerRadius`) are seeded only when absent. Never
+overwrite existing values on reinstall: this preserves custom tuning and the
+corner-artifact workaround from issue #89. An empty value or failed read does
+not authorize a default write. Retired Menu/Dialog/Tooltip/Bottom radius keys
+are no longer written; the current renderer uses the three supported controls.
+VirtualBox VM surfaces (`VirtualBoxVM`, class or resource name, ignoring case)
+are excluded directly in Acrylic Glass's render gate, before either match-list
+mode, so existing installs and custom filters cannot fill seamless cutouts with
+glass (issue #90). The VirtualBox manager remains eligible for glass.
+
 `rounded_corners.py` is the only feature allowed to implement
 `download()`. It fetches KDE-Rounded-Corners v0.9.0 from the upstream
 GitHub tag, verifies the pinned SHA-256 before extraction, rejects
@@ -620,6 +631,13 @@ Highlights:
   guards, unit files, step flag gating.
 - `tests/test_cmake.py` — the C++ plasmoids and KWin effect build
   configure cleanly.
+- `tests/acrylic_glass_capture.py` — opt-in isolated KWin/Wayland capture
+  probe for Acrylic Glass. Requires a reviewed compiled plugin, verifies it
+  loads, and compares effect-off/on pixels on a synthetic VirtualBoxVM
+  surface. Run a pre-fix control with `--expect changed`, and `--backend xcb`
+  to exercise Xwayland. This is not a real VirtualBox guest test. The probe
+  verifies the D-Bus owner PID before changing effects. Usage is in
+  `CONTRIBUTING.md`.
 - `tests/test_rounded_corners_step.py` — immutable upstream pin, checksum
   and traversal rejection, best-effort orchestration, enabled state,
   v0.38 preset cleanup without effect-state changes, and lifecycle.

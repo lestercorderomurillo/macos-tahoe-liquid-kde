@@ -1,5 +1,6 @@
 import subprocess
 import time
+import uuid
 from pathlib import Path
 
 from distro import qt6_plugins_dir
@@ -7,7 +8,7 @@ from steps._helpers import (
     build_dir, cmake_build, fail, info, kw_write, ok, offline, qdbus_call,
     sudo_install_file, sudo_remove, warn,
 )
-from utils import qdbus_cmd, run_user
+from utils import have, qdbus_cmd, run_user
 
 SRC = offline("kwin-effects/acrylic-glass")
 BUILD = build_dir("kwin-effects/acrylic-glass")
@@ -95,25 +96,60 @@ _PRESET = (
     # Match the effect's default: two Kawase downsample levels. Strength 5
     # enters a third level and adds compositor work on every blurred frame.
     ("BlurStrength", "3.5"), ("BorderWidth", "32"),
-    ("BottomCornerRadius", "22"), ("Brightness", "1.0"),
-    ("Contrast", "1.0"), ("DialogCornerRadius", "14"),
-    ("DockCornerRadius", "20"), ("EdgeBandFactor", "0.24"),
+    ("Brightness", "1.0"), ("Contrast", "1.0"),
+    ("EdgeBandFactor", "0.24"),
     ("EdgeLighting", "false"), ("ExcludeDocks", "true"),
     ("GlassInactiveWindows", "true"), ("GlassThickness", "0.2"),
     ("GlowColor", "#00000000"), ("HighlightStrength", "0.30"),
     ("HighlightWidth", "24"), ("InnerShadowStrength", "0.2"),
     ("IridescenceStrength", "0.1"), ("MagnifyGlassStrength", "0.03"),
-    ("MenuCornerRadius", "0"), ("NoiseStrength", "2"),
-    ("PopupCornerRadius", "6"), ("RefractionEdgeSize", "0"),
+    ("NoiseStrength", "2"), ("RefractionEdgeSize", "0"),
     ("RefractionNormalPow", "6"), ("RefractionRGBFringing", "0"),
     ("RefractionStrength", "0"), ("RefractionWidth", "96"),
     ("RgbRinging", "12"), ("RimStrength", "0.5"),
     ("RimWidth", "32"), ("Saturation", "1.0"),
     ("ShadowStrength", "2.50"), ("SpectralMix", "1"),
     ("SpecularStrength", "0.08"), ("TintColor", "#00000000"),
-    ("TooltipCornerRadius", "14"), ("WindowCornerRadius", "22"),
     ("BlurMatching", "false"), ("BlurNonMatching", "true"),
 )
+
+
+_CORNER_DEFAULTS = (
+    ("WindowCornerRadius", "22"),
+    ("DockCornerRadius", "20"),
+    ("PopupCornerRadius", "6"),
+)
+
+
+def _install_corner_defaults() -> None:
+    """Seed missing radii without undoing the user's corner tuning (#89).
+
+    The current effect has only three radius controls: popups also cover
+    menus/tooltips, and normal windows cover dialogs and bottom corners.
+    Preserve even explicitly empty values; failed reads never authorize a
+    write. KConfig's cascade handles both user and system configuration.
+    """
+    if not have("kreadconfig6"):
+        warn("Acrylic Glass corner settings preserved — kreadconfig6 is unavailable")
+        return
+    sentinel = f"__mttkde_absent_{uuid.uuid4().hex}__"
+    for key, default in _CORNER_DEFAULTS:
+        try:
+            result = run_user(
+                ["kreadconfig6", "--file", "kwinrc", "--group",
+                 "Effect-liquidglass", "--key", key, "--default", sentinel],
+                check=False, capture_output=True, text=True, timeout=5,
+            )
+        except (OSError, subprocess.TimeoutExpired) as exc:
+            warn(f"Acrylic Glass {key} preserved — could not read it ({exc})")
+            continue
+        if result.returncode != 0:
+            warn(f"Acrylic Glass {key} preserved — kreadconfig6 failed")
+            continue
+        if (result.stdout or "").removesuffix("\n").removesuffix("\r") == sentinel:
+            if not kw_write("--file", "kwinrc", "--group", "Effect-liquidglass",
+                            "--key", key, default):
+                warn(f"Acrylic Glass {key} default not applied — kwriteconfig6 failed")
 
 
 def install() -> None:
@@ -153,6 +189,7 @@ def install() -> None:
     for key, value in _PRESET:
         kw_write("--file", "kwinrc", "--group", "Effect-liquidglass",
                  "--key", key, value)
+    _install_corner_defaults()
     ok("Acrylic Glass preset installed")
     kw_write("--file", "kwinrc", "--group", "Plugins",
              "--key", "liquidglassEnabled", "true")
