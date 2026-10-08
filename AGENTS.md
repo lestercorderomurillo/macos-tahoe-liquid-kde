@@ -25,6 +25,8 @@ install a systemd user timer under systemd and a per-user `crontab`
 line under OpenRC, chosen by `init_system()` in the distro layer.
 OpenRC is supported generically across distros; it is verified by hand
 in a Gentoo OpenRC VM (`./vm`), not in the container matrix. The
+Artix package mapping uses the Arch family even when `ID_LIKE` is absent;
+Artix OpenRC remains testing and is not part of the container matrix. The
 container matrix covers Arch, CachyOS, Manjaro, EndeavourOS, Garuda,
 Gentoo, Fedora, Nobara, openSUSE Tumbleweed, and KDE neon on their default
 (systemd) profiles; of these only **Arch and CachyOS are marked

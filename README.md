@@ -4,7 +4,7 @@
 
 # macOS Tahoe Liquid Theme for Plasma 6.6/6.7+
 
-[![release](https://img.shields.io/github/v/release/lestercorderomurillo/macos-tahoe-liquid-kde?label=release&color=blue)](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/releases) [![tests](https://img.shields.io/badge/tests-1375_passing-brightgreen)](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/actions/workflows/test.yml) [![plasma](https://img.shields.io/badge/Plasma-6.6%2B-1d99f3?logo=kde)](https://kde.org/plasma-desktop/) [![license](https://img.shields.io/badge/license-GPL--3.0-blue)](LICENSE) [![report a bug](https://img.shields.io/badge/report-a%20bug-red?logo=github)](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/issues/new)
+[![release](https://img.shields.io/github/v/release/lestercorderomurillo/macos-tahoe-liquid-kde?label=release&color=blue)](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/releases) [![tests](https://img.shields.io/badge/tests-1378_passing-brightgreen)](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/actions/workflows/test.yml) [![plasma](https://img.shields.io/badge/Plasma-6.6%2B-1d99f3?logo=kde)](https://kde.org/plasma-desktop/) [![license](https://img.shields.io/badge/license-GPL--3.0-blue)](LICENSE) [![report a bug](https://img.shields.io/badge/report-a%20bug-red?logo=github)](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/issues/new)
 
 Bring a little Tahoe to your Linux desktop.
 
@@ -263,6 +263,7 @@ Use `all` to launch every distro.
 | <img src="https://cdn.simpleicons.org/endeavouros" alt="EndeavourOS" width="22"> | EndeavourOS | ![Relatively stable](https://img.shields.io/badge/relatively%20stable-D4A72C) |
 | <img src="https://cdn.simpleicons.org/fedora" alt="Fedora" width="22"> | Fedora | ![Relatively stable](https://img.shields.io/badge/relatively%20stable-D4A72C) |
 | <img src="https://cdn.simpleicons.org/manjaro" alt="Manjaro" width="22"> | Manjaro | ![Needs more testing](https://img.shields.io/badge/needs%20more%20testing-B42318) |
+| <img src="https://cdn.simpleicons.org/linux" alt="Linux" width="22"> | Artix Linux (OpenRC) | ![Needs more testing](https://img.shields.io/badge/needs%20more%20testing-B42318) |
 | <img src="https://cdn.simpleicons.org/linux" alt="Linux" width="22"> | Garuda Linux | ![Needs more testing](https://img.shields.io/badge/needs%20more%20testing-B42318) |
 | <img src="https://cdn.simpleicons.org/nobaralinux" alt="Nobara" width="22"> | Nobara | ![Needs more testing](https://img.shields.io/badge/needs%20more%20testing-B42318) |
 | <img src="https://cdn.simpleicons.org/opensuse" alt="openSUSE" width="22"> | openSUSE Tumbleweed | ![Needs more testing](https://img.shields.io/badge/needs%20more%20testing-B42318) |
@@ -277,6 +278,13 @@ Use `all` to launch every distro.
 |-------------|---------|---------|
 | systemd | Supported | Completed |
 | OpenRC | Supported | In progress |
+
+Artix uses the Arch package mappings even when its `os-release` omits
+`ID_LIKE=arch`. Dependency installation, all three C++ builds, the full test
+suite, and crontab operations have been checked in an Artix OpenRC container.
+Live installation testing is still needed; Artix is not yet included in the
+automated container matrix. Scheduled theme changes and OLED care use
+the existing per-user cron support and require a running cron daemon.
 
 <br>
 

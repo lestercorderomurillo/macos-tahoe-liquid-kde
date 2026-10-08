@@ -78,6 +78,19 @@ def distro_id_like() -> tuple[str, ...]:
     return tuple(s for s in fields.get("ID_LIKE", "").lower().split() if s)
 
 
+def _compatibility_parents() -> tuple[str, ...]:
+    """Declared parents followed by known packaging compatibility fallbacks.
+
+    Artix may omit ID_LIKE=arch (issue #93). It still uses Arch package
+    names and pacman. Keep the reported distro identity and ID_LIKE intact;
+    this fallback does not select an init system.
+    """
+    parents = distro_id_like()
+    if "artix" in (current_distro(), *parents) and "arch" not in parents:
+        return (*parents, "arch")
+    return parents
+
+
 def plymouth_use_simpledrm() -> bool:
     """Whether this distro should keep Plymouth on ``simpledrm``.
 
@@ -87,7 +100,7 @@ def plymouth_use_simpledrm() -> bool:
     the existing project behaviour because simpledrm helps the shutdown splash
     survive after the native GPU driver unloads.
     """
-    family = (current_distro(), *distro_id_like())
+    family = (current_distro(), *_compatibility_parents())
     return "fedora" not in family
 
 
@@ -96,7 +109,7 @@ def is_debian_family() -> bool:
     one of them (e.g. KDE neon) — the only per-distro-family predicate
     step modules need so far. Lives here, not in the step module that
     uses it, so a future downstream addition is wired in one place."""
-    return bool({current_distro(), *distro_id_like()} & {"debian", "ubuntu", "neon"})
+    return bool({current_distro(), *_compatibility_parents()} & {"debian", "ubuntu", "neon"})
 
 
 # ── Portable desktop defaults ────────────────────────────────────────
@@ -145,7 +158,7 @@ def wallpaper_fallback_ids() -> tuple[str, ...]:
     candidates are consulted only when that package has no usable declaration,
     and callers must verify them on disk before applying one.
     """
-    keys = (current_distro(), *distro_id_like())
+    keys = (current_distro(), *_compatibility_parents())
     candidates: list[str] = []
     for key in keys:
         candidates.extend(_DISTRO_WALLPAPER_FALLBACKS.get(key, ()))
@@ -289,7 +302,7 @@ def qt6_install_hint() -> str:
     distro = current_distro()
     if distro in _QT6_QMAKE_HINTS:
         return _QT6_QMAKE_HINTS[distro]
-    for parent in distro_id_like():
+    for parent in _compatibility_parents():
         if parent in _QT6_QMAKE_HINTS:
             return _QT6_QMAKE_HINTS[parent]
     return ("Install Qt6 dev tooling for your distro. "
@@ -333,7 +346,7 @@ def _fallback_qt6_libdir() -> Path | None:
     distro = current_distro()
     libdir = _QT6_LIBDIR_FALLBACK.get(distro)
     if libdir is None:
-        for parent in distro_id_like():
+        for parent in _compatibility_parents():
             libdir = _QT6_LIBDIR_FALLBACK.get(parent)
             if libdir:
                 break
@@ -1145,7 +1158,7 @@ def package_for(cmd: str, fallback_pkg: str | None = None) -> str:
     here prevents one bad name from cancelling an entire package transaction.
     """
     distro = current_distro()
-    parents = distro_id_like()
+    parents = _compatibility_parents()
     row = _PACKAGE_MAP.get(cmd, {})
     if distro in row:
         return row[distro]
@@ -1193,7 +1206,7 @@ def package_manager_sync_cmd() -> list[str] | None:
     """Db-refresh command for this distro, or None if install refreshes
     on its own. Raises UnsupportedDistroError like the install variant."""
     distro = current_distro()
-    for name in (distro, *distro_id_like()):
+    for name in (distro, *_compatibility_parents()):
         if name in _PACKAGE_MANAGER_SYNC:
             cmd = _PACKAGE_MANAGER_SYNC[name]
             return list(cmd) if cmd else None
@@ -1209,7 +1222,7 @@ def package_manager_install_cmd() -> list[str]:
     distro = current_distro()
     if distro in _PACKAGE_MANAGER_INSTALL:
         return list(_PACKAGE_MANAGER_INSTALL[distro])
-    for parent in distro_id_like():
+    for parent in _compatibility_parents():
         if parent in _PACKAGE_MANAGER_INSTALL:
             return list(_PACKAGE_MANAGER_INSTALL[parent])
     raise UnsupportedDistroError(
@@ -1232,7 +1245,7 @@ _PLASMA_VERSION_PACKAGES: dict[str, tuple[str, ...]] = {
 
 def _package_version_query_builder():
     distro = current_distro()
-    family = (distro, *distro_id_like())
+    family = (distro, *_compatibility_parents())
     if any(name in ("fedora", "rhel", "centos", "opensuse") for name in family):
         return lambda pkg: ["rpm", "-q", "--qf", "%{VERSION}\n", pkg]
     if "arch" in family:
@@ -1257,7 +1270,7 @@ def plasma_version_probe_cmds() -> tuple[list[str], ...]:
     distro = current_distro()
     packages = _PLASMA_VERSION_PACKAGES.get(distro)
     if packages is None:
-        for parent in distro_id_like():
+        for parent in _compatibility_parents():
             packages = _PLASMA_VERSION_PACKAGES.get(parent)
             if packages:
                 break

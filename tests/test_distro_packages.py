@@ -41,6 +41,46 @@ def _force_distro(monkeypatch, distro_id: str, id_like: tuple[str, ...] = ()):
     monkeypatch.setattr(distro, "distro_id_like", lambda: id_like)
 
 
+@pytest.mark.parametrize("id_like", [None, "", "arch"])
+def test_artix_without_arch_id_like_resolves_packages(tmp_path, monkeypatch, id_like):
+    release = tmp_path / "os-release"
+    release.write_text('ID=artix\n' + (
+        f'ID_LIKE="{id_like}"\n' if id_like is not None else ""
+    ))
+    monkeypatch.setattr(distro, "_OS_RELEASE_PATH", release)
+
+    assert distro.current_distro() == "artix"
+    assert distro.package_manager_install_cmd() == [
+        "pacman", "-S", "--noconfirm", "--needed",
+    ]
+    assert distro.package_manager_sync_cmd() == ["pacman", "-Sy", "--noconfirm"]
+    for cmd, fallbacks in _declared_dependency_tokens().items():
+        fallback, = fallbacks
+        assert distro.package_for(cmd, fallback) == distro._PACKAGE_MAP.get(
+            cmd, {}
+        ).get("arch", fallback)
+    assert distro.package_for("unmapped-test-command", "arch-only-package") == "arch-only-package"
+    assert distro.qt6_install_hint() == "pacman -S qt6-base"
+    assert distro.plasma_version_probe_cmds() == (["pacman", "-Q", "plasma-workspace"],)
+
+    queries = []
+    def query(argv):
+        queries.append(argv)
+        return "cmake 4.0.0" if argv[-1] == "cmake" else None
+    monkeypatch.setattr(distro, "_run_query", query)
+    assert distro.package_installed("cmake") is True
+    assert distro.package_installed("missing-package") is False
+    assert queries == [["pacman", "-Q", "cmake"], ["pacman", "-Q", "missing-package"]]
+
+    # Package-family inheritance must not imply a systemd user manager.
+    monkeypatch.delenv("MTTKDE_INIT", raising=False)
+    monkeypatch.setattr(distro, "_INIT_CACHE", None)
+    monkeypatch.setattr(distro, "_SYSTEMD_MARKER", tmp_path / "no-systemd")
+    assert distro.init_system() == "openrc"
+    assert distro.user_service_manager_command("daemon-reload") is None
+    assert distro.package_for("crontab") == "cronie"
+
+
 @pytest.mark.parametrize("distro_id,id_like,expected", [
     ("fedora", (), False),
     ("nobara", ("fedora",), False),
