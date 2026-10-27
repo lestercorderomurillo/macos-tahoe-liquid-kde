@@ -47,6 +47,7 @@ in rec {
       PYTHONPATH=${../src/scripts} python ${./install-assets.py} . "$out"
       mkdir -p "$out/share/icons"
       tar --zstd -xf "$src/icons/MacTahoeLiquidKde-Icons.tar.zst" -C "$out/share/icons"
+      python ${../src/scripts/battery_icons.py} "$out/share/icons"
       tar --zstd -xf "$src/cursors/MacTahoeLiquidKde-Cursors.tar.zst" -C "$out/share/icons"
       runHook postInstall
     '';

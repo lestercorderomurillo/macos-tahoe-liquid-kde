@@ -68,6 +68,9 @@ def install() -> None:
             fail(tr('tar --zstd failed ({value1}): {value2}', value1=res.returncode, value2=res.stderr.strip()))
             return
 
+        from battery_icons import apply_battery_palette
+        apply_battery_palette(staging)
+
         from installer_choices import selected, COLORS
         options = selected()
         if options:

@@ -1,11 +1,49 @@
 # Installer testing
 
-Native installer screens for Tahoe 0.61.5, captured in a disposable KDE Plasma VM.
+Native installer screens for Tahoe 0.61.8, captured in a disposable KDE Plasma VM.
 Dark appearance was selected for this installation test.
 The gallery is captured from the release source and reviewed before publication.
 Release checks cover both editions, theme switching, installation, reboot and removal.
 
 For test commands and the capture workflow, see [CONTRIBUTING.md](CONTRIBUTING.md).
+
+## v0.61.8 battery icon contrast
+
+Both editions adapt fixed neutral battery fills and charging bolts to KDE's
+foreground palette during icon staging. Geometry, warning colors, symbolic
+aliases and the saved percentage-display choice remain intact. The same
+adaptation runs in the installer, offline icon-toolset bundles and Nix packaging;
+the bundled source archive remains unchanged.
+
+On CachyOS with Qt 6.11.2, the following 54 focused tests passed:
+
+```sh
+python -m pytest -q tests/test_battery_icons.py tests/test_icons_step.py \
+  tests/test_icon_toolset.py tests/test_reserved_menu_icons.py tests/test_nix.py
+```
+
+The native KIconLoader probe checks 4,224 renders across the light and dark
+base themes: 0–100% charge, charging and symbolic forms, 16/22/24/32 pixel
+icons, 1/1.25/1.5/2 scaling, and light/dark/light palette changes. Before the
+fix, the 16-pixel empty charging icon retained 16 white foreground pixels in
+light mode. The fixed probe passes. Installation, reinstall and uninstall
+tests also preserve an explicit saved percentage-display setting.
+
+A fresh overlay of the pinned KDE neon reference VM (Plasma 6.8.1, Qt 6.11.1)
+passed the renderer probe and six sequential, individually reviewed previews:
+light/dark/light for Tahoe and Golden Gate. These previews use synthetic charge
+levels and verify artwork, not physical laptop battery telemetry. Their logs,
+source-file hashes and image hashes are recorded in the development artifact
+`/tmp/battery-evidence/evidence.json`; the release gallery is captured separately.
+Golden Gate's wrapper suite passed all 45 tests. Nix asset assembly passed;
+the full Nix build and distribution matrix remain exact-commit CI gates.
+The complete shared suite was exercised on Golden Gate prepared content.
+The first sandboxed run passed 1,964 tests, skipped four optional cases and
+failed 18 checks (17 private-socket restrictions and the upstream README badge).
+After restoring the current badge, those 18 checks and all five battery checks
+passed on prepared content `e94fdd0da088e64426b8` with private D-Bus/Xvfb
+sessions allowed. Passing tests with unchanged inputs were reused; the four
+optional skips are not claimed as passes.
 
 ## v0.61.5 reset default validation
 

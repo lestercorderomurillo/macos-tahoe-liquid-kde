@@ -196,6 +196,8 @@ def build(args) -> Path:
         temp = Path(temp)
         source = temp / "source"
         unpack(args.source.resolve(), source)
+        from battery_icons import apply_battery_palette
+        apply_battery_palette(source)
         for name in (BASE, BASE + "-dark"):
             if not (source / name / "index.theme").is_file():
                 raise ValueError(f"Source archive is missing {name}/index.theme")
@@ -218,8 +220,8 @@ def build(args) -> Path:
         themes.mkdir(parents=True)
         for name in (BASE, BASE + "-dark"):
             shutil.copytree(source / name, themes / name, symlinks=True)
-        # Keep the exact base payload and its provenance gaps visible. This does
-        # not assert that a project license resolves third-party asset ownership.
+        # Keep source notices and provenance gaps visible, including the marked
+        # battery palette adaptation. This does not resolve third-party ownership.
         notices = bundle / "notices"
         notices.mkdir()
         for name in ("LICENSE", "NOTICE", "LICENSING.md", "THIRD_PARTY_NOTICES.md"):
