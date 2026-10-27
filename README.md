@@ -79,13 +79,13 @@ The desktop and its apps in light and dark mode.
 The Tahoe desktop in light and dark mode.
 
 <p align="center">
-  <a href="src/screenshots/showcase_light_4k-c25d0c11ab8d.png"><img src="src/screenshots/showcase_light_4k-c25d0c11ab8d.png" alt="Tahoe light desktop with Files focused" width="415"></a>
-  <a href="src/screenshots/desktop_about_light_4k-4e7893ae47d5.png"><img src="src/screenshots/desktop_about_light_4k-4e7893ae47d5.png" alt="Tahoe light desktop with About This Computer focused" width="415"></a>
+  <a href="src/screenshots/showcase_light_4k-9958f56a9ae8.png"><img src="src/screenshots/showcase_light_4k-9958f56a9ae8.png" alt="Tahoe light desktop with Files focused" width="415"></a>
+  <a href="src/screenshots/desktop_about_light_4k-55182ea89e16.png"><img src="src/screenshots/desktop_about_light_4k-55182ea89e16.png" alt="Tahoe light desktop with About This Computer focused" width="415"></a>
 </p>
 
 <p align="center">
-  <a href="src/screenshots/showcase_dark_4k-5b5452634dfd.png"><img src="src/screenshots/showcase_dark_4k-5b5452634dfd.png" alt="Tahoe dark desktop with Files focused" width="415"></a>
-  <a href="src/screenshots/desktop_about_dark_4k-1818dc6e2f54.png"><img src="src/screenshots/desktop_about_dark_4k-1818dc6e2f54.png" alt="Tahoe dark desktop with About This Computer focused" width="415"></a>
+  <a href="src/screenshots/showcase_dark_4k-971f6a0f38a7.png"><img src="src/screenshots/showcase_dark_4k-971f6a0f38a7.png" alt="Tahoe dark desktop with Files focused" width="415"></a>
+  <a href="src/screenshots/desktop_about_dark_4k-6c973fe74d84.png"><img src="src/screenshots/desktop_about_dark_4k-6c973fe74d84.png" alt="Tahoe dark desktop with About This Computer focused" width="415"></a>
 </p>
 
 <br>
@@ -95,8 +95,8 @@ The Tahoe desktop in light and dark mode.
 App search, favorites and categories with blurred glass and edge refraction. [Material settings](docs/glass-materials.md).
 
 <p align="center">
-  <img src="src/screenshots/launcher_preset_1_light-e6793c66915a.png" alt="Default Tahoe preset 1 in light mode, with integrated search and Tahoe wallpaper" width="415">
-  <img src="src/screenshots/launcher_preset_1_dark-fe29b86747bb.png" alt="Default Tahoe preset 1 in dark mode, with integrated search and Tahoe wallpaper" width="415">
+  <img src="src/screenshots/launcher_preset_1_light-9c706b53acb9.png" alt="Default Tahoe preset 1 in light mode, with integrated search and Tahoe wallpaper" width="415">
+  <img src="src/screenshots/launcher_preset_1_dark-deb0150d279d.png" alt="Default Tahoe preset 1 in dark mode, with integrated search and Tahoe wallpaper" width="415">
 </p>
 
 <br>
@@ -118,7 +118,7 @@ Glass refraction, hover zoom, notification badges and auto-hide.
 Finder-style Nautilus in light and dark.
 
 <p align="center">
-  <img src="src/screenshots/finder_v4-680c02cfb652.png" alt="Finder-style Nautilus in light mode" width="415">
+  <img src="src/screenshots/finder_v4-95e09489c23f.png" alt="Finder-style Nautilus in light mode" width="415">
   <img src="src/screenshots/finder_dark_v4-6e4bbe0ebd7f.png" alt="Finder-style Nautilus in dark mode" width="415">
 </p>
 
@@ -129,7 +129,7 @@ Finder-style Nautilus in light and dark.
 System controls and global menus for compatible apps.
 
 <p align="center">
-  <img src="src/screenshots/menu_v4-8e6260e3e178.png" alt="System menu in light mode" width="415">
+  <img src="src/screenshots/menu_v4-f717fa91696c.png" alt="System menu in light mode" width="415">
   <img src="src/screenshots/menu_dark_v4-c7bad6f7dba6.png" alt="System menu in dark mode" width="415">
 </p>
 
@@ -140,8 +140,8 @@ System controls and global menus for compatible apps.
 Hardware, software and theme details in About This Computer.
 
 <p align="center">
-  <img src="src/screenshots/about_v4-7ed6abf89ff5.png" alt="About This Computer in light mode" width="415">
-  <img src="src/screenshots/about_dark_v4-b77da716d67b.png" alt="About This Computer in dark mode" width="415">
+  <img src="src/screenshots/about_v4-c1d1fefe5b2c.png" alt="About This Computer in light mode" width="415">
+  <img src="src/screenshots/about_dark_v4-1997b3dad62f.png" alt="About This Computer in dark mode" width="415">
 </p>
 
 <br>
@@ -151,7 +151,7 @@ Hardware, software and theme details in About This Computer.
 Translucent menus and popups with matching light and dark colors.
 
 <p align="center">
-  <img src="src/screenshots/context_menu_v4-d5729b4a8019.png" alt="Desktop context menu in light mode" width="415">
+  <img src="src/screenshots/context_menu_v4-24fc7391c5a3.png" alt="Desktop context menu in light mode" width="415">
   <img src="src/screenshots/context_menu_dark_v4-aaba1188daf3.png" alt="Desktop context menu in dark mode" width="415">
 </p>
 
