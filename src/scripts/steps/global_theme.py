@@ -20,7 +20,9 @@ def install() -> None:
             theme_id = None
         if not theme_id:
             continue
-        install_tree(theme, DEST_DIR / theme_id, theme.name)
+        if install_tree(theme, DEST_DIR / theme_id, theme.name):
+            from window_controls import apply_global_theme
+            apply_global_theme(DEST_DIR / theme_id)
 
 
 def uninstall() -> None:

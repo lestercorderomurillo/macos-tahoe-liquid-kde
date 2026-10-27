@@ -13,7 +13,11 @@
         "License": "GPL-3.0",
         "Name": "Icons-Only Task Manager",
         "Name[es]": "Gestor de tareas de solo iconos",
-        "Name[zh_CN]": "纯图标任务管理器"
+        "Name[zh_CN]": "纯图标任务管理器",
+        "Name[pt_BR]": "Gerenciador de tarefas somente com ícones",
+        "Description[pt_BR]": "Gerenciador de tarefas do Dock MacTahoe Liquid KDE somente com ícones e indicadores no estilo macOS",
+        "Name[de]": "Fensterleiste nur mit Symbolen",
+        "Description[de]": "MacTahoe-Liquid-KDE-Dock-Fensterleiste nur mit Symbolen und Kennzeichen im macOS-Stil"
     },
     "X-Plasma-API-Minimum-Version": "6.0",
     "X-Plasma-Provides": [

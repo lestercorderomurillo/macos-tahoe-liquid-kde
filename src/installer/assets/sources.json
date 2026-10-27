@@ -1,0 +1,1890 @@
+{
+  "desktop-tahoe-light.jpg": {
+    "source": "build/captures/v0.60.0/frames/tahoe-light-showcase.png",
+    "source_sha256": "f0bbdcc567b72adfa1095b58f83f236f85079bd8827bb75c47a6bb80c95ba962",
+    "crop": null,
+    "sha256": "a7d8cb0805ad1882e34be53cac55d5903634adaed7545b7d2de611a4c4b8e320",
+    "file": "desktop-tahoe-light-a7d8cb0805ad.jpg"
+  },
+  "desktop-golden-gate-light.jpg": {
+    "source": "build/captures/v0.60.0/frames/golden-gate-light-showcase.png",
+    "source_sha256": "6cc8fb8abde5153c5253f75ba2be2581676432936397a0d1759a11cb0d7d19ce",
+    "crop": null,
+    "sha256": "09ee894401653cb17d1c20192eb6e20cf0af4e7997b2aa3ef9b6621ea6c2b9bc",
+    "file": "desktop-golden-gate-light-09ee89440165.jpg"
+  },
+  "firefox-light.jpg": {
+    "source": "build/installer-wizard-mocks-v5/firefox-frame-light.png",
+    "source_sha256": "2358ef60a4e3db409a54e8276cd638e60a0ee723cad381d3cf221b82708f0bf4",
+    "sha256": "9c02f1cfb2f7ba295d73feb62cc70738d797903375d4d8c84a58b799b787ceaa",
+    "crop": [
+      720,
+      280,
+      3120,
+      1820
+    ],
+    "capture": "Temporary overlay of project reference VM; actual Firefox with bundled userChrome.css and Google home; full window with margins",
+    "file": "firefox-light-9c02f1cfb2f7.jpg"
+  },
+  "dolphin-light.jpg": {
+    "source": "src/screenshots/vm/cachyos/light-34d9c45c3a52.png",
+    "source_sha256": "34d9c45c3a52fff966ab148319811749974a89c14ea317dd3e94b1d4d33855f8",
+    "crop": [
+      85,
+      1124,
+      1895,
+      2088
+    ],
+    "sha256": "2042bf292798590ad33f1d7b1cf316cd16e635a627e0a49fccb84d05762d8668",
+    "file": "dolphin-light-2042bf292798.jpg"
+  },
+  "nautilus-light.jpg": {
+    "source": "src/screenshots/vm/cachyos/light-34d9c45c3a52.png",
+    "source_sha256": "34d9c45c3a52fff966ab148319811749974a89c14ea317dd3e94b1d4d33855f8",
+    "crop": [
+      1945,
+      122,
+      3755,
+      1088
+    ],
+    "sha256": "221756655297f814087d5a048acd1f37799e8ba1d26e140fd3e63da16141a69b",
+    "file": "nautilus-light-221756655297.jpg"
+  },
+  "desktop-tahoe-dark.jpg": {
+    "source": "build/captures/v0.60.0/frames/tahoe-dark-showcase.png",
+    "source_sha256": "49718906236eb061cdc49c3190282e65a772402acc4c933bca376630ac7bbd0c",
+    "crop": null,
+    "sha256": "ac0055cedc8f37c9958a110630b0501dd54c5b106b9c0c66568af74a92e1a791",
+    "file": "desktop-tahoe-dark-ac0055cedc8f.jpg"
+  },
+  "desktop-golden-gate-dark.jpg": {
+    "source": "build/captures/v0.60.0/frames/golden-gate-dark-showcase.png",
+    "source_sha256": "bfa17397c9aca3962572bb013d822fe4b0db801e25eedf3fa8f758b447d676c3",
+    "crop": null,
+    "sha256": "496e2430c690439bc91217d696bf3bb77adb7ef986e076841106fa27b1f6489e",
+    "file": "desktop-golden-gate-dark-496e2430c690.jpg"
+  },
+  "firefox-dark.jpg": {
+    "source": "build/installer-wizard-mocks-v5/firefox-frame-dark.png",
+    "source_sha256": "61f555186a49b5515e80c56886ad10bdea6528643a52b3b1dccc9229a978c21f",
+    "sha256": "2691a4efbbee47a0a06ffcfbbe5e922b440455e895863aeec489fdd7cefbf134",
+    "crop": [
+      720,
+      280,
+      3120,
+      1820
+    ],
+    "capture": "Temporary overlay of project reference VM; actual Firefox with bundled userChrome.css and Google home; full window with margins",
+    "file": "firefox-dark-2691a4efbbee.jpg"
+  },
+  "dolphin-dark.jpg": {
+    "source": "src/screenshots/vm/cachyos/dark-6dcf101c30cf.png",
+    "source_sha256": "6dcf101c30cf921b6b7aaff554c35eb43fa233aff1cc51a4e38d557b72e4c6d6",
+    "crop": [
+      85,
+      1124,
+      1895,
+      2088
+    ],
+    "sha256": "86a3cbf2078ee9cb584aa7c698e382be50fadb24d3b9b403fdcfea520db82677",
+    "file": "dolphin-dark-86a3cbf2078e.jpg"
+  },
+  "nautilus-dark.jpg": {
+    "source": "src/screenshots/vm/cachyos/dark-6dcf101c30cf.png",
+    "source_sha256": "6dcf101c30cf921b6b7aaff554c35eb43fa233aff1cc51a4e38d557b72e4c6d6",
+    "crop": [
+      1945,
+      122,
+      3755,
+      1088
+    ],
+    "sha256": "482637edb0cbbb37d9a4d0898c327782026b682c17e5d9140dc1c4f54dd0d359",
+    "file": "nautilus-dark-482637edb0cb.jpg"
+  },
+  "tahoe.jpg": {
+    "source": "src/offline/wallpapers/MacTahoe/contents/images/3840x2160.jpg",
+    "source_sha256": "33323fe16abbe5911b71255c76c9bfe32dd073f20bee0e79a5fcfa894b3de14a",
+    "crop": null,
+    "sha256": "8192d714bf156baf64b8a4c52b132308f4ff9fafc092150733415bc9a96369ff",
+    "file": "tahoe-8192d714bf15.jpg"
+  },
+  "tahoe-dark.jpg": {
+    "source": "src/offline/wallpapers/MacTahoe/contents/images_dark/3840x2160.jpg",
+    "source_sha256": "b52217a1ba097b3bfe0e13763570e6305f09bef59d122bcf8e93a8c0551691d4",
+    "crop": null,
+    "sha256": "bae45d9c6c37e2cb590397148d67a91ab80344a8d273097d1faf9d0482b8550d",
+    "file": "tahoe-dark-bae45d9c6c37.jpg"
+  },
+  "golden.jpg": {
+    "source": "src/offline/wallpapers/MacGoldenGate/contents/images/4480x3088.jpg",
+    "source_sha256": "7f3ba7da6c0d931bf6560e569ec7a7675fbe23dd911de8ce029bc53d9ae63f2b",
+    "crop": null,
+    "sha256": "65614e096379f1612425d55a49ae7c9ee0456744b65e10498db609c8e8908508",
+    "file": "golden-65614e096379.jpg"
+  },
+  "golden-dark.jpg": {
+    "source": "src/offline/wallpapers/MacGoldenGate/contents/images_dark/4480x3088.jpg",
+    "source_sha256": "9d96f4c18ed77d7e4facfcd3c4d419183684178e14dc0957daeea899a40e31af",
+    "crop": null,
+    "sha256": "ec2fa32d47a4c28e61b624d5adb7adad3cc08810e14c77863b1bdfe23a2ed07a",
+    "file": "golden-dark-ec2fa32d47a4.jpg"
+  },
+  "landscape.jpg": {
+    "source": "src/offline/wallpapers/MacTahoe-Landscape-Morning/contents/images/3840x2160.jpg",
+    "source_sha256": "277502a64c200c7df5c864680b5c362c3d2a143a740a7feef98ad0d2cc8b0153",
+    "crop": null,
+    "sha256": "19b63580964dcdfd1b982496054397e46380e3ce79a972dc55b9989dff1cef4e",
+    "file": "landscape-19b63580964d.jpg"
+  },
+  "landscape-dark.jpg": {
+    "source": "src/offline/wallpapers/MacTahoe-Landscape-Night/contents/images/3840x2160.jpg",
+    "source_sha256": "a690087544274300e1f841cbf15658377d1b84fa26f99ce4fda2865e4f9afc86",
+    "crop": null,
+    "sha256": "10709187f9bbabd39895b9914e94a8c421211796cce1356786e4cf3e7cf9ee93",
+    "file": "landscape-dark-10709187f9bb.jpg"
+  },
+  "iridescence.jpg": {
+    "source": "src/offline/wallpapers/MacTahoe-Iridescence/contents/images/3840x2160.jpg",
+    "source_sha256": "070e0daac18004b3fa3c1875b7d75e7f9d00e31c62e32aa21f136bbc2c175b62",
+    "crop": null,
+    "sha256": "a7522c9a93df2ef2ea4235031233a29d23e78a79ae916ecf7685a021bce005ec",
+    "file": "iridescence-a7522c9a93df.jpg"
+  },
+  "launcher-tahoe.jpg": {
+    "source": "src/screenshots/launcher_preset_1_light-3577b8871b89.png",
+    "source_sha256": "3577b8871b8907e54ba7b5cbb8e2efe9b0de1321d140e2e79eb9ed8e0edb0a1f",
+    "crop": null,
+    "sha256": "0f1eebbe84baf64af943666dd411b3e9eaba69cd71b5feea725a5c3095306635",
+    "file": "launcher-tahoe-0f1eebbe84ba.jpg"
+  },
+  "launcher-golden.jpg": {
+    "source": "../macos-golden-gate-liquid-kde/src/screenshots/launcher_preset_2_light-7bfc5784e046.png",
+    "source_sha256": "7bfc5784e04616ed930f3c5e9d697266f6e40514a492d8e3f3dc971166b80b42",
+    "crop": null,
+    "sha256": "fb4027b18b3c3a713f6fd453339540c9e217d971bd028ef42c3686bcce2e70b4",
+    "file": "launcher-golden-fb4027b18b3c.jpg"
+  },
+  "glass.jpg": {
+    "source": "src/screenshots/context_menu_v4-dbda9eae1565.png",
+    "source_sha256": "dbda9eae1565c789fa062e1b36bd6fc9c0860a04f019dd9d37b3817fa6a83fde",
+    "crop": null,
+    "sha256": "cd4ba63f3175dbb3c01936ec35dc839e6f2b0b6793c8f9f1587f719678b70a56",
+    "file": "glass-cd4ba63f3175.jpg"
+  },
+  "corners.jpg": {
+    "source": "src/screenshots/finder_v4-88d3f0dd6e17.png",
+    "source_sha256": "88d3f0dd6e1720a53fb29e8823ba0bde30fd29aba4a38b6bb3e2b0e26137e4c8",
+    "crop": null,
+    "sha256": "0acb8dedee3449ea7647953861b11d4ccafbffbb99497f402d139e119b3e612c",
+    "file": "corners-0acb8dedee34.jpg"
+  },
+  "dock.jpg": {
+    "source": "src/screenshots/dock_1_v4-e128d6bd0c58.png",
+    "source_sha256": "e128d6bd0c589e1087451b71b0a418ac69c4e9ec5260e9c3b5ad37da9f532155",
+    "crop": null,
+    "sha256": "1b3607a23cd5299a06bcc479a735d1ac731db7431eac93a5bd1a1bd696cff17f",
+    "file": "dock-1b3607a23cd5.jpg"
+  },
+  "boot.jpg": {
+    "source": "src/screenshots/boot_v4-f685ec98f1e4.png",
+    "source_sha256": "f685ec98f1e4407f2624c352f6b6e18ae8c2a686a64f162f6d0666d8fcbfb4d0",
+    "crop": null,
+    "sha256": "bc230f4d8248c54a474d2d8cd6f9d9a89020165d0aa5251aa562ffcd3dbf0bd8",
+    "file": "boot-bc230f4d8248.jpg"
+  },
+  "panel.jpg": {
+    "source": "build/captures/v0.60.0/frames/tahoe-light-showcase.png",
+    "source_sha256": "f0bbdcc567b72adfa1095b58f83f236f85079bd8827bb75c47a6bb80c95ba962",
+    "crop": [
+      0,
+      0,
+      3840,
+      150
+    ],
+    "sha256": "4b08ac80de02f7156aee519236df868f3fb63ebea9edbe408ed78473ddaba878",
+    "file": "panel-4b08ac80de02.jpg"
+  },
+  "regular-light-0.png": {
+    "source": "src/offline/icons/MacTahoeLiquidKde-Icons.tar.zst",
+    "source_sha256": "f9ea0a95a94ac79df7939fca6ef636fbc3ceb3a2e5333a16d20ff3f42488040d",
+    "artwork_sha256": "1dd88e9ee27a257855d8712de3870cf7ca7c87f3e591f45de7444c2456bfa007",
+    "variant": "light",
+    "tint": "#007aff",
+    "sample": "org.kde.dolphin",
+    "generator": "src/scripts/installer_preview_assets.py",
+    "sha256": "794bf8c922b31e0123bf1dfabf101d4e93c99b9d241be5a31c39110798adad7b",
+    "kind": "generated-icon-preview",
+    "file": "regular-light-0-794bf8c922b3.png"
+  },
+  "regular-dark-0.png": {
+    "source": "src/offline/icons/MacTahoeLiquidKde-Icons.tar.zst",
+    "source_sha256": "f9ea0a95a94ac79df7939fca6ef636fbc3ceb3a2e5333a16d20ff3f42488040d",
+    "artwork_sha256": "062243ab98053f71c7e2c35a35bcaafea0b471390e9f5a2a82353c0d27caf4f8",
+    "variant": "dark",
+    "tint": "#007aff",
+    "sample": "org.kde.dolphin",
+    "generator": "src/scripts/installer_preview_assets.py",
+    "sha256": "3f9a264d9cca6a79cca965f5a3574446c50d4039faa8b506879f940d59aa03bb",
+    "kind": "generated-icon-preview",
+    "file": "regular-dark-0-3f9a264d9cca.png"
+  },
+  "regular-light-1.png": {
+    "source": "src/offline/icons/MacTahoeLiquidKde-Icons.tar.zst",
+    "source_sha256": "f9ea0a95a94ac79df7939fca6ef636fbc3ceb3a2e5333a16d20ff3f42488040d",
+    "artwork_sha256": "7d07a906714441fadc7355be9b081a7559ecdbd48193c7dc2a04f547a6bd22cf",
+    "variant": "light",
+    "tint": "#007aff",
+    "sample": "firefox",
+    "generator": "src/scripts/installer_preview_assets.py",
+    "sha256": "2fae9520a7d89e790ec36542e213be209f1bb46763d75cf5028d68eb5a6da6f0",
+    "kind": "generated-icon-preview",
+    "file": "regular-light-1-2fae9520a7d8.png"
+  },
+  "regular-dark-1.png": {
+    "source": "src/offline/icons/MacTahoeLiquidKde-Icons.tar.zst",
+    "source_sha256": "f9ea0a95a94ac79df7939fca6ef636fbc3ceb3a2e5333a16d20ff3f42488040d",
+    "artwork_sha256": "7d07a906714441fadc7355be9b081a7559ecdbd48193c7dc2a04f547a6bd22cf",
+    "variant": "dark",
+    "tint": "#007aff",
+    "sample": "firefox",
+    "generator": "src/scripts/installer_preview_assets.py",
+    "sha256": "0b337d6114f853f40944fd6402e2226d4bde06c4cb50086d78a69e3282bd8dfb",
+    "kind": "generated-icon-preview",
+    "file": "regular-dark-1-0b337d6114f8.png"
+  },
+  "regular-light-2.png": {
+    "source": "src/offline/icons/MacTahoeLiquidKde-Icons.tar.zst",
+    "source_sha256": "f9ea0a95a94ac79df7939fca6ef636fbc3ceb3a2e5333a16d20ff3f42488040d",
+    "artwork_sha256": "8ff99c6c70c0a33282aa351e3de4f0fc29bb4437d3cfe6c6ae6cfda4a7b97632",
+    "variant": "light",
+    "tint": "#007aff",
+    "sample": "systemsettings",
+    "generator": "src/scripts/installer_preview_assets.py",
+    "sha256": "214a2d0e6b9b2a4150be856f2a18093c4484645d70d109106a3e60b8b475b8a1",
+    "kind": "generated-icon-preview",
+    "file": "regular-light-2-214a2d0e6b9b.png"
+  },
+  "regular-dark-2.png": {
+    "source": "src/offline/icons/MacTahoeLiquidKde-Icons.tar.zst",
+    "source_sha256": "f9ea0a95a94ac79df7939fca6ef636fbc3ceb3a2e5333a16d20ff3f42488040d",
+    "artwork_sha256": "4eb3b3da773e58389b31d9d522bad9477c1362ccd767c2077c4d639d814a1903",
+    "variant": "dark",
+    "tint": "#007aff",
+    "sample": "systemsettings",
+    "generator": "src/scripts/installer_preview_assets.py",
+    "sha256": "262c344730fd896af10ad4f4b97b5d8fb06281e375a5499faaf05b225a239f3e",
+    "kind": "generated-icon-preview",
+    "file": "regular-dark-2-262c344730fd.png"
+  },
+  "regular-light-3.png": {
+    "source": "src/offline/icons/MacTahoeLiquidKde-Icons.tar.zst",
+    "source_sha256": "f9ea0a95a94ac79df7939fca6ef636fbc3ceb3a2e5333a16d20ff3f42488040d",
+    "artwork_sha256": "de120d786536281adf81d69e2a778a404dd7a5981668ccb82a695e7f621229f5",
+    "variant": "light",
+    "tint": "#007aff",
+    "sample": "org.kde.konsole",
+    "generator": "src/scripts/installer_preview_assets.py",
+    "sha256": "1dddf02be9d91209fa61d18dd50ed2f496edf5db790177b828ac686be16bf117",
+    "kind": "generated-icon-preview",
+    "file": "regular-light-3-1dddf02be9d9.png"
+  },
+  "regular-dark-3.png": {
+    "source": "src/offline/icons/MacTahoeLiquidKde-Icons.tar.zst",
+    "source_sha256": "f9ea0a95a94ac79df7939fca6ef636fbc3ceb3a2e5333a16d20ff3f42488040d",
+    "artwork_sha256": "b89298c3a1682e0f18b151b23b4ff8e9fc7bd1928fadb272d3546f6376ec7261",
+    "variant": "dark",
+    "tint": "#007aff",
+    "sample": "org.kde.konsole",
+    "generator": "src/scripts/installer_preview_assets.py",
+    "sha256": "98832049ce825d0063b8b63de4b196eabb307feac8c43e32278ff943d4832199",
+    "kind": "generated-icon-preview",
+    "file": "regular-dark-3-98832049ce82.png"
+  },
+  "sonoma.jpg": {
+    "source": "src/offline/wallpapers/MacHeritage-Sonoma/contents/images/3840x2160.jpg",
+    "source_sha256": "9a536eba2d89d5459b47e9e09300d3cb318f133c4f8905428a047993bc33120c",
+    "crop": null,
+    "sha256": "7bb80db202b87495db45507f2d359de5aa0f938004e9752f1345b9bd894fb306",
+    "file": "sonoma-7bb80db202b8.jpg"
+  },
+  "sonoma-dark.jpg": {
+    "source": "src/offline/wallpapers/MacHeritage-Sonoma/contents/images_dark/3840x2160.jpg",
+    "source_sha256": "3e4db31510857241d87948d5bee97bc336d283a1da53fabaf2731ac36e89b601",
+    "crop": null,
+    "sha256": "1b51597409ca8105fe791e470cd7eaa156b79e205b92141c670b3a3613703650",
+    "file": "sonoma-dark-1b51597409ca.jpg"
+  },
+  "panel-detail.jpg": {
+    "source": "/mnt/M2_1/Projects/Repositories/macos-tahoe-liquid-kde/build/captures/v0.60.0/frames/tahoe-light-menu.png",
+    "crop": [
+      0,
+      0,
+      1450,
+      850
+    ],
+    "source_sha256": "1c3848b7cca2c9ae5ffd66642268cf62a57aac80f064e6e5b429b9dc8d377604",
+    "sha256": "502233e14c104c61c45fcd5f6aa09e05ee7529567454809ed961262869f6aa94",
+    "file": "panel-detail-502233e14c10.jpg"
+  },
+  "logo-26.png": {
+    "source": "/mnt/M2_1/Projects/Repositories/macos-tahoe-liquid-kde/src/screenshots/macos-26.png",
+    "source_sha256": "0293dc2ec82d8d6b62430b3cbbd980b55ce217e44eca71d79cf96271bcf8945a",
+    "transform": "Exact README emblem",
+    "sha256": "0293dc2ec82d8d6b62430b3cbbd980b55ce217e44eca71d79cf96271bcf8945a",
+    "file": "logo-26-0293dc2ec82d.png"
+  },
+  "logo-27.png": {
+    "source": "/mnt/M2_1/Projects/Repositories/macos-golden-gate-liquid-kde/src/screenshots/macos-27.png",
+    "source_sha256": "3fdb1e6494823558e600c04aceae0998f4f9db2c32a0f6842abbac1a375859b4",
+    "transform": "Exact README emblem",
+    "sha256": "3fdb1e6494823558e600c04aceae0998f4f9db2c32a0f6842abbac1a375859b4",
+    "file": "logo-27-3fdb1e649482.png"
+  },
+  "logo-27-dark.png": {
+    "source": "/mnt/M2_1/Projects/Repositories/macos-golden-gate-liquid-kde/src/screenshots/macos-27-dark.png",
+    "source_sha256": "6b6964ec4dfc4c019e3054527fadfbb89e0a6032087718e7d09a3553204165e5",
+    "transform": "Exact README emblem",
+    "sha256": "6b6964ec4dfc4c019e3054527fadfbb89e0a6032087718e7d09a3553204165e5",
+    "file": "logo-27-dark-6b6964ec4dfc.png"
+  },
+  "accent-tahoe-light-blue.jpg": {
+    "source": "/mnt/M2_1/Projects/Repositories/macos-tahoe-liquid-kde/build/installer-wizard-mocks-v5/assets/desktop-tahoe-light.jpg",
+    "source_sha256": "a7d8cb0805ad1882e34be53cac55d5903634adaed7545b7d2de611a4c4b8e320",
+    "transform": "Mock accent replacement in window UI only",
+    "accent": "#007aff",
+    "sha256": "b950f96485a2108913dcd651a412afebaafd0f6551c58f3586001ea9c0fdce38",
+    "file": "accent-tahoe-light-blue-b950f96485a2.jpg"
+  },
+  "accent-tahoe-light-purple.jpg": {
+    "source": "/mnt/M2_1/Projects/Repositories/macos-tahoe-liquid-kde/build/installer-wizard-mocks-v5/assets/desktop-tahoe-light.jpg",
+    "source_sha256": "a7d8cb0805ad1882e34be53cac55d5903634adaed7545b7d2de611a4c4b8e320",
+    "transform": "Mock accent replacement in window UI only",
+    "accent": "#af52de",
+    "sha256": "875da125cb33588b00265a91e5bfc9aa5d1a215ec393b30e3dfc6c74cb308f6a",
+    "file": "accent-tahoe-light-purple-875da125cb33.jpg"
+  },
+  "accent-tahoe-light-pink.jpg": {
+    "source": "/mnt/M2_1/Projects/Repositories/macos-tahoe-liquid-kde/build/installer-wizard-mocks-v5/assets/desktop-tahoe-light.jpg",
+    "source_sha256": "a7d8cb0805ad1882e34be53cac55d5903634adaed7545b7d2de611a4c4b8e320",
+    "transform": "Mock accent replacement in window UI only",
+    "accent": "#ff2d55",
+    "sha256": "765e6a0906b063bbea214c7aaa175225ecd8a48412a03060183fc04423c0f86f",
+    "file": "accent-tahoe-light-pink-765e6a0906b0.jpg"
+  },
+  "accent-tahoe-light-red.jpg": {
+    "source": "/mnt/M2_1/Projects/Repositories/macos-tahoe-liquid-kde/build/installer-wizard-mocks-v5/assets/desktop-tahoe-light.jpg",
+    "source_sha256": "a7d8cb0805ad1882e34be53cac55d5903634adaed7545b7d2de611a4c4b8e320",
+    "transform": "Mock accent replacement in window UI only",
+    "accent": "#ff3b30",
+    "sha256": "2219868fde2e5cd97417f0a8f798b39ba6382c42c4d17b8f4ab1221ebb9448a9",
+    "file": "accent-tahoe-light-red-2219868fde2e.jpg"
+  },
+  "accent-tahoe-light-orange.jpg": {
+    "source": "/mnt/M2_1/Projects/Repositories/macos-tahoe-liquid-kde/build/installer-wizard-mocks-v5/assets/desktop-tahoe-light.jpg",
+    "source_sha256": "a7d8cb0805ad1882e34be53cac55d5903634adaed7545b7d2de611a4c4b8e320",
+    "transform": "Mock accent replacement in window UI only",
+    "accent": "#ff9500",
+    "sha256": "dac297c9acfaf17188e95a03ca11d3173bc1f424edd9ba476911c046775c7a3d",
+    "file": "accent-tahoe-light-orange-dac297c9acfa.jpg"
+  },
+  "accent-tahoe-light-yellow.jpg": {
+    "source": "/mnt/M2_1/Projects/Repositories/macos-tahoe-liquid-kde/build/installer-wizard-mocks-v5/assets/desktop-tahoe-light.jpg",
+    "source_sha256": "a7d8cb0805ad1882e34be53cac55d5903634adaed7545b7d2de611a4c4b8e320",
+    "transform": "Mock accent replacement in window UI only",
+    "accent": "#ffcc00",
+    "sha256": "698450b63bfb7fe69b9c2e2d8475d60429b9caf5526dbcfbcccd79bdd449e1fd",
+    "file": "accent-tahoe-light-yellow-698450b63bfb.jpg"
+  },
+  "accent-tahoe-light-green.jpg": {
+    "source": "/mnt/M2_1/Projects/Repositories/macos-tahoe-liquid-kde/build/installer-wizard-mocks-v5/assets/desktop-tahoe-light.jpg",
+    "source_sha256": "a7d8cb0805ad1882e34be53cac55d5903634adaed7545b7d2de611a4c4b8e320",
+    "transform": "Mock accent replacement in window UI only",
+    "accent": "#28cd41",
+    "sha256": "7950d51aa2864d72ef0c830b8d0ca5f85982e9a087c57202f4ceca911c17aa6c",
+    "file": "accent-tahoe-light-green-7950d51aa286.jpg"
+  },
+  "accent-tahoe-light-gray.jpg": {
+    "source": "/mnt/M2_1/Projects/Repositories/macos-tahoe-liquid-kde/build/installer-wizard-mocks-v5/assets/desktop-tahoe-light.jpg",
+    "source_sha256": "a7d8cb0805ad1882e34be53cac55d5903634adaed7545b7d2de611a4c4b8e320",
+    "transform": "Mock accent replacement in window UI only",
+    "accent": "#8e8e93",
+    "sha256": "3107953d1af5c9a955d1fa42e9540c6faf80234dd3bb67af9bad4f29a709e5ed",
+    "file": "accent-tahoe-light-gray-3107953d1af5.jpg"
+  },
+  "accent-tahoe-dark-blue.jpg": {
+    "source": "/mnt/M2_1/Projects/Repositories/macos-tahoe-liquid-kde/build/installer-wizard-mocks-v5/assets/desktop-tahoe-dark.jpg",
+    "source_sha256": "ac0055cedc8f37c9958a110630b0501dd54c5b106b9c0c66568af74a92e1a791",
+    "transform": "Mock accent replacement in window UI only",
+    "accent": "#007aff",
+    "sha256": "0c1fbc1c5d527bc735d41b37b1716cf4fc4290e01fbc5f760dfd8353b20c9d70",
+    "file": "accent-tahoe-dark-blue-0c1fbc1c5d52.jpg"
+  },
+  "accent-tahoe-dark-purple.jpg": {
+    "source": "/mnt/M2_1/Projects/Repositories/macos-tahoe-liquid-kde/build/installer-wizard-mocks-v5/assets/desktop-tahoe-dark.jpg",
+    "source_sha256": "ac0055cedc8f37c9958a110630b0501dd54c5b106b9c0c66568af74a92e1a791",
+    "transform": "Mock accent replacement in window UI only",
+    "accent": "#af52de",
+    "sha256": "e68c310247e2f347c18408137d8f5a503f252514e16479f5d4ceededde439f1a",
+    "file": "accent-tahoe-dark-purple-e68c310247e2.jpg"
+  },
+  "accent-tahoe-dark-pink.jpg": {
+    "source": "/mnt/M2_1/Projects/Repositories/macos-tahoe-liquid-kde/build/installer-wizard-mocks-v5/assets/desktop-tahoe-dark.jpg",
+    "source_sha256": "ac0055cedc8f37c9958a110630b0501dd54c5b106b9c0c66568af74a92e1a791",
+    "transform": "Mock accent replacement in window UI only",
+    "accent": "#ff2d55",
+    "sha256": "cf2de0b4ccb0ae1f22c35a9eac9121294e1ac8fe574d85efdca90ab784a479c3",
+    "file": "accent-tahoe-dark-pink-cf2de0b4ccb0.jpg"
+  },
+  "accent-tahoe-dark-red.jpg": {
+    "source": "/mnt/M2_1/Projects/Repositories/macos-tahoe-liquid-kde/build/installer-wizard-mocks-v5/assets/desktop-tahoe-dark.jpg",
+    "source_sha256": "ac0055cedc8f37c9958a110630b0501dd54c5b106b9c0c66568af74a92e1a791",
+    "transform": "Mock accent replacement in window UI only",
+    "accent": "#ff3b30",
+    "sha256": "d699ad82ade9c8a76f5e182b532df44cdd374035665415c7fd18930c5ba05d56",
+    "file": "accent-tahoe-dark-red-d699ad82ade9.jpg"
+  },
+  "accent-tahoe-dark-orange.jpg": {
+    "source": "/mnt/M2_1/Projects/Repositories/macos-tahoe-liquid-kde/build/installer-wizard-mocks-v5/assets/desktop-tahoe-dark.jpg",
+    "source_sha256": "ac0055cedc8f37c9958a110630b0501dd54c5b106b9c0c66568af74a92e1a791",
+    "transform": "Mock accent replacement in window UI only",
+    "accent": "#ff9500",
+    "sha256": "a288ec6a89fef56b68d96bca5f30869886d111912fe33e1fb6c8d8c7a3d9a72e",
+    "file": "accent-tahoe-dark-orange-a288ec6a89fe.jpg"
+  },
+  "accent-tahoe-dark-yellow.jpg": {
+    "source": "/mnt/M2_1/Projects/Repositories/macos-tahoe-liquid-kde/build/installer-wizard-mocks-v5/assets/desktop-tahoe-dark.jpg",
+    "source_sha256": "ac0055cedc8f37c9958a110630b0501dd54c5b106b9c0c66568af74a92e1a791",
+    "transform": "Mock accent replacement in window UI only",
+    "accent": "#ffcc00",
+    "sha256": "29af5df2b720dfa92ec868852c58a726103c20ec013a241c492bb2d659bafed8",
+    "file": "accent-tahoe-dark-yellow-29af5df2b720.jpg"
+  },
+  "accent-tahoe-dark-green.jpg": {
+    "source": "/mnt/M2_1/Projects/Repositories/macos-tahoe-liquid-kde/build/installer-wizard-mocks-v5/assets/desktop-tahoe-dark.jpg",
+    "source_sha256": "ac0055cedc8f37c9958a110630b0501dd54c5b106b9c0c66568af74a92e1a791",
+    "transform": "Mock accent replacement in window UI only",
+    "accent": "#28cd41",
+    "sha256": "9fa76e7904c9e9ba34ea72862f80ff9540c07433f4114bb519356ae3a9361f2e",
+    "file": "accent-tahoe-dark-green-9fa76e7904c9.jpg"
+  },
+  "accent-tahoe-dark-gray.jpg": {
+    "source": "/mnt/M2_1/Projects/Repositories/macos-tahoe-liquid-kde/build/installer-wizard-mocks-v5/assets/desktop-tahoe-dark.jpg",
+    "source_sha256": "ac0055cedc8f37c9958a110630b0501dd54c5b106b9c0c66568af74a92e1a791",
+    "transform": "Mock accent replacement in window UI only",
+    "accent": "#8e8e93",
+    "sha256": "2c30cbe8c02b2723238a34ea9c1071084ba5bafad921be535323794ed61a1241",
+    "file": "accent-tahoe-dark-gray-2c30cbe8c02b.jpg"
+  },
+  "accent-golden-gate-light-blue.jpg": {
+    "source": "/mnt/M2_1/Projects/Repositories/macos-tahoe-liquid-kde/build/installer-wizard-mocks-v5/assets/desktop-golden-gate-light.jpg",
+    "source_sha256": "09ee894401653cb17d1c20192eb6e20cf0af4e7997b2aa3ef9b6621ea6c2b9bc",
+    "transform": "Mock accent replacement in window UI only",
+    "accent": "#007aff",
+    "sha256": "16301c909272d8d182bd3bf7cdfafc2670ad8b66e7ae725e4bb49d7f74cabe33",
+    "file": "accent-golden-gate-light-blue-16301c909272.jpg"
+  },
+  "accent-golden-gate-light-purple.jpg": {
+    "source": "/mnt/M2_1/Projects/Repositories/macos-tahoe-liquid-kde/build/installer-wizard-mocks-v5/assets/desktop-golden-gate-light.jpg",
+    "source_sha256": "09ee894401653cb17d1c20192eb6e20cf0af4e7997b2aa3ef9b6621ea6c2b9bc",
+    "transform": "Mock accent replacement in window UI only",
+    "accent": "#af52de",
+    "sha256": "0470f8bb0a5fdc711af84490f9b9537dbbd21b564adcd85a866b70f0878975d7",
+    "file": "accent-golden-gate-light-purple-0470f8bb0a5f.jpg"
+  },
+  "accent-golden-gate-light-pink.jpg": {
+    "source": "/mnt/M2_1/Projects/Repositories/macos-tahoe-liquid-kde/build/installer-wizard-mocks-v5/assets/desktop-golden-gate-light.jpg",
+    "source_sha256": "09ee894401653cb17d1c20192eb6e20cf0af4e7997b2aa3ef9b6621ea6c2b9bc",
+    "transform": "Mock accent replacement in window UI only",
+    "accent": "#ff2d55",
+    "sha256": "ce8a912851b06e0961145d8b2b0353ef9e46caedd08f8fdf04058f0e5d82de7b",
+    "file": "accent-golden-gate-light-pink-ce8a912851b0.jpg"
+  },
+  "accent-golden-gate-light-red.jpg": {
+    "source": "/mnt/M2_1/Projects/Repositories/macos-tahoe-liquid-kde/build/installer-wizard-mocks-v5/assets/desktop-golden-gate-light.jpg",
+    "source_sha256": "09ee894401653cb17d1c20192eb6e20cf0af4e7997b2aa3ef9b6621ea6c2b9bc",
+    "transform": "Mock accent replacement in window UI only",
+    "accent": "#ff3b30",
+    "sha256": "82a16069dee96a8e48bc359a9ec97aad4e36fe337e076eca2281d10bfe6c8219",
+    "file": "accent-golden-gate-light-red-82a16069dee9.jpg"
+  },
+  "accent-golden-gate-light-orange.jpg": {
+    "source": "/mnt/M2_1/Projects/Repositories/macos-tahoe-liquid-kde/build/installer-wizard-mocks-v5/assets/desktop-golden-gate-light.jpg",
+    "source_sha256": "09ee894401653cb17d1c20192eb6e20cf0af4e7997b2aa3ef9b6621ea6c2b9bc",
+    "transform": "Mock accent replacement in window UI only",
+    "accent": "#ff9500",
+    "sha256": "61d94e52b3f5a9bf13f8c96262483031306f0a3843879611ede5d931f64653bb",
+    "file": "accent-golden-gate-light-orange-61d94e52b3f5.jpg"
+  },
+  "accent-golden-gate-light-yellow.jpg": {
+    "source": "/mnt/M2_1/Projects/Repositories/macos-tahoe-liquid-kde/build/installer-wizard-mocks-v5/assets/desktop-golden-gate-light.jpg",
+    "source_sha256": "09ee894401653cb17d1c20192eb6e20cf0af4e7997b2aa3ef9b6621ea6c2b9bc",
+    "transform": "Mock accent replacement in window UI only",
+    "accent": "#ffcc00",
+    "sha256": "976aa5ef7140557e1c0b102264e42612438b1f63edfc583b302472b9e04f2db3",
+    "file": "accent-golden-gate-light-yellow-976aa5ef7140.jpg"
+  },
+  "accent-golden-gate-light-green.jpg": {
+    "source": "/mnt/M2_1/Projects/Repositories/macos-tahoe-liquid-kde/build/installer-wizard-mocks-v5/assets/desktop-golden-gate-light.jpg",
+    "source_sha256": "09ee894401653cb17d1c20192eb6e20cf0af4e7997b2aa3ef9b6621ea6c2b9bc",
+    "transform": "Mock accent replacement in window UI only",
+    "accent": "#28cd41",
+    "sha256": "c9736a0e915f2267cb3abb96075a9ea84b09285d35366650f274e9a1f9249ea6",
+    "file": "accent-golden-gate-light-green-c9736a0e915f.jpg"
+  },
+  "accent-golden-gate-light-gray.jpg": {
+    "source": "/mnt/M2_1/Projects/Repositories/macos-tahoe-liquid-kde/build/installer-wizard-mocks-v5/assets/desktop-golden-gate-light.jpg",
+    "source_sha256": "09ee894401653cb17d1c20192eb6e20cf0af4e7997b2aa3ef9b6621ea6c2b9bc",
+    "transform": "Mock accent replacement in window UI only",
+    "accent": "#8e8e93",
+    "sha256": "c20d4e3eb77792dc8358081019bc41e22cea89b746dde1de580087cbdf163f2a",
+    "file": "accent-golden-gate-light-gray-c20d4e3eb777.jpg"
+  },
+  "accent-golden-gate-dark-blue.jpg": {
+    "source": "/mnt/M2_1/Projects/Repositories/macos-tahoe-liquid-kde/build/installer-wizard-mocks-v5/assets/desktop-golden-gate-dark.jpg",
+    "source_sha256": "496e2430c690439bc91217d696bf3bb77adb7ef986e076841106fa27b1f6489e",
+    "transform": "Mock accent replacement in window UI only",
+    "accent": "#007aff",
+    "sha256": "49a45888de236b397a38f902f7e1a729ef5dcf0e85f70a0912c0a8a2938fbfd6",
+    "file": "accent-golden-gate-dark-blue-49a45888de23.jpg"
+  },
+  "accent-golden-gate-dark-purple.jpg": {
+    "source": "/mnt/M2_1/Projects/Repositories/macos-tahoe-liquid-kde/build/installer-wizard-mocks-v5/assets/desktop-golden-gate-dark.jpg",
+    "source_sha256": "496e2430c690439bc91217d696bf3bb77adb7ef986e076841106fa27b1f6489e",
+    "transform": "Mock accent replacement in window UI only",
+    "accent": "#af52de",
+    "sha256": "a2562470df4d5e93c0231f26cf1fbbda2d75ca1c1aa44d79370632f20e08105a",
+    "file": "accent-golden-gate-dark-purple-a2562470df4d.jpg"
+  },
+  "accent-golden-gate-dark-pink.jpg": {
+    "source": "/mnt/M2_1/Projects/Repositories/macos-tahoe-liquid-kde/build/installer-wizard-mocks-v5/assets/desktop-golden-gate-dark.jpg",
+    "source_sha256": "496e2430c690439bc91217d696bf3bb77adb7ef986e076841106fa27b1f6489e",
+    "transform": "Mock accent replacement in window UI only",
+    "accent": "#ff2d55",
+    "sha256": "896bb0e17c0f3dc3debab4d4409413e016424d80f97183c9b1d75df12c5d5677",
+    "file": "accent-golden-gate-dark-pink-896bb0e17c0f.jpg"
+  },
+  "accent-golden-gate-dark-red.jpg": {
+    "source": "/mnt/M2_1/Projects/Repositories/macos-tahoe-liquid-kde/build/installer-wizard-mocks-v5/assets/desktop-golden-gate-dark.jpg",
+    "source_sha256": "496e2430c690439bc91217d696bf3bb77adb7ef986e076841106fa27b1f6489e",
+    "transform": "Mock accent replacement in window UI only",
+    "accent": "#ff3b30",
+    "sha256": "907183a4a5dafc7aaf34091bbf8a275e8d6efdc1bda0753cb1764cbb54c4882b",
+    "file": "accent-golden-gate-dark-red-907183a4a5da.jpg"
+  },
+  "accent-golden-gate-dark-orange.jpg": {
+    "source": "/mnt/M2_1/Projects/Repositories/macos-tahoe-liquid-kde/build/installer-wizard-mocks-v5/assets/desktop-golden-gate-dark.jpg",
+    "source_sha256": "496e2430c690439bc91217d696bf3bb77adb7ef986e076841106fa27b1f6489e",
+    "transform": "Mock accent replacement in window UI only",
+    "accent": "#ff9500",
+    "sha256": "3ccf43dc11bebfeba55f5ac0c729b92e1ce4553744759220fc0879e2f87426aa",
+    "file": "accent-golden-gate-dark-orange-3ccf43dc11be.jpg"
+  },
+  "accent-golden-gate-dark-yellow.jpg": {
+    "source": "/mnt/M2_1/Projects/Repositories/macos-tahoe-liquid-kde/build/installer-wizard-mocks-v5/assets/desktop-golden-gate-dark.jpg",
+    "source_sha256": "496e2430c690439bc91217d696bf3bb77adb7ef986e076841106fa27b1f6489e",
+    "transform": "Mock accent replacement in window UI only",
+    "accent": "#ffcc00",
+    "sha256": "32a257b63b29b8bffb46b0edfbad3687dfd1e8c5a26ae97839a28b7f975de63b",
+    "file": "accent-golden-gate-dark-yellow-32a257b63b29.jpg"
+  },
+  "accent-golden-gate-dark-green.jpg": {
+    "source": "/mnt/M2_1/Projects/Repositories/macos-tahoe-liquid-kde/build/installer-wizard-mocks-v5/assets/desktop-golden-gate-dark.jpg",
+    "source_sha256": "496e2430c690439bc91217d696bf3bb77adb7ef986e076841106fa27b1f6489e",
+    "transform": "Mock accent replacement in window UI only",
+    "accent": "#28cd41",
+    "sha256": "fa3cbd6328d502690160ff16831b701f0220a3540a10a9ce49a3ebd33d85b72e",
+    "file": "accent-golden-gate-dark-green-fa3cbd6328d5.jpg"
+  },
+  "accent-golden-gate-dark-gray.jpg": {
+    "source": "/mnt/M2_1/Projects/Repositories/macos-tahoe-liquid-kde/build/installer-wizard-mocks-v5/assets/desktop-golden-gate-dark.jpg",
+    "source_sha256": "496e2430c690439bc91217d696bf3bb77adb7ef986e076841106fa27b1f6489e",
+    "transform": "Mock accent replacement in window UI only",
+    "accent": "#8e8e93",
+    "sha256": "793e4d258a64df3fadfa8229380352682b1b8c635890311c6db108399c553106",
+    "file": "accent-golden-gate-dark-gray-793e4d258a64.jpg"
+  },
+  "regular-light-4.png": {
+    "source": "src/offline/icons/MacTahoeLiquidKde-Icons.tar.zst",
+    "source_sha256": "f9ea0a95a94ac79df7939fca6ef636fbc3ceb3a2e5333a16d20ff3f42488040d",
+    "artwork_sha256": "3756a88005181fb71f434b01b956cb3ef70185d1e24c11e33e90f96b3df8bedf",
+    "variant": "light",
+    "tint": "#007aff",
+    "sample": "org.kde.kate",
+    "generator": "src/scripts/installer_preview_assets.py",
+    "sha256": "fab49f5f20f50fdf46308065564867bfe5511815f4f67e20bb2bcb772dc49e5d",
+    "kind": "generated-icon-preview",
+    "file": "regular-light-4-fab49f5f20f5.png"
+  },
+  "regular-dark-4.png": {
+    "source": "src/offline/icons/MacTahoeLiquidKde-Icons.tar.zst",
+    "source_sha256": "f9ea0a95a94ac79df7939fca6ef636fbc3ceb3a2e5333a16d20ff3f42488040d",
+    "artwork_sha256": "4ebbf3eb93b6f37b7591dba8245765fa093aa084592e5b10a44074992ecfb9bf",
+    "variant": "dark",
+    "tint": "#007aff",
+    "sample": "org.kde.kate",
+    "generator": "src/scripts/installer_preview_assets.py",
+    "sha256": "e36edfac8fdfa07c9a5eda86c9fe809c7e135c7ac394c4c8ec95b77de613e051",
+    "kind": "generated-icon-preview",
+    "file": "regular-dark-4-e36edfac8fdf.png"
+  },
+  "regular-light-5.png": {
+    "source": "src/offline/icons/MacTahoeLiquidKde-Icons.tar.zst",
+    "source_sha256": "f9ea0a95a94ac79df7939fca6ef636fbc3ceb3a2e5333a16d20ff3f42488040d",
+    "artwork_sha256": "5f8eb7594ee00628afaae671e44536306b41944d97129722364eade5ed106168",
+    "variant": "light",
+    "tint": "#007aff",
+    "sample": "gwenview",
+    "generator": "src/scripts/installer_preview_assets.py",
+    "sha256": "22a29a8d99f1bb6bc7bdac8188718eab94506fe1caed387be7fe7d20ced2e217",
+    "kind": "generated-icon-preview",
+    "file": "regular-light-5-22a29a8d99f1.png"
+  },
+  "regular-dark-5.png": {
+    "source": "src/offline/icons/MacTahoeLiquidKde-Icons.tar.zst",
+    "source_sha256": "f9ea0a95a94ac79df7939fca6ef636fbc3ceb3a2e5333a16d20ff3f42488040d",
+    "artwork_sha256": "5f8eb7594ee00628afaae671e44536306b41944d97129722364eade5ed106168",
+    "variant": "dark",
+    "tint": "#007aff",
+    "sample": "gwenview",
+    "generator": "src/scripts/installer_preview_assets.py",
+    "sha256": "8de38f8febba4ff0146969c77aceee5a5760523020a6e893934da2da0becfea8",
+    "kind": "generated-icon-preview",
+    "file": "regular-dark-5-8de38f8febba.png"
+  },
+  "regular-light-6.png": {
+    "source": "src/offline/icons/MacTahoeLiquidKde-Icons.tar.zst",
+    "source_sha256": "f9ea0a95a94ac79df7939fca6ef636fbc3ceb3a2e5333a16d20ff3f42488040d",
+    "artwork_sha256": "a3905306bcefa3809c64a5da38b1d336abdbf320deafa54b2a31804fd8ed70af",
+    "variant": "light",
+    "tint": "#007aff",
+    "sample": "org.kde.discover",
+    "generator": "src/scripts/installer_preview_assets.py",
+    "sha256": "9234d782b4661ee7264db3ead9ff2fabd4409ebd7e9806f531c7513e0a2ddebd",
+    "kind": "generated-icon-preview",
+    "file": "regular-light-6-9234d782b466.png"
+  },
+  "regular-dark-6.png": {
+    "source": "src/offline/icons/MacTahoeLiquidKde-Icons.tar.zst",
+    "source_sha256": "f9ea0a95a94ac79df7939fca6ef636fbc3ceb3a2e5333a16d20ff3f42488040d",
+    "artwork_sha256": "1f164dd85f3f56ab80bb843b902cec7ee57a7208bab2fb49d4925cb53351072a",
+    "variant": "dark",
+    "tint": "#007aff",
+    "sample": "org.kde.discover",
+    "generator": "src/scripts/installer_preview_assets.py",
+    "sha256": "8791c725f6c7f1b4da05c2c4f425935f34a264b668a2f5033ccd06a4b7cd0f62",
+    "kind": "generated-icon-preview",
+    "file": "regular-dark-6-8791c725f6c7.png"
+  },
+  "regular-light-7.png": {
+    "source": "src/offline/icons/MacTahoeLiquidKde-Icons.tar.zst",
+    "source_sha256": "f9ea0a95a94ac79df7939fca6ef636fbc3ceb3a2e5333a16d20ff3f42488040d",
+    "artwork_sha256": "e3756acc847b1ba5e38ca76d70480e3384087e369a5df2ace92e9fac343d7314",
+    "variant": "light",
+    "tint": "#007aff",
+    "sample": "vlc",
+    "generator": "src/scripts/installer_preview_assets.py",
+    "sha256": "396208d62ead2e45c0cdc1d89b896b4e00581db951a978fef2ce571d4ad3a0f6",
+    "kind": "generated-icon-preview",
+    "file": "regular-light-7-396208d62ead.png"
+  },
+  "regular-dark-7.png": {
+    "source": "src/offline/icons/MacTahoeLiquidKde-Icons.tar.zst",
+    "source_sha256": "f9ea0a95a94ac79df7939fca6ef636fbc3ceb3a2e5333a16d20ff3f42488040d",
+    "artwork_sha256": "e3756acc847b1ba5e38ca76d70480e3384087e369a5df2ace92e9fac343d7314",
+    "variant": "dark",
+    "tint": "#007aff",
+    "sample": "vlc",
+    "generator": "src/scripts/installer_preview_assets.py",
+    "sha256": "396208d62ead2e45c0cdc1d89b896b4e00581db951a978fef2ce571d4ad3a0f6",
+    "kind": "generated-icon-preview",
+    "file": "regular-dark-7-396208d62ead.png"
+  },
+  "glass-light-blue-0.png": {
+    "source": "src/offline/icons/MacTahoeLiquidKde-Icons.tar.zst",
+    "source_sha256": "f9ea0a95a94ac79df7939fca6ef636fbc3ceb3a2e5333a16d20ff3f42488040d",
+    "artwork_sha256": "1dd88e9ee27a257855d8712de3870cf7ca7c87f3e591f45de7444c2456bfa007",
+    "variant": "tinted-light",
+    "tint": "#007aff",
+    "sample": "org.kde.dolphin",
+    "generator": "src/scripts/installer_preview_assets.py",
+    "sha256": "58daa7bd3561bba2b0680cbf1b43ecff1ae15cd9d4a8f17e5bcdf9e215481019",
+    "kind": "generated-icon-preview",
+    "file": "glass-light-blue-0-58daa7bd3561.png"
+  },
+  "glass-light-purple-0.png": {
+    "source": "src/offline/icons/MacTahoeLiquidKde-Icons.tar.zst",
+    "source_sha256": "f9ea0a95a94ac79df7939fca6ef636fbc3ceb3a2e5333a16d20ff3f42488040d",
+    "artwork_sha256": "1dd88e9ee27a257855d8712de3870cf7ca7c87f3e591f45de7444c2456bfa007",
+    "variant": "tinted-light",
+    "tint": "#af52de",
+    "sample": "org.kde.dolphin",
+    "generator": "src/scripts/installer_preview_assets.py",
+    "sha256": "f005f9a3fa1f1465843e688757148e55703a3d6b79297b35be539bd1ad976433",
+    "kind": "generated-icon-preview",
+    "file": "glass-light-purple-0-f005f9a3fa1f.png"
+  },
+  "glass-light-pink-0.png": {
+    "source": "src/offline/icons/MacTahoeLiquidKde-Icons.tar.zst",
+    "source_sha256": "f9ea0a95a94ac79df7939fca6ef636fbc3ceb3a2e5333a16d20ff3f42488040d",
+    "artwork_sha256": "1dd88e9ee27a257855d8712de3870cf7ca7c87f3e591f45de7444c2456bfa007",
+    "variant": "tinted-light",
+    "tint": "#ff2d55",
+    "sample": "org.kde.dolphin",
+    "generator": "src/scripts/installer_preview_assets.py",
+    "sha256": "0ea7225c5a9c52bed7d76fc88f9b563820f3bc01688f5702dd91f2efe17e7667",
+    "kind": "generated-icon-preview",
+    "file": "glass-light-pink-0-0ea7225c5a9c.png"
+  },
+  "glass-light-red-0.png": {
+    "source": "src/offline/icons/MacTahoeLiquidKde-Icons.tar.zst",
+    "source_sha256": "f9ea0a95a94ac79df7939fca6ef636fbc3ceb3a2e5333a16d20ff3f42488040d",
+    "artwork_sha256": "1dd88e9ee27a257855d8712de3870cf7ca7c87f3e591f45de7444c2456bfa007",
+    "variant": "tinted-light",
+    "tint": "#ff3b30",
+    "sample": "org.kde.dolphin",
+    "generator": "src/scripts/installer_preview_assets.py",
+    "sha256": "89642ca5d04013e6c33198ea9569840c6e39eae4b86c47f80cac3e7f4c047c24",
+    "kind": "generated-icon-preview",
+    "file": "glass-light-red-0-89642ca5d040.png"
+  },
+  "glass-light-orange-0.png": {
+    "source": "src/offline/icons/MacTahoeLiquidKde-Icons.tar.zst",
+    "source_sha256": "f9ea0a95a94ac79df7939fca6ef636fbc3ceb3a2e5333a16d20ff3f42488040d",
+    "artwork_sha256": "1dd88e9ee27a257855d8712de3870cf7ca7c87f3e591f45de7444c2456bfa007",
+    "variant": "tinted-light",
+    "tint": "#ff9500",
+    "sample": "org.kde.dolphin",
+    "generator": "src/scripts/installer_preview_assets.py",
+    "sha256": "b8f21e7f19c7826d4c28844903e7ad5d7232c75c7abe48cd0f8a5ad2e2871def",
+    "kind": "generated-icon-preview",
+    "file": "glass-light-orange-0-b8f21e7f19c7.png"
+  },
+  "glass-light-yellow-0.png": {
+    "source": "src/offline/icons/MacTahoeLiquidKde-Icons.tar.zst",
+    "source_sha256": "f9ea0a95a94ac79df7939fca6ef636fbc3ceb3a2e5333a16d20ff3f42488040d",
+    "artwork_sha256": "1dd88e9ee27a257855d8712de3870cf7ca7c87f3e591f45de7444c2456bfa007",
+    "variant": "tinted-light",
+    "tint": "#ffcc00",
+    "sample": "org.kde.dolphin",
+    "generator": "src/scripts/installer_preview_assets.py",
+    "sha256": "a13bb801f87469e9738cfd07f75186b5a67a7f342178c91f842d767acb5a6687",
+    "kind": "generated-icon-preview",
+    "file": "glass-light-yellow-0-a13bb801f874.png"
+  },
+  "glass-light-green-0.png": {
+    "source": "src/offline/icons/MacTahoeLiquidKde-Icons.tar.zst",
+    "source_sha256": "f9ea0a95a94ac79df7939fca6ef636fbc3ceb3a2e5333a16d20ff3f42488040d",
+    "artwork_sha256": "1dd88e9ee27a257855d8712de3870cf7ca7c87f3e591f45de7444c2456bfa007",
+    "variant": "tinted-light",
+    "tint": "#28cd41",
+    "sample": "org.kde.dolphin",
+    "generator": "src/scripts/installer_preview_assets.py",
+    "sha256": "a7512c2d0c96ca92f8f23ffb89afb71a2252dfd70a5b14e55f33d1fe1d5539de",
+    "kind": "generated-icon-preview",
+    "file": "glass-light-green-0-a7512c2d0c96.png"
+  },
+  "glass-light-gray-0.png": {
+    "source": "src/offline/icons/MacTahoeLiquidKde-Icons.tar.zst",
+    "source_sha256": "f9ea0a95a94ac79df7939fca6ef636fbc3ceb3a2e5333a16d20ff3f42488040d",
+    "artwork_sha256": "1dd88e9ee27a257855d8712de3870cf7ca7c87f3e591f45de7444c2456bfa007",
+    "variant": "tinted-light",
+    "tint": "#8e8e93",
+    "sample": "org.kde.dolphin",
+    "generator": "src/scripts/installer_preview_assets.py",
+    "sha256": "ee23bbad51b4b9a377130a55f8c1c0417f6f2ce6ea3012fbc77ff908905b0520",
+    "kind": "generated-icon-preview",
+    "file": "glass-light-gray-0-ee23bbad51b4.png"
+  },
+  "glass-dark-blue-0.png": {
+    "source": "src/offline/icons/MacTahoeLiquidKde-Icons.tar.zst",
+    "source_sha256": "f9ea0a95a94ac79df7939fca6ef636fbc3ceb3a2e5333a16d20ff3f42488040d",
+    "artwork_sha256": "1dd88e9ee27a257855d8712de3870cf7ca7c87f3e591f45de7444c2456bfa007",
+    "variant": "tinted-dark",
+    "tint": "#007aff",
+    "sample": "org.kde.dolphin",
+    "generator": "src/scripts/installer_preview_assets.py",
+    "sha256": "58daa7bd3561bba2b0680cbf1b43ecff1ae15cd9d4a8f17e5bcdf9e215481019",
+    "kind": "generated-icon-preview",
+    "file": "glass-dark-blue-0-58daa7bd3561.png"
+  },
+  "glass-dark-purple-0.png": {
+    "source": "src/offline/icons/MacTahoeLiquidKde-Icons.tar.zst",
+    "source_sha256": "f9ea0a95a94ac79df7939fca6ef636fbc3ceb3a2e5333a16d20ff3f42488040d",
+    "artwork_sha256": "1dd88e9ee27a257855d8712de3870cf7ca7c87f3e591f45de7444c2456bfa007",
+    "variant": "tinted-dark",
+    "tint": "#af52de",
+    "sample": "org.kde.dolphin",
+    "generator": "src/scripts/installer_preview_assets.py",
+    "sha256": "f005f9a3fa1f1465843e688757148e55703a3d6b79297b35be539bd1ad976433",
+    "kind": "generated-icon-preview",
+    "file": "glass-dark-purple-0-f005f9a3fa1f.png"
+  },
+  "glass-dark-pink-0.png": {
+    "source": "src/offline/icons/MacTahoeLiquidKde-Icons.tar.zst",
+    "source_sha256": "f9ea0a95a94ac79df7939fca6ef636fbc3ceb3a2e5333a16d20ff3f42488040d",
+    "artwork_sha256": "1dd88e9ee27a257855d8712de3870cf7ca7c87f3e591f45de7444c2456bfa007",
+    "variant": "tinted-dark",
+    "tint": "#ff2d55",
+    "sample": "org.kde.dolphin",
+    "generator": "src/scripts/installer_preview_assets.py",
+    "sha256": "0ea7225c5a9c52bed7d76fc88f9b563820f3bc01688f5702dd91f2efe17e7667",
+    "kind": "generated-icon-preview",
+    "file": "glass-dark-pink-0-0ea7225c5a9c.png"
+  },
+  "glass-dark-red-0.png": {
+    "source": "src/offline/icons/MacTahoeLiquidKde-Icons.tar.zst",
+    "source_sha256": "f9ea0a95a94ac79df7939fca6ef636fbc3ceb3a2e5333a16d20ff3f42488040d",
+    "artwork_sha256": "1dd88e9ee27a257855d8712de3870cf7ca7c87f3e591f45de7444c2456bfa007",
+    "variant": "tinted-dark",
+    "tint": "#ff3b30",
+    "sample": "org.kde.dolphin",
+    "generator": "src/scripts/installer_preview_assets.py",
+    "sha256": "89642ca5d04013e6c33198ea9569840c6e39eae4b86c47f80cac3e7f4c047c24",
+    "kind": "generated-icon-preview",
+    "file": "glass-dark-red-0-89642ca5d040.png"
+  },
+  "glass-dark-orange-0.png": {
+    "source": "src/offline/icons/MacTahoeLiquidKde-Icons.tar.zst",
+    "source_sha256": "f9ea0a95a94ac79df7939fca6ef636fbc3ceb3a2e5333a16d20ff3f42488040d",
+    "artwork_sha256": "1dd88e9ee27a257855d8712de3870cf7ca7c87f3e591f45de7444c2456bfa007",
+    "variant": "tinted-dark",
+    "tint": "#ff9500",
+    "sample": "org.kde.dolphin",
+    "generator": "src/scripts/installer_preview_assets.py",
+    "sha256": "b8f21e7f19c7826d4c28844903e7ad5d7232c75c7abe48cd0f8a5ad2e2871def",
+    "kind": "generated-icon-preview",
+    "file": "glass-dark-orange-0-b8f21e7f19c7.png"
+  },
+  "glass-dark-yellow-0.png": {
+    "source": "src/offline/icons/MacTahoeLiquidKde-Icons.tar.zst",
+    "source_sha256": "f9ea0a95a94ac79df7939fca6ef636fbc3ceb3a2e5333a16d20ff3f42488040d",
+    "artwork_sha256": "1dd88e9ee27a257855d8712de3870cf7ca7c87f3e591f45de7444c2456bfa007",
+    "variant": "tinted-dark",
+    "tint": "#ffcc00",
+    "sample": "org.kde.dolphin",
+    "generator": "src/scripts/installer_preview_assets.py",
+    "sha256": "a13bb801f87469e9738cfd07f75186b5a67a7f342178c91f842d767acb5a6687",
+    "kind": "generated-icon-preview",
+    "file": "glass-dark-yellow-0-a13bb801f874.png"
+  },
+  "glass-dark-green-0.png": {
+    "source": "src/offline/icons/MacTahoeLiquidKde-Icons.tar.zst",
+    "source_sha256": "f9ea0a95a94ac79df7939fca6ef636fbc3ceb3a2e5333a16d20ff3f42488040d",
+    "artwork_sha256": "1dd88e9ee27a257855d8712de3870cf7ca7c87f3e591f45de7444c2456bfa007",
+    "variant": "tinted-dark",
+    "tint": "#28cd41",
+    "sample": "org.kde.dolphin",
+    "generator": "src/scripts/installer_preview_assets.py",
+    "sha256": "a7512c2d0c96ca92f8f23ffb89afb71a2252dfd70a5b14e55f33d1fe1d5539de",
+    "kind": "generated-icon-preview",
+    "file": "glass-dark-green-0-a7512c2d0c96.png"
+  },
+  "glass-dark-gray-0.png": {
+    "source": "src/offline/icons/MacTahoeLiquidKde-Icons.tar.zst",
+    "source_sha256": "f9ea0a95a94ac79df7939fca6ef636fbc3ceb3a2e5333a16d20ff3f42488040d",
+    "artwork_sha256": "1dd88e9ee27a257855d8712de3870cf7ca7c87f3e591f45de7444c2456bfa007",
+    "variant": "tinted-dark",
+    "tint": "#8e8e93",
+    "sample": "org.kde.dolphin",
+    "generator": "src/scripts/installer_preview_assets.py",
+    "sha256": "ee23bbad51b4b9a377130a55f8c1c0417f6f2ce6ea3012fbc77ff908905b0520",
+    "kind": "generated-icon-preview",
+    "file": "glass-dark-gray-0-ee23bbad51b4.png"
+  },
+  "glass-light-blue-1.png": {
+    "source": "src/offline/icons/MacTahoeLiquidKde-Icons.tar.zst",
+    "source_sha256": "f9ea0a95a94ac79df7939fca6ef636fbc3ceb3a2e5333a16d20ff3f42488040d",
+    "artwork_sha256": "7d07a906714441fadc7355be9b081a7559ecdbd48193c7dc2a04f547a6bd22cf",
+    "variant": "tinted-light",
+    "tint": "#007aff",
+    "sample": "firefox",
+    "generator": "src/scripts/installer_preview_assets.py",
+    "sha256": "bc6a576d5eb0620ea4f6e1d88fdd8f9b3171b66c4b9d99f7cbda698aa2c424ff",
+    "kind": "generated-icon-preview",
+    "file": "glass-light-blue-1-bc6a576d5eb0.png"
+  },
+  "glass-light-purple-1.png": {
+    "source": "src/offline/icons/MacTahoeLiquidKde-Icons.tar.zst",
+    "source_sha256": "f9ea0a95a94ac79df7939fca6ef636fbc3ceb3a2e5333a16d20ff3f42488040d",
+    "artwork_sha256": "7d07a906714441fadc7355be9b081a7559ecdbd48193c7dc2a04f547a6bd22cf",
+    "variant": "tinted-light",
+    "tint": "#af52de",
+    "sample": "firefox",
+    "generator": "src/scripts/installer_preview_assets.py",
+    "sha256": "5dce8b739d805f67877d71b38cf94e3d46f2b80e8dc198849398a8cafff9f017",
+    "kind": "generated-icon-preview",
+    "file": "glass-light-purple-1-5dce8b739d80.png"
+  },
+  "glass-light-pink-1.png": {
+    "source": "src/offline/icons/MacTahoeLiquidKde-Icons.tar.zst",
+    "source_sha256": "f9ea0a95a94ac79df7939fca6ef636fbc3ceb3a2e5333a16d20ff3f42488040d",
+    "artwork_sha256": "7d07a906714441fadc7355be9b081a7559ecdbd48193c7dc2a04f547a6bd22cf",
+    "variant": "tinted-light",
+    "tint": "#ff2d55",
+    "sample": "firefox",
+    "generator": "src/scripts/installer_preview_assets.py",
+    "sha256": "fb4090a3e1d0f2a7919f8d2419ea5af8a7a7d7f848ccd01d9b32bde8831da7a9",
+    "kind": "generated-icon-preview",
+    "file": "glass-light-pink-1-fb4090a3e1d0.png"
+  },
+  "glass-light-red-1.png": {
+    "source": "src/offline/icons/MacTahoeLiquidKde-Icons.tar.zst",
+    "source_sha256": "f9ea0a95a94ac79df7939fca6ef636fbc3ceb3a2e5333a16d20ff3f42488040d",
+    "artwork_sha256": "7d07a906714441fadc7355be9b081a7559ecdbd48193c7dc2a04f547a6bd22cf",
+    "variant": "tinted-light",
+    "tint": "#ff3b30",
+    "sample": "firefox",
+    "generator": "src/scripts/installer_preview_assets.py",
+    "sha256": "4be1d6ab01bd25a51beac8e61b1b7d90582170167f59a64ee802a726fa1620f2",
+    "kind": "generated-icon-preview",
+    "file": "glass-light-red-1-4be1d6ab01bd.png"
+  },
+  "glass-light-orange-1.png": {
+    "source": "src/offline/icons/MacTahoeLiquidKde-Icons.tar.zst",
+    "source_sha256": "f9ea0a95a94ac79df7939fca6ef636fbc3ceb3a2e5333a16d20ff3f42488040d",
+    "artwork_sha256": "7d07a906714441fadc7355be9b081a7559ecdbd48193c7dc2a04f547a6bd22cf",
+    "variant": "tinted-light",
+    "tint": "#ff9500",
+    "sample": "firefox",
+    "generator": "src/scripts/installer_preview_assets.py",
+    "sha256": "98742dee56705e55a8c50815cc0b6e4ee597372e93adaf63b190633b517059ad",
+    "kind": "generated-icon-preview",
+    "file": "glass-light-orange-1-98742dee5670.png"
+  },
+  "glass-light-yellow-1.png": {
+    "source": "src/offline/icons/MacTahoeLiquidKde-Icons.tar.zst",
+    "source_sha256": "f9ea0a95a94ac79df7939fca6ef636fbc3ceb3a2e5333a16d20ff3f42488040d",
+    "artwork_sha256": "7d07a906714441fadc7355be9b081a7559ecdbd48193c7dc2a04f547a6bd22cf",
+    "variant": "tinted-light",
+    "tint": "#ffcc00",
+    "sample": "firefox",
+    "generator": "src/scripts/installer_preview_assets.py",
+    "sha256": "21be11b5eaf475f3285a55eff6844e02b047788a61c6f259d64b07c6dfab4fed",
+    "kind": "generated-icon-preview",
+    "file": "glass-light-yellow-1-21be11b5eaf4.png"
+  },
+  "glass-light-green-1.png": {
+    "source": "src/offline/icons/MacTahoeLiquidKde-Icons.tar.zst",
+    "source_sha256": "f9ea0a95a94ac79df7939fca6ef636fbc3ceb3a2e5333a16d20ff3f42488040d",
+    "artwork_sha256": "7d07a906714441fadc7355be9b081a7559ecdbd48193c7dc2a04f547a6bd22cf",
+    "variant": "tinted-light",
+    "tint": "#28cd41",
+    "sample": "firefox",
+    "generator": "src/scripts/installer_preview_assets.py",
+    "sha256": "77b6cf3cc401d4fdf50899b176e4af90a78b96272a04f8c3a9c930a8c49e58ec",
+    "kind": "generated-icon-preview",
+    "file": "glass-light-green-1-77b6cf3cc401.png"
+  },
+  "glass-light-gray-1.png": {
+    "source": "src/offline/icons/MacTahoeLiquidKde-Icons.tar.zst",
+    "source_sha256": "f9ea0a95a94ac79df7939fca6ef636fbc3ceb3a2e5333a16d20ff3f42488040d",
+    "artwork_sha256": "7d07a906714441fadc7355be9b081a7559ecdbd48193c7dc2a04f547a6bd22cf",
+    "variant": "tinted-light",
+    "tint": "#8e8e93",
+    "sample": "firefox",
+    "generator": "src/scripts/installer_preview_assets.py",
+    "sha256": "2f421f57dd37e221bebc690434bd7931a245e247222f374fa8c9314770edd1e0",
+    "kind": "generated-icon-preview",
+    "file": "glass-light-gray-1-2f421f57dd37.png"
+  },
+  "glass-dark-blue-1.png": {
+    "source": "src/offline/icons/MacTahoeLiquidKde-Icons.tar.zst",
+    "source_sha256": "f9ea0a95a94ac79df7939fca6ef636fbc3ceb3a2e5333a16d20ff3f42488040d",
+    "artwork_sha256": "7d07a906714441fadc7355be9b081a7559ecdbd48193c7dc2a04f547a6bd22cf",
+    "variant": "tinted-dark",
+    "tint": "#007aff",
+    "sample": "firefox",
+    "generator": "src/scripts/installer_preview_assets.py",
+    "sha256": "bc6a576d5eb0620ea4f6e1d88fdd8f9b3171b66c4b9d99f7cbda698aa2c424ff",
+    "kind": "generated-icon-preview",
+    "file": "glass-dark-blue-1-bc6a576d5eb0.png"
+  },
+  "glass-dark-purple-1.png": {
+    "source": "src/offline/icons/MacTahoeLiquidKde-Icons.tar.zst",
+    "source_sha256": "f9ea0a95a94ac79df7939fca6ef636fbc3ceb3a2e5333a16d20ff3f42488040d",
+    "artwork_sha256": "7d07a906714441fadc7355be9b081a7559ecdbd48193c7dc2a04f547a6bd22cf",
+    "variant": "tinted-dark",
+    "tint": "#af52de",
+    "sample": "firefox",
+    "generator": "src/scripts/installer_preview_assets.py",
+    "sha256": "5dce8b739d805f67877d71b38cf94e3d46f2b80e8dc198849398a8cafff9f017",
+    "kind": "generated-icon-preview",
+    "file": "glass-dark-purple-1-5dce8b739d80.png"
+  },
+  "glass-dark-pink-1.png": {
+    "source": "src/offline/icons/MacTahoeLiquidKde-Icons.tar.zst",
+    "source_sha256": "f9ea0a95a94ac79df7939fca6ef636fbc3ceb3a2e5333a16d20ff3f42488040d",
+    "artwork_sha256": "7d07a906714441fadc7355be9b081a7559ecdbd48193c7dc2a04f547a6bd22cf",
+    "variant": "tinted-dark",
+    "tint": "#ff2d55",
+    "sample": "firefox",
+    "generator": "src/scripts/installer_preview_assets.py",
+    "sha256": "fb4090a3e1d0f2a7919f8d2419ea5af8a7a7d7f848ccd01d9b32bde8831da7a9",
+    "kind": "generated-icon-preview",
+    "file": "glass-dark-pink-1-fb4090a3e1d0.png"
+  },
+  "glass-dark-red-1.png": {
+    "source": "src/offline/icons/MacTahoeLiquidKde-Icons.tar.zst",
+    "source_sha256": "f9ea0a95a94ac79df7939fca6ef636fbc3ceb3a2e5333a16d20ff3f42488040d",
+    "artwork_sha256": "7d07a906714441fadc7355be9b081a7559ecdbd48193c7dc2a04f547a6bd22cf",
+    "variant": "tinted-dark",
+    "tint": "#ff3b30",
+    "sample": "firefox",
+    "generator": "src/scripts/installer_preview_assets.py",
+    "sha256": "4be1d6ab01bd25a51beac8e61b1b7d90582170167f59a64ee802a726fa1620f2",
+    "kind": "generated-icon-preview",
+    "file": "glass-dark-red-1-4be1d6ab01bd.png"
+  },
+  "glass-dark-orange-1.png": {
+    "source": "src/offline/icons/MacTahoeLiquidKde-Icons.tar.zst",
+    "source_sha256": "f9ea0a95a94ac79df7939fca6ef636fbc3ceb3a2e5333a16d20ff3f42488040d",
+    "artwork_sha256": "7d07a906714441fadc7355be9b081a7559ecdbd48193c7dc2a04f547a6bd22cf",
+    "variant": "tinted-dark",
+    "tint": "#ff9500",
+    "sample": "firefox",
+    "generator": "src/scripts/installer_preview_assets.py",
+    "sha256": "98742dee56705e55a8c50815cc0b6e4ee597372e93adaf63b190633b517059ad",
+    "kind": "generated-icon-preview",
+    "file": "glass-dark-orange-1-98742dee5670.png"
+  },
+  "glass-dark-yellow-1.png": {
+    "source": "src/offline/icons/MacTahoeLiquidKde-Icons.tar.zst",
+    "source_sha256": "f9ea0a95a94ac79df7939fca6ef636fbc3ceb3a2e5333a16d20ff3f42488040d",
+    "artwork_sha256": "7d07a906714441fadc7355be9b081a7559ecdbd48193c7dc2a04f547a6bd22cf",
+    "variant": "tinted-dark",
+    "tint": "#ffcc00",
+    "sample": "firefox",
+    "generator": "src/scripts/installer_preview_assets.py",
+    "sha256": "21be11b5eaf475f3285a55eff6844e02b047788a61c6f259d64b07c6dfab4fed",
+    "kind": "generated-icon-preview",
+    "file": "glass-dark-yellow-1-21be11b5eaf4.png"
+  },
+  "glass-dark-green-1.png": {
+    "source": "src/offline/icons/MacTahoeLiquidKde-Icons.tar.zst",
+    "source_sha256": "f9ea0a95a94ac79df7939fca6ef636fbc3ceb3a2e5333a16d20ff3f42488040d",
+    "artwork_sha256": "7d07a906714441fadc7355be9b081a7559ecdbd48193c7dc2a04f547a6bd22cf",
+    "variant": "tinted-dark",
+    "tint": "#28cd41",
+    "sample": "firefox",
+    "generator": "src/scripts/installer_preview_assets.py",
+    "sha256": "77b6cf3cc401d4fdf50899b176e4af90a78b96272a04f8c3a9c930a8c49e58ec",
+    "kind": "generated-icon-preview",
+    "file": "glass-dark-green-1-77b6cf3cc401.png"
+  },
+  "glass-dark-gray-1.png": {
+    "source": "src/offline/icons/MacTahoeLiquidKde-Icons.tar.zst",
+    "source_sha256": "f9ea0a95a94ac79df7939fca6ef636fbc3ceb3a2e5333a16d20ff3f42488040d",
+    "artwork_sha256": "7d07a906714441fadc7355be9b081a7559ecdbd48193c7dc2a04f547a6bd22cf",
+    "variant": "tinted-dark",
+    "tint": "#8e8e93",
+    "sample": "firefox",
+    "generator": "src/scripts/installer_preview_assets.py",
+    "sha256": "2f421f57dd37e221bebc690434bd7931a245e247222f374fa8c9314770edd1e0",
+    "kind": "generated-icon-preview",
+    "file": "glass-dark-gray-1-2f421f57dd37.png"
+  },
+  "glass-light-blue-2.png": {
+    "source": "src/offline/icons/MacTahoeLiquidKde-Icons.tar.zst",
+    "source_sha256": "f9ea0a95a94ac79df7939fca6ef636fbc3ceb3a2e5333a16d20ff3f42488040d",
+    "artwork_sha256": "8ff99c6c70c0a33282aa351e3de4f0fc29bb4437d3cfe6c6ae6cfda4a7b97632",
+    "variant": "tinted-light",
+    "tint": "#007aff",
+    "sample": "systemsettings",
+    "generator": "src/scripts/installer_preview_assets.py",
+    "sha256": "a681baf4593a87bdf9f2714a0f35ca6cafaadb0d56053b4070913882684b1f4b",
+    "kind": "generated-icon-preview",
+    "file": "glass-light-blue-2-a681baf4593a.png"
+  },
+  "glass-light-purple-2.png": {
+    "source": "src/offline/icons/MacTahoeLiquidKde-Icons.tar.zst",
+    "source_sha256": "f9ea0a95a94ac79df7939fca6ef636fbc3ceb3a2e5333a16d20ff3f42488040d",
+    "artwork_sha256": "8ff99c6c70c0a33282aa351e3de4f0fc29bb4437d3cfe6c6ae6cfda4a7b97632",
+    "variant": "tinted-light",
+    "tint": "#af52de",
+    "sample": "systemsettings",
+    "generator": "src/scripts/installer_preview_assets.py",
+    "sha256": "cfade21a061769f3f299b101485b47363e77077d9c1666d7b61249a087589aff",
+    "kind": "generated-icon-preview",
+    "file": "glass-light-purple-2-cfade21a0617.png"
+  },
+  "glass-light-pink-2.png": {
+    "source": "src/offline/icons/MacTahoeLiquidKde-Icons.tar.zst",
+    "source_sha256": "f9ea0a95a94ac79df7939fca6ef636fbc3ceb3a2e5333a16d20ff3f42488040d",
+    "artwork_sha256": "8ff99c6c70c0a33282aa351e3de4f0fc29bb4437d3cfe6c6ae6cfda4a7b97632",
+    "variant": "tinted-light",
+    "tint": "#ff2d55",
+    "sample": "systemsettings",
+    "generator": "src/scripts/installer_preview_assets.py",
+    "sha256": "9f5ce97dcee080bef71dbcca2fe47efe4ef42d6d8d0a5799c13ed949cd710700",
+    "kind": "generated-icon-preview",
+    "file": "glass-light-pink-2-9f5ce97dcee0.png"
+  },
+  "glass-light-red-2.png": {
+    "source": "src/offline/icons/MacTahoeLiquidKde-Icons.tar.zst",
+    "source_sha256": "f9ea0a95a94ac79df7939fca6ef636fbc3ceb3a2e5333a16d20ff3f42488040d",
+    "artwork_sha256": "8ff99c6c70c0a33282aa351e3de4f0fc29bb4437d3cfe6c6ae6cfda4a7b97632",
+    "variant": "tinted-light",
+    "tint": "#ff3b30",
+    "sample": "systemsettings",
+    "generator": "src/scripts/installer_preview_assets.py",
+    "sha256": "5d913be001dc7889a5c2fa676b57daf8decd05d82ae65774d6d55410c28acf54",
+    "kind": "generated-icon-preview",
+    "file": "glass-light-red-2-5d913be001dc.png"
+  },
+  "glass-light-orange-2.png": {
+    "source": "src/offline/icons/MacTahoeLiquidKde-Icons.tar.zst",
+    "source_sha256": "f9ea0a95a94ac79df7939fca6ef636fbc3ceb3a2e5333a16d20ff3f42488040d",
+    "artwork_sha256": "8ff99c6c70c0a33282aa351e3de4f0fc29bb4437d3cfe6c6ae6cfda4a7b97632",
+    "variant": "tinted-light",
+    "tint": "#ff9500",
+    "sample": "systemsettings",
+    "generator": "src/scripts/installer_preview_assets.py",
+    "sha256": "198be6f6e0585337bb32af0abd91dfc740dc9e1a4b5032553cebd599638058a0",
+    "kind": "generated-icon-preview",
+    "file": "glass-light-orange-2-198be6f6e058.png"
+  },
+  "glass-light-yellow-2.png": {
+    "source": "src/offline/icons/MacTahoeLiquidKde-Icons.tar.zst",
+    "source_sha256": "f9ea0a95a94ac79df7939fca6ef636fbc3ceb3a2e5333a16d20ff3f42488040d",
+    "artwork_sha256": "8ff99c6c70c0a33282aa351e3de4f0fc29bb4437d3cfe6c6ae6cfda4a7b97632",
+    "variant": "tinted-light",
+    "tint": "#ffcc00",
+    "sample": "systemsettings",
+    "generator": "src/scripts/installer_preview_assets.py",
+    "sha256": "9818ba200610bd757a081ac6f74be4ac8837359e5e291411b6f0ee29974c31df",
+    "kind": "generated-icon-preview",
+    "file": "glass-light-yellow-2-9818ba200610.png"
+  },
+  "glass-light-green-2.png": {
+    "source": "src/offline/icons/MacTahoeLiquidKde-Icons.tar.zst",
+    "source_sha256": "f9ea0a95a94ac79df7939fca6ef636fbc3ceb3a2e5333a16d20ff3f42488040d",
+    "artwork_sha256": "8ff99c6c70c0a33282aa351e3de4f0fc29bb4437d3cfe6c6ae6cfda4a7b97632",
+    "variant": "tinted-light",
+    "tint": "#28cd41",
+    "sample": "systemsettings",
+    "generator": "src/scripts/installer_preview_assets.py",
+    "sha256": "2629256ee889bcce28e203e11daf4bbcfd58c06df5c9dcd4e578a51e04c11d54",
+    "kind": "generated-icon-preview",
+    "file": "glass-light-green-2-2629256ee889.png"
+  },
+  "glass-light-gray-2.png": {
+    "source": "src/offline/icons/MacTahoeLiquidKde-Icons.tar.zst",
+    "source_sha256": "f9ea0a95a94ac79df7939fca6ef636fbc3ceb3a2e5333a16d20ff3f42488040d",
+    "artwork_sha256": "8ff99c6c70c0a33282aa351e3de4f0fc29bb4437d3cfe6c6ae6cfda4a7b97632",
+    "variant": "tinted-light",
+    "tint": "#8e8e93",
+    "sample": "systemsettings",
+    "generator": "src/scripts/installer_preview_assets.py",
+    "sha256": "7a8cfc2ad5829dc22288962992759de18a37502bbbab10d22e118b4d2f530725",
+    "kind": "generated-icon-preview",
+    "file": "glass-light-gray-2-7a8cfc2ad582.png"
+  },
+  "glass-dark-blue-2.png": {
+    "source": "src/offline/icons/MacTahoeLiquidKde-Icons.tar.zst",
+    "source_sha256": "f9ea0a95a94ac79df7939fca6ef636fbc3ceb3a2e5333a16d20ff3f42488040d",
+    "artwork_sha256": "8ff99c6c70c0a33282aa351e3de4f0fc29bb4437d3cfe6c6ae6cfda4a7b97632",
+    "variant": "tinted-dark",
+    "tint": "#007aff",
+    "sample": "systemsettings",
+    "generator": "src/scripts/installer_preview_assets.py",
+    "sha256": "a681baf4593a87bdf9f2714a0f35ca6cafaadb0d56053b4070913882684b1f4b",
+    "kind": "generated-icon-preview",
+    "file": "glass-dark-blue-2-a681baf4593a.png"
+  },
+  "glass-dark-purple-2.png": {
+    "source": "src/offline/icons/MacTahoeLiquidKde-Icons.tar.zst",
+    "source_sha256": "f9ea0a95a94ac79df7939fca6ef636fbc3ceb3a2e5333a16d20ff3f42488040d",
+    "artwork_sha256": "8ff99c6c70c0a33282aa351e3de4f0fc29bb4437d3cfe6c6ae6cfda4a7b97632",
+    "variant": "tinted-dark",
+    "tint": "#af52de",
+    "sample": "systemsettings",
+    "generator": "src/scripts/installer_preview_assets.py",
+    "sha256": "cfade21a061769f3f299b101485b47363e77077d9c1666d7b61249a087589aff",
+    "kind": "generated-icon-preview",
+    "file": "glass-dark-purple-2-cfade21a0617.png"
+  },
+  "glass-dark-pink-2.png": {
+    "source": "src/offline/icons/MacTahoeLiquidKde-Icons.tar.zst",
+    "source_sha256": "f9ea0a95a94ac79df7939fca6ef636fbc3ceb3a2e5333a16d20ff3f42488040d",
+    "artwork_sha256": "8ff99c6c70c0a33282aa351e3de4f0fc29bb4437d3cfe6c6ae6cfda4a7b97632",
+    "variant": "tinted-dark",
+    "tint": "#ff2d55",
+    "sample": "systemsettings",
+    "generator": "src/scripts/installer_preview_assets.py",
+    "sha256": "9f5ce97dcee080bef71dbcca2fe47efe4ef42d6d8d0a5799c13ed949cd710700",
+    "kind": "generated-icon-preview",
+    "file": "glass-dark-pink-2-9f5ce97dcee0.png"
+  },
+  "glass-dark-red-2.png": {
+    "source": "src/offline/icons/MacTahoeLiquidKde-Icons.tar.zst",
+    "source_sha256": "f9ea0a95a94ac79df7939fca6ef636fbc3ceb3a2e5333a16d20ff3f42488040d",
+    "artwork_sha256": "8ff99c6c70c0a33282aa351e3de4f0fc29bb4437d3cfe6c6ae6cfda4a7b97632",
+    "variant": "tinted-dark",
+    "tint": "#ff3b30",
+    "sample": "systemsettings",
+    "generator": "src/scripts/installer_preview_assets.py",
+    "sha256": "5d913be001dc7889a5c2fa676b57daf8decd05d82ae65774d6d55410c28acf54",
+    "kind": "generated-icon-preview",
+    "file": "glass-dark-red-2-5d913be001dc.png"
+  },
+  "glass-dark-orange-2.png": {
+    "source": "src/offline/icons/MacTahoeLiquidKde-Icons.tar.zst",
+    "source_sha256": "f9ea0a95a94ac79df7939fca6ef636fbc3ceb3a2e5333a16d20ff3f42488040d",
+    "artwork_sha256": "8ff99c6c70c0a33282aa351e3de4f0fc29bb4437d3cfe6c6ae6cfda4a7b97632",
+    "variant": "tinted-dark",
+    "tint": "#ff9500",
+    "sample": "systemsettings",
+    "generator": "src/scripts/installer_preview_assets.py",
+    "sha256": "198be6f6e0585337bb32af0abd91dfc740dc9e1a4b5032553cebd599638058a0",
+    "kind": "generated-icon-preview",
+    "file": "glass-dark-orange-2-198be6f6e058.png"
+  },
+  "glass-dark-yellow-2.png": {
+    "source": "src/offline/icons/MacTahoeLiquidKde-Icons.tar.zst",
+    "source_sha256": "f9ea0a95a94ac79df7939fca6ef636fbc3ceb3a2e5333a16d20ff3f42488040d",
+    "artwork_sha256": "8ff99c6c70c0a33282aa351e3de4f0fc29bb4437d3cfe6c6ae6cfda4a7b97632",
+    "variant": "tinted-dark",
+    "tint": "#ffcc00",
+    "sample": "systemsettings",
+    "generator": "src/scripts/installer_preview_assets.py",
+    "sha256": "9818ba200610bd757a081ac6f74be4ac8837359e5e291411b6f0ee29974c31df",
+    "kind": "generated-icon-preview",
+    "file": "glass-dark-yellow-2-9818ba200610.png"
+  },
+  "glass-dark-green-2.png": {
+    "source": "src/offline/icons/MacTahoeLiquidKde-Icons.tar.zst",
+    "source_sha256": "f9ea0a95a94ac79df7939fca6ef636fbc3ceb3a2e5333a16d20ff3f42488040d",
+    "artwork_sha256": "8ff99c6c70c0a33282aa351e3de4f0fc29bb4437d3cfe6c6ae6cfda4a7b97632",
+    "variant": "tinted-dark",
+    "tint": "#28cd41",
+    "sample": "systemsettings",
+    "generator": "src/scripts/installer_preview_assets.py",
+    "sha256": "2629256ee889bcce28e203e11daf4bbcfd58c06df5c9dcd4e578a51e04c11d54",
+    "kind": "generated-icon-preview",
+    "file": "glass-dark-green-2-2629256ee889.png"
+  },
+  "glass-dark-gray-2.png": {
+    "source": "src/offline/icons/MacTahoeLiquidKde-Icons.tar.zst",
+    "source_sha256": "f9ea0a95a94ac79df7939fca6ef636fbc3ceb3a2e5333a16d20ff3f42488040d",
+    "artwork_sha256": "8ff99c6c70c0a33282aa351e3de4f0fc29bb4437d3cfe6c6ae6cfda4a7b97632",
+    "variant": "tinted-dark",
+    "tint": "#8e8e93",
+    "sample": "systemsettings",
+    "generator": "src/scripts/installer_preview_assets.py",
+    "sha256": "7a8cfc2ad5829dc22288962992759de18a37502bbbab10d22e118b4d2f530725",
+    "kind": "generated-icon-preview",
+    "file": "glass-dark-gray-2-7a8cfc2ad582.png"
+  },
+  "glass-light-blue-3.png": {
+    "source": "src/offline/icons/MacTahoeLiquidKde-Icons.tar.zst",
+    "source_sha256": "f9ea0a95a94ac79df7939fca6ef636fbc3ceb3a2e5333a16d20ff3f42488040d",
+    "artwork_sha256": "de120d786536281adf81d69e2a778a404dd7a5981668ccb82a695e7f621229f5",
+    "variant": "tinted-light",
+    "tint": "#007aff",
+    "sample": "org.kde.konsole",
+    "generator": "src/scripts/installer_preview_assets.py",
+    "sha256": "a135752cbc266fd4037c841387d316fdc59f17058735eb8a25f7da2723628de2",
+    "kind": "generated-icon-preview",
+    "file": "glass-light-blue-3-a135752cbc26.png"
+  },
+  "glass-light-purple-3.png": {
+    "source": "src/offline/icons/MacTahoeLiquidKde-Icons.tar.zst",
+    "source_sha256": "f9ea0a95a94ac79df7939fca6ef636fbc3ceb3a2e5333a16d20ff3f42488040d",
+    "artwork_sha256": "de120d786536281adf81d69e2a778a404dd7a5981668ccb82a695e7f621229f5",
+    "variant": "tinted-light",
+    "tint": "#af52de",
+    "sample": "org.kde.konsole",
+    "generator": "src/scripts/installer_preview_assets.py",
+    "sha256": "6e01f6ccb5f36b0fdd9cd33537f3aef8e406c38bb725f22816b479891d95b6cd",
+    "kind": "generated-icon-preview",
+    "file": "glass-light-purple-3-6e01f6ccb5f3.png"
+  },
+  "glass-light-pink-3.png": {
+    "source": "src/offline/icons/MacTahoeLiquidKde-Icons.tar.zst",
+    "source_sha256": "f9ea0a95a94ac79df7939fca6ef636fbc3ceb3a2e5333a16d20ff3f42488040d",
+    "artwork_sha256": "de120d786536281adf81d69e2a778a404dd7a5981668ccb82a695e7f621229f5",
+    "variant": "tinted-light",
+    "tint": "#ff2d55",
+    "sample": "org.kde.konsole",
+    "generator": "src/scripts/installer_preview_assets.py",
+    "sha256": "1c52e4ede469b9cb909ffbd02d42b0deaa7df97156998756b17ff3acdb52b64f",
+    "kind": "generated-icon-preview",
+    "file": "glass-light-pink-3-1c52e4ede469.png"
+  },
+  "glass-light-red-3.png": {
+    "source": "src/offline/icons/MacTahoeLiquidKde-Icons.tar.zst",
+    "source_sha256": "f9ea0a95a94ac79df7939fca6ef636fbc3ceb3a2e5333a16d20ff3f42488040d",
+    "artwork_sha256": "de120d786536281adf81d69e2a778a404dd7a5981668ccb82a695e7f621229f5",
+    "variant": "tinted-light",
+    "tint": "#ff3b30",
+    "sample": "org.kde.konsole",
+    "generator": "src/scripts/installer_preview_assets.py",
+    "sha256": "168177ed8921930ac2d2fa4515418523137272b1a53414960ea970f495ca43a6",
+    "kind": "generated-icon-preview",
+    "file": "glass-light-red-3-168177ed8921.png"
+  },
+  "glass-light-orange-3.png": {
+    "source": "src/offline/icons/MacTahoeLiquidKde-Icons.tar.zst",
+    "source_sha256": "f9ea0a95a94ac79df7939fca6ef636fbc3ceb3a2e5333a16d20ff3f42488040d",
+    "artwork_sha256": "de120d786536281adf81d69e2a778a404dd7a5981668ccb82a695e7f621229f5",
+    "variant": "tinted-light",
+    "tint": "#ff9500",
+    "sample": "org.kde.konsole",
+    "generator": "src/scripts/installer_preview_assets.py",
+    "sha256": "7faeb769d04e92dea29eb8e74865b430974ec83c812cda4a9e6629f5d45669a0",
+    "kind": "generated-icon-preview",
+    "file": "glass-light-orange-3-7faeb769d04e.png"
+  },
+  "glass-light-yellow-3.png": {
+    "source": "src/offline/icons/MacTahoeLiquidKde-Icons.tar.zst",
+    "source_sha256": "f9ea0a95a94ac79df7939fca6ef636fbc3ceb3a2e5333a16d20ff3f42488040d",
+    "artwork_sha256": "de120d786536281adf81d69e2a778a404dd7a5981668ccb82a695e7f621229f5",
+    "variant": "tinted-light",
+    "tint": "#ffcc00",
+    "sample": "org.kde.konsole",
+    "generator": "src/scripts/installer_preview_assets.py",
+    "sha256": "c25b95f4d137b5a8828e809ec8c7ab0053fac6af5a569028053d62239b86cef8",
+    "kind": "generated-icon-preview",
+    "file": "glass-light-yellow-3-c25b95f4d137.png"
+  },
+  "glass-light-green-3.png": {
+    "source": "src/offline/icons/MacTahoeLiquidKde-Icons.tar.zst",
+    "source_sha256": "f9ea0a95a94ac79df7939fca6ef636fbc3ceb3a2e5333a16d20ff3f42488040d",
+    "artwork_sha256": "de120d786536281adf81d69e2a778a404dd7a5981668ccb82a695e7f621229f5",
+    "variant": "tinted-light",
+    "tint": "#28cd41",
+    "sample": "org.kde.konsole",
+    "generator": "src/scripts/installer_preview_assets.py",
+    "sha256": "9a2deb040e70cb0a52c12577b635fddcdfbad30dcb9f093d80186d4fd9611db8",
+    "kind": "generated-icon-preview",
+    "file": "glass-light-green-3-9a2deb040e70.png"
+  },
+  "glass-light-gray-3.png": {
+    "source": "src/offline/icons/MacTahoeLiquidKde-Icons.tar.zst",
+    "source_sha256": "f9ea0a95a94ac79df7939fca6ef636fbc3ceb3a2e5333a16d20ff3f42488040d",
+    "artwork_sha256": "de120d786536281adf81d69e2a778a404dd7a5981668ccb82a695e7f621229f5",
+    "variant": "tinted-light",
+    "tint": "#8e8e93",
+    "sample": "org.kde.konsole",
+    "generator": "src/scripts/installer_preview_assets.py",
+    "sha256": "f96a0199455739844de7c15fc53055bf67bd340b48c6b18814a1ccc7396026f6",
+    "kind": "generated-icon-preview",
+    "file": "glass-light-gray-3-f96a01994557.png"
+  },
+  "glass-dark-blue-3.png": {
+    "source": "src/offline/icons/MacTahoeLiquidKde-Icons.tar.zst",
+    "source_sha256": "f9ea0a95a94ac79df7939fca6ef636fbc3ceb3a2e5333a16d20ff3f42488040d",
+    "artwork_sha256": "de120d786536281adf81d69e2a778a404dd7a5981668ccb82a695e7f621229f5",
+    "variant": "tinted-dark",
+    "tint": "#007aff",
+    "sample": "org.kde.konsole",
+    "generator": "src/scripts/installer_preview_assets.py",
+    "sha256": "a135752cbc266fd4037c841387d316fdc59f17058735eb8a25f7da2723628de2",
+    "kind": "generated-icon-preview",
+    "file": "glass-dark-blue-3-a135752cbc26.png"
+  },
+  "glass-dark-purple-3.png": {
+    "source": "src/offline/icons/MacTahoeLiquidKde-Icons.tar.zst",
+    "source_sha256": "f9ea0a95a94ac79df7939fca6ef636fbc3ceb3a2e5333a16d20ff3f42488040d",
+    "artwork_sha256": "de120d786536281adf81d69e2a778a404dd7a5981668ccb82a695e7f621229f5",
+    "variant": "tinted-dark",
+    "tint": "#af52de",
+    "sample": "org.kde.konsole",
+    "generator": "src/scripts/installer_preview_assets.py",
+    "sha256": "6e01f6ccb5f36b0fdd9cd33537f3aef8e406c38bb725f22816b479891d95b6cd",
+    "kind": "generated-icon-preview",
+    "file": "glass-dark-purple-3-6e01f6ccb5f3.png"
+  },
+  "glass-dark-pink-3.png": {
+    "source": "src/offline/icons/MacTahoeLiquidKde-Icons.tar.zst",
+    "source_sha256": "f9ea0a95a94ac79df7939fca6ef636fbc3ceb3a2e5333a16d20ff3f42488040d",
+    "artwork_sha256": "de120d786536281adf81d69e2a778a404dd7a5981668ccb82a695e7f621229f5",
+    "variant": "tinted-dark",
+    "tint": "#ff2d55",
+    "sample": "org.kde.konsole",
+    "generator": "src/scripts/installer_preview_assets.py",
+    "sha256": "1c52e4ede469b9cb909ffbd02d42b0deaa7df97156998756b17ff3acdb52b64f",
+    "kind": "generated-icon-preview",
+    "file": "glass-dark-pink-3-1c52e4ede469.png"
+  },
+  "glass-dark-red-3.png": {
+    "source": "src/offline/icons/MacTahoeLiquidKde-Icons.tar.zst",
+    "source_sha256": "f9ea0a95a94ac79df7939fca6ef636fbc3ceb3a2e5333a16d20ff3f42488040d",
+    "artwork_sha256": "de120d786536281adf81d69e2a778a404dd7a5981668ccb82a695e7f621229f5",
+    "variant": "tinted-dark",
+    "tint": "#ff3b30",
+    "sample": "org.kde.konsole",
+    "generator": "src/scripts/installer_preview_assets.py",
+    "sha256": "168177ed8921930ac2d2fa4515418523137272b1a53414960ea970f495ca43a6",
+    "kind": "generated-icon-preview",
+    "file": "glass-dark-red-3-168177ed8921.png"
+  },
+  "glass-dark-orange-3.png": {
+    "source": "src/offline/icons/MacTahoeLiquidKde-Icons.tar.zst",
+    "source_sha256": "f9ea0a95a94ac79df7939fca6ef636fbc3ceb3a2e5333a16d20ff3f42488040d",
+    "artwork_sha256": "de120d786536281adf81d69e2a778a404dd7a5981668ccb82a695e7f621229f5",
+    "variant": "tinted-dark",
+    "tint": "#ff9500",
+    "sample": "org.kde.konsole",
+    "generator": "src/scripts/installer_preview_assets.py",
+    "sha256": "7faeb769d04e92dea29eb8e74865b430974ec83c812cda4a9e6629f5d45669a0",
+    "kind": "generated-icon-preview",
+    "file": "glass-dark-orange-3-7faeb769d04e.png"
+  },
+  "glass-dark-yellow-3.png": {
+    "source": "src/offline/icons/MacTahoeLiquidKde-Icons.tar.zst",
+    "source_sha256": "f9ea0a95a94ac79df7939fca6ef636fbc3ceb3a2e5333a16d20ff3f42488040d",
+    "artwork_sha256": "de120d786536281adf81d69e2a778a404dd7a5981668ccb82a695e7f621229f5",
+    "variant": "tinted-dark",
+    "tint": "#ffcc00",
+    "sample": "org.kde.konsole",
+    "generator": "src/scripts/installer_preview_assets.py",
+    "sha256": "c25b95f4d137b5a8828e809ec8c7ab0053fac6af5a569028053d62239b86cef8",
+    "kind": "generated-icon-preview",
+    "file": "glass-dark-yellow-3-c25b95f4d137.png"
+  },
+  "glass-dark-green-3.png": {
+    "source": "src/offline/icons/MacTahoeLiquidKde-Icons.tar.zst",
+    "source_sha256": "f9ea0a95a94ac79df7939fca6ef636fbc3ceb3a2e5333a16d20ff3f42488040d",
+    "artwork_sha256": "de120d786536281adf81d69e2a778a404dd7a5981668ccb82a695e7f621229f5",
+    "variant": "tinted-dark",
+    "tint": "#28cd41",
+    "sample": "org.kde.konsole",
+    "generator": "src/scripts/installer_preview_assets.py",
+    "sha256": "9a2deb040e70cb0a52c12577b635fddcdfbad30dcb9f093d80186d4fd9611db8",
+    "kind": "generated-icon-preview",
+    "file": "glass-dark-green-3-9a2deb040e70.png"
+  },
+  "glass-dark-gray-3.png": {
+    "source": "src/offline/icons/MacTahoeLiquidKde-Icons.tar.zst",
+    "source_sha256": "f9ea0a95a94ac79df7939fca6ef636fbc3ceb3a2e5333a16d20ff3f42488040d",
+    "artwork_sha256": "de120d786536281adf81d69e2a778a404dd7a5981668ccb82a695e7f621229f5",
+    "variant": "tinted-dark",
+    "tint": "#8e8e93",
+    "sample": "org.kde.konsole",
+    "generator": "src/scripts/installer_preview_assets.py",
+    "sha256": "f96a0199455739844de7c15fc53055bf67bd340b48c6b18814a1ccc7396026f6",
+    "kind": "generated-icon-preview",
+    "file": "glass-dark-gray-3-f96a01994557.png"
+  },
+  "window-controls-flat-light.png": {
+    "kind": "controls",
+    "style": "flat",
+    "level": "medium",
+    "mode": "light",
+    "window": {
+      "caption": "Documents",
+      "resourceClass": "org.gnome.Nautilus",
+      "type": 0,
+      "appletPopup": false,
+      "active": true,
+      "geometry": {
+        "x": 90,
+        "y": 30,
+        "width": 760,
+        "height": 380
+      }
+    },
+    "scale": 4,
+    "background": "#b8bec6",
+    "gtk_glassy": false,
+    "file": "window-controls-flat-light-9f1d78c2e553.png",
+    "source_sha256": "2285702e8bf885214dce2ba722f38845e629905ecb3e4b84cca5af68a2938163",
+    "crop": [
+      312,
+      72,
+      1072,
+      472
+    ],
+    "vm_image_sha256": "2a09de13ad568da01a8e16dd93e6aec120e63375bfc0ec24b4e804b43ecb4f8c",
+    "source_archive_sha256": "9a441fb283fc600d01ad44400b9cf347bfbca9cd06d73a2f3e5bb57b0b1b0232",
+    "sha256": "9f1d78c2e5539dcb33824a1eb962cee4b1872dbfc82dee72e1d85c7089994361",
+    "source": "VM Nautilus capture/window-controls-flat-light-desktop.png",
+    "capture": "Disposable pinned KDE neon VM; focused Nautilus; 3840x2160 at 4x scale; lossless crop"
+  },
+  "window-controls-glassy-light.png": {
+    "kind": "controls",
+    "style": "glassy",
+    "level": "medium",
+    "mode": "light",
+    "window": {
+      "caption": "Documents",
+      "resourceClass": "org.gnome.Nautilus",
+      "type": 0,
+      "appletPopup": false,
+      "active": true,
+      "geometry": {
+        "x": 90,
+        "y": 30,
+        "width": 760,
+        "height": 380
+      }
+    },
+    "scale": 4,
+    "background": "#b8bec6",
+    "gtk_glassy": true,
+    "file": "window-controls-glassy-light-6dea409c681b.png",
+    "source_sha256": "1a42afee1f0c634f9828b10293f4f84546e12dfbb2211d25094f1d657b540b6b",
+    "crop": [
+      312,
+      72,
+      1072,
+      472
+    ],
+    "vm_image_sha256": "2a09de13ad568da01a8e16dd93e6aec120e63375bfc0ec24b4e804b43ecb4f8c",
+    "source_archive_sha256": "89c534416693e5378c808cd2edfcf986051a85a91a8a94258090fc32fdcc399f",
+    "sha256": "6dea409c681b0e83ad5d98693e8af32ae2c557951a879f0b30b01244483da3c8",
+    "source": "VM Nautilus capture/window-controls-glassy-light-desktop.png",
+    "capture": "Disposable pinned KDE neon VM; focused Nautilus; 3840x2160 at 4x scale; lossless crop"
+  },
+  "window-controls-flat-dark.png": {
+    "kind": "controls",
+    "style": "flat",
+    "level": "medium",
+    "mode": "dark",
+    "window": {
+      "caption": "Documents",
+      "resourceClass": "org.gnome.Nautilus",
+      "type": 0,
+      "appletPopup": false,
+      "active": true,
+      "geometry": {
+        "x": 90,
+        "y": 30,
+        "width": 760,
+        "height": 380
+      }
+    },
+    "scale": 4,
+    "background": "#686d76",
+    "gtk_glassy": false,
+    "file": "window-controls-flat-dark-312317238609.png",
+    "source_sha256": "6a35ca772b64c8e12bc6be26f238a1f52c54b4cee0da1fba8abcf2c08f5ab7c0",
+    "crop": [
+      312,
+      72,
+      1072,
+      472
+    ],
+    "vm_image_sha256": "2a09de13ad568da01a8e16dd93e6aec120e63375bfc0ec24b4e804b43ecb4f8c",
+    "source_archive_sha256": "9a441fb283fc600d01ad44400b9cf347bfbca9cd06d73a2f3e5bb57b0b1b0232",
+    "sha256": "312317238609ef537cd3dd38648c8bc39da1242cd52cc2a2989f23ea3f77b748",
+    "source": "VM Nautilus capture/window-controls-flat-dark-desktop.png",
+    "capture": "Disposable pinned KDE neon VM; focused Nautilus; 3840x2160 at 4x scale; lossless crop"
+  },
+  "window-controls-glassy-dark.png": {
+    "kind": "controls",
+    "style": "glassy",
+    "level": "medium",
+    "mode": "dark",
+    "window": {
+      "caption": "Documents",
+      "resourceClass": "org.gnome.Nautilus",
+      "type": 0,
+      "appletPopup": false,
+      "active": true,
+      "geometry": {
+        "x": 90,
+        "y": 30,
+        "width": 760,
+        "height": 380
+      }
+    },
+    "scale": 4,
+    "background": "#686d76",
+    "gtk_glassy": true,
+    "file": "window-controls-glassy-dark-864ea28aa4c5.png",
+    "source_sha256": "db60eeed1d5b33d041f0f17ec898aea1cc69f37a018be5b94cd479fb297484fc",
+    "crop": [
+      312,
+      72,
+      1072,
+      472
+    ],
+    "vm_image_sha256": "2a09de13ad568da01a8e16dd93e6aec120e63375bfc0ec24b4e804b43ecb4f8c",
+    "source_archive_sha256": "89c534416693e5378c808cd2edfcf986051a85a91a8a94258090fc32fdcc399f",
+    "sha256": "864ea28aa4c51b0cec82be427f5d2339fa5f8f513584c3d4b1c885dabb54fd48",
+    "source": "VM Nautilus capture/window-controls-glassy-dark-desktop.png",
+    "capture": "Disposable pinned KDE neon VM; focused Nautilus; 3840x2160 at 4x scale; lossless crop"
+  },
+  "window-shadows-none-light.png": {
+    "kind": "shadows",
+    "style": "glassy",
+    "level": "none",
+    "mode": "light",
+    "window": {
+      "caption": "Documents",
+      "resourceClass": "org.gnome.Nautilus",
+      "type": 0,
+      "appletPopup": false,
+      "active": true,
+      "geometry": {
+        "x": 90,
+        "y": 30,
+        "width": 760,
+        "height": 380
+      }
+    },
+    "scale": 4,
+    "background": "#b8bec6",
+    "gtk_glassy": true,
+    "file": "window-shadows-none-light-4aa1645b789e.png",
+    "source_sha256": "b1863c1b1ca2d559651b9fee7559a7b6795b7bfc0a01b936a144749b3b36bc2c",
+    "crop": [
+      2440,
+      1520,
+      3580,
+      1884
+    ],
+    "vm_image_sha256": "2a09de13ad568da01a8e16dd93e6aec120e63375bfc0ec24b4e804b43ecb4f8c",
+    "source_archive_sha256": "9a441fb283fc600d01ad44400b9cf347bfbca9cd06d73a2f3e5bb57b0b1b0232",
+    "sha256": "4aa1645b789e1897534157ed6da3b66744d523d37c5dde028200dfad4bbc551e",
+    "source": "VM Nautilus capture/window-shadows-none-light-desktop.png",
+    "capture": "Disposable pinned KDE neon VM; focused Nautilus; 3840x2160 at 4x scale; lossless crop"
+  },
+  "window-shadows-soft-light.png": {
+    "kind": "shadows",
+    "style": "glassy",
+    "level": "soft",
+    "mode": "light",
+    "window": {
+      "caption": "Documents",
+      "resourceClass": "org.gnome.Nautilus",
+      "type": 0,
+      "appletPopup": false,
+      "active": true,
+      "geometry": {
+        "x": 90,
+        "y": 30,
+        "width": 760,
+        "height": 380
+      }
+    },
+    "scale": 4,
+    "background": "#b8bec6",
+    "gtk_glassy": true,
+    "file": "window-shadows-soft-light-d1a3d4278551.png",
+    "source_sha256": "5034f5cc3db1a9f7fb0e216a82ec66247fb042c1eb15c4e297440c2700997736",
+    "crop": [
+      2440,
+      1520,
+      3580,
+      1884
+    ],
+    "vm_image_sha256": "2a09de13ad568da01a8e16dd93e6aec120e63375bfc0ec24b4e804b43ecb4f8c",
+    "source_archive_sha256": "9a441fb283fc600d01ad44400b9cf347bfbca9cd06d73a2f3e5bb57b0b1b0232",
+    "sha256": "d1a3d4278551ae31901b801254f500b145c636f06cca865bbfecf4decad84a7d",
+    "source": "VM Nautilus capture/window-shadows-soft-light-desktop.png",
+    "capture": "Disposable pinned KDE neon VM; focused Nautilus; 3840x2160 at 4x scale; lossless crop"
+  },
+  "window-shadows-medium-light.png": {
+    "kind": "shadows",
+    "style": "glassy",
+    "level": "medium",
+    "mode": "light",
+    "window": {
+      "caption": "Documents",
+      "resourceClass": "org.gnome.Nautilus",
+      "type": 0,
+      "appletPopup": false,
+      "active": true,
+      "geometry": {
+        "x": 90,
+        "y": 30,
+        "width": 760,
+        "height": 380
+      }
+    },
+    "scale": 4,
+    "background": "#b8bec6",
+    "gtk_glassy": true,
+    "file": "window-shadows-medium-light-5852798c3cd3.png",
+    "source_sha256": "732fe84928c7e27d4578547a8412983c2a9725124aa8bb94a53f70be2584600a",
+    "crop": [
+      2440,
+      1520,
+      3580,
+      1884
+    ],
+    "vm_image_sha256": "2a09de13ad568da01a8e16dd93e6aec120e63375bfc0ec24b4e804b43ecb4f8c",
+    "source_archive_sha256": "9a441fb283fc600d01ad44400b9cf347bfbca9cd06d73a2f3e5bb57b0b1b0232",
+    "sha256": "5852798c3cd3956093867355c1524e7182b89ab31c0f7f1b57bcfec0d1862063",
+    "source": "VM Nautilus capture/window-shadows-medium-light-desktop.png",
+    "capture": "Disposable pinned KDE neon VM; focused Nautilus; 3840x2160 at 4x scale; lossless crop"
+  },
+  "window-shadows-hard-light.png": {
+    "kind": "shadows",
+    "style": "glassy",
+    "level": "hard",
+    "mode": "light",
+    "window": {
+      "caption": "Documents",
+      "resourceClass": "org.gnome.Nautilus",
+      "type": 0,
+      "appletPopup": false,
+      "active": true,
+      "geometry": {
+        "x": 90,
+        "y": 30,
+        "width": 760,
+        "height": 380
+      }
+    },
+    "scale": 4,
+    "background": "#b8bec6",
+    "gtk_glassy": true,
+    "file": "window-shadows-hard-light-0be7b4e8ef64.png",
+    "source_sha256": "1ec1eca10fa520bb6f752c7322da41618e10019911e05e4edcedffb6acdf3388",
+    "crop": [
+      2440,
+      1520,
+      3580,
+      1884
+    ],
+    "vm_image_sha256": "2a09de13ad568da01a8e16dd93e6aec120e63375bfc0ec24b4e804b43ecb4f8c",
+    "source_archive_sha256": "9a441fb283fc600d01ad44400b9cf347bfbca9cd06d73a2f3e5bb57b0b1b0232",
+    "sha256": "0be7b4e8ef646d6c1ee0b852363d13928f0731b8474c83579164bc207e7d42a7",
+    "source": "VM Nautilus capture/window-shadows-hard-light-desktop.png",
+    "capture": "Disposable pinned KDE neon VM; focused Nautilus; 3840x2160 at 4x scale; lossless crop"
+  },
+  "window-shadows-none-dark.png": {
+    "kind": "shadows",
+    "style": "glassy",
+    "level": "none",
+    "mode": "dark",
+    "window": {
+      "caption": "Documents",
+      "resourceClass": "org.gnome.Nautilus",
+      "type": 0,
+      "appletPopup": false,
+      "active": true,
+      "geometry": {
+        "x": 90,
+        "y": 30,
+        "width": 760,
+        "height": 380
+      }
+    },
+    "scale": 4,
+    "background": "#686d76",
+    "gtk_glassy": true,
+    "file": "window-shadows-none-dark-0cd0a5f0dfe9.png",
+    "source_sha256": "00f72161617696001e9199f1e4568bd7fc3a5cba1cebe078432dbc73a4a38446",
+    "crop": [
+      2440,
+      1520,
+      3580,
+      1884
+    ],
+    "vm_image_sha256": "2a09de13ad568da01a8e16dd93e6aec120e63375bfc0ec24b4e804b43ecb4f8c",
+    "source_archive_sha256": "9a441fb283fc600d01ad44400b9cf347bfbca9cd06d73a2f3e5bb57b0b1b0232",
+    "sha256": "0cd0a5f0dfe92175263a5764830168fd5ebf95f7790bc02b2f6079e5cc67efdd",
+    "source": "VM Nautilus capture/window-shadows-none-dark-desktop.png",
+    "capture": "Disposable pinned KDE neon VM; focused Nautilus; 3840x2160 at 4x scale; lossless crop"
+  },
+  "window-shadows-soft-dark.png": {
+    "kind": "shadows",
+    "style": "glassy",
+    "level": "soft",
+    "mode": "dark",
+    "window": {
+      "caption": "Documents",
+      "resourceClass": "org.gnome.Nautilus",
+      "type": 0,
+      "appletPopup": false,
+      "active": true,
+      "geometry": {
+        "x": 90,
+        "y": 30,
+        "width": 760,
+        "height": 380
+      }
+    },
+    "scale": 4,
+    "background": "#686d76",
+    "gtk_glassy": true,
+    "file": "window-shadows-soft-dark-51759225b33a.png",
+    "source_sha256": "00cf0b038cd77ede8b988599831152993664d12123c8d7dd472330f5d89deacb",
+    "crop": [
+      2440,
+      1520,
+      3580,
+      1884
+    ],
+    "vm_image_sha256": "2a09de13ad568da01a8e16dd93e6aec120e63375bfc0ec24b4e804b43ecb4f8c",
+    "source_archive_sha256": "9a441fb283fc600d01ad44400b9cf347bfbca9cd06d73a2f3e5bb57b0b1b0232",
+    "sha256": "51759225b33af0269947a31d19366f596dd1e264547a77cd6c0c6ba8f7bb797d",
+    "source": "VM Nautilus capture/window-shadows-soft-dark-desktop.png",
+    "capture": "Disposable pinned KDE neon VM; focused Nautilus; 3840x2160 at 4x scale; lossless crop"
+  },
+  "window-shadows-medium-dark.png": {
+    "kind": "shadows",
+    "style": "glassy",
+    "level": "medium",
+    "mode": "dark",
+    "window": {
+      "caption": "Documents",
+      "resourceClass": "org.gnome.Nautilus",
+      "type": 0,
+      "appletPopup": false,
+      "active": true,
+      "geometry": {
+        "x": 90,
+        "y": 30,
+        "width": 760,
+        "height": 380
+      }
+    },
+    "scale": 4,
+    "background": "#686d76",
+    "gtk_glassy": true,
+    "file": "window-shadows-medium-dark-5a2efdf93d0c.png",
+    "source_sha256": "044424f3ae59ef08df4fe7df864773810670efba5f3b64ad78e45a59a9dd3d77",
+    "crop": [
+      2440,
+      1520,
+      3580,
+      1884
+    ],
+    "vm_image_sha256": "2a09de13ad568da01a8e16dd93e6aec120e63375bfc0ec24b4e804b43ecb4f8c",
+    "source_archive_sha256": "9a441fb283fc600d01ad44400b9cf347bfbca9cd06d73a2f3e5bb57b0b1b0232",
+    "sha256": "5a2efdf93d0c456cf2652cec184efe1f889ec65f9929d64f6597e56c10b031bc",
+    "source": "VM Nautilus capture/window-shadows-medium-dark-desktop.png",
+    "capture": "Disposable pinned KDE neon VM; focused Nautilus; 3840x2160 at 4x scale; lossless crop"
+  },
+  "window-shadows-hard-dark.png": {
+    "kind": "shadows",
+    "style": "glassy",
+    "level": "hard",
+    "mode": "dark",
+    "window": {
+      "caption": "Documents",
+      "resourceClass": "org.gnome.Nautilus",
+      "type": 0,
+      "appletPopup": false,
+      "active": true,
+      "geometry": {
+        "x": 90,
+        "y": 30,
+        "width": 760,
+        "height": 380
+      }
+    },
+    "scale": 4,
+    "background": "#686d76",
+    "gtk_glassy": true,
+    "file": "window-shadows-hard-dark-5b8590f94fd8.png",
+    "source_sha256": "daa52c9cd4347d4e73d4d1dd0b9ed255f2b4c5477117d624df6b20814317393c",
+    "crop": [
+      2440,
+      1520,
+      3580,
+      1884
+    ],
+    "vm_image_sha256": "2a09de13ad568da01a8e16dd93e6aec120e63375bfc0ec24b4e804b43ecb4f8c",
+    "source_archive_sha256": "9a441fb283fc600d01ad44400b9cf347bfbca9cd06d73a2f3e5bb57b0b1b0232",
+    "sha256": "5b8590f94fd81c44dcf708cde6e8f18332bc66526a88d1e17074de9883568b34",
+    "source": "VM Nautilus capture/window-shadows-hard-dark-desktop.png",
+    "capture": "Disposable pinned KDE neon VM; focused Nautilus; 3840x2160 at 4x scale; lossless crop"
+  }
+}

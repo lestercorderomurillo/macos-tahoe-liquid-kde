@@ -10,13 +10,13 @@ ROOT = Path(__file__).resolve().parents[1] / "src/offline/plasma-theme"
 
 
 @pytest.mark.parametrize("mode", ["Light", "Dark"])
-def test_golden_gate_client_fill_leaves_gradient_in_control(mode, tmp_path, monkeypatch):
+def test_golden_gate_client_fill_follows_appearance(mode, tmp_path, monkeypatch):
     import glass_surfaces
     svg = pytest.importorskip("PyQt6.QtSvg")
     gui = pytest.importorskip("PyQt6.QtGui")
     core = pytest.importorskip("PyQt6.QtCore")
     monkeypatch.setattr(glass_surfaces, "default_wallpaper", lambda: "MacGoldenGate")
-    theme = tmp_path / mode
+    theme = tmp_path / f"MacTahoeLiquidKde-{mode}"
     shutil.copytree(ROOT / f"MacTahoeLiquidKde-{mode}", theme)
     glass_surfaces.apply_plasma_surface_defaults(theme)
     for name in glass_surfaces.PLASMA_SURFACES:
@@ -28,7 +28,9 @@ def test_golden_gate_client_fill_leaves_gradient_in_control(mode, tmp_path, monk
         renderer.render(painter, "center", core.QRectF(0, 0, 64, 64))
         painter.end()
         fill = image.pixelColor(32, 32)
-        assert fill.alphaF() < .015 and fill.red() == 255
+        expected = .60 if mode == "Light" else .01
+        assert fill.alphaF() == pytest.approx(expected, abs=.005)
+        assert fill.red() == 255
         # Alpha-derived blur masks and shadows must survive edition staging.
         for element in ("mask-center", "mask-topleft", "shadow-top", "shadow-topleft"):
             assert original.elementExists(element) == renderer.elementExists(element)
@@ -43,6 +45,52 @@ def test_golden_gate_client_fill_leaves_gradient_in_control(mode, tmp_path, monk
                 rendered.append(image.copy())
             assert rendered[0] == rendered[1], (name, element)
     assert svg.QSvgRenderer(str(theme / "dialogs/background.svgz")).elementExists("hint-clear-surface")
+    before = {path: path.read_bytes() for path in theme.rglob("*.svgz")}
+    glass_surfaces.apply_plasma_surface_defaults(theme)
+    assert all(path.read_bytes() == data for path, data in before.items())
+    for name in ("widgets/panel-background.svgz", "solid/dialogs/background.svgz"):
+        assert (theme / name).read_bytes() == (ROOT / f"MacTahoeLiquidKde-{mode}" / name).read_bytes()
+
+
+@pytest.mark.parametrize("backdrop", ["black", "white"])
+def test_golden_gate_light_plasma_text_is_readable(tmp_path, monkeypatch, backdrop):
+    """Render every popup fill over worst-case backdrops using the real SVGs."""
+    import configparser
+    import glass_surfaces
+    svg = pytest.importorskip("PyQt6.QtSvg")
+    gui = pytest.importorskip("PyQt6.QtGui")
+    core = pytest.importorskip("PyQt6.QtCore")
+    monkeypatch.setattr(glass_surfaces, "default_wallpaper", lambda: "MacGoldenGate")
+    theme = tmp_path / "MacTahoeLiquidKde-Light"
+    shutil.copytree(ROOT / theme.name, theme)
+    glass_surfaces.apply_plasma_surface_defaults(theme)
+    scheme = configparser.ConfigParser()
+    scheme.read(ROOT.parent / "color-schemes/MacTahoeLiquidKdeLight.colors")
+
+    def luminance(color):
+        def linear(value):
+            return value / 12.92 if value <= .04045 else ((value + .055) / 1.055) ** 2.4
+        return sum(weight * linear(value) for weight, value in zip(
+            (.2126, .7152, .0722), (color.redF(), color.greenF(), color.blueF())))
+
+    for name in glass_surfaces.PLASMA_SURFACES:
+        group = "Colors:Tooltip" if name == "widgets/tooltip.svgz" else "Colors:Window"
+        foreground = gui.QColor(*map(int, scheme[group]["ForegroundNormal"].split(",")))
+        image = gui.QImage(64, 64, gui.QImage.Format.Format_ARGB32)
+        image.fill(gui.QColor(backdrop))
+        painter = gui.QPainter(image)
+        svg.QSvgRenderer(str(theme / name)).render(painter, "center", core.QRectF(0, 0, 64, 64))
+        painter.end()
+        a, b = sorted((luminance(image.pixelColor(32, 32)), luminance(foreground)))
+        assert (b + .05) / (a + .05) >= 4.5, name
+
+
+@pytest.mark.parametrize("mode", ["Light", "Dark"])
+def test_tahoe_plasma_surfaces_remain_byte_identical(mode, tmp_path, monkeypatch):
+    import glass_surfaces
+    monkeypatch.setattr(glass_surfaces, "default_wallpaper", lambda: "MacTahoe")
+    theme = tmp_path / f"MacTahoeLiquidKde-{mode}"
+    shutil.copytree(ROOT / theme.name, theme)
     before = {path: path.read_bytes() for path in theme.rglob("*.svgz")}
     glass_surfaces.apply_plasma_surface_defaults(theme)
     assert all(path.read_bytes() == data for path, data in before.items())

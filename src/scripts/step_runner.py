@@ -1,5 +1,7 @@
 """Run a feature step. Each step is a Python module under ``src/scripts/steps``."""
 
+from localization import tr
+
 import importlib
 from types import ModuleType
 
@@ -51,7 +53,7 @@ def run_phase(feature: str, phase: str) -> bool:
         getattr(mod, phase)()
     except Exception as exc:
         from log import fail
-        fail(f"{feature}: {phase} raised {type(exc).__name__}: {exc}")
+        fail(tr('{feature}: {phase} raised {value3}: {exc}', feature=feature, phase=phase, value3=type(exc).__name__, exc=exc))
         return False
     check_cancelled()
     return len(errors) == before

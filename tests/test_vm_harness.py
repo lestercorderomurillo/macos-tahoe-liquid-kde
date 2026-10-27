@@ -41,7 +41,7 @@ def test_vm_excludes_retired_gentoo_targets():
     assert not any("gentoo" in name for name in result.stdout.splitlines())
 
 
-@pytest.mark.parametrize("distro", ["arch", "cachyos", "manjaro", "endeavouros", "garuda", "fedora", "nobara", "opensuse", "neon", "debian", "artix"])
+@pytest.mark.parametrize("distro", ["arch", "cachyos", "manjaro", "endeavouros", "garuda", "fedora", "nobara", "opensuse", "neon", "debian", "artix", "kubuntu"])
 def test_vm_lists_debian_family_guests(distro):
     result = subprocess.run(
         [str(REPO / "vm"), "list"],
@@ -198,7 +198,7 @@ def test_plymouth_render_harness_validates_pixels_and_propagates_failure():
 
 def test_iso_targets_use_independent_verified_media():
     images = json.loads((REPO / '.vm/images.json').read_text())
-    assert set(images) == {'cachyos', 'manjaro', 'endeavouros', 'garuda', 'nobara', 'artix'}
+    assert set(images) == {'cachyos', 'manjaro', 'endeavouros', 'garuda', 'nobara', 'artix', 'kubuntu'}
     assert len({item['url'] for item in images.values()}) == len(images)
     for name, item in images.items():
         assert item['url'].startswith('https://') and item['url'].endswith('.iso')
@@ -222,12 +222,26 @@ def test_prepare_installed_guest_script_parses():
     subprocess.run(['bash', '-n', str(REPO / 'tests/vm/prepare_guest.sh')], check=True)
 
 
+def test_kubuntu_vm_pins_reported_lts_and_keeps_its_native_stack():
+    image = json.loads((REPO / '.vm/images.json').read_text())['kubuntu']
+    assert image['url'] == ('https://cdimage.ubuntu.com/kubuntu/releases/26.04.1/release/'
+                            'kubuntu-26.04.1-desktop-amd64.iso')
+    assert image['digest'] == '831e4d4bb85098339ba43d3502cd6619b27e76daf37246a084cd68a6413090b8'
+    script = (REPO / 'tests/vm/prepare_guest.sh').read_text().split('    ubuntu)', 1)[1].split(';;', 1)[0]
+    assert 'kubuntu-desktop' in script and '26.04' in script
+    assert 'python3-pytest plasma-sdk xvfb x11-utils' in script
+    assert 'upgrade' not in '\n'.join(line for line in script.splitlines() if not line.lstrip().startswith('#'))
+    assert 'add-apt-repository' not in script
+    subprocess.run(['bash', '-n', str(REPO / 'tests/vm/live_access.sh')], check=True)
+
+
+@pytest.mark.parametrize("target,port", [("artix", 2233), ("kubuntu", 2234)])
 @pytest.mark.parametrize("mode", ["valid", "mismatch", "download-failure"])
-def test_iso_vm_verifies_media_and_boots_native_uefi(tmp_path, mode):
+def test_iso_vm_verifies_media_and_boots_native_uefi(tmp_path, mode, target, port):
     shutil.copy2(REPO / "vm", tmp_path / "vm")
     (tmp_path / ".vm").mkdir()
     images = json.loads((REPO / ".vm/images.json").read_text())
-    images["artix"]["digest"] = hashlib.sha256(b"vm-image").hexdigest()
+    images[target]["digest"] = hashlib.sha256(b"vm-image").hexdigest()
     (tmp_path / ".vm/images.json").write_text(json.dumps(images))
     binaries = tmp_path / "bin"
     binaries.mkdir()
@@ -249,7 +263,7 @@ printf '%s' "$TEST_PAYLOAD" > "$2"
     code.write_bytes(b"firmware")
     variables.write_bytes(b"variables")
     log = tmp_path / "qemu.log"
-    result = subprocess.run([str(tmp_path / "vm"), "artix"], capture_output=True,
+    result = subprocess.run([str(tmp_path / "vm"), target], capture_output=True,
         text=True, timeout=10, env={**os.environ,
         "PATH": f"{binaries}:{os.environ['PATH']}",
         "VM_CACHE_DIR": str(tmp_path / "cache"), "VM_RUN_DIR": str(tmp_path / "run"),
@@ -259,12 +273,12 @@ printf '%s' "$TEST_PAYLOAD" > "$2"
     if mode == "valid":
         assert result.returncode == 0, result.stderr
         arguments = log.read_text()
-        assert "hostfwd=tcp:127.0.0.1:2233-:22" in arguments
+        assert f"hostfwd=tcp:127.0.0.1:{port}-:22" in arguments
         assert "media=cdrom,readonly=on" in arguments
         assert f"readonly=on,file={code}" in arguments
         assert "-machine\nq35" in arguments
         assert "-b" not in arguments.splitlines()
-        assert (tmp_path / "run/artix/OVMF_VARS.fd").read_bytes() == b"variables"
+        assert (tmp_path / f"run/{target}/OVMF_VARS.fd").read_bytes() == b"variables"
     else:
         assert result.returncode != 0
         assert not log.exists()

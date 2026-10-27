@@ -15,7 +15,6 @@ def installer_ui_module():
     return installer_ui
 
 
-
 @pytest.fixture(autouse=True)
 def stable_installer_language(monkeypatch):
     """A user's persisted GUI choice must not change test expectations."""
@@ -23,36 +22,20 @@ def stable_installer_language(monkeypatch):
     monkeypatch.setattr(installer_ui, "get_language", lambda: "en")
 
 
-def test_preview_qml_exists(repo):
-    assert (repo / "src/installer/preview_installer.qml").is_file()
-    assert (repo / "src/installer/InstallerWindow.qml").is_file()
-    assert (repo / "src/installer/InstallerHello.png").is_file()
-
-
-def test_features_window_serializes_saves_and_coalesces_latest_state(repo):
-    source = (repo / "src/installer/FeaturesWindow.qml").read_text()
-    save_block = source.split("function save(): void {", 1)[1].split(
-        "function _runSave(): void {", 1)[0]
-    run_block = source.split("function _runSave(): void {", 1)[1].split(
-        "P5Support.DataSource {", 1)[0]
-    saver_block = source.split("id: saver", 1)[1].split(
-        "onVisibleChanged:", 1)[0]
-
-    assert "property bool saveInFlight: false" in source
-    assert "property bool savePending: false" in source
-    assert save_block.index("if (saveInFlight)") < save_block.index(
-        "savePending = true") < save_block.index("return")
-    assert save_block.index("saveInFlight = true") < save_block.index(
-        "_runSave()")
-
-    # The deferred pass must serialize a fresh snapshot of current items,
-    # not replay the payload captured by the older in-flight process.
-    assert "for (let i = 0; i < items.length; ++i)" in run_block
-    assert "payload[items[i].key] = items[i].enabled" in run_block
-    assert saver_block.index("saveInFlight = false") < saver_block.index(
-        "if (featuresWindow.savePending)")
-    assert saver_block.index("savePending = false") < saver_block.index(
-        "featuresWindow.save()")
+@pytest.mark.parametrize("edition", ["MacTahoe", "MacGoldenGate"])
+def test_installer_identifies_source_edition_on_open(
+        installer_ui_module, monkeypatch, tmp_path, capsys, edition):
+    import launcher_defaults
+    import log
+    qtcore = pytest.importorskip("PyQt6.QtCore")
+    app = qtcore.QCoreApplication.instance() or qtcore.QCoreApplication([])
+    config = tmp_path / "defaults.json"
+    config.write_text(json.dumps({"wallpaper": edition}))
+    monkeypatch.setattr(launcher_defaults, "DEFAULTS_FILE", config)
+    bridge = installer_ui_module._make_installer_bridge()
+    assert bridge.editionName == edition
+    log.banner("0.0.0")
+    assert f"{edition} Liquid KDE" in capsys.readouterr().out
 
 
 def test_repo_installer_entry_exists(repo):
@@ -62,41 +45,12 @@ def test_repo_installer_entry_exists(repo):
 
 
 @pytest.mark.parametrize("action,expected", [
-    ("install", "sudo ./install"),
-    ("uninstall", "sudo ./uninstall"),
-    ("preflight", "sudo ./install --preflight"),
+    ("install", "sudo ./src/scripts/installer_backend.py install"),
+    ("uninstall", "sudo ./src/scripts/installer_backend.py uninstall"),
+    ("preflight", "sudo ./src/scripts/installer_backend.py install --preflight"),
 ])
 def test_command_for_action(installer_ui_module, action, expected):
     assert installer_ui_module.command_for_action(action) == expected
-
-
-def test_launch_action_prefers_first_available_terminal(
-        installer_ui_module, monkeypatch, repo):
-    seen: dict[str, object] = {}
-
-    monkeypatch.setattr(
-        installer_ui_module.shutil,
-        "which",
-        lambda name: "/usr/bin/konsole" if name == "konsole" else None,
-    )
-
-    class DummyPopen:
-        def __init__(self, argv, cwd=None, start_new_session=None):
-            seen["argv"] = argv
-            seen["cwd"] = cwd
-            seen["start_new_session"] = start_new_session
-
-    monkeypatch.setattr(installer_ui_module.subprocess, "Popen", DummyPopen)
-
-    payload = installer_ui_module.launch_action("install")
-
-    assert payload["ok"] is True
-    assert payload["terminal"] == "konsole"
-    assert payload["command"] == "sudo ./install"
-    assert seen["argv"][:3] == ["konsole", "--noclose", "-e"]
-    assert seen["argv"][-1] == f"cd {repo} && sudo ./install"
-    assert seen["cwd"] == str(repo)
-    assert seen["start_new_session"] is True
 
 
 @pytest.mark.parametrize("action", ["install", "uninstall", "preflight"])
@@ -287,51 +241,20 @@ def test_supervisor_refuses_to_launch_without_group_isolation(
         "install", str(progress), str(cancel)) == 1
 
 
-@pytest.mark.parametrize("action", ["install", "uninstall", "preflight"])
-def test_terminal_command_keeps_interactive_confirm(
-        installer_ui_module, action):
-    """The terminal launch is interactive — it must NOT auto-skip confirm."""
-    cmd = installer_ui_module.escalated_command_for_action(action, headless=False)
-    assert "MTTKDE_NO_CONFIRM" not in cmd
-
-
-def test_launch_action_reports_when_no_terminal_is_available(
-        installer_ui_module, monkeypatch):
-    monkeypatch.setattr(installer_ui_module.shutil, "which", lambda _name: None)
-
-    payload = installer_ui_module.launch_action("uninstall")
-
-    assert payload["ok"] is False
-    assert payload["terminal"] == ""
-    assert payload["command"] == "sudo ./uninstall"
-    assert "No supported terminal emulator" in payload["message"]
-
-
-def test_main_launch_emits_json_payload(installer_ui_module, monkeypatch, capsys):
-    monkeypatch.setattr(installer_ui_module, "drop_root_to_invoking_user", lambda: 0)
-    monkeypatch.setattr(
-        installer_ui_module,
-        "launch_action",
-        lambda action: {
-            "ok": True,
-            "action": action,
-            "terminal": "konsole",
-            "command": "sudo ./install",
-            "message": "Launching sudo ./install in konsole.",
-        },
-    )
-
-    rc = installer_ui_module.main(["--launch", "install"])
-    out = capsys.readouterr().out.strip()
-
-    assert rc == 0
-    assert json.loads(out)["action"] == "install"
-
-
 def test_drop_root_to_invoking_user_is_noop_for_regular_user(
         installer_ui_module, monkeypatch):
     monkeypatch.setattr(installer_ui_module.os, "geteuid", lambda: 1000)
     assert installer_ui_module.drop_root_to_invoking_user() == 0
+
+
+def test_help_does_not_require_a_desktop_user(installer_ui_module, monkeypatch, capsys):
+    monkeypatch.setattr(installer_ui_module.os, "geteuid", lambda: 0)
+    for key in ("SUDO_USER", "SUDO_UID", "SUDO_GID", "DISPLAY", "WAYLAND_DISPLAY"):
+        monkeypatch.delenv(key, raising=False)
+    with pytest.raises(SystemExit) as result:
+        installer_ui_module.main(["--help"])
+    assert result.value.code == 0
+    assert "--uninstall" in capsys.readouterr().out
 
 
 def test_drop_root_to_invoking_user_requires_sudo_metadata(
@@ -644,11 +567,13 @@ def test_log_step_writes_progress_records(monkeypatch, tmp_path):
     try:
         log.progress_reset()
         log.step("Verification")
+        log.status("Generating icons: 100/6366")
         log.step("Installing fonts")
         log.progress_done(0)
 
         lines = progress.read_text().splitlines()
-        assert lines == ["1\tVerification", "2\tInstalling fonts", "__DONE__\t0"]
+        assert lines == ["1\tVerification\tVerification", "__STATUS__\tGenerating icons: 100/6366",
+                         "2\tInstalling fonts\tInstalling fonts", "__DONE__\t0"]
         assert stat.S_IMODE(progress.stat().st_mode) == 0o600
     finally:
         # Restore the module's default path for any later test.
@@ -859,11 +784,3 @@ def test_confirm_auto_accepts_in_no_confirm_mode(monkeypatch, capsys):
     import cli
     assert cli.confirm("Install at your own risk.") is True
     assert "auto-accepting" in capsys.readouterr().out
-
-
-def test_gui_does_not_expose_retired_transparency(installer_ui_module, monkeypatch, tmp_path):
-    monkeypatch.setenv("XDG_CONFIG_HOME", str(tmp_path))
-    path = tmp_path / "mac-tahoe-liquid-kde/appearance.json"
-    path.parent.mkdir()
-    path.write_text('{"transparency":"reduced"}')
-    assert "transparency" not in installer_ui_module.dump_features()

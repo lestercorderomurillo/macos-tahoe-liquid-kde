@@ -1,0 +1,13 @@
+# Focused init/cron integration probe, not a live Plasma qualification.
+FROM artixlinux/artixlinux:base-dinit@sha256:83532660def626d61e016d5f394ac20dfa6567a0f22c36c4fd5f2682ab4c182d
+
+RUN pacman -Syu --noconfirm --needed python cronie cronie-dinit \
+    && useradd -m -s /bin/bash tester \
+    && passwd -d tester \
+    && mkdir -p /probe-services/boot.d \
+    && printf 'type = internal\nwaits-for.d = boot.d\n' > /probe-services/boot \
+    && printf 'type = process\ncommand = /usr/bin/crond -n\n' > /probe-services/cronie \
+    && ln -s ../cronie /probe-services/boot.d/cronie
+
+# Keep the normal host service graph out of this unprivileged container.
+ENTRYPOINT ["/sbin/init", "--container", "--services-dir", "/probe-services", "--socket-path", "/run/dinitctl", "boot"]

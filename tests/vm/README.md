@@ -1,8 +1,12 @@
 # Real desktop VM qualification
 
-`./vm list` lists the 11 distribution targets. These are graphical QEMU/KVM
+`./vm list` lists the 12 distribution targets. These are graphical QEMU/KVM
 guests with real Plasma sessions. Container builds do not qualify a desktop.
 Debian uses testing (Forky); stock Debian 13 is below the Plasma 6.6 minimum.
+Kubuntu pins 26.04.1 LTS for the Plasma 6.6 launcher regression reported in
+[Golden Gate issue #2](https://github.com/lestercorderomurillo/macos-golden-gate-liquid-kde/issues/2).
+This new test target is pending full live qualification; adding it is not a
+compatibility badge.
 
 ## Start a guest
 
@@ -19,7 +23,7 @@ recipes. Wait for provisioning and Plasma login to finish. The guest account is
 `tester`, password `tester`, with passwordless sudo. Debian's image download is
 checked against the official SHA-512 manifest.
 
-CachyOS, Manjaro, EndeavourOS, Garuda, Nobara and Artix boot their own official
+CachyOS, Manjaro, EndeavourOS, Garuda, Nobara, Artix and Kubuntu boot their own official
 installation media, pinned by URL and checksum in `.vm/images.json`. Complete
 the native installer onto the disposable 60 GB guest disk, select KDE Plasma,
 and create `tester`. Artix uses its OpenRC Plasma edition. These guests are not
@@ -42,6 +46,10 @@ so custom distro CSS cannot mask the theme during rendering checks. The theme
 installer itself preserves custom CSS. Keep that backup when inspecting native
 profile behavior.
 
+Kubuntu preparation keeps the installed 26.04 LTS repositories and Plasma
+stack, installs the launcher test tools, and enables Ubuntu's `ssh` service.
+It does not add a PPA or upgrade to another Ubuntu release.
+
 For remote control of the live installer, `tests/vm/live_access.sh` provides
 optional loopback SSH setup inside the live QEMU guest. It refuses installed
 systems. This is only a setup aid; qualification requires an installed desktop.
@@ -62,6 +70,7 @@ components stay on the guest disk. SSH forwards bind to `127.0.0.1` only:
 | <a id="neon"></a>KDE neon | 2231 | Ubuntu cloud image + signed neon repositories | `./vm neon` |
 | <a id="debian"></a>Debian | 2232 | Official Forky cloud image + KDE | `./vm debian` |
 | <a id="artix"></a>Artix | 2233 | Official Plasma OpenRC ISO | `./vm artix` |
+| <a id="kubuntu"></a>Kubuntu 26.04.1 LTS | 2234 | Official desktop ISO (SHA-256 pinned) | `./vm kubuntu` |
 
 `VM_CACHE_DIR` and `VM_RUN_DIR` relocate images and disks. `VM_CPUS` and
 `VM_MEM_MIB` control resources. Default graphics use accelerated VirtIO/virgl;
@@ -107,6 +116,14 @@ commands, appearance checks or blank captures fail the run. Inspect every
 capture before claiming visual qualification. A successful QEMU cycle verifies
 that guest configuration; it does not establish physical GPU compatibility.
 Release publication screenshots use the separate `./release-screenshots` gate.
+
+For Kubuntu, run `python tests/vm/qualify.py kubuntu --output build/vm-results/kubuntu`.
+The identity guard requires Ubuntu 26.04 with the installed `kubuntu-desktop`
+package. After installation and again after reboot, it also runs the native
+launcher probe in isolated Xvfb sessions against the guest's Plasma SDK. All
+eight combinations of edition, appearance and launcher preset must pass with
+no skips. The probe exercises popup creation, search, preset changes, focus
+transfers and outside-focus dismissal. Logs and JUnit results are retained.
 
 ---
 

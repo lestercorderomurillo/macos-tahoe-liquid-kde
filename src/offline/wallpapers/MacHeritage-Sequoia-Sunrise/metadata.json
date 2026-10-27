@@ -1,7 +1,7 @@
 {
     "KPlugin": {
         "Id": "MacHeritage-Sequoia-Sunrise",
-        "Name": "macOS Sequoia \u2014 Sunrise",
+        "Name": "macOS Sequoia — Sunrise",
         "Description": "macOS Sequoia sunrise variant",
         "Authors": [
             {
@@ -12,6 +12,10 @@
         "Category": "MacTahoe Liquid KDE",
         "License": "Apple Inc. wallpapers extracted from macOS",
         "Website": "https://github.com/lester-sudo/macos-tahoe-liquid-kde",
-        "Version": "1.0"
+        "Version": "1.0",
+        "Name[pt_BR]": "macOS Sequoia — Nascer do sol",
+        "Description[pt_BR]": "Variante do nascer do sol do macOS Sequoia",
+        "Name[de]": "macOS Sequoia — Sonnenaufgang",
+        "Description[de]": "Sonnenaufgangsvariante von macOS Sequoia"
     }
 }

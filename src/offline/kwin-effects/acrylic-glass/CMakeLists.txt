@@ -28,7 +28,7 @@ find_package(ECM REQUIRED NO_MODULE)
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${ECM_MODULE_PATH} ${ECM_KDE_MODULE_DIR})
 
 option(GLASS_WAYLAND "Whether to build Acrylic Glass for Wayland if present." ON)
-option(GLASS_X11 "Whether to build Acrylic Glass for X11 if present." OFF)
+option(GLASS_X11 "Whether to build Acrylic Glass for X11 if present." ON)
 
 include(FeatureSummary)
 include(KDEInstallDirs)
@@ -70,7 +70,7 @@ find_package(KF6 ${KF_MIN_VERSION} REQUIRED COMPONENTS
 find_package(epoxy REQUIRED)
 
 find_package(X11 REQUIRED)
-find_package(XCB REQUIRED COMPONENTS XCB)
+find_package(XCB REQUIRED COMPONENTS XCB RENDER)
 
 if(GLASS_WAYLAND)
     find_package(KWin COMPONENTS
@@ -93,6 +93,7 @@ if(GLASS_X11)
         endif()
     else()
         set(GLASS_X11 OFF)
+        message(STATUS "Acrylic Glass: KWin X11 development files unavailable; skipping X11 backend")
     endif()
 endif()
 
@@ -111,16 +112,11 @@ if(${KWin_VERSION} VERSION_LESS 6.6)
     message(FATAL_ERROR "Acrylic Glass requires KDE Plasma 6.6+ (found ${KWin_VERSION}).")
 endif()
 
-# KWin's private effect ABI changed at 6.7 (the proprietary blur
-# protocol was replaced by ext_background_effect_v1, and the prePaint*
-# methods dropped their presentTime parameter). The effect sources
-# branch on a GLASS_KWIN_67 compile definition — same flag name and
-# >= 6.7 threshold as the upstream kwin-effects-glass fork, kept
-# identical so the two trees stay easy to cross-reference. The Wayland
-# and X11 KWin packages can in principle sit at different versions, so
-# the flag is evaluated per backend below.
+# KWin's Wayland effect ABI changed at 6.7 (the proprietary blur protocol
+# was replaced by ext_background_effect_v1, and the prePaint* methods
+# dropped presentTime). The Plasma 6.7 X11 SDK retains its legacy effect
+# ABI, so GLASS_KWIN_67 is defined only for the Wayland target.
 set(GLASS_KWIN_67_WAYLAND OFF)
-set(GLASS_KWIN_67_X11 OFF)
 # 6.8 (6.7.90 beta onwards) made Effect::drawWindow() return bool; GLASS_KWIN_68
 # switches the override signature in kwin_version_compat.h.
 set(GLASS_KWIN_68_WAYLAND OFF)
@@ -139,14 +135,11 @@ if(GLASS_WAYLAND)
     endif()
 endif()
 if(GLASS_X11)
-    if(${KWinX11_VERSION} VERSION_GREATER_EQUAL 6.7)
-        set(GLASS_KWIN_67_X11 ON)
-    endif()
     if(${KWinX11_VERSION} VERSION_GREATER_EQUAL 6.7.90)
         set(GLASS_KWIN_68_X11 ON)
     endif()
 endif()
-message(STATUS "Acrylic Glass: KWin ${KWin_VERSION} (6.7 ABI: Wayland=${GLASS_KWIN_67_WAYLAND} X11=${GLASS_KWIN_67_X11}; 6.8 ABI: Wayland=${GLASS_KWIN_68_WAYLAND} X11=${GLASS_KWIN_68_X11})")
+message(STATUS "Acrylic Glass: KWin ${KWin_VERSION} (6.7 Wayland ABI=${GLASS_KWIN_67_WAYLAND}; X11 ABI=legacy; 6.8 drawWindow: Wayland=${GLASS_KWIN_68_WAYLAND} X11=${GLASS_KWIN_68_X11})")
 
 find_package(KDecoration3 REQUIRED)
 

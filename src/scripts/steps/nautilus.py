@@ -1,3 +1,4 @@
+from localization import tr
 import re
 import shutil
 import subprocess
@@ -42,7 +43,7 @@ def _generate_bookmarks() -> None:
         return
     src = HOME / ".config/user-dirs.dirs"
     if not src.is_file():
-        warn("~/.config/user-dirs.dirs not found — skipping Nautilus bookmarks")
+        warn(tr('~/.config/user-dirs.dirs not found — skipping Nautilus bookmarks'))
         return
 
     dirs: dict[str, Path] = {}
@@ -69,7 +70,7 @@ def _generate_bookmarks() -> None:
         lines.append(f"{uri} {path.name}")
 
     if not lines:
-        warn("No XDG directories found — skipping Nautilus bookmarks")
+        warn(tr('No XDG directories found — skipping Nautilus bookmarks'))
         return
 
     dest = HOME / ".config/gtk-3.0"
@@ -84,7 +85,7 @@ def _generate_bookmarks() -> None:
         except OSError:
             pass
     bookmarks.write_text("\n".join(lines) + "\n", encoding="utf-8")
-    ok(f"Bookmarks written ({len(lines)} entries)")
+    ok(tr('Bookmarks written ({value1} entries)', value1=len(lines)))
 
 
 def _apply_overrides() -> None:
@@ -103,7 +104,7 @@ def _apply_overrides() -> None:
             except OSError:
                 pass
     if copied:
-        ok(f"Applied {copied} Nautilus override(s)")
+        ok(tr('Applied {copied} Nautilus override(s)', copied=copied))
 
 
 _FINDER_GSETTINGS = (
@@ -129,7 +130,7 @@ def _restart_running_nautilus() -> bool:
     if not _nautilus_running():
         return False
     if not have("gdbus"):
-        warn("gdbus not found — skipping live Nautilus restart")
+        warn(tr('gdbus not found — skipping live Nautilus restart'))
         return False
     # Nautilus 50+ quits via org.gtk.Actions Activate("quit"), not the legacy
     # Application.Quit; the ack is immediate but exit takes ~5-10s.
@@ -148,10 +149,10 @@ def _restart_running_nautilus() -> bool:
             timeout=10,
         ).returncode
     except subprocess.TimeoutExpired:
-        warn("Timed out waiting for Nautilus to quit")
+        warn(tr('Timed out waiting for Nautilus to quit'))
         return False
     if rc != 0:
-        warn(f"Live Nautilus restart skipped (gdbus rc={rc})")
+        warn(tr('Live Nautilus restart skipped (gdbus rc={rc})', rc=rc))
         return False
     # 15s exit window — Nautilus 50.1 with multiple windows takes ~10s to
     # drain; the 100ms poll lets the relaunch start promptly.
@@ -160,7 +161,7 @@ def _restart_running_nautilus() -> bool:
             break
         time.sleep(0.1)
     else:
-        warn("Nautilus did not exit cleanly — leaving it alone")
+        warn(tr('Nautilus did not exit cleanly — leaving it alone'))
         return False
 
     if have("gapplication"):
@@ -173,10 +174,10 @@ def _restart_running_nautilus() -> bool:
             start_new_session=True,
             preexec_fn=_drop,
         )
-        ok("Nautilus restarted")
+        ok(tr('Nautilus restarted'))
         return True
 
-    warn("gapplication not found — skipping Nautilus relaunch")
+    warn(tr('gapplication not found — skipping Nautilus relaunch'))
     return False
 
 
@@ -192,20 +193,20 @@ def _apply_gsettings() -> None:
                 timeout=_NAUTILUS_TOOL_TIMEOUT_SECONDS,
             )
         except subprocess.TimeoutExpired:
-            warn(f"gsettings timed out for {schema}:{key} — skipping")
+            warn(tr('gsettings timed out for {schema}:{key} — skipping', schema=schema, key=key))
 
 
 def install() -> None:
     if not is_plasma_session():
-        warn("Not running under KDE Plasma — skipping Nautilus setup")
+        warn(tr('Not running under KDE Plasma — skipping Nautilus setup'))
         return
 
     if not have("nautilus"):
-        fail("Nautilus not installed (expected deps to have provided it)")
+        fail(tr('Nautilus not installed (expected deps to have provided it)'))
         return
 
     if _set_default(NAUTILUS_DESKTOP, MIME_FOLDER):
-        ok("Nautilus set as default for folders")
+        ok(tr('Nautilus set as default for folders'))
     _set_default(NAUTILUS_DESKTOP, MIME_SEARCH)
 
     _generate_bookmarks()
@@ -213,7 +214,7 @@ def install() -> None:
     _apply_gsettings()
     if _nautilus_running():
         _restart_running_nautilus()
-    ok("Nautilus configured")
+    ok(tr('Nautilus configured'))
 
 
 def uninstall() -> None:
@@ -221,7 +222,7 @@ def uninstall() -> None:
         return
     if have("dolphin"):
         if _set_default(DOLPHIN_DESKTOP, MIME_FOLDER):
-            ok("Dolphin restored as default for folders")
+            ok(tr('Dolphin restored as default for folders'))
         _set_default(DOLPHIN_DESKTOP, MIME_SEARCH)
     nautilus_css = HOME / ".config/nautilus/gtk.css"
     if nautilus_css.is_file():
@@ -239,7 +240,7 @@ def _restore_bookmarks() -> None:
     try:
         if backup.is_file():
             shutil.move(str(backup), str(bookmarks))
-            ok("Nautilus bookmarks restored")
+            ok(tr('Nautilus bookmarks restored'))
         elif bookmarks.is_file():
             bookmarks.unlink()
     except OSError:

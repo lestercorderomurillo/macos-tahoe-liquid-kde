@@ -1,7 +1,7 @@
 {
     "KPlugin": {
         "Id": "MacTahoe-Beach-Night",
-        "Name": "Tahoe Beach \u2014 Night",
+        "Name": "Tahoe Beach — Night",
         "Description": "Lake Tahoe at night",
         "Authors": [
             {
@@ -12,6 +12,10 @@
         "Category": "MacTahoe Liquid KDE",
         "License": "Apple Inc. wallpapers extracted from macOS",
         "Website": "https://github.com/lester-sudo/macos-tahoe-liquid-kde",
-        "Version": "1.0"
+        "Version": "1.0",
+        "Name[pt_BR]": "Praia Tahoe — Noite",
+        "Description[pt_BR]": "Lago Tahoe à noite",
+        "Name[de]": "Tahoe-Strand — Nacht",
+        "Description[de]": "Lake Tahoe bei Nacht"
     }
 }

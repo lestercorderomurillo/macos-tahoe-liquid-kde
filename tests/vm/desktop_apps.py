@@ -20,7 +20,7 @@ sys.path.insert(0, str(REPO / 'src/scripts'))
 STATE = Path.home() / '.local/state/mttkde-vm-apps'
 PROFILE = Path.home() / '.mozilla/firefox/mttkde-vm-proof'
 SNAP_COMMON = Path.home() / 'snap/firefox/common'
-if SNAP_COMMON.is_dir():
+if SNAP_COMMON.is_dir() or Path('/snap/firefox/current').is_dir():
     PROFILE = SNAP_COMMON / '.mozilla/firefox/mttkde-vm-proof'
 # Confined Firefox must be able to read the fixture as well as its profile.
 PAGE = PROFILE / 'browser.html'
@@ -119,6 +119,34 @@ def launch(argv):
         return subprocess.Popen(argv, stdout=log, stderr=log, start_new_session=True).pid
 
 
+def check_browser(mode=None):
+    """Exercise the same browser after appearance changes, including removal."""
+    deadline = time.monotonic() + 60
+    while True:
+        try:
+            browser = Marionette()
+            break
+        except (ConnectionError, OSError):
+            if time.monotonic() > deadline:
+                raise RuntimeError('Firefox did not start its native automation endpoint')
+            time.sleep(1)
+    try:
+        session = browser.call('WebDriver:NewSession', capabilities={})
+        browser.call('WebDriver:Navigate', url=PAGE.as_uri())
+        field = browser.call('WebDriver:FindElement', using='css selector', value='#entry')['value']
+        element = field['element-6066-11e4-a52e-4f735466cecf']
+        browser.call('WebDriver:ElementSendKeys', id=element, text='Plasma desktop input passed')
+        button = browser.call('WebDriver:FindElement', using='css selector', value='#submit')['value']
+        browser.call('WebDriver:ElementClick', id=button['element-6066-11e4-a52e-4f735466cecf'])
+        observation = browser.script("return {dark:matchMedia('(prefers-color-scheme: dark)').matches, result:document.querySelector('#result').textContent, userAgent:navigator.userAgent};")
+        if (mode is not None and observation['dark'] != (mode == 'dark')) or observation['result'] != 'Plasma desktop input passed':
+            raise RuntimeError(f'Firefox interaction/appearance failed: {observation}')
+        browser.call('WebDriver:DeleteSession')
+    finally:
+        browser.close()
+    return observation, session["capabilities"]["browserVersion"]
+
+
 def exercise(mode):
     from utils import restore_desktop_session_env
     from release_capture_guest import windows
@@ -143,30 +171,12 @@ def exercise(mode):
     ):
         if not any(marker in c for c in classes):
             launch(argv)
-    deadline = time.monotonic() + 60
-    while True:
-        try:
-            browser = Marionette()
-            break
-        except (ConnectionError, OSError):
-            if time.monotonic() > deadline:
-                raise RuntimeError('Firefox did not start its native automation endpoint')
-            time.sleep(1)
-    try:
-        session = browser.call('WebDriver:NewSession', capabilities={})
-        browser.call('WebDriver:Navigate', url=PAGE.as_uri())
-        field = browser.call('WebDriver:FindElement', using='css selector', value='#entry')['value']
-        element = field['element-6066-11e4-a52e-4f735466cecf']
-        browser.call('WebDriver:ElementSendKeys', id=element, text='Plasma desktop input passed')
-        button = browser.call('WebDriver:FindElement', using='css selector', value='#submit')['value']
-        browser.call('WebDriver:ElementClick', id=button['element-6066-11e4-a52e-4f735466cecf'])
-        observation = browser.script("return {dark:matchMedia('(prefers-color-scheme: dark)').matches, result:document.querySelector('#result').textContent, userAgent:navigator.userAgent};")
-        if observation['dark'] != (mode == 'dark') or observation['result'] != 'Plasma desktop input passed':
-            raise RuntimeError(f'Firefox interaction/appearance failed: {observation}')
-        browser.call('WebDriver:DeleteSession')
-    finally:
-        browser.close()
+    observation, browser_version = check_browser(mode)
     time.sleep(3)
+    windows("""workspace.windowList().filter(w=>w.windowType===0).forEach(w=>{
+      w.setMaximize(false,false); w.minimized=false;
+    });""")
+    time.sleep(1)
     windows("""const positions = [
       ['firefox', {x:45,y:65,width:900,height:475}],
       ['nautilus', {x:975,y:65,width:900,height:475}],
@@ -177,7 +187,13 @@ def exercise(mode):
       }
       for (const [name, geometry] of positions) {
         const w = workspace.windowList().find(w=>String(w.resourceClass).toLowerCase().includes(name));
-        if (w) { w.setMaximize(false,false); w.frameGeometry=geometry; }
+        if (w) {
+          // Keep the native QRectF type: plain JS objects are ignored on KWin 6.8.
+          const bounds=workspace.clientArea(KWin.FullArea,w);
+          bounds.x=geometry.x; bounds.y=geometry.y;
+          bounds.width=geometry.width; bounds.height=geometry.height;
+          w.frameGeometry=bounds;
+        }
       }""")
     # Wayland clients acknowledge resize requests asynchronously. Sampling
     # their old bounds would check wallpaper pixels instead of the Files view.
@@ -207,17 +223,20 @@ def exercise(mode):
     for name, pattern in [('firefox', 'firefox|firefox-esr'), ('nautilus', 'nautilus'), ('dolphin', 'dolphin'), ('konsole', 'konsole')]:
         processes[name] = subprocess.check_output(['pgrep', '-u', str(os.getuid()), '-x', pattern], text=True).split()
     return {'mode': mode, 'status': 'pass', 'firefox': observation, 'processes': processes,
-            'browser_version': session['capabilities']['browserVersion'], 'windows': observed}
+            'browser_version': browser_version, 'windows': observed}
 
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--prepare', action='store_true')
+    parser.add_argument('--check-browser', action='store_true')
     parser.add_argument('--mode', choices=('light', 'dark'))
     parser.add_argument('--output', type=Path)
     args = parser.parse_args()
     require_guest()
-    if args.prepare:
+    if args.check_browser:
+        print(json.dumps(check_browser()))
+    elif args.prepare:
         prepare()
     else:
         report = exercise(args.mode)

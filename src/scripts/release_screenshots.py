@@ -10,11 +10,15 @@ import subprocess
 ROOT = Path(__file__).resolve().parents[2]
 PROFILE = ROOT / 'src/scripts/release_capture_profile.json'
 EDITIONS = {'tahoe': ('MacTahoe', 1, 'v4'), 'golden-gate': ('MacGoldenGate', 2, 'v1')}
-CASES = ('launcher', 'dock', 'menu', 'context', 'finder', 'showcase', 'about')
+INSTALLER_PAGES = ('welcome', 'appearance', 'icons', 'wallpaper', 'launcher', 'layout',
+                   'effects', 'window_controls', 'shadows', 'fonts', 'firefox', 'files', 'boot', 'oled', 'summary')
+CASES = ('launcher', 'dock', 'menu', 'context', 'finder', 'showcase', 'about') + tuple(
+    'installer-' + page for page in INSTALLER_PAGES)
 MODES = ('light', 'dark')
 RECIPE_FILES = ('release_capture.py', 'release_capture_guest.py', 'release_capture_profile.json',
-                'release_screenshots.py', 'screenshot_checks.py')
+                'release_screenshots.py', 'screenshot_checks.py', 'release_capture_wizard.py')
 STATIC_ART = {'banner_v3.png', 'banner.png', 'macos-26.png', 'macos-27.png', 'macos-27-dark.png'}
+SCREENSHOT_DOCS = ('README.md', 'TESTING.md')
 
 
 def digest(path: Path) -> str:
@@ -46,12 +50,13 @@ def runtime_tree(repo: Path, ref: str) -> str:
     tree = subprocess.check_output(['git', '-C', str(repo), 'ls-tree', '-rz', ref])
     entries = [e for e in tree.split(b'\0') if e and not e.split(b'\t', 1)[1].startswith(b'src/screenshots/')]
     for index, entry in enumerate(entries):
-        if entry.split(b'\t', 1)[1] == b'README.md':
-            # Staging changes image URLs, but any other README edit still
+        document = entry.split(b'\t', 1)[1].decode()
+        if document in SCREENSHOT_DOCS:
+            # Staging changes image URLs, but any other documentation edit still
             # invalidates the captured source.
             readme = re.sub(rb'(src/screenshots/[\w.-]+)-[0-9a-f]{12}(\.png)',
-                            rb'\1\2', blob(repo, ref, 'README.md'))
-            entries[index] = b'README.md\t' + hashlib.sha256(readme).hexdigest().encode()
+                            rb'\1\2', blob(repo, ref, document))
+            entries[index] = document.encode() + b'\t' + hashlib.sha256(readme).hexdigest().encode()
     return hashlib.sha256(b'\0'.join(entries)).hexdigest()
 
 
@@ -106,6 +111,14 @@ def verify_desktop_window(case: str, windows: list[dict]) -> dict:
     return window
 
 
+def verify_icon_appearance(name: str, record: dict) -> None:
+    if name in ('boot', 'shutdown'):
+        return
+    mode = next(m for e in EDITIONS for m in MODES if name.startswith(f'{e}-{m}-'))
+    expected = 'MacTahoeLiquidKde-Icons-Regular-' + mode.capitalize()
+    require(record.get('appearance', {}).get('Icons') == expected, f'Wrong icon appearance: {name}')
+
+
 def validate(repo: Path, ref: str, bundle: Path, *, reviewed: bool = True) -> dict:
     from PIL import Image
     manifest = json.loads((bundle / 'manifest.json').read_text())
@@ -141,10 +154,16 @@ def validate(repo: Path, ref: str, bundle: Path, *, reviewed: bool = True) -> di
                                    if name == f'{e}-{m}-{c}')
         require(record['effect_build'] == manifest['effect_build'], f'Stale effect: {name}')
         require(record['appearance']['Plasma'] == 'MacTahoeLiquidKde-' + mode.capitalize(), f'Wrong appearance: {name}')
+        verify_icon_appearance(name, record)
         require(record['wallpaper'] == EDITIONS[edition][0], f'Wrong wallpaper: {name}')
         require(record['launcher_preset'] == EDITIONS[edition][1], f'Wrong launcher preset: {name}')
         require(record.get('stable_frames') is True, f'Unsettled capture: {name}')
         require(record.get('window_verified') is True, f'Unverified window: {name}')
+        if case.startswith('installer-'):
+            require(record.get('installer_page') == case.removeprefix('installer-'),
+                    f'Wrong installer page: {name}')
+            require(record.get('installer_edition') == EDITIONS[edition][0],
+                    f'Wrong installer edition: {name}')
         if case in ('finder', 'showcase', 'about'):
             verify_desktop_window(case, record['windows'])
         if case in ('finder', 'showcase'):
@@ -168,13 +187,16 @@ def stage(repo: Path, edition: str, bundle: Path, manifest: dict) -> None:
     with tempfile.TemporaryDirectory(prefix='mttkde-stage-') as directory:
         prepared = Path(directory)
         (prepared / 'src/screenshots').mkdir(parents=True)
-        shutil.copyfile(repo / 'README.md', prepared / 'README.md')
+        documents = [name for name in SCREENSHOT_DOCS if (repo / name).is_file()]
+        for name in documents:
+            shutil.copyfile(repo / name, prepared / name)
         _stage(prepared, edition, bundle, manifest)
         out = repo / 'src/screenshots'
         out.mkdir(parents=True, exist_ok=True)
         for path in (prepared / 'src/screenshots').iterdir():
             shutil.copyfile(path, out / path.name)
-        shutil.copyfile(prepared / 'README.md', repo / 'README.md')
+        for name in documents:
+            shutil.copyfile(prepared / name, repo / name)
         staged = json.loads((out / 'release-capture.json').read_text())['images']
         replaced = {original_image_name(name) for name in staged}
         replaced.update(f"launcher{s}_{EDITIONS[edition][2]}.png" for s in ('', '_dark'))
@@ -222,12 +244,16 @@ def _stage(repo: Path, edition: str, bundle: Path, manifest: dict) -> None:
             replacements[full_name] = full_hashed
             records[full_hashed] = dict(record, crop=None, source_commit=manifest['source_commit'],
                                        source_release='v' + manifest['version'], sha256=full_hash)
-    readme = re.sub(r'src/screenshots/([\w.-]+\.png)',
-                    lambda match: 'src/screenshots/' + replacements.get(original_image_name(match[1]), match[1]),
-                    (repo / 'README.md').read_text())
-    required = set(re.findall(r'src/screenshots/([\w.-]+\.png)', readme)) - STATIC_ART
-    require(required <= records.keys(), f'Uncaptured README images: {sorted(required - records.keys())}')
-    (repo / 'README.md').write_text(readme)
+    for name in SCREENSHOT_DOCS:
+        document = repo / name
+        if not document.is_file():
+            continue
+        content = re.sub(r'src/screenshots/([\w.-]+\.png)',
+                         lambda match: 'src/screenshots/' + replacements.get(original_image_name(match[1]), match[1]),
+                         document.read_text())
+        required = set(re.findall(r'src/screenshots/([\w.-]+\.png)', content)) - STATIC_ART
+        require(required <= records.keys(), f'Uncaptured {document.stem} images: {sorted(required - records.keys())}')
+        document.write_text(content)
     (out / 'release-capture.json').write_text(json.dumps({
         'schema': 1, 'version': manifest['version'], 'source_commit': manifest['source_commit'],
         'source_tree': manifest['source_tree'], 'profile_sha256': manifest['profile_sha256'],
@@ -279,9 +305,14 @@ def verify_committed(repo: Path, ref: str, *, tahoe: Path | None = None) -> dict
     require(not review.get('rejected') and review['approved'] == {n: r['sha256'] for n, r in manifest['frames'].items()},
             'Every release capture must be reviewed')
     for name, frame in manifest['frames'].items():
+        verify_icon_appearance(name, frame)
         if name.endswith(('-finder', '-showcase', '-about')):
             verify_desktop_window(name.rsplit('-', 1)[1], frame['windows'])
-    required = set(re.findall(r'src/screenshots/([\w.-]+\.png)', blob(repo, ref, 'README.md').decode())) - STATIC_ART
+    committed_docs = set(git(repo, 'ls-tree', '--name-only', ref, '--', *SCREENSHOT_DOCS).splitlines())
+    required = set()
+    for name in committed_docs:
+        required.update(re.findall(r'src/screenshots/([\w.-]+\.png)', blob(repo, ref, name).decode()))
+    required -= STATIC_ART
     require(required <= record['images'].keys(), 'Missing release screenshots')
     expected = {image_name(edition, m, c) for m in MODES for c in CASES}
     expected.update(f'boot{s}_{EDITIONS[edition][2]}.png' for s in ('', '_shutdown'))

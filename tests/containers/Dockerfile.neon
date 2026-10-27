@@ -16,7 +16,7 @@ ENV PYTHONUNBUFFERED=1
 # therefore builds the pinned, bundled Qt 6 engine instead of adding a PPA.
 RUN apt-get update && \
     DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
-        python3 python3-pytest git \
+        python3 python3-pytest python3-pil python3-pyqt6 python3-pyqt6.qtsvg plasma5support librsvg2-bin git \
         cmake make g++ extra-cmake-modules pkgconf \
         qmake6 qdbus-qt6 \
         qt6-base-dev qt6-base-private-dev qt6-declarative-dev qt6-tools-dev \

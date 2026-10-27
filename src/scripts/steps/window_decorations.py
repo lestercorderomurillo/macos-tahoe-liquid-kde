@@ -1,7 +1,10 @@
-import shutil
+from localization import tr
+
+from window_controls import EDITIONS, assemble_aurorae
+from theme_switch import decoration_theme
 
 from steps._helpers import (
-    DATA_HOME, fail, info, kw_write, offline, ok, qdbus_call, reinstall, theme_mode,
+    DATA_HOME, fail, info, kw_write, offline, ok, qdbus_call, reinstall, remove_tree, theme_mode,
     warn,
 )
 
@@ -12,39 +15,26 @@ VARIANTS = ("Dark", "Light")
 def install() -> None:
     src = offline("aurorae")
     if not src.is_dir():
-        fail(f"Aurorae source not found at {src}")
+        fail(tr('Aurorae source not found at {src}', src=src))
         return
 
     DEST_DIR.mkdir(parents=True, exist_ok=True)
     n_inst = n_re = 0
-    for mode in VARIANTS:
-        name = f"MacTahoeLiquidKde-{mode}"
-        dest = DEST_DIR / name
-        existed = dest.is_dir()
-        dest.mkdir(parents=True, exist_ok=True)
+    for edition in EDITIONS:
+        for mode in VARIANTS:
+            name = f"{edition}LiquidKde-{mode}"
+            dest = DEST_DIR / name
+            existed = dest.is_dir()
+            assemble_aurorae(src, dest, mode, edition)
+            if (dest / "decoration.svg").is_file():
+                from window_shadows import apply_aurorae
+                apply_aurorae(dest / "decoration.svg")
+            if existed:
+                reinstall(name); n_re += 1
+            else:
+                ok(tr('{name} (installed)', name=name)); n_inst += 1
 
-        deco = src / name / "decoration.svg"
-        if deco.is_file():
-            shutil.copy2(deco, dest)
-        rc = src / f"{name}rc"
-        if rc.is_file():
-            shutil.copy2(rc, dest / f"{name}rc")
-        for icon in (src / f"icons-{mode}").glob("*.svg"):
-            shutil.copy2(icon, dest)
-
-        for fn in ("metadata.desktop", "metadata.json"):
-            template = src / fn
-            if template.is_file():
-                (dest / fn).write_text(
-                    template.read_text().replace("theme_name", name)
-                )
-
-        if existed:
-            reinstall(name); n_re += 1
-        else:
-            ok(f"{name} (installed)"); n_inst += 1
-
-    chosen = "MacTahoeLiquidKde-Light" if theme_mode() == "light" else "MacTahoeLiquidKde-Dark"
+    chosen = decoration_theme(theme_mode())
     write_failures = 0
     for key, value in (
         ("library", "org.kde.kwin.aurorae"),
@@ -58,24 +48,21 @@ def install() -> None:
             write_failures += 1
     qdbus_call("org.kde.KWin", "/KWin", "org.kde.KWin.reconfigure")
     if write_failures == 0:
-        ok(f"Window decoration set to {chosen}")
+        ok(tr('Window decoration set to {chosen}', chosen=chosen))
     else:
-        warn(f"Window decoration files installed but {write_failures} "
-             "kwinrc key(s) could not be written — kwriteconfig6 "
-             "unavailable. Install plasma-workspace or your distro's "
-             "equivalent to apply the decoration on next login.")
+        warn(tr("Window decoration files installed but {write_failures} kwinrc key(s) could not be written — kwriteconfig6 unavailable. Install plasma-workspace or your distro's equivalent to apply the decoration on next login.", write_failures=write_failures))
 
-    info(f"{n_inst + n_re} Aurorae themes — {n_inst} installed, {n_re} reinstalled")
+    info(tr('{value1} Aurorae themes — {n_inst} installed, {n_re} reinstalled', value1=n_inst + n_re, n_inst=n_inst, n_re=n_re))
 
 
 def uninstall() -> None:
     n = 0
-    for mode in VARIANTS:
-        d = DEST_DIR / f"MacTahoeLiquidKde-{mode}"
-        if d.is_dir():
-            shutil.rmtree(d, ignore_errors=True)
-            ok(f"MacTahoeLiquidKde-{mode} removed")
-            n += 1
+    for edition in EDITIONS:
+        for mode in VARIANTS:
+            name = f"{edition}LiquidKde-{mode}"
+            d = DEST_DIR / name
+            if remove_tree(d, name):
+                n += 1
     for key, value in (
         ("library", "org.kde.breeze"),
         ("theme", "Breeze"),
@@ -86,5 +73,5 @@ def uninstall() -> None:
                  "--group", "org.kde.kdecoration2",
                  "--key", key, value)
     qdbus_call("org.kde.KWin", "/KWin", "org.kde.KWin.reconfigure")
-    ok("Window decoration reset to Breeze")
-    info(f"{n} Aurorae themes removed")
+    ok(tr('Window decoration reset to Breeze'))
+    info(tr('{n} Aurorae themes removed', n=n))

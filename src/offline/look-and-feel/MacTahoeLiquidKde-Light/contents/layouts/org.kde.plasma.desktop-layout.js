@@ -90,7 +90,11 @@ dock.height = 68;
 var launcher = dock.addWidget("org.kde.mac-tahoe-liquid-kde.launcher");
 launcher.currentConfigGroup = ["General"];
 launcher.writeConfig("icon", "view-app-grid");
-if (launcherPresets[dock.screen] !== undefined) {
+// The installer selects the new edition when migrating between editions.
+if (typeof mttkdeLauncherPreset !== "undefined"
+        && (mttkdeLauncherPreset === 1 || mttkdeLauncherPreset === 2)) {
+    launcher.writeConfig("launcherPreset", mttkdeLauncherPreset);
+} else if (launcherPresets[dock.screen] !== undefined) {
     launcher.writeConfig("launcherPreset", launcherPresets[dock.screen]);
 }
 dock.addWidget("org.kde.plasma.marginsseparator");

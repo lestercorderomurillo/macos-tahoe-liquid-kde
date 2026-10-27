@@ -87,6 +87,7 @@ if(GLASS_WAYLAND)
         KF6::ConfigGui
         KWin::kwin
         XCB::XCB
+        XCB::RENDER
     )
     # GLASS_KWIN_67 drives the 6.6-vs-6.7 ABI gating in kwin_version_compat.h.
     if(GLASS_KWIN_67_WAYLAND)
@@ -95,6 +96,7 @@ if(GLASS_WAYLAND)
     if(GLASS_KWIN_68_WAYLAND)
         target_compile_definitions(liquidglass PRIVATE GLASS_KWIN_68)
     endif()
+    target_compile_definitions(liquidglass PRIVATE GLASS_WAYLAND)
     install(TARGETS liquidglass DESTINATION ${KDE_INSTALL_PLUGINDIR}/kwin/effects/plugins)
 endif()
 if(GLASS_X11)
@@ -105,11 +107,11 @@ if(GLASS_X11)
         KF6::ConfigGui
         KWinX11::kwin
         XCB::XCB
+        XCB::RENDER
     )
-    target_compile_definitions(liquidglass_x11 PRIVATE GLASS_X11)
-    if(GLASS_KWIN_67_X11)
-        target_compile_definitions(liquidglass_x11 PRIVATE GLASS_KWIN_67)
-    endif()
+    target_compile_definitions(liquidglass_x11 PRIVATE GLASS_X11 KWIN_BUILD_X11)
+    # KWin's X11 SDK retains the legacy effect ABI on Plasma 6.7, unlike
+    # the Wayland SDK. Keep its ABI gates independent from the Wayland target.
     if(GLASS_KWIN_68_X11)
         target_compile_definitions(liquidglass_x11 PRIVATE GLASS_KWIN_68)
     endif()

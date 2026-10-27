@@ -2,6 +2,8 @@
 MacTahoeLiquidKde-Cursors.tar.zst into ~/.local/share/icons.
 Fully offline — no download phase."""
 
+from localization import tr
+
 import shutil
 import subprocess
 
@@ -21,7 +23,7 @@ def install() -> None:
     DEST_DIR.mkdir(parents=True, exist_ok=True)
     tarball = OFFLINE_DIR / "MacTahoeLiquidKde-Cursors.tar.zst"
     if not tarball.is_file():
-        fail(f"offline tarball missing: {tarball}")
+        fail(tr('offline tarball missing: {tarball}', tarball=tarball))
         return
 
     # Wipe our own stale cursor dirs (crashed-run leftovers); dirs whose
@@ -35,16 +37,16 @@ def install() -> None:
         check=False, capture_output=True, text=True,
     )
     if res.returncode != 0:
-        fail(f"tar --zstd failed ({res.returncode}): {res.stderr.strip()}")
+        fail(tr('tar --zstd failed ({value1}): {value2}', value1=res.returncode, value2=res.stderr.strip()))
         return
 
     n = 0
     for theme in sorted(DEST_DIR.glob("MacTahoeLiquidKde*")):
         if theme.is_dir() and "Icons" not in theme.name and \
                 (theme / "cursors").is_dir():
-            ok(f"{theme.name} (installed)")
+            ok(tr('{value1} (installed)', value1=theme.name))
             n += 1
-    info(f"{n} cursor themes installed/reinstalled")
+    info(tr('{n} cursor themes installed/reinstalled', n=n))
 
 
 def uninstall() -> None:
@@ -58,4 +60,4 @@ def uninstall() -> None:
             n += 1
         except OSError:
             fail(theme.name)
-    info(f"{n} cursor themes removed")
+    info(tr('{n} cursor themes removed', n=n))

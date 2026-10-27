@@ -534,6 +534,15 @@ def step_pytest() -> bool:
 
 
 def main() -> int:
+    try:
+        from PIL import Image  # noqa: F401 — required by icon rendering tests
+    except ImportError as exc:
+        print(f"FAIL: Pillow is required by the test suite: {exc}")
+        return 1
+    for command in ("git", "rsvg-convert"):
+        if not shutil.which(command):
+            print(f"FAIL: {command} is required by the test suite")
+            return 1
     plugins, qml = step_qmake6_directly()
     layer_ok = step_distro_layer(plugins, qml)
     pkg_ok = step_package_manager_layer()

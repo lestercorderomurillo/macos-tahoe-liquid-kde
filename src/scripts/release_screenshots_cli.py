@@ -21,7 +21,7 @@ def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--repo', type=Path, default=ROOT)
     sub = parser.add_subparsers(dest='command', required=True)
-    capture = sub.add_parser('capture', help='Capture all 30 frames in fresh disposable VMs')
+    capture = sub.add_parser('capture', help='Capture all required frames in fresh disposable VMs')
     capture.add_argument('--ref', default='HEAD')
     capture.add_argument('--vm-image', type=Path, required=True)
     capture.add_argument('--output', type=Path, required=True)
@@ -60,7 +60,7 @@ def main(argv=None):
                     review[decision][name] = manifest['frames'][name]['sha256']
                     review[opposite].pop(name, None)
             path.write_text(json.dumps(review, indent=2) + '\n')
-            print(f"Reviewed: {len(review['approved'])} approved, {len(review['rejected'])} rejected / 30 frames")
+            print(f"Reviewed: {len(review['approved'])} approved, {len(review['rejected'])} rejected / {len(manifest['frames'])} frames")
         elif args.command == 'stage':
             manifest = validate(args.repo, args.ref, args.bundle)
             require((args.destination / 'VERSION').read_text().strip() == manifest['version'], 'Destination version mismatch')

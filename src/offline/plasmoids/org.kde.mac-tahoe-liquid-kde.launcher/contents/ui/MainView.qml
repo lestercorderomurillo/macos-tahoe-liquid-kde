@@ -73,7 +73,8 @@ Item {
 		margin: main.searchPopupGap
 		transientParent: root
 		visible: root.visible && main.detachedSearch
-		hideOnWindowDeactivate: false
+		// PopupPlasmaWindow stays open by default. Its hideOnWindowDeactivate
+		// property only exists in Plasma 6.7+; our focus group handles dismissal.
 		width: root.width * 0.617
 		height: Kirigami.Units.iconSizes.huge * 1.625
 

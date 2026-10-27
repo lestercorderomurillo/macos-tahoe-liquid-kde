@@ -1,7 +1,7 @@
 { config, lib, pkgs, ... }:
 let
   cfg = config.services.mac-tahoe;
-  packages = import ./packages.nix { inherit pkgs; };
+  packages = import ./packages.nix { inherit pkgs; language = config.i18n.defaultLocale; };
   plugins = [ packages.global-menu packages.task-manager packages.acrylic-glass packages.rounded-corners ];
 in {
   options.services.mac-tahoe = {

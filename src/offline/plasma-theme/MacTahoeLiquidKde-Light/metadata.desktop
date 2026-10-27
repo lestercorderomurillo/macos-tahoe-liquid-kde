@@ -25,3 +25,7 @@ saturation=10
 
 [AdaptiveTransparency]
 enabled=true
+Name[pt_BR]=MacTahoeLiquidKde-Light
+Comment[pt_BR]=Tema claro macOS Tahoe para Plasma
+Name[de]=MacTahoeLiquidKde-Light
+Comment[de]=Helles macOS-Tahoe-Design für Plasma

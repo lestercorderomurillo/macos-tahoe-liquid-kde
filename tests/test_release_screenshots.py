@@ -28,6 +28,7 @@ def capture(tmp_path, monkeypatch):
     (repo / 'VERSION').write_text('1.2.3\n')
     (repo / 'README.md').write_text('![Files](src/screenshots/finder_v4.png)\n'
                                   '![Emblem](src/screenshots/macos-26.png)\n')
+    (repo / 'TESTING.md').write_text('![Installer](src/screenshots/installer-welcome_v4.png)\n')
     source = repo / 'src/offline/kwin-effects/acrylic-glass/src'
     source.mkdir(parents=True)
     (source / 'effect.cpp').write_text('release source\n')
@@ -51,13 +52,18 @@ def capture(tmp_path, monkeypatch):
         else:
             edition, mode, case = next((e, m, c) for e in shots.EDITIONS for m in shots.MODES for c in shots.CASES
                                        if name == f'{e}-{m}-{c}')
-            record.update(effect_build=manifest['effect_build'], appearance={'Plasma': 'MacTahoeLiquidKde-' + mode.capitalize()},
+            record.update(effect_build=manifest['effect_build'], appearance={
+                              'Plasma': 'MacTahoeLiquidKde-' + mode.capitalize(),
+                              'Icons': 'MacTahoeLiquidKde-Icons-Regular-' + mode.capitalize()},
                           wallpaper=shots.EDITIONS[edition][0], launcher_preset=shots.EDITIONS[edition][1],
                           stable_frames=True, window_verified=True, windows=[{
                               'caption': 'About This Computer (preview)' if case == 'about' else 'Documents',
                               'resourceClass': 'qml6' if case == 'about' else 'org.gnome.Nautilus',
                               'type': 0, 'active': True,
                               'geometry': dict(x=0, y=0, width=32, height=32)}])
+            if case.startswith('installer-'):
+                record.update(installer_page=case.removeprefix('installer-'),
+                              installer_edition=shots.EDITIONS[edition][0])
         manifest['frames'][name] = record
     write_json(bundle / 'manifest.json', manifest)
     write_json(bundle / 'review.json', {'manifest_sha256': shots.digest(bundle / 'manifest.json'),
@@ -73,6 +79,24 @@ def test_capture_can_be_committed_without_invalidating_source(capture):
     assert ref != final
     assert shots.runtime_tree(repo, ref) == shots.runtime_tree(repo, final)
     assert shots.verify_committed(repo, final)['version'] == '1.2.3'
+    assert 'installer-welcome_v4-' in (repo / 'TESTING.md').read_text()
+
+
+@pytest.mark.parametrize('mode', shots.MODES)
+def test_base_icons_cannot_replace_the_installed_regular_appearance(capture, mode):
+    repo, ref, bundle, manifest = capture
+    manifest['frames'][f'tahoe-{mode}-dock']['appearance']['Icons'] = 'MacTahoeLiquidKde-Icons'
+    write_json(bundle / 'manifest.json', manifest)
+    with pytest.raises(ValueError, match='Wrong icon appearance'):
+        shots.validate(repo, ref, bundle, reviewed=False)
+    # A matching review hash must not make the same bad provenance publishable.
+    review = json.loads((bundle / 'review.json').read_text())
+    review['manifest_sha256'] = shots.digest(bundle / 'manifest.json')
+    write_json(bundle / 'review.json', review)
+    shots.stage(repo, 'tahoe', bundle, manifest)
+    final = commit(repo)
+    with pytest.raises(ValueError, match='Wrong icon appearance'):
+        shots.verify_committed(repo, final)
 
 
 @pytest.mark.parametrize('path,content', [('VERSION', '1.2.4\n'), ('src/new-code.py', 'changed code\n')])
@@ -210,15 +234,26 @@ def test_staging_changes_urls_and_removes_only_replaced_images(capture):
     assert finder in (repo / 'README.md').read_text()
 
 
-def test_readme_changes_beyond_image_hashes_invalidate_capture(capture):
+@pytest.mark.parametrize('document', shots.SCREENSHOT_DOCS)
+def test_documentation_changes_beyond_image_hashes_invalidate_capture(capture, document):
     repo, ref, bundle, manifest = capture
     shots.stage(repo, 'tahoe', bundle, manifest)
     staged = commit(repo)
     assert shots.runtime_tree(repo, ref) == shots.runtime_tree(repo, staged)
-    with (repo / 'README.md').open('a') as stream:
+    with (repo / document).open('a') as stream:
         stream.write('Changed description\n')
     changed = commit(repo)
     assert shots.runtime_tree(repo, ref) != shots.runtime_tree(repo, changed)
+
+
+def test_testing_gallery_rejects_uncaptured_images_without_modifying_readme(capture):
+    repo, _, bundle, manifest = capture
+    before = (repo / 'README.md').read_bytes()
+    (repo / 'TESTING.md').write_text('![Missing](src/screenshots/missing-installer.png)\n')
+    with pytest.raises(ValueError, match='Uncaptured TESTING images'):
+        shots.stage(repo, 'tahoe', bundle, manifest)
+    assert (repo / 'README.md').read_bytes() == before
+    assert not (repo / 'src/screenshots').exists()
 
 
 def test_capture_tool_changes_require_a_committed_recipe(capture, monkeypatch):
@@ -260,3 +295,12 @@ def test_golden_gate_requires_the_matching_tahoe_pin(capture, tmp_path):
     target = commit(golden)
     with pytest.raises(ValueError, match='must pin the published Tahoe release tag'):
         shots.verify_committed(golden, target, tahoe=repo)
+
+
+@pytest.mark.parametrize('key,value', [('installer_page', 'welcome'), ('installer_edition', 'MacGoldenGate')])
+def test_installer_gallery_rejects_wrong_page_or_edition(capture, key, value):
+    repo, ref, bundle, manifest = capture
+    manifest['frames']['tahoe-light-installer-icons'][key] = value
+    write_json(bundle / 'manifest.json', manifest)
+    with pytest.raises(ValueError, match='Wrong installer'):
+        shots.validate(repo, ref, bundle, reviewed=False)

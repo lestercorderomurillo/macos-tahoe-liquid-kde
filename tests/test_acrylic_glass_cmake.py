@@ -27,6 +27,75 @@ def test_acrylic_glass_only_configures_kcm_when_a_kwin_backend_is_available():
     assert "add_subdirectory(kcm)" in src
 
 
+def test_acrylic_glass_enables_optional_x11_backend():
+    top = (ROOT / "CMakeLists.txt").read_text(encoding="utf-8")
+    src = (ROOT / "src/CMakeLists.txt").read_text(encoding="utf-8")
+    assert 'option(GLASS_X11 "Whether to build Acrylic Glass for X11 if present." ON)' in top
+    assert "add_library(liquidglass_x11 MODULE ${liquidglass_SOURCES})" in src
+    assert "target_compile_definitions(liquidglass_x11 PRIVATE GLASS_X11 KWIN_BUILD_X11)" in src
+    assert "kwin-x11/effects/plugins" in src
+    compat = (ROOT / "src/kwin_version_compat.h").read_text(encoding="utf-8")
+    assert "ACRYLIC_GLASS_WAYLAND_BACKGROUND_EFFECT_V1" in compat
+
+
+def test_acrylic_glass_requests_only_present_backend_sdks(monkeypatch):
+    from steps import acrylic_glass
+    monkeypatch.delenv("XDG_SESSION_TYPE", raising=False)
+
+    for binaries, expected in (
+        ({"kwin_wayland"}, {"kwin-cmake:kwin"}),
+        ({"kwin_x11"}, {"kwin-x11-cmake:kwin-x11"}),
+        ({"kwin_wayland", "kwin_x11"},
+         {"kwin-cmake:kwin"}),
+        (set(), {"kwin-cmake:kwin"}),
+    ):
+        monkeypatch.setattr(acrylic_glass, "have", lambda binary: binary in binaries)
+        kwin_dependencies = {dependency for dependency in acrylic_glass.deps()
+                             if dependency.startswith(("kwin-cmake:", "kwin-x11-cmake:"))}
+        assert kwin_dependencies == expected
+
+
+@pytest.mark.parametrize("session,dependency,module", [
+    ("wayland", "kwin-cmake:kwin", "liquidglass.so"),
+    ("x11", "kwin-x11-cmake:kwin-x11", "liquidglass_x11.so"),
+])
+def test_active_session_requires_its_sdk_and_module(monkeypatch, tmp_path, session, dependency, module):
+    from steps import acrylic_glass
+    monkeypatch.setenv("XDG_SESSION_TYPE", session)
+    monkeypatch.setattr(acrylic_glass, "have", lambda binary: True)
+    monkeypatch.setattr(acrylic_glass, "BUILD", tmp_path)
+    assert {item for item in acrylic_glass.deps()
+            if item.startswith(("kwin-cmake:", "kwin-x11-cmake:"))} == {dependency}
+    other = "liquidglass_x11.so" if session == "wayland" else "liquidglass.so"
+    (tmp_path / "src").mkdir()
+    (tmp_path / "src" / other).touch()
+    assert tmp_path / "src" / module in acrylic_glass.build_artifacts()
+    assert not (tmp_path / "src" / module).exists()
+
+
+def test_acrylic_glass_reports_the_optional_x11_artifact(monkeypatch, tmp_path):
+    from steps import acrylic_glass
+    monkeypatch.delenv("XDG_SESSION_TYPE", raising=False)
+
+    build = tmp_path / "build"
+    monkeypatch.setattr(acrylic_glass, "BUILD", build)
+    wayland = build / "src/liquidglass.so"
+    x11 = build / "src/liquidglass_x11.so"
+    config = build / "src/kcm/kwin_liquidglass_config.so"
+    wayland.parent.mkdir(parents=True)
+    wayland.touch()
+    config.parent.mkdir(parents=True)
+    config.touch()
+
+    assert acrylic_glass.build_artifacts() == [config, wayland]
+    x11.touch()
+    assert acrylic_glass.build_artifacts() == [config, wayland, x11]
+    wayland.unlink()
+    assert acrylic_glass.build_artifacts() == [config, x11]
+    x11.unlink()
+    assert any(not path.exists() for path in acrylic_glass.build_artifacts())
+
+
 def test_acrylic_glass_version_floor_matches_preflight():
     """The effect's CMake floor, the preflight runtime floor, and the
     README must all agree on 6.6 — they drifted once (CMake said 6.4
@@ -79,20 +148,28 @@ def test_acrylic_glass_preset_fits_kcm_ranges():
 def test_acrylic_glass_installs_the_effect_default_blur(monkeypatch, tmp_path, capsys,
                                                        active, returncode, identity, confirmed, edition):
     """Fresh installs apply the edition material and preserve radius overrides."""
+    import contextlib
     from steps import acrylic_glass
     from subprocess import CompletedProcess
+    monkeypatch.setattr(acrylic_glass, "_as_root", contextlib.nullcontext)
     monkeypatch.setattr(acrylic_glass, "default_wallpaper", lambda: edition)
 
     build = tmp_path / "build"
-    for name in ("src/liquidglass.so", "src/kcm/kwin_liquidglass_config.so"):
+    for name in ("src/liquidglass.so", "src/liquidglass_x11.so",
+                 "src/kcm/kwin_liquidglass_config.so"):
         artifact = build / name
         artifact.parent.mkdir(parents=True, exist_ok=True)
         artifact.touch()
     monkeypatch.setattr(acrylic_glass, "BUILD", build)
     monkeypatch.setattr(acrylic_glass, "_plugin_dir", lambda: tmp_path / "plugins")
     monkeypatch.setattr(acrylic_glass, "LEGACY_USER_PLUGIN_DIR", tmp_path / "legacy")
-    monkeypatch.setattr(acrylic_glass, "sudo_install_file", lambda *args: True)
-    monkeypatch.setattr(acrylic_glass, "_activate_effect_binary", lambda *args: True)
+    installed_files = []
+    activated_links = []
+    monkeypatch.setattr(acrylic_glass, "sudo_install_file",
+                        lambda source, destination, *args, **kwargs:
+                        installed_files.append(destination) or True)
+    monkeypatch.setattr(acrylic_glass, "_activate_effect_binary",
+                        lambda source, destination: activated_links.append(destination) or True)
     monkeypatch.setattr(acrylic_glass, "_running_build_matches", lambda: identity)
     monkeypatch.setattr(acrylic_glass, "_running_plugin_matches", lambda path: None)
     monkeypatch.setattr(acrylic_glass, "qdbus_call", lambda *args: True)
@@ -108,6 +185,8 @@ def test_acrylic_glass_installs_the_effect_default_blur(monkeypatch, tmp_path, c
 
     acrylic_glass.install()
     output = capsys.readouterr().out
+    assert tmp_path / "plugins/kwin-x11/effects/plugins/liquidglass.so" in activated_links
+    assert tmp_path / "plugins/kwin-x11/effects/configs/kwin_liquidglass_config.so" in installed_files
     assert ("Acrylic Glass loaded" in output) == confirmed
     if returncode != 0 or "liquidglass" not in active.splitlines():
         assert "activation was not confirmed" in output
@@ -120,7 +199,7 @@ def test_acrylic_glass_installs_the_effect_default_blur(monkeypatch, tmp_path, c
     entry = config.find(".//{*}entry[@name='BlurStrength']/{*}default")
     assert entry is not None
     default = entry.text
-    assert default == "10.0"
+    assert default == "5.0"
     blur_writes = [args for args in writes if "BlurStrength" in args]
     assert blur_writes == [("--file", "kwinrc", "--group", "Effect-liquidglass",
                            "--key", "BlurStrength", default)]
@@ -273,11 +352,11 @@ def test_acrylic_glass_selects_abi_per_backend(tmp_path):
     end = source.index("find_package(KDecoration3 REQUIRED)", start)
     # Run the actual discovery/version logic with synthetic SDK versions.
     for wayland, x11, expected in [
-        ("6.6.5", "", "OFF;OFF;OFF;OFF"),
-        ("6.7.4", "", "ON;OFF;OFF;OFF"),
-        ("6.7.90", "", "ON;OFF;ON;OFF"),
-        ("6.8.0", "6.7.4", "ON;ON;ON;OFF"),
-        ("", "6.8.0", "OFF;ON;OFF;ON"),
+        ("6.6.5", "", "OFF;OFF;OFF"),
+        ("6.7.4", "", "ON;OFF;OFF"),
+        ("6.7.90", "", "ON;ON;OFF"),
+        ("6.8.0", "6.7.4", "ON;ON;OFF"),
+        ("", "6.8.0", "OFF;OFF;ON"),
     ]:
         script = tmp_path / "versions.cmake"
         result = tmp_path / "result"
@@ -293,7 +372,7 @@ def test_acrylic_glass_selects_abi_per_backend(tmp_path):
             f'set(KWinX11_VERSION "{x11}")\n'
             + source[start:end]
             + f'file(WRITE "{result}" "${{GLASS_KWIN_67_WAYLAND}};'
-              '${GLASS_KWIN_67_X11};${GLASS_KWIN_68_WAYLAND};'
+              '${GLASS_KWIN_68_WAYLAND};'
               '${GLASS_KWIN_68_X11}")\n')
         proc = subprocess.run(["cmake", "-P", str(script)],
                               capture_output=True, text=True)
@@ -319,6 +398,8 @@ def test_detects_mapped_plugin_retained_after_atomic_replacement(tmp_path):
 
 def test_versioned_plugin_upgrade_and_identical_reinstall(tmp_path, monkeypatch):
     import contextlib
+    import os
+    import stat
     from steps import acrylic_glass as glass
 
     monkeypatch.setattr(glass, "_as_root", contextlib.nullcontext)
@@ -333,7 +414,21 @@ def test_versioned_plugin_upgrade_and_identical_reinstall(tmp_path, monkeypatch)
     directory = tmp_path / "plugins"
     source.write_bytes(b"first build")
     first = glass._versioned_effect_path(source, directory)
+    original_umask = os.umask(0o027)
+    try:
+        assert glass._install_effect_binary(source, first)
+    finally:
+        os.umask(original_umask)
+    assert stat.S_IMODE(first.parent.parent.stat().st_mode) == 0o755
+    assert stat.S_IMODE(first.parent.stat().st_mode) == 0o755
+    assert stat.S_IMODE(first.stat().st_mode) == 0o644
+    first.parent.parent.chmod(0o750)
+    first.parent.chmod(0o750)
+    first.chmod(0o666)
     assert glass._install_effect_binary(source, first)
+    assert stat.S_IMODE(first.parent.parent.stat().st_mode) == 0o755
+    assert stat.S_IMODE(first.parent.stat().st_mode) == 0o755
+    assert stat.S_IMODE(first.stat().st_mode) == 0o644
     link = directory / "liquidglass.so"
     assert glass._activate_effect_binary(first, link)
     assert link.resolve() == first

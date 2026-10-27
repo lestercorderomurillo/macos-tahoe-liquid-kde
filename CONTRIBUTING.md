@@ -26,11 +26,27 @@ KDE Plasma 6.6+ is required to actually exercise the desktop pieces. Most static
 git clone https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde
 cd macos-tahoe-liquid-kde
 
-sudo ./install       # installs user assets plus compiled system Qt6 plugins
-sudo ./uninstall     # removes current and legacy system Qt6 plugins
-./test               # full pytest suite (~20s)
+./installer          # graphical install wizard; requests privileges when needed
+./uninstall          # graphical uninstall confirmation
+./test               # full pytest suite
 ./test --vm          # plymouth render harness (requires root, see tests/vm/)
 ```
+
+For the focused dinit integration probe, build and run the official Artix image
+with dinit as PID 1 and a real cron daemon. The repository mount stays read-only;
+the jobs run as the disposable `tester` user. No privileged container is needed:
+
+```sh
+docker build -f tests/containers/Dockerfile.artix-dinit -t mttkde-test-artix-dinit tests/containers
+docker run -d --name mttkde-dinit-probe --network none -v "$PWD:/repo:ro" mttkde-test-artix-dinit
+docker exec mttkde-dinit-probe dinitctl --system is-started cronie
+docker exec -u tester mttkde-dinit-probe python /repo/tests/containers/dinit_scheduler_probe.py
+docker rm -f mttkde-dinit-probe
+```
+
+The probe takes up to two minutes and checks real scheduled execution, user
+identity, reinstall and cleanup. It does not establish live Plasma compatibility;
+dinit still needs a complete desktop VM qualification.
 
 Live theme switch without restarting the session:
 
@@ -79,10 +95,11 @@ tests/                  Pytest suite
   conftest.py           Sandbox fixture + live-state safety net
   test_*.py             One file per concern
   vm/                   Plymouth render harness (root-required)
-install / uninstall     Python entry points (chmod +x), dispatch into src/scripts/cli.py
+installer               Graphical installer and uninstaller
+install / uninstall     Aliases for the graphical installer and uninstaller
 ```
 
-Two entry points, one codebase. The shell wrappers `install` / `uninstall` at the repo root invoke `src/scripts/cli.py` with the correct phase.
+The graphical wizard invokes `src/scripts/installer_backend.py` with the selected options. The backend dispatches the shared step modules; there is no separate terminal wizard.
 
 Feature-based, NOT layer-based: a step owns its slice end-to-end. Don't dump every step's logic into a single `steps.py`.
 
@@ -191,9 +208,91 @@ The probe builds a private desktop-entry cache for Spectacle authorization.
 For Rounded Corners, pass its built plugin with
 `--rounded-shaders /path/to/build/src/shaders`. The probe draws an opaque
 window with an asymmetric decoration shadow and a red outline, then checks
-that the outline meets the window bottom. Run the unpatched v0.10.0 control
+that the outline meets the window bottom. Run a v0.10.0 build as the control
 as well: on the affected 6.8 path it displaces the outline by 24 pixels.
-The patched shader must align the outline on 6.6, 6.7 and 6.8.
+The pinned v0.11.0 shader must align the outline on 6.6, 6.7 and 6.8.
+
+## Icon generation toolset
+
+`./icon-toolset` builds application-icon appearances from our bundled base for
+both Tahoe and Golden Gate. It is a maintainer tool, separate from installation:
+it never changes the desktop, invokes another project's installer, downloads
+artwork, or changes the installed icon choice. Python 3.10+, Pillow,
+`rsvg-convert` (librsvg), and `zstd` are required. The generator supports every
+24-bit RGB tint through `--tint '#RRGGBB'`, not a fixed palette.
+
+```sh
+# Review a small sample first. Use a new output directory on every build.
+./icon-toolset build --output build/icons/sample --sizes 128 --tint '#ff7a18' \
+  --icons firefox org.kde.dolphin org.kde.konsole visual-studio-code spotify
+./icon-toolset preview build/icons/sample --output build/icons/sample-preview.png
+
+# Generate the complete base, including aliases, in all eight appearances.
+./icon-toolset build --output build/icons/full --tint '#6796d2'
+./icon-toolset verify build/icons/full
+./icon-toolset pack build/icons/full --output build/icons/full.tar.gz
+```
+
+`--variants` accepts `light`, `dark`, `black`, `white`, `clear-light`,
+`clear-dark`, `tinted-light`, and `tinted-dark`. Light/Dark preserve colored
+application artwork and branded color tiles. Black/White use dark/light tiles
+and tonal monochrome symbols. Clear/Tinted use translucent materials with
+separate light/dark foreground treatments. These are static icon appearances;
+they do not refract the live desktop. `--sizes` selects ordinary icon sizes
+(32, 64, 128, 256); default outputs are 64, 128 and 256 pixel PNGs.
+
+The generator identifies large SVG background layers and surrounding rim layers,
+then renders foreground artwork separately at double the largest output size.
+This avoids replacing every white or dark pixel inside a logo. Flattened artwork
+uses conservative edge-connected neutral-background detection. Unrecognized
+backgrounds retain their geometry and alpha; their classification is recorded
+for review rather than being presented as successfully separated glass layers.
+External SVG image references are omitted, counted and reported: the current
+base's `lact.svg` contains an unavailable localhost image. Other external SVG
+resources, scripts, entities and imports are rejected. No external data is fetched.
+
+For a missing application or an icon requiring precise layer separation, supply
+`--overrides path/to/overrides.json`. Each icon name maps to local artwork and its
+notice; paths are relative to that JSON file:
+
+```json
+{
+  "my-app": {
+    "source": "my-app.svg",
+    "kind": "glyph",
+    "notice": "my-app-NOTICE.txt"
+  }
+}
+```
+
+Use `glyph` for an isolated symbol to place on a new material tile, or `icon`
+for complete artwork. Overrides can replace existing names or add new names.
+The bundle carries override sources and notices. It also carries both unchanged
+base themes; generated themes inherit their interface, folder and status icons.
+All implementation and generated assets belong in Tahoe; Golden Gate only
+documents the shared workflow.
+
+`manifest.json` records the input archive hash, generator source hashes, renderer
+versions, tint, classifications, source hashes, output hashes and alias targets.
+Verification detects modified/missing/extra files and unsafe links, and validates
+theme inheritance and image dimensions. Builds never overwrite existing output.
+Pack normalizes timestamps and ownership for reproducible archives; identical
+inputs and renderer versions are needed for identical generated pixels.
+`--icons` marks a sample bundle partial; packaging it requires `--allow-partial`.
+Preview produces synthetic artwork contact sheets, not desktop screenshots.
+
+Our existing icon archive's provenance gaps remain documented in
+`THIRD_PARTY_NOTICES.md`; generation does not resolve or relicense those assets.
+Carry all supplied notices and review artwork before redistributing a generated
+pack. Packaging is not release approval. This tool does not alter installer
+defaults or publish its experimental output as the default icon theme.
+
+Visual references, inspected at immutable revisions, informed the feature design:
+[MacOS-Like](https://github.com/Scrimas/MacOS-Like/tree/efbc63d48d52bbaf52e9a70fb18e0d0c3c0719b2)
+for consistent light/dark tiles and missing-app coverage, and
+[MacTahoe Tinted Glass](https://github.com/Johan-Ardila/MacTahoe-tinted-glass-Icons-for-KDE-plasma/tree/789bfe8ded8d01435145a8f35b73d61f375f61c9)
+for tonal translucent appearances. Their code and icon packs are not included
+or used as build/runtime dependencies. The generator uses our own base artwork.
 
 ## Branching and commits
 
@@ -241,7 +340,28 @@ See [CLAUDE.md](CLAUDE.md) for the full convention list.
 
 ## i18n
 
-User-facing strings in QML go through `i18n("…")` from `org.kde.kirigami` / `QtCore`. Don't hardcode English (or any other language) strings in plasmoid UI. The installer's CLI output (`ok()` / `info()` / `warn()` / `fail()`) is English-only by design — keep messages short and actionable.
+User-facing widget strings use KDE's native `i18n()` catalogs. Keep category
+identity and other control flow independent of translated display names.
+Inherited Dock strings retain KDE's taskmanager domain; project-specific
+strings use the project's own domains.
+
+The installer supports English, Spanish, Simplified Chinese, Brazilian Portuguese
+and German. Brazilian Portuguese and German also cover project-owned CLI logs,
+help, recovery diagnostics and Acrylic Glass settings. Maintain their complete
+message catalogs in `src/scripts/locales/pt_BR.json` and `de.json`. Use
+`tr("Complete message: {path}", path=path)` before logging; never interpolate
+before translation. Translate display labels separately, preserving commands,
+paths, configuration values and external tool diagnostics. `step()` translates
+its own message and records a stable source key for progress classification.
+
+After editing widget or Acrylic Glass strings, run
+`python3 src/scripts/build_translations.py` with gettext's `msgfmt` available.
+Commit the generated `.po` and `.mo` files together. Update localized metadata
+alongside its English source. `tests/test_multilanguage.py` checks coverage,
+placeholders, locale aliases, progress classification and installed helpers
+without access to the checkout. Check both languages visually for clipped text.
+Standalone theme-switch and OLED-care executables embed the localization runtime
+at installation; Nix installs the runtime and catalogs beside the scripts.
 
 ## What NOT to do
 
@@ -270,6 +390,9 @@ Be a decent human. I'll close anything abusive, off-topic, or trying to drag thi
 
 ## Documentation screenshots
 
+Keep the installer gallery in [TESTING.md](TESTING.md); the README links to it
+without embedding installer screenshots. Desktop and Dock photographs stay in the README.
+
 Every release requires a new complete capture. Use `./release-screenshots`,
 not the older single-window helper, for publication. The release workflow
 verifies committed provenance before creating the GitHub release. Never use
@@ -294,9 +417,9 @@ screenshots are outside this gallery rule.
    Stage Golden Gate from the same reviewed bundle using `--edition golden-gate`
    and its checkout as `--destination`. Both versions must already match.
    Staging gives each image a filename containing its content SHA-256 prefix,
-   updates README URLs, and removes replaced images and obsolete aliases.
+   updates README and TESTING URLs, and removes replaced images and obsolete aliases.
 5. Commit the screenshots. This commit may change only `src/screenshots/`
-   and README screenshot filename hashes relative to the captured candidate;
+   and README/TESTING screenshot filename hashes relative to the captured candidate;
    other changes require recapture.
    Run `./release-screenshots verify`. Push the version tag to trigger the
    gated release workflow. Its release title is exactly `vVERSION`.
@@ -317,7 +440,7 @@ The profile fixes 3840×2160 output, 2× scale, locale, timezone, clock, Documen
 fixtures, pinned apps, window positions and pointer position. Each frame must
 settle to two identical consecutive captures. The active effect identity must
 match the captured source. Provenance excludes screenshot outputs and normalizes
-README screenshot filename hashes to avoid a circular commit hash. This makes the capture procedure repeatable; it does
+README/TESTING screenshot filename hashes to avoid a circular commit hash. This makes the capture procedure repeatable; it does
 not promise identical pixels across different host GPUs/QEMU versions. Keep
 the same capture host for comparisons and retain each bundle with its logs.
 

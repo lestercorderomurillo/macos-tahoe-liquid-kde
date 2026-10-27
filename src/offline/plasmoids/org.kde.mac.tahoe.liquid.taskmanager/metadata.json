@@ -13,7 +13,11 @@
         "License": "GPL-3.0",
         "Name": "Task Manager",
         "Name[es]": "Gestor de tareas",
-        "Name[zh_CN]": "任务管理器"
+        "Name[zh_CN]": "任务管理器",
+        "Name[pt_BR]": "Gerenciador de tarefas",
+        "Description[pt_BR]": "Gerenciador de tarefas do Dock MacTahoe Liquid KDE com indicadores no estilo macOS",
+        "Name[de]": "Fensterleiste",
+        "Description[de]": "MacTahoe-Liquid-KDE-Dock-Fensterleiste mit Kennzeichen im macOS-Stil"
     },
     "X-Plasma-API-Minimum-Version": "6.0",
     "X-Plasma-Provides": [

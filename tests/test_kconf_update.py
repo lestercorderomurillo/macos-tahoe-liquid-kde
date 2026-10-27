@@ -10,6 +10,7 @@ $HOME (KF6 kconf_update contract, which passes no arguments).
 import os
 import subprocess
 from pathlib import Path
+import pytest
 
 
 def _run_script(script: Path, *args: Path, env: dict | None = None) -> None:
@@ -23,6 +24,9 @@ def test_kconf_update_assets_present(offline):
                  "mac-tahoe-scrub-colorgroups",
                  "mac-tahoe-migrate-appletsrc"):
         assert (base / (name + ".sh")).is_file(), f"missing helper {name}.sh"
+        if name == "mac-tahoe-scrub-kdedefaults":
+            assert not (base / (name + ".upd")).exists()
+            continue
         assert (base / (name + ".upd")).is_file(), f"missing {name}.upd"
         upd = (base / (name + ".upd")).read_text().splitlines()
         # KF6 kconf_update skips .upd files whose first line isn't Version=6
@@ -124,9 +128,11 @@ def test_install_skips_appletsrc_when_plasmoids_disabled(tmp_path, monkeypatch):
     cfg.mkdir()
     appletsrc = cfg / "plasma-org.kde.plasma.desktop-appletsrc"
     appletsrc.write_text("plugin=org.kde.plasma.icontasks\n")
-    kc.install()
     installed = tmp_path / "kconf_update"
-    assert (installed / "mac-tahoe-scrub-kdedefaults.upd").is_file()
+    installed.mkdir()
+    (installed / "mac-tahoe-scrub-kdedefaults.upd").write_text("old login cleanup")
+    kc.install()
+    assert not (installed / "mac-tahoe-scrub-kdedefaults.upd").exists()
     assert not (installed / "mac-tahoe-migrate-appletsrc.sh").exists()
     assert not (installed / "mac-tahoe-migrate-appletsrc.upd").exists()
     assert appletsrc.read_text() == "plugin=org.kde.plasma.icontasks\n"
@@ -161,13 +167,16 @@ def test_v038_border_sync_rollback_is_exact_and_preserves_effect_state(monkeypat
     assert not any("--delete" in write for write in writes)
 
 
-def test_helpers_self_locate_when_run_argless(tmp_path, offline):
-    """KF6 kconf_update runs scripts with no arguments: each helper must find
-    its live config files from $XDG_CONFIG_HOME / $HOME on its own."""
+@pytest.mark.parametrize("mode", ["Light", "Dark"])
+def test_login_migrations_preserve_active_inherited_theme(tmp_path, offline, mode):
+    """A stale login descriptor must not erase inherited Plasma defaults."""
     cfg = tmp_path / ".config"
     (cfg / "kdedefaults").mkdir(parents=True)
-    (cfg / "kdedefaults/package").write_text("MacTahoeLiquidKde-Dark\n")
-    (cfg / "kdedefaults/plasmarc").write_text("Theme=MacTahoeLiquidKde-Dark\n")
+    package = f"org.kde.mac-tahoe-liquid-kde.{mode.lower()}\n"
+    plasma = f"[Theme]\nname=MacTahoeLiquidKde-{mode}\n"
+    (cfg / "kdedefaults/package").write_text(package)
+    (cfg / "kdedefaults/plasmarc").write_text(plasma)
+    (cfg / "plasmarc").write_text("")  # KConfig omitted the inherited value.
     (cfg / "kdeglobals").write_text(
         "[Colors:Button]\\x5d\\x5bBad]\nBackgroundNormal=0,0,0\n"
         "[Colors:Window]\nBackgroundNormal=1,1,1\n")
@@ -179,9 +188,9 @@ def test_helpers_self_locate_when_run_argless(tmp_path, offline):
                  "mac-tahoe-scrub-colorgroups.sh",
                  "mac-tahoe-migrate-appletsrc.sh"):
         _run_script(offline / "kconf_update" / name, env=env)
-    assert (cfg / "kdedefaults/package").read_text().strip() == \
-        "org.kde.breeze.desktop"
-    assert "MacTahoe" not in (cfg / "kdedefaults/plasmarc").read_text()
+    assert (cfg / "kdedefaults/package").read_text() == package
+    assert (cfg / "kdedefaults/plasmarc").read_text() == plasma
+    assert (cfg / "plasmarc").read_text() == ""
     assert "[Colors:Button]" not in (cfg / "kdeglobals").read_text()
     assert "org.kde.mac.tahoe.liquid.icontasks" in \
         (cfg / "plasma-org.kde.plasma.desktop-appletsrc").read_text()

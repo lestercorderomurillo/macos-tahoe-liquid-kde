@@ -9,7 +9,11 @@
         "Description": "Acrylic Glass — blur and rounded corners for KDE Plasma 6.",
         "EnabledByDefault": false,
         "License": "GPL-3.0",
-        "Name": "Acrylic Glass"
+        "Name": "Acrylic Glass",
+        "Name[pt_BR]": "Acrylic Glass",
+        "Description[pt_BR]": "Acrylic Glass — desfoque e cantos arredondados para KDE Plasma 6.",
+        "Name[de]": "Acrylic Glass",
+        "Description[de]": "Acrylic Glass — Unschärfe und abgerundete Ecken für KDE Plasma 6."
     },
     "X-KDE-ConfigModule": "kwin_liquidglass_config"
 }

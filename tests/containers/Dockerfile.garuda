@@ -6,8 +6,10 @@ FROM archlinux:latest
 
 RUN printf 'NAME="Garuda Linux"\nID=garuda\nID_LIKE=arch\nPRETTY_NAME="Garuda Linux"\n' > /etc/os-release
 
-RUN pacman -Syu --noconfirm --needed \
-    python python-pytest \
+# Refresh signing keys immediately before the full upgrade.
+RUN pacman -Sy --noconfirm --needed archlinux-keyring && \
+    pacman -Syu --noconfirm --needed \
+    python python-pytest git zstd python-pillow python-pyqt6 plasma5support librsvg \
     cmake make gcc extra-cmake-modules \
     qt6-base qt6-tools qt6-declarative qt6-svg \
     pkgconf \

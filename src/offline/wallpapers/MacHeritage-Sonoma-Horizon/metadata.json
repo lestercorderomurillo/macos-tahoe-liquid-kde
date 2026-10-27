@@ -1,7 +1,7 @@
 {
     "KPlugin": {
         "Id": "MacHeritage-Sonoma-Horizon",
-        "Name": "macOS Sonoma \u2014 Horizon",
+        "Name": "macOS Sonoma — Horizon",
         "Description": "macOS Sonoma horizon variant",
         "Authors": [
             {
@@ -12,6 +12,10 @@
         "Category": "MacTahoe Liquid KDE",
         "License": "Apple Inc. wallpapers extracted from macOS",
         "Website": "https://github.com/lester-sudo/macos-tahoe-liquid-kde",
-        "Version": "1.0"
+        "Version": "1.0",
+        "Name[pt_BR]": "macOS Sonoma — Horizonte",
+        "Description[pt_BR]": "Variante do horizonte do macOS Sonoma",
+        "Name[de]": "macOS Sonoma — Horizont",
+        "Description[de]": "Horizontvariante von macOS Sonoma"
     }
 }

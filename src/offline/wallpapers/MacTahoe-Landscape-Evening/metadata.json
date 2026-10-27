@@ -12,6 +12,10 @@
         "Category": "MacTahoe Liquid KDE",
         "License": "Apple Inc. wallpapers extracted from macOS",
         "Website": "https://github.com/lester-sudo/macos-tahoe-liquid-kde",
-        "Version": "1.0"
+        "Version": "1.0",
+        "Name[pt_BR]": "Paisagem Tahoe — Entardecer",
+        "Description[pt_BR]": "Paisagem do lago Tahoe — Entardecer",
+        "Name[de]": "Tahoe-Landschaft — Abend",
+        "Description[de]": "Landschaft am Lake Tahoe — Abend"
     }
 }

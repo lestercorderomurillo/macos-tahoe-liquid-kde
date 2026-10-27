@@ -12,7 +12,7 @@
  * KWin's private effect ABI is not stable across feature releases, so
  * the parts of this effect that touch it have to be compiled against the
  * exact KWin the user is building on. Plasma 6.7 made two source-breaking
- * changes:
+ * changes to the Wayland effect SDK:
  *
  *   1. KDE retired its proprietary blur protocol (`org_kde_kwin_blur`)
  *      in favour of the freedesktop standard `ext_background_effect_v1`.
@@ -31,18 +31,21 @@
  *      makes the `override` mismatch the base class — the "marked
  *      override, but does not override" error.
  *
- * GLASS_KWIN_67 is defined by CMake (see CMakeLists.txt) when
- * find_package(KWin) reports >= 6.7 — the same flag and threshold the
- * upstream kwin-effects-glass fork uses, kept identical on purpose so
- * the two trees stay easy to cross-reference. When the macro is absent
- * we are on 6.6 (the supported floor): the old org_kde_kwin_blur
- * protocol with the presentTime paint parameter.
+ * GLASS_KWIN_67 is defined by CMake when the Wayland SDK reports >= 6.7.
+ * The Plasma 6.7 X11 SDK retains the legacy effect API and protocol, so
+ * the X11 module deliberately uses the pre-6.7 branch even on Plasma 6.7.
  */
 
 #ifdef GLASS_KWIN_67
 #define ACRYLIC_GLASS_KWIN_6_7 1
 #else
 #define ACRYLIC_GLASS_KWIN_6_7 0
+#endif
+
+#if ACRYLIC_GLASS_KWIN_6_7 && defined(GLASS_WAYLAND)
+#define ACRYLIC_GLASS_WAYLAND_BACKGROUND_EFFECT_V1 1
+#else
+#define ACRYLIC_GLASS_WAYLAND_BACKGROUND_EFFECT_V1 0
 #endif
 
 #if ACRYLIC_GLASS_KWIN_6_7

@@ -23,6 +23,9 @@ def test_files_pixels_reject_opposite_mode(mode):
 def test_session_rejects_stale_css_when_settings_all_match(tmp_path, monkeypatch, mode):
     theme = 'MacTahoeLiquidKde-' + mode.capitalize()
     def read(*args):
+        if 'kwinrc' in args:
+            from theme_switch import decoration_theme
+            return '__aurorae__svg__' + decoration_theme(mode)
         if args[0] == 'gsettings':
             return repr('prefer-' + mode if args[-1] == 'color-scheme' else theme)
         if 'ColorScheme' in args:
@@ -60,3 +63,13 @@ def test_wait_requires_consecutive_matches(monkeypatch):
     monkeypatch.setattr(checks.time, 'sleep', lambda _: None)
     checks.wait_for_session('light')
     assert len(observed) == 5
+
+
+@pytest.mark.parametrize('style', ['flat', 'glassy'])
+def test_session_rejects_the_other_control_style(monkeypatch, style):
+    import json
+    monkeypatch.setenv('MTTKDE_WIZARD_OPTIONS', json.dumps({'window_controls': style}))
+    other = 'MacTahoe' if style == 'glassy' else 'MacGoldenGate'
+    monkeypatch.setattr(checks, '_read', lambda *args: f'__aurorae__svg__{other}LiquidKde-Light')
+    with pytest.raises(checks.AppearanceMismatch, match='Window controls'):
+        checks.check_session('light')

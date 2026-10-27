@@ -1,4 +1,4 @@
-"""OpenRC scheduling backend (init_system detection + crontab writer).
+"""OpenRC/dinit scheduling backend (init detection + crontab writer).
 
 The two timed features (OLED care, timed theme switch) fall back to a
 per-user crontab line on OpenRC hosts, where there is no
@@ -23,17 +23,19 @@ from steps import _scheduler
 # ── init detection ───────────────────────────────────────────────────
 
 
-def test_init_system_env_override(monkeypatch):
-    monkeypatch.setenv("MTTKDE_INIT", "openrc")
-    assert distro.init_system() == "openrc"
+@pytest.mark.parametrize("backend", ["openrc", "dinit"])
+def test_init_system_env_override(monkeypatch, backend):
+    monkeypatch.setenv("MTTKDE_INIT", backend)
+    assert distro.init_system() == backend
     assert not _scheduler.is_systemd()
     monkeypatch.setenv("MTTKDE_INIT", "systemd")
     assert distro.init_system() == "systemd"
     assert _scheduler.is_systemd()
 
 
-def test_user_service_manager_command_is_init_gated(monkeypatch):
-    monkeypatch.setenv("MTTKDE_INIT", "openrc")
+@pytest.mark.parametrize("backend", ["openrc", "dinit"])
+def test_user_service_manager_command_is_init_gated(monkeypatch, backend):
+    monkeypatch.setenv("MTTKDE_INIT", backend)
     assert distro.user_service_manager_command("restart", "example") is None
     monkeypatch.setenv("MTTKDE_INIT", "systemd")
     assert distro.user_service_manager_command("restart", "example") == [
@@ -44,7 +46,39 @@ def test_user_service_manager_command_is_init_gated(monkeypatch):
 def test_init_system_ignores_garbage_override(monkeypatch):
     monkeypatch.setenv("MTTKDE_INIT", "upstart")
     # Falls through to the real probe rather than honoring a bad value.
-    assert distro.init_system() in ("systemd", "openrc")
+    assert distro.init_system() in ("systemd", "openrc", "dinit")
+
+
+@pytest.mark.parametrize("systemd,comm,executable,expected", [
+    (False, "dinit", None, "dinit"),
+    (False, "init", "/usr/bin/dinit", "dinit"),
+    (False, "init", "/usr/bin/dinit (deleted)", "dinit"),
+    (False, "init", "/sbin/openrc-init", "openrc"),
+    (False, None, None, "openrc"),
+    (True, "dinit", "/usr/bin/dinit", "systemd"),
+])
+def test_init_detection_uses_pid_one(
+        monkeypatch, tmp_path, systemd, comm, executable, expected):
+    proc = tmp_path / "proc"
+    init = proc / "1"
+    init.mkdir(parents=True)
+    if comm is not None:
+        (init / "comm").write_text(comm + "\n")
+    if executable is not None:
+        (init / "exe").symlink_to(executable)
+    # A user dinit instance must never change the system backend.
+    user = proc / "123"
+    user.mkdir()
+    (user / "comm").write_text("dinit\n")
+    marker = tmp_path / "systemd"
+    if systemd:
+        marker.mkdir()
+    monkeypatch.setattr(distro, "_PROC_ROOT", proc)
+    monkeypatch.setattr(distro, "_SYSTEMD_MARKER", marker)
+    monkeypatch.setattr(distro, "_INIT_CACHE", None)
+    monkeypatch.delenv("MTTKDE_INIT", raising=False)
+    assert distro.init_system() == expected
+    assert (distro.user_service_manager_command("daemon-reload") is None) == (expected != "systemd")
 
 
 def test_crontab_dep_resolves_per_distro(monkeypatch):
@@ -53,6 +87,22 @@ def test_crontab_dep_resolves_per_distro(monkeypatch):
     assert distro.package_for("crontab") == "cronie"
     monkeypatch.setattr(distro, "_DISTRO_CACHE", "artix")
     assert distro.package_for("crontab") == "cronie"
+
+
+@pytest.mark.parametrize("backend", ["systemd", "openrc", "dinit"])
+def test_cron_dependencies_only_for_enabled_schedules(monkeypatch, backend):
+    from steps import oled_care, theme_switch
+
+    monkeypatch.setenv("MTTKDE_INIT", backend)
+    monkeypatch.setenv("THEME_MODE", "light")
+    monkeypatch.setenv("FEAT_OLED_CARE", "false")
+    assert theme_switch.deps() == []
+    assert oled_care.deps() == []
+    monkeypatch.setenv("THEME_MODE", "auto")
+    monkeypatch.setenv("FEAT_OLED_CARE", "true")
+    expected = [] if backend == "systemd" else ["crontab"]
+    assert theme_switch.deps() == expected
+    assert oled_care.deps() == expected
 
 
 # ── fake crontab harness ─────────────────────────────────────────────
@@ -89,16 +139,54 @@ class _Result:
         self.stderr = stderr
 
 
-@pytest.fixture
-def fake_cron(monkeypatch):
+@pytest.fixture(params=["openrc", "dinit"])
+def fake_cron(monkeypatch, request):
     fake = FakeCrontab()
     monkeypatch.setattr(_scheduler, "run_user", fake)
     # The fake stands in for a REAL crontab client, so report one present —
     # otherwise the _have_crontab() guard (which shutil.which's the binary,
     # absent on the CI host) short-circuits before the fake runs.
     monkeypatch.setattr(_scheduler, "_have_crontab", lambda: True)
-    monkeypatch.setenv("MTTKDE_INIT", "openrc")
+    monkeypatch.setenv("MTTKDE_INIT", request.param)
+    monkeypatch.setattr(_scheduler, "cron_daemon_running", lambda: True)
     return fake
+
+
+@pytest.mark.parametrize("running", [False, True])
+def test_scheduling_warns_if_cron_daemon_is_not_confirmed(
+        fake_cron, monkeypatch, running):
+    warnings = []
+    monkeypatch.setattr(_scheduler, "cron_daemon_running", lambda: running)
+    monkeypatch.setattr(_scheduler, "warn", warnings.append)
+    assert _scheduler.install_periodic("oled", 5, "/bin/oled")
+    assert _scheduler.install_at_times("theme", [(6, 0)], "/bin/theme")
+    assert len(fake_cron.lines) == 2
+    assert len(warnings) == (0 if running else 2)
+    assert all("cron daemon" in message for message in warnings)
+
+
+@pytest.mark.parametrize("name,uid,expected", [
+    ("crond", 0, True), ("cron", 0, True), ("dcron", 0, True),
+    ("crontab", 0, False), ("crond", 1000, False),
+])
+def test_cron_daemon_probe_checks_process_and_owner(
+        monkeypatch, tmp_path, name, uid, expected):
+    from types import SimpleNamespace
+
+    process = tmp_path / "42"
+    process.mkdir()
+    (process / "comm").write_text(name + "\n")
+    monkeypatch.setattr(distro, "_PROC_ROOT", tmp_path)
+    original_stat = Path.stat
+    monkeypatch.setattr(Path, "stat", lambda path, **kw:
+                        SimpleNamespace(st_uid=uid) if path == process
+                        else original_stat(path, **kw))
+    assert distro.cron_daemon_running() is expected
+
+
+def test_cron_daemon_probe_handles_inaccessible_proc(monkeypatch, tmp_path):
+    monkeypatch.setattr(distro, "_PROC_ROOT", tmp_path / "missing")
+    assert distro.cron_daemon_running() is False
 
 
 # ── crontab writer ───────────────────────────────────────────────────

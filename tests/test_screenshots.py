@@ -47,7 +47,10 @@ def test_about_capture_never_runs_when_preview_is_not_ready(capture_module, monk
 
 
 @pytest.mark.parametrize("edition", ["MacTahoe", "MacGoldenGate"])
-def test_about_labels_survive_empty_host_translation_context(repo, tmp_path, monkeypatch, edition):
+@pytest.mark.parametrize("initial_mode", ["Light", "Dark"])
+def test_about_labels_and_surface_follow_appearance(repo, tmp_path, monkeypatch, edition, initial_mode):
+    import configparser
+    import json
     import glass_surfaces
     pytest.importorskip('PyQt6.QtQuick')
     from PyQt6.QtCore import QLibraryInfo
@@ -55,9 +58,9 @@ def test_about_labels_survive_empty_host_translation_context(repo, tmp_path, mon
     if not (imports / 'org/kde/ki18n/qmldir').is_file():
         pytest.skip('KDE QML translations are not installed')
     probe = r'''
-import sys
+import sys, json
 from PyQt6.QtCore import QObject, QUrl, pyqtSlot
-from PyQt6.QtGui import QGuiApplication
+from PyQt6.QtGui import QGuiApplication, QColor, QImage, QPainter
 from PyQt6.QtQml import QQmlApplicationEngine, QQmlComponent, QQmlProperty, QQmlExpression
 from PyQt6.QtQuick import QQuickItem
 class EmptyTranslations(QObject):
@@ -93,17 +96,39 @@ window = engine.rootObjects()[0]
 surface = window.findChild(QQuickItem, 'aboutGlassSurface')
 highlight = window.findChild(QQuickItem, 'aboutGlassHighlight')
 assert surface is not None and highlight is not None
-for mode, foreground in [('white', 255), ('black', 0)]:
+def luminance(color):
+    def linear(value):
+        return value / 12.92 if value <= .04045 else ((value + .055) / 1.055) ** 2.4
+    return sum(weight * linear(value) for weight, value in zip(
+        (.2126, .7152, .0722), (color.redF(), color.greenF(), color.blueF())))
+
+palette = json.loads(sys.argv[3])
+for mode, foreground in [('white', 255), ('black', 0), ('white', 255)]:
     expression = QQmlExpression(engine.contextForObject(window), window,
-                               'Kirigami.Theme.backgroundColor = '+repr(mode))
+                               'Kirigami.Theme.backgroundColor = '+repr(mode)
+                               + '; Kirigami.Theme.textColor = ' + repr(palette[mode]))
     expression.evaluate()
     assert not expression.hasError(), expression.error().toString()
     app.processEvents()
-    assert abs(window.property('secondaryTextColor').alphaF() - .85) < .005
     fill = surface.property('color')
     clear = sys.argv[2] == 'MacGoldenGate'
+    secondary = window.property('secondaryTextColor')
     assert fill.red() == fill.green() == fill.blue() == (255 if clear else foreground)
-    assert abs(fill.alphaF() - (.01 if clear else .48 if foreground == 0 else .55)) < .005
+    expected_alpha = (.01 if foreground == 0 else .60) if clear else (.48 if foreground == 0 else .55)
+    assert abs(fill.alphaF() - expected_alpha) < .005, (sys.argv[2], mode, fill.getRgbF())
+    assert abs(secondary.alphaF() - (.90 if clear and foreground == 255 else .85)) < .005
+    assert secondary.name() == palette[mode]
+    if clear and foreground == 255:
+        # Composite the actual QML fill over the reported black backdrop.
+        # Include secondary labels' alpha, not just the primary text.
+        image = QImage(2, 1, QImage.Format.Format_ARGB32)
+        image.fill(QColor('black'))
+        painter = QPainter(image)
+        painter.fillRect(image.rect(), fill)
+        painter.fillRect(0, 0, 1, 1, secondary)
+        painter.end()
+        contrast = (luminance(image.pixelColor(1, 0)) + .05) / (luminance(image.pixelColor(0, 0)) + .05)
+        assert contrast >= 4.5, contrast
     assert QQmlProperty(surface, 'border.width').read() == .75
     assert QQmlProperty(highlight, 'border.width').read() == .75
     outer = QQmlProperty(surface, 'border.color').read()
@@ -113,7 +138,7 @@ for mode, foreground in [('white', 255), ('black', 0)]:
     assert highlight.property('radius') == surface.property('radius') - .75
 '''
     qml = repo / 'src/offline/plasmoids/org.kde.mac.tahoe.liquid.globalmenu/qml/AboutWindow.qml'
-    name = 'MacTahoeLiquidKde-Dark'
+    name = 'MacTahoeLiquidKde-' + initial_mode
     theme = tmp_path / 'data/plasma/desktoptheme' / name
     shutil.copytree(repo / 'src/offline/plasma-theme' / name, theme)
     monkeypatch.setattr(glass_surfaces, 'default_wallpaper', lambda: edition)
@@ -123,7 +148,13 @@ for mode, foreground in [('white', 255), ('black', 0)]:
                LANGUAGE='en', LC_ALL='C.UTF-8', HOME=str(tmp_path),
                XDG_DATA_HOME=str(tmp_path / 'data'),
                XDG_CONFIG_HOME=str(tmp_path), DBUS_SESSION_BUS_ADDRESS='unix:path=/nonexistent')
-    result = subprocess.run([sys.executable, '-c', probe, str(qml), edition], env=env,
+    palette = {}
+    for mode, key in [('Light', 'white'), ('Dark', 'black')]:
+        scheme = configparser.ConfigParser()
+        scheme.read(repo / f'src/offline/color-schemes/MacTahoeLiquidKde{mode}.colors')
+        rgb = map(int, scheme['Colors:Window']['ForegroundNormal'].split(','))
+        palette[key] = '#' + ''.join(f'{value:02x}' for value in rgb)
+    result = subprocess.run([sys.executable, '-c', probe, str(qml), edition, json.dumps(palette)], env=env,
                             capture_output=True, text=True, timeout=20)
     assert result.returncode == 0, result.stdout + result.stderr
 

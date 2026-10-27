@@ -25,3 +25,7 @@ saturation=10
 
 [AdaptiveTransparency]
 enabled=true
+Name[pt_BR]=MacTahoeLiquidKde-Dark
+Comment[pt_BR]=Tema escuro macOS Tahoe para Plasma
+Name[de]=MacTahoeLiquidKde-Dark
+Comment[de]=Dunkles macOS-Tahoe-Design für Plasma

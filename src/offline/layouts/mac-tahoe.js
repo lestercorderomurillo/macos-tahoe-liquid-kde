@@ -27,6 +27,7 @@ for (var screen = 0; screen < screenCount; screen++) {
     // ── top menu bar ────────────────────────────────
     // Top bar, flush panel with applets-only floating. floatingApplets=1 is
     // reasserted via plasmashellrc after layout apply and every theme switch.
+    if (typeof mttkdeTopPanel === "undefined" || mttkdeTopPanel) {
     var bar = new Panel("org.kde.panel");
     bar.location = "top";
     bar.screen = screen;
@@ -82,6 +83,8 @@ for (var screen = 0; screen < screenCount; screen++) {
 
     // ── bottom dock ─────────────────────────────────
     // floating, centered, large icons like macOS
+    }
+    if (typeof mttkdeDock === "undefined" || mttkdeDock) {
     var dock = new Panel("org.kde.panel");
     dock.location = "bottom";
     dock.screen = screen;
@@ -97,7 +100,11 @@ for (var screen = 0; screen < screenCount; screen++) {
     var launcher = dock.addWidget("org.kde.mac-tahoe-liquid-kde.launcher");
     launcher.currentConfigGroup = ["General"];
     launcher.writeConfig("icon", "view-app-grid");
-    if (launcherPresets[dock.screen] !== undefined) {
+    // The installer selects the new edition when migrating between editions.
+    if (typeof mttkdeLauncherPreset !== "undefined"
+            && (mttkdeLauncherPreset === 1 || mttkdeLauncherPreset === 2)) {
+        launcher.writeConfig("launcherPreset", mttkdeLauncherPreset);
+    } else if (launcherPresets[dock.screen] !== undefined) {
         launcher.writeConfig("launcherPreset", launcherPresets[dock.screen]);
     }
     dock.addWidget("org.kde.plasma.marginsseparator");
@@ -110,4 +117,5 @@ for (var screen = 0; screen < screenCount; screen++) {
 
     dock.addWidget("org.kde.plasma.marginsseparator");
     dock.addWidget("org.kde.mac-tahoe-liquid-kde.trashcan");
+}
 }

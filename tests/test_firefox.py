@@ -47,6 +47,10 @@ def test_discovers_xdg_native_flatpak_snap_and_orphan_profiles(
         firefox_home / ".var/app/org.mozilla.firefox/.mozilla/firefox",
         "flatpak.default",
     )
+    flatpak_xdg = _seed_profile(
+        firefox_home / ".var/app/org.mozilla.firefox/config/mozilla/firefox",
+        "flatpak-xdg.default",
+    )
     snap = _seed_profile(
         firefox_home / "snap/firefox/common/.mozilla/firefox",
         "snap.default",
@@ -57,7 +61,7 @@ def test_discovers_xdg_native_flatpak_snap_and_orphan_profiles(
 
     assert firefox.discover_profiles() == sorted(
         (
-            xdg_native.resolve(), native.resolve(), flatpak.resolve(),
+            xdg_native.resolve(), native.resolve(), flatpak.resolve(), flatpak_xdg.resolve(),
             orphan.resolve(), snap.resolve(),
         ),
         key=str,
@@ -69,7 +73,7 @@ def test_discovers_xdg_native_flatpak_snap_and_orphan_profiles(
     )
     assert firefox.discover_profiles() == sorted(
         (
-            default_xdg.resolve(), native.resolve(), flatpak.resolve(),
+            default_xdg.resolve(), native.resolve(), flatpak.resolve(), flatpak_xdg.resolve(),
             orphan.resolve(), snap.resolve(),
         ),
         key=str,
@@ -96,6 +100,143 @@ def test_does_not_scan_tor_browser_profiles(firefox_home):
     (tor / "prefs.js").write_text("", encoding="utf-8")
 
     assert firefox.discover_profiles() == []
+
+
+@pytest.mark.parametrize("root", [
+    ".zen", "xdg-config/zen", ".librewolf", ".floorp", ".waterfox",
+    ".var/app/app.zen_browser.zen/.zen",
+    ".var/app/app.zen_browser.zen/.mozilla/firefox",
+    ".var/app/app.zen_browser.zen/config/zen",
+    ".var/app/org.example.browser/.mozilla/firefox",
+    "snap/zen-browser/common/.mozilla/firefox",
+])
+def test_install_never_themes_forks(firefox_home, root):
+    native = _seed_profile(firefox_home / ".mozilla/firefox")
+    fork = _seed_profile(firefox_home / root)
+    (fork / "chrome").mkdir()
+    (fork / "chrome/userChrome.css").write_text("/* custom browser UI */\n")
+    (fork / "user.js").write_text('user_pref("zen.view.compact", true);\n')
+    before = {p.relative_to(fork): p.read_bytes() for p in fork.rglob("*") if p.is_file()}
+
+    firefox.install()
+
+    assert firefox.discover_profiles() == [native.resolve()]
+    assert (native / "chrome" / firefox.THEME_DIRNAME).is_dir()
+    assert {p.relative_to(fork): p.read_bytes() for p in fork.rglob("*") if p.is_file()} == before
+    assert str(fork) not in firefox._load_manifest()["profiles"]
+
+
+@pytest.mark.parametrize("alias", ["root", "profile", "registered", "shared-external"])
+def test_firefox_alias_cannot_theme_a_zen_profile(firefox_home, alias):
+    zen_root = firefox_home / ".zen"
+    zen = _seed_profile(zen_root)
+    root = firefox_home / ".mozilla/firefox"
+    root.parent.mkdir()
+    if alias == "root":
+        root.symlink_to(zen_root, target_is_directory=True)
+    else:
+        root.mkdir()
+        if alias == "profile":
+            (root / "alias.default").symlink_to(zen, target_is_directory=True)
+        else:
+            if alias == "shared-external":
+                external = firefox_home / "shared-profile"
+                zen.rename(external)
+                zen = external
+                (zen_root / "profiles.ini").write_text(
+                    f"[Profile0]\nIsRelative=0\nPath={zen}\n"
+                )
+            (root / "profiles.ini").write_text(
+                f"[Profile0]\nIsRelative=0\nPath={zen}\n"
+            )
+
+    firefox.install()
+
+    assert firefox.discover_profiles() == []
+    assert not (zen / "chrome").exists()
+    assert not (zen / "user.js").exists()
+
+
+@pytest.mark.parametrize("action", ["install", "uninstall"])
+@pytest.mark.parametrize("keep_manifest", [True, False])
+@pytest.mark.parametrize("root", [
+    ".zen", ".var/app/app.zen_browser.zen/.mozilla/firefox",
+    "snap/zen-browser/common/.mozilla/firefox",
+])
+def test_existing_zen_theme_is_retired_without_losing_customizations(
+    firefox_home, action, keep_manifest, root,
+):
+    zen = _seed_profile(firefox_home / root)
+    chrome = zen / "chrome"
+    chrome.mkdir()
+    original_css = "/* my Zen UI */\n#zen-sidebar { color: red; }\n"
+    original_user = 'user_pref("zen.view.compact", true);\n'
+    (chrome / "userChrome.css").write_text(original_css)
+    (zen / "user.js").write_text(original_user)
+    (zen / "places.sqlite").write_bytes(b"history and bookmarks")
+    # Reproduce the old installer's writes, without allowing fork discovery.
+    assert firefox._install_profile(zen, firefox._load_manifest())
+    if not keep_manifest:
+        firefox._manifest_path().unlink()
+    with (chrome / "userChrome.css").open("a") as handle:
+        handle.write("/* later customization */\n")
+    before_prefs = (zen / "prefs.js").read_bytes()
+
+    getattr(firefox, action)()
+    getattr(firefox, action)()  # cleanup must be idempotent
+
+    assert (chrome / "userChrome.css").read_text() == original_css + "/* later customization */\n"
+    assert (zen / "user.js").read_text() == original_user
+    assert not (chrome / "userContent.css").exists()
+    assert not (chrome / firefox.THEME_DIRNAME).exists()
+    assert (zen / "places.sqlite").read_bytes() == b"history and bookmarks"
+    assert (zen / "prefs.js").read_bytes() == before_prefs
+    assert str(zen) not in firefox._load_manifest()["profiles"]
+    assert len(list((firefox._state_root() / "snapshots").iterdir())) == 2
+
+
+@pytest.mark.parametrize("action", ["install", "uninstall"])
+@pytest.mark.parametrize("failure", ["backup", "marker", "write"])
+def test_failed_zen_recovery_retains_manifest_and_can_retry(
+    firefox_home, monkeypatch, action, failure,
+):
+    zen = _seed_profile(firefox_home / ".zen")
+    assert firefox._install_profile(zen, firefox._load_manifest())
+    css = zen / "chrome/userChrome.css"
+    original_css = css.read_text()
+    with monkeypatch.context() as patch:
+        if failure == "backup":
+            patch.setattr(firefox, "_snapshot_profile", lambda *_: None)
+        elif failure == "marker":
+            css.write_text(firefox.CHROME_START + "\n/* incomplete */\n")
+        else:
+            def fail_cleanup(*_args, **_kwargs):
+                raise OSError("simulated write failure")
+            patch.setattr(firefox, "_clean_file", fail_cleanup)
+        before = css.read_text()
+        getattr(firefox, action)()
+        assert css.read_text() == before
+        assert (zen / "chrome" / firefox.THEME_DIRNAME).is_dir()
+        assert str(zen) in firefox._load_manifest()["profiles"]
+
+    css.write_text(original_css)
+    getattr(firefox, action)()
+    assert not (zen / "chrome").exists()
+    assert str(zen) not in firefox._load_manifest()["profiles"]
+
+
+def test_retiring_zen_restores_colliding_directory(firefox_home):
+    zen = _seed_profile(firefox_home / ".zen")
+    collision = zen / "chrome" / firefox.THEME_DIRNAME
+    collision.mkdir(parents=True)
+    (collision / "mine.css").write_text("/* unrelated */\n")
+    assert firefox._install_profile(zen, firefox._load_manifest())
+
+    firefox.install()
+    firefox.install()
+
+    assert (collision / "mine.css").read_text() == "/* unrelated */\n"
+    assert not (collision / firefox.OWNERSHIP_MARKER).exists()
 
 
 def test_install_preserves_css_and_browser_data_then_uninstall_restores(

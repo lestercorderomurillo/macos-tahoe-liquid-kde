@@ -12,7 +12,11 @@ Each preset replaces the complete material: blur, opacity, refraction, color
 separation, highlights, grain, brightness, contrast, saturation and gradient.
 There is one smooth blur implementation. **Fine tuning** exposes the detailed
 controls without requiring a choice of blur algorithm.
-Both presets use a blur strength of 10 on the 0–20 scale.
+Both presets use a blur strength of 5 on the 0–20 scale, grain 1,
+RGB separation 12, magnification 0.1, and saturation 1.33. The refracted
+edge is 18 wide, with highlight width 3.5 and strength 0.1. Brightness,
+contrast and material opacity remain 1. The gradient stays specific to
+each preset.
 
 **Glass opacity** controls how much of the blurred material covers the original
 background. Keep it at 1 for full material coverage; lower it to reveal more
@@ -51,6 +55,16 @@ GTK client-side popups keep their own readable fills; KWin cannot blur those
 surfaces in the same way as Plasma popups and Qt menus.
 
 ## Visual references
+
+Acrylic Glass builds separate Wayland and X11 modules against each backend's
+KWin SDK. The installer requests the SDK for the current desktop session and
+also builds the other backend when its SDK is already installed. Their plugin
+and settings paths stay separate. X11 support preserves the existing material
+presets, shaders and light/dark surface fills.
+
+The X11 regression probe starts its own Xvfb display and D-Bus session, checks
+the compositor PID, and verifies the exact built module is loaded and active.
+It does not install the module or interact with the running desktop.
 
 These are independently tuned KDE materials, inspired by Apple's published
 screenshots and design guidance; they do not reproduce Apple's renderer.

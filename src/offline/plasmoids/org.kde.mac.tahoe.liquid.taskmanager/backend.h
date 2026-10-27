@@ -115,6 +115,9 @@ public:
     /// used to filter the launcher's "Show in category" submenu.
     Q_INVOKABLE static QStringList applicationCategories(const QUrl& launcherUrl);
 
+    /// Keep themed icons live across appearance changes; preserve custom pixmaps.
+    Q_INVOKABLE static QVariant iconSource(const QVariant& decoration);
+
 Q_SIGNALS:
     // Signals (QML connects via on*Changed handlers)
 

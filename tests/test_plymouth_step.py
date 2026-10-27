@@ -37,6 +37,9 @@ THEME_SRC = REPO / "src/offline/plymouth/MacTahoeLiquidKde"
 def _isolate_plymouthd_conf(tmp_path, monkeypatch):
     """Never let an install-flow unit test read or write the host config."""
     monkeypatch.setattr(plymouth, "PLYMOUTHD_CONF", tmp_path / "plymouthd.conf")
+    import distro
+    monkeypatch.setattr(distro, "current_distro", lambda: "arch")
+    monkeypatch.setattr(distro, "distro_id_like", lambda: ())
 
 
 # ──────────────────────── theme-file integrity ──────────────────────────
@@ -1452,3 +1455,60 @@ def test_native_rebuild_is_required_and_errors_propagate(monkeypatch, failed_ste
     monkeypatch.setattr(plymouth, 'fail', lambda message: None)
     assert plymouth._activate('theme') is (failed_step is None)
     assert calls == (commands[:1] if failed_step == 0 else commands)
+
+
+@pytest.mark.parametrize('distribution', ['ubuntu', 'neon'])
+def test_alternatives_install_and_restore_exact_previous_path(tmp_path, monkeypatch, distribution):
+    import distro
+    monkeypatch.setattr(distro, 'current_distro', lambda: distribution)
+    monkeypatch.setattr(distro, 'distro_id_like', lambda: ('ubuntu', 'debian'))
+    monkeypatch.setattr(plymouth, 'STATE_DIR', tmp_path / 'state')
+    monkeypatch.setattr(plymouth, 'PREV_THEME_FILE', tmp_path / 'state/previous')
+    monkeypatch.setattr(plymouth, 'DEST', tmp_path / 'theme')
+    calls = _stub(monkeypatch)
+    monkeypatch.setattr(plymouth, 'have', lambda command: command != plymouth.PLYMOUTH_BIN)
+    previous = '/opt/custom-splash/custom.plymouth'
+    def run(command, **kwargs):
+        calls['subprocess'].append((command, kwargs))
+        return _FakeProc(stdout='Value: ' + previous + '\n')
+    monkeypatch.setattr(plymouth.subprocess, 'run', run)
+    plymouth.install()
+    assert plymouth.PREV_THEME_FILE.read_text().strip() == previous
+    commands = [command for command, _ in calls['subprocess']]
+    assert not any(command[0] == plymouth.PLYMOUTH_BIN for command in commands)
+    assert commands[-1] == ['update-initramfs', '-u', '-k', 'all']
+    registered = next(command for command in commands if '--install' in command)
+    assert registered[-2].endswith('/MacTahoeLiquidKde/MacTahoeLiquidKde.plymouth')
+    calls['subprocess'].clear()
+    plymouth.uninstall()
+    commands = [command for command, _ in calls['subprocess']]
+    assert commands == [
+        ['update-alternatives', '--set', 'default.plymouth', previous],
+        ['update-initramfs', '-u', '-k', 'all'],
+        ['update-alternatives', '--remove', 'default.plymouth', registered[-2]],
+    ]
+    assert calls['remove'] == [plymouth.DEST]
+    assert not plymouth.PREV_THEME_FILE.exists()
+
+
+def test_alternatives_failed_restore_keeps_recovery_and_theme(tmp_path, monkeypatch):
+    import distro
+    monkeypatch.setattr(distro, 'current_distro', lambda: 'ubuntu')
+    monkeypatch.setattr(plymouth, 'STATE_DIR', tmp_path)
+    monkeypatch.setattr(plymouth, 'PREV_THEME_FILE', tmp_path / 'previous')
+    plymouth.PREV_THEME_FILE.write_text('/opt/custom/custom.plymouth\n')
+    calls = _stub(monkeypatch)
+    monkeypatch.setattr(plymouth, '_activate', lambda theme: False)
+    plymouth.uninstall()
+    assert not calls['remove']
+    assert plymouth.PREV_THEME_FILE.exists()
+
+
+def test_install_aborts_when_previous_theme_cannot_be_saved(tmp_path, monkeypatch):
+    calls = _stub(monkeypatch)
+    monkeypatch.setattr(plymouth, 'STATE_DIR', tmp_path / 'blocked')
+    plymouth.STATE_DIR.write_text('not a directory')
+    monkeypatch.setattr(plymouth, 'PREV_THEME_FILE', plymouth.STATE_DIR / 'previous')
+    plymouth.install()
+    assert not calls['install_tree']
+    assert not _activation_calls(calls)

@@ -2,6 +2,7 @@ import QtQuick 2.12
 import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.0
 import org.kde.draganddrop 2.0
+import org.kde.plasma.private.kicker as Kicker
 
 ColumnLayout {
 	id: allApps
@@ -47,7 +48,8 @@ ColumnLayout {
 				modelIndex: -1,
 				icon: "favorite",
 				isAllApps: false,
-				isFavorites: true
+				isFavorites: true,
+				isSuggestions: false
 			});
 		}
 
@@ -67,11 +69,12 @@ ColumnLayout {
 			var isAllApps = (sub.description === "KICKER_ALL_MODEL");
 			if (isAllApps) {
 				allAppsFound = sub;
+				categoryName = i18n("Apps");
 			}
 
-			// Rename "Recent Applications" / "Recent Documents" to "Suggestions"
-			if (categoryName.toLowerCase().indexOf("recent") !== -1) {
-				categoryName = "Suggestions";
+			var isSuggestions = sub instanceof Kicker.RecentUsageModel;
+			if (isSuggestions) {
+				categoryName = i18n("Suggestions");
 			}
 
 			categories.push({
@@ -79,7 +82,8 @@ ColumnLayout {
 				modelIndex: i,
 				icon: categoryIcon,
 				isAllApps: isAllApps,
-				isFavorites: false
+				isFavorites: false,
+				isSuggestions: isSuggestions
 			});
 		}
 		allApps.allAppsModel = allAppsFound;
@@ -118,7 +122,7 @@ ColumnLayout {
 		// itself are their own tabs, so drop them here.
 		return appsCategoriesList.filter(function (c) {
 			return !c.isAllApps && !c.isFavorites
-				&& c.name !== "Suggestions";
+				&& !c.isSuggestions;
 		});
 	}
 

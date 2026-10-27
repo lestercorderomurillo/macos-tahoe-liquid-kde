@@ -1,0 +1,56 @@
+name: require successful CI
+
+on:
+  workflow_call:
+    inputs:
+      repository:
+        required: true
+        type: string
+      sha:
+        required: true
+        type: string
+
+permissions:
+  actions: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 65
+    steps:
+      - name: Require successful tests on main and dev for the exact commit
+        uses: actions/github-script@v8
+        env:
+          CI_REPOSITORY: ${{ inputs.repository }}
+          CI_SHA: ${{ inputs.sha }}
+        with:
+          script: |
+            const repository = process.env.CI_REPOSITORY;
+            const sha = process.env.CI_SHA;
+            if (!/^[\w.-]+\/[\w.-]+$/.test(repository) || !/^[a-f0-9]{40}$/.test(sha)) {
+              throw new Error('Invalid CI repository or commit');
+            }
+            const [owner, repo] = repository.split('/');
+            const branches = ['main', 'dev'];
+            for (let attempt = 0; attempt < 120; attempt++) {
+              const {data} = await github.rest.actions.listWorkflowRuns({
+                owner, repo, workflow_id: 'test.yml', head_sha: sha,
+                event: 'push', per_page: 100
+              });
+              const runs = data.workflow_runs
+                .filter(run => run.head_sha === sha && run.event === 'push')
+                .sort((a, b) => b.id - a.id);
+              const latest = branches.map(branch => runs.find(run => run.head_branch === branch));
+              for (const run of latest) {
+                if (run?.status === 'completed' && run.conclusion !== 'success') {
+                  throw new Error(`CI ${run.head_branch}: ${run.conclusion} — ${run.html_url}`);
+                }
+              }
+              if (latest.every(run => run?.status === 'completed' && run.conclusion === 'success')) {
+                core.info(`Verified successful main and dev CI for ${repository}@${sha}`);
+                return;
+              }
+              core.info(`Waiting for main and dev CI for ${sha} (${attempt + 1}/120)`);
+              await new Promise(resolve => setTimeout(resolve, 30000));
+            }
+            throw new Error(`No successful main and dev CI for ${repository}@${sha} within 60 minutes`);

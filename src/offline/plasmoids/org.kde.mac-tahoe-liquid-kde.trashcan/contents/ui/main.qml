@@ -15,6 +15,7 @@ import org.kde.plasma.extras as PlasmaExtras
 import org.kde.draganddrop as DragDrop
 import org.kde.kirigami as Kirigami
 import org.kde.plasma.plasma5support as P5Support
+import org.kde.mac.tahoe.launcher as NativeLauncher
 
 PlasmoidItem {
     id: root
@@ -181,6 +182,13 @@ PlasmoidItem {
         }
 
         Kirigami.Icon {
+            id: trashIcon
+            NativeLauncher.IconThemeWatcher {
+                onChanged: {
+                    trashIcon.source = "";
+                    trashIcon.source = Qt.binding(() => Plasmoid.icon);
+                }
+            }
             source: Plasmoid.icon
             anchors {
                 left: parent.left

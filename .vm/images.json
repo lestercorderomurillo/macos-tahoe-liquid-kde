@@ -29,6 +29,12 @@
     "algorithm": "sha256",
     "digest": "7cfb83c09b7c1026233235e909b77726b004ea89b42a1a990e2e5c3e9060e859"
   },
+  "kubuntu": {
+    "url": "https://cdimage.ubuntu.com/kubuntu/releases/26.04.1/release/kubuntu-26.04.1-desktop-amd64.iso",
+    "checksum_url": "https://cdimage.ubuntu.com/kubuntu/releases/26.04.1/release/SHA256SUMS",
+    "algorithm": "sha256",
+    "digest": "831e4d4bb85098339ba43d3502cd6619b27e76daf37246a084cd68a6413090b8"
+  },
   "artix": {
     "url": "https://mirror1.artixlinux.org/iso/artix-plasma-openrc-20260813-x86_64.iso",
     "checksum_url": "https://mirror1.artixlinux.org/iso/sha256sums",

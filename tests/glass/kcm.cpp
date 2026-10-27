@@ -75,10 +75,7 @@ int main(int argc, char **argv)
                 == (savedPreset == QStringLiteral("absent") ? defaults["BlurStrength"].toDouble() : 6.25),
             QStringLiteral("loading changed saved optics"));
     require(!module->widget()->findChild<QWidget *>(QStringLiteral("kcfg_AcrylicGlassType")), QStringLiteral("blur type must be removed"));
-    for (int i : {1, 0}) {
-        selector->setCurrentIndex(i);
-        selector->activated(i);
-        const auto values = presets.at(i).toObject().value(QStringLiteral("values")).toObject();
+    const auto verifyControls = [&](const QJsonObject &values) {
         for (auto it = values.constBegin(); it != values.constEnd(); ++it) {
             const auto name = QStringLiteral("kcfg_") + it.key();
             auto *widget = control<QWidget>(module.get(), name);
@@ -92,6 +89,17 @@ int main(int argc, char **argv)
                 require(color->color() == QColor(it.value().toString()), name);
             else require(false, name + QStringLiteral(" unknown control type"));
         }
+    };
+    // A fresh KCM must show the same optics as installing or restoring Tahoe.
+    // KConfig omits default-valued keys, so every material control matters.
+    if (savedPreset == QStringLiteral("absent")) {
+        verifyControls(defaults);
+    }
+    for (int i : {1, 0}) {
+        selector->setCurrentIndex(i);
+        selector->activated(i);
+        const auto values = presets.at(i).toObject().value(QStringLiteral("values")).toObject();
+        verifyControls(values);
         module->save();
         config->reparseConfiguration();
         require(group.readEntry("MaterialPreset", -1) == presets.at(i).toObject()["value"].toInt(),

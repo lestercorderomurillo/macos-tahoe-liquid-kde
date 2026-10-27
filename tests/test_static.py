@@ -60,14 +60,13 @@ def test_init_specific_user_manager_calls_stay_in_distro_layer(repo):
 
 
 @pytest.mark.parametrize(
-    "entry", ["install", "uninstall", "legacy-install", "legacy-uninstall"])
+    "entry", ["install", "uninstall", "installer"])
 def test_entry_point_exists(repo, entry):
     p = repo / entry
     assert p.is_file() and p.stat().st_mode & 0o111
 
 
-@pytest.mark.parametrize("script", ["install", "uninstall",
-                                    "legacy-install", "legacy-uninstall"])
+@pytest.mark.parametrize("script", ["install", "uninstall", "installer"])
 def test_help_exits_zero(repo, script):
     """`./install --help` and `./uninstall --help` must not crash. This
     catches a class of bug where an import-time error in cli.py only
@@ -247,7 +246,7 @@ def test_only_rounded_corners_step_may_download(repo):
 def test_rounded_corners_online_source_is_immutable(repo):
     """An online step may never track a moving branch or unverified bytes."""
     text = (repo / "src/scripts/steps/rounded_corners.py").read_text()
-    assert 'UPSTREAM_VERSION = "0.10.0"' in text
+    assert 'UPSTREAM_VERSION = "0.11.0"' in text
     assert re.search(r'UPSTREAM_COMMIT = "[0-9a-f]{40}"', text)
     assert re.search(r'UPSTREAM_SHA256 = "[0-9a-f]{64}"', text)
     assert "archive/refs/tags/v{UPSTREAM_VERSION}.tar.gz" in text

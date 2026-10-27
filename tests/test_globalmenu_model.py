@@ -51,10 +51,11 @@ def test_native_globalmenu_recovers_across_focus_and_service_changes(repo, tmp_p
     try:
         assert select.select([read_fd], [], [], 10)[0], "Xvfb did not start"
         env["DISPLAY"] = ":" + os.read(read_fd, 32).decode().strip()
-        result = subprocess.run(["dbus-run-session", "--config-file", str(bus_config),
-                                 "--", str(build / "globalmenu-model-test")],
-                                env=env, capture_output=True, text=True, timeout=90)
-        assert result.returncode == 0, result.stdout + result.stderr
+        for binary in ("globalmenu-model-test", "globalmenu-popup-test"):
+            result = subprocess.run(["dbus-run-session", "--config-file", str(bus_config),
+                                     "--", str(build / binary)],
+                                    env=env, capture_output=True, text=True, timeout=90)
+            assert result.returncode == 0, result.stdout + result.stderr
     finally:
         os.close(read_fd)
         server.terminate()

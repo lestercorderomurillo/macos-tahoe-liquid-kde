@@ -1,0 +1,67 @@
+{
+  "finder-dark.svg": {
+    "source": "MacTahoeLiquidKde-Icons.tar.zst:MacTahoeLiquidKde-Icons/apps/scalable/system-file-manager.svg",
+    "source_sha256": "1dd88e9ee27a257855d8712de3870cf7ca7c87f3e591f45de7444c2456bfa007",
+    "sha256": "062243ab98053f71c7e2c35a35bcaafea0b471390e9f5a2a82353c0d27caf4f8",
+    "transformation": "Preserve bundled contours; graphite background, cyan-to-blue face and contrasting eyes/smile, reviewed against the macOS dark Finder reference.",
+    "references": [
+      "https://developer.apple.com/design/human-interface-guidelines/app-icons",
+      "https://developer.apple.com/videos/play/wwdc2025/220/",
+      "https://appleinsider.com/articles/25/06/23/new-in-macos-tahoe-beta-2-menu-bar-background-toggle-revamped-finder-icon",
+      "https://forums.macrumors.com/threads/macos-26-tahoe-all-icons-for-macos-sequoia.2459293/"
+    ],
+    "notices": "../../../../THIRD_PARTY_NOTICES.md"
+  },
+  "app-store-dark.svg": {
+    "source": "MacTahoeLiquidKde-Icons.tar.zst:MacTahoeLiquidKde-Icons/apps/scalable/org.kde.discover.svg",
+    "source_sha256": "a3905306bcefa3809c64a5da38b1d336abdbf320deafa54b2a31804fd8ed70af",
+    "sha256": "1f164dd85f3f56ab80bb843b902cec7ee57a7208bab2fb49d4925cb53351072a",
+    "transformation": "Preserve bundled layered A; blue foreground over graphite and a neutral subdued edge, replacing the light cyan glyph and cyan perimeter.",
+    "references": [
+      "https://developer.apple.com/design/human-interface-guidelines/app-icons",
+      "https://developer.apple.com/videos/play/wwdc2025/220/",
+      "https://appleinsider.com/articles/25/06/23/new-in-macos-tahoe-beta-2-menu-bar-background-toggle-revamped-finder-icon",
+      "https://forums.macrumors.com/threads/macos-26-tahoe-all-icons-for-macos-sequoia.2459293/"
+    ],
+    "notices": "../../../../THIRD_PARTY_NOTICES.md"
+  },
+  "settings-dark.svg": {
+    "source": "MacTahoeLiquidKde-Icons.tar.zst:MacTahoeLiquidKde-Icons/apps/scalable/systemsettings.svg",
+    "source_sha256": "8ff99c6c70c0a33282aa351e3de4f0fc29bb4437d3cfe6c6ae6cfda4a7b97632",
+    "sha256": "4eb3b3da773e58389b31d9d522bad9477c1362ccd767c2077c4d639d814a1903",
+    "transformation": "Preserve gear contours and internal relief; graphite plate with subdued neutral perimeter and silver rather than white gear highlights.",
+    "references": [
+      "https://developer.apple.com/design/human-interface-guidelines/app-icons",
+      "https://developer.apple.com/videos/play/wwdc2025/220/",
+      "https://appleinsider.com/articles/25/06/23/new-in-macos-tahoe-beta-2-menu-bar-background-toggle-revamped-finder-icon",
+      "https://forums.macrumors.com/threads/macos-26-tahoe-all-icons-for-macos-sequoia.2459293/"
+    ],
+    "notices": "../../../../THIRD_PARTY_NOTICES.md"
+  },
+  "text-editor-dark.svg": {
+    "source": "MacTahoeLiquidKde-Icons.tar.zst:MacTahoeLiquidKde-Icons/apps/scalable/org.kde.kate.svg",
+    "source_sha256": "3756a88005181fb71f434b01b956cb3ef70185d1e24c11e33e90f96b3df8bedf",
+    "sha256": "4ebbf3eb93b6f37b7591dba8245765fa093aa084592e5b10a44074992ecfb9bf",
+    "transformation": "Preserve original text and cursor; light neutral text on graphite for dark-mode legibility, with subdued perimeter.",
+    "references": [
+      "https://developer.apple.com/design/human-interface-guidelines/app-icons",
+      "https://developer.apple.com/videos/play/wwdc2025/220/",
+      "https://appleinsider.com/articles/25/06/23/new-in-macos-tahoe-beta-2-menu-bar-background-toggle-revamped-finder-icon",
+      "https://forums.macrumors.com/threads/macos-26-tahoe-all-icons-for-macos-sequoia.2459293/"
+    ],
+    "notices": "../../../../THIRD_PARTY_NOTICES.md"
+  },
+  "terminal-dark.svg": {
+    "source": "MacTahoeLiquidKde-Icons.tar.zst:MacTahoeLiquidKde-Icons/apps/scalable/org.kde.konsole.svg",
+    "source_sha256": "de120d786536281adf81d69e2a778a404dd7a5981668ccb82a695e7f621229f5",
+    "sha256": "b89298c3a1682e0f18b151b23b4ff8e9fc7bd1928fadb272d3546f6376ec7261",
+    "transformation": "Preserve the bundled dark Terminal artwork and foreground; reduce the perimeter reflection to match the subdued system dark plate.",
+    "references": [
+      "https://developer.apple.com/design/human-interface-guidelines/app-icons",
+      "https://developer.apple.com/videos/play/wwdc2025/220/",
+      "https://appleinsider.com/articles/25/06/23/new-in-macos-tahoe-beta-2-menu-bar-background-toggle-revamped-finder-icon",
+      "https://forums.macrumors.com/threads/macos-26-tahoe-all-icons-for-macos-sequoia.2459293/"
+    ],
+    "notices": "../../../../THIRD_PARTY_NOTICES.md"
+  }
+}

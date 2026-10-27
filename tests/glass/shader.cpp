@@ -18,6 +18,7 @@
 #include <QVector4D>
 #include <QPainter>
 #include <QSvgRenderer>
+#include <QSettings>
 #include <cstdio>
 #include <cstdlib>
 #include <functional>
@@ -261,8 +262,20 @@ int main(int argc, char **argv)
         shader.setUniformValue("magnifyGlassStrength", 0.0f);
         shader.setUniformValue("offset", 2.0f);
 
-        // Exercise the released preset underneath actual client fills. Checking
-        // the effect alone missed the gradient disappearing behind those fills.
+        // Exercise the preset underneath actual client fills: the gradient must
+        // remain visible while light-mode foregrounds retain readable contrast.
+        QSettings lightScheme(root + "/../../../../color-schemes/MacTahoeLiquidKdeLight.colors",
+                              QSettings::IniFormat);
+        const auto channels = lightScheme.value("Colors:Window/ForegroundNormal").toStringList();
+        require(channels.size() == 3, QStringLiteral("light foreground unavailable"));
+        const QColor foreground(channels[0].toInt(), channels[1].toInt(), channels[2].toInt());
+        auto luminance = [](QColor color) {
+            auto linear = [](double value) {
+                return value <= 0.04045 ? value / 12.92 : std::pow((value + 0.055) / 1.055, 2.4);
+            };
+            return 0.2126 * linear(color.redF()) + 0.7152 * linear(color.greenF())
+                + 0.0722 * linear(color.blueF());
+        };
         QJsonObject golden;
         for (const auto &entry : QJsonDocument::fromJson(read(root + "/../presets.json")).array()) {
             if (entry.toObject()["id"] == "golden-gate") golden = entry.toObject()["values"].toObject();
@@ -315,10 +328,18 @@ int main(int argc, char **argv)
                     const auto control = composite(untinted);
                     const auto lower = actual.pixelColor(96, 115);
                     const auto clear = untinted.pixelColor(96, 115);
-                    require(std::abs(lower.red() - clear.red()) <= 3
+                    if (mode == "Light") {
+                        for (int y = 1; y < height - 1; ++y) {
+                            require((luminance(actual.pixelColor(96, y)) + 0.05)
+                                        / (luminance(foreground) + 0.05) >= 4.5,
+                                    name + " " + background + ": light foreground lost contrast over glass");
+                        }
+                    } else {
+                        require(std::abs(lower.red() - clear.red()) <= 3
                                 && std::abs(lower.green() - clear.green()) <= 3
                                 && std::abs(lower.blue() - clear.blue()) <= 3,
                             mode + " " + name + " " + background + ": client fill obscures Golden Gate's clear lower half");
+                    }
                     if (background == "black") {
                         require(actual == control,
                                 mode + " " + name + ": black tint must preserve a black backdrop");

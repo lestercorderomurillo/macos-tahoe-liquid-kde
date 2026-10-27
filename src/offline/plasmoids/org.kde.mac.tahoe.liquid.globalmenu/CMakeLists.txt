@@ -68,3 +68,5 @@ target_link_libraries(org.kde.mac.tahoe.liquid.globalmenu PRIVATE
     PW::LibTaskManager
     dbusmenuqt
 )
+
+install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/locale/" DESTINATION "${KDE_INSTALL_LOCALEDIR}")

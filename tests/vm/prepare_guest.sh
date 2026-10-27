@@ -26,6 +26,16 @@ case "$ID" in
         dnf upgrade -y
         dnf install -y openssh-server rsync sudo python3-pyqt6 qt6-qtbase-devel qt6-qttools spectacle firefox
         ;;
+    ubuntu)
+        [[ "$VERSION_ID" == 26.04 ]] && dpkg-query -W -f='${Status}' kubuntu-desktop | grep -qx 'install ok installed' || {
+            echo 'Expected the installed Kubuntu 26.04 LTS desktop.' >&2; exit 1;
+        }
+        # Keep the LTS Plasma stack: no release upgrade or external repositories.
+        export DEBIAN_FRONTEND=noninteractive
+        apt-get update
+        apt-get install -y openssh-server rsync sudo python3-pyqt6 python3-pyqt6.qtqml \
+            qdbus-qt6 qmake6 kde-spectacle python3-pytest plasma-sdk xvfb x11-utils
+        ;;
     *) echo "Use the cloud recipe for $ID; this helper prepares the official ISO targets." >&2; exit 1 ;;
 esac
 printf '%s\n' 'tester ALL=(ALL) NOPASSWD:ALL' > /etc/sudoers.d/mttkde-vm
@@ -39,6 +49,8 @@ if [[ "$ID" == artix ]]; then
     rc-service sshd restart
     rc-update add cronie default
     rc-service cronie start
+elif [[ "$ID" == ubuntu ]]; then
+    systemctl enable --now ssh
 else
     systemctl enable --now sshd
 fi

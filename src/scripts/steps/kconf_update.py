@@ -12,9 +12,13 @@ and self-locating their config files).
 The installer never invokes the kconf_update binary itself: it lives in
 libexec (not on PATH) on most distros, and install/uninstall need the
 effect immediately anyway, so the step runs the bundled helpers directly
-with explicit targets. The helpers are idempotent, so the later login-time
-kconf_update pass is a harmless re-run.
+with explicit targets. Only the applet rename and malformed color-group repair
+run again at login. The kdedefaults cleanup is transaction-only: repeating it
+would erase the active theme's inherited settings after KConfig removed
+matching per-user overrides.
 """
+
+from localization import tr
 
 import subprocess
 from pathlib import Path
@@ -74,7 +78,7 @@ def rollback_v038_border_sync() -> bool:
                 "--file", "kwinrc", "--group", "Round-Corners",
                 "--key", key, "--delete",
             )
-        ok("v0.38 Rounded Corners border preset removed")
+        ok(tr('v0.38 Rounded Corners border preset removed'))
 
     qdbus_call("org.kde.KWin", "/KWin", "org.kde.KWin.reconfigure")
     return exact_match
@@ -84,7 +88,10 @@ def install() -> None:
     rollback_v038_border_sync()
     if not BUNDLE.is_dir():
         return
-    install_tree(BUNDLE, KCONF_UPDATE_DIR, "kconf_update scripts")
+    install_tree(BUNDLE, KCONF_UPDATE_DIR, tr('kconf_update scripts'))
+    # Older releases scheduled this destructive cleanup for the next login.
+    # Retire the descriptor even when merging into an existing installation.
+    (KCONF_UPDATE_DIR / "mac-tahoe-scrub-kdedefaults.upd").unlink(missing_ok=True)
     for name in set(_SCRIPTS) - set(_enabled_scripts()):
         for f in (KCONF_UPDATE_DIR / name,
                   KCONF_UPDATE_DIR / (name[:-3] + ".upd")):

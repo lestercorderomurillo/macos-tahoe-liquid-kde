@@ -12,13 +12,15 @@
         ],
         "EnabledByDefault": true,
         "Name": "theme_name",
-        "Description" : "theme_name window decorations",
+        "Description": "theme_name window decorations",
         "Id": "theme_name",
         "Version": "1.0",
         "License": "GPL-3.0",
         "X-KDE-PluginInfo-blur": false,
-        "X-KPackage-Dependencies": [
-        ]
+        "X-KPackage-Dependencies": [],
+        "Name[pt_BR]": "theme_name",
+        "Description[pt_BR]": "Decorações de janelas theme_name",
+        "Name[de]": "theme_name",
+        "Description[de]": "theme_name-Fensterdekorationen"
     }
 }
-

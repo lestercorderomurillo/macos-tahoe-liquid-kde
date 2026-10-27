@@ -1,5 +1,7 @@
 """Common helpers shared between step modules."""
 
+from localization import tr
+
 import os
 import shutil
 import subprocess
@@ -10,7 +12,9 @@ from typing import Iterator
 
 from paths import BUILD_DIR, LEGACY_STEPS_DIR, OFFLINE_DIR, SRC_DIR, STEPS_DIR
 from log import fail, info, ok, reinstall, warn
-from utils import drop_privs_in_child, have, kw_write, qdbus_call, safe_copy
+from utils import (
+    drop_privs_in_child, have, kw_write, qdbus_call, qdbus_cmd, run_user, safe_copy,
+)
 
 
 HOME = Path.home()
@@ -50,23 +54,23 @@ def src_dir(*parts: str) -> Path:
 
 def install_tree(src: Path, dest: Path, label: str | None = None) -> bool:
     """Copy a directory tree atomically, reporting via ok()/reinstall()/fail()."""
-    label = label or dest.name
+    label = tr(label or dest.name)
     if not src.is_dir():
-        fail(f"{label} (source missing: {src})")
+        fail(tr('{label} (source missing: {src})', label=label, src=src))
         return False
     existed = dest.is_dir()
     if not safe_copy(src, dest):
-        fail(f"{label} (copy failed)")
+        fail(tr('{label} (copy failed)', label=label))
         return False
     if existed:
         reinstall(label)
     else:
-        ok(f"{label} (installed)")
+        ok(tr('{label} (installed)', label=label))
     return True
 
 
 def remove_tree(p: Path, label: str | None = None) -> bool:
-    label = label or p.name
+    label = tr(label or p.name)
     if not p.exists():
         return False
     try:
@@ -74,7 +78,7 @@ def remove_tree(p: Path, label: str | None = None) -> bool:
             shutil.rmtree(p)
         else:
             p.unlink()
-        ok(f"{label} removed")
+        ok(tr('{label} removed', label=label))
         return True
     except OSError as exc:
         fail(f"{label}: {exc}")
@@ -110,6 +114,7 @@ def sudo_install_file(src: Path, dest: Path, label: str, *, user_owned: bool = F
     user_owned keeps the invoking effective UID/GID on the staged file and
     creates its parent directories before elevation.
     """
+    label = tr(label)
     src = Path(src)
     dest = Path(dest)
     try:
@@ -135,11 +140,11 @@ def sudo_install_file(src: Path, dest: Path, label: str, *, user_owned: bool = F
 def sudo_install_tree(src: Path, dest: Path, label: str | None = None) -> bool:
     """Copy a tree to a root-owned destination, staged at a sibling
     .mttkde-tmp then renamed so the live destination is never half-written."""
-    label = label or dest.name
+    label = tr(label or dest.name)
     src = Path(src)
     dest = Path(dest)
     if not src.is_dir():
-        fail(f"{label} (source missing: {src})")
+        fail(tr('{label} (source missing: {src})', label=label, src=src))
         return False
     try:
         with _as_root():
@@ -159,7 +164,7 @@ def sudo_install_tree(src: Path, dest: Path, label: str | None = None) -> bool:
 
 
 def sudo_remove(path: Path, label: str | None = None) -> bool:
-    label = label or path.name
+    label = tr(label or path.name)
     if not path.exists() and not path.is_symlink():
         return False
     try:
@@ -175,6 +180,47 @@ def sudo_remove(path: Path, label: str | None = None) -> bool:
         return False
     ok(label)
     return True
+
+
+def kwin_plugin_mapping_matches(maps: str, plugin: Path) -> bool | None:
+    """Whether every mapping of ``plugin`` in ``maps`` is the installed file.
+    None when the library is not mapped at all."""
+    installed = plugin.stat()
+    matches = []
+    for line in maps.splitlines():
+        fields = line.split(maxsplit=5)
+        if len(fields) != 6 or fields[5].removesuffix(" (deleted)") != str(plugin):
+            continue
+        # Btrfs subvolume stat devices can differ from /proc/maps devices.
+        # The exact path plus inode identifies the installed file.
+        matches.append(int(fields[4]) == installed.st_ino
+                       and not fields[5].endswith(" (deleted)"))
+    return all(matches) if matches else None
+
+
+def running_kwin_plugin_matches(plugin: Path) -> bool | None:
+    """Check the running KWin's mappings: Qt keeps a replaced plugin library
+    resident after its effect instance is reloaded. None when unknown."""
+    q = qdbus_cmd()
+    if not q:
+        return None
+    try:
+        result = run_user(
+            [q, "org.freedesktop.DBus", "/org/freedesktop/DBus",
+             "org.freedesktop.DBus.GetConnectionUnixProcessID", "org.kde.KWin"],
+            check=False, capture_output=True, text=True, timeout=5,
+        )
+        if result.returncode != 0:
+            return None
+        pid = int(result.stdout.strip())
+        if pid <= 0:
+            return None
+        # KWin's capabilities can deny same-user access to its mappings.
+        with _as_root():
+            maps = Path(f"/proc/{pid}/maps").read_text()
+        return kwin_plugin_mapping_matches(maps, plugin)
+    except (OSError, ValueError, subprocess.TimeoutExpired):
+        return None
 
 
 @contextmanager
@@ -201,8 +247,9 @@ def cmake_build(
     *,
     targets: tuple[str, ...] = (),
 ) -> bool:
+    label = tr(label)
     if not (src_dir_ / "CMakeLists.txt").is_file():
-        warn(f"{label} source not found — skipping")
+        warn(tr('{label} source not found — skipping', label=label))
         return False
     # Root-owned leftovers from old sudo installs survive the user-level
     # rmtree; retry the wipe as root so mkdir doesn't hit FileExistsError.
@@ -221,7 +268,7 @@ def cmake_build(
         preexec_fn=_drop_privs_in_child,
     )
     if cfg.returncode != 0:
-        fail(f"{label}: cmake configure failed")
+        fail(tr('{label}: cmake configure failed', label=label))
         _emit_cmd_log(label, "cmake", cfg.stdout, cfg.stderr, build_dir / "cmake-configure.log")
         return False
     nproc = os.cpu_count() or 1
@@ -231,10 +278,10 @@ def cmake_build(
         preexec_fn=_drop_privs_in_child,
     )
     if mk.returncode != 0:
-        fail(f"{label}: build failed")
+        fail(tr('{label}: build failed', label=label))
         _emit_cmd_log(label, "make", mk.stdout, mk.stderr, build_dir / "make-build.log")
         return False
-    ok(f"{label} built")
+    ok(tr('{label} built', label=label))
     return True
 
 
@@ -249,11 +296,11 @@ def _emit_cmd_log(label: str, tool: str, stdout: str, stderr: str, log_path: Pat
         log_path = None  # type: ignore[assignment]
     tail = [line for line in blob.splitlines() if line.strip()][-25:]
     if tail:
-        print(f"     \033[2m── {tool} output (tail) ──\033[0m")
+        print(tr('     \x1b[2m── {tool} output (tail) ──\x1b[0m', tool=tool))
         for line in tail:
             print(f"     \033[2m{line}\033[0m")
     if log_path:
-        print(f"     \033[2mfull log: {log_path}\033[0m")
+        print(tr('     \x1b[2mfull log: {log_path}\x1b[0m', log_path=log_path))
 
 
 __all__ = [

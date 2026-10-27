@@ -32,7 +32,7 @@ RUN for i in 1 2 3; do \
     done && \
     zypper --non-interactive --gpg-auto-import-keys dup --no-recommends && \
     zypper --non-interactive install --no-recommends \
-        python3 python3-pytest \
+        python3 python3-pytest git zstd python3-Pillow python3-qt6 plasma5support6 rsvg-convert \
         cmake make gcc-c++ kf6-extra-cmake-modules pkgconf-pkg-config \
         qt6-base-devel qt6-tools-devel qt6-uitools-devel \
         qt6-declarative-devel qt6-svg-devel \

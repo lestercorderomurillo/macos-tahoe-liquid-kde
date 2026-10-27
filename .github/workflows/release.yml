@@ -7,13 +7,21 @@ on:
 
 permissions:
   contents: write
+  actions: read
 
 concurrency:
   group: release-${{ github.ref }}
   cancel-in-progress: false
 
 jobs:
+  ci:
+    uses: ./.github/workflows/require-ci.yml
+    with:
+      repository: ${{ github.repository }}
+      sha: ${{ github.sha }}
+
   publish:
+    needs: ci
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5

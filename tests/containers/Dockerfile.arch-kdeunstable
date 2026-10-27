@@ -18,8 +18,9 @@ FROM archlinux:latest
 # upgraded together. A partial upgrade (kwin from kde-unstable, frameworks
 # from extra) is unsupported and would mismatch the private effect ABI.
 RUN printf '\n[kde-unstable]\nInclude = /etc/pacman.d/mirrorlist\n' >> /etc/pacman.conf \
+    && pacman -Sy --noconfirm --needed archlinux-keyring \
     && pacman -Syu --noconfirm --needed \
-    python python-pytest \
+    python python-pytest git zstd python-pillow python-pyqt6 plasma5support librsvg \
     cmake make gcc extra-cmake-modules \
     qt6-base qt6-tools qt6-declarative qt6-svg \
     pkgconf \

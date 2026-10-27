@@ -1,3 +1,4 @@
+from localization import tr
 import os
 import signal
 import subprocess
@@ -84,9 +85,9 @@ def install() -> None:
     try:
         CONF_FILE.write_text(ROUTING)
     except OSError as exc:
-        fail(f"KDE portal routing: {exc}")
+        fail(tr('KDE portal routing: {exc}', exc=exc))
         return
-    ok("KDE portal routing installed")
+    ok(tr('KDE portal routing installed'))
     _bounce_services()
 
 
@@ -94,9 +95,9 @@ def uninstall() -> None:
     if CONF_FILE.is_file():
         try:
             CONF_FILE.unlink()
-            ok("KDE portal routing removed")
+            ok(tr('KDE portal routing removed'))
         except OSError:
-            fail("KDE portal routing")
+            fail(tr('KDE portal routing'))
     else:
-        ok("KDE portal routing (not installed)")
+        ok(tr('KDE portal routing (not installed)'))
     _bounce_services()

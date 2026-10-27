@@ -28,6 +28,10 @@ def test_install_stages_archive_before_replacing_active_themes(
     dest.mkdir()
     offline.mkdir()
     _existing_themes(dest)
+    for name in icons._OVERLAY_NAMES:
+        theme = dest / name
+        theme.mkdir()
+        (theme / "index.theme").write_text("previous material\n")
     (offline / "MacTahoeLiquidKde-Icons.tar.zst").touch()
 
     def fake_tar(args, **_kwargs):
@@ -57,6 +61,8 @@ def test_install_stages_archive_before_replacing_active_themes(
 
     assert all((dest / name / "index.theme").read_text() == "new\n"
                for name in icons._THEME_NAMES)
+    assert all((dest / name / "index.theme").read_text() == "previous material\n"
+               for name in icons._OVERLAY_NAMES)
 
 
 def test_failed_icon_extraction_preserves_active_themes(monkeypatch, tmp_path):

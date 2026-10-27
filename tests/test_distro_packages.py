@@ -76,6 +76,7 @@ def test_artix_without_arch_id_like_resolves_packages(tmp_path, monkeypatch, id_
     monkeypatch.delenv("MTTKDE_INIT", raising=False)
     monkeypatch.setattr(distro, "_INIT_CACHE", None)
     monkeypatch.setattr(distro, "_SYSTEMD_MARKER", tmp_path / "no-systemd")
+    monkeypatch.setattr(distro, "_PROC_ROOT", tmp_path / "no-proc")
     assert distro.init_system() == "openrc"
     assert distro.user_service_manager_command("daemon-reload") is None
     assert distro.package_for("crontab") == "cronie"
@@ -169,7 +170,44 @@ def _declared_dependency_tokens() -> dict[str, set[str]]:
         ]
         for deps_function in deps_functions:
             for node in ast.walk(deps_function):
+                if (isinstance(node, ast.Assign)
+                        and any(isinstance(target, ast.Name)
+                                and target.id == "dependencies"
+                                for target in node.targets)):
+                    try:
+                        values = ast.literal_eval(node.value)
+                    except (TypeError, ValueError) as exc:
+                        raise AssertionError(
+                            f"{source_path.name}: dependencies assignment on line "
+                            f"{node.lineno} must be a literal list"
+                        ) from exc
+                    assert isinstance(values, (list, tuple)), (
+                        f"{source_path.name}: dependencies assignment on line "
+                        f"{node.lineno} must be a list or tuple"
+                    )
+                    for raw in values:
+                        remember(raw, f"{source_path.name}:{node.lineno}")
+                if (isinstance(node, ast.Call)
+                        and isinstance(node.func, ast.Attribute)
+                        and node.func.attr == "append"
+                        and isinstance(node.func.value, ast.Name)
+                        and node.func.value.id == "dependencies"):
+                    assert len(node.args) == 1, (
+                        f"{source_path.name}: dependency append on line "
+                        f"{node.lineno} must have one literal token"
+                    )
+                    try:
+                        raw = ast.literal_eval(node.args[0])
+                    except (TypeError, ValueError) as exc:
+                        raise AssertionError(
+                            f"{source_path.name}: dependency append on line "
+                            f"{node.lineno} must use a literal token"
+                        ) from exc
+                    remember(raw, f"{source_path.name}:{node.lineno}")
+            for node in ast.walk(deps_function):
                 if not isinstance(node, ast.Return) or node.value is None:
+                    continue
+                if isinstance(node.value, ast.Name) and node.value.id == "dependencies":
                     continue
                 try:
                     expression = node.value
@@ -310,6 +348,7 @@ def test_kwriteconfig6_package_per_distro(
     ("kf6-itemmodels-qml", "kitemmodels", "qml6-module-org-kde-kitemmodels"),
     ("libtaskmanager-cmake", "plasma-workspace", "plasma-workspace-dev"),
     ("kwin-cmake", "kwin", "kwin-dev"),
+    ("kwin-x11-cmake", "kwin-x11", "kwin-x11-dev"),
     ("kdecoration-cmake", "kdecoration", "libkdecorations3-dev"),
 ])
 @pytest.mark.parametrize("distro_id", ["debian", "ubuntu"])
@@ -675,6 +714,7 @@ _TOKENS_WITH_FEDORA_DIVERGENCE = {
     "libnotificationmanager-cmake": "plasma-workspace",
     "libtaskmanager-cmake": "plasma-workspace",
     "kwin-cmake": "kwin",
+    "kwin-x11-cmake": "kwin-x11",
     "kdecoration-cmake": "kdecoration",
 }
 
@@ -813,6 +853,21 @@ def test_plasma_packages_per_distro(
 def test_kwin_cmake_package_per_distro(monkeypatch, distro_id, id_like, expected):
     _force_distro(monkeypatch, distro_id, id_like)
     assert distro.package_for("kwin-cmake", "kwin") == expected
+
+
+@pytest.mark.parametrize("distro_id, id_like, expected", [
+    ("arch",                (),             "kwin-x11"),
+    ("cachyos",             ("arch",),      "kwin-x11"),
+    ("debian",              (),             "kwin-x11-dev"),
+    ("ubuntu",              (),             "kwin-x11-dev"),
+    ("fedora",              (),             "kwin-x11-devel"),
+    ("nobara",              ("fedora",),    "kwin-x11-devel"),
+    ("opensuse",            (),             "kwin6-x11-devel"),
+    ("opensuse-tumbleweed", ("opensuse",),  "kwin6-x11-devel"),
+])
+def test_kwin_x11_cmake_package_per_distro(monkeypatch, distro_id, id_like, expected):
+    _force_distro(monkeypatch, distro_id, id_like)
+    assert distro.package_for("kwin-x11-cmake", "kwin-x11") == expected
 
 
 @pytest.mark.parametrize("distro_id, id_like, expected", [
@@ -1170,3 +1225,71 @@ def test_globalmenu_installs_available_runtime_exporters(monkeypatch, name, pare
         assert distro.package_for("gtk3-appmenu", dependencies["gtk3-appmenu"]) == exporter
     else:
         assert "gtk3-appmenu" not in dependencies
+
+
+# Issue #103: a distro Rounded Corners package owns the same paths as the
+# project's patched build; ownership decides whether files may be replaced.
+_SHADER = Path("/usr/share/kwin/shaders/shapecorners_core.frag")
+
+
+@pytest.mark.parametrize("distro_id,id_like,command,output,owner", [
+    ("cachyos", ("arch",), ["pacman", "-Qqo", str(_SHADER)],
+     "kwin-effect-rounded-corners", "kwin-effect-rounded-corners"),
+    ("fedora", (), ["rpm", "-qf", "--qf", "%{NAME}\n", str(_SHADER)],
+     "kwin-effect-roundcorners", "kwin-effect-roundcorners"),
+    ("opensuse-tumbleweed", ("opensuse", "suse"),
+     ["rpm", "-qf", "--qf", "%{NAME}\n", str(_SHADER)],
+     "kwin6-effect-roundcorners\nkwin6-effect-roundcorners",
+     "kwin6-effect-roundcorners"),
+    ("neon", ("ubuntu", "debian"), ["dpkg-query", "-S", str(_SHADER)],
+     "diversion by local from: /elsewhere\n"
+     f"kwin-effect-rounded-corners, other: {_SHADER}",
+     "kwin-effect-rounded-corners"),
+])
+def test_package_owner_reads_native_file_ownership(
+    monkeypatch, distro_id, id_like, command, output, owner,
+):
+    _force_distro(monkeypatch, distro_id, id_like)
+    queries: list[list[str]] = []
+    monkeypatch.setattr(distro, "_run_query",
+                        lambda cmd: queries.append(cmd) or output)
+    assert distro.package_owner(_SHADER) == owner
+    assert queries == [command]
+
+
+@pytest.mark.parametrize("distro_id,id_like", [
+    ("arch", ()), ("fedora", ()), ("debian", ()), ("void", ()),
+])
+def test_package_owner_is_none_for_unowned_paths(monkeypatch, distro_id, id_like):
+    _force_distro(monkeypatch, distro_id, id_like)
+    monkeypatch.setattr(distro, "_run_query", lambda cmd: None)
+    assert distro.package_owner(_SHADER) is None
+
+
+def test_dpkg_owner_ignores_other_paths(monkeypatch):
+    _force_distro(monkeypatch, "debian")
+    monkeypatch.setattr(distro, "_run_query",
+                        lambda cmd: f"other-package: {_SHADER}.orig")
+    assert distro.package_owner(_SHADER) is None
+
+
+@pytest.mark.parametrize("distro_id,id_like,expected", [
+    ("cachyos", ("arch",), ["pacman", "-R", "--noconfirm"]),
+    ("artix", (), ["pacman", "-R", "--noconfirm"]),
+    ("fedora", (), ["dnf", "remove", "-y"]),
+    ("nobara", ("fedora",), ["dnf", "remove", "-y"]),
+    ("opensuse-tumbleweed", ("opensuse", "suse"),
+     ["zypper", "--non-interactive", "remove"]),
+    ("neon", ("ubuntu", "debian"), ["apt-get", "remove", "-y"]),
+])
+def test_package_manager_remove_cmd_is_non_interactive(
+    monkeypatch, distro_id, id_like, expected,
+):
+    _force_distro(monkeypatch, distro_id, id_like)
+    assert distro.package_manager_remove_cmd() == expected
+
+
+def test_package_manager_remove_cmd_rejects_unmapped_distro(monkeypatch):
+    _force_distro(monkeypatch, "void")
+    with pytest.raises(distro.UnsupportedDistroError):
+        distro.package_manager_remove_cmd()

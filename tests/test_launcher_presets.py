@@ -2,6 +2,7 @@
 
 import json
 import os
+import re
 import select
 import shutil
 import signal
@@ -16,6 +17,12 @@ import launcher_defaults
 from steps import plasmoids
 
 
+def test_search_popup_does_not_require_plasma_67_properties(repo):
+    view = (repo / "src/offline/plasmoids" / launcher_defaults.LAUNCHER_ID
+            / "contents/ui/MainView.qml").read_text()
+    assert not re.search(r"^\s*hideOnWindowDeactivate\s*:", view, re.MULTILINE)
+
+
 @pytest.mark.parametrize("preset", [1, 2])
 @pytest.mark.parametrize("wallpaper", ["MacTahoe", "MacGoldenGate"])
 def test_installed_launcher_uses_edition_default_without_changing_source(
@@ -27,6 +34,7 @@ def test_installed_launcher_uses_edition_default_without_changing_source(
     original = (widget / "contents/config/main.xml").read_bytes()
     original_view = (widget / "contents/ui/MainView.qml").read_bytes()
     monkeypatch.setattr(plasmoids, "DEST_DIR", tmp_path / "installed")
+    monkeypatch.setattr(plasmoids, "HOME", tmp_path)
 
     def install_tree(source, destination, label):
         shutil.copytree(source, destination)
@@ -61,11 +69,14 @@ def test_invalid_edition_preset_falls_back_to_tahoe(tmp_path, monkeypatch, raw):
     "look-and-feel/MacTahoeLiquidKde-Dark/contents/layouts/org.kde.plasma.desktop-layout.js",
 ])
 @pytest.mark.parametrize("presets", [[1, 2], [2, 1], [0, None]])
-def test_panel_rebuild_preserves_explicit_presets_per_screen(repo, relative, presets):
+@pytest.mark.parametrize("edition_preset", [None, 1, 2])
+def test_panel_rebuild_preserves_explicit_presets_per_screen(repo, relative, presets, edition_preset):
     node = shutil.which("node")
     if not node:
         pytest.skip("Node.js required to execute Plasma layout scripts")
     script = (repo / "src/offline" / relative).read_text()
+    if edition_preset is not None:
+        script = f"var mttkdeLauncherPreset = {edition_preset};\n" + script
     harness = r'''
 const assert = require('node:assert/strict');
 const saved = PRESETS;
@@ -94,10 +105,10 @@ const docks = created.filter(p => p.location === 'bottom');
 assert.ok(docks.length);
 for (const dock of docks) {
     const launcher = dock.items.find(w => w.type === 'org.kde.mac-tahoe-liquid-kde.launcher');
-    const expected = saved[dock.screen];
+    const expected = EDITION ?? saved[dock.screen];
     assert.equal(launcher.config.launcherPreset, expected === 1 || expected === 2 ? expected : undefined);
 }
-'''
+'''.replace("EDITION", json.dumps(edition_preset))
     result = subprocess.run([node, "-e", harness + script + assertions],
                             capture_output=True, text=True, timeout=10)
     assert result.returncode == 0, result.stderr

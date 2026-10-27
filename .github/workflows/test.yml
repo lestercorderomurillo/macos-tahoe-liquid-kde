@@ -39,9 +39,10 @@ jobs:
         #   - KWin + KDecoration (acrylic-glass kwin effect)
         #   - libepoxy + libdrm + libX11 + libxcb (acrylic-glass effect)
         run: |
+          pacman -Sy --noconfirm --needed archlinux-keyring
           pacman -Syu --noconfirm \
-            python python-pytest python-pillow python-gobject python-pyqt6 gtk4 \
-            qt6-svg xorg-server-xvfb xorg-xprop nodejs bash git diffutils findutils \
+            python python-pytest zstd python-pillow python-gobject python-pyqt6 gtk4 \
+            qt6-svg librsvg xorg-server-xvfb xorg-xprop nodejs bash git diffutils findutils \
             base-devel cmake extra-cmake-modules pkgconf \
             qt6-base qt6-declarative qt6-wayland qt6-tools \
             kconfig kconfigwidgets kcoreaddons kcrash kglobalaccel \
@@ -54,7 +55,8 @@ jobs:
             libepoxy libdrm libx11 libxcb
       - name: Verify native popup test prerequisites
         run: |
-          python -c "import gi; gi.require_version('Gtk', '4.0'); from gi.repository import Gtk; from PyQt6 import QtSvg"
+          python -c "import gi; gi.require_version('Gtk', '4.0'); from gi.repository import Gtk; from PyQt6 import QtSvg; from PIL import Image"
+          command -v rsvg-convert
           command -v Xvfb
           command -v node
           command -v plasmoidviewer

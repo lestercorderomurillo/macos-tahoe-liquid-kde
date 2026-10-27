@@ -4,6 +4,7 @@ import shutil
 import sys
 from pathlib import Path
 
+from window_controls import EDITIONS, assemble_aurorae, apply_gtk_controls, apply_global_theme
 from launcher_defaults import LAUNCHER_ID, apply_launcher_default
 from glass_surfaces import apply_kvantum_surface_defaults, apply_plasma_surface_defaults
 
@@ -20,15 +21,14 @@ for folder, destination in (("color-schemes", "color-schemes"),
 for theme in sorted((source / "look-and-feel").glob("MacTahoeLiquidKde-*")):
     name = json.loads((theme / "metadata.json").read_text())["KPlugin"]["Id"]
     copy(theme, share / "plasma/look-and-feel" / name)
+    apply_global_theme(share / "plasma/look-and-feel" / name)
 for mode in ("Light", "Dark"):
     name = f"MacTahoeLiquidKde-{mode}"
     apply_plasma_surface_defaults(share / "plasma/desktoptheme" / name)
-    dest = share / "aurorae/themes" / name
-    copy(source / "aurorae" / name, dest)
-    copy(source / "aurorae" / f"icons-{mode}", dest)
-    shutil.copy2(source / "aurorae" / f"{name}rc", dest)
-    for fn in ("metadata.json", "metadata.desktop"):
-        (dest / fn).write_text((source / "aurorae" / fn).read_text().replace("theme_name", name))
+    apply_gtk_controls(share / "themes" / name)
+    for edition in EDITIONS:
+        dest = share / "aurorae/themes" / f"{edition}LiquidKde-{mode}"
+        assemble_aurorae(source / "aurorae", dest, mode, edition)
 for name in ("mac-tahoe-liquid-kde", "mac-tahoe-liquid-kdeDark"):
     dest = share / "Kvantum" / name
     dest.mkdir(parents=True)

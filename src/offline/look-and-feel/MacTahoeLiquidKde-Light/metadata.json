@@ -12,7 +12,11 @@
         "Id": "org.kde.mac-tahoe-liquid-kde.light",
         "License": "GPL-3.0",
         "Name": "MacTahoe Liquid (Light)",
-        "Website": "https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde"
+        "Website": "https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde",
+        "Name[pt_BR]": "MacTahoe Liquid (Claro)",
+        "Description[pt_BR]": "Tema claro macOS Tahoe Liquid para KDE Plasma",
+        "Name[de]": "MacTahoe Liquid (Hell)",
+        "Description[de]": "Helles macOS-Tahoe-Liquid-Design für KDE Plasma"
     },
     "Keywords": "Desktop;Workspace;Appearance;Look and Feel;macOS;Tahoe;Light;",
     "X-KDE-fallbackPackage": "org.kde.breeze.desktop",

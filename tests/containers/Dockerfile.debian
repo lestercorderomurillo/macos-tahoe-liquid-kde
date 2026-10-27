@@ -5,10 +5,13 @@ ARG DEBIAN_SUITE=testing-slim
 FROM debian:${DEBIAN_SUITE}
 
 ENV PYTHONUNBUFFERED=1
+# This matrix target provides the maintained X11 SDK and exercises the exact
+# module produced by the runner's CMake build in a private compositor.
+ENV MTTKDE_X11_PLUGIN=/repo/build/container-cmake/acrylic-glass/src/liquidglass_x11.so
 
 RUN apt-get update && \
     DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
-        python3 python3-pytest ca-certificates \
+        python3 python3-pytest git python3-pil python3-pyqt6 python3-pyqt6.qtsvg qml6-module-org-kde-plasma-plasma5support librsvg2-bin ca-certificates \
         cmake make g++ extra-cmake-modules pkgconf \
         qmake6 qdbus-qt6 \
         qt6-base-dev qt6-base-private-dev qt6-declarative-dev qt6-tools-dev \
@@ -20,7 +23,8 @@ RUN apt-get update && \
         libkf6service-dev libkf6widgetsaddons-dev libkf6windowsystem-dev \
         libplasma-dev libplasmaactivities-dev libplasmaactivitiesstats-dev \
         libksysguard-dev plasma-workspace-dev \
-        kwin-dev libkdecorations3-dev \
+        kwin-dev kwin-x11 kwin-x11-dev libkdecorations3-dev \
+        xvfb x11-utils dbus-daemon libgl1-mesa-dri libglx-mesa0 \
         libepoxy-dev libdrm-dev libwayland-dev libx11-dev libxext-dev \
         libxcb1-dev libxcb-composite0-dev libxcb-randr0-dev libxcb-res0-dev \
         libxcb-shm0-dev libxcb-sync-dev libvulkan-dev zstd && \

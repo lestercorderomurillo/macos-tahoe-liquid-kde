@@ -4,6 +4,8 @@ Fill-length panels cycle height (Plasma clamps their offset); others
 cycle offset. When a panel's geometry != base + last delta the user
 moved it — re-capture the base, never fight a deliberate change."""
 
+from localization import tr
+
 import fcntl
 import json
 import os
@@ -115,14 +117,14 @@ def _mark_storage_initialized_unlocked() -> None:
     except FileNotFoundError:
         pass
     else:
-        raise _StateError("canonical OLED storage marker is invalid")
+        raise _StateError(tr('canonical OLED storage marker is invalid'))
     flags = os.O_WRONLY | os.O_CREAT | os.O_EXCL
     flags |= getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_NOFOLLOW", 0)
     fd = os.open(marker, flags, 0o600)
     try:
         payload = b"canonical-v1\n"
         if os.write(fd, payload) != len(payload):
-            raise OSError("short OLED storage-marker write")
+            raise OSError(tr('short OLED storage-marker write'))
         os.fsync(fd)
     except OSError:
         try:
@@ -153,7 +155,7 @@ def _operation_lock(timeout: float):
     acquired = False
     try:
         if not stat.S_ISREG(os.fstat(fd).st_mode):
-            raise OSError(f"OLED operation lock is not a regular file: {path}")
+            raise OSError(tr('OLED operation lock is not a regular file: {path}', path=path))
         os.fchmod(fd, 0o600)
         lock = os.fdopen(fd, "r+", encoding="utf-8")
         fd = -1
@@ -237,7 +239,7 @@ def _disable_unlocked(reason: str = _MARKER_DISABLED) -> None:
     if reason not in {
         _MARKER_DISABLED, _MARKER_TRANSITION, _MARKER_UNCERTAIN,
     }:
-        raise ValueError(f"invalid OLED tombstone reason: {reason}")
+        raise ValueError(tr('invalid OLED tombstone reason: {reason}', reason=reason))
     marker = _disabled_file()
     if _disabled_unlocked():
         return
@@ -248,7 +250,7 @@ def _disable_unlocked(reason: str = _MARKER_DISABLED) -> None:
     try:
         payload = f"{reason}\n".encode("ascii")
         if os.write(fd, payload) != len(payload):
-            raise OSError("short OLED tombstone write")
+            raise OSError(tr('short OLED tombstone write'))
         os.fsync(fd)
     except OSError:
         try:
@@ -268,7 +270,7 @@ def _enable_unlocked() -> None:
     if state is None:
         return
     if state != _MARKER_DISABLED:
-        raise OSError("panel recovery is uncertain; refusing to enable shifts")
+        raise OSError(tr('panel recovery is uncertain; refusing to enable shifts'))
     try:
         _disabled_file().unlink()
     except FileNotFoundError:
@@ -278,7 +280,7 @@ def _enable_unlocked() -> None:
 def _finish_transition_unlocked() -> None:
     """Remove only the guard created by the current verified transition."""
     if _marker_state_unlocked() != _MARKER_TRANSITION:
-        raise OSError("OLED transition guard changed unexpectedly")
+        raise OSError(tr('OLED transition guard changed unexpectedly'))
     _disabled_file().unlink()
 
 
@@ -287,13 +289,13 @@ def quiesce_shifts() -> bool:
     try:
         with _operation_lock(_LOCK_WAIT_SECONDS) as acquired:
             if not acquired:
-                print("oled care: timed out waiting to quiesce panel shifts",
+                print(tr('oled care: timed out waiting to quiesce panel shifts'),
                       file=sys.stderr)
                 return False
             _disable_unlocked()
         return True
     except OSError as exc:
-        print(f"oled care: could not quiesce panel shifts ({exc})",
+        print(tr('oled care: could not quiesce panel shifts ({exc})', exc=exc),
               file=sys.stderr)
         return False
 
@@ -303,13 +305,13 @@ def enable_shifts() -> bool:
     try:
         with _operation_lock(_LOCK_WAIT_SECONDS) as acquired:
             if not acquired:
-                print("oled care: timed out waiting to enable panel shifts",
+                print(tr('oled care: timed out waiting to enable panel shifts'),
                       file=sys.stderr)
                 return False
             _enable_unlocked()
         return True
     except OSError as exc:
-        print(f"oled care: could not enable panel shifts ({exc})",
+        print(tr('oled care: could not enable panel shifts ({exc})', exc=exc),
               file=sys.stderr)
         return False
 
@@ -341,13 +343,13 @@ def mark_recovery_uncertain() -> bool:
             try:
                 payload = f"{_MARKER_UNCERTAIN}\n".encode("ascii")
                 if os.write(fd, payload) != len(payload):
-                    raise OSError("short OLED uncertainty-marker write")
+                    raise OSError(tr('short OLED uncertainty-marker write'))
                 os.fsync(fd)
             finally:
                 os.close(fd)
         return True
     except OSError as exc:
-        print(f"oled care: could not persist uncertain recovery ({exc})",
+        print(tr('oled care: could not persist uncertain recovery ({exc})', exc=exc),
               file=sys.stderr)
         return False
 
@@ -493,7 +495,7 @@ def _is_int(value: object) -> bool:
 
 def _validate_panels(panels: object) -> dict[str, dict[str, int]]:
     if not isinstance(panels, dict):
-        raise _StateError("recovery state is invalid (bad panel map)")
+        raise _StateError(tr('recovery state is invalid (bad panel map)'))
 
     checked_panels: dict[str, dict[str, int]] = {}
     for panel_id, base in panels.items():
@@ -502,13 +504,13 @@ def _validate_panels(panels: object) -> dict[str, dict[str, int]]:
         # semantics of the JavaScript object embedded in evaluateScript.
         if (not isinstance(panel_id, str) or not panel_id.isascii() or
                 not panel_id.isdigit() or not isinstance(base, dict)):
-            raise _StateError("recovery state is invalid (bad panel entry)")
+            raise _StateError(tr('recovery state is invalid (bad panel entry)'))
         offset = base.get("offset")
         height = base.get("height")
         if (not _is_int(offset) or not -1_000_000 <= offset <= 1_000_000 or
                 not _is_int(height) or not 1 <= height <= 1_000_000):
             raise _StateError(
-                f"recovery state is invalid (bad panel {panel_id!r} base)")
+                tr('recovery state is invalid (bad panel {panel_id!r} base)', panel_id=panel_id))
         checked_panels[panel_id] = {"offset": offset, "height": height}
     return checked_panels
 
@@ -516,18 +518,18 @@ def _validate_panels(panels: object) -> dict[str, dict[str, int]]:
 def _validate_state(data: object) -> dict:
     """Validate every value used to calculate or restore geometry."""
     if not isinstance(data, dict):
-        raise _StateError("recovery state is invalid (expected an object)")
+        raise _StateError(tr('recovery state is invalid (expected an object)'))
     index = data.get("index")
     last_off = data.get("last_off")
     last_h = data.get("last_h")
     if not _is_int(index) or index < 0:
-        raise _StateError("recovery state is invalid (bad index)")
+        raise _StateError(tr('recovery state is invalid (bad index)'))
     if (not _is_int(last_off) or
             not -MAX_SHIFT_CEILING_PX <= last_off <= MAX_SHIFT_CEILING_PX):
-        raise _StateError("recovery state is invalid (bad offset delta)")
+        raise _StateError(tr('recovery state is invalid (bad offset delta)'))
     if (not _is_int(last_h) or
             not 0 <= last_h <= MAX_SHIFT_CEILING_PX):
-        raise _StateError("recovery state is invalid (bad height delta)")
+        raise _StateError(tr('recovery state is invalid (bad height delta)'))
     return {
         "index": index,
         "last_off": last_off,
@@ -549,11 +551,11 @@ def _read_existing_state(path: Path | None = None) -> dict | None:
     except FileNotFoundError:
         return None
     except (OSError, UnicodeError) as exc:
-        raise _StateError(f"recovery state could not be read ({exc})") from exc
+        raise _StateError(tr('recovery state could not be read ({exc})', exc=exc)) from exc
     try:
         data = json.loads(raw)
     except json.JSONDecodeError as exc:
-        raise _StateError(f"recovery state could not be read ({exc})") from exc
+        raise _StateError(tr('recovery state could not be read ({exc})', exc=exc)) from exc
     return _validate_state(data)
 
 
@@ -609,7 +611,7 @@ def _prepare_state_unlocked(*, require_known_legacy: bool = False) -> None:
     if legacy == canonical:
         if require_known_legacy and not legacy_location_known:
             raise _StateError(
-                "legacy recovery location is unknown while Plasma is offline"
+                tr('legacy recovery location is unknown while Plasma is offline')
             )
         _mark_storage_initialized_unlocked()
         return
@@ -617,29 +619,29 @@ def _prepare_state_unlocked(*, require_known_legacy: bool = False) -> None:
     legacy_state = _read_existing_state(legacy)
     if canonical_state is not None and legacy_state is not None:
         if canonical_state != legacy_state:
-            raise _StateError("multiple OLED recovery files disagree")
+            raise _StateError(tr('multiple OLED recovery files disagree'))
         try:
             legacy.unlink()
         except OSError as exc:
             raise _StateError(
-                f"legacy recovery state could not be retired ({exc})"
+                tr('legacy recovery state could not be retired ({exc})', exc=exc)
             ) from exc
         _mark_storage_initialized_unlocked()
         return
     if legacy_state is not None:
         if not save_state(legacy_state):
-            raise _StateError("legacy recovery state could not be migrated")
+            raise _StateError(tr('legacy recovery state could not be migrated'))
         try:
             legacy.unlink()
         except OSError as exc:
             raise _StateError(
-                f"legacy recovery state could not be retired ({exc})"
+                tr('legacy recovery state could not be retired ({exc})', exc=exc)
             ) from exc
         _mark_storage_initialized_unlocked()
         return
     if require_known_legacy and not legacy_location_known:
         raise _StateError(
-            "legacy recovery location is unknown while Plasma is offline"
+            tr('legacy recovery location is unknown while Plasma is offline')
         )
     _mark_storage_initialized_unlocked()
 
@@ -649,7 +651,7 @@ def prepare_recovery_state(*, require_known_legacy: bool = False) -> bool:
     try:
         with _operation_lock(_LOCK_WAIT_SECONDS) as acquired:
             if not acquired:
-                print("oled care: timed out preparing recovery state",
+                print(tr('oled care: timed out preparing recovery state'),
                       file=sys.stderr)
                 return False
             _prepare_state_unlocked(
@@ -657,7 +659,7 @@ def prepare_recovery_state(*, require_known_legacy: bool = False) -> bool:
             )
         return True
     except (OSError, _StateError) as exc:
-        print(f"oled care: {exc}", file=sys.stderr)
+        print(tr('oled care: {exc}', exc=exc), file=sys.stderr)
         return False
 
 
@@ -686,7 +688,7 @@ def save_state(state: dict) -> bool:
         os.replace(tmp, path)
         return True
     except OSError as exc:
-        print(f"oled care: could not save panel state ({exc})", file=sys.stderr)
+        print(tr('oled care: could not save panel state ({exc})', exc=exc), file=sys.stderr)
         try:
             tmp.unlink()
         except OSError:
@@ -713,7 +715,7 @@ def _save_transition(state: dict, next_index: int,
         os.replace(tmp, path)
         return True
     except OSError as exc:
-        print(f"oled care: could not save transition journal ({exc})",
+        print(tr('oled care: could not save transition journal ({exc})', exc=exc),
               file=sys.stderr)
         try:
             tmp.unlink()
@@ -730,14 +732,14 @@ def _read_transition() -> dict | None:
         return None
     except (OSError, UnicodeError, json.JSONDecodeError) as exc:
         raise _StateError(
-            f"transition journal could not be read ({exc})"
+            tr('transition journal could not be read ({exc})', exc=exc)
         ) from exc
     if not isinstance(payload, dict) or payload.get("version") != 1:
-        raise _StateError("transition journal is invalid")
+        raise _StateError(tr('transition journal is invalid'))
     prior = _validate_state(payload.get("prior"))
     target = payload.get("target")
     if not isinstance(target, dict):
-        raise _StateError("transition journal is invalid (bad target)")
+        raise _StateError(tr('transition journal is invalid (bad target)'))
     candidate = {
         "index": target.get("index"),
         "last_off": target.get("last_off"),
@@ -911,7 +913,7 @@ def _shift_unlocked(max_px: int) -> int:
         _prepare_state_unlocked()
         state = load_state()
     except _StateError as exc:
-        print(f"oled care: {exc}", file=sys.stderr)
+        print(tr('oled care: {exc}', exc=exc), file=sys.stderr)
         return 1
     # Arm the persistent tombstone before asking Plasma to mutate. A crash,
     # failed save, and failed rollback therefore cannot expose a later timer
@@ -919,7 +921,7 @@ def _shift_unlocked(max_px: int) -> int:
     try:
         _disable_unlocked(_MARKER_TRANSITION)
     except OSError as exc:
-        print(f"oled care: could not guard panel transition ({exc})",
+        print(tr('oled care: could not guard panel transition ({exc})', exc=exc),
               file=sys.stderr)
         return 1
     next_index = (state["index"] + 1) % len(offsets)
@@ -928,7 +930,7 @@ def _shift_unlocked(max_px: int) -> int:
         try:
             _clear_transition_files_unlocked()
         except OSError as exc:
-            print(f"oled care: transition guard cleanup failed ({exc})",
+            print(tr('oled care: transition guard cleanup failed ({exc})', exc=exc),
                   file=sys.stderr)
         return 1
     output = _evaluate_script(
@@ -939,18 +941,18 @@ def _shift_unlocked(max_px: int) -> int:
         try:
             _clear_transition_files_unlocked()
         except OSError as exc:
-            print(f"oled care: transition guard cleanup failed ({exc})",
+            print(tr('oled care: transition guard cleanup failed ({exc})', exc=exc),
                   file=sys.stderr)
             return 1
         return 0
     if output is _EVAL_UNCERTAIN:
-        print("oled care: plasmashell transition outcome is uncertain",
+        print(tr('oled care: plasmashell transition outcome is uncertain'),
               file=sys.stderr)
         return 1
     assert isinstance(output, str)
     panels = _parse_panel_map(output)
     if panels is None:
-        print("oled care: could not parse panel state from plasmashell",
+        print(tr('oled care: could not parse panel state from plasmashell'),
               file=sys.stderr)
         # Plasma may have applied the script before emitting malformed output.
         # Retain the guard because no trustworthy recovery state was saved.
@@ -968,8 +970,7 @@ def _shift_unlocked(max_px: int) -> int:
         # update failure. It covers every panel this fire was allowed to
         # mutate; newly discovered or user-rebased panels were skipped. Keep
         # the tombstone so restore can resolve that journal conservatively.
-        print("oled care: transition journal update failed; panel recovery "
-              "is pending", file=sys.stderr)
+        print(tr('oled care: transition journal update failed; panel recovery is pending'), file=sys.stderr)
         return 1
     if not save_state({"index": applied_index, "last_off": applied_off,
                        "last_h": applied_h, "panels": panels}):
@@ -978,13 +979,13 @@ def _shift_unlocked(max_px: int) -> int:
         # add outcomes, while a confirmed rollback could still mistake a user
         # edit for project-owned geometry. Fail closed until restore consumes
         # the journal.
-        print("oled care: state save failed; panel recovery is pending",
+        print(tr('oled care: state save failed; panel recovery is pending'),
               file=sys.stderr)
         return 1
     try:
         _clear_transition_files_unlocked()
     except OSError as exc:
-        print(f"oled care: transition guard cleanup failed ({exc})",
+        print(tr('oled care: transition guard cleanup failed ({exc})', exc=exc),
               file=sys.stderr)
         return 1
     return 0
@@ -1007,7 +1008,7 @@ def shift(max_px: int = DEFAULT_MAX_SHIFT_PX) -> int:
                 return 0
             return _shift_unlocked(max_px)
     except OSError as exc:
-        print(f"oled care: operation lock unavailable ({exc})",
+        print(tr('oled care: operation lock unavailable ({exc})', exc=exc),
               file=sys.stderr)
         return 1
 
@@ -1017,18 +1018,18 @@ def _restore_unlocked() -> int:
     try:
         _prepare_state_unlocked()
     except _StateError as exc:
-        print(f"oled care: {exc}", file=sys.stderr)
+        print(tr('oled care: {exc}', exc=exc), file=sys.stderr)
         return 1
     marker_state = _marker_state_unlocked()
     if marker_state not in {None, _MARKER_DISABLED, _MARKER_TRANSITION}:
-        print("oled care: the panel transition marker is invalid",
+        print(tr('oled care: the panel transition marker is invalid'),
               file=sys.stderr)
         return 1
     if marker_state == _MARKER_TRANSITION:
         try:
             transition = _read_transition()
         except _StateError as exc:
-            print(f"oled care: {exc}", file=sys.stderr)
+            print(tr('oled care: {exc}', exc=exc), file=sys.stderr)
             return 1
         if transition is None:
             # The journal is removed only after no dispatch or after the new
@@ -1037,49 +1038,45 @@ def _restore_unlocked() -> int:
             try:
                 _finish_transition_unlocked()
             except OSError as exc:
-                print(f"oled care: transition cleanup failed ({exc})",
+                print(tr('oled care: transition cleanup failed ({exc})', exc=exc),
                       file=sys.stderr)
                 return 1
         else:
             prior = transition["prior"]
             target = transition["target"]
             if not prior["panels"]:
-                print("oled care: uncertain geometry has no persisted panel "
-                      "bases; manual recovery is required", file=sys.stderr)
+                print(tr('oled care: uncertain geometry has no persisted panel bases; manual recovery is required'), file=sys.stderr)
                 return 1
             output = _evaluate_script(build_uncertain_restore_script(
                 prior["panels"], prior["last_off"], prior["last_h"],
                 target["last_off"], target["last_h"],
             ))
             if output is None or output is _EVAL_UNCERTAIN:
-                print("oled care: plasmashell unreachable — uncertain "
-                      "geometry not restored", file=sys.stderr)
+                print(tr('oled care: plasmashell unreachable — uncertain geometry not restored'), file=sys.stderr)
                 return 1
             assert isinstance(output, str)
             if not any(line.strip() == "restored-uncertain"
                        for line in output.splitlines()):
-                print("oled care: plasmashell did not confirm uncertain "
-                      "geometry restoration", file=sys.stderr)
+                print(tr('oled care: plasmashell did not confirm uncertain geometry restoration'), file=sys.stderr)
                 return 1
             try:
                 path.unlink()
             except FileNotFoundError:
                 pass
             except OSError as exc:
-                print(f"oled care: geometry restored but state cleanup "
-                      f"failed ({exc})", file=sys.stderr)
+                print(tr('oled care: geometry restored but state cleanup failed ({exc})', exc=exc), file=sys.stderr)
                 return 1
             try:
                 _clear_transition_files_unlocked()
             except OSError as exc:
-                print(f"oled care: transition cleanup failed ({exc})",
+                print(tr('oled care: transition cleanup failed ({exc})', exc=exc),
                       file=sys.stderr)
                 return 1
             return 0
     try:
         state = _read_existing_state()
     except _StateError as exc:
-        print(f"oled care: {exc}", file=sys.stderr)
+        print(tr('oled care: {exc}', exc=exc), file=sys.stderr)
         return 1
     if state is None:
         return 0
@@ -1090,7 +1087,7 @@ def _restore_unlocked() -> int:
         try:
             path.unlink()
         except OSError as exc:
-            print(f"oled care: empty panel state cleanup failed ({exc})",
+            print(tr('oled care: empty panel state cleanup failed ({exc})', exc=exc),
                   file=sys.stderr)
             return 1
         return 0
@@ -1101,17 +1098,17 @@ def _restore_unlocked() -> int:
         # Keep state so a later restore can correct the residue. This command
         # is also used by uninstall/disable, which must know not to delete the
         # only recovery data or helper binary yet.
-        print("oled care: plasmashell unreachable — geometry not restored",
+        print(tr('oled care: plasmashell unreachable — geometry not restored'),
               file=sys.stderr)
         return 1
     if not any(line.strip() == "restored" for line in output.splitlines()):
-        print("oled care: plasmashell did not confirm geometry restoration",
+        print(tr('oled care: plasmashell did not confirm geometry restoration'),
               file=sys.stderr)
         return 1
     try:
         path.unlink()
     except OSError as exc:
-        print(f"oled care: geometry restored but state cleanup failed ({exc})",
+        print(tr('oled care: geometry restored but state cleanup failed ({exc})', exc=exc),
               file=sys.stderr)
         return 1
     return 0
@@ -1122,12 +1119,12 @@ def restore() -> int:
     try:
         with _operation_lock(_LOCK_WAIT_SECONDS) as acquired:
             if not acquired:
-                print("oled care: timed out waiting to restore panel geometry",
+                print(tr('oled care: timed out waiting to restore panel geometry'),
                       file=sys.stderr)
                 return 1
             return _restore_unlocked()
     except OSError as exc:
-        print(f"oled care: operation lock unavailable ({exc})",
+        print(tr('oled care: operation lock unavailable ({exc})', exc=exc),
               file=sys.stderr)
         return 1
 
@@ -1136,19 +1133,19 @@ def status() -> int:
     try:
         with _operation_lock(_LOCK_WAIT_SECONDS) as acquired:
             if not acquired:
-                print("oled care: timed out reading panel state",
+                print(tr('oled care: timed out reading panel state'),
                       file=sys.stderr)
                 return 1
             _prepare_state_unlocked()
             if _recovery_uncertain_unlocked():
-                print("recovery pending (previous transition is uncertain)")
+                print(tr('recovery pending (previous transition is uncertain)'))
                 return 1
             state = load_state()
     except (OSError, _StateError) as exc:
-        print(f"oled care: {exc}", file=sys.stderr)
+        print(tr('oled care: {exc}', exc=exc), file=sys.stderr)
         return 1
     if not state["panels"]:
-        print("inactive (no panel state)")
+        print(tr('inactive (no panel state)'))
         return 0
     print(json.dumps(state, indent=2))
     return 0
@@ -1173,7 +1170,7 @@ def _parse_max_px(args: list[str]) -> int:
 
 def main(argv: list[str]) -> int:
     if not argv:
-        print(USAGE, file=sys.stderr)
+        print(tr(USAGE), file=sys.stderr)
         return 1
     cmd = argv[0]
     if cmd == "shift":
@@ -1182,7 +1179,7 @@ def main(argv: list[str]) -> int:
         return restore()
     if cmd == "status":
         return status()
-    print(USAGE, file=sys.stderr)
+    print(tr(USAGE), file=sys.stderr)
     return 1
 
 

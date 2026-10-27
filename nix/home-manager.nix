@@ -4,6 +4,8 @@ let
   packages = import ./packages.nix { inherit pkgs; };
   assets = packages.theme-assets;
   plugins = [ packages.global-menu packages.task-manager packages.acrylic-glass packages.rounded-corners ];
+  qtPluginPath = lib.concatMapStringsSep ":" (p: "${p}/${pkgs.kdePackages.qtbase.qtPluginPrefix}") plugins;
+  qmlImportPath = lib.concatMapStringsSep ":" (p: "${p}/${pkgs.kdePackages.qtbase.qtQmlPrefix}") plugins;
   names = [ "MacTahoeLiquidKde-Light" "MacTahoeLiquidKde-Dark" ];
   kvNames = [ "mac-tahoe-liquid-kde" "mac-tahoe-liquid-kdeDark" ];
   mutable = [ "kdeglobals" "kwinrc" "plasmarc" "plasmashellrc" "kcminputrc"
@@ -39,10 +41,6 @@ in {
     fonts.fontconfig.enable = lib.mkDefault cfg.appleAssets;
     home.packages = [ packages.default pkgs.kdePackages.qtstyleplugin-kvantum ]
       ++ lib.optional cfg.appleAssets packages.apple-assets;
-    home.sessionVariables = {
-      QT_PLUGIN_PATH = lib.concatMapStringsSep ":" (p: "${p}/${pkgs.kdePackages.qtbase.qtPluginPrefix}") plugins;
-      QML2_IMPORT_PATH = lib.concatMapStringsSep ":" (p: "${p}/${pkgs.kdePackages.qtbase.qtQmlPrefix}") plugins;
-    };
     home.file = lib.listToAttrs (map (name: {
       name = ".themes/${name}";
       value.source = "${assets}/share/themes/${name}";
@@ -63,8 +61,9 @@ in {
     }) kvNames) // {
       "plasma-workspace/env/mac-tahoe-plugin-paths.sh".text = ''
         # Plasma sources this before launching KWin and plasmashell.
-        export QT_PLUGIN_PATH="${config.home.sessionVariables.QT_PLUGIN_PATH}''${QT_PLUGIN_PATH:+:$QT_PLUGIN_PATH}"
-        export QML2_IMPORT_PATH="${config.home.sessionVariables.QML2_IMPORT_PATH}''${QML2_IMPORT_PATH:+:$QML2_IMPORT_PATH}"
+        # Extend the inherited paths here; home.sessionVariables would replace them.
+        export QT_PLUGIN_PATH="${qtPluginPath}''${QT_PLUGIN_PATH:+:$QT_PLUGIN_PATH}"
+        export QML2_IMPORT_PATH="${qmlImportPath}''${QML2_IMPORT_PATH:+:$QML2_IMPORT_PATH}"
         export XDG_DATA_DIRS="${packages.default}/share:''${XDG_DATA_DIRS:-/usr/local/share:/usr/share}"
       '';
     } // lib.optionalAttrs (cfg.gtkAppmenuModule != null) {

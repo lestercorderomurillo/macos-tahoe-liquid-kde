@@ -1,3 +1,4 @@
+from localization import tr
 import os
 import shlex
 import shutil
@@ -23,7 +24,7 @@ ABOUT_INFO_DEST = HOME / ".local/bin/mac-tahoe-about-info"
 _SO_RELPATH = "plasma/applets/org.kde.mac.tahoe.liquid.globalmenu.so"
 _QML_RELPATH = "plasma/applet/org/kde/mac/tahoe/liquid/globalmenu"
 TRANSLATION_DOMAIN = "plasma_applet_org.kde.mac.tahoe.liquid.globalmenu.mo"
-TRANSLATION_LANGUAGES = ("es", "zh_CN")
+TRANSLATION_LANGUAGES = ("es", "zh_CN", "pt_BR", "de")
 GTK_ENV_MARKER = "# Managed by mac-tahoe-liquid-kde: GTK appmenu lifetime\n"
 GTK_ENV_TEMPLATE = offline("plasma-env/mac-tahoe-gtk-appmenu.sh.in")
 
@@ -103,40 +104,40 @@ def _drop_legacy() -> None:
         if so.is_file():
             try:
                 so.unlink()
-                ok(f"Removed {so.name} (user-path leftover)")
+                ok(tr('Removed {value1} (user-path leftover)', value1=so.name))
             except OSError:
                 pass
     for qml_dir in LEGACY_QML_MODULES_USER:
         if qml_dir.is_dir():
             shutil.rmtree(qml_dir, ignore_errors=True)
-            ok(f"Removed {qml_dir.name} (user-path QML)")
+            ok(tr('Removed {value1} (user-path QML)', value1=qml_dir.name))
     legacy_base = qt6_plugins_dir() / "plasma/applets"
     for fn in _LEGACY_SO_BASENAMES:
         so = legacy_base / fn
         if so.is_file():
-            sudo_remove(so, f"{so.name} (legacy)")
+            sudo_remove(so, tr('{value1} (legacy)', value1=so.name))
 
 
 def install() -> None:
     _drop_legacy()
     if LEGACY_QML.is_dir():
         shutil.rmtree(LEGACY_QML, ignore_errors=True)
-        ok("Removed old QML menu")
+        ok(tr('Removed old QML menu'))
 
     artifact = BUILD / "bin/plasma/applets/org.kde.mac.tahoe.liquid.globalmenu.so"
     if not artifact.is_file():
-        fail("Global Menu build artifact missing")
+        fail(tr('Global Menu build artifact missing'))
         return
     dest_so = qt6_plugins_dir() / _SO_RELPATH
-    if not sudo_install_file(artifact, dest_so, "Global Menu installed"):
+    if not sudo_install_file(artifact, dest_so, tr('Global Menu installed')):
         return
 
     module_src = BUILD / "bin/plasma/applet/org/kde/mac/tahoe/liquid/globalmenu"
     if not module_src.is_dir():
-        fail("Global Menu runtime QML missing")
+        fail(tr('Global Menu runtime QML missing'))
         return
     sudo_install_tree(module_src, qt6_qml_dir() / _QML_RELPATH,
-                      "Global Menu runtime QML")
+                      tr('Global Menu runtime QML'))
 
     _install_translations()
     _install_about_info()
@@ -144,7 +145,7 @@ def install() -> None:
     # The applet advertises the menu view; kded owns the registrar that
     # exporters need. A minimal session may not have loaded that module yet.
     if not qdbus_call("org.kde.kded6", "/kded", "org.kde.kded6.loadModule", "appmenu"):
-        warn("Global Menu registrar could not be loaded; log out and back in")
+        warn(tr('Global Menu registrar could not be loaded; log out and back in'))
 
 
 def gtk_appmenu_env_path() -> Path:
@@ -173,24 +174,24 @@ def _install_gtk_appmenu_environment() -> None:
     """
     module = gtk3_appmenu_module()
     if module is None:
-        warn("GTK appmenu module not found; GTK startup integration skipped")
+        warn(tr('GTK appmenu module not found; GTK startup integration skipped'))
         return
     destination = gtk_appmenu_env_path()
     try:
         if (destination.exists() or destination.is_symlink()) and not \
                 _gtk_appmenu_environment_owned(destination):
-            warn(f"Custom GTK environment file preserved: {destination}")
+            warn(tr('Custom GTK environment file preserved: {destination}', destination=destination))
             return
         with temp_dir("mttkde-gtk-appmenu-") as staging:
             source = staging / destination.name
             source.write_text(_gtk_appmenu_environment(module), encoding="utf-8")
             source.chmod(0o644)
-            if not sudo_install_file(source, destination, "GTK Global Menu startup integration",
+            if not sudo_install_file(source, destination, tr('GTK Global Menu startup integration'),
                                      user_owned=True):
                 return
-        note("Log out and back in to enable GTK Global Menu crash protection")
+        note(tr('Log out and back in to enable GTK Global Menu crash protection'))
     except (OSError, UnicodeError) as exc:
-        warn(f"GTK Global Menu startup integration could not be installed: {exc}")
+        warn(tr('GTK Global Menu startup integration could not be installed: {exc}', exc=exc))
 
 
 def _remove_gtk_appmenu_environment() -> None:
@@ -199,12 +200,12 @@ def _remove_gtk_appmenu_environment() -> None:
         if not destination.exists() and not destination.is_symlink():
             return
         if not _gtk_appmenu_environment_owned(destination):
-            warn(f"Custom GTK environment file preserved: {destination}")
+            warn(tr('Custom GTK environment file preserved: {destination}', destination=destination))
             return
-        if sudo_remove(destination, "GTK Global Menu startup integration removed"):
-            note("Log out and back in to remove GTK startup integration from this session")
+        if sudo_remove(destination, tr('GTK Global Menu startup integration removed')):
+            note(tr('Log out and back in to remove GTK startup integration from this session'))
     except (OSError, UnicodeError) as exc:
-        warn(f"GTK Global Menu startup integration could not be removed: {exc}")
+        warn(tr('GTK Global Menu startup integration could not be removed: {exc}', exc=exc))
 
 
 def _translation_dest(language: str) -> Path:
@@ -221,14 +222,14 @@ def _install_translations() -> None:
         try:
             dest.parent.mkdir(parents=True, exist_ok=True)
             shutil.copy2(source, dest)
-            ok(f"Global Menu {language} translation installed")
+            ok(tr('Global Menu {language} translation installed', language=language))
         except OSError as exc:
-            warn(f"Global Menu {language} translation: {exc}")
+            warn(tr('Global Menu {language} translation: {exc}', language=language, exc=exc))
 
 
 def _install_about_info() -> None:
     if not ABOUT_INFO_SRC.is_file():
-        warn("System info helper source missing")
+        warn(tr('System info helper source missing'))
         return
     ABOUT_INFO_DEST.parent.mkdir(parents=True, exist_ok=True)
     # Bake the version in: the installed copy sits outside the repo, so
@@ -237,24 +238,24 @@ def _install_about_info() -> None:
     ABOUT_INFO_DEST.write_text(
         source.replace("@THEME_VERSION@", read_version()), encoding="utf-8")
     ABOUT_INFO_DEST.chmod(0o755)
-    ok("System info helper installed")
+    ok(tr('System info helper installed'))
 
 
 def uninstall() -> None:
     _remove_gtk_appmenu_environment()
-    sudo_remove(qt6_plugins_dir() / _SO_RELPATH, "Global Menu .so removed")
-    sudo_remove(qt6_qml_dir() / _QML_RELPATH, "Global Menu runtime QML removed")
+    sudo_remove(qt6_plugins_dir() / _SO_RELPATH, tr('Global Menu .so removed'))
+    sudo_remove(qt6_qml_dir() / _QML_RELPATH, tr('Global Menu runtime QML removed'))
     for language in TRANSLATION_LANGUAGES:
         try:
             _translation_dest(language).unlink()
-            ok(f"Global Menu {language} translation removed")
+            ok(tr('Global Menu {language} translation removed', language=language))
         except FileNotFoundError:
             pass
         except OSError:
             pass
     try:
         ABOUT_INFO_DEST.unlink()
-        ok("System info helper removed")
+        ok(tr('System info helper removed'))
     except FileNotFoundError:
         pass
     except OSError:
@@ -262,4 +263,4 @@ def uninstall() -> None:
     _drop_legacy()
     if LEGACY_QML.is_dir():
         shutil.rmtree(LEGACY_QML, ignore_errors=True)
-        ok("Removed old QML menu")
+        ok(tr('Removed old QML menu'))

@@ -17,7 +17,7 @@
 #                     install — picks up any cloud-init changes)
 #
 # Supported: cachyos arch manjaro endeavouros garuda
-#            fedora nobara opensuse neon debian artix
+#            fedora nobara opensuse neon debian artix kubuntu
 
 set -euo pipefail
 
@@ -40,17 +40,17 @@ declare -A URL=(
     [ubuntu-noble.qcow2]="https://cloud-images.ubuntu.com/noble/current/noble-server-cloudimg-amd64.img"
     [debian-testing.qcow2]="https://cloud.debian.org/images/cloud/forky/daily/latest/debian-14-generic-amd64-daily.qcow2"
 )
-declare -A PORT=([arch]=2221 [cachyos]=2222 [manjaro]=2223 [endeavouros]=2224 [garuda]=2225 [fedora]=2226 [nobara]=2227 [opensuse]=2228 [neon]=2231 [debian]=2232 [artix]=2233)
+declare -A PORT=([arch]=2221 [cachyos]=2222 [manjaro]=2223 [endeavouros]=2224 [garuda]=2225 [fedora]=2226 [nobara]=2227 [opensuse]=2228 [neon]=2231 [debian]=2232 [artix]=2233 [kubuntu]=2234)
 
-ORDER=(cachyos arch manjaro endeavouros garuda fedora nobara opensuse neon debian artix)
+ORDER=(cachyos arch manjaro endeavouros garuda fedora nobara opensuse neon debian artix kubuntu)
 
 image_rows="$(python3 - "$REPO/.vm/images.json" <<'PY_IMAGES'
 import hashlib, json, re, sys
 images = json.load(open(sys.argv[1]))
-if set(images) != {'cachyos', 'manjaro', 'endeavouros', 'garuda', 'nobara', 'artix'}:
+if set(images) != {'cachyos', 'manjaro', 'endeavouros', 'garuda', 'nobara', 'artix', 'kubuntu'}:
     raise ValueError('The manifest must cover every official ISO target')
 for name, image in images.items():
-    if (name not in ('cachyos', 'manjaro', 'endeavouros', 'garuda', 'nobara', 'artix')
+    if (name not in ('cachyos', 'manjaro', 'endeavouros', 'garuda', 'nobara', 'artix', 'kubuntu')
             or image['algorithm'] not in ('sha256', 'sha512')
             or not image['url'].startswith('https://')
             or not image['url'].endswith('.iso')

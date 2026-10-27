@@ -1,13 +1,17 @@
+from localization import tr
 import contextlib
 import errno
+import fcntl
 import json
 import os
+import re
 import select
 import shutil
 import signal
 import stat
 import subprocess
 import sys
+import tempfile
 import time
 import urllib.error
 import urllib.request
@@ -263,6 +267,9 @@ _DESKTOP_ENV_KEYS = frozenset({
     "XAUTHORITY",
     "XDG_CURRENT_DESKTOP",
     "XDG_CONFIG_HOME",
+    # Plasma stores global-theme defaults in ~/.config/kdedefaults and
+    # includes it in this search path. SSH/sudo must see the same defaults.
+    "XDG_CONFIG_DIRS",
     "XDG_DATA_HOME",
     "XDG_CACHE_HOME",
     "XDG_STATE_HOME",
@@ -271,6 +278,9 @@ _DESKTOP_ENV_KEYS = frozenset({
     "XDG_MENU_PREFIX",
     "XDG_RUNTIME_DIR",
     "XDG_SESSION_TYPE",
+    # GTK's appmenu lifetime reference is part of the logged-in session.
+    # SSH-launched desktop apps need it too, across live theme changes.
+    "GTK3_MODULES",
 })
 _PROC_ROOT = Path("/proc")
 
@@ -390,8 +400,7 @@ def fetch(url: str, dest: Path | str, referer: str | None = None,
             if expected_n is not None:
                 actual_n = dest.stat().st_size
                 if actual_n != expected_n:
-                    last_err = (f"truncated: got {actual_n} of {expected_n} "
-                                f"bytes")
+                    last_err = tr("Truncated: got {actual} of {expected} bytes", actual=actual_n, expected=expected_n)
                     continue
             return True
         except (urllib.error.URLError, OSError, TimeoutError) as exc:
@@ -403,7 +412,7 @@ def fetch(url: str, dest: Path | str, referer: str | None = None,
         except OSError:
             pass
     if last_err:
-        print(f"     fetch {url}: {last_err}", file=sys.stderr)
+        print(tr('     fetch {url}: {last_err}', url=url, last_err=last_err), file=sys.stderr)
     return False
 
 
@@ -418,22 +427,57 @@ def _staging_root() -> Path:
     return Path(cache_home) / "mac-tahoe-liquid-kde-staging"
 
 
+def _prune_copy_staging(staging: Path) -> None:
+    """Called under the copy lock; recovery backups are never disposable."""
+    for path in staging.iterdir():
+        if path.is_symlink() or not path.is_dir():
+            continue
+        if re.fullmatch(r"\.copy-[a-z0-9_]{8}", path.name):
+            if not (path / "backup").exists() and not (path / "backup").is_symlink():
+                shutil.rmtree(path)
+        else:
+            # Pre-lock installers used PID-named staging. Only reclaim their
+            # temporary copies when that process is demonstrably gone.
+            match = re.fullmatch(r"tmp_.+_([1-9][0-9]*)", path.name)
+            if match:
+                try:
+                    os.kill(int(match[1]), 0)
+                except ProcessLookupError:
+                    shutil.rmtree(path)
+                except (PermissionError, OverflowError):
+                    pass
+
+
 def safe_copy(src: Path | str, dest: Path | str) -> bool:
     """Atomic copy via out-of-tree staging + rename, with rollback on failure.
     ``symlinks=True`` or icon themes balloon 2-3x and @2x lookup breaks; staging
     avoids dest.parent because plasmashell's KDirWatch scans sibling tmp dirs
     mid-copy and crashes loading half-built wallpaper packages."""
-    src = Path(src)
-    dest = Path(dest)
-    parent = dest.parent
-    parent.mkdir(parents=True, exist_ok=True)
     staging = _staging_root()
-    staging.mkdir(parents=True, exist_ok=True)
-    tmp = staging / f"tmp_{dest.name}_{os.getpid()}"
-    bak = staging / f"bak_{dest.name}_{os.getpid()}"
+    try:
+        staging.mkdir(parents=True, exist_ok=True)
+        fd = os.open(staging / ".copy.lock", os.O_CREAT | os.O_RDWR | os.O_NOFOLLOW, 0o600)
+        with os.fdopen(fd, "a") as lock:
+            fcntl.flock(lock, fcntl.LOCK_EX)
+            _prune_copy_staging(staging)
+            transaction = Path(tempfile.mkdtemp(prefix=".copy-", dir=staging))
+            try:
+                return _copy_transaction(Path(src), Path(dest), transaction)
+            finally:
+                # A failed rollback retains the only recovery copy. It is
+                # neither a cache nor safe to discard on the next install.
+                backup = transaction / "backup"
+                if not backup.exists() and not backup.is_symlink():
+                    shutil.rmtree(transaction, ignore_errors=True)
+    except OSError:
+        return False
 
-    if tmp.exists():
-        shutil.rmtree(tmp, ignore_errors=True)
+
+def _copy_transaction(src: Path, dest: Path, transaction: Path) -> bool:
+    dest.parent.mkdir(parents=True, exist_ok=True)
+    tmp = transaction / "new"
+    bak = transaction / "backup"
+
     try:
         shutil.copytree(src, tmp, symlinks=True)
     except OSError:
@@ -450,14 +494,11 @@ def safe_copy(src: Path | str, dest: Path | str) -> bool:
                 raise
 
     try:
-        if dest.exists():
-            try:
-                _move(dest, bak)
-            except OSError:
-                shutil.rmtree(dest, ignore_errors=True)
+        if dest.exists() or dest.is_symlink():
+            _move(dest, bak)
         _move(tmp, dest)
     except OSError:
-        if bak.exists():
+        if bak.exists() or bak.is_symlink():
             try:
                 _move(bak, dest)
             except OSError:
@@ -465,7 +506,9 @@ def safe_copy(src: Path | str, dest: Path | str) -> bool:
         shutil.rmtree(tmp, ignore_errors=True)
         return False
 
-    if bak.exists():
+    if bak.is_symlink():
+        bak.unlink()
+    elif bak.exists():
         shutil.rmtree(bak, ignore_errors=True)
     return True
 
@@ -622,7 +665,19 @@ def pkg_install(*pkgs: str) -> bool:
         base = package_manager_install_cmd()
     except UnsupportedDistroError as exc:
         fail(str(exc))
-        fail(f"install manually: {' '.join(pkgs)}")
+        fail(tr('install manually: {value1}', value1=' '.join(pkgs)))
+        return False
+    return _run_pkg_cmd(base, *pkgs)
+
+
+def pkg_remove(*pkgs: str) -> bool:
+    """Remove packages via the distro's native package manager.
+    Non-interactive; callers pass names reported by distro.package_owner."""
+    from distro import UnsupportedDistroError, package_manager_remove_cmd
+    try:
+        base = package_manager_remove_cmd()
+    except UnsupportedDistroError as exc:
+        fail(str(exc))
         return False
     return _run_pkg_cmd(base, *pkgs)
 
@@ -639,7 +694,7 @@ def pkg_sync_install(*pkgs: str) -> bool:
         install = package_manager_install_cmd()
     except UnsupportedDistroError as exc:
         fail(str(exc))
-        fail(f"install manually: {' '.join(pkgs)}")
+        fail(tr('install manually: {value1}', value1=' '.join(pkgs)))
         return False
     if sync is not None and not _run_pkg_cmd(sync):
         return False

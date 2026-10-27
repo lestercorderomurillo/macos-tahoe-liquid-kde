@@ -52,6 +52,20 @@ Window {
     property string fetcherCommand:
         "sh -c 'PATH=\"$HOME/.local/bin:$PATH\" mac-tahoe-about-info'"
 
+    function localizedInfo(value, fallback) {
+        const text = value || fallback || "Unknown";
+        if (text === "Unknown")
+            return translations.i18n("Unknown");
+        if (text === "Not Available")
+            return translations.i18n("Not Available");
+        if (text === "Personal Computer")
+            return translations.i18n("Personal Computer");
+        const cores = /^(\d+) \((\d+) physical\)$/.exec(text);
+        if (cores)
+            return translations.i18n("%1 (%2 physical)", cores[1], cores[2]);
+        return text;
+    }
+
     title: translations.i18n("About This Computer")
     width: 360
     height: 700
@@ -68,7 +82,8 @@ Window {
     }
     readonly property color secondaryTextColor: Qt.rgba(Kirigami.Theme.textColor.r,
                                                         Kirigami.Theme.textColor.g,
-                                                        Kirigami.Theme.textColor.b, 0.85)
+                                                        Kirigami.Theme.textColor.b,
+                                                        popupSurface.clearSurface && !isDarkTheme ? 0.90 : 0.85)
 
     // Reference for two-line cell height. Cells whose content commonly
     // wraps to a second line (Chip, Graphics, Startup disk, OS) bind
@@ -131,17 +146,17 @@ Window {
                 console.warn("[AboutWindow] failed to parse helper output:", e);
                 return;
             }
-            aboutWindow.vendorDisplay = info.vendor || translations.i18n("Personal Computer");
+            aboutWindow.vendorDisplay = aboutWindow.localizedInfo(info.vendor, "Personal Computer");
             aboutWindow.modelDisplay = info.model || "";
             aboutWindow.yearDisplay = info.year || "";
-            aboutWindow.chipDisplay = info.chip || translations.i18n("Unknown");
-            aboutWindow.coresDisplay = info.cores || translations.i18n("Unknown");
-            aboutWindow.memoryDisplay = info.memory || translations.i18n("Unknown");
-            aboutWindow.graphicsDisplay = info.graphics || translations.i18n("Unknown");
-            aboutWindow.diskDisplay = info.disk || translations.i18n("Unknown");
-            aboutWindow.networkDisplay = info.network || translations.i18n("Unknown");
-            aboutWindow.serialDisplay = info.serial || translations.i18n("Not Available");
-            aboutWindow.osDisplay = info.os || translations.i18n("Unknown");
+            aboutWindow.chipDisplay = aboutWindow.localizedInfo(info.chip);
+            aboutWindow.coresDisplay = aboutWindow.localizedInfo(info.cores);
+            aboutWindow.memoryDisplay = aboutWindow.localizedInfo(info.memory);
+            aboutWindow.graphicsDisplay = aboutWindow.localizedInfo(info.graphics);
+            aboutWindow.diskDisplay = aboutWindow.localizedInfo(info.disk);
+            aboutWindow.networkDisplay = aboutWindow.localizedInfo(info.network);
+            aboutWindow.serialDisplay = aboutWindow.localizedInfo(info.serial, "Not Available");
+            aboutWindow.osDisplay = aboutWindow.localizedInfo(info.os);
             aboutWindow.themeVersionDisplay =
                 info.theme_version || aboutWindow._placeholder;
             aboutWindow.infoReady = true;
@@ -238,13 +253,14 @@ Window {
         Component.onCompleted: clearSurface = hasElement("hint-clear-surface")
     }
 
-    // Follow the installed edition's popup fill without changing its contour.
+    // The SVG hint identifies Golden Gate, not a permanently clear fill.
+    // Its light surface must back dark text even over a black glass backdrop.
     Rectangle {
         id: glass
         objectName: "aboutGlassSurface"
         anchors.fill: parent
         radius: 22
-        color: popupSurface.clearSurface ? Qt.rgba(1, 1, 1, 0.01)
+        color: popupSurface.clearSurface ? Qt.rgba(1, 1, 1, aboutWindow.isDarkTheme ? 0.01 : 0.60)
             : aboutWindow.isDarkTheme ? Qt.rgba(0, 0, 0, 0.48) : Qt.rgba(1, 1, 1, 0.55)
         border.width: 0.75
         border.color: Qt.rgba(0, 0, 0, 0.18)

@@ -5,6 +5,8 @@ fully offline under ``src/offline/sounds``.  Plasma 6 stores the selected
 theme in ``kdeglobals`` rather than in an app-specific notification file.
 """
 
+from localization import tr
+
 from pathlib import Path
 
 from steps._helpers import (
@@ -36,22 +38,22 @@ def _select_theme() -> bool:
         "--key", "Enable", "true",
     )
     if theme_ok and enabled_ok:
-        ok("Sound theme selected")
+        ok(tr('Sound theme selected'))
         return True
-    warn("Sound theme copied but not selected (kwriteconfig6 failed)")
+    warn(tr('Sound theme copied but not selected (kwriteconfig6 failed)'))
     return False
 
 
 def install() -> None:
-    if not install_tree(OFFLINE_DIR, DEST_DIR, "MacTahoe sound theme"):
-        info("0 sound events installed/reinstalled")
+    if not install_tree(OFFLINE_DIR, DEST_DIR, tr('MacTahoe sound theme')):
+        info(tr('0 sound events installed/reinstalled'))
         return
 
     # ``--no-apply-theme`` stages assets without changing the desktop.
     if feat_enabled("APPLY_THEME"):
         _select_theme()
 
-    info(f"{_sound_count(DEST_DIR)} sound events installed/reinstalled")
+    info(tr('{value1} sound events installed/reinstalled', value1=_sound_count(DEST_DIR)))
 
 
 def uninstall() -> None:
@@ -61,9 +63,9 @@ def uninstall() -> None:
             "--file", "kdeglobals", "--group", "Sounds",
             "--key", "Theme", FALLBACK_THEME_ID,
         ):
-            ok("Ocean sound theme restored")
+            ok(tr('Ocean sound theme restored'))
         else:
-            warn("Could not restore the Ocean sound theme")
+            warn(tr('Could not restore the Ocean sound theme'))
 
-    removed = remove_tree(DEST_DIR, "MacTahoe sound theme")
-    info(f"{1 if removed else 0} sound theme removed")
+    removed = remove_tree(DEST_DIR, tr('MacTahoe sound theme'))
+    info(tr('{value1} sound theme removed', value1=1 if removed else 0))

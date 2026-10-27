@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""QML wrapper for the install / uninstall commands."""
+"""Graphical wizard and supervised privileged installation backend."""
 
 from __future__ import annotations
 
@@ -8,6 +8,7 @@ import errno
 import json
 import os
 import pwd
+import re
 import shlex
 import shutil
 import signal
@@ -23,22 +24,21 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "scripts"))
 
 from paths import CONFIG_FILE, REPO_ROOT, read_version
+from launcher_defaults import edition_name
 from cli import (
     ALL_FEATURES, DEFAULT_FEATURES, FEATURE_DESC,
     fetch_latest_release, parse_semver,
 )
-from log import DONE_MARKER
+from log import DONE_MARKER, STATUS_MARKER
 from localization import (
-    feature_label, get_language, language_options, set_language, translate,
+    effective_language, feature_label, get_language, language_options, set_language, translate, tr,
 )
 
 
-PREVIEW_QML = Path(__file__).resolve().parent / "preview_installer.qml"
-
 _ACTION_COMMANDS = {
-    "install": "sudo ./install",
-    "uninstall": "sudo ./uninstall",
-    "preflight": "sudo ./install --preflight",
+    "install": "sudo ./src/scripts/installer_backend.py install",
+    "uninstall": "sudo ./src/scripts/installer_backend.py uninstall",
+    "preflight": "sudo ./src/scripts/installer_backend.py install --preflight",
 }
 
 _SUPERVISOR_POLL_SECONDS = 0.05
@@ -51,11 +51,11 @@ def _create_private_run_file(prefix: str) -> str:
         os.fchmod(fd, 0o600)
         info = os.fstat(fd)
         if not stat.S_ISREG(info.st_mode):
-            raise OSError(errno.EPERM, "secure run file is not regular")
+            raise OSError(errno.EPERM, tr('secure run file is not regular'))
         if info.st_uid != os.geteuid():
-            raise OSError(errno.EPERM, "secure run file has the wrong owner")
+            raise OSError(errno.EPERM, tr('secure run file has the wrong owner'))
         if info.st_nlink != 1:
-            raise OSError(errno.EPERM, "secure run file has extra links")
+            raise OSError(errno.EPERM, tr('secure run file has extra links'))
     except BaseException:
         try:
             os.close(fd)
@@ -93,11 +93,11 @@ def _secure_run_file_fd(path: str, *, write: bool) -> int:
     try:
         info = os.fstat(fd)
         if not stat.S_ISREG(info.st_mode):
-            raise OSError(errno.EPERM, "run file is not regular")
+            raise OSError(errno.EPERM, tr('run file is not regular'))
         if (info.st_uid != os.geteuid() or info.st_nlink != 1
                 or stat.S_IMODE(info.st_mode) != 0o600):
             raise OSError(
-                errno.EPERM, "run file owner, mode, or link count changed")
+                errno.EPERM, tr('run file owner, mode, or link count changed'))
         return fd
     except BaseException:
         os.close(fd)
@@ -115,7 +115,7 @@ def _mark_cancel_requested(path: str | None) -> bool:
         while payload:
             written = os.write(fd, payload)
             if written <= 0:
-                raise OSError(errno.EIO, "short cancellation-token write")
+                raise OSError(errno.EIO, tr('short cancellation-token write'))
             payload = payload[written:]
         return True
     except OSError:
@@ -198,16 +198,20 @@ def command_for_action(action: str) -> str:
 def escalated_command_for_action(
         action: str, headless: bool = False,
         progress_file: str | None = None,
-        cancel_file: str | None = None) -> str:
+        cancel_file: str | None = None,
+        choices: dict | None = None) -> str:
     base = _ACTION_COMMANDS[action]
     target = base[len("sudo "):] if base.startswith("sudo ") else base
+    if choices is not None and action in ("install", "uninstall"):
+        from installer_choices import validate
+        target += " --wizard-options " + shlex.quote(json.dumps(validate(choices)))
 
-    headless_pairs = []
+    headless_pairs = [f"MTTKDE_LANGUAGE={shlex.quote(effective_language(get_language()))}"]
     if headless:
         if progress_file is None or cancel_file is None:
             raise ValueError(
-                "headless installer launch requires progress and cancel files")
-        headless_pairs = [
+                tr('headless installer launch requires progress and cancel files'))
+        headless_pairs += [
             "MTTKDE_NO_CONFIRM=1",
             f"MTTKDE_PROGRESS_FILE={shlex.quote(progress_file)}",
             f"MTTKDE_CANCEL_FILE={shlex.quote(cancel_file)}",
@@ -235,11 +239,14 @@ def escalated_command_for_action(
         return f"pkexec env {env_str} {absolute_target}"
 
     prefix = (" ".join(headless_pairs) + " ") if headless_pairs else ""
+    if headless:
+        askpass = shlex.quote(str(Path(__file__).with_name("askpass.py")))
+        return f"SUDO_ASKPASS={askpass} sudo -A {prefix}{target}"
     return f"sudo {prefix}{target}"
 
 
 def _supervise_action(action: str, progress_file: str,
-                      cancel_file: str) -> int:
+                      cancel_file: str, choices: dict | None = None) -> int:
     """Run privilege escalation while remaining a signalable GUI child.
 
     pkexec replaces its caller with a real-root process, which a user-owned
@@ -253,7 +260,7 @@ def _supervise_action(action: str, progress_file: str,
     if action not in _ACTION_COMMANDS:
         return 2
     if not _isolate_supervisor_process_group():
-        print("Could not isolate privileged installer supervisor",
+        print(tr('Could not isolate privileged installer supervisor'),
               file=sys.stderr)
         return 1
     if _cancel_file_requested(cancel_file):
@@ -264,6 +271,7 @@ def _supervise_action(action: str, progress_file: str,
         headless=True,
         progress_file=progress_file,
         cancel_file=cancel_file,
+        **({"choices": choices} if choices is not None else {}),
     )
     try:
         child = subprocess.Popen(
@@ -271,7 +279,7 @@ def _supervise_action(action: str, progress_file: str,
             cwd=str(REPO_ROOT),
         )
     except OSError as exc:
-        print(f"Could not start privileged installer: {exc}", file=sys.stderr)
+        print(tr('Could not start privileged installer: {exc}', exc=exc), file=sys.stderr)
         return 1
 
     signal_cancelled = False
@@ -303,24 +311,6 @@ def _supervise_action(action: str, progress_file: str,
         signal.signal(signal.SIGINT, previous_int)
         signal.signal(signal.SIGTERM, previous_term)
 
-_TERMINAL_BUILDERS = (
-    ("konsole", lambda shell_cmd: ["konsole", "--noclose", "-e",
-                                   "bash", "-lc", shell_cmd]),
-    ("kgx", lambda shell_cmd: ["kgx", "--", "bash", "-lc", shell_cmd]),
-    ("gnome-terminal", lambda shell_cmd: ["gnome-terminal", "--",
-                                          "bash", "-lc", shell_cmd]),
-    ("ptyxis", lambda shell_cmd: ["ptyxis", "--", "bash", "-lc", shell_cmd]),
-    ("xterm", lambda shell_cmd: ["xterm", "-hold", "-e",
-                                 "bash", "-lc", shell_cmd]),
-    ("kitty", lambda shell_cmd: ["kitty", "bash", "-lc", shell_cmd]),
-    ("alacritty", lambda shell_cmd: ["alacritty", "-e",
-                                     "bash", "-lc", shell_cmd]),
-    ("wezterm", lambda shell_cmd: ["wezterm", "start",
-                                   "--always-new-process", "--",
-                                   "bash", "-lc", shell_cmd]),
-)
-
-
 def _restore_user_session_env(uid: int) -> None:
     runtime_dir = Path(f"/run/user/{uid}")
     bus = runtime_dir / "bus"
@@ -339,8 +329,7 @@ def drop_root_to_invoking_user() -> int:
     sudo_gid_str = os.environ.get("SUDO_GID")
     if not sudo_user or not sudo_uid_str or not sudo_gid_str:
         print(
-            "installer UI must be launched from a regular desktop user "
-            "(or via sudo from that user session).",
+            tr('installer UI must be launched from a regular desktop user (or via sudo from that user session).'),
             file=sys.stderr,
         )
         return 1
@@ -360,90 +349,6 @@ def drop_root_to_invoking_user() -> int:
     os.setresgid(sudo_gid, sudo_gid, sudo_gid)
     os.setresuid(sudo_uid, sudo_uid, sudo_uid)
     return 0
-
-
-def _shell_command(action: str) -> str:
-    repo = shlex.quote(str(REPO_ROOT))
-    return f"cd {repo} && {escalated_command_for_action(action)}"
-
-
-def _terminal_specs(shell_cmd: str) -> list[tuple[str, list[str]]]:
-    return [(name, build(shell_cmd)) for name, build in _TERMINAL_BUILDERS]
-
-
-def launch_action(action: str) -> dict[str, object]:
-    display_cmd = command_for_action(action)
-    shell_cmd = _shell_command(action)
-    last_error = ""
-    saw_terminal = False
-
-    for terminal, argv in _terminal_specs(shell_cmd):
-        if not shutil.which(terminal):
-            continue
-        saw_terminal = True
-        try:
-            subprocess.Popen(
-                argv,
-                cwd=str(REPO_ROOT),
-                start_new_session=True,
-            )
-        except OSError as exc:
-            last_error = f"{terminal}: {exc}"
-            continue
-        return {
-            "ok": True,
-            "action": action,
-            "terminal": terminal,
-            "command": display_cmd,
-            "message": f"Launching {display_cmd} in {terminal}.",
-        }
-
-    if saw_terminal and last_error:
-        message = f"Could not open a terminal window ({last_error})."
-    else:
-        message = (
-            "No supported terminal emulator was found. "
-            "Install Konsole or run the command manually from the repo root."
-        )
-    return {
-        "ok": False,
-        "action": action,
-        "terminal": "",
-        "command": display_cmd,
-        "message": message,
-    }
-
-
-def _enable_kwin_blur(window) -> None:
-    import ctypes
-    try:
-        import sip
-    except ImportError:
-        from PyQt6 import sip  # type: ignore
-
-    from PyQt6.QtGui import QRegion
-
-    try:
-        lib = ctypes.CDLL("libKF6WindowSystem.so.6")
-    except OSError:
-        return
-
-    # KWindowEffects::enableBlurBehind(QWindow*, bool, QRegion const&)
-    fn = getattr(
-        lib,
-        "_ZN14KWindowEffects16enableBlurBehindEP7QWindowbRK7QRegion",
-        None,
-    )
-    if fn is None:
-        return
-
-    empty_region = QRegion()
-    window_ptr = sip.unwrapinstance(window)
-    region_ptr = sip.unwrapinstance(empty_region)
-
-    fn.argtypes = [ctypes.c_void_p, ctypes.c_bool, ctypes.c_void_p]
-    fn.restype = None
-    fn(ctypes.c_void_p(window_ptr), True, ctypes.c_void_p(region_ptr))
 
 
 def _make_installer_bridge():
@@ -470,6 +375,11 @@ def _make_installer_bridge():
                     "available": False, "reachable": False,
                 })
 
+    class _UpdateInstallThread(QThread):
+        def run(self) -> None:
+            from cli import auto_update_and_reexec
+            auto_update_and_reexec([], prog="installer")
+
     class InstallerBridge(QObject):
         currentStepChanged = pyqtSignal()
         progressChanged = pyqtSignal()
@@ -477,6 +387,7 @@ def _make_installer_bridge():
         finished = pyqtSignal(int)
         logAppended = pyqtSignal(str)
         updateChecked = pyqtSignal("QVariantMap")
+        updateReturned = pyqtSignal()
         languageChanged = pyqtSignal()
 
         def __init__(self, parent=None):
@@ -485,6 +396,7 @@ def _make_installer_bridge():
             self._current_step = ""
             self._step_index = 0
             self._progress = 0.0
+            self._estimated_total = _ESTIMATED_TOTAL_STEPS
             self._running = False
             self._log_lines: list[str] = []
             self._read_offset = 0
@@ -494,7 +406,9 @@ def _make_installer_bridge():
             self._progress_file: str | None = None
             self._cancel_file: str | None = None
             self._update_thread: _UpdateCheckThread | None = None
+            self._update_install_thread = None
             self._language = get_language()
+            self._choices = None
 
             self._watcher = QFileSystemWatcher(self)
             self._watcher.fileChanged.connect(self._read_progress)
@@ -513,6 +427,10 @@ def _make_installer_bridge():
         @pyqtProperty(bool, notify=runningChanged)
         def running(self) -> bool:
             return self._running
+
+        @pyqtProperty(str, constant=True)
+        def editionName(self) -> str:
+            return edition_name()
 
         @pyqtProperty(str, constant=True)
         def version(self) -> str:
@@ -546,10 +464,23 @@ def _make_installer_bridge():
         def logTail(self) -> str:
             return "\n".join(self._log_lines[-200:])
 
+        @pyqtSlot("QVariantMap")
+        def setChoices(self, choices):
+            if self._running:
+                return
+            from installer_choices import validate
+            self._choices = validate(choices)
+
         @pyqtSlot(str)
         def start(self, action: str) -> None:
             if self._running or action not in _ACTION_COMMANDS:
                 return
+            from cli import _estimate_install_steps, _estimate_uninstall_steps, _theme_is_already_installed
+            from installer_choices import features
+            selected_features = features(self._choices, DEFAULT_FEATURES,
+                                         existing_install=_theme_is_already_installed()) if self._choices else DEFAULT_FEATURES
+            self._estimated_total = (_estimate_uninstall_steps(DEFAULT_FEATURES) if action == "uninstall"
+                                     else _estimate_install_steps(selected_features))
             self._log_lines.clear()
             self._current_step = translate("Starting…", self._language)
             self._step_index = 0
@@ -565,7 +496,7 @@ def _make_installer_bridge():
                 self._progress_file = _create_progress_file()
                 self._cancel_file = _create_cancel_file()
             except OSError as exc:
-                message = f"Could not create secure installer channel: {exc}"
+                message = tr("Could not create secure installer channel: {error}", error=exc)
                 self._log_lines.append(message)
                 self._current_step = message
                 self.logAppended.emit(message)
@@ -579,7 +510,8 @@ def _make_installer_bridge():
 
             self._proc = QProcess(self)
             self._proc.setProcessChannelMode(
-                QProcess.ProcessChannelMode.ForwardedChannels)
+                QProcess.ProcessChannelMode.MergedChannels)
+            self._proc.readyReadStandardOutput.connect(self._read_output)
             self._proc.setWorkingDirectory(str(REPO_ROOT))
             self._proc.finished.connect(self._on_proc_finished)
             self._proc.errorOccurred.connect(self._on_proc_error)
@@ -595,6 +527,8 @@ def _make_installer_bridge():
                     "--supervise", action,
                     "--progress-file", self._progress_file,
                     "--cancel-file", self._cancel_file,
+                    *(["--wizard-options", json.dumps(self._choices)]
+                      if self._choices is not None else []),
                 ],
             )
 
@@ -625,9 +559,31 @@ def _make_installer_bridge():
                 return
             thread = _UpdateCheckThread(self)
             thread.done.connect(self.updateChecked)
-            thread.finished.connect(thread.deleteLater)
             self._update_thread = thread
             thread.start()
+
+        @pyqtSlot()
+        def updateInstaller(self):
+            if self._running or (self._update_install_thread and self._update_install_thread.isRunning()):
+                return
+            self._update_install_thread = _UpdateInstallThread(self)
+            self._update_install_thread.finished.connect(self.updateReturned)
+            self._update_install_thread.start()
+
+        def waitForUpdateWorkers(self):
+            for thread in (self._update_thread, self._update_install_thread):
+                if thread is not None:
+                    thread.wait()
+
+        def _read_output(self) -> None:
+            if self._proc is None:
+                return
+            output = bytes(self._proc.readAllStandardOutput()).decode("utf-8", errors="replace")
+            for line in re.sub(r"\x1b\[[0-9;]*[A-Za-z]", "", output).splitlines():
+                self._log_lines.append(line)
+                self.logAppended.emit(line)
+            if len(self._log_lines) > 2000:
+                del self._log_lines[:-1000]
 
         def _read_progress(self) -> None:
             progress_file = self._progress_file
@@ -662,19 +618,23 @@ def _make_installer_bridge():
                     # QProcess really terminates.
                     self._progress_exit_code = code
                 return
-            title = parts[1] if len(parts) > 1 else head
+            title = parts[1].split("\t", 1)[0] if len(parts) > 1 else head
             self._log_lines.append(title)
             if len(self._log_lines) > 2000:
                 del self._log_lines[:1000]
             self.logAppended.emit(title)
             self._current_step = title
+            if head == STATUS_MARKER:
+                self.currentStepChanged.emit()
+                return
             self._step_index += 1
             self._progress = min(
-                self._step_index / _ESTIMATED_TOTAL_STEPS, 0.95)
+                self._step_index / max(1, self._estimated_total), 0.95)
             self.currentStepChanged.emit()
             self.progressChanged.emit()
 
         def _on_proc_finished(self, code: int, _status) -> None:
+            self._read_output()
             self._read_progress()
             # _read_progress only turns complete lines into records; a
             # final line with no trailing newline (e.g. the process was
@@ -699,7 +659,7 @@ def _make_installer_bridge():
             if error != QProcess.ProcessError.FailedToStart:
                 return
             detail = self._proc.errorString() if self._proc is not None else ""
-            message = "Could not start installer supervisor"
+            message = tr("Could not start installer supervisor")
             if detail:
                 message += f": {detail}"
             self._log_lines.append(message)
@@ -735,35 +695,25 @@ def _make_installer_bridge():
     return InstallerBridge()
 
 
-def _launch_preview_pyqt() -> int:
-    os.environ.setdefault("QT_QUICK_CONTROLS_STYLE", "org.kde.desktop")
-
+def _launch_preview_pyqt(uninstall=False) -> int:
     try:
-        from PyQt6.QtCore import QTimer, QUrl
-        from PyQt6.QtGui import QGuiApplication
-        from PyQt6.QtQml import QQmlApplicationEngine
+        from PyQt6.QtCore import QTimer
+        from PyQt6.QtWidgets import QApplication
+        from wizard_window import InstallerWindow
     except ImportError:
         return -1
-
-    # No .desktop file ships — silence the portal-registration warning.
-    # Must be set before QGuiApplication is constructed.
     os.environ.setdefault("QT_NO_XDG_DESKTOP_PORTAL", "1")
-    app = QGuiApplication.instance() or QGuiApplication(sys.argv[:1])
+    app = QApplication.instance() or QApplication(sys.argv[:1])
     app.setApplicationName("mac-tahoe-liquid-kde-installer")
-    # A close request during an install must leave the event loop running so
-    # the privileged child can stop safely and be reaped.
     app.setQuitOnLastWindowClosed(False)
-    engine = QQmlApplicationEngine()
     bridge = _make_installer_bridge()
-    bridge.setParent(engine)
-    engine.rootContext().setContextProperty("installer", bridge)
-    engine.load(QUrl.fromLocalFile(str(PREVIEW_QML)))
-    roots = engine.rootObjects()
-    if not roots:
-        return 1
-    window = roots[0]
-    _enable_kwin_blur(window)
+    window = InstallerWindow(bridge, uninstall=uninstall)
+    bridge.setParent(window)
     app._installer_bridge = bridge
+    app._installer_window = window
+    window.show()
+    bridge.checkForUpdates()
+    app.aboutToQuit.connect(bridge.waitForUpdateWorkers)
 
     # Qt's C++ event loop blocks Python signal delivery; the idle timer
     # hands control back to the interpreter so SIGINT (Ctrl+C) can land.
@@ -790,8 +740,8 @@ def _launch_preview_pyqt() -> int:
         signal.signal(signal.SIGINT, prev_sigint)
 
 
-def launch_preview() -> int:
-    rc = _launch_preview_pyqt()
+def launch_preview(uninstall=False) -> int:
+    rc = _launch_preview_pyqt(True) if uninstall else _launch_preview_pyqt()
     if rc >= 0:
         return rc
 
@@ -799,61 +749,10 @@ def launch_preview() -> int:
     # dead window (the ``installer`` context property only exists via the
     # PyQt6 bridge), so report the missing dependency instead.
     print(
-        "PyQt6 is required for the graphical installer but could not be "
-        "imported.\n"
-        "  Install the python-pyqt6 package for your distribution and "
-        "re-run ./installer,\n"
-        "  or run ./install / ./uninstall directly from a terminal.",
+        tr('PyQt6 is required for the graphical installer but could not be imported.\n  Install the python-pyqt6 package for your distribution and re-run ./installer.'),
         file=sys.stderr,
     )
     return 1
-
-
-def dump_features() -> dict[str, object]:
-    language = get_language()
-    state: dict[str, object] = dict(DEFAULT_FEATURES)
-    if CONFIG_FILE.is_file():
-        try:
-            saved = json.loads(CONFIG_FILE.read_text())
-            if isinstance(saved, dict):
-                for key, value in saved.items():
-                    if key in state:
-                        state[key] = value
-        except (OSError, ValueError):
-            pass
-
-    items = [
-        {
-            "key": key,
-            "label": feature_label(key, language),
-            "description": translate(FEATURE_DESC.get(key, ""), language),
-            "enabled": bool(state.get(key, True)),
-        }
-        for key in ALL_FEATURES
-        if key != "no_download"
-    ]
-    return {"items": items, "config_path": str(CONFIG_FILE)}
-
-
-def save_features(payload: dict[str, object]) -> dict[str, object]:
-    state: dict[str, object] = dict(DEFAULT_FEATURES)
-    if CONFIG_FILE.is_file():
-        try:
-            saved = json.loads(CONFIG_FILE.read_text())
-            if isinstance(saved, dict):
-                state.update({k: v for k, v in saved.items() if k in state})
-        except (OSError, ValueError):
-            pass
-
-    for key, value in payload.items():
-        if key in state and isinstance(value, bool):
-            state[key] = value
-
-    try:
-        CONFIG_FILE.write_text(json.dumps(state, indent=2) + "\n")
-    except OSError as exc:
-        return {"ok": False, "message": str(exc)}
-    return {"ok": True, "message": f"Saved to {CONFIG_FILE.name}"}
 
 
 def update_status() -> dict[str, object]:
@@ -879,28 +778,9 @@ def update_status() -> dict[str, object]:
 
 
 def main(argv: list[str]) -> int:
-    rc = drop_root_to_invoking_user()
-    if rc != 0:
-        return rc
-
     parser = argparse.ArgumentParser(
         prog=Path(sys.argv[0]).name or "installer",
         description=__doc__,
-    )
-    parser.add_argument(
-        "--launch",
-        choices=sorted(_ACTION_COMMANDS),
-        help="Open the existing CLI command for the chosen action in a terminal.",
-    )
-    parser.add_argument(
-        "--dump-features",
-        action="store_true",
-        help="Print current feature state as JSON (for the Features window).",
-    )
-    parser.add_argument(
-        "--save-features",
-        metavar="JSON",
-        help="Persist a JSON object of {feature: bool} into features.json.",
     )
     parser.add_argument(
         "--check-update",
@@ -912,44 +792,36 @@ def main(argv: list[str]) -> int:
         choices=sorted(_ACTION_COMMANDS),
         help=argparse.SUPPRESS,
     )
+    parser.add_argument("--uninstall", action="store_true", help="Open the graphical uninstaller.")
+    parser.add_argument("--wizard-options", help=argparse.SUPPRESS)
     parser.add_argument("--progress-file", help=argparse.SUPPRESS)
     parser.add_argument("--cancel-file", help=argparse.SUPPRESS)
     args = parser.parse_args(argv)
 
+    rc = drop_root_to_invoking_user()
+    if rc != 0:
+        return rc
+
     if args.supervise:
         if not args.progress_file or not args.cancel_file:
             print(
-                "internal supervisor requires progress and cancel files",
+                tr('internal supervisor requires progress and cancel files'),
                 file=sys.stderr,
             )
             return 2
         return _supervise_action(
-            args.supervise, args.progress_file, args.cancel_file)
-
-    if args.launch:
-        payload = launch_action(args.launch)
-        print(json.dumps(payload, ensure_ascii=False))
-        return 0 if payload["ok"] else 1
-
-    if args.dump_features:
-        print(json.dumps(dump_features(), ensure_ascii=False))
-        return 0
+            args.supervise, args.progress_file, args.cancel_file,
+            json.loads(args.wizard_options) if args.wizard_options else None)
 
     if args.check_update:
         print(json.dumps(update_status(), ensure_ascii=False))
         return 0
 
-    if args.save_features is not None:
-        try:
-            data = json.loads(args.save_features)
-        except ValueError as exc:
-            print(json.dumps({"ok": False, "message": f"bad JSON: {exc}"}))
-            return 1
-        result = save_features(data if isinstance(data, dict) else {})
-        print(json.dumps(result, ensure_ascii=False))
-        return 0 if result["ok"] else 1
+    if not args.uninstall:
+        from cli import auto_update_and_reexec
+        auto_update_and_reexec([], prog="installer")
 
-    return launch_preview()
+    return launch_preview(True) if args.uninstall else launch_preview()
 
 
 if __name__ == "__main__":

@@ -59,7 +59,7 @@ def probe(expected_distro: str, mode: str) -> dict:
 
     restore_desktop_session_env()
     actual = distro.current_distro()
-    wanted = "opensuse-tumbleweed" if expected_distro == "opensuse" else expected_distro
+    wanted = {"opensuse": "opensuse-tumbleweed", "kubuntu": "ubuntu"}.get(expected_distro, expected_distro)
     if actual != wanted:
         raise RuntimeError(f"Expected {wanted}, guest reports {actual}")
     qdbus = qdbus_cmd()

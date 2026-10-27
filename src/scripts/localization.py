@@ -20,11 +20,16 @@ LANGUAGES = (
     {"code": "en", "label": "English"},
     {"code": "es", "label": "Español"},
     {"code": "zh_CN", "label": "简体中文"},
+    {"code": "pt_BR", "label": "Português (Brasil)"},
+    {"code": "de", "label": "Deutsch"},
 )
 LANGUAGE_CODES = tuple(item["code"] for item in LANGUAGES)
 
 
 _ES = {
+    'Could not remove old Rounded Corners cache: {exc}': 'No se pudo eliminar la caché antigua de Rounded Corners: {exc}',
+    "Generating icons: {completed}/{total}": "Generando iconos: {completed}/{total}",
+    "Cron entries installed, but no running cron daemon could be confirmed. Enable your cron service for scheduled features.": "Se instalaron las entradas de cron, pero no se pudo confirmar que haya un servicio cron en ejecución. Activa el servicio cron para las funciones programadas.",
 
     "System default": "Predeterminado del sistema",
     "Language": "Idioma",
@@ -80,6 +85,9 @@ _ES = {
 }
 
 _ZH_CN = {
+    'Could not remove old Rounded Corners cache: {exc}': '无法删除旧的 Rounded Corners 缓存：{exc}',
+    "Generating icons: {completed}/{total}": "正在生成图标：{completed}/{total}",
+    "Cron entries installed, but no running cron daemon could be confirmed. Enable your cron service for scheduled features.": "已安装 cron 条目，但无法确认 cron 守护进程正在运行。请启用 cron 服务以运行计划任务。",
 
     "System default": "跟随系统",
     "Language": "语言",
@@ -201,18 +209,40 @@ _ZH_CN.update({
     "Settings migrations": "设置迁移",
 })
 
+_ES.update({'PyQt6 is required for the graphical installer but could not be imported.\n  Install the python-pyqt6 package for your distribution and re-run ./installer.': 'El instalador gráfico necesita PyQt6, pero no se pudo importar.\n  Instala PyQt6 para tu distribución y vuelve a ejecutar ./installer.'})
+_ZH_CN.update({'PyQt6 is required for the graphical installer but could not be imported.\n  Install the python-pyqt6 package for your distribution and re-run ./installer.': '图形安装程序需要 PyQt6，但无法导入。\n  请安装适合你的发行版的 PyQt6，然后重新运行 ./installer。'})
+
+_ES["Rollback: {command}"] = "Revertir: {command}"
+_ZH_CN["Rollback: {command}"] = "回退：{command}"
+
 _TRANSLATIONS = {"es": _ES, "zh_CN": _ZH_CN}
+
+
+def _load_catalog(code: str) -> dict[str, str]:
+    bundled = globals().get("_BUNDLED_CATALOGS")
+    if bundled is not None:
+        return bundled[code]
+    path = Path(__file__).with_name("locales") / f"{code}.json"
+    return json.loads(path.read_text(encoding="utf-8"))
+
+
+for _code in ("pt_BR", "de"):
+    _TRANSLATIONS[_code] = _load_catalog(_code)
 
 
 def normalize_language(value: str | None) -> str:
     """Map locale spellings (``zh-CN.UTF-8``, ``es_CR``) to our codes."""
     text = (value or "").strip().replace("-", "_").split(".", 1)[0]
-    low = text.lower()
-    if low.startswith("zh_cn") or low.startswith("zh_hans") or low == "zh":
+    low = text.lower().split("@", 1)[0]
+    if low in ("zh", "zh_cn", "zh_hans") or low.startswith("zh_hans_"):
         return "zh_CN"
-    if low.startswith("es"):
+    if low == "pt" or low == "pt_br":
+        return "pt_BR"
+    if low == "de" or low.startswith("de_"):
+        return "de"
+    if low == "es" or low.startswith("es_"):
         return "es"
-    if low.startswith("en"):
+    if low == "en" or low.startswith("en_"):
         return "en"
     return "en"
 
@@ -246,7 +276,9 @@ def get_language() -> str:
 
 
 def effective_language(preference: str | None = None) -> str:
-    code = preference if preference in LANGUAGE_CODES else get_language()
+    inherited = os.environ.get("MTTKDE_LANGUAGE")
+    code = preference if preference in LANGUAGE_CODES else (
+        inherited if inherited in LANGUAGE_CODES else get_language())
     return system_language() if code == "auto" else code
 
 
@@ -282,6 +314,12 @@ def translate(message: str, language: str | None = None, **values: object) -> st
 def feature_label(key: str, language: str | None = None) -> str:
     source = _FEATURE_LABELS.get(key, key.replace("_", " ").title())
     return translate(source, language)
+
+
+def tr(message: str, /, **values: object) -> str:
+    """Translate a complete message before interpolating runtime values."""
+    result = _TRANSLATIONS.get(effective_language(), {}).get(message, message)
+    return result.format(**values) if values else result
 
 
 def language_options(language: str | None = None) -> list[dict[str, str]]:

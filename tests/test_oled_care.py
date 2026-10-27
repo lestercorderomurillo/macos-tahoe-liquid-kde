@@ -888,6 +888,39 @@ def _wire_step(tmp_path, monkeypatch):
     return step, home, calls
 
 
+@pytest.mark.parametrize("backend", ["openrc", "dinit"])
+def test_step_cron_install_reinstall_and_uninstall(tmp_path, monkeypatch, backend):
+    from steps import _scheduler
+    from tests.test_openrc_scheduler import FakeCrontab
+
+    step, _home, calls = _wire_step(tmp_path, monkeypatch)
+    monkeypatch.setenv("MTTKDE_INIT", backend)
+    monkeypatch.setenv("FEAT_OLED_CARE", "true")
+    monkeypatch.setenv("OLED_INTERVAL", "7")
+    monkeypatch.setenv("OLED_MAX_SHIFT", "3")
+    cron = FakeCrontab()
+    unrelated = "30 3 * * * /home/tester/backup"
+    cron.lines = [unrelated]
+    monkeypatch.setattr(_scheduler, "run_user", cron)
+    monkeypatch.setattr(_scheduler, "_have_crontab", lambda: True)
+    monkeypatch.setattr(_scheduler, "cron_daemon_running", lambda: True)
+    monkeypatch.setattr(step, "remove_periodic", _scheduler.remove_periodic)
+
+    step.install()
+    step.install()
+    assert step.BIN_DEST.is_file()
+    assert len(cron.lines) == 2
+    assert cron.lines[0] == unrelated
+    assert cron.lines[1].startswith("*/7 * * * * ")
+    assert "shift --max-px 3" in cron.lines[1]
+    assert not any((step.SVC_DIR / unit).exists() for unit in step.UNITS)
+
+    step.uninstall()
+    assert not step.BIN_DEST.exists()
+    assert cron.lines == [unrelated]
+    assert not any(call[0] == "systemctl" for call in calls)
+
+
 def test_step_install_enabled_copies_and_enables(tmp_path, monkeypatch):
     step, home, calls = _wire_step(tmp_path, monkeypatch)
     monkeypatch.setenv("FEAT_OLED_CARE", "true")
@@ -897,7 +930,8 @@ def test_step_install_enabled_copies_and_enables(tmp_path, monkeypatch):
     step.install()
 
     assert step.BIN_DEST.is_file()
-    assert step.BIN_DEST.read_bytes() == step.PY_SRC.read_bytes()
+    assert step.BIN_DEST.read_text() == step.standalone_source(step.PY_SRC.read_text())
+    assert step._helper_is_current()
     assert list(step.BIN_DEST.parent.glob(f".{step.BIN_DEST.name}.*.tmp")) == []
     assert not oled_care._disabled_file().exists()
     assert step.BIN_DEST.stat().st_mode & 0o111
@@ -1014,17 +1048,18 @@ def test_step_uninstall_retains_recovery_when_panels_cannot_restore(
     # The schedule is gone and the replacement obeys the tombstone, so keep
     # the recovery command available until geometry can actually be restored.
     assert step.BIN_DEST.is_file()
-    assert step.BIN_DEST.read_bytes() == step.PY_SRC.read_bytes()
+    assert step.BIN_DEST.read_text() == step.standalone_source(step.PY_SRC.read_text())
     assert state_file.is_file()
     assert not any((step.SVC_DIR / unit).exists() for unit in step.UNITS)
     assert any("disable" in " ".join(call) for call in calls)
     assert any("removal incomplete" in message for message in failures)
 
 
+@pytest.mark.parametrize("backend", ["openrc", "dinit"])
 def test_step_uninstall_retains_helper_and_state_when_cron_removal_fails(
-        tmp_path, monkeypatch):
+        tmp_path, monkeypatch, backend):
     step, _home, _calls = _wire_step(tmp_path, monkeypatch)
-    monkeypatch.setenv("MTTKDE_INIT", "openrc")
+    monkeypatch.setenv("MTTKDE_INIT", backend)
     step.BIN_DEST.parent.mkdir(parents=True)
     step.BIN_DEST.write_text("#!stub")
     restored: list[bool] = []

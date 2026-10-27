@@ -228,6 +228,29 @@ def test_verify_config_reads_other_layers_when_key_is_absent(
     assert reads == [("kdeglobals", "Icons", "Theme")]
 
 
+@pytest.mark.parametrize("edition", ["MacTahoe", "MacGoldenGate"])
+@pytest.mark.parametrize("style", ["flat", "glassy"])
+def test_verifier_checks_decoration_edition(cli_module, monkeypatch, sandbox, edition, style):
+    import json
+    import theme_switch
+    monkeypatch.setattr(theme_switch, "default_wallpaper", lambda source=edition: source)
+    monkeypatch.setenv("MTTKDE_WIZARD_OPTIONS", json.dumps({"window_controls": style}))
+    edition = "MacGoldenGate" if style == "glassy" else "MacTahoe"
+    failures = []
+    monkeypatch.setattr(cli_module, "fail", failures.append)
+    monkeypatch.setattr(cli_module, "ok", lambda message: None)
+    features = {key: key == "window_decorations" for key, *_ in cli_module._VERIFY_CHECKS}
+    config = sandbox / ".config/kwinrc"
+    for mode in ("Light", "Dark"):
+        config.write_text(f"[org.kde.kdecoration2]\ntheme=__aurorae__svg__{edition}LiquidKde-{mode}\n")
+        cli_module.verify_config(features)
+        assert not failures
+    other = "MacTahoe" if edition == "MacGoldenGate" else "MacGoldenGate"
+    config.write_text(f"[org.kde.kdecoration2]\ntheme=__aurorae__svg__{other}LiquidKde-Light\n")
+    cli_module.verify_config(features)
+    assert len(failures) == 1
+
+
 # ── install order — the inter-step dependency graph ───────────────────
 
 
@@ -459,6 +482,8 @@ def test_auto_update_bails_when_not_a_clean_git_checkout(cli_module, monkeypatch
     """A tarball install / dirty tree must fall back to installing the
     current version, never pull."""
     monkeypatch.delenv("MAC_TAHOE_UPDATED", raising=False)
+    monkeypatch.delenv("MAC_TAHOE_NO_UPDATE_CHECK", raising=False)
+    monkeypatch.setattr(cli_module, "fetch_latest_release", lambda: "99.0.0")
     monkeypatch.setattr(cli_module, "_repo_is_clean_git_checkout", lambda: False)
     pull_calls: list = []
     monkeypatch.setattr(cli_module, "_git",
@@ -476,6 +501,8 @@ def test_auto_update_bails_when_pull_fails(cli_module, monkeypatch):
     """If git pull fails (conflict, offline, detached), install the
     current version instead of re-exec'ing into a half-updated tree."""
     monkeypatch.delenv("MAC_TAHOE_UPDATED", raising=False)
+    monkeypatch.delenv("MAC_TAHOE_NO_UPDATE_CHECK", raising=False)
+    monkeypatch.setattr(cli_module, "fetch_latest_release", lambda: "99.0.0")
     monkeypatch.setattr(cli_module, "_repo_is_clean_git_checkout", lambda: True)
 
     class _Fail:
@@ -496,6 +523,8 @@ def test_auto_update_pulls_and_reexecs_install(cli_module, monkeypatch):
     """Happy path: clean checkout + successful pull → set the recursion
     guard and re-exec ./install with the same argv."""
     monkeypatch.delenv("MAC_TAHOE_UPDATED", raising=False)
+    monkeypatch.delenv("MAC_TAHOE_NO_UPDATE_CHECK", raising=False)
+    monkeypatch.setattr(cli_module, "fetch_latest_release", lambda: "99.0.0")
     monkeypatch.setattr(cli_module, "_repo_is_clean_git_checkout", lambda: True)
 
     class _Ok:
@@ -503,7 +532,15 @@ def test_auto_update_pulls_and_reexecs_install(cli_module, monkeypatch):
         stdout = ""
         stderr = ""
 
-    monkeypatch.setattr(cli_module, "_git", lambda *a, **k: _Ok())
+    def fake_git(*args, **kwargs):
+        result = _Ok()
+        if args[0] == "rev-parse":
+            result.stdout = "a" * 40
+        elif args[0] == "show":
+            result.stdout = "99.0.0"
+        assert args[0] != "pull"
+        return result
+    monkeypatch.setattr(cli_module, "_git", fake_git)
 
     execv_args: list = []
     monkeypatch.setattr(cli_module.os, "execv",
@@ -714,6 +751,73 @@ def test_run_install_body_stops_before_download_when_deps_fail(
     monkeypatch.setattr(cli_module, "fail", lambda _message: None)
 
     assert cli_module._run_install_body({}) == 1
+
+
+@pytest.mark.parametrize("existing,reset,layout_runs", [
+    (False, False, True), (True, False, False), (True, True, True),
+])
+@pytest.mark.parametrize("file_manager", ["nautilus", "dolphin", "keep"])
+def test_wizard_update_preserves_layout_and_respects_file_manager(
+        monkeypatch, cli_module, existing, reset, layout_runs, file_manager):
+    import json
+    import installer_choices
+    from steps import nautilus
+
+    selected = installer_choices.defaults() | {"reset_layout": reset, "files": file_manager}
+    monkeypatch.setenv("MTTKDE_WIZARD_OPTIONS", json.dumps(selected))
+    features = installer_choices.features(selected, cli_module.DEFAULT_FEATURES,
+                                          existing_install=existing)
+    phases, defaults = [], []
+    for name in ("run_preflight", "verify_plasma", "_check_deps", "_run_builds_or_abort"):
+        monkeypatch.setattr(cli_module, name, lambda *args: True)
+    for name in ("_run_optional_downloads", "_flush_icon_cache_signal", "verify_config", "_print_done"):
+        monkeypatch.setattr(cli_module, name, lambda *args: None)
+    monkeypatch.setattr(cli_module, "step_exists", lambda *args: True)
+    monkeypatch.setattr(cli_module, "errors", [])
+    monkeypatch.setattr(cli_module, "_layout_is_installed", lambda: False)
+    monkeypatch.setattr(cli_module, "run_phase", lambda *args: phases.append(args) or True)
+    monkeypatch.setattr(nautilus, "_set_default", lambda *args: defaults.append(args) or True)
+
+    assert cli_module._run_install_body(features) == 0
+    # Force the retry condition: preservation must skip both layout passes.
+    assert phases.count(("layout", "install")) == (2 if layout_runs else 0)
+    assert (("nautilus", "install") in phases) == (file_manager == "nautilus")
+    assert defaults == ([(nautilus.DOLPHIN_DESKTOP, mime)
+                         for mime in (nautilus.MIME_FOLDER, nautilus.MIME_SEARCH)]
+                        if file_manager == "dolphin" else [])
+    assert ("apply", "restart_plasma") in phases
+
+
+@pytest.mark.parametrize("file_manager", ["dolphin", "keep"])
+def test_skip_nautilus_excludes_its_package_dependencies(
+        monkeypatch, cli_module, _deps_env, file_manager):
+    import installer_choices
+    features = installer_choices.features(
+        installer_choices.defaults() | {"files": file_manager}, cli_module.DEFAULT_FEATURES)
+    dependencies = []
+    monkeypatch.setattr(cli_module, "_BASE_DEPS", [])
+    monkeypatch.setattr(cli_module, "step_deps", lambda feature: dependencies.append(feature) or [])
+    assert cli_module._check_deps(features)
+    assert "nautilus" not in dependencies
+
+
+def test_wizard_backend_detects_reinstall_before_selecting_layout(monkeypatch, cli_module, sandbox):
+    import json
+    import installer_choices
+    monkeypatch.setattr(cli_module, "_require_root_and_drop_to_user", lambda *args: True)
+    monkeypatch.setattr(cli_module, "_theme_is_already_installed", lambda: True)
+    monkeypatch.setattr(cli_module, "load_features", lambda: dict(cli_module.DEFAULT_FEATURES))
+    exported = []
+    monkeypatch.setattr(cli_module, "export_env", lambda feat: exported.append(feat.copy()))
+    monkeypatch.setattr(cli_module, "run_preflight", lambda *args: True)
+    monkeypatch.setenv("MTTKDE_WIZARD_OPTIONS", "{}")
+    assert cli_module.run_install(["--wizard-options", json.dumps(installer_choices.defaults()),
+                                   "--preflight"]) == 0
+    assert exported[0]["_existing_install"] and exported[0]["layout"]
+    selected = installer_choices.defaults() | {"reset_layout": False}
+    assert cli_module.run_install(["--wizard-options", json.dumps(selected),
+                                   "--preflight"]) == 0
+    assert exported[1]["_existing_install"] and not exported[1]["layout"]
 
 
 # ── globalmenu as a first-class feature ──────────────────────────────

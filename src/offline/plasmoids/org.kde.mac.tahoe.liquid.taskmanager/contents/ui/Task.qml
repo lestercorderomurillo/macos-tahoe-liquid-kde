@@ -373,7 +373,7 @@ PlasmaCore.ToolTipArea {
         mainItem.pidParent = Qt.binding(() => model.AppPid);
         mainItem.windows = Qt.binding(() => model.WinIdList);
         mainItem.isGroup = Qt.binding(() => model.IsGroupParent);
-        mainItem.icon = Qt.binding(() => model.decoration);
+        mainItem.icon = Qt.binding(() => backend.iconSource(model.decoration));
         mainItem.launcherUrl = Qt.binding(() => model.LauncherUrlWithoutIcon);
         mainItem.isLauncher = Qt.binding(() => model.IsLauncher);
         mainItem.isMinimized = Qt.binding(() => model.IsMinimized);
@@ -584,7 +584,18 @@ PlasmaCore.ToolTipArea {
             active: task.highlighted
             enabled: true
 
-            source: task.model.decoration
+            // A cached QIcon can retain the outgoing theme's pixmap.
+            source: backend.iconSource(task.model.decoration)
+
+            Connections {
+                target: tasksRoot.iconThemeWatcher
+                function onChanged() {
+                    icon.source = "";
+                    Qt.callLater(() => {
+                        icon.source = Qt.binding(() => backend.iconSource(task.model.decoration));
+                    });
+                }
+            }
 
             transform: Translate { id: bounceTransform }
 

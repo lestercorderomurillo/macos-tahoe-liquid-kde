@@ -1,3 +1,4 @@
+from localization import tr
 import datetime as _dt
 import json
 import os
@@ -38,7 +39,7 @@ class RunTracker:
         self.active = True
         ok = self._write("running", finished_at=None, exit_code=0)
         if not ok:
-            warn(f"could not record run state to {last_run_file()}")
+            warn(tr('could not record run state to {value1}', value1=last_run_file()))
         return ok
 
     def mark_completed(self) -> None:
@@ -60,7 +61,7 @@ class RunTracker:
             status = "failed"
         ok = self._write(status, finished_at=_now_iso(), exit_code=exit_code)
         if not ok:
-            warn(f"could not record run state to {last_run_file()}")
+            warn(tr('could not record run state to {value1}', value1=last_run_file()))
         return ok
 
     def _command(self) -> str:

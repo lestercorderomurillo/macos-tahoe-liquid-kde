@@ -2,6 +2,8 @@
 layout: metadata.json + contents/images[_dark]/) into ~/.local/share/wallpapers.
 Fully offline — no download phase."""
 
+from localization import tr
+
 import shutil
 from pathlib import Path
 
@@ -15,6 +17,17 @@ OFFLINE_DIR = offline("wallpapers")
 
 
 def install() -> None:
+    from installer_choices import selected
+    options = selected()
+    if options.get("wallpaper") == "custom":
+        source = Path(options["wallpaper_path"])
+        from PyQt6.QtGui import QImageReader
+        if not source.is_file() or not QImageReader(str(source)).canRead():
+            fail("The selected wallpaper is not a readable image")
+            return
+        custom = DEST_DIR / "MacTahoe-Custom"
+        custom.mkdir(parents=True, exist_ok=True)
+        shutil.copyfile(source, custom / "wallpaper")
     pre = {p.name for p in DEST_DIR.glob("*/") if p.is_dir()}
     DEST_DIR.mkdir(parents=True, exist_ok=True)
 
@@ -25,20 +38,20 @@ def install() -> None:
         # metadata.json is what Plasma lists the wallpaper by — skip the
         # bundle rather than ship a half-installed entry.
         if not (wp / "metadata.json").is_file():
-            fail(f"{wp.name} (missing metadata.json in offline bundle)")
+            fail(tr('{value1} (missing metadata.json in offline bundle)', value1=wp.name))
             continue
         if not safe_copy(wp, DEST_DIR / wp.name):
-            fail(f"{wp.name} (copy failed)")
+            fail(tr('{value1} (copy failed)', value1=wp.name))
             continue
         if wp.name in pre:
             reinstall(wp.name); n_re += 1
         else:
-            ok(f"{wp.name} (installed)"); n_inst += 1
-    info(f"{n_inst + n_re} wallpapers — {n_inst} installed, {n_re} reinstalled")
+            ok(tr('{value1} (installed)', value1=wp.name)); n_inst += 1
+    info(tr('{value1} wallpapers — {n_inst} installed, {n_re} reinstalled', value1=n_inst + n_re, n_inst=n_inst, n_re=n_re))
 
 
 _FIXED_NAMES = (
-    "MacGoldenGate",
+    "MacTahoe-Custom", "MacGoldenGate",
     "MacTahoe", "MacTahoe-Beach-Dawn", "MacTahoe-Beach-Day",
     "MacTahoe-Beach-Dusk", "MacTahoe-Beach-Night",
     "MacTahoe-Iridescence",
@@ -67,4 +80,4 @@ def uninstall() -> None:
             ok(d.name); n += 1
         except OSError:
             fail(d.name)
-    info(f"{n} wallpapers removed")
+    info(tr('{n} wallpapers removed', n=n))

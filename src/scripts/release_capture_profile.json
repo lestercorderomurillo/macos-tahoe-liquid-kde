@@ -1,7 +1,7 @@
 {
   "schema": 1,
-  "vm_image_sha256": "a0db83c3dfbaa942e381ee4fcc9a0ae8f692ab20b968f55be5cd63a0d172e50f",
-  "vm_description": "Sealed KDE neon reference guest, Plasma 6.7.4, prepared offline SDK and desktop applications",
+  "vm_image_sha256": "2a09de13ad568da01a8e16dd93e6aec120e63375bfc0ec24b4e804b43ecb4f8c",
+  "vm_description": "Sealed KDE neon reference guest, Plasma 6.8.1 / Qt 6.11.1, matching desktop applets and offline SDK, verified Rounded Corners cache and desktop applications",
   "resolution": [3840, 2160],
   "scale": 2,
   "locale": "en_US.UTF-8",
@@ -12,7 +12,7 @@
   "guest_user": "tester",
   "pointer": [80, 1000],
   "documents": ["Design", "Projects", "Screenshots", "Wallpapers"],
-  "pins": ["applications:org.gnome.Nautilus.desktop", "applications:org.kde.konsole.desktop", "applications:systemsettings.desktop"],
+  "pins": ["applications:org.gnome.Nautilus.desktop", "applications:org.kde.discover.desktop", "applications:org.kde.kate.desktop", "applications:org.kde.gwenview.desktop", "applications:vlc.desktop", "applications:org.kde.kcalc.desktop", "applications:org.kde.okular.desktop", "applications:org.kde.spectacle.desktop", "applications:org.kde.konsole.desktop", "applications:systemsettings.desktop"],
   "windows": {
     "Documents": {"x": 220, "y": 250, "width": 1000, "height": 620},
     "About This Computer (preview)": {"x": 1330, "y": 180, "width": 360, "height": 700}

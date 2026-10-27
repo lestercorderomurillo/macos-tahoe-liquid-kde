@@ -70,10 +70,13 @@ def apply_plasma_surface_defaults(theme: Path) -> None:
     """Apply to a staged copy of the bundled theme, never user configuration."""
     if default_wallpaper() != "MacGoldenGate":
         return
+    # Plasma popups and tooltips keep the system foreground, just like QMenus.
+    # Dark text needs a light client fill even over a black glass backdrop.
+    opacity = "0.60" if theme.name.endswith("-Light") else "0.01"
     for name in PLASMA_SURFACES:
         path = theme / name
         root = ET.fromstring(gzip.decompress(path.read_bytes()))
-        set_surface_fill(root, _TILES, "0.01", "#ffffff")
+        set_surface_fill(root, _TILES, opacity, "#ffffff")
         if name == "dialogs/background.svgz" and not any(
                 node.get("id") == "hint-clear-surface" for node in root):
             ET.SubElement(root, f"{{{_SVG}}}rect", {

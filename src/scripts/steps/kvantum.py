@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from localization import tr
+
 import hashlib
 import json
 import os
@@ -135,13 +137,12 @@ def deps():
 
 def _extract_bundled_engine() -> bool:
     if not ENGINE_ARCHIVE.is_file():
-        fail(f"Kvantum Qt 6 source archive missing: {ENGINE_ARCHIVE}")
+        fail(tr('Kvantum Qt 6 source archive missing: {ENGINE_ARCHIVE}', ENGINE_ARCHIVE=ENGINE_ARCHIVE))
         return False
     actual = _sha256(ENGINE_ARCHIVE)
     if actual != ENGINE_SHA256:
         fail(
-            "Kvantum Qt 6 source checksum mismatch "
-            f"(expected {ENGINE_SHA256}, got {actual})"
+            tr('Kvantum Qt 6 source checksum mismatch (expected {ENGINE_SHA256}, got {actual})', ENGINE_SHA256=ENGINE_SHA256, actual=actual)
         )
         return False
 
@@ -152,7 +153,7 @@ def _extract_bundled_engine() -> bool:
         with tarfile.open(ENGINE_ARCHIVE, "r:xz") as archive:
             members = archive.getmembers()
             if not members:
-                raise ValueError("archive is empty")
+                raise ValueError(tr('archive is empty'))
             for member in members:
                 relative = PurePosixPath(member.name)
                 if (
@@ -161,18 +162,18 @@ def _extract_bundled_engine() -> bool:
                     or not relative.parts
                     or relative.parts[0] != ENGINE_SOURCE.name
                 ):
-                    raise ValueError(f"unsafe archive path: {member.name}")
+                    raise ValueError(tr('unsafe archive path: {value1}', value1=member.name))
                 if not (member.isfile() or member.isdir()):
-                    raise ValueError(f"unsafe archive member: {member.name}")
+                    raise ValueError(tr('unsafe archive member: {value1}', value1=member.name))
             archive.extractall(staging, members=members)
         extracted = staging / ENGINE_SOURCE.name
         if not (extracted / "Kvantum/CMakeLists.txt").is_file():
-            raise ValueError("Kvantum/CMakeLists.txt missing from archive")
+            raise ValueError(tr('Kvantum/CMakeLists.txt missing from archive'))
         shutil.rmtree(ENGINE_SOURCE, ignore_errors=True)
         extracted.replace(ENGINE_SOURCE)
         return True
     except (OSError, tarfile.TarError, ValueError) as exc:
-        fail(f"Kvantum Qt 6 source archive rejected ({exc})")
+        fail(tr('Kvantum Qt 6 source archive rejected ({exc})', exc=exc))
         return False
     finally:
         shutil.rmtree(staging, ignore_errors=True)
@@ -203,7 +204,7 @@ def _install_bundled_engine() -> bool:
     artifact = ENGINE_BUILD / "style/libkvantum.so"
     license_source = ENGINE_SOURCE / "Kvantum/COPYING"
     if not artifact.is_file() or not license_source.is_file():
-        fail("Kvantum Qt 6 build artefacts missing")
+        fail(tr('Kvantum Qt 6 build artefacts missing'))
         return False
 
     destination = _engine_destination()
@@ -211,17 +212,16 @@ def _install_bundled_engine() -> bool:
     if destination.is_file() and not destination.is_symlink():
         if not _engine_matches_ownership_marker():
             warn(
-                "A distro/user-owned Kvantum Qt 6 engine appeared during the "
-                "build — leaving it unchanged"
+                tr('A distro/user-owned Kvantum Qt 6 engine appeared during the build — leaving it unchanged')
             )
             return True
         try:
             previous_hash = _sha256(destination)
         except OSError as exc:
-            fail(f"Kvantum Qt 6 engine could not be read ({exc})")
+            fail(tr('Kvantum Qt 6 engine could not be read ({exc})', exc=exc))
             return False
     elif destination.exists() or destination.is_symlink():
-        fail("Kvantum Qt 6 engine destination is not a regular owned file")
+        fail(tr('Kvantum Qt 6 engine destination is not a regular owned file'))
         return False
 
     # Prepare both marker states before any system mutation. The pending marker
@@ -251,21 +251,21 @@ def _install_bundled_engine() -> bool:
             encoding="utf-8",
         )
     except OSError as exc:
-        fail(f"Kvantum ownership marker could not be prepared ({exc})")
+        fail(tr('Kvantum ownership marker could not be prepared ({exc})', exc=exc))
         return False
 
     if not sudo_install_file(
         pending_marker_source,
         ENGINE_MARKER,
-        "Kvantum ownership transaction prepared",
+        tr('Kvantum ownership transaction prepared'),
     ):
         return False
     if not sudo_install_file(
-        artifact, destination, f"Kvantum Qt 6 engine v{ENGINE_VERSION} installed"
+        artifact, destination, tr('Kvantum Qt 6 engine v{ENGINE_VERSION} installed', ENGINE_VERSION=ENGINE_VERSION)
     ):
         return False
     if not sudo_install_file(
-        license_source, ENGINE_LICENSE, "Kvantum GPL-3.0 license installed"
+        license_source, ENGINE_LICENSE, tr('Kvantum GPL-3.0 license installed')
     ):
         # Keep the pending marker and installed engine together. Removing the
         # new plugin here would also lose the previous version it atomically
@@ -274,7 +274,7 @@ def _install_bundled_engine() -> bool:
 
     if not sudo_install_file(
         final_marker_source, ENGINE_MARKER,
-        "Kvantum bundled-source marker installed",
+        tr('Kvantum bundled-source marker installed'),
     ):
         # The pending marker already recognizes the installed digest. Retain it
         # as recovery state instead of creating an unmarked system plugin.
@@ -292,14 +292,16 @@ def _install_one(name: str) -> None:
             shutil.copy2(f, dst / f.name)
             if ext == ".svg":
                 apply_kvantum_surface_defaults(dst / f.name)
+            from theme_accent import apply as apply_accent
+            apply_accent(dst / f.name)
         else:
-            warn(f"Kvantum file {f.name} not found")
+            warn(tr('Kvantum file {value1} not found', value1=f.name))
 
 
 def install() -> None:
     src = offline("kvantum/mac-tahoe-liquid-kde")
     if not src.is_dir():
-        fail(f"Kvantum theme source not found at {src}")
+        fail(tr('Kvantum theme source not found at {src}', src=src))
         return
 
     if not _install_bundled_engine():
@@ -314,27 +316,26 @@ def install() -> None:
         _install_one(name)
 
     if any((DEST_DIR / f"{_THEMES[0]}{e}").is_file() for e in (".kvconfig", ".svg")):
-        ok("mac-tahoe-liquid-kde theme (installed)")
+        ok(tr('mac-tahoe-liquid-kde theme (installed)'))
     else:
-        fail("mac-tahoe-liquid-kde theme (copy failed)")
+        fail(tr('mac-tahoe-liquid-kde theme (copy failed)'))
         return
 
     if any((DEST_DIR_DARK / f"{_THEMES[1]}{e}").is_file() for e in (".kvconfig", ".svg")):
         if existed:
-            reinstall("mac-tahoe-liquid-kdeDark theme")
+            reinstall(tr('mac-tahoe-liquid-kdeDark theme'))
         else:
-            ok("mac-tahoe-liquid-kdeDark theme (installed)")
+            ok(tr('mac-tahoe-liquid-kdeDark theme (installed)'))
     else:
-        fail("mac-tahoe-liquid-kdeDark theme (copy failed)")
+        fail(tr('mac-tahoe-liquid-kdeDark theme (copy failed)'))
         return
 
     if kw_write("--file", "kdeglobals", "--group", "KDE",
                 "--key", "widgetStyle", "kvantum"):
-        ok("Widget style installed")
+        ok(tr('Widget style installed'))
     else:
-        warn("Widget style not applied — kwriteconfig6 unavailable "
-             "(install plasma-workspace or your distro's equivalent)")
-    info("Kvantum Qt styling installed")
+        warn(tr("Widget style not applied — kwriteconfig6 unavailable (install plasma-workspace or your distro's equivalent)"))
+    info(tr('Kvantum Qt styling installed'))
 
 
 def _remove_bundled_engine() -> None:
@@ -345,21 +346,18 @@ def _remove_bundled_engine() -> None:
         marker = json.loads(ENGINE_MARKER.read_text(encoding="utf-8"))
     except OSError as exc:
         fail(
-            "Kvantum ownership marker could not be read — retaining the "
-            f"engine, marker, and license for recovery ({exc})"
+            tr('Kvantum ownership marker could not be read — retaining the engine, marker, and license for recovery ({exc})', exc=exc)
         )
         return
     except (ValueError, TypeError) as exc:
         fail(
-            "Kvantum ownership marker is invalid — retaining the engine, "
-            f"marker, and license for recovery ({exc})"
+            tr('Kvantum ownership marker is invalid — retaining the engine, marker, and license for recovery ({exc})', exc=exc)
         )
         return
     owned_hashes = _marker_plugin_hashes(marker)
     if not owned_hashes:
         fail(
-            "Kvantum ownership marker has no valid plugin digest — retaining "
-            "the engine, marker, and license for recovery"
+            tr('Kvantum ownership marker has no valid plugin digest — retaining the engine, marker, and license for recovery')
         )
         return
     owned = False
@@ -368,26 +366,23 @@ def _remove_bundled_engine() -> None:
             owned = _sha256(destination) in owned_hashes
         except OSError as exc:
             fail(
-                "Kvantum Qt 6 engine ownership could not be verified — "
-                f"retaining its marker and license for recovery ({exc})"
+                tr('Kvantum Qt 6 engine ownership could not be verified — retaining its marker and license for recovery ({exc})', exc=exc)
             )
             return
 
     if owned:
-        removed = sudo_remove(destination, "bundled Kvantum Qt 6 engine")
+        removed = sudo_remove(destination, tr('bundled Kvantum Qt 6 engine'))
         if not removed and destination.exists():
             fail(
-                "Kvantum Qt 6 engine could not be removed — retaining its "
-                "ownership marker and license for recovery"
+                tr('Kvantum Qt 6 engine could not be removed — retaining its ownership marker and license for recovery')
             )
             return
     elif destination.exists() or destination.is_symlink():
         warn(
-            "Kvantum Qt 6 engine changed since installation — leaving the "
-            "distro/user-owned plugin in place"
+            tr('Kvantum Qt 6 engine changed since installation — leaving the distro/user-owned plugin in place')
         )
-    sudo_remove(ENGINE_MARKER, "Kvantum bundled-source marker")
-    sudo_remove(ENGINE_LICENSE, "Kvantum bundled-source license")
+    sudo_remove(ENGINE_MARKER, tr('Kvantum bundled-source marker'))
+    sudo_remove(ENGINE_LICENSE, tr('Kvantum bundled-source license'))
 
 
 def uninstall() -> None:
@@ -400,7 +395,7 @@ def uninstall() -> None:
     if any_was_installed:
         if kw_write("--file", "kdeglobals", "--group", "KDE",
                     "--key", "widgetStyle", "Breeze"):
-            ok("Widget style reset to Breeze")
+            ok(tr('Widget style reset to Breeze'))
         if have("kvantummanager"):
             env = os.environ.copy()
             env["QT_QPA_PLATFORM"] = "offscreen"
@@ -415,11 +410,11 @@ def uninstall() -> None:
             except OSError:
                 pass
     if any(d.is_dir() for d in (DEST_DIR, DEST_DIR_DARK)):
-        fail("MacTahoeLiquidKde themes (some leftovers)")
+        fail(tr('MacTahoeLiquidKde themes (some leftovers)'))
     elif any_was_installed:
-        ok("MacTahoeLiquidKde themes removed")
+        ok(tr('MacTahoeLiquidKde themes removed'))
     else:
-        ok("MacTahoeLiquidKde themes (not installed)")
+        ok(tr('MacTahoeLiquidKde themes (not installed)'))
     _remove_bundled_engine()
     shutil.rmtree(ENGINE_WORK, ignore_errors=True)
-    info("Kvantum Qt styling removed")
+    info(tr('Kvantum Qt styling removed'))

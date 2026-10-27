@@ -5,6 +5,8 @@ with a distro hint instead of guessing."""
 
 from __future__ import annotations
 
+from localization import tr
+
 import os
 import shutil
 import subprocess
@@ -104,6 +106,29 @@ def plymouth_use_simpledrm() -> bool:
     return "fedora" not in family
 
 
+def plymouth_uses_alternatives() -> bool:
+    return "ubuntu" in (current_distro(), *_compatibility_parents())
+
+
+def plymouth_tools() -> tuple[str, ...]:
+    if plymouth_uses_alternatives():
+        return ("update-alternatives", "update-initramfs")
+    return ("plymouth-set-default-theme",)
+
+
+def plymouth_query_command() -> list[str]:
+    if plymouth_uses_alternatives():
+        return ["update-alternatives", "--query", "default.plymouth"]
+    return ["plymouth-set-default-theme"]
+
+
+def plymouth_cleanup_commands(theme: str) -> list[list[str]]:
+    if plymouth_uses_alternatives():
+        return [["update-alternatives", "--remove", "default.plymouth",
+                 f"/usr/share/plymouth/themes/{theme}/{theme}.plymouth"]]
+    return []
+
+
 def plymouth_activation_commands(theme: str) -> list[list[str]]:
     """Select the theme and rebuild the images used by the installed OS.
 
@@ -111,6 +136,15 @@ def plymouth_activation_commands(theme: str) -> list[list[str]]:
     provide wrappers that also know their kernel-install/bootloader layout.
     Keep those wrappers instead of installing a second initramfs generator.
     """
+    if plymouth_uses_alternatives():
+        path = theme if Path(theme).is_absolute() else f"/usr/share/plymouth/themes/{theme}/{theme}.plymouth"
+        commands = []
+        if theme == "MacTahoeLiquidKde":
+            commands.append(["update-alternatives", "--install",
+                             "/usr/share/plymouth/themes/default.plymouth",
+                             "default.plymouth", path, "100"])
+        return commands + [["update-alternatives", "--set", "default.plymouth", path],
+                           ["update-initramfs", "-u", "-k", "all"]]
     family = (current_distro(), *_compatibility_parents())
     if "arch" in family and not shutil.which("mkinitcpio") and shutil.which("dracut"):
         for helper in ("reinstall-kernels", "dracut-rebuild"):
@@ -187,33 +221,47 @@ def wallpaper_fallback_ids() -> tuple[str, ...]:
 
 _INIT_CACHE: str | None = None
 _SYSTEMD_MARKER = Path("/run/systemd/system")
+_PROC_ROOT = Path("/proc")
 
 
 def init_system() -> str:
-    """``"systemd"`` when systemd is the running init, else ``"openrc"``.
+    """Identify systemd or dinit; retain the OpenRC fallback otherwise.
     The single sanctioned init probe — scheduled-feature steps branch on
     this to pick a systemd user timer vs. a per-user crontab line. The
     ``/run/systemd/system`` directory exists iff systemd is PID 1 (the
     canonical sd_booted() check), so a systemd package merely installed
-    but not booted still reads as openrc, which is correct.
+    but not booted does not select the systemd backend. Detect dinit from
+    PID 1, never from installed executables or a user's dinit instance.
 
-    ``MTTKDE_INIT=openrc|systemd`` forces the answer — the only supported
-    way to exercise the OpenRC path on a systemd CI host (mirrors the
+    ``MTTKDE_INIT=openrc|dinit|systemd`` forces the answer — the only supported
+    way to exercise non-systemd paths on a systemd CI host (mirrors the
     OFFLINE/STEPS test overrides). It is not cached, so a test can flip it."""
     forced = os.environ.get("MTTKDE_INIT")
-    if forced in ("systemd", "openrc"):
+    if forced in ("systemd", "openrc", "dinit"):
         return forced
     global _INIT_CACHE
     if _INIT_CACHE is None:
         _INIT_CACHE = "systemd" if _SYSTEMD_MARKER.is_dir() else "openrc"
+        if _INIT_CACHE != "systemd":
+            process = _PROC_ROOT / "1"
+            try:
+                executable = (process / "exe").readlink().name
+            except OSError:
+                executable = ""
+            try:
+                name = (process / "comm").read_text().strip()
+            except OSError:
+                name = ""
+            if executable.removesuffix(" (deleted)") == "dinit" or name == "dinit":
+                _INIT_CACHE = "dinit"
     return _INIT_CACHE
 
 
 def user_service_manager_command(*args: str) -> list[str] | None:
     """Build a command for the active per-user service manager.
 
-    OpenRC has no systemd user manager, so callers receive ``None`` and use
-    their init-agnostic fallback (cron, process termination, or ``kstart``).
+    OpenRC and dinit callers get ``None`` and use their init-agnostic
+    fallback (cron, process termination, or ``kstart``).
     Keeping the executable name here makes :func:`init_system` the sole init
     decision point and keeps every step safe on hosts that merely have the
     systemd package installed without booting it.
@@ -221,6 +269,30 @@ def user_service_manager_command(*args: str) -> list[str] | None:
     if init_system() != "systemd":
         return None
     return ["systemctl", "--user", *args]
+
+
+def cron_daemon_running() -> bool:
+    """Confirm a cron daemon without depending on an init's service names.
+
+    Installing a crontab succeeds even with no daemon. A restricted /proc
+    may prevent confirmation, so callers must warn rather than erase jobs
+    or start a shared system service automatically.
+    """
+    try:
+        processes = list(_PROC_ROOT.iterdir())
+    except OSError:
+        return False
+    for process in processes:
+        if not process.name.isdigit():
+            continue
+        try:
+            if process.stat().st_uid != 0:
+                continue
+            if (process / "comm").read_text().strip() in ("cron", "crond", "dcron"):
+                return True
+        except OSError:
+            continue
+    return False
 
 
 # ── Qt6 plugin / QML directories ─────────────────────────────────────
@@ -387,9 +459,7 @@ def qt6_plugins_dir() -> Path:
             _QT_PLUGINS_CACHE = candidate
             return _QT_PLUGINS_CACHE
     raise Qt6PathsMissing(
-        "No Qt6 query tool found (qmake6 / qtpaths6 / pkg-config) and no "
-        "fallback plugin directory exists on disk. Install with: "
-        f"{qt6_install_hint()}"
+        tr('No Qt6 query tool found (qmake6 / qtpaths6 / pkg-config) and no fallback plugin directory exists on disk. Install with: {value1}', value1=qt6_install_hint())
     )
 
 
@@ -410,9 +480,7 @@ def qt6_qml_dir() -> Path:
             _QT_QML_CACHE = candidate
             return _QT_QML_CACHE
     raise Qt6PathsMissing(
-        "No Qt6 query tool found (qmake6 / pkg-config) and no fallback "
-        "QML directory exists on disk. Install with: "
-        f"{qt6_install_hint()}"
+        tr('No Qt6 query tool found (qmake6 / pkg-config) and no fallback QML directory exists on disk. Install with: {value1}', value1=qt6_install_hint())
     )
 
 
@@ -472,6 +540,16 @@ def gtk3_appmenu_module() -> Path | None:
 # is portable.
 
 _PACKAGE_MAP: dict[str, dict[str, str]] = {
+    "python-pillow": {
+        "arch": "python-pillow", "debian": "python3-pil", "ubuntu": "python3-pil",
+        "fedora": "python3-pillow", "rhel": "python3-pillow", "centos": "python3-pillow",
+        "opensuse": "python3-Pillow", "alpine": "py3-pillow", "void": "python3-Pillow",
+    },
+    "rsvg-convert": {
+        "arch": "librsvg", "debian": "librsvg2-bin", "ubuntu": "librsvg2-bin",
+        "fedora": "librsvg2-tools", "rhel": "librsvg2-tools", "centos": "librsvg2-tools",
+        "opensuse": "rsvg-convert", "alpine": "librsvg", "void": "librsvg",
+    },
     "dbusmenu-glib": {
         "arch": "libdbusmenu-glib", "debian": "libdbusmenu-glib4",
         "ubuntu": "libdbusmenu-glib4", "fedora": "libdbusmenu",
@@ -570,7 +648,7 @@ _PACKAGE_MAP: dict[str, dict[str, str]] = {
         "alpine":   "qt6-qttools",
         "void":     "qt6-tools",
     },
-    # Only pulled in on OpenRC hosts, where the scheduled features fall
+    # Only pulled in on OpenRC/dinit hosts, where the scheduled features fall
     # back to a per-user crontab line. On systemd hosts init_system()
     # picks the user timer instead and this token is never resolved.
     # Arch/CachyOS ship the cronie provider of /usr/bin/crontab.
@@ -1014,6 +1092,15 @@ _PACKAGE_MAP: dict[str, dict[str, str]] = {
         "centos":   "kwin-devel",
         "opensuse": "kwin6-devel",
     },
+    "kwin-x11-cmake": {
+        "arch":     "kwin-x11",
+        "debian":   "kwin-x11-dev",
+        "ubuntu":   "kwin-x11-dev",
+        "fedora":   "kwin-x11-devel",
+        "rhel":     "kwin-x11-devel",
+        "centos":   "kwin-x11-devel",
+        "opensuse": "kwin6-x11-devel",
+    },
     "kdecoration-cmake": {
         "arch":     "kdecoration",
         "debian":   "libkdecorations3-dev",
@@ -1189,9 +1276,7 @@ def package_for(cmd: str, fallback_pkg: str | None = None) -> str:
     fallback = fallback_pkg or cmd
     family = ", ".join(parents) if parents else "none"
     raise PackageMappingError(
-        f"No package mapping for dependency token {cmd!r} on distro "
-        f"{distro!r} (ID_LIKE: {family}); refusing Arch fallback "
-        f"{fallback!r}. Add a row to distro._PACKAGE_MAP."
+        tr('No package mapping for dependency token {cmd!r} on distro {distro!r} (ID_LIKE: {family}); refusing Arch fallback {fallback!r}. Add a row to distro._PACKAGE_MAP.', cmd=cmd, distro=distro, family=family, fallback=fallback)
     )
 
 
@@ -1206,6 +1291,19 @@ _PACKAGE_MANAGER_INSTALL: dict[str, list[str]] = {
     "rhel":     ["dnf", "install", "-y"],
     "centos":   ["dnf", "install", "-y"],
     "opensuse": ["zypper", "--non-interactive", "install", "--no-recommends"],
+}
+
+# Root, NON-INTERACTIVE removal of named packages. pacman refuses to break a
+# dependency; apt, dnf and zypper also remove dependents. Callers only remove
+# standalone add-on packages that duplicate files the project installs.
+_PACKAGE_MANAGER_REMOVE: dict[str, list[str]] = {
+    "arch":     ["pacman", "-R", "--noconfirm"],
+    "debian":   ["apt-get", "remove", "-y"],
+    "ubuntu":   ["apt-get", "remove", "-y"],
+    "fedora":   ["dnf", "remove", "-y"],
+    "rhel":     ["dnf", "remove", "-y"],
+    "centos":   ["dnf", "remove", "-y"],
+    "opensuse": ["zypper", "--non-interactive", "remove"],
 }
 
 # Sync the db first or a stale db 404s on rotated mirrors. None = the
@@ -1224,9 +1322,7 @@ _PACKAGE_MANAGER_SYNC: dict[str, list[str] | None] = {
 def _reject_retired_distro() -> None:
     if "gentoo" in (current_distro(), *_compatibility_parents()):
         raise UnsupportedDistroError(
-            "Gentoo support was retired in v0.54.7. New installations and "
-            "upgrades require a separately maintained Gentoo integration. "
-            "Existing installations can still be uninstalled."
+            tr('Gentoo support was retired in v0.54.7. New installations and upgrades require a separately maintained Gentoo integration. Existing installations can still be uninstalled.')
         )
 
 
@@ -1240,8 +1336,7 @@ def package_manager_sync_cmd() -> list[str] | None:
             cmd = _PACKAGE_MANAGER_SYNC[name]
             return list(cmd) if cmd else None
     raise UnsupportedDistroError(
-        f"No package manager mapping for distro {distro!r}. "
-        f"Add a row to distro._PACKAGE_MANAGER_SYNC."
+        tr('No package manager mapping for distro {distro!r}. Add a row to distro._PACKAGE_MANAGER_SYNC.', distro=distro)
     )
 
 
@@ -1256,9 +1351,49 @@ def package_manager_install_cmd() -> list[str]:
         if parent in _PACKAGE_MANAGER_INSTALL:
             return list(_PACKAGE_MANAGER_INSTALL[parent])
     raise UnsupportedDistroError(
-        f"No package manager mapping for distro {distro!r}. "
-        f"Add a row to distro._PACKAGE_MANAGER_INSTALL."
+        tr('No package manager mapping for distro {distro!r}. Add a row to distro._PACKAGE_MANAGER_INSTALL.', distro=distro)
     )
+
+
+def package_manager_remove_cmd() -> list[str]:
+    """Non-interactive removal prefix (caller appends packages).
+    Raises :class:`UnsupportedDistroError` for unmapped distros."""
+    distro = current_distro()
+    for name in (distro, *_compatibility_parents()):
+        if name in _PACKAGE_MANAGER_REMOVE:
+            return list(_PACKAGE_MANAGER_REMOVE[name])
+    raise UnsupportedDistroError(
+        tr('No package manager mapping for distro {distro!r}. Add a row to distro._PACKAGE_MANAGER_REMOVE.', distro=distro)
+    )
+
+
+def package_owner(path: Path) -> str | None:
+    """Name of the installed package that owns ``path``, else None.
+
+    None means no owner is known, including on distros without a
+    file-ownership query.
+    """
+    family = (current_distro(), *_compatibility_parents())
+    if is_debian_family():
+        output = _run_query(["dpkg-query", "-S", str(path)])
+        for line in (output or "").splitlines():
+            # "diversion by X from/to: path" lines describe dpkg-divert, not
+            # the owner; ownership lines read "pkg[, pkg2]: path".
+            if line.startswith("diversion "):
+                continue
+            packages, separator, owned = line.partition(": ")
+            if separator and owned == str(path):
+                return packages.split(",")[0].strip() or None
+        return None
+    if any(name in ("fedora", "rhel", "centos", "opensuse") for name in family):
+        output = _run_query(["rpm", "-qf", "--qf", "%{NAME}\n", str(path)])
+    elif "arch" in family:
+        output = _run_query(["pacman", "-Qqo", str(path)])
+    else:
+        return None
+    if not output:
+        return None
+    return output.splitlines()[0].strip() or None
 
 
 _PLASMA_VERSION_PACKAGES: dict[str, tuple[str, ...]] = {

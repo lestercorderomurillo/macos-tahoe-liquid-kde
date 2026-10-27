@@ -87,12 +87,14 @@ def test_sudo_ignores_runtime_owned_by_another_user(session, monkeypatch, tmp_pa
 
 def test_plasma_session_address_takes_precedence_over_socket_guess(session):
     session.plasmashell(DBUS_SESSION_BUS_ADDRESS="unix:abstract=plasma-bus",
-                       WAYLAND_DISPLAY="wayland-2")
+                       WAYLAND_DISPLAY="wayland-2",
+                       XDG_CONFIG_DIRS="/home/test/.config/kdedefaults:/etc/xdg")
 
     utils.restore_desktop_session_env()
 
     assert os.environ["DBUS_SESSION_BUS_ADDRESS"] == "unix:abstract=plasma-bus"
     assert os.environ["WAYLAND_DISPLAY"] == "wayland-2"
+    assert os.environ["XDG_CONFIG_DIRS"] == "/home/test/.config/kdedefaults:/etc/xdg"
 
 
 def test_custom_plasma_runtime_is_used_for_socket_fallback(session, tmp_path):
@@ -112,12 +114,14 @@ def test_explicit_session_values_are_preserved(session, monkeypatch, tmp_path):
     custom.mkdir(mode=0o700)
     expected = {"XDG_RUNTIME_DIR": str(custom),
                 "DBUS_SESSION_BUS_ADDRESS": "unix:abstract=explicit-bus",
-                "WAYLAND_DISPLAY": "wayland-7", "DISPLAY": ":9"}
+                "WAYLAND_DISPLAY": "wayland-7", "DISPLAY": ":9",
+                "XDG_CONFIG_DIRS": "/explicit:/etc/xdg"}
     for key, value in expected.items():
         monkeypatch.setenv(key, value)
     session.plasmashell(XDG_RUNTIME_DIR=str(session.runtime),
                        DBUS_SESSION_BUS_ADDRESS="unix:abstract=other-bus",
-                       WAYLAND_DISPLAY="wayland-2", DISPLAY=":1")
+                       WAYLAND_DISPLAY="wayland-2", DISPLAY=":1",
+                       XDG_CONFIG_DIRS="/plasma-defaults:/etc/xdg")
 
     utils.restore_desktop_session_env()
 
@@ -125,10 +129,12 @@ def test_explicit_session_values_are_preserved(session, monkeypatch, tmp_path):
 
 
 def test_recovery_uses_only_same_user_plasma_and_allowed_keys(session, monkeypatch):
-    process = session.plasmashell(DISPLAY=":8", LD_PRELOAD="/untrusted.so")
+    process = session.plasmashell(DISPLAY=":8", LD_PRELOAD="/untrusted.so",
+                                 GTK3_MODULES="appmenu-gtk-module")
     monkeypatch.delenv("LD_PRELOAD", raising=False)
     utils.restore_desktop_session_env()
     assert os.environ["DISPLAY"] == ":8"
+    assert os.environ["GTK3_MODULES"] == "appmenu-gtk-module"
     assert "LD_PRELOAD" not in os.environ
 
     monkeypatch.delenv("DISPLAY")

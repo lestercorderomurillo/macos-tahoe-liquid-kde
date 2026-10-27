@@ -2,7 +2,7 @@
     "KPlugin": {
         "Id": "MacHeritage-BigSur",
         "Name": "macOS Big Sur",
-        "Description": "macOS Big Sur \u2014 auto light/dark",
+        "Description": "macOS Big Sur — auto light/dark",
         "Authors": [
             {
                 "Name": "MacTahoe Liquid KDE",
@@ -12,6 +12,10 @@
         "Category": "MacTahoe Liquid KDE",
         "License": "Apple Inc. wallpapers extracted from macOS",
         "Website": "https://github.com/lester-sudo/macos-tahoe-liquid-kde",
-        "Version": "1.0"
+        "Version": "1.0",
+        "Name[pt_BR]": "macOS Big Sur",
+        "Description[pt_BR]": "macOS Big Sur — claro/escuro automático",
+        "Name[de]": "macOS Big Sur",
+        "Description[de]": "macOS Big Sur — automatisch hell/dunkel"
     }
 }

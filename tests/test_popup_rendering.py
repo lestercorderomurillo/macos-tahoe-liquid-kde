@@ -60,10 +60,21 @@ def test_menu_contours_remain_visible_above_translucent_fill(repo, mode):
         assert body.red() == (0 if mode else 255)
 
 
-def test_gtk4_stylesheets_parse_without_errors(repo, tmp_path):
+@pytest.mark.parametrize("legacy", [False, True])
+def test_gtk4_stylesheets_parse_without_errors(repo, tmp_path, legacy):
     gi = pytest.importorskip("gi")
     if not callable(getattr(gi, "require_version", None)):
         pytest.skip("PyGObject required; the gi namespace alone is insufficient")
+    from theme_switch import gtk4_compatible_css
+    import theme_switch
+    import shutil
+    from unittest.mock import patch
+    staged = tmp_path / "themes"
+    shutil.copytree(repo / "src/offline/gtk", staged)
+    version = (4, 14) if legacy else theme_switch._gtk4_version()
+    with patch.object(theme_switch, "_gtk4_version", return_value=version):
+        for path in staged.glob("*/gtk-4.0/*.css"):
+            path.write_text(gtk4_compatible_css(path.read_text()))
     script = """
 import gi, pathlib, sys
 try: gi.require_version('Gtk','4.0')
@@ -82,7 +93,7 @@ assert not errors, errors
         "HOME": str(tmp_path),
     }
     result = subprocess.run(
-        [sys.executable, "-c", script, str(repo / "src/offline/gtk")],
+        [sys.executable, "-c", script, str(staged)],
         env=env,
         capture_output=True,
         text=True,
@@ -173,8 +184,9 @@ def test_xwayland_property_is_read_and_invalid_data_never_means_full_blur(
         repo / "src/offline/kwin-effects/acrylic-glass/src/effect.cpp"
     ).read_text()
     block = source.split("    // Xwayland still advertises blur", 1)[1].split(
-        "    // Wayland: prefer", 1
+        "    // Plasma's translucent menus", 1
     )[0]
+    block = block.removesuffix("#if defined(GLASS_X11)\n") + "#endif\n"
     block = block[block.index("#if KWIN_BUILD_X11") :]
     code = (
         r"""
@@ -193,11 +205,12 @@ using Rect=QRect;
 namespace Xcb { struct Result { QRect rect; QRect toRect() const { return rect; } }; Result fromXNative(QRect r) { return {r}; } }
 struct Window { xcb_window_t id; long windowId() const { return id; } };
 struct Effects { xcb_connection_t *connection; xcb_connection_t *xcbConnection() const { return connection; } };
-std::optional<Region> read(Effects *effects, Window *w, xcb_atom_t net_wm_blur_region) {
+std::optional<Region> read(Effects *effects, Window *w, xcb_atom_t net_wm_blur_region, bool *missing = nullptr) {
     std::optional<Region> content;
 """
         + block
         + r"""
+    if (missing) *missing = legacyBlurPropertyMissing;
     return content;
 }
 int main() {
@@ -209,14 +222,15 @@ int main() {
     auto *reply=xcb_intern_atom_reply(connection,xcb_intern_atom(connection,false,sizeof(name)-1,name),nullptr);
     auto atom=reply->atom;free(reply);
     Effects effects{connection};Window w{id};
-    assert(!read(&effects,&w,atom));
+    bool missing = false;
+    assert(!read(&effects,&w,atom,&missing) && missing);
     auto set=[&](std::vector<uint32_t> data,xcb_atom_t type=XCB_ATOM_CARDINAL) {
         xcb_change_property(connection,XCB_PROP_MODE_REPLACE,id,atom,type,32,data.size(),data.data());xcb_flush(connection);
     };
     set({});assert(read(&effects,&w,atom).has_value() && read(&effects,&w,atom)->isEmpty());
     set({3,4,20,30});assert(*read(&effects,&w,atom)==QRegion(QRect(3,4,20,30)));
-    set({3,4,20});assert(!read(&effects,&w,atom));
-    set({3,4,20,30},XCB_ATOM_STRING);assert(!read(&effects,&w,atom));
+    set({3,4,20});assert(!read(&effects,&w,atom,&missing) && !missing);
+    set({3,4,20,30},XCB_ATOM_STRING);assert(!read(&effects,&w,atom,&missing) && !missing);
     set({3,4,UINT32_MAX,30});assert(!read(&effects,&w,atom));
     set({uint32_t(INT_MAX),4,20,30});assert(!read(&effects,&w,atom));
     set(std::vector<uint32_t>(16388,1));assert(!read(&effects,&w,atom));

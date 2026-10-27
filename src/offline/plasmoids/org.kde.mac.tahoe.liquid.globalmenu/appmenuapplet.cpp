@@ -22,6 +22,7 @@
 #include <QQuickWindow>
 #include <QScreen>
 #include <QStandardPaths>
+#include <QStyleOptionMenuItem>
 #include <QTimer>
 #include <abstracttasksmodel.h>
 
@@ -30,6 +31,18 @@
 int AppMenuApplet::s_refs = 0;
 
 namespace {
+class SystemMenu : public QMenu
+{
+protected:
+    void initStyleOption(QStyleOptionMenuItem* option, const QAction* action) const override
+    {
+        QMenu::initStyleOption(option, action);
+        if (!action->isSeparator() && !action->isIconVisibleInMenu()) {
+            option->maxIconWidth = 0;
+        }
+    }
+};
+
 /// DBus name we register as while at least one AppMenuApplet is alive.
 /// Other system pieces (Latte, Plank, etc.) listen for this to know a
 /// global menu view is on screen and suppress their own in-window menubar.
@@ -159,6 +172,9 @@ void AppMenuApplet::setButtonGrid(QQuickItem* buttonGrid)
 
 QMenu* AppMenuApplet::createMenu(int idx) const
 {
+    if (!m_model || idx < 0 || idx >= m_model->rowCount()) {
+        return nullptr;
+    }
     QMenu* menu = nullptr;
 
     if (view() == CompactView) {
@@ -179,6 +195,9 @@ void AppMenuApplet::onMenuAboutToHide()
 {
     auto menuAction = m_currentMenu->menuAction();
     menuAction->setMenu(m_sourceMenu);
+    if (m_sourceMenu && m_sourceMenu != m_currentMenu) {
+        Q_EMIT m_sourceMenu->aboutToHide();
+    }
     setCurrentIndex(-1);
 }
 
@@ -208,6 +227,13 @@ Qt::Edges edgeFromLocation(Plasma::Types::Location location)
 
 void AppMenuApplet::trigger(QQuickItem* ctx, int idx)
 {
+    if (!m_model || idx < 0 || idx >= m_model->rowCount()) {
+        return;
+    }
+    auto* selectedAction = m_model->index(idx, 0).data(AppMenuModel::ActionRole).value<QAction*>();
+    if (view() == FullView && (!selectedAction || !selectedAction->isEnabled() || !selectedAction->isVisible())) {
+        return;
+    }
     if (m_currentIndex == idx) {
         return;
     }
@@ -236,6 +262,9 @@ void AppMenuApplet::trigger(QQuickItem* ctx, int idx)
                 m_currentMenu = new QMenu(qobject_cast<QWidget*>(actionMenu->parent()));
                 connect(m_currentMenu, &QMenu::aboutToHide, this, &AppMenuApplet::onMenuAboutToHide, Qt::UniqueConnection);
             } else if (m_sourceMenu != actionMenu) {
+                if (m_sourceMenu) {
+                    Q_EMIT m_sourceMenu->aboutToHide();
+                }
                 auto menuAction = m_currentMenu->menuAction();
                 for (QAction* action : m_currentMenu->actions()) {
                     m_currentMenu->removeAction(action);
@@ -250,6 +279,10 @@ void AppMenuApplet::trigger(QQuickItem* ctx, int idx)
                 m_currentMenu->addAction(action);
             }
             menuAction->setMenu(m_currentMenu);
+            // The persistent popup keeps the Wayland grab across File/Edit.
+            // Notify the imported menu on every selection so its D-Bus
+            // AboutToShow handler refreshes dynamic application actions.
+            Q_EMIT m_sourceMenu->aboutToShow();
         } else {
             m_currentMenu = actionMenu;
             m_sourceMenu = actionMenu;
@@ -515,7 +548,7 @@ void AppMenuApplet::triggerSystemMenu(QQuickItem* ctx)
         m_windowMenu->hide();
     }
 
-    auto* menu = new QMenu;
+    auto* menu = new SystemMenu;
     menu->setAttribute(Qt::WA_DeleteOnClose);
     applyActiveColorScheme(menu);
     m_systemMenu = menu;
@@ -540,7 +573,7 @@ void AppMenuApplet::triggerSystemMenu(QQuickItem* ctx)
     menu->addSeparator();
 
     menu->addAction(icon("iconForceQuit", QStringLiteral("dialog-cancel")), i18n("Force Quit…"),
-        []() { runCommand(QStringLiteral("qdbus6 org.kde.KWin /KWin slotKillWindow || xkill")); });
+        []() { runCommand(QStringLiteral("qdbus6 org.kde.KWin /KWin slotKillWindow || xkill")); })->setIconVisibleInMenu(false);
 
     menu->addSeparator();
 
@@ -548,7 +581,7 @@ void AppMenuApplet::triggerSystemMenu(QQuickItem* ctx)
         [cmd = cfg.readEntry(
              "cmdSleep", QStringLiteral("qdbus6 org.kde.Solid.PowerManagement /org/kde/Solid/PowerManagement/Actions/SuspendSession org.kde.Solid.PowerManagement.Actions.SuspendSession.suspendToRam || qdbus-qt6 org.kde.Solid.PowerManagement /org/kde/Solid/PowerManagement/Actions/SuspendSession org.kde.Solid.PowerManagement.Actions.SuspendSession.suspendToRam || qdbus org.kde.Solid.PowerManagement /org/kde/Solid/PowerManagement/Actions/SuspendSession org.kde.Solid.PowerManagement.Actions.SuspendSession.suspendToRam"))]() {
             runSuspendAction(cmd);
-        });
+        })->setIconVisibleInMenu(false);
     menu->addAction(icon("iconRestart", QStringLiteral("system-reboot")), i18n("Restart…"),
         [cmd = cfg.readEntry("cmdRestart", QStringLiteral("qdbus6 org.kde.LogoutPrompt /LogoutPrompt org.kde.LogoutPrompt.promptReboot"))]() {
             runSystemAction(cmd,
@@ -556,7 +589,7 @@ void AppMenuApplet::triggerSystemMenu(QQuickItem* ctx)
                 QStringLiteral("/LogoutPrompt"),
                 QStringLiteral("org.kde.LogoutPrompt"),
                 QStringLiteral("promptReboot"));
-        });
+        })->setIconVisibleInMenu(false);
     menu->addAction(icon("iconShutDown", QStringLiteral("system-shutdown")), i18n("Shut Down…"),
         [cmd = cfg.readEntry("cmdShutDown", QStringLiteral("qdbus6 org.kde.LogoutPrompt /LogoutPrompt org.kde.LogoutPrompt.promptShutDown"))]() {
             runSystemAction(cmd,
@@ -564,14 +597,14 @@ void AppMenuApplet::triggerSystemMenu(QQuickItem* ctx)
                 QStringLiteral("/LogoutPrompt"),
                 QStringLiteral("org.kde.LogoutPrompt"),
                 QStringLiteral("promptShutDown"));
-        });
+        })->setIconVisibleInMenu(false);
 
     menu->addSeparator();
 
     menu->addAction(icon("iconLockScreen", QStringLiteral("system-lock-screen")), i18n("Lock Screen"),
         [cmd = cfg.readEntry("cmdLockScreen", QStringLiteral("qdbus6 org.freedesktop.ScreenSaver /ScreenSaver Lock || loginctl lock-session"))]() {
             runCommand(cmd);
-        });
+        })->setIconVisibleInMenu(false);
     const QString firstName = KUser().property(KUser::FullName).toString().section(QLatin1Char(' '), 0, 0);
     menu->addAction(icon("iconLogOut", QStringLiteral("user-identity")), i18n("Log Out %1…", firstName),
         [cmd = cfg.readEntry("cmdLogOut", QStringLiteral("qdbus6 org.kde.LogoutPrompt /LogoutPrompt org.kde.LogoutPrompt.promptLogout"))]() {
@@ -580,7 +613,7 @@ void AppMenuApplet::triggerSystemMenu(QQuickItem* ctx)
                 QStringLiteral("/LogoutPrompt"),
                 QStringLiteral("org.kde.LogoutPrompt"),
                 QStringLiteral("promptLogout"));
-        });
+        })->setIconVisibleInMenu(false);
 
     auto ungrabMouseHack = [ctx]() {
         if (ctx && ctx->window() && ctx->window()->mouseGrabberItem()) {
@@ -600,7 +633,7 @@ void AppMenuApplet::triggerSystemMenu(QQuickItem* ctx)
         pos.setY(pos.y() + ctx->height());
     }
 
-    menu->setMinimumWidth(menu->sizeHint().width() + 55);
+    menu->setMinimumWidth(menu->sizeHint().width() + 65);
     menu->adjustSize();
     pos = QPoint(qBound(geo.x(), pos.x(), geo.x() + geo.width() - menu->width()), qBound(geo.y(), pos.y(), geo.y() + geo.height() - menu->height()));
 

@@ -12,6 +12,10 @@
         "Category": "MacTahoe Liquid KDE",
         "License": "Apple Inc. wallpapers extracted from macOS",
         "Website": "https://github.com/lester-sudo/macos-tahoe-liquid-kde",
-        "Version": "1.0"
+        "Version": "1.0",
+        "Name[pt_BR]": "Iridescência Tahoe",
+        "Description[pt_BR]": "Ondas prismáticas iridescentes de Liquid Glass",
+        "Name[de]": "Tahoe-Irisieren",
+        "Description[de]": "Schillernde Prismenwellen aus Liquid Glass"
     }
 }

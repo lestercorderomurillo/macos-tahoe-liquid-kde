@@ -1,0 +1,2 @@
+# Documentation galleries remain in Git; installation archives need no photos.
+/src/screenshots export-ignore

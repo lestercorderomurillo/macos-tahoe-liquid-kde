@@ -55,6 +55,41 @@ def test_wrong_guest_identity_prevents_any_mutation(tmp_path, monkeypatch):
     assert 'rsync' not in commands[0] and './install' not in commands[0]
 
 
+def test_kubuntu_identity_checks_lts_release_and_installed_flavor(tmp_path, monkeypatch):
+    guest = qualify.Guest('kubuntu', tmp_path)
+    commands = []
+
+    def run(command, **kwargs):
+        commands.append(command)
+        return subprocess.CompletedProcess([], 0, b'ubuntu', b'')
+
+    monkeypatch.setattr(guest, 'run', run)
+    guest.assert_identity()
+    assert '2234' in guest.ssh
+    assert 'test "$VERSION_ID" = 26.04' in commands[0]
+    assert "dpkg-query -W -f='${Status}' kubuntu-desktop" in commands[0]
+    assert 'install ok installed' in commands[0]
+    assert 'QEMU' in commands[0] and 'tester' in commands[0]
+
+
+@pytest.mark.parametrize('count,child', [(8, ''), (0, ''), (7, ''),
+                                       (8, '<skipped/>'), (8, '<failure/>'), (8, '<error/>')])
+def test_launcher_vm_probe_requires_all_cases_without_skips(tmp_path, monkeypatch, count, child):
+    guest = qualify.Guest('kubuntu', tmp_path)
+    phases = []
+    monkeypatch.setattr(guest, 'phase', lambda *a, **kw: phases.append(a))
+    data = ('<testsuites><testsuite>' + f'<testcase>{child}</testcase>' * count
+            + '</testsuite></testsuites>').encode()
+    monkeypatch.setattr(guest, 'run', lambda *a: subprocess.CompletedProcess([], 0, data, b''))
+    if count == 8 and not child:
+        guest.launcher('launcher-installed')
+    else:
+        with pytest.raises(RuntimeError, match='eight native launcher'):
+            guest.launcher('launcher-installed')
+    assert 'test_native_launcher_popup_presets' in phases[0][1]
+    assert (tmp_path / 'launcher-installed.xml').read_bytes() == data
+
+
 def test_failed_phase_retains_log_and_does_not_pass(tmp_path, monkeypatch):
     guest = qualify.Guest('debian', tmp_path)
     monkeypatch.setattr(guest, 'run', lambda *a, **k: subprocess.CompletedProcess([], 7, b'failure', b'details'))
@@ -85,6 +120,7 @@ def test_gtk_bridge_is_loaded_after_theme_files_are_installed(tmp_path, monkeypa
         (tmp_path / 'source' / name).mkdir(parents=True)
     monkeypatch.setattr(gtk, 'offline', lambda *a: tmp_path / 'source')
     monkeypatch.setattr(gtk, 'DEST_DIR', tmp_path / 'themes')
+    monkeypatch.setattr(gtk, 'GTK4_DEST', tmp_path / 'gtk-4.0')
     monkeypatch.setattr(gtk, 'have', lambda *a: False)
     events = []
     monkeypatch.setattr(gtk, 'install_tree', lambda *a: events.append('copy') or True)

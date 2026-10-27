@@ -27,6 +27,8 @@ Timer {
         }
     }
     function verifyCapsulePosition() {
+        verify(searchPopup.hideOnWindowDeactivate === undefined || !searchPopup.hideOnWindowDeactivate,
+               "native popup leaves dismissal to the launcher focus group on every Plasma version");
         verify(searchPopup.y + searchPopup.height < root.y, "search above app panel");
         verify(Math.abs(searchPopup.x + searchPopup.width / 2 - root.x - root.width / 2) < 2, "capsule centered");
     }

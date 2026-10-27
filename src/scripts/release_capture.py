@@ -14,7 +14,7 @@ import tempfile
 import time
 import uuid
 
-from release_screenshots import (ROOT, PROFILE, EDITIONS, MODES, commit_id, digest,
+from release_screenshots import (ROOT, PROFILE, EDITIONS, MODES, INSTALLER_PAGES, commit_id, digest,
                                  git, runtime_tree, require, validate)
 
 
@@ -194,6 +194,7 @@ def capture(repo: Path, ref: str, image: Path, output: Path) -> dict:
                         print(f'Installing {edition} from {source}', flush=True)
                         manifest['environments'][edition] = vm.action('setup', edition)
                         for mode in MODES:
+                            vm.action('clean-desktop')
                             vm.key('esc')
                             vm.action('mode', mode)
                             def shot(case):
@@ -228,6 +229,11 @@ def capture(repo: Path, ref: str, image: Path, output: Path) -> dict:
                             vm.action('arrange', json.dumps({'About This Computer (preview)':
                                       dict(profile['windows']['About This Computer (preview)'], x=780)}))
                             shot('about')
+                            vm.action('close')
+                            for page in INSTALLER_PAGES:
+                                vm.action('wizard', page)
+                                shot('installer-' + page)
+                            vm.action('clean-desktop')
                         if edition == 'tahoe':
                             vm.action('boot')
                             for case in ('boot', 'shutdown'):

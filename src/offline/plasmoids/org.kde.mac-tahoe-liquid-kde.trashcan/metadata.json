@@ -17,7 +17,11 @@
         "License": "GPL-3.0",
         "Name": "Trashcan (MacTahoe Liquid KDE)",
         "Name[es]": "Papelera (MacTahoe Liquid KDE)",
-        "Name[zh_CN]": "回收站 (MacTahoe Liquid KDE)"
+        "Name[zh_CN]": "回收站 (MacTahoe Liquid KDE)",
+        "Name[pt_BR]": "Lixeira (MacTahoe Liquid KDE)",
+        "Description[pt_BR]": "Widget de lixeira",
+        "Name[de]": "Papierkorb (MacTahoe Liquid KDE)",
+        "Description[de]": "Papierkorb-Miniprogramm"
     },
     "X-Plasma-API-Minimum-Version": "6.0",
     "X-Plasma-DropUrlPatterns": [

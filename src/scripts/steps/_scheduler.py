@@ -1,7 +1,7 @@
 """Init-agnostic scheduling for the two timed features (OLED care, timed
 theme switch). Under systemd each feature installs a user timer; under
-OpenRC there is no user service manager, so we fall back to a per-user
-``crontab`` line running the same binary on the same cadence.
+OpenRC and dinit we use a per-user ``crontab`` line running the same binary
+on the same cadence.
 
 The backend is chosen once by :func:`distro.init_system`. Steps call
 :func:`install_periodic` / :func:`remove_periodic` and stay ignorant of
@@ -15,7 +15,9 @@ import shutil
 import subprocess
 from enum import Enum
 
-from distro import init_system
+from distro import cron_daemon_running, init_system
+from localization import tr
+from log import warn
 from utils import run_user
 
 
@@ -38,9 +40,15 @@ def is_systemd() -> bool:
     return init_system() == "systemd"
 
 
+def _check_cron_daemon(installed: bool) -> bool:
+    if installed and not cron_daemon_running():
+        warn(tr('Cron entries installed, but no running cron daemon could be confirmed. Enable your cron service for scheduled features.'))
+    return installed
+
+
 def _have_crontab() -> bool:
-    """Whether a crontab client is on PATH. OpenRC hosts without a cron
-    daemon (and the CI runner) have none — calling it would raise
+    """Whether a crontab client is on PATH. Hosts without a cron package
+    (and the CI runner) have none — calling it would raise
     FileNotFoundError, so every crontab op guards on this first."""
     return shutil.which("crontab") is not None
 
@@ -187,23 +195,23 @@ def _cron_remove(tag: str) -> RemovalStatus:
 
 
 def install_periodic(tag: str, minutes: int, command: str) -> bool:
-    """OpenRC-only: schedule ``command`` every ``minutes`` via crontab.
+    """OpenRC/dinit: schedule ``command`` every ``minutes`` via crontab.
     On systemd this is a no-op returning True — the caller installs a
-    user timer instead. Returns False if the crontab write failed (e.g.
-    no cron daemon), so the caller can warn instead of silently no-op'ing."""
+    user timer instead. Returns False if the crontab write failed; warns
+    separately when a daemon cannot be confirmed after a successful write."""
     if is_systemd():
         return True
-    return _cron_install(tag, minutes, command)
+    return _check_cron_daemon(_cron_install(tag, minutes, command))
 
 
 def install_at_times(tag: str, times: list[tuple[int, int]], command: str) -> bool:
-    """OpenRC-only: schedule ``command`` at each fixed ``(hour, minute)``
+    """OpenRC/dinit: schedule ``command`` at each fixed ``(hour, minute)``
     via crontab. On systemd this is a no-op returning True — the caller
     installs a user timer with the equivalent ``OnCalendar`` lines instead.
     Returns False if the crontab write failed."""
     if is_systemd():
         return True
-    return _cron_install_at(tag, times, command)
+    return _check_cron_daemon(_cron_install_at(tag, times, command))
 
 
 def remove_periodic(tag: str) -> RemovalStatus:

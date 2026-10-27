@@ -2,19 +2,23 @@
 and rebuilds the initramfs through the installed distro tooling.
 Contract: snapshot the previous theme, then validate BEFORE activating."""
 
+from localization import tr
+
 import configparser
 import json
 import os
 import re
+import shlex
 import shutil
 import subprocess
 from pathlib import Path
 
 from distro import (
     package_for, plymouth_activation_commands, plymouth_use_simpledrm, system_lib_dir,
+    plymouth_cleanup_commands, plymouth_query_command, plymouth_tools, plymouth_uses_alternatives,
 )
 from steps._helpers import (
-    HOME, _as_root, fail, info, ok, offline, sudo_install_tree, sudo_remove, warn,
+    HOME, _as_root, fail, info, ok, offline, sudo_install_tree, sudo_remove, temp_dir, warn,
 )
 from utils import have, pkg_install
 
@@ -37,7 +41,7 @@ PLYMOUTHD_CONF = Path("/etc/plymouth/plymouthd.conf")
 
 
 def deps():
-    # cmd:pkg — the binary ships in the plain ``plymouth`` package everywhere.
+    # Resolve the Plymouth package; distro.py selects the activation tools.
     return ["plymouth-set-default-theme:plymouth"]
 
 
@@ -101,14 +105,13 @@ def _patch_grub_add_splash() -> bool:
         with _as_root():
             text = GRUB_DEFAULT.read_text(encoding="utf-8", errors="replace")
     except OSError as exc:
-        warn(f"could not read {GRUB_DEFAULT} ({exc})")
+        warn(tr('could not read {GRUB_DEFAULT} ({exc})', GRUB_DEFAULT=GRUB_DEFAULT, exc=exc))
         return False
 
     match = _GRUB_CMDLINE_RE.search(text)
     if match is None:
         # Non-standard config — refuse to invent the line.
-        warn(f"{GRUB_DEFAULT} has no GRUB_CMDLINE_LINUX_DEFAULT line — "
-             "skipping auto-patch")
+        warn(tr('{GRUB_DEFAULT} has no GRUB_CMDLINE_LINUX_DEFAULT line — skipping auto-patch', GRUB_DEFAULT=GRUB_DEFAULT))
         return False
 
     prefix, quote, params, suffix = match.groups()
@@ -131,7 +134,7 @@ def _patch_grub_add_splash() -> bool:
             shutil.copystat(GRUB_DEFAULT, tmp)
             tmp.replace(GRUB_DEFAULT)
     except OSError as exc:
-        warn(f"could not patch {GRUB_DEFAULT} ({exc})")
+        warn(tr('could not patch {GRUB_DEFAULT} ({exc})', GRUB_DEFAULT=GRUB_DEFAULT, exc=exc))
         return False
     return True
 
@@ -163,26 +166,32 @@ def _regenerate_grub_config() -> bool:
                     timeout=120,
                 )
         except (subprocess.TimeoutExpired, OSError) as exc:
-            warn(f"{binary} -o {output} failed: {exc}")
+            warn(tr('{binary} -o {output} failed: {exc}', binary=binary, output=output, exc=exc))
             continue
         if res.returncode == 0:
             return True
-        warn(f"{binary} -o {output} exited {res.returncode}: "
-             f"{(res.stderr or '').strip().splitlines()[-1:] or ['(no output)']}")
+        warn(tr('{binary} -o {output} exited {value3}: {value4}', binary=binary, output=output, value3=res.returncode, value4=(res.stderr or '').strip().splitlines()[-1:] or ['(no output)']))
     return False
 
 
 def _current_default_theme() -> str | None:
-    """Currently-active theme (no-arg plymouth-set-default-theme prints it).
-    None on any failure — callers fall back to bgrt."""
+    """Query the distro selector, preserving an alternative's exact path."""
     try:
         res = subprocess.run(
-            [PLYMOUTH_BIN],
+            plymouth_query_command(),
             check=False, capture_output=True, text=True, timeout=10,
         )
     except (subprocess.TimeoutExpired, OSError):
         return None
+    if res.returncode:
+        return None
     name = (res.stdout or "").strip()
+    if plymouth_uses_alternatives():
+        name = next((line.removeprefix("Value: ") for line in name.splitlines()
+                     if line.startswith("Value: ")), "")
+        # Preserve the exact registered path, including custom locations.
+        if Path(name).stem == THEME_NAME:
+            return THEME_NAME
     return name or None
 
 
@@ -193,35 +202,35 @@ def _validate_theme(theme_dir: Path) -> str | None:
     script_path = theme_dir / f"{THEME_NAME}.script"
 
     if not meta_path.is_file():
-        return f"metadata missing: {meta_path}"
+        return tr("metadata missing: {path}", path=meta_path)
     if not script_path.is_file():
-        return f"script missing: {script_path}"
+        return tr("script missing: {path}", path=script_path)
 
     cp = configparser.ConfigParser(strict=True)
     try:
         cp.read(str(meta_path), encoding="utf-8")
     except configparser.Error as exc:
-        return f"metadata unparseable ({exc.__class__.__name__})"
+        return tr("metadata unparseable ({error})", error=exc.__class__.__name__)
 
     if "Plymouth Theme" not in cp.sections():
-        return "metadata missing [Plymouth Theme] section"
+        return tr("metadata missing [Plymouth Theme] section")
     if "script" not in cp.sections():
-        return "metadata missing [script] section"
+        return tr("metadata missing [script] section")
     for key in ("Name", "ModuleName"):
         if not cp.get("Plymouth Theme", key, fallback=""):
-            return f"metadata missing {key}"
+            return tr("metadata missing {key}", key=key)
     for key in ("ImageDir", "ScriptFile"):
         if not cp.get("script", key, fallback=""):
-            return f"metadata missing script.{key}"
+            return tr("metadata missing script.{key}", key=key)
 
     try:
         script_text = script_path.read_text(encoding="utf-8")
     except OSError as exc:
-        return f"script unreadable ({exc})"
+        return tr("script unreadable ({error})", error=exc)
     refs = re.findall(r'Image\("([^"]+)"\)', script_text)
     for ref in refs:
         if not (theme_dir / ref).is_file():
-            return f"script references missing asset: {ref}"
+            return tr("script references missing asset: {path}", path=ref)
     return None
 
 
@@ -234,14 +243,14 @@ def _ensure_script_plugin() -> bool:
     if script_plugin.is_file():
         return True
     pkg = package_for("plymouth-script-plugin", "plymouth")
-    warn(f"{script_plugin} missing — installing {pkg}...")
+    warn(tr('{script_plugin} missing — installing {pkg}...', script_plugin=script_plugin, pkg=pkg))
     if not pkg_install(pkg):
-        warn("Plymouth script plugin install failed — leaving previous splash active")
+        warn(tr('Plymouth script plugin install failed — leaving previous splash active'))
         return False
     if script_plugin.is_file():
-        ok("Plymouth script plugin installed")
+        ok(tr('Plymouth script plugin installed'))
         return True
-    warn(f"{script_plugin} still missing after installing {pkg} — leaving previous splash active")
+    warn(tr('{script_plugin} still missing after installing {pkg} — leaving previous splash active', script_plugin=script_plugin, pkg=pkg))
     return False
 
 
@@ -261,14 +270,14 @@ def _activate(theme: str) -> bool:
         try:
             res = _run_as_root(command, ACTIVATE_TIMEOUT_SEC)
         except subprocess.TimeoutExpired:
-            fail(f"{label} timed out after {ACTIVATE_TIMEOUT_SEC}s")
+            fail(tr('{label} timed out after {ACTIVATE_TIMEOUT_SEC}s', label=label, ACTIVATE_TIMEOUT_SEC=ACTIVATE_TIMEOUT_SEC))
             return False
         except OSError as exc:
             fail(f"{label}: {exc}")
             return False
         if res.returncode != 0:
             tail = (res.stderr or res.stdout or "").strip().splitlines()[-5:]
-            fail(f"{label} failed (exit {res.returncode})")
+            fail(tr('{label} failed (exit {value2})', label=label, value2=res.returncode))
             for line in tail:
                 print(f"     \033[2m{line}\033[0m")
             return False
@@ -286,8 +295,7 @@ def _read_plymouthd_config() -> configparser.ConfigParser | None:
         try:
             cp.read(str(PLYMOUTHD_CONF), encoding="utf-8")
         except configparser.Error as exc:
-            warn(f"plymouthd.conf unparseable ({exc.__class__.__name__}) — "
-                 "leaving UseSimpledrm setting unchanged")
+            warn(tr('plymouthd.conf unparseable ({value1}) — leaving UseSimpledrm setting unchanged', value1=exc.__class__.__name__))
             return None
     return cp
 
@@ -325,7 +333,7 @@ def _set_plymouthd_simpledrm(value: bool | str | None) -> bool:
                 cp.write(fh, space_around_delimiters=False)
             tmp.replace(PLYMOUTHD_CONF)
     except OSError as exc:
-        warn(f"could not update {PLYMOUTHD_CONF} ({exc})")
+        warn(tr('could not update {PLYMOUTHD_CONF} ({exc})', PLYMOUTHD_CONF=PLYMOUTHD_CONF, exc=exc))
         return False
     return True
 
@@ -356,7 +364,7 @@ def _save_previous_simpledrm(*, legacy_override: bool) -> bool:
             encoding="utf-8",
         )
     except OSError as exc:
-        warn(f"could not snapshot previous UseSimpledrm setting ({exc})")
+        warn(tr('could not snapshot previous UseSimpledrm setting ({exc})', exc=exc))
         return False
     return True
 
@@ -369,23 +377,25 @@ def _restore_previous_simpledrm() -> bool:
     except FileNotFoundError:
         return _set_plymouthd_simpledrm(None)
     except (OSError, json.JSONDecodeError, TypeError) as exc:
-        warn(f"could not read previous UseSimpledrm setting ({exc})")
+        warn(tr('could not read previous UseSimpledrm setting ({exc})', exc=exc))
         return False
 
     if not isinstance(payload, dict):
-        warn("previous UseSimpledrm state has an invalid shape")
+        warn(tr('previous UseSimpledrm state has an invalid shape'))
         return False
     if payload.get("present") is True and isinstance(payload.get("value"), str):
         return _set_plymouthd_simpledrm(payload["value"])
     return _set_plymouthd_simpledrm(None)
 
 
-def _save_previous(name: str) -> None:
+def _save_previous(name: str) -> bool:
     try:
         STATE_DIR.mkdir(parents=True, exist_ok=True)
         PREV_THEME_FILE.write_text(name + "\n", encoding="utf-8")
+        return True
     except OSError as exc:
-        warn(f"could not snapshot previous Plymouth theme ({exc})")
+        fail(tr('could not snapshot previous Plymouth theme ({exc})', exc=exc))
+        return False
 
 
 def _read_previous() -> str:
@@ -401,39 +411,49 @@ def _read_previous() -> str:
 
 
 def install() -> None:
-    if not have(PLYMOUTH_BIN):
-        warn(f"{PLYMOUTH_BIN} not found — skipping boot splash")
+    missing = [tool for tool in plymouth_tools() if not have(tool)]
+    if missing:
+        warn(tr('{PLYMOUTH_BIN} not found — skipping boot splash', PLYMOUTH_BIN=", ".join(missing)))
         return
 
     previous = _current_default_theme()
+    if plymouth_uses_alternatives() and not previous:
+        fail(tr('could not snapshot previous Plymouth theme ({exc})', exc="default.plymouth has no selected value"))
+        return
     # Don't snapshot ourselves — a re-run shouldn't overwrite the user's
     # original theme with our own name.
     if previous and previous != THEME_NAME:
-        _save_previous(previous)
+        if not _save_previous(previous):
+            return
 
-    if not sudo_install_tree(offline("plymouth", THEME_NAME), DEST, "Boot splash files"):
-        return
+    with temp_dir("mttkde-plymouth") as temporary:
+        staged = temporary / THEME_NAME
+        shutil.copytree(offline("plymouth", THEME_NAME), staged)
+        script = staged / f"{THEME_NAME}.script"
+        prompt = json.dumps(tr("Password:"), ensure_ascii=False)
+        script.write_text(script.read_text(encoding="utf-8").replace(
+            'prompt = "Password:";', f'prompt = {prompt};'), encoding="utf-8")
+        if not sudo_install_tree(staged, DEST, tr('Boot splash files')):
+            return
 
     err = _validate_theme(DEST)
     if err:
-        fail(f"Boot splash validation failed: {err}")
-        info("Theme files left on disk but NOT activated — previous splash still active")
+        fail(tr('Boot splash validation failed: {err}', err=err))
+        info(tr('Theme files left on disk but NOT activated — previous splash still active'))
         return
 
     if not _ensure_script_plugin():
-        info("Theme files left on disk but NOT activated — previous splash still active")
+        info(tr('Theme files left on disk but NOT activated — previous splash still active'))
         return
 
     # This must be written before -R: plymouth-set-default-theme rebuilds the
     # initramfs, so writing it afterward does not affect the next boot.
     if not _save_previous_simpledrm(legacy_override=previous == THEME_NAME):
-        info("Theme files left on disk but NOT activated — "
-             "previous Plymouth renderer policy could not be saved")
+        info(tr('Theme files left on disk but NOT activated — previous Plymouth renderer policy could not be saved'))
         return
     use_simpledrm = plymouth_use_simpledrm()
     if not _set_plymouthd_simpledrm(use_simpledrm):
-        info("Theme files left on disk but NOT activated — "
-             "Plymouth renderer policy could not be applied")
+        info(tr('Theme files left on disk but NOT activated — Plymouth renderer policy could not be applied'))
         return
 
     if not _activate(THEME_NAME):
@@ -441,16 +461,15 @@ def install() -> None:
         # the fallback is the universal bgrt.
         snapshot = _read_previous()
         _restore_previous_simpledrm()
-        warn(f"attempting rollback to {snapshot}")
+        warn(tr('attempting rollback to {snapshot}', snapshot=snapshot))
         _activate(snapshot)
         return
 
-    ok("Boot splash activated")
+    ok(tr('Boot splash activated'))
     if use_simpledrm:
-        ok("Forced UseSimpledrm=true (keeps the shutdown splash full-size)")
+        ok(tr('Forced UseSimpledrm=true (keeps the shutdown splash full-size)'))
     else:
-        ok("Set UseSimpledrm=0 for this distro "
-           "(avoids the boot framebuffer jump)")
+        ok(tr('Set UseSimpledrm=0 for this distro (avoids the boot framebuffer jump)'))
 
     splash_missing, mkinitcpio_missing_hook = _check_prereqs()
 
@@ -459,49 +478,32 @@ def install() -> None:
     grub_active = _grub_is_active_bootloader()
     if splash_missing and _grub_auto_patch_enabled() and grub_active:
         if _patch_grub_add_splash():
-            ok("Added 'splash' to GRUB_CMDLINE_LINUX_DEFAULT")
+            ok(tr("Added 'splash' to GRUB_CMDLINE_LINUX_DEFAULT"))
             if _regenerate_grub_config():
-                ok("Regenerated bootloader config")
+                ok(tr('Regenerated bootloader config'))
                 splash_missing = False  # remediation succeeded
             else:
-                warn("could not regenerate bootloader config — run "
-                     "grub-mkconfig manually before next reboot")
+                warn(tr('could not regenerate bootloader config — run grub-mkconfig manually before next reboot'))
 
     if splash_missing or mkinitcpio_missing_hook:
-        warn("boot splash files are installed, but the splash will NOT "
-             "appear at next boot until you fix the items below:")
+        warn(tr('boot splash files are installed, but the splash will NOT appear at next boot until you fix the items below:'))
         if splash_missing:
             if grub_active:
                 # User opted out or _patch_grub_add_splash() refused.
-                warn("kernel cmdline missing 'splash' — add it to "
-                     "GRUB_CMDLINE_LINUX_DEFAULT in /etc/default/grub, "
-                     "then run: sudo grub-mkconfig -o /boot/grub/grub.cfg "
-                     "(or re-run the installer without "
-                     "MTTKDE_NO_GRUB_MODIFY=1)")
+                warn(tr("kernel cmdline missing 'splash' — add it to GRUB_CMDLINE_LINUX_DEFAULT in /etc/default/grub, then run: sudo grub-mkconfig -o /boot/grub/grub.cfg (or re-run the installer without MTTKDE_NO_GRUB_MODIFY=1)"))
             elif GRUB_DEFAULT.is_file():
                 # Leftover /etc/default/grub, no regen binary — a different
                 # bootloader is active.
-                warn("kernel cmdline missing 'splash'. Found a leftover "
-                     "/etc/default/grub but no grub-mkconfig / "
-                     "grub2-mkconfig on PATH — your active bootloader is "
-                     "likely systemd-boot / Limine / rEFInd. Edit the "
-                     "appropriate loader config manually (systemd-boot: "
-                     "/boot/loader/entries/*.conf, limine: "
-                     "/boot/limine.conf, rEFInd: /boot/EFI/refind/"
-                     "refind.conf).")
+                warn(tr("kernel cmdline missing 'splash'. Found a leftover /etc/default/grub but no grub-mkconfig / grub2-mkconfig on PATH — your active bootloader is likely systemd-boot / Limine / rEFInd. Edit the appropriate loader config manually (systemd-boot: /boot/loader/entries/*.conf, limine: /boot/limine.conf, rEFInd: /boot/EFI/refind/refind.conf)."))
             else:
-                warn("kernel cmdline missing 'splash' — add it to your "
-                     "bootloader configuration (systemd-boot: "
-                     "/boot/loader/entries/*.conf, limine: "
-                     "/boot/limine.conf)")
+                warn(tr("kernel cmdline missing 'splash' — add it to your bootloader configuration (systemd-boot: /boot/loader/entries/*.conf, limine: /boot/limine.conf)"))
         if mkinitcpio_missing_hook:
-            warn("/etc/mkinitcpio.conf HOOKS line is missing 'plymouth' "
-                 "— add it after 'udev' (or 'systemd' on systemd-init) "
-                 "and BEFORE 'encrypt'/'filesystems', then run: "
-                 "sudo mkinitcpio -P")
+            warn(tr("/etc/mkinitcpio.conf HOOKS line is missing 'plymouth' — add it after 'udev' (or 'systemd' on systemd-init) and BEFORE 'encrypt'/'filesystems', then run: sudo mkinitcpio -P"))
     else:
-        info(f"Next reboot will show the {THEME_NAME} splash.")
-    info(f"Rollback: sudo {PLYMOUTH_BIN} -R $(cat {PREV_THEME_FILE})")
+        info(tr('Next reboot will show the {THEME_NAME} splash.', THEME_NAME=THEME_NAME))
+    rollback = " && ".join("sudo " + shlex.join(command)
+                           for command in plymouth_activation_commands(_read_previous()))
+    info(tr('Rollback: {command}', command=rollback))
 
 
 def uninstall() -> None:
@@ -511,17 +513,33 @@ def uninstall() -> None:
     # the initramfs.
     simpledrm_restored = _restore_previous_simpledrm()
     if simpledrm_restored:
-        ok("Previous UseSimpledrm setting restored")
+        ok(tr('Previous UseSimpledrm setting restored'))
 
-    if have(PLYMOUTH_BIN):
+    if all(have(tool) for tool in plymouth_tools()):
         if _activate(previous):
-            ok(f"Boot splash restored to {previous}")
+            ok(tr('Boot splash restored to {previous}', previous=previous))
         else:
-            warn(f"could not restore boot splash to {previous} — continuing cleanup")
+            if plymouth_uses_alternatives():
+                return
+            warn(tr('could not restore boot splash to {previous} — continuing cleanup', previous=previous))
     else:
-        warn(f"{PLYMOUTH_BIN} not available — skipping splash restore")
+        message = tr('{PLYMOUTH_BIN} not available — skipping splash restore', PLYMOUTH_BIN=", ".join(plymouth_tools()))
+        if plymouth_uses_alternatives():
+            fail(message)
+            return
+        warn(message)
 
-    sudo_remove(DEST, "Boot splash files")
+    for command in plymouth_cleanup_commands(THEME_NAME):
+        try:
+            result = _run_as_root(command, ACTIVATE_TIMEOUT_SEC)
+        except (OSError, subprocess.TimeoutExpired) as exc:
+            fail(f"{' '.join(command)}: {exc}")
+            return
+        if result.returncode:
+            fail(f"{' '.join(command)}: {result.stderr.strip()}")
+            return
+
+    sudo_remove(DEST, tr('Boot splash files'))
 
     try:
         if PREV_THEME_FILE.is_file():
@@ -530,10 +548,10 @@ def uninstall() -> None:
         if simpledrm_restored and previous_simpledrm.is_file():
             previous_simpledrm.unlink()
         if simpledrm_restored:
-            ok("Plymouth state cleared")
+            ok(tr('Plymouth state cleared'))
         else:
-            ok("Previous Plymouth theme state cleared")
+            ok(tr('Previous Plymouth theme state cleared'))
     except OSError:
         pass
     if not simpledrm_restored:
-        warn("Plymouth renderer recovery state retained because restoration failed")
+        warn(tr('Plymouth renderer recovery state retained because restoration failed'))

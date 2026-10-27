@@ -1,3 +1,4 @@
+from localization import tr
 import os
 import re
 import shutil
@@ -247,13 +248,13 @@ def _run_theme_switch_install(switch: Path) -> int | None:
         # and emits a precise recovery warning if KWin still cannot reload one.
         # Do not hide that warning behind the installer's captured subprocess.
         for line in (result.stderr or "").splitlines():
-            if "your KWin effect" in line:
+            if line.strip():
                 warn(line.removeprefix("theme apply: "))
         return result.returncode
     except subprocess.TimeoutExpired:
         return None
     except OSError as exc:
-        warn(f"theme switch could not run: {exc}")
+        warn(tr('theme switch could not run: {exc}', exc=exc))
         return None
 
 
@@ -299,10 +300,9 @@ def _flush_caches() -> None:
     _refresh_desktop_database()
     if have("kbuildsycoca6") and not _run_live(
             ["kbuildsycoca6", "--noincremental"]):
-        warn("KDE application cache rebuild failed — app launchers may be "
-             "unavailable until the next successful rebuild")
+        warn(tr('KDE application cache rebuild failed — app launchers may be unavailable until the next successful rebuild'))
         return
-    ok("Caches flushed")
+    ok(tr('Caches flushed'))
 
 
 def _live_plasma_ready_quick() -> bool:
@@ -323,13 +323,21 @@ def _live_plasma_ready_quick() -> bool:
 
 
 def install() -> None:
+    from installer_choices import selected
+    choices = selected()
+    for choice, plugin in (("acrylic_glass", "liquidglassEnabled"),
+                           ("rounded_corners", "shapecornersEnabled")):
+        if choices and not choices[choice]:
+            if not kw_write("--file", "kwinrc", "--group", "Plugins", "--key", plugin, "false"):
+                fail("Could not disable the selected window effect")
+                return
     if have("kwriteconfig6") and feat_enabled("FONTS"):
         for key, val in _FONTS_INSTALL.items():
             kw_write("--file", "kdeglobals", "--group", "General",
                      "--key", key, val)
         kw_write("--file", "kdeglobals", "--group", "WM",
                  "--key", "activeFont", "SF Pro Display,11,-1,5,63,0,0,0,0,0")
-        ok("Fonts installed")
+        ok(tr('Fonts installed'))
 
     _flush_caches()
 
@@ -339,19 +347,18 @@ def install() -> None:
         # QML teardown races); the final Plasma restart loads theme from config.
         rc = _run_theme_switch_install(switch)
         if rc == 0:
-            ok(f"Theme applied ({theme_mode()})")
+            ok(tr('Theme applied ({value1})', value1=tr(theme_mode().capitalize())))
         elif rc is None:
-            warn("Theme switch did not finish, config may be partial")
+            warn(tr('Theme switch did not finish, config may be partial'))
         else:
-            warn(f"Theme switch failed (exit {rc})")
+            warn(tr('Theme switch failed (exit {rc})', rc=rc))
     else:
         # A restored backup or stray chmod can leave the switcher
         # non-executable; a silent skip would show all-green output with
         # the theme never live-applied.
-        warn(f"Theme switcher missing or not executable ({switch}) — "
-             "theme not live-applied")
+        warn(tr('Theme switcher missing or not executable ({switch}) — theme not live-applied', switch=switch))
 
-    print("  …  Reconfiguring KWin", end="\r", flush=True)
+    print(tr('  …  Reconfiguring KWin'), end="\r", flush=True)
     if feat_enabled("ACRYLIC_GLASS"):
         qdbus_call("org.kde.KWin", "/Effects",
                    "org.kde.kwin.Effects.loadEffect", "liquidglass")
@@ -362,7 +369,7 @@ def install() -> None:
     # dropped again by the very next call.
     reconfigure_kwin_preserving_foreign_effects()
     time.sleep(3)
-    ok("KWin reconfigured ")
+    ok(tr('KWin reconfigured '))
 
 def _run_quick(cmd: list[str], *, capture_output: bool = False):
     try:
@@ -443,7 +450,7 @@ def _start_plasma(systemd: bool) -> bool:
 
 def restart_plasma() -> None:
 
-    print("  …  Restarting Plasma", end="\r", flush=True)
+    print(tr('  …  Restarting Plasma'), end="\r", flush=True)
     # let panels created by the layout script fully initialise
     time.sleep(6)
 
@@ -499,16 +506,16 @@ def restart_plasma() -> None:
         # Refresh their masks only after the replacement shell is running.
         if feat_enabled("ACRYLIC_GLASS"):
             refresh_acrylic_glass()
-        ok("Plasma restarted ")
+        ok(tr('Plasma restarted '))
     else:
-        warn("Plasma restart did not produce a running shell")
+        warn(tr('Plasma restart did not produce a running shell'))
 
 def _scrub_kdedefaults() -> None:
     # The scrub lives in a bundled kconf_update helper; run just
     # that one here — uninstall must not touch appletsrc or install anything.
     from steps.kconf_update import run_migration
     run_migration("mac-tahoe-scrub-kdedefaults.sh")
-    ok("kdedefaults cleaned")
+    ok(tr('kdedefaults cleaned'))
 
 
 def _record_wallpaper_reset(snapshot: list[dict[str, object]]) -> None:
@@ -519,13 +526,13 @@ def _record_wallpaper_reset(snapshot: list[dict[str, object]]) -> None:
     if path.exists() or path.is_symlink():
         # Switcher teardown deliberately retains this file when schedules or
         # running processes could not be neutralized. Do not undo that guard.
-        warn("Wallpaper reset ownership retained: switcher state was not cleared")
+        warn(tr('Wallpaper reset ownership retained: switcher state was not cleared'))
         return
     state = _empty_wallpaper_state()
     state["initialized"] = True
     state["last_applied"] = snapshot
     if not snapshot or not _save_wallpaper_state(state):
-        warn("Wallpaper reset ownership could not be recorded")
+        warn(tr('Wallpaper reset ownership could not be recorded'))
 
 
 def _reset_wallpaper(*, live_ready: bool, native_reset: bool) -> None:
@@ -535,8 +542,7 @@ def _reset_wallpaper(*, live_ready: bool, native_reset: bool) -> None:
         declared = None
     candidates = _wallpaper_reset_candidates(_BREEZE_LOOK_AND_FEEL)
     if not candidates:
-        warn("Wallpaper reset failed: Breeze declared no usable wallpaper "
-             "and no installed fallback package was found")
+        warn(tr('Wallpaper reset failed: Breeze declared no usable wallpaper and no installed fallback package was found'))
         return
 
     current: list[dict[str, object]] | None = None
@@ -548,7 +554,7 @@ def _reset_wallpaper(*, live_ready: bool, native_reset: bool) -> None:
         expected = (declared,) if declared is not None else candidates
         if _snapshot_uses_candidates(current, expected):
             _record_wallpaper_reset(current)
-            ok("Wallpaper reset")
+            ok(tr('Wallpaper reset'))
             return
 
     # Native single-purpose helper. Try every verified path because a package
@@ -562,7 +568,7 @@ def _reset_wallpaper(*, live_ready: bool, native_reset: bool) -> None:
             current = _current_wallpapers()
             if _snapshot_uses_candidates(current, (wallpaper,)):
                 _record_wallpaper_reset(current)
-                ok("Wallpaper reset")
+                ok(tr('Wallpaper reset'))
                 return
 
     # DBus/evaluateScript when the shell is live, then kwriteconfig6 against
@@ -580,11 +586,10 @@ def _reset_wallpaper(*, live_ready: bool, native_reset: bool) -> None:
         )
         if reset:
             _record_wallpaper_reset(snapshot)
-            ok("Wallpaper reset")
+            ok(tr('Wallpaper reset'))
             return
 
-    warn("Wallpaper reset failed after native, path, DBus, and on-disk "
-         "fallbacks")
+    warn(tr('Wallpaper reset failed after native, path, DBus, and on-disk fallbacks'))
 
 
 def uninstall() -> None:
@@ -614,7 +619,7 @@ def uninstall() -> None:
                          "--key", key, val)
             kw_write("--file", "kdeglobals", "--group", "WM",
                      "--key", "activeFont", "Noto Sans,10,-1,5,50,0,0,0,0,0")
-            ok("Fonts reset")
+            ok(tr('Fonts reset'))
         if feat_enabled("CURSORS"):
             cursor_reset = (
                 have("plasma-apply-cursortheme")
@@ -626,9 +631,9 @@ def uninstall() -> None:
                     "--key", "cursorTheme", "breeze_cursors",
                 )
             if cursor_reset:
-                ok("Cursor reset")
+                ok(tr('Cursor reset'))
             else:
-                warn("Cursor reset failed")
+                warn(tr('Cursor reset failed'))
         # Reset icons UNCONDITIONALLY (not gated on the ICONS feature): the
         # MacTahoe icon dirs are deleted later, so point config at breeze first.
         changeicons = kde_libexec_binary("plasma-changeicons")
@@ -642,13 +647,13 @@ def uninstall() -> None:
                 "--key", "Theme", "breeze",
             )
         if icons_reset:
-            ok("Icons reset")
+            ok(tr('Icons reset'))
         else:
-            warn("Icons reset failed")
+            warn(tr('Icons reset failed'))
         if reset_kde_color_scheme_config("BreezeLight"):
-            ok("Color scheme reset")
+            ok(tr('Color scheme reset'))
         else:
-            warn("Color scheme reset failed")
+            warn(tr('Color scheme reset failed'))
 
     _flush_caches()
 
@@ -658,9 +663,9 @@ def uninstall() -> None:
     if live_ready:
         native_laf_reset = _apply_lookandfeel_live(_BREEZE_LOOK_AND_FEEL)
         if native_laf_reset:
-            ok("Look-and-feel applied live")
+            ok(tr('Look-and-feel applied live'))
         else:
-            warn("Live Breeze look-and-feel apply skipped")
+            warn(tr('Live Breeze look-and-feel apply skipped'))
 
     if feat_enabled("WALLPAPERS"):
         _reset_wallpaper(
@@ -672,9 +677,9 @@ def uninstall() -> None:
     # LAF switch; cycling widgetStyle forces re-instantiation without restart.
     if live_ready:
         if not cycle_widget_style_live("Breeze"):
-            warn("Widget style cycle failed")
+            warn(tr('Widget style cycle failed'))
 
     if live_ready and qdbus_cmd() is not None:
         qdbus_call("org.kde.KWin", "/KWin", "org.kde.KWin.reconfigure")
         time.sleep(2)
-        ok("KWin reconfigured")
+        ok(tr('KWin reconfigured'))

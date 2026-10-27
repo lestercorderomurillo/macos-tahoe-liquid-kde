@@ -43,18 +43,21 @@ def test_patch_applies_to_pinned_release_and_is_idempotent(tmp_path):
     first = {p: p.read_bytes() for p in source.rglob('*') if p.is_file()}
     apply(source)
     assert all(p.read_bytes() == data for p, data in first.items())
-    shader = (source / 'src/Shader.cpp').read_text()
-    assert 'ShaderTrait::RoundedCorners' in shader
-    assert 'QT_VERSION_CHECK(6, 7, 90)' in shader
-    variables = (source / 'src/shaders/variables.glsl').read_text()
-    assert 'dFdy(position0.y)' in variables
-    assert 'yInverted ? uv.y : 1.0 - uv.y' in variables
-    # A damaged second file must not partially patch the first.
+    # Uninstall removes exactly the locales the pinned release installs.
+    assert {p.parent.name for p in source.glob('po/*/kcmcorners.po')} == set(rounded.LOCALES)
+    # The 6.8 orientation detection now comes from upstream itself (#103).
+    assert 'ShaderTrait::RoundedCorners' in (source / 'src/Shader.cpp').read_text()
+    assert 'dFdy(position0.y)' in (source / 'src/shaders/variables.glsl').read_text()
+    effect = (source / 'src/Effect.cpp').read_text()
+    assert effect.count('_mttkde_corner_shape_v1') == 3
+    assert 'kwindow->isDesktop()' in (source / 'src/WindowManager.cpp').read_text()
+    assert '!w->isDesktop() && !w->isDock()' in (source / 'src/Window.cpp').read_text()
+    # A damaged later file must not partially patch an earlier one.
     shutil.rmtree(source)
     with tarfile.open(archive) as tar:
         tar.extractall(tmp_path, filter='data')
-    (source / 'src/shaders/shapecorners_qt6_core.frag').write_text('unexpected')
-    original = (source / 'src/Shader.cpp').read_bytes()
+    (source / 'src/Effect.cpp').write_text('unexpected')
+    original = (source / 'src/WindowManager.cpp').read_bytes()
     with pytest.raises(ValueError):
         apply(source)
-    assert (source / 'src/Shader.cpp').read_bytes() == original
+    assert (source / 'src/WindowManager.cpp').read_bytes() == original

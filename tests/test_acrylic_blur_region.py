@@ -173,6 +173,25 @@ int main() {
     subprocess.run([str(binary)], check=True, capture_output=True, timeout=10)
 
 
+def test_x11_plasma_popup_gets_alpha_visual_fallback_blur(repo):
+    source = (repo / "src/offline/kwin-effects/acrylic-glass/src/effect.cpp").read_text()
+    helper = source.split("static bool hasAlphaVisual(", 1)[1].split("#endif", 1)[0]
+    fallback = source.split(
+        "// Plasma's translucent menus do not publish the legacy blur-region",
+        1,
+    )[1].split("#endif", 1)[0]
+    assert 'resourceClass() == QStringLiteral("plasmashell")' in fallback
+    assert "w->isMenu()" in fallback
+    assert "w->isDropdownMenu()" in fallback
+    assert "w->isPopupMenu()" in fallback
+    assert "w->isAppletPopup()" in fallback
+    assert "pictFormats.data->direct.alpha_mask != 0" in helper
+    assert "cache.insert(visual, alphaVisual)" in helper
+    assert "hasAlphaVisual(effects->xcbConnection(), attributes->visual)" in fallback
+    assert "legacyBlurPropertyMissing && !content.has_value()" in fallback
+    assert "content = Region(w->contentsRect().toRect())" in fallback
+
+
 def test_real_svg_capsule_radius_at_fractional_scales(repo, tmp_path):
     if not shutil.which('cmake') or not shutil.which('c++'):
         pytest.skip('CMake and C++ required')

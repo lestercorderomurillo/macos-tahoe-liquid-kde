@@ -2,6 +2,8 @@
 touches disk. Nine fail-fast checks, in order, all visible to the user
 (see run_preflight; documented in AGENTS.md)."""
 
+from localization import tr
+
 import json
 import os
 import re
@@ -23,11 +25,11 @@ from utils import run_user
 
 def _check_sudo_escalation() -> bool:
     if os.getuid() != 0:
-        fail("real UID is not root — sudo not active (run: sudo ./install)")
+        fail(tr('real UID is not root — sudo not active (run: sudo ./install)'))
         return False
 
     if os.geteuid() == 0:
-        warn("running as effective root — privilege drop did not happen")
+        warn(tr('running as effective root — privilege drop did not happen'))
 
     from steps._helpers import _as_root
 
@@ -38,7 +40,7 @@ def _check_sudo_escalation() -> bool:
         return False
 
     probe = probe_dir / f".mttkde-preflight-{os.getpid()}"
-    print(f"  probe path: {probe}")
+    print(tr('  probe path: {probe}', probe=probe))
     try:
         with _as_root():
             probe_dir.mkdir(parents=True, exist_ok=True)
@@ -46,15 +48,15 @@ def _check_sudo_escalation() -> bool:
             content = probe.read_text()
             probe.unlink()
         if content != "ok\n":
-            fail(f"sudo hop wrote {content!r}, expected 'ok\\n'")
+            fail(tr("sudo hop wrote {content!r}, expected 'ok\\n'", content=content))
             return False
     except OSError as exc:
-        fail(f"sudo hop failed ({exc.__class__.__name__}: {exc})")
+        fail(tr('sudo hop failed ({value1}: {exc})', value1=exc.__class__.__name__, exc=exc))
         return False
     except PermissionError as exc:
-        fail(f"sudo hop denied ({exc})")
+        fail(tr('sudo hop denied ({exc})', exc=exc))
         return False
-    ok(f"sudo hop ok — wrote, read, removed {probe.name}")
+    ok(tr('sudo hop ok — wrote, read, removed {value1}', value1=probe.name))
     return True
 
 
@@ -166,15 +168,14 @@ def _check_paths() -> bool:
     try:
         dests = _enumerate_destinations()
     except Qt6PathsMissing:
-        fail("Qt6 installation paths not found — cannot verify install "
-             f"destinations. Install qmake6 with: {qt6_install_hint()}")
+        fail(tr('Qt6 installation paths not found — cannot verify install destinations. Install qmake6 with: {value1}', value1=qt6_install_hint()))
         return False
     for label, path in dests:
         reason = _validate_path(path)
         if reason is None:
-            ok(f"{label}: {path}")
+            ok(f"{tr(label)}: {path}")
         else:
-            fail(f"{label}: {path} ({reason})")
+            fail(f"{tr(label)}: {path} ({tr(reason)})")
             all_ok = False
     return all_ok
 
@@ -206,16 +207,15 @@ def _check_qt_paths() -> bool:
         try:
             dest.relative_to(expected_root)
         except ValueError:
-            fail(f"{label}: {dest} is NOT under qmake6's {expected_root} — "
-                 f"hardcoded libdir slipped past the distro layer")
+            fail(tr("{label}: {dest} is NOT under qmake6's {expected_root} — hardcoded libdir slipped past the distro layer", label=tr(label), dest=dest, expected_root=expected_root))
             cross_ok = False
     if not cross_ok:
         return False
 
-    print(f"  Qt plugins: {plugins}")
-    print(f"  Qt qml:     {qml}")
-    ok(f"Qt plugin path discovered: {plugins}")
-    ok(f"Qt QML path discovered: {qml}")
+    print(tr('  Qt plugins: {plugins}', plugins=plugins))
+    print(tr('  Qt qml:     {qml}', qml=qml))
+    ok(tr('Qt plugin path discovered: {plugins}', plugins=plugins))
+    ok(tr('Qt QML path discovered: {qml}', qml=qml))
     return True
 
 
@@ -242,19 +242,19 @@ def _probe_plasma_version() -> tuple[re.Match[str] | None, str | None]:
                 timeout=10,
             )
         except subprocess.TimeoutExpired:
-            last_error = f"{label} timed out"
+            last_error = tr('{label} timed out', label=label)
             continue
         except OSError as exc:
-            last_error = f"{label} failed: {exc}"
+            last_error = tr('{label} failed: {exc}', label=label, exc=exc)
             continue
         out = (res.stdout or res.stderr or "").strip()
         if not out:
-            last_error = f"{label} returned nothing"
+            last_error = tr('{label} returned nothing', label=label)
             continue
         match = _PLASMA_VERSION_RE.search(out)
         if match:
             return match, label
-        last_error = f"{label} output unparseable: {out!r}"
+        last_error = tr('{label} output unparseable: {out!r}', label=label, out=out)
 
     for cmd in plasma_version_probe_cmds():
         try:
@@ -282,23 +282,21 @@ def _check_plasma_version() -> bool:
     run_user: real UID 0 + effective SUDO_USER trips Qt6's setuid guard
     (``getuid() != geteuid()`` aborts before parsing any args)."""
     if not shutil.which("plasmashell"):
-        fail("plasmashell not on PATH — KDE Plasma is not installed")
+        fail(tr('plasmashell not on PATH — KDE Plasma is not installed'))
         return False
     match, source = _probe_plasma_version()
     if not match:
-        fail(source or "could not detect Plasma version")
+        fail(source or tr("could not detect Plasma version"))
         return False
     major = int(match.group(1))
     minor = int(match.group(2))
-    print(f"  plasmashell {major}.{minor}")
+    print(tr('  plasmashell {major}.{minor}', major=major, minor=minor))
     if source and source != "plasmashell --version":
-        note(f"Plasma version source: {source}")
+        note(tr('Plasma version source: {source}', source=tr(source)))
     if (major, minor) < _MIN_PLASMA:
-        fail(f"Plasma {major}.{minor} is too old — need "
-             f"{_MIN_PLASMA[0]}.{_MIN_PLASMA[1]}+ for the compiled "
-             "plasmoids to load")
+        fail(tr('Plasma {major}.{minor} is too old — need {value3}.{value4}+ for the compiled plasmoids to load', major=major, minor=minor, value3=_MIN_PLASMA[0], value4=_MIN_PLASMA[1]))
         return False
-    ok(f"Plasma {major}.{minor} meets the {_MIN_PLASMA[0]}.{_MIN_PLASMA[1]}+ minimum")
+    ok(tr('Plasma {major}.{minor} meets the {value3}.{value4}+ minimum', major=major, minor=minor, value3=_MIN_PLASMA[0], value4=_MIN_PLASMA[1]))
     return True
 
 
@@ -313,11 +311,9 @@ def _check_kde_config_tools() -> bool:
         if not shutil.which(binary):
             missing.append(binary)
     if missing:
-        fail(f"missing: {', '.join(missing)} — install plasma-workspace "
-             "(or your distro's equivalent — same package that brings "
-             "kded6 / plasmashell)")
+        fail(tr("missing: {value1} — install plasma-workspace (or your distro's equivalent — same package that brings kded6 / plasmashell)", value1=', '.join(missing)))
         return False
-    ok("kwriteconfig6 + kreadconfig6 present")
+    ok(tr('kwriteconfig6 + kreadconfig6 present'))
     return True
 
 
@@ -334,13 +330,11 @@ def _check_dbus_session() -> bool:
         # the address from that socket without assuming an init system).
         runtime_dir = os.environ.get("XDG_RUNTIME_DIR")
         if runtime_dir and Path(runtime_dir, "bus").exists():
-            ok("DBus session bus reachable via XDG_RUNTIME_DIR/bus")
+            ok(tr('DBus session bus reachable via XDG_RUNTIME_DIR/bus'))
             return True
-        fail("DBus session bus not reachable — DBUS_SESSION_BUS_ADDRESS "
-             "is unset and $XDG_RUNTIME_DIR/bus doesn't exist. Live "
-             "theme apply will fail; log out, log back in, then re-run.")
+        fail(tr("DBus session bus not reachable — DBUS_SESSION_BUS_ADDRESS is unset and $XDG_RUNTIME_DIR/bus doesn't exist. Live theme apply will fail; log out, log back in, then re-run."))
         return False
-    ok(f"DBus session bus reachable ({addr.split(',')[0]})")
+    ok(tr('DBus session bus reachable ({value1})', value1=addr.split(',')[0]))
     return True
 
 
@@ -351,8 +345,7 @@ def _check_kded_running() -> bool:
     """kded6 hosts the live-apply services; when it's down, live
     ``plasma-apply-lookandfeel`` calls succeed but silently no-op."""
     if not shutil.which("pgrep"):
-        warn("pgrep not on PATH — skipping kded6 health check "
-             "(install procps-ng to enable)")
+        warn(tr('pgrep not on PATH — skipping kded6 health check (install procps-ng to enable)'))
         return True
     try:
         res = subprocess.run(
@@ -360,14 +353,12 @@ def _check_kded_running() -> bool:
             check=False, capture_output=True, text=True, timeout=5,
         )
     except (subprocess.TimeoutExpired, OSError) as exc:
-        warn(f"could not probe kded6 ({exc}) — skipping")
+        warn(tr('could not probe kded6 ({exc}) — skipping', exc=exc))
         return True
     if res.returncode != 0:
-        warn("kded6 is not running — live theme apply may silently "
-             "no-op. After install: `kquitapp6 kded6 && kded6 &` (or "
-             "log out and back in).")
+        warn(tr('kded6 is not running — live theme apply may silently no-op. After install: `kquitapp6 kded6 && kded6 &` (or log out and back in).'))
         return True
-    ok("kded6 is running")
+    ok(tr('kded6 is running'))
     return True
 
 
@@ -386,7 +377,7 @@ def _check_disk_space() -> bool:
         qt_dir = qt6_plugins_dir()
     except Qt6PathsMissing:
         # Step 3 already failed with a hint; nothing useful to add.
-        warn("disk space probe skipped — Qt6 plugin dir unknown")
+        warn(tr('disk space probe skipped — Qt6 plugin dir unknown'))
         return True
 
     # Walk up to the nearest existing parent (leaf may not exist yet).
@@ -396,9 +387,9 @@ def _check_disk_space() -> bool:
     try:
         usr_free_mb = shutil.disk_usage(str(probe)).free // (1024 * 1024)
     except OSError as exc:
-        warn(f"could not stat {probe} for free space ({exc}) — skipping")
+        warn(tr('could not stat {probe} for free space ({exc}) — skipping', probe=probe, exc=exc))
         return True
-    print(f"  free on {probe}: {usr_free_mb} MB")
+    print(tr('  free on {probe}: {usr_free_mb} MB', probe=probe, usr_free_mb=usr_free_mb))
 
     home_probe = _home()
     while not home_probe.exists() and home_probe != home_probe.parent:
@@ -406,23 +397,19 @@ def _check_disk_space() -> bool:
     try:
         home_free_mb = shutil.disk_usage(str(home_probe)).free // (1024 * 1024)
     except OSError as exc:
-        warn(f"could not stat {home_probe} for free space ({exc}) — skipping")
+        warn(tr('could not stat {home_probe} for free space ({exc}) — skipping', home_probe=home_probe, exc=exc))
         return True
-    print(f"  free on {home_probe}: {home_free_mb} MB")
+    print(tr('  free on {home_probe}: {home_free_mb} MB', home_probe=home_probe, home_free_mb=home_free_mb))
 
     all_ok = True
     if usr_free_mb < _MIN_FREE_USR_MB:
-        fail(f"only {usr_free_mb} MB free on {probe} — need at least "
-             f"{_MIN_FREE_USR_MB} MB for compiled plasmoids + KWin effect")
+        fail(tr('only {usr_free_mb} MB free on {probe} — need at least {_MIN_FREE_USR_MB} MB for compiled plasmoids + KWin effect', usr_free_mb=usr_free_mb, probe=probe, _MIN_FREE_USR_MB=_MIN_FREE_USR_MB))
         all_ok = False
     if home_free_mb < _MIN_FREE_HOME_MB:
-        fail(f"only {home_free_mb} MB free on {home_probe} — need at "
-             f"least {_MIN_FREE_HOME_MB} MB for icons / wallpapers / "
-             "themes")
+        fail(tr('only {home_free_mb} MB free on {home_probe} — need at least {_MIN_FREE_HOME_MB} MB for icons / wallpapers / themes', home_free_mb=home_free_mb, home_probe=home_probe, _MIN_FREE_HOME_MB=_MIN_FREE_HOME_MB))
         all_ok = False
     if all_ok:
-        ok(f"disk space OK ({usr_free_mb} MB on system, "
-           f"{home_free_mb} MB on $HOME)")
+        ok(tr('disk space OK ({usr_free_mb} MB on system, {home_free_mb} MB on $HOME)', usr_free_mb=usr_free_mb, home_free_mb=home_free_mb))
     return all_ok
 
 
@@ -444,7 +431,7 @@ def _read_kplugin_id(metadata: Path) -> str | None:
 
 def _check_plasmoid_ids() -> bool:
     if not _PLASMOID_DIR.is_dir():
-        warn(f"plasmoids dir missing: {_PLASMOID_DIR}")
+        warn(tr('plasmoids dir missing: {_PLASMOID_DIR}', _PLASMOID_DIR=_PLASMOID_DIR))
         return True
 
     layout_text = ""
@@ -465,22 +452,21 @@ def _check_plasmoid_ids() -> bool:
         dir_name = plasmoid_dir.name
 
         if plugin_id is None:
-            fail(f"{dir_name}: metadata.json missing KPlugin.Id")
+            fail(tr('{dir_name}: metadata.json missing KPlugin.Id', dir_name=dir_name))
             all_ok = False
             continue
 
         if plugin_id != dir_name:
-            fail(f"{dir_name}: dir name does not match metadata.Id "
-                 f"({plugin_id})")
+            fail(tr('{dir_name}: dir name does not match metadata.Id ({plugin_id})', dir_name=dir_name, plugin_id=plugin_id))
             all_ok = False
             continue
 
-        ok(f"{dir_name}: Id={plugin_id}")
+        ok(tr('{dir_name}: Id={plugin_id}', dir_name=dir_name, plugin_id=plugin_id))
 
         if layout_text and plugin_id not in layout_text:
             # Optional / user-placed plasmoids aren't in the layout —
             # note, don't fail.
-            print(f"       └ not referenced in layout JS (optional)")
+            print(tr('       └ not referenced in layout JS (optional)'))
     return all_ok
 
 
@@ -488,47 +474,46 @@ def run_preflight(op: str = "install") -> bool:
     """Returns True only if every hard-fail check passes (kded6 and
     missing-path disk probes are soft — warn only). The plasmoid ID
     check is skipped on uninstall: an ID drift can't ship from there."""
-    step("Preflight")
-    note("Verifies sudo, paths, Qt6, KDE version, config tools, DBus, "
-         "kded6, disk space, plasmoid IDs")
+    step('Preflight')
+    note(tr('Verifies sudo, paths, Qt6, KDE version, config tools, DBus, kded6, disk space, plasmoid IDs'))
 
     total = 9 if op == "install" else 8
     n = 0
 
-    n += 1; print(f"  ── {n}/{total} sudo escalation hop ───")
+    n += 1; print(tr('  ── {n}/{total} sudo escalation hop ───', n=n, total=total))
     sudo_ok = _check_sudo_escalation()
     print()
 
-    n += 1; print(f"  ── {n}/{total} destination paths ─────")
+    n += 1; print(tr('  ── {n}/{total} destination paths ─────', n=n, total=total))
     paths_ok = _check_paths()
     print()
 
-    n += 1; print(f"  ── {n}/{total} Qt6 plugin search ─────")
+    n += 1; print(tr('  ── {n}/{total} Qt6 plugin search ─────', n=n, total=total))
     qt_ok = _check_qt_paths()
     print()
 
-    n += 1; print(f"  ── {n}/{total} KDE Plasma version ────")
+    n += 1; print(tr('  ── {n}/{total} KDE Plasma version ────', n=n, total=total))
     plasma_ok = _check_plasma_version()
     print()
 
-    n += 1; print(f"  ── {n}/{total} KDE config tools ──────")
+    n += 1; print(tr('  ── {n}/{total} KDE config tools ──────', n=n, total=total))
     kde_tools_ok = _check_kde_config_tools()
     print()
 
-    n += 1; print(f"  ── {n}/{total} DBus session bus ──────")
+    n += 1; print(tr('  ── {n}/{total} DBus session bus ──────', n=n, total=total))
     dbus_ok = _check_dbus_session()
     print()
 
-    n += 1; print(f"  ── {n}/{total} kded6 health (soft) ───")
+    n += 1; print(tr('  ── {n}/{total} kded6 health (soft) ───', n=n, total=total))
     _check_kded_running()  # soft — never blocks install
     print()
 
-    n += 1; print(f"  ── {n}/{total} disk space ────────────")
+    n += 1; print(tr('  ── {n}/{total} disk space ────────────', n=n, total=total))
     disk_ok = _check_disk_space()
     print()
 
     if op == "install":
-        n += 1; print(f"  ── {n}/{total} plasmoid ID consistency ─")
+        n += 1; print(tr('  ── {n}/{total} plasmoid ID consistency ─', n=n, total=total))
         ids_ok = _check_plasmoid_ids()
     else:
         ids_ok = True

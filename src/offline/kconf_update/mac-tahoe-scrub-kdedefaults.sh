@@ -1,8 +1,9 @@
 #!/bin/sh
 # kconf_update helper: scrub MacTahoe / Liquid leftovers from kdedefaults.
-# KF6 kconf_update runs scripts with no arguments, so argless it walks the
-# kdedefaults files under $XDG_CONFIG_HOME itself; the installer and tests
-# pass one explicit file instead. Mirrors apply._scrub_kdedefaults.
+# Cleanup is valid only inside an explicit installer/uninstaller transaction.
+# At login these values can be the active theme's only persisted defaults:
+# KConfig removes matching per-user overrides. Never scrub them at login,
+# including when an older installed .upd descriptor still invokes this helper.
 
 scrub() {
     f=$1
@@ -24,8 +25,4 @@ if [ -n "$1" ]; then
     exit 0
 fi
 
-base="${XDG_CONFIG_HOME:-$HOME/.config}/kdedefaults"
-for fn in package kdeglobals plasmarc kcminputrc kwinrc ksplashrc kscreenlockerrc; do
-    scrub "$base/$fn"
-done
 exit 0

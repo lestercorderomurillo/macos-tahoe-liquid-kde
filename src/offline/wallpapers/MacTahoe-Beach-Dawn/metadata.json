@@ -1,7 +1,7 @@
 {
     "KPlugin": {
         "Id": "MacTahoe-Beach-Dawn",
-        "Name": "Tahoe Beach \u2014 Dawn",
+        "Name": "Tahoe Beach — Dawn",
         "Description": "Lake Tahoe at dawn",
         "Authors": [
             {
@@ -12,6 +12,10 @@
         "Category": "MacTahoe Liquid KDE",
         "License": "Apple Inc. wallpapers extracted from macOS",
         "Website": "https://github.com/lester-sudo/macos-tahoe-liquid-kde",
-        "Version": "1.0"
+        "Version": "1.0",
+        "Name[pt_BR]": "Praia Tahoe — Amanhecer",
+        "Description[pt_BR]": "Lago Tahoe ao amanhecer",
+        "Name[de]": "Tahoe-Strand — Morgendämmerung",
+        "Description[de]": "Lake Tahoe im Morgengrauen"
     }
 }

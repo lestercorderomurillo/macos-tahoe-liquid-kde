@@ -6,6 +6,8 @@ plasma-apply-colorscheme (correct [Colors:*] groups + ColorSchemeHash so
 live Qt apps reload the palette); the manual [Colors:*] rewrite remains
 only as a fallback for systems without the tool."""
 
+from localization import tr
+
 import datetime as _dt
 import fcntl
 import hashlib
@@ -30,6 +32,7 @@ KVANTUM_STYLE = "kvantum"
 _PROC_ROOT = Path("/proc")
 LEGACY_REDUCED_SUFFIX = "-ReducedTransparency"
 DEFAULT_WALLPAPER = "MacTahoe"
+INSTALLER_OPTIONS = {}
 
 
 def default_wallpaper() -> str:
@@ -44,6 +47,27 @@ def default_wallpaper() -> str:
     except (OSError, ValueError):
         pass
     return DEFAULT_WALLPAPER
+
+
+def window_control_style() -> str:
+    """Use this transaction's choice or the choice baked into the switcher."""
+    options = INSTALLER_OPTIONS
+    if Path(__file__).name == "theme_switch.py" and "MTTKDE_WIZARD_OPTIONS" in os.environ:
+        try:
+            options = json.loads(os.environ.get("MTTKDE_WIZARD_OPTIONS", "{}"))
+        except ValueError:
+            options = {}
+    style = options.get("window_controls") if isinstance(options, dict) else None
+    if style in ("flat", "glassy"):
+        return style
+    return "glassy" if default_wallpaper() == "MacGoldenGate" else "flat"
+
+
+def decoration_theme(mode: str) -> str:
+    """Keep the chosen controls through manual, login and scheduled switches."""
+    variant = "Light" if mode == "light" else "Dark"
+    family = "MacGoldenGate" if window_control_style() == "glassy" else "MacTahoe"
+    return f"{family}LiquidKde-{variant}"
 
 
 def _have(cmd: str) -> bool:
@@ -156,7 +180,7 @@ def _sync_session_env_from_plasmashell() -> None:
         uid = os.getuid()
     wanted = {
         "DBUS_SESSION_BUS_ADDRESS", "DISPLAY", "WAYLAND_DISPLAY",
-        "XAUTHORITY", "XDG_CACHE_HOME", "XDG_CONFIG_HOME",
+        "XAUTHORITY", "XDG_CACHE_HOME", "XDG_CONFIG_HOME", "XDG_CONFIG_DIRS",
         "XDG_CURRENT_DESKTOP", "XDG_DATA_HOME", "XDG_RUNTIME_DIR",
         "XDG_SESSION_TYPE", "XDG_STATE_HOME",
     }
@@ -522,7 +546,15 @@ def _wallpaper_path(mode: str) -> Path | None:
     data_home = Path(os.environ.get("XDG_DATA_HOME") or
                      str(Path.home() / ".local/share"))
     base = data_home / "wallpapers"
-    auto = base / default_wallpaper()
+    choices = INSTALLER_OPTIONS
+    if choices.get("wallpaper") == "custom":
+        custom = base / "MacTahoe-Custom" / "wallpaper"
+        return custom if custom.is_file() else None
+    pairs = {"tahoe": ("MacTahoe", "MacTahoe"), "golden": ("MacGoldenGate", "MacGoldenGate"),
+             "landscape": ("MacTahoe-Landscape-Morning", "MacTahoe-Landscape-Night"),
+             "sonoma": ("MacHeritage-Sonoma", "MacHeritage-Sonoma-Horizon")}
+    pair = pairs.get(choices.get("wallpaper"))
+    auto = base / (pair[mode == "dark"] if pair else default_wallpaper())
     if auto.is_dir():
         return auto
     legacy = base / ("MacTahoe-Dark" if mode == "dark" else "MacTahoe-Light")
@@ -877,8 +909,7 @@ def _apply_wallpaper(
     appletsrc = _xdg_config() / "plasma-org.kde.plasma.desktop-appletsrc"
     if not current and not reset and (was_initialized or
                                      (existing and appletsrc.exists())):
-        print("wallpaper: capture failed after retries — desktop state "
-              "unknown, leaving wallpapers untouched", file=sys.stderr)
+        print(tr('wallpaper: capture failed after retries — desktop state unknown, leaving wallpapers untouched'), file=sys.stderr)
         return True
 
     state["initialized"] = True
@@ -995,7 +1026,7 @@ GTK4_ADAPTIVE_CSS = """/* mac-tahoe-liquid-kde: adaptive GTK 4 */
 """
 
 
-def gtk4_legacy_adaptive_css(source: str) -> str:
+def gtk4_legacy_adaptive_css(source: str, mode: str = "light") -> str:
     """Keep libadwaita's live palette on GTK versions without media queries.
 
     The installed GTK theme still supplies concrete colors for plain GTK apps.
@@ -1012,21 +1043,103 @@ def gtk4_legacy_adaptive_css(source: str) -> str:
         source = re.sub(rf"(?m)^@define-color sidebar_{suffix}_color [^;]+;",
                         f"@define-color sidebar_{suffix}_color @window_{suffix}_color;",
                         source)
+    # GTK < 4.20 cannot select asset URLs with prefers-color-scheme. Keep the
+    # live libadwaita palette, but select our literal button artwork explicitly.
+    if mode not in ("light", "dark"):
+        raise ValueError("Unknown GTK appearance")
+    source = re.sub(r'(windows-assets/golden-gate-[\w-]+)-(?:light|dark)(\.svg)',
+                    lambda match: match[1] + "-" + mode + match[2], source)
     return "/* mac-tahoe-liquid-kde: adaptive legacy GTK 4 */\n" + source
 
 
-def _gtk4_supports_media_queries() -> bool:
-    """GTK 4.20 can restyle an already-open app through media queries."""
+def _gtk4_version() -> tuple[int, int]:
     import ctypes
     import ctypes.util
     try:
         library = ctypes.util.find_library("gtk-4")
         if not library:
-            return False
+            return (0, 0)
         gtk = ctypes.CDLL(library)
-        return (gtk.gtk_get_major_version(), gtk.gtk_get_minor_version()) >= (4, 20)
+        return (gtk.gtk_get_major_version(), gtk.gtk_get_minor_version())
     except (OSError, AttributeError):
-        return False
+        return (0, 0)
+
+
+def _gtk4_supports_media_queries() -> bool:
+    """GTK 4.20 can restyle an already-open app through media queries."""
+    return _gtk4_version() >= (4, 20)
+
+
+def gtk4_compatible_css(source: str) -> str:
+    """Translate bundled GTK 4.16 colors for older GTK, retaining named palettes."""
+    if _gtk4_version() >= (4, 16):
+        return source
+    variables = {}
+
+    def root(match):
+        variables.update(re.findall(r"--([\w-]+)\s*:\s*([^;]+);", match[1]))
+        return ""
+
+    source = re.sub(r":root\s*\{([^{}]*)\}", root, source)
+
+    def resolve(value):
+        for _ in range(len(variables) + 1):
+            updated = re.sub(r"var\(--([\w-]+)\)",
+                             lambda m: variables.get(m[1], m[0]), value)
+            if updated == value:
+                return value
+            value = updated
+        raise ValueError("Circular GTK color variable")
+
+    # Older libadwaita has no accent variables. Keep the bundled color swatches
+    # through explicit background and checked-ring rules on their own selectors.
+    swatches = []
+    def rule(match):
+        selectors, body = match[1], match[2]
+        accent = re.search(r"--accent-bg-color:\s*var\((--accent-[\w-]+)\);", body)
+        if accent:
+            color = resolve("var(" + accent[1] + ")")
+            body += "\nbackground-color: " + color + ";\n"
+            checked = ", ".join(s.strip() + ":checked" for s in selectors.split(","))
+            swatches.append(checked + " { box-shadow: 0 0 0 3px " + color + "; }")
+        body = re.sub(r"--[\w-]+\s*:[^;]+;", "", body)
+        return selectors + "{" + resolve(body) + "}"
+
+    source = re.sub(r"([^{}]+)\{([^{}]*)\}", rule, source)
+
+    def mixtures(text):
+        while match := re.search(r"color-mix\(", text):
+            start = match.end()
+            depth, end = 1, start
+            while depth and end < len(text):
+                depth += (text[end] == "(") - (text[end] == ")")
+                end += 1
+            if depth:
+                raise ValueError("Unclosed GTK color mix")
+            arguments = mixtures(text[start:end-1])
+            parts, last, depth = [], 0, 0
+            for index, character in enumerate(arguments):
+                depth += (character == "(") - (character == ")")
+                if character == "," and depth == 0:
+                    parts.append(arguments[last:index].strip())
+                    last = index + 1
+            parts.append(arguments[last:].strip())
+            if len(parts) != 3 or parts[0] != "in srgb":
+                raise ValueError("Unsupported bundled GTK color mix")
+            weighted = re.fullmatch(r"(.+)\s+([\d.]+)%", parts[1])
+            if not weighted:
+                raise ValueError("Missing GTK color weight")
+            color, weight = weighted[1], float(weighted[2]) / 100
+            replacement = (f"alpha({color},{weight:g})" if parts[2] == "transparent"
+                           else f"mix({parts[2]},{color},{weight:g})")
+            text = text[:match.start()] + replacement + text[end:]
+        return text
+
+    source = mixtures(source)
+    source = re.sub(r"\bRGB\(\s*(\d+)\s+(\d+)\s+(\d+)\s*/\s*([\d.]+)%\s*\)",
+                    lambda m: f"rgba({m[1]},{m[2]},{m[3]},{float(m[4])/100:g})",
+                    source, flags=re.I)
+    return source + "\n" + "\n".join(swatches)
 
 
 def _gtk4_css_is_replaceable(path: Path, themes_root: Path) -> bool:
@@ -1058,6 +1171,22 @@ def _gtk4_css_is_replaceable(path: Path, themes_root: Path) -> bool:
         text = text[:-len(import_line)].rstrip()
     if text == GTK4_ADAPTIVE_CSS.strip():
         return True
+    # kde-gtk-config may replace our adaptive symlink with a regular copy.
+    # During an edition/accent upgrade the installed theme is already new,
+    # while this cached source still proves ownership of the outgoing sheet.
+    cached_light = path.parent / "gtk-Light.css"
+    try:
+        cached_adaptive = path.parent / "gtk-AdaptiveLegacy.css"
+        if (text.startswith("/* mac-tahoe-liquid-kde: adaptive legacy GTK 4 */")
+                and cached_adaptive.is_file()
+                and cached_adaptive.read_text(encoding="utf-8").strip() == text):
+            return True
+        if cached_light.is_file() and any(gtk4_legacy_adaptive_css(
+                cached_light.read_text(encoding="utf-8"), mode).strip() == text
+                for mode in ("light", "dark")):
+            return True
+    except OSError:
+        pass
     for variant in ("MacTahoeLiquidKde-Light", "MacTahoeLiquidKde-Dark",
                     "MacTahoeLiquidKde-Light" + LEGACY_REDUCED_SUFFIX,
                     "MacTahoeLiquidKde-Dark" + LEGACY_REDUCED_SUFFIX):
@@ -1070,7 +1199,8 @@ def _gtk4_css_is_replaceable(path: Path, themes_root: Path) -> bool:
                     source = candidate.read_text(encoding="utf-8")
                     if source.strip() == text:
                         return True
-                    if name == "gtk-Light.css" and gtk4_legacy_adaptive_css(source).strip() == text:
+                    if name == "gtk-Light.css" and any(gtk4_legacy_adaptive_css(source, mode).strip() == text
+                                                      for mode in ("light", "dark")):
                         return True
             except OSError:
                 continue
@@ -1086,6 +1216,11 @@ def _apply_local_extras(mode: str) -> None:
     home = Path.home()
     gtk_dest = home / ".themes"
     gtk_theme = "MacTahoeLiquidKde-Dark" if mode == "dark" else "MacTahoeLiquidKde-Light"
+
+    gtk4_css = home / ".config/gtk-4.0/gtk.css"
+    owned_css = None
+    if _gtk4_css_is_replaceable(gtk4_css, gtk_dest) and gtk4_css.is_file():
+        owned_css = gtk4_css.read_bytes()
 
     if (gtk_dest / gtk_theme).is_dir():
         _qdbus("org.kde.GtkConfig", "/GtkConfig",
@@ -1119,7 +1254,7 @@ def _apply_local_extras(mode: str) -> None:
                 try:
                     shutil.copytree(src, gtk4_dest / sub, dirs_exist_ok=True)
                 except OSError as exc:
-                    print(f"theme apply: gtk4 {sub} copy skipped: {exc}",
+                    print(tr('theme apply: gtk4 {sub} copy skipped: {exc}', sub=sub, exc=exc),
                           file=sys.stderr)
             for fn in ("gtk-Dark.css", "gtk-Light.css"):
                 src = gtk4_src / fn
@@ -1127,29 +1262,30 @@ def _apply_local_extras(mode: str) -> None:
                     try:
                         shutil.copy2(src, gtk4_dest / fn)
                     except OSError as exc:
-                        print(f"theme apply: gtk4 {fn} copy skipped: {exc}",
+                        print(tr('theme apply: gtk4 {fn} copy skipped: {exc}', fn=fn, exc=exc),
                               file=sys.stderr)
 
             gtk4_css = gtk4_dest / "gtk.css"
             try:
-                if _gtk4_css_is_replaceable(gtk4_css, gtk_dest):
+                if (_gtk4_css_is_replaceable(gtk4_css, gtk_dest)
+                        or (owned_css is not None and gtk4_css.is_file()
+                            and gtk4_css.read_bytes() == owned_css)):
                     if _gtk4_supports_media_queries():
                         adaptive = gtk4_dest / "gtk-Adaptive.css"
                         adaptive.write_text(GTK4_ADAPTIVE_CSS, encoding="utf-8")
                     else:
                         adaptive = gtk4_dest / "gtk-AdaptiveLegacy.css"
                         adaptive.write_text(gtk4_legacy_adaptive_css(
-                            (gtk4_dest / "gtk-Light.css").read_text(encoding="utf-8")),
+                            (gtk4_dest / "gtk-Light.css").read_text(encoding="utf-8"), mode),
                             encoding="utf-8")
                     target = adaptive.name
                     if gtk4_css.is_symlink() or gtk4_css.exists():
                         gtk4_css.unlink()
                     gtk4_css.symlink_to(target)
                 else:
-                    print("theme apply: custom gtk4 gtk.css preserved; "
-                          "Nautilus theme override skipped", file=sys.stderr)
+                    print(tr('theme apply: custom gtk4 gtk.css preserved; Nautilus theme override skipped'), file=sys.stderr)
             except OSError as exc:
-                print(f"theme apply: gtk4 gtk.css link skipped: {exc}",
+                print(tr('theme apply: gtk4 gtk.css link skipped: {exc}', exc=exc),
                       file=sys.stderr)
 
     flush_icon_caches()
@@ -1170,21 +1306,23 @@ def write_kde_theme_config(
     if mode == "dark":
         laf, icon, cursor = LAF_DARK, "MacTahoeLiquidKde-Icons-dark", "MacTahoeLiquidKde-Dark"
         scheme, plasma = "MacTahoeLiquidKdeDark", "MacTahoeLiquidKde-Dark"
-        widget, aurorae = KVANTUM_STYLE, "__aurorae__svg__MacTahoeLiquidKde-Dark"
+        widget = KVANTUM_STYLE
     else:
         laf, icon, cursor = LAF_LIGHT, "MacTahoeLiquidKde-Icons", "MacTahoeLiquidKde"
         scheme, plasma = "MacTahoeLiquidKdeLight", "MacTahoeLiquidKde-Light"
-        widget, aurorae = KVANTUM_STYLE, "__aurorae__svg__MacTahoeLiquidKde-Light"
+        widget = KVANTUM_STYLE
+
+    aurorae = "__aurorae__svg__" + decoration_theme(mode)
 
     # Ask KDE to apply the palette while kdeglobals still names the outgoing
     # scheme.  If we stamp General/ColorScheme first, KDE can conclude the
     # target is already active and skip its live palette notification, leaving
     # plasmashell popups on the previous colors even though disk is correct.
     #
-    # Reinstall is the self-healing path for an already-mixed session.  When
+    # Reapplying a mode is the self-healing path for an already-mixed session. When
     # the requested name is already on disk, briefly apply the opposite scheme
-    # first so KDE observes a real transition; the installer's final Plasma
-    # restart then loads the converged target into every containment.
+    # first so KDE observes a real transition and notifies running consumers,
+    # even outside the installer where Plasma will not be restarted.
     if force_color_reload and _kread(
             "kdeglobals", "General", "ColorScheme") == scheme:
         opposite = ("MacTahoeLiquidKdeLight" if mode == "dark"
@@ -1194,6 +1332,11 @@ def write_kde_theme_config(
 
     # AutomaticLookAndFeel=false: Plasma's sunrise/sunset scheduler must
     # not fight our 06:00 / 18:00 timer (idempotent).
+    if INSTALLER_OPTIONS.get("icons") == "keep":
+        icon = INSTALLER_OPTIONS.get("preserved_icon", icon)
+    elif INSTALLER_OPTIONS.get("icons") in ("regular", "glass"):
+        style = "Glass" if INSTALLER_OPTIONS["icons"] == "glass" else "Regular"
+        icon = f"MacTahoeLiquidKde-Icons-{style}-{'Dark' if mode == 'dark' else 'Light'}"
     fixed = (
         ("kdeglobals", "KDE", "LookAndFeelPackage", laf),
         ("kdeglobals", "KDE", "AutomaticLookAndFeel", "false"),
@@ -1352,10 +1495,7 @@ def _restore_or_warn_foreign_effects(enabled_before: list[str]) -> list[str]:
 
     for effect in missing:
         print(
-            f"theme apply: your KWin effect '{effect}' is enabled but KWin "
-            "could not load it after the theme switch. The switcher retried "
-            "it and left your setting enabled; rebuild/reinstall the effect "
-            "for the current KWin if it remains absent.",
+            tr("theme apply: your KWin effect '{effect}' is enabled but KWin could not load it after the theme switch. The switcher retried it and left your setting enabled; rebuild/reinstall the effect for the current KWin if it remains absent.", effect=effect),
             file=sys.stderr,
         )
     return missing
@@ -1416,10 +1556,7 @@ def _restore_own_compiled_effects(*, refresh: bool = False) -> None:
                 break
         else:
             print(
-                f"theme apply: your KWin effect '{effect}' is enabled but "
-                "KWin could not load it after the theme switch. Rebuild/"
-                "reinstall the effect for the current KWin if it remains "
-                "absent.",
+                tr("theme apply: your KWin effect '{effect}' is enabled but KWin could not load it after the theme switch. Rebuild/reinstall the effect for the current KWin if it remains absent.", effect=effect),
                 file=sys.stderr,
             )
 
@@ -1563,6 +1700,11 @@ def _apply_unlocked(mode: str, context: str = "user") -> bool:
     # letting it break silently (#46). We never touch its config key.
     foreign_effects = _snapshot_foreign_effects()
 
+    if INSTALLER_OPTIONS.get("icons") == "keep":
+        current_icon = _kread("kdeglobals", "Icons", "Theme")
+        if current_icon:
+            INSTALLER_OPTIONS["preserved_icon"] = current_icon
+
     # Capture before the live look-and-feel apply.  Even if a third-party LAF
     # carries wallpaper defaults, it must not erase the outgoing custom choice
     # before our per-mode state has seen it.
@@ -1574,30 +1716,29 @@ def _apply_unlocked(mode: str, context: str = "user") -> bool:
     # individual panel containments on the outgoing Plasma theme.
     if context != "install":
         if not _apply_lookandfeel_live(laf):
-            print("theme apply: live look-and-feel apply skipped",
+            print(tr('theme apply: live look-and-feel apply skipped'),
                   file=sys.stderr)
 
     config_ok = write_kde_theme_config(
-        mode, force_color_reload=context == "install",
+        mode, force_color_reload=True,
     )
     if not config_ok:
-        print("theme apply: core KDE config writes failed, theme not "
-              "fully applied", file=sys.stderr)
+        print(tr('theme apply: core KDE config writes failed, theme not fully applied'), file=sys.stderr)
     try:
         _apply_local_extras(mode)
     except Exception as exc:
-        print(f"theme apply: extras step failed, continuing: {exc!r}",
+        print(tr('theme apply: extras step failed, continuing: {exc!r}', exc=exc),
               file=sys.stderr)
     try:
         _apply_wallpaper(mode, context=context,
                          current_snapshot=wallpaper_before)
     except Exception as exc:
-        print(f"theme apply: wallpaper step failed, continuing: {exc!r}",
+        print(tr('theme apply: wallpaper step failed, continuing: {exc!r}', exc=exc),
               file=sys.stderr)
     if not apply_cursortheme_live(cursor):
-        print("theme apply: live cursor apply skipped", file=sys.stderr)
+        print(tr('theme apply: live cursor apply skipped'), file=sys.stderr)
     if not cycle_widget_style_live(widget):
-        print("theme apply: widget-style cycle skipped", file=sys.stderr)
+        print(tr('theme apply: widget-style cycle skipped'), file=sys.stderr)
     refresh_icons_live()
     # Keep the dock translucent so the glass shows through (a theme apply can
     # drop panelOpacity, painting an opaque black panel over the effect).
@@ -1638,7 +1779,7 @@ USAGE = ("Usage: mac-tahoe-theme-switch "
 
 def main(argv: list[str]) -> int:
     if not argv:
-        print(USAGE, file=sys.stderr)
+        print(tr(USAGE), file=sys.stderr)
         return 1
 
     _sync_session_env()
@@ -1651,7 +1792,7 @@ def main(argv: list[str]) -> int:
     if mode == "auto":
         mode = detect_mode_by_time()
     if mode not in ("light", "dark"):
-        print(USAGE, file=sys.stderr)
+        print(tr(USAGE), file=sys.stderr)
         return 1
 
     context = argv[1] if len(argv) > 1 else "user"

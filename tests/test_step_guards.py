@@ -151,6 +151,10 @@ def test_window_decorations_clean_ok_when_writes_succeed(tmp_path, monkeypatch):
     ``Window decoration set to MacTahoeLiquidKde-Dark`` fires and no
     kwriteconfig6 warning appears."""
     from steps import window_decorations as wd
+    import theme_switch
+    # This guard's expected message uses Tahoe; edition switching is covered
+    # separately and the full suite also runs from a Golden Gate staging tree.
+    monkeypatch.setattr(theme_switch, "default_wallpaper", lambda: "MacTahoe")
 
     fake_src = tmp_path / "fake-offline" / "aurorae"
     for variant in ("Dark", "Light"):

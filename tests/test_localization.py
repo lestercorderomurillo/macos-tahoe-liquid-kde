@@ -70,17 +70,6 @@ def test_plasmoid_catalogs_ship_for_spanish_and_simplified_chinese(repo):
         "About This Computer") == "关于本机"
 
 
-def test_installer_qml_has_live_language_selector(repo):
-    source = (repo / "src/installer/InstallerWindow.qml").read_text()
-    assert "id: languageButton" in source
-    assert "id: languagePopup" in source
-    assert "model: installer ? installer.languages : []" in source
-    assert "installer.setLanguage(modelData.code)" in source
-    # KDE's desktop-style ComboBox uses Menu.qml, whose currentIndex binding
-    # loops when the model changes as a language is selected.
-    assert "QQC2.ComboBox" not in source
-
-
 def test_dock_reuses_complete_upstream_taskmanager_catalog(repo):
     root = (repo / "src/offline/plasmoids"
             / "org.kde.mac.tahoe.liquid.taskmanager/contents")

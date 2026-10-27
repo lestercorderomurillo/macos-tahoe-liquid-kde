@@ -297,6 +297,7 @@ def test_patch_plasmashellrc_overwrites_stale_opacity_value(
 
 def _quiet_layout_install(monkeypatch, tmp_path):
     monkeypatch.setattr(layout, "HOME", tmp_path)
+    monkeypatch.setattr(layout, "DATA_HOME", tmp_path / ".local/share")
     monkeypatch.setattr(layout, "_ensure_panel_colorizer", lambda: None)
     monkeypatch.setattr(layout, "_patch_plasmashellrc", lambda: None)
     monkeypatch.setattr(layout, "ok", lambda message: None)

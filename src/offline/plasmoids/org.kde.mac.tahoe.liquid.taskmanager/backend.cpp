@@ -25,6 +25,7 @@
 #include <QAction>
 #include <QActionGroup>
 #include <QApplication>
+#include <QIcon>
 #include <QJsonArray>
 #include <QMenu>
 #include <QQuickItem>
@@ -72,6 +73,12 @@ Backend::Backend(QObject* parent)
 }
 
 Backend::~Backend() { }
+
+QVariant Backend::iconSource(const QVariant& decoration)
+{
+    const QString name = decoration.value<QIcon>().name();
+    return name.isEmpty() ? decoration : QVariant(name);
+}
 
 // URL helpers
 

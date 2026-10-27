@@ -5,12 +5,21 @@ import org.kde.plasma.plasmoid 2.0
 import org.kde.plasma.core as PlasmaCore
 
 import org.kde.kirigami as Kirigami
+import org.kde.mac.tahoe.launcher as NativeLauncher
 
 Item {
     id: root
 
     property QtObject dashWindow: null
     readonly property bool useCustomButtonImage: (Plasmoid.configuration.useCustomButtonImage && Plasmoid.configuration.customButtonImage.length != 0)
+
+    NativeLauncher.IconThemeWatcher {
+        onChanged: {
+            buttonIcon.source = "";
+            buttonIcon.source = Qt.binding(() => root.useCustomButtonImage
+                ? Plasmoid.configuration.customButtonImage : Plasmoid.configuration.icon);
+        }
+    }
 
     Kirigami.Icon {
         id: buttonIcon

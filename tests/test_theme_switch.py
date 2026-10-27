@@ -853,6 +853,7 @@ def test_session_env_recovers_custom_xdg_paths_for_openrc_cron(
     (process / "comm").write_text("plasmashell\n", encoding="utf-8")
     values = {
         "XDG_CONFIG_HOME": tmp_path / "xdg/config",
+        "XDG_CONFIG_DIRS": str(tmp_path / "xdg/config/kdedefaults") + ":/etc/xdg",
         "XDG_DATA_HOME": tmp_path / "xdg/data",
         "XDG_CACHE_HOME": tmp_path / "xdg/cache",
         "XDG_STATE_HOME": tmp_path / "xdg/state",
@@ -914,7 +915,44 @@ def test_apply_install_context_skips_live_lookandfeel(monkeypatch):
     write_kwargs.clear()
     assert theme_switch.apply("dark") is True
     assert "_apply_lookandfeel_live" in calls
-    assert write_kwargs == [{"force_color_reload": False}]
+    assert write_kwargs == [{"force_color_reload": True}]
+
+
+@pytest.mark.parametrize("mode", ["light", "dark"])
+def test_manual_reapply_repairs_mixed_palette_without_changing_material(
+        seeded_color_schemes, monkeypatch, mode):
+    """Exercise KDE's real same-name no-op with an outgoing palette left over."""
+    import theme_switch
+    if not has_command("plasma-apply-colorscheme"):
+        pytest.skip("plasma-apply-colorscheme required")
+    monkeypatch.setenv("QT_QPA_PLATFORM", "offscreen")
+    monkeypatch.setenv("DBUS_SESSION_BUS_ADDRESS", "unix:path=/nonexistent")
+    monkeypatch.setattr(theme_switch, "_has_session_dbus", lambda: False)
+    write_config = theme_switch.write_kde_theme_config
+    _stub_apply_subcalls(monkeypatch, [])
+    monkeypatch.setattr(theme_switch, "write_kde_theme_config", write_config)
+    scheme = "MacTahoeLiquidKde" + mode.title()
+    opposite = "MacTahoeLiquidKde" + ("Dark" if mode == "light" else "Light")
+    assert theme_switch.apply_color_scheme(opposite)
+    assert theme_switch._kwrite("--file", "kdeglobals", "--group", "General",
+                               "--key", "ColorScheme", scheme)
+    config = seeded_color_schemes / ".config/kdeglobals"
+    previous = ini_get(config, "Colors:Window", "BackgroundNormal")
+    # The ordinary KDE command succeeds without repairing the stale palette.
+    assert theme_switch.apply_color_scheme(scheme)
+    assert ini_get(config, "Colors:Window", "BackgroundNormal") == previous
+    kwin = seeded_color_schemes / ".config/kwinrc"
+    material = {"MaterialPreset": "2", "DarkGradientOverlay": "true",
+                "GradientTopOpacity": "0.95", "PopupCornerRadius": "6"}
+    kwin.write_text("[Effect-liquidglass]\n" + "".join(
+        f"{key}={value}\n" for key, value in material.items()))
+    assert theme_switch.apply(mode)
+    expected = seeded_color_schemes / f".local/share/color-schemes/{scheme}.colors"
+    for group in ("Colors:Window", "Colors:Button", "Colors:View", "Colors:Tooltip"):
+        for key in ("BackgroundNormal", "ForegroundNormal"):
+            assert ini_get(config, group, key) == ini_get(expected, group, key)
+    assert all(ini_get(kwin, "Effect-liquidglass", key) == value
+               for key, value in material.items())
 
 
 def test_main_passes_install_context_to_apply(monkeypatch):
@@ -2138,15 +2176,16 @@ def test_switch_step_install_uninstall_reinstall(sandbox, tmp_path):
     assert not layout_marker.exists()
 
 
-def test_switch_step_openrc_schedules_via_crontab_not_systemd(sandbox, tmp_path):
-    """On OpenRC (forced) the auto theme flip installs a crontab line at
+@pytest.mark.parametrize("backend", ["openrc", "dinit"])
+def test_switch_step_cron_schedules_without_systemd(sandbox, tmp_path, backend):
+    """On OpenRC/dinit the auto theme flip installs a crontab line at
     06:00/18:00 and never installs a systemd timer. The shimmed crontab
     logs the stdin write so we can confirm both times were scheduled."""
     shim_dir = make_live_shim_dir(tmp_path)
     log_file = shim_dir / "calls.log"
 
     _run_step("theme_switch", "install",
-              {"THEME_MODE": "auto", "MTTKDE_INIT": "openrc"},
+              {"THEME_MODE": "auto", "MTTKDE_INIT": backend},
               shim_dir=shim_dir)
 
     calls = log_file.read_text()
@@ -2161,11 +2200,12 @@ def test_switch_step_openrc_schedules_via_crontab_not_systemd(sandbox, tmp_path)
     assert "systemctl --user start" not in calls
 
 
-def test_switch_step_openrc_uninstall_strips_crontab(sandbox, tmp_path):
+@pytest.mark.parametrize("backend", ["openrc", "dinit"])
+def test_switch_step_cron_uninstall_strips_crontab(sandbox, tmp_path, backend):
     shim_dir = make_live_shim_dir(tmp_path)
     log_file = shim_dir / "calls.log"
     _run_step("theme_switch", "uninstall",
-              {"THEME_MODE": "auto", "MTTKDE_INIT": "openrc"},
+              {"THEME_MODE": "auto", "MTTKDE_INIT": backend},
               shim_dir=shim_dir)
     # uninstall reads the crontab (to filter our tag) on the OpenRC path.
     assert "crontab -l" in log_file.read_text()
@@ -2315,3 +2355,27 @@ def test_scheduled_job_prefers_plasma_bus_over_runtime_socket(tmp_path, monkeypa
         target._sync_session_env()
     assert os.environ['DBUS_SESSION_BUS_ADDRESS'] == 'unix:path=/tmp/plasma-session'
     assert os.environ['WAYLAND_DISPLAY'] == 'wayland-1'
+
+
+def test_gtk4_compatibility_preserves_dynamic_colors_and_alpha(monkeypatch):
+    import theme_switch
+    monkeypatch.setattr(theme_switch, "_gtk4_version", lambda: (4, 14))
+    css = ":root { --accent-blue: #0088ff; --accent-bg-color: @accent_bg_color; }\n" + (
+        "button { color: color-mix(in srgb, #ffffff 25%, @accent_bg_color); "
+        "background: color-mix(in srgb, @window_bg_color 55%, transparent); "
+        "box-shadow: 0 0 2px RGB(0 0 0/15%); }\n"
+        "button.blue { --accent-bg-color: var(--accent-blue); }")
+    compatible = theme_switch.gtk4_compatible_css(css)
+    assert "mix(@accent_bg_color,#ffffff,0.25)" in compatible
+    assert "alpha(@window_bg_color,0.55)" in compatible
+    assert "rgba(0,0,0,0.15)" in compatible
+    assert "background-color: #0088ff" in compatible
+    assert "button.blue:checked { box-shadow: 0 0 0 3px #0088ff; }" in compatible
+    assert "var(" not in compatible and ":root" not in compatible
+
+
+def test_current_gtk4_keeps_original_stylesheet(monkeypatch):
+    import theme_switch
+    monkeypatch.setattr(theme_switch, "_gtk4_version", lambda: (4, 16))
+    css = ":root { --accent-blue: #0088ff; } button { color: var(--accent-blue); }"
+    assert theme_switch.gtk4_compatible_css(css) == css

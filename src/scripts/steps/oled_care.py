@@ -3,6 +3,9 @@ install() reads the ``oled_care`` flag itself: a disabled run tears down
 whatever a previous flagged install left, so a plain re-run is self-healing.
 """
 
+from localization import tr
+from localization_bundle import standalone_source
+
 import os
 import re
 import shutil
@@ -19,7 +22,7 @@ from steps._scheduler import (
 )
 from utils import run_user
 
-# crontab tag identifying our managed line on OpenRC hosts.
+# crontab tag identifying our managed line on OpenRC/dinit hosts.
 CRON_TAG = "oled"
 
 DEFAULT_INTERVAL_MINUTES = 5
@@ -38,7 +41,7 @@ _LEGACY_DRAIN_POLL_SECONDS = 0.05
 
 
 def deps():
-    # crontab is only needed on OpenRC, where the timer falls back to a
+    # crontab is only needed on OpenRC/dinit, where the timer falls back to a
     # per-user cron line. systemd hosts schedule via the user manager and
     # need nothing extra. The flag gates it further — no --oled-care, no dep.
     if is_systemd() or not feat_enabled("oled_care", default=False):
@@ -129,10 +132,10 @@ def _quiesce_shifts() -> bool:
         import oled_care
         quiesced = oled_care.quiesce_shifts()
     except Exception as exc:
-        warn(f"OLED care: panel shifts could not be quiesced ({exc})")
+        warn(tr('OLED care: panel shifts could not be quiesced ({exc})', exc=exc))
         return False
     if not quiesced:
-        warn("OLED care: panel shifts could not be quiesced")
+        warn(tr('OLED care: panel shifts could not be quiesced'))
     return quiesced
 
 
@@ -142,10 +145,10 @@ def _enable_shifts() -> bool:
         import oled_care
         enabled = oled_care.enable_shifts()
     except Exception as exc:
-        warn(f"OLED care: panel shifts could not be enabled ({exc})")
+        warn(tr('OLED care: panel shifts could not be enabled ({exc})', exc=exc))
         return False
     if not enabled:
-        warn("OLED care: panel shifts could not be enabled")
+        warn(tr('OLED care: panel shifts could not be enabled'))
     return enabled
 
 
@@ -155,7 +158,7 @@ def _recovery_uncertain() -> bool:
         import oled_care
         return oled_care.recovery_uncertain()
     except Exception as exc:
-        warn(f"OLED care: recovery status could not be verified ({exc})")
+        warn(tr('OLED care: recovery status could not be verified ({exc})', exc=exc))
         return True
 
 
@@ -170,7 +173,7 @@ def _replace_current_helper(*, required: bool) -> bool:
     if not required and not exists:
         return True
     if not PY_SRC.is_file():
-        warn("OLED care: current helper source is missing")
+        warn(tr('OLED care: current helper source is missing'))
         return False
     tmp_path: Path | None = None
     fd = -1
@@ -183,14 +186,13 @@ def _replace_current_helper(*, required: bool) -> bool:
         tmp_path = Path(tmp_name)
         with os.fdopen(fd, "wb") as target:
             fd = -1
-            with PY_SRC.open("rb") as source:
-                shutil.copyfileobj(source, target)
-                target.flush()
-                os.fchmod(target.fileno(), 0o755)
+            target.write(standalone_source(PY_SRC.read_text(encoding="utf-8")).encode("utf-8"))
+            target.flush()
+            os.fchmod(target.fileno(), 0o755)
         os.replace(tmp_path, BIN_DEST)
         return True
     except OSError as exc:
-        warn(f"OLED care: current helper could not be installed ({exc})")
+        warn(tr('OLED care: current helper could not be installed ({exc})', exc=exc))
         return False
     finally:
         if fd >= 0:
@@ -209,7 +211,8 @@ def _replace_current_helper(*, required: bool) -> bool:
 
 def _helper_is_current() -> bool:
     try:
-        return BIN_DEST.read_bytes() == PY_SRC.read_bytes()
+        expected = standalone_source(PY_SRC.read_text(encoding="utf-8")).encode("utf-8")
+        return BIN_DEST.read_bytes() == expected
     except OSError:
         return False
 
@@ -229,10 +232,10 @@ def _prepare_recovery_state(*, require_known_legacy: bool) -> bool:
             require_known_legacy=require_known_legacy,
         )
     except Exception as exc:
-        warn(f"OLED care: recovery state could not be prepared ({exc})")
+        warn(tr('OLED care: recovery state could not be prepared ({exc})', exc=exc))
         return False
     if not prepared:
-        warn("OLED care: recovery state could not be prepared")
+        warn(tr('OLED care: recovery state could not be prepared'))
     return prepared
 
 
@@ -249,10 +252,10 @@ def _mark_recovery_uncertain() -> bool:
         import oled_care
         marked = oled_care.mark_recovery_uncertain()
     except Exception as exc:
-        warn(f"OLED care: legacy recovery could not be guarded ({exc})")
+        warn(tr('OLED care: legacy recovery could not be guarded ({exc})', exc=exc))
         return False
     if not marked:
-        warn("OLED care: legacy recovery could not be guarded")
+        warn(tr('OLED care: legacy recovery could not be guarded'))
     return marked
 
 
@@ -323,9 +326,9 @@ def _wait_for_legacy_shifts(
             observed = True
         if pids is None or time.monotonic() >= deadline:
             if pids:
-                warn("OLED care: timed out waiting for an older shift process")
+                warn(tr('OLED care: timed out waiting for an older shift process'))
             else:
-                warn("OLED care: older shift processes could not be inspected")
+                warn(tr('OLED care: older shift processes could not be inspected'))
             return False, observed
         time.sleep(min(_LEGACY_DRAIN_POLL_SECONDS,
                        max(0.0, deadline - time.monotonic())))
@@ -373,7 +376,7 @@ def _teardown_triggers() -> tuple[bool, bool]:
     elif cron_status == RemovalStatus.ERROR or (
             cron_status == RemovalStatus.UNAVAILABLE and not systemd):
         complete = False
-        warn("OLED care: previous cron schedule could not be removed")
+        warn(tr('OLED care: previous cron schedule could not be removed'))
     return removed, complete
 
 
@@ -447,7 +450,7 @@ def _remove_helper() -> tuple[bool, bool]:
         return False, True
     except OSError as exc:
         if existed:
-            warn(f"OLED care: helper could not be removed ({exc})")
+            warn(tr('OLED care: helper could not be removed ({exc})', exc=exc))
             return False, False
         return False, True
 
@@ -465,21 +468,19 @@ def _schedule_systemd(interval: int, max_px: int) -> bool:
         _user_service("restart", "mac-tahoe-liquid-kde-oled.timer"))
     scheduled = all(results)
     if scheduled:
-        info(f"Panels pixel-shift up to {max_px} px every {interval} min "
-             "(systemd user timer)")
+        info(tr('Panels pixel-shift up to {max_px} px every {interval} min (systemd user timer)', max_px=max_px, interval=interval))
     return scheduled
 
 
 def _schedule_cron(interval: int, max_px: int) -> bool:
-    # OpenRC: no systemd user timer. The shift binary recovers the desktop
+    # OpenRC/dinit: no systemd user timer. The shift binary recovers the desktop
     # session env itself (see oled_care._sync_session_env), so a bare cron
     # environment still reaches plasmashell.
     command = cron_command(BIN_DEST, "shift", "--max-px", max_px)
     if not install_periodic(CRON_TAG, interval, command):
-        warn("OLED care: crontab write failed — is a cron daemon installed?")
+        warn(tr('OLED care: crontab write failed — is a cron daemon installed?'))
         return False
-    info(f"Panels pixel-shift up to {max_px} px every {interval} min "
-         "(user crontab)")
+    info(tr('Panels pixel-shift up to {max_px} px every {interval} min (user crontab)', max_px=max_px, interval=interval))
     return True
 
 
@@ -491,11 +492,10 @@ def _restore_panels() -> bool:
         import oled_care
         restored = oled_care.restore() == 0
     except Exception as exc:
-        warn(f"OLED care: panel geometry restore failed ({exc})")
+        warn(tr('OLED care: panel geometry restore failed ({exc})', exc=exc))
         return False
     if not restored or state_file.exists():
-        warn("OLED care: panel geometry not restored — recovery state "
-             "retained for retry")
+        warn(tr('OLED care: panel geometry not restored — recovery state retained for retry'))
         return False
     return True
 
@@ -504,30 +504,27 @@ def install() -> None:
     if not feat_enabled("oled_care", default=False):
         removed, runtime_retired = _retire_runtime(require_helper=False)
         if not runtime_retired:
-            fail("OLED care removal incomplete — active shifts or scheduling "
-                 "could not be retired safely")
-            info("OLED care panel recovery is pending")
+            fail(tr('OLED care removal incomplete — active shifts or scheduling could not be retired safely'))
+            info(tr('OLED care panel recovery is pending'))
             return
         restored = _restore_panels()
         if removed:
-            ok("Previous OLED care service removed")
+            ok(tr('Previous OLED care service removed'))
         if not restored:
-            fail("OLED care removal incomplete — restore panel geometry "
-                 "after logging in, then retry")
-            info("OLED care disabled; panel recovery helper retained")
+            fail(tr('OLED care removal incomplete — restore panel geometry after logging in, then retry'))
+            info(tr('OLED care disabled; panel recovery helper retained'))
             return
         helper_removed, helper_neutralized = _remove_helper()
         removed = removed or helper_removed
         if not helper_neutralized:
-            fail("OLED care removal incomplete — helper cleanup must be "
-                 "retried")
-            info("OLED care disabled; scheduler cleanup is pending")
+            fail(tr('OLED care removal incomplete — helper cleanup must be retried'))
+            info(tr('OLED care disabled; scheduler cleanup is pending'))
             return
-        info("OLED care disabled — enable with --oled-care")
+        info(tr('OLED care disabled — enable with --oled-care'))
         return
 
     if not PY_SRC.is_file():
-        warn("OLED care script missing — skipping")
+        warn(tr('OLED care script missing — skipping'))
         return
 
     interval = _interval_minutes()
@@ -536,8 +533,7 @@ def install() -> None:
     # points, drain any already-exec'd legacy copy, then stop its service.
     _removed, runtime_retired = _retire_runtime(require_helper=True)
     if not runtime_retired:
-        fail("OLED care not installed — previous runtime could not be retired; "
-             "recovery state retained")
+        fail(tr('OLED care not installed — previous runtime could not be retired; recovery state retained'))
         return
 
     if is_systemd():
@@ -550,11 +546,9 @@ def install() -> None:
             require_helper=False)
         if cleanup_safe:
             _remove_helper()
-            fail("OLED care not installed — scheduler could not be enabled; "
-                 "partial schedule removed and recovery state retained")
+            fail(tr('OLED care not installed — scheduler could not be enabled; partial schedule removed and recovery state retained'))
         else:
-            fail("OLED care not installed — scheduler enable and cleanup were "
-                 "incomplete; recovery state retained")
+            fail(tr('OLED care not installed — scheduler enable and cleanup were incomplete; recovery state retained'))
         return
     if not _enable_shifts():
         # Enabling may have failed before or after marker removal. Re-quiesce
@@ -563,36 +557,32 @@ def install() -> None:
             require_helper=False)
         if cleanup_safe:
             _remove_helper()
-            fail("OLED care not installed — shifts could not be enabled; "
-                 "schedule removed and recovery state retained")
+            fail(tr('OLED care not installed — shifts could not be enabled; schedule removed and recovery state retained'))
         else:
-            fail("OLED care enable outcome is uncertain — cleanup incomplete; "
-                 "recovery state retained")
+            fail(tr('OLED care enable outcome is uncertain — cleanup incomplete; recovery state retained'))
         return
 
-    ok("OLED care service installed")
+    ok(tr('OLED care service installed'))
 
 
 def uninstall() -> None:
     removed, runtime_retired = _retire_runtime(require_helper=False)
     if not runtime_retired:
-        fail("OLED care removal incomplete — active shifts or scheduling "
-             "could not be retired safely")
-        info("OLED care panel recovery is pending")
+        fail(tr('OLED care removal incomplete — active shifts or scheduling could not be retired safely'))
+        info(tr('OLED care panel recovery is pending'))
         return
     restored = _restore_panels()
     if not restored:
-        fail("OLED care removal incomplete — restore panel geometry after "
-             "logging in, then retry")
-        info("OLED care disabled; panel recovery helper retained")
+        fail(tr('OLED care removal incomplete — restore panel geometry after logging in, then retry'))
+        info(tr('OLED care disabled; panel recovery helper retained'))
         return
     helper_removed, helper_neutralized = _remove_helper()
     removed = removed or helper_removed
     if not helper_neutralized:
-        fail("OLED care removal incomplete — helper cleanup must be retried")
-        info("OLED care disabled; scheduler cleanup is pending")
+        fail(tr('OLED care removal incomplete — helper cleanup must be retried'))
+        info(tr('OLED care disabled; scheduler cleanup is pending'))
         return
     if removed:
-        ok("OLED care service removed")
+        ok(tr('OLED care service removed'))
     else:
-        info("OLED care was not installed")
+        info(tr('OLED care was not installed'))

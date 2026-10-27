@@ -17,11 +17,12 @@
 #include "core/renderviewport.h"
 #include "effect/effecthandler.h"
 #include "opengl/glplatform.h"
+#include "opengl/eglcontext.h"
 #include "scene/decorationitem.h"
 #include "scene/scene.h"
 #include "scene/surfaceitem.h"
 #include "scene/windowitem.h"
-#if ACRYLIC_GLASS_KWIN_6_7
+#if ACRYLIC_GLASS_WAYLAND_BACKGROUND_EFFECT_V1
 // Plasma 6.7 merged blur + contrast into one background-effect protocol;
 // the dedicated blur.h / contrast.h managers are gone. Blur is announced
 // through waylandServer()->backgroundEffectManager() instead.
@@ -37,6 +38,7 @@
 
 #if KWIN_BUILD_X11
 #include "utils/xcbutils.h"
+#include <xcb/render.h>
 #endif
 
 #include <QGuiApplication>
@@ -227,10 +229,52 @@ void appendClippedTriangle(std::vector<GLVertex2D>& vertices, const std::array<G
 /// X11 atom name we listen to for the blur-behind property protocol.
 static const QByteArray s_blurAtomName = QByteArrayLiteral("_KDE_NET_WM_BLUR_BEHIND_REGION");
 
+#if KWIN_BUILD_X11
+#if defined(GLASS_X11)
+static bool hasAlphaVisual(xcb_connection_t* connection, xcb_visualid_t visual)
+{
+    static QHash<xcb_visualid_t, bool> cache;
+    if (const auto it = cache.constFind(visual); it != cache.cend()) {
+        return it.value();
+    }
+    const auto formatsCookie = xcb_render_query_pict_formats(connection);
+    const std::unique_ptr<xcb_render_query_pict_formats_reply_t, decltype(&std::free)> formats(
+        xcb_render_query_pict_formats_reply(connection, formatsCookie, nullptr), &std::free);
+    if (!formats) {
+        return false;
+    }
+    bool alphaVisual = false;
+    auto screens = xcb_render_query_pict_formats_screens_iterator(formats.get());
+    for (; screens.rem && !alphaVisual; xcb_render_pictscreen_next(&screens)) {
+        auto depths = xcb_render_pictscreen_depths_iterator(screens.data);
+        for (; depths.rem && !alphaVisual; xcb_render_pictdepth_next(&depths)) {
+            auto visuals = xcb_render_pictdepth_visuals_iterator(depths.data);
+            for (; visuals.rem; xcb_render_pictvisual_next(&visuals)) {
+                if (visuals.data->visual != visual) {
+                    continue;
+                }
+                auto pictFormats = xcb_render_query_pict_formats_formats_iterator(formats.get());
+                for (; pictFormats.rem; xcb_render_pictforminfo_next(&pictFormats)) {
+                    if (pictFormats.data->id == visuals.data->format
+                        && pictFormats.data->direct.alpha_mask != 0) {
+                        alphaVisual = true;
+                        break;
+                    }
+                }
+                break;
+            }
+        }
+    }
+    cache.insert(visual, alphaVisual);
+    return alphaVisual;
+}
+#endif
+#endif
+
 // Static singleton storage (definitions live here, declarations in .h).
 // The protocol-manager singletons only exist on the pre-6.7 API; 6.7
 // registers a capability on the shared backgroundEffectManager instead.
-#if !ACRYLIC_GLASS_KWIN_6_7
+#if !ACRYLIC_GLASS_WAYLAND_BACKGROUND_EFFECT_V1
 BlurManagerInterface* BlurEffect::s_blurManager = nullptr;
 QTimer* BlurEffect::s_blurManagerRemoveTimer = nullptr;
 
@@ -287,7 +331,7 @@ BlurEffect::BlurEffect()
     if (!m_roundedOnscreenPass.shader) {
         qCWarning(KWIN_BLUR) << "Failed to load onscreen pass shader (null)";
         return;
-#if !ACRYLIC_GLASS_KWIN_6_7
+#if !ACRYLIC_GLASS_WAYLAND_BACKGROUND_EFFECT_V1
         // GLShader::isValid() was removed in 6.7; a null return from
         // generateShaderFromFile is the only failure signal there.
     } else if (!m_roundedOnscreenPass.shader->isValid()) {
@@ -379,7 +423,7 @@ BlurEffect::BlurEffect()
     // effects->waylandDisplay() is null on pure X11, where surface blur
     // comes from the net_wm_blur_region atom path above instead.
     if (effects->waylandDisplay()) {
-#if ACRYLIC_GLASS_KWIN_6_7
+#if ACRYLIC_GLASS_WAYLAND_BACKGROUND_EFFECT_V1
         // Plasma 6.7: a single capability flag on the shared
         // background-effect manager replaces the per-protocol singletons.
         // Contrast/saturation is no longer a separate protocol.
@@ -421,7 +465,9 @@ BlurEffect::BlurEffect()
     // EffectsHandler signal wiring
     connect(effects, &EffectsHandler::windowAdded, this, &BlurEffect::slotWindowAdded);
     connect(effects, &EffectsHandler::windowDeleted, this, &BlurEffect::slotWindowDeleted);
+#if !defined(GLASS_X11)
     connect(effects, &EffectsHandler::viewRemoved, this, &BlurEffect::slotViewRemoved);
+#endif
 #if KWIN_BUILD_X11
     connect(effects, &EffectsHandler::propertyNotify, this, &BlurEffect::slotPropertyNotify);
     connect(effects, &EffectsHandler::xcbConnectionChanged, this, [this]() { net_wm_blur_region = effects->announceSupportProperty(s_blurAtomName, this); });
@@ -444,7 +490,7 @@ BlurEffect::BlurEffect()
 /// capability flag is just dropped from the shared manager.
 BlurEffect::~BlurEffect()
 {
-#if ACRYLIC_GLASS_KWIN_6_7
+#if ACRYLIC_GLASS_WAYLAND_BACKGROUND_EFFECT_V1
     if (waylandServer()) {
         waylandServer()->backgroundEffectManager()->removeBlurCapability();
     }
@@ -619,6 +665,9 @@ void BlurEffect::updateBlurRegion(EffectWindow* w)
     // Xwayland still advertises blur through the X11 property on KWin 6.7+,
     // even though EffectWindow::readProperty was removed from that SDK.
 #if KWIN_BUILD_X11
+#if defined(GLASS_X11)
+    bool legacyBlurPropertyMissing = false;
+#endif
     if (net_wm_blur_region != XCB_ATOM_NONE && effects->xcbConnection() && w->windowId()) {
         // Bound the response and reject malformed/truncated properties instead
         // of treating them as the empty "blur the entire window" request.
@@ -626,6 +675,9 @@ void BlurEffect::updateBlurRegion(EffectWindow* w)
             xcb_window_t(w->windowId()), net_wm_blur_region, XCB_ATOM_CARDINAL, 0, 16384);
         const std::unique_ptr<xcb_get_property_reply_t, decltype(&std::free)> reply(
             xcb_get_property_reply(effects->xcbConnection(), cookie, nullptr), &std::free);
+#if defined(GLASS_X11)
+        legacyBlurPropertyMissing = reply && reply->type == XCB_ATOM_NONE;
+#endif
         if (reply && reply->type == XCB_ATOM_CARDINAL && reply->format == 32
             && reply->bytes_after == 0 && reply->value_len % 4 == 0) {
             Region region;
@@ -646,11 +698,29 @@ void BlurEffect::updateBlurRegion(EffectWindow* w)
             if (reply->value_len == 0 || !region.isEmpty()) content = region;
         }
     }
+
+#if defined(GLASS_X11)
+    // Plasma's translucent menus do not publish the legacy blur-region
+    // property on X11. Only synthesize a full-client region for alpha
+    // visuals belonging to plasmashell popup windows; opaque menus and
+    // application popups keep their existing rendering path.
+    if (legacyBlurPropertyMissing && !content.has_value() && effects->xcbConnection() && w->windowId()
+        && w->window()->resourceClass() == QStringLiteral("plasmashell")
+        && (w->isMenu() || w->isDropdownMenu() || w->isPopupMenu() || w->isAppletPopup())) {
+        const auto attributesCookie = xcb_get_window_attributes(
+            effects->xcbConnection(), xcb_window_t(w->windowId()));
+        const std::unique_ptr<xcb_get_window_attributes_reply_t, decltype(&std::free)> attributes(
+            xcb_get_window_attributes_reply(effects->xcbConnection(), attributesCookie, nullptr), &std::free);
+        if (attributes && hasAlphaVisual(effects->xcbConnection(), attributes->visual)) {
+            content = Region(w->contentsRect().toRect());
+        }
+    }
+#endif
 #endif
 
     // Wayland: prefer the protocol-driven blur/contrast surface state.
     if (SurfaceInterface* surface = w->surface()) {
-#if ACRYLIC_GLASS_KWIN_6_7
+#if ACRYLIC_GLASS_WAYLAND_BACKGROUND_EFFECT_V1
         // 6.7 exposes the blur region directly as a floating-point
         // RegionF (the ext_background_effect_v1 protocol). Convert it to
         // our integer Region rect-by-rect via toAlignedRect(), matching
@@ -734,7 +804,7 @@ void BlurEffect::slotWindowAdded(EffectWindow* w)
             }
         });
 
-#if !ACRYLIC_GLASS_KWIN_6_7
+#if !ACRYLIC_GLASS_WAYLAND_BACKGROUND_EFFECT_V1
         // contrastChanged was removed with the 6.7 protocol merge.
         windowContrastChangedConnections[w] = connect(surf, &SurfaceInterface::contrastChanged, this, [this, w]() {
             if (w) {
@@ -790,7 +860,7 @@ void BlurEffect::slotWindowDeleted(EffectWindow* w)
         windowBlurChangedConnections.erase(it);
     }
 
-#if !ACRYLIC_GLASS_KWIN_6_7
+#if !ACRYLIC_GLASS_WAYLAND_BACKGROUND_EFFECT_V1
     if (auto it = windowContrastChangedConnections.find(w); it != windowContrastChangedConnections.end()) {
         disconnect(*it);
         windowContrastChangedConnections.erase(it);
@@ -813,6 +883,7 @@ void BlurEffect::slotWindowDeleted(EffectWindow* w)
 /// Drop the per-view scratch buffers (textures + framebuffers) for an
 /// output that just disappeared. Each window's render map is keyed by
 /// RenderView*, so we walk every window once.
+#if !defined(GLASS_X11)
 void BlurEffect::slotViewRemoved(KWin::RenderView* view)
 {
     for (auto& [window, data] : m_windows) {
@@ -822,6 +893,7 @@ void BlurEffect::slotViewRemoved(KWin::RenderView* view)
         }
     }
 }
+#endif
 
 #if KWIN_BUILD_X11
 /// X11 only: re-read the blur-behind property when the client updates
@@ -1041,7 +1113,11 @@ void BlurEffect::prePaintScreen(ScreenPrePaintData& data ACRYLIC_GLASS_PRESENT_T
 {
     m_paintedDeviceArea = Region();
     m_currentDeviceBlur = Region();
+#if defined(GLASS_X11)
+    m_currentView = nullptr;
+#else
     m_currentView = data.view;
+#endif
 
     effects->prePaintScreen(data ACRYLIC_GLASS_PRESENT_TIME_ARG);
 }
@@ -1049,8 +1125,15 @@ void BlurEffect::prePaintScreen(ScreenPrePaintData& data ACRYLIC_GLASS_PRESENT_T
 /// Expand the dirty / opaque regions so the Kawase chain has the
 /// surrounding pixels it needs to sample, and so KWin doesn't occlude
 /// (= skip) the background behind our blur area as a perf optimisation.
+#if defined(GLASS_X11)
+void BlurEffect::prePaintWindow(EffectWindow* w, WindowPrePaintData& data ACRYLIC_GLASS_PRESENT_TIME_PARAM)
+#else
 void BlurEffect::prePaintWindow(RenderView* view, EffectWindow* w, WindowPrePaintData& data ACRYLIC_GLASS_PRESENT_TIME_PARAM)
+#endif
 {
+#if defined(GLASS_X11)
+    m_currentView = w->screen();
+#endif
     // The Plasma shell role may arrive after the first blur region. KWin
     // exposes no window-type change signal; discard an earlier implicit
     // rectangular frame as soon as the window becomes an applet popup.
@@ -1061,28 +1144,43 @@ void BlurEffect::prePaintWindow(RenderView* view, EffectWindow* w, WindowPrePain
             updateBlurRegion(w);
         }
     }
+#if defined(GLASS_X11)
+    effects->prePaintWindow(w, data ACRYLIC_GLASS_PRESENT_TIME_ARG);
+    advanceWobblyShape(m_currentView, w ACRYLIC_GLASS_PRESENT_TIME_ARG);
+#else
     effects->prePaintWindow(view, w, data ACRYLIC_GLASS_PRESENT_TIME_ARG);
     advanceWobblyShape(view, w ACRYLIC_GLASS_PRESENT_TIME_ARG);
+#endif
 
-#if ACRYLIC_GLASS_KWIN_6_7
+#if ACRYLIC_GLASS_WAYLAND_BACKGROUND_EFFECT_V1
     // On KWin 6.7+ the ext_background_effect_v1 machinery owns the
     // dirty/opaque bookkeeping, so no manual pass is needed. The
     // WindowPrePaintData::deviceOpaque / devicePaint members it poked are
     // gone; the effect just marks the window translucent so KWin paints
     // the background we sample. Matches upstream kwin-effects-glass.
+#if !defined(GLASS_X11)
     Q_UNUSED(view)
+#endif
     if (!blurRegion(w).isEmpty()) {
         data.setTranslucent();
     }
 #else
     // 1. The visible blur area for this window, mapped to device px.
+#if defined(GLASS_X11)
+    const Region blurArea = QRectF(blurRegion(w).boundingRect()).translated(w->pos()).toAlignedRect();
+#else
     const Region blurArea = view->mapToDeviceCoordinatesAligned(QRectF(blurRegion(w).boundingRect()).translated(w->pos()));
+#endif
 
     if (!blurArea.isEmpty()) {
         // 2. FORCE TRANSPARENCY: Remove the blur area from the opaque
         // region. Otherwise KWin "occludes" (= skips) the rendering of
         // whatever sits behind us, and our blur reads stale pixels.
+#if defined(GLASS_X11)
+        data.opaque -= blurArea;
+#else
         data.deviceOpaque -= blurArea;
+#endif
 
         // 3. EXPAND PAINT REGION: Pull in pixels from slightly outside
         // the visible bounds so refraction / Kawase taps near the rim
@@ -1093,12 +1191,24 @@ void BlurEffect::prePaintWindow(RenderView* view, EffectWindow* w, WindowPrePain
         }
 
         // Ensure the compositor actually paints the background we need to sample.
+#if defined(GLASS_X11)
+        data.paint += (expandedBlur - data.opaque);
+#else
         data.devicePaint += (expandedBlur - data.deviceOpaque);
+#endif
     }
 
     // Carry over the blur "damage" to windows lower in the stack so they
     // also repaint — otherwise a moving window behind a stationary glass
     // surface leaves trails.
+#if defined(GLASS_X11)
+    if (m_paintedDeviceArea.intersects(blurArea) || data.paint.intersects(blurArea)) {
+        data.paint += blurArea;
+    }
+    m_currentDeviceBlur += blurArea;
+    m_paintedDeviceArea -= data.opaque;
+    m_paintedDeviceArea += data.paint;
+#else
     if (m_paintedDeviceArea.intersects(blurArea) || data.devicePaint.intersects(blurArea)) {
         data.devicePaint += blurArea;
     }
@@ -1106,6 +1216,7 @@ void BlurEffect::prePaintWindow(RenderView* view, EffectWindow* w, WindowPrePain
     m_currentDeviceBlur += blurArea;
     m_paintedDeviceArea -= data.deviceOpaque;
     m_paintedDeviceArea += data.devicePaint;
+#endif
 #endif
 }
 
@@ -1337,8 +1448,13 @@ void BlurEffect::blur(
         return;
     }
 
+#if defined(GLASS_X11)
+    const QRect deviceBackgroundRect = agSnapToPixelGrid(viewport.mapToRenderTarget(backgroundRect));
+    const QRect scaledBackgroundRect(QPoint(0, 0), deviceBackgroundRect.size());
+#else
     const QRect scaledBackgroundRect = agSnapToPixelGrid(scaledRect(backgroundRect, viewport.scale()));
     const QRect deviceBackgroundRect = agSnapToPixelGrid(viewport.mapToDeviceCoordinates(backgroundRect));
+#endif
     const auto opacity = data.opacity();
 
     // Intersect the shape with the deviceRegion clip — empty after the
@@ -1346,21 +1462,38 @@ void BlurEffect::blur(
     QList<RectF> effectiveShape;
     if (!wobblySurface) {
         effectiveShape.reserve(blurShape.rects().size());
+#if ACRYLIC_GLASS_WAYLAND_BACKGROUND_EFFECT_V1
         if (deviceRegion != Region::infinite()) {
+#else
+        {
+#endif
             for (const Rect& clipRect : deviceRegion.rects()) {
                 const RectF deviceClipRect = clipRect.translated(-deviceBackgroundRect.topLeft());
                 for (const Rect& shapeRect : blurShape.rects()) {
+#if defined(GLASS_X11)
+                    const RectF deviceShapeRect = viewport.mapToRenderTarget(shapeRect)
+                        .translated(-deviceBackgroundRect.topLeft());
+#else
                     const RectF deviceShapeRect = shapeRect.translated(-backgroundRect.topLeft()).scaled(viewport.scale()).rounded();
+#endif
                     if (const QRectF intersected = deviceClipRect.intersected(deviceShapeRect); !intersected.isEmpty()) {
                         effectiveShape.append(intersected);
                     }
                 }
             }
+#if ACRYLIC_GLASS_WAYLAND_BACKGROUND_EFFECT_V1
         } else {
             for (const Rect& rect : blurShape.rects()) {
+#if defined(GLASS_X11)
+                effectiveShape.append(viewport.mapToRenderTarget(rect).translated(-deviceBackgroundRect.topLeft()));
+#else
                 effectiveShape.append(rect.translated(-backgroundRect.topLeft()).scaled(viewport.scale()).rounded());
+#endif
             }
         }
+#else
+        }
+#endif
         if (effectiveShape.isEmpty()) {
             return;
         }
@@ -1503,12 +1636,21 @@ void BlurEffect::blur(
     // A wobbly mesh can sample any point in its full deformed bounds even
     // when KWin only asks us to repaint the newly exposed strip. Capture the
     // complete surface, then clip the generated triangles to deviceRegion.
-    const Region dirtyRegion = wobblySurface
-        ? Region(Rect(backgroundRect))
-        : viewport.mapFromDeviceCoordinatesContained(deviceRegion) & backgroundRect;
+    const Region dirtyRegion = wobblySurface ? Region(Rect(backgroundRect))
+#if defined(GLASS_X11)
+                                             : deviceRegion.intersected(deviceBackgroundRect);
+#else
+                                             : viewport.mapFromDeviceCoordinatesContained(deviceRegion) & backgroundRect;
+#endif
     for (const Rect& dirtyRect : dirtyRegion.rects()) {
+#if defined(GLASS_X11)
+        Q_UNUSED(dirtyRect)
+        renderInfo.framebuffers[0]->blitFromRenderTarget(renderTarget, viewport,
+            backgroundRect, QRect(QPoint(0, 0), scaledBackgroundRect.size()));
+#else
         const QRect deviceDirtyRect = agSnapToPixelGrid(scaledRect(QRectF(dirtyRect), viewport.scale()));
         renderInfo.framebuffers[0]->blitFromRenderTarget(renderTarget, viewport, dirtyRect, deviceDirtyRect.translated(-scaledBackgroundRect.topLeft()));
+#endif
     }
 
     // 5. Upload vertex geometry
@@ -1756,7 +1898,11 @@ void BlurEffect::blur(
     ShaderManager::instance()->pushShader(m_roundedOnscreenPass.shader.get());
 
     QMatrix4x4 projectionMatrix = viewport.projectionMatrix();
+#if defined(GLASS_X11)
+    projectionMatrix.translate(deviceBackgroundRect.x(), deviceBackgroundRect.y());
+#else
     projectionMatrix.translate(scaledBackgroundRect.x(), scaledBackgroundRect.y());
+#endif
 
     // Balance the final downsample push from the Kawase loop above. Skipped
     // alongside it when offset=0 so the framebuffer stack stays balanced.
@@ -1780,7 +1926,12 @@ void BlurEffect::blur(
     // Floor to integer device pixels so the SDF rounded corners are always
     // pixel-aligned — prevents subpixel border artifacts that shift with
     // window position.
-    const QRectF nativeBoxF = agSnapToPixelGridF(scaledRect(transformedRect, viewport.scale())).translated(-scaledBackgroundRect.topLeft());
+    const QRectF nativeBoxF = agSnapToPixelGridF(scaledRect(transformedRect, viewport.scale()))
+#if defined(GLASS_X11)
+        .translated(-deviceBackgroundRect.topLeft());
+#else
+        .translated(-scaledBackgroundRect.topLeft());
+#endif
     const QRectF nativeBox(std::floor(nativeBoxF.x()), std::floor(nativeBoxF.y()), std::floor(nativeBoxF.width()), std::floor(nativeBoxF.height()));
     const BorderRadius nativeCornerRadius = cornerRadius.scaled(viewport.scale()).rounded();
 
@@ -1838,7 +1989,11 @@ void BlurEffect::blur(
             ShaderManager::instance()->pushShader(m_noisePass.shader.get());
 
             QMatrix4x4 projectionMatrix = viewport.projectionMatrix();
+#if defined(GLASS_X11)
+            projectionMatrix.translate(deviceBackgroundRect.x(), deviceBackgroundRect.y());
+#else
             projectionMatrix.translate(scaledBackgroundRect.x(), scaledBackgroundRect.y());
+#endif
 
             m_noisePass.shader->setUniform(m_noisePass.mvpMatrixLocation, projectionMatrix);
             m_noisePass.shader->setUniform(m_noisePass.noiseTextureSizeLocation, QVector2D(noiseTexture->width(), noiseTexture->height()));

@@ -8881,4 +8881,15 @@
      xlink:href="#spin-down-disabled"
      id="spin-minus-disabled"
      transform="translate(8.8821782e-7,26)" />
+
+  <!-- Rounded selection painting; menu layout keeps its original 3px frame. -->
+  <use id="expand-menuitem-normal" xlink:href="#menuitem-normal" />
+  <use id="expand-menuitem-normal-top" xlink:href="#menuitem-normal-top" />
+  <use id="expand-menuitem-normal-bottom" xlink:href="#menuitem-normal-bottom" />
+  <use id="expand-menuitem-normal-left" xlink:href="#menuitem-normal-left" />
+  <use id="expand-menuitem-normal-right" xlink:href="#menuitem-normal-right" />
+  <use id="expand-menuitem-normal-topleft" xlink:href="#menuitem-normal-topleft" />
+  <use id="expand-menuitem-normal-topright" xlink:href="#menuitem-normal-topright" />
+  <use id="expand-menuitem-normal-bottomleft" xlink:href="#menuitem-normal-bottomleft" />
+  <use id="expand-menuitem-normal-bottomright" xlink:href="#menuitem-normal-bottomright" />
 </svg>

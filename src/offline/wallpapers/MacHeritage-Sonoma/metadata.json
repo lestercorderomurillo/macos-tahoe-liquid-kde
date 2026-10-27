@@ -2,7 +2,7 @@
     "KPlugin": {
         "Id": "MacHeritage-Sonoma",
         "Name": "macOS Sonoma",
-        "Description": "macOS Sonoma \u2014 auto light/dark",
+        "Description": "macOS Sonoma — auto light/dark",
         "Authors": [
             {
                 "Name": "MacTahoe Liquid KDE",
@@ -12,6 +12,10 @@
         "Category": "MacTahoe Liquid KDE",
         "License": "Apple Inc. wallpapers extracted from macOS",
         "Website": "https://github.com/lester-sudo/macos-tahoe-liquid-kde",
-        "Version": "1.0"
+        "Version": "1.0",
+        "Name[pt_BR]": "macOS Sonoma",
+        "Description[pt_BR]": "macOS Sonoma — claro/escuro automático",
+        "Name[de]": "macOS Sonoma",
+        "Description[de]": "macOS Sonoma — automatisch hell/dunkel"
     }
 }

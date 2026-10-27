@@ -15,6 +15,9 @@ kconfig_add_kcfg_files(kwin_liquidglass_config_SRCS ../glassconfig.kcfgc)
 qt_add_dbus_interface(kwin_liquidglass_config_SRCS ${KWIN_EFFECTS_INTERFACE} kwineffects_interface)
 
 add_library(kwin_liquidglass_config MODULE ${kwin_liquidglass_config_SRCS})
+target_compile_definitions(kwin_liquidglass_config PRIVATE TRANSLATION_DOMAIN="kwin_effect_liquidglass")
+install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/../../locale/" DESTINATION "${KDE_INSTALL_LOCALEDIR}")
+
 target_link_libraries(kwin_liquidglass_config
     KF6::KCMUtils
     KF6::CoreAddons

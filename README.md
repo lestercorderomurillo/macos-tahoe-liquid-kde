@@ -7,8 +7,8 @@
 
 <p align="center">
   <a href="https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/releases"><img src="https://img.shields.io/github/v/release/lestercorderomurillo/macos-tahoe-liquid-kde?label=release&amp;color=blue" alt="release"></a>
-  <a href="https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/releases/tag/v0.57.15"><img src="https://img.shields.io/badge/LTS-v0.57.15-green" alt="LTS v0.57.15"></a>
-  <a href="https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/actions/workflows/test.yml"><img src="https://img.shields.io/badge/tests-1689_passing-brightgreen" alt="tests"></a>
+  <a href="https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/releases/tag/v0.61.0"><img src="https://img.shields.io/badge/LTS-v0.61.0-green" alt="LTS v0.61.0"></a>
+  <a href="https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/actions/workflows/test.yml"><img src="https://img.shields.io/badge/tests-1993_passing-brightgreen" alt="tests"></a>
   <a href="https://kde.org/plasma-desktop/"><img src="https://img.shields.io/badge/Plasma-6.6%2B-1d99f3?logo=kde" alt="plasma"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-GPL--3.0-blue" alt="license"></a>
   <a href="https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/issues/new"><img src="https://img.shields.io/badge/report-a%20bug-red?logo=github" alt="report a bug"></a>
@@ -41,6 +41,35 @@
 
 <br>
 
+![Contributing](https://img.shields.io/badge/contributing-A04B4B?style=for-the-badge&logo=github&logoColor=white)
+
+Help with bug reports, fixes, testing and documentation.
+
+Thanks to the people who contribute to Tahoe and Golden Gate:
+
+<p>
+  <a href="https://github.com/lestercorderomurillo"><img src="src/screenshots/contributors/lestercorderomurillo.svg" width="40" height="40" alt="@lestercorderomurillo" title="@lestercorderomurillo"></a>
+  <a href="https://github.com/yanhenrique-dev"><img src="src/screenshots/contributors/yanhenrique-dev.svg" width="40" height="40" alt="@yanhenrique-dev" title="@yanhenrique-dev"></a>
+  <a href="https://github.com/tuxkt"><img src="src/screenshots/contributors/tuxkt.svg" width="40" height="40" alt="@tuxkt" title="@tuxkt"></a>
+  <a href="https://github.com/caioniehues"><img src="src/screenshots/contributors/caioniehues.svg" width="40" height="40" alt="@caioniehues" title="@caioniehues"></a>
+  <a href="https://github.com/404-not-found129"><img src="src/screenshots/contributors/404-not-found129.svg" width="40" height="40" alt="@404-not-found129" title="@404-not-found129"></a>
+  <a href="https://github.com/myakupozluk"><img src="src/screenshots/contributors/myakupozluk.svg" width="40" height="40" alt="@myakupozluk" title="@myakupozluk"></a>
+  <a href="https://github.com/EMS1998"><img src="src/screenshots/contributors/EMS1998.svg" width="40" height="40" alt="@EMS1998" title="@EMS1998"></a>
+  <a href="https://github.com/allfritz"><img src="src/screenshots/contributors/allfritz.svg" width="40" height="40" alt="@allfritz" title="@allfritz"></a>
+  <a href="https://github.com/elegos"><img src="src/screenshots/contributors/elegos.svg" width="40" height="40" alt="@elegos" title="@elegos"></a>
+  <a href="https://github.com/kozeki-uii"><img src="src/screenshots/contributors/kozeki-uii.svg" width="40" height="40" alt="@kozeki-uii" title="@kozeki-uii"></a>
+  <a href="https://github.com/imightbelosthere"><img src="src/screenshots/contributors/imightbelosthere.svg" width="40" height="40" alt="@imightbelosthere" title="@imightbelosthere"></a>
+  <a href="https://github.com/evaildev"><img src="src/screenshots/contributors/evaildev.svg" width="40" height="40" alt="@evaildev" title="@evaildev"></a>
+  <a href="https://github.com/xarblu"><img src="src/screenshots/contributors/xarblu.svg" width="40" height="40" alt="@xarblu" title="@xarblu"></a>
+  <a href="https://github.com/PKMNPlatin"><img src="src/screenshots/contributors/PKMNPlatin.svg" width="40" height="40" alt="@PKMNPlatin" title="@PKMNPlatin"></a>
+  <a href="https://github.com/matinlotfali"><img src="src/screenshots/contributors/matinlotfali.svg" width="40" height="40" alt="@matinlotfali" title="@matinlotfali"></a>
+  <a href="https://github.com/luisbocanegra"><img src="src/screenshots/contributors/luisbocanegra.svg" width="40" height="40" alt="@luisbocanegra" title="@luisbocanegra"></a>
+  <a href="https://github.com/OliverChase2003"><img src="src/screenshots/contributors/OliverChase2003.svg" width="40" height="40" alt="@OliverChase2003" title="@OliverChase2003"></a>
+  <a href="https://github.com/RoxasYTB"><img src="src/screenshots/contributors/RoxasYTB.svg" width="40" height="40" alt="@RoxasYTB" title="@RoxasYTB"></a>
+</p>
+
+<br>
+
 ![Features and screenshots](https://img.shields.io/badge/features-%26%20screenshots-4B6B8A?style=for-the-badge&logo=kde&logoColor=white)
 
 The desktop and its apps in light and dark mode.
@@ -50,13 +79,13 @@ The desktop and its apps in light and dark mode.
 The Tahoe desktop in light and dark mode.
 
 <p align="center">
-  <a href="src/screenshots/showcase_light_4k-99ee472d081c.png"><img src="src/screenshots/showcase_light_4k-99ee472d081c.png" alt="Tahoe light desktop with Files focused" width="415"></a>
-  <a href="src/screenshots/desktop_about_light_4k-1d8d3dd65457.png"><img src="src/screenshots/desktop_about_light_4k-1d8d3dd65457.png" alt="Tahoe light desktop with About This Computer focused" width="415"></a>
+  <a href="src/screenshots/showcase_light_4k-11afd76e8576.png"><img src="src/screenshots/showcase_light_4k-11afd76e8576.png" alt="Tahoe light desktop with Files focused" width="415"></a>
+  <a href="src/screenshots/desktop_about_light_4k-c44ce982707c.png"><img src="src/screenshots/desktop_about_light_4k-c44ce982707c.png" alt="Tahoe light desktop with About This Computer focused" width="415"></a>
 </p>
 
 <p align="center">
-  <a href="src/screenshots/showcase_dark_4k-3232a090b9d6.png"><img src="src/screenshots/showcase_dark_4k-3232a090b9d6.png" alt="Tahoe dark desktop with Files focused" width="415"></a>
-  <a href="src/screenshots/desktop_about_dark_4k-259a3f2afc37.png"><img src="src/screenshots/desktop_about_dark_4k-259a3f2afc37.png" alt="Tahoe dark desktop with About This Computer focused" width="415"></a>
+  <a href="src/screenshots/showcase_dark_4k-80cc9f870b1a.png"><img src="src/screenshots/showcase_dark_4k-80cc9f870b1a.png" alt="Tahoe dark desktop with Files focused" width="415"></a>
+  <a href="src/screenshots/desktop_about_dark_4k-f8d4f6d9666b.png"><img src="src/screenshots/desktop_about_dark_4k-f8d4f6d9666b.png" alt="Tahoe dark desktop with About This Computer focused" width="415"></a>
 </p>
 
 <br>
@@ -66,8 +95,8 @@ The Tahoe desktop in light and dark mode.
 App search, favorites and categories with blurred glass and edge refraction. [Material settings](docs/glass-materials.md).
 
 <p align="center">
-  <img src="src/screenshots/launcher_preset_1_light-ab3ae6230a03.png" alt="Default Tahoe preset 1 in light mode, with integrated search and Tahoe wallpaper" width="415">
-  <img src="src/screenshots/launcher_preset_1_dark-a7c124cb5aed.png" alt="Default Tahoe preset 1 in dark mode, with integrated search and Tahoe wallpaper" width="415">
+  <img src="src/screenshots/launcher_preset_1_light-100c3d4c2430.png" alt="Default Tahoe preset 1 in light mode, with integrated search and Tahoe wallpaper" width="415">
+  <img src="src/screenshots/launcher_preset_1_dark-2d75cbb02595.png" alt="Default Tahoe preset 1 in dark mode, with integrated search and Tahoe wallpaper" width="415">
 </p>
 
 <br>
@@ -77,7 +106,9 @@ App search, favorites and categories with blurred glass and edge refraction. [Ma
 Glass refraction, hover zoom, notification badges and auto-hide.
 
 <p align="center">
-  <img src="src/screenshots/dock_1_v4-e128d6bd0c58.png" alt="Glass Dock with pinned applications" width="840">
+  <img src="src/screenshots/dock_1_v4-754f6746d955.png" alt="Glass Dock with ten pinned applications and light icons" width="840">
+  <br>
+  <img src="src/screenshots/dock_1_dark_v4-16a606ad24ba.png" alt="The same Dock with dark icons" width="840">
 </p>
 
 <br>
@@ -87,8 +118,8 @@ Glass refraction, hover zoom, notification badges and auto-hide.
 Finder-style Nautilus in light and dark.
 
 <p align="center">
-  <img src="src/screenshots/finder_v4-88d3f0dd6e17.png" alt="Finder-style Nautilus in light mode" width="415">
-  <img src="src/screenshots/finder_dark_v4-2c7987910d56.png" alt="Finder-style Nautilus in dark mode" width="415">
+  <img src="src/screenshots/finder_v4-680c02cfb652.png" alt="Finder-style Nautilus in light mode" width="415">
+  <img src="src/screenshots/finder_dark_v4-6e4bbe0ebd7f.png" alt="Finder-style Nautilus in dark mode" width="415">
 </p>
 
 <br>
@@ -98,8 +129,8 @@ Finder-style Nautilus in light and dark.
 System controls and global menus for compatible apps.
 
 <p align="center">
-  <img src="src/screenshots/menu_v4-99c4e8d021ff.png" alt="System menu in light mode" width="415">
-  <img src="src/screenshots/menu_dark_v4-d40a479cc941.png" alt="System menu in dark mode" width="415">
+  <img src="src/screenshots/menu_v4-8e6260e3e178.png" alt="System menu in light mode" width="415">
+  <img src="src/screenshots/menu_dark_v4-c7bad6f7dba6.png" alt="System menu in dark mode" width="415">
 </p>
 
 <br>
@@ -109,8 +140,8 @@ System controls and global menus for compatible apps.
 Hardware, software and theme details in About This Computer.
 
 <p align="center">
-  <img src="src/screenshots/about_v4-8517954bfde1.png" alt="About This Computer in light mode" width="415">
-  <img src="src/screenshots/about_dark_v4-824f7f8f1c00.png" alt="About This Computer in dark mode" width="415">
+  <img src="src/screenshots/about_v4-7ed6abf89ff5.png" alt="About This Computer in light mode" width="415">
+  <img src="src/screenshots/about_dark_v4-b77da716d67b.png" alt="About This Computer in dark mode" width="415">
 </p>
 
 <br>
@@ -120,8 +151,8 @@ Hardware, software and theme details in About This Computer.
 Translucent menus and popups with matching light and dark colors.
 
 <p align="center">
-  <img src="src/screenshots/context_menu_v4-dbda9eae1565.png" alt="Desktop context menu in light mode" width="415">
-  <img src="src/screenshots/context_menu_dark_v4-0b643f225f83.png" alt="Desktop context menu in dark mode" width="415">
+  <img src="src/screenshots/context_menu_v4-d5729b4a8019.png" alt="Desktop context menu in light mode" width="415">
+  <img src="src/screenshots/context_menu_dark_v4-aaba1188daf3.png" alt="Desktop context menu in dark mode" width="415">
 </p>
 
 <br>
@@ -141,8 +172,8 @@ Plymouth startup and shutdown theme with LUKS2 unlock support.
 
 Here is what we added or improved in the components we ship.
 
-- **Multilanguage support:** English, Spanish and Simplified Chinese in the graphical and terminal installers, plus translated Plasma widgets.
-- **Installation and packaging:** graphical installer, terminal wizard, selectable components, saved preferences, bundled theme assets and release updates.
+- **Multilanguage support:** English, Spanish, Simplified Chinese, Brazilian Portuguese and German in the graphical installer, plus translated Plasma widgets.
+- **Installation and packaging:** graphical install/uninstall wizard, selectable components, bundled theme assets and release updates.
 - **Multiple distributions:** dependency detection and package mappings for Arch-based, Fedora-based, openSUSE, Debian and KDE neon systems.
 - **systemd and OpenRC:** scheduled theme switching and OLED care through user timers or cron.
 - **Glass improvements:** configurable blur, edge refraction, opacity and gradients; Tahoe and Golden Gate materials with consistent light/dark surfaces and paired edge highlights.
@@ -159,22 +190,38 @@ Here is what we added or improved in the components we ship.
 
 ![Getting started](https://img.shields.io/badge/getting-started-3B7B5B?style=for-the-badge&logo=gnubash&logoColor=white)
 
-Install with the graphical interface or terminal wizard.
+To avoid downloading historical screenshots, start with a shallow checkout:
 
-**Graphical installer**
+```bash
+git clone --depth 1 --single-branch https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde.git
+cd macos-tahoe-liquid-kde
+./installer
+```
+
+Reuse this directory for updates. Source ZIP/tar downloads omit the documentation
+gallery; browse the screenshots on GitHub, or use a Git checkout for the complete
+offline documentation. Installer previews, theme assets, tests and license notices
+remain bundled. Git checkouts retain their history as they are updated.
+
+On launch, a clean Git checkout updates to the latest published release before
+opening the wizard. The updater verifies the release tag and its `VERSION`, and
+fast-forwards only; local edits or divergent history are preserved. Updating
+the installer does not apply the theme: review the wizard choices and confirm
+the installation. **Reset Dock and panel customization** starts checked;
+uncheck it to preserve your current layout on reinstall.
+`MAC_TAHOE_NO_UPDATE_CHECK=true` disables the update check.
+
+Install and uninstall through one graphical wizard:
 
 ```bash
 ./installer
 ```
 
-**Terminal wizard**
+Choose **Install** to configure the theme, or **Uninstall** to remove it.
+The language selector is between these actions. The wizard asks for administrator
+access only when you confirm. `./install` and `./uninstall` open the same UI.
 
-```bash
-sudo ./install
-sudo ./uninstall
-```
-
-English, Spanish and Simplified Chinese. All options: `sudo ./install --help`.
+English, Spanish, Simplified Chinese, Brazilian Portuguese and German.
 
 <details>
 <summary><b>Requirements</b></summary>
@@ -182,7 +229,7 @@ English, Spanish and Simplified Chinese. All options: `sudo ./install --help`.
 Required desktop, build tools and system packages.
 
 - KDE Plasma 6.6+
-- Python 3.10+
+- Python 3.10+ and PyQt6
 - `sudo`
 - Qt 6 development tools
 - KDE and Qt 6 development packages for the compiled plasmoids and KWin effects
@@ -190,7 +237,26 @@ Required desktop, build tools and system packages.
 - `dbus-send`
 - `systemctl` or `crontab` for scheduled features
 
+**dinit:** the installer detects dinit and uses per-user cron entries for
+automatic light/dark switching and OLED care. A running cron daemon is required;
+installing `crontab` alone does not start it. On Artix/dinit, prepare it with:
+
+```bash
+sudo pacman -S --needed cronie cronie-dinit
+sudo dinitctl --system enable cronie
+```
+
+Automatic switches run at 06:00 and 18:00 while logged in; the cron backend has
+no login-time catch-up. Manual light/dark switching works independently of cron.
+dinit desktop qualification is pending; the existing Artix screenshots cover OpenRC.
+
 Assets are bundled. Missing dependencies and optional KDE Rounded Corners require internet access.
+Verified Rounded Corners updates remove older downloaded sources and archives.
+Reinstalling replaces the managed asset trees in place; successful copies remove
+their temporary data, and later copies clean interrupted disposable staging.
+Recovery backups, browser-profile backups and user preferences are retained.
+Developer VM images and capture bundles are not installer caches and are never
+removed automatically.
 
 | Distro | Qt 6 tools | KDE Plasma 6 development packages |
 |--------|------------|-----------------------------------|
@@ -203,27 +269,39 @@ Assets are bundled. Missing dependencies and optional KDE Rounded Corners requir
 <details>
 <summary><b>Choose features and theme mode</b></summary>
 
-Flags skip the wizard. Exclude components with `--no-<name>` or select them with `--only`:
+The wizard offers appearance (automatic, light or dark), regular or tinted glass
+icons, theme color, wallpaper, launcher, top bar and Dock, effects, fonts,
+Firefox, file manager, boot animation and optional OLED care. Review your choices
+before installing; each summary row can be edited.
 
-```bash
-sudo ./install --no-gtk --no-sddm
-sudo ./install --only --fonts --icons
-sudo ./uninstall --only --cursors
-```
+Choose **Flat** or **Glassy** window controls in the wizard, with close-up Nautilus previews. Tahoe starts with Flat; Golden Gate starts with Glassy. Your choice applies to window decorations and GTK title bars, including later light/dark switches.
 
-**Features**
+The default option is always first and selected. Opening the other edition starts
+with that repository's defaults, including its wallpaper and launcher. Choosing
+**Keep my icons**, **Keep my wallpaper** or **Keep my fonts** preserves those choices.
 
-`wallpapers`, `fonts`, `cursors`, `plasma-theme`, `window-decorations`, `kvantum`, `color-schemes`, `icons`, `plasmoids`, `globalmenu`, `acrylic-glass`, `rounded-corners`, `global-theme`, `layout`, `sounds`, `gtk`, `firefox`, `sddm`, `apps`, `nautilus`, `nautilus-bookmarks`, `portals`, `oled-care`, `plymouth`.
+**Reset Dock and panel customization** is checked by default. Reinstalling
+rebuilds the selected top bar and Dock while carrying pinned apps across.
+Uncheck it to preserve the current layout, sizes, autohide and widgets. A first
+installation creates the selected layout automatically.
 
-**Theme mode**
+The Window shadows page compares **no, soft, medium or hard window shadows**
+with Nautilus screenshots. The choice applies to the theme's Aurorae
+decorations and GTK windows. Medium is the default. The chosen
+level applies in light and dark mode; applications that draw their own
+decorations may use their own shadows.
 
-```bash
-sudo ./install          # auto: light at 06:00, dark at 18:00
-sudo ./install --light
-sudo ./install --dark
-```
+Golden Gate includes reflective window controls in both Aurorae and GTK title bars.
 
-**Live switching**
+The file-manager step explicitly offers **Install Nautilus**, **Use Dolphin**,
+or **Skip Nautilus and keep my file manager**. The latter preserves the current
+file associations and skips the Nautilus package and setup. These choices apply
+to the current installation; already-installed applications are not removed.
+
+The global menu, window theme, cursors, sounds, Qt/GTK styles and file dialogs are
+included. The theme is applied immediately after installation.
+
+Automatic appearance changes at 06:00 and 18:00. Manual switching remains available:
 
 ```bash
 mac-tahoe-theme-switch light
@@ -231,25 +309,7 @@ mac-tahoe-theme-switch dark
 mac-tahoe-theme-switch auto
 ```
 
-**Saved choices**
-
-```bash
-sudo ./install --no-gtk --dark --save
-sudo ./install --reset
-```
-
-**Maintenance**
-
-- `--preflight` checks the system without installing.
-- `--no-apply-theme` stages files without switching the desktop.
-- `--no-grub-modify` leaves `/etc/default/grub` unchanged.
-- Theme changes keep any wallpaper you've chosen for each monitor.
-- `--reset-wallpapers` returns all monitors to the bundled light/dark wallpapers.
-- Both Tahoe and Golden Gate light/dark wallpapers are bundled. Tahoe is the default;
-  the [Golden Gate edition](https://github.com/lestercorderomurillo/macos-golden-gate-liquid-kde)
-  downloads this implementation and selects Golden Gate through `src/scripts/defaults.json`.
-- Choose **Tahoe (1)** or **Golden Gate (2)** from the Launcher's **…** menu.
-- `./legacy-install` and `./legacy-uninstall` use the classic prompt instead of the terminal wizard.
+Both launcher presets remain available from the Launcher's **…** menu.
 
 </details>
 
@@ -281,7 +341,11 @@ alone does not mean its menus were exported.
 <details>
 <summary><b>Firefox theme</b></summary>
 
-Supports native, Flatpak and Snap profiles. Restart Firefox after installation.
+Supports Firefox profiles from native, Flatpak and Snap installations. Zen and
+other Firefox-derived browsers keep their own interface and are not themed.
+Reinstalling this component removes its earlier theme additions from those
+browsers, with a fresh UI backup and customizations preserved. Restart the
+affected browsers after installation.
 Browser data and customizations are preserved; uninstall removes the theme's additions. UI backups: `~/.local/state/mac-tahoe-liquid-kde/firefox/snapshots/`.
 
 </details>
@@ -291,12 +355,8 @@ Browser data and customizations are preserved; uninstall removes the theme's add
 
 Optional panel shifts; disabled by default.
 
-```bash
-sudo ./install --oled-care
-sudo ./install --oled-care --save
-sudo ./install --no-oled-care
-sudo ./install --oled-care --oled-interval=3 --oled-max-shift=4
-```
+Enable it on the **OLED protection** page. Choose the shift interval and maximum
+pixel displacement there; it is disabled by default.
 
 **Manual controls**
 
@@ -317,11 +377,15 @@ Try the theme in an isolated Plasma desktop.
 ./vm <os>
 ```
 
-**OS:** `cachyos` · `arch` · `manjaro` · `endeavouros` · `garuda` · `fedora` · `nobara` · `opensuse` · `neon` · `debian` · `artix`
+**OS:** `cachyos` · `arch` · `manjaro` · `endeavouros` · `garuda` · `fedora` · `nobara` · `opensuse` · `neon` · `debian` · `artix` · `kubuntu`
 
 `all` launches every distro. Cloud targets provision automatically; the other
 targets use their checksum-pinned official ISO installers. Follow the
 [VM setup and qualification guide](tests/vm/README.md).
+
+`./vm kubuntu` boots the official Kubuntu 26.04.1 LTS ISO with SHA-256
+verification (SSH port `2234` after guest setup). This new launcher regression
+target is pending full live qualification.
 
 `./vm debian` uses the official Debian testing
 (Forky) cloud image, verifies its SHA-512 checksum, and provisions a Plasma
@@ -335,7 +399,7 @@ Use `./vm debian --clean` to rebuild the disposable guest from scratch.
 <details>
 <summary><b>NixOS and Home Manager (testing)</b></summary>
 
-Use the flake modules, **not `sudo ./install`**. Live desktop validation is pending.
+Use the flake modules, **not the graphical installer**. Live desktop validation is pending.
 
 **Flake input** (requires Nixpkgs and Home Manager):
 
@@ -422,15 +486,17 @@ All 11 distributions in this table passed live VM qualification. Select a status
 <details>
 <summary><b>Init systems</b></summary>
 
-Scheduled features use systemd timers or OpenRC with cron.
+Scheduled features use systemd user timers or per-user cron on OpenRC and dinit.
 
 | Init system | Support | Testing |
 |-------------|---------|---------|
 | systemd | Supported | Completed |
-| OpenRC | Supported | In progress |
+| OpenRC | Supported | Completed |
+| dinit | Cron backend | Scheduling verified; desktop qualification pending |
 
-OpenRC scheduled features require a running cron daemon. Artix has container
-validation; live installation testing is pending.
+OpenRC and dinit scheduled features require a running cron daemon.
+[Artix/OpenRC desktop evidence](tests/vm/PROOF.md#artix) is separate from the
+[dinit scheduling probe](CONTRIBUTING.md#setup).
 
 </details>
 
@@ -473,7 +539,6 @@ The current status of each component.
 | Auto Theme Switcher | Available |
 | OLED Care | Available |
 | Installer UI | Available |
-| Installer TUI | Available |
 | Localization | Available |
 | Aurorae Decorations | Available |
 | Global Menu | Available |
@@ -500,32 +565,6 @@ The current status of each component.
 
 <br>
 
-![Contributing](https://img.shields.io/badge/contributing-A04B4B?style=for-the-badge&logo=github&logoColor=white)
-
-Help with bug reports, fixes, testing and documentation.
-
-Thanks to the people who contribute to Tahoe and Golden Gate:
-
-<p>
-  <a href="https://github.com/lestercorderomurillo"><img src="src/screenshots/contributors/lestercorderomurillo.svg" width="40" height="40" alt="@lestercorderomurillo" title="@lestercorderomurillo"></a>
-  <a href="https://github.com/yanhenrique-dev"><img src="src/screenshots/contributors/yanhenrique-dev.svg" width="40" height="40" alt="@yanhenrique-dev" title="@yanhenrique-dev"></a>
-  <a href="https://github.com/tuxkt"><img src="src/screenshots/contributors/tuxkt.svg" width="40" height="40" alt="@tuxkt" title="@tuxkt"></a>
-  <a href="https://github.com/caioniehues"><img src="src/screenshots/contributors/caioniehues.svg" width="40" height="40" alt="@caioniehues" title="@caioniehues"></a>
-  <a href="https://github.com/404-not-found129"><img src="src/screenshots/contributors/404-not-found129.svg" width="40" height="40" alt="@404-not-found129" title="@404-not-found129"></a>
-  <a href="https://github.com/myakupozluk"><img src="src/screenshots/contributors/myakupozluk.svg" width="40" height="40" alt="@myakupozluk" title="@myakupozluk"></a>
-  <a href="https://github.com/EMS1998"><img src="src/screenshots/contributors/EMS1998.svg" width="40" height="40" alt="@EMS1998" title="@EMS1998"></a>
-  <a href="https://github.com/allfritz"><img src="src/screenshots/contributors/allfritz.svg" width="40" height="40" alt="@allfritz" title="@allfritz"></a>
-  <a href="https://github.com/elegos"><img src="src/screenshots/contributors/elegos.svg" width="40" height="40" alt="@elegos" title="@elegos"></a>
-  <a href="https://github.com/kozeki-uii"><img src="src/screenshots/contributors/kozeki-uii.svg" width="40" height="40" alt="@kozeki-uii" title="@kozeki-uii"></a>
-  <a href="https://github.com/imightbelosthere"><img src="src/screenshots/contributors/imightbelosthere.svg" width="40" height="40" alt="@imightbelosthere" title="@imightbelosthere"></a>
-  <a href="https://github.com/evaildev"><img src="src/screenshots/contributors/evaildev.svg" width="40" height="40" alt="@evaildev" title="@evaildev"></a>
-  <a href="https://github.com/xarblu"><img src="src/screenshots/contributors/xarblu.svg" width="40" height="40" alt="@xarblu" title="@xarblu"></a>
-  <a href="https://github.com/PKMNPlatin"><img src="src/screenshots/contributors/PKMNPlatin.svg" width="40" height="40" alt="@PKMNPlatin" title="@PKMNPlatin"></a>
-  <a href="https://github.com/matinlotfali"><img src="src/screenshots/contributors/matinlotfali.svg" width="40" height="40" alt="@matinlotfali" title="@matinlotfali"></a>
-  <a href="https://github.com/luisbocanegra"><img src="src/screenshots/contributors/luisbocanegra.svg" width="40" height="40" alt="@luisbocanegra" title="@luisbocanegra"></a>
-  <a href="https://github.com/OliverChase2003"><img src="src/screenshots/contributors/OliverChase2003.svg" width="40" height="40" alt="@OliverChase2003" title="@OliverChase2003"></a>
-</p>
-
 **[Report a bug](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/issues/new)** or use **Apple menu → About This Computer → Report a Bug…**.
 
 Include:
@@ -536,6 +575,11 @@ Include:
 - A screenshot or recording for visual issues
 
 Keep pull requests focused and validate with `./vm`. See [CONTRIBUTING.md](CONTRIBUTING.md).
+
+The shared [icon generation toolset](CONTRIBUTING.md#icon-generation-toolset)
+creates light, dark, monochrome and translucent glass appearances from our
+bundled icons, with any RGB tint. It builds, previews, verifies and packages
+icons offline for both editions without applying a desktop theme.
 
 <br>
 
@@ -571,3 +615,6 @@ Please support their efforts too: star their repos, report bugs upstream, and co
 If a credit is missing, please [open an issue](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/issues/new).
 
 </details>
+
+
+[Installer screenshots and testing](TESTING.md).
