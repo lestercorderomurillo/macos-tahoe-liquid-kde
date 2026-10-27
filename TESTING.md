@@ -10,7 +10,9 @@ For test commands and the capture workflow, see [CONTRIBUTING.md](CONTRIBUTING.m
 ## v0.61.8 battery icon contrast
 
 Both editions adapt fixed neutral battery fills and charging bolts to KDE's
-foreground palette during icon staging. Geometry, warning colors, symbolic
+foreground palette during icon staging. Generated Regular, Glass and offline
+appearance themes also enable KDE palette recoloring for inherited icons.
+Geometry, warning colors, symbolic
 aliases and the saved percentage-display choice remain intact. The same
 adaptation runs in the installer, offline icon-toolset bundles and Nix packaging;
 the bundled source archive remains unchanged.
@@ -22,11 +24,14 @@ python -m pytest -q tests/test_battery_icons.py tests/test_icons_step.py \
   tests/test_icon_toolset.py tests/test_reserved_menu_icons.py tests/test_nix.py
 ```
 
-The native KIconLoader probe checks 4,224 renders across the light and dark
-base themes: 0–100% charge, charging and symbolic forms, 16/22/24/32 pixel
+The native KIconLoader probe checks 29,568 renders across the two base themes,
+four installer themes and eight offline appearances: 0–100% charge, charging
+and symbolic forms, 16/22/24/32 pixel
 icons, 1/1.25/1.5/2 scaling, and light/dark/light palette changes. Before the
 fix, the 16-pixel empty charging icon retained 16 white foreground pixels in
-light mode. The fixed probe passes. Installation, reinstall and uninstall
+light mode. The original generated Regular theme also retained 70 white
+foreground pixels at 22 pixels because it did not opt into palette recoloring.
+The fixed probe passes. Installation, reinstall and uninstall
 tests also preserve an explicit saved percentage-display setting.
 
 A fresh overlay of the pinned KDE neon reference VM (Plasma 6.8.1, Qt 6.11.1)
@@ -34,7 +39,9 @@ passed the renderer probe and six sequential, individually reviewed previews:
 light/dark/light for Tahoe and Golden Gate. These previews use synthetic charge
 levels and verify artwork, not physical laptop battery telemetry. Their logs,
 source-file hashes and image hashes are recorded in the development artifact
-`/tmp/battery-evidence/evidence.json`; the release gallery is captured separately.
+`/tmp/battery-evidence/evidence.json`. The generated Regular and Glass choices
+are checked separately in `/tmp/battery-overlay-evidence`; the release gallery
+is captured separately.
 Golden Gate's wrapper suite passed all 45 tests. Nix asset assembly passed;
 the full Nix build and distribution matrix remain exact-commit CI gates.
 The complete shared suite was exercised on Golden Gate prepared content.
@@ -44,6 +51,10 @@ After restoring the current badge, those 18 checks and all five battery checks
 passed on prepared content `e94fdd0da088e64426b8` with private D-Bus/Xvfb
 sessions allowed. Passing tests with unchanged inputs were reused; the four
 optional skips are not claimed as passes.
+After enabling palette inheritance in generated themes, the 49 affected battery,
+icon-toolset and menu-icon checks passed again on Golden Gate prepared content
+`a1de53a41b46c737b1ab`. Both Regular and Glass choices passed all six VM
+edition/mode cases; each focused preview was reviewed after capture.
 
 ## v0.61.5 reset default validation
 

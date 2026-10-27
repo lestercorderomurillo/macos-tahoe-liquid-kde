@@ -96,11 +96,31 @@ def test_icon_install_reinstall_uninstall_recolors_staged_batteries(repo, tmp_pa
 
 
 def test_battery_kiconloader_light_dark_light(repo, battery_themes, tmp_path):
+    from icon_toolset import BASE, VARIANTS, index_text, installer_themes, theme_name
+
     if not shutil.which("cmake") or not shutil.which("pkg-config"):
         pytest.skip("Qt6/KF6 icon development SDK required")
     if subprocess.run(["pkg-config", "--exists", "Qt6Widgets"], check=False).returncode:
         pytest.skip("Qt6/KF6 icon development SDK required")
     apply_battery_palette(battery_themes)
+    # Exercise actual generated theme metadata: palette support is decided by
+    # the selected child theme, even when the artwork comes from a base theme.
+    source = tmp_path / "source" / BASE / "apps/scalable"
+    source.mkdir(parents=True)
+    (source / "demo.svg").write_text(
+        f'<svg xmlns="{SVG}" width="64" height="64"><circle cx="32" cy="32" r="25" fill="#0000ff"/></svg>')
+    names = [BASE, BASE + "-dark"]
+    for style in ("regular", "glass"):
+        generated = tmp_path / style
+        for name in installer_themes(source.parents[2], generated, style, "#007aff"):
+            (battery_themes / name).symlink_to(generated / name, target_is_directory=True)
+            names.append(name)
+    for variant in VARIANTS:
+        name = theme_name(variant)
+        theme = battery_themes / name
+        (theme / "apps/256").mkdir(parents=True)
+        (theme / "index.theme").write_text(index_text(variant, [256]))
+        names.append(name)
     build = tmp_path / "build"
     configured = subprocess.run(["cmake", "-S", str(repo / "tests/native_battery_icons"), "-B", str(build)],
                                 capture_output=True, text=True)
@@ -113,6 +133,6 @@ def test_battery_kiconloader_light_dark_light(repo, battery_themes, tmp_path):
     (data / "icons").symlink_to(battery_themes, target_is_directory=True)
     env = {**os.environ, "QT_QPA_PLATFORM": "offscreen", "XDG_DATA_HOME": str(data),
            "XDG_CONFIG_HOME": str(tmp_path / "config"), "XDG_CACHE_HOME": str(tmp_path / "cache")}
-    for theme in ("MacTahoeLiquidKde-Icons", "MacTahoeLiquidKde-Icons-dark"):
+    for theme in names:
         subprocess.run([str(build / "battery_icon_palette"), theme, str(tmp_path / theme)],
                        env=env, check=True, timeout=90)

@@ -73,7 +73,7 @@ def installer_themes(source: Path, output: Path, style: str, tint: str, *,
         (target / "apps/256").mkdir(parents=True)
         (target / "index.theme").write_text(
             f"[Icon Theme]\nName={name}\nInherits={BASE}{'-dark' if mode == 'dark' else ''},hicolor,breeze\n"
-            "Directories=apps/256\n\n[apps/256]\nSize=256\nType=Scalable\nMinSize=32\nMaxSize=512\nContext=Applications\n")
+            "FollowsColorScheme=true\nDirectories=apps/256\n\n[apps/256]\nSize=256\nType=Scalable\nMinSize=32\nMaxSize=512\nContext=Applications\n")
         (target / "GENERATION-NOTICE.txt").write_text(
             "Generated from the bundled MacTahoe icon archive by icon-toolset.\n"
             "Original artwork retains its notices. Static material, not live refraction.\n"
@@ -178,6 +178,7 @@ def index_text(variant: str, sizes: list[int]) -> str:
     text = (f"[Icon Theme]\nName={theme_name(variant)}\n"
             "Comment=Generated application icons; small interface icons inherit the base\n"
             f"Inherits={fallback},hicolor,breeze\n"
+            "FollowsColorScheme=true\n"
             f"Directories={','.join('apps/'+str(size) for size in sizes)}\n")
     for size in sizes:
         text += f"\n[apps/{size}]\nSize={size}\nType=Fixed\nContext=Applications\n"
