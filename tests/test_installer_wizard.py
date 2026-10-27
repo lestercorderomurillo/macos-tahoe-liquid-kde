@@ -27,6 +27,7 @@ def test_new_wizard_uses_source_defaults_after_other_edition(monkeypatch, tmp_pa
     selected = choices.defaults()
     assert selected["wallpaper"] == selected["launcher"] == expected
     assert selected["appearance"] == "auto"
+    assert selected["window_controls"] == ("glassy" if edition == "MacGoldenGate" else "flat")
     assert selected["reset_layout"]
     assert choices.features(selected, cli.DEFAULT_FEATURES, existing_install=True)["layout"]
     actual = choices.features(selected, cli.DEFAULT_FEATURES)
@@ -35,12 +36,31 @@ def test_new_wizard_uses_source_defaults_after_other_edition(monkeypatch, tmp_pa
     assert json.loads(config.read_text()) == stale  # Opening is read-only.
 
 
-@pytest.mark.parametrize("payload", [[], {"shell": "echo bad"}, {"icons": "unknown"}, {"shadows": "unknown"},
+@pytest.mark.parametrize("payload", [[], {"shell": "echo bad"}, {"icons": "unknown"}, {"shadows": "unknown"}, {"window_controls": "unknown"},
                                     {"fonts": "false"}, {"oled_interval": True},
                                     {"oled_max_shift": 17}, {"wallpaper": "custom"}])
 def test_reject_invalid_selections_before_install(payload):
     with pytest.raises(ValueError):
         choices.validate(payload)
+
+
+def test_control_previews_are_lossless_vm_crops_with_verified_hashes(repo):
+    import hashlib
+    from PIL import Image
+    folder = repo / 'src/installer/assets'
+    sources = json.loads((folder / 'sources.json').read_text())
+    for style in ('flat', 'glassy'):
+        for mode in ('light', 'dark'):
+            record = sources[f'window-controls-{style}-{mode}.png']
+            path = folder / record['file']
+            checksum = hashlib.sha256(path.read_bytes()).hexdigest()
+            assert checksum == record['sha256'] and checksum[:12] in path.name
+            assert record['window']['active']
+            assert 'dolphin' in record['window']['resourceClass'].lower()
+            assert record['scale'] == 4 and len(record['source_sha256']) == 64
+            with Image.open(path) as image:
+                assert image.format == 'PNG'
+                assert image.width >= 724 and image.height >= 380
 
 
 def test_preserve_options_and_mandatory_components():
@@ -212,7 +232,7 @@ for page, _ in STEPS:
     assert window.scroll.verticalScrollBar().maximum() == 0, page
     assert window.content.findChild(type(window.label('')), 'pageTitle') is not None or page == 'welcome'
     cards = window.content.findChildren(ChoiceCard)
-    if page in ('appearance', 'icons', 'wallpaper', 'launcher', 'fonts', 'files'):
+    if page in ('appearance', 'icons', 'wallpaper', 'launcher', 'window_controls', 'fonts', 'files'):
         assert cards and cards[0].isChecked(), page
         assert cards[0].height() > 80, page
 window.page = 'welcome'; window.render(); app.processEvents()
@@ -257,6 +277,15 @@ cards = window.content.findChildren(ChoiceCard)
 assert cards[0].y() == cards[1].y()
 assert cards[0].height() == cards[1].height()
 assert abs(window.dots.mapTo(window, window.dots.rect().center()).x() - window.width()/2) <= 2
+window.page = 'window_controls'; window.render(); app.processEvents()
+window.content.findChild(ChoiceCard, 'choice-window_controls-glassy').click()
+assert window.choices['window_controls'] == 'glassy'
+window.page = 'summary'; window.render(); app.processEvents()
+window.content.findChild(QPushButton, 'edit-window_controls').click()
+assert window.page == 'window_controls'
+window.content.findChild(ChoiceCard, 'choice-window_controls-flat').click()
+window.advance(); app.processEvents()
+assert window.page == 'summary' and window.choices['window_controls'] == 'flat'
 window.page = 'icons'; window.render(); app.processEvents()
 window.content.findChild(ChoiceCard, 'choice-icons-keep').click(); app.processEvents()
 assert window.choices['icons'] == 'keep'

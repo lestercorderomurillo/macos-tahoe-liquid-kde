@@ -11,7 +11,7 @@ ROOT = Path(__file__).resolve().parents[2]
 PROFILE = ROOT / 'src/scripts/release_capture_profile.json'
 EDITIONS = {'tahoe': ('MacTahoe', 1, 'v4'), 'golden-gate': ('MacGoldenGate', 2, 'v1')}
 INSTALLER_PAGES = ('welcome', 'appearance', 'icons', 'wallpaper', 'launcher', 'layout',
-                   'effects', 'fonts', 'firefox', 'files', 'boot', 'oled', 'summary')
+                   'effects', 'window_controls', 'fonts', 'firefox', 'files', 'boot', 'oled', 'summary')
 CASES = ('launcher', 'dock', 'menu', 'context', 'finder', 'showcase', 'about') + tuple(
     'installer-' + page for page in INSTALLER_PAGES)
 MODES = ('light', 'dark')

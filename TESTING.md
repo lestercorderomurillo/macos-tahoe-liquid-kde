@@ -56,6 +56,52 @@ icon-toolset and menu-icon checks passed again on Golden Gate prepared content
 `a1de53a41b46c737b1ab`. Both Regular and Glass choices passed all six VM
 edition/mode cases; each focused preview was reviewed after capture.
 
+## v0.61.7 window controls validation
+
+The native wizard offers Flat and Glassy window controls, with the source
+edition's default first. Navigation and summary editing preserve the explicit
+choice for one transaction. The standalone switcher keeps the installed choice
+across light/dark transitions. Both Aurorae families remain installed, while GTK
+and global-theme staging follow the same selection.
+
+On the maintainer's Linux environment with offscreen Qt, 172 component checks
+passed for wizard navigation, input validation, Aurorae install/reinstall/removal,
+GTK styling, global-theme defaults, configuration verification, shadows, Nix
+asset assembly and screenshot validation:
+
+```sh
+QT_QPA_PLATFORM=offscreen PYTHONDONTWRITEBYTECODE=1 python -m pytest -q -p no:cacheprovider \
+  tests/test_screenshot_checks.py tests/test_release_screenshots.py \
+  tests/test_installer_wizard.py tests/test_cli.py tests/test_window_controls.py \
+  tests/test_window_shadows.py tests/test_nix.py tests/test_step_guards.py
+```
+
+Golden Gate prepared content `ee41404ae82e135c7d39` also passed 261 affected
+checks with the same code and preview assets, including GTK upgrades and the
+standalone switcher's existing scheduling paths:
+
+```sh
+QT_QPA_PLATFORM=offscreen PYTHONDONTWRITEBYTECODE=1 python -m pytest -q -p no:cacheprovider \
+  tests/test_installer_wizard.py tests/test_cli.py tests/test_window_controls.py \
+  tests/test_window_shadows.py tests/test_screenshot_checks.py tests/test_nix.py \
+  tests/test_step_guards.py tests/test_gtk_upgrade.py tests/test_theme_switch.py
+```
+
+The run passed 260 checks under filesystem isolation; the Unix-socket scheduling
+case passed separately with permission to bind its temporary local socket.
+
+The four new chooser previews were captured sequentially in a disposable overlay
+of the pinned KDE neon VM (Plasma 6.8.1, Qt 6.11.1, Wayland), at 3840×2160 and
+4× scale. The probe installed both styles, checked the selected Aurorae family
+and matching GTK assets, and captured focused Dolphin windows in both modes.
+The first unsettled crop was rejected; the bundled crops use the corrected
+capture with verified final geometry. Source hashes and crop rectangles are in
+`src/installer/assets/sources.json`. The complete release bundle separately uses
+the fixed 2× profile and includes the new installer page for both editions and
+both modes. It requires visual review and exact-commit CI before publication.
+
+See [window-control construction and rendering limits](docs/window-controls.md).
+
 ## v0.61.5 reset default validation
 
 The shared wizard now starts with **Reset Dock and panel customization** checked
@@ -182,18 +228,19 @@ Scroll horizontally through the installation steps.
 
 <table>
 <tr>
-  <td align="center"><img src="src/screenshots/installer-welcome_dark_v4-11d5f06c1f10.png" alt="Welcome" width="500"><br>Welcome</td>
+  <td align="center"><img src="src/screenshots/installer-welcome_dark_v4-040b6b92d0fa.png" alt="Welcome" width="500"><br>Welcome</td>
   <td align="center"><img src="src/screenshots/installer-appearance_dark_v4-a6f5633f614d.png" alt="Appearance" width="500"><br>Appearance</td>
   <td align="center"><img src="src/screenshots/installer-icons_dark_v4-fb1bad1909be.png" alt="Icons and color" width="500"><br>Icons and color</td>
   <td align="center"><img src="src/screenshots/installer-wallpaper_dark_v4-7ee3602eddd1.png" alt="Wallpaper" width="500"><br>Wallpaper</td>
   <td align="center"><img src="src/screenshots/installer-launcher_dark_v4-28b8fff306a0.png" alt="Launcher" width="500"><br>Launcher</td>
   <td align="center"><img src="src/screenshots/installer-layout_dark_v4-609c79632293.png" alt="Top bar and Dock" width="500"><br>Top bar and Dock</td>
   <td align="center"><img src="src/screenshots/installer-effects_dark_v4-1d92b8e0c330.png" alt="Effects" width="500"><br>Effects</td>
-  <td align="center"><img src="src/screenshots/installer-fonts_dark_v4-49334d088f34.png" alt="Fonts" width="500"><br>Fonts</td>
-  <td align="center"><img src="src/screenshots/installer-firefox_dark_v4-56f96e001034.png" alt="Firefox" width="500"><br>Firefox</td>
-  <td align="center"><img src="src/screenshots/installer-files_dark_v4-59d64d8c7345.png" alt="File manager" width="500"><br>File manager</td>
-  <td align="center"><img src="src/screenshots/installer-boot_dark_v4-e3d53438aa3c.png" alt="Boot animation" width="500"><br>Boot animation</td>
-  <td align="center"><img src="src/screenshots/installer-oled_dark_v4-7114243e7a32.png" alt="OLED protection" width="500"><br>OLED protection</td>
-  <td align="center"><img src="src/screenshots/installer-summary_dark_v4-6b0e4c7ef3b9.png" alt="Summary" width="500"><br>Summary</td>
+  <td align="center"><img src="src/screenshots/installer-window_controls_dark_v4-de5d41212332.png" alt="Flat or Glassy window controls" width="500"><br>Window controls</td>
+  <td align="center"><img src="src/screenshots/installer-fonts_dark_v4-761f06feda96.png" alt="Fonts" width="500"><br>Fonts</td>
+  <td align="center"><img src="src/screenshots/installer-firefox_dark_v4-49cd855a045b.png" alt="Firefox" width="500"><br>Firefox</td>
+  <td align="center"><img src="src/screenshots/installer-files_dark_v4-5fcd5eaf13e4.png" alt="File manager" width="500"><br>File manager</td>
+  <td align="center"><img src="src/screenshots/installer-boot_dark_v4-fc618023c738.png" alt="Boot animation" width="500"><br>Boot animation</td>
+  <td align="center"><img src="src/screenshots/installer-oled_dark_v4-5034afba3bbb.png" alt="OLED protection" width="500"><br>OLED protection</td>
+  <td align="center"><img src="src/screenshots/installer-summary_dark_v4-6e00e7886d4a.png" alt="Summary" width="500"><br>Summary</td>
 </tr>
 </table>

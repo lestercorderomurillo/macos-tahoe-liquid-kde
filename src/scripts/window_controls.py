@@ -4,7 +4,7 @@ from pathlib import Path
 import re
 import shutil
 
-from theme_switch import default_wallpaper
+from theme_switch import decoration_theme, window_control_style
 
 EDITIONS = ("MacTahoe", "MacGoldenGate")
 STATES = ("active", "inactive", "hover", "pressed", "deactivated",
@@ -121,8 +121,8 @@ def assemble_aurorae(source: Path, destination: Path, mode: str, edition: str) -
 
 
 def apply_gtk_controls(theme: Path) -> None:
-    """Replace only bundled titlebutton image references in a staged GG theme."""
-    if default_wallpaper() != "MacGoldenGate":
+    """Apply the chosen controls to fresh staged GTK sources in either edition."""
+    if window_control_style() != "glassy":
         return
     states = {'': 'active', '-hover': 'hover', '-active': 'pressed',
               '-backdrop': 'inactive', '-backdrop-hover': 'hover-inactive'}
@@ -158,5 +158,5 @@ def apply_global_theme(theme: Path) -> None:
     if path.is_file():
         path.write_text(re.sub(
             r"(?m)^theme=__aurorae__svg__Mac(?:Tahoe|GoldenGate)LiquidKde-(Light|Dark)$",
-            lambda match: f"theme=__aurorae__svg__{default_wallpaper()}LiquidKde-{match[1]}",
+            lambda match: f"theme=__aurorae__svg__{decoration_theme(match[1].lower())}",
             path.read_text()))

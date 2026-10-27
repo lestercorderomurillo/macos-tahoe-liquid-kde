@@ -8,7 +8,7 @@
 <p align="center">
   <a href="https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/releases"><img src="https://img.shields.io/github/v/release/lestercorderomurillo/macos-tahoe-liquid-kde?label=release&amp;color=blue" alt="release"></a>
   <a href="https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/releases/tag/v0.61.0"><img src="https://img.shields.io/badge/LTS-v0.61.0-green" alt="LTS v0.61.0"></a>
-  <a href="https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/actions/workflows/test.yml"><img src="https://img.shields.io/badge/tests-1986_passing-brightgreen" alt="tests"></a>
+  <a href="https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/actions/workflows/test.yml"><img src="https://img.shields.io/badge/tests-1998_passing-brightgreen" alt="tests"></a>
   <a href="https://kde.org/plasma-desktop/"><img src="https://img.shields.io/badge/Plasma-6.6%2B-1d99f3?logo=kde" alt="plasma"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-GPL--3.0-blue" alt="license"></a>
   <a href="https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/issues/new"><img src="https://img.shields.io/badge/report-a%20bug-red?logo=github" alt="report a bug"></a>
@@ -79,13 +79,13 @@ The desktop and its apps in light and dark mode.
 The Tahoe desktop in light and dark mode.
 
 <p align="center">
-  <a href="src/screenshots/showcase_light_4k-9958f56a9ae8.png"><img src="src/screenshots/showcase_light_4k-9958f56a9ae8.png" alt="Tahoe light desktop with Files focused" width="415"></a>
-  <a href="src/screenshots/desktop_about_light_4k-55182ea89e16.png"><img src="src/screenshots/desktop_about_light_4k-55182ea89e16.png" alt="Tahoe light desktop with About This Computer focused" width="415"></a>
+  <a href="src/screenshots/showcase_light_4k-11afd76e8576.png"><img src="src/screenshots/showcase_light_4k-11afd76e8576.png" alt="Tahoe light desktop with Files focused" width="415"></a>
+  <a href="src/screenshots/desktop_about_light_4k-c44ce982707c.png"><img src="src/screenshots/desktop_about_light_4k-c44ce982707c.png" alt="Tahoe light desktop with About This Computer focused" width="415"></a>
 </p>
 
 <p align="center">
-  <a href="src/screenshots/showcase_dark_4k-971f6a0f38a7.png"><img src="src/screenshots/showcase_dark_4k-971f6a0f38a7.png" alt="Tahoe dark desktop with Files focused" width="415"></a>
-  <a href="src/screenshots/desktop_about_dark_4k-6c973fe74d84.png"><img src="src/screenshots/desktop_about_dark_4k-6c973fe74d84.png" alt="Tahoe dark desktop with About This Computer focused" width="415"></a>
+  <a href="src/screenshots/showcase_dark_4k-80cc9f870b1a.png"><img src="src/screenshots/showcase_dark_4k-80cc9f870b1a.png" alt="Tahoe dark desktop with Files focused" width="415"></a>
+  <a href="src/screenshots/desktop_about_dark_4k-f8d4f6d9666b.png"><img src="src/screenshots/desktop_about_dark_4k-f8d4f6d9666b.png" alt="Tahoe dark desktop with About This Computer focused" width="415"></a>
 </p>
 
 <br>
@@ -95,8 +95,8 @@ The Tahoe desktop in light and dark mode.
 App search, favorites and categories with blurred glass and edge refraction. [Material settings](docs/glass-materials.md).
 
 <p align="center">
-  <img src="src/screenshots/launcher_preset_1_light-9c706b53acb9.png" alt="Default Tahoe preset 1 in light mode, with integrated search and Tahoe wallpaper" width="415">
-  <img src="src/screenshots/launcher_preset_1_dark-deb0150d279d.png" alt="Default Tahoe preset 1 in dark mode, with integrated search and Tahoe wallpaper" width="415">
+  <img src="src/screenshots/launcher_preset_1_light-100c3d4c2430.png" alt="Default Tahoe preset 1 in light mode, with integrated search and Tahoe wallpaper" width="415">
+  <img src="src/screenshots/launcher_preset_1_dark-2d75cbb02595.png" alt="Default Tahoe preset 1 in dark mode, with integrated search and Tahoe wallpaper" width="415">
 </p>
 
 <br>
@@ -118,7 +118,7 @@ Glass refraction, hover zoom, notification badges and auto-hide.
 Finder-style Nautilus in light and dark.
 
 <p align="center">
-  <img src="src/screenshots/finder_v4-95e09489c23f.png" alt="Finder-style Nautilus in light mode" width="415">
+  <img src="src/screenshots/finder_v4-680c02cfb652.png" alt="Finder-style Nautilus in light mode" width="415">
   <img src="src/screenshots/finder_dark_v4-6e4bbe0ebd7f.png" alt="Finder-style Nautilus in dark mode" width="415">
 </p>
 
@@ -129,7 +129,7 @@ Finder-style Nautilus in light and dark.
 System controls and global menus for compatible apps.
 
 <p align="center">
-  <img src="src/screenshots/menu_v4-f717fa91696c.png" alt="System menu in light mode" width="415">
+  <img src="src/screenshots/menu_v4-8e6260e3e178.png" alt="System menu in light mode" width="415">
   <img src="src/screenshots/menu_dark_v4-c7bad6f7dba6.png" alt="System menu in dark mode" width="415">
 </p>
 
@@ -140,8 +140,8 @@ System controls and global menus for compatible apps.
 Hardware, software and theme details in About This Computer.
 
 <p align="center">
-  <img src="src/screenshots/about_v4-c1d1fefe5b2c.png" alt="About This Computer in light mode" width="415">
-  <img src="src/screenshots/about_dark_v4-1997b3dad62f.png" alt="About This Computer in dark mode" width="415">
+  <img src="src/screenshots/about_v4-7ed6abf89ff5.png" alt="About This Computer in light mode" width="415">
+  <img src="src/screenshots/about_dark_v4-b77da716d67b.png" alt="About This Computer in dark mode" width="415">
 </p>
 
 <br>
@@ -151,7 +151,7 @@ Hardware, software and theme details in About This Computer.
 Translucent menus and popups with matching light and dark colors.
 
 <p align="center">
-  <img src="src/screenshots/context_menu_v4-24fc7391c5a3.png" alt="Desktop context menu in light mode" width="415">
+  <img src="src/screenshots/context_menu_v4-d5729b4a8019.png" alt="Desktop context menu in light mode" width="415">
   <img src="src/screenshots/context_menu_dark_v4-aaba1188daf3.png" alt="Desktop context menu in dark mode" width="415">
 </p>
 
@@ -273,6 +273,8 @@ The wizard offers appearance (automatic, light or dark), regular or tinted glass
 icons, theme color, wallpaper, launcher, top bar and Dock, effects, fonts,
 Firefox, file manager, boot animation and optional OLED care. Review your choices
 before installing; each summary row can be edited.
+
+Choose **Flat** or **Glassy** window controls in the wizard. Tahoe starts with Flat; Golden Gate starts with Glassy. Your choice applies to window decorations and GTK title bars, including later light/dark switches.
 
 The default option is always first and selected. Opening the other edition starts
 with that repository's defaults, including its wallpaper and launcher. Choosing

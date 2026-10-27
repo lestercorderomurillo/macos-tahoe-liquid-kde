@@ -1466,5 +1466,137 @@
     "sha256": "f96a0199455739844de7c15fc53055bf67bd340b48c6b18814a1ccc7396026f6",
     "kind": "generated-icon-preview",
     "file": "glass-dark-gray-3-f96a01994557.png"
+  },
+  "window-controls-flat-light.png": {
+    "style": "flat",
+    "mode": "light",
+    "window": {
+      "caption": "Documents \u2014 Dolphin",
+      "resourceClass": "org.kde.dolphin",
+      "type": 0,
+      "appletPopup": false,
+      "active": true,
+      "geometry": {
+        "x": 120,
+        "y": 100,
+        "width": 700,
+        "height": 350
+      }
+    },
+    "scale": 4,
+    "decoration": "MacTahoe",
+    "gtk_glassy": false,
+    "source_sha256": "1d72171c9e3f60fbd1f7e50ce5db7339e9aa41c1822022120a269bd14bd3fc1d",
+    "crop": [
+      432,
+      352,
+      1192,
+      752
+    ],
+    "vm_image_sha256": "2a09de13ad568da01a8e16dd93e6aec120e63375bfc0ec24b4e804b43ecb4f8c",
+    "source_archive_sha256": "956cd21ad05e7636ae2bf56c987661b98c4c5bbe65413592629aa0a6ca53d513",
+    "source": "VM title-bar capture/flat-light-desktop.png",
+    "sha256": "64b9a978a83f3ca9345ca3c9f82ee16297cd0c29957d92ae38b1ed920d3ab984",
+    "file": "window-controls-flat-light-64b9a978a83f.png",
+    "capture": "Disposable pinned KDE neon VM; focused Dolphin; 3840x2160 at 4x scale; lossless crop"
+  },
+  "window-controls-glassy-light.png": {
+    "style": "glassy",
+    "mode": "light",
+    "window": {
+      "caption": "Documents \u2014 Dolphin",
+      "resourceClass": "org.kde.dolphin",
+      "type": 0,
+      "appletPopup": false,
+      "active": true,
+      "geometry": {
+        "x": 120,
+        "y": 100,
+        "width": 700,
+        "height": 350
+      }
+    },
+    "scale": 4,
+    "decoration": "MacGoldenGate",
+    "gtk_glassy": true,
+    "source_sha256": "3c597afc547d27afe3a426e907d0db9bdec122b709f3485d583719605c3c17f4",
+    "crop": [
+      432,
+      352,
+      1192,
+      752
+    ],
+    "vm_image_sha256": "2a09de13ad568da01a8e16dd93e6aec120e63375bfc0ec24b4e804b43ecb4f8c",
+    "source_archive_sha256": "956cd21ad05e7636ae2bf56c987661b98c4c5bbe65413592629aa0a6ca53d513",
+    "source": "VM title-bar capture/glassy-light-desktop.png",
+    "sha256": "497765f490a98dfc6ba9fdeb23561f89988df9bf2750ed7ebd45881ae002a760",
+    "file": "window-controls-glassy-light-497765f490a9.png",
+    "capture": "Disposable pinned KDE neon VM; focused Dolphin; 3840x2160 at 4x scale; lossless crop"
+  },
+  "window-controls-flat-dark.png": {
+    "style": "flat",
+    "mode": "dark",
+    "window": {
+      "caption": "Documents \u2014 Dolphin",
+      "resourceClass": "org.kde.dolphin",
+      "type": 0,
+      "appletPopup": false,
+      "active": true,
+      "geometry": {
+        "x": 120,
+        "y": 100,
+        "width": 700,
+        "height": 350
+      }
+    },
+    "scale": 4,
+    "decoration": "MacTahoe",
+    "gtk_glassy": false,
+    "source_sha256": "d0aa6ecb8d355df9ade3dd2b8a971042f6937193f57b1bd5498f3f576fffbca8",
+    "crop": [
+      432,
+      352,
+      1192,
+      752
+    ],
+    "vm_image_sha256": "2a09de13ad568da01a8e16dd93e6aec120e63375bfc0ec24b4e804b43ecb4f8c",
+    "source_archive_sha256": "956cd21ad05e7636ae2bf56c987661b98c4c5bbe65413592629aa0a6ca53d513",
+    "source": "VM title-bar capture/flat-dark-desktop.png",
+    "sha256": "e7ef40a3b3aa111d6e4dc684895f3880a28b42fe772887380ccdb7948dd265ff",
+    "file": "window-controls-flat-dark-e7ef40a3b3aa.png",
+    "capture": "Disposable pinned KDE neon VM; focused Dolphin; 3840x2160 at 4x scale; lossless crop"
+  },
+  "window-controls-glassy-dark.png": {
+    "style": "glassy",
+    "mode": "dark",
+    "window": {
+      "caption": "Documents \u2014 Dolphin",
+      "resourceClass": "org.kde.dolphin",
+      "type": 0,
+      "appletPopup": false,
+      "active": true,
+      "geometry": {
+        "x": 120,
+        "y": 100,
+        "width": 700,
+        "height": 350
+      }
+    },
+    "scale": 4,
+    "decoration": "MacGoldenGate",
+    "gtk_glassy": true,
+    "source_sha256": "359b7954e7322d07974047b579f389d38b2edc43c941e80148fe35c9d515d8ae",
+    "crop": [
+      432,
+      352,
+      1192,
+      752
+    ],
+    "vm_image_sha256": "2a09de13ad568da01a8e16dd93e6aec120e63375bfc0ec24b4e804b43ecb4f8c",
+    "source_archive_sha256": "956cd21ad05e7636ae2bf56c987661b98c4c5bbe65413592629aa0a6ca53d513",
+    "source": "VM title-bar capture/glassy-dark-desktop.png",
+    "sha256": "258f41e7fcf6ba88befc6ec87de4b4c6bfe555102cbf1e24af683be409a79b68",
+    "file": "window-controls-glassy-dark-258f41e7fcf6.png",
+    "capture": "Disposable pinned KDE neon VM; focused Dolphin; 3840x2160 at 4x scale; lossless crop"
   }
 }

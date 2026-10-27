@@ -1153,3 +1153,10 @@ and shadow controls. Install both Aurorae families and select the edition in
 the switcher, global-theme defaults and verifier. GTK < 4.20 needs explicit
 mode selection for literal button URLs in its adaptive legacy stylesheet;
 keep ownership detection and screenshot verification consistent with it.
+
+The native wizard has a Window controls step with Flat and Glassy choices and
+reviewed, high-resolution title-bar crops from a disposable VM. Defaults remain
+edition-specific (Tahoe Flat, Golden Gate Glassy), but an explicit transaction
+choice overrides the edition for Aurorae, GTK, global-theme defaults and the
+standalone switcher. Preserve the choice through light/dark transitions; new
+wizard launches still start from source-edition defaults.

@@ -805,8 +805,8 @@ def verify_config(feat: dict[str, object]) -> None:
         if not feat.get(key, True):
             continue
         if key == "window_decorations":
-            from theme_switch import default_wallpaper
-            expected = f"__aurorae__svg__{default_wallpaper()}LiquidKde-"
+            from theme_switch import decoration_theme
+            expected = "__aurorae__svg__" + decoration_theme("light").removesuffix("Light")
         actual = _read_config_cascade(file, group, prop)
         # Consult other KConfig layers only when neither file has the key.
         if actual is None:

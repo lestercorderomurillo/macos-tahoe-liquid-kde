@@ -1,16 +1,17 @@
 {
   "schema": 1,
-  "version": "0.61.8",
-  "source_commit": "6e7dcefb3d2ad513b617c2ee491719df68a48ced",
-  "source_tree": "08391612c2d81d2c4a1d91c66109f32f0e5f43bbf0b1e54c70ea761da61e9bae",
+  "version": "0.61.7",
+  "source_commit": "c1f909bed55726223d36733425904ed9f29ec604",
+  "source_tree": "e6563c82774857f1750e0dc614407de0c4dfd12b70d96646004d1700425dc1bf",
   "profile_sha256": "786905bfe2932f92f011f069c74bb0c8f0eb7b563f2b49372082d642fde5cced",
   "vm_image_sha256": "2a09de13ad568da01a8e16dd93e6aec120e63375bfc0ec24b4e804b43ecb4f8c",
   "effect_build": "747babf1b752c32ad9bce582e74b49abd5122af9ff4ff281c51de2f8f49bc854",
   "edition": "tahoe",
   "images": {
-    "launcher_preset_1_light-9c706b53acb9.png": {
-      "sha256": "9c706b53acb98b9dfce183fefaf90e0bcf764c62127b1c94e3ac10dd46138439",
+    "launcher_preset_1_light-100c3d4c2430.png": {
+      "sha256": "100c3d4c243058fe59bc2279f36d12ffdfd7757def9ec2cf2c537ad2b7ccc659",
       "appearance": {
+        "Window controls": "__aurorae__svg__MacTahoeLiquidKde-Light",
         "Plasma": "MacTahoeLiquidKde-Light",
         "Qt": "MacTahoeLiquidKdeLight",
         "Kvantum": "mac-tahoe-liquid-kde",
@@ -83,12 +84,13 @@
       "window_verified": true,
       "installer_page": null,
       "installer_edition": null,
-      "source_commit": "6e7dcefb3d2ad513b617c2ee491719df68a48ced",
-      "source_release": "v0.61.8"
+      "source_commit": "c1f909bed55726223d36733425904ed9f29ec604",
+      "source_release": "v0.61.7"
     },
     "dock_1_v4-754f6746d955.png": {
       "sha256": "754f6746d9558b04b76fe08c731c81e6a43ae4f64118199bf69e8c47612b4357",
       "appearance": {
+        "Window controls": "__aurorae__svg__MacTahoeLiquidKde-Light",
         "Plasma": "MacTahoeLiquidKde-Light",
         "Qt": "MacTahoeLiquidKdeLight",
         "Kvantum": "mac-tahoe-liquid-kde",
@@ -153,12 +155,13 @@
       "window_verified": true,
       "installer_page": null,
       "installer_edition": null,
-      "source_commit": "6e7dcefb3d2ad513b617c2ee491719df68a48ced",
-      "source_release": "v0.61.8"
+      "source_commit": "c1f909bed55726223d36733425904ed9f29ec604",
+      "source_release": "v0.61.7"
     },
-    "menu_v4-f717fa91696c.png": {
-      "sha256": "f717fa91696c692b02e047d773916ef6049c93790b63340d99376a1b77ef1b17",
+    "menu_v4-8e6260e3e178.png": {
+      "sha256": "8e6260e3e178f92fded2b61bc2b232c3330c7c09a9f802bd0fe0a1c539bf7c1e",
       "appearance": {
+        "Window controls": "__aurorae__svg__MacTahoeLiquidKde-Light",
         "Plasma": "MacTahoeLiquidKde-Light",
         "Qt": "MacTahoeLiquidKdeLight",
         "Kvantum": "mac-tahoe-liquid-kde",
@@ -236,12 +239,13 @@
       "window_verified": true,
       "installer_page": null,
       "installer_edition": null,
-      "source_commit": "6e7dcefb3d2ad513b617c2ee491719df68a48ced",
-      "source_release": "v0.61.8"
+      "source_commit": "c1f909bed55726223d36733425904ed9f29ec604",
+      "source_release": "v0.61.7"
     },
-    "context_menu_v4-24fc7391c5a3.png": {
-      "sha256": "24fc7391c5a3e058841eaa9ce63298fc84795231456798273dcf811bb937cdd8",
+    "context_menu_v4-d5729b4a8019.png": {
+      "sha256": "d5729b4a80191758ef7ea0bda6d1d2939a04fb0fedd9c3c04ea2e52d6db58d0a",
       "appearance": {
+        "Window controls": "__aurorae__svg__MacTahoeLiquidKde-Light",
         "Plasma": "MacTahoeLiquidKde-Light",
         "Qt": "MacTahoeLiquidKdeLight",
         "Kvantum": "mac-tahoe-liquid-kde",
@@ -319,12 +323,13 @@
       "window_verified": true,
       "installer_page": null,
       "installer_edition": null,
-      "source_commit": "6e7dcefb3d2ad513b617c2ee491719df68a48ced",
-      "source_release": "v0.61.8"
+      "source_commit": "c1f909bed55726223d36733425904ed9f29ec604",
+      "source_release": "v0.61.7"
     },
-    "finder_v4-95e09489c23f.png": {
-      "sha256": "95e09489c23fc7df01d1bcf172990ea8ea85943557f93d593a5e61f920d7fea1",
+    "finder_v4-680c02cfb652.png": {
+      "sha256": "680c02cfb65240f1e8f3da2ddec6ac38031457f595f59161903bfa36f13b23e1",
       "appearance": {
+        "Window controls": "__aurorae__svg__MacTahoeLiquidKde-Light",
         "Plasma": "MacTahoeLiquidKde-Light",
         "Qt": "MacTahoeLiquidKdeLight",
         "Kvantum": "mac-tahoe-liquid-kde",
@@ -424,12 +429,13 @@
       "window_verified": true,
       "installer_page": null,
       "installer_edition": null,
-      "source_commit": "6e7dcefb3d2ad513b617c2ee491719df68a48ced",
-      "source_release": "v0.61.8"
+      "source_commit": "c1f909bed55726223d36733425904ed9f29ec604",
+      "source_release": "v0.61.7"
     },
-    "showcase_light_4k-9958f56a9ae8.png": {
-      "sha256": "9958f56a9ae8bc97277cba083295c747bb3ee6e4eaefd3ef34caa5ab77c92a66",
+    "showcase_light_4k-11afd76e8576.png": {
+      "sha256": "11afd76e85761ffb18f7d836f2ecfa85c4e594fefc2377cebdbb5e69c8b3f59f",
       "appearance": {
+        "Window controls": "__aurorae__svg__MacTahoeLiquidKde-Light",
         "Plasma": "MacTahoeLiquidKde-Light",
         "Qt": "MacTahoeLiquidKdeLight",
         "Kvantum": "mac-tahoe-liquid-kde",
@@ -524,12 +530,13 @@
       "window_verified": true,
       "installer_page": null,
       "installer_edition": null,
-      "source_commit": "6e7dcefb3d2ad513b617c2ee491719df68a48ced",
-      "source_release": "v0.61.8"
+      "source_commit": "c1f909bed55726223d36733425904ed9f29ec604",
+      "source_release": "v0.61.7"
     },
-    "about_v4-c1d1fefe5b2c.png": {
-      "sha256": "c1d1fefe5b2c795de6a0cf5c1f1b09e0ded6074c6cd7a47a0bda1ee04667cb98",
+    "about_v4-7ed6abf89ff5.png": {
+      "sha256": "7ed6abf89ff5f8ca8b5682bb3dfd0b897026730799a6f66654941b80c139288c",
       "appearance": {
+        "Window controls": "__aurorae__svg__MacTahoeLiquidKde-Light",
         "Plasma": "MacTahoeLiquidKde-Light",
         "Qt": "MacTahoeLiquidKdeLight",
         "Kvantum": "mac-tahoe-liquid-kde",
@@ -607,12 +614,13 @@
       "window_verified": true,
       "installer_page": null,
       "installer_edition": null,
-      "source_commit": "6e7dcefb3d2ad513b617c2ee491719df68a48ced",
-      "source_release": "v0.61.8"
+      "source_commit": "c1f909bed55726223d36733425904ed9f29ec604",
+      "source_release": "v0.61.7"
     },
-    "desktop_about_light_4k-55182ea89e16.png": {
-      "sha256": "55182ea89e16c09bbdb67e8badf83f15f456dda7c1c731630a778790b0e7a8a2",
+    "desktop_about_light_4k-c44ce982707c.png": {
+      "sha256": "c44ce982707c40ba53058507ec5dbe29a08d3fa141e26499ea72afb0d321a8cb",
       "appearance": {
+        "Window controls": "__aurorae__svg__MacTahoeLiquidKde-Light",
         "Plasma": "MacTahoeLiquidKde-Light",
         "Qt": "MacTahoeLiquidKdeLight",
         "Kvantum": "mac-tahoe-liquid-kde",
@@ -685,12 +693,13 @@
       "window_verified": true,
       "installer_page": null,
       "installer_edition": null,
-      "source_commit": "6e7dcefb3d2ad513b617c2ee491719df68a48ced",
-      "source_release": "v0.61.8"
+      "source_commit": "c1f909bed55726223d36733425904ed9f29ec604",
+      "source_release": "v0.61.7"
     },
-    "installer-welcome_v4-384ff1e2f308.png": {
-      "sha256": "384ff1e2f308d4547e55ca5237698dc0a7dab69f90fe642b1b92590afa08be0a",
+    "installer-welcome_v4-fc972329f027.png": {
+      "sha256": "fc972329f02725231df38e7493abe8f26c7801fc63c5e5ed877eb91e5de552e4",
       "appearance": {
+        "Window controls": "__aurorae__svg__MacTahoeLiquidKde-Light",
         "Plasma": "MacTahoeLiquidKde-Light",
         "Qt": "MacTahoeLiquidKdeLight",
         "Kvantum": "mac-tahoe-liquid-kde",
@@ -768,12 +777,13 @@
       "window_verified": true,
       "installer_page": "welcome",
       "installer_edition": "MacTahoe",
-      "source_commit": "6e7dcefb3d2ad513b617c2ee491719df68a48ced",
-      "source_release": "v0.61.8"
+      "source_commit": "c1f909bed55726223d36733425904ed9f29ec604",
+      "source_release": "v0.61.7"
     },
     "installer-appearance_v4-b8f9aac1828c.png": {
       "sha256": "b8f9aac1828c9d6097ec1f55ae48bef338b9e308a943446dbba60deb75f8bb24",
       "appearance": {
+        "Window controls": "__aurorae__svg__MacTahoeLiquidKde-Light",
         "Plasma": "MacTahoeLiquidKde-Light",
         "Qt": "MacTahoeLiquidKdeLight",
         "Kvantum": "mac-tahoe-liquid-kde",
@@ -851,12 +861,13 @@
       "window_verified": true,
       "installer_page": "appearance",
       "installer_edition": "MacTahoe",
-      "source_commit": "6e7dcefb3d2ad513b617c2ee491719df68a48ced",
-      "source_release": "v0.61.8"
+      "source_commit": "c1f909bed55726223d36733425904ed9f29ec604",
+      "source_release": "v0.61.7"
     },
     "installer-icons_v4-280ba0c495c8.png": {
       "sha256": "280ba0c495c836b8494fb5c007d52508009b790ef0a3e824d1af60ce7d37f027",
       "appearance": {
+        "Window controls": "__aurorae__svg__MacTahoeLiquidKde-Light",
         "Plasma": "MacTahoeLiquidKde-Light",
         "Qt": "MacTahoeLiquidKdeLight",
         "Kvantum": "mac-tahoe-liquid-kde",
@@ -934,12 +945,13 @@
       "window_verified": true,
       "installer_page": "icons",
       "installer_edition": "MacTahoe",
-      "source_commit": "6e7dcefb3d2ad513b617c2ee491719df68a48ced",
-      "source_release": "v0.61.8"
+      "source_commit": "c1f909bed55726223d36733425904ed9f29ec604",
+      "source_release": "v0.61.7"
     },
     "installer-wallpaper_v4-6b4386c8c0b9.png": {
       "sha256": "6b4386c8c0b953207d40d6287a958daaec91ff60c06d62f18365847d20954dd9",
       "appearance": {
+        "Window controls": "__aurorae__svg__MacTahoeLiquidKde-Light",
         "Plasma": "MacTahoeLiquidKde-Light",
         "Qt": "MacTahoeLiquidKdeLight",
         "Kvantum": "mac-tahoe-liquid-kde",
@@ -1017,12 +1029,13 @@
       "window_verified": true,
       "installer_page": "wallpaper",
       "installer_edition": "MacTahoe",
-      "source_commit": "6e7dcefb3d2ad513b617c2ee491719df68a48ced",
-      "source_release": "v0.61.8"
+      "source_commit": "c1f909bed55726223d36733425904ed9f29ec604",
+      "source_release": "v0.61.7"
     },
     "installer-launcher_v4-432002f5f07e.png": {
       "sha256": "432002f5f07e0625542fbf48878b6f0a59b50f0e1f4de8b79a314369dd6601a2",
       "appearance": {
+        "Window controls": "__aurorae__svg__MacTahoeLiquidKde-Light",
         "Plasma": "MacTahoeLiquidKde-Light",
         "Qt": "MacTahoeLiquidKdeLight",
         "Kvantum": "mac-tahoe-liquid-kde",
@@ -1100,12 +1113,13 @@
       "window_verified": true,
       "installer_page": "launcher",
       "installer_edition": "MacTahoe",
-      "source_commit": "6e7dcefb3d2ad513b617c2ee491719df68a48ced",
-      "source_release": "v0.61.8"
+      "source_commit": "c1f909bed55726223d36733425904ed9f29ec604",
+      "source_release": "v0.61.7"
     },
     "installer-layout_v4-2b86ad71f6a1.png": {
       "sha256": "2b86ad71f6a1f11ee166e1bbc908874ee1922a92d04101eea9a766c1b313c15c",
       "appearance": {
+        "Window controls": "__aurorae__svg__MacTahoeLiquidKde-Light",
         "Plasma": "MacTahoeLiquidKde-Light",
         "Qt": "MacTahoeLiquidKdeLight",
         "Kvantum": "mac-tahoe-liquid-kde",
@@ -1183,12 +1197,13 @@
       "window_verified": true,
       "installer_page": "layout",
       "installer_edition": "MacTahoe",
-      "source_commit": "6e7dcefb3d2ad513b617c2ee491719df68a48ced",
-      "source_release": "v0.61.8"
+      "source_commit": "c1f909bed55726223d36733425904ed9f29ec604",
+      "source_release": "v0.61.7"
     },
     "installer-effects_v4-142f58f6caf2.png": {
       "sha256": "142f58f6caf282a6f79b3369d1699c20caa778866046afe3f291ef06c7ae2242",
       "appearance": {
+        "Window controls": "__aurorae__svg__MacTahoeLiquidKde-Light",
         "Plasma": "MacTahoeLiquidKde-Light",
         "Qt": "MacTahoeLiquidKdeLight",
         "Kvantum": "mac-tahoe-liquid-kde",
@@ -1266,12 +1281,97 @@
       "window_verified": true,
       "installer_page": "effects",
       "installer_edition": "MacTahoe",
-      "source_commit": "6e7dcefb3d2ad513b617c2ee491719df68a48ced",
-      "source_release": "v0.61.8"
+      "source_commit": "c1f909bed55726223d36733425904ed9f29ec604",
+      "source_release": "v0.61.7"
     },
-    "installer-fonts_v4-31820df510b8.png": {
-      "sha256": "31820df510b89c5e95cff07048001aaee2a7d6ba39efb550e96cdfb24e21c5c0",
+    "installer-window_controls_v4-144467306b93.png": {
+      "sha256": "144467306b93f03e0191fe2d904fd734553a1662ad163a616bb6abec13123b2c",
       "appearance": {
+        "Window controls": "__aurorae__svg__MacTahoeLiquidKde-Light",
+        "Plasma": "MacTahoeLiquidKde-Light",
+        "Qt": "MacTahoeLiquidKdeLight",
+        "Kvantum": "mac-tahoe-liquid-kde",
+        "GTK preference": "'prefer-light'",
+        "GTK theme": "'MacTahoeLiquidKde-Light'",
+        "GTK 4 stylesheet": "MacTahoeLiquidKde-Light",
+        "Icons": "MacTahoeLiquidKde-Icons-Regular-Light"
+      },
+      "effect_build": "747babf1b752c32ad9bce582e74b49abd5122af9ff4ff281c51de2f8f49bc854",
+      "crop": [
+        1072,
+        422,
+        2768,
+        1678
+      ],
+      "wallpaper": "MacTahoe",
+      "wallpaper_uri": "file:///home/tester/.local/share/wallpapers/MacTahoe",
+      "launcher_preset": 1,
+      "windows": [
+        {
+          "caption": "",
+          "resourceClass": "plasmashell",
+          "type": 1,
+          "appletPopup": false,
+          "active": false,
+          "geometry": {
+            "x": 0,
+            "y": 0,
+            "width": 1920,
+            "height": 1080
+          }
+        },
+        {
+          "caption": "",
+          "resourceClass": "plasmashell",
+          "type": 2,
+          "appletPopup": false,
+          "active": false,
+          "geometry": {
+            "x": 0,
+            "y": 0,
+            "width": 1920,
+            "height": 32
+          }
+        },
+        {
+          "caption": "",
+          "resourceClass": "plasmashell",
+          "type": 2,
+          "appletPopup": false,
+          "active": false,
+          "geometry": {
+            "x": 490.5,
+            "y": 996,
+            "width": 939,
+            "height": 84
+          }
+        },
+        {
+          "caption": "Install Tahoe",
+          "resourceClass": "python3",
+          "type": 0,
+          "appletPopup": false,
+          "active": true,
+          "geometry": {
+            "x": 550,
+            "y": 225,
+            "width": 820,
+            "height": 600
+          }
+        }
+      ],
+      "files_pixels": null,
+      "stable_frames": true,
+      "window_verified": true,
+      "installer_page": "window_controls",
+      "installer_edition": "MacTahoe",
+      "source_commit": "c1f909bed55726223d36733425904ed9f29ec604",
+      "source_release": "v0.61.7"
+    },
+    "installer-fonts_v4-c4ddfe7d5256.png": {
+      "sha256": "c4ddfe7d5256484a9265b2f8aa4213705ea4f7b432359fad9984f11fe444fab4",
+      "appearance": {
+        "Window controls": "__aurorae__svg__MacTahoeLiquidKde-Light",
         "Plasma": "MacTahoeLiquidKde-Light",
         "Qt": "MacTahoeLiquidKdeLight",
         "Kvantum": "mac-tahoe-liquid-kde",
@@ -1349,12 +1449,13 @@
       "window_verified": true,
       "installer_page": "fonts",
       "installer_edition": "MacTahoe",
-      "source_commit": "6e7dcefb3d2ad513b617c2ee491719df68a48ced",
-      "source_release": "v0.61.8"
+      "source_commit": "c1f909bed55726223d36733425904ed9f29ec604",
+      "source_release": "v0.61.7"
     },
-    "installer-firefox_v4-b1acb1f395a7.png": {
-      "sha256": "b1acb1f395a76b7c173852203f7a3adf802501ca13b06d96c318360ba18a7865",
+    "installer-firefox_v4-b85678569434.png": {
+      "sha256": "b85678569434469e85c0e95d0b4658b78bb1b4c761c58615a8aa95ced2f71508",
       "appearance": {
+        "Window controls": "__aurorae__svg__MacTahoeLiquidKde-Light",
         "Plasma": "MacTahoeLiquidKde-Light",
         "Qt": "MacTahoeLiquidKdeLight",
         "Kvantum": "mac-tahoe-liquid-kde",
@@ -1432,12 +1533,13 @@
       "window_verified": true,
       "installer_page": "firefox",
       "installer_edition": "MacTahoe",
-      "source_commit": "6e7dcefb3d2ad513b617c2ee491719df68a48ced",
-      "source_release": "v0.61.8"
+      "source_commit": "c1f909bed55726223d36733425904ed9f29ec604",
+      "source_release": "v0.61.7"
     },
-    "installer-files_v4-47331a44b5a3.png": {
-      "sha256": "47331a44b5a3df6f810e95de0ce9df55fc5966f92a94c0ee3baf3a6a8b0fafc5",
+    "installer-files_v4-49aabe9870e2.png": {
+      "sha256": "49aabe9870e231d1b118eea4320e3023ffbbd478704afcae30d89c7a5d4aa266",
       "appearance": {
+        "Window controls": "__aurorae__svg__MacTahoeLiquidKde-Light",
         "Plasma": "MacTahoeLiquidKde-Light",
         "Qt": "MacTahoeLiquidKdeLight",
         "Kvantum": "mac-tahoe-liquid-kde",
@@ -1515,12 +1617,13 @@
       "window_verified": true,
       "installer_page": "files",
       "installer_edition": "MacTahoe",
-      "source_commit": "6e7dcefb3d2ad513b617c2ee491719df68a48ced",
-      "source_release": "v0.61.8"
+      "source_commit": "c1f909bed55726223d36733425904ed9f29ec604",
+      "source_release": "v0.61.7"
     },
-    "installer-boot_v4-7b7f3f5aa907.png": {
-      "sha256": "7b7f3f5aa90764dd5f1cd561b256dd81700f0d62185e03e6a28cd00c89300fe7",
+    "installer-boot_v4-3c12bf23f551.png": {
+      "sha256": "3c12bf23f5514e6b1aada794b60f131d2974a12969f2da2cc0ed63e8f14be61f",
       "appearance": {
+        "Window controls": "__aurorae__svg__MacTahoeLiquidKde-Light",
         "Plasma": "MacTahoeLiquidKde-Light",
         "Qt": "MacTahoeLiquidKdeLight",
         "Kvantum": "mac-tahoe-liquid-kde",
@@ -1598,12 +1701,13 @@
       "window_verified": true,
       "installer_page": "boot",
       "installer_edition": "MacTahoe",
-      "source_commit": "6e7dcefb3d2ad513b617c2ee491719df68a48ced",
-      "source_release": "v0.61.8"
+      "source_commit": "c1f909bed55726223d36733425904ed9f29ec604",
+      "source_release": "v0.61.7"
     },
-    "installer-oled_v4-83835891d151.png": {
-      "sha256": "83835891d15170cb3ed1eae96ae2aec84ace3ced4ca3b51152aad08f1d80a40f",
+    "installer-oled_v4-db2e0840da0c.png": {
+      "sha256": "db2e0840da0c03ec79e64304c0a5f3074696b6bf52cfab727c40111650ca71bb",
       "appearance": {
+        "Window controls": "__aurorae__svg__MacTahoeLiquidKde-Light",
         "Plasma": "MacTahoeLiquidKde-Light",
         "Qt": "MacTahoeLiquidKdeLight",
         "Kvantum": "mac-tahoe-liquid-kde",
@@ -1681,12 +1785,13 @@
       "window_verified": true,
       "installer_page": "oled",
       "installer_edition": "MacTahoe",
-      "source_commit": "6e7dcefb3d2ad513b617c2ee491719df68a48ced",
-      "source_release": "v0.61.8"
+      "source_commit": "c1f909bed55726223d36733425904ed9f29ec604",
+      "source_release": "v0.61.7"
     },
-    "installer-summary_v4-dcffb964ada9.png": {
-      "sha256": "dcffb964ada9f5ab645f1b768bb770a48776b9e64c7447303ad4b877ddf90d7d",
+    "installer-summary_v4-d05a8156e1d7.png": {
+      "sha256": "d05a8156e1d7dd2e7fb1561dcd02b990d8fec63e2523242ce5d094f8d77c7ccd",
       "appearance": {
+        "Window controls": "__aurorae__svg__MacTahoeLiquidKde-Light",
         "Plasma": "MacTahoeLiquidKde-Light",
         "Qt": "MacTahoeLiquidKdeLight",
         "Kvantum": "mac-tahoe-liquid-kde",
@@ -1764,12 +1869,13 @@
       "window_verified": true,
       "installer_page": "summary",
       "installer_edition": "MacTahoe",
-      "source_commit": "6e7dcefb3d2ad513b617c2ee491719df68a48ced",
-      "source_release": "v0.61.8"
+      "source_commit": "c1f909bed55726223d36733425904ed9f29ec604",
+      "source_release": "v0.61.7"
     },
-    "launcher_preset_1_dark-deb0150d279d.png": {
-      "sha256": "deb0150d279dd52ab71cca1c0df6df9bbb74a1ea583a327260f35592bb264dbe",
+    "launcher_preset_1_dark-2d75cbb02595.png": {
+      "sha256": "2d75cbb02595c50ce0d125ee5bb5ee6a19e6f6f391ed23a63db554e5a2048eaf",
       "appearance": {
+        "Window controls": "__aurorae__svg__MacTahoeLiquidKde-Dark",
         "Plasma": "MacTahoeLiquidKde-Dark",
         "Qt": "MacTahoeLiquidKdeDark",
         "Kvantum": "mac-tahoe-liquid-kdeDark",
@@ -1842,12 +1948,13 @@
       "window_verified": true,
       "installer_page": null,
       "installer_edition": null,
-      "source_commit": "6e7dcefb3d2ad513b617c2ee491719df68a48ced",
-      "source_release": "v0.61.8"
+      "source_commit": "c1f909bed55726223d36733425904ed9f29ec604",
+      "source_release": "v0.61.7"
     },
     "dock_1_dark_v4-16a606ad24ba.png": {
       "sha256": "16a606ad24ba2b46a328c14f5574a9959a80e77d1b664ef6988bdcc12264d78a",
       "appearance": {
+        "Window controls": "__aurorae__svg__MacTahoeLiquidKde-Dark",
         "Plasma": "MacTahoeLiquidKde-Dark",
         "Qt": "MacTahoeLiquidKdeDark",
         "Kvantum": "mac-tahoe-liquid-kdeDark",
@@ -1912,12 +2019,13 @@
       "window_verified": true,
       "installer_page": null,
       "installer_edition": null,
-      "source_commit": "6e7dcefb3d2ad513b617c2ee491719df68a48ced",
-      "source_release": "v0.61.8"
+      "source_commit": "c1f909bed55726223d36733425904ed9f29ec604",
+      "source_release": "v0.61.7"
     },
     "menu_dark_v4-c7bad6f7dba6.png": {
       "sha256": "c7bad6f7dba643653b42c4095c2441f285ee9d357dfa2714baf896cf630939e4",
       "appearance": {
+        "Window controls": "__aurorae__svg__MacTahoeLiquidKde-Dark",
         "Plasma": "MacTahoeLiquidKde-Dark",
         "Qt": "MacTahoeLiquidKdeDark",
         "Kvantum": "mac-tahoe-liquid-kdeDark",
@@ -1995,12 +2103,13 @@
       "window_verified": true,
       "installer_page": null,
       "installer_edition": null,
-      "source_commit": "6e7dcefb3d2ad513b617c2ee491719df68a48ced",
-      "source_release": "v0.61.8"
+      "source_commit": "c1f909bed55726223d36733425904ed9f29ec604",
+      "source_release": "v0.61.7"
     },
     "context_menu_dark_v4-aaba1188daf3.png": {
       "sha256": "aaba1188daf306f88f10814c1b6e99587d2dc64af17e388c161be5abe48caf13",
       "appearance": {
+        "Window controls": "__aurorae__svg__MacTahoeLiquidKde-Dark",
         "Plasma": "MacTahoeLiquidKde-Dark",
         "Qt": "MacTahoeLiquidKdeDark",
         "Kvantum": "mac-tahoe-liquid-kdeDark",
@@ -2078,12 +2187,13 @@
       "window_verified": true,
       "installer_page": null,
       "installer_edition": null,
-      "source_commit": "6e7dcefb3d2ad513b617c2ee491719df68a48ced",
-      "source_release": "v0.61.8"
+      "source_commit": "c1f909bed55726223d36733425904ed9f29ec604",
+      "source_release": "v0.61.7"
     },
     "finder_dark_v4-6e4bbe0ebd7f.png": {
       "sha256": "6e4bbe0ebd7f957e30f6c2aa635df502ffb3102c66284eb169bca9335be8e906",
       "appearance": {
+        "Window controls": "__aurorae__svg__MacTahoeLiquidKde-Dark",
         "Plasma": "MacTahoeLiquidKde-Dark",
         "Qt": "MacTahoeLiquidKdeDark",
         "Kvantum": "mac-tahoe-liquid-kdeDark",
@@ -2183,12 +2293,13 @@
       "window_verified": true,
       "installer_page": null,
       "installer_edition": null,
-      "source_commit": "6e7dcefb3d2ad513b617c2ee491719df68a48ced",
-      "source_release": "v0.61.8"
+      "source_commit": "c1f909bed55726223d36733425904ed9f29ec604",
+      "source_release": "v0.61.7"
     },
-    "showcase_dark_4k-971f6a0f38a7.png": {
-      "sha256": "971f6a0f38a75b59497bb274d6320828e443ce5b8733c12f7d88c6d2579e6a7a",
+    "showcase_dark_4k-80cc9f870b1a.png": {
+      "sha256": "80cc9f870b1a99fc29b40c2a1f0cab769c5e43d2d44bc08f7a3801828c78e68c",
       "appearance": {
+        "Window controls": "__aurorae__svg__MacTahoeLiquidKde-Dark",
         "Plasma": "MacTahoeLiquidKde-Dark",
         "Qt": "MacTahoeLiquidKdeDark",
         "Kvantum": "mac-tahoe-liquid-kdeDark",
@@ -2283,12 +2394,13 @@
       "window_verified": true,
       "installer_page": null,
       "installer_edition": null,
-      "source_commit": "6e7dcefb3d2ad513b617c2ee491719df68a48ced",
-      "source_release": "v0.61.8"
+      "source_commit": "c1f909bed55726223d36733425904ed9f29ec604",
+      "source_release": "v0.61.7"
     },
-    "about_dark_v4-1997b3dad62f.png": {
-      "sha256": "1997b3dad62f44bc22b38bbdd06932fa18ec50a19d30ffe206c8850c6e6ab941",
+    "about_dark_v4-b77da716d67b.png": {
+      "sha256": "b77da716d67b15fe7e1757cf2e90da75bf4044ebe0e251ec171a475cc93cb95b",
       "appearance": {
+        "Window controls": "__aurorae__svg__MacTahoeLiquidKde-Dark",
         "Plasma": "MacTahoeLiquidKde-Dark",
         "Qt": "MacTahoeLiquidKdeDark",
         "Kvantum": "mac-tahoe-liquid-kdeDark",
@@ -2366,12 +2478,13 @@
       "window_verified": true,
       "installer_page": null,
       "installer_edition": null,
-      "source_commit": "6e7dcefb3d2ad513b617c2ee491719df68a48ced",
-      "source_release": "v0.61.8"
+      "source_commit": "c1f909bed55726223d36733425904ed9f29ec604",
+      "source_release": "v0.61.7"
     },
-    "desktop_about_dark_4k-6c973fe74d84.png": {
-      "sha256": "6c973fe74d848c53501e7c137ef0d1a8ff0fe85547b111c2dfbd29fe8b497f84",
+    "desktop_about_dark_4k-f8d4f6d9666b.png": {
+      "sha256": "f8d4f6d9666b96d046ef637822ff2004f2238efd6510cbccc7c6e9bd8342b989",
       "appearance": {
+        "Window controls": "__aurorae__svg__MacTahoeLiquidKde-Dark",
         "Plasma": "MacTahoeLiquidKde-Dark",
         "Qt": "MacTahoeLiquidKdeDark",
         "Kvantum": "mac-tahoe-liquid-kdeDark",
@@ -2444,12 +2557,13 @@
       "window_verified": true,
       "installer_page": null,
       "installer_edition": null,
-      "source_commit": "6e7dcefb3d2ad513b617c2ee491719df68a48ced",
-      "source_release": "v0.61.8"
+      "source_commit": "c1f909bed55726223d36733425904ed9f29ec604",
+      "source_release": "v0.61.7"
     },
-    "installer-welcome_dark_v4-11d5f06c1f10.png": {
-      "sha256": "11d5f06c1f102d562047489c7f7320f85214e946a1d856248b5f39435167a1de",
+    "installer-welcome_dark_v4-040b6b92d0fa.png": {
+      "sha256": "040b6b92d0faf6fdf99df2c9db9a1b7dcf4d3e78d3744d9e091b630d0b381da5",
       "appearance": {
+        "Window controls": "__aurorae__svg__MacTahoeLiquidKde-Dark",
         "Plasma": "MacTahoeLiquidKde-Dark",
         "Qt": "MacTahoeLiquidKdeDark",
         "Kvantum": "mac-tahoe-liquid-kdeDark",
@@ -2527,12 +2641,13 @@
       "window_verified": true,
       "installer_page": "welcome",
       "installer_edition": "MacTahoe",
-      "source_commit": "6e7dcefb3d2ad513b617c2ee491719df68a48ced",
-      "source_release": "v0.61.8"
+      "source_commit": "c1f909bed55726223d36733425904ed9f29ec604",
+      "source_release": "v0.61.7"
     },
     "installer-appearance_dark_v4-a6f5633f614d.png": {
       "sha256": "a6f5633f614d06fcd5e36cd7374def8e3af95a658394a407dd9ed3c2307c366f",
       "appearance": {
+        "Window controls": "__aurorae__svg__MacTahoeLiquidKde-Dark",
         "Plasma": "MacTahoeLiquidKde-Dark",
         "Qt": "MacTahoeLiquidKdeDark",
         "Kvantum": "mac-tahoe-liquid-kdeDark",
@@ -2610,12 +2725,13 @@
       "window_verified": true,
       "installer_page": "appearance",
       "installer_edition": "MacTahoe",
-      "source_commit": "6e7dcefb3d2ad513b617c2ee491719df68a48ced",
-      "source_release": "v0.61.8"
+      "source_commit": "c1f909bed55726223d36733425904ed9f29ec604",
+      "source_release": "v0.61.7"
     },
     "installer-icons_dark_v4-fb1bad1909be.png": {
       "sha256": "fb1bad1909be15b9113e665317326b4252fdf75dd04914d3d6173d4cad0a87fb",
       "appearance": {
+        "Window controls": "__aurorae__svg__MacTahoeLiquidKde-Dark",
         "Plasma": "MacTahoeLiquidKde-Dark",
         "Qt": "MacTahoeLiquidKdeDark",
         "Kvantum": "mac-tahoe-liquid-kdeDark",
@@ -2693,12 +2809,13 @@
       "window_verified": true,
       "installer_page": "icons",
       "installer_edition": "MacTahoe",
-      "source_commit": "6e7dcefb3d2ad513b617c2ee491719df68a48ced",
-      "source_release": "v0.61.8"
+      "source_commit": "c1f909bed55726223d36733425904ed9f29ec604",
+      "source_release": "v0.61.7"
     },
     "installer-wallpaper_dark_v4-7ee3602eddd1.png": {
       "sha256": "7ee3602eddd1a93b74336f4c05393d23d6bb2704399ebbcd5cd3d815e53f64fa",
       "appearance": {
+        "Window controls": "__aurorae__svg__MacTahoeLiquidKde-Dark",
         "Plasma": "MacTahoeLiquidKde-Dark",
         "Qt": "MacTahoeLiquidKdeDark",
         "Kvantum": "mac-tahoe-liquid-kdeDark",
@@ -2776,12 +2893,13 @@
       "window_verified": true,
       "installer_page": "wallpaper",
       "installer_edition": "MacTahoe",
-      "source_commit": "6e7dcefb3d2ad513b617c2ee491719df68a48ced",
-      "source_release": "v0.61.8"
+      "source_commit": "c1f909bed55726223d36733425904ed9f29ec604",
+      "source_release": "v0.61.7"
     },
     "installer-launcher_dark_v4-28b8fff306a0.png": {
       "sha256": "28b8fff306a079580083f9250f5e2c9941abb26f851cf0cf3762b03bb3e1a0d4",
       "appearance": {
+        "Window controls": "__aurorae__svg__MacTahoeLiquidKde-Dark",
         "Plasma": "MacTahoeLiquidKde-Dark",
         "Qt": "MacTahoeLiquidKdeDark",
         "Kvantum": "mac-tahoe-liquid-kdeDark",
@@ -2859,12 +2977,13 @@
       "window_verified": true,
       "installer_page": "launcher",
       "installer_edition": "MacTahoe",
-      "source_commit": "6e7dcefb3d2ad513b617c2ee491719df68a48ced",
-      "source_release": "v0.61.8"
+      "source_commit": "c1f909bed55726223d36733425904ed9f29ec604",
+      "source_release": "v0.61.7"
     },
     "installer-layout_dark_v4-609c79632293.png": {
       "sha256": "609c796322931e4e4f782be65d17c361f7046ad1a6f9deb8c1e8b49c7f276fd9",
       "appearance": {
+        "Window controls": "__aurorae__svg__MacTahoeLiquidKde-Dark",
         "Plasma": "MacTahoeLiquidKde-Dark",
         "Qt": "MacTahoeLiquidKdeDark",
         "Kvantum": "mac-tahoe-liquid-kdeDark",
@@ -2942,12 +3061,13 @@
       "window_verified": true,
       "installer_page": "layout",
       "installer_edition": "MacTahoe",
-      "source_commit": "6e7dcefb3d2ad513b617c2ee491719df68a48ced",
-      "source_release": "v0.61.8"
+      "source_commit": "c1f909bed55726223d36733425904ed9f29ec604",
+      "source_release": "v0.61.7"
     },
     "installer-effects_dark_v4-1d92b8e0c330.png": {
       "sha256": "1d92b8e0c33020b59557c8703b1a7a0ee680981ea00875fab3eee678e4c94dd1",
       "appearance": {
+        "Window controls": "__aurorae__svg__MacTahoeLiquidKde-Dark",
         "Plasma": "MacTahoeLiquidKde-Dark",
         "Qt": "MacTahoeLiquidKdeDark",
         "Kvantum": "mac-tahoe-liquid-kdeDark",
@@ -3025,12 +3145,97 @@
       "window_verified": true,
       "installer_page": "effects",
       "installer_edition": "MacTahoe",
-      "source_commit": "6e7dcefb3d2ad513b617c2ee491719df68a48ced",
-      "source_release": "v0.61.8"
+      "source_commit": "c1f909bed55726223d36733425904ed9f29ec604",
+      "source_release": "v0.61.7"
     },
-    "installer-fonts_dark_v4-49334d088f34.png": {
-      "sha256": "49334d088f346617feb6f39f58e897924b6eaf184278793a1c2443ff80fd3364",
+    "installer-window_controls_dark_v4-de5d41212332.png": {
+      "sha256": "de5d41212332238ff245b5523e98419b802d495bf0f8c7d085a7809d533b5af5",
       "appearance": {
+        "Window controls": "__aurorae__svg__MacTahoeLiquidKde-Dark",
+        "Plasma": "MacTahoeLiquidKde-Dark",
+        "Qt": "MacTahoeLiquidKdeDark",
+        "Kvantum": "mac-tahoe-liquid-kdeDark",
+        "GTK preference": "'prefer-dark'",
+        "GTK theme": "'MacTahoeLiquidKde-Dark'",
+        "GTK 4 stylesheet": "MacTahoeLiquidKde-Dark",
+        "Icons": "MacTahoeLiquidKde-Icons-Regular-Dark"
+      },
+      "effect_build": "747babf1b752c32ad9bce582e74b49abd5122af9ff4ff281c51de2f8f49bc854",
+      "crop": [
+        1072,
+        422,
+        2768,
+        1678
+      ],
+      "wallpaper": "MacTahoe",
+      "wallpaper_uri": "file:///home/tester/.local/share/wallpapers/MacTahoe",
+      "launcher_preset": 1,
+      "windows": [
+        {
+          "caption": "",
+          "resourceClass": "plasmashell",
+          "type": 1,
+          "appletPopup": false,
+          "active": false,
+          "geometry": {
+            "x": 0,
+            "y": 0,
+            "width": 1920,
+            "height": 1080
+          }
+        },
+        {
+          "caption": "",
+          "resourceClass": "plasmashell",
+          "type": 2,
+          "appletPopup": false,
+          "active": false,
+          "geometry": {
+            "x": 0,
+            "y": 0,
+            "width": 1920,
+            "height": 32
+          }
+        },
+        {
+          "caption": "",
+          "resourceClass": "plasmashell",
+          "type": 2,
+          "appletPopup": false,
+          "active": false,
+          "geometry": {
+            "x": 490.5,
+            "y": 996,
+            "width": 939,
+            "height": 84
+          }
+        },
+        {
+          "caption": "Install Tahoe",
+          "resourceClass": "python3",
+          "type": 0,
+          "appletPopup": false,
+          "active": true,
+          "geometry": {
+            "x": 550,
+            "y": 225,
+            "width": 820,
+            "height": 600
+          }
+        }
+      ],
+      "files_pixels": null,
+      "stable_frames": true,
+      "window_verified": true,
+      "installer_page": "window_controls",
+      "installer_edition": "MacTahoe",
+      "source_commit": "c1f909bed55726223d36733425904ed9f29ec604",
+      "source_release": "v0.61.7"
+    },
+    "installer-fonts_dark_v4-761f06feda96.png": {
+      "sha256": "761f06feda96aff5fddbbb9775928f8c08d92c85d6713652b87666786687d883",
+      "appearance": {
+        "Window controls": "__aurorae__svg__MacTahoeLiquidKde-Dark",
         "Plasma": "MacTahoeLiquidKde-Dark",
         "Qt": "MacTahoeLiquidKdeDark",
         "Kvantum": "mac-tahoe-liquid-kdeDark",
@@ -3108,12 +3313,13 @@
       "window_verified": true,
       "installer_page": "fonts",
       "installer_edition": "MacTahoe",
-      "source_commit": "6e7dcefb3d2ad513b617c2ee491719df68a48ced",
-      "source_release": "v0.61.8"
+      "source_commit": "c1f909bed55726223d36733425904ed9f29ec604",
+      "source_release": "v0.61.7"
     },
-    "installer-firefox_dark_v4-56f96e001034.png": {
-      "sha256": "56f96e0010341a18869ff74552b972ad0bbdb0e7b2eefc9a2ebd8794bbb3c1f9",
+    "installer-firefox_dark_v4-49cd855a045b.png": {
+      "sha256": "49cd855a045b50e16e54067979cecae1cb26c81df1fc88d10ea20d61a300f937",
       "appearance": {
+        "Window controls": "__aurorae__svg__MacTahoeLiquidKde-Dark",
         "Plasma": "MacTahoeLiquidKde-Dark",
         "Qt": "MacTahoeLiquidKdeDark",
         "Kvantum": "mac-tahoe-liquid-kdeDark",
@@ -3191,12 +3397,13 @@
       "window_verified": true,
       "installer_page": "firefox",
       "installer_edition": "MacTahoe",
-      "source_commit": "6e7dcefb3d2ad513b617c2ee491719df68a48ced",
-      "source_release": "v0.61.8"
+      "source_commit": "c1f909bed55726223d36733425904ed9f29ec604",
+      "source_release": "v0.61.7"
     },
-    "installer-files_dark_v4-59d64d8c7345.png": {
-      "sha256": "59d64d8c7345ac2054f52c57f1d7775c46e3ee42658735217a054cfe13321314",
+    "installer-files_dark_v4-5fcd5eaf13e4.png": {
+      "sha256": "5fcd5eaf13e400818c330a3c4060c062d8b97fa31ea4aa71d6fe0d949e8d3838",
       "appearance": {
+        "Window controls": "__aurorae__svg__MacTahoeLiquidKde-Dark",
         "Plasma": "MacTahoeLiquidKde-Dark",
         "Qt": "MacTahoeLiquidKdeDark",
         "Kvantum": "mac-tahoe-liquid-kdeDark",
@@ -3274,12 +3481,13 @@
       "window_verified": true,
       "installer_page": "files",
       "installer_edition": "MacTahoe",
-      "source_commit": "6e7dcefb3d2ad513b617c2ee491719df68a48ced",
-      "source_release": "v0.61.8"
+      "source_commit": "c1f909bed55726223d36733425904ed9f29ec604",
+      "source_release": "v0.61.7"
     },
-    "installer-boot_dark_v4-e3d53438aa3c.png": {
-      "sha256": "e3d53438aa3caaa11d2460cd7a04fe85cd29aa5d18ff52d210cb7df6cbd15a88",
+    "installer-boot_dark_v4-fc618023c738.png": {
+      "sha256": "fc618023c73838995ddb9141173258ade8132e9306f991f64db22e9aa99d0d32",
       "appearance": {
+        "Window controls": "__aurorae__svg__MacTahoeLiquidKde-Dark",
         "Plasma": "MacTahoeLiquidKde-Dark",
         "Qt": "MacTahoeLiquidKdeDark",
         "Kvantum": "mac-tahoe-liquid-kdeDark",
@@ -3357,12 +3565,13 @@
       "window_verified": true,
       "installer_page": "boot",
       "installer_edition": "MacTahoe",
-      "source_commit": "6e7dcefb3d2ad513b617c2ee491719df68a48ced",
-      "source_release": "v0.61.8"
+      "source_commit": "c1f909bed55726223d36733425904ed9f29ec604",
+      "source_release": "v0.61.7"
     },
-    "installer-oled_dark_v4-7114243e7a32.png": {
-      "sha256": "7114243e7a321f789eb69978466bf338d568b3c178cb752921e677a6c281270e",
+    "installer-oled_dark_v4-5034afba3bbb.png": {
+      "sha256": "5034afba3bbba1c8786daaf153bb622d4d2fd067eb214de994c603313a8389c4",
       "appearance": {
+        "Window controls": "__aurorae__svg__MacTahoeLiquidKde-Dark",
         "Plasma": "MacTahoeLiquidKde-Dark",
         "Qt": "MacTahoeLiquidKdeDark",
         "Kvantum": "mac-tahoe-liquid-kdeDark",
@@ -3440,12 +3649,13 @@
       "window_verified": true,
       "installer_page": "oled",
       "installer_edition": "MacTahoe",
-      "source_commit": "6e7dcefb3d2ad513b617c2ee491719df68a48ced",
-      "source_release": "v0.61.8"
+      "source_commit": "c1f909bed55726223d36733425904ed9f29ec604",
+      "source_release": "v0.61.7"
     },
-    "installer-summary_dark_v4-6b0e4c7ef3b9.png": {
-      "sha256": "6b0e4c7ef3b900f6e72307df27e40eae75e683a949b47e1eb6effb5e6ad95e40",
+    "installer-summary_dark_v4-6e00e7886d4a.png": {
+      "sha256": "6e00e7886d4a6946ccff797eb47325ece002730613b740a496eb1f72c2af0cb5",
       "appearance": {
+        "Window controls": "__aurorae__svg__MacTahoeLiquidKde-Dark",
         "Plasma": "MacTahoeLiquidKde-Dark",
         "Qt": "MacTahoeLiquidKdeDark",
         "Kvantum": "mac-tahoe-liquid-kdeDark",
@@ -3523,121 +3733,126 @@
       "window_verified": true,
       "installer_page": "summary",
       "installer_edition": "MacTahoe",
-      "source_commit": "6e7dcefb3d2ad513b617c2ee491719df68a48ced",
-      "source_release": "v0.61.8"
+      "source_commit": "c1f909bed55726223d36733425904ed9f29ec604",
+      "source_release": "v0.61.7"
     },
     "boot_v4-f685ec98f1e4.png": {
       "sha256": "f685ec98f1e4407f2624c352f6b6e18ae8c2a686a64f162f6d0666d8fcbfb4d0",
       "plymouth_verified": true,
-      "source_commit": "6e7dcefb3d2ad513b617c2ee491719df68a48ced",
-      "source_release": "v0.61.8"
+      "source_commit": "c1f909bed55726223d36733425904ed9f29ec604",
+      "source_release": "v0.61.7"
     },
     "boot_shutdown_v4-abe6faef7c08.png": {
       "sha256": "abe6faef7c08133f6e6d29004d15f5c85c6d5a03c727451d16181a22eb64c5a3",
       "plymouth_verified": true,
-      "source_commit": "6e7dcefb3d2ad513b617c2ee491719df68a48ced",
-      "source_release": "v0.61.8"
+      "source_commit": "c1f909bed55726223d36733425904ed9f29ec604",
+      "source_release": "v0.61.7"
     }
   },
   "review": {
-    "manifest_sha256": "5f7191829f7148da472b5a53d63a281d0afc8f3d1157929a40838e4e35d4c3b5",
+    "manifest_sha256": "395651e381f01dff4aa1b35a7f0213ad43ed49c80b4e08d73f23416accaec64a",
     "approved": {
       "boot": "f685ec98f1e4407f2624c352f6b6e18ae8c2a686a64f162f6d0666d8fcbfb4d0",
-      "golden-gate-dark-about": "2bf6b54687402798eb977619a5abaab1a2bbcb95e5ba85f4f321c27b3980810d",
-      "golden-gate-dark-context": "315dccd0fcdd62922020f1e81f4e44cc2eb0235b9de7b1f9fc93131d1889973f",
-      "golden-gate-dark-dock": "63901542f38a8e4ae3f09ab2ad8e8f58feeec94483470956ac1cffa87ee9041f",
-      "golden-gate-dark-finder": "bf0f3901e0808ac39f54676bec459f72ca29d02aa147822996d8e963d0cc118b",
-      "golden-gate-dark-installer-appearance": "da49eeb220970a9afa87ed40516d54bd3f5374d43b275fe03fdc3b1b72b0d51a",
-      "golden-gate-dark-installer-boot": "91bdafbf3f3307fd564786c7aaec7b415429e6d3f718610d7440d24371698940",
-      "golden-gate-dark-installer-effects": "6821bac2eeed7045fe4e3e1e4ea0f46541eca811bc5055cbfec4f750223bf466",
-      "golden-gate-dark-installer-files": "9d83e42127c33202b5bceeb4608d6fbaad2ffeb2757db2f59d3e9407f3ce72af",
-      "golden-gate-dark-installer-firefox": "989463fcfc53be5f7570623399e0d0706229e703bb38905ac61b5bc906f5f186",
-      "golden-gate-dark-installer-fonts": "d1ee7454df1c903b48366dacd7e7d2935d5d924dad1e4332db64f76b9bc3d86b",
-      "golden-gate-dark-installer-icons": "1e2b29a2aa59363039779df5c724487381523138057fc440134f4d83f6fc632a",
-      "golden-gate-dark-installer-launcher": "71dba7f27b5e8cbd636541373e5adefa4a704417150a6d58ba449fc9e2c34a1f",
-      "golden-gate-dark-installer-layout": "ee924bed7b2e9a66bad8d1caf0574e6b0a2f80b4684bdded4eea8c0a3950f6f3",
-      "golden-gate-dark-installer-oled": "31e4351513de84b84a903226eb55569ca1531bcacd531623d6e6293eedf10cae",
-      "golden-gate-dark-installer-summary": "408f41aca9473d4510d8eb75c1623be132ff98a1a5213bf3907d2387f6bb6593",
-      "golden-gate-dark-installer-wallpaper": "4f52e16aae5fc0b745a1909c412bc068974ddff9fd6e7fb6eacede21b4cb65f9",
-      "golden-gate-dark-installer-welcome": "4c0914fc5ded8b3ac3571f3db5b98c4528405906f1831372b2afa91003af8a54",
-      "golden-gate-dark-launcher": "9a8d6afffa7f0141a0e4bfb230cb2344d3ed2db7b5b88c4558295ed23b1da310",
-      "golden-gate-dark-menu": "05e6e565f074ac85e4edd5047c5ca08c5cac96ea268af88870b4684f0050cb08",
-      "golden-gate-dark-showcase": "cf6ea23ce738f95a1635462b32f4708e94b30280208ade52134a943c6c62fa60",
-      "golden-gate-light-about": "09da54499184f11986035378fc454c439efe93f01c43b6e1c3b92e3ebe8f813b",
-      "golden-gate-light-context": "7ec721e700b862e475ee0be4106fce2238e9936880dd2d94504f9430b6bfb159",
-      "golden-gate-light-dock": "6a88ef7fe70300723b150b6ee91042dea3f0373756353210ac15f62a7a4dd809",
-      "golden-gate-light-finder": "7bef3323e9bd4d8a629ca31a5bb7f476657c6008e3987fe954f2c1099210de4b",
-      "golden-gate-light-installer-appearance": "3522e66e28fc253a4da50663a70c9e2d05d0d83d34edf50cdbb8887a9fd8c049",
-      "golden-gate-light-installer-boot": "58021ba3fc0064d7a7d8a63cf50001d4b28652ffb2adad09063330f4383c19b2",
-      "golden-gate-light-installer-effects": "190e591c2813c76c903b3587221588862b4778b26cb5ceea90713208064db67b",
-      "golden-gate-light-installer-files": "41d537838a58b662d2369d15bb68b6be46c4ad04a9b074b4dfe083fea5aaa375",
-      "golden-gate-light-installer-firefox": "129e3307cc2931121ef665ed78de67adb441a17087aaeaaa60ae5d6b7258bae7",
-      "golden-gate-light-installer-fonts": "b07f71cba05c87465aeee676f1c11daffdd7b119db4896b496f9f26f84cdd6b9",
-      "golden-gate-light-installer-icons": "79e3f0cd30970e47369b5dabd5aeffaa7af03650048e7c40cf6a8e9b18713eed",
-      "golden-gate-light-installer-launcher": "666dc7712b5f04cdc184de58f58503310734d8dc45ea02e4af9840922530dff9",
-      "golden-gate-light-installer-layout": "d99f31d1d77e097f8756fbece0b8893763f2cb0fdb5fbc2d2a9993eec2b70b99",
-      "golden-gate-light-installer-oled": "f35ca9eec5b7279696a388774d03db0de3a950fb779db5c65a9f17dbfecf89ef",
-      "golden-gate-light-installer-summary": "ff1ac2ce8bf16aeb3ead25d2b64e0f6dabe592241f2911c95a793a1e4452ef5a",
-      "golden-gate-light-installer-wallpaper": "892f86faba51d39420ff2220539dacdac680ed6961f3c6b61abe55486799d19b",
-      "golden-gate-light-installer-welcome": "877dd5616895b5baad3179c1286335f0a57ec8da5ae8c783af166e5f4a4593a9",
-      "golden-gate-light-launcher": "37ee7283eb9e912a1951a2ec19d07be753676256bdf7d9c69d15cd7420e9da96",
-      "golden-gate-light-menu": "aae8a14f1074c901d57104ed55ec1b5de098fdaf65d35dc5388ab2e58acd6399",
-      "golden-gate-light-showcase": "0325f572480ba258c1eb78007bbadaa46c2e4f1466ec16fb6bf89b6e444f0cb2",
+      "golden-gate-dark-about": "41c802116285998316c3ed96b412fcbc6650db876e7dbfffd1df2a52cdb8b04b",
+      "golden-gate-dark-context": "6c1e52a217c717c5fa87b2882a0515edf3c531ed029b7cd06c7cc57a3093c567",
+      "golden-gate-dark-dock": "acb84ad5154a5608bae7218205b2defcd6f41ecd762c797d4c1729e8233c28d7",
+      "golden-gate-dark-finder": "a97e5adc53c404347ca6c01d70fac40b60811963cc9fe8cbb7ef591ece53fae0",
+      "golden-gate-dark-installer-appearance": "b839b621c350d817d6f0c3f6348b49bc759f85b1f077753c4e2330d1b04a0e39",
+      "golden-gate-dark-installer-boot": "c637d4572cf1919345277780197bf8226b1705031c8d0fbbd9a7df9882960028",
+      "golden-gate-dark-installer-effects": "ebbe0e8f8a7d2d91d7301b3d62d992d6019730575791ed47b73ffac790dc61df",
+      "golden-gate-dark-installer-files": "6d205f12f54272ea27cb04eee0bc64e3c62d14573d5986ea656c8ce57f1064c0",
+      "golden-gate-dark-installer-firefox": "0b1380c296fc4e2a39d2159e877ed5097117ccbce4e9450a1a14cc784540a906",
+      "golden-gate-dark-installer-fonts": "3ce978abb6ab88436be14440423d5e0c83fcdabee20aa0f54b8a2bde946cef91",
+      "golden-gate-dark-installer-icons": "9b967102934d2494697fb80805bea5048bb756bbb410ded6e0e0d4814356b0b6",
+      "golden-gate-dark-installer-launcher": "70093e2efc4c14190cf82b200b67cfdd519ae348fb9b55294260966804da617e",
+      "golden-gate-dark-installer-layout": "c56dba0f228292710818dd4f39fbc08de969be7d0a83d23ab5f371588d8b73b4",
+      "golden-gate-dark-installer-oled": "4e0f20d3e8911c000e563c068655d9ccd91aa1b357decb376fc73c9e072e659f",
+      "golden-gate-dark-installer-summary": "63edf2208b03e503b4d66dcd911de6e6b285da25f0f0b6a84822012bce94a1f9",
+      "golden-gate-dark-installer-wallpaper": "0e268fa4350833bfbc2257ca775801ccc28f2acd1edd4b9848aeb266af1393e4",
+      "golden-gate-dark-installer-welcome": "503cb711b9bceeee2a12b63b176d13e6b347cf0c610f927694e9c6369cedf21e",
+      "golden-gate-dark-installer-window_controls": "966b455c1bae23e99e185e0d580cf989c64d390fb384e0db2734cceaaf980437",
+      "golden-gate-dark-launcher": "1a160beb85985a19974122e58bf45a9690badb7adaef61cefb0aeddd48708ba2",
+      "golden-gate-dark-menu": "0e14e310f4eeebce101a2d358e3bf86d9ad9be6958bd570d8dee06465bb75186",
+      "golden-gate-dark-showcase": "cab189458463baf3a41c97e1e6e7e5540ea4afc3cce3ef17a964344b3339ae1d",
+      "golden-gate-light-about": "0920a1fbcd8b473b784c00a1119e217aba38af2eb50b3063bbbc120a1177dee3",
+      "golden-gate-light-context": "3b5318374988d02e25725e8bd5437b32ade8ab1182f57bc1683832e85e6745b9",
+      "golden-gate-light-dock": "9eca3d6c1e60828a1b54c0f37e4ac14dccdf91868dbd3833fb8a166f9d782d3d",
+      "golden-gate-light-finder": "82adccf48d648c802b83cba05e0c1652c34382cf562644af4aefe9d051cce029",
+      "golden-gate-light-installer-appearance": "c4669ea32e340247654b281f2be9bfc2132c85c164b6f59be11313298a001012",
+      "golden-gate-light-installer-boot": "b1437b44c5abc57a972dc0a407a184c3359061fc952baecf92f8b021a4e5a039",
+      "golden-gate-light-installer-effects": "cdbf775290b0bc3037e18b776510b5e8296bbe749c08cdba9b8f56f92e63110f",
+      "golden-gate-light-installer-files": "2a6c1b523fcf3fbc19b2a01d956834a9a9fcbf625c3fbb7d53c58524ee831669",
+      "golden-gate-light-installer-firefox": "205f4f96563077119134f1f760a939968eab8f5968dc9c7fd1903f6dab2ec9e2",
+      "golden-gate-light-installer-fonts": "d41e13178c5c0406b56e815534cc7acf737163d7822b98769c7e23c7a3be6f7a",
+      "golden-gate-light-installer-icons": "77fc94fc0dde287480b7c19f5aba54875de8cca85a70cdf34d645b1e8970c0ec",
+      "golden-gate-light-installer-launcher": "32fbbf58131ec6574ca09d59ddb099ff1762154b19f953e5bd149e5ccd0082d6",
+      "golden-gate-light-installer-layout": "9f92d2f7006004619fea1fe2bb0b74a6199b25ce1952515b7a1dc81a1cdbab77",
+      "golden-gate-light-installer-oled": "ea07506b316be4ffc8622c4a4103eef80c0ec9787fcaf8a649f71a61b3d28194",
+      "golden-gate-light-installer-summary": "e4dd3e0a4d37a876beeb3391503344d5c8c9713a10a620cf3a375f9bb6d8f6ee",
+      "golden-gate-light-installer-wallpaper": "43887f382a48524132ae6215ce0ad960316bc6f59b3211bc7418c433f45e23ce",
+      "golden-gate-light-installer-welcome": "40cce4d2e356b588e40441d51356cbabbade19ba18d3e5926c293009cd53c243",
+      "golden-gate-light-installer-window_controls": "703a364a89e8bb64519510a0814fac0458a4d0a0916c0ccabe09d6f50649d9fa",
+      "golden-gate-light-launcher": "aa34baddc0487c4e046378815c3a4ded896bbc2d105d809738dbf9935d950da3",
+      "golden-gate-light-menu": "d33f87a31aec769be2d7227dd1cad967e76c60186a93c58d5f6c1a5f1cd6ccc2",
+      "golden-gate-light-showcase": "8a3052916a5a33d64d36896dd0093a01be6c2a8eb7728990d959e59283bfdcae",
       "shutdown": "abe6faef7c08133f6e6d29004d15f5c85c6d5a03c727451d16181a22eb64c5a3",
-      "tahoe-dark-about": "6c973fe74d848c53501e7c137ef0d1a8ff0fe85547b111c2dfbd29fe8b497f84",
-      "tahoe-dark-context": "9ffa72deef35c817ef052be5f86f8bb6aa3073cf31039715d46dbbbc404cef44",
-      "tahoe-dark-dock": "3041d54daea990c722002d3fe40488b1da72b0e41e6245efa516a66dde1e0d27",
-      "tahoe-dark-finder": "11b8cb485540479bb165223ded327067825b0e8679c328d7fbf0f99faa3998bf",
-      "tahoe-dark-installer-appearance": "5bfe8820c75ac08b4b67ee335f8cd2ae23a04f1780ad06f47132170a508d3797",
-      "tahoe-dark-installer-boot": "58b4b3e7cd35c7b70f9fd06a20e4fd8870bdc2e5e1d928106a1bb03acac677ae",
-      "tahoe-dark-installer-effects": "efd1052c1a0d8727c7700c634a0f8d1e5e076d887cabf90f05aaf04de1da6a4a",
-      "tahoe-dark-installer-files": "32b74e79fc9b72100ecf9c5529666a681c4aa0e54c15e04c0a15aed2bc07aeeb",
-      "tahoe-dark-installer-firefox": "7b3c7c2b60d4abd971185a8a8ecbdb762df17fa3064608ad86b27b4ad71fbde3",
-      "tahoe-dark-installer-fonts": "6e5e90a9e81664766ca7526acefb00f7a5296a0af64ceea574e23152daad85e3",
-      "tahoe-dark-installer-icons": "bbf9ccc192e7c8d74f93e5a7771619648d77d377a1e093266b5bd8073a7e2696",
-      "tahoe-dark-installer-launcher": "81bbb74301782b0e09ee32ced2d385f3281c26e4555ab1f36b6afd20366af06a",
-      "tahoe-dark-installer-layout": "5db3815ebd4902bd908f96b6662b69db6461689b06c08406047330cf7c1088a4",
-      "tahoe-dark-installer-oled": "7e5999c1c763854cb6b590574480f6c5d1991631e3cae6ef851e81cb252cb783",
-      "tahoe-dark-installer-summary": "6f2e27ec4bae96bac3fae8f91820f25ebb120eec2847afe657041f2a65df03b9",
-      "tahoe-dark-installer-wallpaper": "e00e7417481d1abaccabf7191d837b94cd1d3c223199d44914329785b88dbcdc",
-      "tahoe-dark-installer-welcome": "3c900f2045e0d60cb59fe7ff919ddfe94e8650c869d474ce3e77688f03177dab",
-      "tahoe-dark-launcher": "deb0150d279dd52ab71cca1c0df6df9bbb74a1ea583a327260f35592bb264dbe",
-      "tahoe-dark-menu": "7b78180b45b4c61998278c50a3a79bfe9c404885eac75fca5d70afea1d836c60",
-      "tahoe-dark-showcase": "971f6a0f38a75b59497bb274d6320828e443ce5b8733c12f7d88c6d2579e6a7a",
-      "tahoe-light-about": "55182ea89e16c09bbdb67e8badf83f15f456dda7c1c731630a778790b0e7a8a2",
-      "tahoe-light-context": "cc8029935dea6ce56e438129bc13f6852d1c97d4fa59d1f2ef900c7c8380f334",
-      "tahoe-light-dock": "574f74ff4c1a292a8b6b9280879e2f322381926ace1bd01fb71bb234ba3497e2",
-      "tahoe-light-finder": "7604cfc0e0aa3c29e8550369b99311adfe544f1685de96b07f35f428d63a4990",
-      "tahoe-light-installer-appearance": "54a0a6dc45dd6042993fe5ab336d978679ecff1cb5113c854df398860a160985",
-      "tahoe-light-installer-boot": "acaf756d1f361da56f8c44739741b30dd65f7baa8be25837890ce4d44b21710d",
-      "tahoe-light-installer-effects": "aa57b90b2b0a45f2669024bcdc8288a031117a62a8f5db953d1c940b83ed4348",
-      "tahoe-light-installer-files": "68ff8f9b511b53e9efe9aa7af1d3756d7474defd871f27857b3ac418c6929f22",
-      "tahoe-light-installer-firefox": "de32957d1443fc99acc7d013d4c2bd015f66132daf1296ff51ef052af5fc8a31",
-      "tahoe-light-installer-fonts": "275fcfccf145e6094a1876c6fd2df818a5e068aa4d964c1a5b8c749e2748c315",
-      "tahoe-light-installer-icons": "4ef1563989406d202c197c22ab2932c0919b9bbdbf38bdedbc44d3bc2f18f792",
-      "tahoe-light-installer-launcher": "e47629b41a9845c351f24771bbda81060c192e648f242c5618d5a6e7cbbe0eb0",
-      "tahoe-light-installer-layout": "33b2dbc8892b6681443d7c114afc3d33ef4cfe981b514466e409c35b14356a2e",
-      "tahoe-light-installer-oled": "617475169af0790821bb1461a3bdc3a5081ddd64673104469455de4bf44a6f54",
-      "tahoe-light-installer-summary": "1a8b3f8cb2afbe3d2d54498cea13b0dcfc8aa95b1755ee03badee5159a0c42b3",
-      "tahoe-light-installer-wallpaper": "f4af1d4caad9920985b937cc3444e63c3666e567f1cdb755b38f395c0ea69477",
-      "tahoe-light-installer-welcome": "06f377903643efce92e21850e142b7c888d6fddafb726314422f23d5b76a879f",
-      "tahoe-light-launcher": "9c706b53acb98b9dfce183fefaf90e0bcf764c62127b1c94e3ac10dd46138439",
-      "tahoe-light-menu": "4b1aca06a1a081ace89aec3548851fcac344739c5f487754a5319b122a0966b6",
-      "tahoe-light-showcase": "9958f56a9ae8bc97277cba083295c747bb3ee6e4eaefd3ef34caa5ab77c92a66"
+      "tahoe-dark-about": "f8d4f6d9666b96d046ef637822ff2004f2238efd6510cbccc7c6e9bd8342b989",
+      "tahoe-dark-context": "b1440c6e9203b4671721fb896167b6017124bf41e64015d86d0b19ef3d8b8d71",
+      "tahoe-dark-dock": "4ff7fa2751fc4098b572c327791ba2ff44a28bc1e547055ad9af21ae4459fe3c",
+      "tahoe-dark-finder": "d62265141f5a454b4e8e7bae4056bbd45f9ee529016dc973ae9103a70fa13e8a",
+      "tahoe-dark-installer-appearance": "2352a9d609aa360c5ff03ba6a0c63afaf37cd095f34737faa4c43dec08fe55b5",
+      "tahoe-dark-installer-boot": "dba1a7d24001e8ce3ec43032a146c150a2db20e34ba8fe6083ca2055271fc13e",
+      "tahoe-dark-installer-effects": "274ac90c4b99ff4c0970969fb554502cd269be90ad68169ed546a5688790e075",
+      "tahoe-dark-installer-files": "01dea793c642743be61e2da043d0ada6dd1e3829b54178dd567a773a40a4439b",
+      "tahoe-dark-installer-firefox": "c9ddb176fd7a5ccb6bb98a37bb262a32c18901d51109125f2a87d40a664d26d6",
+      "tahoe-dark-installer-fonts": "6caa1f4fcefd7decbdc7037cf187c61e36e8cbe3bdc0953e0cddff408db81468",
+      "tahoe-dark-installer-icons": "9a22a3c77aaf7af00f723e6e0689bd819db3561b6c69398ad797fd07a6e2b5cb",
+      "tahoe-dark-installer-launcher": "f7568948f50d8a230a703fdedad3edcc330cf04835a4da0ea100915d2c9afb93",
+      "tahoe-dark-installer-layout": "e266952d7751fb27cc786868b8851f7c9ed0aaab425fce0f3f49c60fcad22d11",
+      "tahoe-dark-installer-oled": "bd9b4ac140729b19710c7a8e7d7974c2e9a9a2045b46eaabf591486768fee92f",
+      "tahoe-dark-installer-summary": "807cbbffde3a112fbedecb85518a6296695217f1275ea71c1bbcbffa153f0c76",
+      "tahoe-dark-installer-wallpaper": "e9bece6afdf7a0ab0a5f60c1ce11ae3def82ec58613c8283019b531e56c87ddf",
+      "tahoe-dark-installer-welcome": "c6d76defdceb4c73dfa249bfa30ac3f05d3df33a5f3c4d3092098a1b00916d53",
+      "tahoe-dark-installer-window_controls": "99422cac3c199da488ade62606db88320655c975a52c46001e16d8c03d140749",
+      "tahoe-dark-launcher": "2d75cbb02595c50ce0d125ee5bb5ee6a19e6f6f391ed23a63db554e5a2048eaf",
+      "tahoe-dark-menu": "4c19e01f6150f9173c255b290ba5fde3cb5c9e8b28a5c283dc95784f3892b744",
+      "tahoe-dark-showcase": "80cc9f870b1a99fc29b40c2a1f0cab769c5e43d2d44bc08f7a3801828c78e68c",
+      "tahoe-light-about": "c44ce982707c40ba53058507ec5dbe29a08d3fa141e26499ea72afb0d321a8cb",
+      "tahoe-light-context": "fc19c319d691a63806f1a8dfe599cd0833b681acdd3f25821b028058f52e0999",
+      "tahoe-light-dock": "66c09972eb8f6b746f10e33a92e52c8e90bcec3a6e109a052a5da40c8daf3e0f",
+      "tahoe-light-finder": "0f13b9099462bb351a7aa56754b0aaddbb52a4f23a0f3d24f2b5b8f48e814db1",
+      "tahoe-light-installer-appearance": "3271ce6491609a89bc182ea6781b7088722f6308a06eb3cf932f8c02189992b7",
+      "tahoe-light-installer-boot": "36598e21f559368f4b538059249bfa9ac73f056a010d461e7516125d0e109e26",
+      "tahoe-light-installer-effects": "64af417f564f9293935c2a52117c4ec50f499a6c3804cdd98d1abbb2fbd4fe09",
+      "tahoe-light-installer-files": "63cd9339d35292cd239341cc1866319ee9218eff30ccfb7bf17bbacdef8d440b",
+      "tahoe-light-installer-firefox": "76a7ed24fc972308d551c6b46e845369fe63d451c3505f7046b8d3dbc7a3746b",
+      "tahoe-light-installer-fonts": "0f00762e136b0321eef9d8e732d316451bd9edff77d0db3e420a5b49dfa7788a",
+      "tahoe-light-installer-icons": "aa53c01d8215b64475be5df0360941310c6ea52e46b670329041e0efda8d6f81",
+      "tahoe-light-installer-launcher": "1627efe66bedb09df88f824376636344d94928000497c90344094ec4debac721",
+      "tahoe-light-installer-layout": "0d403349625a0058ae4910bf2d263b8f8c4451848c18c370c4fe00ba7adb84de",
+      "tahoe-light-installer-oled": "ce05b1ba951b3c5f9007637144d9f548176d81f4851cd622883dcffb6beb6401",
+      "tahoe-light-installer-summary": "6f6ad85885c3278348829f85dfb4655441c8324c51a55d972b57af0ea1bb9adc",
+      "tahoe-light-installer-wallpaper": "f07e88276a238a5d2c9e1795a2b83de31700b5ff2bcd9940fc913e6be6835716",
+      "tahoe-light-installer-welcome": "be4b4d474cc0c613f771230f170fc95282b4052a009fbab6b5a32ec2d012ffe3",
+      "tahoe-light-installer-window_controls": "e613454a384d06a6ad9067883129040afdfbaae374a62e532de29ba993562ff0",
+      "tahoe-light-launcher": "100c3d4c243058fe59bc2279f36d12ffdfd7757def9ec2cf2c537ad2b7ccc659",
+      "tahoe-light-menu": "bac943440e7570acc6dc7fd6e3cff7dccdc3eb59b3b1c6e5e5566310bb0d0b25",
+      "tahoe-light-showcase": "11afd76e85761ffb18f7d836f2ecfa85c4e594fefc2377cebdbb5e69c8b3f59f"
     },
     "rejected": {}
   },
   "capture_manifest": {
     "schema": 1,
-    "version": "0.61.8",
-    "source_commit": "6e7dcefb3d2ad513b617c2ee491719df68a48ced",
-    "source_tree": "08391612c2d81d2c4a1d91c66109f32f0e5f43bbf0b1e54c70ea761da61e9bae",
+    "version": "0.61.7",
+    "source_commit": "c1f909bed55726223d36733425904ed9f29ec604",
+    "source_tree": "e6563c82774857f1750e0dc614407de0c4dfd12b70d96646004d1700425dc1bf",
     "profile_sha256": "786905bfe2932f92f011f069c74bb0c8f0eb7b563f2b49372082d642fde5cced",
     "vm_image_sha256": "2a09de13ad568da01a8e16dd93e6aec120e63375bfc0ec24b4e804b43ecb4f8c",
     "frames": {
       "tahoe-light-launcher": {
-        "sha256": "9c706b53acb98b9dfce183fefaf90e0bcf764c62127b1c94e3ac10dd46138439",
+        "sha256": "100c3d4c243058fe59bc2279f36d12ffdfd7757def9ec2cf2c537ad2b7ccc659",
         "appearance": {
+          "Window controls": "__aurorae__svg__MacTahoeLiquidKde-Light",
           "Plasma": "MacTahoeLiquidKde-Light",
           "Qt": "MacTahoeLiquidKdeLight",
           "Kvantum": "mac-tahoe-liquid-kde",
@@ -3712,8 +3927,9 @@
         "installer_edition": null
       },
       "tahoe-light-dock": {
-        "sha256": "574f74ff4c1a292a8b6b9280879e2f322381926ace1bd01fb71bb234ba3497e2",
+        "sha256": "66c09972eb8f6b746f10e33a92e52c8e90bcec3a6e109a052a5da40c8daf3e0f",
         "appearance": {
+          "Window controls": "__aurorae__svg__MacTahoeLiquidKde-Light",
           "Plasma": "MacTahoeLiquidKde-Light",
           "Qt": "MacTahoeLiquidKdeLight",
           "Kvantum": "mac-tahoe-liquid-kde",
@@ -3780,8 +3996,9 @@
         "installer_edition": null
       },
       "tahoe-light-menu": {
-        "sha256": "4b1aca06a1a081ace89aec3548851fcac344739c5f487754a5319b122a0966b6",
+        "sha256": "bac943440e7570acc6dc7fd6e3cff7dccdc3eb59b3b1c6e5e5566310bb0d0b25",
         "appearance": {
+          "Window controls": "__aurorae__svg__MacTahoeLiquidKde-Light",
           "Plasma": "MacTahoeLiquidKde-Light",
           "Qt": "MacTahoeLiquidKdeLight",
           "Kvantum": "mac-tahoe-liquid-kde",
@@ -3861,8 +4078,9 @@
         "installer_edition": null
       },
       "tahoe-light-context": {
-        "sha256": "cc8029935dea6ce56e438129bc13f6852d1c97d4fa59d1f2ef900c7c8380f334",
+        "sha256": "fc19c319d691a63806f1a8dfe599cd0833b681acdd3f25821b028058f52e0999",
         "appearance": {
+          "Window controls": "__aurorae__svg__MacTahoeLiquidKde-Light",
           "Plasma": "MacTahoeLiquidKde-Light",
           "Qt": "MacTahoeLiquidKdeLight",
           "Kvantum": "mac-tahoe-liquid-kde",
@@ -3942,8 +4160,9 @@
         "installer_edition": null
       },
       "tahoe-light-finder": {
-        "sha256": "7604cfc0e0aa3c29e8550369b99311adfe544f1685de96b07f35f428d63a4990",
+        "sha256": "0f13b9099462bb351a7aa56754b0aaddbb52a4f23a0f3d24f2b5b8f48e814db1",
         "appearance": {
+          "Window controls": "__aurorae__svg__MacTahoeLiquidKde-Light",
           "Plasma": "MacTahoeLiquidKde-Light",
           "Qt": "MacTahoeLiquidKdeLight",
           "Kvantum": "mac-tahoe-liquid-kde",
@@ -4045,8 +4264,9 @@
         "installer_edition": null
       },
       "tahoe-light-showcase": {
-        "sha256": "9958f56a9ae8bc97277cba083295c747bb3ee6e4eaefd3ef34caa5ab77c92a66",
+        "sha256": "11afd76e85761ffb18f7d836f2ecfa85c4e594fefc2377cebdbb5e69c8b3f59f",
         "appearance": {
+          "Window controls": "__aurorae__svg__MacTahoeLiquidKde-Light",
           "Plasma": "MacTahoeLiquidKde-Light",
           "Qt": "MacTahoeLiquidKdeLight",
           "Kvantum": "mac-tahoe-liquid-kde",
@@ -4143,8 +4363,9 @@
         "installer_edition": null
       },
       "tahoe-light-about": {
-        "sha256": "55182ea89e16c09bbdb67e8badf83f15f456dda7c1c731630a778790b0e7a8a2",
+        "sha256": "c44ce982707c40ba53058507ec5dbe29a08d3fa141e26499ea72afb0d321a8cb",
         "appearance": {
+          "Window controls": "__aurorae__svg__MacTahoeLiquidKde-Light",
           "Plasma": "MacTahoeLiquidKde-Light",
           "Qt": "MacTahoeLiquidKdeLight",
           "Kvantum": "mac-tahoe-liquid-kde",
@@ -4224,8 +4445,9 @@
         "installer_edition": null
       },
       "tahoe-light-installer-welcome": {
-        "sha256": "06f377903643efce92e21850e142b7c888d6fddafb726314422f23d5b76a879f",
+        "sha256": "be4b4d474cc0c613f771230f170fc95282b4052a009fbab6b5a32ec2d012ffe3",
         "appearance": {
+          "Window controls": "__aurorae__svg__MacTahoeLiquidKde-Light",
           "Plasma": "MacTahoeLiquidKde-Light",
           "Qt": "MacTahoeLiquidKdeLight",
           "Kvantum": "mac-tahoe-liquid-kde",
@@ -4305,8 +4527,9 @@
         "installer_edition": "MacTahoe"
       },
       "tahoe-light-installer-appearance": {
-        "sha256": "54a0a6dc45dd6042993fe5ab336d978679ecff1cb5113c854df398860a160985",
+        "sha256": "3271ce6491609a89bc182ea6781b7088722f6308a06eb3cf932f8c02189992b7",
         "appearance": {
+          "Window controls": "__aurorae__svg__MacTahoeLiquidKde-Light",
           "Plasma": "MacTahoeLiquidKde-Light",
           "Qt": "MacTahoeLiquidKdeLight",
           "Kvantum": "mac-tahoe-liquid-kde",
@@ -4386,8 +4609,9 @@
         "installer_edition": "MacTahoe"
       },
       "tahoe-light-installer-icons": {
-        "sha256": "4ef1563989406d202c197c22ab2932c0919b9bbdbf38bdedbc44d3bc2f18f792",
+        "sha256": "aa53c01d8215b64475be5df0360941310c6ea52e46b670329041e0efda8d6f81",
         "appearance": {
+          "Window controls": "__aurorae__svg__MacTahoeLiquidKde-Light",
           "Plasma": "MacTahoeLiquidKde-Light",
           "Qt": "MacTahoeLiquidKdeLight",
           "Kvantum": "mac-tahoe-liquid-kde",
@@ -4467,8 +4691,9 @@
         "installer_edition": "MacTahoe"
       },
       "tahoe-light-installer-wallpaper": {
-        "sha256": "f4af1d4caad9920985b937cc3444e63c3666e567f1cdb755b38f395c0ea69477",
+        "sha256": "f07e88276a238a5d2c9e1795a2b83de31700b5ff2bcd9940fc913e6be6835716",
         "appearance": {
+          "Window controls": "__aurorae__svg__MacTahoeLiquidKde-Light",
           "Plasma": "MacTahoeLiquidKde-Light",
           "Qt": "MacTahoeLiquidKdeLight",
           "Kvantum": "mac-tahoe-liquid-kde",
@@ -4548,8 +4773,9 @@
         "installer_edition": "MacTahoe"
       },
       "tahoe-light-installer-launcher": {
-        "sha256": "e47629b41a9845c351f24771bbda81060c192e648f242c5618d5a6e7cbbe0eb0",
+        "sha256": "1627efe66bedb09df88f824376636344d94928000497c90344094ec4debac721",
         "appearance": {
+          "Window controls": "__aurorae__svg__MacTahoeLiquidKde-Light",
           "Plasma": "MacTahoeLiquidKde-Light",
           "Qt": "MacTahoeLiquidKdeLight",
           "Kvantum": "mac-tahoe-liquid-kde",
@@ -4629,8 +4855,9 @@
         "installer_edition": "MacTahoe"
       },
       "tahoe-light-installer-layout": {
-        "sha256": "33b2dbc8892b6681443d7c114afc3d33ef4cfe981b514466e409c35b14356a2e",
+        "sha256": "0d403349625a0058ae4910bf2d263b8f8c4451848c18c370c4fe00ba7adb84de",
         "appearance": {
+          "Window controls": "__aurorae__svg__MacTahoeLiquidKde-Light",
           "Plasma": "MacTahoeLiquidKde-Light",
           "Qt": "MacTahoeLiquidKdeLight",
           "Kvantum": "mac-tahoe-liquid-kde",
@@ -4710,8 +4937,9 @@
         "installer_edition": "MacTahoe"
       },
       "tahoe-light-installer-effects": {
-        "sha256": "aa57b90b2b0a45f2669024bcdc8288a031117a62a8f5db953d1c940b83ed4348",
+        "sha256": "64af417f564f9293935c2a52117c4ec50f499a6c3804cdd98d1abbb2fbd4fe09",
         "appearance": {
+          "Window controls": "__aurorae__svg__MacTahoeLiquidKde-Light",
           "Plasma": "MacTahoeLiquidKde-Light",
           "Qt": "MacTahoeLiquidKdeLight",
           "Kvantum": "mac-tahoe-liquid-kde",
@@ -4790,9 +5018,92 @@
         "installer_page": "effects",
         "installer_edition": "MacTahoe"
       },
-      "tahoe-light-installer-fonts": {
-        "sha256": "275fcfccf145e6094a1876c6fd2df818a5e068aa4d964c1a5b8c749e2748c315",
+      "tahoe-light-installer-window_controls": {
+        "sha256": "e613454a384d06a6ad9067883129040afdfbaae374a62e532de29ba993562ff0",
         "appearance": {
+          "Window controls": "__aurorae__svg__MacTahoeLiquidKde-Light",
+          "Plasma": "MacTahoeLiquidKde-Light",
+          "Qt": "MacTahoeLiquidKdeLight",
+          "Kvantum": "mac-tahoe-liquid-kde",
+          "GTK preference": "'prefer-light'",
+          "GTK theme": "'MacTahoeLiquidKde-Light'",
+          "GTK 4 stylesheet": "MacTahoeLiquidKde-Light",
+          "Icons": "MacTahoeLiquidKde-Icons-Regular-Light"
+        },
+        "effect_build": "747babf1b752c32ad9bce582e74b49abd5122af9ff4ff281c51de2f8f49bc854",
+        "crop": [
+          1072,
+          422,
+          2768,
+          1678
+        ],
+        "wallpaper": "MacTahoe",
+        "wallpaper_uri": "file:///home/tester/.local/share/wallpapers/MacTahoe",
+        "launcher_preset": 1,
+        "windows": [
+          {
+            "caption": "",
+            "resourceClass": "plasmashell",
+            "type": 1,
+            "appletPopup": false,
+            "active": false,
+            "geometry": {
+              "x": 0,
+              "y": 0,
+              "width": 1920,
+              "height": 1080
+            }
+          },
+          {
+            "caption": "",
+            "resourceClass": "plasmashell",
+            "type": 2,
+            "appletPopup": false,
+            "active": false,
+            "geometry": {
+              "x": 0,
+              "y": 0,
+              "width": 1920,
+              "height": 32
+            }
+          },
+          {
+            "caption": "",
+            "resourceClass": "plasmashell",
+            "type": 2,
+            "appletPopup": false,
+            "active": false,
+            "geometry": {
+              "x": 490.5,
+              "y": 996,
+              "width": 939,
+              "height": 84
+            }
+          },
+          {
+            "caption": "Install Tahoe",
+            "resourceClass": "python3",
+            "type": 0,
+            "appletPopup": false,
+            "active": true,
+            "geometry": {
+              "x": 550,
+              "y": 225,
+              "width": 820,
+              "height": 600
+            }
+          }
+        ],
+        "files_pixels": null,
+        "stable_frames": true,
+        "window_verified": true,
+        "installer_page": "window_controls",
+        "installer_edition": "MacTahoe"
+      },
+      "tahoe-light-installer-fonts": {
+        "sha256": "0f00762e136b0321eef9d8e732d316451bd9edff77d0db3e420a5b49dfa7788a",
+        "appearance": {
+          "Window controls": "__aurorae__svg__MacTahoeLiquidKde-Light",
           "Plasma": "MacTahoeLiquidKde-Light",
           "Qt": "MacTahoeLiquidKdeLight",
           "Kvantum": "mac-tahoe-liquid-kde",
@@ -4872,8 +5183,9 @@
         "installer_edition": "MacTahoe"
       },
       "tahoe-light-installer-firefox": {
-        "sha256": "de32957d1443fc99acc7d013d4c2bd015f66132daf1296ff51ef052af5fc8a31",
+        "sha256": "76a7ed24fc972308d551c6b46e845369fe63d451c3505f7046b8d3dbc7a3746b",
         "appearance": {
+          "Window controls": "__aurorae__svg__MacTahoeLiquidKde-Light",
           "Plasma": "MacTahoeLiquidKde-Light",
           "Qt": "MacTahoeLiquidKdeLight",
           "Kvantum": "mac-tahoe-liquid-kde",
@@ -4953,8 +5265,9 @@
         "installer_edition": "MacTahoe"
       },
       "tahoe-light-installer-files": {
-        "sha256": "68ff8f9b511b53e9efe9aa7af1d3756d7474defd871f27857b3ac418c6929f22",
+        "sha256": "63cd9339d35292cd239341cc1866319ee9218eff30ccfb7bf17bbacdef8d440b",
         "appearance": {
+          "Window controls": "__aurorae__svg__MacTahoeLiquidKde-Light",
           "Plasma": "MacTahoeLiquidKde-Light",
           "Qt": "MacTahoeLiquidKdeLight",
           "Kvantum": "mac-tahoe-liquid-kde",
@@ -5034,8 +5347,9 @@
         "installer_edition": "MacTahoe"
       },
       "tahoe-light-installer-boot": {
-        "sha256": "acaf756d1f361da56f8c44739741b30dd65f7baa8be25837890ce4d44b21710d",
+        "sha256": "36598e21f559368f4b538059249bfa9ac73f056a010d461e7516125d0e109e26",
         "appearance": {
+          "Window controls": "__aurorae__svg__MacTahoeLiquidKde-Light",
           "Plasma": "MacTahoeLiquidKde-Light",
           "Qt": "MacTahoeLiquidKdeLight",
           "Kvantum": "mac-tahoe-liquid-kde",
@@ -5115,8 +5429,9 @@
         "installer_edition": "MacTahoe"
       },
       "tahoe-light-installer-oled": {
-        "sha256": "617475169af0790821bb1461a3bdc3a5081ddd64673104469455de4bf44a6f54",
+        "sha256": "ce05b1ba951b3c5f9007637144d9f548176d81f4851cd622883dcffb6beb6401",
         "appearance": {
+          "Window controls": "__aurorae__svg__MacTahoeLiquidKde-Light",
           "Plasma": "MacTahoeLiquidKde-Light",
           "Qt": "MacTahoeLiquidKdeLight",
           "Kvantum": "mac-tahoe-liquid-kde",
@@ -5196,8 +5511,9 @@
         "installer_edition": "MacTahoe"
       },
       "tahoe-light-installer-summary": {
-        "sha256": "1a8b3f8cb2afbe3d2d54498cea13b0dcfc8aa95b1755ee03badee5159a0c42b3",
+        "sha256": "6f6ad85885c3278348829f85dfb4655441c8324c51a55d972b57af0ea1bb9adc",
         "appearance": {
+          "Window controls": "__aurorae__svg__MacTahoeLiquidKde-Light",
           "Plasma": "MacTahoeLiquidKde-Light",
           "Qt": "MacTahoeLiquidKdeLight",
           "Kvantum": "mac-tahoe-liquid-kde",
@@ -5277,8 +5593,9 @@
         "installer_edition": "MacTahoe"
       },
       "tahoe-dark-launcher": {
-        "sha256": "deb0150d279dd52ab71cca1c0df6df9bbb74a1ea583a327260f35592bb264dbe",
+        "sha256": "2d75cbb02595c50ce0d125ee5bb5ee6a19e6f6f391ed23a63db554e5a2048eaf",
         "appearance": {
+          "Window controls": "__aurorae__svg__MacTahoeLiquidKde-Dark",
           "Plasma": "MacTahoeLiquidKde-Dark",
           "Qt": "MacTahoeLiquidKdeDark",
           "Kvantum": "mac-tahoe-liquid-kdeDark",
@@ -5353,8 +5670,9 @@
         "installer_edition": null
       },
       "tahoe-dark-dock": {
-        "sha256": "3041d54daea990c722002d3fe40488b1da72b0e41e6245efa516a66dde1e0d27",
+        "sha256": "4ff7fa2751fc4098b572c327791ba2ff44a28bc1e547055ad9af21ae4459fe3c",
         "appearance": {
+          "Window controls": "__aurorae__svg__MacTahoeLiquidKde-Dark",
           "Plasma": "MacTahoeLiquidKde-Dark",
           "Qt": "MacTahoeLiquidKdeDark",
           "Kvantum": "mac-tahoe-liquid-kdeDark",
@@ -5421,8 +5739,9 @@
         "installer_edition": null
       },
       "tahoe-dark-menu": {
-        "sha256": "7b78180b45b4c61998278c50a3a79bfe9c404885eac75fca5d70afea1d836c60",
+        "sha256": "4c19e01f6150f9173c255b290ba5fde3cb5c9e8b28a5c283dc95784f3892b744",
         "appearance": {
+          "Window controls": "__aurorae__svg__MacTahoeLiquidKde-Dark",
           "Plasma": "MacTahoeLiquidKde-Dark",
           "Qt": "MacTahoeLiquidKdeDark",
           "Kvantum": "mac-tahoe-liquid-kdeDark",
@@ -5502,8 +5821,9 @@
         "installer_edition": null
       },
       "tahoe-dark-context": {
-        "sha256": "9ffa72deef35c817ef052be5f86f8bb6aa3073cf31039715d46dbbbc404cef44",
+        "sha256": "b1440c6e9203b4671721fb896167b6017124bf41e64015d86d0b19ef3d8b8d71",
         "appearance": {
+          "Window controls": "__aurorae__svg__MacTahoeLiquidKde-Dark",
           "Plasma": "MacTahoeLiquidKde-Dark",
           "Qt": "MacTahoeLiquidKdeDark",
           "Kvantum": "mac-tahoe-liquid-kdeDark",
@@ -5583,8 +5903,9 @@
         "installer_edition": null
       },
       "tahoe-dark-finder": {
-        "sha256": "11b8cb485540479bb165223ded327067825b0e8679c328d7fbf0f99faa3998bf",
+        "sha256": "d62265141f5a454b4e8e7bae4056bbd45f9ee529016dc973ae9103a70fa13e8a",
         "appearance": {
+          "Window controls": "__aurorae__svg__MacTahoeLiquidKde-Dark",
           "Plasma": "MacTahoeLiquidKde-Dark",
           "Qt": "MacTahoeLiquidKdeDark",
           "Kvantum": "mac-tahoe-liquid-kdeDark",
@@ -5686,8 +6007,9 @@
         "installer_edition": null
       },
       "tahoe-dark-showcase": {
-        "sha256": "971f6a0f38a75b59497bb274d6320828e443ce5b8733c12f7d88c6d2579e6a7a",
+        "sha256": "80cc9f870b1a99fc29b40c2a1f0cab769c5e43d2d44bc08f7a3801828c78e68c",
         "appearance": {
+          "Window controls": "__aurorae__svg__MacTahoeLiquidKde-Dark",
           "Plasma": "MacTahoeLiquidKde-Dark",
           "Qt": "MacTahoeLiquidKdeDark",
           "Kvantum": "mac-tahoe-liquid-kdeDark",
@@ -5784,8 +6106,9 @@
         "installer_edition": null
       },
       "tahoe-dark-about": {
-        "sha256": "6c973fe74d848c53501e7c137ef0d1a8ff0fe85547b111c2dfbd29fe8b497f84",
+        "sha256": "f8d4f6d9666b96d046ef637822ff2004f2238efd6510cbccc7c6e9bd8342b989",
         "appearance": {
+          "Window controls": "__aurorae__svg__MacTahoeLiquidKde-Dark",
           "Plasma": "MacTahoeLiquidKde-Dark",
           "Qt": "MacTahoeLiquidKdeDark",
           "Kvantum": "mac-tahoe-liquid-kdeDark",
@@ -5865,8 +6188,9 @@
         "installer_edition": null
       },
       "tahoe-dark-installer-welcome": {
-        "sha256": "3c900f2045e0d60cb59fe7ff919ddfe94e8650c869d474ce3e77688f03177dab",
+        "sha256": "c6d76defdceb4c73dfa249bfa30ac3f05d3df33a5f3c4d3092098a1b00916d53",
         "appearance": {
+          "Window controls": "__aurorae__svg__MacTahoeLiquidKde-Dark",
           "Plasma": "MacTahoeLiquidKde-Dark",
           "Qt": "MacTahoeLiquidKdeDark",
           "Kvantum": "mac-tahoe-liquid-kdeDark",
@@ -5946,8 +6270,9 @@
         "installer_edition": "MacTahoe"
       },
       "tahoe-dark-installer-appearance": {
-        "sha256": "5bfe8820c75ac08b4b67ee335f8cd2ae23a04f1780ad06f47132170a508d3797",
+        "sha256": "2352a9d609aa360c5ff03ba6a0c63afaf37cd095f34737faa4c43dec08fe55b5",
         "appearance": {
+          "Window controls": "__aurorae__svg__MacTahoeLiquidKde-Dark",
           "Plasma": "MacTahoeLiquidKde-Dark",
           "Qt": "MacTahoeLiquidKdeDark",
           "Kvantum": "mac-tahoe-liquid-kdeDark",
@@ -6027,8 +6352,9 @@
         "installer_edition": "MacTahoe"
       },
       "tahoe-dark-installer-icons": {
-        "sha256": "bbf9ccc192e7c8d74f93e5a7771619648d77d377a1e093266b5bd8073a7e2696",
+        "sha256": "9a22a3c77aaf7af00f723e6e0689bd819db3561b6c69398ad797fd07a6e2b5cb",
         "appearance": {
+          "Window controls": "__aurorae__svg__MacTahoeLiquidKde-Dark",
           "Plasma": "MacTahoeLiquidKde-Dark",
           "Qt": "MacTahoeLiquidKdeDark",
           "Kvantum": "mac-tahoe-liquid-kdeDark",
@@ -6108,8 +6434,9 @@
         "installer_edition": "MacTahoe"
       },
       "tahoe-dark-installer-wallpaper": {
-        "sha256": "e00e7417481d1abaccabf7191d837b94cd1d3c223199d44914329785b88dbcdc",
+        "sha256": "e9bece6afdf7a0ab0a5f60c1ce11ae3def82ec58613c8283019b531e56c87ddf",
         "appearance": {
+          "Window controls": "__aurorae__svg__MacTahoeLiquidKde-Dark",
           "Plasma": "MacTahoeLiquidKde-Dark",
           "Qt": "MacTahoeLiquidKdeDark",
           "Kvantum": "mac-tahoe-liquid-kdeDark",
@@ -6189,8 +6516,9 @@
         "installer_edition": "MacTahoe"
       },
       "tahoe-dark-installer-launcher": {
-        "sha256": "81bbb74301782b0e09ee32ced2d385f3281c26e4555ab1f36b6afd20366af06a",
+        "sha256": "f7568948f50d8a230a703fdedad3edcc330cf04835a4da0ea100915d2c9afb93",
         "appearance": {
+          "Window controls": "__aurorae__svg__MacTahoeLiquidKde-Dark",
           "Plasma": "MacTahoeLiquidKde-Dark",
           "Qt": "MacTahoeLiquidKdeDark",
           "Kvantum": "mac-tahoe-liquid-kdeDark",
@@ -6270,8 +6598,9 @@
         "installer_edition": "MacTahoe"
       },
       "tahoe-dark-installer-layout": {
-        "sha256": "5db3815ebd4902bd908f96b6662b69db6461689b06c08406047330cf7c1088a4",
+        "sha256": "e266952d7751fb27cc786868b8851f7c9ed0aaab425fce0f3f49c60fcad22d11",
         "appearance": {
+          "Window controls": "__aurorae__svg__MacTahoeLiquidKde-Dark",
           "Plasma": "MacTahoeLiquidKde-Dark",
           "Qt": "MacTahoeLiquidKdeDark",
           "Kvantum": "mac-tahoe-liquid-kdeDark",
@@ -6351,8 +6680,9 @@
         "installer_edition": "MacTahoe"
       },
       "tahoe-dark-installer-effects": {
-        "sha256": "efd1052c1a0d8727c7700c634a0f8d1e5e076d887cabf90f05aaf04de1da6a4a",
+        "sha256": "274ac90c4b99ff4c0970969fb554502cd269be90ad68169ed546a5688790e075",
         "appearance": {
+          "Window controls": "__aurorae__svg__MacTahoeLiquidKde-Dark",
           "Plasma": "MacTahoeLiquidKde-Dark",
           "Qt": "MacTahoeLiquidKdeDark",
           "Kvantum": "mac-tahoe-liquid-kdeDark",
@@ -6431,9 +6761,92 @@
         "installer_page": "effects",
         "installer_edition": "MacTahoe"
       },
-      "tahoe-dark-installer-fonts": {
-        "sha256": "6e5e90a9e81664766ca7526acefb00f7a5296a0af64ceea574e23152daad85e3",
+      "tahoe-dark-installer-window_controls": {
+        "sha256": "99422cac3c199da488ade62606db88320655c975a52c46001e16d8c03d140749",
         "appearance": {
+          "Window controls": "__aurorae__svg__MacTahoeLiquidKde-Dark",
+          "Plasma": "MacTahoeLiquidKde-Dark",
+          "Qt": "MacTahoeLiquidKdeDark",
+          "Kvantum": "mac-tahoe-liquid-kdeDark",
+          "GTK preference": "'prefer-dark'",
+          "GTK theme": "'MacTahoeLiquidKde-Dark'",
+          "GTK 4 stylesheet": "MacTahoeLiquidKde-Dark",
+          "Icons": "MacTahoeLiquidKde-Icons-Regular-Dark"
+        },
+        "effect_build": "747babf1b752c32ad9bce582e74b49abd5122af9ff4ff281c51de2f8f49bc854",
+        "crop": [
+          1072,
+          422,
+          2768,
+          1678
+        ],
+        "wallpaper": "MacTahoe",
+        "wallpaper_uri": "file:///home/tester/.local/share/wallpapers/MacTahoe",
+        "launcher_preset": 1,
+        "windows": [
+          {
+            "caption": "",
+            "resourceClass": "plasmashell",
+            "type": 1,
+            "appletPopup": false,
+            "active": false,
+            "geometry": {
+              "x": 0,
+              "y": 0,
+              "width": 1920,
+              "height": 1080
+            }
+          },
+          {
+            "caption": "",
+            "resourceClass": "plasmashell",
+            "type": 2,
+            "appletPopup": false,
+            "active": false,
+            "geometry": {
+              "x": 0,
+              "y": 0,
+              "width": 1920,
+              "height": 32
+            }
+          },
+          {
+            "caption": "",
+            "resourceClass": "plasmashell",
+            "type": 2,
+            "appletPopup": false,
+            "active": false,
+            "geometry": {
+              "x": 490.5,
+              "y": 996,
+              "width": 939,
+              "height": 84
+            }
+          },
+          {
+            "caption": "Install Tahoe",
+            "resourceClass": "python3",
+            "type": 0,
+            "appletPopup": false,
+            "active": true,
+            "geometry": {
+              "x": 550,
+              "y": 225,
+              "width": 820,
+              "height": 600
+            }
+          }
+        ],
+        "files_pixels": null,
+        "stable_frames": true,
+        "window_verified": true,
+        "installer_page": "window_controls",
+        "installer_edition": "MacTahoe"
+      },
+      "tahoe-dark-installer-fonts": {
+        "sha256": "6caa1f4fcefd7decbdc7037cf187c61e36e8cbe3bdc0953e0cddff408db81468",
+        "appearance": {
+          "Window controls": "__aurorae__svg__MacTahoeLiquidKde-Dark",
           "Plasma": "MacTahoeLiquidKde-Dark",
           "Qt": "MacTahoeLiquidKdeDark",
           "Kvantum": "mac-tahoe-liquid-kdeDark",
@@ -6513,8 +6926,9 @@
         "installer_edition": "MacTahoe"
       },
       "tahoe-dark-installer-firefox": {
-        "sha256": "7b3c7c2b60d4abd971185a8a8ecbdb762df17fa3064608ad86b27b4ad71fbde3",
+        "sha256": "c9ddb176fd7a5ccb6bb98a37bb262a32c18901d51109125f2a87d40a664d26d6",
         "appearance": {
+          "Window controls": "__aurorae__svg__MacTahoeLiquidKde-Dark",
           "Plasma": "MacTahoeLiquidKde-Dark",
           "Qt": "MacTahoeLiquidKdeDark",
           "Kvantum": "mac-tahoe-liquid-kdeDark",
@@ -6594,8 +7008,9 @@
         "installer_edition": "MacTahoe"
       },
       "tahoe-dark-installer-files": {
-        "sha256": "32b74e79fc9b72100ecf9c5529666a681c4aa0e54c15e04c0a15aed2bc07aeeb",
+        "sha256": "01dea793c642743be61e2da043d0ada6dd1e3829b54178dd567a773a40a4439b",
         "appearance": {
+          "Window controls": "__aurorae__svg__MacTahoeLiquidKde-Dark",
           "Plasma": "MacTahoeLiquidKde-Dark",
           "Qt": "MacTahoeLiquidKdeDark",
           "Kvantum": "mac-tahoe-liquid-kdeDark",
@@ -6675,8 +7090,9 @@
         "installer_edition": "MacTahoe"
       },
       "tahoe-dark-installer-boot": {
-        "sha256": "58b4b3e7cd35c7b70f9fd06a20e4fd8870bdc2e5e1d928106a1bb03acac677ae",
+        "sha256": "dba1a7d24001e8ce3ec43032a146c150a2db20e34ba8fe6083ca2055271fc13e",
         "appearance": {
+          "Window controls": "__aurorae__svg__MacTahoeLiquidKde-Dark",
           "Plasma": "MacTahoeLiquidKde-Dark",
           "Qt": "MacTahoeLiquidKdeDark",
           "Kvantum": "mac-tahoe-liquid-kdeDark",
@@ -6756,8 +7172,9 @@
         "installer_edition": "MacTahoe"
       },
       "tahoe-dark-installer-oled": {
-        "sha256": "7e5999c1c763854cb6b590574480f6c5d1991631e3cae6ef851e81cb252cb783",
+        "sha256": "bd9b4ac140729b19710c7a8e7d7974c2e9a9a2045b46eaabf591486768fee92f",
         "appearance": {
+          "Window controls": "__aurorae__svg__MacTahoeLiquidKde-Dark",
           "Plasma": "MacTahoeLiquidKde-Dark",
           "Qt": "MacTahoeLiquidKdeDark",
           "Kvantum": "mac-tahoe-liquid-kdeDark",
@@ -6837,8 +7254,9 @@
         "installer_edition": "MacTahoe"
       },
       "tahoe-dark-installer-summary": {
-        "sha256": "6f2e27ec4bae96bac3fae8f91820f25ebb120eec2847afe657041f2a65df03b9",
+        "sha256": "807cbbffde3a112fbedecb85518a6296695217f1275ea71c1bbcbffa153f0c76",
         "appearance": {
+          "Window controls": "__aurorae__svg__MacTahoeLiquidKde-Dark",
           "Plasma": "MacTahoeLiquidKde-Dark",
           "Qt": "MacTahoeLiquidKdeDark",
           "Kvantum": "mac-tahoe-liquid-kdeDark",
@@ -6926,8 +7344,9 @@
         "plymouth_verified": true
       },
       "golden-gate-light-launcher": {
-        "sha256": "37ee7283eb9e912a1951a2ec19d07be753676256bdf7d9c69d15cd7420e9da96",
+        "sha256": "aa34baddc0487c4e046378815c3a4ded896bbc2d105d809738dbf9935d950da3",
         "appearance": {
+          "Window controls": "__aurorae__svg__MacGoldenGateLiquidKde-Light",
           "Plasma": "MacTahoeLiquidKde-Light",
           "Qt": "MacTahoeLiquidKdeLight",
           "Kvantum": "mac-tahoe-liquid-kde",
@@ -7015,8 +7434,9 @@
         "installer_edition": null
       },
       "golden-gate-light-dock": {
-        "sha256": "6a88ef7fe70300723b150b6ee91042dea3f0373756353210ac15f62a7a4dd809",
+        "sha256": "9eca3d6c1e60828a1b54c0f37e4ac14dccdf91868dbd3833fb8a166f9d782d3d",
         "appearance": {
+          "Window controls": "__aurorae__svg__MacGoldenGateLiquidKde-Light",
           "Plasma": "MacTahoeLiquidKde-Light",
           "Qt": "MacTahoeLiquidKdeLight",
           "Kvantum": "mac-tahoe-liquid-kde",
@@ -7083,8 +7503,9 @@
         "installer_edition": null
       },
       "golden-gate-light-menu": {
-        "sha256": "aae8a14f1074c901d57104ed55ec1b5de098fdaf65d35dc5388ab2e58acd6399",
+        "sha256": "d33f87a31aec769be2d7227dd1cad967e76c60186a93c58d5f6c1a5f1cd6ccc2",
         "appearance": {
+          "Window controls": "__aurorae__svg__MacGoldenGateLiquidKde-Light",
           "Plasma": "MacTahoeLiquidKde-Light",
           "Qt": "MacTahoeLiquidKdeLight",
           "Kvantum": "mac-tahoe-liquid-kde",
@@ -7164,8 +7585,9 @@
         "installer_edition": null
       },
       "golden-gate-light-context": {
-        "sha256": "7ec721e700b862e475ee0be4106fce2238e9936880dd2d94504f9430b6bfb159",
+        "sha256": "3b5318374988d02e25725e8bd5437b32ade8ab1182f57bc1683832e85e6745b9",
         "appearance": {
+          "Window controls": "__aurorae__svg__MacGoldenGateLiquidKde-Light",
           "Plasma": "MacTahoeLiquidKde-Light",
           "Qt": "MacTahoeLiquidKdeLight",
           "Kvantum": "mac-tahoe-liquid-kde",
@@ -7245,8 +7667,9 @@
         "installer_edition": null
       },
       "golden-gate-light-finder": {
-        "sha256": "7bef3323e9bd4d8a629ca31a5bb7f476657c6008e3987fe954f2c1099210de4b",
+        "sha256": "82adccf48d648c802b83cba05e0c1652c34382cf562644af4aefe9d051cce029",
         "appearance": {
+          "Window controls": "__aurorae__svg__MacGoldenGateLiquidKde-Light",
           "Plasma": "MacTahoeLiquidKde-Light",
           "Qt": "MacTahoeLiquidKdeLight",
           "Kvantum": "mac-tahoe-liquid-kde",
@@ -7348,8 +7771,9 @@
         "installer_edition": null
       },
       "golden-gate-light-showcase": {
-        "sha256": "0325f572480ba258c1eb78007bbadaa46c2e4f1466ec16fb6bf89b6e444f0cb2",
+        "sha256": "8a3052916a5a33d64d36896dd0093a01be6c2a8eb7728990d959e59283bfdcae",
         "appearance": {
+          "Window controls": "__aurorae__svg__MacGoldenGateLiquidKde-Light",
           "Plasma": "MacTahoeLiquidKde-Light",
           "Qt": "MacTahoeLiquidKdeLight",
           "Kvantum": "mac-tahoe-liquid-kde",
@@ -7446,8 +7870,9 @@
         "installer_edition": null
       },
       "golden-gate-light-about": {
-        "sha256": "09da54499184f11986035378fc454c439efe93f01c43b6e1c3b92e3ebe8f813b",
+        "sha256": "0920a1fbcd8b473b784c00a1119e217aba38af2eb50b3063bbbc120a1177dee3",
         "appearance": {
+          "Window controls": "__aurorae__svg__MacGoldenGateLiquidKde-Light",
           "Plasma": "MacTahoeLiquidKde-Light",
           "Qt": "MacTahoeLiquidKdeLight",
           "Kvantum": "mac-tahoe-liquid-kde",
@@ -7527,8 +7952,9 @@
         "installer_edition": null
       },
       "golden-gate-light-installer-welcome": {
-        "sha256": "877dd5616895b5baad3179c1286335f0a57ec8da5ae8c783af166e5f4a4593a9",
+        "sha256": "40cce4d2e356b588e40441d51356cbabbade19ba18d3e5926c293009cd53c243",
         "appearance": {
+          "Window controls": "__aurorae__svg__MacGoldenGateLiquidKde-Light",
           "Plasma": "MacTahoeLiquidKde-Light",
           "Qt": "MacTahoeLiquidKdeLight",
           "Kvantum": "mac-tahoe-liquid-kde",
@@ -7608,8 +8034,9 @@
         "installer_edition": "MacGoldenGate"
       },
       "golden-gate-light-installer-appearance": {
-        "sha256": "3522e66e28fc253a4da50663a70c9e2d05d0d83d34edf50cdbb8887a9fd8c049",
+        "sha256": "c4669ea32e340247654b281f2be9bfc2132c85c164b6f59be11313298a001012",
         "appearance": {
+          "Window controls": "__aurorae__svg__MacGoldenGateLiquidKde-Light",
           "Plasma": "MacTahoeLiquidKde-Light",
           "Qt": "MacTahoeLiquidKdeLight",
           "Kvantum": "mac-tahoe-liquid-kde",
@@ -7689,8 +8116,9 @@
         "installer_edition": "MacGoldenGate"
       },
       "golden-gate-light-installer-icons": {
-        "sha256": "79e3f0cd30970e47369b5dabd5aeffaa7af03650048e7c40cf6a8e9b18713eed",
+        "sha256": "77fc94fc0dde287480b7c19f5aba54875de8cca85a70cdf34d645b1e8970c0ec",
         "appearance": {
+          "Window controls": "__aurorae__svg__MacGoldenGateLiquidKde-Light",
           "Plasma": "MacTahoeLiquidKde-Light",
           "Qt": "MacTahoeLiquidKdeLight",
           "Kvantum": "mac-tahoe-liquid-kde",
@@ -7770,8 +8198,9 @@
         "installer_edition": "MacGoldenGate"
       },
       "golden-gate-light-installer-wallpaper": {
-        "sha256": "892f86faba51d39420ff2220539dacdac680ed6961f3c6b61abe55486799d19b",
+        "sha256": "43887f382a48524132ae6215ce0ad960316bc6f59b3211bc7418c433f45e23ce",
         "appearance": {
+          "Window controls": "__aurorae__svg__MacGoldenGateLiquidKde-Light",
           "Plasma": "MacTahoeLiquidKde-Light",
           "Qt": "MacTahoeLiquidKdeLight",
           "Kvantum": "mac-tahoe-liquid-kde",
@@ -7851,8 +8280,9 @@
         "installer_edition": "MacGoldenGate"
       },
       "golden-gate-light-installer-launcher": {
-        "sha256": "666dc7712b5f04cdc184de58f58503310734d8dc45ea02e4af9840922530dff9",
+        "sha256": "32fbbf58131ec6574ca09d59ddb099ff1762154b19f953e5bd149e5ccd0082d6",
         "appearance": {
+          "Window controls": "__aurorae__svg__MacGoldenGateLiquidKde-Light",
           "Plasma": "MacTahoeLiquidKde-Light",
           "Qt": "MacTahoeLiquidKdeLight",
           "Kvantum": "mac-tahoe-liquid-kde",
@@ -7932,8 +8362,9 @@
         "installer_edition": "MacGoldenGate"
       },
       "golden-gate-light-installer-layout": {
-        "sha256": "d99f31d1d77e097f8756fbece0b8893763f2cb0fdb5fbc2d2a9993eec2b70b99",
+        "sha256": "9f92d2f7006004619fea1fe2bb0b74a6199b25ce1952515b7a1dc81a1cdbab77",
         "appearance": {
+          "Window controls": "__aurorae__svg__MacGoldenGateLiquidKde-Light",
           "Plasma": "MacTahoeLiquidKde-Light",
           "Qt": "MacTahoeLiquidKdeLight",
           "Kvantum": "mac-tahoe-liquid-kde",
@@ -8013,8 +8444,9 @@
         "installer_edition": "MacGoldenGate"
       },
       "golden-gate-light-installer-effects": {
-        "sha256": "190e591c2813c76c903b3587221588862b4778b26cb5ceea90713208064db67b",
+        "sha256": "cdbf775290b0bc3037e18b776510b5e8296bbe749c08cdba9b8f56f92e63110f",
         "appearance": {
+          "Window controls": "__aurorae__svg__MacGoldenGateLiquidKde-Light",
           "Plasma": "MacTahoeLiquidKde-Light",
           "Qt": "MacTahoeLiquidKdeLight",
           "Kvantum": "mac-tahoe-liquid-kde",
@@ -8093,9 +8525,92 @@
         "installer_page": "effects",
         "installer_edition": "MacGoldenGate"
       },
-      "golden-gate-light-installer-fonts": {
-        "sha256": "b07f71cba05c87465aeee676f1c11daffdd7b119db4896b496f9f26f84cdd6b9",
+      "golden-gate-light-installer-window_controls": {
+        "sha256": "703a364a89e8bb64519510a0814fac0458a4d0a0916c0ccabe09d6f50649d9fa",
         "appearance": {
+          "Window controls": "__aurorae__svg__MacGoldenGateLiquidKde-Light",
+          "Plasma": "MacTahoeLiquidKde-Light",
+          "Qt": "MacTahoeLiquidKdeLight",
+          "Kvantum": "mac-tahoe-liquid-kde",
+          "GTK preference": "'prefer-light'",
+          "GTK theme": "'MacTahoeLiquidKde-Light'",
+          "GTK 4 stylesheet": "MacTahoeLiquidKde-Light",
+          "Icons": "MacTahoeLiquidKde-Icons-Regular-Light"
+        },
+        "effect_build": "747babf1b752c32ad9bce582e74b49abd5122af9ff4ff281c51de2f8f49bc854",
+        "crop": [
+          1072,
+          422,
+          2768,
+          1678
+        ],
+        "wallpaper": "MacGoldenGate",
+        "wallpaper_uri": "file:///home/tester/.local/share/wallpapers/MacGoldenGate",
+        "launcher_preset": 2,
+        "windows": [
+          {
+            "caption": "",
+            "resourceClass": "plasmashell",
+            "type": 1,
+            "appletPopup": false,
+            "active": false,
+            "geometry": {
+              "x": 0,
+              "y": 0,
+              "width": 1920,
+              "height": 1080
+            }
+          },
+          {
+            "caption": "",
+            "resourceClass": "plasmashell",
+            "type": 2,
+            "appletPopup": false,
+            "active": false,
+            "geometry": {
+              "x": 0,
+              "y": 0,
+              "width": 1920,
+              "height": 32
+            }
+          },
+          {
+            "caption": "",
+            "resourceClass": "plasmashell",
+            "type": 2,
+            "appletPopup": false,
+            "active": false,
+            "geometry": {
+              "x": 490.5,
+              "y": 996,
+              "width": 939,
+              "height": 84
+            }
+          },
+          {
+            "caption": "Install Golden Gate",
+            "resourceClass": "python3",
+            "type": 0,
+            "appletPopup": false,
+            "active": true,
+            "geometry": {
+              "x": 550,
+              "y": 225,
+              "width": 820,
+              "height": 600
+            }
+          }
+        ],
+        "files_pixels": null,
+        "stable_frames": true,
+        "window_verified": true,
+        "installer_page": "window_controls",
+        "installer_edition": "MacGoldenGate"
+      },
+      "golden-gate-light-installer-fonts": {
+        "sha256": "d41e13178c5c0406b56e815534cc7acf737163d7822b98769c7e23c7a3be6f7a",
+        "appearance": {
+          "Window controls": "__aurorae__svg__MacGoldenGateLiquidKde-Light",
           "Plasma": "MacTahoeLiquidKde-Light",
           "Qt": "MacTahoeLiquidKdeLight",
           "Kvantum": "mac-tahoe-liquid-kde",
@@ -8175,8 +8690,9 @@
         "installer_edition": "MacGoldenGate"
       },
       "golden-gate-light-installer-firefox": {
-        "sha256": "129e3307cc2931121ef665ed78de67adb441a17087aaeaaa60ae5d6b7258bae7",
+        "sha256": "205f4f96563077119134f1f760a939968eab8f5968dc9c7fd1903f6dab2ec9e2",
         "appearance": {
+          "Window controls": "__aurorae__svg__MacGoldenGateLiquidKde-Light",
           "Plasma": "MacTahoeLiquidKde-Light",
           "Qt": "MacTahoeLiquidKdeLight",
           "Kvantum": "mac-tahoe-liquid-kde",
@@ -8256,8 +8772,9 @@
         "installer_edition": "MacGoldenGate"
       },
       "golden-gate-light-installer-files": {
-        "sha256": "41d537838a58b662d2369d15bb68b6be46c4ad04a9b074b4dfe083fea5aaa375",
+        "sha256": "2a6c1b523fcf3fbc19b2a01d956834a9a9fcbf625c3fbb7d53c58524ee831669",
         "appearance": {
+          "Window controls": "__aurorae__svg__MacGoldenGateLiquidKde-Light",
           "Plasma": "MacTahoeLiquidKde-Light",
           "Qt": "MacTahoeLiquidKdeLight",
           "Kvantum": "mac-tahoe-liquid-kde",
@@ -8337,8 +8854,9 @@
         "installer_edition": "MacGoldenGate"
       },
       "golden-gate-light-installer-boot": {
-        "sha256": "58021ba3fc0064d7a7d8a63cf50001d4b28652ffb2adad09063330f4383c19b2",
+        "sha256": "b1437b44c5abc57a972dc0a407a184c3359061fc952baecf92f8b021a4e5a039",
         "appearance": {
+          "Window controls": "__aurorae__svg__MacGoldenGateLiquidKde-Light",
           "Plasma": "MacTahoeLiquidKde-Light",
           "Qt": "MacTahoeLiquidKdeLight",
           "Kvantum": "mac-tahoe-liquid-kde",
@@ -8418,8 +8936,9 @@
         "installer_edition": "MacGoldenGate"
       },
       "golden-gate-light-installer-oled": {
-        "sha256": "f35ca9eec5b7279696a388774d03db0de3a950fb779db5c65a9f17dbfecf89ef",
+        "sha256": "ea07506b316be4ffc8622c4a4103eef80c0ec9787fcaf8a649f71a61b3d28194",
         "appearance": {
+          "Window controls": "__aurorae__svg__MacGoldenGateLiquidKde-Light",
           "Plasma": "MacTahoeLiquidKde-Light",
           "Qt": "MacTahoeLiquidKdeLight",
           "Kvantum": "mac-tahoe-liquid-kde",
@@ -8499,8 +9018,9 @@
         "installer_edition": "MacGoldenGate"
       },
       "golden-gate-light-installer-summary": {
-        "sha256": "ff1ac2ce8bf16aeb3ead25d2b64e0f6dabe592241f2911c95a793a1e4452ef5a",
+        "sha256": "e4dd3e0a4d37a876beeb3391503344d5c8c9713a10a620cf3a375f9bb6d8f6ee",
         "appearance": {
+          "Window controls": "__aurorae__svg__MacGoldenGateLiquidKde-Light",
           "Plasma": "MacTahoeLiquidKde-Light",
           "Qt": "MacTahoeLiquidKdeLight",
           "Kvantum": "mac-tahoe-liquid-kde",
@@ -8580,8 +9100,9 @@
         "installer_edition": "MacGoldenGate"
       },
       "golden-gate-dark-launcher": {
-        "sha256": "9a8d6afffa7f0141a0e4bfb230cb2344d3ed2db7b5b88c4558295ed23b1da310",
+        "sha256": "1a160beb85985a19974122e58bf45a9690badb7adaef61cefb0aeddd48708ba2",
         "appearance": {
+          "Window controls": "__aurorae__svg__MacGoldenGateLiquidKde-Dark",
           "Plasma": "MacTahoeLiquidKde-Dark",
           "Qt": "MacTahoeLiquidKdeDark",
           "Kvantum": "mac-tahoe-liquid-kdeDark",
@@ -8669,8 +9190,9 @@
         "installer_edition": null
       },
       "golden-gate-dark-dock": {
-        "sha256": "63901542f38a8e4ae3f09ab2ad8e8f58feeec94483470956ac1cffa87ee9041f",
+        "sha256": "acb84ad5154a5608bae7218205b2defcd6f41ecd762c797d4c1729e8233c28d7",
         "appearance": {
+          "Window controls": "__aurorae__svg__MacGoldenGateLiquidKde-Dark",
           "Plasma": "MacTahoeLiquidKde-Dark",
           "Qt": "MacTahoeLiquidKdeDark",
           "Kvantum": "mac-tahoe-liquid-kdeDark",
@@ -8737,8 +9259,9 @@
         "installer_edition": null
       },
       "golden-gate-dark-menu": {
-        "sha256": "05e6e565f074ac85e4edd5047c5ca08c5cac96ea268af88870b4684f0050cb08",
+        "sha256": "0e14e310f4eeebce101a2d358e3bf86d9ad9be6958bd570d8dee06465bb75186",
         "appearance": {
+          "Window controls": "__aurorae__svg__MacGoldenGateLiquidKde-Dark",
           "Plasma": "MacTahoeLiquidKde-Dark",
           "Qt": "MacTahoeLiquidKdeDark",
           "Kvantum": "mac-tahoe-liquid-kdeDark",
@@ -8818,8 +9341,9 @@
         "installer_edition": null
       },
       "golden-gate-dark-context": {
-        "sha256": "315dccd0fcdd62922020f1e81f4e44cc2eb0235b9de7b1f9fc93131d1889973f",
+        "sha256": "6c1e52a217c717c5fa87b2882a0515edf3c531ed029b7cd06c7cc57a3093c567",
         "appearance": {
+          "Window controls": "__aurorae__svg__MacGoldenGateLiquidKde-Dark",
           "Plasma": "MacTahoeLiquidKde-Dark",
           "Qt": "MacTahoeLiquidKdeDark",
           "Kvantum": "mac-tahoe-liquid-kdeDark",
@@ -8899,8 +9423,9 @@
         "installer_edition": null
       },
       "golden-gate-dark-finder": {
-        "sha256": "bf0f3901e0808ac39f54676bec459f72ca29d02aa147822996d8e963d0cc118b",
+        "sha256": "a97e5adc53c404347ca6c01d70fac40b60811963cc9fe8cbb7ef591ece53fae0",
         "appearance": {
+          "Window controls": "__aurorae__svg__MacGoldenGateLiquidKde-Dark",
           "Plasma": "MacTahoeLiquidKde-Dark",
           "Qt": "MacTahoeLiquidKdeDark",
           "Kvantum": "mac-tahoe-liquid-kdeDark",
@@ -9002,8 +9527,9 @@
         "installer_edition": null
       },
       "golden-gate-dark-showcase": {
-        "sha256": "cf6ea23ce738f95a1635462b32f4708e94b30280208ade52134a943c6c62fa60",
+        "sha256": "cab189458463baf3a41c97e1e6e7e5540ea4afc3cce3ef17a964344b3339ae1d",
         "appearance": {
+          "Window controls": "__aurorae__svg__MacGoldenGateLiquidKde-Dark",
           "Plasma": "MacTahoeLiquidKde-Dark",
           "Qt": "MacTahoeLiquidKdeDark",
           "Kvantum": "mac-tahoe-liquid-kdeDark",
@@ -9100,8 +9626,9 @@
         "installer_edition": null
       },
       "golden-gate-dark-about": {
-        "sha256": "2bf6b54687402798eb977619a5abaab1a2bbcb95e5ba85f4f321c27b3980810d",
+        "sha256": "41c802116285998316c3ed96b412fcbc6650db876e7dbfffd1df2a52cdb8b04b",
         "appearance": {
+          "Window controls": "__aurorae__svg__MacGoldenGateLiquidKde-Dark",
           "Plasma": "MacTahoeLiquidKde-Dark",
           "Qt": "MacTahoeLiquidKdeDark",
           "Kvantum": "mac-tahoe-liquid-kdeDark",
@@ -9181,8 +9708,9 @@
         "installer_edition": null
       },
       "golden-gate-dark-installer-welcome": {
-        "sha256": "4c0914fc5ded8b3ac3571f3db5b98c4528405906f1831372b2afa91003af8a54",
+        "sha256": "503cb711b9bceeee2a12b63b176d13e6b347cf0c610f927694e9c6369cedf21e",
         "appearance": {
+          "Window controls": "__aurorae__svg__MacGoldenGateLiquidKde-Dark",
           "Plasma": "MacTahoeLiquidKde-Dark",
           "Qt": "MacTahoeLiquidKdeDark",
           "Kvantum": "mac-tahoe-liquid-kdeDark",
@@ -9262,8 +9790,9 @@
         "installer_edition": "MacGoldenGate"
       },
       "golden-gate-dark-installer-appearance": {
-        "sha256": "da49eeb220970a9afa87ed40516d54bd3f5374d43b275fe03fdc3b1b72b0d51a",
+        "sha256": "b839b621c350d817d6f0c3f6348b49bc759f85b1f077753c4e2330d1b04a0e39",
         "appearance": {
+          "Window controls": "__aurorae__svg__MacGoldenGateLiquidKde-Dark",
           "Plasma": "MacTahoeLiquidKde-Dark",
           "Qt": "MacTahoeLiquidKdeDark",
           "Kvantum": "mac-tahoe-liquid-kdeDark",
@@ -9343,8 +9872,9 @@
         "installer_edition": "MacGoldenGate"
       },
       "golden-gate-dark-installer-icons": {
-        "sha256": "1e2b29a2aa59363039779df5c724487381523138057fc440134f4d83f6fc632a",
+        "sha256": "9b967102934d2494697fb80805bea5048bb756bbb410ded6e0e0d4814356b0b6",
         "appearance": {
+          "Window controls": "__aurorae__svg__MacGoldenGateLiquidKde-Dark",
           "Plasma": "MacTahoeLiquidKde-Dark",
           "Qt": "MacTahoeLiquidKdeDark",
           "Kvantum": "mac-tahoe-liquid-kdeDark",
@@ -9424,8 +9954,9 @@
         "installer_edition": "MacGoldenGate"
       },
       "golden-gate-dark-installer-wallpaper": {
-        "sha256": "4f52e16aae5fc0b745a1909c412bc068974ddff9fd6e7fb6eacede21b4cb65f9",
+        "sha256": "0e268fa4350833bfbc2257ca775801ccc28f2acd1edd4b9848aeb266af1393e4",
         "appearance": {
+          "Window controls": "__aurorae__svg__MacGoldenGateLiquidKde-Dark",
           "Plasma": "MacTahoeLiquidKde-Dark",
           "Qt": "MacTahoeLiquidKdeDark",
           "Kvantum": "mac-tahoe-liquid-kdeDark",
@@ -9505,8 +10036,9 @@
         "installer_edition": "MacGoldenGate"
       },
       "golden-gate-dark-installer-launcher": {
-        "sha256": "71dba7f27b5e8cbd636541373e5adefa4a704417150a6d58ba449fc9e2c34a1f",
+        "sha256": "70093e2efc4c14190cf82b200b67cfdd519ae348fb9b55294260966804da617e",
         "appearance": {
+          "Window controls": "__aurorae__svg__MacGoldenGateLiquidKde-Dark",
           "Plasma": "MacTahoeLiquidKde-Dark",
           "Qt": "MacTahoeLiquidKdeDark",
           "Kvantum": "mac-tahoe-liquid-kdeDark",
@@ -9586,8 +10118,9 @@
         "installer_edition": "MacGoldenGate"
       },
       "golden-gate-dark-installer-layout": {
-        "sha256": "ee924bed7b2e9a66bad8d1caf0574e6b0a2f80b4684bdded4eea8c0a3950f6f3",
+        "sha256": "c56dba0f228292710818dd4f39fbc08de969be7d0a83d23ab5f371588d8b73b4",
         "appearance": {
+          "Window controls": "__aurorae__svg__MacGoldenGateLiquidKde-Dark",
           "Plasma": "MacTahoeLiquidKde-Dark",
           "Qt": "MacTahoeLiquidKdeDark",
           "Kvantum": "mac-tahoe-liquid-kdeDark",
@@ -9667,8 +10200,9 @@
         "installer_edition": "MacGoldenGate"
       },
       "golden-gate-dark-installer-effects": {
-        "sha256": "6821bac2eeed7045fe4e3e1e4ea0f46541eca811bc5055cbfec4f750223bf466",
+        "sha256": "ebbe0e8f8a7d2d91d7301b3d62d992d6019730575791ed47b73ffac790dc61df",
         "appearance": {
+          "Window controls": "__aurorae__svg__MacGoldenGateLiquidKde-Dark",
           "Plasma": "MacTahoeLiquidKde-Dark",
           "Qt": "MacTahoeLiquidKdeDark",
           "Kvantum": "mac-tahoe-liquid-kdeDark",
@@ -9747,9 +10281,92 @@
         "installer_page": "effects",
         "installer_edition": "MacGoldenGate"
       },
-      "golden-gate-dark-installer-fonts": {
-        "sha256": "d1ee7454df1c903b48366dacd7e7d2935d5d924dad1e4332db64f76b9bc3d86b",
+      "golden-gate-dark-installer-window_controls": {
+        "sha256": "966b455c1bae23e99e185e0d580cf989c64d390fb384e0db2734cceaaf980437",
         "appearance": {
+          "Window controls": "__aurorae__svg__MacGoldenGateLiquidKde-Dark",
+          "Plasma": "MacTahoeLiquidKde-Dark",
+          "Qt": "MacTahoeLiquidKdeDark",
+          "Kvantum": "mac-tahoe-liquid-kdeDark",
+          "GTK preference": "'prefer-dark'",
+          "GTK theme": "'MacTahoeLiquidKde-Dark'",
+          "GTK 4 stylesheet": "MacTahoeLiquidKde-Dark",
+          "Icons": "MacTahoeLiquidKde-Icons-Regular-Dark"
+        },
+        "effect_build": "747babf1b752c32ad9bce582e74b49abd5122af9ff4ff281c51de2f8f49bc854",
+        "crop": [
+          1072,
+          422,
+          2768,
+          1678
+        ],
+        "wallpaper": "MacGoldenGate",
+        "wallpaper_uri": "file:///home/tester/.local/share/wallpapers/MacGoldenGate",
+        "launcher_preset": 2,
+        "windows": [
+          {
+            "caption": "",
+            "resourceClass": "plasmashell",
+            "type": 1,
+            "appletPopup": false,
+            "active": false,
+            "geometry": {
+              "x": 0,
+              "y": 0,
+              "width": 1920,
+              "height": 1080
+            }
+          },
+          {
+            "caption": "",
+            "resourceClass": "plasmashell",
+            "type": 2,
+            "appletPopup": false,
+            "active": false,
+            "geometry": {
+              "x": 0,
+              "y": 0,
+              "width": 1920,
+              "height": 32
+            }
+          },
+          {
+            "caption": "",
+            "resourceClass": "plasmashell",
+            "type": 2,
+            "appletPopup": false,
+            "active": false,
+            "geometry": {
+              "x": 490.5,
+              "y": 996,
+              "width": 939,
+              "height": 84
+            }
+          },
+          {
+            "caption": "Install Golden Gate",
+            "resourceClass": "python3",
+            "type": 0,
+            "appletPopup": false,
+            "active": true,
+            "geometry": {
+              "x": 550,
+              "y": 225,
+              "width": 820,
+              "height": 600
+            }
+          }
+        ],
+        "files_pixels": null,
+        "stable_frames": true,
+        "window_verified": true,
+        "installer_page": "window_controls",
+        "installer_edition": "MacGoldenGate"
+      },
+      "golden-gate-dark-installer-fonts": {
+        "sha256": "3ce978abb6ab88436be14440423d5e0c83fcdabee20aa0f54b8a2bde946cef91",
+        "appearance": {
+          "Window controls": "__aurorae__svg__MacGoldenGateLiquidKde-Dark",
           "Plasma": "MacTahoeLiquidKde-Dark",
           "Qt": "MacTahoeLiquidKdeDark",
           "Kvantum": "mac-tahoe-liquid-kdeDark",
@@ -9829,8 +10446,9 @@
         "installer_edition": "MacGoldenGate"
       },
       "golden-gate-dark-installer-firefox": {
-        "sha256": "989463fcfc53be5f7570623399e0d0706229e703bb38905ac61b5bc906f5f186",
+        "sha256": "0b1380c296fc4e2a39d2159e877ed5097117ccbce4e9450a1a14cc784540a906",
         "appearance": {
+          "Window controls": "__aurorae__svg__MacGoldenGateLiquidKde-Dark",
           "Plasma": "MacTahoeLiquidKde-Dark",
           "Qt": "MacTahoeLiquidKdeDark",
           "Kvantum": "mac-tahoe-liquid-kdeDark",
@@ -9910,8 +10528,9 @@
         "installer_edition": "MacGoldenGate"
       },
       "golden-gate-dark-installer-files": {
-        "sha256": "9d83e42127c33202b5bceeb4608d6fbaad2ffeb2757db2f59d3e9407f3ce72af",
+        "sha256": "6d205f12f54272ea27cb04eee0bc64e3c62d14573d5986ea656c8ce57f1064c0",
         "appearance": {
+          "Window controls": "__aurorae__svg__MacGoldenGateLiquidKde-Dark",
           "Plasma": "MacTahoeLiquidKde-Dark",
           "Qt": "MacTahoeLiquidKdeDark",
           "Kvantum": "mac-tahoe-liquid-kdeDark",
@@ -9991,8 +10610,9 @@
         "installer_edition": "MacGoldenGate"
       },
       "golden-gate-dark-installer-boot": {
-        "sha256": "91bdafbf3f3307fd564786c7aaec7b415429e6d3f718610d7440d24371698940",
+        "sha256": "c637d4572cf1919345277780197bf8226b1705031c8d0fbbd9a7df9882960028",
         "appearance": {
+          "Window controls": "__aurorae__svg__MacGoldenGateLiquidKde-Dark",
           "Plasma": "MacTahoeLiquidKde-Dark",
           "Qt": "MacTahoeLiquidKdeDark",
           "Kvantum": "mac-tahoe-liquid-kdeDark",
@@ -10072,8 +10692,9 @@
         "installer_edition": "MacGoldenGate"
       },
       "golden-gate-dark-installer-oled": {
-        "sha256": "31e4351513de84b84a903226eb55569ca1531bcacd531623d6e6293eedf10cae",
+        "sha256": "4e0f20d3e8911c000e563c068655d9ccd91aa1b357decb376fc73c9e072e659f",
         "appearance": {
+          "Window controls": "__aurorae__svg__MacGoldenGateLiquidKde-Dark",
           "Plasma": "MacTahoeLiquidKde-Dark",
           "Qt": "MacTahoeLiquidKdeDark",
           "Kvantum": "mac-tahoe-liquid-kdeDark",
@@ -10153,8 +10774,9 @@
         "installer_edition": "MacGoldenGate"
       },
       "golden-gate-dark-installer-summary": {
-        "sha256": "408f41aca9473d4510d8eb75c1623be132ff98a1a5213bf3907d2387f6bb6593",
+        "sha256": "63edf2208b03e503b4d66dcd911de6e6b285da25f0f0b6a84822012bce94a1f9",
         "appearance": {
+          "Window controls": "__aurorae__svg__MacGoldenGateLiquidKde-Dark",
           "Plasma": "MacTahoeLiquidKde-Dark",
           "Qt": "MacTahoeLiquidKdeDark",
           "Kvantum": "mac-tahoe-liquid-kdeDark",

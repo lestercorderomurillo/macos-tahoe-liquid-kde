@@ -3,7 +3,14 @@
 from localization import effective_language, translate
 
 # English | Spanish | Simplified Chinese | Brazilian Portuguese | German
-_ROWS = '''Window shadows|Sombras de las ventanas|窗口阴影|Sombras das janelas|Fensterschatten
+_ROWS = '''Which window controls would you like?|¿Qué controles de ventana prefieres?|你想使用哪种窗口控件？|Quais controles de janela você prefere?|Welche Fensterknöpfe möchtest du verwenden?
+Window controls|Controles de ventana|窗口控件|Controles da janela|Fensterknöpfe
+Flat|Planos|扁平|Planos|Flach
+Glassy|Cristalinos|玻璃质感|Vítreos|Glasartig
+Simple, solid colors.|Colores sólidos y sencillos.|简洁的纯色。|Cores sólidas e simples.|Schlichte, einfarbige Knöpfe.
+Soft gradients and reflective highlights.|Degradados suaves y reflejos.|柔和的渐变与反光。|Gradientes suaves e reflexos.|Sanfte Farbverläufe und Lichtreflexe.
+Close, minimize and maximize buttons.|Botones para cerrar, minimizar y maximizar.|关闭、最小化和最大化按钮。|Botões para fechar, minimizar e maximizar.|Knöpfe zum Schließen, Minimieren und Maximieren.
+Window shadows|Sombras de las ventanas|窗口阴影|Sombras das janelas|Fensterschatten
 None|Ninguna|无|Nenhuma|Keine
 Soft|Suaves|柔和|Suaves|Weich
 Medium|Medias|中等|Médias|Mittel

@@ -49,10 +49,25 @@ def default_wallpaper() -> str:
     return DEFAULT_WALLPAPER
 
 
+def window_control_style() -> str:
+    """Use this transaction's choice or the choice baked into the switcher."""
+    options = INSTALLER_OPTIONS
+    if Path(__file__).name == "theme_switch.py" and "MTTKDE_WIZARD_OPTIONS" in os.environ:
+        try:
+            options = json.loads(os.environ.get("MTTKDE_WIZARD_OPTIONS", "{}"))
+        except ValueError:
+            options = {}
+    style = options.get("window_controls") if isinstance(options, dict) else None
+    if style in ("flat", "glassy"):
+        return style
+    return "glassy" if default_wallpaper() == "MacGoldenGate" else "flat"
+
+
 def decoration_theme(mode: str) -> str:
-    """Use the installed edition for manual, login and scheduled switches."""
+    """Keep the chosen controls through manual, login and scheduled switches."""
     variant = "Light" if mode == "light" else "Dark"
-    return f"{default_wallpaper()}LiquidKde-{variant}"
+    family = "MacGoldenGate" if window_control_style() == "glassy" else "MacTahoe"
+    return f"{family}LiquidKde-{variant}"
 
 
 def _have(cmd: str) -> bool:

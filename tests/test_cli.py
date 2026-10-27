@@ -229,9 +229,13 @@ def test_verify_config_reads_other_layers_when_key_is_absent(
 
 
 @pytest.mark.parametrize("edition", ["MacTahoe", "MacGoldenGate"])
-def test_verifier_checks_decoration_edition(cli_module, monkeypatch, sandbox, edition):
+@pytest.mark.parametrize("style", ["flat", "glassy"])
+def test_verifier_checks_decoration_edition(cli_module, monkeypatch, sandbox, edition, style):
+    import json
     import theme_switch
-    monkeypatch.setattr(theme_switch, "default_wallpaper", lambda: edition)
+    monkeypatch.setattr(theme_switch, "default_wallpaper", lambda source=edition: source)
+    monkeypatch.setenv("MTTKDE_WIZARD_OPTIONS", json.dumps({"window_controls": style}))
+    edition = "MacGoldenGate" if style == "glassy" else "MacTahoe"
     failures = []
     monkeypatch.setattr(cli_module, "fail", failures.append)
     monkeypatch.setattr(cli_module, "ok", lambda message: None)

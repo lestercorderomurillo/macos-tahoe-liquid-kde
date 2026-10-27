@@ -29,7 +29,10 @@ def check_session(mode: str, *, home: Path | None = None) -> dict[str, str]:
         raise ValueError(mode)
     home = home or Path.home()
     theme = 'MacTahoeLiquidKde-' + mode.capitalize()
+    from theme_switch import decoration_theme
     expected = {
+        'Window controls': (('kreadconfig6', '--file', 'kwinrc', '--group', 'org.kde.kdecoration2', '--key', 'theme'),
+                            '__aurorae__svg__' + decoration_theme(mode)),
         'Plasma': (('kreadconfig6', '--file', 'plasmarc', '--group', 'Theme', '--key', 'name'), theme),
         'Qt': (('kreadconfig6', '--file', 'kdeglobals', '--group', 'General', '--key', 'ColorScheme'), theme.replace('Kde-', 'Kde')),
         'Kvantum': (('kreadconfig6', '--file', 'Kvantum/kvantum.kvconfig', '--group', 'General', '--key', 'theme'),

@@ -25,6 +25,7 @@ STEPS = (
     ("launcher", "Which launcher would you like?"),
     ("layout", "What would you like to add to your desktop?"),
     ("effects", "Which effects would you like to enable?"),
+    ("window_controls", "Which window controls would you like?"),
     ("fonts", "Which fonts would you like to use?"),
     ("firefox", "Apply the theme to Firefox?"),
     ("files", "Install Nautilus as your file manager?"),
@@ -932,6 +933,15 @@ class InstallerWindow(OpaqueSurface):
                                ("medium", "Medium"), ("hard", "Hard")], inline=True)
         self.body.addWidget(self.label("Applies to the theme's window decorations and GTK windows."))
 
+    def page_window_controls(self):
+        self.cards("window_controls", [
+            ("flat", "Flat", "Simple, solid colors.",
+             picture(f"window-controls-flat-{self.mode}.png", 362, 190)),
+            ("glassy", "Glassy", "Soft gradients and reflective highlights.",
+             picture(f"window-controls-glassy-{self.mode}.png", 362, 190)),
+        ])
+        self.body.addWidget(self.label("Close, minimize and maximize buttons."))
+
     def page_fonts(self):
         self.cards("fonts", [
             (True, "Theme fonts", "SF Pro", self.font_sample(True)),
@@ -1026,6 +1036,7 @@ class InstallerWindow(OpaqueSurface):
             ("launcher", "Launcher", self.t("Keep") if keep_layout else value("launcher"), "launcher"),
             ("panel", "Desktop", desktop or self.t("Keep"), "layout"),
             ("acrylic_glass", "Effects", effects or self.t("Disabled"), "effects"),
+            ("window_controls", "Window controls", value("window_controls"), "window_controls"),
             ("fonts", "Fonts", self.t("Theme fonts" if c["fonts"] else "Keep"), "fonts"),
             ("firefox", "Firefox", enabled("firefox"), "firefox"),
             ("files", "Files", self.t("Keep my file manager") if c["files"] == "keep" else value("files"), "files"),
