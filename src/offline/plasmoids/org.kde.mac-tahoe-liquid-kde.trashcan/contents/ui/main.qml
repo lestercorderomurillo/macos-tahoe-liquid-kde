@@ -194,6 +194,7 @@ PlasmoidItem {
 
         NativeLauncher.DockIcon {
             id: trashIcon
+            normalizeTrashArtwork: true
             inPanel: root.inPanel
             location: Plasmoid.location
             NativeLauncher.IconThemeWatcher {

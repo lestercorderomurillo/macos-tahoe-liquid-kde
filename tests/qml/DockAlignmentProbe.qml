@@ -20,6 +20,36 @@ Item {
     ReferenceTaskIcon { id: reference; width: 64; height: 64 }
     NativeLauncher.DockIcon { id: custom; width: reference.width; height: reference.height; source: "folder" }
 
+    NativeLauncher.DockIcon {
+        id: trash
+        width: reference.width; height: reference.height
+        location: custom.location
+        inPanel: custom.inPanel
+        normalizeTrashArtwork: true
+        source: root.caseIndex % 3 === 0 ? "user-trash"
+            : root.caseIndex % 3 === 1 ? "user-trash-full" : "folder"
+    }
+
+    function compareTrashArtwork() {
+        const corrected = custom.inPanel && trash.source !== "folder";
+        const factor = corrected ? 56 / 53 : 1;
+        root.compare(trash.iconItem.width, custom.iconItem.width * factor);
+        root.compare(trash.iconItem.height, custom.iconItem.height * factor);
+        const base = custom.iconItem.mapToItem(custom, custom.iconItem.width / 2, custom.iconItem.height / 2);
+        const actual = trash.iconItem.mapToItem(trash, trash.iconItem.width / 2, trash.iconItem.height / 2);
+        const size = Math.min(custom.iconItem.width, custom.iconItem.height);
+        root.compare(actual.x, base.x);
+        if (corrected) {
+            // Compare the real SVG body bounds (y=6..59) with app tiles
+            // (y=4..60), including their asymmetric internal padding.
+            const fitted = size * factor;
+            root.compare(actual.y + (6 / 64 - 0.5) * fitted, base.y - size * 28 / 64);
+            root.compare(actual.y + (59 / 64 - 0.5) * fitted, base.y + size * 28 / 64);
+        } else {
+            root.compare(actual.y, base.y);
+        }
+    }
+
     function compare(a, b) {
         if (!isFinite(a) || !isFinite(b) || Math.abs(a - b) > 0.01) {
             throw new Error("Dock geometry case " + caseIndex + ": " + a + " != " + b);
@@ -52,6 +82,7 @@ Item {
         repeat: true
         onTriggered: {
             try {
+                root.compareTrashArtwork();
                 const a = custom.iconItem.mapToItem(custom, 0, 0);
                 const b = reference.iconItem.mapToItem(reference, 0, 0);
                 if (root.caseIndex < root.panelCases) {

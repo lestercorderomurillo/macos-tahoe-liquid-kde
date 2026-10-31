@@ -338,6 +338,8 @@ def test_custom_dock_icons_share_task_frame_geometry(repo, tmp_path, launcher_po
             'org.kde.mac-tahoe-liquid-kde.launcher/contents/ui/CompactRepresentation.qml',
             'org.kde.mac-tahoe-liquid-kde.trashcan/contents/ui/main.qml'):
         assert 'NativeLauncher.DockIcon {' in (widgets / relative).read_text()
+    assert 'normalizeTrashArtwork: true' in (widgets /
+        'org.kde.mac-tahoe-liquid-kde.trashcan/contents/ui/main.qml').read_text()
     downloads = widgets / 'org.kde.mac-tahoe-liquid-kde.downloads/contents/ui/main.qml'
     if downloads.is_file():
         assert 'NativeLauncher.DockIcon {' in downloads.read_text()

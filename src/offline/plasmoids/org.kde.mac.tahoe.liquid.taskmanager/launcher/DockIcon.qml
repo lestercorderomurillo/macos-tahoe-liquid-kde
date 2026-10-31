@@ -10,6 +10,12 @@ Item {
     property alias source: icon.source
     property alias active: icon.active
     property bool inPanel: true
+    property bool normalizeTrashArtwork: false
+    // Bundled trash bodies occupy 53/64 vertically; app tiles occupy 56/64.
+    // Correct their artwork padding without changing panel cells or task margins.
+    readonly property bool normalizedTrash: normalizeTrashArtwork && inPanel
+        && (String(source) === "user-trash" || String(source) === "user-trash-full")
+    readonly property real artworkScale: normalizedTrash ? 56 / 53 : 1
     property int location: PlasmaCore.Types.BottomEdge
     readonly property alias iconItem: icon
     implicitWidth: height
@@ -56,7 +62,12 @@ Item {
             id: icon
             // Let Kirigami fit the artwork inside the same rectangular box
             // as Task.qml, including device-pixel rounding at fractional scales.
-            anchors.fill: parent
+            x: (parent.width - width) / 2
+            // The trash body is centred at y=32.5 in its 64px canvas.
+            y: (parent.height - height) / 2 - (root.normalizedTrash
+                ? Math.min(parent.width, parent.height) * root.artworkScale / 128 : 0)
+            width: parent.width * root.artworkScale
+            height: parent.height * root.artworkScale
             smooth: true
         }
     }
