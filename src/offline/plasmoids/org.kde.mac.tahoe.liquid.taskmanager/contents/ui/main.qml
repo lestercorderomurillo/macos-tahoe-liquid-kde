@@ -453,7 +453,7 @@ PlasmoidItem {
                             }
                             return accumulator + child.Layout.maximumWidth
                         }, 0);
-                    return Math.round(totalMaxWidth / widthOccupation);
+                    return Math.round(totalMaxWidth / widthOccupation) + Math.max(0, columns - 1) * columnSpacing;
                 }
                 Layout.maximumHeight: {
                     const totalMaxHeight = children.reduce((accumulator, child) => {
@@ -462,7 +462,7 @@ PlasmoidItem {
                             }
                             return accumulator + child.Layout.maximumHeight
                         }, 0);
-                    return Math.round(totalMaxHeight / heightOccupation);
+                    return Math.round(totalMaxHeight / heightOccupation) + Math.max(0, rows - 1) * rowSpacing;
                 }
                 width: {
                     if (tasks.shouldShrinkToZero) {

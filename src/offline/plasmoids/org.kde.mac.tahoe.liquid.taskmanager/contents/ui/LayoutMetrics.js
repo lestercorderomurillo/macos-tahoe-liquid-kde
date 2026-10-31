@@ -66,12 +66,12 @@ function preferredMaxWidth() {
             if (tasks.width === 0) {
                 return 0
             }
-            return tasks.width + verticalMargins();
+            return tasks.width;
         } else {
             if (tasks.height === 0) {
                 return 0
             }
-            return tasks.height + horizontalMargins();
+            return tasks.height;
         }
     }
 
@@ -125,7 +125,7 @@ function preferredMaxHeight() {
             taskPreferredSize = Math.max(Kirigami.Units.iconSizes.sizeForLabels,
                                          Kirigami.Units.iconSizes.medium);
         }
-        return verticalMargins() +
+        return (tasks.iconsOnly ? 0 : verticalMargins()) +
             Math.min(
                 // Do not allow the preferred icon size to exceed the width of
                 // the vertical task manager.

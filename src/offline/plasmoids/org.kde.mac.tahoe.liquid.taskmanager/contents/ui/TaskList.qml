@@ -14,8 +14,8 @@ import "LayoutMetrics.js" as LayoutMetrics
 GridLayout {
     property bool animating: false
 
-    rowSpacing: 0
-    columnSpacing: 0
+    rowSpacing: tasks.iconsOnly && vertical ? LayoutMetrics.verticalMargins() : 0
+    columnSpacing: tasks.iconsOnly && !vertical ? LayoutMetrics.horizontalMargins() : 0
 
     property int animationsRunning: 0
     onAnimationsRunningChanged: {
