@@ -20,6 +20,7 @@ qt_add_qml_module(mactahoelauncher
     VERSION 1.0
     PLUGIN_TARGET mactahoelauncher
     OUTPUT_DIRECTORY "${launcher_module_dir}"
+    QML_FILES DockIcon.qml
     SOURCES launchersearchpopup.cpp launchersearchpopup.h iconthemewatcher.h
 )
 # Only the scanner is needed from Qt Wayland. PlasmaQuick owns the client;

@@ -269,3 +269,77 @@ def test_native_launcher_popup_presets(repo, tmp_path, monkeypatch, launcher_pop
         server.terminate()
         server.wait(timeout=5)
         runtime.cleanup()
+
+
+@pytest.mark.parametrize("scale", [1, 1.25, 1.5, 1.75, 2, 2.5, 3])
+def test_custom_dock_icons_share_task_frame_geometry(repo, tmp_path, launcher_popup_module, scale):
+    """Compare the shared applet icon with the actual task iconBox QML."""
+    widgets = repo / 'src/offline/plasmoids'
+    for relative in (
+            'org.kde.mac-tahoe-liquid-kde.launcher/contents/ui/CompactRepresentation.qml',
+            'org.kde.mac-tahoe-liquid-kde.trashcan/contents/ui/main.qml'):
+        assert 'NativeLauncher.DockIcon {' in (widgets / relative).read_text()
+    downloads = widgets / 'org.kde.mac-tahoe-liquid-kde.downloads/contents/ui/main.qml'
+    if downloads.is_file():
+        assert 'NativeLauncher.DockIcon {' in downloads.read_text()
+    runner = launcher_popup_module.parent / 'dockgeometryprobe'
+    task = (repo / 'src/offline/plasmoids/org.kde.mac.tahoe.liquid.taskmanager/contents/ui/Task.qml').read_text()
+    icon_box = task.split('    Loader {\n        id: iconBox', 1)[1].split('\n    PlasmaComponents3.Label {', 1)[0]
+    # Execute the production delegate's complete icon box, including its
+    # standalone state, margins and icon. Only its task-model inputs are faked.
+    reference = '''import QtQuick
+import org.kde.kirigami as Kirigami
+import org.kde.ksvg as KSvg
+import org.kde.plasma.core as PlasmaCore
+Item {
+    id: task
+    property alias iconItem: icon
+    property int location: PlasmaCore.Types.BottomEdge
+    property bool inPopup: false
+    property var smartLauncherItem: null
+    property bool highlighted: false
+    property var model: ({IsStartup: false, decoration: "folder"})
+    property var tasksRoot: task
+    property var iconThemeWatcher: null
+    Item { id: label; visible: false }
+    Component { id: busyIndicator; Item {} }
+    QtObject { id: backend; function iconSource(source) { return source; } }
+    QtObject {
+        id: layoutMetrics
+        function horizontalMargins() { return taskFrame.margins.left + taskFrame.margins.right; }
+        function verticalMargins() { return taskFrame.margins.top + taskFrame.margins.bottom; }
+    }
+    KSvg.FrameSvgItem {
+        id: taskFrame
+        visible: false
+        imagePath: "widgets/tasks"
+        prefix: {
+            switch (task.location) {
+            case PlasmaCore.Types.LeftEdge: return ["west-normal", "normal"];
+            case PlasmaCore.Types.TopEdge: return ["north-normal", "normal"];
+            case PlasmaCore.Types.RightEdge: return ["east-normal", "normal"];
+            default: return ["south-normal", "normal"];
+            }
+        }
+    }
+    Loader {
+        id: iconBox''' + icon_box.replace('LayoutMetrics.', 'layoutMetrics.') + '\n}\n'
+    (tmp_path / 'ReferenceTaskIcon.qml').write_text(reference)
+    probe = repo / 'tests/qml/DockAlignmentProbe.qml'
+    shutil.copy2(probe, tmp_path / 'tst_dock.qml')
+    for mode in ('Light', 'Dark'):
+        data = tmp_path / mode / 'data'
+        config = tmp_path / mode / 'config'
+        config.mkdir(parents=True)
+        theme = f'MacTahoeLiquidKde-{mode}'
+        shutil.copytree(repo / f'src/offline/plasma-theme/{theme}', data / f'plasma/desktoptheme/{theme}')
+        (config / 'plasmarc').write_text(f'[Theme]\nname={theme}\n')
+        result = subprocess.run([str(runner), str(tmp_path / 'tst_dock.qml')],
+            env=dict(os.environ, QT_QPA_PLATFORM='offscreen', QT_QUICK_BACKEND='software',
+                     QT_FORCE_STDERR_LOGGING='1', QT_SCALE_FACTOR=str(scale),
+                     QT_SCALE_FACTOR_ROUNDING_POLICY='PassThrough', XDG_CONFIG_HOME=str(config),
+                     XDG_DATA_HOME=str(data), QML_IMPORT_PATH=str(launcher_popup_module)),
+            capture_output=True, text=True, timeout=45)
+        assert result.returncode == 0, result.stdout + result.stderr
+        assert 'DOCK_ALIGNMENT_OK' in result.stdout + result.stderr
+        assert f'DOCK_DPR: {scale:g}' in result.stdout + result.stderr

@@ -181,8 +181,10 @@ PlasmoidItem {
             }
         }
 
-        Kirigami.Icon {
+        NativeLauncher.DockIcon {
             id: trashIcon
+            inPanel: root.inPanel
+            location: Plasmoid.location
             NativeLauncher.IconThemeWatcher {
                 onChanged: {
                     trashIcon.source = "";

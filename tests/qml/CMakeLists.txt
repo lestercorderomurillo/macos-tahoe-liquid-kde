@@ -25,3 +25,6 @@ endif()
 set_property(TARGET Qt6::WaylandClient APPEND PROPERTY INTERFACE_SOURCES
     "$<$<BOOL:$<TARGET_PROPERTY:QT_CONSUMES_METATYPES>>:${CMAKE_CURRENT_BINARY_DIR}/unused-wayland-metatypes.json>")
 add_subdirectory("${LAUNCHER_NATIVE_SOURCE}/launcher" launcher)
+
+add_executable(dockgeometryprobe dockgeometryprobe.cpp)
+target_link_libraries(dockgeometryprobe PRIVATE Qt6::Quick)

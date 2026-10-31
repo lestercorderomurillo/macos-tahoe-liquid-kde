@@ -7,7 +7,7 @@ import org.kde.plasma.core as PlasmaCore
 import org.kde.kirigami as Kirigami
 import org.kde.mac.tahoe.launcher as NativeLauncher
 
-Item {
+NativeLauncher.DockIcon {
     id: root
 
     property QtObject dashWindow: null
@@ -15,26 +15,17 @@ Item {
 
     NativeLauncher.IconThemeWatcher {
         onChanged: {
-            buttonIcon.source = "";
-            buttonIcon.source = Qt.binding(() => root.useCustomButtonImage
+            root.source = "";
+            root.source = Qt.binding(() => root.useCustomButtonImage
                 ? Plasmoid.configuration.customButtonImage : Plasmoid.configuration.icon);
         }
     }
 
-    Kirigami.Icon {
-        id: buttonIcon
-
-        width: Plasmoid.configuration.activationIndicator ? parent.width * 0.65 : parent.width
-        height: Plasmoid.configuration.activationIndicator ? parent.height * 0.65 : parent.height
-        anchors.centerIn: parent
-
-        source: useCustomButtonImage ? Plasmoid.configuration.customButtonImage : Plasmoid.configuration.icon
-
-        active: mouseArea.containsMouse
-
-        smooth: true
-
-    }
+    inPanel: Plasmoid.formFactor === PlasmaCore.Types.Horizontal
+        || Plasmoid.formFactor === PlasmaCore.Types.Vertical
+    location: Plasmoid.location
+    source: useCustomButtonImage ? Plasmoid.configuration.customButtonImage : Plasmoid.configuration.icon
+    active: mouseArea.containsMouse
 
     MouseArea
     {
