@@ -408,22 +408,25 @@ def test_features_json_and_cli_feature_list_match(repo):
 
 
 def test_readme_tests_count_badge_matches_collected_count(repo):
-    """The README ships a ``tests-NNN_passing`` shields.io badge. The
+    """The README ships a ``tests-NNN_collected`` shields.io badge. The
     badge is hand-edited because the alternative (dynamic shields
     endpoint pointing at a Gist updated by CI) needs infra for
     something that changes ~3 times a year.
 
-    To stop the badge from drifting, pin the number here.
-    When the suite grows or shrinks, run ``./test`` to get the new
+    Collection totals include conditional skips; actual passing and skipped
+    results are recorded separately in TESTING.md. Keep the badge literal
+    so it does not describe unrun conditional checks as passes.
+    To stop the badge from drifting, compare its exact count below.
+    When the suite grows or shrinks, run ``pytest --collect-only`` to get the new
     count, edit the README badge, and re-run this test.
 
-    The badge format is ``tests-<count>_passing``. Match against the
+    The badge format is ``tests-<count>_collected``. Match against the
     actual ``--collect-only`` count of the same pytest invocation
     the README is documenting."""
     readme = (repo / "README.md").read_text()
-    m = re.search(r"tests-(\d+)_passing", readme)
+    m = re.search(r"tests-(\d+)_collected", readme)
     assert m, (
-        "README is missing the ``tests-NNN_passing`` badge. Restore "
+        "README is missing the ``tests-NNN_collected`` badge. Restore "
         "it next to the other shields.io badges at the top of the "
         "README."
     )
@@ -448,7 +451,7 @@ def test_readme_tests_count_badge_matches_collected_count(repo):
 
     assert badge_count == actual_count, (
         f"README badge says {badge_count} tests but pytest collects "
-        f"{actual_count}. Edit the ``tests-NNN_passing`` badge in "
+        f"{actual_count}. Edit the ``tests-NNN_collected`` badge in "
         f"README.md to {actual_count}."
     )
 

@@ -358,4 +358,4 @@ results and coverage limits. Full exact-commit branch CI remains the release gat
 The primary CI result is 2,013 passed and 11 existing conditional skips, out of
 2,024 collected cases. All new status-icon tests ran. The validation report
 lists the skipped X11, Rounded Corners archive and native Kvantum checks;
-these are coverage limits and are excluded from the passing badge.
+these are coverage limits. The badge explicitly labels the 2,024 collected cases.
