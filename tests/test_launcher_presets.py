@@ -531,7 +531,7 @@ Item {
     property var removed: []
     property var dock: []
     property var topWidgets: []
-    function widget(type, id) { return {type: type, id: id, remove: function() { removed.push(id); }}; }
+    function widget(type, id) { return {type: type, id: id, index: id, remove: function() { removed.push(id); }}; }
     function panels() { return [{widgets: function() { return dock.filter(w => removed.indexOf(w.id)<0); }},
                                {widgets: function() { return topWidgets; }}]; }
     function migrate() { SCRIPT }
@@ -544,11 +544,14 @@ Item {
         dock = [widget(launcher, 1), widget(separator, 2), widget(tasks, 3),
                 widget(separator, 4), widget(downloads, 5), widget(trash, 6),
                 widget(separator, 7), widget("org.kde.plasma.digitalclock", 8)];
-        dock[2].pins = ["applications:org.kde.kate.desktop"];
+        const pinned = dock[2];
+        pinned.pins = ["applications:org.kde.kate.desktop"];
+        // Widget enumeration follows creation order, not current panel order.
+        dock = [dock[0], dock[2], dock[4], dock[5], dock[1], dock[3], dock[6], dock[7]];
         topWidgets = [widget("org.kde.plasma.systemtray", 10), widget(separator, 11),
                widget("org.kde.plasma.digitalclock", 12)];
         migrate(); migrate();
-        if (JSON.stringify(removed)!=="[2,4]" || dock[2].pins[0]!=="applications:org.kde.kate.desktop") {
+        if (JSON.stringify(removed)!=="[2,4]" || pinned.pins[0]!=="applications:org.kde.kate.desktop") {
             console.error("DOCK_MIGRATION_FAILED", JSON.stringify(removed)); Qt.exit(1); return;
         }
         console.info("DOCK_MIGRATION_OK"); Qt.exit(0);
