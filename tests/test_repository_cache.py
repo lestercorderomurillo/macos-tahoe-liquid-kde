@@ -325,3 +325,34 @@ def test_unrecognized_recovery_journal_is_preserved_without_eviction(history, co
     assert journal.read_text() == contents
     assert available(root) == objects
     assert (root / '.git/config').read_bytes() == config
+
+
+def test_packing_a_converted_development_clone_preserves_private_recovery(history, monkeypatch):
+    from repository_maintenance import compact_repository
+    root, remote, release = history
+    assert cache.trim_published_cache(root)['status'] == 'ok'
+    old_public = git(remote, 'rev-parse', 'v1.0.1:asset')
+    git(root, 'config', 'user.name', 'Development fixture')
+    git(root, 'config', 'user.email', 'test@example.invalid')
+    git(root, 'switch', '-c', 'agent-work')
+    private = os.urandom(128 * 1024)
+    (root / 'private-work').write_bytes(private)
+    git(root, 'add', '.')
+    git(root, 'commit', '-qm', 'private unpublished work')
+    commit = git(root, 'rev-parse', 'HEAD')
+    (root / 'private-work').write_text('stashed work')
+    git(root, 'stash')
+    git(root, 'switch', 'main')
+    lost = git(root, 'hash-object', '-w', '--stdin', input='private dangling data')
+    refs, logs = git(root, 'show-ref'), git(root, 'reflog', '--all')
+    config = (root / '.git/config').read_bytes()
+    monkeypatch.setenv('MAC_TAHOE_NO_UPDATE_CHECK', 'true')
+    result = compact_repository(root)
+    assert result['status'] == 'ok', result
+    assert git(root, 'show-ref') == refs
+    assert git(root, 'reflog', '--all') == logs
+    assert (root / '.git/config').read_bytes() == config
+    assert subprocess.check_output(['git', '-C', str(root), 'show', commit + ':private-work']) == private
+    assert git(root, 'cat-file', '-p', lost) == 'private dangling data'
+    assert old_public not in available(root)
+    git(root, 'fsck', '--full')

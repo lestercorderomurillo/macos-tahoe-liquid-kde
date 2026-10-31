@@ -15,14 +15,14 @@ Linux host, Python 3.14, Git 2.55.0; disposable Git fixtures, no live installer:
 python3 -m pytest tests/test_repository_cache.py tests/test_repository_history.py tests/test_repository_maintenance.py tests/test_auto_update.py tests/test_git_process_maintenance.py tests/test_release_screenshots.py tests/test_static.py tests/test_release_update.py -q
 ```
 
-164 passed. The 127 affected updater/cache/provenance checks also passed in a
+165 passed. The 128 affected updater/cache/provenance checks also passed in a
 Golden Gate source prepared from the candidate with
 `GOLDEN_GATE_TAHOE_SOURCE=<candidate> MAC_TAHOE_NO_UPDATE_CHECK=true python3 installer --prepare`.
-Golden Gate's complete wrapper suite passed 95 tests. Collection is 2115 Tahoe
+Golden Gate's complete wrapper suite passed 95 tests. Collection is 2116 Tahoe
 tests; collection is not a claim that every conditional native check ran locally.
 
 A network-disabled, read-only KDE neon container with Git 2.43.0 passed the
-84 updater/history/cache/maintenance/Trace2 checks. The synthetic history uses
+85 updater/history/cache/maintenance/Trace2 checks. The synthetic history uses
 successive binary asset replacements, main and dev pulls, a merge from an old
 release base, repeated cleanup of hydrated promisor blobs, and historical lazy
 retrieval. Tests preserve current tips, tags, private branches/tags, stashes,
