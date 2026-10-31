@@ -1019,6 +1019,21 @@ green   yellow   orange   red   purple   blue
 | Pinned taskbar apps wiped during layout rebuild | First installs, selected layout resets and uninstall rebuild panels from scratch. `layout.py` captures every `launchers=` list from appletsrc first (deduped, minus our own plasmoids), writes it onto the new Mac Dock during install, and restores it onto the default Breeze icontasks during uninstall. Wizard updates preserve the existing layout when reset is unchecked. |
 | GTK popups never get compositor blur           | Client-side popups (Firefox menus, popovers) receive no KWin blur, so GTK CSS popup surfaces must keep mirrored light/dark rgba alpha — literal `transparent` renders see-through (issue #11). The gtk-4.0 sheets must also define every libadwaita named color they reference; only libadwaita apps define those at runtime. `test_static.py` guards both. |
 
+## Documentation style
+
+Keep TESTING.md as a concise snapshot of the latest verified release, stated
+once, followed by the installer photographs. Replace the previous summary;
+never append a changelog, superseded candidates or unreleased development logs.
+Keep one short validation summary with a link to detailed evidence and coverage
+limits. When consolidating accumulated history, reduce the document by at least
+half. Preserve reviewed photographs, content-hashed filenames and original
+provenance; do not recapture or relabel unchanged images. Keep README concise
+and put installer photographs only in TESTING.md.
+
+Limit README installation/update notes to two short lines of user actions.
+Omit updater internals and repeated explanations; keep technical details in
+CONTRIBUTING.md or linked developer documentation.
+
 ## Testing
 
 `./test` runs the full pytest suite. Apply the following scope policy before

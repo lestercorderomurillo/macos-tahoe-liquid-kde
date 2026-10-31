@@ -36,9 +36,6 @@
 > [!CAUTION]
 > Experimental. Desktop updates may break compatibility. Avoid production systems; [report issues here](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/issues/new).
 
-> [!NOTE]
-> Tahoe and Golden Gate reflect months of development and testing, so please credit the original work and highlight what you’ve changed or added. See our [licensing and attribution guide](LICENSING.md).
-
 <br>
 
 ![Contributing](https://img.shields.io/badge/contributing-A04B4B?style=for-the-badge&logo=github&logoColor=white)
@@ -198,20 +195,8 @@ cd macos-tahoe-liquid-kde
 ./installer
 ```
 
-Reuse this directory for updates. Source ZIP/tar downloads omit the documentation
-gallery; browse the screenshots on GitHub, or use a Git checkout for the complete
-offline documentation. Installer previews, theme assets, tests and license notices
-remain bundled. Git checkouts retain their history as they are updated.
-
-On launch, `./installer` compares the local `VERSION` with the latest published
-release. A clean checkout fast-forwards only when that verified release is newer,
-before opening the wizard. Equal or newer local versions are never downgraded.
-Local edits, untracked files and divergent local commits are treated as development
-work: they stay in place, and any newer release is reported without replacing them. Updating
-the installer does not apply the theme: review the wizard choices and confirm
-the installation. **Reset Dock and panel customization** starts checked;
-uncheck it to preserve your current layout on reinstall.
-`MAC_TAHOE_NO_UPDATE_CHECK=true` disables the update check.
+Run `./installer` again to update. Uncheck **Reset Dock and panel customization** to keep your layout.
+ZIP/tar downloads omit the gallery; view screenshots on GitHub or use a Git checkout.
 
 Install and uninstall through one graphical wizard:
 
@@ -219,11 +204,23 @@ Install and uninstall through one graphical wizard:
 ./installer
 ```
 
-Choose **Install** to configure the theme, or **Uninstall** to remove it.
-The language selector is between these actions. The wizard asks for administrator
-access only when you confirm. `./install` and `./uninstall` open the same UI.
-
-English, Spanish, Simplified Chinese, Brazilian Portuguese and German.
+| Installer language | Status |
+| --- | --- |
+| 🇺🇸 English | Available |
+| 🇪🇸 Spanish | Available |
+| 🇨🇳 Simplified Chinese | Available |
+| 🇧🇷 Brazilian Portuguese | Available |
+| 🇩🇪 German | Available |
+| 🇫🇷 French | Planned |
+| 🇮🇹 Italian | Planned |
+| 🇯🇵 Japanese | Planned |
+| 🇰🇷 Korean | Planned |
+| 🇷🇺 Russian | Planned |
+| 🇸🇦 Arabic | Planned |
+| 🇮🇳 Hindi | Planned |
+| 🇳🇱 Dutch | Planned |
+| 🇵🇱 Polish | Planned |
+| 🇹🇷 Turkish | Planned |
 
 <details>
 <summary><b>Requirements</b></summary>
