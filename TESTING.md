@@ -17,7 +17,7 @@ Scroll horizontally through the installation steps.
 
 <table>
 <tr>
-  <td align="center"><img src="src/screenshots/installer-welcome_dark_v4-ef80ac99ee75.png" alt="Welcome" width="500"><br>Welcome</td>
+  <td align="center"><img src="src/screenshots/installer-welcome_dark_v4-3c6a6da8ac62.png" alt="Welcome" width="500"><br>Welcome</td>
   <td align="center"><img src="src/screenshots/installer-appearance_dark_v4-a6f5633f614d.png" alt="Appearance" width="500"><br>Appearance</td>
   <td align="center"><img src="src/screenshots/installer-icons_dark_v4-fb1bad1909be.png" alt="Icons and color" width="500"><br>Icons and color</td>
   <td align="center"><img src="src/screenshots/installer-wallpaper_dark_v4-7ee3602eddd1.png" alt="Wallpaper" width="500"><br>Wallpaper</td>
