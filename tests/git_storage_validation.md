@@ -5,24 +5,26 @@ retiring verified published file caches and older-version merged branches.
 Both editions use it; Golden Gate delegates for its own clone and a selected
 Tahoe sibling. Updaters retain dirty, staged, deleted, untracked and divergent
 work, including equal-VERSION unpublished commits and ignored-file collisions.
-No desktop, visual asset, native backend, ABI or SDK behavior changed.
+New cleanup messages are translated in every supported language; catalog
+completeness and format-field regressions cover them. No desktop, visual asset,
+native backend, ABI or SDK behavior changed.
 
 ## Focused development and integration
 
 Linux host, Python 3.14, Git 2.55.0; disposable Git fixtures, no live installer:
 
 ```sh
-python3 -m pytest tests/test_repository_cache.py tests/test_repository_history.py tests/test_repository_maintenance.py tests/test_auto_update.py tests/test_git_process_maintenance.py tests/test_release_screenshots.py tests/test_static.py tests/test_release_update.py -q
+python3 -m pytest tests/test_repository_cache.py tests/test_repository_history.py tests/test_repository_maintenance.py tests/test_auto_update.py tests/test_git_process_maintenance.py tests/test_release_screenshots.py tests/test_static.py tests/test_release_update.py tests/test_multilanguage.py tests/test_localization.py -q
 ```
 
-173 passed. The 136 affected updater/cache/provenance checks also passed in a
+210 passed. The 173 affected updater/cache/provenance checks also passed in a
 Golden Gate source prepared from the candidate with
 `GOLDEN_GATE_TAHOE_SOURCE=<candidate> MAC_TAHOE_NO_UPDATE_CHECK=true python3 installer --prepare`.
 Golden Gate's complete wrapper suite passed 95 tests. Collection is 2124 Tahoe
 tests; collection is not a claim that every conditional native check ran locally.
 
 A network-disabled, read-only KDE neon container with Git 2.43.0 passed the
-93 updater/history/cache/maintenance/Trace2 checks. The synthetic history uses
+173 updater/history/cache/maintenance/Trace2, localization and provenance checks. The synthetic history uses
 successive binary asset replacements, main and dev pulls, a merge from an old
 release base, repeated cleanup of hydrated promisor blobs, and historical lazy
 retrieval. Fresh `--filter=blob:none` clones and legacy shallow clones also
@@ -92,3 +94,7 @@ make the focused evidence independent of later documentation/commit metadata.
 | `src/scripts/repository_cache.py` | `b6fc1e63b904cd187eb73cdc63b0b7dd82365404bc45325ac8f91845be337711` |
 | `src/scripts/repository_history.py` | `fe9c75469315b0404f12ed05268a4badd458cf29d30358e81a6606de5bc8fa1a` |
 | `src/scripts/repository_maintenance.py` | `e49637a96b4fe11ef3385fbfd3d85738d5a0b10ede4613c71835020210aa8da7` |
+| `src/scripts/localization.py` | `1e30f09f5e467f0e4d60c5865968893cb4514ecacf34058ebd93697bde6aed69` |
+| `src/scripts/locales/pt_BR.json` | `6d1c99c55c2a04557125649262d61ce7772e1a7e9a3b0c33ea2130709aadf8b0` |
+| `src/scripts/locales/de.json` | `533771b3d88ad7cbade6c50337aec53c04f2b917c99d8ee8bf21ea0ae131b854` |
+| `src/scripts/release_screenshots.py` | `4afaf72f3c553fe3bb5d53b6c53bff497d064e6faafc5356eaf0711dc1228390` |

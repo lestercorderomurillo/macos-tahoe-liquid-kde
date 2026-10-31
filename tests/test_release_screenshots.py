@@ -42,7 +42,16 @@ def test_console_maintenance_preserves_visual_fingerprint_but_ui_changes_do_not(
     (scripts / 'repository_history.py').write_text('# console-only Git history policy\n')
     (scripts / 'repository_cache.py').write_text('# console-only published blob cache\n')
     cli.write_text('def _git():\n    return "safe command"\ndef visible_label():\n    return "Install"\n')
-    localization.write_text('_ES = {"Install": "Instalar", "Compacting Git storage: {path}": "Compactando: {path}"}\n')
+    messages = {"Install": "Instalar", "Compacting Git storage: {path}": "Compactando: {path}"}
+    messages.update({
+        'Recovered {size} MiB. Git ancestry and local recovery data were preserved.':
+            'Se recuperaron {size} MiB. Se conservaron los datos locales de recuperación.',
+        'Published historical files may download again on demand; current source and local work stay available.':
+            'Los archivos históricos publicados pueden descargarse de nuevo cuando se necesiten.',
+        'Git maintenance disabled by local configuration.':
+            'El mantenimiento de Git está desactivado en la configuración local.',
+    })
+    localization.write_text("_ES = " + repr(messages) + "\n")
     installer.write_text(branch + baseline)
     after = commit(tmp_path)
     assert shots.visual_tree(tmp_path, before) == shots.visual_tree(tmp_path, after)

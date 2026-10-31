@@ -27,6 +27,9 @@ LANGUAGE_CODES = tuple(item["code"] for item in LANGUAGES)
 
 
 _ES = {
+    'Recovered {size} MiB. Git ancestry and local recovery data were preserved.': 'Se recuperaron {size} MiB. Se conservaron la ascendencia de Git y los datos locales de recuperación.',
+    'Published historical files may download again on demand; current source and local work stay available.': 'Los archivos históricos publicados pueden descargarse de nuevo cuando se necesiten; el código actual y el trabajo local siguen disponibles.',
+    'Git maintenance disabled by local configuration.': 'El mantenimiento de Git está desactivado en la configuración local.',
     'Compacting Git storage: {path}': 'Compactando el almacenamiento de Git: {path}',
     'Recovered {size} MiB. Git history and recovery data were preserved.': 'Se recuperaron {size} MiB. Se conservaron el historial de Git y los datos de recuperación.',
     'Files still referenced by Git history remain; cleanup does not remove older commits.': 'Los archivos referenciados por el historial de Git se conservan; la limpieza no elimina commits antiguos.',
@@ -92,6 +95,9 @@ _ES = {
 }
 
 _ZH_CN = {
+    'Recovered {size} MiB. Git ancestry and local recovery data were preserved.': '已回收 {size} MiB。Git 提交关系和本地恢复数据已保留。',
+    'Published historical files may download again on demand; current source and local work stay available.': '已发布的历史文件可按需重新下载；当前源代码和本地工作仍然可用。',
+    'Git maintenance disabled by local configuration.': '本地配置已禁用 Git 维护。',
     'Compacting Git storage: {path}': '正在压缩 Git 存储：{path}',
     'Recovered {size} MiB. Git history and recovery data were preserved.': '已回收 {size} MiB。Git 历史记录和恢复数据已保留。',
     'Files still referenced by Git history remain; cleanup does not remove older commits.': 'Git 历史记录仍引用的文件将被保留；清理不会删除旧提交。',
