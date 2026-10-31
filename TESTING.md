@@ -1,14 +1,17 @@
 # Installer testing
 
-Tahoe **v0.61.12** is the latest verified release documented here.
+Tahoe **v0.61.13** is the latest verified release documented here.
 The installer photographs below were captured in a disposable KDE Plasma VM
 and reviewed before publication; their original hashes and provenance are retained.
 
 Dock validation records 48 focused checks, eight native popup checks and
-12 prepared Golden Gate checks. The disposable KDE neon VM (Plasma 6.8.1,
-Qt 6.11.1) passed 112 installed-Dock combinations across seven scale factors,
-four panel edges and four sizes; six light/dark frames were reviewed.
-These results do not establish every GPU, monitor, distro or pointer-drag path.
+12 prepared Golden Gate checks. The geometry probe covers seven scale factors,
+four panel edges and successive resize/aspect changes. The Trash artwork now
+matches the application-tile body height while preserving small and custom icons.
+Twenty fresh light/dark optical frames cover empty/full Trash at 1×, 1.5×
+and 2× with representative panel sizes. The earlier 112-state installed-panel
+allocation checks remain applicable.
+Physical GPUs, mixed-DPI monitors and every pointer-drag path remain untested.
 
 See the [validation report](tests/native/dock_alignment_validation.md) for commands, source identities, results
 and coverage limits, and [CONTRIBUTING.md](CONTRIBUTING.md) for the testing and capture workflow.
@@ -19,7 +22,7 @@ Scroll horizontally through the installation steps.
 
 <table>
 <tr>
-  <td align="center"><img src="src/screenshots/installer-welcome_dark_v4-b3f548b18bae.png" alt="Welcome" width="500"><br>Welcome</td>
+  <td align="center"><img src="src/screenshots/installer-welcome_dark_v4-ef80ac99ee75.png" alt="Welcome" width="500"><br>Welcome</td>
   <td align="center"><img src="src/screenshots/installer-appearance_dark_v4-a6f5633f614d.png" alt="Appearance" width="500"><br>Appearance</td>
   <td align="center"><img src="src/screenshots/installer-icons_dark_v4-fb1bad1909be.png" alt="Icons and color" width="500"><br>Icons and color</td>
   <td align="center"><img src="src/screenshots/installer-wallpaper_dark_v4-7ee3602eddd1.png" alt="Wallpaper" width="500"><br>Wallpaper</td>

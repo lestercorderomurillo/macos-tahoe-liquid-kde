@@ -39,6 +39,7 @@ Item {
         const base = custom.iconItem.mapToItem(custom, custom.iconItem.width / 2, custom.iconItem.height / 2);
         const actual = trash.iconItem.mapToItem(trash, trash.iconItem.width / 2, trash.iconItem.height / 2);
         const size = Math.min(custom.iconItem.paintedWidth, custom.iconItem.paintedHeight);
+        if (size <= 0) throw new Error("Dock artwork did not load");
         root.compare(trash.iconItem.scale, factor);
         root.compare(trash.iconItem.paintedWidth, custom.iconItem.paintedWidth);
         root.compare(trash.iconItem.paintedHeight, custom.iconItem.paintedHeight);

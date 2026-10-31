@@ -93,3 +93,59 @@ nine passed. These edits affect test logging and the README count; runtime
 Dock inputs and the reviewed capture source are unchanged. Publication still
 requires successful push CI for the corrected exact release commit on both
 branches; the failed initial runs are not release evidence.
+
+
+## Trash artwork correction — v0.61.13
+
+The review of v0.61.12 correctly identified a remaining optical mismatch:
+matching applet cells and icon viewports does not compensate for the bundled
+Trash SVG's internal padding. Its body spans y=6..59 in a 64-unit canvas;
+application tiles span y=4..60. `DockIcon` now applies the 56/53 height ratio
+and centres that body, only when the Trash applet opts in and uses the bundled
+empty/full icon names. Custom icons, desktop widgets and the separate glyphs
+at 24 logical pixels or below keep their existing geometry. The bin retains
+its natural narrower shape. No task margins, panel allocation or native ABI
+changed.
+
+Stable runtime candidate: `c421178eeed95376506c157d0dbce9fd554aed2f`.
+The new assertions compare the SVG body bounds with application-tile bounds
+through the existing seven-scale, light/dark, resize/aspect/orientation probe.
+They also exercise empty/full/custom icon changes and the desktop exemption.
+A session fixture seeds the actual bundled SVGs and small glyphs, then selects
+that theme explicitly in the native runner. A missing system icon theme cannot
+turn painted-size assertions into a false pass. `tar`/`zstd` are already present
+in every affected native CI image. The final probe rejects the discarded
+viewport-enlargement implementation (case 3); log:
+`/tmp/dock115-optical-rounding-regression.log`.
+An initial centre-anchor implementation failed the fractional geometry checks.
+The first installed frame then exposed Kirigami's discrete icon-size rounding:
+enlarging its requested viewport jumped to a larger icon bucket. That capture
+was rejected. The final component keeps the original viewport and painted size,
+then scales the resulting artwork. The probe now checks the painted size as well
+as body bounds, catching that bucket jump.
+
+- CachyOS / Qt 6.11.2: `python3 -m pytest -q tests/test_launcher_presets.py
+  tests/test_taskmanager_qml.py -k 'not native_launcher_popup'`: 48 passed.
+- The private Xvfb/D-Bus native popup checks passed all eight edition/mode/preset
+  cases. The first sandboxed invocation could not bind a private D-Bus socket;
+  that environment error is not a rendering result. The isolated invocation
+  ran with the required socket access. The subsequent small-glyph guard only
+  affects an opted-in Trash icon; these popup inputs remain unchanged.
+- Prepared Golden Gate content `e70d974347c0558d36f9` from this candidate:
+  `python3 -m pytest -q tests/test_launcher_presets.py -k 'custom_dock or
+  follow_panel_thickness or installed_launcher'`: 12 passed.
+
+The prior 112-state installed-panel allocation evidence remains applicable:
+this follow-up changes artwork sizing within the existing cells, not their
+allocation. Fresh installed optical QA in the checksum-pinned KDE neon VM reviewed 20
+frames: light/dark, empty/full, scale 1 and 2 at requested panel size 68, and
+scale 1.5 at requested sizes 32, 68 and 96. Plasma clamps the 32 request to its
+40-pixel minimum; `results.json` records both requested and actual geometry.
+The successful run waits two 3-second polling intervals before each capture.
+An earlier development run with a shorter wait had stale empty/full labels and
+was rejected. Final reviewed artifacts: `/tmp/dock115-optical-live-c421`.
+The actual body heights and baselines match adjacent application tiles while
+preserving the bin's narrower shape and the papers above its full-state rim.
+The official publication captures use runtime source `c421178` in fresh VMs;
+no discarded or stale-labelled development frame is used for publication. Physical GPUs and mixed-DPI multi-monitor
+configurations remain untested.

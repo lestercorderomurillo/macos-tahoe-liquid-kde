@@ -330,8 +330,32 @@ Item {
         assert 'DOCK_CELL_OK' in result.stdout + result.stderr
 
 
+@pytest.fixture(scope="session")
+def dock_icon_theme(repo, tmp_path_factory):
+    """Use real bundled artwork even in CI images with no default icon theme."""
+    staging = tmp_path_factory.mktemp("dock-artwork")
+    base = "MacTahoeLiquidKde-Icons"
+    members = [f"{base}/places/{size}/{name}.svg"
+               for size in ("16", "22", "24", "scalable")
+               for name in ("user-trash", "user-trash-full")]
+    members.append(f"{base}/apps/scalable/file-manager.svg")
+    subprocess.run(["tar", "--zstd", "-xf",
+                    str(repo / f"src/offline/icons/{base}.tar.zst"),
+                    "-C", str(staging), *members], check=True, capture_output=True, timeout=30)
+    theme = staging / "DockAlignmentTest"
+    shutil.copytree(staging / base / "places", theme)
+    shutil.copy2(staging / base / "apps/scalable/file-manager.svg", theme / "scalable/folder.svg")
+    sections = ["[Icon Theme]", "Name=DockAlignmentTest", "Directories=16,22,24,scalable", ""]
+    for size in (16, 22, 24):
+        sections += [f"[{size}]", f"Size={size}", "Type=Fixed", "Context=Places", ""]
+    sections += ["[scalable]", "Size=64", "Type=Scalable", "MinSize=32",
+                 "MaxSize=512", "Context=Places", ""]
+    (theme / "index.theme").write_text("\n".join(sections))
+    return theme
+
+
 @pytest.mark.parametrize("scale", [1, 1.25, 1.5, 1.75, 2, 2.5, 3])
-def test_custom_dock_icons_share_task_frame_geometry(repo, tmp_path, launcher_popup_module, scale):
+def test_custom_dock_icons_share_task_frame_geometry(repo, tmp_path, launcher_popup_module, dock_icon_theme, scale):
     """Compare the shared applet icon with the actual task iconBox QML."""
     widgets = repo / 'src/offline/plasmoids'
     for relative in (
@@ -392,12 +416,15 @@ Item {
         data = tmp_path / mode / 'data'
         config = tmp_path / mode / 'config'
         config.mkdir(parents=True)
+        (data / 'icons').mkdir(parents=True)
+        shutil.copytree(dock_icon_theme, data / 'icons/DockAlignmentTest')
         theme = f'MacTahoeLiquidKde-{mode}'
         shutil.copytree(repo / f'src/offline/plasma-theme/{theme}', data / f'plasma/desktoptheme/{theme}')
         (config / 'plasmarc').write_text(f'[Theme]\nname={theme}\n')
         result = subprocess.run([str(runner), str(tmp_path / 'tst_dock.qml')],
             env=dict(os.environ, QT_QPA_PLATFORM='offscreen', QT_QUICK_BACKEND='software',
                      QT_FORCE_STDERR_LOGGING='1', QT_SCALE_FACTOR=str(scale),
+                     DOCK_ICON_THEME='DockAlignmentTest',
                      QT_SCALE_FACTOR_ROUNDING_POLICY='PassThrough', XDG_CONFIG_HOME=str(config),
                      XDG_DATA_HOME=str(data), QML_IMPORT_PATH=str(launcher_popup_module)),
             capture_output=True, text=True, timeout=45)
