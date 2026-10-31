@@ -258,7 +258,8 @@ spinbutton.vertical > button:only-child, spinbutton.vertical > text:only-child, 
   box-shadow: none;
 }
 
-.floating-bar > button.circular.flat, infobar.info > revealer > box button, infobar.info:hover > revealer > box button, infobar.info:backdrop > revealer > box button, infobar.question > revealer > box button, infobar.question:hover > revealer > box button, infobar.question:backdrop > revealer > box button, infobar.warning > revealer > box button, infobar.warning:hover > revealer > box button, infobar.warning:backdrop > revealer > box button, infobar.error > revealer > box button, infobar.error:hover > revealer > box button, infobar.error:backdrop > revealer > box button, .selection-mode headerbar button, headerbar.selection-mode button, .entry-tag > button, #NautilusQueryEditor #NautilusQueryEditorTag > button {
+.floating-bar > button.circular.flat, infobar.info > revealer > box button, infobar.info:hover > revealer > box button, infobar.info:backdrop > revealer > box button, infobar.question > revealer > box button, infobar.question:hover > revealer > box button, infobar.question:backdrop > revealer > box button, infobar.warning > revealer > box button, infobar.warning:hover > revealer > box button, infobar.warning:backdrop > revealer > box button, infobar.error > revealer > box button, infobar.error:hover > revealer > box button, infobar.error:backdrop > revealer > box button, .selection-mode headerbar button, headerbar.selection-mode button, .entry-tag > button, #NautilusQueryEditor #NautilusQueryEditorTag > button,
+.nautilus-query-editor #NautilusQueryEditorTag > button {
   color: #ffffff;
   background-color: transparent;
   border-color: alpha(#ffffff,0.5);
@@ -266,7 +267,8 @@ spinbutton.vertical > button:only-child, spinbutton.vertical > text:only-child, 
   box-shadow: none;
 }
 
-.floating-bar > button.flat.circular, infobar.info > revealer > box button.flat, infobar.question > revealer > box button.flat, infobar.warning > revealer > box button.flat, infobar.error > revealer > box button.flat, .selection-mode headerbar button.flat, headerbar.selection-mode button.flat, .entry-tag > button.flat, #NautilusQueryEditor #NautilusQueryEditorTag > button.flat {
+.floating-bar > button.flat.circular, infobar.info > revealer > box button.flat, infobar.question > revealer > box button.flat, infobar.warning > revealer > box button.flat, infobar.error > revealer > box button.flat, .selection-mode headerbar button.flat, headerbar.selection-mode button.flat, .entry-tag > button.flat, #NautilusQueryEditor #NautilusQueryEditorTag > button.flat,
+.nautilus-query-editor #NautilusQueryEditorTag > button.flat {
   border-color: transparent;
   background-color: transparent;
   background-image: none;
@@ -276,32 +278,39 @@ spinbutton.vertical > button:only-child, spinbutton.vertical > text:only-child, 
   background-image: none;
 }
 
-.floating-bar > button.flat.circular:disabled, infobar.info > revealer > box button.flat:disabled, infobar.question > revealer > box button.flat:disabled, infobar.warning > revealer > box button.flat:disabled, infobar.error > revealer > box button.flat:disabled, .selection-mode headerbar button.flat:disabled, headerbar.selection-mode button.flat:disabled, .entry-tag > button.flat:disabled, #NautilusQueryEditor #NautilusQueryEditorTag > button.flat:disabled {
+.floating-bar > button.flat.circular:disabled, infobar.info > revealer > box button.flat:disabled, infobar.question > revealer > box button.flat:disabled, infobar.warning > revealer > box button.flat:disabled, infobar.error > revealer > box button.flat:disabled, .selection-mode headerbar button.flat:disabled, headerbar.selection-mode button.flat:disabled, .entry-tag > button.flat:disabled, #NautilusQueryEditor #NautilusQueryEditorTag > button.flat:disabled,
+.nautilus-query-editor #NautilusQueryEditorTag > button.flat:disabled {
   color: alpha(#ffffff,0.4);
 }
 
-.floating-bar > button.circular.flat:hover, infobar.info > revealer > box button:hover, infobar.question > revealer > box button:hover, infobar.warning > revealer > box button:hover, infobar.error > revealer > box button:hover, .selection-mode headerbar button:hover, headerbar.selection-mode button:hover, .entry-tag > button:hover, #NautilusQueryEditor #NautilusQueryEditorTag > button:hover {
+.floating-bar > button.circular.flat:hover, infobar.info > revealer > box button:hover, infobar.question > revealer > box button:hover, infobar.warning > revealer > box button:hover, infobar.error > revealer > box button:hover, .selection-mode headerbar button:hover, headerbar.selection-mode button:hover, .entry-tag > button:hover, #NautilusQueryEditor #NautilusQueryEditorTag > button:hover,
+.nautilus-query-editor #NautilusQueryEditorTag > button:hover {
   color: #ffffff;
   background-color: alpha(#ffffff,0.2);
   border-color: alpha(#ffffff,0.5);
   box-shadow: none;
 }
 
-.floating-bar > button.circular.flat:active, infobar.info > revealer > box button:active, infobar.question > revealer > box button:active, infobar.warning > revealer > box button:active, infobar.error > revealer > box button:active, .selection-mode headerbar button:active, headerbar.selection-mode button:active, .entry-tag > button:active, #NautilusQueryEditor #NautilusQueryEditorTag > button:active, .floating-bar > button.circular.flat:checked, infobar.info > revealer > box button:checked, infobar.question > revealer > box button:checked, infobar.warning > revealer > box button:checked, infobar.error > revealer > box button:checked, .selection-mode headerbar button:checked, headerbar.selection-mode button:checked, .entry-tag > button:checked, #NautilusQueryEditor #NautilusQueryEditorTag > button:checked {
+.floating-bar > button.circular.flat:active, infobar.info > revealer > box button:active, infobar.question > revealer > box button:active, infobar.warning > revealer > box button:active, infobar.error > revealer > box button:active, .selection-mode headerbar button:active, headerbar.selection-mode button:active, .entry-tag > button:active, #NautilusQueryEditor #NautilusQueryEditorTag > button:active, .floating-bar > button.circular.flat:checked, infobar.info > revealer > box button:checked, infobar.question > revealer > box button:checked, infobar.warning > revealer > box button:checked, infobar.error > revealer > box button:checked, .selection-mode headerbar button:checked, headerbar.selection-mode button:checked, .entry-tag > button:checked, #NautilusQueryEditor #NautilusQueryEditorTag > button:checked,
+.nautilus-query-editor #NautilusQueryEditorTag > button:active,
+.nautilus-query-editor #NautilusQueryEditorTag > button:checked {
   color: #ffffff;
   background-color: alpha(#ffffff,0.4);
   border-color: alpha(#ffffff,0.5);
   box-shadow: none;
 }
 
-.floating-bar > button.circular.flat:disabled, infobar.info > revealer > box button:disabled, infobar.question > revealer > box button:disabled, infobar.warning > revealer > box button:disabled, infobar.error > revealer > box button:disabled, .selection-mode headerbar button:disabled, headerbar.selection-mode button:disabled, .entry-tag > button:disabled, #NautilusQueryEditor #NautilusQueryEditorTag > button:disabled {
+.floating-bar > button.circular.flat:disabled, infobar.info > revealer > box button:disabled, infobar.question > revealer > box button:disabled, infobar.warning > revealer > box button:disabled, infobar.error > revealer > box button:disabled, .selection-mode headerbar button:disabled, headerbar.selection-mode button:disabled, .entry-tag > button:disabled, #NautilusQueryEditor #NautilusQueryEditorTag > button:disabled,
+.nautilus-query-editor #NautilusQueryEditorTag > button:disabled {
   color: alpha(#ffffff,0.5);
   background-color: transparent;
   border-color: alpha(#ffffff,0.4);
   box-shadow: none;
 }
 
-.floating-bar > button.circular.flat:disabled:active, infobar.info > revealer > box button:disabled:active, infobar.question > revealer > box button:disabled:active, infobar.warning > revealer > box button:disabled:active, infobar.error > revealer > box button:disabled:active, .selection-mode headerbar button:disabled:active, headerbar.selection-mode button:disabled:active, .entry-tag > button:disabled:active, #NautilusQueryEditor #NautilusQueryEditorTag > button:disabled:active, .floating-bar > button.circular.flat:disabled:checked, infobar.info > revealer > box button:disabled:checked, infobar.question > revealer > box button:disabled:checked, infobar.warning > revealer > box button:disabled:checked, infobar.error > revealer > box button:disabled:checked, .selection-mode headerbar button:disabled:checked, headerbar.selection-mode button:disabled:checked, .entry-tag > button:disabled:checked, #NautilusQueryEditor #NautilusQueryEditorTag > button:disabled:checked {
+.floating-bar > button.circular.flat:disabled:active, infobar.info > revealer > box button:disabled:active, infobar.question > revealer > box button:disabled:active, infobar.warning > revealer > box button:disabled:active, infobar.error > revealer > box button:disabled:active, .selection-mode headerbar button:disabled:active, headerbar.selection-mode button:disabled:active, .entry-tag > button:disabled:active, #NautilusQueryEditor #NautilusQueryEditorTag > button:disabled:active, .floating-bar > button.circular.flat:disabled:checked, infobar.info > revealer > box button:disabled:checked, infobar.question > revealer > box button:disabled:checked, infobar.warning > revealer > box button:disabled:checked, infobar.error > revealer > box button:disabled:checked, .selection-mode headerbar button:disabled:checked, headerbar.selection-mode button:disabled:checked, .entry-tag > button:disabled:checked, #NautilusQueryEditor #NautilusQueryEditorTag > button:disabled:checked,
+.nautilus-query-editor #NautilusQueryEditorTag > button:disabled:active,
+.nautilus-query-editor #NautilusQueryEditorTag > button:disabled:checked {
   color: @accent_bg_color;
   background-color: alpha(#ffffff,0.5);
   border-color: alpha(#ffffff,0.4);
@@ -799,7 +808,8 @@ entry progress > trough > progress {
   padding: 0;
 }
 
-.entry-tag, #NautilusQueryEditor #NautilusQueryEditorTag {
+.entry-tag, #NautilusQueryEditor #NautilusQueryEditorTag,
+.nautilus-query-editor #NautilusQueryEditorTag {
   margin: 0;
   min-height: 16px;
   border-radius: 9999px;
@@ -810,21 +820,27 @@ entry progress > trough > progress {
   padding: 2px;
 }
 
-.entry-tag:hover, #NautilusQueryEditor #NautilusQueryEditorTag:hover {
+.entry-tag:hover, #NautilusQueryEditor #NautilusQueryEditorTag:hover,
+.nautilus-query-editor #NautilusQueryEditorTag:hover {
   box-shadow: 0 2px 3px 0 rgba(0, 0, 0, 0.2), 0 3px 5px 0 rgba(0, 0, 0, 0.15);
 }
 
-:dir(ltr) .entry-tag, :dir(ltr) #NautilusQueryEditor #NautilusQueryEditorTag, #NautilusQueryEditor :dir(ltr) #NautilusQueryEditorTag {
+:dir(ltr) .entry-tag, :dir(ltr) #NautilusQueryEditor #NautilusQueryEditorTag, #NautilusQueryEditor :dir(ltr) #NautilusQueryEditorTag,
+:dir(ltr) .nautilus-query-editor #NautilusQueryEditorTag,
+.nautilus-query-editor :dir(ltr) #NautilusQueryEditorTag {
   margin-left: 3px;
   margin-right: 0;
 }
 
-:dir(rtl) .entry-tag, :dir(rtl) #NautilusQueryEditor #NautilusQueryEditorTag, #NautilusQueryEditor :dir(rtl) #NautilusQueryEditorTag {
+:dir(rtl) .entry-tag, :dir(rtl) #NautilusQueryEditor #NautilusQueryEditorTag, #NautilusQueryEditor :dir(rtl) #NautilusQueryEditorTag,
+:dir(rtl) .nautilus-query-editor #NautilusQueryEditorTag,
+.nautilus-query-editor :dir(rtl) #NautilusQueryEditorTag {
   margin-left: 0;
   margin-right: 3px;
 }
 
-.entry-tag > button, #NautilusQueryEditor #NautilusQueryEditorTag > button {
+.entry-tag > button, #NautilusQueryEditor #NautilusQueryEditorTag > button,
+.nautilus-query-editor #NautilusQueryEditorTag > button {
   min-height: 20px;
   min-width: 20px;
   padding: 0;
@@ -2348,7 +2364,10 @@ headerbar menubutton.flat > button:disabled:checked:not(.flat), headerbar button
 #NautilusFileChooser headerbar > windowhandle > box > widget > box.start > stack > widget > box > button, headerbar stackswitcher > button, headerbar splitbutton > button,
 headerbar splitbutton > button button,
 headerbar splitbutton > menubutton > button, headerbar entry button, window.background.csd > dialog-host > widget > widget > box > leaflet > headerbar.titlebar.tweak-titlebar-left button:not(.close):not(.maximize):not(.minimize), window.background.csd > contents > leaflet.unfolded > box > headerbar button:not(.close):not(.maximize):not(.minimize),
-window.background.csd > widget > leaflet.unfolded > box > headerbar button:not(.close):not(.maximize):not(.minimize) {
+window.background.csd > widget > leaflet.unfolded > box > headerbar button:not(.close):not(.maximize):not(.minimize),
+.nautilus-pathbar.linked > menubutton > button,
+.nautilus-pathbar.linked .nautilus-path-button,
+.nautilus-query-editor > menubutton > button {
   color: @headerbar_fg_color;
   background-color: transparent;
   background-image: none;
@@ -2360,7 +2379,10 @@ window.background.csd > widget > leaflet.unfolded > box > headerbar button:not(.
 #NautilusFileChooser headerbar > windowhandle > box > widget > box.start > stack > widget > box > button:backdrop, headerbar stackswitcher > button:backdrop, headerbar splitbutton > button:backdrop,
 headerbar splitbutton > button button:backdrop,
 headerbar splitbutton > menubutton > button:backdrop, headerbar entry button:backdrop, window.background.csd > dialog-host > widget > widget > box > leaflet > headerbar.titlebar.tweak-titlebar-left button:backdrop:not(.close):not(.maximize):not(.minimize), window.background.csd > contents > leaflet.unfolded > box > headerbar button:backdrop:not(.close):not(.maximize):not(.minimize),
-window.background.csd > widget > leaflet.unfolded > box > headerbar button:backdrop:not(.close):not(.maximize):not(.minimize) {
+window.background.csd > widget > leaflet.unfolded > box > headerbar button:backdrop:not(.close):not(.maximize):not(.minimize),
+.nautilus-pathbar.linked > menubutton > button:backdrop,
+.nautilus-pathbar.linked .nautilus-path-button:backdrop,
+.nautilus-query-editor > menubutton > button:backdrop {
   opacity: 0.65;
   background-color: transparent;
   background-image: none;
@@ -2372,7 +2394,10 @@ window.background.csd > widget > leaflet.unfolded > box > headerbar button:backd
 #NautilusFileChooser headerbar > windowhandle > box > widget > box.start > stack > widget > box > button:hover, headerbar stackswitcher > button:hover, headerbar splitbutton > button:hover,
 headerbar splitbutton > button button:hover,
 headerbar splitbutton > menubutton > button:hover, headerbar entry button:hover, window.background.csd > dialog-host > widget > widget > box > leaflet > headerbar.titlebar.tweak-titlebar-left button:hover:not(.close):not(.maximize):not(.minimize), window.background.csd > contents > leaflet.unfolded > box > headerbar button:hover:not(.close):not(.maximize):not(.minimize),
-window.background.csd > widget > leaflet.unfolded > box > headerbar button:hover:not(.close):not(.maximize):not(.minimize) {
+window.background.csd > widget > leaflet.unfolded > box > headerbar button:hover:not(.close):not(.maximize):not(.minimize),
+.nautilus-pathbar.linked > menubutton > button:hover,
+.nautilus-pathbar.linked .nautilus-path-button:hover,
+.nautilus-query-editor > menubutton > button:hover {
   color: @headerbar_fg_color;
   background-color: alpha(@headerbar_fg_color,0.1);
   background-image: none;
@@ -2383,7 +2408,10 @@ window.background.csd > widget > leaflet.unfolded > box > headerbar button:hover
 #NautilusFileChooser headerbar > windowhandle > box > widget > box.start > stack > widget > box > button:active, headerbar stackswitcher > button:active, headerbar splitbutton > button:active,
 headerbar splitbutton > button button:active,
 headerbar splitbutton > menubutton > button:active, headerbar entry button:active, window.background.csd > dialog-host > widget > widget > box > leaflet > headerbar.titlebar.tweak-titlebar-left button:active:not(.close):not(.maximize):not(.minimize), window.background.csd > contents > leaflet.unfolded > box > headerbar button:active:not(.close):not(.maximize):not(.minimize),
-window.background.csd > widget > leaflet.unfolded > box > headerbar button:active:not(.close):not(.maximize):not(.minimize) {
+window.background.csd > widget > leaflet.unfolded > box > headerbar button:active:not(.close):not(.maximize):not(.minimize),
+.nautilus-pathbar.linked > menubutton > button:active,
+.nautilus-pathbar.linked .nautilus-path-button:active,
+.nautilus-query-editor > menubutton > button:active {
   color: @headerbar_fg_color;
   background-color: alpha(@headerbar_fg_color,0.25);
   background-image: none;
@@ -2394,7 +2422,10 @@ window.background.csd > widget > leaflet.unfolded > box > headerbar button:activ
 #NautilusFileChooser headerbar > windowhandle > box > widget > box.start > stack > widget > box > button:checked, headerbar stackswitcher > button:checked, headerbar splitbutton > button:checked,
 headerbar splitbutton > button button:checked,
 headerbar splitbutton > menubutton > button:checked, headerbar entry button:checked, window.background.csd > dialog-host > widget > widget > box > leaflet > headerbar.titlebar.tweak-titlebar-left button:checked:not(.close):not(.maximize):not(.minimize), window.background.csd > contents > leaflet.unfolded > box > headerbar button:checked:not(.close):not(.maximize):not(.minimize),
-window.background.csd > widget > leaflet.unfolded > box > headerbar button:checked:not(.close):not(.maximize):not(.minimize) {
+window.background.csd > widget > leaflet.unfolded > box > headerbar button:checked:not(.close):not(.maximize):not(.minimize),
+.nautilus-pathbar.linked > menubutton > button:checked,
+.nautilus-pathbar.linked .nautilus-path-button:checked,
+.nautilus-query-editor > menubutton > button:checked {
   color: @headerbar_fg_color;
   background-color: alpha(@headerbar_fg_color,0.15);
   background-image: none;
@@ -2405,7 +2436,10 @@ window.background.csd > widget > leaflet.unfolded > box > headerbar button:check
 #NautilusFileChooser headerbar > windowhandle > box > widget > box.start > stack > widget > box > button:disabled, headerbar stackswitcher > button:disabled, headerbar splitbutton > button:disabled,
 headerbar splitbutton > button button:disabled,
 headerbar splitbutton > menubutton > button:disabled, headerbar entry button:disabled, window.background.csd > dialog-host > widget > widget > box > leaflet > headerbar.titlebar.tweak-titlebar-left button:disabled:not(.close):not(.maximize):not(.minimize), window.background.csd > contents > leaflet.unfolded > box > headerbar button:disabled:not(.close):not(.maximize):not(.minimize),
-window.background.csd > widget > leaflet.unfolded > box > headerbar button:disabled:not(.close):not(.maximize):not(.minimize) {
+window.background.csd > widget > leaflet.unfolded > box > headerbar button:disabled:not(.close):not(.maximize):not(.minimize),
+.nautilus-pathbar.linked > menubutton > button:disabled,
+.nautilus-pathbar.linked .nautilus-path-button:disabled,
+.nautilus-query-editor > menubutton > button:disabled {
   color: alpha(@headerbar_fg_color,0.35);
   background-image: none;
   background-color: transparent;
@@ -2416,7 +2450,10 @@ window.background.csd > widget > leaflet.unfolded > box > headerbar button:disab
 #NautilusFileChooser headerbar > windowhandle > box > widget > box.start > stack > widget > box > button:disabled:checked, headerbar stackswitcher > button:disabled:checked, headerbar splitbutton > button:disabled:checked,
 headerbar splitbutton > button button:disabled:checked,
 headerbar splitbutton > menubutton > button:disabled:checked, headerbar entry button:disabled:checked, window.background.csd > dialog-host > widget > widget > box > leaflet > headerbar.titlebar.tweak-titlebar-left button:disabled:checked:not(.close):not(.maximize):not(.minimize), window.background.csd > contents > leaflet.unfolded > box > headerbar button:disabled:checked:not(.close):not(.maximize):not(.minimize),
-window.background.csd > widget > leaflet.unfolded > box > headerbar button:disabled:checked:not(.close):not(.maximize):not(.minimize) {
+window.background.csd > widget > leaflet.unfolded > box > headerbar button:disabled:checked:not(.close):not(.maximize):not(.minimize),
+.nautilus-pathbar.linked > menubutton > button:disabled:checked,
+.nautilus-pathbar.linked .nautilus-path-button:disabled:checked,
+.nautilus-query-editor > menubutton > button:disabled:checked {
   color: alpha(@headerbar_fg_color,0.35);
   background-image: none;
   background-color: alpha(@headerbar_fg_color,0.06);
@@ -6537,21 +6574,27 @@ row.expander.property #NautilusFileChooser .nautilus-grid-view child.activatable
   padding: 0;
 }
 
-#NautilusQueryEditor {
+#NautilusQueryEditor,
+.nautilus-query-editor {
   padding-right: 3px;
 }
 
 #NautilusQueryEditor > image,
 #NautilusQueryEditor > box,
-#NautilusQueryEditor > text {
+#NautilusQueryEditor > text,
+.nautilus-query-editor > image,
+.nautilus-query-editor > box,
+.nautilus-query-editor > text {
   margin: 0;
 }
 
-#NautilusQueryEditor #NautilusQueryEditorTag > button {
+#NautilusQueryEditor #NautilusQueryEditorTag > button,
+.nautilus-query-editor #NautilusQueryEditorTag > button {
   margin: 0;
 }
 
-#NautilusQueryEditor > menubutton > button {
+#NautilusQueryEditor > menubutton > button,
+.nautilus-query-editor > menubutton > button {
   min-width: 24px;
   min-height: 24px;
   margin: 0;
@@ -6559,7 +6602,10 @@ row.expander.property #NautilusFileChooser .nautilus-grid-view child.activatable
   border-radius: 9999px;
 }
 
-#NautilusPathBar {
+/* Nautilus 50 uses CSS classes; .linked keeps capsule rounding above the
+   generic linked-button rules while older versions retain their widget IDs. */
+#NautilusPathBar,
+.nautilus-pathbar.linked {
   border-radius: 9999px;
   margin: 0;
   padding: 3px;
@@ -6570,34 +6616,41 @@ row.expander.property #NautilusFileChooser .nautilus-grid-view child.activatable
   border: none;
 }
 
-#NautilusPathBar:backdrop {
+#NautilusPathBar:backdrop,
+.nautilus-pathbar.linked:backdrop {
   background-color: alpha(@headerbar_fg_color,0.1);
   background-image: none;
   border: none;
   box-shadow: none;
 }
 
-#NautilusPathBar #NautilusPathButton {
+#NautilusPathBar #NautilusPathButton,
+.nautilus-pathbar.linked .nautilus-path-button {
   margin: 0;
   border-radius: 9999px;
   min-height: 24px;
   padding: 3px 6px;
 }
 
-#NautilusPathBar #NautilusPathButton.current-dir {
+#NautilusPathBar #NautilusPathButton.current-dir,
+.nautilus-pathbar.linked .nautilus-path-button.current-dir {
   color: @headerbar_fg_color;
 }
 
-#NautilusPathBar #NautilusPathButton.current-dir:hover, #NautilusPathBar #NautilusPathButton.current-dir:active {
+#NautilusPathBar #NautilusPathButton.current-dir:hover, #NautilusPathBar #NautilusPathButton.current-dir:active,
+.nautilus-pathbar.linked .nautilus-path-button.current-dir:hover,
+.nautilus-pathbar.linked .nautilus-path-button.current-dir:active {
   background: none;
   box-shadow: none;
 }
 
-#NautilusPathBar > menubutton {
+#NautilusPathBar > menubutton,
+.nautilus-pathbar.linked > menubutton {
   margin: 0;
 }
 
-#NautilusPathBar > menubutton > button {
+#NautilusPathBar > menubutton > button,
+.nautilus-pathbar.linked > menubutton > button {
   min-height: 24px;
   min-width: 24px;
   padding: 3px;
