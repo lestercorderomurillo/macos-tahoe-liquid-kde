@@ -271,6 +271,65 @@ def test_native_launcher_popup_presets(repo, tmp_path, monkeypatch, launcher_pop
         runtime.cleanup()
 
 
+def test_dock_applets_follow_panel_thickness(repo, tmp_path, launcher_popup_module):
+    widgets = repo / 'src/offline/plasmoids'
+    for widget in ('launcher', 'trashcan'):
+        source = (widgets / f'org.kde.mac-tahoe-liquid-kde.{widget}/contents/ui/main.qml').read_text()
+        hints = re.findall(r'^    Layout\.(?:fillWidth|fillHeight|minimumWidth|maximumWidth|minimumHeight|maximumHeight):.*$', source, re.MULTILINE)
+        assert hints, f'{widget} has no panel layout hints'
+        assert 'Plasmoid.constraintHints: Plasmoid.CanFillArea' in source
+        qml = """import QtQuick
+import QtQuick.Layouts
+import org.kde.plasma.core as PlasmaCore
+Item {
+    id: root
+    width: 600; height: 300
+    QtObject { id: plasmoid; property int formFactor: PlasmaCore.Types.Horizontal }
+    GridLayout {
+        id: panel
+        width: vertical ? 96 : 500
+        height: vertical ? 500 : 96
+        property bool vertical: false
+        columns: vertical ? 1 : 2
+        rows: vertical ? 2 : 1
+        Item {
+            id: applet
+            implicitWidth: 32; implicitHeight: 32
+            HINTS
+        }
+        Item { Layout.fillWidth: true; Layout.fillHeight: true }
+    }
+    property int phase: 0
+    Timer {
+        interval: 10; repeat: true; running: true
+        onTriggered: {
+            const thickness = panel.vertical ? panel.width : panel.height;
+            if (Math.abs(applet.width - thickness) > 0.01 || Math.abs(applet.height - thickness) > 0.01) {
+                console.error("DOCK_CELL_FAILED", root.phase, applet.width, applet.height, thickness);
+                Qt.exit(1); return;
+            }
+            root.phase++;
+            if (root.phase === 1) panel.height = 48;
+            else if (root.phase === 2) panel.height = 128;
+            else if (root.phase === 3) {
+                plasmoid.formFactor = PlasmaCore.Types.Vertical;
+                panel.vertical = true;
+            } else if (root.phase === 4) panel.width = 32;
+            else if (root.phase === 5) panel.width = 64;
+            else { console.log("DOCK_CELL_OK"); Qt.exit(0); }
+        }
+    }
+}
+""".replace('HINTS', '\n'.join(hints).replace('Plasmoid.formFactor', 'plasmoid.formFactor'))
+        path = tmp_path / f'{widget}.qml'
+        path.write_text(qml)
+        result = subprocess.run([str(launcher_popup_module.parent / 'dockgeometryprobe'), str(path)],
+            env=dict(os.environ, QT_QPA_PLATFORM='offscreen', QT_QUICK_BACKEND='software',
+                     QT_FORCE_STDERR_LOGGING='1'), capture_output=True, text=True, timeout=45)
+        assert result.returncode == 0, result.stdout + result.stderr
+        assert 'DOCK_CELL_OK' in result.stdout + result.stderr
+
+
 @pytest.mark.parametrize("scale", [1, 1.25, 1.5, 1.75, 2, 2.5, 3])
 def test_custom_dock_icons_share_task_frame_geometry(repo, tmp_path, launcher_popup_module, scale):
     """Compare the shared applet icon with the actual task iconBox QML."""

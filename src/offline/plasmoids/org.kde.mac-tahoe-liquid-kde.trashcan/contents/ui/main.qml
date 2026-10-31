@@ -8,6 +8,7 @@
 pragma ComponentBehavior: Bound
 
 import QtQuick
+import QtQuick.Layouts
 
 import org.kde.plasma.plasmoid
 import org.kde.plasma.core as PlasmaCore
@@ -19,6 +20,16 @@ import org.kde.mac.tahoe.launcher as NativeLauncher
 
 PlasmoidItem {
     id: root
+
+    // Reserve a full-thickness square cell, like an icons-only task. Plasma's
+    // default applet sizing otherwise caps standalone icons independently.
+    Plasmoid.constraintHints: Plasmoid.CanFillArea
+    Layout.fillWidth: Plasmoid.formFactor === PlasmaCore.Types.Vertical
+    Layout.fillHeight: Plasmoid.formFactor === PlasmaCore.Types.Horizontal
+    Layout.minimumWidth: Plasmoid.formFactor === PlasmaCore.Types.Horizontal ? height : 0
+    Layout.maximumWidth: Plasmoid.formFactor === PlasmaCore.Types.Horizontal ? height : Infinity
+    Layout.minimumHeight: Plasmoid.formFactor === PlasmaCore.Types.Vertical ? width : 0
+    Layout.maximumHeight: Plasmoid.formFactor === PlasmaCore.Types.Vertical ? width : Infinity
 
     readonly property bool inPanel: (Plasmoid.location === PlasmaCore.Types.TopEdge
         || Plasmoid.location === PlasmaCore.Types.RightEdge

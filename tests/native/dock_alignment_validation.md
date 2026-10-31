@@ -41,8 +41,19 @@ and launcher presets use the shared component; no backend ABI changed.
   `geometry.log` and `render.log`. Guest stopped after checks.
 - `git diff --check` passed in both source checkouts.
 
-These checks exercise rendered icon cells and dynamic bounds rather than a
-complete installed Dock or pointer-driven drag sequence. They do not establish
-all monitor, GPU, resolution or distro combinations. Exact-commit CI and
+The installed-Dock publication probe exposed an additional allocation issue:
+Plasma allocated 52-pixel applets beside a 68-pixel task manager. The final
+applets request `CanFillArea` and a square cell matching panel thickness.
+An executable QtQuick GridLayout regression checks resizing and orientation
+changes using their production layout expressions (one test, both applets).
+The installed Golden Gate Dock then passed 112 live combinations: seven scale
+factors, four panel edges and 32/48/68/96 logical pixel panel sizes. Six final
+light/dark frames at 1×/1.5×/2× were reviewed; artifacts and recorded geometry
+are in `/tmp/dock115-live-final`. Earlier undersized publication frames were
+rejected and are not used as release screenshots. The popup regressions were
+rerun after the root-layout change: eight passed.
+
+These checks do not establish all monitor, GPU, resolution or distro
+combinations or pointer-driven drag sequences. Exact-commit CI and
 publication captures are separate release gates. Unrelated Downloads and
 battery changes are excluded from the isolated release candidate.
