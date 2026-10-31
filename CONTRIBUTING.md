@@ -34,23 +34,50 @@ cd macos-tahoe-liquid-kde
 
 ### Installer storage maintenance
 
-After a verified update, both installers ask Git to perform maintenance only
-when its own thresholds require it. `./installer --free-space` (also available
-through `./install`) requests a full, ordinary Git repack and reports the actual
-allocated space recovered. It does not launch an installation or query releases.
-Golden Gate also retires its unused prepared sources after a replacement is
-ready, preserving snapshots still used by another installer.
+Both installers maintain their source storage on ordinary launches, including
+launches after a manual `git pull`. `./installer --free-space` (also available
+through `./install`) runs maintenance explicitly and reports allocated bytes
+recovered without installing or updating either checkout. It may verify release
+metadata online; `MAC_TAHOE_NO_UPDATE_CHECK=true` forbids these queries.
 
-Maintenance preserves `.git`, commits, branches, tags, stashes, reflogs, index
-contents, conflict-resolution caches and working files. It runs only packing
-tasks, never garbage collection, pruning, reflog expiry or prefetch, even when
-local Git settings enable those tasks. Linked worktrees and shared object stores
-are left alone; a maintenance failure never prevents an otherwise valid update.
-Compaction needs temporary disk space and may recover little from an already
-packed clone. Historical assets referenced by retained commits remain stored;
-use a new shallow clone when a smaller history is desired, after saving local
-work. Archives have no Git history to compact. No installed desktop assets,
-settings, uninstall backups or arbitrary build directories are removed.
+Only a clean, independent canonical clone at an exactly verified published
+release can retire historical file caches. VERSION guides release ordering;
+the published tag, commit and Git ancestry establish identity. Uncommitted,
+staged, untracked, deleted or divergent work, private recovery objects, stashes,
+private tags, active local branches, explicit source overrides, worktrees and
+shared stores prevent this conversion. A newer or equal unpublished version is
+never replaced. Ignored local files also block an update that would overwrite
+them. Update fetches suppress uncontrolled Git auto-maintenance.
+
+Maintenance keeps `.git`, the complete commit/tree graph, canonical tags,
+main/dev positions, current branch snapshots and small historical sources.
+Large obsolete files proven reachable from the published release become a
+`blob:none` partial-clone cache backed by canonical origin. Historical lookups
+can download those files again; ordinary main/dev pulls retain full ancestry,
+including merges based on old releases, without refetching every old asset.
+Only older-version branches already merged into the verified release are
+retired. Active remote work remains. Retired reference IDs and original local
+branch reflogs accumulate in `.git/tahoe-maintenance-journal.json`; recover a
+branch with `git branch <name> <recorded-object-id>`.
+
+Git writer locks, durable replacement packs/configuration, ref comparisons and
+concurrent-state checks protect other processes. Unknown/private objects are
+never classified as cache, and caches in new concurrent packs are not removed.
+No reflog expiry, garbage collection or forced object pruning is used. A failed
+maintenance run never blocks installation. Offline/unverified/development
+sources receive only ordinary packing, preserving all their objects and refs.
+Repacking needs temporary space; savings depend on the history and active tips.
+Set `git config tahoe.maintenance compact` to retain all locally available
+historical files, or `git config tahoe.maintenance off` to disable maintenance.
+To materialize previously evicted history, use
+`git fetch --refetch --no-filter origin`; historical lookups also hydrate it.
+
+Golden Gate retires unused prepared sources and interrupted downloads only
+after a replacement is ready, with leases protecting running installers.
+Verified Rounded Corners downloads and disposable copy staging are cleaned by
+their owning steps. Native builds reuse their component build location.
+Desktop assets, settings, uninstall/browser recovery backups, arbitrary
+untracked folders, developer VM images and capture evidence are preserved.
 
 For the focused dinit integration probe, build and run the official Artix image
 with dinit as PID 1 and a real cron daemon. The repository mount stays read-only;

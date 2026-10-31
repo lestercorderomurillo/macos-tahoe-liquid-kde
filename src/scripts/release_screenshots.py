@@ -88,13 +88,14 @@ def visual_tree(repo: Path, ref: str) -> str:
         path = raw_path.decode()
         if (path == 'VERSION' or path.endswith('.md') or path.startswith(('tests/', 'src/screenshots/', '.github/'))
                 or path in ('src/scripts/release_screenshots.py', 'src/scripts/release_screenshots_cli.py',
-                            'src/scripts/repository_maintenance.py')):
+                            'src/scripts/repository_maintenance.py', 'src/scripts/repository_history.py',
+                            'src/scripts/repository_cache.py')):
             continue
         if path == 'src/scripts/cli.py':
             module = ast.parse(blob(repo, ref, path))
             module.body = [node for node in module.body if not (
                 isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)) and
-                node.name in ('auto_update_and_reexec', '_repo_is_clean_git_checkout'))]
+                node.name in ('auto_update_and_reexec', '_update_published_checkout', '_repo_is_clean_git_checkout', '_git'))]
             content = ast.dump(module, include_attributes=False).encode()
         elif path in ('install', 'installer'):
             module = ast.parse(blob(repo, ref, path))

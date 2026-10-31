@@ -1,4 +1,4 @@
-"""Space maintenance without discarding source history or recovery objects.
+"""Space maintenance preserving source ancestry and local recovery data.
 
 SPDX-License-Identifier: GPL-3.0-or-later
 """
@@ -24,7 +24,7 @@ def disk_usage(directory: Path) -> int:
 
 
 def compact_repository(repository: Path, *, automatic: bool = False) -> dict:
-    """Let Git repack its objects; never expire reflogs, prune or change refs.
+    """Retire verified public file caches, otherwise only repack safely.
 
     Automatic maintenance uses Git's own thresholds. Explicit maintenance
     forces a normal repack, without the CPU/memory cost of --aggressive.
@@ -49,7 +49,20 @@ def compact_repository(repository: Path, *, automatic: bool = False) -> dict:
         if top.returncode or Path(top.stdout.strip()).resolve() != repository:
             result["reason"] = "Not the root of a Git checkout."
             return result
-        before = disk_usage(git_dir) if not automatic else 0
+        policy = subprocess.run(command + ['config', '--get', 'tahoe.maintenance'],
+                                env=env, capture_output=True, text=True, timeout=15)
+        if policy.stdout.strip() == 'off':
+            result['reason'] = 'Git maintenance disabled by local configuration.'
+            return result
+        before = disk_usage(git_dir)
+        from repository_cache import trim_published_cache
+        trimmed = trim_published_cache(repository, automatic=automatic)
+        result['cache'] = trimmed
+        if trimmed['status'] == 'ok' or trimmed['reason'] == 'unchanged-object-cache':
+            after = disk_usage(git_dir)
+            result.update(status='ok', before_bytes=before, after_bytes=after,
+                          reclaimed_bytes=max(0, before - after))
+            return result
         # Never use gc: even with --no-prune it expires other recovery caches.
         # Explicit tasks exclude gc, reflog-expire, rerere-gc and prefetch,
         # regardless of the user's enabled maintenance tasks.
@@ -97,10 +110,10 @@ def main(argv=None) -> int:
             if result["status"] == "skipped":
                 print(tr(result["reason"]))
             else:
-                print(tr('Recovered {size} MiB. Git history and recovery data were preserved.',
+                print(tr('Recovered {size} MiB. Git ancestry and local recovery data were preserved.',
                          size=f'{result["reclaimed_bytes"] / 1024**2:.1f}'))
     if not args.auto:
-        print(tr('Files still referenced by Git history remain; cleanup does not remove older commits.'))
+        print(tr('Published historical files may download again on demand; current source and local work stay available.'))
     return int(failed)
 
 

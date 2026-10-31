@@ -29,6 +29,8 @@ def test_console_maintenance_preserves_visual_fingerprint_but_ui_changes_do_not(
     scripts.mkdir(parents=True)
     localization = scripts / 'localization.py'
     localization.write_text('_ES = {"Install": "Instalar"}\n')
+    cli = scripts / 'cli.py'
+    cli.write_text('def _git():\n    return "old command"\ndef visible_label():\n    return "Install"\n')
     before = commit(tmp_path)
     branch = ('if sys.argv[1:] == ["--free-space"]:\n'
               '    from repository_maintenance import main\n'
@@ -37,6 +39,9 @@ def test_console_maintenance_preserves_visual_fingerprint_but_ui_changes_do_not(
               '    from repository_maintenance import main\n'
               '    main(["--auto"])\n')
     (scripts / 'repository_maintenance.py').write_text('# console-only Git maintenance\n')
+    (scripts / 'repository_history.py').write_text('# console-only Git history policy\n')
+    (scripts / 'repository_cache.py').write_text('# console-only published blob cache\n')
+    cli.write_text('def _git():\n    return "safe command"\ndef visible_label():\n    return "Install"\n')
     localization.write_text('_ES = {"Install": "Instalar", "Compacting Git storage: {path}": "Compactando: {path}"}\n')
     installer.write_text(branch + baseline)
     after = commit(tmp_path)
@@ -48,6 +53,10 @@ def test_console_maintenance_preserves_visual_fingerprint_but_ui_changes_do_not(
     localization.write_text('_ES = {"Install": "New visible label"}\n')
     changed_label = commit(tmp_path)
     assert shots.visual_tree(tmp_path, before) != shots.visual_tree(tmp_path, changed_label)
+    localization.write_text('_ES = {"Install": "Instalar"}\n')
+    cli.write_text('def _git():\n    return "safe command"\ndef visible_label():\n    return "Changed label"\n')
+    changed_cli_ui = commit(tmp_path)
+    assert shots.visual_tree(tmp_path, before) != shots.visual_tree(tmp_path, changed_cli_ui)
 
 
 @pytest.fixture

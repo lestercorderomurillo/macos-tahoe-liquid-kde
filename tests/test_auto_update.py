@@ -52,7 +52,7 @@ def releases(tmp_path, monkeypatch):
 
 @pytest.mark.parametrize('state', ['clean', 'modified', 'staged', 'untracked', 'deleted',
                                   'local-commit', 'equal', 'newer', 'invalid', 'offline',
-                                  'mismatch', 'fetch-failed', 'disabled'])
+                                  'mismatch', 'fetch-failed', 'disabled', 'explicit'])
 def test_version_update_preserves_development_work(releases, monkeypatch, state):
     local, remote, old, new, fetches, restarts = releases
     if state in ('modified', 'staged'):
@@ -76,6 +76,9 @@ def test_version_update_preserves_development_work(releases, monkeypatch, state)
         git(remote, 'tag', '-f', 'v0.61.10', old)
     elif state == 'fetch-failed':
         git(remote, 'tag', '-d', 'v0.61.10')
+    elif state == 'explicit':
+        monkeypatch.setenv('GOLDEN_GATE_TAHOE_SOURCE', str(local))
+        monkeypatch.setattr(cli, 'fetch_latest_release', lambda: pytest.fail('development network check'))
     elif state == 'disabled':
         monkeypatch.setenv('MAC_TAHOE_NO_UPDATE_CHECK', 'true')
         monkeypatch.setattr(cli, 'fetch_latest_release', lambda: pytest.fail('network check'))
@@ -106,6 +109,22 @@ def test_edit_during_fetch_prevents_update(releases, monkeypatch):
     cli.auto_update_and_reexec([], prog='installer')
     assert git(local, 'rev-parse', 'HEAD') == old
     assert (local / 'installer').read_text() == '# concurrent edit\n'
+    assert not restarts
+
+
+def test_update_preserves_an_ignored_file_that_the_new_release_wants_to_track(releases):
+    local, remote, old, new, fetches, restarts = releases
+    private = local / 'notes.local'
+    private.write_text('private local work')
+    exclude = local / '.git/info/exclude'
+    exclude.write_text(exclude.read_text() + '\nnotes.local\n')
+    (remote / 'notes.local').write_text('new release content')
+    commit(remote, 'new tracked path')
+    git(remote, 'tag', '-f', 'v0.61.10')
+    assert git(local, 'status', '--porcelain', '--untracked-files=all') == ''
+    cli.auto_update_and_reexec([], prog='installer')
+    assert private.read_text() == 'private local work'
+    assert git(local, 'rev-parse', 'HEAD') == old
     assert not restarts
 
 
