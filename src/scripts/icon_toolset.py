@@ -24,6 +24,7 @@ from PIL import Image, ImageDraw
 
 from icon_materials import VARIANTS, prepare_source, render, render_installer
 from icon_sources import digest, inventory, unpack, validate_links
+from interface_icons import INTERFACE_ICONS
 
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -38,6 +39,7 @@ SCHEMA = 1
 SYSTEM_MENU_ICONS = frozenset({
     "computer", "preferences", "preferences-system",
     "software", "software-store", "software-store-symbolic",
+    *INTERFACE_ICONS,
 })
 
 
@@ -73,7 +75,7 @@ def installer_themes(source: Path, output: Path, style: str, tint: str, *,
         (target / "apps/256").mkdir(parents=True)
         (target / "index.theme").write_text(
             f"[Icon Theme]\nName={name}\nInherits={BASE}{'-dark' if mode == 'dark' else ''},hicolor,breeze\n"
-            "Directories=apps/256\n\n[apps/256]\nSize=256\nType=Scalable\nMinSize=32\nMaxSize=512\nContext=Applications\n")
+            "FollowsColorScheme=true\nDirectories=apps/256\n\n[apps/256]\nSize=256\nType=Scalable\nMinSize=32\nMaxSize=512\nContext=Applications\n")
         (target / "GENERATION-NOTICE.txt").write_text(
             "Generated from the bundled MacTahoe icon archive by icon-toolset.\n"
             "Original artwork retains its notices. Static material, not live refraction.\n"
@@ -178,6 +180,7 @@ def index_text(variant: str, sizes: list[int]) -> str:
     text = (f"[Icon Theme]\nName={theme_name(variant)}\n"
             "Comment=Generated application icons; small interface icons inherit the base\n"
             f"Inherits={fallback},hicolor,breeze\n"
+            "FollowsColorScheme=true\n"
             f"Directories={','.join('apps/'+str(size) for size in sizes)}\n")
     for size in sizes:
         text += f"\n[apps/{size}]\nSize={size}\nType=Fixed\nContext=Applications\n"
@@ -196,6 +199,8 @@ def build(args) -> Path:
         temp = Path(temp)
         source = temp / "source"
         unpack(args.source.resolve(), source)
+        from interface_icons import apply_interface_icons
+        apply_interface_icons(source)
         for name in (BASE, BASE + "-dark"):
             if not (source / name / "index.theme").is_file():
                 raise ValueError(f"Source archive is missing {name}/index.theme")
@@ -218,8 +223,8 @@ def build(args) -> Path:
         themes.mkdir(parents=True)
         for name in (BASE, BASE + "-dark"):
             shutil.copytree(source / name, themes / name, symlinks=True)
-        # Keep the exact base payload and its provenance gaps visible. This does
-        # not assert that a project license resolves third-party asset ownership.
+        # Keep source notices and provenance gaps visible, including the marked
+        # status palette adaptation. This does not resolve third-party ownership.
         notices = bundle / "notices"
         notices.mkdir()
         for name in ("LICENSE", "NOTICE", "LICENSING.md", "THIRD_PARTY_NOTICES.md"):
