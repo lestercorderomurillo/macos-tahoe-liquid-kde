@@ -254,6 +254,14 @@ def trim_published_cache(repository, *, automatic=False):
         with _lease(directory, plan.branch) as owner_marker:
             if _signature(root) != stable:
                 return dict(result, reason='concurrent-git-change')
+            # Snapshot complete immutable pack pairs BEFORE cataloging. A
+            # concurrent fetch/index-pack may install new private packs while
+            # cataloging; those must never enter this retirement set.
+            complete = {path.stem for path in packs.glob('pack-*.pack')
+                        if path.with_suffix('.idx').is_file()}
+            old_files = {path: _stamp(path) for path in packs.iterdir() if path.is_file()
+                         and (path.name.split('.', 1)[0] in complete or
+                              path.name.startswith('multi-pack-index'))}
             catalog = {}
             for line in _checked(root, 'cat-file', '--batch-all-objects',
                                  '--batch-check=%(objectname) %(objecttype) %(objectsize)').splitlines():
@@ -263,6 +271,7 @@ def trim_published_cache(repository, *, automatic=False):
                       _checked(root, 'rev-list', '--objects', '--missing=print', proof.commit).splitlines()}
             keep = set(catalog) - public
             protected_tips = set()
+            required_tips = set()
             keep.update(oid for oid, (kind, size) in catalog.items() if kind == 'blob' and size <= SMALL_BLOB)
             retired = {change.name for change in plan.changes}
             for ref in plan.refs:
@@ -270,22 +279,38 @@ def trim_published_cache(repository, *, automatic=False):
                     tree = git(root, 'ls-tree', '-r', ref)
                     if tree.returncode:
                         raise ValueError('Cannot protect a branch snapshot')
-                    protected_tips.update(line.split()[2] for line in tree.stdout.splitlines())
-            protected_tips.update(line.split()[2] for line in _checked(root, 'ls-tree', '-r', 'HEAD').splitlines())
-            # Gitlinks name submodule commits, not objects in this store.
-            protected_tips -= {line.split()[2] for ref in ['HEAD', *plan.refs] if ref == 'HEAD' or
-                ref.startswith(('refs/heads/', 'refs/remotes/')) for line in
-                git(root, 'ls-tree', '-r', ref).stdout.splitlines() if line.startswith('160000 ')}
-            if protected_tips - set(catalog):
+                    objects = {line.split()[2] for line in tree.stdout.splitlines() if not line.startswith('160000 ')}
+                    protected_tips.update(objects)
+                    if ref.startswith('refs/heads/'):
+                        required_tips.update(objects)
+            required_tips.update(line.split()[2] for line in _checked(root, 'ls-tree', '-r', 'HEAD').splitlines()
+                                 if not line.startswith('160000 '))
+            protected_tips.update(required_tips)
+            # Remote-only branches are metadata caches, not checked-out work.
+            # Protect all their locally present files without forcing absent
+            # filtered blobs online or blocking maintenance after every fetch.
+            if required_tips - set(catalog):
                 return dict(result, reason='branch-snapshot-not-local')
             keep.update(protected_tips)
             # Avoid lazy-fetching a currently absent branch snapshot.
             metadata = {oid for oid, (kind, size) in catalog.items() if oid in public and kind != 'blob'}
+            # Retain the existing promise classification of fetched metadata.
+            # Remote-only trees may already promise absent blobs; repacking
+            # those trees as ordinary objects would make fsck report damage.
+            for marker in [path for path in old_files if path.suffix == '.promisor']:
+                with marker.with_suffix('.idx').open('rb') as index:
+                    listed = git(root, 'show-index', stdin=index)
+                if listed.returncode:
+                    raise ValueError('Cannot inspect existing promised metadata')
+                for line in listed.stdout.splitlines():
+                    oid = line.split()[1]
+                    if oid in catalog and catalog[oid][0] != 'blob':
+                        metadata.add(oid)
             keep.intersection_update(catalog)
+            keep.difference_update(metadata)
             evict = set(catalog) - metadata - keep
             if any(catalog[oid][0] != 'blob' or oid not in public for oid in evict):
                 raise ValueError('Attempted to evict an unverified object')
-            old_files = {path: _stamp(path) for path in packs.iterdir() if path.is_file()}
             original_config = (directory / 'config').read_text()
             journal = {'schema': 1, 'repository': project, 'commit': proof.commit,
                        'version': proof.version, 'config_before': original_config,
@@ -364,7 +389,9 @@ def trim_published_cache(repository, *, automatic=False):
                     if path.name.startswith('multi-pack-index') and path.exists() and _stamp(path) == stamp:
                         path.unlink()
                 for path, stamp in old_files.items():
-                    if (path.name.split('.', 1)[0] not in new_prefixes
+                    prefix = path.name.split('.', 1)[0]
+                    if (prefix not in new_prefixes
+                            and not (packs / (prefix + '.keep')).exists()
                             and re.fullmatch(r'pack-[0-9a-f]{40}\.(?:pack|idx|rev|bitmap|promisor|mtimes)', path.name)
                             and path.exists() and _stamp(path) == stamp):
                         path.unlink()

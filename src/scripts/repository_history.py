@@ -55,12 +55,12 @@ class HistoryPlan:
     frontiers: list[str] = field(default_factory=list)
 
 
-def git(repository, *args, input=None):
+def git(repository, *args, input=None, stdin=None):
     env = {key: value for key, value in os.environ.items() if not key.startswith('GIT_')}
     env['GIT_OPTIONAL_LOCKS'] = '0'
     env['GIT_NO_LAZY_FETCH'] = '1'
     return subprocess.run(['git', '-c', 'maintenance.auto=false', '-c', 'gc.auto=0',
-                           '-C', str(repository), *args], input=input, env=env,
+                           '-C', str(repository), *args], input=input, stdin=stdin, env=env,
                           encoding='utf-8', errors='surrogateescape', capture_output=True,
                           timeout=120, check=False)
 
@@ -123,6 +123,10 @@ def _inspect(root, directory, published, plan):
         return reject('not-checkout-root', 'unsupported')
     if git(root, 'config', '--get', 'extensions.refStorage').stdout.strip() not in ('', 'files'):
         return reject('unsupported-ref-storage', 'unsupported')
+    partial = git(root, 'config', '--get', 'extensions.partialClone').stdout.strip()
+    filtering = git(root, 'config', '--get', 'remote.origin.partialclonefilter').stdout.strip()
+    if partial not in ('', 'origin') or filtering not in ('', 'blob:none') or (partial and not filtering):
+        return reject('unsupported-partial-clone-filter', 'unsupported')
     if git(root, 'config', '--type=bool', '--get', 'extensions.preciousObjects').stdout.strip() == 'true':
         return reject('precious-objects')
     if any((directory / path).exists() for path in (
@@ -205,7 +209,8 @@ def _inspect(root, directory, published, plan):
         if path.is_file():
             for record in path.read_text(errors='surrogateescape').splitlines():
                 object_id = record.split('\t', 1)[0]
-                if not OID.fullmatch(object_id) or not ancestor(object_id, published.commit):
+                remote_cache = name == 'FETCH_HEAD' and object_id in canonical.values()
+                if not OID.fullmatch(object_id) or not (remote_cache or ancestor(object_id, published.commit)):
                     return reject('unpublished-recovery-ref')
 
     for name, object_id in refs.items():
@@ -269,7 +274,14 @@ def _inspect(root, directory, published, plan):
                 if line.startswith(('unreachable ', 'dangling ')) and len(line.split()) == 3}
     # fsck stops traversal at promisor objects and can label their already
     # public ancestors unreachable. Only canonical reachability proves cache.
-    if checked.returncode or recovery - public:
+    remote_roots = [object_id for name, object_id in refs.items()
+                    if name.startswith('refs/remotes/origin/') and object_id in available
+                    and canonical.get('refs/heads/' + name.removeprefix('refs/remotes/origin/')) == object_id]
+    reachable_remote = {line.split()[0].removeprefix('?') for line in
+        value('rev-list', '--objects', '--missing=print', published.commit, *remote_roots).splitlines()}
+    # Promisor reachability may also stop at an active canonical remote tip.
+    # Its available objects stay local and are NOT eligible for cache eviction.
+    if checked.returncode or recovery - (public | reachable_remote):
         return reject('unreferenced-recovery-objects')
     plan.mode, plan.reason = 'installation', 'verified-clean-published-source'
     # No shallow boundary: retain the complete commit/tree graph.

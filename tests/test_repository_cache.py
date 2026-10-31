@@ -356,3 +356,47 @@ def test_packing_a_converted_development_clone_preserves_private_recovery(histor
     assert git(root, 'cat-file', '-p', lost) == 'private dangling data'
     assert old_public not in available(root)
     git(root, 'fsck', '--full')
+
+
+def test_filtered_unmerged_remote_work_does_not_block_later_cache_cleanup(history):
+    root, remote, release = history
+    assert cache.trim_published_cache(root)['status'] == 'ok'
+    git(remote, 'switch', '-c', 'other-agent', 'v1.0.8')
+    (remote / 'new-agent-asset').write_bytes(os.urandom(256 * 1024))
+    git(remote, 'add', '.')
+    git(remote, 'commit', '-qm', 'unpublished remote work')
+    agent = git(remote, 'rev-parse', 'HEAD')
+    blob = git(remote, 'rev-parse', 'HEAD:new-agent-asset')
+    git(remote, 'switch', 'main')
+    release(9)
+    git(root, 'pull', '--ff-only')
+    old9 = git(remote, 'rev-parse', 'HEAD:asset')
+    release(10)
+    git(root, 'pull', '--ff-only')
+    assert blob not in available(root)
+    assert old9 in available(root)
+    result = cache.trim_published_cache(root)
+    assert result['status'] == 'ok', result
+    assert old9 not in available(root)
+    assert blob not in available(root)
+    assert git(root, 'rev-parse', 'origin/other-agent') == agent
+    git(root, 'fsck', '--full')
+
+
+def test_pack_created_after_catalog_is_not_retired(history, monkeypatch):
+    root, remote, release = history
+    original = cache._checked
+    private = None
+    def concurrent(root, *args, **kw):
+        nonlocal private
+        result = original(root, *args, **kw)
+        if args[:2] == ('cat-file', '--batch-all-objects') and private is None:
+            private = git(root, 'hash-object', '-w', '--stdin', input='new concurrent private data')
+            git(root, 'pack-objects', str(root / '.git/objects/pack/pack'), input=private + '\n')
+            git(root, 'prune-packed')
+        return result
+    monkeypatch.setattr(cache, '_checked', concurrent)
+    result = cache.trim_published_cache(root)
+    assert result['status'] == 'ok', result
+    assert git(root, 'cat-file', '-p', private) == 'new concurrent private data'
+    git(root, 'fsck', '--full')
