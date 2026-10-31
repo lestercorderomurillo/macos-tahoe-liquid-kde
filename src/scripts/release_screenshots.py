@@ -98,12 +98,13 @@ def visual_tree(repo: Path, ref: str) -> str:
             content = ast.dump(module, include_attributes=False).encode()
         elif path in ('install', 'installer'):
             module = ast.parse(blob(repo, ref, path))
-            # This branch exits before loading the wizard and is reachable only
-            # through the explicit console maintenance command. Keep every
-            # other entry-point statement in the visual fingerprint.
-            maintenance_test = ast.dump(ast.parse('sys.argv[1:] == ["--free-space"]', mode='eval').body)
+            # These branches maintain storage before the wizard is loaded.
+            # Keep every other entry-point statement in the visual fingerprint.
+            maintenance_tests = {ast.dump(ast.parse(test, mode='eval').body) for test in (
+                'sys.argv[1:] == ["--free-space"]',
+                'os.environ.get("MAC_TAHOE_UPDATED") == "1"')}
             module.body = [node for node in module.body if not (
-                isinstance(node, ast.If) and ast.dump(node.test) == maintenance_test)]
+                isinstance(node, ast.If) and ast.dump(node.test) in maintenance_tests)]
             content = ast.dump(module, include_attributes=False).encode()
         elif path == 'src/scripts/localization.py':
             module = ast.parse(blob(repo, ref, path))

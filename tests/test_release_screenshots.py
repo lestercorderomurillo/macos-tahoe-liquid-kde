@@ -32,7 +32,10 @@ def test_console_maintenance_preserves_visual_fingerprint_but_ui_changes_do_not(
     before = commit(tmp_path)
     branch = ('if sys.argv[1:] == ["--free-space"]:\n'
               '    from repository_maintenance import main\n'
-              '    raise SystemExit(main([]))\n')
+              '    raise SystemExit(main([]))\n'
+              'if os.environ.get("MAC_TAHOE_UPDATED") == "1":\n'
+              '    from repository_maintenance import main\n'
+              '    main(["--auto"])\n')
     (scripts / 'repository_maintenance.py').write_text('# console-only Git maintenance\n')
     localization.write_text('_ES = {"Install": "Instalar", "Compacting Git storage: {path}": "Compactando: {path}"}\n')
     installer.write_text(branch + baseline)

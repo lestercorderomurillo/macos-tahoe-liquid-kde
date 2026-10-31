@@ -91,7 +91,8 @@ def main(argv=None) -> int:
         result = compact_repository(repository, automatic=args.auto)
         if result["status"] == "failed":
             failed = True
-            print(f'{repository}: {result["reason"]}', file=sys.stderr)
+            print(f'{repository}: ' + tr('Git maintenance could not finish: {reason}',
+                                        reason=result["reason"]), file=sys.stderr)
         elif not args.auto:
             if result["status"] == "skipped":
                 print(tr(result["reason"]))

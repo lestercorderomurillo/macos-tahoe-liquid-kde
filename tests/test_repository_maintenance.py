@@ -168,3 +168,23 @@ def test_maintenance_entry_does_not_launch_wizard_or_query_releases(tmp_path, re
                             capture_output=True, text=True)
     assert result.returncode == 0, result.stderr
     assert result.stdout.strip() == "maintenance only"
+
+
+@pytest.mark.parametrize("entry", ["install", "installer"])
+def test_reexec_from_old_updater_maintains_storage_and_continues_after_failure(tmp_path, repo, entry):
+    import shutil
+    shutil.copyfile(repo / entry, tmp_path / entry)
+    scripts = tmp_path / "src/scripts"
+    scripts.mkdir(parents=True)
+    (scripts / "repository_maintenance.py").write_text(
+        'def main(argv):\n    assert argv == ["--auto"]\n    print("maintenance failed")\n    return 1\n')
+    ui = tmp_path / "src/installer"
+    ui.mkdir()
+    (ui / "installer_ui.py").write_text('def main(argv):\n    print("wizard opened")\n    return 0\n')
+    # Older released updaters already set this flag before re-exec. They
+    # cannot invoke our new helper before updating, so use the new entry point.
+    result = subprocess.run([os.sys.executable, str(tmp_path / entry)],
+                            env={**os.environ, "MAC_TAHOE_UPDATED": "1"},
+                            capture_output=True, text=True)
+    assert result.returncode == 0, result.stderr
+    assert result.stdout.splitlines() == ["maintenance failed", "wizard opened"]

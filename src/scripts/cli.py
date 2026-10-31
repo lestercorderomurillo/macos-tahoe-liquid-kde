@@ -502,11 +502,6 @@ def auto_update_and_reexec(argv: list[str], prog: str = "install") -> None:
         print("  https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/releases/tag/v" + latest)
         return
 
-    from repository_maintenance import compact_repository
-    # Git decides whether repacking is needed; an update never discards history.
-    maintenance = compact_repository(REPO_ROOT, automatic=True)
-    if maintenance["status"] == "failed":
-        warn(tr('Git maintenance could not finish: {reason}', reason=maintenance["reason"]))
     ok(tr('Updated to {value1} — restarting installer', value1=read_version()))
 
     # Real UID is still 0, so the re-exec'd wrapper stays root and repeats

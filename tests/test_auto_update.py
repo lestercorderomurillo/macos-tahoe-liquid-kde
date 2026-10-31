@@ -109,18 +109,6 @@ def test_edit_during_fetch_prevents_update(releases, monkeypatch):
     assert not restarts
 
 
-def test_maintenance_failure_still_restarts_verified_update(releases, monkeypatch):
-    import repository_maintenance
-    local, remote, old, new, fetches, restarts = releases
-    calls = []
-    def maintenance(root, **kw):
-        calls.append((root, kw))
-        return {"status": "failed", "reason": "disk full"}
-    monkeypatch.setattr(repository_maintenance, "compact_repository", maintenance)
-    cli.auto_update_and_reexec([], prog='installer')
-    assert calls == [(local, {"automatic": True})]
-    assert git(local, 'rev-parse', 'HEAD') == new
-    assert restarts
 
 
 @pytest.mark.parametrize('args,updates', [([], True), (['--uninstall'], False), (['--check-update'], False)])
