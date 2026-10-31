@@ -9,6 +9,12 @@
 const iconMargin = Math.round(Kirigami.Units.smallSpacing / 4);
 const labelMargin = Kirigami.Units.smallSpacing;
 
+// Panel applets use smallSpacing between their cells. Keep the same pitch
+// across applet/task boundaries; frame margins belong inside each icon cell.
+function dockSpacing() {
+    return Kirigami.Units.smallSpacing * tasks.plasmoid.configuration.iconSpacing;
+}
+
 function horizontalMargins() {
     const spacingAdjustment = (tasks.plasmoid.pluginName === "org.kde.mac.tahoe.liquid.icontasks") ? tasks.plasmoid.configuration.iconSpacing : 1
     return (taskFrame.margins.left + taskFrame.margins.right) * (tasks.vertical ? 1 : spacingAdjustment);

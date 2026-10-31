@@ -108,7 +108,11 @@ def test_install_copies_taskmanager_runtime_package(tmp_path, monkeypatch):
     failures = []
     monkeypatch.setattr(plasmoids, "fail", lambda msg: failures.append(msg))
 
+    spacing_calls = []
+    monkeypatch.setattr(plasmoids, "qdbus_call", lambda *args: spacing_calls.append(args))
     plasmoids.install()
+    assert spacing_calls == [("org.kde.plasmashell", "/PlasmaShell",
+        "org.kde.PlasmaShell.evaluateScript", plasmoids.offline("layouts/dock-spacing.js").read_text())]
 
     expected_so = fake_plugins / (
         "plasma/applets/org.kde.mac.tahoe.liquid.taskmanager.so"

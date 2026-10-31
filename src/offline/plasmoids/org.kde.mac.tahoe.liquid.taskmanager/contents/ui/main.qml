@@ -448,7 +448,7 @@ PlasmoidItem {
 
                 Layout.maximumWidth: {
                     const totalMaxWidth = children.reduce((accumulator, child) => {
-                            if (!isFinite(child.Layout.maximumWidth)) {
+                            if (!isFinite(child.Layout.maximumWidth) || child.Layout.maximumWidth <= 0) {
                                 return accumulator;
                             }
                             return accumulator + child.Layout.maximumWidth
@@ -457,7 +457,7 @@ PlasmoidItem {
                 }
                 Layout.maximumHeight: {
                     const totalMaxHeight = children.reduce((accumulator, child) => {
-                            if (!isFinite(child.Layout.maximumHeight)) {
+                            if (!isFinite(child.Layout.maximumHeight) || child.Layout.maximumHeight <= 0) {
                                 return accumulator;
                             }
                             return accumulator + child.Layout.maximumHeight
