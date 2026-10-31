@@ -78,3 +78,18 @@ system menu did not open after its scripted click, that edition was retried in
 a fresh pinned VM. Passing Tahoe frames retain their original source/profile,
 hashes and capture provenance; the combined set must pass the unmodified
 90-frame validator. No failed Golden Gate frame is filled with an older one.
+
+
+## CI validation corrections
+
+The initial exact-commit runs at `3c716001335841eb2765dcd1cea2355ff338af77`
+reported a stale collected-case badge (2024 versus 2032) and a suppressed
+QML debug-level success marker on Fedora. The latter reproduced locally with
+`QT_LOGGING_RULES='*.debug=false'`. Probe success messages now use info level;
+all geometry assertions and completion checks remain enabled.
+
+`QT_LOGGING_RULES='*.debug=false' python -m pytest -p no:cacheprovider tests/test_launcher_presets.py tests/test_static.py -k 'follow_panel_thickness or custom_dock or readme_tests_count_badge' -q`:
+nine passed. These edits affect test logging and the README count; runtime
+Dock inputs and the reviewed capture source are unchanged. Publication still
+requires successful push CI for the corrected exact release commit on both
+branches; the failed initial runs are not release evidence.

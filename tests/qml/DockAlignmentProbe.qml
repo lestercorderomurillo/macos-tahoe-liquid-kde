@@ -64,7 +64,7 @@ Item {
                     root.compare(custom.iconItem.height, 48);
                     root.compare(a.x, 8);
                     root.compare(a.y, 0);
-                    console.log("DOCK_ALIGNMENT_OK:", root.panelCases, "resize/edge/aspect cases and desktop geometry");
+                    console.info("DOCK_ALIGNMENT_OK:", root.panelCases, "resize/edge/aspect cases and desktop geometry");
                     stop();
                     Qt.exit(0);
                     return;

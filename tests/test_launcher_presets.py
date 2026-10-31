@@ -316,7 +316,7 @@ Item {
                 panel.vertical = true;
             } else if (root.phase === 4) panel.width = 32;
             else if (root.phase === 5) panel.width = 64;
-            else { console.log("DOCK_CELL_OK"); Qt.exit(0); }
+            else { console.info("DOCK_CELL_OK"); Qt.exit(0); }
         }
     }
 }
