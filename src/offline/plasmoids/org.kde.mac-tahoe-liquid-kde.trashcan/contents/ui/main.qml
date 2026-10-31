@@ -31,14 +31,14 @@ PlasmoidItem {
         vertical: Plasmoid.formFactor === PlasmaCore.Types.Vertical
     }
     Plasmoid.constraintHints: Plasmoid.CanFillArea
-    Layout.fillWidth: Plasmoid.formFactor === PlasmaCore.Types.Vertical
-    Layout.fillHeight: Plasmoid.formFactor === PlasmaCore.Types.Horizontal
-    Layout.minimumWidth: Plasmoid.formFactor === PlasmaCore.Types.Horizontal ? dockCell.size : 0
+    Layout.fillWidth: dockCell.active
+    Layout.fillHeight: dockCell.active
+    Layout.minimumWidth: Plasmoid.formFactor === PlasmaCore.Types.Horizontal ? Math.floor(dockCell.size) : 0
     Layout.preferredWidth: Plasmoid.formFactor === PlasmaCore.Types.Horizontal ? dockCell.size : -1
-    Layout.maximumWidth: Plasmoid.formFactor === PlasmaCore.Types.Horizontal ? dockCell.size : Infinity
-    Layout.minimumHeight: Plasmoid.formFactor === PlasmaCore.Types.Vertical ? dockCell.size : 0
+    Layout.maximumWidth: Plasmoid.formFactor === PlasmaCore.Types.Horizontal ? Math.ceil(dockCell.size) : Infinity
+    Layout.minimumHeight: Plasmoid.formFactor === PlasmaCore.Types.Vertical ? Math.floor(dockCell.size) : 0
     Layout.preferredHeight: Plasmoid.formFactor === PlasmaCore.Types.Vertical ? dockCell.size : -1
-    Layout.maximumHeight: Plasmoid.formFactor === PlasmaCore.Types.Vertical ? dockCell.size : Infinity
+    Layout.maximumHeight: Plasmoid.formFactor === PlasmaCore.Types.Vertical ? Math.ceil(dockCell.size) : Infinity
 
     readonly property bool inPanel: (Plasmoid.location === PlasmaCore.Types.TopEdge
         || Plasmoid.location === PlasmaCore.Types.RightEdge
