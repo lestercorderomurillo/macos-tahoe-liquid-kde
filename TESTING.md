@@ -4,8 +4,8 @@ Tahoe **v0.61.19** is the latest verified release documented here.
 The installer photographs below were captured in a disposable KDE Plasma VM
 and reviewed before publication; their hashes and original provenance remain.
 
-Git storage/update validation passed 167 focused shared checks, 130 prepared
-Golden Gate checks, 87 checks with Git 2.43 and all 95 wrapper tests. Disposable
+Git storage/update validation passed 171 focused shared checks, 134 prepared
+Golden Gate checks, 91 checks with Git 2.43 and all 95 wrapper tests. Disposable
 public clones recovered 82% (Tahoe) and 89% (Golden Gate) of Git storage while
 preserving full ancestry and local work. See the [validation report](tests/git_storage_validation.md)
 for commands, source identities, exact-commit CI gates and coverage limits.

@@ -400,3 +400,91 @@ def test_pack_created_after_catalog_is_not_retired(history, monkeypatch):
     assert result['status'] == 'ok', result
     assert git(root, 'cat-file', '-p', private) == 'new concurrent private data'
     git(root, 'fsck', '--full')
+
+
+def test_recommended_partial_clone_stays_small_through_main_and_dev_updates(history):
+    root, remote, release = history
+    partial = root.with_name('new-user')
+    subprocess.run(['git', 'clone', '-q', '--no-local', '--filter=blob:none',
+                    str(remote), str(partial)], check=True)
+    project = 'lestercorderomurillo/macos-tahoe-liquid-kde'
+    git(partial, 'remote', 'set-url', 'origin', f'https://github.com/{project}.git')
+    git(partial, 'config', f'url.file://{remote}.insteadOf', f'https://github.com/{project}.git')
+    oldest = git(remote, 'rev-parse', 'v1.0.1:asset')
+    assert oldest not in available(partial)
+    assert not (partial / '.git/shallow').exists()
+    assert git(partial, 'rev-list', '--count', 'HEAD') == '8'
+    assert cache.trim_published_cache(partial)['status'] == 'ok'
+    old8 = git(remote, 'rev-parse', 'v1.0.8:asset')
+    release(9)
+    git(partial, 'pull', '--ff-only')
+    assert cache.trim_published_cache(partial)['status'] == 'ok'
+    assert old8 not in available(partial)
+    git(partial, 'switch', '--track', 'origin/dev')
+    old9 = git(remote, 'rev-parse', 'v1.0.9:asset')
+    release(10)
+    git(partial, 'pull', '--ff-only')
+    git(partial, 'switch', 'main')
+    git(partial, 'pull', '--ff-only')
+    result = cache.trim_published_cache(partial)
+    assert result['status'] == 'ok', result
+    assert oldest not in available(partial)
+    assert old9 not in available(partial)
+    assert git(partial, 'rev-list', '--count', 'HEAD') == '10'
+    git(partial, 'fsck', '--full')
+
+
+def test_legacy_shallow_installation_migrates_without_historical_asset_downloads(history):
+    root, remote, release = history
+    legacy = root.with_name('legacy-user')
+    subprocess.run(['git', 'clone', '-q', '--no-local', '--depth=1',
+                    str(remote), str(legacy)], check=True)
+    project = 'lestercorderomurillo/macos-tahoe-liquid-kde'
+    git(legacy, 'remote', 'set-url', 'origin', f'https://github.com/{project}.git')
+    git(legacy, 'config', f'url.file://{remote}.insteadOf', f'https://github.com/{project}.git')
+    oldest = git(remote, 'rev-parse', 'v1.0.1:asset')
+    refs = git(legacy, 'show-ref')
+    logs = (legacy / '.git/logs/HEAD').read_bytes()
+    assert (legacy / '.git/shallow').exists()
+    result = cache.trim_published_cache(legacy)
+    assert result['status'] == 'ok', result
+    assert not (legacy / '.git/shallow').exists()
+    assert git(legacy, 'rev-list', '--count', 'HEAD') == '8'
+    assert oldest not in available(legacy)
+    assert git(legacy, 'show-ref') == refs
+    assert (legacy / '.git/logs/HEAD').read_bytes() == logs
+    assert git(legacy, 'config', '--get', 'remote.origin.partialclonefilter') == 'blob:none'
+    release(9)
+    git(legacy, 'pull', '--ff-only')
+    assert cache.trim_published_cache(legacy)['status'] == 'ok'
+    assert oldest not in available(legacy)
+    git(legacy, 'fsck', '--full')
+
+
+@pytest.mark.parametrize('state', ['untracked', 'unpublished-commit'])
+def test_legacy_shallow_development_source_is_not_migrated(history, monkeypatch, state):
+    root, remote, release = history
+    legacy = root.with_name('legacy-developer')
+    subprocess.run(['git', 'clone', '-q', '--no-local', '--depth=1',
+                    str(remote), str(legacy)], check=True)
+    project = 'lestercorderomurillo/macos-tahoe-liquid-kde'
+    git(legacy, 'remote', 'set-url', 'origin', f'https://github.com/{project}.git')
+    git(legacy, 'config', f'url.file://{remote}.insteadOf', f'https://github.com/{project}.git')
+    if state == 'untracked':
+        (legacy / 'agent-work').write_text('work in progress')
+    else:
+        git(legacy, '-c', 'user.name=Test', '-c', 'user.email=t@example.invalid',
+            'commit', '--allow-empty', '-qm', 'unpublished work')
+    shallow = (legacy / '.git/shallow').read_bytes()
+    config = (legacy / '.git/config').read_bytes()
+    head = git(legacy, 'rev-parse', 'HEAD')
+    original = cache._checked
+    def checked(root, *args, **kw):
+        assert args[0] != 'fetch', 'Development history must never be migrated'
+        return original(root, *args, **kw)
+    monkeypatch.setattr(cache, '_checked', checked)
+    result = cache.trim_published_cache(legacy)
+    assert result['status'] == 'skipped', result
+    assert (legacy / '.git/shallow').read_bytes() == shallow
+    assert (legacy / '.git/config').read_bytes() == config
+    assert git(legacy, 'rev-parse', 'HEAD') == head

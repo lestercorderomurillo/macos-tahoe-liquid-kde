@@ -23,7 +23,7 @@ KDE Plasma 6.6+ is required to actually exercise the desktop pieces. Most static
 ### Install / uninstall / test
 
 ```sh
-git clone https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde
+git clone --filter=blob:none https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde
 cd macos-tahoe-liquid-kde
 
 ./installer          # graphical install wizard; requests privileges when needed
@@ -33,6 +33,12 @@ cd macos-tahoe-liquid-kde
 ```
 
 ### Installer storage maintenance
+
+Recommended clones use `--filter=blob:none`: full commit ancestry is available
+while historical file contents download only when requested. Existing shallow
+clones from older instructions acquire the full ancestry through a filtered
+fetch only after the same clean, published-source audit passes; development
+checkouts remain unchanged.
 
 Both installers maintain their source storage on ordinary launches, including
 launches after a manual `git pull`. `./installer --free-space` (also available

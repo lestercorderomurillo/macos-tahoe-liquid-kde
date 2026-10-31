@@ -15,17 +15,20 @@ Linux host, Python 3.14, Git 2.55.0; disposable Git fixtures, no live installer:
 python3 -m pytest tests/test_repository_cache.py tests/test_repository_history.py tests/test_repository_maintenance.py tests/test_auto_update.py tests/test_git_process_maintenance.py tests/test_release_screenshots.py tests/test_static.py tests/test_release_update.py -q
 ```
 
-167 passed. The 130 affected updater/cache/provenance checks also passed in a
+171 passed. The 134 affected updater/cache/provenance checks also passed in a
 Golden Gate source prepared from the candidate with
 `GOLDEN_GATE_TAHOE_SOURCE=<candidate> MAC_TAHOE_NO_UPDATE_CHECK=true python3 installer --prepare`.
-Golden Gate's complete wrapper suite passed 95 tests. Collection is 2118 Tahoe
+Golden Gate's complete wrapper suite passed 95 tests. Collection is 2122 Tahoe
 tests; collection is not a claim that every conditional native check ran locally.
 
 A network-disabled, read-only KDE neon container with Git 2.43.0 passed the
-87 updater/history/cache/maintenance/Trace2 checks. The synthetic history uses
+91 updater/history/cache/maintenance/Trace2 checks. The synthetic history uses
 successive binary asset replacements, main and dev pulls, a merge from an old
 release base, repeated cleanup of hydrated promisor blobs, and historical lazy
-retrieval. Tests preserve current tips, tags, private branches/tags, stashes,
+retrieval. Fresh `--filter=blob:none` clones and legacy shallow clones also
+passed the update lifecycle: verified clean legacy releases acquire ancestry
+without downloading historical assets; development sources are not migrated.
+Tests preserve current tips, tags, private branches/tags, stashes,
 reflog-only and dangling work, index contents, edited/deleted/untracked files,
 linked worktrees, recovery journals and shared stores. Concurrent work aborts
 eviction; interrupted stages and a terminated process recover only our own
@@ -83,6 +86,6 @@ make the focused evidence independent of later documentation/commit metadata.
 | Path | SHA-256 |
 | --- | --- |
 | `src/scripts/cli.py` | `3219ecf03b8efe5ace3361cab78bcbf9315779597dfbe985a618af642aa32679` |
-| `src/scripts/repository_cache.py` | `4211d8c361ce94e457f68ce25b61d86491833d5d28d4681d8d21d32bfbfa7653` |
+| `src/scripts/repository_cache.py` | `b6fc1e63b904cd187eb73cdc63b0b7dd82365404bc45325ac8f91845be337711` |
 | `src/scripts/repository_history.py` | `f424a6ebb1c2689524202cd41a0a35ef1a86ba36f3266cde36b5ac466a1edaba` |
 | `src/scripts/repository_maintenance.py` | `e49637a96b4fe11ef3385fbfd3d85738d5a0b10ede4613c71835020210aa8da7` |

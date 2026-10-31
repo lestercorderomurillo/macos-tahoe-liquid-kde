@@ -236,7 +236,19 @@ def trim_published_cache(repository, *, automatic=False):
         plan = inspect_history(root, proof)
         if plan.mode != 'installation' or not plan.branch:
             return dict(result, reason=plan.reason)
-        # Shallow/shared/externally managed stores need their own policy.
+        # Older README instructions created shallow clones. Once the same
+        # audit proves a clean published installation, retrieve only the full
+        # ancestry/trees through Git's filtered protocol. No checkout or branch
+        # moves; private/development sources never reach this migration.
+        if (directory / 'shallow').exists():
+            _checked(root, 'fetch', '--no-tags', '--unshallow', '--filter=blob:none',
+                     'origin', 'refs/tags/v' + proof.version)
+            if _checked(root, 'rev-parse', 'FETCH_HEAD^{commit}') != proof.commit:
+                return dict(result, reason='published-history-fetch-mismatch')
+            plan = inspect_history(root, proof)
+            if plan.mode != 'installation' or not plan.branch:
+                return dict(result, reason=plan.reason)
+        # Shared or externally managed stores need their own policy.
         store = directory / 'objects'
         packs = store / 'pack'
         if ((directory / 'shallow').exists() or (packs / 'multi-pack-index.d').exists()
