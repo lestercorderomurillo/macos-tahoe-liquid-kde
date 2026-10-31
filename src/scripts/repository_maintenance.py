@@ -50,14 +50,14 @@ def compact_repository(repository: Path, *, automatic: bool = False) -> dict:
             result["reason"] = "Not the root of a Git checkout."
             return result
         before = disk_usage(git_dir) if not automatic else 0
-        # Explicit settings override even a user's prune=now or expire=now.
-        # Disable detached GC so completion and reported space are truthful.
-        operation = subprocess.run(command + [
-            "-c", "gc.reflogExpire=never", "-c", "gc.reflogExpireUnreachable=never",
-            "-c", "gc.pruneExpire=never", "-c", "gc.worktreePruneExpire=never",
-            "-c", "gc.autoDetach=false", "-c", "core.hooksPath=/dev/null",
-            "gc", "--no-prune", *(["--auto"] if automatic else []),
-        ], env=env, capture_output=True, text=True, timeout=600)
+        # Never use gc: even with --no-prune it expires other recovery caches.
+        # Explicit tasks exclude gc, reflog-expire, rerere-gc and prefetch,
+        # regardless of the user's enabled maintenance tasks.
+        operation_args = (["-c", "maintenance.autoDetach=false", "maintenance", "run", "--auto",
+                           "--task=loose-objects", "--task=incremental-repack"] if automatic else
+                          ["repack", "-a", "-d", "--keep-unreachable"])
+        operation = subprocess.run(command + operation_args,
+                                   env=env, capture_output=True, text=True, timeout=600)
         if operation.returncode:
             result.update(status="failed", reason=operation.stderr.strip())
             return result

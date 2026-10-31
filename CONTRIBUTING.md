@@ -42,8 +42,9 @@ Golden Gate also retires its unused prepared sources after a replacement is
 ready, preserving snapshots still used by another installer.
 
 Maintenance preserves `.git`, commits, branches, tags, stashes, reflogs, index
-contents and working files. It disables object pruning and reflog expiry even
-when local Git settings enable them. Linked worktrees and shared object stores
+contents, conflict-resolution caches and working files. It runs only packing
+tasks, never garbage collection, pruning, reflog expiry or prefetch, even when
+local Git settings enable those tasks. Linked worktrees and shared object stores
 are left alone; a maintenance failure never prevents an otherwise valid update.
 Compaction needs temporary disk space and may recover little from an already
 packed clone. Historical assets referenced by retained commits remain stored;

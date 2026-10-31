@@ -22,7 +22,8 @@ def commit(root, text):
 
 
 @pytest.mark.parametrize("automatic", [False, True])
-def test_gc_preserves_refs_reflogs_loose_objects_and_user_files(tmp_path, automatic):
+def test_maintenance_preserves_refs_reflogs_loose_objects_and_user_files(tmp_path, automatic, monkeypatch):
+    monkeypatch.setenv("GIT_COMMITTER_DATE", "2020-01-01T00:00:00Z")
     git(tmp_path, "init", "-q")
     first = commit(tmp_path, "first")
     git(tmp_path, "tag", "v0.0.1")
@@ -40,9 +41,23 @@ def test_gc_preserves_refs_reflogs_loose_objects_and_user_files(tmp_path, automa
     (tmp_path / "personal").write_text("untracked")
     for key in ("gc.reflogExpire", "gc.reflogExpireUnreachable", "gc.pruneExpire"):
         git(tmp_path, "config", key, "now")
-    # Ensure auto mode actually runs GC in this tiny disposable repository.
-    git(tmp_path, "config", "gc.auto", "1")
-    git(tmp_path, "config", "gc.autoPackLimit", "1")
+    git(tmp_path, "config", "gc.refs/*.reflogExpire", "now")
+    git(tmp_path, "config", "gc.refs/*.reflogExpireUnreachable", "now")
+    git(tmp_path, "config", "gc.rerereResolved", "0")
+    git(tmp_path, "config", "gc.rerereUnresolved", "0")
+    recovery = tmp_path / ".git/rr-cache" / ("a" * 40)
+    recovery.mkdir(parents=True)
+    (recovery / "preimage").write_text("conflict")
+    (recovery / "postimage").write_text("resolution")
+    os.utime(recovery / "preimage", (1, 1))
+    os.utime(recovery / "postimage", (1, 1))
+    os.utime(recovery, (1, 1))
+    # Force both safe automatic tasks, while trying to enable destructive
+    # tasks too. Explicit task selection must ignore these enabled defaults.
+    git(tmp_path, "config", "maintenance.loose-objects.auto", "-1")
+    git(tmp_path, "config", "maintenance.incremental-repack.auto", "-1")
+    for task in ("gc", "reflog-expire", "rerere-gc", "prefetch"):
+        git(tmp_path, "config", f"maintenance.{task}.enabled", "true")
     git(tmp_path, "repack", "-d")
     refs = git(tmp_path, "show-ref")
     reflogs = git(tmp_path, "reflog", "show", "--all", "--format=%H %gs")
@@ -51,6 +66,10 @@ def test_gc_preserves_refs_reflogs_loose_objects_and_user_files(tmp_path, automa
     config = (tmp_path / ".git/config").read_bytes()
     result = maintenance.compact_repository(tmp_path, automatic=automatic)
     assert result["status"] == "ok", result
+    if automatic:
+        # The second incremental run expires superseded packs; all of their
+        # objects, including unreachable objects, must remain recoverable.
+        assert maintenance.compact_repository(tmp_path, automatic=True)["status"] == "ok"
     assert git(tmp_path, "show-ref") == refs
     assert git(tmp_path, "reflog", "show", "--all", "--format=%H %gs") == reflogs
     assert git(tmp_path, "status", "--porcelain", "--untracked-files=all") == status
@@ -58,6 +77,8 @@ def test_gc_preserves_refs_reflogs_loose_objects_and_user_files(tmp_path, automa
     assert (tmp_path / "tracked").read_text() == "unstaged"
     assert (tmp_path / "personal").read_text() == "untracked"
     assert (tmp_path / ".git/config").read_bytes() == config
+    assert (recovery / "preimage").read_text() == "conflict"
+    assert (recovery / "postimage").read_text() == "resolution"
     assert git(tmp_path, "cat-file", "-p", lost) == "recover me"
     assert git(tmp_path, "cat-file", "-t", second) == "commit"
     git(tmp_path, "fsck", "--full")
