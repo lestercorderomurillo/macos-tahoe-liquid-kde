@@ -67,11 +67,18 @@ def visual_tree(repo: Path, ref: str) -> str:
     Keep runtime_tree unchanged so historical manifest hashes remain verifiable.
     Console updater and repository maintenance commands have no rendered output.
     """
-    updater_messages = {
+    console_messages = {
         'Update available: {current} → {latest}',
         'Keeping local source: changes present or not a clean git checkout',
         'Could not verify the published update — keeping the current checkout',
         'Keeping local commits: the release is not a fast-forward',
+        'Compacting Git storage: {path}',
+        'Recovered {size} MiB. Git history and recovery data were preserved.',
+        'Files still referenced by Git history remain; cleanup does not remove older commits.',
+        'Git maintenance could not finish: {reason}',
+        'No independent Git checkout (archives need no Git cleanup).',
+        'Shared object store or linked worktrees; leaving it unchanged.',
+        'Not the root of a Git checkout.',
     }
     entries = []
     for entry in subprocess.check_output(['git', '-C', str(repo), 'ls-tree', '-rz', ref]).split(b'\0'):
@@ -98,9 +105,18 @@ def visual_tree(repo: Path, ref: str) -> str:
             module.body = [node for node in module.body if not (
                 isinstance(node, ast.If) and ast.dump(node.test) == maintenance_test)]
             content = ast.dump(module, include_attributes=False).encode()
+        elif path == 'src/scripts/localization.py':
+            module = ast.parse(blob(repo, ref, path))
+            for node in ast.walk(module):
+                if isinstance(node, ast.Dict):
+                    pairs = [(key, value) for key, value in zip(node.keys, node.values)
+                             if not (isinstance(key, ast.Constant) and key.value in console_messages)]
+                    node.keys = [key for key, value in pairs]
+                    node.values = [value for key, value in pairs]
+            content = ast.dump(module, include_attributes=False).encode()
         elif path.startswith('src/scripts/locales/') and path.endswith('.json'):
             catalog = json.loads(blob(repo, ref, path))
-            content = json.dumps({k: v for k, v in catalog.items() if k not in updater_messages},
+            content = json.dumps({k: v for k, v in catalog.items() if k not in console_messages},
                                  sort_keys=True, ensure_ascii=False).encode()
         else:
             entries.append(entry)

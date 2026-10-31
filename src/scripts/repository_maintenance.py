@@ -94,7 +94,7 @@ def main(argv=None) -> int:
             print(f'{repository}: {result["reason"]}', file=sys.stderr)
         elif not args.auto:
             if result["status"] == "skipped":
-                print(result["reason"])
+                print(tr(result["reason"]))
             else:
                 print(tr('Recovered {size} MiB. Git history and recovery data were preserved.',
                          size=f'{result["reclaimed_bytes"] / 1024**2:.1f}'))
