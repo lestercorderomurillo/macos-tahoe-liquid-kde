@@ -1018,5 +1018,12 @@
   "Update available: {current} → {latest}": "Aktualisierung verfügbar: {current} → {latest}",
   "Keeping local source: changes present or not a clean git checkout": "Lokaler Quellcode wird beibehalten: Änderungen vorhanden oder kein sauberer Git-Checkout",
   "Could not verify the published update — keeping the current checkout": "Die veröffentlichte Aktualisierung konnte nicht überprüft werden — der aktuelle Checkout wird beibehalten",
-  "Keeping local commits: the release is not a fast-forward": "Lokale Commits werden beibehalten: Die Veröffentlichung erlaubt keinen Fast-Forward"
+  "Keeping local commits: the release is not a fast-forward": "Lokale Commits werden beibehalten: Die Veröffentlichung erlaubt keinen Fast-Forward",
+  "Compacting Git storage: {path}": "Git-Speicher wird komprimiert: {path}",
+  "Recovered {size} MiB. Git history and recovery data were preserved.": "{size} MiB freigegeben. Git-Verlauf und Wiederherstellungsdaten wurden beibehalten.",
+  "Files still referenced by Git history remain; cleanup does not remove older commits.": "Vom Git-Verlauf referenzierte Dateien bleiben erhalten; die Bereinigung entfernt keine älteren Commits.",
+  "Git maintenance could not finish: {reason}": "Git-Wartung konnte nicht abgeschlossen werden: {reason}",
+  "No independent Git checkout (archives need no Git cleanup).": "Kein unabhängiger Git-Checkout (Archive benötigen keine Git-Bereinigung).",
+  "Shared object store or linked worktrees; leaving it unchanged.": "Gemeinsamer Objektspeicher oder verknüpfte Arbeitsverzeichnisse; bleibt unverändert.",
+  "Not the root of a Git checkout.": "Das Verzeichnis ist nicht das Stammverzeichnis eines Git-Checkouts."
 }

@@ -1,6 +1,6 @@
 # Installer testing
 
-Tahoe **v0.61.14** is the latest verified release documented here.
+Tahoe **v0.61.17** is the latest verified release documented here.
 The installer photographs below were captured in a disposable KDE Plasma VM
 and reviewed before publication; their hashes and provenance are retained.
 

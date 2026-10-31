@@ -27,6 +27,13 @@ LANGUAGE_CODES = tuple(item["code"] for item in LANGUAGES)
 
 
 _ES = {
+    'Compacting Git storage: {path}': 'Compactando el almacenamiento de Git: {path}',
+    'Recovered {size} MiB. Git history and recovery data were preserved.': 'Se recuperaron {size} MiB. Se conservaron el historial de Git y los datos de recuperación.',
+    'Files still referenced by Git history remain; cleanup does not remove older commits.': 'Los archivos referenciados por el historial de Git se conservan; la limpieza no elimina commits antiguos.',
+    'Git maintenance could not finish: {reason}': 'No se pudo completar el mantenimiento de Git: {reason}',
+    'No independent Git checkout (archives need no Git cleanup).': 'No hay un clon independiente de Git (los archivos descargados no necesitan limpiar Git).',
+    'Shared object store or linked worktrees; leaving it unchanged.': 'El almacén de objetos es compartido o tiene árboles de trabajo vinculados; se conserva sin cambios.',
+    'Not the root of a Git checkout.': 'La carpeta no es la raíz de un clon de Git.',
     'Could not remove old Rounded Corners cache: {exc}': 'No se pudo eliminar la caché antigua de Rounded Corners: {exc}',
     "Generating icons: {completed}/{total}": "Generando iconos: {completed}/{total}",
     "Cron entries installed, but no running cron daemon could be confirmed. Enable your cron service for scheduled features.": "Se instalaron las entradas de cron, pero no se pudo confirmar que haya un servicio cron en ejecución. Activa el servicio cron para las funciones programadas.",
@@ -85,6 +92,13 @@ _ES = {
 }
 
 _ZH_CN = {
+    'Compacting Git storage: {path}': '正在压缩 Git 存储：{path}',
+    'Recovered {size} MiB. Git history and recovery data were preserved.': '已回收 {size} MiB。Git 历史记录和恢复数据已保留。',
+    'Files still referenced by Git history remain; cleanup does not remove older commits.': 'Git 历史记录仍引用的文件将被保留；清理不会删除旧提交。',
+    'Git maintenance could not finish: {reason}': 'Git 维护未能完成：{reason}',
+    'No independent Git checkout (archives need no Git cleanup).': '没有独立的 Git 工作副本（归档文件无需清理 Git）。',
+    'Shared object store or linked worktrees; leaving it unchanged.': '存在共享对象存储或关联工作树；保持不变。',
+    'Not the root of a Git checkout.': '此目录不是 Git 工作副本的根目录。',
     'Could not remove old Rounded Corners cache: {exc}': '无法删除旧的 Rounded Corners 缓存：{exc}',
     "Generating icons: {completed}/{total}": "正在生成图标：{completed}/{total}",
     "Cron entries installed, but no running cron daemon could be confirmed. Enable your cron service for scheduled features.": "已安装 cron 条目，但无法确认 cron 守护进程正在运行。请启用 cron 服务以运行计划任务。",

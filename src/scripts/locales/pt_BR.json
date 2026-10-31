@@ -1018,5 +1018,12 @@
   "Update available: {current} → {latest}": "Atualização disponível: {current} → {latest}",
   "Keeping local source: changes present or not a clean git checkout": "Mantendo o código local: há alterações ou a cópia de trabalho do Git não está limpa",
   "Could not verify the published update — keeping the current checkout": "Não foi possível verificar a atualização publicada — mantendo a cópia de trabalho atual",
-  "Keeping local commits: the release is not a fast-forward": "Mantendo os commits locais: a versão publicada não permite avanço direto"
+  "Keeping local commits: the release is not a fast-forward": "Mantendo os commits locais: a versão publicada não permite avanço direto",
+  "Compacting Git storage: {path}": "Compactando o armazenamento do Git: {path}",
+  "Recovered {size} MiB. Git history and recovery data were preserved.": "{size} MiB recuperados. O histórico do Git e os dados de recuperação foram preservados.",
+  "Files still referenced by Git history remain; cleanup does not remove older commits.": "Os arquivos referenciados pelo histórico do Git permanecem; a limpeza não remove commits antigos.",
+  "Git maintenance could not finish: {reason}": "Não foi possível concluir a manutenção do Git: {reason}",
+  "No independent Git checkout (archives need no Git cleanup).": "Nenhum clone independente do Git (arquivos compactados não precisam de limpeza do Git).",
+  "Shared object store or linked worktrees; leaving it unchanged.": "Armazenamento de objetos compartilhado ou árvores de trabalho vinculadas; mantido sem alterações.",
+  "Not the root of a Git checkout.": "O diretório não é a raiz de um clone do Git."
 }

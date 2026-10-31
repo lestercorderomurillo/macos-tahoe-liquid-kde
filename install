@@ -9,6 +9,16 @@ REPO = Path(__file__).resolve().parent
 os.chdir(REPO)
 sys.path.insert(0, str(REPO / "src" / "installer"))
 
+if sys.argv[1:] == ["--free-space"]:
+    sys.path.insert(0, str(REPO / "src" / "scripts"))
+    from repository_maintenance import main
+    raise SystemExit(main([]))
+
+if os.environ.get("MAC_TAHOE_UPDATED") == "1":
+    sys.path.insert(0, str(REPO / "src" / "scripts"))
+    from repository_maintenance import main
+    main(["--auto"])
+
 from installer_ui import main
 
 raise SystemExit(main(sys.argv[1:]))
