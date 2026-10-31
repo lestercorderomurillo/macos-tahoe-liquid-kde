@@ -306,14 +306,17 @@ Item {
         Item { Layout.fillWidth: true; Layout.fillHeight: true }
     }
     property int phase: 0
+    property int settling: 0
     Timer {
-        interval: 10; repeat: true; running: true
+        interval: 20; repeat: true; running: true
         onTriggered: {
             const thickness = panel.vertical ? panel.width : panel.height;
             if (Math.abs(applet.width - thickness) > 0.01 || Math.abs(applet.height - thickness) > 0.01) {
+                if (++root.settling < 10) return;
                 console.error("DOCK_CELL_FAILED", root.phase, applet.width, applet.height, thickness);
                 Qt.exit(1); return;
             }
+            root.settling = 0;
             root.phase++;
             if (root.phase === 1) panel.height = 48;
             else if (root.phase === 2) panel.height = 128;
