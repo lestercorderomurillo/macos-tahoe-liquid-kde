@@ -6,7 +6,7 @@ from distro import qt6_plugins_dir, qt6_qml_dir
 from launcher_defaults import LAUNCHER_ID, apply_launcher_default, remember_installed_edition
 from steps._helpers import (
     DATA_HOME, HOME, build_dir, cmake_build, fail, info, install_tree, ok, offline,
-    remove_tree,
+    remove_tree, qdbus_call,
     sudo_install_file, sudo_install_tree, sudo_remove, temp_dir,
 )
 
@@ -212,6 +212,10 @@ def install() -> None:
                      else install_tree(widget, DEST_DIR / widget.name))
         if installed:
             n += 1
+    spacing_script = offline("layouts/dock-spacing.js")
+    if spacing_script.is_file():
+        qdbus_call("org.kde.plasmashell", "/PlasmaShell",
+                   "org.kde.PlasmaShell.evaluateScript", spacing_script.read_text())
     label = "plasmoid" if n == 1 else "plasmoids"
     info(tr('{n} {label} installed/reinstalled', n=n, label=tr(label)))
 

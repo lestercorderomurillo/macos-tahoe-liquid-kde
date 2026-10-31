@@ -273,14 +273,19 @@ def test_native_launcher_popup_presets(repo, tmp_path, monkeypatch, launcher_pop
 
 def test_dock_applets_follow_panel_thickness(repo, tmp_path, launcher_popup_module):
     widgets = repo / 'src/offline/plasmoids'
-    for widget in ('launcher', 'trashcan'):
+    applets = ['launcher', 'trashcan']
+    if (widgets / 'org.kde.mac-tahoe-liquid-kde.downloads').is_dir():
+        applets.append('downloads')
+    for widget in applets:
         source = (widgets / f'org.kde.mac-tahoe-liquid-kde.{widget}/contents/ui/main.qml').read_text()
-        hints = re.findall(r'^    Layout\.(?:fillWidth|fillHeight|minimumWidth|maximumWidth|minimumHeight|maximumHeight):.*$', source, re.MULTILINE)
+        hints = re.findall(r'^    Layout\.(?:fillWidth|fillHeight|minimumWidth|preferredWidth|maximumWidth|minimumHeight|preferredHeight|maximumHeight):.*$', source, re.MULTILINE)
         assert hints, f'{widget} has no panel layout hints'
         assert 'Plasmoid.constraintHints: Plasmoid.CanFillArea' in source
         qml = """import QtQuick
 import QtQuick.Layouts
 import org.kde.plasma.core as PlasmaCore
+import org.kde.kirigami as Kirigami
+import org.kde.mac.tahoe.launcher as NativeLauncher
 Item {
     id: root
     width: 600; height: 300
@@ -294,20 +299,24 @@ Item {
         rows: vertical ? 2 : 1
         Item {
             id: applet
+            NativeLauncher.DockCell { id: dockCell; applet: applet; vertical: panel.vertical }
             implicitWidth: 32; implicitHeight: 32
             HINTS
         }
         Item { Layout.fillWidth: true; Layout.fillHeight: true }
     }
     property int phase: 0
+    property int settling: 0
     Timer {
-        interval: 10; repeat: true; running: true
+        interval: 20; repeat: true; running: true
         onTriggered: {
             const thickness = panel.vertical ? panel.width : panel.height;
             if (Math.abs(applet.width - thickness) > 0.01 || Math.abs(applet.height - thickness) > 0.01) {
+                if (++root.settling < 10) return;
                 console.error("DOCK_CELL_FAILED", root.phase, applet.width, applet.height, thickness);
                 Qt.exit(1); return;
             }
+            root.settling = 0;
             root.phase++;
             if (root.phase === 1) panel.height = 48;
             else if (root.phase === 2) panel.height = 128;
@@ -324,7 +333,7 @@ Item {
         path = tmp_path / f'{widget}.qml'
         path.write_text(qml)
         result = subprocess.run([str(launcher_popup_module.parent / 'dockgeometryprobe'), str(path)],
-            env=dict(os.environ, QT_QPA_PLATFORM='offscreen', QT_QUICK_BACKEND='software',
+            env=dict(os.environ, QML_IMPORT_PATH=str(launcher_popup_module), QT_QPA_PLATFORM='offscreen', QT_QUICK_BACKEND='software',
                      QT_FORCE_STDERR_LOGGING='1'), capture_output=True, text=True, timeout=45)
         assert result.returncode == 0, result.stdout + result.stderr
         assert 'DOCK_CELL_OK' in result.stdout + result.stderr
@@ -422,12 +431,267 @@ Item {
         shutil.copytree(repo / f'src/offline/plasma-theme/{theme}', data / f'plasma/desktoptheme/{theme}')
         (config / 'plasmarc').write_text(f'[Theme]\nname={theme}\n')
         result = subprocess.run([str(runner), str(tmp_path / 'tst_dock.qml')],
-            env=dict(os.environ, QT_QPA_PLATFORM='offscreen', QT_QUICK_BACKEND='software',
+            env=dict(os.environ, QML_IMPORT_PATH=str(launcher_popup_module), QT_QPA_PLATFORM='offscreen', QT_QUICK_BACKEND='software',
                      QT_FORCE_STDERR_LOGGING='1', QT_SCALE_FACTOR=str(scale),
                      DOCK_ICON_THEME='DockAlignmentTest',
                      QT_SCALE_FACTOR_ROUNDING_POLICY='PassThrough', XDG_CONFIG_HOME=str(config),
-                     XDG_DATA_HOME=str(data), QML_IMPORT_PATH=str(launcher_popup_module)),
+                     XDG_DATA_HOME=str(data)),
             capture_output=True, text=True, timeout=45)
         assert result.returncode == 0, result.stdout + result.stderr
         assert 'DOCK_ALIGNMENT_OK' in result.stdout + result.stderr
         assert f'DOCK_DPR: {scale:g}' in result.stdout + result.stderr
+
+
+@pytest.mark.parametrize("scale", [1, 1.25, 1.5, 1.75, 2, 2.5, 3])
+def test_dock_boundary_spacing(repo, tmp_path, launcher_popup_module, scale):
+    """Production task metrics/grid keep every boundary on the same pitch."""
+    ui = repo / 'src/offline/plasmoids/org.kde.mac.tahoe.liquid.taskmanager/contents/ui'
+    shutil.copy2(ui / 'LayoutMetrics.js', tmp_path)
+    grid = (ui / 'TaskList.qml').read_text().replace(
+        'Plasmoid.formFactor === PlasmaCore.Types.Vertical', 'tasks.vertical').replace(
+            'Plasmoid.configuration', 'tasks.plasmoid.configuration')
+    (tmp_path / 'TaskList.qml').write_text(grid)
+    main = (ui / 'main.qml').read_text()
+    width_sum = re.search(r'Layout.maximumWidth: \{(.*?)\n                \}', main, re.S).group(1)
+    height_sum = re.search(r'Layout.maximumHeight: \{(.*?)\n                \}', main, re.S).group(1)
+    qml = """import QtQuick
+import QtQuick.Layouts
+import org.kde.plasma.core as PlasmaCore
+import org.kde.ksvg as KSvg
+import org.kde.kirigami as Kirigami
+import "LayoutMetrics.js" as LayoutMetrics
+Item {
+    id: tasks
+    width: 68; height: 68
+    property bool vertical: false
+    property bool iconsOnly: true
+    property var plasmoid: ({pluginName: "org.kde.mac.tahoe.liquid.icontasks",
+        configuration: {iconSpacing: 1, maxStripes: 1, forceStripes: false}})
+    KSvg.FrameSvgItem { id: taskFrame; imagePath: "widgets/tasks"; prefix: ["south-normal", "normal"]; visible: false }
+    TaskList {
+        id: taskList
+        count: 3
+        readonly property real widthOccupation: count / columns
+        readonly property real heightOccupation: count / rows
+        Layout.maximumWidth: { WIDTH_SUM }
+        Layout.maximumHeight: { HEIGHT_SUM }
+        width: tasks.vertical ? tasks.width : Layout.maximumWidth
+        height: tasks.vertical ? Layout.maximumHeight : tasks.height
+        Repeater {
+            model: 3
+            Item {
+                Layout.fillWidth: true; Layout.fillHeight: true
+                Layout.maximumWidth: tasks.vertical ? -1 : LayoutMetrics.preferredMaxWidth()
+                Layout.maximumHeight: tasks.vertical ? LayoutMetrics.preferredMaxHeight() : -1
+                implicitWidth: tasks.width; implicitHeight: tasks.height
+            }
+        }
+    }
+    property int phase: 0
+    readonly property var sizes: [40, 48, 68, 96, 128, 68, 40]
+    function compare(a,b) { if (Math.abs(a-b)>0.05) throw new Error(a+" != "+b); }
+    Timer {
+        interval: 20; repeat: true; running: true
+        onTriggered: {
+            try {
+                const cells = taskList.children.filter(c => c.width > 0 && c.height > 0);
+                const t = tasks.vertical ? tasks.width : tasks.height;
+                const a = tasks.vertical ? "y" : "x";
+                const length = tasks.vertical ? "height" : "width";
+                const pitch = cells[1][a] - cells[0][a];
+                // Native panel inserts smallSpacing between standalone applets.
+                compare(pitch, t + Kirigami.Units.smallSpacing);
+                compare(cells[0][length], t);
+                compare(cells[2][a] - cells[1][a], pitch);
+                // Launcher -> first task; last task -> Downloads -> Trash.
+                compare(t/2 + Kirigami.Units.smallSpacing + cells[0][a] + cells[0][length]/2, pitch);
+                compare(taskList[length] - cells[2][a] - cells[2][length]/2
+                        + Kirigami.Units.smallSpacing + t/2, pitch);
+                compare(t + Kirigami.Units.smallSpacing, pitch);
+                tasks.phase++;
+                if (tasks.phase === sizes.length * 2) { console.info("DOCK_GAPS_OK"); Qt.exit(0); return; }
+                tasks.vertical = tasks.phase >= sizes.length;
+                tasks.width = sizes[tasks.phase % sizes.length]; tasks.height = tasks.width;
+            } catch (e) { console.error("DOCK_GAPS_FAILED", tasks.phase, e); Qt.exit(1); }
+        }
+    }
+}
+""".replace('WIDTH_SUM', width_sum).replace('HEIGHT_SUM', height_sum)
+    path = tmp_path / 'DockGaps.qml'
+    path.write_text(qml)
+    result = subprocess.run([str(launcher_popup_module.parent / 'dockgeometryprobe'), str(path)],
+        env=dict(os.environ, QML_IMPORT_PATH=str(launcher_popup_module), QT_QPA_PLATFORM='offscreen', QT_QUICK_BACKEND='software',
+                 QT_SCALE_FACTOR=str(scale), QT_FORCE_STDERR_LOGGING='1'),
+        capture_output=True, text=True, timeout=45)
+    assert result.returncode == 0, result.stdout + result.stderr
+    assert 'DOCK_GAPS_OK' in result.stdout + result.stderr
+
+
+def test_dock_separator_upgrade_preserves_pins_and_other_widgets(repo, tmp_path, launcher_popup_module):
+    script = (repo / 'src/offline/layouts/dock-spacing.js').read_text()
+    qml = '''import QtQuick
+Item {
+    property var removed: []
+    property var dock: []
+    property var topWidgets: []
+    function widget(type, id) { return {type: type, id: id, index: id, remove: function() { removed.push(id); }}; }
+    function panels() { return [{widgets: function() { return dock.filter(w => removed.indexOf(w.id)<0); }},
+                               {widgets: function() { return topWidgets; }}]; }
+    function migrate() { SCRIPT }
+    Timer { interval: 1; running: true; onTriggered: {
+        const launcher = "org.kde.mac-tahoe-liquid-kde.launcher";
+        const tasks = "org.kde.mac.tahoe.liquid.icontasks";
+        const trash = "org.kde.mac-tahoe-liquid-kde.trashcan";
+        const downloads = "org.kde.mac-tahoe-liquid-kde.downloads";
+        const separator = "org.kde.plasma.marginsseparator";
+        dock = [widget(launcher, 1), widget(separator, 2), widget(tasks, 3),
+                widget(separator, 4), widget(downloads, 5), widget(trash, 6),
+                widget(separator, 7), widget("org.kde.plasma.digitalclock", 8)];
+        const pinned = dock[2];
+        pinned.pins = ["applications:org.kde.kate.desktop"];
+        // Widget enumeration follows creation order, not current panel order.
+        dock = [dock[0], dock[2], dock[4], dock[5], dock[1], dock[3], dock[6], dock[7]];
+        topWidgets = [widget("org.kde.plasma.systemtray", 10), widget(separator, 11),
+               widget("org.kde.plasma.digitalclock", 12)];
+        migrate(); migrate();
+        if (JSON.stringify(removed)!=="[2,4]" || pinned.pins[0]!=="applications:org.kde.kate.desktop") {
+            console.error("DOCK_MIGRATION_FAILED", JSON.stringify(removed)); Qt.exit(1); return;
+        }
+        console.info("DOCK_MIGRATION_OK"); Qt.exit(0);
+    }}
+}'''.replace('SCRIPT', script)
+    path = tmp_path / 'DockMigration.qml'
+    path.write_text(qml)
+    result = subprocess.run([str(launcher_popup_module.parent / 'dockgeometryprobe'), str(path)],
+        env=dict(os.environ, QML_IMPORT_PATH=str(launcher_popup_module), QT_QPA_PLATFORM='offscreen', QT_QUICK_BACKEND='software',
+                 QT_FORCE_STDERR_LOGGING='1'), capture_output=True, text=True, timeout=45)
+    assert result.returncode == 0, result.stdout + result.stderr
+    assert 'DOCK_MIGRATION_OK' in result.stdout + result.stderr
+
+
+
+@pytest.mark.parametrize("scale", [1, 1.5, 2])
+def test_dock_cells_share_compression_and_limit_extra_space(repo, tmp_path, launcher_popup_module, scale):
+    ui = repo / 'src/offline/plasmoids/org.kde.mac.tahoe.liquid.taskmanager/contents/ui'
+    shutil.copy2(ui / 'LayoutMetrics.js', tmp_path)
+    (tmp_path / 'TaskList.qml').write_text((ui / 'TaskList.qml').read_text().replace(
+        'Plasmoid.formFactor === PlasmaCore.Types.Vertical', 'tasks.vertical').replace(
+        'Plasmoid.configuration', 'tasks.plasmoid.configuration'))
+    main = (ui / 'main.qml').read_text()
+    hints = []
+    for key in ('minimumWidth', 'minimumHeight', 'preferredWidth', 'preferredHeight'):
+        hints.append(re.search(r'^    Layout\.' + key + r': \{.*?^    \}', main, re.M | re.S).group(0))
+    for key in ('maximumWidth', 'maximumHeight'):
+        hints.append(re.search(r'^    Layout\.' + key + r':.*$', main, re.M).group(0))
+    sums = [re.search(r'Layout\.' + key + r': \{(.*?)\n                \}', main, re.S).group(1)
+            for key in ('maximumWidth', 'maximumHeight')]
+    applet = (repo / 'src/offline/plasmoids/org.kde.mac-tahoe-liquid-kde.launcher/contents/ui/main.qml').read_text()
+    applet_hints = re.findall(r'^    Layout\.(?:minimumWidth|preferredWidth|maximumWidth|minimumHeight|preferredHeight|maximumHeight):.*$', applet, re.M)
+    applet_hints = '\n'.join(applet_hints).replace('Plasmoid.formFactor', 'plasmoid.formFactor')
+    qml = """import QtQuick
+import QtQuick.Layouts
+import org.kde.plasma.core as PlasmaCore
+import org.kde.ksvg as KSvg
+import org.kde.kirigami as Kirigami
+import org.kde.mac.tahoe.launcher as NativeLauncher
+import "LayoutMetrics.js" as LayoutMetrics
+Item {
+    id: root
+    width: 1200; height: 1200
+    property bool vertical: false
+    property int phase: 0
+    property int taskCount: 10
+    property int settling: 0
+    KSvg.FrameSvgItem { id: taskFrame; imagePath: "widgets/tasks"; prefix: ["south-normal", "normal"]; visible: false }
+    QtObject { id: plasmoid; property int formFactor: root.vertical ? PlasmaCore.Types.Vertical : PlasmaCore.Types.Horizontal }
+    component DockApplet: Item {
+        id: cell
+        NativeLauncher.DockCell { id: dockCell; applet: cell; vertical: root.vertical }
+        Layout.fillWidth: true; Layout.fillHeight: true
+        APPLET_HINTS
+    }
+    GridLayout {
+        id: panel
+        width: root.vertical ? 68 : available
+        height: root.vertical ? available : 68
+        property real available: 1100
+        columns: root.vertical ? 1 : 5; rows: root.vertical ? 5 : 1
+        rowSpacing: Kirigami.Units.smallSpacing; columnSpacing: rowSpacing
+        DockApplet { id: launcher }
+        Item {
+            id: tasks
+            property bool vertical: root.vertical
+            property bool iconsOnly: true
+            property bool shouldShrinkToZero: false
+            property var plasmoid: ({pluginName: "org.kde.mac.tahoe.liquid.icontasks",
+                configuration: {iconSpacing: 1, maxStripes: 1, forceStripes: false}})
+            NativeLauncher.DockCell {
+                applet: tasks; vertical: root.vertical; taskManager: true
+                count: tasks.vertical ? taskList.rows : taskList.columns
+                spacing: tasks.vertical ? taskList.rowSpacing : taskList.columnSpacing
+            }
+            Layout.fillWidth: true; Layout.fillHeight: true
+            TASK_HINTS
+            TaskList {
+                id: taskList
+                count: root.taskCount
+                readonly property real widthOccupation: count / columns
+                readonly property real heightOccupation: count / rows
+                Layout.maximumWidth: { WIDTH_SUM }
+                Layout.maximumHeight: { HEIGHT_SUM }
+                width: tasks.width; height: tasks.height
+                Repeater {
+                    model: root.taskCount
+                    Item {
+                        Layout.fillWidth: true; Layout.fillHeight: true
+                        Layout.maximumWidth: tasks.vertical ? -1 : LayoutMetrics.preferredMaxWidth()
+                        Layout.maximumHeight: tasks.vertical ? LayoutMetrics.preferredMaxHeight() : -1
+                        implicitWidth: 16; implicitHeight: 16
+                    }
+                }
+            }
+        }
+        DockApplet { id: downloads }
+        DockApplet { id: trash }
+        Item { Layout.fillWidth: true; Layout.fillHeight: true }
+    }
+    function compare(a,b) { if (Math.abs(a-b)>1.1) throw new Error(a+" != "+b); }
+    Timer { interval: 30; repeat: true; running: true; onTriggered: {
+        try {
+            const cells = taskList.children.filter(c => c.width>0 && c.height>0);
+            if (cells.length !== root.taskCount) throw new Error("Task delegates are still updating");
+            const pos = root.vertical ? "y" : "x", length = root.vertical ? "height" : "width";
+            const pitch = cells[1][pos] + cells[1][length]/2 - cells[0][pos] - cells[0][length]/2;
+            compare(launcher[length], cells[0][length]);
+            if (downloads.visible) compare(downloads[length], cells[0][length]);
+            compare(trash[length], cells[0][length]);
+            compare(tasks[pos] + cells[0][pos] + cells[0][length]/2 - launcher[pos] - launcher[length]/2, pitch);
+            const last = cells[cells.length - 1];
+            const next = downloads.visible ? downloads : trash;
+            compare(next[pos] + next[length]/2 - tasks[pos] - last[pos] - last[length]/2, pitch);
+            if (downloads.visible) compare(trash[pos] + trash[length]/2 - downloads[pos] - downloads[length]/2, pitch);
+            root.settling = 0;
+            root.phase++;
+            if (root.phase === 9) { console.info("DOCK_COMPRESS_OK"); Qt.exit(0); return; }
+            root.vertical = root.phase >= 3 && root.phase < 6;
+            panel.available = [1100, 650, 350][root.phase % 3];
+            if (root.phase >= 6) {
+                root.taskCount = 3;
+                downloads.visible = root.phase !== 7;
+                panel.available = root.phase === 7 ? 180 : 350;
+            }
+        } catch(e) {
+            if (++root.settling < 10) return;
+            console.error("DOCK_COMPRESS_FAILED", root.phase, e); Qt.exit(1);
+        }
+    }}
+}
+""".replace('APPLET_HINTS', applet_hints).replace('TASK_HINTS', '\n'.join(hints)).replace('WIDTH_SUM', sums[0]).replace('HEIGHT_SUM', sums[1])
+    path = tmp_path / 'DockCompression.qml'
+    path.write_text(qml)
+    result = subprocess.run([str(launcher_popup_module.parent / 'dockgeometryprobe'), str(path)],
+        env=dict(os.environ, QML_IMPORT_PATH=str(launcher_popup_module), QT_QPA_PLATFORM='offscreen', QT_QUICK_BACKEND='software',
+                 QT_SCALE_FACTOR=str(scale), QT_FORCE_STDERR_LOGGING='1'), capture_output=True, text=True, timeout=45)
+    assert result.returncode == 0, result.stdout + result.stderr
+    assert 'DOCK_COMPRESS_OK' in result.stdout + result.stderr
+    assert f'DOCK_DPR: {scale}' in result.stdout + result.stderr

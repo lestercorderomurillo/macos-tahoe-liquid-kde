@@ -57,17 +57,37 @@ PlasmoidItem {
         }
     }
 
+    NativeLauncher.DockCell {
+        applet: tasks
+        active: iconsOnly && (Plasmoid.formFactor === PlasmaCore.Types.Horizontal
+            || Plasmoid.formFactor === PlasmaCore.Types.Vertical)
+        vertical: tasks.vertical
+        taskManager: true
+        count: tasks.vertical ? taskList.rows : taskList.columns
+        spacing: tasks.vertical ? taskList.rowSpacing : taskList.columnSpacing
+    }
+
     Layout.fillWidth: vertical ? true : Plasmoid.configuration.fill
     Layout.fillHeight: !vertical ? true : Plasmoid.configuration.fill
+    Layout.maximumWidth: iconsOnly && !vertical ? taskList.Layout.maximumWidth : Infinity
+    Layout.maximumHeight: iconsOnly && vertical ? taskList.Layout.maximumHeight : Infinity
     Layout.minimumWidth: {
         if (shouldShrinkToZero) {
             return Kirigami.Units.gridUnit; // For edit mode
+        }
+        if (iconsOnly && !vertical) {
+            return taskList.columns * Kirigami.Units.iconSizes.small
+                + Math.max(0, taskList.columns - 1) * taskList.columnSpacing;
         }
         return vertical ? 0 : LayoutMetrics.preferredMinWidth();
     }
     Layout.minimumHeight: {
         if (shouldShrinkToZero) {
             return Kirigami.Units.gridUnit; // For edit mode
+        }
+        if (iconsOnly && vertical) {
+            return taskList.rows * Kirigami.Units.iconSizes.small
+                + Math.max(0, taskList.rows - 1) * taskList.rowSpacing;
         }
         return !vertical ? 0 : LayoutMetrics.preferredMinHeight();
     }
@@ -448,21 +468,21 @@ PlasmoidItem {
 
                 Layout.maximumWidth: {
                     const totalMaxWidth = children.reduce((accumulator, child) => {
-                            if (!isFinite(child.Layout.maximumWidth)) {
+                            if (!isFinite(child.Layout.maximumWidth) || child.Layout.maximumWidth <= 0) {
                                 return accumulator;
                             }
                             return accumulator + child.Layout.maximumWidth
                         }, 0);
-                    return Math.round(totalMaxWidth / widthOccupation);
+                    return Math.round(totalMaxWidth / widthOccupation) + Math.max(0, columns - 1) * columnSpacing;
                 }
                 Layout.maximumHeight: {
                     const totalMaxHeight = children.reduce((accumulator, child) => {
-                            if (!isFinite(child.Layout.maximumHeight)) {
+                            if (!isFinite(child.Layout.maximumHeight) || child.Layout.maximumHeight <= 0) {
                                 return accumulator;
                             }
                             return accumulator + child.Layout.maximumHeight
                         }, 0);
-                    return Math.round(totalMaxHeight / heightOccupation);
+                    return Math.round(totalMaxHeight / heightOccupation) + Math.max(0, rows - 1) * rowSpacing;
                 }
                 width: {
                     if (tasks.shouldShrinkToZero) {

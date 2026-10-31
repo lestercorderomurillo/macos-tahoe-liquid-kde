@@ -107,7 +107,6 @@ for (var screen = 0; screen < screenCount; screen++) {
     } else if (launcherPresets[dock.screen] !== undefined) {
         launcher.writeConfig("launcherPreset", launcherPresets[dock.screen]);
     }
-    dock.addWidget("org.kde.plasma.marginsseparator");
 
     var tasks = dock.addWidget("org.kde.mac.tahoe.liquid.icontasks");
     tasks.currentConfigGroup = ["General"];
@@ -115,7 +114,6 @@ for (var screen = 0; screen < screenCount; screen++) {
     // every dock across every screen (see _append_launcher_restore).
     tasks.writeConfig("launchers", "");
 
-    dock.addWidget("org.kde.plasma.marginsseparator");
     dock.addWidget("org.kde.mac-tahoe-liquid-kde.trashcan");
 }
 }

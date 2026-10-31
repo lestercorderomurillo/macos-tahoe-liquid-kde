@@ -1,4 +1,4 @@
-# Installer Git storage validation — v0.61.18
+# Installer Git storage validation — v0.61.19
 
 The shared implementation preserves `.git` and full commit/tree ancestry while
 retiring verified published file caches and older-version merged branches.
@@ -18,7 +18,7 @@ python3 -m pytest tests/test_repository_cache.py tests/test_repository_history.p
 164 passed. The 127 affected updater/cache/provenance checks also passed in a
 Golden Gate source prepared from the candidate with
 `GOLDEN_GATE_TAHOE_SOURCE=<candidate> MAC_TAHOE_NO_UPDATE_CHECK=true python3 installer --prepare`.
-Golden Gate's complete wrapper suite passed 95 tests. Collection is 2104 Tahoe
+Golden Gate's complete wrapper suite passed 95 tests. Collection is 2115 Tahoe
 tests; collection is not a claim that every conditional native check ran locally.
 
 A network-disabled, read-only KDE neon container with Git 2.43.0 passed the
@@ -64,7 +64,9 @@ version probes above do not replace distro/native qualification.
 Publication uses each repository's release workflow, Tahoe first, followed by
 its published immutable archive checksum and Golden Gate pin verification.
 
-Existing reviewed screenshots and their original provenance are retained.
+Reviewed Dock v0.61.18 screenshots and their original provenance are retained.
+The integration preserves that release’s runtime and
+[validation evidence](native/dock_alignment_validation.md) unchanged.
 The console-only modules and updater functions are excluded from the visual
 fingerprint; regression checks still reject visible-label/entry changes.
 `release-screenshots verify` is required on both final commits. No new VM,
@@ -73,7 +75,7 @@ justified by these changes.
 
 ## Candidate executable content
 
-The immutable v0.61.18 tag identifies the final source. These executable hashes
+The immutable v0.61.19 tag identifies the final source. These executable hashes
 make the focused evidence independent of later documentation/commit metadata.
 
 | Path | SHA-256 |

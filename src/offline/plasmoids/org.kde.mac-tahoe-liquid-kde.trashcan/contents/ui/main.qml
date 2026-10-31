@@ -21,15 +21,24 @@ import org.kde.mac.tahoe.launcher as NativeLauncher
 PlasmoidItem {
     id: root
 
-    // Reserve a full-thickness square cell, like an icons-only task. Plasma's
-    // default applet sizing otherwise caps standalone icons independently.
+    // Prefer a full-thickness cell, but share compression with task cells
+    // when the panel runs out of space.
+    NativeLauncher.DockCell {
+        id: dockCell
+        applet: root
+        active: Plasmoid.formFactor === PlasmaCore.Types.Horizontal
+            || Plasmoid.formFactor === PlasmaCore.Types.Vertical
+        vertical: Plasmoid.formFactor === PlasmaCore.Types.Vertical
+    }
     Plasmoid.constraintHints: Plasmoid.CanFillArea
-    Layout.fillWidth: Plasmoid.formFactor === PlasmaCore.Types.Vertical
-    Layout.fillHeight: Plasmoid.formFactor === PlasmaCore.Types.Horizontal
-    Layout.minimumWidth: Plasmoid.formFactor === PlasmaCore.Types.Horizontal ? height : 0
-    Layout.maximumWidth: Plasmoid.formFactor === PlasmaCore.Types.Horizontal ? height : Infinity
-    Layout.minimumHeight: Plasmoid.formFactor === PlasmaCore.Types.Vertical ? width : 0
-    Layout.maximumHeight: Plasmoid.formFactor === PlasmaCore.Types.Vertical ? width : Infinity
+    Layout.fillWidth: dockCell.active
+    Layout.fillHeight: dockCell.active
+    Layout.minimumWidth: Plasmoid.formFactor === PlasmaCore.Types.Horizontal ? Math.floor(dockCell.size) : 0
+    Layout.preferredWidth: Plasmoid.formFactor === PlasmaCore.Types.Horizontal ? dockCell.size : -1
+    Layout.maximumWidth: Plasmoid.formFactor === PlasmaCore.Types.Horizontal ? Math.ceil(dockCell.size) : Infinity
+    Layout.minimumHeight: Plasmoid.formFactor === PlasmaCore.Types.Vertical ? Math.floor(dockCell.size) : 0
+    Layout.preferredHeight: Plasmoid.formFactor === PlasmaCore.Types.Vertical ? dockCell.size : -1
+    Layout.maximumHeight: Plasmoid.formFactor === PlasmaCore.Types.Vertical ? Math.ceil(dockCell.size) : Infinity
 
     readonly property bool inPanel: (Plasmoid.location === PlasmaCore.Types.TopEdge
         || Plasmoid.location === PlasmaCore.Types.RightEdge
