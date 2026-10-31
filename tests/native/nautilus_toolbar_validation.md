@@ -1,4 +1,4 @@
-# Nautilus toolbar validation — v0.61.14
+# Nautilus toolbar validation — v0.61.17
 
 Issue [#105](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/issues/105)
 is caused by Nautilus changing its path bar, breadcrumb and query editor from
@@ -13,8 +13,8 @@ GTK3, geometry, colors, edition defaults and saved settings are unchanged.
 
 Focused source: `7fcc729` plus this release's two GTK4 stylesheets. The
 release candidate also includes the concurrent Dock changes through
-`c421178`; they leave these GTK inputs unchanged, so the focused evidence is
-reused. Final stylesheet SHA-256:
+`c421178` and nonvisual storage maintenance through `6624d19`; they leave
+these GTK inputs unchanged, so the focused evidence is reused. Final stylesheet SHA-256:
 
 | Stylesheet | SHA-256 |
 | --- | --- |
@@ -30,8 +30,8 @@ python -m pytest tests/test_theme_switch.py -q
 
 Results: 52 asset/lifecycle/static checks and 120 theme-switch checks passed.
 One theme-switch Unix-socket test needed an unrestricted rerun after the
-sandbox denied socket creation; that rerun passed. Collection reports 2,036
-cases, including conditional tests, rather than 2,036 executed passes.
+sandbox denied socket creation; that rerun passed. The final integrated candidate collects 2,052 cases, including conditional
+tests; collection is not a claim that all cases executed locally.
 
 Golden Gate's explicit-source `./install --prepare` produced an isolated copy
 with `MacGoldenGate` and launcher preset 2. The toolbar, GTK upgrade, GTK
@@ -64,7 +64,10 @@ GTK runtime or GPU. It directly verifies the changed selectors on GTK4's real
 renderer and the older-GTK stylesheet translation. Python regressions also
 cover the unmodified GTK 4.16+ stylesheet path. Release gallery captures use
 the repository's pinned VM/profile and retain their exact source, environment,
-image hashes and review decisions in screenshot provenance.
+image hashes and review decisions in screenshot provenance. The reviewed
+gallery was captured from `0e10af1` with version v0.61.14 before concurrent
+release numbering advanced; its original provenance and visible version
+labels are retained. The integrated candidate passes visual-source verification.
 
 ## Integration and publication
 
@@ -72,4 +75,4 @@ Required `test.yml` push runs on both `main` and `dev` gate the exact release
 commit; earlier runs and local focused results cannot replace that gate.
 The full suite and distro matrix run in CI, without a duplicate local matrix.
 Both editions' committed screenshot provenance must verify before their
-release workflows can publish matching `v0.61.14` releases.
+release workflows can publish matching `v0.61.17` releases.
