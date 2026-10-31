@@ -117,9 +117,15 @@ def test_missing_git_is_reported_without_deleting_source(tmp_path, monkeypatch):
 def test_usage_does_not_follow_symlinks_or_double_count_hardlinks(tmp_path):
     source = tmp_path / "file"
     source.write_bytes(b"x" * 8192)
-    (tmp_path / "link").symlink_to(tmp_path, target_is_directory=True)
+    external = tmp_path.with_name(tmp_path.name + "-external")
+    external.mkdir()
+    (external / "not-counted").write_bytes(b"y" * 8192)
+    link = tmp_path / "link"
+    link.symlink_to(external, target_is_directory=True)
     (tmp_path / "hardlink").hardlink_to(source)
-    assert maintenance.disk_usage(tmp_path) == source.stat().st_blocks * 512
+    # Some filesystems allocate blocks for the link itself. Count those, but
+    # never its target's contents or the hardlink's duplicate source data.
+    assert maintenance.disk_usage(tmp_path) == (source.stat().st_blocks + link.lstat().st_blocks) * 512
 
 
 def test_duplicate_roots_are_compacted_once(tmp_path, monkeypatch):

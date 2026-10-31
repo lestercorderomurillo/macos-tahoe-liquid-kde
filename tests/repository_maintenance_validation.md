@@ -32,6 +32,8 @@ The focused set has 166 passing checks, with affected console/fingerprint checks
 rerun after the final adjustment (90 passed). It covers actual Git repacking and
 space recovery while retaining refs, stashes, old unreferenced objects, reflogs,
 index contents, staged/unstaged/untracked files and conflict-resolution caches.
+Space-accounting coverage includes a symlink's own allocated blocks on each
+filesystem while excluding its external target and duplicate hardlink data.
 Immediate-expiry settings and explicitly enabled destructive maintenance tasks
 cannot enable deletion. A pre-fix `gc --no-prune` control failed by deleting the
 conflict-resolution cache; packing-only maintenance preserves it. Automatic tasks
