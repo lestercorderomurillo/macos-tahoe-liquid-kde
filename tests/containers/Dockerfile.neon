@@ -14,7 +14,15 @@ ENV PYTHONUNBUFFERED=1
 #
 # Noble's qt5-style-kvantum does not ship a Qt 6 style plugin. The installer
 # therefore builds the pinned, bundled Qt 6 engine instead of adding a PPA.
-RUN apt-get update && \
+# Retry the same signed archive at KDE's origin when the CDN is unavailable.
+RUN (apt-get update || { \
+        for apt_source in /etc/apt/sources.list /etc/apt/sources.list.d/*.list /etc/apt/sources.list.d/*.sources; do \
+            if [ -f "$apt_source" ]; then \
+                sed -i -E 's@https?://archive\.neon\.kde\.org/@https://origin.archive.neon.kde.org/@g' "$apt_source"; \
+            fi; \
+        done; \
+        apt-get update; \
+    }) && \
     DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
         python3 python3-pytest python3-pil python3-pyqt6 python3-pyqt6.qtsvg plasma5support librsvg2-bin git \
         cmake make g++ extra-cmake-modules pkgconf \

@@ -67,6 +67,12 @@ used.
 
 ## Publication and limits
 
+The initial exact-commit runs at `95b4cad90ac9b00b6dba61cc55468ff623a047c9`
+passed 12 of 13 jobs on each branch. Neon failed before testing because its CDN
+returned HTTP 502 during package-index refresh. Its container now retries the
+same signed User Edition archive at KDE's HTTPS origin; package, signature,
+SDK and matrix checks remain enabled. Runtime and capture inputs are unchanged.
+
 Documentation captures use `./release-screenshots` with fresh overlays of the
 pinned image and the checked-in capture profile. Committed image hashes, source
 identity, environment and review provenance are in
