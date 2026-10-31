@@ -36,10 +36,10 @@ def test_palette_preserves_artwork_notices_and_status_colors():
     assert palette_svg(result) == result
 
 
-def test_bundled_battery_aliases_are_recolored_without_changing_geometry(battery_themes):
-    paths = sorted({p.resolve() for p in battery_themes.glob("*/status/*/battery-*.svg") if p.is_file()})
+def test_bundled_status_aliases_are_recolored_without_changing_geometry(battery_themes):
+    paths = sorted({p.resolve() for p in battery_themes.glob("*/status/*/*.svg") if p.is_file()})
     before = {p: p.read_text() for p in paths}
-    aliases = {p: p.readlink() for p in battery_themes.glob("*/status/*/battery-*.svg") if p.is_symlink()}
+    aliases = {p: p.readlink() for p in battery_themes.glob("*/status/*/*.svg") if p.is_symlink()}
     apply_status_palette(battery_themes)
     changed = 0
     for path, original in before.items():
@@ -48,9 +48,9 @@ def test_bundled_battery_aliases_are_recolored_without_changing_geometry(battery
         old = ET.fromstring(original)
         new = ET.fromstring(result)
         def geometry(root):
-            return [(node.tag, {key: value for key, value in node.attrib.items()
+            return [(node.tag.rsplit("}", 1)[-1], {key: value for key, value in node.attrib.items()
                                if key in {"d", "x", "y", "width", "height", "rx", "ry", "transform", "viewBox"}})
-                    for node in root.iter() if node.tag not in {f"{{{SVG}}}defs", f"{{{SVG}}}style"}]
+                    for node in root.iter() if node.tag.rsplit("}", 1)[-1] not in {"defs", "style"}]
         assert geometry(old) == geometry(new), path
         for node in new.iter():
             assert node.get("fill", "").lower() not in FOREGROUND, path
@@ -110,8 +110,8 @@ def test_battery_kiconloader_light_dark_light(repo, battery_themes, tmp_path):
     source.mkdir(parents=True)
     (source / "demo.svg").write_text(
         f'<svg xmlns="{SVG}" width="64" height="64"><circle cx="32" cy="32" r="25" fill="#0000ff"/></svg>')
-    from interface_icons import INTERFACE_ICONS
-    for name in INTERFACE_ICONS:
+    from icon_toolset import SYSTEM_MENU_ICONS
+    for name in SYSTEM_MENU_ICONS:
         (source / (name + ".svg")).symlink_to("demo.svg")
     names = [BASE, BASE + "-dark"]
     for style in ("regular", "glass"):
@@ -119,6 +119,8 @@ def test_battery_kiconloader_light_dark_light(repo, battery_themes, tmp_path):
         for name in installer_themes(source.parents[2], generated, style, "#007aff"):
             (battery_themes / name).symlink_to(generated / name, target_is_directory=True)
             names.append(name)
+            assert not any((generated / name / "apps/256" / (reserved + ".png")).exists()
+                           for reserved in SYSTEM_MENU_ICONS)
     for variant in VARIANTS:
         name = theme_name(variant)
         theme = battery_themes / name

@@ -3,6 +3,7 @@
 #include <QDir>
 #include <QImage>
 #include <QPalette>
+#include <QPainter>
 #include <KIconLoader>
 #include <KIconTheme>
 #include <QIcon>
@@ -90,5 +91,30 @@ int main(int argc, char **argv)
             }
         }
     }
+    QImage gallery(1800, 500, QImage::Format_ARGB32);
+    gallery.fill(QColor("#eeeeee"));
+    QPainter painter(&gallery);
+    painter.setPen(QColor("#222222"));
+    painter.drawText(QRect(20, 10, 1760, 40), Qt::AlignCenter, QString::fromLocal8Bit(argv[1]));
+    const QStringList names = {"battery", "camera", "camera-web", "preferences-desktop-display-nightcolor",
+                              "kdeconnect", "kdeconnect-tray", "audio-volume-high", "network-wireless-signal-excellent",
+                              "bluetooth-active", "brightness-high", "redshift-status-on"};
+    const QStringList labels = {"Battery", "Camera", "Webcam", "Night Light", "KDE Connect", "Connect tray",
+                               "Volume", "Wi-Fi", "Bluetooth", "Brightness", "Night status"};
+    int row = 0;
+    for (const auto *mode : {"light", "dark", "light-again"}) {
+        const bool dark = QString::fromLatin1(mode) == "dark";
+        const int top = 60 + row++ * 145;
+        painter.fillRect(QRect(0, top, 1800, 145), QColor(dark ? "#222222" : "#eeeeee"));
+        painter.setPen(QColor(dark ? "#eeeeee" : "#222222"));
+        painter.drawText(QRect(5, top, 110, 145), Qt::AlignCenter, QString::fromLatin1(mode));
+        for (int col = 0; col < names.size(); ++col) {
+            painter.drawImage(QRect(150 + col * 145, top + 20, 64, 64),
+                              QImage(output + '/' + mode + '-' + names[col] + ".png"));
+            painter.drawText(QRect(115 + col * 145, top + 95, 140, 35), Qt::AlignCenter, labels[col]);
+        }
+    }
+    painter.end();
+    if (!gallery.save(output + "/gallery.png")) return 1;
     std::cout << renders << " status icon renders passed, including light/dark/light" << std::endl;
 }

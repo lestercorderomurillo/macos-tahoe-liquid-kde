@@ -36,11 +36,15 @@ SCHEMA = 1
 # non-symbolic fallback. KDE also tries each hyphen-separated prefix.
 # Keep those menu names in the base theme; generate
 # systemsettings and org.kde.discover for application launchers instead.
-SYSTEM_MENU_ICONS = frozenset({
+_INTERFACE_NAMES = {
     "computer", "preferences", "preferences-system",
     "software", "software-store", "software-store-symbolic",
     *INTERFACE_ICONS,
-})
+}
+SYSTEM_MENU_ICONS = frozenset(
+    "-".join(name.split("-")[:length])
+    for name in _INTERFACE_NAMES for length in range(1, len(name.split("-")) + 1)
+)
 
 
 def installer_dark_sources() -> dict[str, Path]:
