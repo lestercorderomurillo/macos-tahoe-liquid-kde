@@ -79,13 +79,13 @@ The desktop and its apps in light and dark mode.
 The Tahoe desktop in light and dark mode.
 
 <p align="center">
-  <a href="src/screenshots/showcase_light_4k-e12b632d7360.png"><img src="src/screenshots/showcase_light_4k-e12b632d7360.png" alt="Tahoe light desktop with Files focused" width="415"></a>
-  <a href="src/screenshots/desktop_about_light_4k-0c77c44c353e.png"><img src="src/screenshots/desktop_about_light_4k-0c77c44c353e.png" alt="Tahoe light desktop with About This Computer focused" width="415"></a>
+  <a href="src/screenshots/showcase_light_4k-d35bbe8834a1.png"><img src="src/screenshots/showcase_light_4k-d35bbe8834a1.png" alt="Tahoe light desktop with Files focused" width="415"></a>
+  <a href="src/screenshots/desktop_about_light_4k-0440d662ce6b.png"><img src="src/screenshots/desktop_about_light_4k-0440d662ce6b.png" alt="Tahoe light desktop with About This Computer focused" width="415"></a>
 </p>
 
 <p align="center">
-  <a href="src/screenshots/showcase_dark_4k-4fd7260418a3.png"><img src="src/screenshots/showcase_dark_4k-4fd7260418a3.png" alt="Tahoe dark desktop with Files focused" width="415"></a>
-  <a href="src/screenshots/desktop_about_dark_4k-0f8ba15f3630.png"><img src="src/screenshots/desktop_about_dark_4k-0f8ba15f3630.png" alt="Tahoe dark desktop with About This Computer focused" width="415"></a>
+  <a href="src/screenshots/showcase_dark_4k-3a358c78d8fd.png"><img src="src/screenshots/showcase_dark_4k-3a358c78d8fd.png" alt="Tahoe dark desktop with Files focused" width="415"></a>
+  <a href="src/screenshots/desktop_about_dark_4k-6d3231376ea9.png"><img src="src/screenshots/desktop_about_dark_4k-6d3231376ea9.png" alt="Tahoe dark desktop with About This Computer focused" width="415"></a>
 </p>
 
 <br>
@@ -95,8 +95,8 @@ The Tahoe desktop in light and dark mode.
 App search, favorites and categories with blurred glass and edge refraction. [Material settings](docs/glass-materials.md).
 
 <p align="center">
-  <img src="src/screenshots/launcher_preset_1_light-cae021819938.png" alt="Default Tahoe preset 1 in light mode, with integrated search and Tahoe wallpaper" width="415">
-  <img src="src/screenshots/launcher_preset_1_dark-c8e71276fc20.png" alt="Default Tahoe preset 1 in dark mode, with integrated search and Tahoe wallpaper" width="415">
+  <img src="src/screenshots/launcher_preset_1_light-0ee944758b89.png" alt="Default Tahoe preset 1 in light mode, with integrated search and Tahoe wallpaper" width="415">
+  <img src="src/screenshots/launcher_preset_1_dark-457e12c2cca8.png" alt="Default Tahoe preset 1 in dark mode, with integrated search and Tahoe wallpaper" width="415">
 </p>
 
 <br>
@@ -129,7 +129,7 @@ Finder-style Nautilus in light and dark.
 System controls and global menus for compatible apps.
 
 <p align="center">
-  <img src="src/screenshots/menu_v4-8e6260e3e178.png" alt="System menu in light mode" width="415">
+  <img src="src/screenshots/menu_v4-f717fa91696c.png" alt="System menu in light mode" width="415">
   <img src="src/screenshots/menu_dark_v4-c7bad6f7dba6.png" alt="System menu in dark mode" width="415">
 </p>
 
@@ -140,8 +140,8 @@ System controls and global menus for compatible apps.
 Hardware, software and theme details in About This Computer.
 
 <p align="center">
-  <img src="src/screenshots/about_v4-7e1117896d3d.png" alt="About This Computer in light mode" width="415">
-  <img src="src/screenshots/about_dark_v4-fc814543307b.png" alt="About This Computer in dark mode" width="415">
+  <img src="src/screenshots/about_v4-30c7a0554265.png" alt="About This Computer in light mode" width="415">
+  <img src="src/screenshots/about_dark_v4-3a7a1b87304e.png" alt="About This Computer in dark mode" width="415">
 </p>
 
 <br>
@@ -151,8 +151,8 @@ Hardware, software and theme details in About This Computer.
 Translucent menus and popups with matching light and dark colors.
 
 <p align="center">
-  <img src="src/screenshots/context_menu_v4-d5729b4a8019.png" alt="Desktop context menu in light mode" width="415">
-  <img src="src/screenshots/context_menu_dark_v4-aaba1188daf3.png" alt="Desktop context menu in dark mode" width="415">
+  <img src="src/screenshots/context_menu_v4-e51da0d87ff2.png" alt="Desktop context menu in light mode" width="415">
+  <img src="src/screenshots/context_menu_dark_v4-d9d5a1a9e863.png" alt="Desktop context menu in dark mode" width="415">
 </p>
 
 <br>

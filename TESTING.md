@@ -1,6 +1,6 @@
 # Installer testing
 
-Native installer screens for Tahoe 0.61.9, captured in a disposable KDE Plasma VM.
+Native installer screens for Tahoe 0.61.11, captured in a disposable KDE Plasma VM.
 Dark appearance was selected for this installation test.
 The gallery is captured from the release source and reviewed before publication.
 Release checks cover both editions, theme switching, installation, reboot and removal.
@@ -276,7 +276,7 @@ Scroll horizontally through the installation steps.
 
 <table>
 <tr>
-  <td align="center"><img src="src/screenshots/installer-welcome_dark_v4-babcf1729bec.png" alt="Welcome" width="500"><br>Welcome</td>
+  <td align="center"><img src="src/screenshots/installer-welcome_dark_v4-d51e674d4141.png" alt="Welcome" width="500"><br>Welcome</td>
   <td align="center"><img src="src/screenshots/installer-appearance_dark_v4-a6f5633f614d.png" alt="Appearance" width="500"><br>Appearance</td>
   <td align="center"><img src="src/screenshots/installer-icons_dark_v4-fb1bad1909be.png" alt="Icons and color" width="500"><br>Icons and color</td>
   <td align="center"><img src="src/screenshots/installer-wallpaper_dark_v4-7ee3602eddd1.png" alt="Wallpaper" width="500"><br>Wallpaper</td>
@@ -345,3 +345,12 @@ installed dependency set. The primary job now uses the official
 running every JavaScript regression. No test is skipped or disabled. The
 release verifier treats CI metadata as nonvisual input; its reuse regression
 includes that case. The README count is 2017 collected cases.
+
+
+## v0.61.11: status icons
+
+Battery and other status icons now use the correct symbolic Mac-style artwork
+and follow light/dark palette changes, including generated icon appearances.
+See the [black/white battery proof and validation report](tests/native/status_icons_validation.md)
+for reviewed VM renderings, source hashes, focused checks, prepared Golden Gate
+results and coverage limits. Full exact-commit branch CI remains the release gate.

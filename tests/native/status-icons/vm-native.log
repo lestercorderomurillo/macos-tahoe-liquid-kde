@@ -1,0 +1,62 @@
+-- The CXX compiler identification is GNU 13.3.0
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Check for working CXX compiler: /usr/bin/c++ - skipped
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+-- Performing Test CMAKE_HAVE_LIBC_PTHREAD
+-- Performing Test CMAKE_HAVE_LIBC_PTHREAD - Success
+-- Found Threads: TRUE
+-- Performing Test HAVE_STDATOMIC
+-- Performing Test HAVE_STDATOMIC - Success
+-- Found WrapAtomic: TRUE
+-- Found OpenGL: /usr/lib/x86_64-linux-gnu/libOpenGL.so
+-- Found WrapOpenGL: TRUE
+-- Found WrapVulkanHeaders: /usr/include
+-- Configuring done (0.3s)
+-- Generating done (0.0s)
+-- Build files have been written to: /home/tester/status-proof/build
+[ 50%] Building CXX object CMakeFiles/status_icon_palette.dir/main.cpp.o
+/home/tester/status-proof/source/main.cpp: In function ‘int main(int, char**)’:
+/home/tester/status-proof/source/main.cpp:38:57: warning: ‘QPixmap KIconLoader::loadScaledIcon(const QString&, Group, qreal, int, int, const QStringList&, QString*, bool) const’ is deprecated: Since 6.31. Use overload with QSize size arg [-Wdeprecated-declarations]
+   38 |                 const auto image = loader.loadScaledIcon(QString::fromLatin1(name), KIconLoader::Panel,
+      |                                    ~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   39 |                     1.0, size, KIconLoader::DefaultState, {}, &path, true).toImage();
+      |                     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+In file included from /usr/include/KF6/KIconThemes/KIconLoader:1,
+                 from /home/tester/status-proof/source/main.cpp:7:
+/usr/include/KF6/KIconThemes/kiconloader.h:341:13: note: declared here
+  341 |     QPixmap loadScaledIcon(const QString &name,
+      |             ^~~~~~~~~~~~~~
+/home/tester/status-proof/source/main.cpp:67:65: warning: ‘QPixmap KIconLoader::loadScaledIcon(const QString&, Group, qreal, int, int, const QStringList&, QString*, bool) const’ is deprecated: Since 6.31. Use overload with QSize size arg [-Wdeprecated-declarations]
+   67 |                         const auto image = loader.loadScaledIcon(name, KIconLoader::Panel, scale, size,
+      |                                            ~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   68 |                             KIconLoader::DefaultState, {}, &path, true).toImage();
+      |                             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/usr/include/KF6/KIconThemes/kiconloader.h:341:13: note: declared here
+  341 |     QPixmap loadScaledIcon(const QString &name,
+      |             ^~~~~~~~~~~~~~
+[100%] Linking CXX executable status_icon_palette
+[100%] Built target status_icon_palette
+MacTahoeLiquidKde-Icons
+2310 status icon renders passed, including light/dark/light
+MacTahoeLiquidKde-Icons-dark
+2310 status icon renders passed, including light/dark/light
+MacTahoeLiquidKde-Icons-Regular-Light
+2310 status icon renders passed, including light/dark/light
+MacTahoeLiquidKde-Icons-Regular-Dark
+2310 status icon renders passed, including light/dark/light
+PRETTY_NAME="KDE neon User Edition"
+NAME="KDE neon"
+VERSION_ID="24.04"
+VERSION="User Edition"
+VERSION_CODENAME=noble
+ID=neon
+ID_LIKE="ubuntu debian"
+HOME_URL="https://neon.kde.org/"
+SUPPORT_URL="https://neon.kde.org/"
+BUG_REPORT_URL="https://bugs.kde.org/"
+PRIVACY_POLICY_URL="https://kde.org/privacypolicy/"
+UBUNTU_CODENAME=noble
+LOGO=start-here-kde-neon6.11.1
+plasmashell 6.8.1
