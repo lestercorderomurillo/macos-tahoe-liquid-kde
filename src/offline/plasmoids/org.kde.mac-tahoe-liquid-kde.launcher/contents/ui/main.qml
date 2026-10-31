@@ -1,3 +1,4 @@
+import org.kde.mac.tahoe.launcher as NativeLauncher
 import QtQuick 2.15
 import QtQuick.Layouts 1.15
 import org.kde.plasma.plasmoid 2.0
@@ -14,15 +15,24 @@ import org.kde.kirigami 2.20 as Kirigami
 PlasmoidItem {
     id: kicker
 
-    // Reserve a full-thickness square cell, like an icons-only task. Plasma's
-    // default applet sizing otherwise caps standalone icons independently.
+    // Prefer a full-thickness cell, but share compression with task cells
+    // when the panel runs out of space.
+    NativeLauncher.DockCell {
+        id: dockCell
+        applet: kicker
+        active: Plasmoid.formFactor === PlasmaCore.Types.Horizontal
+            || Plasmoid.formFactor === PlasmaCore.Types.Vertical
+        vertical: Plasmoid.formFactor === PlasmaCore.Types.Vertical
+    }
     Plasmoid.constraintHints: Plasmoid.CanFillArea
     Layout.fillWidth: Plasmoid.formFactor === PlasmaCore.Types.Vertical
     Layout.fillHeight: Plasmoid.formFactor === PlasmaCore.Types.Horizontal
-    Layout.minimumWidth: Plasmoid.formFactor === PlasmaCore.Types.Horizontal ? height : 0
-    Layout.maximumWidth: Plasmoid.formFactor === PlasmaCore.Types.Horizontal ? height : Infinity
-    Layout.minimumHeight: Plasmoid.formFactor === PlasmaCore.Types.Vertical ? width : 0
-    Layout.maximumHeight: Plasmoid.formFactor === PlasmaCore.Types.Vertical ? width : Infinity
+    Layout.minimumWidth: Plasmoid.formFactor === PlasmaCore.Types.Horizontal ? dockCell.size : 0
+    Layout.preferredWidth: Plasmoid.formFactor === PlasmaCore.Types.Horizontal ? dockCell.size : -1
+    Layout.maximumWidth: Plasmoid.formFactor === PlasmaCore.Types.Horizontal ? dockCell.size : Infinity
+    Layout.minimumHeight: Plasmoid.formFactor === PlasmaCore.Types.Vertical ? dockCell.size : 0
+    Layout.preferredHeight: Plasmoid.formFactor === PlasmaCore.Types.Vertical ? dockCell.size : -1
+    Layout.maximumHeight: Plasmoid.formFactor === PlasmaCore.Types.Vertical ? dockCell.size : Infinity
 
     anchors.fill: parent
 

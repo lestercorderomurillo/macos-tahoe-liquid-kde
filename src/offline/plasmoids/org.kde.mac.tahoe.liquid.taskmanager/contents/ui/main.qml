@@ -57,17 +57,37 @@ PlasmoidItem {
         }
     }
 
+    NativeLauncher.DockCell {
+        applet: tasks
+        active: iconsOnly && (Plasmoid.formFactor === PlasmaCore.Types.Horizontal
+            || Plasmoid.formFactor === PlasmaCore.Types.Vertical)
+        vertical: tasks.vertical
+        taskManager: true
+        count: tasks.vertical ? taskList.rows : taskList.columns
+        spacing: tasks.vertical ? taskList.rowSpacing : taskList.columnSpacing
+    }
+
     Layout.fillWidth: vertical ? true : Plasmoid.configuration.fill
     Layout.fillHeight: !vertical ? true : Plasmoid.configuration.fill
+    Layout.maximumWidth: iconsOnly && !vertical ? taskList.Layout.maximumWidth : Infinity
+    Layout.maximumHeight: iconsOnly && vertical ? taskList.Layout.maximumHeight : Infinity
     Layout.minimumWidth: {
         if (shouldShrinkToZero) {
             return Kirigami.Units.gridUnit; // For edit mode
+        }
+        if (iconsOnly && !vertical) {
+            return taskList.columns * Kirigami.Units.iconSizes.small
+                + Math.max(0, taskList.columns - 1) * taskList.columnSpacing;
         }
         return vertical ? 0 : LayoutMetrics.preferredMinWidth();
     }
     Layout.minimumHeight: {
         if (shouldShrinkToZero) {
             return Kirigami.Units.gridUnit; // For edit mode
+        }
+        if (iconsOnly && vertical) {
+            return taskList.rows * Kirigami.Units.iconSizes.small
+                + Math.max(0, taskList.rows - 1) * taskList.rowSpacing;
         }
         return !vertical ? 0 : LayoutMetrics.preferredMinHeight();
     }

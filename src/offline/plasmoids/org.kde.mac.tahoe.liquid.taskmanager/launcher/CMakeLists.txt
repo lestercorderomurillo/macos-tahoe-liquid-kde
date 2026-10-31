@@ -15,12 +15,14 @@ execute_process(COMMAND "${qt_wayland_scanner}" client-header "${shell_protocol}
     COMMAND_ERROR_IS_FATAL ANY)
 set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS "${shell_protocol}")
 set(launcher_module_dir "${CMAKE_BINARY_DIR}/bin/org/kde/mac/tahoe/launcher")
+set_source_files_properties(DockMetrics.qml PROPERTIES QT_QML_SINGLETON_TYPE TRUE)
+
 qt_add_qml_module(mactahoelauncher
     URI org.kde.mac.tahoe.launcher
     VERSION 1.0
     PLUGIN_TARGET mactahoelauncher
     OUTPUT_DIRECTORY "${launcher_module_dir}"
-    QML_FILES DockIcon.qml
+    QML_FILES DockIcon.qml DockCell.qml DockMetrics.qml
     SOURCES launchersearchpopup.cpp launchersearchpopup.h iconthemewatcher.h
 )
 # Only the scanner is needed from Qt Wayland. PlasmaQuick owns the client;
