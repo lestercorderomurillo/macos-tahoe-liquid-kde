@@ -24,15 +24,14 @@ def version(value):
 class PublishedSnapshot:
     """A published release plus its canonical remote ref advertisement.
 
-    The resolver, not VERSION or a local tag, supplies this proof. Descendants
-    are remote main/dev commits whose ancestry was verified on the server when
-    their objects are not already available locally.
+    The resolver, not VERSION or a local tag, supplies this proof. Advertised
+    remote roles may include unpublished commits unavailable locally; auditing
+    retained cache positions does not require fetching that work.
     """
     repository: str
     version: str
     commit: str
     refs: dict[str, str]
-    descendants: frozenset[str] = frozenset()
 
 
 @dataclass(frozen=True)
@@ -164,6 +163,8 @@ def _inspect(root, directory, published, plan):
                  '--batch-check=%(objectname)').splitlines()}
 
     def source_version(tip):
+        if tip not in available:
+            return None
         tree = git(root, 'ls-tree', tip, '--', 'VERSION')
         fields = tree.stdout.split()
         if tree.returncode or len(fields) < 3 or fields[2] not in available:
@@ -249,13 +250,10 @@ def _inspect(root, directory, published, plan):
             remote_name = 'refs/heads/' + branch
             if branch in ('main', 'dev'):
                 remote_tip = canonical.get(remote_name)
-                if not remote_tip or not (ancestor(published.commit, remote_tip)
-                                          or remote_tip in published.descendants):
-                    return reject('remote-role-ancestry-unverified', 'unverified')
-                if object_id != remote_tip:
-                    if not ancestor(object_id, published.commit):
-                        return reject('unpublished-cached-role')
-                    # Preserve cached main/dev positions.
+                # Cached role positions stay unchanged even when the server
+                # has newer unpublished work that is not available locally.
+                if object_id != remote_tip and not ancestor(object_id, published.commit):
+                    return reject('unpublished-cached-role')
             else:
                 if object_id != canonical.get(remote_name):
                     return reject('unpublished-cached-branch')

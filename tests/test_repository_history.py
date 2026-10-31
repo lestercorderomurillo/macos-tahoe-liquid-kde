@@ -190,11 +190,28 @@ def test_local_version_and_tag_names_are_not_publication_proof(released):
     assert inspect_history(root, forged).mode == 'unverified'
 
 
-def test_missing_remote_ancestry_requires_proof_instead_of_discarding_data(released):
+def test_unfetched_remote_work_does_not_block_a_verified_public_cache(released):
+    root, proof, old = released
+    proof.refs['refs/heads/dev'] = 'a' * 40
+    before = state(root)
+    plan = inspect_history(root, proof)
+    assert plan.mode == 'installation', plan
+    assert not any(change.name in ('refs/heads/main', 'refs/heads/dev',
+                                  'refs/remotes/origin/main', 'refs/remotes/origin/dev')
+                   for change in plan.changes)
+    assert state(root) == before
+
+
+def test_unavailable_canonical_tag_metadata_is_not_lazily_fetched(released, monkeypatch):
+    import repository_history
     root, proof, old = released
     unknown = 'a' * 40
-    proof.refs['refs/heads/dev'] = unknown
-    assert inspect_history(root, proof).mode == 'unverified'
-    verified = PublishedSnapshot(proof.repository, proof.version, proof.commit,
-                                 proof.refs, frozenset({unknown}))
-    assert inspect_history(root, verified).mode == 'installation'
+    proof.refs['refs/tags/v0.0.1'] = unknown
+    original = repository_history.git
+    def checked(root, *args, **kw):
+        assert args[:2] != ('ls-tree', unknown), 'Missing metadata must not be fetched'
+        return original(root, *args, **kw)
+    monkeypatch.setattr(repository_history, 'git', checked)
+    before = state(root)
+    assert inspect_history(root, proof).mode == 'installation'
+    assert state(root) == before

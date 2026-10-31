@@ -488,3 +488,30 @@ def test_legacy_shallow_development_source_is_not_migrated(history, monkeypatch,
     assert (legacy / '.git/shallow').read_bytes() == shallow
     assert (legacy / '.git/config').read_bytes() == config
     assert git(legacy, 'rev-parse', 'HEAD') == head
+
+
+def test_legacy_release_migrates_while_remote_main_has_unpublished_work(history, monkeypatch):
+    root, remote, release = history
+    legacy = root.with_name('legacy-remote-ahead')
+    subprocess.run(['git', 'clone', '-q', '--no-local', '--depth=1',
+                    str(remote), str(legacy)], check=True)
+    project = 'lestercorderomurillo/macos-tahoe-liquid-kde'
+    git(legacy, 'remote', 'set-url', 'origin', f'https://github.com/{project}.git')
+    git(legacy, 'config', f'url.file://{remote}.insteadOf', f'https://github.com/{project}.git')
+    published = git(remote, 'rev-parse', 'v1.0.8')
+    (remote / 'agent-work').write_text('unpublished work with unchanged VERSION')
+    git(remote, 'add', 'agent-work')
+    git(remote, 'commit', '-qm', 'unpublished agent work')
+    unpublished = git(remote, 'rev-parse', 'HEAD')
+    refs = dict(line.split('\t')[::-1] for line in git(remote, 'ls-remote', '.').splitlines()
+                if '\trefs/' in line)
+    monkeypatch.setattr(cache, 'published_snapshot', lambda root, project:
+                        PublishedSnapshot(project, '1.0.8', published, refs))
+    result = cache.trim_published_cache(legacy)
+    assert result['status'] == 'ok', result
+    assert not (legacy / '.git/shallow').exists()
+    assert git(legacy, 'rev-parse', 'HEAD') == published
+    assert unpublished not in available(legacy)
+    assert not (legacy / 'agent-work').exists()
+    assert (remote / 'agent-work').read_text() == 'unpublished work with unchanged VERSION'
+    git(legacy, 'fsck', '--full')
