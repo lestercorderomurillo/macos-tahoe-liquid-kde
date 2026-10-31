@@ -532,7 +532,7 @@ Item {
     function panels() { return [{widgets: function() { return dock.filter(w => removed.indexOf(w.id)<0); }},
                                {widgets: function() { return topWidgets; }}]; }
     function migrate() { SCRIPT }
-    Component.onCompleted: {
+    Timer { interval: 1; running: true; onTriggered: {
         const launcher = "org.kde.mac-tahoe-liquid-kde.launcher";
         const tasks = "org.kde.mac.tahoe.liquid.icontasks";
         const trash = "org.kde.mac-tahoe-liquid-kde.trashcan";
@@ -549,7 +549,7 @@ Item {
             console.error("DOCK_MIGRATION_FAILED", JSON.stringify(removed)); Qt.exit(1); return;
         }
         console.info("DOCK_MIGRATION_OK"); Qt.exit(0);
-    }
+    }}
 }'''.replace('SCRIPT', script)
     path = tmp_path / 'DockMigration.qml'
     path.write_text(qml)

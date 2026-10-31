@@ -1,15 +1,12 @@
 # Installer testing
 
-Tahoe **v0.61.17** is the latest verified release documented here.
+Tahoe **v0.61.18** is the latest verified release documented here.
 The installer photographs below were captured in a disposable KDE Plasma VM
 and reviewed before publication; their hashes and provenance are retained.
 
-Nautilus toolbar validation passed 72 native GTK pixel comparisons,
-52 focused asset/lifecycle checks, 120 theme-switch checks and 22 prepared
-Golden Gate checks. The pre-fix control detected the square-button regression.
-See the [validation report](tests/native/nautilus_toolbar_validation.md) for
-commands, source identities, CI gates and coverage limits; the native probe
-models Nautilus’s selector migration rather than qualifying the full new app.
+Dock boundary spacing and upgrade preservation passed focused QML and installer
+checks. See the [Dock validation report](tests/native/dock_alignment_validation.md)
+for resize/scaling evidence, commands, source identities and coverage limits.
 
 ## Installation steps
 
