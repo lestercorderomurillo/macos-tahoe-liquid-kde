@@ -354,3 +354,8 @@ and follow light/dark palette changes, including generated icon appearances.
 See the [black/white battery proof and validation report](tests/native/status_icons_validation.md)
 for reviewed VM renderings, source hashes, focused checks, prepared Golden Gate
 results and coverage limits. Full exact-commit branch CI remains the release gate.
+
+The primary CI result is 2,013 passed and 11 existing conditional skips, out of
+2,024 collected cases. All new status-icon tests ran. The validation report
+lists the skipped X11, Rounded Corners archive and native Kvantum checks;
+these are coverage limits and are excluded from the passing badge.

@@ -95,6 +95,14 @@ command with each installed base and generated theme to cover its lookup path.
 
 ## Release evidence and limits
 
+The primary CI jobs report **2,013 passed and 11 skipped**, from 2,024
+collected cases. Every new status-icon test ran. The existing conditional skips
+are one opt-in X11 plugin smoke check, three checks requiring the externally
+supplied pinned Rounded Corners archive, and seven native Kvantum checks when
+that style plugin is unavailable in the primary container. Those unchanged
+backend/style checks are coverage limits and are excluded from the passing
+count. The VM rendering and capture evidence above is recorded separately.
+
 The full suite and configured distro matrix belong to required `test.yml`
 push runs on the exact v0.61.11 commits on both `main` and `dev` in both
 repositories. Release workflows enforce this gate; development evidence does
