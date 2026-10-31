@@ -57,3 +57,24 @@ These checks do not establish all monitor, GPU, resolution or distro
 combinations or pointer-driven drag sequences. Exact-commit CI and
 publication captures are separate release gates. Unrelated Downloads and
 battery changes are excluded from the isolated release candidate.
+
+
+## Final focused integration
+
+Code candidate `80403fd7d3de2de2de1e9aceadade50222ba5c5f`:
+
+- `python -m pytest -p no:cacheprovider tests/test_launcher_presets.py tests/test_taskmanager_qml.py -k 'not native_launcher_popup' -q`:
+  48 passed, eight popup cases deselected (already rerun separately after the
+  same panel-root change: eight passed).
+- Golden Gate prepared content `bb62d6ffe74a3fcc58d2`, staged from that isolated
+  candidate using the explicit source override and no-update flag:
+  `python -m pytest -p no:cacheprovider tests/test_launcher_presets.py -k 'custom_dock or follow_panel_thickness or installed_launcher' -q`:
+  12 passed. No unpublished Downloads or battery work is in this candidate.
+
+Publication requires a complete newly reviewed capture bundle from this candidate
+and exact-release-commit push CI on both branches. Rejected frames and incomplete sets are excluded from publication.
+The first complete Tahoe edition capture passed review. When the Golden Gate
+system menu did not open after its scripted click, that edition was retried in
+a fresh pinned VM. Passing Tahoe frames retain their original source/profile,
+hashes and capture provenance; the combined set must pass the unmodified
+90-frame validator. No failed Golden Gate frame is filled with an older one.
