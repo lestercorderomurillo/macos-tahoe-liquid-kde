@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 #include <QGuiApplication>
+#include <QIcon>
 #include <QQmlComponent>
 #include <QQmlEngine>
 #include <QQuickView>
@@ -12,6 +13,10 @@ int main(int argc, char **argv)
     QGuiApplication app(argc, argv);
     if (argc != 2) {
         return 2;
+    }
+    const QString iconTheme = qEnvironmentVariable("DOCK_ICON_THEME");
+    if (!iconTheme.isEmpty()) {
+        QIcon::setThemeName(iconTheme);
     }
     QQuickView view;
     QObject::connect(view.engine(), &QQmlEngine::exit, &app, [&view, &app](int code) {
