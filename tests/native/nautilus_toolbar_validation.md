@@ -11,7 +11,10 @@ GTK3, geometry, colors, edition defaults and saved settings are unchanged.
 
 ## Focused checks
 
-Source: `c421178` plus this release's two GTK4 stylesheets. Final SHA-256:
+Focused source: `7fcc729` plus this release's two GTK4 stylesheets. The
+release candidate also includes the concurrent Dock changes through
+`c421178`; they leave these GTK inputs unchanged, so the focused evidence is
+reused. Final stylesheet SHA-256:
 
 | Stylesheet | SHA-256 |
 | --- | --- |
