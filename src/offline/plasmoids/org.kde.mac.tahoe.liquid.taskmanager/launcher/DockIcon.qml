@@ -13,7 +13,9 @@ Item {
     property bool normalizeTrashArtwork: false
     // Bundled trash bodies occupy 53/64 vertically; app tiles occupy 56/64.
     // Correct their artwork padding without changing panel cells or task margins.
+    // At 24px and below the theme uses separate small glyphs, not this artwork.
     readonly property bool normalizedTrash: normalizeTrashArtwork && inPanel
+        && Math.min(iconBox.width, iconBox.height) > 24
         && (String(source) === "user-trash" || String(source) === "user-trash-full")
     readonly property real artworkScale: normalizedTrash ? 56 / 53 : 1
     property int location: PlasmaCore.Types.BottomEdge

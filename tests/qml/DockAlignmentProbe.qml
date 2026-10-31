@@ -31,7 +31,8 @@ Item {
     }
 
     function compareTrashArtwork() {
-        const corrected = custom.inPanel && trash.source !== "folder";
+        const corrected = custom.inPanel && trash.source !== "folder"
+            && Math.min(custom.iconItem.width, custom.iconItem.height) > 24;
         const factor = corrected ? 56 / 53 : 1;
         root.compare(trash.iconItem.width, custom.iconItem.width * factor);
         root.compare(trash.iconItem.height, custom.iconItem.height * factor);
