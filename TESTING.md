@@ -1,20 +1,17 @@
 # Installer testing
 
-Tahoe **v0.61.13** is the latest verified release documented here.
-The installer photographs below were captured in a disposable KDE Plasma VM
-and reviewed before publication; their original hashes and provenance are retained.
+Tahoe **v0.61.16** validates the Dock's Trash artwork sizing with 48 focused
+checks, eight native popup checks and prepared Golden Gate regressions.
+The geometry probe covers seven scales, four edges and successive resize/aspect
+changes. Twenty reviewed disposable-VM frames cover empty/full Trash in both
+modes at 1×, 1.5× and 2× with representative panel sizes. Physical GPUs and
+mixed-DPI monitors remain untested; the earlier panel-allocation evidence is retained.
 
-Dock validation records 48 focused checks, eight native popup checks and
-12 prepared Golden Gate checks. The geometry probe covers seven scale factors,
-four panel edges and successive resize/aspect changes. The Trash artwork now
-matches the application-tile body height while preserving small and custom icons.
-Twenty fresh light/dark optical frames cover empty/full Trash at 1×, 1.5×
-and 2× with representative panel sizes. The earlier 112-state installed-panel
-allocation checks remain applicable.
-Physical GPUs, mixed-DPI monitors and every pointer-drag path remain untested.
-
-See the [validation report](tests/native/dock_alignment_validation.md) for commands, source identities, results
-and coverage limits, and [CONTRIBUTING.md](CONTRIBUTING.md) for the testing and capture workflow.
+See the [Dock validation report](tests/native/dock_alignment_validation.md) for
+commands, source identities and limits, and the [storage maintenance report](tests/repository_maintenance_validation.md)
+for the preserved installer checks. Publication photographs retain their reviewed
+v0.61.13 capture provenance; the subsequent version and console-only maintenance
+changes do not change their visual inputs.
 
 ## Installation steps
 

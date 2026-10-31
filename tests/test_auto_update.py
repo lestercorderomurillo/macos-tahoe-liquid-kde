@@ -109,6 +109,8 @@ def test_edit_during_fetch_prevents_update(releases, monkeypatch):
     assert not restarts
 
 
+
+
 @pytest.mark.parametrize('args,updates', [([], True), (['--uninstall'], False), (['--check-update'], False)])
 def test_gui_entry_checks_update_before_opening(monkeypatch, args, updates):
     calls = []

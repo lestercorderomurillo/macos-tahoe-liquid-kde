@@ -19,6 +19,37 @@ def write_json(path, value):
     path.write_text(json.dumps(value, indent=2) + '\n')
 
 
+def test_console_maintenance_preserves_visual_fingerprint_but_ui_changes_do_not(tmp_path):
+    subprocess.run(['git', 'init', '-q', str(tmp_path)], check=True)
+    installer = tmp_path / 'installer'
+    baseline = 'import sys\nfrom installer_ui import main\nmain(sys.argv[1:])\n'
+    installer.write_text(baseline)
+    (tmp_path / 'install').write_text(baseline)
+    scripts = tmp_path / 'src/scripts'
+    scripts.mkdir(parents=True)
+    localization = scripts / 'localization.py'
+    localization.write_text('_ES = {"Install": "Instalar"}\n')
+    before = commit(tmp_path)
+    branch = ('if sys.argv[1:] == ["--free-space"]:\n'
+              '    from repository_maintenance import main\n'
+              '    raise SystemExit(main([]))\n'
+              'if os.environ.get("MAC_TAHOE_UPDATED") == "1":\n'
+              '    from repository_maintenance import main\n'
+              '    main(["--auto"])\n')
+    (scripts / 'repository_maintenance.py').write_text('# console-only Git maintenance\n')
+    localization.write_text('_ES = {"Install": "Instalar", "Compacting Git storage: {path}": "Compactando: {path}"}\n')
+    installer.write_text(branch + baseline)
+    after = commit(tmp_path)
+    assert shots.visual_tree(tmp_path, before) == shots.visual_tree(tmp_path, after)
+    installer.write_text(branch + baseline.replace('main(sys.argv[1:])', 'main(["--uninstall"])'))
+    changed = commit(tmp_path)
+    assert shots.visual_tree(tmp_path, before) != shots.visual_tree(tmp_path, changed)
+    installer.write_text(branch + baseline)
+    localization.write_text('_ES = {"Install": "New visible label"}\n')
+    changed_label = commit(tmp_path)
+    assert shots.visual_tree(tmp_path, before) != shots.visual_tree(tmp_path, changed_label)
+
+
 @pytest.fixture
 def capture(tmp_path, monkeypatch):
     Image = pytest.importorskip('PIL.Image')
