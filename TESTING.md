@@ -1,18 +1,16 @@
 # Installer testing
 
-Tahoe **v0.61.11** is the latest verified release documented here.
+Tahoe **v0.61.12** is the latest verified release documented here.
 The installer photographs below were captured in a disposable KDE Plasma VM
 and reviewed before publication; their original hashes and provenance are retained.
 
-Status-icon validation covers both editions, palette changes and generated
-appearances: 56 focused Tahoe checks, 53 prepared Golden Gate checks,
-80 wrapper checks, 32,340 native host renders and 9,240 native renders in
-KDE neon (Plasma 6.8.1, Qt 6.11.1, Wayland). Recorded primary CI results:
-2,013 passed and 11 conditional skips. Skipped X11, external Rounded Corners
-archive and native Kvantum checks remain coverage limits; battery rendering
-does not establish hardware-telemetry qualification.
+Dock validation records 48 focused checks, eight native popup checks and
+12 prepared Golden Gate checks. The disposable KDE neon VM (Plasma 6.8.1,
+Qt 6.11.1) passed 112 installed-Dock combinations across seven scale factors,
+four panel edges and four sizes; six light/dark frames were reviewed.
+These results do not establish every GPU, monitor, distro or pointer-drag path.
 
-See the [validation report](tests/native/status_icons_validation.md) for commands, source identities, results
+See the [validation report](tests/native/dock_alignment_validation.md) for commands, source identities, results
 and coverage limits, and [CONTRIBUTING.md](CONTRIBUTING.md) for the testing and capture workflow.
 
 ## Installation steps
