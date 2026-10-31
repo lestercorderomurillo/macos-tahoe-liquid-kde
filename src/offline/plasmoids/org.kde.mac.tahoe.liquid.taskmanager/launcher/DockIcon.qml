@@ -15,7 +15,7 @@ Item {
     // Correct their artwork padding without changing panel cells or task margins.
     // At 24px and below the theme uses separate small glyphs, not this artwork.
     readonly property bool normalizedTrash: normalizeTrashArtwork && inPanel
-        && Math.min(iconBox.width, iconBox.height) > 24
+        && Math.min(icon.paintedWidth, icon.paintedHeight) > 24
         && (String(source) === "user-trash" || String(source) === "user-trash-full")
     readonly property real artworkScale: normalizedTrash ? 56 / 53 : 1
     property int location: PlasmaCore.Types.BottomEdge
@@ -64,12 +64,14 @@ Item {
             id: icon
             // Let Kirigami fit the artwork inside the same rectangular box
             // as Task.qml, including device-pixel rounding at fractional scales.
-            x: (parent.width - width) / 2
+            // Preserve Kirigami's task-size rounding and small-icon selection;
+            // enlarge only the resulting artwork, not its requested icon size.
+            width: parent.width
+            height: parent.height
+            scale: root.artworkScale
             // The trash body is centred at y=32.5 in its 64px canvas.
-            y: (parent.height - height) / 2 - (root.normalizedTrash
-                ? Math.min(parent.width, parent.height) * root.artworkScale / 128 : 0)
-            width: parent.width * root.artworkScale
-            height: parent.height * root.artworkScale
+            y: root.normalizedTrash
+                ? -Math.min(paintedWidth, paintedHeight) * root.artworkScale / 128 : 0
             smooth: true
         }
     }

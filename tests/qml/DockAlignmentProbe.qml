@@ -32,13 +32,16 @@ Item {
 
     function compareTrashArtwork() {
         const corrected = custom.inPanel && trash.source !== "folder"
-            && Math.min(custom.iconItem.width, custom.iconItem.height) > 24;
+            && Math.min(trash.iconItem.paintedWidth, trash.iconItem.paintedHeight) > 24;
         const factor = corrected ? 56 / 53 : 1;
-        root.compare(trash.iconItem.width, custom.iconItem.width * factor);
-        root.compare(trash.iconItem.height, custom.iconItem.height * factor);
+        root.compare(trash.iconItem.width, custom.iconItem.width);
+        root.compare(trash.iconItem.height, custom.iconItem.height);
         const base = custom.iconItem.mapToItem(custom, custom.iconItem.width / 2, custom.iconItem.height / 2);
         const actual = trash.iconItem.mapToItem(trash, trash.iconItem.width / 2, trash.iconItem.height / 2);
-        const size = Math.min(custom.iconItem.width, custom.iconItem.height);
+        const size = Math.min(custom.iconItem.paintedWidth, custom.iconItem.paintedHeight);
+        root.compare(trash.iconItem.scale, factor);
+        root.compare(trash.iconItem.paintedWidth, custom.iconItem.paintedWidth);
+        root.compare(trash.iconItem.paintedHeight, custom.iconItem.paintedHeight);
         root.compare(actual.x, base.x);
         if (corrected) {
             // Compare the real SVG body bounds (y=6..59) with app tiles
