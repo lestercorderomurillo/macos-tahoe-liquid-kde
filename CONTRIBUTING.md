@@ -32,6 +32,25 @@ cd macos-tahoe-liquid-kde
 ./test --vm          # plymouth render harness (requires root, see tests/vm/)
 ```
 
+### Installer storage maintenance
+
+After a verified update, both installers ask Git to perform maintenance only
+when its own thresholds require it. `./installer --free-space` (also available
+through `./install`) requests a full, ordinary Git repack and reports the actual
+allocated space recovered. It does not launch an installation or query releases.
+Golden Gate also retires its unused prepared sources after a replacement is
+ready, preserving snapshots still used by another installer.
+
+Maintenance preserves `.git`, commits, branches, tags, stashes, reflogs, index
+contents and working files. It disables object pruning and reflog expiry even
+when local Git settings enable them. Linked worktrees and shared object stores
+are left alone; a maintenance failure never prevents an otherwise valid update.
+Compaction needs temporary disk space and may recover little from an already
+packed clone. Historical assets referenced by retained commits remain stored;
+use a new shallow clone when a smaller history is desired, after saving local
+work. Archives have no Git history to compact. No installed desktop assets,
+settings, uninstall backups or arbitrary build directories are removed.
+
 For the focused dinit integration probe, build and run the official Artix image
 with dinit as PID 1 and a real cron daemon. The repository mount stays read-only;
 the jobs run as the disposable `tester` user. No privileged container is needed:

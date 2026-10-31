@@ -65,7 +65,7 @@ def visual_tree(repo: Path, ref: str) -> str:
     """Conservative visual inputs; unknown runtime changes require new evidence.
 
     Keep runtime_tree unchanged so historical manifest hashes remain verifiable.
-    Only console updater functions/messages are excluded from application code.
+    Console updater and repository maintenance commands have no rendered output.
     """
     updater_messages = {
         'Update available: {current} → {latest}',
@@ -80,13 +80,23 @@ def visual_tree(repo: Path, ref: str) -> str:
         metadata, raw_path = entry.split(b'\t', 1)
         path = raw_path.decode()
         if (path == 'VERSION' or path.endswith('.md') or path.startswith(('tests/', 'src/screenshots/', '.github/'))
-                or path in ('src/scripts/release_screenshots.py', 'src/scripts/release_screenshots_cli.py')):
+                or path in ('src/scripts/release_screenshots.py', 'src/scripts/release_screenshots_cli.py',
+                            'src/scripts/repository_maintenance.py')):
             continue
         if path == 'src/scripts/cli.py':
             module = ast.parse(blob(repo, ref, path))
             module.body = [node for node in module.body if not (
                 isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)) and
                 node.name in ('auto_update_and_reexec', '_repo_is_clean_git_checkout'))]
+            content = ast.dump(module, include_attributes=False).encode()
+        elif path in ('install', 'installer'):
+            module = ast.parse(blob(repo, ref, path))
+            # This branch exits before loading the wizard and is reachable only
+            # through the explicit console maintenance command. Keep every
+            # other entry-point statement in the visual fingerprint.
+            maintenance_test = ast.dump(ast.parse('sys.argv[1:] == ["--free-space"]', mode='eval').body)
+            module.body = [node for node in module.body if not (
+                isinstance(node, ast.If) and ast.dump(node.test) == maintenance_test)]
             content = ast.dump(module, include_attributes=False).encode()
         elif path.startswith('src/scripts/locales/') and path.endswith('.json'):
             catalog = json.loads(blob(repo, ref, path))
