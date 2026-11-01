@@ -98,6 +98,8 @@ def save(widget, destination):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--output', required=True, type=Path)
+    parser.add_argument('--theme-variant', choices=('Light', 'Dark'),
+                        help='Exercise the adaptive sheets copied from this installed theme')
     args = parser.parse_args()
     require_virtual_machine()
     args.output.mkdir(parents=True, exist_ok=False)
@@ -120,7 +122,9 @@ def main():
     window.set_focus(None)
     results = []
     for mode in ('Light', 'Dark', 'Light'):
-        css = ROOT / f'src/offline/gtk/MacTahoeLiquidKde-{mode}/gtk-4.0/gtk.css'
+        variant = args.theme_variant or mode
+        filename = f'gtk-{mode}.css' if args.theme_variant else 'gtk.css'
+        css = ROOT / f'src/offline/gtk/MacTahoeLiquidKde-{variant}/gtk-4.0/{filename}'
         provider = Gtk.CssProvider()
         errors = []
         provider.connect('parsing-error', lambda _p, _s, error: errors.append(str(error)))

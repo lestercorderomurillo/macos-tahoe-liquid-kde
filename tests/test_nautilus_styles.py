@@ -7,10 +7,11 @@ import theme_switch
 
 
 @pytest.mark.parametrize('mode', ['Light', 'Dark'])
-@pytest.mark.parametrize('gtk_version', [(4, 14), (4, 16)])
-def test_legacy_and_class_based_nautilus_share_toolbar_rules(repo, monkeypatch, mode, gtk_version):
+@pytest.mark.parametrize('filename', ['gtk.css', 'gtk-Light.css', 'gtk-Dark.css', 'gtk-dark.css'])
+@pytest.mark.parametrize('gtk_version', [(4, 14), (4, 16), (4, 22)])
+def test_legacy_and_class_based_nautilus_share_toolbar_rules(repo, monkeypatch, mode, filename, gtk_version):
     monkeypatch.setattr(theme_switch, '_gtk4_version', lambda: gtk_version)
-    path = repo / f'src/offline/gtk/MacTahoeLiquidKde-{mode}/gtk-4.0/gtk.css'
+    path = repo / f'src/offline/gtk/MacTahoeLiquidKde-{mode}/gtk-4.0/{filename}'
     css = theme_switch.gtk4_compatible_css(path.read_text())
     css = re.sub(r'/\*.*?\*/', '', css, flags=re.S)
     names = {
