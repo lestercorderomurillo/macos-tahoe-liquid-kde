@@ -431,3 +431,42 @@ def test_nonvisual_release_publishes_current_version_without_relabeling_images(c
     assert calls == [['gh', 'release', 'create', 'v1.2.4', '--verify-tag',
                       '--title', 'v1.2.4', '--generate-notes']]
     assert shots.verify_committed(repo, final)['version'] == '1.2.3'
+
+def test_clock_readiness_preserves_photos_but_mode_and_service_changes_do_not(tmp_path):
+    subprocess.run(['git', 'init', '-q', str(tmp_path)], check=True)
+    scripts = tmp_path / 'src/scripts'
+    scripts.mkdir(parents=True)
+    switcher = scripts / 'theme_switch.py'
+    baseline = ('def detect_mode_by_time():\n    return "dark"\n'
+                'def apply(mode):\n    return "rendered palette"\n'
+                'def main(argv):\n    mode = argv[0]\n'
+                '    if mode == "auto":\n        mode = detect_mode_by_time()\n'
+                '    return apply(mode)\n')
+    switcher.write_text(baseline)
+    offline = tmp_path / 'src/offline'
+    offline.mkdir()
+    service = offline / 'mac-tahoe-liquid-kde-theme.service'
+    service.write_text('[Service]\nExecStart=%h/.local/bin/mac-tahoe-theme-switch auto\n')
+    before = commit(tmp_path)
+    guard = ('        if not wait_for_clock_sync():\n'
+             '            print("theme apply: waiting for clock synchronization; "\n'
+             '                  "automatic service will retry", file=sys.stderr)\n'
+             '            return 75\n')
+    synchronized = ('def wait_for_clock_sync():\n    return True\n' +
+                    baseline.replace('        mode = detect_mode_by_time()\n',
+                                     guard + '        mode = detect_mode_by_time()\n'))
+    switcher.write_text(synchronized)
+    service.write_text(service.read_text() +
+                      '# Clock retry\nRestartForceExitStatus=75\nRestartSec=15s\nTimeoutStartSec=3min\n')
+    after = commit(tmp_path)
+    assert shots.visual_tree(tmp_path, before) == shots.visual_tree(tmp_path, after)
+    for change in (synchronized.replace('return "dark"', 'return "light"'),
+                   synchronized.replace('rendered palette', 'changed palette'),
+                   synchronized.replace('return 75', 'return 0')):
+        switcher.write_text(change)
+        changed = commit(tmp_path)
+        assert shots.visual_tree(tmp_path, before) != shots.visual_tree(tmp_path, changed)
+    switcher.write_text(synchronized)
+    service.write_text(service.read_text().replace('theme-switch auto', 'theme-switch light'))
+    changed = commit(tmp_path)
+    assert shots.visual_tree(tmp_path, before) != shots.visual_tree(tmp_path, changed)

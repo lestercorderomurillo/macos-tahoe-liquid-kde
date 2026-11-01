@@ -106,8 +106,15 @@ Live theme switch without restarting the session:
 ```sh
 mac-tahoe-theme-switch dark      # explicit
 mac-tahoe-theme-switch light
-mac-tahoe-theme-switch auto      # re-enable the 06:00 / 18:00 timer
+mac-tahoe-theme-switch auto      # apply the mode for the current time
 ```
+
+In automatic mode, the systemd user service waits for enabled NTP to synchronize
+before choosing light (06:00–18:00) or dark. This handles an incorrect dual-boot
+RTC at login. Each wait is bounded to 30 seconds; exit status 75 retries after
+15 seconds while preserving the current appearance. Manual choices, disabled
+NTP and non-systemd scheduling retain their existing behavior. The switcher
+never changes the hardware clock, timezone or NTP configuration.
 
 Reload Plasma after a manual fix without a full logout:
 

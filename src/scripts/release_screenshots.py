@@ -100,6 +100,33 @@ def visual_tree(repo: Path, ref: str) -> str:
                 isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)) and
                 node.name in ('auto_update_and_reexec', '_update_published_checkout', '_repo_is_clean_git_checkout', '_git'))]
             content = ast.dump(module, include_attributes=False).encode()
+        elif path == 'src/scripts/theme_switch.py':
+            module = ast.parse(blob(repo, ref, path))
+            # Clock readiness affects when a scheduled transition runs, not
+            # the rendering of either mode. Keep the mode selection and every
+            # apply/render function in the fingerprint.
+            module.body = [node for node in module.body if not (
+                isinstance(node, ast.FunctionDef) and node.name == 'wait_for_clock_sync')]
+            readiness_guard = ast.dump(ast.parse(
+                'if not wait_for_clock_sync():\n'
+                '    print("theme apply: waiting for clock synchronization; "\n'
+                '          "automatic service will retry", file=sys.stderr)\n'
+                '    return 75').body[0])
+            for node in ast.walk(module):
+                if isinstance(node, ast.FunctionDef) and node.name == 'main':
+                    for statement in ast.walk(node):
+                        if isinstance(statement, ast.If):
+                            statement.body = [child for child in statement.body
+                                              if ast.dump(child) != readiness_guard]
+            content = ast.dump(module, include_attributes=False).encode()
+        elif path == 'src/offline/mac-tahoe-liquid-kde-theme.service':
+            # Only the known clock-readiness retry policy is nonvisual. Changes
+            # to ExecStart, ordering or other service behavior remain visible.
+            retry_settings = {'RestartForceExitStatus=75', 'RestartSec=15s',
+                              'TimeoutStartSec=3min'}
+            content = '\n'.join(line.strip() for line in blob(repo, ref, path).decode().splitlines()
+                                if line.strip() and not line.lstrip().startswith('#')
+                                and line.strip() not in retry_settings).encode()
         elif path in ('install', 'installer'):
             module = ast.parse(blob(repo, ref, path))
             # These branches maintain storage before the wizard is loaded.
