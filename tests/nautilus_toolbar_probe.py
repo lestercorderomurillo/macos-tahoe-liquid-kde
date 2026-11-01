@@ -139,14 +139,17 @@ def main():
                     set_direction(child)
                     child = child.get_next_sibling()
             set_direction(window)
-            for state in ('normal', 'hover', 'active', 'checked', 'backdrop', 'disabled'):
+            for state in ('normal', 'hover', 'active', 'checked', 'backdrop', 'disabled',
+                          'backdrop-hover', 'backdrop-checked', 'checked-hover', 'disabled-checked'):
                 for case, widgets in pairs:
                     files = []
                     for index, (bar, button) in enumerate(widgets):
-                        flags = getattr(Gtk.StateFlags, {'normal': 'NORMAL', 'hover': 'PRELIGHT', 'active': 'ACTIVE',
-                                                       'checked': 'CHECKED', 'backdrop': 'BACKDROP', 'disabled': 'INSENSITIVE'}[state])
+                        flags = Gtk.StateFlags.NORMAL
+                        for part in state.split('-'):
+                            flags |= getattr(Gtk.StateFlags, {'normal': 'NORMAL', 'hover': 'PRELIGHT', 'active': 'ACTIVE',
+                                                              'checked': 'CHECKED', 'backdrop': 'BACKDROP', 'disabled': 'INSENSITIVE'}[part])
                         button.set_state_flags(flags, True)
-                        bar.set_state_flags(Gtk.StateFlags.BACKDROP if state == 'backdrop' else Gtk.StateFlags.NORMAL, True)
+                        bar.set_state_flags(Gtk.StateFlags.BACKDROP if 'backdrop' in state else Gtk.StateFlags.NORMAL, True)
                         settle()
                         path = args.output / f'{len(results):03}-{mode}-{direction.value_nick}-{case}-{state}-{index}.png'
                         save(bar, path)
