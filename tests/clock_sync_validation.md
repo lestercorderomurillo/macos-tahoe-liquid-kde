@@ -50,6 +50,8 @@ with its edition defaults. The combined seven-file selection above passed all
 
 Publication requires successful `test.yml` push runs on both `main` and `dev`
 for each exact release commit, followed by the guarded release workflows.
+An initial v0.61.20 CI run caught the stale README test-count badge (2124
+instead of 2138); the badge was corrected before the final exact-SHA runs.
 These runs supply the full shared suite and configured distro matrix; local
 focused checks do not substitute for that gate. Consult the immutable release
 commit's GitHub Actions runs for the final CI results.
