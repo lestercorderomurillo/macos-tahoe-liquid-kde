@@ -206,6 +206,31 @@ def main():
                     assert image.convert('RGBA').getpixel((image.width // 2, image.height // 2)) == original.getpixel(
                         (original.width // 2, original.height // 2)), ('inactive material changed', frame)
                 results.append(dict(mode=mode, case='path-state-roundtrip', state='inactive'))
+            bar.set_state_flags(Gtk.StateFlags.NORMAL, True)
+            content = crumb.get_child()
+            icon, label = content.get_first_child(), content.get_last_child()
+            # Nautilus 46 dims ancestor labels with dim-label; Nautilus 50
+            # uses dimmed. Render just the text so icon pixels cannot hide
+            # an unreadable label behind a passing alpha maximum.
+            icon.set_visible(False)
+            settle()
+            reference = args.output / f'{len(results):03}-{mode}-{index}-undimmed-label.png'
+            save(crumb, reference)
+            with Image.open(reference) as image:
+                full_alpha = image.convert('RGBA').getchannel('A').getextrema()[1]
+            assert full_alpha > 0, ('missing ancestor label', mode)
+            for css_class in ('dim-label', 'dimmed'):
+                label.add_css_class(css_class)
+                settle()
+                frame = args.output / f'{len(results):03}-{mode}-{index}-{css_class}.png'
+                save(crumb, frame)
+                with Image.open(frame) as image:
+                    alpha = image.convert('RGBA').getchannel('A').getextrema()[1]
+                    assert alpha >= full_alpha * 0.8, ('ancestor label contrast', mode, css_class, alpha, full_alpha)
+                label.remove_css_class(css_class)
+                results.append(dict(mode=mode, case='ancestor-label-contrast', state=css_class))
+            icon.set_visible(True)
+
         Gtk.StyleContext.remove_provider_for_display(Gdk.Display.get_default(), provider)
     window.destroy()
     (args.output / 'result.json').write_text(json.dumps(dict(gtk=f'{Gtk.get_major_version()}.{Gtk.get_minor_version()}',

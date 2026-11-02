@@ -6676,7 +6676,9 @@ row.expander.property #NautilusFileChooser .nautilus-grid-view child.activatable
 }
 
 #NautilusPathBar #NautilusPathButton .dimmed,
-.nautilus-pathbar.linked .nautilus-path-button .dimmed {
+#NautilusPathBar #NautilusPathButton .dim-label,
+.nautilus-pathbar.linked .nautilus-path-button .dimmed,
+.nautilus-pathbar.linked .nautilus-path-button .dim-label {
   opacity: 0.85;
 }
 

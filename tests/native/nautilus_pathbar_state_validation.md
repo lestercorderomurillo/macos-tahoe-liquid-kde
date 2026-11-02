@@ -4,7 +4,8 @@ The path bar retains its capsule fill and contour when the window loses focus.
 Its scrolling viewport stays transparent, and the current-folder button does
 not introduce a second background when checked. Background contrast increases
 in both appearance modes; enabled inactive-window controls retain full opacity
-and ancestor labels use 85% opacity. Geometry, GTK3, saved choices and edition
+and ancestor labels use 85% opacity with both legacy `dim-label` and modern
+`dimmed` classes. Geometry, GTK3, saved choices and edition
 defaults are unchanged. All eight primary/adaptive/fallback GTK4 sheets carry
 the same per-mode path-bar declarations. Both editions share these assets.
 
@@ -32,21 +33,25 @@ Disposable KDE neon VM, sealed `neon-base-v2.qcow2`, SHA-256
 Only the temporary overlay is writable. GTK 4.14, native GTK snapshot renderer.
 
 ```sh
-python3 tests/nautilus_toolbar_probe.py --theme-variant Light --output /tmp/toolbar-final-home
+python3 tests/nautilus_toolbar_probe.py --theme-variant Light --output /tmp/toolbar-final-relative-labels
 ```
 
-The final probe passed 150 cases: 120 legacy/class-based comparisons across
-light/dark/light, LTR/RTL and ten states, plus 30 current-folder state checks.
+The final probe passed 162 cases: 120 legacy/class-based comparisons across
+light/dark/light, LTR/RTL and ten states, plus 30 current-folder state checks and 12 ancestor-label contrast checks.
 The latter require visible capsule fill, low corner coverage, unchanged pixels
 and dimensions during checked/normal/active/normal, and unchanged central fill
-when inactive. The fixture includes Home's icon and label. All adaptive sheets
+when inactive. The fixture includes Home's icon and label; the label-only check requires
+rendered text alpha of at least 80% of an otherwise identical undimmed label
+for both dimming classes, accounting for font antialiasing. All adaptive sheets
 are independently checked for parity on GTK 4.14, 4.16 and 4.22 paths.
 
 Negative controls load the parent's adaptive CSS and run the new state checks
 without repeating the pre-existing selector comparisons. The parent fails the
 contrast check (central alpha 3/255) and, with only the contrast assertions
 removed for that control, fails the checked-state pixel equality assertion.
-The candidate passes both checks. Development PNG/JSON evidence lives under
+The candidate passes both checks. A separate control removes only the legacy
+`dim-label` selectors and fails the new ancestor-label contrast assertion;
+restoring those selectors passes it. Development PNG/JSON evidence lives under
 `/tmp/nautilus-state-qa/`; these are not publication gallery images.
 
 ## Limits and release gate
