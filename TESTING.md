@@ -1,16 +1,14 @@
 # Installer testing
 
-Tahoe **v0.61.21** corrects the installed adaptive Nautilus toolbar sheets.
-Validation passed 192 focused shared checks, 23 controls/shadow checks,
-95 wrapper checks, 42 staged Golden Gate checks and 240 native GTK comparisons.
-Eight captures of the installed Nautilus 50 application cover focused/backdrop
-windows and selected/unselected files in light and dark modes. The old adaptive
-sheets fail the regression controls. See the [validation report](tests/native/nautilus_adaptive_validation.md)
-for commands, environments and coverage limits.
+Tahoe **v0.61.22** keeps the Nautilus path bar curved through checked,
+released and inactive states, with stronger light/dark contrast. Validation:
+162 native GTK cases, 48 affected staged Golden Gate checks and 95 wrapper
+checks, with failing controls against the previous styling. See the
+[validation report](tests/native/nautilus_pathbar_state_validation.md) for commands, environments and coverage limits.
 
-The galleries below come from 90 newly captured and reviewed 4K frames in
-disposable KDE Plasma guests, with version-bound source and image provenance.
-Exact release commits must pass the full push CI on both main and dev.
+The photographs below use the pinned disposable VM capture recipe and retain
+reviewed, content-hashed provenance. Exact release commits require passing
+push CI on both main and dev in both repositories.
 
 ## Installation steps
 
@@ -18,7 +16,7 @@ Scroll horizontally through the installation steps.
 
 <table>
 <tr>
-  <td align="center"><img src="src/screenshots/installer-welcome_dark_v4-47afb80e51c4.png" alt="Welcome" width="500"><br>Welcome</td>
+  <td align="center"><img src="src/screenshots/installer-welcome_dark_v4-63db832c013f.png" alt="Welcome" width="500"><br>Welcome</td>
   <td align="center"><img src="src/screenshots/installer-appearance_dark_v4-a6f5633f614d.png" alt="Appearance" width="500"><br>Appearance</td>
   <td align="center"><img src="src/screenshots/installer-icons_dark_v4-fb1bad1909be.png" alt="Icons and color" width="500"><br>Icons and color</td>
   <td align="center"><img src="src/screenshots/installer-wallpaper_dark_v4-7ee3602eddd1.png" alt="Wallpaper" width="500"><br>Wallpaper</td>

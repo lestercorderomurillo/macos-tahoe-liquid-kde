@@ -11,20 +11,19 @@ the same per-mode path-bar declarations. Both editions share these assets.
 
 ## Focused evidence
 
-Based on Tahoe `365c03cee67d2c79bce31f5b80cc3fce9f830844` with the GTK4
-path-bar patch and probes in this change. Host: CachyOS, Python 3.14.
+Visual source: Tahoe `785ff59ef5c77263be66620944dc08ff0d96dfcf`, based on
+`365c03cee67d2c79bce31f5b80cc3fce9f830844`. Host: CachyOS, Python 3.14.7.
 
 ```sh
 python -m pytest tests/test_nautilus_styles.py tests/test_gtk_upgrade.py tests/test_gtk_window_geometry.py tests/test_nautilus_step.py -q -p no:cacheprovider
 ```
 
-The original affected component selection passed 42 checks. After adding the
-adaptive-sheet parity regression, its 30 cases passed. Golden Gate's explicit
-local-source `./install --prepare` staged these same assets with MacGoldenGate
-and launcher preset 2; the final affected selection passed 48 checks there.
-Its wrapper suite passed 95 checks. The source checkout and host desktop were
-not installed or changed by these checks. Other pre-existing Acrylic Glass
-and installer changes in the sibling worktree are excluded from this candidate.
+Golden Gate's explicit local-source `./install --prepare` staged these assets
+with MacGoldenGate and launcher preset 2. The affected selection passed **48**
+checks, including 30 compatibility/installed-sheet parity cases. Its wrapper
+suite passed **95** checks. The host desktop was not installed or changed by
+these checks. Other pre-existing Acrylic Glass and installer changes in the
+sibling worktree are excluded from this candidate.
 
 ## Native rendering
 
@@ -54,12 +53,35 @@ The candidate passes both checks. A separate control removes only the legacy
 restoring those selectors passes it. Development PNG/JSON evidence lives under
 `/tmp/nautilus-state-qa/`; these are not publication gallery images.
 
+## Publication photographs
+
+The official `./release-screenshots` recipe captured 90 reviewed frames from
+visual source `785ff59ef5c77263be66620944dc08ff0d96dfcf` and the pinned VM/profile.
+Both editions show Files and About separately and focused in each mode.
+The real Nautilus 46.4 toolbar shows the stronger ancestor-label contrast and
+continuous capsule ends. Wizard labels, edition defaults, controls, menus and
+Dock were reviewed before staging with content-hashed filenames.
+
+The initial controller terminated with SIGTERM after Tahoe finished. Its 46
+reviewed frames and original per-frame records were retained byte-for-byte.
+Golden Gate's 44 frames were captured in a fresh guest through the unchanged
+entry point/recipe; resumption checked identical source, profile, VM image,
+effect identity and host environment, then ran the unchanged complete-set
+validator against all 90 frames. This did not repeat Tahoe or replace a failed
+frame with an older capture. The complete bundle and review sheets are at
+`/tmp/nautilus-pathbar-release-complete/`; the interrupted run is not staged.
+
+```sh
+./release-screenshots review --ref 785ff59ef5c77263be66620944dc08ff0d96dfcf --bundle /tmp/nautilus-pathbar-release-complete --approve <90 reviewed frame names>
+./release-screenshots stage --ref 785ff59ef5c77263be66620944dc08ff0d96dfcf --bundle /tmp/nautilus-pathbar-release-complete --edition tahoe --destination /tmp/tahoe-pathbar-release
+./release-screenshots stage --ref 785ff59ef5c77263be66620944dc08ff0d96dfcf --bundle /tmp/nautilus-pathbar-release-complete --edition golden-gate --destination /tmp/golden-gate-pathbar-release
+```
+
 ## Limits and release gate
 
 The native widget fixture verifies the shared GTK styling, not every Nautilus
 version, compositor or GPU. It does not establish that the user's exact
 cropped frame was reproduced. No host installer, theme switch or desktop input
-was used. Publication additionally requires reviewed release captures and
-successful exact-commit push CI on main and dev in both repositories, followed
+was used. Publication additionally requires successful exact-commit push CI on main and dev in both repositories, followed
 by the guarded release workflows. Local focused results do not replace those
 gates.
