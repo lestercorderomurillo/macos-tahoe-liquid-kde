@@ -51,7 +51,11 @@ def toolbar(modern, query=False):
         scroll = Gtk.ScrolledWindow(hexpand=True)
         scroll.set_policy(Gtk.PolicyType.EXTERNAL, Gtk.PolicyType.NEVER)
         crumbs = Gtk.Box()
-        button = Gtk.Button(label='Documents')
+        button = Gtk.Button()
+        content = Gtk.Box(spacing=6)
+        content.append(Gtk.Image.new_from_icon_name('user-home-symbolic'))
+        content.append(Gtk.Label(label='Home'))
+        button.set_child(content)
         button.add_css_class('current-dir')
         if modern:
             button.add_css_class('nautilus-path-button')
@@ -66,6 +70,7 @@ def toolbar(modern, query=False):
     popover.set_child(Gtk.Label(label='Current Folder Menu'))
     menu.set_popover(popover)
     bar.append(menu)
+    bar._probe_crumb = button if not query else None
     return bar, menu.get_first_child()
 
 
@@ -93,6 +98,14 @@ def save(widget, destination):
     gobject.g_object_unref.argtypes = [pointer]
     gobject.g_object_unref(paintable)
     gobject.g_object_unref(texture)
+
+
+def set_direction(widget, direction):
+    widget.set_direction(direction)
+    child = widget.get_first_child()
+    while child:
+        set_direction(child, direction)
+        child = child.get_next_sibling()
 
 
 def main():
@@ -132,13 +145,7 @@ def main():
         assert not errors, errors
         Gtk.StyleContext.add_provider_for_display(Gdk.Display.get_default(), provider, Gtk.STYLE_PROVIDER_PRIORITY_USER)
         for direction in (Gtk.TextDirection.LTR, Gtk.TextDirection.RTL):
-            def set_direction(widget):
-                widget.set_direction(direction)
-                child = widget.get_first_child()
-                while child:
-                    set_direction(child)
-                    child = child.get_next_sibling()
-            set_direction(window)
+            set_direction(window, direction)
             for state in ('normal', 'hover', 'active', 'checked', 'backdrop', 'disabled',
                           'backdrop-hover', 'backdrop-checked', 'checked-hover', 'disabled-checked'):
                 for case, widgets in pairs:
@@ -158,6 +165,47 @@ def main():
                         assert old.size == new.size, (files, old.size, new.size)
                         assert not any(channel.getbbox() for channel in ImageChops.difference(old.convert('RGBA'), new.convert('RGBA')).split()), files
                     results.append(dict(mode=mode, direction=direction.value_nick, case=case, state=state))
+        # Exercise a round trip, not just equivalence between two selectors:
+        # both naming schemes can otherwise share the same rendering defect.
+        for index, (bar, menu) in enumerate(pairs[0][1]):
+            crumb = bar._probe_crumb
+            set_direction(bar, Gtk.TextDirection.LTR)
+            menu.set_state_flags(Gtk.StateFlags.NORMAL, True)
+            bar.set_state_flags(Gtk.StateFlags.NORMAL, True)
+            crumb.set_state_flags(Gtk.StateFlags.NORMAL, True)
+            settle()
+            baseline = args.output / f'{len(results):03}-{mode}-{index}-baseline.png'
+            save(bar, baseline)
+            with Image.open(baseline) as original:
+                original = original.convert('RGBA')
+                centre = original.getpixel((original.width // 2, original.height // 2))[3]
+                assert centre >= (26 if mode == 'Dark' else 18), ('capsule contrast', mode, centre)
+                for x, y in ((0, 0), (original.width - 1, 0),
+                             (0, original.height - 1), (original.width - 1, original.height - 1)):
+                    assert original.getpixel((x, y))[3] < centre / 2, ('square capsule', mode, x, y)
+                for state, flags in (
+                        ('checked', Gtk.StateFlags.CHECKED),
+                        ('released', Gtk.StateFlags.NORMAL),
+                        ('active', Gtk.StateFlags.ACTIVE),
+                        ('released-again', Gtk.StateFlags.NORMAL)):
+                    crumb.set_state_flags(flags, True)
+                    settle()
+                    frame = args.output / f'{len(results):03}-{mode}-{index}-{state}.png'
+                    save(bar, frame)
+                    with Image.open(frame) as image:
+                        assert image.size == original.size, ('geometry changed', frame)
+                        assert not any(channel.getbbox() for channel in ImageChops.difference(
+                            original, image.convert('RGBA')).split()), ('current folder repainted', frame)
+                    results.append(dict(mode=mode, case='path-state-roundtrip', state=state))
+                bar.set_state_flags(Gtk.StateFlags.BACKDROP, True)
+                settle()
+                frame = args.output / f'{len(results):03}-{mode}-{index}-inactive.png'
+                save(bar, frame)
+                with Image.open(frame) as image:
+                    assert image.size == original.size, ('inactive geometry changed', frame)
+                    assert image.convert('RGBA').getpixel((image.width // 2, image.height // 2)) == original.getpixel(
+                        (original.width // 2, original.height // 2)), ('inactive material changed', frame)
+                results.append(dict(mode=mode, case='path-state-roundtrip', state='inactive'))
         Gtk.StyleContext.remove_provider_for_display(Gdk.Display.get_default(), provider)
     window.destroy()
     (args.output / 'result.json').write_text(json.dumps(dict(gtk=f'{Gtk.get_major_version()}.{Gtk.get_minor_version()}',

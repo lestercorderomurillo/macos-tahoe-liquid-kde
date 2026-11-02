@@ -6608,17 +6608,26 @@ row.expander.property #NautilusFileChooser .nautilus-grid-view child.activatable
   margin: 0;
   padding: 3px;
   color: @headerbar_fg_color;
-  background-color: transparent;
+  background-color: alpha(@headerbar_fg_color,0.12);
   background-image: linear-gradient(to bottom, rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0.02));
   box-shadow: 0 6px 20px alpha(#000000,0.15), inset 1px 2px 1px -1px alpha(#ffffff,0.08), inset -1px -1px 1px 0 alpha(#ffffff,0.08);
   border: none;
 }
 
+/* Keep the capsule's material and contour when focus leaves the window. */
 #NautilusPathBar:backdrop,
 .nautilus-pathbar.linked:backdrop {
-  background-color: alpha(@headerbar_fg_color,0.05);
-  background-image: none;
-  border: none;
+  background-color: alpha(@headerbar_fg_color,0.12);
+}
+
+/* GTK does not clip descendants to a parent's rounded background. Keep the
+   scrolling viewport transparent, including after selection/focus changes. */
+#NautilusPathBar > scrolledwindow,
+#NautilusPathBar > scrolledwindow > viewport,
+.nautilus-pathbar.linked > scrolledwindow,
+.nautilus-pathbar.linked > scrolledwindow > viewport {
+  background: none;
+  border-radius: 9999px;
   box-shadow: none;
 }
 
@@ -6628,6 +6637,7 @@ row.expander.property #NautilusFileChooser .nautilus-grid-view child.activatable
   border-radius: 9999px;
   min-height: 24px;
   padding: 3px 6px;
+  transition-property: color, background-color, box-shadow;
 }
 
 #NautilusPathBar #NautilusPathButton.current-dir,
@@ -6637,7 +6647,9 @@ row.expander.property #NautilusFileChooser .nautilus-grid-view child.activatable
 
 #NautilusPathBar #NautilusPathButton.current-dir:hover, #NautilusPathBar #NautilusPathButton.current-dir:active,
 .nautilus-pathbar.linked .nautilus-path-button.current-dir:hover,
-.nautilus-pathbar.linked .nautilus-path-button.current-dir:active {
+#NautilusPathBar #NautilusPathButton.current-dir:checked,
+.nautilus-pathbar.linked .nautilus-path-button.current-dir:active,
+.nautilus-pathbar.linked .nautilus-path-button.current-dir:checked {
   background: none;
   box-shadow: none;
 }
@@ -6653,6 +6665,19 @@ row.expander.property #NautilusFileChooser .nautilus-grid-view child.activatable
   min-width: 24px;
   padding: 3px;
   border-radius: 9999px;
+}
+
+/* Ancestor crumbs and inactive-window controls must remain legible. */
+#NautilusPathBar #NautilusPathButton:not(:disabled):backdrop,
+#NautilusPathBar > menubutton > button:not(:disabled):backdrop,
+.nautilus-pathbar.linked .nautilus-path-button:not(:disabled):backdrop,
+.nautilus-pathbar.linked > menubutton > button:not(:disabled):backdrop {
+  opacity: 1;
+}
+
+#NautilusPathBar #NautilusPathButton .dimmed,
+.nautilus-pathbar.linked .nautilus-path-button .dimmed {
+  opacity: 0.85;
 }
 
 #NautilusFileChooser multi-layout-view > box {
