@@ -133,6 +133,18 @@ hashes and an evidence SHA-256 manifest. Original build trees and additional
 attempt logs remain under `/tmp/tahoe-062-audit/`. These paths are not published
 desktop screenshots and are not substitutes for release CI.
 
+## Installed desktop captures
+
+The pinned disposable KDE neon VM installed source commit
+`5fbf5c9f10d586b6ec043eacec19abeeaa48f50c` separately for Tahoe and Golden Gate.
+All 94 original 3840×2160 frames were visually inspected: launcher, Dock,
+system/context menus, Nautilus, About, all sixteen installer pages in light
+and dark modes, and the shared boot/shutdown frames. The first capture attempt
+was discarded because the light Dock was hidden; the recipe now reveals it
+and rejects hidden panels before capture. These captures establish installation
+and light/dark rendering in that VM, not a full lifecycle qualification.
+The reviewed bundle is `build/release-capture/v0.62.0-retry/`.
+
 ## Limits
 
 These are real compositor processes and GPU/software rendering, with disposable
