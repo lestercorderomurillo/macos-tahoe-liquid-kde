@@ -36,7 +36,13 @@
 > [!CAUTION]
 > Experimental. Desktop updates may break compatibility. Avoid production systems; [report issues here](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/issues/new).
 
-**Coming in v0.63:** an Acrylic Glass rewrite, a new Control Center, new translations and bug fixes. Stay tuned!
+> [!NOTE]
+> **Coming in v0.63!**
+>
+> - Acrylic Glass rewrite
+> - New Control Center
+> - New translations
+> - Bug fixes
 
 <br>
 
