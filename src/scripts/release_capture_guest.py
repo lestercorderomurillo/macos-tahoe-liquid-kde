@@ -56,7 +56,7 @@ def windows(script=''):
         path.write_text(script + 'callDBus(' + json.dumps(service) + ',"/Probe","org.mttkde.ReleaseCapture","record",'
                         'JSON.stringify(workspace.windowList().filter(w=>!w.minimized).map(w=>({'
                         'caption:w.caption,resourceClass:String(w.resourceClass),type:w.windowType,'
-                        'appletPopup:w.appletPopup,active:w===workspace.activeWindow,geometry:w.frameGeometry}))));')
+                        'appletPopup:w.appletPopup,hidden:w.hidden,active:w===workspace.activeWindow,geometry:w.frameGeometry}))));')
         api = QDBusInterface('org.kde.KWin', '/Scripting', 'org.kde.kwin.Scripting', bus)
         loaded = api.call('loadScript', str(path), service).arguments()
         assert loaded and isinstance(loaded[0], int)
@@ -297,7 +297,8 @@ def capture(repo, profile, edition, requested, case):
         chosen = [w for w in shell if w['appletPopup']]
         expected = EDITIONS[edition][1]
     elif case == 'dock':
-        chosen = [w for w in shell if w['type'] == 2 and w['geometry']['y'] > 100]
+        chosen = [w for w in shell if w['type'] == 2 and w['geometry']['y'] > 100
+                  and not w.get('hidden', False)]
         expected = 1
     elif case in ('menu', 'context'):
         chosen = [w for w in shell if w['type'] not in (1, 2)]

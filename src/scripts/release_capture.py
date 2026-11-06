@@ -211,6 +211,10 @@ def capture(repo: Path, ref: str, image: Path, output: Path) -> dict:
                             shot('launcher')
                             vm.key('esc')
                             vm.action('plasma', 'panels().forEach(p=>{if(p.location==="bottom")p.hiding="none";});')
+                            # Reveal the panel before moving the pointer back to
+                            # the neutral capture position.
+                            vm.move(1920, 2159)
+                            time.sleep(1)
                             shot('dock')
                             for case, x, y, button in [('menu', 40, 30, 'left'), ('context', 2100, 1000, 'right')]:
                                 vm.key('esc')
