@@ -13,6 +13,12 @@
 #include "effect/effect.h"
 #include "opengl/glutils.h"
 #include "scene/item.h"
+#if !defined(GLASS_X11) && __has_include("scene/backgroundeffectitem.h")
+#include "scene/backgroundeffectitem.h"
+#define ACRYLIC_GLASS_SCENE_DAMAGE 1
+#else
+#define ACRYLIC_GLASS_SCENE_DAMAGE 0
+#endif
 
 #include <QList>
 #include <QRegion>
@@ -85,6 +91,9 @@ struct BlurEffectData
 
     /** Scene-graph handle that keeps the effect alive while the window is. */
     ItemEffect windowEffect;
+#if ACRYLIC_GLASS_SCENE_DAMAGE
+    std::unique_ptr<BackgroundEffectItem> backgroundEffect;
+#endif
 
     /**
      * Concatenated saturation × contrast × brightness transform. Empty
@@ -287,7 +296,7 @@ private:
         int highlightWidthLocation;
         int highlightStrengthLocation;
         int darkGradientOverlayLocation;
-        int materialOpacityLocation;
+        int backingTintLocation;
         int centerOpacityLocation;
         int dockSurfaceLocation;
         int backgroundSizeLocation;
@@ -357,7 +366,7 @@ private:
     float m_highlightWidth; ///< Pixel width of the bright glass rim.
     float m_highlightStrength; ///< Rim intensity multiplier.
     bool m_darkGradientOverlay = false;
-    float m_materialOpacity = 1.0f;
+    bool m_backingTint = false;
     QVector4D m_gradientTop;
     QVector4D m_gradientBottom;
 

@@ -32,8 +32,11 @@ msgstr "Intensidade da tonalidade inferior"
 msgid "Brightness"
 msgstr "Brilho"
 
-msgid "Choose a starting point, then adjust it below. Switching presets replaces all material settings."
-msgstr "Escolha um ponto de partida e ajuste abaixo. Trocar a predefinição substitui todas as configurações de material."
+msgid "Choose a starting point, then adjust it below. Switching presets replaces optical settings and keeps your window glass choice."
+msgstr "Escolha um ponto de partida e ajuste abaixo. Trocar de predefinição substitui as configurações ópticas e mantém sua escolha de vidro das janelas."
+
+msgid "Classic"
+msgstr "Clássico"
 
 msgid "Color separation (px)"
 msgstr "Separação de cores (px)"
@@ -122,6 +125,12 @@ msgstr "Superfície"
 msgid "Tahoe"
 msgstr "Tahoe"
 
+msgid "Tinted"
+msgstr "Tingido"
+
+msgid "Tinted adds a white backing in light mode or a dark backing in dark mode. Blur and refraction stay the same. Panels and menus keep their own materials."
+msgstr "Tingido adiciona um fundo branco no modo claro ou escuro no modo escuro. O desfoque e a refração permanecem iguais. Painéis e menus mantêm seus materiais."
+
 msgid "Tooltips, menus, dialogs and applet popups."
 msgstr "Dicas, menus, diálogos e janelas de plasmoides."
 
@@ -133,6 +142,9 @@ msgstr "Intensidade da tonalidade superior"
 
 msgid "Window Rules"
 msgstr "Regras de janelas"
+
+msgid "Window glass"
+msgstr "Vidro das janelas"
 
 msgid "Windows"
 msgstr "Janelas"

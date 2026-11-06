@@ -54,6 +54,7 @@ int main(int argc, char **argv)
     }
     group.writeEntry("WindowCornerRadius", 13.5);
     group.writeEntry("WindowClasses", "preserved-app");
+    group.writeEntry("MaterialOpacity", 0.0); // Retired opacity must not hide the glass.
     group.writeEntry("AcrylicGlassType", 2); // Retired settings cannot select another kernel.
     config->sync();
     const KPluginMetaData meta(QString::fromLocal8Bit(argv[1]));
@@ -75,6 +76,7 @@ int main(int argc, char **argv)
                 == (savedPreset == QStringLiteral("absent") ? defaults["BlurStrength"].toDouble() : 6.25),
             QStringLiteral("loading changed saved optics"));
     require(!module->widget()->findChild<QWidget *>(QStringLiteral("kcfg_AcrylicGlassType")), QStringLiteral("blur type must be removed"));
+    require(!module->widget()->findChild<QWidget *>(QStringLiteral("kcfg_MaterialOpacity")), QStringLiteral("glass opacity must be removed"));
     const auto verifyControls = [&](const QJsonObject &values) {
         for (auto it = values.constBegin(); it != values.constEnd(); ++it) {
             const auto name = QStringLiteral("kcfg_") + it.key();
@@ -95,6 +97,10 @@ int main(int argc, char **argv)
     if (savedPreset == QStringLiteral("absent")) {
         verifyControls(defaults);
     }
+    auto *backing = control<QComboBox>(module.get(), QStringLiteral("kcfg_BackingTint"));
+    require(backing->count() == 2 && backing->currentIndex() == 0,
+            QStringLiteral("Classic must be the default window glass"));
+    backing->setCurrentIndex(1);
     for (int i : {1, 0}) {
         selector->setCurrentIndex(i);
         selector->activated(i);
@@ -115,6 +121,8 @@ int main(int argc, char **argv)
         module = open();
         selector = control<QComboBox>(module.get(), QStringLiteral("kcfg_MaterialPreset"));
         require(selector->currentIndex() == i, QStringLiteral("reopening changed selected preset"));
+        require(control<QComboBox>(module.get(), QStringLiteral("kcfg_BackingTint"))->currentIndex() == 1,
+                QStringLiteral("edition preset or reopening reset the backing tint"));
     }
     auto *blur = control<QDoubleSpinBox>(module.get(), QStringLiteral("kcfg_BlurStrength"));
     blur->setValue(8.25);

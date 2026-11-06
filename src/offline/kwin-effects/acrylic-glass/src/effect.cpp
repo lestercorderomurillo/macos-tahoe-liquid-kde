@@ -43,6 +43,7 @@
 
 #include <QGuiApplication>
 #include <QMatrix4x4>
+#include <QPalette>
 #include <QScreen>
 #include <QTime>
 #include <QTimer>
@@ -81,8 +82,11 @@ static QString shaderPath(const QString& name, const QString& extension)
 
 namespace KWin {
 
-QString BlurEffect::debug(const QString &) const
+QString BlurEffect::debug(const QString &parameter) const
 {
+    if (parameter == QStringLiteral("status")) {
+        return m_valid ? QStringLiteral("ready") : QStringLiteral("shader-error");
+    }
     return QStringLiteral(MTTKDE_GLASS_BUILD_ID);
 }
 
@@ -239,7 +243,7 @@ BlurEffect::BlurEffect()
         m_roundedOnscreenPass.highlightWidthLocation = m_roundedOnscreenPass.shader->uniformLocation("highlightWidth");
         m_roundedOnscreenPass.highlightStrengthLocation = m_roundedOnscreenPass.shader->uniformLocation("highlightStrength");
         m_roundedOnscreenPass.darkGradientOverlayLocation = m_roundedOnscreenPass.shader->uniformLocation("darkGradientOverlay");
-        m_roundedOnscreenPass.materialOpacityLocation = m_roundedOnscreenPass.shader->uniformLocation("materialOpacity");
+        m_roundedOnscreenPass.backingTintLocation = m_roundedOnscreenPass.shader->uniformLocation("backingTint");
         m_roundedOnscreenPass.centerOpacityLocation = m_roundedOnscreenPass.shader->uniformLocation("centerOpacity");
         m_roundedOnscreenPass.dockSurfaceLocation = m_roundedOnscreenPass.shader->uniformLocation("dockSurface");
         m_roundedOnscreenPass.backgroundSizeLocation = m_roundedOnscreenPass.shader->uniformLocation("backgroundSize");
@@ -375,6 +379,11 @@ BlurEffect::BlurEffect()
 /// capability flag is just dropped from the shared manager.
 BlurEffect::~BlurEffect()
 {
+    // Shader failure returns before this instance announces blur support.
+    // It must not revoke another effect's capability during recovery.
+    if (!m_valid) {
+        return;
+    }
 #if ACRYLIC_GLASS_WAYLAND_BACKGROUND_EFFECT_V1
     if (waylandServer()) {
         waylandServer()->backgroundEffectManager()->removeBlurCapability();
@@ -479,7 +488,7 @@ void BlurEffect::reconfigure(ReconfigureFlags flags)
     m_highlightWidth = static_cast<float>(BlurConfig::highlightWidth());
     m_highlightStrength = static_cast<float>(BlurConfig::highlightStrength());
     m_darkGradientOverlay = BlurConfig::darkGradientOverlay();
-    m_materialOpacity = qBound(0.0, BlurConfig::materialOpacity(), 1.0);
+    m_backingTint = BlurConfig::backingTint() == 1;
     const auto gradientColor = [](const QColor &color, double opacity) {
         return QVector4D(color.redF(), color.greenF(), color.blueF(), qBound(0.0, opacity, 1.0));
     };
@@ -636,6 +645,20 @@ void BlurEffect::updateBlurRegion(EffectWindow* w)
         }
     }
 
+    // GTK does not publish a blur protocol region. Keep its client blur
+    // independent of the server-side decoration setting.
+    const auto isNautilus = [](const QString &name) {
+        return name.compare(QStringLiteral("org.gnome.Nautilus"), Qt::CaseInsensitive) == 0
+            || name.compare(QStringLiteral("nautilus"), Qt::CaseInsensitive) == 0;
+    };
+    if (!content.has_value() && w->isNormalWindow()
+        && (isNautilus(w->window()->resourceClass()) || isNautilus(w->window()->resourceName()))) {
+        // An empty request means the entire client, without applying the
+        // server-decoration content offset twice. It also avoids the
+        // ambiguous QRect -> Region conversion in KWin 6.6.
+        content = Region();
+    }
+
     // Decoration-side blur: opt-in via the KDecoration3 protocol, else
     // implicit for normal windows (skip docks / menus / popups so their
     // own opaque chrome doesn't double-blur).
@@ -662,6 +685,15 @@ void BlurEffect::updateBlurRegion(EffectWindow* w)
         }
         data.colorMatrix = colorTransformMatrix(saturation.value_or(1.0), contrast.value_or(1.0), 1.0);
         data.windowEffect = ItemEffect(w->windowItem());
+#if ACRYLIC_GLASS_SCENE_DAMAGE
+        // KWin collects damage after prePaintWindow. Register the sampling
+        // bounds in its scene so partial backdrop updates repaint the blur.
+        if (!data.backgroundEffect) {
+            data.backgroundEffect = std::make_unique<BackgroundEffectItem>(w->windowItem());
+        }
+        data.backgroundEffect->setEffectBoundingRect(RectF(blurRegion(w).boundingRect()));
+        data.backgroundEffect->setPixelsToExpandRepaintsBelowOpaqueRegions(m_expandSize);
+#endif
     } else {
         if (auto it = m_windows.find(w); it != m_windows.end()) {
             effects->makeOpenGLContextCurrent();
@@ -1621,7 +1653,13 @@ void BlurEffect::blur(
     // Panels and the Dock retain untinted glass under every material.
     m_roundedOnscreenPass.shader->setUniform(m_roundedOnscreenPass.darkGradientOverlayLocation,
         int(m_darkGradientOverlay && !w->isDock()));
-    m_roundedOnscreenPass.shader->setUniform(m_roundedOnscreenPass.materialOpacityLocation, m_materialOpacity);
+    // Tint application clients only. The per-window palette follows live
+    // light/dark changes; shell surfaces keep their own materials.
+    const bool tintWindow = m_backingTint && (w->isNormalWindow() || w->isDialog());
+    const QColor windowColor = w->window()->palette().color(QPalette::Window);
+    const float tintValue = windowColor.lightnessF() < 0.5 ? 0.0f : 1.0f;
+    m_roundedOnscreenPass.shader->setUniform(m_roundedOnscreenPass.backingTintLocation,
+        QVector4D(tintValue, tintValue, tintValue, tintWindow ? 0.45f : 0.0f));
     m_roundedOnscreenPass.shader->setUniform(m_roundedOnscreenPass.centerOpacityLocation, centerOpacity);
     m_roundedOnscreenPass.shader->setUniform(m_roundedOnscreenPass.dockSurfaceLocation, int(dockSurface));
     m_roundedOnscreenPass.shader->setUniform(m_roundedOnscreenPass.backgroundSizeLocation,
@@ -1666,7 +1704,7 @@ void BlurEffect::blur(
             m_noisePass.shader->setUniform(m_noisePass.cornerRadiusLocation, nativeCornerRadius.toVector());
             m_noisePass.shader->setUniform(m_noisePass.cornerSquircleLocation, cornerSquircle);
             m_noisePass.shader->setUniform(m_noisePass.opacityLocation,
-                modulation * m_materialOpacity * centerOpacity * (dockSurface ? 0.25f : 1.0f));
+                modulation * centerOpacity * (dockSurface ? 0.25f : 1.0f));
             noiseTexture->bind();
 
             vbo->draw(GL_TRIANGLES, 6, vertexCount);

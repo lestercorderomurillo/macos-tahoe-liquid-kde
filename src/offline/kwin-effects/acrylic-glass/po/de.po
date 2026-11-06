@@ -32,8 +32,11 @@ msgstr "Untere Tönungsstärke"
 msgid "Brightness"
 msgstr "Helligkeit"
 
-msgid "Choose a starting point, then adjust it below. Switching presets replaces all material settings."
-msgstr "Wählen Sie einen Ausgangspunkt und passen Sie ihn unten an. Ein Vorgabenwechsel ersetzt alle Materialeinstellungen."
+msgid "Choose a starting point, then adjust it below. Switching presets replaces optical settings and keeps your window glass choice."
+msgstr "Wähle einen Ausgangspunkt und passe ihn unten an. Ein Preset-Wechsel ersetzt die optischen Einstellungen und behält deine Fensterglas-Auswahl bei."
+
+msgid "Classic"
+msgstr "Klassisch"
 
 msgid "Color separation (px)"
 msgstr "Farbaufspaltung (px)"
@@ -122,6 +125,12 @@ msgstr "Oberfläche"
 msgid "Tahoe"
 msgstr "Tahoe"
 
+msgid "Tinted"
+msgstr "Getönt"
+
+msgid "Tinted adds a white backing in light mode or a dark backing in dark mode. Blur and refraction stay the same. Panels and menus keep their own materials."
+msgstr "Getönt fügt im hellen Modus einen weißen und im dunklen Modus einen dunklen Hintergrund hinzu. Unschärfe und Brechung bleiben gleich. Panels und Menüs behalten ihre Materialien."
+
 msgid "Tooltips, menus, dialogs and applet popups."
 msgstr "Kurzinfos, Menüs, Dialoge und Plasmoid-Einblendfenster."
 
@@ -133,6 +142,9 @@ msgstr "Obere Tönungsstärke"
 
 msgid "Window Rules"
 msgstr "Fensterregeln"
+
+msgid "Window glass"
+msgstr "Fensterglas"
 
 msgid "Windows"
 msgstr "Fenster"

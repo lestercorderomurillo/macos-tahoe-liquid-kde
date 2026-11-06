@@ -261,6 +261,44 @@ before toggling effects. This checks the glass interference from #90, not
 a real VirtualBox guest.
 
 For a general blur regression, use `--identity AcrylicProbe --expect changed`.
+
+Use `--compositor x11 --plugin /path/to/liquidglass_x11.so` for a private
+KWin X11/Xvfb session; `--backend xcb` alone remains an Xwayland client in
+KWin Wayland. X11 captures require Xvfb and currently use scale 1.
+Add `--conflicts` to exercise the installer's live built-in blur handoff,
+reinstall snapshot, active-effect recovery guard and restoration. Use
+`--conflict-effect` to select another installed, ABI-compatible competitor.
+A competitor that cannot load is a failed control, not a passing handoff.
+
+`--renderer hardware` requires a render device accessible to the isolated
+compositor. Inspect `support.txt` for the actual renderer: a container or
+successful plugin build alone proves no rendering. `--screenshot-api dbus`
+uses KWin's raw Wayland screenshot API when Spectacle cannot capture; it
+requires python-dbus and relaxes screenshot authorization only in the spawned
+private compositor. Never apply that environment setting to a desktop session.
+
+Use `--application nautilus --material tahoe` (or `golden-gate`) to launch
+real Nautilus with privately staged bundled GTK assets. Synthetic captures
+remain the default. `--damage` compares a partial synthetic backdrop update
+with a full repaint; a passing pre-fix control makes the regression claim
+inconclusive. These captures do not replace full desktop lifecycle qualification.
+
+For the Nautilus client fallback, use `--identity org.gnome.Nautilus
+--expect changed --no-decoration-blur`. Repeat with `--backend xcb` to cover
+resource-name matching. Add `--backing-tint --appearance light` or
+`--backing-tint --appearance dark` to check the Tinted window material.
+Classic and Tinted share their optical settings; Tinted blends a 45% white
+or black backing over the blurred background beneath application windows.
+Panels and menus retain their own materials. The KCM exposes this independently
+of edition presets; the wizard shows it only with Nautilus and Acrylic Glass.
+The probe checks `debug liquidglass status` for shader readiness as well as
+plugin loading. These synthetic clients do not qualify the real Nautilus app.
+
+Installation hands off from known competing blurs only after compilation and
+material setup succeed, verifies their unload, and saves their settings under
+`$XDG_STATE_HOME/mac-tahoe-liquid-kde/blur-conflicts.json` (default
+`~/.local/state/mac-tahoe-liquid-kde/`). Activation failure and uninstall restore
+those settings while preserving subsequent user changes.
 Use `--renderer hardware` and expose a render node in containers when KWin
 requires one (6.8); this does not connect to the host's desktop session.
 The probe builds a private desktop-entry cache for Spectacle authorization.

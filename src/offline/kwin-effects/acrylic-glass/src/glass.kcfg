@@ -78,8 +78,10 @@ xembedsniproxy</default>
             <min>1</min>
             <max>2</max>
         </entry>
-        <entry name="MaterialOpacity" type="Double">
-            <default>1.0</default>
+        <entry name="BackingTint" type="Int">
+            <default>0</default>
+            <min>0</min>
+            <max>1</max>
         </entry>
         <entry name="GradientTopColor" type="Color">
             <default>#000000</default>

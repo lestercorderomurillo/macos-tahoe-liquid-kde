@@ -93,7 +93,6 @@ int main(int argc, char **argv)
         shader.setUniformValue("cornerSquircle", 0.0f);
         shader.setUniformValue("offset", 2.0f);
         shader.setUniformValue("opacity", 1.0f);
-        shader.setUniformValue("materialOpacity", 1.0f);
         shader.setUniformValue("centerOpacity", 1.0f);
         shader.setUniformValue("dockSurface", false);
         shader.setUniformValue("backgroundSize", QVector2D(width, height));
@@ -119,6 +118,22 @@ int main(int argc, char **argv)
         auto image = render();
         require(qAlpha(image.pixel(0,0)) == 0, QStringLiteral("corner mask lost"));
         require(std::abs(qRed(image.pixel(96,64)) - 160) <= 1, QStringLiteral("Gaussian must preserve a constant backdrop"));
+        for (const float tint : {0.0f, 1.0f}) {
+            shader.setUniformValue("backingTint", QVector4D(tint, tint, tint, 0.45f));
+            const auto tinted = render();
+            const int expected = qRound(160 * 0.55 + 255 * tint * 0.45);
+            require(std::abs(qRed(tinted.pixel(96,64)) - expected) <= 1,
+                    QStringLiteral("backing tint must mix over blurred color"));
+            require(qAlpha(tinted.pixel(96,64)) == 255 && qAlpha(tinted.pixel(0,0)) == 0,
+                    QStringLiteral("backing tint must preserve coverage and corners"));
+            shader.setUniformValue("opacity", 0.5f);
+            const auto faded = render();
+            require(std::abs(qRed(faded.pixel(96,64)) - expected * 0.5) <= 1
+                        && std::abs(qAlpha(faded.pixel(96,64)) - 128) <= 1,
+                    QStringLiteral("tinted glass must stay premultiplied"));
+            shader.setUniformValue("opacity", 1.0f);
+        }
+        shader.setUniformValue("backingTint", QVector4D(0,0,0,0));
         shader.setUniformValue("darkGradientOverlay", true);
         shader.setUniformValue("gradientTop", QVector4D(0,0,0,0.38f));
         shader.setUniformValue("gradientBottom", QVector4D(0,0,0,0.02f));
@@ -131,10 +146,10 @@ int main(int argc, char **argv)
         require(qBlue(image.pixel(96,12)) > qRed(image.pixel(96,12)), QStringLiteral("custom top color ignored"));
         require(qRed(image.pixel(96,115)) > qBlue(image.pixel(96,115)), QStringLiteral("custom bottom color ignored"));
         shader.setUniformValue("darkGradientOverlay", false);
-        shader.setUniformValue("materialOpacity", 0.5f);
+        shader.setUniformValue("opacity", 0.5f);
         image = render();
         require(std::abs(qAlpha(image.pixel(96,64)) - 128) <= 1 && std::abs(qRed(image.pixel(96,64)) - 80) <= 1, QStringLiteral("glass output must be premultiplied"));
-        shader.setUniformValue("materialOpacity", 1.0f);
+        shader.setUniformValue("opacity", 1.0f);
         shader.setUniformValue("highlightStrength", 1.0f);
         image = render();
         require(qRed(image.pixel(96,4)) > qRed(image.pixel(96,123)), QStringLiteral("highlight must face upwards"));
@@ -252,13 +267,13 @@ int main(int argc, char **argv)
         shader.setUniformValue("highlightStrength", 0.0f);
         require(qRed(render().pixel(96,0)) == 0,
                 QStringLiteral("Dock must respect disabled highlights"));
-        shader.setUniformValue("materialOpacity", 0.0f);
+        shader.setUniformValue("opacity", 0.0f);
         image = render();
         require(qAlpha(image.pixel(96,4)) == 0 && qRed(image.pixel(96,4)) == 0,
                 QStringLiteral("Dock must respect disabled material coverage"));
         shader.setUniformValue("dockSurface", false);
         shader.setUniformValue("centerOpacity", 1.0f);
-        shader.setUniformValue("materialOpacity", 1.0f);
+        shader.setUniformValue("opacity", 1.0f);
         shader.setUniformValue("magnifyGlassStrength", 0.0f);
         shader.setUniformValue("offset", 2.0f);
 

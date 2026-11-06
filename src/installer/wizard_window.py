@@ -30,6 +30,7 @@ STEPS = (
     ("fonts", "Which fonts would you like to use?"),
     ("firefox", "Apply the theme to Firefox?"),
     ("files", "Install Nautilus as your file manager?"),
+    ("glass_style", "Which window glass would you like?"),
     ("boot", "Change the boot animation?"),
     ("oled", "Enable OLED protection?"),
     ("summary", "Review your installation"),
@@ -261,17 +262,18 @@ class StepDots(QWidget):
     def __init__(self):
         super().__init__()
         self.index = 1
+        self.count = len(STEPS) - 1
         self.setFixedSize(132, 20)
 
     def paintEvent(self, event):
         painter = QPainter(self)
         painter.setRenderHint(QPainter.RenderHint.Antialiasing)
         painter.setPen(Qt.PenStyle.NoPen)
-        for index in range(1, len(STEPS)):
+        for index in range(1, self.count + 1):
             active = index == self.index
             painter.setBrush(self.palette().windowText() if active else self.palette().mid())
             radius = 3 if active else 2
-            painter.drawEllipse(QPointF(5 + (index - 1) * 11, 10), radius, radius)
+            painter.drawEllipse(QPointF(5 + (index - 1) * (self.width() - 10) / max(1, self.count - 1), 10), radius, radius)
 
 
 class PreviewImage(QWidget):
@@ -745,16 +747,18 @@ class InstallerWindow(OpaqueSurface):
         getattr(self, "page_" + self.page)()
         self.body.addStretch()
         self.scroll.setWidget(self.content)
-        index = next((i for i, item in enumerate(STEPS) if item[0] == self.page), -1)
+        visible_steps = [item for item in STEPS if item[0] != "glass_style" or self.show_glass_style()]
+        index = next((i for i, item in enumerate(visible_steps) if item[0] == self.page), -1)
         self.version_label.setVisible(self.page == "welcome")
         self.welcome_actions.setVisible(self.page == "welcome")
         self.express.setText(self.t("Express install"))
         self.express.setToolTip(self.t("Use the defaults and review before installing."))
         self.express.setEnabled(not self.updating and not self.bridge.running)
         self.dots.setVisible(0 < index < len(STEPS))
+        self.dots.count = len(visible_steps) - 1
         self.dots.index = index
         self.dots.update()
-        self.dots.setAccessibleName(self.t("Step") + f" {index}/{len(STEPS)-1}")
+        self.dots.setAccessibleName(self.t("Step") + f" {index}/{len(visible_steps)-1}")
         self.back.setVisible(self.page not in ("progress", "done", "removed"))
         self.back.setText(self.t("Uninstall" if self.page == "welcome" else "Back"))
         self.next.setText(self.t(
@@ -938,6 +942,13 @@ class InstallerWindow(OpaqueSurface):
         ])
         self.body.addWidget(self.label("Close, minimize and maximize buttons."))
 
+    def page_glass_style(self):
+        self.radio("glass_style", [
+            ("classic", "Classic"), ("tinted", "Tinted"),
+        ], inline=True)
+        self.body.addWidget(self.label("Classic keeps the original glass. Tinted adds a white backing in light mode and a dark backing in dark mode."))
+        self.body.addWidget(self.label("Both use the same blur, refraction and highlights. Applies to application windows; panels and menus keep their own materials."))
+
     def page_shadows(self):
         self.cards("shadows", [
             (level, label, "", picture(f"window-shadows-{level}-{self.mode}.png", 362, 116))
@@ -1043,6 +1054,8 @@ class InstallerWindow(OpaqueSurface):
             ("fonts", "Fonts", self.t("Theme fonts" if c["fonts"] else "Keep"), "fonts"),
             ("firefox", "Firefox", enabled("firefox"), "firefox"),
             ("files", "Files", self.t("Keep my file manager") if c["files"] == "keep" else value("files"), "files"),
+            *((("glass_style", "Glass", value("glass_style"), "glass_style"),)
+              if self.show_glass_style() else ()),
             ("plymouth", "Boot", enabled("plymouth"), "boot"),
             ("oled_care", "OLED", enabled("oled_care"), "oled"),
         )
@@ -1050,7 +1063,7 @@ class InstallerWindow(OpaqueSurface):
             entry = QWidget()
             entry.setObjectName("summaryEntry")
             entry.setStyleSheet(f"QWidget#summaryEntry {{ border-bottom: 1px solid {self.line}; }}")
-            row = QHBoxLayout(entry); row.setContentsMargins(0, 6, 0, 6); row.setSpacing(12)
+            row = QHBoxLayout(entry); row.setContentsMargins(0, 4, 0, 4); row.setSpacing(12)
             label = self.label(title); label.setObjectName("detail"); label.setFixedWidth(94)
             label.setFont(relative_font(self, .86)); row.addWidget(label)
             choice = self.label(text); choice.setFont(relative_font(self, .86)); row.addWidget(choice, 1)
@@ -1159,7 +1172,12 @@ class InstallerWindow(OpaqueSurface):
         else:
             index = [item[0] for item in STEPS].index(self.page)
             self.page = STEPS[max(0, index-1)][0]
+            if self.page == "glass_style" and not self.show_glass_style():
+                self.page = "files"
         self.render()
+
+    def show_glass_style(self):
+        return self.choices["files"] == "nautilus" and self.choices["acrylic_glass"]
 
     def advance(self):
         if self.editing:
@@ -1176,6 +1194,8 @@ class InstallerWindow(OpaqueSurface):
         else:
             index = [item[0] for item in STEPS].index(self.page)
             self.page = STEPS[index+1][0]
+            if self.page == "glass_style" and not self.show_glass_style():
+                self.page = "boot"
         self.render()
 
     def finished(self, code):

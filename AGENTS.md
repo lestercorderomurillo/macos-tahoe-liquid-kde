@@ -639,7 +639,11 @@ the units down, so a plain re-install is self-healing.
 
 Both editions use transparent Plasma and Kvantum surfaces in light and dark
 mode. Material presets own blur, refraction and gradient tint. Do not generate
-opaque theme variants or expose a separate reduced-transparency preference.
+opaque theme variants. Window glass offers Classic (unchanged) and Tinted
+(45% white/dark backing in the effect, following the window palette). Keep
+optics identical and shell surfaces unchanged. This choice is independent of
+the edition preset, is exposed in the KCM, and appears in the wizard only when
+Nautilus and Acrylic Glass are selected.
 Legacy appearance files must not influence theme selection; preserve unrelated
 settings and declarative files. Uninstall still cleans up old generated variants.
 Preserve surface masks, shadows, highlights and solid fallbacks.

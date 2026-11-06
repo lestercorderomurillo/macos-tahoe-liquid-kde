@@ -145,8 +145,9 @@ def test_acrylic_glass_preset_fits_kcm_ranges():
     ("", 0, True, False),
 ])
 @pytest.mark.parametrize("edition", ["MacTahoe", "MacGoldenGate"])
+@pytest.mark.parametrize("render_status", ["ready", "shader-error"])
 def test_acrylic_glass_installs_the_effect_default_blur(monkeypatch, tmp_path, capsys,
-                                                       active, returncode, identity, confirmed, edition):
+                                                       active, returncode, identity, confirmed, edition, render_status):
     """Fresh installs apply the edition material and preserve radius overrides."""
     import contextlib
     from steps import acrylic_glass
@@ -171,6 +172,12 @@ def test_acrylic_glass_installs_the_effect_default_blur(monkeypatch, tmp_path, c
     monkeypatch.setattr(acrylic_glass, "_activate_effect_binary",
                         lambda source, destination: activated_links.append(destination) or True)
     monkeypatch.setattr(acrylic_glass, "_running_build_matches", lambda: identity)
+    monkeypatch.setattr(acrylic_glass, "_render_status", lambda: render_status)
+    monkeypatch.setattr(acrylic_glass, "_disable_conflicting_blurs", lambda: True)
+    restored = []
+    monkeypatch.setattr(acrylic_glass, "_restore_conflicting_blurs", lambda: restored.append(True))
+    loaded = iter([set(), set(active.splitlines()) if returncode == 0 else None])
+    monkeypatch.setattr(acrylic_glass, "_loaded_effects", lambda: next(loaded))
     monkeypatch.setattr(acrylic_glass, "_running_plugin_matches", lambda path: None)
     monkeypatch.setattr(acrylic_glass, "qdbus_call", lambda *args: True)
     monkeypatch.setattr(acrylic_glass, "qdbus_cmd", lambda: "probe-qdbus")
@@ -184,12 +191,16 @@ def test_acrylic_glass_installs_the_effect_default_blur(monkeypatch, tmp_path, c
                         lambda *args: writes.append(args) or True)
 
     acrylic_glass.install()
-    output = capsys.readouterr().out
+    captured = capsys.readouterr()
+    output = captured.out + captured.err
     assert tmp_path / "plugins/kwin-x11/effects/plugins/liquidglass.so" in activated_links
     assert tmp_path / "plugins/kwin-x11/effects/configs/kwin_liquidglass_config.so" in installed_files
-    assert ("Acrylic Glass loaded" in output) == confirmed
+    assert ("Acrylic Glass loaded" in output) == (confirmed and render_status == "ready")
     if returncode != 0 or "liquidglass" not in active.splitlines():
         assert "activation was not confirmed" in output
+    elif render_status == "shader-error":
+        assert "could not initialize its shaders" in output
+        assert restored
     elif identity is False:
         assert "previous plugin loaded" in output
     elif identity is None:

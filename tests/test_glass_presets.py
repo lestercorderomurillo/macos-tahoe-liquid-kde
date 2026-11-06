@@ -102,6 +102,9 @@ def test_installation_reapplies_complete_edition_material(monkeypatch, edition, 
     monkeypatch.setattr(glass, "kw_write", write)
     assert glass._install_material_preset()
     expected = _preset_values(2 if golden else 1) | independent
+    if existing == "clear":
+        expected["MaterialOpacity"] = "0.55"  # Retired key is ignored, not rewritten.
+    assert "MaterialOpacity" not in writes
     assert saved == expected
     assert writes[-1] == "MaterialPreset"
     writes.clear()

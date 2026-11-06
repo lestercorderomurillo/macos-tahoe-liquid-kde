@@ -20,7 +20,7 @@ uniform float magnifyGlassStrength;
 uniform float refractionWidth;
 uniform float highlightWidth;
 uniform float highlightStrength;
-uniform float materialOpacity;
+uniform vec4 backingTint;
 uniform float centerOpacity;
 uniform bool dockSurface;
 uniform vec2 backgroundSize;
@@ -85,8 +85,9 @@ void main()
         vec3 tint = mix(gradientTop.rgb * gradientTop.a, gradientBottom.rgb * gradientBottom.a, t);
         surface.rgb = surface.rgb * (1.0 - tintAlpha) + tint;
     }
+    surface.rgb = mix(surface.rgb, backingTint.rgb, backingTint.a);
     // Only the Dock reveals sharp backdrop through its centre. Applet popups
     // need full blur coverage behind their thin client fills.
-    float coverage = materialOpacity * (dockSurface ? mix(centerOpacity, 1.0, edgeQ) : 1.0);
+    float coverage = (dockSurface ? mix(centerOpacity, 1.0, edgeQ) : 1.0);
     LG_OUT = surface * (mask * opacity * coverage);
 }
