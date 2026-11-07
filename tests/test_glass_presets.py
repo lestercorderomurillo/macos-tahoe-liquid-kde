@@ -159,24 +159,17 @@ def test_native_glass_shader_pixels(kcm_probe, tmp_path, monkeypatch):
 
 
 @pytest.mark.parametrize("edition", ["MacTahoe", "MacGoldenGate"])
-@pytest.mark.parametrize("style", ["classic", "tinted"])
+@pytest.mark.parametrize("style", ["classic", "tinted", "official"])
 def test_installer_frost_glass_values(monkeypatch, edition, style):
     monkeypatch.setattr(glass, "default_wallpaper", lambda: edition)
     monkeypatch.setattr(glass, "selected", lambda: {"files": "nautilus", "glass_style": style})
     saved = {}
     monkeypatch.setattr(glass, "kw_write", lambda *args: saved.update({args[-2]: args[-1]}) or True)
     assert glass._install_material_preset()
-    expected = _preset_values(1 if edition == "MacTahoe" else 2)
+    expected = _preset_values(2 if style == "official" else 1)
     if style == "tinted":
         expected.update(BlurStrength="12.0", MagnifyGlassStrength="0.02", RgbDriftStrength="10.0",
                         RefractionWidth="38.0", HighlightWidth="16.0", HighlightStrength="0.1",
                         Brightness="1.0", Contrast="1.0", Saturation="1.33",
                         NoiseStrength="0", BlurDecorations="true")
-        if edition == "MacGoldenGate":
-            expected.update(BlurStrength="4.0", MagnifyGlassStrength="0.032", RgbDriftStrength="8.0",
-                            RefractionWidth="64.0", Brightness="1.1", Contrast="1.0", Saturation="1.13",
-                            DarkGradientOverlay="true", GradientTopColor="#cecece",
-                            GradientCenterColor="#cecece", GradientBottomColor="#cecece",
-                            GradientTopOpacity="1.0", GradientCenterOpacity="0.69",
-                            GradientCenterPosition="0.56", GradientBottomOpacity="0.0")
     assert saved == expected
