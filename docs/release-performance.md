@@ -53,6 +53,8 @@ Screenshot reuse compares decoded font bytes. Only the exact reviewed
 packaging implementations are treated as visually equivalent; future code
 edits or changed font bytes invalidate that equivalence.
 
+The Docker driver shares the runner's containerd image store, avoiding a
+separate BuildKit-to-Docker archive export/import before each test.
 Docker dependency layers use per-distro GitHub Actions caches, a weekly refresh
 argument and fresh base-image resolution. Source changes invalidate the source
 layer, not an unchanged SDK layer. Cache export is optional and time-bounded;
@@ -68,3 +70,7 @@ the exact release commit. The main run is an evidence check, not an unconditiona
 skip. Failed, cancelled, wrong-commit, PR-only or missing dev evidence cannot
 satisfy it. Release publication still verifies screenshot provenance and the
 Golden Gate immutable Tahoe checksum.
+
+With identical `git archive | gzip -6` settings, the complete install archive
+fell from 172,919,480 to 137,083,214 bytes (20.7% smaller). This compares archive
+content, not the one-time Git upload of the new compressed font payload.

@@ -122,7 +122,14 @@ jobs:
           - arch-kdeunstable
     steps:
       - uses: actions/checkout@v5
+      - name: Use the local containerd image store
+        uses: docker/setup-docker-action@v5
+        with:
+          daemon-config: |
+            {"features": {"containerd-snapshotter": true}}
       - uses: docker/setup-buildx-action@v3
+        with:
+          driver: docker
       - name: Refresh dependency cache weekly
         id: sdk
         run: echo "epoch=$(date -u +%G-%V)" >> "$GITHUB_OUTPUT"
