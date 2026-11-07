@@ -14,9 +14,6 @@
 #   - libepoxy + libdrm + libX11 + libxcb (acrylic-glass effect)
 FROM opensuse/tumbleweed:latest
 
-# Invalidate dependency layers weekly, independently of source edits.
-ARG SDK_EPOCH=local
-
 # `zypper refresh` against download.opensuse.org occasionally times out
 # from GitHub runners (curl error 28 after the 180s default). Retry up
 # to 3 times before giving up — every individual refresh is a clean

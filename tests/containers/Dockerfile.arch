@@ -2,9 +2,6 @@
 # layout, so a pass here covers all three.
 FROM archlinux:latest
 
-# Invalidate dependency layers weekly, independently of source edits.
-ARG SDK_EPOCH=local
-
 # Refresh signing keys immediately before the full upgrade.
 RUN pacman -Sy --noconfirm --needed archlinux-keyring && \
     pacman -Syu --noconfirm --needed \

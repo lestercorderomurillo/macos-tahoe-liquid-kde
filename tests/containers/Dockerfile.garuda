@@ -4,9 +4,6 @@
 # of the Arch base.
 FROM archlinux:latest
 
-# Invalidate dependency layers weekly, independently of source edits.
-ARG SDK_EPOCH=local
-
 RUN printf 'NAME="Garuda Linux"\nID=garuda\nID_LIKE=arch\nPRETTY_NAME="Garuda Linux"\n' > /etc/os-release
 
 # Refresh signing keys immediately before the full upgrade.

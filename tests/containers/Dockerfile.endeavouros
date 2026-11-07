@@ -4,9 +4,6 @@
 # distinct package set).
 FROM archlinux:latest
 
-# Invalidate dependency layers weekly, independently of source edits.
-ARG SDK_EPOCH=local
-
 # Add the EndeavourOS /etc/os-release so distro.current_distro() picks
 # the right row in _QT6_LIBDIR_FALLBACK + _PACKAGE_MAP. Real EndeavourOS
 # ships with this file from its base meta-package; we synthesise it

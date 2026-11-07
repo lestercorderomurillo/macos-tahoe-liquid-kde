@@ -53,17 +53,12 @@ Screenshot reuse compares decoded font bytes. Only the exact reviewed
 packaging implementations are treated as visually equivalent; future code
 edits or changed font bytes invalidate that equivalence.
 
-The Docker driver shares the runner's containerd image store, avoiding a
-separate BuildKit-to-Docker archive export/import before each test.
-Docker dependency layers use per-distro GitHub Actions caches, a weekly refresh
-argument and fresh base-image resolution. Source changes invalidate the source
-layer, not an unchanged SDK layer. Cache export is optional and time-bounded;
-compilation, tests and release checks remain mandatory. A cold-cache run still
-builds everything. Native components are compiled against each image's SDK on
-every validation. Package probes deduplicate mapped packages and parallelize
-only independent apt/pacman metadata reads; lock-taking managers stay sequential.
-
-The cache follows the [Docker GitHub Actions cache documentation](https://docs.docker.com/build/cache/backends/gha/).
+SDK images use the runner's direct Docker build path with `--pull`. They are
+not uploaded to Actions cache: their multi-gigabyte layers exceeded cache
+capacity and evicted useful compiler entries. Dependencies are resolved fresh
+on each validation. Only the small compiler caches persist between runs.
+Package probes deduplicate mapped packages and parallelize independent
+apt/pacman metadata reads; lock-taking managers stay sequential.
 
 Both repositories still need successful `test.yml` runs on `dev` and `main` for
 the exact release commit. The main run is an evidence check, not an unconditional
@@ -72,7 +67,7 @@ satisfy it. Release publication still verifies screenshot provenance and the
 Golden Gate immutable Tahoe checksum.
 
 With identical `git archive | gzip -6` settings, the complete install archive
-fell from 172,919,480 to 137,083,214 bytes (20.7% smaller). This compares archive
+fell from 172,919,480 to 137,082,341 bytes (20.7% smaller). This compares archive
 content, not the one-time Git upload of the new compressed font payload.
 
 ## Compilation reuse and measured scheduling
@@ -84,11 +79,10 @@ checks still execute. The general suite is split using recorded JUnit file
 durations in `.github/test-durations.json`, preserving one shard per file so
 module-scoped native fixtures are not rebuilt in multiple workers.
 
-The first optimized stable candidate measured 584 seconds with cold neon cache
-and 526 seconds after warming it, versus 886 seconds for rc2. These are 34% and
-41% elapsed reductions, not the 50% target. Its accumulated job time fell from
-12,546 to 5,286 seconds (58%). The compiler cache and weighted shard scheduling
-address the remaining gap; their final measurement must be reported separately.
+The published runtime candidate improved elapsed validation to 526 seconds,
+but did not meet the 443-second target. The final workflow removes SDK cache
+uploads, preserves compiler caches, and balances test shards using measured
+file durations. Its result is recorded separately with the final CI links.
 
 The font payload and installer are the published v0.63.0 bytes. Subsequent CI-only
 optimizations do not rewrite that release tag or change the installed desktop.

@@ -4,9 +4,6 @@
 ARG DEBIAN_SUITE=testing-slim
 FROM debian:${DEBIAN_SUITE}
 
-# Invalidate dependency layers weekly, independently of source edits.
-ARG SDK_EPOCH=local
-
 ENV PYTHONUNBUFFERED=1
 # This matrix target provides the maintained X11 SDK and exercises the exact
 # module produced by the runner's CMake build in a private compositor.

@@ -4,9 +4,6 @@
 # makes the CI matrix reflect the README claim.
 FROM cachyos/cachyos:latest
 
-# Invalidate dependency layers weekly, independently of source edits.
-ARG SDK_EPOCH=local
-
 # Base image ships pacman keyrings that drift out of date — pacman -Sy
 # then fails with ``signature from "CachyOS <admin@cachyos.org>" is
 # invalid``. Refresh the keyring before any sync so the rest of the

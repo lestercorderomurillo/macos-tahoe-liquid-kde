@@ -3,9 +3,6 @@
 # the old Docker Hub kdeneon/plasma image stopped updating years ago.
 FROM invent-registry.kde.org/neon/docker-images/plasma:user
 
-# Invalidate dependency layers weekly, independently of source edits.
-ARG SDK_EPOCH=local
-
 USER root
 
 ENV PYTHONUNBUFFERED=1

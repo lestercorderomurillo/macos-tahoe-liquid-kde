@@ -2,9 +2,6 @@
 # slightly older package set. Same /usr/lib/qt6 libdir, same pacman.
 FROM manjarolinux/base:latest
 
-# Invalidate dependency layers weekly, independently of source edits.
-ARG SDK_EPOCH=local
-
 # The stable image's libimagequant signer needs its expiry extension from WKD.
 # Keep normal pacman signature verification and the subsequent full upgrade.
 RUN gpg --homedir "$(pacman-conf GPGDir)" --auto-key-locate clear,nodefault,wkd \

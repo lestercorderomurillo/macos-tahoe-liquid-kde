@@ -140,28 +140,11 @@ jobs:
           - arch-kdeunstable
     steps:
       - uses: actions/checkout@v5
-      - name: Use the local containerd image store
-        uses: docker/setup-docker-action@v5
-        with:
-          daemon-config: |
-            {"features": {"containerd-snapshotter": true}}
-      - uses: docker/setup-buildx-action@v3
-        with:
-          driver: docker
-      - name: Refresh dependency cache weekly
+      - name: Select weekly compiler cache
         id: sdk
         run: echo "epoch=$(date -u +%G-%V)" >> "$GITHUB_OUTPUT"
       - name: Build ${{ matrix.distro }} SDK image
-        uses: docker/build-push-action@v6
-        with:
-          context: .
-          file: tests/containers/Dockerfile.${{ matrix.distro }}
-          load: true
-          pull: true
-          tags: mttkde-test-${{ matrix.distro }}:ci
-          build-args: SDK_EPOCH=${{ steps.sdk.outputs.epoch }}
-          cache-from: type=gha,scope=sdk-${{ matrix.distro }}
-          cache-to: type=gha,scope=sdk-${{ matrix.distro }},mode=max,ignore-error=true,timeout=60s
+        run: docker build --pull -f tests/containers/Dockerfile.${{ matrix.distro }} -t mttkde-test-${{ matrix.distro }}:ci .
       - uses: actions/cache@v4
         with:
           path: ${{ runner.temp }}/ccache

@@ -12,9 +12,6 @@
 # a real per-Plasma-version build gate.
 FROM archlinux:latest
 
-# Invalidate dependency layers weekly, independently of source edits.
-ARG SDK_EPOCH=local
-
 # Enable [kde-unstable] ABOVE [extra] (pacman is first-match-wins on repo
 # order for equal versions, and kde-unstable carries the higher version
 # anyway), then do a full -Syu so the whole KF6/Qt6/Plasma/KWin stack is
