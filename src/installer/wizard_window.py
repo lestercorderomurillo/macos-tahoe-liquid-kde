@@ -943,11 +943,16 @@ class InstallerWindow(OpaqueSurface):
         self.body.addWidget(self.label("Close, minimize and maximize buttons."))
 
     def page_glass_style(self):
-        self.radio("glass_style", [
-            ("classic", "Classic"), ("tinted", "Tinted"),
-        ], inline=True)
-        self.body.addWidget(self.label("Classic keeps the original glass. Tinted adds a white backing in light mode and a dark backing in dark mode."))
-        self.body.addWidget(self.label("Both use the same blur, refraction and highlights. Applies to application windows; panels and menus keep their own materials."))
+        if self.edition == "Golden Gate":
+            self.choices["glass_style"] = "tinted"
+            self.radio("glass_style", [("tinted", "Golden Gate (Official)")])
+            self.body.addWidget(self.label("Three-color gradient with separate light and dark colors, and blur strength 4."))
+        else:
+            self.radio("glass_style", [
+                ("classic", "Tahoe (Clear)"), ("tinted", "Tahoe (Frosted)"),
+            ], inline=True)
+            self.body.addWidget(self.label("Clear uses blur strength 5. Frosted uses 12; the other surface and fine-tuning values are identical."))
+        self.body.addWidget(self.label("The Dock keeps its fixed v0.62 glass settings, independent of these presets."))
 
     def page_shadows(self):
         self.cards("shadows", [
@@ -1031,7 +1036,9 @@ class InstallerWindow(OpaqueSurface):
         names = {"auto": "Automatic", "light": "Light", "dark": "Dark", "regular": "Regular",
                  "glass": "Glass", "keep": "Keep", "golden": "Golden Gate", "tahoe": "Tahoe",
                  "landscape": "Landscape", "sonoma": "Sonoma", "custom": "Custom file",
-                 "nautilus": "Nautilus", "dolphin": "Dolphin"}
+                 "nautilus": "Nautilus", "dolphin": "Dolphin",
+                 "classic": "Golden Gate (Official)" if self.edition == "Golden Gate" else "Tahoe (Clear)",
+                 "tinted": "Golden Gate (Official)" if self.edition == "Golden Gate" else "Tahoe (Frosted)"}
         value = lambda key: self.t(names.get(str(c[key]), str(c[key]).capitalize()))
         enabled = lambda key: self.t("Enabled" if c[key] else "Disabled")
         desktop = " + ".join(self.t(label) for key, label in (("panel", "Top bar"), ("dock", "Dock")) if c[key])
