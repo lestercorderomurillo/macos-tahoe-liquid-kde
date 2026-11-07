@@ -12,7 +12,7 @@
             <default>false</default>
         </entry>
         <entry name="NoiseStrength" type="Int">
-            <default>1</default>
+            <default>0</default>
         </entry>
         <entry name="BlurDecorations" type="Bool">
             <default>true</default>
@@ -49,16 +49,18 @@ xembedsniproxy</default>
             <default>false</default>
         </entry>
         <entry name="RgbDriftStrength" type="Double">
-            <default>12.0</default>
+            <default>10.0</default>
         </entry>
         <entry name="MagnifyGlassStrength" type="Double">
-            <default>0.1</default>
+            <default>0.02</default>
+            <min>0.0</min>
+            <max>0.2</max>
         </entry>
         <entry name="RefractionWidth" type="Double">
-            <default>18.0</default>
+            <default>38.0</default>
         </entry>
         <entry name="HighlightWidth" type="Double">
-            <default>3.5</default>
+            <default>16.0</default>
         </entry>
         <entry name="HighlightStrength" type="Double">
             <default>0.1</default>
@@ -78,6 +80,7 @@ xembedsniproxy</default>
             <min>1</min>
             <max>2</max>
         </entry>
+        <!-- Legacy key now identifies the alternate preset only; no flat backing is rendered. -->
         <entry name="BackingTint" type="Int">
             <default>0</default>
             <min>0</min>
@@ -85,6 +88,19 @@ xembedsniproxy</default>
         </entry>
         <entry name="GradientTopColor" type="Color">
             <default>#000000</default>
+        </entry>
+        <entry name="GradientCenterColor" type="Color">
+            <default>#000000</default>
+        </entry>
+        <entry name="GradientCenterOpacity" type="Double">
+            <default>0.02</default>
+            <min>0.0</min>
+            <max>1.0</max>
+        </entry>
+        <entry name="GradientCenterPosition" type="Double">
+            <default>0.55</default>
+            <min>0.0</min>
+            <max>1.0</max>
         </entry>
         <entry name="GradientBottomColor" type="Color">
             <default>#000000</default>
@@ -94,6 +110,15 @@ xembedsniproxy</default>
         </entry>
         <entry name="GradientBottomOpacity" type="Double">
             <default>0.02</default>
+        </entry>
+        <entry name="GradientTopDarkColor" type="Color">
+            <default>#000000</default>
+        </entry>
+        <entry name="GradientCenterDarkColor" type="Color">
+            <default>#000000</default>
+        </entry>
+        <entry name="GradientBottomDarkColor" type="Color">
+            <default>#000000</default>
         </entry>
     </group>
 </kcfg>

@@ -13,13 +13,15 @@ PROFILE = ROOT / 'src/scripts/release_capture_profile.json'
 EDITIONS = {'tahoe': ('MacTahoe', 1, 'v4'), 'golden-gate': ('MacGoldenGate', 2, 'v1')}
 INSTALLER_PAGES = ('welcome', 'appearance', 'icons', 'wallpaper', 'launcher', 'layout',
                    'effects', 'window_controls', 'shadows', 'fonts', 'firefox', 'files', 'glass_style', 'boot', 'oled', 'summary')
-CASES = ('launcher', 'dock', 'menu', 'context', 'finder', 'showcase', 'about') + tuple(
+MATERIAL_CASES = {'glass-tahoe-clear': (1, 0), 'glass-tahoe-frosted': (1, 1),
+                  'glass-golden-gate-official': (2, 1)}
+CASES = tuple(MATERIAL_CASES) + ('launcher', 'dock', 'menu', 'context', 'finder', 'showcase', 'about') + tuple(
     'installer-' + page for page in INSTALLER_PAGES)
 MODES = ('light', 'dark')
 RECIPE_FILES = ('release_capture.py', 'release_capture_guest.py', 'release_capture_profile.json',
                 'release_screenshots.py', 'screenshot_checks.py', 'release_capture_wizard.py')
 STATIC_ART = {'banner_v3.png', 'banner.png', 'macos-26.png', 'macos-27.png', 'macos-27-dark.png'}
-SCREENSHOT_DOCS = ('README.md', 'TESTING.md')
+SCREENSHOT_DOCS = ('README.md', 'TESTING.md', 'GLASS_PRESETS.md')
 
 
 def digest(path: Path) -> str:
@@ -167,6 +169,15 @@ def verify_visual_source(repo: Path, source: str, target: str, source_tree: str)
             'Visual release source changed after capture; recapture required')
 
 
+def material_values(presets: list[dict], case: str) -> dict:
+    material, variant = MATERIAL_CASES[case]
+    preset = next(p for p in presets if p['value'] == material)
+    values = dict(preset['values'])
+    if variant:
+        values.update(preset.get('tinted_values', {}))
+    return values | {'MaterialPreset': material, 'BackingTint': variant}
+
+
 def expected_frames() -> set[str]:
     return {f'{edition}-{mode}-{case}' for edition in EDITIONS for mode in MODES for case in CASES} | {'boot', 'shutdown'}
 
@@ -270,9 +281,12 @@ def validate(repo: Path, ref: str, bundle: Path, *, reviewed: bool = True) -> di
                     f'Wrong installer page: {name}')
             require(record.get('installer_edition') == EDITIONS[edition][0],
                     f'Wrong installer edition: {name}')
-        if case in ('finder', 'showcase', 'about'):
+        if case in ('finder', 'showcase', 'about') or case in MATERIAL_CASES:
             verify_desktop_window(case, record['windows'])
-        if case in ('finder', 'showcase'):
+        if case in MATERIAL_CASES:
+            presets = json.loads(blob(repo, source, 'src/offline/kwin-effects/acrylic-glass/src/presets.json'))
+            require(record.get('material_values') == material_values(presets, case), f'Wrong glass material: {name}')
+        if case in ('finder', 'showcase') or case in MATERIAL_CASES:
             from screenshot_checks import check_files_pixels
             with Image.open(path) as image:
                 check_files_pixels(image, mode, record['windows'], profile['scale'])
@@ -413,6 +427,11 @@ def verify_committed(repo: Path, ref: str, *, tahoe: Path | None = None) -> dict
             'Every release capture must be reviewed')
     for name, frame in manifest['frames'].items():
         verify_icon_appearance(name, frame)
+        case = next((c for c in MATERIAL_CASES if name.endswith('-' + c)), None)
+        if case:
+            presets = json.loads(blob(source_repo, source, 'src/offline/kwin-effects/acrylic-glass/src/presets.json'))
+            require(frame.get('material_values') == material_values(presets, case), f'Wrong glass material: {name}')
+            verify_desktop_window(case, frame['windows'])
         if name.endswith(('-finder', '-showcase', '-about')):
             verify_desktop_window(name.rsplit('-', 1)[1], frame['windows'])
     committed_docs = set(git(repo, 'ls-tree', '--name-only', ref, '--', *SCREENSHOT_DOCS).splitlines())

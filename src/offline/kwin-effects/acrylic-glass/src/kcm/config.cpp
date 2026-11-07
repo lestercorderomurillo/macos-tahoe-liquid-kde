@@ -22,9 +22,19 @@ LiquidGlassEffectConfig::LiquidGlassEffectConfig(QObject* parent, const KPluginM
 {
     ui.setupUi(widget());
     const auto presets = QJsonDocument::fromJson(materialPresetsJson).array();
-    for (int index = 0; index < presets.size(); ++index) {
-        ui.kcfg_MaterialPreset->setItemData(index, presets.at(index).toObject().value(QStringLiteral("value")).toInt());
+    int row = 0;
+    for (const auto &entry : presets) {
+        const int value = entry.toObject().value(QStringLiteral("value")).toInt();
+        for (int variant : {0, 1}) {
+            if (value == 2 && variant == 0) {
+                continue; // Golden Gate clear is not offered in the selector.
+            }
+            ui.kcfg_MaterialPreset->setItemData(row, value);
+            ui.kcfg_MaterialPreset->setItemData(row++, variant, Qt::UserRole + 1);
+        }
     }
+    connect(ui.kcfg_BackingTint, &QSpinBox::valueChanged,
+            ui.kcfg_MaterialPreset, &PresetComboBox::setBackingTint);
     BlurConfig::instance("kwinrc");
     addConfig(BlurConfig::self(), widget());
 
@@ -36,7 +46,13 @@ LiquidGlassEffectConfig::LiquidGlassEffectConfig(QObject* parent, const KPluginM
     });
     const auto updateGradient = [this](bool enabled) {
         ui.kcfg_GradientTopColor->setEnabled(enabled);
+        ui.kcfg_GradientTopDarkColor->setEnabled(enabled);
+        ui.kcfg_GradientCenterColor->setEnabled(enabled);
+        ui.kcfg_GradientCenterDarkColor->setEnabled(enabled);
+        ui.kcfg_GradientCenterOpacity->setEnabled(enabled);
+        ui.kcfg_GradientCenterPosition->setEnabled(enabled);
         ui.kcfg_GradientBottomColor->setEnabled(enabled);
+        ui.kcfg_GradientBottomDarkColor->setEnabled(enabled);
         ui.kcfg_GradientTopOpacity->setEnabled(enabled);
         ui.kcfg_GradientBottomOpacity->setEnabled(enabled);
     };
@@ -54,10 +70,29 @@ LiquidGlassEffectConfig::~LiquidGlassEffectConfig() { }
 void LiquidGlassEffectConfig::applyPreset(int index)
 {
     const auto presets = QJsonDocument::fromJson(materialPresetsJson).array();
-    if (index < 0 || index >= presets.size()) {
+    if (index < 0 || index >= ui.kcfg_MaterialPreset->count()) {
         return;
     }
-    const auto values = presets.at(index).toObject().value(QStringLiteral("values")).toObject();
+    const int value = ui.kcfg_MaterialPreset->itemData(index).toInt();
+    const int variant = ui.kcfg_MaterialPreset->itemData(index, Qt::UserRole + 1).toInt();
+    QJsonObject preset;
+    for (const auto &entry : presets) {
+        if (entry.toObject().value(QStringLiteral("value")).toInt() == value) {
+            preset = entry.toObject();
+            break;
+        }
+    }
+    if (preset.isEmpty()) {
+        return;
+    }
+    ui.kcfg_BackingTint->setValue(variant);
+    auto values = preset.value(QStringLiteral("values")).toObject();
+    if (variant) {
+        const auto overrides = preset.value(QStringLiteral("tinted_values")).toObject();
+        for (auto it = overrides.constBegin(); it != overrides.constEnd(); ++it) {
+            values.insert(it.key(), it.value());
+        }
+    }
     for (auto it = values.constBegin(); it != values.constEnd(); ++it) {
         auto *control = widget()->findChild<QWidget *>(QStringLiteral("kcfg_") + it.key());
         if (auto *number = qobject_cast<QDoubleSpinBox *>(control)) {
@@ -72,6 +107,22 @@ void LiquidGlassEffectConfig::applyPreset(int index)
     }
 }
 
+void LiquidGlassEffectConfig::load()
+{
+    KCModule::load();
+    const KConfigGroup group(BlurConfig::self()->config(), QStringLiteral("Effect-liquidglass"));
+    // Older settings used one color in both modes. Preserve it until edited.
+    if (!group.hasKey("GradientTopDarkColor")) {
+        ui.kcfg_GradientTopDarkColor->setColor(ui.kcfg_GradientTopColor->color());
+    }
+    if (!group.hasKey("GradientCenterDarkColor")) {
+        ui.kcfg_GradientCenterDarkColor->setColor(ui.kcfg_GradientCenterColor->color());
+    }
+    if (!group.hasKey("GradientBottomDarkColor")) {
+        ui.kcfg_GradientBottomDarkColor->setColor(ui.kcfg_GradientBottomColor->color());
+    }
+}
+
 void LiquidGlassEffectConfig::save()
 {
     KCModule::save();
@@ -80,6 +131,9 @@ void LiquidGlassEffectConfig::save()
     // selection explicitly, using stable IDs rather than combo-box positions.
     auto group = BlurConfig::self()->config()->group(QStringLiteral("Effect-liquidglass"));
     group.writeEntry("MaterialPreset", ui.kcfg_MaterialPreset->presetValue());
+    group.writeEntry("GradientTopDarkColor", ui.kcfg_GradientTopDarkColor->color());
+    group.writeEntry("GradientCenterDarkColor", ui.kcfg_GradientCenterDarkColor->color());
+    group.writeEntry("GradientBottomDarkColor", ui.kcfg_GradientBottomDarkColor->color());
     group.sync();
 
     OrgKdeKwinEffectsInterface interface(QStringLiteral("org.kde.KWin"), QStringLiteral("/Effects"), QDBusConnection::sessionBus());

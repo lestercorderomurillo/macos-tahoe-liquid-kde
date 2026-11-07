@@ -296,11 +296,12 @@ private:
         int highlightWidthLocation;
         int highlightStrengthLocation;
         int darkGradientOverlayLocation;
-        int backingTintLocation;
         int centerOpacityLocation;
         int dockSurfaceLocation;
         int backgroundSizeLocation;
         int gradientTopLocation;
+        int gradientCenterLocation;
+        int gradientCenterPositionLocation;
         int gradientBottomLocation;
     } m_roundedOnscreenPass;
 
@@ -366,13 +367,16 @@ private:
     float m_highlightWidth; ///< Pixel width of the bright glass rim.
     float m_highlightStrength; ///< Rim intensity multiplier.
     bool m_darkGradientOverlay = false;
-    bool m_backingTint = false;
     QVector4D m_gradientTop;
+    QVector4D m_gradientTopDark;
+    QVector4D m_gradientCenter;
+    QVector4D m_gradientCenterDark;
+    float m_gradientCenterPosition;
     QVector4D m_gradientBottom;
+    QVector4D m_gradientBottomDark;
 
     size_t m_iterationCount; ///< Number of Kawase halve/double passes (drives texture chain length).
     float m_offset; ///< Kawase tap offset; 0.0 means "no blur, passthrough".
-    float m_dockOffset; ///< Compact Dock pyramid tap spacing, increasing with BlurStrength.
     int m_expandSize; ///< Pixels of dirty-region expansion needed for taps near the rim.
     int m_noiseStrength; ///< 0..N grain intensity; 0 disables the noise pass entirely.
 

@@ -247,9 +247,40 @@ def wizard(repo, page):
     raise RuntimeError('Installer capture page did not become ready: ' + page)
 
 
+def material(repo, case):
+    from release_screenshots import material_values
+    import configparser
+    snapshot = repo.parent / 'material-before.ini'
+    config = Path.home() / '.config/kwinrc'
+    if case == 'restore':
+        old = configparser.ConfigParser()
+        old.optionxform = str
+        old.read(snapshot)
+        values = dict(old['Effect-liquidglass'])
+    else:
+        if not snapshot.exists():
+            snapshot.write_bytes(config.read_bytes())
+        presets = json.loads((repo / 'src/offline/kwin-effects/acrylic-glass/src/presets.json').read_text())
+        values = material_values(presets, case)
+    for key, value in values.items():
+        run('kwriteconfig6', '--file', 'kwinrc', '--group', 'Effect-liquidglass', '--key', key,
+            str(value).lower() if isinstance(value, bool) else str(value))
+    run('qdbus6', 'org.kde.KWin', '/Effects', 'org.kde.kwin.Effects.reconfigureEffect', 'liquidglass')
+    time.sleep(1)
+    if case == 'restore':
+        snapshot.unlink()
+    else:
+        for key, value in values.items():
+            saved = run('kreadconfig6', '--file', 'kwinrc', '--group', 'Effect-liquidglass', '--key', key)
+            expected = str(value).lower() if isinstance(value, bool) else str(value)
+            if saved != expected:
+                raise RuntimeError(f'Material readback failed: {key}: {saved} != {expected}')
+    return values
+
+
 def capture(repo, profile, edition, requested, case):
     from PIL import Image
-    from release_screenshots import EDITIONS, digest, verify_desktop_window, verify_icon_appearance
+    from release_screenshots import EDITIONS, MATERIAL_CASES, material_values, digest, verify_desktop_window, verify_icon_appearance
     from screenshot_checks import wait_for_session, check_files_pixels
     state = wait_for_session(requested)
     state['Icons'] = run('kreadconfig6', '--file', 'kdeglobals', '--group', 'Icons', '--key', 'Theme')
@@ -267,7 +298,7 @@ def capture(repo, profile, edition, requested, case):
         raise RuntimeError(f'Wrong launcher preset: {presets}')
     run('sudo', 'date', '--set', profile['clock'])
     target = repo.parent / 'frame.png'
-    if case in ('finder', 'showcase', 'about'):
+    if case in ('finder', 'showcase', 'about') or case in MATERIAL_CASES:
         verify_desktop_window(case, windows())
     previous = None
     deadline = time.monotonic() + 25
@@ -309,18 +340,27 @@ def capture(repo, profile, edition, requested, case):
     if len(chosen) != expected:
         raise RuntimeError(f'{case}: expected {expected} windows, found {chosen}; observed {observed}')
     crop = None
-    if case not in ('launcher', 'showcase'):
+    if case not in ('launcher', 'showcase') and case not in MATERIAL_CASES:
         g = chosen[0]['geometry']
         scale = profile['scale']
         crop = [max(0, round(g['x'] * scale) - 28), max(0, round(g['y'] * scale) - 28),
                 min(3840, round((g['x'] + g['width']) * scale) + 28),
                 min(2160, round((g['y'] + g['height']) * scale) + 28)]
     pixels = None
-    if case in ('finder', 'showcase'):
+    if case in ('finder', 'showcase') or case in MATERIAL_CASES:
         with Image.open(target) as image:
             pixels = check_files_pixels(image, requested, observed, profile['scale'])
+    captured_material = None
+    if case in MATERIAL_CASES:
+        definitions = json.loads((repo / 'src/offline/kwin-effects/acrylic-glass/src/presets.json').read_text())
+        captured_material = material_values(definitions, case)
+        for key, value in captured_material.items():
+            actual = run('kreadconfig6', '--file', 'kwinrc', '--group', 'Effect-liquidglass', '--key', key)
+            expected = str(value).lower() if isinstance(value, bool) else str(value)
+            if actual != expected:
+                raise RuntimeError(f'Glass setting changed before capture: {key}')
     identity = run('qdbus6', 'org.kde.KWin', '/Effects', 'org.kde.kwin.Effects.debug', 'liquidglass', '')
-    return dict(sha256=digest(target), appearance=state, effect_build=identity, crop=crop,
+    return dict(material_values=captured_material, sha256=digest(target), appearance=state, effect_build=identity, crop=crop,
                 wallpaper=EDITIONS[edition][0], wallpaper_uri=wallpaper[0], launcher_preset=presets[0], windows=observed,
                 files_pixels=pixels, stable_frames=True, window_verified=True,
                 installer_page=installer_state['page'] if installer_state else None,
@@ -353,7 +393,7 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--repo', type=Path, required=True)
     parser.add_argument('--profile', type=Path, required=True)
-    parser.add_argument('action', choices=('setup', 'mode', 'launch', 'launcher', 'arrange', 'close', 'clean-desktop', 'wizard', 'plasma', 'capture', 'boot'))
+    parser.add_argument('action', choices=('material', 'setup', 'mode', 'launch', 'launcher', 'arrange', 'close', 'clean-desktop', 'wizard', 'plasma', 'capture', 'boot'))
     parser.add_argument('args', nargs='*')
     args = parser.parse_args()
     sys.path.insert(0, str(args.repo / 'src/scripts'))
@@ -361,6 +401,7 @@ def main():
     profile = json.loads(args.profile.read_text())
     result = None
     if args.action == 'setup': result = setup(args.repo, profile, args.args[0])
+    elif args.action == 'material': result = material(args.repo, args.args[0])
     elif args.action == 'mode': result = mode(args.repo, args.args[0])
     elif args.action == 'launch': launch(args.repo, args.args[0])
     elif args.action == 'launcher': run('qdbus6', 'org.kde.plasmashell', '/PlasmaShell', 'org.kde.PlasmaShell.activateLauncherMenu')

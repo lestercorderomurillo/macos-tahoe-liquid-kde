@@ -231,6 +231,8 @@ def _restore_conflicting_blurs() -> None:
 
 def _install_backing_tint() -> bool:
     choices = selected()
+    if default_wallpaper() == "MacGoldenGate":
+        return kw_write("--file", "kwinrc", "--group", "Effect-liquidglass", "--key", "BackingTint", "1")
     if not choices or choices["files"] != "nautilus":
         return True
     return kw_write("--file", "kwinrc", "--group", "Effect-liquidglass", "--key",
@@ -248,7 +250,10 @@ def _edition_preset() -> dict[str, str]:
     presets = json.loads((SRC / "src/presets.json").read_text())
     preset_id = "golden-gate" if default_wallpaper() == "MacGoldenGate" else "tahoe"
     preset = next(preset for preset in presets if preset["id"] == preset_id)
-    values = preset["values"]
+    values = dict(preset["values"])
+    choices = selected()
+    if choices and choices["files"] == "nautilus" and choices["glass_style"] == "tinted":
+        values.update(preset.get("tinted_values", {}))
     return {key: str(value).lower() if isinstance(value, bool) else str(value)
             for key, value in values.items()} | {"MaterialPreset": str(preset["value"])}
 

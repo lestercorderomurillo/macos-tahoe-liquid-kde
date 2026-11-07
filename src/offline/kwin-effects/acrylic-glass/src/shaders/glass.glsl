@@ -20,11 +20,12 @@ uniform float magnifyGlassStrength;
 uniform float refractionWidth;
 uniform float highlightWidth;
 uniform float highlightStrength;
-uniform vec4 backingTint;
 uniform float centerOpacity;
 uniform bool dockSurface;
 uniform vec2 backgroundSize;
 uniform vec4 gradientTop;
+uniform vec4 gradientCenter;
+uniform float gradientCenterPosition;
 uniform vec4 gradientBottom;
 uniform bool darkGradientOverlay;
 
@@ -79,12 +80,19 @@ void main(void)
         // Frame-local geometry keeps top/bottom upright on all backends.
         // Tint changes color only: the bottom retains the same blurred glass.
         float heightFraction = clamp((pos.y + halfSize.y) / max(blurSize.y, 1.0), 0.0, 1.0);
-        float t = smoothstep(0.0, 0.55, heightFraction);
-        float tintAlpha = mix(gradientTop.a, gradientBottom.a, t);
-        vec3 tint = mix(gradientTop.rgb * gradientTop.a, gradientBottom.rgb * gradientBottom.a, t);
+        // End positions collapse one segment without dividing by zero.
+        float centerPosition = clamp(gradientCenterPosition, 0.0, 1.0);
+        bool upper = heightFraction < centerPosition;
+        vec4 start = upper ? gradientTop : gradientCenter;
+        vec4 end = upper ? gradientCenter : gradientBottom;
+        float segmentStart = upper ? 0.0 : centerPosition;
+        float segmentLength = upper ? centerPosition : 1.0 - centerPosition;
+        float t = smoothstep(0.0, 1.0,
+            (heightFraction - segmentStart) / max(segmentLength, 0.000001));
+        float tintAlpha = mix(start.a, end.a, t);
+        vec3 tint = mix(start.rgb * start.a, end.rgb * end.a, t);
         surface.rgb = surface.rgb * (1.0 - tintAlpha) + tint;
     }
-    surface.rgb = mix(surface.rgb, backingTint.rgb, backingTint.a);
     // Only the Dock reveals sharp backdrop through its centre. Applet popups
     // need full blur coverage behind their thin client fills.
     float coverage = (dockSurface ? mix(centerOpacity, 1.0, edgeQ) : 1.0);

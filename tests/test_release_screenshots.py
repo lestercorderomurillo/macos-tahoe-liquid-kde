@@ -81,6 +81,8 @@ def capture(tmp_path, monkeypatch):
     source = repo / 'src/offline/kwin-effects/acrylic-glass/src'
     source.mkdir(parents=True)
     (source / 'effect.cpp').write_text('release source\n')
+    write_json(source / 'presets.json', [{'value': i, 'values': {'BlurStrength': 5},
+                'tinted_values': {'BlurStrength': 12}} for i in (1, 2)])
     profile = repo / 'src/scripts/release_capture_profile.json'
     profile.parent.mkdir(parents=True)
     write_json(profile.parent / 'defaults.json', {'wallpaper': 'MacTahoe', 'launcher_preset': 1})
@@ -110,6 +112,8 @@ def capture(tmp_path, monkeypatch):
                               'resourceClass': 'qml6' if case == 'about' else 'org.gnome.Nautilus',
                               'type': 0, 'active': True,
                               'geometry': dict(x=0, y=0, width=32, height=32)}])
+            if case in shots.MATERIAL_CASES:
+                record['material_values'] = shots.material_values(json.loads((source / 'presets.json').read_text()), case)
             if case.startswith('installer-'):
                 record.update(installer_page=case.removeprefix('installer-'),
                               installer_edition=shots.EDITIONS[edition][0])
@@ -413,12 +417,13 @@ def test_ui_translation_changes_still_require_recapture(capture):
         shots.validate(repo, changed, bundle, reviewed=False)
 
 
-def test_nonvisual_release_publishes_current_version_without_relabeling_images(capture, monkeypatch):
+@pytest.mark.parametrize("version,flags", [("1.2.4", []), ("1.3rc1", ["--prerelease", "--latest=false"])])
+def test_nonvisual_release_publishes_current_version_without_relabeling_images(capture, monkeypatch, version, flags):
     repo, _, bundle, manifest = capture
     shots.stage(repo, 'tahoe', bundle, manifest)
-    (repo / 'VERSION').write_text('1.2.4\n')
+    (repo / 'VERSION').write_text(version + '\n')
     final = commit(repo)
-    subprocess.run(['git', '-C', str(repo), 'tag', 'v1.2.4'], check=True)
+    subprocess.run(['git', '-C', str(repo), 'tag', 'v' + version], check=True)
     original = subprocess.run
     calls = []
     def run(command, **kwargs):
@@ -428,8 +433,8 @@ def test_nonvisual_release_publishes_current_version_without_relabeling_images(c
         return original(command, **kwargs)
     monkeypatch.setattr(subprocess, 'run', run)
     publish(repo, final)
-    assert calls == [['gh', 'release', 'create', 'v1.2.4', '--verify-tag',
-                      '--title', 'v1.2.4', '--generate-notes']]
+    assert calls == [['gh', 'release', 'create', 'v' + version, '--verify-tag',
+                      '--title', 'v' + version, '--generate-notes', *flags]]
     assert shots.verify_committed(repo, final)['version'] == '1.2.3'
 
 def test_clock_readiness_preserves_photos_but_mode_and_service_changes_do_not(tmp_path):

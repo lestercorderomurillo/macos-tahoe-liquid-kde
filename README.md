@@ -8,7 +8,7 @@
 <p align="center">
   <a href="https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/releases"><img src="https://img.shields.io/github/v/release/lestercorderomurillo/macos-tahoe-liquid-kde?label=release&amp;color=blue" alt="release"></a>
   <a href="https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/releases/tag/v0.61.0"><img src="https://img.shields.io/badge/LTS-v0.61.0-green" alt="LTS v0.61.0"></a>
-  <a href="https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/actions/workflows/test.yml"><img src="https://img.shields.io/badge/tests-2197_collected-brightgreen" alt="tests"></a>
+  <a href="https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/actions/workflows/test.yml"><img src="https://img.shields.io/badge/tests-2207_collected-brightgreen" alt="tests"></a>
   <a href="https://kde.org/plasma-desktop/"><img src="https://img.shields.io/badge/Plasma-6.6%2B-1d99f3?logo=kde" alt="plasma"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-GPL--3.0-blue" alt="license"></a>
   <a href="https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/issues/new"><img src="https://img.shields.io/badge/report-a%20bug-red?logo=github" alt="report a bug"></a>
@@ -181,7 +181,7 @@ Here is what we added or improved in the components we ship.
 - **Installation and packaging:** graphical install/uninstall wizard, selectable components, bundled theme assets and release updates.
 - **Multiple distributions:** dependency detection and package mappings for Arch-based, Fedora-based, openSUSE, Debian and KDE neon systems.
 - **systemd and OpenRC:** scheduled theme switching and OLED care through user timers or cron.
-- **Glass improvements:** configurable blur, edge refraction, opacity and gradients; Tahoe and Golden Gate materials with consistent light/dark surfaces and paired edge highlights.
+- **Glass improvements:** configurable blur, edge refraction and three-stop gradients with separate light/dark colors. [Compare every preset](GLASS_PRESETS.md). The Dock retains its v0.62.0 optics.
 - **Plasma compatibility:** rendering and build fixes for Plasma 6.6–6.8, with effects compiled against the installed Qt and KWin SDKs.
 - **Launcher improvements:** two selectable layouts, integrated or detached search, favorites, app categories and drag/wheel category scrolling.
 - **Dock improvements:** glass surfaces, hover zoom, notification badges and auto-hide. Reinstalling keeps your pinned apps.

@@ -228,6 +228,11 @@ def capture(repo: Path, ref: str, image: Path, output: Path) -> dict:
                             vm.action('arrange', json.dumps({'Documents':
                                       dict(profile['windows']['Documents'], x=460)}))
                             shot('showcase')
+                            from release_screenshots import MATERIAL_CASES
+                            for material_case in MATERIAL_CASES:
+                                vm.action('material', material_case)
+                                shot(material_case)
+                            vm.action('material', 'restore')
                             vm.action('close')
                             vm.action('launch', 'about')
                             vm.action('arrange', json.dumps({'About This Computer (preview)':

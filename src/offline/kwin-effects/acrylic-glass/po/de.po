@@ -2,17 +2,26 @@
 msgid ""
 msgstr "Project-Id-Version: MacTahoe Liquid KDE\nPO-Revision-Date: 2026-10-22 00:00-0600\nLast-Translator: MacTahoe Liquid KDE contributors\nLanguage-Team: de\nLanguage: de\nMIME-Version: 1.0\nContent-Type: text/plain; charset=UTF-8\nContent-Transfer-Encoding: 8bit\nPlural-Forms: nplurals=2; plural=(n != 1);\n"
 
-msgid "1 keeps the fully blurred material; lower values reveal more of the sharp background. Text and icons keep their opacity."
-msgstr "1 erhält das vollständig weichgezeichnete Material; kleinere Werte zeigen mehr vom scharfen Hintergrund. Text und Symbole behalten ihre Deckkraft."
-
 msgid "Acrylic Glass — a complete material for your Dock, menus and windows."
 msgstr "Acrylic Glass — ein vollständiges Material für Ihr Dock, Ihre Menüs und Fenster."
+
+msgid "Add fine grain to the glass texture. 0 disables grain."
+msgstr "Fügt der Glastextur eine feine Körnung hinzu. 0 deaktiviert die Körnung."
+
+msgid "Adjust color intensity. 0 gives grayscale; 1 keeps the original colors."
+msgstr "Passt die Farbintensität an. 0 ergibt Graustufen; 1 behält die ursprünglichen Farben bei."
+
+msgid "Adjust the difference between light and dark tones. 1 keeps the original contrast."
+msgstr "Passt den Unterschied zwischen hellen und dunklen Tönen an. 1 behält den ursprünglichen Kontrast bei."
 
 msgid "All except matching windows"
 msgstr "Alle außer passenden Fenstern"
 
 msgid "Appearance"
 msgstr "Erscheinungsbild"
+
+msgid "Background gradient"
+msgstr "Hintergrundverlauf"
 
 msgid "Bend the background near the glass edge. 0 disables distortion."
 msgstr "Verzerrt den Hintergrund am Glasrand. 0 deaktiviert die Verzerrung."
@@ -26,20 +35,44 @@ msgstr "Fensterdekorationen weichzeichnen"
 msgid "Bottom color"
 msgstr "Untere Farbe"
 
+msgid "Bottom color in dark mode."
+msgstr "Untere Farbe im dunklen Modus."
+
+msgid "Bottom color in light mode."
+msgstr "Untere Farbe im hellen Modus."
+
 msgid "Bottom tint strength"
 msgstr "Untere Tönungsstärke"
+
+msgid "Bottom tint strength for both modes. 0 leaves the glass untinted at this stop."
+msgstr "Untere Tönungsstärke für beide Modi. Bei 0 bleibt das Glas an diesem Punkt ungetönt."
 
 msgid "Brightness"
 msgstr "Helligkeit"
 
-msgid "Choose a starting point, then adjust it below. Switching presets replaces optical settings and keeps your window glass choice."
-msgstr "Wähle einen Ausgangspunkt und passe ihn unten an. Ein Preset-Wechsel ersetzt die optischen Einstellungen und behält deine Fensterglas-Auswahl bei."
+msgid "Center color"
+msgstr "Mittlere Farbe"
 
-msgid "Classic"
-msgstr "Klassisch"
+msgid "Center color in dark mode."
+msgstr "Mittlere Farbe im dunklen Modus."
+
+msgid "Center color in light mode."
+msgstr "Mittlere Farbe im hellen Modus."
+
+msgid "Center position"
+msgstr "Mittlere Position"
+
+msgid "Center tint strength"
+msgstr "Mittlere Tönungsstärke"
+
+msgid "Center tint strength for both modes. 0 leaves the glass untinted at this stop."
+msgstr "Mittlere Tönungsstärke für beide Modi. Bei 0 bleibt das Glas an diesem Punkt ungetönt."
 
 msgid "Color separation (px)"
 msgstr "Farbaufspaltung (px)"
+
+msgid "Colors follow each window's light or dark appearance automatically."
+msgstr "Die Farben folgen automatisch dem hellen oder dunklen Erscheinungsbild jedes Fensters."
 
 msgid "Contrast"
 msgstr "Kontrast"
@@ -50,11 +83,17 @@ msgstr "Eckenradius (px)"
 msgid "Corners"
 msgstr "Ecken"
 
+msgid "Dark mode"
+msgstr "Dunkler Modus"
+
 msgid "Dock/Launcher"
 msgstr "Dock/Anwendungsstarter"
 
 msgid "Enable gradient"
 msgstr "Farbverlauf aktivieren"
+
+msgid "Extend background blur to translucent window frames and title bars."
+msgstr "Erweitert die Hintergrundunschärfe auf durchscheinende Fensterrahmen und Titelleisten."
 
 msgid "Fine tuning"
 msgstr "Feinabstimmung"
@@ -65,14 +104,8 @@ msgstr "Liste für erzwungene Unschärfe"
 msgid "Glass"
 msgstr "Glas"
 
-msgid "Glass opacity"
-msgstr "Glasdeckkraft"
-
-msgid "Golden Gate"
-msgstr "Golden Gate"
-
-msgid "Gradient"
-msgstr "Farbverlauf"
+msgid "Golden Gate (Official)"
+msgstr "Golden Gate (Official)"
 
 msgid "Grain"
 msgstr "Körnung"
@@ -82,6 +115,15 @@ msgstr "Glanzstärke"
 
 msgid "Highlight width (px)"
 msgstr "Glanzbreite (px)"
+
+msgid "Intensity of the edge highlight. 0 disables it."
+msgstr "Stärke des Glanzlichts am Rand. 0 deaktiviert es."
+
+msgid "Light mode"
+msgstr "Heller Modus"
+
+msgid "Lighten or darken the glass background. 1 keeps the original brightness."
+msgstr "Hellt den Glashintergrund auf oder dunkelt ihn ab. 1 behält die ursprüngliche Helligkeit bei."
 
 msgid "Match Mode"
 msgstr "Abgleichmodus"
@@ -97,6 +139,9 @@ msgstr "Optik"
 
 msgid "Popups"
 msgstr "Einblendfenster"
+
+msgid "Position from top (0) to bottom (1). 0.5 is halfway down the surface."
+msgstr "Position von oben (0) nach unten (1). 0.5 liegt auf halber Höhe der Oberfläche."
 
 msgid "Preset"
 msgstr "Vorgabe"
@@ -116,20 +161,23 @@ msgstr "Maximierte Fenster abrunden"
 msgid "Saturation"
 msgstr "Sättigung"
 
+msgid "Separate red, green and blue near the glass edge. 0 disables color fringes."
+msgstr "Trennt Rot, Grün und Blau am Glasrand. 0 deaktiviert Farbsäume."
+
 msgid "Soften the background behind glass. 0 leaves the background sharp."
 msgstr "Zeichnet den Hintergrund hinter dem Glas weich. Bei 0 bleibt der Hintergrund scharf."
 
 msgid "Surface"
 msgstr "Oberfläche"
 
-msgid "Tahoe"
-msgstr "Tahoe"
+msgid "Tahoe (Clear)"
+msgstr "Tahoe (Klar)"
 
-msgid "Tinted"
-msgstr "Getönt"
+msgid "Tahoe (Frosted)"
+msgstr "Tahoe (Mattiert)"
 
-msgid "Tinted adds a white backing in light mode or a dark backing in dark mode. Blur and refraction stay the same. Panels and menus keep their own materials."
-msgstr "Getönt fügt im hellen Modus einen weißen und im dunklen Modus einen dunklen Hintergrund hinzu. Unschärfe und Brechung bleiben gleich. Panels und Menüs behalten ihre Materialien."
+msgid "Tint strength"
+msgstr "Tönungsstärke"
 
 msgid "Tooltips, menus, dialogs and applet popups."
 msgstr "Kurzinfos, Menüs, Dialoge und Plasmoid-Einblendfenster."
@@ -137,14 +185,26 @@ msgstr "Kurzinfos, Menüs, Dialoge und Plasmoid-Einblendfenster."
 msgid "Top color"
 msgstr "Obere Farbe"
 
+msgid "Top color in dark mode."
+msgstr "Obere Farbe im dunklen Modus."
+
+msgid "Top color in light mode."
+msgstr "Obere Farbe im hellen Modus."
+
 msgid "Top tint strength"
 msgstr "Obere Tönungsstärke"
 
+msgid "Top tint strength for both modes. 0 leaves the glass untinted at this stop."
+msgstr "Obere Tönungsstärke für beide Modi. Bei 0 bleibt das Glas an diesem Punkt ungetönt."
+
+msgid "Width of the bright rim along the glass edge."
+msgstr "Breite des hellen Saums am Glasrand."
+
+msgid "Width of the edge band where refraction and color separation appear."
+msgstr "Breite des Randbereichs, in dem Lichtbrechung und Farbaufspaltung erscheinen."
+
 msgid "Window Rules"
 msgstr "Fensterregeln"
-
-msgid "Window glass"
-msgstr "Fensterglas"
 
 msgid "Windows"
 msgstr "Fenster"

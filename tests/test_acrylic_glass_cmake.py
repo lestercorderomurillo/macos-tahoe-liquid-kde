@@ -213,13 +213,13 @@ def test_acrylic_glass_installs_the_effect_default_blur(monkeypatch, tmp_path, c
     assert default == "5.0"
     blur_writes = [args for args in writes if "BlurStrength" in args]
     assert blur_writes == [("--file", "kwinrc", "--group", "Effect-liquidglass",
-                           "--key", "BlurStrength", default)]
+                           "--key", "BlurStrength", "4.0" if edition == "MacGoldenGate" else default)]
     # The complete install must preserve the #89 workaround, including
     # avoiding the obsolete Menu/Dialog/Tooltip/Bottom radius keys.
     assert not any(args[-2].endswith("CornerRadius") for args in writes)
 
 
-def test_golden_gate_shares_tahoe_optics_with_its_own_gradient(monkeypatch):
+def test_editions_install_their_visible_materials(monkeypatch):
     from steps import acrylic_glass as glass
     monkeypatch.setattr(glass, "default_wallpaper", lambda: "MacGoldenGate")
     golden = glass._edition_preset()
@@ -228,12 +228,20 @@ def test_golden_gate_shares_tahoe_optics_with_its_own_gradient(monkeypatch):
     assert tahoe["MaterialPreset"] == "1"
     assert golden["MaterialPreset"] == "2"
     assert tahoe.keys() == golden.keys()
-    differences = {key for key in tahoe if tahoe[key] != golden[key]}
-    assert differences == {"MaterialPreset", "DarkGradientOverlay",
-                           "GradientTopOpacity", "GradientBottomOpacity"}
+    assert tahoe["BlurStrength"] == "5.0"
+    assert tahoe["MagnifyGlassStrength"] == "0.02"
+    assert tahoe["DarkGradientOverlay"] == "false"
+    assert golden["BlurStrength"] == "4.0"
+    assert golden["MagnifyGlassStrength"] == "0.032"
+    assert golden["RgbDriftStrength"] == "8.0"
+    assert golden["DarkGradientOverlay"] == "true"
+    assert golden["GradientCenterPosition"] == "0.56"
+    assert golden["GradientTopColor"] == "#cecece"
+    assert golden["GradientTopDarkColor"] == "#000000"
     schema = ET.parse(ROOT / "src/glass.kcfg").getroot()
     rgb_default = schema.find(".//{*}entry[@name='RgbDriftStrength']/{*}default").text
-    assert float(golden["RgbDriftStrength"]) == float(rgb_default)
+    assert float(tahoe["RgbDriftStrength"]) == float(rgb_default)
+
 
 
 @pytest.mark.parametrize("saved", [None, "true", "false", ""])

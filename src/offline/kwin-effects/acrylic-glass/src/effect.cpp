@@ -7,6 +7,7 @@
 */
 
 #include "effect.h"
+#include "surfaceoptics.h"
 #include "build_identity.h"
 // KConfigSkeleton
 #include "glassconfig.h"
@@ -44,6 +45,7 @@
 #include <QGuiApplication>
 #include <QMatrix4x4>
 #include <QPalette>
+#include "gradientcolors.h"
 #include <QScreen>
 #include <QTime>
 #include <QTimer>
@@ -243,11 +245,12 @@ BlurEffect::BlurEffect()
         m_roundedOnscreenPass.highlightWidthLocation = m_roundedOnscreenPass.shader->uniformLocation("highlightWidth");
         m_roundedOnscreenPass.highlightStrengthLocation = m_roundedOnscreenPass.shader->uniformLocation("highlightStrength");
         m_roundedOnscreenPass.darkGradientOverlayLocation = m_roundedOnscreenPass.shader->uniformLocation("darkGradientOverlay");
-        m_roundedOnscreenPass.backingTintLocation = m_roundedOnscreenPass.shader->uniformLocation("backingTint");
         m_roundedOnscreenPass.centerOpacityLocation = m_roundedOnscreenPass.shader->uniformLocation("centerOpacity");
         m_roundedOnscreenPass.dockSurfaceLocation = m_roundedOnscreenPass.shader->uniformLocation("dockSurface");
         m_roundedOnscreenPass.backgroundSizeLocation = m_roundedOnscreenPass.shader->uniformLocation("backgroundSize");
         m_roundedOnscreenPass.gradientTopLocation = m_roundedOnscreenPass.shader->uniformLocation("gradientTop");
+        m_roundedOnscreenPass.gradientCenterLocation = m_roundedOnscreenPass.shader->uniformLocation("gradientCenter");
+        m_roundedOnscreenPass.gradientCenterPositionLocation = m_roundedOnscreenPass.shader->uniformLocation("gradientCenterPosition");
         m_roundedOnscreenPass.gradientBottomLocation = m_roundedOnscreenPass.shader->uniformLocation("gradientBottom");
 
         qCDebug(KWIN_BLUR) << "Onscreen shader uniforms:"
@@ -459,8 +462,6 @@ void BlurEffect::reconfigure(ReconfigureFlags flags)
     // Fractional blur strength: interpolate offset between neighbouring table entries.
     // Strength 0 = no blur (passthrough).
     double blurStrengthD = qBound(0.0, BlurConfig::blurStrength(), (double) blurStrengthValues.size());
-    // Keep Dock samples close together; pyramid levels provide the radius.
-    m_dockOffset = blurStrengthD * 0.14f;
 
     if (blurStrengthD <= 0.0) {
         m_iterationCount = 1;
@@ -488,12 +489,20 @@ void BlurEffect::reconfigure(ReconfigureFlags flags)
     m_highlightWidth = static_cast<float>(BlurConfig::highlightWidth());
     m_highlightStrength = static_cast<float>(BlurConfig::highlightStrength());
     m_darkGradientOverlay = BlurConfig::darkGradientOverlay();
-    m_backingTint = BlurConfig::backingTint() == 1;
     const auto gradientColor = [](const QColor &color, double opacity) {
         return QVector4D(color.redF(), color.greenF(), color.blueF(), qBound(0.0, opacity, 1.0));
     };
+    const KConfigGroup gradientConfig(BlurConfig::self()->config(), QStringLiteral("Effect-liquidglass"));
     m_gradientTop = gradientColor(BlurConfig::gradientTopColor(), BlurConfig::gradientTopOpacity());
+    m_gradientTopDark = gradientColor(gradientConfig.readEntry(QStringLiteral("GradientTopDarkColor"),
+        BlurConfig::gradientTopColor()), BlurConfig::gradientTopOpacity());
+    m_gradientCenter = gradientColor(BlurConfig::gradientCenterColor(), BlurConfig::gradientCenterOpacity());
+    m_gradientCenterDark = gradientColor(gradientConfig.readEntry(QStringLiteral("GradientCenterDarkColor"),
+        BlurConfig::gradientCenterColor()), BlurConfig::gradientCenterOpacity());
+    m_gradientCenterPosition = qBound(0.0, BlurConfig::gradientCenterPosition(), 1.0);
     m_gradientBottom = gradientColor(BlurConfig::gradientBottomColor(), BlurConfig::gradientBottomOpacity());
+    m_gradientBottomDark = gradientColor(gradientConfig.readEntry(QStringLiteral("GradientBottomDarkColor"),
+        BlurConfig::gradientBottomColor()), BlurConfig::gradientBottomOpacity());
     m_blurDecorations = BlurConfig::blurDecorations();
 
     // Window-class filter (whitelist vs blacklist) — the parser below handles
@@ -692,7 +701,7 @@ void BlurEffect::updateBlurRegion(EffectWindow* w)
             data.backgroundEffect = std::make_unique<BackgroundEffectItem>(w->windowItem());
         }
         data.backgroundEffect->setEffectBoundingRect(RectF(blurRegion(w).boundingRect()));
-        data.backgroundEffect->setPixelsToExpandRepaintsBelowOpaqueRegions(m_expandSize);
+        data.backgroundEffect->setPixelsToExpandRepaintsBelowOpaqueRegions(w->isDock() ? 50 : m_expandSize);
 #endif
     } else {
         if (auto it = m_windows.find(w); it != m_windows.end()) {
@@ -986,8 +995,9 @@ void BlurEffect::prePaintWindow(RenderView* view, EffectWindow* w, WindowPrePain
         // the visible bounds so refraction / Kawase taps near the rim
         // sample real content, not whatever was left in the buffer.
         Region expandedBlur = blurArea;
+        const int expandSize = w->isDock() ? 50 : m_expandSize;
         for (const Rect& rect : blurArea.rects()) {
-            expandedBlur += rect.adjusted(-m_expandSize, -m_expandSize, m_expandSize, m_expandSize);
+            expandedBlur += rect.adjusted(-expandSize, -expandSize, expandSize, expandSize);
         }
 
         // Ensure the compositor actually paints the background we need to sample.
@@ -1187,9 +1197,13 @@ void BlurEffect::blur(
     // edges into copies. Reconstruct a compact pyramid instead, and avoid
     // leaking a sharp image through the centre of the blurred material.
     const bool dockSurface = w->isDock();
+    const auto optics = opticsForSurface(dockSurface, {m_rgbDriftStrength, m_magnifyGlassStrength,
+        m_refractionWidth, m_highlightWidth, m_highlightStrength});
     const float centerOpacity = dockSurface ? 0.98f : 1.0f;
-    const size_t iterationCount = dockSurface ? std::min(size_t(3), m_iterationCount) : m_iterationCount;
-    const float blurOffset = dockSurface ? m_dockOffset : m_offset;
+    // Freeze Dock optics at the v0.62.0 material (BlurStrength 5), including
+    // repaint expansion above. Window presets and fine tuning must not leak in.
+    const size_t iterationCount = dockSurface ? size_t(3) : m_iterationCount;
+    const float blurOffset = dockSurface ? 5.0f * 0.14f : m_offset;
 
     // 2. Effective blur shape
     // If the window is transformed (scaled / translated by an effect such
@@ -1517,7 +1531,7 @@ void BlurEffect::blur(
     // it with kcfg values keyed by window type (dock / popup / normal).
     // Maximized full-screen apps keep sharp corners unless the user
     // opts in via RoundCornersOfMaximizedWindows.
-    const QMatrix4x4& colorMatrix = m_colorMatrix;
+    const QMatrix4x4 colorMatrix = dockSurface ? colorTransformMatrix(1.33, 1.0, 1.0) : m_colorMatrix;
     const float modulation = opacity * opacity;
 
     BorderRadius cornerRadius = w->window()->borderRadius();
@@ -1645,27 +1659,26 @@ void BlurEffect::blur(
     m_roundedOnscreenPass.shader->setUniform(m_roundedOnscreenPass.opacityLocation, modulation);
     m_roundedOnscreenPass.shader->setUniform(m_roundedOnscreenPass.blurSizeLocation, QVector2D(nativeBox.width(), nativeBox.height()));
     m_roundedOnscreenPass.shader->setUniform(m_roundedOnscreenPass.rgbDriftStrengthLocation,
-        float(m_rgbDriftStrength * viewport.scale() * (dockSurface ? 0.24f : 1.0f)));
-    m_roundedOnscreenPass.shader->setUniform(m_roundedOnscreenPass.magnifyGlassStrengthLocation, m_magnifyGlassStrength);
-    m_roundedOnscreenPass.shader->setUniform(m_roundedOnscreenPass.refractionWidthLocation, float(m_refractionWidth * viewport.scale()));
-    m_roundedOnscreenPass.shader->setUniform(m_roundedOnscreenPass.highlightWidthLocation, float(m_highlightWidth * viewport.scale()));
-    m_roundedOnscreenPass.shader->setUniform(m_roundedOnscreenPass.highlightStrengthLocation, m_highlightStrength);
+        float(optics.rgbDrift * viewport.scale()));
+    m_roundedOnscreenPass.shader->setUniform(m_roundedOnscreenPass.magnifyGlassStrengthLocation, optics.refraction);
+    m_roundedOnscreenPass.shader->setUniform(m_roundedOnscreenPass.refractionWidthLocation, float(optics.refractionWidth * viewport.scale()));
+    m_roundedOnscreenPass.shader->setUniform(m_roundedOnscreenPass.highlightWidthLocation, float(optics.highlightWidth * viewport.scale()));
+    m_roundedOnscreenPass.shader->setUniform(m_roundedOnscreenPass.highlightStrengthLocation, optics.highlightStrength);
     // Panels and the Dock retain untinted glass under every material.
     m_roundedOnscreenPass.shader->setUniform(m_roundedOnscreenPass.darkGradientOverlayLocation,
         int(m_darkGradientOverlay && !w->isDock()));
-    // Tint application clients only. The per-window palette follows live
-    // light/dark changes; shell surfaces keep their own materials.
-    const bool tintWindow = m_backingTint && (w->isNormalWindow() || w->isDialog());
-    const QColor windowColor = w->window()->palette().color(QPalette::Window);
-    const float tintValue = windowColor.lightnessF() < 0.5 ? 0.0f : 1.0f;
-    m_roundedOnscreenPass.shader->setUniform(m_roundedOnscreenPass.backingTintLocation,
-        QVector4D(tintValue, tintValue, tintValue, tintWindow ? 0.45f : 0.0f));
+    const QPalette windowPalette = w->window()->palette();
     m_roundedOnscreenPass.shader->setUniform(m_roundedOnscreenPass.centerOpacityLocation, centerOpacity);
     m_roundedOnscreenPass.shader->setUniform(m_roundedOnscreenPass.dockSurfaceLocation, int(dockSurface));
     m_roundedOnscreenPass.shader->setUniform(m_roundedOnscreenPass.backgroundSizeLocation,
         QVector2D(scaledBackgroundRect.width(), scaledBackgroundRect.height()));
-    m_roundedOnscreenPass.shader->setUniform(m_roundedOnscreenPass.gradientTopLocation, m_gradientTop);
-    m_roundedOnscreenPass.shader->setUniform(m_roundedOnscreenPass.gradientBottomLocation, m_gradientBottom);
+    m_roundedOnscreenPass.shader->setUniform(m_roundedOnscreenPass.gradientTopLocation,
+        gradientColorForPalette(m_gradientTop, m_gradientTopDark, windowPalette));
+    m_roundedOnscreenPass.shader->setUniform(m_roundedOnscreenPass.gradientCenterLocation,
+        gradientColorForPalette(m_gradientCenter, m_gradientCenterDark, windowPalette));
+    m_roundedOnscreenPass.shader->setUniform(m_roundedOnscreenPass.gradientCenterPositionLocation, m_gradientCenterPosition);
+    m_roundedOnscreenPass.shader->setUniform(m_roundedOnscreenPass.gradientBottomLocation,
+        gradientColorForPalette(m_gradientBottom, m_gradientBottomDark, windowPalette));
 
     read->colorAttachment()->bind();
 
@@ -1679,7 +1692,9 @@ void BlurEffect::blur(
     ShaderManager::instance()->popShader();
 
     // 9. Grain pass (optional)
-    if (m_noiseStrength > 0) {
+    // v0.62.0 used NoiseStrength 1: rand() % 1 produces a zero texture.
+    // Skipping that no-op preserves the Dock while windows keep their grain.
+    if (!dockSurface && m_noiseStrength > 0) {
         // Additive noise over the blurred image. Masks banding artefacts
         // that show up in smooth gradients after heavy blur.
 

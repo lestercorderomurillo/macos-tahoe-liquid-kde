@@ -1,3 +1,5 @@
+#include "gradientcolors.h"
+#include "surfaceoptics.h"
 // SPDX-License-Identifier: GPL-3.0-or-later
 #include <QGuiApplication>
 #include <QFile>
@@ -118,25 +120,11 @@ int main(int argc, char **argv)
         auto image = render();
         require(qAlpha(image.pixel(0,0)) == 0, QStringLiteral("corner mask lost"));
         require(std::abs(qRed(image.pixel(96,64)) - 160) <= 1, QStringLiteral("Gaussian must preserve a constant backdrop"));
-        for (const float tint : {0.0f, 1.0f}) {
-            shader.setUniformValue("backingTint", QVector4D(tint, tint, tint, 0.45f));
-            const auto tinted = render();
-            const int expected = qRound(160 * 0.55 + 255 * tint * 0.45);
-            require(std::abs(qRed(tinted.pixel(96,64)) - expected) <= 1,
-                    QStringLiteral("backing tint must mix over blurred color"));
-            require(qAlpha(tinted.pixel(96,64)) == 255 && qAlpha(tinted.pixel(0,0)) == 0,
-                    QStringLiteral("backing tint must preserve coverage and corners"));
-            shader.setUniformValue("opacity", 0.5f);
-            const auto faded = render();
-            require(std::abs(qRed(faded.pixel(96,64)) - expected * 0.5) <= 1
-                        && std::abs(qAlpha(faded.pixel(96,64)) - 128) <= 1,
-                    QStringLiteral("tinted glass must stay premultiplied"));
-            shader.setUniformValue("opacity", 1.0f);
-        }
-        shader.setUniformValue("backingTint", QVector4D(0,0,0,0));
         shader.setUniformValue("darkGradientOverlay", true);
         shader.setUniformValue("gradientTop", QVector4D(0,0,0,0.38f));
         shader.setUniformValue("gradientBottom", QVector4D(0,0,0,0.02f));
+        shader.setUniformValue("gradientCenter", QVector4D(0,0,0,0.02f));
+        shader.setUniformValue("gradientCenterPosition", 0.55f);
         image = render();
         require(qRed(image.pixel(96,12)) + 40 < qRed(image.pixel(96,115)), QStringLiteral("black gradient must start at the top"));
         require(qAlpha(image.pixel(96,12)) == 255 && qAlpha(image.pixel(96,115)) == 255, QStringLiteral("gradient must not reveal sharp background at the bottom"));
@@ -145,6 +133,53 @@ int main(int argc, char **argv)
         image = render();
         require(qBlue(image.pixel(96,12)) > qRed(image.pixel(96,12)), QStringLiteral("custom top color ignored"));
         require(qRed(image.pixel(96,115)) > qBlue(image.pixel(96,115)), QStringLiteral("custom bottom color ignored"));
+        for (const QColor windowColor : {QColor(Qt::white), QColor(Qt::black), QColor(Qt::white)}) {
+            QPalette palette;
+            palette.setColor(QPalette::Window, windowColor);
+            const QVector4D light(1, 0, 0, 0.5f), dark(0, 0, 1, 0.5f);
+            const auto color = gradientColorForPalette(light, dark, palette);
+            shader.setUniformValue("gradientTop", color);
+            shader.setUniformValue("gradientCenter", color);
+            shader.setUniformValue("gradientBottom", color);
+            image = render();
+            const auto pixel = image.pixel(96,64);
+            const bool lightMode = windowColor == Qt::white;
+            require(std::abs(qRed(pixel) - (lightMode ? 208 : 80)) <= 1
+                        && std::abs(qBlue(pixel) - (lightMode ? 80 : 208)) <= 1,
+                    QStringLiteral("light/dark/light gradient colors did not follow palette"));
+            require(qAlpha(pixel) == 255 && qAlpha(image.pixel(0,0)) == 0,
+                    QStringLiteral("mode colors changed coverage or corners"));
+            shader.setUniformValue("opacity", 0.5f);
+            const auto faded = render().pixel(96,64);
+            require(std::abs(qRed(faded) - qRed(pixel) * 0.5) <= 1 && std::abs(qAlpha(faded) - 128) <= 1,
+                    QStringLiteral("mode gradient is not premultiplied"));
+            shader.setUniformValue("opacity", 1.0f);
+        }
+        shader.setUniformValue("gradientTop", QVector4D(0,0,1,1));
+        shader.setUniformValue("gradientCenter", QVector4D(0,1,0,1));
+        shader.setUniformValue("gradientBottom", QVector4D(1,0,0,1));
+        for (float position : {0.25f, 0.5f, 0.75f}) {
+            shader.setUniformValue("gradientCenterPosition", position);
+            image = render();
+            const auto middle = image.pixel(96, qRound(position * 128));
+            require(qGreen(middle) > 250 && qRed(middle) < 5 && qBlue(middle) < 5,
+                    QStringLiteral("center color or position ignored"));
+            require(qAlpha(middle) == 255, QStringLiteral("center changed coverage"));
+        }
+        shader.setUniformValue("gradientCenterPosition", 0.0f);
+        image = render();
+        require(qGreen(image.pixel(96,12)) > 240 && qBlue(image.pixel(96,12)) < 5,
+                QStringLiteral("center at zero must replace top stop"));
+        shader.setUniformValue("gradientCenterPosition", 1.0f);
+        image = render();
+        require(qGreen(image.pixel(96,115)) > 240 && qRed(image.pixel(96,115)) < 5,
+                QStringLiteral("center at one must replace bottom stop"));
+        shader.setUniformValue("gradientCenterPosition", 0.5f);
+        shader.setUniformValue("gradientCenter", QVector4D(0,1,0,0));
+        image = render();
+        require(std::abs(qRed(image.pixel(96,64)) - 160) <= 1
+                    && std::abs(qGreen(image.pixel(96,64)) - 160) <= 1,
+                QStringLiteral("transparent center must preserve backdrop"));
         shader.setUniformValue("darkGradientOverlay", false);
         shader.setUniformValue("opacity", 0.5f);
         image = render();
@@ -251,6 +286,33 @@ int main(int argc, char **argv)
         if (dockReference.isNull()) dockReference = bentDock;
         else require(dockReference == bentDock, QStringLiteral("Dock differs between shader profiles"));
 
+        // Exercise the same surface selection as the effect, on an asymmetric
+        // backdrop: extreme window tuning must leave every Dock pixel intact.
+        QImage fixedDock;
+        for (const auto configured : {SurfaceOptics{0, 0, 0, 0, 0},
+                                      SurfaceOptics{10, .02f, 38, 16, .1f},
+                                      SurfaceOptics{8, .032f, 64, 16, .1f},
+                                      SurfaceOptics{50, .2f, 100, 50, 1}}) {
+            const auto optics = opticsForSurface(true, configured);
+            shader.setUniformValue("rgbDriftStrength", optics.rgbDrift);
+            shader.setUniformValue("magnifyGlassStrength", optics.refraction);
+            shader.setUniformValue("refractionWidth", optics.refractionWidth);
+            shader.setUniformValue("highlightWidth", optics.highlightWidth);
+            shader.setUniformValue("highlightStrength", optics.highlightStrength);
+            const auto fixed = render();
+            if (fixedDock.isNull()) fixedDock = fixed;
+            else require(fixed == fixedDock, QStringLiteral("Window tuning changed Dock pixels"));
+            const auto windowOptics = opticsForSurface(false, configured);
+            require(windowOptics.refraction == configured.refraction
+                    && windowOptics.rgbDrift == configured.rgbDrift
+                    && windowOptics.refractionWidth == configured.refractionWidth
+                    && windowOptics.highlightWidth == configured.highlightWidth
+                    && windowOptics.highlightStrength == configured.highlightStrength,
+                    QStringLiteral("Dock isolation changed window tuning"));
+        }
+        shader.setUniformValue("rgbDriftStrength", 0.0f);
+        shader.setUniformValue("magnifyGlassStrength", 0.02f);
+
         // The Dock reflection must catch its silhouette without painting a
         // broad rim or changing the transparent centre, even on black.
         backdrop.fill(Qt::black);
@@ -301,9 +363,10 @@ int main(int argc, char **argv)
         shader.setUniformValue("colorMatrix", QMatrix4x4(
             contrast,0,0,0, 0,contrast,0,0, 0,0,contrast,0, shift,shift,shift,1));
         shader.setUniformValue("highlightStrength", 0.0f);
-        for (const QString end : {QStringLiteral("Top"), QStringLiteral("Bottom")}) {
+        shader.setUniformValue("gradientCenterPosition", float(golden["GradientCenterPosition"].toDouble()));
+        for (const QString end : {QStringLiteral("Top"), QStringLiteral("Center"), QStringLiteral("Bottom")}) {
             const QColor color(golden["Gradient" + end + "Color"].toString());
-            const auto uniform = end == "Top" ? "gradientTop" : "gradientBottom";
+            const auto uniform = end == "Top" ? "gradientTop" : end == "Center" ? "gradientCenter" : "gradientBottom";
             shader.setUniformValue(uniform, QVector4D(color.redF(), color.greenF(), color.blueF(),
                                                       golden["Gradient" + end + "Opacity"].toDouble()));
         }
@@ -318,17 +381,21 @@ int main(int argc, char **argv)
                 backdrop = wallpaper.scaled(width, height).convertToFormat(QImage::Format_RGBA8888);
             }
             texture.setData(QOpenGLTexture::RGBA, QOpenGLTexture::UInt8, backdrop.constBits());
-            shader.setUniformValue("darkGradientOverlay", true);
-            const auto tinted = render();
-            shader.setUniformValue("darkGradientOverlay", false);
-            const auto untinted = render();
-            require(std::abs(qRed(tinted.pixel(96, 0)) - qRed(untinted.pixel(96, 0)) * 0.15) <= 1,
-                    QStringLiteral("Golden Gate must start with 85 percent black tint"));
-            for (int y = std::ceil(height * 0.55); y < height - 1; ++y) {
-                require(tinted.pixel(96, y) == untinted.pixel(96, y),
-                        QStringLiteral("Golden Gate tint extends past the first 55 percent"));
-            }
             for (const QString mode : {QStringLiteral("Light"), QStringLiteral("Dark")}) {
+                for (const QString end : {QStringLiteral("Top"), QStringLiteral("Center"), QStringLiteral("Bottom")}) {
+                    const QColor color(golden["Gradient" + end + (mode == "Dark" ? "DarkColor" : "Color")].toString());
+                    const auto uniform = end == "Top" ? "gradientTop" : end == "Center" ? "gradientCenter" : "gradientBottom";
+                    shader.setUniformValue(uniform, QVector4D(color.redF(), color.greenF(), color.blueF(),
+                                                              golden["Gradient" + end + "Opacity"].toDouble()));
+                }
+                shader.setUniformValue("darkGradientOverlay", true);
+                const auto tinted = render();
+                shader.setUniformValue("darkGradientOverlay", false);
+                const auto untinted = render();
+                require(std::abs(qRed(tinted.pixel(96, 0)) - (mode == "Light" ? 206 : 0)) <= 1,
+                        QStringLiteral("Golden Gate top tint does not follow appearance"));
+                require(std::abs(qRed(tinted.pixel(96, 127)) - qRed(untinted.pixel(96, 127))) <= 1,
+                        QStringLiteral("Golden Gate bottom must remain untinted"));
                 for (const QString name : {QStringLiteral("background"), QStringLiteral("launcher-search")}) {
                     QSvgRenderer renderer(QString::fromLocal8Bit(argv[2]) + "/MacTahoeLiquidKde-" + mode
                                           + "/dialogs/" + name + ".svgz");
@@ -341,29 +408,20 @@ int main(int argc, char **argv)
                     };
                     const auto actual = composite(tinted);
                     const auto control = composite(untinted);
-                    const auto lower = actual.pixelColor(96, 115);
-                    const auto clear = untinted.pixelColor(96, 115);
                     if (mode == "Light") {
                         for (int y = 1; y < height - 1; ++y) {
                             require((luminance(actual.pixelColor(96, y)) + 0.05)
                                         / (luminance(foreground) + 0.05) >= 4.5,
                                     name + " " + background + ": light foreground lost contrast over glass");
                         }
-                    } else {
-                        require(std::abs(lower.red() - clear.red()) <= 3
-                                && std::abs(lower.green() - clear.green()) <= 3
-                                && std::abs(lower.blue() - clear.blue()) <= 3,
-                            mode + " " + name + " " + background + ": client fill obscures Golden Gate's clear lower half");
                     }
-                    if (background == "black") {
-                        require(actual == control,
-                                mode + " " + name + ": black tint must preserve a black backdrop");
-                    } else if (background == "white") {
+                    if (background == "white") {
                         require(qRed(actual.pixel(96, 12)) + 8 <= qRed(control.pixel(96, 12)),
-                                mode + " " + name + ": upper black tint hidden by client fill");
+                                mode + " " + name + ": upper tint hidden by client fill");
                         require(qRed(actual.pixel(96, 12)) + 8 <= qRed(actual.pixel(96, 115)),
                                 mode + " " + name + ": top/bottom gradient lost");
                     }
+
                 }
             }
         }

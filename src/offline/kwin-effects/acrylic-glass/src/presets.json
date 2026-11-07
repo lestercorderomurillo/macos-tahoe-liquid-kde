@@ -4,11 +4,11 @@
     "value": 1,
     "values": {
       "BlurStrength": 5.0,
-      "NoiseStrength": 1,
-      "RgbDriftStrength": 12.0,
-      "MagnifyGlassStrength": 0.1,
-      "RefractionWidth": 18.0,
-      "HighlightWidth": 3.5,
+      "NoiseStrength": 0,
+      "RgbDriftStrength": 10.0,
+      "MagnifyGlassStrength": 0.02,
+      "RefractionWidth": 38.0,
+      "HighlightWidth": 16.0,
       "HighlightStrength": 0.1,
       "Brightness": 1.0,
       "Contrast": 1.0,
@@ -17,28 +17,46 @@
       "GradientTopColor": "#000000",
       "GradientBottomColor": "#000000",
       "GradientTopOpacity": 0.38,
-      "GradientBottomOpacity": 0.02
+      "GradientBottomOpacity": 0.02,
+      "GradientCenterColor": "#000000",
+      "GradientCenterOpacity": 0.02,
+      "GradientCenterPosition": 0.55,
+      "GradientTopDarkColor": "#000000",
+      "GradientCenterDarkColor": "#000000",
+      "GradientBottomDarkColor": "#000000",
+      "BlurDecorations": true
+    },
+    "tinted_values": {
+      "BlurStrength": 12.0
     }
   },
   {
     "id": "golden-gate",
     "value": 2,
     "values": {
-      "BlurStrength": 5.0,
-      "NoiseStrength": 1,
-      "RgbDriftStrength": 12.0,
-      "MagnifyGlassStrength": 0.1,
-      "RefractionWidth": 18.0,
-      "HighlightWidth": 3.5,
+      "BlurStrength": 4.0,
+      "NoiseStrength": 0,
+      "RgbDriftStrength": 8.0,
+      "MagnifyGlassStrength": 0.032,
+      "RefractionWidth": 64.0,
+      "HighlightWidth": 16.0,
       "HighlightStrength": 0.1,
-      "Brightness": 1.0,
+      "Brightness": 1.1,
       "Contrast": 1.0,
-      "Saturation": 1.33,
+      "Saturation": 1.13,
       "DarkGradientOverlay": true,
-      "GradientTopColor": "#000000",
-      "GradientBottomColor": "#000000",
-      "GradientTopOpacity": 0.85,
-      "GradientBottomOpacity": 0.0
-    }
+      "GradientTopColor": "#cecece",
+      "GradientBottomColor": "#cecece",
+      "GradientTopOpacity": 1.0,
+      "GradientBottomOpacity": 0.0,
+      "GradientCenterColor": "#cecece",
+      "GradientCenterOpacity": 0.69,
+      "GradientCenterPosition": 0.56,
+      "GradientTopDarkColor": "#000000",
+      "GradientCenterDarkColor": "#000000",
+      "GradientBottomDarkColor": "#000000",
+      "BlurDecorations": true
+    },
+    "tinted_values": {}
   }
 ]

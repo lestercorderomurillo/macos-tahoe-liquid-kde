@@ -19,3 +19,5 @@ target_link_libraries(glass-kcm-probe PRIVATE Qt6::Widgets KF6::KCMUtils KF6::Co
 
 add_executable(glass-shader-probe shader.cpp)
 target_link_libraries(glass-shader-probe PRIVATE Qt6::Gui Qt6::OpenGL Qt6::Svg)
+
+target_include_directories(glass-shader-probe PRIVATE "${GLASS_SOURCE}/src")

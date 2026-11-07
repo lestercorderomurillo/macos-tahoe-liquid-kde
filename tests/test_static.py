@@ -27,7 +27,7 @@ def test_version_is_semver(repo):
     and printed by the install banner. If this file drifts or gets
     malformed (e.g. two lines from a botched merge), the banner
     prints the wrong version. Pin the shape so that fails CI."""
-    assert re.fullmatch(r"\d+\.\d+\.\d+", (repo / "VERSION").read_text().strip())
+    assert re.fullmatch(r"\d+\.\d+(?:\.\d+|rc[1-9]\d*)", (repo / "VERSION").read_text().strip())
 
 
 def test_look_and_feel_does_not_bypass_smart_wallpaper_owner(repo):

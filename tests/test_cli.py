@@ -323,12 +323,12 @@ def test_successful_online_download_keeps_feature_enabled(
 
 
 @pytest.mark.parametrize("raw,expected", [
-    ("0.8.0",          (0, 8, 0)),
-    ("1.2.3",          (1, 2, 3)),
-    ("v0.8.0",         (0, 8, 0)),
-    ("1.0.0-rc1",      (1, 0, 0)),
-    ("",               (0, 0, 0)),
-    ("garbage",        (0, 0, 0)),
+    ("0.8.0",          (0, 8, 0, 1, 0)),
+    ("1.2.3",          (1, 2, 3, 1, 0)),
+    ("v0.8.0",         (0, 8, 0, 1, 0)),
+    ("1.0.0-rc1",      (1, 0, 0, 0, 1)),
+    ("",               (0, 0, 0, 0, 0)),
+    ("garbage",        (0, 0, 0, 0, 0)),
 ])
 def test_parse_semver(cli_module, raw, expected):
     assert cli_module.parse_semver(raw) == expected
@@ -339,6 +339,9 @@ def test_parse_semver_orders_correctly(cli_module):
     say '0.7.14' < '0.7.9' (lexicographic). Real bug shape: update
     checker would say a newer release is older because of the string
     compare."""
+    ordered = ["0.62.0", "0.63rc1", "0.63rc2", "0.63.0", "0.63.1"]
+    assert sorted(ordered, key=cli_module.parse_semver) == ordered
+    assert cli_module.parse_semver("0.63rc1") == cli_module.parse_semver("0.63.0-rc.1")
     assert cli_module.parse_semver("v0.8.0") > cli_module.parse_semver("0.7.14")
     assert cli_module.parse_semver("0.7.14") > cli_module.parse_semver("0.7.9")
 

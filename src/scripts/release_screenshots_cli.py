@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import re
 from pathlib import Path
 import subprocess
 
@@ -13,7 +14,8 @@ def publish(repo, ref, tahoe=None):
     record = verify_committed(repo, ref, tahoe=tahoe)
     tag = 'v' + git(repo, 'show', commit_id(repo, ref) + ':VERSION')
     require(commit_id(repo, tag) == commit_id(repo, ref), 'Release tag does not point to the verified commit')
-    subprocess.run(['gh', 'release', 'create', tag, '--verify-tag', '--title', tag, '--generate-notes'],
+    prerelease = ['--prerelease', '--latest=false'] if re.search(r'rc\.?[0-9]+$', tag) else []
+    subprocess.run(['gh', 'release', 'create', tag, '--verify-tag', '--title', tag, '--generate-notes', *prerelease],
                    cwd=repo, check=True)
 
 
