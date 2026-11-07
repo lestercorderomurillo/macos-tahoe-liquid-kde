@@ -74,3 +74,21 @@ Golden Gate immutable Tahoe checksum.
 With identical `git archive | gzip -6` settings, the complete install archive
 fell from 172,919,480 to 137,083,214 bytes (20.7% smaller). This compares archive
 content, not the one-time Git upload of the new compressed font payload.
+
+## Compilation reuse and measured scheduling
+
+CMake uses ccache in CI, with separate per-distro stores. Compiler bytes, flags
+and preprocessed header content participate in cache keys; direct mode is
+disabled, and no relaxed correctness options are enabled. SDK and native runtime
+checks still execute. The general suite is split using recorded JUnit file
+durations in `.github/test-durations.json`, preserving one shard per file so
+module-scoped native fixtures are not rebuilt in multiple workers.
+
+The first optimized stable candidate measured 584 seconds with cold neon cache
+and 526 seconds after warming it, versus 886 seconds for rc2. These are 34% and
+41% elapsed reductions, not the 50% target. Its accumulated job time fell from
+12,546 to 5,286 seconds (58%). The compiler cache and weighted shard scheduling
+address the remaining gap; their final measurement must be reported separately.
+
+The font payload and installer are the published v0.63.0 bytes. Subsequent CI-only
+optimizations do not rewrite that release tag or change the installed desktop.

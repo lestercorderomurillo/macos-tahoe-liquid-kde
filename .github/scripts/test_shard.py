@@ -1,4 +1,5 @@
 """Run disjoint file shards so module-scoped native fixtures are built once."""
+import json
 from pathlib import Path
 import subprocess
 import sys
@@ -10,7 +11,15 @@ def select_files(root: Path, index: int, count: int) -> list[str]:
     files = sorted(path.relative_to(root).as_posix()
                    for path in (root / 'tests').rglob('test_*.py')
                    if 'containers' not in path.relative_to(root / 'tests').parts)
-    return files[index::count]
+    history = root / '.github/test-durations.json'
+    weights = json.loads(history.read_text()) if history.exists() else {}
+    groups = [[] for _ in range(count)]
+    totals = [0.0] * count
+    for path in sorted(files, key=lambda path: (-weights.get(path, 1.0), path)):
+        slot = min(range(count), key=lambda slot: totals[slot])
+        groups[slot].append(path)
+        totals[slot] += weights.get(path, 1.0)
+    return sorted(groups[index])
 
 
 def main() -> int:

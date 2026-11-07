@@ -43,6 +43,14 @@ jobs:
       matrix:
         shard: [0, 1]
     container: archlinux:latest
+    env:
+      CMAKE_C_COMPILER_LAUNCHER: ccache
+      CMAKE_CXX_COMPILER_LAUNCHER: ccache
+      CCACHE_DIR: ${{ github.workspace }}/build/ccache
+      CCACHE_BASEDIR: ${{ github.workspace }}
+      CCACHE_COMPILERCHECK: content
+      CCACHE_NODIRECT: 'true'
+      CCACHE_MAXSIZE: 256M
     steps:
       - uses: actions/checkout@v5
       - name: Install deps
@@ -59,7 +67,7 @@ jobs:
         run: |
           pacman -Sy --noconfirm --needed archlinux-keyring
           pacman -Syu --noconfirm \
-            python python-pytest zstd python-pillow python-gobject python-pyqt6 gtk4 \
+            python python-pytest ccache zstd python-pillow python-gobject python-pyqt6 gtk4 \
             qt6-svg librsvg xorg-server-xvfb xorg-xprop bash git diffutils findutils \
             base-devel cmake extra-cmake-modules pkgconf \
             qt6-base qt6-declarative qt6-wayland qt6-tools \
@@ -83,8 +91,18 @@ jobs:
           node --version
           command -v plasmoidviewer
           command -v xprop
+      - uses: actions/cache@v4
+        with:
+          path: build/ccache
+          key: ccache-primary-${{ matrix.shard }}-${{ github.sha }}-${{ github.run_attempt }}
+          restore-keys: ccache-primary-${{ matrix.shard }}-
       - name: Run disjoint test shard
-        run: python .github/scripts/test_shard.py ${{ matrix.shard }} 2
+        run: |
+          ccache --zero-stats
+          python .github/scripts/test_shard.py ${{ matrix.shard }} 2
+      - name: Report compiler cache usage
+        if: always()
+        run: ccache --show-stats
       - uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -144,5 +162,25 @@ jobs:
           build-args: SDK_EPOCH=${{ steps.sdk.outputs.epoch }}
           cache-from: type=gha,scope=sdk-${{ matrix.distro }}
           cache-to: type=gha,scope=sdk-${{ matrix.distro }},mode=max,ignore-error=true,timeout=60s
+      - uses: actions/cache@v4
+        with:
+          path: ${{ runner.temp }}/ccache
+          key: ccache-${{ matrix.distro }}-${{ steps.sdk.outputs.epoch }}-${{ github.sha }}-${{ github.run_attempt }}
+          restore-keys: ccache-${{ matrix.distro }}-${{ steps.sdk.outputs.epoch }}-
       - name: Verify ${{ matrix.distro }} dependencies, native builds and platform behavior
-        run: docker run --rm mttkde-test-${{ matrix.distro }}:ci
+        run: |
+          mkdir -p "$RUNNER_TEMP/ccache"
+          docker run --rm \
+            -v "$RUNNER_TEMP/ccache:/ccache" \
+            -e CMAKE_C_COMPILER_LAUNCHER=ccache \
+            -e CMAKE_CXX_COMPILER_LAUNCHER=ccache \
+            -e CCACHE_DIR=/ccache -e CCACHE_BASEDIR=/repo \
+            -e CCACHE_COMPILERCHECK=content -e CCACHE_NODIRECT=true \
+            -e CCACHE_MAXSIZE=256M \
+            mttkde-test-${{ matrix.distro }}:ci sh -c '
+              ccache --zero-stats || exit $?
+              python3 tests/containers/run_in_container.py
+              result=$?
+              ccache --show-stats
+              exit "$result"
+            '

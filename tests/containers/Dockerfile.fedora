@@ -17,7 +17,7 @@ ARG SDK_EPOCH=local
 # Fetch complete metadata; zchunk range transfers can stall on mirror proxies.
 RUN dnf install -y --setopt=install_weak_deps=False --setopt=zchunk=False \
         python3 python3-pytest git zstd python3-pillow python3-pyqt6 plasma5support librsvg2-tools \
-        cmake make gcc-c++ extra-cmake-modules pkgconf-pkg-config \
+        cmake make ccache gcc-c++ extra-cmake-modules pkgconf-pkg-config \
         qt6-qtbase-devel qt6-qttools-devel qt6-qtdeclarative-devel qt6-qtsvg-devel \
         kf6-kconfig-devel kf6-kconfigwidgets-devel kf6-kcoreaddons-devel \
         kf6-kcrash-devel kf6-kglobalaccel-devel kf6-kguiaddons-devel \
