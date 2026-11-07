@@ -1,9 +1,11 @@
-# KDE neon User Edition — Ubuntu LTS base with KDE's current released
-# Frameworks and Plasma packages. Use KDE's maintained registry image;
-# the old Docker Hub kdeneon/plasma image stopped updating years ago.
-FROM invent-registry.kde.org/neon/docker-images/plasma:user
+# KDE neon User Edition SDK, using the same signed archives and Ubuntu
+# LTS base as KDE's official image, without downloading a complete desktop.
+# The vendored archive key and sources are pinned in neon/SOURCE.json.
+FROM ubuntu:24.04
 
-USER root
+RUN apt-get update && apt-get install -y --no-install-recommends ca-certificates git
+COPY tests/containers/neon/neon-archive-keyring.asc /etc/apt/keyrings/neon-archive-keyring.asc
+COPY tests/containers/neon/neon.sources /etc/apt/sources.list.d/neon.sources
 
 ENV PYTHONUNBUFFERED=1
 
@@ -24,7 +26,9 @@ RUN (apt-get update || { \
         apt-get update; \
     }) && \
     DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
-        python3 python3-pytest python3-pil python3-pyqt6 python3-pyqt6.qtsvg plasma5support librsvg2-bin git \
+        -o Dpkg::Options::=--force-confdef -o Dpkg::Options::=--force-confold neon-settings-2 && \
+    DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+        python3 python3-pytest python3-gi gir1.2-gtk-4.0 python3-pil python3-pyqt6 python3-pyqt6.qtsvg plasma5support librsvg2-bin git \
         cmake make ccache g++ extra-cmake-modules pkgconf \
         qmake6 qdbus-qt6 \
         qt6-base-dev qt6-base-private-dev qt6-declarative-dev qt6-tools-dev \
@@ -39,8 +43,10 @@ RUN (apt-get update || { \
         kwin-dev libkdecorations3-dev \
         libepoxy-dev libdrm-dev libwayland-dev libx11-dev libxext-dev \
         libxcb1-dev \
-        libvulkan-dev zstd && \
-    apt-get clean
+        libvulkan-dev zstd xvfb x11-utils dbus-bin dbus-daemon \
+        libgl1-mesa-dri libglx-mesa0 fonts-dejavu-core breeze-icon-theme && \
+    apt-get clean && \
+    python3 -c "import platform; assert platform.freedesktop_os_release()['ID'] == 'neon'"
 
 WORKDIR /repo
 COPY . /repo
