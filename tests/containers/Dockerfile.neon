@@ -45,6 +45,7 @@ RUN (apt-get update || { \
         libxcb1-dev \
         libvulkan-dev zstd xvfb x11-utils dbus-bin dbus-daemon \
         libgl1-mesa-dri libglx-mesa0 fonts-dejavu-core breeze-icon-theme && \
+    DEBIAN_FRONTEND=noninteractive apt-get dist-upgrade -y --allow-downgrades && \
     apt-get clean && \
     python3 -c "import platform; assert platform.freedesktop_os_release()['ID'] == 'neon'"
 

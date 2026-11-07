@@ -95,6 +95,7 @@ def test_neon_sdk_preserves_signed_sources_and_real_distribution_identity(repo):
     docker = (repo / 'tests/containers/Dockerfile.neon').read_text()
     assert 'FROM ubuntu:24.04' in docker
     assert 'neon-settings-2' in docker
+    assert 'apt-get dist-upgrade -y --allow-downgrades' in docker
     assert "platform.freedesktop_os_release()['ID'] == 'neon'" in docker
     for dependency in ('python3-gi', 'gir1.2-gtk-4.0', 'xvfb', 'dbus-bin',
                        'fonts-dejavu-core', 'breeze-icon-theme'):

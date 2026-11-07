@@ -58,7 +58,8 @@ not uploaded to Actions cache: their multi-gigabyte layers exceeded cache
 capacity and evicted useful compiler entries. Dependencies are resolved fresh
 on each validation. The neon SDK uses the same Ubuntu LTS base, pinned archive
 key and signed User Edition repositories as KDE's official Docker recipe,
-installing `neon-settings-2` for its real distribution identity. It omits the
+installing the official settings and upgrading base packages as in that recipe,
+then asserting its real neon distribution identity. It omits the
 full desktop image and explicitly installs the headless rendering prerequisites.
 The full neon desktop VM qualification workflow is unchanged. Only the small compiler caches persist between runs.
 Package probes deduplicate mapped packages and parallelize independent
