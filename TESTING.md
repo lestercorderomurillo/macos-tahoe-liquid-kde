@@ -11,8 +11,9 @@ They cover selective recapture, preservation of original image provenance,
 light/dark/automatic previews and the three material choices. The popup fill
 checks also passed: light mode uses a slightly more transparent white fill,
 and dark mode uses a stronger black fill. Shader and gradient values are unchanged.
-Four targeted regression checks also passed for RC version reading, update
-ordering, the installed About version and selective version-frame capture.
+Seven targeted regression checks also passed for RC version reading, update
+ordering, candidate-to-candidate and candidate-to-stable automatic updates,
+the installed About version and selective version-frame capture.
 See the [preset gallery](GLASS_PRESETS.md) for every surface and fine-tuning
 value, with light/dark photographs. Release captures use the pinned Plasma
 6.8.1 VM; they do not establish new live qualification on other Plasma versions.

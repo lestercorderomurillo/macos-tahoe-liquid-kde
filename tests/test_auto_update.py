@@ -141,3 +141,19 @@ def test_gui_entry_checks_update_before_opening(monkeypatch, args, updates):
     assert ('update' in calls) == updates
     if updates:
         assert calls == ['update', 'window']
+
+
+@pytest.mark.parametrize('latest', ['0.63rc3', '0.63.0'])
+def test_candidate_checkout_updates_to_newer_release(releases, monkeypatch, latest):
+    local, remote, old, new, fetches, restarts = releases
+    (local / 'VERSION').write_text('0.63rc2\n')
+    candidate = commit(local, 'candidate release')
+    git(remote, 'fetch', str(local), candidate)
+    git(remote, 'reset', '--hard', candidate)
+    (remote / 'VERSION').write_text(latest + '\n')
+    target = commit(remote, 'next release')
+    git(remote, 'tag', 'v' + latest)
+    monkeypatch.setattr(cli, 'fetch_latest_release', lambda: latest)
+    cli.auto_update_and_reexec([], prog='installer')
+    assert git(local, 'rev-parse', 'HEAD') == target
+    assert restarts == [(str(local / 'installer'), [str(local / 'installer')])]

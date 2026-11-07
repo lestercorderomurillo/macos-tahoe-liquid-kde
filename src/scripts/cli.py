@@ -475,12 +475,12 @@ def auto_update_and_reexec(argv: list[str], prog: str = "install") -> None:
 
 def _update_published_checkout(argv: list[str], prog: str) -> None:
     current = read_version().strip()
-    if not re.fullmatch(r"\d+\.\d+\.\d+", current):
+    if not re.fullmatch(r"\d+\.\d+(?:\.\d+|rc[1-9]\d*)", current):
         return
     latest = fetch_latest_release()
     from repository_cache import hint
     hint('lestercorderomurillo/macos-tahoe-liquid-kde', latest)
-    if (not latest or not re.fullmatch(r"\d+\.\d+\.\d+", latest)
+    if (not latest or not re.fullmatch(r"\d+\.\d+(?:\.\d+|rc[1-9]\d*)", latest)
             or parse_semver(latest) <= parse_semver(current)):
         return
 
