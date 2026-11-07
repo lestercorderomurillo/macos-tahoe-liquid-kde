@@ -1,6 +1,6 @@
 # Installer testing
 
-Tahoe **v0.63rc1** provides Tahoe (Clear), Tahoe (Frosted) and Golden Gate
+Tahoe **v0.63rc2** provides Tahoe (Clear), Tahoe (Frosted) and Golden Gate
 (Official) glass presets, with separate light/dark colors in a three-stop
 gradient. The Dock retains fixed v0.62.0 blur, refraction, highlights and color
 tuning independently of window settings. The existing Nautilus blur, scene

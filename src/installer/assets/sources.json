@@ -1886,5 +1886,53 @@
     "sha256": "5b8590f94fd81c44dcf708cde6e8f18332bc66526a88d1e17074de9883568b34",
     "source": "VM Nautilus capture/window-shadows-hard-dark-desktop.png",
     "capture": "Disposable pinned KDE neon VM; focused Nautilus; 3840x2160 at 4x scale; lossless crop"
+  },
+  "glass-preset-tahoe-clear-light.png": {
+    "source": "build/captures/launcher-balanced/tahoe-clear-light.png",
+    "source_sha256": "66b8538769de1b45bf72cca70da60bd03dcc7163be3ac2fb95966aac08741501",
+    "sha256": "66b8538769de1b45bf72cca70da60bd03dcc7163be3ac2fb95966aac08741501",
+    "file": "glass-preset-tahoe-clear-light-66b8538769de.png",
+    "crop": null,
+    "capture": "Native 3840x2160 disposable VM capture of the Golden Gate launcher on Tahoe Iridescence; material values verified before capture"
+  },
+  "glass-preset-tahoe-clear-dark.png": {
+    "source": "build/captures/launcher-balanced/tahoe-clear-dark.png",
+    "source_sha256": "afad6fa93bd4ced5e58d7a6c074cc0397e5cb0ebb064492cd3b11f4cca0d5fe5",
+    "sha256": "afad6fa93bd4ced5e58d7a6c074cc0397e5cb0ebb064492cd3b11f4cca0d5fe5",
+    "file": "glass-preset-tahoe-clear-dark-afad6fa93bd4.png",
+    "crop": null,
+    "capture": "Native 3840x2160 disposable VM capture of the Golden Gate launcher on Tahoe Iridescence; material values verified before capture"
+  },
+  "glass-preset-tahoe-frosted-light.png": {
+    "source": "build/captures/launcher-balanced/tahoe-frosted-light.png",
+    "source_sha256": "8a6194eb5270a19ee32e28c6ae72aeeca239ad4893c4d90d8dbb9624cafe4dd4",
+    "sha256": "8a6194eb5270a19ee32e28c6ae72aeeca239ad4893c4d90d8dbb9624cafe4dd4",
+    "file": "glass-preset-tahoe-frosted-light-8a6194eb5270.png",
+    "crop": null,
+    "capture": "Native 3840x2160 disposable VM capture of the Golden Gate launcher on Tahoe Iridescence; material values verified before capture"
+  },
+  "glass-preset-tahoe-frosted-dark.png": {
+    "source": "build/captures/launcher-balanced/tahoe-frosted-dark.png",
+    "source_sha256": "cdd8fdc107dd8ece00bea047cdf57b0d100bab10b0f25d916a6d65e20b80bac5",
+    "sha256": "cdd8fdc107dd8ece00bea047cdf57b0d100bab10b0f25d916a6d65e20b80bac5",
+    "file": "glass-preset-tahoe-frosted-dark-cdd8fdc107dd.png",
+    "crop": null,
+    "capture": "Native 3840x2160 disposable VM capture of the Golden Gate launcher on Tahoe Iridescence; material values verified before capture"
+  },
+  "glass-preset-golden-gate-official-light.png": {
+    "source": "build/captures/launcher-balanced/golden-gate-official-light.png",
+    "source_sha256": "13ca03a3396c4985018de7b9604206a154b783b46374d989933dea1998abb48e",
+    "sha256": "13ca03a3396c4985018de7b9604206a154b783b46374d989933dea1998abb48e",
+    "file": "glass-preset-golden-gate-official-light-13ca03a3396c.png",
+    "crop": null,
+    "capture": "Native 3840x2160 disposable VM capture of the Golden Gate launcher on Tahoe Iridescence; material values verified before capture"
+  },
+  "glass-preset-golden-gate-official-dark.png": {
+    "source": "build/captures/launcher-balanced/golden-gate-official-dark.png",
+    "source_sha256": "3ab1905fbb30a67cd52bc407cfed97852b2e2759638c5fedaf20c8b58f2928bc",
+    "sha256": "3ab1905fbb30a67cd52bc407cfed97852b2e2759638c5fedaf20c8b58f2928bc",
+    "file": "glass-preset-golden-gate-official-dark-3ab1905fbb30.png",
+    "crop": null,
+    "capture": "Native 3840x2160 disposable VM capture of the Golden Gate launcher on Tahoe Iridescence; material values verified before capture"
   }
 }

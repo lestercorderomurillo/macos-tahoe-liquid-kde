@@ -1,6 +1,6 @@
 # Glass preset gallery
 
-Material presets for **v0.63rc1**. Each pair shows the same preset in light and dark mode.
+Material presets for **v0.63rc2**. Each pair shows the same preset in light and dark mode.
 
 The Dock retains v0.62.0 optics in every view. These are independent community themes, not Apple or KDE products.
 

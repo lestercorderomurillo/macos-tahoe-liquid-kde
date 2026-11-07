@@ -166,7 +166,7 @@ def capture_lock():
         yield
 
 
-def capture(repo: Path, ref: str, image: Path, output: Path) -> dict:
+def capture(repo: Path, ref: str, image: Path, output: Path, reuse: Path | None = None) -> dict:
     profile = json.loads(PROFILE.read_text())
     image = image.resolve()
     require(digest(image) == profile['vm_image_sha256'], 'VM image checksum differs from the pinned recipe')
@@ -185,8 +185,33 @@ def capture(repo: Path, ref: str, image: Path, output: Path) -> dict:
                     vm_image_sha256=profile['vm_image_sha256'], frames={}, environments={},
                     host={'qemu': subprocess.check_output(['qemu-system-x86_64', '--version'], text=True).strip(),
                           'kernel': os.uname().release, 'machine': os.uname().machine})
+    from release_screenshots import affected_frames, frame_origin, expected_frames, CASES
+    pending = expected_frames()
+    approvals = {}
+    if reuse is not None:
+        old = json.loads((reuse / 'manifest.json').read_text())
+        validate(repo, old['source_commit'], reuse)
+        old_review = json.loads((reuse / 'review.json').read_text())
+        manifest['schema'] = 2
+        invalidated = {}
+        for name, frame in old['frames'].items():
+            origin, tree, version = frame_origin(old, frame)
+            if origin not in invalidated:
+                invalidated[origin] = affected_frames(repo, origin, source)
+            if name in invalidated[origin]:
+                continue
+            shutil.copyfile(reuse / 'frames' / (name + '.png'), output / 'frames' / (name + '.png'))
+            manifest['frames'][name] = dict(frame, source_commit=origin, source_tree=tree, source_version=version)
+            approvals[name] = old_review['approved'][name]
+            pending.remove(name)
+        from release_screenshots import effect_identity
+        manifest['effect_build'] = effect_identity(repo, source)
+        print(f'Reusing {len(approvals)} reviewed frames; capturing {len(pending)} affected frames', flush=True)
     with capture_lock():
         for edition in EDITIONS:
+            if not any(n.startswith(edition + '-') or (edition == 'tahoe' and n in ('boot', 'shutdown'))
+                       for n in pending):
+                continue
             with tempfile.TemporaryDirectory(prefix='mttkde-cap-') as temp:
                 guest_dir = Path(temp)
                 try:
@@ -198,6 +223,9 @@ def capture(repo: Path, ref: str, image: Path, output: Path) -> dict:
                             vm.key('esc')
                             vm.action('mode', mode)
                             def shot(case):
+                                name = f'{edition}-{mode}-{case}'
+                                if name not in pending:
+                                    return
                                 vm.move(*profile['pointer'])
                                 record = vm.action('capture', edition, mode, case)
                                 name = f'{edition}-{mode}-{case}'
@@ -205,45 +233,49 @@ def capture(repo: Path, ref: str, image: Path, output: Path) -> dict:
                                 manifest['frames'][name] = record
                                 manifest.setdefault('effect_build', record['effect_build'])
                                 print('Captured ' + name, flush=True)
-                            vm.action('plasma', 'panels().forEach(p=>p.widgets().forEach(w=>{if(w.type==="org.kde.mac-tahoe-liquid-kde.launcher")'
-                                      '{w.currentConfigGroup=["General"];w.writeConfig("launcherPreset",' + str(EDITIONS[edition][1]) + ');}}));')
-                            vm.action('launcher')
-                            shot('launcher')
-                            vm.key('esc')
-                            vm.action('plasma', 'panels().forEach(p=>{if(p.location==="bottom")p.hiding="none";});')
-                            # Reveal the panel before moving the pointer back to
-                            # the neutral capture position.
-                            vm.move(1920, 2159)
-                            time.sleep(1)
-                            shot('dock')
-                            for case, x, y, button in [('menu', 40, 30, 'left'), ('context', 2100, 1000, 'right')]:
+                            if any(f'{edition}-{mode}-{case}' in pending for case in CASES
+                                   if not case.startswith('installer-')):
+                                vm.action('plasma', 'panels().forEach(p=>p.widgets().forEach(w=>{if(w.type==="org.kde.mac-tahoe-liquid-kde.launcher")'
+                                          '{w.currentConfigGroup=["General"];w.writeConfig("launcherPreset",' + str(EDITIONS[edition][1]) + ');}}));')
+                                vm.action('launcher')
+                                shot('launcher')
                                 vm.key('esc')
-                                vm.click(1900, 1000)
-                                vm.click(x, y, button)
-                                shot(case)
-                            vm.key('esc')
-                            vm.action('launch', 'finder')
-                            vm.action('arrange', json.dumps({'Documents': profile['windows']['Documents']}))
-                            shot('finder')
-                            vm.action('arrange', json.dumps({'Documents':
-                                      dict(profile['windows']['Documents'], x=460)}))
-                            shot('showcase')
-                            from release_screenshots import MATERIAL_CASES
-                            for material_case in MATERIAL_CASES:
-                                vm.action('material', material_case)
-                                shot(material_case)
-                            vm.action('material', 'restore')
-                            vm.action('close')
-                            vm.action('launch', 'about')
-                            vm.action('arrange', json.dumps({'About This Computer (preview)':
-                                      dict(profile['windows']['About This Computer (preview)'], x=780)}))
-                            shot('about')
-                            vm.action('close')
+                                vm.action('plasma', 'panels().forEach(p=>{if(p.location==="bottom")p.hiding="none";});')
+                                # Reveal the panel before moving the pointer back to
+                                # the neutral capture position.
+                                vm.move(1920, 2159)
+                                time.sleep(1)
+                                shot('dock')
+                                for case, x, y, button in [('menu', 40, 30, 'left'), ('context', 2100, 1000, 'right')]:
+                                    vm.key('esc')
+                                    vm.click(1900, 1000)
+                                    vm.click(x, y, button)
+                                    shot(case)
+                                vm.key('esc')
+                                vm.action('launch', 'finder')
+                                vm.action('arrange', json.dumps({'Documents': profile['windows']['Documents']}))
+                                shot('finder')
+                                vm.action('arrange', json.dumps({'Documents':
+                                          dict(profile['windows']['Documents'], x=460)}))
+                                shot('showcase')
+                                from release_screenshots import MATERIAL_CASES
+                                for material_case in MATERIAL_CASES:
+                                    vm.action('material', material_case)
+                                    shot(material_case)
+                                vm.action('material', 'restore')
+                                vm.action('close')
+                                vm.action('launch', 'about')
+                                vm.action('arrange', json.dumps({'About This Computer (preview)':
+                                          dict(profile['windows']['About This Computer (preview)'], x=780)}))
+                                shot('about')
+                                vm.action('close')
                             for page in INSTALLER_PAGES:
+                                if f'{edition}-{mode}-installer-{page}' not in pending:
+                                    continue
                                 vm.action('wizard', page)
                                 shot('installer-' + page)
                             vm.action('clean-desktop')
-                        if edition == 'tahoe':
+                        if edition == 'tahoe' and pending & {'boot', 'shutdown'}:
                             vm.action('boot')
                             for case in ('boot', 'shutdown'):
                                 path = output / 'frames' / (case + '.png')
@@ -255,4 +287,8 @@ def capture(repo: Path, ref: str, image: Path, output: Path) -> dict:
                         if (guest_dir / name).exists():
                             shutil.copyfile(guest_dir / name, output / (edition + '-' + name))
                     (output / 'manifest.json').write_text(json.dumps(manifest, indent=2) + '\n')
+    (output / 'manifest.json').write_text(json.dumps(manifest, indent=2) + '\n')
+    (output / 'review.json').write_text(json.dumps({
+        'manifest_sha256': digest(output / 'manifest.json'), 'approved': approvals, 'rejected': {},
+    }, indent=2) + '\n')
     return validate(repo, source, output, reviewed=False)

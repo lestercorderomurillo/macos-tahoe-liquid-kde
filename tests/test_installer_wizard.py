@@ -428,12 +428,9 @@ window.advance(); app.processEvents()
 assert window.page == 'glass_style'
 glass_text = ' '.join(label.text() for label in window.content.findChildren(QLabel))
 assert 'white backing' not in glass_text
-if sys.argv[1] == 'MacGoldenGate':
-    assert window.content.findChild(RadioOption, 'choice-glass_style-classic') is None
-    assert 'blur strength 4' in glass_text
-else:
-    assert 'Frosted uses 12' in glass_text
-window.content.findChild(RadioOption, 'choice-glass_style-tinted').click()
+assert 'Dock' not in glass_text and 'blur strength' not in glass_text
+assert len(window.content.findChildren(ChoiceCard)) == 3
+window.content.findChild(ChoiceCard, 'choice-glass_style-tinted').click()
 assert window.choices['glass_style'] == 'tinted'
 window.advance(); window.previous(); app.processEvents()
 assert window.page == 'glass_style' and window.choices['glass_style'] == 'tinted'

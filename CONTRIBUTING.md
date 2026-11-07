@@ -509,11 +509,16 @@ For a release that changes visual output:
 
 1. Finish the source changes, set `VERSION`, and commit the release candidate.
 2. Run `./release-screenshots capture --ref HEAD --vm-image /path/to/neon-base.qcow2 --output build/captures/vVERSION`.
+   Add `--reuse build/captures/PREVIOUS` to retain reviewed, unaffected frames
+   from an existing bundle. Dependency checks select the views that require
+   new captures; unknown visual changes invalidate the full set. Retained
+   frames keep their original source commit, version and hash-bound approval.
    The output directory must be new. The runner checks the VM SHA-256 against
    `src/scripts/release_capture_profile.json`, creates a fresh disposable overlay
    for each edition, installs the exact Git archive, and captures both modes
    sequentially. It never mounts the host home or sends input to the host.
-3. Inspect **every** PNG in `frames/` at full size. Record decisions with
+3. Inspect every **new** PNG in `frames/` at full size. Reused frames retain
+   their existing reviews. Record new decisions with
    `./release-screenshots review --bundle build/captures/vVERSION --approve FRAME...`
    or `--reject FRAME...`. Names are the PNG basenames without `.png`.
    Review is bound to the manifest and image hashes. A rejected or missing

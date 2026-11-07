@@ -28,9 +28,9 @@ def test_golden_gate_client_fill_follows_appearance(mode, tmp_path, monkeypatch)
         renderer.render(painter, "center", core.QRectF(0, 0, 64, 64))
         painter.end()
         fill = image.pixelColor(32, 32)
-        expected = .60 if mode == "Light" else .01
+        expected = .55 if mode == "Light" else .12
         assert fill.alphaF() == pytest.approx(expected, abs=.005)
-        assert fill.red() == 255
+        assert fill.red() == (255 if mode == "Light" else 0)
         # Alpha-derived blur masks and shadows must survive edition staging.
         for element in ("mask-center", "mask-topleft", "shadow-top", "shadow-topleft"):
             assert original.elementExists(element) == renderer.elementExists(element)

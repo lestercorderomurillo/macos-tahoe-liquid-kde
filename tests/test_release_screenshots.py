@@ -475,3 +475,57 @@ def test_clock_readiness_preserves_photos_but_mode_and_service_changes_do_not(tm
     service.write_text(service.read_text().replace('theme-switch auto', 'theme-switch light'))
     changed = commit(tmp_path)
     assert shots.visual_tree(tmp_path, before) != shots.visual_tree(tmp_path, changed)
+
+
+def test_scoped_wizard_change_retains_unaffected_origins(capture):
+    repo, ref, bundle, manifest = capture
+    wizard = repo / 'src/installer/wizard_window.py'
+    wizard.parent.mkdir(parents=True)
+    wizard.write_text('class InstallerWindow:\n    def page_glass_style(self):\n        return "old"\n')
+    before = commit(repo)
+    # Start a reviewed fixture at this visual source.
+    manifest.update(source_commit=before, source_tree=shots.runtime_tree(repo, before))
+    wizard.write_text(wizard.read_text().replace('"old"', '"new"'))
+    after = commit(repo)
+    affected = shots.affected_frames(repo, before, after)
+    assert affected == {f'{e}-{m}-installer-glass_style' for e in shots.EDITIONS for m in shots.MODES}
+    for name, frame in manifest['frames'].items():
+        origin = after if name in affected else before
+        frame.update(source_commit=origin, source_tree=shots.runtime_tree(repo, origin),
+                     source_version='1.2.3')
+    manifest.update(schema=2, source_commit=after, source_tree=shots.runtime_tree(repo, after))
+    write_json(bundle / 'manifest.json', manifest)
+    write_json(bundle / 'review.json', dict(manifest_sha256=shots.digest(bundle / 'manifest.json'),
+               approved={n: f['sha256'] for n, f in manifest['frames'].items()}, rejected={}))
+    shots.validate(repo, after, bundle)
+    shots.stage(repo, 'tahoe', bundle, manifest)
+    final = commit(repo)
+    record = shots.verify_committed(repo, final)
+    assert {r['source_commit'] for r in record['images'].values()} == {before, after}
+    stale = manifest['frames']['tahoe-light-installer-glass_style']
+    stale.update(source_commit=before, source_tree=shots.runtime_tree(repo, before))
+    with pytest.raises(ValueError, match='Affected frame needs recapture'):
+        shots.verify_frame_origins(repo, manifest, final)
+    stale.update(source_commit=after, source_tree=shots.runtime_tree(repo, after))
+    (repo / 'src/unknown-runtime.py').write_text('new_rendering = True\n')
+    unknown = commit(repo)
+    assert shots.affected_frames(repo, after, unknown) == shots.expected_frames()
+    with pytest.raises(ValueError, match='Affected frame needs recapture'):
+        shots.verify_frame_origins(repo, manifest, unknown)
+
+
+def test_scoped_choices_only_ignore_glass_selection(capture):
+    repo, ref, bundle, manifest = capture
+    path = repo / 'src/scripts/installer_choices.py'
+    path.write_text('ENUMS = {"glass_style": ("classic",)}\ndef defaults():\n'
+                    '    return dict(glass_style="classic", icons="regular")\n')
+    before = commit(repo)
+    path.write_text(path.read_text().replace('("classic",)', '("classic", "official")')
+                    .replace('glass_style="classic"', 'glass_style="official"'))
+    after = commit(repo)
+    assert shots.affected_frames(repo, before, after) == {
+        f'{e}-{m}-installer-{p}' for e in shots.EDITIONS for m in shots.MODES
+        for p in ('glass_style', 'summary')}
+    path.write_text(path.read_text().replace('icons="regular"', 'icons="glass"'))
+    other = commit(repo)
+    assert shots.affected_frames(repo, after, other) == shots.expected_frames()

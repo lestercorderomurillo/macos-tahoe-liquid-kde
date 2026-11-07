@@ -231,12 +231,14 @@ def _restore_conflicting_blurs() -> None:
 
 def _install_backing_tint() -> bool:
     choices = selected()
-    if default_wallpaper() == "MacGoldenGate":
-        return kw_write("--file", "kwinrc", "--group", "Effect-liquidglass", "--key", "BackingTint", "1")
-    if not choices or choices["files"] != "nautilus":
+    if choices and choices["files"] == "nautilus":
+        variant = "0" if choices["glass_style"] == "classic" else "1"
+    elif default_wallpaper() == "MacGoldenGate":
+        variant = "1"
+    else:
         return True
     return kw_write("--file", "kwinrc", "--group", "Effect-liquidglass", "--key",
-                    "BackingTint", "1" if choices["glass_style"] == "tinted" else "0")
+                    "BackingTint", variant)
 
 
 _CORNER_DEFAULTS = (
@@ -249,9 +251,11 @@ def _edition_preset() -> dict[str, str]:
     # The KCM and installer apply the same complete material.
     presets = json.loads((SRC / "src/presets.json").read_text())
     preset_id = "golden-gate" if default_wallpaper() == "MacGoldenGate" else "tahoe"
+    choices = selected()
+    if choices and choices["files"] == "nautilus":
+        preset_id = "golden-gate" if choices["glass_style"] == "official" else "tahoe"
     preset = next(preset for preset in presets if preset["id"] == preset_id)
     values = dict(preset["values"])
-    choices = selected()
     if choices and choices["files"] == "nautilus" and choices["glass_style"] == "tinted":
         values.update(preset.get("tinted_values", {}))
     return {key: str(value).lower() if isinstance(value, bool) else str(value)
