@@ -11,7 +11,7 @@ all eleven distro SDK/dependency/native checks and Nix. Main promotion verifies
 the successful dev run for the exact commit. The focused CI selection and gate
 checks passed **35 tests**. VM qualification and capture tooling remain intact.
 Reviewed rc2 photographs retain their original capture version and provenance;
-this workflow-only release does not recapture the desktop.
+this workflow and packaging release does not recapture the desktop.
 See [release performance](docs/release-performance.md) for coverage and timing.
 See the [preset gallery](GLASS_PRESETS.md) for every surface and fine-tuning
 value, with light/dark photographs. Release captures use the pinned Plasma
@@ -35,7 +35,7 @@ Scroll horizontally through the installation steps.
   <td align="center"><img src="src/screenshots/installer-wallpaper_dark_v4-b23218dae540.png" alt="Wallpaper" width="500"><br>Wallpaper</td>
   <td align="center"><img src="src/screenshots/installer-launcher_dark_v4-cd7bdad8b465.png" alt="Launcher" width="500"><br>Launcher</td>
   <td align="center"><img src="src/screenshots/installer-layout_dark_v4-1194dbf959c2.png" alt="Top bar and Dock" width="500"><br>Top bar and Dock</td>
-  <td align="center"><img src="src/screenshots/installer-effects_dark_v4-07353b0bf444.png" alt="Effects" width="500"><br>Effects</td>
+  <td align="center"><img src="src/screenshots/installer-effects_dark_v4-07283b0bf444.png" alt="Effects" width="500"><br>Effects</td>
   <td align="center"><img src="src/screenshots/installer-window_controls_dark_v4-858098db4ed3.png" alt="Flat or Glassy window controls" width="500"><br>Window controls</td>
   <td align="center"><img src="src/screenshots/installer-shadows_dark_v4-f7d360aabf64.png" alt="Window shadow comparison" width="500"><br>Window shadows</td>
   <td align="center"><img src="src/screenshots/installer-fonts_dark_v4-daaeba3d059b.png" alt="Fonts" width="500"><br>Fonts</td>
