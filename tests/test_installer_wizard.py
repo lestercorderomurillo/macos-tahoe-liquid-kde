@@ -183,7 +183,7 @@ def test_native_wizard_navigation_preserves_choices_and_waits_for_completion(rep
 import sys
 from pathlib import Path
 sys.path[:0] = [str(Path.cwd() / 'src/scripts'), str(Path.cwd() / 'src/installer')]
-from PyQt6.QtWidgets import QApplication, QPushButton
+from PyQt6.QtWidgets import QApplication, QPushButton, QLabel
 from PyQt6.QtCore import Qt
 from PyQt6.QtTest import QTest
 from installer_ui import _make_installer_bridge
@@ -426,6 +426,13 @@ assert window.page == 'files'
 window.select('files', 'nautilus')
 window.advance(); app.processEvents()
 assert window.page == 'glass_style'
+glass_text = ' '.join(label.text() for label in window.content.findChildren(QLabel))
+assert 'white backing' not in glass_text
+if sys.argv[1] == 'MacGoldenGate':
+    assert window.content.findChild(RadioOption, 'choice-glass_style-classic') is None
+    assert 'blur strength 4' in glass_text
+else:
+    assert 'Frosted uses 12' in glass_text
 window.content.findChild(RadioOption, 'choice-glass_style-tinted').click()
 assert window.choices['glass_style'] == 'tinted'
 window.advance(); window.previous(); app.processEvents()
