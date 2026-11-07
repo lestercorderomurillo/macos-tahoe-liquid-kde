@@ -1070,7 +1070,7 @@ class InstallerWindow(OpaqueSurface):
             entry = QWidget()
             entry.setObjectName("summaryEntry")
             entry.setStyleSheet(f"QWidget#summaryEntry {{ border-bottom: 1px solid {self.line}; }}")
-            row = QHBoxLayout(entry); row.setContentsMargins(0, 4, 0, 4); row.setSpacing(12)
+            row = QHBoxLayout(entry); row.setContentsMargins(0, 2, 0, 2); row.setSpacing(12)
             label = self.label(title); label.setObjectName("detail"); label.setFixedWidth(94)
             label.setFont(relative_font(self, .86)); row.addWidget(label)
             choice = self.label(text); choice.setFont(relative_font(self, .86)); row.addWidget(choice, 1)
