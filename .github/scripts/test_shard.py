@@ -9,8 +9,7 @@ def select_files(root: Path, index: int, count: int) -> list[str]:
     if count < 1 or not 0 <= index < count:
         raise ValueError('Invalid shard index/count')
     files = sorted(path.relative_to(root).as_posix()
-                   for path in (root / 'tests').rglob('test_*.py')
-                   if 'containers' not in path.relative_to(root / 'tests').parts)
+                   for path in (root / 'tests').rglob('test_*.py'))
     history = root / '.github/test-durations.json'
     weights = json.loads(history.read_text()) if history.exists() else {}
     groups = [[] for _ in range(count)]

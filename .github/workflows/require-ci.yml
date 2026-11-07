@@ -41,7 +41,7 @@ jobs:
             if (!['["main","dev"]', '["dev"]'].includes(JSON.stringify(branches))) {
               throw new Error('Invalid CI branch selection');
             }
-            for (let attempt = 0; attempt < 120; attempt++) {
+            for (let attempt = 0; attempt < 360; attempt++) {
               const {data} = await github.rest.actions.listWorkflowRuns({
                 owner, repo, workflow_id: 'test.yml', head_sha: sha,
                 event: 'push', per_page: 100
@@ -59,7 +59,7 @@ jobs:
                 core.info(`Verified successful ${branches.join(" and ")} CI for ${repository}@${sha}`);
                 return;
               }
-              core.info(`Waiting for ${branches.join(" and ")} CI for ${sha} (${attempt + 1}/120)`);
-              await new Promise(resolve => setTimeout(resolve, 30000));
+              core.info(`Waiting for ${branches.join(" and ")} CI for ${sha} (${attempt + 1}/360)`);
+              await new Promise(resolve => setTimeout(resolve, 10000));
             }
             throw new Error(`No successful ${branches.join(" and ")} CI for ${repository}@${sha} within 60 minutes`);

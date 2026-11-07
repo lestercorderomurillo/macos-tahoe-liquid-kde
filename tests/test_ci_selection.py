@@ -18,8 +18,7 @@ def load(path):
 def test_shards_cover_every_test_file_exactly_once():
     shard = load('.github/scripts/test_shard.py')
     parts = [set(shard.select_files(ROOT, index, 2)) for index in range(2)]
-    expected = {p.relative_to(ROOT).as_posix() for p in (ROOT / 'tests').rglob('test_*.py')
-                if 'containers' not in p.relative_to(ROOT / 'tests').parts}
+    expected = {p.relative_to(ROOT).as_posix() for p in (ROOT / 'tests').rglob('test_*.py')}
     assert parts[0] and parts[1]
     assert not parts[0] & parts[1]
     assert parts[0] | parts[1] == expected

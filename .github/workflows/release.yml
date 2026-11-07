@@ -27,8 +27,6 @@ jobs:
       - uses: actions/checkout@v5
         with:
           fetch-depth: 0
-      - name: Verify version-bound, reviewed screenshots
-        run: python3 release-screenshots verify --ref "$GITHUB_SHA"
       - name: Publish verified release
         env:
           GH_TOKEN: ${{ github.token }}

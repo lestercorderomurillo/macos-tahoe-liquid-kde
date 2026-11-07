@@ -92,3 +92,8 @@ address the remaining gap; their final measurement must be reported separately.
 
 The font payload and installer are the published v0.63.0 bytes. Subsequent CI-only
 optimizations do not rewrite that release tag or change the installed desktop.
+
+Publication invokes the mandatory provenance check inside `publish` once,
+instead of calling `verify` immediately before the same check runs again.
+The exact-commit gate polls every ten seconds while retaining its sixty-minute
+limit and refusal of failed, skipped or mismatched runs.
