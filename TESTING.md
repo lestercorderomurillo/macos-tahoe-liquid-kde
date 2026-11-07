@@ -6,11 +6,11 @@ gradient. The Dock retains fixed v0.62.0 blur, refraction, highlights and color
 tuning independently of window settings. The existing Nautilus blur, scene
 damage and competing-effect fixes remain included.
 
-The full local suite passed **2,203 tests**, with **4 skipped**. The native
-material checks cover gradient colors, positions, opacity, palette selection
-and Dock isolation; the updated installer navigation passed all 29 tests.
-Pixel comparisons of the captured Dock were identical across all three presets
-in each of the four edition/mode combinations.
+The focused screenshot-provenance and glass-step checks passed **54 tests**.
+They cover selective recapture, preservation of original image provenance,
+light/dark/automatic previews and the three material choices. The popup fill
+checks also passed: light mode uses a slightly more transparent white fill,
+and dark mode uses a stronger black fill. Shader and gradient values are unchanged.
 See the [preset gallery](GLASS_PRESETS.md) for every surface and fine-tuning
 value, with light/dark photographs. Release captures use the pinned Plasma
 6.8.1 VM; they do not establish new live qualification on other Plasma versions.
@@ -39,9 +39,9 @@ Scroll horizontally through the installation steps.
   <td align="center"><img src="src/screenshots/installer-fonts_dark_v4-daaeba3d059b.png" alt="Fonts" width="500"><br>Fonts</td>
   <td align="center"><img src="src/screenshots/installer-firefox_dark_v4-a4e5ebe3254b.png" alt="Firefox" width="500"><br>Firefox</td>
   <td align="center"><img src="src/screenshots/installer-files_dark_v4-e16ea88dd70e.png" alt="File manager" width="500"><br>File manager</td>
-  <td align="center"><img src="src/screenshots/installer-glass_style_dark_v4-c711e3ae30de.png" alt="Window glass" width="500"><br>Window glass</td>
+  <td align="center"><img src="src/screenshots/installer-glass_style_dark_v4-f913bca520d1.png" alt="Window glass" width="500"><br>Window glass</td>
   <td align="center"><img src="src/screenshots/installer-boot_dark_v4-de543c2dfb97.png" alt="Boot animation" width="500"><br>Boot animation</td>
   <td align="center"><img src="src/screenshots/installer-oled_dark_v4-c8e66978f276.png" alt="OLED protection" width="500"><br>OLED protection</td>
-  <td align="center"><img src="src/screenshots/installer-summary_dark_v4-4b0697855d0f.png" alt="Summary" width="500"><br>Summary</td>
+  <td align="center"><img src="src/screenshots/installer-summary_dark_v4-766f23e5d67e.png" alt="Summary" width="500"><br>Summary</td>
 </tr>
 </table>
