@@ -63,6 +63,11 @@ def runtime_tree(repo: Path, ref: str) -> str:
     return hashlib.sha256(b'\0'.join(entries)).hexdigest()
 
 
+# Reviewed v0.63.0 packaging-only changes. Any later code edit invalidates
+# this equivalence; payload bytes themselves remain in the visual fingerprint.
+FONT_PACKAGING_EQUIVALENCE = {'src/scripts/steps/fonts.py': ('6f4912e04de79b1a56d11462badd3f90eadd4eaf', 'e7791550d140d5556939697041c92f197fb4e41d'), 'nix/packages.nix': ('5c0207d9554df4e414c9d4dcea9d99709a66ccf3', '1cd61cc57b9c3f2fdfa05bfaaaf8937ec2599e3b')}
+FONT_BUNDLE_IMPLEMENTATION = 'eafb4b4909c933982b80360d07a72d3a27a3ee69'
+
 def visual_tree(repo: Path, ref: str, *, ignore_paths: frozenset[str] = frozenset()) -> str:
     """Conservative visual inputs; unknown runtime changes require new evidence.
 
@@ -86,16 +91,38 @@ def visual_tree(repo: Path, ref: str, *, ignore_paths: frozenset[str] = frozense
         'Not the root of a Git checkout.',
     }
     entries = []
+    font_entries = {}
     for entry in subprocess.check_output(['git', '-C', str(repo), 'ls-tree', '-rz', ref]).split(b'\0'):
         if not entry:
             continue
         metadata, raw_path = entry.split(b'\t', 1)
         path = raw_path.decode()
-        if (path in ignore_paths or path == 'VERSION' or path.endswith('.md') or path.startswith(('tests/', 'src/screenshots/', '.github/'))
+        if (path in ignore_paths or path in ('VERSION', '.dockerignore') or path.endswith('.md') or path.startswith(('tests/', 'src/screenshots/', '.github/'))
                 or path in ('src/scripts/release_screenshots.py', 'src/scripts/release_screenshots_cli.py',
                             'src/scripts/repository_maintenance.py', 'src/scripts/repository_history.py',
                             'src/scripts/repository_cache.py')):
             continue
+        object_id = metadata.split()[-1].decode()
+        if path == 'src/scripts/font_bundle.py' and object_id == FONT_BUNDLE_IMPLEMENTATION:
+            continue
+        equivalence = FONT_PACKAGING_EQUIVALENCE.get(path)
+        if equivalence and object_id == equivalence[0]:
+            entries.append(metadata.rsplit(b' ', 1)[0] + b' ' + equivalence[1].encode() + b'\t' + raw_path)
+            continue
+        if path.startswith('src/offline/fonts/'):
+            if path.endswith(('.otf', '.ttf')):
+                font_entries[path] = hashlib.sha256(blob(repo, ref, path)).hexdigest()
+                continue
+            if path.endswith('/fonts.json'):
+                continue
+            if path.endswith('/fonts.tar.xz'):
+                from font_bundle import unpacked_fonts
+                manifest = json.loads(blob(repo, ref, 'src/offline/fonts/fonts.json'))
+                for name, data in unpacked_fonts(blob(repo, ref, path), manifest).items():
+                    font_path = 'src/offline/fonts/' + name
+                    require(font_path not in font_entries, 'Duplicate packed font')
+                    font_entries[font_path] = hashlib.sha256(data).hexdigest()
+                continue
         if path == 'src/scripts/cli.py':
             module = ast.parse(blob(repo, ref, path))
             module.body = [node for node in module.body if not (
@@ -157,6 +184,7 @@ def visual_tree(repo: Path, ref: str, *, ignore_paths: frozenset[str] = frozense
             continue
         entries.append(metadata.split(b' ', 1)[0] + b'\t' + raw_path + b'\t' +
                        hashlib.sha256(content).hexdigest().encode())
+    entries.extend((path + '\t' + digest).encode() for path, digest in sorted(font_entries.items()))
     return hashlib.sha256(b'\0'.join(entries)).hexdigest()
 
 

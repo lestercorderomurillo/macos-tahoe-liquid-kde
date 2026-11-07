@@ -6,8 +6,21 @@ on:
   pull_request:
     branches: [main, dev]
 
+permissions:
+  contents: read
+  actions: read
+
 jobs:
+  promotion:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    uses: ./.github/workflows/require-ci.yml
+    with:
+      repository: ${{ github.repository }}
+      sha: ${{ github.sha }}
+      branches: '["dev"]'
+
   nix:
+    if: github.event_name != 'push' || github.ref != 'refs/heads/main'
     runs-on: ubuntu-latest
     timeout-minutes: 60
     steps:
@@ -23,7 +36,12 @@ jobs:
   # daily-driver libdir convention). The full Plasma 6 dev SDK is
   # available here so this is the broadest pytest run.
   test:
+    if: github.event_name != 'push' || github.ref != 'refs/heads/main'
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [0, 1]
     container: archlinux:latest
     steps:
       - uses: actions/checkout@v5
@@ -65,21 +83,20 @@ jobs:
           node --version
           command -v plasmoidviewer
           command -v xprop
-      - name: Run tests
-        run: |
-          output=$(python -m pytest tests -q --ignore=tests/containers 2>&1) || exit_code=$?
-          echo "$output"
-          count=$(echo "$output" | grep -oE '[0-9]+ passed' | tail -n 1 | grep -oE '[0-9]+')
-          if [ -n "$count" ]; then
-            echo "### Tests: $count passing" >> "$GITHUB_STEP_SUMMARY"
-          fi
-          exit ${exit_code:-0}
+      - name: Run disjoint test shard
+        run: python .github/scripts/test_shard.py ${{ matrix.shard }} 2
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: pytest-${{ matrix.shard }}
+          path: build/ci/*.xml
 
   # Cross-distro matrix — proves the qmake6-driven path discovery
   # works on every distro the README claims support for. Each leg
   # runs the same container test from tests/containers/, so a regression
   # that breaks one distro can't silently sneak through CI.
   cross-distro:
+    if: github.event_name != 'push' || github.ref != 'refs/heads/main'
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -105,24 +122,20 @@ jobs:
           - arch-kdeunstable
     steps:
       - uses: actions/checkout@v5
-      # Every matrix target is required, including the staging SDK.
-      - name: Build and run ${{ matrix.distro }} container
-        run: |
-          # Retry the build: pulling the base image from Docker Hub can
-          # transiently time out / rate-limit from GitHub runners, which
-          # has nothing to do with our code. 3 attempts, 15s backoff.
-          for attempt in 1 2 3; do
-            if docker build \
-                -f tests/containers/Dockerfile.${{ matrix.distro }} \
-                -t mttkde-test-${{ matrix.distro }}:ci \
-                .; then
-              break
-            fi
-            if [ "$attempt" = 3 ]; then
-              echo "::error::docker build failed after 3 attempts"
-              exit 1
-            fi
-            echo "build attempt $attempt failed — retrying in 15s"
-            sleep 15
-          done
-          docker run --rm mttkde-test-${{ matrix.distro }}:ci
+      - uses: docker/setup-buildx-action@v3
+      - name: Refresh dependency cache weekly
+        id: sdk
+        run: echo "epoch=$(date -u +%G-%V)" >> "$GITHUB_OUTPUT"
+      - name: Build ${{ matrix.distro }} SDK image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: tests/containers/Dockerfile.${{ matrix.distro }}
+          load: true
+          pull: true
+          tags: mttkde-test-${{ matrix.distro }}:ci
+          build-args: SDK_EPOCH=${{ steps.sdk.outputs.epoch }}
+          cache-from: type=gha,scope=sdk-${{ matrix.distro }}
+          cache-to: type=gha,scope=sdk-${{ matrix.distro }},mode=max,ignore-error=true,timeout=60s
+      - name: Verify ${{ matrix.distro }} dependencies, native builds and platform behavior
+        run: docker run --rm mttkde-test-${{ matrix.distro }}:ci

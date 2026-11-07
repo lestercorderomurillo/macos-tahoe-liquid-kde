@@ -912,7 +912,7 @@ bootloader probe.
 | ---------------------------- | ---- |
 | `tests/containers/Dockerfile.<distro>` | One per supported distro. CachyOS pulls both `archlinux-keyring` and `cachyos-keyring` after `pacman-key --init && pacman-key --populate archlinux cachyos`. |
 | `tests/containers/Dockerfile.arch-kdeunstable` | Canary against Arch's `[kde-unstable]` staging repo — catches the next Plasma release early. Every matrix target, including staging, must pass. |
-| `tests/containers/run_in_container.py` | Per-distro probe: qmake6 resolves, the distro layer agrees with what qmake6 reports, every `package_for()` token resolves in the distro's repo (with a "transient network" skip so flaky upstream CDN edges don't tank CI), preflight destination checks, pytest. |
+| `tests/containers/run_in_container.py` | Per-distro probe: qmake6 resolves, the distro layer agrees with what qmake6 reports, every `package_for()` token resolves in the distro's repo (with a "transient network" skip so flaky upstream CDN edges don't tank CI), preflight destination checks and platform-sensitive pytest. The general suite runs once per commit, split into disjoint file shards. |
 | `tests/containers/run_matrix.sh` | Local runner. CI runs the same workflow via `.github/workflows/test.yml`. |
 
 Gentoo is no longer a supported installation target. Package-manager entry
@@ -1093,7 +1093,10 @@ qualification on every distro for this fix.
 
 Run focused checks while implementing; reserve broad integration runs for a
 stable candidate. Required CI supplies the complete suite and configured distro
-matrix on the final implementation commit. Do not also run the entire matrix
+matrix on the final implementation commit. The full general suite runs once on
+`dev` (two disjoint shards); each distro retains dependency, SDK build, native
+rendering and platform checks. `main` reuses the successful `dev` result only
+for the identical commit. Pull requests run their own complete checks. Do not also run the entire matrix
 locally unless CI cannot exercise the needed case or a failure needs local
 reproduction. Run the shared suite against the prepared source when staging
 changes executable behavior; a pin-only update to an already validated Tahoe
@@ -1112,7 +1115,9 @@ that evidence.
 For implementation delivery, inspect required CI results for the exact commits
 on both branches. Earlier-commit evidence never substitutes for the exact-SHA
 release gate: publication requires successful `test.yml` push runs on `main`
-and `dev` for each repository's exact release commit. Never weaken workflows,
+and `dev` for each repository's exact release commit. A `main` promotion run
+may verify the latest successful `dev` push run for that exact SHA instead of
+repeating it; missing, failed or cancelled evidence blocks promotion. Never weaken workflows,
 skip required checks or treat missing,
 cancelled or failed checks as success to shorten a task. Screenshot provenance verification remains mandatory; new visual tests and
 captures are conditional on a clear visual change, as specified below.

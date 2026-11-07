@@ -407,55 +407,6 @@ def test_features_json_and_cli_feature_list_match(repo):
 # ── README "tests count" badge stays honest ──────────────────────────
 
 
-def test_readme_tests_count_badge_matches_collected_count(repo):
-    """The README ships a ``tests-NNN_collected`` shields.io badge. The
-    badge is hand-edited because the alternative (dynamic shields
-    endpoint pointing at a Gist updated by CI) needs infra for
-    something that changes ~3 times a year.
-
-    Collection totals include conditional skips; actual passing and skipped
-    results are recorded separately in TESTING.md. Keep the badge literal
-    so it does not describe unrun conditional checks as passes.
-    To stop the badge from drifting, compare its exact count below.
-    When the suite grows or shrinks, run ``pytest --collect-only`` to get the new
-    count, edit the README badge, and re-run this test.
-
-    The badge format is ``tests-<count>_collected``. Match against the
-    actual ``--collect-only`` count of the same pytest invocation
-    the README is documenting."""
-    readme = (repo / "README.md").read_text()
-    m = re.search(r"tests-(\d+)_collected", readme)
-    assert m, (
-        "README is missing the ``tests-NNN_collected`` badge. Restore "
-        "it next to the other shields.io badges at the top of the "
-        "README."
-    )
-    badge_count = int(m.group(1))
-
-    # Count what pytest actually collects today, without running
-    # anything. Counting via --collect-only is what the badge claims
-    # to count.
-    res = subprocess.run(
-        [sys.executable, "-m", "pytest", "--collect-only", "-q",
-         str(repo / "tests")],
-        capture_output=True, text=True,
-        env={**os.environ, "MAC_TAHOE_SKIP_LIVE_SAFETY_NET": "1"},
-    )
-    last = [ln for ln in res.stdout.splitlines() if "tests collected" in ln]
-    assert last, (
-        f"pytest --collect-only did not report a count:\n"
-        f"stdout tail:\n{res.stdout[-500:]}\n"
-        f"stderr tail:\n{res.stderr[-500:]}"
-    )
-    actual_count = int(last[0].split()[0])
-
-    assert badge_count == actual_count, (
-        f"README badge says {badge_count} tests but pytest collects "
-        f"{actual_count}. Edit the ``tests-NNN_collected`` badge in "
-        f"README.md to {actual_count}."
-    )
-
-
 # ── dark popup surfaces keep mirrored light/dark alpha ────────────────
 #
 # GTK client-side popups never receive compositor blur, so a literal

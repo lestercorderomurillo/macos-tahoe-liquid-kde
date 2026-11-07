@@ -88,6 +88,7 @@ in rec {
   };
   apple-assets = pkgs.stdenvNoCC.mkDerivation {
     pname = "mac-tahoe-apple-assets";
+    nativeBuildInputs = [ pkgs.xz ];
     inherit version;
     src = lib.fileset.toSource {
       root = offline;
@@ -96,7 +97,8 @@ in rec {
     meta = meta // { license = lib.licenses.unfree; };
     installPhase = ''
       mkdir -p "$out/share/fonts" "$out/share/wallpapers" "$out/share/sounds"
-      cp -r fonts/. "$out/share/fonts/"
+      tar -xJf fonts/fonts.tar.xz -C "$out/share/fonts"
+      cp fonts/SF-Pro-Display-Regular.otf "$out/share/fonts/"
       cp -r wallpapers/. "$out/share/wallpapers/"
       cp -r sounds/. "$out/share/sounds/"
     '';

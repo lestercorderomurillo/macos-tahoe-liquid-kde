@@ -27,7 +27,7 @@ def run(branch, conclusion='success', *, sha=SHA, status='completed', id=1, even
     ([[run('main', status='in_progress'), run('dev')], [run('main'), run('dev')]], True),
     ([[]], False),
 ])
-def test_gate_requires_latest_success_on_both_branches(repo, responses, success):
+def test_gate_requires_latest_success_on_both_branches(repo, responses, success, branches=None):
     node = shutil.which('node')
     if not node:
         pytest.skip('Node.js required to execute the GitHub Actions gate')
@@ -45,12 +45,13 @@ const github = { rest: { actions: { async listWorkflowRuns(args) {
 }}}};
 process.env.CI_REPOSITORY = 'owner/repo';
 process.env.CI_SHA = '__COMMIT__';
+process.env.CI_BRANCHES = JSON.stringify(SELECTED_BRANCHES);
 const setTimeout = resolve => resolve();
 (async () => { SCRIPT })().then(() => console.log('success')).catch(error => {
   console.error(error.message);
   process.exitCode = 1;
 });
-'''.replace('RESPONSES', json.dumps(responses)).replace('__COMMIT__', SHA).replace('SCRIPT', script)
+'''.replace('RESPONSES', json.dumps(responses)).replace('__COMMIT__', SHA).replace('SCRIPT', script).replace('SELECTED_BRANCHES', json.dumps(branches or ['main', 'dev']))
     result = subprocess.run([node, '-e', harness], capture_output=True, text=True, timeout=10)
     assert (result.returncode == 0) == success, result.stdout + result.stderr
 
@@ -62,3 +63,17 @@ def test_release_waits_for_ci_before_publishing(repo):
     assert 'repository: ${{ github.repository }}' in text
     assert '    needs: ci\n' in text.split('  publish:', 1)[1]
     assert 'actions: read' in text
+
+
+@pytest.mark.parametrize('responses,success', [
+    ([[run('dev')]], True),
+    ([[run('main')]], False),
+    ([[run('dev', sha='b' * 40)]], False),
+    ([[run('dev', 'failure')]], False),
+    ([[run('dev', 'cancelled')]], False),
+    ([[run('dev', 'skipped')]], False),
+    ([[run('dev', event='pull_request')]], False),
+    ([[run('dev', status='in_progress')], [run('dev')]], True),
+])
+def test_main_promotion_reuses_only_successful_exact_dev_commit(repo, responses, success):
+    test_gate_requires_latest_success_on_both_branches(repo, responses, success, ['dev'])

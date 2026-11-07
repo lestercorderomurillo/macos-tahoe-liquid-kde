@@ -1,6 +1,9 @@
 # Fedora SDK and native build validation.
 FROM fedora:latest
 
+# Invalidate dependency layers weekly, independently of source edits.
+ARG SDK_EPOCH=local
+
 # Dep groups (do NOT inline comments inside the `\`-continued arg list
 # — bash treats `#` mid-command as a line comment and silently drops
 # every arg after it; missing KF6 / Plasma cmake configs then surface

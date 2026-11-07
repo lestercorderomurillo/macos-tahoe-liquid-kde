@@ -3,6 +3,7 @@
 Fully offline — no download phase."""
 
 from localization import tr
+from font_bundle import font_sources
 
 import filecmp
 import os
@@ -54,20 +55,20 @@ def install() -> None:
     re_: dict[str, int] = defaultdict(int)
     any_copied = False
 
-    for f in (*OFFLINE_DIR.glob("*.otf"), *OFFLINE_DIR.glob("*.ttf")):
-        target = DEST_DIR / f.name
-        existed = target.is_file()
-        try:
-            any_copied = _copy_font(f, target) or any_copied
-        except OSError:
-            fail(tr('{value1} (copy failed)', value1=f.name))
-            continue
-        grp = _group(f.name)
-        if existed:
-            reinstall(f.name); re_[grp] += 1
-        else:
-            ok(tr('{value1} (installed)', value1=f.name)); inst[grp] += 1
-
+    with font_sources(OFFLINE_DIR, DEST_DIR) as sources:
+        for f in sources:
+            target = DEST_DIR / f.name
+            existed = target.is_file()
+            try:
+                any_copied = _copy_font(f, target) or any_copied
+            except OSError:
+                fail(tr('{value1} (copy failed)', value1=f.name))
+                continue
+            grp = _group(f.name)
+            if existed:
+                reinstall(f.name); re_[grp] += 1
+            else:
+                ok(tr('{value1} (installed)', value1=f.name)); inst[grp] += 1
     for grp in ("SF Pro", "SF Mono", "Other"):
         if inst[grp] or re_[grp]:
             info(tr('{grp} — {value2} installed, {value3} reinstalled', grp=tr(grp), value2=inst[grp], value3=re_[grp]))
