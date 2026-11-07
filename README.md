@@ -85,12 +85,12 @@ The Tahoe desktop in light and dark mode.
 
 <p align="center">
   <a href="src/screenshots/showcase_light_4k-252c3236a9fd.png"><img src="src/screenshots/showcase_light_4k-252c3236a9fd.png" alt="Tahoe light desktop with Files focused" width="415"></a>
-  <a href="src/screenshots/desktop_about_light_4k-62fb6900379a.png"><img src="src/screenshots/desktop_about_light_4k-62fb6900379a.png" alt="Tahoe light desktop with About This Computer focused" width="415"></a>
+  <a href="src/screenshots/desktop_about_light_4k-df7f7fc1f078.png"><img src="src/screenshots/desktop_about_light_4k-df7f7fc1f078.png" alt="Tahoe light desktop with About This Computer focused" width="415"></a>
 </p>
 
 <p align="center">
   <a href="src/screenshots/showcase_dark_4k-63d101cc0dc1.png"><img src="src/screenshots/showcase_dark_4k-63d101cc0dc1.png" alt="Tahoe dark desktop with Files focused" width="415"></a>
-  <a href="src/screenshots/desktop_about_dark_4k-d7915b0273b6.png"><img src="src/screenshots/desktop_about_dark_4k-d7915b0273b6.png" alt="Tahoe dark desktop with About This Computer focused" width="415"></a>
+  <a href="src/screenshots/desktop_about_dark_4k-e9c5c3297b7d.png"><img src="src/screenshots/desktop_about_dark_4k-e9c5c3297b7d.png" alt="Tahoe dark desktop with About This Computer focused" width="415"></a>
 </p>
 
 <br>
@@ -145,8 +145,8 @@ System controls and global menus for compatible apps.
 Hardware, software and theme details in About This Computer.
 
 <p align="center">
-  <img src="src/screenshots/about_v4-40ee9965e2ac.png" alt="About This Computer in light mode" width="415">
-  <img src="src/screenshots/about_dark_v4-f1ef40ad3794.png" alt="About This Computer in dark mode" width="415">
+  <img src="src/screenshots/about_v4-10789c2f9fc4.png" alt="About This Computer in light mode" width="415">
+  <img src="src/screenshots/about_dark_v4-4eda8f6cfde4.png" alt="About This Computer in dark mode" width="415">
 </p>
 
 <br>

@@ -11,6 +11,8 @@ They cover selective recapture, preservation of original image provenance,
 light/dark/automatic previews and the three material choices. The popup fill
 checks also passed: light mode uses a slightly more transparent white fill,
 and dark mode uses a stronger black fill. Shader and gradient values are unchanged.
+Four targeted regression checks also passed for RC version reading, update
+ordering, the installed About version and selective version-frame capture.
 See the [preset gallery](GLASS_PRESETS.md) for every surface and fine-tuning
 value, with light/dark photographs. Release captures use the pinned Plasma
 6.8.1 VM; they do not establish new live qualification on other Plasma versions.
@@ -27,7 +29,7 @@ Scroll horizontally through the installation steps.
 
 <table>
 <tr>
-  <td align="center"><img src="src/screenshots/installer-welcome_dark_v4-ae72e7a7460d.png" alt="Welcome" width="500"><br>Welcome</td>
+  <td align="center"><img src="src/screenshots/installer-welcome_dark_v4-e67bcd41b245.png" alt="Welcome" width="500"><br>Welcome</td>
   <td align="center"><img src="src/screenshots/installer-appearance_dark_v4-cbd81ab8fef4.png" alt="Appearance" width="500"><br>Appearance</td>
   <td align="center"><img src="src/screenshots/installer-icons_dark_v4-7ea49971f78c.png" alt="Icons and color" width="500"><br>Icons and color</td>
   <td align="center"><img src="src/screenshots/installer-wallpaper_dark_v4-b23218dae540.png" alt="Wallpaper" width="500"><br>Wallpaper</td>
