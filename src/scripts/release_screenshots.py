@@ -209,6 +209,18 @@ def affected_frames(repo: Path, source: str, target: str) -> set[str]:
             if methods - allowed.keys():
                 return all_frames
             cases([allowed[key] for key in methods])
+        elif path == 'src/scripts/paths.py':
+            normalized = []
+            for ref in (source, target):
+                module = ast.parse(blob(repo, ref, path))
+                module.body = [node for node in module.body if not (
+                    isinstance(node, ast.FunctionDef) and node.name == 'read_version'
+                    or isinstance(node, ast.Import) and
+                    all(alias.name == 're' and alias.asname is None for alias in node.names))]
+                normalized.append(ast.dump(module, include_attributes=False))
+            if normalized[0] != normalized[1]:
+                return all_frames
+            cases(['installer-welcome', 'about'])
         elif path == 'src/scripts/installer_choices.py':
             normalized = []
             for ref in (source, target):

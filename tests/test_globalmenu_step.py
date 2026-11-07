@@ -158,7 +158,11 @@ def test_system_session_actions_use_qtdbus_not_distro_binary_names():
 
 
 def test_install_about_info_bakes_version(tmp_path, monkeypatch):
-    from paths import read_version
+    import paths
+
+    version = tmp_path / "VERSION"
+    version.write_text("0.63rc2\n")
+    monkeypatch.setattr(paths, "VERSION_FILE", version)
 
     dest = tmp_path / "bin/mac-tahoe-about-info"
     monkeypatch.setattr(globalmenu, "ABOUT_INFO_DEST", dest)
@@ -166,7 +170,7 @@ def test_install_about_info_bakes_version(tmp_path, monkeypatch):
 
     text = dest.read_text(encoding="utf-8")
     assert "@THEME_VERSION@" not in text
-    assert f'_BAKED_VERSION = "{read_version()}"' in text
+    assert '_BAKED_VERSION = "0.63rc2"' in text
     assert dest.stat().st_mode & 0o111, "helper must stay executable"
 
 

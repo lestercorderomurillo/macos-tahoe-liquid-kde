@@ -529,3 +529,17 @@ def test_scoped_choices_only_ignore_glass_selection(capture):
     path.write_text(path.read_text().replace('icons="regular"', 'icons="glass"'))
     other = commit(repo)
     assert shots.affected_frames(repo, after, other) == shots.expected_frames()
+
+
+def test_version_reader_only_invalidates_visible_version_frames(capture):
+    repo, ref, bundle, manifest = capture
+    path = repo / 'src/scripts/paths.py'
+    path.write_text('ROOT = "source"\ndef read_version():\n    return "0.0.0"\n')
+    before = commit(repo)
+    path.write_text('import re\nROOT = "source"\ndef read_version():\n    return "0.63rc2"\n')
+    after = commit(repo)
+    assert shots.affected_frames(repo, before, after) == {
+        f'{e}-{m}-{case}' for e in shots.EDITIONS for m in shots.MODES
+        for case in ('installer-welcome', 'about')}
+    path.write_text(path.read_text().replace('ROOT = "source"', 'ROOT = "other"'))
+    assert shots.affected_frames(repo, after, commit(repo)) == shots.expected_frames()
