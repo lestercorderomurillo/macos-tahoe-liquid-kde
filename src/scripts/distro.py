@@ -828,6 +828,20 @@ _PACKAGE_MAP: dict[str, dict[str, str]] = {
     },
     # Qt6SvgConfig.cmake — required by the bundled Kvantum Qt 6 fallback
     # used when a Debian-family repository still ships only the Qt 5 engine.
+    # Direct SVG QIcons need the runtime icon engine; Debian/Ubuntu split it
+    # from the library and -dev package when recommends are disabled.
+    "qt6-svg-icons": {
+        "arch":     "qt6-svg",
+        "debian":   "qt6-svg-plugins",
+        "ubuntu":   "qt6-svg-plugins",
+        "neon":     "qt6-svg",
+        "fedora":   "qt6-qtsvg",
+        "rhel":     "qt6-qtsvg",
+        "centos":   "qt6-qtsvg",
+        "opensuse": "libQt6Svg6",
+        "alpine":   "qt6-qtsvg",
+        "void":     "qt6-svg",
+    },
     "qt6-svg-cmake": {
         "arch":     "qt6-svg",
         "debian":   "qt6-svg-dev",

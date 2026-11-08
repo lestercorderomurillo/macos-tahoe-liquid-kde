@@ -96,3 +96,16 @@ def test_dock_artwork_is_self_contained_and_matches_bundled_sources():
     assert 'mainItem.launcherUrl = Qt.binding(() => model.LauncherUrlWithoutIcon)' in task
     assert 'task.dockRoleLabel || model.GenericName' in task
     assert 'Kirigami.Theme.backgroundColor.hslLightness' in task
+
+
+@pytest.mark.parametrize('family,expected', [
+    ('arch','qt6-svg'), ('debian','qt6-svg-plugins'), ('ubuntu','qt6-svg-plugins'),
+    ('neon','qt6-svg'), ('fedora','qt6-qtsvg'), ('opensuse','libQt6Svg6'),
+])
+def test_svg_icon_engine_dependency_respects_package_layout(monkeypatch, family, expected):
+    import distro
+    import steps.plasmoids as plasmoids
+    monkeypatch.setattr(distro, 'current_distro', lambda: family)
+    monkeypatch.setattr(distro, '_compatibility_parents', lambda: [])
+    assert 'qt6-svg-icons' in plasmoids.deps()
+    assert distro.package_for('qt6-svg-icons') == expected
