@@ -105,7 +105,7 @@ App search, favorites and categories with blurred glass and edge refraction. [Ma
 
 ### Acrylic Glass Tahoe Dock
 
-Optional macOS-style Dock icons, available in **Desktop → Dock apps**. Your applications and pin order stay unchanged.
+Express applies the pictured Dock preset and icons. Firefox keeps its own icon; your pinned apps keep their order.
 
 Glass refraction, hover zoom, notification badges and auto-hide.
 
@@ -287,13 +287,11 @@ The default option is always first and selected. Opening the other edition start
 with that repository's defaults, including its wallpaper and launcher. Choosing
 **Keep my icons**, **Keep my wallpaper** or **Keep my fonts** preserves those choices.
 
-**Reset Dock and panel customization** is checked by default. Reinstalling
-rebuilds the selected top bar and Dock while carrying pinned apps across.
-The base Dock selects installed equivalents for each app category, even without
-a layout reset. Missing categories stay pending; later reinstalls respect apps
-you remove after their category was filled.
-Uncheck it to preserve the current layout, sizes, autohide and widgets. A first
-installation creates the selected layout automatically.
+**Reset Dock and panel customization** restores the pictured preset and icons,
+keeping your pinned apps in order. The first update to 0.64 applies this Dock
+migration once, even without reset. Later reinstalls without reset preserve
+removed pins and custom icons. Only installed apps are added; Firefox keeps
+its own identity and icon.
 
 The custom installer's Desktop step offers optional **Dock apps**. Installed
 native and Flatpak equivalents are reused; missing categories can be selected

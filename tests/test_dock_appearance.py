@@ -44,12 +44,12 @@ def test_resolves_all_installed_equivalents_and_preserves_unknown_apps():
                                                         ('macos', False, True), ('native', True, False)])
 @pytest.mark.parametrize('rebuild', [False, True])
 def test_appearance_preserves_pins_and_survives_rebuild(monkeypatch, appearance, initial, expected, rebuild):
-    monkeypatch.setenv('MTTKDE_WIZARD_OPTIONS', json.dumps({'dock_appearance': appearance}))
+    monkeypatch.setenv('MTTKDE_WIZARD_OPTIONS', json.dumps({'dock_appearance': appearance, 'reset_layout': False}))
     monkeypatch.setattr(layout, '_discover_is_installed', lambda: True)
     pins = ['applications:my-app.desktop', 'preferred://browser']
-    script = 'var installed = [];\n' + HARNESS + existing_dock(pins, revision=2)
+    script = 'var installed = [];\n' + HARNESS + existing_dock(pins, revision=3)
     script += 'task.writeConfig("macOSDockIcons", ' + json.dumps(initial) + ');\n'
-    script += existing_dock(pins, revision=2, screen=1)
+    script += existing_dock(pins, revision=3, screen=1)
     script += 'task.writeConfig("macOSDockIcons", ' + json.dumps(initial) + ');\n'
     if rebuild:
         script += layout._layout_script_with_launchers(layout.LAYOUT_SCRIPT, pins, layout.MAC_TASKS_ID)
@@ -65,9 +65,9 @@ JSON.stringify(created.filter(p => p.location === "bottom").map(p =>
         assert panel == [{'pins': pins, 'icons': expected}]
 
 
-def test_appearance_default_does_not_consent_to_apps_or_replace_icons(monkeypatch):
+def test_appearance_default_does_not_consent_to_apps(monkeypatch):
     choices = installer_choices.validate({})
-    assert choices['dock_appearance'] == 'keep'
+    assert choices['dock_appearance'] == 'auto'
     assert choices['dock_apps'] == []
     assert not installer_choices.features({'dock_appearance':'macos'}, {}, existing_install=True)['apps']
     with pytest.raises(ValueError):
@@ -120,3 +120,34 @@ def test_dock_mode_uses_desktop_mode_even_when_material_luminance_is_inverted():
     assert result == [False, True, False, True, False]
     task = (PACKAGE / 'contents/ui/Task.qml').read_text()
     assert 'tasksRoot.iconThemeWatcher.plasmaThemeName' in task
+
+
+@pytest.mark.parametrize('revision', [0, 1, 2, 3])
+@pytest.mark.parametrize('reset', [False, True])
+def test_064_defaults_once_or_explicit_reset(monkeypatch, revision, reset):
+    monkeypatch.setenv('MTTKDE_WIZARD_OPTIONS', json.dumps({'reset_layout': reset}))
+    pins = ['applications:custom.desktop', 'preferred://browser']
+    script = 'var installed = ["firefox.desktop", "org.kde.marknote.desktop"];\n' + HARNESS
+    script += existing_dock(pins, revision=revision)
+    script += 'task.writeConfig("macOSDockIcons", false);'
+    script += layout._dock_migration_script()
+    script += 'JSON.stringify({config:task.config, height:dock.height, hiding:dock.hiding});'
+    observed = evaluate(script)
+    result = observed['config']
+    apply = revision < 3 or reset
+    if apply:
+        assert observed['height'] == 68 and observed['hiding'] == 'autohide'
+    else:
+        assert 'height' not in observed
+    assert result['launchers'] == pins + (['applications:org.kde.marknote.desktop'] if apply else [])
+    assert result['macOSDockIcons'] is apply
+    assert result['dockPresetRevision'] == 3
+
+
+def test_browser_keeps_real_app_artwork_and_label():
+    js = (PACKAGE / 'contents/ui/DockRoles.js').read_text().replace('.pragma library', '')
+    urls = ['applications:' + app for app in dock_apps.CANDIDATES['browser']] + ['preferred://browser']
+    result = evaluate(js + '\nJSON.stringify(' + json.dumps(urls) + '.map(url => appearanceRoleFor(url, "")));')
+    assert result == [''] * len(urls)
+    task = (PACKAGE / 'contents/ui/Task.qml').read_text()
+    assert 'DockRoles.appearanceRoleFor(' in task

@@ -1,4 +1,4 @@
-// Add the base applications once per Dock, preserving user pins and order.
+// Apply the 0.64 defaults once per Dock, or on explicit reset, preserving pin order.
 (function () {
     var dockApplications = [
         ["org.kde.dolphin.desktop", "org.gnome.Nautilus.desktop", "thunar.desktop", "pcmanfm-qt.desktop"],
@@ -21,22 +21,32 @@
             var tasks = ps[p].widgetById(ids[w]);
             if (!tasks || tasks.type !== "org.kde.mac.tahoe.liquid.icontasks") continue;
             tasks.currentConfigGroup = ["General"];
-            if (typeof mttkdeDockAppearance !== "undefined" && mttkdeDockAppearance !== "keep") {
+            var revision = Number(tasks.readConfig("dockPresetRevision", 0));
+            var applyDefaults = revision < 3
+                || (typeof mttkdeResetDock !== "undefined" && mttkdeResetDock);
+            if (applyDefaults) {
+                ps[p].location = "bottom";
+                ps[p].alignment = "center";
+                ps[p].lengthMode = "fit";
+                ps[p].floating = true;
+                ps[p].hiding = "autohide";
+                ps[p].height = 68;
+            }
+            if (applyDefaults && (typeof mttkdeDockAppearance === "undefined" || mttkdeDockAppearance === "auto")) {
+                tasks.writeConfig("macOSDockIcons", true);
+            }
+            if (typeof mttkdeDockAppearance !== "undefined" && mttkdeDockAppearance !== "keep" && mttkdeDockAppearance !== "auto") {
                 tasks.writeConfig("macOSDockIcons", mttkdeDockAppearance === "macos");
             }
-            var revision = Number(tasks.readConfig("dockPresetRevision", 0));
             var resolved = tasks.readConfig("dockPresetCategories", []);
             if (typeof resolved === "string") resolved = resolved ? resolved.split(",") : [];
-            // Revision 1 already offered these candidates. Preserve deliberate
-            // removals; newly supported equivalents can still fill empty roles.
-            var legacyCounts = [1, 4, 3, 1, 1, 1, 1, 1, 1, 1];
             var pins = tasks.readConfig("launchers", []);
             if (typeof pins === "string") pins = pins ? pins.split(",") : [];
             for (var app = 0; app < dockApplications.length; app++) {
                 var category = dockCategories[app];
                 var requested = typeof mttkdeRequestedDockApps !== "undefined"
                     && mttkdeRequestedDockApps.indexOf(category) !== -1;
-                if (resolved.indexOf(category) !== -1 && !requested) continue;
+                if (!applyDefaults && !requested) continue;
                 var candidates = dockApplications[app];
                 var present = false;
                 for (var i = 0; i < candidates.length; i++) {
@@ -48,11 +58,6 @@
                 if (app === 0 && pins.indexOf("preferred://filemanager") !== -1) present = true;
                 if (app === 1 && pins.indexOf("preferred://browser") !== -1) present = true;
                 if (app === 2 && pins.indexOf("preferred://mailer") !== -1) present = true;
-                if (revision === 1 && !present && !requested) {
-                    for (var i = 0; i < legacyCounts[app]; i++) {
-                        if (applicationExists(candidates[i])) present = true;
-                    }
-                }
                 if (present) {
                     if (resolved.indexOf(category) === -1) resolved.push(category);
                     continue;
@@ -68,7 +73,7 @@
             }
             tasks.writeConfig("launchers", pins);
             tasks.writeConfig("dockPresetCategories", resolved);
-            tasks.writeConfig("dockPresetRevision", 2);
+            tasks.writeConfig("dockPresetRevision", Math.max(revision, 3));
         }
     }
 })();

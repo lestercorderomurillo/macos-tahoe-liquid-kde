@@ -99,3 +99,9 @@ function darkMode(themeName, backgroundLightness) {
     if (themeName === "MacTahoeLiquidKde-Light") return false;
     return backgroundLightness < 0.5;
 }
+
+// Browsers retain their own identity and artwork, including Firefox.
+function appearanceRoleFor(launcherUrl, appId) {
+    var role = roleFor(launcherUrl, appId);
+    return role === "browser" ? "" : role;
+}

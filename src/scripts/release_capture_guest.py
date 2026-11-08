@@ -144,9 +144,54 @@ def setup(repo, profile, edition, scope=None):
     for name in profile['documents']:
         (folder / name).mkdir(exist_ok=True)
     run('sudo', 'date', '--set', profile['clock'])
-    return {'packages': packages, 'kwin': run('kwin_wayland', '--version'),
+    return {'dock_migration': verify_dock_defaults(repo) if scope == 'dock' else None,
+            'packages': packages, 'kwin': run('kwin_wayland', '--version'),
             'plasma': run('plasmashell', '--version'),
             'compositor': run('qdbus6', 'org.kde.KWin', '/KWin', 'org.kde.KWin.supportInformation')}
+
+
+
+def verify_dock_defaults(repo):
+    """Exercise legacy updates and repeat installs in the disposable guest only."""
+    from steps.layout import _dock_migration_script
+    saved_options = os.environ.get('MTTKDE_WIZARD_OPTIONS')
+    evidence = []
+    try:
+        for revision in (0, 1, 2):
+            os.environ['MTTKDE_WIZARD_OPTIONS'] = json.dumps({'reset_layout': False})
+            migration = _dock_migration_script()
+            script = 'var tasks; panels().forEach(p=>p.widgets().forEach(w=>{if(w.type === "org.kde.mac.tahoe.liquid.icontasks") tasks=w;}));'
+            script += 'tasks.currentConfigGroup=["General"]; var saved=tasks.readConfig("launchers", []);'
+            script += 'tasks.writeConfig("launchers", ["applications:systemsettings.desktop", "applications:firefox.desktop"]);'
+            script += 'tasks.writeConfig("dockPresetRevision", ' + str(revision) + '); tasks.writeConfig("macOSDockIcons", false);'
+            script += migration
+            script += 'var first=tasks.readConfig("launchers"); var icons=tasks.readConfig("macOSDockIcons");'
+            script += 'tasks.writeConfig("launchers", ["applications:firefox.desktop"]); tasks.writeConfig("macOSDockIcons", false);'
+            script += migration
+            script += 'var second=tasks.readConfig("launchers"); var kept=tasks.readConfig("macOSDockIcons");'
+            os.environ['MTTKDE_WIZARD_OPTIONS'] = json.dumps({'reset_layout': True})
+            script += _dock_migration_script()
+            script += 'var reset=tasks.readConfig("launchers"); var restored=tasks.readConfig("macOSDockIcons");'
+            script += 'var revision=tasks.readConfig("dockPresetRevision"); tasks.writeConfig("launchers", saved);'
+            script += 'print(JSON.stringify({first:first, icons:icons, second:second, kept:kept, reset:reset, restored:restored, revision:revision}));'
+            result = json.loads(plasma(script))
+            pins = lambda value: value.split(',') if isinstance(value, str) else value
+            if (pins(result['first'])[:2] != ['applications:systemsettings.desktop', 'applications:firefox.desktop']
+                    or len(pins(result['first'])) != 10
+                    or result['icons'] not in (True, 'true')
+                    or pins(result['second']) != ['applications:firefox.desktop']
+                    or result['kept'] not in (False, 'false')
+                    or pins(result['reset'])[0] != 'applications:firefox.desktop'
+                    or len(pins(result['reset'])) != 10
+                    or result['restored'] not in (True, 'true') or int(result['revision']) != 3):
+                raise RuntimeError(f'Dock migration {revision} failed: {result}')
+            evidence.append(dict(previous_revision=revision, **result))
+    finally:
+        if saved_options is None:
+            os.environ.pop('MTTKDE_WIZARD_OPTIONS', None)
+        else:
+            os.environ['MTTKDE_WIZARD_OPTIONS'] = saved_options
+    return evidence
 
 
 def mode(repo, requested, scope=None):

@@ -191,8 +191,9 @@ def _dock_migration_script() -> str:
     from installer_choices import selected
     choices = selected()
     requested = choices.get("dock_apps", []) if choices.get("dock", True) else []
-    appearance = choices.get("dock_appearance", "keep") if choices.get("dock", True) else "keep"
-    return ("var mttkdeDockAppearance = " + json.dumps(appearance) + ";\n"
+    appearance = choices.get("dock_appearance", "auto") if choices.get("dock", True) else "keep"
+    return ("var mttkdeResetDock = " + json.dumps(choices.get("reset_layout", False)) + ";\n"
+            + "var mttkdeDockAppearance = " + json.dumps(appearance) + ";\n"
             + "var mttkdeRequestedDockApps = " + json.dumps(requested) + ";\n"
             + DOCK_MIGRATION.read_text())
 
@@ -420,14 +421,13 @@ def _reset_plasmashellrc() -> bool:
 def install() -> None:
     # A failed rebuild must leave is_installed() false so cli.py retries after
     # Plasma restarts instead of trusting a marker from the previous run.
-    existing_layout = _layout_marker().is_file() or _layout_has_any_theme_widget()
     _clear_layout_marker()
     remember_installed_edition(HOME, DATA_HOME / "plasma/plasmoids" / LAUNCHER_ID)
     _ensure_panel_colorizer()
     if not LAYOUT_SCRIPT.is_file():
         warn(tr('Layout script not found — skipping'))
         return
-    pins = _capture_pinned_launchers() if existing_layout else []
+    pins = _capture_pinned_launchers()
     applied = _evaluate_layout_with_launchers(
         LAYOUT_SCRIPT, pins, MAC_TASKS_ID,
     )

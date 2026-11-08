@@ -945,7 +945,7 @@ class InstallerWindow(OpaqueSurface):
         body.addWidget(self.label("Dock appearance"))
         appearance = QComboBox()
         appearance.setObjectName("dock-appearance")
-        for key, label in (("keep", "Keep current Dock icons"), ("macos", "macOS-style Dock icons"), ("native", "Application icons")):
+        for key, label in (("auto", "Automatic"), ("keep", "Keep current Dock icons"), ("macos", "macOS-style Dock icons"), ("native", "Application icons")):
             appearance.addItem(self.t(label), key)
         appearance.setCurrentIndex(appearance.findData(choices["dock_appearance"]))
         appearance.setEnabled(choices["dock"])
@@ -1160,7 +1160,7 @@ class InstallerWindow(OpaqueSurface):
             ("wallpaper", "Background", value("wallpaper"), "wallpaper"),
             ("launcher", "Launcher", self.t("Keep") if keep_layout else value("launcher"), "launcher"),
             ("panel", "Desktop", desktop or self.t("Keep"), "layout"),
-            ("dock_apps", "Dock apps", self.dock_app_summary() + (" · " + self.t("macOS-style Dock icons" if c["dock_appearance"] == "macos" else "Application icons") if c["dock"] and c["dock_appearance"] != "keep" else ""), "layout"),
+            ("dock_apps", "Dock apps", self.dock_app_summary() + (" · " + self.t("macOS-style Dock icons" if c["dock_appearance"] == "macos" else "Application icons") if c["dock"] and c["dock_appearance"] not in ("auto", "keep") else ""), "layout"),
             ("acrylic_glass", "Effects", effects or self.t("Disabled"), "effects"),
             ("window_controls", "Window controls", value("window_controls"), "window_controls"),
             ("shadows", "Window shadows", value("shadows"), "shadows"),

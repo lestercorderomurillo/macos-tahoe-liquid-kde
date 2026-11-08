@@ -232,15 +232,12 @@ def capture(repo: Path, ref: str, image: Path, output: Path, reuse: Path | None 
                                 if case == 'dock':
                                     state = vm.action('plasma', 'var states=[]; panels().forEach(p=>p.widgets().forEach(w=>{'
                                         'if(w.type.includes("icontasks")){w.currentConfigGroup=["General"];'
-                                        'w.writeConfig("macOSDockIcons",true);states.push(w.readConfig("macOSDockIcons"));}}));'
+                                        'states.push(w.readConfig("macOSDockIcons"));}}));'
                                         'print(JSON.stringify(states));')
-                                    require(json.loads(state) in ([True], ['true']), 'Dock artwork option did not persist')
+                                    require(json.loads(state) in ([True], ['true']), 'Installer did not apply default Dock artwork')
                                 record = vm.action('capture', edition, mode, case)
                                 if case == 'dock':
                                     record['dock_appearance'] = 'macos'
-                                    vm.action('plasma', 'panels().forEach(p=>p.widgets().forEach(w=>{'
-                                        'if(w.type.includes("icontasks")){w.currentConfigGroup=["General"];'
-                                        'w.writeConfig("macOSDockIcons",false);}}));')
                                 name = f'{edition}-{mode}-{case}'
                                 vm.get('/home/tester/release-capture/frame.png', output / 'frames' / (name + '.png'))
                                 manifest['frames'][name] = record

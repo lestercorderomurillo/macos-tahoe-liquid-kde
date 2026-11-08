@@ -373,25 +373,55 @@ DOCK_APPEARANCE_CAPTURE_DEPENDENCIES = {'src/installer/wizard_translations.py': 
                                     '1f395dbecb61139c20c17febead2ca09765222cb')}
 
 
+# Reviewed 0.64 transition: Dock migration and browser artwork only. The optional
+# dialog gains Automatic; it is closed in retained installer photographs and the
+# default summary text is unchanged. Guest additions validate only Dock state.
+# Exact blob pairs keep unrelated future changes outside this approval.
+DOCK_064_BASE = 'cc15011e6ee2a52cf0700b3e197bf35829c57d11'
+DOCK_064_CAPTURE_DEPENDENCIES = {'src/installer/wizard_window.py': ('e493c1ba88d137dd61bd95f1ca644a1ab1a8efdd',
+                                    '768f573d3ef30678bf13ad61d65ef1b038e7dae3'),
+ 'src/offline/layouts/migrate-dock-preset.js': ('c0cecfee4556766e7e970f6e7d791cc02c9dd294',
+                                                '2676e87101d2048c748d322b662c6adcd55e918c'),
+ 'src/offline/plasmoids/org.kde.mac.tahoe.liquid.taskmanager/contents/ui/DockRoles.js': ('76edd1ff8fc688397f00497814b3d7b61fc18e50',
+                                                                                         'a55104bc79ddc158473cbe473d2f212885f61d9d'),
+ 'src/offline/plasmoids/org.kde.mac.tahoe.liquid.taskmanager/contents/ui/Task.qml': ('ce0a759e19909c3598369bb6edab52fb5bb5819b',
+                                                                                     'ba054ddc950789e55049bb25326803cedb5ee30d'),
+ 'src/scripts/installer_choices.py': ('ac674a27ba18d5911c7628b0eb222d30f53f6c68',
+                                      'eaf94b21f84d209321a29652ad5e91594cfbed48'),
+ 'src/scripts/release_capture_guest.py': ('7c55555e01043423db7aba23914f2d335f09811e',
+                                          '51f36dbf29ba4a82b0e7b85f82b1ec0c7f704064'),
+ 'src/scripts/steps/layout.py': ('7900db224cd5c70ba4b9e5d149184f51c01cd72a',
+                                 '034c82fbc6b86f76c9cd24e9c849418a3f2400dd')}
+
+
 def affected_frames(repo: Path, source: str, target: str) -> set[str]:
     """Conservative dependencies: unknown changes invalidate every frame."""
     all_frames = expected_frames()
     if visual_tree(repo, source) == visual_tree(repo, target):
         return set()
     # Compose reviewed transitions without rewriting historical frame origins.
-    base = DOCK_APPEARANCE_BASE
-    if source != base and target != base and all(
-        subprocess.run(['git', '-C', str(repo), 'merge-base', '--is-ancestor', a, b],
-                       stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL).returncode == 0
-        for a, b in ((source, base), (base, target))
-    ):
-        return affected_frames(repo, source, base) | affected_frames(repo, base, target)
+    for base in (DOCK_064_BASE, DOCK_APPEARANCE_BASE):
+        if source != base and target != base and all(
+            subprocess.run(['git', '-C', str(repo), 'merge-base', '--is-ancestor', a, b],
+                           stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL).returncode == 0
+            for a, b in ((source, base), (base, target))
+        ):
+            return affected_frames(repo, source, base) | affected_frames(repo, base, target)
     changed = set(git(repo, 'diff', '--name-only', source, target).splitlines())
     ignored = set()
     affected = set()
     def cases(names, editions=EDITIONS):
         affected.update(f'{e}-{m}-{c}' for e in editions for m in MODES for c in names)
     for path in changed:
+        dock_dependency = DOCK_064_CAPTURE_DEPENDENCIES.get(path)
+        if dock_dependency:
+            def dock_object(ref):
+                entry = git(repo, 'ls-tree', ref, '--', path)
+                return entry.split()[2] if entry else None
+            if (dock_object(source), dock_object(target)) == dock_dependency:
+                cases(['dock'])
+                ignored.add(path)
+                continue
         appearance_dependency = DOCK_APPEARANCE_CAPTURE_DEPENDENCIES.get(path)
         if appearance_dependency:
             def appearance_object(ref):

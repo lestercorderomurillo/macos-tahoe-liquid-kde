@@ -167,7 +167,7 @@ def test_migration_keeps_aliases_and_only_adds_installed_apps():
 @pytest.mark.parametrize('pins', [[], ['applications:custom.desktop']])
 def test_rebuild_retains_completed_migration(monkeypatch, pins):
     monkeypatch.setattr(layout, '_layout_has_any_theme_widget', lambda: True)
-    script = existing_dock(pins, revision=1)
+    script = existing_dock(pins, revision=3)
     script += layout._layout_script_with_launchers(layout.LAYOUT_SCRIPT, pins, layout.MAC_TASKS_ID)
     docks = execute(script, APPS)
     assert next(w['pins'] for w in docks[0] if w['type'] == layout.MAC_TASKS_ID) == pins
@@ -190,7 +190,7 @@ def test_migration_honors_disabled_dock(monkeypatch):
     assert calls == []
 
 
-def test_fresh_install_uses_base_instead_of_stock_pins(monkeypatch):
+def test_fresh_install_preserves_existing_user_pins(monkeypatch):
     monkeypatch.setattr(layout, '_layout_marker', lambda: type('Marker', (), {'is_file': lambda self: False})())
     monkeypatch.setattr(layout, '_layout_has_any_theme_widget', lambda: False)
     monkeypatch.setattr(layout, '_clear_layout_marker', lambda: None)
@@ -200,7 +200,7 @@ def test_fresh_install_uses_base_instead_of_stock_pins(monkeypatch):
     calls = []
     monkeypatch.setattr(layout, '_evaluate_layout_with_launchers', lambda path, pins, widget: calls.append(pins) or False)
     layout.install()
-    assert calls == [[]]
+    assert calls == [['applications:stock.desktop']]
 
 
 @pytest.mark.parametrize('relative', LAYOUTS)
@@ -226,13 +226,12 @@ def test_revision_one_recovers_photos_and_video_from_host_equivalents():
         'applications:org.gnome.Loupe.desktop', 'applications:org.gnome.Showtime.desktop']
 
 
-def test_missing_category_can_be_filled_later_without_readding_removed_apps():
+def test_completed_migration_does_not_add_apps_on_later_reinstall():
     migration = layout.DOCK_MIGRATION.read_text()
     script = existing_dock([]) + migration
     script += 'task.writeConfig("launchers", []); installed.push("org.gnome.Showtime.desktop");'
     script += migration
-    assert execute(script, ['org.gnome.Loupe.desktop'])[0][0]['pins'] == [
-        'applications:org.gnome.Showtime.desktop']
+    assert execute(script, ['org.gnome.Loupe.desktop'])[0][0]['pins'] == []
 
 
 def test_existing_equivalent_prevents_a_second_app_for_same_role():
@@ -243,14 +242,14 @@ def test_existing_equivalent_prevents_a_second_app_for_same_role():
     assert execute(script, installed)[0][0]['pins'] == pins
 
 
-def test_rebuild_preserves_resolved_categories_and_pending_roles(monkeypatch):
+def test_first_064_rebuild_fills_previously_resolved_categories(monkeypatch):
     monkeypatch.setattr(layout, '_layout_has_any_theme_widget', lambda: True)
     script = existing_dock([], revision=2)
     script += 'task.writeConfig("dockPresetCategories", "photos");'
     script += layout._layout_script_with_launchers(layout.LAYOUT_SCRIPT, [], layout.MAC_TASKS_ID)
     docks = execute(script, ['org.gnome.Loupe.desktop', 'org.gnome.Showtime.desktop'])
     assert next(w['pins'] for w in docks[0] if w['type'] == layout.MAC_TASKS_ID) == [
-        'applications:org.gnome.Showtime.desktop']
+        'applications:org.gnome.Loupe.desktop', 'applications:org.gnome.Showtime.desktop']
 
 
 def test_csv_pins_and_category_state_are_supported():
@@ -259,7 +258,7 @@ def test_csv_pins_and_category_state_are_supported():
     script += 'task.writeConfig("dockPresetCategories", "photos,music");'
     script += layout.DOCK_MIGRATION.read_text()
     assert execute(script, ['org.gnome.Loupe.desktop', 'org.gnome.Showtime.desktop'])[0][0]['pins'] == [
-        'applications:custom.desktop', 'applications:org.gnome.Showtime.desktop']
+        'applications:custom.desktop', 'applications:org.gnome.Loupe.desktop', 'applications:org.gnome.Showtime.desktop']
 
 
 def test_requested_install_fills_legacy_revision_one_dock(monkeypatch):

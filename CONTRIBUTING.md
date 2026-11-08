@@ -601,3 +601,19 @@ choice, including during a layout reset. **Application icons** turns the option
 off. It can also be toggled in the Dock widget's Appearance settings. Pins, their
 order and the global icon theme are preserved. The bundled artwork has light and
 dark variants and does not require changing the desktop icon theme.
+
+
+### Dock migration in 0.64
+
+Express uses automatic Dock appearance. Each Dock records `dockPresetRevision=3`
+after applying the preset, installed application equivalents and macOS-style
+role icons. Revisions 0, 1 and 2 migrate once, regardless of the release they
+came from (including 0.61.0). The migration retains existing launchers in order
+and appends missing installed roles; it never installs applications. Firefox
+and other browsers retain their real application artwork and name.
+
+An explicit layout reset reapplies the preset. Without reset, revision 3 keeps
+removed pins and icon choices; explicit optional app requests can still add
+the requested roles. `keep`, `native` and `macos` are explicit icon overrides;
+`auto` applies the pictured icons only on initial migration or reset. Rebuilding
+retains the revision per screen. Failed script execution can retry.
