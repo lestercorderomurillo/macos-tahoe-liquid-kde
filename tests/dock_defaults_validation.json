@@ -60,5 +60,11 @@
     "No native ABI or package dependency changes in the installer. No new distro qualification run.",
     "Eight unrelated native launcher popup cases could not open a private D-Bus socket in the host sandbox; not counted as passing. Required CI remains the release gate.",
     "Nix asset unit checks passed; no Nix desktop qualification is claimed."
-  ]
+  ],
+  "official_capture": {
+    "source_commit": "42d8b249372d66dfa62fb71883df8e6655fb4b13",
+    "manifest_sha256": "33d5c6bd4e816ede0f7f5dcceea4d307943b4479dd8db7820aad09a3e3026a84",
+    "result": "106 frames captured and individually reviewed before the user requested narrower validation; reused without recapture for publication",
+    "provenance": "src/screenshots/release-capture.json"
+  }
 }

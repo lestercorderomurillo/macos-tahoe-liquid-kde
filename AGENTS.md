@@ -730,16 +730,35 @@ the published Tahoe release commit and verified archive SHA-256 before
 publishing the corresponding Golden Gate release. Each README
 shows its own default launcher preset and wallpaper in light and dark mode.
 
-Run visual tests and capture documentation screenshots only when the actual
-change clearly affects visible output: layout, colors, materials, typography,
-icons, wallpaper, controls or rendered UI content. A release, version bump,
-updater fix, translation of console-only messages, documentation edit or CI
-change alone does not justify visual tests or new captures. State the concrete
-visual impact before starting a VM. Reuse reviewed screenshots and their
-original provenance when visual inputs are unchanged; never relabel old images
-as newly captured. Run focused visual checks only for affected components,
-editions and modes, and do not repeat an unchanged passing check. A failed or
-rejected new frame cannot be filled with an older image.
+Visual validation and documentation photography are separate tasks. A visible
+change may justify a focused visual check; it does not require refreshing the
+documentation gallery. New documentation captures are optional unless the user
+requests them or an affected published image would otherwise misrepresent the
+changed behavior. A request to "show me" authorizes a focused preview of the
+changed component, not a full release capture run.
+
+Before starting a VM, name the changed component, the visible difference and
+the exact frames needed. For a Dock application-list or icon-alias change,
+check the affected Dock in the relevant editions and appearance modes. Do not
+recapture installer pages, window materials, Files, About This Computer, boot
+or shutdown unless the diff changes their behavior or the user requests a
+gallery refresh. The Dock appearing incidentally in another screenshot does
+not by itself require replacing that screenshot.
+
+Reuse reviewed images with their original source commit, hashes and provenance;
+never relabel them as newly captured. A new version, source commit, VM checksum,
+profile change or capture-tool limitation is not evidence that every component
+changed. Do not modify the global capture profile or rebuild the full gallery
+merely to obtain a focused preview. If the publication tooling cannot preserve
+unaffected images, report that limitation and keep the preview separate; do not
+expand the capture scope to satisfy the tool. A rejected new frame must not be
+replaced by an older image presented as fresh evidence.
+
+Once the planned affected checks pass, stop. Do not repeat them for documentation,
+version or release bookkeeping. A user instruction to stop testing cancels
+further test, VM, capture and manual CI launches; preserve completed evidence
+and report any remaining publication gate without trying to satisfy it through
+another test route.
 
 Use `./release-screenshots` and the checksum-pinned disposable VM for any new
 publication captures. Review each new image, preserve content-hashed filenames,
@@ -1078,7 +1097,7 @@ that scope when a failure or shared dependency reveals another affected path.
 | --- | --- |
 | Wrapper, downloader or source selection | Wrapper suite, including local-source staging, release fallback and checksum/version handling where affected. |
 | Tahoe implementation | Component regressions and affected installer lifecycle paths in Tahoe; exercise the prepared Golden Gate source when edition staging can change the result. |
-| Defaults, materials or appearance | Affected editions, light/dark transitions, saved choices and relevant visual checks in a disposable VM. |
+| Defaults, materials or appearance | Target the changed behavior, affected editions and saved choices. Use a disposable VM only for rendering or transition claims that need visual evidence; scope it to the changed component. Documentation photography follows the optional capture policy. |
 | Native backend, ABI or distro packages | Build against the affected SDKs and test the changed backend on representative distros with distinct relevant SDK/package layouts. Record build, load and behavior results separately. |
 | Documentation or agent instructions only | Review consistency, references and `git diff --check`; no manual pytest, native builds or VM runs. |
 
@@ -1120,7 +1139,7 @@ may verify the latest successful `dev` push run for that exact SHA instead of
 repeating it; missing, failed or cancelled evidence blocks promotion. Never weaken workflows,
 skip required checks or treat missing,
 cancelled or failed checks as success to shorten a task. Screenshot provenance verification remains mandatory; new visual tests and
-captures are conditional on a clear visual change, as specified below.
+captures follow the component-scoped, optional documentation capture policy.
 
 Documentation-only delivery does not require a version bump, pin update,
 release or new screenshots. Automatic push CI may still run; report its status

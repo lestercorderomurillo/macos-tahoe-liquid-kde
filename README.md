@@ -84,13 +84,13 @@ The desktop and its apps in light and dark mode.
 The Tahoe desktop in light and dark mode.
 
 <p align="center">
-  <a href="src/screenshots/showcase_light_2k-5479af03cf16.webp"><img src="src/screenshots/showcase_light_2k-5479af03cf16.webp" alt="Tahoe light desktop with Files focused" width="415"></a>
-  <a href="src/screenshots/desktop_about_light_2k-89450b407893.webp"><img src="src/screenshots/desktop_about_light_2k-89450b407893.webp" alt="Tahoe light desktop with About This Computer focused" width="415"></a>
+  <a href="src/screenshots/showcase_light_2k-9b2ab1370590.webp"><img src="src/screenshots/showcase_light_2k-9b2ab1370590.webp" alt="Tahoe light desktop with Files focused" width="415"></a>
+  <a href="src/screenshots/desktop_about_light_2k-505b6ada7411.webp"><img src="src/screenshots/desktop_about_light_2k-505b6ada7411.webp" alt="Tahoe light desktop with About This Computer focused" width="415"></a>
 </p>
 
 <p align="center">
-  <a href="src/screenshots/showcase_dark_2k-a75515efba07.webp"><img src="src/screenshots/showcase_dark_2k-a75515efba07.webp" alt="Tahoe dark desktop with Files focused" width="415"></a>
-  <a href="src/screenshots/desktop_about_dark_2k-76aef24fbea6.webp"><img src="src/screenshots/desktop_about_dark_2k-76aef24fbea6.webp" alt="Tahoe dark desktop with About This Computer focused" width="415"></a>
+  <a href="src/screenshots/showcase_dark_2k-59352cf81a95.webp"><img src="src/screenshots/showcase_dark_2k-59352cf81a95.webp" alt="Tahoe dark desktop with Files focused" width="415"></a>
+  <a href="src/screenshots/desktop_about_dark_2k-2049cca06c1a.webp"><img src="src/screenshots/desktop_about_dark_2k-2049cca06c1a.webp" alt="Tahoe dark desktop with About This Computer focused" width="415"></a>
 </p>
 
 <br>
@@ -100,8 +100,8 @@ The Tahoe desktop in light and dark mode.
 App search, favorites and categories with blurred glass and edge refraction. [Material settings](docs/glass-materials.md).
 
 <p align="center">
-  <img src="src/screenshots/launcher_preset_1_light-9edad6ec4f82.webp" alt="Default Tahoe preset 1 in light mode, with integrated search and Tahoe wallpaper" width="415">
-  <img src="src/screenshots/launcher_preset_1_dark-4979edb5f5d4.webp" alt="Default Tahoe preset 1 in dark mode, with integrated search and Tahoe wallpaper" width="415">
+  <img src="src/screenshots/launcher_preset_1_light-3f4adbce1ea1.webp" alt="Default Tahoe preset 1 in light mode, with integrated search and Tahoe wallpaper" width="415">
+  <img src="src/screenshots/launcher_preset_1_dark-d4523e4134cc.webp" alt="Default Tahoe preset 1 in dark mode, with integrated search and Tahoe wallpaper" width="415">
 </p>
 
 <br>
@@ -111,9 +111,9 @@ App search, favorites and categories with blurred glass and edge refraction. [Ma
 Glass refraction, hover zoom, notification badges and auto-hide.
 
 <p align="center">
-  <img src="src/screenshots/dock_1_v4-ea14e8e1c5b8.webp" alt="Glass Dock with ten pinned applications and light icons" width="840">
+  <img src="src/screenshots/dock_1_v4-ee5d7fd576bd.webp" alt="Glass Dock with ten pinned applications and light icons" width="840">
   <br>
-  <img src="src/screenshots/dock_1_dark_v4-1932d732c490.webp" alt="The same Dock with dark icons" width="840">
+  <img src="src/screenshots/dock_1_dark_v4-05af0ed1173b.webp" alt="The same Dock with dark icons" width="840">
 </p>
 
 <br>
@@ -123,7 +123,7 @@ Glass refraction, hover zoom, notification badges and auto-hide.
 Finder-style Nautilus in light and dark.
 
 <p align="center">
-  <img src="src/screenshots/finder_v4-46ea5328910c.webp" alt="Finder-style Nautilus in light mode" width="415">
+  <img src="src/screenshots/finder_v4-9dfc04f0541c.webp" alt="Finder-style Nautilus in light mode" width="415">
   <img src="src/screenshots/finder_dark_v4-f53df7a986bc.webp" alt="Finder-style Nautilus in dark mode" width="415">
 </p>
 
@@ -145,8 +145,8 @@ System controls and global menus for compatible apps.
 Hardware, software and theme details in About This Computer.
 
 <p align="center">
-  <img src="src/screenshots/about_v4-d9d3c7498226.webp" alt="About This Computer in light mode" width="415">
-  <img src="src/screenshots/about_dark_v4-c92b8a602214.webp" alt="About This Computer in dark mode" width="415">
+  <img src="src/screenshots/about_v4-d04104349f40.webp" alt="About This Computer in light mode" width="415">
+  <img src="src/screenshots/about_dark_v4-8714e1f9e9dd.webp" alt="About This Computer in dark mode" width="415">
 </p>
 
 <br>

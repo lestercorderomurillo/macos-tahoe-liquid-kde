@@ -1,14 +1,13 @@
 # Installer testing
 
-Tahoe **v0.63.2** fixes Dock spacing at a 56 px center pitch on the default
-68 px panel, preserving 42 px visible icons. The spacing selector is removed;
-legacy saved values no longer affect geometry. Both editions share the change.
+Tahoe **v0.63.3** adds a ten-application base Dock, omits missing apps and
+preserves existing pins, including an intentionally empty Dock. Launcher lists
+use Plasma's native array format; new icon aliases retain the selected appearance.
 
-Focused KDE neon VM checks passed: 20 Dock regressions across orientations,
-compression and display scales, plus 7 task-manager/install regressions.
-Golden Gate light/dark/light captures preserve icon size and spacing. See
-[validation evidence](tests/dock_spacing_validation.json) for commands and limits.
-Release publication additionally requires exact-commit CI on main and dev.
+Focused layout, icon generation and Golden Gate staging checks passed, with
+both editions verified through light/dark/light in a disposable KDE neon VM.
+See [validation evidence](tests/dock_defaults_validation.json) for commands, source identity and coverage limits.
+Publication requires exact-commit CI on main and dev in both repositories.
 
 ## Installation steps
 
@@ -16,7 +15,7 @@ Scroll horizontally through the installation steps.
 
 <table>
 <tr>
-  <td align="center"><img src="src/screenshots/installer-welcome_dark_v4-8bc76665e1db.webp" alt="Welcome" width="500"><br>Welcome</td>
+  <td align="center"><img src="src/screenshots/installer-welcome_dark_v4-07e3ace23ecd.webp" alt="Welcome" width="500"><br>Welcome</td>
   <td align="center"><img src="src/screenshots/installer-appearance_dark_v4-cb3010a655df.webp" alt="Appearance" width="500"><br>Appearance</td>
   <td align="center"><img src="src/screenshots/installer-icons_dark_v4-6da196043656.webp" alt="Icons and color" width="500"><br>Icons and color</td>
   <td align="center"><img src="src/screenshots/installer-wallpaper_dark_v4-71c1437b72f2.webp" alt="Wallpaper" width="500"><br>Wallpaper</td>
