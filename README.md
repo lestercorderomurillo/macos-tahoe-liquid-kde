@@ -36,13 +36,10 @@
 > [!CAUTION]
 > Experimental. Desktop updates may break compatibility. Avoid production systems; [report issues here](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/issues/new).
 
-> [!NOTE]
-> **Coming in v0.64!**
+> [!WARNING]
+> **Beware of paywall repackers — this theme is FREE.**
 >
-> - Acrylic Glass rewrite
-> - New Control Center
-> - New translations
-> - Bug fixes
+> If you found this theme through linusscoop or any other third-party channel, you do not need to pay to get it: download it directly from this repository. We keep this project free so everyone can enjoy it without a paywall. No purchase or subscription is required.
 
 <br>
 
