@@ -60,7 +60,7 @@ PlasmaCore.ToolTipArea {
         ? DockRoles.roleFor(model.LauncherUrlWithoutIcon, model.AppId) : ""
     readonly property bool darkDockIcons: Kirigami.Theme.backgroundColor.hslLightness < 0.5
     readonly property var dockIconSource: dockRole
-        ? Qt.resolvedUrl("../icons/" + (darkDockIcons ? "dark/" : "light/") + dockRole + ".svg")
+        ? Qt.resolvedUrl("qrc:/qt/qml/plasma/applet/org/kde/mac/tahoe/liquid/taskmanager/icons/" + (darkDockIcons ? "dark/" : "light/") + dockRole + ".svg")
         : backend.iconSource(task.model.decoration)
     readonly property string dockRoleLabel: {
         switch (dockRole) {
