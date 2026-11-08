@@ -73,5 +73,10 @@
       "Elisa"
     ],
     "installed_on_host": false
+  },
+  "ci_infrastructure": {
+    "run": "https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/actions/runs/42522957272",
+    "result": "13 jobs passed; openSUSE SDK downloads failed with HTTP 404 in the original attempt and one isolated retry, before tests ran.",
+    "resolution": "Use the official HTTPS content origin for the same openSUSE repositories. HEAD checks returned 200 for repomd.xml, binutils, libctf0 and libctf-nobfd0. Package versions, signatures and required checks are unchanged; final commit CI is still required."
   }
 }

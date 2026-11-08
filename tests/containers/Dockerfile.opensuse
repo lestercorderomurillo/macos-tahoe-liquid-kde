@@ -14,6 +14,12 @@
 #   - libepoxy + libdrm + libX11 + libxcb (acrylic-glass effect)
 FROM opensuse/tumbleweed:latest
 
+# Regional mirror metadata can lead GitHub runners to RPMs that still return
+# 404 after a refresh (binutils/libctf in the 2026-11-08 SDK image). Use the
+# official content origin for the same repositories; keep GPG/signature checks
+# and the complete rolling SDK update and package list below.
+RUN sed -i -E 's@https?://download\.opensuse\.org/@https://downloadcontent.opensuse.org/@g' /etc/zypp/repos.d/*.repo
+
 # `zypper refresh` against download.opensuse.org occasionally times out
 # from GitHub runners (curl error 28 after the 180s default). Retry up
 # to 3 times before giving up — every individual refresh is a clean
