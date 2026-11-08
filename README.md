@@ -105,6 +105,8 @@ App search, favorites and categories with blurred glass and edge refraction. [Ma
 
 ### Acrylic Glass Tahoe Dock
 
+Optional macOS-style Dock icons, available in **Desktop → Dock apps**. Your applications and pin order stay unchanged.
+
 Glass refraction, hover zoom, notification badges and auto-hide.
 
 <p align="center">

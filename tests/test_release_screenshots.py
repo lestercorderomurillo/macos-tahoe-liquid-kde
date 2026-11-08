@@ -636,3 +636,47 @@ def test_optional_apps_require_all_affected_frames_and_fail_closed(tmp_path, mon
         shots.verify_visual_source(tmp_path, before, after, shots.runtime_tree(tmp_path, before))
     target.write_text('installed = True\nunknown_change = True\n')
     assert shots.affected_frames(tmp_path, before, commit(tmp_path)) == shots.expected_frames()
+
+
+def test_dock_appearance_scope_composes_history_and_rejects_later_edits(tmp_path, monkeypatch):
+    subprocess.run(['git', 'init', '-q', str(tmp_path)], check=True)
+    paths = ('src/offline/dock.qml', 'src/scripts/installer_choices.py')
+    for path in paths:
+        target = tmp_path / path
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_text('value = 1\n')
+    old = commit(tmp_path)
+    (tmp_path / 'README.md').write_text('Documentation only\n')
+    baseline = commit(tmp_path)
+    for path in paths:
+        (tmp_path / path).write_text('value = 2\n')
+    changed = commit(tmp_path)
+    monkeypatch.setattr(shots, 'DOCK_APPEARANCE_BASE', baseline)
+    monkeypatch.setattr(shots, 'DOCK_APPEARANCE_CAPTURE_DEPENDENCIES', {
+        path: (shots.git(tmp_path, 'rev-parse', baseline + ':' + path),
+               shots.git(tmp_path, 'rev-parse', changed + ':' + path)) for path in paths})
+    expected = {f'{e}-{m}-dock' for e in shots.EDITIONS for m in shots.MODES}
+    assert shots.affected_frames(tmp_path, baseline, changed) == expected
+    assert shots.affected_frames(tmp_path, old, changed) == expected
+    for path in paths:
+        (tmp_path / path).write_text('value = 3\n')
+        assert shots.affected_frames(tmp_path, old, commit(tmp_path)) == shots.expected_frames()
+        (tmp_path / path).write_text('value = 2\n')
+    (tmp_path / 'unknown.qml').write_text('unknown change\n')
+    assert shots.affected_frames(tmp_path, old, commit(tmp_path)) == shots.expected_frames()
+
+
+def test_dock_artwork_evidence_required_by_bundle_and_committed_gate(capture, monkeypatch):
+    repo, ref, bundle, manifest = capture
+    shots.stage(repo, 'tahoe', bundle, manifest)
+    final = commit(repo)
+    original = shots.git
+    def with_dock_roles(root, *args):
+        if args[0] == 'ls-tree' and args[-1].endswith('/contents/ui/DockRoles.js'):
+            return '100644 blob fixture\tDockRoles.js'
+        return original(root, *args)
+    monkeypatch.setattr(shots, 'git', with_dock_roles)
+    with pytest.raises(ValueError, match='Unverified Dock artwork option'):
+        shots.validate(repo, final, bundle)
+    with pytest.raises(ValueError, match='Unverified Dock artwork option'):
+        shots.verify_committed(repo, final)

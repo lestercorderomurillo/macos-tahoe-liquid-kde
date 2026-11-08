@@ -268,17 +268,135 @@ DOCK_APPS_CAPTURE_DEPENDENCIES = {'src/installer/wizard_window.py': (('f0b682104
                                   '92aa0d474bb77062728ced998edd591245a6c8c8'),
                                  '6f5b66a3e295e1a2baa3fadaa52e9637b6cb8c9a')}
 
+# Reviewed opt-in Dock artwork transition. The wizard dialog is not open in
+# existing installer photographs; default "keep" leaves their summary unchanged.
+# SVG runtime dependencies and added translations support only this new option.
+# Match complete blob identities, never prefixes: later edits fail closed.
+DOCK_APPEARANCE_BASE = 'd110219036701c2dfc7e8aeaf6d984ac30de383c'
+DOCK_APPEARANCE_CAPTURE_DEPENDENCIES = {'src/installer/wizard_translations.py': ('e387626daaaca12e3dc8485e3fa40aa6f77b7994',
+                                          'c1834ecc3de3e96874d70237f3a0daa5ade601a7'),
+ 'src/installer/wizard_window.py': ('6c14f892d4d5249d2f93373c7b6fc8c2488da1bc',
+                                    'e493c1ba88d137dd61bd95f1ca644a1ab1a8efdd'),
+ 'src/offline/layouts/mac-tahoe.js': ('b59e603999e87e5a14e527be37591235a95e12eb',
+                                      'a46670b72f9a29b62476426553e931f8782e01d3'),
+ 'src/offline/layouts/migrate-dock-preset.js': ('0abd3dde7947370e1a179ff2e6f14a9ca317c0d0',
+                                                'c0cecfee4556766e7e970f6e7d791cc02c9dd294'),
+ 'src/offline/plasmoids/org.kde.mac.tahoe.liquid.taskmanager/CMakeLists.txt': ('0f69f1746f539d1aaea7066267cc4da63317260d',
+                                                                               '3a53c842532eb1f45faaacb8f2a5885e4a986ebc'),
+ 'src/offline/plasmoids/org.kde.mac.tahoe.liquid.taskmanager/backend.cpp': ('f6d304f957bf198c26a52f70422086609911f832',
+                                                                            'def8620f26d7393ac3e0906696ce858980081184'),
+ 'src/offline/plasmoids/org.kde.mac.tahoe.liquid.taskmanager/backend.h': ('e76cc5bde291367751bdedd5b2d43ebd29ded8e0',
+                                                                          '078cb80603e20ffa3131822b4196802bb3fe2823'),
+ 'src/offline/plasmoids/org.kde.mac.tahoe.liquid.taskmanager/contents/config/main.xml': ('684d338a12a58f9f564fc450d9f1cd5e5c5b1b6d',
+                                                                                         '1d70d841a6e12b7a30698973d1fb3d0e401c48a4'),
+ 'src/offline/plasmoids/org.kde.mac.tahoe.liquid.taskmanager/contents/icons/NOTICE': (None,
+                                                                                      '10d5808986e9a02e8d4bea72c6d607e57df55f6a'),
+ 'src/offline/plasmoids/org.kde.mac.tahoe.liquid.taskmanager/contents/icons/dark/browser.svg': (None,
+                                                                                                '457e11a20ec71999d4eb2e784163239b5298c619'),
+ 'src/offline/plasmoids/org.kde.mac.tahoe.liquid.taskmanager/contents/icons/dark/calendar.svg': (None,
+                                                                                                 '1c4f8899f073e04509f05cd13a0acde4041de16e'),
+ 'src/offline/plasmoids/org.kde.mac.tahoe.liquid.taskmanager/contents/icons/dark/files.svg': (None,
+                                                                                              '75350888fc25a442f203415629693c31bececf70'),
+ 'src/offline/plasmoids/org.kde.mac.tahoe.liquid.taskmanager/contents/icons/dark/mail.svg': (None,
+                                                                                             'd2df288e00d27e57d856a74268818a9afe7ac0b5'),
+ 'src/offline/plasmoids/org.kde.mac.tahoe.liquid.taskmanager/contents/icons/dark/music.svg': (None,
+                                                                                              'e67ef4bf747185f01f990db77ea16b4e4dafb52f'),
+ 'src/offline/plasmoids/org.kde.mac.tahoe.liquid.taskmanager/contents/icons/dark/notes.svg': (None,
+                                                                                              '433df86dd9f98346ef9c2b6e8588f79bb6822e40'),
+ 'src/offline/plasmoids/org.kde.mac.tahoe.liquid.taskmanager/contents/icons/dark/photos.svg': (None,
+                                                                                               '20af1d6f611d3a47a9fca55f0dedeaa687c7d4f3'),
+ 'src/offline/plasmoids/org.kde.mac.tahoe.liquid.taskmanager/contents/icons/dark/settings.svg': (None,
+                                                                                                 '650bfa7dc7236d66d09d5325d273dbcf423f722b'),
+ 'src/offline/plasmoids/org.kde.mac.tahoe.liquid.taskmanager/contents/icons/dark/store.svg': (None,
+                                                                                              '4f4106d18ea9fa241ee27e08c7f9e6b69673a49a'),
+ 'src/offline/plasmoids/org.kde.mac.tahoe.liquid.taskmanager/contents/icons/dark/video.svg': (None,
+                                                                                              'c3d526d610e47a0cb4654f80d1102d63bb4b7b6b'),
+ 'src/offline/plasmoids/org.kde.mac.tahoe.liquid.taskmanager/contents/icons/light/browser.svg': (None,
+                                                                                                 '457e11a20ec71999d4eb2e784163239b5298c619'),
+ 'src/offline/plasmoids/org.kde.mac.tahoe.liquid.taskmanager/contents/icons/light/calendar.svg': (None,
+                                                                                                  '1c4f8899f073e04509f05cd13a0acde4041de16e'),
+ 'src/offline/plasmoids/org.kde.mac.tahoe.liquid.taskmanager/contents/icons/light/files.svg': (None,
+                                                                                               '75350888fc25a442f203415629693c31bececf70'),
+ 'src/offline/plasmoids/org.kde.mac.tahoe.liquid.taskmanager/contents/icons/light/mail.svg': (None,
+                                                                                              'd2df288e00d27e57d856a74268818a9afe7ac0b5'),
+ 'src/offline/plasmoids/org.kde.mac.tahoe.liquid.taskmanager/contents/icons/light/music.svg': (None,
+                                                                                               'e67ef4bf747185f01f990db77ea16b4e4dafb52f'),
+ 'src/offline/plasmoids/org.kde.mac.tahoe.liquid.taskmanager/contents/icons/light/notes.svg': (None,
+                                                                                               '433df86dd9f98346ef9c2b6e8588f79bb6822e40'),
+ 'src/offline/plasmoids/org.kde.mac.tahoe.liquid.taskmanager/contents/icons/light/photos.svg': (None,
+                                                                                                '20af1d6f611d3a47a9fca55f0dedeaa687c7d4f3'),
+ 'src/offline/plasmoids/org.kde.mac.tahoe.liquid.taskmanager/contents/icons/light/settings.svg': (None,
+                                                                                                  '650bfa7dc7236d66d09d5325d273dbcf423f722b'),
+ 'src/offline/plasmoids/org.kde.mac.tahoe.liquid.taskmanager/contents/icons/light/store.svg': (None,
+                                                                                               '4f4106d18ea9fa241ee27e08c7f9e6b69673a49a'),
+ 'src/offline/plasmoids/org.kde.mac.tahoe.liquid.taskmanager/contents/icons/light/video.svg': (None,
+                                                                                               'c3d526d610e47a0cb4654f80d1102d63bb4b7b6b'),
+ 'src/offline/plasmoids/org.kde.mac.tahoe.liquid.taskmanager/contents/icons/sources.json': (None,
+                                                                                            '575119038a6be79800fc4df736a5120fad3ae1a3'),
+ 'src/offline/plasmoids/org.kde.mac.tahoe.liquid.taskmanager/contents/locale/de/LC_MESSAGES/plasma_applet_org.kde.mac.tahoe.liquid.taskmanager.mo': ('52e1c55b74297050615825e07d602bb2eb0ee754',
+                                                                                                                                                     '64798bfcb55c5acc274515c35159d0e088e85d04'),
+ 'src/offline/plasmoids/org.kde.mac.tahoe.liquid.taskmanager/contents/locale/es/LC_MESSAGES/plasma_applet_org.kde.mac.tahoe.liquid.taskmanager.mo': ('50e3ac2097d82a917331c461a6d9d1375b590773',
+                                                                                                                                                     '59d61d0a748df98be68aae9fd1b2c1ed74dc913c'),
+ 'src/offline/plasmoids/org.kde.mac.tahoe.liquid.taskmanager/contents/locale/pt_BR/LC_MESSAGES/plasma_applet_org.kde.mac.tahoe.liquid.taskmanager.mo': ('033a65874e622c2599f0002f858c364809c7c884',
+                                                                                                                                                        'e10510e81bd6fa75f5d510be3631003c4ece1621'),
+ 'src/offline/plasmoids/org.kde.mac.tahoe.liquid.taskmanager/contents/locale/zh_CN/LC_MESSAGES/plasma_applet_org.kde.mac.tahoe.liquid.taskmanager.mo': ('8b79c01e3686fbc6c8b43b56ab6507b4e2273162',
+                                                                                                                                                        '6e159878ad6ebe247ffd878776f7a60b1b09c9ae'),
+ 'src/offline/plasmoids/org.kde.mac.tahoe.liquid.taskmanager/contents/ui/ConfigAppearance.qml': ('381bd4a8ba0dfddd83b774474182626e2789f58a',
+                                                                                                 'de1539cb5d15ff51807926d204e930bf7ff0184b'),
+ 'src/offline/plasmoids/org.kde.mac.tahoe.liquid.taskmanager/contents/ui/DockRoles.js': (None,
+                                                                                         '90503365556177278c09b1a8606590b4a614849d'),
+ 'src/offline/plasmoids/org.kde.mac.tahoe.liquid.taskmanager/contents/ui/Task.qml': ('52d2d6f733a7d1bea240743e45ddc9eca0d2943f',
+                                                                                     '85410d56b99a19f6023691b7694350feaaf91aac'),
+ 'src/offline/plasmoids/org.kde.mac.tahoe.liquid.taskmanager/po/de.po': ('054de5a5c72b8c9a164e72c27ed43cc35ca7cd64',
+                                                                         '29184e4fb020e3642643a3344ea300d36b9ffdbc'),
+ 'src/offline/plasmoids/org.kde.mac.tahoe.liquid.taskmanager/po/es.po': ('a474abf7d7e5402e590e06135ec5b03aea5a8711',
+                                                                         '90570b54c3e40db6c4e8148f8a9a6fb3b83cc2f9'),
+ 'src/offline/plasmoids/org.kde.mac.tahoe.liquid.taskmanager/po/pt_BR.po': ('c0b71733b1f6dc19ab3953d7d3ba2445590e531c',
+                                                                            '6b8d4af0529420e16acc1d73819f7f65c6962b46'),
+ 'src/offline/plasmoids/org.kde.mac.tahoe.liquid.taskmanager/po/zh_CN.po': ('561f7e0273ee757d982a70dddab74aaa1ea29ae2',
+                                                                            '116d0946b106e8b0da365f483c3a7a1ec5d519e9'),
+ 'src/scripts/distro.py': ('fb6f6910e9c8b1f3578b789907d10fbe14b0594b',
+                           'd8aa244fb0a6eaf623f33adb4a6fce84cfab92ec'),
+ 'src/scripts/installer_choices.py': ('4b3c74bc178133463148849d2191022f42897f7f',
+                                      'ac674a27ba18d5911c7628b0eb222d30f53f6c68'),
+ 'src/scripts/locales/de.json': ('d2c9fa18f91830852967c4a79a37611209820ac5',
+                                 '48ab535ece12f2674fbac77c8999884dcadd0891'),
+ 'src/scripts/locales/pt_BR.json': ('3dfb1b4827ae3d08aa7898e70a53dab2df75dd07',
+                                    '93d442f779016cf102144d5814a7f641929cb45e'),
+ 'src/scripts/steps/layout.py': ('6f5b66a3e295e1a2baa3fadaa52e9637b6cb8c9a',
+                                 '7900db224cd5c70ba4b9e5d149184f51c01cd72a'),
+ 'src/scripts/steps/plasmoids.py': ('575ff913e0039519f52fd23af2c003ef6c946d95',
+                                    '1f395dbecb61139c20c17febead2ca09765222cb')}
+
+
 def affected_frames(repo: Path, source: str, target: str) -> set[str]:
     """Conservative dependencies: unknown changes invalidate every frame."""
     all_frames = expected_frames()
     if visual_tree(repo, source) == visual_tree(repo, target):
         return set()
+    # Compose reviewed transitions without rewriting historical frame origins.
+    base = DOCK_APPEARANCE_BASE
+    if source != base and target != base and all(
+        subprocess.run(['git', '-C', str(repo), 'merge-base', '--is-ancestor', a, b],
+                       stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL).returncode == 0
+        for a, b in ((source, base), (base, target))
+    ):
+        return affected_frames(repo, source, base) | affected_frames(repo, base, target)
     changed = set(git(repo, 'diff', '--name-only', source, target).splitlines())
     ignored = set()
     affected = set()
     def cases(names, editions=EDITIONS):
         affected.update(f'{e}-{m}-{c}' for e in editions for m in MODES for c in names)
     for path in changed:
+        appearance_dependency = DOCK_APPEARANCE_CAPTURE_DEPENDENCIES.get(path)
+        if appearance_dependency:
+            def appearance_object(ref):
+                entry = git(repo, 'ls-tree', ref, '--', path)
+                return entry.split()[2] if entry else None
+            if (appearance_object(source), appearance_object(target)) == appearance_dependency:
+                cases(['dock'])
+                ignored.add(path)
+                continue
         app_dependency = DOCK_APPS_CAPTURE_DEPENDENCIES.get(path)
         if app_dependency:
             def app_object_at(ref):
@@ -508,6 +626,9 @@ def validate(repo: Path, ref: str, bundle: Path, *, reviewed: bool = True) -> di
         require(record['launcher_preset'] == EDITIONS[edition][1], f'Wrong launcher preset: {name}')
         require(record.get('stable_frames') is True, f'Unsettled capture: {name}')
         require(record.get('window_verified') is True, f'Unverified window: {name}')
+        if case == 'dock' and git(repo, 'ls-tree', source, '--',
+                'src/offline/plasmoids/org.kde.mac.tahoe.liquid.taskmanager/contents/ui/DockRoles.js'):
+            require(record.get('dock_appearance') == 'macos', f'Unverified Dock artwork option: {name}')
         if case.startswith('installer-'):
             require(record.get('installer_page') == case.removeprefix('installer-'),
                     f'Wrong installer page: {name}')
@@ -668,6 +789,9 @@ def verify_committed(repo: Path, ref: str, *, tahoe: Path | None = None) -> dict
             'Every release capture must be reviewed')
     for name, frame in manifest['frames'].items():
         verify_icon_appearance(name, frame)
+        if name.endswith('-dock') and git(source_repo, 'ls-tree', target, '--',
+                'src/offline/plasmoids/org.kde.mac.tahoe.liquid.taskmanager/contents/ui/DockRoles.js'):
+            require(frame.get('dock_appearance') == 'macos', f'Unverified Dock artwork option: {name}')
         case = next((c for c in MATERIAL_CASES if name.endswith('-' + c)), None)
         if case:
             presets = json.loads(blob(source_repo, source, 'src/offline/kwin-effects/acrylic-glass/src/presets.json'))
