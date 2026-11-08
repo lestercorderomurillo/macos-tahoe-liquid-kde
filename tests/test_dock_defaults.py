@@ -21,13 +21,15 @@ APPS = [
 HARNESS = '''
 var created = [];
 var screenCount = 2;
-function panels() { return created; }
+function panels() { return created.slice(); }
 function applicationExists(id) { return installed.indexOf(id) !== -1; }
 function Panel() {
     this.widgetIds = [];
     this.widgetsById = {};
+    this.remove = function() { created.splice(created.indexOf(this), 1); };
     this.addWidget = function(type) {
         var widget = {type: type, config: {},
+            readConfig: function(key, fallback) { return key in this.config ? this.config[key] : fallback; },
             writeConfig: function(key, value) { this.config[key] = value; }};
         var id = this.widgetIds.length;
         this.widgetIds.push(id);
@@ -85,17 +87,17 @@ def test_base_dock_order_and_missing_apps(offline, relative, installed, expected
         assert widgets[-1]['type'] == 'org.kde.mac-tahoe-liquid-kde.trashcan'
 
 
-def test_reinstall_preserves_pins_on_every_screen(monkeypatch):
+def test_upgrade_adds_defaults_after_user_pins_on_every_screen(monkeypatch):
     monkeypatch.setattr(layout, '_discover_is_installed', lambda: True)
     pins = ['applications:custom.desktop', 'preferred://browser']
     script = layout._layout_script_with_launchers(layout.LAYOUT_SCRIPT, pins, layout.MAC_TASKS_ID)
     docks = execute(script, APPS)
     assert len(docks) == 2
     for widgets in docks:
-        assert next(w['pins'] for w in widgets if w['type'] == layout.MAC_TASKS_ID) == pins
+        assert next(w['pins'] for w in widgets if w['type'] == layout.MAC_TASKS_ID) == pins + ['applications:' + app for app in APPS if app != 'firefox.desktop']
 
 
-def test_reinstall_preserves_intentionally_empty_dock(monkeypatch, tmp_path):
+def test_upgrade_populates_empty_legacy_dock(monkeypatch, tmp_path):
     monkeypatch.setattr(layout, 'HOME', tmp_path)
     monkeypatch.setattr(layout, '_discover_is_installed', lambda: True)
     config = tmp_path / '.config/plasma-org.kde.plasma.desktop-appletsrc'
@@ -103,7 +105,7 @@ def test_reinstall_preserves_intentionally_empty_dock(monkeypatch, tmp_path):
     config.write_text('plugin=' + layout.MAC_TASKS_ID + '\nlaunchers=\n')
     script = layout._layout_script_with_launchers(layout.LAYOUT_SCRIPT, [], layout.MAC_TASKS_ID)
     for widgets in execute(script, APPS):
-        assert next(w['pins'] for w in widgets if w['type'] == layout.MAC_TASKS_ID) == []
+        assert next(w['pins'] for w in widgets if w['type'] == layout.MAC_TASKS_ID) == ['applications:' + app for app in APPS]
 
 
 @pytest.mark.parametrize('style', ['regular', 'glass'])
@@ -137,3 +139,65 @@ def test_dock_aliases_preserve_dedicated_artwork(tmp_path):
     dedicated.write_text('dedicated artwork')
     apply_interface_icons(tmp_path)
     assert dedicated.read_text() == 'dedicated artwork'
+
+
+def existing_dock(pins, revision=0, screen=0):
+    return (
+        'var dock = new Panel(); dock.location = "bottom"; dock.screen = ' + str(screen) + ';'
+        'var task = dock.addWidget(' + json.dumps(layout.MAC_TASKS_ID) + ');'
+        'task.writeConfig("launchers", ' + json.dumps(pins) + ');'
+        'task.writeConfig("dockPresetRevision", ' + str(revision) + ');'
+    )
+
+
+def test_migration_does_not_reintroduce_removed_pins():
+    migration = layout.DOCK_MIGRATION.read_text()
+    script = existing_dock(['applications:custom.desktop']) + migration
+    script += 'task.writeConfig("launchers", ["applications:custom.desktop"]);'
+    script += migration
+    assert execute(script, APPS)[0][0]['pins'] == ['applications:custom.desktop']
+
+
+def test_migration_keeps_aliases_and_only_adds_installed_apps():
+    pins = ['preferred://browser', 'file:///usr/share/applications/org.mozilla.Thunderbird.desktop']
+    script = existing_dock(pins) + layout.DOCK_MIGRATION.read_text()
+    assert execute(script, ['firefox.desktop', 'thunderbird.desktop', 'org.kde.marknote.desktop'])[0][0]['pins'] == pins + ['applications:org.kde.marknote.desktop']
+
+
+@pytest.mark.parametrize('pins', [[], ['applications:custom.desktop']])
+def test_rebuild_retains_completed_migration(monkeypatch, pins):
+    monkeypatch.setattr(layout, '_layout_has_any_theme_widget', lambda: True)
+    script = existing_dock(pins, revision=1)
+    script += layout._layout_script_with_launchers(layout.LAYOUT_SCRIPT, pins, layout.MAC_TASKS_ID)
+    docks = execute(script, APPS)
+    assert next(w['pins'] for w in docks[0] if w['type'] == layout.MAC_TASKS_ID) == pins
+
+
+def test_migration_and_base_have_identical_candidates(offline):
+    import re
+    pattern = r'var dockApplications = (\[.*?\n\s*\]);'
+    candidates = json.loads(re.search(pattern, layout.DOCK_MIGRATION.read_text(), re.S)[1])
+    for relative in LAYOUTS:
+        assert json.loads(re.search(pattern, (offline / relative).read_text(), re.S)[1]) == candidates
+
+
+def test_migration_honors_disabled_dock(monkeypatch):
+    import installer_choices
+    monkeypatch.setattr(installer_choices, 'selected', lambda: {'dock': False})
+    calls = []
+    monkeypatch.setattr(layout, '_evaluate_layout_script', lambda script: calls.append(script))
+    layout.migrate_dock_preset()
+    assert calls == []
+
+
+def test_fresh_install_uses_base_instead_of_stock_pins(monkeypatch):
+    monkeypatch.setattr(layout, '_layout_marker', lambda: type('Marker', (), {'is_file': lambda self: False})())
+    monkeypatch.setattr(layout, '_layout_has_any_theme_widget', lambda: False)
+    monkeypatch.setattr(layout, '_clear_layout_marker', lambda: None)
+    monkeypatch.setattr(layout, 'remember_installed_edition', lambda *args: None)
+    monkeypatch.setattr(layout, '_ensure_panel_colorizer', lambda: None)
+    monkeypatch.setattr(layout, '_capture_pinned_launchers', lambda: ['applications:stock.desktop'])
+    calls = []
+    monkeypatch.setattr(layout, '_evaluate_layout_with_launchers', lambda path, pins, widget: calls.append(pins) or False)
+    layout.install()
+    assert calls == [[]]

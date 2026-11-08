@@ -6,10 +6,15 @@
 // ── remove existing panels ──────────────────────
 var old = panels();
 var launcherPresets = {};
+var dockPresetRevisions = {};
 for (var p = 0; p < old.length; p++) {
     var widgets = old[p].widgetIds;
     for (var w = 0; w < widgets.length; w++) {
         var widget = old[p].widgetById(widgets[w]);
+        if (widget && widget.type === "org.kde.mac.tahoe.liquid.icontasks") {
+            widget.currentConfigGroup = ["General"];
+            dockPresetRevisions[old[p].screen] = Number(widget.readConfig("dockPresetRevision", 0));
+        }
         if (widget && widget.type === "org.kde.mac-tahoe-liquid-kde.launcher") {
             widget.currentConfigGroup = ["General"];
             var preset = Number(widget.readConfig("launcherPreset", 0));
@@ -135,6 +140,7 @@ for (var screen = 0; screen < screenCount; screen++) {
         }
     }
     tasks.writeConfig("launchers", dockLaunchers);
+    tasks.writeConfig("dockPresetRevision", dockPresetRevisions[dock.screen] || 0);
 
     dock.addWidget("org.kde.mac-tahoe-liquid-kde.trashcan");
 }

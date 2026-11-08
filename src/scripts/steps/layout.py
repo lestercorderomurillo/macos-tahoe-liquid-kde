@@ -17,6 +17,7 @@ from utils import qdbus_cmd, run_user
 
 LAYOUT_SCRIPT = offline("layouts/mac-tahoe.js")
 LAYOUT_RESET = offline("layouts/default.js")
+DOCK_MIGRATION = offline("layouts/migrate-dock-preset.js")
 _DISCOVER_DESKTOP = "applications:org.kde.discover.desktop"
 COLORIZER_ID = "luisbocanegra.panel.colorizer"
 COLORIZER_SRC = offline("plasmoids") / COLORIZER_ID
@@ -176,10 +177,24 @@ def _layout_script_with_launchers(
     if not _discover_is_installed():
         script = script.replace(_DISCOVER_DESKTOP + ",", "")
         script = script.replace("," + _DISCOVER_DESKTOP, "")
-    return _append_launcher_restore(
+    script = _append_launcher_restore(
         script, pins, widget_type,
         preserve_empty=script_path == LAYOUT_SCRIPT and _layout_has_any_theme_widget(),
     )
+
+    if script_path == LAYOUT_SCRIPT:
+        script += "\n" + DOCK_MIGRATION.read_text()
+    return script
+
+
+def migrate_dock_preset() -> None:
+    """Upgrade existing Docks without rebuilding panels or changing their geometry."""
+    from installer_choices import selected
+    choices = selected()
+    if choices and not choices["dock"]:
+        return
+    if not _evaluate_layout_script(DOCK_MIGRATION.read_text()):
+        warn(tr('Dock preset update failed'))
 
 
 def _evaluate_layout_with_launchers(
@@ -395,13 +410,14 @@ def _reset_plasmashellrc() -> bool:
 def install() -> None:
     # A failed rebuild must leave is_installed() false so cli.py retries after
     # Plasma restarts instead of trusting a marker from the previous run.
+    existing_layout = _layout_marker().is_file() or _layout_has_any_theme_widget()
     _clear_layout_marker()
     remember_installed_edition(HOME, DATA_HOME / "plasma/plasmoids" / LAUNCHER_ID)
     _ensure_panel_colorizer()
     if not LAYOUT_SCRIPT.is_file():
         warn(tr('Layout script not found — skipping'))
         return
-    pins = _capture_pinned_launchers()
+    pins = _capture_pinned_launchers() if existing_layout else []
     applied = _evaluate_layout_with_launchers(
         LAYOUT_SCRIPT, pins, MAC_TASKS_ID,
     )

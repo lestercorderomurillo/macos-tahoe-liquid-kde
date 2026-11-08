@@ -1142,6 +1142,8 @@ def _run_install_body(feat: dict[str, object]) -> int:
             step('Retrying Layout')
             note(tr('Retries the panel layout after Plasma reloads new plasmoids'))
             run_phase("layout", "install")
+        if not feat.get("layout", True) and step_exists("layout"):
+            run_phase("layout", "migrate_dock_preset")
         run_phase("theme_switch", "start_schedule")
     else:
         step('Skipping Activation')

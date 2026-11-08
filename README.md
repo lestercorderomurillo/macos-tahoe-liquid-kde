@@ -287,6 +287,8 @@ with that repository's defaults, including its wallpaper and launcher. Choosing
 
 **Reset Dock and panel customization** is checked by default. Reinstalling
 rebuilds the selected top bar and Dock while carrying pinned apps across.
+The base Dock adds newly included installed apps once during upgrade, even
+without a layout reset; later reinstalls respect apps you remove.
 Uncheck it to preserve the current layout, sizes, autohide and widgets. A first
 installation creates the selected layout automatically.
 

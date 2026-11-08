@@ -125,5 +125,6 @@ for (var app = 0; app < dockApplications.length; app++) {
     }
 }
 tasks.writeConfig("launchers", dockLaunchers);
+tasks.writeConfig("dockPresetRevision", 1);
 
 dock.addWidget("org.kde.mac-tahoe-liquid-kde.trashcan");
