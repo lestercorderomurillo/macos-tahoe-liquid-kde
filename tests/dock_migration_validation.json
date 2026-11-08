@@ -1,0 +1,51 @@
+{
+  "version": "0.63.4",
+  "implementation_commit": "9a0d88023bbb98c451e6e3ae2383d3b9d5360bd5",
+  "capture_source_commit": "300bf3ada9e070fc39184978d550a8bd5ca978b9",
+  "scope": "First installs use the full installed-app base Dock; upgrades append missing installed base apps once, preserving current pins and order, including when layout reset is disabled. Later reinstalls preserve removals. No missing applications are installed.",
+  "checks": [
+    {
+      "command": "python -m pytest -q tests/test_dock_defaults.py tests/test_layout_step.py",
+      "result": "59 passed",
+      "environment": "Host Python 3.14, isolated QJSEngine; no live desktop or DBus calls",
+      "limit": "Does not prove live installer or compositor behavior; cache write warning only."
+    },
+    {
+      "command": "python -m pytest -q -p no:cacheprovider tests/test_release_screenshots.py",
+      "result": "52 passed",
+      "environment": "Host, temporary Git fixtures",
+      "limit": "Content-bound dependency rule requires fresh Dock images; every later runtime edit invalidates the scoped rule."
+    },
+    {
+      "command": "python -m pytest -q -p no:cacheprovider tests/test_edition_transition.py tests/test_multilanguage.py tests/test_release_screenshots.py -k 'edition or language or console_maintenance or dock_migration'",
+      "result": "50 passed, 48 deselected",
+      "source": "af5f12c",
+      "reason": "Resolve CI legacy-panel fixture and missing translation failures; regression fixture also works with shallow CI checkouts."
+    }
+  ],
+  "visual_scope": {
+    "vm_image_sha256": "412e7933f10add20b921b92c02709e7eea56acd14dc14cf654f58fba4ea3cc9d",
+    "resolution": [
+      3840,
+      2160
+    ],
+    "scale": 2,
+    "new_frames": [
+      "tahoe-light-dock",
+      "tahoe-dark-dock",
+      "golden-gate-light-dock",
+      "golden-gate-dark-dock"
+    ],
+    "retained_frames": 102,
+    "retained_provenance": "Original source commits, versions, hashes and approvals are retained in release-capture.json. No retained image is claimed as a new capture.",
+    "result": "Four fresh Dock frames captured sequentially and visually reviewed; 102 unrelated reviewed frames retained.",
+    "new_frame_sha256": {
+      "tahoe-light-dock": "54305847265fd670d529d558bab26810f6337bc88ed0813e745ba044f2cbcf4e",
+      "tahoe-dark-dock": "5d4174b440c88ad0eae39d0db460eeaa2d074df9ca0a90a9077842a7dafe9414",
+      "golden-gate-light-dock": "290cb0f4d855f483be7b58f9be5badb5b5d84a39f9f9a3f5a76233029cd7da41",
+      "golden-gate-dark-dock": "2ea408b0258b4a4f0527bd288eadf86813e34920e76d7155210b51dc09f90650"
+    },
+    "limits": "Fresh installation and light/dark Dock appearance on pinned KDE neon VM; upgrade pin merging and one-time persistence exercised by focused QJSEngine tests. No new unrelated desktop, wizard, boot or shutdown captures."
+  },
+  "release_gate": "Successful test.yml push runs for the exact release commits on dev and main in both repositories; provenance verified by release.yml. See GitHub Actions on the tagged commits."
+}

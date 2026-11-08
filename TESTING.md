@@ -1,13 +1,12 @@
 # Installer testing
 
-Tahoe **v0.63.3** adds a ten-application base Dock, omits missing apps and
-preserves existing pins, including an intentionally empty Dock. Launcher lists
-use Plasma's native array format; new icon aliases retain the selected appearance.
-
-Focused layout, icon generation and Golden Gate staging checks passed, with
-both editions verified through light/dark/light in a disposable KDE neon VM.
-See [validation evidence](tests/dock_defaults_validation.json) for commands, source identity and coverage limits.
-Publication requires exact-commit CI on main and dev in both repositories.
+Tahoe **v0.63.4** uses the complete installed-app Dock preset on fresh installs
+and adds missing base apps once on upgrades, preserving user pins and later removals.
+Focused migration, edition-transition, translation and provenance checks passed.
+Four new Dock frames were reviewed in the pinned KDE neon VM; all 102 unrelated
+frames retain their original provenance. See [validation evidence](tests/dock_migration_validation.json)
+for commands, source identities and coverage limits. Release workflows require
+successful exact-commit CI on both branches in both repositories.
 
 ## Installation steps
 
