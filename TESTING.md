@@ -1,6 +1,6 @@
 # Installer testing
 
-Tahoe **v0.63.1** fixes Dock spacing at a 56 px center pitch on the default
+Tahoe **v0.63.2** fixes Dock spacing at a 56 px center pitch on the default
 68 px panel, preserving 42 px visible icons. The spacing selector is removed;
 legacy saved values no longer affect geometry. Both editions share the change.
 

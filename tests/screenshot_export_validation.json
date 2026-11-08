@@ -172,5 +172,6 @@
     "src/screenshots/wizard-glass/golden-gate-auto-749c22ad8480.webp": "749c22ad8480421ff51e3d04efb5530bb3ae71beecd7c4bb793f5b3ddece444e",
     "src/screenshots/wizard-glass/golden-gate-light-105b973abe12.webp": "105b973abe1295932a93b129755f88b68f7b422c29259bd47316bf3c6854aa70",
     "src/screenshots/wizard-glass/golden-gate-dark-6ef8da31db77.webp": "6ef8da31db770ce02858a4bd1e9aeeb670885a8bdc8181972debf27c607efefe"
-  }
+  },
+  "release_verification_environment": "Clean virtualenv, Pillow 12.0.0: release-screenshots verify passed. Both publication workflows install this pinned dependency."
 }
