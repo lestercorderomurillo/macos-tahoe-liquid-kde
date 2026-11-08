@@ -1462,3 +1462,27 @@ def plasma_version_probe_cmds() -> tuple[list[str], ...]:
     if build_cmd is None:
         return ()
     return tuple(build_cmd(pkg) for pkg in packages)
+
+
+_DOCK_APP_PACKAGES = {
+    "mail": ("Thunderbird", "thunderbird"),
+    "calendar": ("Merkuro", "merkuro"),
+    "notes": ("Marknote", "marknote"),
+    "photos": ("Gwenview", "gwenview"),
+    "music": ("Elisa", "elisa"),
+    "video": ("Haruna", "haruna"),
+    "flatpak": ("Flatpak", "flatpak"),
+}
+
+
+def dock_app_package(category: str) -> tuple[str, str] | None:
+    """Optional apps use only existing native repositories; no distro upgrades."""
+    for family in (current_distro(), *_compatibility_parents()):
+        if family not in _PACKAGE_MANAGER_INSTALL:
+            continue
+        if category == "calendar" and family != "arch":
+            return ("KOrganizer", "korganizer")
+        if category == "mail" and family == "opensuse":
+            return ("Thunderbird", "MozillaThunderbird")
+        return _DOCK_APP_PACKAGES.get(category)
+    return None

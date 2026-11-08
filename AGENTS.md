@@ -1238,3 +1238,12 @@ Defaults remain edition-specific (Tahoe Flat, Golden Gate Glassy), but an explic
 choice overrides the edition for Aurorae, GTK, global-theme defaults and the
 standalone switcher. Preserve the choice through light/dark transitions; new
 wizard launches still start from source-edition defaults.
+
+
+Optional Dock applications are a separate, user-authorized package operation.
+Keep theme assets offline. Reuse installed equivalents first; never install
+applications in an express/default transaction. The custom wizard previews each
+selected app and its source. Native packages use only configured repositories;
+per-user Flatpak and adding Flathub require explicit transaction choices. Do not
+silently switch sources, upgrade the distribution or remove these apps during
+theme uninstall. Failed optional apps warn and remain pending in the Dock.

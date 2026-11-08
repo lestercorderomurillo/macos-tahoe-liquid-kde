@@ -74,7 +74,7 @@ INSTALL_ORDER = [
     "sounds",
     "kconf_update",
     "plasmoids", "globalmenu", "acrylic_glass", "rounded_corners",
-    "layout", "nautilus", "portals", "plymouth",
+    "layout", "nautilus", "apps", "portals", "plymouth",
 ]
 
 FEATURE_DESC = {

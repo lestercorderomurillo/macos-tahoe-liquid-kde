@@ -9,7 +9,7 @@ import json
 from PyQt6.QtCore import Qt, QEvent, QPointF, QRectF, QSize
 from PyQt6.QtGui import QColor, QFont, QPainter, QPainterPath, QLinearGradient, QPen, QPixmap, QPolygonF, QRegion
 from PyQt6.QtWidgets import (
-    QApplication, QButtonGroup, QCheckBox, QComboBox, QFileDialog, QFrame,
+    QApplication, QButtonGroup, QCheckBox, QComboBox, QDialog, QDialogButtonBox, QFileDialog, QFrame,
     QGridLayout, QHBoxLayout, QLabel, QPlainTextEdit, QProgressBar, QPushButton,
     QRadioButton, QScrollArea, QSizePolicy, QSpinBox, QToolButton, QVBoxLayout, QWidget,
 )
@@ -625,6 +625,10 @@ class InstallerWindow(OpaqueSurface):
         elif self.page == "wallpaper" and key == "wallpaper":
             self.wallpaper_filename.setText(Path(self.choices["wallpaper_path"]).name)
             self.wallpaper_filename.setVisible(value == "custom")
+        elif self.page == "layout" and key == "dock":
+            button = self.content.findChild(QPushButton, "edit-dock-apps")
+            if button:
+                button.setEnabled(value)
         elif self.page == "files" and key == "files":
             self.bookmarks.setVisible(value == "nautilus")
         elif self.page == "oled" and key == "oled_care":
@@ -920,6 +924,81 @@ class InstallerWindow(OpaqueSurface):
                 card.setEnabled(not self.existing_install or self.choices["reset_layout"])
         reset.toggled.connect(enable_layout_options)
         enable_layout_options()
+        self.dock_app_options()
+
+    def dock_app_options(self):
+        button = QPushButton(self.t("Dock apps…"))
+        button.setObjectName("edit-dock-apps")
+        button.setEnabled(self.choices["dock"])
+        button.clicked.connect(self.edit_dock_apps)
+        self.body.addWidget(button, 0, Qt.AlignmentFlag.AlignLeft)
+
+    def edit_dock_apps(self):
+        from dock_apps import OPTIONAL, LABELS, installed_apps, recommendation
+        choices = self.choices.copy()
+        choices["dock_apps"] = list(choices["dock_apps"])
+        installed = installed_apps()
+        dialog = QDialog(self)
+        dialog.setWindowTitle(self.t("Dock apps"))
+        dialog.setMinimumWidth(620)
+        body = QVBoxLayout(dialog)
+        intro = self.label("Installed equivalents are reused. Select only the missing apps you want to install.")
+        body.addWidget(intro)
+        source = QComboBox()
+        source.setObjectName("dock-apps-source")
+        source.addItem(self.t("Distribution repositories"), "native")
+        source.addItem(self.t("Flatpak for my user (installs Flatpak if needed)"), "flatpak")
+        source.setCurrentIndex(0 if choices["dock_apps_source"] == "native" else 1)
+        body.addWidget(source)
+        remote = CheckOption(self.t("Allow adding Flathub for my user if it is missing"))
+        remote.setObjectName("dock-add-flathub")
+        remote.setChecked(choices["dock_add_flathub"])
+        remote.toggled.connect(lambda checked: choices.update(dock_add_flathub=checked))
+        body.addWidget(remote)
+        flatpak_note = self.label("Flatpak apps may use their own appearance. No system remote is changed.")
+        body.addWidget(flatpak_note)
+        options = {}
+        for category in OPTIONAL:
+            option = CheckOption("")
+            option.setObjectName("dock-app-" + category)
+            option.setFont(relative_font(self, .93))
+            def choose(checked, key=category):
+                chosen = set(choices["dock_apps"])
+                chosen.add(key) if checked else chosen.discard(key)
+                choices["dock_apps"] = [key for key in OPTIONAL if key in chosen]
+            option.toggled.connect(choose)
+            options[category] = option
+            body.addWidget(option)
+        def refresh():
+            choices["dock_apps_source"] = source.currentData()
+            remote.setVisible(source.currentData() == "flatpak")
+            flatpak_note.setVisible(source.currentData() == "flatpak")
+            for category, option in options.items():
+                proposal = recommendation(category, source.currentData())
+                existing = installed.get(category)
+                title = self.t(LABELS[category]) + " — "
+                if existing:
+                    title += existing + " · " + self.t("Installed")
+                elif proposal:
+                    title += proposal[0] + " (" + proposal[1] + ")"
+                else:
+                    title += self.t("Unavailable from this source")
+                option.setText(title)
+                option.setEnabled(bool(proposal) and not existing)
+                option.setChecked(category in choices["dock_apps"] and option.isEnabled())
+        source.currentIndexChanged.connect(refresh)
+        refresh()
+        body.addWidget(self.label("Availability is checked during installation. Failed apps remain pending; removing the theme keeps your apps."))
+        buttons = QDialogButtonBox(QDialogButtonBox.StandardButton.Ok | QDialogButtonBox.StandardButton.Cancel)
+        buttons.button(QDialogButtonBox.StandardButton.Ok).setText(self.t("Continue"))
+        buttons.button(QDialogButtonBox.StandardButton.Cancel).setText(self.t("Cancel"))
+        buttons.accepted.connect(dialog.accept)
+        buttons.rejected.connect(dialog.reject)
+        body.addWidget(buttons)
+        if dialog.exec() == QDialog.DialogCode.Accepted:
+            for key in ("dock_apps", "dock_apps_source", "dock_add_flathub"):
+                self.choices[key] = choices[key]
+            self.render()
 
     def corner_sample(self):
         source = QPixmap(str(ASSETS / ASSET_FILES["corners.jpg"]["file"]))
@@ -1032,6 +1111,16 @@ class InstallerWindow(OpaqueSurface):
             spin.setFixedWidth(80)
             row.addWidget(spin); row.addStretch(); self.body.addLayout(row)
 
+    def dock_app_summary(self):
+        from dock_apps import recommendation
+        names = [recommendation(key, self.choices["dock_apps_source"])
+                 for key in self.choices["dock_apps"]] if self.choices["dock"] else []
+        selected = ", ".join(item[0] for item in names if item)
+        if not selected:
+            return self.t("Use installed apps only")
+        source = self.t("Distribution repositories") if self.choices["dock_apps_source"] == "native" else "Flatpak"
+        return selected + " · " + source
+
     def page_summary(self):
         self.body.setSpacing(8)
         grid = QGridLayout()
@@ -1060,6 +1149,7 @@ class InstallerWindow(OpaqueSurface):
             ("wallpaper", "Background", value("wallpaper"), "wallpaper"),
             ("launcher", "Launcher", self.t("Keep") if keep_layout else value("launcher"), "launcher"),
             ("panel", "Desktop", desktop or self.t("Keep"), "layout"),
+            ("dock_apps", "Dock apps", self.dock_app_summary(), "layout"),
             ("acrylic_glass", "Effects", effects or self.t("Disabled"), "effects"),
             ("window_controls", "Window controls", value("window_controls"), "window_controls"),
             ("shadows", "Window shadows", value("shadows"), "shadows"),

@@ -615,3 +615,24 @@ def test_dock_migration_requires_new_dock_frames_and_fails_closed(tmp_path, monk
         changed = commit(tmp_path)
         assert shots.affected_frames(tmp_path, baseline, changed) == shots.expected_frames(), path
         target.write_text(original)
+
+
+def test_optional_apps_require_all_affected_frames_and_fail_closed(tmp_path, monkeypatch):
+    subprocess.run(['git', 'init', '-q', str(tmp_path)], check=True)
+    path = 'src/scripts/dock_apps.py'
+    target = tmp_path / path
+    target.parent.mkdir(parents=True)
+    target.write_text('installed = False\n')
+    before = commit(tmp_path)
+    target.write_text('installed = True\n')
+    after = commit(tmp_path)
+    mappings = {path: ((shots.git(tmp_path, 'rev-parse', before + ':' + path),),
+                       shots.git(tmp_path, 'rev-parse', after + ':' + path))}
+    monkeypatch.setattr(shots, 'DOCK_APPS_CAPTURE_DEPENDENCIES', mappings)
+    assert shots.affected_frames(tmp_path, before, after) == {
+        f'{edition}-{mode}-{case}' for edition in shots.EDITIONS for mode in shots.MODES
+        for case in ('dock', 'installer-layout', 'installer-summary')}
+    with pytest.raises(ValueError, match='Visual release source changed'):
+        shots.verify_visual_source(tmp_path, before, after, shots.runtime_tree(tmp_path, before))
+    target.write_text('installed = True\nunknown_change = True\n')
+    assert shots.affected_frames(tmp_path, before, commit(tmp_path)) == shots.expected_frames()

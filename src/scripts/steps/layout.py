@@ -183,8 +183,16 @@ def _layout_script_with_launchers(
     )
 
     if script_path == LAYOUT_SCRIPT:
-        script += "\n" + DOCK_MIGRATION.read_text()
+        script += "\n" + _dock_migration_script()
     return script
+
+
+def _dock_migration_script() -> str:
+    from installer_choices import selected
+    choices = selected()
+    requested = choices.get("dock_apps", []) if choices.get("dock", True) else []
+    return ("var mttkdeRequestedDockApps = " + json.dumps(requested) + ";\n"
+            + DOCK_MIGRATION.read_text())
 
 
 def migrate_dock_preset() -> None:
@@ -193,7 +201,7 @@ def migrate_dock_preset() -> None:
     choices = selected()
     if choices and not choices["dock"]:
         return
-    if not _evaluate_layout_script(DOCK_MIGRATION.read_text()):
+    if not _evaluate_layout_script(_dock_migration_script()):
         warn(tr('Dock preset update failed'))
 
 

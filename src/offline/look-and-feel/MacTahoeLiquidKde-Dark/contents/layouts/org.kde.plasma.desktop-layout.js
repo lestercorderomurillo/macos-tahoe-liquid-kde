@@ -103,28 +103,32 @@ tasks.currentConfigGroup = ["General"];
 // Base Dock: use the first installed desktop ID for each application.
 // Existing user pins are restored by layout.py after this layout is created.
 var dockApplications = [
-    ["org.kde.dolphin.desktop"],
-    ["firefox.desktop", "firefox-esr.desktop", "org.mozilla.firefox.desktop", "firefox_firefox.desktop"],
-    ["thunderbird.desktop", "org.mozilla.Thunderbird.desktop", "thunderbird_thunderbird.desktop"],
-    ["org.kde.merkuro.calendar.desktop"],
-    ["org.kde.marknote.desktop"],
-    ["org.kde.gwenview.desktop"],
-    ["org.kde.elisa.desktop"],
-    ["org.kde.haruna.desktop"],
-    ["org.kde.discover.desktop"],
-    ["systemsettings.desktop"]
-];
+        ["org.kde.dolphin.desktop", "org.gnome.Nautilus.desktop", "thunar.desktop", "pcmanfm-qt.desktop"],
+        ["firefox.desktop", "firefox-esr.desktop", "org.mozilla.firefox.desktop", "firefox_firefox.desktop", "chromium.desktop", "chromium-browser.desktop", "google-chrome.desktop", "com.google.Chrome.desktop", "brave-browser.desktop", "com.brave.Browser.desktop", "org.kde.falkon.desktop"],
+        ["thunderbird.desktop", "org.mozilla.Thunderbird.desktop", "thunderbird_thunderbird.desktop", "org.kde.kmail2.desktop", "org.gnome.Evolution.desktop", "org.gnome.Geary.desktop"],
+        ["org.kde.merkuro.calendar.desktop", "org.kde.korganizer.desktop", "org.gnome.Calendar.desktop"],
+        ["org.kde.marknote.desktop", "org.kde.knotes.desktop", "org.gnome.Gnote.desktop", "org.gnome.Notes.desktop", "com.vixalien.sticky.desktop"],
+        ["org.kde.gwenview.desktop", "org.gnome.Loupe.desktop", "org.gnome.eog.desktop", "org.xfce.ristretto.desktop", "ristretto.desktop", "nomacs.desktop"],
+        ["org.kde.elisa.desktop", "org.gnome.Rhythmbox3.desktop", "org.gnome.Music.desktop", "io.bassi.Amberol.desktop", "org.strawberrymusic.strawberry.desktop", "strawberry.desktop", "clementine.desktop", "audacious.desktop"],
+        ["org.kde.haruna.desktop", "org.gnome.Showtime.desktop", "vlc.desktop", "org.videolan.VLC.desktop", "org.gnome.Totem.desktop", "io.github.celluloid_player.Celluloid.desktop", "mpv.desktop", "smplayer.desktop"],
+        ["org.kde.discover.desktop", "org.gnome.Software.desktop"],
+        ["systemsettings.desktop"]
+    ];
+    var dockCategories = ["files", "browser", "mail", "calendar", "notes", "photos", "music", "video", "store", "settings"];
 var dockLaunchers = [];
+    var resolvedDockCategories = [];
 for (var app = 0; app < dockApplications.length; app++) {
     for (var candidate = 0; candidate < dockApplications[app].length; candidate++) {
         var desktopId = dockApplications[app][candidate];
         if (applicationExists(desktopId)) {
             dockLaunchers.push("applications:" + desktopId);
+                resolvedDockCategories.push(dockCategories[app]);
             break;
         }
     }
 }
 tasks.writeConfig("launchers", dockLaunchers);
-tasks.writeConfig("dockPresetRevision", 1);
+tasks.writeConfig("dockPresetCategories", resolvedDockCategories);
+tasks.writeConfig("dockPresetRevision", 2);
 
 dock.addWidget("org.kde.mac-tahoe-liquid-kde.trashcan");

@@ -228,6 +228,46 @@ def _scoped_python(repo: Path, ref: str, path: str) -> dict[str, str]:
 # falls through to the conservative full-frame dependency check.
 DOCK_MIGRATION_CAPTURE_DEPENDENCIES = {'src/offline/layouts/mac-tahoe.js': ('bb43a915eced126315f2b43144d09ce6d4751005', '40cc46eaaafa4a551287d536d7ce6f0663b07851'), 'src/offline/layouts/migrate-dock-preset.js': (None, '5f2775b105d98829f408e12965dfb918b33a850a'), 'src/offline/look-and-feel/MacTahoeLiquidKde-Dark/contents/layouts/org.kde.plasma.desktop-layout.js': ('3753a072afd83668c3b861678d9cb3f20425e204', 'e67912b73cd1395244d7f6e1c6f93e71a2ebbb83'), 'src/offline/look-and-feel/MacTahoeLiquidKde-Light/contents/layouts/org.kde.plasma.desktop-layout.js': ('3753a072afd83668c3b861678d9cb3f20425e204', 'e67912b73cd1395244d7f6e1c6f93e71a2ebbb83'), 'src/scripts/cli.py': ('54e5f5ef24867e746d992458f51e713d605222bf', '497dbdf4a75c8560435835b5419c6c072c88638b'), 'src/scripts/steps/layout.py': ('726d4a233c49e4faa313fe5f8c682294c690f5be', '92aa0d474bb77062728ced998edd591245a6c8c8')}
 
+# The reviewed optional-apps transition changes the Dock and the wizard's
+# Desktop/Summary surfaces only. These exact source blobs REQUIRE twelve new
+# frames across both editions/modes; no affected frame may reuse old approval.
+# Unknown or subsequent edits still invalidate the complete gallery.
+DOCK_APPS_CAPTURE_DEPENDENCIES = {'src/installer/wizard_window.py': (('f0b682104a8f8c30af28c94ad954bb3b2535a5f7',),
+                                    '6c14f892d4d5249d2f93373c7b6fc8c2488da1bc'),
+ 'src/offline/layouts/mac-tahoe.js': (('bb43a915eced126315f2b43144d09ce6d4751005',
+                                       '40cc46eaaafa4a551287d536d7ce6f0663b07851'),
+                                      'b59e603999e87e5a14e527be37591235a95e12eb'),
+ 'src/offline/layouts/migrate-dock-preset.js': ((None, '5f2775b105d98829f408e12965dfb918b33a850a'),
+                                                '0abd3dde7947370e1a179ff2e6f14a9ca317c0d0'),
+ 'src/offline/look-and-feel/MacTahoeLiquidKde-Dark/contents/layouts/org.kde.plasma.desktop-layout.js': (('3753a072afd83668c3b861678d9cb3f20425e204',
+                                                                                                         'e67912b73cd1395244d7f6e1c6f93e71a2ebbb83'),
+                                                                                                        'a729045e55adc283bc39840e59b3a7633f396e0c'),
+ 'src/offline/look-and-feel/MacTahoeLiquidKde-Light/contents/layouts/org.kde.plasma.desktop-layout.js': (('3753a072afd83668c3b861678d9cb3f20425e204',
+                                                                                                          'e67912b73cd1395244d7f6e1c6f93e71a2ebbb83'),
+                                                                                                         'a729045e55adc283bc39840e59b3a7633f396e0c'),
+ 'src/scripts/cli.py': (('54e5f5ef24867e746d992458f51e713d605222bf',
+                         '497dbdf4a75c8560435835b5419c6c072c88638b'),
+                        '4875c6a5dc856a7febfc61024a285de5550c1b14'),
+ 'src/scripts/distro.py': (('625c03a418043256ef5eb6bc840f205293f7e1c4',),
+                           'fb6f6910e9c8b1f3578b789907d10fbe14b0594b'),
+ 'src/scripts/dock_apps.py': ((None,), 'c8f10500f4a6a8037d419cd2d28cb173b939c7d1'),
+ 'src/scripts/installer_choices.py': (('f534f66933f6f25c5ff8da8323a2bc5228c0fe72',),
+                                      '4b3c74bc178133463148849d2191022f42897f7f'),
+ 'src/scripts/locales/de.json': (('c90e4ea92abd6f34885def7cf711bdcc177338fb',
+                                  '0b28916cd69f7c35069a1362568374da72e8c585'),
+                                 'd2c9fa18f91830852967c4a79a37611209820ac5'),
+ 'src/scripts/locales/pt_BR.json': (('3b4495ba7ab23cd88275be51750aea0e3420e7cb',
+                                     '27e7930142da4c128c15b57c9db876b94d295123'),
+                                    '3dfb1b4827ae3d08aa7898e70a53dab2df75dd07'),
+ 'src/scripts/localization.py': (('652ea732bbcc6315ac4963e9251a034dd72e342c',
+                                  'a92dd60bfdb4307b879c5c21be13d865a30fb6d7'),
+                                 '161bccdf7b0e19ee9672b8acd089ff31c95d1162'),
+ 'src/scripts/steps/apps.py': (('18de9c3f402f7a8f74b2f32d2a838723bb867614',),
+                               '779d5cb9a53d77e0b9b1ab096c0c020b72ac85de'),
+ 'src/scripts/steps/layout.py': (('726d4a233c49e4faa313fe5f8c682294c690f5be',
+                                  '92aa0d474bb77062728ced998edd591245a6c8c8'),
+                                 '6f5b66a3e295e1a2baa3fadaa52e9637b6cb8c9a')}
+
 def affected_frames(repo: Path, source: str, target: str) -> set[str]:
     """Conservative dependencies: unknown changes invalidate every frame."""
     all_frames = expected_frames()
@@ -239,6 +279,16 @@ def affected_frames(repo: Path, source: str, target: str) -> set[str]:
     def cases(names, editions=EDITIONS):
         affected.update(f'{e}-{m}-{c}' for e in editions for m in MODES for c in names)
     for path in changed:
+        app_dependency = DOCK_APPS_CAPTURE_DEPENDENCIES.get(path)
+        if app_dependency:
+            def app_object_at(ref):
+                entry = git(repo, 'ls-tree', ref, '--', path)
+                return entry.split()[2] if entry else None
+            previous, current = app_dependency
+            if app_object_at(source) in previous and app_object_at(target) == current:
+                cases(['dock', 'installer-layout', 'installer-summary'])
+                ignored.add(path)
+                continue
         dependency = DOCK_MIGRATION_CAPTURE_DEPENDENCIES.get(path)
         if dependency:
             def object_at(ref):

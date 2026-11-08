@@ -1089,5 +1089,22 @@
   "Bottom color in dark mode.": "Untere Farbe im dunklen Modus.",
   "Bottom tint strength for both modes. 0 leaves the glass untinted at this stop.": "Untere Tönungsstärke für beide Modi. Bei 0 bleibt das Glas an diesem Punkt ungetönt.",
   "Tahoe (Clear)": "Tahoe (Klar)",
-  "Tahoe (Frosted)": "Tahoe (Mattiert)"
+  "Tahoe (Frosted)": "Tahoe (Mattiert)",
+  "Dock apps": "Dock-Apps",
+  "Dock apps…": "Dock-Apps…",
+  "Installed equivalents are reused. Select only the missing apps you want to install.": "Installierte Alternativen werden weiterverwendet. Wähle nur fehlende Apps aus, die du installieren möchtest.",
+  "Distribution repositories": "Paketquellen der Distribution",
+  "Flatpak for my user (installs Flatpak if needed)": "Flatpak für meinen Benutzer (installiert bei Bedarf Flatpak)",
+  "Allow adding Flathub for my user if it is missing": "Hinzufügen von Flathub für meinen Benutzer erlauben, falls es fehlt",
+  "Flatpak apps may use their own appearance. No system remote is changed.": "Flatpak-Apps können ein eigenes Erscheinungsbild haben. Systemweite Flatpak-Quellen bleiben unverändert.",
+  "Unavailable from this source": "Über diese Quelle nicht verfügbar",
+  "Availability is checked during installation. Failed apps remain pending; removing the theme keeps your apps.": "Die Verfügbarkeit wird bei der Installation geprüft. Fehlgeschlagene Apps bleiben ausstehend; beim Entfernen des Themes bleiben deine Apps erhalten.",
+  "Use installed apps only": "Nur installierte Apps verwenden",
+  "Could not add {app}. The theme will continue; this Dock category remains pending.": "{app} konnte nicht hinzugefügt werden. Die Theme-Installation wird fortgesetzt; diese Dock-Kategorie bleibt ausstehend.",
+  "Mail": "E-Mail",
+  "Calendar": "Kalender",
+  "Notes": "Notizen",
+  "Photos": "Fotos",
+  "Music": "Musik",
+  "Video": "Video"
 }

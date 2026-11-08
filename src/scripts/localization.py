@@ -237,6 +237,89 @@ _ZH_CN.update({'PyQt6 is required for the graphical installer but could not be i
 _ES["Rollback: {command}"] = "Revertir: {command}"
 _ZH_CN["Rollback: {command}"] = "回退：{command}"
 
+_ES.update({'Dock apps': 'Apps del Dock',
+ 'Dock apps…': 'Apps del Dock…',
+ 'Installed equivalents are reused. Select only the missing apps you want to install.': 'Se '
+                                                                                        'reutilizan '
+                                                                                        'las apps '
+                                                                                        'equivalentes '
+                                                                                        'instaladas. '
+                                                                                        'Selecciona '
+                                                                                        'solo las '
+                                                                                        'apps '
+                                                                                        'faltantes '
+                                                                                        'que '
+                                                                                        'quieras '
+                                                                                        'instalar.',
+ 'Distribution repositories': 'Repositorios de la distribución',
+ 'Flatpak for my user (installs Flatpak if needed)': 'Flatpak para mi usuario (instala Flatpak si '
+                                                     'hace falta)',
+ 'Allow adding Flathub for my user if it is missing': 'Permitir añadir Flathub para mi usuario si '
+                                                      'falta',
+ 'Flatpak apps may use their own appearance. No system remote is changed.': 'Las apps Flatpak '
+                                                                            'pueden tener su '
+                                                                            'propia apariencia. No '
+                                                                            'se cambia ningún '
+                                                                            'repositorio del '
+                                                                            'sistema.',
+ 'Unavailable from this source': 'No disponible en este origen',
+ 'Availability is checked during installation. Failed apps remain pending; removing the theme keeps your apps.': 'La '
+                                                                                                                 'disponibilidad '
+                                                                                                                 'se '
+                                                                                                                 'comprueba '
+                                                                                                                 'al '
+                                                                                                                 'instalar. '
+                                                                                                                 'Las '
+                                                                                                                 'apps '
+                                                                                                                 'que '
+                                                                                                                 'fallen '
+                                                                                                                 'quedan '
+                                                                                                                 'pendientes; '
+                                                                                                                 'desinstalar '
+                                                                                                                 'el '
+                                                                                                                 'tema '
+                                                                                                                 'conserva '
+                                                                                                                 'tus '
+                                                                                                                 'apps.',
+ 'Use installed apps only': 'Usar solo las apps instaladas',
+ 'Could not add {app}. The theme will continue; this Dock category remains pending.': 'No se pudo '
+                                                                                      'añadir '
+                                                                                      '{app}. El '
+                                                                                      'tema '
+                                                                                      'continuará; '
+                                                                                      'esta '
+                                                                                      'categoría '
+                                                                                      'del Dock '
+                                                                                      'queda '
+                                                                                      'pendiente.',
+ 'Mail': 'Correo',
+ 'Calendar': 'Calendario',
+ 'Notes': 'Notas',
+ 'Photos': 'Fotos',
+ 'Music': 'Música',
+ 'Video': 'Vídeo'})
+_ZH_CN.update({'Dock apps': 'Dock 应用',
+ 'Dock apps…': 'Dock 应用…',
+ 'Installed equivalents are reused. Select only the missing apps you want to install.': '将使用已安装的同类应用。仅选择要安装的缺失应用。',
+ 'Distribution repositories': '发行版软件仓库',
+ 'Flatpak for my user (installs Flatpak if needed)': '为当前用户安装 Flatpak 应用（必要时安装 Flatpak）',
+ 'Allow adding Flathub for my user if it is missing': '允许为当前用户添加尚未配置的 Flathub',
+ 'Flatpak apps may use their own appearance. No system remote is changed.': 'Flatpak '
+                                                                            '应用的外观可能不同。不会更改系统级远程仓库。',
+ 'Unavailable from this source': '此来源不可用',
+ 'Availability is checked during installation. Failed apps remain pending; removing the theme keeps your apps.': '安装时将检查可用性。安装失败的应用将保持待添加状态；卸载主题不会删除应用。',
+ 'Use installed apps only': '仅使用已安装的应用',
+ 'Could not add {app}. The theme will continue; this Dock category remains pending.': '无法添加 '
+                                                                                      '{app}。主题安装将继续；此 '
+                                                                                      'Dock '
+                                                                                      '类别保持待添加状态。',
+ 'Mail': '邮件',
+ 'Calendar': '日历',
+ 'Notes': '笔记',
+ 'Photos': '照片',
+ 'Music': '音乐',
+ 'Video': '视频'})
+
 _TRANSLATIONS = {"es": _ES, "zh_CN": _ZH_CN}
 
 

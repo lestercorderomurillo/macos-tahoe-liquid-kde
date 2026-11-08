@@ -235,14 +235,13 @@ def capture(repo: Path, ref: str, image: Path, output: Path, reuse: Path | None 
                                 print('Captured ' + name, flush=True)
                             mode_pending = {case for case in CASES
                                             if f'{edition}-{mode}-{case}' in pending}
-                            if mode_pending == {'dock'}:
+                            if mode_pending - {case for case in mode_pending if case.startswith('installer-')} == {'dock'}:
                                 vm.action('plasma', 'panels().forEach(p=>{if(p.location==="bottom")p.hiding="none";});')
                                 vm.move(1920, 2159)
                                 time.sleep(1)
                                 shot('dock')
                                 vm.action('clean-desktop')
-                                continue
-                            if any(f'{edition}-{mode}-{case}' in pending for case in CASES
+                            elif any(f'{edition}-{mode}-{case}' in pending for case in CASES
                                    if not case.startswith('installer-')):
                                 vm.action('plasma', 'panels().forEach(p=>p.widgets().forEach(w=>{if(w.type==="org.kde.mac-tahoe-liquid-kde.launcher")'
                                           '{w.currentConfigGroup=["General"];w.writeConfig("launcherPreset",' + str(EDITIONS[edition][1]) + ');}}));')

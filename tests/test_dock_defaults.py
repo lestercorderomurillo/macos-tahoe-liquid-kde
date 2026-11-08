@@ -201,3 +201,70 @@ def test_fresh_install_uses_base_instead_of_stock_pins(monkeypatch):
     monkeypatch.setattr(layout, '_evaluate_layout_with_launchers', lambda path, pins, widget: calls.append(pins) or False)
     layout.install()
     assert calls == [[]]
+
+
+@pytest.mark.parametrize('relative', LAYOUTS)
+def test_base_uses_installed_equivalents(offline, relative):
+    installed = ['org.gnome.Nautilus.desktop', 'chromium.desktop',
+                 'org.kde.kmail2.desktop', 'org.gnome.Calendar.desktop',
+                 'org.gnome.Gnote.desktop', 'org.gnome.Loupe.desktop',
+                 'org.gnome.Rhythmbox3.desktop', 'org.gnome.Showtime.desktop',
+                 'org.kde.discover.desktop', 'systemsettings.desktop']
+    for widgets in execute((offline / relative).read_text(), installed):
+        assert next(w['pins'] for w in widgets if w['type'] == layout.MAC_TASKS_ID) == [
+            'applications:' + app for app in installed]
+
+
+def test_revision_one_recovers_photos_and_video_from_host_equivalents():
+    pins = ['preferred://filemanager', 'preferred://browser',
+            'applications:systemsettings.desktop',
+            'applications:org.kde.discover.desktop', 'applications:steam.desktop']
+    installed = ['org.gnome.Loupe.desktop', 'org.gnome.Showtime.desktop',
+                 'systemsettings.desktop', 'org.kde.discover.desktop']
+    script = existing_dock(pins, revision=1) + layout.DOCK_MIGRATION.read_text()
+    assert execute(script, installed)[0][0]['pins'] == pins + [
+        'applications:org.gnome.Loupe.desktop', 'applications:org.gnome.Showtime.desktop']
+
+
+def test_missing_category_can_be_filled_later_without_readding_removed_apps():
+    migration = layout.DOCK_MIGRATION.read_text()
+    script = existing_dock([]) + migration
+    script += 'task.writeConfig("launchers", []); installed.push("org.gnome.Showtime.desktop");'
+    script += migration
+    assert execute(script, ['org.gnome.Loupe.desktop'])[0][0]['pins'] == [
+        'applications:org.gnome.Showtime.desktop']
+
+
+def test_existing_equivalent_prevents_a_second_app_for_same_role():
+    pins = ['applications:vlc.desktop', 'applications:org.gnome.Loupe.desktop']
+    script = existing_dock(pins) + layout.DOCK_MIGRATION.read_text()
+    installed = ['vlc.desktop', 'org.gnome.Showtime.desktop', 'org.kde.haruna.desktop',
+                 'org.gnome.Loupe.desktop', 'org.kde.gwenview.desktop']
+    assert execute(script, installed)[0][0]['pins'] == pins
+
+
+def test_rebuild_preserves_resolved_categories_and_pending_roles(monkeypatch):
+    monkeypatch.setattr(layout, '_layout_has_any_theme_widget', lambda: True)
+    script = existing_dock([], revision=2)
+    script += 'task.writeConfig("dockPresetCategories", "photos");'
+    script += layout._layout_script_with_launchers(layout.LAYOUT_SCRIPT, [], layout.MAC_TASKS_ID)
+    docks = execute(script, ['org.gnome.Loupe.desktop', 'org.gnome.Showtime.desktop'])
+    assert next(w['pins'] for w in docks[0] if w['type'] == layout.MAC_TASKS_ID) == [
+        'applications:org.gnome.Showtime.desktop']
+
+
+def test_csv_pins_and_category_state_are_supported():
+    script = existing_dock(['applications:custom.desktop'], revision=2)
+    script += 'task.writeConfig("launchers", "applications:custom.desktop");'
+    script += 'task.writeConfig("dockPresetCategories", "photos,music");'
+    script += layout.DOCK_MIGRATION.read_text()
+    assert execute(script, ['org.gnome.Loupe.desktop', 'org.gnome.Showtime.desktop'])[0][0]['pins'] == [
+        'applications:custom.desktop', 'applications:org.gnome.Showtime.desktop']
+
+
+def test_requested_install_fills_legacy_revision_one_dock(monkeypatch):
+    monkeypatch.setenv('MTTKDE_WIZARD_OPTIONS', json.dumps({'dock_apps':['mail']}))
+    script = existing_dock(['applications:custom.desktop'], revision=1)
+    script += layout._dock_migration_script()
+    assert execute(script, ['thunderbird.desktop'])[0][0]['pins'] == [
+        'applications:custom.desktop', 'applications:thunderbird.desktop']

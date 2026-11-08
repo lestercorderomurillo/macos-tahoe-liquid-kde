@@ -287,10 +287,17 @@ with that repository's defaults, including its wallpaper and launcher. Choosing
 
 **Reset Dock and panel customization** is checked by default. Reinstalling
 rebuilds the selected top bar and Dock while carrying pinned apps across.
-The base Dock adds newly included installed apps once during upgrade, even
-without a layout reset; later reinstalls respect apps you remove.
+The base Dock selects installed equivalents for each app category, even without
+a layout reset. Missing categories stay pending; later reinstalls respect apps
+you remove after their category was filled.
 Uncheck it to preserve the current layout, sizes, autohide and widgets. A first
 installation creates the selected layout automatically.
+
+The custom installer's Desktop step offers optional **Dock apps**. Installed
+native and Flatpak equivalents are reused; missing categories can be selected
+individually from existing distro repositories or per-user Flatpak. Adding
+Flathub is a separate opt-in. Availability depends on the selected source;
+unavailable apps stay pending, and theme removal leaves applications installed.
 
 The Window shadows page compares **no, soft, medium or hard window shadows**
 with Nautilus screenshots. The choice applies to the theme's Aurorae
