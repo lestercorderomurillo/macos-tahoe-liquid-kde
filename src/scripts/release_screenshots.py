@@ -78,6 +78,7 @@ def visual_tree(repo: Path, ref: str, *, ignore_paths: frozenset[str] = frozense
     Console updater and repository maintenance commands have no rendered output.
     """
     console_messages = {
+        'Dock preset update failed',
         'Update available: {current} → {latest}',
         'Keeping local source: changes present or not a clean git checkout',
         'Could not verify the published update — keeping the current checkout',

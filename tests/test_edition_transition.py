@@ -85,6 +85,10 @@ def test_installer_round_trip_replaces_other_edition_and_preserves_same_edition(
     shutil.copytree(widget, installed)
     defaults.apply_launcher_default(installed)
     pins = ["applications:browser.desktop", "applications:files.desktop"]
+    # Model the legacy running panel as well as its installed package.
+    appletsrc = sandbox / '.config/plasma-org.kde.plasma.desktop-appletsrc'
+    appletsrc.parent.mkdir(parents=True, exist_ok=True)
+    appletsrc.write_text('plugin=' + defaults.LAUNCHER_ID + '\n')
     monkeypatch.setattr(layout, "_capture_pinned_launchers", lambda: pins)
     saved = [1, 2]  # Explicit choices on two screens must yield to a new edition.
     results = []

@@ -1,4 +1,5 @@
 {
+  "Dock preset update failed": "Não foi possível atualizar a predefinição do Dock",
   "Could not remove old Rounded Corners cache: {exc}": "Não foi possível remover o cache antigo do Rounded Corners: {exc}",
   "Generating icons: {completed}/{total}": "Gerando ícones: {completed}/{total}",
   "Cron entries installed, but no running cron daemon could be confirmed. Enable your cron service for scheduled features.": "As entradas do cron foram instaladas, mas não foi possível confirmar um serviço cron em execução. Ative o serviço cron para os recursos agendados.",
