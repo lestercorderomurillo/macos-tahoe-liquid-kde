@@ -6,6 +6,10 @@
   <kcfgfile name=""/>
 
   <group name="General">
+    <entry name="macOSDockIcons" type="Bool">
+      <label>Use consistent function icons only inside this Dock.</label>
+      <default>false</default>
+    </entry>
     <entry name="showOnlyCurrentScreen" type="Bool">
       <label>Whether to show only window tasks that are on the same screen as the widget.</label>
       <default>false</default>

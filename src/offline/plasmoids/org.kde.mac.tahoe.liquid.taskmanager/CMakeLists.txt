@@ -50,7 +50,9 @@ file(GLOB_RECURSE TASKMANAGER_QML CONFIGURE_DEPENDS
     contents/ui/*.js
 )
 
-set_source_files_properties(contents/ui/LayoutMetrics.js contents/ui/TaskTools.js PROPERTIES QT_QML_SKIP_QMLDIR_ENTRY TRUE)
+file(GLOB_RECURSE DOCK_ARTWORK RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} CONFIGURE_DEPENDS contents/icons/*.svg)
+
+set_source_files_properties(contents/ui/LayoutMetrics.js contents/ui/TaskTools.js contents/ui/DockRoles.js PROPERTIES QT_QML_SKIP_QMLDIR_ENTRY TRUE)
 
 set(QT_QML_NO_CACHEGEN TRUE)
 
@@ -63,6 +65,7 @@ plasma_add_applet(org.kde.mac.tahoe.liquid.taskmanager
         smartlauncheritem.cpp
     RESOURCES
         contents/config/main.xml
+        ${DOCK_ARTWORK}
     GENERATE_APPLET_CLASS
     QML_ARGS DEPENDENCIES
         QtCore

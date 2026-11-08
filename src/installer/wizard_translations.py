@@ -3,7 +3,12 @@
 from localization import effective_language, translate
 
 # English | Spanish | Simplified Chinese | Brazilian Portuguese | German
-_ROWS = '''Which window glass would you like?|¿Qué cristal prefieres para las ventanas?|你想使用哪种窗口玻璃效果？|Qual vidro você prefere nas janelas?|Welches Fensterglas möchtest du verwenden?
+_ROWS = '''Dock appearance|Apariencia del Dock|程序坞外观|Aparência do Dock|Dock-Erscheinungsbild
+Keep current Dock icons|Conservar los iconos actuales del Dock|保留当前程序坞图标|Manter os ícones atuais do Dock|Aktuelle Dock-Symbole behalten
+macOS-style Dock icons|Iconos del Dock estilo macOS|macOS 风格的程序坞图标|Ícones do Dock no estilo macOS|Dock-Symbole im macOS-Stil
+Application icons|Iconos de las aplicaciones|应用图标|Ícones dos aplicativos|Anwendungssymbole
+Only Dock icons change. Your apps, pin order and desktop icon theme stay the same.|Solo cambian los iconos del Dock. Se conservan tus apps, su orden y el tema de iconos del escritorio.|仅更改程序坞图标。应用、固定顺序和桌面图标主题保持不变。|Somente os ícones do Dock mudam. Seus aplicativos, a ordem e o tema de ícones da área de trabalho permanecem iguais.|Nur die Dock-Symbole ändern sich. Anwendungen, Reihenfolge und Desktop-Symboldesign bleiben erhalten.
+Which window glass would you like?|¿Qué cristal prefieres para las ventanas?|你想使用哪种窗口玻璃效果？|Qual vidro você prefere nas janelas?|Welches Fensterglas möchtest du verwenden?
 Window glass|Cristal de las ventanas|窗口玻璃|Vidro das janelas|Fensterglas
 Classic|Clásico|经典|Clássico|Klassisch
 Tinted|Tintado|着色|Tingido|Getönt

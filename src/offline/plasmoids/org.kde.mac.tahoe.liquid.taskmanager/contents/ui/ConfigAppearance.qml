@@ -28,6 +28,7 @@ KCMUtils.SimpleKCM {
     property alias cfg_maxStripes: maxStripes.value
     property alias cfg_forceStripes: forceStripes.checked
     property alias cfg_taskMaxWidth: taskMaxWidth.currentIndex
+    property alias cfg_macOSDockIcons: macOSDockIcons.checked
     property alias cfg_dockMagnification: dockMagnification.value
 
     Component.onCompleted: {
@@ -44,6 +45,12 @@ KCMUtils.SimpleKCM {
         }
     }
     Kirigami.FormLayout {
+        QQC2.CheckBox {
+            id: macOSDockIcons
+            visible: root.iconOnly
+            text: i18nd("plasma_applet_org.kde.mac.tahoe.liquid.taskmanager", "Use macOS-style Dock icons")
+        }
+
         QQC2.CheckBox {
             id: showToolTips
             Kirigami.FormData.label: i18ndc("plasma_applet_org.kde.plasma.taskmanager", "@label for several checkboxes", "General:")

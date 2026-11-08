@@ -36,7 +36,8 @@ def test_dock_themed_icons_follow_both_modes_and_preserve_custom_pixmaps(tmp_pat
     backend = (UI.parent.parent / 'backend.cpp').read_text()
     method = backend.split('QVariant Backend::iconSource(', 1)[1].split('\n}\n', 1)[0]
     task = (UI / 'Task.qml').read_text()
-    assert 'source: backend.iconSource(task.model.decoration)' in task
+    assert ': backend.iconSource(task.model.decoration)' in task
+    assert 'source: task.dockIconSource' in task
     assert 'target: tasksRoot.iconThemeWatcher' in task
     watcher = (UI.parent.parent / 'launcher/iconthemewatcher.h').read_text()
     assert 'QTimer::singleShot(0, this, &IconThemeWatcher::changed)' in watcher

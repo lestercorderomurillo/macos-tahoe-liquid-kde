@@ -21,6 +21,9 @@
             var tasks = ps[p].widgetById(ids[w]);
             if (!tasks || tasks.type !== "org.kde.mac.tahoe.liquid.icontasks") continue;
             tasks.currentConfigGroup = ["General"];
+            if (typeof mttkdeDockAppearance !== "undefined" && mttkdeDockAppearance !== "keep") {
+                tasks.writeConfig("macOSDockIcons", mttkdeDockAppearance === "macos");
+            }
             var revision = Number(tasks.readConfig("dockPresetRevision", 0));
             var resolved = tasks.readConfig("dockPresetCategories", []);
             if (typeof resolved === "string") resolved = resolved ? resolved.split(",") : [];

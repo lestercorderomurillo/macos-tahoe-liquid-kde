@@ -4,3 +4,36 @@ msgstr "Project-Id-Version: MacTahoe Liquid KDE\nPO-Revision-Date: 2026-10-22 00
 
 msgid "Hover magnification:"
 msgstr "Vergrößerung beim Überfahren:"
+
+msgid "Use macOS-style Dock icons"
+msgstr "Dock-Symbole im macOS-Stil verwenden"
+
+msgid "Files"
+msgstr "Dateien"
+
+msgid "Browser"
+msgstr "Browser"
+
+msgid "Mail"
+msgstr "E-Mail"
+
+msgid "Calendar"
+msgstr "Kalender"
+
+msgid "Notes"
+msgstr "Notizen"
+
+msgid "Photos"
+msgstr "Fotos"
+
+msgid "Music"
+msgstr "Musik"
+
+msgid "Video"
+msgstr "Video"
+
+msgid "App Store"
+msgstr "App-Store"
+
+msgid "System Settings"
+msgstr "Systemeinstellungen"

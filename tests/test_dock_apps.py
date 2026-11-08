@@ -148,6 +148,9 @@ def interact(accept):
         assert isinstance(dialog, QDialog)
         assert not dialog.findChild(CheckOption,'dock-app-notes').isEnabled()
         assert not dialog.findChild(CheckOption,'dock-app-photos').isEnabled()
+        appearance = dialog.findChild(QComboBox, 'dock-appearance')
+        assert appearance.currentData() == 'keep'
+        appearance.setCurrentIndex(appearance.findData('macos'))
         mail = dialog.findChild(CheckOption,'dock-app-mail')
         assert not mail.isChecked()
         mail.click()
@@ -162,12 +165,14 @@ def interact(accept):
 QTimer.singleShot(0, lambda: interact(False))
 window.edit_dock_apps()
 assert window.choices['dock_apps'] == []
+assert window.choices['dock_appearance'] == 'keep'
 assert window.choices['dock_apps_source'] == 'native'
 assert not window.choices['dock_add_flathub']
 QTimer.singleShot(0, lambda: interact(True))
 window.edit_dock_apps()
 assert not errors, errors
 assert window.choices['dock_apps'] == ['mail']
+assert window.choices['dock_appearance'] == 'macos'
 assert window.choices['dock_apps_source'] == 'flatpak'
 assert window.choices['dock_add_flathub']
 assert 'Mail' in window.dock_app_summary() and 'Flatpak' in window.dock_app_summary()

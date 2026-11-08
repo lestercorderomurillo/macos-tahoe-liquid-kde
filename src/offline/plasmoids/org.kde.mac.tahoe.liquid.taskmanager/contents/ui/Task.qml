@@ -19,6 +19,7 @@ import plasma.applet.org.kde.mac.tahoe.liquid.taskmanager as TaskManagerApplet
 import org.kde.plasma.plasmoid
 import "LayoutMetrics.js" as LayoutMetrics
 import "TaskTools.js" as TaskTools
+import "DockRoles.js" as DockRoles
 
 import org.kde.taskmanager as TaskManager
 
@@ -55,6 +56,27 @@ PlasmaCore.ToolTipArea {
 
     readonly property int pid: model.AppPid
     readonly property string appName: model.AppName
+    readonly property string dockRole: tasksRoot.iconsOnly && Plasmoid.configuration.macOSDockIcons
+        ? DockRoles.roleFor(model.LauncherUrlWithoutIcon, model.AppId) : ""
+    readonly property bool darkDockIcons: Kirigami.Theme.backgroundColor.hslLightness < 0.5
+    readonly property var dockIconSource: dockRole
+        ? Qt.resolvedUrl("../icons/" + (darkDockIcons ? "dark/" : "light/") + dockRole + ".svg")
+        : backend.iconSource(task.model.decoration)
+    readonly property string dockRoleLabel: {
+        switch (dockRole) {
+        case "files": return i18nd("plasma_applet_org.kde.mac.tahoe.liquid.taskmanager", "Files");
+        case "browser": return i18nd("plasma_applet_org.kde.mac.tahoe.liquid.taskmanager", "Browser");
+        case "mail": return i18nd("plasma_applet_org.kde.mac.tahoe.liquid.taskmanager", "Mail");
+        case "calendar": return i18nd("plasma_applet_org.kde.mac.tahoe.liquid.taskmanager", "Calendar");
+        case "notes": return i18nd("plasma_applet_org.kde.mac.tahoe.liquid.taskmanager", "Notes");
+        case "photos": return i18nd("plasma_applet_org.kde.mac.tahoe.liquid.taskmanager", "Photos");
+        case "music": return i18nd("plasma_applet_org.kde.mac.tahoe.liquid.taskmanager", "Music");
+        case "video": return i18nd("plasma_applet_org.kde.mac.tahoe.liquid.taskmanager", "Video");
+        case "store": return i18nd("plasma_applet_org.kde.mac.tahoe.liquid.taskmanager", "App Store");
+        case "settings": return i18nd("plasma_applet_org.kde.mac.tahoe.liquid.taskmanager", "System Settings");
+        default: return "";
+        }
+    }
     readonly property string appId: model.AppId.replace(/\.desktop/, '')
     readonly property bool isIcon: tasksRoot.iconsOnly || model.IsLauncher
     property bool toolTipOpen: false
@@ -373,12 +395,12 @@ PlasmaCore.ToolTipArea {
         mainItem.pidParent = Qt.binding(() => model.AppPid);
         mainItem.windows = Qt.binding(() => model.WinIdList);
         mainItem.isGroup = Qt.binding(() => model.IsGroupParent);
-        mainItem.icon = Qt.binding(() => backend.iconSource(model.decoration));
+        mainItem.icon = Qt.binding(() => task.dockIconSource);
         mainItem.launcherUrl = Qt.binding(() => model.LauncherUrlWithoutIcon);
         mainItem.isLauncher = Qt.binding(() => model.IsLauncher);
         mainItem.isMinimized = Qt.binding(() => model.IsMinimized);
         mainItem.display = Qt.binding(() => model.display);
-        mainItem.genericName = Qt.binding(() => model.GenericName);
+        mainItem.genericName = Qt.binding(() => task.dockRoleLabel || model.GenericName);
         mainItem.virtualDesktops = Qt.binding(() => model.VirtualDesktops);
         mainItem.isOnAllVirtualDesktops = Qt.binding(() => model.IsOnAllVirtualDesktops);
         mainItem.activities = Qt.binding(() => model.Activities);
@@ -587,14 +609,14 @@ PlasmaCore.ToolTipArea {
             enabled: true
 
             // A cached QIcon can retain the outgoing theme's pixmap.
-            source: backend.iconSource(task.model.decoration)
+            source: task.dockIconSource
 
             Connections {
                 target: tasksRoot.iconThemeWatcher
                 function onChanged() {
                     icon.source = "";
                     Qt.callLater(() => {
-                        icon.source = Qt.binding(() => backend.iconSource(task.model.decoration));
+                        icon.source = Qt.binding(() => task.dockIconSource);
                     });
                 }
             }

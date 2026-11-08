@@ -1,0 +1,87 @@
+{
+  "archive": "src/offline/icons/MacTahoeLiquidKde-Icons.tar.zst",
+  "archive_sha256": "f9ea0a95a94ac79df7939fca6ef636fbc3ceb3a2e5333a16d20ff3f42488040d",
+  "transformation": "None; dereferenced bundled SVG aliases. See THIRD_PARTY_NOTICES.md for source notices.",
+  "files": {
+    "light/files.svg": {
+      "source": "MacTahoeLiquidKde-Icons/apps/scalable/file-manager.svg",
+      "sha256": "1dd88e9ee27a257855d8712de3870cf7ca7c87f3e591f45de7444c2456bfa007"
+    },
+    "light/browser.svg": {
+      "source": "MacTahoeLiquidKde-Icons/apps/scalable/safari.svg",
+      "sha256": "38b75967592c55a04c4c1d1e3c9e98a55851693024048e5e4895f95d150592c4"
+    },
+    "light/mail.svg": {
+      "source": "MacTahoeLiquidKde-Icons/apps/scalable/internet-mail.svg",
+      "sha256": "a55db5fe761f3b5dadbeea41cbd9575a23d75952117cd49b24cb586a717465b0"
+    },
+    "light/calendar.svg": {
+      "source": "MacTahoeLiquidKde-Icons/apps/scalable/calendar.svg",
+      "sha256": "c767f07a84992e28a5bf81c95e9e7020acbb6cc27d2424145b65304a11f23789"
+    },
+    "light/notes.svg": {
+      "source": "MacTahoeLiquidKde-Icons/apps/scalable/org.gnome.Gnote.svg",
+      "sha256": "31aaec5b1fe843db80e2bae73ca9611ed8b4520b7e66799981f00bfa52879151"
+    },
+    "light/photos.svg": {
+      "source": "MacTahoeLiquidKde-Icons/apps/scalable/gnome-photos.svg",
+      "sha256": "5f8eb7594ee00628afaae671e44536306b41944d97129722364eade5ed106168"
+    },
+    "light/music.svg": {
+      "source": "MacTahoeLiquidKde-Icons/apps/scalable/music-app.svg",
+      "sha256": "dc8f1e4942cf4d3adb155b2dcd9c9a600448cd629d961cef26d96462b0e118fd"
+    },
+    "light/video.svg": {
+      "source": "MacTahoeLiquidKde-Icons/apps/scalable/multimedia-video-player.svg",
+      "sha256": "b80cad927337a71d68f2dfd0bfb19aea9b5ee37e308f6bd62306c19ee96ab369"
+    },
+    "light/store.svg": {
+      "source": "MacTahoeLiquidKde-Icons/apps/scalable/org.kde.discover.svg",
+      "sha256": "a3905306bcefa3809c64a5da38b1d336abdbf320deafa54b2a31804fd8ed70af"
+    },
+    "light/settings.svg": {
+      "source": "MacTahoeLiquidKde-Icons/apps/scalable/systemsettings.svg",
+      "sha256": "8ff99c6c70c0a33282aa351e3de4f0fc29bb4437d3cfe6c6ae6cfda4a7b97632"
+    },
+    "dark/files.svg": {
+      "source": "MacTahoeLiquidKde-Icons-dark/apps/scalable/file-manager.svg",
+      "sha256": "1dd88e9ee27a257855d8712de3870cf7ca7c87f3e591f45de7444c2456bfa007"
+    },
+    "dark/browser.svg": {
+      "source": "MacTahoeLiquidKde-Icons-dark/apps/scalable/safari.svg",
+      "sha256": "38b75967592c55a04c4c1d1e3c9e98a55851693024048e5e4895f95d150592c4"
+    },
+    "dark/mail.svg": {
+      "source": "MacTahoeLiquidKde-Icons-dark/apps/scalable/internet-mail.svg",
+      "sha256": "a55db5fe761f3b5dadbeea41cbd9575a23d75952117cd49b24cb586a717465b0"
+    },
+    "dark/calendar.svg": {
+      "source": "MacTahoeLiquidKde-Icons-dark/apps/scalable/calendar.svg",
+      "sha256": "c767f07a84992e28a5bf81c95e9e7020acbb6cc27d2424145b65304a11f23789"
+    },
+    "dark/notes.svg": {
+      "source": "MacTahoeLiquidKde-Icons-dark/apps/scalable/org.gnome.Gnote.svg",
+      "sha256": "31aaec5b1fe843db80e2bae73ca9611ed8b4520b7e66799981f00bfa52879151"
+    },
+    "dark/photos.svg": {
+      "source": "MacTahoeLiquidKde-Icons-dark/apps/scalable/gnome-photos.svg",
+      "sha256": "5f8eb7594ee00628afaae671e44536306b41944d97129722364eade5ed106168"
+    },
+    "dark/music.svg": {
+      "source": "MacTahoeLiquidKde-Icons-dark/apps/scalable/music-app.svg",
+      "sha256": "dc8f1e4942cf4d3adb155b2dcd9c9a600448cd629d961cef26d96462b0e118fd"
+    },
+    "dark/video.svg": {
+      "source": "MacTahoeLiquidKde-Icons-dark/apps/scalable/multimedia-video-player.svg",
+      "sha256": "b80cad927337a71d68f2dfd0bfb19aea9b5ee37e308f6bd62306c19ee96ab369"
+    },
+    "dark/store.svg": {
+      "source": "MacTahoeLiquidKde-Icons-dark/apps/scalable/org.kde.discover.svg",
+      "sha256": "a3905306bcefa3809c64a5da38b1d336abdbf320deafa54b2a31804fd8ed70af"
+    },
+    "dark/settings.svg": {
+      "source": "MacTahoeLiquidKde-Icons-dark/apps/scalable/systemsettings.svg",
+      "sha256": "8ff99c6c70c0a33282aa351e3de4f0fc29bb4437d3cfe6c6ae6cfda4a7b97632"
+    }
+  }
+}

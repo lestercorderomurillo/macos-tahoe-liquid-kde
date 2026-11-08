@@ -585,3 +585,19 @@ The installer restores existing pins after creating the layout, including an
 intentionally empty Dock on an existing theme installation. The base list is
 used when there are no saved pins and no previous theme layout. Declarative Nix
 panels continue to use their explicit `panels.launchers` list.
+
+
+## Dock icon appearance
+
+In the custom installer, open **Desktop → Dock apps… → Dock appearance** and
+choose **macOS-style Dock icons**. This is separate from optional app installation:
+it uses installed Linux applications with consistent icons for Files, Browser,
+Mail, Calendar, Notes, Photos, Music, Video, App Store and System Settings.
+The tooltip retains the real application name. Other applications keep their
+normal icons; launchers and running windows retain the same application identity.
+
+**Keep current Dock icons** is the installer default and preserves each Dock's
+choice, including during a layout reset. **Application icons** turns the option
+off. It can also be toggled in the Dock widget's Appearance settings. Pins, their
+order and the global icon theme are preserved. The bundled artwork has light and
+dark variants and does not require changing the desktop icon theme.

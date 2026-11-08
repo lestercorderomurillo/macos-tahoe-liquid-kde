@@ -942,6 +942,17 @@ class InstallerWindow(OpaqueSurface):
         dialog.setWindowTitle(self.t("Dock apps"))
         dialog.setMinimumWidth(620)
         body = QVBoxLayout(dialog)
+        body.addWidget(self.label("Dock appearance"))
+        appearance = QComboBox()
+        appearance.setObjectName("dock-appearance")
+        for key, label in (("keep", "Keep current Dock icons"), ("macos", "macOS-style Dock icons"), ("native", "Application icons")):
+            appearance.addItem(self.t(label), key)
+        appearance.setCurrentIndex(appearance.findData(choices["dock_appearance"]))
+        appearance.setEnabled(choices["dock"])
+        appearance.currentIndexChanged.connect(lambda: choices.update(dock_appearance=appearance.currentData()))
+        body.addWidget(appearance)
+        body.addWidget(self.label("Only Dock icons change. Your apps, pin order and desktop icon theme stay the same."))
+
         intro = self.label("Installed equivalents are reused. Select only the missing apps you want to install.")
         body.addWidget(intro)
         source = QComboBox()
@@ -996,7 +1007,7 @@ class InstallerWindow(OpaqueSurface):
         buttons.rejected.connect(dialog.reject)
         body.addWidget(buttons)
         if dialog.exec() == QDialog.DialogCode.Accepted:
-            for key in ("dock_apps", "dock_apps_source", "dock_add_flathub"):
+            for key in ("dock_apps", "dock_apps_source", "dock_add_flathub", "dock_appearance"):
                 self.choices[key] = choices[key]
             self.render()
 
@@ -1149,7 +1160,7 @@ class InstallerWindow(OpaqueSurface):
             ("wallpaper", "Background", value("wallpaper"), "wallpaper"),
             ("launcher", "Launcher", self.t("Keep") if keep_layout else value("launcher"), "launcher"),
             ("panel", "Desktop", desktop or self.t("Keep"), "layout"),
-            ("dock_apps", "Dock apps", self.dock_app_summary(), "layout"),
+            ("dock_apps", "Dock apps", self.dock_app_summary() + (" · " + self.t("macOS-style Dock icons" if c["dock_appearance"] == "macos" else "Application icons") if c["dock"] and c["dock_appearance"] != "keep" else ""), "layout"),
             ("acrylic_glass", "Effects", effects or self.t("Disabled"), "effects"),
             ("window_controls", "Window controls", value("window_controls"), "window_controls"),
             ("shadows", "Window shadows", value("shadows"), "shadows"),

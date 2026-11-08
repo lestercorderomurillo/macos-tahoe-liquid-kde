@@ -8,12 +8,14 @@ var old = panels();
 var launcherPresets = {};
 var dockPresetRevisions = {};
 var dockPresetCategories = {};
+var dockIconChoices = {};
 for (var p = 0; p < old.length; p++) {
     var widgets = old[p].widgetIds;
     for (var w = 0; w < widgets.length; w++) {
         var widget = old[p].widgetById(widgets[w]);
         if (widget && widget.type === "org.kde.mac.tahoe.liquid.icontasks") {
             widget.currentConfigGroup = ["General"];
+            dockIconChoices[old[p].screen] = widget.readConfig("macOSDockIcons", false);
             dockPresetRevisions[old[p].screen] = Number(widget.readConfig("dockPresetRevision", 0));
             dockPresetCategories[old[p].screen] = widget.readConfig("dockPresetCategories", []);
         }
@@ -145,6 +147,7 @@ for (var screen = 0; screen < screenCount; screen++) {
         }
     }
     tasks.writeConfig("launchers", dockLaunchers);
+    tasks.writeConfig("macOSDockIcons", dockIconChoices[dock.screen] || false);
     tasks.writeConfig("dockPresetRevision", dockPresetRevisions[dock.screen] || 0);
     tasks.writeConfig("dockPresetCategories", dockPresetCategories[dock.screen] || []);
 

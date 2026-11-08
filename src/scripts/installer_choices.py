@@ -14,6 +14,7 @@ COLORS = {
 }
 ENUMS = {
     "appearance": ("auto", "light", "dark"),
+    "dock_appearance": ("keep", "macos", "native"),
     "dock_apps_source": ("native", "flatpak"),
     "icons": ("regular", "glass", "keep"),
     "color": tuple(COLORS),
@@ -41,7 +42,7 @@ def defaults() -> dict:
         window_controls="glassy" if edition == "golden" else "flat",
         files="nautilus", nautilus_bookmarks=True, plymouth=True, glass_style="official" if edition == "golden" else "classic",
         oled_care=False, oled_interval=5, oled_max_shift=8,
-        dock_apps=[], dock_apps_source="native", dock_add_flathub=False,
+        dock_appearance="keep", dock_apps=[], dock_apps_source="native", dock_add_flathub=False,
     )
 
 
