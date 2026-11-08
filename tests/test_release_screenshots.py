@@ -582,3 +582,33 @@ def test_export_provenance_cannot_claim_a_different_original(capture):
     final = commit(repo)
     with pytest.raises(ValueError, match='export provenance'):
         shots.verify_committed(repo, final)
+
+
+def test_dock_migration_requires_new_dock_frames_and_fails_closed(tmp_path):
+    subprocess.run(['git', 'init', '-q', str(tmp_path)], check=True)
+    mappings = shots.DOCK_MIGRATION_CAPTURE_DEPENDENCIES
+    for path, (before, after) in mappings.items():
+        if before:
+            target = tmp_path / path
+            target.parent.mkdir(parents=True, exist_ok=True)
+            target.write_bytes(subprocess.check_output(
+                ['git', '-C', str(shots.ROOT), 'cat-file', 'blob', before]))
+    baseline = commit(tmp_path)
+    for path, (before, after) in mappings.items():
+        target = tmp_path / path
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_bytes(subprocess.check_output(
+            ['git', '-C', str(shots.ROOT), 'cat-file', 'blob', after]))
+    migrated = commit(tmp_path)
+    assert shots.visual_tree(tmp_path, baseline) != shots.visual_tree(tmp_path, migrated)
+    assert shots.affected_frames(tmp_path, baseline, migrated) == {
+        f'{edition}-{mode}-dock' for edition in shots.EDITIONS for mode in shots.MODES}
+    with pytest.raises(ValueError, match='Visual release source changed'):
+        shots.verify_visual_source(tmp_path, baseline, migrated, shots.runtime_tree(tmp_path, baseline))
+    for path in mappings:
+        target = tmp_path / path
+        original = target.read_text()
+        target.write_text(original + ('\nvisible_change = True\n' if path.endswith('.py') else '\nvar visibleChange = true;\n'))
+        changed = commit(tmp_path)
+        assert shots.affected_frames(tmp_path, baseline, changed) == shots.expected_frames(), path
+        target.write_text(original)

@@ -221,6 +221,12 @@ def _scoped_python(repo: Path, ref: str, path: str) -> dict[str, str]:
     return functions
 
 
+# Dependency scope for the audited v0.63.4 Dock migration. These exact changes
+# REQUIRE four new Dock frames, never visual equivalence or old Dock approval.
+# Other components retain their own reviewed provenance. Any subsequent edit
+# falls through to the conservative full-frame dependency check.
+DOCK_MIGRATION_CAPTURE_DEPENDENCIES = {'src/offline/layouts/mac-tahoe.js': ('bb43a915eced126315f2b43144d09ce6d4751005', '40cc46eaaafa4a551287d536d7ce6f0663b07851'), 'src/offline/layouts/migrate-dock-preset.js': (None, '5f2775b105d98829f408e12965dfb918b33a850a'), 'src/offline/look-and-feel/MacTahoeLiquidKde-Dark/contents/layouts/org.kde.plasma.desktop-layout.js': ('3753a072afd83668c3b861678d9cb3f20425e204', 'e67912b73cd1395244d7f6e1c6f93e71a2ebbb83'), 'src/offline/look-and-feel/MacTahoeLiquidKde-Light/contents/layouts/org.kde.plasma.desktop-layout.js': ('3753a072afd83668c3b861678d9cb3f20425e204', 'e67912b73cd1395244d7f6e1c6f93e71a2ebbb83'), 'src/scripts/cli.py': ('54e5f5ef24867e746d992458f51e713d605222bf', '497dbdf4a75c8560435835b5419c6c072c88638b'), 'src/scripts/steps/layout.py': ('726d4a233c49e4faa313fe5f8c682294c690f5be', '92aa0d474bb77062728ced998edd591245a6c8c8')}
+
 def affected_frames(repo: Path, source: str, target: str) -> set[str]:
     """Conservative dependencies: unknown changes invalidate every frame."""
     all_frames = expected_frames()
@@ -232,6 +238,15 @@ def affected_frames(repo: Path, source: str, target: str) -> set[str]:
     def cases(names, editions=EDITIONS):
         affected.update(f'{e}-{m}-{c}' for e in editions for m in MODES for c in names)
     for path in changed:
+        dependency = DOCK_MIGRATION_CAPTURE_DEPENDENCIES.get(path)
+        if dependency:
+            def object_at(ref):
+                entry = git(repo, 'ls-tree', ref, '--', path)
+                return entry.split()[2] if entry else None
+            if (object_at(source), object_at(target)) == dependency:
+                cases(['dock'])
+                ignored.add(path)
+                continue
         if path == 'src/installer/wizard_window.py':
             before, after = (_scoped_python(repo, ref, path) for ref in (source, target))
             methods = {key for key in before.keys() | after.keys() if before.get(key) != after.get(key)}
