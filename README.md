@@ -110,9 +110,9 @@ Optional macOS-style Dock icons, available in **Desktop → Dock apps**. Your ap
 Glass refraction, hover zoom, notification badges and auto-hide.
 
 <p align="center">
-  <img src="src/screenshots/dock_1_v4-ee5d7fd576bd.webp" alt="Glass Dock with ten pinned applications and light icons" width="840">
+  <img src="src/screenshots/dock_1_v4-9caa88849e2c.webp" alt="Glass Dock with ten pinned applications and light icons" width="840">
   <br>
-  <img src="src/screenshots/dock_1_dark_v4-05af0ed1173b.webp" alt="The same Dock with dark icons" width="840">
+  <img src="src/screenshots/dock_1_dark_v4-f7a01f84cb24.webp" alt="The same Dock with dark icons" width="840">
 </p>
 
 <br>

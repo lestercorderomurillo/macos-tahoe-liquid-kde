@@ -1,12 +1,12 @@
 # Installer testing
 
-Tahoe **v0.63.5** reuses installed Dock equivalents and offers optional missing
-apps with explicit per-app/source choices. Focused installer, migration,
-translation and prepared Golden Gate checks passed. Twelve affected Dock,
-Desktop-step and Summary frames were reviewed in the pinned KDE neon VM;
-94 other frames retain their original provenance. See [validation evidence](tests/dock_apps_validation.json)
-for commands, source identities and package-installation coverage limits.
-Publication requires successful exact-commit CI on both branches in both repositories.
+Tahoe **v0.63.6** adds optional macOS-style Dock icons while preserving real
+applications, pin order and the desktop icon theme. Focused component and
+publication-provenance checks passed. Four new Dock frames were reviewed in
+the pinned KDE neon VM; the other 102 retain their original provenance.
+See [validation evidence](tests/dock_appearance_validation.json) for source
+identities, commands and coverage limits. Publication requires successful
+exact-commit CI on both branches in both repositories.
 
 ## Installation steps
 
