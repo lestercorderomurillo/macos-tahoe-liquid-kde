@@ -1,12 +1,12 @@
 # Installer testing
 
-Tahoe **v0.63.4** uses the complete installed-app Dock preset on fresh installs
-and adds missing base apps once on upgrades, preserving user pins and later removals.
-Focused migration, edition-transition, translation and provenance checks passed.
-Four new Dock frames were reviewed in the pinned KDE neon VM; all 102 unrelated
-frames retain their original provenance. See [validation evidence](tests/dock_migration_validation.json)
-for commands, source identities and coverage limits. Release workflows require
-successful exact-commit CI on both branches in both repositories.
+Tahoe **v0.63.5** reuses installed Dock equivalents and offers optional missing
+apps with explicit per-app/source choices. Focused installer, migration,
+translation and prepared Golden Gate checks passed. Twelve affected Dock,
+Desktop-step and Summary frames were reviewed in the pinned KDE neon VM;
+94 other frames retain their original provenance. See [validation evidence](tests/dock_apps_validation.json)
+for commands, source identities and package-installation coverage limits.
+Publication requires successful exact-commit CI on both branches in both repositories.
 
 ## Installation steps
 
@@ -19,7 +19,7 @@ Scroll horizontally through the installation steps.
   <td align="center"><img src="src/screenshots/installer-icons_dark_v4-6da196043656.webp" alt="Icons and color" width="500"><br>Icons and color</td>
   <td align="center"><img src="src/screenshots/installer-wallpaper_dark_v4-71c1437b72f2.webp" alt="Wallpaper" width="500"><br>Wallpaper</td>
   <td align="center"><img src="src/screenshots/installer-launcher_dark_v4-4c649664ccd0.webp" alt="Launcher" width="500"><br>Launcher</td>
-  <td align="center"><img src="src/screenshots/installer-layout_dark_v4-8c948361753c.webp" alt="Top bar and Dock" width="500"><br>Top bar and Dock</td>
+  <td align="center"><img src="src/screenshots/installer-layout_dark_v4-e3a848e2a47a.webp" alt="Top bar and Dock" width="500"><br>Top bar and Dock</td>
   <td align="center"><img src="src/screenshots/installer-effects_dark_v4-2417cbbd36cd.webp" alt="Effects" width="500"><br>Effects</td>
   <td align="center"><img src="src/screenshots/installer-window_controls_dark_v4-eedd4ce4d0b4.webp" alt="Flat or Glassy window controls" width="500"><br>Window controls</td>
   <td align="center"><img src="src/screenshots/installer-shadows_dark_v4-d78803a9bf02.webp" alt="Window shadow comparison" width="500"><br>Window shadows</td>
@@ -29,6 +29,6 @@ Scroll horizontally through the installation steps.
   <td align="center"><img src="src/screenshots/installer-glass_style_dark_v4-b3a8a7506ab6.webp" alt="Window glass" width="500"><br>Window glass</td>
   <td align="center"><img src="src/screenshots/installer-boot_dark_v4-872ac7febe6d.webp" alt="Boot animation" width="500"><br>Boot animation</td>
   <td align="center"><img src="src/screenshots/installer-oled_dark_v4-fb72373e426a.webp" alt="OLED protection" width="500"><br>OLED protection</td>
-  <td align="center"><img src="src/screenshots/installer-summary_dark_v4-3f1b4b556829.webp" alt="Summary" width="500"><br>Summary</td>
+  <td align="center"><img src="src/screenshots/installer-summary_dark_v4-e5a7bfc57e13.webp" alt="Summary" width="500"><br>Summary</td>
 </tr>
 </table>
