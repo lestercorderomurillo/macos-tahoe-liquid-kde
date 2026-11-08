@@ -84,13 +84,13 @@ The desktop and its apps in light and dark mode.
 The Tahoe desktop in light and dark mode.
 
 <p align="center">
-  <a href="src/screenshots/showcase_light_4k-97fc9fe105ff.png"><img src="src/screenshots/showcase_light_4k-97fc9fe105ff.png" alt="Tahoe light desktop with Files focused" width="415"></a>
-  <a href="src/screenshots/desktop_about_light_4k-8dab357ddaef.png"><img src="src/screenshots/desktop_about_light_4k-8dab357ddaef.png" alt="Tahoe light desktop with About This Computer focused" width="415"></a>
+  <a href="src/screenshots/showcase_light_2k-5479af03cf16.webp"><img src="src/screenshots/showcase_light_2k-5479af03cf16.webp" alt="Tahoe light desktop with Files focused" width="415"></a>
+  <a href="src/screenshots/desktop_about_light_2k-89450b407893.webp"><img src="src/screenshots/desktop_about_light_2k-89450b407893.webp" alt="Tahoe light desktop with About This Computer focused" width="415"></a>
 </p>
 
 <p align="center">
-  <a href="src/screenshots/showcase_dark_4k-bb9d297e1abf.png"><img src="src/screenshots/showcase_dark_4k-bb9d297e1abf.png" alt="Tahoe dark desktop with Files focused" width="415"></a>
-  <a href="src/screenshots/desktop_about_dark_4k-3d09f2ea53e1.png"><img src="src/screenshots/desktop_about_dark_4k-3d09f2ea53e1.png" alt="Tahoe dark desktop with About This Computer focused" width="415"></a>
+  <a href="src/screenshots/showcase_dark_2k-a75515efba07.webp"><img src="src/screenshots/showcase_dark_2k-a75515efba07.webp" alt="Tahoe dark desktop with Files focused" width="415"></a>
+  <a href="src/screenshots/desktop_about_dark_2k-76aef24fbea6.webp"><img src="src/screenshots/desktop_about_dark_2k-76aef24fbea6.webp" alt="Tahoe dark desktop with About This Computer focused" width="415"></a>
 </p>
 
 <br>
@@ -100,8 +100,8 @@ The Tahoe desktop in light and dark mode.
 App search, favorites and categories with blurred glass and edge refraction. [Material settings](docs/glass-materials.md).
 
 <p align="center">
-  <img src="src/screenshots/launcher_preset_1_light-863b04d83dc6.png" alt="Default Tahoe preset 1 in light mode, with integrated search and Tahoe wallpaper" width="415">
-  <img src="src/screenshots/launcher_preset_1_dark-42b1c531609f.png" alt="Default Tahoe preset 1 in dark mode, with integrated search and Tahoe wallpaper" width="415">
+  <img src="src/screenshots/launcher_preset_1_light-9edad6ec4f82.webp" alt="Default Tahoe preset 1 in light mode, with integrated search and Tahoe wallpaper" width="415">
+  <img src="src/screenshots/launcher_preset_1_dark-4979edb5f5d4.webp" alt="Default Tahoe preset 1 in dark mode, with integrated search and Tahoe wallpaper" width="415">
 </p>
 
 <br>
@@ -111,9 +111,9 @@ App search, favorites and categories with blurred glass and edge refraction. [Ma
 Glass refraction, hover zoom, notification badges and auto-hide.
 
 <p align="center">
-  <img src="src/screenshots/dock_1_v4-91be9e593683.png" alt="Glass Dock with ten pinned applications and light icons" width="840">
+  <img src="src/screenshots/dock_1_v4-ea14e8e1c5b8.webp" alt="Glass Dock with ten pinned applications and light icons" width="840">
   <br>
-  <img src="src/screenshots/dock_1_dark_v4-5d3f6bcb049c.png" alt="The same Dock with dark icons" width="840">
+  <img src="src/screenshots/dock_1_dark_v4-1932d732c490.webp" alt="The same Dock with dark icons" width="840">
 </p>
 
 <br>
@@ -123,8 +123,8 @@ Glass refraction, hover zoom, notification badges and auto-hide.
 Finder-style Nautilus in light and dark.
 
 <p align="center">
-  <img src="src/screenshots/finder_v4-ff0a28cbd37c.png" alt="Finder-style Nautilus in light mode" width="415">
-  <img src="src/screenshots/finder_dark_v4-f802aa3f9657.png" alt="Finder-style Nautilus in dark mode" width="415">
+  <img src="src/screenshots/finder_v4-46ea5328910c.webp" alt="Finder-style Nautilus in light mode" width="415">
+  <img src="src/screenshots/finder_dark_v4-f53df7a986bc.webp" alt="Finder-style Nautilus in dark mode" width="415">
 </p>
 
 <br>
@@ -134,8 +134,8 @@ Finder-style Nautilus in light and dark.
 System controls and global menus for compatible apps.
 
 <p align="center">
-  <img src="src/screenshots/menu_v4-2c794f62668d.png" alt="System menu in light mode" width="415">
-  <img src="src/screenshots/menu_dark_v4-d6c4083ab815.png" alt="System menu in dark mode" width="415">
+  <img src="src/screenshots/menu_v4-33c36392edcf.webp" alt="System menu in light mode" width="415">
+  <img src="src/screenshots/menu_dark_v4-4641cf7875fc.webp" alt="System menu in dark mode" width="415">
 </p>
 
 <br>
@@ -145,8 +145,8 @@ System controls and global menus for compatible apps.
 Hardware, software and theme details in About This Computer.
 
 <p align="center">
-  <img src="src/screenshots/about_v4-a6540f6c2609.png" alt="About This Computer in light mode" width="415">
-  <img src="src/screenshots/about_dark_v4-937187d364e1.png" alt="About This Computer in dark mode" width="415">
+  <img src="src/screenshots/about_v4-d9d3c7498226.webp" alt="About This Computer in light mode" width="415">
+  <img src="src/screenshots/about_dark_v4-c92b8a602214.webp" alt="About This Computer in dark mode" width="415">
 </p>
 
 <br>
@@ -156,8 +156,8 @@ Hardware, software and theme details in About This Computer.
 Translucent menus and popups with matching light and dark colors.
 
 <p align="center">
-  <img src="src/screenshots/context_menu_v4-60471d2e6532.png" alt="Desktop context menu in light mode" width="415">
-  <img src="src/screenshots/context_menu_dark_v4-d12df6d79512.png" alt="Desktop context menu in dark mode" width="415">
+  <img src="src/screenshots/context_menu_v4-08d29d25e2e5.webp" alt="Desktop context menu in light mode" width="415">
+  <img src="src/screenshots/context_menu_dark_v4-656300dfe2fb.webp" alt="Desktop context menu in dark mode" width="415">
 </p>
 
 <br>
@@ -167,8 +167,8 @@ Translucent menus and popups with matching light and dark colors.
 Plymouth startup and shutdown theme with LUKS2 unlock support.
 
 <p align="center">
-  <img src="src/screenshots/boot_v4-f685ec98f1e4.png" alt="Plymouth startup splash with a progress bar" width="415">
-  <img src="src/screenshots/boot_shutdown_v4-abe6faef7c08.png" alt="Plymouth shutdown splash without a progress bar" width="415">
+  <img src="src/screenshots/boot_v4-1f628792b5bc.webp" alt="Plymouth startup splash with a progress bar" width="415">
+  <img src="src/screenshots/boot_shutdown_v4-7ef5590450a7.webp" alt="Plymouth shutdown splash without a progress bar" width="415">
 </p>
 
 <br>
@@ -473,7 +473,7 @@ Check support for your distribution, init system and Plasma version.
 <details>
 <summary><b>Distributions</b></summary>
 
-All 11 distributions in this table passed live VM qualification. Select a status badge for reviewed 4K screenshots and test results.
+All 11 distributions in this table passed live VM qualification. Select a status badge for reviewed screenshots and test results.
 
 | | Name | Status |
 |:--:|------|---------|

@@ -4,24 +4,24 @@ Golden Gate launcher on Tahoe Iridescence, captured at 3840 × 2160. Previews fo
 
 ## Tahoe — Automatic — light / dark
 
-![Tahoe: Automatic — light / dark](../src/screenshots/wizard-glass/tahoe-auto-4a224c3179f5.png)
+![Tahoe: Automatic — light / dark](../src/screenshots/wizard-glass/tahoe-auto-e2730fdb0877.webp)
 
 ## Tahoe — Light
 
-![Tahoe: Light](../src/screenshots/wizard-glass/tahoe-light-bd65ef83c28d.png)
+![Tahoe: Light](../src/screenshots/wizard-glass/tahoe-light-fccfde0de8ce.webp)
 
 ## Tahoe — Dark
 
-![Tahoe: Dark](../src/screenshots/wizard-glass/tahoe-dark-b3ea92555ee6.png)
+![Tahoe: Dark](../src/screenshots/wizard-glass/tahoe-dark-1a3120181583.webp)
 
 ## Golden Gate — Automatic — light / dark
 
-![Golden Gate: Automatic — light / dark](../src/screenshots/wizard-glass/golden-gate-auto-1b4d785868ea.png)
+![Golden Gate: Automatic — light / dark](../src/screenshots/wizard-glass/golden-gate-auto-749c22ad8480.webp)
 
 ## Golden Gate — Light
 
-![Golden Gate: Light](../src/screenshots/wizard-glass/golden-gate-light-3b08a6863315.png)
+![Golden Gate: Light](../src/screenshots/wizard-glass/golden-gate-light-105b973abe12.webp)
 
 ## Golden Gate — Dark
 
-![Golden Gate: Dark](../src/screenshots/wizard-glass/golden-gate-dark-2aba8353b321.png)
+![Golden Gate: Dark](../src/screenshots/wizard-glass/golden-gate-dark-6ef8da31db77.webp)

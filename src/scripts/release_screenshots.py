@@ -22,6 +22,9 @@ RECIPE_FILES = ('release_capture.py', 'release_capture_guest.py', 'release_captu
                 'release_screenshots.py', 'screenshot_checks.py', 'release_capture_wizard.py')
 STATIC_ART = {'banner_v3.png', 'banner.png', 'macos-26.png', 'macos-27.png', 'macos-27-dark.png'}
 SCREENSHOT_DOCS = ('README.md', 'TESTING.md', 'GLASS_PRESETS.md')
+README_MAX_EDGE = 2560
+AUXILIARY_MAX_EDGE = 1280
+EXPORT_QUALITY = 92
 
 
 def digest(path: Path) -> str:
@@ -57,8 +60,8 @@ def runtime_tree(repo: Path, ref: str) -> str:
         if document in SCREENSHOT_DOCS:
             # Staging changes image URLs, but any other documentation edit still
             # invalidates the captured source.
-            readme = re.sub(rb'(src/screenshots/[\w.-]+)-[0-9a-f]{12}(\.png)',
-                            rb'\1\2', blob(repo, ref, document))
+            readme = re.sub(rb'(src/screenshots/[\w.-]+)-[0-9a-f]{12}\.(?:png|webp)',
+                            rb'\1.png', blob(repo, ref, document)).replace(b'_2k.png', b'_4k.png')
             entries[index] = document.encode() + b'\t' + hashlib.sha256(readme).hexdigest().encode()
     return hashlib.sha256(b'\0'.join(entries)).hexdigest()
 
@@ -368,7 +371,7 @@ def image_name(edition: str, mode: str, case: str) -> str:
 
 
 def original_image_name(name: str) -> str:
-    return re.sub(r'-[0-9a-f]{12}(?=\.png$)', '', name)
+    return re.sub(r'-[0-9a-f]{12}(?=\.png$)', '', str(Path(name).with_suffix('.png'))).replace('_2k.png', '_4k.png')
 
 
 def require(condition: bool, message: str) -> None:
@@ -483,8 +486,8 @@ def stage(repo: Path, edition: str, bundle: Path, manifest: dict) -> None:
         staged = json.loads((out / 'release-capture.json').read_text())['images']
         replaced = {original_image_name(name) for name in staged}
         replaced.update(f"launcher{s}_{EDITIONS[edition][2]}.png" for s in ('', '_dark'))
-        for path in out.glob('*.png'):
-            if original_image_name(path.name) in replaced and path.name not in staged:
+        for path in out.iterdir():
+            if path.suffix in ('.png', '.webp') and original_image_name(path.name) in replaced and path.name not in staged:
                 path.unlink()
         for name in ('capture.json', 'launcher-presets.json', 'appearance-review.json'):
             (out / name).unlink(missing_ok=True)
@@ -496,6 +499,9 @@ def _stage(repo: Path, edition: str, bundle: Path, manifest: dict) -> None:
     out = repo / 'src/screenshots'
     records = {}
     replacements = {}
+    readme = repo / 'README.md'
+    readme_images = {original_image_name(name) for name in re.findall(
+        r'src/screenshots/([\w.-]+\.(?:png|webp))', readme.read_text() if readme.exists() else '')}
     for name, record in manifest['frames'].items():
         if name in ('boot', 'shutdown'):
             filename = f"boot{'_shutdown' if name == 'shutdown' else ''}_{EDITIONS[edition][2]}.png"
@@ -505,37 +511,39 @@ def _stage(repo: Path, edition: str, bundle: Path, manifest: dict) -> None:
         else:
             continue
         source = bundle / 'frames' / (name + '.png')
-        crop = record.get('crop')
-        if crop:
-            with Image.open(source) as image:
-                require(0 <= crop[0] < crop[2] <= image.width and 0 <= crop[1] < crop[3] <= image.height,
-                        f'Invalid crop: {name}')
-                image.crop(crop).save(out / filename)
-        else:
-            shutil.copyfile(source, out / filename)
-        checksum = digest(out / filename)
-        hashed = str(Path(filename).with_suffix('')) + '-' + checksum[:12] + '.png'
-        (out / filename).rename(out / hashed)
-        replacements[filename] = hashed
         origin, _, origin_version = frame_origin(manifest, record)
-        records[hashed] = dict(record, frame_name=name, source_commit=origin, source_release='v' + origin_version,
-                               sha256=checksum)
+        exports = [(filename, record.get('crop'))]
         if name.startswith(edition + '-') and case == 'about':
-            full_name = f'desktop_about_{mode}_4k.png'
-            full_hash = digest(source)
-            full_hashed = str(Path(full_name).with_suffix('')) + '-' + full_hash[:12] + '.png'
-            shutil.copyfile(source, out / full_hashed)
-            replacements[full_name] = full_hashed
-            records[full_hashed] = dict(record, crop=None, frame_name=name, source_commit=origin,
-                                       source_release='v' + origin_version, sha256=full_hash)
+            exports.append((f'desktop_about_{mode}_4k.png', None))
+        for filename, crop in exports:
+            max_edge = README_MAX_EDGE if filename in readme_images else AUXILIARY_MAX_EDGE
+            if '-installer-' in name:
+                max_edge = None
+            with Image.open(source) as image:
+                if crop:
+                    require(0 <= crop[0] < crop[2] <= image.width and 0 <= crop[1] < crop[3] <= image.height,
+                            f'Invalid crop: {name}')
+                    image = image.crop(crop)
+                if max_edge:
+                    image.thumbnail((max_edge, max_edge), Image.Resampling.LANCZOS)
+                output = out / Path(filename.replace('_4k.png', '_2k.png')).with_suffix('.webp')
+                image.save(output, format='WEBP', quality=EXPORT_QUALITY, method=6)
+                export = dict(format='webp', size=list(image.size), quality=EXPORT_QUALITY,
+                              max_edge=max_edge, source_sha256=record['sha256'])
+            checksum = digest(output)
+            hashed = output.stem + '-' + checksum[:12] + '.webp'
+            output.rename(out / hashed)
+            replacements[filename] = hashed
+            records[hashed] = dict(record, crop=crop, frame_name=name, source_commit=origin,
+                                   source_release='v' + origin_version, sha256=checksum, export=export)
     for name in SCREENSHOT_DOCS:
         document = repo / name
         if not document.is_file():
             continue
-        content = re.sub(r'src/screenshots/([\w.-]+\.png)',
+        content = re.sub(r'src/screenshots/([\w.-]+\.(?:png|webp))',
                          lambda match: 'src/screenshots/' + replacements.get(original_image_name(match[1]), match[1]),
                          document.read_text())
-        required = set(re.findall(r'src/screenshots/([\w.-]+\.png)', content)) - STATIC_ART
+        required = set(re.findall(r'src/screenshots/([\w.-]+\.(?:png|webp))', content)) - STATIC_ART
         require(required <= records.keys(), f'Uncaptured {document.stem} images: {sorted(required - records.keys())}')
         document.write_text(content)
     (out / 'release-capture.json').write_text(json.dumps({
@@ -604,18 +612,35 @@ def verify_committed(repo: Path, ref: str, *, tahoe: Path | None = None) -> dict
     committed_docs = set(git(repo, 'ls-tree', '--name-only', ref, '--', *SCREENSHOT_DOCS).splitlines())
     required = set()
     for name in committed_docs:
-        required.update(re.findall(r'src/screenshots/([\w.-]+\.png)', blob(repo, ref, name).decode()))
+        required.update(re.findall(r'src/screenshots/([\w.-]+\.(?:png|webp))', blob(repo, ref, name).decode()))
     required -= STATIC_ART
     require(required <= record['images'].keys(), 'Missing release screenshots')
     expected = {image_name(edition, m, c) for m in MODES for c in CASES}
     expected.update(f'boot{s}_{EDITIONS[edition][2]}.png' for s in ('', '_shutdown'))
     expected.update(f'desktop_about_{mode}_4k.png' for mode in MODES)
     require(expected <= {original_image_name(name) for name in record['images']}, 'Missing release screenshots')
+    readme_images = {original_image_name(name) for name in re.findall(
+        r'src/screenshots/([\w.-]+\.(?:png|webp))', blob(repo, ref, 'README.md').decode())}
     for name, image in record['images'].items():
-        require(re.fullmatch(r'[\w.-]+\.png', name) is not None, 'Invalid screenshot filename')
-        require(name.endswith('-' + image['sha256'][:12] + '.png'), 'Screenshot URL is missing its content hash: ' + name)
+        require(re.fullmatch(r'[\w.-]+\.(?:png|webp)', name) is not None, 'Invalid screenshot filename')
+        require(name.endswith('-' + image['sha256'][:12] + Path(name).suffix), 'Screenshot URL is missing its content hash: ' + name)
         require(hashlib.sha256(blob(repo, ref, 'src/screenshots/' + name)).hexdigest() == image['sha256'],
                 'Screenshot changed after review: ' + name)
+        if name.endswith('.webp'):
+            from io import BytesIO
+            from PIL import Image
+            export = image.get('export', {})
+            limit = README_MAX_EDGE if original_image_name(name) in readme_images else AUXILIARY_MAX_EDGE
+            if '-installer-' in image['frame_name']:
+                limit = None
+            require(export.get('format') == 'webp' and export.get('quality') == EXPORT_QUALITY and
+                    export.get('max_edge') == limit and
+                    export.get('source_sha256') == manifest['frames'][image['frame_name']]['sha256'],
+                    'Invalid screenshot export provenance: ' + name)
+            with Image.open(BytesIO(blob(repo, ref, 'src/screenshots/' + name))) as exported:
+                require(exported.format == 'WEBP' and list(exported.size) == export.get('size') and
+                        (limit is None or max(exported.size) <= limit),
+                        'Invalid screenshot export dimensions: ' + name)
         image_source, _, image_version = (frame_origin(manifest, manifest['frames'][image['frame_name']])
                                           if record.get('schema') == 2 else (source, '', capture_version))
         require(image['source_commit'] == image_source and image['source_release'] == 'v' + image_version,

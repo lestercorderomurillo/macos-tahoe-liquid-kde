@@ -143,16 +143,64 @@
   },
   "images": {
     "light": {
-      "filename": "light-25b88204a5c9.png",
-      "sha256": "25b88204a5c9d8df102e3e5d097fb7fdc1b69aa3570eb191173a500dd79b7be3"
+      "filename": "light-f87227465173.webp",
+      "sha256": "f872274651734869aa988d8ce644ff9e9bc149070689157aa865017f85a482e2",
+      "export": {
+        "original_file": "light-25b88204a5c9.png",
+        "original_sha256": "25b88204a5c9d8df102e3e5d097fb7fdc1b69aa3570eb191173a500dd79b7be3",
+        "original_size": [
+          3840,
+          2160
+        ],
+        "source_repository_commit": "0021c22e78cd556427e2c0027fe9bc88aeb23cf6",
+        "format": "webp",
+        "quality": 95,
+        "size": [
+          1280,
+          720
+        ],
+        "max_edge": 1280
+      }
     },
     "dark": {
-      "filename": "dark-5dcc9fdb6b2b.png",
-      "sha256": "5dcc9fdb6b2ba002ce4eea660028408bc02a6fccff08b3c5a9303e784893c673"
+      "filename": "dark-96da0552a722.webp",
+      "sha256": "96da0552a722a04a9f7579523e0489f27dc2dab9832f6012f03a8d1e37fe4bb8",
+      "export": {
+        "original_file": "dark-5dcc9fdb6b2b.png",
+        "original_sha256": "5dcc9fdb6b2ba002ce4eea660028408bc02a6fccff08b3c5a9303e784893c673",
+        "original_size": [
+          3840,
+          2160
+        ],
+        "source_repository_commit": "0021c22e78cd556427e2c0027fe9bc88aeb23cf6",
+        "format": "webp",
+        "quality": 95,
+        "size": [
+          1280,
+          720
+        ],
+        "max_edge": 1280
+      }
     },
     "reboot": {
-      "filename": "reboot-6f493a2a9d9b.png",
-      "sha256": "6f493a2a9d9b131eeef6d84e997da4011e26f9991c6bf809f3566c8f09d5e05d"
+      "filename": "reboot-743c7d23e7e0.webp",
+      "sha256": "743c7d23e7e0ca5536f3ee2a262d4f3e7dc1000dd3409af8630684deca27de7c",
+      "export": {
+        "original_file": "reboot-6f493a2a9d9b.png",
+        "original_sha256": "6f493a2a9d9b131eeef6d84e997da4011e26f9991c6bf809f3566c8f09d5e05d",
+        "original_size": [
+          3840,
+          2160
+        ],
+        "source_repository_commit": "0021c22e78cd556427e2c0027fe9bc88aeb23cf6",
+        "format": "webp",
+        "quality": 95,
+        "size": [
+          1280,
+          720
+        ],
+        "max_edge": 1280
+      }
     }
   },
   "checks": {

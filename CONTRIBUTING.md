@@ -528,6 +528,10 @@ For a release that changes visual output:
    and its checkout as `--destination`. Both versions must already match.
    Staging gives each image a filename containing its content SHA-256 prefix,
    updates README and TESTING URLs, and removes replaced images and obsolete aliases.
+   Published images use WebP quality 92: README images fit within 2560 px,
+   auxiliary images within 1280 px, and installer crops retain their resolution.
+   Keep the original reviewed PNG bundle; export metadata binds each derivative
+   to its original hash. Review compressed outputs before committing them.
 5. Commit the screenshots. Further changes to visual inputs require recapture;
    nonvisual edits do not. Preserve the capture version and source in provenance.
    Run `./release-screenshots verify`. Push the version tag to trigger the

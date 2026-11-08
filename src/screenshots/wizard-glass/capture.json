@@ -10,8 +10,24 @@
         "edition": "MacTahoe",
         "title": "Install Tahoe"
       },
-      "sha256": "4a224c3179f52f9772d69b5eee563b17c973047a4be5bca5a3669109040c7946",
-      "file": "tahoe-auto-4a224c3179f5.png"
+      "sha256": "e2730fdb08778b89f28e3ba06bc0de016fcae79c300947bd6d971572bcc8e39f",
+      "file": "tahoe-auto-e2730fdb0877.webp",
+      "export": {
+        "original_file": "tahoe-auto-4a224c3179f5.png",
+        "original_sha256": "4a224c3179f52f9772d69b5eee563b17c973047a4be5bca5a3669109040c7946",
+        "original_size": [
+          3840,
+          2160
+        ],
+        "source_repository_commit": "0021c22e78cd556427e2c0027fe9bc88aeb23cf6",
+        "format": "webp",
+        "quality": 95,
+        "size": [
+          2560,
+          1440
+        ],
+        "max_edge": 2560
+      }
     },
     "tahoe-light-installer-glass_style.png": {
       "wizard": {
@@ -21,8 +37,24 @@
         "edition": "MacTahoe",
         "title": "Install Tahoe"
       },
-      "sha256": "bd65ef83c28d1dd564d5e7bece8c827839fc6ab97f355f52c86848f0018f120b",
-      "file": "tahoe-light-bd65ef83c28d.png"
+      "sha256": "fccfde0de8ceb6733a0ddea7bcba1e188c06094bba95209e46751ca9295b8fe6",
+      "file": "tahoe-light-fccfde0de8ce.webp",
+      "export": {
+        "original_file": "tahoe-light-bd65ef83c28d.png",
+        "original_sha256": "bd65ef83c28d1dd564d5e7bece8c827839fc6ab97f355f52c86848f0018f120b",
+        "original_size": [
+          3840,
+          2160
+        ],
+        "source_repository_commit": "0021c22e78cd556427e2c0027fe9bc88aeb23cf6",
+        "format": "webp",
+        "quality": 95,
+        "size": [
+          2560,
+          1440
+        ],
+        "max_edge": 2560
+      }
     },
     "tahoe-dark-installer-glass_style.png": {
       "wizard": {
@@ -32,8 +64,24 @@
         "edition": "MacTahoe",
         "title": "Install Tahoe"
       },
-      "sha256": "b3ea92555ee62eb7002746603284c535e0394e5c0903c97f519aea293328e1e8",
-      "file": "tahoe-dark-b3ea92555ee6.png"
+      "sha256": "1a31201815839c57ee37a307d19dac1c36ba68cce0139f6dbd01ddc524053a48",
+      "file": "tahoe-dark-1a3120181583.webp",
+      "export": {
+        "original_file": "tahoe-dark-b3ea92555ee6.png",
+        "original_sha256": "b3ea92555ee62eb7002746603284c535e0394e5c0903c97f519aea293328e1e8",
+        "original_size": [
+          3840,
+          2160
+        ],
+        "source_repository_commit": "0021c22e78cd556427e2c0027fe9bc88aeb23cf6",
+        "format": "webp",
+        "quality": 95,
+        "size": [
+          2560,
+          1440
+        ],
+        "max_edge": 2560
+      }
     },
     "golden-gate-auto-installer-glass_style.png": {
       "wizard": {
@@ -43,8 +91,24 @@
         "edition": "MacGoldenGate",
         "title": "Install Golden Gate"
       },
-      "sha256": "1b4d785868ea0352de4bce5b0e775f8ba7ca3534855dc8c31b686649f5b80109",
-      "file": "golden-gate-auto-1b4d785868ea.png"
+      "sha256": "749c22ad8480421ff51e3d04efb5530bb3ae71beecd7c4bb793f5b3ddece444e",
+      "file": "golden-gate-auto-749c22ad8480.webp",
+      "export": {
+        "original_file": "golden-gate-auto-1b4d785868ea.png",
+        "original_sha256": "1b4d785868ea0352de4bce5b0e775f8ba7ca3534855dc8c31b686649f5b80109",
+        "original_size": [
+          3840,
+          2160
+        ],
+        "source_repository_commit": "0021c22e78cd556427e2c0027fe9bc88aeb23cf6",
+        "format": "webp",
+        "quality": 95,
+        "size": [
+          2560,
+          1440
+        ],
+        "max_edge": 2560
+      }
     },
     "golden-gate-light-installer-glass_style.png": {
       "wizard": {
@@ -54,8 +118,24 @@
         "edition": "MacGoldenGate",
         "title": "Install Golden Gate"
       },
-      "sha256": "3b08a68633159b312646af17474796075441966747c58ee2262541783cd16b4d",
-      "file": "golden-gate-light-3b08a6863315.png"
+      "sha256": "105b973abe1295932a93b129755f88b68f7b422c29259bd47316bf3c6854aa70",
+      "file": "golden-gate-light-105b973abe12.webp",
+      "export": {
+        "original_file": "golden-gate-light-3b08a6863315.png",
+        "original_sha256": "3b08a68633159b312646af17474796075441966747c58ee2262541783cd16b4d",
+        "original_size": [
+          3840,
+          2160
+        ],
+        "source_repository_commit": "0021c22e78cd556427e2c0027fe9bc88aeb23cf6",
+        "format": "webp",
+        "quality": 95,
+        "size": [
+          2560,
+          1440
+        ],
+        "max_edge": 2560
+      }
     },
     "golden-gate-dark-installer-glass_style.png": {
       "wizard": {
@@ -65,8 +145,24 @@
         "edition": "MacGoldenGate",
         "title": "Install Golden Gate"
       },
-      "sha256": "2aba8353b32136d120e9eb4c8a0bcdaf6fe2ee2c9bc8b5fffd867b50d51b44e7",
-      "file": "golden-gate-dark-2aba8353b321.png"
+      "sha256": "6ef8da31db770ce02858a4bd1e9aeeb670885a8bdc8181972debf27c607efefe",
+      "file": "golden-gate-dark-6ef8da31db77.webp",
+      "export": {
+        "original_file": "golden-gate-dark-2aba8353b321.png",
+        "original_sha256": "2aba8353b32136d120e9eb4c8a0bcdaf6fe2ee2c9bc8b5fffd867b50d51b44e7",
+        "original_size": [
+          3840,
+          2160
+        ],
+        "source_repository_commit": "0021c22e78cd556427e2c0027fe9bc88aeb23cf6",
+        "format": "webp",
+        "quality": 95,
+        "size": [
+          2560,
+          1440
+        ],
+        "max_edge": 2560
+      }
     }
   },
   "reviewed": true,

@@ -211,7 +211,7 @@ def test_committed_picture_change_blocks_publication(capture, monkeypatch):
     repo, ref, bundle, manifest = capture
     shots.stage(repo, 'tahoe', bundle, manifest)
     commit(repo)
-    next((repo / 'src/screenshots').glob('finder_v4-*.png')).write_bytes(b'replaced after review')
+    next((repo / 'src/screenshots').glob('finder_v4-*.webp')).write_bytes(b'replaced after review')
     final = commit(repo)
     calls = []
     import release_screenshots_cli
@@ -260,8 +260,12 @@ def test_staging_adds_a_separate_full_desktop_about_image(capture):
     shots.stage(repo, 'tahoe', bundle, manifest)
     out = repo / 'src/screenshots'
     records = json.loads((out / 'release-capture.json').read_text())['images']
-    name = next(name for name in records if name.startswith('desktop_about_light_4k-'))
-    assert (out / name).read_bytes() == (bundle / 'frames/tahoe-light-about.png').read_bytes()
+    name = next(name for name in records if name.startswith('desktop_about_light_2k-'))
+    from PIL import Image
+    with Image.open(out / name) as image:
+        assert image.size == (32, 32)
+        assert image.format == 'WEBP'
+    assert records[name]['export']['source_sha256'] == manifest['frames']['tahoe-light-about']['sha256']
     assert records[name]['crop'] is None
     assert name in (repo / 'README.md').read_text()
 
@@ -282,7 +286,7 @@ def test_staging_changes_urls_and_removes_only_replaced_images(capture):
     assert not (out / 'finder_v4.png').exists()
     assert not (out / 'launcher_v4.png').exists()
     assert (out / 'unrelated.png').read_bytes() == b'old'
-    assert all(name.endswith('-' + shots.digest(out / name)[:12] + '.png') for name in records)
+    assert all(name.endswith('-' + shots.digest(out / name)[:12] + '.webp') for name in records)
     shots.stage(repo, 'tahoe', bundle, manifest)
     assert finder in (repo / 'README.md').read_text()
 
@@ -543,3 +547,38 @@ def test_version_reader_only_invalidates_visible_version_frames(capture):
         for case in ('installer-welcome', 'about')}
     path.write_text(path.read_text().replace('ROOT = "source"', 'ROOT = "other"'))
     assert shots.affected_frames(repo, after, commit(repo)) == shots.expected_frames()
+
+
+def test_export_sizes_preserve_installer_text_and_limit_document_images(capture):
+    from PIL import Image
+    repo, _, bundle, manifest = capture
+    for case in ('finder', 'glass-tahoe-clear', 'installer-welcome'):
+        name = 'tahoe-light-' + case
+        path = bundle / 'frames' / (name + '.png')
+        Image.new('RGB', (3840, 2160), '#abcdef').save(path)
+        manifest['frames'][name]['sha256'] = shots.digest(path)
+    manifest['frames']['tahoe-light-installer-welcome']['crop'] = [100, 100, 1796, 1356]
+    shots.stage(repo, 'tahoe', bundle, manifest)
+    out = repo / 'src/screenshots'
+    records = json.loads((out / 'release-capture.json').read_text())['images']
+    for prefix, size in [('finder_v4-', (2560, 1440)), ('glass-tahoe-clear_v4-', (1280, 720)),
+                         ('installer-welcome_v4-', (1696, 1256))]:
+        name = next(n for n in records if n.startswith(prefix))
+        with Image.open(out / name) as image:
+            assert image.size == size
+        assert records[name]['export']['size'] == list(size)
+    first = {n: shots.digest(out / n) for n in records}
+    shots.stage(repo, 'tahoe', bundle, manifest)
+    assert first == {n: shots.digest(out / n) for n in records}
+
+
+def test_export_provenance_cannot_claim_a_different_original(capture):
+    repo, _, bundle, manifest = capture
+    shots.stage(repo, 'tahoe', bundle, manifest)
+    path = repo / 'src/screenshots/release-capture.json'
+    record = json.loads(path.read_text())
+    next(iter(record['images'].values()))['export']['source_sha256'] = '0' * 64
+    write_json(path, record)
+    final = commit(repo)
+    with pytest.raises(ValueError, match='export provenance'):
+        shots.verify_committed(repo, final)
