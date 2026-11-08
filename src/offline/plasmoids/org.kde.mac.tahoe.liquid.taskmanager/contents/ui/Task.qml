@@ -58,7 +58,8 @@ PlasmaCore.ToolTipArea {
     readonly property string appName: model.AppName
     readonly property string dockRole: tasksRoot.iconsOnly && Plasmoid.configuration.macOSDockIcons
         ? DockRoles.roleFor(model.LauncherUrlWithoutIcon, model.AppId) : ""
-    readonly property bool darkDockIcons: Kirigami.Theme.backgroundColor.hslLightness < 0.5
+    readonly property bool darkDockIcons: DockRoles.darkMode(
+        tasksRoot.iconThemeWatcher.plasmaThemeName, Kirigami.Theme.backgroundColor.hslLightness)
     readonly property var dockIconSource: dockRole
         ? backend.dockRoleIcon(dockRole, darkDockIcons)
         : backend.iconSource(task.model.decoration)

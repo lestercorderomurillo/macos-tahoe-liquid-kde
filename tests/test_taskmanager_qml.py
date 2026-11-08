@@ -139,6 +139,11 @@ int main(int argc, char **argv) {
             assert(icon.name().isEmpty()); // Kirigami must not re-resolve a theme name.
             const QImage actual = icon.pixmap(64,64).toImage();
             assert(!actual.isNull());
+            if (dark) {
+                const QColor plate = actual.pixelColor(9, 20);
+                assert(plate.alpha() > 200);
+                assert(plate.red() + plate.green() + plate.blue() < 300);
+            }
             const QIcon expected(root + (dark ? "/dark/" : "/light/") + QString::fromLatin1(role) + ".svg");
             assert(actual == expected.pixmap(64,64).toImage());
         }

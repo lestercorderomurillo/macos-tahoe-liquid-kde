@@ -1,6 +1,6 @@
 # Installer testing
 
-Tahoe **v0.63.6** adds optional macOS-style Dock icons while preserving real
+Tahoe **v0.63.7** adds optional macOS-style Dock icons while preserving real
 applications, pin order and the desktop icon theme. Focused component and
 publication-provenance checks passed. Four new Dock frames were reviewed in
 the pinned KDE neon VM; the other 102 retain their original provenance.

@@ -92,3 +92,10 @@ function roleFor(launcherUrl, appId) {
     }
     return "";
 }
+
+// Material colors may invert luminance independently of the desktop mode.
+function darkMode(themeName, backgroundLightness) {
+    if (themeName === "MacTahoeLiquidKde-Dark") return true;
+    if (themeName === "MacTahoeLiquidKde-Light") return false;
+    return backgroundLightness < 0.5;
+}

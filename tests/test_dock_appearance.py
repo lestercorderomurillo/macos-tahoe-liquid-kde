@@ -109,3 +109,14 @@ def test_svg_icon_engine_dependency_respects_package_layout(monkeypatch, family,
     monkeypatch.setattr(distro, '_compatibility_parents', lambda: [])
     assert 'qt6-svg-icons' in plasmoids.deps()
     assert distro.package_for('qt6-svg-icons') == expected
+
+
+def test_dock_mode_uses_desktop_mode_even_when_material_luminance_is_inverted():
+    js = (PACKAGE / 'contents/ui/DockRoles.js').read_text().replace('.pragma library', '')
+    result = evaluate(js + '\nJSON.stringify([darkMode("MacTahoeLiquidKde-Light", 0.1),'
+                      'darkMode("MacTahoeLiquidKde-Dark", 0.9),'
+                      'darkMode("MacTahoeLiquidKde-Light", 0.1),'
+                      'darkMode("third-party", 0.1), darkMode("third-party", 0.9)]);')
+    assert result == [False, True, False, True, False]
+    task = (PACKAGE / 'contents/ui/Task.qml').read_text()
+    assert 'tasksRoot.iconThemeWatcher.plasmaThemeName' in task
