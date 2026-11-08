@@ -1,12 +1,12 @@
 # Installer testing
 
-Tahoe **v0.63.7** adds optional macOS-style Dock icons while preserving real
-applications, pin order and the desktop icon theme. Focused component and
-publication-provenance checks passed. Four new Dock frames were reviewed in
-the pinned KDE neon VM; the other 102 retain their original provenance.
-See [validation evidence](tests/dock_appearance_validation.json) for source
-identities, commands and coverage limits. Publication requires successful
-exact-commit CI on both branches in both repositories.
+Tahoe **v0.64.0** applies the pictured Dock preset on first upgrade or reset,
+preserving pinned apps and their order; Firefox keeps its own artwork.
+Focused checks and migration checks in the pinned KDE neon VM passed.
+Four Dock frames were reviewed across both editions and modes; the other 102
+retain their original provenance. See [validation evidence](tests/dock_064_validation.json)
+for commands, source identities and coverage limits. Publication requires
+successful exact-commit CI on both branches in both repositories.
 
 ## Installation steps
 

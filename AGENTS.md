@@ -311,7 +311,11 @@ build artifacts; the tool must not change live themes or installer defaults.
 
 **Reset Dock and panel customization** starts checked on every new wizard launch.
 Unchecking it preserves existing Dock/panel geometry, hiding behavior, widgets
-and launcher configuration during reinstall.
+and launcher configuration during reinstall, except for the one-time 0.64 Dock
+migration. Revision 3 applies the pictured preset and icons, preserving pins
+and their order. Later reinstalls without reset respect removed pins and icon
+choices. Explicit resets reapply the preset. Browsers retain their own artwork
+and names, including Firefox; never substitute Safari artwork.
 Determine whether this is an existing installation before copying any assets;
 skip both layout creation and its post-restart retry when preserving. Fresh
 installs still create the selected layout. File-manager choices explicitly offer
