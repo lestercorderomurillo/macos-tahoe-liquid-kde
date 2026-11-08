@@ -112,7 +112,7 @@ Glass refraction, hover zoom, notification badges and auto-hide.
 <p align="center">
   <img src="src/screenshots/dock_1_v4-9caa88849e2c.webp" alt="Glass Dock with ten pinned applications and light icons" width="840">
   <br>
-  <img src="src/screenshots/dock_1_dark_v4-f7a01f84cb24.webp" alt="The same Dock with dark icons" width="840">
+  <img src="src/screenshots/dock_1_dark_v4-5633f49a1e08.webp" alt="The same Dock with dark icons" width="840">
 </p>
 
 <br>
