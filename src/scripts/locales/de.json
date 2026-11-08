@@ -1106,5 +1106,10 @@
   "Notes": "Notizen",
   "Photos": "Fotos",
   "Music": "Musik",
-  "Video": "Video"
+  "Video": "Video",
+  "Use macOS-style Dock icons": "Dock-Symbole im macOS-Stil verwenden",
+  "Files": "Dateien",
+  "Browser": "Browser",
+  "App Store": "App-Store",
+  "System Settings": "Systemeinstellungen"
 }

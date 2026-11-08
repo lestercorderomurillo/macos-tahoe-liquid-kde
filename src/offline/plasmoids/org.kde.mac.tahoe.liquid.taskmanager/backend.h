@@ -117,6 +117,7 @@ public:
 
     /// Keep themed icons live across appearance changes; preserve custom pixmaps.
     Q_INVOKABLE static QVariant iconSource(const QVariant& decoration);
+    Q_INVOKABLE static QVariant dockRoleIcon(const QString& role, bool dark);
 
 Q_SIGNALS:
     // Signals (QML connects via on*Changed handlers)

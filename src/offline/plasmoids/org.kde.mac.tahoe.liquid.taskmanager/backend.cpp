@@ -80,6 +80,16 @@ QVariant Backend::iconSource(const QVariant& decoration)
     return name.isEmpty() ? decoration : QVariant(name);
 }
 
+QVariant Backend::dockRoleIcon(const QString& role, bool dark)
+{
+    // A resource URL passed to Kirigami's theme loader can resolve to an
+    // unrelated theme icon with the same basename. An unnamed QIcon preserves
+    // the bundled artwork, including in tooltip previews.
+    const QString path = QStringLiteral(":/qt/qml/plasma/applet/org/kde/mac/tahoe/liquid/taskmanager/icons/")
+        + (dark ? QStringLiteral("dark/") : QStringLiteral("light/")) + role + QStringLiteral(".svg");
+    return QVariant::fromValue(QIcon(path));
+}
+
 // URL helpers
 
 QUrl Backend::tryDecodeApplicationsUrl(const QUrl& launcherUrl)
