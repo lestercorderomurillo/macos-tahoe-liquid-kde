@@ -13,9 +13,9 @@ Item {
                                  PlasmaCore.Types.LeftEdge, PlasmaCore.Types.RightEdge]
     // Reuse the same items throughout: growing, shrinking, fractional cell
     // extents, rectangular cells and orientation changes must rebind correctly.
-    readonly property var sizes: [16, 22, 24, 31.5, 32, 47.5, 48, 64, 96, 128,
+    readonly property var sizes: [16, 22, 24, 31.5, 32, 47.5, 48, 64, 68, 96, 128,
                                  96, 64, 48, 47.5, 32, 31.5, 24, 22, 16]
-    readonly property var aspects: [1, 0.75, 1.5]
+    readonly property var aspects: [1, 0.75, 1.5, 13 / 17]
     readonly property int panelCases: edges.length * sizes.length * aspects.length
     ReferenceTaskIcon { id: reference; width: 64; height: 64 }
     NativeLauncher.DockIcon { id: custom; width: reference.width; height: reference.height; source: "folder" }
@@ -95,6 +95,11 @@ Item {
                     root.compare(a.y, b.y);
                     root.compare(custom.iconItem.width, reference.iconItem.width);
                     root.compare(custom.iconItem.height, reference.iconItem.height);
+                    if ((reference.width === 52 && reference.height === 68)
+                            || (reference.width === 68 && reference.height === 52)) {
+                        root.compare(custom.iconItem.paintedWidth, 48);
+                        root.compare(custom.iconItem.paintedHeight, 48);
+                    }
                 } else {
                     root.compare(custom.iconItem.width, 48);
                     root.compare(custom.iconItem.height, 48);

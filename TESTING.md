@@ -1,27 +1,14 @@
 # Installer testing
 
-Tahoe **v0.63.0** provides Tahoe (Clear), Tahoe (Frosted) and Golden Gate
-(Official) glass presets, with separate light/dark colors in a three-stop
-gradient. The Dock retains fixed v0.62.0 blur, refraction, highlights and color
-tuning independently of window settings. The existing Nautilus blur, scene
-damage and competing-effect fixes remain included.
+Tahoe **v0.63.1** fixes Dock spacing at a 56 px center pitch on the default
+68 px panel, preserving 42 px visible icons. The spacing selector is removed;
+legacy saved values no longer affect geometry. Both editions share the change.
 
-Release validation runs the general suite once in two disjoint shards, plus
-all eleven distro SDK/dependency/native checks and Nix. Main promotion verifies
-the successful dev run for the exact commit. The focused CI selection and gate
-checks passed **35 tests**. VM qualification and capture tooling remain intact.
-Reviewed rc2 photographs retain their original capture version and provenance;
-this workflow and packaging release does not recapture the desktop.
-See [release performance](docs/release-performance.md) for coverage and timing.
-See the [preset gallery](GLASS_PRESETS.md) for every surface and fine-tuning
-value, with light/dark photographs. Release captures use the pinned Plasma
-6.8.1 VM; they do not establish new live qualification on other Plasma versions.
-The [v0.62 rendering report](tests/native/acrylic_glass_062.md) retains its
-original version-specific Wayland/X11 evidence.
-
-The photographs below use the pinned disposable VM capture recipe and retain
-reviewed, content-hashed provenance. Exact release commits require passing
-push CI on both main and dev in both repositories.
+Focused KDE neon VM checks passed: 20 Dock regressions across orientations,
+compression and display scales, plus 7 task-manager/install regressions.
+Golden Gate light/dark/light captures preserve icon size and spacing. See
+[validation evidence](tests/dock_spacing_validation.json) for commands and limits.
+Release publication additionally requires exact-commit CI on main and dev.
 
 ## Installation steps
 

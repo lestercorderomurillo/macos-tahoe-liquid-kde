@@ -7,6 +7,12 @@ QtObject {
     id: root
     property var cells: []
 
+    // A 68px panel uses 52px cells plus the native 4px applet gap.
+    // This matches the reference pitch without enlarging the icon artwork.
+    function preferredCellSize(thickness) {
+        return Math.max(Kirigami.Units.iconSizes.small, Math.round(thickness * 13 / 17));
+    }
+
     function add(cell) {
         cells = cells.concat([cell]);
         schedule();
@@ -26,7 +32,7 @@ QtObject {
         for (const group of groups.values()) {
             const manager = group.find(c => c.taskManager && c.count > 0);
             if (!manager) {
-                for (const cell of group) cell.size = cell.vertical ? cell.applet.width : cell.applet.height;
+                for (const cell of group) cell.size = preferredCellSize(cell.vertical ? cell.applet.width : cell.applet.height);
                 continue;
             }
             const vertical = manager.vertical;
@@ -41,7 +47,7 @@ QtObject {
             if (available <= 0 || count <= 0) continue;
             const thickness = vertical ? manager.applet.width : manager.applet.height;
             const size = Math.max(Math.min(thickness, Kirigami.Units.iconSizes.small),
-                                  Math.min(thickness, available / count));
+                                  Math.min(preferredCellSize(thickness), available / count));
             for (const cell of members) {
                 // Queuing the calculation avoids a Layout/geometry binding loop;
                 // preserve subpixel sizing while ignoring rounding noise.

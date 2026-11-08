@@ -12,7 +12,7 @@ QtObject {
     property bool taskManager: false
     property int count: 1
     property real spacing: 0
-    property real size: vertical ? applet.width : applet.height
+    property real size: DockMetrics.preferredCellSize(vertical ? applet.width : applet.height)
     readonly property var panelWindow: applet.Window.window
     onActiveChanged: DockMetrics.schedule()
     onVerticalChanged: DockMetrics.schedule()

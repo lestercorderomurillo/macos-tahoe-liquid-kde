@@ -311,7 +311,8 @@ Item {
         interval: 20; repeat: true; running: true
         onTriggered: {
             const thickness = panel.vertical ? panel.width : panel.height;
-            if (Math.abs(applet.width - thickness) > 0.01 || Math.abs(applet.height - thickness) > 0.01) {
+            const length = Math.max(16, Math.round(thickness * 13 / 17));
+            if (Math.abs(applet.width - (panel.vertical ? thickness : length)) > 0.01 || Math.abs(applet.height - (panel.vertical ? length : thickness)) > 0.01) {
                 if (++root.settling < 10) return;
                 console.error("DOCK_CELL_FAILED", root.phase, applet.width, applet.height, thickness);
                 Qt.exit(1); return;
@@ -394,6 +395,8 @@ Item {
     property bool highlighted: false
     property var model: ({IsStartup: false, decoration: "folder"})
     property var tasksRoot: task
+    property bool iconsOnly: true
+    property bool vertical: location === PlasmaCore.Types.LeftEdge || location === PlasmaCore.Types.RightEdge
     property var iconThemeWatcher: null
     Item { id: label; visible: false }
     Component { id: busyIndicator; Item {} }
@@ -495,7 +498,7 @@ Item {
         onTriggered: {
             try {
                 const cells = taskList.children.filter(c => c.width > 0 && c.height > 0);
-                const t = tasks.vertical ? tasks.width : tasks.height;
+                const t = Math.max(16, Math.round((tasks.vertical ? tasks.width : tasks.height) * 13 / 17));
                 const a = tasks.vertical ? "y" : "x";
                 const length = tasks.vertical ? "height" : "width";
                 const pitch = cells[1][a] - cells[0][a];
@@ -508,6 +511,8 @@ Item {
                 compare(taskList[length] - cells[2][a] - cells[2][length]/2
                         + Kirigami.Units.smallSpacing + t/2, pitch);
                 compare(t + Kirigami.Units.smallSpacing, pitch);
+                tasks.plasmoid = {pluginName: "org.kde.mac.tahoe.liquid.icontasks",
+                    configuration: {iconSpacing: [0, 1, 3][tasks.phase % 3], maxStripes: 1, forceStripes: false}};
                 tasks.phase++;
                 if (tasks.phase === sizes.length * 2) { console.info("DOCK_GAPS_OK"); Qt.exit(0); return; }
                 tasks.vertical = tasks.phase >= sizes.length;
@@ -695,3 +700,10 @@ Item {
     assert result.returncode == 0, result.stdout + result.stderr
     assert 'DOCK_COMPRESS_OK' in result.stdout + result.stderr
     assert f'DOCK_DPR: {scale}' in result.stdout + result.stderr
+
+
+def test_dock_spacing_is_not_configurable(repo):
+    package = repo / 'src/offline/plasmoids/org.kde.mac.tahoe.liquid.taskmanager'
+    for relative in ('contents/config/main.xml', 'contents/ui/ConfigAppearance.qml',
+                     'contents/ui/LayoutMetrics.js'):
+        assert 'iconSpacing' not in (package / relative).read_text()

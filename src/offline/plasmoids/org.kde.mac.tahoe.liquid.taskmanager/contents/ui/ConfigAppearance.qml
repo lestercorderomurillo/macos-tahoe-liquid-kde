@@ -28,7 +28,6 @@ KCMUtils.SimpleKCM {
     property alias cfg_maxStripes: maxStripes.value
     property alias cfg_forceStripes: forceStripes.checked
     property alias cfg_taskMaxWidth: taskMaxWidth.currentIndex
-    property int cfg_iconSpacing: 0
     property alias cfg_dockMagnification: dockMagnification.value
 
     Component.onCompleted: {
@@ -153,37 +152,6 @@ KCMUtils.SimpleKCM {
 
         Item {
             Kirigami.FormData.isSection: true
-        }
-
-        QQC2.ComboBox {
-            visible: root.iconOnly
-            Kirigami.FormData.label: i18ndc("plasma_applet_org.kde.plasma.taskmanager", "@label:listbox", "Spacing between icons:")
-
-            model: [
-                {
-                    "label": i18ndc("plasma_applet_org.kde.plasma.taskmanager", "@item:inlistbox Icon spacing", "Small"),
-                    "spacing": 0
-                },
-                {
-                    "label": i18ndc("plasma_applet_org.kde.plasma.taskmanager", "@item:inlistbox Icon spacing", "Normal"),
-                    "spacing": 1
-                },
-                {
-                    "label": i18ndc("plasma_applet_org.kde.plasma.taskmanager", "@item:inlistbox Icon spacing", "Large"),
-                    "spacing": 3
-                },
-            ]
-
-            textRole: "label"
-
-            currentIndex: switch (root.cfg_iconSpacing) {
-                case 0: return 0; // Small
-                case 1: return 1; // Normal
-                case 3: return 2; // Large
-            }
-            onActivated: index => {
-                root.cfg_iconSpacing = model[currentIndex]["spacing"];
-            }
         }
 
         QQC2.SpinBox {

@@ -1,0 +1,28 @@
+{
+  "environment": "Disposable KDE neon 24.04 VM; Plasma 6.8.1 / Qt 6.11.1; 3840x2160 at 200%",
+  "source_base": "0df71f06c2c52295e9678bcd5defa26f34277397",
+  "checks": [
+    {
+      "command": "pytest -q tests/test_launcher_presets.py -k dock",
+      "result": "20 passed; 46 deselected",
+      "coverage": "horizontal/vertical cells, compression, stale spacing settings, 1 through 3 DPR, Light/Dark shared icon geometry; 48px icon canvas in 52x68 cell"
+    },
+    {
+      "command": "pytest -q tests/test_taskmanager_qml.py tests/test_plasmoids_step.py",
+      "result": "7 passed"
+    },
+    {
+      "command": "cmake --build build/plasmoids/org.kde.mac.tahoe.liquid.taskmanager -j 4",
+      "result": "passed"
+    },
+    {
+      "command": "mac-tahoe-theme-switch dark; mac-tahoe-theme-switch light",
+      "result": "Golden Gate light/dark/light reviewed in disposable VM; 56px pitch, approximately 42px artwork, 14px gap"
+    }
+  ],
+  "limits": [
+    "Apple reference proportions are measured from official imagery, not certified clean-install preferences.",
+    "No ABI or backend changes; no extra local distribution matrix.",
+    "Release CI and screenshot provenance remain mandatory gates."
+  ]
+}

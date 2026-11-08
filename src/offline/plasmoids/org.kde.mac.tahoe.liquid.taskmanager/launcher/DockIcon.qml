@@ -18,6 +18,7 @@ Item {
         && Math.min(icon.paintedWidth, icon.paintedHeight) > 24
         && (String(source) === "user-trash" || String(source) === "user-trash-full")
     readonly property real artworkScale: normalizedTrash ? 56 / 53 : 1
+    readonly property bool vertical: location === PlasmaCore.Types.LeftEdge || location === PlasmaCore.Types.RightEdge
     property int location: PlasmaCore.Types.BottomEdge
     readonly property alias iconItem: icon
     implicitWidth: height
@@ -52,12 +53,12 @@ Item {
             taskFrame.margins.left, taskFrame.margins.left + taskFrame.margins.right) : 0
         readonly property real rightInset: root.inPanel ? root.adjustedMargin(root.width,
             taskFrame.margins.right, taskFrame.margins.left + taskFrame.margins.right) : 0
-        anchors.topMargin: root.inPanel ? root.adjustedMargin(root.height,
+        anchors.topMargin: root.inPanel && !root.vertical ? root.adjustedMargin(root.height,
             taskFrame.margins.top, taskFrame.margins.top + taskFrame.margins.bottom) : 0
-        readonly property real bottomInset: root.inPanel ? root.adjustedMargin(root.height,
+        readonly property real bottomInset: root.inPanel && !root.vertical ? root.adjustedMargin(root.height,
             taskFrame.margins.bottom, taskFrame.margins.top + taskFrame.margins.bottom) : 0
 
-        width: Math.max(0, Math.min(root.width, root.height) - leftInset - rightInset)
+        width: Math.max(0, root.inPanel && root.vertical ? root.width - leftInset - rightInset : Math.min(root.width, root.height))
         height: Math.max(0, root.height - anchors.topMargin - bottomInset)
 
         Kirigami.Icon {

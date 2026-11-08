@@ -548,13 +548,15 @@ PlasmaCore.ToolTipArea {
 
         anchors {
             left: parent.left
-            leftMargin: adjustMargin(true, parent.width, taskFrame.margins.left)
+            leftMargin: tasksRoot.iconsOnly && !tasksRoot.vertical && !task.inPopup ? 0 : adjustMargin(true, parent.width, taskFrame.margins.left)
             top: parent.top
-            topMargin: adjustMargin(false, parent.height, taskFrame.margins.top)
+            topMargin: tasksRoot.iconsOnly && tasksRoot.vertical && !task.inPopup ? 0 : adjustMargin(false, parent.height, taskFrame.margins.top)
         }
 
-        width: task.inPopup ? Math.max(Kirigami.Units.iconSizes.sizeForLabels, Kirigami.Units.iconSizes.medium) : Math.min(task.parent?.minimumWidth ?? 0, task.height)
-        height: task.inPopup ? width : (parent.height - adjustMargin(false, parent.height, taskFrame.margins.top)
+        width: task.inPopup ? Math.max(Kirigami.Units.iconSizes.sizeForLabels, Kirigami.Units.iconSizes.medium)
+            : tasksRoot.iconsOnly && tasksRoot.vertical ? parent.width - adjustMargin(true, parent.width, taskFrame.margins.left) - adjustMargin(true, parent.width, taskFrame.margins.right)
+            : Math.min(task.parent?.minimumWidth ?? 0, task.height)
+        height: task.inPopup ? width : tasksRoot.iconsOnly && tasksRoot.vertical ? parent.height : (parent.height - adjustMargin(false, parent.height, taskFrame.margins.top)
                  - adjustMargin(false, parent.height, taskFrame.margins.bottom))
 
         asynchronous: true
@@ -639,9 +641,14 @@ PlasmaCore.ToolTipArea {
 
                 PropertyChanges {
                     iconBox.anchors.leftMargin: 0
-                    iconBox.width: Math.min(task.parent.minimumWidth, tasksRoot.height)
-                        - iconBox.adjustMargin(true, task.width, taskFrame.margins.left)
-                        - iconBox.adjustMargin(true, task.width, taskFrame.margins.right)
+                    iconBox.width: tasksRoot.iconsOnly && !task.inPopup
+                        ? (tasksRoot.vertical ? task.width
+                            - iconBox.adjustMargin(true, task.width, taskFrame.margins.left)
+                            - iconBox.adjustMargin(true, task.width, taskFrame.margins.right)
+                            : Math.min(task.parent.minimumWidth, task.height))
+                        : Math.min(task.parent.minimumWidth, tasksRoot.height)
+                            - iconBox.adjustMargin(true, task.width, taskFrame.margins.left)
+                            - iconBox.adjustMargin(true, task.width, taskFrame.margins.right)
                 }
             }
         ]
