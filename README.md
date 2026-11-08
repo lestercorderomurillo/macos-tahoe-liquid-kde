@@ -39,7 +39,7 @@
 > [!WARNING]
 > **Beware of paywall repackers — this theme is FREE.**
 >
-> If you found this theme through linusscoop or any other third-party channel, you do not need to pay to get it: download it directly from this repository. We keep this project free so everyone can enjoy it without a paywall. No purchase or subscription is required.
+> If you found this theme through any third-party channel, you do not need to pay to get it: download it directly from this repository. We keep this project free so everyone can enjoy it without a paywall. No purchase or subscription is required.
 
 <br>
 
