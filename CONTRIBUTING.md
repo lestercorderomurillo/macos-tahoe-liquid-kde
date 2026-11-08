@@ -571,3 +571,17 @@ rejects a dark Files surface in a light capture, or the reverse. Keep a rejected
 mixed-theme frame as a negative control. Do not apply the brightness check to
 the Dock or translucent popups: their material can show the wallpaper through
 it. Review every image before replacing published screenshots.
+
+## Base Dock applications
+
+The three bundled layouts share this order: Dolphin, Firefox, Thunderbird,
+Merkuro Calendar, Marknote, Gwenview, Elisa, Haruna, Discover and System Settings.
+Plasma resolves installed desktop IDs when creating the layout; missing apps are
+omitted and native/Flatpak/Snap alternatives occupy a single slot. The preset does
+not install application packages. Both editions use the same list and retain
+their own icon appearance and materials.
+
+The installer restores existing pins after creating the layout, including an
+intentionally empty Dock on an existing theme installation. The base list is
+used when there are no saved pins and no previous theme layout. Declarative Nix
+panels continue to use their explicit `panels.launchers` list.

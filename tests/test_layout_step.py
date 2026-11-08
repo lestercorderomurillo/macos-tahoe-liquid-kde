@@ -6,6 +6,8 @@ logic that keeps the user's pinned taskbar apps alive when --resetLayout
 rebuilds the panel from scratch.
 """
 
+import json
+
 import pytest
 
 import steps.layout as layout
@@ -102,8 +104,8 @@ def test_reset_with_pins_writes_launchers_into_script(monkeypatch):
     script = captured["script"]
     # The default reset JS plus a restore block targeting icontasks.
     assert "org.kde.plasma.icontasks" in script
-    assert ("writeConfig('launchers', "
-            "'preferred://browser,applications:steam.desktop')") in script
+    expected = json.dumps(["preferred://browser", "applications:steam.desktop"])
+    assert f"writeConfig('launchers', {expected})" in script
 
 
 def test_reset_with_pins_skips_restore_block_when_no_pins(monkeypatch):
@@ -116,10 +118,9 @@ def test_reset_with_pins_skips_restore_block_when_no_pins(monkeypatch):
     assert "writeConfig('launchers'" not in captured["script"]
 
 
-def test_mac_layout_adds_no_application_launchers_of_its_own():
+def test_mac_layout_keeps_native_panel_surfaces():
     script = layout.LAYOUT_SCRIPT.read_text()
 
-    assert 'tasks.writeConfig("launchers", "");' in script
     # Keep the full-width panel invisible and let Plasma draw its own
     # light/dark-aware floating-applet surfaces. Custom panel/widget layers
     # stack and recreate an opaque strip plus mismatched dark tiles.
@@ -348,8 +349,8 @@ def test_reinstall_applies_autohide_with_preserved_pins(monkeypatch, tmp_path):
     script = captured["script"]
     assert 'dock.hiding = "autohide";' in script
     assert 'bar.hiding = "none";' in script
-    assert "writeConfig('launchers', 'preferred://filemanager," in script
-    assert "applications:steam.desktop,preferred://browser')" in script
+    expected = json.dumps(["preferred://filemanager", "applications:steam.desktop", "preferred://browser"])
+    assert f"writeConfig('launchers', {expected})" in script
     assert marker.is_file()
 
 

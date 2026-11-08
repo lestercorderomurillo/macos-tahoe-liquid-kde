@@ -110,9 +110,31 @@ for (var screen = 0; screen < screenCount; screen++) {
 
     var tasks = dock.addWidget("org.kde.mac.tahoe.liquid.icontasks");
     tasks.currentConfigGroup = ["General"];
-    // Filled by layout.py from the user's existing taskbar pins, applied to
-    // every dock across every screen (see _append_launcher_restore).
-    tasks.writeConfig("launchers", "");
+    // Base Dock: use the first installed desktop ID for each application.
+    // Existing user pins are restored by layout.py after this layout is created.
+    var dockApplications = [
+        ["org.kde.dolphin.desktop"],
+        ["firefox.desktop", "firefox-esr.desktop", "org.mozilla.firefox.desktop", "firefox_firefox.desktop"],
+        ["thunderbird.desktop", "org.mozilla.Thunderbird.desktop", "thunderbird_thunderbird.desktop"],
+        ["org.kde.merkuro.calendar.desktop"],
+        ["org.kde.marknote.desktop"],
+        ["org.kde.gwenview.desktop"],
+        ["org.kde.elisa.desktop"],
+        ["org.kde.haruna.desktop"],
+        ["org.kde.discover.desktop"],
+        ["systemsettings.desktop"]
+    ];
+    var dockLaunchers = [];
+    for (var app = 0; app < dockApplications.length; app++) {
+        for (var candidate = 0; candidate < dockApplications[app].length; candidate++) {
+            var desktopId = dockApplications[app][candidate];
+            if (applicationExists(desktopId)) {
+                dockLaunchers.push("applications:" + desktopId);
+                break;
+            }
+        }
+    }
+    tasks.writeConfig("launchers", dockLaunchers);
 
     dock.addWidget("org.kde.mac-tahoe-liquid-kde.trashcan");
 }

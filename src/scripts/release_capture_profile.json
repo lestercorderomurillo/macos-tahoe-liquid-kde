@@ -1,8 +1,11 @@
 {
   "schema": 1,
-  "vm_image_sha256": "2a09de13ad568da01a8e16dd93e6aec120e63375bfc0ec24b4e804b43ecb4f8c",
-  "vm_description": "Sealed KDE neon reference guest, Plasma 6.8.1 / Qt 6.11.1, matching desktop applets and offline SDK, verified Rounded Corners cache and desktop applications",
-  "resolution": [3840, 2160],
+  "vm_image_sha256": "412e7933f10add20b921b92c02709e7eea56acd14dc14cf654f58fba4ea3cc9d",
+  "vm_description": "Sealed KDE neon reference guest, Plasma 6.8.1 / Qt 6.11.1, matching SDK and offline Rounded Corners cache; all ten base Dock applications installed",
+  "resolution": [
+    3840,
+    2160
+  ],
   "scale": 2,
   "locale": "en_US.UTF-8",
   "timezone": "UTC",
@@ -10,11 +13,40 @@
   "memory_mib": 8192,
   "cpus": 4,
   "guest_user": "tester",
-  "pointer": [80, 1000],
-  "documents": ["Design", "Projects", "Screenshots", "Wallpapers"],
-  "pins": ["applications:org.gnome.Nautilus.desktop", "applications:org.kde.discover.desktop", "applications:org.kde.kate.desktop", "applications:org.kde.gwenview.desktop", "applications:vlc.desktop", "applications:org.kde.kcalc.desktop", "applications:org.kde.okular.desktop", "applications:org.kde.spectacle.desktop", "applications:org.kde.konsole.desktop", "applications:systemsettings.desktop"],
+  "pointer": [
+    80,
+    1000
+  ],
+  "documents": [
+    "Design",
+    "Projects",
+    "Screenshots",
+    "Wallpapers"
+  ],
+  "pins": [
+    "applications:org.kde.dolphin.desktop",
+    "applications:firefox.desktop",
+    "applications:thunderbird.desktop",
+    "applications:org.kde.merkuro.calendar.desktop",
+    "applications:org.kde.marknote.desktop",
+    "applications:org.kde.gwenview.desktop",
+    "applications:org.kde.elisa.desktop",
+    "applications:org.kde.haruna.desktop",
+    "applications:org.kde.discover.desktop",
+    "applications:systemsettings.desktop"
+  ],
   "windows": {
-    "Documents": {"x": 220, "y": 250, "width": 1000, "height": 620},
-    "About This Computer (preview)": {"x": 1330, "y": 180, "width": 360, "height": 700}
+    "Documents": {
+      "x": 220,
+      "y": 250,
+      "width": 1000,
+      "height": 620
+    },
+    "About This Computer (preview)": {
+      "x": 1330,
+      "y": 180,
+      "width": 360,
+      "height": 700
+    }
   }
 }

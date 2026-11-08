@@ -1,4 +1,4 @@
-"""Keep shared interface names symbolic instead of selecting application tiles.
+"""Adapt shared interface names and missing application aliases in staged icons.
 
 SPDX-License-Identifier: GPL-3.0-or-later
 Copyright (C) 2026 Lester Cordero Murillo
@@ -28,6 +28,15 @@ INTERFACE_ICONS = {
 }
 
 
+# New application IDs reuse bundled artwork before regular/glass generation.
+# Never replace a dedicated icon supplied by a newer base archive.
+APPLICATION_ALIASES = {
+    "org.kde.merkuro.calendar.svg": "calendar.svg",
+    "org.kde.marknote.svg": "notes.svg",
+    "haruna.svg": "org.kde.haruna.svg",
+}
+
+
 def apply_interface_icons(directory: Path) -> None:
     """Adapt extracted themes only; retain canonical sources and notices."""
     directory = directory.resolve()
@@ -36,6 +45,14 @@ def apply_interface_icons(directory: Path) -> None:
         theme = directory / theme_name
         if not theme.is_dir():
             continue
+        applications = theme / "apps/scalable"
+        for alias, original in APPLICATION_ALIASES.items():
+            source, target = applications / original, applications / alias
+            if not source.is_file() or target.exists() or target.is_symlink():
+                continue
+            if not applications.resolve().is_relative_to(directory) or not source.resolve().is_relative_to(directory):
+                raise ValueError(f"Application icon escapes staging: {source}")
+            target.symlink_to(original)
         # Read all originals before replacing aliases to those same originals.
         artwork = {}
         for name, relative in INTERFACE_ICONS.items():

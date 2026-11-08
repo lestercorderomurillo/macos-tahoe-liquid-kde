@@ -136,9 +136,10 @@ def _capture_pinned_launchers() -> list[str]:
 
 
 def _append_launcher_restore(
-        script: str, pins: list[str], widget_type: str) -> str:
-    if pins:
-        joined = repr(",".join(pins))
+        script: str, pins: list[str], widget_type: str, *,
+        preserve_empty: bool = False) -> str:
+    if pins or preserve_empty:
+        joined = json.dumps(pins)
         widget = repr(widget_type)
         script += (
             "\n(function () {\n"
@@ -175,7 +176,10 @@ def _layout_script_with_launchers(
     if not _discover_is_installed():
         script = script.replace(_DISCOVER_DESKTOP + ",", "")
         script = script.replace("," + _DISCOVER_DESKTOP, "")
-    return _append_launcher_restore(script, pins, widget_type)
+    return _append_launcher_restore(
+        script, pins, widget_type,
+        preserve_empty=script_path == LAYOUT_SCRIPT and _layout_has_any_theme_widget(),
+    )
 
 
 def _evaluate_layout_with_launchers(

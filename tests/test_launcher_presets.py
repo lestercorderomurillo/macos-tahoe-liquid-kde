@@ -94,6 +94,7 @@ const existing = saved.map((preset, screen) => {
         remove: function() { launcher.config = {}; } };
 });
 function panels() { return existing; }
+function applicationExists(id) { return false; }
 function Panel() {
     this.items = [];
     this.addWidget = function(type) { const item = makeWidget(type); this.items.push(item); return item; };
