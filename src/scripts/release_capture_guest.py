@@ -92,7 +92,7 @@ def clean_desktop():
     raise RuntimeError('Applications remain open; refusing a Dock capture with extra icons')
 
 
-def setup(repo, profile, edition):
+def setup(repo, profile, edition, scope=None):
     from release_screenshots import EDITIONS
     session()
     packages = run('dpkg-query', '-W', '-f=${Package}=${Version}\n')
@@ -113,6 +113,8 @@ def setup(repo, profile, edition):
     # The fixed profile explicitly recreates its layout even if the sealed VM
     # contains an earlier installation. Normal reinstalls preserve it by default.
     choices = defaults() | {'appearance': 'light', 'reset_layout': True}
+    if scope == 'dock':
+        choices['icons'] = 'keep'
     command = ['sudo', 'env', 'MAC_TAHOE_NO_UPDATE_CHECK=true', 'MTTKDE_NO_CONFIRM=1',
                str(repo / 'src/scripts/installer_backend.py'), 'install',
                '--wizard-options', json.dumps(choices)]
@@ -147,12 +149,20 @@ def setup(repo, profile, edition):
             'compositor': run('qdbus6', 'org.kde.KWin', '/KWin', 'org.kde.KWin.supportInformation')}
 
 
-def mode(repo, requested):
+def mode(repo, requested, scope=None):
     from screenshot_checks import wait_for_session
     close()
     # The installed command carries the edition and the user's icon choices;
     # importing the source module would silently fall back to the base icons.
     run(str(Path.home() / '.local/bin/mac-tahoe-theme-switch'), requested, timeout=180)
+    if scope == 'dock':
+        # The sealed VM already contains these unchanged global appearances.
+        theme = 'MacTahoeLiquidKde-Icons-Regular-' + requested.title()
+        if not (Path.home() / '.local/share/icons' / theme / 'index.theme').is_file():
+            raise RuntimeError('Reference icon theme is missing: ' + theme)
+        run('kwriteconfig6', '--file', 'kdeglobals', '--group', 'Icons', '--key', 'Theme', theme)
+        from theme_switch import refresh_icons_live
+        refresh_icons_live()
     return wait_for_session(requested)
 
 
@@ -400,9 +410,9 @@ def main():
     session()
     profile = json.loads(args.profile.read_text())
     result = None
-    if args.action == 'setup': result = setup(args.repo, profile, args.args[0])
+    if args.action == 'setup': result = setup(args.repo, profile, *args.args)
     elif args.action == 'material': result = material(args.repo, args.args[0])
-    elif args.action == 'mode': result = mode(args.repo, args.args[0])
+    elif args.action == 'mode': result = mode(args.repo, *args.args)
     elif args.action == 'launch': launch(args.repo, args.args[0])
     elif args.action == 'launcher': run('qdbus6', 'org.kde.plasmashell', '/PlasmaShell', 'org.kde.PlasmaShell.activateLauncherMenu')
     elif args.action == 'arrange': arrange(json.loads(args.args[0]))

@@ -273,7 +273,8 @@ DOCK_APPS_CAPTURE_DEPENDENCIES = {'src/installer/wizard_window.py': (('f0b682104
 # SVG runtime dependencies and added translations support only this new option.
 # Match complete blob identities, never prefixes: later edits fail closed.
 DOCK_APPEARANCE_BASE = 'd110219036701c2dfc7e8aeaf6d984ac30de383c'
-DOCK_APPEARANCE_CAPTURE_DEPENDENCIES = {'src/installer/wizard_translations.py': ('e387626daaaca12e3dc8485e3fa40aa6f77b7994',
+DOCK_APPEARANCE_CAPTURE_DEPENDENCIES = {'src/scripts/release_capture_guest.py': ('f21554ac2a3e2fb84bee1c345a97dda0921d3c1a', '7c55555e01043423db7aba23914f2d335f09811e'),
+ 'src/installer/wizard_translations.py': ('e387626daaaca12e3dc8485e3fa40aa6f77b7994',
                                           'c1834ecc3de3e96874d70237f3a0daa5ade601a7'),
  'src/installer/wizard_window.py': ('6c14f892d4d5249d2f93373c7b6fc8c2488da1bc',
                                     'e493c1ba88d137dd61bd95f1ca644a1ab1a8efdd'),

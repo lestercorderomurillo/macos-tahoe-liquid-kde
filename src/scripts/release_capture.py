@@ -217,11 +217,13 @@ def capture(repo: Path, ref: str, image: Path, output: Path, reuse: Path | None 
                 try:
                     with Guest(guest_dir, profile, image, archive, edition) as vm:
                         print(f'Installing {edition} from {source}', flush=True)
-                        manifest['environments'][edition] = vm.action('setup', edition)
+                        dock_only = pending <= {f'{e}-{m}-dock' for e in EDITIONS for m in MODES}
+                        scope = ['dock'] if dock_only else []
+                        manifest['environments'][edition] = vm.action('setup', edition, *scope)
                         for mode in MODES:
                             vm.action('clean-desktop')
                             vm.key('esc')
-                            vm.action('mode', mode)
+                            vm.action('mode', mode, *scope)
                             def shot(case):
                                 name = f'{edition}-{mode}-{case}'
                                 if name not in pending:
