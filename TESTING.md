@@ -16,7 +16,7 @@ Scroll horizontally through the installation steps.
 
 <table>
 <tr>
-  <td align="center"><img src="src/screenshots/installer-welcome_dark_v4-e67bcd41b245.png" alt="Welcome" width="500"><br>Welcome</td>
+  <td align="center"><img src="src/screenshots/installer-welcome_dark_v4-e33ae2074e37.png" alt="Welcome" width="500"><br>Welcome</td>
   <td align="center"><img src="src/screenshots/installer-appearance_dark_v4-cbd81ab8fef4.png" alt="Appearance" width="500"><br>Appearance</td>
   <td align="center"><img src="src/screenshots/installer-icons_dark_v4-7ea49971f78c.png" alt="Icons and color" width="500"><br>Icons and color</td>
   <td align="center"><img src="src/screenshots/installer-wallpaper_dark_v4-b23218dae540.png" alt="Wallpaper" width="500"><br>Wallpaper</td>
@@ -31,6 +31,6 @@ Scroll horizontally through the installation steps.
   <td align="center"><img src="src/screenshots/installer-glass_style_dark_v4-f913bca520d1.png" alt="Window glass" width="500"><br>Window glass</td>
   <td align="center"><img src="src/screenshots/installer-boot_dark_v4-de543c2dfb97.png" alt="Boot animation" width="500"><br>Boot animation</td>
   <td align="center"><img src="src/screenshots/installer-oled_dark_v4-c8e66978f276.png" alt="OLED protection" width="500"><br>OLED protection</td>
-  <td align="center"><img src="src/screenshots/installer-summary_dark_v4-766f23e5d67e.png" alt="Summary" width="500"><br>Summary</td>
+  <td align="center"><img src="src/screenshots/installer-summary_dark_v4-09c9cde4ba61.png" alt="Summary" width="500"><br>Summary</td>
 </tr>
 </table>
