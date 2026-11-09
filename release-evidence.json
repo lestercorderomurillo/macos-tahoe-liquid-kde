@@ -1,0 +1,50 @@
+{
+  "version": "0.66.2",
+  "source_sha256": "23945600b14ac37a257b098d88fc92ba03727a3098432afc287169461d7aa6ab",
+  "environment": "Linux-7.2.0-1-cachyos-x86_64-with-glibc2.44",
+  "checks": [
+    {
+      "command": "QT_QPA_PLATFORM=offscreen python -m pytest -q -p no:cacheprovider tests/test_screenshots.py tests/test_traffic_lights.py tests/test_ci_gate.py tests/test_release_evidence.py tests/test_component_cache.py",
+      "result": "passed",
+      "detail": "56 passed; followed by final publication/evidence checks after adding historical-gallery regression tests"
+    },
+    {
+      "command": "python -m pytest -q -p no:cacheprovider tests/test_release_evidence.py tests/test_ci_gate.py",
+      "result": "passed",
+      "detail": "29 passed on final workflow/evidence implementation"
+    },
+    {
+      "command": "QT_QPA_PLATFORM=offscreen python -m pytest -q -p no:cacheprovider tests/test_screenshots.py tests/test_traffic_lights.py (prepared Golden Gate source 04395f276740d5c0647f)",
+      "result": "passed",
+      "detail": "17 passed"
+    },
+    {
+      "command": "python /tmp/about-buttons-0662.py",
+      "result": "passed",
+      "detail": "Four focused disposable pinned-VM frames reviewed; drag, identity and focus verified"
+    }
+  ],
+  "gallery_commit": "170f24dd28ae58a44774780935f3fdeaf8999afe",
+  "captures": [
+    {
+      "path": "src/screenshots/previews/about-buttons-dark-57536aa93c40.png",
+      "sha256": "57536aa93c408265675e97410c69b17530abef73fb8f4b0b29a0c10a89cd4b6d",
+      "reviewed": true
+    },
+    {
+      "path": "src/screenshots/previews/about-buttons-light-eaebe82caa18.png",
+      "sha256": "eaebe82caa18cc24c21833fff02137c262061aa5a35d1092a9e441c8c41482f0",
+      "reviewed": true
+    },
+    {
+      "path": "src/screenshots/previews/about-buttons-provenance.json",
+      "sha256": "b74e838cdf150d8b5ad5fb72f35fa9ce8f08cd3edd7725e1e49788403efbfcc5",
+      "reviewed": true
+    }
+  ],
+  "coverage_limits": [
+    "Full remote test.yml matrix runs asynchronously and is not claimed passed by this local evidence.",
+    "Historical desktop/installer gallery retains original provenance; new previews validate About labels, not an entire desktop reinstall.",
+    "Existing unchanged Flat/Glassy installer and Firefox checks/VM evidence retained in tests/traffic_lights_validation.json."
+  ]
+}

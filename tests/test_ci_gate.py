@@ -56,13 +56,16 @@ const setTimeout = resolve => resolve();
     assert (result.returncode == 0) == success, result.stdout + result.stderr
 
 
-def test_release_waits_for_ci_before_publishing(repo):
+def test_release_checks_local_evidence_without_waiting_for_matrix(repo):
     text = (repo / '.github/workflows/release.yml').read_text()
-    assert 'uses: ./.github/workflows/require-ci.yml' in text
-    assert 'sha: ${{ github.sha }}' in text
-    assert 'repository: ${{ github.repository }}' in text
-    assert '    needs: ci\n' in text.split('  publish:', 1)[1]
-    assert 'actions: read' in text
+    assert 'require-ci.yml' not in text
+    assert 'needs: ci' not in text
+    assert 'python3 .github/scripts/release_evidence.py' in text
+    assert 'python3 src/scripts/component_manifest.py' in text
+    assert '--verify-tag --title' in text
+    matrix = (repo / '.github/workflows/test.yml').read_text()
+    assert 'branches: [main, dev]' in matrix
+    assert 'shard: [0, 1]' in matrix and 'cross-distro:' in matrix and '  nix:' in matrix
 
 
 @pytest.mark.parametrize('responses,success', [

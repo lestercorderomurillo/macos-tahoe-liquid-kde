@@ -1,12 +1,16 @@
 # Installer testing
 
-Tahoe **v0.66.1** reuses identical component payloads and icon generation, and
-uses individually focused Nautilus/Dolphin previews in both appearance modes.
-Focused regressions cover source hashes, changed choices, missing files,
-native rebuild invalidation and capture focus. Four installer-file photographs
-are refreshed; unrelated photographs retain their original provenance.
-See [validation evidence and coverage limits](CONTRIBUTING.md#0661-validation-evidence).
-Publication requires successful exact-commit CI on both branches in both repositories.
+Tahoe **v0.66.2** fixes blank About action labels under KDE's control style
+and includes the coordinated Flat/Glassy controls. Focused local rendering and
+lifecycle checks passed; full remote CI runs asynchronously and is reported
+separately. See [release evidence](release-evidence.json).
+
+The installer gallery below and README desktop gallery retain their original
+reviewed v0.66.1-or-earlier provenance; they are historical examples, not new
+0.66.2 appearance evidence. The focused About previews show the corrected labels
+in both modes ([provenance](src/screenshots/previews/about-buttons-provenance.json)).
+
+[Light preview](src/screenshots/previews/about-buttons-light-eaebe82caa18.png) · [Dark preview](src/screenshots/previews/about-buttons-dark-57536aa93c40.png)
 
 ## Installation steps
 

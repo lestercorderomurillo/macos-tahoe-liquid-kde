@@ -491,19 +491,20 @@ Be a decent human. I'll close anything abusive, off-topic, or trying to drag thi
 Keep the installer gallery in [TESTING.md](TESTING.md); the README links to it
 without embedding installer screenshots. Desktop and Dock photographs stay in the README.
 
-New captures are required only when the diff clearly changes visible output.
-For nonvisual releases, retain the reviewed images and their original capture
-version and source; run `./release-screenshots verify` without starting a VM.
-The verifier conservatively rejects changed visual inputs and unknown source
-changes. Console updater logic/messages, documentation, tests, release
-verification tools and a version bump alone do not invalidate visual evidence.
-When new captures are needed, use `./release-screenshots` for publication. The release workflow
-verifies committed provenance before creating the GitHub release. Never use
-old images to fill a failed or rejected case. Main README desktop galleries
-show Files and About This Computer separately in both modes. Each frame must
-contain only its featured application with that window focused; capture and
-release validation reject combined or unfocused desktops. Distro qualification
-screenshots are outside this gallery rule.
+Publish a fix after focused local checks and any component-scoped VM review.
+Record commands, results, coverage limits and source fingerprint in
+`release-evidence.json`; the workflow verifies this record, component hashes,
+reviewed preview hashes, immutable tag/version and unchanged historical gallery
+bytes before publishing. Full `test.yml` CI runs independently on remote branches;
+report its actual status and offer the published release without waiting for the
+matrix. Do not call a release fully qualified while that CI is pending or failed.
+
+Focused previews may accompany a fix while the full documentation gallery remains
+historical and explicitly labeled. Preserve its original provenance; do not
+recapture unaffected pages or relabel old frames as new. Refresh the gallery
+separately when needed, using the following capture tooling. Never use an older
+image to conceal a rejected new capture. Main README desktop frames show Files
+and About separately, each with only the featured application focused.
 
 For a release that changes visual output:
 
@@ -522,7 +523,7 @@ For a release that changes visual output:
    `./release-screenshots review --bundle build/captures/vVERSION --approve FRAME...`
    or `--reject FRAME...`. Names are the PNG basenames without `.png`.
    Review is bound to the manifest and image hashes. A rejected or missing
-   frame blocks staging and publication; fix the source and recapture.
+   frame blocks publication of that image; fix the source and recapture.
 4. Stage Tahoe with `./release-screenshots stage --bundle build/captures/vVERSION --edition tahoe --destination .`.
    Stage Golden Gate from the same reviewed bundle using `--edition golden-gate`
    and its checkout as `--destination`. Both versions must already match.
@@ -535,7 +536,7 @@ For a release that changes visual output:
 5. Commit the screenshots. Further changes to visual inputs require recapture;
    nonvisual edits do not. Preserve the capture version and source in provenance.
    Run `./release-screenshots verify`. Push the version tag to trigger the
-   gated release workflow. Its release title is exactly `vVERSION`.
+   release workflow after focused local evidence is recorded. Its title is exactly `vVERSION`.
    Pin Golden Gate to that published Tahoe commit and verified archive, commit
    its screenshots and pin, then run the Tahoe tool with
    `--repo /path/to/golden-gate verify --tahoe-repo /path/to/tahoe` before its tag.
@@ -693,8 +694,9 @@ Their hashes, source commit and before/after focus evidence are retained in
 `build/captures/v0.66.1-file-previews/manifest.json`.
 
 These checks do not qualify a new distro or prove all native SDK combinations.
-The required push CI matrix remains the exact-commit publication gate; local
-focused results do not substitute for it. The four affected installer-gallery
+For v0.66.1, the push CI matrix was a blocking publication gate. From v0.66.2
+it runs asynchronously; focused local evidence permits publication without
+claiming full remote qualification. The four affected installer-gallery
 frames were captured separately from source `9053872` after installing each
 edition in its own disposable VM overlay, preserving the pinned package
 inventory. All four frames were reviewed; unrelated photographs retain their

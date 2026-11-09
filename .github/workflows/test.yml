@@ -68,7 +68,7 @@ jobs:
           pacman -Sy --noconfirm --needed archlinux-keyring
           pacman -Syu --noconfirm \
             python python-pytest ccache zstd python-pillow python-gobject python-pyqt6 gtk4 \
-            qt6-svg librsvg xorg-server-xvfb xorg-xprop bash git diffutils findutils \
+            qt6-svg qqc2-desktop-style librsvg xorg-server-xvfb xorg-xprop bash git diffutils findutils \
             base-devel cmake extra-cmake-modules pkgconf \
             qt6-base qt6-declarative qt6-wayland qt6-tools \
             kconfig kconfigwidgets kcoreaddons kcrash kglobalaccel \

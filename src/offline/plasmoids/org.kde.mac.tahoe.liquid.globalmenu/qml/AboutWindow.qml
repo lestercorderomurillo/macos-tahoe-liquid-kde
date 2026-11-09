@@ -277,11 +277,24 @@ Window {
     component GlassButton: QQC2.Button {
         id: control
         hoverEnabled: true
+        implicitWidth: Math.max(implicitBackgroundWidth + leftInset + rightInset,
+                                implicitContentWidth + leftPadding + rightPadding)
         implicitHeight: Math.max(32, implicitContentHeight + topPadding + bottomPadding)
         leftPadding: 14
         rightPadding: 14
         topPadding: 6
         bottomPadding: 6
+
+        contentItem: GlassText {
+            objectName: "aboutButtonLabel"
+            text: control.text
+            font: control.font
+            color: Kirigami.Theme.textColor
+            opacity: control.enabled ? 1 : 0.4
+            horizontalAlignment: Text.AlignHCenter
+            verticalAlignment: Text.AlignVCenter
+            elide: Text.ElideRight
+        }
 
         background: Item {
             implicitWidth: 32

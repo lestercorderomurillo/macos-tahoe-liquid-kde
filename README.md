@@ -626,3 +626,5 @@ If a credit is missing, please [open an issue](https://github.com/lestercorderom
 
 
 [Installer screenshots and testing](TESTING.md).
+
+Desktop photographs retain their original capture provenance; see [current focused validation and historical gallery notes](TESTING.md).

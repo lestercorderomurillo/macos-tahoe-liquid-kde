@@ -770,9 +770,11 @@ another test route.
 
 Use `./release-screenshots` and the checksum-pinned disposable VM for any new
 publication captures. Review each new image, preserve content-hashed filenames,
-and verify committed provenance before publication. Publish through
-`.github/workflows/release.yml`; keep exact-commit CI on main and dev mandatory
-in both repositories. Never use direct `gh release create` to bypass the gate.
+and record their source hashes and review before publication. Keep unchanged
+gallery images with their original provenance and label historical galleries
+accurately. Publish through `.github/workflows/release.yml` after its fast local-
+evidence check; full remote CI runs independently. Do not create releases outside
+that workflow.
 See CONTRIBUTING.md for the capture sequence when visual changes require it.
 
 The same defaults file selects `launcher_preset` (Tahoe: 1, Golden Gate: 2).
@@ -1122,8 +1124,8 @@ Run focused checks while implementing; reserve broad integration runs for a
 stable candidate. Required CI supplies the complete suite and configured distro
 matrix on the final implementation commit. The full general suite runs once on
 `dev` (two disjoint shards); each distro retains dependency, SDK build, native
-rendering and platform checks. `main` reuses the successful `dev` result only
-for the identical commit. Pull requests run their own complete checks. Do not also run the entire matrix
+rendering and platform checks. `main` reports the `dev` result only for the identical commit; this status
+check runs asynchronously and does not hold the release. Pull requests run their own complete checks. Do not also run the entire matrix
 locally unless CI cannot exercise the needed case or a failure needs local
 reproduction. Run the shared suite against the prepared source when staging
 changes executable behavior; a pin-only update to an already validated Tahoe
@@ -1139,15 +1141,17 @@ matrix just to obtain the same evidence sooner. Once the planned checks pass
 and coverage gaps are resolved, stop testing unless new changes invalidate
 that evidence.
 
-For implementation delivery, inspect required CI results for the exact commits
-on both branches. Earlier-commit evidence never substitutes for the exact-SHA
-release gate: publication requires successful `test.yml` push runs on `main`
-and `dev` for each repository's exact release commit. A `main` promotion run
-may verify the latest successful `dev` push run for that exact SHA instead of
-repeating it; missing, failed or cancelled evidence blocks promotion. Never weaken workflows,
-skip required checks or treat missing,
-cancelled or failed checks as success to shorten a task. Screenshot provenance verification remains mandatory; new visual tests and
-captures follow the component-scoped, optional documentation capture policy.
+For implementation delivery, run focused local checks for the affected behavior,
+review component-scoped VM captures when needed, and record their exact source
+fingerprint in `release-evidence.json`. Publish the installable fix promptly after
+these checks pass. Full remote CI remains enabled and runs asynchronously on
+`dev`; `main` tracks that exact commit's CI without blocking publication.
+Do not wait for the full matrix or repeat the historical screenshot audit before
+telling the user the release can be installed. Clearly distinguish local checks,
+reviewed captures, published release and pending/passed/failed remote CI. Never
+call pending, cancelled, skipped or failed checks successful. Investigate later
+CI failures and deliver a corrective release when necessary. Preserve complete
+CI coverage; this policy changes publication ordering, not the test matrix.
 
 Documentation-only delivery does not require a version bump, pin update,
 release or new screenshots. Automatic push CI may still run; report its status
