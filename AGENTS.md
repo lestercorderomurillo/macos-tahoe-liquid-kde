@@ -1,5 +1,30 @@
 # AGENTS.md
 
+## Clean install-ready delivery
+
+After every fix or release, leave the user's actual VS Code checkout clean and
+ready to install, in both Tahoe and Golden Gate. Publishing from an isolated
+worktree does not complete delivery while the checkout the user opens remains
+behind or contains leftover edits. Synchronize that checkout to the delivered
+commit, including VERSION, the upstream pin and component hashes as applicable.
+
+Commit and deliver all task-owned changes, including AGENTS.md. Keep generated
+logs, temporary captures, build output and machine-specific .vscode settings out
+of tracked changes. Never hide dirt with assume-unchanged or skip-worktree, or
+ignore files that belong in version control.
+
+Coordinate with other agents before reconciling a shared checkout. Preserve
+uncommitted work that is not part of the delivery in a named, recoverable local
+backup before moving the checkout; never discard it with reset --hard or git
+clean. Do not reapply obsolete release edits over the delivered version. If
+active work prevents a clean checkout, resolve ownership or report that specific
+blocker instead of claiming the repository is ready.
+
+Check local git status once after the final checkout update and resolve any
+remaining task-owned changes. This is a local delivery check, not permission to
+repeat remote publication queries, rerun passed tests or wait for full CI.
+Documentation-only policy changes need no new version or release.
+
 ## Efficient scope and repository graph
 
 Select tests by the behavior they prove. When one executable scenario covers
