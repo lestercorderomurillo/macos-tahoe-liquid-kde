@@ -426,13 +426,70 @@ SYSTEM_MENU_0652_CAPTURE_DEPENDENCIES = {'src/offline/plasmoids/org.kde.mac.taho
  'src/offline/plasmoids/org.kde.mac.tahoe.liquid.globalmenu/systemmenustyle.h': (None,
                                                                                  '020533051dbaeee315c8b047c93f8d438869fb13')}
 
+# Audited 0.66 integration: application-menu importing, generic shortcuts and
+# native tray/clock composition change only the bar/menu component. Existing
+# font, tray, popup-style and edition defaults are preserved. Dependencies and
+# license additions do not change other photographed components. Exact blob
+# pairs intentionally reject any later edits, including changes to layouts.
+UNIFIED_MENU_066_BASE = 'b34984642b44702588fea0dd94837870bcff065e'
+UNIFIED_MENU_066_CAPTURE_DEPENDENCIES = {'LICENSES/MIT-QuickBar.txt': (None, 'cba300532dc82e81228c91fe97bcfc29d32916e0'),
+ 'LICENSES/sources.json': ('bbfd535cf6ea59cfd7a6dfe174b56cb1491c4c76',
+                           'a1de294818d7fa5fcf52d7ad9c2bd2010964f52c'),
+ 'nix/packages.nix': ('5c0207d9554df4e414c9d4dcea9d99709a66ccf3', '027c1f0b90d84d4e29489e43c0b1df1f8e8b3830'),
+ 'nix/plasma-manager.nix': ('46cd58ddaf8abf9f2820c9abcd761a14652c0148',
+                            '14410400b90eb4dd212bd2a48eb725be395a3fea'),
+ 'src/offline/layouts/mac-tahoe.js': ('a46670b72f9a29b62476426553e931f8782e01d3',
+                                      '50884a53de3bf727dc0a4d5f0ab76f2bf37e1019'),
+ 'src/offline/look-and-feel/MacTahoeLiquidKde-Dark/contents/layouts/org.kde.plasma.desktop-layout.js': ('a729045e55adc283bc39840e59b3a7633f396e0c',
+                                                                                                        '6a080b41a9875cbc61d453ca19df39ecc8b7f7e5'),
+ 'src/offline/look-and-feel/MacTahoeLiquidKde-Light/contents/layouts/org.kde.plasma.desktop-layout.js': ('a729045e55adc283bc39840e59b3a7633f396e0c',
+                                                                                                         '6a080b41a9875cbc61d453ca19df39ecc8b7f7e5'),
+ 'src/offline/plasmoids/org.kde.mac.tahoe.liquid.globalmenu/CMakeLists.txt': ('2a7ebbca14a2ba83f4026aba121a1a28cb786486',
+                                                                              'b181fd7661b290f3ff20ee97376f99f93518c6dc'),
+ 'src/offline/plasmoids/org.kde.mac.tahoe.liquid.globalmenu/appmenuapplet.cpp': ('1dd65d214d3e1bb7462c51ccff92ef57e58c1aa0',
+                                                                                 '4e22d010ab16814a48012ba2085944147668b2c7'),
+ 'src/offline/plasmoids/org.kde.mac.tahoe.liquid.globalmenu/appmenuapplet.h': ('d4ab58d0269d0b28794ab6a715bd4f2c5f23c560',
+                                                                               '21c979c8d5c6ea10068784edec52f762ac4dacca'),
+ 'src/offline/plasmoids/org.kde.mac.tahoe.liquid.globalmenu/appmenumodel.cpp': ('21e8028d68a34a0d6506eba94391f13412aeb90c',
+                                                                                '66834d1513152910ac65c0043cba5f22c2e155d2'),
+ 'src/offline/plasmoids/org.kde.mac.tahoe.liquid.globalmenu/appmenumodel.h': ('1ed2ed5285ef165da164a7eaf4a05b0147af7d3f',
+                                                                              '50c1e3f4a76f6eab09f903b86e69b674124e66f4'),
+ 'src/offline/plasmoids/org.kde.mac.tahoe.liquid.globalmenu/libdbusmenuqt/dbusmenuimporter.cpp': ('7e821921deb83c321656b0f0922ddc045063fa62',
+                                                                                                  'b65072de19037981dbb668f3554ec5fc6da5e021'),
+ 'src/offline/plasmoids/org.kde.mac.tahoe.liquid.globalmenu/main.xml': ('9a96b29758bbc24b47c8d57f99d78bb11a008c9a',
+                                                                        '06aa69c4499146f198cb753ecc32b3d123c18d09'),
+ 'src/offline/plasmoids/org.kde.mac.tahoe.liquid.globalmenu/menushortcuts.cmake': (None,
+                                                                                   '04e6657d647a71b581ef3c49ec8f12818e3724ea'),
+ 'src/offline/plasmoids/org.kde.mac.tahoe.liquid.globalmenu/menushortcutsender.cpp': (None,
+                                                                                      'b466a7d831e62429a649029d7aba4980edb68452'),
+ 'src/offline/plasmoids/org.kde.mac.tahoe.liquid.globalmenu/menushortcutsender.h': (None,
+                                                                                    '4aa6b74f82f1b7094819f25421db0f6ab2cb2f22'),
+ 'src/offline/plasmoids/org.kde.mac.tahoe.liquid.globalmenu/metadata.json': ('248ac2289122c5f6661b644fdfca8ded6e761d7d',
+                                                                             'c5a3d6d0f104f6ed71c03ab530d1978d790a302a'),
+ 'src/offline/plasmoids/org.kde.mac.tahoe.liquid.globalmenu/protocols/fake-input.xml': (None,
+                                                                                        '33734c07581ea5a7a5bed10e7973646584885d99'),
+ 'src/offline/plasmoids/org.kde.mac.tahoe.liquid.globalmenu/qml/BarAccessory.qml': (None,
+                                                                                    '4c4e4277c2768c2852178e83915848cbfade7a9c'),
+ 'src/offline/plasmoids/org.kde.mac.tahoe.liquid.globalmenu/qml/MenuDelegate.qml': ('1730b2071cae6afdc39794d802825ad8c4fdd766',
+                                                                                    '5008c603915a9af579f60b30fc00040ac57f090b'),
+ 'src/offline/plasmoids/org.kde.mac.tahoe.liquid.globalmenu/qml/configGeneral.qml': ('dfb20237f77f5c5bfa05882f4306cdb41ed17216',
+                                                                                     '05a69892939fe8a824ec1b7e7bdcdcefd65db0d0'),
+ 'src/offline/plasmoids/org.kde.mac.tahoe.liquid.globalmenu/qml/main.qml': ('e5148dbaed0cf109a6a9df44a632148a392714f9',
+                                                                            'b1318a7f8983f48162d851b393e4502eb32f2647'),
+ 'src/offline/plasmoids/org.kde.mac.tahoe.liquid.globalmenu/quickbarmenuhelpers.h': (None,
+                                                                                     'a82c12182bef7828f176a3fae0116f307c9e583f'),
+ 'src/scripts/distro.py': ('d8aa244fb0a6eaf623f33adb4a6fce84cfab92ec',
+                           'ed83f130e61572a7e752293899384eb00f0a3c9a'),
+ 'src/scripts/steps/globalmenu.py': ('78118529edd5ec87963bc25d977dda09bed54f5c',
+                                     'beb4f94569eae53158930388b696bcb2b3cc5945')}
+
 def affected_frames(repo: Path, source: str, target: str) -> set[str]:
     """Conservative dependencies: unknown changes invalidate every frame."""
     all_frames = expected_frames()
     if visual_tree(repo, source) == visual_tree(repo, target):
         return set()
     # Compose reviewed transitions without rewriting historical frame origins.
-    for base in (SYSTEM_MENU_0652_BASE, TOPBAR_0651_BASE, MENU_065_BASE, DOCK_064_BASE, DOCK_APPEARANCE_BASE):
+    for base in (UNIFIED_MENU_066_BASE, SYSTEM_MENU_0652_BASE, TOPBAR_0651_BASE, MENU_065_BASE, DOCK_064_BASE, DOCK_APPEARANCE_BASE):
         if source != base and target != base and all(
             subprocess.run(['git', '-C', str(repo), 'merge-base', '--is-ancestor', a, b],
                            stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL).returncode == 0
@@ -445,6 +502,15 @@ def affected_frames(repo: Path, source: str, target: str) -> set[str]:
     def cases(names, editions=EDITIONS):
         affected.update(f'{e}-{m}-{c}' for e in editions for m in MODES for c in names)
     for path in changed:
+        unified_dependency = UNIFIED_MENU_066_CAPTURE_DEPENDENCIES.get(path)
+        if unified_dependency:
+            def unified_object(ref):
+                entry = git(repo, 'ls-tree', ref, '--', path)
+                return entry.split()[2] if entry else None
+            if (unified_object(source), unified_object(target)) == unified_dependency:
+                cases(['menu'])
+                ignored.add(path)
+                continue
         system_menu_dependency = SYSTEM_MENU_0652_CAPTURE_DEPENDENCIES.get(path)
         if system_menu_dependency:
             def system_menu_object(ref):
