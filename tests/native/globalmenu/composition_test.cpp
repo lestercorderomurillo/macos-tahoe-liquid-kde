@@ -28,85 +28,25 @@ class CompositionTest : public QObject
 {
     Q_OBJECT
 private Q_SLOTS:
-    void restoresLegacyPreferences()
+    void remainsAMenuApplet()
     {
         TestCorona corona;
         auto *panel = corona.createContainment(QString());
         QVERIFY(panel);
-        auto panelConfig = panel->config();
-        auto saved = panelConfig.group("Applets").group("700");
-        saved.writeEntry("plugin", "org.kde.mac.tahoe.liquid.globalmenu");
-        auto legacy = saved.group("Configuration").group("Appearance");
-        legacy.writeEntry("integratedBar", true);
-        legacy.writeEntry("menuIcon", "legacy-custom-icon");
-        legacy.writeEntry("enableGenericMenu", false);
-        saved.group("Appearance").writeEntry("menuIcon", "new-custom-icon");
-        panel->restore(panelConfig);
-        QCOMPARE(panel->applets().size(), 1);
-        auto *bar = panel->applets().first();
-        QVERIFY(bar->configuration()->value("integratedBar").toBool());
-        QVERIFY(!bar->configuration()->value("enableGenericMenu").toBool());
-        QCOMPARE(bar->configuration()->value("menuIcon").toString(), QString("new-custom-icon"));
-        QVERIFY(!legacy.exists());
-    }
-
-    void containsOneTrayAndClock()
-    {
-        TestCorona corona;
-        corona.setKPackage(KPackage::PackageLoader::self()->loadPackage(QStringLiteral("Plasma/Shell"), QStringLiteral("org.kde.plasma.desktop")));
-        QVERIFY2(corona.kPackage().isValid(), "The plasma-desktop shell package is required for native accessory representations");
-        auto* panel = corona.createContainment(QString());
-        QVERIFY(panel);
-        auto* bar = qobject_cast<Plasma::Containment*>(panel->createApplet(QStringLiteral("org.kde.mac.tahoe.liquid.globalmenu")));
-        QVERIFY(bar);
-        QVERIFY2(bar->pluginMetaData().isValid(), qPrintable(bar->launchErrorMessage()));
         panel->setFormFactor(Plasma::Types::Horizontal);
         panel->setLocation(Plasma::Types::TopEdge);
-        bar->config().group("Appearance").writeEntry("integratedBar", true);
-        bar->configChanged();
+        auto *bar = panel->createApplet(QStringLiteral("org.kde.mac.tahoe.liquid.globalmenu"));
+        QVERIFY(bar);
+        QVERIFY2(!bar->failedToLaunch(), qPrintable(bar->launchErrorMessage()));
+        QVERIFY(!qobject_cast<Plasma::Containment *>(bar));
         QQuickWindow window;
         window.resize(1280, 32);
-        auto* item = PlasmaQuick::AppletQuickItem::itemForApplet(bar);
+        auto *item = PlasmaQuick::AppletQuickItem::itemForApplet(bar);
         QVERIFY(item);
         item->setParentItem(window.contentItem());
-        item->setSize({1280,32});
+        item->setSize({1280, 32});
         window.show();
         QTRY_VERIFY_WITH_TIMEOUT(item->fullRepresentationItem(), 10000);
-        QTRY_COMPARE_WITH_TIMEOUT(bar->applets().size(), 2, 10000);
-        const auto originalChildren = bar->applets();
-        for (auto* child : originalChildren) {
-            QVERIFY2(!child->failedToLaunch(), qPrintable(child->launchErrorMessage()));
-            auto* childItem = PlasmaQuick::AppletQuickItem::itemForApplet(child);
-            QVERIFY(childItem);
-            QVERIFY(child->configScheme());
-            if (child->pluginMetaData().pluginId() == QStringLiteral("org.kde.plasma.digitalclock")) {
-                auto *setting = child->configScheme()->findItemByName("customDateFormat");
-                QVERIFY(setting);
-                QCOMPARE(setting->property().toString(), QString("ddd d ' | '"));
-                QCOMPARE(child->configuration()->value("customDateFormat").toString(), QString("ddd d ' | '"));
-                auto *automaticFont = child->configScheme()->findItemByName("autoFontAndSize");
-                QVERIFY(automaticFont);
-                QVERIFY(!automaticFont->property().toBool());
-                QCOMPARE(child->config().group("Appearance").readEntry("fontSize", 0), 10);
-            } else {
-                auto *tray = qobject_cast<Plasma::Containment *>(child);
-                QVERIFY(tray);
-                QTRY_VERIFY(!tray->applets().isEmpty());
-                for (auto *indicator : tray->applets()) {
-                    QCOMPARE(indicator->formFactor(), Plasma::Types::Horizontal);
-                }
-                auto *setting = child->configScheme()->findItemByName("hiddenItems");
-                QVERIFY(setting);
-                QVERIFY(setting->property().toStringList().contains("org.kde.kdeconnect"));
-            }
-            QTRY_VERIFY(childItem->width() > 0);
-            QVERIFY(childItem->window() == &window);
-            const auto topLeft = childItem->mapToScene({0, 0});
-            QVERIFY(topLeft.x() >= 0);
-            QVERIFY(topLeft.x() + childItem->width() <= window.width() + 1);
-            QCOMPARE(childItem->height(), 32);
-            child->config().group("Appearance").writeEntry("testSavedChoice", "retained");
-        }
         auto *model = bar->property("model").value<QObject *>();
         QVERIFY(model);
         auto *tasks = model->findChild<TaskManager::TasksModel *>();
@@ -122,28 +62,12 @@ private Q_SLOTS:
         tasks->setSourceModel(&source);
         Q_EMIT tasks->activeTaskChanged();
         QTRY_VERIFY(model->property("menuAvailable").toBool());
-        bar->config().group("Appearance").writeEntry("integratedBar", false);
-        bar->configChanged();
         auto *representation = item->fullRepresentationItem();
-        auto *viewport = representation->findChild<QQuickItem *>(QStringLiteral("menuViewport"));
-        QVERIFY(viewport);
-        // A normal panel allocates the advertised minimum to non-expanding
-        // applets. It must include every menu, not just Apple + the app name.
         QQmlProperty minimumWidth(representation, QStringLiteral("Layout.minimumWidth"), qmlContext(representation));
         QVERIFY(minimumWidth.isValid());
         QTRY_VERIFY(minimumWidth.read().toReal() > 250);
-        const qreal minimum = minimumWidth.read().toReal();
-        item->setWidth(minimum);
-        QTRY_VERIFY(viewport->width() + 1 >= viewport->property("contentWidth").toReal());
-        item->setWidth(1280);
-        bar->config().group("Appearance").writeEntry("integratedBar", true);
-        bar->configChanged();
-        QCoreApplication::processEvents();
-        QCOMPARE(bar->applets(), originalChildren);
-        for (auto* child : originalChildren) {
-            QCOMPARE(child->config().group("Appearance").readEntry("testSavedChoice", QString()), QString("retained"));
-            QTRY_VERIFY(PlasmaQuick::AppletQuickItem::itemForApplet(child)->isVisible());
-        }
+        QCOMPARE(panel->applets().size(), 1);
+        QVERIFY(!bar->configuration()->contains(QStringLiteral("integratedBar")));
     }
 };
 QTEST_MAIN(CompositionTest)

@@ -7,7 +7,6 @@ import org.kde.kcmutils as KCM
 
 KCM.SimpleKCM {
     property alias cfg_compactView: compactViewRadioButton.checked
-    property alias cfg_integratedBar: integratedBar.checked
     property alias cfg_enableGenericMenu: genericMenu.checked
     property alias cfg_enableMenuSearch: menuSearch.checked
     property alias cfg_hoverOpensMenu: hoverMenus.checked
@@ -19,10 +18,6 @@ KCM.SimpleKCM {
             text: i18n("Show common menus for applications without a menu bar")
         }
         QQC2.CheckBox {
-            id: integratedBar
-            text: i18n("Include system tray and clock")
-        }
-        QQC2.CheckBox {
             id: menuSearch
             text: i18n("Search application menu actions")
         }
@@ -32,12 +27,10 @@ KCM.SimpleKCM {
         }
         QQC2.RadioButton {
             id: compactViewRadioButton
-            enabled: !integratedBar.checked
             text: i18n("Use single button for application menu")
         }
         QQC2.RadioButton {
             id: fullViewRadioButton
-            enabled: !integratedBar.checked
             checked: !compactViewRadioButton.checked
             text: i18n("Show full application menu")
         }

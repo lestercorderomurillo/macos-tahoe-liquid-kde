@@ -21,8 +21,10 @@
           floating = false;
           opacity = "translucent";
           widgets = [
-            { name = "org.kde.mac.tahoe.liquid.globalmenu";
-              config.Appearance.integratedBar = true; }
+            "org.kde.mac.tahoe.liquid.globalmenu"
+            "org.kde.plasma.panelspacer"
+            "org.kde.plasma.systemtray"
+            "org.kde.plasma.digitalclock"
           ];
         }
         {

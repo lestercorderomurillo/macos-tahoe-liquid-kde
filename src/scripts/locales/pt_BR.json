@@ -1111,22 +1111,5 @@
   "Browser": "Navegador",
   "Files": "Arquivos",
   "App Store": "Loja de aplicativos",
-  "System Settings": "Configurações do sistema",
-  "&Copy": "&Copiar",
-  "&Edit": "&Editar",
-  "&File": "&Arquivo",
-  "&Paste": "Co&lar",
-  "&Redo": "&Refazer",
-  "&Undo": "&Desfazer",
-  "&View": "E&xibir",
-  "Close Window": "Fechar janela",
-  "Configure Clock…": "Configurar relógio…",
-  "Configure System Tray…": "Configurar área de notificação…",
-  "Cu&t": "Recor&tar",
-  "Include system tray and clock": "Incluir área de notificação e relógio",
-  "Search application menu actions": "Pesquisar ações do menu do aplicativo",
-  "Select &All": "Selecionar &tudo",
-  "Show common menus for applications without a menu bar": "Mostrar menus comuns para aplicativos sem barra de menus",
-  "Switch open menus on hover": "Alternar menus abertos ao passar o mouse",
-  "System menu": "Menu do sistema"
+  "System Settings": "Configurações do sistema"
 }

@@ -59,11 +59,7 @@ msgstr "Fenster schließen"
 msgid "Commands"
 msgstr "Befehle"
 
-msgid "Configure Clock…"
-msgstr "Uhr einrichten…"
 
-msgid "Configure System Tray…"
-msgstr "Systemabschnitt der Kontrollleiste einrichten…"
 
 msgid "Copied"
 msgstr "Kopiert"
@@ -92,8 +88,6 @@ msgstr "Sofort beenden…"
 msgid "Graphics"
 msgstr "Grafik"
 
-msgid "Include system tray and clock"
-msgstr "Systemabschnitt der Kontrollleiste und Uhr einbeziehen"
 
 msgid "Lock Screen"
 msgstr "Bildschirm sperren"

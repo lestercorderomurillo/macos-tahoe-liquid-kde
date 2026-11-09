@@ -90,6 +90,7 @@ AppMenuModel::AppMenuModel(QObject* parent)
             m_menu.clear();
             m_importer.reset();
             setMenuAvailable(false);
+            updateGenericMenu();
             Q_EMIT modelNeedsUpdate();
         }
     });
@@ -448,6 +449,15 @@ void AppMenuModel::setEnableGenericMenu(bool enabled)
 {
     if (m_enableGenericMenu == enabled) return;
     m_enableGenericMenu = enabled;
+    if (!enabled && m_genericMenu) {
+        Q_EMIT menuSourceAboutToChange();
+        removeSearchActionsFromMenu();
+        m_menu.clear();
+        m_genericMenu.reset();
+        m_genericTarget = QPersistentModelIndex();
+        ++m_shortcutGeneration;
+        setMenuAvailable(false);
+    }
     onActiveWindowChanged();
     Q_EMIT enableGenericMenuChanged();
 }

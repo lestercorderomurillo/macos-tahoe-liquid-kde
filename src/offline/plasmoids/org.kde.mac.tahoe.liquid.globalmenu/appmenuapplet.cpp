@@ -5,8 +5,6 @@
 */
 
 #include "appmenuapplet.h"
-#include <KConfigLoader>
-#include <KConfigPropertyMap>
 #include "appmenumodel.h"
 #include "systemmenustyle.h"
 
@@ -21,7 +19,6 @@
 #include <QKeyEvent>
 #include <QMenu>
 #include <QLineEdit>
-#include <PlasmaQuick/AppletQuickItem>
 #include <QMouseEvent>
 #include <QProcess>
 #include <QQuickItem>
@@ -83,7 +80,7 @@ void applyActiveColorScheme(QWidget* menu)
 /// observed so deferred destruction (right-click → remove widget then
 /// drag back) still keeps the service in sync.
 AppMenuApplet::AppMenuApplet(QObject* parent, const KPluginMetaData& data, const QVariantList& args)
-    : Plasma::Containment(parent, data, args)
+    : Plasma::Applet(parent, data, args)
 {
     ++s_refs;
     if (s_refs == 1) {
@@ -149,103 +146,7 @@ void AppMenuApplet::resetApplicationMenu()
     setCurrentIndex(-1);
 }
 
-void AppMenuApplet::init()
-{
-    // Before 0.66 this was an Applet: Plasma stored its settings under
-    // Configuration. Embedded containments read them directly from their root.
-    // This also covers a layout created while the previous plugin was loaded.
-    auto legacy = config().group(QStringLiteral("Configuration")).group(QStringLiteral("Appearance"));
-    auto appearance = config().group(QStringLiteral("Appearance"));
-    for (const auto &key : legacy.keyList()) {
-        if (!appearance.hasKey(key)) {
-            appearance.writeEntry(key, legacy.readEntry(key));
-        }
-    }
-    if (legacy.exists()) {
-        legacy.deleteGroup();
-        config().sync();
-        configChanged();
-    }
-    Plasma::Containment::init();
-    // Tray applets are nested one level deeper. Plasma resolves their form
-    // factor through this containment, so mirror the enclosing panel here.
-    if (auto *panel = containment(); panel && panel != this) {
-        setFormFactor(panel->formFactor());
-        setLocation(panel->location());
-        connect(panel, &Plasma::Applet::formFactorChanged, this, &Plasma::Containment::setFormFactor);
-        connect(panel, &Plasma::Applet::locationChanged, this, &Plasma::Containment::setLocation);
-    }
-    // Child popup activation must not activate the enclosing bar as well.
-    connect(this, &Plasma::Containment::appletAdded, this, [this](Plasma::Applet *child) {
-        disconnect(child, &Plasma::Applet::activated, this, &Plasma::Applet::activated);
-    });
-}
-
-QQuickItem* AppMenuApplet::accessory(const QString& pluginId)
-{
-    // This containment has a fixed purpose; do not load arbitrary plugin IDs.
-    if (pluginId != QLatin1String("org.kde.plasma.systemtray")
-        && pluginId != QLatin1String("org.kde.plasma.digitalclock")) {
-        return nullptr;
-    }
-    Plasma::Applet* child = nullptr;
-    for (auto* candidate : applets()) {
-        if (candidate->pluginMetaData().pluginId() == pluginId) {
-            child = candidate;
-            break;
-        }
-    }
-    if (!child) {
-        child = createApplet(pluginId);
-        if (!child || child->failedToLaunch()) {
-            return nullptr;
-        }
-        if (pluginId == QLatin1String("org.kde.plasma.digitalclock")) {
-            KConfigGroup appearance = child->config().group(QStringLiteral("Appearance"));
-            appearance.writeEntry("autoFontAndSize", false);
-            appearance.writeEntry("fontFamily", "SF Pro Text");
-            appearance.writeEntry("fontSize", 10);
-            appearance.writeEntry("fontWeight", 500);
-            appearance.writeEntry("showDate", true);
-            appearance.writeEntry("use24hFormat", 1);
-            appearance.writeEntry("showSeconds", 0);
-            appearance.writeEntry("dateDisplayFormat", "BesideTime");
-            appearance.writeEntry("dateFormat", "custom");
-            appearance.writeEntry("customDateFormat", "ddd d ' | '");
-        } else {
-            KConfigGroup settings = child->config().group(QStringLiteral("General"));
-            settings.writeEntry("shownItems", QStringList{
-                QStringLiteral("org.kde.plasma.bluetooth"), QStringLiteral("org.kde.plasma.networkmanagement"),
-                QStringLiteral("org.kde.plasma.brightness"), QStringLiteral("org.kde.plasma.volume")});
-            settings.writeEntry("hiddenItems", QStringLiteral("org.kde.plasma.clipboard,org.kde.plasma.devicenotifier,org.kde.plasma.manage-inputmethod,org.kde.plasma.mediacontroller,org.kde.plasma.notifications,org.kde.plasma.keyboardindicator,org.kde.plasma.weather,org.kde.kscreen,org.kde.plasma.keyboardlayout,org.kde.plasma.printmanager,org.kde.plasma.cameraindicator,org.kde.plasma.vault,org.kde.kdeconnect,org.kde.plasma.battery,Arch-Update,chrome_status_icon_1,discord,plasmashell_microphone,steam,spotify,telegram,slack").split(QLatin1Char(',')));
-            settings.writeEntry("iconSpacing", 3);
-        }
-        child->config().sync();
-        if (auto *scheme = child->configScheme()) {
-            scheme->load();
-        }
-        // The QML property map can already exist after createApplet(). Loading
-        // the skeleton alone does not notify it; publish the loaded values too.
-        auto *configuration = child->configuration();
-        for (auto *setting : child->configScheme()->items()) {
-            configuration->insert(setting->key(), setting->property());
-        }
-        configuration->writeConfig();
-        child->configChanged();
-        Q_EMIT configNeedsSaving();
-    }
-    return PlasmaQuick::AppletQuickItem::itemForApplet(child);
-}
-
-void AppMenuApplet::configureAccessory(const QString& pluginId)
-{
-    for (auto* child : applets()) {
-        if (child->pluginMetaData().pluginId() == pluginId) {
-            Q_EMIT configureRequested(child);
-            return;
-        }
-    }
-}
+void AppMenuApplet::init() { }
 
 // Property accessors
 

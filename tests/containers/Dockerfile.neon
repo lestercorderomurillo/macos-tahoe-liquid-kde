@@ -39,7 +39,7 @@ RUN (apt-get update || { \
         libkf6kcmutils-dev libkf6kio-dev libkf6notifications-dev \
         libkf6service-dev libkf6widgetsaddons-dev libkf6windowsystem-dev \
         libplasma-dev plasma-activities-dev plasma-activities-stats-dev \
-        libksysguard-dev plasma-desktop plasma-pa plasma-workspace plasma-workspace-dev \
+        libksysguard-dev plasma-workspace plasma-workspace-dev \
         kwin-dev libkdecorations3-dev \
         libepoxy-dev libdrm-dev libwayland-dev libx11-dev libxext-dev libxtst-dev \
         libxcb1-dev \

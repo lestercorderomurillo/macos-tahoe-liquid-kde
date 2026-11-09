@@ -1111,22 +1111,5 @@
   "Files": "Dateien",
   "Browser": "Browser",
   "App Store": "App-Store",
-  "System Settings": "Systemeinstellungen",
-  "&Copy": "&Kopieren",
-  "&Edit": "&Bearbeiten",
-  "&File": "&Datei",
-  "&Paste": "&Einfügen",
-  "&Redo": "&Wiederherstellen",
-  "&Undo": "&Rückgängig",
-  "&View": "&Ansicht",
-  "Close Window": "Fenster schließen",
-  "Configure Clock…": "Uhr einrichten…",
-  "Configure System Tray…": "Systemabschnitt der Kontrollleiste einrichten…",
-  "Cu&t": "&Ausschneiden",
-  "Include system tray and clock": "Systemabschnitt der Kontrollleiste und Uhr einbeziehen",
-  "Search application menu actions": "Aktionen im Anwendungsmenü suchen",
-  "Select &All": "&Alles auswählen",
-  "Show common menus for applications without a menu bar": "Allgemeine Menüs für Anwendungen ohne Menüleiste anzeigen",
-  "Switch open menus on hover": "Geöffnete Menüs beim Überfahren mit der Maus wechseln",
-  "System menu": "Systemmenü"
+  "System Settings": "Systemeinstellungen"
 }

@@ -125,6 +125,10 @@ private Q_SLOTS:
         QCOMPARE(model.rowCount(), 0);
         QTRY_COMPARE(model.rowCount(), 3);
         QCOMPARE(model.index(0).data(AppMenuModel::MenuRole).toString(), QString("&File"));
+        model.setEnableGenericMenu(false);
+        QTRY_COMPARE(model.rowCount(), 0);
+        model.setEnableGenericMenu(true);
+        QTRY_COMPARE(model.rowCount(), 3);
         setLabels({"File", "Edit"});
         QTRY_COMPARE(model.rowCount(), 2);
         QCOMPARE(model.index(0).data(AppMenuModel::MenuRole).toString(), QString("File"));

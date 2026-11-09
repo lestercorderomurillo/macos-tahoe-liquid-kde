@@ -25,7 +25,7 @@ RUN dnf install -y --setopt=install_weak_deps=False --setopt=zchunk=False \
         kf6-kitemmodels-devel \
         libplasma-devel plasma-activities-devel \
         plasma-activities-stats-devel libksysguard-devel \
-        plasma-desktop plasma-pa plasma-workspace plasma-workspace-devel \
+        plasma-workspace plasma-workspace-devel \
         kwin-devel kdecoration-devel \
         libepoxy-devel libdrm-devel libX11-devel libxcb-devel libXtst-devel \
     && dnf clean all

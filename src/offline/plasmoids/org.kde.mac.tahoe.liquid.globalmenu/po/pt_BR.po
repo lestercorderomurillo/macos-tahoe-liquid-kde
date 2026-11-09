@@ -59,11 +59,7 @@ msgstr "Fechar janela"
 msgid "Commands"
 msgstr "Comandos"
 
-msgid "Configure Clock…"
-msgstr "Configurar relógio…"
 
-msgid "Configure System Tray…"
-msgstr "Configurar área de notificação…"
 
 msgid "Copied"
 msgstr "Copiado"
@@ -92,8 +88,6 @@ msgstr "Forçar encerramento…"
 msgid "Graphics"
 msgstr "Gráficos"
 
-msgid "Include system tray and clock"
-msgstr "Incluir área de notificação e relógio"
 
 msgid "Lock Screen"
 msgstr "Bloquear tela"
