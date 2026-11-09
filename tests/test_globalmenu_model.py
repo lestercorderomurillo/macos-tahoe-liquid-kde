@@ -25,6 +25,14 @@ def test_native_globalmenu_recovers_across_focus_and_service_changes(repo, tmp_p
     result = subprocess.run(["cmake", "--build", str(build), "--parallel", "2"],
                             capture_output=True, text=True, timeout=180)
     assert result.returncode == 0, result.stdout + result.stderr
+    plugin_build = tmp_path / "plugin"
+    plugin_source = repo / "src/offline/plasmoids/org.kde.mac.tahoe.liquid.globalmenu"
+    result = subprocess.run(["cmake", "-S", str(plugin_source), "-B", str(plugin_build),
+                             "-DBUILD_TESTING=OFF"], capture_output=True, text=True, timeout=60)
+    assert result.returncode == 0, result.stdout + result.stderr
+    result = subprocess.run(["cmake", "--build", str(plugin_build), "--parallel", "2"],
+                            capture_output=True, text=True, timeout=180)
+    assert result.returncode == 0, result.stdout + result.stderr
     runtime = tmp_path / "runtime"
     runtime.mkdir(mode=0o700)
     bus_config = tmp_path / "bus.conf"
@@ -42,7 +50,12 @@ def test_native_globalmenu_recovers_across_focus_and_service_changes(repo, tmp_p
                 "XDG_CACHE_HOME": str(tmp_path / "cache"), "XDG_RUNTIME_DIR": str(runtime),
                 "QT_QPA_PLATFORM": "xcb",
                 "QT_QPA_PLATFORMTHEME": "generic", "QT_FORCE_STDERR_LOGGING": "1",
-                "XDG_CURRENT_DESKTOP": "", "MTTKDE_TEST_X11": "1"})
+                "XDG_CURRENT_DESKTOP": "", "MTTKDE_TEST_X11": "1",
+                "XDG_CONFIG_DIRS": str(tmp_path / "system-config"),
+                "XDG_DATA_DIRS": "/usr/local/share:/usr/share",
+                "QT_QUICK_BACKEND": "software",
+                "QT_PLUGIN_PATH": str(plugin_build / "bin"),
+                "QML_IMPORT_PATH": str(plugin_build / "bin")})
     read_fd, write_fd = os.pipe()
     server = subprocess.Popen(["Xvfb", "-displayfd", str(write_fd), "-screen", "0",
                                "800x600x24", "-nolisten", "tcp"], pass_fds=(write_fd,),
@@ -51,7 +64,7 @@ def test_native_globalmenu_recovers_across_focus_and_service_changes(repo, tmp_p
     try:
         assert select.select([read_fd], [], [], 10)[0], "Xvfb did not start"
         env["DISPLAY"] = ":" + os.read(read_fd, 32).decode().strip()
-        for binary in ("globalmenu-model-test", "globalmenu-popup-test"):
+        for binary in ("globalmenu-model-test", "globalmenu-popup-test", "globalmenu-composition-test"):
             result = subprocess.run(["dbus-run-session", "--config-file", str(bus_config),
                                      "--", str(build / binary)],
                                     env=env, capture_output=True, text=True, timeout=90)

@@ -6,7 +6,7 @@
 #pragma once
 
 #include <KUser>
-#include <Plasma/Applet>
+#include <Plasma/Containment>
 #include <QAbstractItemModel>
 #include <QPointer>
 #include <memory>
@@ -34,7 +34,7 @@ class QMenu;
  * and CompactView (single "≡" button — used when horizontal space is
  * tight).
  */
-class AppMenuApplet : public Plasma::Applet
+class AppMenuApplet : public Plasma::Containment
 {
     Q_OBJECT
 
@@ -69,6 +69,8 @@ public:
     ~AppMenuApplet() override;
 
     void init() override;
+    Q_INVOKABLE QQuickItem* accessory(const QString& pluginId);
+    Q_INVOKABLE void configureAccessory(const QString& pluginId);
 
     // Property accessors
 
@@ -128,6 +130,10 @@ private:
 
     // State
 
+    void restoreBorrowedActions();
+    void resetApplicationMenu();
+    bool m_ownsCurrentMenu = false;
+    bool m_registered = true;
     int m_currentIndex = -1;
     int m_viewType = FullView;
 

@@ -21,6 +21,7 @@ find_package(KF6 ${KF_MIN_VERSION} REQUIRED COMPONENTS
     WindowSystem I18n CoreAddons Config ColorScheme
 )
 find_package(Plasma REQUIRED)
+find_package(PlasmaQuick REQUIRED)
 find_package(PlasmaActivities)
 find_package(LibTaskManager REQUIRED)
 
@@ -39,6 +40,7 @@ plasma_add_applet(org.kde.mac.tahoe.liquid.globalmenu
         qml/configGeneral.qml
         qml/main.qml
         qml/MenuDelegate.qml
+        qml/BarAccessory.qml
         qml/AboutWindow.qml
         qml/configSystemMenu.qml
     CPP_SOURCES
@@ -62,11 +64,16 @@ target_link_libraries(org.kde.mac.tahoe.liquid.globalmenu PRIVATE
     Qt::Quick
     Qt::DBus
     Plasma::Plasma
+    Plasma::PlasmaQuick
     KF6::WindowSystem
     KF6::I18n
+    KF6::ConfigGui
     KF6::ColorScheme
     PW::LibTaskManager
     dbusmenuqt
 )
 
 install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/locale/" DESTINATION "${KDE_INSTALL_LOCALEDIR}")
+
+include(menushortcuts.cmake)
+tahoe_menu_shortcuts(org.kde.mac.tahoe.liquid.globalmenu)

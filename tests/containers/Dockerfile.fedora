@@ -15,7 +15,7 @@ FROM fedora:latest
 RUN dnf install -y --setopt=install_weak_deps=False --setopt=zchunk=False \
         python3 python3-pytest git zstd python3-pillow python3-pyqt6 plasma5support librsvg2-tools \
         cmake make ccache gcc-c++ extra-cmake-modules pkgconf-pkg-config \
-        qt6-qtbase-devel qt6-qttools-devel qt6-qtdeclarative-devel qt6-qtsvg-devel \
+        qt6-qtbase-devel qt6-qttools-devel qt6-qtdeclarative-devel qt6-qtsvg-devel qt6-qtwayland-devel \
         kf6-kconfig-devel kf6-kconfigwidgets-devel kf6-kcoreaddons-devel \
         kf6-kcrash-devel kf6-kglobalaccel-devel kf6-kguiaddons-devel \
         kf6-ki18n-devel kf6-kio-devel kf6-kcmutils-devel \
@@ -26,7 +26,7 @@ RUN dnf install -y --setopt=install_weak_deps=False --setopt=zchunk=False \
         plasma-activities-stats-devel libksysguard-devel \
         plasma-workspace-devel \
         kwin-devel kdecoration-devel \
-        libepoxy-devel libdrm-devel libX11-devel libxcb-devel \
+        libepoxy-devel libdrm-devel libX11-devel libxcb-devel libXtst-devel \
     && dnf clean all
 
 WORKDIR /repo

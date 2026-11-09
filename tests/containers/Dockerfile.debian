@@ -25,7 +25,7 @@ RUN apt-get update && \
         libksysguard-dev plasma-workspace-dev \
         kwin-dev kwin-x11 kwin-x11-dev libkdecorations3-dev \
         xvfb x11-utils dbus-daemon libgl1-mesa-dri libglx-mesa0 \
-        libepoxy-dev libdrm-dev libwayland-dev libx11-dev libxext-dev \
+        libepoxy-dev libdrm-dev libwayland-dev libx11-dev libxext-dev libxtst-dev \
         libxcb1-dev libxcb-composite0-dev libxcb-randr0-dev libxcb-res0-dev \
         libxcb-shm0-dev libxcb-sync-dev libvulkan-dev zstd && \
     apt-get clean

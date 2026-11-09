@@ -75,7 +75,6 @@ public:
     ActionForId m_actionForId;
     QTimer m_pendingLayoutUpdateTimer;
 
-    QSet<int> m_idsRefreshedByAboutToShow;
     QSet<int> m_pendingLayoutUpdates;
 
     QDBusPendingCallWatcher *refresh(int id)
@@ -298,9 +297,9 @@ DBusMenuImporter::~DBusMenuImporter()
 void DBusMenuImporter::slotLayoutUpdated(uint revision, int parentId)
 {
     Q_UNUSED(revision)
-    if (d->m_idsRefreshedByAboutToShow.remove(parentId)) {
-        return;
-    }
+    // A previous AboutToShow refresh must not suppress a later, independent
+    // layout change (notably an application publishing its initially empty menu).
+    // The pending-update set already coalesces duplicate notifications.
     d->m_pendingLayoutUpdates << parentId;
     if (!d->m_pendingLayoutUpdateTimer.isActive()) {
         d->m_pendingLayoutUpdateTimer.start();
@@ -504,7 +503,6 @@ void DBusMenuImporter::slotAboutToShowDBusCallFinished(QDBusPendingCallWatcher *
     bool needRefresh = reply.argumentAt<0>();
 
     if (needRefresh || menu->actions().isEmpty()) {
-        d->m_idsRefreshedByAboutToShow << id;
         d->refresh(id);
     } else if (menu) {
         Q_EMIT menuUpdated(menu);

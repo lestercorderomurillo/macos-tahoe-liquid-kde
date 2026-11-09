@@ -1,0 +1,11 @@
+enable_language(C)
+find_package(Qt6 REQUIRED COMPONENTS WaylandClient)
+find_package(X11 REQUIRED COMPONENTS Xtst)
+add_library(tahoe-menu-shortcuts STATIC ${CMAKE_CURRENT_LIST_DIR}/menushortcutsender.cpp)
+set_target_properties(tahoe-menu-shortcuts PROPERTIES POSITION_INDEPENDENT_CODE ON AUTOMOC ON)
+qt6_generate_wayland_protocol_client_sources(tahoe-menu-shortcuts
+    FILES ${CMAKE_CURRENT_LIST_DIR}/protocols/fake-input.xml)
+target_link_libraries(tahoe-menu-shortcuts PRIVATE Qt6::WaylandClient KF6::WindowSystem X11::X11 X11::Xtst)
+function(tahoe_menu_shortcuts target)
+    target_link_libraries(${target} PRIVATE tahoe-menu-shortcuts)
+endfunction()

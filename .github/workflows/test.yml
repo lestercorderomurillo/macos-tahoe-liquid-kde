@@ -78,7 +78,7 @@ jobs:
             libplasma plasma-activities plasma-activities-stats \
             libksysguard plasma-workspace plasma-desktop plasma5support plasma-sdk \
             kwin kdecoration \
-            libepoxy libdrm libx11 libxcb
+            libepoxy libdrm libx11 libxcb libxtst
       - name: Set up Node for JavaScript regression tests
         uses: actions/setup-node@v5
         with:

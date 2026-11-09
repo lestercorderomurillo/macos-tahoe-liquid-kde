@@ -29,5 +29,6 @@
         "Name[de]": "Globales Menü",
         "Description[de]": "Globale Menüleiste — zeigt das Menü der aktiven Anwendung (Datei, Bearbeiten, Ansicht…) im Panel."
     },
-    "X-Plasma-API-Minimum-Version": "6.0"
+    "X-Plasma-API-Minimum-Version": "6.0",
+    "X-Plasma-ContainmentType": "CustomEmbedded"
 }

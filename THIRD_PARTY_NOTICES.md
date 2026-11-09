@@ -11,6 +11,7 @@ a whole without replacing independent component grants.
 | Acrylic Glass | [Bundled GPLv3 text](src/offline/kwin-effects/acrylic-glass/LICENSE) and existing source copyright/SPDX headers, including GPL-2.0-or-later and GPL-3.0-or-later files. |
 | Launcher | [Original GPLv2 text](src/offline/plasmoids/org.kde.mac-tahoe-liquid-kde.launcher/LICENSE-TahoeLauncher), file notices, and package metadata. The license text alone does not resolve version options for every file. |
 | Panel Colorizer | [Bundled license](src/offline/plasmoids/luisbocanegra.panel.colorizer/LICENSE) and source notices. |
+| QuickBar integration | [MIT notice](LICENSES/MIT-QuickBar.txt), original KDE/QuickBar file notices, and [integration provenance](docs/topbar-integration.md). Selected menu search and popup lifecycle code is adapted from commit `213a583adfd257ed420c77ef2cf1443a709a3425`; file-level GPL alternatives remain intact. |
 | KDE-derived plasmoids and integration code | Existing copyright/SPDX headers, including GPL-2.0-or-later, LGPL-2.0-or-later, LGPL-2.1-or-later, and KDE alternative grants. The alternatives remain available as stated in each file. |
 | Firefox theme | [MIT notice](src/offline/firefox/LICENSE.MacTahoe), including the WhiteSur Developers copyright. |
 | GTK theme | [MIT upstream notice](LICENSES/MIT-MacTahoe.txt) from MacTahoe-gtk-theme; project modifications and any separately licensed material retain their own notices. |
@@ -47,3 +48,8 @@ repository root does not resolve missing third-party permissions.
 This index preserves attribution separately from the manually maintained
 README Credits section. Corrections should include the affected path,
 original source, license evidence, and the proposed notice.
+
+The Global Menu also bundles KDE plasma-wayland-protocols `fake-input.xml`
+(commit `1db07441870d54157e937674b99380a7dcc0fb32`), copyright 2015 Martin
+Gräßlin, LGPL-2.1-or-later. The original notice is retained in the XML;
+see `LICENSES/LGPL-2.1.txt` and `docs/topbar-integration.md`.

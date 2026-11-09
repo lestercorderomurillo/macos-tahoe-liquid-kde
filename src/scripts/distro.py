@@ -1136,6 +1136,17 @@ _PACKAGE_MAP: dict[str, dict[str, str]] = {
         "alpine":   "libepoxy-dev",
         "void":     "libepoxy-devel",
     },
+    "xtst-cmake": {
+        "arch": "libxtst",
+        "debian": "libxtst-dev",
+        "ubuntu": "libxtst-dev",
+        "fedora": "libXtst-devel",
+        "rhel": "libXtst-devel",
+        "centos": "libXtst-devel",
+        "opensuse": "libXtst-devel",
+        "alpine": "libxtst-dev",
+        "void": "libXtst-devel",
+    },
     "x11-cmake": {
         "arch":     "libx11",
         "debian":   "libx11-dev",

@@ -23,7 +23,7 @@ let
       kservice kwidgetsaddons kwindowsystem kcolorscheme libplasma plasma-activities
       plasma-activities-stats libksysguard plasma-workspace kwin kdecoration ]
       ++ [ pkgs.libepoxy pkgs.libdrm pkgs.wayland pkgs.libxkbcommon
-           pkgs.libGL pkgs.vulkan-headers pkgs.vulkan-loader pkgs.libx11 pkgs.libxcb ];
+           pkgs.libGL pkgs.vulkan-headers pkgs.vulkan-loader pkgs.libx11 pkgs.libxcb pkgs.libxtst ];
     dontWrapQtApps = true;
     cmakeFlags = [ "-DCMAKE_BUILD_TYPE=Release" ];
   } // extra);

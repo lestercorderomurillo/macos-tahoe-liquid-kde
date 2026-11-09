@@ -14,12 +14,13 @@ AbstractButton {
 
     font.weight: Font.Normal
     property bool menuIsOpen: false
+    property bool hoverOpensMenu: true
 
     signal activated()
 
     hoverEnabled: true
 
-    onHoveredChanged: if (hovered && menuIsOpen) { activated(); }
+    onHoveredChanged: if (hoverOpensMenu && hovered && menuIsOpen) { activated(); }
     onPressed: activated()
 
     enum State {
