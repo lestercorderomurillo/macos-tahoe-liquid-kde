@@ -1,12 +1,11 @@
 # Installer testing
 
-Tahoe **v0.65.2** refines the system menu using macOS Golden Gate proportions:
-three reference symbols, regular typography, consistent rows and softer selection corners.
-Native checks cover two font sizes, three scales, keyboard navigation and style isolation.
-Four system-menu photographs cover both editions and modes in the pinned KDE neon VM;
-102 unchanged photographs retain their original provenance. See [validation evidence](tests/system_menu_0652_validation.json)
-for commands, source identities and coverage limits. Publication requires successful
-exact-commit CI on both branches in both repositories.
+Tahoe **v0.66.0** improves the existing global menu with exported application menus,
+common fallback actions and guarded shortcut dispatch, preserving the Apple menu and panel layout.
+Focused native checks cover menu updates, popup lifecycle, search and window changes.
+Four menu photographs cover both editions and modes; the other 102 retain their original provenance.
+See [validation evidence](docs/topbar-integration.md) for commands, source identities and coverage limits.
+Publication requires successful exact-commit CI on both branches in both repositories.
 
 ## Installation steps
 

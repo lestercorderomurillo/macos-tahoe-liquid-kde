@@ -1,6 +1,6 @@
 # Global menu applet
 
-Development candidate, not release evidence. Scope: the existing global menu applet only.
+Release v0.66.0. Scope: the existing global menu applet only.
 
 The existing Tahoe plasmoid is the base. It already provides the system menu,
 application actions, dynamic D-Bus menu refresh, persistent Wayland popup grabs,
@@ -64,9 +64,29 @@ NUL, file bytes, NUL):
 
 The first sandboxed native run compiled successfully but could not start Xvfb.
 The successful run used permission to create the isolated display and bus.
-This is focused development evidence, not a release gate. No new VM captures,
-Wayland end-to-end runs, Steam validation or distro matrix were run for this
-revision. SDKs without the X11 TasksModel backend skip that backend-specific
-case; the model fixture and actual XTest delivery still run. Previous full-bar
-captures are not evidence for this revision. Exact-commit CI and publication
-remain pending; no release or fallback pin was changed.
+The initial implementation CI completed all distro jobs and Nix successfully:
+[run 42564969879](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/actions/runs/42564969879).
+Its general-suite failure identified missing shared German/Portuguese menu
+catalog entries; those entries were restored, and both affected catalog checks
+passed. This earlier run does not replace the final exact-commit release gate.
+
+The capture dependency audit binds exact before/after Git objects for this menu
+change. It requires four fresh menu frames and retains the other 102 with their
+original source commits, hashes and review records. Any later menu implementation
+edit or unrelated runtime change fails closed. The scope-composition regression
+passed; no global capture profile or unrelated widget was changed.
+
+No new end-to-end Steam or alternate-keyboard-layout validation was performed. SDKs without the X11 TasksModel backend skip that backend-specific
+case; the model fixture and actual XTest delivery still run. Previous full-bar captures are not evidence for this revision. Final CI and
+publication are enforced by the release workflows, including the matching
+Golden Gate immutable source pin.
+
+The four replacement menu frames were captured from
+`f5bffcc36d81b4be504910711d87393135d050d1` with the pinned KDE neon VM
+(`412e7933f10add20b921b92c02709e7eea56acd14dc14cf654f58fba4ea3cc9d`),
+Plasma/KWin 6.8.1, Qt 6.11.1, Wayland. Visual review confirms the existing Apple
+popup and the File/Edit/View fallback beside Files in both editions and modes.
+The full frame hashes, environment and retained origins are recorded in
+`src/screenshots/release-capture.json`; only the menu crops are republished.
+Missing Plymouth/About log messages come from optional collection after this
+menu-only capture; those components were not exercised or recaptured.

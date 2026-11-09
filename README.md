@@ -133,8 +133,8 @@ Finder-style Nautilus in light and dark.
 System controls and global menus for compatible apps, with inset top-bar capsules and a macOS-inspired system menu with Golden Gate symbols and balanced typography.
 
 <p align="center">
-  <img src="src/screenshots/menu_v4-4fdb86341e31.webp" alt="System menu in light mode" width="415">
-  <img src="src/screenshots/menu_dark_v4-5a8c232c56ec.webp" alt="System menu in dark mode" width="415">
+  <img src="src/screenshots/menu_v4-c20c63c81107.webp" alt="System menu in light mode" width="415">
+  <img src="src/screenshots/menu_dark_v4-7d7b7d7b6d8c.webp" alt="System menu in dark mode" width="415">
 </p>
 
 <br>
