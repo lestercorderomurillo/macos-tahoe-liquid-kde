@@ -1,0 +1,53 @@
+{
+  "version": "0.65.2",
+  "implementation_commit": "ea23bd24fe3f2f15991c3464db29b8d94b7d7076",
+  "reference": "https://512pixels.net/projects/aqua-screenshot-library/macos-27-golden-gate/",
+  "scope": "System menu follows Golden Gate: regular system menu font, laptop/gear/App Store reference symbols only on the first three actions; all remaining rows omit icons and reserved columns. Recent Items remains absent. Font-scaled rows, margins, separators, width and 6px selection corners; other menus retain Kvantum.",
+  "checks": [
+    {
+      "command": "PYTHONDONTWRITEBYTECODE=1 python3 -m pytest -q -p no:cacheprovider tests/test_system_menu_style.py",
+      "result": "1 passed; native C++ probe at scales 1, 1.5, 2 and font sizes 10, 18; rendering, geometry, isolation, Down and Escape navigation"
+    },
+    {
+      "command": "PYTHONDONTWRITEBYTECODE=1 QT_QPA_PLATFORM=offscreen python3 -m pytest -q -p no:cacheprovider tests/test_globalmenu_step.py tests/test_menu_rounding.py",
+      "result": "24 passed in combined development run"
+    },
+    {
+      "command": "cmake --build build/plasmoids/org.kde.mac.tahoe.liquid.globalmenu -j 4",
+      "result": "built native globalmenu plugin successfully"
+    },
+    {
+      "command": "PYTHONDONTWRITEBYTECODE=1 python3 -m pytest -q -p no:cacheprovider tests/test_release_screenshots.py",
+      "result": "59 passed"
+    },
+    {
+      "command": "PYTHONDONTWRITEBYTECODE=1 python3 -m pytest -q -p no:cacheprovider tests/test_system_menu_style.py tests/test_release_screenshots.py",
+      "result": "60 passed on final margin/icon changes; native component rebuilt successfully afterward"
+    },
+    {
+      "command": "PYTHONDONTWRITEBYTECODE=1 python3 -m pytest -q -p no:cacheprovider tests/test_system_menu_style.py tests/test_globalmenu_step.py tests/test_release_screenshots.py",
+      "result": "66 passed after Golden Gate correction; expanded reference/custom icon rendering probe passed separately; component rebuilt successfully"
+    }
+  ],
+  "limits": [
+    "The preset installs SF Pro Text; explicit user font choices remain respected rather than hardcoding a font in the popup.",
+    "No public plugin ABI or platform API changes. Required exact-commit CI supplies native SDK builds and configured distro checks."
+  ],
+  "rejected_preview": {
+    "source": "524f1aaa58584c1ab0dda2e2c1269afe48c5efde",
+    "bundle": "build/captures/v0.65.2-system-menu",
+    "reason": "Selection too close to visible outer edge and colored Lock Screen icon; not approved or staged."
+  },
+  "superseded_capture": {
+    "source": "bd066408411228261f3c9d8cdd6f3a4f8b5d833e",
+    "bundle": "build/captures/v0.65.2-system-menu-final",
+    "result": "Stopped after user confirmed Golden Gate reference instead of Tahoe; not approved or staged."
+  },
+  "visual_validation": {
+    "command": "./release-screenshots capture --ref HEAD --vm-image build/dock-defaults-neon-base.qcow2 --reuse build/captures/v0.65.1-topbar --output build/captures/v0.65.2-golden-reference",
+    "source_commit": "ea23bd24fe3f2f15991c3464db29b8d94b7d7076",
+    "vm_image_sha256": "412e7933f10add20b921b92c02709e7eea56acd14dc14cf654f58fba4ea3cc9d",
+    "environment": "Disposable KDE neon VM, Plasma/KWin 6.8.1, Qt 6.11.1",
+    "result": "Reviewed four system-menu frames: Tahoe and Golden Gate in light and dark mode. Laptop, gear and App Store symbols only on the first three actions; remaining rows have neither icons nor reserved icon columns. Selection margins, corners, typography and separators reviewed against Golden Gate reference. Retained 102 previously reviewed frames with original provenance."
+  }
+}

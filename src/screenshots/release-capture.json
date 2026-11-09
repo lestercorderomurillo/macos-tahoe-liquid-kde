@@ -1,8 +1,8 @@
 {
   "schema": 2,
-  "version": "0.65.1",
-  "source_commit": "f5f445e2db681460cea453c9c0024730dfc92dfa",
-  "source_tree": "6d24366fb6f228f8ece872bdb5c0637267ba94d8eebd1b5625fdbc2f7c589a12",
+  "version": "0.65.2",
+  "source_commit": "ea23bd24fe3f2f15991c3464db29b8d94b7d7076",
+  "source_tree": "98a9f04920b1c329c848545f3d46b896a803559760c840a6e4e6a02642c55173",
   "profile_sha256": "2a3bd2d31ca0dfdd65c45a09a3c8c2bbe35a122ab2ca7961f1c33edf8b9a3b09",
   "vm_image_sha256": "412e7933f10add20b921b92c02709e7eea56acd14dc14cf654f58fba4ea3cc9d",
   "effect_build": "6afc24d897200027af4c08ab1a417a9d8de89c8e886ede4d5d88dd031d02d29c",
@@ -5646,9 +5646,9 @@
         "source_sha256": "a084a92c061cd20916879ecd49970dc53ac207a578f093cc87c91d1a1c336a15"
       }
     },
-    "menu_v4-68ee77c67b31.webp": {
+    "menu_v4-4fdb86341e31.webp": {
       "material_values": null,
-      "sha256": "68ee77c67b3151b83e453a292eb200a1bf9ac74a92215a9c3d582446316728ff",
+      "sha256": "4fdb86341e31af305c1632239480b6f56f97c0211d269cc5fcb0a66688709eae",
       "appearance": {
         "Window controls": "__aurorae__svg__MacTahoeLiquidKde-Light",
         "Plasma": "MacTahoeLiquidKde-Light",
@@ -5663,8 +5663,8 @@
       "crop": [
         0,
         0,
-        566,
-        644
+        608,
+        660
       ],
       "wallpaper": "MacTahoe",
       "wallpaper_uri": "file:///home/tester/.local/share/wallpapers/MacTahoe",
@@ -5736,8 +5736,8 @@
           "geometry": {
             "x": 2,
             "y": 32,
-            "width": 267,
-            "height": 276
+            "width": 288,
+            "height": 284
           }
         }
       ],
@@ -5747,22 +5747,22 @@
       "installer_page": null,
       "installer_edition": null,
       "frame_name": "tahoe-light-menu",
-      "source_commit": "f5f445e2db681460cea453c9c0024730dfc92dfa",
-      "source_release": "v0.65.1",
+      "source_commit": "ea23bd24fe3f2f15991c3464db29b8d94b7d7076",
+      "source_release": "v0.65.2",
       "export": {
         "format": "webp",
         "size": [
-          566,
-          644
+          608,
+          660
         ],
         "quality": 92,
         "max_edge": 2560,
-        "source_sha256": "ccc1796290848a6dbb9e2921f30fc3ba40e3b01cb1c7388cc37171be8af3d4b1"
+        "source_sha256": "cb1b5cfa96b46b5678a5b74978cf099ad8e176f5958734f66e3c261713a213f9"
       }
     },
-    "menu_dark_v4-bbed9f1b9dd6.webp": {
+    "menu_dark_v4-5a8c232c56ec.webp": {
       "material_values": null,
-      "sha256": "bbed9f1b9dd627f1d430957807ec6781577aadb0fb331f906108571df0a16c12",
+      "sha256": "5a8c232c56ec4fffe9ab14b6b3c57a5b16b286a36d53e918083d43ef579c3754",
       "appearance": {
         "Window controls": "__aurorae__svg__MacTahoeLiquidKde-Dark",
         "Plasma": "MacTahoeLiquidKde-Dark",
@@ -5777,8 +5777,8 @@
       "crop": [
         0,
         0,
-        566,
-        644
+        608,
+        660
       ],
       "wallpaper": "MacTahoe",
       "wallpaper_uri": "file:///home/tester/.local/share/wallpapers/MacTahoe",
@@ -5850,8 +5850,8 @@
           "geometry": {
             "x": 2,
             "y": 32,
-            "width": 267,
-            "height": 276
+            "width": 288,
+            "height": 284
           }
         }
       ],
@@ -5861,22 +5861,22 @@
       "installer_page": null,
       "installer_edition": null,
       "frame_name": "tahoe-dark-menu",
-      "source_commit": "f5f445e2db681460cea453c9c0024730dfc92dfa",
-      "source_release": "v0.65.1",
+      "source_commit": "ea23bd24fe3f2f15991c3464db29b8d94b7d7076",
+      "source_release": "v0.65.2",
       "export": {
         "format": "webp",
         "size": [
-          566,
-          644
+          608,
+          660
         ],
         "quality": 92,
         "max_edge": 2560,
-        "source_sha256": "8fb8f37e145bf290ecbeafa032424d52fe157b81b0c681748823bb6c52aa8648"
+        "source_sha256": "dfe6950bc192995015093a3610b9e6dfcb6d20432a8f2ea206473f09a3e9adfe"
       }
     }
   },
   "review": {
-    "manifest_sha256": "1f4eecf51e0fe3a8d61aece9180b5a9210a57203f6f19c95da3ae37d8a337870",
+    "manifest_sha256": "240cb72c87de78b2b21029632705266d758e905af56aecd68f91bdd522f8932d",
     "approved": {
       "tahoe-light-launcher": "451eb29811edcae22b9cd02a4f71e97252cbb827d4615894523eef0112e61b7c",
       "tahoe-light-finder": "0e151d7ea3fbeb45cd116b1bab88ab8d0c0a8f9b737302643ba00ae55970ddf2",
@@ -5980,18 +5980,18 @@
       "tahoe-dark-context": "a084a92c061cd20916879ecd49970dc53ac207a578f093cc87c91d1a1c336a15",
       "golden-gate-light-context": "63f57be155144fb82562155df69dcf8029ccd4670eca4ad75295d76f4db6b63e",
       "golden-gate-dark-context": "77c4e8bf2bc68cafe3f70094492e3ba2226347bd4a52193a0290d1837ede54ed",
-      "tahoe-light-menu": "ccc1796290848a6dbb9e2921f30fc3ba40e3b01cb1c7388cc37171be8af3d4b1",
-      "tahoe-dark-menu": "8fb8f37e145bf290ecbeafa032424d52fe157b81b0c681748823bb6c52aa8648",
-      "golden-gate-light-menu": "5debb66f275f5e488b047f2cccee39d4bac2be0a81c5d5c12b208c6b4fbd500e",
-      "golden-gate-dark-menu": "d5ac842675ae6ee8a2cfc7f97ba69fcbfe06921625e0b4932e0b6350c134dc2c"
+      "tahoe-light-menu": "cb1b5cfa96b46b5678a5b74978cf099ad8e176f5958734f66e3c261713a213f9",
+      "tahoe-dark-menu": "dfe6950bc192995015093a3610b9e6dfcb6d20432a8f2ea206473f09a3e9adfe",
+      "golden-gate-light-menu": "e9702ba8c477e3b1427b908b580ba1afbb93687f40cb27ff677b27e78a10c8d2",
+      "golden-gate-dark-menu": "ea5488efbfe6fc208a69a3b8b4051f828193f476d590d1b08aa084c544047c55"
     },
     "rejected": {}
   },
   "capture_manifest": {
     "schema": 2,
-    "version": "0.65.1",
-    "source_commit": "f5f445e2db681460cea453c9c0024730dfc92dfa",
-    "source_tree": "6d24366fb6f228f8ece872bdb5c0637267ba94d8eebd1b5625fdbc2f7c589a12",
+    "version": "0.65.2",
+    "source_commit": "ea23bd24fe3f2f15991c3464db29b8d94b7d7076",
+    "source_tree": "98a9f04920b1c329c848545f3d46b896a803559760c840a6e4e6a02642c55173",
     "profile_sha256": "2a3bd2d31ca0dfdd65c45a09a3c8c2bbe35a122ab2ca7961f1c33edf8b9a3b09",
     "vm_image_sha256": "412e7933f10add20b921b92c02709e7eea56acd14dc14cf654f58fba4ea3cc9d",
     "frames": {
@@ -15647,7 +15647,7 @@
       },
       "tahoe-light-menu": {
         "material_values": null,
-        "sha256": "ccc1796290848a6dbb9e2921f30fc3ba40e3b01cb1c7388cc37171be8af3d4b1",
+        "sha256": "cb1b5cfa96b46b5678a5b74978cf099ad8e176f5958734f66e3c261713a213f9",
         "appearance": {
           "Window controls": "__aurorae__svg__MacTahoeLiquidKde-Light",
           "Plasma": "MacTahoeLiquidKde-Light",
@@ -15662,8 +15662,8 @@
         "crop": [
           0,
           0,
-          566,
-          644
+          608,
+          660
         ],
         "wallpaper": "MacTahoe",
         "wallpaper_uri": "file:///home/tester/.local/share/wallpapers/MacTahoe",
@@ -15735,8 +15735,8 @@
             "geometry": {
               "x": 2,
               "y": 32,
-              "width": 267,
-              "height": 276
+              "width": 288,
+              "height": 284
             }
           }
         ],
@@ -15748,7 +15748,7 @@
       },
       "tahoe-dark-menu": {
         "material_values": null,
-        "sha256": "8fb8f37e145bf290ecbeafa032424d52fe157b81b0c681748823bb6c52aa8648",
+        "sha256": "dfe6950bc192995015093a3610b9e6dfcb6d20432a8f2ea206473f09a3e9adfe",
         "appearance": {
           "Window controls": "__aurorae__svg__MacTahoeLiquidKde-Dark",
           "Plasma": "MacTahoeLiquidKde-Dark",
@@ -15763,8 +15763,8 @@
         "crop": [
           0,
           0,
-          566,
-          644
+          608,
+          660
         ],
         "wallpaper": "MacTahoe",
         "wallpaper_uri": "file:///home/tester/.local/share/wallpapers/MacTahoe",
@@ -15836,8 +15836,8 @@
             "geometry": {
               "x": 2,
               "y": 32,
-              "width": 267,
-              "height": 276
+              "width": 288,
+              "height": 284
             }
           }
         ],
@@ -15849,7 +15849,7 @@
       },
       "golden-gate-light-menu": {
         "material_values": null,
-        "sha256": "5debb66f275f5e488b047f2cccee39d4bac2be0a81c5d5c12b208c6b4fbd500e",
+        "sha256": "e9702ba8c477e3b1427b908b580ba1afbb93687f40cb27ff677b27e78a10c8d2",
         "appearance": {
           "Window controls": "__aurorae__svg__MacGoldenGateLiquidKde-Light",
           "Plasma": "MacTahoeLiquidKde-Light",
@@ -15864,8 +15864,8 @@
         "crop": [
           0,
           0,
-          566,
-          644
+          608,
+          660
         ],
         "wallpaper": "MacGoldenGate",
         "wallpaper_uri": "file:///home/tester/.local/share/wallpapers/MacGoldenGate",
@@ -15937,8 +15937,8 @@
             "geometry": {
               "x": 2,
               "y": 32,
-              "width": 267,
-              "height": 276
+              "width": 288,
+              "height": 284
             }
           }
         ],
@@ -15950,7 +15950,7 @@
       },
       "golden-gate-dark-menu": {
         "material_values": null,
-        "sha256": "d5ac842675ae6ee8a2cfc7f97ba69fcbfe06921625e0b4932e0b6350c134dc2c",
+        "sha256": "ea5488efbfe6fc208a69a3b8b4051f828193f476d590d1b08aa084c544047c55",
         "appearance": {
           "Window controls": "__aurorae__svg__MacGoldenGateLiquidKde-Dark",
           "Plasma": "MacTahoeLiquidKde-Dark",
@@ -15965,8 +15965,8 @@
         "crop": [
           0,
           0,
-          566,
-          644
+          608,
+          660
         ],
         "wallpaper": "MacGoldenGate",
         "wallpaper_uri": "file:///home/tester/.local/share/wallpapers/MacGoldenGate",
@@ -16038,8 +16038,8 @@
             "geometry": {
               "x": 2,
               "y": 32,
-              "width": 267,
-              "height": 276
+              "width": 288,
+              "height": 284
             }
           }
         ],
@@ -16075,7 +16075,7 @@
     "component_previews": {
       "tahoe-light-topbar": {
         "material_values": null,
-        "sha256": "ebac219bb3a99684325ad02596f8f144ae4c82a10428964c379b33f2930ebeee",
+        "sha256": "941acb89af03579c75a6ed009d4337fb43b233fc27e090936fcda002cabf1262",
         "appearance": {
           "Window controls": "__aurorae__svg__MacTahoeLiquidKde-Light",
           "Plasma": "MacTahoeLiquidKde-Light",
@@ -16162,7 +16162,7 @@
       },
       "tahoe-dark-topbar": {
         "material_values": null,
-        "sha256": "99bbf2cec30dfd42b7b4d24b58b58aff7ff43d82a82fe562fc79cd02ca1ae23b",
+        "sha256": "7ad73ed6d8dd027c2943bd710923350f32b6c9d288f2e8adfe7b9d485beeb5a9",
         "appearance": {
           "Window controls": "__aurorae__svg__MacTahoeLiquidKde-Dark",
           "Plasma": "MacTahoeLiquidKde-Dark",
@@ -16249,7 +16249,7 @@
       },
       "golden-gate-light-topbar": {
         "material_values": null,
-        "sha256": "bb9bc3717e6958e4988109e6d27b9627bcd5122ffb8624ec163fc636b72435c8",
+        "sha256": "6a0c72b81861f63691ca51d3822dbbb8e6bda50760873aa061823cd7659774f0",
         "appearance": {
           "Window controls": "__aurorae__svg__MacGoldenGateLiquidKde-Light",
           "Plasma": "MacTahoeLiquidKde-Light",
@@ -16336,7 +16336,7 @@
       },
       "golden-gate-dark-topbar": {
         "material_values": null,
-        "sha256": "63303a214029a0e4f00aae0290b9ed6bdd80490d62dadc7c24361307977ef83b",
+        "sha256": "85a6454e903ab3123893b8d00b70c82e87fe91456da1be246af7e45611ab7fe8",
         "appearance": {
           "Window controls": "__aurorae__svg__MacGoldenGateLiquidKde-Dark",
           "Plasma": "MacTahoeLiquidKde-Dark",
