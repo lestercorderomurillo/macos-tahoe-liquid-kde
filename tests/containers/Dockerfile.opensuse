@@ -51,7 +51,7 @@ RUN for i in 1 2 3; do \
         kf6-kitemmodels-devel \
         libplasma6-devel plasma6-activities-devel \
         plasma6-activities-stats-devel libksysguard6-devel \
-        plasma6-workspace plasma6-workspace-devel \
+        plasma6-pa plasma6-workspace plasma6-workspace-devel \
         kwin6-devel kdecoration6-devel \
         libepoxy-devel libdrm-devel libX11-devel libxcb-devel libXtst-devel \
     && zypper clean --all
