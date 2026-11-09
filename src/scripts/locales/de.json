@@ -1,4 +1,6 @@
 {
+  "Icons unchanged — skipping generation and installation": "Symbole unverändert — Erstellung und Installation werden übersprungen",
+  "{label} (unchanged)": "{label} (unverändert)",
   "Dock preset update failed": "Die Dock-Voreinstellung konnte nicht aktualisiert werden",
   "Could not remove old Rounded Corners cache: {exc}": "Alter Rounded-Corners-Cache konnte nicht entfernt werden: {exc}",
   "Generating icons: {completed}/{total}": "Symbole werden erstellt: {completed}/{total}",

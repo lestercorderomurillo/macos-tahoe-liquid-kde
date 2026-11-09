@@ -493,13 +493,17 @@ INCREMENTAL_0661_NONVISUAL = {'component-hashes.json': (None, '44c4e637bba59ae8d
 UNINSTALL_RECEIPT_0661_BASE = '905387257415dbc2d9f9716d72109b924c4315a1'
 UNINSTALL_RECEIPT_0661_NONVISUAL = {'component-hashes.json': ('44c4e637bba59ae8d7081d6c5f1b00e09e575faa', 'e502763567576894a4824e9f0b21566c867b0f95'), 'src/scripts/steps/icons.py': ('ce89f7743e390cc497e0cd75bb276c33b221269e', '0bccb4a43cd91089cbff2a0e4218b709a5b45b99')}
 
+# Only translations of incremental-install log messages changed; no gallery frame contains them.
+LOCALIZATION_0661_BASE = '3031de3ca1bacb1946912fe8f4ae31cfa21896e0'
+LOCALIZATION_0661_NONVISUAL = {'component-hashes.json': ('e502763567576894a4824e9f0b21566c867b0f95', '3450d2ee5dce9349a29cd78f7b890532f2f390af'), 'src/scripts/localization.py': ('161bccdf7b0e19ee9672b8acd089ff31c95d1162', '80274062e6ec691cedf49e53542d1c1820c2e16e'), 'src/scripts/locales/de.json': ('d584ebd081bab39bafe2a2cdaa8e83fe902eb22c', '486109e60fe24cdc6c224e50e13009929f22014a'), 'src/scripts/locales/pt_BR.json': ('e1648d53338a6967d16aea5b14c6da895a44fafe', '1d1c031addc817a3fc39c7979d43d29422225d68')}
+
 def affected_frames(repo: Path, source: str, target: str) -> set[str]:
     """Conservative dependencies: unknown changes invalidate every frame."""
     all_frames = expected_frames()
     if visual_tree(repo, source) == visual_tree(repo, target):
         return set()
     # Compose reviewed transitions without rewriting historical frame origins.
-    for base in (UNINSTALL_RECEIPT_0661_BASE, INCREMENTAL_0661_BASE, MENU_ONLY_066_BASE, SYSTEM_MENU_0652_BASE, TOPBAR_0651_BASE, MENU_065_BASE, DOCK_064_BASE, DOCK_APPEARANCE_BASE):
+    for base in (LOCALIZATION_0661_BASE, UNINSTALL_RECEIPT_0661_BASE, INCREMENTAL_0661_BASE, MENU_ONLY_066_BASE, SYSTEM_MENU_0652_BASE, TOPBAR_0651_BASE, MENU_065_BASE, DOCK_064_BASE, DOCK_APPEARANCE_BASE):
         if source != base and target != base and all(
             subprocess.run(['git', '-C', str(repo), 'merge-base', '--is-ancestor', a, b],
                            stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL).returncode == 0
@@ -512,6 +516,13 @@ def affected_frames(repo: Path, source: str, target: str) -> set[str]:
     def cases(names, editions=EDITIONS):
         affected.update(f'{e}-{m}-{c}' for e in editions for m in MODES for c in names)
     for path in changed:
+        if path in LOCALIZATION_0661_NONVISUAL:
+            def localization_object(ref):
+                entry = git(repo, 'ls-tree', ref, '--', path)
+                return entry.split()[2] if entry else None
+            if (localization_object(source), localization_object(target)) == LOCALIZATION_0661_NONVISUAL[path]:
+                ignored.add(path)
+                continue
         if path in UNINSTALL_RECEIPT_0661_NONVISUAL:
             def receipt_object(ref):
                 entry = git(repo, 'ls-tree', ref, '--', path)

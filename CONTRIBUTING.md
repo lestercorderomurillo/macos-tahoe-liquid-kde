@@ -671,6 +671,8 @@ Commands and results:
 - The installer wizard, icon and copy-helper regressions passed in the earlier
   102-test development run; unaffected results were retained.
 - Uninstall receipt invalidation and icon-step regressions: 3 passed.
+- CI identified missing translations for incremental-install log messages; after
+  completing all four catalogs, localization and component-cache checks: 49 passed.
 - Golden Gate's `python -m pytest -q -p no:cacheprovider tests`: 97 passed.
 - Against the prepared Golden Gate source, component-cache, wizard and icon
   regressions: 41 passed, including portable hashes across the edition staging.

@@ -27,6 +27,8 @@ LANGUAGE_CODES = tuple(item["code"] for item in LANGUAGES)
 
 
 _ES = {
+    "Icons unchanged — skipping generation and installation": "Iconos sin cambios — se omiten la generación y la instalación",
+    "{label} (unchanged)": "{label} (sin cambios)",
     'Dock preset update failed': 'No se pudo actualizar el preset del Dock',
     'Recovered {size} MiB. Git ancestry and local recovery data were preserved.': 'Se recuperaron {size} MiB. Se conservaron la ascendencia de Git y los datos locales de recuperación.',
     'Published historical files may download again on demand; current source and local work stay available.': 'Los archivos históricos publicados pueden descargarse de nuevo cuando se necesiten; el código actual y el trabajo local siguen disponibles.',
@@ -96,6 +98,8 @@ _ES = {
 }
 
 _ZH_CN = {
+    "Icons unchanged — skipping generation and installation": "图标未更改 — 跳过生成和安装",
+    "{label} (unchanged)": "{label}（未更改）",
     'Dock preset update failed': 'Dock 预设更新失败',
     'Recovered {size} MiB. Git ancestry and local recovery data were preserved.': '已回收 {size} MiB。Git 提交关系和本地恢复数据已保留。',
     'Published historical files may download again on demand; current source and local work stay available.': '已发布的历史文件可按需重新下载；当前源代码和本地工作仍然可用。',
