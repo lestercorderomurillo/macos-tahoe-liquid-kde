@@ -644,3 +644,18 @@ The Apple and Finder states in the [macOS Tahoe screenshot reference](https://51
 The [macOS Golden Gate Apple menu reference](https://512pixels.net/projects/aqua-screenshot-library/macos-27-golden-gate/) guides the system popup's 24px rows, 16px icon column, 12px separator rows, 6px selection corners and 288px minimum natural width. Metrics scale with the configured menu font; long translated labels and user names can widen the popup. The preset already selects SF Pro Text, and the popup uses regular weight without overriding a user's font family or size.
 
 `SystemMenuStyle` owns a separate base style for this popup; it must never adopt or delete the application's shared style. The other menus retain their existing Kvantum rendering. Only About, System Settings and App Store have icons; other actions omit the icon column, as in Golden Gate. The default laptop, gear and App Store symbols use palette-aware vector drawing, while explicit custom icon choices retain their artwork. Recent Items remains absent. `tests/test_system_menu_style.py` compiles the actual style and checks geometry, selection rendering, style isolation and keyboard navigation.
+
+## Incremental installation
+
+Each payload is compared by content, permissions and symlink targets before
+replacement, so changing one plasmoid leaves identical siblings in place.
+Icon generation additionally keeps a successful-install receipt covering its
+source archive, Python recipe dependencies, style, tint and installed outputs.
+Missing or modified outputs cause regeneration. Receipts are an optimization,
+not proof that configuration or a requested layout reset can be skipped.
+Native builds retain their build graph and reconfigure against the current SDK.
+
+After changing a component, run
+`python src/scripts/component_manifest.py --write` and commit the resulting
+`component-hashes.json`. The ledger is independent of VERSION and Git commit;
+`python src/scripts/component_manifest.py` verifies it without writing.

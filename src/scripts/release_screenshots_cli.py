@@ -28,6 +28,10 @@ def main(argv=None):
     capture.add_argument('--vm-image', type=Path, required=True)
     capture.add_argument('--output', type=Path, required=True)
     capture.add_argument('--reuse', type=Path, help='Reuse reviewed frames whose visual inputs are unchanged')
+    previews = sub.add_parser('file-previews', help='Capture focused Nautilus/Dolphin installer previews only')
+    previews.add_argument('--ref', default='HEAD')
+    previews.add_argument('--vm-image', type=Path, required=True)
+    previews.add_argument('--output', type=Path, required=True)
     review = sub.add_parser('review', help='Record a decision for images you have visually inspected')
     review.add_argument('--ref', default='HEAD')
     review.add_argument('--bundle', type=Path, required=True)
@@ -44,7 +48,11 @@ def main(argv=None):
         command.add_argument('--tahoe-repo', type=Path)
     args = parser.parse_args(argv)
     try:
-        if args.command == 'capture':
+        if args.command == 'file-previews':
+            from release_capture import capture_file_previews
+            capture_file_previews(args.repo, args.ref, args.vm_image, args.output)
+            print('Captured four file-manager previews; inspect each before publishing.')
+        elif args.command == 'capture':
             from release_capture import capture as run_capture
             verify_recipe(args.repo, args.ref)
             run_capture(args.repo, args.ref, args.vm_image, args.output, reuse=args.reuse)

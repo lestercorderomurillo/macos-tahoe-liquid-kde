@@ -55,7 +55,7 @@ def windows(script=''):
         path = Path(temp) / 'capture.js'
         path.write_text(script + 'callDBus(' + json.dumps(service) + ',"/Probe","org.mttkde.ReleaseCapture","record",'
                         'JSON.stringify(workspace.windowList().filter(w=>!w.minimized).map(w=>({'
-                        'caption:w.caption,resourceClass:String(w.resourceClass),type:w.windowType,'
+                        'id:String(w.internalId),caption:w.caption,resourceClass:String(w.resourceClass),type:w.windowType,'
                         'appletPopup:w.appletPopup,hidden:w.hidden,active:w===workspace.activeWindow,geometry:w.frameGeometry}))));')
         api = QDBusInterface('org.kde.KWin', '/Scripting', 'org.kde.kwin.Scripting', bus)
         loaded = api.call('loadScript', str(path), service).arguments()
@@ -214,6 +214,7 @@ def mode(repo, requested, scope=None):
 def launch(repo, name):
     from distro import user_service_manager_command
     commands = {'finder': ['nautilus', '--new-window', str(Path.home() / 'Documents')],
+                'dolphin': ['dolphin', '--new-window', str(Path.home() / 'Documents')],
                 'about': ['qml6', str(repo / 'src/scripts/preview_about.qml')]}
     log = repo.parent / (name + '.log')
     env = dict(os.environ, QT_FORCE_STDERR_LOGGING='1', MAC_TAHOE_ABOUT_MOCK='1')
@@ -241,10 +242,10 @@ def launch(repo, name):
         if key in env:
             command.append('--setenv=' + key + '=' + env[key])
     run(*command, *commands[name])
-    caption = 'Documents' if name == 'finder' else 'About This Computer (preview)'
+    caption = 'Documents' if name in ('finder', 'dolphin') else 'About This Computer (preview)'
     deadline = time.monotonic() + 25
     while time.monotonic() < deadline:
-        if any(w['caption'] == caption for w in windows()):
+        if any(w['caption'].startswith(caption) for w in windows()):
             if name != 'about' or 'MTTKDE_ABOUT_READY' in log.read_text():
                 return
         time.sleep(.3)
@@ -356,9 +357,17 @@ def capture(repo, profile, edition, requested, case):
     if case in ('finder', 'showcase', 'about', 'topbar') or case in MATERIAL_CASES:
         verify_desktop_window(case, windows())
     previous = None
+    desktop_case = case in ('finder', 'showcase', 'about', 'topbar') or case in MATERIAL_CASES
     deadline = time.monotonic() + 25
     while time.monotonic() < deadline:
+        before = windows() if desktop_case else None
+        if desktop_case:
+            verify_desktop_window(case, before)
         run('spectacle', '-b', '-n', '-f', '-o', str(target))
+        if desktop_case:
+            from release_screenshots import verify_focused_frame
+            focused = verify_desktop_window(case, before)
+            verify_focused_frame(before, windows(), focused['resourceClass'])
         with Image.open(target) as image:
             if list(image.size) != profile['resolution']:
                 raise RuntimeError(f'Unexpected capture dimensions: {image.size}')
@@ -429,6 +438,43 @@ def capture(repo, profile, edition, requested, case):
                 installer_edition=installer_state['edition'] if installer_state else None)
 
 
+def file_preview(repo, profile, manager):
+    from PIL import Image
+    from release_screenshots import verify_focused_frame, digest
+    classes = {'nautilus': 'org.gnome.Nautilus', 'dolphin': 'org.kde.dolphin'}
+    resource = classes[manager]
+    clean_desktop()
+    launch(repo, 'finder' if manager == 'nautilus' else 'dolphin')
+    candidates = [w for w in windows() if w['resourceClass'] == resource and w['type'] == 0]
+    if len(candidates) != 1:
+        raise RuntimeError('File manager did not open exactly one window')
+    arrange({candidates[0]['caption']: dict(x=480, y=240, width=960, height=600)})
+    previous = None
+    target = repo.parent / 'frame.png'
+    deadline = time.monotonic() + 30
+    while time.monotonic() < deadline:
+        before = windows()
+        verify_focused_frame(before, before, resource)
+        run('spectacle', '-b', '-n', '-f', '-o', str(target))
+        after = windows()
+        window = verify_focused_frame(before, after, resource)
+        with Image.open(target) as image:
+            if list(image.size) != profile['resolution']:
+                raise RuntimeError('Wrong preview resolution')
+            current = image.convert('RGB').tobytes()
+        if previous == current:
+            geometry = window['geometry']
+            scale = profile['scale']
+            crop = [round(geometry['x'] * scale) - 28, round(geometry['y'] * scale) - 28,
+                    round((geometry['x'] + geometry['width']) * scale) + 28,
+                    round((geometry['y'] + geometry['height']) * scale) + 28]
+            return dict(before=before, after=after, crop=crop, stable_frames=True,
+                        resource_class=resource, sha256=digest(target))
+        previous = current
+        time.sleep(.3)
+    raise RuntimeError('File-manager preview never settled')
+
+
 def boot(repo):
     # Use the existing Plymouth pixel probe. Its temporary 4K wrapper remains
     # inside the disposable guest and never changes shipped theme sources.
@@ -455,14 +501,15 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--repo', type=Path, required=True)
     parser.add_argument('--profile', type=Path, required=True)
-    parser.add_argument('action', choices=('material', 'setup', 'mode', 'launch', 'launcher', 'arrange', 'close', 'clean-desktop', 'wizard', 'plasma', 'capture', 'boot'))
+    parser.add_argument('action', choices=('file-preview', 'material', 'setup', 'mode', 'launch', 'launcher', 'arrange', 'close', 'clean-desktop', 'wizard', 'plasma', 'capture', 'boot'))
     parser.add_argument('args', nargs='*')
     args = parser.parse_args()
     sys.path.insert(0, str(args.repo / 'src/scripts'))
     session()
     profile = json.loads(args.profile.read_text())
     result = None
-    if args.action == 'setup': result = setup(args.repo, profile, *args.args)
+    if args.action == 'file-preview': result = file_preview(args.repo, profile, args.args[0])
+    elif args.action == 'setup': result = setup(args.repo, profile, *args.args)
     elif args.action == 'material': result = material(args.repo, args.args[0])
     elif args.action == 'mode': result = mode(args.repo, *args.args)
     elif args.action == 'launch': launch(args.repo, args.args[0])

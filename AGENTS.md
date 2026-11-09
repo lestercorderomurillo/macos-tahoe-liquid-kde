@@ -1255,3 +1255,28 @@ selected app and its source. Native packages use only configured repositories;
 per-user Flatpak and adding Flathub require explicit transaction choices. Do not
 silently switch sources, upgrade the distribution or remove these apps during
 theme uninstall. Failed optional apps warn and remain pending in the Dock.
+
+## Component installation fingerprints
+
+Maintain independent installation fingerprints for each component, including each
+plasmoid. Changes to component sources, installation logic, shared dependencies
+or relevant choices must invalidate only the affected components. Never use the
+release version or repository commit as a global reinstall key. Record success
+only after installation completes; failures, cancellation, missing installed
+artifacts and uninstall must not leave a reusable success record. Keep source
+fingerprints auditable in the repository and validate them before release.
+
+Installer file-manager previews must show the featured Nautilus or Dolphin
+window focused. Verify window identity, focus and settled geometry immediately
+before and after capture inside a disposable VM; reject interrupted captures.
+Preserve original provenance for unaffected photographs.
+
+Before committing a component change, run
+`python src/scripts/component_manifest.py --write` and commit
+`component-hashes.json` with it. Review that only affected payloads and their
+shared recipe dependents changed. CI verifies this ledger against the actual
+sources; never bump a global release hash to force every component to reinstall.
+Runtime comparisons hash actual staged bytes (including local development
+changes), permissions and symlink targets. Keep configuration application and
+explicit reset choices outside payload reuse. Native build reuse must retain
+CMake configuration and Make's SDK/header dependency checks.

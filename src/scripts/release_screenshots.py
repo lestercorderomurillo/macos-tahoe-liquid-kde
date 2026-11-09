@@ -734,6 +734,22 @@ def verify_desktop_window(case: str, windows: list[dict]) -> dict:
     return window
 
 
+def verify_focused_frame(before: list[dict], after: list[dict], resource_class: str) -> dict:
+    """A photograph is valid only if the same sole client retained focus."""
+    def featured(observation):
+        clients = [w for w in observation if w.get('type') not in (1, 2)]
+        require(len(clients) == 1, 'Capture must contain exactly one application')
+        window = clients[0]
+        require(window.get('resourceClass') == resource_class, 'Wrong featured application')
+        require(window.get('active') is True, 'Featured application lost focus')
+        require(bool(window.get('id')), 'Capture has no window identity')
+        return window
+    first, last = featured(before), featured(after)
+    require(all(first.get(key) == last.get(key) for key in ('id', 'caption', 'geometry')),
+            'Featured window changed during capture')
+    return last
+
+
 def verify_icon_appearance(name: str, record: dict) -> None:
     if name in ('boot', 'shutdown'):
         return

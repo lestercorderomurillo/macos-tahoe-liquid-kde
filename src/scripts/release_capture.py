@@ -333,3 +333,30 @@ def capture(repo: Path, ref: str, image: Path, output: Path, reuse: Path | None 
         'manifest_sha256': digest(output / 'manifest.json'), 'approved': approvals, 'rejected': {},
     }, indent=2) + '\n')
     return validate(repo, source, output, reviewed=False)
+
+
+def capture_file_previews(repo: Path, ref: str, image: Path, output: Path):
+    """Four focused file-manager photographs, without refreshing the gallery."""
+    profile = json.loads(PROFILE.read_text())
+    image = image.resolve()
+    require(digest(image) == profile['vm_image_sha256'], 'VM image checksum differs from the pinned recipe')
+    info = json.loads(subprocess.check_output(['qemu-img', 'info', '--output=json', str(image)], text=True))
+    require(not info.get('backing-filename') and not info.get('dirty-flag'), 'Use a sealed standalone VM')
+    source = commit_id(repo, ref)
+    output = output.resolve()
+    output.mkdir(parents=True, exist_ok=False)
+    archive = output / 'source.tar'
+    subprocess.run(['git', '-C', str(repo), 'archive', '--format=tar', '--output=' + str(archive), source], check=True)
+    manifest = dict(source_commit=source, vm_image_sha256=profile['vm_image_sha256'], frames={})
+    with capture_lock(), Guest(output, profile, image, archive, 'tahoe') as vm:
+        manifest['environment'] = vm.action('setup', 'tahoe')
+        for mode in MODES:
+            vm.action('mode', mode)
+            vm.move(*profile['pointer'])
+            for manager in ('nautilus', 'dolphin'):
+                name = f'{manager}-{mode}'
+                record = vm.action('file-preview', manager)
+                vm.get('/home/tester/release-capture/frame.png', output / (name + '.png'))
+                manifest['frames'][name] = record
+                (output / 'manifest.json').write_text(json.dumps(manifest, indent=2) + '\n')
+    return manifest

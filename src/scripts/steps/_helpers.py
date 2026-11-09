@@ -1,6 +1,7 @@
 """Common helpers shared between step modules."""
 
 from localization import tr
+from component_cache import identical
 
 import os
 import shutil
@@ -58,6 +59,9 @@ def install_tree(src: Path, dest: Path, label: str | None = None) -> bool:
     if not src.is_dir():
         fail(tr('{label} (source missing: {src})', label=label, src=src))
         return False
+    if identical(src, dest):
+        ok(tr("{label} (unchanged)", label=label))
+        return True
     existed = dest.is_dir()
     if not safe_copy(src, dest):
         fail(tr('{label} (copy failed)', label=label))
@@ -117,6 +121,9 @@ def sudo_install_file(src: Path, dest: Path, label: str, *, user_owned: bool = F
     label = tr(label)
     src = Path(src)
     dest = Path(dest)
+    if identical(src, dest) and (dest.stat().st_uid == (os.geteuid() if user_owned else 0)):
+        ok(tr("{label} (unchanged)", label=label))
+        return True
     try:
         owner = (os.geteuid(), os.getegid()) if user_owned else None
         if user_owned:
@@ -146,6 +153,9 @@ def sudo_install_tree(src: Path, dest: Path, label: str | None = None) -> bool:
     if not src.is_dir():
         fail(tr('{label} (source missing: {src})', label=label, src=src))
         return False
+    if identical(src, dest) and dest.stat().st_uid == 0:
+        ok(tr("{label} (unchanged)", label=label))
+        return True
     try:
         with _as_root():
             dest.parent.mkdir(parents=True, exist_ok=True)
@@ -251,13 +261,18 @@ def cmake_build(
     if not (src_dir_ / "CMakeLists.txt").is_file():
         warn(tr('{label} source not found — skipping', label=label))
         return False
-    # Root-owned leftovers from old sudo installs survive the user-level
-    # rmtree; retry the wipe as root so mkdir doesn't hit FileExistsError.
-    if build_dir.exists():
-        shutil.rmtree(build_dir, ignore_errors=True)
-        if build_dir.exists():
+    # Keep the build graph so unchanged translation units remain reusable.
+    # CMake reconfigures against the current SDK on every invocation; Make
+    # tracks source/header dependencies. A moved source tree needs a new cache.
+    cache = build_dir / "CMakeCache.txt"
+    if build_dir.exists() and not os.access(build_dir, os.W_OK, effective_ids=True):
+        with _as_root():
+            shutil.rmtree(build_dir)
+    if cache.is_file():
+        expected = f"CMAKE_HOME_DIRECTORY:INTERNAL={src_dir_.resolve()}"
+        if expected not in cache.read_text().splitlines():
             with _as_root():
-                shutil.rmtree(build_dir, ignore_errors=True)
+                shutil.rmtree(build_dir)
     build_dir.mkdir(parents=True, exist_ok=True)
     cfg = subprocess.run(
         ["cmake", "-S", str(src_dir_), "-B", str(build_dir),
