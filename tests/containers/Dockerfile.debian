@@ -12,20 +12,20 @@ ENV MTTKDE_X11_PLUGIN=/repo/build/container-cmake/acrylic-glass/src/liquidglass_
 RUN apt-get update && \
     DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
         python3 python3-pytest git python3-pil python3-pyqt6 python3-pyqt6.qtsvg qml6-module-org-kde-plasma-plasma5support librsvg2-bin ca-certificates \
-        cmake make g++ extra-cmake-modules pkgconf \
+        cmake make ccache g++ extra-cmake-modules pkgconf \
         qmake6 qdbus-qt6 \
         qt6-base-dev qt6-base-private-dev qt6-declarative-dev qt6-tools-dev \
-        qt6-svg-dev qt6-wayland-dev \
+        qt6-svg-dev qt6-svg-plugins qt6-wayland-dev \
         libkf6config-bin libkf6config-dev libkf6configwidgets-dev \
         libkf6coreaddons-dev libkf6crash-dev libkf6globalaccel-dev \
         libkf6guiaddons-dev libkf6i18n-dev libkf6itemmodels-dev \
         libkf6kcmutils-dev libkf6kio-dev libkf6notifications-dev \
         libkf6service-dev libkf6widgetsaddons-dev libkf6windowsystem-dev \
         libplasma-dev libplasmaactivities-dev libplasmaactivitiesstats-dev \
-        libksysguard-dev plasma-workspace-dev \
+        libksysguard-dev plasma-workspace plasma-workspace-dev \
         kwin-dev kwin-x11 kwin-x11-dev libkdecorations3-dev \
         xvfb x11-utils dbus-daemon libgl1-mesa-dri libglx-mesa0 \
-        libepoxy-dev libdrm-dev libwayland-dev libx11-dev libxext-dev \
+        libepoxy-dev libdrm-dev libwayland-dev libx11-dev libxext-dev libxtst-dev \
         libxcb1-dev libxcb-composite0-dev libxcb-randr0-dev libxcb-res0-dev \
         libxcb-shm0-dev libxcb-sync-dev libvulkan-dev zstd && \
     apt-get clean

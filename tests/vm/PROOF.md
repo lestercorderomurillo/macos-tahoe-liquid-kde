@@ -15,15 +15,15 @@ captures at 2× scale. Open an image to inspect it at full resolution.
 
 **Light**
 
-![Debian light](../../src/screenshots/vm/debian/light-fe7e071861fc.png)
+![Debian light](../../src/screenshots/vm/debian/light-db2c5c38c8dc.webp)
 
 **Dark**
 
-![Debian dark](../../src/screenshots/vm/debian/dark-26cc7394098f.png)
+![Debian dark](../../src/screenshots/vm/debian/dark-c0980428ece6.webp)
 
 **After reboot**
 
-![Debian after reboot](../../src/screenshots/vm/debian/reboot-124d50c56945.png)
+![Debian after reboot](../../src/screenshots/vm/debian/reboot-ccdfdd941aa2.webp)
 
 **Tested VM**
 
@@ -53,15 +53,15 @@ stock Plasma 6.3 is below this project's minimum; this run does not qualify it.
 
 **Light**
 
-![CachyOS light](../../src/screenshots/vm/cachyos/light-34d9c45c3a52.png)
+![CachyOS light](../../src/screenshots/vm/cachyos/light-ad7e6ab0eca5.webp)
 
 **Dark**
 
-![CachyOS dark](../../src/screenshots/vm/cachyos/dark-6dcf101c30cf.png)
+![CachyOS dark](../../src/screenshots/vm/cachyos/dark-5d6eab9d22a2.webp)
 
 **After reboot**
 
-![CachyOS after reboot](../../src/screenshots/vm/cachyos/reboot-bc01b2bc88bb.png)
+![CachyOS after reboot](../../src/screenshots/vm/cachyos/reboot-7f8d8db91e17.webp)
 
 **Tested VM**
 
@@ -90,15 +90,15 @@ Installed from the official CachyOS ISO and upgraded with its native repositorie
 
 **Light**
 
-![Arch Linux light](../../src/screenshots/vm/arch/light-dcd9652b57c9.png)
+![Arch Linux light](../../src/screenshots/vm/arch/light-04fa1012dc03.webp)
 
 **Dark**
 
-![Arch Linux dark](../../src/screenshots/vm/arch/dark-237f5d92f8d7.png)
+![Arch Linux dark](../../src/screenshots/vm/arch/dark-e20d8cf7c4bd.webp)
 
 **After reboot**
 
-![Arch Linux after reboot](../../src/screenshots/vm/arch/reboot-289081492443.png)
+![Arch Linux after reboot](../../src/screenshots/vm/arch/reboot-03a3d61e916a.webp)
 
 **Tested VM**
 
@@ -127,15 +127,15 @@ Official Arch cloud image with KDE Plasma installed from its native repositories
 
 **Light**
 
-![EndeavourOS light](../../src/screenshots/vm/endeavouros/light-3839fb64ce80.png)
+![EndeavourOS light](../../src/screenshots/vm/endeavouros/light-a40ed8e4d780.webp)
 
 **Dark**
 
-![EndeavourOS dark](../../src/screenshots/vm/endeavouros/dark-14a5b3a23a69.png)
+![EndeavourOS dark](../../src/screenshots/vm/endeavouros/dark-df6a395f14ae.webp)
 
 **After reboot**
 
-![EndeavourOS after reboot](../../src/screenshots/vm/endeavouros/reboot-94573a3b415e.png)
+![EndeavourOS after reboot](../../src/screenshots/vm/endeavouros/reboot-b57409cd3b05.webp)
 
 **Tested VM**
 
@@ -164,15 +164,15 @@ Official EndeavourOS ISO with native KDE desktop and a full distribution upgrade
 
 **Light**
 
-![Fedora light](../../src/screenshots/vm/fedora/light-1cad4eadcaef.png)
+![Fedora light](../../src/screenshots/vm/fedora/light-52d8b52aa131.webp)
 
 **Dark**
 
-![Fedora dark](../../src/screenshots/vm/fedora/dark-be77aa2fe2dc.png)
+![Fedora dark](../../src/screenshots/vm/fedora/dark-ab71ca191d88.webp)
 
 **After reboot**
 
-![Fedora after reboot](../../src/screenshots/vm/fedora/reboot-d9a595e8e001.png)
+![Fedora after reboot](../../src/screenshots/vm/fedora/reboot-f9b7b986829a.webp)
 
 **Tested VM**
 
@@ -201,15 +201,15 @@ Official Fedora 44 cloud image with native KDE desktop and packages.
 
 **Light**
 
-![Manjaro light](../../src/screenshots/vm/manjaro/light-d297dffbe487.png)
+![Manjaro light](../../src/screenshots/vm/manjaro/light-fc4d40151547.webp)
 
 **Dark**
 
-![Manjaro dark](../../src/screenshots/vm/manjaro/dark-504e99020f75.png)
+![Manjaro dark](../../src/screenshots/vm/manjaro/dark-bcae493cb335.webp)
 
 **After reboot**
 
-![Manjaro after reboot](../../src/screenshots/vm/manjaro/reboot-ee500f3102a9.png)
+![Manjaro after reboot](../../src/screenshots/vm/manjaro/reboot-936f07329942.webp)
 
 **Tested VM**
 
@@ -238,15 +238,15 @@ Official Manjaro KDE ISO with native packages.
 
 **Light**
 
-![Artix Linux (OpenRC) light](../../src/screenshots/vm/artix/light-9383135cdff4.png)
+![Artix Linux (OpenRC) light](../../src/screenshots/vm/artix/light-818b2b786445.webp)
 
 **Dark**
 
-![Artix Linux (OpenRC) dark](../../src/screenshots/vm/artix/dark-ba8f3dd4a617.png)
+![Artix Linux (OpenRC) dark](../../src/screenshots/vm/artix/dark-efe24bbe0c0b.webp)
 
 **After reboot**
 
-![Artix Linux (OpenRC) after reboot](../../src/screenshots/vm/artix/reboot-058ac23fe050.png)
+![Artix Linux (OpenRC) after reboot](../../src/screenshots/vm/artix/reboot-c99f281e2a54.webp)
 
 **Tested VM**
 
@@ -275,15 +275,15 @@ Official Artix Plasma OpenRC ISO with native packages and per-user cron scheduli
 
 **Light**
 
-![Garuda Linux light](../../src/screenshots/vm/garuda/light-25b88204a5c9.png)
+![Garuda Linux light](../../src/screenshots/vm/garuda/light-f87227465173.webp)
 
 **Dark**
 
-![Garuda Linux dark](../../src/screenshots/vm/garuda/dark-5dcc9fdb6b2b.png)
+![Garuda Linux dark](../../src/screenshots/vm/garuda/dark-96da0552a722.webp)
 
 **After reboot**
 
-![Garuda Linux after reboot](../../src/screenshots/vm/garuda/reboot-6f493a2a9d9b.png)
+![Garuda Linux after reboot](../../src/screenshots/vm/garuda/reboot-743c7d23e7e0.webp)
 
 **Tested VM**
 
@@ -312,15 +312,15 @@ Official Garuda KDE ISO with native packages.
 
 **Light**
 
-![Nobara light](../../src/screenshots/vm/nobara/light-c21b13ec9011.png)
+![Nobara light](../../src/screenshots/vm/nobara/light-04a9ecb375da.webp)
 
 **Dark**
 
-![Nobara dark](../../src/screenshots/vm/nobara/dark-59dd73b989cc.png)
+![Nobara dark](../../src/screenshots/vm/nobara/dark-b71945558810.webp)
 
 **After reboot**
 
-![Nobara after reboot](../../src/screenshots/vm/nobara/reboot-797c0e9aecda.png)
+![Nobara after reboot](../../src/screenshots/vm/nobara/reboot-5b0113d37cb8.webp)
 
 **Tested VM**
 
@@ -349,15 +349,15 @@ Official Nobara 44 KDE ISO with native packages.
 
 **Light**
 
-![openSUSE Tumbleweed light](../../src/screenshots/vm/opensuse/light-69bdc7c5e780.png)
+![openSUSE Tumbleweed light](../../src/screenshots/vm/opensuse/light-95fc6f10cc1c.webp)
 
 **Dark**
 
-![openSUSE Tumbleweed dark](../../src/screenshots/vm/opensuse/dark-3f6bac045843.png)
+![openSUSE Tumbleweed dark](../../src/screenshots/vm/opensuse/dark-18f8a3d9c86c.webp)
 
 **After reboot**
 
-![openSUSE Tumbleweed after reboot](../../src/screenshots/vm/opensuse/reboot-bcb6af863f92.png)
+![openSUSE Tumbleweed after reboot](../../src/screenshots/vm/opensuse/reboot-ca1f78b5974c.webp)
 
 **Tested VM**
 
@@ -386,15 +386,15 @@ Official openSUSE Tumbleweed cloud image with native KDE desktop and packages.
 
 **Light**
 
-![KDE neon light](../../src/screenshots/vm/neon/light-d8708e27c32d.png)
+![KDE neon light](../../src/screenshots/vm/neon/light-69884b16d0c0.webp)
 
 **Dark**
 
-![KDE neon dark](../../src/screenshots/vm/neon/dark-93d514e99c22.png)
+![KDE neon dark](../../src/screenshots/vm/neon/dark-ade3e158ad34.webp)
 
 **After reboot**
 
-![KDE neon after reboot](../../src/screenshots/vm/neon/reboot-02f200918339.png)
+![KDE neon after reboot](../../src/screenshots/vm/neon/reboot-3ae480081973.webp)
 
 **Tested VM**
 

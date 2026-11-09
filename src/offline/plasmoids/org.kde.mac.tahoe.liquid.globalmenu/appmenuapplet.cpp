@@ -1,10 +1,12 @@
 /*
     SPDX-FileCopyrightText: 2016 Kai Uwe Broulik <kde@privat.broulik.de>
+    SPDX-FileCopyrightText: 2026 QuickBar contributors
     SPDX-License-Identifier: GPL-2.0-only OR GPL-3.0-only OR LicenseRef-KDE-Accepted-GPL
 */
 
 #include "appmenuapplet.h"
 #include "appmenumodel.h"
+#include "systemmenustyle.h"
 
 #include <KColorScheme>
 #include <KLocalizedString>
@@ -16,6 +18,7 @@
 #include <QDBusMessage>
 #include <QKeyEvent>
 #include <QMenu>
+#include <QLineEdit>
 #include <QMouseEvent>
 #include <QProcess>
 #include <QQuickItem>
@@ -31,18 +34,6 @@
 int AppMenuApplet::s_refs = 0;
 
 namespace {
-class SystemMenu : public QMenu
-{
-protected:
-    void initStyleOption(QStyleOptionMenuItem* option, const QAction* action) const override
-    {
-        QMenu::initStyleOption(option, action);
-        if (!action->isSeparator() && !action->isIconVisibleInMenu()) {
-            option->maxIconWidth = 0;
-        }
-    }
-};
-
 /// DBus name we register as while at least one AppMenuApplet is alive.
 /// Other system pieces (Latte, Plank, etc.) listen for this to know a
 /// global menu view is on screen and suppress their own in-window menubar.
@@ -96,7 +87,8 @@ AppMenuApplet::AppMenuApplet(QObject* parent, const KPluginMetaData& data, const
         QDBusConnection::sessionBus().interface()->registerService(
             viewService(), QDBusConnectionInterface::QueueService, QDBusConnectionInterface::DontAllowReplacement);
     }
-    connect(this, &Applet::destroyedChanged, this, [](bool destroyed) {
+    connect(this, &Applet::destroyedChanged, this, [this](bool destroyed) {
+        m_registered = !destroyed;
         if (destroyed) {
             if (--s_refs == 0) {
                 QDBusConnection::sessionBus().interface()->unregisterService(viewService());
@@ -110,7 +102,49 @@ AppMenuApplet::AppMenuApplet(QObject* parent, const KPluginMetaData& data, const
     });
 }
 
-AppMenuApplet::~AppMenuApplet() = default;
+AppMenuApplet::~AppMenuApplet()
+{
+    resetApplicationMenu();
+    if (m_ownsCurrentMenu && m_currentMenu) {
+        delete m_currentMenu.data();
+    }
+    if (m_registered && --s_refs == 0) {
+        QDBusConnection::sessionBus().interface()->unregisterService(viewService());
+    }
+}
+
+// Adapted from QuickBar's owned-proxy/borrowed-menu lifecycle, preserving
+// Tahoe's AboutToShow refresh and its persistent Wayland popup grab.
+void AppMenuApplet::restoreBorrowedActions()
+{
+    if (!m_ownsCurrentMenu || !m_currentMenu) {
+        return;
+    }
+    auto* menuAction = m_currentMenu->menuAction();
+    for (auto* action : m_currentMenu->actions()) {
+        m_currentMenu->removeAction(action);
+        if (m_sourceMenu) {
+            m_sourceMenu->addAction(action);
+        }
+    }
+    if (m_sourceMenu) {
+        menuAction->setMenu(m_sourceMenu);
+    }
+}
+
+void AppMenuApplet::resetApplicationMenu()
+{
+    if (m_currentMenu) {
+        m_currentMenu->hide();
+        m_currentMenu->removeEventFilter(this);
+    }
+    restoreBorrowedActions();
+    m_sourceMenu.clear();
+    if (!m_ownsCurrentMenu) {
+        m_currentMenu.clear();
+    }
+    setCurrentIndex(-1);
+}
 
 void AppMenuApplet::init() { }
 
@@ -124,7 +158,19 @@ QAbstractItemModel* AppMenuApplet::model() const
 void AppMenuApplet::setModel(QAbstractItemModel* model)
 {
     if (m_model != model) {
+        resetApplicationMenu();
+        if (m_model) {
+            disconnect(m_model, nullptr, this, nullptr);
+        }
         m_model = model;
+        if (m_model) {
+            if (auto* appModel = qobject_cast<AppMenuModel*>(m_model)) {
+                connect(appModel, &AppMenuModel::menuSourceAboutToChange, this, &AppMenuApplet::resetApplicationMenu);
+            } else {
+                connect(m_model, &QAbstractItemModel::modelAboutToBeReset, this, &AppMenuApplet::resetApplicationMenu);
+            }
+            connect(m_model, &QObject::destroyed, this, &AppMenuApplet::resetApplicationMenu);
+        }
         Q_EMIT modelChanged();
     }
 }
@@ -137,6 +183,7 @@ int AppMenuApplet::view() const
 void AppMenuApplet::setView(int type)
 {
     if (m_viewType != type) {
+        resetApplicationMenu();
         m_viewType = type;
         Q_EMIT viewChanged();
     }
@@ -193,11 +240,10 @@ QMenu* AppMenuApplet::createMenu(int idx) const
 
 void AppMenuApplet::onMenuAboutToHide()
 {
-    auto menuAction = m_currentMenu->menuAction();
-    menuAction->setMenu(m_sourceMenu);
     if (m_sourceMenu && m_sourceMenu != m_currentMenu) {
         Q_EMIT m_sourceMenu->aboutToHide();
     }
+    restoreBorrowedActions();
     setCurrentIndex(-1);
 }
 
@@ -258,19 +304,15 @@ void AppMenuApplet::trigger(QQuickItem* ctx, int idx)
         };
 
         if (view() == FullView) {
-            if (!m_currentMenu) {
-                m_currentMenu = new QMenu(qobject_cast<QWidget*>(actionMenu->parent()));
+            if (!m_currentMenu || !m_ownsCurrentMenu) {
+                m_currentMenu = new QMenu;
+                m_ownsCurrentMenu = true;
                 connect(m_currentMenu, &QMenu::aboutToHide, this, &AppMenuApplet::onMenuAboutToHide, Qt::UniqueConnection);
             } else if (m_sourceMenu != actionMenu) {
                 if (m_sourceMenu) {
                     Q_EMIT m_sourceMenu->aboutToHide();
                 }
-                auto menuAction = m_currentMenu->menuAction();
-                for (QAction* action : m_currentMenu->actions()) {
-                    m_currentMenu->removeAction(action);
-                    m_sourceMenu->addAction(action);
-                }
-                menuAction->setMenu(m_sourceMenu);
+                restoreBorrowedActions();
             }
             m_sourceMenu = actionMenu;
             auto menuAction = m_sourceMenu->menuAction();
@@ -284,6 +326,11 @@ void AppMenuApplet::trigger(QQuickItem* ctx, int idx)
             // AboutToShow handler refreshes dynamic application actions.
             Q_EMIT m_sourceMenu->aboutToShow();
         } else {
+            restoreBorrowedActions();
+            if (m_ownsCurrentMenu && m_currentMenu) {
+                delete m_currentMenu.data();
+            }
+            m_ownsCurrentMenu = false;
             m_currentMenu = actionMenu;
             m_sourceMenu = actionMenu;
         }
@@ -317,6 +364,7 @@ void AppMenuApplet::trigger(QQuickItem* ctx, int idx)
             if (m_currentMenu->isEmpty()) {
                 return;
             }
+            m_currentMenu->installEventFilter(this);
             m_currentMenu->popup(pos);
             connect(actionMenu, &QMenu::aboutToHide, this, &AppMenuApplet::onMenuAboutToHide, Qt::UniqueConnection);
         }
@@ -548,7 +596,11 @@ void AppMenuApplet::triggerSystemMenu(QQuickItem* ctx)
         m_windowMenu->hide();
     }
 
-    auto* menu = new SystemMenu;
+    auto* menu = new QMenu;
+    QFont menuFont = QApplication::font("QMenu");
+    menuFont.setWeight(QFont::Normal);
+    menu->setFont(menuFont);
+    menu->setStyle(new SystemMenuStyle(menu));
     menu->setAttribute(Qt::WA_DeleteOnClose);
     applyActiveColorScheme(menu);
     m_systemMenu = menu;
@@ -633,7 +685,6 @@ void AppMenuApplet::triggerSystemMenu(QQuickItem* ctx)
         pos.setY(pos.y() + ctx->height());
     }
 
-    menu->setMinimumWidth(menu->sizeHint().width() + 65);
     menu->adjustSize();
     pos = QPoint(qBound(geo.x(), pos.x(), geo.x() + geo.width() - menu->width()), qBound(geo.y(), pos.y(), geo.y() + geo.height() - menu->height()));
 
@@ -660,6 +711,11 @@ bool AppMenuApplet::eventFilter(QObject* watched, QEvent* event)
 
     if (event->type() == QEvent::KeyPress) {
         auto* e = static_cast<QKeyEvent*>(event);
+        if (auto* field = qobject_cast<QLineEdit*>(QApplication::focusWidget());
+            field && menu->isAncestorOf(field)
+            && (e->key() == Qt::Key_Left || e->key() == Qt::Key_Right)) {
+            return false;
+        }
 
         if (e->key() == Qt::Key_Left) {
             if (m_currentIndex == -3) {
@@ -692,6 +748,9 @@ bool AppMenuApplet::eventFilter(QObject* watched, QEvent* event)
         }
 
     } else if (event->type() == QEvent::MouseMove) {
+        if (!config().group(QStringLiteral("Appearance")).readEntry("hoverOpensMenu", true)) {
+            return false;
+        }
         auto* e = static_cast<QMouseEvent*>(event);
 
         if (!m_buttonGrid || !m_buttonGrid->window()) {
@@ -699,6 +758,10 @@ bool AppMenuApplet::eventFilter(QObject* watched, QEvent* event)
         }
 
         const QPointF& windowLocalPos = m_buttonGrid->window()->mapFromGlobal(e->globalPosition());
+        if (auto* viewport = m_buttonGrid->parentItem(); viewport && viewport->clip()
+            && !viewport->contains(viewport->mapFromScene(windowLocalPos))) {
+            return false;
+        }
         const QPointF& buttonGridLocalPos = m_buttonGrid->mapFromScene(windowLocalPos);
         auto* item = m_buttonGrid->childAt(buttonGridLocalPos.x(), buttonGridLocalPos.y());
         if (!item) {

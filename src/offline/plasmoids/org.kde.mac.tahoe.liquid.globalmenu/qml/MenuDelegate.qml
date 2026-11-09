@@ -12,14 +12,15 @@ import org.kde.kirigami as Kirigami
 AbstractButton {
     id: controlRoot
 
-    font.weight: Font.DemiBold
+    font.weight: Font.Normal
     property bool menuIsOpen: false
+    property bool hoverOpensMenu: true
 
     signal activated()
 
     hoverEnabled: true
 
-    onHoveredChanged: if (hovered && menuIsOpen) { activated(); }
+    onHoveredChanged: if (hoverOpensMenu && hovered && menuIsOpen) { activated(); }
     onPressed: activated()
 
     enum State {
@@ -40,15 +41,17 @@ AbstractButton {
     Kirigami.MnemonicData.controlType: Kirigami.MnemonicData.SecondaryControl
     Kirigami.MnemonicData.label: text
 
-    topPadding: Kirigami.Units.smallSpacing + 1
-    bottomPadding: Kirigami.Units.smallSpacing - 1
-    leftPadding: Kirigami.Units.largeSpacing
-    rightPadding: Kirigami.Units.largeSpacing
+    topPadding: Kirigami.Units.smallSpacing
+    bottomPadding: Kirigami.Units.smallSpacing
+    leftPadding: 3 * Kirigami.Units.smallSpacing
+    rightPadding: 3 * Kirigami.Units.smallSpacing
 
     Accessible.description: i18nc("@info:usagetip", "Open a menu")
 
     background: Rectangle {
-        radius: Kirigami.Units.cornerRadius
+        y: Math.min(Kirigami.Units.smallSpacing, controlRoot.height / 4)
+        height: Math.max(0, controlRoot.height - 2 * y)
+        radius: Math.min(width, height) / 2
         color: controlRoot.menuState === MenuDelegate.State.Rest
                ? "transparent"
                : Qt.rgba(0.5, 0.5, 0.5, controlRoot.menuState === MenuDelegate.State.Down ? 0.25 : 0.18)

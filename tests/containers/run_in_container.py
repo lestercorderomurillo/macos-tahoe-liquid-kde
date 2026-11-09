@@ -5,8 +5,8 @@ Tier 1 — Qt6 path discovery + pytest suite:
   * distro.qt6_plugins_dir() / qt6_qml_dir() return exactly what
     qmake6 reports — no hardcoded assumption sneaked back in.
   * distro.current_distro() resolves to a sensible /etc/os-release id.
-  * The full pytest suite passes against this distro's real Python +
-    Qt6 layout.
+  * Platform-sensitive tests pass against this distro's real Python +
+    Qt6 layout. Platform-independent tests run once in the primary suite.
 
 Tier 2 — the dep layer (per-distro package mapping):
   * distro.package_manager_install_cmd() returns a real binary that
@@ -57,6 +57,7 @@ import os
 import shutil
 import subprocess
 import sys
+from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
 REPO = Path("/repo")
@@ -238,6 +239,18 @@ def step_distro_layer(expected_plugins: str | None,
     return ok
 
 
+def _probe_packages(probe: list[str], packages: list[str]) -> dict:
+    # apt/pacman metadata reads are independent. Other managers may lock their
+    # shared metadata cache, so keep those sequential.
+    packages = list(dict.fromkeys(packages))
+    workers = 4 if probe[0] in ('apt', 'pacman') else 1
+    def query(package):
+        return subprocess.run([*probe, package], check=False, capture_output=True,
+                              text=True, timeout=120)
+    with ThreadPoolExecutor(max_workers=workers) as pool:
+        return dict(zip(packages, pool.map(query, packages)))
+
+
 def step_package_manager_layer() -> bool:
     """Tier 2: the distro layer knows how to install packages here, AND
     the common deps() tokens map to packages that exist in the distro's
@@ -284,6 +297,7 @@ def step_package_manager_layer() -> bool:
         return True
 
     ok = True
+    mapped = []
     for cmd_token, arch_fallback in _collect_dep_tokens():
         try:
             pkg = distro.package_for(cmd_token, arch_fallback)
@@ -292,10 +306,11 @@ def step_package_manager_layer() -> bool:
             print(f"     FAIL: {exc}")
             ok = False
             continue
+        mapped.append((cmd_token, pkg))
+    results = _probe_packages(probe, [pkg for _, pkg in mapped])
+    for cmd_token, pkg in mapped:
         print(f"  ── probe {cmd_token!r} → {pkg!r}")
-        res = subprocess.run(
-            [*probe, pkg], check=False, capture_output=True, text=True,
-        )
+        res = results[pkg]
         if res.returncode == 0:
             print(f"     PASS")
             continue
@@ -520,15 +535,26 @@ def step_bundled_kvantum_build() -> bool:
     return True
 
 
+PLATFORM_TESTS = (
+    "tests/test_distro_packages.py",
+    "tests/test_preflight.py",
+    "tests/test_session_env.py",
+    "tests/test_glass_presets.py",
+    "tests/test_popup_rendering.py",
+    "tests/test_taskmanager_qml.py",
+    "tests/test_globalmenu_model.py",
+    "tests/test_reserved_menu_icons.py",
+    "tests/test_status_icons.py",
+    "tests/test_acrylic_glass_x11_smoke.py",
+)
+
+
 def step_pytest() -> bool:
     print("\n=== pytest ===")
     res = subprocess.run(
-        ["python3", "-m", "pytest", "tests/", "-q",
-         # Skip tests that need the live KDE session — none of those
-         # work inside a stripped-down container.
-         "--ignore=tests/test_vm_harness.py",
-         "-x"],
+        ["python3", "-m", "pytest", *PLATFORM_TESTS, "-q", "-rs", "--durations=10", "-x"],
         check=False, cwd=str(REPO),
+        env=os.environ | {"MTTKDE_REQUIRE_NATIVE_GLOBALMENU": "1"},
     )
     return res.returncode == 0
 

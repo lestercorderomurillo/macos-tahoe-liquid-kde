@@ -4,9 +4,10 @@ from pathlib import Path
 
 from distro import qt6_plugins_dir, qt6_qml_dir
 from launcher_defaults import LAUNCHER_ID, apply_launcher_default, remember_installed_edition
+from steps._native_build import cmake_build
 from steps._helpers import (
-    DATA_HOME, HOME, build_dir, cmake_build, fail, info, install_tree, ok, offline,
-    remove_tree,
+    DATA_HOME, HOME, build_dir, fail, info, install_tree, ok, offline,
+    remove_tree, qdbus_call,
     sudo_install_file, sudo_install_tree, sudo_remove, temp_dir,
 )
 
@@ -60,6 +61,7 @@ LEGACY_TASKMANAGER_QML_DIRS = (
 def deps():
     return [
         "qmake6:qt6-base",
+        "qt6-svg-icons",
         "qt6-gui-cmake:qt6-base",
         "qt6-widgets-cmake:qt6-base",
         "qt6-dbus-cmake:qt6-base",
@@ -212,6 +214,10 @@ def install() -> None:
                      else install_tree(widget, DEST_DIR / widget.name))
         if installed:
             n += 1
+    spacing_script = offline("layouts/dock-spacing.js")
+    if spacing_script.is_file():
+        qdbus_call("org.kde.plasmashell", "/PlasmaShell",
+                   "org.kde.PlasmaShell.evaluateScript", spacing_script.read_text())
     label = "plasmoid" if n == 1 else "plasmoids"
     info(tr('{n} {label} installed/reinstalled', n=n, label=tr(label)))
 

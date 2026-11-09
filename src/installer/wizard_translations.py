@@ -3,7 +3,18 @@
 from localization import effective_language, translate
 
 # English | Spanish | Simplified Chinese | Brazilian Portuguese | German
-_ROWS = '''Which window controls would you like?|¿Qué controles de ventana prefieres?|你想使用哪种窗口控件？|Quais controles de janela você prefere?|Welche Fensterknöpfe möchtest du verwenden?
+_ROWS = '''Dock appearance|Apariencia del Dock|程序坞外观|Aparência do Dock|Dock-Erscheinungsbild
+Keep current Dock icons|Conservar los iconos actuales del Dock|保留当前程序坞图标|Manter os ícones atuais do Dock|Aktuelle Dock-Symbole behalten
+macOS-style Dock icons|Iconos del Dock estilo macOS|macOS 风格的程序坞图标|Ícones do Dock no estilo macOS|Dock-Symbole im macOS-Stil
+Application icons|Iconos de las aplicaciones|应用图标|Ícones dos aplicativos|Anwendungssymbole
+Only Dock icons change. Your apps, pin order and desktop icon theme stay the same.|Solo cambian los iconos del Dock. Se conservan tus apps, su orden y el tema de iconos del escritorio.|仅更改程序坞图标。应用、固定顺序和桌面图标主题保持不变。|Somente os ícones do Dock mudam. Seus aplicativos, a ordem e o tema de ícones da área de trabalho permanecem iguais.|Nur die Dock-Symbole ändern sich. Anwendungen, Reihenfolge und Desktop-Symboldesign bleiben erhalten.
+Which window glass would you like?|¿Qué cristal prefieres para las ventanas?|你想使用哪种窗口玻璃效果？|Qual vidro você prefere nas janelas?|Welches Fensterglas möchtest du verwenden?
+Window glass|Cristal de las ventanas|窗口玻璃|Vidro das janelas|Fensterglas
+Classic|Clásico|经典|Clássico|Klassisch
+Tinted|Tintado|着色|Tingido|Getönt
+Classic keeps the original glass. Tinted adds a white backing in light mode and a dark backing in dark mode.|Clásico conserva el cristal original. Tintado añade un fondo blanco en modo claro y oscuro en modo oscuro.|经典保留原始玻璃效果。着色在浅色模式下添加白色底层，在深色模式下添加深色底层。|Clássico mantém o vidro original. Tingido adiciona um fundo branco no modo claro e escuro no modo escuro.|Klassisch behält das ursprüngliche Glas bei. Getönt fügt im hellen Modus einen weißen und im dunklen Modus einen dunklen Hintergrund hinzu.
+Both use the same blur, refraction and highlights. Applies to application windows; panels and menus keep their own materials.|Ambos usan el mismo desenfoque, refracción y reflejos. Se aplica a ventanas de aplicaciones; los paneles y menús conservan sus materiales.|两者使用相同的模糊、折射和高光。仅应用于应用窗口；面板和菜单保留各自的材质。|Ambos usam o mesmo desfoque, refração e reflexos. Aplica-se às janelas dos aplicativos; painéis e menus mantêm seus materiais.|Beide verwenden dieselbe Unschärfe, Brechung und dieselben Lichtreflexe. Gilt für Anwendungsfenster; Panels und Menüs behalten ihre Materialien.
+Which window controls would you like?|¿Qué controles de ventana prefieres?|你想使用哪种窗口控件？|Quais controles de janela você prefere?|Welche Fensterknöpfe möchtest du verwenden?
 Window controls|Controles de ventana|窗口控件|Controles da janela|Fensterknöpfe
 Flat|Planos|扁平|Planos|Flach
 Glassy|Cristalinos|玻璃质感|Vítreos|Glasartig

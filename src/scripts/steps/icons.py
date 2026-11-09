@@ -44,6 +44,45 @@ def deps():
 
 
 def install() -> None:
+    from component_cache import Receipt, identity
+    from installer_choices import selected
+    from paths import REPO_ROOT
+    from log import errors, warn
+    from utils import check_cancelled
+    options = selected()
+    scripts = REPO_ROOT / "src/scripts"
+    from component_manifest import dependencies
+    inputs = [("icons", OFFLINE_DIR)] + [
+        (str(path.relative_to(scripts)), path)
+        for path in dependencies(scripts / "steps/icons.py", scripts)]
+    receipt = None
+    def outputs():
+        names = list(_THEME_NAMES)
+        if options:
+            style = options["icons"].capitalize()
+            names += [f"MacTahoeLiquidKde-Icons-{style}-{mode}" for mode in ("Light", "Dark")]
+        return [DEST_DIR / name for name in names]
+    try:
+        key = identity(inputs, {key: options.get(key) for key in ("icons", "color")})
+        receipt = Receipt("icons", key)
+        if receipt.current(outputs()):
+            check_cancelled()
+            info(tr("Icons unchanged — skipping generation and installation"))
+            return
+        receipt.invalidate()
+    except (OSError, ValueError):
+        receipt = None
+    before = len(errors)
+    _install_payload()
+    check_cancelled()
+    if receipt is not None and len(errors) == before:
+        try:
+            receipt.save(outputs())
+        except (OSError, ValueError) as exc:
+            warn(f"Could not save icon installation fingerprint: {exc}")
+
+
+def _install_payload() -> None:
     """Extract the pre-built MacTahoeLiquidKde-Icons tarball into
     ~/.local/share/icons, then rebuild GTK icon caches."""
     DEST_DIR.mkdir(parents=True, exist_ok=True)
@@ -67,6 +106,9 @@ def install() -> None:
         if res.returncode != 0:
             fail(tr('tar --zstd failed ({value1}): {value2}', value1=res.returncode, value2=res.stderr.strip()))
             return
+
+        from interface_icons import apply_interface_icons
+        apply_interface_icons(staging)
 
         from installer_choices import selected, COLORS
         options = selected()
@@ -108,6 +150,12 @@ def install() -> None:
 
 
 def uninstall() -> None:
+    from component_cache import Receipt
+    from log import warn
+    try:
+        Receipt("icons", "").invalidate()
+    except OSError as exc:
+        warn(f"Could not remove icon installation fingerprint: {exc}")
     n = 0
     for theme in DEST_DIR.glob("MacTahoeLiquidKde-Icons*"):
         if theme.is_dir():

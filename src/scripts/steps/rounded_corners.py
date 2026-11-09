@@ -28,10 +28,10 @@ from distro import (
     qt6_plugins_dir,
 )
 from log import note
+from steps._native_build import cmake_build
 from steps._helpers import (
     HOME,
     build_dir,
-    cmake_build,
     fail,
     have,
     info,

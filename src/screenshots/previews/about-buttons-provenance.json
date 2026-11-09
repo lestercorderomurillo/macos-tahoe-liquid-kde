@@ -1,0 +1,80 @@
+{
+  "purpose": "Focused About button label regression; historical desktop gallery is unchanged",
+  "source_commit": "bfcb16effcef11679e7053b3340594ac31984408",
+  "qml_sha256": "0578016d26f67f57fc9b7329440541a4b8dabed4a6ffe1cc746e9254da4869a9",
+  "source_tar_sha256": "caa31e43a62c30a816867986c3c026833e079341b26108b2fa470062580e38f4",
+  "vm_image_sha256": "412e7933f10add20b921b92c02709e7eea56acd14dc14cf654f58fba4ea3cc9d",
+  "capture_version": "0.66.1 (development snapshot before the 0.66.2 version bump)",
+  "frames": {
+    "Light": {
+      "before": {
+        "id": "{34044b20-428e-4aa9-a524-88e716ab0656}",
+        "caption": "About This Computer (preview)",
+        "resourceClass": "org.qt-project.qml",
+        "type": 0,
+        "appletPopup": false,
+        "hidden": false,
+        "active": true,
+        "geometry": {
+          "x": 350,
+          "y": 120,
+          "width": 360,
+          "height": 700
+        }
+      },
+      "after": {
+        "id": "{34044b20-428e-4aa9-a524-88e716ab0656}",
+        "caption": "About This Computer (preview)",
+        "resourceClass": "org.qt-project.qml",
+        "type": 0,
+        "appletPopup": false,
+        "hidden": false,
+        "active": true,
+        "geometry": {
+          "x": 429.98046875,
+          "y": 169.998779296875,
+          "width": 360,
+          "height": 700
+        }
+      },
+      "frame_sha256": "eaebe82caa18cc24c21833fff02137c262061aa5a35d1092a9e441c8c41482f0",
+      "file": "about-buttons-light-eaebe82caa18.png",
+      "reviewed": true
+    },
+    "Dark": {
+      "before": {
+        "id": "{c7c516eb-6883-46d7-bad4-7c2eb963f20d}",
+        "caption": "About This Computer (preview)",
+        "resourceClass": "org.qt-project.qml",
+        "type": 0,
+        "appletPopup": false,
+        "hidden": false,
+        "active": true,
+        "geometry": {
+          "x": 350,
+          "y": 120,
+          "width": 360,
+          "height": 700
+        }
+      },
+      "after": {
+        "id": "{c7c516eb-6883-46d7-bad4-7c2eb963f20d}",
+        "caption": "About This Computer (preview)",
+        "resourceClass": "org.qt-project.qml",
+        "type": 0,
+        "appletPopup": false,
+        "hidden": false,
+        "active": true,
+        "geometry": {
+          "x": 429.98046875,
+          "y": 169.998779296875,
+          "width": 360,
+          "height": 700
+        }
+      },
+      "frame_sha256": "57536aa93c408265675e97410c69b17530abef73fb8f4b0b29a0c10a89cd4b6d",
+      "file": "about-buttons-dark-57536aa93c40.png",
+      "reviewed": true
+    }
+  }
+}

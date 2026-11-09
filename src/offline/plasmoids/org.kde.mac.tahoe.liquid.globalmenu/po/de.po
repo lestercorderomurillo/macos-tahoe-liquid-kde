@@ -5,6 +5,27 @@ msgstr "Project-Id-Version: MacTahoe Liquid KDE\nPO-Revision-Date: 2026-10-22 00
 msgid "%1 (%2 physical)"
 msgstr "%1 (%2 physisch)"
 
+msgid "&Copy"
+msgstr "&Kopieren"
+
+msgid "&Edit"
+msgstr "&Bearbeiten"
+
+msgid "&File"
+msgstr "&Datei"
+
+msgid "&Paste"
+msgstr "&Einfügen"
+
+msgid "&Redo"
+msgstr "&Wiederherstellen"
+
+msgid "&Undo"
+msgstr "&Rückgängig"
+
+msgid "&View"
+msgstr "&Ansicht"
+
 msgid "About This Computer"
 msgstr "Über diesen Computer"
 
@@ -32,8 +53,13 @@ msgstr "Auswählen…"
 msgid "Close"
 msgstr "Schließen"
 
+msgid "Close Window"
+msgstr "Fenster schließen"
+
 msgid "Commands"
 msgstr "Befehle"
+
+
 
 msgid "Copied"
 msgstr "Kopiert"
@@ -43,6 +69,9 @@ msgstr "Details kopieren"
 
 msgid "Cores"
 msgstr "Kerne"
+
+msgid "Cu&t"
+msgstr "&Ausschneiden"
 
 msgid "Enter Full Screen"
 msgstr "Vollbildmodus starten"
@@ -58,6 +87,7 @@ msgstr "Sofort beenden…"
 
 msgid "Graphics"
 msgstr "Grafik"
+
 
 msgid "Lock Screen"
 msgstr "Bildschirm sperren"
@@ -113,11 +143,20 @@ msgstr "Wiederherstellen"
 msgid "Search"
 msgstr "Suchen"
 
+msgid "Search application menu actions"
+msgstr "Aktionen im Anwendungsmenü suchen"
+
 msgid "Search…"
 msgstr "Suchen…"
 
+msgid "Select &All"
+msgstr "&Alles auswählen"
+
 msgid "Serial number"
 msgstr "Seriennummer"
+
+msgid "Show common menus for applications without a menu bar"
+msgstr "Allgemeine Menüs für Anwendungen ohne Menüleiste anzeigen"
 
 msgid "Show full application menu"
 msgstr "Vollständiges Anwendungsmenü anzeigen"
@@ -140,6 +179,9 @@ msgstr "Ruhezustand:"
 msgid "Startup disk"
 msgstr "Startvolume"
 
+msgid "Switch open menus on hover"
+msgstr "Geöffnete Menüs beim Überfahren mit der Maus wechseln"
+
 msgid "System Menu"
 msgstr "Systemmenü"
 
@@ -148,6 +190,9 @@ msgstr "Systemeinstellungen:"
 
 msgid "System Settings…"
 msgstr "Systemeinstellungen…"
+
+msgid "System menu"
+msgstr "Systemmenü"
 
 msgid "Unknown"
 msgstr "Unbekannt"

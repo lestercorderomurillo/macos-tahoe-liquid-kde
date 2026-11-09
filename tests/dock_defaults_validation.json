@@ -1,0 +1,70 @@
+{
+  "date": "2026-11-08",
+  "source_parent": "4bb4db55043d9cd7c4fdb36c2bf92c707dca130b",
+  "source_diff_sha256": "1c8edc4f7e9048f7e9fba2f079ba0618bfa12090cf8905499d66af782556b4eb",
+  "behavior": "Ten installed-app defaults; preserve existing and empty Dock pins; native Plasma launcher lists; calendar/notes/video icon aliases.",
+  "focused_checks": [
+    {
+      "command": "python -m pytest -p no:cacheprovider tests/test_dock_defaults.py tests/test_layout_step.py tests/test_edition_transition.py tests/test_launcher_presets.py -k 'not native_launcher_popup' -q",
+      "result": "125 passed, 8 deselected"
+    },
+    {
+      "command": "python -m pytest -p no:cacheprovider tests/test_dock_defaults.py tests/test_icons_step.py tests/test_icon_toolset.py tests/test_nix.py -q",
+      "result": "73 passed"
+    },
+    {
+      "command": "python -m pytest -p no:cacheprovider tests/test_dock_defaults.py -k 'generated_appearance or dedicated_artwork' -q",
+      "result": "3 passed after adding the actual Haruna icon name"
+    },
+    {
+      "environment": "Golden Gate prepared source d780967ec6755dbc72a5",
+      "command": "python -m pytest -p no:cacheprovider tests/test_dock_defaults.py tests/test_layout_step.py tests/test_edition_transition.py tests/test_launcher_presets.py tests/test_icons_step.py tests/test_icon_toolset.py tests/test_nix.py -k 'not native_launcher_popup' -q",
+      "result": "172 passed; Haruna alias subsequently covered by the focused generation check"
+    }
+  ],
+  "visual_checks": {
+    "environment": "Disposable KDE neon guest, Plasma 6.8.1 / Qt 6.11.1; 3840x2160 at scale 2",
+    "scope": "Both editions, ten real installed applications, light/dark/light transitions",
+    "original_vm_sha256": "2a09de13ad568da01a8e16dd93e6aec120e63375bfc0ec24b4e804b43ecb4f8c",
+    "sealed_vm_sha256": "412e7933f10add20b921b92c02709e7eea56acd14dc14cf654f58fba4ea3cc9d",
+    "frames": {
+      "tahoe-light.png": {
+        "sha256": "e9c800b8108d0fc7ebc4820a42c4ad73379b3a8d9d23f8e3eef62e33eac0d2ce",
+        "review": "approved"
+      },
+      "tahoe-dark.png": {
+        "sha256": "0d6aaf0c74f72360ba99fb73ae954543160067cfbe67a46ac344df17ca60bd2a",
+        "review": "approved"
+      },
+      "tahoe-light-return.png": {
+        "sha256": "e9c800b8108d0fc7ebc4820a42c4ad73379b3a8d9d23f8e3eef62e33eac0d2ce",
+        "review": "approved"
+      },
+      "golden-gate-light.png": {
+        "sha256": "1bc31f36e1ebb555fbb31c18b602f6196e2267872d2b3257dc185161c0da6725",
+        "review": "approved"
+      },
+      "golden-gate-dark.png": {
+        "sha256": "2739bb3a8df2912881ed955e59a6f15bfff9883019feb305ee1d910634cd6b66",
+        "review": "approved"
+      },
+      "golden-gate-light-return.png": {
+        "sha256": "1bc31f36e1ebb555fbb31c18b602f6196e2267872d2b3257dc185161c0da6725",
+        "review": "approved"
+      }
+    },
+    "light_return": "Byte-identical to initial light frame in both editions",
+    "limits": "Development previews used installed rendered originals for new icon aliases. Official publication requires the complete capture workflow on the sealed VM and exact source commit."
+  },
+  "coverage_limits": [
+    "No native ABI or package dependency changes in the installer. No new distro qualification run.",
+    "Eight unrelated native launcher popup cases could not open a private D-Bus socket in the host sandbox; not counted as passing. Required CI remains the release gate.",
+    "Nix asset unit checks passed; no Nix desktop qualification is claimed."
+  ],
+  "official_capture": {
+    "source_commit": "42d8b249372d66dfa62fb71883df8e6655fb4b13",
+    "manifest_sha256": "33d5c6bd4e816ede0f7f5dcceea4d307943b4479dd8db7820aad09a3e3026a84",
+    "result": "106 frames captured and individually reviewed before the user requested narrower validation; reused without recapture for publication",
+    "provenance": "src/screenshots/release-capture.json"
+  }
+}

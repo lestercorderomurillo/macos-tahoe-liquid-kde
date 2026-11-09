@@ -128,6 +128,10 @@ private:
 
     // State
 
+    void restoreBorrowedActions();
+    void resetApplicationMenu();
+    bool m_ownsCurrentMenu = false;
+    bool m_registered = true;
     int m_currentIndex = -1;
     int m_viewType = FullView;
 

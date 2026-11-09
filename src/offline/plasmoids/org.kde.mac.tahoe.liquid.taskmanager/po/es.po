@@ -11,3 +11,36 @@ msgstr ""
 
 msgid "Hover magnification:"
 msgstr "Ampliación al pasar el cursor:"
+
+msgid "Use macOS-style Dock icons"
+msgstr "Usar iconos del Dock estilo macOS"
+
+msgid "Files"
+msgstr "Archivos"
+
+msgid "Browser"
+msgstr "Navegador"
+
+msgid "Mail"
+msgstr "Correo"
+
+msgid "Calendar"
+msgstr "Calendario"
+
+msgid "Notes"
+msgstr "Notas"
+
+msgid "Photos"
+msgstr "Fotos"
+
+msgid "Music"
+msgstr "Música"
+
+msgid "Video"
+msgstr "Vídeo"
+
+msgid "App Store"
+msgstr "Tienda de aplicaciones"
+
+msgid "System Settings"
+msgstr "Preferencias del sistema"

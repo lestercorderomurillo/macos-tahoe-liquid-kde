@@ -730,6 +730,7 @@ def test_main_auto_resolves_to_time_based_mode(monkeypatch):
     creates a stale-config feedback loop."""
     import theme_switch
     calls: list = []
+    monkeypatch.setattr(theme_switch, "wait_for_clock_sync", lambda: True)
     monkeypatch.setattr(theme_switch, "detect_mode_by_time", lambda: "dark")
     monkeypatch.setattr(theme_switch, "apply",
                         lambda mode, **kw: calls.append(("apply", mode)) or True)

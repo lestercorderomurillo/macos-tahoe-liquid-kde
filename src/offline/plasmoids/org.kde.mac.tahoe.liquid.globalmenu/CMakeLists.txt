@@ -70,3 +70,6 @@ target_link_libraries(org.kde.mac.tahoe.liquid.globalmenu PRIVATE
 )
 
 install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/locale/" DESTINATION "${KDE_INSTALL_LOCALEDIR}")
+
+include(menushortcuts.cmake)
+tahoe_menu_shortcuts(org.kde.mac.tahoe.liquid.globalmenu)

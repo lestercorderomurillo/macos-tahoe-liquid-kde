@@ -11,3 +11,36 @@ msgstr ""
 
 msgid "Hover magnification:"
 msgstr "悬停放大："
+
+msgid "Use macOS-style Dock icons"
+msgstr "使用 macOS 风格的程序坞图标"
+
+msgid "Files"
+msgstr "文件"
+
+msgid "Browser"
+msgstr "浏览器"
+
+msgid "Mail"
+msgstr "邮件"
+
+msgid "Calendar"
+msgstr "日历"
+
+msgid "Notes"
+msgstr "备忘录"
+
+msgid "Photos"
+msgstr "照片"
+
+msgid "Music"
+msgstr "音乐"
+
+msgid "Video"
+msgstr "视频"
+
+msgid "App Store"
+msgstr "应用商店"
+
+msgid "System Settings"
+msgstr "系统设置"

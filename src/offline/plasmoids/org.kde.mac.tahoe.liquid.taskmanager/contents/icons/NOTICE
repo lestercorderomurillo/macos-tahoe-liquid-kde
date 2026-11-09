@@ -1,0 +1,7 @@
+Dock artwork derives from the bundled MacTahoe icon archive.
+Light aliases are dereferenced. Dark variants use the installer Regular-Dark
+pipeline, reviewed overrides and Dock-specific graphite variants. Sources,
+transformations and content hashes are recorded in sources.json.
+Transformations: Copyright (C) 2026 Lester Cordero Murillo; GPL-3.0-or-later.
+See THIRD_PARTY_NOTICES.md and LICENSE at the repository root for original
+artwork notices. No ownership of third-party marks is claimed.

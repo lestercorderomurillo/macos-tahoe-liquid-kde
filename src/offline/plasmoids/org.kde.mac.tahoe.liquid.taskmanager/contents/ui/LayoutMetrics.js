@@ -5,18 +5,23 @@
 */
 
 .import org.kde.kirigami as Kirigami
+.import org.kde.mac.tahoe.launcher as NativeLauncher
 
 const iconMargin = Math.round(Kirigami.Units.smallSpacing / 4);
 const labelMargin = Kirigami.Units.smallSpacing;
 
+// Panel applets use smallSpacing between their cells. Keep the same pitch
+// across applet/task boundaries; frame margins belong inside each icon cell.
+function dockSpacing() {
+    return Kirigami.Units.smallSpacing;
+}
+
 function horizontalMargins() {
-    const spacingAdjustment = (tasks.plasmoid.pluginName === "org.kde.mac.tahoe.liquid.icontasks") ? tasks.plasmoid.configuration.iconSpacing : 1
-    return (taskFrame.margins.left + taskFrame.margins.right) * (tasks.vertical ? 1 : spacingAdjustment);
+    return taskFrame.margins.left + taskFrame.margins.right;
 }
 
 function verticalMargins() {
-    const spacingAdjustment = (tasks.plasmoid.pluginName === "org.kde.mac.tahoe.liquid.icontasks") ? tasks.plasmoid.configuration.iconSpacing : 1
-    return (taskFrame.margins.top + taskFrame.margins.bottom) * (tasks.vertical ? spacingAdjustment : 1);
+    return taskFrame.margins.top + taskFrame.margins.bottom;
 }
 
 function adjustMargin(height, margin) {
@@ -66,12 +71,12 @@ function preferredMaxWidth() {
             if (tasks.width === 0) {
                 return 0
             }
-            return tasks.width + verticalMargins();
+            return NativeLauncher.DockMetrics.preferredCellSize(tasks.width);
         } else {
             if (tasks.height === 0) {
                 return 0
             }
-            return tasks.height + horizontalMargins();
+            return NativeLauncher.DockMetrics.preferredCellSize(tasks.height);
         }
     }
 
@@ -120,12 +125,12 @@ function preferredMaxHeight() {
     if (tasks.vertical) {
         let taskPreferredSize = 0;
         if (tasks.iconsOnly) {
-            taskPreferredSize = tasks.width / maxStripes();
+            taskPreferredSize = NativeLauncher.DockMetrics.preferredCellSize(tasks.width / maxStripes());
         } else {
             taskPreferredSize = Math.max(Kirigami.Units.iconSizes.sizeForLabels,
                                          Kirigami.Units.iconSizes.medium);
         }
-        return verticalMargins() +
+        return (tasks.iconsOnly ? 0 : verticalMargins()) +
             Math.min(
                 // Do not allow the preferred icon size to exceed the width of
                 // the vertical task manager.

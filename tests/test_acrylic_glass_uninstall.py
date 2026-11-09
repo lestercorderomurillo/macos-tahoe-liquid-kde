@@ -21,6 +21,7 @@ def test_uninstall_disables_before_unload_and_reconfigures_after_removal(
     monkeypatch.setattr(acrylic_glass, "LEGACY_USER_PLUGIN_DIR",
                         home / ".local/lib/qt6/plugins")
     monkeypatch.setattr(acrylic_glass, "_plugin_dir", lambda: plugin_dir)
+    monkeypatch.setattr(acrylic_glass, "_conflict_state_path", lambda: tmp_path / "blur-conflicts.json")
     monkeypatch.setattr(
         acrylic_glass, "kw_write",
         lambda *args: calls.append(("write", args)) or True,

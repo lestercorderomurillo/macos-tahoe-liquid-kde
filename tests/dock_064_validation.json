@@ -1,0 +1,115 @@
+{
+  "version": "0.64.0",
+  "implementation_commit": "30f829d9c6218ebf69a3743e8efa751dddf64c82",
+  "scope": "One-time Dock preset revision 3 migration from all older revisions, explicit reset, automatic Express appearance, pin order preservation and native Firefox/browser artwork.",
+  "checks": [
+    {
+      "command": "PYTHONDONTWRITEBYTECODE=1 QT_QPA_PLATFORM=offscreen python3 -m pytest -q -p no:cacheprovider tests/test_dock_defaults.py tests/test_dock_appearance.py tests/test_dock_apps.py tests/test_layout_step.py tests/test_installer_wizard.py tests/test_localization.py",
+      "result": "152 passed",
+      "environment": "Host offscreen Qt; no live desktop mutations"
+    },
+    {
+      "command": "PYTHONDONTWRITEBYTECODE=1 python3 -m pytest -q -p no:cacheprovider tests/test_release_screenshots.py",
+      "result": "56 passed",
+      "environment": "Temporary Git fixtures"
+    },
+    {
+      "command": "GOLDEN_GATE_TAHOE_SOURCE=/mnt/M2_1/Projects/Repositories/macos-tahoe-liquid-kde MAC_TAHOE_NO_UPDATE_CHECK=true ./installer --prepare",
+      "prepared_source": "build/dbbeef0aa07c8f21b320",
+      "followup": "PYTHONDONTWRITEBYTECODE=1 QT_QPA_PLATFORM=offscreen python3 -m pytest -q -p no:cacheprovider tests/test_dock_defaults.py tests/test_dock_appearance.py tests/test_installer_wizard.py",
+      "result": "98 passed"
+    },
+    {
+      "command": "PYTHONDONTWRITEBYTECODE=1 python3 -m pytest -q -p no:cacheprovider tests",
+      "repository": "Golden Gate",
+      "result": "97 passed"
+    }
+  ],
+  "limits": [
+    "The migration is state-based: absent revision (including 0.61.0), revisions 1 and 2 migrate to 3. This is not a claim of separately installing every historical release.",
+    "Native rendering and migration checks use the pinned KDE neon Wayland VM. Unrelated desktop lifecycle and documentation photographs are retained; no host install was run.",
+    "The complete suite and configured distro matrix are required from test.yml push runs on the exact final commits. Main verifies the identical successful dev commit.",
+    "The capture candidate recorded VERSION 0.64; final release metadata uses the project semver form 0.64.0. Original frame source metadata is retained, not relabeled."
+  ],
+  "publication_capture": {
+    "command": "./release-screenshots capture --ref 30f829d9c6218ebf69a3743e8efa751dddf64c82 --vm-image build/dock-defaults-neon-base.qcow2 --reuse build/captures/v0.63.7-black-dock --output build/captures/v0.64-dock",
+    "vm_image_sha256": "412e7933f10add20b921b92c02709e7eea56acd14dc14cf654f58fba4ea3cc9d",
+    "fresh_frames": 4,
+    "retained_frames": 102,
+    "result": "Four Dock frames visually reviewed; Firefox artwork present in both editions and modes. Original sources and approvals retained for all other frames."
+  },
+  "vm_migration": {
+    "tahoe": {
+      "plasma": "plasmashell 6.8.1",
+      "kwin": "kwin 6.8.1",
+      "dock_migration": [
+        {
+          "previous_revision": 0,
+          "first": "applications:systemsettings.desktop,applications:firefox.desktop,applications:org.kde.dolphin.desktop,applications:thunderbird.desktop,applications:org.kde.merkuro.calendar.desktop,applications:org.kde.marknote.desktop,applications:org.kde.gwenview.desktop,applications:org.kde.elisa.desktop,applications:org.kde.haruna.desktop,applications:org.kde.discover.desktop",
+          "icons": "true",
+          "second": "applications:firefox.desktop",
+          "kept": "false",
+          "reset": "applications:firefox.desktop,applications:org.kde.dolphin.desktop,applications:thunderbird.desktop,applications:org.kde.merkuro.calendar.desktop,applications:org.kde.marknote.desktop,applications:org.kde.gwenview.desktop,applications:org.kde.elisa.desktop,applications:org.kde.haruna.desktop,applications:org.kde.discover.desktop,applications:systemsettings.desktop",
+          "restored": "true",
+          "revision": "3"
+        },
+        {
+          "previous_revision": 1,
+          "first": "applications:systemsettings.desktop,applications:firefox.desktop,applications:org.kde.dolphin.desktop,applications:thunderbird.desktop,applications:org.kde.merkuro.calendar.desktop,applications:org.kde.marknote.desktop,applications:org.kde.gwenview.desktop,applications:org.kde.elisa.desktop,applications:org.kde.haruna.desktop,applications:org.kde.discover.desktop",
+          "icons": "true",
+          "second": "applications:firefox.desktop",
+          "kept": "false",
+          "reset": "applications:firefox.desktop,applications:org.kde.dolphin.desktop,applications:thunderbird.desktop,applications:org.kde.merkuro.calendar.desktop,applications:org.kde.marknote.desktop,applications:org.kde.gwenview.desktop,applications:org.kde.elisa.desktop,applications:org.kde.haruna.desktop,applications:org.kde.discover.desktop,applications:systemsettings.desktop",
+          "restored": "true",
+          "revision": "3"
+        },
+        {
+          "previous_revision": 2,
+          "first": "applications:systemsettings.desktop,applications:firefox.desktop,applications:org.kde.dolphin.desktop,applications:thunderbird.desktop,applications:org.kde.merkuro.calendar.desktop,applications:org.kde.marknote.desktop,applications:org.kde.gwenview.desktop,applications:org.kde.elisa.desktop,applications:org.kde.haruna.desktop,applications:org.kde.discover.desktop",
+          "icons": "true",
+          "second": "applications:firefox.desktop",
+          "kept": "false",
+          "reset": "applications:firefox.desktop,applications:org.kde.dolphin.desktop,applications:thunderbird.desktop,applications:org.kde.merkuro.calendar.desktop,applications:org.kde.marknote.desktop,applications:org.kde.gwenview.desktop,applications:org.kde.elisa.desktop,applications:org.kde.haruna.desktop,applications:org.kde.discover.desktop,applications:systemsettings.desktop",
+          "restored": "true",
+          "revision": "3"
+        }
+      ]
+    },
+    "golden-gate": {
+      "plasma": "plasmashell 6.8.1",
+      "kwin": "kwin 6.8.1",
+      "dock_migration": [
+        {
+          "previous_revision": 0,
+          "first": "applications:systemsettings.desktop,applications:firefox.desktop,applications:org.kde.dolphin.desktop,applications:thunderbird.desktop,applications:org.kde.merkuro.calendar.desktop,applications:org.kde.marknote.desktop,applications:org.kde.gwenview.desktop,applications:org.kde.elisa.desktop,applications:org.kde.haruna.desktop,applications:org.kde.discover.desktop",
+          "icons": "true",
+          "second": "applications:firefox.desktop",
+          "kept": "false",
+          "reset": "applications:firefox.desktop,applications:org.kde.dolphin.desktop,applications:thunderbird.desktop,applications:org.kde.merkuro.calendar.desktop,applications:org.kde.marknote.desktop,applications:org.kde.gwenview.desktop,applications:org.kde.elisa.desktop,applications:org.kde.haruna.desktop,applications:org.kde.discover.desktop,applications:systemsettings.desktop",
+          "restored": "true",
+          "revision": "3"
+        },
+        {
+          "previous_revision": 1,
+          "first": "applications:systemsettings.desktop,applications:firefox.desktop,applications:org.kde.dolphin.desktop,applications:thunderbird.desktop,applications:org.kde.merkuro.calendar.desktop,applications:org.kde.marknote.desktop,applications:org.kde.gwenview.desktop,applications:org.kde.elisa.desktop,applications:org.kde.haruna.desktop,applications:org.kde.discover.desktop",
+          "icons": "true",
+          "second": "applications:firefox.desktop",
+          "kept": "false",
+          "reset": "applications:firefox.desktop,applications:org.kde.dolphin.desktop,applications:thunderbird.desktop,applications:org.kde.merkuro.calendar.desktop,applications:org.kde.marknote.desktop,applications:org.kde.gwenview.desktop,applications:org.kde.elisa.desktop,applications:org.kde.haruna.desktop,applications:org.kde.discover.desktop,applications:systemsettings.desktop",
+          "restored": "true",
+          "revision": "3"
+        },
+        {
+          "previous_revision": 2,
+          "first": "applications:systemsettings.desktop,applications:firefox.desktop,applications:org.kde.dolphin.desktop,applications:thunderbird.desktop,applications:org.kde.merkuro.calendar.desktop,applications:org.kde.marknote.desktop,applications:org.kde.gwenview.desktop,applications:org.kde.elisa.desktop,applications:org.kde.haruna.desktop,applications:org.kde.discover.desktop",
+          "icons": "true",
+          "second": "applications:firefox.desktop",
+          "kept": "false",
+          "reset": "applications:firefox.desktop,applications:org.kde.dolphin.desktop,applications:thunderbird.desktop,applications:org.kde.merkuro.calendar.desktop,applications:org.kde.marknote.desktop,applications:org.kde.gwenview.desktop,applications:org.kde.elisa.desktop,applications:org.kde.haruna.desktop,applications:org.kde.discover.desktop,applications:systemsettings.desktop",
+          "restored": "true",
+          "revision": "3"
+        }
+      ]
+    }
+  }
+}

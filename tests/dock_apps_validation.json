@@ -1,0 +1,82 @@
+{
+  "version": "0.63.5",
+  "implementation_commit": "a2a039ff3791aab65b5e44aa54ab82a54bb48553",
+  "scope": "Reuse installed native/Flatpak equivalents by Dock category. Offer explicit per-app installation from configured native repositories or per-user Flatpak, with separate Flathub consent. Preserve pins/order/removals and keep missing categories pending. Apps survive theme removal.",
+  "checks": [
+    {
+      "command": "python -m pytest -q -p no:cacheprovider tests/test_dock_apps.py tests/test_dock_defaults.py tests/test_installer_wizard.py tests/test_layout_step.py tests/test_cli.py",
+      "result": "184 passed",
+      "environment": "Host Python 3.14; package operations mocked, QJSEngine and offscreen PyQt6, no live desktop calls"
+    },
+    {
+      "command": "python -m pytest -q -p no:cacheprovider tests/test_installer_wizard.py tests/test_multilanguage.py",
+      "result": "60 passed",
+      "environment": "Host; complete translation catalogs; final changes after this run only reformatted new translations; final wizard rerun included in 184 passing checks"
+    },
+    {
+      "command": "python -m pytest -q -p no:cacheprovider tests/test_release_screenshots.py",
+      "result": "53 passed",
+      "environment": "Temporary Git fixtures; affected frames require fresh approval and later edits fail closed"
+    },
+    {
+      "command": "GOLDEN_GATE_TAHOE_SOURCE=<Tahoe checkout> MAC_TAHOE_NO_UPDATE_CHECK=true ./installer --prepare; python -m pytest -q -p no:cacheprovider tests/test_dock_apps.py tests/test_dock_defaults.py tests/test_edition_transition.py",
+      "result": "79 passed",
+      "environment": "Prepared Golden Gate source build/48c44ee1f3f0d94d1959; no checkout updates or desktop changes"
+    }
+  ],
+  "coverage_limits": [
+    "Native package names and derivatives are covered with mocked distro selection; this does not establish package availability in every repository snapshot.",
+    "No application was installed on the host. Package failures, missing desktop exports and Flatpak remote consent are simulated in regressions.",
+    "Immutable distributions remain outside the theme installer support matrix; Flatpak is not a promise of universal theme installation or identical sandboxed app styling."
+  ],
+  "visual_scope": {
+    "vm_image_sha256": "412e7933f10add20b921b92c02709e7eea56acd14dc14cf654f58fba4ea3cc9d",
+    "new_frames": [
+      "tahoe-light-dock",
+      "tahoe-light-installer-layout",
+      "tahoe-light-installer-summary",
+      "tahoe-dark-dock",
+      "tahoe-dark-installer-layout",
+      "tahoe-dark-installer-summary",
+      "golden-gate-light-dock",
+      "golden-gate-light-installer-layout",
+      "golden-gate-light-installer-summary",
+      "golden-gate-dark-dock",
+      "golden-gate-dark-installer-layout",
+      "golden-gate-dark-installer-summary"
+    ],
+    "retained_frames": 94,
+    "status": "12 fresh frames visually reviewed and approved; 94 prior frames retain original source identities and approval",
+    "bundle": "build/captures/v0.63.5-dock-apps",
+    "commands": [
+      "./release-screenshots capture --ref a2a039ff3791aab65b5e44aa54ab82a54bb48553 --vm-image build/dock-defaults-neon-base.qcow2 --output build/captures/v0.63.5-dock-apps --reuse build/captures/v0.63.4-dock-migration",
+      "./release-screenshots review --ref a2a039ff3791aab65b5e44aa54ab82a54bb48553 --bundle build/captures/v0.63.5-dock-apps --approve <12 listed new_frames>"
+    ]
+  },
+  "source_sha256": {
+    "src/scripts/dock_apps.py": "fe1f2e7f798163f97048fda354da312be43a9e9ccfcb068e3c2a96b6f6cc6498",
+    "src/scripts/steps/apps.py": "92b69149c4253ec0b7eb8088a3f2e0473ea6f190b0f4f3b6265a0d6d1100dad8",
+    "src/scripts/installer_choices.py": "063db56daeaf7661e4cb520241d6d281104e01f09bee52dc26feb7fda60a9418",
+    "src/installer/wizard_window.py": "3e6652e11428e8d4f458f1e6985937ffb224efd7585d6c3c8600205c0a2b43bd",
+    "src/offline/layouts/migrate-dock-preset.js": "5c4afd889b65232e6c0a2ced99db5b76a5b17aa1112b9ce00ef57ae339c1d5dc"
+  },
+  "host_inventory": {
+    "environment": "CachyOS, read-only desktop entry discovery",
+    "reused": [
+      "Sticky Notes",
+      "GNOME Loupe",
+      "GNOME Showtime"
+    ],
+    "missing_native_options": [
+      "Thunderbird",
+      "Merkuro",
+      "Elisa"
+    ],
+    "installed_on_host": false
+  },
+  "ci_infrastructure": {
+    "run": "https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/actions/runs/42522957272",
+    "result": "13 jobs passed; openSUSE SDK downloads failed with HTTP 404 in the original attempt and one isolated retry, before tests ran.",
+    "resolution": "Use the official HTTPS content origin for the same openSUSE repositories. HEAD checks returned 200 for repomd.xml, binutils, libctf0 and libctf-nobfd0. Package versions, signatures and required checks are unchanged; final commit CI is still required."
+  }
+}

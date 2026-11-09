@@ -23,5 +23,9 @@
     "source": "src/offline/firefox/LICENSE.MacTahoe",
     "sha256": "47508b7d79f238a7e7225c21d2c9234b860c6d1931d8f9f2d545a2db0e26a25f",
     "upstream_source": "https://raw.githubusercontent.com/vinceliuice/MacTahoe-gtk-theme/1e45e19f510edb8cde18fa84d6cd5319f60b086b/COPYING"
+  },
+  "MIT-QuickBar.txt": {
+    "source": "https://raw.githubusercontent.com/kevinbudz/quickbar/213a583adfd257ed420c77ef2cf1443a709a3425/LICENSE",
+    "sha256": "781416cbf4ef57e9f835570a3ed1eef59a5adcf18f67250c61642a3ef23ff7c6"
   }
 }

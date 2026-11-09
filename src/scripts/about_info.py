@@ -7,6 +7,7 @@ value or "") so tests feed them distro fixtures; ``collect()`` wires live comman
 from __future__ import annotations
 
 import concurrent.futures
+import configparser
 import json
 import os
 import re
@@ -16,6 +17,34 @@ from pathlib import Path
 
 # _install_about_info() bakes the real version in when copying to ~/.local/bin.
 _BAKED_VERSION = "@THEME_VERSION@"
+
+
+def window_controls() -> dict[str, str]:
+    """Resolve both modes of the selected project decoration, including KDE defaults."""
+    config = Path(os.environ.get("XDG_CONFIG_HOME") or Path.home() / ".config")
+    theme = ""
+    for path in (config / "kwinrc", config / "kdedefaults/kwinrc"):
+        parser = configparser.RawConfigParser(interpolation=None, strict=False)
+        try:
+            parser.read(path)
+        except (OSError, configparser.Error):
+            continue
+        if parser.has_option("org.kde.kdecoration2", "theme"):
+            theme = parser.get("org.kde.kdecoration2", "theme")
+            break
+    match = re.fullmatch(r"__aurorae__svg__(Mac(?:Tahoe|GoldenGate)LiquidKde)-(?:Light|Dark)", theme)
+    if not match:
+        return {}
+    roots = [Path(os.environ.get("XDG_DATA_HOME") or Path.home() / ".local/share")]
+    roots.extend(Path(p) for p in os.environ.get("XDG_DATA_DIRS", "/usr/local/share:/usr/share").split(":") if p)
+    result = {}
+    for mode in ("Light", "Dark"):
+        for root in roots:
+            folder = root / "aurorae/themes" / f"{match[1]}-{mode}"
+            if all((folder / f"{button}.svg").is_file() for button in ("close", "minimize", "maximize")):
+                result[mode] = str(folder)
+                break
+    return result
 
 
 def theme_version() -> str:
@@ -952,6 +981,9 @@ _MOCK_DATA = {
 
 
 def main(argv: list[str]) -> int:
+    if "--window-controls" in argv:
+        sys.stdout.write(json.dumps(window_controls()) + "\n")
+        return 0
     pretty = "--pretty" in argv
     mock = "--mock" in argv or os.environ.get("MAC_TAHOE_ABOUT_MOCK") == "1"
 

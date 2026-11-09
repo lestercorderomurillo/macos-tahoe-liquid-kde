@@ -714,6 +714,19 @@ def test_update_status_reports_available_when_remote_is_newer(
     }
 
 
+def test_update_status_candidate_uses_version_file(installer_ui_module, tmp_path, monkeypatch):
+    import paths
+
+    version = tmp_path / "VERSION"
+    version.write_text("0.63rc2\n")
+    monkeypatch.setattr(paths, "VERSION_FILE", version)
+    monkeypatch.setattr(installer_ui_module, "fetch_latest_release", lambda: "0.62.0")
+
+    status = installer_ui_module.update_status()
+    assert status["current"] == "0.63rc2"
+    assert status["available"] is False
+
+
 def test_update_status_not_available_when_on_latest(
         installer_ui_module, monkeypatch):
     monkeypatch.setattr(installer_ui_module, "read_version", lambda: "0.21.0")

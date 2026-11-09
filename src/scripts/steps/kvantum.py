@@ -12,8 +12,9 @@ from pathlib import Path, PurePosixPath
 
 from distro import is_debian_family, qt6_plugins_dir
 from glass_surfaces import apply_kvantum_surface_defaults
+from steps._native_build import cmake_build
 from steps._helpers import (
-    HOME, build_dir, cmake_build, fail, have, info, kw_write, offline, ok,
+    HOME, build_dir, fail, have, info, kw_write, offline, ok,
     reinstall, sudo_install_file, sudo_remove, warn,
 )
 from utils import run_user

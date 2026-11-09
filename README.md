@@ -8,7 +8,7 @@
 <p align="center">
   <a href="https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/releases"><img src="https://img.shields.io/github/v/release/lestercorderomurillo/macos-tahoe-liquid-kde?label=release&amp;color=blue" alt="release"></a>
   <a href="https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/releases/tag/v0.61.0"><img src="https://img.shields.io/badge/LTS-v0.61.0-green" alt="LTS v0.61.0"></a>
-  <a href="https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/actions/workflows/test.yml"><img src="https://img.shields.io/badge/tests-1993_passing-brightgreen" alt="tests"></a>
+  <a href="https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/actions/workflows/test.yml"><img src="https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/actions/workflows/test.yml/badge.svg?branch=dev" alt="tests"></a>
   <a href="https://kde.org/plasma-desktop/"><img src="https://img.shields.io/badge/Plasma-6.6%2B-1d99f3?logo=kde" alt="plasma"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-GPL--3.0-blue" alt="license"></a>
   <a href="https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/issues/new"><img src="https://img.shields.io/badge/report-a%20bug-red?logo=github" alt="report a bug"></a>
@@ -36,8 +36,10 @@
 > [!CAUTION]
 > Experimental. Desktop updates may break compatibility. Avoid production systems; [report issues here](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/issues/new).
 
-> [!NOTE]
-> Tahoe and Golden Gate reflect months of development and testing, so please credit the original work and highlight what you’ve changed or added. See our [licensing and attribution guide](LICENSING.md).
+> [!WARNING]
+> **Beware of paywall repackers — this theme is FREE.**
+>
+> If you found this theme through any third-party channel, you do not need to pay to get it: download it directly from this repository. We keep this project free so everyone can enjoy it without a paywall. No purchase or subscription is required.
 
 <br>
 
@@ -79,13 +81,13 @@ The desktop and its apps in light and dark mode.
 The Tahoe desktop in light and dark mode.
 
 <p align="center">
-  <a href="src/screenshots/showcase_light_4k-11afd76e8576.png"><img src="src/screenshots/showcase_light_4k-11afd76e8576.png" alt="Tahoe light desktop with Files focused" width="415"></a>
-  <a href="src/screenshots/desktop_about_light_4k-c44ce982707c.png"><img src="src/screenshots/desktop_about_light_4k-c44ce982707c.png" alt="Tahoe light desktop with About This Computer focused" width="415"></a>
+  <a href="src/screenshots/showcase_light_2k-9b2ab1370590.webp"><img src="src/screenshots/showcase_light_2k-9b2ab1370590.webp" alt="Tahoe light desktop with Files focused" width="415"></a>
+  <a href="src/screenshots/desktop_about_light_2k-505b6ada7411.webp"><img src="src/screenshots/desktop_about_light_2k-505b6ada7411.webp" alt="Tahoe light desktop with About This Computer focused" width="415"></a>
 </p>
 
 <p align="center">
-  <a href="src/screenshots/showcase_dark_4k-80cc9f870b1a.png"><img src="src/screenshots/showcase_dark_4k-80cc9f870b1a.png" alt="Tahoe dark desktop with Files focused" width="415"></a>
-  <a href="src/screenshots/desktop_about_dark_4k-f8d4f6d9666b.png"><img src="src/screenshots/desktop_about_dark_4k-f8d4f6d9666b.png" alt="Tahoe dark desktop with About This Computer focused" width="415"></a>
+  <a href="src/screenshots/showcase_dark_2k-59352cf81a95.webp"><img src="src/screenshots/showcase_dark_2k-59352cf81a95.webp" alt="Tahoe dark desktop with Files focused" width="415"></a>
+  <a href="src/screenshots/desktop_about_dark_2k-2049cca06c1a.webp"><img src="src/screenshots/desktop_about_dark_2k-2049cca06c1a.webp" alt="Tahoe dark desktop with About This Computer focused" width="415"></a>
 </p>
 
 <br>
@@ -95,20 +97,22 @@ The Tahoe desktop in light and dark mode.
 App search, favorites and categories with blurred glass and edge refraction. [Material settings](docs/glass-materials.md).
 
 <p align="center">
-  <img src="src/screenshots/launcher_preset_1_light-100c3d4c2430.png" alt="Default Tahoe preset 1 in light mode, with integrated search and Tahoe wallpaper" width="415">
-  <img src="src/screenshots/launcher_preset_1_dark-2d75cbb02595.png" alt="Default Tahoe preset 1 in dark mode, with integrated search and Tahoe wallpaper" width="415">
+  <img src="src/screenshots/launcher_preset_1_light-3f4adbce1ea1.webp" alt="Default Tahoe preset 1 in light mode, with integrated search and Tahoe wallpaper" width="415">
+  <img src="src/screenshots/launcher_preset_1_dark-d4523e4134cc.webp" alt="Default Tahoe preset 1 in dark mode, with integrated search and Tahoe wallpaper" width="415">
 </p>
 
 <br>
 
 ### Acrylic Glass Tahoe Dock
 
+Express applies the pictured Dock preset and icons. Firefox keeps its own icon; your pinned apps keep their order.
+
 Glass refraction, hover zoom, notification badges and auto-hide.
 
 <p align="center">
-  <img src="src/screenshots/dock_1_v4-754f6746d955.png" alt="Glass Dock with ten pinned applications and light icons" width="840">
+  <img src="src/screenshots/dock_1_v4-16250ed9e41d.webp" alt="Glass Dock with ten pinned applications and light icons" width="840">
   <br>
-  <img src="src/screenshots/dock_1_dark_v4-16a606ad24ba.png" alt="The same Dock with dark icons" width="840">
+  <img src="src/screenshots/dock_1_dark_v4-934f603cfe0b.webp" alt="The same Dock with dark icons" width="840">
 </p>
 
 <br>
@@ -118,19 +122,19 @@ Glass refraction, hover zoom, notification badges and auto-hide.
 Finder-style Nautilus in light and dark.
 
 <p align="center">
-  <img src="src/screenshots/finder_v4-680c02cfb652.png" alt="Finder-style Nautilus in light mode" width="415">
-  <img src="src/screenshots/finder_dark_v4-6e4bbe0ebd7f.png" alt="Finder-style Nautilus in dark mode" width="415">
+  <img src="src/screenshots/finder_v4-9dfc04f0541c.webp" alt="Finder-style Nautilus in light mode" width="415">
+  <img src="src/screenshots/finder_dark_v4-f53df7a986bc.webp" alt="Finder-style Nautilus in dark mode" width="415">
 </p>
 
 <br>
 
 ### Acrylic Glass Tahoe Menu
 
-System controls and global menus for compatible apps.
+System controls and global menus for compatible apps, with inset top-bar capsules and a macOS-inspired system menu with Golden Gate symbols and balanced typography.
 
 <p align="center">
-  <img src="src/screenshots/menu_v4-8e6260e3e178.png" alt="System menu in light mode" width="415">
-  <img src="src/screenshots/menu_dark_v4-c7bad6f7dba6.png" alt="System menu in dark mode" width="415">
+  <img src="src/screenshots/menu_v4-c20c63c81107.webp" alt="System menu in light mode" width="415">
+  <img src="src/screenshots/menu_dark_v4-7d7b7d7b6d8c.webp" alt="System menu in dark mode" width="415">
 </p>
 
 <br>
@@ -140,8 +144,8 @@ System controls and global menus for compatible apps.
 Hardware, software and theme details in About This Computer.
 
 <p align="center">
-  <img src="src/screenshots/about_v4-7ed6abf89ff5.png" alt="About This Computer in light mode" width="415">
-  <img src="src/screenshots/about_dark_v4-b77da716d67b.png" alt="About This Computer in dark mode" width="415">
+  <img src="src/screenshots/about_v4-d04104349f40.webp" alt="About This Computer in light mode" width="415">
+  <img src="src/screenshots/about_dark_v4-8714e1f9e9dd.webp" alt="About This Computer in dark mode" width="415">
 </p>
 
 <br>
@@ -151,8 +155,8 @@ Hardware, software and theme details in About This Computer.
 Translucent menus and popups with matching light and dark colors.
 
 <p align="center">
-  <img src="src/screenshots/context_menu_v4-d5729b4a8019.png" alt="Desktop context menu in light mode" width="415">
-  <img src="src/screenshots/context_menu_dark_v4-aaba1188daf3.png" alt="Desktop context menu in dark mode" width="415">
+  <img src="src/screenshots/context_menu_v4-24d76ec72961.webp" alt="Desktop context menu in light mode" width="415">
+  <img src="src/screenshots/context_menu_dark_v4-4f0bf863d85a.webp" alt="Desktop context menu in dark mode" width="415">
 </p>
 
 <br>
@@ -162,8 +166,8 @@ Translucent menus and popups with matching light and dark colors.
 Plymouth startup and shutdown theme with LUKS2 unlock support.
 
 <p align="center">
-  <img src="src/screenshots/boot_v4-f685ec98f1e4.png" alt="Plymouth startup splash with a progress bar" width="415">
-  <img src="src/screenshots/boot_shutdown_v4-abe6faef7c08.png" alt="Plymouth shutdown splash without a progress bar" width="415">
+  <img src="src/screenshots/boot_v4-1f628792b5bc.webp" alt="Plymouth startup splash with a progress bar" width="415">
+  <img src="src/screenshots/boot_shutdown_v4-7ef5590450a7.webp" alt="Plymouth shutdown splash without a progress bar" width="415">
 </p>
 
 <br>
@@ -176,7 +180,7 @@ Here is what we added or improved in the components we ship.
 - **Installation and packaging:** graphical install/uninstall wizard, selectable components, bundled theme assets and release updates.
 - **Multiple distributions:** dependency detection and package mappings for Arch-based, Fedora-based, openSUSE, Debian and KDE neon systems.
 - **systemd and OpenRC:** scheduled theme switching and OLED care through user timers or cron.
-- **Glass improvements:** configurable blur, edge refraction, opacity and gradients; Tahoe and Golden Gate materials with consistent light/dark surfaces and paired edge highlights.
+- **Glass improvements:** configurable blur, edge refraction and three-stop gradients with separate light/dark colors. [Compare every preset](GLASS_PRESETS.md). The Dock retains its v0.62.0 optics.
 - **Plasma compatibility:** rendering and build fixes for Plasma 6.6–6.8, with effects compiled against the installed Qt and KWin SDKs.
 - **Launcher improvements:** two selectable layouts, integrated or detached search, favorites, app categories and drag/wheel category scrolling.
 - **Dock improvements:** glass surfaces, hover zoom, notification badges and auto-hide. Reinstalling keeps your pinned apps.
@@ -190,26 +194,17 @@ Here is what we added or improved in the components we ship.
 
 ![Getting started](https://img.shields.io/badge/getting-started-3B7B5B?style=for-the-badge&logo=gnubash&logoColor=white)
 
-To avoid downloading historical screenshots, start with a shallow checkout:
+Clone the current files with history available on demand:
 
 ```bash
-git clone --depth 1 --single-branch https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde.git
+git clone --filter=blob:none https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde.git
 cd macos-tahoe-liquid-kde
 ./installer
 ```
 
-Reuse this directory for updates. Source ZIP/tar downloads omit the documentation
-gallery; browse the screenshots on GitHub, or use a Git checkout for the complete
-offline documentation. Installer previews, theme assets, tests and license notices
-remain bundled. Git checkouts retain their history as they are updated.
-
-On launch, a clean Git checkout updates to the latest published release before
-opening the wizard. The updater verifies the release tag and its `VERSION`, and
-fast-forwards only; local edits or divergent history are preserved. Updating
-the installer does not apply the theme: review the wizard choices and confirm
-the installation. **Reset Dock and panel customization** starts checked;
-uncheck it to preserve your current layout on reinstall.
-`MAC_TAHOE_NO_UPDATE_CHECK=true` disables the update check.
+Run `./installer` for Express installation or updates; uncheck **Reset Dock and panel customization** on later reinstalls to keep your changes.
+Run `./installer --free-space` to free storage while preserving `.git` and local work.
+ZIP/tar downloads omit the gallery; view screenshots on GitHub or use a Git checkout.
 
 Install and uninstall through one graphical wizard:
 
@@ -217,11 +212,23 @@ Install and uninstall through one graphical wizard:
 ./installer
 ```
 
-Choose **Install** to configure the theme, or **Uninstall** to remove it.
-The language selector is between these actions. The wizard asks for administrator
-access only when you confirm. `./install` and `./uninstall` open the same UI.
-
-English, Spanish, Simplified Chinese, Brazilian Portuguese and German.
+| Installer language | Status |
+| --- | --- |
+| 🇺🇸 English | Available |
+| 🇪🇸 Spanish | Available |
+| 🇨🇳 Simplified Chinese | Available |
+| 🇧🇷 Brazilian Portuguese | Available |
+| 🇩🇪 German | Available |
+| 🇫🇷 French | Planned |
+| 🇮🇹 Italian | Planned |
+| 🇯🇵 Japanese | Planned |
+| 🇰🇷 Korean | Planned |
+| 🇷🇺 Russian | Planned |
+| 🇸🇦 Arabic | Planned |
+| 🇮🇳 Hindi | Planned |
+| 🇳🇱 Dutch | Planned |
+| 🇵🇱 Polish | Planned |
+| 🇹🇷 Turkish | Planned |
 
 <details>
 <summary><b>Requirements</b></summary>
@@ -280,10 +287,11 @@ The default option is always first and selected. Opening the other edition start
 with that repository's defaults, including its wallpaper and launcher. Choosing
 **Keep my icons**, **Keep my wallpaper** or **Keep my fonts** preserves those choices.
 
-**Reset Dock and panel customization** is checked by default. Reinstalling
-rebuilds the selected top bar and Dock while carrying pinned apps across.
-Uncheck it to preserve the current layout, sizes, autohide and widgets. A first
-installation creates the selected layout automatically.
+The custom installer's Desktop step offers optional **Dock apps**. Installed
+native and Flatpak equivalents are reused; missing categories can be selected
+individually from existing distro repositories or per-user Flatpak. Adding
+Flathub is a separate opt-in. Availability depends on the selected source;
+unavailable apps stay pending, and theme removal leaves applications installed.
 
 The Window shadows page compares **no, soft, medium or hard window shadows**
 with Nautilus screenshots. The choice applies to the theme's Aurorae
@@ -465,7 +473,7 @@ Check support for your distribution, init system and Plasma version.
 <details>
 <summary><b>Distributions</b></summary>
 
-All 11 distributions in this table passed live VM qualification. Select a status badge for reviewed 4K screenshots and test results.
+All 11 distributions in this table passed live VM qualification. Select a status badge for reviewed screenshots and test results.
 
 | | Name | Status |
 |:--:|------|---------|
@@ -618,3 +626,5 @@ If a credit is missing, please [open an issue](https://github.com/lestercorderom
 
 
 [Installer screenshots and testing](TESTING.md).
+
+Desktop photographs retain their original capture provenance; see [current focused validation and historical gallery notes](TESTING.md).

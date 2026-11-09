@@ -20,6 +20,7 @@ public:
     explicit LiquidGlassEffectConfig(QObject* parent, const KPluginMetaData& data);
     ~LiquidGlassEffectConfig() override;
 
+    void load() override;
     void save() override;
 
 private:

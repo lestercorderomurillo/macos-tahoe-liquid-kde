@@ -191,7 +191,7 @@ Timer {
                 verifyCategoryPills();
                 verify(searchBar.textField.font.pointSize > main.appTextSize, "search text has its own hierarchy");
                 const view = appList.viewItem;
-                console.log("PROBE_CATEGORIES", JSON.stringify(appList.appsCategoriesList),
+                console.log("PROBE_CATEGORIES", JSON.stringify(appList.appsCategoriesList.map(c => ({name: c.name, modelIndex: c.modelIndex, isAllApps: c.isAllApps}))),
                             appList.selectedModelIndex, appList.selectedIsAllApps, globalFavorites.count);
                 verify(view.headerItem !== null, "favorites row shown above all apps");
                 verify(view.headerItem.favoritesView.count === 7, "favorites limited to one row");

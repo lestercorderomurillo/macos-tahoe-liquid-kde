@@ -1,0 +1,189 @@
+{
+  "archive_sha256": "404b8bc22069c5b9102a0956c163adb238bde1a23b7e0e9596455546030357e2",
+  "files": {
+    "SF-Pro-Display-Black.otf": {
+      "size": 2173496,
+      "sha256": "d28322c217efb62a09b63688edda7c70f99f7f9a770b2d7385aa5288601987b0"
+    },
+    "SF-Pro-Display-BlackItalic.otf": {
+      "size": 2074920,
+      "sha256": "74f0369582f80fac81ba1d6fdf5500bffee03ad44393c6f9fc859331f4402744"
+    },
+    "SF-Pro-Display-Bold.otf": {
+      "size": 2298456,
+      "sha256": "9661ed5e91885b6a80cd458d5ef068db320574c2cb7c1ed2d77864fb91cb8adc"
+    },
+    "SF-Pro-Display-BoldItalic.otf": {
+      "size": 2196100,
+      "sha256": "d5a06570643f9f8bb1e6af7ea712ca6a696d50838c04254f352c1495a882573c"
+    },
+    "SF-Pro-Display-Heavy.otf": {
+      "size": 2311308,
+      "sha256": "68020e8fbddc00c16ae939f337d65459632a1359f7b51656e14bf0d7140629d7"
+    },
+    "SF-Pro-Display-HeavyItalic.otf": {
+      "size": 2208464,
+      "sha256": "128a6b00873e20c4bcba2028915a2d25ca3c0cdc77f10f4237e1790ff787c89f"
+    },
+    "SF-Pro-Display-Light.otf": {
+      "size": 2283060,
+      "sha256": "2c79861d4ba3a6301ee16438640376469dbbc721337bb3db718ee4e96f35d1a1"
+    },
+    "SF-Pro-Display-LightItalic.otf": {
+      "size": 2206648,
+      "sha256": "52a79e84f07628babf0840e9283ca595a6d2ed68681a8a3bf3ec02251d7fe801"
+    },
+    "SF-Pro-Display-Medium.otf": {
+      "size": 2320104,
+      "sha256": "05865eda9d9a6880538034210becfcf21622fc1a0b30723acdb670009ddbf51c"
+    },
+    "SF-Pro-Display-MediumItalic.otf": {
+      "size": 2221096,
+      "sha256": "1d162e0f712749f6d3a819947e0d78ed8eb31b3cfd1cabfd713aaca7e6039875"
+    },
+    "SF-Pro-Display-RegularItalic.otf": {
+      "size": 2152140,
+      "sha256": "6af1535277287bad998872c0f85c25207564c53f93b38b8e8b5265cacdc88720"
+    },
+    "SF-Pro-Display-Semibold.otf": {
+      "size": 2325324,
+      "sha256": "6c4fa1be203ec1b7a5135cf636d87e1e23a91a9aabd556309664251745fd8249"
+    },
+    "SF-Pro-Display-SemiboldItalic.otf": {
+      "size": 2232436,
+      "sha256": "4401f2b51087165db5468d967a4a29d4f24d7e68c9f3180909ea89a8e54775df"
+    },
+    "SF-Pro-Display-Thin.otf": {
+      "size": 2253252,
+      "sha256": "721d46cc698ca5b7f19b47f2d8b4085915129d31630a8deb09c25681fe368b71"
+    },
+    "SF-Pro-Display-ThinItalic.otf": {
+      "size": 2175884,
+      "sha256": "a4109a8e76e4be967997aa257c013897a7e3e1f0b213b9d27572d4c0b3b48e5d"
+    },
+    "SF-Pro-Display-Ultralight.otf": {
+      "size": 2264032,
+      "sha256": "bb02f6bc889c1b2f41f8b0c59c48100b9e5a3b29052bc64cf78689f9669d7715"
+    },
+    "SF-Pro-Display-UltralightItalic.otf": {
+      "size": 2188156,
+      "sha256": "12bf45b5ff209b17cc5cd7c343c102cf31c09f1f17bcdab97d4d0f745466c82f"
+    },
+    "SF-Pro-Italic.ttf": {
+      "size": 6558876,
+      "sha256": "9eb0a0761f0f7df966159e091e7b7b905c422ca4b521e330280dc7c4c70f0567"
+    },
+    "SF-Pro-Rounded-Black.otf": {
+      "size": 2245284,
+      "sha256": "dd1a91dc5bfbde9d05f47d7d97e7af74579951fe3192f9e3f9ae52134bc94289"
+    },
+    "SF-Pro-Rounded-Bold.otf": {
+      "size": 2383476,
+      "sha256": "78b0cd56679ab2165b2295223d6519abce139db0795493bf6376f6dd9b50041b"
+    },
+    "SF-Pro-Rounded-Heavy.otf": {
+      "size": 2400688,
+      "sha256": "3c6917136764106c95409940ded8212f5ed7e53949f457243f3c55b19bb1bb25"
+    },
+    "SF-Pro-Rounded-Light.otf": {
+      "size": 2375724,
+      "sha256": "6c1649c027db0f009e19c343e2a0cae33f6e9bfc4cd5097c766fc371d3b3c441"
+    },
+    "SF-Pro-Rounded-Medium.otf": {
+      "size": 2406796,
+      "sha256": "a53caedde943524ffa2265b6e1e24d277b7691230f7d80755cb419d7aef28fbd"
+    },
+    "SF-Pro-Rounded-Regular.otf": {
+      "size": 2290984,
+      "sha256": "95ac37b162c930df638cb9cb149c36f871cbf1f42966cc98b80eb7fee1adc96e"
+    },
+    "SF-Pro-Rounded-Semibold.otf": {
+      "size": 2410352,
+      "sha256": "8aa9b7f57046550efc27390f34e9d88e7f92533ea3a42d2ff69bf852e1e5d4e7"
+    },
+    "SF-Pro-Rounded-Thin.otf": {
+      "size": 2346472,
+      "sha256": "3e6e0e06dfe9e4466fb74c4a3c5412a7d193e50ce919a67fd3bdb56121ad1919"
+    },
+    "SF-Pro-Rounded-Ultralight.otf": {
+      "size": 2360188,
+      "sha256": "29292796b09ebdc4e68764816ac0134550760a008831623ef0c610f67f69f989"
+    },
+    "SF-Pro-Text-Black.otf": {
+      "size": 2155952,
+      "sha256": "1610a2383835f6d085b038e126e079c0b0e5ba083b64e8b3d2a21d401efdd073"
+    },
+    "SF-Pro-Text-BlackItalic.otf": {
+      "size": 2091948,
+      "sha256": "6dca8036618731c5be5c1c910e58837076f5ae7121b80ea35327c8ec89143a9a"
+    },
+    "SF-Pro-Text-Bold.otf": {
+      "size": 2275752,
+      "sha256": "fef7eb65390a41bdd247b012a0e018750afd52143c29892b821a6a5796516aca"
+    },
+    "SF-Pro-Text-BoldItalic.otf": {
+      "size": 2209932,
+      "sha256": "db0085f5b9bf53b9fa0cfc529921b48df0d3eb8546dda116574464ebf881ee61"
+    },
+    "SF-Pro-Text-Heavy.otf": {
+      "size": 2286508,
+      "sha256": "34e5acbe13ad5ecdecc835539b79ef1ee082cbb6e5176a1e2e8978d9c7606a37"
+    },
+    "SF-Pro-Text-HeavyItalic.otf": {
+      "size": 2219920,
+      "sha256": "357c898092334b130132540c9585a518602b63d28cad5aaf433f1b9a96079377"
+    },
+    "SF-Pro-Text-Light.otf": {
+      "size": 2273920,
+      "sha256": "32146e1155618c0b0e33eaf6d4355e8f3ac700b098248220b602198555754575"
+    },
+    "SF-Pro-Text-LightItalic.otf": {
+      "size": 2209468,
+      "sha256": "2b3fea5ef5c85aa4d15435635eb1baaf32dd64c3bfcdc346254abdc61d75602a"
+    },
+    "SF-Pro-Text-Medium.otf": {
+      "size": 2300344,
+      "sha256": "90b3647c8d2dfc8cbb62233a02982d663b74c6dc6e450cd1be7fb714b5333b54"
+    },
+    "SF-Pro-Text-MediumItalic.otf": {
+      "size": 2235460,
+      "sha256": "a9c59562b8217dd33f9fc5c431e6b43b2ae155c429012e95f4bcec290d6d6e17"
+    },
+    "SF-Pro-Text-Regular.otf": {
+      "size": 2230172,
+      "sha256": "3afd2ac95c5bff8f3ba32f0d6586400947674739d857e73f4d7b6394b0ae8b77"
+    },
+    "SF-Pro-Text-RegularItalic.otf": {
+      "size": 2161492,
+      "sha256": "b27719809195501feb552f85e726a9e5f3fe36b929dfbe7825a907b5b5025471"
+    },
+    "SF-Pro-Text-Semibold.otf": {
+      "size": 2300840,
+      "sha256": "14097343b49548e81026b328e8b9b5d504c02976b8a4c53be10b5b4505d6b7ac"
+    },
+    "SF-Pro-Text-SemiboldItalic.otf": {
+      "size": 2242956,
+      "sha256": "30ecbfb6482252b44b9abd9c6f69ca53121869dd5cfd113342ecb7ae27aa9eea"
+    },
+    "SF-Pro-Text-Thin.otf": {
+      "size": 2244284,
+      "sha256": "91672e372e72d4ee3c7ce20e2e872fb815bc21265fa14290b83a111c2b258d8b"
+    },
+    "SF-Pro-Text-ThinItalic.otf": {
+      "size": 2181648,
+      "sha256": "448d83b5877500accdabdaeb0dbbb4f849708165ab5ef50a1fe4a584b340027a"
+    },
+    "SF-Pro-Text-Ultralight.otf": {
+      "size": 2256532,
+      "sha256": "8ced6c7562df6abf7506c88018b46a06804a329e877d4e3f769cba559f43be68"
+    },
+    "SF-Pro-Text-UltralightItalic.otf": {
+      "size": 2189704,
+      "sha256": "eaaaf7fc75ad8491ab137a387b545a7fb2d42ee5b902c0674c591c58991e6d68"
+    },
+    "SF-Pro.ttf": {
+      "size": 6110460,
+      "sha256": "216c8f70fc35fb8161d03a7f8ddf5fff5760e1879688d70eb20ed9779b8ffee2"
+    }
+  }
+}

@@ -1,0 +1,110 @@
+{
+  "archive": "src/offline/icons/MacTahoeLiquidKde-Icons.tar.zst",
+  "archive_sha256": "f9ea0a95a94ac79df7939fca6ef636fbc3ceb3a2e5333a16d20ff3f42488040d",
+  "transformation": "Light: bundled SVG aliases. Dark: installer Regular-Dark pipeline, reviewed overrides, and Dock-specific graphite Mail, Notes and Music variants. See per-file records and THIRD_PARTY_NOTICES.md.",
+  "files": {
+    "light/files.svg": {
+      "source": "MacTahoeLiquidKde-Icons/apps/scalable/file-manager.svg",
+      "sha256": "1dd88e9ee27a257855d8712de3870cf7ca7c87f3e591f45de7444c2456bfa007"
+    },
+    "light/browser.svg": {
+      "source": "MacTahoeLiquidKde-Icons/apps/scalable/safari.svg",
+      "sha256": "38b75967592c55a04c4c1d1e3c9e98a55851693024048e5e4895f95d150592c4"
+    },
+    "light/mail.svg": {
+      "source": "MacTahoeLiquidKde-Icons/apps/scalable/internet-mail.svg",
+      "sha256": "a55db5fe761f3b5dadbeea41cbd9575a23d75952117cd49b24cb586a717465b0"
+    },
+    "light/calendar.svg": {
+      "source": "MacTahoeLiquidKde-Icons/apps/scalable/calendar.svg",
+      "sha256": "c767f07a84992e28a5bf81c95e9e7020acbb6cc27d2424145b65304a11f23789"
+    },
+    "light/notes.svg": {
+      "source": "MacTahoeLiquidKde-Icons/apps/scalable/org.gnome.Gnote.svg",
+      "sha256": "31aaec5b1fe843db80e2bae73ca9611ed8b4520b7e66799981f00bfa52879151"
+    },
+    "light/photos.svg": {
+      "source": "MacTahoeLiquidKde-Icons/apps/scalable/gnome-photos.svg",
+      "sha256": "5f8eb7594ee00628afaae671e44536306b41944d97129722364eade5ed106168"
+    },
+    "light/music.svg": {
+      "source": "MacTahoeLiquidKde-Icons/apps/scalable/music-app.svg",
+      "sha256": "dc8f1e4942cf4d3adb155b2dcd9c9a600448cd629d961cef26d96462b0e118fd"
+    },
+    "light/video.svg": {
+      "source": "MacTahoeLiquidKde-Icons/apps/scalable/multimedia-video-player.svg",
+      "sha256": "b80cad927337a71d68f2dfd0bfb19aea9b5ee37e308f6bd62306c19ee96ab369"
+    },
+    "light/store.svg": {
+      "source": "MacTahoeLiquidKde-Icons/apps/scalable/org.kde.discover.svg",
+      "sha256": "a3905306bcefa3809c64a5da38b1d336abdbf320deafa54b2a31804fd8ed70af"
+    },
+    "light/settings.svg": {
+      "source": "MacTahoeLiquidKde-Icons/apps/scalable/systemsettings.svg",
+      "sha256": "8ff99c6c70c0a33282aa351e3de4f0fc29bb4437d3cfe6c6ae6cfda4a7b97632"
+    },
+    "dark/files.svg": {
+      "source": "src/offline/icons/overrides/finder-dark.svg",
+      "source_sha256": "062243ab98053f71c7e2c35a35bcaafea0b471390e9f5a2a82353c0d27caf4f8",
+      "sha256": "062243ab98053f71c7e2c35a35bcaafea0b471390e9f5a2a82353c0d27caf4f8",
+      "transformation": "Reviewed installer Regular-Dark override, unchanged.",
+      "base_sha256": "1dd88e9ee27a257855d8712de3870cf7ca7c87f3e591f45de7444c2456bfa007"
+    },
+    "dark/browser.svg": {
+      "source": "MacTahoeLiquidKde-Icons/apps/scalable/safari.svg",
+      "source_sha256": "38b75967592c55a04c4c1d1e3c9e98a55851693024048e5e4895f95d150592c4",
+      "sha256": "35f0c8868292f88cc0d563916fdad518723ad6e596ed79a4d2f912ca8f3fd0d1",
+      "transformation": "icon_materials.prepare_source(size=512, clean_rim=True), render_installer(style=regular, mode=dark, tint=(0,122,255)); embedded lossless PNG."
+    },
+    "dark/mail.svg": {
+      "source": "MacTahoeLiquidKde-Icons/apps/scalable/internet-mail.svg",
+      "source_sha256": "a55db5fe761f3b5dadbeea41cbd9575a23d75952117cd49b24cb586a717465b0",
+      "sha256": "f379f8cb82ec84bdc00e3c2065bd445aba08e73051e7ac9b998c91a2d9af8f27",
+      "transformation": "Preserve bundled SVG contours; graphite plate, colored foreground and subdued highlights for the Dock dark variant."
+    },
+    "dark/calendar.svg": {
+      "source": "MacTahoeLiquidKde-Icons/apps/scalable/calendar.svg",
+      "source_sha256": "c767f07a84992e28a5bf81c95e9e7020acbb6cc27d2424145b65304a11f23789",
+      "sha256": "57d17b56737428418e7f9ea1189f3584d555a6a94d60754595c9aa122e3b6bbd",
+      "transformation": "icon_materials.prepare_source(size=512, clean_rim=True), render_installer(style=regular, mode=dark, tint=(0,122,255)); embedded lossless PNG."
+    },
+    "dark/notes.svg": {
+      "source": "MacTahoeLiquidKde-Icons/apps/scalable/org.gnome.Gnote.svg",
+      "source_sha256": "31aaec5b1fe843db80e2bae73ca9611ed8b4520b7e66799981f00bfa52879151",
+      "sha256": "a9d991a342ac6cd006428a3e3ef5b10073e0ee283939f30575f0f3e5cef67000",
+      "transformation": "Preserve bundled SVG contours; graphite plate, colored foreground and subdued highlights for the Dock dark variant."
+    },
+    "dark/photos.svg": {
+      "source": "MacTahoeLiquidKde-Icons/apps/scalable/gnome-photos.svg",
+      "source_sha256": "5f8eb7594ee00628afaae671e44536306b41944d97129722364eade5ed106168",
+      "sha256": "8d5e040865881661a296a99dae19f99c5352052fb7007ad13391dd7931652c5a",
+      "transformation": "icon_materials.prepare_source(size=512, clean_rim=True), render_installer(style=regular, mode=dark, tint=(0,122,255)); embedded lossless PNG."
+    },
+    "dark/music.svg": {
+      "source": "MacTahoeLiquidKde-Icons/apps/scalable/music-app.svg",
+      "source_sha256": "dc8f1e4942cf4d3adb155b2dcd9c9a600448cd629d961cef26d96462b0e118fd",
+      "sha256": "bc155b2776be5d27f54a1097abb04a140a7492780cf3b9ac53a2ec3fd1850bdf",
+      "transformation": "Preserve bundled SVG contours; graphite plate, colored foreground and subdued highlights for the Dock dark variant."
+    },
+    "dark/video.svg": {
+      "source": "MacTahoeLiquidKde-Icons/apps/scalable/multimedia-video-player.svg",
+      "source_sha256": "b80cad927337a71d68f2dfd0bfb19aea9b5ee37e308f6bd62306c19ee96ab369",
+      "sha256": "68d2595428eee95b6890afd7c07c8e3e0e2c40f4e2a4f80084c1022ffe743064",
+      "transformation": "icon_materials.prepare_source(size=512, clean_rim=True), render_installer(style=regular, mode=dark, tint=(0,122,255)); embedded lossless PNG."
+    },
+    "dark/store.svg": {
+      "source": "src/offline/icons/overrides/app-store-dark.svg",
+      "source_sha256": "1f164dd85f3f56ab80bb843b902cec7ee57a7208bab2fb49d4925cb53351072a",
+      "sha256": "1f164dd85f3f56ab80bb843b902cec7ee57a7208bab2fb49d4925cb53351072a",
+      "transformation": "Reviewed installer Regular-Dark override, unchanged.",
+      "base_sha256": "a3905306bcefa3809c64a5da38b1d336abdbf320deafa54b2a31804fd8ed70af"
+    },
+    "dark/settings.svg": {
+      "source": "src/offline/icons/overrides/settings-dark.svg",
+      "source_sha256": "4eb3b3da773e58389b31d9d522bad9477c1362ccd767c2077c4d639d814a1903",
+      "sha256": "4eb3b3da773e58389b31d9d522bad9477c1362ccd767c2077c4d639d814a1903",
+      "transformation": "Reviewed installer Regular-Dark override, unchanged.",
+      "base_sha256": "8ff99c6c70c0a33282aa351e3de4f0fc29bb4437d3cfe6c6ae6cfda4a7b97632"
+    }
+  }
+}

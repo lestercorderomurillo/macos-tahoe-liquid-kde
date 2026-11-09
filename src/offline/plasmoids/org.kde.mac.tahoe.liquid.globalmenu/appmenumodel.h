@@ -10,6 +10,8 @@
 #include <QAbstractListModel>
 #include <QAction>
 #include <QPointer>
+#include <QPersistentModelIndex>
+#include <QKeySequence>
 #include <QRect>
 #include <QStringList>
 #include <qqmlregistration.h>
@@ -19,6 +21,7 @@ class QMenu;
 class QModelIndex;
 class QDBusServiceWatcher;
 class KDBusMenuImporter;
+class MenuShortcutSender;
 
 /**
  * Flattened MenuModel exposing the active window's application menu.
@@ -47,6 +50,9 @@ class AppMenuModel : public QAbstractListModel
     Q_PROPERTY(QString activeAppName READ activeAppName NOTIFY activeAppNameChanged)
 
     /// True iff the active window publishes an AppMenu we can render.
+    Q_PROPERTY(bool enableGenericMenu READ enableGenericMenu WRITE setEnableGenericMenu NOTIFY enableGenericMenuChanged)
+    Q_PROPERTY(bool enableMenuSearch READ enableMenuSearch WRITE setEnableMenuSearch NOTIFY enableMenuSearchChanged)
+
     Q_PROPERTY(bool menuAvailable READ menuAvailable WRITE setMenuAvailable NOTIFY menuAvailableChanged)
 
     /// True when the menubar is actually painted (combination of
@@ -92,6 +98,10 @@ public:
     void updateApplicationMenu(const QString& serviceName, const QString& menuObjectPath);
 
     QString activeAppName() const;
+    bool enableGenericMenu() const;
+    void setEnableGenericMenu(bool enabled);
+    bool enableMenuSearch() const;
+    void setEnableMenuSearch(bool enabled);
     bool menuAvailable() const;
     void setMenuAvailable(bool set);
     bool allScreens() const;
@@ -114,6 +124,9 @@ Q_SIGNALS:
     void requestActivateIndex(int index);
     void bringToFocus(int index);
 
+    void menuSourceAboutToChange();
+    void enableGenericMenuChanged();
+    void enableMenuSearchChanged();
     void activeAppNameChanged();
     void allScreensChanged();
     void menuAvailableChanged();
@@ -135,6 +148,8 @@ private Q_SLOTS:
 private:
     // Visibility / model state
 
+    bool m_enableGenericMenu = true;
+    bool m_enableMenuSearch = KWindowSystem::isPlatformWayland();
     bool m_menuAvailable = false;
     bool m_allScreens = true;
     bool m_updatePending = false;
@@ -144,10 +159,16 @@ private:
     // Task tracking + menu source
 
     TaskManager::TasksModel* m_tasksModel;
+    std::unique_ptr<QMenu> m_genericMenu;
+    QPersistentModelIndex m_genericTarget;
+    MenuShortcutSender *m_shortcutSender;
+    quint64 m_shortcutGeneration = 0;
+    void updateGenericMenu();
+    void sendGenericShortcut(const QKeySequence &sequence, const QPersistentModelIndex &target);
     std::unique_ptr<QMenu> m_searchMenu;
     QPointer<QMenu> m_menu;
     QPointer<QAction> m_searchAction;
-    QList<QAction*> m_currentSearchActions;
+    QList<QPointer<QAction>> m_currentSearchActions;
 
     /// Remove the synthetic search results from the menu before rebuilding.
     void removeSearchActionsFromMenu();

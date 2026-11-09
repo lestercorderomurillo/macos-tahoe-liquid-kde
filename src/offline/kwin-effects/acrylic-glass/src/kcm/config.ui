@@ -51,30 +51,17 @@
            <widget class="PresetComboBox" name="kcfg_MaterialPreset">
             <item>
              <property name="text">
-              <string>Tahoe</string>
+              <string>Tahoe (Clear)</string>
              </property>
             </item>
-            <item>
-             <property name="text">
-              <string>Golden Gate</string>
-             </property>
-            </item>
+            <item><property name="text"><string>Tahoe (Frosted)</string></property></item>
+            <item><property name="text"><string>Golden Gate (Official)</string></property></item>
            </widget>
           </item>
           <item row="1" column="1">
            <widget class="QPushButton" name="resetPreset">
             <property name="text">
              <string>Restore this preset</string>
-            </property>
-           </widget>
-          </item>
-          <item row="2" column="0" colspan="2">
-           <widget class="QLabel" name="presetHelp">
-            <property name="text">
-             <string>Choose a starting point, then adjust it below. Switching presets replaces all material settings.</string>
-            </property>
-            <property name="wordWrap">
-             <bool>true</bool>
             </property>
            </widget>
           </item>
@@ -89,6 +76,9 @@
          <layout class="QFormLayout" name="surfaceGroupForm">
           <item row="0" column="0">
            <widget class="QLabel" name="labelBlurStrength">
+            <property name="toolTip">
+             <string>Soften the background behind glass. 0 leaves the background sharp.</string>
+            </property>
             <property name="text">
              <string>Blur strength</string>
             </property>
@@ -113,34 +103,11 @@
             </property>
            </widget>
           </item>
-          <item row="1" column="0">
-           <widget class="QLabel" name="labelMaterialOpacity">
-            <property name="text">
-             <string>Glass opacity</string>
-            </property>
-            <property name="buddy">
-             <cstring>kcfg_MaterialOpacity</cstring>
-            </property>
-           </widget>
-          </item>
-          <item row="1" column="1">
-           <widget class="QDoubleSpinBox" name="kcfg_MaterialOpacity">
-            <property name="toolTip">
-             <string>1 keeps the fully blurred material; lower values reveal more of the sharp background. Text and icons keep their opacity.</string>
-            </property>
-            <property name="maximum">
-             <double>1</double>
-            </property>
-            <property name="singleStep">
-             <double>0.05</double>
-            </property>
-            <property name="decimals">
-             <number>2</number>
-            </property>
-           </widget>
-          </item>
           <item row="2" column="0">
            <widget class="QLabel" name="labelMagnifyGlassStrength">
+            <property name="toolTip">
+             <string>Bend the background near the glass edge. 0 disables distortion.</string>
+            </property>
             <property name="text">
              <string>Refraction</string>
             </property>
@@ -155,7 +122,7 @@
              <string>Bend the background near the glass edge. 0 disables distortion.</string>
             </property>
             <property name="maximum">
-             <double>0.1</double>
+             <double>0.2</double>
             </property>
             <property name="singleStep">
              <double>0.001</double>
@@ -169,94 +136,132 @@
         </widget>
        </item>
        <item>
+        <widget class="QSpinBox" name="kcfg_BackingTint">
+         <property name="visible"><bool>false</bool></property>
+         <property name="maximum"><number>1</number></property>
+        </widget>
+       </item>
+       <item>
         <widget class="QGroupBox" name="gradientGroup">
-         <property name="title">
-          <string>Gradient</string>
-         </property>
-         <layout class="QFormLayout" name="gradientGroupForm">
-          <item row="0" column="0">
-           <widget class="QLabel" name="labelDarkGradientOverlay">
-            <property name="text">
-             <string>Enable gradient</string>
-            </property>
-            <property name="buddy">
-             <cstring>kcfg_DarkGradientOverlay</cstring>
-            </property>
-           </widget>
-          </item>
-          <item row="0" column="1">
-           <widget class="QCheckBox" name="kcfg_DarkGradientOverlay" />
-          </item>
-          <item row="1" column="0">
-           <widget class="QLabel" name="labelGradientTopColor">
-            <property name="text">
-             <string>Top color</string>
-            </property>
-            <property name="buddy">
-             <cstring>kcfg_GradientTopColor</cstring>
-            </property>
+         <property name="title"><string>Background gradient</string></property>
+         <layout class="QGridLayout" name="gradientGroupForm">
+          <item row="0" column="0" colspan="4">
+           <widget class="QCheckBox" name="kcfg_DarkGradientOverlay">
+            <property name="text"><string>Enable gradient</string></property>
+            <property name="toolTip"><string>Colors follow each window's light or dark appearance automatically.</string></property>
            </widget>
           </item>
           <item row="1" column="1">
-           <widget class="KColorButton" name="kcfg_GradientTopColor" />
+           <widget class="QLabel" name="labelGradientLight">
+            <property name="text"><string>Light mode</string></property>
+            <property name="alignment"><set>Qt::AlignCenter</set></property>
+           </widget>
+          </item>
+          <item row="1" column="2">
+           <widget class="QLabel" name="labelGradientDark">
+            <property name="text"><string>Dark mode</string></property>
+            <property name="alignment"><set>Qt::AlignCenter</set></property>
+           </widget>
+          </item>
+          <item row="1" column="3">
+           <widget class="QLabel" name="labelGradientStrength">
+            <property name="text"><string>Tint strength</string></property>
+            <property name="alignment"><set>Qt::AlignCenter</set></property>
+           </widget>
           </item>
           <item row="2" column="0">
-           <widget class="QLabel" name="labelGradientTopOpacity">
-            <property name="text">
-             <string>Top tint strength</string>
-            </property>
-            <property name="buddy">
-             <cstring>kcfg_GradientTopOpacity</cstring>
-            </property>
+           <widget class="QLabel" name="labelGradientTopColor">
+            <property name="text"><string>Top color</string></property>
+            <property name="buddy"><cstring>kcfg_GradientTopColor</cstring></property>
            </widget>
           </item>
           <item row="2" column="1">
+           <widget class="KColorButton" name="kcfg_GradientTopColor">
+            <property name="toolTip"><string>Top color in light mode.</string></property>
+            <property name="accessibleName"><string>Top color in light mode.</string></property>
+           </widget>
+          </item>
+          <item row="2" column="2">
+           <widget class="KColorButton" name="kcfg_GradientTopDarkColor">
+            <property name="toolTip"><string>Top color in dark mode.</string></property>
+            <property name="accessibleName"><string>Top color in dark mode.</string></property>
+           </widget>
+          </item>
+          <item row="2" column="3">
            <widget class="QDoubleSpinBox" name="kcfg_GradientTopOpacity">
-            <property name="maximum">
-             <double>1</double>
-            </property>
-            <property name="singleStep">
-             <double>0.05</double>
-            </property>
-            <property name="decimals">
-             <number>2</number>
-            </property>
+            <property name="toolTip"><string>Top tint strength for both modes. 0 leaves the glass untinted at this stop.</string></property>
+            <property name="accessibleName"><string>Top tint strength</string></property>
+            <property name="maximum"><double>1.0</double></property>
+            <property name="singleStep"><double>0.01</double></property>
+            <property name="decimals"><number>2</number></property>
            </widget>
           </item>
           <item row="3" column="0">
-           <widget class="QLabel" name="labelGradientBottomColor">
-            <property name="text">
-             <string>Bottom color</string>
-            </property>
-            <property name="buddy">
-             <cstring>kcfg_GradientBottomColor</cstring>
-            </property>
+           <widget class="QLabel" name="labelGradientCenterColor">
+            <property name="text"><string>Center color</string></property>
+            <property name="buddy"><cstring>kcfg_GradientCenterColor</cstring></property>
            </widget>
           </item>
           <item row="3" column="1">
-           <widget class="KColorButton" name="kcfg_GradientBottomColor" />
+           <widget class="KColorButton" name="kcfg_GradientCenterColor">
+            <property name="toolTip"><string>Center color in light mode.</string></property>
+            <property name="accessibleName"><string>Center color in light mode.</string></property>
+           </widget>
+          </item>
+          <item row="3" column="2">
+           <widget class="KColorButton" name="kcfg_GradientCenterDarkColor">
+            <property name="toolTip"><string>Center color in dark mode.</string></property>
+            <property name="accessibleName"><string>Center color in dark mode.</string></property>
+           </widget>
+          </item>
+          <item row="3" column="3">
+           <widget class="QDoubleSpinBox" name="kcfg_GradientCenterOpacity">
+            <property name="toolTip"><string>Center tint strength for both modes. 0 leaves the glass untinted at this stop.</string></property>
+            <property name="accessibleName"><string>Center tint strength</string></property>
+            <property name="maximum"><double>1.0</double></property>
+            <property name="singleStep"><double>0.01</double></property>
+            <property name="decimals"><number>2</number></property>
+           </widget>
           </item>
           <item row="4" column="0">
-           <widget class="QLabel" name="labelGradientBottomOpacity">
-            <property name="text">
-             <string>Bottom tint strength</string>
-            </property>
-            <property name="buddy">
-             <cstring>kcfg_GradientBottomOpacity</cstring>
-            </property>
+           <widget class="QLabel" name="labelGradientBottomColor">
+            <property name="text"><string>Bottom color</string></property>
+            <property name="buddy"><cstring>kcfg_GradientBottomColor</cstring></property>
            </widget>
           </item>
           <item row="4" column="1">
+           <widget class="KColorButton" name="kcfg_GradientBottomColor">
+            <property name="toolTip"><string>Bottom color in light mode.</string></property>
+            <property name="accessibleName"><string>Bottom color in light mode.</string></property>
+           </widget>
+          </item>
+          <item row="4" column="2">
+           <widget class="KColorButton" name="kcfg_GradientBottomDarkColor">
+            <property name="toolTip"><string>Bottom color in dark mode.</string></property>
+            <property name="accessibleName"><string>Bottom color in dark mode.</string></property>
+           </widget>
+          </item>
+          <item row="4" column="3">
            <widget class="QDoubleSpinBox" name="kcfg_GradientBottomOpacity">
-            <property name="maximum">
-             <double>1</double>
-            </property>
-            <property name="singleStep">
-             <double>0.05</double>
-            </property>
-            <property name="decimals">
-             <number>2</number>
-            </property>
+            <property name="toolTip"><string>Bottom tint strength for both modes. 0 leaves the glass untinted at this stop.</string></property>
+            <property name="accessibleName"><string>Bottom tint strength</string></property>
+            <property name="maximum"><double>1.0</double></property>
+            <property name="singleStep"><double>0.01</double></property>
+            <property name="decimals"><number>2</number></property>
+           </widget>
+          </item>
+          <item row="5" column="0">
+           <widget class="QLabel" name="labelGradientCenterPosition">
+            <property name="text"><string>Center position</string></property>
+            <property name="buddy"><cstring>kcfg_GradientCenterPosition</cstring></property>
+           </widget>
+          </item>
+          <item row="5" column="1" colspan="3">
+           <widget class="QDoubleSpinBox" name="kcfg_GradientCenterPosition">
+            <property name="toolTip"><string>Position from top (0) to bottom (1). 0.5 is halfway down the surface.</string></property>
+            <property name="maximum"><double>1.0</double></property>
+            <property name="singleStep"><double>0.01</double></property>
+            <property name="decimals"><number>2</number></property>
            </widget>
           </item>
          </layout>
@@ -284,6 +289,9 @@
          <layout class="QFormLayout" name="opticsGroupForm">
           <item row="0" column="0">
            <widget class="QLabel" name="labelRgbDriftStrength">
+            <property name="toolTip">
+             <string>Separate red, green and blue near the glass edge. 0 disables color fringes.</string>
+            </property>
             <property name="text">
              <string>Color separation (px)</string>
             </property>
@@ -294,6 +302,9 @@
           </item>
           <item row="0" column="1">
            <widget class="QDoubleSpinBox" name="kcfg_RgbDriftStrength">
+            <property name="toolTip">
+             <string>Separate red, green and blue near the glass edge. 0 disables color fringes.</string>
+            </property>
             <property name="maximum">
              <double>100</double>
             </property>
@@ -307,6 +318,9 @@
           </item>
           <item row="1" column="0">
            <widget class="QLabel" name="labelRefractionWidth">
+            <property name="toolTip">
+             <string>Width of the edge band where refraction and color separation appear.</string>
+            </property>
             <property name="text">
              <string>Refraction width (px)</string>
             </property>
@@ -317,6 +331,9 @@
           </item>
           <item row="1" column="1">
            <widget class="QDoubleSpinBox" name="kcfg_RefractionWidth">
+            <property name="toolTip">
+             <string>Width of the edge band where refraction and color separation appear.</string>
+            </property>
             <property name="maximum">
              <double>300</double>
             </property>
@@ -330,6 +347,9 @@
           </item>
           <item row="2" column="0">
            <widget class="QLabel" name="labelHighlightWidth">
+            <property name="toolTip">
+             <string>Width of the bright rim along the glass edge.</string>
+            </property>
             <property name="text">
              <string>Highlight width (px)</string>
             </property>
@@ -340,6 +360,9 @@
           </item>
           <item row="2" column="1">
            <widget class="QDoubleSpinBox" name="kcfg_HighlightWidth">
+            <property name="toolTip">
+             <string>Width of the bright rim along the glass edge.</string>
+            </property>
             <property name="maximum">
              <double>600</double>
             </property>
@@ -353,6 +376,9 @@
           </item>
           <item row="3" column="0">
            <widget class="QLabel" name="labelHighlightStrength">
+            <property name="toolTip">
+             <string>Intensity of the edge highlight. 0 disables it.</string>
+            </property>
             <property name="text">
              <string>Highlight strength</string>
             </property>
@@ -363,6 +389,9 @@
           </item>
           <item row="3" column="1">
            <widget class="QDoubleSpinBox" name="kcfg_HighlightStrength">
+            <property name="toolTip">
+             <string>Intensity of the edge highlight. 0 disables it.</string>
+            </property>
             <property name="maximum">
              <double>3</double>
             </property>
@@ -376,6 +405,9 @@
           </item>
           <item row="4" column="0">
            <widget class="QLabel" name="labelBrightness">
+            <property name="toolTip">
+             <string>Lighten or darken the glass background. 1 keeps the original brightness.</string>
+            </property>
             <property name="text">
              <string>Brightness</string>
             </property>
@@ -386,6 +418,9 @@
           </item>
           <item row="4" column="1">
            <widget class="QDoubleSpinBox" name="kcfg_Brightness">
+            <property name="toolTip">
+             <string>Lighten or darken the glass background. 1 keeps the original brightness.</string>
+            </property>
             <property name="maximum">
              <double>2</double>
             </property>
@@ -399,6 +434,9 @@
           </item>
           <item row="5" column="0">
            <widget class="QLabel" name="labelContrast">
+            <property name="toolTip">
+             <string>Adjust the difference between light and dark tones. 1 keeps the original contrast.</string>
+            </property>
             <property name="text">
              <string>Contrast</string>
             </property>
@@ -409,6 +447,9 @@
           </item>
           <item row="5" column="1">
            <widget class="QDoubleSpinBox" name="kcfg_Contrast">
+            <property name="toolTip">
+             <string>Adjust the difference between light and dark tones. 1 keeps the original contrast.</string>
+            </property>
             <property name="maximum">
              <double>2</double>
             </property>
@@ -422,6 +463,9 @@
           </item>
           <item row="6" column="0">
            <widget class="QLabel" name="labelSaturation">
+            <property name="toolTip">
+             <string>Adjust color intensity. 0 gives grayscale; 1 keeps the original colors.</string>
+            </property>
             <property name="text">
              <string>Saturation</string>
             </property>
@@ -432,6 +476,9 @@
           </item>
           <item row="6" column="1">
            <widget class="QDoubleSpinBox" name="kcfg_Saturation">
+            <property name="toolTip">
+             <string>Adjust color intensity. 0 gives grayscale; 1 keeps the original colors.</string>
+            </property>
             <property name="maximum">
              <double>2</double>
             </property>
@@ -445,6 +492,9 @@
           </item>
           <item row="7" column="0">
            <widget class="QLabel" name="labelNoiseStrength">
+            <property name="toolTip">
+             <string>Add fine grain to the glass texture. 0 disables grain.</string>
+            </property>
             <property name="text">
              <string>Grain</string>
             </property>
@@ -455,6 +505,9 @@
           </item>
           <item row="7" column="1">
            <widget class="QSpinBox" name="kcfg_NoiseStrength">
+            <property name="toolTip">
+             <string>Add fine grain to the glass texture. 0 disables grain.</string>
+            </property>
             <property name="maximum">
              <number>64</number>
             </property>
@@ -465,6 +518,9 @@
        </item>
        <item>
         <widget class="QCheckBox" name="kcfg_BlurDecorations">
+            <property name="toolTip">
+             <string>Extend background blur to translucent window frames and title bars.</string>
+            </property>
          <property name="text">
           <string>Blur window decorations</string>
          </property>

@@ -14,6 +14,12 @@
 #   - libepoxy + libdrm + libX11 + libxcb (acrylic-glass effect)
 FROM opensuse/tumbleweed:latest
 
+# Regional mirror metadata can lead GitHub runners to RPMs that still return
+# 404 after a refresh (binutils/libctf in the 2026-11-08 SDK image). Use the
+# official content origin for the same repositories; keep GPG/signature checks
+# and the complete rolling SDK update and package list below.
+RUN sed -i -E 's@https?://download\.opensuse\.org/@https://downloadcontent.opensuse.org/@g' /etc/zypp/repos.d/*.repo
+
 # `zypper refresh` against download.opensuse.org occasionally times out
 # from GitHub runners (curl error 28 after the 180s default). Retry up
 # to 3 times before giving up — every individual refresh is a clean
@@ -33,9 +39,10 @@ RUN for i in 1 2 3; do \
     zypper --non-interactive --gpg-auto-import-keys dup --no-recommends && \
     zypper --non-interactive install --no-recommends \
         python3 python3-pytest git zstd python3-Pillow python3-qt6 plasma5support6 rsvg-convert \
-        cmake make gcc-c++ kf6-extra-cmake-modules pkgconf-pkg-config \
+        cmake make ccache gcc-c++ kf6-extra-cmake-modules pkgconf-pkg-config \
+        xorg-x11-server-Xvfb dbus-1 dejavu-fonts \
         qt6-base-devel qt6-tools-devel qt6-uitools-devel \
-        qt6-declarative-devel qt6-svg-devel \
+        qt6-declarative-devel qt6-svg-devel qt6-waylandclient-devel \
         kf6-kconfig-devel kf6-kconfigwidgets-devel kf6-kcoreaddons-devel \
         kf6-kcrash-devel kf6-kglobalaccel-devel kf6-kguiaddons-devel \
         kf6-ki18n-devel kf6-kio-devel kf6-kcmutils-devel \
@@ -44,9 +51,9 @@ RUN for i in 1 2 3; do \
         kf6-kitemmodels-devel \
         libplasma6-devel plasma6-activities-devel \
         plasma6-activities-stats-devel libksysguard6-devel \
-        plasma6-workspace-devel \
+        plasma6-workspace plasma6-workspace-devel \
         kwin6-devel kdecoration6-devel \
-        libepoxy-devel libdrm-devel libX11-devel libxcb-devel \
+        libepoxy-devel libdrm-devel libX11-devel libxcb-devel libXtst-devel \
     && zypper clean --all
 
 WORKDIR /repo

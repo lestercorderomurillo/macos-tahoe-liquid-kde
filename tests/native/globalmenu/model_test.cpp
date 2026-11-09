@@ -1,5 +1,8 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 #include "appmenumodel.h"
+#include "quickbarmenuhelpers.h"
+#include <QMenu>
+#include <QLineEdit>
 #include "dbusmenutypes_p.h"
 #include <abstracttasksmodel.h>
 
@@ -75,6 +78,149 @@ private Q_SLOTS:
         exporter.terminate();
         QVERIFY(exporter.waitForFinished());
         QCoreApplication::sendPostedEvents(nullptr, QEvent::DeferredDelete);
+    }
+    void genericMenuFollowsWindowAndYieldsToExporter()
+    {
+        using Roles = TaskManager::AbstractTasksModel;
+        QStandardItemModel tasks(2, 1);
+        const auto first = tasks.index(0, 0);
+        const auto second = tasks.index(1, 0);
+        for (const auto &idx : {first, second}) {
+            tasks.setData(idx, true, Roles::IsWindow);
+            tasks.setData(idx, QVariantList{idx.row() + 1}, Roles::WinIdList);
+        }
+        tasks.setData(first, true, Roles::IsActive);
+        tasks.setData(first, true, Roles::IsClosable);
+        tasks.setData(first, true, Roles::IsMaximizable);
+        AppMenuModel model;
+        model.setEnableMenuSearch(false);
+        QTRY_VERIFY(model.tasksModel()->sourceModel());
+        model.tasksModel()->setSourceModel(&tasks);
+        Q_EMIT model.tasksModel()->activeTaskChanged();
+        QTRY_COMPARE(model.rowCount(), 3);
+        QCOMPARE(model.index(0).data(AppMenuModel::MenuRole).toString(), QString("&File"));
+        auto actionAt = [&model](int row) {
+            return model.index(row).data(AppMenuModel::ActionRole).value<QAction *>();
+        };
+        QVERIFY(actionAt(0)->menu()->actions().first()->isEnabled());
+        QPointer<QAction> oldAction = actionAt(0);
+        model.setEnableGenericMenu(false);
+        QTRY_COMPARE(model.rowCount(), 0);
+        QVERIFY(oldAction.isNull());
+        model.setEnableGenericMenu(true);
+        QTRY_COMPARE(model.rowCount(), 3);
+        tasks.setData(first, service, Roles::ApplicationMenuServiceName);
+        tasks.setData(first, path, Roles::ApplicationMenuObjectPath);
+        QTRY_COMPARE(model.rowCount(), 2);
+        QCOMPARE(model.index(0).data(AppMenuModel::MenuRole).toString(), QString("File"));
+        tasks.setData(first, false, Roles::IsActive);
+        tasks.setData(second, true, Roles::IsActive);
+        Q_EMIT model.tasksModel()->activeTaskChanged();
+        QTRY_COMPARE(model.rowCount(), 3);
+        QVERIFY(!actionAt(0)->menu()->actions().first()->isEnabled());
+        setLabels({});
+        tasks.setData(second, service, Roles::ApplicationMenuServiceName);
+        tasks.setData(second, path, Roles::ApplicationMenuObjectPath);
+        QVERIFY(QMetaObject::invokeMethod(&model, "onActiveWindowChanged"));
+        QCOMPARE(model.rowCount(), 0);
+        QTRY_COMPARE(model.rowCount(), 3);
+        QCOMPARE(model.index(0).data(AppMenuModel::MenuRole).toString(), QString("&File"));
+        model.setEnableGenericMenu(false);
+        QTRY_COMPARE(model.rowCount(), 0);
+        model.setEnableGenericMenu(true);
+        QTRY_COMPARE(model.rowCount(), 3);
+        setLabels({"File", "Edit"});
+        QTRY_COMPARE(model.rowCount(), 2);
+        QCOMPARE(model.index(0).data(AppMenuModel::MenuRole).toString(), QString("File"));
+        tasks.setData(second, QString(), Roles::ApplicationMenuServiceName);
+        tasks.setData(second, QString(), Roles::ApplicationMenuObjectPath);
+        QTRY_COMPARE(model.rowCount(), 3);
+        QVERIFY(model.setProperty("containmentStatus", Plasma::Types::AcceptingInputStatus));
+        tasks.removeRow(1);
+        Q_EMIT model.tasksModel()->activeTaskChanged();
+        QTRY_COMPARE(model.rowCount(), 0);
+    }
+    void fallbackShortcutRequiresTheOriginalWindow()
+    {
+        if (QGuiApplication::platformName() != QStringLiteral("xcb")) {
+            QSKIP("Keyboard dispatch requires the private Xvfb session");
+        }
+        using Roles = TaskManager::AbstractTasksModel;
+        QStandardItemModel tasks(2, 1);
+        const auto first = tasks.index(0, 0);
+        const auto second = tasks.index(1, 0);
+        for (auto idx : {first, second}) {
+            tasks.setData(idx, true, Roles::IsWindow);
+            tasks.setData(idx, QVariantList{idx.row() + 1}, Roles::WinIdList);
+        }
+        tasks.setData(first, true, Roles::IsActive);
+        AppMenuModel model;
+        model.setEnableMenuSearch(false);
+        QTRY_VERIFY(model.tasksModel()->sourceModel());
+        model.tasksModel()->setSourceModel(&tasks);
+        Q_EMIT model.tasksModel()->activeTaskChanged();
+        QTRY_COMPARE(model.rowCount(), 3);
+        QLineEdit editor(QStringLiteral("Original document"));
+        editor.show();
+        auto *connection = xcb_connect(nullptr, nullptr);
+        QVERIFY(!xcb_connection_has_error(connection));
+        xcb_set_input_focus(connection, XCB_INPUT_FOCUS_POINTER_ROOT, editor.winId(), XCB_CURRENT_TIME);
+        xcb_flush(connection);
+        QTRY_VERIFY(editor.hasFocus());
+        auto selectAll = [&model]() {
+            auto *edit = model.index(1).data(AppMenuModel::ActionRole).value<QAction *>()->menu();
+            return edit->actions().last();
+        };
+        QVERIFY(selectAll()->isEnabled());
+        selectAll()->trigger();
+        QTRY_COMPARE(editor.selectedText(), QStringLiteral("Original document"));
+        editor.deselect();
+        selectAll()->trigger();
+        tasks.setData(first, false, Roles::IsActive);
+        tasks.setData(second, true, Roles::IsActive);
+        Q_EMIT model.tasksModel()->activeTaskChanged();
+        QTest::qWait(180);
+        QVERIFY(editor.selectedText().isEmpty());
+        // Deletion invalidates the persistent task even while the popup keeps
+        // the panel accepting input.
+        selectAll()->trigger();
+        model.setProperty("containmentStatus", Plasma::Types::AcceptingInputStatus);
+        tasks.removeRow(1);
+        Q_EMIT model.tasksModel()->activeTaskChanged();
+        QTest::qWait(180);
+        QVERIFY(editor.selectedText().isEmpty());
+        xcb_disconnect(connection);
+    }
+    void searchesAttachedMenusWithoutMnemonicMarkers()
+    {
+        QMenu root;
+        QMenu externallyOwned;
+        auto* open = externallyOwned.addAction("&Open");
+        auto* disabled = externallyOwned.addAction("Disabled");
+        disabled->setEnabled(false);
+        auto* hidden = externallyOwned.addAction("Hidden");
+        hidden->setVisible(false);
+        externallyOwned.addSeparator();
+        root.addMenu(&externallyOwned);
+        externallyOwned.addMenu(&root); // malformed/cyclic exporter must terminate
+        QList<QAction*> actions;
+        QSet<QMenu*> visited;
+        QuickBarMenu::collectMenuActions(&root, actions, visited);
+        QCOMPARE(actions, QList<QAction*>{open});
+        QCOMPARE(QuickBarMenu::visibleMenuText("Save && E&xit"), QString("Save & Exit"));
+    }
+    void searchCanBeEnabledOnEitherBackend()
+    {
+        AppMenuModel model;
+        model.setProperty("containmentStatus", Plasma::Types::AcceptingInputStatus);
+        model.setEnableMenuSearch(false);
+        model.updateApplicationMenu(service, path);
+        QTRY_COMPARE(model.rowCount(), 2);
+        model.setEnableMenuSearch(true);
+        QTRY_COMPARE(model.rowCount(), 3);
+        QCOMPARE(model.index(2).data(AppMenuModel::MenuRole).toString(), QString("Search"));
+        model.setEnableMenuSearch(false);
+        QTRY_COMPARE(model.rowCount(), 2);
     }
     void switchesWithoutExposingPreviousActions()
     {
@@ -192,6 +338,7 @@ private Q_SLOTS:
         setWindowProperty("_NET_CLIENT_LIST", {xcb_window_t(first.winId()), xcb_window_t(second.winId())});
         setWindowProperty("_NET_ACTIVE_WINDOW", {xcb_window_t(second.winId())});
         AppMenuModel model;
+        model.setEnableGenericMenu(false);
         QVERIFY(model.setProperty("containmentStatus", Plasma::Types::AcceptingInputStatus));
         QTRY_VERIFY(model.tasksModel()->activeTask().isValid());
         QCOMPARE(model.rowCount(), 0);

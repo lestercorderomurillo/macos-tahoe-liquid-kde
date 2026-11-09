@@ -23,7 +23,7 @@ KDE Plasma 6.6+ is required to actually exercise the desktop pieces. Most static
 ### Install / uninstall / test
 
 ```sh
-git clone https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde
+git clone --filter=blob:none https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde
 cd macos-tahoe-liquid-kde
 
 ./installer          # graphical install wizard; requests privileges when needed
@@ -31,6 +31,59 @@ cd macos-tahoe-liquid-kde
 ./test               # full pytest suite
 ./test --vm          # plymouth render harness (requires root, see tests/vm/)
 ```
+
+### Installer storage maintenance
+
+Recommended clones use `--filter=blob:none`: full commit ancestry is available
+while historical file contents download only when requested. Existing shallow
+clones from older instructions acquire the full ancestry through a filtered
+fetch only after the same clean, published-source audit passes; development
+checkouts remain unchanged.
+
+Both installers maintain their source storage on ordinary launches, including
+launches after a manual `git pull`. `./installer --free-space` (also available
+through `./install`) runs maintenance explicitly and reports allocated bytes
+recovered without installing or updating either checkout. It may verify release
+metadata online; `MAC_TAHOE_NO_UPDATE_CHECK=true` forbids these queries.
+
+Only a clean, independent canonical clone at an exactly verified published
+release can retire historical file caches. VERSION guides release ordering;
+the published tag, commit and Git ancestry establish identity. Uncommitted,
+staged, untracked, deleted or divergent work, private recovery objects, stashes,
+private tags, active local branches, explicit source overrides, worktrees and
+shared stores prevent this conversion. A newer or equal unpublished version is
+never replaced. Ignored local files also block an update that would overwrite
+them. Update fetches suppress uncontrolled Git auto-maintenance.
+
+Maintenance keeps `.git`, the complete commit/tree graph, canonical tags,
+main/dev positions, current branch snapshots and small historical sources.
+Large obsolete files proven reachable from the published release become a
+`blob:none` partial-clone cache backed by canonical origin. Historical lookups
+can download those files again; ordinary main/dev pulls retain full ancestry,
+including merges based on old releases, without refetching every old asset.
+Only older-version branches already merged into the verified release are
+retired. Active remote work remains. Retired reference IDs and original local
+branch reflogs accumulate in `.git/tahoe-maintenance-journal.json`; recover a
+branch with `git branch <name> <recorded-object-id>`.
+
+Git writer locks, durable replacement packs/configuration, ref comparisons and
+concurrent-state checks protect other processes. Unknown/private objects are
+never classified as cache, and caches in new concurrent packs are not removed.
+No reflog expiry, garbage collection or forced object pruning is used. A failed
+maintenance run never blocks installation. Offline/unverified/development
+sources receive only ordinary packing, preserving all their objects and refs.
+Repacking needs temporary space; savings depend on the history and active tips.
+Set `git config tahoe.maintenance compact` to retain all locally available
+historical files, or `git config tahoe.maintenance off` to disable maintenance.
+To materialize previously evicted history, use
+`git fetch --refetch --no-filter origin`; historical lookups also hydrate it.
+
+Golden Gate retires unused prepared sources and interrupted downloads only
+after a replacement is ready, with leases protecting running installers.
+Verified Rounded Corners downloads and disposable copy staging are cleaned by
+their owning steps. Native builds reuse their component build location.
+Desktop assets, settings, uninstall/browser recovery backups, arbitrary
+untracked folders, developer VM images and capture evidence are preserved.
 
 For the focused dinit integration probe, build and run the official Artix image
 with dinit as PID 1 and a real cron daemon. The repository mount stays read-only;
@@ -53,8 +106,15 @@ Live theme switch without restarting the session:
 ```sh
 mac-tahoe-theme-switch dark      # explicit
 mac-tahoe-theme-switch light
-mac-tahoe-theme-switch auto      # re-enable the 06:00 / 18:00 timer
+mac-tahoe-theme-switch auto      # apply the mode for the current time
 ```
+
+In automatic mode, the systemd user service waits for enabled NTP to synchronize
+before choosing light (06:00–18:00) or dark. This handles an incorrect dual-boot
+RTC at login. Each wait is bounded to 30 seconds; exit status 75 retries after
+15 seconds while preserving the current appearance. Manual choices, disabled
+NTP and non-systemd scheduling retain their existing behavior. The switcher
+never changes the hardware clock, timezone or NTP configuration.
 
 Reload Plasma after a manual fix without a full logout:
 
@@ -201,6 +261,44 @@ before toggling effects. This checks the glass interference from #90, not
 a real VirtualBox guest.
 
 For a general blur regression, use `--identity AcrylicProbe --expect changed`.
+
+Use `--compositor x11 --plugin /path/to/liquidglass_x11.so` for a private
+KWin X11/Xvfb session; `--backend xcb` alone remains an Xwayland client in
+KWin Wayland. X11 captures require Xvfb and currently use scale 1.
+Add `--conflicts` to exercise the installer's live built-in blur handoff,
+reinstall snapshot, active-effect recovery guard and restoration. Use
+`--conflict-effect` to select another installed, ABI-compatible competitor.
+A competitor that cannot load is a failed control, not a passing handoff.
+
+`--renderer hardware` requires a render device accessible to the isolated
+compositor. Inspect `support.txt` for the actual renderer: a container or
+successful plugin build alone proves no rendering. `--screenshot-api dbus`
+uses KWin's raw Wayland screenshot API when Spectacle cannot capture; it
+requires python-dbus and relaxes screenshot authorization only in the spawned
+private compositor. Never apply that environment setting to a desktop session.
+
+Use `--application nautilus --material tahoe` (or `golden-gate`) to launch
+real Nautilus with privately staged bundled GTK assets. Synthetic captures
+remain the default. `--damage` compares a partial synthetic backdrop update
+with a full repaint; a passing pre-fix control makes the regression claim
+inconclusive. These captures do not replace full desktop lifecycle qualification.
+
+For the Nautilus client fallback, use `--identity org.gnome.Nautilus
+--expect changed --no-decoration-blur`. Repeat with `--backend xcb` to cover
+resource-name matching. Add `--backing-tint --appearance light` or
+`--backing-tint --appearance dark` to check the Tinted window material.
+Classic and Tinted share their optical settings; Tinted blends a 45% white
+or black backing over the blurred background beneath application windows.
+Panels and menus retain their own materials. The KCM exposes this independently
+of edition presets; the wizard shows it only with Nautilus and Acrylic Glass.
+The probe checks `debug liquidglass status` for shader readiness as well as
+plugin loading. These synthetic clients do not qualify the real Nautilus app.
+
+Installation hands off from known competing blurs only after compilation and
+material setup succeed, verifies their unload, and saves their settings under
+`$XDG_STATE_HOME/mac-tahoe-liquid-kde/blur-conflicts.json` (default
+`~/.local/state/mac-tahoe-liquid-kde/`). Activation failure and uninstall restore
+those settings while preserving subsequent user changes.
 Use `--renderer hardware` and expose a render node in containers when KWin
 requires one (6.8); this does not connect to the host's desktop session.
 The probe builds a private desktop-entry cache for Spectacle authorization.
@@ -393,36 +491,52 @@ Be a decent human. I'll close anything abusive, off-topic, or trying to drag thi
 Keep the installer gallery in [TESTING.md](TESTING.md); the README links to it
 without embedding installer screenshots. Desktop and Dock photographs stay in the README.
 
-Every release requires a new complete capture. Use `./release-screenshots`,
-not the older single-window helper, for publication. The release workflow
-verifies committed provenance before creating the GitHub release. Never use
-old images to fill a failed or rejected case. Main README desktop galleries
-show Files and About This Computer separately in both modes. Each frame must
-contain only its featured application with that window focused; capture and
-release validation reject combined or unfocused desktops. Distro qualification
-screenshots are outside this gallery rule.
+Publish a fix after focused local checks and any component-scoped VM review.
+Record commands, results, coverage limits and source fingerprint in
+`release-evidence.json`; the workflow verifies this record, component hashes,
+reviewed preview hashes, immutable tag/version and unchanged historical gallery
+bytes before publishing. Full `test.yml` CI runs independently on remote branches;
+report its actual status and offer the published release without waiting for the
+matrix. Do not call a release fully qualified while that CI is pending or failed.
+
+Focused previews may accompany a fix while the full documentation gallery remains
+historical and explicitly labeled. Preserve its original provenance; do not
+recapture unaffected pages or relabel old frames as new. Refresh the gallery
+separately when needed, using the following capture tooling. Never use an older
+image to conceal a rejected new capture. Main README desktop frames show Files
+and About separately, each with only the featured application focused.
+
+For a release that changes visual output:
 
 1. Finish the source changes, set `VERSION`, and commit the release candidate.
 2. Run `./release-screenshots capture --ref HEAD --vm-image /path/to/neon-base.qcow2 --output build/captures/vVERSION`.
+   Add `--reuse build/captures/PREVIOUS` to retain reviewed, unaffected frames
+   from an existing bundle. Dependency checks select the views that require
+   new captures; unknown visual changes invalidate the full set. Retained
+   frames keep their original source commit, version and hash-bound approval.
    The output directory must be new. The runner checks the VM SHA-256 against
    `src/scripts/release_capture_profile.json`, creates a fresh disposable overlay
    for each edition, installs the exact Git archive, and captures both modes
    sequentially. It never mounts the host home or sends input to the host.
-3. Inspect **every** PNG in `frames/` at full size. Record decisions with
+3. Inspect every **new** PNG in `frames/` at full size. Reused frames retain
+   their existing reviews. Record new decisions with
    `./release-screenshots review --bundle build/captures/vVERSION --approve FRAME...`
    or `--reject FRAME...`. Names are the PNG basenames without `.png`.
    Review is bound to the manifest and image hashes. A rejected or missing
-   frame blocks staging and publication; fix the source and recapture.
+   frame blocks publication of that image; fix the source and recapture.
 4. Stage Tahoe with `./release-screenshots stage --bundle build/captures/vVERSION --edition tahoe --destination .`.
    Stage Golden Gate from the same reviewed bundle using `--edition golden-gate`
    and its checkout as `--destination`. Both versions must already match.
    Staging gives each image a filename containing its content SHA-256 prefix,
    updates README and TESTING URLs, and removes replaced images and obsolete aliases.
-5. Commit the screenshots. This commit may change only `src/screenshots/`
-   and README/TESTING screenshot filename hashes relative to the captured candidate;
-   other changes require recapture.
+   Published images use WebP quality 92: README images fit within 2560 px,
+   auxiliary images within 1280 px, and installer crops retain their resolution.
+   Keep the original reviewed PNG bundle; export metadata binds each derivative
+   to its original hash. Review compressed outputs before committing them.
+5. Commit the screenshots. Further changes to visual inputs require recapture;
+   nonvisual edits do not. Preserve the capture version and source in provenance.
    Run `./release-screenshots verify`. Push the version tag to trigger the
-   gated release workflow. Its release title is exactly `vVERSION`.
+   release workflow after focused local evidence is recorded. Its title is exactly `vVERSION`.
    Pin Golden Gate to that published Tahoe commit and verified archive, commit
    its screenshots and pin, then run the Tahoe tool with
    `--repo /path/to/golden-gate verify --tahoe-repo /path/to/tahoe` before its tag.
@@ -458,3 +572,139 @@ rejects a dark Files surface in a light capture, or the reverse. Keep a rejected
 mixed-theme frame as a negative control. Do not apply the brightness check to
 the Dock or translucent popups: their material can show the wallpaper through
 it. Review every image before replacing published screenshots.
+
+## Base Dock applications
+
+The three bundled layouts share this order: Dolphin, Firefox, Thunderbird,
+Merkuro Calendar, Marknote, Gwenview, Elisa, Haruna, Discover and System Settings.
+Plasma resolves installed desktop IDs when creating the layout; missing apps are
+omitted and native/Flatpak/Snap alternatives occupy a single slot. The preset does
+not install application packages. Both editions use the same list and retain
+their own icon appearance and materials.
+
+The installer restores existing pins after creating the layout, including an
+intentionally empty Dock on an existing theme installation. The base list is
+used when there are no saved pins and no previous theme layout. Declarative Nix
+panels continue to use their explicit `panels.launchers` list.
+
+
+## Dock icon appearance
+
+In the custom installer, open **Desktop → Dock apps… → Dock appearance** and
+choose **macOS-style Dock icons**. This is separate from optional app installation:
+it uses installed Linux applications with consistent icons for Files, Browser,
+Mail, Calendar, Notes, Photos, Music, Video, App Store and System Settings.
+The tooltip retains the real application name. Other applications keep their
+normal icons; launchers and running windows retain the same application identity.
+
+**Keep current Dock icons** is the installer default and preserves each Dock's
+choice, including during a layout reset. **Application icons** turns the option
+off. It can also be toggled in the Dock widget's Appearance settings. Pins, their
+order and the global icon theme are preserved. The bundled artwork has light and
+dark variants and does not require changing the desktop icon theme.
+
+
+### Dock migration in 0.64
+
+Express uses automatic Dock appearance. Each Dock records `dockPresetRevision=3`
+after applying the preset, installed application equivalents and macOS-style
+role icons. Revisions 0, 1 and 2 migrate once, regardless of the release they
+came from (including 0.61.0). The migration retains existing launchers in order
+and appends missing installed roles; it never installs applications. Firefox
+and other browsers retain their real application artwork and name.
+
+An explicit layout reset reapplies the preset. Without reset, revision 3 keeps
+removed pins and icon choices; explicit optional app requests can still add
+the requested roles. `keep`, `native` and `macos` are explicit icon overrides;
+`auto` applies the pictured icons only on initial migration or reset. Rebuilding
+retains the revision per screen. Failed script execution can retry.
+
+
+### Capsule highlights in 0.65
+
+The global menu's system button and `MenuDelegate` use half the smaller
+dimension as their QML radius, including hover and pressed states. Native
+menu selections use circular SVG corner arcs and Kvantum frame expansion
+large enough for the caps to meet at half the row height. Layout frames stay
+at 3px; text margins, row height, icon sizes and separators are unchanged.
+This follows Kvantum's [frame expansion contract](https://github.com/tsujan/Kvantum/blob/master/Kvantum/doc/Theme-Config).
+
+`tests/test_menu_rounding.py` renders the actual Qt style in light and dark
+mode, at scales 1, 1.5 and 2 with 9, 16 and 24 point fonts. It checks circular
+edge profiles and unchanged geometry. Publication updates only menu/context
+frames; separate top-bar previews verify the application-name hover.
+
+### Top-bar proportions in 0.65.1
+
+The Apple and Finder states in the [macOS Tahoe screenshot reference](https://512pixels.net/projects/aqua-screenshot-library/macos-26-tahoe/) guide the shared top bar: an inset capsule, symmetric text padding, a wider system-button capsule, regular menu labels and a bold application name. Keep the system font and full-height input area. Highlight height follows panel height with a bounded vertical inset; changing the visual inset must not move the popup anchor or reduce the clickable area.
+
+`tests/test_topbar_geometry.py` loads the real QML delegate with short and long names at three panel heights, checking text fit, symmetric padding and independent highlight/input geometry.
+
+### System menu proportions in 0.65.2
+
+The [macOS Golden Gate Apple menu reference](https://512pixels.net/projects/aqua-screenshot-library/macos-27-golden-gate/) guides the system popup's 24px rows, 16px icon column, 12px separator rows, 6px selection corners and 288px minimum natural width. Metrics scale with the configured menu font; long translated labels and user names can widen the popup. The preset already selects SF Pro Text, and the popup uses regular weight without overriding a user's font family or size.
+
+`SystemMenuStyle` owns a separate base style for this popup; it must never adopt or delete the application's shared style. The other menus retain their existing Kvantum rendering. Only About, System Settings and App Store have icons; other actions omit the icon column, as in Golden Gate. The default laptop, gear and App Store symbols use palette-aware vector drawing, while explicit custom icon choices retain their artwork. Recent Items remains absent. `tests/test_system_menu_style.py` compiles the actual style and checks geometry, selection rendering, style isolation and keyboard navigation.
+
+## Incremental installation
+
+Each payload is compared by content, permissions and symlink targets before
+replacement, so changing one plasmoid leaves identical siblings in place.
+Icon generation additionally keeps a successful-install receipt covering its
+source archive, Python recipe dependencies, style, tint and installed outputs.
+Missing or modified outputs cause regeneration. Receipts are an optimization,
+not proof that configuration or a requested layout reset can be skipped.
+Native builds retain their build graph and reconfigure against the current SDK.
+
+After changing a component, run
+`python src/scripts/component_manifest.py --write` and commit the resulting
+`component-hashes.json`. The ledger is independent of VERSION and Git commit;
+`python src/scripts/component_manifest.py` verifies it without writing.
+
+### 0.66.1 validation evidence
+
+Focused checks on Linux x86_64 with Python 3.14 covered component identity,
+missing/corrupt receipts, changed tint, independent payloads, repair of deleted
+files and a real CMake/Make rebuild with deliberately old source timestamps.
+Commands and results:
+
+- `python -m pytest -q -p no:cacheprovider tests/test_component_cache.py tests/test_release_screenshots.py`: 71 passed after portable source hashes and focused previews were added.
+- The installer wizard, icon and copy-helper regressions passed in the earlier
+  102-test development run; unaffected results were retained.
+- Uninstall receipt invalidation and icon-step regressions: 3 passed.
+- CI identified missing translations for incremental-install log messages; after
+  completing all four catalogs, localization and component-cache checks: 49 passed.
+- Golden Gate's `python -m pytest -q -p no:cacheprovider tests`: 97 passed.
+- Against the prepared Golden Gate source, component-cache, wizard and icon
+  regressions: 41 passed, including portable hashes across the edition staging.
+- Shared step guards, icon, Kvantum and Rounded Corners regressions: 68 passed,
+  one opt-in native Rounded Corners build skipped because its reviewed archive
+  and host KWin SDK were not supplied to that test.
+
+The four file-manager preview originals were captured from Tahoe commit
+`b762888c` in a disposable overlay of the pinned KDE neon VM (Plasma 6.8.1,
+Qt 6.11.1; image SHA-256
+`412e7933f10add20b921b92c02709e7eea56acd14dc14cf654f58fba4ea3cc9d`).
+A second installation in that overlay explicitly reported
+`Icons unchanged — skipping generation and installation`, along with unchanged
+individual plasmoid/runtime payloads. A frame whose geometry changed during
+capture was rejected; all four accepted originals were individually reviewed.
+Their hashes, source commit and before/after focus evidence are retained in
+`src/installer/assets/sources.json` and
+`build/captures/v0.66.1-file-previews/manifest.json`.
+
+These checks do not qualify a new distro or prove all native SDK combinations.
+For v0.66.1, the push CI matrix was a blocking publication gate. From v0.66.2
+it runs asynchronously; focused local evidence permits publication without
+claiming full remote qualification. The four affected installer-gallery
+frames were captured separately from source `9053872` after installing each
+edition in its own disposable VM overlay, preserving the pinned package
+inventory. All four frames were reviewed; unrelated photographs retain their
+original provenance. This was not a full distro or uninstall lifecycle run.
+
+Runtime CI runs on `dev`, pull requests and manual dispatch. Promote the same
+commit to `main` without a second suite or a polling job; send runtime changes
+through `dev` first. Markdown and documentation-image-only changes do not start
+the runtime matrix. Use command results as delivery evidence instead of repeated
+publication or branch lookups. Golden Gate validates the immutable Tahoe tag and
+archive once, without waiting for or querying the GitHub release page.

@@ -1,3 +1,4 @@
+import re
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parent.parent.parent
@@ -15,8 +16,7 @@ def read_version() -> str:
         v = VERSION_FILE.read_text().strip()
     except OSError:
         return "0.0.0"
-    parts = v.split(".")
-    if len(parts) == 3 and all(p.isdigit() for p in parts):
+    if re.fullmatch(r"\d+\.\d+(?:\.\d+|rc[1-9]\d*)", v):
         return v
     return "0.0.0"
 

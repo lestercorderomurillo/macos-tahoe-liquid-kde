@@ -27,6 +27,19 @@ LANGUAGE_CODES = tuple(item["code"] for item in LANGUAGES)
 
 
 _ES = {
+    "Icons unchanged — skipping generation and installation": "Iconos sin cambios — se omiten la generación y la instalación",
+    "{label} (unchanged)": "{label} (sin cambios)",
+    'Dock preset update failed': 'No se pudo actualizar el preset del Dock',
+    'Recovered {size} MiB. Git ancestry and local recovery data were preserved.': 'Se recuperaron {size} MiB. Se conservaron la ascendencia de Git y los datos locales de recuperación.',
+    'Published historical files may download again on demand; current source and local work stay available.': 'Los archivos históricos publicados pueden descargarse de nuevo cuando se necesiten; el código actual y el trabajo local siguen disponibles.',
+    'Git maintenance disabled by local configuration.': 'El mantenimiento de Git está desactivado en la configuración local.',
+    'Compacting Git storage: {path}': 'Compactando el almacenamiento de Git: {path}',
+    'Recovered {size} MiB. Git history and recovery data were preserved.': 'Se recuperaron {size} MiB. Se conservaron el historial de Git y los datos de recuperación.',
+    'Files still referenced by Git history remain; cleanup does not remove older commits.': 'Los archivos referenciados por el historial de Git se conservan; la limpieza no elimina commits antiguos.',
+    'Git maintenance could not finish: {reason}': 'No se pudo completar el mantenimiento de Git: {reason}',
+    'No independent Git checkout (archives need no Git cleanup).': 'No hay un clon independiente de Git (los archivos descargados no necesitan limpiar Git).',
+    'Shared object store or linked worktrees; leaving it unchanged.': 'El almacén de objetos es compartido o tiene árboles de trabajo vinculados; se conserva sin cambios.',
+    'Not the root of a Git checkout.': 'La carpeta no es la raíz de un clon de Git.',
     'Could not remove old Rounded Corners cache: {exc}': 'No se pudo eliminar la caché antigua de Rounded Corners: {exc}',
     "Generating icons: {completed}/{total}": "Generando iconos: {completed}/{total}",
     "Cron entries installed, but no running cron daemon could be confirmed. Enable your cron service for scheduled features.": "Se instalaron las entradas de cron, pero no se pudo confirmar que haya un servicio cron en ejecución. Activa el servicio cron para las funciones programadas.",
@@ -85,6 +98,19 @@ _ES = {
 }
 
 _ZH_CN = {
+    "Icons unchanged — skipping generation and installation": "图标未更改 — 跳过生成和安装",
+    "{label} (unchanged)": "{label}（未更改）",
+    'Dock preset update failed': 'Dock 预设更新失败',
+    'Recovered {size} MiB. Git ancestry and local recovery data were preserved.': '已回收 {size} MiB。Git 提交关系和本地恢复数据已保留。',
+    'Published historical files may download again on demand; current source and local work stay available.': '已发布的历史文件可按需重新下载；当前源代码和本地工作仍然可用。',
+    'Git maintenance disabled by local configuration.': '本地配置已禁用 Git 维护。',
+    'Compacting Git storage: {path}': '正在压缩 Git 存储：{path}',
+    'Recovered {size} MiB. Git history and recovery data were preserved.': '已回收 {size} MiB。Git 历史记录和恢复数据已保留。',
+    'Files still referenced by Git history remain; cleanup does not remove older commits.': 'Git 历史记录仍引用的文件将被保留；清理不会删除旧提交。',
+    'Git maintenance could not finish: {reason}': 'Git 维护未能完成：{reason}',
+    'No independent Git checkout (archives need no Git cleanup).': '没有独立的 Git 工作副本（归档文件无需清理 Git）。',
+    'Shared object store or linked worktrees; leaving it unchanged.': '存在共享对象存储或关联工作树；保持不变。',
+    'Not the root of a Git checkout.': '此目录不是 Git 工作副本的根目录。',
     'Could not remove old Rounded Corners cache: {exc}': '无法删除旧的 Rounded Corners 缓存：{exc}',
     "Generating icons: {completed}/{total}": "正在生成图标：{completed}/{total}",
     "Cron entries installed, but no running cron daemon could be confirmed. Enable your cron service for scheduled features.": "已安装 cron 条目，但无法确认 cron 守护进程正在运行。请启用 cron 服务以运行计划任务。",
@@ -214,6 +240,89 @@ _ZH_CN.update({'PyQt6 is required for the graphical installer but could not be i
 
 _ES["Rollback: {command}"] = "Revertir: {command}"
 _ZH_CN["Rollback: {command}"] = "回退：{command}"
+
+_ES.update({'Dock apps': 'Apps del Dock',
+ 'Dock apps…': 'Apps del Dock…',
+ 'Installed equivalents are reused. Select only the missing apps you want to install.': 'Se '
+                                                                                        'reutilizan '
+                                                                                        'las apps '
+                                                                                        'equivalentes '
+                                                                                        'instaladas. '
+                                                                                        'Selecciona '
+                                                                                        'solo las '
+                                                                                        'apps '
+                                                                                        'faltantes '
+                                                                                        'que '
+                                                                                        'quieras '
+                                                                                        'instalar.',
+ 'Distribution repositories': 'Repositorios de la distribución',
+ 'Flatpak for my user (installs Flatpak if needed)': 'Flatpak para mi usuario (instala Flatpak si '
+                                                     'hace falta)',
+ 'Allow adding Flathub for my user if it is missing': 'Permitir añadir Flathub para mi usuario si '
+                                                      'falta',
+ 'Flatpak apps may use their own appearance. No system remote is changed.': 'Las apps Flatpak '
+                                                                            'pueden tener su '
+                                                                            'propia apariencia. No '
+                                                                            'se cambia ningún '
+                                                                            'repositorio del '
+                                                                            'sistema.',
+ 'Unavailable from this source': 'No disponible en este origen',
+ 'Availability is checked during installation. Failed apps remain pending; removing the theme keeps your apps.': 'La '
+                                                                                                                 'disponibilidad '
+                                                                                                                 'se '
+                                                                                                                 'comprueba '
+                                                                                                                 'al '
+                                                                                                                 'instalar. '
+                                                                                                                 'Las '
+                                                                                                                 'apps '
+                                                                                                                 'que '
+                                                                                                                 'fallen '
+                                                                                                                 'quedan '
+                                                                                                                 'pendientes; '
+                                                                                                                 'desinstalar '
+                                                                                                                 'el '
+                                                                                                                 'tema '
+                                                                                                                 'conserva '
+                                                                                                                 'tus '
+                                                                                                                 'apps.',
+ 'Use installed apps only': 'Usar solo las apps instaladas',
+ 'Could not add {app}. The theme will continue; this Dock category remains pending.': 'No se pudo '
+                                                                                      'añadir '
+                                                                                      '{app}. El '
+                                                                                      'tema '
+                                                                                      'continuará; '
+                                                                                      'esta '
+                                                                                      'categoría '
+                                                                                      'del Dock '
+                                                                                      'queda '
+                                                                                      'pendiente.',
+ 'Mail': 'Correo',
+ 'Calendar': 'Calendario',
+ 'Notes': 'Notas',
+ 'Photos': 'Fotos',
+ 'Music': 'Música',
+ 'Video': 'Vídeo'})
+_ZH_CN.update({'Dock apps': 'Dock 应用',
+ 'Dock apps…': 'Dock 应用…',
+ 'Installed equivalents are reused. Select only the missing apps you want to install.': '将使用已安装的同类应用。仅选择要安装的缺失应用。',
+ 'Distribution repositories': '发行版软件仓库',
+ 'Flatpak for my user (installs Flatpak if needed)': '为当前用户安装 Flatpak 应用（必要时安装 Flatpak）',
+ 'Allow adding Flathub for my user if it is missing': '允许为当前用户添加尚未配置的 Flathub',
+ 'Flatpak apps may use their own appearance. No system remote is changed.': 'Flatpak '
+                                                                            '应用的外观可能不同。不会更改系统级远程仓库。',
+ 'Unavailable from this source': '此来源不可用',
+ 'Availability is checked during installation. Failed apps remain pending; removing the theme keeps your apps.': '安装时将检查可用性。安装失败的应用将保持待添加状态；卸载主题不会删除应用。',
+ 'Use installed apps only': '仅使用已安装的应用',
+ 'Could not add {app}. The theme will continue; this Dock category remains pending.': '无法添加 '
+                                                                                      '{app}。主题安装将继续；此 '
+                                                                                      'Dock '
+                                                                                      '类别保持待添加状态。',
+ 'Mail': '邮件',
+ 'Calendar': '日历',
+ 'Notes': '笔记',
+ 'Photos': '照片',
+ 'Music': '音乐',
+ 'Video': '视频'})
 
 _TRANSLATIONS = {"es": _ES, "zh_CN": _ZH_CN}
 

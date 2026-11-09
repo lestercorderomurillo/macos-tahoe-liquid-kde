@@ -435,6 +435,41 @@ def apply_color_groups_direct(scheme: str) -> bool:
                    "--key", "ColorSchemeHash", digest)
 
 
+def wait_for_clock_sync(timeout: float = 30.0) -> bool:
+    """Do not choose a scheduled theme using an unsynchronized dual-boot RTC.
+
+    A user unit cannot order itself after the system manager's time-sync
+    target. Query timedated instead, without changing the clock or NTP setup.
+    Non-systemd systems and deliberately disabled NTP retain wall-clock mode.
+    A bounded monotonic wait lets the user service retry safely when offline.
+    """
+    if not Path("/run/systemd/system").is_dir() or not _have("timedatectl"):
+        return True
+    deadline = time.monotonic() + timeout
+    while True:
+        remaining = deadline - time.monotonic()
+        if remaining <= 0:
+            return False
+        try:
+            result = _run_user(
+                ["timedatectl", "show", "--property=NTP",
+                 "--property=NTPSynchronized"],
+                timeout=min(2.0, remaining), capture=True,
+            )
+            properties = dict(line.split("=", 1) for line in
+                              (result.stdout or "").splitlines() if "=" in line)
+            if result.returncode == 0 and (
+                    properties.get("NTPSynchronized") == "yes"
+                    or properties.get("NTP") == "no"):
+                return True
+        except (OSError, subprocess.TimeoutExpired):
+            pass
+        remaining = deadline - time.monotonic()
+        if remaining <= 0:
+            return False
+        time.sleep(min(1.0, remaining))
+
+
 def detect_mode_by_time() -> str:
     h = _dt.datetime.now().hour
     return "light" if 6 <= h < 18 else "dark"
@@ -1790,6 +1825,10 @@ def main(argv: list[str]) -> int:
     if mode == "follow-system":
         return follow_system()
     if mode == "auto":
+        if not wait_for_clock_sync():
+            print("theme apply: waiting for clock synchronization; "
+                  "automatic service will retry", file=sys.stderr)
+            return 75  # EX_TEMPFAIL; only this result restarts the user unit.
         mode = detect_mode_by_time()
     if mode not in ("light", "dark"):
         print(tr(USAGE), file=sys.stderr)

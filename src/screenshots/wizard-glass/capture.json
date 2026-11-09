@@ -1,0 +1,369 @@
+{
+  "scope": "installer-glass_style only",
+  "working_source_sha256": "1650c580b143ca673f851f5971407a30ce39154044e34f9f2b68146927b60399",
+  "frames": {
+    "tahoe-auto-installer-glass_style.png": {
+      "wizard": {
+        "page": "glass_style",
+        "request": "dfd059e1f16d4a72a9329351982bcc96",
+        "pid": 2888,
+        "edition": "MacTahoe",
+        "title": "Install Tahoe"
+      },
+      "sha256": "e2730fdb08778b89f28e3ba06bc0de016fcae79c300947bd6d971572bcc8e39f",
+      "file": "tahoe-auto-e2730fdb0877.webp",
+      "export": {
+        "original_file": "tahoe-auto-4a224c3179f5.png",
+        "original_sha256": "4a224c3179f52f9772d69b5eee563b17c973047a4be5bca5a3669109040c7946",
+        "original_size": [
+          3840,
+          2160
+        ],
+        "source_repository_commit": "0021c22e78cd556427e2c0027fe9bc88aeb23cf6",
+        "format": "webp",
+        "quality": 95,
+        "size": [
+          2560,
+          1440
+        ],
+        "max_edge": 2560
+      }
+    },
+    "tahoe-light-installer-glass_style.png": {
+      "wizard": {
+        "page": "glass_style",
+        "request": "3b4f1f451e9a4e4c9f0a5e38315c4311",
+        "pid": 3618,
+        "edition": "MacTahoe",
+        "title": "Install Tahoe"
+      },
+      "sha256": "fccfde0de8ceb6733a0ddea7bcba1e188c06094bba95209e46751ca9295b8fe6",
+      "file": "tahoe-light-fccfde0de8ce.webp",
+      "export": {
+        "original_file": "tahoe-light-bd65ef83c28d.png",
+        "original_sha256": "bd65ef83c28d1dd564d5e7bece8c827839fc6ab97f355f52c86848f0018f120b",
+        "original_size": [
+          3840,
+          2160
+        ],
+        "source_repository_commit": "0021c22e78cd556427e2c0027fe9bc88aeb23cf6",
+        "format": "webp",
+        "quality": 95,
+        "size": [
+          2560,
+          1440
+        ],
+        "max_edge": 2560
+      }
+    },
+    "tahoe-dark-installer-glass_style.png": {
+      "wizard": {
+        "page": "glass_style",
+        "request": "3d4c23bac5ae4fe283600cb8e3ecb137",
+        "pid": 4282,
+        "edition": "MacTahoe",
+        "title": "Install Tahoe"
+      },
+      "sha256": "1a31201815839c57ee37a307d19dac1c36ba68cce0139f6dbd01ddc524053a48",
+      "file": "tahoe-dark-1a3120181583.webp",
+      "export": {
+        "original_file": "tahoe-dark-b3ea92555ee6.png",
+        "original_sha256": "b3ea92555ee62eb7002746603284c535e0394e5c0903c97f519aea293328e1e8",
+        "original_size": [
+          3840,
+          2160
+        ],
+        "source_repository_commit": "0021c22e78cd556427e2c0027fe9bc88aeb23cf6",
+        "format": "webp",
+        "quality": 95,
+        "size": [
+          2560,
+          1440
+        ],
+        "max_edge": 2560
+      }
+    },
+    "golden-gate-auto-installer-glass_style.png": {
+      "wizard": {
+        "page": "glass_style",
+        "request": "8c4ec707626c4478b6010a395e8b9596",
+        "pid": 5014,
+        "edition": "MacGoldenGate",
+        "title": "Install Golden Gate"
+      },
+      "sha256": "749c22ad8480421ff51e3d04efb5530bb3ae71beecd7c4bb793f5b3ddece444e",
+      "file": "golden-gate-auto-749c22ad8480.webp",
+      "export": {
+        "original_file": "golden-gate-auto-1b4d785868ea.png",
+        "original_sha256": "1b4d785868ea0352de4bce5b0e775f8ba7ca3534855dc8c31b686649f5b80109",
+        "original_size": [
+          3840,
+          2160
+        ],
+        "source_repository_commit": "0021c22e78cd556427e2c0027fe9bc88aeb23cf6",
+        "format": "webp",
+        "quality": 95,
+        "size": [
+          2560,
+          1440
+        ],
+        "max_edge": 2560
+      }
+    },
+    "golden-gate-light-installer-glass_style.png": {
+      "wizard": {
+        "page": "glass_style",
+        "request": "5c5c65e1345c4d3cba5adbe9b9a0539b",
+        "pid": 5663,
+        "edition": "MacGoldenGate",
+        "title": "Install Golden Gate"
+      },
+      "sha256": "105b973abe1295932a93b129755f88b68f7b422c29259bd47316bf3c6854aa70",
+      "file": "golden-gate-light-105b973abe12.webp",
+      "export": {
+        "original_file": "golden-gate-light-3b08a6863315.png",
+        "original_sha256": "3b08a68633159b312646af17474796075441966747c58ee2262541783cd16b4d",
+        "original_size": [
+          3840,
+          2160
+        ],
+        "source_repository_commit": "0021c22e78cd556427e2c0027fe9bc88aeb23cf6",
+        "format": "webp",
+        "quality": 95,
+        "size": [
+          2560,
+          1440
+        ],
+        "max_edge": 2560
+      }
+    },
+    "golden-gate-dark-installer-glass_style.png": {
+      "wizard": {
+        "page": "glass_style",
+        "request": "3ba78326016b466696d526a9145cef26",
+        "pid": 6304,
+        "edition": "MacGoldenGate",
+        "title": "Install Golden Gate"
+      },
+      "sha256": "6ef8da31db770ce02858a4bd1e9aeeb670885a8bdc8181972debf27c607efefe",
+      "file": "golden-gate-dark-6ef8da31db77.webp",
+      "export": {
+        "original_file": "golden-gate-dark-2aba8353b321.png",
+        "original_sha256": "2aba8353b32136d120e9eb4c8a0bcdaf6fe2ee2c9bc8b5fffd867b50d51b44e7",
+        "original_size": [
+          3840,
+          2160
+        ],
+        "source_repository_commit": "0021c22e78cd556427e2c0027fe9bc88aeb23cf6",
+        "format": "webp",
+        "quality": 95,
+        "size": [
+          2560,
+          1440
+        ],
+        "max_edge": 2560
+      }
+    }
+  },
+  "reviewed": true,
+  "resolution": [
+    3840,
+    2160
+  ],
+  "preview_crop": [
+    820,
+    300,
+    1280,
+    1214
+  ],
+  "client_fill": {
+    "light": {
+      "color": "#ffffff",
+      "opacity": 0.55
+    },
+    "dark": {
+      "color": "#000000",
+      "opacity": 0.12
+    }
+  },
+  "preview_capture": {
+    "scope": "Golden Gate launcher glass previews on Iridescence",
+    "source_sha256": "11046ed1944ed4ebedcffed2dcb5ba31c4050ea7b4df3db14d26328485496b8c",
+    "frames": {
+      "tahoe-clear-light.png": {
+        "values": {
+          "BlurStrength": 5.0,
+          "NoiseStrength": 0,
+          "RgbDriftStrength": 10.0,
+          "MagnifyGlassStrength": 0.02,
+          "RefractionWidth": 38.0,
+          "HighlightWidth": 16.0,
+          "HighlightStrength": 0.1,
+          "Brightness": 1.0,
+          "Contrast": 1.0,
+          "Saturation": 1.33,
+          "DarkGradientOverlay": false,
+          "GradientTopColor": "#000000",
+          "GradientBottomColor": "#000000",
+          "GradientTopOpacity": 0.38,
+          "GradientBottomOpacity": 0.02,
+          "GradientCenterColor": "#000000",
+          "GradientCenterOpacity": 0.02,
+          "GradientCenterPosition": 0.55,
+          "GradientTopDarkColor": "#000000",
+          "GradientCenterDarkColor": "#000000",
+          "GradientBottomDarkColor": "#000000",
+          "BlurDecorations": true,
+          "MaterialPreset": 1,
+          "BackingTint": 0
+        },
+        "sha256": "66b8538769de1b45bf72cca70da60bd03dcc7163be3ac2fb95966aac08741501"
+      },
+      "tahoe-frosted-light.png": {
+        "values": {
+          "BlurStrength": 12.0,
+          "NoiseStrength": 0,
+          "RgbDriftStrength": 10.0,
+          "MagnifyGlassStrength": 0.02,
+          "RefractionWidth": 38.0,
+          "HighlightWidth": 16.0,
+          "HighlightStrength": 0.1,
+          "Brightness": 1.0,
+          "Contrast": 1.0,
+          "Saturation": 1.33,
+          "DarkGradientOverlay": false,
+          "GradientTopColor": "#000000",
+          "GradientBottomColor": "#000000",
+          "GradientTopOpacity": 0.38,
+          "GradientBottomOpacity": 0.02,
+          "GradientCenterColor": "#000000",
+          "GradientCenterOpacity": 0.02,
+          "GradientCenterPosition": 0.55,
+          "GradientTopDarkColor": "#000000",
+          "GradientCenterDarkColor": "#000000",
+          "GradientBottomDarkColor": "#000000",
+          "BlurDecorations": true,
+          "MaterialPreset": 1,
+          "BackingTint": 1
+        },
+        "sha256": "8a6194eb5270a19ee32e28c6ae72aeeca239ad4893c4d90d8dbb9624cafe4dd4"
+      },
+      "golden-gate-official-light.png": {
+        "values": {
+          "BlurStrength": 4.0,
+          "NoiseStrength": 0,
+          "RgbDriftStrength": 8.0,
+          "MagnifyGlassStrength": 0.032,
+          "RefractionWidth": 64.0,
+          "HighlightWidth": 16.0,
+          "HighlightStrength": 0.1,
+          "Brightness": 1.1,
+          "Contrast": 1.0,
+          "Saturation": 1.13,
+          "DarkGradientOverlay": true,
+          "GradientTopColor": "#cecece",
+          "GradientBottomColor": "#cecece",
+          "GradientTopOpacity": 1.0,
+          "GradientBottomOpacity": 0.0,
+          "GradientCenterColor": "#cecece",
+          "GradientCenterOpacity": 0.69,
+          "GradientCenterPosition": 0.56,
+          "GradientTopDarkColor": "#000000",
+          "GradientCenterDarkColor": "#000000",
+          "GradientBottomDarkColor": "#000000",
+          "BlurDecorations": true,
+          "MaterialPreset": 2,
+          "BackingTint": 1
+        },
+        "sha256": "13ca03a3396c4985018de7b9604206a154b783b46374d989933dea1998abb48e"
+      },
+      "tahoe-clear-dark.png": {
+        "values": {
+          "BlurStrength": 5.0,
+          "NoiseStrength": 0,
+          "RgbDriftStrength": 10.0,
+          "MagnifyGlassStrength": 0.02,
+          "RefractionWidth": 38.0,
+          "HighlightWidth": 16.0,
+          "HighlightStrength": 0.1,
+          "Brightness": 1.0,
+          "Contrast": 1.0,
+          "Saturation": 1.33,
+          "DarkGradientOverlay": false,
+          "GradientTopColor": "#000000",
+          "GradientBottomColor": "#000000",
+          "GradientTopOpacity": 0.38,
+          "GradientBottomOpacity": 0.02,
+          "GradientCenterColor": "#000000",
+          "GradientCenterOpacity": 0.02,
+          "GradientCenterPosition": 0.55,
+          "GradientTopDarkColor": "#000000",
+          "GradientCenterDarkColor": "#000000",
+          "GradientBottomDarkColor": "#000000",
+          "BlurDecorations": true,
+          "MaterialPreset": 1,
+          "BackingTint": 0
+        },
+        "sha256": "afad6fa93bd4ced5e58d7a6c074cc0397e5cb0ebb064492cd3b11f4cca0d5fe5"
+      },
+      "tahoe-frosted-dark.png": {
+        "values": {
+          "BlurStrength": 12.0,
+          "NoiseStrength": 0,
+          "RgbDriftStrength": 10.0,
+          "MagnifyGlassStrength": 0.02,
+          "RefractionWidth": 38.0,
+          "HighlightWidth": 16.0,
+          "HighlightStrength": 0.1,
+          "Brightness": 1.0,
+          "Contrast": 1.0,
+          "Saturation": 1.33,
+          "DarkGradientOverlay": false,
+          "GradientTopColor": "#000000",
+          "GradientBottomColor": "#000000",
+          "GradientTopOpacity": 0.38,
+          "GradientBottomOpacity": 0.02,
+          "GradientCenterColor": "#000000",
+          "GradientCenterOpacity": 0.02,
+          "GradientCenterPosition": 0.55,
+          "GradientTopDarkColor": "#000000",
+          "GradientCenterDarkColor": "#000000",
+          "GradientBottomDarkColor": "#000000",
+          "BlurDecorations": true,
+          "MaterialPreset": 1,
+          "BackingTint": 1
+        },
+        "sha256": "cdd8fdc107dd8ece00bea047cdf57b0d100bab10b0f25d916a6d65e20b80bac5"
+      },
+      "golden-gate-official-dark.png": {
+        "values": {
+          "BlurStrength": 4.0,
+          "NoiseStrength": 0,
+          "RgbDriftStrength": 8.0,
+          "MagnifyGlassStrength": 0.032,
+          "RefractionWidth": 64.0,
+          "HighlightWidth": 16.0,
+          "HighlightStrength": 0.1,
+          "Brightness": 1.1,
+          "Contrast": 1.0,
+          "Saturation": 1.13,
+          "DarkGradientOverlay": true,
+          "GradientTopColor": "#cecece",
+          "GradientBottomColor": "#cecece",
+          "GradientTopOpacity": 1.0,
+          "GradientBottomOpacity": 0.0,
+          "GradientCenterColor": "#cecece",
+          "GradientCenterOpacity": 0.69,
+          "GradientCenterPosition": 0.56,
+          "GradientTopDarkColor": "#000000",
+          "GradientCenterDarkColor": "#000000",
+          "GradientBottomDarkColor": "#000000",
+          "BlurDecorations": true,
+          "MaterialPreset": 2,
+          "BackingTint": 1
+        },
+        "sha256": "3ab1905fbb30a67cd52bc407cfed97852b2e2759638c5fedaf20c8b58f2928bc"
+      }
+    }
+  }
+}

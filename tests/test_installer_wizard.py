@@ -36,7 +36,7 @@ def test_new_wizard_uses_source_defaults_after_other_edition(monkeypatch, tmp_pa
     assert json.loads(config.read_text()) == stale  # Opening is read-only.
 
 
-@pytest.mark.parametrize("payload", [[], {"shell": "echo bad"}, {"icons": "unknown"}, {"shadows": "unknown"}, {"window_controls": "unknown"},
+@pytest.mark.parametrize("payload", [[], {"shell": "echo bad"}, {"icons": "unknown"}, {"shadows": "unknown"}, {"window_controls": "unknown"}, {"glass_style": "unknown"},
                                     {"fonts": "false"}, {"oled_interval": True},
                                     {"oled_max_shift": 17}, {"wallpaper": "custom"}])
 def test_reject_invalid_selections_before_install(payload):
@@ -183,7 +183,7 @@ def test_native_wizard_navigation_preserves_choices_and_waits_for_completion(rep
 import sys
 from pathlib import Path
 sys.path[:0] = [str(Path.cwd() / 'src/scripts'), str(Path.cwd() / 'src/installer')]
-from PyQt6.QtWidgets import QApplication, QPushButton
+from PyQt6.QtWidgets import QApplication, QPushButton, QLabel
 from PyQt6.QtCore import Qt
 from PyQt6.QtTest import QTest
 from installer_ui import _make_installer_bridge
@@ -419,6 +419,29 @@ window.select('files', 'nautilus'); assert bookmarks.isVisible() and not bookmar
 window.content.findChild(RadioOption, 'choice-files-keep').click(); app.processEvents()
 assert window.choices['files'] == 'keep' and not bookmarks.isVisible()
 assert not any(card.isChecked() for card in window.content.findChildren(ChoiceCard))
+window.advance(); app.processEvents()
+assert window.page == 'boot'
+window.previous(); app.processEvents()
+assert window.page == 'files'
+window.select('files', 'nautilus')
+window.advance(); app.processEvents()
+assert window.page == 'glass_style'
+glass_text = ' '.join(label.text() for label in window.content.findChildren(QLabel))
+assert 'white backing' not in glass_text
+assert 'Dock' not in glass_text and 'blur strength' not in glass_text
+assert len(window.content.findChildren(ChoiceCard)) == 3
+window.content.findChild(ChoiceCard, 'choice-glass_style-tinted').click()
+assert window.choices['glass_style'] == 'tinted'
+window.advance(); window.previous(); app.processEvents()
+assert window.page == 'glass_style' and window.choices['glass_style'] == 'tinted'
+window.choices['acrylic_glass'] = False
+window.page = 'files'; window.render()
+window.advance(); app.processEvents()
+assert window.page == 'boot'
+window.previous(); app.processEvents()
+assert window.page == 'files'
+window.choices['acrylic_glass'] = True
+window.select('files', 'keep')
 window.page = 'summary'; window.render(); app.processEvents()
 assert window.choices['files'] == 'keep'
 window.existing_install = True

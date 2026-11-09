@@ -1,39 +1,42 @@
 # Glass materials
 
 Open **System Settings → Desktop Effects → Acrylic Glass → Configure**.
-Choose a preset, adjust its controls if desired, and press **Apply**.
+Choose a preset and press **Apply**. See the [light/dark preset gallery](../GLASS_PRESETS.md).
 
 | Preset | Appearance |
 | --- | --- |
-| Tahoe | Strongly blurred glass with a narrow refracted edge. Default in Tahoe. |
-| Golden Gate | Tahoe's optical values with an 85% black tint that fades out at 55% of menu height. The lower 45% and Dock stay untinted. Default in Golden Gate. |
+| Tahoe (Clear) | Blur 5, refraction 0.02, no gradient. Tahoe default. |
+| Tahoe (Frosted) | The same optics with blur 12. |
+| Golden Gate (Official) | Blur 4, refraction 0.032, three-stop light/dark tint. Golden Gate default. |
 
-Each preset replaces the complete material: blur, opacity, refraction, color
-separation, highlights, grain, brightness, contrast, saturation and gradient.
-There is one smooth blur implementation. **Fine tuning** exposes the detailed
-controls without requiring a choice of blur algorithm.
-Both presets use a blur strength of 5 on the 0–20 scale, grain 1,
-RGB separation 12, magnification 0.1, and saturation 1.33. The refracted
-edge is 18 wide, with highlight width 3.5 and strength 0.1. Brightness,
-contrast and material opacity remain 1. The gradient stays specific to
-each preset.
+The preset name “Official” is a material label in this independent project;
+it does not imply Apple or KDE endorsement.
 
-**Glass opacity** controls how much of the blurred material covers the original
-background. Keep it at 1 for full material coverage; lower it to reveal more
-of the sharp background. The Dock uses a clearer centre while preserving the
-refracted rim; applet popups retain full blur coverage. Text and icons retain
-their own opacity. Gradient
-colors and strengths are independent of this coverage, so a lighter bottom
-does not lose its blur. Disable **Enable gradient** for an untinted material.
+**Surface** controls the overall material. Blur softens the backdrop;
+refraction bends it near the edges (0–0.2), with stronger values producing
+more displacement. Brightness, contrast and saturation adjust the sampled
+background while keeping application text independent.
 
-Selecting another preset replaces your material adjustments. **Restore this
-preset** reapplies the selected preset, including its gradient colors.
-**Cancel** discards pending changes. Saved adjustments survive reopening the
-settings. Installing or reinstalling Acrylic Glass reapplies the complete
-preset of the repository being run: **Tahoe** from Tahoe, **Golden Gate** from
-Golden Gate. This replaces previous material selections and optical adjustments,
-including the gradient toggle and colors. Corners and window rules remain
-independent and are preserved.
+**Fine tuning** controls the details: grain adds texture, color separation
+splits edge colors, refraction width sets the band where bending happens,
+and highlight width and strength control the reflective rim.
+
+**Background gradient** provides the tint. Top, center and bottom each have
+clearly labeled light-mode and dark-mode colors plus a shared tint strength.
+Center position runs from 0 (top) to 1 (bottom). Colors follow each window's
+palette. The retired uniform background and opacity controls are gone.
+Disable the gradient for untinted glass.
+
+The Dock keeps its v0.62.0 optics independently of these controls: blur 5,
+RGB separation 12 with the existing 24% Dock attenuation, refraction 0.1,
+refraction width 18, highlight width 3.5 and strength 0.1, brightness 1,
+contrast 1, saturation 1.33 and 98% center coverage. It stays free of gradients.
+Corner settings and rendering fixes continue to apply.
+
+Selecting a preset replaces its surface, fine tuning and gradient values.
+**Restore this preset** reapplies them; **Cancel** discards pending changes.
+Saved adjustments survive reopening settings. Reinstalling reapplies the
+edition's preset; corners and window rules are preserved.
 
 Tahoe Plasma applet popups, tooltips, Qt menus and the detached search capsule
 use a 55% white fill in light mode and a slightly clearer 48% black fill in dark

@@ -1,5 +1,96 @@
 # AGENTS.md
 
+## Clean install-ready delivery
+
+After every fix or release, leave the user's actual VS Code checkout clean and
+ready to install, in both Tahoe and Golden Gate. Publishing from an isolated
+worktree does not complete delivery while the checkout the user opens remains
+behind or contains leftover edits. Synchronize that checkout to the delivered
+commit, including VERSION, the upstream pin and component hashes as applicable.
+
+Commit and deliver all task-owned changes, including AGENTS.md. Keep generated
+logs, temporary captures, build output and machine-specific .vscode settings out
+of tracked changes. Never hide dirt with assume-unchanged or skip-worktree, or
+ignore files that belong in version control.
+
+Coordinate with other agents before reconciling a shared checkout. Preserve
+uncommitted work that is not part of the delivery in a named, recoverable local
+backup before moving the checkout; never discard it with reset --hard or git
+clean. Do not reapply obsolete release edits over the delivered version. If
+active work prevents a clean checkout, resolve ownership or report that specific
+blocker instead of claiming the repository is ready.
+
+Check local git status once after the final checkout update and resolve any
+remaining task-owned changes. This is a local delivery check, not permission to
+repeat remote publication queries, rerun passed tests or wait for full CI.
+Documentation-only policy changes need no new version or release.
+
+## Efficient scope and repository graph
+
+Select tests by the behavior they prove. When one executable scenario covers
+A, B, C and D, keep that scenario and remove duplicate source-text assertions.
+Keep independent failure cases, security checks and distinct SDK coverage;
+"probably covered" is not evidence of equivalent coverage. Do not add tests
+that merely assert workflow wording, test names, file lists or this policy.
+Test executable CI helpers through their behavior when they can lose coverage.
+
+Use the offline graph before broad repository reads:
+`python3 tools/repo_graph.py --repo <checkout> <changed-path> ...` from Golden
+Gate. Omit paths for the working diff; use `--limit 10` for compact output,
+`--limit 0` for every impact or `--all` for the adjacency graph. The tool works
+on either checkout without network, packages or an AI service. Follow its
+caller links and read only affected functions first. Dynamic imports, generated
+paths and native/SDK dependencies need manual scope review; this navigation aid
+must never silently exclude tests from CI. No suggested tests is a coverage
+question, not a pass. Agent tooling in `tools/` is permitted in Golden Gate;
+shared desktop/installer implementation still belongs exclusively in Tahoe.
+
+CI cancels superseded runs on the same ref. Preserve all distro legs and the
+disjoint primary shards. Reuse weekly distro SDK layers and compiler results;
+retain compiler-content checking and never enable unsafe cache sloppiness.
+Focused local evidence precedes delivery; the full remote matrix stays async.
+
+## Respect for the user's time
+
+Apply these rules in both Tahoe and Golden Gate. They supersede older delivery
+or communication wording below. In the user's sense, *necio* means persisting
+stubbornly after a correction, not useful diligence ([Diccionario del español
+de México](https://dem.colmex.mx/ver/necio)). The following are concrete failure
+patterns to stop, not reasons to remove necessary correctness checks.
+
+1. Rechecking publication after a successful publishing command: use that result; do not issue a second release lookup.
+2. Polling a release repeatedly: submit the authorized operation and report the known outcome; do not invent an obligation to wait.
+3. Rechecking remote branches after a successful push: use the push result unless it reports an error or ambiguity.
+4. Narrating plans, tool calls or implementation details: omit routine process narration; explain only when asked or when needed for user input.
+5. Repeating unchanged status messages: no stream of “still waiting”, “verifying” or “almost done”.
+6. Announcing that you will be concise or respectful: demonstrate it in the response instead.
+7. Delaying an installable fix for the remote matrix: publish after focused local validation and required component review; leave full CI asynchronous.
+8. Waiting for main to repeat dev's result: promote the same commit without a polling job.
+9. Running the full matrix twice for the same delivered change: run it on dev and on PRs; main promotion does not launch a duplicate.
+10. Running runtime CI for Markdown-only edits: use documentation/path filters; do not build native components for prose.
+11. Repeating passing local tests after bookkeeping: reuse evidence while tested code, inputs and environment are unchanged.
+12. Running the whole suite for a narrow fix: choose affected behavior and expand only for a concrete failure or dependency.
+13. Taking every screenshot for one changed component: capture only the needed views in a disposable VM.
+14. Revalidating the entire historical gallery at every release: retain original provenance and check changed artifacts; do not repeat historical audits without cause.
+15. Replacing reviewed images because the version changed: preserve them and their actual capture identity.
+16. Expanding a bug fix into an unsolicited redesign or framework: make the smallest complete repair.
+17. Asking again for permission already granted: act within the existing authorization.
+18. Asking questions already answered by the repository or session: consult existing context first.
+19. Treating old AGENTS wording as stronger than a new user instruction: apply the user's correction and reconcile the conflicting rule.
+20. Reciting internal checklists to the user: keep operational records in files and return the useful result.
+21. Printing long logs when one error explains the failure: inspect quietly and surface only the decision-relevant issue.
+22. Sending coordination acknowledgment loops: message peers for ownership conflicts or actionable handoffs, not ceremonial updates.
+23. Bumping versions or publishing releases for instruction-only edits: commit and push the documentation without release churn.
+24. Continuing after the requested result is complete: stop; do not add a new verification phase.
+
+Default final response: the result, its usable link/path when relevant, and a
+material unresolved limitation if one exists. Do not describe how it was done
+unless requested. Ask only for missing input that changes the outcome. Never
+claim an unobserved success: “submitted” is sufficient when an asynchronous
+operation has only been submitted. A failed operation still needs correction;
+removing redundant confirmation is not permission to hide failure.
+
+
 ## #1 — Self-explanatory code
 
 Do not explain what a terminal command does when it is already obvious
@@ -186,12 +277,15 @@ Store, Force Quit, Sleep, Restart, Shut Down, Lock Screen, Log Out.
 
 ## UI/UX Conventions
 
-- System menu icons appear only beside About This Computer, System Settings
-  and App Store, matching the Golden Gate reference. Keep the remaining
-  actions icon-free and omit their reserved icon column; preserve the
-  surrounding menu margins and row spacing.
-- Keep the system menu's `computer`, `preferences-system` and
-  `software-store-symbolic` artwork inherited from the base icon theme.
+- The system menu follows the macOS Golden Gate reference: only About,
+  System Settings and App Store have icons (laptop, gear and App Store symbol).
+  Remaining rows have neither an icon nor a reserved icon column. Recent Items
+  is intentionally absent. SystemMenuStyle scopes the font-scaled metrics and
+  reference symbols to this popup; explicit custom icon choices remain usable.
+  Ordinary menus keep their existing Kvantum style.
+- Draw the three default system-menu symbols from the Golden Gate reference
+  in SystemMenuStyle; custom icons and other widgets retain the inherited
+  base-theme artwork.
   Generated app appearances must also omit `preferences`, `software` and
   `software-store`: Qt/KDE resolve those generic fallbacks before inherited
   menu icons. Test both QIcon rendering and KIconLoader resolution. Use
@@ -199,9 +293,10 @@ Store, Force Quit, Sleep, Restart, Shut Down, Lock Screen, Log Out.
 - Hover tiles: glass effect (semi-transparent fill, 0.5px micro
   border, 22px radius) — not outlined borders.
 - Native menu selection rounding uses Kvantum `expand-menuitem-normal` tiles
-  and `frame.expansion=12`. Keep the 3px layout frame, text margins, row
+  and `frame.expansion=10000`, with circular SVG corners so the caps meet
+  at half the row height. Keep the 3px layout frame, text margins, row
   heights, icon sizes and separators unchanged; frame expansion affects
-  painting only. The system menu adds 65 logical pixels to its natural width.
+  painting only. The system menu uses its own scoped metrics and grows for long labels.
 - System font always — never hardcode font names or sizes.
 - Popup plasmoids are fixed-size, not resizable.
 - Top panel is applets-only floating (not full-floating). Keep the menu bar
@@ -311,7 +406,11 @@ build artifacts; the tool must not change live themes or installer defaults.
 
 **Reset Dock and panel customization** starts checked on every new wizard launch.
 Unchecking it preserves existing Dock/panel geometry, hiding behavior, widgets
-and launcher configuration during reinstall.
+and launcher configuration during reinstall, except for the one-time 0.64 Dock
+migration. Revision 3 applies the pictured preset and icons, preserving pins
+and their order. Later reinstalls without reset respect removed pins and icon
+choices. Explicit resets reapply the preset. Browsers retain their own artwork
+and names, including Firefox; never substitute Safari artwork.
 Determine whether this is an existing installation before copying any assets;
 skip both layout creation and its post-restart retry when preserving. Fresh
 installs still create the selected layout. File-manager choices explicitly offer
@@ -328,10 +427,14 @@ commit before opening the wizard. It then re-execs `./install`;
 `MAC_TAHOE_UPDATED=1` prevents recursion. Dirty or diverged checkouts, missing
 git, network failures and mismatched release versions leave the checkout
 unchanged and show the manual update hint. Uninstall does not update itself.
-Golden Gate first uses `GOLDEN_GATE_TAHOE_SOURCE` or a complete sibling
-`../macos-tahoe-liquid-kde` checkout, staging its own defaults in an isolated
-copy without updates or downloads. Without local sources its wrapper
-fast-forwards its own checkout and selects the latest published Tahoe release.
+Golden Gate compares its wrapper and an automatically discovered sibling Tahoe
+checkout to their respective published versions independently. Each clean
+checkout fast-forwards only to a verified newer release; local edits, untracked
+files and divergent local commits remain available for development. Equal or
+newer local versions are never downgraded. `GOLDEN_GATE_TAHOE_SOURCE` explicitly
+selects local testing and disables automatic updates of both repositories.
+Golden Gate stages its own defaults in an isolated copy, never in Tahoe itself.
+Without local sources it selects the latest published Tahoe release.
 It sets `MAC_TAHOE_NO_UPDATE_CHECK=true` for the prepared source.
 
 ## Architecture — Optional Online Rounded Corners
@@ -635,7 +738,29 @@ the units down, so a plain re-install is self-healing.
 
 Both editions use transparent Plasma and Kvantum surfaces in light and dark
 mode. Material presets own blur, refraction and gradient tint. Do not generate
-opaque theme variants or expose a separate reduced-transparency preference.
+opaque theme variants. Keep shell surfaces unchanged. The KCM offers Tahoe (Clear),
+Tahoe (Frosted) and Golden Gate (Official). Golden Gate clear is hidden from
+the selector; old selections retain their saved optics and display Official. Alternate
+presets use the shared `tinted_values` overrides; selection, Restore and the
+installer apply them consistently. Tahoe (Clear) uses the former Frost Glass
+optics with blur 5; Tahoe (Frosted) differs only in blur strength 12. Preserve `MaterialPreset` IDs 1/2 and the
+legacy `BackingTint` key as the alternate-preset identity only. It no longer
+activates a flat backing, and retired BackgroundColor, BackgroundAutomatic and
+BackgroundOpacity keys must not affect rendering.
+The single Background gradient section owns the color overlay. Top, center
+and bottom each have separate Light mode and Dark mode color pickers, with a
+shared tint strength per stop and a center position from 0 (top) to 1 (bottom).
+Colors follow each window's palette at render time. Existing Gradient*Color
+keys serve light mode; absent Gradient*DarkColor keys inherit the old color in
+both the renderer and KCM. Save explicit dark colors, including default black,
+so a custom light color cannot override a deliberate dark choice.
+Golden Gate (Official) uses blur 4, refraction 0.032, color separation 8 px,
+refraction width 64 px, highlight width 16 px, highlight strength 0.1,
+brightness 1.1, contrast 1, saturation 1.13 and no grain. Its gradient uses
+#CECECE in light mode and black in dark mode, with top/center/bottom strengths
+1/0.69/0 and center position 0.56. Window decoration blur is enabled. Corners and window rules
+remain independent. Endpoint positions collapse the corresponding segment
+safely; keep interpolation premultiplied and surface coverage unchanged.
 Legacy appearance files must not influence theme selection; preserve unrelated
 settings and declarative files. Uninstall still cleans up old generated variants.
 Preserve surface masks, shadows, highlights and solid fallbacks.
@@ -673,17 +798,21 @@ per-screen ownership: selecting an edition never resets custom wallpapers;
 `--reset-wallpapers` remains the explicit opt-in. Golden Gate is a download
 wrapper selecting `MacGoldenGate`, not a separate theme implementation.
 
-Golden Gate's upper glass gradient applies to menus in both light and dark
-mode: 85% black at the top, fading completely within the first 55% of the
-surface height. The lower 45% keeps untinted glass. Dock surfaces are exempt
+Golden Gate (Official) is the only offered Golden Gate material and the
+installer default. Its independently tuned three-stop gradient, documented
+above, applies to menus in both light and dark mode. Dock surfaces are exempt
 from the gradient under every material; do not
 change the saved gradient settings or remove their blur and refraction.
-Dock/panel glass uses a compact Kawase pyramid (up to three levels), less grain
-and 98% centre coverage, with a mild angled lens near the rim. Keep the Gaussian
+Dock/panel optics stay pinned to v0.62.0 independently of window presets and
+fine tuning: three Kawase levels, offset `5 * 0.14`, repaint expansion 50,
+RGB separation `12 * 0.24`, refraction 0.1 / width 18, highlight 3.5 / 0.1,
+brightness 1, contrast 1, saturation 1.33 and 98% centre coverage. The old
+grain strength 1 generated an all-zero texture, so skip that no-op on Docks.
+Corner geometry and rendering fixes remain active. Keep the Gaussian
 finish dense: reconstruct its 5×5 binomial kernel with nine bilinear samples,
 never widen it by separating taps into displaced backdrop copies. Blend the surface normal
 with the centre-directed lens in normalized local coordinates. Derive this
-per surface from the selected material without rewriting optical preferences;
+per surface without rewriting optical preferences;
 menus retain their full blur. Keep the bevel displacement independent of the
 Dock's length and scale it in device pixels.
 Dock captures must use `widgets/panel-background.svgz`, not a light/dark dialog
@@ -691,7 +820,7 @@ fill. Its glass is identical in both appearance modes.
 
 Publish Tahoe and Golden Gate with matching release versions and `v<version>`
 tags. Deliver completed changes to both `dev` and `main` in both repositories,
-and verify both remote branches include them before reporting completion.
+and use the successful push result as delivery evidence; do not re-query refs.
 Release titles must be exactly `v<version>`, with no subtitles, descriptions
 or other extra text. Golden Gate's `VERSION` must match its pinned Tahoe
 release. Golden Gate installs the latest Tahoe release at runtime; its
@@ -700,16 +829,44 @@ the published Tahoe release commit and verified archive SHA-256 before
 publishing the corresponding Golden Gate release. Each README
 shows its own default launcher preset and wallpaper in light and dark mode.
 
-Capture screenshots for EVERY release with `./release-screenshots capture`.
-Use the checksum-pinned disposable VM and fixed recipe in
-`src/scripts/release_capture_profile.json`; never capture on the host desktop.
-Capture both modes in both editions, verify the active effect matches the
-release source, and visually review every fresh image before staging. Missing,
-rejected, mixed-theme or older-release pictures block publication. Commit the
-reviewed images and provenance, run `./release-screenshots verify`, then push
-the release tag through `.github/workflows/release.yml`. Do not bypass the
-gate with a direct `gh release create`. Changes outside `src/screenshots/`
-after capture require a new run, except README/TESTING screenshot filename hash updates. See CONTRIBUTING.md for the full sequence.
+Visual validation and documentation photography are separate tasks. A visible
+change may justify a focused visual check; it does not require refreshing the
+documentation gallery. New documentation captures are optional unless the user
+requests them or an affected published image would otherwise misrepresent the
+changed behavior. A request to "show me" authorizes a focused preview of the
+changed component, not a full release capture run.
+
+Before starting a VM, name the changed component, the visible difference and
+the exact frames needed. For a Dock application-list or icon-alias change,
+check the affected Dock in the relevant editions and appearance modes. Do not
+recapture installer pages, window materials, Files, About This Computer, boot
+or shutdown unless the diff changes their behavior or the user requests a
+gallery refresh. The Dock appearing incidentally in another screenshot does
+not by itself require replacing that screenshot.
+
+Reuse reviewed images with their original source commit, hashes and provenance;
+never relabel them as newly captured. A new version, source commit, VM checksum,
+profile change or capture-tool limitation is not evidence that every component
+changed. Do not modify the global capture profile or rebuild the full gallery
+merely to obtain a focused preview. If the publication tooling cannot preserve
+unaffected images, report that limitation and keep the preview separate; do not
+expand the capture scope to satisfy the tool. A rejected new frame must not be
+replaced by an older image presented as fresh evidence.
+
+Once the planned affected checks pass, stop. Do not repeat them for documentation,
+version or release bookkeeping. A user instruction to stop testing cancels
+further test, VM, capture and manual CI launches; preserve completed evidence
+and report any remaining publication gate without trying to satisfy it through
+another test route.
+
+Use `./release-screenshots` and the checksum-pinned disposable VM for any new
+publication captures. Review each new image, preserve content-hashed filenames,
+and record their source hashes and review before publication. Keep unchanged
+gallery images with their original provenance and label historical galleries
+accurately. Publish through `.github/workflows/release.yml` after its fast local-
+evidence check; full remote CI runs independently. Do not create releases outside
+that workflow.
+See CONTRIBUTING.md for the capture sequence when visual changes require it.
 
 The same defaults file selects `launcher_preset` (Tahoe: 1, Golden Gate: 2).
 `launcher_defaults.py` stamps only the staged launcher's `defaultLauncherPreset`
@@ -875,7 +1032,7 @@ bootloader probe.
 | ---------------------------- | ---- |
 | `tests/containers/Dockerfile.<distro>` | One per supported distro. CachyOS pulls both `archlinux-keyring` and `cachyos-keyring` after `pacman-key --init && pacman-key --populate archlinux cachyos`. |
 | `tests/containers/Dockerfile.arch-kdeunstable` | Canary against Arch's `[kde-unstable]` staging repo — catches the next Plasma release early. Every matrix target, including staging, must pass. |
-| `tests/containers/run_in_container.py` | Per-distro probe: qmake6 resolves, the distro layer agrees with what qmake6 reports, every `package_for()` token resolves in the distro's repo (with a "transient network" skip so flaky upstream CDN edges don't tank CI), preflight destination checks, pytest. |
+| `tests/containers/run_in_container.py` | Per-distro probe: qmake6 resolves, the distro layer agrees with what qmake6 reports, every `package_for()` token resolves in the distro's repo (with a "transient network" skip so flaky upstream CDN edges don't tank CI), preflight destination checks and platform-sensitive pytest. The general suite runs once per commit, split into disjoint file shards. |
 | `tests/containers/run_matrix.sh` | Local runner. CI runs the same workflow via `.github/workflows/test.yml`. |
 
 Gentoo is no longer a supported installation target. Package-manager entry
@@ -1008,6 +1165,21 @@ green   yellow   orange   red   purple   blue
 | Pinned taskbar apps wiped during layout rebuild | First installs, selected layout resets and uninstall rebuild panels from scratch. `layout.py` captures every `launchers=` list from appletsrc first (deduped, minus our own plasmoids), writes it onto the new Mac Dock during install, and restores it onto the default Breeze icontasks during uninstall. Wizard updates preserve the existing layout when reset is unchecked. |
 | GTK popups never get compositor blur           | Client-side popups (Firefox menus, popovers) receive no KWin blur, so GTK CSS popup surfaces must keep mirrored light/dark rgba alpha — literal `transparent` renders see-through (issue #11). The gtk-4.0 sheets must also define every libadwaita named color they reference; only libadwaita apps define those at runtime. `test_static.py` guards both. |
 
+## Documentation style
+
+Keep TESTING.md as a concise snapshot of the latest verified release, stated
+once, followed by the installer photographs. Replace the previous summary;
+never append a changelog, superseded candidates or unreleased development logs.
+Keep one short validation summary with a link to detailed evidence and coverage
+limits. When consolidating accumulated history, reduce the document by at least
+half. Preserve reviewed photographs, content-hashed filenames and original
+provenance; do not recapture or relabel unchanged images. Keep README concise
+and put installer photographs only in TESTING.md.
+
+Limit README installation/update notes to two short lines of user actions.
+Omit updater internals and repeated explanations; keep technical details in
+CONTRIBUTING.md or linked developer documentation.
+
 ## Testing
 
 `./test` runs the full pytest suite. Apply the following scope policy before
@@ -1026,7 +1198,7 @@ that scope when a failure or shared dependency reveals another affected path.
 | --- | --- |
 | Wrapper, downloader or source selection | Wrapper suite, including local-source staging, release fallback and checksum/version handling where affected. |
 | Tahoe implementation | Component regressions and affected installer lifecycle paths in Tahoe; exercise the prepared Golden Gate source when edition staging can change the result. |
-| Defaults, materials or appearance | Affected editions, light/dark transitions, saved choices and relevant visual checks in a disposable VM. |
+| Defaults, materials or appearance | Target the changed behavior, affected editions and saved choices. Use a disposable VM only for rendering or transition claims that need visual evidence; scope it to the changed component. Documentation photography follows the optional capture policy. |
 | Native backend, ABI or distro packages | Build against the affected SDKs and test the changed backend on representative distros with distinct relevant SDK/package layouts. Record build, load and behavior results separately. |
 | Documentation or agent instructions only | Review consistency, references and `git diff --check`; no manual pytest, native builds or VM runs. |
 
@@ -1041,7 +1213,9 @@ qualification on every distro for this fix.
 
 Run focused checks while implementing; reserve broad integration runs for a
 stable candidate. Required CI supplies the complete suite and configured distro
-matrix on the final implementation commit. Do not also run the entire matrix
+matrix on the final implementation commit. The full general suite runs once on
+`dev` (two disjoint shards); each distro retains dependency, SDK build, native
+rendering and platform checks. `main` receives the same commit without launching another CI run or polling job. Pull requests run their own complete checks. Do not also run the entire matrix
 locally unless CI cannot exercise the needed case or a failure needs local
 reproduction. Run the shared suite against the prepared source when staging
 changes executable behavior; a pin-only update to an already validated Tahoe
@@ -1057,13 +1231,17 @@ matrix just to obtain the same evidence sooner. Once the planned checks pass
 and coverage gaps are resolved, stop testing unless new changes invalidate
 that evidence.
 
-For implementation delivery, inspect required CI results for the exact commits
-on both branches. Earlier-commit evidence never substitutes for the exact-SHA
-release gate: publication requires successful `test.yml` push runs on `main`
-and `dev` for each repository's exact release commit. Never weaken workflows,
-skip required checks or treat missing,
-cancelled or failed checks as success to shorten a task. Release screenshot
-capture and verification remain mandatory for every release.
+For implementation delivery, run focused local checks for the affected behavior,
+review component-scoped VM captures when needed, and record their exact source
+fingerprint in `release-evidence.json`. Publish the installable fix promptly after
+these checks pass. Full remote CI remains enabled and runs asynchronously on
+`dev`; `main` promotion does not run a polling or duplicate test job.
+Do not wait for the full matrix or repeat the historical screenshot audit before
+telling the user the release can be installed. Clearly distinguish local checks,
+reviewed captures, published release and pending/passed/failed remote CI. Never
+call pending, cancelled, skipped or failed checks successful. Investigate later
+CI failures and deliver a corrective release when necessary. Preserve complete
+CI coverage; this policy changes publication ordering, not the test matrix.
 
 Documentation-only delivery does not require a version bump, pin update,
 release or new screenshots. Automatic push CI may still run; report its status
@@ -1162,3 +1340,37 @@ Defaults remain edition-specific (Tahoe Flat, Golden Gate Glassy), but an explic
 choice overrides the edition for Aurorae, GTK, global-theme defaults and the
 standalone switcher. Preserve the choice through light/dark transitions; new
 wizard launches still start from source-edition defaults.
+
+
+Optional Dock applications are a separate, user-authorized package operation.
+Keep theme assets offline. Reuse installed equivalents first; never install
+applications in an express/default transaction. The custom wizard previews each
+selected app and its source. Native packages use only configured repositories;
+per-user Flatpak and adding Flathub require explicit transaction choices. Do not
+silently switch sources, upgrade the distribution or remove these apps during
+theme uninstall. Failed optional apps warn and remain pending in the Dock.
+
+## Component installation fingerprints
+
+Maintain independent installation fingerprints for each component, including each
+plasmoid. Changes to component sources, installation logic, shared dependencies
+or relevant choices must invalidate only the affected components. Never use the
+release version or repository commit as a global reinstall key. Record success
+only after installation completes; failures, cancellation, missing installed
+artifacts and uninstall must not leave a reusable success record. Keep source
+fingerprints auditable in the repository and validate them before release.
+
+Installer file-manager previews must show the featured Nautilus or Dolphin
+window focused. Verify window identity, focus and settled geometry immediately
+before and after capture inside a disposable VM; reject interrupted captures.
+Preserve original provenance for unaffected photographs.
+
+Before committing a component change, run
+`python src/scripts/component_manifest.py --write` and commit
+`component-hashes.json` with it. Review that only affected payloads and their
+shared recipe dependents changed. CI verifies this ledger against the actual
+sources; never bump a global release hash to force every component to reinstall.
+Runtime comparisons hash actual staged bytes (including local development
+changes), permissions and symlink targets. Keep configuration application and
+explicit reset choices outside payload reuse. Native build reuse must retain
+CMake configuration and Make's SDK/header dependency checks.

@@ -19,13 +19,14 @@ from release_screenshots import (ROOT, PROFILE, EDITIONS, MODES, INSTALLER_PAGES
 
 
 class Guest:
-    def __init__(self, root, profile, image, source, edition):
+    def __init__(self, root, profile, image, source, edition, *, resume=False):
         self.root, self.profile, self.source, self.edition = root, profile, source, edition
         self.name = 'mttkde-capture-' + uuid.uuid4().hex[:12]
         self.stream = None
         self.process = None
         self.log = None
         self.image = image
+        self.resume = resume
         with socket.socket() as probe:
             probe.bind(('127.0.0.1', 0))
             self.port = probe.getsockname()[1]
@@ -39,7 +40,11 @@ class Guest:
     def __enter__(self):
         try:
             disk = self.root / 'disk.qcow2'
-            subprocess.run(['qemu-img', 'create', '-q', '-f', 'qcow2', '-F', 'qcow2', '-b', str(self.image), str(disk)], check=True)
+            if self.resume:
+                info = json.loads(subprocess.check_output(['qemu-img', 'info', '--output=json', str(disk)], text=True))
+                require(Path(info.get('full-backing-filename', '')).resolve() == self.image.resolve(), 'Wrong resume image')
+            else:
+                subprocess.run(['qemu-img', 'create', '-q', '-f', 'qcow2', '-F', 'qcow2', '-b', str(self.image), str(disk)], check=True)
             self.log = (self.root / 'qemu.log').open('w')
             self.process = subprocess.Popen([
                 'qemu-system-x86_64', '-name', self.name, '-enable-kvm', '-cpu', 'host',
@@ -166,7 +171,7 @@ def capture_lock():
         yield
 
 
-def capture(repo: Path, ref: str, image: Path, output: Path) -> dict:
+def capture(repo: Path, ref: str, image: Path, output: Path, reuse: Path | None = None) -> dict:
     profile = json.loads(PROFILE.read_text())
     image = image.resolve()
     require(digest(image) == profile['vm_image_sha256'], 'VM image checksum differs from the pinned recipe')
@@ -185,56 +190,139 @@ def capture(repo: Path, ref: str, image: Path, output: Path) -> dict:
                     vm_image_sha256=profile['vm_image_sha256'], frames={}, environments={},
                     host={'qemu': subprocess.check_output(['qemu-system-x86_64', '--version'], text=True).strip(),
                           'kernel': os.uname().release, 'machine': os.uname().machine})
+    from release_screenshots import affected_frames, frame_origin, expected_frames, CASES
+    pending = expected_frames()
+    approvals = {}
+    if reuse is not None:
+        old = json.loads((reuse / 'manifest.json').read_text())
+        validate(repo, old['source_commit'], reuse)
+        old_review = json.loads((reuse / 'review.json').read_text())
+        manifest['schema'] = 2
+        invalidated = {}
+        for name, frame in old['frames'].items():
+            origin, tree, version = frame_origin(old, frame)
+            if origin not in invalidated:
+                invalidated[origin] = affected_frames(repo, origin, source)
+            if name in invalidated[origin]:
+                continue
+            shutil.copyfile(reuse / 'frames' / (name + '.png'), output / 'frames' / (name + '.png'))
+            manifest['frames'][name] = dict(frame, source_commit=origin, source_tree=tree, source_version=version)
+            approvals[name] = old_review['approved'][name]
+            pending.remove(name)
+        from release_screenshots import effect_identity
+        manifest['effect_build'] = effect_identity(repo, source)
+        print(f'Reusing {len(approvals)} reviewed frames; capturing {len(pending)} affected frames', flush=True)
     with capture_lock():
         for edition in EDITIONS:
+            if not any(n.startswith(edition + '-') or (edition == 'tahoe' and n in ('boot', 'shutdown'))
+                       for n in pending):
+                continue
             with tempfile.TemporaryDirectory(prefix='mttkde-cap-') as temp:
                 guest_dir = Path(temp)
                 try:
                     with Guest(guest_dir, profile, image, archive, edition) as vm:
                         print(f'Installing {edition} from {source}', flush=True)
-                        manifest['environments'][edition] = vm.action('setup', edition)
+                        dock_only = pending <= {f'{e}-{m}-dock' for e in EDITIONS for m in MODES}
+                        menu_only = pending <= {f'{e}-{m}-{c}' for e in EDITIONS for m in MODES for c in ('menu', 'context')}
+                        installer_only = all('-installer-' in name for name in pending)
+                        scope = ['dock'] if dock_only else ['menu'] if menu_only else ['installer'] if installer_only else []
+                        manifest['environments'][edition] = vm.action('setup', edition, *scope)
                         for mode in MODES:
                             vm.action('clean-desktop')
                             vm.key('esc')
-                            vm.action('mode', mode)
+                            vm.action('mode', mode, *scope)
                             def shot(case):
-                                vm.move(*profile['pointer'])
+                                name = f'{edition}-{mode}-{case}'
+                                if name not in pending:
+                                    return
+                                if case not in ('menu', 'context'):
+                                    vm.move(*profile['pointer'])
+                                if case == 'dock':
+                                    state = vm.action('plasma', 'var states=[]; panels().forEach(p=>p.widgets().forEach(w=>{'
+                                        'if(w.type.includes("icontasks")){w.currentConfigGroup=["General"];'
+                                        'states.push(w.readConfig("macOSDockIcons"));}}));'
+                                        'print(JSON.stringify(states));')
+                                    require(json.loads(state) in ([True], ['true']), 'Installer did not apply default Dock artwork')
                                 record = vm.action('capture', edition, mode, case)
+                                if case == 'dock':
+                                    record['dock_appearance'] = 'macos'
                                 name = f'{edition}-{mode}-{case}'
                                 vm.get('/home/tester/release-capture/frame.png', output / 'frames' / (name + '.png'))
                                 manifest['frames'][name] = record
                                 manifest.setdefault('effect_build', record['effect_build'])
                                 print('Captured ' + name, flush=True)
-                            vm.action('plasma', 'panels().forEach(p=>p.widgets().forEach(w=>{if(w.type==="org.kde.mac-tahoe-liquid-kde.launcher")'
-                                      '{w.currentConfigGroup=["General"];w.writeConfig("launcherPreset",' + str(EDITIONS[edition][1]) + ');}}));')
-                            vm.action('launcher')
-                            shot('launcher')
-                            vm.key('esc')
-                            vm.action('plasma', 'panels().forEach(p=>{if(p.location==="bottom")p.hiding="none";});')
-                            shot('dock')
-                            for case, x, y, button in [('menu', 40, 30, 'left'), ('context', 2100, 1000, 'right')]:
+                            mode_pending = {case for case in CASES
+                                            if f'{edition}-{mode}-{case}' in pending}
+                            if mode_pending and mode_pending <= {'menu', 'context'}:
+                                vm.action('launch', 'finder')
+                                vm.action('arrange', json.dumps({'Documents': profile['windows']['Documents']}))
+                                vm.move(140, 30)
+                                time.sleep(1)
+                                preview = vm.action('capture', edition, mode, 'topbar')
+                                preview_name = f'{edition}-{mode}-topbar'
+                                (output / 'previews').mkdir(exist_ok=True)
+                                vm.get('/home/tester/release-capture/frame.png', output / 'previews' / (preview_name + '.png'))
+                                manifest.setdefault('component_previews', {})[preview_name] = preview
+                                vm.click(40, 30)
+                                vm.move(*profile['pointer'])
+                                vm.key('down')
+                                shot('menu')
                                 vm.key('esc')
-                                vm.click(1900, 1000)
-                                vm.click(x, y, button)
-                                shot(case)
-                            vm.key('esc')
-                            vm.action('launch', 'finder')
-                            vm.action('arrange', json.dumps({'Documents': profile['windows']['Documents']}))
-                            shot('finder')
-                            vm.action('arrange', json.dumps({'Documents':
-                                      dict(profile['windows']['Documents'], x=460)}))
-                            shot('showcase')
-                            vm.action('close')
-                            vm.action('launch', 'about')
-                            vm.action('arrange', json.dumps({'About This Computer (preview)':
-                                      dict(profile['windows']['About This Computer (preview)'], x=780)}))
-                            shot('about')
-                            vm.action('close')
+                                vm.action('close')
+                                vm.click(2100, 1000, 'right')
+                                vm.move(*profile['pointer'])
+                                vm.key('down')
+                                shot('context')
+                                vm.key('esc')
+                            elif mode_pending - {case for case in mode_pending if case.startswith('installer-')} == {'dock'}:
+                                vm.action('plasma', 'panels().forEach(p=>{if(p.location==="bottom")p.hiding="none";});')
+                                vm.move(1920, 2159)
+                                time.sleep(1)
+                                shot('dock')
+                                vm.action('clean-desktop')
+                            elif any(f'{edition}-{mode}-{case}' in pending for case in CASES
+                                   if not case.startswith('installer-')):
+                                vm.action('plasma', 'panels().forEach(p=>p.widgets().forEach(w=>{if(w.type==="org.kde.mac-tahoe-liquid-kde.launcher")'
+                                          '{w.currentConfigGroup=["General"];w.writeConfig("launcherPreset",' + str(EDITIONS[edition][1]) + ');}}));')
+                                vm.action('launcher')
+                                shot('launcher')
+                                vm.key('esc')
+                                vm.action('plasma', 'panels().forEach(p=>{if(p.location==="bottom")p.hiding="none";});')
+                                # Reveal the panel before moving the pointer back to
+                                # the neutral capture position.
+                                vm.move(1920, 2159)
+                                time.sleep(1)
+                                shot('dock')
+                                for case, x, y, button in [('menu', 40, 30, 'left'), ('context', 2100, 1000, 'right')]:
+                                    vm.key('esc')
+                                    vm.click(1900, 1000)
+                                    vm.click(x, y, button)
+                                    shot(case)
+                                vm.key('esc')
+                                vm.action('launch', 'finder')
+                                vm.action('arrange', json.dumps({'Documents': profile['windows']['Documents']}))
+                                shot('finder')
+                                vm.action('arrange', json.dumps({'Documents':
+                                          dict(profile['windows']['Documents'], x=460)}))
+                                shot('showcase')
+                                from release_screenshots import MATERIAL_CASES
+                                for material_case in MATERIAL_CASES:
+                                    vm.action('material', material_case)
+                                    shot(material_case)
+                                vm.action('material', 'restore')
+                                vm.action('close')
+                                vm.action('launch', 'about')
+                                vm.action('arrange', json.dumps({'About This Computer (preview)':
+                                          dict(profile['windows']['About This Computer (preview)'], x=780)}))
+                                shot('about')
+                                vm.action('close')
                             for page in INSTALLER_PAGES:
+                                if f'{edition}-{mode}-installer-{page}' not in pending:
+                                    continue
                                 vm.action('wizard', page)
                                 shot('installer-' + page)
                             vm.action('clean-desktop')
-                        if edition == 'tahoe':
+                        if edition == 'tahoe' and pending & {'boot', 'shutdown'}:
                             vm.action('boot')
                             for case in ('boot', 'shutdown'):
                                 path = output / 'frames' / (case + '.png')
@@ -246,4 +334,91 @@ def capture(repo: Path, ref: str, image: Path, output: Path) -> dict:
                         if (guest_dir / name).exists():
                             shutil.copyfile(guest_dir / name, output / (edition + '-' + name))
                     (output / 'manifest.json').write_text(json.dumps(manifest, indent=2) + '\n')
+    (output / 'manifest.json').write_text(json.dumps(manifest, indent=2) + '\n')
+    (output / 'review.json').write_text(json.dumps({
+        'manifest_sha256': digest(output / 'manifest.json'), 'approved': approvals, 'rejected': {},
+    }, indent=2) + '\n')
     return validate(repo, source, output, reviewed=False)
+
+
+def capture_file_previews(repo: Path, ref: str, image: Path, output: Path, *, resume=False):
+    """Four focused file-manager photographs, without refreshing the gallery."""
+    profile = json.loads(PROFILE.read_text())
+    image = image.resolve()
+    require(digest(image) == profile['vm_image_sha256'], 'VM image checksum differs from the pinned recipe')
+    info = json.loads(subprocess.check_output(['qemu-img', 'info', '--output=json', str(image)], text=True))
+    require(not info.get('backing-filename') and not info.get('dirty-flag'), 'Use a sealed standalone VM')
+    source = commit_id(repo, ref)
+    output = output.resolve()
+    output.mkdir(parents=True, exist_ok=resume)
+    archive = output / 'source.tar'
+    fresh = output / 'source-next.tar'
+    subprocess.run(['git', '-C', str(repo), 'archive', '--format=tar', '--output=' + str(fresh), source], check=True)
+    if resume:
+        require(archive.is_file() and digest(archive) == digest(fresh), 'Resume source differs from original capture')
+    fresh.replace(archive)
+    manifest = dict(source_commit=source, vm_image_sha256=profile['vm_image_sha256'], frames={})
+    with capture_lock(), Guest(output, profile, image, archive, 'tahoe', resume=resume) as vm:
+        manifest['environment'] = vm.action('setup', 'tahoe')
+        manifest['capture_tools'] = {name: digest(ROOT / 'src/scripts' / name) for name in ('release_capture.py', 'release_capture_guest.py')}
+        (output / 'manifest.json').write_text(json.dumps(manifest, indent=2) + '\n')
+        for mode in MODES:
+            vm.action('mode', mode)
+            vm.move(*profile['pointer'])
+            for manager in ('nautilus', 'dolphin'):
+                name = f'{manager}-{mode}'
+                record = vm.action('file-preview', manager)
+                vm.get('/home/tester/release-capture/frame.png', output / (name + '.png'))
+                manifest['frames'][name] = record
+                (output / 'manifest.json').write_text(json.dumps(manifest, indent=2) + '\n')
+    return manifest
+
+
+def stage_file_previews(repo: Path, bundle: Path):
+    """Stage the four individually reviewed photographs with focus evidence."""
+    from io import BytesIO
+    from PIL import Image
+    from release_screenshots import verify_focused_frame
+    manifest = json.loads((bundle / 'manifest.json').read_text())
+    profile = json.loads(PROFILE.read_text())
+    require(manifest['vm_image_sha256'] == profile['vm_image_sha256'], 'Unpinned preview VM')
+    expected = {f'{manager}-{mode}' for manager in ('nautilus', 'dolphin') for mode in MODES}
+    require(set(manifest['frames']) == expected, 'Incomplete file-manager previews')
+    destination = repo / 'src/installer/assets'
+    sources = json.loads((destination / 'sources.json').read_text())
+    updates = {}
+    for name in sorted(expected):
+        record = manifest['frames'][name]
+        source = bundle / (name + '.png')
+        require(digest(source) == record['sha256'], 'Changed preview: ' + name)
+        manager = name.split('-')[0]
+        resource = {'nautilus': 'org.gnome.Nautilus', 'dolphin': 'org.kde.dolphin'}[manager]
+        verify_focused_frame(record['before'], record['after'], resource)
+        require(record['stable_frames'] is True, 'Unsettled preview: ' + name)
+        with Image.open(source) as image:
+            require(list(image.size) == profile['resolution'], 'Unexpected preview resolution')
+            crop = record['crop']
+            require(0 <= crop[0] < crop[2] <= image.width and 0 <= crop[1] < crop[3] <= image.height,
+                    'Invalid preview crop')
+            buffer = BytesIO()
+            image.crop(crop).convert('RGB').save(buffer, format='JPEG', quality=95, subsampling=0)
+        import hashlib
+        payload = buffer.getvalue()
+        checksum = hashlib.sha256(payload).hexdigest()
+        filename = f'{name}-{checksum[:12]}.jpg'
+        updates[name + '.jpg'] = (payload, dict(
+            source=str(source.relative_to(repo)), source_sha256=record['sha256'],
+            source_commit=manifest['source_commit'], vm_image_sha256=manifest['vm_image_sha256'],
+            crop=crop, sha256=checksum, file=filename, kind='focused-vm-file-preview',
+            before=record['before'], after=record['after'], stable_frames=True, reviewed=True))
+    for key, (payload, record) in updates.items():
+        old = sources[key]['file']
+        (destination / record['file']).write_bytes(payload)
+        if old != record['file']:
+            require(Path(old).name == old, 'Invalid old preview filename')
+            (destination / old).unlink(missing_ok=True)
+        sources[key] = record
+    (destination / 'sources.json').write_text(json.dumps(sources, indent=2) + '\n')
+    (bundle / 'review.json').write_text(json.dumps(dict(
+        manifest_sha256=digest(bundle / 'manifest.json'),
+        approved={name: manifest['frames'][name]['sha256'] for name in sorted(expected)}), indent=2) + '\n')

@@ -145,8 +145,9 @@ def test_acrylic_glass_preset_fits_kcm_ranges():
     ("", 0, True, False),
 ])
 @pytest.mark.parametrize("edition", ["MacTahoe", "MacGoldenGate"])
+@pytest.mark.parametrize("render_status", ["ready", "shader-error"])
 def test_acrylic_glass_installs_the_effect_default_blur(monkeypatch, tmp_path, capsys,
-                                                       active, returncode, identity, confirmed, edition):
+                                                       active, returncode, identity, confirmed, edition, render_status):
     """Fresh installs apply the edition material and preserve radius overrides."""
     import contextlib
     from steps import acrylic_glass
@@ -171,6 +172,12 @@ def test_acrylic_glass_installs_the_effect_default_blur(monkeypatch, tmp_path, c
     monkeypatch.setattr(acrylic_glass, "_activate_effect_binary",
                         lambda source, destination: activated_links.append(destination) or True)
     monkeypatch.setattr(acrylic_glass, "_running_build_matches", lambda: identity)
+    monkeypatch.setattr(acrylic_glass, "_render_status", lambda: render_status)
+    monkeypatch.setattr(acrylic_glass, "_disable_conflicting_blurs", lambda: True)
+    restored = []
+    monkeypatch.setattr(acrylic_glass, "_restore_conflicting_blurs", lambda: restored.append(True))
+    loaded = iter([set(), set(active.splitlines()) if returncode == 0 else None])
+    monkeypatch.setattr(acrylic_glass, "_loaded_effects", lambda: next(loaded))
     monkeypatch.setattr(acrylic_glass, "_running_plugin_matches", lambda path: None)
     monkeypatch.setattr(acrylic_glass, "qdbus_call", lambda *args: True)
     monkeypatch.setattr(acrylic_glass, "qdbus_cmd", lambda: "probe-qdbus")
@@ -184,12 +191,16 @@ def test_acrylic_glass_installs_the_effect_default_blur(monkeypatch, tmp_path, c
                         lambda *args: writes.append(args) or True)
 
     acrylic_glass.install()
-    output = capsys.readouterr().out
+    captured = capsys.readouterr()
+    output = captured.out + captured.err
     assert tmp_path / "plugins/kwin-x11/effects/plugins/liquidglass.so" in activated_links
     assert tmp_path / "plugins/kwin-x11/effects/configs/kwin_liquidglass_config.so" in installed_files
-    assert ("Acrylic Glass loaded" in output) == confirmed
+    assert ("Acrylic Glass loaded" in output) == (confirmed and render_status == "ready")
     if returncode != 0 or "liquidglass" not in active.splitlines():
         assert "activation was not confirmed" in output
+    elif render_status == "shader-error":
+        assert "could not initialize its shaders" in output
+        assert restored
     elif identity is False:
         assert "previous plugin loaded" in output
     elif identity is None:
@@ -202,13 +213,13 @@ def test_acrylic_glass_installs_the_effect_default_blur(monkeypatch, tmp_path, c
     assert default == "5.0"
     blur_writes = [args for args in writes if "BlurStrength" in args]
     assert blur_writes == [("--file", "kwinrc", "--group", "Effect-liquidglass",
-                           "--key", "BlurStrength", default)]
+                           "--key", "BlurStrength", "4.0" if edition == "MacGoldenGate" else default)]
     # The complete install must preserve the #89 workaround, including
     # avoiding the obsolete Menu/Dialog/Tooltip/Bottom radius keys.
     assert not any(args[-2].endswith("CornerRadius") for args in writes)
 
 
-def test_golden_gate_shares_tahoe_optics_with_its_own_gradient(monkeypatch):
+def test_editions_install_their_visible_materials(monkeypatch):
     from steps import acrylic_glass as glass
     monkeypatch.setattr(glass, "default_wallpaper", lambda: "MacGoldenGate")
     golden = glass._edition_preset()
@@ -217,12 +228,20 @@ def test_golden_gate_shares_tahoe_optics_with_its_own_gradient(monkeypatch):
     assert tahoe["MaterialPreset"] == "1"
     assert golden["MaterialPreset"] == "2"
     assert tahoe.keys() == golden.keys()
-    differences = {key for key in tahoe if tahoe[key] != golden[key]}
-    assert differences == {"MaterialPreset", "DarkGradientOverlay",
-                           "GradientTopOpacity", "GradientBottomOpacity"}
+    assert tahoe["BlurStrength"] == "5.0"
+    assert tahoe["MagnifyGlassStrength"] == "0.02"
+    assert tahoe["DarkGradientOverlay"] == "false"
+    assert golden["BlurStrength"] == "4.0"
+    assert golden["MagnifyGlassStrength"] == "0.032"
+    assert golden["RgbDriftStrength"] == "8.0"
+    assert golden["DarkGradientOverlay"] == "true"
+    assert golden["GradientCenterPosition"] == "0.56"
+    assert golden["GradientTopColor"] == "#cecece"
+    assert golden["GradientTopDarkColor"] == "#000000"
     schema = ET.parse(ROOT / "src/glass.kcfg").getroot()
     rgb_default = schema.find(".//{*}entry[@name='RgbDriftStrength']/{*}default").text
-    assert float(golden["RgbDriftStrength"]) == float(rgb_default)
+    assert float(tahoe["RgbDriftStrength"]) == float(rgb_default)
+
 
 
 @pytest.mark.parametrize("saved", [None, "true", "false", ""])

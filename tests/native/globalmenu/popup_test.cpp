@@ -77,6 +77,32 @@ private Q_SLOTS:
         QCOMPARE(popup->actions().first()->text(), QString("Open"));
         popup->hide();
     }
+    void changingViewAndDestroyingAppletPreservesSourceActions()
+    {
+        QMenu root;
+        auto* file = root.addMenu("File");
+        auto* open = file->addAction("Open");
+        QStandardItemModel model(1, 1);
+        model.setData(model.index(0, 0), QVariant::fromValue(file->menuAction()), AppMenuModel::ActionRole);
+        QQuickWindow window;
+        QQuickItem anchor(window.contentItem());
+        anchor.setSize({80, 24});
+        {
+            AppMenuApplet applet(nullptr, KPluginMetaData(), {});
+            applet.setModel(&model);
+            applet.trigger(&anchor, 0);
+            QCOMPARE(applet.currentIndex(), 0);
+            applet.setView(AppMenuApplet::CompactView);
+            QCOMPARE(applet.currentIndex(), -1);
+            QCOMPARE(file->actions(), QList<QAction*>{open});
+            QCOMPARE(file->menuAction()->menu(), file);
+            applet.setView(AppMenuApplet::FullView);
+            applet.trigger(&anchor, 0);
+            QCOMPARE(applet.currentIndex(), 0);
+        }
+        QCOMPARE(file->actions(), QList<QAction*>{open});
+        QCOMPARE(file->menuAction()->menu(), file);
+    }
     void notifiesSourceOnOpen()
     {
         QMenu root;

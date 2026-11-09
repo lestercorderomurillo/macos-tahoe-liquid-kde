@@ -50,7 +50,7 @@ file(GLOB_RECURSE TASKMANAGER_QML CONFIGURE_DEPENDS
     contents/ui/*.js
 )
 
-set_source_files_properties(contents/ui/LayoutMetrics.js contents/ui/TaskTools.js PROPERTIES QT_QML_SKIP_QMLDIR_ENTRY TRUE)
+set_source_files_properties(contents/ui/LayoutMetrics.js contents/ui/TaskTools.js contents/ui/DockRoles.js PROPERTIES QT_QML_SKIP_QMLDIR_ENTRY TRUE)
 
 set(QT_QML_NO_CACHEGEN TRUE)
 
@@ -77,6 +77,14 @@ plasma_add_applet(org.kde.mac.tahoe.liquid.taskmanager
         org.kde.plasma.workspace.dbus
         org.kde.plasma.workspace.trianglemousefilter
 )
+
+# ECM flattens resource paths. Keep appearance directories in these aliases.
+file(GLOB_RECURSE DOCK_ARTWORK CONFIGURE_DEPENDS contents/icons/*.svg)
+foreach(artwork IN LISTS DOCK_ARTWORK)
+    file(RELATIVE_PATH alias "${CMAKE_CURRENT_SOURCE_DIR}/contents" "${artwork}")
+    set_source_files_properties("${artwork}" PROPERTIES QT_RESOURCE_ALIAS "${alias}")
+endforeach()
+qt_target_qml_sources(org.kde.mac.tahoe.liquid.taskmanager RESOURCES ${DOCK_ARTWORK})
 
 kconfig_add_kcfg_files(org.kde.mac.tahoe.liquid.taskmanager
     kactivitymanagerd_plugins_settings.kcfgc

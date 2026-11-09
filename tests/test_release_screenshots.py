@@ -19,6 +19,55 @@ def write_json(path, value):
     path.write_text(json.dumps(value, indent=2) + '\n')
 
 
+def test_console_maintenance_preserves_visual_fingerprint_but_ui_changes_do_not(tmp_path):
+    subprocess.run(['git', 'init', '-q', str(tmp_path)], check=True)
+    installer = tmp_path / 'installer'
+    baseline = 'import sys\nfrom installer_ui import main\nmain(sys.argv[1:])\n'
+    installer.write_text(baseline)
+    (tmp_path / 'install').write_text(baseline)
+    scripts = tmp_path / 'src/scripts'
+    scripts.mkdir(parents=True)
+    localization = scripts / 'localization.py'
+    localization.write_text('_ES = {"Install": "Instalar"}\n')
+    cli = scripts / 'cli.py'
+    cli.write_text('def _git():\n    return "old command"\ndef visible_label():\n    return "Install"\n')
+    before = commit(tmp_path)
+    branch = ('if sys.argv[1:] == ["--free-space"]:\n'
+              '    from repository_maintenance import main\n'
+              '    raise SystemExit(main([]))\n'
+              'if os.environ.get("MAC_TAHOE_UPDATED") == "1":\n'
+              '    from repository_maintenance import main\n'
+              '    main(["--auto"])\n')
+    (scripts / 'repository_maintenance.py').write_text('# console-only Git maintenance\n')
+    (scripts / 'repository_history.py').write_text('# console-only Git history policy\n')
+    (scripts / 'repository_cache.py').write_text('# console-only published blob cache\n')
+    cli.write_text('def _git():\n    return "safe command"\ndef visible_label():\n    return "Install"\n')
+    messages = {"Install": "Instalar", "Compacting Git storage: {path}": "Compactando: {path}"}
+    messages.update({
+        'Recovered {size} MiB. Git ancestry and local recovery data were preserved.':
+            'Se recuperaron {size} MiB. Se conservaron los datos locales de recuperación.',
+        'Published historical files may download again on demand; current source and local work stay available.':
+            'Los archivos históricos publicados pueden descargarse de nuevo cuando se necesiten.',
+        'Git maintenance disabled by local configuration.':
+            'El mantenimiento de Git está desactivado en la configuración local.',
+    })
+    localization.write_text("_ES = " + repr(messages) + "\n")
+    installer.write_text(branch + baseline)
+    after = commit(tmp_path)
+    assert shots.visual_tree(tmp_path, before) == shots.visual_tree(tmp_path, after)
+    installer.write_text(branch + baseline.replace('main(sys.argv[1:])', 'main(["--uninstall"])'))
+    changed = commit(tmp_path)
+    assert shots.visual_tree(tmp_path, before) != shots.visual_tree(tmp_path, changed)
+    installer.write_text(branch + baseline)
+    localization.write_text('_ES = {"Install": "New visible label"}\n')
+    changed_label = commit(tmp_path)
+    assert shots.visual_tree(tmp_path, before) != shots.visual_tree(tmp_path, changed_label)
+    localization.write_text('_ES = {"Install": "Instalar"}\n')
+    cli.write_text('def _git():\n    return "safe command"\ndef visible_label():\n    return "Changed label"\n')
+    changed_cli_ui = commit(tmp_path)
+    assert shots.visual_tree(tmp_path, before) != shots.visual_tree(tmp_path, changed_cli_ui)
+
+
 @pytest.fixture
 def capture(tmp_path, monkeypatch):
     Image = pytest.importorskip('PIL.Image')
@@ -32,6 +81,8 @@ def capture(tmp_path, monkeypatch):
     source = repo / 'src/offline/kwin-effects/acrylic-glass/src'
     source.mkdir(parents=True)
     (source / 'effect.cpp').write_text('release source\n')
+    write_json(source / 'presets.json', [{'value': i, 'values': {'BlurStrength': 5},
+                'tinted_values': {'BlurStrength': 12}} for i in (1, 2)])
     profile = repo / 'src/scripts/release_capture_profile.json'
     profile.parent.mkdir(parents=True)
     write_json(profile.parent / 'defaults.json', {'wallpaper': 'MacTahoe', 'launcher_preset': 1})
@@ -61,6 +112,8 @@ def capture(tmp_path, monkeypatch):
                               'resourceClass': 'qml6' if case == 'about' else 'org.gnome.Nautilus',
                               'type': 0, 'active': True,
                               'geometry': dict(x=0, y=0, width=32, height=32)}])
+            if case in shots.MATERIAL_CASES:
+                record['material_values'] = shots.material_values(json.loads((source / 'presets.json').read_text()), case)
             if case.startswith('installer-'):
                 record.update(installer_page=case.removeprefix('installer-'),
                               installer_edition=shots.EDITIONS[edition][0])
@@ -99,8 +152,8 @@ def test_base_icons_cannot_replace_the_installed_regular_appearance(capture, mod
         shots.verify_committed(repo, final)
 
 
-@pytest.mark.parametrize('path,content', [('VERSION', '1.2.4\n'), ('src/new-code.py', 'changed code\n')])
-def test_new_release_or_code_requires_recapture(capture, path, content):
+@pytest.mark.parametrize('path,content', [('src/new-code.py', 'changed code\n')])
+def test_unknown_runtime_code_requires_recapture(capture, path, content):
     repo, ref, bundle, _ = capture
     (repo / path).write_text(content)
     final = commit(repo)
@@ -158,7 +211,7 @@ def test_committed_picture_change_blocks_publication(capture, monkeypatch):
     repo, ref, bundle, manifest = capture
     shots.stage(repo, 'tahoe', bundle, manifest)
     commit(repo)
-    next((repo / 'src/screenshots').glob('finder_v4-*.png')).write_bytes(b'replaced after review')
+    next((repo / 'src/screenshots').glob('finder_v4-*.webp')).write_bytes(b'replaced after review')
     final = commit(repo)
     calls = []
     import release_screenshots_cli
@@ -207,8 +260,12 @@ def test_staging_adds_a_separate_full_desktop_about_image(capture):
     shots.stage(repo, 'tahoe', bundle, manifest)
     out = repo / 'src/screenshots'
     records = json.loads((out / 'release-capture.json').read_text())['images']
-    name = next(name for name in records if name.startswith('desktop_about_light_4k-'))
-    assert (out / name).read_bytes() == (bundle / 'frames/tahoe-light-about.png').read_bytes()
+    name = next(name for name in records if name.startswith('desktop_about_light_2k-'))
+    from PIL import Image
+    with Image.open(out / name) as image:
+        assert image.size == (32, 32)
+        assert image.format == 'WEBP'
+    assert records[name]['export']['source_sha256'] == manifest['frames']['tahoe-light-about']['sha256']
     assert records[name]['crop'] is None
     assert name in (repo / 'README.md').read_text()
 
@@ -229,7 +286,7 @@ def test_staging_changes_urls_and_removes_only_replaced_images(capture):
     assert not (out / 'finder_v4.png').exists()
     assert not (out / 'launcher_v4.png').exists()
     assert (out / 'unrelated.png').read_bytes() == b'old'
-    assert all(name.endswith('-' + shots.digest(out / name)[:12] + '.png') for name in records)
+    assert all(name.endswith('-' + shots.digest(out / name)[:12] + '.webp') for name in records)
     shots.stage(repo, 'tahoe', bundle, manifest)
     assert finder in (repo / 'README.md').read_text()
 
@@ -304,3 +361,462 @@ def test_installer_gallery_rejects_wrong_page_or_edition(capture, key, value):
     write_json(bundle / 'manifest.json', manifest)
     with pytest.raises(ValueError, match='Wrong installer'):
         shots.validate(repo, ref, bundle, reviewed=False)
+
+
+@pytest.mark.parametrize('path,content', [
+    ('VERSION', '1.2.4\n'), ('AGENTS.md', 'Only test changed visual behavior.\n'),
+    ('TESTING.md', '![Installer](src/screenshots/installer-welcome_v4.png)\nNew console tests passed.\n'),
+    ('tests/new_test.py', '# nonvisual regression coverage\n'),
+    ('.github/workflows/test.yml', '# CI runtime setup does not render the desktop\n'),
+])
+def test_nonvisual_release_reuses_original_reviewed_evidence(capture, path, content):
+    repo, ref, bundle, manifest = capture
+    shots.stage(repo, 'tahoe', bundle, manifest)
+    target = repo / path
+    target.parent.mkdir(parents=True, exist_ok=True)
+    if path == "TESTING.md":
+        target.write_text(target.read_text() + "New console tests passed.\n")
+    else:
+        target.write_text(content)
+    final = commit(repo)
+    shots.validate(repo, final, bundle)
+    record = shots.verify_committed(repo, final)
+    assert record['version'] == '1.2.3'
+    assert record['source_commit'] == ref
+    assert all(image['source_release'] == 'v1.2.3' for image in record['images'].values())
+
+
+def test_updater_exclusion_does_not_hide_other_cli_changes(capture):
+    repo, _, bundle, manifest = capture
+    cli = repo / 'src/scripts/cli.py'
+    cli.write_text('def auto_update_and_reexec():\n    return 1\n\ndef install():\n    return "same UI"\n')
+    source = commit(repo)
+    manifest['source_commit'] = source
+    manifest['source_tree'] = shots.runtime_tree(repo, source)
+    write_json(bundle / 'manifest.json', manifest)
+    cli.write_text(cli.read_text().replace('return 1', 'return 2'))
+    updated = commit(repo)
+    shots.validate(repo, updated, bundle, reviewed=False)
+    cli.write_text(cli.read_text().replace('same UI', 'changed UI'))
+    changed = commit(repo)
+    with pytest.raises(ValueError, match='changed after capture'):
+        shots.validate(repo, changed, bundle, reviewed=False)
+
+
+def test_ui_translation_changes_still_require_recapture(capture):
+    repo, _, bundle, manifest = capture
+    catalog = repo / 'src/scripts/locales/de.json'
+    catalog.parent.mkdir(parents=True)
+    write_json(catalog, {'Welcome': 'Willkommen', 'Update available: {current} → {latest}': 'Alt'})
+    source = commit(repo)
+    manifest['source_commit'] = source
+    manifest['source_tree'] = shots.runtime_tree(repo, source)
+    write_json(bundle / 'manifest.json', manifest)
+    write_json(catalog, {'Welcome': 'Willkommen', 'Update available: {current} → {latest}': 'Neu'})
+    updated = commit(repo)
+    shots.validate(repo, updated, bundle, reviewed=False)
+    write_json(catalog, {'Welcome': 'Changed visible text'})
+    changed = commit(repo)
+    with pytest.raises(ValueError, match='changed after capture'):
+        shots.validate(repo, changed, bundle, reviewed=False)
+
+
+@pytest.mark.parametrize("version,flags", [("1.2.4", []), ("1.3rc1", ["--prerelease", "--latest=false"])])
+def test_nonvisual_release_publishes_current_version_without_relabeling_images(capture, monkeypatch, version, flags):
+    repo, _, bundle, manifest = capture
+    shots.stage(repo, 'tahoe', bundle, manifest)
+    (repo / 'VERSION').write_text(version + '\n')
+    final = commit(repo)
+    subprocess.run(['git', '-C', str(repo), 'tag', 'v' + version], check=True)
+    original = subprocess.run
+    calls = []
+    def run(command, **kwargs):
+        if command[0] == 'gh':
+            calls.append(command)
+            return subprocess.CompletedProcess(command, 0)
+        return original(command, **kwargs)
+    monkeypatch.setattr(subprocess, 'run', run)
+    publish(repo, final)
+    assert calls == [['gh', 'release', 'create', 'v' + version, '--verify-tag',
+                      '--title', 'v' + version, '--generate-notes', *flags]]
+    assert shots.verify_committed(repo, final)['version'] == '1.2.3'
+
+def test_clock_readiness_preserves_photos_but_mode_and_service_changes_do_not(tmp_path):
+    subprocess.run(['git', 'init', '-q', str(tmp_path)], check=True)
+    scripts = tmp_path / 'src/scripts'
+    scripts.mkdir(parents=True)
+    switcher = scripts / 'theme_switch.py'
+    baseline = ('def detect_mode_by_time():\n    return "dark"\n'
+                'def apply(mode):\n    return "rendered palette"\n'
+                'def main(argv):\n    mode = argv[0]\n'
+                '    if mode == "auto":\n        mode = detect_mode_by_time()\n'
+                '    return apply(mode)\n')
+    switcher.write_text(baseline)
+    offline = tmp_path / 'src/offline'
+    offline.mkdir()
+    service = offline / 'mac-tahoe-liquid-kde-theme.service'
+    service.write_text('[Service]\nExecStart=%h/.local/bin/mac-tahoe-theme-switch auto\n')
+    before = commit(tmp_path)
+    guard = ('        if not wait_for_clock_sync():\n'
+             '            print("theme apply: waiting for clock synchronization; "\n'
+             '                  "automatic service will retry", file=sys.stderr)\n'
+             '            return 75\n')
+    synchronized = ('def wait_for_clock_sync():\n    return True\n' +
+                    baseline.replace('        mode = detect_mode_by_time()\n',
+                                     guard + '        mode = detect_mode_by_time()\n'))
+    switcher.write_text(synchronized)
+    service.write_text(service.read_text() +
+                      '# Clock retry\nRestartForceExitStatus=75\nRestartSec=15s\nTimeoutStartSec=3min\n')
+    after = commit(tmp_path)
+    assert shots.visual_tree(tmp_path, before) == shots.visual_tree(tmp_path, after)
+    for change in (synchronized.replace('return "dark"', 'return "light"'),
+                   synchronized.replace('rendered palette', 'changed palette'),
+                   synchronized.replace('return 75', 'return 0')):
+        switcher.write_text(change)
+        changed = commit(tmp_path)
+        assert shots.visual_tree(tmp_path, before) != shots.visual_tree(tmp_path, changed)
+    switcher.write_text(synchronized)
+    service.write_text(service.read_text().replace('theme-switch auto', 'theme-switch light'))
+    changed = commit(tmp_path)
+    assert shots.visual_tree(tmp_path, before) != shots.visual_tree(tmp_path, changed)
+
+
+def test_scoped_wizard_change_retains_unaffected_origins(capture):
+    repo, ref, bundle, manifest = capture
+    wizard = repo / 'src/installer/wizard_window.py'
+    wizard.parent.mkdir(parents=True)
+    wizard.write_text('class InstallerWindow:\n    def page_glass_style(self):\n        return "old"\n')
+    before = commit(repo)
+    # Start a reviewed fixture at this visual source.
+    manifest.update(source_commit=before, source_tree=shots.runtime_tree(repo, before))
+    wizard.write_text(wizard.read_text().replace('"old"', '"new"'))
+    after = commit(repo)
+    affected = shots.affected_frames(repo, before, after)
+    assert affected == {f'{e}-{m}-installer-glass_style' for e in shots.EDITIONS for m in shots.MODES}
+    for name, frame in manifest['frames'].items():
+        origin = after if name in affected else before
+        frame.update(source_commit=origin, source_tree=shots.runtime_tree(repo, origin),
+                     source_version='1.2.3')
+    manifest.update(schema=2, source_commit=after, source_tree=shots.runtime_tree(repo, after))
+    write_json(bundle / 'manifest.json', manifest)
+    write_json(bundle / 'review.json', dict(manifest_sha256=shots.digest(bundle / 'manifest.json'),
+               approved={n: f['sha256'] for n, f in manifest['frames'].items()}, rejected={}))
+    shots.validate(repo, after, bundle)
+    shots.stage(repo, 'tahoe', bundle, manifest)
+    final = commit(repo)
+    record = shots.verify_committed(repo, final)
+    assert {r['source_commit'] for r in record['images'].values()} == {before, after}
+    stale = manifest['frames']['tahoe-light-installer-glass_style']
+    stale.update(source_commit=before, source_tree=shots.runtime_tree(repo, before))
+    with pytest.raises(ValueError, match='Affected frame needs recapture'):
+        shots.verify_frame_origins(repo, manifest, final)
+    stale.update(source_commit=after, source_tree=shots.runtime_tree(repo, after))
+    (repo / 'src/unknown-runtime.py').write_text('new_rendering = True\n')
+    unknown = commit(repo)
+    assert shots.affected_frames(repo, after, unknown) == shots.expected_frames()
+    with pytest.raises(ValueError, match='Affected frame needs recapture'):
+        shots.verify_frame_origins(repo, manifest, unknown)
+
+
+def test_scoped_choices_only_ignore_glass_selection(capture):
+    repo, ref, bundle, manifest = capture
+    path = repo / 'src/scripts/installer_choices.py'
+    path.write_text('ENUMS = {"glass_style": ("classic",)}\ndef defaults():\n'
+                    '    return dict(glass_style="classic", icons="regular")\n')
+    before = commit(repo)
+    path.write_text(path.read_text().replace('("classic",)', '("classic", "official")')
+                    .replace('glass_style="classic"', 'glass_style="official"'))
+    after = commit(repo)
+    assert shots.affected_frames(repo, before, after) == {
+        f'{e}-{m}-installer-{p}' for e in shots.EDITIONS for m in shots.MODES
+        for p in ('glass_style', 'summary')}
+    path.write_text(path.read_text().replace('icons="regular"', 'icons="glass"'))
+    other = commit(repo)
+    assert shots.affected_frames(repo, after, other) == shots.expected_frames()
+
+
+def test_version_reader_only_invalidates_visible_version_frames(capture):
+    repo, ref, bundle, manifest = capture
+    path = repo / 'src/scripts/paths.py'
+    path.write_text('ROOT = "source"\ndef read_version():\n    return "0.0.0"\n')
+    before = commit(repo)
+    path.write_text('import re\nROOT = "source"\ndef read_version():\n    return "0.63rc2"\n')
+    after = commit(repo)
+    assert shots.affected_frames(repo, before, after) == {
+        f'{e}-{m}-{case}' for e in shots.EDITIONS for m in shots.MODES
+        for case in ('installer-welcome', 'about')}
+    path.write_text(path.read_text().replace('ROOT = "source"', 'ROOT = "other"'))
+    assert shots.affected_frames(repo, after, commit(repo)) == shots.expected_frames()
+
+
+def test_export_sizes_preserve_installer_text_and_limit_document_images(capture):
+    from PIL import Image
+    repo, _, bundle, manifest = capture
+    for case in ('finder', 'glass-tahoe-clear', 'installer-welcome'):
+        name = 'tahoe-light-' + case
+        path = bundle / 'frames' / (name + '.png')
+        Image.new('RGB', (3840, 2160), '#abcdef').save(path)
+        manifest['frames'][name]['sha256'] = shots.digest(path)
+    manifest['frames']['tahoe-light-installer-welcome']['crop'] = [100, 100, 1796, 1356]
+    shots.stage(repo, 'tahoe', bundle, manifest)
+    out = repo / 'src/screenshots'
+    records = json.loads((out / 'release-capture.json').read_text())['images']
+    for prefix, size in [('finder_v4-', (2560, 1440)), ('glass-tahoe-clear_v4-', (1280, 720)),
+                         ('installer-welcome_v4-', (1696, 1256))]:
+        name = next(n for n in records if n.startswith(prefix))
+        with Image.open(out / name) as image:
+            assert image.size == size
+        assert records[name]['export']['size'] == list(size)
+    first = {n: shots.digest(out / n) for n in records}
+    shots.stage(repo, 'tahoe', bundle, manifest)
+    assert first == {n: shots.digest(out / n) for n in records}
+
+
+def test_export_provenance_cannot_claim_a_different_original(capture):
+    repo, _, bundle, manifest = capture
+    shots.stage(repo, 'tahoe', bundle, manifest)
+    path = repo / 'src/screenshots/release-capture.json'
+    record = json.loads(path.read_text())
+    next(iter(record['images'].values()))['export']['source_sha256'] = '0' * 64
+    write_json(path, record)
+    final = commit(repo)
+    with pytest.raises(ValueError, match='export provenance'):
+        shots.verify_committed(repo, final)
+
+
+def test_dock_migration_requires_new_dock_frames_and_fails_closed(tmp_path, monkeypatch):
+    subprocess.run(['git', 'init', '-q', str(tmp_path)], check=True)
+    mappings = shots.DOCK_MIGRATION_CAPTURE_DEPENDENCIES
+    for path, (before, after) in mappings.items():
+        if before:
+            target = tmp_path / path
+            target.parent.mkdir(parents=True, exist_ok=True)
+            target.write_text('visible = 1\n' if path.endswith('.py') else 'var visible = 1;\n')
+    baseline = commit(tmp_path)
+    for path, (before, after) in mappings.items():
+        target = tmp_path / path
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_text('visible = 2\n' if path.endswith('.py') else 'var visible = 2;\n')
+    migrated = commit(tmp_path)
+    fixture_mappings = {
+        path: (shots.git(tmp_path, 'rev-parse', baseline + ':' + path) if before else None,
+               shots.git(tmp_path, 'rev-parse', migrated + ':' + path))
+        for path, (before, after) in mappings.items()}
+    monkeypatch.setattr(shots, 'DOCK_MIGRATION_CAPTURE_DEPENDENCIES', fixture_mappings)
+    assert shots.visual_tree(tmp_path, baseline) != shots.visual_tree(tmp_path, migrated)
+    assert shots.affected_frames(tmp_path, baseline, migrated) == {
+        f'{edition}-{mode}-dock' for edition in shots.EDITIONS for mode in shots.MODES}
+    with pytest.raises(ValueError, match='Visual release source changed'):
+        shots.verify_visual_source(tmp_path, baseline, migrated, shots.runtime_tree(tmp_path, baseline))
+    for path in mappings:
+        target = tmp_path / path
+        original = target.read_text()
+        target.write_text(original + ('\nvisible_change = True\n' if path.endswith('.py') else '\nvar visibleChange = true;\n'))
+        changed = commit(tmp_path)
+        assert shots.affected_frames(tmp_path, baseline, changed) == shots.expected_frames(), path
+        target.write_text(original)
+
+
+def test_optional_apps_require_all_affected_frames_and_fail_closed(tmp_path, monkeypatch):
+    subprocess.run(['git', 'init', '-q', str(tmp_path)], check=True)
+    path = 'src/scripts/dock_apps.py'
+    target = tmp_path / path
+    target.parent.mkdir(parents=True)
+    target.write_text('installed = False\n')
+    before = commit(tmp_path)
+    target.write_text('installed = True\n')
+    after = commit(tmp_path)
+    mappings = {path: ((shots.git(tmp_path, 'rev-parse', before + ':' + path),),
+                       shots.git(tmp_path, 'rev-parse', after + ':' + path))}
+    monkeypatch.setattr(shots, 'DOCK_APPS_CAPTURE_DEPENDENCIES', mappings)
+    assert shots.affected_frames(tmp_path, before, after) == {
+        f'{edition}-{mode}-{case}' for edition in shots.EDITIONS for mode in shots.MODES
+        for case in ('dock', 'installer-layout', 'installer-summary')}
+    with pytest.raises(ValueError, match='Visual release source changed'):
+        shots.verify_visual_source(tmp_path, before, after, shots.runtime_tree(tmp_path, before))
+    target.write_text('installed = True\nunknown_change = True\n')
+    assert shots.affected_frames(tmp_path, before, commit(tmp_path)) == shots.expected_frames()
+
+
+def test_dock_appearance_scope_composes_history_and_rejects_later_edits(tmp_path, monkeypatch):
+    subprocess.run(['git', 'init', '-q', str(tmp_path)], check=True)
+    paths = ('src/offline/dock.qml', 'src/scripts/installer_choices.py')
+    for path in paths:
+        target = tmp_path / path
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_text('value = 1\n')
+    old = commit(tmp_path)
+    (tmp_path / 'README.md').write_text('Documentation only\n')
+    baseline = commit(tmp_path)
+    for path in paths:
+        (tmp_path / path).write_text('value = 2\n')
+    changed = commit(tmp_path)
+    monkeypatch.setattr(shots, 'DOCK_APPEARANCE_BASE', baseline)
+    monkeypatch.setattr(shots, 'DOCK_APPEARANCE_CAPTURE_DEPENDENCIES', {
+        path: (shots.git(tmp_path, 'rev-parse', baseline + ':' + path),
+               shots.git(tmp_path, 'rev-parse', changed + ':' + path)) for path in paths})
+    expected = {f'{e}-{m}-dock' for e in shots.EDITIONS for m in shots.MODES}
+    assert shots.affected_frames(tmp_path, baseline, changed) == expected
+    assert shots.affected_frames(tmp_path, old, changed) == expected
+    for path in paths:
+        (tmp_path / path).write_text('value = 3\n')
+        assert shots.affected_frames(tmp_path, old, commit(tmp_path)) == shots.expected_frames()
+        (tmp_path / path).write_text('value = 2\n')
+    (tmp_path / 'unknown.qml').write_text('unknown change\n')
+    assert shots.affected_frames(tmp_path, old, commit(tmp_path)) == shots.expected_frames()
+
+
+def test_dock_artwork_evidence_required_by_bundle_and_committed_gate(capture, monkeypatch):
+    repo, ref, bundle, manifest = capture
+    shots.stage(repo, 'tahoe', bundle, manifest)
+    final = commit(repo)
+    original = shots.git
+    def with_dock_roles(root, *args):
+        if args[0] == 'ls-tree' and args[-1].endswith('/contents/ui/DockRoles.js'):
+            return '100644 blob fixture\tDockRoles.js'
+        return original(root, *args)
+    monkeypatch.setattr(shots, 'git', with_dock_roles)
+    with pytest.raises(ValueError, match='Unverified Dock artwork option'):
+        shots.validate(repo, final, bundle)
+    with pytest.raises(ValueError, match='Unverified Dock artwork option'):
+        shots.verify_committed(repo, final)
+
+
+def test_dock_064_scope_composes_history_and_rejects_later_edits(tmp_path, monkeypatch):
+    subprocess.run(['git', 'init', '-q', str(tmp_path)], check=True)
+    paths = ('src/offline/dock.qml', 'src/scripts/installer_choices.py')
+    for path in paths:
+        target = tmp_path / path
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_text('value = 1\n')
+    old = commit(tmp_path)
+    (tmp_path / 'README.md').write_text('Documentation only\n')
+    baseline = commit(tmp_path)
+    for path in paths:
+        (tmp_path / path).write_text('value = 2\n')
+    changed = commit(tmp_path)
+    monkeypatch.setattr(shots, 'DOCK_064_BASE', baseline)
+    monkeypatch.setattr(shots, 'DOCK_064_CAPTURE_DEPENDENCIES', {
+        path: (shots.git(tmp_path, 'rev-parse', baseline + ':' + path),
+               shots.git(tmp_path, 'rev-parse', changed + ':' + path)) for path in paths})
+    expected = {f'{e}-{m}-dock' for e in shots.EDITIONS for m in shots.MODES}
+    assert shots.affected_frames(tmp_path, baseline, changed) == expected
+    assert shots.affected_frames(tmp_path, old, changed) == expected
+    for path in paths:
+        (tmp_path / path).write_text('value = 3\n')
+        assert shots.affected_frames(tmp_path, old, commit(tmp_path)) == shots.expected_frames()
+        (tmp_path / path).write_text('value = 2\n')
+    (tmp_path / 'unknown.qml').write_text('unknown change\n')
+    assert shots.affected_frames(tmp_path, old, commit(tmp_path)) == shots.expected_frames()
+
+
+def test_menu_065_scope_composes_history_and_rejects_later_edits(tmp_path, monkeypatch):
+    subprocess.run(['git', 'init', '-q', str(tmp_path)], check=True)
+    paths = ('src/offline/dock.qml', 'src/scripts/installer_choices.py')
+    for path in paths:
+        target = tmp_path / path
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_text('value = 1\n')
+    old = commit(tmp_path)
+    (tmp_path / 'README.md').write_text('Documentation only\n')
+    baseline = commit(tmp_path)
+    for path in paths:
+        (tmp_path / path).write_text('value = 2\n')
+    changed = commit(tmp_path)
+    monkeypatch.setattr(shots, 'MENU_065_BASE', baseline)
+    monkeypatch.setattr(shots, 'MENU_065_CAPTURE_DEPENDENCIES', {
+        path: (shots.git(tmp_path, 'rev-parse', baseline + ':' + path),
+               shots.git(tmp_path, 'rev-parse', changed + ':' + path)) for path in paths})
+    expected = {f'{e}-{m}-{c}' for e in shots.EDITIONS for m in shots.MODES for c in ('menu', 'context')}
+    assert shots.affected_frames(tmp_path, baseline, changed) == expected
+    assert shots.affected_frames(tmp_path, old, changed) == expected
+    for path in paths:
+        (tmp_path / path).write_text('value = 3\n')
+        assert shots.affected_frames(tmp_path, old, commit(tmp_path)) == shots.expected_frames()
+        (tmp_path / path).write_text('value = 2\n')
+    (tmp_path / 'unknown.qml').write_text('unknown change\n')
+    assert shots.affected_frames(tmp_path, old, commit(tmp_path)) == shots.expected_frames()
+
+
+def test_topbar_0651_scope_composes_history_and_rejects_later_edits(tmp_path, monkeypatch):
+    subprocess.run(['git', 'init', '-q', str(tmp_path)], check=True)
+    paths = ('src/offline/dock.qml', 'src/scripts/installer_choices.py')
+    for path in paths:
+        target = tmp_path / path
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_text('value = 1\n')
+    old = commit(tmp_path)
+    (tmp_path / 'README.md').write_text('Documentation only\n')
+    baseline = commit(tmp_path)
+    for path in paths:
+        (tmp_path / path).write_text('value = 2\n')
+    changed = commit(tmp_path)
+    monkeypatch.setattr(shots, 'TOPBAR_0651_BASE', baseline)
+    monkeypatch.setattr(shots, 'TOPBAR_0651_CAPTURE_DEPENDENCIES', {
+        path: (shots.git(tmp_path, 'rev-parse', baseline + ':' + path),
+               shots.git(tmp_path, 'rev-parse', changed + ':' + path)) for path in paths})
+    expected = {f'{e}-{m}-{c}' for e in shots.EDITIONS for m in shots.MODES for c in ('menu',)}
+    assert shots.affected_frames(tmp_path, baseline, changed) == expected
+    assert shots.affected_frames(tmp_path, old, changed) == expected
+    for path in paths:
+        (tmp_path / path).write_text('value = 3\n')
+        assert shots.affected_frames(tmp_path, old, commit(tmp_path)) == shots.expected_frames()
+        (tmp_path / path).write_text('value = 2\n')
+    (tmp_path / 'unknown.qml').write_text('unknown change\n')
+    assert shots.affected_frames(tmp_path, old, commit(tmp_path)) == shots.expected_frames()
+
+
+def test_system_menu_0652_scope_composes_history_and_rejects_later_edits(tmp_path, monkeypatch):
+    subprocess.run(['git', 'init', '-q', str(tmp_path)], check=True)
+    paths = ('src/offline/dock.qml', 'src/scripts/installer_choices.py')
+    for path in paths:
+        target = tmp_path / path
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_text('value = 1\n')
+    old = commit(tmp_path)
+    (tmp_path / 'README.md').write_text('Documentation only\n')
+    baseline = commit(tmp_path)
+    for path in paths:
+        (tmp_path / path).write_text('value = 2\n')
+    changed = commit(tmp_path)
+    monkeypatch.setattr(shots, 'SYSTEM_MENU_0652_BASE', baseline)
+    monkeypatch.setattr(shots, 'SYSTEM_MENU_0652_CAPTURE_DEPENDENCIES', {
+        path: (shots.git(tmp_path, 'rev-parse', baseline + ':' + path),
+               shots.git(tmp_path, 'rev-parse', changed + ':' + path)) for path in paths})
+    expected = {f'{e}-{m}-{c}' for e in shots.EDITIONS for m in shots.MODES for c in ('menu',)}
+    assert shots.affected_frames(tmp_path, baseline, changed) == expected
+    assert shots.affected_frames(tmp_path, old, changed) == expected
+    for path in paths:
+        (tmp_path / path).write_text('value = 3\n')
+        assert shots.affected_frames(tmp_path, old, commit(tmp_path)) == shots.expected_frames()
+        (tmp_path / path).write_text('value = 2\n')
+    (tmp_path / 'unknown.qml').write_text('unknown change\n')
+    assert shots.affected_frames(tmp_path, old, commit(tmp_path)) == shots.expected_frames()
+
+
+def test_menu_only_066_scope_composes_history_and_rejects_later_edits(tmp_path, monkeypatch):
+    subprocess.run(['git', 'init', '-q', str(tmp_path)], check=True)
+    paths = ('src/offline/dock.qml', 'src/scripts/installer_choices.py')
+    for path in paths:
+        target = tmp_path / path
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_text('value = 1\n')
+    old = commit(tmp_path)
+    (tmp_path / 'README.md').write_text('Documentation only\n')
+    baseline = commit(tmp_path)
+    for path in paths:
+        (tmp_path / path).write_text('value = 2\n')
+    changed = commit(tmp_path)
+    monkeypatch.setattr(shots, 'MENU_ONLY_066_BASE', baseline)
+    monkeypatch.setattr(shots, 'MENU_ONLY_066_CAPTURE_DEPENDENCIES', {
+        path: (shots.git(tmp_path, 'rev-parse', baseline + ':' + path),
+               shots.git(tmp_path, 'rev-parse', changed + ':' + path)) for path in paths})
+    expected = {f'{e}-{m}-{c}' for e in shots.EDITIONS for m in shots.MODES for c in ('menu',)}
+    assert shots.affected_frames(tmp_path, baseline, changed) == expected
+    assert shots.affected_frames(tmp_path, old, changed) == expected
+    for path in paths:
+        (tmp_path / path).write_text('value = 3\n')
+        assert shots.affected_frames(tmp_path, old, commit(tmp_path)) == shots.expected_frames()
+        (tmp_path / path).write_text('value = 2\n')
+    (tmp_path / 'unknown.qml').write_text('unknown change\n')
+    assert shots.affected_frames(tmp_path, old, commit(tmp_path)) == shots.expected_frames()

@@ -5,6 +5,27 @@ msgstr "Project-Id-Version: MacTahoe Liquid KDE\nPO-Revision-Date: 2026-10-22 00
 msgid "%1 (%2 physical)"
 msgstr "%1 (%2 físicos)"
 
+msgid "&Copy"
+msgstr "&Copiar"
+
+msgid "&Edit"
+msgstr "&Editar"
+
+msgid "&File"
+msgstr "&Arquivo"
+
+msgid "&Paste"
+msgstr "Co&lar"
+
+msgid "&Redo"
+msgstr "&Refazer"
+
+msgid "&Undo"
+msgstr "&Desfazer"
+
+msgid "&View"
+msgstr "E&xibir"
+
 msgid "About This Computer"
 msgstr "Sobre este computador"
 
@@ -32,8 +53,13 @@ msgstr "Escolher…"
 msgid "Close"
 msgstr "Fechar"
 
+msgid "Close Window"
+msgstr "Fechar janela"
+
 msgid "Commands"
 msgstr "Comandos"
+
+
 
 msgid "Copied"
 msgstr "Copiado"
@@ -43,6 +69,9 @@ msgstr "Copiar detalhes"
 
 msgid "Cores"
 msgstr "Núcleos"
+
+msgid "Cu&t"
+msgstr "Recor&tar"
 
 msgid "Enter Full Screen"
 msgstr "Entrar em tela cheia"
@@ -58,6 +87,7 @@ msgstr "Forçar encerramento…"
 
 msgid "Graphics"
 msgstr "Gráficos"
+
 
 msgid "Lock Screen"
 msgstr "Bloquear tela"
@@ -113,11 +143,20 @@ msgstr "Restaurar"
 msgid "Search"
 msgstr "Pesquisar"
 
+msgid "Search application menu actions"
+msgstr "Pesquisar ações do menu do aplicativo"
+
 msgid "Search…"
 msgstr "Pesquisar…"
 
+msgid "Select &All"
+msgstr "Selecionar &tudo"
+
 msgid "Serial number"
 msgstr "Número de série"
+
+msgid "Show common menus for applications without a menu bar"
+msgstr "Mostrar menus comuns para aplicativos sem barra de menus"
 
 msgid "Show full application menu"
 msgstr "Mostrar menu completo do aplicativo"
@@ -140,6 +179,9 @@ msgstr "Suspender:"
 msgid "Startup disk"
 msgstr "Disco de inicialização"
 
+msgid "Switch open menus on hover"
+msgstr "Alternar menus abertos ao passar o mouse"
+
 msgid "System Menu"
 msgstr "Menu do sistema"
 
@@ -148,6 +190,9 @@ msgstr "Configurações do sistema:"
 
 msgid "System Settings…"
 msgstr "Configurações do sistema…"
+
+msgid "System menu"
+msgstr "Menu do sistema"
 
 msgid "Unknown"
 msgstr "Desconhecido"

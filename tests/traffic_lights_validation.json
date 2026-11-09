@@ -1,0 +1,654 @@
+{
+  "base_commit": "15842e202a2fe8cc8f396a8371d9773025b1e1bb",
+  "environment": {
+    "python": "3.14.7 (main, Aug 13 2026, 07:40:04) [GCC 16.2.1 20260810]",
+    "platform": "Linux-7.2.0-1-cachyos-x86_64-with-glibc2.44",
+    "qt_platform": "offscreen",
+    "desktop": "no host changes"
+  },
+  "command_prefix": "PYTHONDONTWRITEBYTECODE=1 QT_QPA_PLATFORM=offscreen python -m pytest -p no:cacheprovider",
+  "checks": [
+    {
+      "scope": "Tahoe component regression",
+      "tests": [
+        "test_traffic_lights",
+        "test_window_controls",
+        "test_firefox",
+        "test_installer_wizard",
+        "test_about_info",
+        "test_screenshots"
+      ],
+      "result": "335 passed; before added QML artwork test and SVG-loader refinement"
+    },
+    {
+      "scope": "About QML artwork + focused integration",
+      "tests": [
+        "test_traffic_lights"
+      ],
+      "result": "5 passed"
+    },
+    {
+      "scope": "Global Menu helper dependency",
+      "tests": [
+        "test_globalmenu_step"
+      ],
+      "result": "6 passed"
+    },
+    {
+      "scope": "Golden Gate prepared integration",
+      "snapshot": "07cb52507b6caac011f4",
+      "tests": [
+        "test_traffic_lights",
+        "test_window_controls",
+        "test_firefox",
+        "test_installer_wizard",
+        "test_about_info",
+        "test_globalmenu_step"
+      ],
+      "result": "334 passed; prior to SVG-loader refinement"
+    },
+    {
+      "scope": "Final installer refinement, Tahoe",
+      "tests": [
+        "test_traffic_lights",
+        "test_installer_wizard"
+      ],
+      "result": "34 passed"
+    },
+    {
+      "scope": "Final installer refinement, Golden Gate",
+      "snapshot": "f10092604b76fe26cd63",
+      "tests": [
+        "test_traffic_lights",
+        "test_installer_wizard"
+      ],
+      "result": "34 passed"
+    },
+    {
+      "scope": "Integrity",
+      "result": "component_manifest.py and git diff --check passed"
+    },
+    {
+      "scope": "About event-based refresh replaces periodic polling",
+      "command": "PYTHONDONTWRITEBYTECODE=1 QT_QPA_PLATFORM=offscreen python -m pytest -p no:cacheprovider tests/test_traffic_lights.py -k about -q",
+      "result": "2 passed, 3 deselected"
+    },
+    {
+      "scope": "Disposable VM focused visuals",
+      "result": "8 installer + 4 Firefox captures reviewed; About close click passed",
+      "evidence": "/tmp/traffic-vm-proof/evidence.json",
+      "about_peer_evidence": "/tmp/about-vm-proof/evidence.json"
+    }
+  ],
+  "sha256": {
+    "src/installer/wizard_window.py": "f0c974f4e54e975c80a0268d6bed69e370cbcc3855eb90205b55329ec3a31ff1",
+    "src/scripts/window_controls.py": "40927362ffc88b9e2a38dd7bd362d23966a86678b6eca04149ec1a0947558c6a",
+    "src/scripts/steps/firefox.py": "d3c47411fbbfa7c8a2dd400650230764fcbd459a8e043ebfc9846360a1a4bfb4",
+    "src/scripts/steps/globalmenu.py": "9eab22ba148214446d930c1307acc33eb6e25b7308b6b06fc64d856eefcb27d5",
+    "src/scripts/about_info.py": "a293238d86d2a3d9a5aa563181fdf25379eec828f53edd801365c9f379094dc5",
+    "src/offline/plasmoids/org.kde.mac.tahoe.liquid.globalmenu/qml/AboutWindow.qml": "683ca23ed58ce840c7039ce1fa26173cbcd8d0e3cda2976840759cdad5712fb7",
+    "tests/test_traffic_lights.py": "78374cd071981330085210188aeda1d7ba14b88a71c55786cdcbbbe86f05ecf6",
+    "component-hashes.json": "e13c181ccd69b105607434fdc00266a13a5996dd1c2d7ef59bf4defce4411aeb"
+  },
+  "coverage_limits": [
+    "Exact-commit CI and publication pending coordinated next candidate after both 0.66.1 releases",
+    "One reference VM; not a distro matrix or full installer lifecycle",
+    "Focused preview images remain external to the documentation gallery; current publication tooling over-invalidates unaffected frames"
+  ],
+  "vm_evidence": {
+    "source_tar_sha256": "f978ec86dc73c49c483fbcd7300868b83392ff3c096652dcc489e36f9fe8a180",
+    "vm_image_sha256": "412e7933f10add20b921b92c02709e7eea56acd14dc14cf654f58fba4ea3cc9d",
+    "scope": "Focused traffic-light previews only, not documentation gallery",
+    "cases": {
+      "installer-MacTahoe-flat-light": {
+        "info": {
+          "kind": "installer",
+          "edition": "MacTahoe",
+          "style": "flat",
+          "mode": "light",
+          "caption": "Install Tahoe",
+          "wizard": {
+            "edition": "MacTahoe",
+            "default": "flat",
+            "selected": "flat",
+            "mode": "light",
+            "title": "Install Tahoe"
+          }
+        },
+        "window": {
+          "id": "{f67376a8-1e36-45e2-810e-609dddec81a4}",
+          "caption": "Install Tahoe",
+          "resourceClass": "python3",
+          "type": 0,
+          "appletPopup": false,
+          "hidden": false,
+          "active": true,
+          "geometry": {
+            "x": 300,
+            "y": 150,
+            "width": 820,
+            "height": 600
+          }
+        },
+        "sha256": "bf0285f0938f02f52a93f0e8f3918b1ae24642b0bfa3e8e19033a93bafa1d473",
+        "source_tar_sha256": "f978ec86dc73c49c483fbcd7300868b83392ff3c096652dcc489e36f9fe8a180"
+      },
+      "installer-MacTahoe-glassy-light": {
+        "info": {
+          "kind": "installer",
+          "edition": "MacTahoe",
+          "style": "glassy",
+          "mode": "light",
+          "caption": "Install Tahoe",
+          "wizard": {
+            "edition": "MacTahoe",
+            "default": "flat",
+            "selected": "glassy",
+            "mode": "light",
+            "title": "Install Tahoe"
+          }
+        },
+        "window": {
+          "id": "{ba4b5fa6-2b48-4d58-8584-590fcb0ac73d}",
+          "caption": "Install Tahoe",
+          "resourceClass": "python3",
+          "type": 0,
+          "appletPopup": false,
+          "hidden": false,
+          "active": true,
+          "geometry": {
+            "x": 300,
+            "y": 150,
+            "width": 820,
+            "height": 600
+          }
+        },
+        "sha256": "89e14ec7c18dbc1393e45be18d9470d02c5553c34f28668c4a55a5653ee2df19",
+        "source_tar_sha256": "f978ec86dc73c49c483fbcd7300868b83392ff3c096652dcc489e36f9fe8a180"
+      },
+      "installer-MacTahoe-flat-dark": {
+        "info": {
+          "kind": "installer",
+          "edition": "MacTahoe",
+          "style": "flat",
+          "mode": "dark",
+          "caption": "Install Tahoe",
+          "wizard": {
+            "edition": "MacTahoe",
+            "default": "flat",
+            "selected": "flat",
+            "mode": "dark",
+            "title": "Install Tahoe"
+          }
+        },
+        "window": {
+          "id": "{83cef9bf-04c4-4b9d-91eb-130b3cf50d8d}",
+          "caption": "Install Tahoe",
+          "resourceClass": "python3",
+          "type": 0,
+          "appletPopup": false,
+          "hidden": false,
+          "active": true,
+          "geometry": {
+            "x": 300,
+            "y": 150,
+            "width": 820,
+            "height": 600
+          }
+        },
+        "sha256": "9b2b8928170dccf5eb3544123c14d07ebb9069d08e4a3b4c2fb48889930b18dc",
+        "source_tar_sha256": "f978ec86dc73c49c483fbcd7300868b83392ff3c096652dcc489e36f9fe8a180"
+      },
+      "installer-MacTahoe-glassy-dark": {
+        "info": {
+          "kind": "installer",
+          "edition": "MacTahoe",
+          "style": "glassy",
+          "mode": "dark",
+          "caption": "Install Tahoe",
+          "wizard": {
+            "edition": "MacTahoe",
+            "default": "flat",
+            "selected": "glassy",
+            "mode": "dark",
+            "title": "Install Tahoe"
+          }
+        },
+        "window": {
+          "id": "{ec89c91a-64f3-4a30-a6e8-e9cc4690cd1a}",
+          "caption": "Install Tahoe",
+          "resourceClass": "python3",
+          "type": 0,
+          "appletPopup": false,
+          "hidden": false,
+          "active": true,
+          "geometry": {
+            "x": 300,
+            "y": 150,
+            "width": 820,
+            "height": 600
+          }
+        },
+        "sha256": "7c12bc829f07d04aec08e2d5b0a522cc20f89cd4cebf2e490f8e8b4fd5e8d349",
+        "source_tar_sha256": "f978ec86dc73c49c483fbcd7300868b83392ff3c096652dcc489e36f9fe8a180"
+      },
+      "installer-MacGoldenGate-flat-light": {
+        "info": {
+          "kind": "installer",
+          "edition": "MacGoldenGate",
+          "style": "flat",
+          "mode": "light",
+          "caption": "Install Golden Gate",
+          "wizard": {
+            "edition": "MacGoldenGate",
+            "default": "glassy",
+            "selected": "flat",
+            "mode": "light",
+            "title": "Install Golden Gate"
+          }
+        },
+        "window": {
+          "id": "{5017f7f1-3a67-40f2-adf4-c0ec46584c4a}",
+          "caption": "Install Golden Gate",
+          "resourceClass": "python3",
+          "type": 0,
+          "appletPopup": false,
+          "hidden": false,
+          "active": true,
+          "geometry": {
+            "x": 300,
+            "y": 150,
+            "width": 820,
+            "height": 600
+          }
+        },
+        "sha256": "daa395c7b8b82f3cd61a8c9d2c0b5a12c50b4dd117c92f54ba8aa8f1492d1c45",
+        "source_tar_sha256": "f978ec86dc73c49c483fbcd7300868b83392ff3c096652dcc489e36f9fe8a180"
+      },
+      "installer-MacGoldenGate-glassy-light": {
+        "info": {
+          "kind": "installer",
+          "edition": "MacGoldenGate",
+          "style": "glassy",
+          "mode": "light",
+          "caption": "Install Golden Gate",
+          "wizard": {
+            "edition": "MacGoldenGate",
+            "default": "glassy",
+            "selected": "glassy",
+            "mode": "light",
+            "title": "Install Golden Gate"
+          }
+        },
+        "window": {
+          "id": "{bbee406f-57d7-41f3-9546-75fef5acbc44}",
+          "caption": "Install Golden Gate",
+          "resourceClass": "python3",
+          "type": 0,
+          "appletPopup": false,
+          "hidden": false,
+          "active": true,
+          "geometry": {
+            "x": 300,
+            "y": 150,
+            "width": 820,
+            "height": 600
+          }
+        },
+        "sha256": "b7499a69c166100fd783726bee6853707d0909aacdd29615970d514cb45c6418",
+        "source_tar_sha256": "f978ec86dc73c49c483fbcd7300868b83392ff3c096652dcc489e36f9fe8a180"
+      },
+      "installer-MacGoldenGate-flat-dark": {
+        "info": {
+          "kind": "installer",
+          "edition": "MacGoldenGate",
+          "style": "flat",
+          "mode": "dark",
+          "caption": "Install Golden Gate",
+          "wizard": {
+            "edition": "MacGoldenGate",
+            "default": "glassy",
+            "selected": "flat",
+            "mode": "dark",
+            "title": "Install Golden Gate"
+          }
+        },
+        "window": {
+          "id": "{f0bb91b4-43f3-445a-8fd0-37156c1bd378}",
+          "caption": "Install Golden Gate",
+          "resourceClass": "python3",
+          "type": 0,
+          "appletPopup": false,
+          "hidden": false,
+          "active": true,
+          "geometry": {
+            "x": 300,
+            "y": 150,
+            "width": 820,
+            "height": 600
+          }
+        },
+        "sha256": "bf5d917b827e8480018cc0389d10af29cad8c52d07221b38afd3bceaee37d44b",
+        "source_tar_sha256": "f978ec86dc73c49c483fbcd7300868b83392ff3c096652dcc489e36f9fe8a180"
+      },
+      "installer-MacGoldenGate-glassy-dark": {
+        "info": {
+          "kind": "installer",
+          "edition": "MacGoldenGate",
+          "style": "glassy",
+          "mode": "dark",
+          "caption": "Install Golden Gate",
+          "wizard": {
+            "edition": "MacGoldenGate",
+            "default": "glassy",
+            "selected": "glassy",
+            "mode": "dark",
+            "title": "Install Golden Gate"
+          }
+        },
+        "window": {
+          "id": "{b4974f7b-8e2d-41fe-aaf3-71093f8e11b8}",
+          "caption": "Install Golden Gate",
+          "resourceClass": "python3",
+          "type": 0,
+          "appletPopup": false,
+          "hidden": false,
+          "active": true,
+          "geometry": {
+            "x": 300,
+            "y": 150,
+            "width": 820,
+            "height": 600
+          }
+        },
+        "sha256": "7069635134718a3cbc4428972d3ef514bd7455078a8d6e8caa3af224ac093e9d",
+        "source_tar_sha256": "f978ec86dc73c49c483fbcd7300868b83392ff3c096652dcc489e36f9fe8a180"
+      },
+      "firefox-MacGoldenGate-flat-light": {
+        "info": {
+          "kind": "firefox",
+          "edition": "MacGoldenGate",
+          "style": "flat",
+          "mode": "light",
+          "caption": "Traffic lights proof \u2014 Mozilla Firefox"
+        },
+        "window": {
+          "id": "{69afbd9d-957b-45c1-a930-520aa9ae44be}",
+          "caption": "Traffic lights proof \u2014 Mozilla Firefox",
+          "resourceClass": "firefox_firefox",
+          "type": 0,
+          "appletPopup": false,
+          "hidden": false,
+          "active": true,
+          "geometry": {
+            "x": 300,
+            "y": 150,
+            "width": 1100,
+            "height": 700
+          }
+        },
+        "sha256": "8914ad7655ddf71219ed134783adcf0c4b51c2fc380b03e8099a09ee7b243ee7",
+        "source_tar_sha256": "f978ec86dc73c49c483fbcd7300868b83392ff3c096652dcc489e36f9fe8a180"
+      },
+      "firefox-MacGoldenGate-glassy-light": {
+        "info": {
+          "kind": "firefox",
+          "edition": "MacGoldenGate",
+          "style": "glassy",
+          "mode": "light",
+          "caption": "Traffic lights proof \u2014 Mozilla Firefox"
+        },
+        "window": {
+          "id": "{ed38cfa7-19f9-46e4-8a49-3ab28f02a6e3}",
+          "caption": "Traffic lights proof \u2014 Mozilla Firefox",
+          "resourceClass": "firefox_firefox",
+          "type": 0,
+          "appletPopup": false,
+          "hidden": false,
+          "active": true,
+          "geometry": {
+            "x": 300,
+            "y": 150,
+            "width": 1100,
+            "height": 700
+          }
+        },
+        "sha256": "74ace4dc62701693d0838e38660bdf77a11cb7eb13c642728d0742addeb58464",
+        "source_tar_sha256": "f978ec86dc73c49c483fbcd7300868b83392ff3c096652dcc489e36f9fe8a180"
+      },
+      "firefox-MacGoldenGate-flat-dark": {
+        "info": {
+          "kind": "firefox",
+          "edition": "MacGoldenGate",
+          "style": "flat",
+          "mode": "dark",
+          "caption": "Traffic lights proof \u2014 Mozilla Firefox"
+        },
+        "window": {
+          "id": "{f69da1a7-bc66-4ed3-8d90-1cc70c6f750d}",
+          "caption": "Traffic lights proof \u2014 Mozilla Firefox",
+          "resourceClass": "firefox_firefox",
+          "type": 0,
+          "appletPopup": false,
+          "hidden": false,
+          "active": true,
+          "geometry": {
+            "x": 300,
+            "y": 150,
+            "width": 1100,
+            "height": 700
+          }
+        },
+        "sha256": "76fe188eb12c559e5a45eb6b7a897c74849b6f6c234ed3a4dfe625015e463a7b",
+        "source_tar_sha256": "f978ec86dc73c49c483fbcd7300868b83392ff3c096652dcc489e36f9fe8a180"
+      },
+      "firefox-MacGoldenGate-glassy-dark": {
+        "info": {
+          "kind": "firefox",
+          "edition": "MacGoldenGate",
+          "style": "glassy",
+          "mode": "dark",
+          "caption": "Traffic lights proof \u2014 Mozilla Firefox"
+        },
+        "window": {
+          "id": "{344d82f6-e2b3-4f93-b2b5-88066c3a34bf}",
+          "caption": "Traffic lights proof \u2014 Mozilla Firefox",
+          "resourceClass": "firefox_firefox",
+          "type": 0,
+          "appletPopup": false,
+          "hidden": false,
+          "active": true,
+          "geometry": {
+            "x": 300,
+            "y": 150,
+            "width": 1100,
+            "height": 700
+          }
+        },
+        "sha256": "8cf3133e7dac8bc8c191d023a1e00ee92978f3ea47a7f492ae2d37f9b998678d",
+        "source_tar_sha256": "f978ec86dc73c49c483fbcd7300868b83392ff3c096652dcc489e36f9fe8a180"
+      }
+    },
+    "about_close": {
+      "closed": true
+    },
+    "commands": [
+      "python /tmp/traffic-vm-proof.py",
+      "guest: python3 /home/tester/release-capture/traffic-vm-guest.py open <component> <edition> <style> <mode>",
+      "guest: spectacle -b -n -a -o /home/tester/release-capture/traffic-proof/frame.png"
+    ],
+    "review": "Reviewed all 8 installer and 4 Firefox frame titlebars; Flat/Glassy colors, rims and highlights match chosen style. Window identity, active focus and settled geometry checked before/after every frame.",
+    "environment": "Checksum-pinned KDE neon reference VM, disposable overlay; Firefox Snap; 2x scale. Host desktop untouched.",
+    "limits": [
+      "Single reference VM; not a distro matrix.",
+      "Firefox VM cases use Golden Gate with both styles; both edition defaults and overrides are additionally covered by isolated regressions.",
+      "No full install/uninstall VM lifecycle (focused profile lifecycle covered by tests).",
+      "Focused previews only; no documentation gallery publication.",
+      "Exact-commit release CI pending coordinated next candidate."
+    ],
+    "source_files": {
+      "src/installer/wizard_window.py": "f0c974f4e54e975c80a0268d6bed69e370cbcc3855eb90205b55329ec3a31ff1",
+      "src/scripts/window_controls.py": "40927362ffc88b9e2a38dd7bd362d23966a86678b6eca04149ec1a0947558c6a",
+      "src/scripts/steps/firefox.py": "d3c47411fbbfa7c8a2dd400650230764fcbd459a8e043ebfc9846360a1a4bfb4",
+      "src/scripts/about_info.py": "a293238d86d2a3d9a5aa563181fdf25379eec828f53edd801365c9f379094dc5",
+      "src/scripts/steps/globalmenu.py": "9eab22ba148214446d930c1307acc33eb6e25b7308b6b06fc64d856eefcb27d5",
+      "src/offline/plasmoids/org.kde.mac.tahoe.liquid.globalmenu/qml/AboutWindow.qml": "683ca23ed58ce840c7039ce1fa26173cbcd8d0e3cda2976840759cdad5712fb7"
+    },
+    "probe_files": {
+      "/tmp/traffic-vm-proof.py": "f6e3c34d6231d5c388ef27ad600855f0cc31912213ad1da03e957d0d91922be8",
+      "/tmp/traffic-vm-guest.py": "4ce157dec5d74c4753c9b41c77177343a794d2bd970ce6bbef15b76c18065cd1"
+    }
+  },
+  "about_vm_evidence": {
+    "source_tar_sha256": "d126764ff8a95192c22680bee6f53ce4a84a91d6f0c299dc38409937be650f23",
+    "vm_image_sha256": "412e7933f10add20b921b92c02709e7eea56acd14dc14cf654f58fba4ea3cc9d",
+    "cases": {
+      "MacTahoe-Light": {
+        "before": {
+          "id": "{2cf20cc6-5afa-49e9-bef5-b80ceb98ceef}",
+          "caption": "About This Computer (preview)",
+          "resourceClass": "org.qt-project.qml",
+          "type": 0,
+          "appletPopup": false,
+          "hidden": false,
+          "active": true,
+          "geometry": {
+            "x": 350,
+            "y": 120,
+            "width": 360,
+            "height": 700
+          }
+        },
+        "after": {
+          "id": "{2cf20cc6-5afa-49e9-bef5-b80ceb98ceef}",
+          "caption": "About This Computer (preview)",
+          "resourceClass": "org.qt-project.qml",
+          "type": 0,
+          "appletPopup": false,
+          "hidden": false,
+          "active": true,
+          "geometry": {
+            "x": 429.98046875,
+            "y": 169.998779296875,
+            "width": 360,
+            "height": 700
+          }
+        },
+        "frame_sha256": "db1e1395a1c48dcaeda99888d518ee61ba577be3ecd751d2c155dc9e0e312cf3"
+      },
+      "MacTahoe-Dark": {
+        "before": {
+          "id": "{02bbac76-1dd7-4098-9504-5fcda2ec0b05}",
+          "caption": "About This Computer (preview)",
+          "resourceClass": "org.qt-project.qml",
+          "type": 0,
+          "appletPopup": false,
+          "hidden": false,
+          "active": true,
+          "geometry": {
+            "x": 350,
+            "y": 120,
+            "width": 360,
+            "height": 700
+          }
+        },
+        "after": {
+          "id": "{02bbac76-1dd7-4098-9504-5fcda2ec0b05}",
+          "caption": "About This Computer (preview)",
+          "resourceClass": "org.qt-project.qml",
+          "type": 0,
+          "appletPopup": false,
+          "hidden": false,
+          "active": true,
+          "geometry": {
+            "x": 429.98046875,
+            "y": 169.998779296875,
+            "width": 360,
+            "height": 700
+          }
+        },
+        "frame_sha256": "f49ebc7c91501433ab3a6acfe0d1387726e733dcd10006ecb22b73f52fc782ce"
+      },
+      "MacGoldenGate-Light": {
+        "before": {
+          "id": "{b217948e-216b-4006-94e9-d4bded42eb83}",
+          "caption": "About This Computer (preview)",
+          "resourceClass": "org.qt-project.qml",
+          "type": 0,
+          "appletPopup": false,
+          "hidden": false,
+          "active": true,
+          "geometry": {
+            "x": 350,
+            "y": 120,
+            "width": 360,
+            "height": 700
+          }
+        },
+        "after": {
+          "id": "{b217948e-216b-4006-94e9-d4bded42eb83}",
+          "caption": "About This Computer (preview)",
+          "resourceClass": "org.qt-project.qml",
+          "type": 0,
+          "appletPopup": false,
+          "hidden": false,
+          "active": true,
+          "geometry": {
+            "x": 429.98046875,
+            "y": 169.998779296875,
+            "width": 360,
+            "height": 700
+          }
+        },
+        "frame_sha256": "2e527d8260d71ac8a297219b8c15087d007913355e12c6d046ca8ac569686d9e"
+      },
+      "MacGoldenGate-Dark": {
+        "before": {
+          "id": "{aa6eb935-4f10-46c0-8496-a59a94579666}",
+          "caption": "About This Computer (preview)",
+          "resourceClass": "org.qt-project.qml",
+          "type": 0,
+          "appletPopup": false,
+          "hidden": false,
+          "active": true,
+          "geometry": {
+            "x": 350,
+            "y": 120,
+            "width": 360,
+            "height": 700
+          }
+        },
+        "after": {
+          "id": "{aa6eb935-4f10-46c0-8496-a59a94579666}",
+          "caption": "About This Computer (preview)",
+          "resourceClass": "org.qt-project.qml",
+          "type": 0,
+          "appletPopup": false,
+          "hidden": false,
+          "active": true,
+          "geometry": {
+            "x": 429.98046875,
+            "y": 169.998779296875,
+            "width": 360,
+            "height": 700
+          }
+        },
+        "frame_sha256": "27bc86f24a351d030e7a2c23125cf8615183332468d0c7315d75f406a24aeb85"
+      }
+    },
+    "about_qml_sha256": "683ca23ed58ce840c7039ce1fa26173cbcd8d0e3cda2976840759cdad5712fb7",
+    "commands": [
+      "PYTHONDONTWRITEBYTECODE=1 python -m pytest -p no:cacheprovider tests/test_screenshots.py -k about -q",
+      "PYTHONDONTWRITEBYTECODE=1 python /tmp/about-vm-proof.py"
+    ],
+    "focused_tests": "6 passed",
+    "review": "Reviewed all four focused About PNGs: labels readable, three action capsules and default Flat/Glassy round controls render without clipping.",
+    "limits": [
+      "Standalone About preview using mock hardware data; no installer lifecycle qualification.",
+      "Guest window captures verify client visuals, not wallpaper-composited blur/refraction.",
+      "Close-click follow-up delegated to traffic-light owner during sequential reuse of same overlay.",
+      "No release CI or publication by this session."
+    ]
+  },
+  "integration_base": "3031de3ca1bacb1946912fe8f4ae31cfa21896e0"
+}

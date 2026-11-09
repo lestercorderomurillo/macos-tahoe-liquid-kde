@@ -18,6 +18,8 @@ def test_client_regions_only_move_for_server_decorations(repo, tmp_path):
     method = text[text.index('Region BlurEffect::blurRegion('):text.index('// Per-frame entry points')]
     frame_logic = text[text.index('    if (m_blurDecorations && w->decorationHasAlpha()'):
                        text.index('    // Commit (or evict).')]
+    nautilus_logic = text[text.index('    // GTK does not publish a blur protocol region.'):
+                          text.index('    // Decoration-side blur:')]
     source = tmp_path / 'regions.cpp'
     source.write_text('''
 #include <QRegion>
@@ -32,6 +34,11 @@ using Region = QRegion;
 using Rect = QRect;
 struct EffectWindow {
     bool decorated = false;
+    QString identity = QStringLiteral("org.gnome.Nautilus");
+    EffectWindow *window() { return this; }
+    QString resourceClass() const { return identity; }
+    QString resourceName() const { return identity; }
+    bool isNormalWindow() const { return type == Normal; }
     enum Type { Normal, Popup, AppletPopup, Menu, Dropdown, Context, Tooltip, Dock } type = Normal;
     QRectF contentsRect() const { return QRectF(10, 20, 100, 80); }
     bool decoration() const { return decorated; }
@@ -54,6 +61,10 @@ struct BlurEffect {
     bool m_blurDecorations = true;
     bool decorationSupportsBlurBehind(EffectWindow*) const { return false; }
     Region decorationBlurRegion(EffectWindow*) const { return {}; }
+    std::optional<Region> implicitContent(EffectWindow* w, std::optional<Region> content = {}) const {
+''' + nautilus_logic + '''
+        return content;
+    }
     std::optional<Region> implicitFrame(EffectWindow* w) const {
         std::optional<Region> frame;
 ''' + frame_logic + '''
@@ -88,6 +99,19 @@ int main() {
     BlurEffect effect;
     EffectWindow window;
     auto& state = effect.m_windows[&window];
+    state.content = effect.implicitContent(&window);
+    assert(state.content.has_value() && state.content->isEmpty());
+    for (bool decorated : {false, true}) {
+        window.decorated = decorated;
+        assert(effect.blurRegion(&window) == Region(QRect(10, 20, 100, 80)));
+    }
+    window.identity = QStringLiteral("other-app");
+    assert(!effect.implicitContent(&window).has_value());
+    window.identity = QStringLiteral("NAUTILUS");
+    assert(effect.implicitContent(&window).has_value());
+    const Region requested(QRect(1, 2, 3, 4));
+    assert(effect.implicitContent(&window, requested) == requested);
+    window.decorated = false;
     state.content = Region(QRect(10, 20, 30, 20));
     assert(effect.blurRegion(&window) == Region(QRect(10, 20, 30, 20)));
     window.decorated = true;

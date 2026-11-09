@@ -48,7 +48,8 @@ def test_about_capture_never_runs_when_preview_is_not_ready(capture_module, monk
 
 @pytest.mark.parametrize("edition", ["MacTahoe", "MacGoldenGate"])
 @pytest.mark.parametrize("initial_mode", ["Light", "Dark"])
-def test_about_labels_and_surface_follow_appearance(repo, tmp_path, monkeypatch, edition, initial_mode):
+@pytest.mark.parametrize("control_style", ["Basic", "org.kde.desktop"])
+def test_about_labels_and_surface_follow_appearance(repo, tmp_path, monkeypatch, edition, initial_mode, control_style):
     import configparser
     import json
     import glass_surfaces
@@ -63,6 +64,7 @@ from PyQt6.QtCore import QObject, QUrl, pyqtSlot
 from PyQt6.QtGui import QGuiApplication, QColor, QImage, QPainter
 from PyQt6.QtQml import QQmlApplicationEngine, QQmlComponent, QQmlProperty, QQmlExpression
 from PyQt6.QtQuick import QQuickItem
+from PyQt6.QtTest import QTest
 class EmptyTranslations(QObject):
     @pyqtSlot(str, result=str)
     def i18n(self, message):
@@ -78,7 +80,7 @@ errors = []
 engine.warnings.connect(lambda warnings: errors.extend(w.toString() for w in warnings))
 context = EmptyTranslations()
 engine.rootContext().setContextObject(context)
-engine.setInitialProperties({'visible': False, 'fetcherCommand': 'true'})
+engine.setInitialProperties({'visible': False, 'fetcherCommand': 'true', 'controlsCommand': 'true'})
 engine.load(QUrl.fromLocalFile(sys.argv[1]))
 assert engine.rootObjects(), 'About window failed to load: ' + '\n'.join(errors)
 texts = set()
@@ -96,6 +98,15 @@ window = engine.rootObjects()[0]
 surface = window.findChild(QQuickItem, 'aboutGlassSurface')
 highlight = window.findChild(QQuickItem, 'aboutGlassHighlight')
 assert surface is not None and highlight is not None
+# Every action uses the same glass background, including the icon-only Copy.
+faces = window.findChildren(QQuickItem, 'aboutButtonFace')
+assert len(faces) == 3
+buttons = [face.parentItem().parentItem() for face in faces]
+assert [button.property('text') for button in buttons[:2]] == ['More Info…', 'Report a Bug…']
+assert not buttons[2].property('enabled'), 'Copy must wait for hardware details'
+assert window.findChild(QQuickItem, 'aboutDragArea') is not None
+window.show()
+app.processEvents()
 def luminance(color):
     def linear(value):
         return value / 12.92 if value <= .04045 else ((value + .055) / 1.055) ** 2.4
@@ -110,6 +121,30 @@ for mode, foreground in [('white', 255), ('black', 0), ('white', 255)]:
     expression.evaluate()
     assert not expression.hasError(), expression.error().toString()
     app.processEvents()
+    for face, button in zip(faces, buttons):
+        button.setProperty('down', False)
+        normal = face.property('color')
+        assert abs(normal.alphaF() - (80 if foreground == 255 else 16) / 255) < .005
+        assert normal.red() == 255
+        assert face.property('radius') == face.height() / 2
+        button.setProperty('down', True)
+        pressed = face.property('color')
+        assert pressed.red() == (0 if foreground == 255 else 255)
+        assert abs(pressed.alphaF() - (8 if foreground == 255 else 9) / 255) < .005
+        button.setProperty('down', False)
+    for button in buttons[:2]:
+        label = button.property('contentItem')
+        assert label is not None and label.property('text') == button.property('text')
+        assert label.isVisible() and label.implicitWidth() > 30
+        assert label.width() >= label.implicitWidth(), 'Action text is clipped into a circle'
+        QTest.qWait(20)
+        painted = window.grabWindow()
+        assert not painted.isNull()
+        label.setVisible(False)
+        QTest.qWait(20)
+        without_label = window.grabWindow()
+        assert painted != without_label, 'Action label exists but is not rendered'
+        label.setVisible(True)
     fill = surface.property('color')
     clear = sys.argv[2] == 'MacGoldenGate'
     secondary = window.property('secondaryTextColor')
@@ -136,6 +171,7 @@ for mode, foreground in [('white', 255), ('black', 0), ('white', 255)]:
     assert outer.red() == 0 and abs(outer.alphaF() - .18) < .005
     assert inner.red() == 255 and abs(inner.alphaF() - .22) < .005
     assert highlight.property('radius') == surface.property('radius') - .75
+assert not errors, '\n'.join(errors)
 '''
     qml = repo / 'src/offline/plasmoids/org.kde.mac.tahoe.liquid.globalmenu/qml/AboutWindow.qml'
     name = 'MacTahoeLiquidKde-' + initial_mode
@@ -145,6 +181,7 @@ for mode, foreground in [('white', 255), ('black', 0), ('white', 255)]:
     glass_surfaces.apply_plasma_surface_defaults(theme)
     (tmp_path / 'plasmarc').write_text('[Theme]\nname=' + name + '\n')
     env = dict(os.environ, QT_QPA_PLATFORM='offscreen', QT_QUICK_BACKEND='software',
+               QT_QUICK_CONTROLS_STYLE=control_style,
                LANGUAGE='en', LC_ALL='C.UTF-8', HOME=str(tmp_path),
                XDG_DATA_HOME=str(tmp_path / 'data'),
                XDG_CONFIG_HOME=str(tmp_path), DBUS_SESSION_BUS_ADDRESS='unix:path=/nonexistent')
@@ -165,3 +202,11 @@ def test_capture_refuses_host_before_switch(capture_module, monkeypatch):
     monkeypatch.setattr(capture_module, '_switch_theme', lambda _: pytest.fail('Host theme changed'))
     with pytest.raises(RuntimeError, match='disposable VM'):
         capture_module.main(['about'])
+
+
+def test_about_drag_uses_compositor_move(repo):
+    qml = (repo / 'src/offline/plasmoids/org.kde.mac.tahoe.liquid.globalmenu/qml/AboutWindow.qml').read_text()
+    assert 'onPressed: aboutWindow.startSystemMove()' in qml
+    assert 'acceptedButtons: Qt.LeftButton' in qml
+    assert 'aboutWindow.x +=' not in qml
+    assert 'aboutWindow.y +=' not in qml

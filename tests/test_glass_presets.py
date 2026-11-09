@@ -30,8 +30,9 @@ def kcm_probe(tmp_path_factory):
     return build
 
 
+@pytest.mark.parametrize("saved_tint", ["0", "1"])
 @pytest.mark.parametrize("saved_preset", ["absent", "0", "1", "2"])
-def test_native_material_preset_controls(kcm_probe, tmp_path, saved_preset):
+def test_native_material_preset_controls(kcm_probe, tmp_path, saved_preset, saved_tint):
     if not shutil.which("dbus-run-session"):
         pytest.skip("private D-Bus session required")
     env = {k: v for k, v in os.environ.items() if k in ("PATH", "LANG")}
@@ -39,7 +40,7 @@ def test_native_material_preset_controls(kcm_probe, tmp_path, saved_preset):
                XDG_CONFIG_DIRS=str(tmp_path / "system"), QT_QPA_PLATFORM="offscreen")
     result = subprocess.run(["dbus-run-session", "--", str(kcm_probe / "glass-kcm-probe"),
                              str(kcm_probe / "kcm/kwin_liquidglass_config.so"),
-                             str(glass.SRC / "src/presets.json"), saved_preset],
+                             str(glass.SRC / "src/presets.json"), saved_preset, saved_tint],
                             env=env, capture_output=True, text=True, timeout=30)
     assert result.returncode == 0, result.stdout + result.stderr
     assert "save/reopen, cancel and restore verified" in result.stderr
@@ -102,6 +103,9 @@ def test_installation_reapplies_complete_edition_material(monkeypatch, edition, 
     monkeypatch.setattr(glass, "kw_write", write)
     assert glass._install_material_preset()
     expected = _preset_values(2 if golden else 1) | independent
+    if existing == "clear":
+        expected["MaterialOpacity"] = "0.55"  # Retired key is ignored, not rewritten.
+    assert "MaterialOpacity" not in writes
     assert saved == expected
     assert writes[-1] == "MaterialPreset"
     writes.clear()
@@ -152,3 +156,20 @@ def test_native_glass_shader_pixels(kcm_probe, tmp_path, monkeypatch):
         finally:
             server.terminate()
             server.wait(timeout=5)
+
+
+@pytest.mark.parametrize("edition", ["MacTahoe", "MacGoldenGate"])
+@pytest.mark.parametrize("style", ["classic", "tinted", "official"])
+def test_installer_frost_glass_values(monkeypatch, edition, style):
+    monkeypatch.setattr(glass, "default_wallpaper", lambda: edition)
+    monkeypatch.setattr(glass, "selected", lambda: {"files": "nautilus", "glass_style": style})
+    saved = {}
+    monkeypatch.setattr(glass, "kw_write", lambda *args: saved.update({args[-2]: args[-1]}) or True)
+    assert glass._install_material_preset()
+    expected = _preset_values(2 if style == "official" else 1)
+    if style == "tinted":
+        expected.update(BlurStrength="12.0", MagnifyGlassStrength="0.02", RgbDriftStrength="10.0",
+                        RefractionWidth="38.0", HighlightWidth="16.0", HighlightStrength="0.1",
+                        Brightness="1.0", Contrast="1.0", Saturation="1.33",
+                        NoiseStrength="0", BlurDecorations="true")
+    assert saved == expected

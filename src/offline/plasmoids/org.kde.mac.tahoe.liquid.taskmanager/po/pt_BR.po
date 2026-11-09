@@ -2,5 +2,38 @@
 msgid ""
 msgstr "Project-Id-Version: MacTahoe Liquid KDE\nPO-Revision-Date: 2026-10-22 00:00-0600\nLast-Translator: MacTahoe Liquid KDE contributors\nLanguage-Team: pt_BR\nLanguage: pt_BR\nMIME-Version: 1.0\nContent-Type: text/plain; charset=UTF-8\nContent-Transfer-Encoding: 8bit\nPlural-Forms: nplurals=2; plural=(n > 1);\n"
 
+msgid "App Store"
+msgstr "Loja de aplicativos"
+
+msgid "Browser"
+msgstr "Navegador"
+
+msgid "Calendar"
+msgstr "Calendário"
+
+msgid "Files"
+msgstr "Arquivos"
+
 msgid "Hover magnification:"
 msgstr "Ampliação ao passar o ponteiro:"
+
+msgid "Mail"
+msgstr "E-mail"
+
+msgid "Music"
+msgstr "Música"
+
+msgid "Notes"
+msgstr "Notas"
+
+msgid "Photos"
+msgstr "Fotos"
+
+msgid "System Settings"
+msgstr "Configurações do sistema"
+
+msgid "Use macOS-style Dock icons"
+msgstr "Usar ícones do Dock no estilo macOS"
+
+msgid "Video"
+msgstr "Vídeo"

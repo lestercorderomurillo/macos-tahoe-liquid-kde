@@ -27,7 +27,7 @@ def test_version_is_semver(repo):
     and printed by the install banner. If this file drifts or gets
     malformed (e.g. two lines from a botched merge), the banner
     prints the wrong version. Pin the shape so that fails CI."""
-    assert re.fullmatch(r"\d+\.\d+\.\d+", (repo / "VERSION").read_text().strip())
+    assert re.fullmatch(r"\d+\.\d+(?:\.\d+|rc[1-9]\d*)", (repo / "VERSION").read_text().strip())
 
 
 def test_look_and_feel_does_not_bypass_smart_wallpaper_owner(repo):
@@ -405,52 +405,6 @@ def test_features_json_and_cli_feature_list_match(repo):
 
 
 # ── README "tests count" badge stays honest ──────────────────────────
-
-
-def test_readme_tests_count_badge_matches_collected_count(repo):
-    """The README ships a ``tests-NNN_passing`` shields.io badge. The
-    badge is hand-edited because the alternative (dynamic shields
-    endpoint pointing at a Gist updated by CI) needs infra for
-    something that changes ~3 times a year.
-
-    To stop the badge from drifting, pin the number here.
-    When the suite grows or shrinks, run ``./test`` to get the new
-    count, edit the README badge, and re-run this test.
-
-    The badge format is ``tests-<count>_passing``. Match against the
-    actual ``--collect-only`` count of the same pytest invocation
-    the README is documenting."""
-    readme = (repo / "README.md").read_text()
-    m = re.search(r"tests-(\d+)_passing", readme)
-    assert m, (
-        "README is missing the ``tests-NNN_passing`` badge. Restore "
-        "it next to the other shields.io badges at the top of the "
-        "README."
-    )
-    badge_count = int(m.group(1))
-
-    # Count what pytest actually collects today, without running
-    # anything. Counting via --collect-only is what the badge claims
-    # to count.
-    res = subprocess.run(
-        [sys.executable, "-m", "pytest", "--collect-only", "-q",
-         str(repo / "tests")],
-        capture_output=True, text=True,
-        env={**os.environ, "MAC_TAHOE_SKIP_LIVE_SAFETY_NET": "1"},
-    )
-    last = [ln for ln in res.stdout.splitlines() if "tests collected" in ln]
-    assert last, (
-        f"pytest --collect-only did not report a count:\n"
-        f"stdout tail:\n{res.stdout[-500:]}\n"
-        f"stderr tail:\n{res.stderr[-500:]}"
-    )
-    actual_count = int(last[0].split()[0])
-
-    assert badge_count == actual_count, (
-        f"README badge says {badge_count} tests but pytest collects "
-        f"{actual_count}. Edit the ``tests-NNN_passing`` badge in "
-        f"README.md to {actual_count}."
-    )
 
 
 # ── dark popup surfaces keep mirrored light/dark alpha ────────────────

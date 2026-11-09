@@ -1,0 +1,19 @@
+.....................................................                    [100%]
+=============================== warnings summary ===============================
+tests/test_icon_toolset.py: 33 warnings
+tests/test_reserved_menu_icons.py: 4 warnings
+  /mnt/M2_1/Projects/Repositories/macos-golden-gate-liquid-kde/build/39679337df4840f381b8/src/scripts/icon_materials.py:163: DeprecationWarning: Image.Image.getdata is deprecated and will be removed in Pillow 14 (2027-10-15). Use get_flattened_data instead.
+    plate_pixels = [p for p in plate_probe.getdata() if p[3] > 230]
+
+tests/test_icon_toolset.py: 33 warnings
+tests/test_reserved_menu_icons.py: 4 warnings
+  /mnt/M2_1/Projects/Repositories/macos-golden-gate-liquid-kde/build/39679337df4840f381b8/src/scripts/icon_materials.py:171: DeprecationWarning: Image.Image.getdata is deprecated and will be removed in Pillow 14 (2027-10-15). Use get_flattened_data instead.
+    image.resize((64, 64), Image.Resampling.LANCZOS).getdata(),
+
+tests/test_icon_toolset.py: 66 warnings
+tests/test_reserved_menu_icons.py: 8 warnings
+  /mnt/M2_1/Projects/Repositories/macos-golden-gate-liquid-kde/build/39679337df4840f381b8/src/scripts/icon_materials.py:172: DeprecationWarning: Image.Image.getdata is deprecated and will be removed in Pillow 14 (2027-10-15). Use get_flattened_data instead.
+    plate_alpha.getdata(), inset_alpha.getdata()) if outer > 230 and inner < 128]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+53 passed, 148 warnings in 22.00s

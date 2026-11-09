@@ -1,0 +1,59 @@
+{
+  "implementation_commit": "daf738d30f3463bca9fc5eda25ce697dce979b2c",
+  "checks": [
+    {
+      "scope": "Dock resolution, migration, optional apps, wizard, layout and themed icons",
+      "result": "128 initially passing checks retained; 4 initial failures fixed and affected subset passed (62 checks)."
+    },
+    {
+      "command": "python3 -m pytest -q -p no:cacheprovider tests/test_localization.py tests/test_dock_appearance.py",
+      "result": "17 passed before native icon-loading fix"
+    },
+    {
+      "command": "python3 -m pytest -q -p no:cacheprovider tests/test_taskmanager_qml.py tests/test_dock_appearance.py",
+      "result": "14 passed after native icon-loading fix; also 14 passed in prepared Golden Gate source build/935dc9bc02c4d312d657"
+    },
+    {
+      "command": "python3 -m pytest -q -p no:cacheprovider tests/test_multilanguage.py",
+      "result": "31 passed after shared catalog correction"
+    },
+    {
+      "command": "python3 -m pytest -q -p no:cacheprovider tests/test_dock_appearance.py tests/test_distro_packages.py tests/test_utils_deps.py",
+      "result": "459 passed after SVG runtime dependency correction"
+    },
+    {
+      "command": "cmake --build build/plasmoids/org.kde.mac.tahoe.liquid.taskmanager -j 4",
+      "result": "pass; build only, no host install"
+    },
+    {
+      "scope": "Disposable reference VM",
+      "result": "four approved Dock frames; icon option on/off preserves pins in each edition; native build/load and no Dock QML errors observed",
+      "vm_image_sha256": "412e7933f10add20b921b92c02709e7eea56acd14dc14cf654f58fba4ea3cc9d"
+    },
+    {
+      "command": "python -m pytest -q -p no:cacheprovider tests/test_release_screenshots.py",
+      "result": "54 passed; then 1 additional publication evidence regression passed after adding it",
+      "environment": "Temporary Git fixtures; no desktop access"
+    },
+    {
+      "command": "python -m pytest -q -p no:cacheprovider tests/test_dock_appearance.py tests/test_taskmanager_qml.py",
+      "result": "21 passed after black-artwork and desktop-mode correction; verifies light/dark/light selection despite inverted material luminance, unnamed QIcon resources, and dark plate pixels for every role",
+      "environment": "Host offscreen Qt; no desktop changes"
+    }
+  ],
+  "limits": [
+    "Native rendering checked in the pinned KDE neon Wayland guest; distro SDK coverage comes from required CI, not a duplicated local matrix.",
+    "Earlier f155ef4 previews were rejected because Plasma substituted theme basenames; they are not included in the approved exports.",
+    "Dock-only publication photography reuses the sealed VM global icon themes; the new Dock backend is built and installed from the capture source. No unrelated installer or desktop photography was repeated."
+  ],
+  "version": "0.63.7",
+  "scope": "Optional macOS-style Dock role artwork. Real Linux application identities, launcher order and global icon themes are preserved. Dark variants follow the actual Plasma mode and use graphite artwork for every role.",
+  "publication_capture": {
+    "source_commit": "e1296b4decca9070e3c90c1dd439fc0c145957aa",
+    "command": "./release-screenshots capture --ref HEAD --vm-image build/dock-defaults-neon-base.qcow2 --reuse build/captures/v0.63.5-dock-apps --output build/captures/v0.63.7-black-dock",
+    "status": "four fresh Dock frames visually reviewed: black variants in dark mode and light variants in light mode in both editions; 102 original frame hashes and origins retained",
+    "retained_frames": 102,
+    "fresh_frames": 4
+  },
+  "dark_mode_correction_commit": "e1296b4decca9070e3c90c1dd439fc0c145957aa"
+}

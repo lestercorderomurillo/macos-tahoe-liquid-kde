@@ -34,3 +34,14 @@ def test_capture_refuses_a_different_dbus_owner(monkeypatch):
         capture.assert_compositor_owner(123)
     assert len(calls) == 1
     assert "org.freedesktop.DBus.GetConnectionUnixProcessID" in calls[0]
+
+
+@pytest.mark.parametrize("options", [dict(scale=1.5), dict(screenshot_api="dbus")])
+def test_x11_probe_rejects_unsupported_capture_modes_before_starting(tmp_path, options):
+    output = tmp_path / "capture"
+    arguments = dict(plugin=tmp_path / "effect.so", output=output, scale=1,
+                     expected="changed", backend="xcb", identity="test",
+                     compositor="x11") | options
+    with pytest.raises(AssertionError):
+        capture.run(**arguments)
+    assert not output.exists()

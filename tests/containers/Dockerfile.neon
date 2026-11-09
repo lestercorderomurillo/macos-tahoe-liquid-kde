@@ -1,9 +1,11 @@
-# KDE neon User Edition — Ubuntu LTS base with KDE's current released
-# Frameworks and Plasma packages. Use KDE's maintained registry image;
-# the old Docker Hub kdeneon/plasma image stopped updating years ago.
-FROM invent-registry.kde.org/neon/docker-images/plasma:user
+# KDE neon User Edition SDK, using the same signed archives and Ubuntu
+# LTS base as KDE's official image, without downloading a complete desktop.
+# The vendored archive key and sources are pinned in neon/SOURCE.json.
+FROM ubuntu:24.04
 
-USER root
+RUN apt-get update && apt-get install -y --no-install-recommends ca-certificates git
+COPY tests/containers/neon/neon-archive-keyring.asc /etc/apt/keyrings/neon-archive-keyring.asc
+COPY tests/containers/neon/neon.sources /etc/apt/sources.list.d/neon.sources
 
 ENV PYTHONUNBUFFERED=1
 
@@ -14,25 +16,38 @@ ENV PYTHONUNBUFFERED=1
 #
 # Noble's qt5-style-kvantum does not ship a Qt 6 style plugin. The installer
 # therefore builds the pinned, bundled Qt 6 engine instead of adding a PPA.
-RUN apt-get update && \
+# Retry the same signed archive at KDE's origin when the CDN is unavailable.
+RUN (apt-get update || { \
+        for apt_source in /etc/apt/sources.list /etc/apt/sources.list.d/*.list /etc/apt/sources.list.d/*.sources; do \
+            if [ -f "$apt_source" ]; then \
+                sed -i -E 's@https?://archive\.neon\.kde\.org/@https://origin.archive.neon.kde.org/@g' "$apt_source"; \
+            fi; \
+        done; \
+        apt-get update; \
+    }) && \
     DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
-        python3 python3-pytest python3-pil python3-pyqt6 python3-pyqt6.qtsvg plasma5support librsvg2-bin git \
-        cmake make g++ extra-cmake-modules pkgconf \
+        -o Dpkg::Options::=--force-confdef -o Dpkg::Options::=--force-confold neon-settings-2 && \
+    DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+        python3 python3-pytest python3-gi gir1.2-gtk-4.0 python3-pil python3-pyqt6 python3-pyqt6.qtsvg plasma5support librsvg2-bin git \
+        cmake make ccache g++ extra-cmake-modules pkgconf \
         qmake6 qdbus-qt6 \
         qt6-base-dev qt6-base-private-dev qt6-declarative-dev qt6-tools-dev \
-        qt6-svg-dev \
+        qt6-svg-dev qt6-wayland-dev \
         libkf6config-bin libkf6config-dev libkf6configwidgets-dev \
         libkf6coreaddons-dev libkf6crash-dev libkf6globalaccel-dev \
         libkf6guiaddons-dev libkf6i18n-dev libkf6itemmodels-dev \
         libkf6kcmutils-dev libkf6kio-dev libkf6notifications-dev \
         libkf6service-dev libkf6widgetsaddons-dev libkf6windowsystem-dev \
         libplasma-dev plasma-activities-dev plasma-activities-stats-dev \
-        libksysguard-dev plasma-workspace-dev \
+        libksysguard-dev plasma-workspace plasma-workspace-dev \
         kwin-dev libkdecorations3-dev \
-        libepoxy-dev libdrm-dev libwayland-dev libx11-dev libxext-dev \
+        libepoxy-dev libdrm-dev libwayland-dev libx11-dev libxext-dev libxtst-dev \
         libxcb1-dev \
-        libvulkan-dev zstd && \
-    apt-get clean
+        libvulkan-dev zstd xvfb x11-utils dbus-bin dbus-daemon \
+        libgl1-mesa-dri libglx-mesa0 fonts-dejavu-core breeze-icon-theme && \
+    DEBIAN_FRONTEND=noninteractive apt-get dist-upgrade -y --allow-downgrades && \
+    apt-get clean && \
+    python3 -c "import platform; assert platform.freedesktop_os_release()['ID'] == 'neon'"
 
 WORKDIR /repo
 COPY . /repo

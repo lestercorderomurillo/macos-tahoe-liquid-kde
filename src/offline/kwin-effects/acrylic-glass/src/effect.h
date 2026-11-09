@@ -14,6 +14,12 @@
 #include "effect/effect.h"
 #include "opengl/glutils.h"
 #include "scene/item.h"
+#if !defined(GLASS_X11) && __has_include("scene/backgroundeffectitem.h")
+#include "scene/backgroundeffectitem.h"
+#define ACRYLIC_GLASS_SCENE_DAMAGE 1
+#else
+#define ACRYLIC_GLASS_SCENE_DAMAGE 0
+#endif
 
 #include <QList>
 #include <QRegion>
@@ -87,6 +93,9 @@ struct BlurEffectData
 
     /** Scene-graph handle that keeps the effect alive while the window is. */
     ItemEffect windowEffect;
+#if ACRYLIC_GLASS_SCENE_DAMAGE
+    std::unique_ptr<BackgroundEffectItem> backgroundEffect;
+#endif
 
     /**
      * Concatenated saturation × contrast × brightness transform. Empty
@@ -303,11 +312,12 @@ private:
         int highlightWidthLocation;
         int highlightStrengthLocation;
         int darkGradientOverlayLocation;
-        int materialOpacityLocation;
         int centerOpacityLocation;
         int dockSurfaceLocation;
         int backgroundSizeLocation;
         int gradientTopLocation;
+        int gradientCenterLocation;
+        int gradientCenterPositionLocation;
         int gradientBottomLocation;
     } m_roundedOnscreenPass;
 
@@ -373,13 +383,16 @@ private:
     float m_highlightWidth; ///< Pixel width of the bright glass rim.
     float m_highlightStrength; ///< Rim intensity multiplier.
     bool m_darkGradientOverlay = false;
-    float m_materialOpacity = 1.0f;
     QVector4D m_gradientTop;
+    QVector4D m_gradientTopDark;
+    QVector4D m_gradientCenter;
+    QVector4D m_gradientCenterDark;
+    float m_gradientCenterPosition;
     QVector4D m_gradientBottom;
+    QVector4D m_gradientBottomDark;
 
     size_t m_iterationCount; ///< Number of Kawase halve/double passes (drives texture chain length).
     float m_offset; ///< Kawase tap offset; 0.0 means "no blur, passthrough".
-    float m_dockOffset; ///< Compact Dock pyramid tap spacing, increasing with BlurStrength.
     int m_expandSize; ///< Pixels of dirty-region expansion needed for taps near the rim.
     int m_noiseStrength; ///< 0..N grain intensity; 0 disables the noise pass entirely.
 

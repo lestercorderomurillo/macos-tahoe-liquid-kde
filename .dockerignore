@@ -18,3 +18,6 @@ tests/vm-smoke/
 # Python bytecode caches.
 **/__pycache__/
 **/*.pyc
+
+# Documentation images are checked once in the primary suite.
+src/screenshots/

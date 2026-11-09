@@ -19,6 +19,7 @@ import plasma.applet.org.kde.mac.tahoe.liquid.taskmanager as TaskManagerApplet
 import org.kde.plasma.plasmoid
 import "LayoutMetrics.js" as LayoutMetrics
 import "TaskTools.js" as TaskTools
+import "DockRoles.js" as DockRoles
 
 import org.kde.taskmanager as TaskManager
 
@@ -55,6 +56,28 @@ PlasmaCore.ToolTipArea {
 
     readonly property int pid: model.AppPid
     readonly property string appName: model.AppName
+    readonly property string dockRole: tasksRoot.iconsOnly && Plasmoid.configuration.macOSDockIcons
+        ? DockRoles.appearanceRoleFor(model.LauncherUrlWithoutIcon, model.AppId) : ""
+    readonly property bool darkDockIcons: DockRoles.darkMode(
+        tasksRoot.iconThemeWatcher.plasmaThemeName, Kirigami.Theme.backgroundColor.hslLightness)
+    readonly property var dockIconSource: dockRole
+        ? backend.dockRoleIcon(dockRole, darkDockIcons)
+        : backend.iconSource(task.model.decoration)
+    readonly property string dockRoleLabel: {
+        switch (dockRole) {
+        case "files": return i18nd("plasma_applet_org.kde.mac.tahoe.liquid.taskmanager", "Files");
+        case "browser": return i18nd("plasma_applet_org.kde.mac.tahoe.liquid.taskmanager", "Browser");
+        case "mail": return i18nd("plasma_applet_org.kde.mac.tahoe.liquid.taskmanager", "Mail");
+        case "calendar": return i18nd("plasma_applet_org.kde.mac.tahoe.liquid.taskmanager", "Calendar");
+        case "notes": return i18nd("plasma_applet_org.kde.mac.tahoe.liquid.taskmanager", "Notes");
+        case "photos": return i18nd("plasma_applet_org.kde.mac.tahoe.liquid.taskmanager", "Photos");
+        case "music": return i18nd("plasma_applet_org.kde.mac.tahoe.liquid.taskmanager", "Music");
+        case "video": return i18nd("plasma_applet_org.kde.mac.tahoe.liquid.taskmanager", "Video");
+        case "store": return i18nd("plasma_applet_org.kde.mac.tahoe.liquid.taskmanager", "App Store");
+        case "settings": return i18nd("plasma_applet_org.kde.mac.tahoe.liquid.taskmanager", "System Settings");
+        default: return "";
+        }
+    }
     readonly property string appId: model.AppId.replace(/\.desktop/, '')
     readonly property bool isIcon: tasksRoot.iconsOnly || model.IsLauncher
     property bool toolTipOpen: false
@@ -373,12 +396,12 @@ PlasmaCore.ToolTipArea {
         mainItem.pidParent = Qt.binding(() => model.AppPid);
         mainItem.windows = Qt.binding(() => model.WinIdList);
         mainItem.isGroup = Qt.binding(() => model.IsGroupParent);
-        mainItem.icon = Qt.binding(() => backend.iconSource(model.decoration));
+        mainItem.icon = Qt.binding(() => task.dockIconSource);
         mainItem.launcherUrl = Qt.binding(() => model.LauncherUrlWithoutIcon);
         mainItem.isLauncher = Qt.binding(() => model.IsLauncher);
         mainItem.isMinimized = Qt.binding(() => model.IsMinimized);
         mainItem.display = Qt.binding(() => model.display);
-        mainItem.genericName = Qt.binding(() => model.GenericName);
+        mainItem.genericName = Qt.binding(() => task.dockRoleLabel || model.GenericName);
         mainItem.virtualDesktops = Qt.binding(() => model.VirtualDesktops);
         mainItem.isOnAllVirtualDesktops = Qt.binding(() => model.IsOnAllVirtualDesktops);
         mainItem.activities = Qt.binding(() => model.Activities);
@@ -548,13 +571,15 @@ PlasmaCore.ToolTipArea {
 
         anchors {
             left: parent.left
-            leftMargin: adjustMargin(true, parent.width, taskFrame.margins.left)
+            leftMargin: tasksRoot.iconsOnly && !tasksRoot.vertical && !task.inPopup ? 0 : adjustMargin(true, parent.width, taskFrame.margins.left)
             top: parent.top
-            topMargin: adjustMargin(false, parent.height, taskFrame.margins.top)
+            topMargin: tasksRoot.iconsOnly && tasksRoot.vertical && !task.inPopup ? 0 : adjustMargin(false, parent.height, taskFrame.margins.top)
         }
 
-        width: task.inPopup ? Math.max(Kirigami.Units.iconSizes.sizeForLabels, Kirigami.Units.iconSizes.medium) : Math.min(task.parent?.minimumWidth ?? 0, task.height)
-        height: task.inPopup ? width : (parent.height - adjustMargin(false, parent.height, taskFrame.margins.top)
+        width: task.inPopup ? Math.max(Kirigami.Units.iconSizes.sizeForLabels, Kirigami.Units.iconSizes.medium)
+            : tasksRoot.iconsOnly && tasksRoot.vertical ? parent.width - adjustMargin(true, parent.width, taskFrame.margins.left) - adjustMargin(true, parent.width, taskFrame.margins.right)
+            : Math.min(task.parent?.minimumWidth ?? 0, task.height)
+        height: task.inPopup ? width : tasksRoot.iconsOnly && tasksRoot.vertical ? parent.height : (parent.height - adjustMargin(false, parent.height, taskFrame.margins.top)
                  - adjustMargin(false, parent.height, taskFrame.margins.bottom))
 
         asynchronous: true
@@ -585,14 +610,14 @@ PlasmaCore.ToolTipArea {
             enabled: true
 
             // A cached QIcon can retain the outgoing theme's pixmap.
-            source: backend.iconSource(task.model.decoration)
+            source: task.dockIconSource
 
             Connections {
                 target: tasksRoot.iconThemeWatcher
                 function onChanged() {
                     icon.source = "";
                     Qt.callLater(() => {
-                        icon.source = Qt.binding(() => backend.iconSource(task.model.decoration));
+                        icon.source = Qt.binding(() => task.dockIconSource);
                     });
                 }
             }
@@ -639,9 +664,14 @@ PlasmaCore.ToolTipArea {
 
                 PropertyChanges {
                     iconBox.anchors.leftMargin: 0
-                    iconBox.width: Math.min(task.parent.minimumWidth, tasksRoot.height)
-                        - iconBox.adjustMargin(true, task.width, taskFrame.margins.left)
-                        - iconBox.adjustMargin(true, task.width, taskFrame.margins.right)
+                    iconBox.width: tasksRoot.iconsOnly && !task.inPopup
+                        ? (tasksRoot.vertical ? task.width
+                            - iconBox.adjustMargin(true, task.width, taskFrame.margins.left)
+                            - iconBox.adjustMargin(true, task.width, taskFrame.margins.right)
+                            : Math.min(task.parent.minimumWidth, task.height))
+                        : Math.min(task.parent.minimumWidth, tasksRoot.height)
+                            - iconBox.adjustMargin(true, task.width, taskFrame.margins.left)
+                            - iconBox.adjustMargin(true, task.width, taskFrame.margins.right)
                 }
             }
         ]

@@ -11,6 +11,11 @@ PartOf=graphical-session.target
 [Service]
 Type=oneshot
 ExecStart=%h/.local/bin/mac-tahoe-theme-switch auto
+# A dual-boot RTC can be wrong until NTP synchronizes. Keep the current
+# appearance while offline and retry only that temporary failure.
+RestartForceExitStatus=75
+RestartSec=15s
+TimeoutStartSec=3min
 
 [Install]
 WantedBy=plasma-plasmashell.service

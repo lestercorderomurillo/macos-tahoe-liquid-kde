@@ -6,6 +6,18 @@
   <kcfgfile name=""/>
 
   <group name="Appearance">
+    <entry name="enableGenericMenu" type="Bool">
+      <label>Show common actions for applications without exported menus.</label>
+      <default>true</default>
+    </entry>
+    <entry name="enableMenuSearch" type="Bool">
+      <label>Search the active application's exported menu actions.</label>
+      <default>true</default>
+    </entry>
+    <entry name="hoverOpensMenu" type="Bool">
+      <label>Switch menus on hover while a menu is open.</label>
+      <default>true</default>
+    </entry>
     <entry name="compactView" type="Bool">
       <label>If true it only shows a button for the application menu.</label>
       <default>false</default>

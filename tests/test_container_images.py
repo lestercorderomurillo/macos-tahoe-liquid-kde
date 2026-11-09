@@ -75,3 +75,28 @@ def test_every_matrix_image_installs_suite_dependencies(repo):
     assert 'librsvg ' in workflow
     assert 'from PIL import Image' in workflow
     assert 'command -v rsvg-convert' in workflow
+
+
+def test_neon_sdk_preserves_signed_sources_and_real_distribution_identity(repo):
+    import hashlib
+    import json
+    import re
+
+    source = repo / 'tests/containers/neon'
+    pin = json.loads((source / 'SOURCE.json').read_text())
+    assert re.fullmatch('[a-f0-9]{40}', pin['commit'])
+    assert pin['repository'] == 'https://invent.kde.org/neon/docker-images'
+    for name, digest in pin['files'].items():
+        assert hashlib.sha256((source / name).read_bytes()).hexdigest() == digest
+    sources = (source / 'neon.sources').read_text()
+    assert 'URIs: http://archive.neon.kde.org/user' in sources
+    assert 'Suites: noble' in sources
+    assert 'Signed-By: /etc/apt/keyrings/neon-archive-keyring.asc' in sources
+    docker = (repo / 'tests/containers/Dockerfile.neon').read_text()
+    assert 'FROM ubuntu:24.04' in docker
+    assert 'neon-settings-2' in docker
+    assert 'apt-get dist-upgrade -y --allow-downgrades' in docker
+    assert "platform.freedesktop_os_release()['ID'] == 'neon'" in docker
+    for dependency in ('python3-gi', 'gir1.2-gtk-4.0', 'xvfb', 'dbus-bin',
+                       'fonts-dejavu-core', 'breeze-icon-theme'):
+        assert dependency in docker

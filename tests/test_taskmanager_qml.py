@@ -36,7 +36,8 @@ def test_dock_themed_icons_follow_both_modes_and_preserve_custom_pixmaps(tmp_pat
     backend = (UI.parent.parent / 'backend.cpp').read_text()
     method = backend.split('QVariant Backend::iconSource(', 1)[1].split('\n}\n', 1)[0]
     task = (UI / 'Task.qml').read_text()
-    assert 'source: backend.iconSource(task.model.decoration)' in task
+    assert ': backend.iconSource(task.model.decoration)' in task
+    assert 'source: task.dockIconSource' in task
     assert 'target: tasksRoot.iconThemeWatcher' in task
     watcher = (UI.parent.parent / 'launcher/iconthemewatcher.h').read_text()
     assert 'QTimer::singleShot(0, this, &IconThemeWatcher::changed)' in watcher
@@ -95,4 +96,62 @@ int main(int argc, char **argv) {
     subprocess.run(['c++', '-std=c++17', '-fPIC', str(source), '-o', str(binary),
                     *shlex.split(flags.stdout)], check=True, capture_output=True, timeout=60)
     subprocess.run([str(binary), str(tmp_path / 'themes')], check=True,
+                   env=dict(os.environ, QT_QPA_PLATFORM='offscreen'), timeout=15)
+
+
+def test_dock_role_icons_are_unnamed_resource_icons(tmp_path):
+    """A theme basename must never replace the artwork selected for a Dock role."""
+    if not shutil.which('c++') or not shutil.which('pkg-config'):
+        pytest.skip('C++ and Qt6 development files required')
+    flags = subprocess.run(['pkg-config', '--cflags', '--libs', 'Qt6Gui'], capture_output=True, text=True)
+    libexec = subprocess.run(['pkg-config', '--variable=libexecdir', 'Qt6Core'], capture_output=True, text=True)
+    rcc = Path(libexec.stdout.strip()) / 'rcc'
+    if flags.returncode or not rcc.is_file():
+        pytest.skip('Qt6 development tools required')
+    import xml.etree.ElementTree as ET
+    resources = ET.Element('RCC')
+    group = ET.SubElement(resources, 'qresource', prefix='/qt/qml/plasma/applet/org/kde/mac/tahoe/liquid/taskmanager/icons')
+    icons = UI.parent / 'icons'
+    for path in sorted(icons.glob('*/*.svg')):
+        ET.SubElement(group, 'file', alias=path.relative_to(icons).as_posix()).text = str(path)
+    qrc = tmp_path / 'icons.qrc'
+    ET.ElementTree(resources).write(qrc)
+    generated = tmp_path / 'resources.cpp'
+    subprocess.run([str(rcc), str(qrc), '-o', str(generated)], check=True, capture_output=True)
+    backend = (UI.parent.parent / 'backend.cpp').read_text()
+    method = backend.split('QVariant Backend::dockRoleIcon(', 1)[1].split('\n}\n', 1)[0]
+    source = tmp_path / 'roles.cpp'
+    source.write_text(r'''#include <QGuiApplication>
+#include <QIcon>
+#include <QImage>
+#include <QVariant>
+#include <cassert>
+struct Backend { static QVariant dockRoleIcon(const QString &, bool); };
+''' + 'QVariant Backend::dockRoleIcon(' + method + '\n}\n' + r'''
+int main(int argc, char **argv) {
+    QGuiApplication app(argc, argv);
+    const QString root = QString::fromLocal8Bit(argv[1]);
+    for (const bool dark : {false, true, false}) {
+        for (const auto role : {"files", "browser", "mail", "calendar", "notes", "photos", "music", "video", "store", "settings"}) {
+            const QVariant result = Backend::dockRoleIcon(QString::fromLatin1(role), dark);
+            assert(result.metaType() == QMetaType::fromType<QIcon>());
+            const QIcon icon = result.value<QIcon>();
+            assert(icon.name().isEmpty()); // Kirigami must not re-resolve a theme name.
+            const QImage actual = icon.pixmap(64,64).toImage();
+            assert(!actual.isNull());
+            if (dark) {
+                const QColor plate = actual.pixelColor(9, 20);
+                assert(plate.alpha() > 200);
+                assert(plate.red() + plate.green() + plate.blue() < 300);
+            }
+            const QIcon expected(root + (dark ? "/dark/" : "/light/") + QString::fromLatin1(role) + ".svg");
+            assert(actual == expected.pixmap(64,64).toImage());
+        }
+    }
+}
+''')
+    binary = tmp_path / 'roles'
+    subprocess.run(['c++', '-std=c++17', '-fPIC', str(source), str(generated), '-o', str(binary),
+                    *shlex.split(flags.stdout)], check=True, capture_output=True, timeout=60)
+    subprocess.run([str(binary), str(icons)], check=True,
                    env=dict(os.environ, QT_QPA_PLATFORM='offscreen'), timeout=15)

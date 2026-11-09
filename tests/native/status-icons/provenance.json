@@ -1,0 +1,15 @@
+{
+  "status-icons": {
+    "file": "status-icons-3b3bc46d0047.png",
+    "sha256": "3b3bc46d0047149bcb760720e96bae4c5950efc1c948a62daa81fc0b8cfbe16f"
+  },
+  "battery-states": {
+    "file": "battery-states-842c4b99b92b.png",
+    "sha256": "842c4b99b92bffc783f862444721ad82fc4ba43e1e4327a8d5c096e76f070362"
+  },
+  "source_commit": "fb06ee7ab44cf55c283e585cd94aaa469d8eca37",
+  "source_archive_sha256": "43d6a916aba37ab668588d48464b8a47375453de4bcda594a21af2a53ab818d8",
+  "native_probe_sha256": "89b4322f8dbe7c116737b31a180606cb27717a4dc43f29f973d0fbe0765599bc",
+  "vm_image_sha256": "2a09de13ad568da01a8e16dd93e6aec120e63375bfc0ec24b4e804b43ecb4f8c",
+  "review": "Both images reviewed on 2026-10-30 (America/Costa_Rica); native rendered test artifacts produced inside the pinned disposable VM."
+}

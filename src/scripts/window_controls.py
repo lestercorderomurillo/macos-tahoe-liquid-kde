@@ -163,3 +163,21 @@ def apply_global_theme(theme: Path) -> None:
             r"(?m)^theme=__aurorae__svg__Mac(?:Tahoe|GoldenGate)LiquidKde-(Light|Dark)$",
             lambda match: f"theme=__aurorae__svg__{decoration_theme(match[1].lower())}",
             path.read_text()))
+
+
+def apply_firefox_controls(theme: Path) -> None:
+    """Replace fresh Firefox titlebutton assets, retaining its CSS state rules."""
+    if window_control_style() != "glassy":
+        return
+    for folder in (theme / "MacTahoe").glob("titlebuttons*"):
+        for asset in folder.glob("titlebutton-*.svg"):
+            parts = asset.stem.removeprefix("titlebutton-").split("-")
+            button = parts[0]
+            if button == "backdrop":
+                button, state = "close", "inactive"
+            else:
+                button = "restore" if button == "unmaximize" else button
+                state = ("pressed" if "active" in parts else "hover" if "hover" in parts
+                         else "hover-inactive" if "backdrop" in parts else "active")
+            if button in BUTTONS:
+                asset.write_text(button_svg(button, "Dark" if "dark" in parts else "Light", state))

@@ -9,14 +9,16 @@ import uuid
 from pathlib import Path
 
 from distro import qt6_plugins_dir
+from steps._native_build import cmake_build
 from steps._helpers import (
-    DATA_HOME, build_dir, cmake_build, fail, info, kw_write, ok, offline, qdbus_call,
+    DATA_HOME, build_dir, fail, info, kw_write, ok, offline, qdbus_call,
     sudo_install_file, sudo_remove, warn, _as_root,
     kwin_plugin_mapping_matches as _plugin_mapping_matches,
     running_kwin_plugin_matches as _running_plugin_matches,
 )
 from utils import have, qdbus_cmd, run_user
 from theme_switch import default_wallpaper
+from installer_choices import selected
 
 SRC = offline("kwin-effects/acrylic-glass")
 BUILD = build_dir("kwin-effects/acrylic-glass")
@@ -117,18 +119,127 @@ def _plugin_dir() -> Path:
 def build() -> None:
     if not (SRC / "CMakeLists.txt").is_file():
         return
-    # Disable conflicting blur effects before build so the kwin plugin
-    # loader doesn't keep the .so mapped while we replace it.
-    kw_write("--file", "kwinrc", "--group", "Plugins",
-             "--key", "glassEnabled", "false")
-    kw_write("--file", "kwinrc", "--group", "Plugins",
-             "--key", "blurEnabled", "false")
-    qdbus_call("org.kde.KWin", "/Effects",
-               "org.kde.kwin.Effects.unloadEffect", "glass")
-    qdbus_call("org.kde.KWin", "/Effects",
-               "org.kde.kwin.Effects.unloadEffect", "blur")
-
     cmake_build(SRC, BUILD, "Acrylic Glass")
+
+
+# Exact plugin IDs only; unrelated effects (including Rounded Corners) stay enabled.
+CONFLICTING_BLURS = ("blur", "glass", "glass_x11", "betterblur", "forceblur", "forceblur_x11",
+                     "better_blur_dx", "better_blur_dx_woapi",
+                     "kwin4_effect_blur", "kwin4_effect_glass",
+                     "kwin4_effect_betterblur", "kwin4_effect_forceblur")
+
+
+def _loaded_effects() -> set[str] | None:
+    q = qdbus_cmd()
+    if not q:
+        return None
+    try:
+        result = run_user([q, "org.kde.KWin", "/Effects",
+                           "org.kde.kwin.Effects.loadedEffects"],
+                          check=False, capture_output=True, text=True, timeout=10)
+        if result.returncode == 0:
+            return {item.strip() for item in (result.stdout or "").replace(",", "\n").splitlines() if item.strip()}
+    except (OSError, subprocess.TimeoutExpired):
+        pass
+    return None
+
+
+def _conflict_state_path() -> Path:
+    return Path(os.environ.get("XDG_STATE_HOME") or HOME / ".local/state") / "mac-tahoe-liquid-kde/blur-conflicts.json"
+
+
+def _read_conflict_state(path: Path) -> dict:
+    saved = json.loads(path.read_text())
+    if not isinstance(saved, dict) or any(
+            key not in CONFLICTING_BLURS or (value is not None and not isinstance(value, str))
+            for key, value in saved.items()):
+        raise ValueError("Invalid saved blur settings")
+    return saved
+
+
+def _plugin_setting(effect: str) -> str | None:
+    sentinel = "__mttkde_absent__"
+    result = run_user(["kreadconfig6", "--file", "kwinrc", "--group", "Plugins",
+                       "--key", effect + "Enabled", "--default", sentinel],
+                      check=False, capture_output=True, text=True, timeout=5)
+    if result.returncode:
+        raise OSError("Could not read KWin blur settings")
+    value = (result.stdout or "").rstrip("\r\n")
+    return None if value == sentinel else value
+
+
+def _disable_conflicting_blurs() -> bool:
+    path = _conflict_state_path()
+    try:
+        saved = _read_conflict_state(path) if path.exists() else {}
+        current = {effect: _plugin_setting(effect) for effect in CONFLICTING_BLURS}
+        # Retain the original state across reinstalls, before writing any settings.
+        saved = current | saved
+        path.parent.mkdir(parents=True, exist_ok=True)
+        temporary = path.with_suffix(".tmp")
+        temporary.write_text(json.dumps(saved))
+        temporary.replace(path)
+    except (OSError, ValueError, subprocess.TimeoutExpired) as exc:
+        fail(tr("Could not preserve competing blur settings: {exc}", exc=exc))
+        return False
+    for effect in CONFLICTING_BLURS:
+        if not kw_write("--file", "kwinrc", "--group", "Plugins",
+                        "--key", effect + "Enabled", "false"):
+            fail(tr("Could not disable competing blur: {effect}", effect=effect))
+            _restore_conflicting_blurs()
+            return False
+        qdbus_call("org.kde.KWin", "/Effects", "org.kde.kwin.Effects.unloadEffect", effect)
+    qdbus_call("org.kde.KWin", "/KWin", "org.kde.KWin.reconfigure")
+    loaded = _loaded_effects()
+    if loaded is not None and loaded.intersection(CONFLICTING_BLURS):
+        fail(tr("A competing blur effect is still loaded; Acrylic Glass was not activated"))
+        _restore_conflicting_blurs()
+        return False
+    if loaded is None:
+        fail(tr("Competing blurs disabled in settings, but their live unload could not be verified"))
+        return False
+    return True
+
+
+def _restore_conflicting_blurs() -> None:
+    path = _conflict_state_path()
+    if not path.exists():
+        return
+    loaded = _loaded_effects()
+    if loaded is None:
+        warn(tr("Previous blur settings retained for recovery because Acrylic Glass unload could not be verified"))
+        return
+    if "liquidglass" in loaded:
+        warn(tr("Previous blur settings retained for recovery because Acrylic Glass is still loaded"))
+        return
+    try:
+        saved = _read_conflict_state(path)
+        success = True
+        for effect in CONFLICTING_BLURS:
+            if effect not in saved or _plugin_setting(effect) != "false":
+                continue  # Preserve subsequent user edits.
+            args = ("--delete",) if saved[effect] is None else (str(saved[effect]),)
+            success = kw_write("--file", "kwinrc", "--group", "Plugins",
+                               "--key", effect + "Enabled", *args) and success
+        if success:
+            path.unlink()
+        else:
+            warn(tr("Some competing blur settings could not be restored"))
+        qdbus_call("org.kde.KWin", "/KWin", "org.kde.KWin.reconfigure")
+    except (OSError, ValueError, subprocess.TimeoutExpired) as exc:
+        warn(tr("Could not restore competing blur settings: {exc}", exc=exc))
+
+
+def _install_backing_tint() -> bool:
+    choices = selected()
+    if choices and choices["files"] == "nautilus":
+        variant = "0" if choices["glass_style"] == "classic" else "1"
+    elif default_wallpaper() == "MacGoldenGate":
+        variant = "1"
+    else:
+        return True
+    return kw_write("--file", "kwinrc", "--group", "Effect-liquidglass", "--key",
+                    "BackingTint", variant)
 
 
 _CORNER_DEFAULTS = (
@@ -141,8 +252,13 @@ def _edition_preset() -> dict[str, str]:
     # The KCM and installer apply the same complete material.
     presets = json.loads((SRC / "src/presets.json").read_text())
     preset_id = "golden-gate" if default_wallpaper() == "MacGoldenGate" else "tahoe"
+    choices = selected()
+    if choices and choices["files"] == "nautilus":
+        preset_id = "golden-gate" if choices["glass_style"] == "official" else "tahoe"
     preset = next(preset for preset in presets if preset["id"] == preset_id)
-    values = preset["values"]
+    values = dict(preset["values"])
+    if choices and choices["files"] == "nautilus" and choices["glass_style"] == "tinted":
+        values.update(preset.get("tinted_values", {}))
     return {key: str(value).lower() if isinstance(value, bool) else str(value)
             for key, value in values.items()} | {"MaterialPreset": str(preset["value"])}
 
@@ -266,6 +382,20 @@ def _running_build_matches() -> bool | None:
         return None
 
 
+def _render_status() -> str | None:
+    q = qdbus_cmd()
+    if not q:
+        return None
+    try:
+        result = run_user([q, "org.kde.KWin", "/Effects",
+                           "org.kde.kwin.Effects.debug", "liquidglass", "status"],
+                          check=False, capture_output=True, text=True, timeout=5)
+        status = (result.stdout or "").strip()
+        return status if result.returncode == 0 and status in ("ready", "shader-error") else None
+    except (OSError, subprocess.TimeoutExpired):
+        return None
+
+
 def install() -> None:
     system_dir = _plugin_dir()
     backends = [
@@ -288,13 +418,19 @@ def install() -> None:
 
     # Disable discovery while switching versions. Qt can retain the old
     # library even after the effect instance has been unloaded.
-    kw_write("--file", "kwinrc", "--group", "Plugins",
-             "--key", "liquidglassEnabled", "false")
+    if not kw_write("--file", "kwinrc", "--group", "Plugins",
+                    "--key", "liquidglassEnabled", "false"):
+        fail(tr('Acrylic Glass could not be disabled in kwinrc'))
+        return
     qdbus_call("org.kde.KWin", "/Effects",
                "org.kde.kwin.Effects.unloadEffect", "liquidglass")
     qdbus_call("org.kde.KWin", "/KWin", "org.kde.KWin.reconfigure")
     time.sleep(2)
-    ok(tr('Acrylic Glass unloaded for safe upgrade'))
+    loaded = _loaded_effects()
+    if loaded is not None and "liquidglass" in loaded:
+        kw_write("--file", "kwinrc", "--group", "Plugins", "--key", "liquidglassEnabled", "true")
+        fail(tr('Acrylic Glass is still loaded; log out before upgrading'))
+        return
 
     # Drop user-path leftovers from old sudoless installs.
     for so in (LEGACY_USER_PLUGIN_DIR / "kwin/effects/plugins/liquidglass.so",
@@ -329,10 +465,17 @@ def install() -> None:
     _install_corner_defaults()
     _install_missing_defaults((("BlurDecorations", "true"),
                                ("BlurMatching", "false"), ("BlurNonMatching", "true")))
-    if material_applied:
-        ok(tr('Acrylic Glass material settings ready'))
-    kw_write("--file", "kwinrc", "--group", "Plugins",
-             "--key", "liquidglassEnabled", "true")
+    if not material_applied or not _install_backing_tint():
+        fail(tr('Acrylic Glass material settings could not be applied'))
+        return
+    ok(tr('Acrylic Glass material settings ready'))
+    if not _disable_conflicting_blurs():
+        return
+    if not kw_write("--file", "kwinrc", "--group", "Plugins",
+                    "--key", "liquidglassEnabled", "true"):
+        fail(tr('Acrylic Glass could not be enabled in kwinrc'))
+        _restore_conflicting_blurs()
+        return
 
     # Reload the effect instance. Qt may still retain its old shared library;
     # activeEffects alone cannot prove the newly installed code is running.
@@ -342,19 +485,15 @@ def install() -> None:
     qdbus_call("org.kde.KWin", "/Effects",
                "org.kde.kwin.Effects.loadEffect", "liquidglass")
 
-    q = qdbus_cmd()
-    active = ""
-    if q:
-        try:
-            res = run_user([q, "org.kde.KWin", "/Effects",
-                            "org.kde.kwin.Effects.activeEffects"],
-                           check=False, capture_output=True, text=True,
-                           timeout=10)
-            if res.returncode == 0:
-                active = res.stdout or ""
-        except (OSError, subprocess.TimeoutExpired):
-            pass
-    if "liquidglass" in active.splitlines():
+    loaded = _loaded_effects()
+    status = _render_status() if loaded is not None and "liquidglass" in loaded else None
+    if status == "shader-error":
+        fail(tr('Acrylic Glass could not initialize its shaders; restoring the previous blur settings'))
+        kw_write("--file", "kwinrc", "--group", "Plugins", "--key", "liquidglassEnabled", "false")
+        qdbus_call("org.kde.KWin", "/Effects", "org.kde.kwin.Effects.unloadEffect", "liquidglass")
+        _restore_conflicting_blurs()
+        return
+    if loaded is not None and "liquidglass" in loaded:
         identity_matches = _running_build_matches()
         if identity_matches is None:
             matches = [_running_plugin_matches(destination)
@@ -364,12 +503,17 @@ def install() -> None:
                                 else None)
         if identity_matches is False:
             warn(tr('Acrylic Glass installed, but KWin still has the previous plugin loaded. Log out and back in to use this update; reloading the effect or restarting Plasma is not enough.'))
-        elif identity_matches is True:
+        elif identity_matches is True and status == "ready":
             ok(tr('Acrylic Glass loaded'))
+        elif identity_matches is True:
+            warn(tr('Acrylic Glass build is loaded, but shader readiness could not be verified'))
         else:
             warn(tr('Acrylic Glass is active, but its running build could not be verified.'))
     else:
         warn(tr('Acrylic Glass installed but activation was not confirmed. Log out and back in after a KWin upgrade; if it remains inactive, check the KWin log for liquidglass shader or plugin errors.'))
+        if loaded is not None:
+            kw_write("--file", "kwinrc", "--group", "Plugins", "--key", "liquidglassEnabled", "false")
+            _restore_conflicting_blurs()
 
 
 def uninstall() -> None:
@@ -436,4 +580,5 @@ def uninstall() -> None:
     # also repaints windows immediately on sessions where unloadEffect is
     # asynchronous, instead of leaving the old effect mapped until logout.
     qdbus_call("org.kde.KWin", "/KWin", "org.kde.KWin.reconfigure")
+    _restore_conflicting_blurs()
     info(tr('Acrylic Glass removed'))

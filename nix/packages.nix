@@ -23,7 +23,7 @@ let
       kservice kwidgetsaddons kwindowsystem kcolorscheme libplasma plasma-activities
       plasma-activities-stats libksysguard plasma-workspace kwin kdecoration ]
       ++ [ pkgs.libepoxy pkgs.libdrm pkgs.wayland pkgs.libxkbcommon
-           pkgs.libGL pkgs.vulkan-headers pkgs.vulkan-loader pkgs.libx11 pkgs.libxcb ];
+           pkgs.libGL pkgs.vulkan-headers pkgs.vulkan-loader pkgs.libx11 pkgs.libxcb pkgs.libxtst ];
     dontWrapQtApps = true;
     cmakeFlags = [ "-DCMAKE_BUILD_TYPE=Release" ];
   } // extra);
@@ -47,6 +47,7 @@ in rec {
       PYTHONPATH=${../src/scripts} python ${./install-assets.py} . "$out"
       mkdir -p "$out/share/icons"
       tar --zstd -xf "$src/icons/MacTahoeLiquidKde-Icons.tar.zst" -C "$out/share/icons"
+      PYTHONPATH=${../src/scripts} python ${../src/scripts/interface_icons.py} "$out/share/icons"
       tar --zstd -xf "$src/cursors/MacTahoeLiquidKde-Cursors.tar.zst" -C "$out/share/icons"
       runHook postInstall
     '';
@@ -87,6 +88,7 @@ in rec {
   };
   apple-assets = pkgs.stdenvNoCC.mkDerivation {
     pname = "mac-tahoe-apple-assets";
+    nativeBuildInputs = [ pkgs.xz ];
     inherit version;
     src = lib.fileset.toSource {
       root = offline;
@@ -95,7 +97,8 @@ in rec {
     meta = meta // { license = lib.licenses.unfree; };
     installPhase = ''
       mkdir -p "$out/share/fonts" "$out/share/wallpapers" "$out/share/sounds"
-      cp -r fonts/. "$out/share/fonts/"
+      tar -xJf fonts/fonts.tar.xz -C "$out/share/fonts"
+      cp fonts/SF-Pro-Display-Regular.otf "$out/share/fonts/"
       cp -r wallpapers/. "$out/share/wallpapers/"
       cp -r sounds/. "$out/share/sounds/"
     '';

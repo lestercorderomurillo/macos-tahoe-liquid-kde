@@ -21,8 +21,9 @@ RUN printf '\n[kde-unstable]\nInclude = /etc/pacman.d/mirrorlist\n' >> /etc/pacm
     && pacman -Sy --noconfirm --needed archlinux-keyring \
     && pacman -Syu --noconfirm --needed \
     python python-pytest git zstd python-pillow python-pyqt6 plasma5support librsvg \
-    cmake make gcc extra-cmake-modules \
-    qt6-base qt6-tools qt6-declarative qt6-svg \
+    cmake make ccache gcc extra-cmake-modules \
+    xorg-server-xvfb dbus ttf-dejavu \
+    qt6-base qt6-tools qt6-declarative qt6-svg qt6-wayland \
     pkgconf \
     # KF6 frameworks required by deps() of the compiled steps.
     kconfig kconfigwidgets kcoreaddons kcrash kglobalaccel kguiaddons \
@@ -35,7 +36,7 @@ RUN printf '\n[kde-unstable]\nInclude = /etc/pacman.d/mirrorlist\n' >> /etc/pacm
     # KWin 6.27+ pulls Vulkan into its cmake config.
     kwin kdecoration vulkan-headers \
     # libepoxy + X11/XCB headers used by the acrylic-glass effect.
-    libepoxy libx11 libxcb \
+    libepoxy libx11 libxcb libxtst \
     && pacman -Scc --noconfirm
 
 WORKDIR /repo

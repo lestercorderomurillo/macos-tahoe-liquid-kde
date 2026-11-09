@@ -17,6 +17,7 @@ from utils import qdbus_cmd, run_user
 
 LAYOUT_SCRIPT = offline("layouts/mac-tahoe.js")
 LAYOUT_RESET = offline("layouts/default.js")
+DOCK_MIGRATION = offline("layouts/migrate-dock-preset.js")
 _DISCOVER_DESKTOP = "applications:org.kde.discover.desktop"
 COLORIZER_ID = "luisbocanegra.panel.colorizer"
 COLORIZER_SRC = offline("plasmoids") / COLORIZER_ID
@@ -136,9 +137,10 @@ def _capture_pinned_launchers() -> list[str]:
 
 
 def _append_launcher_restore(
-        script: str, pins: list[str], widget_type: str) -> str:
-    if pins:
-        joined = repr(",".join(pins))
+        script: str, pins: list[str], widget_type: str, *,
+        preserve_empty: bool = False) -> str:
+    if pins or preserve_empty:
+        joined = json.dumps(pins)
         widget = repr(widget_type)
         script += (
             "\n(function () {\n"
@@ -175,7 +177,35 @@ def _layout_script_with_launchers(
     if not _discover_is_installed():
         script = script.replace(_DISCOVER_DESKTOP + ",", "")
         script = script.replace("," + _DISCOVER_DESKTOP, "")
-    return _append_launcher_restore(script, pins, widget_type)
+    script = _append_launcher_restore(
+        script, pins, widget_type,
+        preserve_empty=script_path == LAYOUT_SCRIPT and _layout_has_any_theme_widget(),
+    )
+
+    if script_path == LAYOUT_SCRIPT:
+        script += "\n" + _dock_migration_script()
+    return script
+
+
+def _dock_migration_script() -> str:
+    from installer_choices import selected
+    choices = selected()
+    requested = choices.get("dock_apps", []) if choices.get("dock", True) else []
+    appearance = choices.get("dock_appearance", "auto") if choices.get("dock", True) else "keep"
+    return ("var mttkdeResetDock = " + json.dumps(choices.get("reset_layout", False)) + ";\n"
+            + "var mttkdeDockAppearance = " + json.dumps(appearance) + ";\n"
+            + "var mttkdeRequestedDockApps = " + json.dumps(requested) + ";\n"
+            + DOCK_MIGRATION.read_text())
+
+
+def migrate_dock_preset() -> None:
+    """Upgrade existing Docks without rebuilding panels or changing their geometry."""
+    from installer_choices import selected
+    choices = selected()
+    if choices and not choices["dock"]:
+        return
+    if not _evaluate_layout_script(_dock_migration_script()):
+        warn(tr('Dock preset update failed'))
 
 
 def _evaluate_layout_with_launchers(

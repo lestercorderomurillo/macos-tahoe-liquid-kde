@@ -55,8 +55,8 @@ def windows(script=''):
         path = Path(temp) / 'capture.js'
         path.write_text(script + 'callDBus(' + json.dumps(service) + ',"/Probe","org.mttkde.ReleaseCapture","record",'
                         'JSON.stringify(workspace.windowList().filter(w=>!w.minimized).map(w=>({'
-                        'caption:w.caption,resourceClass:String(w.resourceClass),type:w.windowType,'
-                        'appletPopup:w.appletPopup,active:w===workspace.activeWindow,geometry:w.frameGeometry}))));')
+                        'id:String(w.internalId),caption:w.caption,resourceClass:String(w.resourceClass),type:w.windowType,'
+                        'appletPopup:w.appletPopup,hidden:w.hidden,active:w===workspace.activeWindow,geometry:w.frameGeometry}))));')
         api = QDBusInterface('org.kde.KWin', '/Scripting', 'org.kde.kwin.Scripting', bus)
         loaded = api.call('loadScript', str(path), service).arguments()
         assert loaded and isinstance(loaded[0], int)
@@ -92,7 +92,7 @@ def clean_desktop():
     raise RuntimeError('Applications remain open; refusing a Dock capture with extra icons')
 
 
-def setup(repo, profile, edition):
+def setup(repo, profile, edition, scope=None):
     from release_screenshots import EDITIONS
     session()
     packages = run('dpkg-query', '-W', '-f=${Package}=${Version}\n')
@@ -113,6 +113,8 @@ def setup(repo, profile, edition):
     # The fixed profile explicitly recreates its layout even if the sealed VM
     # contains an earlier installation. Normal reinstalls preserve it by default.
     choices = defaults() | {'appearance': 'light', 'reset_layout': True}
+    if scope in ('dock', 'menu', 'installer'):
+        choices['icons'] = 'keep'
     command = ['sudo', 'env', 'MAC_TAHOE_NO_UPDATE_CHECK=true', 'MTTKDE_NO_CONFIRM=1',
                str(repo / 'src/scripts/installer_backend.py'), 'install',
                '--wizard-options', json.dumps(choices)]
@@ -142,23 +144,77 @@ def setup(repo, profile, edition):
     for name in profile['documents']:
         (folder / name).mkdir(exist_ok=True)
     run('sudo', 'date', '--set', profile['clock'])
-    return {'packages': packages, 'kwin': run('kwin_wayland', '--version'),
+    return {'dock_migration': verify_dock_defaults(repo) if scope == 'dock' else None,
+            'packages': packages, 'kwin': run('kwin_wayland', '--version'),
             'plasma': run('plasmashell', '--version'),
             'compositor': run('qdbus6', 'org.kde.KWin', '/KWin', 'org.kde.KWin.supportInformation')}
 
 
-def mode(repo, requested):
+
+def verify_dock_defaults(repo):
+    """Exercise legacy updates and repeat installs in the disposable guest only."""
+    from steps.layout import _dock_migration_script
+    saved_options = os.environ.get('MTTKDE_WIZARD_OPTIONS')
+    evidence = []
+    try:
+        for revision in (0, 1, 2):
+            os.environ['MTTKDE_WIZARD_OPTIONS'] = json.dumps({'reset_layout': False})
+            migration = _dock_migration_script()
+            script = 'var tasks; panels().forEach(p=>p.widgets().forEach(w=>{if(w.type === "org.kde.mac.tahoe.liquid.icontasks") tasks=w;}));'
+            script += 'tasks.currentConfigGroup=["General"]; var saved=tasks.readConfig("launchers", []);'
+            script += 'tasks.writeConfig("launchers", ["applications:systemsettings.desktop", "applications:firefox.desktop"]);'
+            script += 'tasks.writeConfig("dockPresetRevision", ' + str(revision) + '); tasks.writeConfig("macOSDockIcons", false);'
+            script += migration
+            script += 'var first=tasks.readConfig("launchers"); var icons=tasks.readConfig("macOSDockIcons");'
+            script += 'tasks.writeConfig("launchers", ["applications:firefox.desktop"]); tasks.writeConfig("macOSDockIcons", false);'
+            script += migration
+            script += 'var second=tasks.readConfig("launchers"); var kept=tasks.readConfig("macOSDockIcons");'
+            os.environ['MTTKDE_WIZARD_OPTIONS'] = json.dumps({'reset_layout': True})
+            script += _dock_migration_script()
+            script += 'var reset=tasks.readConfig("launchers"); var restored=tasks.readConfig("macOSDockIcons");'
+            script += 'var revision=tasks.readConfig("dockPresetRevision"); tasks.writeConfig("launchers", saved);'
+            script += 'print(JSON.stringify({first:first, icons:icons, second:second, kept:kept, reset:reset, restored:restored, revision:revision}));'
+            result = json.loads(plasma(script))
+            pins = lambda value: value.split(',') if isinstance(value, str) else value
+            if (pins(result['first'])[:2] != ['applications:systemsettings.desktop', 'applications:firefox.desktop']
+                    or len(pins(result['first'])) != 10
+                    or result['icons'] not in (True, 'true')
+                    or pins(result['second']) != ['applications:firefox.desktop']
+                    or result['kept'] not in (False, 'false')
+                    or pins(result['reset'])[0] != 'applications:firefox.desktop'
+                    or len(pins(result['reset'])) != 10
+                    or result['restored'] not in (True, 'true') or int(result['revision']) != 3):
+                raise RuntimeError(f'Dock migration {revision} failed: {result}')
+            evidence.append(dict(previous_revision=revision, **result))
+    finally:
+        if saved_options is None:
+            os.environ.pop('MTTKDE_WIZARD_OPTIONS', None)
+        else:
+            os.environ['MTTKDE_WIZARD_OPTIONS'] = saved_options
+    return evidence
+
+
+def mode(repo, requested, scope=None):
     from screenshot_checks import wait_for_session
     close()
     # The installed command carries the edition and the user's icon choices;
     # importing the source module would silently fall back to the base icons.
     run(str(Path.home() / '.local/bin/mac-tahoe-theme-switch'), requested, timeout=180)
+    if scope in ('dock', 'menu', 'installer'):
+        # The sealed VM already contains these unchanged global appearances.
+        theme = 'MacTahoeLiquidKde-Icons-Regular-' + requested.title()
+        if not (Path.home() / '.local/share/icons' / theme / 'index.theme').is_file():
+            raise RuntimeError('Reference icon theme is missing: ' + theme)
+        run('kwriteconfig6', '--file', 'kdeglobals', '--group', 'Icons', '--key', 'Theme', theme)
+        from theme_switch import refresh_icons_live
+        refresh_icons_live()
     return wait_for_session(requested)
 
 
 def launch(repo, name):
     from distro import user_service_manager_command
     commands = {'finder': ['nautilus', '--new-window', str(Path.home() / 'Documents')],
+                'dolphin': ['dolphin', '--new-window', str(Path.home() / 'Documents')],
                 'about': ['qml6', str(repo / 'src/scripts/preview_about.qml')]}
     log = repo.parent / (name + '.log')
     env = dict(os.environ, QT_FORCE_STDERR_LOGGING='1', MAC_TAHOE_ABOUT_MOCK='1')
@@ -186,10 +242,10 @@ def launch(repo, name):
         if key in env:
             command.append('--setenv=' + key + '=' + env[key])
     run(*command, *commands[name])
-    caption = 'Documents' if name == 'finder' else 'About This Computer (preview)'
+    caption = 'Documents' if name in ('finder', 'dolphin') else 'About This Computer (preview)'
     deadline = time.monotonic() + 25
     while time.monotonic() < deadline:
-        if any(w['caption'] == caption for w in windows()):
+        if any(w['caption'].startswith(caption) for w in windows()):
             if name != 'about' or 'MTTKDE_ABOUT_READY' in log.read_text():
                 return
         time.sleep(.3)
@@ -247,9 +303,40 @@ def wizard(repo, page):
     raise RuntimeError('Installer capture page did not become ready: ' + page)
 
 
+def material(repo, case):
+    from release_screenshots import material_values
+    import configparser
+    snapshot = repo.parent / 'material-before.ini'
+    config = Path.home() / '.config/kwinrc'
+    if case == 'restore':
+        old = configparser.ConfigParser()
+        old.optionxform = str
+        old.read(snapshot)
+        values = dict(old['Effect-liquidglass'])
+    else:
+        if not snapshot.exists():
+            snapshot.write_bytes(config.read_bytes())
+        presets = json.loads((repo / 'src/offline/kwin-effects/acrylic-glass/src/presets.json').read_text())
+        values = material_values(presets, case)
+    for key, value in values.items():
+        run('kwriteconfig6', '--file', 'kwinrc', '--group', 'Effect-liquidglass', '--key', key,
+            str(value).lower() if isinstance(value, bool) else str(value))
+    run('qdbus6', 'org.kde.KWin', '/Effects', 'org.kde.kwin.Effects.reconfigureEffect', 'liquidglass')
+    time.sleep(1)
+    if case == 'restore':
+        snapshot.unlink()
+    else:
+        for key, value in values.items():
+            saved = run('kreadconfig6', '--file', 'kwinrc', '--group', 'Effect-liquidglass', '--key', key)
+            expected = str(value).lower() if isinstance(value, bool) else str(value)
+            if saved != expected:
+                raise RuntimeError(f'Material readback failed: {key}: {saved} != {expected}')
+    return values
+
+
 def capture(repo, profile, edition, requested, case):
     from PIL import Image
-    from release_screenshots import EDITIONS, digest, verify_desktop_window, verify_icon_appearance
+    from release_screenshots import EDITIONS, MATERIAL_CASES, material_values, digest, verify_desktop_window, verify_icon_appearance
     from screenshot_checks import wait_for_session, check_files_pixels
     state = wait_for_session(requested)
     state['Icons'] = run('kreadconfig6', '--file', 'kdeglobals', '--group', 'Icons', '--key', 'Theme')
@@ -267,12 +354,20 @@ def capture(repo, profile, edition, requested, case):
         raise RuntimeError(f'Wrong launcher preset: {presets}')
     run('sudo', 'date', '--set', profile['clock'])
     target = repo.parent / 'frame.png'
-    if case in ('finder', 'showcase', 'about'):
+    if case in ('finder', 'showcase', 'about', 'topbar') or case in MATERIAL_CASES:
         verify_desktop_window(case, windows())
     previous = None
+    desktop_case = case in ('finder', 'showcase', 'about', 'topbar') or case in MATERIAL_CASES
     deadline = time.monotonic() + 25
     while time.monotonic() < deadline:
+        before = windows() if desktop_case else None
+        if desktop_case:
+            verify_desktop_window(case, before)
         run('spectacle', '-b', '-n', '-f', '-o', str(target))
+        if desktop_case:
+            from release_screenshots import verify_focused_frame
+            focused = verify_desktop_window(case, before)
+            verify_focused_frame(before, windows(), focused['resourceClass'])
         with Image.open(target) as image:
             if list(image.size) != profile['resolution']:
                 raise RuntimeError(f'Unexpected capture dimensions: {image.size}')
@@ -296,8 +391,12 @@ def capture(repo, profile, edition, requested, case):
     elif case == 'launcher':
         chosen = [w for w in shell if w['appletPopup']]
         expected = EDITIONS[edition][1]
+    elif case == 'topbar':
+        chosen = [w for w in shell if w['type'] == 2 and w['geometry']['y'] == 0]
+        expected = 1
     elif case == 'dock':
-        chosen = [w for w in shell if w['type'] == 2 and w['geometry']['y'] > 100]
+        chosen = [w for w in shell if w['type'] == 2 and w['geometry']['y'] > 100
+                  and not w.get('hidden', False)]
         expected = 1
     elif case in ('menu', 'context'):
         chosen = [w for w in shell if w['type'] not in (1, 2)]
@@ -308,22 +407,77 @@ def capture(repo, profile, edition, requested, case):
     if len(chosen) != expected:
         raise RuntimeError(f'{case}: expected {expected} windows, found {chosen}; observed {observed}')
     crop = None
-    if case not in ('launcher', 'showcase'):
+    if case not in ('launcher', 'showcase') and case not in MATERIAL_CASES:
         g = chosen[0]['geometry']
         scale = profile['scale']
         crop = [max(0, round(g['x'] * scale) - 28), max(0, round(g['y'] * scale) - 28),
                 min(3840, round((g['x'] + g['width']) * scale) + 28),
                 min(2160, round((g['y'] + g['height']) * scale) + 28)]
+    if case == 'topbar':
+        crop = [0, 0, 900, 96]
+    elif case == 'menu':
+        crop[1] = 0  # Include the active system-menu capsule above the popup.
     pixels = None
-    if case in ('finder', 'showcase'):
+    if case in ('finder', 'showcase') or case in MATERIAL_CASES:
         with Image.open(target) as image:
             pixels = check_files_pixels(image, requested, observed, profile['scale'])
+    captured_material = None
+    if case in MATERIAL_CASES:
+        definitions = json.loads((repo / 'src/offline/kwin-effects/acrylic-glass/src/presets.json').read_text())
+        captured_material = material_values(definitions, case)
+        for key, value in captured_material.items():
+            actual = run('kreadconfig6', '--file', 'kwinrc', '--group', 'Effect-liquidglass', '--key', key)
+            expected = str(value).lower() if isinstance(value, bool) else str(value)
+            if actual != expected:
+                raise RuntimeError(f'Glass setting changed before capture: {key}')
     identity = run('qdbus6', 'org.kde.KWin', '/Effects', 'org.kde.kwin.Effects.debug', 'liquidglass', '')
-    return dict(sha256=digest(target), appearance=state, effect_build=identity, crop=crop,
+    return dict(material_values=captured_material, sha256=digest(target), appearance=state, effect_build=identity, crop=crop,
                 wallpaper=EDITIONS[edition][0], wallpaper_uri=wallpaper[0], launcher_preset=presets[0], windows=observed,
                 files_pixels=pixels, stable_frames=True, window_verified=True,
                 installer_page=installer_state['page'] if installer_state else None,
                 installer_edition=installer_state['edition'] if installer_state else None)
+
+
+def file_preview(repo, profile, manager):
+    from PIL import Image
+    from release_screenshots import verify_focused_frame, digest
+    classes = {'nautilus': 'org.gnome.Nautilus', 'dolphin': 'org.kde.dolphin'}
+    resource = classes[manager]
+    clean_desktop()
+    launch(repo, 'finder' if manager == 'nautilus' else 'dolphin')
+    candidates = [w for w in windows() if w['resourceClass'] == resource and w['type'] == 0]
+    if len(candidates) != 1:
+        raise RuntimeError('File manager did not open exactly one window')
+    arrange({candidates[0]['caption']: dict(x=480, y=240, width=960, height=600)})
+    previous = None
+    target = repo.parent / 'frame.png'
+    deadline = time.monotonic() + 30
+    while time.monotonic() < deadline:
+        before = windows()
+        verify_focused_frame(before, before, resource)
+        run('spectacle', '-b', '-n', '-f', '-o', str(target))
+        after = windows()
+        try:
+            window = verify_focused_frame(before, after, resource)
+        except ValueError:
+            previous = None
+            time.sleep(.3)
+            continue  # Reject this frame; a resizing window has not settled.
+        with Image.open(target) as image:
+            if list(image.size) != profile['resolution']:
+                raise RuntimeError('Wrong preview resolution')
+            current = image.convert('RGB').tobytes()
+        if previous == current:
+            geometry = window['geometry']
+            scale = profile['scale']
+            crop = [round(geometry['x'] * scale) - 28, round(geometry['y'] * scale) - 28,
+                    round((geometry['x'] + geometry['width']) * scale) + 28,
+                    round((geometry['y'] + geometry['height']) * scale) + 28]
+            return dict(before=before, after=after, crop=crop, stable_frames=True,
+                        resource_class=resource, sha256=digest(target))
+        previous = current
+        time.sleep(.3)
+    raise RuntimeError('File-manager preview never settled')
 
 
 def boot(repo):
@@ -352,15 +506,17 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--repo', type=Path, required=True)
     parser.add_argument('--profile', type=Path, required=True)
-    parser.add_argument('action', choices=('setup', 'mode', 'launch', 'launcher', 'arrange', 'close', 'clean-desktop', 'wizard', 'plasma', 'capture', 'boot'))
+    parser.add_argument('action', choices=('file-preview', 'material', 'setup', 'mode', 'launch', 'launcher', 'arrange', 'close', 'clean-desktop', 'wizard', 'plasma', 'capture', 'boot'))
     parser.add_argument('args', nargs='*')
     args = parser.parse_args()
     sys.path.insert(0, str(args.repo / 'src/scripts'))
     session()
     profile = json.loads(args.profile.read_text())
     result = None
-    if args.action == 'setup': result = setup(args.repo, profile, args.args[0])
-    elif args.action == 'mode': result = mode(args.repo, args.args[0])
+    if args.action == 'file-preview': result = file_preview(args.repo, profile, args.args[0])
+    elif args.action == 'setup': result = setup(args.repo, profile, *args.args)
+    elif args.action == 'material': result = material(args.repo, args.args[0])
+    elif args.action == 'mode': result = mode(args.repo, *args.args)
     elif args.action == 'launch': launch(args.repo, args.args[0])
     elif args.action == 'launcher': run('qdbus6', 'org.kde.plasmashell', '/PlasmaShell', 'org.kde.PlasmaShell.activateLauncherMenu')
     elif args.action == 'arrange': arrange(json.loads(args.args[0]))

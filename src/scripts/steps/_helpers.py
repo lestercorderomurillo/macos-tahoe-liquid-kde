@@ -1,6 +1,7 @@
 """Common helpers shared between step modules."""
 
 from localization import tr
+from component_cache import identical
 
 import os
 import shutil
@@ -58,6 +59,9 @@ def install_tree(src: Path, dest: Path, label: str | None = None) -> bool:
     if not src.is_dir():
         fail(tr('{label} (source missing: {src})', label=label, src=src))
         return False
+    if identical(src, dest):
+        ok(tr("{label} (unchanged)", label=label))
+        return True
     existed = dest.is_dir()
     if not safe_copy(src, dest):
         fail(tr('{label} (copy failed)', label=label))
@@ -117,6 +121,9 @@ def sudo_install_file(src: Path, dest: Path, label: str, *, user_owned: bool = F
     label = tr(label)
     src = Path(src)
     dest = Path(dest)
+    if identical(src, dest) and (dest.stat().st_uid == (os.geteuid() if user_owned else 0)):
+        ok(tr("{label} (unchanged)", label=label))
+        return True
     try:
         owner = (os.geteuid(), os.getegid()) if user_owned else None
         if user_owned:
@@ -146,6 +153,9 @@ def sudo_install_tree(src: Path, dest: Path, label: str | None = None) -> bool:
     if not src.is_dir():
         fail(tr('{label} (source missing: {src})', label=label, src=src))
         return False
+    if identical(src, dest) and dest.stat().st_uid == 0:
+        ok(tr("{label} (unchanged)", label=label))
+        return True
     try:
         with _as_root():
             dest.parent.mkdir(parents=True, exist_ok=True)
@@ -240,76 +250,13 @@ def temp_dir(prefix: str) -> Iterator[Path]:
         shutil.rmtree(p, ignore_errors=True)
 
 
-def cmake_build(
-    src_dir_: Path,
-    build_dir: Path,
-    label: str,
-    *,
-    targets: tuple[str, ...] = (),
-) -> bool:
-    label = tr(label)
-    if not (src_dir_ / "CMakeLists.txt").is_file():
-        warn(tr('{label} source not found — skipping', label=label))
-        return False
-    # Root-owned leftovers from old sudo installs survive the user-level
-    # rmtree; retry the wipe as root so mkdir doesn't hit FileExistsError.
-    if build_dir.exists():
-        shutil.rmtree(build_dir, ignore_errors=True)
-        if build_dir.exists():
-            with _as_root():
-                shutil.rmtree(build_dir, ignore_errors=True)
-    build_dir.mkdir(parents=True, exist_ok=True)
-    cfg = subprocess.run(
-        ["cmake", "-S", str(src_dir_), "-B", str(build_dir),
-         "-DCMAKE_BUILD_TYPE=Release",
-         # compile_commands.json lets clangd resolve Qt AUTOMOC headers.
-         "-DCMAKE_EXPORT_COMPILE_COMMANDS=ON"],
-        check=False, capture_output=True, text=True,
-        preexec_fn=_drop_privs_in_child,
-    )
-    if cfg.returncode != 0:
-        fail(tr('{label}: cmake configure failed', label=label))
-        _emit_cmd_log(label, "cmake", cfg.stdout, cfg.stderr, build_dir / "cmake-configure.log")
-        return False
-    nproc = os.cpu_count() or 1
-    mk = subprocess.run(
-        ["make", "-C", str(build_dir), f"-j{nproc}", *targets],
-        check=False, capture_output=True, text=True,
-        preexec_fn=_drop_privs_in_child,
-    )
-    if mk.returncode != 0:
-        fail(tr('{label}: build failed', label=label))
-        _emit_cmd_log(label, "make", mk.stdout, mk.stderr, build_dir / "make-build.log")
-        return False
-    ok(tr('{label} built', label=label))
-    return True
-
-
-def _emit_cmd_log(label: str, tool: str, stdout: str, stderr: str, log_path: Path) -> None:
-    """Print the output tail (the last ~25 lines carry the actual
-    find_package()/header error) and persist the full log to disk."""
-    blob = (stdout or "") + (stderr or "")
-    try:
-        log_path.parent.mkdir(parents=True, exist_ok=True)
-        log_path.write_text(blob)
-    except OSError:
-        log_path = None  # type: ignore[assignment]
-    tail = [line for line in blob.splitlines() if line.strip()][-25:]
-    if tail:
-        print(tr('     \x1b[2m── {tool} output (tail) ──\x1b[0m', tool=tool))
-        for line in tail:
-            print(f"     \033[2m{line}\033[0m")
-    if log_path:
-        print(tr('     \x1b[2mfull log: {log_path}\x1b[0m', log_path=log_path))
-
-
 __all__ = [
     "HOME", "DATA_HOME", "feat_enabled", "theme_mode", "offline", "steps_dir",
     "build_dir",
     "legacy_steps_dir", "src_dir",
     "install_tree", "remove_tree", "sudo_install_file", "sudo_install_tree",
     "sudo_remove",
-    "temp_dir", "cmake_build",
+    "temp_dir",
     # re-exports for step modules
     "fail", "info", "ok", "reinstall", "warn",
     "have", "kw_write", "qdbus_call",

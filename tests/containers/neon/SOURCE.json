@@ -1,0 +1,8 @@
+{
+  "repository": "https://invent.kde.org/neon/docker-images",
+  "commit": "4d1da4130d3a8dd1743c4e6919fec9c5ea6a6a3b",
+  "files": {
+    "neon.sources": "a34b45e931847789201dd2e64998b0525fa5b2b7b85803d707d5d468914c7aa9",
+    "neon-archive-keyring.asc": "c4b8558bd2df11bfb3d35f736a2554cc62def7f40815520b3ee404bce4435412"
+  }
+}
