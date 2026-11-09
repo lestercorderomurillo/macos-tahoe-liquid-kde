@@ -8,19 +8,25 @@ import subprocess
 import pytest
 
 
+def unavailable(reason):
+    if os.environ.get("MTTKDE_REQUIRE_NATIVE_GLOBALMENU") == "1":
+        pytest.fail(reason)
+    pytest.skip(reason)
+
+
 def test_native_globalmenu_recovers_across_focus_and_service_changes(repo, tmp_path):
     for tool in ("cmake", "Xvfb", "dbus-run-session", "pkg-config"):
         if not shutil.which(tool):
-            pytest.skip(f"{tool} required for the native Global Menu test")
+            unavailable(f"{tool} required for the native Global Menu test")
     sdk = subprocess.run(["pkg-config", "--exists", "Qt6Widgets", "Qt6Test", "xcb"],
                          capture_output=True, timeout=10)
     if sdk.returncode:
-        pytest.skip("Qt6 and XCB development files required")
+        unavailable("Qt6 and XCB development files required")
     build = tmp_path / "build"
     result = subprocess.run(["cmake", "-S", str(repo / "tests/native/globalmenu"),
                              "-B", str(build)], capture_output=True, text=True, timeout=60)
     if result.returncode and "Could not find a package configuration file provided by" in result.stderr:
-        pytest.skip("Plasma development SDK required: " + result.stderr)
+        unavailable("Plasma development SDK required: " + result.stderr)
     assert result.returncode == 0, result.stdout + result.stderr
     result = subprocess.run(["cmake", "--build", str(build), "--parallel", "2"],
                             capture_output=True, text=True, timeout=180)

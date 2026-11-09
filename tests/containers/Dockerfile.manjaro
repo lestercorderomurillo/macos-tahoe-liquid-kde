@@ -10,6 +10,7 @@ RUN gpg --homedir "$(pacman-conf GPGDir)" --auto-key-locate clear,nodefault,wkd 
     pacman -Syu --noconfirm --needed \
     python python-pytest git zstd python-pillow python-pyqt6 plasma5support librsvg \
     cmake make ccache gcc extra-cmake-modules \
+    xorg-server-xvfb dbus ttf-dejavu \
     qt6-base qt6-tools qt6-declarative qt6-svg qt6-wayland \
     pkgconf \
     kconfig kconfigwidgets kcoreaddons kcrash kglobalaccel kguiaddons \

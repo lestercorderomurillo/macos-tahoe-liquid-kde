@@ -552,8 +552,9 @@ PLATFORM_TESTS = (
 def step_pytest() -> bool:
     print("\n=== pytest ===")
     res = subprocess.run(
-        ["python3", "-m", "pytest", *PLATFORM_TESTS, "-q", "--durations=10", "-x"],
+        ["python3", "-m", "pytest", *PLATFORM_TESTS, "-q", "-rs", "--durations=10", "-x"],
         check=False, cwd=str(REPO),
+        env=os.environ | {"MTTKDE_REQUIRE_NATIVE_GLOBALMENU": "1"},
     )
     return res.returncode == 0
 
