@@ -78,7 +78,7 @@ errors = []
 engine.warnings.connect(lambda warnings: errors.extend(w.toString() for w in warnings))
 context = EmptyTranslations()
 engine.rootContext().setContextObject(context)
-engine.setInitialProperties({'visible': False, 'fetcherCommand': 'true'})
+engine.setInitialProperties({'visible': False, 'fetcherCommand': 'true', 'controlsCommand': 'true'})
 engine.load(QUrl.fromLocalFile(sys.argv[1]))
 assert engine.rootObjects(), 'About window failed to load: ' + '\n'.join(errors)
 texts = set()
@@ -96,6 +96,15 @@ window = engine.rootObjects()[0]
 surface = window.findChild(QQuickItem, 'aboutGlassSurface')
 highlight = window.findChild(QQuickItem, 'aboutGlassHighlight')
 assert surface is not None and highlight is not None
+# Every action uses the same glass background, including the icon-only Copy.
+faces = window.findChildren(QQuickItem, 'aboutButtonFace')
+assert len(faces) == 3
+buttons = [face.parentItem().parentItem() for face in faces]
+assert [button.property('text') for button in buttons[:2]] == ['More Info…', 'Report a Bug…']
+assert not buttons[2].property('enabled'), 'Copy must wait for hardware details'
+assert window.findChild(QQuickItem, 'aboutDragArea') is not None
+window.show()
+app.processEvents()
 def luminance(color):
     def linear(value):
         return value / 12.92 if value <= .04045 else ((value + .055) / 1.055) ** 2.4
@@ -110,6 +119,17 @@ for mode, foreground in [('white', 255), ('black', 0), ('white', 255)]:
     expression.evaluate()
     assert not expression.hasError(), expression.error().toString()
     app.processEvents()
+    for face, button in zip(faces, buttons):
+        button.setProperty('down', False)
+        normal = face.property('color')
+        assert abs(normal.alphaF() - (80 if foreground == 255 else 16) / 255) < .005
+        assert normal.red() == 255
+        assert face.property('radius') == face.height() / 2
+        button.setProperty('down', True)
+        pressed = face.property('color')
+        assert pressed.red() == (0 if foreground == 255 else 255)
+        assert abs(pressed.alphaF() - (8 if foreground == 255 else 9) / 255) < .005
+        button.setProperty('down', False)
     fill = surface.property('color')
     clear = sys.argv[2] == 'MacGoldenGate'
     secondary = window.property('secondaryTextColor')
@@ -136,6 +156,7 @@ for mode, foreground in [('white', 255), ('black', 0), ('white', 255)]:
     assert outer.red() == 0 and abs(outer.alphaF() - .18) < .005
     assert inner.red() == 255 and abs(inner.alphaF() - .22) < .005
     assert highlight.property('radius') == surface.property('radius') - .75
+assert not errors, '\n'.join(errors)
 '''
     qml = repo / 'src/offline/plasmoids/org.kde.mac.tahoe.liquid.globalmenu/qml/AboutWindow.qml'
     name = 'MacTahoeLiquidKde-' + initial_mode
@@ -165,3 +186,11 @@ def test_capture_refuses_host_before_switch(capture_module, monkeypatch):
     monkeypatch.setattr(capture_module, '_switch_theme', lambda _: pytest.fail('Host theme changed'))
     with pytest.raises(RuntimeError, match='disposable VM'):
         capture_module.main(['about'])
+
+
+def test_about_drag_uses_compositor_move(repo):
+    qml = (repo / 'src/offline/plasmoids/org.kde.mac.tahoe.liquid.globalmenu/qml/AboutWindow.qml').read_text()
+    assert 'onPressed: aboutWindow.startSystemMove()' in qml
+    assert 'acceptedButtons: Qt.LeftButton' in qml
+    assert 'aboutWindow.x +=' not in qml
+    assert 'aboutWindow.y +=' not in qml

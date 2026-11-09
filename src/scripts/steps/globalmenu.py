@@ -6,7 +6,8 @@ from pathlib import Path
 
 from distro import global_menu_exporter_deps, gtk3_appmenu_module, qt6_plugins_dir, qt6_qml_dir
 from log import note
-from paths import REPO_ROOT, read_version
+from paths import read_version
+import about_info
 from steps._helpers import (
     DATA_HOME, HOME, build_dir, cmake_build, fail, ok, offline,
     sudo_install_file, sudo_install_tree, sudo_remove, temp_dir, warn, qdbus_call,
@@ -17,7 +18,7 @@ BUILD = build_dir("plasmoids/org.kde.mac.tahoe.liquid.globalmenu")
 
 # AboutWindow shells out to this helper; it lives in ~/.local/bin so the
 # script side stays sudoless (only the C++ .so install needs root).
-ABOUT_INFO_SRC = REPO_ROOT / "src/scripts/about_info.py"
+ABOUT_INFO_SRC = Path(about_info.__file__)
 ABOUT_INFO_DEST = HOME / ".local/bin/mac-tahoe-about-info"
 # Qt6 never scans user paths for plugins/QML — the .so + QML module MUST
 # live under the qmake6-reported libdir (qt6_*_dir() handles per-distro).

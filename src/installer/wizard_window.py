@@ -15,6 +15,7 @@ from PyQt6.QtWidgets import (
 )
 
 from installer_choices import COLORS, defaults, validate
+from window_controls import button_svg
 
 ASSETS = Path(__file__).with_name("assets")
 ASSET_FILES = json.loads((ASSETS / "sources.json").read_text())
@@ -185,6 +186,17 @@ class WindowLight(QPushButton):
                  "-backdrop-hover" if hover else "-backdrop")
         mode = "Dark" if dark else "Light"
         action = "restore" if self.action == "maximize" and self.window().isMaximized() else self.action
+        if self.window().choices["window_controls"] == "glassy":
+            svg_state = ("deactivated" if not self.isEnabled() else
+                         {"": "active", "-active": "pressed", "-hover": "hover",
+                          "-backdrop-hover": "hover-inactive", "-backdrop": "inactive"}[state])
+            key = ("glassy", mode, action, svg_state)
+            if key not in self._pixmaps:
+                pixmap = QPixmap()
+                pixmap.loadFromData(button_svg(action, mode, svg_state).encode(), "SVG")
+                self._pixmaps[key] = pixmap
+            painter.drawPixmap(self.rect(), self._pixmaps[key])
+            return
         filename = f"titlebutton-{action}{state}{'-dark' if dark else ''}@2.png"
         key = (mode, filename)
         if key not in self._pixmaps:
@@ -601,6 +613,8 @@ class InstallerWindow(OpaqueSurface):
 
     def select(self, key, value):
         self.choices[key] = value
+        if key == "window_controls":
+            self.refresh_window_controls()
         controls = self.choice_widgets.get(key, [])
         groups = {button.group() for _, button in controls if button.group()}
         for group in groups:
