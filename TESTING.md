@@ -1,13 +1,12 @@
 # Installer testing
 
-Tahoe **v0.65.0** uses semicircular capsule highlights for top-bar buttons
-and native menu selections, preserving row sizes and text margins.
-Focused rendering checks cover both modes, three scales and three font sizes.
-Eight menu photographs and four top-bar previews cover both editions in the
-pinned KDE neon VM; 98 unchanged photographs retain their original provenance.
-See [validation evidence](tests/menu_065_validation.json) for commands, source identities
-and coverage limits. Publication requires successful exact-commit CI on both
-branches in both repositories.
+Tahoe **v0.65.1** refines top-bar highlights and spacing using macOS Tahoe
+as a visual reference, with inset capsules, symmetric padding and clearer type hierarchy.
+Focused checks cover real QML geometry, long application names and three panel heights.
+Four menu photographs and four top-bar previews cover both editions and modes;
+102 unchanged photographs retain their original provenance. See [validation evidence](tests/topbar_0651_validation.json)
+for commands, source identities and coverage limits. Publication requires successful
+exact-commit CI on both branches in both repositories.
 
 ## Installation steps
 
