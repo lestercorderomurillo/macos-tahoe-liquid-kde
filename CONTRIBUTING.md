@@ -617,3 +617,18 @@ removed pins and icon choices; explicit optional app requests can still add
 the requested roles. `keep`, `native` and `macos` are explicit icon overrides;
 `auto` applies the pictured icons only on initial migration or reset. Rebuilding
 retains the revision per screen. Failed script execution can retry.
+
+
+### Capsule highlights in 0.65
+
+The global menu's system button and `MenuDelegate` use half the smaller
+dimension as their QML radius, including hover and pressed states. Native
+menu selections use circular SVG corner arcs and Kvantum frame expansion
+large enough for the caps to meet at half the row height. Layout frames stay
+at 3px; text margins, row height, icon sizes and separators are unchanged.
+This follows Kvantum's [frame expansion contract](https://github.com/tsujan/Kvantum/blob/master/Kvantum/doc/Theme-Config).
+
+`tests/test_menu_rounding.py` renders the actual Qt style in light and dark
+mode, at scales 1, 1.5 and 2 with 9, 16 and 24 point fonts. It checks circular
+edge profiles and unchanged geometry. Publication updates only menu/context
+frames; separate top-bar previews verify the application-name hover.

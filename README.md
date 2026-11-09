@@ -133,8 +133,8 @@ Finder-style Nautilus in light and dark.
 System controls and global menus for compatible apps, with capsule-shaped hover and selection highlights.
 
 <p align="center">
-  <img src="src/screenshots/menu_v4-33c36392edcf.webp" alt="System menu in light mode" width="415">
-  <img src="src/screenshots/menu_dark_v4-4641cf7875fc.webp" alt="System menu in dark mode" width="415">
+  <img src="src/screenshots/menu_v4-1955c957c173.webp" alt="System menu in light mode" width="415">
+  <img src="src/screenshots/menu_dark_v4-4cd1ef6cd51f.webp" alt="System menu in dark mode" width="415">
 </p>
 
 <br>
@@ -155,8 +155,8 @@ Hardware, software and theme details in About This Computer.
 Translucent menus and popups with matching light and dark colors.
 
 <p align="center">
-  <img src="src/screenshots/context_menu_v4-08d29d25e2e5.webp" alt="Desktop context menu in light mode" width="415">
-  <img src="src/screenshots/context_menu_dark_v4-656300dfe2fb.webp" alt="Desktop context menu in dark mode" width="415">
+  <img src="src/screenshots/context_menu_v4-24d76ec72961.webp" alt="Desktop context menu in light mode" width="415">
+  <img src="src/screenshots/context_menu_dark_v4-4f0bf863d85a.webp" alt="Desktop context menu in dark mode" width="415">
 </p>
 
 <br>
