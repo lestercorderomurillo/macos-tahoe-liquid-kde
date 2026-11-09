@@ -282,7 +282,9 @@ Store, Force Quit, Sleep, Restart, Shut Down, Lock Screen, Log Out.
   Remaining rows have neither an icon nor a reserved icon column. Recent Items
   is intentionally absent. SystemMenuStyle scopes the font-scaled metrics and
   reference symbols to this popup; explicit custom icon choices remain usable.
-  Ordinary menus keep their existing Kvantum style.
+  Ordinary menus keep their existing Kvantum style. Lock Screen and Log Out
+  show right-aligned Mac shortcut symbols (⌃⌘Q and ⇧⌘Q). These shortcuts
+  work within the open system menu; do not replace KDE global key bindings.
 - Draw the three default system-menu symbols from the Golden Gate reference
   in SystemMenuStyle; custom icons and other widgets retain the inherited
   base-theme artwork.

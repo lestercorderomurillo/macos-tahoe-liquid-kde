@@ -138,6 +138,29 @@ private Q_SLOTS:
             QVERIFY(exporter.waitForFinished());
         }
     }
+    void systemMenuShortcuts()
+    {
+        QQuickWindow window;
+        window.resize(400, 100);
+        window.show();
+        QQuickItem anchor(window.contentItem());
+        anchor.setSize({80, 24});
+        AppMenuApplet applet(nullptr, KPluginMetaData(), {});
+        for (auto modifiers : {Qt::ControlModifier | Qt::MetaModifier,
+                               Qt::ShiftModifier | Qt::MetaModifier}) {
+            applet.triggerSystemMenu(&anchor);
+            auto* popup = qobject_cast<QMenu*>(QApplication::activePopupWidget());
+            QVERIFY(popup);
+            auto* action = popup->actions().at(popup->actions().size() - (modifiers.testFlag(Qt::ControlModifier) ? 2 : 1));
+            QCOMPARE(action->shortcut(), QKeySequence(modifiers | Qt::Key_Q));
+            // Exercise activation without calling the session lock/logout service.
+            action->disconnect();
+            QSignalSpy triggered(action, &QAction::triggered);
+            QTest::keyClick(popup, Qt::Key_Q, modifiers);
+            QTRY_COMPARE(triggered.count(), 1);
+            popup->hide();
+        }
+    }
     void fileEditReopen()
     {
         QMenu root;

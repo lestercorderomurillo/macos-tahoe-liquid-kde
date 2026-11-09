@@ -28,10 +28,17 @@ int main(int argc, char** argv) {
   menu.addAction("Sleep");
   menu.addAction("Restart…");
   menu.addAction("Shut Down…");
-  menu.addAction("Lock Screen");
-  menu.addAction("Log Out A Much Longer User Name…");
+  auto* lock = menu.addAction("Lock Screen");
+  lock->setShortcut(QKeySequence(Qt::CTRL | Qt::META | Qt::Key_Q));
+  auto* logout = menu.addAction("Log Out A Much Longer User Name…");
+  logout->setShortcut(QKeySequence(Qt::SHIFT | Qt::META | Qt::Key_Q));
   menu.adjustSize();
   const qreal scale=SystemMenuStyle::scaleFor(font,&menu);
+  const qreal required=QFontMetricsF(font).horizontalAdvance(logout->text())
+      +QFontMetricsF(font).horizontalAdvance(QStringLiteral("⇧⌘Q"))+48*scale;
+  assert(menu.actionGeometry(logout).width()>=qCeil(required));
+  if (menu.actionGeometry(first).left()==menu.actionGeometry(logout).left())
+   assert(menu.sizeHint().width()<qCeil(required+50*scale));
   assert(menu.actionGeometry(first).height()==qRound(24*scale));
   assert(menu.actionGeometry(first).height()==menu.actionGeometry(second).height());
   assert(menu.sizeHint().width()>=qRound(280*scale));
@@ -63,6 +70,26 @@ int main(int argc, char** argv) {
    assert(opaque>0);
    assert((name==QStringLiteral("custom-icon"))==(magenta>0));
   }
+  for (const auto direction : {Qt::LeftToRight, Qt::RightToLeft}) {
+   option.direction=direction;
+   option.icon=QIcon();
+   option.text=QStringLiteral("Log Out A Much Longer User Name…\tMeta+Shift+Q");
+   option.rect.setWidth(menu.style()->sizeFromContents(QStyle::CT_MenuItem,&option,{},nullptr).width());
+   const auto labelWidth=QFontMetricsF(font).horizontalAdvance(option.text.section('\t',0,0));
+   const auto hintWidth=QFontMetricsF(font).horizontalAdvance(QStringLiteral("⇧⌘Q"));
+   assert(option.rect.width()>=qCeil(labelWidth+hintWidth+48*scale));
+   QImage row(option.rect.size(),QImage::Format_ARGB32_Premultiplied); row.fill(Qt::transparent);
+   QPainter p(&row);menu.style()->drawControl(QStyle::CE_MenuItem,&option,&p,&menu);p.end();
+   const int edge=qRound(12*scale);
+   const int start=direction==Qt::LeftToRight?row.width()-edge-qCeil(hintWidth):edge;
+   int pixels=0;
+   for(int x=start;x<start+qCeil(hintWidth);++x)for(int y=0;y<row.height();++y)
+    if(row.pixelColor(x,y).alpha()>0)++pixels;
+   assert(pixels>0);
+  }
+  assert(SystemMenuStyle::shortcutSymbols(QStringLiteral("Meta+Ctrl+Q"))==QStringLiteral("⌃⌘Q"));
+  assert(SystemMenuStyle::shortcutSymbols(QStringLiteral("Meta+Shift+Q"))==QStringLiteral("⇧⌘Q"));
+  assert(SystemMenuStyle::shortcutSymbols(QStringLiteral("Alt+F4"))==QStringLiteral("Alt+F4"));
   menu.show();
   menu.setActiveAction(first);
   QKeyEvent down(QEvent::KeyPress, Qt::Key_Down, Qt::NoModifier);

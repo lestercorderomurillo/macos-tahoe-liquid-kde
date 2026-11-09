@@ -4,6 +4,8 @@
 #pragma once
 
 #include <QApplication>
+#include <QKeySequence>
+#include <QMenu>
 #include <QFontMetricsF>
 #include <QPainter>
 #include <QPainterPath>
@@ -48,8 +50,25 @@ public:
         const qreal scale = scaleFor(item->font, widget);
         if (item->menuItemType == QStyleOptionMenuItem::Separator) return QSize(1, qRound(12 * scale));
         const QFontMetricsF metrics(item->font);
-        const int width = qCeil(metrics.horizontalAdvance(item->text) + (item->icon.isNull() ? 24 : 46) * scale);
-        return QSize(std::max(qRound(268 * scale), width),
+        const QString label = item->text.section(QLatin1Char('\t'), 0, 0);
+        const QString shortcut = shortcutSymbols(item->text.section(QLatin1Char('\t'), 1));
+        const qreal shortcutWidth = shortcut.isEmpty() ? 0 : metrics.horizontalAdvance(shortcut) + 24 * scale;
+        const int width = qCeil(metrics.horizontalAdvance(label) + shortcutWidth
+                               + (item->icon.isNull() ? 24 : 46) * scale);
+        // QMenu adds its native shortcut column after measuring every row.
+        // We already measured the compact symbols, so cancel that extra width.
+        int nativeShortcutWidth = 0;
+        if (const auto* menu = qobject_cast<const QMenu*>(widget)) {
+            const QFontMetrics menuMetrics(menu->font());
+            for (const auto* action : menu->actions()) {
+                if (!action->isVisible() || action->isSeparator()) continue;
+                const QString hint = action->text().contains(QLatin1Char('\t'))
+                    ? action->text().section(QLatin1Char('\t'), 1)
+                    : action->shortcut().toString(QKeySequence::NativeText);
+                nativeShortcutWidth = std::max(nativeShortcutWidth, menuMetrics.horizontalAdvance(hint));
+            }
+        }
+        return QSize(std::max(qRound(268 * scale), width) - nativeShortcutWidth,
                      std::max(qRound(24 * scale), qCeil(metrics.height() + 4 * scale)));
     }
 
@@ -91,12 +110,32 @@ public:
             item->icon.paint(painter, iconRect, Qt::AlignCenter,
                              !enabled ? QIcon::Disabled : selected ? QIcon::Selected : QIcon::Normal);
         }
+        const QString label = item->text.section(QLatin1Char('\t'), 0, 0);
+        const QString shortcut = shortcutSymbols(item->text.section(QLatin1Char('\t'), 1));
+        const int shortcutWidth = qCeil(QFontMetricsF(item->font).horizontalAdvance(shortcut));
+        const int trailing = qRound(12 * scale) + (shortcut.isEmpty() ? 0 : shortcutWidth + qRound(24 * scale));
         const QRect textRect = visualRect(item->direction, item->rect,
-            item->rect.adjusted(qRound((item->icon.isNull() ? 12 : 34) * scale), 0, -qRound(12 * scale), 0));
+            item->rect.adjusted(qRound((item->icon.isNull() ? 12 : 34) * scale), 0, -trailing, 0));
         painter->setFont(item->font);
-        painter->setPen(item->palette.color(group, selected ? QPalette::HighlightedText : QPalette::WindowText));
-        painter->drawText(textRect, Qt::AlignVCenter | Qt::AlignLeading | Qt::TextHideMnemonic, item->text);
+        painter->setPen(foreground);
+        painter->drawText(textRect, Qt::AlignVCenter | Qt::AlignLeading | Qt::TextHideMnemonic, label);
+        if (!shortcut.isEmpty()) {
+            const QRect shortcutRect = visualRect(item->direction, item->rect,
+                QRect(item->rect.right() + 1 - qRound(12 * scale) - shortcutWidth,
+                      item->rect.top(), shortcutWidth, item->rect.height()));
+            QColor hint = foreground;
+            if (!selected && enabled) hint.setAlphaF(0.55);
+            painter->setPen(hint);
+            painter->drawText(shortcutRect, Qt::AlignVCenter | Qt::AlignRight, shortcut);
+        }
         painter->restore();
+    }
+    static QString shortcutSymbols(const QString& shortcut)
+    {
+        const auto sequence = QKeySequence::fromString(shortcut, QKeySequence::NativeText);
+        if (sequence == QKeySequence(Qt::CTRL | Qt::META | Qt::Key_Q)) return QStringLiteral("⌃⌘Q");
+        if (sequence == QKeySequence(Qt::SHIFT | Qt::META | Qt::Key_Q)) return QStringLiteral("⇧⌘Q");
+        return shortcut;
     }
 private:
     static bool drawReferenceIcon(const QString& name, QPainter* painter,
@@ -107,27 +146,27 @@ private:
         painter->save();
         painter->translate(rect.topLeft());
         painter->scale(rect.width() / 16.0, rect.height() / 16.0);
-        painter->setPen(QPen(color, 1.15, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));
+        painter->setPen(QPen(color, 1.0, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));
         painter->setBrush(Qt::NoBrush);
         if (name == QLatin1String("computer")) {
-            painter->drawRoundedRect(QRectF(2.5, 3.5, 11, 8), 0.8, 0.8);
-            painter->drawLine(QPointF(0.8, 12.5), QPointF(15.2, 12.5));
+            painter->drawRoundedRect(QRectF(3, 4, 10, 7.5), 0.65, 0.65);
+            painter->drawLine(QPointF(1, 12), QPointF(15, 12));
         } else if (name == QLatin1String("preferences-system")) {
             QPainterPath gear;
-            for (int i = 0; i < 48; ++i) {
-                const qreal angle = i * 2 * 3.141592653589793 / 48;
-                const qreal radius = i % 4 == 1 || i % 4 == 2 ? 6.1 : 5.1;
+            for (int i = 0; i < 40; ++i) {
+                const qreal angle = i * 2 * 3.141592653589793 / 40;
+                const qreal radius = i % 4 == 1 || i % 4 == 2 ? 5.5 : 4.7;
                 const QPointF point(8 + radius * std::cos(angle), 8 + radius * std::sin(angle));
                 if (i == 0) gear.moveTo(point); else gear.lineTo(point);
             }
             gear.closeSubpath();
             painter->drawPath(gear);
-            painter->drawEllipse(QPointF(8, 8), 3.6, 3.6);
+            painter->drawEllipse(QPointF(8, 8), 3.4, 3.4);
         } else {
-            painter->setPen(QPen(color, 1.6, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));
-            painter->drawLine(QPointF(4, 13), QPointF(9.2, 3));
-            painter->drawLine(QPointF(7, 3), QPointF(12.2, 13));
-            painter->drawLine(QPointF(2, 10), QPointF(14, 10));
+            painter->setPen(QPen(color, 1.35, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));
+            painter->drawLine(QPointF(4.1, 12.5), QPointF(9.1, 3.5));
+            painter->drawLine(QPointF(7, 3.5), QPointF(12, 12.5));
+            painter->drawLine(QPointF(2.6, 9.7), QPointF(13.4, 9.7));
         }
         painter->restore();
         return true;

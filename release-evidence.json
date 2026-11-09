@@ -1,27 +1,27 @@
 {
-  "version": "0.66.5",
-  "source_sha256": "8d55cf06c33ae8094d08161fca277d09a3b6c0aec3c74fc5036a34deb4668220",
+  "version": "0.67.0",
+  "source_sha256": "1765cefc05bf15b4f40667a82ef6372f9873c6cc68d59ac65a6bbbb9a1a21974",
   "environment": "Linux-7.2.0-1-cachyos-x86_64-with-glibc2.44",
   "checks": [
     {
+      "command": "PYTHONDONTWRITEBYTECODE=1 QT_QPA_PLATFORM=offscreen python3 -m pytest tests/test_system_menu_style.py -q --tb=short -p no:cacheprovider",
+      "result": "passed",
+      "detail": "Native drawing/metrics probe at scales 1, 1.5 and 2, font sizes 10 and 18. Default versus custom icons, shortcut glyphs, long usernames, RTL placement, unchanged ordinary style and keyboard navigation."
+    },
+    {
       "command": "PYTHONDONTWRITEBYTECODE=1 MTTKDE_REQUIRE_NATIVE_GLOBALMENU=1 python3 -m pytest tests/test_globalmenu_model.py -q --tb=short -p no:cacheprovider",
       "result": "passed",
-      "detail": "1 passed: native plugin build, Xvfb model, popup and real QML composition suites. Mouse transitions across Apple/app-name/File/Edit in both directions for exported and generic menus preserve popup identity, highlight and style; Escape, reopening, borrowed-action ownership, dynamic D-Bus refresh and applet teardown covered."
+      "detail": "1 passed: native plugin build and isolated model/popup/QML composition suites. New system-menu shortcuts activate the intended action without calling session services in tests. Existing exported/generic focus transitions and D-Bus refresh pass."
     },
     {
-      "command": "globalmenu-popup-test refreshesDynamicDBusActionsOnEveryOpen (private Xvfb and isolated D-Bus, rebuilt final native test)",
+      "command": "python3 /tmp/menu-067/preview_vm.py; review menu-light.png and menu-dark.png",
       "result": "passed",
-      "detail": "3 QtTest cases passed after adding a mapped parent window and explicit search setting to the existing asynchronous refresh test."
+      "detail": "Reviewed two final native menu symbol previews inside a disposable KDE neon overlay; popup identity and geometry verified before/after. Rejected initial harness palette/selection frames were replaced by newly captured frames."
     },
     {
-      "command": "PYTHONDONTWRITEBYTECODE=1 QT_QPA_PLATFORM=offscreen python3 -m pytest tests/test_globalmenu_step.py tests/test_system_menu_style.py -q --tb=short -p no:cacheprovider",
+      "command": "GOLDEN_GATE_TAHOE_SOURCE=<checkout> MAC_TAHOE_NO_UPDATE_CHECK=true python3 bootstrap.py --prepare; compare systemmenustyle.h and appmenuapplet.cpp",
       "result": "passed",
-      "detail": "7 passed: install/uninstall integration and system-menu style isolation/metrics. Unchanged tested inputs retained."
-    },
-    {
-      "command": "GOLDEN_GATE_TAHOE_SOURCE=<checkout> MAC_TAHOE_NO_UPDATE_CHECK=true python3 bootstrap.py --prepare; compare staged appmenuapplet.cpp, appmenuapplet.h and qml/main.qml",
-      "result": "passed",
-      "detail": "Prepared Golden Gate menu implementation byte-identical to tested Tahoe. No edition-dependent popup code."
+      "detail": "Prepared Golden Gate menu bytes match the tested Tahoe implementation."
     }
   ],
   "gallery_commit": "170f24dd28ae58a44774780935f3fdeaf8999afe",
@@ -40,11 +40,27 @@
       "path": "src/screenshots/previews/about-buttons-provenance.json",
       "sha256": "b74e838cdf150d8b5ad5fb72f35fa9ce8f08cd3edd7725e1e49788403efbfcc5",
       "reviewed": true
+    },
+    {
+      "path": "src/screenshots/previews/menu-symbols-067-light-a558e02129b0.png",
+      "sha256": "a558e02129b04d6759c9f6fee9431f8a04cc90e6584adfb2a48efb170ddc939f",
+      "reviewed": true
+    },
+    {
+      "path": "src/screenshots/previews/menu-symbols-067-dark-35230bb0f200.png",
+      "sha256": "35230bb0f2002677e41c40436f63c437d0ee1675ccae33cb167fc9afe52be5a4",
+      "reviewed": true
+    },
+    {
+      "path": "src/screenshots/previews/menu-symbols-067-provenance-534bface45c1.json",
+      "sha256": "534bface45c10f33b2e59a3e458a13b2eed896dd789a3dd9a80d539420430c9a",
+      "reviewed": true
     }
   ],
   "coverage_limits": [
-    "Host SDK: Qt 6.11.2, Plasma 6.7.4 on CachyOS. Full distro/SDK CI remains asynchronous; no public ABI or compositor backend changes.",
-    "Exploratory private KWin Wayland run passed generic/exported mouse transitions, reopening and QML panel status/teardown. The complete popup run was NOT successful: asynchronous D-Bus refresh lost its non-grabbing popup (0 actions) because synthetic input supplied no compositor input serial. That asynchronous case passes on private X11. Real Wayland pointer-grab behavior remains unverified.",
-    "No rendering/material change or documentation photography; existing gallery and About previews retain their original provenance. No host desktop interaction."
+    "Shortcuts are local to the open system menu (Control+Meta+Q and Shift+Meta+Q). KDE global bindings are unchanged.",
+    "Host native tests use Qt 6.11.2 / Plasma 6.7.4 on CachyOS; preview compiled and rendered in the disposable KDE neon guest. Full distro CI remains asynchronous.",
+    "Only menu symbol/shortcut rendering changed. Previews use neutral Fusion backgrounds and do not claim compositor/glass material validation. Existing desktop and installer photographs retain their original provenance.",
+    "The prior real Wayland pointer-grab coverage limit remains; this change does not modify popup-grab behavior."
   ]
 }

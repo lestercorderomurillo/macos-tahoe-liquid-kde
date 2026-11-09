@@ -609,19 +609,25 @@ void AppMenuApplet::triggerSystemMenu(QQuickItem* ctx)
 
     menu->addSeparator();
 
-    menu->addAction(icon("iconLockScreen", QStringLiteral("system-lock-screen")), i18n("Lock Screen"),
+    auto* lockAction = menu->addAction(icon("iconLockScreen", QStringLiteral("system-lock-screen")), i18n("Lock Screen"),
         [cmd = cfg.readEntry("cmdLockScreen", QStringLiteral("qdbus6 org.freedesktop.ScreenSaver /ScreenSaver Lock || loginctl lock-session"))]() {
             runCommand(cmd);
-        })->setIconVisibleInMenu(false);
+        });
+    lockAction->setIconVisibleInMenu(false);
+    lockAction->setShortcut(QKeySequence(Qt::CTRL | Qt::META | Qt::Key_Q));
+    lockAction->setShortcutContext(Qt::WidgetShortcut);
     const QString firstName = KUser().property(KUser::FullName).toString().section(QLatin1Char(' '), 0, 0);
-    menu->addAction(icon("iconLogOut", QStringLiteral("user-identity")), i18n("Log Out %1…", firstName),
+    auto* logoutAction = menu->addAction(icon("iconLogOut", QStringLiteral("user-identity")), i18n("Log Out %1…", firstName),
         [cmd = cfg.readEntry("cmdLogOut", QStringLiteral("qdbus6 org.kde.LogoutPrompt /LogoutPrompt org.kde.LogoutPrompt.promptLogout"))]() {
             runSystemAction(cmd,
                 QStringLiteral("org.kde.LogoutPrompt"),
                 QStringLiteral("/LogoutPrompt"),
                 QStringLiteral("org.kde.LogoutPrompt"),
                 QStringLiteral("promptLogout"));
-        })->setIconVisibleInMenu(false);
+        });
+    logoutAction->setIconVisibleInMenu(false);
+    logoutAction->setShortcut(QKeySequence(Qt::SHIFT | Qt::META | Qt::Key_Q));
+    logoutAction->setShortcutContext(Qt::WidgetShortcut);
 
     showMenu(ctx, menu, SYSTEM_MENU_INDEX);
 }
@@ -637,6 +643,21 @@ bool AppMenuApplet::eventFilter(QObject* watched, QEvent* event)
 
     if (event->type() == QEvent::KeyPress) {
         auto* e = static_cast<QKeyEvent*>(event);
+        // QMenu owns the keyboard grab; widget shortcuts on borrowed actions
+        // are not reliably dispatched by Qt's window shortcut map.
+        if (m_currentIndex == -3) {
+            const QKeySequence pressed(e->keyCombination());
+            for (auto* action : menu->actions()) {
+                if (action->isEnabled() && action->isVisible() && !action->shortcut().isEmpty()
+                    && action->shortcut().matches(pressed) == QKeySequence::ExactMatch) {
+                    if (!e->isAutoRepeat()) {
+                        menu->hide();
+                        action->trigger();
+                    }
+                    return true;
+                }
+            }
+        }
         if (auto* field = qobject_cast<QLineEdit*>(QApplication::focusWidget());
             field && menu->isAncestorOf(field)
             && (e->key() == Qt::Key_Left || e->key() == Qt::Key_Right)) {
