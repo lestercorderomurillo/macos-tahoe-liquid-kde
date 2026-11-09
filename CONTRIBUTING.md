@@ -701,3 +701,10 @@ frames were captured separately from source `9053872` after installing each
 edition in its own disposable VM overlay, preserving the pinned package
 inventory. All four frames were reviewed; unrelated photographs retain their
 original provenance. This was not a full distro or uninstall lifecycle run.
+
+Runtime CI runs on `dev`, pull requests and manual dispatch. Promote the same
+commit to `main` without a second suite or a polling job; send runtime changes
+through `dev` first. Markdown and documentation-image-only changes do not start
+the runtime matrix. Use command results as delivery evidence instead of repeated
+publication or branch lookups. Golden Gate validates the immutable Tahoe tag and
+archive once, without waiting for or querying the GitHub release page.

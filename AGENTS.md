@@ -1,5 +1,46 @@
 # AGENTS.md
 
+## Respect for the user's time
+
+Apply these rules in both Tahoe and Golden Gate. They supersede older delivery
+or communication wording below. In the user's sense, *necio* means persisting
+stubbornly after a correction, not useful diligence ([Diccionario del español
+de México](https://dem.colmex.mx/ver/necio)). The following are concrete failure
+patterns to stop, not reasons to remove necessary correctness checks.
+
+1. Rechecking publication after a successful publishing command: use that result; do not issue a second release lookup.
+2. Polling a release repeatedly: submit the authorized operation and report the known outcome; do not invent an obligation to wait.
+3. Rechecking remote branches after a successful push: use the push result unless it reports an error or ambiguity.
+4. Narrating plans, tool calls or implementation details: omit routine process narration; explain only when asked or when needed for user input.
+5. Repeating unchanged status messages: no stream of “still waiting”, “verifying” or “almost done”.
+6. Announcing that you will be concise or respectful: demonstrate it in the response instead.
+7. Delaying an installable fix for the remote matrix: publish after focused local validation and required component review; leave full CI asynchronous.
+8. Waiting for main to repeat dev's result: promote the same commit without a polling job.
+9. Running the full matrix twice for the same delivered change: run it on dev and on PRs; main promotion does not launch a duplicate.
+10. Running runtime CI for Markdown-only edits: use documentation/path filters; do not build native components for prose.
+11. Repeating passing local tests after bookkeeping: reuse evidence while tested code, inputs and environment are unchanged.
+12. Running the whole suite for a narrow fix: choose affected behavior and expand only for a concrete failure or dependency.
+13. Taking every screenshot for one changed component: capture only the needed views in a disposable VM.
+14. Revalidating the entire historical gallery at every release: retain original provenance and check changed artifacts; do not repeat historical audits without cause.
+15. Replacing reviewed images because the version changed: preserve them and their actual capture identity.
+16. Expanding a bug fix into an unsolicited redesign or framework: make the smallest complete repair.
+17. Asking again for permission already granted: act within the existing authorization.
+18. Asking questions already answered by the repository or session: consult existing context first.
+19. Treating old AGENTS wording as stronger than a new user instruction: apply the user's correction and reconcile the conflicting rule.
+20. Reciting internal checklists to the user: keep operational records in files and return the useful result.
+21. Printing long logs when one error explains the failure: inspect quietly and surface only the decision-relevant issue.
+22. Sending coordination acknowledgment loops: message peers for ownership conflicts or actionable handoffs, not ceremonial updates.
+23. Bumping versions or publishing releases for instruction-only edits: commit and push the documentation without release churn.
+24. Continuing after the requested result is complete: stop; do not add a new verification phase.
+
+Default final response: the result, its usable link/path when relevant, and a
+material unresolved limitation if one exists. Do not describe how it was done
+unless requested. Ask only for missing input that changes the outcome. Never
+claim an unobserved success: “submitted” is sufficient when an asynchronous
+operation has only been submitted. A failed operation still needs correction;
+removing redundant confirmation is not permission to hide failure.
+
+
 ## #1 — Self-explanatory code
 
 Do not explain what a terminal command does when it is already obvious
@@ -729,7 +770,7 @@ fill. Its glass is identical in both appearance modes.
 
 Publish Tahoe and Golden Gate with matching release versions and `v<version>`
 tags. Deliver completed changes to both `dev` and `main` in both repositories,
-and verify both remote branches include them before reporting completion.
+and use the successful push result as delivery evidence; do not re-query refs.
 Release titles must be exactly `v<version>`, with no subtitles, descriptions
 or other extra text. Golden Gate's `VERSION` must match its pinned Tahoe
 release. Golden Gate installs the latest Tahoe release at runtime; its
@@ -1124,8 +1165,7 @@ Run focused checks while implementing; reserve broad integration runs for a
 stable candidate. Required CI supplies the complete suite and configured distro
 matrix on the final implementation commit. The full general suite runs once on
 `dev` (two disjoint shards); each distro retains dependency, SDK build, native
-rendering and platform checks. `main` reports the `dev` result only for the identical commit; this status
-check runs asynchronously and does not hold the release. Pull requests run their own complete checks. Do not also run the entire matrix
+rendering and platform checks. `main` receives the same commit without launching another CI run or polling job. Pull requests run their own complete checks. Do not also run the entire matrix
 locally unless CI cannot exercise the needed case or a failure needs local
 reproduction. Run the shared suite against the prepared source when staging
 changes executable behavior; a pin-only update to an already validated Tahoe
@@ -1145,7 +1185,7 @@ For implementation delivery, run focused local checks for the affected behavior,
 review component-scoped VM captures when needed, and record their exact source
 fingerprint in `release-evidence.json`. Publish the installable fix promptly after
 these checks pass. Full remote CI remains enabled and runs asynchronously on
-`dev`; `main` tracks that exact commit's CI without blocking publication.
+`dev`; `main` promotion does not run a polling or duplicate test job.
 Do not wait for the full matrix or repeat the historical screenshot audit before
 telling the user the release can be installed. Clearly distinguish local checks,
 reviewed captures, published release and pending/passed/failed remote CI. Never
