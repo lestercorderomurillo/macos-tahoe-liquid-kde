@@ -19,13 +19,14 @@ from release_screenshots import (ROOT, PROFILE, EDITIONS, MODES, INSTALLER_PAGES
 
 
 class Guest:
-    def __init__(self, root, profile, image, source, edition):
+    def __init__(self, root, profile, image, source, edition, *, resume=False):
         self.root, self.profile, self.source, self.edition = root, profile, source, edition
         self.name = 'mttkde-capture-' + uuid.uuid4().hex[:12]
         self.stream = None
         self.process = None
         self.log = None
         self.image = image
+        self.resume = resume
         with socket.socket() as probe:
             probe.bind(('127.0.0.1', 0))
             self.port = probe.getsockname()[1]
@@ -39,7 +40,11 @@ class Guest:
     def __enter__(self):
         try:
             disk = self.root / 'disk.qcow2'
-            subprocess.run(['qemu-img', 'create', '-q', '-f', 'qcow2', '-F', 'qcow2', '-b', str(self.image), str(disk)], check=True)
+            if self.resume:
+                info = json.loads(subprocess.check_output(['qemu-img', 'info', '--output=json', str(disk)], text=True))
+                require(Path(info.get('full-backing-filename', '')).resolve() == self.image.resolve(), 'Wrong resume image')
+            else:
+                subprocess.run(['qemu-img', 'create', '-q', '-f', 'qcow2', '-F', 'qcow2', '-b', str(self.image), str(disk)], check=True)
             self.log = (self.root / 'qemu.log').open('w')
             self.process = subprocess.Popen([
                 'qemu-system-x86_64', '-name', self.name, '-enable-kvm', '-cpu', 'host',
@@ -219,7 +224,8 @@ def capture(repo: Path, ref: str, image: Path, output: Path, reuse: Path | None 
                         print(f'Installing {edition} from {source}', flush=True)
                         dock_only = pending <= {f'{e}-{m}-dock' for e in EDITIONS for m in MODES}
                         menu_only = pending <= {f'{e}-{m}-{c}' for e in EDITIONS for m in MODES for c in ('menu', 'context')}
-                        scope = ['dock'] if dock_only else ['menu'] if menu_only else []
+                        installer_only = all('-installer-' in name for name in pending)
+                        scope = ['dock'] if dock_only else ['menu'] if menu_only else ['installer'] if installer_only else []
                         manifest['environments'][edition] = vm.action('setup', edition, *scope)
                         for mode in MODES:
                             vm.action('clean-desktop')
@@ -335,7 +341,7 @@ def capture(repo: Path, ref: str, image: Path, output: Path, reuse: Path | None 
     return validate(repo, source, output, reviewed=False)
 
 
-def capture_file_previews(repo: Path, ref: str, image: Path, output: Path):
+def capture_file_previews(repo: Path, ref: str, image: Path, output: Path, *, resume=False):
     """Four focused file-manager photographs, without refreshing the gallery."""
     profile = json.loads(PROFILE.read_text())
     image = image.resolve()
@@ -344,12 +350,18 @@ def capture_file_previews(repo: Path, ref: str, image: Path, output: Path):
     require(not info.get('backing-filename') and not info.get('dirty-flag'), 'Use a sealed standalone VM')
     source = commit_id(repo, ref)
     output = output.resolve()
-    output.mkdir(parents=True, exist_ok=False)
+    output.mkdir(parents=True, exist_ok=resume)
     archive = output / 'source.tar'
-    subprocess.run(['git', '-C', str(repo), 'archive', '--format=tar', '--output=' + str(archive), source], check=True)
+    fresh = output / 'source-next.tar'
+    subprocess.run(['git', '-C', str(repo), 'archive', '--format=tar', '--output=' + str(fresh), source], check=True)
+    if resume:
+        require(archive.is_file() and digest(archive) == digest(fresh), 'Resume source differs from original capture')
+    fresh.replace(archive)
     manifest = dict(source_commit=source, vm_image_sha256=profile['vm_image_sha256'], frames={})
-    with capture_lock(), Guest(output, profile, image, archive, 'tahoe') as vm:
+    with capture_lock(), Guest(output, profile, image, archive, 'tahoe', resume=resume) as vm:
         manifest['environment'] = vm.action('setup', 'tahoe')
+        manifest['capture_tools'] = {name: digest(ROOT / 'src/scripts' / name) for name in ('release_capture.py', 'release_capture_guest.py')}
+        (output / 'manifest.json').write_text(json.dumps(manifest, indent=2) + '\n')
         for mode in MODES:
             vm.action('mode', mode)
             vm.move(*profile['pointer'])
@@ -360,3 +372,53 @@ def capture_file_previews(repo: Path, ref: str, image: Path, output: Path):
                 manifest['frames'][name] = record
                 (output / 'manifest.json').write_text(json.dumps(manifest, indent=2) + '\n')
     return manifest
+
+
+def stage_file_previews(repo: Path, bundle: Path):
+    """Stage the four individually reviewed photographs with focus evidence."""
+    from io import BytesIO
+    from PIL import Image
+    from release_screenshots import verify_focused_frame
+    manifest = json.loads((bundle / 'manifest.json').read_text())
+    profile = json.loads(PROFILE.read_text())
+    require(manifest['vm_image_sha256'] == profile['vm_image_sha256'], 'Unpinned preview VM')
+    expected = {f'{manager}-{mode}' for manager in ('nautilus', 'dolphin') for mode in MODES}
+    require(set(manifest['frames']) == expected, 'Incomplete file-manager previews')
+    destination = repo / 'src/installer/assets'
+    sources = json.loads((destination / 'sources.json').read_text())
+    updates = {}
+    for name in sorted(expected):
+        record = manifest['frames'][name]
+        source = bundle / (name + '.png')
+        require(digest(source) == record['sha256'], 'Changed preview: ' + name)
+        manager = name.split('-')[0]
+        resource = {'nautilus': 'org.gnome.Nautilus', 'dolphin': 'org.kde.dolphin'}[manager]
+        verify_focused_frame(record['before'], record['after'], resource)
+        require(record['stable_frames'] is True, 'Unsettled preview: ' + name)
+        with Image.open(source) as image:
+            require(list(image.size) == profile['resolution'], 'Unexpected preview resolution')
+            crop = record['crop']
+            require(0 <= crop[0] < crop[2] <= image.width and 0 <= crop[1] < crop[3] <= image.height,
+                    'Invalid preview crop')
+            buffer = BytesIO()
+            image.crop(crop).convert('RGB').save(buffer, format='JPEG', quality=95, subsampling=0)
+        import hashlib
+        payload = buffer.getvalue()
+        checksum = hashlib.sha256(payload).hexdigest()
+        filename = f'{name}-{checksum[:12]}.jpg'
+        updates[name + '.jpg'] = (payload, dict(
+            source=str(source.relative_to(repo)), source_sha256=record['sha256'],
+            source_commit=manifest['source_commit'], vm_image_sha256=manifest['vm_image_sha256'],
+            crop=crop, sha256=checksum, file=filename, kind='focused-vm-file-preview',
+            before=record['before'], after=record['after'], stable_frames=True, reviewed=True))
+    for key, (payload, record) in updates.items():
+        old = sources[key]['file']
+        (destination / record['file']).write_bytes(payload)
+        if old != record['file']:
+            require(Path(old).name == old, 'Invalid old preview filename')
+            (destination / old).unlink(missing_ok=True)
+        sources[key] = record
+    (destination / 'sources.json').write_text(json.dumps(sources, indent=2) + '\n')
+    (bundle / 'review.json').write_text(json.dumps(dict(
+        manifest_sha256=digest(bundle / 'manifest.json'),
+        approved={name: manifest['frames'][name]['sha256'] for name in sorted(expected)}), indent=2) + '\n')

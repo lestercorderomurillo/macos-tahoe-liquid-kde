@@ -53,6 +53,7 @@ def test_component_changes_do_not_invalidate_other_payloads(tmp_path):
 def test_unchanged_tree_preserves_inode_and_repairs_deletion(tmp_path, monkeypatch):
     from steps._helpers import install_tree
     monkeypatch.setenv("XDG_STATE_HOME", str(tmp_path / "state"))
+    monkeypatch.setenv("XDG_CACHE_HOME", str(tmp_path / "cache"))
     source = tmp_path / 'source'; source.mkdir()
     (source / 'payload').write_text('same')
     target = tmp_path / 'target'
@@ -149,3 +150,24 @@ def test_native_build_reuses_objects_and_rebuilds_changed_source(tmp_path):
     os.utime(code, (1, 1))  # Archives can restore older mtimes despite changed bytes.
     assert cmake_build(source, build, 'probe')
     assert subprocess.run([str(build / 'probe')]).returncode == 3
+
+
+def test_source_ledger_uses_git_modes_but_runtime_checks_real_permissions(tmp_path):
+    source = tmp_path / 'source'; source.mkdir(mode=0o700)
+    target = tmp_path / 'target'; target.mkdir(mode=0o755)
+    assert fingerprint(source, portable=True) == fingerprint(target, portable=True)
+    assert fingerprint(source) != fingerprint(target)
+
+
+def test_installer_file_previews_keep_verified_focus_and_hashes():
+    import hashlib
+    from paths import REPO_ROOT
+    from release_screenshots import verify_focused_frame
+    folder = REPO_ROOT / 'src/installer/assets'
+    sources = json.loads((folder / 'sources.json').read_text())
+    for manager, resource in (('nautilus', 'org.gnome.Nautilus'), ('dolphin', 'org.kde.dolphin')):
+        for mode in ('light', 'dark'):
+            record = sources[f'{manager}-{mode}.jpg']
+            assert record['reviewed'] and record['stable_frames']
+            verify_focused_frame(record['before'], record['after'], resource)
+            assert hashlib.sha256((folder / record['file']).read_bytes()).hexdigest() == record['sha256']

@@ -487,7 +487,7 @@ MENU_ONLY_066_CAPTURE_DEPENDENCIES = {'LICENSES/MIT-QuickBar.txt': (None, 'cba30
 # Unknown later edits still invalidate all frames. File-manager preview changes
 # below invalidate only their four installer photographs.
 INCREMENTAL_0661_BASE = '5258ba9216c2babc5073d0f3fbf311ccc5c7723c'
-INCREMENTAL_0661_NONVISUAL = {'component-hashes.json': (None, 'e321d5373c5e5976eeb820a14db755eeee90b3a6'), 'src/scripts/component_cache.py': (None, 'e079b13e8d79b7aa1ed9b37cf53936158ce4f193'), 'src/scripts/component_manifest.py': (None, '422be90e1e94f8db4c97640f54016cd42b1c2907'), 'src/scripts/steps/icons.py': ('afe5cac8d5a511bb203b662745046e9fc191f251', 'ce89f7743e390cc497e0cd75bb276c33b221269e'), 'src/scripts/steps/_helpers.py': ('fd8b2ff134191178f289a4133d4a56ee59ecef24', '71374d5f11ffa116805b2cf9d8be8c53b9a3655c'), 'src/scripts/release_capture_guest.py': ('56dac0fb1bf6e4d45a367bc89eef614028e77aeb', '76585f67e4a3126a864c45b54189e6cd992848a4')}
+INCREMENTAL_0661_NONVISUAL = {'component-hashes.json': (None, '44c4e637bba59ae8d7081d6c5f1b00e09e575faa'), 'src/scripts/component_cache.py': (None, 'ba26e99f0cc17b89235d2629d2842e53e4ff17e7'), 'src/scripts/component_manifest.py': (None, '0eade305e5d8f37e892db8ea3f68c3d6bdabd05e'), 'src/scripts/steps/icons.py': ('afe5cac8d5a511bb203b662745046e9fc191f251', 'ce89f7743e390cc497e0cd75bb276c33b221269e'), 'src/scripts/steps/_helpers.py': ('fd8b2ff134191178f289a4133d4a56ee59ecef24', '71374d5f11ffa116805b2cf9d8be8c53b9a3655c'), 'src/scripts/release_capture_guest.py': ('56dac0fb1bf6e4d45a367bc89eef614028e77aeb', 'c3084adb3bbb70c4f6fac34552a608eb1fa356fe')}
 
 def affected_frames(repo: Path, source: str, target: str) -> set[str]:
     """Conservative dependencies: unknown changes invalidate every frame."""
@@ -938,6 +938,23 @@ def _stage(repo: Path, edition: str, bundle: Path, manifest: dict) -> None:
         (out / name).unlink(missing_ok=True)
 
 
+def verify_installer_file_previews(repo: Path, ref: str):
+    sources = json.loads(blob(repo, ref, 'src/installer/assets/sources.json'))
+    for manager, resource in (('nautilus', 'org.gnome.Nautilus'), ('dolphin', 'org.kde.dolphin')):
+        for mode in MODES:
+            record = sources[f'{manager}-{mode}.jpg']
+            require(record.get('kind') == 'focused-vm-file-preview' and record.get('reviewed') is True,
+                    'Unreviewed file-manager preview')
+            verify_focused_frame(record['before'], record['after'], resource)
+            require(record.get('stable_frames') is True, 'Unsettled file-manager preview')
+            name = record['file']
+            require(Path(name).name == name and record['sha256'][:12] in name, 'Unhashed preview name')
+            require(hashlib.sha256(blob(repo, ref, 'src/installer/assets/' + name)).hexdigest() == record['sha256'],
+                    'Changed file-manager preview')
+            profile = json.loads(blob(repo, ref, 'src/scripts/release_capture_profile.json'))
+            require(record['vm_image_sha256'] == profile['vm_image_sha256'], 'Unpinned preview VM')
+
+
 def verify_committed(repo: Path, ref: str, *, tahoe: Path | None = None) -> dict:
     """Release gate: read Git objects, never unchecked working-tree images."""
     ref = commit_id(repo, ref)
@@ -958,6 +975,9 @@ def verify_committed(repo: Path, ref: str, *, tahoe: Path | None = None) -> dict
         require(json.loads(blob(repo, ref, 'defaults.json')) ==
                 {'wallpaper': EDITIONS[edition][0], 'launcher_preset': EDITIONS[edition][1]},
                 'Golden Gate defaults differ from the capture recipe')
+    assets_entry = git(source_repo, 'ls-tree', target, '--', 'src/installer/assets/sources.json')
+    if assets_entry and git(source_repo, 'ls-tree', target, '--', 'component-hashes.json'):
+        verify_installer_file_previews(source_repo, target)
     if record.get('schema') == 2:
         verify_frame_origins(source_repo, record['capture_manifest'], target)
     else:

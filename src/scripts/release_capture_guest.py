@@ -113,7 +113,7 @@ def setup(repo, profile, edition, scope=None):
     # The fixed profile explicitly recreates its layout even if the sealed VM
     # contains an earlier installation. Normal reinstalls preserve it by default.
     choices = defaults() | {'appearance': 'light', 'reset_layout': True}
-    if scope in ('dock', 'menu'):
+    if scope in ('dock', 'menu', 'installer'):
         choices['icons'] = 'keep'
     command = ['sudo', 'env', 'MAC_TAHOE_NO_UPDATE_CHECK=true', 'MTTKDE_NO_CONFIRM=1',
                str(repo / 'src/scripts/installer_backend.py'), 'install',
@@ -200,7 +200,7 @@ def mode(repo, requested, scope=None):
     # The installed command carries the edition and the user's icon choices;
     # importing the source module would silently fall back to the base icons.
     run(str(Path.home() / '.local/bin/mac-tahoe-theme-switch'), requested, timeout=180)
-    if scope in ('dock', 'menu'):
+    if scope in ('dock', 'menu', 'installer'):
         # The sealed VM already contains these unchanged global appearances.
         theme = 'MacTahoeLiquidKde-Icons-Regular-' + requested.title()
         if not (Path.home() / '.local/share/icons' / theme / 'index.theme').is_file():
@@ -457,7 +457,12 @@ def file_preview(repo, profile, manager):
         verify_focused_frame(before, before, resource)
         run('spectacle', '-b', '-n', '-f', '-o', str(target))
         after = windows()
-        window = verify_focused_frame(before, after, resource)
+        try:
+            window = verify_focused_frame(before, after, resource)
+        except ValueError:
+            previous = None
+            time.sleep(.3)
+            continue  # Reject this frame; a resizing window has not settled.
         with Image.open(target) as image:
             if list(image.size) != profile['resolution']:
                 raise RuntimeError('Wrong preview resolution')

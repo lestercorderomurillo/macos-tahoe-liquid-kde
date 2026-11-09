@@ -27,28 +27,286 @@
     "file": "firefox-light-9c02f1cfb2f7.jpg"
   },
   "dolphin-light.jpg": {
-    "source": "src/screenshots/vm/cachyos/light-34d9c45c3a52.png",
-    "source_sha256": "34d9c45c3a52fff966ab148319811749974a89c14ea317dd3e94b1d4d33855f8",
+    "source": "build/captures/v0.66.1-file-previews/dolphin-light.png",
+    "source_sha256": "86c4683cea646922a152e52292ff228670fa9d58045a121bb5a0cecbd062bc3d",
+    "source_commit": "b762888c5ffedfe106de3b8c94ee37b6b2712e89",
+    "vm_image_sha256": "412e7933f10add20b921b92c02709e7eea56acd14dc14cf654f58fba4ea3cc9d",
     "crop": [
-      85,
-      1124,
-      1895,
-      2088
+      932,
+      452,
+      2908,
+      1708
     ],
-    "sha256": "2042bf292798590ad33f1d7b1cf316cd16e635a627e0a49fccb84d05762d8668",
-    "file": "dolphin-light-2042bf292798.jpg"
+    "sha256": "1ec7ce2a75e9ba8bf8db551acbf5de9100ee628125812591d1c9c6e508b83790",
+    "file": "dolphin-light-1ec7ce2a75e9.jpg",
+    "kind": "focused-vm-file-preview",
+    "before": [
+      {
+        "id": "{c2508302-f20b-4407-87a3-82d44f09a401}",
+        "caption": "",
+        "resourceClass": "plasmashell",
+        "type": 1,
+        "appletPopup": false,
+        "hidden": false,
+        "active": false,
+        "geometry": {
+          "x": 0,
+          "y": 0,
+          "width": 1920,
+          "height": 1080
+        }
+      },
+      {
+        "id": "{887b48c3-ae9d-4c03-b505-63dc01673ac3}",
+        "caption": "",
+        "resourceClass": "plasmashell",
+        "type": 2,
+        "appletPopup": false,
+        "hidden": false,
+        "active": false,
+        "geometry": {
+          "x": 0,
+          "y": 0,
+          "width": 1920,
+          "height": 32
+        }
+      },
+      {
+        "id": "{3bd6fbf4-6aea-42bf-8de8-d4281026e3d9}",
+        "caption": "",
+        "resourceClass": "plasmashell",
+        "type": 2,
+        "appletPopup": false,
+        "hidden": true,
+        "active": false,
+        "geometry": {
+          "x": 644,
+          "y": 996,
+          "width": 632,
+          "height": 84
+        }
+      },
+      {
+        "id": "{c6a9bc7b-446f-4e88-ac94-942ab4838752}",
+        "caption": "Documents \u2014 Dolphin",
+        "resourceClass": "org.kde.dolphin",
+        "type": 0,
+        "appletPopup": false,
+        "hidden": false,
+        "active": true,
+        "geometry": {
+          "x": 480,
+          "y": 240,
+          "width": 960,
+          "height": 600
+        }
+      }
+    ],
+    "after": [
+      {
+        "id": "{c2508302-f20b-4407-87a3-82d44f09a401}",
+        "caption": "",
+        "resourceClass": "plasmashell",
+        "type": 1,
+        "appletPopup": false,
+        "hidden": false,
+        "active": false,
+        "geometry": {
+          "x": 0,
+          "y": 0,
+          "width": 1920,
+          "height": 1080
+        }
+      },
+      {
+        "id": "{887b48c3-ae9d-4c03-b505-63dc01673ac3}",
+        "caption": "",
+        "resourceClass": "plasmashell",
+        "type": 2,
+        "appletPopup": false,
+        "hidden": false,
+        "active": false,
+        "geometry": {
+          "x": 0,
+          "y": 0,
+          "width": 1920,
+          "height": 32
+        }
+      },
+      {
+        "id": "{3bd6fbf4-6aea-42bf-8de8-d4281026e3d9}",
+        "caption": "",
+        "resourceClass": "plasmashell",
+        "type": 2,
+        "appletPopup": false,
+        "hidden": true,
+        "active": false,
+        "geometry": {
+          "x": 644,
+          "y": 996,
+          "width": 632,
+          "height": 84
+        }
+      },
+      {
+        "id": "{c6a9bc7b-446f-4e88-ac94-942ab4838752}",
+        "caption": "Documents \u2014 Dolphin",
+        "resourceClass": "org.kde.dolphin",
+        "type": 0,
+        "appletPopup": false,
+        "hidden": false,
+        "active": true,
+        "geometry": {
+          "x": 480,
+          "y": 240,
+          "width": 960,
+          "height": 600
+        }
+      }
+    ],
+    "stable_frames": true,
+    "reviewed": true
   },
   "nautilus-light.jpg": {
-    "source": "src/screenshots/vm/cachyos/light-34d9c45c3a52.png",
-    "source_sha256": "34d9c45c3a52fff966ab148319811749974a89c14ea317dd3e94b1d4d33855f8",
+    "source": "build/captures/v0.66.1-file-previews/nautilus-light.png",
+    "source_sha256": "4eed87e79aac5df988ef8fabdb59861a6c35e5969f57274cec05d712583ee4e6",
+    "source_commit": "b762888c5ffedfe106de3b8c94ee37b6b2712e89",
+    "vm_image_sha256": "412e7933f10add20b921b92c02709e7eea56acd14dc14cf654f58fba4ea3cc9d",
     "crop": [
-      1945,
-      122,
-      3755,
-      1088
+      932,
+      452,
+      2908,
+      1708
     ],
-    "sha256": "221756655297f814087d5a048acd1f37799e8ba1d26e140fd3e63da16141a69b",
-    "file": "nautilus-light-221756655297.jpg"
+    "sha256": "b2f5b2748f19484678ac00b3fa9da85b150cbcafe83f7f1fd062191d497a53a4",
+    "file": "nautilus-light-b2f5b2748f19.jpg",
+    "kind": "focused-vm-file-preview",
+    "before": [
+      {
+        "id": "{c2508302-f20b-4407-87a3-82d44f09a401}",
+        "caption": "",
+        "resourceClass": "plasmashell",
+        "type": 1,
+        "appletPopup": false,
+        "hidden": false,
+        "active": false,
+        "geometry": {
+          "x": 0,
+          "y": 0,
+          "width": 1920,
+          "height": 1080
+        }
+      },
+      {
+        "id": "{887b48c3-ae9d-4c03-b505-63dc01673ac3}",
+        "caption": "",
+        "resourceClass": "plasmashell",
+        "type": 2,
+        "appletPopup": false,
+        "hidden": false,
+        "active": false,
+        "geometry": {
+          "x": 0,
+          "y": 0,
+          "width": 1920,
+          "height": 32
+        }
+      },
+      {
+        "id": "{3bd6fbf4-6aea-42bf-8de8-d4281026e3d9}",
+        "caption": "",
+        "resourceClass": "plasmashell",
+        "type": 2,
+        "appletPopup": false,
+        "hidden": true,
+        "active": false,
+        "geometry": {
+          "x": 644,
+          "y": 996,
+          "width": 632,
+          "height": 84
+        }
+      },
+      {
+        "id": "{eae4cad7-12c5-4c83-a3f3-1731c0c20b47}",
+        "caption": "Documents",
+        "resourceClass": "org.gnome.Nautilus",
+        "type": 0,
+        "appletPopup": false,
+        "hidden": false,
+        "active": true,
+        "geometry": {
+          "x": 480,
+          "y": 240,
+          "width": 960,
+          "height": 600
+        }
+      }
+    ],
+    "after": [
+      {
+        "id": "{c2508302-f20b-4407-87a3-82d44f09a401}",
+        "caption": "",
+        "resourceClass": "plasmashell",
+        "type": 1,
+        "appletPopup": false,
+        "hidden": false,
+        "active": false,
+        "geometry": {
+          "x": 0,
+          "y": 0,
+          "width": 1920,
+          "height": 1080
+        }
+      },
+      {
+        "id": "{887b48c3-ae9d-4c03-b505-63dc01673ac3}",
+        "caption": "",
+        "resourceClass": "plasmashell",
+        "type": 2,
+        "appletPopup": false,
+        "hidden": false,
+        "active": false,
+        "geometry": {
+          "x": 0,
+          "y": 0,
+          "width": 1920,
+          "height": 32
+        }
+      },
+      {
+        "id": "{3bd6fbf4-6aea-42bf-8de8-d4281026e3d9}",
+        "caption": "",
+        "resourceClass": "plasmashell",
+        "type": 2,
+        "appletPopup": false,
+        "hidden": true,
+        "active": false,
+        "geometry": {
+          "x": 644,
+          "y": 996,
+          "width": 632,
+          "height": 84
+        }
+      },
+      {
+        "id": "{eae4cad7-12c5-4c83-a3f3-1731c0c20b47}",
+        "caption": "Documents",
+        "resourceClass": "org.gnome.Nautilus",
+        "type": 0,
+        "appletPopup": false,
+        "hidden": false,
+        "active": true,
+        "geometry": {
+          "x": 480,
+          "y": 240,
+          "width": 960,
+          "height": 600
+        }
+      }
+    ],
+    "stable_frames": true,
+    "reviewed": true
   },
   "desktop-tahoe-dark.jpg": {
     "source": "build/captures/v0.60.0/frames/tahoe-dark-showcase.png",
@@ -78,28 +336,286 @@
     "file": "firefox-dark-2691a4efbbee.jpg"
   },
   "dolphin-dark.jpg": {
-    "source": "src/screenshots/vm/cachyos/dark-6dcf101c30cf.png",
-    "source_sha256": "6dcf101c30cf921b6b7aaff554c35eb43fa233aff1cc51a4e38d557b72e4c6d6",
+    "source": "build/captures/v0.66.1-file-previews/dolphin-dark.png",
+    "source_sha256": "e8a044314bf5d3bdd2ece6d70aa2c741401e1bb4fc1e0e667f3b2f94a0f26647",
+    "source_commit": "b762888c5ffedfe106de3b8c94ee37b6b2712e89",
+    "vm_image_sha256": "412e7933f10add20b921b92c02709e7eea56acd14dc14cf654f58fba4ea3cc9d",
     "crop": [
-      85,
-      1124,
-      1895,
-      2088
+      932,
+      452,
+      2908,
+      1708
     ],
-    "sha256": "86a3cbf2078ee9cb584aa7c698e382be50fadb24d3b9b403fdcfea520db82677",
-    "file": "dolphin-dark-86a3cbf2078e.jpg"
+    "sha256": "0ad02370b365d8aeeb94ee9e5ebf2fa48624eebc83dc6efa220a639e3ab5af67",
+    "file": "dolphin-dark-0ad02370b365.jpg",
+    "kind": "focused-vm-file-preview",
+    "before": [
+      {
+        "id": "{c2508302-f20b-4407-87a3-82d44f09a401}",
+        "caption": "",
+        "resourceClass": "plasmashell",
+        "type": 1,
+        "appletPopup": false,
+        "hidden": false,
+        "active": false,
+        "geometry": {
+          "x": 0,
+          "y": 0,
+          "width": 1920,
+          "height": 1080
+        }
+      },
+      {
+        "id": "{887b48c3-ae9d-4c03-b505-63dc01673ac3}",
+        "caption": "",
+        "resourceClass": "plasmashell",
+        "type": 2,
+        "appletPopup": false,
+        "hidden": false,
+        "active": false,
+        "geometry": {
+          "x": 0,
+          "y": 0,
+          "width": 1920,
+          "height": 32
+        }
+      },
+      {
+        "id": "{3bd6fbf4-6aea-42bf-8de8-d4281026e3d9}",
+        "caption": "",
+        "resourceClass": "plasmashell",
+        "type": 2,
+        "appletPopup": false,
+        "hidden": true,
+        "active": false,
+        "geometry": {
+          "x": 644,
+          "y": 996,
+          "width": 632,
+          "height": 84
+        }
+      },
+      {
+        "id": "{8bfcc1bd-014e-4ca6-a7fd-ade1003fc5a7}",
+        "caption": "Documents \u2014 Dolphin",
+        "resourceClass": "org.kde.dolphin",
+        "type": 0,
+        "appletPopup": false,
+        "hidden": false,
+        "active": true,
+        "geometry": {
+          "x": 480,
+          "y": 240,
+          "width": 960,
+          "height": 600
+        }
+      }
+    ],
+    "after": [
+      {
+        "id": "{c2508302-f20b-4407-87a3-82d44f09a401}",
+        "caption": "",
+        "resourceClass": "plasmashell",
+        "type": 1,
+        "appletPopup": false,
+        "hidden": false,
+        "active": false,
+        "geometry": {
+          "x": 0,
+          "y": 0,
+          "width": 1920,
+          "height": 1080
+        }
+      },
+      {
+        "id": "{887b48c3-ae9d-4c03-b505-63dc01673ac3}",
+        "caption": "",
+        "resourceClass": "plasmashell",
+        "type": 2,
+        "appletPopup": false,
+        "hidden": false,
+        "active": false,
+        "geometry": {
+          "x": 0,
+          "y": 0,
+          "width": 1920,
+          "height": 32
+        }
+      },
+      {
+        "id": "{3bd6fbf4-6aea-42bf-8de8-d4281026e3d9}",
+        "caption": "",
+        "resourceClass": "plasmashell",
+        "type": 2,
+        "appletPopup": false,
+        "hidden": true,
+        "active": false,
+        "geometry": {
+          "x": 644,
+          "y": 996,
+          "width": 632,
+          "height": 84
+        }
+      },
+      {
+        "id": "{8bfcc1bd-014e-4ca6-a7fd-ade1003fc5a7}",
+        "caption": "Documents \u2014 Dolphin",
+        "resourceClass": "org.kde.dolphin",
+        "type": 0,
+        "appletPopup": false,
+        "hidden": false,
+        "active": true,
+        "geometry": {
+          "x": 480,
+          "y": 240,
+          "width": 960,
+          "height": 600
+        }
+      }
+    ],
+    "stable_frames": true,
+    "reviewed": true
   },
   "nautilus-dark.jpg": {
-    "source": "src/screenshots/vm/cachyos/dark-6dcf101c30cf.png",
-    "source_sha256": "6dcf101c30cf921b6b7aaff554c35eb43fa233aff1cc51a4e38d557b72e4c6d6",
+    "source": "build/captures/v0.66.1-file-previews/nautilus-dark.png",
+    "source_sha256": "d4476f8696f4b937bdd40a77cd63cce008b3c610da0731fcadfe2bb0f04c6ad1",
+    "source_commit": "b762888c5ffedfe106de3b8c94ee37b6b2712e89",
+    "vm_image_sha256": "412e7933f10add20b921b92c02709e7eea56acd14dc14cf654f58fba4ea3cc9d",
     "crop": [
-      1945,
-      122,
-      3755,
-      1088
+      932,
+      452,
+      2908,
+      1708
     ],
-    "sha256": "482637edb0cbbb37d9a4d0898c327782026b682c17e5d9140dc1c4f54dd0d359",
-    "file": "nautilus-dark-482637edb0cb.jpg"
+    "sha256": "d2747d49c0fedbd5ecca8f8aa64cb7010c26092d4c7756f33102719cd14b3d86",
+    "file": "nautilus-dark-d2747d49c0fe.jpg",
+    "kind": "focused-vm-file-preview",
+    "before": [
+      {
+        "id": "{c2508302-f20b-4407-87a3-82d44f09a401}",
+        "caption": "",
+        "resourceClass": "plasmashell",
+        "type": 1,
+        "appletPopup": false,
+        "hidden": false,
+        "active": false,
+        "geometry": {
+          "x": 0,
+          "y": 0,
+          "width": 1920,
+          "height": 1080
+        }
+      },
+      {
+        "id": "{887b48c3-ae9d-4c03-b505-63dc01673ac3}",
+        "caption": "",
+        "resourceClass": "plasmashell",
+        "type": 2,
+        "appletPopup": false,
+        "hidden": false,
+        "active": false,
+        "geometry": {
+          "x": 0,
+          "y": 0,
+          "width": 1920,
+          "height": 32
+        }
+      },
+      {
+        "id": "{3bd6fbf4-6aea-42bf-8de8-d4281026e3d9}",
+        "caption": "",
+        "resourceClass": "plasmashell",
+        "type": 2,
+        "appletPopup": false,
+        "hidden": true,
+        "active": false,
+        "geometry": {
+          "x": 644,
+          "y": 996,
+          "width": 632,
+          "height": 84
+        }
+      },
+      {
+        "id": "{33080313-1696-45c9-a3a6-1817b97921a0}",
+        "caption": "Documents",
+        "resourceClass": "org.gnome.Nautilus",
+        "type": 0,
+        "appletPopup": false,
+        "hidden": false,
+        "active": true,
+        "geometry": {
+          "x": 480,
+          "y": 240,
+          "width": 960,
+          "height": 600
+        }
+      }
+    ],
+    "after": [
+      {
+        "id": "{c2508302-f20b-4407-87a3-82d44f09a401}",
+        "caption": "",
+        "resourceClass": "plasmashell",
+        "type": 1,
+        "appletPopup": false,
+        "hidden": false,
+        "active": false,
+        "geometry": {
+          "x": 0,
+          "y": 0,
+          "width": 1920,
+          "height": 1080
+        }
+      },
+      {
+        "id": "{887b48c3-ae9d-4c03-b505-63dc01673ac3}",
+        "caption": "",
+        "resourceClass": "plasmashell",
+        "type": 2,
+        "appletPopup": false,
+        "hidden": false,
+        "active": false,
+        "geometry": {
+          "x": 0,
+          "y": 0,
+          "width": 1920,
+          "height": 32
+        }
+      },
+      {
+        "id": "{3bd6fbf4-6aea-42bf-8de8-d4281026e3d9}",
+        "caption": "",
+        "resourceClass": "plasmashell",
+        "type": 2,
+        "appletPopup": false,
+        "hidden": true,
+        "active": false,
+        "geometry": {
+          "x": 644,
+          "y": 996,
+          "width": 632,
+          "height": 84
+        }
+      },
+      {
+        "id": "{33080313-1696-45c9-a3a6-1817b97921a0}",
+        "caption": "Documents",
+        "resourceClass": "org.gnome.Nautilus",
+        "type": 0,
+        "appletPopup": false,
+        "hidden": false,
+        "active": true,
+        "geometry": {
+          "x": 480,
+          "y": 240,
+          "width": 960,
+          "height": 600
+        }
+      }
+    ],
+    "stable_frames": true,
+    "reviewed": true
   },
   "tahoe.jpg": {
     "source": "src/offline/wallpapers/MacTahoe/contents/images/3840x2160.jpg",

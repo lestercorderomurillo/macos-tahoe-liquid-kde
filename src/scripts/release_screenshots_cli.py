@@ -30,8 +30,13 @@ def main(argv=None):
     capture.add_argument('--reuse', type=Path, help='Reuse reviewed frames whose visual inputs are unchanged')
     previews = sub.add_parser('file-previews', help='Capture focused Nautilus/Dolphin installer previews only')
     previews.add_argument('--ref', default='HEAD')
+    previews.add_argument('--resume', action='store_true', help='Reuse this failed capture overlay with the identical source archive')
     previews.add_argument('--vm-image', type=Path, required=True)
     previews.add_argument('--output', type=Path, required=True)
+    preview_stage = sub.add_parser('stage-file-previews', help='Stage four visually reviewed file-manager previews')
+    preview_stage.add_argument('--bundle', type=Path, required=True)
+    preview_stage.add_argument('--reviewed', action='store_true', required=True,
+                               help='Confirm each of the four original frames was visually inspected')
     review = sub.add_parser('review', help='Record a decision for images you have visually inspected')
     review.add_argument('--ref', default='HEAD')
     review.add_argument('--bundle', type=Path, required=True)
@@ -48,9 +53,13 @@ def main(argv=None):
         command.add_argument('--tahoe-repo', type=Path)
     args = parser.parse_args(argv)
     try:
-        if args.command == 'file-previews':
+        if args.command == 'stage-file-previews':
+            from release_capture import stage_file_previews
+            stage_file_previews(args.repo.resolve(), args.bundle.resolve())
+            print('Staged four reviewed, focused file-manager previews.')
+        elif args.command == 'file-previews':
             from release_capture import capture_file_previews
-            capture_file_previews(args.repo, args.ref, args.vm_image, args.output)
+            capture_file_previews(args.repo, args.ref, args.vm_image, args.output, resume=args.resume)
             print('Captured four file-manager previews; inspect each before publishing.')
         elif args.command == 'capture':
             from release_capture import capture as run_capture

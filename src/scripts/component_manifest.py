@@ -50,13 +50,13 @@ def snapshot(root=REPO_ROOT):
                 step = 'acrylic_glass'
             recipe = dependencies(scripts / 'steps' / (step + '.py'), scripts)
             inputs = [(name, payload)] + [(str(p.relative_to(root)), p) for p in recipe]
-            components[name] = identity(inputs)
+            components[name] = identity(inputs, portable=True)
     # Components with no offline payload still have independently audited recipes.
     for entry in sorted((scripts / 'steps').glob('*.py')):
         if entry.name.startswith('_'):
             continue
         components['recipe/' + entry.stem] = identity([
-            (str(p.relative_to(root)), p) for p in dependencies(entry, scripts)])
+            (str(p.relative_to(root)), p) for p in dependencies(entry, scripts)], portable=True)
     return dict(schema=1, components=components)
 
 

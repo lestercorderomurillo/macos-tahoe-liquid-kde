@@ -12,7 +12,7 @@ import stat
 import tempfile
 
 
-def fingerprint(path: Path) -> str:
+def fingerprint(path: Path, *, portable: bool = False) -> str:
     """Hash names, types, permissions, bytes and link targets, never follow links."""
     value = hashlib.sha256()
     def visit(item, relative):
@@ -26,6 +26,8 @@ def fingerprint(path: Path) -> str:
             kind, data = 'file', b''
         else:
             raise ValueError(f'Unsupported component entry: {item}')
+        if portable:
+            mode = 0o777 if kind == 'link' else (0o755 if kind == 'directory' or mode & 0o111 else 0o644)
         header = json.dumps([relative, kind, mode], separators=(',', ':')).encode()
         value.update(len(header).to_bytes(8, 'big')); value.update(header)
         if kind == 'file':
@@ -49,8 +51,8 @@ def identical(source: Path, destination: Path) -> bool:
         return False
 
 
-def identity(paths, options=None):
-    records = [(str(name), fingerprint(path)) for name, path in paths]
+def identity(paths, options=None, *, portable=False):
+    records = [(str(name), fingerprint(path, portable=portable)) for name, path in paths]
     return hashlib.sha256(json.dumps([records, options], sort_keys=True).encode()).hexdigest()
 
 
