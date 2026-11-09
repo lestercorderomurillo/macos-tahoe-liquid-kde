@@ -48,7 +48,7 @@ AbstractButton {
     Accessible.description: i18nc("@info:usagetip", "Open a menu")
 
     background: Rectangle {
-        radius: Kirigami.Units.cornerRadius
+        radius: Math.min(width, height) / 2
         color: controlRoot.menuState === MenuDelegate.State.Rest
                ? "transparent"
                : Qt.rgba(0.5, 0.5, 0.5, controlRoot.menuState === MenuDelegate.State.Down ? 0.25 : 0.18)

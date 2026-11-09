@@ -1,5 +1,6 @@
 """Kvantum selection curvature must never change menu layout at any scale."""
 import json
+import math
 import os
 from pathlib import Path
 import shutil
@@ -11,10 +12,11 @@ import pytest
 
 @pytest.mark.parametrize("mode", ["", "Dark"])
 @pytest.mark.parametrize("scale", ["1", "1.5", "2"])
-def test_native_rounding_preserves_menu_geometry(repo, tmp_path, mode, scale):
+@pytest.mark.parametrize("font_size", [9, 16, 24])
+def test_native_rounding_preserves_menu_geometry(repo, tmp_path, mode, scale, font_size):
     pytest.importorskip("PyQt6.QtWidgets")
     results = []
-    for expansion in (0, 12):
+    for expansion in (0, 10000):
         home = tmp_path / str(expansion)
         config = home / ".config/Kvantum"
         profile = "mac-tahoe-liquid-kde" + mode
@@ -26,13 +28,13 @@ def test_native_rounding_preserves_menu_geometry(repo, tmp_path, mode, scale):
         start = content.index("[MenuItem]")
         end = content.index("\n[", start + 1)
         content = content[:start] + content[start:end].replace(
-            "frame.expansion=12", f"frame.expansion={expansion}") + content[end:]
+            "frame.expansion=10000", f"frame.expansion={expansion}") + content[end:]
         (theme / f"{profile}.kvconfig").write_text(content)
         (config / "kvantum.kvconfig").write_text(f"[General]\ntheme={profile}\n")
         env = {k: v for k, v in os.environ.items() if k in ("PATH", "LANG")}
         env.update(HOME=str(home), XDG_CONFIG_HOME=str(home / ".config"),
                    QT_QPA_PLATFORM="offscreen", QT_QPA_PLATFORMTHEME="generic",
-                   QT_SCALE_FACTOR=scale)
+                   QT_SCALE_FACTOR=scale, CAPSULE_FONT_SIZE=str(font_size))
         result = subprocess.run([sys.executable, __file__, "--probe"], env=env,
                                 capture_output=True, text=True, timeout=20)
         if result.returncode == 77:
@@ -45,6 +47,11 @@ def test_native_rounding_preserves_menu_geometry(repo, tmp_path, mode, scale):
     assert after["top_inset"] > before["top_inset"]
     assert after["center"] == before["center"]
     assert after["solid_center"]
+    radius = after["pixel_height"] / 2
+    for y, left, right in after["edges"]:
+        expected = radius - math.sqrt(max(0, radius * radius - (y + .5 - radius) ** 2))
+        assert abs(left - expected) <= 2, (scale, font_size, y, left, expected)
+        assert abs(right - expected) <= 2, (scale, font_size, y, right, expected)
 
 
 def _probe():
@@ -54,6 +61,9 @@ def _probe():
     app = QApplication([])
     if not app.setStyle("kvantum"):
         sys.exit(77)
+    font = app.font()
+    font.setPointSize(int(os.environ.get("CAPSULE_FONT_SIZE", "9")))
+    app.setFont(font)
     menu = QMenu()
     pixmap = QPixmap(16, 16)
     pixmap.fill(Qt.GlobalColor.black)
@@ -80,7 +90,12 @@ def _probe():
     center = image.pixelColor(image.width() // 2, image.height() // 2).rgba()
     solid = all(image.pixelColor(x, image.height() // 2).alpha() == 255
                 for x in range(round(8 * scale), image.width() - round(8 * scale)))
-    print(json.dumps(dict(geometry=geometry, size=[size.width(), size.height()],
+    edges = []
+    for row in (image.height() // 8, image.height() // 4, image.height() // 2):
+        left = next(x for x in range(image.width()) if image.pixelColor(x, row).alpha() > 127)
+        right = next(x for x in range(image.width()) if image.pixelColor(image.width() - 1 - x, row).alpha() > 127)
+        edges.append([row, left, right])
+    print(json.dumps(dict(pixel_height=image.height(), edges=edges, geometry=geometry, size=[size.width(), size.height()],
                          top_inset=inset, center=center, solid_center=solid)))
 
 

@@ -141,7 +141,7 @@ PlasmoidItem {
             }
 
             background: Rectangle {
-                radius: Kirigami.Units.cornerRadius
+                radius: Math.min(width, height) / 2
                 color: systemMenuButton.menuState === 0
                        ? "transparent"
                        : Qt.rgba(0.5, 0.5, 0.5, systemMenuButton.menuState === 2 ? 0.25 : 0.18)

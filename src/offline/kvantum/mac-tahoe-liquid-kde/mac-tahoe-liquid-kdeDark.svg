@@ -5504,7 +5504,7 @@
      transform="translate(64.418654,32.628013)">
     <path
        id="menuitem-normal-bottomleft2"
-       d="m 184,520 c -8,0 -8,-8 -8,-8 h 8 z"
+       d="M 184,520 A 8,8 0 0 1 176,512 H 184 Z"
        style="opacity:1;fill:#315bef;fill-opacity:1" />
   </g>
   <g
@@ -5512,7 +5512,7 @@
      transform="translate(64.418654,32.628013)">
     <path
        id="menuitem-normal-topleft2"
-       d="m 176,504 c 0,0 0,-8 8,-8 v 8 z"
+       d="M 176,504 A 8,8 0 0 1 184,496 V 504 Z"
        style="opacity:1;fill:#315bef;fill-opacity:1" />
   </g>
   <g
@@ -5548,7 +5548,7 @@
      transform="translate(64.418654,32.628013)">
     <path
        id="menuitem-normal-bottomright2"
-       d="M 192,519.99989 C 200,520 199.99979,512 199.99979,512 H 192 Z"
+       d="M 192,520 A 8,8 0 0 0 200,512 H 192 Z"
        style="opacity:1;fill:#315bef;fill-opacity:1" />
   </g>
   <g
@@ -5556,7 +5556,7 @@
      transform="translate(64.418654,32.628013)">
     <path
        id="menuitem-normal-topright2"
-       d="M 199.99979,503.99989 C 199.99979,503.99989 200,496 192,496 v 7.99978 z"
+       d="M 200,504 A 8,8 0 0 0 192,496 V 504 Z"
        style="opacity:1;fill:#315bef;fill-opacity:1" />
   </g>
   <g

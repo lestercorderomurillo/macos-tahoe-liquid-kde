@@ -113,7 +113,7 @@ def setup(repo, profile, edition, scope=None):
     # The fixed profile explicitly recreates its layout even if the sealed VM
     # contains an earlier installation. Normal reinstalls preserve it by default.
     choices = defaults() | {'appearance': 'light', 'reset_layout': True}
-    if scope == 'dock':
+    if scope in ('dock', 'menu'):
         choices['icons'] = 'keep'
     command = ['sudo', 'env', 'MAC_TAHOE_NO_UPDATE_CHECK=true', 'MTTKDE_NO_CONFIRM=1',
                str(repo / 'src/scripts/installer_backend.py'), 'install',
@@ -200,7 +200,7 @@ def mode(repo, requested, scope=None):
     # The installed command carries the edition and the user's icon choices;
     # importing the source module would silently fall back to the base icons.
     run(str(Path.home() / '.local/bin/mac-tahoe-theme-switch'), requested, timeout=180)
-    if scope == 'dock':
+    if scope in ('dock', 'menu'):
         # The sealed VM already contains these unchanged global appearances.
         theme = 'MacTahoeLiquidKde-Icons-Regular-' + requested.title()
         if not (Path.home() / '.local/share/icons' / theme / 'index.theme').is_file():
@@ -353,7 +353,7 @@ def capture(repo, profile, edition, requested, case):
         raise RuntimeError(f'Wrong launcher preset: {presets}')
     run('sudo', 'date', '--set', profile['clock'])
     target = repo.parent / 'frame.png'
-    if case in ('finder', 'showcase', 'about') or case in MATERIAL_CASES:
+    if case in ('finder', 'showcase', 'about', 'topbar') or case in MATERIAL_CASES:
         verify_desktop_window(case, windows())
     previous = None
     deadline = time.monotonic() + 25
@@ -382,6 +382,9 @@ def capture(repo, profile, edition, requested, case):
     elif case == 'launcher':
         chosen = [w for w in shell if w['appletPopup']]
         expected = EDITIONS[edition][1]
+    elif case == 'topbar':
+        chosen = [w for w in shell if w['type'] == 2 and w['geometry']['y'] == 0]
+        expected = 1
     elif case == 'dock':
         chosen = [w for w in shell if w['type'] == 2 and w['geometry']['y'] > 100
                   and not w.get('hidden', False)]
@@ -401,6 +404,10 @@ def capture(repo, profile, edition, requested, case):
         crop = [max(0, round(g['x'] * scale) - 28), max(0, round(g['y'] * scale) - 28),
                 min(3840, round((g['x'] + g['width']) * scale) + 28),
                 min(2160, round((g['y'] + g['height']) * scale) + 28)]
+    if case == 'topbar':
+        crop = [0, 0, 900, 96]
+    elif case == 'menu':
+        crop[1] = 0  # Include the active system-menu capsule above the popup.
     pixels = None
     if case in ('finder', 'showcase') or case in MATERIAL_CASES:
         with Image.open(target) as image:

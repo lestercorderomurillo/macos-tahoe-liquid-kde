@@ -218,7 +218,8 @@ def capture(repo: Path, ref: str, image: Path, output: Path, reuse: Path | None 
                     with Guest(guest_dir, profile, image, archive, edition) as vm:
                         print(f'Installing {edition} from {source}', flush=True)
                         dock_only = pending <= {f'{e}-{m}-dock' for e in EDITIONS for m in MODES}
-                        scope = ['dock'] if dock_only else []
+                        menu_only = pending <= {f'{e}-{m}-{c}' for e in EDITIONS for m in MODES for c in ('menu', 'context')}
+                        scope = ['dock'] if dock_only else ['menu'] if menu_only else []
                         manifest['environments'][edition] = vm.action('setup', edition, *scope)
                         for mode in MODES:
                             vm.action('clean-desktop')
@@ -228,7 +229,8 @@ def capture(repo: Path, ref: str, image: Path, output: Path, reuse: Path | None 
                                 name = f'{edition}-{mode}-{case}'
                                 if name not in pending:
                                     return
-                                vm.move(*profile['pointer'])
+                                if case not in ('menu', 'context'):
+                                    vm.move(*profile['pointer'])
                                 if case == 'dock':
                                     state = vm.action('plasma', 'var states=[]; panels().forEach(p=>p.widgets().forEach(w=>{'
                                         'if(w.type.includes("icontasks")){w.currentConfigGroup=["General"];'
@@ -245,7 +247,28 @@ def capture(repo: Path, ref: str, image: Path, output: Path, reuse: Path | None 
                                 print('Captured ' + name, flush=True)
                             mode_pending = {case for case in CASES
                                             if f'{edition}-{mode}-{case}' in pending}
-                            if mode_pending - {case for case in mode_pending if case.startswith('installer-')} == {'dock'}:
+                            if mode_pending and mode_pending <= {'menu', 'context'}:
+                                vm.action('launch', 'finder')
+                                vm.action('arrange', json.dumps({'Documents': profile['windows']['Documents']}))
+                                vm.move(140, 30)
+                                time.sleep(1)
+                                preview = vm.action('capture', edition, mode, 'topbar')
+                                preview_name = f'{edition}-{mode}-topbar'
+                                (output / 'previews').mkdir(exist_ok=True)
+                                vm.get('/home/tester/release-capture/frame.png', output / 'previews' / (preview_name + '.png'))
+                                manifest.setdefault('component_previews', {})[preview_name] = preview
+                                vm.click(40, 30)
+                                vm.move(*profile['pointer'])
+                                vm.key('down')
+                                shot('menu')
+                                vm.key('esc')
+                                vm.action('close')
+                                vm.click(2100, 1000, 'right')
+                                vm.move(*profile['pointer'])
+                                vm.key('down')
+                                shot('context')
+                                vm.key('esc')
+                            elif mode_pending - {case for case in mode_pending if case.startswith('installer-')} == {'dock'}:
                                 vm.action('plasma', 'panels().forEach(p=>{if(p.location==="bottom")p.hiding="none";});')
                                 vm.move(1920, 2159)
                                 time.sleep(1)

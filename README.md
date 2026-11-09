@@ -130,7 +130,7 @@ Finder-style Nautilus in light and dark.
 
 ### Acrylic Glass Tahoe Menu
 
-System controls and global menus for compatible apps.
+System controls and global menus for compatible apps, with capsule-shaped hover and selection highlights.
 
 <p align="center">
   <img src="src/screenshots/menu_v4-33c36392edcf.webp" alt="System menu in light mode" width="415">

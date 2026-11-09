@@ -394,13 +394,33 @@ DOCK_064_CAPTURE_DEPENDENCIES = {'src/installer/wizard_window.py': ('e493c1ba88d
                                  '034c82fbc6b86f76c9cd24e9c849418a3f2400dd')}
 
 
+# Reviewed 0.65 capsule transition. Only active menu/bar highlights change;
+# retained frames have no such highlight. The guest additions capture the
+# changed components without changing the global profile or other scenes.
+MENU_065_BASE = '1f881a030504c569f6a094fea5536c45e207e040'
+MENU_065_CAPTURE_DEPENDENCIES = {'src/offline/kvantum/mac-tahoe-liquid-kde/mac-tahoe-liquid-kde.kvconfig': ('f94a9cc8a26da772c5cc3564dc403feef9916b09',
+                                                                            '5700d0b48e7d15c8c8862c8c6f02704ab7e064ba'),
+ 'src/offline/kvantum/mac-tahoe-liquid-kde/mac-tahoe-liquid-kde.svg': ('6a4e98e6f928bd8bd07ecfb89efd1d2faa873d90',
+                                                                       '7615939a4d8a35bee155b246023ab02b8fc4978f'),
+ 'src/offline/kvantum/mac-tahoe-liquid-kde/mac-tahoe-liquid-kdeDark.kvconfig': ('c3cd8e5486895cc3254f3e80eddf5f7caf254537',
+                                                                                '3dedb1fbd120a394cc493bb36a801bf7ae89027b'),
+ 'src/offline/kvantum/mac-tahoe-liquid-kde/mac-tahoe-liquid-kdeDark.svg': ('82785803ed7b3afc9c03c0ef16ebc0c7c2ae9712',
+                                                                           '1ea593d1927f0422735160abde823b4c8a28d579'),
+ 'src/offline/plasmoids/org.kde.mac.tahoe.liquid.globalmenu/qml/MenuDelegate.qml': ('f66fb626c44e143448a540208b58467be76a8419',
+                                                                                    'e1a940be09cfd47767800684031b4eeb8729cd84'),
+ 'src/offline/plasmoids/org.kde.mac.tahoe.liquid.globalmenu/qml/main.qml': ('1f86596c4648bc9172c466c8677fc9d573fc355a',
+                                                                            '5cac7ed5a87fa83d7fbda3dbef123c1bfd866641'),
+ 'src/scripts/release_capture_guest.py': ('51f36dbf29ba4a82b0e7b85f82b1ec0c7f704064',
+                                          '56dac0fb1bf6e4d45a367bc89eef614028e77aeb')}
+
+
 def affected_frames(repo: Path, source: str, target: str) -> set[str]:
     """Conservative dependencies: unknown changes invalidate every frame."""
     all_frames = expected_frames()
     if visual_tree(repo, source) == visual_tree(repo, target):
         return set()
     # Compose reviewed transitions without rewriting historical frame origins.
-    for base in (DOCK_064_BASE, DOCK_APPEARANCE_BASE):
+    for base in (MENU_065_BASE, DOCK_064_BASE, DOCK_APPEARANCE_BASE):
         if source != base and target != base and all(
             subprocess.run(['git', '-C', str(repo), 'merge-base', '--is-ancestor', a, b],
                            stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL).returncode == 0
@@ -413,6 +433,15 @@ def affected_frames(repo: Path, source: str, target: str) -> set[str]:
     def cases(names, editions=EDITIONS):
         affected.update(f'{e}-{m}-{c}' for e in editions for m in MODES for c in names)
     for path in changed:
+        menu_dependency = MENU_065_CAPTURE_DEPENDENCIES.get(path)
+        if menu_dependency:
+            def menu_object(ref):
+                entry = git(repo, 'ls-tree', ref, '--', path)
+                return entry.split()[2] if entry else None
+            if (menu_object(source), menu_object(target)) == menu_dependency:
+                cases(['menu', 'context'])
+                ignored.add(path)
+                continue
         dock_dependency = DOCK_064_CAPTURE_DEPENDENCIES.get(path)
         if dock_dependency:
             def dock_object(ref):
