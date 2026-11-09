@@ -482,13 +482,20 @@ MENU_ONLY_066_CAPTURE_DEPENDENCIES = {'LICENSES/MIT-QuickBar.txt': (None, 'cba30
  'src/scripts/steps/globalmenu.py': ('78118529edd5ec87963bc25d977dda09bed54f5c',
                                      'beb4f94569eae53158930388b696bcb2b3cc5945')}
 
+# Reviewed 0.66.1 payload reuse changes preserve rendered bytes. These exact
+# blobs only change copying, build invalidation and capture focus validation.
+# Unknown later edits still invalidate all frames. File-manager preview changes
+# below invalidate only their four installer photographs.
+INCREMENTAL_0661_BASE = '5258ba9216c2babc5073d0f3fbf311ccc5c7723c'
+INCREMENTAL_0661_NONVISUAL = {'component-hashes.json': (None, 'e321d5373c5e5976eeb820a14db755eeee90b3a6'), 'src/scripts/component_cache.py': (None, 'e079b13e8d79b7aa1ed9b37cf53936158ce4f193'), 'src/scripts/component_manifest.py': (None, '422be90e1e94f8db4c97640f54016cd42b1c2907'), 'src/scripts/steps/icons.py': ('afe5cac8d5a511bb203b662745046e9fc191f251', 'ce89f7743e390cc497e0cd75bb276c33b221269e'), 'src/scripts/steps/_helpers.py': ('fd8b2ff134191178f289a4133d4a56ee59ecef24', '71374d5f11ffa116805b2cf9d8be8c53b9a3655c'), 'src/scripts/release_capture_guest.py': ('56dac0fb1bf6e4d45a367bc89eef614028e77aeb', '76585f67e4a3126a864c45b54189e6cd992848a4')}
+
 def affected_frames(repo: Path, source: str, target: str) -> set[str]:
     """Conservative dependencies: unknown changes invalidate every frame."""
     all_frames = expected_frames()
     if visual_tree(repo, source) == visual_tree(repo, target):
         return set()
     # Compose reviewed transitions without rewriting historical frame origins.
-    for base in (MENU_ONLY_066_BASE, SYSTEM_MENU_0652_BASE, TOPBAR_0651_BASE, MENU_065_BASE, DOCK_064_BASE, DOCK_APPEARANCE_BASE):
+    for base in (INCREMENTAL_0661_BASE, MENU_ONLY_066_BASE, SYSTEM_MENU_0652_BASE, TOPBAR_0651_BASE, MENU_065_BASE, DOCK_064_BASE, DOCK_APPEARANCE_BASE):
         if source != base and target != base and all(
             subprocess.run(['git', '-C', str(repo), 'merge-base', '--is-ancestor', a, b],
                            stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL).returncode == 0
@@ -501,6 +508,13 @@ def affected_frames(repo: Path, source: str, target: str) -> set[str]:
     def cases(names, editions=EDITIONS):
         affected.update(f'{e}-{m}-{c}' for e in editions for m in MODES for c in names)
     for path in changed:
+        if path in INCREMENTAL_0661_NONVISUAL:
+            def component_object(ref):
+                entry = git(repo, 'ls-tree', ref, '--', path)
+                return entry.split()[2] if entry else None
+            if (component_object(source), component_object(target)) == INCREMENTAL_0661_NONVISUAL[path]:
+                ignored.add(path)
+                continue
         menu_only_dependency = MENU_ONLY_066_CAPTURE_DEPENDENCIES.get(path)
         if menu_only_dependency:
             def menu_only_object(ref):
@@ -622,14 +636,19 @@ def affected_frames(repo: Path, source: str, target: str) -> set[str]:
             if methods - {'apply_plasma_surface_defaults'}:
                 return all_frames
             cases(['launcher', 'menu', 'context'], ['golden-gate'])
+        elif path.startswith(('src/installer/assets/nautilus-', 'src/installer/assets/dolphin-')):
+            cases(['installer-files'])
         elif path.startswith('src/installer/assets/glass-preset-'):
             cases(['installer-glass_style'])
         elif path == 'src/installer/assets/sources.json':
             before, after = (json.loads(blob(repo, ref, path)) for ref in (source, target))
             keys = {key for key in before.keys() | after.keys() if before.get(key) != after.get(key)}
-            if any(not key.startswith('glass-preset-') for key in keys):
+            if any(not key.startswith(('glass-preset-', 'nautilus-', 'dolphin-')) for key in keys):
                 return all_frames
-            cases(['installer-glass_style'])
+            if any(key.startswith('glass-preset-') for key in keys):
+                cases(['installer-glass_style'])
+            if any(key.startswith(('nautilus-', 'dolphin-')) for key in keys):
+                cases(['installer-files'])
         elif path == 'src/scripts/release_capture.py':
             # Orchestration selects frames; each selected frame still uses the
             # pinned guest renderer, readback, stability and identity checks.

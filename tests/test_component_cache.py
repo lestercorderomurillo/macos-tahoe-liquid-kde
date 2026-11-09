@@ -50,8 +50,9 @@ def test_component_changes_do_not_invalidate_other_payloads(tmp_path):
     assert identity([('dock', dock)], {'color': 'red'}) != first
 
 
-def test_unchanged_tree_preserves_inode_and_repairs_deletion(tmp_path):
+def test_unchanged_tree_preserves_inode_and_repairs_deletion(tmp_path, monkeypatch):
     from steps._helpers import install_tree
+    monkeypatch.setenv("XDG_STATE_HOME", str(tmp_path / "state"))
     source = tmp_path / 'source'; source.mkdir()
     (source / 'payload').write_text('same')
     target = tmp_path / 'target'
@@ -59,6 +60,9 @@ def test_unchanged_tree_preserves_inode_and_repairs_deletion(tmp_path):
     inode = (target / 'payload').stat().st_ino
     assert install_tree(source, target)
     assert (target / 'payload').stat().st_ino == inode
+    (target / "payload").unlink()
+    assert install_tree(source, target)
+    assert (target / "payload").read_text() == "same"
 
 
 def test_icon_reinstall_skips_generation_but_changed_choices_and_damage_repair(monkeypatch, tmp_path):
@@ -141,5 +145,7 @@ def test_native_build_reuses_objects_and_rebuilds_changed_source(tmp_path):
     assert cmake_build(source, build, 'probe')
     assert obj.stat().st_mtime_ns == stamp
     code.write_text('int main() { return 3; }\n')
+    import os
+    os.utime(code, (1, 1))  # Archives can restore older mtimes despite changed bytes.
     assert cmake_build(source, build, 'probe')
     assert subprocess.run([str(build / 'probe')]).returncode == 3

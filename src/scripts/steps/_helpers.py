@@ -1,7 +1,7 @@
 """Common helpers shared between step modules."""
 
 from localization import tr
-from component_cache import identical
+from component_cache import identical, identity
 
 import os
 import shutil
@@ -261,19 +261,25 @@ def cmake_build(
     if not (src_dir_ / "CMakeLists.txt").is_file():
         warn(tr('{label} source not found — skipping', label=label))
         return False
-    # Keep the build graph so unchanged translation units remain reusable.
-    # CMake reconfigures against the current SDK on every invocation; Make
-    # tracks source/header dependencies. A moved source tree needs a new cache.
+    # Source identity, not checkout timestamps, decides whether this component
+    # may reuse its build graph. CMake and Make still check the current SDK.
+    source_key = identity([("source", src_dir_), ("recipe", Path(__file__))], list(targets))
+    stamp = build_dir / ".mttkde-source-sha256"
     cache = build_dir / "CMakeCache.txt"
-    if build_dir.exists() and not os.access(build_dir, os.W_OK, effective_ids=True):
-        with _as_root():
-            shutil.rmtree(build_dir)
-    if cache.is_file():
-        expected = f"CMAKE_HOME_DIRECTORY:INTERNAL={src_dir_.resolve()}"
-        if expected not in cache.read_text().splitlines():
+    reusable = False
+    try:
+        reusable = (stamp.read_text() == source_key and
+                    f"CMAKE_HOME_DIRECTORY:INTERNAL={src_dir_.resolve()}" in cache.read_text().splitlines()
+                    and os.access(build_dir, os.W_OK, effective_ids=True))
+    except OSError:
+        pass
+    if build_dir.exists() and not reusable:
+        shutil.rmtree(build_dir, ignore_errors=True)
+        if build_dir.exists():
             with _as_root():
                 shutil.rmtree(build_dir)
     build_dir.mkdir(parents=True, exist_ok=True)
+    stamp.unlink(missing_ok=True)
     cfg = subprocess.run(
         ["cmake", "-S", str(src_dir_), "-B", str(build_dir),
          "-DCMAKE_BUILD_TYPE=Release",
@@ -296,6 +302,7 @@ def cmake_build(
         fail(tr('{label}: build failed', label=label))
         _emit_cmd_log(label, "make", mk.stdout, mk.stderr, build_dir / "make-build.log")
         return False
+    stamp.write_text(source_key)
     ok(tr('{label} built', label=label))
     return True
 
