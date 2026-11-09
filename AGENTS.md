@@ -25,6 +25,29 @@ remaining task-owned changes. This is a local delivery check, not permission to
 repeat remote publication queries, rerun passed tests or wait for full CI.
 Documentation-only policy changes need no new version or release.
 
+## Paired repository delivery
+
+Tahoe and Golden Gate are one connected delivery. Work requested in either
+checkout covers the corresponding changes in both repositories unless the user
+explicitly excludes an edition. A repository name, working directory or
+edition-specific README heading alone does not limit that scope.
+
+For shared documentation subjects such as About This Computer and Finder,
+update the matching README images in both editions and both appearance modes.
+Capture each edition with its own defaults, wallpaper and controls; never
+reuse one edition's photograph as the other. Refresh only the requested
+subjects and preserve unrelated photographs and their original provenance.
+Reuse a counterpart update already completed in the same task.
+
+Keep shared implementation exclusively in Tahoe and deliver Golden Gate's
+matching version and verified pin for implementation releases. Publish paired
+releases and deliver to dev and main in both repositories. Documentation,
+photography and agent-policy updates also require paired delivery, but do not
+bump versions, move release tags or publish releases for those changes alone.
+Apply shared policy corrections to both AGENTS.md files. Do not report the
+work complete after delivering only one repository; finish the counterpart or
+report its specific blocker. Leave both actual checkouts clean and ready.
+
 ## Efficient scope and repository graph
 
 Select tests by the behavior they prove. When one executable scenario covers
