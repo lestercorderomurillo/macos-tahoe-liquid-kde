@@ -792,3 +792,31 @@ def test_system_menu_0652_scope_composes_history_and_rejects_later_edits(tmp_pat
         (tmp_path / path).write_text('value = 2\n')
     (tmp_path / 'unknown.qml').write_text('unknown change\n')
     assert shots.affected_frames(tmp_path, old, commit(tmp_path)) == shots.expected_frames()
+
+
+def test_menu_only_066_scope_composes_history_and_rejects_later_edits(tmp_path, monkeypatch):
+    subprocess.run(['git', 'init', '-q', str(tmp_path)], check=True)
+    paths = ('src/offline/dock.qml', 'src/scripts/installer_choices.py')
+    for path in paths:
+        target = tmp_path / path
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_text('value = 1\n')
+    old = commit(tmp_path)
+    (tmp_path / 'README.md').write_text('Documentation only\n')
+    baseline = commit(tmp_path)
+    for path in paths:
+        (tmp_path / path).write_text('value = 2\n')
+    changed = commit(tmp_path)
+    monkeypatch.setattr(shots, 'MENU_ONLY_066_BASE', baseline)
+    monkeypatch.setattr(shots, 'MENU_ONLY_066_CAPTURE_DEPENDENCIES', {
+        path: (shots.git(tmp_path, 'rev-parse', baseline + ':' + path),
+               shots.git(tmp_path, 'rev-parse', changed + ':' + path)) for path in paths})
+    expected = {f'{e}-{m}-{c}' for e in shots.EDITIONS for m in shots.MODES for c in ('menu',)}
+    assert shots.affected_frames(tmp_path, baseline, changed) == expected
+    assert shots.affected_frames(tmp_path, old, changed) == expected
+    for path in paths:
+        (tmp_path / path).write_text('value = 3\n')
+        assert shots.affected_frames(tmp_path, old, commit(tmp_path)) == shots.expected_frames()
+        (tmp_path / path).write_text('value = 2\n')
+    (tmp_path / 'unknown.qml').write_text('unknown change\n')
+    assert shots.affected_frames(tmp_path, old, commit(tmp_path)) == shots.expected_frames()

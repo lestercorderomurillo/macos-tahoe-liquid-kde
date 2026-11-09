@@ -426,13 +426,69 @@ SYSTEM_MENU_0652_CAPTURE_DEPENDENCIES = {'src/offline/plasmoids/org.kde.mac.taho
  'src/offline/plasmoids/org.kde.mac.tahoe.liquid.globalmenu/systemmenustyle.h': (None,
                                                                                  '020533051dbaeee315c8b047c93f8d438869fb13')}
 
+# Audited menu-only 0.66 transition. Application menu behavior changes, while
+# other widget/layout assets are unchanged. Refresh the four menu frames;
+# preserve every unrelated frame with its original hash and source provenance.
+# Exact object pairs prevent this scope from approving later implementation edits.
+MENU_ONLY_066_BASE = 'b34984642b44702588fea0dd94837870bcff065e'
+MENU_ONLY_066_CAPTURE_DEPENDENCIES = {'LICENSES/MIT-QuickBar.txt': (None, 'cba300532dc82e81228c91fe97bcfc29d32916e0'),
+ 'LICENSES/sources.json': ('bbfd535cf6ea59cfd7a6dfe174b56cb1491c4c76',
+                           'a1de294818d7fa5fcf52d7ad9c2bd2010964f52c'),
+ 'nix/packages.nix': ('5c0207d9554df4e414c9d4dcea9d99709a66ccf3', '027c1f0b90d84d4e29489e43c0b1df1f8e8b3830'),
+ 'src/offline/plasmoids/org.kde.mac.tahoe.liquid.globalmenu/CMakeLists.txt': ('2a7ebbca14a2ba83f4026aba121a1a28cb786486',
+                                                                              'da19d51fdb3e98fbed48a49e3d8706db540f0031'),
+ 'src/offline/plasmoids/org.kde.mac.tahoe.liquid.globalmenu/appmenuapplet.cpp': ('1dd65d214d3e1bb7462c51ccff92ef57e58c1aa0',
+                                                                                 'e655587cd59ebd8793f236b2040b4e26a38ddd52'),
+ 'src/offline/plasmoids/org.kde.mac.tahoe.liquid.globalmenu/appmenuapplet.h': ('d4ab58d0269d0b28794ab6a715bd4f2c5f23c560',
+                                                                               '25edd2ab8a7e7044fc5e3ebc8d5b8a0176970a3f'),
+ 'src/offline/plasmoids/org.kde.mac.tahoe.liquid.globalmenu/appmenumodel.cpp': ('21e8028d68a34a0d6506eba94391f13412aeb90c',
+                                                                                '9f78be3d0ab4ab32ebb55ac91d4b1bbf9ca51767'),
+ 'src/offline/plasmoids/org.kde.mac.tahoe.liquid.globalmenu/appmenumodel.h': ('1ed2ed5285ef165da164a7eaf4a05b0147af7d3f',
+                                                                              '50c1e3f4a76f6eab09f903b86e69b674124e66f4'),
+ 'src/offline/plasmoids/org.kde.mac.tahoe.liquid.globalmenu/libdbusmenuqt/dbusmenuimporter.cpp': ('7e821921deb83c321656b0f0922ddc045063fa62',
+                                                                                                  'b65072de19037981dbb668f3554ec5fc6da5e021'),
+ 'src/offline/plasmoids/org.kde.mac.tahoe.liquid.globalmenu/locale/de/LC_MESSAGES/plasma_applet_org.kde.mac.tahoe.liquid.globalmenu.mo': ('36398e4e0d5d3aa3a103daad400572160198b525',
+                                                                                                                                          'd87f49f275f9cc9974e6fa64f9eeecc22868fbc9'),
+ 'src/offline/plasmoids/org.kde.mac.tahoe.liquid.globalmenu/locale/pt_BR/LC_MESSAGES/plasma_applet_org.kde.mac.tahoe.liquid.globalmenu.mo': ('73e7326e74ffabebf4233fd3da023b756bc9a9f6',
+                                                                                                                                             'af3d96f12370d74c548337230b392df14e3f1232'),
+ 'src/offline/plasmoids/org.kde.mac.tahoe.liquid.globalmenu/main.xml': ('9a96b29758bbc24b47c8d57f99d78bb11a008c9a',
+                                                                        '7268c1298fbb413e6be23bc79b76bba8d2d18cf2'),
+ 'src/offline/plasmoids/org.kde.mac.tahoe.liquid.globalmenu/menushortcuts.cmake': (None,
+                                                                                   '04e6657d647a71b581ef3c49ec8f12818e3724ea'),
+ 'src/offline/plasmoids/org.kde.mac.tahoe.liquid.globalmenu/menushortcutsender.cpp': (None,
+                                                                                      'b466a7d831e62429a649029d7aba4980edb68452'),
+ 'src/offline/plasmoids/org.kde.mac.tahoe.liquid.globalmenu/menushortcutsender.h': (None,
+                                                                                    '4aa6b74f82f1b7094819f25421db0f6ab2cb2f22'),
+ 'src/offline/plasmoids/org.kde.mac.tahoe.liquid.globalmenu/po/de.po': ('54fe22ad05b1101f1b51e82d2e939c1a47bb605d',
+                                                                        '70b5b7df4cbef7c8e5e22968512c7e2eb6b200dc'),
+ 'src/offline/plasmoids/org.kde.mac.tahoe.liquid.globalmenu/po/pt_BR.po': ('c29f4448f354644b24f6f574132f4189b88166c9',
+                                                                           '1d3813931e3ef3338e1792ea12c57dec40b68b95'),
+ 'src/offline/plasmoids/org.kde.mac.tahoe.liquid.globalmenu/protocols/fake-input.xml': (None,
+                                                                                        '33734c07581ea5a7a5bed10e7973646584885d99'),
+ 'src/offline/plasmoids/org.kde.mac.tahoe.liquid.globalmenu/qml/MenuDelegate.qml': ('1730b2071cae6afdc39794d802825ad8c4fdd766',
+                                                                                    '5008c603915a9af579f60b30fc00040ac57f090b'),
+ 'src/offline/plasmoids/org.kde.mac.tahoe.liquid.globalmenu/qml/configGeneral.qml': ('dfb20237f77f5c5bfa05882f4306cdb41ed17216',
+                                                                                     '25b0344561008ca3d237772ab1fef2a67650fa12'),
+ 'src/offline/plasmoids/org.kde.mac.tahoe.liquid.globalmenu/qml/main.qml': ('e5148dbaed0cf109a6a9df44a632148a392714f9',
+                                                                            '5e485f6ac8d8056bab274bfa25d64f1cdc8c9e2d'),
+ 'src/offline/plasmoids/org.kde.mac.tahoe.liquid.globalmenu/quickbarmenuhelpers.h': (None,
+                                                                                     'a82c12182bef7828f176a3fae0116f307c9e583f'),
+ 'src/scripts/distro.py': ('d8aa244fb0a6eaf623f33adb4a6fce84cfab92ec',
+                           'ed83f130e61572a7e752293899384eb00f0a3c9a'),
+ 'src/scripts/locales/de.json': ('48ab535ece12f2674fbac77c8999884dcadd0891',
+                                 'd584ebd081bab39bafe2a2cdaa8e83fe902eb22c'),
+ 'src/scripts/locales/pt_BR.json': ('93d442f779016cf102144d5814a7f641929cb45e',
+                                    'e1648d53338a6967d16aea5b14c6da895a44fafe'),
+ 'src/scripts/steps/globalmenu.py': ('78118529edd5ec87963bc25d977dda09bed54f5c',
+                                     'beb4f94569eae53158930388b696bcb2b3cc5945')}
+
 def affected_frames(repo: Path, source: str, target: str) -> set[str]:
     """Conservative dependencies: unknown changes invalidate every frame."""
     all_frames = expected_frames()
     if visual_tree(repo, source) == visual_tree(repo, target):
         return set()
     # Compose reviewed transitions without rewriting historical frame origins.
-    for base in (SYSTEM_MENU_0652_BASE, TOPBAR_0651_BASE, MENU_065_BASE, DOCK_064_BASE, DOCK_APPEARANCE_BASE):
+    for base in (MENU_ONLY_066_BASE, SYSTEM_MENU_0652_BASE, TOPBAR_0651_BASE, MENU_065_BASE, DOCK_064_BASE, DOCK_APPEARANCE_BASE):
         if source != base and target != base and all(
             subprocess.run(['git', '-C', str(repo), 'merge-base', '--is-ancestor', a, b],
                            stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL).returncode == 0
@@ -445,6 +501,15 @@ def affected_frames(repo: Path, source: str, target: str) -> set[str]:
     def cases(names, editions=EDITIONS):
         affected.update(f'{e}-{m}-{c}' for e in editions for m in MODES for c in names)
     for path in changed:
+        menu_only_dependency = MENU_ONLY_066_CAPTURE_DEPENDENCIES.get(path)
+        if menu_only_dependency:
+            def menu_only_object(ref):
+                entry = git(repo, 'ls-tree', ref, '--', path)
+                return entry.split()[2] if entry else None
+            if (menu_only_object(source), menu_only_object(target)) == menu_only_dependency:
+                cases(['menu'])
+                ignored.add(path)
+                continue
         system_menu_dependency = SYSTEM_MENU_0652_CAPTURE_DEPENDENCIES.get(path)
         if system_menu_dependency:
             def system_menu_object(ref):
