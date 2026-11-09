@@ -24,7 +24,7 @@
       "detail": "Prepared Golden Gate menu bytes match the tested Tahoe implementation."
     }
   ],
-  "gallery_commit": "170f24dd28ae58a44774780935f3fdeaf8999afe",
+  "gallery_commit": "c485eeec652358824d2496222cb030a91f70e5dd",
   "captures": [
     {
       "path": "src/screenshots/previews/about-buttons-dark-57536aa93c40.png",
@@ -55,6 +55,21 @@
       "path": "src/screenshots/previews/menu-symbols-067-provenance-534bface45c1.json",
       "sha256": "534bface45c10f33b2e59a3e458a13b2eed896dd789a3dd9a80d539420430c9a",
       "reviewed": true
+    },
+    {
+      "path": "src/screenshots/previews/topbar-067-dark-e9a5d1287fc8.webp",
+      "sha256": "e9a5d1287fc8e598e223f1fa467156ddc46c05e0ee35d51cd5ed0cd63843e0f7",
+      "reviewed": true
+    },
+    {
+      "path": "src/screenshots/previews/topbar-067-light-55270e8b3600.webp",
+      "sha256": "55270e8b36008571f372c0748fc653f87d644a02eb63b3be10f1c42929c437cb",
+      "reviewed": true
+    },
+    {
+      "path": "src/screenshots/previews/topbar-067-provenance-a671cf4013c2.json",
+      "sha256": "a671cf4013c298eab800f23232885c151403390ba753ef5b9aff413a40670c67",
+      "reviewed": true
     }
   ],
   "coverage_limits": [
@@ -62,5 +77,31 @@
     "Host native tests use Qt 6.11.2 / Plasma 6.7.4 on CachyOS; preview compiled and rendered in the disposable KDE neon guest. Full distro CI remains asynchronous.",
     "Only menu symbol/shortcut rendering changed. Previews use neutral Fusion backgrounds and do not claim compositor/glass material validation. Existing desktop and installer photographs retain their original provenance.",
     "The prior real Wayland pointer-grab coverage limit remains; this change does not modify popup-grab behavior."
-  ]
+  ],
+  "documentation_refresh": {
+    "source_commit": "48aef6207aa995838dc9b24b4321bf03b0417ec2",
+    "source_version": "0.67.0",
+    "scope": "About and Files desktop/close-up photographs, top-bar crops, and Apple menus in light and dark mode. Both editions refreshed with their own defaults. Unrelated photographs retain original provenance.",
+    "commands": [
+      "Tahoe release_capture Guest helpers in disposable VM; focused About/Files and Apple-menu captures; scoped _stage exports",
+      "Visual review of requested frames and exported images",
+      "python3 /tmp/topbar-menu-067/check_docs.py; git diff --check"
+    ],
+    "result": "passed",
+    "images": {
+      "finder_v4-b7743e709fcb.webp": "b7743e709fcb17a87f94ce6159f9884ee55b3615033868182ed6d3320e1608b5",
+      "showcase_light_2k-84cf80ed6028.webp": "84cf80ed60287c5cc46ecd398fda81bd44ca5198eccef07c30723dfcf394017d",
+      "about_v4-89bf172117ec.webp": "89bf172117ec3250406c2b16c67ed3a255b8b4f8777be1cc89b677f54b30d925",
+      "desktop_about_light_2k-ae7e67008775.webp": "ae7e6700877580baf77ad4f0079955da852257149a5678802d5ba1c04e8a5f40",
+      "finder_dark_v4-ce0dc544c4be.webp": "ce0dc544c4be81266ffd213bf2bcdf75b77279cbc9775e90e05766279575f685",
+      "showcase_dark_2k-421bb9e5798a.webp": "421bb9e5798a4d834c61fb02a4a265f999835d565472958badb81a60e18f6e08",
+      "about_dark_v4-bcfd5f536826.webp": "bcfd5f536826922d148965353b3148185d6209f35b64bcac7cebf744060223f2",
+      "desktop_about_dark_2k-1bbbba68bf58.webp": "1bbbba68bf5800dcd464b2770eb92a6cabe40ff2ca90fc85fda27a792141243b",
+      "menu_v4-d754cdb089ec.webp": "d754cdb089ec8a8acfda50bd89406e2be1313081d01464ea54a49a32f8abc513",
+      "menu_dark_v4-e12fb577d61b.webp": "e12fb577d61bdd3298e7ca7943fa8d4435bdc8ae18485f88ca7086928367cdef",
+      "previews/topbar-067-dark-e9a5d1287fc8.webp": "e9a5d1287fc8e598e223f1fa467156ddc46c05e0ee35d51cd5ed0cd63843e0f7",
+      "previews/topbar-067-light-55270e8b3600.webp": "55270e8b36008571f372c0748fc653f87d644a02eb63b3be10f1c42929c437cb"
+    },
+    "limits": "Documentation-only refresh; no runtime suite or release launched. About uses the standard mock-data preview harness. Top-bar crops derive from the reviewed neutral-pointer Files frames. Dark menus captured in fresh dark VM sessions: initial mode-switch frames retained stale light surfaces and were rejected. This refresh does not establish correctness of menu appearance transitions."
+  }
 }
