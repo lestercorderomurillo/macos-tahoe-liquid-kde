@@ -1,12 +1,13 @@
 # Installer testing
 
-Tahoe **v0.66.4** separates native compilation from icon installation fingerprints.
+Tahoe **v0.66.5** preserves menu focus across Apple, application-name and File/Edit menus,
+including exported and generic application menus.
 Focused behavior checks passed; full remote CI runs asynchronously. See
 [release evidence](release-evidence.json) for scope and coverage limits.
 
 The installer gallery below and README desktop gallery retain their original
 reviewed v0.66.1-or-earlier provenance; they are historical examples, not new
-0.66.4 appearance evidence. The retained v0.66.2 About previews show the corrected labels
+0.66.5 appearance evidence. The retained v0.66.2 About previews show the corrected labels
 in both modes ([provenance](src/screenshots/previews/about-buttons-provenance.json)).
 
 [Light preview](src/screenshots/previews/about-buttons-light-eaebe82caa18.png) · [Dark preview](src/screenshots/previews/about-buttons-dark-57536aa93c40.png)

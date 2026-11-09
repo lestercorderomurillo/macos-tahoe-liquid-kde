@@ -1,22 +1,27 @@
 {
-  "version": "0.66.4",
-  "source_sha256": "4f550c546807467d86a8eec284dbee348b7cea2149e11f1edced1a454062f285",
+  "version": "0.66.5",
+  "source_sha256": "8d55cf06c33ae8094d08161fca277d09a3b6c0aec3c74fc5036a34deb4668220",
   "environment": "Linux-7.2.0-1-cachyos-x86_64-with-glibc2.44",
   "checks": [
     {
-      "command": "PYTHONDONTWRITEBYTECODE=1 python3 -m pytest tests/test_component_cache.py tests/test_helpers_step.py tests/test_icons_step.py tests/test_kvantum_step.py tests/test_acrylic_glass_conflicts.py tests/test_rounded_corners_step.py tests/test_rounded_corners_compat.py tests/test_step_guards.py -q --tb=short -p no:cacheprovider",
+      "command": "PYTHONDONTWRITEBYTECODE=1 MTTKDE_REQUIRE_NATIVE_GLOBALMENU=1 python3 -m pytest tests/test_globalmenu_model.py -q --tb=short -p no:cacheprovider",
       "result": "passed",
-      "detail": "96 passed, 2 skipped. Real icon recipe identities preserve reuse after native-only changes and invalidate for changed artwork, generator, shared installation helpers, choices and missing installed files. Real CMake builds cover reuse, changed sources with old timestamps, and automatic/explicit compiler launchers."
+      "detail": "1 passed: native plugin build, Xvfb model, popup and real QML composition suites. Mouse transitions across Apple/app-name/File/Edit in both directions for exported and generic menus preserve popup identity, highlight and style; Escape, reopening, borrowed-action ownership, dynamic D-Bus refresh and applet teardown covered."
     },
     {
-      "command": "PYTHONDONTWRITEBYTECODE=1 python3 -m pytest tests/test_plasmoids_step.py tests/test_globalmenu_step.py -q --tb=short -p no:cacheprovider",
+      "command": "globalmenu-popup-test refreshesDynamicDBusActionsOnEveryOpen (private Xvfb and isolated D-Bus, rebuilt final native test)",
       "result": "passed",
-      "detail": "11 passed; remaining native caller installation regressions."
+      "detail": "3 QtTest cases passed after adding a mapped parent window and explicit search setting to the existing asynchronous refresh test."
     },
     {
-      "command": "python3 src/scripts/component_manifest.py --write",
+      "command": "PYTHONDONTWRITEBYTECODE=1 QT_QPA_PLATFORM=offscreen python3 -m pytest tests/test_globalmenu_step.py tests/test_system_menu_style.py -q --tb=short -p no:cacheprovider",
       "result": "passed",
-      "detail": "Refreshed component ledger for moved native build recipe and affected common-helper dependents; checked by test_committed_component_hashes_match_sources."
+      "detail": "7 passed: install/uninstall integration and system-menu style isolation/metrics. Unchanged tested inputs retained."
+    },
+    {
+      "command": "GOLDEN_GATE_TAHOE_SOURCE=<checkout> MAC_TAHOE_NO_UPDATE_CHECK=true python3 bootstrap.py --prepare; compare staged appmenuapplet.cpp, appmenuapplet.h and qml/main.qml",
+      "result": "passed",
+      "detail": "Prepared Golden Gate menu implementation byte-identical to tested Tahoe. No edition-dependent popup code."
     }
   ],
   "gallery_commit": "170f24dd28ae58a44774780935f3fdeaf8999afe",
@@ -38,9 +43,8 @@
     }
   ],
   "coverage_limits": [
-    "Two optional Rounded Corners upstream-archive/SDK cases skipped; no plugin rendering or ABI behavior changed.",
-    "Full remote CI remains asynchronous. Native compiler-launcher behavior tested with wrappers, not a measured ccache hit rate.",
-    "The receipt identity changes once during this migration; subsequent compiler-only changes preserve icon reuse. No success receipts are fabricated for existing installations.",
-    "No appearance or edition-specific logic changed; original galleries and About previews retain their reviewed provenance."
+    "Host SDK: Qt 6.11.2, Plasma 6.7.4 on CachyOS. Full distro/SDK CI remains asynchronous; no public ABI or compositor backend changes.",
+    "Exploratory private KWin Wayland run passed generic/exported mouse transitions, reopening and QML panel status/teardown. The complete popup run was NOT successful: asynchronous D-Bus refresh lost its non-grabbing popup (0 actions) because synthetic input supplied no compositor input serial. That asynchronous case passes on private X11. Real Wayland pointer-grab behavior remains unverified.",
+    "No rendering/material change or documentation photography; existing gallery and About previews retain their original provenance. No host desktop interaction."
   ]
 }
