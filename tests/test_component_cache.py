@@ -130,12 +130,29 @@ def test_committed_component_hashes_match_sources():
     assert json.loads((REPO_ROOT / 'component-hashes.json').read_text()) == snapshot()
 
 
-def test_native_build_reuses_objects_and_rebuilds_changed_source(tmp_path):
+@pytest.mark.parametrize("launcher", ["absent", "auto", "explicit"])
+def test_native_build_reuses_objects_and_rebuilds_changed_source(tmp_path, monkeypatch, launcher):
     import shutil
     import subprocess
     from steps._helpers import cmake_build
     if not all(shutil.which(tool) for tool in ('cmake', 'make', 'c++')):
         pytest.skip('Native build tools are unavailable')
+    import shlex
+    import steps._helpers as helpers
+    find_tool = shutil.which
+    wrappers = {}
+    for name in ('auto', 'explicit'):
+        wrapper = tmp_path / name
+        log = tmp_path / (name + '.log')
+        wrapper.write_text('#!/bin/sh\nprintf "called\\n" >> ' + shlex.quote(str(log)) + '\nexec "$@"\n')
+        wrapper.chmod(0o755)
+        wrappers[name] = wrapper
+    monkeypatch.setattr(helpers.shutil, 'which', lambda tool: (
+        str(wrappers['auto']) if launcher != 'absent' else None
+    ) if tool == 'ccache' else find_tool(tool))
+    monkeypatch.delenv('CMAKE_CXX_COMPILER_LAUNCHER', raising=False)
+    if launcher == 'explicit':
+        monkeypatch.setenv('CMAKE_CXX_COMPILER_LAUNCHER', str(wrappers['explicit']))
     source = tmp_path / 'source'; source.mkdir()
     (source / 'CMakeLists.txt').write_text('cmake_minimum_required(VERSION 3.16)\nproject(probe LANGUAGES CXX)\nadd_executable(probe main.cpp)\n')
     code = source / 'main.cpp'
@@ -151,6 +168,10 @@ def test_native_build_reuses_objects_and_rebuilds_changed_source(tmp_path):
     os.utime(code, (1, 1))  # Archives can restore older mtimes despite changed bytes.
     assert cmake_build(source, build, 'probe')
     assert subprocess.run([str(build / 'probe')]).returncode == 3
+    if launcher != 'absent':
+        assert (tmp_path / (launcher + '.log')).read_text().count('called') >= 2
+    if launcher == 'explicit':
+        assert not (tmp_path / 'auto.log').exists()
 
 
 def test_source_ledger_uses_git_modes_but_runtime_checks_real_permissions(tmp_path):

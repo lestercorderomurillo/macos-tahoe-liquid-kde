@@ -1,5 +1,30 @@
 # AGENTS.md
 
+## Efficient scope and repository graph
+
+Select tests by the behavior they prove. When one executable scenario covers
+A, B, C and D, keep that scenario and remove duplicate source-text assertions.
+Keep independent failure cases, security checks and distinct SDK coverage;
+"probably covered" is not evidence of equivalent coverage. Do not add tests
+that merely assert workflow wording, test names, file lists or this policy.
+Test executable CI helpers through their behavior when they can lose coverage.
+
+Use the offline graph before broad repository reads:
+`python3 tools/repo_graph.py --repo <checkout> <changed-path> ...` from Golden
+Gate. Omit paths for the working diff; use `--limit 10` for compact output,
+`--limit 0` for every impact or `--all` for the adjacency graph. The tool works
+on either checkout without network, packages or an AI service. Follow its
+caller links and read only affected functions first. Dynamic imports, generated
+paths and native/SDK dependencies need manual scope review; this navigation aid
+must never silently exclude tests from CI. No suggested tests is a coverage
+question, not a pass. Agent tooling in `tools/` is permitted in Golden Gate;
+shared desktop/installer implementation still belongs exclusively in Tahoe.
+
+CI cancels superseded runs on the same ref. Preserve all distro legs and the
+disjoint primary shards. Reuse weekly distro SDK layers and compiler results;
+retain compiler-content checking and never enable unsafe cache sloppiness.
+Focused local evidence precedes delivery; the full remote matrix stays async.
+
 ## Respect for the user's time
 
 Apply these rules in both Tahoe and Golden Gate. They supersede older delivery

@@ -81,6 +81,7 @@ ColumnLayout {
 				name: categoryName,
 				modelIndex: i,
 				icon: categoryIcon,
+				appModel: sub,
 				isAllApps: isAllApps,
 				isFavorites: false,
 				isSuggestions: isSuggestions
@@ -94,7 +95,7 @@ ColumnLayout {
 	// Favorites section appearing). null = pick the first category.
 	property var selectedModelIndex: null
 
-	onAppsCategoriesListChanged: syncSelection()
+	onAppsCategoriesListChanged: Qt.callLater(syncSelection)
 	Connections {
 		target: main
 		function onDetachedSearchChanged() { Qt.callLater(allApps.syncSelection); }
@@ -128,13 +129,12 @@ ColumnLayout {
 
 	function modelForCategory(category) {
 		return category.isFavorites ? globalFavorites
-			: rootModel.modelForRow(category.modelIndex);
+			: category.appModel;
 	}
 
 	function updateShowedModel(index){
 		selectedModelIndex = index;
-		currentModel = (index === -1) ? globalFavorites
-			: rootModel.modelForRow(index);
+		syncSelection();
 	}
 
 	function reset(){
@@ -178,9 +178,6 @@ ColumnLayout {
 		active: true
 	}
 
-	onPreferredAppsViewComponentChanged: {
-		appViewLoader.sourceComponent = preferredAppsViewComponent;
-	}
 
 	Component {
 		id: applicationsListViewComponent

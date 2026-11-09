@@ -280,11 +280,26 @@ def cmake_build(
                 shutil.rmtree(build_dir)
     build_dir.mkdir(parents=True, exist_ok=True)
     stamp.unlink(missing_ok=True)
+    # Reuse compiler results even when an archive forces a fresh build graph.
+    # Explicit environment or cached launchers (including an empty value) win.
+    launchers = []
+    try:
+        cache_lines = cache.read_text().splitlines()
+    except OSError:
+        cache_lines = []
+    compiler_cache = shutil.which("ccache")
+    if compiler_cache:
+        for language in ("C", "CXX"):
+            variable = f"CMAKE_{language}_COMPILER_LAUNCHER"
+            if variable not in os.environ and not any(
+                line.startswith(variable + ":") for line in cache_lines
+            ):
+                launchers.append(f"-D{variable}={compiler_cache}")
     cfg = subprocess.run(
         ["cmake", "-S", str(src_dir_), "-B", str(build_dir),
          "-DCMAKE_BUILD_TYPE=Release",
          # compile_commands.json lets clangd resolve Qt AUTOMOC headers.
-         "-DCMAKE_EXPORT_COMPILE_COMMANDS=ON"],
+         "-DCMAKE_EXPORT_COMPILE_COMMANDS=ON", *launchers],
         check=False, capture_output=True, text=True,
         preexec_fn=_drop_privs_in_child,
     )

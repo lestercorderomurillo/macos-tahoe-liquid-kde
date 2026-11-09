@@ -9,6 +9,10 @@ on:
     paths-ignore: ['**/*.md', 'src/screenshots/**']
   workflow_dispatch:
 
+concurrency:
+  group: tests-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
 permissions:
   contents: read
 
@@ -41,8 +45,7 @@ jobs:
       CCACHE_DIR: ${{ github.workspace }}/build/ccache
       CCACHE_BASEDIR: ${{ github.workspace }}
       CCACHE_COMPILERCHECK: content
-      CCACHE_NODIRECT: 'true'
-      CCACHE_MAXSIZE: 256M
+      CCACHE_MAXSIZE: 1G
     steps:
       - uses: actions/checkout@v5
       - name: Install deps
@@ -134,8 +137,17 @@ jobs:
       - name: Select weekly compiler cache
         id: sdk
         run: echo "epoch=$(date -u +%G-%V)" >> "$GITHUB_OUTPUT"
+      - uses: docker/setup-buildx-action@v3
       - name: Build ${{ matrix.distro }} SDK image
-        run: docker build --pull -f tests/containers/Dockerfile.${{ matrix.distro }} -t mttkde-test-${{ matrix.distro }}:ci .
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: tests/containers/Dockerfile.${{ matrix.distro }}
+          tags: mttkde-test-${{ matrix.distro }}:ci
+          load: true
+          pull: true
+          cache-from: type=gha,scope=sdk-${{ matrix.distro }}-${{ steps.sdk.outputs.epoch }}
+          cache-to: type=gha,mode=max,scope=sdk-${{ matrix.distro }}-${{ steps.sdk.outputs.epoch }}
       - uses: actions/cache@v4
         with:
           path: ${{ runner.temp }}/ccache
@@ -149,8 +161,8 @@ jobs:
             -e CMAKE_C_COMPILER_LAUNCHER=ccache \
             -e CMAKE_CXX_COMPILER_LAUNCHER=ccache \
             -e CCACHE_DIR=/ccache -e CCACHE_BASEDIR=/repo \
-            -e CCACHE_COMPILERCHECK=content -e CCACHE_NODIRECT=true \
-            -e CCACHE_MAXSIZE=256M \
+            -e CCACHE_COMPILERCHECK=content \
+            -e CCACHE_MAXSIZE=1G \
             mttkde-test-${{ matrix.distro }}:ci sh -c '
               ccache --zero-stats || exit $?
               python3 tests/containers/run_in_container.py

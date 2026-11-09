@@ -1,6 +1,6 @@
 # Release validation performance
 
-The v0.63.0 release removes repeated work while retaining the supported VM
+The v0.66.3 release removes repeated work while retaining the supported VM
 qualification workflows and all eleven container targets, including the staging
 KWin SDK. A version/CI-only release reuses reviewed captures with their original
 provenance; changes to visible output still require the affected views.
@@ -25,7 +25,7 @@ failed candidates and screenshot creation; they are not whole-release timings.
 | --- | --- | --- |
 | General tests | Full suite in primary and every distro, on both branches | Full suite once per commit, two disjoint file shards |
 | Distro compatibility | Dependency probes, native builds and repeated full suite | All package mappings, paths, native builds, platform/native rendering tests |
-| Main promotion | Repeat identical dev execution | Require latest successful dev push for exactly the same commit |
+| Main promotion | Repeat identical dev execution | Promote the same commit without another job or polling gate |
 | Pull requests | Independent checks | Independent checks retained |
 | VM qualification | Disposable distro desktops | Retained; run affected scenarios when desktop behavior changes |
 | Screenshot evidence | Reviewed capture provenance | Retained; reuse unchanged views without rewriting capture versions |
@@ -96,3 +96,28 @@ Publication invokes the mandatory provenance check inside `publish` once,
 instead of calling `verify` immediately before the same check runs again.
 The exact-commit gate polls every ten seconds while retaining its sixty-minute
 limit and refusal of failed, skipped or mismatched runs.
+
+## Current focused optimization
+
+SDK Docker layers are reused within each distro's weekly cache scope, with
+base-image pulls retained. Compiler caches use standard direct lookup, compiler
+content checks and 1 GiB per shard/distro; no unsafe sloppiness is enabled. The
+installer uses ccache when installed, preserving explicit environment and
+cached launcher choices. Source changes with restored old timestamps still
+invalidate the build graph, while unchanged builds retain their object files.
+
+Launcher categories retain their already-resolved app models. Multiple model
+notifications in one event-loop turn share one selection update. The Loader
+keeps its declarative binding without a duplicate assignment handler. No visual
+layout or search debounce changes are introduced.
+
+Removed tests only inspected workflow text, enumerated required test filenames,
+or repeated a Plasma property check now exercised by the native launcher probe.
+The disjoint-shard behavioral test remains because it detects missing/doubled
+coverage. Compiler tests execute a binary after edits with old timestamps and
+exercise absent, automatic and explicitly selected compiler launchers.
+
+The offline agent graph lives in Golden Gate's `tools/repo_graph.py` and accepts
+`--repo` for Tahoe. It emits shortest caller chains first and bounded output.
+It is an inferred navigation index, not a promise of exhaustive test selection.
+No remote runtime speedup is claimed until a comparable warm-cache run exists.

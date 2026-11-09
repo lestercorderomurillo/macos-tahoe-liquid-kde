@@ -1,27 +1,27 @@
 {
-  "version": "0.66.2",
-  "source_sha256": "23945600b14ac37a257b098d88fc92ba03727a3098432afc287169461d7aa6ab",
+  "version": "0.66.3",
+  "source_sha256": "83d4cbb906e599e2165a3a1abaf0ce62fd31b49bd10636c995be387eee5b8b83",
   "environment": "Linux-7.2.0-1-cachyos-x86_64-with-glibc2.44",
   "checks": [
     {
-      "command": "QT_QPA_PLATFORM=offscreen python -m pytest -q -p no:cacheprovider tests/test_screenshots.py tests/test_traffic_lights.py tests/test_ci_gate.py tests/test_release_evidence.py tests/test_component_cache.py",
+      "command": "python3 -m pytest tests/test_component_cache.py tests/test_helpers_step.py tests/test_ci_selection.py -q --tb=short",
       "result": "passed",
-      "detail": "56 passed; followed by final publication/evidence checks after adding historical-gallery regression tests"
+      "detail": "19 passed, including real compiler invocation and old-timestamp rebuilds."
     },
     {
-      "command": "python -m pytest -q -p no:cacheprovider tests/test_release_evidence.py tests/test_ci_gate.py",
+      "command": "python3 -m pytest tests/test_launcher_presets.py -k native_launcher_popup_presets -q --tb=short",
       "result": "passed",
-      "detail": "29 passed on final workflow/evidence implementation"
+      "detail": "8 passed in 81.56s; isolated Xvfb/private D-Bus, both editions, both modes and both presets."
     },
     {
-      "command": "QT_QPA_PLATFORM=offscreen python -m pytest -q -p no:cacheprovider tests/test_screenshots.py tests/test_traffic_lights.py (prepared Golden Gate source 04395f276740d5c0647f)",
+      "command": "python3 -m pytest tests/test_launcher_presets.py -k installed_launcher -q",
       "result": "passed",
-      "detail": "17 passed"
+      "detail": "4 installation-default cases passed in the initial focused run; launcher implementation unchanged since those checks."
     },
     {
-      "command": "python /tmp/about-buttons-0662.py",
+      "command": "python3 src/scripts/component_manifest.py",
       "result": "passed",
-      "detail": "Four focused disposable pinned-VM frames reviewed; drag, identity and focus verified"
+      "detail": "Component ledger refreshed for shared helper and launcher changes."
     }
   ],
   "gallery_commit": "170f24dd28ae58a44774780935f3fdeaf8999afe",
@@ -43,8 +43,9 @@
     }
   ],
   "coverage_limits": [
-    "Full remote test.yml matrix runs asynchronously and is not claimed passed by this local evidence.",
-    "Historical desktop/installer gallery retains original provenance; new previews validate About labels, not an entire desktop reinstall.",
-    "Existing unchanged Flat/Glassy installer and Firefox checks/VM evidence retained in tests/traffic_lights_validation.json."
+    "Full remote CI and SDK-cache effectiveness are asynchronous; no remote pass or measured speedup claimed.",
+    "The launcher probe exercises both editions via edition staging; no host desktop changes or new documentation captures.",
+    "Compiler-cache selection tested with real compiler launcher wrappers; host has no ccache, so actual hit-rate evidence comes from remote CI.",
+    "Historical galleries and v0.66.2 About previews retain their original provenance."
   ]
 }

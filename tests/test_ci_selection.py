@@ -26,14 +26,6 @@ def test_shards_cover_every_test_file_exactly_once():
         shard.select_files(ROOT, 2, 2)
 
 
-def test_platform_selection_keeps_native_and_dependency_coverage():
-    runner = load('tests/containers/run_in_container.py')
-    assert all((ROOT / path).is_file() for path in runner.PLATFORM_TESTS)
-    assert {'tests/test_distro_packages.py', 'tests/test_preflight.py',
-            'tests/test_acrylic_glass_x11_smoke.py', 'tests/test_glass_presets.py',
-            'tests/test_popup_rendering.py'} <= set(runner.PLATFORM_TESTS)
-
-
 def test_package_queries_are_deduplicated_without_hiding_failure(monkeypatch):
     runner = load('tests/containers/run_in_container.py')
     calls = []

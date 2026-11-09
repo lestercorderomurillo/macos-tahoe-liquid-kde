@@ -10,7 +10,6 @@
   "tests/test_acrylic_glass_x11_smoke.py": 0.001,
   "tests/test_apply_portability.py": 0.05,
   "tests/test_auto_update.py": 1.659,
-  "tests/test_ci_gate.py": 0.643,
   "tests/test_ci_selection.py": 0.019,
   "tests/test_cli.py": 0.547,
   "tests/test_clock_sync.py": 0.013,

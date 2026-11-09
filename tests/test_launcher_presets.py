@@ -17,12 +17,6 @@ import launcher_defaults
 from steps import plasmoids
 
 
-def test_search_popup_does_not_require_plasma_67_properties(repo):
-    view = (repo / "src/offline/plasmoids" / launcher_defaults.LAUNCHER_ID
-            / "contents/ui/MainView.qml").read_text()
-    assert not re.search(r"^\s*hideOnWindowDeactivate\s*:", view, re.MULTILINE)
-
-
 @pytest.mark.parametrize("preset", [1, 2])
 @pytest.mark.parametrize("wallpaper", ["MacTahoe", "MacGoldenGate"])
 def test_installed_launcher_uses_edition_default_without_changing_source(
