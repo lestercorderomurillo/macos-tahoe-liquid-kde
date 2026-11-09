@@ -542,6 +542,7 @@ PLATFORM_TESTS = (
     "tests/test_glass_presets.py",
     "tests/test_popup_rendering.py",
     "tests/test_taskmanager_qml.py",
+    "tests/test_globalmenu_model.py",
     "tests/test_reserved_menu_icons.py",
     "tests/test_status_icons.py",
     "tests/test_acrylic_glass_x11_smoke.py",
