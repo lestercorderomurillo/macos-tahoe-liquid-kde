@@ -6,6 +6,7 @@
 
 #include "appmenuapplet.h"
 #include <KConfigLoader>
+#include <KConfigPropertyMap>
 #include "appmenumodel.h"
 #include "systemmenustyle.h"
 
@@ -150,7 +151,34 @@ void AppMenuApplet::resetApplicationMenu()
 
 void AppMenuApplet::init()
 {
+    // Before 0.66 this was an Applet: Plasma stored its settings under
+    // Configuration. Embedded containments read them directly from their root.
+    // This also covers a layout created while the previous plugin was loaded.
+    auto legacy = config().group(QStringLiteral("Configuration")).group(QStringLiteral("Appearance"));
+    auto appearance = config().group(QStringLiteral("Appearance"));
+    for (const auto &key : legacy.keyList()) {
+        if (!appearance.hasKey(key)) {
+            appearance.writeEntry(key, legacy.readEntry(key));
+        }
+    }
+    if (legacy.exists()) {
+        legacy.deleteGroup();
+        config().sync();
+        configChanged();
+    }
     Plasma::Containment::init();
+    // Tray applets are nested one level deeper. Plasma resolves their form
+    // factor through this containment, so mirror the enclosing panel here.
+    if (auto *panel = containment(); panel && panel != this) {
+        setFormFactor(panel->formFactor());
+        setLocation(panel->location());
+        connect(panel, &Plasma::Applet::formFactorChanged, this, &Plasma::Containment::setFormFactor);
+        connect(panel, &Plasma::Applet::locationChanged, this, &Plasma::Containment::setLocation);
+    }
+    // Child popup activation must not activate the enclosing bar as well.
+    connect(this, &Plasma::Containment::appletAdded, this, [this](Plasma::Applet *child) {
+        disconnect(child, &Plasma::Applet::activated, this, &Plasma::Applet::activated);
+    });
 }
 
 QQuickItem* AppMenuApplet::accessory(const QString& pluginId)
@@ -196,6 +224,13 @@ QQuickItem* AppMenuApplet::accessory(const QString& pluginId)
         if (auto *scheme = child->configScheme()) {
             scheme->load();
         }
+        // The QML property map can already exist after createApplet(). Loading
+        // the skeleton alone does not notify it; publish the loaded values too.
+        auto *configuration = child->configuration();
+        for (auto *setting : child->configScheme()->items()) {
+            configuration->insert(setting->key(), setting->property());
+        }
+        configuration->writeConfig();
         child->configChanged();
         Q_EMIT configNeedsSaving();
     }

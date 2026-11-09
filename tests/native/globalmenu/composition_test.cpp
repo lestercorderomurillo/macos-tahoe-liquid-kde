@@ -12,6 +12,7 @@
 #include <abstracttasksmodel.h>
 #include <KConfigGroup>
 #include <KConfigLoader>
+#include <KConfigPropertyMap>
 #include <KPackage/PackageLoader>
 #include <KPackage/Package>
 
@@ -27,6 +28,28 @@ class CompositionTest : public QObject
 {
     Q_OBJECT
 private Q_SLOTS:
+    void restoresLegacyPreferences()
+    {
+        TestCorona corona;
+        auto *panel = corona.createContainment(QString());
+        QVERIFY(panel);
+        auto panelConfig = panel->config();
+        auto saved = panelConfig.group("Applets").group("700");
+        saved.writeEntry("plugin", "org.kde.mac.tahoe.liquid.globalmenu");
+        auto legacy = saved.group("Configuration").group("Appearance");
+        legacy.writeEntry("integratedBar", true);
+        legacy.writeEntry("menuIcon", "legacy-custom-icon");
+        legacy.writeEntry("enableGenericMenu", false);
+        saved.group("Appearance").writeEntry("menuIcon", "new-custom-icon");
+        panel->restore(panelConfig);
+        QCOMPARE(panel->applets().size(), 1);
+        auto *bar = panel->applets().first();
+        QVERIFY(bar->configuration()->value("integratedBar").toBool());
+        QVERIFY(!bar->configuration()->value("enableGenericMenu").toBool());
+        QCOMPARE(bar->configuration()->value("menuIcon").toString(), QString("new-custom-icon"));
+        QVERIFY(!legacy.exists());
+    }
+
     void containsOneTrayAndClock()
     {
         TestCorona corona;
@@ -37,8 +60,8 @@ private Q_SLOTS:
         auto* bar = qobject_cast<Plasma::Containment*>(panel->createApplet(QStringLiteral("org.kde.mac.tahoe.liquid.globalmenu")));
         QVERIFY(bar);
         QVERIFY2(bar->pluginMetaData().isValid(), qPrintable(bar->launchErrorMessage()));
-        bar->setFormFactor(Plasma::Types::Horizontal);
-        bar->setLocation(Plasma::Types::TopEdge);
+        panel->setFormFactor(Plasma::Types::Horizontal);
+        panel->setLocation(Plasma::Types::TopEdge);
         bar->config().group("Appearance").writeEntry("integratedBar", true);
         bar->configChanged();
         QQuickWindow window;
@@ -60,11 +83,18 @@ private Q_SLOTS:
                 auto *setting = child->configScheme()->findItemByName("customDateFormat");
                 QVERIFY(setting);
                 QCOMPARE(setting->property().toString(), QString("ddd d ' | '"));
+                QCOMPARE(child->configuration()->value("customDateFormat").toString(), QString("ddd d ' | '"));
                 auto *automaticFont = child->configScheme()->findItemByName("autoFontAndSize");
                 QVERIFY(automaticFont);
                 QVERIFY(!automaticFont->property().toBool());
                 QCOMPARE(child->config().group("Appearance").readEntry("fontSize", 0), 10);
             } else {
+                auto *tray = qobject_cast<Plasma::Containment *>(child);
+                QVERIFY(tray);
+                QTRY_VERIFY(!tray->applets().isEmpty());
+                for (auto *indicator : tray->applets()) {
+                    QCOMPARE(indicator->formFactor(), Plasma::Types::Horizontal);
+                }
                 auto *setting = child->configScheme()->findItemByName("hiddenItems");
                 QVERIFY(setting);
                 QVERIFY(setting->property().toStringList().contains("org.kde.kdeconnect"));

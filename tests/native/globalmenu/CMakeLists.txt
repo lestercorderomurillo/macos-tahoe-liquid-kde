@@ -20,7 +20,7 @@ add_subdirectory(${MENU_SOURCE}/libdbusmenuqt dbusmenu)
 add_executable(globalmenu-model-test model_test.cpp ${MENU_SOURCE}/appmenumodel.cpp)
 add_executable(globalmenu-popup-test popup_test.cpp ${MENU_SOURCE}/appmenuapplet.cpp ${MENU_SOURCE}/appmenumodel.cpp)
 target_include_directories(globalmenu-popup-test PRIVATE ${MENU_SOURCE})
-target_link_libraries(globalmenu-popup-test PRIVATE Qt6::Widgets Qt6::Quick Qt6::DBus Qt6::Test KF6::WindowSystem KF6::I18n KF6::ColorScheme KF6::ConfigGui Plasma::Plasma Plasma::PlasmaQuick PW::LibTaskManager dbusmenuqt)
+target_link_libraries(globalmenu-popup-test PRIVATE Qt6::Widgets Qt6::Quick Qt6::DBus Qt6::Test KF6::WindowSystem KF6::I18n KF6::ColorScheme KF6::ConfigGui KF6::ConfigQml Plasma::Plasma Plasma::PlasmaQuick PW::LibTaskManager dbusmenuqt)
 # Plasma 6.8 removed the X11 task backend. Keep its integration check on
 # older SDKs; the task-role and D-Bus regression runs on every version.
 if(LibTaskManager_VERSION VERSION_LESS "6.7.90")
@@ -29,7 +29,7 @@ endif()
 target_include_directories(globalmenu-model-test PRIVATE ${MENU_SOURCE})
 target_link_libraries(globalmenu-model-test PRIVATE Qt6::Widgets Qt6::Quick Qt6::DBus Qt6::Test KF6::WindowSystem KF6::I18n Plasma::Plasma Plasma::PlasmaQuick PW::LibTaskManager dbusmenuqt PkgConfig::XCB)
 add_executable(globalmenu-composition-test composition_test.cpp)
-target_link_libraries(globalmenu-composition-test PRIVATE Qt6::Widgets Qt6::Quick Qt6::Test Plasma::Plasma Plasma::PlasmaQuick KF6::Package KF6::ConfigGui PW::LibTaskManager)
+target_link_libraries(globalmenu-composition-test PRIVATE Qt6::Widgets Qt6::Quick Qt6::Test Plasma::Plasma Plasma::PlasmaQuick KF6::Package KF6::ConfigGui KF6::ConfigQml PW::LibTaskManager)
 
 include(${MENU_SOURCE}/menushortcuts.cmake)
 tahoe_menu_shortcuts(globalmenu-model-test)

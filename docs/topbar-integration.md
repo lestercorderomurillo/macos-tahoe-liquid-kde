@@ -50,7 +50,7 @@ CI/release gates in both repositories remain required.
 ## Focused development evidence
 
 Candidate based on Tahoe `b34984642b44702588fea0dd94837870bcff065e`.
-Current Global Menu source-tree digest (sorted relative paths and file bytes,
+Global Menu source-tree digest before catalogue additions (sorted relative paths and file bytes,
 each NUL-delimited): `fa69bd2dada886ac6b6e52ab7a52d1d922726667a960e08a5777b79cf612d1d0`.
 
 - Qt 6.11.2 local SDK: native model and popup binaries built successfully.
@@ -83,7 +83,7 @@ each NUL-delimited): `fa69bd2dada886ac6b6e52ab7a52d1d922726667a960e08a5777b79cf6
   with an active application and confirms initial tray/clock settings are loaded.
 - The guest overlay is preserved under Tahoe's ignored
   `build/topbar-application-vm/disk.qcow2`; its post-move `qemu-img check` passed.
-  The resumed guest controller remains live while edition validation continues.
+  The development guest was stopped after edition validation.
   No host desktop input or theme change was used.
 
 Golden Gate staging: wrapper checks passed 41 cases. The prepared source passed
@@ -91,9 +91,27 @@ Golden Gate staging: wrapper checks passed 41 cases. The prepared source passed
 VM installation succeeded; Edit → Select All selected the GTK4 document, and
 light/dark menu rendering was inspected. The installed archive was
 `a0b671640fd50bc263bb0e3d5912dbdebc026d11e193009881fc75262e3f6118`;
-this precedes the clock-font-default correction, covered by the later composition run.
+installed plugin SHA-256
+`893f89d2f58a784b45cdc4c30f3ab8509f317242f7e9c053f9d9ec23b0bf1dee`.
+This precedes the clock-font-default correction, covered by the later composition run.
 
 Coverage limits: rapid focus switching was exercised in the private X11 test,
 not end-to-end on Wayland; alternate keyboard layouts were not qualified.
 Supported SDK/backend CI and exact-commit branch/release gates remain required.
 This evidence is not a release approval or a replacement for those checks.
+
+Initialization follow-up (development candidate): the native composition test
+reproduced a stale QML property map (`customDateFormat` remained `ddd d` while
+the stored value was correct). Publishing the loaded values to that map fixes
+first creation. Legacy `Configuration/Appearance` values migrate to the
+containment root, preserving any newer root values. The test covers both.
+The enclosing panel's form factor and location are propagated to the embedded
+containment so tray indicators do not initialize as desktop widgets.
+`python -m pytest -q tests/test_globalmenu_model.py` passed in 29.15 seconds
+before the form-factor follow-up; the affected composition test was then rebuilt
+and passed four cases. The resumed neon VM rebuilt the component and created
+a new bar: tray and clock were visible immediately, with no unsolicited popup.
+The clock matched a standalone native clock with the same settings. Reviewed
+frame SHA-256: `5a2527c093effc15196ed0d2cdfc3d6c08c22c94e93fc73d42ce1915069681d0`.
+The first four v0.66 menu captures were rejected (102 previous approvals retained)
+because the integrated accessories were absent; none were staged or published.
