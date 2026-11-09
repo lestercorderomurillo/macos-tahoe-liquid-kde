@@ -1,6 +1,7 @@
 #include <systemmenustyle.h>
 #include <QMenu>
 #include <QImage>
+#include <QKeyEvent>
 #include <cassert>
 int main(int argc, char** argv) {
  QApplication app(argc, argv);
@@ -36,6 +37,14 @@ int main(int argc, char** argv) {
   assert(image.pixelColor(0,0).alpha()==0);
   assert(image.pixelColor(qRound(7*scale),0).alpha()>240);
   assert(image.pixelColor(0,image.height()/2).alpha()>240);
+  menu.show();
+  menu.setActiveAction(first);
+  QKeyEvent down(QEvent::KeyPress, Qt::Key_Down, Qt::NoModifier);
+  QApplication::sendEvent(&menu, &down);
+  assert(menu.activeAction()==second);
+  QKeyEvent escape(QEvent::KeyPress, Qt::Key_Escape, Qt::NoModifier);
+  QApplication::sendEvent(&menu, &escape);
+  assert(!menu.isVisible());
   assert(app.style()==original);
  }
  QMenu unaffected; assert(unaffected.style()==original);

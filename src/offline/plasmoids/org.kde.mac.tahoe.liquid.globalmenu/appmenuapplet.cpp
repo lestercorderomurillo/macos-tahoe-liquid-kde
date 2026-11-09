@@ -550,7 +550,13 @@ void AppMenuApplet::triggerSystemMenu(QQuickItem* ctx)
 
     const auto cfg = config();
 
-    auto icon = [&cfg](const char* key, const QString& fallback) { return QIcon::fromTheme(cfg.readEntry(key, fallback)); };
+    auto icon = [&cfg](const char* key, const QString& fallback) {
+        QString name = cfg.readEntry(key, fallback);
+        if (name == QLatin1String("system-lock-screen")) {
+            name = QStringLiteral("system-lock-screen-symbolic");
+        }
+        return QIcon::fromTheme(name);
+    };
 
     menu->addAction(icon("iconAbout", QStringLiteral("computer")), i18n("About This Computer"), this, [this]() { Q_EMIT aboutRequested(); });
 

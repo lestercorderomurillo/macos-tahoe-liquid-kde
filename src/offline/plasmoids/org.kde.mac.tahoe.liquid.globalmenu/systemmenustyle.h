@@ -32,7 +32,7 @@ public:
                     const QWidget* widget = nullptr) const override
     {
         const qreal scale = scaleFor(widget ? widget->font() : QApplication::font("QMenu"), widget);
-        if (metric == PM_MenuPanelWidth) return qRound(6 * scale);
+        if (metric == PM_MenuPanelWidth) return qRound(10 * scale);
         if (metric == PM_MenuHMargin || metric == PM_MenuVMargin) return 0;
         if (metric == PM_SmallIconSize) return qRound(16 * scale);
         return QProxyStyle::pixelMetric(metric, option, widget);
