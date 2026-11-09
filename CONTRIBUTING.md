@@ -632,3 +632,9 @@ This follows Kvantum's [frame expansion contract](https://github.com/tsujan/Kvan
 mode, at scales 1, 1.5 and 2 with 9, 16 and 24 point fonts. It checks circular
 edge profiles and unchanged geometry. Publication updates only menu/context
 frames; separate top-bar previews verify the application-name hover.
+
+### Top-bar proportions in 0.65.1
+
+The Apple and Finder states in the [macOS Tahoe screenshot reference](https://512pixels.net/projects/aqua-screenshot-library/macos-26-tahoe/) guide the shared top bar: an inset capsule, symmetric text padding, a wider system-button capsule, regular menu labels and a bold application name. Keep the system font and full-height input area. Highlight height follows panel height with a bounded vertical inset; changing the visual inset must not move the popup anchor or reduce the clickable area.
+
+`tests/test_topbar_geometry.py` loads the real QML delegate with short and long names at three panel heights, checking text fit, symmetric padding and independent highlight/input geometry.

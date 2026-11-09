@@ -414,13 +414,19 @@ MENU_065_CAPTURE_DEPENDENCIES = {'src/offline/kvantum/mac-tahoe-liquid-kde/mac-t
                                           '56dac0fb1bf6e4d45a367bc89eef614028e77aeb')}
 
 
+TOPBAR_0651_BASE = 'b1997890c8b880154be512d34110f1d0efb60f76'
+TOPBAR_0651_CAPTURE_DEPENDENCIES = {'src/offline/plasmoids/org.kde.mac.tahoe.liquid.globalmenu/qml/MenuDelegate.qml': ('e1a940be09cfd47767800684031b4eeb8729cd84',
+                                                                                    '1730b2071cae6afdc39794d802825ad8c4fdd766'),
+ 'src/offline/plasmoids/org.kde.mac.tahoe.liquid.globalmenu/qml/main.qml': ('5cac7ed5a87fa83d7fbda3dbef123c1bfd866641',
+                                                                            'e5148dbaed0cf109a6a9df44a632148a392714f9')}
+
 def affected_frames(repo: Path, source: str, target: str) -> set[str]:
     """Conservative dependencies: unknown changes invalidate every frame."""
     all_frames = expected_frames()
     if visual_tree(repo, source) == visual_tree(repo, target):
         return set()
     # Compose reviewed transitions without rewriting historical frame origins.
-    for base in (MENU_065_BASE, DOCK_064_BASE, DOCK_APPEARANCE_BASE):
+    for base in (TOPBAR_0651_BASE, MENU_065_BASE, DOCK_064_BASE, DOCK_APPEARANCE_BASE):
         if source != base and target != base and all(
             subprocess.run(['git', '-C', str(repo), 'merge-base', '--is-ancestor', a, b],
                            stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL).returncode == 0
@@ -433,6 +439,15 @@ def affected_frames(repo: Path, source: str, target: str) -> set[str]:
     def cases(names, editions=EDITIONS):
         affected.update(f'{e}-{m}-{c}' for e in editions for m in MODES for c in names)
     for path in changed:
+        topbar_dependency = TOPBAR_0651_CAPTURE_DEPENDENCIES.get(path)
+        if topbar_dependency:
+            def topbar_object(ref):
+                entry = git(repo, 'ls-tree', ref, '--', path)
+                return entry.split()[2] if entry else None
+            if (topbar_object(source), topbar_object(target)) == topbar_dependency:
+                cases(['menu'])
+                ignored.add(path)
+                continue
         menu_dependency = MENU_065_CAPTURE_DEPENDENCIES.get(path)
         if menu_dependency:
             def menu_object(ref):

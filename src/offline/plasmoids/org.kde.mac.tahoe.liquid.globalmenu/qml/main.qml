@@ -123,10 +123,10 @@ PlasmoidItem {
 
             Layout.fillHeight: !root.vertical
 
-            topPadding: Kirigami.Units.smallSpacing + 1
-            bottomPadding: Kirigami.Units.smallSpacing - 1
-            leftPadding: Kirigami.Units.largeSpacing
-            rightPadding: Kirigami.Units.largeSpacing
+            topPadding: Kirigami.Units.smallSpacing
+            bottomPadding: Kirigami.Units.smallSpacing
+            leftPadding: 3.5 * Kirigami.Units.smallSpacing
+            rightPadding: 3.5 * Kirigami.Units.smallSpacing
 
             hoverEnabled: true
             onHoveredChanged: if (hovered && menuIsOpen) { Plasmoid.triggerSystemMenu(this); }
@@ -141,6 +141,8 @@ PlasmoidItem {
             }
 
             background: Rectangle {
+                y: Math.min(Kirigami.Units.smallSpacing, systemMenuButton.height / 4)
+                height: Math.max(0, systemMenuButton.height - 2 * y)
                 radius: Math.min(width, height) / 2
                 color: systemMenuButton.menuState === 0
                        ? "transparent"
@@ -160,7 +162,7 @@ PlasmoidItem {
             readonly property int buttonIndex: -2
             visible: appMenuModel.activeAppName !== ""
             text: appMenuModel.activeAppName
-            font.weight: Font.ExtraBold
+            font.weight: Font.Bold
             Layout.fillHeight: !root.vertical
 
             down: Plasmoid.currentIndex === -2
