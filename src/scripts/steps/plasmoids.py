@@ -4,8 +4,9 @@ from pathlib import Path
 
 from distro import qt6_plugins_dir, qt6_qml_dir
 from launcher_defaults import LAUNCHER_ID, apply_launcher_default, remember_installed_edition
+from steps._native_build import cmake_build
 from steps._helpers import (
-    DATA_HOME, HOME, build_dir, cmake_build, fail, info, install_tree, ok, offline,
+    DATA_HOME, HOME, build_dir, fail, info, install_tree, ok, offline,
     remove_tree, qdbus_call,
     sudo_install_file, sudo_install_tree, sudo_remove, temp_dir,
 )

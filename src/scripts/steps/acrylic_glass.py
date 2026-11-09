@@ -9,8 +9,9 @@ import uuid
 from pathlib import Path
 
 from distro import qt6_plugins_dir
+from steps._native_build import cmake_build
 from steps._helpers import (
-    DATA_HOME, build_dir, cmake_build, fail, info, kw_write, ok, offline, qdbus_call,
+    DATA_HOME, build_dir, fail, info, kw_write, ok, offline, qdbus_call,
     sudo_install_file, sudo_remove, warn, _as_root,
     kwin_plugin_mapping_matches as _plugin_mapping_matches,
     running_kwin_plugin_matches as _running_plugin_matches,

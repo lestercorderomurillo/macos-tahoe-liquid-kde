@@ -74,8 +74,18 @@ def test_icon_reinstall_skips_generation_but_changed_choices_and_damage_repair(m
     import component_manifest  # Import before replacing its dependency in this test.
     monkeypatch.setenv('XDG_STATE_HOME', str(tmp_path / 'state'))
     monkeypatch.setattr(icons, 'DEST_DIR', tmp_path / 'icons')
-    # Keep this test about transaction behavior, without hashing bundled artwork.
-    monkeypatch.setattr(component_cache, 'identity', lambda inputs, options: json.dumps(options, sort_keys=True))
+    # Use the real recipe graph and identities with a tiny offline payload.
+    import paths
+    source = tmp_path / 'source'
+    scripts = source / 'src/scripts'
+    shutil.copytree(paths.REPO_ROOT / 'src/scripts', scripts,
+                    ignore=shutil.ignore_patterns('__pycache__'))
+    offline = source / 'src/offline/icons'
+    offline.mkdir(parents=True)
+    artwork = offline / 'base.svg'
+    artwork.write_text('original artwork')
+    monkeypatch.setattr(paths, 'REPO_ROOT', source)
+    monkeypatch.setattr(icons, 'OFFLINE_DIR', offline)
     options = {'icons': 'regular', 'color': 'blue'}
     monkeypatch.setattr(installer_choices, 'selected', lambda: options)
     calls = []
@@ -95,6 +105,21 @@ def test_icon_reinstall_skips_generation_but_changed_choices_and_damage_repair(m
     (icons.DEST_DIR / icons._THEME_NAMES[0] / 'index.theme').unlink()
     icons.install()
     assert len(calls) == 3
+    native = scripts / 'steps/_native_build.py'
+    native.write_text(native.read_text() + '\nNATIVE_RECIPE_REVISION = 2\n')
+    icons.install()
+    assert len(calls) == 3  # Compiler-only changes do not regenerate icons.
+    shared = scripts / 'steps/_helpers.py'
+    shared.write_text(shared.read_text() + '\nCOPY_RECIPE_REVISION = 2\n')
+    icons.install()
+    assert len(calls) == 4  # Installation recipe changes still invalidate.
+    artwork.write_text('changed artwork')
+    icons.install()
+    assert len(calls) == 5
+    generator = scripts / 'icon_toolset.py'
+    generator.write_text(generator.read_text() + '\nRENDERER_REVISION = 2\n')
+    icons.install()
+    assert len(calls) == 6
 
 
 def test_icon_failure_never_marks_success(monkeypatch, tmp_path):
@@ -134,11 +159,11 @@ def test_committed_component_hashes_match_sources():
 def test_native_build_reuses_objects_and_rebuilds_changed_source(tmp_path, monkeypatch, launcher):
     import shutil
     import subprocess
-    from steps._helpers import cmake_build
+    from steps._native_build import cmake_build
     if not all(shutil.which(tool) for tool in ('cmake', 'make', 'c++')):
         pytest.skip('Native build tools are unavailable')
     import shlex
-    import steps._helpers as helpers
+    import steps._native_build as helpers
     find_tool = shutil.which
     wrappers = {}
     for name in ('auto', 'explicit'):

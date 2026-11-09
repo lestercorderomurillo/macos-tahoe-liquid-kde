@@ -8,8 +8,9 @@ from distro import global_menu_exporter_deps, gtk3_appmenu_module, qt6_plugins_d
 from log import note
 from paths import read_version
 import about_info
+from steps._native_build import cmake_build
 from steps._helpers import (
-    DATA_HOME, HOME, build_dir, cmake_build, fail, ok, offline,
+    DATA_HOME, HOME, build_dir, fail, ok, offline,
     sudo_install_file, sudo_install_tree, sudo_remove, temp_dir, warn, qdbus_call,
 )
 
