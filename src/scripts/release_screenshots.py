@@ -489,13 +489,17 @@ MENU_ONLY_066_CAPTURE_DEPENDENCIES = {'LICENSES/MIT-QuickBar.txt': (None, 'cba30
 INCREMENTAL_0661_BASE = '5258ba9216c2babc5073d0f3fbf311ccc5c7723c'
 INCREMENTAL_0661_NONVISUAL = {'component-hashes.json': (None, '44c4e637bba59ae8d7081d6c5f1b00e09e575faa'), 'src/scripts/component_cache.py': (None, 'ba26e99f0cc17b89235d2629d2842e53e4ff17e7'), 'src/scripts/component_manifest.py': (None, '0eade305e5d8f37e892db8ea3f68c3d6bdabd05e'), 'src/scripts/steps/icons.py': ('afe5cac8d5a511bb203b662745046e9fc191f251', 'ce89f7743e390cc497e0cd75bb276c33b221269e'), 'src/scripts/steps/_helpers.py': ('fd8b2ff134191178f289a4133d4a56ee59ecef24', '71374d5f11ffa116805b2cf9d8be8c53b9a3655c'), 'src/scripts/release_capture_guest.py': ('56dac0fb1bf6e4d45a367bc89eef614028e77aeb', 'c3084adb3bbb70c4f6fac34552a608eb1fa356fe')}
 
+# Receipt removal on uninstall changes no rendered payload or preview.
+UNINSTALL_RECEIPT_0661_BASE = '905387257415dbc2d9f9716d72109b924c4315a1'
+UNINSTALL_RECEIPT_0661_NONVISUAL = {'component-hashes.json': ('44c4e637bba59ae8d7081d6c5f1b00e09e575faa', 'e502763567576894a4824e9f0b21566c867b0f95'), 'src/scripts/steps/icons.py': ('ce89f7743e390cc497e0cd75bb276c33b221269e', '0bccb4a43cd91089cbff2a0e4218b709a5b45b99')}
+
 def affected_frames(repo: Path, source: str, target: str) -> set[str]:
     """Conservative dependencies: unknown changes invalidate every frame."""
     all_frames = expected_frames()
     if visual_tree(repo, source) == visual_tree(repo, target):
         return set()
     # Compose reviewed transitions without rewriting historical frame origins.
-    for base in (INCREMENTAL_0661_BASE, MENU_ONLY_066_BASE, SYSTEM_MENU_0652_BASE, TOPBAR_0651_BASE, MENU_065_BASE, DOCK_064_BASE, DOCK_APPEARANCE_BASE):
+    for base in (UNINSTALL_RECEIPT_0661_BASE, INCREMENTAL_0661_BASE, MENU_ONLY_066_BASE, SYSTEM_MENU_0652_BASE, TOPBAR_0651_BASE, MENU_065_BASE, DOCK_064_BASE, DOCK_APPEARANCE_BASE):
         if source != base and target != base and all(
             subprocess.run(['git', '-C', str(repo), 'merge-base', '--is-ancestor', a, b],
                            stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL).returncode == 0
@@ -508,6 +512,13 @@ def affected_frames(repo: Path, source: str, target: str) -> set[str]:
     def cases(names, editions=EDITIONS):
         affected.update(f'{e}-{m}-{c}' for e in editions for m in MODES for c in names)
     for path in changed:
+        if path in UNINSTALL_RECEIPT_0661_NONVISUAL:
+            def receipt_object(ref):
+                entry = git(repo, 'ls-tree', ref, '--', path)
+                return entry.split()[2] if entry else None
+            if (receipt_object(source), receipt_object(target)) == UNINSTALL_RECEIPT_0661_NONVISUAL[path]:
+                ignored.add(path)
+                continue
         if path in INCREMENTAL_0661_NONVISUAL:
             def component_object(ref):
                 entry = git(repo, 'ls-tree', ref, '--', path)

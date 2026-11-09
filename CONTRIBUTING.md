@@ -659,3 +659,41 @@ After changing a component, run
 `python src/scripts/component_manifest.py --write` and commit the resulting
 `component-hashes.json`. The ledger is independent of VERSION and Git commit;
 `python src/scripts/component_manifest.py` verifies it without writing.
+
+### 0.66.1 validation evidence
+
+Focused checks on Linux x86_64 with Python 3.14 covered component identity,
+missing/corrupt receipts, changed tint, independent payloads, repair of deleted
+files and a real CMake/Make rebuild with deliberately old source timestamps.
+Commands and results:
+
+- `python -m pytest -q -p no:cacheprovider tests/test_component_cache.py tests/test_release_screenshots.py`: 71 passed after portable source hashes and focused previews were added.
+- The installer wizard, icon and copy-helper regressions passed in the earlier
+  102-test development run; unaffected results were retained.
+- Uninstall receipt invalidation and icon-step regressions: 3 passed.
+- Golden Gate's `python -m pytest -q -p no:cacheprovider tests`: 97 passed.
+- Against the prepared Golden Gate source, component-cache, wizard and icon
+  regressions: 41 passed, including portable hashes across the edition staging.
+- Shared step guards, icon, Kvantum and Rounded Corners regressions: 68 passed,
+  one opt-in native Rounded Corners build skipped because its reviewed archive
+  and host KWin SDK were not supplied to that test.
+
+The four file-manager preview originals were captured from Tahoe commit
+`b762888c` in a disposable overlay of the pinned KDE neon VM (Plasma 6.8.1,
+Qt 6.11.1; image SHA-256
+`412e7933f10add20b921b92c02709e7eea56acd14dc14cf654f58fba4ea3cc9d`).
+A second installation in that overlay explicitly reported
+`Icons unchanged — skipping generation and installation`, along with unchanged
+individual plasmoid/runtime payloads. A frame whose geometry changed during
+capture was rejected; all four accepted originals were individually reviewed.
+Their hashes, source commit and before/after focus evidence are retained in
+`src/installer/assets/sources.json` and
+`build/captures/v0.66.1-file-previews/manifest.json`.
+
+These checks do not qualify a new distro or prove all native SDK combinations.
+The required push CI matrix remains the exact-commit publication gate; local
+focused results do not substitute for it. The four affected installer-gallery
+frames were captured separately from source `9053872` after installing each
+edition in its own disposable VM overlay, preserving the pinned package
+inventory. All four frames were reviewed; unrelated photographs retain their
+original provenance. This was not a full distro or uninstall lifecycle run.

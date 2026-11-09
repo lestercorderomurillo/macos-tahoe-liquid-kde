@@ -1,10 +1,11 @@
 # Installer testing
 
-Tahoe **v0.66.0** improves the existing global menu with exported application menus,
-common fallback actions and guarded shortcut dispatch, preserving the Apple menu and panel layout.
-Focused native checks cover menu updates, popup lifecycle, search and window changes.
-Four menu photographs cover both editions and modes; the other 102 retain their original provenance.
-See [validation evidence](docs/topbar-integration.md) for commands, source identities and coverage limits.
+Tahoe **v0.66.1** reuses identical component payloads and icon generation, and
+uses individually focused Nautilus/Dolphin previews in both appearance modes.
+Focused regressions cover source hashes, changed choices, missing files,
+native rebuild invalidation and capture focus. Four installer-file photographs
+are refreshed; unrelated photographs retain their original provenance.
+See [validation evidence and coverage limits](CONTRIBUTING.md#0661-validation-evidence).
 Publication requires successful exact-commit CI on both branches in both repositories.
 
 ## Installation steps
@@ -24,7 +25,7 @@ Scroll horizontally through the installation steps.
   <td align="center"><img src="src/screenshots/installer-shadows_dark_v4-d78803a9bf02.webp" alt="Window shadow comparison" width="500"><br>Window shadows</td>
   <td align="center"><img src="src/screenshots/installer-fonts_dark_v4-5ed134810b67.webp" alt="Fonts" width="500"><br>Fonts</td>
   <td align="center"><img src="src/screenshots/installer-firefox_dark_v4-f373877df3a2.webp" alt="Firefox" width="500"><br>Firefox</td>
-  <td align="center"><img src="src/screenshots/installer-files_dark_v4-d20342ebb547.webp" alt="File manager" width="500"><br>File manager</td>
+  <td align="center"><img src="src/screenshots/installer-files_dark_v4-d603c0bd4a8b.webp" alt="File manager" width="500"><br>File manager</td>
   <td align="center"><img src="src/screenshots/installer-glass_style_dark_v4-b3a8a7506ab6.webp" alt="Window glass" width="500"><br>Window glass</td>
   <td align="center"><img src="src/screenshots/installer-boot_dark_v4-872ac7febe6d.webp" alt="Boot animation" width="500"><br>Boot animation</td>
   <td align="center"><img src="src/screenshots/installer-oled_dark_v4-fb72373e426a.webp" alt="OLED protection" width="500"><br>OLED protection</td>

@@ -150,6 +150,12 @@ def _install_payload() -> None:
 
 
 def uninstall() -> None:
+    from component_cache import Receipt
+    from log import warn
+    try:
+        Receipt("icons", "").invalidate()
+    except OSError as exc:
+        warn(f"Could not remove icon installation fingerprint: {exc}")
     n = 0
     for theme in DEST_DIR.glob("MacTahoeLiquidKde-Icons*"):
         if theme.is_dir():

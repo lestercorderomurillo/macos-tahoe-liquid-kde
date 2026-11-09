@@ -3,6 +3,7 @@ import json
 import shutil
 
 import pytest
+import component_manifest  # Bind real hashing before any per-test replacement.
 
 from component_cache import Receipt, fingerprint, identical, identity
 
@@ -171,3 +172,14 @@ def test_installer_file_previews_keep_verified_focus_and_hashes():
             assert record['reviewed'] and record['stable_frames']
             verify_focused_frame(record['before'], record['after'], resource)
             assert hashlib.sha256((folder / record['file']).read_bytes()).hexdigest() == record['sha256']
+
+
+def test_icon_uninstall_invalidates_receipt_even_without_payload(monkeypatch, tmp_path):
+    import steps.icons as icons
+    monkeypatch.setenv('XDG_STATE_HOME', str(tmp_path / 'state'))
+    monkeypatch.setattr(icons, 'DEST_DIR', tmp_path / 'icons')
+    artifact = tmp_path / 'old'; artifact.write_text('old')
+    receipt = Receipt('icons', 'old')
+    receipt.save([artifact])
+    icons.uninstall()
+    assert not receipt.path.exists()
