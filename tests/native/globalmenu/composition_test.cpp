@@ -31,6 +31,7 @@ private Q_SLOTS:
     {
         TestCorona corona;
         corona.setKPackage(KPackage::PackageLoader::self()->loadPackage(QStringLiteral("Plasma/Shell"), QStringLiteral("org.kde.plasma.desktop")));
+        QVERIFY2(corona.kPackage().isValid(), "The plasma-desktop shell package is required for native accessory representations");
         auto* panel = corona.createContainment(QString());
         QVERIFY(panel);
         auto* bar = qobject_cast<Plasma::Containment*>(panel->createApplet(QStringLiteral("org.kde.mac.tahoe.liquid.globalmenu")));
