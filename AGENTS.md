@@ -186,10 +186,11 @@ Store, Force Quit, Sleep, Restart, Shut Down, Lock Screen, Log Out.
 
 ## UI/UX Conventions
 
-- System menu icons appear only beside About This Computer, System Settings
-  and App Store, matching the Golden Gate reference. Keep the remaining
-  actions icon-free and omit their reserved icon column; preserve the
-  surrounding menu margins and row spacing.
+- The system menu shows icons for every action, with one aligned text column.
+  Recent Items is intentionally absent. Its scoped SystemMenuStyle follows
+  macOS proportions: 24px rows, 16px icons, 12px separators and 6px selection
+  corners at the default system font, scaling with user font size. Keep
+  ordinary menus on their existing Kvantum style.
 - Keep the system menu's `computer`, `preferences-system` and
   `software-store-symbolic` artwork inherited from the base icon theme.
   Generated app appearances must also omit `preferences`, `software` and
@@ -202,7 +203,7 @@ Store, Force Quit, Sleep, Restart, Shut Down, Lock Screen, Log Out.
   and `frame.expansion=10000`, with circular SVG corners so the caps meet
   at half the row height. Keep the 3px layout frame, text margins, row
   heights, icon sizes and separators unchanged; frame expansion affects
-  painting only. The system menu adds 65 logical pixels to its natural width.
+  painting only. The system menu uses its own scoped metrics and grows for long labels.
 - System font always — never hardcode font names or sizes.
 - Popup plasmoids are fixed-size, not resizable.
 - Top panel is applets-only floating (not full-floating). Keep the menu bar

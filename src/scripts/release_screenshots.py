@@ -420,13 +420,19 @@ TOPBAR_0651_CAPTURE_DEPENDENCIES = {'src/offline/plasmoids/org.kde.mac.tahoe.liq
  'src/offline/plasmoids/org.kde.mac.tahoe.liquid.globalmenu/qml/main.qml': ('5cac7ed5a87fa83d7fbda3dbef123c1bfd866641',
                                                                             'e5148dbaed0cf109a6a9df44a632148a392714f9')}
 
+SYSTEM_MENU_0652_BASE = '0dac97e4ebdd2feb0f0ab1cee26233470c3915e6'
+SYSTEM_MENU_0652_CAPTURE_DEPENDENCIES = {'src/offline/plasmoids/org.kde.mac.tahoe.liquid.globalmenu/appmenuapplet.cpp': ('3cd173928be9b0daf306be47490675ae7255db8d',
+                                                                                 '6c78ea46d7980e7c122e9757cbbd8c7de5d9781d'),
+ 'src/offline/plasmoids/org.kde.mac.tahoe.liquid.globalmenu/systemmenustyle.h': (None,
+                                                                                 'a8ced26a085234c381b888bb473396824dd351d5')}
+
 def affected_frames(repo: Path, source: str, target: str) -> set[str]:
     """Conservative dependencies: unknown changes invalidate every frame."""
     all_frames = expected_frames()
     if visual_tree(repo, source) == visual_tree(repo, target):
         return set()
     # Compose reviewed transitions without rewriting historical frame origins.
-    for base in (TOPBAR_0651_BASE, MENU_065_BASE, DOCK_064_BASE, DOCK_APPEARANCE_BASE):
+    for base in (SYSTEM_MENU_0652_BASE, TOPBAR_0651_BASE, MENU_065_BASE, DOCK_064_BASE, DOCK_APPEARANCE_BASE):
         if source != base and target != base and all(
             subprocess.run(['git', '-C', str(repo), 'merge-base', '--is-ancestor', a, b],
                            stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL).returncode == 0
@@ -439,6 +445,15 @@ def affected_frames(repo: Path, source: str, target: str) -> set[str]:
     def cases(names, editions=EDITIONS):
         affected.update(f'{e}-{m}-{c}' for e in editions for m in MODES for c in names)
     for path in changed:
+        system_menu_dependency = SYSTEM_MENU_0652_CAPTURE_DEPENDENCIES.get(path)
+        if system_menu_dependency:
+            def system_menu_object(ref):
+                entry = git(repo, 'ls-tree', ref, '--', path)
+                return entry.split()[2] if entry else None
+            if (system_menu_object(source), system_menu_object(target)) == system_menu_dependency:
+                cases(['menu'])
+                ignored.add(path)
+                continue
         topbar_dependency = TOPBAR_0651_CAPTURE_DEPENDENCIES.get(path)
         if topbar_dependency:
             def topbar_object(ref):
