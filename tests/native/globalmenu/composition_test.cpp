@@ -18,7 +18,9 @@
 class TestCorona : public Plasma::Corona
 {
 public:
-    QRect screenGeometry(int) const override { return {0, 0, 1280, 720}; }
+    // Plasma SDKs use either signed or unsigned screen IDs.
+    QRect screenGeometry(int) const { return {0, 0, 1280, 720}; }
+    QRect screenGeometry(uint) const { return {0, 0, 1280, 720}; }
 };
 
 class CompositionTest : public QObject
