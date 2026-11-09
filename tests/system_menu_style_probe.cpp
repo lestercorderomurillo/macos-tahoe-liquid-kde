@@ -2,7 +2,16 @@
 #include <QMenu>
 #include <QImage>
 #include <QKeyEvent>
+#include <QIconEngine>
 #include <cassert>
+class NamedIcon : public QIconEngine {
+ QString m_name;
+public:
+ explicit NamedIcon(QString name):m_name(name){}
+ QIconEngine* clone() const override {return new NamedIcon(m_name);}
+ QString iconName() override {return m_name;}
+ void paint(QPainter* p,const QRect& r,QIcon::Mode,QIcon::State) override {p->fillRect(r,Qt::magenta);}
+};
 int main(int argc, char** argv) {
  QApplication app(argc, argv);
  QStyle* original = app.style();
@@ -37,6 +46,23 @@ int main(int argc, char** argv) {
   assert(image.pixelColor(0,0).alpha()==0);
   assert(image.pixelColor(qRound(7*scale),0).alpha()>240);
   assert(image.pixelColor(0,image.height()/2).alpha()>240);
+  for (const QString& name : {QStringLiteral("computer"), QStringLiteral("preferences-system"),
+                              QStringLiteral("software-store-symbolic"), QStringLiteral("custom-icon")}) {
+   option.icon=QIcon(new NamedIcon(name));
+   option.state=QStyle::State_Enabled;
+   image.fill(Qt::transparent);
+   QPainter iconPainter(&image);
+   menu.style()->drawControl(QStyle::CE_MenuItem,&option,&iconPainter,&menu);
+   iconPainter.end();
+   int opaque=0,magenta=0;
+   for(int y=0;y<image.height();++y)for(int x=0;x<image.width();++x){
+    QColor pixel=image.pixelColor(x,y);
+    if(pixel.alpha()>0)++opaque;
+    if(pixel==QColor(Qt::magenta))++magenta;
+   }
+   assert(opaque>0);
+   assert((name==QStringLiteral("custom-icon"))==(magenta>0));
+  }
   menu.show();
   menu.setActiveAction(first);
   QKeyEvent down(QEvent::KeyPress, Qt::Key_Down, Qt::NoModifier);

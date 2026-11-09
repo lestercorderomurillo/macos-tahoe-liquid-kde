@@ -186,13 +186,15 @@ Store, Force Quit, Sleep, Restart, Shut Down, Lock Screen, Log Out.
 
 ## UI/UX Conventions
 
-- The system menu shows icons for every action, with one aligned text column.
-  Recent Items is intentionally absent. Its scoped SystemMenuStyle follows
-  macOS proportions: 24px rows, 16px icons, 12px separators and 6px selection
-  corners at the default system font, scaling with user font size. Keep
-  ordinary menus on their existing Kvantum style.
-- Keep the system menu's `computer`, `preferences-system` and
-  `software-store-symbolic` artwork inherited from the base icon theme.
+- The system menu follows the macOS Golden Gate reference: only About,
+  System Settings and App Store have icons (laptop, gear and App Store symbol).
+  Remaining rows have neither an icon nor a reserved icon column. Recent Items
+  is intentionally absent. SystemMenuStyle scopes the font-scaled metrics and
+  reference symbols to this popup; explicit custom icon choices remain usable.
+  Ordinary menus keep their existing Kvantum style.
+- Draw the three default system-menu symbols from the Golden Gate reference
+  in SystemMenuStyle; custom icons and other widgets retain the inherited
+  base-theme artwork.
   Generated app appearances must also omit `preferences`, `software` and
   `software-store`: Qt/KDE resolve those generic fallbacks before inherited
   menu icons. Test both QIcon rendering and KIconLoader resolution. Use

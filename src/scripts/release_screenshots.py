@@ -422,9 +422,9 @@ TOPBAR_0651_CAPTURE_DEPENDENCIES = {'src/offline/plasmoids/org.kde.mac.tahoe.liq
 
 SYSTEM_MENU_0652_BASE = '0dac97e4ebdd2feb0f0ab1cee26233470c3915e6'
 SYSTEM_MENU_0652_CAPTURE_DEPENDENCIES = {'src/offline/plasmoids/org.kde.mac.tahoe.liquid.globalmenu/appmenuapplet.cpp': ('3cd173928be9b0daf306be47490675ae7255db8d',
-                                                                                 '133fb63753ba73bcd5950390cde43ff20edffcb3'),
+                                                                                 '1dd65d214d3e1bb7462c51ccff92ef57e58c1aa0'),
  'src/offline/plasmoids/org.kde.mac.tahoe.liquid.globalmenu/systemmenustyle.h': (None,
-                                                                                 '49b6645e13611c914f6534097093879629b3ef89')}
+                                                                                 '020533051dbaeee315c8b047c93f8d438869fb13')}
 
 def affected_frames(repo: Path, source: str, target: str) -> set[str]:
     """Conservative dependencies: unknown changes invalidate every frame."""

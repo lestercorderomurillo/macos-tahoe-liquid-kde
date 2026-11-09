@@ -6,6 +6,8 @@
 #include <QApplication>
 #include <QFontMetricsF>
 #include <QPainter>
+#include <QPainterPath>
+#include <cmath>
 #include <QProxyStyle>
 #include <QStyleOptionMenuItem>
 #include <QWidget>
@@ -46,7 +48,7 @@ public:
         const qreal scale = scaleFor(item->font, widget);
         if (item->menuItemType == QStyleOptionMenuItem::Separator) return QSize(1, qRound(12 * scale));
         const QFontMetricsF metrics(item->font);
-        const int width = qCeil(metrics.horizontalAdvance(item->text) + 46 * scale);
+        const int width = qCeil(metrics.horizontalAdvance(item->text) + (item->icon.isNull() ? 24 : 46) * scale);
         return QSize(std::max(qRound(268 * scale), width),
                      std::max(qRound(24 * scale), qCeil(metrics.height() + 4 * scale)));
     }
@@ -84,13 +86,50 @@ public:
         const QRect iconRect = visualRect(item->direction, item->rect,
             QRect(item->rect.left() + qRound(12 * scale),
                   qRound(rect.center().y() - iconSize / 2.0), iconSize, iconSize));
-        item->icon.paint(painter, iconRect, Qt::AlignCenter,
-                         !enabled ? QIcon::Disabled : selected ? QIcon::Selected : QIcon::Normal);
+        const QColor foreground = item->palette.color(group, selected ? QPalette::HighlightedText : QPalette::WindowText);
+        if (!drawReferenceIcon(item->icon.name(), painter, iconRect, foreground)) {
+            item->icon.paint(painter, iconRect, Qt::AlignCenter,
+                             !enabled ? QIcon::Disabled : selected ? QIcon::Selected : QIcon::Normal);
+        }
         const QRect textRect = visualRect(item->direction, item->rect,
-            item->rect.adjusted(qRound(34 * scale), 0, -qRound(12 * scale), 0));
+            item->rect.adjusted(qRound((item->icon.isNull() ? 12 : 34) * scale), 0, -qRound(12 * scale), 0));
         painter->setFont(item->font);
         painter->setPen(item->palette.color(group, selected ? QPalette::HighlightedText : QPalette::WindowText));
         painter->drawText(textRect, Qt::AlignVCenter | Qt::AlignLeading | Qt::TextHideMnemonic, item->text);
         painter->restore();
+    }
+private:
+    static bool drawReferenceIcon(const QString& name, QPainter* painter,
+                                  const QRect& rect, const QColor& color)
+    {
+        if (name != QLatin1String("computer") && name != QLatin1String("preferences-system")
+            && name != QLatin1String("software-store-symbolic")) return false;
+        painter->save();
+        painter->translate(rect.topLeft());
+        painter->scale(rect.width() / 16.0, rect.height() / 16.0);
+        painter->setPen(QPen(color, 1.15, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));
+        painter->setBrush(Qt::NoBrush);
+        if (name == QLatin1String("computer")) {
+            painter->drawRoundedRect(QRectF(2.5, 3.5, 11, 8), 0.8, 0.8);
+            painter->drawLine(QPointF(0.8, 12.5), QPointF(15.2, 12.5));
+        } else if (name == QLatin1String("preferences-system")) {
+            QPainterPath gear;
+            for (int i = 0; i < 48; ++i) {
+                const qreal angle = i * 2 * 3.141592653589793 / 48;
+                const qreal radius = i % 4 == 1 || i % 4 == 2 ? 6.1 : 5.1;
+                const QPointF point(8 + radius * std::cos(angle), 8 + radius * std::sin(angle));
+                if (i == 0) gear.moveTo(point); else gear.lineTo(point);
+            }
+            gear.closeSubpath();
+            painter->drawPath(gear);
+            painter->drawEllipse(QPointF(8, 8), 3.6, 3.6);
+        } else {
+            painter->setPen(QPen(color, 1.6, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));
+            painter->drawLine(QPointF(4, 13), QPointF(9.2, 3));
+            painter->drawLine(QPointF(7, 3), QPointF(12.2, 13));
+            painter->drawLine(QPointF(2, 10), QPointF(14, 10));
+        }
+        painter->restore();
+        return true;
     }
 };

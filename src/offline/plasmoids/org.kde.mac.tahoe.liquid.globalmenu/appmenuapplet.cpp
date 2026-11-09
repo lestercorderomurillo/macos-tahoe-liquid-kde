@@ -550,13 +550,7 @@ void AppMenuApplet::triggerSystemMenu(QQuickItem* ctx)
 
     const auto cfg = config();
 
-    auto icon = [&cfg](const char* key, const QString& fallback) {
-        QString name = cfg.readEntry(key, fallback);
-        if (name == QLatin1String("system-lock-screen")) {
-            name = QStringLiteral("system-lock-screen-symbolic");
-        }
-        return QIcon::fromTheme(name);
-    };
+    auto icon = [&cfg](const char* key, const QString& fallback) { return QIcon::fromTheme(cfg.readEntry(key, fallback)); };
 
     menu->addAction(icon("iconAbout", QStringLiteral("computer")), i18n("About This Computer"), this, [this]() { Q_EMIT aboutRequested(); });
 
@@ -572,7 +566,7 @@ void AppMenuApplet::triggerSystemMenu(QQuickItem* ctx)
     menu->addSeparator();
 
     menu->addAction(icon("iconForceQuit", QStringLiteral("dialog-cancel")), i18n("Force Quit…"),
-        []() { runCommand(QStringLiteral("qdbus6 org.kde.KWin /KWin slotKillWindow || xkill")); });
+        []() { runCommand(QStringLiteral("qdbus6 org.kde.KWin /KWin slotKillWindow || xkill")); })->setIconVisibleInMenu(false);
 
     menu->addSeparator();
 
@@ -580,7 +574,7 @@ void AppMenuApplet::triggerSystemMenu(QQuickItem* ctx)
         [cmd = cfg.readEntry(
              "cmdSleep", QStringLiteral("qdbus6 org.kde.Solid.PowerManagement /org/kde/Solid/PowerManagement/Actions/SuspendSession org.kde.Solid.PowerManagement.Actions.SuspendSession.suspendToRam || qdbus-qt6 org.kde.Solid.PowerManagement /org/kde/Solid/PowerManagement/Actions/SuspendSession org.kde.Solid.PowerManagement.Actions.SuspendSession.suspendToRam || qdbus org.kde.Solid.PowerManagement /org/kde/Solid/PowerManagement/Actions/SuspendSession org.kde.Solid.PowerManagement.Actions.SuspendSession.suspendToRam"))]() {
             runSuspendAction(cmd);
-        });
+        })->setIconVisibleInMenu(false);
     menu->addAction(icon("iconRestart", QStringLiteral("system-reboot")), i18n("Restart…"),
         [cmd = cfg.readEntry("cmdRestart", QStringLiteral("qdbus6 org.kde.LogoutPrompt /LogoutPrompt org.kde.LogoutPrompt.promptReboot"))]() {
             runSystemAction(cmd,
@@ -588,7 +582,7 @@ void AppMenuApplet::triggerSystemMenu(QQuickItem* ctx)
                 QStringLiteral("/LogoutPrompt"),
                 QStringLiteral("org.kde.LogoutPrompt"),
                 QStringLiteral("promptReboot"));
-        });
+        })->setIconVisibleInMenu(false);
     menu->addAction(icon("iconShutDown", QStringLiteral("system-shutdown")), i18n("Shut Down…"),
         [cmd = cfg.readEntry("cmdShutDown", QStringLiteral("qdbus6 org.kde.LogoutPrompt /LogoutPrompt org.kde.LogoutPrompt.promptShutDown"))]() {
             runSystemAction(cmd,
@@ -596,14 +590,14 @@ void AppMenuApplet::triggerSystemMenu(QQuickItem* ctx)
                 QStringLiteral("/LogoutPrompt"),
                 QStringLiteral("org.kde.LogoutPrompt"),
                 QStringLiteral("promptShutDown"));
-        });
+        })->setIconVisibleInMenu(false);
 
     menu->addSeparator();
 
     menu->addAction(icon("iconLockScreen", QStringLiteral("system-lock-screen")), i18n("Lock Screen"),
         [cmd = cfg.readEntry("cmdLockScreen", QStringLiteral("qdbus6 org.freedesktop.ScreenSaver /ScreenSaver Lock || loginctl lock-session"))]() {
             runCommand(cmd);
-        });
+        })->setIconVisibleInMenu(false);
     const QString firstName = KUser().property(KUser::FullName).toString().section(QLatin1Char(' '), 0, 0);
     menu->addAction(icon("iconLogOut", QStringLiteral("user-identity")), i18n("Log Out %1…", firstName),
         [cmd = cfg.readEntry("cmdLogOut", QStringLiteral("qdbus6 org.kde.LogoutPrompt /LogoutPrompt org.kde.LogoutPrompt.promptLogout"))]() {
@@ -612,7 +606,7 @@ void AppMenuApplet::triggerSystemMenu(QQuickItem* ctx)
                 QStringLiteral("/LogoutPrompt"),
                 QStringLiteral("org.kde.LogoutPrompt"),
                 QStringLiteral("promptLogout"));
-        });
+        })->setIconVisibleInMenu(false);
 
     auto ungrabMouseHack = [ctx]() {
         if (ctx && ctx->window() && ctx->window()->mouseGrabberItem()) {
