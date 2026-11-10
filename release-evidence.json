@@ -1,6 +1,6 @@
 {
-  "version": "0.67.3",
-  "source_sha256": "29d26c1a2184bbd0ad9c188bf9bb0ad6bb1e453357d6346c6776438295a8424d",
+  "version": "0.67.4",
+  "source_sha256": "668c991ac976a2e204c2593cd4d2b1d65e9e5809b1de46e779e00fb0c582a8d2",
   "environment": "CachyOS host; isolated KWin 6.6 SDK container; disposable KDE neon KWin 6.8.1 Wayland VMs",
   "checks": [
     {
@@ -113,5 +113,6 @@
     "Optional rounded-corners archive regression skipped because archive was not provided.",
     "Full remote distro matrix runs asynchronously; no remote CI success claimed.",
     "Unchanged historical gallery retains its original capture identity."
-  ]
+  ],
+  "delivery_note": "v0.67.4 repairs paired release bookkeeping after the Golden Gate v0.67.3 submission retained an old pin. Tested implementation and reviewed captures are unchanged."
 }
