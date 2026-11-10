@@ -9,7 +9,6 @@
 
 #include "kwin_version_compat.h"
 #include "roundedblurshape.h"
-#include "wobbly_shape.h"
 
 #include "effect/effect.h"
 #include "opengl/glutils.h"
@@ -25,7 +24,6 @@
 #include <QRegion>
 #include <QStringList>
 
-#include <optional>
 #include <unordered_map>
 
 namespace KWin {
@@ -223,12 +221,6 @@ public Q_SLOTS:
     /// decoration is swapped.
     void setupDecorationConnections(EffectWindow* w);
 
-    /// Mirror Wobbly Windows' move/resize spring model so the glass mesh
-    /// follows the same cubic surface as the window content.
-    void slotWindowStartUserMovedResized(KWin::EffectWindow* w);
-    void slotWindowStepUserMovedResized(KWin::EffectWindow* w);
-    void slotWindowFinishUserMovedResized(KWin::EffectWindow* w);
-
 private:
     // Internals
 
@@ -257,14 +249,6 @@ private:
     /// Recompute and cache the blur region for ``w``. Called on
     /// window-added / decoration-swap / explicit property change.
     void updateBlurRegion(EffectWindow* w);
-
-    /// Read Wobbly's live QObject properties. Returns nullopt when the
-    /// effect is not loaded or the relevant wobble mode is disabled.
-    std::optional<WobblyShapeParameters> readWobblyParameters(bool resizing) const;
-
-    /// Advance the per-window mirror after delegating prePaintWindow to
-    /// Wobbly Windows (effect-chain position 70).
-    void advanceWobblyShape(RenderView* view, EffectWindow* w ACRYLIC_GLASS_PRESENT_TIME_PARAM);
 
     /// Heart of the effect. Allocates / rebuilds per-view framebuffers,
     /// captures the background, runs the Dual Kawase chain (skipped at
@@ -434,14 +418,6 @@ private:
     QMap<EffectWindow*, QMetaObject::Connection> windowContrastChangedConnections;
 #endif
     QMap<EffectWindow*, QMetaObject::Connection> windowFrameGeometryChangedConnections;
-    struct WobblyConnections
-    {
-        QMetaObject::Connection start;
-        QMetaObject::Connection step;
-        QMetaObject::Connection finish;
-    };
-    QMap<EffectWindow*, WobblyConnections> windowWobblyConnections;
-    std::unordered_map<EffectWindow*, WobblyShapeTracker> wobblyShapes;
     std::unordered_map<EffectWindow*, BlurEffectData> m_windows;
 
 #if !ACRYLIC_GLASS_WAYLAND_BACKGROUND_EFFECT_V1

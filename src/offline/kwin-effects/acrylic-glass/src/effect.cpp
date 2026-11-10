@@ -44,19 +44,15 @@
 
 #include <QGuiApplication>
 #include <QMatrix4x4>
-#include <QObject>
 #include <QPalette>
 #include "gradientcolors.h"
 #include <QScreen>
 #include <QTime>
 #include <QTimer>
 #include <QWindow>
-#include <algorithm>
-#include <array>
 #include <cmath> // for ceil()
 #include <cstdlib>
 #include <climits>
-#include <vector>
 
 #include <KConfigGroup>
 #include <KSharedConfig>
@@ -123,120 +119,10 @@ inline QRect agSnapToPixelGrid(const QRectF& rect)
     return QRect(topLeft.x(), topLeft.y(), bottomRight.x() - topLeft.x(), bottomRight.y() - topLeft.y());
 }
 
-namespace {
-
-GLVertex2D interpolateVertex(const GLVertex2D& from, const GLVertex2D& to, float factor)
-{
-    return GLVertex2D{
-        .position = from.position + (to.position - from.position) * factor,
-        .texcoord = from.texcoord + (to.texcoord - from.texcoord) * factor,
-    };
-}
-
-std::vector<GLVertex2D> clipPolygonToRect(const std::vector<GLVertex2D>& polygon, const QRectF& rect)
-{
-    using EdgeTest = bool (*)(const QVector2D&, const QRectF&);
-    using EdgeIntersection = float (*)(const QVector2D&, const QVector2D&, const QRectF&);
-    struct Edge
-    {
-        EdgeTest inside;
-        EdgeIntersection factor;
-    };
-    static constexpr Edge edges[] = {
-        {
-            [](const QVector2D& point, const QRectF& clip) { return point.x() >= clip.left(); },
-            [](const QVector2D& from, const QVector2D& to, const QRectF& clip) {
-                return static_cast<float>((clip.left() - from.x()) / (to.x() - from.x()));
-            },
-        },
-        {
-            [](const QVector2D& point, const QRectF& clip) { return point.x() <= clip.right(); },
-            [](const QVector2D& from, const QVector2D& to, const QRectF& clip) {
-                return static_cast<float>((clip.right() - from.x()) / (to.x() - from.x()));
-            },
-        },
-        {
-            [](const QVector2D& point, const QRectF& clip) { return point.y() >= clip.top(); },
-            [](const QVector2D& from, const QVector2D& to, const QRectF& clip) {
-                return static_cast<float>((clip.top() - from.y()) / (to.y() - from.y()));
-            },
-        },
-        {
-            [](const QVector2D& point, const QRectF& clip) { return point.y() <= clip.bottom(); },
-            [](const QVector2D& from, const QVector2D& to, const QRectF& clip) {
-                return static_cast<float>((clip.bottom() - from.y()) / (to.y() - from.y()));
-            },
-        },
-    };
-
-    std::vector<GLVertex2D> output = polygon;
-    for (const Edge& edge : edges) {
-        if (output.empty()) {
-            break;
-        }
-
-        std::vector<GLVertex2D> input;
-        input.swap(output);
-        GLVertex2D previous = input.back();
-        bool previousInside = edge.inside(previous.position, rect);
-        for (const GLVertex2D& current : input) {
-            const bool currentInside = edge.inside(current.position, rect);
-            if (currentInside != previousInside) {
-                const float factor = std::clamp(edge.factor(previous.position, current.position, rect), 0.0f, 1.0f);
-                output.push_back(interpolateVertex(previous, current, factor));
-            }
-            if (currentInside) {
-                output.push_back(current);
-            }
-            previous = current;
-            previousInside = currentInside;
-        }
-    }
-    return output;
-}
-
-float triangleArea(const GLVertex2D& a, const GLVertex2D& b, const GLVertex2D& c)
-{
-    return (b.position.x() - a.position.x()) * (c.position.y() - a.position.y())
-        - (b.position.y() - a.position.y()) * (c.position.x() - a.position.x());
-}
-
-void appendTriangleFan(std::vector<GLVertex2D>& vertices, const std::vector<GLVertex2D>& polygon)
-{
-    if (polygon.size() < 3) {
-        return;
-    }
-    for (size_t i = 1; i + 1 < polygon.size(); ++i) {
-        if (std::abs(triangleArea(polygon[0], polygon[i], polygon[i + 1])) <= 0.0001f) {
-            continue;
-        }
-        vertices.push_back(polygon[0]);
-        vertices.push_back(polygon[i]);
-        vertices.push_back(polygon[i + 1]);
-    }
-}
-
-void appendClippedTriangle(std::vector<GLVertex2D>& vertices, const std::array<GLVertex2D, 3>& triangle,
-    const std::vector<QRectF>& clipRects)
-{
-    if (clipRects.empty()) {
-        vertices.insert(vertices.end(), triangle.begin(), triangle.end());
-        return;
-    }
-
-    const std::vector<GLVertex2D> polygon(triangle.begin(), triangle.end());
-    for (const QRectF& clipRect : clipRects) {
-        appendTriangleFan(vertices, clipPolygonToRect(polygon, clipRect));
-    }
-}
-
-} // namespace
-
 /// X11 atom name we listen to for the blur-behind property protocol.
 static const QByteArray s_blurAtomName = QByteArrayLiteral("_KDE_NET_WM_BLUR_BEHIND_REGION");
 
 #if KWIN_BUILD_X11
-#if defined(GLASS_X11)
 static bool hasAlphaVisual(xcb_connection_t* connection, xcb_visualid_t visual)
 {
     static QHash<xcb_visualid_t, bool> cache;
@@ -274,7 +160,6 @@ static bool hasAlphaVisual(xcb_connection_t* connection, xcb_visualid_t visual)
     cache.insert(visual, alphaVisual);
     return alphaVisual;
 }
-#endif
 #endif
 
 // Static singleton storage (definitions live here, declarations in .h).
@@ -683,7 +568,7 @@ void BlurEffect::updateBlurRegion(EffectWindow* w)
     // Xwayland still advertises blur through the X11 property on KWin 6.7+,
     // even though EffectWindow::readProperty was removed from that SDK.
 #if KWIN_BUILD_X11
-    [[maybe_unused]] bool legacyBlurPropertyMissing = false;
+    bool legacyBlurPropertyMissing = false;
     if (net_wm_blur_region != XCB_ATOM_NONE && effects->xcbConnection() && w->windowId()) {
         // Bound the response and reject malformed/truncated properties instead
         // of treating them as the empty "blur the entire window" request.
@@ -867,17 +752,6 @@ void BlurEffect::slotWindowAdded(EffectWindow* w)
         updateBlurRegion(w);
     });
 
-    if (!windowWobblyConnections.contains(w)) {
-        WobblyConnections connections;
-        connections.start = connect(w, &EffectWindow::windowStartUserMovedResized, this,
-            [this](EffectWindow* window) { slotWindowStartUserMovedResized(window); });
-        connections.step = connect(w, &EffectWindow::windowStepUserMovedResized, this,
-            [this](EffectWindow* window, const auto&) { slotWindowStepUserMovedResized(window); });
-        connections.finish = connect(w, &EffectWindow::windowFinishUserMovedResized, this,
-            [this](EffectWindow* window) { slotWindowFinishUserMovedResized(window); });
-        windowWobblyConnections.insert(w, connections);
-    }
-
     updateBlurRegion(w);
 }
 
@@ -890,7 +764,6 @@ void BlurEffect::slotWindowDeleted(EffectWindow* w)
         effects->makeOpenGLContextCurrent();
         m_windows.erase(it);
     }
-    wobblyShapes.erase(w);
 
     if (auto it = windowBlurChangedConnections.find(w); it != windowBlurChangedConnections.end()) {
         disconnect(*it);
@@ -907,13 +780,6 @@ void BlurEffect::slotWindowDeleted(EffectWindow* w)
     if (auto it = windowFrameGeometryChangedConnections.find(w); it != windowFrameGeometryChangedConnections.end()) {
         disconnect(*it);
         windowFrameGeometryChangedConnections.erase(it);
-    }
-
-    if (auto it = windowWobblyConnections.find(w); it != windowWobblyConnections.end()) {
-        disconnect(it->start);
-        disconnect(it->step);
-        disconnect(it->finish);
-        windowWobblyConnections.erase(it);
     }
 }
 
@@ -952,98 +818,6 @@ void BlurEffect::setupDecorationConnections(EffectWindow* w)
     }
 
     connect(w->decoration(), &KDecoration3::Decoration::blurRegionChanged, this, [this, w]() { updateBlurRegion(w); });
-}
-
-std::optional<WobblyShapeParameters> BlurEffect::readWobblyParameters(bool resizing) const
-{
-    Effect* wobbly = effects->findEffect(QStringLiteral("wobblywindows"));
-    if (!wobbly) {
-        return std::nullopt;
-    }
-
-    if (!wobbly->property(resizing ? "resizeWobble" : "moveWobble").toBool()) {
-        return std::nullopt;
-    }
-
-    WobblyShapeParameters parameters;
-    parameters.stiffness = wobbly->property("stiffness").toReal();
-    parameters.drag = wobbly->property("drag").toReal();
-    parameters.moveFactor = wobbly->property("moveFactor").toReal();
-    parameters.minVelocity = wobbly->property("minVelocity").toReal();
-    parameters.maxVelocity = wobbly->property("maxVelocity").toReal();
-    parameters.stopVelocity = wobbly->property("stopVelocity").toReal();
-    parameters.minAcceleration = wobbly->property("minAcceleration").toReal();
-    parameters.maxAcceleration = wobbly->property("maxAcceleration").toReal();
-    parameters.stopAcceleration = wobbly->property("stopAcceleration").toReal();
-    parameters.xTessellation = wobbly->property("xTessellation").toInt();
-    parameters.yTessellation = wobbly->property("yTessellation").toInt();
-
-    if (parameters.xTessellation <= 0 || parameters.yTessellation <= 0) {
-        return std::nullopt;
-    }
-    return parameters;
-}
-
-void BlurEffect::slotWindowStartUserMovedResized(EffectWindow* w)
-{
-    if (!w || w->isSpecialWindow()) {
-        return;
-    }
-
-    const bool resizing = w->isUserResize();
-    if (!w->isUserMove() && !resizing) {
-        return;
-    }
-
-    const std::optional<WobblyShapeParameters> parameters = readWobblyParameters(resizing);
-    if (!parameters) {
-        return;
-    }
-
-    const QPointF cursorPosition = Effect::cursorPos();
-    const QRectF geometry = w->frameGeometry();
-    auto it = wobblyShapes.find(w);
-    if (it != wobblyShapes.end() && !it->second.retirePending()) {
-        // Wobbly keeps its spring model and clock when a drag is released
-        // and restarted before the previous motion has settled.
-        it->second.beginMovedResized(cursorPosition, geometry, resizing);
-    } else {
-        if (it != wobblyShapes.end()) {
-            wobblyShapes.erase(it);
-        }
-        wobblyShapes.try_emplace(w, *parameters, geometry, cursorPosition, resizing);
-    }
-}
-
-void BlurEffect::slotWindowStepUserMovedResized(EffectWindow* w)
-{
-    if (auto it = wobblyShapes.find(w); it != wobblyShapes.end()) {
-        it->second.shape().noteGeometryStep(w->frameGeometry());
-    }
-}
-
-void BlurEffect::slotWindowFinishUserMovedResized(EffectWindow* w)
-{
-    if (auto it = wobblyShapes.find(w); it != wobblyShapes.end()) {
-        it->second.shape().noteGeometryFinished(w->frameGeometry());
-    }
-}
-
-void BlurEffect::advanceWobblyShape(RenderView* view, EffectWindow* w ACRYLIC_GLASS_PRESENT_TIME_PARAM)
-{
-    auto it = wobblyShapes.find(w);
-    if (it == wobblyShapes.end()) {
-        return;
-    }
-
-#if ACRYLIC_GLASS_KWIN_6_7
-    const bool active = it->second.advance(view, w->frameGeometry());
-#else
-    const bool active = it->second.advance(presentTime, w->frameGeometry());
-#endif
-    if (!active) {
-        wobblyShapes.erase(it);
-    }
 }
 
 /// Catch ``kwin_blur`` dynamic property changes on internal QWindows
@@ -1183,10 +957,8 @@ void BlurEffect::prePaintWindow(RenderView* view, EffectWindow* w, WindowPrePain
     }
 #if defined(GLASS_X11)
     effects->prePaintWindow(w, data ACRYLIC_GLASS_PRESENT_TIME_ARG);
-    advanceWobblyShape(m_currentView, w ACRYLIC_GLASS_PRESENT_TIME_ARG);
 #else
     effects->prePaintWindow(view, w, data ACRYLIC_GLASS_PRESENT_TIME_ARG);
-    advanceWobblyShape(view, w ACRYLIC_GLASS_PRESENT_TIME_ARG);
 #endif
 
 #if ACRYLIC_GLASS_WAYLAND_BACKGROUND_EFFECT_V1
@@ -1319,22 +1091,13 @@ bool BlurEffect::shouldBlur(const EffectWindow* w, int mask, const WindowPaintDa
         return false;
     }
 
-    // Skip transformed windows unless Wobbly Windows is driving this
-    // particular window. Wobbly keeps WindowPaintData at 1x/identity and
-    // supplies geometry through its own WindowQuadList, but still sets
-    // PAINT_WINDOW_TRANSFORMED. Dropping the glass for that flag caused
-    // the start/end drag flash. Overview, present-windows and other
-    // transforms remain excluded.
+    // Skip transformed windows — Plasma's overview / present-windows
+    // effects scale and translate windows around, and blurring while
+    // they're mid-animation reads garbage from the background fb.
     bool scaled = !qFuzzyCompare(data.xScale(), 1.0) || !qFuzzyCompare(data.yScale(), 1.0);
     bool translated = data.xTranslation() || data.yTranslation();
-    const bool wobblyTransformed = (mask & PAINT_WINDOW_TRANSFORMED)
-        && std::any_of(wobblyShapes.cbegin(), wobblyShapes.cend(), [w](const auto& entry) { return entry.first == w; });
 
-    if ((scaled || translated) && !w->data(WindowForceBlurRole).toBool()) {
-        return false;
-    }
-
-    if ((mask & PAINT_WINDOW_TRANSFORMED) && !wobblyTransformed && !w->data(WindowForceBlurRole).toBool()) {
+    if ((scaled || (translated || (mask & PAINT_WINDOW_TRANSFORMED))) && !w->data(WindowForceBlurRole).toBool()) {
         return false;
     }
 
@@ -1443,53 +1206,27 @@ void BlurEffect::blur(
     const float blurOffset = dockSurface ? 5.0f * 0.14f : m_offset;
 
     // 2. Effective blur shape
-    // Wobbly supplies its deformation through WindowQuadList rather than
-    // WindowPaintData. Mirror its cubic surface here and expand the
-    // background capture to the real, non-linear silhouette.
-    const auto wobblyIt = wobblyShapes.find(w);
-    const bool wobblySurface = wobblyIt != wobblyShapes.end();
-    const QRectF frameRect = w->frameGeometry();
-
+    // If the window is transformed (scaled / translated by an effect such
+    // as overview), the shape has to follow.
     Region blurShape = blurRegion(w).translated(w->pos().toPoint());
-    if (!wobblySurface) {
-        if (data.xScale() != 1 || data.yScale() != 1) {
-            QPoint pt = blurShape.boundingRect().topLeft();
-            Region scaledShape;
 
-            for (const Rect& r : blurShape.rects()) {
-                const QPointF topLeft(
-                    pt.x() + (r.x() - pt.x()) * data.xScale() + data.xTranslation(), pt.y() + (r.y() - pt.y()) * data.yScale() + data.yTranslation());
-                const QPoint bottomRight(std::floor(topLeft.x() + r.width() * data.xScale()) - 1, std::floor(topLeft.y() + r.height() * data.yScale()) - 1);
-                scaledShape += QRect(QPoint(std::floor(topLeft.x()), std::floor(topLeft.y())), bottomRight);
-            }
+    if (data.xScale() != 1 || data.yScale() != 1) {
+        QPoint pt = blurShape.boundingRect().topLeft();
+        Region scaledShape;
 
-            blurShape = scaledShape;
-        } else if (data.xTranslation() || data.yTranslation()) {
-            blurShape.translate(std::round(data.xTranslation()), std::round(data.yTranslation()));
+        for (const Rect& r : blurShape.rects()) {
+            const QPointF topLeft(
+                pt.x() + (r.x() - pt.x()) * data.xScale() + data.xTranslation(), pt.y() + (r.y() - pt.y()) * data.yScale() + data.yTranslation());
+            const QPoint bottomRight(std::floor(topLeft.x() + r.width() * data.xScale()) - 1, std::floor(topLeft.y() + r.height() * data.yScale()) - 1);
+            scaledShape += QRect(QPoint(std::floor(topLeft.x()), std::floor(topLeft.y())), bottomRight);
         }
+
+        blurShape = scaledShape;
+    } else if (data.xTranslation() || data.yTranslation()) {
+        blurShape.translate(std::round(data.xTranslation()), std::round(data.yTranslation()));
     }
 
-    QRect backgroundRect;
-    if (wobblySurface) {
-        const QRectF mappedBounds = wobblyIt->second.shape().mappedBounds(frameRect);
-        const QPointF frameOrigin(w->x(), w->y());
-        const QPointF transformedTopLeft(
-            frameOrigin.x() + (mappedBounds.left() - frameOrigin.x()) * data.xScale() + data.xTranslation(),
-            frameOrigin.y() + (mappedBounds.top() - frameOrigin.y()) * data.yScale() + data.yTranslation());
-        const QPointF transformedBottomRight(
-            frameOrigin.x() + (mappedBounds.right() - frameOrigin.x()) * data.xScale() + data.xTranslation(),
-            frameOrigin.y() + (mappedBounds.bottom() - frameOrigin.y()) * data.yScale() + data.yTranslation());
-        backgroundRect = QRectF(transformedTopLeft, transformedBottomRight)
-                            .adjusted(-2.0, -2.0, 2.0, 2.0)
-                            .toAlignedRect();
-    } else {
-        backgroundRect = blurShape.boundingRect();
-    }
-
-    if (backgroundRect.isEmpty()) {
-        return;
-    }
-
+    const QRect backgroundRect = blurShape.boundingRect();
 #if defined(GLASS_X11)
     const QRect deviceBackgroundRect = agSnapToPixelGrid(viewport.mapToRenderTarget(backgroundRect));
     const QRect scaledBackgroundRect(QPoint(0, 0), deviceBackgroundRect.size());
@@ -1501,134 +1238,42 @@ void BlurEffect::blur(
 
     // Intersect the shape with the deviceRegion clip — empty after the
     // intersection means everything is clipped and there's nothing to draw.
-#if ACRYLIC_GLASS_WAYLAND_BACKGROUND_EFFECT_V1
-    const bool finiteClip = deviceRegion != Region::infinite();
-#else
-    const bool finiteClip = true;
-#endif
     QList<RectF> effectiveShape;
-    if (!wobblySurface) {
-        effectiveShape.reserve(blurShape.rects().size());
+    effectiveShape.reserve(blurShape.rects().size());
 #if ACRYLIC_GLASS_WAYLAND_BACKGROUND_EFFECT_V1
-        if (deviceRegion != Region::infinite()) {
+    if (deviceRegion != Region::infinite()) {
 #else
-        {
+    {
 #endif
-            for (const Rect& clipRect : deviceRegion.rects()) {
-                const RectF deviceClipRect = clipRect.translated(-deviceBackgroundRect.topLeft());
-                for (const Rect& shapeRect : blurShape.rects()) {
+        for (const Rect& clipRect : deviceRegion.rects()) {
+            const RectF deviceClipRect = clipRect.translated(-deviceBackgroundRect.topLeft());
+            for (const Rect& shapeRect : blurShape.rects()) {
 #if defined(GLASS_X11)
-                    const RectF deviceShapeRect = viewport.mapToRenderTarget(shapeRect)
-                        .translated(-deviceBackgroundRect.topLeft());
+                const RectF deviceShapeRect = viewport.mapToRenderTarget(shapeRect)
+                    .translated(-deviceBackgroundRect.topLeft());
 #else
-                    const RectF deviceShapeRect = shapeRect.translated(-backgroundRect.topLeft()).scaled(viewport.scale()).rounded();
+                const RectF deviceShapeRect = shapeRect.translated(-backgroundRect.topLeft()).scaled(viewport.scale()).rounded();
 #endif
-                    if (const QRectF intersected = deviceClipRect.intersected(deviceShapeRect); !intersected.isEmpty()) {
-                        effectiveShape.append(intersected);
-                    }
+                if (const QRectF intersected = deviceClipRect.intersected(deviceShapeRect); !intersected.isEmpty()) {
+                    effectiveShape.append(intersected);
                 }
             }
+        }
 #if ACRYLIC_GLASS_WAYLAND_BACKGROUND_EFFECT_V1
-        } else {
-            for (const Rect& rect : blurShape.rects()) {
+    } else {
+        for (const Rect& rect : blurShape.rects()) {
 #if defined(GLASS_X11)
-                effectiveShape.append(viewport.mapToRenderTarget(rect).translated(-deviceBackgroundRect.topLeft()));
+            effectiveShape.append(viewport.mapToRenderTarget(rect).translated(-deviceBackgroundRect.topLeft()));
 #else
-                effectiveShape.append(rect.translated(-backgroundRect.topLeft()).scaled(viewport.scale()).rounded());
+            effectiveShape.append(rect.translated(-backgroundRect.topLeft()).scaled(viewport.scale()).rounded());
 #endif
-            }
         }
-#else
-        }
-#endif
-        if (effectiveShape.isEmpty()) {
-            return;
-        }
-    } else if (finiteClip && (deviceRegion & deviceBackgroundRect).isEmpty()) {
-        return;
     }
-
-    std::vector<GLVertex2D> wobblyVertices;
-    if (wobblySurface) {
-        const WobblyShape& shape = wobblyIt->second.shape();
-        const int xTessellation = shape.xTessellation();
-        const int yTessellation = shape.yTessellation();
-        std::vector<QRectF> clipRects;
-        if (finiteClip) {
-            const QRectF surfaceBounds(0.0, 0.0, scaledBackgroundRect.width(), scaledBackgroundRect.height());
-            clipRects.reserve(deviceRegion.rects().size());
-            for (const Rect& clipRect : deviceRegion.rects()) {
-                const QRectF localClip(
-                    clipRect.x() - deviceBackgroundRect.x(),
-                    clipRect.y() - deviceBackgroundRect.y(),
-                    clipRect.width(),
-                    clipRect.height());
-                if (const QRectF intersected = localClip.intersected(surfaceBounds); !intersected.isEmpty()) {
-                    clipRects.push_back(intersected);
-                }
-            }
-            if (clipRects.empty()) {
-                return;
-            }
-        }
-        wobblyVertices.reserve(static_cast<size_t>(xTessellation) * yTessellation * 6 * std::max<size_t>(1, clipRects.size()));
-
-        const QPointF frameOrigin(w->x(), w->y());
-#if !defined(GLASS_X11)
-        const QPointF deviceBackgroundOrigin(scaledBackgroundRect.x(), scaledBackgroundRect.y());
-#endif
-        const auto toDeviceLocal = [&](const QPointF& globalPoint) {
-            const QPointF transformed(
-                frameOrigin.x() + (globalPoint.x() - frameOrigin.x()) * data.xScale() + data.xTranslation(),
-                frameOrigin.y() + (globalPoint.y() - frameOrigin.y()) * data.yScale() + data.yTranslation());
-#if defined(GLASS_X11)
-            return QVector2D(viewport.mapToRenderTarget(transformed) - QPointF(deviceBackgroundRect.topLeft()));
 #else
-            return QVector2D(
-                static_cast<float>(transformed.x() * viewport.scale() - deviceBackgroundOrigin.x()),
-                static_cast<float>(transformed.y() * viewport.scale() - deviceBackgroundOrigin.y()));
+    }
 #endif
-        };
-
-        const auto makeVertex = [&](qreal u, qreal v) {
-            const QPointF sourcePoint(frameRect.x() + u * frameRect.width(), frameRect.y() + v * frameRect.height());
-            return GLVertex2D{
-                .position = toDeviceLocal(shape.map(u, v, frameRect)),
-                .texcoord = toDeviceLocal(sourcePoint),
-            };
-        };
-
-        for (int row = 0; row < yTessellation; ++row) {
-            const qreal v0 = static_cast<qreal>(row) / yTessellation;
-            const qreal v1 = static_cast<qreal>(row + 1) / yTessellation;
-            for (int column = 0; column < xTessellation; ++column) {
-                const qreal u0 = static_cast<qreal>(column) / xTessellation;
-                const qreal u1 = static_cast<qreal>(column + 1) / xTessellation;
-
-                // Preserve the client's blur region while deforming it. A
-                // full-frame mesh would blur deliberately transparent holes.
-                const QRectF cell(frameRect.x() + u0 * frameRect.width(),
-                    frameRect.y() + v0 * frameRect.height(),
-                    (u1 - u0) * frameRect.width(), (v1 - v0) * frameRect.height());
-                for (const Rect& regionRect : blurShape.rects()) {
-                    const QRectF part = cell.intersected(QRectF(regionRect));
-                    if (part.isEmpty()) {
-                        continue;
-                    }
-                    const qreal left = (part.left() - frameRect.x()) / frameRect.width();
-                    const qreal right = (part.right() - frameRect.x()) / frameRect.width();
-                    const qreal top = (part.top() - frameRect.y()) / frameRect.height();
-                    const qreal bottom = (part.bottom() - frameRect.y()) / frameRect.height();
-                    appendClippedTriangle(wobblyVertices,
-                        {makeVertex(left, top), makeVertex(right, bottom), makeVertex(left, bottom)}, clipRects);
-                    appendClippedTriangle(wobblyVertices,
-                        {makeVertex(left, top), makeVertex(right, top), makeVertex(right, bottom)}, clipRects);
-                }
-            }
-        }
-        if (wobblyVertices.empty()) {
-            return;
-        }
+    if (effectiveShape.isEmpty()) {
+        return;
     }
 
     // 3. Framebuffer (re)allocation
@@ -1689,14 +1334,10 @@ void BlurEffect::blur(
     // Source is logical (blitFromRenderTarget transforms it via viewport).
     // Destination is in the framebuffer's own pixel space — now device,
     // so map dirtyRect through viewport.scale() before translating.
-    // A wobbly mesh can sample any point in its full deformed bounds even
-    // when KWin only asks us to repaint the newly exposed strip. Capture the
-    // complete surface, then clip the generated triangles to deviceRegion.
-    const Region dirtyRegion = wobblySurface ? Region(Rect(backgroundRect))
 #if defined(GLASS_X11)
-                                             : deviceRegion.intersected(deviceBackgroundRect);
+    const Region dirtyRegion = deviceRegion.intersected(deviceBackgroundRect);
 #else
-                                             : viewport.mapFromDeviceCoordinatesContained(deviceRegion) & backgroundRect;
+    const Region dirtyRegion = viewport.mapFromDeviceCoordinatesContained(deviceRegion) & backgroundRect;
 #endif
     for (const Rect& dirtyRect : dirtyRegion.rects()) {
 #if defined(GLASS_X11)
@@ -1716,7 +1357,7 @@ void BlurEffect::blur(
     vbo->reset();
     vbo->setAttribLayout(std::span(GLVertexBuffer::GLVertex2DLayout), sizeof(GLVertex2D));
 
-    const int vertexCount = wobblySurface ? static_cast<int>(wobblyVertices.size()) : effectiveShape.size() * 6;
+    const int vertexCount = effectiveShape.size() * 6;
     if (auto result = vbo->map<GLVertex2D>(6 + vertexCount)) {
         auto map = *result;
 
@@ -1768,33 +1409,45 @@ void BlurEffect::blur(
             };
         }
 
-        // Onscreen geometry. position is the final screen location used
-        // for background sampling; texcoord is the undeformed local
-        // coordinate used by the rounded-rect SDF, lens and highlight.
-        if (wobblySurface) {
-            for (const GLVertex2D& vertex : wobblyVertices) {
-                map[vboIndex++] = vertex;
-            }
-        } else {
-            for (const RectF& rect : effectiveShape) {
-                const float x0 = rect.left();
-                const float y0 = rect.top();
-                const float x1 = rect.right();
-                const float y1 = rect.bottom();
+        // The geometry that will be painted on screen, in device pixels.
+        for (const QRectF& rect : effectiveShape) {
+            const float x0 = rect.left();
+            const float y0 = rect.top();
+            const float x1 = rect.right();
+            const float y1 = rect.bottom();
 
-                const QVector2D topLeft(x0, y0);
-                const QVector2D bottomRight(x1, y1);
-                const QVector2D bottomLeft(x0, y1);
-                const QVector2D topRight(x1, y0);
+            const float u0 = x0 / scaledBackgroundRect.width();
+            const float v0 = 1.0f - y0 / scaledBackgroundRect.height();
+            const float u1 = x1 / scaledBackgroundRect.width();
+            const float v1 = 1.0f - y1 / scaledBackgroundRect.height();
 
-                map[vboIndex++] = GLVertex2D{.position = topLeft, .texcoord = topLeft};
-                map[vboIndex++] = GLVertex2D{.position = bottomRight, .texcoord = bottomRight};
-                map[vboIndex++] = GLVertex2D{.position = bottomLeft, .texcoord = bottomLeft};
+            // first triangle
+            map[vboIndex++] = GLVertex2D {
+                .position = QVector2D(x0, y0),
+                .texcoord = QVector2D(u0, v0),
+            };
+            map[vboIndex++] = GLVertex2D {
+                .position = QVector2D(x1, y1),
+                .texcoord = QVector2D(u1, v1),
+            };
+            map[vboIndex++] = GLVertex2D {
+                .position = QVector2D(x0, y1),
+                .texcoord = QVector2D(u0, v1),
+            };
 
-                map[vboIndex++] = GLVertex2D{.position = topLeft, .texcoord = topLeft};
-                map[vboIndex++] = GLVertex2D{.position = topRight, .texcoord = topRight};
-                map[vboIndex++] = GLVertex2D{.position = bottomRight, .texcoord = bottomRight};
-            }
+            // second triangle
+            map[vboIndex++] = GLVertex2D {
+                .position = QVector2D(x0, y0),
+                .texcoord = QVector2D(u0, v0),
+            };
+            map[vboIndex++] = GLVertex2D {
+                .position = QVector2D(x1, y0),
+                .texcoord = QVector2D(u1, v0),
+            };
+            map[vboIndex++] = GLVertex2D {
+                .position = QVector2D(x1, y1),
+                .texcoord = QVector2D(u1, v1),
+            };
         }
 
         vbo->unmap();

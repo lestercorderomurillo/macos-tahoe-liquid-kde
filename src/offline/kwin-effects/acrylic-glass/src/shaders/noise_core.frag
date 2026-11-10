@@ -16,8 +16,8 @@ out vec4 fragColor;
 void main(void)
 {
     vec2 halfSize = blurSize * 0.5;
-    vec2 localPos = uv - box.xy;
-    float d = lgRoundedRectDistance(localPos, halfSize, cornerRadius);
+    vec2 pos = vertex - box.xy;
+    float d = lgRoundedRectDistance(pos, halfSize, cornerRadius);
     float mask = lgRoundedRectCoverage(d);
     if (mask <= 0.0) {
         discard;

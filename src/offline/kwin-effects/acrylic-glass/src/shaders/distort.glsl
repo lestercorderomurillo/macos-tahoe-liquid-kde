@@ -16,7 +16,7 @@ vec2 lgDockLensUV(vec2 uv, vec2 outwardNormal, vec2 surfacePosition, vec2 surfac
     return clamp(uv - textureNormal * thickness * edgeQ / max(backgroundSize, vec2(1.0)), 0.0, 1.0);
 }
 
-vec2 lgLensUV(vec2 uv, vec2 center, float magnifyGlassStrength, float edgeQ)
+vec2 lgLensUV(vec2 uv, float magnifyGlassStrength, float edgeQ)
 {
     // Edge-gated lens. The previous formula
     //   totalMag = magnifyGlassStrength * (1.0 + edgeQ * 3.5)
@@ -32,6 +32,7 @@ vec2 lgLensUV(vec2 uv, vec2 center, float magnifyGlassStrength, float edgeQ)
     // pixel-perfect across frames. The rim (edgeQ≈1) still gets the
     // full magnification (4.5×, matching the previous peak value at
     // the edge: 1.0 + 3.5*1 = 4.5).
+    vec2 center = vec2(0.5);
     float totalMag = magnifyGlassStrength * edgeQ * 4.5;
     return center + (uv - center) * (1.0 - totalMag);
 }

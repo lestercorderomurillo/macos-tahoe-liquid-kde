@@ -35,15 +35,15 @@ varying vec2 vertex;
 void main(void)
 {
     vec2 halfSize = blurSize * 0.5;
-    vec2 localPos = uv - box.xy;
+    vec2 pos = vertex - box.xy;
 
-    float d = lgRoundedRectDistance(localPos, halfSize, cornerRadius);
+    float d = lgRoundedRectDistance(pos, halfSize, cornerRadius);
     float mask = lgRoundedRectCoverage(d);
     if (mask <= 0.0) {
         discard;
     }
 
-    vec2 outNorm = lgRoundedRectNormal(localPos, halfSize, cornerRadius);
+    vec2 outNorm = lgRoundedRectNormal(pos, halfSize, cornerRadius);
     float inside = max(-d, 0.0);
 
     float refrBand = max(refractionWidth * (dockSurface ? 1.25 : 1.0), 1.0);
@@ -52,14 +52,11 @@ void main(void)
     // Both profiles leave the centre undistorted.
     float edgeQ = edgeT * edgeT * (dockSurface ? 1.0 : edgeT);
 
-    vec2 safeBackgroundSize = max(backgroundSize, vec2(1.0));
-    vec2 backgroundUV = vec2(vertex.x / safeBackgroundSize.x, 1.0 - vertex.y / safeBackgroundSize.y);
-    vec2 lensCenter = vec2(box.x / safeBackgroundSize.x, 1.0 - box.y / safeBackgroundSize.y);
-    vec2 lensUV = backgroundUV;
+    vec2 lensUV = uv;
     if (magnifyGlassStrength > 0.0) {
         lensUV = dockSurface
-            ? lgDockLensUV(backgroundUV, outNorm, localPos, blurSize, safeBackgroundSize, magnifyGlassStrength, edgeQ)
-            : lgLensUV(backgroundUV, lensCenter, magnifyGlassStrength, edgeQ);
+            ? lgDockLensUV(uv, outNorm, pos, blurSize, backgroundSize, magnifyGlassStrength, edgeQ)
+            : lgLensUV(uv, magnifyGlassStrength, edgeQ);
     }
     vec2 texel = halfpixel * 2.0;
     vec3 col;
@@ -82,7 +79,7 @@ void main(void)
     if (darkGradientOverlay) {
         // Frame-local geometry keeps top/bottom upright on all backends.
         // Tint changes color only: the bottom retains the same blurred glass.
-        float heightFraction = clamp((localPos.y + halfSize.y) / max(blurSize.y, 1.0), 0.0, 1.0);
+        float heightFraction = clamp((pos.y + halfSize.y) / max(blurSize.y, 1.0), 0.0, 1.0);
         // End positions collapse one segment without dividing by zero.
         float centerPosition = clamp(gradientCenterPosition, 0.0, 1.0);
         bool upper = heightFraction < centerPosition;
