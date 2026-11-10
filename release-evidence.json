@@ -1,69 +1,190 @@
 {
-  "version": "0.67.1",
-  "source_sha256": "d6e78a9b725cfaaf2f97648181df892e5b055ac1279ebeab670a455c45077195",
+  "version": "0.67.2",
+  "source_sha256": "a975ffb8fe0d76dd683513ecf6f7b87c6e77afc80d9bbe6682504d31823df530",
   "environment": "Linux-7.2.0-1-cachyos-x86_64-with-glibc2.44",
   "checks": [
     {
-      "command": "PYTHONDONTWRITEBYTECODE=1 python3 -m pytest tests/test_system_menu_style.py -q --tb=short -p no:cacheprovider",
+      "command": "PYTHONDONTWRITEBYTECODE=1 python3 -m pytest tests/test_launcher_presets.py tests/test_plasmoids_step.py tests/test_taskmanager_qml.py -k 'dock or taskmanager_build_artifacts' -q -p no:cacheprovider --basetemp=/tmp/dock-zoom-0672-tests",
       "result": "passed",
-      "detail": "1 passed. Actual native row drawing/metrics at scales 1, 1.5 and 2; light/dark/light plugin-style replacement with identical palettes; ordinary menu parity; style ownership/destruction. The new regression fails against the pre-fix header."
+      "detail": "Tahoe: 24 passed, 50 deselected. Executed task transforms and shared DockIcon hover/idle states, centered bounds, unchanged cells, horizontal/vertical and desktop/popup exemptions, saved magnification clamping; existing artwork and boundary geometry regressions."
     },
     {
-      "command": "PYTHONDONTWRITEBYTECODE=1 MTTKDE_REQUIRE_NATIVE_GLOBALMENU=1 python3 -m pytest tests/test_globalmenu_model.py -q --tb=short -p no:cacheprovider --basetemp=/tmp/menu-sync-0671/native",
+      "command": "GOLDEN_GATE_TAHOE_SOURCE=<Tahoe checkout> MAC_TAHOE_NO_UPDATE_CHECK=true python3 bootstrap.py --prepare; compare all four changed staged Dock QML files with Tahoe",
       "result": "passed",
-      "detail": "1 passed. Plugin and test builds; isolated Xvfb/private D-Bus model, popup, shortcut and QML composition checks."
+      "detail": "Golden Gate stages byte-identical tested hover implementations."
     },
     {
-      "command": "PYTHONDONTWRITEBYTECODE=1 python3 /tmp/menu-sync-0671/vm.py",
+      "command": "PYTHONDONTWRITEBYTECODE=1 python3 -m pytest tests/test_bootstrap.py -q -p no:cacheprovider",
       "result": "passed",
-      "detail": "Real Kvantum in disposable KDE neon VMs for both editions. Same menu instances reused through light/dark/light; shared surface interiors match exactly and change per mode. System-menu popup captures reviewed; identity verified before each capture. Ordinary-menu QWidget grabs were rejected for inconsistent transparent backing; material parity is established by the direct native surface comparison, not those grabs. Custom system-menu metrics intentionally differ from ordinary menus."
+      "detail": "Golden Gate: 40 passed; source staging and release selection regression checks."
     },
     {
-      "command": "GOLDEN_GATE_TAHOE_SOURCE=<Tahoe checkout> MAC_TAHOE_NO_UPDATE_CHECK=true python3 bootstrap.py --prepare; cmp staged/systemmenustyle.h Tahoe/systemmenustyle.h",
+      "command": "Clean guest Dock build; python3 /tmp/dock-zoom-0672/final_capture.py; python3 /tmp/dock-zoom-0672/golden_light_capture.py",
       "result": "passed",
-      "detail": "Golden Gate stages the identical tested menu implementation; edition staging does not transform this source."
+      "detail": "Disposable KDE neon VMs, each edition using its own installed defaults. Dock-only light/dark idle, Launcher, application and Trash hover captures reviewed. Old-module frames were rejected; final captures use the rebuilt module with QML disk caching disabled."
     }
   ],
   "gallery_commit": "c485eeec652358824d2496222cb030a91f70e5dd",
   "captures": [],
-  "menu_transition_review": {
-    "edition": "tahoe",
-    "source_header_sha256": "db89e448fb34bc47ff2bd4e7bb0e1d6b66e7491aae7921c15bd984655ad1f9ce",
-    "probe_sha256": "320fb96ba21e0876e0b23aa42fd6f4164025d00dbaa80b00e191187788c4c397",
-    "results": [
-      {
-        "changed_from_previous": false,
-        "mode": "light",
-        "popup_identity_verified": true,
-        "style": "kvantum",
-        "system_matches_ordinary": true
-      },
-      {
-        "changed_from_previous": true,
-        "mode": "dark",
-        "popup_identity_verified": true,
-        "style": "kvantum",
-        "system_matches_ordinary": true
-      },
-      {
-        "changed_from_previous": true,
-        "mode": "light",
-        "popup_identity_verified": true,
-        "style": "kvantum",
-        "system_matches_ordinary": true
-      }
-    ],
+  "dock_hover_review": {
+    "location": "/tmp/dock-zoom-0672",
+    "environment": "Disposable KDE neon, Plasma 6.8.1 / Qt 6.11.1, Wayland, scale 2; edition-specific existing capture overlays; rebuilt shared module and changed QML only",
     "frames": {
-      "0-light-system.png": "4a2dd2c756b13f8dbbbde9af3b14f896889d931b243d5e731ebd56d8406a6853",
-      "1-dark-system.png": "a77f6cdac700665bb2aaae18b50481f672b7d96f363316a063cb6b5f315a99a9",
-      "2-light-system.png": "4a2dd2c756b13f8dbbbde9af3b14f896889d931b243d5e731ebd56d8406a6853"
+      "tahoe-light-idle.png": {
+        "sha256": "d2bc732dc02be8fe0eec08360ea8d04d31ce0925eeb535cf934cdf5ad8958192",
+        "dock_geometry": {
+          "x": 614,
+          "y": 996,
+          "width": 692,
+          "height": 84
+        }
+      },
+      "tahoe-light-launcher.png": {
+        "sha256": "2575172c688802b91f423121fc48e7c84ebf78e8cac2fb53180c618a9579b18d",
+        "dock_geometry": {
+          "x": 614,
+          "y": 996,
+          "width": 692,
+          "height": 84
+        }
+      },
+      "tahoe-light-task.png": {
+        "sha256": "a046ea23071cbeb311b295bf37a24544f6c049564a877ef8a5d8870d9f57ea35",
+        "dock_geometry": {
+          "x": 614,
+          "y": 996,
+          "width": 692,
+          "height": 84
+        }
+      },
+      "tahoe-light-trash.png": {
+        "sha256": "812b3721e92e12fbfd2abf734e8ff06306e417a706beef5dbfa04725dbac6fc8",
+        "dock_geometry": {
+          "x": 614,
+          "y": 996,
+          "width": 692,
+          "height": 84
+        }
+      },
+      "tahoe-dark-idle.png": {
+        "sha256": "13187eb2024f8cdb1e07700707bc35ce2428b8b5aeae795ee92e061bf8fbaecd",
+        "dock_geometry": {
+          "x": 614,
+          "y": 996,
+          "width": 692,
+          "height": 84
+        }
+      },
+      "tahoe-dark-launcher.png": {
+        "sha256": "dd9045f5ec3cc8710b1174201b7a354972e3f0cfb662520f57e85eb7cc79b904",
+        "dock_geometry": {
+          "x": 614,
+          "y": 996,
+          "width": 692,
+          "height": 84
+        }
+      },
+      "tahoe-dark-task.png": {
+        "sha256": "c134b951b8e711619cca4a84cf8652242991a72adfa79067b3a515640327fa3b",
+        "dock_geometry": {
+          "x": 614,
+          "y": 996,
+          "width": 692,
+          "height": 84
+        }
+      },
+      "tahoe-dark-trash.png": {
+        "sha256": "61091ccdf1f8c0973d6e0f19d042e7210f189708bd9ae8c4098128029060dae9",
+        "dock_geometry": {
+          "x": 614,
+          "y": 996,
+          "width": 692,
+          "height": 84
+        }
+      },
+      "golden-gate-light-idle.png": {
+        "sha256": "7b5c3d9efb0d00d39734ac7aa870b97d9c6f76936dee0f17bdf05788af42df33",
+        "dock_geometry": {
+          "x": 614,
+          "y": 996,
+          "width": 692,
+          "height": 84
+        }
+      },
+      "golden-gate-light-launcher.png": {
+        "sha256": "b1606d9fba7ac9271c39466f3793eecbfc0fe146b140a31b3868f61af9d32839",
+        "dock_geometry": {
+          "x": 614,
+          "y": 996,
+          "width": 692,
+          "height": 84
+        }
+      },
+      "golden-gate-light-task.png": {
+        "sha256": "61218598a3d6ecd2b4b2195c81daafe45fb80b1a6b93babe7a498c085074c7cf",
+        "dock_geometry": {
+          "x": 614,
+          "y": 996,
+          "width": 692,
+          "height": 84
+        }
+      },
+      "golden-gate-light-trash.png": {
+        "sha256": "7b20e5c2b6ee225c082e78c5d9fa5af7e8f1dac2a02241f96a70da9638a1d9de",
+        "dock_geometry": {
+          "x": 614,
+          "y": 996,
+          "width": 692,
+          "height": 84
+        }
+      },
+      "golden-gate-dark-idle.png": {
+        "sha256": "4947910f84d33cfe537e1165dad06be1eafc00e827772dc7b20953cb361a4b6c",
+        "dock_geometry": {
+          "x": 614,
+          "y": 996,
+          "width": 692,
+          "height": 84
+        }
+      },
+      "golden-gate-dark-launcher.png": {
+        "sha256": "5244d63fc9df4be3c476461f71762036bec28de9ded0bc40b89ed8c4b28a3034",
+        "dock_geometry": {
+          "x": 614,
+          "y": 996,
+          "width": 692,
+          "height": 84
+        }
+      },
+      "golden-gate-dark-task.png": {
+        "sha256": "28040731948eca10e03e33ba4f61cf612834254e51e0e59beda95bfb3415df38",
+        "dock_geometry": {
+          "x": 614,
+          "y": 996,
+          "width": 692,
+          "height": 84
+        }
+      },
+      "golden-gate-dark-trash.png": {
+        "sha256": "a665384a808bd114d885286bcc3745008f24c233acd1002935c8281a1702feb3",
+        "dock_geometry": {
+          "x": 614,
+          "y": 996,
+          "width": 692,
+          "height": 84
+        }
+      }
     },
-    "location": "/tmp/menu-sync-0671/tahoe"
+    "runtime_files": {
+      "src/offline/plasmoids/org.kde.mac.tahoe.liquid.taskmanager/contents/ui/Task.qml": "55b1655d5f7027bb349ad9cfc47d29dca0a586228c455ed18ed9021b116056a0",
+      "src/offline/plasmoids/org.kde.mac.tahoe.liquid.taskmanager/launcher/DockIcon.qml": "b8ba82fa45f4d77c6d3e1f84f92eccee6d52717cdd303fba0e6565a0e5a16cf1",
+      "src/offline/plasmoids/org.kde.mac-tahoe-liquid-kde.launcher/contents/ui/CompactRepresentation.qml": "8ccc7027fa68fe727252fbab6b0f63658052b0c6ceb8f1735e0010e70ae0134a",
+      "src/offline/plasmoids/org.kde.mac-tahoe-liquid-kde.trashcan/contents/ui/main.qml": "008e85237cfa6c0076f5d84b1a769d3934c24218120757c136e2aeaa21d67e3c"
+    }
   },
   "coverage_limits": [
     "Full remote distro CI runs asynchronously; pending results are not passed.",
-    "VM previews exercise real Kvantum native menu surfaces and repeated style replacement; QWidget captures do not include compositor blur/refraction or establish end-to-end desktop theme-switch timing.",
-    "Existing documentation photographs retain their original provenance; no gallery refresh.",
-    "The prior real Wayland pointer-grab coverage limitation remains; popup-grab behavior is unchanged."
+    "Focused VM review covers the installed default horizontal Dock in both editions and modes, not every GPU or custom panel arrangement.",
+    "Existing documentation photographs retain their original provenance; no gallery refresh."
   ]
 }

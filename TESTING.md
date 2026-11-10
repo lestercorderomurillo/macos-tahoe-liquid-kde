@@ -1,9 +1,7 @@
 # Installer testing
 
-Tahoe **v0.67.1** keeps the system menu's surface synchronized with the live
-application style during light/dark switching. The system menu previously kept
-an independent Kvantum instance whose cached light SVG survived the desktop's
-style replacement. Custom row metrics, icons and shortcut hints are preserved.
+Tahoe **v0.67.2** adds centered hover zoom to Launcher and Trash and reduces
+Dock enlargement by 10% (the default grows icons by 9% instead of 10%).
 See [release evidence](release-evidence.json) for focused checks and coverage limits;
 full remote CI runs asynchronously.
 
