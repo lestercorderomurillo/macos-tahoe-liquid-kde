@@ -78,7 +78,41 @@ shared desktop/installer implementation still belongs exclusively in Tahoe.
 CI cancels superseded runs on the same ref. Preserve all distro legs and the
 disjoint primary shards. Reuse weekly distro SDK layers and compiler results;
 retain compiler-content checking and never enable unsafe cache sloppiness.
-Focused local evidence precedes delivery; the full remote matrix stays async.
+Selected qualification precedes merge; the full remote matrix stays async.
+
+## Review and merge qualification
+
+A request to review, fix, test and merge means review the diff and existing CI
+results first, repair relevant failures, then qualify the candidate before
+merging. A successful compile, plugin load or workflow submission does not
+prove rendering behavior. Do not merge first and leave required validation
+for the user to discover afterward.
+
+Choose a small representative set by the behavior and compatibility boundaries
+actually changed, not every distro by default. For shared KWin effect, shader
+or ABI changes, cover the supported 6.6, 6.7 and 6.8 SDK/API branches using
+selected distro environments, and exercise at least one real isolated X11
+rendering case plus Wayland when shared code affects it. One environment may
+prove multiple claims; another distro is needed only for a distinct relevant
+SDK, package layout or observed failure. Record build, load and visible behavior
+separately. Include existing executable shader/pixel regressions when shader
+inputs or coordinate conventions change; source-text checks are not substitutes.
+
+The selected qualification checks must pass on the final implementation before
+merge. Inspect existing CI failures and resolve those relevant to the change;
+do not choose a passing subset to avoid an observed regression. Reuse matching
+passing evidence and running CI jobs rather than launching duplicate matrices.
+The complete distro matrix stays enabled and may finish asynchronously. Once
+the selected checks pass, publication does not wait for every distro or a
+second run on main. Investigate later failures with a focused reproduction and
+repair; do not automatically revert an entire delivery for every CI failure.
+Revert when the user requests it or the failure warrants withdrawing the change.
+Never describe pending or unrun checks as passed.
+
+Release commands must stop on failed prerequisites. Verify the version, immutable
+pin, archive checksum and evidence before committing or pushing a release tag;
+use fail-fast scripts or separate dependent commands. Never continue publication
+after a failed validation command. Policy-only edits need no new release.
 
 ## Respect for the user's time
 
@@ -94,7 +128,7 @@ patterns to stop, not reasons to remove necessary correctness checks.
 4. Narrating plans, tool calls or implementation details: omit routine process narration; explain only when asked or when needed for user input.
 5. Repeating unchanged status messages: no stream of “still waiting”, “verifying” or “almost done”.
 6. Announcing that you will be concise or respectful: demonstrate it in the response instead.
-7. Delaying an installable fix for the remote matrix: publish after focused local validation and required component review; leave full CI asynchronous.
+7. Delaying publication for the entire remote matrix: pass the selected qualification before merge, then publish without waiting for every distro; keep full CI asynchronous.
 8. Waiting for main to repeat dev's result: promote the same commit without a polling job.
 9. Running the full matrix twice for the same delivered change: run it on dev and on PRs; main promotion does not launch a duplicate.
 10. Running runtime CI for Markdown-only edits: use documentation/path filters; do not build native components for prose.
@@ -1234,14 +1268,14 @@ that scope when a failure or shared dependency reveals another affected path.
 | Native backend, ABI or distro packages | Build against the affected SDKs and test the changed backend on representative distros with distinct relevant SDK/package layouts. Record build, load and behavior results separately. |
 | Documentation or agent instructions only | Review consistency, references and `git diff --check`; no manual pytest, native builds or VM runs. |
 
-For an X11-only fix, test the affected component on at least two supported
-distros with X11 available, covering the relevant KWin ABI differences. Verify
-the intended module loads and the reported behavior is fixed in an isolated
-session. Include install/reinstall/uninstall regressions when those paths
-changed, and a Wayland regression check when shared code changed. A successful
-compile or plugin load alone does not prove rendering is correct. Missing X11
-support is a coverage gap, not a pass. Do not repeat unrelated desktop lifecycle
-qualification on every distro for this fix.
+For an X11 fix, run at least one representative isolated X11 session and
+verify both module loading and the reported behavior. Cover affected KWin
+6.6, 6.7 and 6.8 SDK/API branches with selected distro environments; add another
+runtime distro only for a distinct relevant compatibility difference or failure.
+Include install/reinstall/uninstall regressions only when those paths changed,
+and a Wayland regression when shared code changed. Compilation or plugin loading
+alone does not prove rendering. Missing X11 support is a coverage gap, not a pass.
+Do not repeat unrelated desktop lifecycle qualification across distros.
 
 Run focused checks while implementing; reserve broad integration runs for a
 stable candidate. Required CI supplies the complete suite and configured distro
@@ -1265,8 +1299,8 @@ that evidence.
 
 For implementation delivery, run focused local checks for the affected behavior,
 review component-scoped VM captures when needed, and record their exact source
-fingerprint in `release-evidence.json`. Publish the installable fix promptly after
-these checks pass. Full remote CI remains enabled and runs asynchronously on
+fingerprint in `release-evidence.json`. Complete the selected merge qualification
+above and resolve relevant known CI failures, then publish the installable fix. Full remote CI remains enabled and runs asynchronously on
 `dev`; `main` promotion does not run a polling or duplicate test job.
 Do not wait for the full matrix or repeat the historical screenshot audit before
 telling the user the release can be installed. Clearly distinguish local checks,
