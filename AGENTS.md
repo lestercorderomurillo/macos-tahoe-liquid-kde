@@ -1,5 +1,11 @@
 # AGENTS.md
 
+## Required skills
+
+Read and follow these skills on every task in this repository:
+
+- [communication-autonomy](lester-skills/communication-autonomy/SKILL.md) — work silently, interrupt only for real decisions or blockers, and close with a one-line "Done." report.
+
 ## Clean install-ready delivery
 
 After every fix or release, leave the user's actual VS Code checkout clean and
