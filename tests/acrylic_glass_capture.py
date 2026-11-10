@@ -5,6 +5,8 @@ Uses a synthetic transparent VM surface; this is not a VirtualBox guest test.
 Requires KWin, Spectacle, kscreen-doctor, qdbus6, PyQt6, Pillow and a compiled effect.
 Use --backend xcb for Xwayland (also requires Xwayland).
 Use --compositor x11 with the X11 plugin for native KWin X11 in Xvfb.
+Add --wobbly --identity WobblyProbe --expect changed for drag coverage
+(requires xdotool and xprop); compare glass at rest, during motion and afterward.
 Use --identity VirtualBox --expect changed to check the manager is not excluded.
 Use --expect changed for an unpatched control; unchanged is the default.
 The output directory must be new. No host config or plugins are modified.
@@ -97,9 +99,13 @@ def client(role):
         subprocess.run(["xprop", "-id", str(int(window.winId())), "-f", "_NET_WM_WINDOW_TYPE", "32a",
                         "-set", "_NET_WM_WINDOW_TYPE", "_NET_WM_WINDOW_TYPE_DESKTOP"], check=True, timeout=5)
     window.resize(960, 640)
-    if role != "desktop" and rounded:
+    if role != "desktop" and (rounded or os.environ.get("MTTKDE_CAPTURE_WOBBLY")):
         window.resize(480, 320)
         window.show()
+        if os.environ.get("MTTKDE_CAPTURE_WOBBLY"):
+            subprocess.run(["xprop", "-id", str(int(window.winId())), "-f",
+                            "_KDE_NET_WM_BLUR_BEHIND_REGION", "32c", "-set",
+                            "_KDE_NET_WM_BLUR_BEHIND_REGION", "0,0,480,320"], check=True)
     else:
         window.showFullScreen()
     app.exec()
@@ -141,8 +147,8 @@ def inside(output):
         return subprocess.run(["qdbus6", "org.kde.KWin", *args],
                               capture_output=True, text=True, check=True, timeout=10).stdout.strip()
 
-    def capture(name):
-        time.sleep(1)
+    def capture(name, delay=1):
+        time.sleep(delay)
         if os.environ.get("MTTKDE_CAPTURE_SCREENSHOT_API") == "dbus":
             import dbus as python_dbus
             from PyQt6.QtGui import QImage
@@ -265,6 +271,45 @@ def inside(output):
         assert loaded == "true" and effect in active.splitlines(), "Effect did not activate"
         assert vm.poll() is None and (background is None or background.poll() is None), "Test client exited"
         capture("effect-on.png")
+        if os.environ.get("MTTKDE_CAPTURE_WOBBLY"):
+            # All input targets the private Xvfb display, after verifying its
+            # compositor owner above. Never inherit the user's DISPLAY/bus.
+            assert x11 and dbus("/Effects", "org.kde.kwin.Effects.loadEffect", "wobblywindows") == "true"
+            def xdo(*args):
+                return subprocess.check_output(["xdotool", *args], env=env, text=True, timeout=10).strip()
+            window_id = xdo("search", "--name", "^Synthetic VM surface$").splitlines()[0]
+            xdo("windowactivate", "--sync", window_id)
+            xdo("windowmove", window_id, "180", "140")
+            before = xdo("getwindowgeometry", "--shell", window_id)
+            capture("wobbly-rest.png")
+            xdo("mousemove", "420", "280", "keydown", "Alt_L", "mousedown", "1")
+            try:
+                # Keep the model moving while the screenshot service captures.
+                import threading
+                done = threading.Event()
+                def motion():
+                    for x in [450, 510, 570, 510, 450, 390] * 5:
+                        if done.is_set():
+                            break
+                        xdo("mousemove", str(x), "310")
+                        time.sleep(.04)
+                thread = threading.Thread(target=motion)
+                thread.start()
+                try:
+                    time.sleep(.12)
+                    assert "wobblywindows" in dbus("/Effects", "org.kde.kwin.Effects.activeEffects").splitlines(), "Move did not activate Wobbly Windows"
+                    capture("wobbly-moving.png", delay=0)
+                finally:
+                    done.set()
+                    thread.join(timeout=10)
+            finally:
+                xdo("mouseup", "1", "keyup", "Alt_L")
+            capture("wobbly-settled.png", delay=2)
+            after = xdo("getwindowgeometry", "--shell", window_id)
+            assert before != after, "The isolated window did not move"
+            assert dbus("/Effects", "org.kde.kwin.Effects.debug", "liquidglass", "status") == "ready"
+            (output / "wobbly.json").write_text(json.dumps({"before": before, "after": after,
+                "active_during_motion": True, "shader_status": "ready"}, indent=2))
         if os.environ.get("MTTKDE_CAPTURE_DAMAGE"):
             (output / "damage-trigger").touch()
             capture("partial-update.png")
@@ -301,7 +346,8 @@ def inside(output):
         stop(xserver)
 
 
-def run(plugin, output, scale, expected, backend, identity, renderer="software", shader_dir=None, companion=None, desktop_surface=False, squircle_blend=0.0, decoration_blur=True, backing_tint=False, appearance="light", compositor="wayland", conflicts=False, screenshot_api="spectacle", damage=False, conflict_effect="blur", application="synthetic", material=None):
+def run(plugin, output, scale, expected, backend, identity, renderer="software", shader_dir=None, companion=None, desktop_surface=False, squircle_blend=0.0, decoration_blur=True, backing_tint=False, appearance="light", compositor="wayland", conflicts=False, screenshot_api="spectacle", damage=False, conflict_effect="blur", application="synthetic", material=None, wobbly=False):
+    assert not wobbly or (compositor == "x11" and application == "synthetic" and not shader_dir), "Wobbly probe requires native X11 synthetic client"
     assert not conflicts or not shader_dir, "Conflict probe requires Acrylic Glass"
     if compositor == "x11":
         assert screenshot_api == "spectacle", "Direct screenshot API is Wayland only"
@@ -337,6 +383,9 @@ def run(plugin, output, scale, expected, backend, identity, renderer="software",
         "BlurMatching=false\nNoiseStrength=0\nWindowCornerRadius=22\n"
         # A retired opacity value must not suppress the rendered material.
         "MaterialOpacity=0\n")
+    if wobbly:
+        with (output / "config/kwinrc").open("a") as config:
+            config.write("[MouseBindings]\nCommandAllKey=Alt\nCommandAll1=Move\n")
     color = "32,32,32" if appearance == "dark" else "245,245,245"
     (output / "config/kdeglobals").write_text(f"[Colors:Window]\nBackgroundNormal={color}\n")
     if material:
@@ -393,11 +442,15 @@ def run(plugin, output, scale, expected, backend, identity, renderer="software",
                MTTKDE_CAPTURE_CONFLICTS="1" if conflicts else "",
                MTTKDE_CAPTURE_CONFLICT_EFFECT=conflict_effect,
                MTTKDE_CAPTURE_APPLICATION=application,
+               MTTKDE_CAPTURE_WOBBLY="1" if wobbly else "",
                MTTKDE_CAPTURE_SCREENSHOT_API=screenshot_api,
                MTTKDE_CAPTURE_DAMAGE="1" if damage else "",
                MTTKDE_CAPTURE_DESKTOP="1" if desktop_surface else "", MTTKDE_CAPTURE_EFFECT=effect, MTTKDE_CAPTURE_COMPANION="1" if companion else "")
     command = ["dbus-run-session", "--", sys.executable, str(Path(__file__).resolve()),
                "--inside", str(output)]
+    if wobbly:
+        # llvmpipe disables animations by default; enable only this private compositor.
+        env["KWIN_EFFECTS_FORCE_ANIMATIONS"] = "1"
     if screenshot_api == "dbus":
         # Restricted to the private compositor spawned with this environment.
         env["KWIN_SCREENSHOT_NO_PERMISSION_CHECKS"] = "1"
@@ -444,6 +497,8 @@ def run(plugin, output, scale, expected, backend, identity, renderer="software",
         compare_corners(output)
     elif shader_dir:
         compare_outline(output)
+    elif wobbly:
+        compare_wobbly(output)
     elif application == "nautilus":
         from PIL import Image, ImageChops
         before = Image.open(output / "effect-off.png").convert("RGB")
@@ -518,6 +573,23 @@ def compare_outline(output):
     assert metrics["passed"], "Rounded outline is displaced from the window bottom"
 
 
+def compare_wobbly(output):
+    from PIL import Image
+    reference_colors = ((33, 66, 99), (225, 199, 135), (55, 120, 170))
+    metrics = {}
+    for name in ("rest", "moving", "settled"):
+        image = Image.open(output / f"wobbly-{name}.png").convert("RGB")
+        pixels = iter(image.tobytes())
+        # Sharp backdrop tiles and the opaque client patch are not glass.
+        # Antialiased edges alone cannot meet this interior-area threshold.
+        glass = sum(all(max(abs(a - b) for a, b in zip(pixel, color)) > 12
+                        for color in reference_colors)
+                    for pixel in zip(pixels, pixels, pixels))
+        metrics[name] = {"glass_pixels": glass, "passed": glass > 10000}
+    (output / "wobbly-pixels.json").write_text(json.dumps(metrics, indent=2) + "\n")
+    assert all(item["passed"] for item in metrics.values()), "Glass disappeared during Wobbly motion: " + str(metrics)
+
+
 def compare(output, expected):
     from collections import Counter
     from PIL import Image, ImageChops
@@ -566,6 +638,7 @@ if __name__ == "__main__":
     parser.add_argument("--conflict-effect", choices=("blur", "glass", "glass_x11", "forceblur", "forceblur_x11", "better_blur_dx", "better_blur_dx_woapi"), default="blur")
     parser.add_argument("--application", choices=("synthetic", "nautilus"), default="synthetic")
     parser.add_argument("--material", choices=("tahoe", "golden-gate"))
+    parser.add_argument("--wobbly", action="store_true", help="Exercise moving glass in isolated X11; requires xdotool and xprop")
     parser.add_argument("--damage", action="store_true", help="Compare a partial backdrop update against a full repaint")
     parser.add_argument("--renderer", choices=("software", "hardware"), default="software")
     parser.add_argument("--expect", choices=("unchanged", "changed"), default="unchanged")
@@ -587,6 +660,6 @@ if __name__ == "__main__":
         run(args.plugin.resolve(), args.output.resolve(), args.scale, args.expect, args.backend, args.identity, args.renderer,
             args.rounded_shaders.resolve() if args.rounded_shaders else None,
             args.companion_plugin.resolve() if args.companion_plugin else None, args.desktop_surface, args.squircle_blend,
-            not args.no_decoration_blur, args.backing_tint, args.appearance, args.compositor, args.conflicts, args.screenshot_api, args.damage, args.conflict_effect, args.application, args.material)
+            not args.no_decoration_blur, args.backing_tint, args.appearance, args.compositor, args.conflicts, args.screenshot_api, args.damage, args.conflict_effect, args.application, args.material, args.wobbly)
     else:
         parser.error("--plugin and --output required")

@@ -975,8 +975,15 @@ std::optional<WobblyShapeParameters> BlurEffect::readWobblyParameters(bool resiz
     parameters.minAcceleration = wobbly->property("minAcceleration").toReal();
     parameters.maxAcceleration = wobbly->property("maxAcceleration").toReal();
     parameters.stopAcceleration = wobbly->property("stopAcceleration").toReal();
-    parameters.xTessellation = wobbly->property("xTessellation").toInt();
-    parameters.yTessellation = wobbly->property("yTessellation").toInt();
+    // KWin X11 and older Wayland SDKs retain the original single-s
+    // property spelling. A missing property converts to zero and would
+    // silently disable our mesh for every drag on those backends.
+    const QVariant xTessellation = wobbly->property("xTessellation");
+    const QVariant yTessellation = wobbly->property("yTessellation");
+    parameters.xTessellation = xTessellation.isValid()
+        ? xTessellation.toInt() : wobbly->property("xTesselation").toInt();
+    parameters.yTessellation = yTessellation.isValid()
+        ? yTessellation.toInt() : wobbly->property("yTesselation").toInt();
 
     if (parameters.xTessellation <= 0 || parameters.yTessellation <= 0) {
         return std::nullopt;
