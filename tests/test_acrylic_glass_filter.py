@@ -27,7 +27,9 @@ def blur_gate(tmp_path_factory):
 #include <QStringList>
 #include <QVariant>
 #include <QtGlobal>
+#include <algorithm>
 #include <iostream>
+#include <unordered_map>
 constexpr int WindowForceBlurRole = 1, PAINT_WINDOW_TRANSFORMED = 2;
 constexpr int OverlayLayer = 3, ActiveLayer = 4;
 struct Window {
@@ -55,6 +57,7 @@ auto effects = &handler;
 struct BlurEffect {
     bool m_whitelist;
     QStringList m_windowClasses;
+    std::unordered_map<const EffectWindow *, int> wobblyShapes;
     bool shouldBlur(const EffectWindow *, int, const WindowPaintData &) const;
 };
 ''' + "bool BlurEffect::shouldBlur(" + method + "\n}\n" + r'''
