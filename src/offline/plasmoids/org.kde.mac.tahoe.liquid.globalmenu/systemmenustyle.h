@@ -10,19 +10,56 @@
 #include <QPainter>
 #include <QPainterPath>
 #include <cmath>
-#include <QProxyStyle>
+#include <QCommonStyle>
 #include <QStyleOptionMenuItem>
 #include <QWidget>
 #include <QtMath>
 #include <algorithm>
 
-class SystemMenuStyle final : public QProxyStyle
+class SystemMenuStyle final : public QCommonStyle
 {
 public:
     explicit SystemMenuStyle(QObject* owner)
-        : QProxyStyle(QApplication::style()->objectName())
     {
         setParent(owner);
+    }
+
+    // Only menu rows and their metrics are custom. Never clone or own the
+    // application style: Kvantum caches literal SVG fills, and the desktop's
+    // light/dark style cycle replaces that instance without updating a clone.
+    void drawPrimitive(PrimitiveElement element, const QStyleOption* option,
+                       QPainter* painter, const QWidget* widget = nullptr) const override
+    {
+        QApplication::style()->drawPrimitive(element, option, painter, widget);
+    }
+
+    int styleHint(StyleHint hint, const QStyleOption* option = nullptr,
+                  const QWidget* widget = nullptr, QStyleHintReturn* result = nullptr) const override
+    {
+        return QApplication::style()->styleHint(hint, option, widget, result);
+    }
+
+    void polish(QWidget* widget) override { QApplication::style()->polish(widget); }
+    void unpolish(QWidget* widget) override { QApplication::style()->unpolish(widget); }
+    void polish(QPalette& palette) override { QApplication::style()->polish(palette); }
+    QPalette standardPalette() const override { return QApplication::style()->standardPalette(); }
+
+    QRect subElementRect(SubElement element, const QStyleOption* option,
+                         const QWidget* widget = nullptr) const override
+    {
+        return QApplication::style()->subElementRect(element, option, widget);
+    }
+
+    QIcon standardIcon(StandardPixmap icon, const QStyleOption* option = nullptr,
+                       const QWidget* widget = nullptr) const override
+    {
+        return QApplication::style()->standardIcon(icon, option, widget);
+    }
+
+    QPixmap standardPixmap(StandardPixmap icon, const QStyleOption* option = nullptr,
+                           const QWidget* widget = nullptr) const override
+    {
+        return QApplication::style()->standardPixmap(icon, option, widget);
     }
 
     static qreal scaleFor(const QFont& font, const QPaintDevice* device)
@@ -39,14 +76,14 @@ public:
         if (metric == PM_MenuPanelWidth) return qRound(10 * scale);
         if (metric == PM_MenuHMargin || metric == PM_MenuVMargin) return 0;
         if (metric == PM_SmallIconSize) return qRound(16 * scale);
-        return QProxyStyle::pixelMetric(metric, option, widget);
+        return QApplication::style()->pixelMetric(metric, option, widget);
     }
 
     QSize sizeFromContents(ContentsType type, const QStyleOption* option,
                            const QSize& size, const QWidget* widget = nullptr) const override
     {
         const auto* item = qstyleoption_cast<const QStyleOptionMenuItem*>(option);
-        if (type != CT_MenuItem || !item) return QProxyStyle::sizeFromContents(type, option, size, widget);
+        if (type != CT_MenuItem || !item) return QApplication::style()->sizeFromContents(type, option, size, widget);
         const qreal scale = scaleFor(item->font, widget);
         if (item->menuItemType == QStyleOptionMenuItem::Separator) return QSize(1, qRound(12 * scale));
         const QFontMetricsF metrics(item->font);
@@ -77,7 +114,7 @@ public:
     {
         const auto* item = qstyleoption_cast<const QStyleOptionMenuItem*>(option);
         if (element != CE_MenuItem || !item) {
-            QProxyStyle::drawControl(element, option, painter, widget);
+            QApplication::style()->drawControl(element, option, painter, widget);
             return;
         }
         const qreal scale = scaleFor(item->font, widget);

@@ -4,6 +4,8 @@
 #include <QKeyEvent>
 #include <QIconEngine>
 #include <cassert>
+#include <QProxyStyle>
+#include <QPointer>
 class NamedIcon : public QIconEngine {
  QString m_name;
 public:
@@ -12,6 +14,44 @@ public:
  QString iconName() override {return m_name;}
  void paint(QPainter* p,const QRect& r,QIcon::Mode,QIcon::State) override {p->fillRect(r,Qt::magenta);}
 };
+// A plugin surface is independent of the palette, like Kvantum's SVG fill.
+class SurfaceStyle : public QProxyStyle {
+ QColor surface;
+public:
+ explicit SurfaceStyle(QColor color):QProxyStyle("Fusion"),surface(color){}
+ void drawPrimitive(PrimitiveElement element,const QStyleOption* option,QPainter* painter,
+                    const QWidget* widget=nullptr) const override {
+  if(element==PE_PanelMenu){painter->fillRect(option->rect,surface);return;}
+  QProxyStyle::drawPrimitive(element,option,painter,widget);
+ }
+};
+static QImage surface(QMenu& menu) {
+ QStyleOption option;option.initFrom(&menu);option.rect=QRect(0,0,120,80);
+ QImage image(option.rect.size(),QImage::Format_ARGB32_Premultiplied);image.fill(Qt::transparent);
+ QPainter painter(&image);menu.style()->drawPrimitive(QStyle::PE_PanelMenu,&option,&painter,&menu);
+ return image;
+}
+static void liveStyleCycle() {
+ QMenu system,ordinary;
+ system.setStyle(new SystemMenuStyle(&system));
+ auto* scoped=system.style();
+ // Reuse the same menu/style across light -> dark -> light, with unchanged
+ // palettes, so a palette-only fix or an independently cached style fails.
+ for(const QColor color : {QColor(230,230,230),QColor(18,18,18),QColor(230,230,230)}) {
+  QPointer<QStyle> previous=QApplication::style();
+  QApplication::setStyle(new SurfaceStyle(color));
+  QApplication::sendPostedEvents(nullptr,QEvent::DeferredDelete);
+  assert(previous.isNull());
+  assert(system.style()==scoped);
+  assert(ordinary.style()==QApplication::style());
+  assert(surface(system)==surface(ordinary));
+  assert(surface(system).pixelColor(60,40)==color);
+ }
+ QPointer<QStyle> live=QApplication::style();
+ // Destroying the scoped style must never destroy the shared desktop style.
+ system.setStyle(nullptr);delete scoped;
+ assert(!live.isNull());
+}
 int main(int argc, char** argv) {
  QApplication app(argc, argv);
  QStyle* original = app.style();
@@ -101,4 +141,5 @@ int main(int argc, char** argv) {
   assert(app.style()==original);
  }
  QMenu unaffected; assert(unaffected.style()==original);
+ liveStyleCycle();
 }

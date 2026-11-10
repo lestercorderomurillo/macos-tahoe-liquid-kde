@@ -1,11 +1,13 @@
 # Installer testing
 
-Tahoe **v0.67.0** refines the Apple-style system-menu icons and adds right-aligned
-Lock Screen / Log Out shortcut symbols. Focused native and rendering checks passed;
-full remote CI runs asynchronously. See [release evidence](release-evidence.json)
-for scope and coverage limits.
+Tahoe **v0.67.1** keeps the system menu's surface synchronized with the live
+application style during light/dark switching. The system menu previously kept
+an independent Kvantum instance whose cached light SVG survived the desktop's
+style replacement. Custom row metrics, icons and shortcut hints are preserved.
+See [release evidence](release-evidence.json) for focused checks and coverage limits;
+full remote CI runs asynchronously.
 
-Native symbol previews (neutral backgrounds, not material captures):
+Historical v0.67.0 symbol previews (unchanged):
 [Light](src/screenshots/previews/menu-symbols-067-light-a558e02129b0.png) · [Dark](src/screenshots/previews/menu-symbols-067-dark-35230bb0f200.png) · [Provenance](src/screenshots/previews/menu-symbols-067-provenance-534bface45c1.json)
 
 The README About, Finder, top bar and Apple menu photographs were refreshed from v0.67.0 in a

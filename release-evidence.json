@@ -1,107 +1,72 @@
 {
-  "version": "0.67.0",
-  "source_sha256": "1765cefc05bf15b4f40667a82ef6372f9873c6cc68d59ac65a6bbbb9a1a21974",
+  "version": "0.67.1",
+  "source_sha256": "d6e78a9b725cfaaf2f97648181df892e5b055ac1279ebeab670a455c45077195",
   "environment": "Linux-7.2.0-1-cachyos-x86_64-with-glibc2.44",
   "checks": [
     {
-      "command": "PYTHONDONTWRITEBYTECODE=1 QT_QPA_PLATFORM=offscreen python3 -m pytest tests/test_system_menu_style.py -q --tb=short -p no:cacheprovider",
+      "command": "PYTHONDONTWRITEBYTECODE=1 python3 -m pytest tests/test_system_menu_style.py -q --tb=short -p no:cacheprovider",
       "result": "passed",
-      "detail": "Native drawing/metrics probe at scales 1, 1.5 and 2, font sizes 10 and 18. Default versus custom icons, shortcut glyphs, long usernames, RTL placement, unchanged ordinary style and keyboard navigation."
+      "detail": "1 passed. Actual native row drawing/metrics at scales 1, 1.5 and 2; light/dark/light plugin-style replacement with identical palettes; ordinary menu parity; style ownership/destruction. The new regression fails against the pre-fix header."
     },
     {
-      "command": "PYTHONDONTWRITEBYTECODE=1 MTTKDE_REQUIRE_NATIVE_GLOBALMENU=1 python3 -m pytest tests/test_globalmenu_model.py -q --tb=short -p no:cacheprovider",
+      "command": "PYTHONDONTWRITEBYTECODE=1 MTTKDE_REQUIRE_NATIVE_GLOBALMENU=1 python3 -m pytest tests/test_globalmenu_model.py -q --tb=short -p no:cacheprovider --basetemp=/tmp/menu-sync-0671/native",
       "result": "passed",
-      "detail": "1 passed: native plugin build and isolated model/popup/QML composition suites. New system-menu shortcuts activate the intended action without calling session services in tests. Existing exported/generic focus transitions and D-Bus refresh pass."
+      "detail": "1 passed. Plugin and test builds; isolated Xvfb/private D-Bus model, popup, shortcut and QML composition checks."
     },
     {
-      "command": "python3 /tmp/menu-067/preview_vm.py; review menu-light.png and menu-dark.png",
+      "command": "PYTHONDONTWRITEBYTECODE=1 python3 /tmp/menu-sync-0671/vm.py",
       "result": "passed",
-      "detail": "Reviewed two final native menu symbol previews inside a disposable KDE neon overlay; popup identity and geometry verified before/after. Rejected initial harness palette/selection frames were replaced by newly captured frames."
+      "detail": "Real Kvantum in disposable KDE neon VMs for both editions. Same menu instances reused through light/dark/light; shared surface interiors match exactly and change per mode. Native popup captures reviewed; identity verified before each capture. Custom system-menu metrics intentionally differ from ordinary menus."
     },
     {
-      "command": "GOLDEN_GATE_TAHOE_SOURCE=<checkout> MAC_TAHOE_NO_UPDATE_CHECK=true python3 bootstrap.py --prepare; compare systemmenustyle.h and appmenuapplet.cpp",
+      "command": "GOLDEN_GATE_TAHOE_SOURCE=<Tahoe checkout> MAC_TAHOE_NO_UPDATE_CHECK=true python3 bootstrap.py --prepare; cmp staged/systemmenustyle.h Tahoe/systemmenustyle.h",
       "result": "passed",
-      "detail": "Prepared Golden Gate menu bytes match the tested Tahoe implementation."
+      "detail": "Golden Gate stages the identical tested menu implementation; edition staging does not transform this source."
     }
   ],
   "gallery_commit": "c485eeec652358824d2496222cb030a91f70e5dd",
-  "captures": [
-    {
-      "path": "src/screenshots/previews/about-buttons-dark-57536aa93c40.png",
-      "sha256": "57536aa93c408265675e97410c69b17530abef73fb8f4b0b29a0c10a89cd4b6d",
-      "reviewed": true
-    },
-    {
-      "path": "src/screenshots/previews/about-buttons-light-eaebe82caa18.png",
-      "sha256": "eaebe82caa18cc24c21833fff02137c262061aa5a35d1092a9e441c8c41482f0",
-      "reviewed": true
-    },
-    {
-      "path": "src/screenshots/previews/about-buttons-provenance.json",
-      "sha256": "b74e838cdf150d8b5ad5fb72f35fa9ce8f08cd3edd7725e1e49788403efbfcc5",
-      "reviewed": true
-    },
-    {
-      "path": "src/screenshots/previews/menu-symbols-067-light-a558e02129b0.png",
-      "sha256": "a558e02129b04d6759c9f6fee9431f8a04cc90e6584adfb2a48efb170ddc939f",
-      "reviewed": true
-    },
-    {
-      "path": "src/screenshots/previews/menu-symbols-067-dark-35230bb0f200.png",
-      "sha256": "35230bb0f2002677e41c40436f63c437d0ee1675ccae33cb167fc9afe52be5a4",
-      "reviewed": true
-    },
-    {
-      "path": "src/screenshots/previews/menu-symbols-067-provenance-534bface45c1.json",
-      "sha256": "534bface45c10f33b2e59a3e458a13b2eed896dd789a3dd9a80d539420430c9a",
-      "reviewed": true
-    },
-    {
-      "path": "src/screenshots/previews/topbar-067-dark-e9a5d1287fc8.webp",
-      "sha256": "e9a5d1287fc8e598e223f1fa467156ddc46c05e0ee35d51cd5ed0cd63843e0f7",
-      "reviewed": true
-    },
-    {
-      "path": "src/screenshots/previews/topbar-067-light-55270e8b3600.webp",
-      "sha256": "55270e8b36008571f372c0748fc653f87d644a02eb63b3be10f1c42929c437cb",
-      "reviewed": true
-    },
-    {
-      "path": "src/screenshots/previews/topbar-067-provenance-a671cf4013c2.json",
-      "sha256": "a671cf4013c298eab800f23232885c151403390ba753ef5b9aff413a40670c67",
-      "reviewed": true
-    }
-  ],
-  "coverage_limits": [
-    "Shortcuts are local to the open system menu (Control+Meta+Q and Shift+Meta+Q). KDE global bindings are unchanged.",
-    "Host native tests use Qt 6.11.2 / Plasma 6.7.4 on CachyOS; preview compiled and rendered in the disposable KDE neon guest. Full distro CI remains asynchronous.",
-    "Only menu symbol/shortcut rendering changed. Previews use neutral Fusion backgrounds and do not claim compositor/glass material validation. Existing desktop and installer photographs retain their original provenance.",
-    "The prior real Wayland pointer-grab coverage limit remains; this change does not modify popup-grab behavior."
-  ],
-  "documentation_refresh": {
-    "source_commit": "48aef6207aa995838dc9b24b4321bf03b0417ec2",
-    "source_version": "0.67.0",
-    "scope": "About and Files desktop/close-up photographs, top-bar crops, and Apple menus in light and dark mode. Both editions refreshed with their own defaults. Unrelated photographs retain original provenance.",
-    "commands": [
-      "Tahoe release_capture Guest helpers in disposable VM; focused About/Files and Apple-menu captures; scoped _stage exports",
-      "Visual review of requested frames and exported images",
-      "python3 /tmp/topbar-menu-067/check_docs.py; git diff --check"
+  "captures": [],
+  "menu_transition_review": {
+    "edition": "tahoe",
+    "source_header_sha256": "db89e448fb34bc47ff2bd4e7bb0e1d6b66e7491aae7921c15bd984655ad1f9ce",
+    "probe_sha256": "320fb96ba21e0876e0b23aa42fd6f4164025d00dbaa80b00e191187788c4c397",
+    "results": [
+      {
+        "changed_from_previous": false,
+        "mode": "light",
+        "popup_identity_verified": true,
+        "style": "kvantum",
+        "system_matches_ordinary": true
+      },
+      {
+        "changed_from_previous": true,
+        "mode": "dark",
+        "popup_identity_verified": true,
+        "style": "kvantum",
+        "system_matches_ordinary": true
+      },
+      {
+        "changed_from_previous": true,
+        "mode": "light",
+        "popup_identity_verified": true,
+        "style": "kvantum",
+        "system_matches_ordinary": true
+      }
     ],
-    "result": "passed",
-    "images": {
-      "finder_v4-b7743e709fcb.webp": "b7743e709fcb17a87f94ce6159f9884ee55b3615033868182ed6d3320e1608b5",
-      "showcase_light_2k-84cf80ed6028.webp": "84cf80ed60287c5cc46ecd398fda81bd44ca5198eccef07c30723dfcf394017d",
-      "about_v4-89bf172117ec.webp": "89bf172117ec3250406c2b16c67ed3a255b8b4f8777be1cc89b677f54b30d925",
-      "desktop_about_light_2k-ae7e67008775.webp": "ae7e6700877580baf77ad4f0079955da852257149a5678802d5ba1c04e8a5f40",
-      "finder_dark_v4-ce0dc544c4be.webp": "ce0dc544c4be81266ffd213bf2bcdf75b77279cbc9775e90e05766279575f685",
-      "showcase_dark_2k-421bb9e5798a.webp": "421bb9e5798a4d834c61fb02a4a265f999835d565472958badb81a60e18f6e08",
-      "about_dark_v4-bcfd5f536826.webp": "bcfd5f536826922d148965353b3148185d6209f35b64bcac7cebf744060223f2",
-      "desktop_about_dark_2k-1bbbba68bf58.webp": "1bbbba68bf5800dcd464b2770eb92a6cabe40ff2ca90fc85fda27a792141243b",
-      "menu_v4-d754cdb089ec.webp": "d754cdb089ec8a8acfda50bd89406e2be1313081d01464ea54a49a32f8abc513",
-      "menu_dark_v4-e12fb577d61b.webp": "e12fb577d61bdd3298e7ca7943fa8d4435bdc8ae18485f88ca7086928367cdef",
-      "previews/topbar-067-dark-e9a5d1287fc8.webp": "e9a5d1287fc8e598e223f1fa467156ddc46c05e0ee35d51cd5ed0cd63843e0f7",
-      "previews/topbar-067-light-55270e8b3600.webp": "55270e8b36008571f372c0748fc653f87d644a02eb63b3be10f1c42929c437cb"
+    "frames": {
+      "0-light-ordinary.png": "6c416eebd28ef132af7bf08d55cc6da68d3f7a186d81b41ba5c5502fd99f14c2",
+      "0-light-system.png": "4a2dd2c756b13f8dbbbde9af3b14f896889d931b243d5e731ebd56d8406a6853",
+      "1-dark-ordinary.png": "b362f7599612b5e1dc917fe76f63d4535f04d34c6c10c80f5b1f6c494ef4a382",
+      "1-dark-system.png": "a77f6cdac700665bb2aaae18b50481f672b7d96f363316a063cb6b5f315a99a9",
+      "2-light-ordinary.png": "6c416eebd28ef132af7bf08d55cc6da68d3f7a186d81b41ba5c5502fd99f14c2",
+      "2-light-system.png": "4a2dd2c756b13f8dbbbde9af3b14f896889d931b243d5e731ebd56d8406a6853"
     },
-    "limits": "Documentation-only refresh; no runtime suite or release launched. About uses the standard mock-data preview harness. Top-bar crops derive from the reviewed neutral-pointer Files frames. Dark menus captured in fresh dark VM sessions: initial mode-switch frames retained stale light surfaces and were rejected. This refresh does not establish correctness of menu appearance transitions."
-  }
+    "location": "/tmp/menu-sync-0671/tahoe"
+  },
+  "coverage_limits": [
+    "Full remote distro CI runs asynchronously; pending results are not passed.",
+    "VM previews exercise real Kvantum native menu surfaces and repeated style replacement; QWidget captures do not include compositor blur/refraction or establish end-to-end desktop theme-switch timing.",
+    "Existing documentation photographs retain their original provenance; no gallery refresh.",
+    "The prior real Wayland pointer-grab coverage limitation remains; popup-grab behavior is unchanged."
+  ]
 }
