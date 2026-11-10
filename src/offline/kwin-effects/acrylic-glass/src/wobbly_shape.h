@@ -21,7 +21,9 @@
 
 namespace KWin {
 
+#if ACRYLIC_GLASS_KWIN_6_7
 class RenderView;
+#endif
 
 /**
  * The subset of Wobbly Windows settings that affects the spring mesh.

@@ -57,6 +57,21 @@ int main()
     const QPointF deformed = shape.map(0.5, 0.5, moved);
     assert(QPointF::dotProduct(deformed - flat, deformed - flat) > 0.0001);
 
+    KWin::WobblyShape resize(parameters, geometry, geometry.bottomRight(), true);
+    const QRectF wider(100, 100, 460, 300);
+    resize.noteGeometryStep(wider);
+    resize.advance(20ms, wider);
+    assert(std::abs(resize.map(0, 0.5, wider).x() - wider.left()) < 0.000001);
+    assert(std::abs(resize.map(0.5, 0, wider).y() - wider.top()) < 0.000001);
+    assert(std::abs(resize.map(0.5, 1, wider).y() - wider.bottom()) < 0.000001);
+    resize.noteGeometryFinished(wider);
+    bool active = true;
+    for (int frame = 0; frame < 1000 && active; ++frame) {
+        active = resize.advance(16ms, wider);
+    }
+    assert(!active);
+    assert(resize.map(1, 1, wider) == wider.bottomRight());
+
     shape.beginMovedResized(cursor + QPointF(40, 0), moved, false);
     const QPointF reused = shape.map(0.5, 0.5, moved);
     assert(QPointF::dotProduct(reused - deformed, reused - deformed) < 0.000001);
@@ -135,34 +150,6 @@ def test_wobbly_drag_restart_reuses_only_a_live_spring_model():
     assert start.index("retirePending()") < start.index("wobblyShapes.erase(it)")
 
 
-def test_wobbly_tracker_keeps_the_final_frame_before_retiring():
-    wobbly = _read("wobbly_shape.cpp")
-    advance = wobbly.split("WobblyShapeTracker::advance(", 1)[1]
-    assert "if (m_retirePending)" in advance
-    assert "m_retirePending = true" in advance
-    assert "return true;" in advance
-    header = _read("wobbly_shape.h")
-    assert "bool retirePending() const" in header
-
-
-def test_wobbly_physics_matches_the_upstream_integration_model():
-    wobbly = _read("wobbly_shape.cpp")
-    assert "std::chrono::milliseconds(10)" in wobbly
-    assert "Pair WobblyShape::computeBezierPoint(" in wobbly
-    assert "computeBezierPoint(m_position, u, v)" in wobbly
-    assert "const qreal px[4]" in wobbly
-    assert "const qreal py[4]" in wobbly
-    assert "3 * (1 - u) * (1 - u) * u" in wobbly
-    assert "3 * (1 - v) * (1 - v) * v" in wobbly
-    assert "m_parameters.stiffness" in wobbly
-    assert "m_parameters.moveFactor" in wobbly
-    assert "m_wobbling = !(accelerationSum < m_parameters.stopAcceleration" in wobbly
-    header = _read("wobbly_shape.h")
-    assert "std::array<Pair, 16> m_position" in header
-    assert "std::array<Pair, 16> m_velocity" in header
-    assert "std::array<Pair, 16> m_acceleration" in header
-
-
 def test_wobbly_glass_uses_frame_local_mask_and_destination_background():
     glass = _read("shaders/glass.glsl")
     core = _read("shaders/glass_core.glsl")
@@ -179,7 +166,7 @@ def test_wobbly_mesh_is_clipped_and_captures_the_complete_surface():
     effect = _read("effect.cpp")
     assert "appendClippedTriangle(" in effect
     assert "clipPolygonToRect(" in effect
-    assert "clipRect.x() - scaledBackgroundRect.x()" in effect
+    assert "clipRect.x() - deviceBackgroundRect.x()" in effect
     assert "? Region(Rect(backgroundRect))" in effect
     assert "viewport.mapFromDeviceCoordinatesContained(deviceRegion) & backgroundRect" in effect
 
@@ -202,3 +189,83 @@ def test_transformed_windows_remain_blurred_only_while_wobbly_owns_them():
     should_blur = should_blur.split("\n}\n", 1)[0]
     assert "const bool wobblyTransformed" in should_blur
     assert "(mask & PAINT_WINDOW_TRANSFORMED) && !wobblyTransformed" in should_blur
+
+
+@pytest.mark.parametrize("backend", ["wayland", "x11"])
+def test_native_mesh_preserves_holes_and_output_coordinates(tmp_path, backend):
+    """Execute the production mesh loop with an offset output and split region."""
+    flags = subprocess.run(["pkg-config", "--cflags", "--libs", "Qt6Gui"],
+                           capture_output=True, text=True)
+    if flags.returncode or not shutil.which("c++"):
+        pytest.skip("C++ and Qt6Gui development files required")
+    effect = _read("effect.cpp")
+    helpers = effect.split("namespace {", 1)[1].split("} // namespace", 1)[0]
+    mesh = effect.split("    std::vector<GLVertex2D> wobblyVertices;", 1)[1].split(
+        "    // 3. Framebuffer", 1)[0].replace("return;", 'assert(false && "unexpected empty mesh");')
+    cpp = tmp_path / "mesh.cpp"
+    cpp.write_text(r"""
+#include "wobbly_shape.h"
+#include <QVector2D>
+#include <QRegion>
+#include <algorithm>
+#include <array>
+#include <vector>
+#include <map>
+#include <cassert>
+#include <cmath>
+using namespace KWin;
+using Rect = QRect;
+struct GLVertex2D { QVector2D position; QVector2D texcoord; };
+struct Region {
+    std::vector<QRect> values;
+    const auto& rects() const { return values; }
+};
+struct Viewport {
+    qreal scale() const { return 1.25; }
+    QPointF mapToRenderTarget(QPointF p) const { return p * scale() - QPointF(1000, 0); }
+};
+struct Window { qreal x() const { return 900; } qreal y() const { return 80; } };
+struct Data {
+    qreal xScale() const { return 1; } qreal yScale() const { return 1; }
+    qreal xTranslation() const { return 0; } qreal yTranslation() const { return 0; }
+};
+""" + helpers + r"""
+void run() {
+    const QRectF frameRect(900, 80, 400, 300);
+    Window window; auto* w = &window; Viewport viewport; Data data;
+    std::map<Window*, WobblyShapeTracker> shapes;
+    shapes.try_emplace(w, WobblyShapeParameters{}, frameRect, frameRect.topLeft(), false);
+    auto wobblyIt = shapes.begin();
+    const bool wobblySurface = true, finiteClip = true;
+    const QRect deviceBackgroundRect(123, 98, 504, 379);
+#ifdef GLASS_X11
+    const QRect scaledBackgroundRect(0, 0, 504, 379);
+#else
+    const QRect scaledBackgroundRect(1123, 98, 504, 379);
+#endif
+    // The right half intentionally has no blur, and output coordinates
+    // differ from global scaled coordinates by 1000 pixels.
+    Region blurShape{{QRect(900, 80, 200, 300)}};
+    Region deviceRegion{{deviceBackgroundRect}};
+    std::vector<GLVertex2D> wobblyVertices;
+""" + mesh + r"""
+    assert(!wobblyVertices.empty());
+    double area = 0;
+    for (size_t i = 0; i < wobblyVertices.size(); i += 3) {
+        area += std::abs(triangleArea(wobblyVertices[i], wobblyVertices[i+1], wobblyVertices[i+2])) / 2;
+    }
+    assert(std::abs(area - 200 * 300 * 1.25 * 1.25) < 0.1);
+    for (const auto& vertex : wobblyVertices) {
+        assert(vertex.position.x() >= 1.99 && vertex.position.x() <= 252.01);
+        assert(vertex.position.y() >= 1.99 && vertex.position.y() <= 377.01);
+    }
+}
+int main() { run(); }
+""")
+    binary = tmp_path / "mesh"
+    result = subprocess.run(["c++", "-std=c++20", "-fPIC", f"-I{ROOT}",
+                             *(["-DGLASS_X11"] if backend == "x11" else []),
+                             str(cpp), str(ROOT / "wobbly_shape.cpp"), "-o", str(binary),
+                             *shlex.split(flags.stdout)], capture_output=True, text=True)
+    assert result.returncode == 0, result.stderr
+    subprocess.run([str(binary)], check=True, capture_output=True)

@@ -683,9 +683,7 @@ void BlurEffect::updateBlurRegion(EffectWindow* w)
     // Xwayland still advertises blur through the X11 property on KWin 6.7+,
     // even though EffectWindow::readProperty was removed from that SDK.
 #if KWIN_BUILD_X11
-#if defined(GLASS_X11)
-    bool legacyBlurPropertyMissing = false;
-#endif
+    [[maybe_unused]] bool legacyBlurPropertyMissing = false;
     if (net_wm_blur_region != XCB_ATOM_NONE && effects->xcbConnection() && w->windowId()) {
         // Bound the response and reject malformed/truncated properties instead
         // of treating them as the empty "blur the entire window" request.
@@ -693,9 +691,7 @@ void BlurEffect::updateBlurRegion(EffectWindow* w)
             xcb_window_t(w->windowId()), net_wm_blur_region, XCB_ATOM_CARDINAL, 0, 16384);
         const std::unique_ptr<xcb_get_property_reply_t, decltype(&std::free)> reply(
             xcb_get_property_reply(effects->xcbConnection(), cookie, nullptr), &std::free);
-#if defined(GLASS_X11)
         legacyBlurPropertyMissing = reply && reply->type == XCB_ATOM_NONE;
-#endif
         if (reply && reply->type == XCB_ATOM_CARDINAL && reply->format == 32
             && reply->bytes_after == 0 && reply->value_len % 4 == 0) {
             Region region;
@@ -1505,6 +1501,11 @@ void BlurEffect::blur(
 
     // Intersect the shape with the deviceRegion clip — empty after the
     // intersection means everything is clipped and there's nothing to draw.
+#if ACRYLIC_GLASS_WAYLAND_BACKGROUND_EFFECT_V1
+    const bool finiteClip = deviceRegion != Region::infinite();
+#else
+    const bool finiteClip = true;
+#endif
     QList<RectF> effectiveShape;
     if (!wobblySurface) {
         effectiveShape.reserve(blurShape.rects().size());
@@ -1543,7 +1544,7 @@ void BlurEffect::blur(
         if (effectiveShape.isEmpty()) {
             return;
         }
-    } else if (deviceRegion != Region::infinite() && (deviceRegion & deviceBackgroundRect).isEmpty()) {
+    } else if (finiteClip && (deviceRegion & deviceBackgroundRect).isEmpty()) {
         return;
     }
 
@@ -1553,13 +1554,13 @@ void BlurEffect::blur(
         const int xTessellation = shape.xTessellation();
         const int yTessellation = shape.yTessellation();
         std::vector<QRectF> clipRects;
-        if (deviceRegion != Region::infinite()) {
+        if (finiteClip) {
             const QRectF surfaceBounds(0.0, 0.0, scaledBackgroundRect.width(), scaledBackgroundRect.height());
             clipRects.reserve(deviceRegion.rects().size());
             for (const Rect& clipRect : deviceRegion.rects()) {
                 const QRectF localClip(
-                    clipRect.x() - scaledBackgroundRect.x(),
-                    clipRect.y() - scaledBackgroundRect.y(),
+                    clipRect.x() - deviceBackgroundRect.x(),
+                    clipRect.y() - deviceBackgroundRect.y(),
                     clipRect.width(),
                     clipRect.height());
                 if (const QRectF intersected = localClip.intersected(surfaceBounds); !intersected.isEmpty()) {
@@ -1573,14 +1574,20 @@ void BlurEffect::blur(
         wobblyVertices.reserve(static_cast<size_t>(xTessellation) * yTessellation * 6 * std::max<size_t>(1, clipRects.size()));
 
         const QPointF frameOrigin(w->x(), w->y());
+#if !defined(GLASS_X11)
         const QPointF deviceBackgroundOrigin(scaledBackgroundRect.x(), scaledBackgroundRect.y());
+#endif
         const auto toDeviceLocal = [&](const QPointF& globalPoint) {
             const QPointF transformed(
                 frameOrigin.x() + (globalPoint.x() - frameOrigin.x()) * data.xScale() + data.xTranslation(),
                 frameOrigin.y() + (globalPoint.y() - frameOrigin.y()) * data.yScale() + data.yTranslation());
+#if defined(GLASS_X11)
+            return QVector2D(viewport.mapToRenderTarget(transformed) - QPointF(deviceBackgroundRect.topLeft()));
+#else
             return QVector2D(
                 static_cast<float>(transformed.x() * viewport.scale() - deviceBackgroundOrigin.x()),
                 static_cast<float>(transformed.y() * viewport.scale() - deviceBackgroundOrigin.y()));
+#endif
         };
 
         const auto makeVertex = [&](qreal u, qreal v) {
@@ -1598,22 +1605,25 @@ void BlurEffect::blur(
                 const qreal u0 = static_cast<qreal>(column) / xTessellation;
                 const qreal u1 = static_cast<qreal>(column + 1) / xTessellation;
 
-                appendClippedTriangle(
-                    wobblyVertices,
-                    {
-                        makeVertex(u0, v0),
-                        makeVertex(u1, v1),
-                        makeVertex(u0, v1),
-                    },
-                    clipRects);
-                appendClippedTriangle(
-                    wobblyVertices,
-                    {
-                        makeVertex(u0, v0),
-                        makeVertex(u1, v0),
-                        makeVertex(u1, v1),
-                    },
-                    clipRects);
+                // Preserve the client's blur region while deforming it. A
+                // full-frame mesh would blur deliberately transparent holes.
+                const QRectF cell(frameRect.x() + u0 * frameRect.width(),
+                    frameRect.y() + v0 * frameRect.height(),
+                    (u1 - u0) * frameRect.width(), (v1 - v0) * frameRect.height());
+                for (const Rect& regionRect : blurShape.rects()) {
+                    const QRectF part = cell.intersected(QRectF(regionRect));
+                    if (part.isEmpty()) {
+                        continue;
+                    }
+                    const qreal left = (part.left() - frameRect.x()) / frameRect.width();
+                    const qreal right = (part.right() - frameRect.x()) / frameRect.width();
+                    const qreal top = (part.top() - frameRect.y()) / frameRect.height();
+                    const qreal bottom = (part.bottom() - frameRect.y()) / frameRect.height();
+                    appendClippedTriangle(wobblyVertices,
+                        {makeVertex(left, top), makeVertex(right, bottom), makeVertex(left, bottom)}, clipRects);
+                    appendClippedTriangle(wobblyVertices,
+                        {makeVertex(left, top), makeVertex(right, top), makeVertex(right, bottom)}, clipRects);
+                }
             }
         }
         if (wobblyVertices.empty()) {
