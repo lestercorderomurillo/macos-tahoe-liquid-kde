@@ -188,7 +188,7 @@ Here’s what you’ll find when you make yourself at home.
 - **Light and dark, together:** switch the desktop, app styles, icons and window decorations together. Keep your wallpaper choices for each monitor, or reset them when you want a fresh start.
 - **Apps that feel at home:** global menus, more reliable GTK menus, Finder-style Nautilus and a matching Firefox theme, with backups of your Firefox profiles.
 - **Care for your settings:** the installer checks requirements, finds your desktop session and backs up your settings. Uninstall restores the changes it made.
-- **A few extras:** optional OLED panel shifts, plus experimental NixOS and Home Manager modules for those who want them.
+- **A few extras:** optional OLED panel shifts, an optional Meta+V clipboard history with pins and image previews, plus experimental NixOS and Home Manager modules for those who want them.
 - **Care behind the scenes:** we check behavior and appearance with regression tests, containers across distributions and real Plasma VMs.
 
 <br>
@@ -380,6 +380,21 @@ mac-tahoe-oled-care shift
 mac-tahoe-oled-care restore
 mac-tahoe-oled-care status
 ```
+
+</details>
+
+<details>
+<summary><b>Clipboard history</b></summary>
+
+Optional Meta+V popup with search, pinning and image previews; disabled by default.
+
+Enable it with `./install --clipboard`. It builds a small background service that
+records text and images you copy (never anything a password manager marks secret)
+and keeps the history private in `~/.local/share/mac-tahoe-liquid-kde/clipboard`.
+Pinned items are never deleted by Delete or Clear all. Uninstalling returns Meta+V
+to Plasma's clipboard widget and deletes the recorded history.
+
+Requires the KDE Frameworks 6 GuiAddons development files and PyQt6.
 
 </details>
 

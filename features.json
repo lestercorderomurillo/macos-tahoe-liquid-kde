@@ -23,6 +23,7 @@
   "nautilus_bookmarks": true,
   "portals":            true,
   "oled_care":          false,
+  "clipboard":          false,
   "apply_theme":        true,
   "kconf_update":       true,
   "oled_interval":      5,
