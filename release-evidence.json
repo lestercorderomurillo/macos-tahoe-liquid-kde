@@ -16,7 +16,7 @@
     {
       "command": "PYTHONDONTWRITEBYTECODE=1 python3 /tmp/menu-sync-0671/vm.py",
       "result": "passed",
-      "detail": "Real Kvantum in disposable KDE neon VMs for both editions. Same menu instances reused through light/dark/light; shared surface interiors match exactly and change per mode. Native popup captures reviewed; identity verified before each capture. Custom system-menu metrics intentionally differ from ordinary menus."
+      "detail": "Real Kvantum in disposable KDE neon VMs for both editions. Same menu instances reused through light/dark/light; shared surface interiors match exactly and change per mode. System-menu popup captures reviewed; identity verified before each capture. Ordinary-menu QWidget grabs were rejected for inconsistent transparent backing; material parity is established by the direct native surface comparison, not those grabs. Custom system-menu metrics intentionally differ from ordinary menus."
     },
     {
       "command": "GOLDEN_GATE_TAHOE_SOURCE=<Tahoe checkout> MAC_TAHOE_NO_UPDATE_CHECK=true python3 bootstrap.py --prepare; cmp staged/systemmenustyle.h Tahoe/systemmenustyle.h",
@@ -54,11 +54,8 @@
       }
     ],
     "frames": {
-      "0-light-ordinary.png": "6c416eebd28ef132af7bf08d55cc6da68d3f7a186d81b41ba5c5502fd99f14c2",
       "0-light-system.png": "4a2dd2c756b13f8dbbbde9af3b14f896889d931b243d5e731ebd56d8406a6853",
-      "1-dark-ordinary.png": "b362f7599612b5e1dc917fe76f63d4535f04d34c6c10c80f5b1f6c494ef4a382",
       "1-dark-system.png": "a77f6cdac700665bb2aaae18b50481f672b7d96f363316a063cb6b5f315a99a9",
-      "2-light-ordinary.png": "6c416eebd28ef132af7bf08d55cc6da68d3f7a186d81b41ba5c5502fd99f14c2",
       "2-light-system.png": "4a2dd2c756b13f8dbbbde9af3b14f896889d931b243d5e731ebd56d8406a6853"
     },
     "location": "/tmp/menu-sync-0671/tahoe"
