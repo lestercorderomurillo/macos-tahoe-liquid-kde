@@ -81,13 +81,13 @@ The desktop and its apps in light and dark mode.
 The Tahoe desktop in light and dark mode.
 
 <p align="center">
-  <a href="src/screenshots/showcase_light_2k-9b2ab1370590.webp"><img src="src/screenshots/showcase_light_2k-9b2ab1370590.webp" alt="Tahoe light desktop with Files focused" width="415"></a>
-  <a href="src/screenshots/desktop_about_light_2k-505b6ada7411.webp"><img src="src/screenshots/desktop_about_light_2k-505b6ada7411.webp" alt="Tahoe light desktop with About This Computer focused" width="415"></a>
+  <a href="src/screenshots/showcase_light_2k-84cf80ed6028.webp"><img src="src/screenshots/showcase_light_2k-84cf80ed6028.webp" alt="Tahoe light desktop with Files focused" width="415"></a>
+  <a href="src/screenshots/desktop_about_light_2k-ae7e67008775.webp"><img src="src/screenshots/desktop_about_light_2k-ae7e67008775.webp" alt="Tahoe light desktop with About This Computer focused" width="415"></a>
 </p>
 
 <p align="center">
-  <a href="src/screenshots/showcase_dark_2k-59352cf81a95.webp"><img src="src/screenshots/showcase_dark_2k-59352cf81a95.webp" alt="Tahoe dark desktop with Files focused" width="415"></a>
-  <a href="src/screenshots/desktop_about_dark_2k-2049cca06c1a.webp"><img src="src/screenshots/desktop_about_dark_2k-2049cca06c1a.webp" alt="Tahoe dark desktop with About This Computer focused" width="415"></a>
+  <a href="src/screenshots/showcase_dark_2k-421bb9e5798a.webp"><img src="src/screenshots/showcase_dark_2k-421bb9e5798a.webp" alt="Tahoe dark desktop with Files focused" width="415"></a>
+  <a href="src/screenshots/desktop_about_dark_2k-1bbbba68bf58.webp"><img src="src/screenshots/desktop_about_dark_2k-1bbbba68bf58.webp" alt="Tahoe dark desktop with About This Computer focused" width="415"></a>
 </p>
 
 <br>
@@ -122,19 +122,17 @@ Glass refraction, hover zoom, notification badges and auto-hide.
 Finder-style Nautilus in light and dark.
 
 <p align="center">
-  <img src="src/screenshots/finder_v4-9dfc04f0541c.webp" alt="Finder-style Nautilus in light mode" width="415">
-  <img src="src/screenshots/finder_dark_v4-f53df7a986bc.webp" alt="Finder-style Nautilus in dark mode" width="415">
+  <img src="src/screenshots/finder_v4-b7743e709fcb.webp" alt="Finder-style Nautilus in light mode" width="415">
+  <img src="src/screenshots/finder_dark_v4-ce0dc544c4be.webp" alt="Finder-style Nautilus in dark mode" width="415">
 </p>
 
 <br>
 
 ### Acrylic Glass Tahoe Menu
 
-System controls and global menus for compatible apps, with inset top-bar capsules and a macOS-inspired system menu with Golden Gate symbols and balanced typography.
-
 <p align="center">
-  <img src="src/screenshots/menu_v4-c20c63c81107.webp" alt="System menu in light mode" width="415">
-  <img src="src/screenshots/menu_dark_v4-7d7b7d7b6d8c.webp" alt="System menu in dark mode" width="415">
+  <img src="src/screenshots/menu_v4-d754cdb089ec.webp" alt="System menu in light mode" width="415">
+  <img src="src/screenshots/menu_dark_v4-e12fb577d61b.webp" alt="System menu in dark mode" width="415">
 </p>
 
 <br>
@@ -144,8 +142,8 @@ System controls and global menus for compatible apps, with inset top-bar capsule
 Hardware, software and theme details in About This Computer.
 
 <p align="center">
-  <img src="src/screenshots/about_v4-d04104349f40.webp" alt="About This Computer in light mode" width="415">
-  <img src="src/screenshots/about_dark_v4-8714e1f9e9dd.webp" alt="About This Computer in dark mode" width="415">
+  <img src="src/screenshots/about_v4-89bf172117ec.webp" alt="About This Computer in light mode" width="415">
+  <img src="src/screenshots/about_dark_v4-bcfd5f536826.webp" alt="About This Computer in dark mode" width="415">
 </p>
 
 <br>

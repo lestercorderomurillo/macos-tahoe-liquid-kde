@@ -10,6 +10,12 @@ Item {
     property alias source: icon.source
     property alias active: icon.active
     property bool inPanel: true
+    property bool hovered: false
+    scale: inPanel && !vertical && hovered ? 1.09 : 1.0
+    transformOrigin: Item.Center
+    Behavior on scale {
+        NumberAnimation { duration: 140; easing.type: Easing.OutCubic }
+    }
     property bool normalizeTrashArtwork: false
     // Bundled trash bodies occupy 53/64 vertically; app tiles occupy 56/64.
     // Correct their artwork padding without changing panel cells or task margins.

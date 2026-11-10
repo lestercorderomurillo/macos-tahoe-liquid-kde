@@ -1,5 +1,12 @@
 # AGENTS.md
 
+## Required skills
+
+Read and follow these skills on every task in this repository:
+
+- [communication-autonomy](skills/lester-skills/communication-autonomy/SKILL.md) — work silently, interrupt only for real decisions or blockers, and close with a one-line "Done." report.
+- [Skill organization](skills/lester-skills/other-skills.md) — keep Lester and other skill collections under `skills/`.
+
 ## Clean install-ready delivery
 
 After every fix or release, leave the user's actual VS Code checkout clean and
@@ -24,6 +31,29 @@ Check local git status once after the final checkout update and resolve any
 remaining task-owned changes. This is a local delivery check, not permission to
 repeat remote publication queries, rerun passed tests or wait for full CI.
 Documentation-only policy changes need no new version or release.
+
+## Paired repository delivery
+
+Tahoe and Golden Gate are one connected delivery. Work requested in either
+checkout covers the corresponding changes in both repositories unless the user
+explicitly excludes an edition. A repository name, working directory or
+edition-specific README heading alone does not limit that scope.
+
+For shared documentation subjects such as About This Computer and Finder,
+update the matching README images in both editions and both appearance modes.
+Capture each edition with its own defaults, wallpaper and controls; never
+reuse one edition's photograph as the other. Refresh only the requested
+subjects and preserve unrelated photographs and their original provenance.
+Reuse a counterpart update already completed in the same task.
+
+Keep shared implementation exclusively in Tahoe and deliver Golden Gate's
+matching version and verified pin for implementation releases. Publish paired
+releases and deliver to dev and main in both repositories. Documentation,
+photography and agent-policy updates also require paired delivery, but do not
+bump versions, move release tags or publish releases for those changes alone.
+Apply shared policy corrections to both AGENTS.md files. Do not report the
+work complete after delivering only one repository; finish the counterpart or
+report its specific blocker. Leave both actual checkouts clean and ready.
 
 ## Efficient scope and repository graph
 
@@ -282,7 +312,9 @@ Store, Force Quit, Sleep, Restart, Shut Down, Lock Screen, Log Out.
   Remaining rows have neither an icon nor a reserved icon column. Recent Items
   is intentionally absent. SystemMenuStyle scopes the font-scaled metrics and
   reference symbols to this popup; explicit custom icon choices remain usable.
-  Ordinary menus keep their existing Kvantum style.
+  Ordinary menus keep their existing Kvantum style. Lock Screen and Log Out
+  show right-aligned Mac shortcut symbols (⌃⌘Q and ⇧⌘Q). These shortcuts
+  work within the open system menu; do not replace KDE global key bindings.
 - Draw the three default system-menu symbols from the Golden Gate reference
   in SystemMenuStyle; custom icons and other widgets retain the inherited
   base-theme artwork.

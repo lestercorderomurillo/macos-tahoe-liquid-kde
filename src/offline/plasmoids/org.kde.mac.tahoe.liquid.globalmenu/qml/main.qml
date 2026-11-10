@@ -71,7 +71,7 @@ PlasmoidItem {
         id: buttonGrid
 
         Plasmoid.status: {
-            if (appMenuModel.menuAvailable && Plasmoid.currentIndex > -1 && buttonRepeater.count > 0) {
+            if (Plasmoid.currentIndex !== -1) {
                 return PlasmaCore.Types.NeedsAttentionStatus;
             }
             return PlasmaCore.Types.ActiveStatus;

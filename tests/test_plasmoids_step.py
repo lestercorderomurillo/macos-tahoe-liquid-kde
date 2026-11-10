@@ -160,7 +160,7 @@ def test_taskmanager_build_artifacts_match_install_sources():
     task_qml = (plasmoids.TASKMANAGER_SRC / "contents/ui/Task.qml").read_text()
     assert "z: dockMagnified ? 10 : 0" in task_qml
     assert "Plasmoid.configuration.dockMagnification" in task_qml
-    assert "readonly property real dockScale: dockMagnified ? configuredDockScale : 1.0" in task_qml
+    assert "readonly property real dockScale: dockMagnified ? reducedDockScale : 1.0" in task_qml
     assert "scale: dockScale" in task_qml
     assert "scale: task.dockMagnified" not in task_qml
 

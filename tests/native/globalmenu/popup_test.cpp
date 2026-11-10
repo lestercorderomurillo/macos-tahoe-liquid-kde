@@ -7,6 +7,8 @@
 #include <QDBusInterface>
 #include <QDBusVariant>
 #include <QMenu>
+#include <QMouseEvent>
+#include <abstracttasksmodel.h>
 #include <QProcess>
 #include <QQuickItem>
 #include <QQuickWindow>
@@ -25,7 +27,10 @@ public Q_SLOTS:
         DBusMenuLayoutItem child {2, {{QStringLiteral("label"), QStringLiteral("Revision %1").arg(openings)}}, {}};
         DBusMenuLayoutItem file {
             1, {{QStringLiteral("label"), QStringLiteral("File")}, {QStringLiteral("children-display"), QStringLiteral("submenu")}}, {child}};
-        layout = parent == 1 ? file : DBusMenuLayoutItem {0, {}, {file}};
+        DBusMenuLayoutItem edit {3, {{QStringLiteral("label"), QStringLiteral("Edit")},
+            {QStringLiteral("children-display"), QStringLiteral("submenu")}},
+            {{4, {{QStringLiteral("label"), QStringLiteral("Copy")}}, {}}}};
+        layout = parent == 1 ? file : parent == 3 ? edit : DBusMenuLayoutItem {0, {}, {file, edit}};
         return openings + 1;
     }
     bool AboutToShow(int id)
@@ -44,6 +49,118 @@ class PopupTest : public QObject
 {
     Q_OBJECT
 private Q_SLOTS:
+    void mouseAcrossEntireBar_data()
+    {
+        QTest::addColumn<bool>("exported");
+        QTest::newRow("generic") << false;
+        QTest::newRow("exported") << true;
+    }
+    void mouseAcrossEntireBar()
+    {
+        QFETCH(bool, exported);
+        QProcess exporter;
+        if (exported) {
+            exporter.start(QCoreApplication::applicationFilePath(), {QStringLiteral("--exporter")});
+            QVERIFY(exporter.waitForStarted());
+            QVERIFY(exporter.waitForReadyRead());
+        }
+        using Roles = TaskManager::AbstractTasksModel;
+        QStandardItemModel tasks(1, 1);
+        auto task = tasks.index(0, 0);
+        tasks.setData(task, true, Roles::IsWindow);
+        tasks.setData(task, true, Roles::IsActive);
+        tasks.setData(task, true, Roles::IsClosable);
+        tasks.setData(task, QVariantList{101}, Roles::WinIdList);
+        tasks.setData(task, QStringLiteral("Test application"), Roles::AppName);
+        AppMenuModel model;
+        model.setEnableMenuSearch(false);
+        QTRY_VERIFY(model.tasksModel()->sourceModel());
+        model.tasksModel()->setSourceModel(&tasks);
+        Q_EMIT model.tasksModel()->activeTaskChanged();
+        QTRY_COMPARE(model.rowCount(), 3);
+        if (exported) {
+            model.updateApplicationMenu("org.mttkde.PopupTest", "/Menu");
+            QTRY_COMPARE(model.rowCount(), 2);
+        }
+        QQuickWindow window;
+        window.resize(400, 24);
+        QQuickItem grid(window.contentItem());
+        grid.setSize({400, 24});
+        QQuickItem apple(&grid), appName(&grid), file(&grid), edit(&grid);
+        const QList<QQuickItem*> buttons{&apple, &appName, &file, &edit};
+        const QList<int> indices{-3, -2, 0, 1};
+        for (int i = 0; i < buttons.size(); ++i) {
+            buttons[i]->setPosition({qreal(i * 80), 0});
+            buttons[i]->setSize({80, 24});
+            buttons[i]->setProperty("buttonIndex", indices[i]);
+        }
+        window.show();
+        AppMenuApplet applet(nullptr, KPluginMetaData(), {});
+        applet.setModel(&model);
+        applet.setButtonGrid(&grid);
+        connect(&applet, &AppMenuApplet::requestActivateIndex, &applet, [&](int index) {
+            if (index == -3) applet.triggerSystemMenu(&apple);
+            else if (index == -2) applet.triggerWindowMenu(&appName);
+            else applet.trigger(buttons[indices.indexOf(index)], index);
+        });
+        applet.triggerSystemMenu(&apple);
+        auto* popup = qobject_cast<QMenu*>(QApplication::activePopupWidget());
+        QVERIFY(popup);
+        const auto popupId = popup->winId();
+        auto* systemStyle = popup->style();
+        QSignalSpy hidden(popup, &QMenu::aboutToHide);
+        QSignalSpy selected(&applet, &AppMenuApplet::currentIndexChanged);
+        for (int index : {-2, 0, 1, 0, -2, -3, 1, -3}) {
+            auto* button = buttons[indices.indexOf(index)];
+            const QPointF global = button->mapToGlobal(QPointF(40, 12));
+            QMouseEvent move(QEvent::MouseMove, popup->mapFromGlobal(global.toPoint()), global,
+                             Qt::NoButton, Qt::NoButton, Qt::NoModifier);
+            QApplication::sendEvent(popup, &move);
+            QCOMPARE(applet.currentIndex(), index);
+            QCOMPARE(QApplication::activePopupWidget(), popup);
+            QCOMPARE(popup->winId(), popupId);
+            QCOMPARE(hidden.count(), 0);
+            QVERIFY(!popup->actions().isEmpty());
+            QCOMPARE(popup->style() == systemStyle, index == -3);
+        }
+        QCOMPARE(selected.count(), 8); // no intermediate closed/highlight-lost state
+        QTest::keyClick(popup, Qt::Key_Escape);
+        QCOMPARE(applet.currentIndex(), -1);
+        QCOMPARE(hidden.count(), 1);
+        applet.trigger(&file, 0);
+        QCOMPARE(applet.currentIndex(), 0);
+        popup->hide();
+        auto* source = model.index(0).data(AppMenuModel::ActionRole).value<QAction*>()->menu();
+        QVERIFY(source != popup);
+        QVERIFY(!source->actions().isEmpty());
+        if (exported) {
+            exporter.terminate();
+            QVERIFY(exporter.waitForFinished());
+        }
+    }
+    void systemMenuShortcuts()
+    {
+        QQuickWindow window;
+        window.resize(400, 100);
+        window.show();
+        QQuickItem anchor(window.contentItem());
+        anchor.setSize({80, 24});
+        AppMenuApplet applet(nullptr, KPluginMetaData(), {});
+        for (auto modifiers : {Qt::ControlModifier | Qt::MetaModifier,
+                               Qt::ShiftModifier | Qt::MetaModifier}) {
+            applet.triggerSystemMenu(&anchor);
+            auto* popup = qobject_cast<QMenu*>(QApplication::activePopupWidget());
+            QVERIFY(popup);
+            auto* action = popup->actions().at(popup->actions().size() - (modifiers.testFlag(Qt::ControlModifier) ? 2 : 1));
+            QCOMPARE(action->shortcut(), QKeySequence(modifiers | Qt::Key_Q));
+            // Exercise activation without calling the session lock/logout service.
+            action->disconnect();
+            QSignalSpy triggered(action, &QAction::triggered);
+            QTest::keyClick(popup, Qt::Key_Q, modifiers);
+            QTRY_COMPARE(triggered.count(), 1);
+            popup->hide();
+        }
+    }
     void fileEditReopen()
     {
         QMenu root;
@@ -150,14 +267,18 @@ private Q_SLOTS:
         QDBusInterface remote("org.mttkde.PopupTest", "/Menu", "com.canonical.dbusmenu");
         auto openings = [&] { return remote.call("Openings").arguments().value(0).toInt(); };
         AppMenuModel model;
+        model.setEnableMenuSearch(false);
         model.setProperty("containmentStatus", Plasma::Types::AcceptingInputStatus);
         model.updateApplicationMenu("org.mttkde.PopupTest", "/Menu");
-        QTRY_COMPARE(model.rowCount(), 1);
+        QTRY_COMPARE(model.rowCount(), 2);
         auto* action = model.index(0, 0).data(AppMenuModel::ActionRole).value<QAction*>();
         QVERIFY(action && action->menu());
         QTRY_COMPARE(action->menu()->actions().size(), 1);
         const int initial = openings();
         QQuickWindow window;
+        window.resize(400, 100);
+        window.show();
+        QVERIFY(QTest::qWaitForWindowExposed(&window));
         QQuickItem anchor(window.contentItem());
         anchor.setSize({80, 24});
         AppMenuApplet applet(nullptr, KPluginMetaData(), {});

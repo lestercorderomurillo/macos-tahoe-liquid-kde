@@ -1,0 +1,41 @@
+{
+  "version": "0.67.0",
+  "scope": "Reviewed native SystemMenuStyle symbol and shortcut previews in a disposable VM. Fusion backgrounds isolate symbols; these are not full desktop or Acrylic Glass material captures.",
+  "reference": "https://512pixels.net/projects/aqua-screenshot-library/macos-27-golden-gate/",
+  "source_files": {
+    "src/offline/plasmoids/org.kde.mac.tahoe.liquid.globalmenu/systemmenustyle.h": "901d8d6c45bf8eca885d63cc2f520a77c3c27cff526ecb8f2acc2252ba493982",
+    "src/offline/plasmoids/org.kde.mac.tahoe.liquid.globalmenu/appmenuapplet.cpp": "c9575770abb95d9e6303f8b8de1d464d1eef8fdcbb1d191d02f4fec05d4d647f"
+  },
+  "preview_harness_sha256": "f6c12f0fa940100f5f7b8b8897b9bbadcd71a79e44a3f069b756a813946c1fcc",
+  "vm_image_sha256": "412e7933f10add20b921b92c02709e7eea56acd14dc14cf654f58fba4ea3cc9d",
+  "images": [
+    {
+      "path": "src/screenshots/previews/menu-symbols-067-light-a558e02129b0.png",
+      "sha256": "a558e02129b04d6759c9f6fee9431f8a04cc90e6584adfb2a48efb170ddc939f",
+      "reviewed": true,
+      "capture": {
+        "active_popup_after": true,
+        "active_popup_before": true,
+        "device_pixel_ratio": 2,
+        "height": 341,
+        "mode": "light",
+        "scope": "Native SystemMenuStyle symbol/shortcut preview; Fusion background, not compositor material evidence",
+        "width": 346
+      }
+    },
+    {
+      "path": "src/screenshots/previews/menu-symbols-067-dark-35230bb0f200.png",
+      "sha256": "35230bb0f2002677e41c40436f63c437d0ee1675ccae33cb167fc9afe52be5a4",
+      "reviewed": true,
+      "capture": {
+        "active_popup_after": true,
+        "active_popup_before": true,
+        "device_pixel_ratio": 2,
+        "height": 341,
+        "mode": "dark",
+        "scope": "Native SystemMenuStyle symbol/shortcut preview; Fusion background, not compositor material evidence",
+        "width": 346
+      }
+    }
+  ]
+}

@@ -123,8 +123,7 @@ private:
     /// Cleanup hooks — reset currentIndex / unparent the QMenu when
     /// the popup closes so the QML highlight de-activates.
     void onMenuAboutToHide();
-    void onWindowMenuAboutToHide();
-    void onSystemMenuAboutToHide();
+    void showMenu(QQuickItem* ctx, QMenu* source, int index);
 
     // State
 

@@ -3,6 +3,7 @@
 #include <Plasma/Containment>
 #include <PlasmaQuick/AppletQuickItem>
 #include <QApplication>
+#include <QMenu>
 #include <QQuickWindow>
 #include <QTest>
 #include <QQmlEngine>
@@ -66,6 +67,14 @@ private Q_SLOTS:
         QQmlProperty minimumWidth(representation, QStringLiteral("Layout.minimumWidth"), qmlContext(representation));
         QVERIFY(minimumWidth.isValid());
         QTRY_VERIFY(minimumWidth.read().toReal() > 250);
+        for (const char* method : {"triggerSystemMenu", "triggerWindowMenu"}) {
+            QVERIFY(QMetaObject::invokeMethod(bar, method, Q_ARG(QQuickItem*, representation)));
+            QTRY_COMPARE(bar->status(), Plasma::Types::NeedsAttentionStatus);
+            auto* popup = QApplication::activePopupWidget();
+            QVERIFY(popup);
+            popup->hide();
+            QTRY_COMPARE(bar->status(), Plasma::Types::ActiveStatus);
+        }
         QCOMPARE(panel->applets().size(), 1);
         QVERIFY(!bar->configuration()->contains(QStringLiteral("integratedBar")));
     }

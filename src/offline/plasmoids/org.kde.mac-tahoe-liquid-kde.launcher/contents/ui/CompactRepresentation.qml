@@ -26,6 +26,7 @@ NativeLauncher.DockIcon {
     location: Plasmoid.location
     source: useCustomButtonImage ? Plasmoid.configuration.customButtonImage : Plasmoid.configuration.icon
     active: mouseArea.containsMouse
+    hovered: mouseArea.containsMouse
 
     MouseArea
     {

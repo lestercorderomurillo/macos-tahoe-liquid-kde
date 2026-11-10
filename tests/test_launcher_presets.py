@@ -702,3 +702,82 @@ def test_dock_spacing_is_not_configurable(repo):
     for relative in ('contents/config/main.xml', 'contents/ui/ConfigAppearance.qml',
                      'contents/ui/LayoutMetrics.js'):
         assert 'iconSpacing' not in (package / relative).read_text()
+
+
+def test_dock_hover_zoom_is_reduced_and_centered(repo, tmp_path, launcher_popup_module):
+    """Execute production task transforms and shared end-icon rendering together."""
+    task = (plasmoids.TASKMANAGER_SRC / 'contents/ui/Task.qml').read_text()
+    transforms = task[task.index('    readonly property bool dockMagnified:'):task.index('    active: !inPopup')]
+    qml = r'''import QtQuick
+import org.kde.plasma.core as PlasmaCore
+import org.kde.mac.tahoe.launcher as NativeLauncher
+Item {
+    id: root; width: 400; height: 100
+    property int phase: 0
+    property bool hovering: false
+    property bool vertical: false
+    property bool panel: true
+    property bool popup: false
+    property real amount: 110
+    QtObject { id: tasksRoot; property bool vertical: root.vertical }
+    QtObject { id: plasmoid; property QtObject configuration: QtObject { property real dockMagnification: root.amount } }
+    Item {
+        id: task; x: 130; y: 10; width: 52; height: 68
+        property bool inPopup: root.popup
+        property bool containsMouse: root.hovering
+        TRANSFORMS
+    }
+    NativeLauncher.DockIcon {
+        id: launcher; x: 30; y: 10; width: 52; height: 68
+        source: "start-here-kde"; hovered: root.hovering; inPanel: root.panel
+        location: root.vertical ? PlasmaCore.Types.LeftEdge : PlasmaCore.Types.BottomEdge
+    }
+    NativeLauncher.DockIcon {
+        id: trash; x: 230; y: 10; width: 52; height: 68
+        source: "user-trash"; normalizeTrashArtwork: true
+        hovered: root.hovering; inPanel: root.panel
+        location: launcher.location
+    }
+    function check(item, expected) {
+        const center = item.mapToItem(root, item.width / 2, item.height / 2);
+        const top = item.mapToItem(root, 0, 0);
+        const bottom = item.mapToItem(root, item.width, item.height);
+        if (Math.abs(item.scale - expected) > 0.0001
+            || Math.abs(center.x - item.x - 26) > 0.001
+            || Math.abs(center.y - item.y - 34) > 0.001
+            || Math.abs(bottom.y - top.y - 68 * expected) > 0.001
+            || item.width !== 52 || item.height !== 68) {
+            console.error("ZOOM_FAILED", root.phase, item, item.scale, expected, center);
+            Qt.exit(1); return false;
+        }
+        return true;
+    }
+    Timer {
+        running: true; repeat: true; interval: 250
+        onTriggered: {
+            let taskScale = root.hovering && !root.vertical && !root.popup
+                ? 1 + (Math.max(100, Math.min(150, root.amount)) / 100 - 1) * 0.9 : 1;
+            let endScale = root.hovering && root.panel && !root.vertical ? 1.09 : 1;
+            if (!root.check(task, taskScale) || !root.check(launcher, endScale) || !root.check(trash, endScale)) return;
+            switch (++root.phase) {
+            case 1: root.hovering = true; break;
+            case 2: root.hovering = false; break;
+            case 3: root.hovering = true; root.vertical = true; break;
+            case 4: root.vertical = false; root.panel = false; root.popup = true; break;
+            case 5: root.panel = true; root.popup = false; root.amount = 150; break;
+            case 6: root.amount = 80; break;
+            case 7: root.amount = 180; break;
+            default: console.info("DOCK_ZOOM_OK"); Qt.exit(0);
+            }
+        }
+    }
+}
+'''.replace('TRANSFORMS', transforms.replace('Plasmoid.configuration', 'plasmoid.configuration'))
+    path = tmp_path / 'DockZoom.qml'
+    path.write_text(qml)
+    result = subprocess.run([str(launcher_popup_module.parent / 'dockgeometryprobe'), str(path)],
+        env=dict(os.environ, QML_IMPORT_PATH=str(launcher_popup_module), QT_QPA_PLATFORM='offscreen',
+                 QT_QUICK_BACKEND='software', QT_FORCE_STDERR_LOGGING='1'),
+        capture_output=True, text=True, timeout=30)
+    assert result.returncode == 0, result.stdout + result.stderr
+    assert 'DOCK_ZOOM_OK' in result.stdout + result.stderr
