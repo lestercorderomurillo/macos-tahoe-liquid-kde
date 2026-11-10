@@ -72,7 +72,10 @@ int main(int argc, char **argv)
         require(shader.addShaderFromSourceCode(QOpenGLShader::Fragment, fragment), shader.log());
         require(shader.link(), shader.log());
         shader.bind();
-        const GLfloat points[] = {0,0, 0,1, 0,height, 0,0, width,0, 1,1, width,height, 1,0};
+        // The onscreen pass receives undeformed local pixel coordinates,
+        // not normalized sampler UVs. Match BlurEffect's vertex contract.
+        const GLfloat points[] = {0,0, 0,0, 0,height, 0,height,
+                                  width,0, width,0, width,height, width,height};
         QOpenGLVertexArrayObject array;
         require(array.create(), QStringLiteral("vertex array unavailable"));
         array.bind();

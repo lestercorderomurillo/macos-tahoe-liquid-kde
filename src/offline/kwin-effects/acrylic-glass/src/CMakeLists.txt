@@ -72,6 +72,7 @@ set(liquidglass_SOURCES
     effect.cpp
     ${CMAKE_CURRENT_BINARY_DIR}/liquidglass.qrc
     main.cpp
+    wobbly_shape.cpp
 )
 
 kconfig_add_kcfg_files(liquidglass_SOURCES

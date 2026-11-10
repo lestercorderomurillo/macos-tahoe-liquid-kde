@@ -12,8 +12,8 @@ varying vec2 vertex;
 void main(void)
 {
     vec2 halfSize = blurSize * 0.5;
-    vec2 pos = vertex - box.xy;
-    float d = lgRoundedRectDistance(pos, halfSize, cornerRadius);
+    vec2 localPos = uv - box.xy;
+    float d = lgRoundedRectDistance(localPos, halfSize, cornerRadius);
     float mask = lgRoundedRectCoverage(d);
     if (mask <= 0.0) {
         discard;
