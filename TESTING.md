@@ -1,7 +1,8 @@
 # Installer testing
 
-Tahoe **v0.67.2** adds centered hover zoom to Launcher and Trash and reduces
-Dock enlargement by 10% (the default grows icons by 9% instead of 10%).
+Tahoe **v0.67.5** makes Acrylic Glass follow Wobbly Windows, including legacy
+X11 properties, output coordinates and client blur regions. Representative
+KWin 6.6/6.7/6.8 checks and isolated rendering evidence are recorded below.
 See [release evidence](release-evidence.json) for focused checks and coverage limits;
 full remote CI runs asynchronously.
 

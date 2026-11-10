@@ -269,3 +269,65 @@ int main() { run(); }
                              *shlex.split(flags.stdout)], capture_output=True, text=True)
     assert result.returncode == 0, result.stderr
     subprocess.run([str(binary)], check=True, capture_output=True)
+
+
+def test_native_wobbly_property_compatibility(tmp_path):
+    """Run the actual property reader against modern and legacy Qt properties."""
+    flags = subprocess.run(["pkg-config", "--cflags", "--libs", "Qt6Core"],
+                           capture_output=True, text=True)
+    if flags.returncode or not shutil.which("c++"):
+        pytest.skip("C++ and Qt6Core development files required")
+    source = _read("effect.cpp")
+    reader = source[source.index("std::optional<WobblyShapeParameters> BlurEffect::readWobblyParameters"):]
+    reader = reader.split("\nvoid BlurEffect::slotWindowStartUserMovedResized", 1)[0]
+    cpp = tmp_path / "properties.cpp"
+    cpp.write_text(r'''
+#include "wobbly_shape.h"
+#include <QObject>
+#include <QVariant>
+#include <optional>
+#include <cassert>
+using namespace KWin;
+using Effect = QObject;
+struct Handler {
+    QObject object;
+    bool loaded = true;
+    Effect* findEffect(const QString&) { return loaded ? &object : nullptr; }
+};
+struct BlurEffect {
+    Handler* effects;
+    std::optional<WobblyShapeParameters> readWobblyParameters(bool resizing) const;
+};
+''' + reader + r'''
+int main() {
+    Handler handler;
+    BlurEffect effect{&handler};
+    auto& object = handler.object;
+    object.setProperty("moveWobble", true);
+    object.setProperty("resizeWobble", true);
+    assert(!effect.readWobblyParameters(false));
+    object.setProperty("xTesselation", 12.0);
+    object.setProperty("yTesselation", 17.0);
+    auto legacy = effect.readWobblyParameters(false);
+    assert(legacy && legacy->xTessellation == 12 && legacy->yTessellation == 17);
+    object.setProperty("xTessellation", 20);
+    object.setProperty("yTessellation", 24);
+    auto modern = effect.readWobblyParameters(false);
+    assert(modern && modern->xTessellation == 20 && modern->yTessellation == 24);
+    object.setProperty("xTessellation", 0);
+    assert(!effect.readWobblyParameters(false));
+    object.setProperty("xTessellation", QVariant());
+    object.setProperty("yTessellation", QVariant());
+    object.setProperty("moveWobble", false);
+    assert(!effect.readWobblyParameters(false));
+    assert(effect.readWobblyParameters(true));
+    handler.loaded = false;
+    assert(!effect.readWobblyParameters(true));
+}
+''')
+    binary = tmp_path / "properties"
+    result = subprocess.run(["c++", "-std=c++20", "-fPIC", f"-I{ROOT}", str(cpp),
+                             "-o", str(binary), *shlex.split(flags.stdout)],
+                            capture_output=True, text=True)
+    assert result.returncode == 0, result.stderr
+    subprocess.run([str(binary)], check=True, capture_output=True)

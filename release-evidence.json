@@ -1,190 +1,162 @@
 {
-  "version": "0.67.2",
-  "source_sha256": "a975ffb8fe0d76dd683513ecf6f7b87c6e77afc80d9bbe6682504d31823df530",
-  "environment": "Linux-7.2.0-1-cachyos-x86_64-with-glibc2.44",
+  "version": "0.67.5",
+  "source_sha256": "f9c26ada6ae3e5c34b43fc7f10a77c95ad889a6784ee6fb3731c795dca5614b7",
+  "environment": "CachyOS KWin 6.7.4; isolated 6.6.5/6.8.2 SDK images; KDE neon KWin 6.8.1 disposable Wayland VMs",
   "checks": [
     {
-      "command": "PYTHONDONTWRITEBYTECODE=1 python3 -m pytest tests/test_launcher_presets.py tests/test_plasmoids_step.py tests/test_taskmanager_qml.py -k 'dock or taskmanager_build_artifacts' -q -p no:cacheprovider --basetemp=/tmp/dock-zoom-0672-tests",
+      "command": "GitHub Actions run 42783277906: test (0), test (1), cross-distro (fedora), cross-distro (neon)",
       "result": "passed",
-      "detail": "Tahoe: 24 passed, 50 deselected. Executed task transforms and shared DockIcon hover/idle states, centered bounds, unchanged cells, horizontal/vertical and desktop/popup exemptions, saved magnification clamping; existing artwork and boundary geometry regressions."
+      "detail": "Selected CI jobs passed on c1b7edaaa6890f0b38ec944392dbd8e555ccf24f. Final implementation and component ledger are byte-identical; subsequent changes add a passing native compatibility regression and release bookkeeping. https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/actions/runs/42783277906"
     },
     {
-      "command": "GOLDEN_GATE_TAHOE_SOURCE=<Tahoe checkout> MAC_TAHOE_NO_UPDATE_CHECK=true python3 bootstrap.py --prepare; compare all four changed staged Dock QML files with Tahoe",
+      "command": "python3 -m pytest tests/test_glass_presets.py::test_native_glass_shader_pixels -q -p no:cacheprovider",
       "result": "passed",
-      "detail": "Golden Gate stages byte-identical tested hover implementations."
+      "detail": "Previously failing pixel probe passed after aligning its vertex data with the shader local-pixel contract; isolated Xvfb, host Qt 6.11.2."
     },
     {
-      "command": "PYTHONDONTWRITEBYTECODE=1 python3 -m pytest tests/test_bootstrap.py -q -p no:cacheprovider",
+      "command": "Compile tests/glass/shader.cpp using Qt6Gui/Qt6OpenGL/Qt6Svg in mttkde-acrylic-x11:6.6; xvfb-run -a /tmp/shader-probe <shaders> <staged themes>",
       "result": "passed",
-      "detail": "Golden Gate: 40 passed; source staging and release selection regression checks."
+      "detail": "KWin 6.6 environment: colors, orientation, coverage, premultiplication and both GLSL profiles verified. Native executable used because this minimal SDK image has no pytest."
     },
     {
-      "command": "Clean guest Dock build; python3 /tmp/dock-zoom-0672/final_capture.py; python3 /tmp/dock-zoom-0672/golden_light_capture.py",
+      "command": "cmake configure/build Acrylic Glass: host /tmp/pr121-qualified-build; mttkde-acrylic-x11:6.6; mttkde-acrylic:6.8.2-base",
       "result": "passed",
-      "detail": "Disposable KDE neon VMs, each edition using its own installed defaults. Dock-only light/dark idle, Launcher, application and Trash hover captures reviewed. Old-module frames were rejected; final captures use the rebuilt module with QML disk caching disabled."
+      "detail": "KWin 6.6.5 X11, 6.7.4 Wayland/X11 and 6.8.2 Wayland built successfully. Existing source fixes were reused; all affected backend builds repeated after legacy-property correction."
+    },
+    {
+      "command": "python3 -m pytest tests/test_acrylic_glass_wobbly.py tests/test_acrylic_capture_safety.py -q -p no:cacheprovider; then test_native_wobbly_property_compatibility",
+      "result": "passed",
+      "detail": "15 passed plus the added native compatibility case passed. Real production property-reader body exercised against modern, legacy, disabled, missing and invalid properties. Spring restart, resize fixed edges/settling, output clipping and partial regions covered."
+    },
+    {
+      "command": "python3 tests/acrylic_glass_capture.py --plugin /tmp/pr121-qualified-build/src/liquidglass_x11.so --output /tmp/pr121-x11-qualified --compositor x11 --identity WobblyProbe --expect changed --wobbly",
+      "result": "passed",
+      "detail": "Real isolated KWin X11 6.7.4/Xvfb/llvmpipe, private bus and verified module inode. Wobbly active during drag; shader ready. Pre-fix capture rejected: 157 glass pixels during motion. Fixed capture: 132051 glass pixels, matching deformed silhouette; rest/moving/settled frames reviewed."
+    },
+    {
+      "command": "GOLDEN_GATE_TAHOE_SOURCE=/tmp/tahoe-pr121-qualified MAC_TAHOE_NO_UPDATE_CHECK=true python3 bootstrap.py --prepare; pytest tests/test_acrylic_glass_wobbly.py tests/test_acrylic_glass_filter.py tests/test_acrylic_blur_region.py in prepared source",
+      "result": "passed",
+      "detail": "25 passed against Golden Gate staged implementation after the property correction. Later property-reader regression is independent of edition staging and passed locally."
+    },
+    {
+      "command": "python3 /tmp/pr121-qualified-visual/run.py",
+      "result": "passed",
+      "detail": "Disposable KDE neon / KWin 6.8.1 Wayland: representative Tahoe light and Golden Gate dark rest/drag/settled frames reviewed. Effect deployed atomically and VM rebooted; exact loaded-module hash checked. Earlier captures with unverified/empty guest module rejected."
+    },
+    {
+      "command": "python3 -m pytest tests/test_bootstrap.py -q -p no:cacheprovider (prior focused run)",
+      "result": "passed",
+      "detail": "40 passed; wrapper code, inputs and environment unchanged. Evidence reused for pin-only delivery."
     }
   ],
   "gallery_commit": "c485eeec652358824d2496222cb030a91f70e5dd",
   "captures": [],
-  "dock_hover_review": {
-    "location": "/tmp/dock-zoom-0672",
-    "environment": "Disposable KDE neon, Plasma 6.8.1 / Qt 6.11.1, Wayland, scale 2; edition-specific existing capture overlays; rebuilt shared module and changed QML only",
-    "frames": {
-      "tahoe-light-idle.png": {
-        "sha256": "d2bc732dc02be8fe0eec08360ea8d04d31ce0925eeb535cf934cdf5ad8958192",
-        "dock_geometry": {
-          "x": 614,
-          "y": 996,
-          "width": 692,
-          "height": 84
-        }
+  "review": {
+    "pull_request": "https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/pull/122",
+    "supersedes_reverted_pr": 121,
+    "fixes": [
+      "Correct native pixel probe vertex contract.",
+      "Support legacy xTesselation/yTesselation Qt properties; without them glass vanished during Wobbly on X11.",
+      "Retain reviewed X11 ABI, output-coordinate and client-region fixes."
+    ]
+  },
+  "component_capture_review": {
+    "component_sha256": "10d2bcf8a6276b4cf34e132d254e852f9400612c668db22f2150c59911d48b32",
+    "x11": {
+      "loaded": "true",
+      "active_effects": "liquidglass",
+      "plugin_loads": [
+        "qt.core.library: \"/tmp/pr121-x11-qualified/plugins/kwin-x11/effects/plugins/liquidglass.so\" loaded library"
+      ],
+      "plugin_mappings": [
+        "7f78e08c5000-7f78e08cf000 r--p 00000000 00:34 116714                     /tmp/pr121-x11-qualified/plugins/kwin-x11/effects/plugins/liquidglass.so",
+        "7f78e08cf000-7f78e08f0000 r-xp 0000a000 00:34 116714                     /tmp/pr121-x11-qualified/plugins/kwin-x11/effects/plugins/liquidglass.so",
+        "7f78e08f0000-7f78e08fc000 r--p 0002b000 00:34 116714                     /tmp/pr121-x11-qualified/plugins/kwin-x11/effects/plugins/liquidglass.so",
+        "7f78e08fc000-7f78e08fd000 r--p 00037000 00:34 116714                     /tmp/pr121-x11-qualified/plugins/kwin-x11/effects/plugins/liquidglass.so",
+        "7f78e08fd000-7f78e08fe000 rw-p 00038000 00:34 116714                     /tmp/pr121-x11-qualified/plugins/kwin-x11/effects/plugins/liquidglass.so"
+      ],
+      "dbus_owner_verified": true,
+      "kwin_pid": 1897076,
+      "identity": "WobblyProbe",
+      "client_backend": "xcb",
+      "scale": "1",
+      "compositor_backend": "x11",
+      "capture_backend": "spectacle",
+      "plugin_sha256": "3ba3c87afc4ec7225cec66b7090a4df34135ec438a90f900c91e25aeebce2fcb",
+      "kwin_version": "kwin 6.7.4"
+    },
+    "x11_pixels": {
+      "rest": {
+        "glass_pixels": 134076,
+        "passed": true
       },
-      "tahoe-light-launcher.png": {
-        "sha256": "2575172c688802b91f423121fc48e7c84ebf78e8cac2fb53180c618a9579b18d",
-        "dock_geometry": {
-          "x": 614,
-          "y": 996,
-          "width": 692,
-          "height": 84
-        }
+      "moving": {
+        "glass_pixels": 132051,
+        "passed": true
       },
-      "tahoe-light-task.png": {
-        "sha256": "a046ea23071cbeb311b295bf37a24544f6c049564a877ef8a5d8870d9f57ea35",
-        "dock_geometry": {
-          "x": 614,
-          "y": 996,
-          "width": 692,
-          "height": 84
-        }
-      },
-      "tahoe-light-trash.png": {
-        "sha256": "812b3721e92e12fbfd2abf734e8ff06306e417a706beef5dbfa04725dbac6fc8",
-        "dock_geometry": {
-          "x": 614,
-          "y": 996,
-          "width": 692,
-          "height": 84
-        }
-      },
-      "tahoe-dark-idle.png": {
-        "sha256": "13187eb2024f8cdb1e07700707bc35ce2428b8b5aeae795ee92e061bf8fbaecd",
-        "dock_geometry": {
-          "x": 614,
-          "y": 996,
-          "width": 692,
-          "height": 84
-        }
-      },
-      "tahoe-dark-launcher.png": {
-        "sha256": "dd9045f5ec3cc8710b1174201b7a354972e3f0cfb662520f57e85eb7cc79b904",
-        "dock_geometry": {
-          "x": 614,
-          "y": 996,
-          "width": 692,
-          "height": 84
-        }
-      },
-      "tahoe-dark-task.png": {
-        "sha256": "c134b951b8e711619cca4a84cf8652242991a72adfa79067b3a515640327fa3b",
-        "dock_geometry": {
-          "x": 614,
-          "y": 996,
-          "width": 692,
-          "height": 84
-        }
-      },
-      "tahoe-dark-trash.png": {
-        "sha256": "61091ccdf1f8c0973d6e0f19d042e7210f189708bd9ae8c4098128029060dae9",
-        "dock_geometry": {
-          "x": 614,
-          "y": 996,
-          "width": 692,
-          "height": 84
-        }
-      },
-      "golden-gate-light-idle.png": {
-        "sha256": "7b5c3d9efb0d00d39734ac7aa870b97d9c6f76936dee0f17bdf05788af42df33",
-        "dock_geometry": {
-          "x": 614,
-          "y": 996,
-          "width": 692,
-          "height": 84
-        }
-      },
-      "golden-gate-light-launcher.png": {
-        "sha256": "b1606d9fba7ac9271c39466f3793eecbfc0fe146b140a31b3868f61af9d32839",
-        "dock_geometry": {
-          "x": 614,
-          "y": 996,
-          "width": 692,
-          "height": 84
-        }
-      },
-      "golden-gate-light-task.png": {
-        "sha256": "61218598a3d6ecd2b4b2195c81daafe45fb80b1a6b93babe7a498c085074c7cf",
-        "dock_geometry": {
-          "x": 614,
-          "y": 996,
-          "width": 692,
-          "height": 84
-        }
-      },
-      "golden-gate-light-trash.png": {
-        "sha256": "7b20e5c2b6ee225c082e78c5d9fa5af7e8f1dac2a02241f96a70da9638a1d9de",
-        "dock_geometry": {
-          "x": 614,
-          "y": 996,
-          "width": 692,
-          "height": 84
-        }
-      },
-      "golden-gate-dark-idle.png": {
-        "sha256": "4947910f84d33cfe537e1165dad06be1eafc00e827772dc7b20953cb361a4b6c",
-        "dock_geometry": {
-          "x": 614,
-          "y": 996,
-          "width": 692,
-          "height": 84
-        }
-      },
-      "golden-gate-dark-launcher.png": {
-        "sha256": "5244d63fc9df4be3c476461f71762036bec28de9ded0bc40b89ed8c4b28a3034",
-        "dock_geometry": {
-          "x": 614,
-          "y": 996,
-          "width": 692,
-          "height": 84
-        }
-      },
-      "golden-gate-dark-task.png": {
-        "sha256": "28040731948eca10e03e33ba4f61cf612834254e51e0e59beda95bfb3415df38",
-        "dock_geometry": {
-          "x": 614,
-          "y": 996,
-          "width": 692,
-          "height": 84
-        }
-      },
-      "golden-gate-dark-trash.png": {
-        "sha256": "a665384a808bd114d885286bcc3745008f24c233acd1002935c8281a1702feb3",
-        "dock_geometry": {
-          "x": 614,
-          "y": 996,
-          "width": 692,
-          "height": 84
-        }
+      "settled": {
+        "glass_pixels": 136271,
+        "passed": true
       }
     },
-    "runtime_files": {
-      "src/offline/plasmoids/org.kde.mac.tahoe.liquid.taskmanager/contents/ui/Task.qml": "55b1655d5f7027bb349ad9cfc47d29dca0a586228c455ed18ed9021b116056a0",
-      "src/offline/plasmoids/org.kde.mac.tahoe.liquid.taskmanager/launcher/DockIcon.qml": "b8ba82fa45f4d77c6d3e1f84f92eccee6d52717cdd303fba0e6565a0e5a16cf1",
-      "src/offline/plasmoids/org.kde.mac-tahoe-liquid-kde.launcher/contents/ui/CompactRepresentation.qml": "8ccc7027fa68fe727252fbab6b0f63658052b0c6ceb8f1735e0010e70ae0134a",
-      "src/offline/plasmoids/org.kde.mac-tahoe-liquid-kde.trashcan/contents/ui/main.qml": "008e85237cfa6c0076f5d84b1a769d3934c24218120757c136e2aeaa21d67e3c"
+    "wayland_modules": {
+      "tahoe": {
+        "module_sha256": "df9dac96ead99330f70c255195e4c7e06023249c7a0bb534531b266de09b0cfb",
+        "paths": [
+          "/usr/lib/x86_64-linux-gnu/qt6/plugins/kwin/effects/plugins/liquidglass.so"
+        ]
+      },
+      "golden-gate": {
+        "module_sha256": "8c2e7f2e3ab3d9e5291a555daa40a11fcf3e2d4d56fa23219e0586b296c2695b",
+        "paths": [
+          "/usr/lib/x86_64-linux-gnu/qt6/plugins/kwin/effects/plugins/liquidglass.so"
+        ]
+      }
+    },
+    "frames": {
+      "/tmp/pr121-qualified-visual/tahoe-light-rest.png": {
+        "sha256": "5c9978f323205fb9bdd1eb31b308bf04ed3fefe7bfe9cce414f85debdd7a2ef6",
+        "reviewed": true
+      },
+      "/tmp/pr121-qualified-visual/tahoe-light-drag.png": {
+        "sha256": "3233e80e6d20fc9913adc84c8e1f91838c993a8cc713e13eed1ab808969a6570",
+        "reviewed": true
+      },
+      "/tmp/pr121-qualified-visual/tahoe-light-settled.png": {
+        "sha256": "dc53491a43caf3cfd696b16bd78ce0d08a2df13dbd33c04729366272eef1913a",
+        "reviewed": true
+      },
+      "/tmp/pr121-qualified-visual/golden-gate-dark-rest.png": {
+        "sha256": "74d339b8b18d604df3f3209a2cab98a89e9daa529774c59fd449c98c2e11029a",
+        "reviewed": true
+      },
+      "/tmp/pr121-qualified-visual/golden-gate-dark-drag.png": {
+        "sha256": "59dd60bee22c34871e0135b5693c160ad12e20fd6f06909ceac2872ff5622575",
+        "reviewed": true
+      },
+      "/tmp/pr121-qualified-visual/golden-gate-dark-settled.png": {
+        "sha256": "fb886eac89d985b939aff73d05a30d280b1b61340f0bf814769f0d26d646e89d",
+        "reviewed": true
+      },
+      "/tmp/pr121-x11-qualified/wobbly-rest.png": {
+        "sha256": "4d3ce9c18bb3552eac4712a49c3809f548d5f1dab4afebba7f08f0b9a3e7cb90",
+        "reviewed": true
+      },
+      "/tmp/pr121-x11-qualified/wobbly-moving.png": {
+        "sha256": "b1d842d9a68dd0a806ac8e4b0ac5815a2286fbb51037422cae240fa4531217c5",
+        "reviewed": true
+      },
+      "/tmp/pr121-x11-qualified/wobbly-settled.png": {
+        "sha256": "ebaa056ab24248b86d1ee9b430d20989cda1b752331c2f7e3e6e4472a759e989",
+        "reviewed": true
+      }
     }
   },
   "coverage_limits": [
-    "Full remote distro CI runs asynchronously; pending results are not passed.",
-    "Focused VM review covers the installed default horizontal Dock in both editions and modes, not every GPU or custom panel arrangement.",
-    "Existing documentation photographs retain their original provenance; no gallery refresh."
+    "Representative backend qualification is complete; the full remote matrix may continue asynchronously. No pending job is counted as passed.",
+    "X11 runtime exercised on 6.7.4; 6.6.5 has SDK build and native shader pixels, 6.8.2 has SDK build, 6.8.1 has Wayland VM rendering.",
+    "Interactive captures cover moving; resize constraints and settling are covered by the native model.",
+    "Multi-output/fractional geometry covered by executable mesh probe, not a multi-output VM.",
+    "No unrelated installer lifecycle or historical gallery recapture; original gallery provenance preserved."
   ]
 }
