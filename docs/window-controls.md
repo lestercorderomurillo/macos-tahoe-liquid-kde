@@ -33,8 +33,8 @@ Nix staging retains the edition default without running the graphical installer.
 ## Button position
 
 The separate **Window buttons** page places the controls on the **left**
-(macOS order, the default in both editions), on the **right** (minimize,
-maximize, close), or **keeps** the current layout. Left and right write
+(close, minimize, maximize; the default in both editions), on the **right**
+(minimize, maximize, close), or **keeps** the current layout. Left and right write
 kwinrc `ButtonsOnLeft`/`ButtonsOnRight`, the gsettings `button-layout` and the
 staged global-theme defaults. They are written again by every standalone
 switch, so login and scheduled light/dark transitions retain the choice.

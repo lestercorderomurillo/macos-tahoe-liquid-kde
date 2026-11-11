@@ -295,7 +295,7 @@ Flathub is a separate opt-in. Availability depends on the selected source;
 unavailable apps stay pending, and theme removal leaves applications installed.
 
 The Window buttons page places close, minimize and maximize on the **left**
-(macOS, default) or **right**, or leaves your current layout untouched with
+(default) or **right**, or leaves your current layout untouched with
 **Keep my layout**. The choice applies to Aurorae and GTK windows, including
 light/dark switches.
 

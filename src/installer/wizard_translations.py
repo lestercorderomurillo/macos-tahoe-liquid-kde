@@ -25,8 +25,8 @@ Where should the window buttons go?|¿Dónde quieres los botones de ventana?|窗
 Window buttons|Botones de ventana|窗口按钮|Botões da janela|Fensterknöpfe
 Left|Izquierda|左侧|Esquerda|Links
 Right|Derecha|右侧|Direita|Rechts
-Like macOS.|Como en macOS.|与 macOS 相同。|Como no macOS.|Wie in macOS.
-Like Windows and GNOME.|Como en Windows y GNOME.|与 Windows 和 GNOME 相同。|Como no Windows e no GNOME.|Wie in Windows und GNOME.
+Close, minimize, maximize.|Cerrar, minimizar, maximizar.|关闭、最小化、最大化。|Fechar, minimizar, maximizar.|Schließen, Minimieren, Maximieren.
+Minimize, maximize, close.|Minimizar, maximizar, cerrar.|最小化、最大化、关闭。|Minimizar, maximizar, fechar.|Minimieren, Maximieren, Schließen.
 Keep my layout|Conservar mi disposición|保留我的布局|Manter meu layout|Meine Anordnung beibehalten
 Leave the buttons unchanged.|Los botones no cambian.|保持按钮不变。|Os botões não mudam.|Die Knöpfe bleiben unverändert.
 Window shadows|Sombras de las ventanas|窗口阴影|Sombras das janelas|Fensterschatten

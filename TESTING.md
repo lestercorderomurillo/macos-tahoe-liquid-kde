@@ -30,7 +30,7 @@ Scroll horizontally through the installation steps.
   <td align="center"><img src="src/screenshots/installer-layout_dark_v4-e3a848e2a47a.webp" alt="Top bar and Dock" width="500"><br>Top bar and Dock</td>
   <td align="center"><img src="src/screenshots/installer-effects_dark_v4-2417cbbd36cd.webp" alt="Effects" width="500"><br>Effects</td>
   <td align="center"><img src="src/screenshots/installer-window_controls_dark_v4-eedd4ce4d0b4.webp" alt="Flat or Glassy window controls" width="500"><br>Window controls</td>
-  <td align="center"><img src="src/screenshots/previews/installer-button_position-tahoe-dark-c3c3f9dceff3.webp" alt="Window button position" width="500"><br>Window buttons</td>
+  <td align="center"><img src="src/screenshots/previews/installer-button_position-tahoe-dark-0f67481a0f2f.webp" alt="Window button position" width="500"><br>Window buttons</td>
   <td align="center"><img src="src/screenshots/installer-shadows_dark_v4-d78803a9bf02.webp" alt="Window shadow comparison" width="500"><br>Window shadows</td>
   <td align="center"><img src="src/screenshots/installer-fonts_dark_v4-5ed134810b67.webp" alt="Fonts" width="500"><br>Fonts</td>
   <td align="center"><img src="src/screenshots/installer-firefox_dark_v4-f373877df3a2.webp" alt="Firefox" width="500"><br>Firefox</td>
@@ -44,7 +44,7 @@ Scroll horizontally through the installation steps.
 
 The Window buttons page is a focused native render of the real wizard page, not a
 disposable-VM capture. Light and Golden Gate frames and provenance:
-[Tahoe light](src/screenshots/previews/installer-button_position-tahoe-light-6ba8580d6581.webp) ·
-[Golden Gate light](src/screenshots/previews/installer-button_position-golden-gate-light-eb1dc4d3f9cf.webp) ·
-[Golden Gate dark](src/screenshots/previews/installer-button_position-golden-gate-dark-2526ed9e5625.webp) ·
+[Tahoe light](src/screenshots/previews/installer-button_position-tahoe-light-d69bf955357d.webp) ·
+[Golden Gate light](src/screenshots/previews/installer-button_position-golden-gate-light-58cca860d276.webp) ·
+[Golden Gate dark](src/screenshots/previews/installer-button_position-golden-gate-dark-1c1e0e3a89e8.webp) ·
 [Provenance](src/screenshots/previews/installer-button-position-provenance.json)

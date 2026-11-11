@@ -1096,8 +1096,8 @@ class InstallerWindow(OpaqueSurface):
 
     def page_button_position(self):
         self.cards("button_position", [
-            ("left", "Left", "Like macOS.", self.button_position_sample("left")),
-            ("right", "Right", "Like Windows and GNOME.", self.button_position_sample("right")),
+            ("left", "Left", "Close, minimize, maximize.", self.button_position_sample("left")),
+            ("right", "Right", "Minimize, maximize, close.", self.button_position_sample("right")),
             ("keep", "Keep my layout", "Leave the buttons unchanged.", self.button_position_sample("keep")),
         ], columns=3)
         self.body.addWidget(self.label("Close, minimize and maximize buttons."))

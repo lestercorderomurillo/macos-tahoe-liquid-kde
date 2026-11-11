@@ -76,7 +76,7 @@ BUTTON_LAYOUTS = {
 
 
 def button_position() -> str:
-    """left (macOS), right, or keep, which leaves the user's layout untouched."""
+    """left (default), right, or keep, which leaves the user's layout untouched."""
     position = _installer_options().get("button_position")
     return position if position in ("left", "right", "keep") else "left"
 
