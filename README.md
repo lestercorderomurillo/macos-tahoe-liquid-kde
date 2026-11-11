@@ -294,6 +294,11 @@ individually from existing distro repositories or per-user Flatpak. Adding
 Flathub is a separate opt-in. Availability depends on the selected source;
 unavailable apps stay pending, and theme removal leaves applications installed.
 
+The Window buttons page places close, minimize and maximize on the **left**
+(macOS, default) or **right**, or leaves your current layout untouched with
+**Keep my layout**. The choice applies to Aurorae and GTK windows, including
+light/dark switches.
+
 The Window shadows page compares **no, soft, medium or hard window shadows**
 with Nautilus screenshots. The choice applies to the theme's Aurorae
 decorations and GTK windows. Medium is the default. The chosen

@@ -1,7 +1,7 @@
 from localization import tr
 
-from window_controls import EDITIONS, assemble_aurorae
-from theme_switch import decoration_theme
+from window_controls import EDITIONS, assemble_aurorae, buttons_kept, record_button_position
+from theme_switch import decoration_theme, kwin_button_layout
 
 from steps._helpers import (
     DATA_HOME, fail, info, kw_write, offline, ok, qdbus_call, reinstall, remove_tree, theme_mode,
@@ -39,8 +39,7 @@ def install() -> None:
     for key, value in (
         ("library", "org.kde.kwin.aurorae"),
         ("theme", f"__aurorae__svg__{chosen}"),
-        ("ButtonsOnLeft", "XIA"),
-        ("ButtonsOnRight", ""),
+        *zip(("ButtonsOnLeft", "ButtonsOnRight"), kwin_button_layout() or ()),
     ):
         if not kw_write("--file", "kwinrc",
                         "--group", "org.kde.kdecoration2",
@@ -48,6 +47,7 @@ def install() -> None:
             write_failures += 1
     qdbus_call("org.kde.KWin", "/KWin", "org.kde.KWin.reconfigure")
     if write_failures == 0:
+        record_button_position()
         ok(tr('Window decoration set to {chosen}', chosen=chosen))
     else:
         warn(tr("Window decoration files installed but {write_failures} kwinrc key(s) could not be written — kwriteconfig6 unavailable. Install plasma-workspace or your distro's equivalent to apply the decoration on next login.", write_failures=write_failures))
@@ -63,11 +63,11 @@ def uninstall() -> None:
             d = DEST_DIR / name
             if remove_tree(d, name):
                 n += 1
+    restore_buttons = not buttons_kept()
     for key, value in (
         ("library", "org.kde.breeze"),
         ("theme", "Breeze"),
-        ("ButtonsOnLeft", "M"),
-        ("ButtonsOnRight", "IAX"),
+        *((("ButtonsOnLeft", "M"), ("ButtonsOnRight", "IAX")) if restore_buttons else ()),
     ):
         kw_write("--file", "kwinrc",
                  "--group", "org.kde.kdecoration2",

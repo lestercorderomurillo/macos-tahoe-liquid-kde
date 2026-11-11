@@ -1,10 +1,11 @@
 """Generate Golden Gate traffic-light controls for Aurorae and GTK offline."""
 
+import os
 from pathlib import Path
 import re
 import shutil
 
-from theme_switch import decoration_theme, window_control_style
+from theme_switch import button_position, decoration_theme, kwin_button_layout, window_control_style
 
 EDITIONS = ("MacTahoe", "MacGoldenGate")
 STATES = ("active", "inactive", "hover", "pressed", "deactivated",
@@ -159,10 +160,43 @@ def apply_global_theme(theme: Path) -> None:
     """Keep System Settings' global-theme activation on the staged edition."""
     path = theme / "contents/defaults"
     if path.is_file():
-        path.write_text(re.sub(
+        text = re.sub(
             r"(?m)^theme=__aurorae__svg__Mac(?:Tahoe|GoldenGate)LiquidKde-(Light|Dark)$",
             lambda match: f"theme=__aurorae__svg__{decoration_theme(match[1].lower())}",
-            path.read_text()))
+            path.read_text())
+        layout = kwin_button_layout()
+        if layout is None:
+            text = re.sub(r"(?m)^Buttons(?:OnLeft|OnRight)=.*\n", "", text)
+        else:
+            for key, value in zip(("ButtonsOnLeft", "ButtonsOnRight"), layout):
+                text = re.sub(rf"(?m)^{key}=.*$", f"{key}={value}", text)
+        path.write_text(text)
+
+
+def _button_record() -> Path:
+    state = Path(os.environ.get("XDG_STATE_HOME") or Path.home() / ".local/state")
+    return state / "mac-tahoe-liquid-kde/button-position"
+
+
+def record_button_position() -> None:
+    """Remember that the user's own layout was kept, so uninstall leaves it alone."""
+    record = _button_record()
+    if button_position() == "keep":
+        record.parent.mkdir(parents=True, exist_ok=True)
+        record.write_text("keep\n")
+    else:
+        record.unlink(missing_ok=True)
+
+
+def buttons_kept() -> bool:
+    try:
+        return _button_record().read_text().strip() == "keep"
+    except OSError:
+        return False
+
+
+def forget_button_position() -> None:
+    _button_record().unlink(missing_ok=True)
 
 
 def apply_firefox_controls(theme: Path) -> None:

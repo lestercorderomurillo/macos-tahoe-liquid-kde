@@ -36,7 +36,7 @@ def test_new_wizard_uses_source_defaults_after_other_edition(monkeypatch, tmp_pa
     assert json.loads(config.read_text()) == stale  # Opening is read-only.
 
 
-@pytest.mark.parametrize("payload", [[], {"shell": "echo bad"}, {"icons": "unknown"}, {"shadows": "unknown"}, {"window_controls": "unknown"}, {"glass_style": "unknown"},
+@pytest.mark.parametrize("payload", [[], {"shell": "echo bad"}, {"icons": "unknown"}, {"shadows": "unknown"}, {"window_controls": "unknown"}, {"button_position": "center"}, {"glass_style": "unknown"},
                                     {"fonts": "false"}, {"oled_interval": True},
                                     {"oled_max_shift": 17}, {"wallpaper": "custom"}])
 def test_reject_invalid_selections_before_install(payload):
@@ -234,7 +234,7 @@ for page, _ in STEPS:
     assert window.scroll.verticalScrollBar().maximum() == 0, page
     assert window.content.findChild(type(window.label('')), 'pageTitle') is not None or page == 'welcome'
     cards = window.content.findChildren(ChoiceCard)
-    if page in ('appearance', 'icons', 'wallpaper', 'launcher', 'window_controls', 'shadows', 'fonts', 'files'):
+    if page in ('appearance', 'icons', 'wallpaper', 'launcher', 'window_controls', 'button_position', 'shadows', 'fonts', 'files'):
         assert cards and cards[0].isChecked(), page
         assert cards[0].height() > 80, page
 # Match the capture VM's larger system typography: the added shadows row must
@@ -298,6 +298,20 @@ assert window.page == 'window_controls'
 window.content.findChild(ChoiceCard, 'choice-window_controls-flat').click()
 window.advance(); app.processEvents()
 assert window.page == 'summary' and window.choices['window_controls'] == 'flat'
+window.page = 'button_position'; window.render(); app.processEvents()
+assert window.choices['button_position'] == 'left'
+buttons = window.content.findChildren(ChoiceCard)
+assert [card.objectName() for card in buttons] == ['choice-button_position-' + v for v in ('left', 'right', 'keep')]
+assert buttons[0].isChecked() and sum(card.isChecked() for card in buttons) == 1
+window.content.findChild(ChoiceCard, 'choice-button_position-right').click()
+assert window.choices['button_position'] == 'right'
+window.content.findChild(ChoiceCard, 'choice-button_position-keep').click()
+window.page = 'summary'; window.render(); app.processEvents()
+window.content.findChild(QPushButton, 'edit-button_position').click()
+assert window.page == 'button_position'
+window.content.findChild(ChoiceCard, 'choice-button_position-left').click()
+window.advance(); app.processEvents()
+assert window.page == 'summary' and window.choices['button_position'] == 'left'
 window.page = 'icons'; window.render(); app.processEvents()
 window.content.findChild(ChoiceCard, 'choice-icons-keep').click(); app.processEvents()
 assert window.choices['icons'] == 'keep'
@@ -360,7 +374,7 @@ class PageEvents(QObject):
             self.hidden += 1
         return False
 for page in ('appearance', 'icons', 'wallpaper', 'launcher', 'layout', 'effects',
-             'window_controls', 'shadows', 'fonts', 'firefox', 'files', 'boot', 'oled'):
+             'window_controls', 'button_position', 'shadows', 'fonts', 'firefox', 'files', 'boot', 'oled'):
     window.page = page; window.render(); app.processEvents(); app.processEvents()
     content = window.content
     observer = PageEvents(); content.installEventFilter(observer)

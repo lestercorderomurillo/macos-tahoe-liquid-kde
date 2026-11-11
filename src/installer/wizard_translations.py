@@ -21,6 +21,14 @@ Glassy|Cristalinos|玻璃质感|Vítreos|Glasartig
 Simple, solid colors.|Colores sólidos y sencillos.|简洁的纯色。|Cores sólidas e simples.|Schlichte, einfarbige Knöpfe.
 Soft gradients and reflective highlights.|Degradados suaves y reflejos.|柔和的渐变与反光。|Gradientes suaves e reflexos.|Sanfte Farbverläufe und Lichtreflexe.
 Close, minimize and maximize buttons.|Botones para cerrar, minimizar y maximizar.|关闭、最小化和最大化按钮。|Botões para fechar, minimizar e maximizar.|Knöpfe zum Schließen, Minimieren und Maximieren.
+Where should the window buttons go?|¿Dónde quieres los botones de ventana?|窗口按钮放在哪里？|Onde os botões da janela devem ficar?|Wo sollen die Fensterknöpfe stehen?
+Window buttons|Botones de ventana|窗口按钮|Botões da janela|Fensterknöpfe
+Left|Izquierda|左侧|Esquerda|Links
+Right|Derecha|右侧|Direita|Rechts
+Like macOS.|Como en macOS.|与 macOS 相同。|Como no macOS.|Wie in macOS.
+Like Windows and GNOME.|Como en Windows y GNOME.|与 Windows 和 GNOME 相同。|Como no Windows e no GNOME.|Wie in Windows und GNOME.
+Keep my layout|Conservar mi disposición|保留我的布局|Manter meu layout|Meine Anordnung beibehalten
+Leave the buttons unchanged.|Los botones no cambian.|保持按钮不变。|Os botões não mudam.|Die Knöpfe bleiben unverändert.
 Window shadows|Sombras de las ventanas|窗口阴影|Sombras das janelas|Fensterschatten
 Which window shadows would you like?|¿Qué sombras de ventana prefieres?|你想使用哪种窗口阴影？|Quais sombras de janela você prefere?|Welche Fensterschatten möchtest du verwenden?
 None|Ninguna|无|Nenhuma|Keine

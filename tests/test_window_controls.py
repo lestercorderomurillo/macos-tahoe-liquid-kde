@@ -55,6 +55,7 @@ def test_install_reinstall_switch_and_uninstall(repo, tmp_path, monkeypatch, edi
     from steps import window_decorations as step
     from window_shadows import aurorae_svg
     destination = tmp_path / "aurorae"
+    monkeypatch.setenv("XDG_STATE_HOME", str(tmp_path / "state"))
     monkeypatch.setattr(step, "DEST_DIR", destination)
     monkeypatch.setattr(step, "qdbus_call", lambda *args: True)
     monkeypatch.setattr(theme_switch, "default_wallpaper", lambda: edition)

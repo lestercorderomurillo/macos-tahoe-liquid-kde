@@ -1,0 +1,51 @@
+{
+  "purpose": "Focused preview of the new Window buttons installer page; the historical installer gallery is unchanged",
+  "method": "Real native wizard page rendered with Qt offscreen on the maintainer host at 2x scale, English, 820x600 window. Not a disposable-VM desktop capture: no desktop, wallpaper or window frame.",
+  "base_commit": "e099bce68f8b0a4f4a1079ee6b6b4772cad4bb2d",
+  "source_sha256": {
+    "src/installer/wizard_window.py": "a8367ac84a90c13850690d5d3b8c16354dd4f4d5cb7fa039b9e488cfed47f5e8",
+    "src/installer/wizard_translations.py": "3407ebb7b9aa5bb7e93f08e3eecb8ae55ec57da2c85bcc0cd90b6562731c0e84",
+    "src/scripts/window_controls.py": "74b7a7a6c9feda79749bc828fe3966ae437c67ddc1004dcb8e59ab72c8e74abf",
+    "src/scripts/installer_choices.py": "cabe812311189b57a5be0483dc33b0804434bcd47a9c1c0e6ff7d040a8a7f324",
+    "src/scripts/theme_switch.py": "63fb1f1ee2729963e21b8e02315836bb63cae528d823b9b291e3d986aeb99bc0"
+  },
+  "defaults": "button_position=left; Tahoe uses Flat controls, Golden Gate uses Glassy controls",
+  "frames": {
+    "tahoe-light": {
+      "file": "installer-button_position-tahoe-light-6ba8580d6581.webp",
+      "sha256": "6ba8580d6581759b67ee094d889e29bd849f547f64b07ec876dc6a2f5fdd924a",
+      "size": [
+        1640,
+        1212
+      ],
+      "reviewed": true
+    },
+    "tahoe-dark": {
+      "file": "installer-button_position-tahoe-dark-c3c3f9dceff3.webp",
+      "sha256": "c3c3f9dceff353cbf8bf652c7023a41498926a06c2a5807a88a68ed32158cb6e",
+      "size": [
+        1640,
+        1212
+      ],
+      "reviewed": true
+    },
+    "golden-gate-light": {
+      "file": "installer-button_position-golden-gate-light-eb1dc4d3f9cf.webp",
+      "sha256": "eb1dc4d3f9cf784c13324b5ad29ce1690d513728dd0d80cc29218d0b74035891",
+      "size": [
+        1640,
+        1212
+      ],
+      "reviewed": true
+    },
+    "golden-gate-dark": {
+      "file": "installer-button_position-golden-gate-dark-2526ed9e5625.webp",
+      "sha256": "2526ed9e56255c34133c3a73a97532234ab968120f0dd9cd9d0ac389f7673a3e",
+      "size": [
+        1640,
+        1212
+      ],
+      "reviewed": true
+    }
+  }
+}

@@ -27,6 +27,7 @@ STEPS = (
     ("layout", "What would you like to add to your desktop?"),
     ("effects", "Which effects would you like to enable?"),
     ("window_controls", "Which window controls would you like?"),
+    ("button_position", "Where should the window buttons go?"),
     ("shadows", "Which window shadows would you like?"),
     ("fonts", "Which fonts would you like to use?"),
     ("firefox", "Apply the theme to Firefox?"),
@@ -1048,6 +1049,59 @@ class InstallerWindow(OpaqueSurface):
         ])
         self.body.addWidget(self.label("Close, minimize and maximize buttons."))
 
+    def button_position_sample(self, position):
+        dark = self.mode == "dark"
+        mode = "Dark" if dark else "Light"
+        style = self.choices["window_controls"]
+        width, height, size = 232, 96, 14
+        canvas = QPixmap(width*2, height*2)
+        canvas.fill(Qt.GlobalColor.transparent)
+        painter = QPainter(canvas)
+        painter.scale(2, 2)
+        painter.setRenderHint(QPainter.RenderHint.Antialiasing)
+        painter.setRenderHint(QPainter.RenderHint.SmoothPixmapTransform)
+        painter.setPen(Qt.PenStyle.NoPen)
+        painter.setBrush(QColor("#1f2024" if dark else "#d7dae0"))
+        painter.drawRect(0, 0, width, height)
+        window = QRectF(18, 18, width-36, height-30)
+        painter.setPen(QPen(QColor(255, 255, 255, 34) if dark else QColor(0, 0, 0, 40), .75))
+        painter.setBrush(QColor("#2d2e32" if dark else "#fafafa"))
+        painter.drawRoundedRect(window, 9, 9)
+        painter.setPen(Qt.PenStyle.NoPen)
+        painter.setBrush(QColor(255, 255, 255, 18) if dark else QColor(0, 0, 0, 22))
+        painter.drawRoundedRect(QRectF(width/2-18, 27, 36, 6), 3, 3)
+        for row in range(3):
+            painter.drawRoundedRect(QRectF(32, 50 + row*11, (width-64) * (.82, .6, .72)[row], 5), 2.5, 2.5)
+        order = ("minimize", "maximize", "close") if position == "right" else ("close", "minimize", "maximize")
+        for index, action in enumerate(order):
+            left = window.left() + 14 + index * 21
+            right = window.right() - 14 - size - (2 - index) * 21
+            target = QRectF(right if position == "right" else left, 30 - size/2, size, size)
+            if position == "keep":
+                painter.setBrush(QColor(255, 255, 255, 46) if dark else QColor(0, 0, 0, 38))
+                for x in (left, right):
+                    painter.drawEllipse(QRectF(x, 30 - size/2, size, size).adjusted(1, 1, -1, -1))
+                continue
+            pixmap = QPixmap()
+            if style == "glassy":
+                pixmap.loadFromData(button_svg(action, mode, "active").encode(), "SVG")
+            else:
+                asset = (Path(__file__).resolve().parents[1] / "offline/gtk" / f"MacTahoeLiquidKde-{mode}" /
+                         "gtk-4.0/windows-assets" / f"titlebutton-{action}{'-dark' if dark else ''}@2.png")
+                pixmap.load(str(asset))
+            painter.drawPixmap(target, pixmap, QRectF(pixmap.rect()))
+        painter.end()
+        canvas.setDevicePixelRatio(2)
+        return canvas
+
+    def page_button_position(self):
+        self.cards("button_position", [
+            ("left", "Left", "Like macOS.", self.button_position_sample("left")),
+            ("right", "Right", "Like Windows and GNOME.", self.button_position_sample("right")),
+            ("keep", "Keep my layout", "Leave the buttons unchanged.", self.button_position_sample("keep")),
+        ], columns=3)
+        self.body.addWidget(self.label("Close, minimize and maximize buttons."))
+
     def page_glass_style(self):
         mode = self.mode
         automatic = self.choices["appearance"] == "auto"
@@ -1177,6 +1231,7 @@ class InstallerWindow(OpaqueSurface):
             ("dock_apps", "Dock apps", self.dock_app_summary() + (" · " + self.t("macOS-style Dock icons" if c["dock_appearance"] == "macos" else "Application icons") if c["dock"] and c["dock_appearance"] not in ("auto", "keep") else ""), "layout"),
             ("acrylic_glass", "Effects", effects or self.t("Disabled"), "effects"),
             ("window_controls", "Window controls", value("window_controls"), "window_controls"),
+            ("button_position", "Window buttons", value("button_position"), "button_position"),
             ("shadows", "Window shadows", value("shadows"), "shadows"),
             ("fonts", "Fonts", self.t("Theme fonts" if c["fonts"] else "Keep"), "fonts"),
             ("firefox", "Firefox", enabled("firefox"), "firefox"),
