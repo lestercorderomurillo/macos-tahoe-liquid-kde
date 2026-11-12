@@ -1,12 +1,11 @@
 # Installer testing
 
-Tahoe **v0.68.1** fixes Firefox toolbar icon contrast in dark mode.
-Focused installer regressions pass, including the prepared Golden Gate source.
-Disposable-VM Firefox captures verify light/dark/light in both editions.
-See [release evidence](release-evidence.json) for exact sources and coverage limits;
+Tahoe **v0.68.2** fixes the incomplete dark App Store icon.
+Dock and icon regressions pass, including Golden Gate staging and wrapper checks.
+Reviewed disposable-VM Dock frames cover light/dark/light in both editions,
+with a synthetic red notification count bubble. See [release evidence](release-evidence.json)
+and [capture provenance](src/screenshots/previews/dock-tahoe-0682-provenance-f978824961de.json) for exact sources and coverage limits;
 the full remote CI matrix runs asynchronously.
-
-[Light Firefox](src/screenshots/previews/firefox-tahoe-light-0cb9040f9cd8.png) · [Dark Firefox](src/screenshots/previews/firefox-tahoe-dark-41e0aa35923e.png) · [Provenance](src/screenshots/previews/firefox-tahoe-provenance-94d70966abd6.json)
 
 Historical v0.67.0 symbol previews (unchanged):
 [Light](src/screenshots/previews/menu-symbols-067-light-a558e02129b0.png) · [Dark](src/screenshots/previews/menu-symbols-067-dark-35230bb0f200.png) · [Provenance](src/screenshots/previews/menu-symbols-067-provenance-534bface45c1.json)
