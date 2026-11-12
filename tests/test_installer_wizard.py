@@ -12,6 +12,23 @@ import pytest
 import installer_choices as choices
 
 
+@pytest.mark.parametrize('edition', ['MacTahoe', 'MacGoldenGate'])
+@pytest.mark.parametrize('mode', ['light', 'dark'])
+def test_native_dock_apps_dialog_paints_and_preserves_transaction(repo, tmp_path, edition, mode):
+    source_defaults = tmp_path / 'defaults.json'
+    source_defaults.write_text(json.dumps({'wallpaper': edition, 'launcher_preset': 2 if edition == 'MacGoldenGate' else 1}))
+    env = os.environ | {'QT_QPA_PLATFORM': 'offscreen', 'QT_FORCE_STDERR_LOGGING': '1',
+                        'XDG_CONFIG_HOME': str(tmp_path),
+                        'MAC_TAHOE_NO_UPDATE_CHECK': 'true', 'PYTHONDONTWRITEBYTECODE': '1'}
+    # A separate process also makes a fatal exception in a Qt paint callback a
+    # normal test failure instead of aborting the rest of the test suite.
+    result = subprocess.run([sys.executable, str(repo / 'tests/installer_dock_apps_probe.py'), mode,
+                             '--defaults', str(source_defaults)],
+                            cwd=repo, env=env, capture_output=True, text=True, timeout=30)
+    assert result.returncode == 0, result.stdout + result.stderr
+    assert json.loads(result.stdout)['edition'] == ('Golden Gate' if edition == 'MacGoldenGate' else 'Tahoe')
+
+
 @pytest.mark.parametrize("edition", ["MacTahoe", "MacGoldenGate", "MacTahoe"])
 def test_new_wizard_uses_source_defaults_after_other_edition(monkeypatch, tmp_path, edition):
     import launcher_defaults

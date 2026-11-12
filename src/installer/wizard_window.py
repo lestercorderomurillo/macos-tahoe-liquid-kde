@@ -954,6 +954,10 @@ class InstallerWindow(OpaqueSurface):
         choices["dock_apps"] = list(choices["dock_apps"])
         installed = installed_apps()
         dialog = QDialog(self)
+        # Custom checkbox painting uses the colors of its containing window.
+        # A modal QDialog is a separate window even with the wizard as parent.
+        dialog.accent = self.accent
+        dialog.line = self.line
         dialog.setWindowTitle(self.t("Dock apps"))
         dialog.setMinimumWidth(620)
         body = QVBoxLayout(dialog)
@@ -1012,6 +1016,9 @@ class InstallerWindow(OpaqueSurface):
                 option.setText(title)
                 option.setEnabled(bool(proposal) and not existing)
                 option.setChecked(category in choices["dock_apps"] and option.isEnabled())
+            # Already-unchecked controls do not emit toggled when a saved
+            # selection becomes installed or unavailable on reopening.
+            choices["dock_apps"] = [key for key, option in options.items() if option.isChecked()]
         source.currentIndexChanged.connect(refresh)
         refresh()
         body.addWidget(self.label("Availability is checked during installation. Failed apps remain pending; removing the theme keeps your apps."))

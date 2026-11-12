@@ -1,16 +1,16 @@
 # Installer testing
 
-Tahoe **v0.69.0** uses original Apple glyph outlines for the system-menu symbols.
-Tahoe shows an icon on every action; Golden Gate shows only About, System Settings
-and App Store. The active theme selects this preset across light/dark transitions,
-independently of the Launcher preset. The existing App Store drawing is retained.
+Tahoe **v0.69.1** fixes the installer crash when opening **Dock apps…**
+and clears stale selections for apps that become installed or unavailable.
 
-The native renderer, live cached-menu preset changes and shortcut interactions
-pass in an isolated Arch SDK/X11 environment. Both editions passed installation
-and reinstallation in disposable KDE neon Plasma/KWin 6.8.1 Wayland VMs, with
-four reviewed menu captures. The full remote matrix remains asynchronous.
-See [release evidence](release-evidence.json) and the
-[original-font glyph provenance](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/blob/6f515f188b86db6ee6f997eedee0c669c4c02a36/src/offline/plasmoids/org.kde.mac.tahoe.liquid.globalmenu/systemmenusymbols.json).
+The focused host suite passed 134 checks; Golden Gate passed 97 wrapper checks
+and four prepared-source dialog cases. Both editions passed focused install and
+reinstall qualification in a disposable KDE neon Plasma/KWin 6.8.1 VM.
+All eight native Wayland/X11, light/dark and edition cases passed, with 96 actual
+modal openings and four reviewed dialog images. Optional package discovery is
+controlled in the GUI probe; this does not claim real optional app downloads.
+See [detailed qualification](tests/native/installer_dock_apps_validation.md) and [release evidence](release-evidence.json).
+Full remote CI is recorded separately in GitHub Actions.
 
 [Light menu](src/screenshots/menu_v4-0343811e426d.webp) · [Dark menu](src/screenshots/menu_dark_v4-171bb0e051ff.webp) · [Capture provenance](src/screenshots/previews/system-menu-tahoe-069-provenance-9c458fcf42db.json)
 
