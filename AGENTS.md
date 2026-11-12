@@ -358,11 +358,12 @@ Store, Force Quit, Sleep, Restart, Shut Down, Lock Screen, Log Out.
   `systemsettings` and `org.kde.discover` for generated application tiles.
 - Hover tiles: glass effect (semi-transparent fill, 0.5px micro
   border, 22px radius) — not outlined borders.
-- Native menu selection rounding uses Kvantum `expand-menuitem-normal` tiles
-  and `frame.expansion=10000`, with circular SVG corners so the caps meet
-  at half the row height. Keep the 3px layout frame, text margins, row
-  heights, icon sizes and separators unchanged; frame expansion affects
-  painting only. The system menu uses its own scoped metrics and grows for long labels.
+- Match native menu selections against real macOS references at 50/50 opacity.
+  Tahoe and Golden Gate use their own references and retain their respective
+  materials. Both reference selections have 8px corners on 24px rows, not
+  full semicircular caps. Kvantum `frame.expansion=16` changes painting only;
+  preserve row heights, text margins, icons and separators. The system menu
+  retains its independently measured style.
 - System font always — never hardcode font names or sizes.
 - Popup plasmoids are fixed-size, not resizable.
 - Top panel is applets-only floating (not full-floating). Keep the menu bar
@@ -1440,3 +1441,12 @@ Runtime comparisons hash actual staged bytes (including local development
 changes), permissions and symlink targets. Keep configuration application and
 explicit reset choices outside payload reuse. Native build reuse must retain
 CMake configuration and Make's SDK/header dependency checks.
+
+Menu appearance comparisons use real screenshots of the corresponding macOS
+edition, aligned at the same display scale and blended at 50/50 opacity.
+Do not use a Tahoe photograph as Golden Gate evidence or vice versa. Installer
+source defaults remain Tahoe with launcher preset 1 and Golden Gate with
+preset 2; explicit per-step choices still override their own setting. Native
+menu selections use the measured 8px corners, while edition materials remain
+independent of the launcher preset. Record any remaining geometry differences
+instead of claiming a pixel-identical match.

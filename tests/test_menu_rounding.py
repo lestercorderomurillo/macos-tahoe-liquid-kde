@@ -16,7 +16,7 @@ import pytest
 def test_native_rounding_preserves_menu_geometry(repo, tmp_path, mode, scale, font_size):
     pytest.importorskip("PyQt6.QtWidgets")
     results = []
-    for expansion in (0, 10000):
+    for expansion in (0, 16):
         home = tmp_path / str(expansion)
         config = home / ".config/Kvantum"
         profile = "mac-tahoe-liquid-kde" + mode
@@ -28,7 +28,7 @@ def test_native_rounding_preserves_menu_geometry(repo, tmp_path, mode, scale, fo
         start = content.index("[MenuItem]")
         end = content.index("\n[", start + 1)
         content = content[:start] + content[start:end].replace(
-            "frame.expansion=10000", f"frame.expansion={expansion}") + content[end:]
+            "frame.expansion=16", f"frame.expansion={expansion}") + content[end:]
         (theme / f"{profile}.kvconfig").write_text(content)
         (config / "kvantum.kvconfig").write_text(f"[General]\ntheme={profile}\n")
         env = {k: v for k, v in os.environ.items() if k in ("PATH", "LANG")}
@@ -47,9 +47,10 @@ def test_native_rounding_preserves_menu_geometry(repo, tmp_path, mode, scale, fo
     assert after["top_inset"] > before["top_inset"]
     assert after["center"] == before["center"]
     assert after["solid_center"]
-    radius = after["pixel_height"] / 2
+    radius = min(8 * float(scale), after["pixel_height"] / 2)
     for y, left, right in after["edges"]:
-        expected = radius - math.sqrt(max(0, radius * radius - (y + .5 - radius) ** 2))
+        expected = (radius - math.sqrt(max(0, radius * radius - (y + .5 - radius) ** 2))
+                    if y + .5 < radius else 0)
         assert abs(left - expected) <= 2, (scale, font_size, y, left, expected)
         assert abs(right - expected) <= 2, (scale, font_size, y, right, expected)
 
