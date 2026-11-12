@@ -1,55 +1,51 @@
 {
-  "version": "0.68.2",
-  "source_sha256": "bfcec8f3aa108d9150b856a04d1ea5a65743a44ef47763f1ed82d1d5626278bb",
-  "environment": "Host Python 3.14 / Qt SVG 6.11.2; pinned disposable KDE neon Plasma/KWin 6.8.1 / Qt 6.11.1 Wayland guests, 3840x2160 at scale 2.",
+  "version": "0.68.3",
+  "source_sha256": "65d140d1b8ac1cf13f0785bf1a2df16bd763fd43387bc68f1e107fed95fab47d",
+  "environment": "Qt 6 / Kvantum offscreen rendering; isolated X11 launcher checks; four context menus in disposable KDE neon Plasma/KWin 6.8.1 Wayland guests at 3840x2160 scale 2. Pinned root VM plus private copies of the completed v0.68.2 reference guest overlays.",
   "checks": [
     {
-      "command": "PYTHONDONTWRITEBYTECODE=1 python3 -m pytest tests/test_dock_appearance.py tests/test_icon_toolset.py::test_reviewed_dark_artwork_is_used_for_every_alias_and_light_is_preserved tests/test_component_cache.py::test_committed_component_hashes_match_sources -q -p no:cacheprovider",
+      "command": "PYTHONDONTWRITEBYTECODE=1 QT_QPA_PLATFORM=offscreen python3 -m pytest -q -p no:cacheprovider tests/test_menu_rounding.py tests/test_glass_surfaces.py tests/test_installer_wizard.py tests/test_launcher_presets.py; native socket-restricted cases retried outside the sandbox with the same environment: python3 -m pytest -q -p no:cacheprovider tests/test_launcher_presets.py -k test_native_launcher_popup_presets --tb=short",
       "result": "passed",
-      "detail": "32 passed. Qt SVG pixels at 32/64/128 px cover both Dock artwork and installer override; aliases, light preservation, component ledger and Dock behavior retained. The pre-fix source fails right-diagonal and crossbar fill thresholds."
+      "detail": "136 passed in the initial sandbox run; 8 native launcher cases initially failed because the sandbox denied private D-Bus sockets. All 8 passed when rerun outside that sandbox. No implementation edits between runs. Both presets and editions covered."
     },
     {
-      "command": "GOLDEN_GATE_TAHOE_SOURCE=/mnt/M2_1/Projects/Repositories/macos-tahoe-liquid-kde MAC_TAHOE_NO_UPDATE_CHECK=true python3 bootstrap.py --prepare; PYTHONDONTWRITEBYTECODE=1 python3 -m pytest tests/test_dock_appearance.py -q -p no:cacheprovider (prepared source)",
+      "command": "GOLDEN_GATE_TAHOE_SOURCE=/tmp/tahoe-menu-reference MAC_TAHOE_NO_UPDATE_CHECK=true python3 bootstrap.py --prepare; PYTHONDONTWRITEBYTECODE=1 QT_QPA_PLATFORM=offscreen python3 -m pytest -q -p no:cacheprovider tests/test_menu_rounding.py tests/test_glass_surfaces.py --tb=short (prepared build/1df010eb1b88d67dfdcf)",
       "result": "passed",
-      "detail": "30 passed against the staged Golden Gate source."
+      "detail": "48 passed against the Golden Gate prepared source."
     },
     {
-      "command": "PYTHONDONTWRITEBYTECODE=1 python3 -m pytest tests -q -p no:cacheprovider (Golden Gate wrapper checkout)",
+      "command": "PYTHONDONTWRITEBYTECODE=1 python3 /tmp/plasma-menu-reference/capture.py; python3 /tmp/plasma-menu-reference/compare.py",
       "result": "passed",
-      "detail": "97 passed, including local source staging, source/pin fallback, version and checksum handling."
-    },
-    {
-      "command": "PYTHONDONTWRITEBYTECODE=1 python3 /tmp/dock-store-capture.py; python3 /tmp/dock-store-stage.py",
-      "result": "passed",
-      "detail": "Six focused real Dock captures reviewed, light/dark/light in each edition. Candidate installed in fresh disposable overlays; installed store asset hash verified. Real Unity LauncherEntry count 3 exercises the existing red badge. Four README Dock photographs refreshed using the repository staging exporter; all unrelated photographs retain original bytes and provenance."
+      "detail": "Four visually reviewed desktop context-menu frames, both editions and appearance modes. Verified installed Kvantum configuration, wallpaper and preset. Genuine edition-specific macOS screenshots aligned without stretching and blended at 50/50 opacity. Selected-row left-edge error reduced from 2.875 to 0.125 physical pixels for Tahoe and 3.5625 to 0.625 for Golden Gate."
     }
   ],
-  "gallery_commit": "300093c73ac89a8dabe6a9597015488f21e428f1",
+  "gallery_commit": "bfe49b7b34723560e613b34f1e43982abe44465c",
   "captures": [
     {
-      "path": "src/screenshots/dock_1_v4-5c41cf6a0a7c.webp",
-      "sha256": "5c41cf6a0a7c1032d98a2cae3beca0493b1c684c211871928ce5198752821159",
+      "path": "src/screenshots/context_menu_v4-a77718e25471.webp",
+      "sha256": "a77718e25471a40de85eb60b1191afd5149cdae6afc3c6e38e9732b411a60195",
       "reviewed": true
     },
     {
-      "path": "src/screenshots/dock_1_dark_v4-9624a00a62d5.webp",
-      "sha256": "9624a00a62d5603badfa62a64646a8328226b17d6b5b1229c8acd5da8fe85985",
+      "path": "src/screenshots/context_menu_dark_v4-ae55993198c9.webp",
+      "sha256": "ae55993198c9f97ddf2de37f41bc4117d9dadd3e54b93619e690885f783732e1",
       "reviewed": true
     },
     {
-      "path": "src/screenshots/previews/dock-tahoe-0682-provenance-f978824961de.json",
-      "sha256": "f978824961de95336278e83e083a73f3ca6e0bf66cf4b51d634a4e68dd1f69cd",
+      "path": "src/screenshots/previews/menu-tahoe-comparison-bbe3384d803a.png",
+      "sha256": "bbe3384d803a7f6372b81c21a377ddf86f21e9741f45ccf68cf3855283f88146",
       "reviewed": true
     }
   ],
   "component_capture_review": {
-    "provenance": "src/screenshots/previews/dock-tahoe-0682-provenance-f978824961de.json",
+    "provenance": "src/screenshots/previews/menu-tahoe-provenance-54683cf4f0d5.json",
     "reviewed": true
   },
   "coverage_limits": [
-    "The SVG prefix fix changes no native backend, shader, ABI, installation lifecycle or SDK branch; no new X11 or native SDK matrix run claimed.",
-    "Real desktop runtime covers the pinned Wayland Qt 6.11.1 guest; badge count 3 is synthetic example data.",
-    "The icon override is unchanged visually in librsvg; Qt now resolves its existing gradients correctly.",
-    "Full remote CI runs asynchronously on dev and is not counted as passed here."
+    "Selection corners match the measured references; outer menu padding remains 9px versus approximately 5px in the macOS references. No whole-menu pixel-identical match is claimed.",
+    "Real macOS references are light mode; dark KDE menus were reviewed separately. Colors depend on wallpaper and edition material.",
+    "No native implementation, shader, ABI or backend change. No additional SDK or distro matrix was launched.",
+    "Captures identify unreleased implementation dc75083, whose VERSION was still 0.68.2; subsequent source changes are version/documentation/release bookkeeping only.",
+    "Full remote CI remains asynchronous on dev and is not counted as passed here. Unrelated photos and the v0.68.2 Dock delivery retain their original provenance."
   ]
 }
