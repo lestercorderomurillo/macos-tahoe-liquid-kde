@@ -151,3 +151,27 @@ def test_browser_keeps_real_app_artwork_and_label():
     assert result == [''] * len(urls)
     task = (PACKAGE / 'contents/ui/Task.qml').read_text()
     assert 'DockRoles.appearanceRoleFor(' in task
+
+
+@pytest.mark.parametrize('size', [32, 64, 128])
+def test_dark_store_has_filled_strokes_in_qt_svg(size):
+    """Qt resolves xlink:href by prefix; XML-equivalent ns1:href loses fills."""
+    from PyQt6.QtCore import QByteArray, Qt
+    from PyQt6.QtGui import QImage, QPainter
+    from PyQt6.QtSvg import QSvgRenderer
+
+    paths = [ROOT / 'src/offline/icons/overrides/app-store-dark.svg',
+             PACKAGE / 'contents/icons/dark/store.svg']
+    for path in paths:
+        image = QImage(size, size, QImage.Format.Format_RGBA8888)
+        image.fill(Qt.GlobalColor.transparent)
+        renderer = QSvgRenderer(QByteArray(path.read_bytes()))
+        assert renderer.isValid()
+        painter = QPainter(image)
+        renderer.render(painter)
+        painter.end()
+        # Interior of the right diagonal and crossbar, away from the thin rim.
+        for x, y in [(10.0, 8.0), (8.0, 10.2)]:
+            pixel = image.pixelColor(round(x / 16.933 * size), round(y / 16.933 * size))
+            assert pixel.blue() > 170 and pixel.green() > 110, (path, size, x, y, pixel.getRgb())
+            assert pixel.blue() - pixel.red() > 100

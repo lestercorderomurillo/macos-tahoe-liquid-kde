@@ -15,8 +15,8 @@
   "app-store-dark.svg": {
     "source": "MacTahoeLiquidKde-Icons.tar.zst:MacTahoeLiquidKde-Icons/apps/scalable/org.kde.discover.svg",
     "source_sha256": "a3905306bcefa3809c64a5da38b1d336abdbf320deafa54b2a31804fd8ed70af",
-    "sha256": "1f164dd85f3f56ab80bb843b902cec7ee57a7208bab2fb49d4925cb53351072a",
-    "transformation": "Preserve bundled layered A; blue foreground over graphite and a neutral subdued edge, replacing the light cyan glyph and cyan perimeter.",
+    "sha256": "277ded065a934c093979430e0e2c130dd1181e309407571eca1e7f622440ee18",
+    "transformation": "Preserve bundled layered A; blue foreground over graphite and a neutral subdued edge, replacing the light cyan glyph and cyan perimeter. Use the canonical xlink prefix so Qt SVG resolves the solid gradient fills on all three strokes.",
     "references": [
       "https://developer.apple.com/design/human-interface-guidelines/app-icons",
       "https://developer.apple.com/videos/play/wwdc2025/220/",

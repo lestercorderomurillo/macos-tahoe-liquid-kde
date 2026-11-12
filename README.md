@@ -107,9 +107,7 @@ App search, favorites and categories with blurred glass and edge refraction. [Ma
 
 ### Acrylic Glass Tahoe Dock
 
-Express applies the pictured Dock preset and icons. Firefox keeps its own icon; your pinned apps keep their order.
-
-Glass refraction, hover zoom, notification badges and auto-hide.
+Glass refraction, hover zoom, red notification count bubbles and auto-hide.
 
 <p align="center">
   <img src="src/screenshots/dock_1_v4-16250ed9e41d.webp" alt="Glass Dock with ten pinned applications and light icons" width="840">
