@@ -82,6 +82,12 @@ Selected qualification precedes merge; the full remote matrix stays async.
 
 ## Standing authorization for fixes and releases
 
+For this project, a fix means a tested, published paired release. A request
+to "test harder" strengthens the required validation; it does not cancel
+release delivery or introduce another user confirmation step. Continue
+through testing, repairs, publication and CI completion within the user's
+authorized scope. A local commit or a proposed release is not delivery.
+
 The user explicitly authorizes the complete paired maintenance delivery whenever
 requesting a fix or a versioned change: implement and validate it, commit the
 changes, fast-forward `dev` and `main`, create matching version tags, publish
