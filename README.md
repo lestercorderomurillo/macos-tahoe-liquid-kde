@@ -110,9 +110,9 @@ App search, favorites and categories with blurred glass and edge refraction. [Ma
 Glass refraction, hover zoom, red notification count bubbles and auto-hide.
 
 <p align="center">
-  <img src="src/screenshots/dock_1_v4-16250ed9e41d.webp" alt="Glass Dock with ten pinned applications and light icons" width="840">
+  <img src="src/screenshots/dock_1_v4-5c41cf6a0a7c.webp" alt="Glass Dock with light icons and a red notification count bubble" width="840">
   <br>
-  <img src="src/screenshots/dock_1_dark_v4-934f603cfe0b.webp" alt="The same Dock with dark icons" width="840">
+  <img src="src/screenshots/dock_1_dark_v4-9624a00a62d5.webp" alt="Glass Dock with dark icons, a complete App Store icon and a red notification count bubble" width="840">
 </p>
 
 <br>
