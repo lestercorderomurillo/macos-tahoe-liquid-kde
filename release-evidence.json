@@ -1,58 +1,68 @@
 {
-  "version": "0.69.1",
-  "source_sha256": "11ce85bce3d526c7ac435be09c9aab7f170eb1c10cf49dfd750d51c6150aae57",
-  "environment": "CachyOS host Qt/PyQt6; disposable KDE neon Plasma/KWin 6.8.1 / Qt 6.11.1 Wayland guest; native Wayland and private Xvfb/D-Bus X11 widgets, both editions and both installed appearances.",
+  "version": "0.70.0",
+  "source_sha256": "5f5e1fe313647a2e38fd4e768fb4de551d5b2953038aa95fb257f9d756167be6",
+  "environment": "CachyOS host Qt 6.11.2; checksum-pinned disposable KDE neon Plasma/KWin 6.8.1, Qt 6.11.1 Wayland; private Xvfb/D-Bus native menu and QML checks.",
   "checks": [
     {
-      "command": "QT_QPA_PLATFORM=offscreen python3 -m pytest -q tests/test_installer_wizard.py tests/test_dock_apps.py tests/test_dock_appearance.py tests/test_installer_ui.py",
+      "command": "QT_QPA_PLATFORM=offscreen python3 -m pytest -q tests/test_application_about.py tests/test_globalmenu_step.py tests/test_multilanguage.py; QT_QPA_PLATFORM=offscreen python3 -m pytest -q tests/test_application_about.py tests/test_component_cache.py",
       "result": "passed",
-      "detail": "134 passed. New actual modal-dialog paint/click tests cover both editions and appearances; the original code aborts with the reported QDialog accent AttributeError."
+      "detail": "39 focused checks and 16 final geometry/component checks; counts overlap."
     },
     {
-      "command": "GOLDEN_GATE_TAHOE_SOURCE=<candidate> MAC_TAHOE_NO_UPDATE_CHECK=true python3 bootstrap.py --prepare; python3 -m pytest -q tests; cd <prepared-source> && python3 -m pytest -q tests/test_installer_wizard.py -k native_dock_apps",
+      "command": "MTTKDE_REQUIRE_NATIVE_GLOBALMENU=1 python3 -m pytest -q tests/test_globalmenu_model.py",
       "result": "passed",
-      "detail": "97 wrapper tests and 4 prepared-source edition/appearance cases passed."
+      "detail": "Host and both prepared edition sources in disposable VM: native importer, popup capability/task dispatch, metadata and actual QML applet composition."
     },
     {
-      "command": "In disposable Plasma VM, for each edition source: sudo env MAC_TAHOE_NO_UPDATE_CHECK=true MTTKDE_NO_CONFIRM=1 <source>/src/scripts/installer_backend.py install --only --layout --apply-theme --light (installation and reinstallation)",
+      "command": "In disposable Plasma VM, both sources: installer_backend.py install --only --globalmenu --no-apply-theme (install and reinstall)",
       "result": "passed",
-      "detail": "All 4 focused install/reinstall operations passed, activated the selected layout and restarted only guest Plasma. Golden Gate used its actual prepared source."
+      "detail": "Four lifecycle operations passed; Golden Gate source was prepared by its actual wrapper."
     },
     {
-      "command": "In disposable VM with matching installed appearance: QT_QPA_PLATFORM=wayland python3 tests/installer_dock_apps_probe.py <light|dark>; QT_QPA_PLATFORM=xcb dbus-run-session -- xvfb-run -a -s \"-screen 0 1920x1080x24\" python3 tests/installer_dock_apps_probe.py <light|dark>, both edition sources",
+      "command": "QT_QPA_PLATFORM=wayland MTTKDE_LIVE_GLOBALMENU=1 /tmp/about-live/globalmenu-popup-test liveWindowControls; python3 tests/application_about_probe.py --mode <light|dark>, both edition sources and Wayland/private X11; actual installed Files \u2192 About Files",
       "result": "passed",
-      "detail": "All 8 native cases passed: 96 actual modal openings, source/selection changes, installed/unavailable app states, mouse/keyboard input, Continue/Cancel/Escape, transactional isolation and reopening. Four final matching-appearance images reviewed; the initial mismatched dark image was rejected."
+      "detail": "Real KWin About/maximize/restore/full-screen/minimize/reactivate/close passed with zero skips. Eight QML cases, 40 app openings, clipboard and close/reopen checks passed; four content captures and the actual native Files About frame reviewed."
     }
   ],
   "gallery_commit": "1e75b167c464c1b41ab611d7f64f027b5b17a00e",
   "captures": [],
   "local_vm_qualification": {
     "vm_image_sha256": "412e7933f10add20b921b92c02709e7eea56acd14dc14cf654f58fba4ea3cc9d",
-    "source_archive_sha256": "539a2ad9072a7253a2aa7ba15b2551f204ce2bebfaa8bb2cc0753a62c172ae88",
+    "source_archive_sha256": "d727a2c337cfd679b19fc355c175d8a0c8596daf6bcf9486f14e01bb9c8d43d7",
+    "initial_source_archive_sha256": "ba2c9b284419c017ad487d439fa02b2bc9e8f73f5a8274f60b4a5158b2846bca",
     "runtime_sources": {
-      "src/installer/wizard_window.py": "12d86171aeb9240d6c46efcb20a5f7ce3d0b67d6488aa768b708489e7f36853a",
-      "tests/installer_dock_apps_probe.py": "92c1904ca9b066028e2fb0a22d86512bedd7d4718f239c7da11dfad7134d0c23",
-      "tests/test_installer_wizard.py": "3703a642f3fdee11f328026bb3c2815086ebd2e2b356f4833770c4d94d318eb8"
+      "src/offline/plasmoids/org.kde.mac.tahoe.liquid.globalmenu/appmenuapplet.cpp": "f8e62e7a4dd49443ccbb205ed1b3aeeec683d5145eded5bd54147802926d10bc",
+      "src/offline/plasmoids/org.kde.mac.tahoe.liquid.globalmenu/appmenuapplet.h": "69e6b1096f07eb366b7aa0cd65d1b8c4de4caadc76ba7cd40473e7b8f090e4ae",
+      "src/offline/plasmoids/org.kde.mac.tahoe.liquid.globalmenu/CMakeLists.txt": "63d64cf25c0ec496e59277cfec7fc7d3ea612a994e66c989b7332557a554867b",
+      "src/offline/plasmoids/org.kde.mac.tahoe.liquid.globalmenu/qml/main.qml": "1937b8207b37d5febb5b04c2a1834863d0ac7a5aaa83f62ca8663b343c8596c3",
+      "src/offline/plasmoids/org.kde.mac.tahoe.liquid.globalmenu/qml/ApplicationAboutWindow.qml": "0ef8a76566b12975c7a424470ae1288eb3d7406c4073a8f5f4cb4a5ce4158964",
+      "tests/native/globalmenu/popup_test.cpp": "433cd49782378351ddd56deba8ad8e830e801ec055846c84c07cbd41b212ceff",
+      "tests/native/globalmenu/composition_test.cpp": "b3a1abf33ff0c4e238dd5254acdc56d326e7ca37d8bcc8191c3bec0546aa14ca",
+      "tests/application_about_probe.py": "60d9e39273975564f07916cab79cb6b36ac1f4ecfa5545e53ae6d3ca2c192bcd"
     },
     "reviewed_frames": {
-      "tahoe-light-wayland-desktop-mode": {
-        "sha256": "973e768c4c903d314220bb7f1fc6a329cc1b0ee745df6782990843475767c8df",
+      "tahoe-light-wayland": {
+        "sha256": "0a8df2708b911d8d5922d8d356342057f6db3643a8930cf36c2dbcfd0309f358",
         "reviewed": true
       },
-      "tahoe-dark-wayland-desktop-mode": {
-        "sha256": "9a46217759aafc36d215230c62e6300d6a7c3e8e7fb90e2b17a1d1278ddf3603",
+      "tahoe-dark-wayland": {
+        "sha256": "14214ec168432056409d7aefec3e062dd5cdf6a397b7a705d257acf8fdd3faad",
         "reviewed": true
       },
-      "golden-gate-light-wayland-desktop-mode": {
-        "sha256": "973e768c4c903d314220bb7f1fc6a329cc1b0ee745df6782990843475767c8df",
+      "golden-gate-light-wayland": {
+        "sha256": "e13f850a5b06c99f3e3b447a54a43a1a472b077feb90f5ae0172114cac878ffd",
         "reviewed": true
       },
-      "golden-gate-dark-wayland-desktop-mode": {
-        "sha256": "9a46217759aafc36d215230c62e6300d6a7c3e8e7fb90e2b17a1d1278ddf3603",
+      "golden-gate-dark-wayland": {
+        "sha256": "b81df82404ae78d5e93b9a3994f842907863c316ab3a7f79242510e2f728f074",
+        "reviewed": true
+      },
+      "actual-about-crop": {
+        "sha256": "fa716d54fd443bdb48843dcdb4057a2baf99293d71f8c9eba47ccd99d03e5b71",
         "reviewed": true
       }
     },
-    "artifacts": "/tmp/dock-dialog-0691",
-    "scope": "Dock apps editor and focused layout install/reinstall; optional app provisioning uses deterministic discovery fixtures in the GUI probe."
+    "artifacts": "/tmp/app-about-070",
+    "scope": "Generic About application window and existing window controls; no new per-app commands or fallback menus."
   }
 }

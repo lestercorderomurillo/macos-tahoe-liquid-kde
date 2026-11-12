@@ -26,6 +26,9 @@ msgstr "&Rückgängig"
 msgid "&View"
 msgstr "&Ansicht"
 
+msgid "About %1"
+msgstr "Über %1"
+
 msgid "About This Computer"
 msgstr "Über diesen Computer"
 
@@ -44,6 +47,12 @@ msgstr "App-Store…"
 msgid "Appearance"
 msgstr "Erscheinungsbild"
 
+msgid "Application"
+msgstr "Anwendung"
+
+msgid "Application ID"
+msgstr "Anwendungskennung"
+
 msgid "Chip"
 msgstr "Chip"
 
@@ -59,10 +68,11 @@ msgstr "Fenster schließen"
 msgid "Commands"
 msgstr "Befehle"
 
-
-
 msgid "Copied"
 msgstr "Kopiert"
+
+msgid "Copy Details"
+msgstr "Details kopieren"
 
 msgid "Copy details"
 msgstr "Details kopieren"
@@ -73,8 +83,14 @@ msgstr "Kerne"
 msgid "Cu&t"
 msgstr "&Ausschneiden"
 
+msgid "Desktop file"
+msgstr "Desktop-Datei"
+
 msgid "Enter Full Screen"
 msgstr "Vollbildmodus starten"
+
+msgid "Executable"
+msgstr "Programmdatei"
 
 msgid "Exit Full Screen"
 msgstr "Vollbildmodus beenden"
@@ -88,6 +104,8 @@ msgstr "Sofort beenden…"
 msgid "Graphics"
 msgstr "Grafik"
 
+msgid "Location"
+msgstr "Speicherort"
 
 msgid "Lock Screen"
 msgstr "Bildschirm sperren"
@@ -127,6 +145,9 @@ msgstr "Betriebssystem"
 
 msgid "Personal Computer"
 msgstr "Personal Computer"
+
+msgid "Process ID"
+msgstr "Prozesskennung"
 
 msgid "Report a Bug…"
 msgstr "Fehler melden…"

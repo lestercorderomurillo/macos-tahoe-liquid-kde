@@ -1,16 +1,14 @@
 # Installer testing
 
-Tahoe **v0.69.1** fixes the installer crash when opening **Dock apps…**
-and clears stale selections for apps that become installed or unavailable.
+Tahoe **v0.70.0** adds a generic **About <application>** window following
+Finder's About composition, with the selected app's icon, name, location and
+copyable details. Existing application menus remain intact.
 
-The focused host suite passed 134 checks; Golden Gate passed 97 wrapper checks
-and four prepared-source dialog cases. Both editions passed focused install and
-reinstall qualification in a disposable KDE neon Plasma/KWin 6.8.1 VM.
-All eight native Wayland/X11, light/dark and edition cases passed, with 96 actual
-modal openings and four reviewed dialog images. Optional package discovery is
-controlled in the GUI probe; this does not claim real optional app downloads.
-See [detailed qualification](tests/native/installer_dock_apps_validation.md) and [release evidence](release-evidence.json).
-Full remote CI is recorded separately in GitHub Actions.
+Both editions passed focused global-menu installation and reinstallation in a
+disposable Plasma/KWin 6.8.1 VM. Native menu/metadata/composition checks, real
+Wayland window controls and all eight edition/appearance/Wayland-X11 dialog
+cases passed. See [commands, reviewed frames and coverage limits](tests/native/application_about_validation.md).
+Historical installer photographs below retain their original capture provenance.
 
 [Light menu](src/screenshots/menu_v4-0343811e426d.webp) · [Dark menu](src/screenshots/menu_dark_v4-171bb0e051ff.webp) · [Capture provenance](src/screenshots/previews/system-menu-tahoe-069-provenance-9c458fcf42db.json)
 

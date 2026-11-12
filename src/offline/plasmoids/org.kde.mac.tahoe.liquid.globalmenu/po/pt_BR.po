@@ -26,6 +26,9 @@ msgstr "&Desfazer"
 msgid "&View"
 msgstr "E&xibir"
 
+msgid "About %1"
+msgstr "Sobre %1"
+
 msgid "About This Computer"
 msgstr "Sobre este computador"
 
@@ -44,6 +47,12 @@ msgstr "Loja de aplicativos…"
 msgid "Appearance"
 msgstr "Aparência"
 
+msgid "Application"
+msgstr "Aplicativo"
+
+msgid "Application ID"
+msgstr "ID do aplicativo"
+
 msgid "Chip"
 msgstr "Chip"
 
@@ -59,10 +68,11 @@ msgstr "Fechar janela"
 msgid "Commands"
 msgstr "Comandos"
 
-
-
 msgid "Copied"
 msgstr "Copiado"
+
+msgid "Copy Details"
+msgstr "Copiar detalhes"
 
 msgid "Copy details"
 msgstr "Copiar detalhes"
@@ -73,8 +83,14 @@ msgstr "Núcleos"
 msgid "Cu&t"
 msgstr "Recor&tar"
 
+msgid "Desktop file"
+msgstr "Arquivo de desktop"
+
 msgid "Enter Full Screen"
 msgstr "Entrar em tela cheia"
+
+msgid "Executable"
+msgstr "Executável"
 
 msgid "Exit Full Screen"
 msgstr "Sair da tela cheia"
@@ -88,6 +104,8 @@ msgstr "Forçar encerramento…"
 msgid "Graphics"
 msgstr "Gráficos"
 
+msgid "Location"
+msgstr "Localização"
 
 msgid "Lock Screen"
 msgstr "Bloquear tela"
@@ -127,6 +145,9 @@ msgstr "Sistema operacional"
 
 msgid "Personal Computer"
 msgstr "Computador pessoal"
+
+msgid "Process ID"
+msgstr "ID do processo"
 
 msgid "Report a Bug…"
 msgstr "Relatar um erro…"

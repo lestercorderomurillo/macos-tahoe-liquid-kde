@@ -95,6 +95,9 @@ Q_SIGNALS:
     /// "About This Computer" menu entry selected.
     void aboutRequested();
 
+    /// Immutable information about the application whose menu was opened.
+    void applicationAboutRequested(const QVariantMap &info);
+
 public Q_SLOTS:
     // QML-triggered actions
 

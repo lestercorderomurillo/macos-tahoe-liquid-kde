@@ -1129,5 +1129,13 @@
   "Select &All": "Selecionar &tudo",
   "Show common menus for applications without a menu bar": "Mostrar menus comuns para aplicativos sem barra de menus",
   "Switch open menus on hover": "Alternar menus abertos ao passar o mouse",
-  "System menu": "Menu do sistema"
+  "System menu": "Menu do sistema",
+  "About %1": "Sobre %1",
+  "Application": "Aplicativo",
+  "Executable": "Executável",
+  "Application ID": "ID do aplicativo",
+  "Desktop file": "Arquivo de desktop",
+  "Process ID": "ID do processo",
+  "Location": "Localização",
+  "Copy Details": "Copiar detalhes"
 }

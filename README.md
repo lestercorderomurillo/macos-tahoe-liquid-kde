@@ -342,7 +342,9 @@ Fixes and known limitations for blur, refraction and window corners.
 <details>
 <summary><b>Global Menu compatibility</b></summary>
 
-Global Menu displays menus exported by the focused application. The installer
+Global Menu displays menus exported by the focused application. Select the
+application name → **About** to see its icon, name and location, or copy its
+details. The installer
 includes the D-Bus menu runtime, installs the GTK3 exporter on Arch/Debian-family
 systems, and activates KDE's registrar. Log out and back in after installation
 to load the GTK startup integration. Applications must still support menu

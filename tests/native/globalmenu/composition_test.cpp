@@ -75,6 +75,20 @@ private Q_SLOTS:
             popup->hide();
             QTRY_COMPARE(bar->status(), Plasma::Types::ActiveStatus);
         }
+        QVERIFY(QMetaObject::invokeMethod(bar, "triggerWindowMenu", Q_ARG(QQuickItem*, representation)));
+        auto *popup = qobject_cast<QMenu*>(QApplication::activePopupWidget());
+        QVERIFY(popup);
+        auto *about = popup->actions().first();
+        QTest::mouseClick(popup, Qt::LeftButton, Qt::NoModifier, popup->actionGeometry(about).center());
+        QWindow *aboutWindow = nullptr;
+        QTRY_VERIFY([&] {
+            for (auto *candidate : QGuiApplication::topLevelWindows())
+                if (candidate->objectName() == QLatin1String("applicationAboutWindow")) aboutWindow = candidate;
+            return aboutWindow && aboutWindow->isVisible();
+        }());
+        QCOMPARE(aboutWindow->title(), QStringLiteral("About Menu Test Application"));
+        QCOMPARE(aboutWindow->property("applicationInfo").toMap().value("name").toString(), QStringLiteral("Menu Test Application"));
+        aboutWindow->close();
         QCOMPARE(panel->applets().size(), 1);
         QVERIFY(!bar->configuration()->contains(QStringLiteral("integratedBar")));
     }

@@ -31,12 +31,22 @@ PlasmoidItem {
         useSystemFont: Plasmoid.configuration.useSystemFont
     }
 
+    ApplicationAboutWindow {
+        id: applicationAboutWindow
+    }
+
     Connections {
         target: Plasmoid
         function onAboutRequested() {
             aboutWindow.show();
             aboutWindow.raise();
             aboutWindow.requestActivate();
+        }
+        function onApplicationAboutRequested(info) {
+            applicationAboutWindow.applicationInfo = info;
+            applicationAboutWindow.show();
+            applicationAboutWindow.raise();
+            applicationAboutWindow.requestActivate();
         }
     }
 

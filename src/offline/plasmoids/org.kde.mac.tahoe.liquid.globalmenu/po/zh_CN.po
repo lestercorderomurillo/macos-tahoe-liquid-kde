@@ -116,3 +116,27 @@ msgid "Search"
 msgstr "搜索"
 msgid "Search…"
 msgstr "搜索…"
+
+msgid "About %1"
+msgstr "关于 %1"
+
+msgid "Application"
+msgstr "应用程序"
+
+msgid "Executable"
+msgstr "可执行文件"
+
+msgid "Application ID"
+msgstr "应用程序 ID"
+
+msgid "Desktop file"
+msgstr "桌面文件"
+
+msgid "Process ID"
+msgstr "进程 ID"
+
+msgid "Location"
+msgstr "位置"
+
+msgid "Copy Details"
+msgstr "复制详细信息"

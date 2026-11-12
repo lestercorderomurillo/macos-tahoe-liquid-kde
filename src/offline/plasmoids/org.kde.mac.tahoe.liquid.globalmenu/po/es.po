@@ -116,3 +116,27 @@ msgid "Search"
 msgstr "Buscar"
 msgid "Search…"
 msgstr "Buscar…"
+
+msgid "About %1"
+msgstr "Acerca de %1"
+
+msgid "Application"
+msgstr "Aplicación"
+
+msgid "Executable"
+msgstr "Ejecutable"
+
+msgid "Application ID"
+msgstr "ID de la aplicación"
+
+msgid "Desktop file"
+msgstr "Archivo de escritorio"
+
+msgid "Process ID"
+msgstr "ID del proceso"
+
+msgid "Location"
+msgstr "Ubicación"
+
+msgid "Copy Details"
+msgstr "Copiar detalles"

@@ -18,6 +18,11 @@
 #include <QDBusMessage>
 #include <QKeyEvent>
 #include <QMenu>
+#include <QFileInfo>
+#include <QPersistentModelIndex>
+#include <QStandardPaths>
+#include <QTimer>
+#include <KDesktopFile>
 #include <QLineEdit>
 #include <QMouseEvent>
 #include <QProcess>
@@ -402,7 +407,7 @@ void AppMenuApplet::triggerWindowMenu(QQuickItem* ctx)
     }
 
     auto* tasks = appModel->tasksModel();
-    const QModelIndex activeTask = tasks->activeTask();
+    const QPersistentModelIndex activeTask(tasks->activeTask());
     if (!activeTask.isValid()) {
         return;
     }
@@ -414,6 +419,51 @@ void AppMenuApplet::triggerWindowMenu(QQuickItem* ctx)
     // Reused across light↔dark switches, so refresh the palette on every open.
     applyActiveColorScheme(m_windowMenu.get());
 
+    // Read metadata only. Never execute an application's binary or Exec entry
+    // to discover its version, and never expose process command-line arguments.
+    QVariantMap info;
+    info.insert(QStringLiteral("name"), activeTask.data(TaskManager::AbstractTasksModel::AppName));
+    info.insert(QStringLiteral("description"), activeTask.data(TaskManager::AbstractTasksModel::GenericName));
+    info.insert(QStringLiteral("applicationId"), activeTask.data(TaskManager::AbstractTasksModel::AppId));
+    info.insert(QStringLiteral("icon"), activeTask.data(Qt::DecorationRole));
+    const auto pid = activeTask.data(TaskManager::AbstractTasksModel::AppPid).toLongLong();
+    if (pid > 0) {
+        info.insert(QStringLiteral("processId"), QString::number(pid));
+        info.insert(QStringLiteral("executable"), QFileInfo(QStringLiteral("/proc/%1/exe").arg(pid)).symLinkTarget());
+    }
+    auto launcher = activeTask.data(TaskManager::AbstractTasksModel::LauncherUrlWithoutIcon).toUrl();
+    if (launcher.isEmpty()) launcher = activeTask.data(TaskManager::AbstractTasksModel::LauncherUrl).toUrl();
+    QString desktopPath;
+    if (launcher.isLocalFile()) {
+        desktopPath = launcher.toLocalFile();
+    } else if (launcher.scheme() == QLatin1String("applications")) {
+        const QString name = launcher.path();
+        if (!name.contains(QLatin1Char('/')) && name.endsWith(QLatin1String(".desktop")))
+            desktopPath = QStandardPaths::locate(QStandardPaths::GenericDataLocation, QStringLiteral("applications/") + name);
+    }
+    if (desktopPath.endsWith(QLatin1String(".desktop")) && QFileInfo(desktopPath).isFile()) {
+        KDesktopFile desktop(desktopPath);
+        info.insert(QStringLiteral("desktopFile"), desktopPath);
+        if (info.value(QStringLiteral("name")).toString().isEmpty()) info.insert(QStringLiteral("name"), desktop.readName());
+        if (info.value(QStringLiteral("description")).toString().isEmpty()) info.insert(QStringLiteral("description"), desktop.readGenericName());
+        if (qvariant_cast<QIcon>(info.value(QStringLiteral("icon"))).isNull())
+            info.insert(QStringLiteral("icon"), QIcon::fromTheme(desktop.readIcon()));
+    }
+    if (info.value(QStringLiteral("name")).toString().isEmpty())
+        info.insert(QStringLiteral("name"), info.value(QStringLiteral("applicationId")));
+    if (info.value(QStringLiteral("name")).toString().isEmpty())
+        info.insert(QStringLiteral("name"), i18n("Application"));
+    if (qvariant_cast<QIcon>(info.value(QStringLiteral("icon"))).isNull())
+        info.insert(QStringLiteral("icon"), QIcon::fromTheme(QStringLiteral("application-x-executable")));
+
+    auto *aboutAction = m_windowMenu->addAction(i18n("About %1", QString(info.value(QStringLiteral("name")).toString()).replace(QLatin1Char('&'), QStringLiteral("&&"))));
+    connect(aboutAction, &QAction::triggered, this, [this, activeTask, info] {
+        if (!activeTask.isValid()) return;
+        // Release the popup grab before the independent About window opens.
+        QTimer::singleShot(0, this, [this, info] { Q_EMIT applicationAboutRequested(info); });
+    });
+    m_windowMenu->addSeparator();
+
     const bool isClosable = tasks->data(activeTask, TaskManager::AbstractTasksModel::IsClosable).toBool();
     const bool isMinimizable = tasks->data(activeTask, TaskManager::AbstractTasksModel::IsMinimizable).toBool();
     const bool isMaximizable = tasks->data(activeTask, TaskManager::AbstractTasksModel::IsMaximizable).toBool();
@@ -423,25 +473,25 @@ void AppMenuApplet::triggerWindowMenu(QQuickItem* ctx)
 
     auto* closeAction = m_windowMenu->addAction(QIcon::fromTheme(QStringLiteral("window-close")), i18n("Close"));
     closeAction->setEnabled(isClosable);
-    connect(closeAction, &QAction::triggered, tasks, [tasks, activeTask]() { tasks->requestClose(activeTask); });
+    connect(closeAction, &QAction::triggered, tasks, [tasks, activeTask]() { if (activeTask.isValid()) tasks->requestClose(activeTask); });
 
     m_windowMenu->addSeparator();
 
     auto* minimizeAction = m_windowMenu->addAction(QIcon::fromTheme(QStringLiteral("window-minimize")), i18n("Minimize"));
     minimizeAction->setEnabled(isMinimizable);
-    connect(minimizeAction, &QAction::triggered, tasks, [tasks, activeTask]() { tasks->requestToggleMinimized(activeTask); });
+    connect(minimizeAction, &QAction::triggered, tasks, [tasks, activeTask]() { if (activeTask.isValid()) tasks->requestToggleMinimized(activeTask); });
 
     auto* zoomAction = m_windowMenu->addAction(QIcon::fromTheme(isMaximized ? QStringLiteral("window-restore") : QStringLiteral("window-maximize")),
         isMaximized ? i18n("Restore") : i18n("Zoom"));
     zoomAction->setEnabled(isMaximizable);
-    connect(zoomAction, &QAction::triggered, tasks, [tasks, activeTask]() { tasks->requestToggleMaximized(activeTask); });
+    connect(zoomAction, &QAction::triggered, tasks, [tasks, activeTask]() { if (activeTask.isValid()) tasks->requestToggleMaximized(activeTask); });
 
     m_windowMenu->addSeparator();
 
     auto* fullScreenAction = m_windowMenu->addAction(
         QIcon::fromTheme(QStringLiteral("view-fullscreen")), isFullScreen ? i18n("Exit Full Screen") : i18n("Enter Full Screen"));
     fullScreenAction->setEnabled(isFullScreenable);
-    connect(fullScreenAction, &QAction::triggered, tasks, [tasks, activeTask]() { tasks->requestToggleFullScreen(activeTask); });
+    connect(fullScreenAction, &QAction::triggered, tasks, [tasks, activeTask]() { if (activeTask.isValid()) tasks->requestToggleFullScreen(activeTask); });
 
     showMenu(ctx, m_windowMenu.get(), WINDOW_MENU_INDEX);
 }
