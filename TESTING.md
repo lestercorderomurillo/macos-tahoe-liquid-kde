@@ -1,10 +1,10 @@
 # Installer testing
 
-Tahoe **v0.68.3** aligns native menu selection corners with real macOS references.
-Menu rendering, edition defaults and launcher preset checks pass, including Golden Gate staging.
-Four focused disposable-VM menu captures cover both editions in light and dark mode.
-See [the 50/50 comparison and remaining geometry limits](docs/menu-reference-comparison.md)
-and [release evidence](release-evidence.json); full remote CI remains asynchronous.
+Tahoe **v0.68.4** matches continuous menu corners and the 5-pixel selection inset.
+Focused native rendering, style lifecycle, mode switching and Golden Gate staging checks pass.
+Four reviewed VM menu frames cover both editions and modes; isolated X11 rendering also passed.
+See [the real-reference 50/50 comparisons](docs/menu-reference-comparison.md) and
+[release evidence](release-evidence.json) for provenance and limits. Full remote CI stays asynchronous.
 
 Historical v0.67.0 symbol previews (unchanged):
 [Light](src/screenshots/previews/menu-symbols-067-light-a558e02129b0.png) · [Dark](src/screenshots/previews/menu-symbols-067-dark-35230bb0f200.png) · [Provenance](src/screenshots/previews/menu-symbols-067-provenance-534bface45c1.json)

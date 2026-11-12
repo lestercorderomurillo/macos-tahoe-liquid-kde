@@ -1450,3 +1450,8 @@ preset 2; explicit per-step choices still override their own setting. Native
 menu selections use the measured 8px corners, while edition materials remain
 independent of the launcher preset. Record any remaining geometry differences
 instead of claiming a pixel-identical match.
+
+Native menu outer borders use continuous corners independently of the 5px
+content inset. Keep the blue selection at its measured 8px corners. The
+MacTahoe Qt style delegates ordinary widgets and edition materials to Kvantum;
+install its sidecar in both editions and retain it through light/dark switches.
