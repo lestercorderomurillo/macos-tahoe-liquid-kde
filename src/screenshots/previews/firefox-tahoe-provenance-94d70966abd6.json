@@ -1,0 +1,1145 @@
+{
+  "source_commit": "5d35a84d8bbbcc246ef345e2f1cac9320afdef41",
+  "vm_image_sha256": "412e7933f10add20b921b92c02709e7eea56acd14dc14cf654f58fba4ea3cc9d",
+  "edition": "tahoe",
+  "frames": {
+    "tahoe-0-light": {
+      "before": [
+        {
+          "id": "{9a7953df-7d3a-4e12-aabf-dc4b7b9db937}",
+          "caption": "",
+          "resourceClass": "plasmashell",
+          "type": 1,
+          "appletPopup": false,
+          "hidden": false,
+          "active": false,
+          "geometry": {
+            "x": 0,
+            "y": 0,
+            "width": 1920,
+            "height": 1080
+          }
+        },
+        {
+          "id": "{93cabf1f-31fa-423e-8ebc-4f360eb0381b}",
+          "caption": "",
+          "resourceClass": "plasmashell",
+          "type": 2,
+          "appletPopup": false,
+          "hidden": false,
+          "active": false,
+          "geometry": {
+            "x": 0,
+            "y": 1024,
+            "width": 1920,
+            "height": 56
+          }
+        },
+        {
+          "id": "{00a5d348-0575-4a1f-901d-abcae4dcfaeb}",
+          "caption": "Firefox desktop verification \u2014 Mozilla Firefox",
+          "resourceClass": "firefox_firefox",
+          "type": 0,
+          "appletPopup": false,
+          "hidden": false,
+          "active": true,
+          "geometry": {
+            "x": 420,
+            "y": 220,
+            "width": 1100,
+            "height": 650
+          }
+        }
+      ],
+      "after": [
+        {
+          "id": "{9a7953df-7d3a-4e12-aabf-dc4b7b9db937}",
+          "caption": "",
+          "resourceClass": "plasmashell",
+          "type": 1,
+          "appletPopup": false,
+          "hidden": false,
+          "active": false,
+          "geometry": {
+            "x": 0,
+            "y": 0,
+            "width": 1920,
+            "height": 1080
+          }
+        },
+        {
+          "id": "{93cabf1f-31fa-423e-8ebc-4f360eb0381b}",
+          "caption": "",
+          "resourceClass": "plasmashell",
+          "type": 2,
+          "appletPopup": false,
+          "hidden": false,
+          "active": false,
+          "geometry": {
+            "x": 0,
+            "y": 1024,
+            "width": 1920,
+            "height": 56
+          }
+        },
+        {
+          "id": "{00a5d348-0575-4a1f-901d-abcae4dcfaeb}",
+          "caption": "Firefox desktop verification \u2014 Mozilla Firefox",
+          "resourceClass": "firefox_firefox",
+          "type": 0,
+          "appletPopup": false,
+          "hidden": false,
+          "active": true,
+          "geometry": {
+            "x": 420,
+            "y": 220,
+            "width": 1100,
+            "height": 650
+          }
+        }
+      ],
+      "window": {
+        "id": "{00a5d348-0575-4a1f-901d-abcae4dcfaeb}",
+        "caption": "Firefox desktop verification \u2014 Mozilla Firefox",
+        "resourceClass": "firefox_firefox",
+        "type": 0,
+        "appletPopup": false,
+        "hidden": false,
+        "active": true,
+        "geometry": {
+          "x": 420,
+          "y": 220,
+          "width": 1100,
+          "height": 650
+        }
+      },
+      "buttons": [
+        {
+          "classes": "titlebar-button titlebar-min",
+          "rect": {
+            "x": 40,
+            "y": 16,
+            "width": 16,
+            "height": 16,
+            "top": 16,
+            "right": 56,
+            "bottom": 32,
+            "left": 40
+          },
+          "display": "flex"
+        },
+        {
+          "classes": "titlebar-button titlebar-max",
+          "rect": {
+            "x": 64,
+            "y": 16,
+            "width": 16,
+            "height": 16,
+            "top": 16,
+            "right": 80,
+            "bottom": 32,
+            "left": 64
+          },
+          "display": "flex"
+        },
+        {
+          "classes": "titlebar-button titlebar-close",
+          "rect": {
+            "x": 16,
+            "y": 16,
+            "width": 16,
+            "height": 16,
+            "top": 16,
+            "right": 32,
+            "bottom": 32,
+            "left": 16
+          },
+          "display": "flex"
+        }
+      ],
+      "icons": [
+        {
+          "id": "tabs-newtab-button",
+          "rect": {
+            "x": 1030,
+            "y": 62,
+            "width": 16,
+            "height": 16,
+            "top": 62,
+            "right": 1046,
+            "bottom": 78,
+            "left": 1030
+          },
+          "fill": "rgb(46, 46, 46)",
+          "image": "url(\"file:///home/tester/snap/firefox/common/.mozilla/firefox/mttkde-vm-proof/chrome/MacTahoeLiquidKde/MacTahoe/icons/tab-new-symbolic.svg\")",
+          "opacity": "1"
+        },
+        {
+          "id": "",
+          "rect": {
+            "x": 109,
+            "y": 18,
+            "width": 16,
+            "height": 16,
+            "top": 18,
+            "right": 125,
+            "bottom": 34,
+            "left": 109
+          },
+          "fill": "rgb(46, 46, 46)",
+          "image": "url(\"file:///home/tester/snap/firefox/common/.mozilla/firefox/mttkde-vm-proof/chrome/MacTahoeLiquidKde/MacTahoe/icons/toggle-sidebar-symbolic.svg\")",
+          "opacity": "1"
+        },
+        {
+          "id": "back-button",
+          "rect": {
+            "x": 143,
+            "y": 10,
+            "width": 32,
+            "height": 32,
+            "top": 10,
+            "right": 175,
+            "bottom": 42,
+            "left": 143
+          },
+          "fill": "rgb(46, 46, 46)",
+          "image": "url(\"file:///home/tester/snap/firefox/common/.mozilla/firefox/mttkde-vm-proof/chrome/MacTahoeLiquidKde/MacTahoe/icons/go-previous-symbolic.svg\")",
+          "opacity": "0.4"
+        },
+        {
+          "id": "forward-button",
+          "rect": {
+            "x": 185,
+            "y": 10,
+            "width": 32,
+            "height": 32,
+            "top": 10,
+            "right": 217,
+            "bottom": 42,
+            "left": 185
+          },
+          "fill": "rgb(46, 46, 46)",
+          "image": "url(\"file:///home/tester/snap/firefox/common/.mozilla/firefox/mttkde-vm-proof/chrome/MacTahoeLiquidKde/MacTahoe/icons/go-next-symbolic.svg\")",
+          "opacity": "0.4"
+        },
+        {
+          "id": "reload-button",
+          "rect": {
+            "x": 227,
+            "y": 10,
+            "width": 32,
+            "height": 32,
+            "top": 10,
+            "right": 259,
+            "bottom": 42,
+            "left": 227
+          },
+          "fill": "rgb(46, 46, 46)",
+          "image": "url(\"file:///home/tester/snap/firefox/common/.mozilla/firefox/mttkde-vm-proof/chrome/MacTahoeLiquidKde/MacTahoe/icons/view-refresh-symbolic.svg\")",
+          "opacity": "1"
+        },
+        {
+          "id": "",
+          "rect": {
+            "x": 981,
+            "y": 18,
+            "width": 16,
+            "height": 16,
+            "top": 18,
+            "right": 997,
+            "bottom": 34,
+            "left": 981
+          },
+          "fill": "rgb(46, 46, 46)",
+          "image": "url(\"file:///home/tester/snap/firefox/common/.mozilla/firefox/mttkde-vm-proof/chrome/MacTahoeLiquidKde/MacTahoe/icons/system-users-symbolic.svg\")",
+          "opacity": "1"
+        },
+        {
+          "id": "unified-extensions-button",
+          "rect": {
+            "x": 1015,
+            "y": 10,
+            "width": 32,
+            "height": 32,
+            "top": 10,
+            "right": 1047,
+            "bottom": 42,
+            "left": 1015
+          },
+          "fill": "rgb(46, 46, 46)",
+          "image": "url(\"file:///home/tester/snap/firefox/common/.mozilla/firefox/mttkde-vm-proof/chrome/MacTahoeLiquidKde/MacTahoe/icons/application-x-addon-symbolic.svg\")",
+          "opacity": "1"
+        },
+        {
+          "id": "",
+          "rect": {
+            "x": 1065,
+            "y": 18,
+            "width": 16,
+            "height": 16,
+            "top": 18,
+            "right": 1081,
+            "bottom": 34,
+            "left": 1065
+          },
+          "fill": "rgb(46, 46, 46)",
+          "image": "url(\"file:///home/tester/snap/firefox/common/.mozilla/firefox/mttkde-vm-proof/chrome/MacTahoeLiquidKde/MacTahoe/icons/open-menu-symbolic.svg\")",
+          "opacity": "1"
+        },
+        {
+          "id": "",
+          "rect": {
+            "x": 40,
+            "y": 12,
+            "width": 16,
+            "height": 24,
+            "top": 12,
+            "right": 56,
+            "bottom": 36,
+            "left": 40
+          },
+          "fill": "rgb(46, 46, 46)",
+          "image": "none",
+          "opacity": "0"
+        },
+        {
+          "id": "",
+          "rect": {
+            "x": 64,
+            "y": 12,
+            "width": 16,
+            "height": 24,
+            "top": 12,
+            "right": 80,
+            "bottom": 36,
+            "left": 64
+          },
+          "fill": "rgb(46, 46, 46)",
+          "image": "none",
+          "opacity": "0"
+        },
+        {
+          "id": "",
+          "rect": {
+            "x": 16,
+            "y": 12,
+            "width": 16,
+            "height": 24,
+            "top": 12,
+            "right": 32,
+            "bottom": 36,
+            "left": 16
+          },
+          "fill": "rgb(46, 46, 46)",
+          "image": "none",
+          "opacity": "0"
+        }
+      ],
+      "context_fill": true,
+      "position": "left",
+      "mode": "light",
+      "sha256": "c3640fefd3070746c834cd91f9bb70a898556e5b3c3c3cd7d9fcd2f3df58c524",
+      "stable_frames": true,
+      "browser_version": "153.0.4",
+      "interaction": {
+        "dark": false,
+        "result": "Plasma desktop input passed",
+        "userAgent": "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:153.0) Gecko/20100101 Firefox/153.0"
+      },
+      "gtk_layout": "'close,minimize,maximize:'"
+    },
+    "tahoe-1-dark": {
+      "before": [
+        {
+          "id": "{9a7953df-7d3a-4e12-aabf-dc4b7b9db937}",
+          "caption": "",
+          "resourceClass": "plasmashell",
+          "type": 1,
+          "appletPopup": false,
+          "hidden": false,
+          "active": false,
+          "geometry": {
+            "x": 0,
+            "y": 0,
+            "width": 1920,
+            "height": 1080
+          }
+        },
+        {
+          "id": "{93cabf1f-31fa-423e-8ebc-4f360eb0381b}",
+          "caption": "",
+          "resourceClass": "plasmashell",
+          "type": 2,
+          "appletPopup": false,
+          "hidden": false,
+          "active": false,
+          "geometry": {
+            "x": 0,
+            "y": 1024,
+            "width": 1920,
+            "height": 56
+          }
+        },
+        {
+          "id": "{f5a9479a-283d-4534-aa72-9d836cedc09d}",
+          "caption": "Firefox desktop verification \u2014 Mozilla Firefox",
+          "resourceClass": "firefox_firefox",
+          "type": 0,
+          "appletPopup": false,
+          "hidden": false,
+          "active": true,
+          "geometry": {
+            "x": 420,
+            "y": 220,
+            "width": 1100,
+            "height": 650
+          }
+        }
+      ],
+      "after": [
+        {
+          "id": "{9a7953df-7d3a-4e12-aabf-dc4b7b9db937}",
+          "caption": "",
+          "resourceClass": "plasmashell",
+          "type": 1,
+          "appletPopup": false,
+          "hidden": false,
+          "active": false,
+          "geometry": {
+            "x": 0,
+            "y": 0,
+            "width": 1920,
+            "height": 1080
+          }
+        },
+        {
+          "id": "{93cabf1f-31fa-423e-8ebc-4f360eb0381b}",
+          "caption": "",
+          "resourceClass": "plasmashell",
+          "type": 2,
+          "appletPopup": false,
+          "hidden": false,
+          "active": false,
+          "geometry": {
+            "x": 0,
+            "y": 1024,
+            "width": 1920,
+            "height": 56
+          }
+        },
+        {
+          "id": "{f5a9479a-283d-4534-aa72-9d836cedc09d}",
+          "caption": "Firefox desktop verification \u2014 Mozilla Firefox",
+          "resourceClass": "firefox_firefox",
+          "type": 0,
+          "appletPopup": false,
+          "hidden": false,
+          "active": true,
+          "geometry": {
+            "x": 420,
+            "y": 220,
+            "width": 1100,
+            "height": 650
+          }
+        }
+      ],
+      "window": {
+        "id": "{f5a9479a-283d-4534-aa72-9d836cedc09d}",
+        "caption": "Firefox desktop verification \u2014 Mozilla Firefox",
+        "resourceClass": "firefox_firefox",
+        "type": 0,
+        "appletPopup": false,
+        "hidden": false,
+        "active": true,
+        "geometry": {
+          "x": 420,
+          "y": 220,
+          "width": 1100,
+          "height": 650
+        }
+      },
+      "buttons": [
+        {
+          "classes": "titlebar-button titlebar-min",
+          "rect": {
+            "x": 40,
+            "y": 16,
+            "width": 16,
+            "height": 16,
+            "top": 16,
+            "right": 56,
+            "bottom": 32,
+            "left": 40
+          },
+          "display": "flex"
+        },
+        {
+          "classes": "titlebar-button titlebar-max",
+          "rect": {
+            "x": 64,
+            "y": 16,
+            "width": 16,
+            "height": 16,
+            "top": 16,
+            "right": 80,
+            "bottom": 32,
+            "left": 64
+          },
+          "display": "flex"
+        },
+        {
+          "classes": "titlebar-button titlebar-close",
+          "rect": {
+            "x": 16,
+            "y": 16,
+            "width": 16,
+            "height": 16,
+            "top": 16,
+            "right": 32,
+            "bottom": 32,
+            "left": 16
+          },
+          "display": "flex"
+        }
+      ],
+      "icons": [
+        {
+          "id": "tabs-newtab-button",
+          "rect": {
+            "x": 1030,
+            "y": 62,
+            "width": 16,
+            "height": 16,
+            "top": 62,
+            "right": 1046,
+            "bottom": 78,
+            "left": 1030
+          },
+          "fill": "rgb(255, 255, 255)",
+          "image": "url(\"file:///home/tester/snap/firefox/common/.mozilla/firefox/mttkde-vm-proof/chrome/MacTahoeLiquidKde/MacTahoe/icons/tab-new-symbolic.svg\")",
+          "opacity": "1"
+        },
+        {
+          "id": "",
+          "rect": {
+            "x": 109,
+            "y": 18,
+            "width": 16,
+            "height": 16,
+            "top": 18,
+            "right": 125,
+            "bottom": 34,
+            "left": 109
+          },
+          "fill": "rgb(255, 255, 255)",
+          "image": "url(\"file:///home/tester/snap/firefox/common/.mozilla/firefox/mttkde-vm-proof/chrome/MacTahoeLiquidKde/MacTahoe/icons/toggle-sidebar-symbolic.svg\")",
+          "opacity": "1"
+        },
+        {
+          "id": "back-button",
+          "rect": {
+            "x": 143,
+            "y": 10,
+            "width": 32,
+            "height": 32,
+            "top": 10,
+            "right": 175,
+            "bottom": 42,
+            "left": 143
+          },
+          "fill": "rgb(255, 255, 255)",
+          "image": "url(\"file:///home/tester/snap/firefox/common/.mozilla/firefox/mttkde-vm-proof/chrome/MacTahoeLiquidKde/MacTahoe/icons/go-previous-symbolic.svg\")",
+          "opacity": "0.4"
+        },
+        {
+          "id": "forward-button",
+          "rect": {
+            "x": 185,
+            "y": 10,
+            "width": 32,
+            "height": 32,
+            "top": 10,
+            "right": 217,
+            "bottom": 42,
+            "left": 185
+          },
+          "fill": "rgb(255, 255, 255)",
+          "image": "url(\"file:///home/tester/snap/firefox/common/.mozilla/firefox/mttkde-vm-proof/chrome/MacTahoeLiquidKde/MacTahoe/icons/go-next-symbolic.svg\")",
+          "opacity": "0.4"
+        },
+        {
+          "id": "reload-button",
+          "rect": {
+            "x": 227,
+            "y": 10,
+            "width": 32,
+            "height": 32,
+            "top": 10,
+            "right": 259,
+            "bottom": 42,
+            "left": 227
+          },
+          "fill": "rgb(255, 255, 255)",
+          "image": "url(\"file:///home/tester/snap/firefox/common/.mozilla/firefox/mttkde-vm-proof/chrome/MacTahoeLiquidKde/MacTahoe/icons/view-refresh-symbolic.svg\")",
+          "opacity": "1"
+        },
+        {
+          "id": "",
+          "rect": {
+            "x": 981,
+            "y": 18,
+            "width": 16,
+            "height": 16,
+            "top": 18,
+            "right": 997,
+            "bottom": 34,
+            "left": 981
+          },
+          "fill": "rgb(255, 255, 255)",
+          "image": "url(\"file:///home/tester/snap/firefox/common/.mozilla/firefox/mttkde-vm-proof/chrome/MacTahoeLiquidKde/MacTahoe/icons/system-users-symbolic.svg\")",
+          "opacity": "1"
+        },
+        {
+          "id": "unified-extensions-button",
+          "rect": {
+            "x": 1015,
+            "y": 10,
+            "width": 32,
+            "height": 32,
+            "top": 10,
+            "right": 1047,
+            "bottom": 42,
+            "left": 1015
+          },
+          "fill": "rgb(255, 255, 255)",
+          "image": "url(\"file:///home/tester/snap/firefox/common/.mozilla/firefox/mttkde-vm-proof/chrome/MacTahoeLiquidKde/MacTahoe/icons/application-x-addon-symbolic.svg\")",
+          "opacity": "1"
+        },
+        {
+          "id": "",
+          "rect": {
+            "x": 1065,
+            "y": 18,
+            "width": 16,
+            "height": 16,
+            "top": 18,
+            "right": 1081,
+            "bottom": 34,
+            "left": 1065
+          },
+          "fill": "rgb(255, 255, 255)",
+          "image": "url(\"file:///home/tester/snap/firefox/common/.mozilla/firefox/mttkde-vm-proof/chrome/MacTahoeLiquidKde/MacTahoe/icons/open-menu-symbolic.svg\")",
+          "opacity": "1"
+        },
+        {
+          "id": "",
+          "rect": {
+            "x": 40,
+            "y": 12,
+            "width": 16,
+            "height": 24,
+            "top": 12,
+            "right": 56,
+            "bottom": 36,
+            "left": 40
+          },
+          "fill": "rgb(255, 255, 255)",
+          "image": "none",
+          "opacity": "0"
+        },
+        {
+          "id": "",
+          "rect": {
+            "x": 64,
+            "y": 12,
+            "width": 16,
+            "height": 24,
+            "top": 12,
+            "right": 80,
+            "bottom": 36,
+            "left": 64
+          },
+          "fill": "rgb(255, 255, 255)",
+          "image": "none",
+          "opacity": "0"
+        },
+        {
+          "id": "",
+          "rect": {
+            "x": 16,
+            "y": 12,
+            "width": 16,
+            "height": 24,
+            "top": 12,
+            "right": 32,
+            "bottom": 36,
+            "left": 16
+          },
+          "fill": "rgb(255, 255, 255)",
+          "image": "none",
+          "opacity": "0"
+        }
+      ],
+      "context_fill": true,
+      "position": "left",
+      "mode": "dark",
+      "sha256": "96a9dadfcf3b39937cf52d126c46e98a354455c641394f10198c28d01a1d3e90",
+      "stable_frames": true,
+      "browser_version": "153.0.4",
+      "interaction": {
+        "dark": true,
+        "result": "Plasma desktop input passed",
+        "userAgent": "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:153.0) Gecko/20100101 Firefox/153.0"
+      },
+      "gtk_layout": "'close,minimize,maximize:'"
+    },
+    "tahoe-2-light": {
+      "before": [
+        {
+          "id": "{9a7953df-7d3a-4e12-aabf-dc4b7b9db937}",
+          "caption": "",
+          "resourceClass": "plasmashell",
+          "type": 1,
+          "appletPopup": false,
+          "hidden": false,
+          "active": false,
+          "geometry": {
+            "x": 0,
+            "y": 0,
+            "width": 1920,
+            "height": 1080
+          }
+        },
+        {
+          "id": "{93cabf1f-31fa-423e-8ebc-4f360eb0381b}",
+          "caption": "",
+          "resourceClass": "plasmashell",
+          "type": 2,
+          "appletPopup": false,
+          "hidden": false,
+          "active": false,
+          "geometry": {
+            "x": 0,
+            "y": 1024,
+            "width": 1920,
+            "height": 56
+          }
+        },
+        {
+          "id": "{ba5bf024-eec8-46da-b120-0bbed70c0a21}",
+          "caption": "Firefox desktop verification \u2014 Mozilla Firefox",
+          "resourceClass": "firefox_firefox",
+          "type": 0,
+          "appletPopup": false,
+          "hidden": false,
+          "active": true,
+          "geometry": {
+            "x": 420,
+            "y": 220,
+            "width": 1100,
+            "height": 650
+          }
+        }
+      ],
+      "after": [
+        {
+          "id": "{9a7953df-7d3a-4e12-aabf-dc4b7b9db937}",
+          "caption": "",
+          "resourceClass": "plasmashell",
+          "type": 1,
+          "appletPopup": false,
+          "hidden": false,
+          "active": false,
+          "geometry": {
+            "x": 0,
+            "y": 0,
+            "width": 1920,
+            "height": 1080
+          }
+        },
+        {
+          "id": "{93cabf1f-31fa-423e-8ebc-4f360eb0381b}",
+          "caption": "",
+          "resourceClass": "plasmashell",
+          "type": 2,
+          "appletPopup": false,
+          "hidden": false,
+          "active": false,
+          "geometry": {
+            "x": 0,
+            "y": 1024,
+            "width": 1920,
+            "height": 56
+          }
+        },
+        {
+          "id": "{ba5bf024-eec8-46da-b120-0bbed70c0a21}",
+          "caption": "Firefox desktop verification \u2014 Mozilla Firefox",
+          "resourceClass": "firefox_firefox",
+          "type": 0,
+          "appletPopup": false,
+          "hidden": false,
+          "active": true,
+          "geometry": {
+            "x": 420,
+            "y": 220,
+            "width": 1100,
+            "height": 650
+          }
+        }
+      ],
+      "window": {
+        "id": "{ba5bf024-eec8-46da-b120-0bbed70c0a21}",
+        "caption": "Firefox desktop verification \u2014 Mozilla Firefox",
+        "resourceClass": "firefox_firefox",
+        "type": 0,
+        "appletPopup": false,
+        "hidden": false,
+        "active": true,
+        "geometry": {
+          "x": 420,
+          "y": 220,
+          "width": 1100,
+          "height": 650
+        }
+      },
+      "buttons": [
+        {
+          "classes": "titlebar-button titlebar-min",
+          "rect": {
+            "x": 40,
+            "y": 16,
+            "width": 16,
+            "height": 16,
+            "top": 16,
+            "right": 56,
+            "bottom": 32,
+            "left": 40
+          },
+          "display": "flex"
+        },
+        {
+          "classes": "titlebar-button titlebar-max",
+          "rect": {
+            "x": 64,
+            "y": 16,
+            "width": 16,
+            "height": 16,
+            "top": 16,
+            "right": 80,
+            "bottom": 32,
+            "left": 64
+          },
+          "display": "flex"
+        },
+        {
+          "classes": "titlebar-button titlebar-close",
+          "rect": {
+            "x": 16,
+            "y": 16,
+            "width": 16,
+            "height": 16,
+            "top": 16,
+            "right": 32,
+            "bottom": 32,
+            "left": 16
+          },
+          "display": "flex"
+        }
+      ],
+      "icons": [
+        {
+          "id": "tabs-newtab-button",
+          "rect": {
+            "x": 1030,
+            "y": 62,
+            "width": 16,
+            "height": 16,
+            "top": 62,
+            "right": 1046,
+            "bottom": 78,
+            "left": 1030
+          },
+          "fill": "rgb(46, 46, 46)",
+          "image": "url(\"file:///home/tester/snap/firefox/common/.mozilla/firefox/mttkde-vm-proof/chrome/MacTahoeLiquidKde/MacTahoe/icons/tab-new-symbolic.svg\")",
+          "opacity": "1"
+        },
+        {
+          "id": "",
+          "rect": {
+            "x": 109,
+            "y": 18,
+            "width": 16,
+            "height": 16,
+            "top": 18,
+            "right": 125,
+            "bottom": 34,
+            "left": 109
+          },
+          "fill": "rgb(46, 46, 46)",
+          "image": "url(\"file:///home/tester/snap/firefox/common/.mozilla/firefox/mttkde-vm-proof/chrome/MacTahoeLiquidKde/MacTahoe/icons/toggle-sidebar-symbolic.svg\")",
+          "opacity": "1"
+        },
+        {
+          "id": "back-button",
+          "rect": {
+            "x": 143,
+            "y": 10,
+            "width": 32,
+            "height": 32,
+            "top": 10,
+            "right": 175,
+            "bottom": 42,
+            "left": 143
+          },
+          "fill": "rgb(46, 46, 46)",
+          "image": "url(\"file:///home/tester/snap/firefox/common/.mozilla/firefox/mttkde-vm-proof/chrome/MacTahoeLiquidKde/MacTahoe/icons/go-previous-symbolic.svg\")",
+          "opacity": "0.4"
+        },
+        {
+          "id": "forward-button",
+          "rect": {
+            "x": 185,
+            "y": 10,
+            "width": 32,
+            "height": 32,
+            "top": 10,
+            "right": 217,
+            "bottom": 42,
+            "left": 185
+          },
+          "fill": "rgb(46, 46, 46)",
+          "image": "url(\"file:///home/tester/snap/firefox/common/.mozilla/firefox/mttkde-vm-proof/chrome/MacTahoeLiquidKde/MacTahoe/icons/go-next-symbolic.svg\")",
+          "opacity": "0.4"
+        },
+        {
+          "id": "reload-button",
+          "rect": {
+            "x": 227,
+            "y": 10,
+            "width": 32,
+            "height": 32,
+            "top": 10,
+            "right": 259,
+            "bottom": 42,
+            "left": 227
+          },
+          "fill": "rgb(46, 46, 46)",
+          "image": "url(\"file:///home/tester/snap/firefox/common/.mozilla/firefox/mttkde-vm-proof/chrome/MacTahoeLiquidKde/MacTahoe/icons/view-refresh-symbolic.svg\")",
+          "opacity": "1"
+        },
+        {
+          "id": "",
+          "rect": {
+            "x": 981,
+            "y": 18,
+            "width": 16,
+            "height": 16,
+            "top": 18,
+            "right": 997,
+            "bottom": 34,
+            "left": 981
+          },
+          "fill": "rgb(46, 46, 46)",
+          "image": "url(\"file:///home/tester/snap/firefox/common/.mozilla/firefox/mttkde-vm-proof/chrome/MacTahoeLiquidKde/MacTahoe/icons/system-users-symbolic.svg\")",
+          "opacity": "1"
+        },
+        {
+          "id": "unified-extensions-button",
+          "rect": {
+            "x": 1015,
+            "y": 10,
+            "width": 32,
+            "height": 32,
+            "top": 10,
+            "right": 1047,
+            "bottom": 42,
+            "left": 1015
+          },
+          "fill": "rgb(46, 46, 46)",
+          "image": "url(\"file:///home/tester/snap/firefox/common/.mozilla/firefox/mttkde-vm-proof/chrome/MacTahoeLiquidKde/MacTahoe/icons/application-x-addon-symbolic.svg\")",
+          "opacity": "1"
+        },
+        {
+          "id": "",
+          "rect": {
+            "x": 1065,
+            "y": 18,
+            "width": 16,
+            "height": 16,
+            "top": 18,
+            "right": 1081,
+            "bottom": 34,
+            "left": 1065
+          },
+          "fill": "rgb(46, 46, 46)",
+          "image": "url(\"file:///home/tester/snap/firefox/common/.mozilla/firefox/mttkde-vm-proof/chrome/MacTahoeLiquidKde/MacTahoe/icons/open-menu-symbolic.svg\")",
+          "opacity": "1"
+        },
+        {
+          "id": "",
+          "rect": {
+            "x": 40,
+            "y": 12,
+            "width": 16,
+            "height": 24,
+            "top": 12,
+            "right": 56,
+            "bottom": 36,
+            "left": 40
+          },
+          "fill": "rgb(46, 46, 46)",
+          "image": "none",
+          "opacity": "0"
+        },
+        {
+          "id": "",
+          "rect": {
+            "x": 64,
+            "y": 12,
+            "width": 16,
+            "height": 24,
+            "top": 12,
+            "right": 80,
+            "bottom": 36,
+            "left": 64
+          },
+          "fill": "rgb(46, 46, 46)",
+          "image": "none",
+          "opacity": "0"
+        },
+        {
+          "id": "",
+          "rect": {
+            "x": 16,
+            "y": 12,
+            "width": 16,
+            "height": 24,
+            "top": 12,
+            "right": 32,
+            "bottom": 36,
+            "left": 16
+          },
+          "fill": "rgb(46, 46, 46)",
+          "image": "none",
+          "opacity": "0"
+        }
+      ],
+      "context_fill": true,
+      "position": "left",
+      "mode": "light",
+      "sha256": "9b8598d61281d00172ced320090b239548a52346b6f898b7a24091ed7a6ab3b9",
+      "stable_frames": true,
+      "browser_version": "153.0.4",
+      "interaction": {
+        "dark": false,
+        "result": "Plasma desktop input passed",
+        "userAgent": "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:153.0) Gecko/20100101 Firefox/153.0"
+      },
+      "gtk_layout": "'close,minimize,maximize:'"
+    }
+  },
+  "pixel_checks": {
+    "tahoe-0-light": {
+      "tab-new-symbolic.svg": {
+        "bright_pixels": 924,
+        "dark_pixels": 100,
+        "passed": true
+      },
+      "toggle-sidebar-symbolic.svg": {
+        "bright_pixels": 736,
+        "dark_pixels": 276,
+        "passed": true
+      },
+      "view-refresh-symbolic.svg": {
+        "bright_pixels": 3933,
+        "dark_pixels": 101,
+        "passed": true
+      },
+      "system-users-symbolic.svg": {
+        "bright_pixels": 624,
+        "dark_pixels": 326,
+        "passed": true
+      },
+      "application-x-addon-symbolic.svg": {
+        "bright_pixels": 3848,
+        "dark_pixels": 213,
+        "passed": true
+      },
+      "open-menu-symbolic.svg": {
+        "bright_pixels": 880,
+        "dark_pixels": 144,
+        "passed": true
+      }
+    },
+    "tahoe-1-dark": {
+      "tab-new-symbolic.svg": {
+        "bright_pixels": 100,
+        "dark_pixels": 924,
+        "passed": true
+      },
+      "toggle-sidebar-symbolic.svg": {
+        "bright_pixels": 284,
+        "dark_pixels": 736,
+        "passed": true
+      },
+      "view-refresh-symbolic.svg": {
+        "bright_pixels": 119,
+        "dark_pixels": 3926,
+        "passed": true
+      },
+      "system-users-symbolic.svg": {
+        "bright_pixels": 361,
+        "dark_pixels": 605,
+        "passed": true
+      },
+      "application-x-addon-symbolic.svg": {
+        "bright_pixels": 240,
+        "dark_pixels": 3844,
+        "passed": true
+      },
+      "open-menu-symbolic.svg": {
+        "bright_pixels": 144,
+        "dark_pixels": 880,
+        "passed": true
+      }
+    },
+    "tahoe-2-light": {
+      "tab-new-symbolic.svg": {
+        "bright_pixels": 924,
+        "dark_pixels": 100,
+        "passed": true
+      },
+      "toggle-sidebar-symbolic.svg": {
+        "bright_pixels": 736,
+        "dark_pixels": 276,
+        "passed": true
+      },
+      "view-refresh-symbolic.svg": {
+        "bright_pixels": 3933,
+        "dark_pixels": 101,
+        "passed": true
+      },
+      "system-users-symbolic.svg": {
+        "bright_pixels": 624,
+        "dark_pixels": 326,
+        "passed": true
+      },
+      "application-x-addon-symbolic.svg": {
+        "bright_pixels": 3848,
+        "dark_pixels": 213,
+        "passed": true
+      },
+      "open-menu-symbolic.svg": {
+        "bright_pixels": 880,
+        "dark_pixels": 144,
+        "passed": true
+      }
+    }
+  },
+  "before_fix_control": "Tahoe v0.68.0 dark menu crop has zero bright pixels and fails the same contrast threshold; fixed menu has 144.",
+  "source_files": {
+    "src/scripts/steps/firefox.py": "1671a605afbd89fbb6b2df9d5e98e17dcb6e463ea2c295affe85478252ac4933",
+    "component-hashes.json": "862683fa9714f64e36c20a0a3a7424d34d24097c4edbbb54bb0a46f4d26c14bb"
+  }
+}

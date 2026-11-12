@@ -1,92 +1,45 @@
 {
-  "version": "0.68.0",
-  "source_sha256": "7c0fdc4fcbafafceb3edf77c99e3c5716d5daf261f1f8a80196c2e6d5d1c8d02",
-  "environment": "Local Python 3.14 / Qt6 focused regressions; isolated pinned KDE neon Plasma/KWin 6.8.1 / Qt 6.11.1 Wayland guests, 3840x2160 at scale 2",
+  "version": "0.68.1",
+  "source_sha256": "ea9dd2a02452909c000e3df51e4a79742fb79a1a0d4ff8d1a8eb74fb20fe7cdc",
+  "environment": "Firefox 153.0.4 in pinned disposable KDE neon Plasma/KWin 6.8.1 Wayland guests; 3840x2160, scale 2; local Python 3.14",
   "checks": [
     {
-      "command": "python3 -m pytest tests/test_button_position.py tests/test_window_controls.py tests/test_installer_wizard.py tests/test_theme_switch.py tests/test_apply_portability.py tests/test_cli.py tests/test_release_screenshots.py tests/test_component_cache.py -q -p no:cacheprovider",
+      "command": "python3 -m pytest tests/test_firefox.py tests/test_traffic_lights.py tests/test_component_cache.py::test_committed_component_hashes_match_sources -q -p no:cacheprovider",
       "result": "passed",
-      "detail": "359 checks passed in the focused run. The two initial failures were an OS sandbox restriction on binding a temporary Unix socket and the stale component ledger after edits; each passed its focused rerun. Unchanged code evidence reused."
+      "detail": "52 passed. Install, reinstall, uninstall, profile preservation and updated component ledger."
     },
     {
-      "command": "python3 -m pytest tests/test_button_position.py tests/test_cli.py tests/test_component_cache.py::test_committed_component_hashes_match_sources -q -p no:cacheprovider",
+      "command": "GOLDEN_GATE_TAHOE_SOURCE=/tmp/tahoe-firefox-contrast MAC_TAHOE_NO_UPDATE_CHECK=true python3 bootstrap.py --prepare; python3 -m pytest tests/test_firefox.py -q -p no:cacheprovider (prepared source)",
       "result": "passed",
-      "detail": "87 passed after the final installation-preservation change. Covers Left/Right/Keep, standalone choice persistence, complete install/uninstall preservation boundaries, failed reads/restores and recovery-record retention."
+      "detail": "46 passed against Golden Gate staged source."
     },
     {
-      "command": "python3 -m pytest tests/test_theme_switch.py::test_scheduled_job_prefers_plasma_bus_over_runtime_socket -q -p no:cacheprovider",
+      "command": "python3 /tmp/firefox-contrast-capture.py; python3 /tmp/firefox-contrast-review.py",
       "result": "passed",
-      "detail": "Passed with permission to bind its private temporary socket outside the OS sandbox. No desktop changes."
-    },
-    {
-      "command": "GOLDEN_GATE_TAHOE_SOURCE=/tmp/tahoe-pr125 MAC_TAHOE_NO_UPDATE_CHECK=true python3 bootstrap.py --prepare; python3 -m pytest tests/test_button_position.py tests/test_window_controls.py tests/test_installer_wizard.py -q -p no:cacheprovider (in prepared source)",
-      "result": "passed",
-      "detail": "65 passed against the final Golden Gate staged implementation."
-    },
-    {
-      "command": "python3 -m pytest tests/test_bootstrap.py -q -p no:cacheprovider",
-      "result": "passed",
-      "detail": "40 passed. Wrapper executable code unchanged; immutable release pin validated separately."
-    },
-    {
-      "command": "python3 /tmp/pr125-capture.py; python3 /tmp/pr125-pixels.py",
-      "result": "passed",
-      "detail": "Two fresh overlays of the checksum-pinned KDE neon VM. Six focused install/reinstall transactions, three light/dark/light transitions per edition, 24 focused application captures and four wizard captures. Button color order and side verified from pixels. Distinct custom KDE and GTK layouts survived uninstall in both editions. Interrupted wizard frames were rejected; only settled, focused captures retained."
+      "detail": "Six focused Firefox captures: light/dark/light in each edition. Six toolbar SVGs per frame checked in pixels; prior broken dark menu fails the same threshold. Native DOM geometry, focused settled window and content interaction checked."
     }
   ],
   "gallery_commit": "c485eeec652358824d2496222cb030a91f70e5dd",
   "captures": [
     {
-      "path": "src/screenshots/previews/button-position-tahoe-light-wizard-9af66fd52939.webp",
-      "sha256": "9af66fd5293972892ca9a73f8a5d46be58573a235328e313438d6e0d8192dbc9",
+      "path": "src/screenshots/previews/firefox-tahoe-light-0cb9040f9cd8.png",
+      "sha256": "0cb9040f9cd8fcff3d6f475a1d9a1ea8f2ab74392afa2a92608a94153dd2fe95",
       "reviewed": true
     },
     {
-      "path": "src/screenshots/previews/button-position-tahoe-light-comparison-f3ceb4999d5f.png",
-      "sha256": "f3ceb4999d5f7fe884543cb0e21e823ab9daf985df427f1c1ebd3e53de47e1ff",
-      "reviewed": true
-    },
-    {
-      "path": "src/screenshots/previews/button-position-tahoe-dark-wizard-281c04c32309.webp",
-      "sha256": "281c04c3230997b83e19cc111401eedc07705e2fee36a427628757ace70a6f00",
-      "reviewed": true
-    },
-    {
-      "path": "src/screenshots/previews/button-position-tahoe-dark-comparison-4b56fedd6db6.png",
-      "sha256": "4b56fedd6db66d663bc4a2dacab41e0e2e2f3960ec58fa288295f498ae2fb9ef",
+      "path": "src/screenshots/previews/firefox-tahoe-dark-41e0aa35923e.png",
+      "sha256": "41e0aa35923e7dd0ce76300821cf22f899d693aa7c6f3f0aad0901ae9bb21538",
       "reviewed": true
     }
   ],
-  "review": {
-    "pull_request": "https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/pull/125",
-    "contributor": "4l3j0Ok",
-    "capture_source_commit": "cc29db2560ac534e67e4b2fe636d03fdbbfcaee8",
-    "fixes": [
-      "Preserve effective KDE and GTK button layouts around theme activation, installer GTK activation and complete uninstall.",
-      "Keep the preservation record until successful uninstall and report snapshot/restore failures.",
-      "Replace offscreen contribution previews with focused disposable-VM captures; remove project LTS designation in both READMEs."
-    ],
-    "scope": "Window-button choices and their installer, theme-switch, global-theme, Aurorae and GTK callers. No native effect, shader or SDK/API changes."
-  },
   "component_capture_review": {
-    "provenance": "src/screenshots/previews/button-position-tahoe-provenance-4002854e5c29.json",
-    "source_sha256": {
-      "src/installer/wizard_window.py": "f04b1cdfa70f3f9e3270c3e08c9f3c672e776ae60d9ebe48a231d462e8b1b026",
-      "src/scripts/installer_choices.py": "cabe812311189b57a5be0483dc33b0804434bcd47a9c1c0e6ff7d040a8a7f324",
-      "src/scripts/theme_switch.py": "81e04187cc43e8e90cf711e97c60211d937e5ac42fc27df749b77c80ba547e23",
-      "src/scripts/cli.py": "b1377599dec2ea5bd1234319876ee9b6fbc01dc862ad1820af97271ab8c68d1e",
-      "src/scripts/window_controls.py": "74b7a7a6c9feda79749bc828fe3966ae437c67ddc1004dcb8e59ab72c8e74abf",
-      "src/scripts/steps/gtk.py": "73ed4bb27cda387cf57acf82e3e902b2c7c7033d96a963a2be464893b79462cf",
-      "src/scripts/steps/window_decorations.py": "fdc46df58522555a2bd3da5edb530d815308545beb4c39b397979d6bc1ff2835"
-    },
-    "vm_image_sha256": "412e7933f10add20b921b92c02709e7eea56acd14dc14cf654f58fba4ea3cc9d",
+    "provenance": "src/screenshots/previews/firefox-tahoe-provenance-94d70966abd6.json",
     "reviewed": true
   },
   "coverage_limits": [
-    "Runtime and pixels exercised on the pinned Wayland desktop; no new X11 or 6.6/6.7 runtime qualification is claimed. Native effects, shaders and ABI branches are unchanged.",
-    "The six VM transactions install only affected theme/configuration components and reuse existing native plugins; no claim of a complete native rebuild or unrelated lifecycle qualification.",
-    "Wizard launches retain Automatic appearance defaults, whose sample illustrations use light mode; the wizard surface itself follows the captured desktop mode.",
-    "Full remote CI runs asynchronously on dev after delivery; pending jobs are not counted as passed.",
-    "Historical desktop and installer photographs retain their original source and provenance. Only the new Window buttons page and title-bar comparisons are added."
+    "Runtime covers Firefox 153.0.4 Snap on pinned Wayland guest; other Firefox versions and package runtimes not exercised.",
+    "No native effect, shader, ABI or backend changes; no new X11/SDK matrix qualification claimed.",
+    "Full remote CI runs asynchronously on dev; not counted as passed here.",
+    "Existing galleries and earlier button-position captures retain original provenance."
   ]
 }
