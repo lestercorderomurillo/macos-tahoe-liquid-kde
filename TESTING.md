@@ -1,10 +1,11 @@
 # Installer testing
 
-Tahoe **v0.67.5** makes Acrylic Glass follow Wobbly Windows, including legacy
-X11 properties, output coordinates and client blur regions. Representative
-KWin 6.6/6.7/6.8 checks and isolated rendering evidence are recorded below.
-See [release evidence](release-evidence.json) for focused checks and coverage limits;
-full remote CI runs asynchronously.
+Tahoe **v0.68.0** adds Left, Right and Keep my layout choices for window buttons.
+Focused installer, theme-switch and wrapper checks pass; disposable-VM
+photographs cover Aurorae and GTK in both appearance modes, with custom layouts
+preserved through reinstall, mode changes and uninstall.
+See [release evidence](release-evidence.json) for exact sources and coverage limits;
+the full remote CI matrix runs asynchronously.
 
 Historical v0.67.0 symbol previews (unchanged):
 [Light](src/screenshots/previews/menu-symbols-067-light-a558e02129b0.png) · [Dark](src/screenshots/previews/menu-symbols-067-dark-35230bb0f200.png) · [Provenance](src/screenshots/previews/menu-symbols-067-provenance-534bface45c1.json)
@@ -30,7 +31,7 @@ Scroll horizontally through the installation steps.
   <td align="center"><img src="src/screenshots/installer-layout_dark_v4-e3a848e2a47a.webp" alt="Top bar and Dock" width="500"><br>Top bar and Dock</td>
   <td align="center"><img src="src/screenshots/installer-effects_dark_v4-2417cbbd36cd.webp" alt="Effects" width="500"><br>Effects</td>
   <td align="center"><img src="src/screenshots/installer-window_controls_dark_v4-eedd4ce4d0b4.webp" alt="Flat or Glassy window controls" width="500"><br>Window controls</td>
-  <td align="center"><img src="src/screenshots/previews/installer-button_position-tahoe-dark-0f67481a0f2f.webp" alt="Window button position" width="500"><br>Window buttons</td>
+  <td align="center"><img src="src/screenshots/previews/button-position-tahoe-dark-wizard-281c04c32309.webp" alt="Window buttons" width="500"><br>Window buttons</td>
   <td align="center"><img src="src/screenshots/installer-shadows_dark_v4-d78803a9bf02.webp" alt="Window shadow comparison" width="500"><br>Window shadows</td>
   <td align="center"><img src="src/screenshots/installer-fonts_dark_v4-5ed134810b67.webp" alt="Fonts" width="500"><br>Fonts</td>
   <td align="center"><img src="src/screenshots/installer-firefox_dark_v4-f373877df3a2.webp" alt="Firefox" width="500"><br>Firefox</td>
@@ -42,9 +43,4 @@ Scroll horizontally through the installation steps.
 </tr>
 </table>
 
-The Window buttons page is a focused native render of the real wizard page, not a
-disposable-VM capture. Light and Golden Gate frames and provenance:
-[Tahoe light](src/screenshots/previews/installer-button_position-tahoe-light-d69bf955357d.webp) ·
-[Golden Gate light](src/screenshots/previews/installer-button_position-golden-gate-light-58cca860d276.webp) ·
-[Golden Gate dark](src/screenshots/previews/installer-button_position-golden-gate-dark-1c1e0e3a89e8.webp) ·
-[Provenance](src/screenshots/previews/installer-button-position-provenance.json)
+Window buttons, captured in a disposable VM: [Light wizard](src/screenshots/previews/button-position-tahoe-light-wizard-9af66fd52939.webp) · [Light comparison](src/screenshots/previews/button-position-tahoe-light-comparison-f3ceb4999d5f.png) · [Dark wizard](src/screenshots/previews/button-position-tahoe-dark-wizard-281c04c32309.webp) · [Dark comparison](src/screenshots/previews/button-position-tahoe-dark-comparison-4b56fedd6db6.png) · [Provenance](src/screenshots/previews/button-position-tahoe-provenance-4002854e5c29.json)
