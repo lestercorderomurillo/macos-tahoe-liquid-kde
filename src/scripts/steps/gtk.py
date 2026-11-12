@@ -109,9 +109,8 @@ def uninstall() -> None:
 
     qdbus_call("org.kde.GtkConfig", "/GtkConfig",
                "org.kde.GtkConfig.setGtkTheme", "Breeze")
-    from window_controls import buttons_kept, forget_button_position
+    from window_controls import buttons_kept
     keep_buttons = buttons_kept()
-    forget_button_position()
     if have("gsettings"):
         for schema, key in (
             ("org.gnome.desktop.interface", "gtk-theme"),

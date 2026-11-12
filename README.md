@@ -7,14 +7,12 @@
 
 <p align="center">
   <a href="https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/releases"><img src="https://img.shields.io/github/v/release/lestercorderomurillo/macos-tahoe-liquid-kde?label=release&amp;color=blue" alt="release"></a>
-  <a href="https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/releases/tag/v0.67.5"><img src="https://img.shields.io/badge/LTS-v0.67.5-green" alt="LTS v0.67.5"></a>
   <a href="https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/actions/workflows/test.yml"><img src="https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/actions/workflows/test.yml/badge.svg?branch=dev" alt="tests"></a>
   <a href="https://kde.org/plasma-desktop/"><img src="https://img.shields.io/badge/Plasma-6.6%2B-1d99f3?logo=kde" alt="plasma"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-GPL--3.0-blue" alt="license"></a>
   <a href="https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/issues/new"><img src="https://img.shields.io/badge/report-a%20bug-red?logo=github" alt="report a bug"></a>
 </p>
 
-Long-term support: **v0.67.5**, maintained on [`lts/0.67`](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/tree/lts/0.67).
 
 <p align="center">
   The ultimate macOS Tahoe experience, reimagined for Linux. Immersive glass, an iconic Dock and a complete desktop transformation for KDE Plasma 6.6, 6.7 and 6.8+.

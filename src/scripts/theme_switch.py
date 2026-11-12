@@ -91,6 +91,44 @@ def gtk_button_layout() -> str | None:
     return layout[2] if layout else None
 
 
+@contextmanager
+def preserve_button_layout(enabled: bool):
+    """Keep effective layouts across look-and-feel and GTK configuration resets."""
+    if not enabled:
+        yield
+        return
+    saved = {}
+    for key, default in (("ButtonsOnLeft", "M"), ("ButtonsOnRight", "IAX")):
+        result = _run_user([
+            "kreadconfig6", "--file", "kwinrc", "--group", "org.kde.kdecoration2",
+            "--key", key, "--default", default,
+        ], capture=True, timeout=5)
+        if result.returncode:
+            raise RuntimeError("Cannot read window button layout; refusing to replace it")
+        saved[key] = result.stdout.strip()
+    gtk = None
+    if _have("gsettings"):
+        result = _run_user(["gsettings", "get", "org.gnome.desktop.wm.preferences",
+                            "button-layout"], capture=True, timeout=5)
+        if result.returncode:
+            raise RuntimeError("Cannot read GTK button layout; refusing to replace it")
+        gtk = result.stdout.strip()
+    try:
+        yield
+    finally:
+        restored = True
+        for key, value in saved.items():
+            restored = _kwrite("--file", "kwinrc", "--group", "org.kde.kdecoration2",
+                               "--key", key, value) and restored
+        _qdbus("org.kde.KWin", "/KWin", "org.kde.KWin.reconfigure")
+        if gtk is not None:
+            result = _run_user(["gsettings", "set", "org.gnome.desktop.wm.preferences",
+                                "button-layout", gtk], timeout=5)
+            restored = result.returncode == 0 and restored
+        if not restored:
+            raise RuntimeError("Could not restore the preserved window button layout")
+
+
 def decoration_theme(mode: str) -> str:
     """Keep the chosen controls through manual, login and scheduled switches."""
     variant = "Light" if mode == "light" else "Dark"
@@ -1816,7 +1854,7 @@ def _apply_unlocked(mode: str, context: str = "user") -> bool:
 
 def apply(mode: str, context: str = "user") -> bool:
     """Run one complete, cross-process-serialized theme transition."""
-    with _theme_transition_lock():
+    with _theme_transition_lock(), preserve_button_layout(button_position() == "keep"):
         return _apply_unlocked(mode, context=context)
 
 

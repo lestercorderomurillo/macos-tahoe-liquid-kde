@@ -38,9 +38,10 @@ The separate **Window buttons** page places the controls on the **left**
 kwinrc `ButtonsOnLeft`/`ButtonsOnRight`, the gsettings `button-layout` and the
 staged global-theme defaults. They are written again by every standalone
 switch, so login and scheduled light/dark transitions retain the choice.
-Keep writes none of them and removes those keys from the staged global-theme
-defaults; it records `button-position` in the state directory so uninstall
-does not reset the user's own layout to Breeze. Nix staging uses the default.
+Keep removes those keys from staged global-theme defaults and preserves the
+effective KDE and GTK layouts across theme activation and uninstall, including
+empty sides and layouts inherited from KDE defaults. Its `button-position`
+state is retired only after successful uninstall. Nix staging uses the default.
 
 Standalone GTK SVGs use a 128×128 intrinsic canvas with a 16×16 view box;
 the stylesheet keeps the buttons at their existing 16 logical pixels. This

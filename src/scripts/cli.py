@@ -1154,6 +1154,17 @@ def _run_install_body(feat: dict[str, object]) -> int:
 
 
 def _run_uninstall_body(feat: dict[str, object]) -> int:
+    from theme_switch import preserve_button_layout
+    from window_controls import buttons_kept, forget_button_position
+
+    with preserve_button_layout(buttons_kept()):
+        result = _run_uninstall_steps(feat)
+    if result == 0:
+        forget_button_position()
+    return result
+
+
+def _run_uninstall_steps(feat: dict[str, object]) -> int:
     """The actual uninstall sequence — same split as _run_install_body."""
     check_cancelled()
     preflight_ok = run_preflight("uninstall")
