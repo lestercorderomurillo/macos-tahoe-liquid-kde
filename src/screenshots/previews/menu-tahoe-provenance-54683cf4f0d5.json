@@ -1,0 +1,471 @@
+{
+  "source_commit": "dc7508320bd2fa1f12c48748c212c836a22070ff",
+  "source_tree": "30226f6794dff2a2af871c9a29e3dbc21b1e6e1db73dda3d9b031692912e49a5",
+  "profile_sha256": "2a3bd2d31ca0dfdd65c45a09a3c8c2bbe35a122ab2ca7961f1c33edf8b9a3b09",
+  "vm_image_sha256": "412e7933f10add20b921b92c02709e7eea56acd14dc14cf654f58fba4ea3cc9d",
+  "frames": {
+    "tahoe-light": {
+      "material_values": null,
+      "sha256": "3a49bf7ca66ec9ea5c675a964570232938c80ad5d32f06da7f5fd1e4a4d26716",
+      "appearance": {
+        "Window controls": "__aurorae__svg__MacTahoeLiquidKde-Light",
+        "Plasma": "MacTahoeLiquidKde-Light",
+        "Qt": "MacTahoeLiquidKdeLight",
+        "Kvantum": "mac-tahoe-liquid-kde",
+        "GTK preference": "'prefer-light'",
+        "GTK theme": "'MacTahoeLiquidKde-Light'",
+        "GTK 4 stylesheet": "MacTahoeLiquidKde-Light",
+        "Icons": "MacTahoeLiquidKde-Icons-Regular-Light"
+      },
+      "effect_build": "a509d4b2a3b7e6a21e8319eb253e2e5258c923a767217628629e20154ba34003",
+      "crop": [
+        2066,
+        964,
+        2794,
+        1448
+      ],
+      "wallpaper": "MacTahoe",
+      "wallpaper_uri": "file:///home/tester/.local/share/wallpapers/MacTahoe",
+      "launcher_preset": 1,
+      "windows": [
+        {
+          "id": "{c71e8e14-03a2-4e83-8119-5c3b565e2a13}",
+          "caption": "",
+          "resourceClass": "plasmashell",
+          "type": 1,
+          "appletPopup": false,
+          "hidden": false,
+          "active": true,
+          "geometry": {
+            "x": 0,
+            "y": 0,
+            "width": 1920,
+            "height": 1080
+          }
+        },
+        {
+          "id": "{4368a753-3cec-45f4-81e9-238762beaade}",
+          "caption": "",
+          "resourceClass": "plasmashell",
+          "type": 2,
+          "appletPopup": false,
+          "hidden": false,
+          "active": false,
+          "geometry": {
+            "x": 0,
+            "y": 0,
+            "width": 1920,
+            "height": 32
+          }
+        },
+        {
+          "id": "{b0597acc-73c0-4c3c-bbab-68e957471e05}",
+          "caption": "",
+          "resourceClass": "plasmashell",
+          "type": 2,
+          "appletPopup": false,
+          "hidden": false,
+          "active": false,
+          "geometry": {
+            "x": 614,
+            "y": 996,
+            "width": 692,
+            "height": 84
+          }
+        },
+        {
+          "id": "{479a4116-ebff-45c8-a49b-a3035ac7d5ce}",
+          "caption": "",
+          "resourceClass": "plasmashell",
+          "type": -1,
+          "appletPopup": false,
+          "hidden": false,
+          "active": false,
+          "geometry": {
+            "x": 1047,
+            "y": 496,
+            "width": 336,
+            "height": 214
+          }
+        }
+      ],
+      "files_pixels": null,
+      "stable_frames": true,
+      "window_verified": true,
+      "installer_page": null,
+      "installer_edition": null
+    },
+    "tahoe-dark": {
+      "material_values": null,
+      "sha256": "4933d8ba56de38663829193c0aaff31f997fc34ec4c39287d2eb583b45c9d2e2",
+      "appearance": {
+        "Window controls": "__aurorae__svg__MacTahoeLiquidKde-Dark",
+        "Plasma": "MacTahoeLiquidKde-Dark",
+        "Qt": "MacTahoeLiquidKdeDark",
+        "Kvantum": "mac-tahoe-liquid-kdeDark",
+        "GTK preference": "'prefer-dark'",
+        "GTK theme": "'MacTahoeLiquidKde-Dark'",
+        "GTK 4 stylesheet": "MacTahoeLiquidKde-Dark",
+        "Icons": "MacTahoeLiquidKde-Icons-Regular-Dark"
+      },
+      "effect_build": "a509d4b2a3b7e6a21e8319eb253e2e5258c923a767217628629e20154ba34003",
+      "crop": [
+        2066,
+        964,
+        2794,
+        1448
+      ],
+      "wallpaper": "MacTahoe",
+      "wallpaper_uri": "file:///home/tester/.local/share/wallpapers/MacTahoe",
+      "launcher_preset": 1,
+      "windows": [
+        {
+          "id": "{c71e8e14-03a2-4e83-8119-5c3b565e2a13}",
+          "caption": "",
+          "resourceClass": "plasmashell",
+          "type": 1,
+          "appletPopup": false,
+          "hidden": false,
+          "active": true,
+          "geometry": {
+            "x": 0,
+            "y": 0,
+            "width": 1920,
+            "height": 1080
+          }
+        },
+        {
+          "id": "{4368a753-3cec-45f4-81e9-238762beaade}",
+          "caption": "",
+          "resourceClass": "plasmashell",
+          "type": 2,
+          "appletPopup": false,
+          "hidden": false,
+          "active": false,
+          "geometry": {
+            "x": 0,
+            "y": 0,
+            "width": 1920,
+            "height": 32
+          }
+        },
+        {
+          "id": "{b0597acc-73c0-4c3c-bbab-68e957471e05}",
+          "caption": "",
+          "resourceClass": "plasmashell",
+          "type": 2,
+          "appletPopup": false,
+          "hidden": false,
+          "active": false,
+          "geometry": {
+            "x": 614,
+            "y": 996,
+            "width": 692,
+            "height": 84
+          }
+        },
+        {
+          "id": "{509b4ad2-ff5e-4f85-b49e-537256895ed6}",
+          "caption": "",
+          "resourceClass": "plasmashell",
+          "type": -1,
+          "appletPopup": false,
+          "hidden": false,
+          "active": false,
+          "geometry": {
+            "x": 1047,
+            "y": 496,
+            "width": 336,
+            "height": 214
+          }
+        }
+      ],
+      "files_pixels": null,
+      "stable_frames": true,
+      "window_verified": true,
+      "installer_page": null,
+      "installer_edition": null
+    }
+  },
+  "environments": {
+    "tahoe": {
+      "command": [
+        "sudo",
+        "env",
+        "MAC_TAHOE_NO_UPDATE_CHECK=true",
+        "MTTKDE_NO_CONFIRM=1",
+        "MTTKDE_WIZARD_OPTIONS={\"appearance\": \"auto\", \"icons\": \"keep\", \"color\": \"blue\", \"wallpaper\": \"tahoe\", \"wallpaper_path\": \"\", \"launcher\": \"tahoe\", \"panel\": true, \"dock\": true, \"reset_layout\": false, \"acrylic_glass\": true, \"rounded_corners\": true, \"shadows\": \"medium\", \"fonts\": true, \"firefox\": true, \"window_controls\": \"flat\", \"button_position\": \"left\", \"files\": \"nautilus\", \"nautilus_bookmarks\": true, \"plymouth\": true, \"glass_style\": \"classic\", \"oled_care\": false, \"oled_interval\": 5, \"oled_max_shift\": 8, \"dock_appearance\": \"auto\", \"dock_apps\": [], \"dock_apps_source\": \"native\", \"dock_add_flathub\": false}",
+        "/home/tester/release-capture/source/src/scripts/installer_backend.py",
+        "install",
+        "--only",
+        "--kvantum",
+        "--no-apply-theme"
+      ],
+      "source_defaults": {
+        "wallpaper": "MacTahoe",
+        "launcher_preset": 1
+      },
+      "wizard_defaults": {
+        "appearance": "auto",
+        "icons": "regular",
+        "color": "blue",
+        "wallpaper": "tahoe",
+        "wallpaper_path": "",
+        "launcher": "tahoe",
+        "panel": true,
+        "dock": true,
+        "reset_layout": true,
+        "acrylic_glass": true,
+        "rounded_corners": true,
+        "shadows": "medium",
+        "fonts": true,
+        "firefox": true,
+        "window_controls": "flat",
+        "button_position": "left",
+        "files": "nautilus",
+        "nautilus_bookmarks": true,
+        "plymouth": true,
+        "glass_style": "classic",
+        "oled_care": false,
+        "oled_interval": 5,
+        "oled_max_shift": 8,
+        "dock_appearance": "auto",
+        "dock_apps": [],
+        "dock_apps_source": "native",
+        "dock_add_flathub": false
+      },
+      "installed_configs": {
+        "mac-tahoe-liquid-kde": "eddf73cf94664a5da4f619aff0a6284525c047ffcf7694b095b30b3d17120afe",
+        "mac-tahoe-liquid-kdeDark": "325056b74bb99a029c51cc5a23f2f62c4929fed0cbab5d36fcc7ae7a25aef0f0"
+      }
+    }
+  },
+  "prepared_bases": {
+    "tahoe": {
+      "source": "/tmp/dock-store-final-captures/tahoe/disk.qcow2",
+      "sha256": "cff49eb918087052c2e3b15bef8554742b36957abf9e628f8953ce2883b2add7",
+      "provenance": "625fea68c8e72cf8eaed28407cf335d213b85d6c"
+    }
+  },
+  "schema": 2,
+  "version": "0.68.2",
+  "effect_build": "a509d4b2a3b7e6a21e8319eb253e2e5258c923a767217628629e20154ba34003",
+  "scope": "Four desktop context menus only; 8px selection corners. Source is an unreleased menu candidate based on v0.68.2; source_commit identifies the exact code, not the v0.68.2 tag.",
+  "reference": {
+    "page": "https://512pixels.net/projects/aqua-screenshot-library/macos-26-tahoe/",
+    "image": "https://media.512pixels.net/downloads/macos-screenshots/26/26-Tahoe-Finder-Menu.png",
+    "source_sha256": "b7dd9559021e5175f451576fce174046d9c11284b0f51a422534fdcc7a21c613",
+    "source_dimensions": [
+      2880,
+      1800
+    ],
+    "source_scale": 2,
+    "crop": [
+      68,
+      50,
+      328,
+      222
+    ],
+    "comparison_transform": "Translation only at 2x scale; no stretching",
+    "crop_sha256": "bd5cf00378d40ea8b4f434e4b6bc432a29c3512fdc03da810fc8e1b1b17d90e3"
+  },
+  "edge_comparison": {
+    "reference_edges": [
+      13,
+      9,
+      7,
+      6,
+      5,
+      4,
+      3,
+      2,
+      2,
+      1,
+      1,
+      1,
+      1,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      1,
+      1,
+      1,
+      1,
+      1,
+      2,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      9,
+      14
+    ],
+    "display_scale": 2,
+    "row_height_physical_pixels": 48,
+    "before": {
+      "left_edge_pixels": [
+        19,
+        16,
+        13,
+        12,
+        10,
+        9,
+        8,
+        7,
+        6,
+        5,
+        4,
+        4,
+        3,
+        2,
+        2,
+        2,
+        1,
+        1,
+        1,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        1,
+        1,
+        1,
+        2,
+        2,
+        2,
+        3,
+        4,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        12,
+        13,
+        16,
+        19
+      ],
+      "mean_absolute_edge_error_physical_pixels": 2.875
+    },
+    "after": {
+      "left_edge_pixels": [
+        12,
+        9,
+        7,
+        6,
+        5,
+        4,
+        3,
+        2,
+        2,
+        1,
+        1,
+        1,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        1,
+        1,
+        1,
+        2,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        9,
+        12
+      ],
+      "mean_absolute_edge_error_physical_pixels": 0.125
+    }
+  },
+  "overlay": {
+    "file": "menu-tahoe-comparison-bbe3384d803a.png",
+    "sha256": "bbe3384d803a7f6372b81c21a377ddf86f21e9741f45ccf68cf3855283f88146",
+    "alpha": 0.5,
+    "reference_border_crop": [
+      68,
+      50,
+      328,
+      222
+    ],
+    "kde_border_crop": [
+      25,
+      25,
+      285,
+      197
+    ],
+    "reference_selection_crop": [
+      78,
+      60,
+      338,
+      132
+    ],
+    "kde_selection_crop": [
+      42,
+      42,
+      302,
+      114
+    ]
+  },
+  "reviewed": true,
+  "coverage_limits": [
+    "Real macOS references are light-mode screenshots; dark KDE menus were visually reviewed separately.",
+    "Outer corner/padding differences remain; selection left-edge comparison does not prove whole-menu pixel equivalence.",
+    "No native code, effect, shader, ABI or backend change; no new distro/SDK matrix run."
+  ],
+  "source_files": {
+    "src/offline/kvantum/mac-tahoe-liquid-kde/mac-tahoe-liquid-kdeDark.kvconfig": "398f21e8bcdb16652e622fef4f0c98636e94e43ab795825aa21d4a2f68f194fc",
+    "src/offline/kvantum/mac-tahoe-liquid-kde/mac-tahoe-liquid-kde.kvconfig": "8136a4e737cde2f6aca2c563b64a8e7d06e940d72211fc9f753ff93b5442dcee"
+  }
+}

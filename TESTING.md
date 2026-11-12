@@ -1,11 +1,10 @@
 # Installer testing
 
-Tahoe **v0.68.2** fixes the incomplete dark App Store icon.
-Dock and icon regressions pass, including Golden Gate staging and wrapper checks.
-Reviewed disposable-VM Dock frames cover light/dark/light in both editions,
-with a synthetic red notification count bubble. See [release evidence](release-evidence.json)
-and [capture provenance](src/screenshots/previews/dock-tahoe-0682-provenance-f978824961de.json) for exact sources and coverage limits;
-the full remote CI matrix runs asynchronously.
+Tahoe **v0.68.3** aligns native menu selection corners with real macOS references.
+Menu rendering, edition defaults and launcher preset checks pass, including Golden Gate staging.
+Four focused disposable-VM menu captures cover both editions in light and dark mode.
+See [the 50/50 comparison and remaining geometry limits](docs/menu-reference-comparison.md)
+and [release evidence](release-evidence.json); full remote CI remains asynchronous.
 
 Historical v0.67.0 symbol previews (unchanged):
 [Light](src/screenshots/previews/menu-symbols-067-light-a558e02129b0.png) · [Dark](src/screenshots/previews/menu-symbols-067-dark-35230bb0f200.png) · [Provenance](src/screenshots/previews/menu-symbols-067-provenance-534bface45c1.json)
