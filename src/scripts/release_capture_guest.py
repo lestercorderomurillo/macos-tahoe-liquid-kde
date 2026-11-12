@@ -120,6 +120,9 @@ def setup(repo, profile, edition, scope=None):
                '--wizard-options', json.dumps(choices)]
     with (repo.parent / 'install.log').open('w') as log:
         subprocess.run(command, cwd=repo, stdout=log, stderr=subprocess.STDOUT, check=True, timeout=1800)
+    if scope == 'menu':
+        with (repo.parent / 'reinstall.log').open('w') as log:
+            subprocess.run(command, cwd=repo, stdout=log, stderr=subprocess.STDOUT, check=True, timeout=1800)
     if not all(path.is_file() for path in rounded_corners.build_artifacts()):
         raise RuntimeError('Rounded Corners was not built from this release; capture cannot use the old VM plugin')
     session()

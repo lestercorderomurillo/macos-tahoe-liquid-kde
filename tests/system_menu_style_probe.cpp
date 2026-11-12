@@ -94,9 +94,14 @@ int main(int argc, char** argv) {
   assert(image.pixelColor(qRound(7*scale),0).alpha()>240);
   assert(image.pixelColor(0,image.height()/2).alpha()>240);
   for (const QString& name : {QStringLiteral("computer"), QStringLiteral("preferences-system"),
-                              QStringLiteral("software-store-symbolic"), QStringLiteral("custom-icon")}) {
+                              QStringLiteral("software-store-symbolic"), QStringLiteral("dialog-cancel"),
+                              QStringLiteral("system-suspend"), QStringLiteral("system-reboot"),
+                              QStringLiteral("system-shutdown"), QStringLiteral("system-lock-screen"),
+                              QStringLiteral("user-identity"), QStringLiteral("custom-icon")}) {
    option.icon=QIcon(new NamedIcon(name));
    option.state=QStyle::State_Enabled;
+   image=QImage(option.rect.size()*4,QImage::Format_ARGB32_Premultiplied);
+   image.setDevicePixelRatio(4);
    image.fill(Qt::transparent);
    QPainter iconPainter(&image);
    menu.style()->drawControl(QStyle::CE_MenuItem,&option,&iconPainter,&menu);
@@ -109,6 +114,23 @@ int main(int argc, char** argv) {
    }
    assert(opaque>0);
    assert((name==QStringLiteral("custom-icon"))==(magenta>0));
+   if (name==QStringLiteral("preferences-system")) {
+    const int size=qRound(16*scale);
+    const QPoint origin(qRound(12*scale),qRound(QRectF(option.rect).center().y()-size/2.0));
+    auto alpha = [&](qreal x,qreal y) {
+     return image.pixelColor(qRound((origin.x()+x*size/16)*4),
+                             qRound((origin.y()+y*size/16)*4)).alpha();
+    };
+    // Actual glyph pixels: three spokes, three open sectors and a hollow hub.
+    // The old hollow gear cannot satisfy the spoke checks.
+    for (int spoke=0;spoke<3;++spoke) {
+     const qreal angle=spoke*2*M_PI/3;
+     assert(alpha(8+2.4*std::cos(angle),8+2.4*std::sin(angle))>100);
+     const qreal gap=angle+M_PI/3;
+     assert(alpha(8+2.8*std::cos(gap),8+2.8*std::sin(gap))<80);
+    }
+    assert(alpha(8,8)<100);
+   }
   }
   for (const auto direction : {Qt::LeftToRight, Qt::RightToLeft}) {
    option.direction=direction;

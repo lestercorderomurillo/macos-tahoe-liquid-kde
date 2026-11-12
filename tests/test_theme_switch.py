@@ -147,6 +147,27 @@ def test_color_scheme_hash_tracks_active_scheme(seeded_color_schemes, offline):
 # ── apply() — single code path, no contexts, no skips ─────────────────
 
 
+@pytest.mark.parametrize('edition,preset', [('MacTahoe', 'tahoe'), ('MacGoldenGate', 'golden-gate')])
+def test_system_menu_preset_follows_edition_through_mode_changes(monkeypatch, edition, preset):
+    import theme_switch
+
+    writes = {}
+    monkeypatch.setattr(theme_switch, 'default_wallpaper', lambda: edition)
+    monkeypatch.setattr(theme_switch, '_have', lambda command: True)
+    monkeypatch.setattr(theme_switch, 'apply_color_scheme', lambda scheme: True)
+    # A different launcher selection must not change the active edition's menu.
+    monkeypatch.setattr(theme_switch, 'INSTALLER_OPTIONS', {'launcher': 'tahoe' if preset == 'golden-gate' else 'golden-gate'})
+
+    def write(*args):
+        writes[tuple(args[:-1])] = args[-1]
+        return True
+
+    monkeypatch.setattr(theme_switch, '_kwrite', write)
+    for mode in ('light', 'dark', 'light'):
+        assert theme_switch.write_kde_theme_config(mode)
+        assert writes[('--file', 'kdeglobals', '--group', 'MacTahoeLiquidKde', '--key', 'SystemMenuPreset')] == preset
+
+
 def _stub_apply_dependencies(monkeypatch, calls):
     import theme_switch
     monkeypatch.setattr(theme_switch, "_current_wallpapers", lambda: [])

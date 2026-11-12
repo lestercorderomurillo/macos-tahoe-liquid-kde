@@ -13,6 +13,8 @@
 #include <QQuickItem>
 #include <QQuickWindow>
 #include <QSignalSpy>
+#include <QSettings>
+#include <QStandardPaths>
 #include <QStandardItemModel>
 #include <QTest>
 
@@ -136,6 +138,33 @@ private Q_SLOTS:
         if (exported) {
             exporter.terminate();
             QVERIFY(exporter.waitForFinished());
+        }
+    }
+    void systemMenuIconPresets()
+    {
+        QQuickWindow window;
+        window.resize(400, 100);
+        window.show();
+        QQuickItem anchor(window.contentItem());
+        anchor.setSize({80, 24});
+        AppMenuApplet applet(nullptr, KPluginMetaData(), {});
+        QSettings settings(QStandardPaths::writableLocation(QStandardPaths::GenericConfigLocation)
+                           + QStringLiteral("/kdeglobals"), QSettings::IniFormat);
+        for (const auto* preset : {"tahoe", "golden-gate", "tahoe"}) {
+            settings.setValue(QStringLiteral("MacTahoeLiquidKde/SystemMenuPreset"), QString::fromLatin1(preset));
+            settings.sync();
+            applet.triggerSystemMenu(&anchor);
+            auto* popup = qobject_cast<QMenu*>(QApplication::activePopupWidget());
+            QVERIFY(popup);
+            int row = 0;
+            for (auto* action : popup->actions()) {
+                if (action->isSeparator()) continue;
+                const bool featured = row < 2 || action->text().startsWith(QLatin1String("App Store"));
+                QCOMPARE(action->icon().isNull(), QString::fromLatin1(preset) == QLatin1String("golden-gate") && !featured);
+                ++row;
+            }
+            QVERIFY(row >= 8);
+            popup->hide();
         }
     }
     void systemMenuShortcuts()

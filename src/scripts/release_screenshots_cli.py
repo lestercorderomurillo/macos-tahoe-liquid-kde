@@ -28,6 +28,8 @@ def main(argv=None):
     capture.add_argument('--vm-image', type=Path, required=True)
     capture.add_argument('--output', type=Path, required=True)
     capture.add_argument('--reuse', type=Path, help='Reuse reviewed frames whose visual inputs are unchanged')
+    capture.add_argument('--only-system-menu', action='store_true',
+                         help='Capture only the two editions of the system menu in light and dark mode')
     previews = sub.add_parser('file-previews', help='Capture focused Nautilus/Dolphin installer previews only')
     previews.add_argument('--ref', default='HEAD')
     previews.add_argument('--resume', action='store_true', help='Reuse this failed capture overlay with the identical source archive')
@@ -64,7 +66,8 @@ def main(argv=None):
         elif args.command == 'capture':
             from release_capture import capture as run_capture
             verify_recipe(args.repo, args.ref)
-            run_capture(args.repo, args.ref, args.vm_image, args.output, reuse=args.reuse)
+            run_capture(args.repo, args.ref, args.vm_image, args.output, reuse=args.reuse,
+                        system_menu_only=args.only_system_menu)
             print(f'Captured all frames. Visually inspect {args.output / "frames"} before review.')
         elif args.command == 'review':
             manifest = validate(args.repo, args.ref, args.bundle, reviewed=False)

@@ -124,6 +124,24 @@ def capture(tmp_path, monkeypatch):
     return repo, ref, bundle, manifest
 
 
+@pytest.mark.parametrize('missing', [False, True])
+def test_system_menu_capture_scope_requires_both_editions_and_modes(capture, missing):
+    repo, ref, bundle, manifest = capture
+    manifest['scope'] = 'system-menu'
+    names = {f'{e}-{m}-menu' for e in shots.EDITIONS for m in shots.MODES}
+    manifest['frames'] = {name: manifest['frames'][name] for name in names}
+    if missing:
+        manifest['frames'].pop('golden-gate-dark-menu')
+    write_json(bundle / 'manifest.json', manifest)
+    if missing:
+        with pytest.raises(ValueError, match='Missing or unexpected'):
+            shots.validate(repo, ref, bundle, reviewed=False)
+    else:
+        shots.validate(repo, ref, bundle, reviewed=False)
+        with pytest.raises(ValueError, match='Focused captures cannot replace'):
+            shots.stage(repo, 'tahoe', bundle, manifest)
+
+
 def test_capture_can_be_committed_without_invalidating_source(capture):
     repo, ref, bundle, manifest = capture
     shots.validate(repo, ref, bundle)

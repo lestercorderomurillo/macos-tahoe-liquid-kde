@@ -820,7 +820,10 @@ def validate(repo: Path, ref: str, bundle: Path, *, reviewed: bool = True) -> di
     profile = json.loads(PROFILE.read_text())
     require(manifest['profile_sha256'] == digest(PROFILE), 'Capture recipe changed; recapture required')
     require(manifest['vm_image_sha256'] == profile['vm_image_sha256'], 'Unpinned capture VM')
-    require(set(manifest['frames']) == expected_frames(), 'Missing or unexpected release captures')
+    require(manifest.get('scope') in (None, 'system-menu'), 'Unsupported capture scope')
+    expected = ({f'{e}-{m}-menu' for e in EDITIONS for m in MODES}
+                if manifest.get('scope') == 'system-menu' else expected_frames())
+    require(set(manifest['frames']) == expected, 'Missing or unexpected release captures')
     require(re.fullmatch('[a-f0-9]{64}', manifest['effect_build']) is not None, 'Missing active effect identity')
     require(manifest['effect_build'] == effect_identity(repo, source), 'Loaded effect differs from the release source')
     for name, record in manifest['frames'].items():
@@ -869,6 +872,7 @@ def validate(repo: Path, ref: str, bundle: Path, *, reviewed: bool = True) -> di
 
 def stage(repo: Path, edition: str, bundle: Path, manifest: dict) -> None:
     """Replace the complete screenshot set only after validating the whole run."""
+    require(not manifest.get('scope'), 'Focused captures cannot replace the complete gallery')
     from PIL import Image
     import shutil
     import tempfile

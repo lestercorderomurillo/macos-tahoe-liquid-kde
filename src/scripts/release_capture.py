@@ -171,7 +171,8 @@ def capture_lock():
         yield
 
 
-def capture(repo: Path, ref: str, image: Path, output: Path, reuse: Path | None = None) -> dict:
+def capture(repo: Path, ref: str, image: Path, output: Path, reuse: Path | None = None, *, system_menu_only=False) -> dict:
+    require(not (system_menu_only and reuse), 'Focused system-menu capture does not reuse a full gallery')
     profile = json.loads(PROFILE.read_text())
     image = image.resolve()
     require(digest(image) == profile['vm_image_sha256'], 'VM image checksum differs from the pinned recipe')
@@ -192,6 +193,9 @@ def capture(repo: Path, ref: str, image: Path, output: Path, reuse: Path | None 
                           'kernel': os.uname().release, 'machine': os.uname().machine})
     from release_screenshots import affected_frames, frame_origin, expected_frames, CASES
     pending = expected_frames()
+    if system_menu_only:
+        manifest['scope'] = 'system-menu'
+        pending = {f'{edition}-{mode}-menu' for edition in EDITIONS for mode in MODES}
     approvals = {}
     if reuse is not None:
         old = json.loads((reuse / 'manifest.json').read_text())
@@ -258,11 +262,12 @@ def capture(repo: Path, ref: str, image: Path, output: Path, reuse: Path | None 
                                 vm.action('arrange', json.dumps({'Documents': profile['windows']['Documents']}))
                                 vm.move(140, 30)
                                 time.sleep(1)
-                                preview = vm.action('capture', edition, mode, 'topbar')
-                                preview_name = f'{edition}-{mode}-topbar'
-                                (output / 'previews').mkdir(exist_ok=True)
-                                vm.get('/home/tester/release-capture/frame.png', output / 'previews' / (preview_name + '.png'))
-                                manifest.setdefault('component_previews', {})[preview_name] = preview
+                                if not system_menu_only:
+                                    preview = vm.action('capture', edition, mode, 'topbar')
+                                    preview_name = f'{edition}-{mode}-topbar'
+                                    (output / 'previews').mkdir(exist_ok=True)
+                                    vm.get('/home/tester/release-capture/frame.png', output / 'previews' / (preview_name + '.png'))
+                                    manifest.setdefault('component_previews', {})[preview_name] = preview
                                 vm.click(40, 30)
                                 vm.move(*profile['pointer'])
                                 vm.key('down')

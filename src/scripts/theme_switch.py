@@ -1445,6 +1445,8 @@ def write_kde_theme_config(
         ("kdeglobals", "Icons", "Theme", icon),
         ("kdeglobals", "General", "ColorScheme", scheme),
         ("kdeglobals", "KDE", "widgetStyle", widget),
+        ("kdeglobals", "MacTahoeLiquidKde", "SystemMenuPreset",
+         "golden-gate" if default_wallpaper() == "MacGoldenGate" else "tahoe"),
         ("kcminputrc", "Mouse", "cursorTheme", cursor),
         ("plasmarc", "Theme", "name", plasma),
     )

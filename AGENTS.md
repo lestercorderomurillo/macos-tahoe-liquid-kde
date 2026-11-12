@@ -348,21 +348,27 @@ Store, Force Quit, Sleep, Restart, Shut Down, Lock Screen, Log Out.
 
 ## UI/UX Conventions
 
-- The system menu follows the macOS Golden Gate reference: only About,
-  System Settings and App Store have icons (laptop, gear and App Store symbol).
-  Remaining rows have neither an icon nor a reserved icon column. Recent Items
+- The system menu follows the active edition's macOS reference. Tahoe shows
+  reference symbols on every action; Golden Gate shows only About, System
+  Settings and App Store. Hidden symbols reserve no icon column. Recent Items
   is intentionally absent. SystemMenuStyle scopes the font-scaled metrics and
   reference symbols to this popup; explicit custom icon choices remain usable.
   Ordinary menus keep their existing Kvantum style. Lock Screen and Log Out
   show right-aligned Mac shortcut symbols (⌃⌘Q and ⇧⌘Q). These shortcuts
   work within the open system menu; do not replace KDE global key bindings.
-- Draw the three default system-menu symbols from the Golden Gate reference
+- Draw default system-menu symbols from the corresponding edition's reference
   in SystemMenuStyle; custom icons and other widgets retain the inherited
   base-theme artwork.
   Generated app appearances must also omit `preferences`, `software` and
   `software-store`: Qt/KDE resolve those generic fallbacks before inherited
   menu icons. Test both QIcon rendering and KIconLoader resolution. Use
   `systemsettings` and `org.kde.discover` for generated application tiles.
+- `kdeglobals`'s `MacTahoeLiquidKde/SystemMenuPreset` follows the active edition
+  through light/dark transitions, independently of the Launcher preset. Read it
+  again whenever the cached menu opens. The System Settings symbol is the
+  reference 18-tooth wheel with three spokes and a hollow hub; preserve the
+  existing App Store symbol. README captures must show each edition's own
+  wallpaper, preset and icon visibility in both modes.
 - Hover tiles: glass effect (semi-transparent fill, 0.5px micro
   border, 22px radius) — not outlined borders.
 - Match native menu selections against real macOS references at 50/50 opacity.
