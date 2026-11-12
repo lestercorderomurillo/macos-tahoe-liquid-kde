@@ -412,3 +412,57 @@ def test_uninstall_retains_invalid_ownership_marker_for_recovery(
     assert marker.is_file()
     assert license_file.is_file()
     assert failures and "retaining" in failures[0]
+
+
+def test_continuous_menu_install_reinstall_uninstall(tmp_path, monkeypatch):
+    """The sidecar lifecycle leaves the distro-owned engine unchanged."""
+    import shutil
+    from steps import kvantum
+    build = tmp_path / "build"
+    build.mkdir()
+    artifact = build / "libmactahoestyle.so"
+    artifact.write_bytes(b"menu-style-v1")
+    destination = tmp_path / "plugins/styles/libmactahoestyle.so"
+    engine = destination.with_name("libkvantum.so")
+    engine.parent.mkdir(parents=True)
+    engine.write_bytes(b"distro-owned")
+    monkeypatch.setattr(kvantum, "MENU_BUILD", build)
+    monkeypatch.setattr(kvantum, "menu_style_destination", lambda: destination)
+    monkeypatch.setattr(kvantum, "_engine_destination", lambda: engine)
+    monkeypatch.setattr(kvantum, "_install_bundled_engine", lambda: True)
+    monkeypatch.setattr(kvantum, "ENGINE_MARKER", tmp_path / "no-engine-marker")
+    monkeypatch.setattr(kvantum, "ENGINE_WORK", tmp_path / "engine-work")
+    monkeypatch.setattr(kvantum, "DEST_DIR", tmp_path / "themes/light")
+    monkeypatch.setattr(kvantum, "DEST_DIR_DARK", tmp_path / "themes/dark")
+    monkeypatch.setattr(kvantum, "have", lambda _: False)
+    writes = []
+    monkeypatch.setattr(kvantum, "kw_write", lambda *args: writes.append(args) or True)
+    def install(src, dst, label):
+        if not src.is_file():
+            return False
+        dst.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(src, dst)
+        return True
+    monkeypatch.setattr(kvantum, "sudo_install_file", install)
+    monkeypatch.setattr(kvantum, "sudo_remove", lambda path, label: path.unlink(missing_ok=True) or True)
+    kvantum.install()
+    assert destination.read_bytes() == b"menu-style-v1"
+    assert writes[-1][-1] == "MacTahoe"
+    artifact.write_bytes(b"menu-style-v2")
+    kvantum.install()
+    assert destination.read_bytes() == b"menu-style-v2"
+    kvantum.uninstall()
+    assert not destination.exists()
+    assert writes[-1][-1] == "Breeze"
+    assert engine.read_bytes() == b"distro-owned"
+
+
+def test_missing_menu_plugin_does_not_activate_style(tmp_path, monkeypatch):
+    from steps import kvantum
+    monkeypatch.setattr(kvantum, "MENU_BUILD", tmp_path / "missing-build")
+    monkeypatch.setattr(kvantum, "_install_bundled_engine", lambda: True)
+    monkeypatch.setattr(kvantum, "sudo_install_file", lambda *args: False)
+    writes = []
+    monkeypatch.setattr(kvantum, "kw_write", lambda *args: writes.append(args) or True)
+    kvantum.install()
+    assert writes == []
