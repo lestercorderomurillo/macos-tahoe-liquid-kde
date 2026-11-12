@@ -1468,3 +1468,9 @@ Native menu outer borders use continuous corners independently of the 5px
 content inset. Keep the blue selection at its measured 8px corners. The
 MacTahoe Qt style delegates ordinary widgets and edition materials to Kvantum;
 install its sidecar in both editions and retain it through light/dark switches.
+
+Use the original Apple glyph outlines from the bundled font for system-menu
+symbols, not hand-drawn approximations. Regenerate the committed paths with
+`src/scripts/build_menu_symbols.py`; keep the font hash, glyph identities and
+uniform transforms in `systemmenusymbols.json`. The plugin must not require
+a host Apple font or an SVG loader at runtime. App Store remains unchanged.

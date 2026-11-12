@@ -566,6 +566,7 @@ void AppMenuApplet::triggerSystemMenu(QQuickItem* ctx)
     const auto cfg = config();
 
     const auto preset = SystemMenuStyle::themePreset();
+    static_cast<SystemMenuStyle*>(menu->style())->setPreset(preset);
     auto icon = [&cfg, preset](const char* key, const QString& fallback) {
         return SystemMenuStyle::menuIcon(cfg.readEntry(key, fallback), fallback, preset);
     };

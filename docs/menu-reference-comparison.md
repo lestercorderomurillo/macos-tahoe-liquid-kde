@@ -10,6 +10,24 @@ launcher choice changes the layout independently of the edition's menu material.
 The MacTahoe Qt style delegates ordinary widgets and material colors to Kvantum;
 its menu adapter separates the outer curve from the content padding.
 
+## System-menu presets
+
+The active theme edition selects the system-menu symbols, independently of the
+Launcher preset. Mode changes preserve that selection, and reopening an existing
+menu reads the current edition again.
+
+| Theme | Visible symbols |
+| --- | --- |
+| Tahoe | About, System Settings, App Store, Force Quit, Sleep, Restart, Shut Down, Lock Screen and Log Out |
+| Golden Gate | About, System Settings and App Store; other rows reserve no icon column |
+
+System Settings uses the reference 18-tooth wheel, three spokes and hollow hub.
+The symbol contours are copied from the Apple font already bundled by the project,
+with the source font hash and glyph IDs recorded in `systemmenusymbols.json`.
+Tahoe also uses the reference stop octagon, low-bar Sleep circle, left-pointing
+Restart triangle, power switch, padlock and user-circle symbols. The existing
+App Store symbol is retained. Recent Items remains absent from this project.
+
 ## Real references
 
 - [macOS 26 Tahoe](https://512pixels.net/projects/aqua-screenshot-library/macos-26-tahoe/)

@@ -114,13 +114,21 @@ int main(int argc, char** argv) {
    }
    assert(opaque>0);
    assert((name==QStringLiteral("custom-icon"))==(magenta>0));
-   if (name==QStringLiteral("preferences-system")) {
+   if (name==QStringLiteral("preferences-system") || name==QStringLiteral("system-suspend")) {
     const int size=qRound(16*scale);
     const QPoint origin(qRound(12*scale),qRound(QRectF(option.rect).center().y()-size/2.0));
     auto alpha = [&](qreal x,qreal y) {
      return image.pixelColor(qRound((origin.x()+x*size/16)*4),
                              qRound((origin.y()+y*size/16)*4)).alpha();
     };
+    if (name==QStringLiteral("system-suspend")) {
+     // Apple's Sleep symbol has a low bar, rather than a centered minus.
+     assert(alpha(8,8)<80);
+     int lowBar=0;
+     for (qreal y=9.5;y<=12;y+=0.25) lowBar=std::max(lowBar,alpha(8,y));
+     assert(lowBar>100);
+     continue;
+    }
     // Actual glyph pixels: three spokes, three open sectors and a hollow hub.
     // The old hollow gear cannot satisfy the spoke checks.
     for (int spoke=0;spoke<3;++spoke) {

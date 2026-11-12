@@ -115,6 +115,8 @@ def setup(repo, profile, edition, scope=None):
     choices = defaults() | {'appearance': 'light', 'reset_layout': True}
     if scope in ('dock', 'menu', 'installer'):
         choices['icons'] = 'keep'
+    if scope == 'menu':
+        choices['plymouth'] = False
     command = ['sudo', 'env', 'MAC_TAHOE_NO_UPDATE_CHECK=true', 'MTTKDE_NO_CONFIRM=1',
                str(repo / 'src/scripts/installer_backend.py'), 'install',
                '--wizard-options', json.dumps(choices)]

@@ -4,6 +4,7 @@
 #pragma once
 
 #include <QApplication>
+#include "systemmenusymbols.h"
 #include <QKeySequence>
 #include <QMenu>
 #include <QFontMetricsF>
@@ -41,8 +42,10 @@ public:
             && fallback != QLatin1String("preferences-system")
             && fallback != QLatin1String("software-store-symbolic")) return {};
         if (chosen != fallback) return QIcon::fromTheme(chosen);
-        return QIcon(new ReferenceIconEngine(fallback));
+        return QIcon(new ReferenceIconEngine(fallback, preset));
     }
+
+    void setPreset(Preset preset) { m_preset = preset; }
 
     explicit SystemMenuStyle(QObject* owner)
     {
@@ -168,7 +171,7 @@ public:
             QRect(item->rect.left() + qRound(12 * scale),
                   qRound(rect.center().y() - iconSize / 2.0), iconSize, iconSize));
         const QColor foreground = item->palette.color(group, selected ? QPalette::HighlightedText : QPalette::WindowText);
-        if (!drawReferenceIcon(item->icon.name(), painter, iconRect, foreground)) {
+        if (!drawReferenceIcon(item->icon.name(), painter, iconRect, foreground, m_preset)) {
             item->icon.paint(painter, iconRect, Qt::AlignCenter,
                              !enabled ? QIcon::Disabled : selected ? QIcon::Selected : QIcon::Normal);
         }
@@ -200,22 +203,25 @@ public:
         return shortcut;
     }
 private:
+    Preset m_preset = Preset::Tahoe;
+
     class ReferenceIconEngine final : public QIconEngine {
         QString m_name;
+        Preset m_preset;
     public:
-        explicit ReferenceIconEngine(QString name) : m_name(std::move(name)) {}
-        QIconEngine* clone() const override { return new ReferenceIconEngine(m_name); }
+        ReferenceIconEngine(QString name, Preset preset) : m_name(std::move(name)), m_preset(preset) {}
+        QIconEngine* clone() const override { return new ReferenceIconEngine(m_name, m_preset); }
         QString iconName() override { return m_name; }
         void paint(QPainter* painter, const QRect& rect, QIcon::Mode mode, QIcon::State) override
         {
             const auto group = mode == QIcon::Disabled ? QPalette::Disabled : QPalette::Active;
             const auto role = mode == QIcon::Selected ? QPalette::HighlightedText : QPalette::WindowText;
-            drawReferenceIcon(m_name, painter, rect, QApplication::palette().color(group, role));
+            drawReferenceIcon(m_name, painter, rect, QApplication::palette().color(group, role), m_preset);
         }
     };
 
     static bool drawReferenceIcon(const QString& name, QPainter* painter,
-                                  const QRect& rect, const QColor& color)
+                                  const QRect& rect, const QColor& color, Preset preset)
     {
         static const QStringList names = {QStringLiteral("computer"), QStringLiteral("preferences-system"),
             QStringLiteral("software-store-symbolic"), QStringLiteral("dialog-cancel"),
@@ -227,72 +233,21 @@ private:
         painter->scale(rect.width() / 16.0, rect.height() / 16.0);
         painter->setPen(QPen(color, 1.0, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));
         painter->setBrush(Qt::NoBrush);
-        if (name == QLatin1String("computer")) {
-            painter->drawRoundedRect(QRectF(3, 4, 10, 7.5), 0.65, 0.65);
-            painter->drawLine(QPointF(1, 12), QPointF(15, 12));
-        } else if (name == QLatin1String("preferences-system")) {
-            // The macOS menu symbol is an 18-tooth wheel with a hollow hub
-            // and three spokes, rather than the generic hollow gear outline.
-            QPainterPath gear;
-            for (int i = 0; i < 72; ++i) {
-                const qreal angle = (i - 0.5) * 2 * 3.141592653589793 / 72;
-                const qreal radius = i % 4 < 2 ? 5.8 : 5.1;
-                const QPointF point(8 + radius * std::cos(angle), 8 + radius * std::sin(angle));
-                if (i == 0) gear.moveTo(point); else gear.lineTo(point);
-            }
-            gear.closeSubpath();
-            gear.addEllipse(QPointF(8, 8), 4.15, 4.15);
-            gear.addEllipse(QPointF(8, 8), 1.5, 1.5);
-            gear.addEllipse(QPointF(8, 8), 0.65, 0.65);
-            painter->setPen(Qt::NoPen);
-            painter->setBrush(color);
-            painter->drawPath(gear);
-            painter->setPen(QPen(color, 0.9, Qt::SolidLine, Qt::RoundCap));
-            for (int spoke = 0; spoke < 3; ++spoke) {
-                const qreal angle = spoke * 2 * 3.141592653589793 / 3;
-                const QPointF direction(std::cos(angle), std::sin(angle));
-                painter->drawLine(QPointF(8, 8) + 1.2 * direction,
-                                  QPointF(8, 8) + 4.5 * direction);
-            }
-        } else if (name == QLatin1String("software-store-symbolic")) {
+        if (name == QLatin1String("software-store-symbolic")) {
+            // The approved App Store symbol remains unchanged.
             painter->setPen(QPen(color, 1.35, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));
             painter->drawLine(QPointF(4.1, 12.5), QPointF(9.1, 3.5));
             painter->drawLine(QPointF(7, 3.5), QPointF(12, 12.5));
             painter->drawLine(QPointF(2.6, 9.7), QPointF(13.4, 9.7));
-        } else if (name == QLatin1String("dialog-cancel")) {
-            QPainterPath octagon;
-            octagon.moveTo(5.7, 2.5); octagon.lineTo(10.3, 2.5);
-            octagon.lineTo(13.5, 5.7); octagon.lineTo(13.5, 10.3);
-            octagon.lineTo(10.3, 13.5); octagon.lineTo(5.7, 13.5);
-            octagon.lineTo(2.5, 10.3); octagon.lineTo(2.5, 5.7); octagon.closeSubpath();
-            painter->drawPath(octagon);
-            painter->drawLine(QPointF(6, 6), QPointF(10, 10));
-            painter->drawLine(QPointF(10, 6), QPointF(6, 10));
-        } else if (name == QLatin1String("system-suspend")) {
-            painter->drawEllipse(QPointF(8, 8), 5.1, 5.1);
-            painter->drawLine(QPointF(3.2, 8), QPointF(12.8, 8));
-        } else if (name == QLatin1String("system-reboot")) {
-            QPainterPath triangle;
-            triangle.moveTo(4.2, 8); triangle.lineTo(11.5, 3.7);
-            triangle.lineTo(11.5, 12.3); triangle.closeSubpath();
-            painter->drawPath(triangle);
-        } else if (name == QLatin1String("system-shutdown")) {
-            painter->drawArc(QRectF(3, 3, 10, 10), 135 * 16, 270 * 16);
-            painter->drawLine(QPointF(8, 2), QPointF(8, 7.4));
-        } else if (name == QLatin1String("system-lock-screen")) {
-            painter->drawRoundedRect(QRectF(4, 7, 8, 6), 0.8, 0.8);
-            QPainterPath shackle;
-            shackle.moveTo(5.5, 7); shackle.lineTo(5.5, 5.2);
-            shackle.cubicTo(5.5, 2, 10.5, 2, 10.5, 5.2); shackle.lineTo(10.5, 7);
-            painter->drawPath(shackle);
-        } else if (name == QLatin1String("user-identity")) {
-            painter->drawEllipse(QPointF(8, 8), 5.1, 5.1);
+        } else {
+            if (name == QLatin1String("preferences-system") && preset == Preset::GoldenGate) {
+                painter->translate(8, 8);
+                painter->scale(24.0 / 23, 24.0 / 23);
+                painter->translate(-8, -8);
+            }
+            painter->setPen(Qt::NoPen);
             painter->setBrush(color);
-            painter->drawEllipse(QPointF(8, 6.5), 1.3, 1.3);
-            QPainterPath shoulders;
-            shoulders.moveTo(4.1, 11.3); shoulders.cubicTo(4.5, 8.5, 11.5, 8.5, 11.9, 11.3);
-            shoulders.quadTo(8, 14.5, 4.1, 11.3);
-            painter->drawPath(shoulders);
+            painter->drawPath(SystemMenuSymbols::path(name));
         }
         painter->restore();
         return true;

@@ -1,0 +1,80 @@
+{
+  "font": "src/offline/fonts/SF-Pro-Display-Regular.otf",
+  "font_sha256": "7dc04ac11000f759c973a45c6109e2c164372db0db23dd4796c887df73048cd0",
+  "font_copyright": "\u00a9 2015-2020 Apple Inc. All rights reserved.",
+  "generator": "src/scripts/build_menu_symbols.py",
+  "transform": "Original contours only; uniform scaling and translation into the 16px menu cell; no tracing or hand reconstruction.",
+  "coordinate_precision": 1e-05,
+  "reference_images": [
+    "https://media.512pixels.net/downloads/macos-screenshots/26/26-Tahoe-About-This-Mac-Menu.png",
+    "https://media.512pixels.net/downloads/macos-screenshots/27/27-Golden-Gate-About-This-Mac-Menu.png"
+  ],
+  "symbols": {
+    "computer": {
+      "symbol": "laptopcomputer",
+      "glyph": "uni1007DB.small",
+      "tahoe_bounds": [
+        15,
+        9
+      ]
+    },
+    "preferences-system": {
+      "symbol": "gear",
+      "glyph": "uni10035F.small",
+      "tahoe_bounds": [
+        11.5,
+        11.5
+      ]
+    },
+    "dialog-cancel": {
+      "symbol": "xmark.octagon",
+      "glyph": "uni100489.small",
+      "tahoe_bounds": [
+        11,
+        10.5
+      ]
+    },
+    "system-suspend": {
+      "symbol": "macOS Sleep",
+      "glyph": "uni10071A.small",
+      "tahoe_bounds": [
+        10.5,
+        10.5
+      ]
+    },
+    "system-reboot": {
+      "symbol": "macOS Restart",
+      "glyph": "uni100BC6.small",
+      "tahoe_bounds": [
+        8,
+        9
+      ]
+    },
+    "system-shutdown": {
+      "symbol": "power",
+      "glyph": "uni1001A8.small",
+      "tahoe_bounds": [
+        10.5,
+        11
+      ]
+    },
+    "system-lock-screen": {
+      "symbol": "lock",
+      "glyph": "uni1003A0.small",
+      "tahoe_bounds": [
+        7.5,
+        10.5
+      ]
+    },
+    "user-identity": {
+      "symbol": "person.crop.circle",
+      "glyph": "uni10026D.small",
+      "tahoe_bounds": [
+        10.5,
+        10.5
+      ]
+    }
+  },
+  "golden_gate": "Same original laptop and gear contours; gear uses the 24px reference size instead of Tahoe's 23px at 2x. Other non-featured symbols are hidden.",
+  "app_store": "Existing approved drawing retained unchanged at user request."
+}
