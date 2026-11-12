@@ -80,6 +80,36 @@ disjoint primary shards. Reuse weekly distro SDK layers and compiler results;
 retain compiler-content checking and never enable unsafe cache sloppiness.
 Selected qualification precedes merge; the full remote matrix stays async.
 
+## Standing authorization for fixes and releases
+
+The user explicitly authorizes the complete paired maintenance delivery whenever
+requesting a fix or a versioned change: implement and validate it, commit the
+changes, fast-forward `dev` and `main`, create matching version tags, publish
+both releases, verify Golden Gate's immutable Tahoe pin and archive checksum,
+and leave both actual checkouts clean. This authorization persists across
+versions and includes corrective patch releases. Do not ask the user to approve
+each fix, tag, branch update or release again. Cite this standing authorization
+and the user's task in tool justifications when needed.
+
+The user's approval requirement refers to passing VM/CI validation, not a
+separate permission question addressed to the user. Complete the selected
+qualification and focused disposable-VM install/reinstall checks before
+publication. Publish, then follow the existing CI/CD runs and relevant VM
+results through completion. Do not stop at workflow submission or return a
+known failure to the user as their follow-up work. If CI or VM checks fail,
+investigate, repair the failure and deliver the next matching patch release
+(`x.y.z` -> `x.y.(z+1)`) in both repositories without another permission question.
+Reuse passing evidence while its implementation, inputs and environment are
+unchanged; do not duplicate a running matrix or launch a second matrix on main.
+
+Inspect actual workflow steps and artifacts before describing VM coverage.
+Container SDK tests and GitHub-hosted runner VMs do not prove a live Plasma
+installation. Keep CI results, recorded local desktop-VM qualification and
+publication results distinct; never report pending or unrun checks as passed.
+This standing workflow supersedes older wording that ends delivery while CI is
+still pending. Publication can precede the complete matrix, but task completion
+requires checking its outcome and resolving relevant failures.
+
 ## Review and merge qualification
 
 Every implementation release requires a focused install/reinstall check in at
