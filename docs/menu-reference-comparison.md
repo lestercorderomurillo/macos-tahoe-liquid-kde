@@ -50,7 +50,8 @@ The adapter also rendered successfully with blur in an isolated KWin X11 session
 ## Limits
 
 This matches the corner and inset geometry, not every menu pixel. KDE action
-labels, icons and menu widths differ. Colors also depend on the wallpaper behind
+labels and menu widths differ. System-menu symbol contours use the original
+Apple font; the approved App Store drawing is retained. Colors depend on the wallpaper behind
 the translucent surface. The real reference images are light mode; the dark KDE
 menus were reviewed separately. Unchanged gallery photographs retain their
 original source provenance.

@@ -133,8 +133,8 @@ Finder-style Nautilus in light and dark.
 The Tahoe preset shows reference symbols on every action, including the three-spoke System Settings wheel. [macOS Tahoe reference](https://512pixels.net/projects/aqua-screenshot-library/macos-26-tahoe/). The menu preset follows the active theme edition, independently of the Launcher preset.
 
 <p align="center">
-  <img src="src/screenshots/menu_v4-d754cdb089ec.webp" alt="System menu in light mode" width="415">
-  <img src="src/screenshots/menu_dark_v4-e12fb577d61b.webp" alt="System menu in dark mode" width="415">
+  <img src="src/screenshots/menu_v4-0343811e426d.webp" alt="System menu in light mode" width="415">
+  <img src="src/screenshots/menu_dark_v4-171bb0e051ff.webp" alt="System menu in dark mode" width="415">
 </p>
 
 <br>
