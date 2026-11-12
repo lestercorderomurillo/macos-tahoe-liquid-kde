@@ -1048,6 +1048,13 @@ def _print_done(verb: str) -> None:
 
 
 def _run_install_body(feat: dict[str, object]) -> int:
+    from theme_switch import button_position, preserve_button_layout
+
+    with preserve_button_layout(button_position() == "keep"):
+        return _run_install_steps(feat)
+
+
+def _run_install_steps(feat: dict[str, object]) -> int:
     """The actual install sequence — no banner, confirm, or progress UI.
     Runs under the graphical supervisor or isolated qualification tools."""
     check_cancelled()

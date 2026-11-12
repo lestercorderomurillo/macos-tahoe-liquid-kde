@@ -180,6 +180,18 @@ def test_failed_layout_read_stops_before_reset(monkeypatch, live_layout):
             pytest.fail("Must not change the desktop after a failed snapshot")
 
 
+def test_keep_preserves_layout_before_gtk_module_activation(monkeypatch, live_layout):
+    import cli
+    monkeypatch.setenv("MTTKDE_WIZARD_OPTIONS", '{"button_position":"keep"}')
+    original = dict(live_layout)
+    def install(feat):
+        live_layout.update(gtk="':maximize,close,minimize'")
+        return 0
+    monkeypatch.setattr(cli, "_run_install_steps", install)
+    assert cli._run_install_body({}) == 0
+    assert live_layout == original
+
+
 def test_failed_restore_is_reported_and_keeps_uninstall_record(tmp_path, monkeypatch, live_layout):
     import cli
     monkeypatch.setenv("XDG_STATE_HOME", str(tmp_path))
