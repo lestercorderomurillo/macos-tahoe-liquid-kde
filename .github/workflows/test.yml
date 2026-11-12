@@ -72,7 +72,7 @@ jobs:
             kitemmodels \
             libplasma plasma-activities plasma-activities-stats \
             libksysguard plasma-workspace plasma-desktop plasma5support plasma-sdk \
-            kwin kdecoration \
+            kwin kdecoration kvantum \
             libepoxy libdrm libx11 libxcb libxtst
       - name: Set up Node for JavaScript regression tests
         uses: actions/setup-node@v5
@@ -81,6 +81,7 @@ jobs:
       - name: Verify native popup test prerequisites
         run: |
           python -c "import gi; gi.require_version('Gtk', '4.0'); from gi.repository import Gtk; from PyQt6 import QtSvg; from PIL import Image"
+          QT_QPA_PLATFORM=offscreen python -c "from PyQt6.QtWidgets import QApplication, QStyleFactory; app = QApplication([]); assert QStyleFactory.create('kvantum') is not None, 'Kvantum Qt 6 style plugin is required'"
           command -v rsvg-convert
           command -v Xvfb
           node --version

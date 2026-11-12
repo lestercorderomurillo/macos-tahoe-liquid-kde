@@ -1,10 +1,16 @@
 # Installer testing
 
-Tahoe **v0.68.4** matches continuous menu corners and the 5-pixel selection inset.
-Focused native rendering, style lifecycle, mode switching and Golden Gate staging checks pass.
-Four reviewed VM menu frames cover both editions and modes; isolated X11 rendering also passed.
-See [the real-reference 50/50 comparisons](docs/menu-reference-comparison.md) and
-[release evidence](release-evidence.json) for provenance and limits. Full remote CI stays asynchronous.
+Tahoe **v0.68.5** repairs exhaustive dependency discovery, missing Portuguese/German
+menu messages and the clean Arch CI dependency on the Kvantum Qt 6 style.
+The affected checks pass in clean Arch (470), Debian (466) and a disposable
+KDE neon Plasma 6.8.1 / Qt 6.11.1 Wayland VM (470). The VM also passed focused
+Kvantum installation, reinstallation and loading the exact installed menu plugin.
+Golden Gate wrapper checks (97) and prepared-source rendering checks (34) pass.
+See [release evidence](release-evidence.json) for source identity and coverage limits.
+The complete remote matrix remains asynchronous and is not counted as passed.
+
+Menu photographs and [real-reference comparisons](docs/menu-reference-comparison.md)
+retain their reviewed v0.68.4 provenance; this fix changes no menu rendering.
 
 Historical v0.67.0 symbol previews (unchanged):
 [Light](src/screenshots/previews/menu-symbols-067-light-a558e02129b0.png) · [Dark](src/screenshots/previews/menu-symbols-067-dark-35230bb0f200.png) · [Provenance](src/screenshots/previews/menu-symbols-067-provenance-534bface45c1.json)

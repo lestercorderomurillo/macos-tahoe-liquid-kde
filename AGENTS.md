@@ -82,6 +82,13 @@ Selected qualification precedes merge; the full remote matrix stays async.
 
 ## Review and merge qualification
 
+Every implementation release requires a focused install/reinstall check in at
+least one disposable Plasma VM before publication. Record the actual source,
+commands and results. Captures alone do not replace installer qualification or
+resolve known CI failures. Dependency changes require the exhaustive package
+mapping checks; translated messages require catalog checks; native rendering
+tests must pass with their declared dependencies in a clean CI environment.
+
 A request to review, fix, test and merge means review the diff and existing CI
 results first, repair relevant failures, then qualify the candidate before
 merging. A successful compile, plugin load or workflow submission does not

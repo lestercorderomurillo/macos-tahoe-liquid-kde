@@ -1,66 +1,77 @@
 {
-  "version": "0.68.4",
-  "source_sha256": "3f8f23af0b8cf329b564efbcec6442d5c26c858f7c68c9ce209c546b449bc0c2",
-  "environment": "Native Qt 6.11.2/KF6 style build and offscreen checks; private Xvfb/KWin X11 rendering; four menu captures in the pinned KDE neon Plasma/KWin 6.8.1 Wayland VM at 3840x2160, scale 2. Edition-specific prepared base hashes are recorded in capture provenance.",
+  "version": "0.68.5",
+  "source_sha256": "59433753877148992199f3aff92ccb238764cb7447e7a93d4f686f2bede0b295",
+  "environment": "Host Qt 6.11.2; freshly built Arch SDK and existing Debian SDK; disposable KDE neon Wayland Plasma/KWin 6.8.1, Qt 6.11.1 VM; Golden Gate prepared-source checks.",
   "checks": [
     {
-      "command": "QT_QPA_PLATFORM=offscreen python -m pytest -q tests/test_continuous_menu.py tests/test_kvantum_step.py tests/test_step_guards.py tests/test_theme_switch.py tests/test_preflight.py tests/test_nix.py; sandbox-blocked cases: XDG_STATE_HOME=/tmp/menu-squircle/test-state QT_QPA_PLATFORM=offscreen python -m pytest -q tests/test_step_guards.py::test_window_decorations_clean_ok_when_writes_succeed tests/test_theme_switch.py::test_scheduled_job_prefers_plasma_bus_over_runtime_socket",
+      "command": "QT_QPA_PLATFORM=offscreen XDG_STATE_HOME=/tmp/tahoe-ci-state python3 -m pytest -q tests/test_distro_packages.py tests/test_multilanguage.py tests/test_kvantum_step.py tests/test_continuous_menu.py tests/test_container_images.py tests/test_ci_selection.py",
       "result": "passed",
-      "detail": "199 passed initially; the two environment-blocked cases passed with isolated state and private Unix socket permission. Native adapter compiled with Qt 6.11.2 and KF6WindowSystem; four actual plugin raster/metric/fallback cases passed."
+      "detail": "478 passed; exhaustive dependency collection and mapping, catalog completeness, actual menu rendering, container/CI selection behavior."
     },
     {
-      "command": "QT_QPA_PLATFORM=offscreen python -m pytest -q tests/test_menu_rounding.py tests/test_glass_surfaces.py tests/test_static.py -k 'menu or kvantum or surface'",
+      "command": "QT_QPA_PLATFORM=offscreen XDG_STATE_HOME=/tmp/tahoe-ci-state python3 -m pytest -q tests/test_preflight.py tests/test_step_guards.py tests/test_component_cache.py tests/test_static.py",
       "result": "passed",
-      "detail": "54 passed, 23 deselected."
+      "detail": "101 passed."
     },
     {
-      "command": "QT_QPA_PLATFORM=offscreen python -m pytest -q tests/test_kvantum_step.py -k 'continuous_menu or missing_menu'",
+      "command": "docker build --pull=false -t mttkde-ci-repair-arch -f tests/containers/Dockerfile.arch .; docker run --rm mttkde-ci-repair-arch sh -ec 'pacman -S --noconfirm --needed kvantum; QT_QPA_PLATFORM=offscreen python -c \"from PyQt6.QtWidgets import QApplication, QStyleFactory; app=QApplication([]); assert QStyleFactory.create(\"kvantum\") is not None\"; QT_QPA_PLATFORM=offscreen python -m pytest -q tests/test_distro_packages.py tests/test_multilanguage.py tests/test_kvantum_step.py tests/test_continuous_menu.py'",
       "result": "passed",
-      "detail": "2 passed; install/reinstall/uninstall and failed activation preserve the distro-owned engine."
+      "detail": "470 passed in freshly built Arch SDK image 7c09376d64b3. Reproduced missing Kvantum in the original SDK first, then installed and loaded the package now declared by primary CI."
     },
     {
-      "command": "GOLDEN_GATE_TAHOE_SOURCE=/tmp/tahoe-menu-reference MAC_TAHOE_NO_UPDATE_CHECK=true python bootstrap.py --prepare; QT_QPA_PLATFORM=offscreen python -m pytest -q tests/test_continuous_menu.py tests/test_glass_surfaces.py (prepared build/e7feb5b65af22086063e)",
+      "command": "docker run --rm -v /tmp/tci-source/source.tar:/source.tar:ro mttkde-test-debian:latest sh -ec 'mkdir -p /tmp/final-source; tar -xf /source.tar -C /tmp/final-source; cd /tmp/final-source; QT_QPA_PLATFORM=offscreen python3 -m pytest -q tests/test_distro_packages.py tests/test_kvantum_step.py tests/test_multilanguage.py'",
       "result": "passed",
-      "detail": "34 passed against the prepared Golden Gate source."
+      "detail": "466 passed against the final source archive in the Debian SDK."
     },
     {
-      "command": "python /tmp/menu-squircle/x11-run.py",
+      "command": "python3 /tmp/tahoe-ci-vm.py",
       "result": "passed",
-      "detail": "Private Xvfb + actual KWin X11; asserted compositor process identity, exact Acrylic Glass module mapping, active compositing and loaded effect. The MacTahoe style library loaded and the continuous translucent menu rendered visibly. Reviewed frame SHA-256 2ded8202065a56d3406aca6fef5415078a9878a711636d9ef08d4060cb200305."
+      "detail": "Disposable verified KDE neon Wayland guest: source VERSION and kvantum.py digest verified before installation; installer_backend.py install --only --kvantum --no-apply-theme, 470 affected tests, reinstall and installed MacTahoe QStyleFactory load all passed. The installed library matches the newly compiled bytes. Controller, source.tar and logs retained in ignored build/ci-repair-v0.68.5/."
     },
     {
-      "command": "python /tmp/menu-squircle/capture.py; python /tmp/menu-squircle/compare.py",
+      "command": "GOLDEN_GATE_TAHOE_SOURCE=/mnt/M2_1/Projects/Repositories/macos-tahoe-liquid-kde MAC_TAHOE_NO_UPDATE_CHECK=true python3 bootstrap.py --prepare; python3 -m pytest -q tests",
       "result": "passed",
-      "detail": "Four reviewed context-menu frames in disposable KDE neon Wayland guests; edition wallpaper/preset, appearance, window identity and stable frames verified. Separate real macOS 26 and 27 references, same-scale border alignment and 50/50 blends reviewed."
+      "detail": "97 Golden Gate wrapper tests passed. Explicit local source staging used the repaired Tahoe implementation."
+    },
+    {
+      "command": "QT_QPA_PLATFORM=offscreen XDG_STATE_HOME=/tmp/golden-gate-ci-state python3 -m pytest -q tests/test_continuous_menu.py tests/test_glass_surfaces.py",
+      "result": "passed",
+      "detail": "34 passed in Golden Gate prepared source build/c792962696a7443f5812; edition-specific staging retains native rendering and surface behavior."
     }
   ],
   "gallery_commit": "d1b5447a1c15b018999c324cb84824dc022c06dd",
-  "captures": [
-    {
-      "path": "src/screenshots/context_menu_v4-7598f30fb989.webp",
-      "sha256": "7598f30fb98925f18393d2e1561cc4866a5ac377eb8fbf45dc4b18efa4c245cd",
-      "reviewed": true
-    },
-    {
-      "path": "src/screenshots/context_menu_dark_v4-f858978d15b9.webp",
-      "sha256": "f858978d15b9baa2a99f956da698274456f6a35be850d41f97b5da27f0e3dacc",
-      "reviewed": true
-    },
-    {
-      "path": "src/screenshots/previews/menu-tahoe-comparison-fad8e594709f.png",
-      "sha256": "fad8e594709fbe25777f538cfb62f790df124800d7efa4e7c7b005c26dfe7c3d",
-      "reviewed": true
-    }
-  ],
-  "component_capture_review": {
-    "provenance": "src/screenshots/previews/menu-tahoe-provenance-6238e1806103.json",
-    "reviewed": true
+  "vm_qualification": {
+    "base_sha256": "412e7933f10add20b921b92c02709e7eea56acd14dc14cf654f58fba4ea3cc9d",
+    "source_archive_sha256": "9c5f8d2074cc7e755d86f4c9b7461bb3cf84c88c036f3c5b11cf7c434efe0fb0",
+    "kvantum_recipe_sha256": "1ff40f54a34c1d4575f89e432491a24cc9b5b419eb790d9efaea98a939021ad9",
+    "checks": [
+      {
+        "name": "source-identity",
+        "result": "passed"
+      },
+      {
+        "name": "install",
+        "result": "passed"
+      },
+      {
+        "name": "regressions",
+        "result": "passed"
+      },
+      {
+        "name": "reinstall",
+        "result": "passed"
+      },
+      {
+        "name": "installed-style",
+        "result": "passed"
+      }
+    ]
   },
   "coverage_limits": [
-    "Only menu geometry and its Qt style integration changed; no KWin effect, shader or private SDK/ABI implementation changed. No duplicate full distro matrix was launched.",
-    "References are real light-mode macOS screenshots. Dark KDE surfaces were reviewed separately. Labels, icons, width and background-dependent colors are not pixel-identical.",
-    "The first VM run retained a pre-install style factory and showed Breeze; those frames were rejected. Storage/socket-path fixture failures and Baloo notifications were corrected before accepting the final four frames.",
-    "A preliminary Xwayland probe used the X11-only effect module and failed; it was superseded by the successful actual KWin X11 check. Wayland behavior was validated in the disposable VM.",
-    "Full remote CI for this delivery remains asynchronous on dev and is not counted as passed here. The preceding v0.68.3 dev run 43157290527 passed. Unrelated photographs retain their original provenance."
+    "The 11 failed distro legs all stopped at the same exhaustive dependency collector. Those exact checks now pass in Arch, Debian and neon; the complete remote matrix remains enabled and asynchronous, not counted as passed.",
+    "VM qualification is scoped to the changed Kvantum dependency/install behavior, reinstall, exact plugin load and offscreen light/dark raster regressions; no new full-desktop lifecycle or visual redesign claim is made. Golden Gate is separately staged and tested; this release did not boot an additional Golden Gate VM.",
+    "The initial custom VM transfer used the wrong archive filename and extracted a retained older archive. That attempt was rejected. The accepted fresh-overlay run verified version 0.68.5 and the exact recipe digest inside the guest before installing.",
+    "A separate plasmashell --version invocation without the desktop environment aborted. It is not counted as a successful check; Plasma 6.8.1 is recorded by installer preflight, and the accepted plugin load explicitly used the live Wayland session environment.",
+    "Menu rendering sources and photographs are unchanged from v0.68.4; their original provenance is preserved."
   ]
 }

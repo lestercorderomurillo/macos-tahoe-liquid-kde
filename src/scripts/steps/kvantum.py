@@ -126,8 +126,8 @@ def _bundled_engine_required() -> bool:
 
 
 def deps():
-    menu_deps = ["qmake6:qt6-base", "cmake", "make", "g++:gcc",
-                 "kf6-windowsystem-cmake:kwindowsystem"]
+    dependencies = ["qmake6:qt6-base", "cmake", "make", "g++:gcc",
+                    "kf6-windowsystem-cmake:kwindowsystem"]
     if _bundled_engine_required():
         return [
             "qmake6:qt6-base",
@@ -139,11 +139,11 @@ def deps():
             "x11-cmake:libx11",
             "xext-cmake:libxext",
         ]
-    if is_debian_family():
-        # A distro-owned Qt 6 style plugin is sufficient. Theme selection has
-        # a kwriteconfig6 fallback and does not require Kvantum Manager.
-        return menu_deps
-    return menu_deps + ["kvantummanager:kvantum"]
+    # A distro-owned Debian Qt 6 style plugin is sufficient. Theme selection
+    # has a kwriteconfig6 fallback and does not require Kvantum Manager.
+    if not is_debian_family():
+        dependencies.append("kvantummanager:kvantum")
+    return dependencies
 
 
 def _extract_bundled_engine() -> bool:
