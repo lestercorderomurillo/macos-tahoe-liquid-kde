@@ -23,6 +23,7 @@ ENUMS = {
     "files": ("nautilus", "dolphin", "keep"),
     "shadows": ("none", "soft", "medium", "hard"),
     "window_controls": ("flat", "glassy"),
+    "button_position": ("left", "right", "keep"),
     "glass_style": ("classic", "tinted", "official"),
 }
 WALLPAPERS = {
@@ -39,7 +40,7 @@ def defaults() -> dict:
         appearance="auto", icons="regular", color="blue", wallpaper=edition,
         wallpaper_path="", launcher=edition, panel=True, dock=True, reset_layout=True,
         acrylic_glass=True, rounded_corners=True, shadows="medium", fonts=True, firefox=True,
-        window_controls="glassy" if edition == "golden" else "flat",
+        window_controls="glassy" if edition == "golden" else "flat", button_position="left",
         files="nautilus", nautilus_bookmarks=True, plymouth=True, glass_style="official" if edition == "golden" else "classic",
         oled_care=False, oled_interval=5, oled_max_shift=8,
         dock_appearance="auto", dock_apps=[], dock_apps_source="native", dock_add_flathub=False,

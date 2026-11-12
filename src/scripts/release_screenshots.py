@@ -12,7 +12,7 @@ ROOT = Path(__file__).resolve().parents[2]
 PROFILE = ROOT / 'src/scripts/release_capture_profile.json'
 EDITIONS = {'tahoe': ('MacTahoe', 1, 'v4'), 'golden-gate': ('MacGoldenGate', 2, 'v1')}
 INSTALLER_PAGES = ('welcome', 'appearance', 'icons', 'wallpaper', 'launcher', 'layout',
-                   'effects', 'window_controls', 'shadows', 'fonts', 'firefox', 'files', 'glass_style', 'boot', 'oled', 'summary')
+                   'effects', 'window_controls', 'button_position', 'shadows', 'fonts', 'firefox', 'files', 'glass_style', 'boot', 'oled', 'summary')
 MATERIAL_CASES = {'glass-tahoe-clear': (1, 0), 'glass-tahoe-frosted': (1, 1),
                   'glass-golden-gate-official': (2, 1)}
 CASES = tuple(MATERIAL_CASES) + ('launcher', 'dock', 'menu', 'context', 'finder', 'showcase', 'about') + tuple(

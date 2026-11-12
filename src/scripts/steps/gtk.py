@@ -80,10 +80,11 @@ def install() -> None:
     # A minimal Plasma session may have started before deps installed this
     # module. Load it now so the final theme switch also reaches GTK settings.
     qdbus_call("org.kde.kded6", "/kded", "org.kde.kded6.loadModule", "gtkconfig")
-    if have("gsettings"):
+    from theme_switch import gtk_button_layout
+    if have("gsettings") and gtk_button_layout():
         run_user(
             ["gsettings", "set", "org.gnome.desktop.wm.preferences",
-             "button-layout", "close,minimize,maximize:"],
+             "button-layout", gtk_button_layout()],
             check=False,
             stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
         )
@@ -108,11 +109,13 @@ def uninstall() -> None:
 
     qdbus_call("org.kde.GtkConfig", "/GtkConfig",
                "org.kde.GtkConfig.setGtkTheme", "Breeze")
+    from window_controls import buttons_kept
+    keep_buttons = buttons_kept()
     if have("gsettings"):
         for schema, key in (
             ("org.gnome.desktop.interface", "gtk-theme"),
             ("org.gnome.desktop.interface", "color-scheme"),
-            ("org.gnome.desktop.wm.preferences", "button-layout"),
+            *(() if keep_buttons else (("org.gnome.desktop.wm.preferences", "button-layout"),)),
         ):
             run_user(["gsettings", "reset", schema, key],
                      check=False,

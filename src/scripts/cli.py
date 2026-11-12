@@ -1048,6 +1048,13 @@ def _print_done(verb: str) -> None:
 
 
 def _run_install_body(feat: dict[str, object]) -> int:
+    from theme_switch import button_position, preserve_button_layout
+
+    with preserve_button_layout(button_position() == "keep"):
+        return _run_install_steps(feat)
+
+
+def _run_install_steps(feat: dict[str, object]) -> int:
     """The actual install sequence — no banner, confirm, or progress UI.
     Runs under the graphical supervisor or isolated qualification tools."""
     check_cancelled()
@@ -1154,6 +1161,17 @@ def _run_install_body(feat: dict[str, object]) -> int:
 
 
 def _run_uninstall_body(feat: dict[str, object]) -> int:
+    from theme_switch import preserve_button_layout
+    from window_controls import buttons_kept, forget_button_position
+
+    with preserve_button_layout(buttons_kept()):
+        result = _run_uninstall_steps(feat)
+    if result == 0:
+        forget_button_position()
+    return result
+
+
+def _run_uninstall_steps(feat: dict[str, object]) -> int:
     """The actual uninstall sequence — same split as _run_install_body."""
     check_cancelled()
     preflight_ok = run_preflight("uninstall")

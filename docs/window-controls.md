@@ -30,6 +30,19 @@ reinstallation starts from fresh bundled GTK sources. GTK below 4.20 requires
 explicit light/dark selection for literal SVG URLs in its adaptive stylesheet.
 Nix staging retains the edition default without running the graphical installer.
 
+## Button position
+
+The separate **Window buttons** page places the controls on the **left**
+(close, minimize, maximize; the default in both editions), on the **right**
+(minimize, maximize, close), or **keeps** the current layout. Left and right write
+kwinrc `ButtonsOnLeft`/`ButtonsOnRight`, the gsettings `button-layout` and the
+staged global-theme defaults. They are written again by every standalone
+switch, so login and scheduled light/dark transitions retain the choice.
+Keep removes those keys from staged global-theme defaults and preserves the
+effective KDE and GTK layouts across theme activation and uninstall, including
+empty sides and layouts inherited from KDE defaults. Its `button-position`
+state is retired only after successful uninstall. Nix staging uses the default.
+
 Standalone GTK SVGs use a 128×128 intrinsic canvas with a 16×16 view box;
 the stylesheet keeps the buttons at their existing 16 logical pixels. This
 prevents GTK from enlarging a low-resolution raster on high-DPI displays.

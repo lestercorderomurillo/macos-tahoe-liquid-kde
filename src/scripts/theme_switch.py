@@ -49,18 +49,84 @@ def default_wallpaper() -> str:
     return DEFAULT_WALLPAPER
 
 
-def window_control_style() -> str:
-    """Use this transaction's choice or the choice baked into the switcher."""
+def _installer_options() -> dict:
+    """This transaction's choices, or the ones baked into the switcher."""
     options = INSTALLER_OPTIONS
     if Path(__file__).name == "theme_switch.py" and "MTTKDE_WIZARD_OPTIONS" in os.environ:
         try:
             options = json.loads(os.environ.get("MTTKDE_WIZARD_OPTIONS", "{}"))
         except ValueError:
             options = {}
-    style = options.get("window_controls") if isinstance(options, dict) else None
+    return options if isinstance(options, dict) else {}
+
+
+def window_control_style() -> str:
+    """Use this transaction's choice or the choice baked into the switcher."""
+    style = _installer_options().get("window_controls")
     if style in ("flat", "glassy"):
         return style
     return "glassy" if default_wallpaper() == "MacGoldenGate" else "flat"
+
+
+# KWin ButtonsOnLeft, ButtonsOnRight and the GTK/GNOME button-layout string.
+BUTTON_LAYOUTS = {
+    "left": ("XIA", "", "close,minimize,maximize:"),
+    "right": ("", "IAX", ":minimize,maximize,close"),
+}
+
+
+def button_position() -> str:
+    """left (default), right, or keep, which leaves the user's layout untouched."""
+    position = _installer_options().get("button_position")
+    return position if position in ("left", "right", "keep") else "left"
+
+
+def kwin_button_layout() -> tuple[str, str] | None:
+    layout = BUTTON_LAYOUTS.get(button_position())
+    return layout[:2] if layout else None
+
+
+def gtk_button_layout() -> str | None:
+    layout = BUTTON_LAYOUTS.get(button_position())
+    return layout[2] if layout else None
+
+
+@contextmanager
+def preserve_button_layout(enabled: bool):
+    """Keep effective layouts across look-and-feel and GTK configuration resets."""
+    if not enabled:
+        yield
+        return
+    saved = {}
+    for key, default in (("ButtonsOnLeft", "M"), ("ButtonsOnRight", "IAX")):
+        result = _run_user([
+            "kreadconfig6", "--file", "kwinrc", "--group", "org.kde.kdecoration2",
+            "--key", key, "--default", default,
+        ], capture=True, timeout=5)
+        if result.returncode:
+            raise RuntimeError("Cannot read window button layout; refusing to replace it")
+        saved[key] = result.stdout.strip()
+    gtk = None
+    if _have("gsettings"):
+        result = _run_user(["gsettings", "get", "org.gnome.desktop.wm.preferences",
+                            "button-layout"], capture=True, timeout=5)
+        if result.returncode:
+            raise RuntimeError("Cannot read GTK button layout; refusing to replace it")
+        gtk = result.stdout.strip()
+    try:
+        yield
+    finally:
+        restored = True
+        for key, value in saved.items():
+            restored = _kwrite("--file", "kwinrc", "--group", "org.kde.kdecoration2",
+                               "--key", key, value) and restored
+        _qdbus("org.kde.KWin", "/KWin", "org.kde.KWin.reconfigure")
+        if gtk is not None:
+            result = _run_user(["gsettings", "set", "org.gnome.desktop.wm.preferences",
+                                "button-layout", gtk], timeout=5)
+            restored = result.returncode == 0 and restored
+        if not restored:
+            raise RuntimeError("Could not restore the preserved window button layout")
 
 
 def decoration_theme(mode: str) -> str:
@@ -1261,10 +1327,11 @@ def _apply_local_extras(mode: str) -> None:
         _qdbus("org.kde.GtkConfig", "/GtkConfig",
                "org.kde.GtkConfig.setGtkTheme", gtk_theme)
         if _have("gsettings"):
+            gtk_layout = gtk_button_layout()
             for args in (
                 ["set", "org.gnome.desktop.interface", "gtk-theme", gtk_theme],
-                ["set", "org.gnome.desktop.wm.preferences",
-                 "button-layout", "close,minimize,maximize:"],
+                *((["set", "org.gnome.desktop.wm.preferences",
+                    "button-layout", gtk_layout],) if gtk_layout else ()),
                 ["set", "org.gnome.desktop.interface", "color-scheme",
                  "prefer-dark" if mode == "dark" else "prefer-light"],
             ):
@@ -1389,8 +1456,7 @@ def write_kde_theme_config(
         ("library", "org.kde.kwin.aurorae"),
         ("theme", aurorae),
         ("BorderSize", "Tiny"),
-        ("ButtonsOnLeft", "XIA"),
-        ("ButtonsOnRight", ""),
+        *zip(("ButtonsOnLeft", "ButtonsOnRight"), kwin_button_layout() or ()),
     ):
         if not _kwrite("--file", "kwinrc", "--group", "org.kde.kdecoration2",
                        "--key", key, value):
@@ -1788,7 +1854,7 @@ def _apply_unlocked(mode: str, context: str = "user") -> bool:
 
 def apply(mode: str, context: str = "user") -> bool:
     """Run one complete, cross-process-serialized theme transition."""
-    with _theme_transition_lock():
+    with _theme_transition_lock(), preserve_button_layout(button_position() == "keep"):
         return _apply_unlocked(mode, context=context)
 
 
