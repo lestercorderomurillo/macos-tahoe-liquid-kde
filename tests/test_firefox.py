@@ -263,6 +263,7 @@ def test_install_preserves_css_and_browser_data_then_uninstall_restores(
     assert firefox.CHROME_START in (chrome / "userContent.css").read_text()
     assert original_user in (profile / "user.js").read_text()
     assert firefox.USER_START in (profile / "user.js").read_text()
+    assert 'user_pref("svg.context-properties.content.enabled", true);' in (profile / "user.js").read_text()
     assert (chrome / firefox.THEME_DIRNAME / firefox.OWNERSHIP_MARKER).is_file()
     assert places.read_bytes() == b"browser-history-must-not-change"
 

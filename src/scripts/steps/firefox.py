@@ -46,6 +46,8 @@ CHROME_BLOCKS = {
 USER_BLOCK = (
     f"{USER_START}\n"
     'user_pref("toolkit.legacyUserProfileCustomizations.stylesheets", true);\n'
+    # Local symbolic SVGs use context-fill to follow the toolbar palette.
+    'user_pref("svg.context-properties.content.enabled", true);\n'
     f"{USER_END}\n"
 )
 LEGACY_PREF_LINES = (
