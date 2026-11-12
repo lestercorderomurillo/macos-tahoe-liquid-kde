@@ -5,7 +5,7 @@ ColorScheme=MacTahoeLiquidKdeLight
 Theme=MacTahoeLiquidKde-Icons
 
 [kdeglobals][KDE]
-widgetStyle=kvantum
+widgetStyle=MacTahoe
 LookAndFeelPackage=org.kde.mac-tahoe-liquid-kde.light
 
 [kcminputrc][Mouse]

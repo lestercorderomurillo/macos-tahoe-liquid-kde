@@ -35,8 +35,9 @@ def test_neon_keeps_unmarked_distro_qt6_engine(monkeypatch, tmp_path):
     _neon(monkeypatch, kvantum, destination)
     monkeypatch.setattr(kvantum, "ENGINE_MARKER", tmp_path / "missing-marker")
 
-    assert kvantum.deps() == []
-    assert kvantum.build_artifacts() == []
+    assert "kvantummanager:kvantum" not in kvantum.deps()
+    assert kvantum.build_artifacts() == [kvantum.MENU_BUILD / "libmactahoestyle.so"]
+    assert destination.read_bytes() == b"distro-owned"
 
 
 def test_bundled_archive_extracts_only_after_digest_check(monkeypatch, tmp_path):

@@ -143,7 +143,7 @@ PlasmaCore.Dialog {
         QTimer.singleShot(1500, lambda: (output / "ready").write_text(case))
         app.exec()
         return
-    app.setStyle("kvantum")
+    app.setStyle("MacTahoe" if os.environ.get("PROBE_MENU_STYLE") else "kvantum")
     dark = os.environ["PROBE_MODE"] == "Dark"
     palette = app.palette()
     for role, color in (
@@ -533,6 +533,10 @@ def run(args):
     )
     plugin_dir = output / "plugins/kwin/effects/plugins"
     plugin_dir.mkdir(parents=True)
+    if args.menu_style:
+        styles = output / "plugins/styles"
+        styles.mkdir(parents=True, exist_ok=True)
+        shutil.copyfile(args.menu_style, styles / "libmactahoestyle.so")
     shutil.copyfile(args.glass, plugin_dir / "liquidglass.so")
     shutil.copyfile(args.rounded, plugin_dir / "kwin4_effect_shapecorners.so")
     shaders = output / "data/kwin/shaders"
@@ -599,6 +603,7 @@ def run(args):
             XDG_CACHE_HOME=str(output / "cache"),
             XDG_RUNTIME_DIR=runtime,
             QT_PLUGIN_PATH=str(output / "plugins"),
+            PROBE_MENU_STYLE="1" if args.menu_style else "",
             QT_QPA_PLATFORM="offscreen",
             QT_QUICK_CONTROLS_STYLE="org.kde.desktop",
             QT_QPA_PLATFORMTHEME="kde",
@@ -660,6 +665,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "--pointer", type=Path, default=ROOT / "build/menu-probe/menu-wayland-pointer"
     )
+    parser.add_argument("--menu-style", type=Path)
     parser.add_argument("--glass", type=Path)
     parser.add_argument("--rounded", type=Path)
     parser.add_argument("--shaders", type=Path)

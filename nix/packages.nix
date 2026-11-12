@@ -52,6 +52,10 @@ in rec {
       runHook postInstall
     '';
   };
+  menu-style = buildPlugin "menu-style" (offline + "/menu-style") {
+    cmakeFlags = [ "-DCMAKE_BUILD_TYPE=Release"
+      "-DMENU_STYLE_PLUGIN_DIR=${placeholder "out"}/${kde.qtbase.qtPluginPrefix}/styles" ];
+  };
   global-menu = buildPlugin "global-menu" (offline + "/plasmoids/org.kde.mac.tahoe.liquid.globalmenu") {};
   task-manager = buildPlugin "task-manager" (offline + "/plasmoids/org.kde.mac.tahoe.liquid.taskmanager") {};
   acrylic-glass = buildPlugin "acrylic-glass" (offline + "/kwin-effects/acrylic-glass") {};
@@ -119,7 +123,7 @@ in rec {
   };
   default = pkgs.symlinkJoin {
     name = "mac-tahoe-liquid-kde-${version}";
-    paths = [ theme-assets global-menu task-manager acrylic-glass rounded-corners tools kde.plasma5support kde.kitemmodels ];
+    paths = [ theme-assets menu-style global-menu task-manager acrylic-glass rounded-corners tools kde.plasma5support kde.kitemmodels ];
     inherit meta;
   };
 }

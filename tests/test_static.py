@@ -478,7 +478,7 @@ def test_kvantum_dark_popup_parity(offline):
     dark_defaults = (
         offline / "look-and-feel/MacTahoeLiquidKde-Dark/contents/defaults"
     ).read_text()
-    assert "widgetStyle=kvantum\n" in dark_defaults
+    assert "widgetStyle=MacTahoe\n" in dark_defaults
     assert "widgetStyle=kvantum-dark" not in dark_defaults, (
         "widgetStyle is the Qt plugin name; the light/dark Kvantum profile is "
         "selected separately by mac-tahoe-theme-switch."

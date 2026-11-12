@@ -24,6 +24,14 @@ DEST_DIR_DARK = HOME / ".config/Kvantum/mac-tahoe-liquid-kdeDark"
 
 _THEMES = ("mac-tahoe-liquid-kde", "mac-tahoe-liquid-kdeDark")
 
+MENU_SOURCE = offline("menu-style")
+MENU_BUILD = build_dir("menu-style")
+
+
+def menu_style_destination() -> Path:
+    return qt6_plugins_dir() / "styles/libmactahoestyle.so"
+
+
 ENGINE_VERSION = "1.1.8"
 ENGINE_COMMIT = "058534fc15d1798c3887590166f05c598e8e946c"
 ENGINE_SHA256 = "7aa9099345e48048ebdad768f583944ac042f87b216fa0b26a169c7e05425047"
@@ -118,6 +126,8 @@ def _bundled_engine_required() -> bool:
 
 
 def deps():
+    menu_deps = ["qmake6:qt6-base", "cmake", "make", "g++:gcc",
+                 "kf6-windowsystem-cmake:kwindowsystem"]
     if _bundled_engine_required():
         return [
             "qmake6:qt6-base",
@@ -132,8 +142,8 @@ def deps():
     if is_debian_family():
         # A distro-owned Qt 6 style plugin is sufficient. Theme selection has
         # a kwriteconfig6 fallback and does not require Kvantum Manager.
-        return []
-    return ["kvantummanager:kvantum"]
+        return menu_deps
+    return menu_deps + ["kvantummanager:kvantum"]
 
 
 def _extract_bundled_engine() -> bool:
@@ -181,22 +191,22 @@ def _extract_bundled_engine() -> bool:
 
 
 def build_artifacts() -> list[Path]:
-    if not _bundled_engine_required():
-        return []
-    return [ENGINE_BUILD / "style/libkvantum.so"]
+    artifacts = [MENU_BUILD / "libmactahoestyle.so"]
+    if _bundled_engine_required():
+        artifacts.append(ENGINE_BUILD / "style/libkvantum.so")
+    return artifacts
 
 
 def build() -> None:
-    if not _bundled_engine_required():
-        return
-    if not _extract_bundled_engine():
-        return
-    cmake_build(
-        ENGINE_SOURCE / "Kvantum",
-        ENGINE_BUILD,
-        f"Kvantum Qt 6 engine v{ENGINE_VERSION}",
-        targets=("kvantum",),
-    )
+    if _bundled_engine_required():
+        if not _extract_bundled_engine():
+            return
+        if not cmake_build(
+            ENGINE_SOURCE / "Kvantum", ENGINE_BUILD,
+            f"Kvantum Qt 6 engine v{ENGINE_VERSION}", targets=("kvantum",),
+        ):
+            return
+    cmake_build(MENU_SOURCE, MENU_BUILD, "Continuous menu corners")
 
 
 def _install_bundled_engine() -> bool:
@@ -308,6 +318,12 @@ def install() -> None:
     if not _install_bundled_engine():
         return
 
+    if not sudo_install_file(
+        MENU_BUILD / "libmactahoestyle.so", menu_style_destination(),
+        tr('Continuous menu corners installed'),
+    ):
+        return
+
     existed = any(
         (d.is_dir() and any(d.glob("*.kvconfig")))
          for d in (DEST_DIR, DEST_DIR_DARK)
@@ -332,7 +348,7 @@ def install() -> None:
         return
 
     if kw_write("--file", "kdeglobals", "--group", "KDE",
-                "--key", "widgetStyle", "kvantum"):
+                "--key", "widgetStyle", "MacTahoe"):
         ok(tr('Widget style installed'))
     else:
         warn(tr("Widget style not applied — kwriteconfig6 unavailable (install plasma-workspace or your distro's equivalent)"))
@@ -416,6 +432,8 @@ def uninstall() -> None:
         ok(tr('MacTahoeLiquidKde themes removed'))
     else:
         ok(tr('MacTahoeLiquidKde themes (not installed)'))
+    sudo_remove(menu_style_destination(), tr("Continuous menu corners"))
+    shutil.rmtree(MENU_BUILD, ignore_errors=True)
     _remove_bundled_engine()
     shutil.rmtree(ENGINE_WORK, ignore_errors=True)
     info(tr('Kvantum Qt styling removed'))

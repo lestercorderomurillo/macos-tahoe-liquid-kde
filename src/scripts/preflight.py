@@ -153,6 +153,7 @@ def _enumerate_destinations() -> list[tuple[str, Path]]:
         ("launcher QML module", plasmoids.LAUNCHER_DEST_QML),
         ("acrylic-glass plugin dir", acrylic_glass._plugin_dir()),
         ("kvantum Qt6 style plugin", kvantum._engine_destination()),
+        ("continuous menu style", kvantum.menu_style_destination()),
         ("kvantum bundled-source marker", kvantum.ENGINE_MARKER),
         ("kvantum bundled-source license", kvantum.ENGINE_LICENSE),
         ("rounded-corners plugin dir", rounded_corners._plugin_dir()),
@@ -200,6 +201,7 @@ def _check_qt_paths() -> bool:
         ("launcher QML module", plasmoids.LAUNCHER_DEST_QML, qml),
         ("acrylic-glass plugin dir", acrylic_glass._plugin_dir(), plugins),
         ("kvantum Qt6 style plugin", kvantum._engine_destination(), plugins),
+        ("continuous menu style", kvantum.menu_style_destination(), plugins),
         ("rounded-corners plugin dir", rounded_corners._plugin_dir(), plugins),
     ]
     cross_ok = True

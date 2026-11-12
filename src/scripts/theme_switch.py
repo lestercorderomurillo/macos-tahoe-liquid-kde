@@ -28,7 +28,7 @@ LAF_LIGHT = "org.kde.mac-tahoe-liquid-kde.light"
 LAF_DARK = "org.kde.mac-tahoe-liquid-kde.dark"
 KVANTUM_THEME_LIGHT = "mac-tahoe-liquid-kde"
 KVANTUM_THEME_DARK = "mac-tahoe-liquid-kdeDark"
-KVANTUM_STYLE = "kvantum"
+KVANTUM_STYLE = "MacTahoe"
 _PROC_ROOT = Path("/proc")
 LEGACY_REDUCED_SUFFIX = "-ReducedTransparency"
 DEFAULT_WALLPAPER = "MacTahoe"
@@ -1309,7 +1309,7 @@ def _gtk4_css_is_replaceable(path: Path, themes_root: Path) -> bool:
 
 
 def _apply_local_extras(mode: str) -> None:
-    # widgetStyle remains the Qt plugin name "kvantum", but the profile
+    # MacTahoe wraps Kvantum for continuous menu corners; the profile
     # itself must match the mode. Both SVGs contain literal surface colors;
     # respect_DE=true cannot recolor those assets.
     _set_kvantum_theme(mode)

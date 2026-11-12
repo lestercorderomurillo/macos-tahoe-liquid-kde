@@ -196,7 +196,7 @@ def test_apply_runs_full_pipeline_in_order(monkeypatch):
     assert (laf_idx < write_idx < extras_idx < wallpaper_idx < cursor_idx
             < cycle_idx < reconfigure_idx)
     assert ("laf", theme_switch.LAF_DARK) in calls
-    assert ("cycle", "kvantum") in calls
+    assert ("cycle", "MacTahoe") in calls
 
 
 def test_apply_serializes_overlapping_theme_transitions(monkeypatch, tmp_path):
@@ -412,7 +412,7 @@ def test_apply_finishes_cycle_and_reconfigure_when_extras_raise(monkeypatch):
 
     assert theme_switch.apply("light") is True
     assert ("extras-attempted",) in calls
-    assert ("cycle", "kvantum") in calls
+    assert ("cycle", "MacTahoe") in calls
     assert any(c[0] == "qdbus" and c[1][0] == "org.kde.KWin" for c in calls)
 
 

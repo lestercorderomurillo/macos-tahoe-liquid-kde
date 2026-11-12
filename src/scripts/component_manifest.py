@@ -38,7 +38,7 @@ def snapshot(root=REPO_ROOT):
     components = {}
     mapping = {'aurorae': 'window_decorations', 'plasma-theme': 'plasma_theme',
                'look-and-feel': 'global_theme', 'layouts': 'layout',
-               'kvantum-engine': 'kvantum', 'plasma-env': 'globalmenu'}
+               'menu-style': 'kvantum', 'kvantum-engine': 'kvantum', 'plasma-env': 'globalmenu'}
     for path in sorted(offline.iterdir()):
         entries = sorted(path.iterdir()) if path.name in ('plasmoids', 'kwin-effects') else [path]
         for payload in entries:
