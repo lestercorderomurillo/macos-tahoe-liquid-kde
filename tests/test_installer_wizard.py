@@ -174,14 +174,15 @@ def test_layout_uses_explicit_launcher_and_independent_panels(monkeypatch, tmp_p
     assert "applications:example.desktop" in script
 
 
-def test_installed_switcher_uses_selected_wallpaper_pair_and_icon_mode(monkeypatch, tmp_path):
+@pytest.mark.parametrize("pack", ["landscape", "prism", "macos"])
+def test_installed_switcher_uses_selected_wallpaper_pair_and_icon_mode(monkeypatch, tmp_path, pack):
     import theme_switch as switch
     monkeypatch.setenv("XDG_DATA_HOME", str(tmp_path))
-    for name in choices.WALLPAPERS["landscape"]:
+    for name in set(choices.WALLPAPERS[pack]):
         (tmp_path / "wallpapers" / name).mkdir(parents=True)
-    monkeypatch.setattr(switch, "INSTALLER_OPTIONS", choices.defaults() | {"wallpaper": "landscape", "icons": "glass"})
-    assert switch._wallpaper_path("light").name == "MacTahoe-Landscape-Morning"
-    assert switch._wallpaper_path("dark").name == "MacTahoe-Landscape-Night"
+    monkeypatch.setattr(switch, "INSTALLER_OPTIONS", choices.defaults() | {"wallpaper": pack, "icons": "glass"})
+    assert switch._wallpaper_path("light").name == choices.WALLPAPERS[pack][0]
+    assert switch._wallpaper_path("dark").name == choices.WALLPAPERS[pack][1]
     writes = []
     monkeypatch.setattr(switch, "_have", lambda _: True)
     monkeypatch.setattr(switch, "_kwrite", lambda *args: writes.append(args) or True)

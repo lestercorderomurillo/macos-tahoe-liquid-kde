@@ -11,9 +11,6 @@ msgstr "&Copiar"
 msgid "&Edit"
 msgstr "&Editar"
 
-msgid "&File"
-msgstr "&Arquivo"
-
 msgid "&Paste"
 msgstr "Co&lar"
 
@@ -59,8 +56,8 @@ msgstr "Chip"
 msgid "Choose…"
 msgstr "Escolher…"
 
-msgid "Close"
-msgstr "Fechar"
+msgid "Close %1"
+msgstr "Fechar %1"
 
 msgid "Close Window"
 msgstr "Fechar janela"

@@ -140,3 +140,6 @@ msgstr "Ubicación"
 
 msgid "Copy Details"
 msgstr "Copiar detalles"
+
+msgid "Close %1"
+msgstr "Cerrar %1"

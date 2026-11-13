@@ -1130,6 +1130,7 @@
   "Show common menus for applications without a menu bar": "Allgemeine Menüs für Anwendungen ohne Menüleiste anzeigen",
   "Switch open menus on hover": "Geöffnete Menüs beim Überfahren mit der Maus wechseln",
   "System menu": "Systemmenü",
+  "Close %1": "%1 schließen",
   "About %1": "Über %1",
   "Application": "Anwendung",
   "Executable": "Programmdatei",

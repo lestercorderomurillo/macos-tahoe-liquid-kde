@@ -1,0 +1,9 @@
+{
+    "KPlugin": {
+        "Id": "MacPrism",
+        "Name": "Prism",
+        "Description": "Psychedelic liquid color \u2014 light and dark",
+        "License": "CC0-1.0",
+        "Version": "1.0"
+    }
+}

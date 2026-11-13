@@ -455,8 +455,8 @@ class InstallerWindow(OpaqueSurface):
         # Use the system face and scale its hierarchy together with accessibility settings.
         self.setFont(relative_font(self, 7/6))
         self.setWindowFlags(Qt.WindowType.Window | Qt.WindowType.FramelessWindowHint)
-        self.resize(820, 606)
-        self.setMinimumSize(820, 606)
+        self.resize(900, 680)
+        self.setMinimumSize(820, 640)
         self.layout = QVBoxLayout(self)
         self.layout.setContentsMargins(0, 0, 0, 0)
         self.layout.setSpacing(0)
@@ -896,7 +896,8 @@ class InstallerWindow(OpaqueSurface):
     def page_wallpaper(self):
         group = self.cards("wallpaper", [(key, label, "", picture(key+".jpg", 362, 112, key+"-dark.jpg", cover=True))
                    for key, label in (("tahoe", "Tahoe"), ("golden", "Golden Gate"),
-                                      ("landscape", "Landscape"), ("sonoma", "Sonoma"))], compact=True)
+                                      ("landscape", "Landscape"), ("sonoma", "Sonoma"),
+                                      ("prism", "Prism"), ("macos", "macOS"))], columns=3, compact=True)
         row = QHBoxLayout()
         keep = RadioOption(self.t("Keep my wallpaper"))
         keep.setFont(relative_font(self, .93))

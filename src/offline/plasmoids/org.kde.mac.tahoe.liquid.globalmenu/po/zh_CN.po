@@ -140,3 +140,6 @@ msgstr "位置"
 
 msgid "Copy Details"
 msgstr "复制详细信息"
+
+msgid "Close %1"
+msgstr "关闭 %1"

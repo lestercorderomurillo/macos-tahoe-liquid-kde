@@ -72,6 +72,8 @@ class AppMenuModel : public QAbstractListModel
     Q_PROPERTY(QRect screenGeometry READ screenGeometry WRITE setScreenGeometry NOTIFY screenGeometryChanged)
 
 public:
+    void refreshWindowActions(QMenu *menu);
+
     // Construction
 
     explicit AppMenuModel(QObject* parent = nullptr);

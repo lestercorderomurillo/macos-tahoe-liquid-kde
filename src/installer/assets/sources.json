@@ -2450,5 +2450,33 @@
     "file": "glass-preset-golden-gate-official-dark-3ab1905fbb30.png",
     "crop": null,
     "capture": "Native 3840x2160 disposable VM capture of the Golden Gate launcher on Tahoe Iridescence; material values verified before capture"
+  },
+  "prism.jpg": {
+    "source": "src/offline/wallpapers/MacPrism/contents/images/3840x2160.jpg",
+    "source_sha256": "071ef3b55ba3824fd31109d7007e57770089b8401a0fce19dc0724039a39e820",
+    "sha256": "51aecf00e2255a62391493acf6206cd400939a8a14c191b43632c09d6fec08a8",
+    "file": "prism-51aecf00e225.jpg",
+    "crop": null
+  },
+  "prism-dark.jpg": {
+    "source": "src/offline/wallpapers/MacPrism/contents/images_dark/3840x2160.jpg",
+    "source_sha256": "ad0427b036dd16f1f35664c739fa2927bb8414fc369740a3e738feae52c37f35",
+    "sha256": "3e1f907ff014d1212f1c36021fc5abf8ef98ee9dd5dfa7828c081eeaaf71a819",
+    "file": "prism-dark-3e1f907ff014.jpg",
+    "crop": null
+  },
+  "macos.jpg": {
+    "source": "src/offline/wallpapers/MacHeritage-Monterey/contents/images/3840x2160.jpg",
+    "source_sha256": "22a5648945fab570952c06b95760329d5d7ccdf6379c27e248e20fafd5140766",
+    "sha256": "d8c96cad9dec0d3ca24bc1bea398f0ee4aa66b33b4e10aa131852b3f2bd6d063",
+    "file": "macos-d8c96cad9dec.jpg",
+    "crop": null
+  },
+  "macos-dark.jpg": {
+    "source": "src/offline/wallpapers/MacHeritage-Monterey/contents/images_dark/3840x2160.jpg",
+    "source_sha256": "701587dbe7300ab3d78d019705b7351160933408199708e7246c1c9895cfb41c",
+    "sha256": "686ee7f16689b2f197d5bf6e5319420536d4074d0a885a9df790e0ae033816e0",
+    "file": "macos-dark-686ee7f16689.jpg",
+    "crop": null
   }
 }

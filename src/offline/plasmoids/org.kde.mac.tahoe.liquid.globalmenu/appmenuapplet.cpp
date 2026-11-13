@@ -248,6 +248,10 @@ QMenu* AppMenuApplet::createMenu(int idx) const
         }
     }
 
+    if (menu && menu->property("tahoeWindowView").toBool()) {
+        if (auto *model = qobject_cast<AppMenuModel*>(m_model))
+            model->refreshWindowActions(menu);
+    }
     return menu;
 }
 
@@ -462,36 +466,11 @@ void AppMenuApplet::triggerWindowMenu(QQuickItem* ctx)
         // Release the popup grab before the independent About window opens.
         QTimer::singleShot(0, this, [this, info] { Q_EMIT applicationAboutRequested(info); });
     });
-    m_windowMenu->addSeparator();
-
-    const bool isClosable = tasks->data(activeTask, TaskManager::AbstractTasksModel::IsClosable).toBool();
-    const bool isMinimizable = tasks->data(activeTask, TaskManager::AbstractTasksModel::IsMinimizable).toBool();
-    const bool isMaximizable = tasks->data(activeTask, TaskManager::AbstractTasksModel::IsMaximizable).toBool();
-    const bool isMaximized = tasks->data(activeTask, TaskManager::AbstractTasksModel::IsMaximized).toBool();
-    const bool isFullScreenable = tasks->data(activeTask, TaskManager::AbstractTasksModel::IsFullScreenable).toBool();
-    const bool isFullScreen = tasks->data(activeTask, TaskManager::AbstractTasksModel::IsFullScreen).toBool();
-
-    auto* closeAction = m_windowMenu->addAction(QIcon::fromTheme(QStringLiteral("window-close")), i18n("Close"));
-    closeAction->setEnabled(isClosable);
-    connect(closeAction, &QAction::triggered, tasks, [tasks, activeTask]() { if (activeTask.isValid()) tasks->requestClose(activeTask); });
-
-    m_windowMenu->addSeparator();
-
-    auto* minimizeAction = m_windowMenu->addAction(QIcon::fromTheme(QStringLiteral("window-minimize")), i18n("Minimize"));
-    minimizeAction->setEnabled(isMinimizable);
-    connect(minimizeAction, &QAction::triggered, tasks, [tasks, activeTask]() { if (activeTask.isValid()) tasks->requestToggleMinimized(activeTask); });
-
-    auto* zoomAction = m_windowMenu->addAction(QIcon::fromTheme(isMaximized ? QStringLiteral("window-restore") : QStringLiteral("window-maximize")),
-        isMaximized ? i18n("Restore") : i18n("Zoom"));
-    zoomAction->setEnabled(isMaximizable);
-    connect(zoomAction, &QAction::triggered, tasks, [tasks, activeTask]() { if (activeTask.isValid()) tasks->requestToggleMaximized(activeTask); });
-
-    m_windowMenu->addSeparator();
-
-    auto* fullScreenAction = m_windowMenu->addAction(
-        QIcon::fromTheme(QStringLiteral("view-fullscreen")), isFullScreen ? i18n("Exit Full Screen") : i18n("Enter Full Screen"));
-    fullScreenAction->setEnabled(isFullScreenable);
-    connect(fullScreenAction, &QAction::triggered, tasks, [tasks, activeTask]() { if (activeTask.isValid()) tasks->requestToggleFullScreen(activeTask); });
+    auto* closeAction = m_windowMenu->addAction(i18n("Close %1", QString(info.value(QStringLiteral("name")).toString()).replace(QLatin1Char('&'), QStringLiteral("&&"))));
+    closeAction->setEnabled(tasks->data(activeTask, TaskManager::AbstractTasksModel::IsClosable).toBool());
+    connect(closeAction, &QAction::triggered, tasks, [tasks, activeTask]() {
+        if (activeTask.isValid()) tasks->requestClose(activeTask);
+    });
 
     showMenu(ctx, m_windowMenu.get(), WINDOW_MENU_INDEX);
 }

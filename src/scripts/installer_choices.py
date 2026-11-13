@@ -18,7 +18,7 @@ ENUMS = {
     "dock_apps_source": ("native", "flatpak"),
     "icons": ("regular", "glass", "keep"),
     "color": tuple(COLORS),
-    "wallpaper": ("tahoe", "golden", "landscape", "sonoma", "keep", "custom"),
+    "wallpaper": ("tahoe", "golden", "landscape", "sonoma", "prism", "macos", "keep", "custom"),
     "launcher": ("tahoe", "golden"),
     "files": ("nautilus", "dolphin", "keep"),
     "shadows": ("none", "soft", "medium", "hard"),
@@ -27,6 +27,8 @@ ENUMS = {
     "glass_style": ("classic", "tinted", "official"),
 }
 WALLPAPERS = {
+    "prism": ("MacPrism", "MacPrism"),
+    "macos": ("MacHeritage-Monterey", "MacHeritage-Monterey"),
     "tahoe": ("MacTahoe", "MacTahoe"),
     "golden": ("MacGoldenGate", "MacGoldenGate"),
     "landscape": ("MacTahoe-Landscape-Morning", "MacTahoe-Landscape-Night"),

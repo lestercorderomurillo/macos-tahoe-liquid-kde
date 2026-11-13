@@ -405,6 +405,22 @@ void AppMenuModel::updateApplicationMenu(const QString& serviceName, const QStri
             }
             setMenuAvailable(true);
 
+            QMenu *windowView = nullptr;
+            const auto viewLabel = i18n("&View").remove(QLatin1Char('&'));
+            for (auto *action : m_menu->actions()) {
+                const auto label = action->text().remove(QLatin1Char('&'));
+                if (action->menu() && (label.compare(viewLabel, Qt::CaseInsensitive) == 0
+                    || label.compare(QStringLiteral("View"), Qt::CaseInsensitive) == 0)) {
+                    windowView = action->menu();
+                    break;
+                }
+            }
+            if (!windowView && m_tasksModel->activeTask().isValid()) {
+                windowView = m_menu->addMenu(i18n("&View"));
+                windowView->setProperty("tahoeLocalView", true);
+            }
+            if (windowView) windowView->setProperty("tahoeWindowView", true);
+
             const auto actions = m_menu->actions();
             for (QAction* a : actions) {
                 connect(a, &QAction::changed, this, [this, a] {
@@ -418,7 +434,7 @@ void AppMenuModel::updateApplicationMenu(const QString& serviceName, const QStri
                 });
                 connect(a, &QAction::destroyed, this, &AppMenuModel::modelNeedsUpdate);
 
-                if (a->menu()) {
+                if (a->menu() && !a->menu()->property("tahoeLocalView").toBool()) {
                     m_importer->updateMenu(a->menu());
                 }
             }
@@ -497,12 +513,6 @@ void AppMenuModel::updateGenericMenu()
     m_genericTarget = target;
     ++m_shortcutGeneration;
     m_genericMenu->setObjectName(QStringLiteral("tahoe-generic-menu"));
-    auto *file = m_genericMenu->addMenu(i18n("&File"));
-    auto *close = file->addAction(i18n("Close Window"));
-    close->setEnabled(target.data(TaskManager::AbstractTasksModel::IsClosable).toBool());
-    connect(close, &QAction::triggered, this, [this, target] {
-        if (target.isValid() && target == m_genericTarget) m_tasksModel->requestClose(target);
-    });
     auto *edit = m_genericMenu->addMenu(i18n("&Edit"));
     auto addShortcut = [this, edit, target](const QString &label, QKeySequence::StandardKey key) {
         auto *action = edit->addAction(label);
@@ -521,20 +531,41 @@ void AppMenuModel::updateGenericMenu()
     edit->addSeparator();
     addShortcut(i18n("Select &All"), QKeySequence::SelectAll);
     auto *view = m_genericMenu->addMenu(i18n("&View"));
-    auto *minimize = view->addAction(i18n("Minimize"));
-    minimize->setEnabled(target.data(TaskManager::AbstractTasksModel::IsMinimizable).toBool());
-    connect(minimize, &QAction::triggered, this, [this, target] {
-        if (target.isValid() && target == m_genericTarget) m_tasksModel->requestToggleMinimized(target);
-    });
-    auto *zoom = view->addAction(i18n("Zoom"));
-    zoom->setEnabled(target.data(TaskManager::AbstractTasksModel::IsMaximizable).toBool());
-    connect(zoom, &QAction::triggered, this, [this, target] {
-        if (target.isValid() && target == m_genericTarget) m_tasksModel->requestToggleMaximized(target);
-    });
+    view->setProperty("tahoeWindowView", true);
+    refreshWindowActions(view);
     m_menu = m_genericMenu.get();
     setMenuAvailable(true);
     setVisible(true);
     Q_EMIT modelNeedsUpdate();
+}
+
+void AppMenuModel::refreshWindowActions(QMenu *menu)
+{
+    // Only replace our own additions; imported application actions stay intact.
+    for (auto *action : menu->actions()) {
+        if (action->property("tahoeWindowAction").toBool()) delete action;
+    }
+    const QPersistentModelIndex target(m_tasksModel->activeTask());
+    if (!target.isValid()) return;
+    using Roles = TaskManager::AbstractTasksModel;
+    if (!menu->isEmpty()) {
+        auto *separator = menu->addSeparator();
+        separator->setProperty("tahoeWindowAction", true);
+    }
+    auto add = [this, menu, target](const QString &label, int capability, auto request) {
+        auto *action = menu->addAction(label);
+        action->setProperty("tahoeWindowAction", true);
+        action->setEnabled(target.data(capability).toBool());
+        connect(action, &QAction::triggered, this, [this, target, request] {
+            if (target.isValid()) (m_tasksModel->*request)(target);
+        });
+    };
+    add(i18n("Close Window"), Roles::IsClosable, &TaskManager::TasksModel::requestClose);
+    add(i18n("Minimize"), Roles::IsMinimizable, &TaskManager::TasksModel::requestToggleMinimized);
+    add(target.data(Roles::IsMaximized).toBool() ? i18n("Restore") : i18n("Zoom"),
+        Roles::IsMaximizable, &TaskManager::TasksModel::requestToggleMaximized);
+    add(target.data(Roles::IsFullScreen).toBool() ? i18n("Exit Full Screen") : i18n("Enter Full Screen"),
+        Roles::IsFullScreenable, &TaskManager::TasksModel::requestToggleFullScreen);
 }
 
 #include "moc_appmenumodel.cpp"

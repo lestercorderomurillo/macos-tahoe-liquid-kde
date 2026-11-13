@@ -4,6 +4,7 @@
 #include <QMenu>
 #include <QLineEdit>
 #include "dbusmenutypes_p.h"
+#include "dbusmenuimporter.h"
 #include <abstracttasksmodel.h>
 
 #include <QDBusConnection>
@@ -97,44 +98,44 @@ private Q_SLOTS:
         QTRY_VERIFY(model.tasksModel()->sourceModel());
         model.tasksModel()->setSourceModel(&tasks);
         Q_EMIT model.tasksModel()->activeTaskChanged();
-        QTRY_COMPARE(model.rowCount(), 3);
-        QCOMPARE(model.index(0).data(AppMenuModel::MenuRole).toString(), QString("&File"));
+        QTRY_COMPARE(model.rowCount(), 2);
+        QCOMPARE(model.index(0).data(AppMenuModel::MenuRole).toString(), QString("&Edit"));
         auto actionAt = [&model](int row) {
             return model.index(row).data(AppMenuModel::ActionRole).value<QAction *>();
         };
-        QVERIFY(actionAt(0)->menu()->actions().first()->isEnabled());
+        QVERIFY(actionAt(1)->menu()->actions().first()->isEnabled());
         QPointer<QAction> oldAction = actionAt(0);
         model.setEnableGenericMenu(false);
         QTRY_COMPARE(model.rowCount(), 0);
         QVERIFY(oldAction.isNull());
         model.setEnableGenericMenu(true);
-        QTRY_COMPARE(model.rowCount(), 3);
+        QTRY_COMPARE(model.rowCount(), 2);
         tasks.setData(first, service, Roles::ApplicationMenuServiceName);
         tasks.setData(first, path, Roles::ApplicationMenuObjectPath);
-        QTRY_COMPARE(model.rowCount(), 2);
+        QTRY_COMPARE(model.rowCount(), 3);
         QCOMPARE(model.index(0).data(AppMenuModel::MenuRole).toString(), QString("File"));
         tasks.setData(first, false, Roles::IsActive);
         tasks.setData(second, true, Roles::IsActive);
         Q_EMIT model.tasksModel()->activeTaskChanged();
-        QTRY_COMPARE(model.rowCount(), 3);
-        QVERIFY(!actionAt(0)->menu()->actions().first()->isEnabled());
+        QTRY_COMPARE(model.rowCount(), 2);
+        QVERIFY(!actionAt(1)->menu()->actions().first()->isEnabled());
         setLabels({});
         tasks.setData(second, service, Roles::ApplicationMenuServiceName);
         tasks.setData(second, path, Roles::ApplicationMenuObjectPath);
         QVERIFY(QMetaObject::invokeMethod(&model, "onActiveWindowChanged"));
         QCOMPARE(model.rowCount(), 0);
-        QTRY_COMPARE(model.rowCount(), 3);
-        QCOMPARE(model.index(0).data(AppMenuModel::MenuRole).toString(), QString("&File"));
+        QTRY_COMPARE(model.rowCount(), 2);
+        QCOMPARE(model.index(0).data(AppMenuModel::MenuRole).toString(), QString("&Edit"));
         model.setEnableGenericMenu(false);
         QTRY_COMPARE(model.rowCount(), 0);
         model.setEnableGenericMenu(true);
-        QTRY_COMPARE(model.rowCount(), 3);
-        setLabels({"File", "Edit"});
         QTRY_COMPARE(model.rowCount(), 2);
+        setLabels({"File", "Edit"});
+        QTRY_COMPARE(model.rowCount(), 3);
         QCOMPARE(model.index(0).data(AppMenuModel::MenuRole).toString(), QString("File"));
         tasks.setData(second, QString(), Roles::ApplicationMenuServiceName);
         tasks.setData(second, QString(), Roles::ApplicationMenuObjectPath);
-        QTRY_COMPARE(model.rowCount(), 3);
+        QTRY_COMPARE(model.rowCount(), 2);
         QVERIFY(model.setProperty("containmentStatus", Plasma::Types::AcceptingInputStatus));
         tasks.removeRow(1);
         Q_EMIT model.tasksModel()->activeTaskChanged();
@@ -159,7 +160,7 @@ private Q_SLOTS:
         QTRY_VERIFY(model.tasksModel()->sourceModel());
         model.tasksModel()->setSourceModel(&tasks);
         Q_EMIT model.tasksModel()->activeTaskChanged();
-        QTRY_COMPARE(model.rowCount(), 3);
+        QTRY_COMPARE(model.rowCount(), 2);
         QLineEdit editor(QStringLiteral("Original document"));
         editor.show();
         auto *connection = xcb_connect(nullptr, nullptr);
@@ -168,7 +169,7 @@ private Q_SLOTS:
         xcb_flush(connection);
         QTRY_VERIFY(editor.hasFocus());
         auto selectAll = [&model]() {
-            auto *edit = model.index(1).data(AppMenuModel::ActionRole).value<QAction *>()->menu();
+            auto *edit = model.index(0).data(AppMenuModel::ActionRole).value<QAction *>()->menu();
             return edit->actions().last();
         };
         QVERIFY(selectAll()->isEnabled());
@@ -221,6 +222,23 @@ private Q_SLOTS:
         QCOMPARE(model.index(2).data(AppMenuModel::MenuRole).toString(), QString("Search"));
         model.setEnableMenuSearch(false);
         QTRY_COMPARE(model.rowCount(), 2);
+    }
+    void localActionsSurviveExporterRefresh()
+    {
+        DBusMenuImporter importer(service, path);
+        importer.updateMenu();
+        QTRY_VERIFY(importer.menu());
+        QTRY_COMPARE(importer.menu()->actions().size(), 2);
+        QPointer<QAction> local = importer.menu()->addAction("Local window action");
+        for (const QStringList labels : {QStringList{"First", "Second", "Third"},
+                                         QStringList{}, QStringList{"Restored"}}) {
+            setLabels(labels);
+            QTRY_COMPARE(importer.menu()->actions().size(), labels.size() + 1);
+            QVERIFY(local);
+            QCOMPARE(importer.menu()->actions().last(), local.data());
+            for (int i = 0; i < labels.size(); ++i)
+                QCOMPARE(importer.menu()->actions()[i]->text(), labels[i]);
+        }
     }
     void switchesWithoutExposingPreviousActions()
     {
@@ -293,16 +311,16 @@ private Q_SLOTS:
             Q_EMIT model.tasksModel()->activeTaskChanged();
         };
         activate(second, first);
-        QTRY_COMPARE(model.rowCount(), 2);
+        QTRY_COMPARE(model.rowCount(), 3);
         QCOMPARE(model.index(0).data(AppMenuModel::MenuRole).toString(), QStringLiteral("File"));
         activate(first, second);
         QTRY_COMPARE(model.rowCount(), 0);
         activate(second, first);
-        QTRY_COMPARE(model.rowCount(), 2);
+        QTRY_COMPARE(model.rowCount(), 3);
         tasks.setData(first, false, Roles::IsActive);
         Q_EMIT model.tasksModel()->activeTaskChanged();
         QTRY_VERIFY(!model.tasksModel()->activeTask().isValid());
-        QCOMPARE(model.rowCount(), 2);
+        QCOMPARE(model.rowCount(), 3);
         QVERIFY(model.setProperty("containmentStatus", Plasma::Types::ActiveStatus));
         QTRY_COMPARE(model.rowCount(), 0);
     }
@@ -343,12 +361,12 @@ private Q_SLOTS:
         QTRY_VERIFY(model.tasksModel()->activeTask().isValid());
         QCOMPARE(model.rowCount(), 0);
         setWindowProperty("_NET_ACTIVE_WINDOW", {xcb_window_t(first.winId())});
-        QTRY_COMPARE(model.rowCount(), 2);
+        QTRY_COMPARE(model.rowCount(), 3);
         QCOMPARE(model.index(0).data(AppMenuModel::MenuRole).toString(), QStringLiteral("File"));
         setWindowProperty("_NET_ACTIVE_WINDOW", {xcb_window_t(second.winId())});
         QTRY_COMPARE(model.rowCount(), 0);
         setWindowProperty("_NET_ACTIVE_WINDOW", {xcb_window_t(first.winId())});
-        QTRY_COMPARE(model.rowCount(), 2);
+        QTRY_COMPARE(model.rowCount(), 3);
         setWindowProperty("_NET_ACTIVE_WINDOW", {XCB_WINDOW_NONE});
         setWindowProperty("_NET_CLIENT_LIST", {});
         QTRY_VERIFY(!model.tasksModel()->activeTask().isValid());
@@ -362,7 +380,7 @@ private Q_SLOTS:
         model.updateApplicationMenu(service, path);
         QTRY_VERIFY(!model.menuAvailable());
         setLabels({QStringLiteral("Tools")});
-        QTRY_COMPARE(model.rowCount(), 1);
+        QTRY_COMPARE(model.rowCount(), model.tasksModel()->activeTask().isValid() ? 2 : 1);
         QVERIFY(model.menuAvailable());
     }
 };

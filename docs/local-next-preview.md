@@ -1,0 +1,35 @@
+# Local next-update preview
+
+This candidate is intentionally unpublished so it can be tried locally first.
+VERSION and release tags remain at the last published version.
+
+- Application About uses the computer About glass surface, draggable frameless
+  window and the same shared GlassButton component. Its content remains scrollable.
+- The application-name popup contains only About and Close, both with the app name.
+  Window controls are in View; exported application View actions are preserved.
+- The installer opens at 900 × 680, with a six-card wallpaper selection.
+- Prism supplies newly generated psychedelic light/dark artwork. macOS exposes
+  the existing original Monterey light/dark bundle; the other bundled Apple
+  wallpapers remain available through Plasma's wallpaper selector.
+
+From either checkout, run `./installer` to try the candidate. Golden Gate prepares
+its own edition using the adjacent Tahoe checkout, including these local changes.
+Its published immutable upstream pin is intentionally unchanged until release.
+
+For a standalone About preview without installation, run from Tahoe:
+
+```sh
+python3 tests/application_about_probe.py --preview
+```
+
+The preview uses sample Files metadata. Opening it does not replace the installed
+applet; the changed menu requires installing the candidate through the wizard.
+No host installation was performed automatically.
+
+Local verification: 43 installer/About/wallpaper checks passed, followed by
+three focused switcher cases for Landscape, Prism and macOS; 31 catalog checks
+and 14 component-cache checks passed. The native isolated X11 suite built the
+plugin and exercised the importer, popup actions and QML composition successfully.
+These are local checks, not CI or VM install results. Live Plasma
+installation/reinstallation and compositor qualification are still required
+before a future release; offscreen captures do not prove compositor blur.

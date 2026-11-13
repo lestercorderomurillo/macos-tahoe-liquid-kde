@@ -651,7 +651,9 @@ def _wallpaper_path(mode: str) -> Path | None:
     if choices.get("wallpaper") == "custom":
         custom = base / "MacTahoe-Custom" / "wallpaper"
         return custom if custom.is_file() else None
-    pairs = {"tahoe": ("MacTahoe", "MacTahoe"), "golden": ("MacGoldenGate", "MacGoldenGate"),
+    pairs = {"prism": ("MacPrism", "MacPrism"),
+             "macos": ("MacHeritage-Monterey", "MacHeritage-Monterey"),
+             "tahoe": ("MacTahoe", "MacTahoe"), "golden": ("MacGoldenGate", "MacGoldenGate"),
              "landscape": ("MacTahoe-Landscape-Morning", "MacTahoe-Landscape-Night"),
              "sonoma": ("MacHeritage-Sonoma", "MacHeritage-Sonoma-Horizon")}
     pair = pairs.get(choices.get("wallpaper"))

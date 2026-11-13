@@ -93,7 +93,13 @@ private Q_SLOTS:
         AppMenuApplet applet(nullptr, KPluginMetaData(), {});
         applet.setModel(&model);
         auto click = [&](const QString &label) {
-            applet.triggerWindowMenu(&anchor);
+            for (int row = 0; row < model.rowCount(); ++row) {
+                auto *action = model.index(row).data(AppMenuModel::ActionRole).value<QAction*>();
+                if (action && action->menu() && action->menu()->property("tahoeWindowView").toBool()) {
+                    applet.trigger(&anchor, row);
+                    break;
+                }
+            }
             auto *popup = qobject_cast<QMenu*>(QApplication::activePopupWidget());
             if (!popup) return false;
             for (auto *action : popup->actions()) {
@@ -132,7 +138,7 @@ private Q_SLOTS:
         model.tasksModel()->requestActivate(task);
         QTRY_VERIFY(target.isActive());
         QTRY_VERIFY(!task.data(Roles::IsMinimized).toBool());
-        QVERIFY(click("Close"));
+        QVERIFY(click("Close Window"));
         QTRY_VERIFY(!target.isVisible());
     }
     void applicationAboutAndWindowActions()
@@ -185,14 +191,26 @@ private Q_SLOTS:
             QVERIFY(popup);
             QList<QAction*> actions;
             for (auto *action : popup->actions()) if (!action->isSeparator()) actions << action;
-            QCOMPARE(actions.size(), 5);
+            QCOMPARE(actions.size(), 2);
             QCOMPARE(actions[0]->text(), QString("About Editor && <Notes>"));
-            QCOMPARE(actions[3]->text(), QString(state & 1 ? "Restore" : "Zoom"));
-            QCOMPARE(actions[4]->text(), QString(state & 2 ? "Exit Full Screen" : "Enter Full Screen"));
+            QCOMPARE(actions[1]->text(), QString("Close Editor && <Notes>"));
+            QCOMPARE(actions[1]->isEnabled(), bool(state & 1));
+            popup->hide();
+            QMenu view;
+            auto *native = view.addAction("Application view action");
+            model.refreshWindowActions(&view);
+            model.refreshWindowActions(&view); // no duplicates; exporter action survives
+            QCOMPARE(view.actions().first(), native);
+            actions.clear();
+            for (auto *action : view.actions())
+                if (!action->isSeparator() && action != native) actions << action;
+            QCOMPARE(actions.size(), 4);
+            QCOMPARE(actions[2]->text(), QString(state & 1 ? "Restore" : "Zoom"));
+            QCOMPARE(actions[3]->text(), QString(state & 2 ? "Exit Full Screen" : "Enter Full Screen"));
             for (int bit = 0; bit < capabilities.size(); ++bit) {
-                QCOMPARE(actions[bit + 1]->isEnabled(), bool(state & (1 << bit)));
+                QCOMPARE(actions[bit]->isEnabled(), bool(state & (1 << bit)));
                 const auto count = requested.count();
-                actions[bit + 1]->trigger();
+                actions[bit]->trigger();
                 QCOMPARE(requested.count(), count + bool(state & (1 << bit)));
                 if (requested.count() > count) {
                     QCOMPARE(requested.last().at(0).toString(), commands[bit]);
@@ -218,8 +236,11 @@ private Q_SLOTS:
         QVERIFY(!info.contains("version")); // Desktop Entry Version is a file-format version.
         QVERIFY(!info.contains("commandLine"));
         // Deleted tasks must never become another app's window action.
+        QMenu staleView;
+        model.refreshWindowActions(&staleView);
         const auto count = requested.count();
         source.removeFirst();
+        for (auto *action : staleView.actions()) if (!action->isSeparator()) action->trigger();
         for (auto *action : popup->actions()) if (!action->isSeparator()) action->trigger();
         QTest::qWait(20);
         QCOMPARE(requested.count(), count);
@@ -253,10 +274,10 @@ private Q_SLOTS:
         QTRY_VERIFY(model.tasksModel()->sourceModel());
         model.tasksModel()->setSourceModel(&tasks);
         Q_EMIT model.tasksModel()->activeTaskChanged();
-        QTRY_COMPARE(model.rowCount(), 3);
+        QTRY_COMPARE(model.rowCount(), 2);
         if (exported) {
             model.updateApplicationMenu("org.mttkde.PopupTest", "/Menu");
-            QTRY_COMPARE(model.rowCount(), 2);
+            QTRY_COMPARE(model.rowCount(), 3);
         }
         QQuickWindow window;
         window.resize(400, 24);

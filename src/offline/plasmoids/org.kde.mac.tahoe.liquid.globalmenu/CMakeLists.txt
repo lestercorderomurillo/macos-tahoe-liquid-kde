@@ -39,6 +39,7 @@ plasma_add_applet(org.kde.mac.tahoe.liquid.globalmenu
         qml/configGeneral.qml
         qml/main.qml
         qml/MenuDelegate.qml
+        qml/GlassButton.qml
         qml/AboutWindow.qml
         qml/ApplicationAboutWindow.qml
         qml/configSystemMenu.qml

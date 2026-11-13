@@ -274,95 +274,6 @@ Window {
         styleColor: Qt.rgba(0, 0, 0, 0.12)
     }
 
-    component GlassButton: QQC2.Button {
-        id: control
-        hoverEnabled: true
-        implicitWidth: Math.max(implicitBackgroundWidth + leftInset + rightInset,
-                                implicitContentWidth + leftPadding + rightPadding)
-        implicitHeight: Math.max(32, implicitContentHeight + topPadding + bottomPadding)
-        leftPadding: 14
-        rightPadding: 14
-        topPadding: 6
-        bottomPadding: 6
-
-        contentItem: GlassText {
-            objectName: "aboutButtonLabel"
-            text: control.text
-            font: control.font
-            color: Kirigami.Theme.textColor
-            opacity: control.enabled ? 1 : 0.4
-            horizontalAlignment: Text.AlignHCenter
-            verticalAlignment: Text.AlignVCenter
-            elide: Text.ElideRight
-        }
-
-        background: Item {
-            implicitWidth: 32
-            implicitHeight: 32
-            opacity: control.enabled ? 1 : 0.4
-
-            Rectangle {
-                anchors.fill: face
-                anchors.topMargin: 0.8
-                anchors.bottomMargin: -0.8
-                radius: height / 2
-                color: "transparent"
-                border.width: 1
-                border.color: Qt.rgba(0, 0, 0, aboutWindow.isDarkTheme ? 28 / 255 : 12 / 255)
-            }
-
-            Rectangle {
-                id: face
-                objectName: "aboutButtonFace"
-                anchors.fill: parent
-                anchors.margins: 1
-                anchors.bottomMargin: 2
-                radius: height / 2
-                color: control.down
-                    ? (aboutWindow.isDarkTheme ? Qt.rgba(1, 1, 1, 9 / 255) : Qt.rgba(0, 0, 0, 8 / 255))
-                    : Qt.rgba(1, 1, 1, ((aboutWindow.isDarkTheme ? 16 : 80) + (control.hovered ? 14 : 0)) / 255)
-                border.width: 0.5
-                border.color: aboutWindow.isDarkTheme ? Qt.rgba(1, 1, 1, 24 / 255) : Qt.rgba(0, 0, 0, 22 / 255)
-            }
-
-            // Paint only the rim so the reflection never bands the glass face.
-            Canvas {
-                id: rim
-                anchors.fill: face
-                onWidthChanged: requestPaint()
-                onHeightChanged: requestPaint()
-                Connections {
-                    target: aboutWindow
-                    function onIsDarkThemeChanged() { rim.requestPaint() }
-                }
-                onPaint: {
-                    const ctx = getContext("2d");
-                    ctx.reset();
-                    const dark = aboutWindow.isDarkTheme;
-                    const gradient = ctx.createLinearGradient(0, 0, width, height);
-                    const stops = [[0, dark ? 125 : 240], [.22, dark ? 65 : 160],
-                                   [.44, 12], [.62, 6], [.84, dark ? 60 : 135],
-                                   [1, dark ? 115 : 220]];
-                    for (const stop of stops)
-                        gradient.addColorStop(stop[0], Qt.rgba(1, 1, 1, stop[1] / 255));
-                    ctx.strokeStyle = gradient;
-                    ctx.lineWidth = 1;
-                    ctx.beginPath();
-                    ctx.roundedRect(.5, .5, width - 1, height - 1, (height - 1) / 2, (height - 1) / 2);
-                    ctx.stroke();
-                }
-            }
-
-            Rectangle {
-                anchors.fill: face
-                radius: height / 2
-                color: "transparent"
-                border.width: 1
-                border.color: Kirigami.Theme.focusColor
-                visible: control.visualFocus
-            }
-        }
-    }
 
     KSvg.Svg {
         id: popupSurface
@@ -681,6 +592,7 @@ Window {
                 spacing: 8
 
                 GlassButton {
+                    isDarkTheme: aboutWindow.isDarkTheme
                     text: translations.i18n("More Info…")
                     onClicked: {
                         launcher.exec("kinfocenter");
@@ -689,6 +601,7 @@ Window {
                 }
 
                 GlassButton {
+                    isDarkTheme: aboutWindow.isDarkTheme
                     text: translations.i18n("Report a Bug…")
                     onClicked: {
                         launcher.exec("xdg-open https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/issues/new");
@@ -697,6 +610,7 @@ Window {
                 }
 
                 GlassButton {
+                    isDarkTheme: aboutWindow.isDarkTheme
                     id: copyButton
                     property bool justCopied: false
                     enabled: aboutWindow.infoReady

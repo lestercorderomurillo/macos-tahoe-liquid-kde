@@ -16,6 +16,7 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--mode', choices=('light', 'dark'), default='light')
     parser.add_argument('--capture', type=Path)
+    parser.add_argument('--preview', action='store_true', help='Open a standalone preview without installing anything')
     parser.add_argument('--icon-theme')
     args = parser.parse_args()
     app = QApplication(sys.argv[:1])
@@ -48,12 +49,24 @@ def main():
         {'name': 'Sandboxed app', 'desktopFile': '/var/lib/flatpak/exports/share/applications/org.example.App.desktop'},
         {},
     ]
+    if args.preview:
+        window.setProperty('applicationInfo', samples[0])
+        window.show()
+        window.requestActivate()
+        app.exec()
+        return
     for info in samples:
         window.setProperty('applicationInfo', info)
         window.show()
         window.requestActivate()
         QTest.qWait(120)
         assert window.isVisible()
+        assert window.flags() & Qt.WindowType.FramelessWindowHint
+        assert window.color().alpha() == 0
+        assert window.findChild(QObject, 'aboutDragArea') is not None
+        surface = window.findChild(QObject, 'aboutGlassSurface')
+        assert 0 < surface.property('color').alphaF() < 1
+        assert window.findChild(QObject, 'aboutButtonFace') is not None
         name = window.findChild(QObject, 'applicationName')
         location = window.findChild(QObject, 'applicationLocation')
         assert name.property('text') == info.get('name', 'Application')
