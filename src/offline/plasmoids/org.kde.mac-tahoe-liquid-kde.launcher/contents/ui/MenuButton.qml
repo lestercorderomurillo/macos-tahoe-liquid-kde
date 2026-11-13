@@ -29,7 +29,10 @@ Item {
         Kirigami.Theme.textColor: foregroundColor
 
         background: Rectangle {
-            color: button.down ? main.contrastBgColor : "transparent"
+            color: button.down || (main.tahoeStyle && button.hovered) ? main.contrastBgColor : "transparent"
+            border.width: main.tahoeStyle ? 1 : 0
+            border.color: Qt.rgba(foregroundColor.r, foregroundColor.g, foregroundColor.b, 0.55)
+            Behavior on color { ColorAnimation { duration: main.tahoeStyle ? 100 : 0 } }
             radius: height / 2
         }
         onPressed: contextMenu.openRelative()

@@ -1,13 +1,13 @@
 # Installer testing
 
-Tahoe **v0.71.3** uses a smooth circular installer progress indicator.
+Tahoe **v0.71.4** carries the Tahoe launcher layout and hover refinement.
+Golden Gate's appearance is unchanged.
 
-Wizard/progress checks passed on the host and in a disposable Plasma 6.8.1
-VM. Scoped installation/reinstallation, light/dark animation and visibility
-timer checks passed; both progress views were reviewed. Golden Gate's staged
-wizard checks also passed. See [commands and coverage limits](release-evidence.json).
-Historical installer photographs below retain their original provenance and
-may show the previous spinner.
+Cross-edition launcher regressions and focused install/reinstall checks passed.
+Tahoe light/dark launcher hover and pointer-exit frames were reviewed in a
+disposable Plasma 6.8.1 Wayland VM. See [commands, reference and coverage limits](release-evidence.json).
+Historical photographs below retain their original provenance; launcher images
+may show the previous Tahoe layout.
 
 [Light menu](src/screenshots/menu_v4-0343811e426d.webp) · [Dark menu](src/screenshots/menu_dark_v4-171bb0e051ff.webp) · [Capture provenance](src/screenshots/previews/system-menu-tahoe-069-provenance-9c458fcf42db.json)
 

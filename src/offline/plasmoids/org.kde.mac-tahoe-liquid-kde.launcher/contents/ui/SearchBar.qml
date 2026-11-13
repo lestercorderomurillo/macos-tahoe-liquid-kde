@@ -42,7 +42,7 @@ RowLayout {
         Layout.fillHeight: true
         Layout.fillWidth: true
         font.family: Kirigami.Theme.defaultFont.family
-        font.pointSize: main.textSize * (main.detachedSearch ? 2 : 1)
+        font.pointSize: main.textSize * (main.detachedSearch ? 2 : (main.tahoeStyle ? 1.7 : 1))
         font.weight: Kirigami.Theme.defaultFont.weight
         color: searchFieldBar.textColor
 

@@ -162,7 +162,7 @@ PlasmaCore.Dialog {
 		implicitHeight: root.goldenGate
 			? innerPadding * 3 + main.categoryHeight + main.gridTopSpacing + root.cellSizeHeight * rows
 				- dialogSvg.margins.top - dialogSvg.margins.bottom
-			: 40 + 2 + 12 + 40 + root.cellSizeHeight * rows + innerPadding
+			: main.inlineSearchHeight + 2 + 12 + main.categoryHeight + main.gridTopSpacing + root.cellSizeHeight * rows + innerPadding
 		// Dialog can write back the previous window size during a preset switch.
 		// Keep the requested size independent of that feedback and constrain the
 		// native window to the selected preset's dimensions.

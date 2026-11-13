@@ -61,7 +61,7 @@ Item {
 		text: ("name" in model ? model.name : model.display)
 		font.family: main.textFont
 		font.pointSize: main.appTextSize
-		font.weight: main.detachedSearch ? Font.Medium : 650
+		font.weight: main.detachedSearch || main.tahoeStyle ? Font.Medium : 650
 		color: main.textColor
 		layer.enabled: true
 		layer.effect: GlassTextShadow {}
@@ -74,10 +74,10 @@ Item {
 			rightMargin: Kirigami.Units.smallSpacing
 		}
 		textFormat: Text.PlainText
-		elide: main.detachedSearch ? Text.ElideRight : Text.ElideMiddle
+		elide: main.detachedSearch || main.tahoeStyle ? Text.ElideRight : Text.ElideMiddle
 		horizontalAlignment: Text.AlignHCenter
-		maximumLineCount: main.detachedSearch ? 1 : 2
-		wrapMode: main.detachedSearch ? Text.NoWrap : Text.Wrap
+		maximumLineCount: main.detachedSearch || main.tahoeStyle ? 1 : 2
+		wrapMode: main.detachedSearch || main.tahoeStyle ? Text.NoWrap : Text.Wrap
 	}
 
 	
@@ -110,12 +110,12 @@ Item {
 	state: "default"
 	states: [
 		State {
-			name: "highlight"; when: (view.canMoveWithKeyboard ? activeFocus : highlighted)
+			name: "highlight"; when: main.tahoeStyle ? (highlighted || (activeFocus && view.movedWithKeyboard)) : (view.canMoveWithKeyboard ? activeFocus : highlighted)
 			PropertyChanges { target: appIconShadow;  color: "#4D000000"}
-			PropertyChanges { target: appiconHighlight;  opacity: 0.4}
+			PropertyChanges { target: appiconHighlight;  opacity: main.tahoeStyle ? 1 : 0.4}
 		},
 		State {
-			name: "default"; when: (view.canMoveWithKeyboard ? !activeFocus : !highlighted)
+			name: "default"; when: main.tahoeStyle ? (!highlighted && !(activeFocus && view.movedWithKeyboard)) : (view.canMoveWithKeyboard ? !activeFocus : !highlighted)
 			PropertyChanges { target: appIconShadow; color: "#33000000"}
 			PropertyChanges { target: appiconHighlight;  opacity: 0}
 		}

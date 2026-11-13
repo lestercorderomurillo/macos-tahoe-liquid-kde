@@ -1,48 +1,92 @@
 {
-  "version": "0.71.3",
-  "source_sha256": "2c108ad5fb37abddeb431be7c1d8b4e1ceb4ada4ca39084dfd283631119482fd",
-  "environment": "CachyOS host Qt 6.11.2; pinned disposable KDE neon Plasma 6.8.1 / Qt 6.11.1 Wayland VM.",
+  "version": "0.71.4",
+  "source_sha256": "be9f34b00e8367354d48c09e6e622818ad9a998e792dce4a766ff01fe5ef59c8",
+  "environment": "CachyOS Qt 6.11.2 isolated Xvfb; pinned disposable KDE neon Plasma 6.8.1 / Qt 6.11.1 Wayland VM.",
   "checks": [
     {
-      "command": "QT_QPA_PLATFORM=offscreen python3 -m pytest -q tests/test_installer_wizard.py tests/test_installer_ui.py",
+      "command": "python3 -m pytest -q tests/test_launcher_presets.py -k 'not dock'",
       "result": "passed",
-      "detail": "85 passed on host; 85 passed in disposable VM."
+      "detail": "45 passed, covering staging/defaults, saved presets, native X11 popup layout and interaction in both editions/modes."
     },
     {
-      "command": "Guest: installer_backend.py install --only --wallpapers --no-apply-theme with installer_choices.defaults(); repeat for reinstall",
+      "command": "python3 -m pytest -q tests/test_launcher_presets.py -k native_launcher_popup_presets",
       "result": "passed",
-      "detail": "Both scoped lifecycle operations exited 0 in disposable VM."
+      "detail": "8 passed on final implementation, including Tahoe pointer-entry/exit and edition-isolated glass/header regressions."
     },
     {
-      "command": "Guest: QT_QPA_PLATFORM=wayland python3 spinner-probe.py light; repeat dark",
+      "command": "Guest: installer_backend.py install --only --plasmoids --no-apply-theme with installer_choices.defaults(); repeat for reinstall",
       "result": "passed",
-      "detail": "Real progress page focused; successive frames differ; hide stops timer and show restarts it. Both mode captures reviewed."
+      "detail": "Final source installed and reinstalled successfully in disposable Plasma 6.8.1/Qt 6.11.1 Wayland VM. Stale fixture payload repaired and Plasma reloaded before visual qualification."
     },
     {
-      "command": "Prepared Golden Gate: QT_QPA_PLATFORM=offscreen python3 -m pytest -q tests/test_installer_wizard.py -k native_wizard_navigation",
+      "command": "python3 /tmp/launcher-final-vm.py",
       "result": "passed",
-      "detail": "2 passed; 35 deselected."
+      "detail": "Focused active launcher frames: resting, category hover, options hover, app hover and pointer exit, light/dark; reviewed and pixel differences checked."
     }
   ],
   "gallery_commit": "1e75b167c464c1b41ab611d7f64f027b5b17a00e",
   "captures": [],
+  "reference": {
+    "url": "https://www.macrumors.com/how-to/do-more-with-spotlight-in-macos-tahoe/",
+    "image": "https://images.macrumors.com/article-new/2025/09/apps-app-macos.jpg",
+    "sha256": "f1f11d7d3d7efdfd66321732d03f1b46bf954ea2ffd2378b7fb4758b0366c4da",
+    "scope": "Real macOS Tahoe Apps browser reference for search hierarchy, category capsules, options ring and single-line labels. KDE data grouping and window material remain unchanged; no pixel-identical claim."
+  },
   "local_vm_qualification": {
     "vm_image_sha256": "412e7933f10add20b921b92c02709e7eea56acd14dc14cf654f58fba4ea3cc9d",
-    "source_archive_sha256": "8dc6fc7227e26fce2068a57f76bdb8365280734ffb8e9898af0de699c2d55835",
+    "source_archive_sha256": "ff4033ce981e12bc2835efe4922804aa0336751bfab09d3e9f9d78e473fb1fb4",
     "runtime_sources": {
-      "src/installer/wizard_window.py": "359d644f9db02824fbb012249c5621eaa90c36bcd3e2450fd67962350bf4e135"
+      "src/offline/plasmoids/org.kde.mac-tahoe-liquid-kde.launcher/contents/ui/AllAppsList.qml": "e84f9b5562e385094746815ddc304f691c8a16f38cdccd90ab3285024c1e2869",
+      "src/offline/plasmoids/org.kde.mac-tahoe-liquid-kde.launcher/contents/ui/AppGridViewDelegate.qml": "a70a38dec19334b601e53e3fcf9c3db32465d849e8b45c308d8a09405ca0ad84",
+      "src/offline/plasmoids/org.kde.mac-tahoe-liquid-kde.launcher/contents/ui/CategoryPill.qml": "795bccacacd6efce9cbc88f0d28e9b9b7710b9f9b8d52cc79faa8a60163cb1c5",
+      "src/offline/plasmoids/org.kde.mac-tahoe-liquid-kde.launcher/contents/ui/MainView.qml": "ff412bedde3b2777336987b8445edf0c8d6a604df5a7550a107a4b454da9e0cf",
+      "src/offline/plasmoids/org.kde.mac-tahoe-liquid-kde.launcher/contents/ui/MenuButton.qml": "0a55ee1d71a6f2ba85c02f325b461045247c331f87c863887e19840e7c176b07",
+      "src/offline/plasmoids/org.kde.mac-tahoe-liquid-kde.launcher/contents/ui/MenuRepresentation.qml": "4aba609feb5613917e5a0809b6f04a7e1d0485fe98e84c738f51567af043de36",
+      "src/offline/plasmoids/org.kde.mac-tahoe-liquid-kde.launcher/contents/ui/SearchBar.qml": "72df919fb5529f5bf290b22d066b7e669b7158cd9b19992007a8de28ef30c3c6"
     },
     "reviewed_frames": {
-      "light": {
-        "sha256": "cd8c3949703a07df98e3572ce01be016ef9177d86a25573857d9bd17e86be9f8",
+      "dark-exit": {
+        "sha256": "264adeffe5a7a57690094dbc6f41117da6a9762c849d7adc3a620a7edff217c6",
         "reviewed": true
       },
-      "dark": {
-        "sha256": "091fd1d70b1d4fe15ed81d1b392644eb4a0cae03bc561ce523f1d166acb8a5d0",
+      "light-exit": {
+        "sha256": "4db2ab49c7fe4fa44f206fd5aab1917f4aaee93ba4c5f23791040d157e79197e",
+        "reviewed": true
+      },
+      "dark-app": {
+        "sha256": "60248c777007026179c9dc6cc80971efbdd458601bb96985b333bcc10703eb2f",
+        "reviewed": true
+      },
+      "dark-options": {
+        "sha256": "e0055956e58fd50ed72c9803a3445cf5be7d7bfc118b818c8955c5d77ef432e5",
+        "reviewed": true
+      },
+      "dark-pill": {
+        "sha256": "16dae4f0c6f9f61c7ac659bc1b522cf9ed6228f4a65648e670b80eb3d4eac548",
+        "reviewed": true
+      },
+      "dark-rest": {
+        "sha256": "d806b1be02435834a289fda973be58454fd700608e0413a41c5a5732977b0044",
+        "reviewed": true
+      },
+      "light-app": {
+        "sha256": "57e739bce8dcd5079811ec601d9c2425d14256afb946015f3c329f0bf985a02f",
+        "reviewed": true
+      },
+      "light-options": {
+        "sha256": "b22001053096d1cfc868e90f46821d389b13ad6bedfcdea3386c00c5e4742750",
+        "reviewed": true
+      },
+      "light-pill": {
+        "sha256": "790e9575cdc285ebdbd27ebeb3df14b6e7a0f7defc706019db93eb2dafc36b4e",
+        "reviewed": true
+      },
+      "light-rest": {
+        "sha256": "9aa191aeb886876849e2013defa61f42cef2f5e28e24a0c6dd5576cab3258c15",
         "reviewed": true
       }
     },
-    "artifacts": "/tmp/spinner-0713",
-    "scope": "Installer progress indicator only. No backend, dependency, translation or installed component payload changes. Historical gallery retained."
+    "artifacts": "/tmp/launcher-0714",
+    "scope": "Tahoe preset 1 QML layout and hover states only. Both presets and staged editions exercised in native isolated X11 tests. Real Wayland pointer rendering checked for Tahoe light/dark. No native shader, ABI, backend or dependency changes; historical galleries retained."
   }
 }

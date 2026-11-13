@@ -51,6 +51,9 @@ Timer {
                 : (pill.selected ? 0.62 : 0.46);
             verify(Math.abs(pill.testBackground.color.a - alpha) < 0.005,
                    "category opacity follows edition and mode");
+            const tahoe = !expectedGoldenGate && kicker.launcherPreset === 1;
+            verify(pill.testBackground.border.width === (tahoe ? 1 : 0),
+                   "Tahoe glass edge does not affect Golden Gate or preset 2");
             const position = pill.mapToItem(view, 0, 0);
             verify(position.y >= 0 && position.y + pill.height <= view.height + 0.01,
                    "category pill fits its clipped viewport: " + position.y + " + " + pill.height + " <= " + view.height);
@@ -73,6 +76,19 @@ Timer {
             if (label) return label;
         }
         return null;
+    }
+    function verifyTahoeHover(item) {
+        if (item.testActionMenu !== undefined) {
+            item.highlighted = true;
+            verify(item.state === "highlight", "Tahoe pointer entry highlights the app tile");
+            item.highlighted = false;
+            verify(item.state === "default", "Tahoe pointer exit clears the app tile");
+            return true;
+        }
+        for (const child of item.children) {
+            if (verifyTahoeHover(child)) return true;
+        }
+        return false;
     }
     function findIcon(item) {
         if (item instanceof Kirigami.Icon) {
@@ -128,9 +144,16 @@ Timer {
             case 1:
                 verify(root.visible, "inline panel visible");
                 verifyCategoryPills();
+                if (!expectedGoldenGate) {
+                    verify(verifyTahoeHover(appList.viewItem), "a real Tahoe app tile was exercised");
+                }
                 verify(glassPalette.Kirigami.Theme.colorSet === Kirigami.Theme.Window, "labels use the popup color set");
                 verify(main.textColor === glassPalette.Kirigami.Theme.textColor, "labels follow the mode-specific window foreground");
                 verify(!searchPopup.visible, "inline search has no second popup");
+                verify(main.inlineSearchHeight === (expectedGoldenGate ? 40 : 48),
+                       "Tahoe reference header preserves Golden Gate geometry");
+                verify(searchBar.textField.font.pointSize === main.textSize * (expectedGoldenGate ? 1 : 1.7),
+                       "reference search hierarchy is scoped to Tahoe");
                 verify(searchBar.parent === inlineSearchSlot, "inline field parent");
                 verifyOptionsIcon(searchBar);
                 verifySearchContrast(searchBar);

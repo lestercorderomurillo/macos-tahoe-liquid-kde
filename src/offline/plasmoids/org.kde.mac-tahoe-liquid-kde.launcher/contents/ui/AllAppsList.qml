@@ -158,7 +158,7 @@ ColumnLayout {
 	// Separator below the tabs, mirroring the one above them in
 	// MainView so the capsule row sits between two lines.
 	Rectangle {
-		visible: !main.detachedSearch
+		visible: !main.detachedSearch && !main.tahoeStyle
 		Layout.fillWidth: true
 		Layout.rightMargin: fs.innerPadding
 		Layout.topMargin: 6
