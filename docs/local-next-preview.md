@@ -1,7 +1,6 @@
-# Local next-update preview
+# v0.71.0 installer and menu update
 
-This candidate is intentionally unpublished so it can be tried locally first.
-VERSION and release tags remain at the last published version.
+This update was prepared as a local preview before release qualification.
 
 - Application About uses the computer About glass surface, draggable frameless
   window and the same shared GlassButton component. Its content remains scrollable.
@@ -17,9 +16,9 @@ VERSION and release tags remain at the last published version.
   the existing original Monterey light/dark bundle; the other bundled Apple
   wallpapers remain available through Plasma's wallpaper selector.
 
-From either checkout, run `./installer` to try the candidate. Golden Gate prepares
-its own edition using the adjacent Tahoe checkout, including these local changes.
-Its published immutable upstream pin is intentionally unchanged until release.
+From either checkout, run `./installer`. Golden Gate prepares its own edition
+using the adjacent Tahoe checkout when present, or its immutable published
+Tahoe source otherwise.
 
 For a standalone About preview without installation, run from Tahoe:
 
@@ -35,9 +34,9 @@ Local verification: 43 installer/About/wallpaper checks passed, followed by
 three focused switcher cases for Landscape, Prism and macOS; 31 catalog checks
 and 14 component-cache checks passed. The native isolated X11 suite built the
 plugin and exercised the importer, popup actions and QML composition successfully.
-These are local checks, not CI or VM install results. Live Plasma
-installation/reinstallation and compositor qualification are still required
-before a future release; offscreen captures do not prove compositor blur.
+These initial checks used local isolated rendering. The subsequent release
+qualification is recorded in `tests/native/update071_validation.md`; offscreen
+captures alone do not prove compositor blur.
 
 Progress-page follow-up: all 36 wizard tests passed, including both editions,
 localized estimates, details toggling, status retention in the log and an actual

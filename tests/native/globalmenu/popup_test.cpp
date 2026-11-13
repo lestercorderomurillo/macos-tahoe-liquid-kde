@@ -134,7 +134,7 @@ private Q_SLOTS:
         const QPersistentModelIndex task(model.tasksModel()->activeTask());
         QVERIFY(click("Minimize"));
         QTRY_VERIFY(task.data(Roles::IsMinimized).toBool());
-        QVERIFY(target.visibility() == QWindow::Minimized || !target.isExposed());
+        QTRY_VERIFY(target.visibility() == QWindow::Minimized || !target.isExposed());
         model.tasksModel()->requestActivate(task);
         QTRY_VERIFY(target.isActive());
         QTRY_VERIFY(!task.data(Roles::IsMinimized).toBool());
