@@ -52,9 +52,9 @@ Timer {
                 : (pill.selected ? 0.62 : 0.46);
             verify(Math.abs(pill.testBackground.color.a - alpha) < 0.005,
                    "category opacity follows edition and mode");
-            const tahoe = !expectedGoldenGate && kicker.launcherPreset === 1;
+            const tahoe = kicker.launcherPreset === 1;
             verify(pill.testBackground.border.width === (tahoe ? 1 : 0),
-                   "Tahoe glass edge does not affect Golden Gate or preset 2");
+                   "Tahoe glass edge follows preset 1 in either edition");
             const position = pill.mapToItem(view, 0, 0);
             verify(position.y >= 0 && position.y + pill.height <= view.height + 0.01,
                    "category pill fits its clipped viewport: " + position.y + " + " + pill.height + " <= " + view.height);
@@ -116,9 +116,9 @@ Timer {
     }
     function verifySearchContrast(search) {
         const stronger = expectedGoldenGate && !expectedDark;
-        const tahoe = !expectedGoldenGate && kicker.launcherPreset === 1;
+        const tahoe = kicker.launcherPreset === 1;
         verify(search.textField.placeholderText === (tahoe ? "Applications" : "Apps"),
-               "Tahoe reference heading preserves the Golden Gate label");
+               "reference heading follows the selected preset");
         verify(search.testMenuButton.testButton.contentItem.opacity === (tahoe ? 0 : 1),
                "reference ellipsis replaces only the Tahoe symbol");
         verify(main.goldenGateEdition === expectedGoldenGate, "staged edition survives preset changes");
@@ -156,7 +156,7 @@ Timer {
             case 1:
                 verify(root.visible, "inline panel visible");
                 verifyCategoryPills();
-                if (!expectedGoldenGate) {
+                if (kicker.launcherPreset === 1) {
                     verify(verifyTahoeHover(appList.viewItem), "a real Tahoe app tile was exercised");
                     verify(appList.selectedIsAllApps, "Tahoe opens the app browser");
                     verify(appList.viewItem.headerItem.favoritesView.count === root.columns,
@@ -192,8 +192,8 @@ Timer {
                 verify(!searchPopup.visible, "inline search has no second popup");
                 verify(main.inlineSearchHeight === 40,
                        "Tahoe reference header preserves Golden Gate geometry");
-                verify(searchBar.textField.font.pointSize === main.textSize * (expectedGoldenGate ? 1 : 2),
-                       "reference search hierarchy is scoped to Tahoe");
+                verify(searchBar.textField.font.pointSize === main.textSize * 2,
+                       "reference search hierarchy follows preset 1");
                 verify(searchBar.parent === inlineSearchSlot, "inline field parent");
                 verifyOptionsIcon(searchBar);
                 verifySearchContrast(searchBar);

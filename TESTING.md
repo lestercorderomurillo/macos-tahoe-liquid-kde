@@ -1,13 +1,13 @@
 # Installer testing
 
-Tahoe **v0.71.5** includes the refined Tahoe Applications launcher, glass options
-menu and icon edge highlights. Golden Gate retains its own launcher appearance.
+Tahoe **v0.71.6** fixes preset 1 showing the old launcher when installed
+from Golden Gate. The current Tahoe layout follows the selected preset while
+materials continue to follow the installed edition.
 
-Ten native launcher/catalog checks passed across both editions and appearance
-modes. Focused Tahoe installation/reinstallation and staged Golden Gate installation
-passed in a disposable Plasma 6.8.1 VM. The four README launcher photographs
-were refreshed with each edition’s defaults and wallpaper; other photographs
-retain their original provenance. See [commands, reference and coverage limits](release-evidence.json).
+Focused launcher, edition-transition and Nix checks passed. Native popup checks
+cover both presets, editions and modes; installation/reinstallation was checked
+in a disposable Plasma VM. Photographs retain their original capture provenance.
+See [commands and coverage limits](release-evidence.json).
 
 [Light menu](src/screenshots/menu_v4-0343811e426d.webp) · [Dark menu](src/screenshots/menu_dark_v4-171bb0e051ff.webp) · [Capture provenance](src/screenshots/previews/system-menu-tahoe-069-provenance-9c458fcf42db.json)
 

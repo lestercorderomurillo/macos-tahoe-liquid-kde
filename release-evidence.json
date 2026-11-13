@@ -1,22 +1,27 @@
 {
-  "version": "0.71.5",
-  "source_sha256": "7f694e1a425d0cf217a09f7ceefb94cb9989825ecb6dfe5688c5e2ed512d53f0",
+  "version": "0.71.6",
+  "source_sha256": "50c43c83cb9d6c1f095ae1d8d6145fb14545cd3dbdb99e2cc03951133c3d86ef",
   "environment": "Disposable KDE neon Plasma 6.8.1 / Qt 6.11.1, Wayland render and isolated Xvfb executable regression checks.",
   "checks": [
     {
-      "command": "Guest: python3 -m pytest -q tests/test_launcher_presets.py tests/test_multilanguage.py -k 'native_launcher_popup_presets or catalogs_cover_all_project_widget'",
+      "command": "python3 -m pytest -q tests/test_launcher_presets.py",
       "result": "passed",
-      "detail": "10 passed, 87 deselected; isolated X11 QML regressions for both editions/presets/modes and translation catalogs. Tested source hashes unchanged."
+      "detail": "66 passed; preset 1 current layout exercised in both editions and appearance modes, including grid, categories, favorites, options and preset switching."
     },
     {
-      "command": "Guest: installer_backend.py install --only --plasmoids --plasma-theme --wallpapers --no-apply-theme; repeat Tahoe reinstall, apply Golden Gate defaults and install",
+      "command": "python3 -m pytest -q tests/test_edition_transition.py tests/test_nix.py",
       "result": "passed",
-      "detail": "Tahoe install/reinstall and staged Golden Gate install exited 0 using edition defaults in disposable Plasma VM."
+      "detail": "18 passed."
     },
     {
-      "command": "Disposable VM launcher capture and pointer/menu interaction review",
+      "command": "Guest: python3 -m pytest -q tests/test_launcher_presets.py -k native_launcher_popup_presets",
       "result": "passed",
-      "detail": "Four README launcher frames reviewed with edition-specific defaults/wallpaper and stable active windows. Prior final-source menu, hover and pointer-exit previews reviewed in both modes."
+      "detail": "8 passed, 58 deselected; fresh disposable Plasma VM overlay, both editions/presets/modes."
+    },
+    {
+      "command": "Guest: sudo env MAC_TAHOE_NO_UPDATE_CHECK=true MTTKDE_NO_CONFIRM=1 python3 src/scripts/installer_backend.py install --only --plasmoids --plasma-theme --wallpapers --no-apply-theme; repeat",
+      "result": "passed",
+      "detail": "Golden Gate staged defaults; install and reinstall exited 0. Logs: /tmp/launcher-0716-vm/qualification-install.log"
     }
   ],
   "gallery_commit": "9993f61cc0afeba7e39afee776c99f29a55edb8f",
@@ -108,5 +113,15 @@
     "scope": "Tahoe heading alignment, larger ellipsis dots, icon silhouette highlights and glass options menu with separate Grid/List and preset sections. Golden Gate UI unchanged.",
     "limits": "Uses KDE application inventory and the existing Plasma glass material. Menu corners inherit the existing theme radius; rendering is closely matched, not claimed pixel-identical to macOS. Prior host test guard detected a concurrent kwinrc write; subsequent validation ran entirely in the disposable VM."
   },
-  "remote_ci": "Full dev matrix runs asynchronously after publication; this record describes focused local qualification."
+  "remote_ci": "Full dev matrix runs asynchronously after publication; this record describes focused local qualification.",
+  "qualification": {
+    "scope": "Preset 1 layout follows the selected preset independently of source edition; edition materials preserved. Preset 2 unchanged.",
+    "native_log_sha256": "697f08aa8f73fde23dd2a2e12dc0816945ce200f1cdcc925cb8ffdb57dafd946",
+    "installer_log_sha256": "0de7415a43f1e8d38dfd434f8947e99f122114b5f8d14f38b72c5b5d9b77aa97",
+    "runtime_sources": {
+      "src/offline/plasmoids/org.kde.mac-tahoe-liquid-kde.launcher/contents/ui/MainView.qml": "961adba0dcc629b13c2519d1a3a619c199ccd6b996fd8bc4aab2f67422d806dd",
+      "tests/qml/LauncherPresetProbe.qml": "3992ba46b8e42f29da78271306ea7a3d3c1f9bbb04cd7241c666a9a6753ed1a7"
+    },
+    "limits": "Executable native popup rendering checks use isolated X11 in disposable Plasma VM; no new documentation photographs or shared native backend changes. Historical captures retain original source identity."
+  }
 }

@@ -20,7 +20,7 @@ Item {
 	readonly property var searchBar: detachedSearch ? detachedSearchBar : inlineSearchBar
 	onSearchTextChanged: runnerModel.query = searchText
 	readonly property bool detachedSearch: kicker.launcherPreset === 2
-	readonly property bool tahoeStyle: !goldenGateEdition && !detachedSearch
+	readonly property bool tahoeStyle: !detachedSearch
 	readonly property real inlineSearchHeight: 40
 	readonly property real searchPopupHeight: searchPopup.height
 	readonly property real searchPopupGap: Kirigami.Units.gridUnit * 0.75
