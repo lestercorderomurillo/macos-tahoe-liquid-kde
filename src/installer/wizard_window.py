@@ -732,9 +732,6 @@ class InstallerWindow(OpaqueSurface):
                 self.glass_preview.update()
                 self.accent_preview.setPixmap(picture(
                     f"accent-{self.asset_edition}-{self.mode}-{value}.jpg", 236, 133))
-            elif key == "icons":
-                self.icon_caption.setText(self.t("Icons, selections, top bar and Dock."
-                                                if value == "glass" else "Selections, top bar and Dock."))
         elif self.page == "wallpaper" and key == "wallpaper":
             self.wallpaper_filename.setText(Path(self.choices["wallpaper_path"]).name)
             self.wallpaper_filename.setVisible(value == "custom")
@@ -920,7 +917,7 @@ class InstallerWindow(OpaqueSurface):
         self.body.addSpacing(28)
         stem = f"desktop-{self.asset_edition}-"
         self.cards("appearance", [
-            ("auto", "Automatic", "Light by day, dark at night.", picture(stem+"light.jpg", 232, 131, stem+"dark.jpg")),
+            ("auto", "Auto", "", picture(stem+"light.jpg", 232, 131, stem+"dark.jpg")),
             ("light", "Light", "", picture(stem+"light.jpg", 232, 131)),
             ("dark", "Dark", "", picture(stem+"dark.jpg", 232, 131)),
         ], columns=3)
@@ -982,10 +979,7 @@ class InstallerWindow(OpaqueSurface):
             swatches.addWidget(button)
         swatches.addStretch()
         controls.addLayout(swatches)
-        caption = self.label("Icons, selections, top bar and Dock." if self.choices["icons"] == "glass" else "Selections, top bar and Dock.")
-        caption.setFont(relative_font(self, .79)); caption.setObjectName("detail")
-        self.icon_caption = caption
-        controls.addWidget(caption); controls.addStretch(); row.addLayout(controls, 1)
+        controls.addStretch(); row.addLayout(controls, 1)
         self.accent_preview = self.image(f"accent-{self.asset_edition}-{self.mode}-{self.choices['color']}.jpg", 236, 133)
         row.addWidget(self.accent_preview)
         self.body.addLayout(row)

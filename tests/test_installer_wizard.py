@@ -453,7 +453,6 @@ assert window.accent_preview.pixmap().toImage() != before_accent
 assert regular.pixmap.toImage() == regular_image
 assert window.color_buttons['green'].isChecked() and not window.color_buttons['blue'].isChecked()
 window.select('icons', 'glass')
-assert window.icon_caption.text() == window.t('Icons, selections, top bar and Dock.')
 window.select('icons', 'keep')
 assert sum(card.isChecked() for card in window.content.findChildren(ChoiceCard)) == 1
 window.page = 'wallpaper'; window.render(); app.processEvents()

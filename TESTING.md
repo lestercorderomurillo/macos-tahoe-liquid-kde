@@ -1,14 +1,14 @@
 # Installer testing
 
-Tahoe **v0.70.0** adds a generic **About <application>** window following
-Finder's About composition, with the selected app's icon, name, location and
-copyable details. Existing application menus remain intact.
+Tahoe **v0.71.1** simplifies the installer appearance choices to Auto, Light
+and Dark and removes the Auto and Theme color descriptions.
 
-Both editions passed focused global-menu installation and reinstallation in a
-disposable Plasma/KWin 6.8.1 VM. Native menu/metadata/composition checks, real
-Wayland window controls and all eight edition/appearance/Wayland-X11 dialog
-cases passed. See [commands, reviewed frames and coverage limits](tests/native/application_about_validation.md).
-Historical installer photographs below retain their original capture provenance.
+Wizard and translation checks passed on the host and in a disposable Plasma
+6.8.1 VM, including both edition choices; focused installation and reinstallation
+also passed. Golden Gate staging passed its wizard checks. See
+[commands, source hashes and coverage limits](release-evidence.json).
+Historical installer photographs below retain their original capture provenance
+and may show the previous wording.
 
 [Light menu](src/screenshots/menu_v4-0343811e426d.webp) · [Dark menu](src/screenshots/menu_dark_v4-171bb0e051ff.webp) · [Capture provenance](src/screenshots/previews/system-menu-tahoe-069-provenance-9c458fcf42db.json)
 

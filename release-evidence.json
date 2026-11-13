@@ -1,93 +1,34 @@
 {
-  "version": "0.71.0",
-  "source_sha256": "65aa72d8aa6ca6f0fafe8bccd59a620a0c734ac5215acb00d0929b407beaffff",
-  "environment": "CachyOS Plasma 6.7.4 SDK / Qt 6.11.2; two pinned disposable KDE neon Plasma/KWin 6.8.1, Qt 6.11.1 Wayland overlays; private Xvfb/D-Bus native checks.",
+  "version": "0.71.1",
+  "source_sha256": "ff76008f7c212d4d9fcfc2ce33809bc397b731c497ddd354120d52d8ceb6ff96",
+  "environment": "Host CachyOS / Qt 6.11.2; fresh disposable pinned KDE neon Plasma 6.8.1 / Qt 6.11.1 VM.",
   "checks": [
     {
-      "command": "QT_QPA_PLATFORM=offscreen MTTKDE_REQUIRE_NATIVE_GLOBALMENU=1 python3 -m pytest -q tests/test_application_about.py tests/test_globalmenu_model.py tests/test_globalmenu_step.py tests/test_installer_wizard.py tests/test_installer_ui.py tests/test_wallpaper_defaults.py tests/test_multilanguage.py tests/test_component_cache.py",
+      "command": "QT_QPA_PLATFORM=offscreen python3 -m pytest -q tests/test_installer_wizard.py tests/test_multilanguage.py",
       "result": "passed",
-      "detail": "146 focused host checks; implementation unchanged by subsequent live-test wait correction."
+      "detail": "68 passed on host; 68 passed in disposable Plasma VM. Both edition wizard navigation/selection cases included."
     },
     {
-      "command": "python3 -m pytest -q tests/test_theme_switch.py -k wallpaper",
+      "command": "Guest: sudo env MAC_TAHOE_NO_UPDATE_CHECK=true MTTKDE_NO_CONFIRM=1 MTTKDE_WIZARD_OPTIONS=<installer_choices.defaults()> src/scripts/installer_backend.py install --only --wallpapers --no-apply-theme; repeat for reinstall",
       "result": "passed",
-      "detail": "21 wallpaper ownership and switching cases."
+      "detail": "Install and reinstall exited 0 in fresh pinned KDE neon Plasma 6.8.1 overlay."
     },
     {
-      "command": "Both disposable edition sources: installer_backend.py install --only --globalmenu --wallpapers --no-apply-theme, with edition defaults in MTTKDE_WIZARD_OPTIONS; repeat for reinstall",
+      "command": "GOLDEN_GATE_TAHOE_SOURCE=<Tahoe checkout> MAC_TAHOE_NO_UPDATE_CHECK=true ./install --prepare; in staged source: QT_QPA_PLATFORM=offscreen python3 -m pytest -q tests/test_installer_wizard.py -k 'native_wizard_navigation or catalogs'",
       "result": "passed",
-      "detail": "Four lifecycle operations; installed Prism/Monterey bytes verified."
-    },
-    {
-      "command": "Each guest: python3 -m pytest -q tests/test_globalmenu_model.py tests/test_application_about.py tests/test_installer_wizard.py tests/test_wallpaper_defaults.py; QT_QPA_PLATFORM=wayland MTTKDE_LIVE_GLOBALMENU=1 <built>/globalmenu-popup-test liveWindowControls",
-      "result": "passed",
-      "detail": "47 focused checks per edition; real compositor menu/window controls passed with zero live skips."
-    },
-    {
-      "command": "Each edition/mode: tests/application_about_probe.py --mode <mode>; standalone About preview, real pointer drag and Spectacle composited capture",
-      "result": "passed",
-      "detail": "Four reviewed captures; every drag moved the window approximately 120 x 80 logical pixels."
+      "detail": "3 passed; 34 deselected."
     }
   ],
   "gallery_commit": "1e75b167c464c1b41ab611d7f64f027b5b17a00e",
   "captures": [],
   "local_vm_qualification": {
     "vm_image_sha256": "412e7933f10add20b921b92c02709e7eea56acd14dc14cf654f58fba4ea3cc9d",
-    "source_archive_sha256": "018c395313be70a6f0c8a10090861bd22760efa3ace94f55d9a89eeaf5459a36",
-    "golden_archive_sha256": "ad77499fc68ddaccbaf1491f8c8e8348143c7d4882022f1487140d47f5ba5e25",
+    "source_archive_sha256": "45e3d61b0295a25ab3f6ba44bb52df3f14473b9b8251ded841b74e3e21c2d09d",
     "runtime_sources": {
-      "src/installer/assets/macos-d8c96cad9dec.jpg": "d8c96cad9dec0d3ca24bc1bea398f0ee4aa66b33b4e10aa131852b3f2bd6d063",
-      "src/installer/assets/macos-dark-686ee7f16689.jpg": "686ee7f16689b2f197d5bf6e5319420536d4074d0a885a9df790e0ae033816e0",
-      "src/installer/assets/prism-51aecf00e225.jpg": "51aecf00e2255a62391493acf6206cd400939a8a14c191b43632c09d6fec08a8",
-      "src/installer/assets/prism-dark-3e1f907ff014.jpg": "3e1f907ff014d1212f1c36021fc5abf8ef98ee9dd5dfa7828c081eeaaf71a819",
-      "src/installer/assets/sources.json": "f5c4316d2e736f49e1f45d68fefbd411b45cb9cc87eedf10ae0c57839e42476f",
-      "src/installer/wizard_translations.py": "9b80e190fe400e76b83a32bdfe7d7af4f337207875bea8dc7640a7bced21505c",
-      "src/installer/wizard_window.py": "f07035fd15399fce652daf245efd1809536471f5a7f63a86e46e9a75d21dd838",
-      "src/offline/plasmoids/org.kde.mac.tahoe.liquid.globalmenu/CMakeLists.txt": "5b3d8a0d910561ad26029d4e3b9faa193f1d821896df549a573aef2049e485dc",
-      "src/offline/plasmoids/org.kde.mac.tahoe.liquid.globalmenu/appmenuapplet.cpp": "e80cccf7074e3b008a4e87504573f0c258a5fdf4aa6dfd86dd1a464f5c0a080b",
-      "src/offline/plasmoids/org.kde.mac.tahoe.liquid.globalmenu/appmenumodel.cpp": "e394dbd2de5ba49d46c618df5632f8f2c2f6033cd388fe46d24a4bdcb10f1f70",
-      "src/offline/plasmoids/org.kde.mac.tahoe.liquid.globalmenu/appmenumodel.h": "2f5a82c6cab9815cf7872392a7ea42fd584184ec57c3e71df416a42fe9ebf375",
-      "src/offline/plasmoids/org.kde.mac.tahoe.liquid.globalmenu/libdbusmenuqt/dbusmenuimporter.cpp": "e57f8b44cd7782360de21468c9b77a77fb5da8f1d3038de6e76fdbfdd028b33a",
-      "src/offline/plasmoids/org.kde.mac.tahoe.liquid.globalmenu/locale/de/LC_MESSAGES/plasma_applet_org.kde.mac.tahoe.liquid.globalmenu.mo": "5147eaca16ce1549f2d7eac304dc783edea6bf348d8e5e45426d9cad87e8fe9c",
-      "src/offline/plasmoids/org.kde.mac.tahoe.liquid.globalmenu/locale/es/LC_MESSAGES/plasma_applet_org.kde.mac.tahoe.liquid.globalmenu.mo": "d2654712fca107dfb02b885f0caa7bd8e9cc8426b4a832071a74c373d4d66b38",
-      "src/offline/plasmoids/org.kde.mac.tahoe.liquid.globalmenu/locale/pt_BR/LC_MESSAGES/plasma_applet_org.kde.mac.tahoe.liquid.globalmenu.mo": "746cfc8c2fe0ee70042bd64f9e018ea0f8306aad9165d9f7da8bcb868f09b7bf",
-      "src/offline/plasmoids/org.kde.mac.tahoe.liquid.globalmenu/locale/zh_CN/LC_MESSAGES/plasma_applet_org.kde.mac.tahoe.liquid.globalmenu.mo": "e9e9696bca8c43def7d10533c2ce054dab322259e3471d5d9b044f4b6119f0dd",
-      "src/offline/plasmoids/org.kde.mac.tahoe.liquid.globalmenu/po/de.po": "c846ebbeb6c30bc3d3e285a1fb5628d3ea6a1dc18d660ea27d15fd4456bd758c",
-      "src/offline/plasmoids/org.kde.mac.tahoe.liquid.globalmenu/po/es.po": "3b32fd2af958e016da1ae11f71a8119961e7a2deec371faba4f0143d9c732210",
-      "src/offline/plasmoids/org.kde.mac.tahoe.liquid.globalmenu/po/pt_BR.po": "01acb13eae1a8c90b0a6f428d2e41a8dbed19cb35bbf650e9a12e14701dc3a3f",
-      "src/offline/plasmoids/org.kde.mac.tahoe.liquid.globalmenu/po/zh_CN.po": "f0e3802963eeee41d5a4599c33ad7196d07acfad499b065f4cb4b2d5382537d0",
-      "src/offline/plasmoids/org.kde.mac.tahoe.liquid.globalmenu/qml/AboutWindow.qml": "2214d7df8326ccbb0d2fd8adf220411b86bc6973ea8a2dff46e13f2d9ccb584a",
-      "src/offline/plasmoids/org.kde.mac.tahoe.liquid.globalmenu/qml/ApplicationAboutWindow.qml": "c4173c80ca6f27ccc3a3d20b99505c4ed7e42b1f888516406593982b0d595545",
-      "src/offline/plasmoids/org.kde.mac.tahoe.liquid.globalmenu/qml/GlassButton.qml": "d784a5f330559c423e1ede7da92a7629d5056db8bdd739da7fdc77b88c3acd64",
-      "src/offline/wallpapers/MacPrism/PROVENANCE.md": "89042ec9dccd36dfaebae5ff30d9d86c031685e4cb92381cea6d81c5de673d3a",
-      "src/offline/wallpapers/MacPrism/contents/images/3840x2160.jpg": "071ef3b55ba3824fd31109d7007e57770089b8401a0fce19dc0724039a39e820",
-      "src/offline/wallpapers/MacPrism/contents/images_dark/3840x2160.jpg": "ad0427b036dd16f1f35664c739fa2927bb8414fc369740a3e738feae52c37f35",
-      "src/offline/wallpapers/MacPrism/metadata.json": "9ec46f79845b1ba4c04c76650b7fb362569ed6d123a0fa0f7be150e8e1666205",
-      "src/scripts/installer_choices.py": "71b2c6bbd164582bcc20da7763554bf1ce1cc50276e2a6e5813292e82409c0e0",
-      "src/scripts/locales/de.json": "8bfebe2e5567161ddcbb9bcdf672e1569ffe847a71bf8f64cf0938e982efa4f8",
-      "src/scripts/locales/pt_BR.json": "9b19e12255f89f35bfeaaccc39b23fd4b18fc92b00c082b88f6af6265d477cf1",
-      "src/scripts/steps/wallpapers.py": "bf88dc6b39ad2ec80791abb54a1a40219a768a60a6f4241a96035f687958b3d8",
-      "src/scripts/theme_switch.py": "e47aeba748247f5b5d699150fe811bb11bd3994be0173b00b46c9eb0171c9789"
+      "src/installer/wizard_window.py": "105419bfdcd9b9d57ae94073ec8091897554937d156b6a9ca53a741e18c1e07b",
+      "src/installer/wizard_translations.py": "f56e76e11f5d7babb64c9875da5fca9f927bdc9e7ae9cf2dde4e787c89236d02"
     },
-    "reviewed_frames": {
-      "tahoe-desktop-about-dark": {
-        "sha256": "1bfa7235c01c75bca4b94aa543510fc9be5cb73987fcfea5706fc10a61c564fe",
-        "reviewed": true
-      },
-      "tahoe-desktop-about-light": {
-        "sha256": "526e216f930b7541f06935cce672c7c81cc06e6d654b8eca2a021408a2141285",
-        "reviewed": true
-      },
-      "golden-gate-desktop-about-dark": {
-        "sha256": "95d540a55863fe83ab0f62e6b7c9241a333aa09d97b54ee72ba8cf92696385a0",
-        "reviewed": true
-      },
-      "golden-gate-desktop-about-light": {
-        "sha256": "ff1af94413434117cff384eff839ed55bc076cf89811909b46e83fe01b137fa2",
-        "reviewed": true
-      }
-    },
-    "artifacts": "build/release-071",
-    "scope": "Installer, About application glass, View window controls and wallpaper selection; existing gallery retained."
+    "artifacts": "/tmp/installer-copy-0711",
+    "scope": "Appearance labels and icon-page caption in both editions; wizard navigation, selections and translations. Scoped wallpaper install/reinstall in Tahoe guest. No native rendering, ABI, dependencies or installation recipes changed; no new gallery photographs."
   }
 }

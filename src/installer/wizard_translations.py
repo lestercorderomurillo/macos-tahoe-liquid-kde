@@ -96,6 +96,7 @@ Change the boot animation?|¿Cambiar la animación de arranque?|更改启动动�
 Enable OLED protection?|¿Activar la protección para pantallas OLED?|启用 OLED 保护？|Ativar a proteção para telas OLED?|OLED-Schutz aktivieren?
 Review your installation|Revisa la instalación|检查安装选项|Revise a instalação|Installation überprüfen
 Choose your options and begin installation.|Personaliza las opciones y comienza la instalación.|选择选项并开始安装。|Escolha as opções e inicie a instalação.|Wähle deine Optionen und starte die Installation.
+Auto|Auto|自动|Auto|Auto
 Automatic|Automática|自动|Automática|Automatisch
 Light by day, dark at night.|Clara de día, oscura de noche.|白天浅色，夜间深色。|Clara de dia, escura à noite.|Tagsüber hell, nachts dunkel.
 Light|Clara|浅色|Clara|Hell
