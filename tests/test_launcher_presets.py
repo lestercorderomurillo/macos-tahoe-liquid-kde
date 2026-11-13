@@ -183,7 +183,7 @@ def test_native_launcher_popup_presets(repo, tmp_path, monkeypatch, launcher_pop
         ("AllAppsList.qml", "ColumnLayout {", "ColumnLayout { property alias testCategories: categorySwitcher"),
         ("AppCategorySwitcher.qml", "Item {", "Item { property alias testView: categorySwitcher"),
         ("AppGridViewDelegate.qml", "Item {", "Item { property alias testActionMenu: actionMenu"),
-        ("MenuButton.qml", "Item {", "Item { property alias testMenu: contextMenu; property alias testButton: button"),
+        ("MenuButton.qml", "Item {", "Item { readonly property var testMenu: activeMenu; property alias testButton: button"),
         ("SearchBar.qml", "RowLayout {", "RowLayout { property alias testMenuButton: menuButton"),
         ("CategoryPill.qml", "Item {", "Item { property alias testBackground: pillBg"),
     ):

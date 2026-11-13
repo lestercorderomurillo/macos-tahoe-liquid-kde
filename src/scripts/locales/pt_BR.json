@@ -108,6 +108,7 @@
   "Applies settings, flushes caches, restarts KWin": "Aplica configurações, atualiza caches e reinicia o KWin",
   "Apply Theme": "Aplicar tema",
   "Applying Changes": "Aplicando alterações",
+  "Applications": "Aplicativos",
   "Apps": "Apps",
   "Aurorae source not found at {src}": "Origem do Aurorae não encontrada em {src}",
   "Auto": "Automático",
@@ -1138,5 +1139,9 @@
   "Desktop file": "Arquivo de desktop",
   "Process ID": "ID do processo",
   "Location": "Localização",
-  "Copy Details": "Copiar detalhes"
+  "Copy Details": "Copiar detalhes",
+  "View content as": "Visualizar conteúdo como",
+  "Grid": "Grade",
+  "List": "Lista",
+  "Launcher preset": "Predefinição do lançador"
 }

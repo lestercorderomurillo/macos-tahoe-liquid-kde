@@ -5,6 +5,9 @@ msgstr "Project-Id-Version: MacTahoe Liquid KDE\nPO-Revision-Date: 2026-10-22 00
 msgid "Add to Favorites"
 msgstr "Adicionar aos favoritos"
 
+msgid "Applications"
+msgstr "Aplicativos"
+
 msgid "Apps"
 msgstr "Apps"
 
@@ -35,6 +38,12 @@ msgstr "Flutuante"
 msgid "General"
 msgstr "Geral"
 
+msgid "Golden Gate"
+msgstr "Golden Gate"
+
+msgid "Grid"
+msgstr "Grade"
+
 msgid "Grid icon size:"
 msgstr "Tamanho dos ícones da grade:"
 
@@ -59,8 +68,14 @@ msgstr "Posicionamento do lançador:"
 msgid "Launcher options"
 msgstr "Opções do lançador"
 
+msgid "Launcher preset"
+msgstr "Predefinição do lançador"
+
 msgid "Launcher preset:"
 msgstr "Predefinição do lançador:"
+
+msgid "List"
+msgstr "Lista"
 
 msgid "Lists:"
 msgstr "Listas:"
@@ -122,11 +137,17 @@ msgstr "Pequeno"
 msgid "Suggestions"
 msgstr "Sugestões"
 
+msgid "Tahoe"
+msgstr "Tahoe"
+
 msgid "Uninstall…"
 msgstr "Desinstalar…"
 
 msgid "Use system font settings"
 msgstr "Usar configurações de fontes do sistema"
+
+msgid "View content as"
+msgstr "Visualizar conteúdo como"
 
 msgctxt "@info:status"
 msgid "No matches"

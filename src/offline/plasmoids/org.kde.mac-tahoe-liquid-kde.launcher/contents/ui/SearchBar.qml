@@ -5,7 +5,7 @@ import org.kde.kirigami as Kirigami
 
 RowLayout {
     id: searchFieldBar
-	spacing: Kirigami.Units.smallSpacing
+	spacing: main.tahoeStyle ? 0 : Kirigami.Units.smallSpacing
 
     property alias textField: textField
     property alias showMenuButton: menuButton.visible
@@ -17,12 +17,14 @@ RowLayout {
 
     Kirigami.Icon {
         id: searchIcon
+        scale: main.tahoeStyle ? 1.15 : 1
         layer.enabled: true
         layer.effect: GlassTextShadow {
             haloOpacity: main.goldenGateLight ? 0.65 : 0.35
             radius: main.goldenGateLight ? 3 : 2
             samples: main.goldenGateLight ? 13 : 9
         }
+        Layout.leftMargin: main.tahoeStyle ? 1 : 0
         Layout.rightMargin: 0
         Layout.preferredWidth: main.detachedSearch ? Kirigami.Units.gridUnit * 2 : (main.tahoeStyle ? 38 : Kirigami.Units.iconSizes.medium)
         Layout.preferredHeight: Layout.preferredWidth
@@ -41,9 +43,11 @@ RowLayout {
         }
         Layout.fillHeight: true
         Layout.fillWidth: true
-        font.family: Kirigami.Theme.defaultFont.family
+        Layout.leftMargin: main.tahoeStyle ? -2 : 0
+        font.family: main.tahoeStyle ? "SF Pro Display" : Kirigami.Theme.defaultFont.family
         font.pointSize: main.textSize * (main.detachedSearch ? 2 : (main.tahoeStyle ? 2 : 1))
         font.weight: Kirigami.Theme.defaultFont.weight
+        font.letterSpacing: main.tahoeStyle ? -0.55 : 0
         color: searchFieldBar.textColor
 
         Component.onCompleted: text = main.searchText
@@ -54,7 +58,7 @@ RowLayout {
                     textField.text = main.searchText;
             }
         }
-        placeholderText: i18n("Apps")
+        placeholderText: main.tahoeStyle ? i18n("Applications") : i18n("Apps")
         placeholderTextColor: searchFieldBar.dimmedTextColor
         background: Rectangle{
             color: "transparent"
@@ -84,5 +88,6 @@ RowLayout {
         id: menuButton
         foregroundColor: searchFieldBar.textColor
         Layout.alignment: Qt.AlignVCenter
+        Layout.rightMargin: main.tahoeStyle ? -3.5 : 0
     }
 }

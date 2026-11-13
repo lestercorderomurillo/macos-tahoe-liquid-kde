@@ -56,6 +56,22 @@ Item {
 		source: model.decoration
 	}
 
+    // Follow the icon's alpha silhouette, including non-square third-party icons.
+    // A narrow upper rim catches the light without adding a tile behind the artwork.
+    InnerShadow {
+        z: 1 // Render above the existing shadow effect, which also composites the source.
+        anchors.fill: appicon
+        visible: main.tahoeStyle
+        source: appicon
+        horizontalOffset: 0.5
+        verticalOffset: 1
+        radius: 1.5
+        samples: 5
+        spread: 0.35
+        color: Qt.rgba(1, 1, 1, main.isDarkTheme ? 0.60 : 0.40)
+        cached: true
+    }
+
 	PlasmaComponents.Label {
 		id: appname
 		text: ("name" in model ? model.name : model.display)

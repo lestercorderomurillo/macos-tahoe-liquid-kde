@@ -35,6 +35,12 @@ GridView {
 
     header: showFavorites && globalFavorites && globalFavorites.count > 0 ? favoritesHeader : null
     onHeaderItemChanged: Qt.callLater(positionViewAtBeginning)
+    onCountChanged: {
+        // The asynchronously populated app model can otherwise scroll to index 0
+        // after the favorites header was positioned on first opening.
+        if (main.tahoeStyle && showFavorites && !activeFocus)
+            Qt.callLater(positionViewAtBeginning);
+    }
 
     Component {
         id: favoritesHeader
