@@ -228,8 +228,8 @@ def start(action):
 bridge.start = start
 window = InstallerWindow(bridge)
 window.show(); app.processEvents()
-assert app.palette().window().color().name() == '#111111'
-assert window.palette().window().color().name() == '#111111'
+assert app.palette().window().color().name() == '#292929'
+assert window.palette().window().color().name() == '#292929'
 assert window.grab().toImage().pixelColor(10, 60).name() == '#292929'
 assert window.windowFlags() & Qt.WindowType.FramelessWindowHint
 from wizard_window import WindowLight
@@ -570,3 +570,67 @@ def test_wizard_catalogs_have_the_same_translated_messages():
     source = set(CATALOGS["es"])
     for catalog in CATALOGS.values():
         assert set(catalog) == source and all(value.strip() for value in catalog.values())
+
+
+def test_wizard_appearance_does_not_depend_on_desktop_style(repo, tmp_path):
+    script = r'''
+import sys
+from pathlib import Path
+sys.path[:0] = [str(Path.cwd() / 'src/scripts'), str(Path.cwd() / 'src/installer')]
+from PyQt6.QtCore import QEvent
+from PyQt6.QtGui import QColor, QPalette
+from PyQt6.QtWidgets import QApplication, QStyleFactory
+from PyQt6.QtTest import QTest
+from installer_ui import _make_installer_bridge
+from wizard_window import InstallerWindow
+import cli
+cli._theme_is_already_installed = lambda: False
+app = QApplication([])
+font = app.font()
+styles = [style for style in QStyleFactory.keys()
+          if style.lower() in ('fusion', 'windows', 'breeze', 'kvantum')]
+assert len(styles) >= 2
+for dark in (False, True):
+    baseline = None
+    for style in styles:
+        app.setStyle(style)
+        app.setFont(font)
+        desktop = app.palette()
+        desktop.setColor(QPalette.ColorRole.Window, QColor('#202327' if dark else '#eff0f1'))
+        desktop.setColor(QPalette.ColorRole.Base, QColor('#451a45' if style == styles[0] else '#164536'))
+        desktop.setColor(QPalette.ColorRole.Highlight, QColor('#ef5522'))
+        app.setPalette(desktop)
+        bridge = _make_installer_bridge()
+        bridge._language = 'en'
+        window = InstallerWindow(bridge)
+        window.page = 'wallpaper'; window.render(); window.show()
+        window.activateWindow(); window.next.setFocus()
+        QTest.qWait(30)
+        assert app.style().objectName().lower() == 'fusion'
+        assert app.palette() == window.palette()
+        assert window.font().family() == font.family()
+        assert window.palette().highlight().color().name() == '#007aff'
+        capture = window.grab().toImage()
+        if baseline is None:
+            baseline = capture
+        else:
+            assert capture == baseline, (dark, style)
+        # Applying the desktop theme during installation cannot recolor cards.
+        changed = QPalette(desktop)
+        changed.setColor(QPalette.ColorRole.Base, QColor('#ff0000'))
+        changed.setColor(QPalette.ColorRole.Window, QColor('#ffffff' if dark else '#000000'))
+        app.setPalette(changed); app.processEvents()
+        window.render(); app.processEvents()
+        window.next.setFocus()
+        assert window.grab().toImage() == capture, (dark, style, 'palette update')
+        window.close(); window.deleteLater()
+        app.sendPostedEvents(None, QEvent.Type.DeferredDelete)
+print('Compared light/dark renders:', ', '.join(styles))
+'''
+    result = subprocess.run([sys.executable, '-c', script], cwd=repo,
+                            env=dict(os.environ, QT_QPA_PLATFORM='offscreen',
+                                     QT_QPA_PLATFORMTHEME='generic',
+                                     XDG_CONFIG_HOME=str(tmp_path / 'config'),
+                                     XDG_CACHE_HOME=str(tmp_path / 'cache')),
+                            capture_output=True, text=True, timeout=30)
+    assert result.returncode == 0, result.stdout + result.stderr

@@ -43,3 +43,11 @@ Progress-page follow-up: all 36 wizard tests passed, including both editions,
 localized estimates, details toggling, status retention in the log and an actual
 application-font change while output continues. Local screenshots in
 `build/next-preview/progress*.png` use simulated progress; no installation ran.
+
+Pre-install appearance: the installer now supplies its own process-local Qt
+style and palette, selected in light/dark mode when it opens. Breeze or Kvantum
+is not required for its glass controls, card colors or layout. The system font
+and accessibility scale remain in use; no desktop configuration is changed.
+All 37 wizard tests pass, including pixel comparisons starting with Breeze,
+Kvantum, Windows and Fusion in both modes, and a desktop-palette change followed
+by navigation. These comparisons use isolated offscreen Qt rendering.

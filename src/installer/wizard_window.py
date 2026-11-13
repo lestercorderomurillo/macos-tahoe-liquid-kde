@@ -9,7 +9,7 @@ import math
 import time
 
 from PyQt6.QtCore import Qt, QEvent, QPointF, QRectF, QSize, QTimer
-from PyQt6.QtGui import QColor, QFont, QFontDatabase, QPainter, QPainterPath, QLinearGradient, QPen, QPixmap, QPolygonF, QRegion
+from PyQt6.QtGui import QColor, QFont, QFontDatabase, QPainter, QPainterPath, QLinearGradient, QPalette, QPen, QPixmap, QPolygonF, QRegion
 from PyQt6.QtWidgets import (
     QApplication, QButtonGroup, QCheckBox, QComboBox, QDialog, QDialogButtonBox, QFileDialog, QFrame,
     QGridLayout, QHBoxLayout, QLabel, QPlainTextEdit, QProgressBar, QPushButton,
@@ -485,9 +485,49 @@ class PageScrollArea(QScrollArea):
         painter.fillRect(event.rect(), color)
 
 
+def installer_palette(dark):
+    """The wizard owns its colors; desktop settings only select light or dark."""
+    palette = QPalette(QApplication.style().standardPalette())
+    colors = {
+        QPalette.ColorRole.Window: "#292929" if dark else "#f6f6f6",
+        QPalette.ColorRole.Base: "#333333" if dark else "#ffffff",
+        QPalette.ColorRole.AlternateBase: "#383838" if dark else "#eeeeee",
+        QPalette.ColorRole.Button: "#333333" if dark else "#f6f6f6",
+        QPalette.ColorRole.WindowText: "#eeeeee" if dark else "#292929",
+        QPalette.ColorRole.Text: "#eeeeee" if dark else "#292929",
+        QPalette.ColorRole.ButtonText: "#eeeeee" if dark else "#292929",
+        QPalette.ColorRole.ToolTipBase: "#333333" if dark else "#ffffff",
+        QPalette.ColorRole.ToolTipText: "#eeeeee" if dark else "#292929",
+        QPalette.ColorRole.Highlight: "#007aff",
+        QPalette.ColorRole.HighlightedText: "#ffffff",
+        QPalette.ColorRole.Link: "#007aff",
+        QPalette.ColorRole.LinkVisited: "#af52de",
+        QPalette.ColorRole.Mid: "#626262" if dark else "#c9c9c9",
+        QPalette.ColorRole.Light: "#626262" if dark else "#ffffff",
+        QPalette.ColorRole.Dark: "#191919" if dark else "#a0a0a0",
+        QPalette.ColorRole.Shadow: "#121212" if dark else "#686868",
+        QPalette.ColorRole.PlaceholderText: "#bcbcbc" if dark else "#686868",
+    }
+    for role, color in colors.items():
+        palette.setColor(role, QColor(color))
+    for role in (QPalette.ColorRole.WindowText, QPalette.ColorRole.Text, QPalette.ColorRole.ButtonText):
+        palette.setColor(QPalette.ColorGroup.Disabled, role, QColor("#aaaaaa" if dark else "#777777"))
+    return palette
+
+
 class InstallerWindow(OpaqueSurface):
     def __init__(self, bridge, *, uninstall=False):
+        # Fusion ships with Qt. Use it only in this installer process so native
+        # controls cannot acquire Breeze/Kvantum geometry or transparent fills.
+        app = QApplication.instance()
+        desktop_palette = QPalette(app.palette())
+        desktop_font = QFont(app.font())
+        dark = desktop_palette.window().color().lightnessF() <= .5
+        app.setStyle("Fusion")
+        app.setPalette(installer_palette(dark))
+        app.setFont(desktop_font)
         super().__init__()
+        self.setPalette(installer_palette(dark))
         self.bridge = bridge
         self._log_font = QFont(QFontDatabase.systemFont(QFontDatabase.SystemFont.FixedFont))
         self._operation_started = None
@@ -777,9 +817,12 @@ class InstallerWindow(OpaqueSurface):
             self.setUpdatesEnabled(updates_enabled)
 
     def _render(self):
+        # Qt stylesheets can resolve child palettes from the application rather
+        # than their parent. Keep that application-local palette consistent too.
+        QApplication.setPalette(self.palette())
         focused = QApplication.focusWidget()
         focus_name = focused.objectName() if focused else ""
-        # Follow the desktop appearance; the installation choices affect previews only.
+        # Keep the opening light/dark appearance; installation choices affect previews only.
         self.accent = "#007aff"
         light = self.window().palette().window().color().lightnessF() > .5
         surface, footer = ("#f6f6f6", "#eeeeee") if light else ("#292929", "#242424")
