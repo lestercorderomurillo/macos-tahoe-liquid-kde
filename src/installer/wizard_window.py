@@ -5,13 +5,15 @@ SPDX-License-Identifier: GPL-3.0-or-later
 
 from pathlib import Path
 import json
+import math
+import time
 
-from PyQt6.QtCore import Qt, QEvent, QPointF, QRectF, QSize
-from PyQt6.QtGui import QColor, QFont, QPainter, QPainterPath, QLinearGradient, QPen, QPixmap, QPolygonF, QRegion
+from PyQt6.QtCore import Qt, QEvent, QPointF, QRectF, QSize, QTimer
+from PyQt6.QtGui import QColor, QFont, QFontDatabase, QPainter, QPainterPath, QLinearGradient, QPen, QPixmap, QPolygonF, QRegion
 from PyQt6.QtWidgets import (
     QApplication, QButtonGroup, QCheckBox, QComboBox, QDialog, QDialogButtonBox, QFileDialog, QFrame,
     QGridLayout, QHBoxLayout, QLabel, QPlainTextEdit, QProgressBar, QPushButton,
-    QRadioButton, QScrollArea, QSizePolicy, QSpinBox, QToolButton, QVBoxLayout, QWidget,
+    QRadioButton, QScrollArea, QSizePolicy, QSpinBox, QVBoxLayout, QWidget,
 )
 
 from installer_choices import COLORS, defaults, validate
@@ -139,6 +141,56 @@ class GlassButton(QPushButton):
     def leaveEvent(self, event):
         super().leaveEvent(event)
         self.update()
+
+
+class DetailsButton(GlassButton):
+    def sizeHint(self):
+        return QSize(44, 30)
+
+    def paintEvent(self, event):
+        painter = QPainter(self)
+        paint_glass_control(self, painter, pressed=self.isDown())
+        painter.setPen(QPen(self.palette().text().color(), 1.5,
+                           Qt.PenStyle.SolidLine, Qt.PenCapStyle.RoundCap))
+        x, y = self.width() / 2, self.height() / 2 - 1
+        direction = -1 if self.isChecked() else 1
+        painter.drawPolyline(QPolygonF([QPointF(x-4, y-direction*2),
+                                        QPointF(x, y+direction*2),
+                                        QPointF(x+4, y-direction*2)]))
+
+
+class ProgressSpinner(QWidget):
+    """Twelve fading spokes, animated only while visible."""
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.setFixedSize(24, 24)
+        self.frame = 0
+        self.timer = QTimer(self)
+        self.timer.setInterval(80)
+        self.timer.timeout.connect(self.tick)
+
+    def tick(self):
+        self.frame = (self.frame + 1) % 12
+        self.update()
+
+    def showEvent(self, event):
+        super().showEvent(event)
+        self.timer.start()
+
+    def hideEvent(self, event):
+        self.timer.stop()
+        super().hideEvent(event)
+
+    def paintEvent(self, event):
+        painter = QPainter(self)
+        painter.setRenderHint(QPainter.RenderHint.Antialiasing)
+        painter.translate(12, 12)
+        for spoke in range(12):
+            color = QColor(self.palette().text().color())
+            color.setAlphaF(.18 + .82 * ((spoke - self.frame) % 12) / 11)
+            painter.setPen(QPen(color, 2, Qt.PenStyle.SolidLine, Qt.PenCapStyle.RoundCap))
+            painter.drawLine(QPointF(0, -6), QPointF(0, -9))
+            painter.rotate(30)
 
 
 class LanguageSelector(QComboBox):
@@ -437,6 +489,12 @@ class InstallerWindow(OpaqueSurface):
     def __init__(self, bridge, *, uninstall=False):
         super().__init__()
         self.bridge = bridge
+        self._log_font = QFont(QFontDatabase.systemFont(QFontDatabase.SystemFont.FixedFont))
+        self._operation_started = None
+        self._details_expanded = False
+        self._eta_timer = QTimer(self)
+        self._eta_timer.setInterval(1000)
+        self._eta_timer.timeout.connect(self.refresh_progress)
         self.defaults = defaults()
         self.choices = dict(self.defaults)
         from cli import _theme_is_already_installed
@@ -1277,38 +1335,83 @@ class InstallerWindow(OpaqueSurface):
         self.editing = True; self.page = page; self.render()
 
     def details(self):
-        toggle = QToolButton()
-        toggle.setText(self.t("Installation details"))
-        toggle.setToolButtonStyle(Qt.ToolButtonStyle.ToolButtonTextBesideIcon)
-        toggle.setArrowType(Qt.ArrowType.RightArrow)
-        toggle.setCheckable(True)
-        toggle.setAutoRaise(True)
-        self.body.addWidget(toggle, 0, Qt.AlignmentFlag.AlignLeft)
-        self.log = QPlainTextEdit(self.bridge.logTail()); self.log.setReadOnly(True)
+        self.details_toggle = DetailsButton()
+        self.details_toggle.setObjectName("detailsToggle")
+        self.details_toggle.setCheckable(True)
+        self.body.addWidget(self.details_toggle, 0, Qt.AlignmentFlag.AlignHCenter)
+        self.log = QPlainTextEdit(self.bridge.logTail())
+        self.log.setObjectName("installationLog")
+        self.log.setReadOnly(True)
         self.log.setAccessibleName(self.t("Installation details"))
-        self.log.setMinimumHeight(110)
+        self.log.setFont(self._log_font)
+        self.log.document().setDefaultFont(self._log_font)
+        self.log.setMaximumBlockCount(2000)
+        # Explicit font properties survive theme/font changes during installation.
+        family = self._log_font.family().replace("\\", "\\\\").replace('"', '\\"')
+        size = self._log_font.pointSizeF()
+        font_size = f"{size}pt" if size > 0 else f"{self._log_font.pixelSize()}px"
+        self.log.setStyleSheet(f'''
+            QPlainTextEdit {{ background: #191b20; color: #d6dae1;
+                border: 1px solid #343740; border-radius: 10px; padding: 12px;
+                font-family: "{family}"; font-size: {font_size};
+                font-weight: normal; font-style: normal;
+                selection-background-color: #36577c; selection-color: #ffffff; }}
+        ''')
+        self.log.setFixedHeight(190)
         self.body.addWidget(self.log)
-        self.log.hide()
         def expanded(value):
+            self._details_expanded = value
             self.log.setVisible(value)
-            toggle.setArrowType(Qt.ArrowType.DownArrow if value else Qt.ArrowType.RightArrow)
-        toggle.toggled.connect(expanded)
+            title = self.t("Hide installation details" if value else "Show installation details")
+            self.details_toggle.setAccessibleName(title)
+            self.details_toggle.setToolTip(title)
+            self.details_toggle.update()
+        self.details_toggle.toggled.connect(expanded)
+        self.details_toggle.setChecked(self._details_expanded)
+        expanded(self._details_expanded)
 
     def page_progress(self):
-        self.body.addWidget(self.label("Uninstalling…" if self.action == "uninstall" else "Installing…", heading=True))
-        self.body.addSpacing(60)
-        self.step_label = self.label(self.bridge.currentStep or self.t("Preparing…"))
-        self.body.addWidget(self.step_label)
-        self.progress = QProgressBar(); self.progress.setRange(0, 1000)
-        self.progress.setTextVisible(False); self.body.addWidget(self.progress)
-        self.body.addSpacing(12)
+        self.body.addSpacing(95)
+        row = QHBoxLayout()
+        row.setContentsMargins(60, 0, 60, 0)
+        row.setSpacing(12)
+        self.spinner = ProgressSpinner()
+        self.spinner.setAccessibleName(self.t("Uninstalling…" if self.action == "uninstall" else "Installing…"))
+        row.addWidget(self.spinner)
+        self.progress = QProgressBar()
+        self.progress.setRange(0, 1000)
+        self.progress.setAccessibleName(self.spinner.accessibleName())
+        self.progress.setTextVisible(False)
+        row.addWidget(self.progress, 1)
+        self.body.addLayout(row)
+        self.remaining_label = self.label("Estimating time remaining…")
+        self.remaining_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.body.addWidget(self.remaining_label)
         self.details()
+        self._eta_timer.start()
         self.refresh_progress()
 
     def refresh_progress(self):
-        if self.page == "progress" and hasattr(self, "progress"):
-            self.progress.setValue(round(self.bridge.progress * 1000))
-            self.step_label.setText(self.bridge.currentStep or self.t("Preparing…"))
+        if self.page != "progress" or not hasattr(self, "progress"):
+            self._eta_timer.stop()
+            return
+        fraction = max(0.0, min(1.0, self.bridge.progress))
+        self.progress.setValue(round(fraction * 1000))
+        self.progress.setAccessibleDescription(self.bridge.currentStep)
+        elapsed = time.monotonic() - self._operation_started if self._operation_started is not None else 0
+        if fraction >= 1:
+            message = self.t("Finishing…")
+        elif elapsed < 15 or fraction < .02:
+            message = self.t("Estimating time remaining…")
+        else:
+            seconds = elapsed * (1 - fraction) / fraction
+            if seconds < 60:
+                message = self.t("Less than a minute remaining")
+            else:
+                minutes = math.ceil(seconds / 60)
+                message = (self.t("About a minute remaining") if minutes == 1 else
+                           self.t("About {minutes} minutes remaining").format(minutes=minutes))
+        self.remaining_label.setText(message)
 
     def append_log(self, text):
         if self.page == "progress" and hasattr(self, "log"):
@@ -1380,6 +1483,8 @@ class InstallerWindow(OpaqueSurface):
             if self.page != "error":
                 self.action = "uninstall" if self.page == "uninstall" else "install"
             self.bridge.setChoices(validate(self.choices))
+            self._operation_started = time.monotonic()
+            self._details_expanded = False
             self.page = "progress"; self.render(); self.bridge.start(self.action); return
         else:
             index = [item[0] for item in STEPS].index(self.page)
@@ -1389,6 +1494,7 @@ class InstallerWindow(OpaqueSurface):
         self.render()
 
     def finished(self, code):
+        self._eta_timer.stop()
         if self.close_pending:
             self.close(); return
         self.next.setEnabled(True)

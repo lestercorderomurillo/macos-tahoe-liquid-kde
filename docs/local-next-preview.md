@@ -8,6 +8,11 @@ VERSION and release tags remain at the last published version.
 - The application-name popup contains only About and Close, both with the app name.
   Window controls are in View; exported application View actions are preserved.
 - The installer opens at 900 × 680, with a six-card wallpaper selection.
+- During installation/removal, a fading-spoke spinner sits beside the progress
+  bar and a centered localized estimate appears below. The estimate uses elapsed
+  time and completed-step progress; it is approximate, not a fixed countdown.
+  A glass chevron toggles the dark details console. Its system monospace font is
+  captured when the wizard opens and stays fixed across desktop font changes.
 - Prism supplies newly generated psychedelic light/dark artwork. macOS exposes
   the existing original Monterey light/dark bundle; the other bundled Apple
   wallpapers remain available through Plasma's wallpaper selector.
@@ -33,3 +38,8 @@ plugin and exercised the importer, popup actions and QML composition successfull
 These are local checks, not CI or VM install results. Live Plasma
 installation/reinstallation and compositor qualification are still required
 before a future release; offscreen captures do not prove compositor blur.
+
+Progress-page follow-up: all 36 wizard tests passed, including both editions,
+localized estimates, details toggling, status retention in the log and an actual
+application-font change while output continues. Local screenshots in
+`build/next-preview/progress*.png` use simulated progress; no installation ran.

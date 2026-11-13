@@ -3,7 +3,14 @@
 from localization import effective_language, translate
 
 # English | Spanish | Simplified Chinese | Brazilian Portuguese | German
-_ROWS = '''Dock appearance|Apariencia del Dock|程序坞外观|Aparência do Dock|Dock-Erscheinungsbild
+_ROWS = '''Estimating time remaining…|Calculando el tiempo restante…|正在估算剩余时间…|Calculando o tempo restante…|Verbleibende Zeit wird geschätzt…
+About {minutes} minutes remaining|Faltan unos {minutes} minutos|大约还剩 {minutes} 分钟|Faltam cerca de {minutes} minutos|Noch etwa {minutes} Minuten
+About a minute remaining|Falta aproximadamente un minuto|大约还剩 1 分钟|Falta cerca de um minuto|Noch etwa eine Minute
+Less than a minute remaining|Falta menos de un minuto|剩余不到一分钟|Falta menos de um minuto|Noch weniger als eine Minute
+Finishing…|Finalizando…|正在完成…|Finalizando…|Wird abgeschlossen…
+Show installation details|Mostrar detalles de instalación|显示安装详情|Mostrar detalhes da instalação|Installationsdetails anzeigen
+Hide installation details|Ocultar detalles de instalación|隐藏安装详情|Ocultar detalhes da instalação|Installationsdetails ausblenden
+Dock appearance|Apariencia del Dock|程序坞外观|Aparência do Dock|Dock-Erscheinungsbild
 Keep current Dock icons|Conservar los iconos actuales del Dock|保留当前程序坞图标|Manter os ícones atuais do Dock|Aktuelle Dock-Symbole behalten
 macOS-style Dock icons|Iconos del Dock estilo macOS|macOS 风格的程序坞图标|Ícones do Dock no estilo macOS|Dock-Symbole im macOS-Stil
 Application icons|Iconos de las aplicaciones|应用图标|Ícones dos aplicativos|Anwendungssymbole
