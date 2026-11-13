@@ -12,10 +12,10 @@ STATES = ("active", "inactive", "hover", "pressed", "deactivated",
           "hover-inactive", "pressed-inactive", "deactivated-inactive")
 BUTTONS = ("close", "minimize", "maximize", "restore")
 COLORS = {
-    "close": ("#f16a72", "#ee5964", "#f68a92", "#921b1b"),
-    "minimize": ("#f8cf30", "#f9c51a", "#fbe254", "#8b5006"),
-    "maximize": ("#6cd52a", "#55ca16", "#8ae34d", "#287f10"),
-    "restore": ("#6cd52a", "#55ca16", "#8ae34d", "#287f10"),
+    "close": ("#ff6964", "#f35f59", "#ff9282", "#921b1b"),
+    "minimize": ("#ffce2c", "#f5bf1c", "#ffe76b", "#8b5006"),
+    "maximize": ("#70cc48", "#60c139", "#9ae56d", "#287f10"),
+    "restore": ("#70cc48", "#60c139", "#9ae56d", "#287f10"),
 }
 GLYPHS = {
     "close": 'M5.2 5.2l5.6 5.6m0-5.6l-5.6 5.6',
@@ -43,7 +43,7 @@ def _button(button: str, mode: str, state: str, index: int) -> str:
     prefix = f"b{index}"
     # Top/bottom reflections survive loss of focus. Disabled controls are
     # deliberately fainter, unlike inactive but still actionable controls.
-    shine = ".62" if dark else ".44"
+    shine = ".88" if dark else ".72"
     opacity = '.45' if disabled else '1'
     glyph = (f'<path d="{GLYPHS[button]}" fill="none" stroke="{ink}" '
              'stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/>') if state in (
@@ -65,7 +65,7 @@ def _button(button: str, mode: str, state: str, index: int) -> str:
     <stop offset="1" stop-color="#fff" stop-opacity="{shine}"/>
   </linearGradient>
   <radialGradient id="{prefix}-glow" cx=".5" cy="1" r=".7">
-    <stop stop-color="#fff" stop-opacity="{'.12' if not neutral else '.04'}"/>
+    <stop stop-color="#fff" stop-opacity="{'.24' if not neutral else '.08'}"/>
     <stop offset="1" stop-color="#fff" stop-opacity="0"/>
   </radialGradient>
 </defs>
@@ -73,8 +73,8 @@ def _button(button: str, mode: str, state: str, index: int) -> str:
   <circle cx="8" cy="8.5" r="7" fill="#000" opacity="{'.20' if dark else '.08'}"/>
   <circle cx="8" cy="8" r="6.8" fill="url(#{prefix}-body)"/>
   <circle cx="8" cy="8" r="6.8" fill="url(#{prefix}-glow)"/>
-  <circle cx="8" cy="8" r="6.8" fill="none" stroke="#000" stroke-opacity=".18" stroke-width=".4"/>
-  <circle cx="8" cy="8" r="6.55" fill="none" stroke="url(#{prefix}-rim)" stroke-width=".6"/>
+  <circle cx="8" cy="8" r="6.8" fill="none" stroke="#000" stroke-opacity=".25" stroke-width=".45"/>
+  <circle cx="8" cy="8" r="6.4" fill="none" stroke="url(#{prefix}-rim)" stroke-width=".9"/>
   {pressed}{glyph}
 </g>'''
 

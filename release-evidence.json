@@ -1,34 +1,59 @@
 {
-  "version": "0.71.1",
-  "source_sha256": "ff76008f7c212d4d9fcfc2ce33809bc397b731c497ddd354120d52d8ceb6ff96",
-  "environment": "Host CachyOS / Qt 6.11.2; fresh disposable pinned KDE neon Plasma 6.8.1 / Qt 6.11.1 VM.",
+  "version": "0.71.2",
+  "source_sha256": "72e47cff6ffbed8ed62f2f67cb7b8ab988781318a7fe7b2313574b9c08db49ce",
+  "environment": "CachyOS host Qt 6.11.2; disposable pinned KDE neon Plasma 6.8.1 / Qt 6.11.1 Wayland VM.",
   "checks": [
     {
-      "command": "QT_QPA_PLATFORM=offscreen python3 -m pytest -q tests/test_installer_wizard.py tests/test_multilanguage.py",
+      "command": "QT_QPA_PLATFORM=offscreen python3 -m pytest -q tests/test_installer_wizard.py tests/test_window_controls.py tests/test_traffic_lights.py tests/test_wallpaper_defaults.py tests/test_multilanguage.py",
       "result": "passed",
-      "detail": "68 passed on host; 68 passed in disposable Plasma VM. Both edition wizard navigation/selection cases included."
+      "detail": "94 passed on host and 94 in pinned disposable Plasma VM; subsequent changes only inset the Dock checkboxes and name Monterey in the summary."
     },
     {
-      "command": "Guest: sudo env MAC_TAHOE_NO_UPDATE_CHECK=true MTTKDE_NO_CONFIRM=1 MTTKDE_WIZARD_OPTIONS=<installer_choices.defaults()> src/scripts/installer_backend.py install --only --wallpapers --no-apply-theme; repeat for reinstall",
+      "command": "QT_QPA_PLATFORM=offscreen python3 -m pytest -q tests/test_installer_wizard.py -k 'native_dock_apps or native_wizard_navigation'",
       "result": "passed",
-      "detail": "Install and reinstall exited 0 in fresh pinned KDE neon Plasma 6.8.1 overlay."
+      "detail": "Final UI: 6 passed on host, 6 in disposable VM, 6 in prepared Golden Gate source. Includes actual wallpaper-file/package preview pixels and dialog cancel/accept/keyboard behavior."
     },
     {
-      "command": "GOLDEN_GATE_TAHOE_SOURCE=<Tahoe checkout> MAC_TAHOE_NO_UPDATE_CHECK=true ./install --prepare; in staged source: QT_QPA_PLATFORM=offscreen python3 -m pytest -q tests/test_installer_wizard.py -k 'native_wizard_navigation or catalogs'",
+      "command": "Guest: sudo env MAC_TAHOE_NO_UPDATE_CHECK=true MTTKDE_NO_CONFIRM=1 MTTKDE_WIZARD_OPTIONS=<Golden Gate defaults with glassy controls> src/scripts/installer_backend.py install --only --gtk --window-decorations --wallpapers --no-apply-theme; repeat for reinstall",
       "result": "passed",
-      "detail": "3 passed; 34 deselected."
+      "detail": "Both operations exited 0; actual GTK/Aurorae and Prism wallpaper payloads installed in disposable Plasma 6.8.1 overlay."
+    },
+    {
+      "command": "Guest: focused Nautilus light/dark at scale 4; KWin identity/focus/geometry immediately before and after Spectacle capture; native wallpaper/layout/Dock-dialog views for both editions in light/dark",
+      "result": "passed",
+      "detail": "Two reviewed 760x400 glassy-control crops; both editions retain their own defaults. Final UI captures reviewed; no historical gallery refresh."
+    },
+    {
+      "command": "QT_QPA_PLATFORM=offscreen python3 -m pytest -q tests/test_installer_wizard.py -k control_previews",
+      "result": "passed",
+      "detail": "1 passed; new content-hashed crop and provenance integrity checked."
     }
   ],
   "gallery_commit": "1e75b167c464c1b41ab611d7f64f027b5b17a00e",
-  "captures": [],
+  "captures": [
+    {
+      "path": "src/installer/assets/window-controls-glassy-light-45ea24069b73.png",
+      "sha256": "45ea24069b73be3296280ee22b98276058796ab59816753ba405598e563d437b",
+      "reviewed": true
+    },
+    {
+      "path": "src/installer/assets/window-controls-glassy-dark-2429eef77f43.png",
+      "sha256": "2429eef77f4344e0b6ee3c6a8da3fb71dca11ce9da991ff5881154248be72e37",
+      "reviewed": true
+    }
+  ],
   "local_vm_qualification": {
     "vm_image_sha256": "412e7933f10add20b921b92c02709e7eea56acd14dc14cf654f58fba4ea3cc9d",
-    "source_archive_sha256": "45e3d61b0295a25ab3f6ba44bb52df3f14473b9b8251ded841b74e3e21c2d09d",
+    "installation_archive_sha256": "744fb62257c1e476571cdf55b77be8a1d2c7e7be56334380a3fd0b7ffae2dd25",
+    "final_ui_archive_sha256": "fbd698cd53e3550639175a4864c5306c54a124d744bda81a805e41b2672aa1b0",
     "runtime_sources": {
-      "src/installer/wizard_window.py": "105419bfdcd9b9d57ae94073ec8091897554937d156b6a9ca53a741e18c1e07b",
-      "src/installer/wizard_translations.py": "f56e76e11f5d7babb64c9875da5fca9f927bdc9e7ae9cf2dde4e787c89236d02"
+      "src/installer/wizard_window.py": "7e6fc315a69198c105782ae669c33f4adb4a6a7bfb9fb11765b4e9b69de44895",
+      "src/scripts/window_controls.py": "5172d954ca3c33c022eda8cd2885b7f06e4426ed711bf1cf72ff593a86c637dc",
+      "src/offline/wallpapers/MacPrism/contents/images/3840x2160.jpg": "ee7780a161cf2c76a818b95bca50a96ffc48558c3c2792341b3e37dd21d5bb89",
+      "src/offline/wallpapers/MacPrism/contents/images_dark/3840x2160.jpg": "3471f38a7b94dbd9c919f9e52a0c55ade9c2a6b890bd1d0bf80855e75ae17390"
     },
-    "artifacts": "/tmp/installer-copy-0711",
-    "scope": "Appearance labels and icon-page caption in both editions; wizard navigation, selections and translations. Scoped wallpaper install/reinstall in Tahoe guest. No native rendering, ABI, dependencies or installation recipes changed; no new gallery photographs."
+    "artifacts": "/tmp/refinement-0712",
+    "scope": "Installer cards and Dock app controls; static GTK/Aurorae SVG traffic lights and Prism artwork. No native ABI, shader executable or distro dependency changes. Installer preview crops refreshed after visual review; all other gallery provenance retained. Background preview falls back to a neutral card when no readable static wallpaper is configured.",
+    "reference": "https://512pixels.net/2026/08/golden-gate-beta-6-stoplights-liquid-glass/"
   }
 }

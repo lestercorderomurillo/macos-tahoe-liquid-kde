@@ -102,7 +102,7 @@ def main():
                 else:
                     button = (QDialogButtonBox.StandardButton.Ok if action == 'accept'
                               else QDialogButtonBox.StandardButton.Cancel)
-                    QTest.mouseClick(buttons.button(button), Qt.MouseButton.LeftButton)
+                    QTest.mouseClick(dialog.findChild(QPushButton, 'dock-apps-continue' if action == 'accept' else 'dock-apps-cancel'), Qt.MouseButton.LeftButton)
 
             QTimer.singleShot(60, interact)
             QTest.mouseClick(window.content.findChild(QPushButton, 'edit-dock-apps'), Qt.MouseButton.LeftButton)

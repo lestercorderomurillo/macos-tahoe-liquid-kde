@@ -1,14 +1,16 @@
 # Installer testing
 
-Tahoe **v0.71.1** simplifies the installer appearance choices to Auto, Light
-and Dark and removes the Auto and Theme color descriptions.
+Tahoe **v0.71.2** refines Prism, adds a preview of the current wallpaper,
+names Monterey correctly and gives Dock app controls and traffic lights
+a consistent glass appearance.
 
-Wizard and translation checks passed on the host and in a disposable Plasma
-6.8.1 VM, including both edition choices; focused installation and reinstallation
-also passed. Golden Gate staging passed its wizard checks. See
+Focused wizard, wallpaper, translation and window-control checks passed;
+a disposable Plasma 6.8.1 VM passed scoped GTK, window-decoration and wallpaper
+installation/reinstallation. Both editions' light/dark wizard views and the
+updated glassy-control crops were reviewed. See
 [commands, source hashes and coverage limits](release-evidence.json).
 Historical installer photographs below retain their original capture provenance
-and may show the previous wording.
+and may show the previous wording and controls.
 
 [Light menu](src/screenshots/menu_v4-0343811e426d.webp) · [Dark menu](src/screenshots/menu_dark_v4-171bb0e051ff.webp) · [Capture provenance](src/screenshots/previews/system-menu-tahoe-069-provenance-9c458fcf42db.json)
 

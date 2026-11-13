@@ -8,7 +8,7 @@ import json
 import math
 import time
 
-from PyQt6.QtCore import Qt, QEvent, QPointF, QRectF, QSize, QTimer
+from PyQt6.QtCore import Qt, QEvent, QPointF, QRectF, QSize, QTimer, QUrl
 from PyQt6.QtGui import QColor, QFont, QFontDatabase, QPainter, QPainterPath, QLinearGradient, QPalette, QPen, QPixmap, QPolygonF, QRegion
 from PyQt6.QtWidgets import (
     QApplication, QButtonGroup, QCheckBox, QComboBox, QDialog, QDialogButtonBox, QFileDialog, QFrame,
@@ -51,7 +51,7 @@ def picture(name, width, height, other=None, *, cover=False, crop=None):
     for index, filename in enumerate((name, other)):
         if not filename:
             continue
-        source = QPixmap(str(ASSETS / ASSET_FILES[filename]["file"]))
+        source = QPixmap(str(filename if isinstance(filename, Path) else ASSETS / ASSET_FILES[filename]["file"]))
         if source.isNull():
             continue
         if crop is not None:
@@ -69,6 +69,35 @@ def picture(name, width, height, other=None, *, cover=False, crop=None):
         painter.setPen(QPen(QColor("#baffffff"), 1))
         painter.drawLine(QPointF(width*.61, 0), QPointF(width*.39, height))
     painter.end()
+    canvas.setDevicePixelRatio(2)
+    return canvas
+
+
+def current_wallpaper_preview(width, height):
+    """Read the user's saved desktops without changing or capturing the desktop."""
+    from theme_switch import _wallpapers_from_config
+    images = []
+    for desktop in _wallpapers_from_config():
+        value = str(desktop["image"])
+        url = QUrl(value)
+        path = Path(url.toLocalFile() if url.isLocalFile() else value)
+        if path.is_dir():
+            candidates = [sorted((path / "contents" / folder).glob("*"))
+                          for folder in ("images", "images_dark")]
+            paths = [next((p for p in files if p.is_file() and not QPixmap(str(p)).isNull()), None)
+                     for files in candidates]
+        else:
+            paths = [path]
+            if path.parent.name in ("images", "images_dark"):
+                alternate = path.parent.parent / ("images_dark" if path.parent.name == "images" else "images") / path.name
+                paths = [path, alternate] if path.parent.name == "images" else [alternate, path]
+        for candidate in paths:
+            if candidate and candidate not in images and not QPixmap(str(candidate)).isNull():
+                images.append(candidate)
+    if images:
+        return picture(images[0], width, height, images[1] if len(images) > 1 else None, cover=True)
+    canvas = QPixmap(width * 2, height * 2)
+    canvas.fill(QApplication.palette().window().color())
     canvas.setDevicePixelRatio(2)
     return canvas
 
@@ -193,7 +222,7 @@ class ProgressSpinner(QWidget):
             painter.rotate(30)
 
 
-class LanguageSelector(QComboBox):
+class GlassComboBox(QComboBox):
     def focusInEvent(self, event):
         self.keyboard_focus = event.reason() in (
             Qt.FocusReason.TabFocusReason, Qt.FocusReason.BacktabFocusReason,
@@ -202,7 +231,7 @@ class LanguageSelector(QComboBox):
         self.update()
 
     def sizeHint(self):
-        return QSize(self.fontMetrics().horizontalAdvance(self.currentText()) + 42, 32)
+        return QSize(max((self.fontMetrics().horizontalAdvance(self.itemText(i)) for i in range(self.count())), default=0) + 42, 32)
 
     def minimumSizeHint(self):
         return self.sizeHint()
@@ -212,11 +241,15 @@ class LanguageSelector(QComboBox):
         paint_glass_control(self, painter)
         painter.setPen(self.palette().text().color())
         painter.drawText(QRectF(12, 0, self.width()-36, self.height()),
-                         Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignVCenter, self.currentText())
+                         Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignVCenter, self.fontMetrics().elidedText(self.currentText(), Qt.TextElideMode.ElideRight, self.width()-36))
         x, y = self.width()-15, self.height()/2
         painter.setPen(QPen(self.palette().text().color(), 1.2, Qt.PenStyle.SolidLine, Qt.PenCapStyle.RoundCap))
         painter.drawLine(QPointF(x-3, y-1.5), QPointF(x, y+1.5))
         painter.drawLine(QPointF(x, y+1.5), QPointF(x+3, y-1.5))
+
+
+class LanguageSelector(GlassComboBox):
+    pass
 
 
 class WindowLight(QPushButton):
@@ -278,8 +311,9 @@ class WindowHeader(QWidget):
 
 class CheckOption(QCheckBox):
     """Keep native checkbox behavior with the same mark as selection cards."""
+    content_margin = 0
     def sizeHint(self):
-        return QSize(self.fontMetrics().horizontalAdvance(self.text())+26,
+        return QSize(self.fontMetrics().horizontalAdvance(self.text())+26+2*self.content_margin,
                      max(32, self.fontMetrics().height()+14))
 
     def hitButton(self, point):
@@ -288,6 +322,7 @@ class CheckOption(QCheckBox):
     def paintEvent(self, event):
         painter = QPainter(self)
         painter.setRenderHint(QPainter.RenderHint.Antialiasing)
+        painter.translate(self.content_margin, 0)
         accent = QColor(self.window().accent)
         y = (self.height()-16)/2
         box = QRectF(1, y, 16, 16)
@@ -300,11 +335,30 @@ class CheckOption(QCheckBox):
             path = QPainterPath(QPointF(5, y+8)); path.lineTo(8, y+11); path.lineTo(13, y+5)
             painter.drawPath(path)
         painter.setPen(self.palette().text().color())
-        painter.drawText(QRectF(26, 0, self.width()-26, self.height()),
+        painter.drawText(QRectF(26, 0, self.width()-26-2*self.content_margin, self.height()),
                          Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignVCenter, self.text())
 
 
+class GlassCheckOption(CheckOption):
+    content_margin = 12
+
+    def paintEvent(self, event):
+        painter = QPainter(self)
+        paint_glass_control(self, painter, pressed=self.isDown())
+        painter.end()
+        super().paintEvent(event)
+
+    def enterEvent(self, event):
+        super().enterEvent(event)
+        self.update()
+
+    def leaveEvent(self, event):
+        super().leaveEvent(event)
+        self.update()
+
+
 class RadioOption(QRadioButton):
+    content_margin = 0
     sizeHint = CheckOption.sizeHint
     hitButton = CheckOption.hitButton
 
@@ -989,18 +1043,14 @@ class InstallerWindow(OpaqueSurface):
         return "dark" if self.choices["appearance"] == "dark" else "light"
 
     def page_wallpaper(self):
-        group = self.cards("wallpaper", [(key, label, "", picture(key+".jpg", 362, 112, key+"-dark.jpg", cover=True))
-                   for key, label in (("tahoe", "Tahoe"), ("golden", "Golden Gate"),
-                                      ("landscape", "Landscape"), ("sonoma", "Sonoma"),
-                                      ("prism", "Prism"), ("macos", "macOS"))], columns=3, compact=True)
+        items = [(key, label, "", picture(key+".jpg", 170, 112, key+"-dark.jpg", cover=True))
+                 for key, label in (("tahoe", "Tahoe"), ("golden", "Golden Gate"),
+                                    ("landscape", "Landscape"), ("sonoma", "Sonoma"),
+                                    ("prism", "Prism"), ("macos", "Monterey"))]
+        items.append(("keep", "Keep my wallpaper", "", current_wallpaper_preview(170, 112)))
+        self.cards("wallpaper", items, columns=4, compact=True)
         row = QHBoxLayout()
-        keep = RadioOption(self.t("Keep my wallpaper"))
-        keep.setFont(relative_font(self, .93))
-        keep.setChecked(self.choices["wallpaper"] == "keep")
-        group.addButton(keep)
-        self.bind_choice("wallpaper", "keep", keep)
-        keep.clicked.connect(lambda: self.select("wallpaper", "keep"))
-        row.addWidget(keep); row.addStretch()
+        row.addStretch()
         button = QPushButton(self.t("Choose a file…")); button.clicked.connect(self.choose_file)
         button.setObjectName("textLink")
         row.addWidget(button); self.body.addLayout(row)
@@ -1038,7 +1088,7 @@ class InstallerWindow(OpaqueSurface):
         self.dock_app_options()
 
     def dock_app_options(self):
-        button = QPushButton(self.t("Dock apps…"))
+        button = GlassButton(self.t("Dock apps…"))
         button.setObjectName("edit-dock-apps")
         button.setEnabled(self.choices["dock"])
         button.clicked.connect(self.edit_dock_apps)
@@ -1052,13 +1102,15 @@ class InstallerWindow(OpaqueSurface):
         dialog = QDialog(self)
         # Custom checkbox painting uses the colors of its containing window.
         # A modal QDialog is a separate window even with the wizard as parent.
+        dialog.setPalette(self.palette())
+        dialog.setAutoFillBackground(True)
         dialog.accent = self.accent
         dialog.line = self.line
         dialog.setWindowTitle(self.t("Dock apps"))
         dialog.setMinimumWidth(620)
         body = QVBoxLayout(dialog)
         body.addWidget(self.label("Dock appearance"))
-        appearance = QComboBox()
+        appearance = GlassComboBox()
         appearance.setObjectName("dock-appearance")
         for key, label in (("auto", "Automatic"), ("keep", "Keep current Dock icons"), ("macos", "macOS-style Dock icons"), ("native", "Application icons")):
             appearance.addItem(self.t(label), key)
@@ -1070,13 +1122,13 @@ class InstallerWindow(OpaqueSurface):
 
         intro = self.label("Installed equivalents are reused. Select only the missing apps you want to install.")
         body.addWidget(intro)
-        source = QComboBox()
+        source = GlassComboBox()
         source.setObjectName("dock-apps-source")
         source.addItem(self.t("Distribution repositories"), "native")
         source.addItem(self.t("Flatpak for my user (installs Flatpak if needed)"), "flatpak")
         source.setCurrentIndex(0 if choices["dock_apps_source"] == "native" else 1)
         body.addWidget(source)
-        remote = CheckOption(self.t("Allow adding Flathub for my user if it is missing"))
+        remote = GlassCheckOption(self.t("Allow adding Flathub for my user if it is missing"))
         remote.setObjectName("dock-add-flathub")
         remote.setChecked(choices["dock_add_flathub"])
         remote.toggled.connect(lambda checked: choices.update(dock_add_flathub=checked))
@@ -1085,7 +1137,7 @@ class InstallerWindow(OpaqueSurface):
         body.addWidget(flatpak_note)
         options = {}
         for category in OPTIONAL:
-            option = CheckOption("")
+            option = GlassCheckOption("")
             option.setObjectName("dock-app-" + category)
             option.setFont(relative_font(self, .93))
             def choose(checked, key=category):
@@ -1118,9 +1170,14 @@ class InstallerWindow(OpaqueSurface):
         source.currentIndexChanged.connect(refresh)
         refresh()
         body.addWidget(self.label("Availability is checked during installation. Failed apps remain pending; removing the theme keeps your apps."))
-        buttons = QDialogButtonBox(QDialogButtonBox.StandardButton.Ok | QDialogButtonBox.StandardButton.Cancel)
-        buttons.button(QDialogButtonBox.StandardButton.Ok).setText(self.t("Continue"))
-        buttons.button(QDialogButtonBox.StandardButton.Cancel).setText(self.t("Cancel"))
+        buttons = QDialogButtonBox()
+        accept = GlassButton(self.t("Continue"))
+        accept.setObjectName("dock-apps-continue")
+        accept.setDefault(True)
+        cancel = GlassButton(self.t("Cancel"))
+        cancel.setObjectName("dock-apps-cancel")
+        buttons.addButton(accept, QDialogButtonBox.ButtonRole.AcceptRole)
+        buttons.addButton(cancel, QDialogButtonBox.ButtonRole.RejectRole)
         buttons.accepted.connect(dialog.accept)
         buttons.rejected.connect(dialog.reject)
         body.addWidget(buttons)
@@ -1226,7 +1283,6 @@ class InstallerWindow(OpaqueSurface):
             for level, label in (("none", "None"), ("soft", "Soft"),
                                  ("medium", "Medium"), ("hard", "Hard"))
         ], compact=True)
-        self.body.addWidget(self.label("Applies to the theme's window decorations and GTK windows."))
 
     def page_fonts(self):
         self.cards("fonts", [
@@ -1311,7 +1367,7 @@ class InstallerWindow(OpaqueSurface):
         c = self.choices
         names = {"auto": "Automatic", "light": "Light", "dark": "Dark", "regular": "Regular",
                  "glass": "Glass", "keep": "Keep", "golden": "Golden Gate", "tahoe": "Tahoe",
-                 "landscape": "Landscape", "sonoma": "Sonoma", "custom": "Custom file",
+                 "landscape": "Landscape", "sonoma": "Sonoma", "macos": "Monterey", "custom": "Custom file",
                  "nautilus": "Nautilus", "dolphin": "Dolphin",
                  "classic": "Tahoe (Clear)", "tinted": "Tahoe (Frosted)",
                  "official": "Golden Gate (Official)"}

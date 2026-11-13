@@ -472,7 +472,7 @@ with tempfile.TemporaryDirectory() as directory:
     window.select('wallpaper', 'keep')
     assert not window.wallpaper_filename.isVisible()
     window.select('wallpaper', 'tahoe')
-    assert not content.findChild(RadioOption).isChecked()
+    assert not content.findChild(ChoiceCard, 'choice-wallpaper-keep').isChecked()
 window.page = 'files'; window.render(); app.processEvents()
 bookmarks = window.bookmarks
 bookmarks.setChecked(False)
@@ -545,6 +545,25 @@ window.select('oled_care', True); assert all(spin.isEnabled() for spin in spins)
 spins[0].setValue(17)
 window.select('oled_care', False); assert all(not spin.isEnabled() for spin in spins)
 window.select('oled_care', True); assert spins[0].value() == 17
+# Current wallpaper cards render actual files and package light/dark partners.
+from wizard_window import current_wallpaper_preview
+from PyQt6.QtCore import QUrl
+import theme_switch
+snapshot = theme_switch._wallpapers_from_config
+with tempfile.TemporaryDirectory() as directory:
+    package = Path(directory) / 'My wallpaper'
+    for folder, color in [('images', 'red'), ('images_dark', 'blue')]:
+        destination = package / 'contents' / folder / 'image.png'
+        destination.parent.mkdir(parents=True)
+        tile = QPixmap(80, 40); tile.fill(QColor(color)); tile.save(str(destination))
+    for path in [package, package/'contents/images/image.png', package/'contents/images_dark/image.png']:
+        theme_switch._wallpapers_from_config = lambda: [{'screen': 0, 'image': QUrl.fromLocalFile(str(path)).toString()}]
+        preview = current_wallpaper_preview(100, 50).toImage()
+        assert preview.pixelColor(10, 50) == QColor('red')
+        assert preview.pixelColor(190, 50) == QColor('blue')
+    theme_switch._wallpapers_from_config = lambda: [{'screen': 0, 'image': str(package/'missing.png')}]
+    assert not current_wallpaper_preview(100, 50).isNull()
+theme_switch._wallpapers_from_config = snapshot
 window.close()
 print('native wizard flow passed')
 '''

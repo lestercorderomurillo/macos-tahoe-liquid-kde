@@ -2019,15 +2019,13 @@
     "capture": "Disposable pinned KDE neon VM; focused Nautilus; 3840x2160 at 4x scale; lossless crop"
   },
   "window-controls-glassy-light.png": {
-    "kind": "controls",
-    "style": "glassy",
-    "level": "medium",
-    "mode": "light",
     "window": {
+      "id": "{f13b6cc3-6b13-4d77-a70a-f3f522f1a4ab}",
       "caption": "Documents",
       "resourceClass": "org.gnome.Nautilus",
       "type": 0,
       "appletPopup": false,
+      "hidden": false,
       "active": true,
       "geometry": {
         "x": 90,
@@ -2036,22 +2034,41 @@
         "height": 380
       }
     },
-    "scale": 4,
-    "background": "#b8bec6",
-    "gtk_glassy": true,
-    "file": "window-controls-glassy-light-6dea409c681b.png",
-    "source_sha256": "1a42afee1f0c634f9828b10293f4f84546e12dfbb2211d25094f1d657b540b6b",
+    "after": {
+      "id": "{f13b6cc3-6b13-4d77-a70a-f3f522f1a4ab}",
+      "caption": "Documents",
+      "resourceClass": "org.gnome.Nautilus",
+      "type": 0,
+      "appletPopup": false,
+      "hidden": false,
+      "active": true,
+      "geometry": {
+        "x": 90,
+        "y": 30,
+        "width": 760,
+        "height": 380
+      }
+    },
     "crop": [
       312,
       72,
       1072,
       472
     ],
-    "vm_image_sha256": "2a09de13ad568da01a8e16dd93e6aec120e63375bfc0ec24b4e804b43ecb4f8c",
-    "source_archive_sha256": "89c534416693e5378c808cd2edfcf986051a85a91a8a94258090fc32fdcc399f",
-    "sha256": "6dea409c681b0e83ad5d98693e8af32ae2c557951a879f0b30b01244483da3c8",
-    "source": "VM Nautilus capture/window-controls-glassy-light-desktop.png",
-    "capture": "Disposable pinned KDE neon VM; focused Nautilus; 3840x2160 at 4x scale; lossless crop"
+    "scale": 4,
+    "source_sha256": "5f5ed7f5e499c67d7df32fc560ef03df787d7f74aa9432379e8144a32b3599ed",
+    "kind": "controls",
+    "style": "glassy",
+    "level": "medium",
+    "mode": "light",
+    "gtk_glassy": true,
+    "file": "window-controls-glassy-light-45ea24069b73.png",
+    "sha256": "45ea24069b73be3296280ee22b98276058796ab59816753ba405598e563d437b",
+    "vm_image_sha256": "412e7933f10add20b921b92c02709e7eea56acd14dc14cf654f58fba4ea3cc9d",
+    "source_archive_sha256": "fbd698cd53e3550639175a4864c5306c54a124d744bda81a805e41b2672aa1b0",
+    "source": "VM Nautilus capture/controls-light-desktop.png",
+    "capture": "Disposable pinned KDE neon VM; focused Nautilus verified before and after; 3840x2160 at 4x scale; lossless crop",
+    "reference": "https://512pixels.net/2026/08/golden-gate-beta-6-stoplights-liquid-glass/"
   },
   "window-controls-flat-dark.png": {
     "kind": "controls",
@@ -2089,15 +2106,13 @@
     "capture": "Disposable pinned KDE neon VM; focused Nautilus; 3840x2160 at 4x scale; lossless crop"
   },
   "window-controls-glassy-dark.png": {
-    "kind": "controls",
-    "style": "glassy",
-    "level": "medium",
-    "mode": "dark",
     "window": {
+      "id": "{a231e13b-3fea-41b6-afaf-5fc62b6078b3}",
       "caption": "Documents",
       "resourceClass": "org.gnome.Nautilus",
       "type": 0,
       "appletPopup": false,
+      "hidden": false,
       "active": true,
       "geometry": {
         "x": 90,
@@ -2106,22 +2121,41 @@
         "height": 380
       }
     },
-    "scale": 4,
-    "background": "#686d76",
-    "gtk_glassy": true,
-    "file": "window-controls-glassy-dark-864ea28aa4c5.png",
-    "source_sha256": "db60eeed1d5b33d041f0f17ec898aea1cc69f37a018be5b94cd479fb297484fc",
+    "after": {
+      "id": "{a231e13b-3fea-41b6-afaf-5fc62b6078b3}",
+      "caption": "Documents",
+      "resourceClass": "org.gnome.Nautilus",
+      "type": 0,
+      "appletPopup": false,
+      "hidden": false,
+      "active": true,
+      "geometry": {
+        "x": 90,
+        "y": 30,
+        "width": 760,
+        "height": 380
+      }
+    },
     "crop": [
       312,
       72,
       1072,
       472
     ],
-    "vm_image_sha256": "2a09de13ad568da01a8e16dd93e6aec120e63375bfc0ec24b4e804b43ecb4f8c",
-    "source_archive_sha256": "89c534416693e5378c808cd2edfcf986051a85a91a8a94258090fc32fdcc399f",
-    "sha256": "864ea28aa4c51b0cec82be427f5d2339fa5f8f513584c3d4b1c885dabb54fd48",
-    "source": "VM Nautilus capture/window-controls-glassy-dark-desktop.png",
-    "capture": "Disposable pinned KDE neon VM; focused Nautilus; 3840x2160 at 4x scale; lossless crop"
+    "scale": 4,
+    "source_sha256": "4e5ac0cc20f2399793dadc627f8d77c40a9b7185d0ca406d376c7a5240236825",
+    "kind": "controls",
+    "style": "glassy",
+    "level": "medium",
+    "mode": "dark",
+    "gtk_glassy": true,
+    "file": "window-controls-glassy-dark-2429eef77f43.png",
+    "sha256": "2429eef77f4344e0b6ee3c6a8da3fb71dca11ce9da991ff5881154248be72e37",
+    "vm_image_sha256": "412e7933f10add20b921b92c02709e7eea56acd14dc14cf654f58fba4ea3cc9d",
+    "source_archive_sha256": "fbd698cd53e3550639175a4864c5306c54a124d744bda81a805e41b2672aa1b0",
+    "source": "VM Nautilus capture/controls-dark-desktop.png",
+    "capture": "Disposable pinned KDE neon VM; focused Nautilus verified before and after; 3840x2160 at 4x scale; lossless crop",
+    "reference": "https://512pixels.net/2026/08/golden-gate-beta-6-stoplights-liquid-glass/"
   },
   "window-shadows-none-light.png": {
     "kind": "shadows",
@@ -2453,16 +2487,16 @@
   },
   "prism.jpg": {
     "source": "src/offline/wallpapers/MacPrism/contents/images/3840x2160.jpg",
-    "source_sha256": "071ef3b55ba3824fd31109d7007e57770089b8401a0fce19dc0724039a39e820",
-    "sha256": "51aecf00e2255a62391493acf6206cd400939a8a14c191b43632c09d6fec08a8",
-    "file": "prism-51aecf00e225.jpg",
+    "source_sha256": "ee7780a161cf2c76a818b95bca50a96ffc48558c3c2792341b3e37dd21d5bb89",
+    "sha256": "d161645494d6327492affd09680da3808a9b3f0aeff474d3d6653d02f0d6e0f4",
+    "file": "prism-d161645494d6.jpg",
     "crop": null
   },
   "prism-dark.jpg": {
     "source": "src/offline/wallpapers/MacPrism/contents/images_dark/3840x2160.jpg",
-    "source_sha256": "ad0427b036dd16f1f35664c739fa2927bb8414fc369740a3e738feae52c37f35",
-    "sha256": "3e1f907ff014d1212f1c36021fc5abf8ef98ee9dd5dfa7828c081eeaaf71a819",
-    "file": "prism-dark-3e1f907ff014.jpg",
+    "source_sha256": "3471f38a7b94dbd9c919f9e52a0c55ade9c2a6b890bd1d0bf80855e75ae17390",
+    "sha256": "a262885b5543d6ecbcc63a1aadebc1c886dcb75267c9b96b902195a4ff95e332",
+    "file": "prism-dark-a262885b5543.jpg",
     "crop": null
   },
   "macos.jpg": {
