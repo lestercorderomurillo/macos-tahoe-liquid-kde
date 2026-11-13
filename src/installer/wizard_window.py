@@ -1365,14 +1365,7 @@ class InstallerWindow(OpaqueSurface):
             button.clicked.connect(lambda _, page=step: self.edit(page)); row.addWidget(button)
             grid.addWidget(entry, i//2, i%2)
         self.body.addLayout(grid)
-        self.separator()
-        title = self.label("Included with the theme")
-        title.setFont(relative_font(self, .93, QFont.Weight.Bold)); self.body.addWidget(title)
-        included = self.label("Global menu, window theme, cursors, sounds, Qt and GTK styles and file dialogs.")
-        included.setObjectName("detail")
-        included.setFont(relative_font(self, .86)); self.body.addWidget(included)
-        note = self.label("The theme is applied immediately when installation finishes.")
-        note.setFont(relative_font(self, .86)); self.body.addWidget(note)
+
 
     def edit(self, page):
         self.editing = True; self.page = page; self.render()

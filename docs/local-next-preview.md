@@ -51,3 +51,6 @@ and accessibility scale remain in use; no desktop configuration is changed.
 All 37 wizard tests pass, including pixel comparisons starting with Breeze,
 Kvantum, Windows and Fusion in both modes, and a desktop-palette change followed
 by navigation. These comparisons use isolated offscreen Qt rendering.
+
+The summary ends after the selected options; the redundant included-components
+and immediate-application text block has been removed.
