@@ -189,17 +189,17 @@ class DetailsButton(GlassButton):
 
 
 class ProgressSpinner(QWidget):
-    """Twelve fading spokes, animated only while visible."""
+    """A smooth circular progress arc, animated only while visible."""
     def __init__(self, parent=None):
         super().__init__(parent)
         self.setFixedSize(24, 24)
         self.frame = 0
         self.timer = QTimer(self)
-        self.timer.setInterval(80)
+        self.timer.setInterval(16)
         self.timer.timeout.connect(self.tick)
 
     def tick(self):
-        self.frame = (self.frame + 1) % 12
+        self.frame = (self.frame + 6) % 360
         self.update()
 
     def showEvent(self, event):
@@ -213,13 +213,14 @@ class ProgressSpinner(QWidget):
     def paintEvent(self, event):
         painter = QPainter(self)
         painter.setRenderHint(QPainter.RenderHint.Antialiasing)
-        painter.translate(12, 12)
-        for spoke in range(12):
-            color = QColor(self.palette().text().color())
-            color.setAlphaF(.18 + .82 * ((spoke - self.frame) % 12) / 11)
-            painter.setPen(QPen(color, 2, Qt.PenStyle.SolidLine, Qt.PenCapStyle.RoundCap))
-            painter.drawLine(QPointF(0, -6), QPointF(0, -9))
-            painter.rotate(30)
+        ring = QRectF(3, 3, 18, 18)
+        color = QColor(self.palette().text().color())
+        color.setAlphaF(.12)
+        painter.setPen(QPen(color, 2.2))
+        painter.drawEllipse(ring)
+        color.setAlphaF(.85)
+        painter.setPen(QPen(color, 2.2, Qt.PenStyle.SolidLine, Qt.PenCapStyle.RoundCap))
+        painter.drawArc(ring, (90 - self.frame) * 16, -260 * 16)
 
 
 class GlassComboBox(QComboBox):

@@ -1,16 +1,13 @@
 # Installer testing
 
-Tahoe **v0.71.2** refines Prism, adds a preview of the current wallpaper,
-names Monterey correctly and gives Dock app controls and traffic lights
-a consistent glass appearance.
+Tahoe **v0.71.3** uses a smooth circular installer progress indicator.
 
-Focused wizard, wallpaper, translation and window-control checks passed;
-a disposable Plasma 6.8.1 VM passed scoped GTK, window-decoration and wallpaper
-installation/reinstallation. Both editions' light/dark wizard views and the
-updated glassy-control crops were reviewed. See
-[commands, source hashes and coverage limits](release-evidence.json).
-Historical installer photographs below retain their original capture provenance
-and may show the previous wording and controls.
+Wizard/progress checks passed on the host and in a disposable Plasma 6.8.1
+VM. Scoped installation/reinstallation, light/dark animation and visibility
+timer checks passed; both progress views were reviewed. Golden Gate's staged
+wizard checks also passed. See [commands and coverage limits](release-evidence.json).
+Historical installer photographs below retain their original provenance and
+may show the previous spinner.
 
 [Light menu](src/screenshots/menu_v4-0343811e426d.webp) · [Dark menu](src/screenshots/menu_dark_v4-171bb0e051ff.webp) · [Capture provenance](src/screenshots/previews/system-menu-tahoe-069-provenance-9c458fcf42db.json)
 
