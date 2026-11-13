@@ -84,7 +84,7 @@ GridView {
                 height: 1
                 color: main.contrastBgColor
             }
-            Item { width: 1; height: root.configuredIconSize * 0.25 }
+            Item { width: 1; height: root.configuredIconSize * (main.tahoeStyle ? 0.2265625 : 0.25) }
         }
     }
 

@@ -24,7 +24,7 @@ RowLayout {
             samples: main.goldenGateLight ? 13 : 9
         }
         Layout.rightMargin: 0
-        Layout.preferredWidth: main.detachedSearch ? Kirigami.Units.gridUnit * 2 : Kirigami.Units.iconSizes.medium
+        Layout.preferredWidth: main.detachedSearch ? Kirigami.Units.gridUnit * 2 : (main.tahoeStyle ? 38 : Kirigami.Units.iconSizes.medium)
         Layout.preferredHeight: Layout.preferredWidth
         source: Qt.resolvedUrl('icons/AppsIcon.svg')
         isMask: true
@@ -42,7 +42,7 @@ RowLayout {
         Layout.fillHeight: true
         Layout.fillWidth: true
         font.family: Kirigami.Theme.defaultFont.family
-        font.pointSize: main.textSize * (main.detachedSearch ? 2 : (main.tahoeStyle ? 1.7 : 1))
+        font.pointSize: main.textSize * (main.detachedSearch ? 2 : (main.tahoeStyle ? 2 : 1))
         font.weight: Kirigami.Theme.defaultFont.weight
         color: searchFieldBar.textColor
 

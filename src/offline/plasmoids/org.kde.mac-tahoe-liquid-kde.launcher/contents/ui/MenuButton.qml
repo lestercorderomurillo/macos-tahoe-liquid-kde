@@ -34,6 +34,7 @@ Item {
             border.color: Qt.rgba(foregroundColor.r, foregroundColor.g, foregroundColor.b, 0.55)
             Behavior on color { ColorAnimation { duration: main.tahoeStyle ? 100 : 0 } }
             radius: height / 2
+            scale: main.tahoeStyle ? 0.61 : 1
         }
         onPressed: contextMenu.openRelative()
     }

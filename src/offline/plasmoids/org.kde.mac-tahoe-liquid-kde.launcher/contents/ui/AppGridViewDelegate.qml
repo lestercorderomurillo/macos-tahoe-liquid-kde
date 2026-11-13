@@ -49,7 +49,7 @@ Item {
  	Kirigami.Icon {
 		id: appicon
 		animated: false
-		y: main.detachedSearch ? 0 : 2 * highlightItemSvg.margins.top
+		y: main.detachedSearch || main.tahoeStyle ? 0 : 2 * highlightItemSvg.margins.top
 		anchors.horizontalCenter: parent.horizontalCenter
 		width: root.iconSize
 		height: width
@@ -69,7 +69,7 @@ Item {
 			top: appicon.bottom
 			left: parent.left
 			right: parent.right
-			topMargin: Kirigami.Units.largeSpacing * (main.detachedSearch ? 0.5 : 1.2)
+			topMargin: Kirigami.Units.largeSpacing * (main.detachedSearch || main.tahoeStyle ? 0.5 : 1.2)
 			leftMargin: Kirigami.Units.smallSpacing
 			rightMargin: Kirigami.Units.smallSpacing
 		}

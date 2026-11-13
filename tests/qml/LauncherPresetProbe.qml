@@ -1,5 +1,6 @@
 import QtQuick
 import QtQuick.Window
+import QtQuick.Layouts
 import org.kde.kirigami as Kirigami
 
 // Runs only in the isolated plasmoidviewer from test_launcher_presets.py.
@@ -146,13 +147,26 @@ Timer {
                 verifyCategoryPills();
                 if (!expectedGoldenGate) {
                     verify(verifyTahoeHover(appList.viewItem), "a real Tahoe app tile was exercised");
+                    verify(appList.selectedIsAllApps, "Tahoe opens the app browser");
+                    verify(appList.viewItem.headerItem.favoritesView.count === root.columns,
+                           "Tahoe favorites occupy one row above apps");
+                    verify(root.cellSizeHeight < root.cellSizeWidth, "Tahoe uses shorter row pitch");
+                    verify(appList.testCategories.testView.count === appList.slicedCategories.length,
+                           "Tahoe capsules show actual categories only");
+                    const category = appList.slicedCategories[0];
+                    appList.updateShowedModel(category.modelIndex);
+                    verify(appList.currentModel === category.appModel && !appList.selectedIsAllApps,
+                           "Tahoe capsule filters applications");
+                    appList.updateShowedModel(category.modelIndex);
+                    verify(appList.currentModel === appList.allAppsModel && appList.selectedIsAllApps,
+                           "clicking selected Tahoe capsule restores all apps");
                 }
                 verify(glassPalette.Kirigami.Theme.colorSet === Kirigami.Theme.Window, "labels use the popup color set");
                 verify(main.textColor === glassPalette.Kirigami.Theme.textColor, "labels follow the mode-specific window foreground");
                 verify(!searchPopup.visible, "inline search has no second popup");
-                verify(main.inlineSearchHeight === (expectedGoldenGate ? 40 : 48),
+                verify(main.inlineSearchHeight === 40,
                        "Tahoe reference header preserves Golden Gate geometry");
-                verify(searchBar.textField.font.pointSize === main.textSize * (expectedGoldenGate ? 1 : 1.7),
+                verify(searchBar.textField.font.pointSize === main.textSize * (expectedGoldenGate ? 1 : 2),
                        "reference search hierarchy is scoped to Tahoe");
                 verify(searchBar.parent === inlineSearchSlot, "inline field parent");
                 verifyOptionsIcon(searchBar);
@@ -179,7 +193,7 @@ Timer {
                 verifySearchContrast(searchBar);
                 verify(searchBar.textField.color === main.textColor, "search and app labels share the mode foreground");
                 verify(searchBar.textField.text === "terminal", "query survives preset change");
-                verify(root.height < presetProbe.inlineHeight, "no empty inline search row");
+                verify(!inlineSearchSlot.visible && inlineSearchSlot.Layout.preferredHeight === 40, "detached preset hides its inline search row");
                 verifyCapsulePosition();
                 searchBar.testMenuButton.testMenu.content[3].clicked();
                 verify(plasmoid.configuration.showAllAppsInList, "list option works");

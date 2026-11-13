@@ -21,6 +21,7 @@ ColumnLayout {
 	// sections; every other tab (Favorites, Suggestions, a single
 	// category) is a plain grid. List mode is always a flat list.
 	property bool selectedIsAllApps: {
+		if (main.tahoeStyle) return selectedModelIndex === null;
 		var pos = categorySwitcher.currentIndex;
 		return pos >= 0 && pos < appsCategoriesList.length
 			&& appsCategoriesList[pos].isAllApps;
@@ -28,7 +29,7 @@ ColumnLayout {
 
 	property Component preferredAppsViewComponent:
 		showItemsInList ? applicationsListViewComponent
-		: selectedIsAllApps && !main.detachedSearch ? applicationsCategorizedViewComponent
+		: selectedIsAllApps && !main.detachedSearch && !main.tahoeStyle ? applicationsCategorizedViewComponent
 		: applicationsGridViewComponent
 
 	property alias viewItem: appViewLoader.item
@@ -102,6 +103,13 @@ ColumnLayout {
 	}
 
 	function syncSelection() {
+        if (main.tahoeStyle) {
+            const pos = slicedCategories.findIndex(c => c.modelIndex === selectedModelIndex);
+            if (pos < 0) selectedModelIndex = null;
+            categorySwitcher.currentIndex = pos;
+            currentModel = pos < 0 ? allAppsModel : slicedCategories[pos].appModel;
+            return;
+        }
 		if (!appsCategoriesList.length) {
 			return;
 		}
@@ -133,7 +141,7 @@ ColumnLayout {
 	}
 
 	function updateShowedModel(index){
-		selectedModelIndex = index;
+		selectedModelIndex = main.tahoeStyle && selectedModelIndex === index ? null : index;
 		syncSelection();
 	}
 
@@ -147,7 +155,7 @@ ColumnLayout {
 		Layout.preferredWidth: parent.width - (main.detachedSearch ? 0 : fs.innerPadding)
 		Layout.preferredHeight: visible ? Math.max(main.categoryHeight, implicitHeight) : 0
 		Layout.minimumHeight: Layout.preferredHeight
-		model: appsCategoriesList
+		model: main.tahoeStyle ? slicedCategories : appsCategoriesList
 		visible: true
 
 		Component.onCompleted: {
@@ -198,11 +206,11 @@ ColumnLayout {
 		AppGridView {
 			id: grid
 			anchors.fill: parent
-			anchors.leftMargin: main.detachedSearch ? 0 : fs.innerPadding / 2
+			anchors.leftMargin: main.detachedSearch || main.tahoeStyle ? 0 : fs.innerPadding / 2
 			
 			model: currentModel
 			canMoveWithKeyboard: true
-			showFavorites: main.detachedSearch && allApps.selectedIsAllApps
+			showFavorites: (main.detachedSearch || main.tahoeStyle) && allApps.selectedIsAllApps
 			//viewItem.highlightFollowsCurrentItem: false
 		}
 	}

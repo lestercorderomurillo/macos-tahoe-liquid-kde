@@ -53,20 +53,20 @@ PlasmaCore.Dialog {
 			default: return 64
 		}
 	}
-	readonly property int iconSize: Math.round(configuredIconSize * (goldenGate ? 1.3125 : 1))
+	readonly property int iconSize: Math.round(configuredIconSize * (goldenGate ? 1.3125 : (main.tahoeStyle ? 1.0625 : 1)))
 
 	property int columns: goldenGate ? Plasmoid.configuration.goldenGateColumns : Plasmoid.configuration.numberColumns
 
 	// Reference proportions: 7 columns, icons 60% of the column pitch,
 	// and a row pitch slightly shorter than the column pitch.
-	property int cellSizeHeight: goldenGate ? Math.round(configuredIconSize * 1.9375) : iconSize
+	property int cellSizeHeight: goldenGate ? Math.round(configuredIconSize * 1.9375) : main.tahoeStyle ? Math.round(configuredIconSize * 1.625) : iconSize
 								+ Kirigami.Units.gridUnit * 2
 								+ (2 * Math.max(
 												highlightItemSvg.margins.top + highlightItemSvg.margins.bottom,
 												highlightItemSvg.margins.left + highlightItemSvg.margins.right
 												)
 								  )
-	property int cellSizeWidth: goldenGate ? Math.round(configuredIconSize * 2.1875) : cellSizeHeight
+	property int cellSizeWidth: goldenGate ? Math.round(configuredIconSize * 2.1875) : main.tahoeStyle ? Math.round(configuredIconSize * 1.84375) : cellSizeHeight
 	property int rows: plasmoid.configuration.numberOfRows
 	
 	onVisibleChanged: {
@@ -162,7 +162,7 @@ PlasmaCore.Dialog {
 		implicitHeight: root.goldenGate
 			? innerPadding * 3 + main.categoryHeight + main.gridTopSpacing + root.cellSizeHeight * rows
 				- dialogSvg.margins.top - dialogSvg.margins.bottom
-			: main.inlineSearchHeight + 2 + 12 + main.categoryHeight + main.gridTopSpacing + root.cellSizeHeight * rows + innerPadding
+			: main.inlineSearchHeight + 2 + 12 + main.categoryHeight + main.gridTopSpacing + root.cellSizeHeight * rows + innerPadding - (main.tahoeStyle ? 1 : 0)
 		// Dialog can write back the previous window size during a preset switch.
 		// Keep the requested size independent of that feedback and constrain the
 		// native window to the selected preset's dimensions.
@@ -188,9 +188,9 @@ PlasmaCore.Dialog {
 			MainView {
 				id: main
 				width: mainItem.width - fs.innerPadding * (root.goldenGate ? 2 : 1)
-				height: mainItem.height - (fs.innerPadding*2)
+				height: mainItem.height - fs.innerPadding * (main.tahoeStyle ? 1 : 2)
 				x: fs.innerPadding
-				y: fs.innerPadding
+				y: main.tahoeStyle ? 8 : fs.innerPadding
 			}
 		}
 

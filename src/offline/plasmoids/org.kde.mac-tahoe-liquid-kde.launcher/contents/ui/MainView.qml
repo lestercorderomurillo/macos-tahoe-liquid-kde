@@ -21,11 +21,11 @@ Item {
 	onSearchTextChanged: runnerModel.query = searchText
 	readonly property bool detachedSearch: kicker.launcherPreset === 2
 	readonly property bool tahoeStyle: !goldenGateEdition && !detachedSearch
-	readonly property real inlineSearchHeight: tahoeStyle ? 48 : 40
+	readonly property real inlineSearchHeight: 40
 	readonly property real searchPopupHeight: searchPopup.height
 	readonly property real searchPopupGap: Kirigami.Units.gridUnit * 0.75
-	readonly property real categoryHeight: detachedSearch ? Kirigami.Units.gridUnit * 16 / 9 : (tahoeStyle ? 34 : 40)
-	readonly property real gridTopSpacing: detachedSearch ? Kirigami.Units.gridUnit * 16 / 9 : (tahoeStyle ? 12 : 0)
+	readonly property real categoryHeight: detachedSearch ? Kirigami.Units.gridUnit * 16 / 9 : (tahoeStyle ? 30 : 40)
+	readonly property real gridTopSpacing: detachedSearch ? Kirigami.Units.gridUnit * 16 / 9 : (tahoeStyle ? 15 : 0)
 	// QWindow.active also includes transient parents/siblings, such as the panel.
 	readonly property bool popupHasFocus: {
 		var window = searchPopup.focusWindow;
