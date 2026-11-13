@@ -173,23 +173,23 @@ Plymouth startup and shutdown theme with LUKS2 unlock support.
 
 <br>
 
-![Project contributions](https://img.shields.io/badge/project-contributions-6B4B8A?style=for-the-badge&logo=github&logoColor=white)
+![Features](https://img.shields.io/badge/features-6B4B8A?style=for-the-badge&logo=github&logoColor=white)
 
-Here is what we added or improved in the components we ship.
+Here’s what you’ll find when you make yourself at home.
 
-- **Multilanguage support:** English, Spanish, Simplified Chinese, Brazilian Portuguese and German in the graphical installer, plus translated Plasma widgets.
-- **Installation and packaging:** graphical install/uninstall wizard, selectable components, bundled theme assets and release updates.
-- **Multiple distributions:** dependency detection and package mappings for Arch-based, Fedora-based, openSUSE, Debian and KDE neon systems.
-- **systemd and OpenRC:** scheduled theme switching and OLED care through user timers or cron.
-- **Glass improvements:** configurable blur, edge refraction and three-stop gradients with separate light/dark colors. [Compare every preset](GLASS_PRESETS.md). The Dock retains its v0.62.0 optics.
-- **Plasma compatibility:** rendering and build fixes for Plasma 6.6–6.8, with effects compiled against the installed Qt and KWin SDKs.
-- **Launcher improvements:** two selectable layouts, integrated or detached search, favorites, app categories and drag/wheel category scrolling.
-- **Dock improvements:** glass surfaces, hover zoom, notification badges and auto-hide. Reinstalling keeps your pinned apps.
-- **Theme switching:** changes Plasma, Kvantum, GTK, icons and window decorations together. Keeps wallpapers you choose for each monitor, with an option to reset them.
-- **App integration:** global menus, a fix for GTK menu crashes, Finder-style Nautilus and Firefox theming with profile backups.
-- **Install and uninstall:** checks requirements, finds your desktop session, backs up settings and restores changes on removal.
-- **Optional features:** OLED panel shifts and experimental NixOS/Home Manager modules.
-- **Testing:** regression tests, container checks across distributions and Plasma VMs for checking desktop behavior and appearance.
+- **Your language:** use the installer in English, Spanish, Simplified Chinese, Brazilian Portuguese or German. Plasma widgets have translations too.
+- **Choose what you install:** pick the components you want in the graphical wizard. Theme assets come bundled, and updates are built in.
+- **At home on your distro:** the installer finds the packages it needs on Arch-based, Fedora-based, openSUSE, Debian and KDE neon systems.
+- **systemd or OpenRC:** schedule theme switching and OLED care with either setup, using user timers or cron.
+- **Glass your way:** adjust the blur, how the edges bend light, and three-color gradients for light and dark modes.
+- **Ready for Plasma:** supports Plasma 6.6–6.8, with effects built for the Qt and KWin versions on your computer.
+- **A launcher that suits you:** choose between two layouts, keep search inside or in its own window, save favorites, and drag or scroll through app categories.
+- **Your apps, close at hand:** a glass Dock with hover zoom, notification badges and auto-hide. Your pinned apps stay put when you reinstall.
+- **Light and dark, together:** switch the desktop, app styles, icons and window decorations together. Keep your wallpaper choices for each monitor, or reset them when you want a fresh start.
+- **Apps that feel at home:** global menus, more reliable GTK menus, Finder-style Nautilus and a matching Firefox theme, with backups of your Firefox profiles.
+- **Care for your settings:** the installer checks requirements, finds your desktop session and backs up your settings. Uninstall restores the changes it made.
+- **A few extras:** optional OLED panel shifts, plus experimental NixOS and Home Manager modules for those who want them.
+- **Care behind the scenes:** we check behavior and appearance with regression tests, containers across distributions and real Plasma VMs.
 
 <br>
 
