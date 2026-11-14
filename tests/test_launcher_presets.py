@@ -177,8 +177,9 @@ def test_native_launcher_popup_presets(repo, tmp_path, monkeypatch, launcher_pop
     end = source.rfind("}")
     golden_gate = str(edition == "MacGoldenGate").lower()
     dark = str(mode == "Dark").lower()
+    event_loop_delay = 450 if os.environ.get("MTTKDE_TEST_LAUNCHER_SCALE") else 0
     main.write_text(source[:end] + f"LauncherPresetProbe {{ expectedPreset: {preset}; "
-                    f"expectedGoldenGate: {golden_gate}; expectedDark: {dark} }}\n" + source[end:])
+                    f"expectedGoldenGate: {golden_gate}; expectedDark: {dark}; eventLoopDelay: {event_loop_delay} }}\n" + source[end:])
     for name, original, replacement in (
         ("AllAppsList.qml", "ColumnLayout {", "ColumnLayout { property alias testCategories: categorySwitcher"),
         ("AppCategorySwitcher.qml", "Item {", "Item { property alias testView: categorySwitcher"),

@@ -9,7 +9,10 @@ Timer {
     id: presetProbe
     interval: 400
     running: true
-    repeat: true
+    // Input helpers process nested Qt events. Re-arm after each phase returns.
+    repeat: false
+    property bool finished: false
+    property int eventLoopDelay: 0
     property int phase: -2
     property int expectedPreset: 1
     property bool expectedGoldenGate: false
@@ -136,6 +139,10 @@ Timer {
     function verifyOptionsMenu(search) {
         const button = search.testMenuButton.testButton;
         LauncherInteraction.click(button);
+        if (eventLoopDelay > 0) {
+            LauncherInteraction.pauseForEvents(eventLoopDelay);
+            eventLoopDelay = 0;
+        }
         let state = LauncherInteraction.menuState();
         verify(state.actions && state.actions.length === 7, "both presets open the seven rendered menu rows");
         verify(state.actions[0].separator && state.actions[0].text === "View content as",
@@ -402,12 +409,14 @@ Timer {
                 verifyPopupSize();
                 verifyCapsulePosition();
                 console.log("LAUNCHER_PROBE_OK");
-                stop();
+                finished = true;
                 break;
             }
         } catch (error) {
             console.log("LAUNCHER_PROBE_FAILED", error.message);
-            stop();
+            finished = true;
+        } finally {
+            if (!finished) restart();
         }
     }
 }

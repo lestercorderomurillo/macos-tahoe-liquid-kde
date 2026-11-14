@@ -1,6 +1,6 @@
 {
   "version": "0.71.7",
-  "source_sha256": "f1e867bb0275ad9e88af4eb4bb8eab7df8e2c4306b84a396d24481681766c4c7",
+  "source_sha256": "2ccdc8f680f4727b79ffed5f2280e88fe85b849aa3e9ae7dcf30ae78694c627c",
   "environment": "plasmashell 6.8.1\n6.11.1\nGTK 3 24 41\nGTK 4 14 5; disposable KDE neon Wayland/KVM/virgl.",
   "checks": [
     {
@@ -86,6 +86,12 @@
       "command": "Guest: python3 tests/vm/launcher_presets.py --output <edition>-geometry.json; host: live-launcher.py <edition>; auto-launcher.py <edition>",
       "result": "passed",
       "detail": "Both editions: seven KWin geometry cases, four real menu preset selections, four hover entry/exit pixel cases, two actual automatic boundary crossings, final install/reinstall success and installed-source hash verification."
+    },
+    {
+      "command": "python3 -m pytest tests/test_launcher_presets.py -k native_launcher_fractional_scale -x -q",
+      "result": "passed",
+      "detail": "2 passed in 34.87s after making probe phases non-reentrant. Both fractional cases deliberately process nested Qt events for 450 ms, exceeding the 400 ms phase interval; the next phase starts only after the current input phase returns.",
+      "log_sha256": "31dcaa65043c6fb39370e7d798fcc7863c133a4dd380827316bf92209c2580c5"
     }
   ],
   "gallery_commit": "9993f61cc0afeba7e39afee776c99f29a55edb8f",
@@ -1107,7 +1113,17 @@
       "environment": "KDE neon Plasma 6.8.1 / Qt 6.11.1, Wayland, KVM/virgl, 3840x2160 at 200%. Local native input/buffer checks use isolated Xvfb at 100% and 150%. Host CachyOS Plasma 6.7.4 is not modified; identical distro/GPU or a full X11 desktop VM is not claimed.",
       "reuse": "Previous appearance state, persistent-app, session and lifecycle evidence remains applicable to unchanged synchronization logic. These focused frames supersede earlier Launcher frames for the final QML. Public gallery provenance is unchanged.",
       "automatic": "Actual guest-only 17:59:58 dusk and 05:59:58 dawn crossings in both editions, with rendered Launcher/options/Dock frames. Auto selection alone is not counted.",
-      "settlement": "KWin configures the panel and search capsule independently. The VM scenario waits at most five seconds for both frames, then verifies width, centering and vertical placement; rapid sixteen selections end at preset 2."
+      "settlement": "KWin configures the panel and search capsule independently. The VM scenario waits at most five seconds for both frames, then verifies width, centering and vertical placement; rapid sixteen selections end at preset 2.",
+      "test_harness_followup": {
+        "base_commit": "cd14b7129f1cf6af3de93eccf5fa7694e329808b",
+        "change": "Only test-driver scheduling and deliberate nested-event delay changed. Repeating phase timer replaced by a single-shot timer rearmed in finally.",
+        "evidence_reuse": "The six production QML sources, edition staging and installer inputs are unchanged; retain the recorded paired VM install, geometry, pointer, icon and automatic-transition evidence with its original hashes.",
+        "failed_ci": {
+          "url": "https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/actions/runs/43585928518",
+          "result": "failed",
+          "detail": "test (0) failed in two fractional launcher cases when nested input event loops allowed overlapping probe phases. Nix, test (1) and all eleven cross-distro jobs passed. The repaired test driver requires new automatic PR CI."
+        }
+      }
     }
   },
   "remote_ci": "Final draft PR CI is tracked separately; publication remains explicitly on hold. No release, tag, dev/main promotion or published pin update.",

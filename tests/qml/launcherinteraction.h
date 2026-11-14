@@ -33,6 +33,7 @@ class LauncherInteraction : public QObject {
     }
 public:
     using QObject::QObject;
+    Q_INVOKABLE void pauseForEvents(int milliseconds) { QTest::qWait(milliseconds); }
     Q_INVOKABLE void setIconTheme(const QString &directory, const QString &name) {
         QIcon::setThemeSearchPaths({directory});
         QIcon::setThemeName(name);
