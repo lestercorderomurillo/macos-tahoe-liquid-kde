@@ -2030,13 +2030,14 @@ def _synchronize_appearance(mode: str, preference: str, *, context: str = "user"
         if any(value in ("light", "dark") and value != mode
                for key, value in snapshot.items() if key != "automatic"):
             success = False
-        if success:
-            _save_appearance_state({"preference": preference, "applied": mode,
-                                    "observed": snapshot})
-        else:
-            _save_appearance_state({"preference": preference, "pending": mode,
-                                    "applied": _read_appearance_state().get("applied"),
-                                    "observed": snapshot})
+        previous = _read_appearance_state()
+        record = {"preference": preference, "observed": snapshot,
+                  "applied": mode if success else previous.get("applied")}
+        if not success:
+            record["pending"] = mode
+        if "session_default" in previous:
+            record["session_default"] = previous["session_default"]
+        _save_appearance_state(record)
         return success
 
 
@@ -2160,9 +2161,20 @@ def main(argv: list[str]) -> int:
     if mode == "watch-system":
         return watch_system()
     if mode == "session" and len(argv) == 2 and argv[1] in ("light", "dark", "auto"):
-        if not _read_appearance_state():
-            return main([argv[1]])
-        return 0 if reconcile_appearance() else 1
+        state = _read_appearance_state()
+        # Repeated logins preserve manual intent, while an explicit change to
+        # Home Manager's declared mode is a new selection. Adopt existing state
+        # on migration rather than silently replacing the user's current mode.
+        changed_default = ("session_default" in state
+                           and state["session_default"] != argv[1])
+        if not state or changed_default:
+            result = main([argv[1]])
+        else:
+            result = 0 if reconcile_appearance() else 1
+        if result == 0:
+            with _theme_transition_lock():
+                _save_appearance_state({**_read_appearance_state(), "session_default": argv[1]})
+        return result
     if mode == "scheduled":
         state = _read_appearance_state()
         if (state.get("preference") == "auto"

@@ -1,6 +1,6 @@
 {
   "version": "0.71.7",
-  "source_sha256": "41ee06106f967f943170a316df3342804a207da67ff7ecbdb8612f332315f571",
+  "source_sha256": "953ae4e2c6f4bbcc674e232a40ee8acee47146c6eb08baa91f6a2ad68237e0c2",
   "environment": "plasmashell 6.8.1\n6.11.1\nGTK 3 24 41\nGTK 4 14 5; disposable KDE neon Wayland/KVM/virgl.",
   "checks": [
     {
@@ -39,6 +39,18 @@
       "command": "python3 src/scripts/component_manifest.py; git diff --check",
       "result": "passed",
       "detail": "Component ledger matches the final implementation; no documentation gallery refresh."
+    },
+    {
+      "command": "python3 -m pytest -q tests/test_appearance_sync.py tests/test_nix.py tests/test_openrc_scheduler.py",
+      "result": "passed",
+      "detail": "75 passed, including changed declarative defaults, manual choices across repeated logins, migration and retry after failed application.",
+      "log_sha256": "ef8f2e15a17cab75944653b4504b31c001037c3aa7d6074530d22ff09fb02332"
+    },
+    {
+      "command": "Guest: python3 tests/vm/appearance_session.py",
+      "result": "passed",
+      "detail": "Seven session/manual/declarative transitions passed with persistent Qt/Kvantum and GTK applications. Final switcher reinstall exited 0.",
+      "log_sha256": "e668db5c58056baf1235ea7b958025034c639be0caa9b8795a30e8d6ca57b9a7"
     }
   ],
   "gallery_commit": "9993f61cc0afeba7e39afee776c99f29a55edb8f",
@@ -313,7 +325,39 @@
       "golden-transitions.log": "219f394808b2f06989b9447d5f051f995f75640553d39d4b3315ac0f1dedb91f"
     },
     "artifact_directory": "macos-golden-gate-liquid-kde/build/appearance-vm",
-    "limits": "Runtime qualification uses Plasma 6.8.1/Qt 6.11.1, GTK 3.24.41/4.14.5 and virtual GPU on Wayland. Host is CachyOS Plasma 6.7.4/Qt 6.11.2 with GTK 4.22.4; identical distro, physical GPU and live X11 coverage are not claimed. No native/shader/ABI implementation changed. Loose QML probes cover launcher, trash and panel colorizer; compiled Task Managers/global menu use actual desktop frames and the native menu renderer probe. Full distro SDK/container CI is separate from a real desktop VM. After an initial host reboot erased temporary artifacts, the recovered final source and qualification were retained in persistent ignored build storage."
+    "limits": "Runtime qualification uses Plasma 6.8.1/Qt 6.11.1, GTK 3.24.41/4.14.5 and virtual GPU on Wayland. Host is CachyOS Plasma 6.7.4/Qt 6.11.2 with GTK 4.22.4; identical distro, physical GPU and live X11 coverage are not claimed. No native/shader/ABI implementation changed. Loose QML probes cover launcher, trash and panel colorizer; compiled Task Managers/global menu use actual desktop frames and the native menu renderer probe. Full distro SDK/container CI is separate from a real desktop VM. After an initial host reboot erased temporary artifacts, the recovered final source and qualification were retained in persistent ignored build storage.",
+    "session_followup": {
+      "installed_sources": {
+        "source": {
+          "src/scripts/theme_switch.py": "12e0349bbdc8eb227825f3e10a39c274625dee4907e2757550a9dcca74dc0cb5",
+          "src/scripts/steps/theme_switch.py": "772d21c994431d36697e706c29ed8c1a0f99e5e784fddec09c6a08217a65af55",
+          "component-hashes.json": "81068a8148968ec3546201cc34825bd7954a8400fb5d5d8946463ba872c57ae5",
+          "src/offline/mac-tahoe-liquid-kde-theme.service": "5900a3ae90d6db5aa825f3523d40a89c7d91d6573bfa10f24628208a0cdfdcff",
+          "src/scripts/defaults.json": "22a5ec9ebf9abbcdf8c6e7442d960f41c520fdf2e98d806eb3de850247162d18"
+        },
+        "installed_switcher_sha256": "e2ce1a4eff44142c85d69214ffe54bf7b2d4d2aefd81a102e005004a3e3cfc43"
+      },
+      "archive_sha256": "a21ae95ffbd2dc61c6241c28ad42af33b1eff54ba614d85862f9443b3f012129",
+      "results_sha256": "045aa53e0eb3829b89f1fde48dd0a36a0642486b7917608638feeaaa369b36d8",
+      "installer_log_sha256": "43b3235dfeddf03cc3cebdbd8089484013b17e2002b1f88914fe41616c616c5d",
+      "reuse_basis": {
+        "previous_qualified_source_sha256": "41ee06106f967f943170a316df3342804a207da67ff7ecbdb8612f332315f571",
+        "unchanged_apply_functions": [
+          "_apply_unlocked",
+          "write_kde_theme_config",
+          "_apply_local_extras",
+          "cycle_widget_style_live",
+          "reconcile_appearance"
+        ],
+        "detail": "The final follow-up changes session-default selection and carries that metadata when acknowledging a transition. Rendering/apply functions and every material/GTK/plasmoid asset are unchanged; earlier paired rendering and automatic-boundary evidence is reused. The changed entry point and acknowledgement are covered by 18 executable state regressions and seven additional live VM transitions."
+      }
+    }
   },
-  "remote_ci": "The complete dev matrix runs once after delivery; its workflow outcome is tracked separately and must be resolved before task completion."
+  "remote_ci": "The complete dev matrix runs once after delivery; its workflow outcome is tracked separately and must be resolved before task completion.",
+  "prior_ci": {
+    "commit": "e6d349316ccac8d68753371b18256efe027089e6",
+    "url": "https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/actions/runs/43569151830",
+    "result": "passed",
+    "detail": "Both primary shards, Nix and all 11 distro SDK jobs passed before the focused session-default follow-up. The final candidate must pass its own PR checks."
+  }
 }

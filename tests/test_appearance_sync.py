@@ -184,3 +184,37 @@ def test_lookandfeel_defaults_remain_effective_after_kconfig_elides_key(desktop)
     current = ts._appearance_snapshot()
     assert current['plasma'] == 'light'
     assert ts._changed_appearance(previous, current) == 'light'
+
+
+def test_session_preserves_manual_choice_but_applies_changed_declarative_mode(desktop, monkeypatch):
+    _, calls, _ = desktop
+    monkeypatch.setattr(ts, 'detect_mode_by_time', lambda: 'light')
+    assert ts.main(['session', 'light']) == 0
+    assert ts.select_appearance('dark') == 0
+    assert ts.main(['session', 'light']) == 0
+    assert calls == ['light', 'dark']
+    assert ts.main(['session', 'auto']) == 0
+    assert ts._read_appearance_state()['preference'] == 'auto'
+    assert calls == ['light', 'dark', 'light']
+    assert ts.select_appearance('dark') == 0
+    assert ts.main(['session', 'auto']) == 0
+    assert calls == ['light', 'dark', 'light', 'dark']
+
+
+def test_first_session_adopts_existing_manual_preference(desktop, monkeypatch):
+    _, calls, _ = desktop
+    assert ts.select_appearance('dark') == 0
+    assert ts.main(['session', 'light']) == 0
+    assert calls == ['dark']
+    assert ts._read_appearance_state()['preference'] == 'dark'
+
+
+def test_failed_declarative_mode_is_retried(desktop, monkeypatch):
+    _, calls, _ = desktop
+    assert ts.main(['session', 'light']) == 0
+    apply = ts._apply_unlocked
+    monkeypatch.setattr(ts, '_apply_unlocked', lambda *args, **kwargs: False)
+    assert ts.main(['session', 'dark']) == 1
+    monkeypatch.setattr(ts, '_apply_unlocked', apply)
+    assert ts.main(['session', 'dark']) == 0
+    assert ts._read_appearance_state()['preference'] == 'dark'

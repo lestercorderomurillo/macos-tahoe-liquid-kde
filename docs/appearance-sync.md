@@ -17,7 +17,10 @@ The follower is started after installation activation and through a KDE session
 autostart on systemd, OpenRC and dinit. Home Manager uses a session service.
 `mac-tahoe-theme-switch light`, `dark` and `auto` remain the user commands.
 `follow-system` explicitly reconciles the current desktop mode. Internal
-`scheduled` and `session` invocations preserve an existing manual preference.
+`scheduled` and repeated `session` invocations preserve an existing manual
+preference. Home Manager records its last declared default separately: changing
+that declaration applies the new choice, while a login with the same declaration
+preserves a later manual choice. Failed application remains retryable.
 
 ## Qualification scope
 
@@ -47,3 +50,7 @@ launcher presets are checked with each edition's installed material.
 The public gallery is unchanged. Private qualification frames and raw logs stay
 in the maintainer's ignored build directory; release evidence records their
 hashes and the installed source identities. No host appearance was changed.
+
+`tests/vm/appearance_session.py` specifically verifies the Home Manager session
+entry point: unchanged declarations preserve manual choices, a changed declaration
+applies light/dark/auto, and open Qt/Kvantum and GTK applications follow it.
