@@ -40,8 +40,8 @@ def boot(monkeypatch):
     monkeypatch.setattr(theme_switch, "_have", lambda _: state.available)
     monkeypatch.setattr(theme_switch, "_run_user", query)
     monkeypatch.setattr(theme_switch, "_sync_session_env", lambda: None)
-    monkeypatch.setattr(theme_switch, "apply", lambda mode, **_: (
-        state.applied.append(mode) or True))
+    monkeypatch.setattr(theme_switch, "select_appearance", lambda mode, **_: (
+        state.applied.append(theme_switch.detect_mode_by_time() if mode == "auto" else mode) or 0))
     return state
 
 

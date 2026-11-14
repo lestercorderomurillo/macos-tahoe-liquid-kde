@@ -18,7 +18,8 @@ from steps._scheduler import (
     RemovalStatus, cron_command, install_at_times, is_systemd, remove_periodic,
 )
 from utils import run_user
-from theme_switch import default_wallpaper
+from theme_switch import (default_wallpaper, _appearance_snapshot,
+                          _save_appearance_state, _theme_transition_lock)
 
 BIN_DEST = HOME / ".local/bin/mac-tahoe-theme-switch"
 SVC_DIR = HOME / ".config/systemd/user"
@@ -26,14 +27,17 @@ PY_SRC = REPO_ROOT / "src/scripts/theme_switch.py"
 LAYOUT_STATE_FILE = HOME / ".local/state/mac-tahoe-liquid-kde/layout-installed"
 
 
-def _managed_state_files() -> tuple[Path, Path]:
+def _managed_state_files() -> tuple[Path, ...]:
     state_home = Path(os.environ.get("XDG_STATE_HOME") or
                       HOME / ".local/state")
     wallpaper_state = state_home / "mac-tahoe-liquid-kde/wallpapers.json"
-    return wallpaper_state, LAYOUT_STATE_FILE
+    return (wallpaper_state, LAYOUT_STATE_FILE,
+            state_home / "mac-tahoe-liquid-kde/appearance.json",
+            state_home / "mac-tahoe-liquid-kde/appearance-request.json",
+            state_home / "mac-tahoe-liquid-kde/appearance-request.lock")
 
-# Legacy 0.36.x-0.38.x portal watcher. Current installs remove this autostart
-# and stop the process; the names stay here solely for upgrade cleanup.
+# Reuse the historical autostart filename; stop legacy and current followers
+# before replacement or removal.
 AUTOSTART_DIR = HOME / ".config/autostart"
 GTK_SYNC_DESKTOP = "mac-tahoe-liquid-kde-gtk-sync.desktop"
 
@@ -46,7 +50,7 @@ UNITS = (
 
 # crontab tag + fire times for the OpenRC/dinit backend, matching the systemd
 # timer's OnCalendar (06:00 light, 18:00 dark). The binary derives the
-# mode from the wall clock, so both fires run the same `auto` command.
+# mode from the wall clock when auto remains selected.
 CRON_TAG = "theme"
 CRON_TIMES = [(6, 0), (18, 0)]
 
@@ -56,7 +60,7 @@ _SWITCHER_DRAIN_POLL_SECONDS = 0.05
 
 
 def _watcher_pids() -> list[int]:
-    """Same-user processes running our exact installed portal watcher."""
+    """Same-user processes running our exact installed appearance follower."""
     try:
         uid = int(os.environ.get("SUDO_UID") or os.getuid())
     except ValueError:
@@ -79,7 +83,7 @@ def _watcher_pids() -> list[int]:
             ]
         except OSError:
             continue
-        if str(BIN_DEST) in argv and "watch-portal" in argv:
+        if str(BIN_DEST) in argv and any(mode in argv for mode in ("watch-portal", "watch-system")):
             found.append(int(process.name))
     return found
 
@@ -188,6 +192,8 @@ def _install_units() -> bool:
 
 
 def start_schedule() -> None:
+    if BIN_DEST.is_file():
+        run_user([str(BIN_DEST), "start-watcher"], check=False, timeout=10)
     if theme_mode() == "auto" and is_systemd():
         if not _user_service("start", UNITS[1]):
             warn(tr('Theme switch: user timer could not be started'))
@@ -280,6 +286,9 @@ def install() -> None:
         BIN_DEST.chmod(0o755)
     SVC_DIR.mkdir(parents=True, exist_ok=True)
 
+    with _theme_transition_lock():
+        _save_appearance_state({"preference": theme_mode(),
+                                "observed": _appearance_snapshot()})
     auto = theme_mode() == "auto"
 
     if auto:
@@ -297,7 +306,7 @@ def install() -> None:
             # OpenRC/dinit: fixed-time cron lines at 06:00/18:00. There is no
             # login-time oneshot equivalent, but the binary is idempotent
             # and the timed flips are what matter.
-            command = cron_command(BIN_DEST, "auto")
+            command = cron_command(BIN_DEST, "scheduled")
             if not install_at_times(CRON_TAG, CRON_TIMES, command):
                 warn(tr('Theme switch: crontab write failed — is a cron daemon installed?'))
     else:
@@ -320,6 +329,11 @@ def install() -> None:
             return
 
     if BIN_DEST.is_file() and BIN_DEST.stat().st_mode & 0o111:
+        AUTOSTART_DIR.mkdir(parents=True, exist_ok=True)
+        (AUTOSTART_DIR / GTK_SYNC_DESKTOP).write_text(
+            "[Desktop Entry]\nType=Application\nName=MacTahoe appearance sync\n"
+            f'Exec="{BIN_DEST}" watch-system\nOnlyShowIn=KDE;\n'
+            "X-KDE-autostart-phase=2\nNoDisplay=true\n")
         ok(tr('Theme switcher installed'))
     else:
         warn(tr('Theme switcher not installed'))

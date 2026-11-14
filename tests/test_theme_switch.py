@@ -263,6 +263,7 @@ def _prep_effect_warn_case(monkeypatch, tmp_path, kwinrc_body):
     (home / ".config").mkdir(parents=True)
     monkeypatch.setenv("HOME", str(home))
     monkeypatch.setenv("XDG_CONFIG_HOME", str(home / ".config"))
+    monkeypatch.setenv("XDG_CONFIG_HOME", str(home / ".config"))
     kwinrc = home / ".config/kwinrc"
     kwinrc.write_text(kwinrc_body)
     for fn in ("write_kde_theme_config", "_apply_wallpaper",
@@ -431,7 +432,7 @@ def test_apply_finishes_cycle_and_reconfigure_when_extras_raise(monkeypatch):
     monkeypatch.setattr(theme_switch, "_qdbus",
                         lambda *args: calls.append(("qdbus", args)) or True)
 
-    assert theme_switch.apply("light") is True
+    assert theme_switch.apply("light") is False
     assert ("extras-attempted",) in calls
     assert ("cycle", "MacTahoe") in calls
     assert any(c[0] == "qdbus" and c[1][0] == "org.kde.KWin" for c in calls)
@@ -447,6 +448,7 @@ def test_local_extras_switches_libadwaita_gtk4_override(monkeypatch, tmp_path, a
     home = tmp_path / "home"
     home.mkdir()
     monkeypatch.setenv("HOME", str(home))
+    monkeypatch.setenv("XDG_CONFIG_HOME", str(home / ".config"))
 
     for variant in ("Dark", "Light"):
         src = (home / ".themes" / f"MacTahoeLiquidKde-{variant}"
@@ -519,6 +521,7 @@ def test_local_extras_preserves_user_owned_gtk4_css(monkeypatch, tmp_path):
     custom = gtk4 / "gtk.css"
     custom.write_text("/* my custom overrides */\n")
     monkeypatch.setenv("HOME", str(home))
+    monkeypatch.setenv("XDG_CONFIG_HOME", str(home / ".config"))
     monkeypatch.setattr(theme_switch, "_have", lambda _cmd: False)
     monkeypatch.setattr(theme_switch, "_qdbus", lambda *args: True)
     monkeypatch.setattr(theme_switch, "flush_icon_caches", lambda: None)
@@ -540,6 +543,7 @@ def test_local_extras_selects_matching_kvantum_profile(
     gtk_theme = f"MacTahoeLiquidKde-{mode.capitalize()}"
     (home / ".themes" / gtk_theme).mkdir(parents=True)
     monkeypatch.setenv("HOME", str(home))
+    monkeypatch.setenv("XDG_CONFIG_HOME", str(home / ".config"))
     monkeypatch.setattr(
         theme_switch, "_have",
         lambda cmd: cmd == "kvantummanager",
@@ -608,6 +612,7 @@ def test_local_extras_replaces_kde_generated_light_gtk4_sheet_in_dark_mode(
     (gtk4 / "gtk.css").write_text("LIGHT\n@import 'colors.css';")
 
     monkeypatch.setenv("HOME", str(home))
+    monkeypatch.setenv("XDG_CONFIG_HOME", str(home / ".config"))
     monkeypatch.setattr(theme_switch, "_have", lambda _cmd: False)
     monkeypatch.setattr(theme_switch, "_qdbus", lambda *args: True)
     monkeypatch.setattr(theme_switch, "flush_icon_caches", lambda: None)
@@ -753,10 +758,10 @@ def test_main_auto_resolves_to_time_based_mode(monkeypatch):
     calls: list = []
     monkeypatch.setattr(theme_switch, "wait_for_clock_sync", lambda: True)
     monkeypatch.setattr(theme_switch, "detect_mode_by_time", lambda: "dark")
-    monkeypatch.setattr(theme_switch, "apply",
-                        lambda mode, **kw: calls.append(("apply", mode)) or True)
+    monkeypatch.setattr(theme_switch, "select_appearance",
+                        lambda mode, **kw: calls.append(("apply", mode)) or 0)
     assert theme_switch.main(["auto"]) == 0
-    assert calls == [("apply", "dark")]
+    assert calls == [("apply", "auto")]
 
 
 def test_main_rejects_invalid_mode(monkeypatch):
@@ -805,7 +810,7 @@ def test_detect_mode_by_system_falls_back_to_colorscheme_name(monkeypatch):
     assert theme_switch.detect_mode_by_system() is None
 
 
-def test_follow_system_applies_detected_mode(monkeypatch):
+def test_follow_system_applies_detected_mode(monkeypatch, sandbox):
     """follow-system applies whatever mode the desktop currently wants, so a
     native toggle drives our full theme (GTK included)."""
     import theme_switch
@@ -814,10 +819,10 @@ def test_follow_system_applies_detected_mode(monkeypatch):
     monkeypatch.setattr(theme_switch, "_apply_unlocked",
                         lambda mode, **kw: seen.append((mode, kw)) or True)
     assert theme_switch.follow_system() == 0
-    assert seen == [("light", {"context": "user"})]
+    assert seen == [("light", {"context": "sync"})]
 
 
-def test_follow_system_noop_when_mode_unknown(monkeypatch):
+def test_follow_system_noop_when_mode_unknown(monkeypatch, sandbox):
     """When the current mode can't be read, follow-system does NOT guess and
     apply a mode — that would fight the user's real state. Success, no apply."""
     import theme_switch
@@ -981,8 +986,8 @@ def test_main_passes_install_context_to_apply(monkeypatch):
     import theme_switch
     seen: dict = {}
     monkeypatch.setattr(
-        theme_switch, "apply",
-        lambda mode, context="user": seen.update(mode=mode, context=context) or True)
+        theme_switch, "select_appearance",
+        lambda mode, context="user": seen.update(mode=mode, context=context) or 0)
     assert theme_switch.main(["light", "install"]) == 0
     assert seen == {"mode": "light", "context": "install"}
 
@@ -991,7 +996,7 @@ def test_main_exit_code_reflects_apply_failure(monkeypatch):
     """The systemd oneshot service and the install step can
     only see failure through the exit code."""
     import theme_switch
-    monkeypatch.setattr(theme_switch, "apply", lambda mode, **kw: False)
+    monkeypatch.setattr(theme_switch, "select_appearance", lambda mode, **kw: 1)
     assert theme_switch.main(["dark"]) == 1
 
 
@@ -1009,6 +1014,7 @@ def _smart_wallpaper_env(monkeypatch, tmp_path):
     for path in (wallpaper, state, config):
         path.mkdir(parents=True, exist_ok=True)
     monkeypatch.setenv("HOME", str(home))
+    monkeypatch.setenv("XDG_CONFIG_HOME", str(home / ".config"))
     monkeypatch.setenv("XDG_DATA_HOME", str(data))
     monkeypatch.setenv("XDG_STATE_HOME", str(state))
     monkeypatch.setenv("XDG_CONFIG_HOME", str(config))
@@ -1839,6 +1845,7 @@ def test_switch_step_removes_old_watcher_before_replacing_binary(
     monkeypatch.setattr(step, "PY_SRC", source)
     monkeypatch.setattr(step, "BIN_DEST", destination)
     monkeypatch.setattr(step, "SVC_DIR", tmp_path / "systemd")
+    monkeypatch.setattr(step, "AUTOSTART_DIR", tmp_path / "autostart")
     monkeypatch.setattr(step, "stop_gtk_sync_watcher",
                         lambda: events.append("stop"))
     monkeypatch.setattr(step, "_watcher_pids", lambda: [])
@@ -1872,6 +1879,7 @@ def test_pinned_switch_mode_neutralizes_binary_when_cron_cleanup_fails(
     monkeypatch.setattr(step, "PY_SRC", source)
     monkeypatch.setattr(step, "BIN_DEST", destination)
     monkeypatch.setattr(step, "SVC_DIR", tmp_path / "systemd")
+    monkeypatch.setattr(step, "AUTOSTART_DIR", tmp_path / "autostart")
     monkeypatch.setattr(step, "AUTOSTART_DIR", tmp_path / "autostart")
     monkeypatch.setattr(step, "stop_gtk_sync_watcher", lambda: None)
     monkeypatch.setattr(step, "_watcher_pids", lambda: [])
@@ -2084,6 +2092,9 @@ def test_switch_uninstall_targets_xdg_wallpaper_state_and_fixed_layout_state(
     assert step._managed_state_files() == (
         custom / "mac-tahoe-liquid-kde/wallpapers.json",
         tmp_path / "fixed/layout-installed",
+        custom / "mac-tahoe-liquid-kde/appearance.json",
+        custom / "mac-tahoe-liquid-kde/appearance-request.json",
+        custom / "mac-tahoe-liquid-kde/appearance-request.lock",
     )
 
 
@@ -2167,10 +2178,10 @@ def test_switch_step_install_uninstall_reinstall(sandbox, tmp_path):
     assert bin_path.is_file() and bin_path.stat().st_mode & 0o111
     assert (svc_dir / "mac-tahoe-liquid-kde-theme.service").is_file()
     assert (svc_dir / "mac-tahoe-liquid-kde-theme.timer").is_file()
-    assert not autostart.exists()
+    assert "watch-system" in autostart.read_text()
 
     state_dir = sandbox / ".local/state/mac-tahoe-liquid-kde"
-    state_dir.mkdir(parents=True)
+    state_dir.mkdir(parents=True, exist_ok=True)
     wallpaper_state = state_dir / "wallpapers.json"
     layout_marker = state_dir / "layout-installed"
     wallpaper_state.write_text("{}\n")
@@ -2217,8 +2228,8 @@ def test_switch_step_cron_schedules_without_systemd(sandbox, tmp_path, backend):
     assert not (svc_dir / "mac-tahoe-liquid-kde-theme.timer").exists()
     # enable/start of the user timer must not have been attempted.
     assert "systemctl --user enable" not in calls
-    assert not (sandbox / ".config/autostart"
-                / "mac-tahoe-liquid-kde-gtk-sync.desktop").exists()
+    assert "watch-system" in (sandbox / ".config/autostart"
+                / "mac-tahoe-liquid-kde-gtk-sync.desktop").read_text()
     assert "systemctl --user start" not in calls
 
 
