@@ -1,6 +1,7 @@
 {
   "components": {
     "aurorae": "1dc346fa0ef0d502ec6210ea472da45eca4f48453a5797da9a8b02cc54bc1f5d",
+    "clipboard": "b3bd47d4de7ab447a2359ffa69d5a90e6739b7cd12e6c281aa69c0ddfdc5d66c",
     "color-schemes": "8e4db2fd42e65a05ede20f0f3af757662d1128d9089d6b5509cff32b0decdae5",
     "cursors": "29672fe70a1eb53a5d17c5dcb121dd76395e76b50446a2782b367939530f4813",
     "firefox": "efc75f6bc894d0ae53b1ccaa59947be03ce71ad8072a6ea2631e6139c761ef3f",
@@ -31,6 +32,7 @@
     "recipe/acrylic_glass": "1d93c78484fdd406d60ac7eac9e76409b72fd14c62f13a314bcfc16247304322",
     "recipe/apply": "e71e98c5900fd122fe60f3da7eb611a4ec5cd35c4b5b7f0aa1f80bdc98563000",
     "recipe/apps": "ee6308870a0e05eae400b6367238f9b9d2f20dfe0050c73119577e594e168ad2",
+    "recipe/clipboard": "e367abdc0ae28e7fa7f94847b83e4b26e6fa8babec8b094326633bb318644d8a",
     "recipe/color_schemes": "e3fce873f32d47f4b39156bd102b4c535934c56a96415d6d53587f0d1549907e",
     "recipe/cursors": "29a08f99fa9ffc969e5813f1019abfca842ca79c2b9161ea46979b95457c9f1e",
     "recipe/firefox": "f7bf1a58d4bcc0edf1638e247253919e3cffd1bd1943583dcf6688dd424b083c",

@@ -62,7 +62,7 @@ ALL_FEATURES = [
     "kvantum", "color_schemes", "icons", "plasmoids", "globalmenu", "acrylic_glass",
     "rounded_corners",
     "global_theme", "layout", "sounds", "gtk", "firefox", "sddm", "plymouth", "apps",
-    "nautilus", "nautilus_bookmarks", "portals", "oled_care", "apply_theme",
+    "nautilus", "nautilus_bookmarks", "portals", "oled_care", "clipboard", "apply_theme",
     "kconf_update",
 ]
 
@@ -74,7 +74,7 @@ INSTALL_ORDER = [
     "sounds",
     "kconf_update",
     "plasmoids", "globalmenu", "acrylic_glass", "rounded_corners",
-    "layout", "nautilus", "apps", "portals", "plymouth",
+    "layout", "nautilus", "apps", "portals", "plymouth", "clipboard",
 ]
 
 FEATURE_DESC = {
@@ -102,6 +102,7 @@ FEATURE_DESC = {
     "nautilus_bookmarks": "Sidebar shortcuts",
     "portals": "KDE file dialogs",
     "oled_care": "Panel pixel shift",
+    "clipboard": "Clipboard history (Meta+V)",
     "apply_theme": "Activate after install",
     "kconf_update": "Settings migrations",
 }
@@ -144,6 +145,9 @@ Options:
     --nautilus-bookmarks  macOS-style sidebar bookmarks (backs up the
                        existing bookmarks; uninstall restores them)
     --portals          Route FileChooser/AppChooser to KDE (fixes stale dialogs)
+    --clipboard        Clipboard history popup on Meta+V (text and images,
+                       pinning, search). Builds a small background service;
+                       history stays private on this machine. Default: off
     --oled-care        OLED burn-in care: pixel-shift the panels every
                        5 minutes (top bar height, dock offset). Default: off
     --oled-interval=N  Minutes between pixel shifts (1-59, default 5)
@@ -214,6 +218,8 @@ Examples:
 DEFAULT_FEATURES: dict[str, object] = {f: True for f in ALL_FEATURES}
 # Opt-in: shifts panel geometry on a timer — only wanted on OLED monitors.
 DEFAULT_FEATURES["oled_care"] = False
+# Opt-in: records everything copied to the clipboard, so it must be chosen.
+DEFAULT_FEATURES["clipboard"] = False
 DEFAULT_FEATURES["oled_interval"] = 5   # minutes between shifts (1-59)
 DEFAULT_FEATURES["oled_max_shift"] = 8  # max shift distance in px (1-16)
 DEFAULT_FEATURES["theme_mode"] = "auto"
@@ -1197,6 +1203,10 @@ def _run_uninstall_steps(feat: dict[str, object]) -> int:
     note(tr('Stops the pixel shift and restores panel geometry'))
     run_phase("oled_care", "uninstall")
 
+    step('Removing Clipboard')
+    note(tr('Stops the clipboard service, returns Meta+V to Plasma and deletes its history'))
+    run_phase("clipboard", "uninstall")
+
     # Always remove MacTahoe's top bar/Dock, even when the saved feature
     # selection has since disabled layout.
     if step_exists("layout"):
@@ -1210,7 +1220,7 @@ def _run_uninstall_steps(feat: dict[str, object]) -> int:
 
     for feature in INSTALL_ORDER:
         check_cancelled()
-        if feature == "layout":
+        if feature in ("layout", "clipboard"):   # both are removed explicitly above
             continue
         if not should_process(feature, feat):
             continue
