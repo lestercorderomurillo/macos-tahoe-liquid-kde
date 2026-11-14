@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import argparse
+import codecs
 import errno
 import json
 import os
@@ -29,7 +30,8 @@ from cli import (
     ALL_FEATURES, DEFAULT_FEATURES, FEATURE_DESC,
     fetch_latest_release, parse_semver,
 )
-from log import DONE_MARKER, STATUS_MARKER
+from log import DONE_MARKER, STATUS_MARKER, EVENT_MARKER
+from progress_model import ProgressModel
 from localization import (
     effective_language, feature_label, get_language, language_options, set_language, translate, tr,
 )
@@ -176,7 +178,8 @@ def _parse_done_record(record: str, *, terminated: bool = True) -> int | None:
     if head != DONE_MARKER or not separator:
         return None
     try:
-        return int(value)
+        code = int(value)
+        return code if 0 <= code <= 255 else None
     except ValueError:
         return None
 
@@ -213,6 +216,7 @@ def escalated_command_for_action(
                 tr('headless installer launch requires progress and cancel files'))
         headless_pairs += [
             "MTTKDE_NO_CONFIRM=1",
+            "PYTHONUNBUFFERED=1",
             f"MTTKDE_PROGRESS_FILE={shlex.quote(progress_file)}",
             f"MTTKDE_CANCEL_FILE={shlex.quote(cancel_file)}",
         ]
@@ -383,6 +387,7 @@ def _make_installer_bridge():
     class InstallerBridge(QObject):
         currentStepChanged = pyqtSignal()
         progressChanged = pyqtSignal()
+        summaryChanged = pyqtSignal()
         runningChanged = pyqtSignal()
         finished = pyqtSignal(int)
         logAppended = pyqtSignal(str)
@@ -394,6 +399,7 @@ def _make_installer_bridge():
             super().__init__(parent)
             self._proc: QProcess | None = None
             self._current_step = ""
+            self.statusMessage = ""
             self._step_index = 0
             self._progress = 0.0
             self._estimated_total = _ESTIMATED_TOTAL_STEPS
@@ -409,6 +415,15 @@ def _make_installer_bridge():
             self._update_install_thread = None
             self._language = get_language()
             self._choices = None
+            self.summary = ProgressModel()
+            self._finishing = False
+            self.cancelRequested = False
+            self._requires_done = False
+            self._output_decoder = codecs.getincrementaldecoder("utf-8")("replace")
+            self._output_buffer = ""
+            self._progress_decoder = codecs.getincrementaldecoder("utf-8")("replace")
+            self._log_file = tempfile.SpooledTemporaryFile(max_size=1024 * 1024, mode="w+t", encoding="utf-8")
+            self._log_failed = False
 
             self._watcher = QFileSystemWatcher(self)
             self._watcher.fileChanged.connect(self._read_progress)
@@ -462,7 +477,53 @@ def _make_installer_bridge():
 
         @pyqtSlot(result=str)
         def logTail(self) -> str:
-            return "\n".join(self._log_lines[-200:])
+            return "\n".join(self._log_lines[-2000:])
+
+        def _log_storage_failure(self):
+            if self._log_failed:
+                return
+            self._log_failed = True
+            message = "Full log storage is unavailable. Only the latest output is retained."
+            self.summary.accept({'kind': 'warning', 'message': message})
+            self.summaryChanged.emit()
+            self._log_lines.append(message)
+            self.logAppended.emit(message)
+
+        def logText(self) -> str:
+            if not self._log_failed:
+                try:
+                    self._log_file.flush()
+                    self._log_file.seek(0)
+                    result = self._log_file.read()
+                    self._log_file.seek(0, 2)
+                    return result
+                except OSError:
+                    self._log_storage_failure()
+            return "\n".join(self._log_lines)
+
+        def saveLog(self, path):
+            from PyQt6.QtCore import QSaveFile, QIODeviceBase, QFileDevice
+            output = QSaveFile(path)
+            if not output.open(QIODeviceBase.OpenModeFlag.WriteOnly):
+                raise OSError(output.errorString())
+            data = self.logText().encode('utf-8')
+            if (not output.setPermissions(QFileDevice.Permission.ReadOwner | QFileDevice.Permission.WriteOwner)
+                    or output.write(data) != len(data)):
+                output.cancelWriting()
+                raise OSError(output.errorString())
+            if not output.commit():
+                raise OSError(output.errorString())
+
+        def _append_log(self, line):
+            if not self._log_failed:
+                try:
+                    self._log_file.write(line + "\n")
+                except OSError:
+                    self._log_storage_failure()
+            self._log_lines.append(line)
+            if len(self._log_lines) > 2000:
+                del self._log_lines[:-2000]
+            self.logAppended.emit(line)
 
         @pyqtSlot("QVariantMap")
         def setChoices(self, choices):
@@ -473,7 +534,8 @@ def _make_installer_bridge():
 
         @pyqtSlot(str)
         def start(self, action: str) -> None:
-            if self._running or action not in _ACTION_COMMANDS:
+            if (self._running or self._finishing or action not in _ACTION_COMMANDS
+                    or (self._update_install_thread and self._update_install_thread.isRunning())):
                 return
             from cli import _estimate_install_steps, _estimate_uninstall_steps, _theme_is_already_installed
             from installer_choices import features
@@ -481,9 +543,24 @@ def _make_installer_bridge():
                                          existing_install=_theme_is_already_installed()) if self._choices else DEFAULT_FEATURES
             self._estimated_total = (_estimate_uninstall_steps(DEFAULT_FEATURES) if action == "uninstall"
                                      else _estimate_install_steps(selected_features))
+            self._running = True
+            self.summary = ProgressModel(action)
+            self.cancelRequested = False
+            self._requires_done = action in ("install", "uninstall")
+            self._output_decoder.reset()
+            self._progress_decoder.reset()
+            self._output_buffer = ""
+            try:
+                self._log_file.close()
+            except OSError:
+                pass
+            self._log_file = tempfile.SpooledTemporaryFile(max_size=1024 * 1024, mode="w+t", encoding="utf-8")
+            self._log_failed = False
             self._log_lines.clear()
+            self.summaryChanged.emit()
             self._current_step = translate("Starting…", self._language)
             self._step_index = 0
+            self.statusMessage = ""
             self._progress = 0.0
             self._read_offset = 0
             self._line_buf = ""
@@ -497,11 +574,14 @@ def _make_installer_bridge():
                 self._cancel_file = _create_cancel_file()
             except OSError as exc:
                 message = tr("Could not create secure installer channel: {error}", error=exc)
-                self._log_lines.append(message)
                 self._current_step = message
-                self.logAppended.emit(message)
+                self._append_log(message)
                 self.currentStepChanged.emit()
                 self._finish(1)
+                return
+
+            if self.cancelRequested:
+                self._finish(130)
                 return
 
             if self._progress_file not in self._watcher.files():
@@ -511,10 +591,11 @@ def _make_installer_bridge():
             self._proc = QProcess(self)
             self._proc.setProcessChannelMode(
                 QProcess.ProcessChannelMode.MergedChannels)
-            self._proc.readyReadStandardOutput.connect(self._read_output)
+            proc = self._proc
+            proc.readyReadStandardOutput.connect(lambda: self._from_process(proc, self._read_output))
             self._proc.setWorkingDirectory(str(REPO_ROOT))
-            self._proc.finished.connect(self._on_proc_finished)
-            self._proc.errorOccurred.connect(self._on_proc_error)
+            proc.finished.connect(lambda code, status: self._from_process(proc, self._on_proc_finished, code, status))
+            proc.errorOccurred.connect(lambda error: self._from_process(proc, self._on_proc_error, error))
             # Mark busy before start(): FailedToStart may be delivered as soon
             # as Qt attempts the fork/exec, and its handler must be the final
             # writer of the state rather than being overwritten below.
@@ -536,6 +617,7 @@ def _make_installer_bridge():
         def cancel(self) -> None:
             if not self._running:
                 return
+            self.cancelRequested = True
             _mark_cancel_requested(self._cancel_file)
             # Keep the supervisor (and therefore the busy state and private
             # channels) alive until the privileged transaction really exits.
@@ -546,9 +628,9 @@ def _make_installer_bridge():
                 self._language,
             )
             if self._current_step != message:
-                self._log_lines.append(message)
                 self._current_step = message
-                self.logAppended.emit(message)
+                self.statusMessage = message
+                self._append_log(message)
                 self.currentStepChanged.emit()
 
         @pyqtSlot()
@@ -575,34 +657,42 @@ def _make_installer_bridge():
                 if thread is not None:
                     thread.wait()
 
-        def _read_output(self) -> None:
-            if self._proc is None:
-                return
-            output = bytes(self._proc.readAllStandardOutput()).decode("utf-8", errors="replace")
-            for line in re.sub(r"\x1b\[[0-9;]*[A-Za-z]", "", output).splitlines():
-                self._log_lines.append(line)
-                self.logAppended.emit(line)
-            if len(self._log_lines) > 2000:
-                del self._log_lines[:-1000]
+        def _from_process(self, proc, callback, *args):
+            if proc is self._proc:
+                callback(*args)
+
+        def _read_output(self, final=False) -> None:
+            data = bytes(self._proc.readAllStandardOutput()) if self._proc is not None else b""
+            self._output_buffer += self._output_decoder.decode(data, final=final)
+            while "\n" in self._output_buffer:
+                line, self._output_buffer = self._output_buffer.split("\n", 1)
+                self._append_log(re.sub(r"\x1b\[[0-9;]*[A-Za-z]", "", line.rstrip("\r")))
+            # Bound an unterminated compiler line without dropping its content.
+            if final or len(self._output_buffer) > 65536:
+                if self._output_buffer:
+                    self._append_log(re.sub(r"\x1b\[[0-9;]*[A-Za-z]", "", self._output_buffer))
+                self._output_buffer = ""
 
         def _read_progress(self) -> None:
             progress_file = self._progress_file
             if progress_file is None:
                 return
             try:
-                with open(progress_file, "r", encoding="utf-8") as fh:
+                with os.fdopen(_secure_run_file_fd(progress_file, write=False), "rb") as fh:
                     fh.seek(self._read_offset)
-                    chunk = fh.read()
+                    chunk = fh.read(65536)
                     self._read_offset = fh.tell()
             except OSError:
                 return
 
             if not chunk:
                 return
-            self._line_buf += chunk
+            self._line_buf += self._progress_decoder.decode(chunk)
             while "\n" in self._line_buf:
                 line, self._line_buf = self._line_buf.split("\n", 1)
                 self._handle_record(line.rstrip("\r"))
+            if len(self._line_buf) > 65536:
+                self._line_buf = ""
 
         def _handle_record(self, record: str, *, terminated: bool = True) -> None:
             if not record:
@@ -618,24 +708,38 @@ def _make_installer_bridge():
                     # QProcess really terminates.
                     self._progress_exit_code = code
                 return
-            title = parts[1].split("\t", 1)[0] if len(parts) > 1 else head
-            self._log_lines.append(title)
-            if len(self._log_lines) > 2000:
-                del self._log_lines[:1000]
-            self.logAppended.emit(title)
-            self._current_step = title
+            if head == EVENT_MARKER:
+                if terminated and len(parts) == 2:
+                    try:
+                        self.summary.accept(json.loads(parts[1]))
+                    except (ValueError, TypeError):
+                        return
+                    self.summaryChanged.emit()
+                return
+            if head != STATUS_MARKER and (len(head) > 10 or not head.isdecimal() or int(head) <= self._step_index):
+                return
+            if not terminated or len(parts) != 2:
+                return
+            title = parts[1].split("\t", 1)[0]
+            if not self.cancelRequested:
+                self._current_step = title
+                self.statusMessage = title if head == STATUS_MARKER else ""
             if head == STATUS_MARKER:
                 self.currentStepChanged.emit()
                 return
-            self._step_index += 1
+            self._step_index = int(head)
             self._progress = min(
                 self._step_index / max(1, self._estimated_total), 0.95)
             self.currentStepChanged.emit()
             self.progressChanged.emit()
 
         def _on_proc_finished(self, code: int, _status) -> None:
-            self._read_output()
-            self._read_progress()
+            self._read_output(final=True)
+            while True:
+                offset = self._read_offset
+                self._read_progress()
+                if self._read_offset == offset:
+                    break
             # _read_progress only turns complete lines into records; a
             # final line with no trailing newline (e.g. the process was
             # killed mid-write) would otherwise sit in _line_buf and
@@ -653,6 +757,11 @@ def _make_installer_bridge():
                     if code == 0 and self._progress_exit_code is not None
                     else code
                 )
+                if _status == QProcess.ExitStatus.CrashExit and final_code == 0:
+                    final_code = 1
+                if self._requires_done and final_code == 0 and self._progress_exit_code is None:
+                    self._append_log("Installer exited without a completion record. Review the log before retrying.")
+                    final_code = 1
                 self._finish(final_code)
 
         def _on_proc_error(self, error) -> None:
@@ -662,16 +771,21 @@ def _make_installer_bridge():
             message = tr("Could not start installer supervisor")
             if detail:
                 message += f": {detail}"
-            self._log_lines.append(message)
             self._current_step = message
-            self.logAppended.emit(message)
+            self._append_log(message)
             self.currentStepChanged.emit()
             self._finish(1)
 
         def _finish(self, code: int) -> None:
             if self._exit_code is not None:
                 return
+            self._finishing = True
             self._exit_code = code
+            self.summary.finish(code)
+            self.summaryChanged.emit()
+            proc, self._proc = self._proc, None
+            if proc is not None and hasattr(proc, "deleteLater"):
+                proc.deleteLater()
             self._poll.stop()
             progress_file = self._progress_file
             cancel_file = self._cancel_file
@@ -686,11 +800,14 @@ def _make_installer_bridge():
                     os.unlink(path)
                 except OSError:
                     pass
-            self._progress = 1.0
+            self._progress = 1.0 if code == 0 else self._progress
             self.progressChanged.emit()
             self._running = False
             self.runningChanged.emit()
-            self.finished.emit(code)
+            try:
+                self.finished.emit(code)
+            finally:
+                self._finishing = False
 
     return InstallerBridge()
 

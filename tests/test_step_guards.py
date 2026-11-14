@@ -148,7 +148,7 @@ def test_window_decorations_warns_when_kwinrc_writes_fail(tmp_path, monkeypatch)
     )
 
 
-def test_window_decorations_clean_ok_when_writes_succeed(tmp_path, monkeypatch):
+def test_window_decorations_clean_ok_when_writes_succeed(tmp_path, monkeypatch, sandbox):
     """Positive control: on the happy path the ok() message
     ``Window decoration set to MacTahoeLiquidKde-Dark`` fires and no
     kwriteconfig6 warning appears."""

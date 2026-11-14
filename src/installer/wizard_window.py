@@ -18,6 +18,7 @@ from PyQt6.QtWidgets import (
 
 from installer_choices import COLORS, defaults, validate
 from window_controls import button_svg
+from progress_model import ProgressModel, elapsed_text
 
 ASSETS = Path(__file__).with_name("assets")
 ASSET_FILES = json.loads((ASSETS / "sources.json").read_text())
@@ -684,6 +685,7 @@ class InstallerWindow(OpaqueSurface):
         bridge.runningChanged.connect(self.refresh_window_controls)
         bridge.finished.connect(self.finished)
         bridge.progressChanged.connect(self.refresh_progress)
+        bridge.summaryChanged.connect(self.refresh_progress)
         bridge.currentStepChanged.connect(self.refresh_progress)
         bridge.logAppended.connect(self.append_log)
         bridge.updateChecked.connect(self.update_checked)
@@ -886,7 +888,7 @@ class InstallerWindow(OpaqueSurface):
         muted = "#686868" if light else "#bcbcbc"
         foreground = "#292929" if light else "#eeeeee"
         operation = "Uninstall" if self.page in ("uninstall", "removed") or (self.page in ("progress", "error") and self.action == "uninstall") else "Install"
-        self.setWindowTitle(self.t(operation) + " " + self.edition)
+        self.setWindowTitle(self.t(operation) + " " + self.edition + " · v" + self.bridge.version)
         self.close_button.setAccessibleName(self.t("Close"))
         self.close_button.setToolTip(self.t("Close"))
         self.refresh_window_controls()
@@ -1422,11 +1424,37 @@ class InstallerWindow(OpaqueSurface):
         self.editing = True; self.page = page; self.render()
 
     def details(self):
-        self.details_toggle = DetailsButton()
+        self.details_toggle = QPushButton("Show details")
         self.details_toggle.setObjectName("detailsToggle")
         self.details_toggle.setCheckable(True)
-        self.body.addWidget(self.details_toggle, 0, Qt.AlignmentFlag.AlignHCenter)
-        self.log = QPlainTextEdit(self.bridge.logTail())
+        controls = QHBoxLayout()
+        controls.setSpacing(18)
+        controls.addWidget(self.details_toggle)
+        controls.addStretch()
+        copy = QPushButton("Copy diagnostic")
+        copy.setObjectName("copyInstallationLog")
+        copy.clicked.connect(lambda: QApplication.clipboard().setText(self.bridge.logText()))
+        controls.addWidget(copy)
+        save = QPushButton("Save log…")
+        save.setObjectName("saveInstallationLog")
+        save.clicked.connect(self.save_log)
+        controls.addWidget(save)
+        for button in (self.details_toggle, copy, save):
+            button.setFlat(True)
+            button.setFont(relative_font(self, .85))
+            button.setStyleSheet(f"border:0; background:transparent; color:{self.accent}; padding:4px 0;")
+        self.body.addLayout(controls)
+        self.full_output_toggle = QPushButton("Show technical output")
+        self.full_output_toggle.setCheckable(True)
+        self.full_output_toggle.setFlat(True)
+        self.full_output_toggle.setFont(relative_font(self, .85))
+        self.full_output_toggle.setStyleSheet(f"border:0; background:transparent; color:{self.accent}; padding:4px 0; text-align:left;")
+        self.full_output_toggle.setObjectName("fullTechnicalOutput")
+        self.full_output_toggle.setToolTip("Latest 2,000 lines. Copy or save includes the complete output.")
+        self.full_output_toggle.setChecked(False)
+        self.full_output_toggle.toggled.connect(lambda _: self.refresh_log(force=True))
+        self.body.addWidget(self.full_output_toggle)
+        self.log = QPlainTextEdit()
         self.log.setObjectName("installationLog")
         self.log.setReadOnly(True)
         self.log.setAccessibleName(self.t("Installation details"))
@@ -1444,12 +1472,15 @@ class InstallerWindow(OpaqueSurface):
                 font-weight: normal; font-style: normal;
                 selection-background-color: #36577c; selection-color: #ffffff; }}
         ''')
-        self.log.setFixedHeight(190)
+        self.log.setFixedHeight(260)
         self.body.addWidget(self.log)
         def expanded(value):
             self._details_expanded = value
             self.log.setVisible(value)
-            title = self.t("Hide installation details" if value else "Show installation details")
+            self.full_output_toggle.setVisible(value)
+            self.refresh_log(force=True)
+            title = "Hide details" if value else "Show details"
+            self.details_toggle.setText(title)
             self.details_toggle.setAccessibleName(title)
             self.details_toggle.setToolTip(title)
             self.details_toggle.update()
@@ -1457,13 +1488,26 @@ class InstallerWindow(OpaqueSurface):
         self.details_toggle.setChecked(self._details_expanded)
         expanded(self._details_expanded)
 
+    def save_log(self):
+        path, _ = QFileDialog.getSaveFileName(self, "Save installation log", "installation.log", "Log files (*.log);;All files (*)")
+        if not path:
+            return
+        try:
+            self.bridge.saveLog(path)
+        except OSError as exc:
+            self.log.appendPlainText(f"Couldn't save log: {exc}")
+            self.details_toggle.setChecked(True)
+
     def page_progress(self):
+        self.body.setSpacing(6)
         self.body.addSpacing(95)
+        self.operation_detail = self.label("")
+        self.operation_detail.setObjectName("detail")
+        self.operation_detail.setTextFormat(Qt.TextFormat.PlainText)
+        self.body.addWidget(self.operation_detail)
         row = QHBoxLayout()
-        row.setContentsMargins(60, 0, 60, 0)
-        row.setSpacing(12)
         self.spinner = ProgressSpinner()
-        self.spinner.setAccessibleName(self.t("Uninstalling…" if self.action == "uninstall" else "Installing…"))
+        self.spinner.setAccessibleName("Removing components" if self.action == "uninstall" else "Installing components")
         row.addWidget(self.spinner)
         self.progress = QProgressBar()
         self.progress.setRange(0, 1000)
@@ -1471,8 +1515,8 @@ class InstallerWindow(OpaqueSurface):
         self.progress.setTextVisible(False)
         row.addWidget(self.progress, 1)
         self.body.addLayout(row)
-        self.remaining_label = self.label("Estimating time remaining…")
-        self.remaining_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.remaining_label = self.label("Elapsed 0 sec")
+        self.remaining_label.setObjectName("detail")
         self.body.addWidget(self.remaining_label)
         self.details()
         self._eta_timer.start()
@@ -1486,42 +1530,60 @@ class InstallerWindow(OpaqueSurface):
         self.progress.setValue(round(fraction * 1000))
         self.progress.setAccessibleDescription(self.bridge.currentStep)
         elapsed = time.monotonic() - self._operation_started if self._operation_started is not None else 0
-        if fraction >= 1:
-            message = self.t("Finishing…")
-        elif elapsed < 15 or fraction < .02:
-            message = self.t("Estimating time remaining…")
+        self.remaining_label.setText("Elapsed " + elapsed_text(elapsed))
+        active = self.bridge.summary.phases.get(self.bridge.summary.active, {})
+        self.operation_detail.setText('Cancelling…' if self.bridge.cancelRequested else active.get('label', 'Preparing…'))
+        self.refresh_log()
+
+    def refresh_log(self, force=False):
+        if self.page not in ('progress', 'done', 'removed', 'error') or not hasattr(self, 'log'):
+            return
+        self.full_output_toggle.setText("Show summary" if self.full_output_toggle.isChecked() else "Show technical output")
+        if self.full_output_toggle.isChecked():
+            if not force:
+                return
+            text = self.bridge.logTail()
         else:
-            seconds = elapsed * (1 - fraction) / fraction
-            if seconds < 60:
-                message = self.t("Less than a minute remaining")
-            else:
-                minutes = math.ceil(seconds / 60)
-                message = (self.t("About a minute remaining") if minutes == 1 else
-                           self.t("About {minutes} minutes remaining").format(minutes=minutes))
-        self.remaining_label.setText(message)
+            title = ('Removing ' if self.action == 'uninstall' else 'Installing ') + self.edition
+            context = f"{self.choices['appearance'].capitalize()} appearance · {self.choices['launcher'].replace('golden', 'Golden Gate').replace('tahoe', 'Tahoe')} launcher"
+            text = title + '\n' + context + '\n\n' + self.bridge.summary.text()
+            if self.bridge.statusMessage:
+                text += '\n\n' + self.bridge.statusMessage
+        if self.log.toPlainText() != text:
+            bar = self.log.verticalScrollBar()
+            position = bar.value()
+            self.log.setPlainText(text)
+            bar.setValue(position)
 
     def append_log(self, text):
-        if self.page == "progress" and hasattr(self, "log"):
+        if self.page in ("progress", "error", "done", "removed") and hasattr(self, "log") and self.full_output_toggle.isChecked():
+            bar = self.log.verticalScrollBar()
+            following = bar.value() == bar.maximum()
+            position = bar.value()
             self.log.appendPlainText(text)
+            if not following:
+                bar.setValue(position)
 
     def page_done(self):
-        self.body.addWidget(self.label("Installation complete", heading=True))
-        self.body.addWidget(self.label("The theme is now applied. You can close the installer."))
+        skipped = self.bridge.summary.phases.get('apply', {}).get('state') == 'skipped'
+        title = self.edition + (" files are installed" if skipped else " is ready")
+        if self.bridge.summary.warnings:
+            title = "Installation completed with warnings"
+        self.body.addWidget(self.label(title, heading=True))
+        self.body.addWidget(self.label("Desktop preferences were left unchanged." if skipped else "Your selected components and preferences have been applied."))
         self.completion()
 
     def page_removed(self):
-        self.body.addWidget(self.label("Uninstallation complete", heading=True))
-        self.body.addWidget(self.label("The theme components have been removed."))
+        self.body.addWidget(self.label("Removal completed", heading=True))
+        self.body.addWidget(self.label("The selected theme components have been removed."))
         self.completion()
 
     def completion(self):
-        self.body.addSpacing(43)
-        mark = self.label("✓")
-        mark.setFont(relative_font(self, 2.5))
-        mark.setFixedSize(62, 62)
-        mark.setStyleSheet("border: 1.5px solid #6b8e71; border-radius:31px; color:#4f7655;")
-        mark.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        self.body.addWidget(mark, 0, Qt.AlignmentFlag.AlignLeft)
+        elapsed = getattr(self, '_operation_elapsed', 0)
+        self.body.addWidget(self.label("Completed in " + elapsed_text(elapsed)))
+        if self.bridge.summary.warnings:
+            self.body.addWidget(self.label(f"{len(self.bridge.summary.warnings)} warning(s) · See details"))
+        self.details()
 
     def page_uninstall(self):
         self.body.addWidget(self.label(self.t("Uninstall")+" "+self.edition, heading=True))
@@ -1536,11 +1598,15 @@ class InstallerWindow(OpaqueSurface):
         note.setObjectName("detail"); self.body.addWidget(note)
 
     def page_error(self):
-        self.body.addWidget(self.label("The operation could not be completed", heading=True))
-        note = self.label("Review the installation details before trying again.")
-        note.setObjectName("detail"); self.body.addWidget(note)
-        self.body.addSpacing(12)
+        cancelled = getattr(self, '_operation_code', None) == 130
+        title = "Operation cancelled" if cancelled else ("Couldn't build " if self.bridge.summary.active == "build" else "Couldn't complete ") + self.bridge.summary.failed_label()
+        self.body.addWidget(self.label(title, heading=True))
+        note = self.label("Review the log before retrying. Some changes may already have been applied.")
+        note.setObjectName("detail")
+        self.body.addWidget(note)
+        self._details_expanded = True
         self.details()
+        self.full_output_toggle.setChecked(True)
 
     def previous(self):
         if self.editing:
@@ -1570,6 +1636,7 @@ class InstallerWindow(OpaqueSurface):
             if self.page != "error":
                 self.action = "uninstall" if self.page == "uninstall" else "install"
             self.bridge.setChoices(validate(self.choices))
+            self.bridge.summary = ProgressModel(self.action)
             self._operation_started = time.monotonic()
             self._details_expanded = False
             self.page = "progress"; self.render(); self.bridge.start(self.action); return
@@ -1581,6 +1648,8 @@ class InstallerWindow(OpaqueSurface):
         self.render()
 
     def finished(self, code):
+        self._operation_code = code
+        self._operation_elapsed = time.monotonic() - self._operation_started if self._operation_started is not None else 0
         self._eta_timer.stop()
         if self.close_pending:
             self.close(); return

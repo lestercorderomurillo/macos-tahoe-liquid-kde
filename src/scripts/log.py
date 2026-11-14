@@ -1,5 +1,8 @@
 import atexit
+import json
+import threading
 import errno
+import fcntl
 import os
 import secrets
 import stat
@@ -35,6 +38,8 @@ PROGRESS_FILE = _CONFIGURED_PROGRESS_FILE or (
 )
 DONE_MARKER = "__DONE__"
 STATUS_MARKER = "__STATUS__"
+EVENT_MARKER = "__EVENT__"
+_progress_lock = threading.RLock()
 
 
 def _open_progress_file(*, truncate: bool) -> int:
@@ -87,9 +92,21 @@ def _write_all(fd: int, payload: bytes) -> None:
 
 
 def _progress_write(record: str) -> None:
+    with _progress_lock:
+        _write_record(record)
+
+
+def progress_event(kind: str, **values) -> None:
+    if _CONFIGURED_PROGRESS_FILE is None:
+        return
+    _progress_write(EVENT_MARKER + "\t" + json.dumps({"kind": kind, **values}))
+
+
+def _write_record(record: str) -> None:
     fd: int | None = None
     try:
         fd = _open_progress_file(truncate=False)
+        fcntl.flock(fd, fcntl.LOCK_EX)
         _write_all(fd, (record + "\n").encode("utf-8"))
     except OSError:
         pass
@@ -103,7 +120,7 @@ def progress_reset() -> None:
     _step_counter = 0
     fd: int | None = None
     try:
-        fd = _open_progress_file(truncate=True)
+        fd = _open_progress_file(truncate=_CONFIGURED_PROGRESS_FILE is None)
     except OSError:
         pass
     finally:
@@ -182,6 +199,7 @@ def reinstall(msg: str) -> None:
 
 def warn(msg: str) -> None:
     global _last_ended_blank
+    progress_event("warning", message=msg)
     print(f"  {YELLOW}⚠{RESET}  {msg}")
     _last_ended_blank = False
 
@@ -206,6 +224,8 @@ APPLE_ART = (
 
 
 def banner(version: str) -> None:
+    if _CONFIGURED_PROGRESS_FILE:
+        return
     art = APPLE_ART
     print()
     for line, colour in zip(art, _APPLE_RAINBOW):

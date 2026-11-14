@@ -166,7 +166,7 @@ def test_gui_progress_hides_english_control_key(sandbox, monkeypatch, language):
     title = localization.tr("Removing Theme Switcher")
     bridge._handle_record(f"1\t{title}\tRemoving Theme Switcher")
     assert app is not None
-    assert visible == [title]
+    assert visible == []  # Protocol records update state; stdout owns the technical log.
     assert bridge._current_step == title
 
 
