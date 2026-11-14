@@ -106,8 +106,12 @@ Live theme switch without restarting the session:
 ```sh
 mac-tahoe-theme-switch dark      # explicit
 mac-tahoe-theme-switch light
-mac-tahoe-theme-switch auto      # apply the mode for the current time
+mac-tahoe-theme-switch auto      # follow the 06:00 / 18:00 schedule
 ```
+
+The session follower synchronizes native KDE, Kvantum and GTK selections; a
+manual selection supersedes the project schedule. See [appearance synchronization](docs/appearance-sync.md)
+for native automatic mode, lifecycle and qualification details.
 
 In automatic mode, the systemd user service waits for enabled NTP to synchronize
 before choosing light (06:00–18:00) or dark. This handles an incorrect dual-boot

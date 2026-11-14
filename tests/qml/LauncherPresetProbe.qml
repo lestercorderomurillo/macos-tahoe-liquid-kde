@@ -1,4 +1,5 @@
 import QtQuick
+import LauncherInteraction 1.0
 import QtQuick.Window
 import QtQuick.Layouts
 import org.kde.kirigami as Kirigami
@@ -17,6 +18,16 @@ Timer {
     property real inlineWidth: 0
     property size initialPopupSize
     property color originalForeground: "transparent"
+    property int rapidWaits: 0
+    property int resizeWaits: 0
+    property Timer rapidPresets: Timer {
+        interval: 30; repeat: true
+        property int changes: 0
+        onTriggered: {
+            plasmoid.configuration.launcherPreset = ++changes % 2 ? 1 : 2;
+            if (changes === 10) stop();
+        }
+    }
     property Window outsideProbe: Window {
         width: 100
         height: 100
@@ -28,6 +39,8 @@ Timer {
         }
     }
     function verifyCapsulePosition() {
+        verify(Math.abs(searchPopup.width - root.width * 0.617) <= 1,
+               "capsule width follows the current app panel after native resize feedback");
         verify(searchPopup.hideOnWindowDeactivate === undefined || !searchPopup.hideOnWindowDeactivate,
                "native popup leaves dismissal to the launcher focus group on every Plasma version");
         verify(searchPopup.y + searchPopup.height < root.y, "search above app panel");
@@ -109,6 +122,46 @@ Timer {
         }
         throw new Error("missing menu action: " + name);
     }
+    function verifyPopupSize() {
+        verify(Math.abs(fs.width - fs.implicitWidth) < 1 && Math.abs(fs.height - fs.implicitHeight) < 1,
+               "native geometry feedback cannot retain the previous preset dimensions: " + fs.width + "/" + fs.implicitWidth);
+        const buffer = LauncherInteraction.bufferSize(root);
+        verify(Math.abs(buffer.width - root.width) <= 1 && Math.abs(buffer.height - root.height) <= 1,
+               "rendered window buffer follows the selected preset");
+        // Layouts stop sizing an invisible grid while search results are shown.
+        const visibleView = main.searching ? searchList : appList.viewItem;
+        verify(visibleView.width >= root.columns * root.cellSizeWidth,
+               "the visible viewport fits every configured column: " + visibleView.width + "/" + (root.columns * root.cellSizeWidth));
+    }
+    function verifyOptionsMenu(search) {
+        const button = search.testMenuButton.testButton;
+        LauncherInteraction.click(button);
+        let state = LauncherInteraction.menuState();
+        verify(state.actions && state.actions.length === 7, "both presets open the seven rendered menu rows");
+        verify(state.actions[0].separator && state.actions[0].text === "View content as",
+               "view heading exists in both presets");
+        verify(state.actions[4].separator && state.actions[4].text === "Launcher preset",
+               "preset heading exists in both presets");
+        const anchor = button.mapToGlobal(button.width, button.height);
+        verify(Math.abs(state.rect.y - anchor.y) <= 2 && Math.abs(state.rect.x + state.rect.width - anchor.x) <= 2,
+               "menu opens below the button aligned with its right edge: " + JSON.stringify(state.rect) + " anchor " + anchor);
+        LauncherInteraction.pointer(state.rect.x - 20, state.rect.y - 20);
+        verify(LauncherInteraction.menuState().active === "", "no highlight while pointer is outside");
+        const list = state.actions[2].rect;
+        LauncherInteraction.pointer(state.rect.x + list.x + list.width / 2, state.rect.y + list.y + list.height / 2);
+        verify(LauncherInteraction.menuState().active === "List", "pointer over List highlights List: " + JSON.stringify(state) + " / " + JSON.stringify(LauncherInteraction.menuState()));
+        LauncherInteraction.pointer(state.rect.x - 20, state.rect.y - 20);
+        verify(LauncherInteraction.menuState().active === "", "leaving List clears its highlight");
+        LauncherInteraction.key(Qt.Key_Down);
+        verify(LauncherInteraction.menuState().active === "Grid", "keyboard skips section headings");
+        LauncherInteraction.key(Qt.Key_Down);
+        LauncherInteraction.key(Qt.Key_Return);
+        verify(plasmoid.configuration.showAllAppsInList, "menu keyboard List action works");
+        LauncherInteraction.click(button);
+        LauncherInteraction.key(Qt.Key_Down);
+        LauncherInteraction.key(Qt.Key_Return);
+        verify(!plasmoid.configuration.showAllAppsInList, "menu keyboard Grid action works");
+    }
     function verifyOptionsIcon(search) {
         const icon = findIcon(search.testMenuButton.testButton.contentItem);
         verify(icon !== null && icon.valid, "options icon loaded");
@@ -155,6 +208,7 @@ Timer {
                 break;
             case 1:
                 verify(root.visible, "inline panel visible");
+                verifyPopupSize();
                 verifyCategoryPills();
                 if (kicker.launcherPreset === 1) {
                     verify(verifyTahoeHover(appList.viewItem), "a real Tahoe app tile was exercised");
@@ -176,16 +230,7 @@ Timer {
                     const options = searchBar.testMenuButton.testMenu;
                     verify(options.content[0].section && options.content[4].section,
                            "Tahoe menu separates view choices from presets");
-                    options.selectedIndex = -1;
-                    options.moveSelection(1);
-                    verify(options.content[options.selectedIndex].objectName === "grid",
-                           "keyboard navigation skips menu section labels");
-                    options.moveSelection(1);
-                    options.activate(options.selectedIndex);
-                    verify(plasmoid.configuration.showAllAppsInList, "Tahoe List action works");
-                    options.moveSelection(-1);
-                    options.activate(options.selectedIndex);
-                    verify(!plasmoid.configuration.showAllAppsInList, "Tahoe Grid action works");
+                    verifyOptionsMenu(searchBar);
                 }
                 verify(glassPalette.Kirigami.Theme.colorSet === Kirigami.Theme.Window, "labels use the popup color set");
                 verify(main.textColor === glassPalette.Kirigami.Theme.textColor, "labels follow the mode-specific window foreground");
@@ -205,10 +250,13 @@ Timer {
                 root.height += 60;
                 searchBar.textField.text = "terminal";
                 verify(runnerModel.query === "terminal", "search reaches runner");
-                menuAction(searchBar.testMenuButton.testMenu, "preset2").clicked();
+                LauncherInteraction.click(searchBar.testMenuButton.testButton);
+                LauncherInteraction.choose(6);
                 break;
             case 2:
                 verify(root.visible && searchPopup.visible, "both detached popups visible");
+                verifyPopupSize();
+                verifyOptionsMenu(searchBar);
                 verify(root.width !== presetProbe.inlineWidth, "Golden Gate applies its own width");
                 if (expectedPreset === 2) {
                     verify(root.width === initialPopupSize.width && root.height === initialPopupSize.height,
@@ -224,15 +272,25 @@ Timer {
                 menuAction(searchBar.testMenuButton.testMenu, "list").clicked();
                 verify(plasmoid.configuration.showAllAppsInList, "list option works");
                 searchBar.testMenuButton.testMenu.openRelative();
+                // A late compositor configure can report the previous preset
+                // after the new bindings have already finished updating.
+                root.width = presetProbe.inlineWidth;
+                root.height = presetProbe.inlineHeight;
                 break;
             case 3:
+                // A native configure is asynchronous, including under fractional
+                // scaling. Bound the wait without requesting another resize.
+                if ((Math.abs(fs.width - fs.implicitWidth) >= 1 || Math.abs(fs.height - fs.implicitHeight) >= 1)
+                        && ++resizeWaits < 5) { --phase; break; }
                 verify(root.visible && searchPopup.visible && main.menuOpen, "options menu keeps popups open");
-                menuAction(searchBar.testMenuButton.testMenu, "preset1").clicked();
-                searchBar.testMenuButton.testMenu.close();
+                verifyPopupSize();
+                verify(root.width > presetProbe.inlineWidth, "late old geometry is repaired without another preset change");
+                LauncherInteraction.choose(5);
                 break;
             case 4:
                 verify(root.visible && !searchPopup.visible, "switch back hides capsule");
                 verify(searchBar.parent === inlineSearchSlot, "field returns inside panel");
+                verifyPopupSize();
                 verify(root.height === presetProbe.inlineHeight, "inline height restored");
                 verify(root.width === presetProbe.inlineWidth, "Tahoe applies its own width");
                 verify(searchBar.textField.text === "terminal", "query survives round trip");
@@ -322,6 +380,27 @@ Timer {
                 break;
             case 19:
                 verify(!root.visible && !searchPopup.visible, "focusing the parent closes both detached popups");
+                plasmoid.configuration.launcherPreset = 1;
+                break;
+            case 20:
+                root.visible = true;
+                break;
+            case 21:
+                verifyPopupSize();
+                verify(root.width === presetProbe.inlineWidth, "hidden preset change resizes on reopening");
+                rapidPresets.start();
+                break;
+            case 22:
+                if (rapidPresets.running && ++rapidWaits < 10) {
+                    --phase;
+                    break;
+                }
+                verify(!rapidPresets.running && kicker.launcherPreset === 2, "last rapid preset selection wins");
+                break;
+            case 23:
+                // The final selection queues native capsule positioning.
+                verifyPopupSize();
+                verifyCapsulePosition();
                 console.log("LAUNCHER_PROBE_OK");
                 stop();
                 break;

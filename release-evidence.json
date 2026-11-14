@@ -1,27 +1,91 @@
 {
-  "version": "0.71.6",
-  "source_sha256": "50c43c83cb9d6c1f095ae1d8d6145fb14545cd3dbdb99e2cc03951133c3d86ef",
-  "environment": "Disposable KDE neon Plasma 6.8.1 / Qt 6.11.1, Wayland render and isolated Xvfb executable regression checks.",
+  "version": "0.71.7",
+  "source_sha256": "f1e867bb0275ad9e88af4eb4bb8eab7df8e2c4306b84a396d24481681766c4c7",
+  "environment": "plasmashell 6.8.1\n6.11.1\nGTK 3 24 41\nGTK 4 14 5; disposable KDE neon Wayland/KVM/virgl.",
   "checks": [
     {
-      "command": "python3 -m pytest -q tests/test_launcher_presets.py",
+      "command": "python3 -m pytest -q tests/test_theme_switch.py tests/test_appearance_sync.py tests/test_clock_sync.py",
       "result": "passed",
-      "detail": "66 passed; preset 1 current layout exercised in both editions and appearance modes, including grid, categories, favorites, options and preset switching."
+      "detail": "149 passed in isolated HOME without a desktop bus; final follow-colors race repair and timer overlap covered.",
+      "log_sha256": "e732908d944aa90829709dee20cb109ecb5159cadf152eeb3072f05d3d6d3f9d"
     },
     {
-      "command": "python3 -m pytest -q tests/test_edition_transition.py tests/test_nix.py",
+      "command": "python3 -m pytest -q tests/test_appearance_sync.py tests/test_nix.py tests/test_openrc_scheduler.py",
       "result": "passed",
-      "detail": "18 passed."
+      "detail": "72 passed after the effective KConfig defaults correction; 15 executable appearance state cases.",
+      "log_sha256": "e8f82efce8e4ea19b44526b676707f7750ef22d2b669eebcf1c6ea9a5b1fb40b"
     },
     {
-      "command": "Guest: python3 -m pytest -q tests/test_launcher_presets.py -k native_launcher_popup_presets",
+      "command": "Guest: python3 tests/vm/appearance_sync.py --edition <tahoe|golden-gate> --browser --output <edition>-transitions.json",
       "result": "passed",
-      "detail": "8 passed, 58 deselected; fresh disposable Plasma VM overlay, both editions/presets/modes."
+      "detail": "14 cases per edition, including native KDE palette/global and GTK selections, 15 rapid native changes, five overlapping CLI choices, real dusk/dawn crossings, manual override and later timer tick."
     },
     {
-      "command": "Guest: sudo env MAC_TAHOE_NO_UPDATE_CHECK=true MTTKDE_NO_CONFIRM=1 python3 src/scripts/installer_backend.py install --only --plasmoids --plasma-theme --wallpapers --no-apply-theme; repeat",
+      "command": "Guest: sudo env MAC_TAHOE_NO_UPDATE_CHECK=true MTTKDE_NO_CONFIRM=1 python3 src/scripts/installer_backend.py install --only --theme-switch --plasmoids --globalmenu --kvantum --plasma-theme --color-schemes --gtk --global-theme --window-decorations --wallpapers --light --apply-theme",
       "result": "passed",
-      "detail": "Golden Gate staged defaults; install and reinstall exited 0. Logs: /tmp/launcher-0716-vm/qualification-install.log"
+      "detail": "Both edition sources installed successfully; focused switcher reinstalls passed. Golden Gate used the actual wrapper-prepared source."
+    },
+    {
+      "command": "Guest: installer_backend.py uninstall --only --theme-switch; assert follower/autostart/state absent; installer_backend.py install --only --theme-switch --light --apply-theme; assert follower applied light",
+      "result": "passed",
+      "detail": "Lifecycle exit codes 0; uninstall removed the follower and owned state, reinstall restored synchronization. The existing uninstall also resets layout; the disposable layout was restored explicitly for subsequent component frames."
+    },
+    {
+      "command": "Guest: appearance-preserve.py; QMP and spectacle focused preset-1/preset-2/Dock/menu captures; actual 17:59:58 and 05:59:58 crossings",
+      "result": "passed",
+      "detail": "Native-auto authority, custom blur/refraction/gradient/radius values and application process identities preserved. Both Task Manager variants, launcher presets, trash, panel colorizer and native global menu visually reviewed with their own edition materials."
+    },
+    {
+      "command": "python3 src/scripts/component_manifest.py; git diff --check",
+      "result": "passed",
+      "detail": "Component ledger matches the final implementation; no documentation gallery refresh."
+    },
+    {
+      "command": "python3 -m pytest -q tests/test_appearance_sync.py tests/test_nix.py tests/test_openrc_scheduler.py",
+      "result": "passed",
+      "detail": "75 passed, including changed declarative defaults, manual choices across repeated logins, migration and retry after failed application.",
+      "log_sha256": "ef8f2e15a17cab75944653b4504b31c001037c3aa7d6074530d22ff09fb02332"
+    },
+    {
+      "command": "Guest: python3 tests/vm/appearance_session.py",
+      "result": "passed",
+      "detail": "Seven session/manual/declarative transitions passed with persistent Qt/Kvantum and GTK applications. Final switcher reinstall exited 0.",
+      "log_sha256": "e668db5c58056baf1235ea7b958025034c639be0caa9b8795a30e8d6ca57b9a7"
+    },
+    {
+      "command": "python3 -m pytest tests/test_launcher_presets.py -k native_launcher -x -q",
+      "result": "passed",
+      "detail": "Eight default-scale cases passed. A subsequent fractional-scale case required a bounded asynchronous-configure wait; only these eight passing default-scale cases are reused from this log.",
+      "log_sha256": "45b956aa1a36cf512e6d64bb5bf1cdfc132ccc5a39290a3d5060e35276153ac2"
+    },
+    {
+      "command": "python3 -m pytest tests/test_launcher_presets.py -k native_launcher_fractional_scale -x -q",
+      "result": "passed",
+      "detail": "Two fractional-scale cases passed with the same menu, hidden/rapid preset, rendered-buffer and late-configure checks. The test waits at most two seconds without requesting another resize.",
+      "log_sha256": "02e8a39c702a771f81ba7b0106c1c52bc06c2f60fd473797d32e42c52b428e07"
+    },
+    {
+      "command": "python3 -m pytest tests/test_launcher_presets.py -k 'native_launcher or installed_launcher' -x -q",
+      "result": "passed",
+      "detail": "Four installed-staging cases passed before a separate GUI assertion failed by checking a hidden grid. Only these four staging cases are reused from this log; the corrected GUI checks passed separately.",
+      "log_sha256": "20cb8424d56d5148a4c42868502f50493a7026734e67e01309dc7f73a42fe1d9"
+    },
+    {
+      "command": "python3 -m pytest tests/test_launcher_presets.py -k launcher_icons_repaint -x -q",
+      "result": "passed",
+      "detail": "2 passed; actual grid/list icon components render red/blue/red pixels across theme changes while the model icon name stays unchanged.",
+      "log_sha256": "a2add3c6e643a4ecfe16661d4a6fb68dabd721e0790428691cab6b6ed20f5cbf"
+    },
+    {
+      "command": "python3 -m pytest tests/test_localization.py -q",
+      "result": "passed",
+      "detail": "6 catalog tests passed; shared existing translated labels.",
+      "log_sha256": "d271bc4c61476139fa75efa8c67eb55e8dd295b53d6f286ec6f1c70f6a20e581"
+    },
+    {
+      "command": "Guest: python3 tests/vm/launcher_presets.py --output <edition>-geometry.json; host: live-launcher.py <edition>; auto-launcher.py <edition>",
+      "result": "passed",
+      "detail": "Both editions: seven KWin geometry cases, four real menu preset selections, four hover entry/exit pixel cases, two actual automatic boundary crossings, final install/reinstall success and installed-source hash verification."
     }
   ],
   "gallery_commit": "9993f61cc0afeba7e39afee776c99f29a55edb8f",
@@ -37,91 +101,1020 @@
       "reviewed": true
     }
   ],
-  "reference": {
-    "reference_url": "https://www.macrumors.com/how-to/do-more-with-spotlight-in-macos-tahoe/",
-    "reference_image": "https://images.macrumors.com/article-new/2025/09/apps-app-macos.jpg",
-    "reference_sha256": "f1f11d7d3d7efdfd66321732d03f1b46bf954ea2ffd2378b7fb4758b0366c4da"
-  },
+  "historical_capture_note": "Existing public photographs and their original provenance are retained; they are not new v0.71.7 captures.",
   "local_vm_qualification": {
     "vm_image_sha256": "412e7933f10add20b921b92c02709e7eea56acd14dc14cf654f58fba4ea3cc9d",
-    "source_commit": "fb3d66f54200389d75434150e883dcb30ddf3daf",
-    "source_archive_sha256": "e43881a502e92d0d8f0f0d43a28ed675c57e99b5291f50f5f6c584302337f1e0",
-    "runtime_sources": {
-      "component-hashes.json": "ad5a2e1d955c12fa9929367581d7a20fb9dc16e868ed6fdeb868668c63f56dca",
-      "src/offline/plasmoids/org.kde.mac-tahoe-liquid-kde.launcher/contents/locale/de/LC_MESSAGES/plasma_applet_org.kde.mac-tahoe-liquid-kde.launcher.mo": "d8d587d34e002417f4135aa891f49183315040e50374c66b2ad7319effecbf87",
-      "src/offline/plasmoids/org.kde.mac-tahoe-liquid-kde.launcher/contents/locale/pt_BR/LC_MESSAGES/plasma_applet_org.kde.mac-tahoe-liquid-kde.launcher.mo": "b8bc9d30578a0f11adab30de4bf2d99fb50da6fcd2369813035c3415d935ccf3",
-      "src/offline/plasmoids/org.kde.mac-tahoe-liquid-kde.launcher/contents/ui/AppGridView.qml": "8941cc40114e8bab9cad66fe87b9cdced0c78c0a8ed7469e060c66f34caa1bcf",
-      "src/offline/plasmoids/org.kde.mac-tahoe-liquid-kde.launcher/contents/ui/AppGridViewDelegate.qml": "7c01e6bd4381192d2e764ad335f1e54dda9a9be1966acf5f5f44f04a2e23738c",
-      "src/offline/plasmoids/org.kde.mac-tahoe-liquid-kde.launcher/contents/ui/MenuButton.qml": "4822364dbe6d0b4f6375c7c7497b9144d67f61236233e6bb28c42c3b1ce28d2a",
-      "src/offline/plasmoids/org.kde.mac-tahoe-liquid-kde.launcher/contents/ui/SearchBar.qml": "090c72e422d126cfe2ea4007d56d4d8445cbe864c3237e767c3daa95b3d696d3",
-      "src/offline/plasmoids/org.kde.mac-tahoe-liquid-kde.launcher/contents/ui/TahoeOptionsMenu.qml": "1004420f872511b77e331c4bdcec3fdc91bb2a7fbcb9cb2ebd5a9cb7509e80e6",
-      "src/offline/plasmoids/org.kde.mac-tahoe-liquid-kde.launcher/po/de.po": "4ded5dd448922591f3643481f048cb2334370cea7a5b74bfd6934a5eebd2b99b",
-      "src/offline/plasmoids/org.kde.mac-tahoe-liquid-kde.launcher/po/pt_BR.po": "bef8e03e0ea8e4e50a361d443bc4fffe5990342c40464a5d7d6d0c21b8e1a83e",
-      "src/scripts/locales/de.json": "bafe16989e6d0f30fa80ce76a67e524d34a01b3b12e61c2066262cb1f006541f",
-      "src/scripts/locales/pt_BR.json": "0463d8fa5f69fd11bc58b811c1c678b27ac94f3a923bed122a1cfdcb5839b8a5",
-      "tests/qml/LauncherPresetProbe.qml": "498a94d5e704f4ebd2baf3a5ec738b2d6ade88a8724ff854319e9be8a307a460",
-      "tests/test_launcher_presets.py": "de10119015afe294ecc5b6e81c8c4d486106061bc9af63d63b7af4531118c160"
+    "source_archives": {
+      "source.tar": "66906f400213cdbd3856948264737a7c897c2fcafc9eaba26b693237649a5845",
+      "golden-source.tar": "b3dc809c924111320723192113aac302e9a9baf2f47f399bc2f5173bf6915cec",
+      "tahoe-final.tar": "69bf031d7e4c5f8a039f452ffdc2f764e2951661777171903a95df977521510a"
     },
+    "installed_sources": {
+      "tahoe": {
+        "source": {
+          "src/scripts/theme_switch.py": "2c8d0802df6018d5f0af7de14b18a41740feab9e28fc15d32b938d1466a1b527",
+          "src/scripts/steps/theme_switch.py": "772d21c994431d36697e706c29ed8c1a0f99e5e784fddec09c6a08217a65af55",
+          "component-hashes.json": "a58ca639d055b9fe3755c91eeabf2e87b36dc8f35770913947ba2d8e8911b49c",
+          "src/offline/mac-tahoe-liquid-kde-theme.service": "5900a3ae90d6db5aa825f3523d40a89c7d91d6573bfa10f24628208a0cdfdcff",
+          "src/scripts/defaults.json": "22a5ec9ebf9abbcdf8c6e7442d960f41c520fdf2e98d806eb3de850247162d18"
+        },
+        "installed_switcher_sha256": "8de9fbfc483908743876c98af8f5075b41ea0d4cec0c4f962390422a69a959ad"
+      },
+      "golden": {
+        "source": {
+          "src/scripts/theme_switch.py": "2c8d0802df6018d5f0af7de14b18a41740feab9e28fc15d32b938d1466a1b527",
+          "src/scripts/steps/theme_switch.py": "772d21c994431d36697e706c29ed8c1a0f99e5e784fddec09c6a08217a65af55",
+          "component-hashes.json": "a58ca639d055b9fe3755c91eeabf2e87b36dc8f35770913947ba2d8e8911b49c",
+          "src/offline/mac-tahoe-liquid-kde-theme.service": "5900a3ae90d6db5aa825f3523d40a89c7d91d6573bfa10f24628208a0cdfdcff",
+          "src/scripts/defaults.json": "f27a2cd7a65964a6ab9f22b101d06d814643123c607b726e5c2e5beb4324692c"
+        },
+        "installed_switcher_sha256": "ccb2ecc764275863a6b705bac7edd9d2138d8185ecd6470494d7fff6031c4b2e"
+      }
+    },
+    "transitions": {
+      "tahoe": {
+        "sha256": "70fe6e7c49b884a62b69d3c3753ba6ab72f71b25d0fd1d4c0b4f218e6768b298",
+        "cases": [
+          {
+            "case": "manual-light",
+            "mode": "light",
+            "seconds": 0.0
+          },
+          {
+            "case": "native-kde-dark",
+            "mode": "dark",
+            "seconds": 2.14
+          },
+          {
+            "case": "native-kde-light",
+            "mode": "light",
+            "seconds": 1.77
+          },
+          {
+            "case": "native-global-dark",
+            "mode": "dark",
+            "seconds": 2.44
+          },
+          {
+            "case": "native-global-light",
+            "mode": "light",
+            "seconds": 2.18
+          },
+          {
+            "case": "native-gtk-dark",
+            "mode": "dark",
+            "seconds": 2.22
+          },
+          {
+            "case": "native-gtk-light",
+            "mode": "light",
+            "seconds": 2.01
+          },
+          {
+            "case": "rapid-native-15",
+            "mode": "dark",
+            "seconds": 1.91
+          },
+          {
+            "case": "rapid-cli-5",
+            "mode": "light",
+            "seconds": 0.0
+          },
+          {
+            "case": "auto-before-dusk",
+            "mode": "light",
+            "seconds": 0.0
+          },
+          {
+            "case": "auto-cross-dusk",
+            "mode": "dark",
+            "seconds": 4.35
+          },
+          {
+            "case": "auto-cross-dawn",
+            "mode": "light",
+            "seconds": 4.43
+          },
+          {
+            "case": "manual-overrides-auto",
+            "mode": "dark",
+            "seconds": 2.16
+          },
+          {
+            "case": "timer-preserves-manual",
+            "mode": "dark",
+            "seconds": 0.0
+          }
+        ],
+        "observations": "Persistent Qt ordinary/system menu rendered pixels, QApplication palette, GTK 3/4 effective colors, Firefox prefers-color-scheme, actual About surface/controls and three instrumented QML applets; Plasma/KWin process identities unchanged."
+      },
+      "golden": {
+        "sha256": "6c7d3f1be041217dae3628d0dba1215890c5119556237d5e35d90271e3a7ef8a",
+        "cases": [
+          {
+            "case": "manual-light",
+            "mode": "light",
+            "seconds": 0.01
+          },
+          {
+            "case": "native-kde-dark",
+            "mode": "dark",
+            "seconds": 1.94
+          },
+          {
+            "case": "native-kde-light",
+            "mode": "light",
+            "seconds": 1.93
+          },
+          {
+            "case": "native-global-dark",
+            "mode": "dark",
+            "seconds": 2.14
+          },
+          {
+            "case": "native-global-light",
+            "mode": "light",
+            "seconds": 2.42
+          },
+          {
+            "case": "native-gtk-dark",
+            "mode": "dark",
+            "seconds": 1.97
+          },
+          {
+            "case": "native-gtk-light",
+            "mode": "light",
+            "seconds": 2.13
+          },
+          {
+            "case": "rapid-native-15",
+            "mode": "dark",
+            "seconds": 1.56
+          },
+          {
+            "case": "rapid-cli-5",
+            "mode": "light",
+            "seconds": 0.01
+          },
+          {
+            "case": "auto-before-dusk",
+            "mode": "light",
+            "seconds": 0.16
+          },
+          {
+            "case": "auto-cross-dusk",
+            "mode": "dark",
+            "seconds": 3.94
+          },
+          {
+            "case": "auto-cross-dawn",
+            "mode": "light",
+            "seconds": 4.09
+          },
+          {
+            "case": "manual-overrides-auto",
+            "mode": "dark",
+            "seconds": 1.96
+          },
+          {
+            "case": "timer-preserves-manual",
+            "mode": "dark",
+            "seconds": 0.0
+          }
+        ],
+        "observations": "Persistent Qt ordinary/system menu rendered pixels, QApplication palette, GTK 3/4 effective colors, Firefox prefers-color-scheme, actual About surface/controls and three instrumented QML applets; Plasma/KWin process identities unchanged."
+      }
+    },
+    "preservation_sha256": "6cbe8e7d83ecdf393947c31e45619a82263f1239c33bef0d8a0881108abf0d82",
     "reviewed_frames": {
-      "tahoe-light-launcher": {
-        "sha256": "b4352b269621acf1a9b4668393a6f752ac1d60b38ff4b591e45b1a1a797dff83",
+      "tahoe-menu-light.png": {
+        "sha256": "8978789553ab67517d488bc3ad5daaf87d928358fe0e5637172ee1de0c8d4095",
         "reviewed": true
       },
-      "tahoe-dark-launcher": {
-        "sha256": "4accc31b8e8f55d91918a267996afd48cf4aaf3ed317965e1556cb402e6a1eec",
+      "tahoe-menu-dark.png": {
+        "sha256": "d70f9040bcaa173bc6935d5a9e88495a994c684bade357f339948dffb57a876d",
         "reviewed": true
       },
-      "golden-gate-light-launcher": {
-        "sha256": "36540af1dfcae286f2ce2e9281afe9cdf711647f5f38a00c7643cc2c24957bff",
+      "tahoe-dock-dark.png": {
+        "sha256": "e6a5b9b161791bd8963231c5f6ad81f74e854e21ebdd8cc28b8474e997e30116",
         "reviewed": true
       },
-      "golden-gate-dark-launcher": {
-        "sha256": "36af596b6f0149e1ca3734b2970114c9c78e18c01712cff64899185566593d36",
+      "tahoe-launcher-light.png": {
+        "sha256": "120168ac033853c63e10aa048a215915801461f80a0448d2cfcda9496721621e",
+        "reviewed": true
+      },
+      "tahoe-launcher-dark.png": {
+        "sha256": "0e37b1db2fa949bb3d00ee6c82504d609d43856a8cb2547cc11b87ca57c4f7cc",
+        "reviewed": true
+      },
+      "tahoe-all-auto-light.png": {
+        "sha256": "6e3ec1ce512c67caed144f8141ae072859bee51a2534565f098fb56d683d7f4d",
+        "reviewed": true
+      },
+      "tahoe-all-auto-dark.png": {
+        "sha256": "575166f931dacb4d7cf7ed64db8d2798b880f2b7e54681b5f00e02d00f00c20e",
+        "reviewed": true
+      },
+      "golden-menu-light.png": {
+        "sha256": "e0c65b50b8df336ee9bf73e0286b744f0142d128d8090d7f5172f261c05bb004",
+        "reviewed": true
+      },
+      "golden-menu-auto-dark.png": {
+        "sha256": "d53cd86e1d69bfef8e9e6e95af382a26957c1a3f0d13b41bb3cfbd177127b334",
+        "reviewed": true
+      },
+      "golden-launcher-light.png": {
+        "sha256": "d9555900912ddaed95e287ffc8dcd9dcbaa923d54a2994d7d13ef235248a8673",
+        "reviewed": true
+      },
+      "golden-launcher-dark.png": {
+        "sha256": "88d5f57e85e85fb891c95b96c08d33be9f01f627227ccf923a5fc81a52a6716f",
+        "reviewed": true
+      },
+      "golden-all-auto-light.png": {
+        "sha256": "7529bd9a66a828b0a6599f71a41aa9789a3759c868e701fc7e42e902a9cb8ce1",
+        "reviewed": true
+      },
+      "golden-all-auto-dark.png": {
+        "sha256": "06c4b4748af4cc9c0b057870df9527f5721be1e47359e02d83586cfc35669a99",
         "reviewed": true
       }
     },
-    "menu_previews": {
-      "light.png": {
-        "sha256": "656bc579fc6839aa0a7024d086fc1a891680df372999552cd507829f295aeea8",
-        "reviewed": true
+    "commands": {
+      "install-tahoe.sh": "cd ~/release-capture/source\nsudo timedatectl set-ntp true\nsudo apt-get install -y gir1.2-adw-1 > ~/appearance-deps.log 2>&1\nsudo env DBUS_SESSION_BUS_ADDRESS=\"$DBUS_SESSION_BUS_ADDRESS\" XDG_RUNTIME_DIR=\"$XDG_RUNTIME_DIR\" WAYLAND_DISPLAY=\"$WAYLAND_DISPLAY\" DISPLAY=\"$DISPLAY\" MAC_TAHOE_NO_UPDATE_CHECK=true MTTKDE_NO_CONFIRM=1 python3 src/scripts/installer_backend.py install --only --theme-switch --plasmoids --globalmenu --kvantum --plasma-theme --color-schemes --gtk --global-theme --window-decorations --wallpapers --light --apply-theme > ~/appearance-tahoe-install.log 2>&1\n",
+      "install-golden.sh": "cd ~/release-capture/source\ntar --warning=no-timestamp -xf ~/golden-source.tar\nsudo timedatectl set-ntp true\nsudo env DBUS_SESSION_BUS_ADDRESS=\"$DBUS_SESSION_BUS_ADDRESS\" XDG_RUNTIME_DIR=\"$XDG_RUNTIME_DIR\" WAYLAND_DISPLAY=\"$WAYLAND_DISPLAY\" DISPLAY=\"$DISPLAY\" MAC_TAHOE_NO_UPDATE_CHECK=true MTTKDE_NO_CONFIRM=1 python3 src/scripts/installer_backend.py install --only --theme-switch --plasmoids --globalmenu --kvantum --plasma-theme --color-schemes --gtk --global-theme --window-decorations --wallpapers --light --apply-theme > ~/appearance-golden-install.log 2>&1\n",
+      "reinstall.sh": "cd ~/release-capture/source\nsudo env DBUS_SESSION_BUS_ADDRESS=\"$DBUS_SESSION_BUS_ADDRESS\" XDG_RUNTIME_DIR=\"$XDG_RUNTIME_DIR\" WAYLAND_DISPLAY=\"$WAYLAND_DISPLAY\" DISPLAY=\"$DISPLAY\" MAC_TAHOE_NO_UPDATE_CHECK=true MTTKDE_NO_CONFIRM=1 python3 src/scripts/installer_backend.py install --only --theme-switch --light --apply-theme > ~/appearance-tahoe-reinstall.log 2>&1\npython3 - <<'PY'\nimport subprocess,os\nfrom pathlib import Path\nwith (Path.home()/'appearance-probe/3.log').open('w') as log:\n subprocess.Popen(['python3','tests/vm/appearance_about_probe.py'],stdin=subprocess.DEVNULL,stdout=log,stderr=log,start_new_session=True,env={**os.environ,'QT_QPA_PLATFORM':'wayland','QT_FORCE_STDERR_LOGGING':'1'})\nPY\n",
+      "lifecycle.sh": "cd ~/release-capture/source\nsudo env DBUS_SESSION_BUS_ADDRESS=\"$DBUS_SESSION_BUS_ADDRESS\" XDG_RUNTIME_DIR=\"$XDG_RUNTIME_DIR\" WAYLAND_DISPLAY=\"$WAYLAND_DISPLAY\" DISPLAY=\"$DISPLAY\" MAC_TAHOE_NO_UPDATE_CHECK=true MTTKDE_NO_CONFIRM=1 python3 src/scripts/installer_backend.py uninstall --only --theme-switch > ~/appearance-uninstall.log 2>&1\npython3 - <<'PY'\nfrom pathlib import Path\nimport subprocess,os\nhome=Path.home()\nfor name in ('.local/bin/mac-tahoe-theme-switch','.config/autostart/mac-tahoe-liquid-kde-gtk-sync.desktop','.local/state/mac-tahoe-liquid-kde/appearance.json'):\n assert not (home/name).exists(),name\nfor proc in Path('/proc').iterdir():\n if proc.name.isdigit():\n  try:\n   args=(proc/'cmdline').read_bytes().split(b'\\0')\n   assert not (str(home/'.local/bin/mac-tahoe-theme-switch').encode() in args and b'watch-system' in args),args\n  except (OSError,PermissionError):pass\nprint('uninstall removed follower, autostart and state')\nPY\nsudo env DBUS_SESSION_BUS_ADDRESS=\"$DBUS_SESSION_BUS_ADDRESS\" XDG_RUNTIME_DIR=\"$XDG_RUNTIME_DIR\" WAYLAND_DISPLAY=\"$WAYLAND_DISPLAY\" DISPLAY=\"$DISPLAY\" MAC_TAHOE_NO_UPDATE_CHECK=true MTTKDE_NO_CONFIRM=1 python3 src/scripts/installer_backend.py install --only --theme-switch --light --apply-theme > ~/appearance-golden-reinstall.log 2>&1\npython3 - <<'PY'\nimport time,json\nfrom pathlib import Path\np=Path.home()/'.local/state/mac-tahoe-liquid-kde/appearance.json'\nfor _ in range(60):\n if p.exists() and json.loads(p.read_text()).get('applied')=='light':break\n time.sleep(.25)\nelse:raise AssertionError('reinstalled follower did not apply light')\nassert (Path.home()/'.config/autostart/mac-tahoe-liquid-kde-gtk-sync.desktop').exists()\nprint('reinstall restored follower and reconciled light')\nPY\n",
+      "preserve.py": "import json,os,subprocess,time,configparser\nfrom pathlib import Path\nassert Path('/sys/class/dmi/id/product_name').read_text().strip()=='MTTKDE release capture'\nhome=Path.home()\ndef run(*args):subprocess.run(args,check=True,stdout=subprocess.DEVNULL)\ndef snapshot():\n p=configparser.ConfigParser();p.optionxform=str;p.read(home/'.config/kwinrc')\n return dict(p['Effect-liquidglass'])\ndef wait(mode):\n for _ in range(160):\n  state=json.loads((home/'.local/state/mac-tahoe-liquid-kde/appearance.json').read_text())\n  if state.get('applied')==mode and not state.get('pending'):return state\n  time.sleep(.25)\n raise AssertionError(state)\nsettings={'BlurStrength':'6.25','RefractionWidth':'13.5','GradientTopOpacity':'0.73','PopupCornerRadius':'11.75'}\noriginal=snapshot()\nfor key,value in settings.items():run('kwriteconfig6','--file','kwinrc','--group','Effect-liquidglass','--key',key,value)\nexpected=snapshot()\npids=[]\nfor name in ('appearance-probe','appearance-plasmoids'):\n for record in json.loads((home/name/'processes.json').read_text()):\n  p=Path('/proc')/str(record['pid'])/'stat';pids.append((str(p),p.read_text().split(') ',1)[1].split()[19]))\nrun('kwriteconfig6','--file','kdeglobals','--group','KDE','--key','AutomaticLookAndFeel','true')\nresults=[]\nfor mode in ('light','dark'):\n run('plasma-apply-colorscheme','MacTahoeLiquidKde'+mode.title())\n state=wait(mode)\n assert state['preference']=='native-auto',state\n assert snapshot()==expected\n for name,identity in pids:assert Path(name).read_text().split(') ',1)[1].split()[19]==identity\n results.append({'mode':mode,'state':state,'optics':snapshot(),'processes':pids})\n(home/'appearance-preservation.json').write_text(json.dumps(results,indent=2))\nfor key in settings:\n if key in original:run('kwriteconfig6','--file','kwinrc','--group','Effect-liquidglass','--key',key,original[key])\n else:run('kwriteconfig6','--file','kwinrc','--group','Effect-liquidglass','--key',key,'--delete')\nrun('qdbus6','org.kde.KWin','/KWin','org.kde.KWin.reconfigure')\nprint('native auto, saved optics and persistent application identities passed')\n",
+      "auto-dark.sh": "sudo timedatectl set-ntp false\nsudo date -s '2026-01-01 17:59:00' >/dev/null\n~/.local/bin/mac-tahoe-theme-switch auto > ~/appearance-auto.log 2>&1\nsudo date -s '2026-01-01 17:59:58' >/dev/null\npython3 - <<'PY'\nimport json,time\nfrom pathlib import Path\nfor _ in range(180):\n s=json.loads((Path.home()/'.local/state/mac-tahoe-liquid-kde/appearance.json').read_text())\n if s.get('preference')=='auto' and s.get('applied')=='dark':break\n time.sleep(.25)\nelse:raise AssertionError(s)\nprint('automatic dusk passed')\nPY\n",
+      "auto-light.sh": "sudo date -s '2026-01-02 05:59:58' >/dev/null\npython3 - <<'PY'\nimport json,time\nfrom pathlib import Path\nfor _ in range(180):\n s=json.loads((Path.home()/'.local/state/mac-tahoe-liquid-kde/appearance.json').read_text())\n if s.get('preference')=='auto' and s.get('applied')=='light':break\n time.sleep(.25)\nelse:raise AssertionError(s)\nprint('automatic dawn passed')\nPY\n"
+    },
+    "logs": {
+      "tahoe-install.log": "403e4131d544ed30dee22475c10f28652d4ef569404397cfe46acf6ebad2b786",
+      "tahoe-reinstall.log": "6b32033defbd91f80ae4b1cc922adbd309cc6914a6e29f3a1b4e93ad2a1ba504",
+      "golden-install.log": "50bb08bef5fc31d52ec93847e23c005078a8c49c6723b2a7ccbb01155703eb41",
+      "golden-reinstall.log": "4466f7b6bade754f0f79ab2fcced4c43613e72c1f17e7ec54df9b62a096118cc",
+      "uninstall.log": "9ade914de91a3a3e299b9c28d196f1f32f45a6be9e5d18b62ca928043b6a8d35",
+      "lifecycle-result.log": "9947134235932172347e6a9a1bf33b6d558e125ee3352d1622a7aa6a59985758",
+      "tahoe-transitions.log": "219f394808b2f06989b9447d5f051f995f75640553d39d4b3315ac0f1dedb91f",
+      "golden-transitions.log": "219f394808b2f06989b9447d5f051f995f75640553d39d4b3315ac0f1dedb91f"
+    },
+    "artifact_directory": "macos-golden-gate-liquid-kde/build/appearance-vm",
+    "limits": "Runtime qualification uses Plasma 6.8.1/Qt 6.11.1, GTK 3.24.41/4.14.5 and virtual GPU on Wayland. Host is CachyOS Plasma 6.7.4/Qt 6.11.2 with GTK 4.22.4; identical distro, physical GPU and live X11 coverage are not claimed. No native/shader/ABI implementation changed. Loose QML probes cover launcher, trash and panel colorizer; compiled Task Managers/global menu use actual desktop frames and the native menu renderer probe. Full distro SDK/container CI is separate from a real desktop VM. After an initial host reboot erased temporary artifacts, the recovered final source and qualification were retained in persistent ignored build storage.",
+    "session_followup": {
+      "installed_sources": {
+        "source": {
+          "src/scripts/theme_switch.py": "12e0349bbdc8eb227825f3e10a39c274625dee4907e2757550a9dcca74dc0cb5",
+          "src/scripts/steps/theme_switch.py": "772d21c994431d36697e706c29ed8c1a0f99e5e784fddec09c6a08217a65af55",
+          "component-hashes.json": "81068a8148968ec3546201cc34825bd7954a8400fb5d5d8946463ba872c57ae5",
+          "src/offline/mac-tahoe-liquid-kde-theme.service": "5900a3ae90d6db5aa825f3523d40a89c7d91d6573bfa10f24628208a0cdfdcff",
+          "src/scripts/defaults.json": "22a5ec9ebf9abbcdf8c6e7442d960f41c520fdf2e98d806eb3de850247162d18"
+        },
+        "installed_switcher_sha256": "e2ce1a4eff44142c85d69214ffe54bf7b2d4d2aefd81a102e005004a3e3cfc43"
       },
-      "light-menu.png": {
-        "sha256": "c1118a1b2d112aa42c81d16e745c1832a298d79ad38b05a9c70bab05f81dd392",
-        "reviewed": true
-      },
-      "light-menu-hover.png": {
-        "sha256": "603a30e8a227ed0e21a5fce9c9445e74e182a7d0654ead9dae571db1496db15c",
-        "reviewed": true
-      },
-      "dark.png": {
-        "sha256": "d49459c02588339af1af3209fd3b96b4d57a46091322df299a46a68a17d5a747",
-        "reviewed": true
-      },
-      "dark-menu.png": {
-        "sha256": "56174fccaee601ddb1e7045c69f2a3d69368f25c151c368199a2d57cd7a4d021",
-        "reviewed": true
-      },
-      "dark-menu-hover.png": {
-        "sha256": "77d9eda1c6e61adc1dad076307c1b68f9284a3cdcc4c8696a607603a32f66309",
-        "reviewed": true
+      "archive_sha256": "a21ae95ffbd2dc61c6241c28ad42af33b1eff54ba614d85862f9443b3f012129",
+      "results_sha256": "045aa53e0eb3829b89f1fde48dd0a36a0642486b7917608638feeaaa369b36d8",
+      "installer_log_sha256": "43b3235dfeddf03cc3cebdbd8089484013b17e2002b1f88914fe41616c616c5d",
+      "reuse_basis": {
+        "previous_qualified_source_sha256": "41ee06106f967f943170a316df3342804a207da67ff7ecbdb8612f332315f571",
+        "unchanged_apply_functions": [
+          "_apply_unlocked",
+          "write_kde_theme_config",
+          "_apply_local_extras",
+          "cycle_widget_style_live",
+          "reconcile_appearance"
+        ],
+        "detail": "The final follow-up changes session-default selection and carries that metadata when acknowledging a transition. Rendering/apply functions and every material/GTK/plasmoid asset are unchanged; earlier paired rendering and automatic-boundary evidence is reused. The changed entry point and acknowledgement are covered by 18 executable state regressions and seven additional live VM transitions."
       }
     },
-    "artifacts": [
-      "/tmp/launcher-release-0715",
-      "/tmp/tahoe-details"
-    ],
-    "scope": "Tahoe heading alignment, larger ellipsis dots, icon silhouette highlights and glass options menu with separate Grid/List and preset sections. Golden Gate UI unchanged.",
-    "limits": "Uses KDE application inventory and the existing Plasma glass material. Menu corners inherit the existing theme radius; rendering is closely matched, not claimed pixel-identical to macOS. Prior host test guard detected a concurrent kwinrc write; subsequent validation ran entirely in the disposable VM."
+    "launcher_followup": {
+      "icon_pixels": {
+        "launcher-tahoe-preset2-light.png": [
+          33,
+          167,
+          249
+        ],
+        "launcher-tahoe-preset2-dark.png": [
+          45,
+          45,
+          47
+        ],
+        "launcher-tahoe-auto-light.png": [
+          33,
+          167,
+          249
+        ],
+        "launcher-tahoe-auto-dark.png": [
+          45,
+          45,
+          47
+        ],
+        "launcher-golden-preset2-light.png": [
+          33,
+          167,
+          249
+        ],
+        "launcher-golden-preset2-dark.png": [
+          45,
+          45,
+          47
+        ],
+        "launcher-golden-auto-light.png": [
+          33,
+          167,
+          249
+        ],
+        "launcher-golden-auto-dark.png": [
+          45,
+          45,
+          47
+        ]
+      },
+      "base_commit": "3f8a3d76caa6987bd545abe7847b9b6788c84db9",
+      "source_files": {
+        "src/offline/plasmoids/org.kde.mac-tahoe-liquid-kde.launcher/contents/ui/MenuButton.qml": "d689afeeb4a807433cf811802bd055ea800eb64221a940ca18226d30b2c79cdc",
+        "src/offline/plasmoids/org.kde.mac-tahoe-liquid-kde.launcher/contents/ui/MenuRepresentation.qml": "36c2c3ba25c31dd6722384376b581748c22df6ffa8e3d6612190abf06b6b9f5a",
+        "src/offline/plasmoids/org.kde.mac-tahoe-liquid-kde.launcher/contents/ui/TahoeOptionsMenu.qml": "83c803e060db8d0be11f91bcd209db6b6423a9b09a4d75f2e7d6290d77e5d3d0",
+        "src/offline/plasmoids/org.kde.mac-tahoe-liquid-kde.launcher/contents/ui/MainView.qml": "f540348406953d8d20cf9819a8e4b161af278943b51d0021a19a90ec0f82af4d",
+        "src/offline/plasmoids/org.kde.mac-tahoe-liquid-kde.launcher/contents/ui/AppGridViewDelegate.qml": "b98d4ce48bff270ad2b73407d81eb01c601b9d4fc02964dcdb72b798fec69fa6",
+        "src/offline/plasmoids/org.kde.mac-tahoe-liquid-kde.launcher/contents/ui/AppListViewDelegate.qml": "722488075152a30cc06f5c063853555c18b3ed2be3e67edfc4fa7c13842ad416"
+      },
+      "installed_sources": {
+        "tahoe": {
+          "files": {
+            "ui/MenuButton.qml": "d689afeeb4a807433cf811802bd055ea800eb64221a940ca18226d30b2c79cdc",
+            "ui/MenuRepresentation.qml": "36c2c3ba25c31dd6722384376b581748c22df6ffa8e3d6612190abf06b6b9f5a",
+            "ui/TahoeOptionsMenu.qml": "83c803e060db8d0be11f91bcd209db6b6423a9b09a4d75f2e7d6290d77e5d3d0",
+            "ui/MainView.qml": "f540348406953d8d20cf9819a8e4b161af278943b51d0021a19a90ec0f82af4d",
+            "ui/AppGridViewDelegate.qml": "b98d4ce48bff270ad2b73407d81eb01c601b9d4fc02964dcdb72b798fec69fa6",
+            "ui/AppListViewDelegate.qml": "722488075152a30cc06f5c063853555c18b3ed2be3e67edfc4fa7c13842ad416",
+            "config/main.xml": "3c001965510a32a7c666b6a4addb16c7f55064d0cf32c4d19f3ee97b200dae51"
+          },
+          "edition": "MacTahoe",
+          "installer_choices": {
+            "appearance": "light",
+            "icons": "regular",
+            "color": "blue",
+            "wallpaper": "tahoe",
+            "wallpaper_path": "",
+            "launcher": "tahoe",
+            "panel": true,
+            "dock": true,
+            "reset_layout": false,
+            "acrylic_glass": true,
+            "rounded_corners": true,
+            "shadows": "medium",
+            "fonts": true,
+            "firefox": true,
+            "window_controls": "flat",
+            "button_position": "left",
+            "files": "nautilus",
+            "nautilus_bookmarks": true,
+            "plymouth": true,
+            "glass_style": "classic",
+            "oled_care": false,
+            "oled_interval": 5,
+            "oled_max_shift": 8,
+            "dock_appearance": "auto",
+            "dock_apps": [],
+            "dock_apps_source": "native",
+            "dock_add_flathub": false
+          },
+          "switcher_sha256": "0d9356bbd2fdbb77dd796ff1de3765fe44f8a304d4f764b6da3ad99a4d9b831b"
+        },
+        "golden": {
+          "files": {
+            "ui/MenuButton.qml": "d689afeeb4a807433cf811802bd055ea800eb64221a940ca18226d30b2c79cdc",
+            "ui/MenuRepresentation.qml": "36c2c3ba25c31dd6722384376b581748c22df6ffa8e3d6612190abf06b6b9f5a",
+            "ui/TahoeOptionsMenu.qml": "83c803e060db8d0be11f91bcd209db6b6423a9b09a4d75f2e7d6290d77e5d3d0",
+            "ui/MainView.qml": "6b4708098a1edb4c2fdc42569fe37070b7e0ba19704e1ed725cf42540302c564",
+            "ui/AppGridViewDelegate.qml": "b98d4ce48bff270ad2b73407d81eb01c601b9d4fc02964dcdb72b798fec69fa6",
+            "ui/AppListViewDelegate.qml": "722488075152a30cc06f5c063853555c18b3ed2be3e67edfc4fa7c13842ad416",
+            "config/main.xml": "c433045dcc1eb0eab63e9b00b20a9611ac28f24249a32029401f34eca4e70829"
+          },
+          "edition": "MacGoldenGate",
+          "installer_choices": {
+            "appearance": "light",
+            "icons": "regular",
+            "color": "blue",
+            "wallpaper": "golden",
+            "wallpaper_path": "",
+            "launcher": "golden",
+            "panel": true,
+            "dock": true,
+            "reset_layout": true,
+            "acrylic_glass": true,
+            "rounded_corners": true,
+            "shadows": "medium",
+            "fonts": true,
+            "firefox": true,
+            "window_controls": "glassy",
+            "button_position": "left",
+            "files": "nautilus",
+            "nautilus_bookmarks": true,
+            "plymouth": true,
+            "glass_style": "official",
+            "oled_care": false,
+            "oled_interval": 5,
+            "oled_max_shift": 8,
+            "dock_appearance": "auto",
+            "dock_apps": [],
+            "dock_apps_source": "native",
+            "dock_add_flathub": false
+          },
+          "switcher_sha256": "9619a8cce561f177f93d193720f4b9df00a54781439a822640d2127dddf260ca"
+        }
+      },
+      "geometry": {
+        "tahoe": [
+          {
+            "case": "fresh-1",
+            "panel": {
+              "x": 642,
+              "y": 267,
+              "width": 636,
+              "height": 545
+            },
+            "capsule": []
+          },
+          {
+            "case": "fresh-2",
+            "panel": {
+              "x": 446,
+              "y": 282,
+              "width": 1028,
+              "height": 632
+            },
+            "capsule": [
+              {
+                "x": 643,
+                "y": 165,
+                "width": 634,
+                "height": 104
+              }
+            ]
+          },
+          {
+            "case": "live-1",
+            "panel": {
+              "x": 642,
+              "y": 267,
+              "width": 636,
+              "height": 545
+            },
+            "capsule": []
+          },
+          {
+            "case": "live-2",
+            "panel": {
+              "x": 446,
+              "y": 282,
+              "width": 1028,
+              "height": 632
+            },
+            "capsule": [
+              {
+                "x": 643,
+                "y": 165,
+                "width": 634,
+                "height": 104
+              }
+            ]
+          },
+          {
+            "case": "live-1",
+            "panel": {
+              "x": 642,
+              "y": 267,
+              "width": 636,
+              "height": 545
+            },
+            "capsule": []
+          },
+          {
+            "case": "live-2",
+            "panel": {
+              "x": 446,
+              "y": 282,
+              "width": 1028,
+              "height": 632
+            },
+            "capsule": [
+              {
+                "x": 643,
+                "y": 165,
+                "width": 634,
+                "height": 104
+              }
+            ]
+          },
+          {
+            "case": "rapid-16-final-2",
+            "panel": {
+              "x": 446,
+              "y": 282,
+              "width": 1028,
+              "height": 632
+            },
+            "capsule": [
+              {
+                "x": 643,
+                "y": 165,
+                "width": 634,
+                "height": 104
+              }
+            ]
+          }
+        ],
+        "golden": [
+          {
+            "case": "fresh-1",
+            "panel": {
+              "x": 642,
+              "y": 267,
+              "width": 636,
+              "height": 545
+            },
+            "capsule": []
+          },
+          {
+            "case": "fresh-2",
+            "panel": {
+              "x": 446,
+              "y": 282,
+              "width": 1028,
+              "height": 632
+            },
+            "capsule": [
+              {
+                "x": 643,
+                "y": 165,
+                "width": 634,
+                "height": 104
+              }
+            ]
+          },
+          {
+            "case": "live-1",
+            "panel": {
+              "x": 642,
+              "y": 267,
+              "width": 636,
+              "height": 545
+            },
+            "capsule": []
+          },
+          {
+            "case": "live-2",
+            "panel": {
+              "x": 446,
+              "y": 282,
+              "width": 1028,
+              "height": 632
+            },
+            "capsule": [
+              {
+                "x": 643,
+                "y": 165,
+                "width": 634,
+                "height": 104
+              }
+            ]
+          },
+          {
+            "case": "live-1",
+            "panel": {
+              "x": 642,
+              "y": 267,
+              "width": 636,
+              "height": 545
+            },
+            "capsule": []
+          },
+          {
+            "case": "live-2",
+            "panel": {
+              "x": 446,
+              "y": 282,
+              "width": 1028,
+              "height": 632
+            },
+            "capsule": [
+              {
+                "x": 643,
+                "y": 165,
+                "width": 634,
+                "height": 104
+              }
+            ]
+          },
+          {
+            "case": "rapid-16-final-2",
+            "panel": {
+              "x": 446,
+              "y": 282,
+              "width": 1028,
+              "height": 632
+            },
+            "capsule": [
+              {
+                "x": 643,
+                "y": 165,
+                "width": 634,
+                "height": 104
+              }
+            ]
+          }
+        ]
+      },
+      "pointer_and_menu_selection": {
+        "tahoe": [
+          {
+            "case": "light-preset2",
+            "kwin_menu": {
+              "x": 1087,
+              "y": 235,
+              "width": 154,
+              "height": 168
+            },
+            "kwin_panel": {
+              "x": 446,
+              "y": 282,
+              "width": 1028,
+              "height": 632
+            },
+            "hover_pixel": [
+              10,
+              132,
+              255
+            ],
+            "outside_pixel": [
+              233,
+              244,
+              243
+            ],
+            "frame": "launcher-tahoe-preset2-light.png",
+            "sha256": "02fe6fd5cbf5c4d3379f9d584300cb6dc2480cdf37ba8a785d61f513d5202dbb"
+          },
+          {
+            "action": "menu-select",
+            "preset": 1,
+            "kwin_panel": {
+              "x": 642,
+              "y": 267,
+              "width": 636,
+              "height": 545
+            }
+          },
+          {
+            "case": "light-preset1",
+            "kwin_menu": {
+              "x": 1112,
+              "y": 313,
+              "width": 154,
+              "height": 168
+            },
+            "kwin_panel": {
+              "x": 642,
+              "y": 267,
+              "width": 636,
+              "height": 545
+            },
+            "hover_pixel": [
+              10,
+              132,
+              255
+            ],
+            "outside_pixel": [
+              201,
+              217,
+              255
+            ],
+            "frame": "launcher-tahoe-preset1-light.png",
+            "sha256": "87be52b2f8f72823da176301a18f263a7fd15a9e61a46f24f1f8daf44ab354e9"
+          },
+          {
+            "action": "menu-select",
+            "preset": 2,
+            "kwin_panel": {
+              "x": 446,
+              "y": 282,
+              "width": 1028,
+              "height": 632
+            }
+          },
+          {
+            "case": "dark-preset2",
+            "kwin_menu": {
+              "x": 1087,
+              "y": 235,
+              "width": 154,
+              "height": 168
+            },
+            "kwin_panel": {
+              "x": 446,
+              "y": 282,
+              "width": 1028,
+              "height": 632
+            },
+            "hover_pixel": [
+              10,
+              132,
+              255
+            ],
+            "outside_pixel": [
+              18,
+              26,
+              76
+            ],
+            "frame": "launcher-tahoe-preset2-dark.png",
+            "sha256": "2e0d7e8f3ae6c919d49dc6880a5825259dad6b686c77fd77f0b1c8182ebd0d69"
+          },
+          {
+            "action": "menu-select",
+            "preset": 1,
+            "kwin_panel": {
+              "x": 642,
+              "y": 267,
+              "width": 636,
+              "height": 545
+            }
+          },
+          {
+            "case": "dark-preset1",
+            "kwin_menu": {
+              "x": 1112,
+              "y": 313,
+              "width": 154,
+              "height": 168
+            },
+            "kwin_panel": {
+              "x": 642,
+              "y": 267,
+              "width": 636,
+              "height": 545
+            },
+            "hover_pixel": [
+              10,
+              132,
+              255
+            ],
+            "outside_pixel": [
+              0,
+              4,
+              37
+            ],
+            "frame": "launcher-tahoe-preset1-dark.png",
+            "sha256": "294d66ef83b138a95a9e8d5511ff299262fd09296d9531614730fc1ee1f5a296"
+          },
+          {
+            "action": "menu-select",
+            "preset": 2,
+            "kwin_panel": {
+              "x": 446,
+              "y": 282,
+              "width": 1028,
+              "height": 632
+            }
+          }
+        ],
+        "golden": [
+          {
+            "case": "light-preset2",
+            "kwin_menu": {
+              "x": 1087,
+              "y": 235,
+              "width": 154,
+              "height": 168
+            },
+            "kwin_panel": {
+              "x": 446,
+              "y": 282,
+              "width": 1028,
+              "height": 632
+            },
+            "hover_pixel": [
+              10,
+              132,
+              255
+            ],
+            "outside_pixel": [
+              239,
+              239,
+              239
+            ],
+            "frame": "launcher-golden-preset2-light.png",
+            "sha256": "6a43e2b3ca4e91cde217781939f5e7ea4f8c2ded36d78cb14a9bf006a18c8d1a"
+          },
+          {
+            "action": "menu-select",
+            "preset": 1,
+            "kwin_panel": {
+              "x": 642,
+              "y": 267,
+              "width": 636,
+              "height": 545
+            }
+          },
+          {
+            "case": "light-preset1",
+            "kwin_menu": {
+              "x": 1112,
+              "y": 313,
+              "width": 154,
+              "height": 168
+            },
+            "kwin_panel": {
+              "x": 642,
+              "y": 267,
+              "width": 636,
+              "height": 545
+            },
+            "hover_pixel": [
+              10,
+              132,
+              255
+            ],
+            "outside_pixel": [
+              238,
+              238,
+              238
+            ],
+            "frame": "launcher-golden-preset1-light.png",
+            "sha256": "5269dfc56bd80825c58a4d9c139cf109fccf91acb9136b6765b49e0e12ad583f"
+          },
+          {
+            "action": "menu-select",
+            "preset": 2,
+            "kwin_panel": {
+              "x": 446,
+              "y": 282,
+              "width": 1028,
+              "height": 632
+            }
+          },
+          {
+            "case": "dark-preset2",
+            "kwin_menu": {
+              "x": 1087,
+              "y": 235,
+              "width": 154,
+              "height": 168
+            },
+            "kwin_panel": {
+              "x": 446,
+              "y": 282,
+              "width": 1028,
+              "height": 632
+            },
+            "hover_pixel": [
+              10,
+              132,
+              255
+            ],
+            "outside_pixel": [
+              1,
+              2,
+              2
+            ],
+            "frame": "launcher-golden-preset2-dark.png",
+            "sha256": "261068e2cbb3b6d4f4b634abcdcb57b7363b90fdcfdd25290e1d5c431704688d"
+          },
+          {
+            "action": "menu-select",
+            "preset": 1,
+            "kwin_panel": {
+              "x": 642,
+              "y": 267,
+              "width": 636,
+              "height": 545
+            }
+          },
+          {
+            "case": "dark-preset1",
+            "kwin_menu": {
+              "x": 1112,
+              "y": 313,
+              "width": 154,
+              "height": 168
+            },
+            "kwin_panel": {
+              "x": 642,
+              "y": 267,
+              "width": 636,
+              "height": 545
+            },
+            "hover_pixel": [
+              10,
+              132,
+              255
+            ],
+            "outside_pixel": [
+              2,
+              2,
+              2
+            ],
+            "frame": "launcher-golden-preset1-dark.png",
+            "sha256": "0a2425b050f2ddc713934172df591ebd4bbbe0a681e32768e9d0724a466977e8"
+          },
+          {
+            "action": "menu-select",
+            "preset": 2,
+            "kwin_panel": {
+              "x": 446,
+              "y": 282,
+              "width": 1028,
+              "height": 632
+            }
+          }
+        ]
+      },
+      "reviewed_frames": {
+        "launcher-tahoe-preset1-light.png": {
+          "sha256": "87be52b2f8f72823da176301a18f263a7fd15a9e61a46f24f1f8daf44ab354e9",
+          "reviewed": true
+        },
+        "launcher-tahoe-preset2-light.png": {
+          "sha256": "02fe6fd5cbf5c4d3379f9d584300cb6dc2480cdf37ba8a785d61f513d5202dbb",
+          "reviewed": true
+        },
+        "launcher-tahoe-preset1-dark.png": {
+          "sha256": "294d66ef83b138a95a9e8d5511ff299262fd09296d9531614730fc1ee1f5a296",
+          "reviewed": true
+        },
+        "launcher-tahoe-preset2-dark.png": {
+          "sha256": "2e0d7e8f3ae6c919d49dc6880a5825259dad6b686c77fd77f0b1c8182ebd0d69",
+          "reviewed": true
+        },
+        "launcher-tahoe-auto-dark.png": {
+          "sha256": "f25161823bf13d74ff31b83d104032e1aa2b8866c5909c4982306c72615aea03",
+          "reviewed": true
+        },
+        "launcher-tahoe-auto-light.png": {
+          "sha256": "eca109483aa9d4643d31ed06eb12225d7944410541cf60cb46f4a7f3e14049be",
+          "reviewed": true
+        },
+        "launcher-golden-preset1-light.png": {
+          "sha256": "5269dfc56bd80825c58a4d9c139cf109fccf91acb9136b6765b49e0e12ad583f",
+          "reviewed": true
+        },
+        "launcher-golden-preset2-light.png": {
+          "sha256": "6a43e2b3ca4e91cde217781939f5e7ea4f8c2ded36d78cb14a9bf006a18c8d1a",
+          "reviewed": true
+        },
+        "launcher-golden-preset1-dark.png": {
+          "sha256": "0a2425b050f2ddc713934172df591ebd4bbbe0a681e32768e9d0724a466977e8",
+          "reviewed": true
+        },
+        "launcher-golden-preset2-dark.png": {
+          "sha256": "261068e2cbb3b6d4f4b634abcdcb57b7363b90fdcfdd25290e1d5c431704688d",
+          "reviewed": true
+        },
+        "launcher-golden-auto-dark.png": {
+          "sha256": "a1b838a7a0eb42fb40e6a98d6a49f13b4867a4f2bbf10b6f9e9cbffe37139746",
+          "reviewed": true
+        },
+        "launcher-golden-auto-light.png": {
+          "sha256": "87cbbec2ad9d2e67d2bc4590ca79ce1846226a0712db8da5d644bc1dd46fdc98",
+          "reviewed": true
+        }
+      },
+      "logs": {
+        "launcher-final-defaults.log": "45b956aa1a36cf512e6d64bb5bf1cdfc132ccc5a39290a3d5060e35276153ac2",
+        "launcher-final-fractional.log": "02e8a39c702a771f81ba7b0106c1c52bc06c2f60fd473797d32e42c52b428e07",
+        "launcher-icon-tests.log": "a2add3c6e643a4ecfe16661d4a6fb68dabd721e0790428691cab6b6ed20f5cbf",
+        "launcher-staging-and-resize.log": "20cb8424d56d5148a4c42868502f50493a7026734e67e01309dc7f73a42fe1d9",
+        "launcher-catalog-tests.log": "d271bc4c61476139fa75efa8c67eb55e8dd295b53d6f286ec6f1c70f6a20e581",
+        "launcher-tahoe-final-install.log": "e4f27ba4c2fbabc5a9698a352f96600edf0f781780382e8c0c7bc77a4d7801a0",
+        "launcher-tahoe-live.log": "81aa8b7cb76a9201550502010ba4b29ae380a100d32a9335b444b3fdbd2b879b",
+        "launcher-tahoe-auto.log": "4a4321bfe6115986b875f84302ac9957a2002311cf796ef741587a5339395c42",
+        "launcher-golden-final-install.log": "3b1ecd68c1c4c0812d52a3bb1f2b49eed966c4847b645da6f8ab9c736c241617",
+        "launcher-golden-live.log": "ee8bcbfa55e4d2f437afe49c0bcb21ded416e7c4f35e9b23b672af383c2dac22",
+        "launcher-golden-auto.log": "4a4321bfe6115986b875f84302ac9957a2002311cf796ef741587a5339395c42"
+      },
+      "commands": {
+        "restore-desktop.sh": "cd ~/release-capture/source\nPYTHONPATH=src/scripts python3 - <<'PY'\nfrom release_capture_guest import plasma\nplasma('panels().forEach(p=>p.widgets().filter(w=>w.type===\"org.kde.mac.tahoe.liquid.taskmanager\").forEach(w=>w.remove()));')\nPY\nsudo env DBUS_SESSION_BUS_ADDRESS=\"$DBUS_SESSION_BUS_ADDRESS\" XDG_RUNTIME_DIR=\"$XDG_RUNTIME_DIR\" WAYLAND_DISPLAY=\"$WAYLAND_DISPLAY\" DISPLAY=\"$DISPLAY\" MAC_TAHOE_NO_UPDATE_CHECK=true MTTKDE_NO_CONFIRM=1 MTTKDE_WIZARD_OPTIONS='{\"reset_layout\":true,\"appearance\":\"light\"}' python3 src/scripts/installer_backend.py install --only --layout --fonts --icons --plasma-theme --color-schemes --kvantum --global-theme --window-decorations --wallpapers --acrylic-glass --light --reset-wallpapers --apply-theme > ~/launcher-desktop-restore.log 2>&1\n",
+        "install-launcher-golden.sh": "cd ~/release-capture/source\ntar --warning=no-timestamp -xf ~/launcher-golden-fix.tar\nsudo env DBUS_SESSION_BUS_ADDRESS=\"$DBUS_SESSION_BUS_ADDRESS\" XDG_RUNTIME_DIR=\"$XDG_RUNTIME_DIR\" WAYLAND_DISPLAY=\"$WAYLAND_DISPLAY\" DISPLAY=\"$DISPLAY\" MAC_TAHOE_NO_UPDATE_CHECK=true MTTKDE_NO_CONFIRM=1 MTTKDE_WIZARD_OPTIONS='{\"appearance\":\"light\",\"reset_layout\":true}' python3 src/scripts/installer_backend.py install --only --layout --plasmoids --kvantum --plasma-theme --color-schemes --gtk --global-theme --window-decorations --wallpapers --acrylic-glass --light --reset-wallpapers --apply-theme > ~/launcher-golden-install.log 2>&1\npython3 tests/vm/launcher_presets.py --output ~/launcher-golden-geometry.json > ~/launcher-golden-geometry.log 2>&1\n",
+        "install-launcher-fix.sh": "cd ~/release-capture/source\ntar --warning=no-timestamp -xf ~/launcher-fix.tar\nsudo env DBUS_SESSION_BUS_ADDRESS=\"$DBUS_SESSION_BUS_ADDRESS\" XDG_RUNTIME_DIR=\"$XDG_RUNTIME_DIR\" WAYLAND_DISPLAY=\"$WAYLAND_DISPLAY\" DISPLAY=\"$DISPLAY\" MAC_TAHOE_NO_UPDATE_CHECK=true MTTKDE_NO_CONFIRM=1 MTTKDE_WIZARD_OPTIONS='{\"appearance\":\"light\",\"reset_layout\":false}' python3 src/scripts/installer_backend.py install --only --plasmoids --light --apply-theme > ~/launcher-fix-install.log 2>&1\n",
+        "install-launcher-tahoe.sh": "cd ~/release-capture/source\ntar --warning=no-timestamp -xf ~/launcher-tahoe-fix.tar\nsudo env DBUS_SESSION_BUS_ADDRESS=\"$DBUS_SESSION_BUS_ADDRESS\" XDG_RUNTIME_DIR=\"$XDG_RUNTIME_DIR\" WAYLAND_DISPLAY=\"$WAYLAND_DISPLAY\" DISPLAY=\"$DISPLAY\" MAC_TAHOE_NO_UPDATE_CHECK=true MTTKDE_NO_CONFIRM=1 MTTKDE_WIZARD_OPTIONS='{\"appearance\":\"light\",\"reset_layout\":true}' python3 src/scripts/installer_backend.py install --only --layout --plasmoids --kvantum --plasma-theme --color-schemes --gtk --global-theme --window-decorations --wallpapers --acrylic-glass --light --reset-wallpapers --apply-theme > ~/launcher-tahoe-final-install.log 2>&1\npython3 tests/vm/launcher_presets.py --output ~/launcher-tahoe-geometry.json > ~/launcher-tahoe-geometry.log 2>&1\n",
+        "live-launcher.py": "import hashlib,json,subprocess,time,sys\nfrom pathlib import Path\nfrom PIL import Image\nart=Path(__file__).resolve().parent\nconnection=json.loads((art/'connection.json').read_text())\nedition=sys.argv[1]\ndef guest(script):\n guard='set -e\\ntest \"$(cat /sys/class/dmi/id/product_name)\" = \"MTTKDE release capture\"\\nexport XDG_RUNTIME_DIR=/run/user/1000 DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/1000/bus WAYLAND_DISPLAY=wayland-1 DISPLAY=:0 XDG_CURRENT_DESKTOP=KDE QT_QPA_PLATFORMTHEME=kde\\ncd ~/release-capture/source\\n'\n return subprocess.check_output(connection['ssh']+['bash -s'],input=guard+script,text=True)\ndef states():\n return json.loads(guest(\"PYTHONPATH=src/scripts python3 - <<'PY'\\nfrom release_capture_guest import windows\\nimport json\\nprint(json.dumps(windows()))\\nPY\\n\"))\ndef qmp(*args):\n subprocess.run([sys.executable,str(art/'input.py'),json.dumps(args)],check=True,stdout=subprocess.DEVNULL)\ndef panel():\n s=[w['geometry'] for w in states() if w['appletPopup'] and not w['hidden']]\n p=next(w for w in s if w['height']>250)\n for c in s:\n  if c['height']<200: assert abs(c['width']/p['width']-.617)<.01,(p,c)\n return p\ndef menu(preset):\n s=states()\n p=next(w['geometry'] for w in s if w['appletPopup'] and not w['hidden'] and ((w['geometry']['height']<200)==(preset==2)))\n x=p['x']+p['width']-(54 if preset==2 else 30)\n y=p['y']+(p['height']/2 if preset==2 else 28)\n qmp('click',round(2*x),round(2*y));time.sleep(.3)\n return next(w['geometry'] for w in states() if w['resourceClass']=='org.kde.plasmashell' and w['type']==0 and w['geometry']['width']<250 and not w['hidden'])\ndef choose(m,preset):\n qmp('click',round((m['x']+80)*2),round((m['y']+(124 if preset==1 else 148))*2));time.sleep(.4)\n p=panel();assert abs(p['width']-(636 if preset==1 else 1028))<=1,p\n result.append({'action':'menu-select','preset':preset,'kwin_panel':p})\ndef capture(name):\n guest('spectacle -b -n -f -o ~/launcher-frame.png >/dev/null 2>&1\\n')\n p=art/name\n subprocess.run(connection['scp']+['tester@127.0.0.1:/home/tester/launcher-frame.png',str(p)],check=True)\n return p\nresult=[]\nguest(\"PYTHONPATH=src/scripts python3 - <<'PY'\\nfrom release_capture_guest import windows\\nwindows('workspace.windowList().filter(w=>w.windowType===0 && String(w.resourceClass)!==\\\"org.kde.plasmashell\\\").forEach(w=>w.closeWindow());')\\nPY\\n\")\n# Start from the installed preset 2 left open by launcher_presets.py.\nfor mode in ('light','dark'):\n guest('~/.local/bin/mac-tahoe-theme-switch '+mode+'\\n')\n time.sleep(.5)\n if not any(w['appletPopup'] and not w['hidden'] for w in states()):\n  guest('qdbus6 org.kde.plasmashell /PlasmaShell org.kde.PlasmaShell.activateLauncherMenu\\n');time.sleep(.5)\n for preset in (2,1):\n  m=menu(preset)\n  qmp('move',round((m['x']+50)*2),round((m['y']+67)*2));time.sleep(.25)\n  hovered=capture(f'launcher-{edition}-preset{preset}-{mode}-hover.png')\n  rgb=Image.open(hovered).convert('RGB').getpixel((round((m['x']+12)*2),round((m['y']+67)*2)))\n  assert rgb[2]>180 and rgb[0]<40 and rgb[1]>90,(m,rgb)\n  qmp('move',3400,1900);time.sleep(.25)\n  frame=capture(f'launcher-{edition}-preset{preset}-{mode}.png')\n  outside=Image.open(frame).convert('RGB').getpixel((round((m['x']+12)*2),round((m['y']+67)*2)))\n  assert not(outside[2]>180 and outside[0]<40 and outside[1]>90),(m,outside)\n  result.append({'case':f'{mode}-preset{preset}','kwin_menu':m,'kwin_panel':panel(),'hover_pixel':rgb,'outside_pixel':outside,'frame':frame.name,'sha256':hashlib.sha256(frame.read_bytes()).hexdigest()})\n  choose(m,1 if preset==2 else 2)\n(art/f'launcher-{edition}-live.json').write_text(json.dumps(result,indent=2)+'\\n')\nprint(json.dumps(result))\n",
+        "auto-launcher.py": "import subprocess,sys,json\nfrom pathlib import Path\nart=Path(__file__).resolve().parent; edition=sys.argv[1]\ndef call(*args):subprocess.run([sys.executable,*map(str,args)],check=True)\nfor mode in ('dark','light'):\n call(art/'control.py','run',art/f'auto-{mode}.sh')\n call(art/'control.py','run',art/'open-preset2.sh')\n call(art/'input.py',json.dumps(['click',2444,434]))\n call(art/'input.py',json.dumps(['move',3400,1900]))\n call(art/'control.py','run',art/'capture.sh')\n call(art/'control.py','get','/home/tester/appearance-frame.png',art/f'launcher-{edition}-auto-{mode}.png')\n call(art/'input.py',json.dumps(['key','esc']))\n",
+        "auto-dark.sh": "sudo timedatectl set-ntp false\nsudo date -s '2026-01-01 17:59:00' >/dev/null\n~/.local/bin/mac-tahoe-theme-switch auto > ~/appearance-auto.log 2>&1\nsudo date -s '2026-01-01 17:59:58' >/dev/null\npython3 - <<'PY'\nimport json,time\nfrom pathlib import Path\nfor _ in range(180):\n s=json.loads((Path.home()/'.local/state/mac-tahoe-liquid-kde/appearance.json').read_text())\n if s.get('preference')=='auto' and s.get('applied')=='dark':break\n time.sleep(.25)\nelse:raise AssertionError(s)\nprint('automatic dusk passed')\nPY\n",
+        "auto-light.sh": "sudo date -s '2026-01-02 05:59:58' >/dev/null\npython3 - <<'PY'\nimport json,time\nfrom pathlib import Path\nfor _ in range(180):\n s=json.loads((Path.home()/'.local/state/mac-tahoe-liquid-kde/appearance.json').read_text())\n if s.get('preference')=='auto' and s.get('applied')=='light':break\n time.sleep(.25)\nelse:raise AssertionError(s)\nprint('automatic dawn passed')\nPY\n"
+      },
+      "scope": "Launcher geometry, options menu and icon-theme refresh; no native rendering/ABI/shader implementation change. Test-only Qt Test input module; existing component install recipes are exercised, unchanged.",
+      "desktop": "Final installer invocations pass wizard choices explicitly; earlier partial backend invocations without them selected the legacy icon family and were rejected. Removed the regular Task Manager added for earlier appearance probes. Each edition was installed with its own source defaults, wallpaper, controls and actual Launcher/icons-only Task Manager/trash Dock. Final screenshots show the installed shell, not plasmoidviewer.",
+      "environment": "KDE neon Plasma 6.8.1 / Qt 6.11.1, Wayland, KVM/virgl, 3840x2160 at 200%. Local native input/buffer checks use isolated Xvfb at 100% and 150%. Host CachyOS Plasma 6.7.4 is not modified; identical distro/GPU or a full X11 desktop VM is not claimed.",
+      "reuse": "Previous appearance state, persistent-app, session and lifecycle evidence remains applicable to unchanged synchronization logic. These focused frames supersede earlier Launcher frames for the final QML. Public gallery provenance is unchanged.",
+      "automatic": "Actual guest-only 17:59:58 dusk and 05:59:58 dawn crossings in both editions, with rendered Launcher/options/Dock frames. Auto selection alone is not counted.",
+      "settlement": "KWin configures the panel and search capsule independently. The VM scenario waits at most five seconds for both frames, then verifies width, centering and vertical placement; rapid sixteen selections end at preset 2."
+    }
   },
-  "remote_ci": "Full dev matrix runs asynchronously after publication; this record describes focused local qualification.",
-  "qualification": {
-    "scope": "Preset 1 layout follows the selected preset independently of source edition; edition materials preserved. Preset 2 unchanged.",
-    "native_log_sha256": "697f08aa8f73fde23dd2a2e12dc0816945ce200f1cdcc925cb8ffdb57dafd946",
-    "installer_log_sha256": "0de7415a43f1e8d38dfd434f8947e99f122114b5f8d14f38b72c5b5d9b77aa97",
-    "runtime_sources": {
-      "src/offline/plasmoids/org.kde.mac-tahoe-liquid-kde.launcher/contents/ui/MainView.qml": "961adba0dcc629b13c2519d1a3a619c199ccd6b996fd8bc4aab2f67422d806dd",
-      "tests/qml/LauncherPresetProbe.qml": "3992ba46b8e42f29da78271306ea7a3d3c1f9bbb04cd7241c666a9a6753ed1a7"
-    },
-    "limits": "Executable native popup rendering checks use isolated X11 in disposable Plasma VM; no new documentation photographs or shared native backend changes. Historical captures retain original source identity."
+  "remote_ci": "Final draft PR CI is tracked separately; publication remains explicitly on hold. No release, tag, dev/main promotion or published pin update.",
+  "prior_ci": {
+    "commit": "3f8a3d76caa6987bd545abe7847b9b6788c84db9",
+    "url": "https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/actions/runs/43570518817",
+    "result": "passed",
+    "detail": "Full prior appearance/session candidate CI passed. Launcher follow-up requires its own PR CI; prior result is not claimed for changed QML."
   }
 }

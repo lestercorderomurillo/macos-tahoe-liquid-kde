@@ -13,6 +13,7 @@ import "js/colorType.js" as ColorType
 
 Item {
 	id: main
+	readonly property QtObject iconThemeWatcher: Tahoe.IconThemeWatcher {}
 	readonly property bool goldenGateEdition: false
 	readonly property bool goldenGateLight: goldenGateEdition && !isDarkTheme
 	property string searchText: ""
@@ -77,8 +78,17 @@ Item {
 		visible: root.visible && main.detachedSearch
 		// PopupPlasmaWindow stays open by default. Its hideOnWindowDeactivate
 		// property only exists in Plasma 6.7+; our focus group handles dismissal.
-		width: root.width * 0.617
-		height: Kirigami.Units.iconSizes.huge * 1.625
+		readonly property int requestedWidth: Math.round(root.width * 0.617)
+		readonly property int requestedHeight: Math.round(Kirigami.Units.iconSizes.huge * 1.625)
+		function syncSize() {
+			width = requestedWidth;
+			height = requestedHeight;
+		}
+		width: requestedWidth
+		height: requestedHeight
+		onRequestedWidthChanged: Qt.callLater(syncSize)
+		onWidthChanged: if (width !== requestedWidth) Qt.callLater(syncSize)
+		onHeightChanged: if (height !== requestedHeight) Qt.callLater(syncSize)
 
 		mainItem: FocusScope {
 			id: detachedSearchSlot

@@ -85,13 +85,31 @@ in {
       Service = {
         Type = "oneshot";
         ExecStartPre = "${initEffects}";
-        ExecStart = "${packages.tools}/bin/mac-tahoe-theme-switch ${cfg.mode}";
+        ExecStart = "${packages.tools}/bin/mac-tahoe-theme-switch session ${cfg.mode}";
       };
       Install.WantedBy = [ "plasma-plasmashell.service" ];
     };
+    systemd.user.services.mac-tahoe-appearance-sync = {
+      Unit = {
+        Description = "Synchronize desktop appearance";
+        After = [ "mac-tahoe-theme.service" ];
+        PartOf = [ "graphical-session.target" ];
+      };
+      Service = {
+        ExecStart = "${packages.tools}/bin/mac-tahoe-theme-switch watch-system";
+        Restart = "on-failure";
+      };
+      Install.WantedBy = [ "graphical-session.target" ];
+    };
+    systemd.user.services.mac-tahoe-scheduled = lib.mkIf (cfg.mode == "auto") {
+      Service = {
+        Type = "oneshot";
+        ExecStart = "${packages.tools}/bin/mac-tahoe-theme-switch scheduled";
+      };
+    };
     systemd.user.timers.mac-tahoe-theme = lib.mkIf (cfg.mode == "auto") {
       Unit.Description = "Switch MacTahoe at 06:00 and 18:00";
-      Timer = { OnCalendar = [ "*-*-* 06:00:00" "*-*-* 18:00:00" ]; Persistent = true; };
+      Timer = { OnCalendar = [ "*-*-* 06:00:00" "*-*-* 18:00:00" ]; Persistent = true; Unit = "mac-tahoe-scheduled.service"; };
       Install.WantedBy = [ "timers.target" ];
     };
     systemd.user.services.mac-tahoe-oled = lib.mkIf cfg.oledCare.enable {

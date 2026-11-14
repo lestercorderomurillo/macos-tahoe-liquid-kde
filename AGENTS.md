@@ -116,6 +116,21 @@ This standing workflow supersedes older wording that ends delivery while CI is
 still pending. Publication can precede the complete matrix, but task completion
 requires checking its outcome and resolving relevant failures.
 
+## Appearance synchronization qualification
+
+Every shipped plasmoid, glass surface and menu must follow the effective system
+appearance in both editions. Qualify light, dark and automatic mode, including
+an actual automatic boundary crossing; choosing auto without observing its
+transition is not a pass. Keep Qt/Kvantum and GTK 3/4 applications open while
+switching through native KDE settings, the standalone switcher and supported
+GTK preferences. Exercise rapid successive and overlapping selections and prove
+that the latest selection wins without stale surfaces, palettes or controls.
+A manual selection supersedes the project schedule; native KDE automatic mode
+keeps KDE's scheduler authoritative. Preserve saved material optics, window
+controls, user wallpapers and unrelated preferences. Never test on the host.
+Record installed source fingerprints, application continuity, rendered evidence
+and the exact VM/SDK coverage; configuration readback alone is insufficient.
+
 ## Review and merge qualification
 
 Every implementation release requires a focused install/reinstall check in at
@@ -734,12 +749,20 @@ the login service without starting it and starts the persistent timer only
 after theme activation has recorded wallpaper ownership; starting either
 earlier can misclassify the uninstaller's Breeze wallpaper as a user override.
 
-There is no background xdg-portal appearance watcher. Automatic mode is
-driven only by the post-login service and the 06:00 / 18:00 scheduler;
-`follow-system` remains an explicit one-shot command. Install and uninstall
-remove the legacy `mac-tahoe-liquid-kde-gtk-sync.desktop` autostart and stop
-any `watch-portal` process left by v0.36.x-v0.38.x so it cannot race or undo
-the scheduled target.
+The session appearance follower runs in every mode and reads changes from
+KDE's palette/global theme, Plasma style, Kvantum and GTK preferences. It
+acknowledges its own writes under the shared transition lock; delayed portal
+echoes never select a mode. New native selections cancel an obsolete transition
+before its next desktop command. Queued standalone requests use replaceable
+tickets so older requests cannot win after a newer selection. The installed
+`watch-system` autostart replaces the retired `watch-portal` implementation.
+
+The effective light/dark mode and scheduling preference live separately in
+`appearance.json`. `auto` selects the project's 06:00/18:00 policy; `scheduled`
+reconciles without changing the user's preference. Manual choices supersede
+that schedule. KDE's native automatic setting remains authoritative when
+enabled. The follower also handles resume across a schedule boundary.
+Install starts it after activation; uninstall stops it before removing state.
 
 Light/dark switching applies:
 
@@ -774,7 +797,7 @@ again. Run the cycle AFTER `apply_extras()` so `kvantummanager --set`
 has rewritten the kvconfig; otherwise Kvantum re-instantiates against
 the old config and the menu visuals stay stale.
 
-`widgetStyle` is always the plugin name `kvantum`; its selected profile is
+`widgetStyle` is the `MacTahoe` plugin wrapping Kvantum; its selected profile is
 mode-specific: `mac-tahoe-liquid-kde` for light and
 `mac-tahoe-liquid-kdeDark` for dark. `respect_DE=true` supplies palette
 colors but does not recolor literal SVG menu surfaces, so using the light

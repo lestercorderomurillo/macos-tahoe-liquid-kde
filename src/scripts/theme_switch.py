@@ -33,6 +33,7 @@ _PROC_ROOT = Path("/proc")
 LEGACY_REDUCED_SUFFIX = "-ReducedTransparency"
 DEFAULT_WALLPAPER = "MacTahoe"
 INSTALLER_OPTIONS = {}
+_APPEARANCE_GUARD = None
 
 
 def default_wallpaper() -> str:
@@ -155,10 +156,12 @@ def _drop_privs_in_child() -> None:
 
 def _run_user(cmd: list[str], *, timeout: int,
               env: dict[str, str] | None = None,
-              capture: bool = False) -> subprocess.CompletedProcess:
+              capture: bool = False, observe: bool = False) -> subprocess.CompletedProcess:
     """Every child spawn goes through here. steps/apply.py imports these
     helpers into the sudo'd installer (ruid=0, euid=user), where a bare
     child trips Qt6's setuid abort and the call silently fails."""
+    if _APPEARANCE_GUARD is not None and not observe:
+        _APPEARANCE_GUARD.check()
     kwargs: dict = {"check": False, "timeout": timeout, "env": env,
                     "preexec_fn": _drop_privs_in_child}
     if capture:
@@ -301,14 +304,13 @@ def _theme_transition_lock_path() -> Path:
 
 
 @contextmanager
-def _theme_transition_lock():
+def _theme_transition_lock(*, blocking: bool = True):
     """Prevent two live theme pipelines from interleaving.
 
     A login service, timer and manual command can overlap. Without a
     cross-process lock they can rewrite Plasma settings and caches at the same
     time, leaving different panel containments rendered from different
-    variants. Lock setup is best-effort so an unusual read-only state/runtime
-    directory never makes an otherwise usable switcher fail.
+    variants. Fail closed if serialization cannot be established.
     """
     lock = None
     locked = False
@@ -316,7 +318,7 @@ def _theme_transition_lock():
         path = _theme_transition_lock_path()
         path.parent.mkdir(parents=True, exist_ok=True)
         lock = path.open("w", encoding="utf-8")
-        fcntl.flock(lock, fcntl.LOCK_EX)
+        fcntl.flock(lock, fcntl.LOCK_EX | (0 if blocking else fcntl.LOCK_NB))
         locked = True
         lock.write(f"{os.getpid()}\n")
         lock.flush()
@@ -324,6 +326,7 @@ def _theme_transition_lock():
         if lock is not None:
             lock.close()
             lock = None
+        raise
     try:
         yield
     finally:
@@ -1432,7 +1435,12 @@ def write_kde_theme_config(
         opposite = ("MacTahoeLiquidKdeLight" if mode == "dark"
                     else "MacTahoeLiquidKdeDark")
         apply_color_scheme(opposite)
-    color_ok = apply_color_scheme(scheme)
+    # A follower must not write back the native selection it is following.
+    # A new KCM request can arrive after our last observation but before the
+    # child process writes kdeglobals; replaying the old palette loses it.
+    following_palette = (_APPEARANCE_GUARD is not None
+                         and _APPEARANCE_GUARD.follow_colors)
+    color_ok = True if following_palette else apply_color_scheme(scheme)
 
     # AutomaticLookAndFeel=false: Plasma's sunrise/sunset scheduler must
     # not fight our 06:00 / 18:00 timer (idempotent).
@@ -1443,9 +1451,10 @@ def write_kde_theme_config(
         icon = f"MacTahoeLiquidKde-Icons-{style}-{'Dark' if mode == 'dark' else 'Light'}"
     fixed = (
         ("kdeglobals", "KDE", "LookAndFeelPackage", laf),
-        ("kdeglobals", "KDE", "AutomaticLookAndFeel", "false"),
+        *(((("kdeglobals", "KDE", "AutomaticLookAndFeel", "false"),))
+          if _APPEARANCE_GUARD is None else ()),
         ("kdeglobals", "Icons", "Theme", icon),
-        ("kdeglobals", "General", "ColorScheme", scheme),
+        *(() if following_palette else (("kdeglobals", "General", "ColorScheme", scheme),)),
         ("kdeglobals", "KDE", "widgetStyle", widget),
         ("kdeglobals", "MacTahoeLiquidKde", "SystemMenuPreset",
          "golden-gate" if default_wallpaper() == "MacGoldenGate" else "tahoe"),
@@ -1819,19 +1828,20 @@ def _apply_unlocked(mode: str, context: str = "user") -> bool:
     # package in kdeglobals.  Writing the target package first can make the
     # live tool treat parts of the transition as already current, leaving
     # individual panel containments on the outgoing Plasma theme.
-    if context != "install":
+    if context not in ("install", "sync"):
         if not _apply_lookandfeel_live(laf):
             print(tr('theme apply: live look-and-feel apply skipped'),
                   file=sys.stderr)
 
     config_ok = write_kde_theme_config(
-        mode, force_color_reload=True,
+        mode, force_color_reload=_APPEARANCE_GUARD is None,
     )
     if not config_ok:
         print(tr('theme apply: core KDE config writes failed, theme not fully applied'), file=sys.stderr)
     try:
         _apply_local_extras(mode)
     except Exception as exc:
+        config_ok = False
         print(tr('theme apply: extras step failed, continuing: {exc!r}', exc=exc),
               file=sys.stderr)
     try:
@@ -1843,6 +1853,8 @@ def _apply_unlocked(mode: str, context: str = "user") -> bool:
     if not apply_cursortheme_live(cursor):
         print(tr('theme apply: live cursor apply skipped'), file=sys.stderr)
     if not cycle_widget_style_live(widget):
+        if _APPEARANCE_GUARD is not None:
+            config_ok = False
         print(tr('theme apply: widget-style cycle skipped'), file=sys.stderr)
     refresh_icons_live()
     # Keep the dock translucent so the glass shows through (a theme apply can
@@ -1862,19 +1874,266 @@ def apply(mode: str, context: str = "user") -> bool:
         return _apply_unlocked(mode, context=context)
 
 
-def follow_system() -> int:
-    """Apply whichever mode the desktop currently wants (System Settings /
-    quick-settings choice), so a NATIVE light/dark toggle drives our full
-    theme. No-op success when the current mode can't be read (don't guess and
-    fight the user's real state).
+# The effective desktop mode and the user's scheduling choice are distinct.
+# This state also acknowledges our own writes, so a follower never feeds its
+# output back into the next request. All state changes hold the transition lock.
+def _appearance_state_path() -> Path:
+    return Path(os.environ.get("XDG_STATE_HOME") or Path.home() / ".local/state") / "mac-tahoe-liquid-kde/appearance.json"
 
-    This is an explicit one-shot command, not a background watcher. Automatic
-    switching remains controlled only by the 06:00/18:00 scheduler."""
+
+def _read_appearance_state() -> dict:
+    try:
+        value = json.loads(_appearance_state_path().read_text())
+        return value if isinstance(value, dict) else {}
+    except (OSError, ValueError):
+        return {}
+
+
+def _save_appearance_state(value: dict) -> None:
+    path = _appearance_state_path()
+    path.parent.mkdir(parents=True, exist_ok=True)
+    temporary = path.with_suffix(f".{os.getpid()}.tmp")
+    temporary.write_text(json.dumps(value) + "\n")
+    temporary.replace(path)
+
+
+def _named_mode(name: str) -> str | None:
+    name = name.lower()
+    if "dark" in name:
+        return "dark"
+    if "light" in name or name in ("breeze", "org.kde.breeze.desktop", "mac-tahoe-liquid-kde"):
+        return "light"
+    return None
+
+
+_GNOME_APPEARANCE_CACHE = (None, {})
+
+
+def _gnome_appearance() -> dict:
+    """Read dconf only when its database changes; no subprocess polling loop."""
+    global _GNOME_APPEARANCE_CACHE
+    database = _xdg_config() / "dconf/user"
+    try:
+        stat = database.stat()
+    except OSError:
+        return {}
+    identity = (str(database), stat.st_ino, stat.st_mtime_ns, stat.st_size)
+    if identity == _GNOME_APPEARANCE_CACHE[0]:
+        return _GNOME_APPEARANCE_CACHE[1]
+    values = {}
+    if _have("gsettings"):
+        for key in ("color-scheme", "gtk-theme"):
+            try:
+                result = _run_user(["gsettings", "get", "org.gnome.desktop.interface", key],
+                                   timeout=2, capture=True, observe=True)
+                if result.returncode == 0:
+                    values["gnome-" + key] = _named_mode(result.stdout.strip().strip("'"))
+            except (OSError, subprocess.SubprocessError):
+                continue
+    _GNOME_APPEARANCE_CACHE = (identity, values)
+    return values
+
+
+def _appearance_kconfig(name: str) -> dict:
+    # KConfig removes explicit values equal to the look-and-feel defaults.
+    # Those defaults remain authoritative after a light/dark package change.
+    config = _xdg_config()
+    result = _parse_ini(config / "kdedefaults" / name)
+    for section, values in _parse_ini(config / name).items():
+        result.setdefault(section, {}).update(values)
+    return result
+
+
+def _appearance_snapshot() -> dict:
+    """Read authoritative local settings, never a delayed portal echo.
+
+    File replacement is normal for KConfig; reopen each file rather than
+    watching an inode. Palette luminance covers schemes without Light/Dark in
+    their names. A transient missing value is not a new user request.
+    """
+    config = _xdg_config()
+    kde = _appearance_kconfig("kdeglobals")
+    colors = _named_mode(kde.get("General", {}).get("ColorScheme", ""))
+    if colors is None:
+        try:
+            rgb = [int(x) for x in kde["Colors:Window"]["BackgroundNormal"].split(",")[:3]]
+            if len(rgb) == 3:
+                colors = "dark" if sum(c * w for c, w in zip(rgb, (.2126, .7152, .0722))) < 128 else "light"
+        except (KeyError, ValueError):
+            pass
+    try:
+        kv = re.search(r"^theme=(.*)$", (config / "Kvantum/kvantum.kvconfig").read_text(), re.M)
+    except OSError:
+        kv = None
+    return {
+        **_gnome_appearance(),
+        "colors": colors,
+        "global": _named_mode(kde.get("KDE", {}).get("LookAndFeelPackage", "")),
+        "plasma": _named_mode(_appearance_kconfig("plasmarc").get("Theme", {}).get("name", "")),
+        "kvantum": _named_mode(kv[1]) if kv else None,
+        "gtk": _named_mode(_parse_ini(config / "gtk-3.0/settings.ini").get("Settings", {}).get("gtk-theme-name", "")),
+        "automatic": kde.get("KDE", {}).get("AutomaticLookAndFeel", "false").lower() == "true",
+    }
+
+
+def _changed_appearance(before: dict, after: dict) -> str | None:
+    # KDE's applied palette wins when a global theme changes several settings
+    # in one operation; a standalone Plasma/GTK/Kvantum change also propagates.
+    for key in ("colors", "global", "plasma", "kvantum", "gtk", "gnome-color-scheme", "gnome-gtk-theme"):
+        if after.get(key) in ("light", "dark") and after[key] != before.get(key):
+            return after[key]
+    return None
+
+
+class _AppearanceChanged(BaseException):
+    """Cancel a superseded pipeline without swallowing it as an optional error."""
+    def __init__(self, mode: str, native_auto: bool):
+        self.mode, self.native_auto = mode, native_auto
+
+
+class _AppearanceGuard:
+    def __init__(self, target: str, *, follow_colors: bool = False):
+        self.target = target
+        self.previous = _appearance_snapshot()
+        self.follow_colors = follow_colors and self.previous.get("colors") == target
+
+    def check(self):
+        global _APPEARANCE_GUARD
+        snapshot = _appearance_snapshot()
+        changed = _changed_appearance(self.previous, snapshot)
+        self.previous = snapshot
+        if changed is not None and changed != self.target:
+            # Disable before unwinding: finally blocks must still restore the
+            # widget style if cancellation arrived during its Breeze cycle.
+            _APPEARANCE_GUARD = None
+            _record_appearance_request("native-auto" if snapshot["automatic"] else changed, "sync")
+            raise _AppearanceChanged(changed, snapshot["automatic"])
+
+
+def _synchronize_appearance(mode: str, preference: str, *, context: str = "user") -> bool:
+    """Called with the transition lock held; re-read intent after cancellation."""
+    global _APPEARANCE_GUARD
+    while True:
+        try:
+            _APPEARANCE_GUARD = _AppearanceGuard(mode, follow_colors=context == "sync")
+            with preserve_button_layout(button_position() == "keep"):
+                success = _apply_unlocked(mode, context=context)
+            _APPEARANCE_GUARD.check()
+        except _AppearanceChanged as change:
+            mode = change.mode
+            preference = "native-auto" if change.native_auto else mode
+            context = "sync"
+            continue
+        finally:
+            _APPEARANCE_GUARD = None
+        snapshot = _appearance_snapshot()
+        if any(value in ("light", "dark") and value != mode
+               for key, value in snapshot.items() if key != "automatic"):
+            success = False
+        previous = _read_appearance_state()
+        record = {"preference": preference, "observed": snapshot,
+                  "applied": mode if success else previous.get("applied")}
+        if not success:
+            record["pending"] = mode
+        if "session_default" in previous:
+            record["session_default"] = previous["session_default"]
+        _save_appearance_state(record)
+        return success
+
+
+def reconcile_appearance() -> bool:
+    """One nonblocking follower iteration; latest desktop state wins.
+
+    A running transition owns both the settings and its acknowledgement. The
+    follower does not sample half-written state or replay stale portal signals.
+    """
+    try:
+        with _theme_transition_lock(blocking=False):
+            state = _read_appearance_state()
+            snapshot = _appearance_snapshot()
+            previous = state.get("observed", snapshot)
+            changed = _changed_appearance(previous, snapshot)
+            preference = state.get("preference", snapshot.get("colors") or "light")
+            if snapshot["automatic"]:
+                preference = "native-auto"
+            elif changed:
+                preference = changed
+            elif previous.get("automatic") and not snapshot["automatic"]:
+                preference = snapshot.get("colors") or state.get("applied", "light")
+            mode = changed or state.get("pending") or snapshot.get("colors") or snapshot.get("global")
+            if preference == "auto":
+                # A resumed machine can cross a boundary while the watcher is
+                # asleep. Resolve the clock now, not when the job was queued.
+                mode = detect_mode_by_time()
+                if mode != state.get("applied") and not wait_for_clock_sync(timeout=2):
+                    return False
+            if mode is None:
+                return False
+            if changed or mode != state.get("applied"):
+                return _synchronize_appearance(mode, preference, context="sync")
+            if preference != state.get("preference"):
+                _save_appearance_state({**state, "preference": preference, "observed": snapshot})
+            return True
+    except BlockingIOError:
+        # A running transition owns reconciliation; timer overlap is a no-op.
+        return True
+
+
+def watch_system() -> int:
+    """One follower per desktop, independent of systemd/OpenRC/dinit."""
+    path = _theme_transition_lock_path().with_name("mac-tahoe-appearance-watch.lock")
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with path.open("w") as singleton:
+        try:
+            fcntl.flock(singleton, fcntl.LOCK_EX | fcntl.LOCK_NB)
+        except BlockingIOError:
+            return 0
+        while True:
+            try:
+                reconcile_appearance()
+            except (OSError, subprocess.SubprocessError) as error:
+                print(f"theme sync: {error}", file=sys.stderr)
+            time.sleep(0.25)
+
+
+def _record_appearance_request(preference: str, context: str) -> dict:
+    path = _appearance_state_path().with_name("appearance-request.json")
+    path.parent.mkdir(parents=True, exist_ok=True)
+    # Serialize ticket publication separately from the long desktop transition.
+    # A native change during a transition invalidates CLI requests queued before it.
+    with path.with_suffix(".lock").open("w") as lock:
+        fcntl.flock(lock, fcntl.LOCK_EX)
+        ticket = {"id": time.time_ns(), "preference": preference, "context": context}
+        temporary = path.with_suffix(f".{os.getpid()}.tmp")
+        temporary.write_text(json.dumps(ticket))
+        temporary.replace(path)
+        return ticket
+
+
+def select_appearance(preference: str, context: str = "user") -> int:
+    """Publish intent before waiting; discard superseded queued commands."""
+    path = _appearance_state_path().with_name("appearance-request.json")
+    ticket = _record_appearance_request(preference, context)
     with _theme_transition_lock():
-        mode = detect_mode_by_system()
+        latest = json.loads(path.read_text())
+        if latest != ticket:
+            return 0
+        if not _kwrite("--file", "kdeglobals", "--group", "KDE",
+                       "--key", "AutomaticLookAndFeel", "false"):
+            return 1
+        mode = detect_mode_by_time() if preference == "auto" else preference
+        return 0 if _synchronize_appearance(mode, preference, context=context) else 1
+
+
+def follow_system() -> int:
+    """Synchronize with KDE's current mode, preserving native auto selection."""
+    with _theme_transition_lock():
+        snapshot = _appearance_snapshot()
+        mode = snapshot.get("colors") or snapshot.get("global") or detect_mode_by_system()
         if mode is None:
             return 0
-        return 0 if _apply_unlocked(mode, context="user") else 1
+        preference = "native-auto" if snapshot["automatic"] else mode
+        return 0 if _synchronize_appearance(mode, preference, context="sync") else 1
 
 
 USAGE = ("Usage: mac-tahoe-theme-switch "
@@ -1889,11 +2148,43 @@ def main(argv: list[str]) -> int:
 
     _sync_session_env()
     mode = argv[0]
+    if mode == "start-watcher":
+        if not _has_session_dbus():
+            return 1
+        subprocess.Popen([sys.executable, str(Path(__file__).resolve()), "watch-system"],
+                         stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL,
+                         stderr=subprocess.DEVNULL, start_new_session=True)
+        return 0
     if mode == "patch-dock" and len(argv) == 1:
         patch_dock_transparency()
         return 0
+    if mode == "watch-system":
+        return watch_system()
+    if mode == "session" and len(argv) == 2 and argv[1] in ("light", "dark", "auto"):
+        state = _read_appearance_state()
+        # Repeated logins preserve manual intent, while an explicit change to
+        # Home Manager's declared mode is a new selection. Adopt existing state
+        # on migration rather than silently replacing the user's current mode.
+        changed_default = ("session_default" in state
+                           and state["session_default"] != argv[1])
+        if not state or changed_default:
+            result = main([argv[1]])
+        else:
+            result = 0 if reconcile_appearance() else 1
+        if result == 0:
+            with _theme_transition_lock():
+                _save_appearance_state({**_read_appearance_state(), "session_default": argv[1]})
+        return result
+    if mode == "scheduled":
+        state = _read_appearance_state()
+        if (state.get("preference") == "auto"
+                and detect_mode_by_time() != state.get("applied")
+                and not wait_for_clock_sync()):
+            return 75
+        return 0 if reconcile_appearance() else 1
     if mode == "follow-system":
         return follow_system()
+    preference = mode
     if mode == "auto":
         if not wait_for_clock_sync():
             print("theme apply: waiting for clock synchronization; "
@@ -1905,7 +2196,7 @@ def main(argv: list[str]) -> int:
         return 1
 
     context = argv[1] if len(argv) > 1 else "user"
-    return 0 if apply(mode, context=context) else 1
+    return select_appearance(preference, context=context)
 
 
 if __name__ == "__main__":

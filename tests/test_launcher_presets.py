@@ -207,6 +207,7 @@ def test_native_launcher_popup_presets(repo, tmp_path, monkeypatch, launcher_pop
         "XDG_MENU_PREFIX": "plasma-",
         "QT_QPA_PLATFORM": "xcb", "QT_QPA_PLATFORMTHEME": "generic",
         "QT_QUICK_BACKEND": "software", "QT_FORCE_STDERR_LOGGING": "1",
+        "QT_SCALE_FACTOR": os.environ.get("MTTKDE_TEST_LAUNCHER_SCALE", "1"),
         "QML_IMPORT_PATH": str(launcher_popup_module),
         "QT_LOGGING_RULES": "*.warning=true;*.critical=true",
         "XDG_SESSION_TYPE": "x11", "XDG_CURRENT_DESKTOP": "",
@@ -214,8 +215,10 @@ def test_native_launcher_popup_presets(repo, tmp_path, monkeypatch, launcher_pop
     for key in ("DBUS_SESSION_BUS_ADDRESS", "WAYLAND_DISPLAY"):
         env.pop(key, None)
     read_fd, write_fd = os.pipe()
+    scale = float(env["QT_SCALE_FACTOR"])
+    screen_size = f"{round(1280 * scale)}x{round(1024 * scale)}x24"
     server = subprocess.Popen(
-        ["Xvfb", "-displayfd", str(write_fd), "-screen", "0", "1280x1024x24", "-nolisten", "tcp"],
+        ["Xvfb", "-displayfd", str(write_fd), "-screen", "0", screen_size, "-nolisten", "tcp"],
         pass_fds=(write_fd,), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
     )
     os.close(write_fd)
@@ -264,6 +267,14 @@ def test_native_launcher_popup_presets(repo, tmp_path, monkeypatch, launcher_pop
         server.terminate()
         server.wait(timeout=5)
         runtime.cleanup()
+
+
+@pytest.mark.parametrize("edition,mode,preset", [("MacTahoe", "Light", 1), ("MacGoldenGate", "Dark", 2)])
+def test_native_launcher_fractional_scale(repo, tmp_path, monkeypatch, launcher_popup_module,
+                                        edition, mode, preset):
+    monkeypatch.setenv("MTTKDE_TEST_LAUNCHER_SCALE", "1.5")
+    test_native_launcher_popup_presets(repo, tmp_path, monkeypatch, launcher_popup_module,
+                                      preset, mode, edition)
 
 
 def test_dock_applets_follow_panel_thickness(repo, tmp_path, launcher_popup_module):
@@ -781,3 +792,69 @@ Item {
         capture_output=True, text=True, timeout=30)
     assert result.returncode == 0, result.stdout + result.stderr
     assert 'DOCK_ZOOM_OK' in result.stdout + result.stderr
+
+
+@pytest.mark.parametrize("delegate", ["AppGridViewDelegate.qml", "AppListViewDelegate.qml"])
+def test_launcher_icons_repaint_after_theme_change(repo, tmp_path, launcher_popup_module, delegate):
+    for name, color in (("probe-light", "#ff0000"), ("probe-dark", "#0000ff")):
+        directory = tmp_path / name / "32x32/apps"
+        directory.mkdir(parents=True)
+        (directory.parent.parent / "index.theme").write_text(
+            f"[Icon Theme]\nName={name}\nDirectories=32x32/apps\n"
+            "[32x32/apps]\nSize=32\nType=Fixed\nContext=Applications\n")
+        (directory / "launcher-test.svg").write_text(
+            f'<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32">'
+            f'<rect width="32" height="32" fill="{color}"/></svg>')
+    source = (repo / "src/offline/plasmoids" / launcher_defaults.LAUNCHER_ID / "contents/ui" / delegate).read_text()
+    start = source.index("Kirigami.Icon {")
+    end = start + len("Kirigami.Icon {")
+    depth = 1
+    while depth:
+        depth += (source[end] == "{") - (source[end] == "}")
+        end += 1
+    icon_id = "appicon" if delegate.startswith("AppGrid") else "icon"
+    qml = tmp_path / "icon-theme.qml"
+    qml.write_text('''import QtQuick
+import QtQuick.Layouts
+import org.kde.kirigami as Kirigami
+import org.kde.mac.tahoe.launcher as NativeLauncher
+import LauncherInteraction 1.0
+Item {
+    id: root
+    width: 100; height: 100
+    property int iconSize: 32
+    property bool compact: false
+    QtObject { id: model; property string decoration: "launcher-test" }
+    QtObject {
+        id: main
+        property bool detachedSearch: true
+        property bool tahoeStyle: false
+        property QtObject iconThemeWatcher: NativeLauncher.IconThemeWatcher {}
+    }
+    ICON_BODY
+    Timer {
+        interval: 100; running: true; repeat: true
+        property int phase: 0
+        onTriggered: {
+            const directory = DIRECTORY;
+            if (phase > 0) {
+                const actual = LauncherInteraction.pixel(ICON_ID);
+                const expected = phase === 2 ? "#0000ff" : "#ff0000";
+                if (actual.toString() !== expected) {
+                    console.error("ICON_REPAINT_FAILED", phase, actual); Qt.exit(1); return;
+                }
+            }
+            if (phase === 3) { console.info("ICON_REPAINT_OK"); Qt.exit(0); return; }
+            LauncherInteraction.setIconTheme(directory, phase === 1 ? "probe-dark" : "probe-light");
+            main.iconThemeWatcher.changed();
+            phase++;
+        }
+    }
+}
+'''.replace("ICON_BODY", source[start:end]).replace("ICON_ID", icon_id)
+        .replace("DIRECTORY", json.dumps(str(tmp_path))))
+    result = subprocess.run([str(launcher_popup_module.parent / "dockgeometryprobe"), str(qml)],
+        env=dict(os.environ, QML_IMPORT_PATH=str(launcher_popup_module), QT_QPA_PLATFORM="offscreen",
+                 QT_QPA_PLATFORMTHEME="generic", QT_QUICK_BACKEND="software", QT_FORCE_STDERR_LOGGING="1"),
+        capture_output=True, text=True, timeout=15)
+    assert result.returncode == 0 and "ICON_REPAINT_OK" in result.stderr, result.stdout + result.stderr
