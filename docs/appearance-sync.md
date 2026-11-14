@@ -47,6 +47,22 @@ for a focused visual check; it is not represented as covered by the loose QML
 probe, because the compiled applet resolves its own resource module. Both
 launcher presets are checked with each edition's installed material.
 
+The extra Task Manager is removed before Launcher qualification, and the
+installer restores the edition's default Dock, wallpaper, icons and controls.
+The Launcher checks run on that installed desktop. Preset changes resize the
+Wayland surface from its content without conflicting fixed-size hints. Both
+presets share the same options menu anchored below its button. Isolated input tests exercise
+real menu clicks, hover entry/exit, keyboard selection, hidden and rapid preset
+changes, and 150% scaling. `tests/vm/launcher_presets.py` checks KWin's accepted
+frame geometry separately; QML dimensions alone cannot prove an unclipped
+Wayland surface. The focused VM evidence also records actual menu selections
+and inside/outside hover pixels in both appearance modes and editions.
+Grid and list icons also reload after icon-theme notifications even when their
+model names stay unchanged. Pixel regressions cover light/dark/light changes.
+The VM preflight requires the wizard's Regular icon family and the three default
+Dock widgets, so an added Task Manager or partial backend install without wizard
+choices cannot silently qualify as the edition's default desktop.
+
 The public gallery is unchanged. Private qualification frames and raw logs stay
 in the maintainer's ignored build directory; release evidence records their
 hashes and the installed source identities. No host appearance was changed.

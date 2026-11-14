@@ -6,10 +6,10 @@ import org.kde.plasma.extras as PlasmaExtras
 
 Item {
 
-    function closeMenu() { contextMenu.close(); tahoeMenu.close(); }
-    readonly property var activeMenu: main.tahoeStyle ? tahoeMenu : contextMenu
+    function closeMenu() { tahoeMenu.close(); }
+    readonly property var activeMenu: tahoeMenu
 
-    readonly property bool menuOpen: contextMenu.status !== PlasmaExtras.Menu.Closed || tahoeMenu.status !== PlasmaExtras.Menu.Closed
+    readonly property bool menuOpen: tahoeMenu.status !== PlasmaExtras.Menu.Closed
     property color foregroundColor: main.textColor
 
     width: button.width
@@ -22,7 +22,7 @@ Item {
 
         flat: true
         // Make it look pressed while the menu is open
-        down: (main.tahoeStyle ? menuOpen : contextMenu.status === PlasmaExtras.Menu.Open) || pressed
+        down: menuOpen || pressed
         
         icon.name: "view-more-symbolic"
         icon.color: foregroundColor
@@ -63,64 +63,12 @@ Item {
                 radius: height / 2
             }
         }
-        onPressed: activeMenu.openRelative()
-        Item {
-            id: tahoeMenuAnchor
-            x: button.width + 10 - width
-            width: 154
-            y: button.height / 2 + 2
-        }
+        onClicked: activeMenu.openRelative()
     }
 
-    PlasmaExtras.Menu {
-        id: contextMenu
-        visualParent: button
-        placement: PlasmaExtras.Menu.BottomPosedLeftAlignedPopup
-
-        PlasmaExtras.MenuItem {
-            objectName: "preset1"
-            text: i18n("Preset 1 — Tahoe")
-            checkable: true
-            checked: kicker.launcherPreset === 1
-            onClicked: Plasmoid.configuration.launcherPreset = 1
-        }
-        PlasmaExtras.MenuItem {
-            objectName: "preset2"
-            text: i18n("Preset 2 — Golden Gate")
-            checkable: true
-            checked: kicker.launcherPreset === 2
-            onClicked: Plasmoid.configuration.launcherPreset = 2
-        }
-        PlasmaExtras.MenuItem { separator: true }
-        PlasmaExtras.MenuItem {
-            objectName: "list"
-            text: i18n("Show apps in a list")
-            checkable: true
-            checked: Plasmoid.configuration.showAllAppsInList
-            onClicked: {
-                Plasmoid.configuration.showAllAppsInList = true;
-                Plasmoid.configuration.showAllAppsInGrid = false;
-            }
-        }
-        PlasmaExtras.MenuItem {
-            objectName: "grid"
-            text: i18n("Show apps in a grid")
-            checkable: true
-            checked: !Plasmoid.configuration.showAllAppsInList
-            onClicked: {
-                Plasmoid.configuration.showAllAppsInList = false;
-                Plasmoid.configuration.showAllAppsInGrid = true;
-            }
-        }
-        onStatusChanged: {
-            if ( contextMenu.status === PlasmaExtras.Menu.Closed && Qt.application.layoutDirection == Qt.LeftToRight) {
-                nextItemInFocusChain(false).forceActiveFocus(Qt.BacktabFocusReason)
-            }
-        }   
-    }
     TahoeOptionsMenu {
         id: tahoeMenu
-        anchorItem: tahoeMenuAnchor
+        anchorItem: button
 
         actions: [
         PlasmaExtras.MenuItem { text: i18n("View content as"); section: true },

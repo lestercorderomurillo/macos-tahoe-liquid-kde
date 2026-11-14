@@ -63,6 +63,14 @@ T.ItemDelegate {
 			Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
 			
 			source: model.decoration // || root.icon.name || root.icon.source
+        Connections {
+            target: main.iconThemeWatcher
+            function onChanged() {
+                // The model's icon name stays unchanged across theme switches.
+                icon.source = "";
+                icon.source = Qt.binding(() => model.decoration);
+            }
+        }
 		}
 
 		GridLayout {

@@ -1,34 +1,41 @@
 import QtQuick
+import QtQuick.Window
 import QtQuick.Controls as Controls
 import org.kde.plasma.core as PlasmaCore
 import org.kde.plasma.extras as PlasmaExtras
 
 PlasmaCore.Dialog {
     id: menu
+    objectName: "launcherOptionsMenu"
     property Item anchorItem
     property list<QtObject> actions
     readonly property var content: actions
     readonly property int status: visible ? PlasmaExtras.Menu.Open : PlasmaExtras.Menu.Closed
     visualParent: anchorItem
     type: PlasmaCore.Dialog.PopupMenu
-    flags: Qt.Popup | Qt.FramelessWindowHint
+    // A Qt.Popup is repositioned by Wayland independently of Dialog.x/y,
+    // leaving hover coordinates out of sync with our Plasma shell surface.
+    flags: Qt.Tool | Qt.FramelessWindowHint
+    transientParent: anchorItem ? anchorItem.Window.window : null
     location: PlasmaCore.Types.Floating
+    onXChanged: if (visible) Qt.callLater(alignBelow)
     onYChanged: if (visible) Qt.callLater(alignBelow)
     onVisibleChanged: if (visible) Qt.callLater(alignBelow)
     function alignBelow() {
-        if (!visible) return;
-        const position = anchorItem.mapToGlobal(anchorItem.width, 0);
-        x = Math.round(position.x - width);
-        y = Math.round(position.y);
+        if (!anchorItem) return;
+        const below = anchorItem.mapToGlobal(anchorItem.width, anchorItem.height);
+        const above = anchorItem.mapToGlobal(0, 0);
+        const area = kicker.screenGeometry;
+        x = Math.round(Math.max(area.x, Math.min(below.x - width, area.x + area.width - width)));
+        y = Math.round(below.y + height <= area.y + area.height ? below.y : Math.max(area.y, above.y - height));
     }
     hideOnWindowDeactivate: true
 
     function openRelative() {
-        const position = anchorItem.mapToGlobal(anchorItem.width, 0);
         selectedIndex = -1;
+        alignBelow();
         visible = true;
-        x = Math.round(position.x - width);
-        y = Math.round(position.y);
+        alignBelow();
         requestActivate();
         menuBody.forceActiveFocus();
     }
@@ -82,6 +89,7 @@ PlasmaCore.Dialog {
                 model: menu.actions
                 delegate: Controls.ItemDelegate {
                     id: row
+                    objectName: "launcherOption"
                     required property var modelData
                     required property int index
                     width: rows.width
