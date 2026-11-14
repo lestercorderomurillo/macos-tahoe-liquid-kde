@@ -145,7 +145,7 @@ T.ItemDelegate {
 
 			// forceActiveFocus() touches multiple items, so check for
 			// activeFocus first to be more efficient.
-			if (!listView.activeFocus) {
+			if (!listView.activeFocus && !main.searchBar.textField.activeFocus) {
 				listView.forceActiveFocus(Qt.MouseFocusReason)
 			}
 			// No need to check currentIndex first because it's

@@ -11,16 +11,21 @@ PlasmaCore.Dialog {
     property list<QtObject> actions
     readonly property var content: actions
     readonly property int status: visible ? PlasmaExtras.Menu.Open : PlasmaExtras.Menu.Closed
-    visualParent: anchorItem
-    type: PlasmaCore.Dialog.PopupMenu
+    // Position explicitly before mapping; Dialog's anchor placement would
+    // otherwise overwrite it for the first visible frame.
+    visualParent: null
+    // Keep the client glass contour; a menu role adds a compositor outline.
+    type: PlasmaCore.Dialog.AppletPopup
     // A Qt.Popup is repositioned by Wayland independently of Dialog.x/y,
     // leaving hover coordinates out of sync with our Plasma shell surface.
     flags: Qt.Tool | Qt.FramelessWindowHint
     transientParent: anchorItem ? anchorItem.Window.window : null
     location: PlasmaCore.Types.Floating
-    onXChanged: if (visible) Qt.callLater(alignBelow)
-    onYChanged: if (visible) Qt.callLater(alignBelow)
-    onVisibleChanged: if (visible) Qt.callLater(alignBelow)
+    onXChanged: if (visible) alignBelow()
+    onYChanged: if (visible) alignBelow()
+    onWidthChanged: if (visible) alignBelow()
+    onHeightChanged: if (visible) alignBelow()
+    onVisibleChanged: if (visible) alignBelow()
     function alignBelow() {
         if (!anchorItem) return;
         const below = anchorItem.mapToGlobal(anchorItem.width, anchorItem.height);

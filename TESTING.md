@@ -1,12 +1,11 @@
 # Installer testing
 
-Tahoe **v0.71.8** keeps progress minimal and places the English phase summary
-inside **Show details**. Installer transactions, cancellation, process completion
-and diagnostic log storage are guarded against overlapping or incomplete work.
+Tahoe **v0.71.9** repairs Launcher opening and search focus, positions the
+options dialog before its first frame, and preserves its Plasma glass contour.
 
-Focused regressions passed, alongside disposable Plasma VM install/reinstall and
-concurrent-run rejection in both editions. Light/dark native progress frames were
-reviewed; these represent UI states, not full desktop installations. See the
+Focused native Launcher regressions cover both presets, editions and appearance
+modes. Disposable Plasma VM install/reinstall, repeated openings and rendered
+search/dialog checks passed in both editions. See the
 [commands, source identities and coverage limits](release-evidence.json).
 The complete [dev CI](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/actions/workflows/test.yml) runs separately.
 Photographs retain their original capture provenance.

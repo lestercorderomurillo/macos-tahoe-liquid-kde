@@ -138,6 +138,7 @@ Timer {
     }
     function verifyOptionsMenu(search) {
         const button = search.testMenuButton.testButton;
+        LauncherInteraction.watchMenuFrame(search.testMenuButton.testMenu);
         LauncherInteraction.click(button);
         if (eventLoopDelay > 0) {
             LauncherInteraction.pauseForEvents(eventLoopDelay);
@@ -152,6 +153,10 @@ Timer {
         const anchor = button.mapToGlobal(button.width, button.height);
         verify(Math.abs(state.rect.y - anchor.y) <= 2 && Math.abs(state.rect.x + state.rect.width - anchor.x) <= 2,
                "menu opens below the button aligned with its right edge: " + JSON.stringify(state.rect) + " anchor " + anchor);
+        const first = LauncherInteraction.firstMenuFrame();
+        verify(first.width > 0 && Math.abs(first.y - anchor.y) <= 2
+               && Math.abs(first.x + first.width - anchor.x) <= 2,
+               "first rendered menu frame is already aligned: " + JSON.stringify(first));
         LauncherInteraction.pointer(state.rect.x - 20, state.rect.y - 20);
         verify(LauncherInteraction.menuState().active === "", "no highlight while pointer is outside");
         const list = state.actions[2].rect;
@@ -202,6 +207,8 @@ Timer {
                 root.visible = true;
                 break;
             case -1:
+                verify(searchBar.textField.activeFocus, "opening focuses the search input");
+                verify(!main.detachedSearch || searchPopup.visible, "opening shows the capsule");
                 initialPopupSize = Qt.size(root.width, root.height);
                 root.visible = false;
                 break;
@@ -356,6 +363,7 @@ Timer {
                 break;
             case 12:
                 verify(root.visible, "inline popup stays open with a transient parent");
+                verify(searchBar.textField.activeFocus, "reopened inline search has focus");
                 outsideProbe.requestActivate();
                 break;
             case 13:
@@ -365,6 +373,7 @@ Timer {
                 break;
             case 14:
                 verify(root.visible && searchPopup.visible, "detached popups reopen with a transient parent");
+                verify(searchBar.textField.activeFocus, "reopened detached search has focus");
                 root.requestActivate();
                 break;
             case 15:

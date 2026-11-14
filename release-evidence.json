@@ -1,24 +1,25 @@
 {
-  "version": "0.71.8",
-  "source_sha256": "6a0e0a452d515588c9f847a30cb6645e65b55ec28c7fd087677cba19193fc947",
-  "environment": "plasmashell 6.8.1\n6.11.1\nGTK 3 24 41\nGTK 4 14 5; disposable KDE neon Wayland/KVM/virgl.",
+  "version": "0.71.9",
+  "source_sha256": "fb9612d36562fa91300ab5de82a901fb165b2004f5e25e8efe8061e6b12e4bef",
+  "environment": "Isolated Xvfb: Plasma SDK 6.7.4 / Qt 6.11.2. Disposable KDE neon: Plasma 6.8.1 / Qt 6.11.1, Wayland/KVM/virgl.",
   "checks": [
     {
-      "command": "python3 -m pytest -q tests/test_installer_ui.py tests/test_installer_wizard.py tests/test_installer_progress.py tests/test_cli.py tests/test_localization.py tests/test_multilanguage.py tests/test_step_guards.py tests/test_utils_deps.py",
+      "command": "PYTHONDONTWRITEBYTECODE=1 python3 -m pytest -xq -p no:cacheprovider tests/test_launcher_presets.py -k native_launcher_popup_presets",
       "result": "passed",
-      "detail": "244 passed with isolated HOME/XDG paths and no host desktop bus.",
-      "log_sha256": "8776ef48f06325e068128be8a817cdaccdeb64d8431a7dddcb144a1d4b3841be"
+      "detail": "8 cases: both presets, both editions, light/dark; cold/reopened search focus, detached capsule, first-rendered menu position, keyboard/mouse selection, preset changes and dismissal. Isolated Xvfb/private D-Bus, Plasma SDK 6.7.4 / Qt 6.11.2.",
+      "log_sha256": "f6521d5fe051bb69a6771eee790ab0a7b353eed3ce1e3215356c6899ed44674f"
     },
     {
-      "command": "python3 -m pytest -q tests/test_installer_progress.py tests/test_installer_ui.py",
+      "command": "Guest: sudo env MAC_TAHOE_NO_UPDATE_CHECK=true MTTKDE_NO_CONFIRM=1 MTTKDE_WIZARD_OPTIONS=<edition defaults; light; reset_layout=false> src/scripts/installer_backend.py install --only --plasmoids --plasma-theme --apply-theme --light (twice per edition)",
       "result": "passed",
-      "detail": "70 passed after the final configured-channel-only event guard.",
-      "log_sha256": "aa6ba0a5c882e1f84a94d9555cedbdf06aac63c4066c7c846edae840b2a008f3"
+      "detail": "Final source installed and reinstalled in a disposable Plasma 6.8.1 / Qt 6.11.1 Wayland guest. All installed Launcher QML hashes match the final edition-staged sources.",
+      "archive_sha256": "8e4c299a9f37f7c3361984c18f9bf13a553b404d0e0f99a8cb3f4da46fae1edd"
     },
     {
-      "command": "Guest: python3 tests/vm/installer_transaction.py --output <edition-output>; python3 tests/vm/installer_progress.py --edition <edition> --mode <light|dark> --output <frames>",
+      "command": "Guest QMP keyboard/pointer input; org.kde.PlasmaShell.activateLauncherMenu; KWin window inspection; spectacle captures in light/dark",
       "result": "passed",
-      "detail": "Actual focused install/reinstall and concurrent backend rejection in both editions. Seven representative native UI frames reviewed in light/dark; phase details appear only in Show details."
+      "detail": "Six openings per edition/mode (24 total), both detached windows present, native search window activated, typed terminal without clicking input, options dialog verified present and rendered with its client contour. Scoped launcher frames only; no documentation gallery refresh.",
+      "record_sha256": "014aadb842c507225d4edcd44213882bf1f8bf4bd46a18aef328e09342158f88"
     },
     {
       "command": "python3 src/scripts/component_manifest.py; git diff --check",
@@ -38,176 +39,55 @@
       "reviewed": true
     }
   ],
-  "local_vm_qualification": {
-    "tahoe": {
-      "runs": [
-        {
-          "name": "install",
-          "command": [
-            "sudo",
-            "-n",
-            "env",
-            "MAC_TAHOE_NO_UPDATE_CHECK=true",
-            "MTTKDE_NO_CONFIRM=1",
-            "PYTHONUNBUFFERED=1",
-            "MTTKDE_LANGUAGE=en",
-            "MTTKDE_PROGRESS_FILE=/home/tester/installer-progress/qualification-tahoe/installer-qualification-ia9z68ts",
-            "MTTKDE_WIZARD_OPTIONS={\"appearance\":\"light\",\"reset_layout\":false}",
-            "python3",
-            "/home/tester/installer-progress/tahoe/src/scripts/installer_backend.py",
-            "install",
-            "--only",
-            "--no-apply-theme",
-            "--light"
-          ],
-          "exit_code": 0,
-          "summary": "\u2713  System checks\n\u2713  Dependencies\n\u2013  Downloads \u00b7 Skipped\n\u2013  Building components \u00b7 Skipped\n\u2713  Installing components\n\u2013  Applying preferences \u00b7 Skipped\n\u2013  Final checks \u00b7 Skipped",
-          "log_sha256": "b8e89674e250d54097d0148dd164c75428508ed279f706abd3f9d04831f37964",
-          "progress_sha256": "0a3ce4c546f20aa58488fbf930d393d28407eb30fbf1fdf48675b1dd2908b1b8"
-        },
-        {
-          "name": "reinstall",
-          "command": [
-            "sudo",
-            "-n",
-            "env",
-            "MAC_TAHOE_NO_UPDATE_CHECK=true",
-            "MTTKDE_NO_CONFIRM=1",
-            "PYTHONUNBUFFERED=1",
-            "MTTKDE_LANGUAGE=en",
-            "MTTKDE_PROGRESS_FILE=/home/tester/installer-progress/qualification-tahoe/installer-qualification-fpjiknzt",
-            "MTTKDE_WIZARD_OPTIONS={\"appearance\":\"light\",\"reset_layout\":false}",
-            "python3",
-            "/home/tester/installer-progress/tahoe/src/scripts/installer_backend.py",
-            "install",
-            "--only",
-            "--no-apply-theme",
-            "--light"
-          ],
-          "exit_code": 0,
-          "summary": "\u2713  System checks\n\u2713  Dependencies\n\u2013  Downloads \u00b7 Skipped\n\u2013  Building components \u00b7 Skipped\n\u2713  Installing components\n\u2013  Applying preferences \u00b7 Skipped\n\u2013  Final checks \u00b7 Skipped",
-          "log_sha256": "b6a505b33ab67f1cd85b17f928cffe5faf547387287ee6fb550f17b4a3bbda1c",
-          "progress_sha256": "0a3ce4c546f20aa58488fbf930d393d28407eb30fbf1fdf48675b1dd2908b1b8"
-        }
-      ],
-      "overlap": "passed",
-      "source_files": {
-        "VERSION": "55cc7221461f4772687a0ef0a73712e2cd0bf5f7a650f7069d27ab449f5435a5",
-        "component-hashes.json": "b61316db70e001e35803de9f737da22c80c8c79ffb83905af46d7dbacbdf5ff7",
-        "src/scripts/defaults.json": "22a5ec9ebf9abbcdf8c6e7442d960f41c520fdf2e98d806eb3de850247162d18",
-        "src/installer/installer_ui.py": "866f05d391e098b1443fd205e67fc3526eef45038763742b79be1850e7358b3c",
-        "src/installer/progress_model.py": "9780698a6d28eac397faf5254ac170e076bc2673d83b748cdfa9ff6123958b34",
-        "src/installer/wizard_window.py": "6d4ae308d9d5241366c8882a4bd556f1b0717f0a7418beb05fae22f885fe9304",
-        "src/scripts/cli.py": "240191d774ee7a99ef18231d341a3cbb2d2c73fcf42076840a39e395b12f594f",
-        "src/scripts/log.py": "152250890b1dc3f7db1fab676b7e91657489a3527200916afc9e573482a5f987",
-        "src/scripts/installer_backend.py": "53fc290e14d968366f57a7b17db4d65fef6206859c5be7423d3b0914dff3eaed",
-        "src/scripts/installer_lock.py": "cbc4103d029bc109ae9a87225e53443f859329ba999e55c3ce2cce3576ea4d83"
+  "qualification": {
+    "scope": "Launcher opening/focus/hover, options dialog first-frame positioning and compositor role. Shared SVGs, native effects, shaders, SDK interfaces and appearance scheduler are unchanged.",
+    "vm_image_sha256": "412e7933f10add20b921b92c02709e7eea56acd14dc14cf654f58fba4ea3cc9d",
+    "installed_launcher_qml_sha256": {
+      "main.qml": "1988c16c89b0dfb0a3654466a2fe9c5932733238adb5ff62564706e132626f31",
+      "AppListView.qml": "05dac4aa43c6fdda622c62495158e739c8b6aea2012a4cd219a8cd6e85b92074",
+      "GlassTextShadow.qml": "6a9a6b799e17f3764d46b7248b6b37e50c321ec204c184924dc4e4defcbfc1b6",
+      "AppListViewDelegate.qml": "c295ce16bd08bbf3a7828312ae595ea1cb86c84cce3667627af3cfe1a30ce42b",
+      "TahoeOptionsMenu.qml": "4cc767614caf67d358a76cb8ea493b5fbb8a1be61e1b1b462133bf4560463be4",
+      "AllAppsList.qml": "01c6989c7ff7a5e915ced3b191457b237c1ca076c3bd0ec3fbaf7ebedca43fb3",
+      "AppGridViewDelegate.qml": "efaebdb01d924a84310de46154f3484427ebb8ce4f43195287802369e6ff737b",
+      "CompactRepresentation.qml": "8ccc7027fa68fe727252fbab6b0f63658052b0c6ceb8f1735e0010e70ae0134a",
+      "SearchList.qml": "e263ade59997c8685e853920af36f54d4bee3116ddbbc22ed8801fac492dce6a",
+      "Highlight.qml": "b91dc0dc2898ff6d83333d5c00905ae29d621906704a84c559c8df83747f2e39",
+      "ActionMenu.qml": "976d91e98a7c183978e3a9f372063b24cf5ff59ee64849596cfc0d3841468cc6",
+      "Scrollbar.qml": "5fb3b81f1be5eb4944fbd363f247f587c0854d17e29df061b2bc7f713b096106",
+      "AppGridView.qml": "8941cc40114e8bab9cad66fe87b9cdced0c78c0a8ed7469e060c66f34caa1bcf",
+      "SearchBar.qml": "090c72e422d126cfe2ea4007d56d4d8445cbe864c3237e767c3daa95b3d696d3",
+      "MainView.qml": "a22c7c922198e4560037b169fe393fc3502519d63f654c61fc788283cd0d4191",
+      "MenuButton.qml": "d689afeeb4a807433cf811802bd055ea800eb64221a940ca18226d30b2c79cdc",
+      "MenuRepresentation.qml": "6fe01bda02b7d061341be94803cde0d2152ce1a7e4b4edad87eeba5d6d2769a3",
+      "AppCategorySwitcher.qml": "f550eb20ea8ccce35cf4f3c0957c6dc1ba01d90cab738e707e61d059df9e5682",
+      "CategoryPill.qml": "795bccacacd6efce9cbc88f0d28e9b9b7710b9f9b8d52cc79faa8a60163cb1c5",
+      "AppsCategorized.qml": "acc2a14566a5ffd6877e2d984a8922239fa27bfbea99d1e2acdfc3385078ef41",
+      "ConfigGeneral.qml": "3ffe9c0946f8db088f8811d725a9df10c34fac11049cf5589fc65fe7f2880f29",
+      "SessionButtons.qml": "47cf5d2f5dc67f661dcbe5f859abfdada8468849625485f08eff7fd7e41dfd2f"
+    },
+    "frames": [
+      {
+        "name": "tahoe-dark-menu.png",
+        "sha256": "31daa8c0c2ae0095c48a9ec4e69880c3ef52371290aaf0785c0b51d39afd6ae4",
+        "reviewed": true
       },
-      "limits": "Actual focused backend install/reinstall without desktop activation. Representative progress/error/completion UI frames are recorded separately; this is not a full desktop reinstall."
-    },
-    "golden": {
-      "runs": [
-        {
-          "name": "install",
-          "command": [
-            "sudo",
-            "-n",
-            "env",
-            "MAC_TAHOE_NO_UPDATE_CHECK=true",
-            "MTTKDE_NO_CONFIRM=1",
-            "PYTHONUNBUFFERED=1",
-            "MTTKDE_LANGUAGE=en",
-            "MTTKDE_PROGRESS_FILE=/home/tester/installer-progress/qualification-golden/installer-qualification-b0cl8ysk",
-            "MTTKDE_WIZARD_OPTIONS={\"appearance\":\"light\",\"reset_layout\":false}",
-            "python3",
-            "/home/tester/installer-progress/golden/src/scripts/installer_backend.py",
-            "install",
-            "--only",
-            "--no-apply-theme",
-            "--light"
-          ],
-          "exit_code": 0,
-          "summary": "\u2713  System checks\n\u2713  Dependencies\n\u2013  Downloads \u00b7 Skipped\n\u2013  Building components \u00b7 Skipped\n\u2713  Installing components\n\u2013  Applying preferences \u00b7 Skipped\n\u2013  Final checks \u00b7 Skipped",
-          "log_sha256": "95dcc08e071f7c249d7fe256544c528f3e306a1aeeb83703ddda126c9a6338ca",
-          "progress_sha256": "0a3ce4c546f20aa58488fbf930d393d28407eb30fbf1fdf48675b1dd2908b1b8"
-        },
-        {
-          "name": "reinstall",
-          "command": [
-            "sudo",
-            "-n",
-            "env",
-            "MAC_TAHOE_NO_UPDATE_CHECK=true",
-            "MTTKDE_NO_CONFIRM=1",
-            "PYTHONUNBUFFERED=1",
-            "MTTKDE_LANGUAGE=en",
-            "MTTKDE_PROGRESS_FILE=/home/tester/installer-progress/qualification-golden/installer-qualification-i4ee5cis",
-            "MTTKDE_WIZARD_OPTIONS={\"appearance\":\"light\",\"reset_layout\":false}",
-            "python3",
-            "/home/tester/installer-progress/golden/src/scripts/installer_backend.py",
-            "install",
-            "--only",
-            "--no-apply-theme",
-            "--light"
-          ],
-          "exit_code": 0,
-          "summary": "\u2713  System checks\n\u2713  Dependencies\n\u2013  Downloads \u00b7 Skipped\n\u2013  Building components \u00b7 Skipped\n\u2713  Installing components\n\u2013  Applying preferences \u00b7 Skipped\n\u2013  Final checks \u00b7 Skipped",
-          "log_sha256": "3c5cc06a828eb89ff66174aa5157b2ab582381a7ddbc9dca1c12fe33204a65ab",
-          "progress_sha256": "0a3ce4c546f20aa58488fbf930d393d28407eb30fbf1fdf48675b1dd2908b1b8"
-        }
-      ],
-      "overlap": "passed",
-      "source_files": {
-        "VERSION": "55cc7221461f4772687a0ef0a73712e2cd0bf5f7a650f7069d27ab449f5435a5",
-        "component-hashes.json": "b61316db70e001e35803de9f737da22c80c8c79ffb83905af46d7dbacbdf5ff7",
-        "src/scripts/defaults.json": "f27a2cd7a65964a6ab9f22b101d06d814643123c607b726e5c2e5beb4324692c",
-        "src/installer/installer_ui.py": "866f05d391e098b1443fd205e67fc3526eef45038763742b79be1850e7358b3c",
-        "src/installer/progress_model.py": "9780698a6d28eac397faf5254ac170e076bc2673d83b748cdfa9ff6123958b34",
-        "src/installer/wizard_window.py": "6d4ae308d9d5241366c8882a4bd556f1b0717f0a7418beb05fae22f885fe9304",
-        "src/scripts/cli.py": "240191d774ee7a99ef18231d341a3cbb2d2c73fcf42076840a39e395b12f594f",
-        "src/scripts/log.py": "152250890b1dc3f7db1fab676b7e91657489a3527200916afc9e573482a5f987",
-        "src/scripts/installer_backend.py": "53fc290e14d968366f57a7b17db4d65fef6206859c5be7423d3b0914dff3eaed",
-        "src/scripts/installer_lock.py": "cbc4103d029bc109ae9a87225e53443f859329ba999e55c3ce2cce3576ea4d83"
+      {
+        "name": "tahoe-dark-search.png",
+        "sha256": "5278423c26aef2c89930ff9f0e83d652cc622ae46fef18879069d14891883b0a",
+        "reviewed": true
       },
-      "limits": "Actual focused backend install/reinstall without desktop activation. Representative progress/error/completion UI frames are recorded separately; this is not a full desktop reinstall."
-    }
-  },
-  "reviewed_native_frames": [
-    {
-      "name": "golden-gate-dark-progress.png",
-      "sha256": "c4af0158890341ca43bbe7543d1059e607909f16b3ebf2a6dab40ff8b5293998",
-      "reviewed": true
-    },
-    {
-      "name": "golden-gate-light-details.png",
-      "sha256": "d543e23a28ab2b517792841cc623fc0b4471d770f3961ec8654d7d048419d1a5",
-      "reviewed": true
-    },
-    {
-      "name": "golden-gate-light-error.png",
-      "sha256": "d78d5ade48b43d5e69a7dbda4899d30182c8f88c48cafdb9615c781c352da8cb",
-      "reviewed": true
-    },
-    {
-      "name": "golden-gate-light-progress.png",
-      "sha256": "0fa293f153dcc2dc48f648020f34b8b7700fe50e50f4c732885e5867dec3f524",
-      "reviewed": true
-    },
-    {
-      "name": "tahoe-dark-done.png",
-      "sha256": "ebb6168f3140276184c44071715674fdb03b2410966f092baf34ee6d7a8108bb",
-      "reviewed": true
-    },
-    {
-      "name": "tahoe-dark-progress.png",
-      "sha256": "182e92de0994b1d6068c3bf24200de14bc1f03c9945b3d1cd489bdf8392a20ea",
-      "reviewed": true
-    },
-    {
-      "name": "tahoe-light-progress.png",
-      "sha256": "16799025c0de44a6e7191ebda1bdc8619bc4f6afc772119a36401e978ed873e9",
-      "reviewed": true
-    }
-  ],
-  "coverage_limits": "Focused backend install/reinstall without desktop activation; representative progress, completion and failure frames use injected backend events. No new native rendering changes or full desktop reinstall. Existing documentation gallery retains original provenance. Full dev CI is tracked separately."
+      {
+        "name": "tahoe-light-menu.png",
+        "sha256": "f7d58be17833740bff14c9dd7888efe3779b6c82378cb2eff6feaf3e4e56a756",
+        "reviewed": true
+      },
+      {
+        "name": "tahoe-light-search.png",
+        "sha256": "1ba5a569f73932a678fbaa0aee349376cc90b0fd5592f5b9e1192f04632b97cd",
+        "reviewed": true
+      }
+    ],
+    "limits": "Focused Wayland desktop and isolated X11 QML qualification, not a new all-distro desktop run. No fresh automatic scheduling boundary or GTK/Qt application lifecycle qualification: those implementations are unchanged. Full remote dev CI remains enabled; main promotion does not duplicate it."
+  }
 }

@@ -43,15 +43,25 @@ Item {
 	readonly property bool menuOpen: searchBar.menuOpen
 
 	function focusSearch() {
+		if (!root.visible) return;
 		if (detachedSearch) {
+			// Map the child only after the app panel has opened. Native parent
+			// visibility changes can otherwise hide it during a rapid reopen.
+			searchPopup.visible = true;
 			searchPopup.activate();
 		} else {
 			root.requestActivate();
 		}
 		searchBar.textField.forceActiveFocus(Qt.PopupFocusReason);
+		if (!detachedSearch) root.openingSearchFocus = false;
+	}
+
+	function closeSearchPopup() {
+		searchPopup.visible = false;
 	}
 
 	onDetachedSearchChanged: {
+		if (!detachedSearch) closeSearchPopup();
 		inlineSearchBar.closeMenu();
 		detachedSearchBar.closeMenu();
 		Qt.callLater(function() {
@@ -75,7 +85,13 @@ Item {
 		popupDirection: Qt.TopEdge
 		margin: main.searchPopupGap
 		transientParent: root
-		visible: root.visible && main.detachedSearch
+		visible: false
+		onFocusWindowChanged: {
+			if (focusWindow === searchPopup && root.openingSearchFocus) {
+				detachedSearchBar.textField.forceActiveFocus(Qt.PopupFocusReason);
+				root.openingSearchFocus = false;
+			}
+		}
 		// PopupPlasmaWindow stays open by default. Its hideOnWindowDeactivate
 		// property only exists in Plasma 6.7+; our focus group handles dismissal.
 		readonly property int requestedWidth: Math.round(root.width * 0.617)

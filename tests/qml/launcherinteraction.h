@@ -31,8 +31,19 @@ class LauncherInteraction : public QObject {
         }
         for (auto *child : item->childItems()) collectRows(child, rows);
     }
+    QRect m_firstMenuFrame;
+    QMetaObject::Connection m_frameConnection;
 public:
     using QObject::QObject;
+    Q_INVOKABLE void watchMenuFrame(QQuickWindow *menu) {
+        disconnect(m_frameConnection);
+        m_firstMenuFrame = QRect();
+        m_frameConnection = connect(menu, &QQuickWindow::afterAnimating, this, [this, menu] {
+            if (menu->isVisible() && m_firstMenuFrame.isNull())
+                m_firstMenuFrame = menu->geometry();
+        });
+    }
+    Q_INVOKABLE QRect firstMenuFrame() const { return m_firstMenuFrame; }
     Q_INVOKABLE void pauseForEvents(int milliseconds) { QTest::qWait(milliseconds); }
     Q_INVOKABLE void setIconTheme(const QString &directory, const QString &name) {
         QIcon::setThemeSearchPaths({directory});

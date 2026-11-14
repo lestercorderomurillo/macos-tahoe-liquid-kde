@@ -78,8 +78,14 @@ PlasmaCore.Dialog {
 	property int cellSizeWidth: goldenGate ? Math.round(configuredIconSize * 2.1875) : main.tahoeStyle ? Math.round(configuredIconSize * 1.84375) : cellSizeHeight
 	property int rows: plasmoid.configuration.numberOfRows
 	
+	property bool openingSearchFocus: false
+	onActiveChanged: {
+		if (active && openingSearchFocus) Qt.callLater(main.focusSearch);
+	}
 	onVisibleChanged: {
+		openingSearchFocus = visible;
 		if (!visible) {
+			main.closeSearchPopup();
 			reset();
 		} else {
 			syncSize();

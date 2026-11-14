@@ -173,7 +173,7 @@ Item {
 
 			// forceActiveFocus() touches multiple items, so check for
 			// activeFocus first to be more efficient.
-			if (!view.activeFocus) {
+			if (!view.activeFocus && !main.searchBar.textField.activeFocus) {
 				view.forceActiveFocus(Qt.MouseFocusReason);
 			}
 			// No need to check currentIndex first because it's
