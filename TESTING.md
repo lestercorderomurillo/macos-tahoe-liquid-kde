@@ -1,13 +1,14 @@
 # Installer testing
 
-Tahoe **v0.71.6** fixes preset 1 showing the old launcher when installed
-from Golden Gate. The current Tahoe layout follows the selected preset while
-materials continue to follow the installed edition.
+Tahoe **v0.71.7** synchronizes manual and automatic desktop appearance and
+repairs Launcher preset sizing, options-menu input and stale icon artwork.
 
-Focused launcher, edition-transition and Nix checks passed. Native popup checks
-cover both presets, editions and modes; installation/reinstallation was checked
-in a disposable Plasma VM. Photographs retain their original capture provenance.
-See [commands and coverage limits](release-evidence.json).
+Both editions passed disposable Plasma VM install/reinstall, rapid changes and
+actual dusk/dawn transitions. Native input/rendering tests include 150% scaling;
+the [qualified implementation CI](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/actions/runs/43620244461)
+passed both test shards, Nix and eleven distro jobs. See the recorded
+[commands, source identities and coverage limits](release-evidence.json).
+Photographs retain their original capture provenance.
 
 [Light menu](src/screenshots/menu_v4-0343811e426d.webp) · [Dark menu](src/screenshots/menu_dark_v4-171bb0e051ff.webp) · [Capture provenance](src/screenshots/previews/system-menu-tahoe-069-provenance-9c458fcf42db.json)
 
