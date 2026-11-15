@@ -139,9 +139,9 @@ The Tahoe preset shows reference symbols on every action, including the three-sp
 
 <br>
 
-### Control Center
+### Control Center (Alpha)
 
-Wi-Fi, sound, brightness and notifications in one glass menu.
+Wi-Fi, sound, brightness and notifications in one glass menu. Updates will come very soon.
 
 <p align="center">
   <img src="src/screenshots/control-center-light-3e44b74c9a4d.png" alt="Control Center in light mode" width="415">
