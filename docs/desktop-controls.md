@@ -26,3 +26,5 @@ existing clock/calendar is preserved in this delivery.
 Validation and precise hardware/SDK coverage are recorded in
 [release-evidence.json](../release-evidence.json). Historical README photographs
 retain their original source and are not evidence for these new controls.
+
+[Light preview](../src/screenshots/previews/control-center-tahoe-light-a595d01c855e.png) · [Dark preview](../src/screenshots/previews/control-center-tahoe-dark-8d2756c8f857.png) · [Capture provenance](../src/screenshots/previews/control-center-tahoe-provenance.json)

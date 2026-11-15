@@ -1,0 +1,22 @@
+{
+  "component": "Control Center",
+  "source_commit": "6240a56fccba31c1ba1340a090f460dafabe8141",
+  "environment": "Disposable KDE neon Plasma 6.8.1 / Qt 6.11.1 Wayland VM; 3840x2160, scale 2",
+  "scope": "Focused controls previews, separately installed edition defaults and wallpapers; historical galleries unchanged",
+  "images": [
+    {
+      "path": "src/screenshots/previews/control-center-tahoe-light-a595d01c855e.png",
+      "sha256": "a595d01c855ed886f1b57194e7a25190d1b180632cc98293f8b50268a788551f",
+      "reviewed": true,
+      "edition": "tahoe",
+      "mode": "light"
+    },
+    {
+      "path": "src/screenshots/previews/control-center-tahoe-dark-8d2756c8f857.png",
+      "sha256": "8d2756c8f857dbdcdff6c0a8b75c6ed2e1d0255e95ae4193fdbc9a0091fd9db2",
+      "reviewed": true,
+      "edition": "tahoe",
+      "mode": "dark"
+    }
+  ]
+}

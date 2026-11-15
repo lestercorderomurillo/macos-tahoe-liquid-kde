@@ -1,181 +1,151 @@
 {
-  "version": "0.71.12",
-  "source_sha256": "b52ae39ea153d2b35e371141f6b6e65f5714e8992a3e43c930cc5a571efcdddc",
-  "environment": "Isolated Plasma 6.6/6.7 X11 and Plasma 6.7.4 Wayland; disposable Plasma 6.8.1 / Qt 6.11.1 two-display Wayland VM.",
+  "version": "0.72.0",
+  "source_sha256": "6f4738196be2aab3b8ca9b20894aab5e2bb544f8d3783b2740bdd0be92e022ac",
+  "environment": "Disposable Plasma 6.8.1 / Qt 6.11.1 Wayland VM; isolated X11; Plasma 6.6/6.7 SDK builds and distro runtime containers. No host desktop mutation.",
   "checks": [
     {
-      "command": "python3 -m pytest -xq -rs -p no:cacheprovider tests/test_launcher_presets.py -k \"native_launcher_multiscreen or native_launcher_reopens\"",
+      "command": "python3 -m pytest -q tests/test_desktop_controls.py",
       "result": "passed",
-      "detail": "4 passed: portable native multi-screen geometry and live two-output Wayland, both at scale 1 and 1.5. Live Wayland uses a temporary compositor copy without privileged file capabilities.",
-      "log_sha256": "fcf403c8a2073aae8120f2d457c9181a549f7a889064fcc1ffd8ffe278b1332b"
-    },
-    {
-      "command": "python3 -m pytest -xq -p no:cacheprovider tests/test_launcher_presets.py -k \"native_launcher_reopens or native_launcher_anchor\"",
-      "result": "passed",
-      "detail": "3 passed, including the existing isolated X11 late-anchor geometry scenario.",
-      "log_sha256": "52455880c6cc9ef26dca03036e30be7af5c4d68be2cab6c9d6864bec2433f258"
-    },
-    {
-      "command": "python3 -m pytest -xq -p no:cacheprovider tests/test_launcher_presets.py -k \"native_launcher_popup_presets or native_launcher_fractional_scale\"",
-      "result": "passed",
-      "detail": "10 passed: both editions, both presets, light/dark, native focus/menu interactions and fractional scaling on isolated X11.",
-      "log_sha256": "a7868aaee98d4970fc8086c0d56a9fd1898df757b171f6d16849e20d853268fb"
-    },
-    {
-      "command": "docker run --rm --network none --user 1000:1000 -v /tmp/tahoe-launchpad-screens:/source:ro -v /tmp:/artifacts mttkde-acrylic-x11:6.6-user python3 /artifacts/launchpad-sdk66-run.py",
-      "result": "passed",
-      "detail": "Existing offline Plasma 6.6 SDK: native module compiled with cmake -S /source/tests/qml -B /artifacts/launchpad-sdk66 -DLAUNCHER_NATIVE_SOURCE=/source/src/offline/plasmoids/org.kde.mac.tahoe.liquid.taskmanager; cmake --build /artifacts/launchpad-sdk66 -j4. Existing Xvfb anchor scenario passed: SDK66_ANCHOR_OK.",
-      "build_log_sha256": "464e4838bf005071d677948150d46570941bbff8c7f595dd388385afb60111d1",
-      "log_sha256": "02f832544a6ce5772604276bb65fb44b4f0e412674e0aae08ede2aa7681937e1"
-    },
-    {
-      "command": "Guest: sudo env MAC_TAHOE_NO_UPDATE_CHECK=true MTTKDE_NO_CONFIRM=1 MTTKDE_WIZARD_OPTIONS=<installer_choices.defaults() with appearance=light and reset_layout=false> /home/tester/release-capture/source/src/scripts/installer_backend.py install --only --plasmoids --plasma-theme --apply-theme --light",
-      "result": "passed",
-      "detail": "Install and reinstall each edition in a disposable Plasma 6.8.1 / Qt 6.11.1 VM; edition selected through src/scripts/defaults.json. Native module built there; installed binary matches candidate build.",
-      "script_sha256": "d6ab98bc3b9dd75fd022bceb74e326d1f9b980a5617cc0acc7c2c4b2b37c7749"
-    },
-    {
-      "command": "python3 /tmp/launchpad-vm/qualify.py tahoe; python3 /tmp/launchpad-vm/qualify.py golden-gate",
-      "result": "passed",
-      "detail": "64 live KWin geometry checks: Dock clicks and actual Meta-key activation; presets 1/2; monitor sequence 0,1,0,1; light/dark in each edition. Four focused frames reviewed.",
-      "driver_sha256": "02912854e54c3fceae390670a0d106f1e01f2521994c78793ad2f0073506cf16",
-      "guest_actions_sha256": "167132740c58dfa00a433766ead61d0c68b8532a24fb4523d88000a7c61aa8a2",
-      "records_sha256": {
-        "tahoe": "193afde6f3e6563ecca83e8dbcc481772f46667f174cbf542de1239b619d82ef",
-        "golden-gate": "ba59b058cfbd5c770736db9d3cdb5aad9fb427679dc9a6e75b75f5d05522be51"
+      "detail": "Native QML state/action regression: audio, Wi-Fi dispatch and rfkill, power profiles, notification actions/replies/jobs, brightness roles, Focus, pointer/keyboard panel activation, saved Edit Controls. Independently passed in clean Neon, Fedora and openSUSE runtime containers.",
+      "logs": {
+        "theme-controls-neon.log": "77867685350b6877d0d59307683c52e13b4367bc73e0ba811df040b46ae5a6c7",
+        "theme-controls-fedora-final.log": "43db26f998bc22eb28c0a45cbdbba6a1e973537f513c2dcd663ff6df3a77cac6",
+        "theme-controls-suse-complete.log": "51618742eeb866d8fc291a2afa8556ab2397c1e4d001580e539b09705b91792c"
       }
     },
     {
-      "command": "docker run --rm --network none -e PYTHONDONTWRITEBYTECODE=1 -v /tmp/tahoe-launchpad-screens:/source:ro -w /source mttkde-ci-repair-arch:latest python3 -m pytest -xq -rs -p no:cacheprovider tests/test_launcher_presets.py -k \"native_launcher_multiscreen or native_launcher_reopens\"",
+      "command": "python3 -m pytest -q tests/test_launcher_presets.py -k \"control_center_glass_regions or native_launcher_anchor\"",
       "result": "passed",
-      "detail": "2 required native geometry cases passed in an ordinary GPU-less CI container. 2 separate live-Wayland cases explicitly skipped for absent DRM render nodes; their rendering coverage comes from the 4-case host run and the disposable desktop VM, not this container.",
-      "log_sha256": "a5f6ef03a0ecc20e5968cdb40b04158f459b8e07d704d2954c2c2dca41e3ae4c"
+      "detail": "2 passed: rounded region boundaries/gaps and existing isolated X11 launcher anchor behavior.",
+      "logs": {
+        "theme-controls-native-pytest.log": "f7422b09d451d686113558398cbd28bb07420e0e8402200fbafd40cc9fc2ee84"
+      }
+    },
+    {
+      "command": "python3 -m pytest -q tests/test_launcher_presets.py -k control_center_native_x11_render",
+      "result": "passed",
+      "detail": "1 passed: native module and production floating controls rendered in isolated X11; alpha and input-mask gaps asserted.",
+      "logs": {
+        "theme-controls-render-pytest.log": "cad26969a7098ec35b8c42313e15a65d194222627440b1e86afcc59e2ecc8305"
+      }
+    },
+    {
+      "command": "cmake --build /tmp/theme-controls-sdk66 -j4; /tmp/theme-controls-sdk66/controlglassprobe",
+      "result": "passed",
+      "detail": "Plasma 6.6 SDK native helper build and executable region probe passed. Host Plasma 6.7.4 build passed; Plasma 6.8.1 build/load exercised by VM installs.",
+      "logs": {
+        "theme-controls-sdk66.log": "733a3fad174111909104fc1807d805e3e43746dcd48b840e785fc75bcb4cc8fd"
+      }
+    },
+    {
+      "command": "python3 -m pytest -q tests/test_component_cache.py",
+      "result": "passed",
+      "detail": "14 component-cache checks passed after updating the ledger; new shared-control dependency case separately passed.",
+      "logs": {
+        "theme-controls-cache.log": "e1c7dba11aa04ce193d0949abcee4c6d41568e065d49b1a32156452267e529eb"
+      }
+    },
+    {
+      "command": "Guest: installer_backend.py install --only --plasmoids --apply-theme --light",
+      "result": "passed",
+      "detail": "Install and reinstall succeeded for both editions in the disposable VM. Golden Gate was staged by its actual wrapper with local Tahoe source; its first installation also selected plasma/global themes, colors, Kvantum, GTK, wallpapers, window decorations and Acrylic Glass.",
+      "logs": {
+        "control-final-tahoe-install.log": "10693dc4a5f541ed45366bf5c807ed78364891a1ad8d9f8e69d7a1d471695687",
+        "control-final-tahoe-reinstall.log": "c8fded2080a6fa8a114d4e7adf127a0e395d81f622c587bae5f1b12322bdf9bf",
+        "control-final-golden-reinstall.log": "ab7de09fa4058af8f7ad028937a55a4136f8a8f839749701e4aaf3049a999009",
+        "control-final-golden-install.log": "2330a3b3da50a35e9d77819ddf9166ca25d81dd757695d5cc8e8abcab286ed11"
+      }
+    },
+    {
+      "command": "Guest: control-env.py python3 control-transitions.py <tahoe|golden-gate>",
+      "result": "passed",
+      "detail": "9 transitions per edition passed with Control Center/Battery/Wi-Fi/Notifications, Qt/Kvantum and GTK 3/4 alive: standalone, native KDE, native GTK, overlapping latest selection, actual automatic dusk crossing, manual supersession. Saved optics and wallpapers unchanged; process identities preserved.",
+      "logs": {
+        "control-tahoe-transitions.log": "fb6a0944be018df7e8c115cd4503668a9de37662a0fe4a2217ac6e39bc96b96a",
+        "control-golden-transitions.log": "836a5c3a8d47b48309995dd81ff716329ced9f73bdf239620c7fa194166dd51d"
+      }
+    },
+    {
+      "command": "GOLDEN_GATE_TAHOE_SOURCE=/tmp/tahoe-desktop-controls MAC_TAHOE_NO_UPDATE_CHECK=true ./install --prepare; python3 -m pytest -q tests/test_bootstrap.py tests/test_source_archive.py tests/test_release_update.py tests/test_local_updates.py",
+      "result": "passed",
+      "detail": "Actual Golden Gate source preparation succeeded; 83 wrapper checks passed.",
+      "logs": {
+        "theme-controls-golden-stage.log": "399d410b99d660ebafa2eb57b279caf96970977da07100d292b2a050f8b5b527",
+        "theme-controls-golden-wrapper.log": "b5be7cb9735e82afc40b2e61eacd5c4a93997ea7e5bc7daf360780c5d1e4cb99"
+      }
     }
   ],
   "gallery_commit": "9993f61cc0afeba7e39afee776c99f29a55edb8f",
   "captures": [
     {
-      "path": "src/screenshots/launcher_preset_1_light-8999bb38291b.webp",
-      "sha256": "8999bb38291b3748ca8c457807a9380f503fca20291367dd04ffbad275287967",
-      "reviewed": true
+      "path": "src/screenshots/previews/control-center-tahoe-light-a595d01c855e.png",
+      "sha256": "a595d01c855ed886f1b57194e7a25190d1b180632cc98293f8b50268a788551f",
+      "reviewed": true,
+      "edition": "tahoe",
+      "mode": "light"
     },
     {
-      "path": "src/screenshots/launcher_preset_1_dark-5349732aa184.webp",
-      "sha256": "5349732aa18403b9131c626ccf67dd52c10faca1ce094046e5e9211a5f923c76",
-      "reviewed": true
+      "path": "src/screenshots/previews/control-center-tahoe-dark-8d2756c8f857.png",
+      "sha256": "8d2756c8f857dbdcdff6c0a8b75c6ed2e1d0255e95ae4193fdbc9a0091fd9db2",
+      "reviewed": true,
+      "edition": "tahoe",
+      "mode": "dark"
     }
   ],
   "qualification": {
-    "scope": "Detached launcher search resolves its output from the global anchor geometry rather than the parent QWindow screen, which is stale during a cross-monitor reopen. No material, scheduler, shader or installer logic change.",
+    "scope": "Original project Control Center, Wi-Fi, Battery and Notifications; native KDE backends and rounded glass regions. Calendar deferred. No KWin shader/effect changes.",
+    "implementation_commit": "6240a56fccba31c1ba1340a090f460dafabe8141",
+    "baseline": "425199ee1363f2278df208049dbfbe059d7268ee",
     "vm_image_sha256": "412e7933f10add20b921b92c02709e7eea56acd14dc14cf654f58fba4ea3cc9d",
-    "outputs": [
-      {
-        "name": "Virtual-1",
-        "scale": 2,
-        "geometry": [
-          0,
-          0,
-          1920,
-          1080
-        ]
+    "installed": {
+      "org.kde.mac-tahoe-liquid-kde.controlcenter": {
+        "contents/ui/main.qml": "928c73582614550f5c60c4116a2d804eeec97fbc596e44e8c74a71c9f316132e",
+        "contents/ui/FocusSwitch.qml": "cc994585606b7dc8fc2c4d003a4c44e181a629b90147a46a05f285b9be78ae2b",
+        "contents/ui/EditControls.qml": "50d6aff538c4a0993c288656e245857e897bebb249e0ddd5a08f80647d5382cc",
+        "contents/ui/ControlView.qml": "8633f91eb6053d3543d1d38663ccb845bebb6efe867d805816c9cd67df64f2cd",
+        "contents/ui/WifiView.qml": "473f081b7e84fff7b047ffad99b56f3e106df641c876f46846487d05d370bfc1",
+        "contents/ui/MediaView.qml": "723b3edd5fae7712c79833e926739c388e40fb385e0a8ccba76cd8fc2a340c8b",
+        "contents/ui/BatteryView.qml": "7839523a58a8d0a54f6be2749b00e619fd89cd160683941380e57a2b7c540253",
+        "contents/ui/PanelButton.qml": "8dd9f4c63dc13f9d7770c153e46d151f4ea16bf7129efe2ead6882c31ee8fe80",
+        "contents/ui/ControlTile.qml": "5b20cfd8f43c0713f39ee320e86d6b1783ca68648f33907b100aef2d6f9f38b0",
+        "contents/ui/AudioView.qml": "b75c40fb0f72db2d99d460ef2103f1f7ead57cf3cf6df2da679a8b3f758f30b0",
+        "contents/ui/BluetoothView.qml": "b5372daae19e4fa6adaed438bb051493844cc0c0e62f6aa0f977b3bb5cb07b69",
+        "contents/ui/Page.qml": "97d5f8b11972241fd26da1f1882f3ed3ef7d35be2cf35235ac3063b8fad4e45d",
+        "contents/ui/DisplayView.qml": "7b58ce0d9d5cea9d6b9fa08a2c9301b01ab3d53c1bb7286655f3d348d45300b9",
+        "contents/ui/controlcenter.svg": "a1149ac7986ed1af0c872feb780c912b911377d793943cfe864dc9eed7f08e2c",
+        "contents/ui/SettingsLink.qml": "2dbe7f565826655bb87b8e7e906871230ada9669d992a1eae52fc03257aa2b83",
+        "contents/ui/ControlAction.qml": "2cf5fcbd17cd147f5d438ea01d639ff5f5377aa3bda52a6c923dba47028318ec",
+        "contents/ui/GlassSlider.qml": "466923a753fa75b1249080c5bb4e428f3b249a4cd1c1764d76dc09c4ca81d7a3",
+        "contents/ui/NotificationsView.qml": "2b5829e48224f655fd5a17e09c0bd5f847201638d5817eb888f9aa9adb135995",
+        "contents/config/main.xml": "7aa2a39e8d0331d7786194b1ebcac1874bb3760bdea575afd90c631f88a0387c"
       },
-      {
-        "name": "Virtual-2",
-        "scale": 2.7,
-        "geometry": [
-          1920,
-          0,
-          1422,
-          800
-        ]
-      }
-    ],
-    "installed_native": {
-      "tahoe": {
-        "path": "/usr/lib/x86_64-linux-gnu/qt6/qml/org/kde/mac/tahoe/launcher/libmactahoelauncher.so",
-        "binary_sha256": "06f16bc699b449a437cb6ef3f1827ac6e74ef46249e34969b5c8be21e10c4100",
-        "source": {
-          "launchersearchpopup.cpp": "6d95741c2ad912b81c1a7d2c0acc4d5a5ba4f8eb62ab24d25dc4fdb54866483d",
-          "launchersearchpopup.h": "9b6335b6728a4d0efb568aecd11859c081038f4d4662da2c4f42c43e5d12f617"
-        },
-        "version": "plasmashell 6.8.1"
+      "org.kde.mac-tahoe-liquid-kde.wifi": {
+        "contents/ui/main.qml": "c306dc9ba6114119542c5f3025ee5104645781e6fc7e06af2eb5039c4a24a4fa"
       },
-      "golden-gate": {
-        "path": "/usr/lib/x86_64-linux-gnu/qt6/qml/org/kde/mac/tahoe/launcher/libmactahoelauncher.so",
-        "binary_sha256": "06f16bc699b449a437cb6ef3f1827ac6e74ef46249e34969b5c8be21e10c4100",
-        "build_sha256": "06f16bc699b449a437cb6ef3f1827ac6e74ef46249e34969b5c8be21e10c4100",
-        "source": {
-          "launchersearchpopup.cpp": "6d95741c2ad912b81c1a7d2c0acc4d5a5ba4f8eb62ab24d25dc4fdb54866483d",
-          "launchersearchpopup.h": "9b6335b6728a4d0efb568aecd11859c081038f4d4662da2c4f42c43e5d12f617"
-        },
-        "version": "plasmashell 6.8.1"
+      "org.kde.mac-tahoe-liquid-kde.battery": {
+        "contents/ui/main.qml": "b060f42fc5401d8b3fbdcb39d3620ca275d945bb81d640913dcbd8c412d245c4"
+      },
+      "org.kde.mac-tahoe-liquid-kde.notifications": {
+        "contents/ui/main.qml": "ea802e4948a73395415f1725b9e4d2aea7b4f72f4ba548e49c14377d948f0936"
+      },
+      "native": {
+        "installed_sha256": "1f9bdc8bba0768ff5546725225c1cc4109b264a4f180acafb1c85415e4133973",
+        "sources": {
+          "controlglass.h": "0ba60bfb7398b77fefab8d1fbd108779619629bf46d75b7d86287a8c2c2cf185",
+          "controlglass.cpp": "26cf7f42651b6e706270c7f33229149f56211f465f21cbf8307397605b1dba1c"
+        }
       }
     },
-    "frames": [
-      {
-        "name": "tahoe-light.png",
-        "sha256": "6443eed3ad5a884ce554531f4fefb7ff6984f459a4a0f656404808559fe7f557",
-        "reviewed": true,
-        "edition": "tahoe"
-      },
-      {
-        "name": "tahoe-dark.png",
-        "sha256": "8e8fca89cb59188d78713983c3a7920b458306bce0fcebff59cf86ae8f4728fb",
-        "reviewed": true,
-        "edition": "tahoe"
-      },
-      {
-        "name": "golden-gate-light.png",
-        "sha256": "dd5173f720f9795c3ac5d076a161c2c0da81b1619ee850c2cc3201af983cd895",
-        "reviewed": true,
-        "edition": "golden-gate"
-      },
-      {
-        "name": "golden-gate-dark.png",
-        "sha256": "79d2cc5c5e0c1a9b0e9cf0ecf3c0f667bddb1c2ba1a6a747d39d43a3668dd6fa",
-        "reviewed": true,
-        "edition": "golden-gate"
-      }
-    ],
-    "reproduction": {
-      "source_commit": "e0cb3e7d1354bca2f8119cf680c3d78e9bb0206e",
-      "trigger": "Open on first output, hide both windows, reopen on second output in one event-loop turn.",
-      "before": {
-        "panel": [
-          1600,
-          300,
-          608,
-          408
-        ],
-        "search": [
-          968,
-          208,
-          300,
-          80
-        ]
-      },
-      "after": {
-        "panel": [
-          1600,
-          300,
-          608,
-          408
-        ],
-        "search": [
-          1754,
-          208,
-          300,
-          80
-        ]
-      }
+    "transition_records": {
+      "tahoe": "12969c712aad2012e1a072c2706aec9075a2f815285f682dae59d4c6a3bb976e",
+      "golden-gate": "e24cb690aa74b966cff00d6ef053ab639c3f398f5faa4b795135ae9509d71c0e"
     },
-    "limits": "Real desktop install/input/rendering qualification is Wayland. X11 is an isolated native popup harness. No monitor unplug/replug or automatic-appearance transition claim; those implementations are unchanged. VM retains its existing wallpaper; frames are focused validation, not replacement documentation photographs. Historical galleries retain their original provenance. Full remote CI is tracked separately.",
-    "reused_from": "v0.71.11: native launcher sources, installer inputs and VM environment are unchanged. Only test-harness startup/settling and release metadata changed.",
-    "ci_correction": {
-      "prior_run": "https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/actions/runs/43745654957",
-      "result": "Primary shard 0 failed only the two live-Wayland test startups; other primary shard, Nix and every distro leg passed.",
-      "cause": "System KWin file capabilities prevent exec in the container, and its virtual renderer requires a DRM device unavailable there.",
-      "repair": "Always execute the same native two-output scenario using the configurable offscreen QPA; retain separate live-Wayland cases when a render node is available. Bound asynchronous geometry settling; preserve all placement assertions."
-    }
+    "drivers": {
+      "theme-controls-transitions.py": "98f0ca82e47ebe7106fa75e31dbb3aa1fe42cbb0633913f0f16a9e34913277be",
+      "theme-controls-appearance-probe.py": "74274bb8d86c49ec6887e871bc2778b64c355b7ae3a8a5c71c4cdfef7511658b",
+      "theme-controls-start-apps.py": "451eb59531cf057b176d2e51f8b0a53de418246c0b9d6d315897b09019027a93",
+      "theme-controls-identities.py": "6860e0d6e18d4f7dd5fb4cd1ad3b8e0a4896d793c67de48cceb09683157af88a"
+    },
+    "limits": "Physical Wi-Fi connection, Bluetooth hardware, battery discharge and audio playback were not available in the VM; native-model fixtures exercise state/action dispatch. Full desktop rendering is Wayland; X11 covers native module, visible controls and regions without a compositor/refraction claim. Automatic crossing is the project dusk schedule; no new native KDE scheduler implementation claim. Historical galleries retain original provenance. Remote dev CI is separate. Clipboard candidate subsequently pushed by another task is not part of this qualified source."
   }
 }
