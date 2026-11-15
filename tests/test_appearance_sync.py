@@ -351,3 +351,26 @@ def test_selection_after_final_guard_is_not_acknowledged_as_our_write(desktop, m
     assert calls == ['light', 'dark', 'light']
     assert ts._read_appearance_state()['preference'] == 'light'
     assert ts._read_appearance_state()['applied'] == 'light'
+
+
+def test_completed_gsettings_write_invalidates_cache_before_database_flush(sandbox, monkeypatch):
+    import subprocess
+    config = sandbox / '.config'
+    (config / 'dconf').mkdir(exist_ok=True)
+    (config / 'dconf/user').write_bytes(b'unchanged on-disk database identity')
+    values = {'color-scheme': 'prefer-dark', 'gtk-theme': 'MacTahoeLiquidKde-Dark'}
+    monkeypatch.setattr(ts, '_xdg_config', lambda: config)
+    monkeypatch.setattr(ts, '_GNOME_APPEARANCE_CACHE', (None, {}))
+    monkeypatch.setattr(ts, '_have', lambda _: True)
+    def run(command, **kwargs):
+        if command[1] == 'set':
+            values[command[3]] = command[4]
+        return subprocess.CompletedProcess(command, 0, repr(values[command[3]]), '')
+    monkeypatch.setattr(ts.subprocess, 'run', run)
+    monkeypatch.setattr(ts, '_appearance_snapshot',
+                        lambda: ts._gnome_appearance() | {'automatic': False})
+    guard = ts._AppearanceGuard('light')
+    monkeypatch.setattr(ts, '_APPEARANCE_GUARD', guard)
+    ts._run_user(['gsettings', 'set', 'org.gnome.desktop.interface', 'color-scheme', 'prefer-light'], timeout=5)
+    guard.check()
+    assert guard.previous['gnome-color-scheme'] == 'light'

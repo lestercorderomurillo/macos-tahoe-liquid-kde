@@ -2034,6 +2034,7 @@ class _AppearanceGuard:
         self.follow_colors = follow_colors and self.previous.get("colors") == target
 
     def record_write(self, command):
+        global _GNOME_APPEARANCE_CACHE
         # A native choice can restore the old value before our next sample.
         # Remember completed writes so that reversal is still recognized.
         tool = Path(command[0]).name
@@ -2043,6 +2044,11 @@ class _AppearanceGuard:
         elif tool == "gsettings" and len(command) == 5 and command[1:3] == ["set", "org.gnome.desktop.interface"]:
             fields = {"color-scheme": ["gnome-color-scheme"],
                       "gtk-theme": ["gnome-gtk-theme"]}.get(command[3], [])
+            # Dconf acknowledges the session write before its database file
+            # necessarily changes. A cached pre-write value is not a new user
+            # choice; read the service again before checking for a reversal.
+            if fields:
+                _GNOME_APPEARANCE_CACHE = (None, {})
         elif tool == "kwriteconfig6" and all(flag in command for flag in ("--file", "--group", "--key")):
             setting = tuple(command[command.index(flag) + 1] for flag in ("--file", "--group", "--key"))
             fields = {("kdeglobals", "General", "ColorScheme"): ["colors"],
