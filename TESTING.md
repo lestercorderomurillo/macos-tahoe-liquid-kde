@@ -1,6 +1,6 @@
 # Installer testing
 
-Tahoe **v0.71.11** keeps the Launcher and detached search together when reopening
+Tahoe **v0.71.12** keeps the Launcher and detached search together when reopening
 on another monitor. Focused X11/Wayland regressions and disposable Plasma 6.8
 install/reinstall checks passed; both editions were exercised through Dock clicks
 and Meta-key activation on two differently scaled monitors in light/dark mode.

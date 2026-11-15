@@ -28,6 +28,7 @@ Item {
         repeat: true
         property int phase: 0
         property int target: 0
+        property int retries: 0
         function openOn(index) {
             target = index;
             const output = Qt.application.screens[index];
@@ -44,7 +45,9 @@ Item {
                 || capsule.x < output.virtualX || capsule.x + capsule.width > output.virtualX + output.width
                 || capsule.y < output.virtualY || capsule.y + capsule.height > output.virtualY + output.height) {
                 throw new Error("screen " + target + ": panel=" + panel.x + "," + panel.y
-                    + " capsule=" + capsule.x + "," + capsule.y);
+                    + " size=" + panel.width + "x" + panel.height
+                    + " anchor=" + panel.contentItem.width + "x" + panel.contentItem.height
+                    + " capsule=" + capsule.x + "," + capsule.y + " size=" + capsule.width + "x" + capsule.height);
             }
         }
         onTriggered: {
@@ -69,7 +72,10 @@ Item {
                 default:
                     verify(); console.warn("LAUNCHER_SCREENS_OK"); stop(); Qt.exit(0);
                 }
+                retries = 0;
             } catch (error) {
+                // Native output/configure events may lag on software-rendered CI.
+                if (retries++ < 10) { --phase; return; }
                 console.error("LAUNCHER_SCREENS_FAILED", phase, error);
                 stop(); Qt.exit(1);
             }

@@ -1,6 +1,7 @@
 """Edition defaults and preset preservation when Plasma rebuilds panels."""
 
 import json
+from pathlib import Path
 import os
 import re
 import select
@@ -167,8 +168,43 @@ def test_native_launcher_anchor_geometry(repo, tmp_path, launcher_popup_module):
 
 
 @pytest.mark.parametrize("scale", [1, 1.5])
+def test_native_launcher_multiscreen_geometry(repo, tmp_path, launcher_popup_module, scale):
+    """Exercise the native placement path without requiring a GPU/compositor."""
+    screens = tmp_path / "screens.json"
+    screens.write_text(json.dumps({"windowFrameMargins": False, "screens": [
+        {"name": "first", "x": 0, "y": 0, "width": 1920, "height": 1440, "dpr": scale},
+        {"name": "second", "x": 1920, "y": 0, "width": 1920, "height": 1440, "dpr": scale},
+    ]}))
+    with tempfile.TemporaryDirectory(prefix="launcher-geometry-") as runtime:
+        env = os.environ | {
+            "HOME": str(tmp_path), "XDG_CONFIG_HOME": str(tmp_path / "config"),
+            "XDG_DATA_HOME": str(tmp_path / "data"), "XDG_CACHE_HOME": str(tmp_path / "cache"),
+            "XDG_STATE_HOME": str(tmp_path / "state"), "XDG_RUNTIME_DIR": runtime,
+            "XDG_CONFIG_DIRS": "/etc/xdg", "XDG_DATA_DIRS": "/usr/local/share:/usr/share",
+            "DBUS_SESSION_BUS_ADDRESS": "unix:path=" + runtime + "/no-host-bus",
+            "QT_QPA_PLATFORM": "offscreen:configfile=" + str(screens),
+            "QT_QPA_OFFSCREEN_NO_GLX": "1", "QT_QPA_PLATFORMTHEME": "generic",
+            "QT_QUICK_BACKEND": "software", "QT_FORCE_STDERR_LOGGING": "1",
+            "QML_IMPORT_PATH": str(launcher_popup_module), "QT_SCALE_FACTOR": "1",
+        }
+        for key in ("DISPLAY", "WAYLAND_DISPLAY"):
+            env.pop(key, None)
+        result = subprocess.run([
+            str(launcher_popup_module.parent / "dockgeometryprobe"),
+            str(repo / "tests/qml/LauncherScreensProbe.qml")],
+            env=env, capture_output=True, text=True, timeout=30)
+        assert result.returncode == 0, result.stdout + result.stderr
+        assert "LAUNCHER_SCREENS_OK" in result.stderr
+
+
+@pytest.mark.parametrize("scale", [1, 1.5])
 def test_native_launcher_reopens_on_another_screen(repo, tmp_path, launcher_popup_module, scale):
     """The cached parent still has its old QScreen when the capsule opens."""
+    # KWin's virtual backend requires a DRM device; normal CI containers have
+    # none. Keep the same native scenario mandatory through Qt's offscreen QPA
+    # below, and qualify actual Wayland rendering in the disposable Plasma VM.
+    if not any(os.access(node, os.R_OK | os.W_OK) for node in Path("/dev/dri").glob("renderD*")):
+        pytest.skip("Live Wayland requires a DRM render node; native offscreen geometry remains covered")
     for tool in ("kwin_wayland", "dbus-run-session"):
         if not shutil.which(tool):
             pytest.skip(f"{tool} required for isolated multi-output Wayland")
@@ -192,6 +228,10 @@ def test_native_launcher_reopens_on_another_screen(repo, tmp_path, launcher_popu
         bus.write_text('<busconfig><type>session</type><listen>unix:tmpdir=/tmp</listen>'
                        '<policy context="default"><allow user="*"/><allow send_destination="*"/>'
                        '<allow receive_sender="*"/><allow own="*"/></policy></busconfig>')
+        # copyfile omits system CAP_SYS_NICE xattrs rejected by containers.
+        compositor = tmp_path / "kwin_wayland"
+        shutil.copyfile(shutil.which("kwin_wayland"), compositor)
+        compositor.chmod(0o755)
         client = tmp_path / "screens-client.sh"
         import shlex
         client.write_text("#!/bin/sh\nexport QT_QPA_PLATFORM=wayland\nexec " + shlex.join([
@@ -201,7 +241,7 @@ def test_native_launcher_reopens_on_another_screen(repo, tmp_path, launcher_popu
         log_path = tmp_path / "screens.log"
         with log_path.open("w") as log:
             process = subprocess.Popen([
-                "dbus-run-session", "--config-file", str(bus), "--", "kwin_wayland",
+                "dbus-run-session", "--config-file", str(bus), "--", str(compositor),
                 "--virtual", "--socket", "launcher-screens", "--width", "1920", "--height", "1440",
                 "--scale", str(scale), "--output-count", "2", "--no-lockscreen",
                 "--no-global-shortcuts", "--exit-with-session", str(client)],
