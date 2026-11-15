@@ -1,181 +1,352 @@
 {
-  "version": "0.71.12",
-  "source_sha256": "b52ae39ea153d2b35e371141f6b6e65f5714e8992a3e43c930cc5a571efcdddc",
-  "environment": "Isolated Plasma 6.6/6.7 X11 and Plasma 6.7.4 Wayland; disposable Plasma 6.8.1 / Qt 6.11.1 two-display Wayland VM.",
+  "version": "0.72.0",
+  "source_sha256": "f2fae6356a1612f20edbe8a8b6b5a46fdba23cfd9e75395d77b7165a77e017ee",
+  "environment": "Private Xvfb and D-Bus sessions; clean Arch CI container; disposable KDE neon Plasma 6.8.1 / Qt 6.11.1 Wayland VM. No host desktop mutation.",
   "checks": [
     {
-      "command": "python3 -m pytest -xq -rs -p no:cacheprovider tests/test_launcher_presets.py -k \"native_launcher_multiscreen or native_launcher_reopens\"",
+      "command": "python3 -m pytest -q tests/test_clipboard_step.py",
       "result": "passed",
-      "detail": "4 passed: portable native multi-screen geometry and live two-output Wayland, both at scale 1 and 1.5. Live Wayland uses a temporary compositor copy without privileged file capabilities.",
-      "log_sha256": "fcf403c8a2073aae8120f2d457c9181a549f7a889064fcc1ffd8ffe278b1332b"
+      "detail": "16 passed: opt-in, service readiness/shutdown, shortcut ownership/restoration, install failures and no-op removal.",
+      "log_sha256": "e36b6ac3f26f6514018446c23569d17ea08e20849d68730d4f16bfe467656eb5"
     },
     {
-      "command": "python3 -m pytest -xq -p no:cacheprovider tests/test_launcher_presets.py -k \"native_launcher_reopens or native_launcher_anchor\"",
+      "command": "python3 -m pytest -q tests/test_clipboard_popup.py -k singleton",
       "result": "passed",
-      "detail": "3 passed, including the existing isolated X11 late-anchor geometry scenario.",
-      "log_sha256": "52455880c6cc9ef26dca03036e30be7af5c4d68be2cab6c9d6864bec2433f258"
+      "detail": "2 passed: singleton safety, including no-follow reads/writes. Other unchanged popup behavior retains the prior 38 passing checks.",
+      "log_sha256": "ad6d49efc700b49b55af2ff9057ea97c282d286db071622361a0f87c37cc9bc9"
     },
     {
-      "command": "python3 -m pytest -xq -p no:cacheprovider tests/test_launcher_presets.py -k \"native_launcher_popup_presets or native_launcher_fractional_scale\"",
+      "command": "python3 -m pytest -q tests/test_clipboard_native.py",
       "result": "passed",
-      "detail": "10 passed: both editions, both presets, light/dark, native focus/menu interactions and fractional scaling on isolated X11.",
-      "log_sha256": "a7868aaee98d4970fc8086c0d56a9fd1898df757b171f6d16849e20d853268fb"
+      "detail": "Compiled daemon persistence/pin/path checks on a private bus, plus real text/image/secret-hint capture and copyback on isolated Xvfb.",
+      "log_sha256": "b431a4cf5967121895f0c7541194ac74693200faca0bef5f9718062a43179654"
     },
     {
-      "command": "docker run --rm --network none --user 1000:1000 -v /tmp/tahoe-launchpad-screens:/source:ro -v /tmp:/artifacts mttkde-acrylic-x11:6.6-user python3 /artifacts/launchpad-sdk66-run.py",
+      "command": "docker run --rm --network none -e PYTHONDONTWRITEBYTECODE=1 -v /tmp/tahoe-pr123:/source:ro -w /source mttkde-ci-repair-arch:latest python3 -m pytest -q tests/test_clipboard_native.py",
       "result": "passed",
-      "detail": "Existing offline Plasma 6.6 SDK: native module compiled with cmake -S /source/tests/qml -B /artifacts/launchpad-sdk66 -DLAUNCHER_NATIVE_SOURCE=/source/src/offline/plasmoids/org.kde.mac.tahoe.liquid.taskmanager; cmake --build /artifacts/launchpad-sdk66 -j4. Existing Xvfb anchor scenario passed: SDK66_ANCHOR_OK.",
-      "build_log_sha256": "464e4838bf005071d677948150d46570941bbff8c7f595dd388385afb60111d1",
-      "log_sha256": "02f832544a6ce5772604276bb65fb44b4f0e412674e0aae08ede2aa7681937e1"
+      "detail": "Native daemon and X11 scenario passed with clean CI dependencies.",
+      "log_sha256": "e4c9f3d2d3b3c3b9f53d23198f8e53853c00e8ef19e46e56beeeef3dba122146"
     },
     {
-      "command": "Guest: sudo env MAC_TAHOE_NO_UPDATE_CHECK=true MTTKDE_NO_CONFIRM=1 MTTKDE_WIZARD_OPTIONS=<installer_choices.defaults() with appearance=light and reset_layout=false> /home/tester/release-capture/source/src/scripts/installer_backend.py install --only --plasmoids --plasma-theme --apply-theme --light",
+      "command": "python3 -m pytest -q tests/test_appearance_sync.py",
       "result": "passed",
-      "detail": "Install and reinstall each edition in a disposable Plasma 6.8.1 / Qt 6.11.1 VM; edition selected through src/scripts/defaults.json. Native module built there; installed binary matches candidate build.",
-      "script_sha256": "d6ab98bc3b9dd75fd022bceb74e326d1f9b980a5617cc0acc7c2c4b2b37c7749"
+      "detail": "28 passed on the final synchronization implementation; covers stale GTK output, dconf readback, overlapping native requests, cleanup and scheduler authority.",
+      "log_sha256": "0d392bb1ad47f612fc41dc6ea1ca05ccb8e934a409307ada32bce346182ed904"
     },
     {
-      "command": "python3 /tmp/launchpad-vm/qualify.py tahoe; python3 /tmp/launchpad-vm/qualify.py golden-gate",
+      "command": "docker run --rm --network none -e PYTHONDONTWRITEBYTECODE=1 -e QT_QPA_PLATFORM=offscreen -e XDG_RUNTIME_DIR=/tmp/pr123-runtime -e XDG_CONFIG_HOME=/tmp/pr123-config -e XDG_STATE_HOME=/tmp/pr123-state -e XDG_DATA_HOME=/tmp/pr123-data -e DBUS_SESSION_BUS_ADDRESS=unix:path=/tmp/no-session -v /tmp/tahoe-pr123:/source:ro -w /source mttkde-ci-repair-arch:latest python3 -m pytest -q -p no:cacheprovider tests/test_appearance_sync.py tests/test_theme_switch.py",
       "result": "passed",
-      "detail": "64 live KWin geometry checks: Dock clicks and actual Meta-key activation; presets 1/2; monitor sequence 0,1,0,1; light/dark in each edition. Four focused frames reviewed.",
-      "driver_sha256": "02912854e54c3fceae390670a0d106f1e01f2521994c78793ad2f0073506cf16",
-      "guest_actions_sha256": "167132740c58dfa00a433766ead61d0c68b8532a24fb4523d88000a7c61aa8a2",
-      "records_sha256": {
-        "tahoe": "193afde6f3e6563ecca83e8dbcc481772f46667f174cbf542de1239b619d82ef",
-        "golden-gate": "ba59b058cfbd5c770736db9d3cdb5aad9fb427679dc9a6e75b75f5d05522be51"
-      }
+      "detail": "150 passed before the final GTK-output guard case; unchanged cases reused and the final 28-case state-machine run includes that repair.",
+      "log_sha256": "950ae5d338b46300e0e2976768da9be999383045a0f9302a7b9507d55674cd70"
     },
     {
-      "command": "docker run --rm --network none -e PYTHONDONTWRITEBYTECODE=1 -v /tmp/tahoe-launchpad-screens:/source:ro -w /source mttkde-ci-repair-arch:latest python3 -m pytest -xq -rs -p no:cacheprovider tests/test_launcher_presets.py -k \"native_launcher_multiscreen or native_launcher_reopens\"",
+      "command": "docker run --rm -e PYTHONDONTWRITEBYTECODE=1 -v /tmp/tahoe-pr123:/source:ro -w /source mttkde-ci-repair-arch:latest sh -c \"pacman -Syu --noconfirm --needed python-gobject gtk3 && python3 -m pytest -q -p no:cacheprovider tests/test_gtk3_system_appearance.py\"",
       "result": "passed",
-      "detail": "2 required native geometry cases passed in an ordinary GPU-less CI container. 2 separate live-Wayland cases explicitly skipped for absent DRM render nodes; their rendering coverage comes from the 4-case host run and the disposable desktop VM, not this container.",
-      "log_sha256": "a5f6ef03a0ecc20e5968cdb40b04158f459b8e07d704d2954c2c2dca41e3ae4c"
+      "detail": "Native GTK 3 dark/light/dark/light selection passed while retaining the application startup dark flag; GTK 3 is explicitly declared in primary CI.",
+      "log_sha256": "b213c6b154bf8451e35723ec7950c980626a223bb8673b5b72adb168850861f8"
+    },
+    {
+      "command": "python3 -m pytest -q tests/test_nix.py -k asset_assembly",
+      "result": "passed",
+      "detail": "Both edition asset assemblies passed, including the explicit light GTK alias and edition window controls.",
+      "log_sha256": "e77dcf01f4938c0a94767efb5f2e7db787b8acb7a237f7f9e5a70cab8c54f7a0"
+    },
+    {
+      "command": "Guest: installer_backend.py install --only --clipboard --apply-theme --light (install and reinstall)",
+      "result": "passed",
+      "detail": "Tahoe full installer transactions passed, including replacement of a surviving legacy watcher. Subsequent runtime-only corrections were installed through steps.theme_switch.install() and checked live.",
+      "log_sha256": "30a51927621abf0d50c393e903e9103f8369b24e3bf11d12a5f801a62c6a993d"
+    },
+    {
+      "command": "Guest: tests/vm/clipboard_appearance.py; tests/vm/clipboard_shortcut.py",
+      "result": "passed",
+      "detail": "Tahoe continuous Qt/Kvantum and GTK 3/4 windows passed standalone/native/GTK selections, rapid overlapping requests, completed and interrupted 18:00 automatic boundaries. Registered Meta+V launch/toggle passed separately.",
+      "log_sha256": "d6b63b3a426f0e6aefb08ed7f2b1711b51d02253fe84540d55fba47461af2ab6"
+    },
+    {
+      "command": "Guest: installer_backend.py install --only --clipboard --color-schemes --global-theme --gtk --kvantum --plasma-theme --light --apply-theme; installer_backend.py install --only --clipboard --apply-theme --light",
+      "result": "passed",
+      "detail": "Final prepared Golden Gate source installed and reinstalled with its own defaults and theme assets.",
+      "log_sha256": "ed9ab2634316a1c7d85b9ad0aaf44bb9e7ec6911f784b95fe8028bf7b2509fcd"
+    },
+    {
+      "command": "Guest: tests/vm/clipboard_appearance.py",
+      "result": "passed",
+      "detail": "Golden Gate continuous Qt/Kvantum and GTK 3/4 windows passed the same complete and overlapping appearance scenarios.",
+      "log_sha256": "e1aac971fa48e7404002ff5345bddd96d05cea8cff4ce2eb49baef25cd2124e0"
+    },
+    {
+      "command": "Guest: tests/vm/clipboard_lifecycle.py",
+      "result": "passed",
+      "detail": "Golden Gate install/uninstall restored the original shortcut, preserved subsequent custom bindings, removed history, and tolerated repeated removal. Unchanged clipboard lifecycle also passed in Tahoe.",
+      "log_sha256": "6f43242090d1fd8f3b501c32c8a300895ffebed7c41cb33aa82bbdefe959a604"
     }
   ],
   "gallery_commit": "9993f61cc0afeba7e39afee776c99f29a55edb8f",
   "captures": [
     {
-      "path": "src/screenshots/launcher_preset_1_light-8999bb38291b.webp",
-      "sha256": "8999bb38291b3748ca8c457807a9380f503fca20291367dd04ffbad275287967",
-      "reviewed": true
+      "path": "src/screenshots/previews/clipboard-light-7f4256d7e409.png",
+      "sha256": "7f4256d7e409999fdbdcb526da6453e3415af155969823530782052b27d43f5d",
+      "reviewed": true,
+      "edition": "tahoe",
+      "mode": "light"
     },
     {
-      "path": "src/screenshots/launcher_preset_1_dark-5349732aa184.webp",
-      "sha256": "5349732aa18403b9131c626ccf67dd52c10faca1ce094046e5e9211a5f923c76",
-      "reviewed": true
+      "path": "src/screenshots/previews/clipboard-dark-1aabd3f3853f.png",
+      "sha256": "1aabd3f3853fca12bb1bef1f42c64ee34f56efea4bb7f5ff2c034162a183dbb1",
+      "reviewed": true,
+      "edition": "tahoe",
+      "mode": "dark"
     }
   ],
   "qualification": {
-    "scope": "Detached launcher search resolves its output from the global anchor geometry rather than the parent QWindow screen, which is stale during a cross-monitor reopen. No material, scheduler, shader or installer logic change.",
+    "scope": "Optional clipboard history integrated with the native Custom wizard; safe history/pins and shortcut lifecycle; shared latest-selection appearance synchronization and GTK 3 startup-dark-flag correction.",
+    "code_commit": "9b2c3be993eee510b84ea50e4af86b64665d9052",
+    "source_files_sha256": {
+      "src/offline/clipboard/clipboard.py": "ec49b324fb47fe64faaa62fe83830a8b400dccae8b3658e392e044daaad829c3",
+      "src/offline/clipboard/clipd/main.cpp": "8355e29352bcb1f47c1387c57f418bf99725cac5d69f477ca9565b43d6bee53c",
+      "src/scripts/steps/clipboard.py": "8b1757432473d1f4a82e72d0a76b99e509659302dee1839cc479ee8df70a8ee1",
+      "src/scripts/theme_switch.py": "f7ba58edf23cf3f9b3bd9b92a579b6f4e975cf75269aecd315e62a721c9b3e3c",
+      "src/scripts/steps/theme_switch.py": "1bd94c8d8428d8b3eee40ca42ac435d466631eb916fcae40a13cbbfea778af66",
+      "src/offline/gtk/MacTahoeLiquidKde-Light/gtk-3.0/gtk.css": "a45212e1cae13c48197a8f5bdf319fe8be41076e0825144c296327ece2d8974e"
+    },
     "vm_image_sha256": "412e7933f10add20b921b92c02709e7eea56acd14dc14cf654f58fba4ea3cc9d",
-    "outputs": [
-      {
-        "name": "Virtual-1",
-        "scale": 2,
-        "geometry": [
-          0,
-          0,
-          1920,
-          1080
-        ]
-      },
-      {
-        "name": "Virtual-2",
-        "scale": 2.7,
-        "geometry": [
-          1920,
-          0,
-          1422,
-          800
-        ]
-      }
-    ],
-    "installed_native": {
+    "vm_backend": "Wayland; isolated X11 capture/copyback is covered separately by the native daemon test.",
+    "sdk_coverage": "Clipboard daemon built with the existing 6.6 SDK image, host 6.7/Qt 6.11 SDK and the real 6.8.1 VM SDK. No KWin shader or ABI implementation changed.",
+    "clipboard_binary_sha256": "45c1926f1022dca0828613ff52af5bfd91adcbc96d48e2711e041ad62ad061c4",
+    "appearance_records": {
       "tahoe": {
-        "path": "/usr/lib/x86_64-linux-gnu/qt6/qml/org/kde/mac/tahoe/launcher/libmactahoelauncher.so",
-        "binary_sha256": "06f16bc699b449a437cb6ef3f1827ac6e74ef46249e34969b5c8be21e10c4100",
-        "source": {
-          "launchersearchpopup.cpp": "6d95741c2ad912b81c1a7d2c0acc4d5a5ba4f8eb62ab24d25dc4fdb54866483d",
-          "launchersearchpopup.h": "9b6335b6728a4d0efb568aecd11859c081038f4d4662da2c4f42c43e5d12f617"
-        },
-        "version": "plasmashell 6.8.1"
+        "popup_pid": 46219,
+        "gtk_pids": [
+          46226,
+          46227
+        ],
+        "selections": [
+          {
+            "selection": "standalone-dark",
+            "mode": "dark",
+            "gtk_backgrounds": [
+              "#333333",
+              "#242424"
+            ]
+          },
+          {
+            "selection": "standalone-light",
+            "mode": "light",
+            "gtk_backgrounds": [
+              "#f5f5f5",
+              "#fafafa"
+            ]
+          },
+          {
+            "selection": "gtk-preference-dark",
+            "mode": "dark",
+            "gtk_backgrounds": [
+              "#333333",
+              "#242424"
+            ]
+          },
+          {
+            "selection": "gtk-preference-light",
+            "mode": "light",
+            "gtk_backgrounds": [
+              "#f5f5f5",
+              "#fafafa"
+            ]
+          },
+          {
+            "selection": "rapid-latest-wins",
+            "mode": "light",
+            "gtk_backgrounds": [
+              "#f5f5f5",
+              "#fafafa"
+            ]
+          },
+          {
+            "selection": "auto-before-boundary",
+            "mode": "light",
+            "gtk_backgrounds": [
+              "#f5f5f5",
+              "#fafafa"
+            ]
+          },
+          {
+            "selection": "auto-crossed-1800",
+            "mode": "dark",
+            "gtk_backgrounds": [
+              "#333333",
+              "#242424"
+            ]
+          },
+          {
+            "selection": "native-manual-after-completed-auto",
+            "mode": "light",
+            "gtk_backgrounds": [
+              "#f5f5f5",
+              "#fafafa"
+            ]
+          },
+          {
+            "selection": "auto-before-overlap",
+            "mode": "light",
+            "gtk_backgrounds": [
+              "#f5f5f5",
+              "#fafafa"
+            ]
+          },
+          {
+            "selection": "auto-transition-in-flight",
+            "mode": "dark",
+            "gtk_backgrounds": "Superseded transition; verify the following completed selection."
+          },
+          {
+            "selection": "native-manual-supersedes-auto",
+            "mode": "light",
+            "gtk_backgrounds": [
+              "#f5f5f5",
+              "#fafafa"
+            ]
+          },
+          {
+            "selection": "manual-remains-light",
+            "mode": "light",
+            "gtk_backgrounds": [
+              "#f5f5f5",
+              "#fafafa"
+            ]
+          }
+        ]
       },
       "golden-gate": {
-        "path": "/usr/lib/x86_64-linux-gnu/qt6/qml/org/kde/mac/tahoe/launcher/libmactahoelauncher.so",
-        "binary_sha256": "06f16bc699b449a437cb6ef3f1827ac6e74ef46249e34969b5c8be21e10c4100",
-        "build_sha256": "06f16bc699b449a437cb6ef3f1827ac6e74ef46249e34969b5c8be21e10c4100",
-        "source": {
-          "launchersearchpopup.cpp": "6d95741c2ad912b81c1a7d2c0acc4d5a5ba4f8eb62ab24d25dc4fdb54866483d",
-          "launchersearchpopup.h": "9b6335b6728a4d0efb568aecd11859c081038f4d4662da2c4f42c43e5d12f617"
-        },
-        "version": "plasmashell 6.8.1"
+        "popup_pid": 49682,
+        "gtk_pids": [
+          49689,
+          49690
+        ],
+        "selections": [
+          {
+            "selection": "standalone-dark",
+            "mode": "dark",
+            "gtk_backgrounds": [
+              "#333333",
+              "#242424"
+            ]
+          },
+          {
+            "selection": "standalone-light",
+            "mode": "light",
+            "gtk_backgrounds": [
+              "#f5f5f5",
+              "#fafafa"
+            ]
+          },
+          {
+            "selection": "gtk-preference-dark",
+            "mode": "dark",
+            "gtk_backgrounds": [
+              "#333333",
+              "#242424"
+            ]
+          },
+          {
+            "selection": "gtk-preference-light",
+            "mode": "light",
+            "gtk_backgrounds": [
+              "#f5f5f5",
+              "#fafafa"
+            ]
+          },
+          {
+            "selection": "rapid-latest-wins",
+            "mode": "light",
+            "gtk_backgrounds": [
+              "#f5f5f5",
+              "#fafafa"
+            ]
+          },
+          {
+            "selection": "auto-before-boundary",
+            "mode": "light",
+            "gtk_backgrounds": [
+              "#f5f5f5",
+              "#fafafa"
+            ]
+          },
+          {
+            "selection": "auto-crossed-1800",
+            "mode": "dark",
+            "gtk_backgrounds": [
+              "#333333",
+              "#242424"
+            ]
+          },
+          {
+            "selection": "native-manual-after-completed-auto",
+            "mode": "light",
+            "gtk_backgrounds": [
+              "#f5f5f5",
+              "#fafafa"
+            ]
+          },
+          {
+            "selection": "auto-before-overlap",
+            "mode": "light",
+            "gtk_backgrounds": [
+              "#f5f5f5",
+              "#fafafa"
+            ]
+          },
+          {
+            "selection": "auto-transition-in-flight",
+            "mode": "dark",
+            "gtk_backgrounds": "Superseded transition; verify the following completed selection."
+          },
+          {
+            "selection": "native-manual-supersedes-auto",
+            "mode": "light",
+            "gtk_backgrounds": [
+              "#f5f5f5",
+              "#fafafa"
+            ]
+          },
+          {
+            "selection": "manual-remains-light",
+            "mode": "light",
+            "gtk_backgrounds": [
+              "#f5f5f5",
+              "#fafafa"
+            ]
+          }
+        ]
       }
     },
-    "frames": [
-      {
-        "name": "tahoe-light.png",
-        "sha256": "6443eed3ad5a884ce554531f4fefb7ff6984f459a4a0f656404808559fe7f557",
-        "reviewed": true,
-        "edition": "tahoe"
-      },
-      {
-        "name": "tahoe-dark.png",
-        "sha256": "8e8fca89cb59188d78713983c3a7920b458306bce0fcebff59cf86ae8f4728fb",
-        "reviewed": true,
-        "edition": "tahoe"
-      },
-      {
-        "name": "golden-gate-light.png",
-        "sha256": "dd5173f720f9795c3ac5d076a161c2c0da81b1619ee850c2cc3201af983cd895",
-        "reviewed": true,
-        "edition": "golden-gate"
-      },
-      {
-        "name": "golden-gate-dark.png",
-        "sha256": "79d2cc5c5e0c1a9b0e9cf0ecf3c0f667bddb1c2ba1a6a747d39d43a3668dd6fa",
-        "reviewed": true,
-        "edition": "golden-gate"
-      }
-    ],
-    "reproduction": {
-      "source_commit": "e0cb3e7d1354bca2f8119cf680c3d78e9bb0206e",
-      "trigger": "Open on first output, hide both windows, reopen on second output in one event-loop turn.",
-      "before": {
-        "panel": [
-          1600,
-          300,
-          608,
-          408
-        ],
-        "search": [
-          968,
-          208,
-          300,
-          80
-        ]
-      },
-      "after": {
-        "panel": [
-          1600,
-          300,
-          608,
-          408
-        ],
-        "search": [
-          1754,
-          208,
-          300,
-          80
-        ]
+    "additional_evidence": {
+      "clipboard_capture_tahoe": "4d76617595fba05c489992272b0915a28dc110ac51d91314188ef9d2ce170c15",
+      "clipboard_capture_golden_gate": "4d76617595fba05c489992272b0915a28dc110ac51d91314188ef9d2ce170c15",
+      "shortcut_tahoe": "06944344ce6accfe4b9a7d99899c3c8564c24913210a793203f91c320494484a",
+      "shortcut_golden_gate": "06944344ce6accfe4b9a7d99899c3c8564c24913210a793203f91c320494484a",
+      "lifecycle_tahoe": "6f43242090d1fd8f3b501c32c8a300895ffebed7c41cb33aa82bbdefe959a604",
+      "gtk3_dark_start_before": "028da02250c5165ae874aad759e91a915e59c31d9dfcb95111aa9a163c8b5c6d",
+      "gtk3_dark_start_after": "1bfc63d81ecac5ac785ede75d2e301cc64b963730806ec1f67bfe99768592706",
+      "sdk66_build": "8d1ebc94e738fea7047a5ec0e4080e337fc76f64b9d71f89ea6cbec7cef0fe64",
+      "wizard_localization_package_mapping": {
+        "result": "511 focused checks passed; unchanged domains reused.",
+        "log_sha256": "d3af576183d73c9c26fd095c41341b062e62181baf115cadb2967e40d2e96e22"
       }
     },
-    "limits": "Real desktop install/input/rendering qualification is Wayland. X11 is an isolated native popup harness. No monitor unplug/replug or automatic-appearance transition claim; those implementations are unchanged. VM retains its existing wallpaper; frames are focused validation, not replacement documentation photographs. Historical galleries retain their original provenance. Full remote CI is tracked separately.",
-    "reused_from": "v0.71.11: native launcher sources, installer inputs and VM environment are unchanged. Only test-harness startup/settling and release metadata changed.",
-    "ci_correction": {
-      "prior_run": "https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/actions/runs/43745654957",
-      "result": "Primary shard 0 failed only the two live-Wayland test startups; other primary shard, Nix and every distro leg passed.",
-      "cause": "System KWin file capabilities prevent exec in the container, and its virtual renderer requires a DRM device unavailable there.",
-      "repair": "Always execute the same native two-output scenario using the configurable offscreen QPA; retain separate live-Wayland cases when a render node is available. Bound asynchronous geometry settling; preserve all placement assertions."
-    }
+    "capture_provenance": {
+      "popup_sha256": "ec49b324fb47fe64faaa62fe83830a8b400dccae8b3658e392e044daaad829c3",
+      "daemon_source_sha256": "8355e29352bcb1f47c1387c57f418bf99725cac5d69f477ca9565b43d6bee53c",
+      "note": "Each edition was captured separately with its own defaults. Focused widget frames predate the later synchronization repairs; popup/daemon bytes are unchanged. Existing full desktop and installer galleries retain their original capture provenance."
+    },
+    "baseline": {
+      "version": "0.71.12",
+      "commit": "425199ee1363f2278df208049dbfbe059d7268ee",
+      "ci": "https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/actions/runs/43747180997",
+      "qualification": "https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/blob/425199ee1363f2278df208049dbfbe059d7268ee/release-evidence.json",
+      "reuse": "Unchanged native launcher and historical gallery qualification retained."
+    },
+    "limits": "Focused rendering evidence covers Clipboard and continuous GTK 3/4 application palettes. No new full-gallery or all-plasmoid capture claim. Primary shards, Nix and the complete distro matrix remain enabled and are tracked on the final dev commit. Tags and release workflows require the user confirmation requested for this delivery.",
+    "installed_final_identity_log_sha256": "ecefb14337acf0a08327a35672a6bafd1906fe9c017ad725a418463790dcfe5c"
   }
 }
