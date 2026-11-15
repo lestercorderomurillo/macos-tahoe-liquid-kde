@@ -78,3 +78,14 @@ def test_dock_reuses_complete_upstream_taskmanager_catalog(repo):
     # custom catalog and turn the inherited configuration UI back to English.
     assert not re.search(r"\bi18n(?:c|p|cp)?\(", source)
     assert source.count('"plasma_applet_org.kde.plasma.taskmanager"') > 100
+
+
+def test_desktop_controls_translate_when_installed_independently(repo):
+    """Shared QML views use the hosting applet's catalog, without another applet loaded."""
+    for suffix in ('controlcenter', 'battery', 'wifi', 'notifications'):
+        widget = 'org.kde.mac-tahoe-liquid-kde.' + suffix
+        root = repo / 'src/offline/plasmoids' / widget / 'contents/locale'
+        for language, expected in (('es', 'Concentración'), ('zh_CN', '专注模式'),
+                                   ('de', 'Fokus'), ('pt_BR', 'Foco')):
+            catalog = _catalog(root / language / 'LC_MESSAGES' / ('plasma_applet_' + widget + '.mo'))
+            assert catalog.gettext('Focus') == expected

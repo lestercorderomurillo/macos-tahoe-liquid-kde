@@ -139,6 +139,17 @@ The Tahoe preset shows reference symbols on every action, including the three-sp
 
 <br>
 
+### Control Center
+
+Wi-Fi, sound, brightness and notifications in one glass menu.
+
+<p align="center">
+  <img src="src/screenshots/control-center-light-3e44b74c9a4d.png" alt="Control Center in light mode" width="415">
+  <img src="src/screenshots/control-center-dark-ef0768193f51.png" alt="Control Center in dark mode" width="415">
+</p>
+
+<br>
+
 ### System Information
 
 Hardware, software and theme details in About This Computer.
@@ -588,7 +599,7 @@ The current status of each component.
 | Kate Theme | Planned |
 | SDDM Theme | Planned |
 | Calendar | Planned |
-| Control Center | Planned |
+| Control Center, Wi-Fi, Battery and Notifications | Available |
 | System Preferences | Planned |
 | OS Selector | Planned |
 

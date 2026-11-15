@@ -1028,6 +1028,50 @@ _PACKAGE_MAP: dict[str, dict[str, str]] = {
         "opensuse": "kf6-kitemmodels-imports",
     },
     # ── Plasma / KSysGuard / plasma-workspace ─────────────────────────
+    "plasma-network-qml": {
+        "arch": "plasma-nm",
+        "debian": "plasma-nm",
+        "ubuntu": "plasma-nm",
+        "fedora": "plasma-nm",
+        "rhel": "plasma-nm",
+        "centos": "plasma-nm",
+        "opensuse": "plasma6-nm",
+        "alpine": "plasma-nm",
+        "void": "plasma-nm"
+    },
+    "plasma-audio-qml": {
+        "arch": "plasma-pa",
+        "debian": "plasma-pa",
+        "ubuntu": "plasma-pa",
+        "fedora": "plasma-pa",
+        "rhel": "plasma-pa",
+        "centos": "plasma-pa",
+        "opensuse": "plasma6-pa",
+        "alpine": "plasma-pa",
+        "void": "plasma-pa"
+    },
+    "plasma-power-qml": {
+        "arch": "powerdevil",
+        "debian": "powerdevil",
+        "ubuntu": "powerdevil",
+        "fedora": "powerdevil",
+        "rhel": "powerdevil",
+        "centos": "powerdevil",
+        "opensuse": "powerdevil6",
+        "alpine": "powerdevil",
+        "void": "powerdevil"
+    },
+    "bluez-qml": {
+        "arch": "bluez-qt",
+        "debian": "qml6-module-org-kde-bluezqt",
+        "ubuntu": "qml6-module-org-kde-bluezqt",
+        "fedora": "kf6-bluez-qt",
+        "rhel": "kf6-bluez-qt",
+        "centos": "kf6-bluez-qt",
+        "opensuse": "kf6-bluez-qt-imports",
+        "alpine": "bluez-qt",
+        "void": "bluez-qt"
+    },
     "plasma5support-qml": {
         "arch":     "plasma5support",
         "debian":   "qml6-module-org-kde-plasma-plasma5support",

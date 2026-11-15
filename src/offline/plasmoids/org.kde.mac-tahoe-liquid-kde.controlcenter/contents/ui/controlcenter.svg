@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 22 22">
+<!-- SPDX-License-Identifier: GPL-3.0-or-later -->
+<style id="current-color-scheme">.ColorScheme-Text { color: #232629; }</style>
+<g class="ColorScheme-Text" fill="none" stroke="currentColor" stroke-width="1.5">
+<rect x="3" y="3.5" width="16" height="6" rx="3"/><rect x="3" y="12.5" width="16" height="6" rx="3"/>
+</g><g class="ColorScheme-Text" fill="currentColor"><circle cx="7" cy="6.5" r="2"/><circle cx="15" cy="15.5" r="2"/></g></svg>

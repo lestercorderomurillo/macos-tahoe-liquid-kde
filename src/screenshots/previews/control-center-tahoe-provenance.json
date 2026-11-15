@@ -1,0 +1,24 @@
+{
+  "component": "Control Center",
+  "source_commit": "facd0b95b78ca542fce815bf0d88195520675ceb",
+  "environment": "Disposable Plasma 6.8.1 / Qt 6.11.1 Wayland VM, 3840x2160 at scale 2",
+  "font": "SF Pro Text (confirmed by fc-match in VM)",
+  "scope": "Original symbols, consistent typography and Dock-inspired glass rim over existing Acrylic Glass blur. Separate edition installations and wallpapers. No new refraction shader.",
+  "images": [
+    {
+      "path": "src/screenshots/previews/control-center-tahoe-light-cc86e8a6cf41.png",
+      "sha256": "cc86e8a6cf41f60b7f37efb7b55ef27b5a16b215013d596247a0d40d4ce57225",
+      "reviewed": true,
+      "edition": "tahoe",
+      "mode": "light"
+    },
+    {
+      "path": "src/screenshots/previews/control-center-tahoe-dark-9ff57df537c6.png",
+      "sha256": "9ff57df537c678db5ad9bd81e211718cee790ded29e8986e26223c1434a0692f",
+      "reviewed": true,
+      "edition": "tahoe",
+      "mode": "dark"
+    }
+  ],
+  "limits": "Focused visual review only; broad GTK 3 appearance qualification failed on this baseline."
+}

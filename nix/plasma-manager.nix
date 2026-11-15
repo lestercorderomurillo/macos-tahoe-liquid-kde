@@ -24,6 +24,10 @@
             "org.kde.mac.tahoe.liquid.globalmenu"
             "org.kde.plasma.panelspacer"
             "org.kde.plasma.systemtray"
+            "org.kde.mac-tahoe-liquid-kde.wifi"
+            "org.kde.mac-tahoe-liquid-kde.battery"
+            "org.kde.mac-tahoe-liquid-kde.controlcenter"
+            "org.kde.mac-tahoe-liquid-kde.notifications"
             "org.kde.plasma.digitalclock"
           ];
         }

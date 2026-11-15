@@ -1,0 +1,18 @@
+{
+  "KPackageStructure": "Plasma/Applet",
+  "KPlugin": {
+    "Id": "org.kde.mac-tahoe-liquid-kde.notifications",
+    "Name": "Notifications",
+    "Description": "Notifications for the Tahoe and Golden Gate desktop",
+    "Icon": "notifications",
+    "Category": "System Information",
+    "License": "GPL-3.0-or-later",
+    "Authors": [
+      {
+        "Name": "Lester Cordero Murillo"
+      }
+    ],
+    "Website": "https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde"
+  },
+  "X-Plasma-API-Minimum-Version": "6.6"
+}

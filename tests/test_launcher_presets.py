@@ -9,6 +9,7 @@ import select
 import shutil
 import signal
 import subprocess
+import sys
 import tempfile
 import time
 import xml.etree.ElementTree as ET
@@ -1023,3 +1024,49 @@ def test_clipboard_launcher_integration(repo, tmp_path, monkeypatch, launcher_po
     pytest.importorskip("PyQt6.QtDBus")
     test_native_launcher_popup_presets(repo, tmp_path, monkeypatch, launcher_popup_module,
                                       preset, mode, edition, clipboard_launcher_daemon)
+def test_control_center_glass_regions(launcher_popup_module):
+    """Floating controls blur and receive input only inside their rounded islands."""
+    result = subprocess.run(
+        [str(launcher_popup_module.parent / 'controlglassprobe')],
+        env=dict(os.environ, QT_QPA_PLATFORM='offscreen',
+                 DBUS_SESSION_BUS_ADDRESS='unix:path=/tmp/no-control-glass-test-bus'),
+        capture_output=True, text=True, timeout=30)
+    assert result.returncode == 0, result.stdout + result.stderr
+    assert 'CONTROL_GLASS_REGIONS_OK' in result.stdout
+
+
+def test_control_center_native_x11_render(repo, tmp_path, launcher_popup_module):
+    """The original QML layout and native input mask agree on an isolated display."""
+    if not shutil.which('Xvfb'):
+        pytest.skip('Xvfb required for native Control Center rendering')
+    runtime = tmp_path / 'runtime'; runtime.mkdir(mode=0o700)
+    bus_config = runtime / 'bus.conf'
+    bus_config.write_text('<busconfig><type>session</type><listen>unix:tmpdir=' + str(runtime)
+                         + '</listen><auth>EXTERNAL</auth><policy context="default">'
+                         + '<allow send_destination="*"/><allow receive_sender="*"/><allow own="*"/></policy></busconfig>')
+    env = os.environ | {
+        'HOME': str(tmp_path), 'XDG_RUNTIME_DIR': str(runtime),
+        'XDG_CONFIG_HOME': str(tmp_path / 'config'), 'XDG_DATA_HOME': str(tmp_path / 'data'),
+        'XDG_CACHE_HOME': str(tmp_path / 'cache'), 'QT_QPA_PLATFORM': 'xcb',
+        'QT_QPA_PLATFORMTHEME': 'generic', 'QT_QUICK_BACKEND': 'software',
+        'DBUS_SYSTEM_BUS_ADDRESS': 'unix:path=' + str(runtime / 'no-system-bus'),
+        'PULSE_SERVER': 'unix:' + str(runtime / 'no-audio'),
+        'QML_IMPORT_PATH': str(launcher_popup_module),
+    }
+    env.pop('WAYLAND_DISPLAY', None)
+    read_fd, write_fd = os.pipe()
+    server = subprocess.Popen(
+        ['Xvfb', '-displayfd', str(write_fd), '-screen', '0', '1280x1024x24', '-nolisten', 'tcp'],
+        pass_fds=(write_fd,), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    os.close(write_fd)
+    try:
+        assert select.select([read_fd], [], [], 10)[0], 'Xvfb did not start'
+        env['DISPLAY'] = ':' + os.read(read_fd,32).decode().strip()
+        result = subprocess.run(
+            ['dbus-run-session', '--config-file', str(bus_config), '--', sys.executable, str(repo / 'tests/desktop_controls_render.py'),
+             str(repo), str(tmp_path / 'control-center.png')],
+            env=env, capture_output=True, text=True, timeout=30)
+        assert result.returncode == 0, result.stdout + result.stderr
+        assert 'CONTROL_CENTER_X11_RENDER_OK' in result.stdout
+    finally:
+        os.close(read_fd);server.terminate();server.wait(timeout=5)

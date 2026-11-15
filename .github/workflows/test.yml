@@ -71,7 +71,7 @@ jobs:
             kwidgetsaddons kwindowsystem kdbusaddons kiconthemes \
             kitemmodels \
             libplasma plasma-activities plasma-activities-stats \
-            libksysguard plasma-workspace plasma-desktop plasma5support plasma-sdk \
+            libksysguard plasma-workspace plasma-desktop plasma5support plasma-sdk plasma-nm plasma-pa powerdevil bluez-qt \
             kwin kdecoration kvantum \
             libepoxy libdrm libx11 libxcb libxtst
       - name: Set up Node for JavaScript regression tests

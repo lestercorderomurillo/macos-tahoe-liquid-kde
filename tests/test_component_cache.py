@@ -229,3 +229,26 @@ def test_icon_uninstall_invalidates_receipt_even_without_payload(monkeypatch, tm
     receipt.save([artifact])
     icons.uninstall()
     assert not receipt.path.exists()
+
+
+def test_desktop_control_shared_views_and_native_regions_invalidate_satellites(tmp_path):
+    scripts = tmp_path / 'src/scripts/steps'; scripts.mkdir(parents=True)
+    (scripts / 'plasmoids.py').write_text('')
+    packages = tmp_path / 'src/offline/plasmoids'; packages.mkdir(parents=True)
+    names = ['org.kde.mac-tahoe-liquid-kde.' + suffix for suffix in
+             ('controlcenter', 'battery', 'wifi', 'notifications', 'unrelated')]
+    for name in names:
+        path = packages / name; path.mkdir(); (path / 'view.qml').write_text('original')
+    native = packages / 'org.kde.mac.tahoe.liquid.taskmanager/launcher'
+    native.mkdir(parents=True); (native / 'controlglass.cpp').write_text('original')
+    first = component_manifest.snapshot(tmp_path)["components"]
+    (packages / names[0] / 'view.qml').write_text('updated shared view')
+    second = component_manifest.snapshot(tmp_path)["components"]
+    for name in names[:4]:
+        assert first['plasmoids/' + name] != second['plasmoids/' + name]
+    assert first['plasmoids/' + names[-1]] == second['plasmoids/' + names[-1]]
+    (native / 'controlglass.cpp').write_text('updated native region')
+    third = component_manifest.snapshot(tmp_path)["components"]
+    for name in names[:4]:
+        assert second['plasmoids/' + name] != third['plasmoids/' + name]
+    assert second['plasmoids/' + names[-1]] == third['plasmoids/' + names[-1]]

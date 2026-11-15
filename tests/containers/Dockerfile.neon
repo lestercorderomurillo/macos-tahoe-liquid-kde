@@ -28,7 +28,7 @@ RUN (apt-get update || { \
     DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
         -o Dpkg::Options::=--force-confdef -o Dpkg::Options::=--force-confold neon-settings-2 && \
     DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
-        python3 python3-pytest python3-gi gir1.2-gtk-4.0 python3-pil python3-pyqt6 python3-pyqt6.qtsvg plasma5support librsvg2-bin git \
+        python3 python3-pytest python3-gi gir1.2-gtk-4.0 python3-pil python3-pyqt6 python3-pyqt6.qtquick python3-pyqt6.qtsvg plasma5support librsvg2-bin git \
         cmake make ccache g++ extra-cmake-modules pkgconf \
         qmake6 qdbus-qt6 \
         qt6-base-dev qt6-base-private-dev qt6-declarative-dev qt6-tools-dev \
@@ -39,7 +39,7 @@ RUN (apt-get update || { \
         libkf6kcmutils-dev libkf6kio-dev libkf6notifications-dev \
         libkf6service-dev libkf6widgetsaddons-dev libkf6windowsystem-dev \
         libplasma-dev plasma-activities-dev plasma-activities-stats-dev \
-        libksysguard-dev plasma-workspace plasma-workspace-dev \
+        libksysguard-dev plasma-workspace plasma-nm plasma-pa powerdevil qml6-module-org-kde-bluezqt plasma-workspace-dev \
         kwin-dev libkdecorations3-dev \
         libepoxy-dev libdrm-dev libwayland-dev libx11-dev libxext-dev libxtst-dev \
         libxcb1-dev \

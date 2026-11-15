@@ -23,8 +23,9 @@ qt_add_qml_module(mactahoelauncher
     PLUGIN_TARGET mactahoelauncher
     OUTPUT_DIRECTORY "${launcher_module_dir}"
     QML_FILES DockIcon.qml DockCell.qml DockMetrics.qml
-    SOURCES launchersearchpopup.cpp launchersearchpopup.h iconthemewatcher.h clipboardmodel.h
+    SOURCES launchersearchpopup.cpp launchersearchpopup.h iconthemewatcher.h clipboardmodel.h controlglass.cpp controlglass.h
 )
+target_compile_definitions(mactahoelauncher PRIVATE QT_NO_CAST_FROM_ASCII QT_NO_CAST_TO_ASCII)
 # Only the scanner is needed from Qt Wayland. PlasmaQuick owns the client;
 # linking it here also pulls unused Wayland metatypes into QML registration.
 target_link_libraries(mactahoelauncher PRIVATE Qt6::Quick Qt6::DBus Plasma::Plasma Plasma::PlasmaQuick KF6::WindowSystem Wayland::Client)

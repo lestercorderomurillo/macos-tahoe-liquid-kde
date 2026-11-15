@@ -1,0 +1,44 @@
+{
+  "source_commit": "4c4f949e440655fd2ce0209049f6d781d07b0008",
+  "environment": "Disposable Plasma 6.8.1 / Qt 6.11.1 Wayland VM; separate Tahoe and Golden Gate installs, 3840x2160 at scale 2",
+  "component": "Control Center native blur lifecycle",
+  "images": [
+    {
+      "path": "src/screenshots/previews/control-center-blur-tahoe-light-95480d7f88be.png",
+      "sha256": "95480d7f88be8c36f760f435119a1dc49549b18ae6adb204d31db6924cabd3f1",
+      "reviewed": true,
+      "edition": "tahoe",
+      "mode": "light"
+    },
+    {
+      "path": "src/screenshots/previews/control-center-blur-tahoe-dark-46f0aa2b6ca3.png",
+      "sha256": "46f0aa2b6ca30c3e5f41fe22193f7489eb73d6948eb257f3078f8040d27ab9b1",
+      "reviewed": true,
+      "edition": "tahoe",
+      "mode": "dark"
+    }
+  ],
+  "comparison": {
+    "inside_tile_standard_deviation_on": 0.37267799624996495,
+    "inside_tile_standard_deviation_off": 43.40322568657772,
+    "gap_mean_difference": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "tile_roi": [
+      3310,
+      182,
+      3460,
+      194
+    ],
+    "gap_roi": [
+      3512,
+      140,
+      3528,
+      180
+    ]
+  },
+  "comparison_edition": "golden-gate",
+  "scope": "An actual striped application window behind the popup; compositor effect on/off, then live light/dark transition. Stripes blur in tile interiors; gaps remain sharp. No historical gallery replacement."
+}

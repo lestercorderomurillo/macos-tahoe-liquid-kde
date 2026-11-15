@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kcfg xmlns="http://www.kde.org/standards/kcfg/1.0"><kcfgfile name=""/><group name="General">
+<entry name="showWifi" type="Bool"><default>true</default></entry>
+<entry name="showBluetooth" type="Bool"><default>true</default></entry>
+<entry name="showBattery" type="Bool"><default>true</default></entry>
+<entry name="showMedia" type="Bool"><default>true</default></entry>
+<entry name="showFocus" type="Bool"><default>true</default></entry>
+<entry name="showNotifications" type="Bool"><default>true</default></entry>
+<entry name="showSettings" type="Bool"><default>true</default></entry>
+<entry name="showDisplay" type="Bool"><default>true</default></entry>
+<entry name="showAudio" type="Bool"><default>true</default></entry>
+</group></kcfg>
