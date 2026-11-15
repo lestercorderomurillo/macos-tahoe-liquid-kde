@@ -1018,7 +1018,7 @@ def test_control_center_native_x11_render(repo, tmp_path, launcher_popup_module)
     bus_config = runtime / 'bus.conf'
     bus_config.write_text('<busconfig><type>session</type><listen>unix:tmpdir=' + str(runtime)
                          + '</listen><auth>EXTERNAL</auth><policy context="default">'
-                         + '<allow send_destination="*"/><allow own="*"/></policy></busconfig>')
+                         + '<allow send_destination="*"/><allow receive_sender="*"/><allow own="*"/></policy></busconfig>')
     env = os.environ | {
         'HOME': str(tmp_path), 'XDG_RUNTIME_DIR': str(runtime),
         'XDG_CONFIG_HOME': str(tmp_path / 'config'), 'XDG_DATA_HOME': str(tmp_path / 'data'),

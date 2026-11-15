@@ -31,4 +31,6 @@ private:
     void apply();
     QPointer<QWindow> m_window;
     QVariantList m_surfaces;
+    QRegion m_region;
+    QMetaObject::Connection m_frameConnection;
 };

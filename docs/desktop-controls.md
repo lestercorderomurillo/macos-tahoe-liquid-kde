@@ -36,3 +36,10 @@ user's icon theme. Battery state remains live. The glass edge follows the Dock's
 opposing light rims; the existing compositor blur and edition material remain
 active. This does not replace the saved Acrylic Glass optics or introduce a new
 refraction shader.
+
+The native helper restores each control's blur region immediately before frame
+preparation. Plasma's backgroundless dialog otherwise clears that region during
+layout and theme updates. A real striped window behind the popup verifies the
+compositor effect: the tiles blur while the gaps remain sharp. The X11 regression
+checks the published blur property after opening, theme reset and reopening.
+Earlier typography previews above predate this blur lifecycle repair.

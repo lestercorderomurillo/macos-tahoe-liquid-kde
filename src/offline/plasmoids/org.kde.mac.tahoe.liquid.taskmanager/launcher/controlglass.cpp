@@ -3,6 +3,7 @@
 #include <KWindowEffects>
 #include <QEvent>
 #include <QPainterPath>
+#include <QQuickWindow>
 #include <QTimer>
 #include <algorithm>
 #include <cmath>
@@ -32,8 +33,17 @@ void ControlGlass::setWindow(QWindow *window)
 {
     if (m_window == window) return;
     if (m_window) m_window->removeEventFilter(this);
+    disconnect(m_frameConnection);
     m_window = window;
     if (m_window) m_window->installEventFilter(this);
+    if (auto quickWindow = qobject_cast<QQuickWindow *>(m_window.data())) {
+        // Plasma Dialog::NoBackground clears blur and the input mask during
+        // layout/theme/expose updates, after Show's queued callback. Restore
+        // our islands on the GUI thread immediately before scene preparation.
+        // No polling or extra frame request: KWindowEffects caches the region.
+        m_frameConnection = connect(quickWindow, &QQuickWindow::afterAnimating,
+                                    this, &ControlGlass::apply);
+    }
     Q_EMIT windowChanged();
     apply();
 }
@@ -42,6 +52,7 @@ void ControlGlass::setSurfaces(const QVariantList &surfaces)
 {
     if (m_surfaces == surfaces) return;
     m_surfaces = surfaces;
+    m_region = regionFor(surfaces);
     Q_EMIT surfacesChanged();
     apply();
 }
@@ -49,9 +60,8 @@ void ControlGlass::setSurfaces(const QVariantList &surfaces)
 void ControlGlass::apply()
 {
     if (!m_window) return;
-    const auto region = regionFor(m_surfaces);
-    m_window->setMask(region);
-    KWindowEffects::enableBlurBehind(m_window, !region.isEmpty(), region);
+    if (m_window->mask() != m_region) m_window->setMask(m_region);
+    KWindowEffects::enableBlurBehind(m_window, !m_region.isEmpty(), m_region);
 }
 
 bool ControlGlass::eventFilter(QObject *object, QEvent *event)
