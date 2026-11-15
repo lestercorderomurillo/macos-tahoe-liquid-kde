@@ -1143,5 +1143,16 @@
   "View content as": "Inhalt anzeigen als",
   "Grid": "Raster",
   "List": "Liste",
-  "Launcher preset": "Starter-Voreinstellung"
+  "Launcher preset": "Starter-Voreinstellung",
+  "Removing Clipboard": "Zwischenablage wird entfernt",
+  "Stops the clipboard service, returns Meta+V to Plasma and deletes its history": "Beendet den Zwischenablage-Dienst, gibt Meta+V an Plasma zurück und löscht den Verlauf",
+  "Clipboard: build artifacts missing — skipping install": "Zwischenablage: Build-Artefakte fehlen — Installation übersprungen",
+  "Clipboard: PyQt6 (QtWidgets, QtDBus) is missing — the Meta+V popup will not start until it is installed": "Zwischenablage: PyQt6 (QtWidgets, QtDBus) fehlt — das Meta+V-Popup startet erst nach der Installation",
+  "Clipboard service and popup installed": "Zwischenablage-Dienst und Popup installiert",
+  "Meta+V now opens the clipboard popup": "Meta+V öffnet jetzt das Zwischenablage-Popup",
+  "Clipboard: could not bind Meta+V live — assign the \"Clipboard\" entry in System Settings › Shortcuts": "Zwischenablage: Meta+V konnte nicht live belegt werden — weise den Eintrag „Clipboard“ in Systemeinstellungen › Kurzbefehle zu",
+  "Clipboard history is stored privately in ~/.local/share/mac-tahoe-liquid-kde/clipboard": "Der Zwischenablage-Verlauf wird privat in ~/.local/share/mac-tahoe-liquid-kde/clipboard gespeichert",
+  "Clipboard popup and service removed": "Zwischenablage-Popup und -Dienst entfernt",
+  "Clipboard service": "Zwischenablage-Dienst",
+  "Clipboard history (Meta+V)": "Zwischenablage-Verlauf (Meta+V)"
 }

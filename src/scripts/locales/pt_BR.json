@@ -1143,5 +1143,16 @@
   "View content as": "Visualizar conteúdo como",
   "Grid": "Grade",
   "List": "Lista",
-  "Launcher preset": "Predefinição do lançador"
+  "Launcher preset": "Predefinição do lançador",
+  "Removing Clipboard": "Removendo a área de transferência",
+  "Stops the clipboard service, returns Meta+V to Plasma and deletes its history": "Interrompe o serviço da área de transferência, devolve o Meta+V ao Plasma e apaga o histórico",
+  "Clipboard: build artifacts missing — skipping install": "Área de transferência: artefatos de compilação ausentes — instalação ignorada",
+  "Clipboard: PyQt6 (QtWidgets, QtDBus) is missing — the Meta+V popup will not start until it is installed": "Área de transferência: PyQt6 (QtWidgets, QtDBus) ausente — o popup do Meta+V só inicia depois de instalado",
+  "Clipboard service and popup installed": "Serviço e popup da área de transferência instalados",
+  "Meta+V now opens the clipboard popup": "O Meta+V agora abre o popup da área de transferência",
+  "Clipboard: could not bind Meta+V live — assign the \"Clipboard\" entry in System Settings › Shortcuts": "Área de transferência: não foi possível vincular o Meta+V agora — atribua a entrada \"Clipboard\" em Configurações do sistema › Atalhos",
+  "Clipboard history is stored privately in ~/.local/share/mac-tahoe-liquid-kde/clipboard": "O histórico da área de transferência é guardado de forma privada em ~/.local/share/mac-tahoe-liquid-kde/clipboard",
+  "Clipboard popup and service removed": "Popup e serviço da área de transferência removidos",
+  "Clipboard service": "Serviço da área de transferência",
+  "Clipboard history (Meta+V)": "Histórico da área de transferência (Meta+V)"
 }
