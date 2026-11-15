@@ -3,6 +3,7 @@
 
 #include <PlasmaQuick/PopupPlasmaWindow>
 #include <QPointer>
+#include <QList>
 #include <qqmlregistration.h>
 
 // A separate native frame keeps the capsule's glass, input mask and shadow aligned.
@@ -26,4 +27,5 @@ Q_SIGNALS:
 
 private:
     QPointer<QWindow> m_anchorWindow;
+    QList<QMetaObject::Connection> m_anchorGeometryConnections;
 };

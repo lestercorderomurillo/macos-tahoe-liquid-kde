@@ -1,29 +1,30 @@
 {
-  "version": "0.71.9",
-  "source_sha256": "fb9612d36562fa91300ab5de82a901fb165b2004f5e25e8efe8061e6b12e4bef",
-  "environment": "Isolated Xvfb: Plasma SDK 6.7.4 / Qt 6.11.2. Disposable KDE neon: Plasma 6.8.1 / Qt 6.11.1, Wayland/KVM/virgl.",
+  "version": "0.71.10",
+  "source_sha256": "1e0feafe5a3d76b9c295a826ab27969a3031aeaeb929836aff0b007830305657",
+  "environment": "Isolated X11: Plasma SDK 6.6.5 and 6.7.4. Disposable Plasma 6.8.1 / Qt 6.11.1 Wayland/KVM/virgl VM.",
   "checks": [
     {
-      "command": "PYTHONDONTWRITEBYTECODE=1 python3 -m pytest -xq -p no:cacheprovider tests/test_launcher_presets.py -k native_launcher_popup_presets",
+      "command": "python3 -m pytest -xq -p no:cacheprovider tests/test_launcher_presets.py -k native_launcher_anchor_geometry",
       "result": "passed",
-      "detail": "8 cases: both presets, both editions, light/dark; cold/reopened search focus, detached capsule, first-rendered menu position, keyboard/mouse selection, preset changes and dismissal. Isolated Xvfb/private D-Bus, Plasma SDK 6.7.4 / Qt 6.11.2.",
-      "log_sha256": "f6521d5fe051bb69a6771eee790ab0a7b353eed3ce1e3215356c6899ed44674f"
+      "detail": "Native isolated X11 regression on Plasma 6.7.4 / Qt 6.11.2: delayed anchor geometry, popup resize, anchor replacement, parent move and reopen.",
+      "log_sha256": "0bb10157264354a0791324e3465aa9102ad9f8543d9c11d150c6ba098bd0136a"
     },
     {
-      "command": "Guest: sudo env MAC_TAHOE_NO_UPDATE_CHECK=true MTTKDE_NO_CONFIRM=1 MTTKDE_WIZARD_OPTIONS=<edition defaults; light; reset_layout=false> src/scripts/installer_backend.py install --only --plasmoids --plasma-theme --apply-theme --light (twice per edition)",
+      "command": "cmake -S tests/qml -B /tmp/build -DLAUNCHER_NATIVE_SOURCE=<taskmanager>; cmake --build /tmp/build -j2; python3 native-run.py /tmp/build tests/qml/LauncherAnchorProbe.qml",
       "result": "passed",
-      "detail": "Final source installed and reinstalled in a disposable Plasma 6.8.1 / Qt 6.11.1 Wayland guest. All installed Launcher QML hashes match the final edition-staged sources.",
-      "archive_sha256": "8e4c299a9f37f7c3361984c18f9bf13a553b404d0e0f99a8cb3f4da46fae1edd"
+      "detail": "Offline mttkde-acrylic-x11:6.6-user container; Plasma 6.6.5; native X11 anchor regression ANCHOR_OK.",
+      "log_sha256": "c45bb9db94fd7f90b8a457d6ce59c5b9fe5a5a1528d38aa6fd3616e33dec1706"
     },
     {
-      "command": "Guest QMP keyboard/pointer input; org.kde.PlasmaShell.activateLauncherMenu; KWin window inspection; spectacle captures in light/dark",
+      "command": "Guest: sudo env MAC_TAHOE_NO_UPDATE_CHECK=true MTTKDE_NO_CONFIRM=1 MTTKDE_WIZARD_OPTIONS=<edition defaults> src/scripts/installer_backend.py install --only --plasmoids --plasma-theme --apply-theme --light (twice per edition)",
       "result": "passed",
-      "detail": "Six openings per edition/mode (24 total), both detached windows present, native search window activated, typed terminal without clicking input, options dialog verified present and rendered with its client contour. Scoped launcher frames only; no documentation gallery refresh.",
-      "record_sha256": "014aadb842c507225d4edcd44213882bf1f8bf4bd46a18aef328e09342158f88"
+      "detail": "Disposable Plasma 6.8.1 / Qt 6.11.1 Wayland VM: install/reinstall both editions; installed native library matches freshly built source."
     },
     {
-      "command": "python3 src/scripts/component_manifest.py; git diff --check",
-      "result": "passed"
+      "command": "Guest launcher column changes 7,6,8,5,7 and reopen after each; KWin frame geometry; spectacle captures",
+      "result": "passed",
+      "detail": "40 centered capsule/panel pairs, both editions in light/dark at scale 2. Four scoped frames reviewed.",
+      "record_sha256": "4d6160fcc6a8feb222a89852ef3d2da31764cc7909da5efb33245065b6782165"
     }
   ],
   "gallery_commit": "9993f61cc0afeba7e39afee776c99f29a55edb8f",
@@ -40,54 +41,38 @@
     }
   ],
   "qualification": {
-    "scope": "Launcher opening/focus/hover, options dialog first-frame positioning and compositor role. Shared SVGs, native effects, shaders, SDK interfaces and appearance scheduler are unchanged.",
+    "scope": "Detached launcher capsule follows late anchor layout and parent move/resize. No material, scheduler, shader or QML styling changes.",
     "vm_image_sha256": "412e7933f10add20b921b92c02709e7eea56acd14dc14cf654f58fba4ea3cc9d",
-    "installed_launcher_qml_sha256": {
-      "main.qml": "1988c16c89b0dfb0a3654466a2fe9c5932733238adb5ff62564706e132626f31",
-      "AppListView.qml": "05dac4aa43c6fdda622c62495158e739c8b6aea2012a4cd219a8cd6e85b92074",
-      "GlassTextShadow.qml": "6a9a6b799e17f3764d46b7248b6b37e50c321ec204c184924dc4e4defcbfc1b6",
-      "AppListViewDelegate.qml": "c295ce16bd08bbf3a7828312ae595ea1cb86c84cce3667627af3cfe1a30ce42b",
-      "TahoeOptionsMenu.qml": "4cc767614caf67d358a76cb8ea493b5fbb8a1be61e1b1b462133bf4560463be4",
-      "AllAppsList.qml": "01c6989c7ff7a5e915ced3b191457b237c1ca076c3bd0ec3fbaf7ebedca43fb3",
-      "AppGridViewDelegate.qml": "efaebdb01d924a84310de46154f3484427ebb8ce4f43195287802369e6ff737b",
-      "CompactRepresentation.qml": "8ccc7027fa68fe727252fbab6b0f63658052b0c6ceb8f1735e0010e70ae0134a",
-      "SearchList.qml": "e263ade59997c8685e853920af36f54d4bee3116ddbbc22ed8801fac492dce6a",
-      "Highlight.qml": "b91dc0dc2898ff6d83333d5c00905ae29d621906704a84c559c8df83747f2e39",
-      "ActionMenu.qml": "976d91e98a7c183978e3a9f372063b24cf5ff59ee64849596cfc0d3841468cc6",
-      "Scrollbar.qml": "5fb3b81f1be5eb4944fbd363f247f587c0854d17e29df061b2bc7f713b096106",
-      "AppGridView.qml": "8941cc40114e8bab9cad66fe87b9cdced0c78c0a8ed7469e060c66f34caa1bcf",
-      "SearchBar.qml": "090c72e422d126cfe2ea4007d56d4d8445cbe864c3237e767c3daa95b3d696d3",
-      "MainView.qml": "a22c7c922198e4560037b169fe393fc3502519d63f654c61fc788283cd0d4191",
-      "MenuButton.qml": "d689afeeb4a807433cf811802bd055ea800eb64221a940ca18226d30b2c79cdc",
-      "MenuRepresentation.qml": "6fe01bda02b7d061341be94803cde0d2152ce1a7e4b4edad87eeba5d6d2769a3",
-      "AppCategorySwitcher.qml": "f550eb20ea8ccce35cf4f3c0957c6dc1ba01d90cab738e707e61d059df9e5682",
-      "CategoryPill.qml": "795bccacacd6efce9cbc88f0d28e9b9b7710b9f9b8d52cc79faa8a60163cb1c5",
-      "AppsCategorized.qml": "acc2a14566a5ffd6877e2d984a8922239fa27bfbea99d1e2acdfc3385078ef41",
-      "ConfigGeneral.qml": "3ffe9c0946f8db088f8811d725a9df10c34fac11049cf5589fc65fe7f2880f29",
-      "SessionButtons.qml": "47cf5d2f5dc67f661dcbe5f859abfdada8468849625485f08eff7fd7e41dfd2f"
+    "installed_native": {
+      "tahoe": {
+        "installed": "/usr/lib/x86_64-linux-gnu/qt6/qml/org/kde/mac/tahoe/launcher/libmactahoelauncher.so",
+        "binary_sha256": "60d9bb93550b284bac6ad3dae2723cf5efa037cd9a7b8531ed46f982a760f156",
+        "source": {
+          "launchersearchpopup.cpp": "b9acdd160598ebd3de8c8238201859ec42155b44f65d4725de5de4f262fb06f2",
+          "launchersearchpopup.h": "9b6335b6728a4d0efb568aecd11859c081038f4d4662da2c4f42c43e5d12f617"
+        }
+      },
+      "golden-gate": {
+        "installed": "/usr/lib/x86_64-linux-gnu/qt6/qml/org/kde/mac/tahoe/launcher/libmactahoelauncher.so",
+        "binary_sha256": "60d9bb93550b284bac6ad3dae2723cf5efa037cd9a7b8531ed46f982a760f156",
+        "source": {
+          "launchersearchpopup.cpp": "b9acdd160598ebd3de8c8238201859ec42155b44f65d4725de5de4f262fb06f2",
+          "launchersearchpopup.h": "9b6335b6728a4d0efb568aecd11859c081038f4d4662da2c4f42c43e5d12f617"
+        }
+      }
     },
     "frames": [
       {
-        "name": "tahoe-dark-menu.png",
-        "sha256": "31daa8c0c2ae0095c48a9ec4e69880c3ef52371290aaf0785c0b51d39afd6ae4",
+        "name": "tahoe-light.png",
+        "sha256": "a7a46d390eb66e186d99838658c7e12f9f43b91c38932bd30eccd86c4d42aa57",
         "reviewed": true
       },
       {
-        "name": "tahoe-dark-search.png",
-        "sha256": "5278423c26aef2c89930ff9f0e83d652cc622ae46fef18879069d14891883b0a",
-        "reviewed": true
-      },
-      {
-        "name": "tahoe-light-menu.png",
-        "sha256": "f7d58be17833740bff14c9dd7888efe3779b6c82378cb2eff6feaf3e4e56a756",
-        "reviewed": true
-      },
-      {
-        "name": "tahoe-light-search.png",
-        "sha256": "1ba5a569f73932a678fbaa0aee349376cc90b0fd5592f5b9e1192f04632b97cd",
+        "name": "tahoe-dark.png",
+        "sha256": "22409a8556d5514b82366830c5937ea61c0584cbde908157799cc5b041663e02",
         "reviewed": true
       }
     ],
-    "limits": "Focused Wayland desktop and isolated X11 QML qualification, not a new all-distro desktop run. No fresh automatic scheduling boundary or GTK/Qt application lifecycle qualification: those implementations are unchanged. Full remote dev CI remains enabled; main promotion does not duplicate it."
+    "limits": "X11 uses a native popup harness; complete desktop rendering/install is Wayland. No multi-monitor hotplug claim. Exact trigger of the user observation is unknown. Historical gallery preserved. Full remote CI tracked separately."
   }
 }

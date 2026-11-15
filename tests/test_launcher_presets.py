@@ -127,6 +127,44 @@ def launcher_popup_module(repo, tmp_path_factory):
     return build / "bin"
 
 
+def test_native_launcher_anchor_geometry(repo, tmp_path, launcher_popup_module):
+    """Late item layout must recenter the popup without a window resize."""
+    if not shutil.which("Xvfb"):
+        pytest.skip("Xvfb required for isolated native window positioning")
+    with tempfile.TemporaryDirectory(prefix="launcher-anchor-") as runtime:
+        env = os.environ | {
+            "HOME": str(tmp_path), "XDG_CONFIG_HOME": str(tmp_path / "config"),
+            "XDG_DATA_HOME": str(tmp_path / "data"), "XDG_CACHE_HOME": str(tmp_path / "cache"),
+            "XDG_STATE_HOME": str(tmp_path / "state"), "XDG_RUNTIME_DIR": runtime,
+            "XDG_CONFIG_DIRS": "/etc/xdg", "XDG_DATA_DIRS": "/usr/local/share:/usr/share",
+            "DBUS_SESSION_BUS_ADDRESS": "unix:path=" + runtime + "/no-host-bus",
+            "QT_QPA_PLATFORM": "xcb", "QT_QPA_PLATFORMTHEME": "generic",
+            "QT_QUICK_BACKEND": "software", "QT_FORCE_STDERR_LOGGING": "1",
+            "QML_IMPORT_PATH": str(launcher_popup_module), "QT_SCALE_FACTOR": "1",
+        }
+        env.pop("WAYLAND_DISPLAY", None)
+        read_fd, write_fd = os.pipe()
+        server = subprocess.Popen(
+            ["Xvfb", "-displayfd", str(write_fd), "-screen", "0", "1280x1024x24", "-nolisten", "tcp"],
+            pass_fds=(write_fd,), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
+        )
+        os.close(write_fd)
+        try:
+            assert select.select([read_fd], [], [], 10)[0], "Xvfb did not start"
+            env["DISPLAY"] = ":" + os.read(read_fd, 32).decode().strip()
+            result = subprocess.run(
+                [str(launcher_popup_module.parent / "dockgeometryprobe"),
+                 str(repo / "tests/qml/LauncherAnchorProbe.qml")],
+                env=env, capture_output=True, text=True, timeout=15,
+            )
+            assert result.returncode == 0, result.stdout + result.stderr
+            assert "ANCHOR_OK" in result.stdout + result.stderr
+        finally:
+            os.close(read_fd)
+            server.terminate()
+            server.wait(timeout=5)
+
+
 @pytest.mark.parametrize("preset", [1, 2])
 @pytest.mark.parametrize("mode", ["Light", "Dark"])
 @pytest.mark.parametrize("edition", ["MacTahoe", "MacGoldenGate"])

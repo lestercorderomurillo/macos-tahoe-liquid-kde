@@ -26,12 +26,35 @@ LauncherSearchPopup::LauncherSearchPopup()
         PlasmaShellWaylandIntegration::get(this)->setRole(QtWayland::org_kde_plasma_surface::role_appletpopup);
     }
     connect(qGuiApp, &QGuiApplication::focusWindowChanged, this, &LauncherSearchPopup::focusWindowChanged);
+    connect(this, &PlasmaQuick::PopupPlasmaWindow::visualParentChanged, this, [this] {
+        for (const auto &connection : m_anchorGeometryConnections) {
+            disconnect(connection);
+        }
+        m_anchorGeometryConnections.clear();
+        auto *anchor = visualParent();
+        if (!anchor) {
+            return;
+        }
+        // Item layout can settle after the native popup/window configure.
+        // Plasma tracks the parent window position, not this item geometry.
+        const auto reposition = [this] {
+            queuePositionUpdate();
+            requestUpdate();
+        };
+        m_anchorGeometryConnections = {
+            connect(anchor, &QQuickItem::xChanged, this, reposition),
+            connect(anchor, &QQuickItem::yChanged, this, reposition),
+            connect(anchor, &QQuickItem::widthChanged, this, reposition),
+            connect(anchor, &QQuickItem::heightChanged, this, reposition),
+        };
+        reposition();
+    });
     connect(this, &QWindow::transientParentChanged, this, [this](QWindow *parent) {
         if (m_anchorWindow) {
             m_anchorWindow->removeEventFilter(this);
         }
         m_anchorWindow = parent;
-        if (parent && KWindowSystem::isPlatformX11()) {
+        if (parent) {
             parent->installEventFilter(this);
         }
     });
@@ -46,6 +69,7 @@ bool LauncherSearchPopup::eventFilter(QObject *watched, QEvent *event)
 {
     if (watched == m_anchorWindow && isVisible()
         && (event->type() == QEvent::Move || event->type() == QEvent::Resize)) {
+        queuePositionUpdate();
         requestUpdate();
     }
     return PlasmaQuick::PopupPlasmaWindow::eventFilter(watched, event);
