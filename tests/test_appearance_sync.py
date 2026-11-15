@@ -272,6 +272,46 @@ def test_native_reversal_cancels_palette_command_before_its_final_write(sandbox,
     assert state.read_text() == 'light'
 
 
+@pytest.mark.parametrize('cleanup_error', [False, True])
+def test_widget_cleanup_restores_signal_handlers_and_defers_cancellation(sandbox, monkeypatch, cleanup_error):
+    import signal
+    handlers = {sig: signal.getsignal(sig) for sig in (signal.SIGTERM, signal.SIGINT)}
+    pending = [False]
+    writes = []
+    class Guard:
+        def check(self):
+            if pending[0]:
+                raise ts._AppearanceChanged('light', False)
+    guard = Guard()
+    monkeypatch.setattr(ts, '_APPEARANCE_GUARD', guard)
+    monkeypatch.setattr(ts, '_have', lambda _: True)
+    monkeypatch.setattr(ts, '_has_session_dbus', lambda: True)
+    monkeypatch.setattr(ts.time, 'sleep', lambda _: pending.__setitem__(0, True))
+    def write(*args):
+        if ts._APPEARANCE_GUARD is not None:
+            ts._APPEARANCE_GUARD.check()
+        writes.append(args[-1])
+        if cleanup_error and args[-1] == 'MacTahoe':
+            raise OSError('simulated cleanup write failure')
+        return True
+    monkeypatch.setattr(ts, '_kwrite', write)
+    monkeypatch.setattr(ts, '_broadcast_widget_style_change', lambda _: True)
+    try:
+        if cleanup_error:
+            with pytest.raises(OSError):
+                ts.cycle_widget_style_live('MacTahoe')
+        else:
+            assert ts.cycle_widget_style_live('MacTahoe')
+        assert writes == ['Breeze', 'MacTahoe']
+        assert ts._APPEARANCE_GUARD is guard
+        assert all(signal.getsignal(sig) is handler for sig, handler in handlers.items())
+        with pytest.raises(ts._AppearanceChanged):
+            guard.check()
+    finally:
+        for sig, handler in handlers.items():
+            signal.signal(sig, handler)
+
+
 
 def test_successful_native_palette_apply_is_not_replayed(desktop, monkeypatch):
     native, _, _ = desktop

@@ -1762,6 +1762,7 @@ def cycle_widget_style_live(target: str) -> bool:
     the finally + signal handler guarantee disk ends at the target.
     False when a widgetStyle write fails or a broadcast phase lands
     nothing — silent success here would mask a sudo'd-uninstall failure."""
+    global _APPEARANCE_GUARD
     if not _have("kwriteconfig6") or not _has_session_dbus():
         return False
     if not target:
@@ -1798,12 +1799,20 @@ def cycle_widget_style_live(target: str) -> bool:
         phase_ok.append(bool(_broadcast_widget_style_change("Breeze")))
         time.sleep(0.4)
     finally:
-        _restore_target()
-        if handlers_installed:
-            signal.signal(signal.SIGTERM, old_term)
-            signal.signal(signal.SIGINT, old_int)
-    if interrupted:
-        raise SystemExit(128 + interrupted[0])
+        # Restoring the neutral widget style is cleanup, not a new appearance
+        # choice. Cancellation here used to strand Breeze and leave our
+        # temporary SIGTERM handler installed permanently in the watcher.
+        guard = _APPEARANCE_GUARD
+        _APPEARANCE_GUARD = None
+        try:
+            _restore_target()
+        finally:
+            _APPEARANCE_GUARD = guard
+            if handlers_installed:
+                signal.signal(signal.SIGTERM, old_term)
+                signal.signal(signal.SIGINT, old_int)
+            if interrupted:
+                raise SystemExit(128 + interrupted[0])
     return all(phase_ok)
 
 

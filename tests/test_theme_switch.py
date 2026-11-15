@@ -2412,3 +2412,26 @@ def test_current_gtk4_keeps_original_stylesheet(monkeypatch):
     monkeypatch.setattr(theme_switch, "_gtk4_version", lambda: (4, 16))
     css = ":root { --accent-blue: #0088ff; } button { color: var(--accent-blue); }"
     assert theme_switch.gtk4_compatible_css(css) == css
+
+
+def test_stop_reaps_only_exact_legacy_watcher_that_ignores_sigterm(tmp_path, monkeypatch):
+    import subprocess
+    import sys
+    from steps import theme_switch as step
+    command = tmp_path / 'mac-tahoe-theme-switch'
+    command.write_text('import signal,time\nsignal.signal(signal.SIGTERM, signal.SIG_IGN)\nprint("ready",flush=True)\ntime.sleep(30)\n')
+    monkeypatch.setattr(step, 'BIN_DEST', command)
+    monkeypatch.setattr(step, '_WATCHER_STOP_SECONDS', .15)
+    monkeypatch.delenv('SUDO_UID', raising=False)
+    owned = subprocess.Popen([sys.executable, str(command), 'watch-system'], stdout=subprocess.PIPE, text=True)
+    unrelated = subprocess.Popen([sys.executable, str(command), 'unrelated'], stdout=subprocess.PIPE, text=True)
+    try:
+        assert owned.stdout.readline().strip() == unrelated.stdout.readline().strip() == 'ready'
+        step.stop_gtk_sync_watcher()
+        assert owned.wait(timeout=2) != 0
+        assert unrelated.poll() is None
+    finally:
+        for process in (owned, unrelated):
+            if process.poll() is None:
+                process.kill()
+            process.wait(timeout=2)
