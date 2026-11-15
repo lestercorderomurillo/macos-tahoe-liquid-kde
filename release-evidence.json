@@ -1,13 +1,13 @@
 {
-  "version": "0.71.11",
-  "source_sha256": "90f770f1d57fcf54bca0d6998807d8e43e95c1d3e82a39d132b6024a22b9a58a",
+  "version": "0.71.12",
+  "source_sha256": "b52ae39ea153d2b35e371141f6b6e65f5714e8992a3e43c930cc5a571efcdddc",
   "environment": "Isolated Plasma 6.6/6.7 X11 and Plasma 6.7.4 Wayland; disposable Plasma 6.8.1 / Qt 6.11.1 two-display Wayland VM.",
   "checks": [
     {
-      "command": "python3 -m pytest -xq -p no:cacheprovider tests/test_launcher_presets.py -k native_launcher_reopens",
+      "command": "python3 -m pytest -xq -rs -p no:cacheprovider tests/test_launcher_presets.py -k \"native_launcher_multiscreen or native_launcher_reopens\"",
       "result": "passed",
-      "detail": "2 passed: native two-output Wayland reopen, reverse move, visible move and resize at scale 1 and 1.5; clean process exit required. Plasma 6.7.4 / Qt 6.11.2.",
-      "log_sha256": "947bd69dc23068a804cb01b73d1b7d8da56e41cea25cc0ab1e4eb6e7dd00b84b"
+      "detail": "4 passed: portable native multi-screen geometry and live two-output Wayland, both at scale 1 and 1.5. Live Wayland uses a temporary compositor copy without privileged file capabilities.",
+      "log_sha256": "fcf403c8a2073aae8120f2d457c9181a549f7a889064fcc1ffd8ffe278b1332b"
     },
     {
       "command": "python3 -m pytest -xq -p no:cacheprovider tests/test_launcher_presets.py -k \"native_launcher_reopens or native_launcher_anchor\"",
@@ -44,6 +44,12 @@
         "tahoe": "193afde6f3e6563ecca83e8dbcc481772f46667f174cbf542de1239b619d82ef",
         "golden-gate": "ba59b058cfbd5c770736db9d3cdb5aad9fb427679dc9a6e75b75f5d05522be51"
       }
+    },
+    {
+      "command": "docker run --rm --network none -e PYTHONDONTWRITEBYTECODE=1 -v /tmp/tahoe-launchpad-screens:/source:ro -w /source mttkde-ci-repair-arch:latest python3 -m pytest -xq -rs -p no:cacheprovider tests/test_launcher_presets.py -k \"native_launcher_multiscreen or native_launcher_reopens\"",
+      "result": "passed",
+      "detail": "2 required native geometry cases passed in an ordinary GPU-less CI container. 2 separate live-Wayland cases explicitly skipped for absent DRM render nodes; their rendering coverage comes from the 4-case host run and the disposable desktop VM, not this container.",
+      "log_sha256": "a5f6ef03a0ecc20e5968cdb40b04158f459b8e07d704d2954c2c2dca41e3ae4c"
     }
   ],
   "gallery_commit": "9993f61cc0afeba7e39afee776c99f29a55edb8f",
@@ -163,6 +169,13 @@
         ]
       }
     },
-    "limits": "Real desktop install/input/rendering qualification is Wayland. X11 is an isolated native popup harness. No monitor unplug/replug or automatic-appearance transition claim; those implementations are unchanged. VM retains its existing wallpaper; frames are focused validation, not replacement documentation photographs. Historical galleries retain their original provenance. Full remote CI is tracked separately."
+    "limits": "Real desktop install/input/rendering qualification is Wayland. X11 is an isolated native popup harness. No monitor unplug/replug or automatic-appearance transition claim; those implementations are unchanged. VM retains its existing wallpaper; frames are focused validation, not replacement documentation photographs. Historical galleries retain their original provenance. Full remote CI is tracked separately.",
+    "reused_from": "v0.71.11: native launcher sources, installer inputs and VM environment are unchanged. Only test-harness startup/settling and release metadata changed.",
+    "ci_correction": {
+      "prior_run": "https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/actions/runs/43745654957",
+      "result": "Primary shard 0 failed only the two live-Wayland test startups; other primary shard, Nix and every distro leg passed.",
+      "cause": "System KWin file capabilities prevent exec in the container, and its virtual renderer requires a DRM device unavailable there.",
+      "repair": "Always execute the same native two-output scenario using the configurable offscreen QPA; retain separate live-Wayland cases when a render node is available. Bound asynchronous geometry settling; preserve all placement assertions."
+    }
   }
 }
