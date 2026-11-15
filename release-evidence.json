@@ -1,12 +1,12 @@
 {
   "version": "0.72.0",
-  "source_sha256": "fa1fd992f6a0ea3525787a3b93835484a31a67fdf758c9efa1775b5b6f742693",
+  "source_sha256": "f58b6ffd620241c7299804025cbaf1fd1b9ec796824ac4a0afc0e4a44015ba9d",
   "environment": "Disposable Plasma 6.8.1 / Qt 6.11.1 Wayland VM; isolated X11; Plasma 6.6/6.7 SDK builds and distro runtime containers. No host desktop mutation.",
   "checks": [
     {
       "command": "python3 -m pytest -q tests/test_desktop_controls.py tests/test_launcher_presets.py -k 'desktop_controls_native_state or control_center_native_x11_render'",
       "result": "passed",
-      "detail": "2 passed, 76 deselected. Final QML behavior and actual isolated X11 rendering.",
+      "detail": "Reused unchanged QML state/action evidence from the typography candidate. The new actual-popup lifecycle regression below supersedes its earlier plain-window rendering coverage.",
       "log_sha256": "bb77a17b4c6ec4e327d9190f22c4129529b6a289a9556308d5193f8ee21b78de"
     },
     {
@@ -23,6 +23,32 @@
       "result": "failed",
       "detail": "Controls, Qt/Kvantum and GTK 4 became light; GTK 3 retained a dark application preference under the Light theme. The baseline issue has a separate pending fix in upstream commit 9b2c3be9. No combined integration or release qualification is claimed.",
       "log_sha256": "bbbec5187e2f676a376b46d221d9cfa318862f9173d87a4d5e3fa35c5836f799"
+    },
+    {
+      "command": "python3 -m pytest -q tests/test_launcher_presets.py -k control_center_native_x11_render",
+      "result": "passed",
+      "detail": "Actual Plasma NoBackground dialog: show, synchronous theme reset that clears its mask, frame-stage repair, reopen. Rendered alpha, input gaps and actual X11 blur property agree.",
+      "log_sha256": "dfb4b619695159627bf690bbf96c242d36331b1e293ad9a8053fd6c9a6c326c3"
+    },
+    {
+      "command": "cmake --build /tmp/theme-controls-native -j4; docker run --rm --network none --user 1000:1000 -v /tmp/tahoe-desktop-controls:/source:ro mttkde-acrylic-x11:6.6-user bash -lc \"cmake -S /source/tests/qml -B /tmp/controls-blur-sdk66 -DLAUNCHER_NATIVE_SOURCE=/source/src/offline/plasmoids/org.kde.mac.tahoe.liquid.taskmanager && cmake --build /tmp/controls-blur-sdk66 -j4 && QT_QPA_PLATFORM=offscreen /tmp/controls-blur-sdk66/controlglassprobe\"",
+      "result": "passed",
+      "detail": "Native helper compiled against Plasma 6.7.4 host SDK and Plasma 6.6 offline SDK; region probe passed on 6.6. VM native build/load/render passed on Plasma 6.8.1. No KWin shader or effect changes.",
+      "logs": {
+        "controls-blur-native-build.log": "3c88639ba04f6186e013bdc0d80391440b7a76fb2df330af8b1badbc885d5e53",
+        "controls-blur-sdk66.log": "f5b4b5bd2f624281a7b918b88b76eb841415ac126dca3da509f8f01d2a9673c0"
+      }
+    },
+    {
+      "command": "Guest: installer_backend.py install --only --plasmoids --apply-theme --light (both editions, install and reinstall)",
+      "result": "passed",
+      "detail": "Golden Gate source prepared by the real wrapper with local Tahoe override. Tahoe first install additionally restored its edition themes/colors/Kvantum/wallpaper. Installed source identities recorded.",
+      "logs": {
+        "controls-blur-tahoe-reinstall.log": "262ae6b87996bc62b4a539edcd9e127b96eb436a2ddd71952516dd0eaa02aa30",
+        "controls-blur-tahoe-install.log": "be1cbc7d71b5858d906c61032f0768b020d631e53f99c2d85d8aeb8ac733cfeb",
+        "controls-blur-golden-reinstall.log": "db6b4d81bc60e0e28efad8d183b45878c37e10791a4bf979de83aea9d5cea8de",
+        "controls-blur-golden-install.log": "36bc0a42b40539d852570f6794ae0fa0871dcb73ea456585a93c4f3bcb9f0288"
+      }
     }
   ],
   "gallery_commit": "9993f61cc0afeba7e39afee776c99f29a55edb8f",
@@ -40,97 +66,224 @@
       "reviewed": true,
       "edition": "tahoe",
       "mode": "dark"
+    },
+    {
+      "path": "src/screenshots/previews/control-center-blur-tahoe-light-95480d7f88be.png",
+      "sha256": "95480d7f88be8c36f760f435119a1dc49549b18ae6adb204d31db6924cabd3f1",
+      "reviewed": true,
+      "edition": "tahoe",
+      "mode": "light"
+    },
+    {
+      "path": "src/screenshots/previews/control-center-blur-tahoe-dark-46f0aa2b6ca3.png",
+      "sha256": "46f0aa2b6ca30c3e5f41fe22193f7489eb73d6948eb257f3078f8040d27ab9b1",
+      "reviewed": true,
+      "edition": "tahoe",
+      "mode": "dark"
     }
   ],
   "qualification": {
-    "implementation_commit": "facd0b95b78ca542fce815bf0d88195520675ceb",
-    "installed_golden_gate": {
-      "org.kde.mac-tahoe-liquid-kde.controlcenter": {
-        "contents/ui/main.qml": "928c73582614550f5c60c4116a2d804eeec97fbc596e44e8c74a71c9f316132e",
-        "contents/ui/FocusSwitch.qml": "cc994585606b7dc8fc2c4d003a4c44e181a629b90147a46a05f285b9be78ae2b",
-        "contents/ui/EditControls.qml": "eb34a2655f01699949e307d12b24e67803491d4ed670215aab084c462c4ec117",
-        "contents/ui/ControlView.qml": "25c6231eceaba3d99f7c1844f76313ee490d2e6ad63c19ce43e961ad3cd05405",
-        "contents/ui/WifiView.qml": "b3499617e6c19b5b3b03367a170b439928641975790eda2155430460c02eb4cf",
-        "contents/ui/MediaView.qml": "a1c1d22f95aba60fd2143135f8c47b115780f09b2d58ae261a0d455eb9ebad77",
-        "contents/ui/BatteryView.qml": "d102ab929c30b41747582222693d65594ac309c50c082fae68b95ec629eedf76",
-        "contents/ui/PanelButton.qml": "688ee3c01ab077ec6f6fc761083acdcd60ddd1bd468ed113391e5f9c248521c6",
-        "contents/ui/ControlLabel.qml": "52af06a63ea75b5c4d0fd701326f2bbdb5d539689477f726ebd83f6277259bb0",
-        "contents/ui/ControlTile.qml": "87b7e54c1ad47c7303d891e88b740220da9aa4b132e58ab110a6c16ca8308367",
-        "contents/ui/AudioView.qml": "96e6286bb166723f02174fbec8cae6a602732cd455f90bad30eb6cddb93d163e",
-        "contents/ui/BluetoothView.qml": "78ae19a0657afb33816e054bf5e17fe813508e84670399789a137060a6066c44",
-        "contents/ui/Page.qml": "6d2c999099d556e37ae937769fb90260b931d5403bb501cdf5391b9eb69f8576",
-        "contents/ui/DisplayView.qml": "dcdf8b717694755d869b41eede25fe3ace2e5d3f66db470ca21fff9be00a6885",
-        "contents/ui/controlcenter.svg": "a1149ac7986ed1af0c872feb780c912b911377d793943cfe864dc9eed7f08e2c",
-        "contents/ui/GlassRim.qml": "4e4413e4b03b4c0f06f483db2709df6918dc6a723c26ee3aa380ae1298ab652c",
-        "contents/ui/SettingsLink.qml": "8c0da542beffb3ba79990fb3e14bb6e34cc9cc8b59a06f3aec8dbe21cca05d26",
-        "contents/ui/ControlAction.qml": "6ac98f93b95a51f752f8b54b299b2ad0f120c2756f98ee02bd32e273b4fbd712",
-        "contents/ui/GlassSlider.qml": "466923a753fa75b1249080c5bb4e428f3b249a4cd1c1764d76dc09c4ca81d7a3",
-        "contents/ui/NotificationsView.qml": "8157b72ac81596f971407c449ef171ae0546ba93c0c61111319b94b08e498cc0",
-        "contents/config/main.xml": "7aa2a39e8d0331d7786194b1ebcac1874bb3760bdea575afd90c631f88a0387c",
-        "contents/ui/symbols/speaker.svg": "c9de39602401c352967419742c6a77b0cd557bc0f54a573e056f0702ed9cfaf4",
-        "contents/ui/symbols/battery.svg": "8a594726d9b03c08f024fe5dc2c5fff61dc5231dc56ed3326d7e3d69deaf1c05",
-        "contents/ui/symbols/speaker-off.svg": "e7276eda19ba8e620ef946db1a3f6488909cdd37ee8c52c4c563f18d095ced4d",
-        "contents/ui/symbols/wifi.svg": "907c0ebc70f9f0aab96e193ab047ed572724550ab99370b7dd27210fa42f554d",
-        "contents/ui/symbols/mttkde-control-battery-20.svg": "b2060ce357c19cfebab2e06c7b5bb2e2ab62dd788fd9da5d17c0f90e77a76081",
-        "contents/ui/symbols/mttkde-control-previous.svg": "34c3dff98b2d2d3ef8621c6078d16eac4e31e66959cda424dda5cc9d3fbcda1a",
-        "contents/ui/symbols/mttkde-control-battery-80.svg": "1668b035452f608a327771d5044e604cb1884badbaf2763fd1ce6a1aead3b70d",
-        "contents/ui/symbols/mttkde-control-next.svg": "ea55430e6cf67599d513e32e181d986eeb3ecb20a049e3f4240062e6af659228",
-        "contents/ui/symbols/mttkde-control-wifi.svg": "907c0ebc70f9f0aab96e193ab047ed572724550ab99370b7dd27210fa42f554d",
-        "contents/ui/symbols/moon.svg": "659940933ccbc0ce64144e2e8a82bc63327c2b5dd77a79467ad3da0b3184a1d1",
-        "contents/ui/symbols/mttkde-control-settings.svg": "014eee249d2b96112088adb81e538b2064107c24a13138673b52de4372b0c75f",
-        "contents/ui/symbols/mttkde-control-bell.svg": "412a708756c97c28624c504844ae828f7b16902052e5103b326ecb08c12f3d6d",
-        "contents/ui/symbols/mttkde-control-battery-0.svg": "ddb01b182a0d9c1aa266d8cf3b1ed69a01b47b35d94941f4796619031404e623",
-        "contents/ui/symbols/mttkde-control-battery-60.svg": "58bba5010a9c691c83b1a7c26f4a823ef0708e0b4b77e448266b7c2eb5618fae",
-        "contents/ui/symbols/sun.svg": "56f84b2dd157a5069362463150ec2ff00555cc854cc2c8434914bedc73a6c70a",
-        "contents/ui/symbols/mttkde-control-pause.svg": "a586fb0dcc802ea64ddddc115ae3d4a5e49d227b6ba333dc59b2984ce071171a",
-        "contents/ui/symbols/next.svg": "ea55430e6cf67599d513e32e181d986eeb3ecb20a049e3f4240062e6af659228",
-        "contents/ui/symbols/bell.svg": "412a708756c97c28624c504844ae828f7b16902052e5103b326ecb08c12f3d6d",
-        "contents/ui/symbols/mttkde-control-moon.svg": "659940933ccbc0ce64144e2e8a82bc63327c2b5dd77a79467ad3da0b3184a1d1",
-        "contents/ui/symbols/mttkde-control-battery-charging.svg": "8dc41e495323a2ca90b301138dc88ae6b05360735e95fb097b3575e9cc4d7e28",
-        "contents/ui/symbols/mttkde-control-battery-10.svg": "60dc2bde34dd2d9c420760c2fd6a649f86ce94e60ee324385b3a1c0aaa391ec9",
-        "contents/ui/symbols/mttkde-control-wifi-off.svg": "fb92b57ea39ad213671e5aa1bfe82741f87a622f0f794a7d0dc15049bf23c2d5",
-        "contents/ui/symbols/settings.svg": "014eee249d2b96112088adb81e538b2064107c24a13138673b52de4372b0c75f",
-        "contents/ui/symbols/music.svg": "517d2bf50267c4ee055f46ce939145791bfb1e8caa6990e5d1e5a9fd7ce866c6",
-        "contents/ui/symbols/mttkde-control-play.svg": "1c64056a308540672fb0729504a195ecca95be9bc3850b83a61bf6c0f045af78",
-        "contents/ui/symbols/mttkde-control-speaker-off.svg": "e7276eda19ba8e620ef946db1a3f6488909cdd37ee8c52c4c563f18d095ced4d",
-        "contents/ui/symbols/mttkde-control-bluetooth.svg": "f3d4b26f7bb8abc7b70a8689bd12c427277bb10b246587cd277c1d974a261b07",
-        "contents/ui/symbols/play.svg": "1c64056a308540672fb0729504a195ecca95be9bc3850b83a61bf6c0f045af78",
-        "contents/ui/symbols/mttkde-control-battery-40.svg": "e5c7c5d154551da3abc27c6cd7c66385589e78377f6eb0f7697fcc3e8595440b",
-        "contents/ui/symbols/mttkde-control-battery-30.svg": "062686a8de31bc41bd1fb4f9b4fd8f69015dd64a31996f6c3e22606e29b5886c",
-        "contents/ui/symbols/mttkde-control-battery-100.svg": "8a594726d9b03c08f024fe5dc2c5fff61dc5231dc56ed3326d7e3d69deaf1c05",
-        "contents/ui/symbols/mttkde-control-sun.svg": "56f84b2dd157a5069362463150ec2ff00555cc854cc2c8434914bedc73a6c70a",
-        "contents/ui/symbols/mttkde-control-battery-missing.svg": "24eac2d42c8e01c88ef64855fb868d61e44b052ec46a32649a507a3d074a63dc",
-        "contents/ui/symbols/mttkde-control-music.svg": "517d2bf50267c4ee055f46ce939145791bfb1e8caa6990e5d1e5a9fd7ce866c6",
-        "contents/ui/symbols/mttkde-control-battery-90.svg": "99d8687fa0c8abc85e7745128101f1f3dde5b8a712908945ae6644d14cb5940f",
-        "contents/ui/symbols/mttkde-control-battery-70.svg": "bde048741feda5fe648dd020b9f07503af40a7d0bd717a8a8fc2fd3703f0aaa4",
-        "contents/ui/symbols/previous.svg": "34c3dff98b2d2d3ef8621c6078d16eac4e31e66959cda424dda5cc9d3fbcda1a",
-        "contents/ui/symbols/wifi-off.svg": "fb92b57ea39ad213671e5aa1bfe82741f87a622f0f794a7d0dc15049bf23c2d5",
-        "contents/ui/symbols/mttkde-control-battery.svg": "8a594726d9b03c08f024fe5dc2c5fff61dc5231dc56ed3326d7e3d69deaf1c05",
-        "contents/ui/symbols/bluetooth.svg": "f3d4b26f7bb8abc7b70a8689bd12c427277bb10b246587cd277c1d974a261b07",
-        "contents/ui/symbols/mttkde-control-battery-50.svg": "bb6defc38787da6c3632806032acfadb861cae8aa0f12a85d4cf94058a6b028e",
-        "contents/ui/symbols/pause.svg": "a586fb0dcc802ea64ddddc115ae3d4a5e49d227b6ba333dc59b2984ce071171a",
-        "contents/ui/symbols/mttkde-control-speaker.svg": "c9de39602401c352967419742c6a77b0cd557bc0f54a573e056f0702ed9cfaf4"
-      },
-      "org.kde.mac-tahoe-liquid-kde.wifi": {
-        "contents/ui/main.qml": "c306dc9ba6114119542c5f3025ee5104645781e6fc7e06af2eb5039c4a24a4fa"
-      },
-      "org.kde.mac-tahoe-liquid-kde.battery": {
-        "contents/ui/main.qml": "b060f42fc5401d8b3fbdcb39d3620ca275d945bb81d640913dcbd8c412d245c4"
-      },
-      "org.kde.mac-tahoe-liquid-kde.notifications": {
-        "contents/ui/main.qml": "ea802e4948a73395415f1725b9e4d2aea7b4f72f4ba548e49c14377d948f0936"
-      },
-      "native": {
-        "installed_sha256": "1f9bdc8bba0768ff5546725225c1cc4109b264a4f180acafb1c85415e4133973",
-        "sources": {
-          "controlglass.h": "0ba60bfb7398b77fefab8d1fbd108779619629bf46d75b7d86287a8c2c2cf185",
-          "controlglass.cpp": "26cf7f42651b6e706270c7f33229149f56211f465f21cbf8307397605b1dba1c"
-        }
-      }
-    },
-    "scope": "Font family/size, original symbol artwork/sizing, and glass rim. Existing backend, SDK and wrapper behavior unchanged; prior evidence remains in commit 06daad72.",
+    "implementation_commit": "4c4f949e440655fd2ce0209049f6d781d07b0008",
+    "scope": "Original desktop controls, typography, symbols and glass rim; native popup blur lifecycle repaired. No KWin shader/effect change.",
     "release_blocker": "Existing GTK 3 appearance failure and unresolved integration with separate approval-pending clipboard candidate. No publication performed.",
-    "limits": "No physical Wi-Fi/battery/audio device claims. No new Dock refraction implementation; existing compositor blur remains active. Tahoe main Control Center screenshot bytes match the final implementation; three later standalone form font declarations were installed in Golden Gate. Historical galleries untouched."
+    "limits": "Physical Wi-Fi, battery and audio remain unverified. Historical typography previews predate the blur repair; the new striped-window proofs show real compositor blur. No new refraction shader. Existing GTK 3 appearance failure remains a release blocker.",
+    "blur_repair": {
+      "implementation_commit": "4c4f949e440655fd2ce0209049f6d781d07b0008",
+      "cause": "Plasma backgroundless dialog clears KWindowEffects blur state during later layout/theme updates. Reapply cached islands on QQuickWindow.afterAnimating before frame preparation; do not request extra frames.",
+      "pixel_comparison": {
+        "inside_tile_standard_deviation_on": 0.37267799624996495,
+        "inside_tile_standard_deviation_off": 43.40322568657772,
+        "gap_mean_difference": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "tile_roi": [
+          3310,
+          182,
+          3460,
+          194
+        ],
+        "gap_roi": [
+          3512,
+          140,
+          3528,
+          180
+        ]
+      },
+      "before_trace_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "installed": {
+        "tahoe": {
+          "org.kde.mac-tahoe-liquid-kde.controlcenter": {
+            "contents/ui/main.qml": "928c73582614550f5c60c4116a2d804eeec97fbc596e44e8c74a71c9f316132e",
+            "contents/ui/FocusSwitch.qml": "cc994585606b7dc8fc2c4d003a4c44e181a629b90147a46a05f285b9be78ae2b",
+            "contents/ui/EditControls.qml": "eb34a2655f01699949e307d12b24e67803491d4ed670215aab084c462c4ec117",
+            "contents/ui/ControlView.qml": "25c6231eceaba3d99f7c1844f76313ee490d2e6ad63c19ce43e961ad3cd05405",
+            "contents/ui/WifiView.qml": "b3499617e6c19b5b3b03367a170b439928641975790eda2155430460c02eb4cf",
+            "contents/ui/MediaView.qml": "a1c1d22f95aba60fd2143135f8c47b115780f09b2d58ae261a0d455eb9ebad77",
+            "contents/ui/BatteryView.qml": "d102ab929c30b41747582222693d65594ac309c50c082fae68b95ec629eedf76",
+            "contents/ui/PanelButton.qml": "688ee3c01ab077ec6f6fc761083acdcd60ddd1bd468ed113391e5f9c248521c6",
+            "contents/ui/ControlLabel.qml": "52af06a63ea75b5c4d0fd701326f2bbdb5d539689477f726ebd83f6277259bb0",
+            "contents/ui/ControlTile.qml": "87b7e54c1ad47c7303d891e88b740220da9aa4b132e58ab110a6c16ca8308367",
+            "contents/ui/AudioView.qml": "96e6286bb166723f02174fbec8cae6a602732cd455f90bad30eb6cddb93d163e",
+            "contents/ui/BluetoothView.qml": "78ae19a0657afb33816e054bf5e17fe813508e84670399789a137060a6066c44",
+            "contents/ui/Page.qml": "6d2c999099d556e37ae937769fb90260b931d5403bb501cdf5391b9eb69f8576",
+            "contents/ui/DisplayView.qml": "dcdf8b717694755d869b41eede25fe3ace2e5d3f66db470ca21fff9be00a6885",
+            "contents/ui/controlcenter.svg": "a1149ac7986ed1af0c872feb780c912b911377d793943cfe864dc9eed7f08e2c",
+            "contents/ui/GlassRim.qml": "4e4413e4b03b4c0f06f483db2709df6918dc6a723c26ee3aa380ae1298ab652c",
+            "contents/ui/SettingsLink.qml": "8c0da542beffb3ba79990fb3e14bb6e34cc9cc8b59a06f3aec8dbe21cca05d26",
+            "contents/ui/ControlAction.qml": "6ac98f93b95a51f752f8b54b299b2ad0f120c2756f98ee02bd32e273b4fbd712",
+            "contents/ui/GlassSlider.qml": "466923a753fa75b1249080c5bb4e428f3b249a4cd1c1764d76dc09c4ca81d7a3",
+            "contents/ui/NotificationsView.qml": "8157b72ac81596f971407c449ef171ae0546ba93c0c61111319b94b08e498cc0",
+            "contents/config/main.xml": "7aa2a39e8d0331d7786194b1ebcac1874bb3760bdea575afd90c631f88a0387c",
+            "contents/ui/symbols/speaker.svg": "c9de39602401c352967419742c6a77b0cd557bc0f54a573e056f0702ed9cfaf4",
+            "contents/ui/symbols/battery.svg": "8a594726d9b03c08f024fe5dc2c5fff61dc5231dc56ed3326d7e3d69deaf1c05",
+            "contents/ui/symbols/speaker-off.svg": "e7276eda19ba8e620ef946db1a3f6488909cdd37ee8c52c4c563f18d095ced4d",
+            "contents/ui/symbols/wifi.svg": "907c0ebc70f9f0aab96e193ab047ed572724550ab99370b7dd27210fa42f554d",
+            "contents/ui/symbols/mttkde-control-battery-20.svg": "b2060ce357c19cfebab2e06c7b5bb2e2ab62dd788fd9da5d17c0f90e77a76081",
+            "contents/ui/symbols/mttkde-control-previous.svg": "34c3dff98b2d2d3ef8621c6078d16eac4e31e66959cda424dda5cc9d3fbcda1a",
+            "contents/ui/symbols/mttkde-control-battery-80.svg": "1668b035452f608a327771d5044e604cb1884badbaf2763fd1ce6a1aead3b70d",
+            "contents/ui/symbols/mttkde-control-next.svg": "ea55430e6cf67599d513e32e181d986eeb3ecb20a049e3f4240062e6af659228",
+            "contents/ui/symbols/mttkde-control-wifi.svg": "907c0ebc70f9f0aab96e193ab047ed572724550ab99370b7dd27210fa42f554d",
+            "contents/ui/symbols/moon.svg": "659940933ccbc0ce64144e2e8a82bc63327c2b5dd77a79467ad3da0b3184a1d1",
+            "contents/ui/symbols/mttkde-control-settings.svg": "014eee249d2b96112088adb81e538b2064107c24a13138673b52de4372b0c75f",
+            "contents/ui/symbols/mttkde-control-bell.svg": "412a708756c97c28624c504844ae828f7b16902052e5103b326ecb08c12f3d6d",
+            "contents/ui/symbols/mttkde-control-battery-0.svg": "ddb01b182a0d9c1aa266d8cf3b1ed69a01b47b35d94941f4796619031404e623",
+            "contents/ui/symbols/mttkde-control-battery-60.svg": "58bba5010a9c691c83b1a7c26f4a823ef0708e0b4b77e448266b7c2eb5618fae",
+            "contents/ui/symbols/sun.svg": "56f84b2dd157a5069362463150ec2ff00555cc854cc2c8434914bedc73a6c70a",
+            "contents/ui/symbols/mttkde-control-pause.svg": "a586fb0dcc802ea64ddddc115ae3d4a5e49d227b6ba333dc59b2984ce071171a",
+            "contents/ui/symbols/next.svg": "ea55430e6cf67599d513e32e181d986eeb3ecb20a049e3f4240062e6af659228",
+            "contents/ui/symbols/bell.svg": "412a708756c97c28624c504844ae828f7b16902052e5103b326ecb08c12f3d6d",
+            "contents/ui/symbols/mttkde-control-moon.svg": "659940933ccbc0ce64144e2e8a82bc63327c2b5dd77a79467ad3da0b3184a1d1",
+            "contents/ui/symbols/mttkde-control-battery-charging.svg": "8dc41e495323a2ca90b301138dc88ae6b05360735e95fb097b3575e9cc4d7e28",
+            "contents/ui/symbols/mttkde-control-battery-10.svg": "60dc2bde34dd2d9c420760c2fd6a649f86ce94e60ee324385b3a1c0aaa391ec9",
+            "contents/ui/symbols/mttkde-control-wifi-off.svg": "fb92b57ea39ad213671e5aa1bfe82741f87a622f0f794a7d0dc15049bf23c2d5",
+            "contents/ui/symbols/settings.svg": "014eee249d2b96112088adb81e538b2064107c24a13138673b52de4372b0c75f",
+            "contents/ui/symbols/music.svg": "517d2bf50267c4ee055f46ce939145791bfb1e8caa6990e5d1e5a9fd7ce866c6",
+            "contents/ui/symbols/mttkde-control-play.svg": "1c64056a308540672fb0729504a195ecca95be9bc3850b83a61bf6c0f045af78",
+            "contents/ui/symbols/mttkde-control-speaker-off.svg": "e7276eda19ba8e620ef946db1a3f6488909cdd37ee8c52c4c563f18d095ced4d",
+            "contents/ui/symbols/mttkde-control-bluetooth.svg": "f3d4b26f7bb8abc7b70a8689bd12c427277bb10b246587cd277c1d974a261b07",
+            "contents/ui/symbols/play.svg": "1c64056a308540672fb0729504a195ecca95be9bc3850b83a61bf6c0f045af78",
+            "contents/ui/symbols/mttkde-control-battery-40.svg": "e5c7c5d154551da3abc27c6cd7c66385589e78377f6eb0f7697fcc3e8595440b",
+            "contents/ui/symbols/mttkde-control-battery-30.svg": "062686a8de31bc41bd1fb4f9b4fd8f69015dd64a31996f6c3e22606e29b5886c",
+            "contents/ui/symbols/mttkde-control-battery-100.svg": "8a594726d9b03c08f024fe5dc2c5fff61dc5231dc56ed3326d7e3d69deaf1c05",
+            "contents/ui/symbols/mttkde-control-sun.svg": "56f84b2dd157a5069362463150ec2ff00555cc854cc2c8434914bedc73a6c70a",
+            "contents/ui/symbols/mttkde-control-battery-missing.svg": "24eac2d42c8e01c88ef64855fb868d61e44b052ec46a32649a507a3d074a63dc",
+            "contents/ui/symbols/mttkde-control-music.svg": "517d2bf50267c4ee055f46ce939145791bfb1e8caa6990e5d1e5a9fd7ce866c6",
+            "contents/ui/symbols/mttkde-control-battery-90.svg": "99d8687fa0c8abc85e7745128101f1f3dde5b8a712908945ae6644d14cb5940f",
+            "contents/ui/symbols/mttkde-control-battery-70.svg": "bde048741feda5fe648dd020b9f07503af40a7d0bd717a8a8fc2fd3703f0aaa4",
+            "contents/ui/symbols/previous.svg": "34c3dff98b2d2d3ef8621c6078d16eac4e31e66959cda424dda5cc9d3fbcda1a",
+            "contents/ui/symbols/wifi-off.svg": "fb92b57ea39ad213671e5aa1bfe82741f87a622f0f794a7d0dc15049bf23c2d5",
+            "contents/ui/symbols/mttkde-control-battery.svg": "8a594726d9b03c08f024fe5dc2c5fff61dc5231dc56ed3326d7e3d69deaf1c05",
+            "contents/ui/symbols/bluetooth.svg": "f3d4b26f7bb8abc7b70a8689bd12c427277bb10b246587cd277c1d974a261b07",
+            "contents/ui/symbols/mttkde-control-battery-50.svg": "bb6defc38787da6c3632806032acfadb861cae8aa0f12a85d4cf94058a6b028e",
+            "contents/ui/symbols/pause.svg": "a586fb0dcc802ea64ddddc115ae3d4a5e49d227b6ba333dc59b2984ce071171a",
+            "contents/ui/symbols/mttkde-control-speaker.svg": "c9de39602401c352967419742c6a77b0cd557bc0f54a573e056f0702ed9cfaf4"
+          },
+          "org.kde.mac-tahoe-liquid-kde.wifi": {
+            "contents/ui/main.qml": "c306dc9ba6114119542c5f3025ee5104645781e6fc7e06af2eb5039c4a24a4fa"
+          },
+          "org.kde.mac-tahoe-liquid-kde.battery": {
+            "contents/ui/main.qml": "b060f42fc5401d8b3fbdcb39d3620ca275d945bb81d640913dcbd8c412d245c4"
+          },
+          "org.kde.mac-tahoe-liquid-kde.notifications": {
+            "contents/ui/main.qml": "ea802e4948a73395415f1725b9e4d2aea7b4f72f4ba548e49c14377d948f0936"
+          },
+          "native": {
+            "installed_sha256": "86f27d025407557e2a1a995a4e43cd4d7477cd580fbd396478794cecdaa8b8eb",
+            "sources": {
+              "controlglass.h": "a13722cbaba80dc22206bcaae7f40dd1986575ca09e9bb5592bac49cf9bd542e",
+              "controlglass.cpp": "0bf26fe2582d5bcb324065f95141822974fa5c794dd64006144aacde92a66d97"
+            }
+          }
+        },
+        "golden": {
+          "org.kde.mac-tahoe-liquid-kde.controlcenter": {
+            "contents/ui/main.qml": "928c73582614550f5c60c4116a2d804eeec97fbc596e44e8c74a71c9f316132e",
+            "contents/ui/FocusSwitch.qml": "cc994585606b7dc8fc2c4d003a4c44e181a629b90147a46a05f285b9be78ae2b",
+            "contents/ui/EditControls.qml": "eb34a2655f01699949e307d12b24e67803491d4ed670215aab084c462c4ec117",
+            "contents/ui/ControlView.qml": "25c6231eceaba3d99f7c1844f76313ee490d2e6ad63c19ce43e961ad3cd05405",
+            "contents/ui/WifiView.qml": "b3499617e6c19b5b3b03367a170b439928641975790eda2155430460c02eb4cf",
+            "contents/ui/MediaView.qml": "a1c1d22f95aba60fd2143135f8c47b115780f09b2d58ae261a0d455eb9ebad77",
+            "contents/ui/BatteryView.qml": "d102ab929c30b41747582222693d65594ac309c50c082fae68b95ec629eedf76",
+            "contents/ui/PanelButton.qml": "688ee3c01ab077ec6f6fc761083acdcd60ddd1bd468ed113391e5f9c248521c6",
+            "contents/ui/ControlLabel.qml": "52af06a63ea75b5c4d0fd701326f2bbdb5d539689477f726ebd83f6277259bb0",
+            "contents/ui/ControlTile.qml": "87b7e54c1ad47c7303d891e88b740220da9aa4b132e58ab110a6c16ca8308367",
+            "contents/ui/AudioView.qml": "96e6286bb166723f02174fbec8cae6a602732cd455f90bad30eb6cddb93d163e",
+            "contents/ui/BluetoothView.qml": "78ae19a0657afb33816e054bf5e17fe813508e84670399789a137060a6066c44",
+            "contents/ui/Page.qml": "6d2c999099d556e37ae937769fb90260b931d5403bb501cdf5391b9eb69f8576",
+            "contents/ui/DisplayView.qml": "dcdf8b717694755d869b41eede25fe3ace2e5d3f66db470ca21fff9be00a6885",
+            "contents/ui/controlcenter.svg": "a1149ac7986ed1af0c872feb780c912b911377d793943cfe864dc9eed7f08e2c",
+            "contents/ui/GlassRim.qml": "4e4413e4b03b4c0f06f483db2709df6918dc6a723c26ee3aa380ae1298ab652c",
+            "contents/ui/SettingsLink.qml": "8c0da542beffb3ba79990fb3e14bb6e34cc9cc8b59a06f3aec8dbe21cca05d26",
+            "contents/ui/ControlAction.qml": "6ac98f93b95a51f752f8b54b299b2ad0f120c2756f98ee02bd32e273b4fbd712",
+            "contents/ui/GlassSlider.qml": "466923a753fa75b1249080c5bb4e428f3b249a4cd1c1764d76dc09c4ca81d7a3",
+            "contents/ui/NotificationsView.qml": "8157b72ac81596f971407c449ef171ae0546ba93c0c61111319b94b08e498cc0",
+            "contents/config/main.xml": "7aa2a39e8d0331d7786194b1ebcac1874bb3760bdea575afd90c631f88a0387c",
+            "contents/ui/symbols/speaker.svg": "c9de39602401c352967419742c6a77b0cd557bc0f54a573e056f0702ed9cfaf4",
+            "contents/ui/symbols/battery.svg": "8a594726d9b03c08f024fe5dc2c5fff61dc5231dc56ed3326d7e3d69deaf1c05",
+            "contents/ui/symbols/speaker-off.svg": "e7276eda19ba8e620ef946db1a3f6488909cdd37ee8c52c4c563f18d095ced4d",
+            "contents/ui/symbols/wifi.svg": "907c0ebc70f9f0aab96e193ab047ed572724550ab99370b7dd27210fa42f554d",
+            "contents/ui/symbols/mttkde-control-battery-20.svg": "b2060ce357c19cfebab2e06c7b5bb2e2ab62dd788fd9da5d17c0f90e77a76081",
+            "contents/ui/symbols/mttkde-control-previous.svg": "34c3dff98b2d2d3ef8621c6078d16eac4e31e66959cda424dda5cc9d3fbcda1a",
+            "contents/ui/symbols/mttkde-control-battery-80.svg": "1668b035452f608a327771d5044e604cb1884badbaf2763fd1ce6a1aead3b70d",
+            "contents/ui/symbols/mttkde-control-next.svg": "ea55430e6cf67599d513e32e181d986eeb3ecb20a049e3f4240062e6af659228",
+            "contents/ui/symbols/mttkde-control-wifi.svg": "907c0ebc70f9f0aab96e193ab047ed572724550ab99370b7dd27210fa42f554d",
+            "contents/ui/symbols/moon.svg": "659940933ccbc0ce64144e2e8a82bc63327c2b5dd77a79467ad3da0b3184a1d1",
+            "contents/ui/symbols/mttkde-control-settings.svg": "014eee249d2b96112088adb81e538b2064107c24a13138673b52de4372b0c75f",
+            "contents/ui/symbols/mttkde-control-bell.svg": "412a708756c97c28624c504844ae828f7b16902052e5103b326ecb08c12f3d6d",
+            "contents/ui/symbols/mttkde-control-battery-0.svg": "ddb01b182a0d9c1aa266d8cf3b1ed69a01b47b35d94941f4796619031404e623",
+            "contents/ui/symbols/mttkde-control-battery-60.svg": "58bba5010a9c691c83b1a7c26f4a823ef0708e0b4b77e448266b7c2eb5618fae",
+            "contents/ui/symbols/sun.svg": "56f84b2dd157a5069362463150ec2ff00555cc854cc2c8434914bedc73a6c70a",
+            "contents/ui/symbols/mttkde-control-pause.svg": "a586fb0dcc802ea64ddddc115ae3d4a5e49d227b6ba333dc59b2984ce071171a",
+            "contents/ui/symbols/next.svg": "ea55430e6cf67599d513e32e181d986eeb3ecb20a049e3f4240062e6af659228",
+            "contents/ui/symbols/bell.svg": "412a708756c97c28624c504844ae828f7b16902052e5103b326ecb08c12f3d6d",
+            "contents/ui/symbols/mttkde-control-moon.svg": "659940933ccbc0ce64144e2e8a82bc63327c2b5dd77a79467ad3da0b3184a1d1",
+            "contents/ui/symbols/mttkde-control-battery-charging.svg": "8dc41e495323a2ca90b301138dc88ae6b05360735e95fb097b3575e9cc4d7e28",
+            "contents/ui/symbols/mttkde-control-battery-10.svg": "60dc2bde34dd2d9c420760c2fd6a649f86ce94e60ee324385b3a1c0aaa391ec9",
+            "contents/ui/symbols/mttkde-control-wifi-off.svg": "fb92b57ea39ad213671e5aa1bfe82741f87a622f0f794a7d0dc15049bf23c2d5",
+            "contents/ui/symbols/settings.svg": "014eee249d2b96112088adb81e538b2064107c24a13138673b52de4372b0c75f",
+            "contents/ui/symbols/music.svg": "517d2bf50267c4ee055f46ce939145791bfb1e8caa6990e5d1e5a9fd7ce866c6",
+            "contents/ui/symbols/mttkde-control-play.svg": "1c64056a308540672fb0729504a195ecca95be9bc3850b83a61bf6c0f045af78",
+            "contents/ui/symbols/mttkde-control-speaker-off.svg": "e7276eda19ba8e620ef946db1a3f6488909cdd37ee8c52c4c563f18d095ced4d",
+            "contents/ui/symbols/mttkde-control-bluetooth.svg": "f3d4b26f7bb8abc7b70a8689bd12c427277bb10b246587cd277c1d974a261b07",
+            "contents/ui/symbols/play.svg": "1c64056a308540672fb0729504a195ecca95be9bc3850b83a61bf6c0f045af78",
+            "contents/ui/symbols/mttkde-control-battery-40.svg": "e5c7c5d154551da3abc27c6cd7c66385589e78377f6eb0f7697fcc3e8595440b",
+            "contents/ui/symbols/mttkde-control-battery-30.svg": "062686a8de31bc41bd1fb4f9b4fd8f69015dd64a31996f6c3e22606e29b5886c",
+            "contents/ui/symbols/mttkde-control-battery-100.svg": "8a594726d9b03c08f024fe5dc2c5fff61dc5231dc56ed3326d7e3d69deaf1c05",
+            "contents/ui/symbols/mttkde-control-sun.svg": "56f84b2dd157a5069362463150ec2ff00555cc854cc2c8434914bedc73a6c70a",
+            "contents/ui/symbols/mttkde-control-battery-missing.svg": "24eac2d42c8e01c88ef64855fb868d61e44b052ec46a32649a507a3d074a63dc",
+            "contents/ui/symbols/mttkde-control-music.svg": "517d2bf50267c4ee055f46ce939145791bfb1e8caa6990e5d1e5a9fd7ce866c6",
+            "contents/ui/symbols/mttkde-control-battery-90.svg": "99d8687fa0c8abc85e7745128101f1f3dde5b8a712908945ae6644d14cb5940f",
+            "contents/ui/symbols/mttkde-control-battery-70.svg": "bde048741feda5fe648dd020b9f07503af40a7d0bd717a8a8fc2fd3703f0aaa4",
+            "contents/ui/symbols/previous.svg": "34c3dff98b2d2d3ef8621c6078d16eac4e31e66959cda424dda5cc9d3fbcda1a",
+            "contents/ui/symbols/wifi-off.svg": "fb92b57ea39ad213671e5aa1bfe82741f87a622f0f794a7d0dc15049bf23c2d5",
+            "contents/ui/symbols/mttkde-control-battery.svg": "8a594726d9b03c08f024fe5dc2c5fff61dc5231dc56ed3326d7e3d69deaf1c05",
+            "contents/ui/symbols/bluetooth.svg": "f3d4b26f7bb8abc7b70a8689bd12c427277bb10b246587cd277c1d974a261b07",
+            "contents/ui/symbols/mttkde-control-battery-50.svg": "bb6defc38787da6c3632806032acfadb861cae8aa0f12a85d4cf94058a6b028e",
+            "contents/ui/symbols/pause.svg": "a586fb0dcc802ea64ddddc115ae3d4a5e49d227b6ba333dc59b2984ce071171a",
+            "contents/ui/symbols/mttkde-control-speaker.svg": "c9de39602401c352967419742c6a77b0cd557bc0f54a573e056f0702ed9cfaf4"
+          },
+          "org.kde.mac-tahoe-liquid-kde.wifi": {
+            "contents/ui/main.qml": "c306dc9ba6114119542c5f3025ee5104645781e6fc7e06af2eb5039c4a24a4fa"
+          },
+          "org.kde.mac-tahoe-liquid-kde.battery": {
+            "contents/ui/main.qml": "b060f42fc5401d8b3fbdcb39d3620ca275d945bb81d640913dcbd8c412d245c4"
+          },
+          "org.kde.mac-tahoe-liquid-kde.notifications": {
+            "contents/ui/main.qml": "ea802e4948a73395415f1725b9e4d2aea7b4f72f4ba548e49c14377d948f0936"
+          },
+          "native": {
+            "installed_sha256": "86f27d025407557e2a1a995a4e43cd4d7477cd580fbd396478794cecdaa8b8eb",
+            "sources": {
+              "controlglass.h": "a13722cbaba80dc22206bcaae7f40dd1986575ca09e9bb5592bac49cf9bd542e",
+              "controlglass.cpp": "0bf26fe2582d5bcb324065f95141822974fa5c794dd64006144aacde92a66d97"
+            }
+          }
+        }
+      },
+      "limits": "Live compositor pixels are Wayland. X11 qualifies the actual popup, published blur property, input mask and rendered transparency; no new live X11 compositor optics claim. Existing GTK 3 qualification failure remains; candidate not published."
+    }
   },
   "status": "review-candidate-not-release-qualified"
 }

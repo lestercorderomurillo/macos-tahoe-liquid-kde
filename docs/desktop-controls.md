@@ -43,3 +43,5 @@ layout and theme updates. A real striped window behind the popup verifies the
 compositor effect: the tiles blur while the gaps remain sharp. The X11 regression
 checks the published blur property after opening, theme reset and reopening.
 Earlier typography previews above predate this blur lifecycle repair.
+
+[Blur proof — light](../src/screenshots/previews/control-center-blur-tahoe-light-95480d7f88be.png) · [Blur proof — dark](../src/screenshots/previews/control-center-blur-tahoe-dark-46f0aa2b6ca3.png) · [Blur capture provenance](../src/screenshots/previews/control-center-blur-tahoe-provenance.json)
