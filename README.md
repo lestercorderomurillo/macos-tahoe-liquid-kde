@@ -150,6 +150,19 @@ Wi-Fi, sound, brightness and notifications in one glass menu. Updates will come 
 
 <br>
 
+### Clipboard History (Alpha)
+
+Search copied text and images directly in the launcher. Press **Ctrl+4** to open Clipboard and **Ctrl+1** to return to applications. Enable **Clipboard history** in the custom installer; recording is off by default.
+
+<p align="center">
+  <img src="src/screenshots/previews/clipboard-launcher-light-5fc3d40da024.png" alt="Clipboard history in the tahoe launcher in light mode" width="415">
+  <img src="src/screenshots/previews/clipboard-launcher-dark-c62021460b99.png" alt="Clipboard history in the tahoe launcher in dark mode" width="415">
+</p>
+
+[Capture provenance](src/screenshots/previews/clipboard-launcher-provenance-3a4b55e0592a.json)
+
+<br>
+
 ### System Information
 
 Hardware, software and theme details in About This Computer.
@@ -395,7 +408,7 @@ mac-tahoe-oled-care status
 </details>
 
 <details>
-<summary><b>Clipboard history</b></summary>
+<summary><b>Clipboard history (Alpha)</b></summary>
 
 Open Clipboard from the launcher’s search bar or press **Ctrl+4** while the launcher is open; **Ctrl+1** returns to applications. The optional **Meta+V** popup also supports search, pins and image previews. History is disabled by default. Right-click an entry to pin or delete it.
 
