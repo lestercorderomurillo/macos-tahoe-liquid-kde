@@ -1,9 +1,8 @@
 # Installer testing
 
-Tahoe **v0.72.0 candidate** adds optional Clipboard history to the Custom installer.
-Focused native X11/Wayland, install/reinstall, shortcut restoration and continuous
-Qt/GTK light/dark/automatic checks passed in disposable environments.
-See [source identities and coverage limits](release-evidence.json). Release publication awaits confirmation.
+Tahoe **v0.72.0** adds Control Center, Wi-Fi, Battery and Notifications widgets,
+and optional Clipboard history. Focused native checks, disposable-VM install/reinstall
+and live light/dark/automatic transitions passed. See [validation and hardware limits](release-evidence.json).
 
 [Light menu](src/screenshots/menu_v4-0343811e426d.webp) · [Dark menu](src/screenshots/menu_dark_v4-171bb0e051ff.webp) · [Capture provenance](src/screenshots/previews/system-menu-tahoe-069-provenance-9c458fcf42db.json)
 

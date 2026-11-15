@@ -1,0 +1,36 @@
+{
+  "component": "Control Center",
+  "source_commit": "bd51af7086461fa60752b443a61cd47e886c228a",
+  "environment": "Disposable Plasma 6.8.1 / Qt 6.11.1 Wayland VM; 3840x2160 at scale 2",
+  "edition": "tahoe",
+  "images": [
+    {
+      "path": "src/screenshots/control-center-light-3e44b74c9a4d.png",
+      "sha256": "3e44b74c9a4dbac71afac988207af4d7b8f3b67e9f15617061e635b1c3507b07",
+      "reviewed": true,
+      "edition": "tahoe",
+      "mode": "light",
+      "original_sha256": "91857cdfebc491adf20bf296989de02807864e54489c4b10b308f320e1bea4b6",
+      "crop": [
+        3170,
+        0,
+        3840,
+        1010
+      ]
+    },
+    {
+      "path": "src/screenshots/control-center-dark-ef0768193f51.png",
+      "sha256": "ef0768193f511b8efccb0e91dd720ea0709af5604fd50febae3dbb2610f58c5c",
+      "reviewed": true,
+      "edition": "tahoe",
+      "mode": "dark",
+      "original_sha256": "d403b51c13f1fad55d41c8577423e5b43108300e928c741e6e038441247f64bf",
+      "crop": [
+        3170,
+        0,
+        3840,
+        1010
+      ]
+    }
+  ]
+}
