@@ -18,7 +18,7 @@ Page {
             {key:"showDisplay", label:i18n("Display")},
             {key:"showAudio", label:i18n("Sound")}
         ]
-        delegate: QQC.CheckBox {
+        delegate: QQC.CheckBox { font.family: "SF Pro Text"; font.pixelSize: 13;
             required property var modelData
             objectName: modelData.key
             text: modelData.label

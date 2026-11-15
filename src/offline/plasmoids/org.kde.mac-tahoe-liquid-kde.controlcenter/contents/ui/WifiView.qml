@@ -23,14 +23,14 @@ Page {
     }
     Network.NetworkModel { id: networks }
     Network.AppletProxyModel { id: available; sourceModel: networks }
-    QQC.Switch {
+    QQC.Switch { font.family: "SF Pro Text"; font.pixelSize: 13;
         objectName: "wirelessToggle"
         text: i18n("Wi-Fi")
         checked: view.wireless.wirelessEnabled
         enabled: view.devices.wirelessDeviceAvailable && view.wireless.wirelessHwEnabled
         onClicked: view.handler.enableWireless(!view.wireless.wirelessEnabled)
     }
-    QQC.Label {
+    ControlLabel {
         Layout.fillWidth: true; wrapMode: Text.WordWrap
         text: !view.devices.wirelessDeviceAvailable ? i18n("No Wi-Fi adapter")
             : !view.wireless.wirelessHwEnabled ? i18n("Wi-Fi is blocked by the hardware switch")
@@ -44,7 +44,7 @@ Page {
         ListView {
             id: list
             model: view.connections
-            delegate: QQC.ItemDelegate {
+            delegate: QQC.ItemDelegate { font.family: "SF Pro Text"; font.pixelSize: 13;
                 objectName: "networkRow"
                 required property var model
                 width: ListView.view.width
@@ -63,7 +63,7 @@ Page {
             }
         }
     }
-    QQC.Label { Layout.fillWidth: true; visible: view.error.length > 0; text: view.error; wrapMode: Text.WordWrap }
-    QQC.Button { text: view.handler.scanning ? i18n("Scanning…") : i18n("Scan for Networks"); enabled: view.devices.wirelessDeviceAvailable && view.wireless.wirelessHwEnabled && view.wireless.wirelessEnabled && !view.handler.scanning; onClicked: view.handler.requestScan() }
+    ControlLabel { Layout.fillWidth: true; visible: view.error.length > 0; text: view.error; wrapMode: Text.WordWrap }
+    QQC.Button { font.family: "SF Pro Text"; font.pixelSize: 13; text: view.handler.scanning ? i18n("Scanning…") : i18n("Scan for Networks"); enabled: view.devices.wirelessDeviceAvailable && view.wireless.wirelessHwEnabled && view.wireless.wirelessEnabled && !view.handler.scanning; onClicked: view.handler.requestScan() }
     SettingsLink { text: i18n("Network Settings…"); module: "kcm_networkmanagement" }
 }

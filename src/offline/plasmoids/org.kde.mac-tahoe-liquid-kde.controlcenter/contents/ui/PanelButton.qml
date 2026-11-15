@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 import QtQuick
+import "ControlStyle.js" as Style
 import QtQuick.Layouts
 import org.kde.kirigami as Kirigami
 Item {
@@ -8,7 +9,7 @@ Item {
     property string label
     property bool selected: false
     signal clicked()
-    implicitWidth: Kirigami.Units.iconSizes.smallMedium + Kirigami.Units.smallSpacing * 2
+    implicitWidth: 28
     implicitHeight: implicitWidth
     Layout.minimumWidth: implicitWidth
     Layout.fillHeight: true
@@ -26,9 +27,9 @@ Item {
     }
     Kirigami.Icon {
         anchors.centerIn: parent
-        width: Math.min(parent.width, parent.height, Kirigami.Units.iconSizes.smallMedium)
+        width: Math.min(parent.width, parent.height, Style.panelIcon)
         height: width
-        source: button.symbol
+        source: Style.symbol(button.symbol)
         color: Kirigami.Theme.textColor
     }
     MouseArea {

@@ -28,3 +28,11 @@ Validation and precise hardware/SDK coverage are recorded in
 retain their original source and are not evidence for these new controls.
 
 [Light preview](../src/screenshots/previews/control-center-tahoe-light-a595d01c855e.png) · [Dark preview](../src/screenshots/previews/control-center-tahoe-dark-8d2756c8f857.png) · [Capture provenance](../src/screenshots/previews/control-center-tahoe-provenance.json)
+
+Typography uses the bundled SF Pro Text face: 13 logical pixels for labels and
+11 for secondary captions. Original monochrome symbols use consistent 18-pixel
+panel, 22-pixel inline and 26-pixel circular-control sizing, independent of the
+user's icon theme. Battery state remains live. The glass edge follows the Dock's
+opposing light rims; the existing compositor blur and edition material remain
+active. This does not replace the saved Acrylic Glass optics or introduce a new
+refraction shader.

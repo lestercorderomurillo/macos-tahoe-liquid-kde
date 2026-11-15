@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 import QtQuick
+import "ControlStyle.js" as Style
 import QtQuick.Layouts
 import QtQuick.Controls as QQC
 import org.kde.kirigami as Kirigami
@@ -8,10 +9,11 @@ ColumnLayout {
     id: view
     Audio.SinkModel { id: outputs }
     property var sink: outputs.defaultSink
-    QQC.Label { text: i18n("Sound"); font.bold: true }
+    ControlLabel { text: i18n("Sound"); font.weight: Font.DemiBold }
     RowLayout {
-        QQC.ToolButton {
-            icon.name: view.sink && view.sink.muted ? "audio-volume-muted" : "audio-volume-high"
+        QQC.ToolButton { font.family: "SF Pro Text"; font.pixelSize: 13;
+            icon.source: Style.symbol(view.sink && view.sink.muted ? "audio-volume-muted" : "audio-volume-high")
+            icon.width: 16; icon.height: 16; padding: 0; implicitWidth: 22; implicitHeight: 22
             objectName: "muteButton"
             text: i18n("Mute sound"); Accessible.name: text
             display: QQC.AbstractButton.IconOnly
@@ -27,5 +29,5 @@ ColumnLayout {
             onMoved: view.sink.volume = Math.round(value)
         }
     }
-    QQC.Label { Layout.fillWidth: true; text: view.sink ? view.sink.description : i18n("No audio output"); elide: Text.ElideRight }
+    ControlLabel { Layout.fillWidth: true; font.pixelSize: Style.caption; opacity: 0.7; text: view.sink ? view.sink.description : i18n("No audio output"); elide: Text.ElideRight }
 }

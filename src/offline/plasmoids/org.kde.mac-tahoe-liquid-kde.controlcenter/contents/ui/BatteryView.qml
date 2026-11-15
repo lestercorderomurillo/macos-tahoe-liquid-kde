@@ -12,7 +12,7 @@ Page {
     property var profiles: nativeProfiles
     Power.BatteryControlModel { id: nativeBattery }
     Profiles.PowerProfilesControl { id: nativeProfiles }
-    QQC.Label {
+    ControlLabel {
         objectName: "batteryPercent"
         Layout.fillWidth: true
         text: view.battery.hasInternalBatteries ? i18n("%1%", view.battery.percent) : i18n("No internal battery")
@@ -20,7 +20,7 @@ Page {
         Accessible.name: text
     }
     QQC.ProgressBar { Layout.fillWidth: true; visible: view.battery.hasInternalBatteries; from: 0; to: 100; value: view.battery.percent }
-    QQC.Label {
+    ControlLabel {
         Layout.fillWidth: true
         wrapMode: Text.WordWrap
         text: !view.battery.hasInternalBatteries ? i18n("Battery information will appear when a battery is available.")
@@ -30,7 +30,7 @@ Page {
     }
     Repeater {
         model: view.battery
-        delegate: QQC.Label {
+        delegate: ControlLabel {
             required property var model
             visible: !model.IsPowerSupply
             text: i18n("%1 — %2%", model.PrettyName, model.Percent)
@@ -38,8 +38,8 @@ Page {
             elide: Text.ElideRight
         }
     }
-    QQC.Label { text: i18n("Energy mode"); visible: view.profiles.isPowerProfileDaemonInstalled }
-    QQC.ComboBox {
+    ControlLabel { text: i18n("Energy mode"); visible: view.profiles.isPowerProfileDaemonInstalled }
+    QQC.ComboBox { font.family: "SF Pro Text"; font.pixelSize: 13;
         objectName: "powerProfile"
         Layout.fillWidth: true
         visible: view.profiles.isPowerProfileDaemonInstalled
@@ -49,6 +49,6 @@ Page {
         onActivated: view.profiles.setProfile(currentText)
         Accessible.name: i18n("Energy mode")
     }
-    QQC.Label { Layout.fillWidth: true; visible: text.length > 0; text: view.profiles.profileError; wrapMode: Text.WordWrap }
+    ControlLabel { Layout.fillWidth: true; visible: text.length > 0; text: view.profiles.profileError; wrapMode: Text.WordWrap }
     SettingsLink { text: i18n("Energy Settings…"); module: "kcm_powerdevilprofilesconfig" }
 }

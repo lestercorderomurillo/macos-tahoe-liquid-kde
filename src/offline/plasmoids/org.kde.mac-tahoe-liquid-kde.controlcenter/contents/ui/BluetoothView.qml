@@ -4,7 +4,7 @@ import QtQuick.Layouts
 import QtQuick.Controls as QQC
 import org.kde.bluezqt as Bluetooth
 ColumnLayout {
-    QQC.Switch {
+    QQC.Switch { font.family: "SF Pro Text"; font.pixelSize: 13;
         text: i18n("Bluetooth")
         checked: Bluetooth.Manager.operational && !Bluetooth.Manager.bluetoothBlocked
         enabled: Bluetooth.Manager.operational && Bluetooth.Manager.adapters.length > 0

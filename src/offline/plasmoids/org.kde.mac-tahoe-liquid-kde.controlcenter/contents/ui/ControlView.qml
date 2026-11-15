@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 import QtQuick
+import "ControlStyle.js" as Style
 import QtQuick.Layouts
 import QtQuick.Controls as QQC
 import org.kde.kirigami as Kirigami
@@ -104,7 +105,8 @@ Item {
         contentItem: QQC.Button {
             flat: true
             text: i18n("Edit Controls")
-            font.pixelSize: 11
+            font.family: Style.family
+            font.pixelSize: Style.caption
             onClicked: view.section = "EditControls.qml"
         }
     }
@@ -115,7 +117,7 @@ Item {
         visible: view.section !== ""
         cornerRadius: 24
         contentItem: ColumnLayout {
-            QQC.Button { text: i18n("Back"); icon.name: "go-previous"; flat: true; onClicked: view.section = "" }
+            QQC.Button { font.family: "SF Pro Text"; font.pixelSize: 13; text: i18n("Back"); icon.name: "go-previous"; flat: true; onClicked: view.section = "" }
             Loader { Layout.fillWidth: true; active: view.section !== ""; source: view.section; onLoaded: if (view.section === "EditControls.qml") item.preferences = view.preferences }
         }
     }
