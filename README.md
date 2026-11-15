@@ -386,7 +386,7 @@ mac-tahoe-oled-care status
 <details>
 <summary><b>Clipboard history</b></summary>
 
-Optional Meta+V popup with search, pinning and image previews; disabled by default.
+Open Clipboard from the launcher’s search bar or press **Ctrl+4** while the launcher is open; **Ctrl+1** returns to applications. The optional **Meta+V** popup also supports search, pins and image previews. History is disabled by default. Right-click an entry to pin or delete it.
 
 Enable **Clipboard history** in the custom installer. Text and images are stored
 unencrypted in a user-only local history; items carrying KDE's password-manager
@@ -394,6 +394,8 @@ hint are excluded. Pinned items survive Delete and Clear all. Uninstall deletes
 the history and restores the previous Plasma shortcut unless you changed it afterward.
 
 Requires KDE Frameworks 6 GuiAddons development files and PyQt6.
+
+[Light preview](src/screenshots/previews/clipboard-launcher-light-5fc3d40da024.png) · [Dark preview](src/screenshots/previews/clipboard-launcher-dark-c62021460b99.png) · [Capture provenance](src/screenshots/previews/clipboard-launcher-provenance-3a4b55e0592a.json)
 
 </details>
 

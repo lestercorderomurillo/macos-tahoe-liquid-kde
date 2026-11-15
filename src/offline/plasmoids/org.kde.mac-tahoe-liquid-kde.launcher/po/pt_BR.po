@@ -11,11 +11,38 @@ msgstr "Aplicativos"
 msgid "Apps"
 msgstr "Apps"
 
+msgid "Clear history"
+msgstr "Limpar histórico"
+
+msgid "Clipboard"
+msgstr "Área de transferência"
+
+msgid "Clipboard action failed. Try again."
+msgstr "A ação da área de transferência falhou. Tente novamente."
+
+msgid "Clipboard history is unavailable. Enable Clipboard history in the installer."
+msgstr "O histórico está indisponível. Ative o histórico da área de transferência no instalador."
+
+msgid "Clipboard options"
+msgstr "Opções da área de transferência"
+
 msgid "Compact list items"
 msgstr "Itens de lista compactos"
 
+msgid "Confirm clear history"
+msgstr "Confirmar limpeza do histórico"
+
+msgid "Copied %1"
+msgstr "Copiado às %1"
+
+msgid "Copy"
+msgstr "Copiar"
+
 msgid "Default"
 msgstr "Padrão"
+
+msgid "Delete"
+msgstr "Excluir"
 
 msgid "Edit Applications..."
 msgstr "Editar aplicativos..."
@@ -59,6 +86,9 @@ msgstr "Enorme"
 msgid "Icon:"
 msgstr "Ícone:"
 
+msgid "Image"
+msgstr "Imagem"
+
 msgid "Large"
 msgstr "Grande"
 
@@ -83,6 +113,12 @@ msgstr "Listas:"
 msgid "Medium"
 msgstr "Médio"
 
+msgid "No results"
+msgstr "Nenhum resultado"
+
+msgid "Nothing copied yet"
+msgstr "Nada copiado ainda"
+
 msgid "Number of columns in grid"
 msgstr "Número de colunas da grade"
 
@@ -101,6 +137,12 @@ msgstr "Em todas as atividades"
 msgid "On the Current Activity"
 msgstr "Na atividade atual"
 
+msgid "Pin"
+msgstr "Fixar"
+
+msgid "Pinned"
+msgstr "Fixado"
+
 msgid "Preset 1 — Tahoe"
 msgstr "Predefinição 1 — Tahoe"
 
@@ -115,12 +157,6 @@ msgstr "Centro da tela"
 
 msgid "Session Actions"
 msgstr "Ações da sessão"
-
-msgid "Show apps in a grid"
-msgstr "Mostrar apps em grade"
-
-msgid "Show apps in a list"
-msgstr "Mostrar apps em lista"
 
 msgid "Show in Favorites"
 msgstr "Mostrar nos favoritos"
@@ -140,8 +176,14 @@ msgstr "Sugestões"
 msgid "Tahoe"
 msgstr "Tahoe"
 
+msgid "Text"
+msgstr "Texto"
+
 msgid "Uninstall…"
 msgstr "Desinstalar…"
+
+msgid "Unpin"
+msgstr "Desafixar"
 
 msgid "Use system font settings"
 msgstr "Usar configurações de fontes do sistema"

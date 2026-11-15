@@ -9,7 +9,10 @@ session()
 from PyQt6.QtWidgets import QApplication
 spec=importlib.util.spec_from_file_location('clip',Path.home()/'.local/share/mac-tahoe-liquid-kde/clipboard.py')
 clip=importlib.util.module_from_spec(spec);spec.loader.exec_module(clip)
-app=QApplication([]);be=clip.DaemonBackend();w=clip.Popup(be,auto_close=False);w.show()
+app=QApplication([]);be=clip.DaemonBackend()
+assert be.available()
+if not be.entries(): be.add_text('Clipboard appearance qualification',False)
+w=clip.Popup(be,auto_close=False);w.show()
 children=[];records=[]
 def pump(seconds):
     end=time.monotonic()+seconds
@@ -36,7 +39,7 @@ def check(mode,label,timeout=45,check_gtk=True):
             (sum(entry['background'][:3])/3<.5)==dark and
             (sum(entry['foreground'][:3])/3>.5)==dark for entry in gtk)
         if ((palette.color(palette.ColorRole.Window).lightnessF()<.5)==dark and
-            (w.findChildren(clip.KeyCap)[0].palette().color(palette.ColorRole.WindowText).lightnessF()>.5)==dark and
+            (w.rows[0].caption.palette().color(palette.ColorRole.WindowText).lightnessF()>.5)==dark and
             (gtk_ready or not check_gtk)):break
     else:raise AssertionError(('wrong rendered palette',mode,label,
                               palette.color(palette.ColorRole.Window).name(),gtk))

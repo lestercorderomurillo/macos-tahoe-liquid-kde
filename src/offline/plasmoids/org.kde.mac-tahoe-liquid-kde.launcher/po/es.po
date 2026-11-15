@@ -88,3 +88,54 @@ msgstr "Preajuste 2 — Golden Gate"
 
 msgid "Launcher options"
 msgstr "Opciones del lanzador"
+
+msgid "Clipboard"
+msgstr "Portapapeles"
+
+msgid "Clipboard options"
+msgstr "Opciones del portapapeles"
+
+msgid "Image"
+msgstr "Imagen"
+
+msgid "Pinned"
+msgstr "Fijado"
+
+msgid "Text"
+msgstr "Texto"
+
+msgid "Copied %1"
+msgstr "Copiado a las %1"
+
+msgid "Copy"
+msgstr "Copiar"
+
+msgid "Clipboard history is unavailable. Enable Clipboard history in the installer."
+msgstr "El historial no está disponible. Activa Historial del portapapeles en el instalador."
+
+msgid "No results"
+msgstr "Sin resultados"
+
+msgid "Nothing copied yet"
+msgstr "Todavía no has copiado nada"
+
+msgid "Unpin"
+msgstr "Desfijar"
+
+msgid "Pin"
+msgstr "Fijar"
+
+msgid "Applications"
+msgstr "Aplicaciones"
+
+msgid "Delete"
+msgstr "Eliminar"
+
+msgid "Confirm clear history"
+msgstr "Confirmar borrado del historial"
+
+msgid "Clear history"
+msgstr "Borrar historial"
+
+msgid "Clipboard action failed. Try again."
+msgstr "La acción del portapapeles falló. Inténtalo de nuevo."

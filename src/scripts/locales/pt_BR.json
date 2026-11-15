@@ -1154,5 +1154,21 @@
   "Clipboard history is stored privately in ~/.local/share/mac-tahoe-liquid-kde/clipboard": "O histórico da área de transferência é guardado de forma privada em ~/.local/share/mac-tahoe-liquid-kde/clipboard",
   "Clipboard popup and service removed": "Popup e serviço da área de transferência removidos",
   "Clipboard service": "Serviço da área de transferência",
-  "Clipboard history (Meta+V)": "Histórico da área de transferência (Meta+V)"
+  "Clipboard history (Meta+V)": "Histórico da área de transferência (Meta+V)",
+  "Clipboard": "Área de transferência",
+  "Clipboard options": "Opções da área de transferência",
+  "Image": "Imagem",
+  "Pinned": "Fixado",
+  "Text": "Texto",
+  "Copied %1": "Copiado às %1",
+  "Copy": "Copiar",
+  "Clipboard history is unavailable. Enable Clipboard history in the installer.": "O histórico está indisponível. Ative o histórico da área de transferência no instalador.",
+  "No results": "Nenhum resultado",
+  "Nothing copied yet": "Nada copiado ainda",
+  "Unpin": "Desafixar",
+  "Pin": "Fixar",
+  "Delete": "Excluir",
+  "Confirm clear history": "Confirmar limpeza do histórico",
+  "Clear history": "Limpar histórico",
+  "Clipboard action failed. Try again.": "A ação da área de transferência falhou. Tente novamente."
 }

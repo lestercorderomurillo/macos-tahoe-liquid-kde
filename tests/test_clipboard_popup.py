@@ -154,28 +154,28 @@ class Tests(unittest.TestCase):
         self.assertIn("unavailable", make([], ok=False).empty_msg.text())
 
     # ── text rows never clip ──
-    def test_rows_fit_content(self):
-        p = make([T("short one"), T(PARA), T(LONG_URL), T(MULTI), T(CODE), T("emoji \U0001F600 \u65e5\u672c\u8a9e caf\u00e9"), T(HUGE), T("tail")])
-        for r in p.rows:
-            self.assertFalse(clipped(r), f"clipped: {r.text[:30]!r}")
-        h = {r.text: r.height() for r in p.rows}
-        self.assertLess(h["short one"], h[PARA]); self.assertLess(h["short one"], h[MULTI])
-        for r in p.rows:
-            shown, cut = clip.display_text(r.text, False)
-            self.assertEqual(r.more is not None, cut, r.text[:20])
-            self.assertEqual(r.label.text().replace(clip.ZWSP, ""), shown)
+    def test_compact_rows_elide_without_changing_copied_text(self):
+        p = make([T("short one"), T(PARA), T(LONG_URL), T(MULTI), T(HUGE)])
+        self.assertEqual(len({r.height() for r in p.rows}), 1)
+        for row in p.rows:
+            self.assertFalse(row.label.wordWrap())
+            self.assertLessEqual(row.label.fontMetrics().horizontalAdvance(row.label.text()), row.label.width())
+        click(p.rows[2].b_copy); settle(150)
+        self.assertEqual(p.be.copied, [p.rows[2].id])
+        self.assertEqual(p.rows[2].text, LONG_URL)
 
-    def test_expand_collapse_mouse_and_key(self):
+    def test_expand_collapse_keyboard(self):
         p = make([T(MULTI), T("x")])
-        r = p.rows[0]; h0 = r.height()
-        click(r.more); r = p.rows[0]
-        self.assertEqual(p.be.copied, []); self.assertGreater(r.height(), h0)
+        h0 = p.rows[0].height()
+        key(p, Qt.Key.Key_E, CTRL)
+        r = p.rows[0]
+        self.assertGreater(r.height(), h0)
         self.assertEqual(r.label.text().replace(clip.ZWSP, ""), MULTI)
-        self.assertEqual(r.more.text(), "Show less"); self.assertFalse(clipped(r))
-        click(r.more); self.assertEqual(p.rows[0].height(), h0)
-        key(p, Qt.Key.Key_E, CTRL); self.assertGreater(p.rows[0].height(), h0)
-        key(p, Qt.Key.Key_E, CTRL); self.assertEqual(p.rows[0].height(), h0)
-        p2 = make([T(HUGE)]); click(p2.rows[0].more)
+        self.assertFalse(clipped(r))
+        key(p, Qt.Key.Key_E, CTRL)
+        self.assertEqual(p.rows[0].height(), h0)
+        p2 = make([T(HUGE)])
+        key(p2, Qt.Key.Key_E, CTRL)
         self.assertFalse(clipped(p2.rows[0])); self.assertIn("more characters", p2.rows[0].label.text())
 
     # ── image rows ──
@@ -197,7 +197,7 @@ class Tests(unittest.TestCase):
             self.assertGreater(tw, 0); self.assertGreater(th, 0)
             if w > 8 and h > 8:
                 self.assertAlmostEqual(tw / th, w / h, delta=0.05 * (w / h) + 0.05)
-        self.assertEqual((p.rows[2].thumb.width(), p.rows[2].thumb.height()), (40, 30))  # small images are not upscaled
+        self.assertEqual((p.rows[2].thumb.width(), p.rows[2].thumb.height()), (36, 27))  # compact thumbnails preserve aspect
 
     def test_image_missing_file_placeholder(self):
         p = make([I(640, 360, missing=True)])
@@ -232,7 +232,7 @@ class Tests(unittest.TestCase):
     # ── window ──
     def test_window_height_bounds_and_scroll(self):
         one = make([T("a")])
-        self.assertGreaterEqual(one.height(), 240)
+        self.assertGreaterEqual(one.height(), 156)
         many = make([T(f"{i} " + PARA) if i % 3 else I(800, 500) for i in range(40)])
         mx = many.screen().availableGeometry().height() * 0.8
         self.assertLessEqual(many.height(), mx + 1); self.assertGreater(many.height(), one.height())
@@ -244,33 +244,19 @@ class Tests(unittest.TestCase):
         top = many.rows[39].mapTo(many.scroll.viewport(), QPoint(0, 0)).y()
         self.assertTrue(0 <= top <= many.scroll.viewport().height())
 
-    def test_resize_rewraps(self):
+    def test_resize_updates_elision(self):
         p = make([T(PARA), T(LONG_URL)])
-        h1 = [r.height() for r in p.rows]
+        before = [r.label.text() for r in p.rows]
         p.setFixedWidth(900); settle(120)
-        h2 = [r.height() for r in p.rows]
-        self.assertTrue(all(h2[i] <= h1[i] for i in range(2)) and any(h2[i] < h1[i] for i in range(2)))
-        for r in p.rows:
-            self.assertFalse(clipped(r))
+        self.assertTrue(all(len(r.label.text()) > len(old) for r, old in zip(p.rows, before)))
+        self.assertEqual(len({r.height() for r in p.rows}), 1)
 
-    # ── boundaries ──
-    def test_panel_and_dividers(self):
-        p = make([T("a"), T("b"), T("c")])
-        self.assertIn("border", p.panel.styleSheet()); self.assertIs(p.scroll.parent(), p.panel)
-        self.assertEqual([r.divider for r in p.rows], [True, True, False])
-        p = make([T("p1", True), T("p2", True), T("r1"), T("r2")])
-        self.assertEqual([r.divider for r in p.rows], [True, False, True, False])    # no divider at section ends
-        pr = p.panel.geometry()
-        self.assertGreater(pr.left(), 0); self.assertGreater(p.height() - pr.bottom(), 20)   # footer sits outside the panel
-        self.assertGreater(pr.top(), p.search.geometry().bottom())
+    def test_rows_share_one_surface(self):
+        p = make([T("pinned", True), T("recent")])
+        self.assertFalse(any(r.divider for r in p.rows))
+        self.assertLess(p.height() - p.panel.geometry().bottom(), 20)
         for r in p.rows:
             self.assertTrue(p.panel.rect().contains(r.mapTo(p.panel, QPoint(0, 0))))
-
-    def test_divider_pixels_drawn(self):
-        r = make([T("a"), T("b")]).rows[0]
-        img = r.grab().toImage()
-        y = img.height() - 1
-        self.assertTrue(all(img.pixelColor(x, y).alpha() > 0 for x in range(20, img.width() - 20, 40)))
 
     # ── keyboard ──
     def test_keyboard_nav_and_enter(self):
@@ -339,9 +325,10 @@ class Tests(unittest.TestCase):
 
         def heads(w):
             return [x.text() for x in w.body.findChildren(clip.QLabel) if x.text() in ("PINNED", "RECENT")]
-        self.assertEqual(heads(p), ["PINNED", "RECENT"])
+        self.assertEqual(heads(p), [])
+        self.assertTrue(p.rows[0].caption.text().startswith("Pinned · "))
         self.assertEqual(heads(make([T("a")])), [])
-        self.assertEqual(heads(make([T("only", True)])), ["PINNED"])
+        self.assertEqual(heads(make([T("only", True)])), [])
 
     def test_clear_all_two_step_keeps_pins(self):
         p = make([T("a"), T("b"), T("pin", True), I(10, 10)]); click(p.clear_btn)
@@ -359,7 +346,7 @@ class Tests(unittest.TestCase):
     # ── width / first-entry focus ──
     def test_width_and_first_entry_focus(self):
         p = make([T("a"), T("b")])
-        self.assertEqual(p.width(), clip.POPUP_W); self.assertGreaterEqual(clip.POPUP_W, 780)
+        self.assertEqual(p.width(), clip.POPUP_W)
         self.assertEqual(p.sel, 0); self.assertTrue(p.rows[0].selected); self.assertFalse(p.rows[1].selected)
         key(p, Qt.Key.Key_Return); settle(150)
         self.assertEqual(p.be.copied, [p.rows[0].id])                             # Enter right away copies the first entry
@@ -521,7 +508,7 @@ def test_open_popup_updates_child_text_after_application_palette_change():
             app.setPalette(palette)
             settle()
             assert popup.rows[0].label.palette().color(QPalette.ColorRole.WindowText).name() == foreground
-            assert popup.findChildren(clip.KeyCap)[0].palette().color(QPalette.ColorRole.WindowText).name() == foreground
+            assert popup.rows[0].caption.palette().color(QPalette.ColorRole.WindowText).name() == foreground
     finally:
         popup.close()
         app.setPalette(original)

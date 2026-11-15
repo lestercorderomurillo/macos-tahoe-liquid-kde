@@ -88,3 +88,54 @@ msgstr "预设 2 — Golden Gate"
 
 msgid "Launcher options"
 msgstr "启动器选项"
+
+msgid "Clipboard"
+msgstr "剪贴板"
+
+msgid "Clipboard options"
+msgstr "剪贴板选项"
+
+msgid "Image"
+msgstr "图像"
+
+msgid "Pinned"
+msgstr "已固定"
+
+msgid "Text"
+msgstr "文本"
+
+msgid "Copied %1"
+msgstr "复制于 %1"
+
+msgid "Copy"
+msgstr "复制"
+
+msgid "Clipboard history is unavailable. Enable Clipboard history in the installer."
+msgstr "剪贴板历史不可用。请在安装程序中启用剪贴板历史。"
+
+msgid "No results"
+msgstr "无结果"
+
+msgid "Nothing copied yet"
+msgstr "尚未复制任何内容"
+
+msgid "Unpin"
+msgstr "取消固定"
+
+msgid "Pin"
+msgstr "固定"
+
+msgid "Applications"
+msgstr "应用程序"
+
+msgid "Delete"
+msgstr "删除"
+
+msgid "Confirm clear history"
+msgstr "确认清除历史"
+
+msgid "Clear history"
+msgstr "清除历史"
+
+msgid "Clipboard action failed. Try again."
+msgstr "剪贴板操作失败。请重试。"

@@ -1,7 +1,7 @@
 {
   "components": {
     "aurorae": "e3a4bab43dfdf1fcc8fb7c51ee90ed2236531700a9570f4d4c09e9b325b82f9a",
-    "clipboard": "944fb48ce657a31ee33e2426caf787210055cec4d594daf123e3c1130965c4c2",
+    "clipboard": "165c6dd51c169ae35d05ab09f6ab44c31d734b9257e6e32c767ad7ae03e97654",
     "color-schemes": "9f941e31cac2232fdb7acdba3382d5c3cab1a1797a6885f4ed0c30ef573131b2",
     "cursors": "067913601e157f68cf62986145a0a1df459f61fb24344f2ec311b0d421ea5eec",
     "firefox": "267c1df819ce2c78cce4a760642efdaebb64142632dc12238e09b16163b53938",
@@ -23,11 +23,11 @@
     "plasma-env": "27adf49a46219c4ab47b316dde5b989f703349fa955d0237a9c36ec7c4ddcc15",
     "plasma-theme": "9b1bd75cfb35a9751c5c7e4d87d1030624df86d673bc9df70a21386575d7a6ed",
     "plasmoids/luisbocanegra.panel.colorizer": "9ea25647872413fcb30b6c8be20eaba6533f34bb58bbddb0d78e7e975ca0fb56",
-    "plasmoids/org.kde.mac-tahoe-liquid-kde.launcher": "bb61d83a08dbb040bc5fd4d93c2fcf658deb1808d1c4da44498203f09ce4e4b1",
+    "plasmoids/org.kde.mac-tahoe-liquid-kde.launcher": "64fca22f377ef6ce375b010268a386c4b96faf9f9f60c5b7e23aebb5fb049f67",
     "plasmoids/org.kde.mac-tahoe-liquid-kde.trashcan": "3ae5ed04bea7cb6df0030464afe444e066981d34d6879ec2a793162bf933bc4b",
     "plasmoids/org.kde.mac.tahoe.liquid.globalmenu": "f9a879b948b91ab9486ab07e43c937dfda131298d677569985caf817f7269967",
     "plasmoids/org.kde.mac.tahoe.liquid.icontasks": "568f78ce4bd7ada9251b469b794dc9e3effabccdf42effe1229fa382535f4cbd",
-    "plasmoids/org.kde.mac.tahoe.liquid.taskmanager": "a1a4b31564bfab2474ec292dfeeca14b5f19a5382d37d5ec5d04856c944932f7",
+    "plasmoids/org.kde.mac.tahoe.liquid.taskmanager": "633431689250c77d407209e9d9656d930b70d8793de74dddc216d66dd9f3e888",
     "plymouth": "36433b0fb7674449a39def70f6e4d269022a08f8edeeabf6bbae3aab944cf84a",
     "recipe/acrylic_glass": "4b207c49ffdc7feb3ad6b05a4f7b40933ac6dfc127cd06fb1b34f9222d901ef9",
     "recipe/apply": "ba96ddc818bf5bb12f3aebc401de74d316b0ce78df562ea5538dbb304fa10909",

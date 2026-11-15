@@ -1,6 +1,6 @@
 {
   "version": "0.72.0",
-  "source_sha256": "f2fae6356a1612f20edbe8a8b6b5a46fdba23cfd9e75395d77b7165a77e017ee",
+  "source_sha256": "f17f4588441c207b912ce94fca605edbc0c1567ebcf33619bdf6504c6ce65a4d",
   "environment": "Private Xvfb and D-Bus sessions; clean Arch CI container; disposable KDE neon Plasma 6.8.1 / Qt 6.11.1 Wayland VM. No host desktop mutation.",
   "checks": [
     {
@@ -8,12 +8,6 @@
       "result": "passed",
       "detail": "16 passed: opt-in, service readiness/shutdown, shortcut ownership/restoration, install failures and no-op removal.",
       "log_sha256": "e36b6ac3f26f6514018446c23569d17ea08e20849d68730d4f16bfe467656eb5"
-    },
-    {
-      "command": "python3 -m pytest -q tests/test_clipboard_popup.py -k singleton",
-      "result": "passed",
-      "detail": "2 passed: singleton safety, including no-follow reads/writes. Other unchanged popup behavior retains the prior 38 passing checks.",
-      "log_sha256": "ad6d49efc700b49b55af2ff9057ea97c282d286db071622361a0f87c37cc9bc9"
     },
     {
       "command": "python3 -m pytest -q tests/test_clipboard_native.py",
@@ -52,301 +46,871 @@
       "log_sha256": "e77dcf01f4938c0a94767efb5f2e7db787b8acb7a237f7f9e5a70cab8c54f7a0"
     },
     {
-      "command": "Guest: installer_backend.py install --only --clipboard --apply-theme --light (install and reinstall)",
+      "command": "QT_QPA_PLATFORM=offscreen python3 -m pytest tests/test_clipboard_popup.py -q",
       "result": "passed",
-      "detail": "Tahoe full installer transactions passed, including replacement of a surviving legacy watcher. Subsequent runtime-only corrections were installed through steps.theme_switch.install() and checked live.",
-      "log_sha256": "30a51927621abf0d50c393e903e9103f8369b24e3bf11d12a5f801a62c6a993d"
+      "detail": "38 passed on final popup; compact text/image rows, full text expansion, search, pins, deletion, keyboard and palette propagation.",
+      "log_sha256": "db3a973cae272c3e055f260e369aeb505466f53866f37109408635bd31ebcafd"
     },
     {
-      "command": "Guest: tests/vm/clipboard_appearance.py; tests/vm/clipboard_shortcut.py",
+      "command": "python3 -m pytest tests/test_launcher_presets.py -q -k clipboard_launcher_integration",
       "result": "passed",
-      "detail": "Tahoe continuous Qt/Kvantum and GTK 3/4 windows passed standalone/native/GTK selections, rapid overlapping requests, completed and interrupted 18:00 automatic boundaries. Registered Meta+V launch/toggle passed separately.",
-      "log_sha256": "d6b63b3a426f0e6aefb08ed7f2b1711b51d02253fe84540d55fba47461af2ab6"
+      "detail": "2 passed on final implementation: actual native daemon and QML launcher on private X11 displays in both editions; asynchronous updates, pinning, search, copy/dismissal, clear protection and application return.",
+      "log_sha256": "4ef5bc5984fd03bf8fe2ec6d7263c00ee68be82f3cfd7eecdcd1f59f6d723193"
     },
     {
-      "command": "Guest: installer_backend.py install --only --clipboard --color-schemes --global-theme --gtk --kvantum --plasma-theme --light --apply-theme; installer_backend.py install --only --clipboard --apply-theme --light",
+      "command": "python3 -m pytest tests/test_launcher_presets.py -q -k \"clipboard_launcher_integration or native_launcher_popup_presets\"",
       "result": "passed",
-      "detail": "Final prepared Golden Gate source installed and reinstalled with its own defaults and theme assets.",
-      "log_sha256": "ed9ab2634316a1c7d85b9ad0aaf44bb9e7ec6911f784b95fe8028bf7b2509fcd"
+      "detail": "10 passed before clipboard-only final spacing refinements. Unchanged application-mode/preset coverage retained; both final clipboard cases rerun separately.",
+      "log_sha256": "66fb4a809d5af3622f8bc06c2b9561d3bc9b8564cac689a0ad305df03574adee"
     },
     {
-      "command": "Guest: tests/vm/clipboard_appearance.py",
+      "command": "python3 -m pytest tests/test_plasmoids_step.py tests/test_launcher_presets.py -q -k \"not native_launcher and not clipboard_launcher\"",
       "result": "passed",
-      "detail": "Golden Gate continuous Qt/Kvantum and GTK 3/4 windows passed the same complete and overlapping appearance scenarios.",
-      "log_sha256": "e1aac971fa48e7404002ff5345bddd96d05cea8cff4ce2eb49baef25cd2124e0"
+      "detail": "65 passed: installation and edition staging/default preservation.",
+      "log_sha256": "3e043e6b2e34458b6b2615fd6bae5f6fe99171e2a20649eb1367ff15b7b19e6e"
     },
     {
-      "command": "Guest: tests/vm/clipboard_lifecycle.py",
+      "command": "msgfmt --check --check-format (es, zh_CN, pt_BR, de); python3 -m pytest tests/test_localization.py -q",
       "result": "passed",
-      "detail": "Golden Gate install/uninstall restored the original shortcut, preserved subsequent custom bindings, removed history, and tolerated repeated removal. Unchanged clipboard lifecycle also passed in Tahoe.",
-      "log_sha256": "6f43242090d1fd8f3b501c32c8a300895ffebed7c41cb33aa82bbdefe959a604"
+      "detail": "All four launcher catalogs compiled and 6 catalog regressions passed.",
+      "log_sha256": "4729102e59db75b5820273a0249979ca622611e03b653c221e4dadacd7a4b70d"
+    },
+    {
+      "command": "docker run --rm --network none ... mttkde-issue100-plasma66:tested-sdk cmake --build /tmp/clipboard-sdk66 --target mactahoelauncher -j4",
+      "result": "passed",
+      "detail": "Production launcher module built against the cached Plasma 6.6 SDK with strict KDE compiler settings; local 6.7 SDK integration and live 6.8.1 VM installation cover the other relevant branches.",
+      "log_sha256": "1fc0445e49c781f1743d469ff31a237ecfee1ed3f5017d1261039a276d348174"
+    },
+    {
+      "command": "Guest: installer_backend.py install --only --clipboard --plasmoids --apply-theme --light (install and reinstall)",
+      "result": "passed",
+      "detail": "tahoe: both complete transactions returned 0. Final QML refinements were restaged with the same launcher-default installer helper; real installed sources are recorded in captures."
+    },
+    {
+      "command": "Guest: python3 tests/vm/clipboard_appearance.py",
+      "result": "passed",
+      "detail": "tahoe: 12 cases passed with continuous popup and GTK 3/4 processes, including rapid overlapping selections and an actual automatic boundary. The only later Tahoe popup change parents its hidden clear-action widget; final offscreen ownership/lifecycle tests passed.",
+      "log_sha256": "19b74d12060cfa58915d6e22c8bf5fbc01ababc78c06ebcc322d634440ffe25c"
+    },
+    {
+      "command": "Guest: python3 tests/vm/clipboard_launcher.py light|dark /tmp/output-prefix",
+      "result": "passed",
+      "detail": "tahoe: Ctrl+4 opens the installed clipboard view, Enter copies the selected actual history item and dismisses the launcher, Ctrl+1 restores applications; active focused frames reviewed in both modes."
     }
   ],
   "gallery_commit": "9993f61cc0afeba7e39afee776c99f29a55edb8f",
   "captures": [
     {
-      "path": "src/screenshots/previews/clipboard-light-7f4256d7e409.png",
-      "sha256": "7f4256d7e409999fdbdcb526da6453e3415af155969823530782052b27d43f5d",
+      "path": "src/screenshots/previews/clipboard-launcher-light-5fc3d40da024.png",
+      "sha256": "5fc3d40da024721da23fd555d1e0887af8935deb09888669dd8aa4acb2e531d3",
       "reviewed": true,
       "edition": "tahoe",
-      "mode": "light"
+      "mode": "light",
+      "provenance": "src/screenshots/previews/clipboard-launcher-provenance-3a4b55e0592a.json"
     },
     {
-      "path": "src/screenshots/previews/clipboard-dark-1aabd3f3853f.png",
-      "sha256": "1aabd3f3853fca12bb1bef1f42c64ee34f56efea4bb7f5ff2c034162a183dbb1",
+      "path": "src/screenshots/previews/clipboard-launcher-dark-c62021460b99.png",
+      "sha256": "c62021460b9925137ccb31165fa2f8ce3df52b9ffb2dba60776b7e055dc8fea2",
       "reviewed": true,
       "edition": "tahoe",
-      "mode": "dark"
+      "mode": "dark",
+      "provenance": "src/screenshots/previews/clipboard-launcher-provenance-3a4b55e0592a.json"
     }
   ],
   "qualification": {
-    "scope": "Optional clipboard history integrated with the native Custom wizard; safe history/pins and shortcut lifecycle; shared latest-selection appearance synchronization and GTK 3 startup-dark-flag correction.",
-    "code_commit": "9b2c3be993eee510b84ea50e4af86b64665d9052",
+    "scope": "Reference-matched clipboard popup and native in-launcher history; no KWin shader, clipboard daemon storage or shared appearance synchronizer changes.",
+    "candidate_base_commit": "0a9742c4d5d87b4c1c58cc5ace0a1567b4cf89f3",
     "source_files_sha256": {
-      "src/offline/clipboard/clipboard.py": "ec49b324fb47fe64faaa62fe83830a8b400dccae8b3658e392e044daaad829c3",
-      "src/offline/clipboard/clipd/main.cpp": "8355e29352bcb1f47c1387c57f418bf99725cac5d69f477ca9565b43d6bee53c",
-      "src/scripts/steps/clipboard.py": "8b1757432473d1f4a82e72d0a76b99e509659302dee1839cc479ee8df70a8ee1",
-      "src/scripts/theme_switch.py": "f7ba58edf23cf3f9b3bd9b92a579b6f4e975cf75269aecd315e62a721c9b3e3c",
-      "src/scripts/steps/theme_switch.py": "1bd94c8d8428d8b3eee40ca42ac435d466631eb916fcae40a13cbbfea778af66",
-      "src/offline/gtk/MacTahoeLiquidKde-Light/gtk-3.0/gtk.css": "a45212e1cae13c48197a8f5bdf319fe8be41076e0825144c296327ece2d8974e"
+      "src/offline/clipboard/clipboard.py": "fa9deb3bf712a79ec92c0f7fa51e28ea9254594b85e86be48951f6784487cb6c",
+      "src/offline/plasmoids/org.kde.mac-tahoe-liquid-kde.launcher/contents/locale/de/LC_MESSAGES/plasma_applet_org.kde.mac-tahoe-liquid-kde.launcher.mo": "9d27c1243e80d5c2bd026fba508144a749ae8242139475864771e70e05aa7173",
+      "src/offline/plasmoids/org.kde.mac-tahoe-liquid-kde.launcher/contents/locale/es/LC_MESSAGES/plasma_applet_org.kde.mac-tahoe-liquid-kde.launcher.mo": "5bb1cfb84e164708dfe5dea31aaf2f69c47a80ed224b49d647ad73bf3d9815c9",
+      "src/offline/plasmoids/org.kde.mac-tahoe-liquid-kde.launcher/contents/locale/pt_BR/LC_MESSAGES/plasma_applet_org.kde.mac-tahoe-liquid-kde.launcher.mo": "480cd9c44fa43a97a7a52ad8ba3292bcba4bc6289425f0a6bf4912a222b1acec",
+      "src/offline/plasmoids/org.kde.mac-tahoe-liquid-kde.launcher/contents/locale/zh_CN/LC_MESSAGES/plasma_applet_org.kde.mac-tahoe-liquid-kde.launcher.mo": "0fd4debd9b7e00712d0e05f3bd9ab3719fbf8d88b0116837ed4c9ba6bbc5f54f",
+      "src/offline/plasmoids/org.kde.mac-tahoe-liquid-kde.launcher/contents/ui/ClipboardView.qml": "e2488148588d442c5445566bcb856ca95c6da5b79e363e12d67ae08f76d41e2a",
+      "src/offline/plasmoids/org.kde.mac-tahoe-liquid-kde.launcher/contents/ui/MainView.qml": "4874a0e73cce359a919a6ad8a520a85c0bc6f8f0ee7dac851fe4787231e7093a",
+      "src/offline/plasmoids/org.kde.mac-tahoe-liquid-kde.launcher/contents/ui/MenuRepresentation.qml": "c8bd7d57c468b28c58440024712b192c8b8ea4913e8ecbc48c68934aba122c4b",
+      "src/offline/plasmoids/org.kde.mac-tahoe-liquid-kde.launcher/contents/ui/SearchBar.qml": "db2157dd92fb4ff1423bdd4763279e7184e6e059abac1f9bee4e7eb5419fe4fa",
+      "src/offline/plasmoids/org.kde.mac-tahoe-liquid-kde.launcher/contents/ui/icons/ClipboardIcon.svg": "c6b15291a9652f68b1bb663bf1b0b412533c8537c8e233e702d585dded8327f3",
+      "src/offline/plasmoids/org.kde.mac-tahoe-liquid-kde.launcher/po/de.po": "2cb8c14604205b5976e7b336a841b8c3651bd3e5a1ef2b075196ca36d230aca7",
+      "src/offline/plasmoids/org.kde.mac-tahoe-liquid-kde.launcher/po/es.po": "700b7ded5170c6599f8f98b55c2d89fccc8dbf30f0201a8ae394095baba0abde",
+      "src/offline/plasmoids/org.kde.mac-tahoe-liquid-kde.launcher/po/pt_BR.po": "3721277588215623e6e27af3ff7a1c924568543f873642e85032b9e0c8850e87",
+      "src/offline/plasmoids/org.kde.mac-tahoe-liquid-kde.launcher/po/zh_CN.po": "0d0d3a0331e5841c15b213cefbfb7236f19bc142c32bdcdde2145009cde86a47",
+      "src/offline/plasmoids/org.kde.mac.tahoe.liquid.taskmanager/launcher/CMakeLists.txt": "38d68beefa056fef2f52d0314b0e6e8dd4e5a9eba4a8fb0c716224455e0daf05",
+      "src/offline/plasmoids/org.kde.mac.tahoe.liquid.taskmanager/launcher/clipboardmodel.h": "358a4e68a82bc47d7cdf01bf68473ecce871e0995be2e78d115e2f09310c425a",
+      "src/scripts/locales/de.json": "7b6261178ee99be8f5f06da58ba4cb6587ebbe18a1e92c29c70d033f1bed911e",
+      "src/scripts/locales/pt_BR.json": "62f207816c4b91ead5bcb8fca75210b9941958af19578c11824b9fa39413649a"
     },
     "vm_image_sha256": "412e7933f10add20b921b92c02709e7eea56acd14dc14cf654f58fba4ea3cc9d",
-    "vm_backend": "Wayland; isolated X11 capture/copyback is covered separately by the native daemon test.",
-    "sdk_coverage": "Clipboard daemon built with the existing 6.6 SDK image, host 6.7/Qt 6.11 SDK and the real 6.8.1 VM SDK. No KWin shader or ABI implementation changed.",
-    "clipboard_binary_sha256": "45c1926f1022dca0828613ff52af5bfd91adcbc96d48e2711e041ad62ad061c4",
-    "appearance_records": {
-      "tahoe": {
-        "popup_pid": 46219,
+    "vm_backend": "Wayland; private Xvfb/D-Bus executable integration covers X11 separately.",
+    "appearance_records": [
+      {
+        "selection": "standalone-dark",
+        "mode": "dark",
+        "popup_pid": 109651,
         "gtk_pids": [
-          46226,
-          46227
+          109661,
+          109662
         ],
-        "selections": [
+        "gtk_palettes": [
           {
-            "selection": "standalone-dark",
-            "mode": "dark",
-            "gtk_backgrounds": [
-              "#333333",
-              "#242424"
-            ]
+            "gtk": "3",
+            "background": [
+              0.2,
+              0.2,
+              0.2,
+              1.0
+            ],
+            "foreground": [
+              0.8705882352941177,
+              0.8705882352941177,
+              0.8705882352941177,
+              1.0
+            ],
+            "theme": "MacTahoeLiquidKde-Dark",
+            "prefer_dark": true
           },
           {
-            "selection": "standalone-light",
-            "mode": "light",
-            "gtk_backgrounds": [
-              "#f5f5f5",
-              "#fafafa"
-            ]
-          },
-          {
-            "selection": "gtk-preference-dark",
-            "mode": "dark",
-            "gtk_backgrounds": [
-              "#333333",
-              "#242424"
-            ]
-          },
-          {
-            "selection": "gtk-preference-light",
-            "mode": "light",
-            "gtk_backgrounds": [
-              "#f5f5f5",
-              "#fafafa"
-            ]
-          },
-          {
-            "selection": "rapid-latest-wins",
-            "mode": "light",
-            "gtk_backgrounds": [
-              "#f5f5f5",
-              "#fafafa"
-            ]
-          },
-          {
-            "selection": "auto-before-boundary",
-            "mode": "light",
-            "gtk_backgrounds": [
-              "#f5f5f5",
-              "#fafafa"
-            ]
-          },
-          {
-            "selection": "auto-crossed-1800",
-            "mode": "dark",
-            "gtk_backgrounds": [
-              "#333333",
-              "#242424"
-            ]
-          },
-          {
-            "selection": "native-manual-after-completed-auto",
-            "mode": "light",
-            "gtk_backgrounds": [
-              "#f5f5f5",
-              "#fafafa"
-            ]
-          },
-          {
-            "selection": "auto-before-overlap",
-            "mode": "light",
-            "gtk_backgrounds": [
-              "#f5f5f5",
-              "#fafafa"
-            ]
-          },
-          {
-            "selection": "auto-transition-in-flight",
-            "mode": "dark",
-            "gtk_backgrounds": "Superseded transition; verify the following completed selection."
-          },
-          {
-            "selection": "native-manual-supersedes-auto",
-            "mode": "light",
-            "gtk_backgrounds": [
-              "#f5f5f5",
-              "#fafafa"
-            ]
-          },
-          {
-            "selection": "manual-remains-light",
-            "mode": "light",
-            "gtk_backgrounds": [
-              "#f5f5f5",
-              "#fafafa"
-            ]
+            "gtk": "4",
+            "background": [
+              0.1411764770746231,
+              0.1411764770746231,
+              0.1411764770746231,
+              1.0
+            ],
+            "foreground": [
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ],
+            "theme": "Adwaita-empty",
+            "prefer_dark": true,
+            "dark": true
           }
         ]
       },
-      "golden-gate": {
-        "popup_pid": 49682,
+      {
+        "selection": "standalone-light",
+        "mode": "light",
+        "popup_pid": 109651,
         "gtk_pids": [
-          49689,
-          49690
+          109661,
+          109662
         ],
-        "selections": [
+        "gtk_palettes": [
           {
-            "selection": "standalone-dark",
-            "mode": "dark",
-            "gtk_backgrounds": [
-              "#333333",
-              "#242424"
-            ]
+            "gtk": "3",
+            "background": [
+              0.9607843137254902,
+              0.9607843137254902,
+              0.9607843137254902,
+              1.0
+            ],
+            "foreground": [
+              0.1411764705882353,
+              0.1411764705882353,
+              0.1411764705882353,
+              1.0
+            ],
+            "theme": "MacTahoeLiquidKde-Light",
+            "prefer_dark": true
           },
           {
-            "selection": "standalone-light",
-            "mode": "light",
-            "gtk_backgrounds": [
-              "#f5f5f5",
-              "#fafafa"
-            ]
+            "gtk": "4",
+            "background": [
+              0.9803921580314636,
+              0.9803921580314636,
+              0.9803921580314636,
+              1.0
+            ],
+            "foreground": [
+              0.0,
+              0.0,
+              0.0,
+              0.800000011920929
+            ],
+            "theme": "Adwaita-empty",
+            "prefer_dark": false,
+            "dark": false
+          }
+        ]
+      },
+      {
+        "selection": "gtk-preference-dark",
+        "mode": "dark",
+        "popup_pid": 109651,
+        "gtk_pids": [
+          109661,
+          109662
+        ],
+        "gtk_palettes": [
+          {
+            "gtk": "3",
+            "background": [
+              0.2,
+              0.2,
+              0.2,
+              1.0
+            ],
+            "foreground": [
+              0.8705882352941177,
+              0.8705882352941177,
+              0.8705882352941177,
+              1.0
+            ],
+            "theme": "MacTahoeLiquidKde-Dark",
+            "prefer_dark": true
           },
           {
-            "selection": "gtk-preference-dark",
-            "mode": "dark",
-            "gtk_backgrounds": [
-              "#333333",
-              "#242424"
-            ]
+            "gtk": "4",
+            "background": [
+              0.1411764770746231,
+              0.1411764770746231,
+              0.1411764770746231,
+              1.0
+            ],
+            "foreground": [
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ],
+            "theme": "Adwaita-empty",
+            "prefer_dark": true,
+            "dark": true
+          }
+        ]
+      },
+      {
+        "selection": "gtk-preference-light",
+        "mode": "light",
+        "popup_pid": 109651,
+        "gtk_pids": [
+          109661,
+          109662
+        ],
+        "gtk_palettes": [
+          {
+            "gtk": "3",
+            "background": [
+              0.9607843137254902,
+              0.9607843137254902,
+              0.9607843137254902,
+              1.0
+            ],
+            "foreground": [
+              0.1411764705882353,
+              0.1411764705882353,
+              0.1411764705882353,
+              1.0
+            ],
+            "theme": "MacTahoeLiquidKde-Light",
+            "prefer_dark": true
           },
           {
-            "selection": "gtk-preference-light",
-            "mode": "light",
-            "gtk_backgrounds": [
-              "#f5f5f5",
-              "#fafafa"
-            ]
+            "gtk": "4",
+            "background": [
+              0.9803921580314636,
+              0.9803921580314636,
+              0.9803921580314636,
+              1.0
+            ],
+            "foreground": [
+              0.0,
+              0.0,
+              0.0,
+              0.800000011920929
+            ],
+            "theme": "Adwaita-empty",
+            "prefer_dark": false,
+            "dark": false
+          }
+        ]
+      },
+      {
+        "selection": "rapid-latest-wins",
+        "mode": "light",
+        "popup_pid": 109651,
+        "gtk_pids": [
+          109661,
+          109662
+        ],
+        "gtk_palettes": [
+          {
+            "gtk": "3",
+            "background": [
+              0.9607843137254902,
+              0.9607843137254902,
+              0.9607843137254902,
+              1.0
+            ],
+            "foreground": [
+              0.1411764705882353,
+              0.1411764705882353,
+              0.1411764705882353,
+              1.0
+            ],
+            "theme": "MacTahoeLiquidKde-Light",
+            "prefer_dark": true
           },
           {
-            "selection": "rapid-latest-wins",
-            "mode": "light",
-            "gtk_backgrounds": [
-              "#f5f5f5",
-              "#fafafa"
-            ]
+            "gtk": "4",
+            "background": [
+              0.9803921580314636,
+              0.9803921580314636,
+              0.9803921580314636,
+              1.0
+            ],
+            "foreground": [
+              0.0,
+              0.0,
+              0.0,
+              0.800000011920929
+            ],
+            "theme": "Adwaita-empty",
+            "prefer_dark": false,
+            "dark": false
+          }
+        ]
+      },
+      {
+        "selection": "auto-before-boundary",
+        "mode": "light",
+        "popup_pid": 109651,
+        "gtk_pids": [
+          109661,
+          109662
+        ],
+        "gtk_palettes": [
+          {
+            "gtk": "3",
+            "background": [
+              0.9607843137254902,
+              0.9607843137254902,
+              0.9607843137254902,
+              1.0
+            ],
+            "foreground": [
+              0.1411764705882353,
+              0.1411764705882353,
+              0.1411764705882353,
+              1.0
+            ],
+            "theme": "MacTahoeLiquidKde-Light",
+            "prefer_dark": true
           },
           {
-            "selection": "auto-before-boundary",
-            "mode": "light",
-            "gtk_backgrounds": [
-              "#f5f5f5",
-              "#fafafa"
-            ]
+            "gtk": "4",
+            "background": [
+              0.9803921580314636,
+              0.9803921580314636,
+              0.9803921580314636,
+              1.0
+            ],
+            "foreground": [
+              0.0,
+              0.0,
+              0.0,
+              0.800000011920929
+            ],
+            "theme": "Adwaita-empty",
+            "prefer_dark": false,
+            "dark": false
+          }
+        ]
+      },
+      {
+        "selection": "auto-crossed-1800",
+        "mode": "dark",
+        "popup_pid": 109651,
+        "gtk_pids": [
+          109661,
+          109662
+        ],
+        "gtk_palettes": [
+          {
+            "gtk": "3",
+            "background": [
+              0.2,
+              0.2,
+              0.2,
+              1.0
+            ],
+            "foreground": [
+              0.8705882352941177,
+              0.8705882352941177,
+              0.8705882352941177,
+              1.0
+            ],
+            "theme": "MacTahoeLiquidKde-Dark",
+            "prefer_dark": true
           },
           {
-            "selection": "auto-crossed-1800",
-            "mode": "dark",
-            "gtk_backgrounds": [
-              "#333333",
-              "#242424"
-            ]
+            "gtk": "4",
+            "background": [
+              0.1411764770746231,
+              0.1411764770746231,
+              0.1411764770746231,
+              1.0
+            ],
+            "foreground": [
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ],
+            "theme": "Adwaita-empty",
+            "prefer_dark": true,
+            "dark": true
+          }
+        ]
+      },
+      {
+        "selection": "native-manual-after-completed-auto",
+        "mode": "light",
+        "popup_pid": 109651,
+        "gtk_pids": [
+          109661,
+          109662
+        ],
+        "gtk_palettes": [
+          {
+            "gtk": "3",
+            "background": [
+              0.9607843137254902,
+              0.9607843137254902,
+              0.9607843137254902,
+              1.0
+            ],
+            "foreground": [
+              0.1411764705882353,
+              0.1411764705882353,
+              0.1411764705882353,
+              1.0
+            ],
+            "theme": "MacTahoeLiquidKde-Light",
+            "prefer_dark": true
           },
           {
-            "selection": "native-manual-after-completed-auto",
-            "mode": "light",
-            "gtk_backgrounds": [
-              "#f5f5f5",
-              "#fafafa"
-            ]
+            "gtk": "4",
+            "background": [
+              0.9803921580314636,
+              0.9803921580314636,
+              0.9803921580314636,
+              1.0
+            ],
+            "foreground": [
+              0.0,
+              0.0,
+              0.0,
+              0.800000011920929
+            ],
+            "theme": "Adwaita-empty",
+            "prefer_dark": false,
+            "dark": false
+          }
+        ]
+      },
+      {
+        "selection": "auto-before-overlap",
+        "mode": "light",
+        "popup_pid": 109651,
+        "gtk_pids": [
+          109661,
+          109662
+        ],
+        "gtk_palettes": [
+          {
+            "gtk": "3",
+            "background": [
+              0.9607843137254902,
+              0.9607843137254902,
+              0.9607843137254902,
+              1.0
+            ],
+            "foreground": [
+              0.1411764705882353,
+              0.1411764705882353,
+              0.1411764705882353,
+              1.0
+            ],
+            "theme": "MacTahoeLiquidKde-Light",
+            "prefer_dark": true
           },
           {
-            "selection": "auto-before-overlap",
-            "mode": "light",
-            "gtk_backgrounds": [
-              "#f5f5f5",
-              "#fafafa"
-            ]
+            "gtk": "4",
+            "background": [
+              0.9803921580314636,
+              0.9803921580314636,
+              0.9803921580314636,
+              1.0
+            ],
+            "foreground": [
+              0.0,
+              0.0,
+              0.0,
+              0.800000011920929
+            ],
+            "theme": "Adwaita-empty",
+            "prefer_dark": false,
+            "dark": false
+          }
+        ]
+      },
+      {
+        "selection": "auto-transition-in-flight",
+        "mode": "dark",
+        "popup_pid": 109651,
+        "gtk_pids": [
+          109661,
+          109662
+        ],
+        "gtk_palettes": "transition still in flight"
+      },
+      {
+        "selection": "native-manual-supersedes-auto",
+        "mode": "light",
+        "popup_pid": 109651,
+        "gtk_pids": [
+          109661,
+          109662
+        ],
+        "gtk_palettes": [
+          {
+            "gtk": "3",
+            "background": [
+              0.9607843137254902,
+              0.9607843137254902,
+              0.9607843137254902,
+              1.0
+            ],
+            "foreground": [
+              0.1411764705882353,
+              0.1411764705882353,
+              0.1411764705882353,
+              1.0
+            ],
+            "theme": "MacTahoeLiquidKde-Light",
+            "prefer_dark": true
           },
           {
-            "selection": "auto-transition-in-flight",
-            "mode": "dark",
-            "gtk_backgrounds": "Superseded transition; verify the following completed selection."
+            "gtk": "4",
+            "background": [
+              0.9803921580314636,
+              0.9803921580314636,
+              0.9803921580314636,
+              1.0
+            ],
+            "foreground": [
+              0.0,
+              0.0,
+              0.0,
+              0.800000011920929
+            ],
+            "theme": "Adwaita-empty",
+            "prefer_dark": false,
+            "dark": false
+          }
+        ]
+      },
+      {
+        "selection": "manual-remains-light",
+        "mode": "light",
+        "popup_pid": 109651,
+        "gtk_pids": [
+          109661,
+          109662
+        ],
+        "gtk_palettes": [
+          {
+            "gtk": "3",
+            "background": [
+              0.9607843137254902,
+              0.9607843137254902,
+              0.9607843137254902,
+              1.0
+            ],
+            "foreground": [
+              0.1411764705882353,
+              0.1411764705882353,
+              0.1411764705882353,
+              1.0
+            ],
+            "theme": "MacTahoeLiquidKde-Light",
+            "prefer_dark": true
           },
           {
-            "selection": "native-manual-supersedes-auto",
-            "mode": "light",
-            "gtk_backgrounds": [
-              "#f5f5f5",
-              "#fafafa"
-            ]
-          },
-          {
-            "selection": "manual-remains-light",
-            "mode": "light",
-            "gtk_backgrounds": [
-              "#f5f5f5",
-              "#fafafa"
-            ]
+            "gtk": "4",
+            "background": [
+              0.9803921580314636,
+              0.9803921580314636,
+              0.9803921580314636,
+              1.0
+            ],
+            "foreground": [
+              0.0,
+              0.0,
+              0.0,
+              0.800000011920929
+            ],
+            "theme": "Adwaita-empty",
+            "prefer_dark": false,
+            "dark": false
           }
         ]
       }
+    ],
+    "capture_provenance": "src/screenshots/previews/clipboard-launcher-provenance-3a4b55e0592a.json",
+    "retained_prior_qualification": {
+      "scope": "Optional clipboard history integrated with the native Custom wizard; safe history/pins and shortcut lifecycle; shared latest-selection appearance synchronization and GTK 3 startup-dark-flag correction.",
+      "code_commit": "9b2c3be993eee510b84ea50e4af86b64665d9052",
+      "source_files_sha256": {
+        "src/offline/clipboard/clipboard.py": "ec49b324fb47fe64faaa62fe83830a8b400dccae8b3658e392e044daaad829c3",
+        "src/offline/clipboard/clipd/main.cpp": "8355e29352bcb1f47c1387c57f418bf99725cac5d69f477ca9565b43d6bee53c",
+        "src/scripts/steps/clipboard.py": "8b1757432473d1f4a82e72d0a76b99e509659302dee1839cc479ee8df70a8ee1",
+        "src/scripts/theme_switch.py": "f7ba58edf23cf3f9b3bd9b92a579b6f4e975cf75269aecd315e62a721c9b3e3c",
+        "src/scripts/steps/theme_switch.py": "1bd94c8d8428d8b3eee40ca42ac435d466631eb916fcae40a13cbbfea778af66",
+        "src/offline/gtk/MacTahoeLiquidKde-Light/gtk-3.0/gtk.css": "a45212e1cae13c48197a8f5bdf319fe8be41076e0825144c296327ece2d8974e"
+      },
+      "vm_image_sha256": "412e7933f10add20b921b92c02709e7eea56acd14dc14cf654f58fba4ea3cc9d",
+      "vm_backend": "Wayland; isolated X11 capture/copyback is covered separately by the native daemon test.",
+      "sdk_coverage": "Clipboard daemon built with the existing 6.6 SDK image, host 6.7/Qt 6.11 SDK and the real 6.8.1 VM SDK. No KWin shader or ABI implementation changed.",
+      "clipboard_binary_sha256": "45c1926f1022dca0828613ff52af5bfd91adcbc96d48e2711e041ad62ad061c4",
+      "appearance_records": {
+        "tahoe": {
+          "popup_pid": 46219,
+          "gtk_pids": [
+            46226,
+            46227
+          ],
+          "selections": [
+            {
+              "selection": "standalone-dark",
+              "mode": "dark",
+              "gtk_backgrounds": [
+                "#333333",
+                "#242424"
+              ]
+            },
+            {
+              "selection": "standalone-light",
+              "mode": "light",
+              "gtk_backgrounds": [
+                "#f5f5f5",
+                "#fafafa"
+              ]
+            },
+            {
+              "selection": "gtk-preference-dark",
+              "mode": "dark",
+              "gtk_backgrounds": [
+                "#333333",
+                "#242424"
+              ]
+            },
+            {
+              "selection": "gtk-preference-light",
+              "mode": "light",
+              "gtk_backgrounds": [
+                "#f5f5f5",
+                "#fafafa"
+              ]
+            },
+            {
+              "selection": "rapid-latest-wins",
+              "mode": "light",
+              "gtk_backgrounds": [
+                "#f5f5f5",
+                "#fafafa"
+              ]
+            },
+            {
+              "selection": "auto-before-boundary",
+              "mode": "light",
+              "gtk_backgrounds": [
+                "#f5f5f5",
+                "#fafafa"
+              ]
+            },
+            {
+              "selection": "auto-crossed-1800",
+              "mode": "dark",
+              "gtk_backgrounds": [
+                "#333333",
+                "#242424"
+              ]
+            },
+            {
+              "selection": "native-manual-after-completed-auto",
+              "mode": "light",
+              "gtk_backgrounds": [
+                "#f5f5f5",
+                "#fafafa"
+              ]
+            },
+            {
+              "selection": "auto-before-overlap",
+              "mode": "light",
+              "gtk_backgrounds": [
+                "#f5f5f5",
+                "#fafafa"
+              ]
+            },
+            {
+              "selection": "auto-transition-in-flight",
+              "mode": "dark",
+              "gtk_backgrounds": "Superseded transition; verify the following completed selection."
+            },
+            {
+              "selection": "native-manual-supersedes-auto",
+              "mode": "light",
+              "gtk_backgrounds": [
+                "#f5f5f5",
+                "#fafafa"
+              ]
+            },
+            {
+              "selection": "manual-remains-light",
+              "mode": "light",
+              "gtk_backgrounds": [
+                "#f5f5f5",
+                "#fafafa"
+              ]
+            }
+          ]
+        },
+        "golden-gate": {
+          "popup_pid": 49682,
+          "gtk_pids": [
+            49689,
+            49690
+          ],
+          "selections": [
+            {
+              "selection": "standalone-dark",
+              "mode": "dark",
+              "gtk_backgrounds": [
+                "#333333",
+                "#242424"
+              ]
+            },
+            {
+              "selection": "standalone-light",
+              "mode": "light",
+              "gtk_backgrounds": [
+                "#f5f5f5",
+                "#fafafa"
+              ]
+            },
+            {
+              "selection": "gtk-preference-dark",
+              "mode": "dark",
+              "gtk_backgrounds": [
+                "#333333",
+                "#242424"
+              ]
+            },
+            {
+              "selection": "gtk-preference-light",
+              "mode": "light",
+              "gtk_backgrounds": [
+                "#f5f5f5",
+                "#fafafa"
+              ]
+            },
+            {
+              "selection": "rapid-latest-wins",
+              "mode": "light",
+              "gtk_backgrounds": [
+                "#f5f5f5",
+                "#fafafa"
+              ]
+            },
+            {
+              "selection": "auto-before-boundary",
+              "mode": "light",
+              "gtk_backgrounds": [
+                "#f5f5f5",
+                "#fafafa"
+              ]
+            },
+            {
+              "selection": "auto-crossed-1800",
+              "mode": "dark",
+              "gtk_backgrounds": [
+                "#333333",
+                "#242424"
+              ]
+            },
+            {
+              "selection": "native-manual-after-completed-auto",
+              "mode": "light",
+              "gtk_backgrounds": [
+                "#f5f5f5",
+                "#fafafa"
+              ]
+            },
+            {
+              "selection": "auto-before-overlap",
+              "mode": "light",
+              "gtk_backgrounds": [
+                "#f5f5f5",
+                "#fafafa"
+              ]
+            },
+            {
+              "selection": "auto-transition-in-flight",
+              "mode": "dark",
+              "gtk_backgrounds": "Superseded transition; verify the following completed selection."
+            },
+            {
+              "selection": "native-manual-supersedes-auto",
+              "mode": "light",
+              "gtk_backgrounds": [
+                "#f5f5f5",
+                "#fafafa"
+              ]
+            },
+            {
+              "selection": "manual-remains-light",
+              "mode": "light",
+              "gtk_backgrounds": [
+                "#f5f5f5",
+                "#fafafa"
+              ]
+            }
+          ]
+        }
+      },
+      "additional_evidence": {
+        "clipboard_capture_tahoe": "4d76617595fba05c489992272b0915a28dc110ac51d91314188ef9d2ce170c15",
+        "clipboard_capture_golden_gate": "4d76617595fba05c489992272b0915a28dc110ac51d91314188ef9d2ce170c15",
+        "shortcut_tahoe": "06944344ce6accfe4b9a7d99899c3c8564c24913210a793203f91c320494484a",
+        "shortcut_golden_gate": "06944344ce6accfe4b9a7d99899c3c8564c24913210a793203f91c320494484a",
+        "lifecycle_tahoe": "6f43242090d1fd8f3b501c32c8a300895ffebed7c41cb33aa82bbdefe959a604",
+        "gtk3_dark_start_before": "028da02250c5165ae874aad759e91a915e59c31d9dfcb95111aa9a163c8b5c6d",
+        "gtk3_dark_start_after": "1bfc63d81ecac5ac785ede75d2e301cc64b963730806ec1f67bfe99768592706",
+        "sdk66_build": "8d1ebc94e738fea7047a5ec0e4080e337fc76f64b9d71f89ea6cbec7cef0fe64",
+        "wizard_localization_package_mapping": {
+          "result": "511 focused checks passed; unchanged domains reused.",
+          "log_sha256": "d3af576183d73c9c26fd095c41341b062e62181baf115cadb2967e40d2e96e22"
+        }
+      },
+      "capture_provenance": {
+        "popup_sha256": "ec49b324fb47fe64faaa62fe83830a8b400dccae8b3658e392e044daaad829c3",
+        "daemon_source_sha256": "8355e29352bcb1f47c1387c57f418bf99725cac5d69f477ca9565b43d6bee53c",
+        "note": "Each edition was captured separately with its own defaults. Focused widget frames predate the later synchronization repairs; popup/daemon bytes are unchanged. Existing full desktop and installer galleries retain their original capture provenance."
+      },
+      "baseline": {
+        "version": "0.71.12",
+        "commit": "425199ee1363f2278df208049dbfbe059d7268ee",
+        "ci": "https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/actions/runs/43747180997",
+        "qualification": "https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/blob/425199ee1363f2278df208049dbfbe059d7268ee/release-evidence.json",
+        "reuse": "Unchanged native launcher and historical gallery qualification retained."
+      },
+      "limits": "Focused rendering evidence covers Clipboard and continuous GTK 3/4 application palettes. No new full-gallery or all-plasmoid capture claim. Primary shards, Nix and the complete distro matrix remain enabled and are tracked on the final dev commit. Tags and release workflows require the user confirmation requested for this delivery.",
+      "installed_final_identity_log_sha256": "ecefb14337acf0a08327a35672a6bafd1906fe9c017ad725a418463790dcfe5c"
     },
-    "additional_evidence": {
-      "clipboard_capture_tahoe": "4d76617595fba05c489992272b0915a28dc110ac51d91314188ef9d2ce170c15",
-      "clipboard_capture_golden_gate": "4d76617595fba05c489992272b0915a28dc110ac51d91314188ef9d2ce170c15",
-      "shortcut_tahoe": "06944344ce6accfe4b9a7d99899c3c8564c24913210a793203f91c320494484a",
-      "shortcut_golden_gate": "06944344ce6accfe4b9a7d99899c3c8564c24913210a793203f91c320494484a",
-      "lifecycle_tahoe": "6f43242090d1fd8f3b501c32c8a300895ffebed7c41cb33aa82bbdefe959a604",
-      "gtk3_dark_start_before": "028da02250c5165ae874aad759e91a915e59c31d9dfcb95111aa9a163c8b5c6d",
-      "gtk3_dark_start_after": "1bfc63d81ecac5ac785ede75d2e301cc64b963730806ec1f67bfe99768592706",
-      "sdk66_build": "8d1ebc94e738fea7047a5ec0e4080e337fc76f64b9d71f89ea6cbec7cef0fe64",
-      "wizard_localization_package_mapping": {
-        "result": "511 focused checks passed; unchanged domains reused.",
-        "log_sha256": "d3af576183d73c9c26fd095c41341b062e62181baf115cadb2967e40d2e96e22"
-      }
-    },
-    "capture_provenance": {
-      "popup_sha256": "ec49b324fb47fe64faaa62fe83830a8b400dccae8b3658e392e044daaad829c3",
-      "daemon_source_sha256": "8355e29352bcb1f47c1387c57f418bf99725cac5d69f477ca9565b43d6bee53c",
-      "note": "Each edition was captured separately with its own defaults. Focused widget frames predate the later synchronization repairs; popup/daemon bytes are unchanged. Existing full desktop and installer galleries retain their original capture provenance."
-    },
-    "baseline": {
-      "version": "0.71.12",
-      "commit": "425199ee1363f2278df208049dbfbe059d7268ee",
-      "ci": "https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/actions/runs/43747180997",
-      "qualification": "https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/blob/425199ee1363f2278df208049dbfbe059d7268ee/release-evidence.json",
-      "reuse": "Unchanged native launcher and historical gallery qualification retained."
-    },
-    "limits": "Focused rendering evidence covers Clipboard and continuous GTK 3/4 application palettes. No new full-gallery or all-plasmoid capture claim. Primary shards, Nix and the complete distro matrix remain enabled and are tracked on the final dev commit. Tags and release workflows require the user confirmation requested for this delivery.",
-    "installed_final_identity_log_sha256": "ecefb14337acf0a08327a35672a6bafd1906fe9c017ad725a418463790dcfe5c"
+    "limits": "Focused Clipboard captures only; unchanged historical desktop/installer gallery provenance retained. Full dev CI remains enabled and asynchronous. This is an untagged v0.72.0 candidate; no release workflow or tag is authorized until the user confirms."
   }
 }

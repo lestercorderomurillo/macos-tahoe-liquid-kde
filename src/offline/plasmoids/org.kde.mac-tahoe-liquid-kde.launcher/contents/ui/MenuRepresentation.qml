@@ -177,10 +177,10 @@ PlasmaCore.Dialog {
 	FocusScope {
 		id: fs
 		focus: true
-		implicitWidth: root.cellSizeWidth * root.columns + innerPadding * 2
+		implicitWidth: main.clipboardMode ? Math.round(main.textSize * 60) : root.cellSizeWidth * root.columns + innerPadding * 2
 			- (root.goldenGate ? dialogSvg.margins.left + dialogSvg.margins.right : 0)
 		// Searchbar + separator + categories + grid
-		implicitHeight: root.goldenGate
+		implicitHeight: main.clipboardMode ? Math.round(main.inlineSearchHeight + 18 + Math.max(2, Math.min(6, main.clipboardList.entries.length)) * main.textSize * 5.2) : root.goldenGate
 			? innerPadding * 3 + main.categoryHeight + main.gridTopSpacing + root.cellSizeHeight * rows
 				- dialogSvg.margins.top - dialogSvg.margins.bottom
 			: main.inlineSearchHeight + 2 + 12 + main.categoryHeight + main.gridTopSpacing + root.cellSizeHeight * rows + innerPadding - (main.tahoeStyle ? 1 : 0)
@@ -195,7 +195,7 @@ PlasmaCore.Dialog {
 		Component.onCompleted: Qt.callLater(root.syncSize)
 		
 		// We want the MainView to have an uniform margin through different plasma themes
-		property real innerPadding: root.goldenGate ? root.configuredIconSize * 0.375 : 15
+		property real innerPadding: main.clipboardMode ? 15 : root.goldenGate ? root.configuredIconSize * 0.375 : 15
 
 		Item {
 			id: mainItem
@@ -206,7 +206,7 @@ PlasmaCore.Dialog {
 
 			MainView {
 				id: main
-				width: mainItem.width - fs.innerPadding * (root.goldenGate ? 2 : 1)
+				width: mainItem.width - fs.innerPadding * (root.goldenGate && !main.clipboardMode ? 2 : 1)
 				height: mainItem.height - fs.innerPadding * (main.tahoeStyle ? 1 : 2)
 				x: fs.innerPadding
 				y: main.tahoeStyle ? 8 : fs.innerPadding

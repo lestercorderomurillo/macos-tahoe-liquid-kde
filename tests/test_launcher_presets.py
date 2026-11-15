@@ -3,6 +3,7 @@
 import json
 from pathlib import Path
 import os
+import sys
 import re
 import select
 import shutil
@@ -267,7 +268,7 @@ def test_native_launcher_reopens_on_another_screen(repo, tmp_path, launcher_popu
 @pytest.mark.parametrize("preset", [1, 2])
 @pytest.mark.parametrize("mode", ["Light", "Dark"])
 @pytest.mark.parametrize("edition", ["MacTahoe", "MacGoldenGate"])
-def test_native_launcher_popup_presets(repo, tmp_path, monkeypatch, launcher_popup_module, preset, mode, edition):
+def test_native_launcher_popup_presets(repo, tmp_path, monkeypatch, launcher_popup_module, preset, mode, edition, clipboard_daemon=None):
     for tool in ("plasmoidviewer", "Xvfb", "dbus-run-session", "xprop"):
         if not shutil.which(tool):
             pytest.skip(f"{tool} required for the isolated launcher preview")
@@ -308,15 +309,18 @@ def test_native_launcher_popup_presets(repo, tmp_path, monkeypatch, launcher_pop
         'property QtObject globalFavorites: ListModel { '
         'property var favorites: []; function trigger(index, action, argument) {}\n'
         + favorites + '\n}', 1))
-    shutil.copy2(repo / "tests/qml/LauncherPresetProbe.qml", ui)
+    shutil.copy2(repo / ("tests/qml/ClipboardLauncherProbe.qml" if clipboard_daemon else "tests/qml/LauncherPresetProbe.qml"), ui)
     main = ui / "MainView.qml"
     source = main.read_text()
     end = source.rfind("}")
     golden_gate = str(edition == "MacGoldenGate").lower()
     dark = str(mode == "Dark").lower()
     event_loop_delay = 450 if os.environ.get("MTTKDE_TEST_LAUNCHER_SCALE") else 0
-    main.write_text(source[:end] + f"LauncherPresetProbe {{ expectedPreset: {preset}; "
-                    f"expectedGoldenGate: {golden_gate}; expectedDark: {dark}; eventLoopDelay: {event_loop_delay} }}\n" + source[end:])
+    if clipboard_daemon:
+        main.write_text(source[:end] + "ClipboardLauncherProbe {}\n" + source[end:])
+    else:
+        main.write_text(source[:end] + f"LauncherPresetProbe {{ expectedPreset: {preset}; "
+                        f"expectedGoldenGate: {golden_gate}; expectedDark: {dark}; eventLoopDelay: {event_loop_delay} }}\n" + source[end:])
     for name, original, replacement in (
         ("AllAppsList.qml", "ColumnLayout {", "ColumnLayout { property alias testCategories: categorySwitcher"),
         ("AppCategorySwitcher.qml", "Item {", "Item { property alias testView: categorySwitcher"),
@@ -368,6 +372,7 @@ def test_native_launcher_popup_presets(repo, tmp_path, monkeypatch, launcher_pop
         with log_path.open("w") as log:
             process = subprocess.Popen(
                 ["dbus-run-session", "--config-file", str(bus_config), "--",
+                 *([sys.executable, str(repo / "tests/native/clipboard_launcher_session.py"), str(clipboard_daemon)] if clipboard_daemon else []),
                  "plasmoidviewer", "-a", str(package), "-f", "horizontal", "-l", "bottomedge",
                  "--size", "1280x1024"],
                 env=env, stdout=log, stderr=log, start_new_session=True,
@@ -384,10 +389,14 @@ def test_native_launcher_popup_presets(repo, tmp_path, monkeypatch, launcher_pop
                                 env=env, capture_output=True, text=True, timeout=5)
                             if role.returncode == 0:
                                 popup_roles[name] = role.stdout
-                if "LAUNCHER_PROBE_" in output or process.poll() is not None:
+                if "LAUNCHER_PROBE_" in output or "CLIPBOARD_LAUNCHER_" in output or process.poll() is not None:
                     break
                 time.sleep(0.05)
         output = log_path.read_text()
+        if clipboard_daemon:
+            assert "CLIPBOARD_LAUNCHER_OK" in output, output
+            assert "CLIPBOARD_LAUNCHER_FAILED" not in output, output
+            return
         assert "LAUNCHER_PROBE_OK" in output, output
         assert "LAUNCHER_PROBE_FAILED" not in output, output
         assert "_KDE_NET_WM_WINDOW_TYPE_APPLET_POPUP" in popup_roles.get("search", ""), popup_roles
@@ -996,3 +1005,21 @@ Item {
                  QT_QPA_PLATFORMTHEME="generic", QT_QUICK_BACKEND="software", QT_FORCE_STDERR_LOGGING="1"),
         capture_output=True, text=True, timeout=15)
     assert result.returncode == 0 and "ICON_REPAINT_OK" in result.stderr, result.stdout + result.stderr
+
+
+@pytest.fixture(scope="session")
+def clipboard_launcher_daemon(repo, tmp_path_factory):
+    build = tmp_path_factory.mktemp("clipboard-launcher-daemon")
+    for command in (["cmake", "-S", str(repo / "src/offline/clipboard/clipd"), "-B", str(build)],
+                    ["cmake", "--build", str(build), "-j2"]):
+        result = subprocess.run(command, capture_output=True, text=True, timeout=120)
+        assert result.returncode == 0, result.stdout + result.stderr
+    return build / "mac-tahoe-clipd"
+
+
+@pytest.mark.parametrize("edition,mode,preset", [("MacTahoe", "Light", 1), ("MacGoldenGate", "Dark", 2)])
+def test_clipboard_launcher_integration(repo, tmp_path, monkeypatch, launcher_popup_module,
+                                       clipboard_launcher_daemon, edition, mode, preset):
+    pytest.importorskip("PyQt6.QtDBus")
+    test_native_launcher_popup_presets(repo, tmp_path, monkeypatch, launcher_popup_module,
+                                      preset, mode, edition, clipboard_launcher_daemon)

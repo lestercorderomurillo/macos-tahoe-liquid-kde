@@ -1,0 +1,75 @@
+{
+  "edition": "tahoe",
+  "environment": "Disposable KDE neon Plasma 6.8.1 / Qt 6.11.1 Wayland VM; own wallpaper and launcher default, test clipboard content.",
+  "command": "python3 tests/vm/clipboard_launcher.py light|dark /tmp/output-prefix",
+  "frames": {
+    "light": {
+      "id": "{5ddc2b31-fe6e-4886-a35c-b7e61de2cf53}",
+      "caption": "plasmashell",
+      "resourceClass": "org.kde.plasmashell",
+      "type": 18,
+      "appletPopup": true,
+      "hidden": false,
+      "active": true,
+      "geometry": {
+        "x": 652,
+        "y": 451,
+        "width": 616,
+        "height": 178
+      },
+      "installed_source_sha256": {
+        "contents/ui/ClipboardView.qml": "e2488148588d442c5445566bcb856ca95c6da5b79e363e12d67ae08f76d41e2a",
+        "contents/ui/MainView.qml": "4874a0e73cce359a919a6ad8a520a85c0bc6f8f0ee7dac851fe4787231e7093a",
+        "contents/ui/MenuRepresentation.qml": "c8bd7d57c468b28c58440024712b192c8b8ea4913e8ecbc48c68934aba122c4b",
+        "contents/ui/SearchBar.qml": "db2157dd92fb4ff1423bdd4763279e7184e6e059abac1f9bee4e7eb5419fe4fa",
+        "contents/ui/icons/ClipboardIcon.svg": "c6b15291a9652f68b1bb663bf1b0b412533c8537c8e233e702d585dded8327f3"
+      },
+      "mode": "MacTahoeLiquidKdeLight",
+      "edition": {
+        "wallpaper": "MacTahoe",
+        "launcher_preset": 1
+      },
+      "checks": [
+        "Ctrl+4 opens Clipboard",
+        "Enter copies selected history and closes launcher",
+        "Ctrl+1 restores applications"
+      ]
+    },
+    "dark": {
+      "id": "{ba712eeb-4310-4a5e-93d8-92a45a622fb6}",
+      "caption": "plasmashell",
+      "resourceClass": "org.kde.plasmashell",
+      "type": 18,
+      "appletPopup": true,
+      "hidden": false,
+      "active": true,
+      "geometry": {
+        "x": 652,
+        "y": 451,
+        "width": 616,
+        "height": 178
+      },
+      "installed_source_sha256": {
+        "contents/ui/ClipboardView.qml": "e2488148588d442c5445566bcb856ca95c6da5b79e363e12d67ae08f76d41e2a",
+        "contents/ui/MainView.qml": "4874a0e73cce359a919a6ad8a520a85c0bc6f8f0ee7dac851fe4787231e7093a",
+        "contents/ui/MenuRepresentation.qml": "c8bd7d57c468b28c58440024712b192c8b8ea4913e8ecbc48c68934aba122c4b",
+        "contents/ui/SearchBar.qml": "db2157dd92fb4ff1423bdd4763279e7184e6e059abac1f9bee4e7eb5419fe4fa",
+        "contents/ui/icons/ClipboardIcon.svg": "c6b15291a9652f68b1bb663bf1b0b412533c8537c8e233e702d585dded8327f3"
+      },
+      "mode": "MacTahoeLiquidKdeDark",
+      "edition": {
+        "wallpaper": "MacTahoe",
+        "launcher_preset": 1
+      },
+      "checks": [
+        "Ctrl+4 opens Clipboard",
+        "Enter copies selected history and closes launcher",
+        "Ctrl+1 restores applications"
+      ]
+    }
+  },
+  "reference": "https://www.macrumors.com/how-to/do-more-with-spotlight-in-macos-tahoe/",
+  "reference_image_sha256": "0e8a280bfc4a444965737ce0ad4fdd12a86bfc18b630240256aa123f9e235343",
+  "comparison": "Reviewed a 50/50 raw-pixel overlay with the MacRumors macOS Tahoe reference. Reference display scaling is not independently verified. Shared compact rows, paper glyph, timestamps and circular copy/options controls; edition material and a return-to-applications control are retained. Source-app badges are not fabricated; this is not a pixel-identical claim.",
+  "reuse_note": "Final installed launcher sources; capture identity retained below."
+}

@@ -28,7 +28,7 @@ RowLayout {
         Layout.rightMargin: 0
         Layout.preferredWidth: main.detachedSearch ? Kirigami.Units.gridUnit * 2 : (main.tahoeStyle ? 38 : Kirigami.Units.iconSizes.medium)
         Layout.preferredHeight: Layout.preferredWidth
-        source: Qt.resolvedUrl('icons/AppsIcon.svg')
+        source: main.clipboardMode ? Qt.resolvedUrl('icons/ClipboardIcon.svg') : Qt.resolvedUrl('icons/AppsIcon.svg')
         isMask: true
         color: searchFieldBar.dimmedTextColor
     }
@@ -58,7 +58,7 @@ RowLayout {
                     textField.text = main.searchText;
             }
         }
-        placeholderText: main.tahoeStyle ? i18n("Applications") : i18n("Apps")
+        placeholderText: main.clipboardMode ? i18n("Clipboard") : main.tahoeStyle ? i18n("Applications") : i18n("Apps")
         placeholderTextColor: searchFieldBar.dimmedTextColor
         background: Rectangle{
             color: "transparent"
@@ -72,10 +72,22 @@ RowLayout {
         }
 
         Keys.onPressed: event => {
+            if ((event.modifiers & (Qt.ControlModifier | Qt.MetaModifier)) && event.key === Qt.Key_4) {
+                main.showClipboard(true);
+                event.accepted = true;
+                return;
+            }
+            if ((event.modifiers & (Qt.ControlModifier | Qt.MetaModifier)) && event.key === Qt.Key_1) {
+                main.showClipboard(false);
+                event.accepted = true;
+                return;
+            }
             if (event.key == Qt.Key_Escape) {
                 event.accepted = true;
                 if (searching) {
                     clear();
+                } else if (main.clipboardMode) {
+                    main.showClipboard(false);
                 } else {
                     root.toggle()
                 }
@@ -84,8 +96,45 @@ RowLayout {
         }
     }
 
+    ToolButton {
+        objectName: "clipboardModeButton"
+        icon.name: main.clipboardMode ? "view-grid" : "edit-paste"
+        Accessible.name: main.clipboardMode ? i18n("Applications") : i18n("Clipboard")
+        ToolTip.visible: hovered
+        ToolTip.text: Accessible.name + (main.clipboardMode ? " (Ctrl+1)" : " (Ctrl+4)")
+        onClicked: main.showClipboard(!main.clipboardMode)
+    }
+
+    ToolButton {
+        visible: main.clipboardMode
+        Layout.preferredWidth: 28
+        Layout.preferredHeight: 28
+        Accessible.name: i18n("Clipboard options")
+        contentItem: Item {
+            Row {
+                anchors.centerIn: parent
+                spacing: 2.1
+                Repeater {
+                    model: 3
+                    Rectangle { width: 2.6; height: 2.6; radius: 1.3; color: main.dimmedTextColor }
+                }
+            }
+        }
+        background: Rectangle {
+            anchors.centerIn: parent
+            width: 22
+            height: 22
+            radius: 11
+            color: parent.hovered ? main.contrastBgColor : "transparent"
+            border.width: 1.25
+            border.color: main.dimmedTextColor
+        }
+        onClicked: main.clipboardList.more(this, null)
+    }
+
     MenuButton {
         id: menuButton
+        visible: !main.clipboardMode
         foregroundColor: searchFieldBar.textColor
         Layout.alignment: Qt.AlignVCenter
         Layout.rightMargin: main.tahoeStyle ? -3.5 : 0

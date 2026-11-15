@@ -7,9 +7,9 @@ import tempfile
 import html
 from PyQt6.QtCore import Qt, QTimer, QRectF, QPointF, QSize, QObject, pyqtSignal, pyqtSlot
 from PyQt6.QtDBus import QDBusConnection, QDBusInterface
-from PyQt6.QtGui import QColor, QImage, QPainter, QPainterPath, QPen, QPixmap
+from PyQt6.QtGui import QColor, QIcon, QImage, QPainter, QPainterPath, QPen, QPixmap
 from PyQt6.QtWidgets import (QApplication, QWidget, QVBoxLayout, QHBoxLayout, QLineEdit, QScrollArea,
-                             QPushButton, QLabel, QFrame, QAbstractButton, QSizePolicy)
+                             QPushButton, QLabel, QFrame, QAbstractButton, QSizePolicy, QMenu)
 
 APP_ID = "mac-tahoe-clipboard"
 DATA = os.path.join(os.environ.get("XDG_DATA_HOME", os.path.expanduser("~/.local/share")), "mac-tahoe-liquid-kde")
@@ -17,13 +17,12 @@ OLD_PINS_FILE = os.path.join(DATA, "clipboard-pins.json")
 LOCK = os.path.join(os.environ.get("XDG_RUNTIME_DIR", os.path.join(tempfile.gettempdir(), APP_ID + "-" + str(os.getuid()))), APP_ID + ".pid")
 DAEMON = os.path.expanduser("~/.local/bin/mac-tahoe-clipd")
 
-POPUP_W = 800
+POPUP_W = 660
 CAP_LINES = 5          # collapsed text row: at most this many lines ...
 CAP_CHARS = 300        # ... or this many characters
 EXPANDED_CHARS = 3000  # expanded text row: at most this many characters
-THUMB_MAX_W, THUMB_MAX_H = 560, 300
+THUMB_MAX_W, THUMB_MAX_H = 36, 40
 ZWSP = "​"
-LINE = "rgba(127,127,127,0.30)"
 
 
 # ── text helpers ───────────────────────────────────────────────────────────
@@ -231,7 +230,7 @@ class Thumb(QWidget):
             lw, lh = int(self.pix.width() / self.pix.devicePixelRatio()), int(self.pix.height() / self.pix.devicePixelRatio())
             self.setFixedSize(max(1, lw), max(1, lh))
         else:
-            self.setFixedSize(THUMB_MAX_W, 64)
+            self.setFixedSize(THUMB_MAX_W, THUMB_MAX_H)
 
     def paintEvent(self, _):
         p = QPainter(self); p.setRenderHint(QPainter.RenderHint.Antialiasing); p.setRenderHint(QPainter.RenderHint.SmoothPixmapTransform)
@@ -259,48 +258,63 @@ class Row(QFrame):
         self.setMouseTracking(True)
         self.setCursor(Qt.CursorShape.PointingHandCursor)
 
-        outer = QHBoxLayout(self); outer.setContentsMargins(14, 8, 8, 9); outer.setSpacing(6)
-        col = QVBoxLayout(); col.setSpacing(4); col.setContentsMargins(0, 2, 0, 2)
-        self.more = None; self.truncated = False; self.label = None; self.caption = None
+        outer = QHBoxLayout(self); outer.setContentsMargins(12, 8, 12, 8); outer.setSpacing(14)
+        self.setMinimumHeight(58)
+        if self.kind == "image":
+            self.thumb = Thumb(item.get("path"), item.get("w", 0), item.get("h", 0), popup.thumb_cache)
+            outer.addWidget(self.thumb)
+        else:
+            icon = QLabel(); icon.setFixedSize(36, 40)
+            icon.setPixmap(QIcon.fromTheme("text-plain").pixmap(36, 40))
+            icon.setAttribute(Qt.WidgetAttribute.WA_TransparentForMouseEvents)
+            outer.addWidget(icon)
+        col = QVBoxLayout(); col.setSpacing(2); col.setContentsMargins(0, 0, 0, 0)
+        self.more = None; self.truncated = False
+        self.label = QLabel(); self.label.setTextFormat(Qt.TextFormat.PlainText)
+        self.label.setAttribute(Qt.WidgetAttribute.WA_TransparentForMouseEvents)
+        self.label.setSizePolicy(QSizePolicy.Policy.Ignored, QSizePolicy.Policy.Minimum)
+        f = self.label.font(); f.setPointSizeF(f.pointSizeF() * 1.2); self.label.setFont(f)
         if self.kind == "text":
             shown, self.truncated = display_text(self.text, expanded)
-            self.label = QLabel(soft_breaks(shown)); self.label.setWordWrap(True)
-            self.label.setTextFormat(Qt.TextFormat.PlainText)
-            self.label.setAttribute(Qt.WidgetAttribute.WA_TransparentForMouseEvents)
-            self.label.setSizePolicy(QSizePolicy.Policy.Ignored, QSizePolicy.Policy.Minimum)
-            col.addWidget(self.label)
-            if self.truncated or expanded:
-                self.more = QPushButton("Show less" if expanded else "Show more")
-                self.more.setFlat(True); self.more.setCursor(Qt.CursorShape.PointingHandCursor)
-                self.more.setFocusPolicy(Qt.FocusPolicy.NoFocus)
-                self.more.setToolTip("Collapse  (Ctrl+E)" if expanded else "Show full text  (Ctrl+E)")
-                self.more.setStyleSheet("QPushButton{border:none;padding:0;text-align:left;color:palette(highlight);}"
-                                        "QPushButton:hover{text-decoration:underline;}")
-                self.more.clicked.connect(lambda: popup.toggle_expand(self.id))
-                col.addWidget(self.more, 0, Qt.AlignmentFlag.AlignLeft)
+            self.label.setWordWrap(expanded)
+            self.label.setText(soft_breaks(shown) if expanded else " ".join(self.text.split()))
+            self.label.setToolTip(self.text[:EXPANDED_CHARS])
         else:
-            self.thumb = Thumb(item.get("path"), item.get("w", 0), item.get("h", 0), popup.thumb_cache)
-            col.addWidget(self.thumb, 0, Qt.AlignmentFlag.AlignLeft)
-            self.caption = QLabel(f"Image · {item.get('w', 0)} × {item.get('h', 0)} · {human_size(item.get('bytes', 0))}")
-            f = self.caption.font(); f.setPointSizeF(max(7.0, f.pointSizeF() - 1.5)); self.caption.setFont(f)
-            self.caption.setStyleSheet("color:rgba(127,127,127,0.95);")
-            self.caption.setAttribute(Qt.WidgetAttribute.WA_TransparentForMouseEvents)
-            col.addWidget(self.caption)
+            self.label.setText("Image")
+        col.addWidget(self.label)
+        stamp = time.strftime("%I:%M %p", time.localtime(item.get("ts", 0) / 1000)).lstrip("0")
+        details = "Text" if self.kind == "text" else f"Image · {item.get('w', 0)} × {item.get('h', 0)} · {human_size(item.get('bytes', 0))}"
+        self.caption = QLabel(("Pinned · " if self.pinned else "") + details + " · Copied " + stamp)
+        self.caption.setTextFormat(Qt.TextFormat.PlainText)
+        self.caption.setStyleSheet("color:palette(window-text);")
+        self.caption.setAttribute(Qt.WidgetAttribute.WA_TransparentForMouseEvents)
+        col.addWidget(self.caption)
         outer.addLayout(col, 1)
-
-        acts = QHBoxLayout(); acts.setSpacing(0); acts.setContentsMargins(0, 0, 0, 0)
         self.b_copy = IconButton("copy", "Copy  (Enter)")
-        self.b_pin = IconButton("pin", "Unpin  (Ctrl+P)" if self.pinned else "Pin  (Ctrl+P)")
+        self.b_pin = IconButton("pin", "Unpin  (Ctrl+P)" if self.pinned else "Pin  (Ctrl+P)", self)
         self.b_pin.active = self.pinned
-        self.b_del = IconButton("delete", "Pinned \u2014 unpin to delete" if self.pinned else "Delete  (Del)")
+        self.b_del = IconButton("delete", "Pinned — unpin to delete" if self.pinned else "Delete  (Del)", self)
         self.b_del.locked = self.pinned
+        self.b_pin.hide(); self.b_del.hide()
         self.b_copy.clicked.connect(lambda: popup.choose(self.id))
         self.b_pin.clicked.connect(lambda: popup.toggle_pin(self.id))
         self.b_del.clicked.connect(lambda: popup.delete(self.id))
-        for b in (self.b_copy, self.b_pin, self.b_del):
-            acts.addWidget(b)
-        outer.addLayout(acts, 0)
-        outer.setAlignment(acts, Qt.AlignmentFlag.AlignTop)
+        outer.addWidget(self.b_copy)
+        self.setContextMenuPolicy(Qt.ContextMenuPolicy.CustomContextMenu)
+        self.customContextMenuRequested.connect(self.context_menu)
+
+    def context_menu(self, pos):
+        menu = QMenu(self)
+        menu.addAction("Unpin" if self.pinned else "Pin", lambda: self.popup.toggle_pin(self.id))
+        delete = menu.addAction("Delete", lambda: self.popup.delete(self.id)); delete.setEnabled(not self.pinned)
+        if self.kind == "text":
+            menu.addAction("Show less" if self.expanded else "Show full text", lambda: self.popup.toggle_expand(self.id))
+        menu.exec(self.mapToGlobal(pos))
+
+    def resizeEvent(self, ev):
+        super().resizeEvent(ev)
+        if self.kind == "text" and not self.expanded:
+            self.label.setText(self.label.fontMetrics().elidedText(" ".join(self.text.split()), Qt.TextElideMode.ElideRight, self.label.width()))
 
     def set_selected(self, v):
         if v != self.selected:
@@ -342,14 +356,6 @@ class Row(QFrame):
             p.drawRoundedRect(QRectF(2, 10, 3, max(8, self.height() - 21)), 1.5, 1.5)
 
 
-class KeyCap(QLabel):
-    def __init__(self, text):
-        super().__init__(text)
-        self.setStyleSheet("QLabel{border:1px solid rgba(127,127,127,0.45);border-radius:5px;padding:0 5px;"
-                           "background:rgba(127,127,127,0.12);}")
-        f = self.font(); f.setPointSizeF(max(7.0, f.pointSizeF() - 1.5)); self.setFont(f)
-
-
 class Popup(QWidget):
     finished = pyqtSignal()
 
@@ -370,18 +376,27 @@ class Popup(QWidget):
         self.ready = False
         self.empty_msg = None
 
-        root = QVBoxLayout(self); root.setContentsMargins(14, 14, 14, 12); root.setSpacing(10)
-        self.search = QLineEdit(); self.search.setPlaceholderText("Search clipboard"); self.search.setClearButtonEnabled(True)
-        self.search.setMinimumHeight(34)
-        self.search.setStyleSheet("QLineEdit{border-radius:17px;padding:0 14px;background:rgba(127,127,127,0.18);"
-                                  f"border:1px solid {LINE};}}")
+        root = QVBoxLayout(self); root.setContentsMargins(16, 12, 16, 12); root.setSpacing(8)
+        top = QHBoxLayout(); top.setSpacing(12)
+        glyph = QLabel(); glyph.setPixmap(QIcon.fromTheme("edit-copy").pixmap(28, 32)); top.addWidget(glyph)
+        self.search = QLineEdit(); self.search.setPlaceholderText("Clipboard"); self.search.setClearButtonEnabled(True)
+        self.search.setMinimumHeight(46)
+        f = self.search.font(); f.setPointSizeF(f.pointSizeF() * 2); self.search.setFont(f)
+        self.search.setStyleSheet("QLineEdit{border:none;padding:0;background:transparent;}")
         self.search.textChanged.connect(lambda _: self.refresh(reset=True))
         self.search.installEventFilter(self)
-        root.addWidget(self.search)
+        top.addWidget(self.search, 1)
+        self.options = QPushButton("···"); self.options.setFixedSize(28, 28)
+        self.options.setToolTip("Clipboard options")
+        self.options.setStyleSheet("QPushButton{border:1px solid palette(window-text);border-radius:14px;background:transparent;}")
+        top.addWidget(self.options)
+        root.addLayout(top)
+        separator = QFrame(); separator.setFixedHeight(1); separator.setStyleSheet("background:rgba(127,127,127,0.3);")
+        root.addWidget(separator)
 
-        # The list lives in its own bordered panel so items are clearly separated from the popup chrome.
+        # Rows share the popup surface, below the search separator.
         self.panel = QFrame(); self.panel.setObjectName("panel")
-        self.panel.setStyleSheet(f"QFrame#panel{{border:1px solid {LINE};border-radius:14px;background:rgba(127,127,127,0.07);}}")
+        self.panel.setStyleSheet("QFrame#panel{border:none;background:transparent;}")
         pl = QVBoxLayout(self.panel); pl.setContentsMargins(4, 4, 4, 4); pl.setSpacing(0)
         self.scroll = QScrollArea(); self.scroll.setWidgetResizable(True); self.scroll.setFrameShape(QFrame.Shape.NoFrame)
         self.scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
@@ -396,23 +411,17 @@ class Popup(QWidget):
         pl.addWidget(self.scroll)
         root.addWidget(self.panel, 1)
 
-        foot = QHBoxLayout(); foot.setSpacing(5); foot.setContentsMargins(2, 0, 0, 0)
-        for key, what in (("Enter", "Copy"), ("Ctrl+P", "Pin"), ("Ctrl+A", "Select all"), ("Del", "Delete"), ("Esc", "Close")):
-            foot.addWidget(KeyCap(key))
-            w = QLabel(what); w.setStyleSheet("color:rgba(127,127,127,0.95);"); foot.addWidget(w)
-            foot.addSpacing(5)
-        foot.addStretch(1)
         self.status = QLabel(""); self.status.setStyleSheet("color:palette(highlight);font-weight:bold;"); self.status.hide()
-        foot.addWidget(self.status)
-        self.clear_btn = QPushButton("Clear all"); self.clear_btn.setFlat(True)
+        root.addWidget(self.status)
+        self.clear_btn = QPushButton("Clear all", self); self.clear_btn.setFlat(True)
         self.clear_btn.setCursor(Qt.CursorShape.PointingHandCursor); self.clear_btn.setFocusPolicy(Qt.FocusPolicy.NoFocus)
         self.clear_btn.setToolTip("Remove all history (pinned items stay)")
         self.clear_btn.clicked.connect(self.clear_clicked)
         self._flash_timer = QTimer(self); self._flash_timer.setSingleShot(True); self._flash_timer.timeout.connect(self.end_flash)
         self._clear_armed = False
         self._clear_timer = QTimer(self); self._clear_timer.setSingleShot(True); self._clear_timer.timeout.connect(self.disarm_clear)
-        foot.addWidget(self.clear_btn)
-        root.addLayout(foot)
+        self.clear_btn.hide()
+        self.options.clicked.connect(self.options_menu)
 
         if hasattr(backend, "changed"):
             backend.changed.connect(self.reload)
@@ -462,13 +471,8 @@ class Popup(QWidget):
             box.setMinimumHeight(140); self.empty_msg = box
             self.body_l.addWidget(box)
         else:
-            has_pins = any(i.get("pinned") for i in entries)
             for n, item in enumerate(entries):
-                pinned = bool(item.get("pinned"))
-                if has_pins and (n == 0 or bool(entries[n - 1].get("pinned")) != pinned):
-                    self.body_l.addWidget(self.header("Pinned" if pinned else "Recent"))
-                last_in_section = n == len(entries) - 1 or bool(entries[n + 1].get("pinned")) != pinned
-                row = Row(self, item, item["id"] == self.current, item["id"] in self.expanded, divider=not last_in_section)
+                row = Row(self, item, item["id"] == self.current, item["id"] in self.expanded, divider=False)
                 self.rows.append(row); self.body_l.addWidget(row)
         self.body_l.addStretch(1)
         self.sel = 0
@@ -482,12 +486,6 @@ class Popup(QWidget):
         self.clear_btn.setEnabled(any(not i.get("pinned") for i in self.items))
         QTimer.singleShot(0, self.fit)
 
-    def header(self, text):
-        l = QLabel(text.upper()); l.setContentsMargins(12, 8, 0, 3)
-        f = l.font(); f.setPointSizeF(max(7.0, f.pointSizeF() - 2)); f.setBold(True)
-        l.setFont(f); l.setStyleSheet("color:rgba(127,127,127,0.95);")
-        return l
-
     def fit(self):
         maxh = 560
         scr = self.screen()
@@ -497,8 +495,8 @@ class Popup(QWidget):
         content = self.body.sizeHint().height()
         if self.body_l.hasHeightForWidth():
             content = max(content, self.body_l.totalHeightForWidth(self.body.width()))
-        chrome = 14 + 34 + 10 + 10 + 30 + 12 + 6 + 10
-        self.resize(POPUP_W, max(240, min(maxh, content + chrome)))
+        chrome = 12 + 46 + 8 + 1 + 8 + 12 + 8
+        self.resize(POPUP_W, max(156, min(maxh, content + chrome)))
 
     def apply_selection(self, scroll=True):
         for i, r in enumerate(self.rows):
@@ -609,6 +607,14 @@ class Popup(QWidget):
         self.expanded ^= {item_id}
         self.refresh()
 
+    def options_menu(self):
+        menu = QMenu(self)
+        clear = menu.addAction("Clear all?" if self._clear_armed else "Clear history", self.clear_clicked)
+        clear.setEnabled(self.clear_btn.isEnabled())
+        menu.exec(self.options.mapToGlobal(self.options.rect().bottomLeft()))
+        if self._clear_armed:
+            self.options.setToolTip("Click again to confirm clearing history")
+
     def clear_clicked(self):
         if not self._clear_armed:
             self._clear_armed = True; self.clear_btn.setText("Clear all?")
@@ -665,7 +671,7 @@ class Popup(QWidget):
     def changeEvent(self, ev):
         if ev.type() in (ev.Type.PaletteChange, ev.Type.ApplicationPaletteChange):
             QTimer.singleShot(0, self._sync_palette)
-        if self.auto_close and ev.type() == ev.Type.ActivationChange and self.ready and not self.isActiveWindow():
+        if self.auto_close and ev.type() == ev.Type.ActivationChange and self.ready and not self.isActiveWindow() and QApplication.activePopupWidget() is None:
             self.finished.emit()
         super().changeEvent(ev)
 
@@ -681,10 +687,10 @@ class Popup(QWidget):
 
     def paintEvent(self, _):
         p = QPainter(self); p.setRenderHint(QPainter.RenderHint.Antialiasing)
-        bg = QColor(self.palette().color(self.palette().ColorRole.Window)); bg.setAlphaF(0.92)
+        bg = QColor(self.palette().color(self.palette().ColorRole.Window)); bg.setAlphaF(0.78)
         r = QRectF(self.rect()).adjusted(0.5, 0.5, -0.5, -0.5)
         edge = QColor(255, 255, 255, 46) if bg.lightnessF() < 0.5 else QColor(0, 0, 0, 40)
-        p.setBrush(bg); p.setPen(QPen(edge, 1)); p.drawRoundedRect(r, 20, 20)
+        p.setBrush(bg); p.setPen(QPen(edge, 1)); p.drawRoundedRect(r, 28, 28)
 
 
 # ── process plumbing ──────────────────────────────────────────────────────

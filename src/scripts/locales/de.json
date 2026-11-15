@@ -1154,5 +1154,21 @@
   "Clipboard history is stored privately in ~/.local/share/mac-tahoe-liquid-kde/clipboard": "Der Zwischenablage-Verlauf wird privat in ~/.local/share/mac-tahoe-liquid-kde/clipboard gespeichert",
   "Clipboard popup and service removed": "Zwischenablage-Popup und -Dienst entfernt",
   "Clipboard service": "Zwischenablage-Dienst",
-  "Clipboard history (Meta+V)": "Zwischenablage-Verlauf (Meta+V)"
+  "Clipboard history (Meta+V)": "Zwischenablage-Verlauf (Meta+V)",
+  "Clipboard": "Zwischenablage",
+  "Clipboard options": "Zwischenablageoptionen",
+  "Image": "Bild",
+  "Pinned": "Angeheftet",
+  "Text": "Text",
+  "Copied %1": "Kopiert um %1",
+  "Copy": "Kopieren",
+  "Clipboard history is unavailable. Enable Clipboard history in the installer.": "Der Verlauf ist nicht verfügbar. Aktiviere den Zwischenablageverlauf im Installationsprogramm.",
+  "No results": "Keine Ergebnisse",
+  "Nothing copied yet": "Noch nichts kopiert",
+  "Unpin": "Lösen",
+  "Pin": "Anheften",
+  "Delete": "Löschen",
+  "Confirm clear history": "Verlauf löschen bestätigen",
+  "Clear history": "Verlauf löschen",
+  "Clipboard action failed. Try again.": "Die Zwischenablageaktion ist fehlgeschlagen. Versuche es erneut."
 }

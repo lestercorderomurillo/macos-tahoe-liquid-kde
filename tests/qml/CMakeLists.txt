@@ -25,6 +25,8 @@ endif()
 set_property(TARGET Qt6::WaylandClient APPEND PROPERTY INTERFACE_SOURCES
     "$<$<BOOL:$<TARGET_PROPERTY:QT_CONSUMES_METATYPES>>:${CMAKE_CURRENT_BINARY_DIR}/unused-wayland-metatypes.json>")
 add_subdirectory("${LAUNCHER_NATIVE_SOURCE}/launcher" launcher)
+# Match the production KDE build, which disables Qt keyword macros.
+target_compile_definitions(mactahoelauncher PRIVATE QT_NO_KEYWORDS QT_NO_CAST_FROM_ASCII QT_NO_CAST_TO_ASCII)
 
 add_executable(dockgeometryprobe dockgeometryprobe.cpp)
 target_link_libraries(dockgeometryprobe PRIVATE Qt6::Quick)
