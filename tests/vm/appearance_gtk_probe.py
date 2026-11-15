@@ -37,7 +37,8 @@ def activate(app):
             return [value.red, value.green, value.blue, value.alpha] if found else None
         result = {'gtk': args.gtk, 'background': color('window_bg_color' if args.gtk == '4' else 'theme_bg_color'),
                   'foreground': color('window_fg_color' if args.gtk == '4' else 'theme_fg_color'),
-                  'theme': Gtk.Settings.get_default().get_property('gtk-theme-name')}
+                  'theme': Gtk.Settings.get_default().get_property('gtk-theme-name'),
+                  'prefer_dark': Gtk.Settings.get_default().get_property('gtk-application-prefer-dark-theme')}
         if args.gtk == '4':
             result['dark'] = Adw.StyleManager.get_default().get_dark()
         temporary = args.output.with_suffix('.tmp')
