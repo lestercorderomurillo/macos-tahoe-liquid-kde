@@ -374,3 +374,16 @@ def test_completed_gsettings_write_invalidates_cache_before_database_flush(sandb
     ts._run_user(['gsettings', 'set', 'org.gnome.desktop.interface', 'color-scheme', 'prefer-light'], timeout=5)
     guard.check()
     assert guard.previous['gnome-color-scheme'] == 'light'
+
+
+def test_delayed_kde_gtk_file_echo_cannot_reverse_newer_native_palette(sandbox, monkeypatch):
+    states = iter([
+        {'colors': 'light', 'gnome-color-scheme': 'light', 'gtk': 'light', 'automatic': False},
+        {'colors': 'light', 'gnome-color-scheme': 'light', 'gtk': 'dark', 'automatic': False},
+        {'colors': 'light', 'gnome-color-scheme': 'light', 'gtk': 'light', 'automatic': False},
+    ])
+    monkeypatch.setattr(ts, '_appearance_snapshot', lambda: next(states))
+    guard = ts._AppearanceGuard('light', follow_colors=True)
+    guard.check()
+    guard.check()
+    assert guard.previous['gtk'] == 'light'

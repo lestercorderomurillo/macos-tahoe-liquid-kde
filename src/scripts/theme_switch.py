@@ -2067,7 +2067,12 @@ class _AppearanceGuard:
         # can supersede this transition.
         changed = _changed_appearance(
             self.previous, {key: value for key, value in snapshot.items()
-                            if value != self.target})
+                            if value != self.target and key != "gtk"})
+        # GtkConfig can finish writing settings.ini for the cancelled mode
+        # after a newer native palette has arrived. During a transition this
+        # file is an asynchronous output, not another user selection. GTK
+        # preferences remain observable through their GSettings keys; idle
+        # reconciliation still detects direct settings.ini edits.
         self.previous = snapshot
         if changed is not None and changed != self.target:
             # Disable before unwinding: finally blocks must still restore the
