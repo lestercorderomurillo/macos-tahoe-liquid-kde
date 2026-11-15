@@ -1,30 +1,49 @@
 {
-  "version": "0.71.10",
-  "source_sha256": "1e0feafe5a3d76b9c295a826ab27969a3031aeaeb929836aff0b007830305657",
-  "environment": "Isolated X11: Plasma SDK 6.6.5 and 6.7.4. Disposable Plasma 6.8.1 / Qt 6.11.1 Wayland/KVM/virgl VM.",
+  "version": "0.71.11",
+  "source_sha256": "90f770f1d57fcf54bca0d6998807d8e43e95c1d3e82a39d132b6024a22b9a58a",
+  "environment": "Isolated Plasma 6.6/6.7 X11 and Plasma 6.7.4 Wayland; disposable Plasma 6.8.1 / Qt 6.11.1 two-display Wayland VM.",
   "checks": [
     {
-      "command": "python3 -m pytest -xq -p no:cacheprovider tests/test_launcher_presets.py -k native_launcher_anchor_geometry",
+      "command": "python3 -m pytest -xq -p no:cacheprovider tests/test_launcher_presets.py -k native_launcher_reopens",
       "result": "passed",
-      "detail": "Native isolated X11 regression on Plasma 6.7.4 / Qt 6.11.2: delayed anchor geometry, popup resize, anchor replacement, parent move and reopen.",
-      "log_sha256": "0bb10157264354a0791324e3465aa9102ad9f8543d9c11d150c6ba098bd0136a"
+      "detail": "2 passed: native two-output Wayland reopen, reverse move, visible move and resize at scale 1 and 1.5; clean process exit required. Plasma 6.7.4 / Qt 6.11.2.",
+      "log_sha256": "947bd69dc23068a804cb01b73d1b7d8da56e41cea25cc0ab1e4eb6e7dd00b84b"
     },
     {
-      "command": "cmake -S tests/qml -B /tmp/build -DLAUNCHER_NATIVE_SOURCE=<taskmanager>; cmake --build /tmp/build -j2; python3 native-run.py /tmp/build tests/qml/LauncherAnchorProbe.qml",
+      "command": "python3 -m pytest -xq -p no:cacheprovider tests/test_launcher_presets.py -k \"native_launcher_reopens or native_launcher_anchor\"",
       "result": "passed",
-      "detail": "Offline mttkde-acrylic-x11:6.6-user container; Plasma 6.6.5; native X11 anchor regression ANCHOR_OK.",
-      "log_sha256": "c45bb9db94fd7f90b8a457d6ce59c5b9fe5a5a1528d38aa6fd3616e33dec1706"
+      "detail": "3 passed, including the existing isolated X11 late-anchor geometry scenario.",
+      "log_sha256": "52455880c6cc9ef26dca03036e30be7af5c4d68be2cab6c9d6864bec2433f258"
     },
     {
-      "command": "Guest: sudo env MAC_TAHOE_NO_UPDATE_CHECK=true MTTKDE_NO_CONFIRM=1 MTTKDE_WIZARD_OPTIONS=<edition defaults> src/scripts/installer_backend.py install --only --plasmoids --plasma-theme --apply-theme --light (twice per edition)",
+      "command": "python3 -m pytest -xq -p no:cacheprovider tests/test_launcher_presets.py -k \"native_launcher_popup_presets or native_launcher_fractional_scale\"",
       "result": "passed",
-      "detail": "Disposable Plasma 6.8.1 / Qt 6.11.1 Wayland VM: install/reinstall both editions; installed native library matches freshly built source."
+      "detail": "10 passed: both editions, both presets, light/dark, native focus/menu interactions and fractional scaling on isolated X11.",
+      "log_sha256": "a7868aaee98d4970fc8086c0d56a9fd1898df757b171f6d16849e20d853268fb"
     },
     {
-      "command": "Guest launcher column changes 7,6,8,5,7 and reopen after each; KWin frame geometry; spectacle captures",
+      "command": "docker run --rm --network none --user 1000:1000 -v /tmp/tahoe-launchpad-screens:/source:ro -v /tmp:/artifacts mttkde-acrylic-x11:6.6-user python3 /artifacts/launchpad-sdk66-run.py",
       "result": "passed",
-      "detail": "40 centered capsule/panel pairs, both editions in light/dark at scale 2. Four scoped frames reviewed.",
-      "record_sha256": "4d6160fcc6a8feb222a89852ef3d2da31764cc7909da5efb33245065b6782165"
+      "detail": "Existing offline Plasma 6.6 SDK: native module compiled with cmake -S /source/tests/qml -B /artifacts/launchpad-sdk66 -DLAUNCHER_NATIVE_SOURCE=/source/src/offline/plasmoids/org.kde.mac.tahoe.liquid.taskmanager; cmake --build /artifacts/launchpad-sdk66 -j4. Existing Xvfb anchor scenario passed: SDK66_ANCHOR_OK.",
+      "build_log_sha256": "464e4838bf005071d677948150d46570941bbff8c7f595dd388385afb60111d1",
+      "log_sha256": "02f832544a6ce5772604276bb65fb44b4f0e412674e0aae08ede2aa7681937e1"
+    },
+    {
+      "command": "Guest: sudo env MAC_TAHOE_NO_UPDATE_CHECK=true MTTKDE_NO_CONFIRM=1 MTTKDE_WIZARD_OPTIONS=<installer_choices.defaults() with appearance=light and reset_layout=false> /home/tester/release-capture/source/src/scripts/installer_backend.py install --only --plasmoids --plasma-theme --apply-theme --light",
+      "result": "passed",
+      "detail": "Install and reinstall each edition in a disposable Plasma 6.8.1 / Qt 6.11.1 VM; edition selected through src/scripts/defaults.json. Native module built there; installed binary matches candidate build.",
+      "script_sha256": "d6ab98bc3b9dd75fd022bceb74e326d1f9b980a5617cc0acc7c2c4b2b37c7749"
+    },
+    {
+      "command": "python3 /tmp/launchpad-vm/qualify.py tahoe; python3 /tmp/launchpad-vm/qualify.py golden-gate",
+      "result": "passed",
+      "detail": "64 live KWin geometry checks: Dock clicks and actual Meta-key activation; presets 1/2; monitor sequence 0,1,0,1; light/dark in each edition. Four focused frames reviewed.",
+      "driver_sha256": "02912854e54c3fceae390670a0d106f1e01f2521994c78793ad2f0073506cf16",
+      "guest_actions_sha256": "167132740c58dfa00a433766ead61d0c68b8532a24fb4523d88000a7c61aa8a2",
+      "records_sha256": {
+        "tahoe": "193afde6f3e6563ecca83e8dbcc481772f46667f174cbf542de1239b619d82ef",
+        "golden-gate": "ba59b058cfbd5c770736db9d3cdb5aad9fb427679dc9a6e75b75f5d05522be51"
+      }
     }
   ],
   "gallery_commit": "9993f61cc0afeba7e39afee776c99f29a55edb8f",
@@ -41,38 +60,109 @@
     }
   ],
   "qualification": {
-    "scope": "Detached launcher capsule follows late anchor layout and parent move/resize. No material, scheduler, shader or QML styling changes.",
+    "scope": "Detached launcher search resolves its output from the global anchor geometry rather than the parent QWindow screen, which is stale during a cross-monitor reopen. No material, scheduler, shader or installer logic change.",
     "vm_image_sha256": "412e7933f10add20b921b92c02709e7eea56acd14dc14cf654f58fba4ea3cc9d",
+    "outputs": [
+      {
+        "name": "Virtual-1",
+        "scale": 2,
+        "geometry": [
+          0,
+          0,
+          1920,
+          1080
+        ]
+      },
+      {
+        "name": "Virtual-2",
+        "scale": 2.7,
+        "geometry": [
+          1920,
+          0,
+          1422,
+          800
+        ]
+      }
+    ],
     "installed_native": {
       "tahoe": {
-        "installed": "/usr/lib/x86_64-linux-gnu/qt6/qml/org/kde/mac/tahoe/launcher/libmactahoelauncher.so",
-        "binary_sha256": "60d9bb93550b284bac6ad3dae2723cf5efa037cd9a7b8531ed46f982a760f156",
+        "path": "/usr/lib/x86_64-linux-gnu/qt6/qml/org/kde/mac/tahoe/launcher/libmactahoelauncher.so",
+        "binary_sha256": "06f16bc699b449a437cb6ef3f1827ac6e74ef46249e34969b5c8be21e10c4100",
         "source": {
-          "launchersearchpopup.cpp": "b9acdd160598ebd3de8c8238201859ec42155b44f65d4725de5de4f262fb06f2",
+          "launchersearchpopup.cpp": "6d95741c2ad912b81c1a7d2c0acc4d5a5ba4f8eb62ab24d25dc4fdb54866483d",
           "launchersearchpopup.h": "9b6335b6728a4d0efb568aecd11859c081038f4d4662da2c4f42c43e5d12f617"
-        }
+        },
+        "version": "plasmashell 6.8.1"
       },
       "golden-gate": {
-        "installed": "/usr/lib/x86_64-linux-gnu/qt6/qml/org/kde/mac/tahoe/launcher/libmactahoelauncher.so",
-        "binary_sha256": "60d9bb93550b284bac6ad3dae2723cf5efa037cd9a7b8531ed46f982a760f156",
+        "path": "/usr/lib/x86_64-linux-gnu/qt6/qml/org/kde/mac/tahoe/launcher/libmactahoelauncher.so",
+        "binary_sha256": "06f16bc699b449a437cb6ef3f1827ac6e74ef46249e34969b5c8be21e10c4100",
+        "build_sha256": "06f16bc699b449a437cb6ef3f1827ac6e74ef46249e34969b5c8be21e10c4100",
         "source": {
-          "launchersearchpopup.cpp": "b9acdd160598ebd3de8c8238201859ec42155b44f65d4725de5de4f262fb06f2",
+          "launchersearchpopup.cpp": "6d95741c2ad912b81c1a7d2c0acc4d5a5ba4f8eb62ab24d25dc4fdb54866483d",
           "launchersearchpopup.h": "9b6335b6728a4d0efb568aecd11859c081038f4d4662da2c4f42c43e5d12f617"
-        }
+        },
+        "version": "plasmashell 6.8.1"
       }
     },
     "frames": [
       {
         "name": "tahoe-light.png",
-        "sha256": "a7a46d390eb66e186d99838658c7e12f9f43b91c38932bd30eccd86c4d42aa57",
-        "reviewed": true
+        "sha256": "6443eed3ad5a884ce554531f4fefb7ff6984f459a4a0f656404808559fe7f557",
+        "reviewed": true,
+        "edition": "tahoe"
       },
       {
         "name": "tahoe-dark.png",
-        "sha256": "22409a8556d5514b82366830c5937ea61c0584cbde908157799cc5b041663e02",
-        "reviewed": true
+        "sha256": "8e8fca89cb59188d78713983c3a7920b458306bce0fcebff59cf86ae8f4728fb",
+        "reviewed": true,
+        "edition": "tahoe"
+      },
+      {
+        "name": "golden-gate-light.png",
+        "sha256": "dd5173f720f9795c3ac5d076a161c2c0da81b1619ee850c2cc3201af983cd895",
+        "reviewed": true,
+        "edition": "golden-gate"
+      },
+      {
+        "name": "golden-gate-dark.png",
+        "sha256": "79d2cc5c5e0c1a9b0e9cf0ecf3c0f667bddb1c2ba1a6a747d39d43a3668dd6fa",
+        "reviewed": true,
+        "edition": "golden-gate"
       }
     ],
-    "limits": "X11 uses a native popup harness; complete desktop rendering/install is Wayland. No multi-monitor hotplug claim. Exact trigger of the user observation is unknown. Historical gallery preserved. Full remote CI tracked separately."
+    "reproduction": {
+      "source_commit": "e0cb3e7d1354bca2f8119cf680c3d78e9bb0206e",
+      "trigger": "Open on first output, hide both windows, reopen on second output in one event-loop turn.",
+      "before": {
+        "panel": [
+          1600,
+          300,
+          608,
+          408
+        ],
+        "search": [
+          968,
+          208,
+          300,
+          80
+        ]
+      },
+      "after": {
+        "panel": [
+          1600,
+          300,
+          608,
+          408
+        ],
+        "search": [
+          1754,
+          208,
+          300,
+          80
+        ]
+      }
+    },
+    "limits": "Real desktop install/input/rendering qualification is Wayland. X11 is an isolated native popup harness. No monitor unplug/replug or automatic-appearance transition claim; those implementations are unchanged. VM retains its existing wallpaper; frames are focused validation, not replacement documentation photographs. Historical galleries retain their original provenance. Full remote CI is tracked separately."
   }
 }

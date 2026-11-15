@@ -218,3 +218,96 @@ def test_failed_declarative_mode_is_retried(desktop, monkeypatch):
     monkeypatch.setattr(ts, '_apply_unlocked', apply)
     assert ts.main(['session', 'dark']) == 0
     assert ts._read_appearance_state()['preference'] == 'dark'
+
+
+def test_own_palette_write_cannot_hide_a_new_gtk_selection(sandbox, monkeypatch):
+    states = iter([
+        {'colors': 'light', 'gnome-color-scheme': 'dark', 'automatic': False},
+        {'colors': 'dark', 'gnome-color-scheme': 'light', 'automatic': False},
+    ])
+    monkeypatch.setattr(ts, '_appearance_snapshot', lambda: next(states))
+    guard = ts._AppearanceGuard('dark')
+    with pytest.raises(ts._AppearanceChanged) as change:
+        guard.check()
+    assert change.value.mode == 'light'
+    assert ts._read_appearance_state() == {}
+    request = json.loads(ts._appearance_state_path().with_name('appearance-request.json').read_text())
+    assert request['preference'] == 'light'
+
+
+@pytest.mark.parametrize('command,field', [
+    (['kwriteconfig6', '--file', 'kdeglobals', '--group', 'General', '--key', 'ColorScheme', 'MacTahoeLiquidKdeDark'], 'colors'),
+    (['gsettings', 'set', 'org.gnome.desktop.interface', 'color-scheme', 'prefer-dark'], 'gnome-color-scheme'),
+])
+def test_native_reversal_between_samples_supersedes_completed_write(sandbox, monkeypatch, command, field):
+    import subprocess
+    monkeypatch.setattr(ts, '_appearance_snapshot', lambda: {field: 'light', 'automatic': False})
+    guard = ts._AppearanceGuard('dark')
+    monkeypatch.setattr(ts, '_APPEARANCE_GUARD', guard)
+    monkeypatch.setattr(ts.subprocess, 'run', lambda *a, **k: subprocess.CompletedProcess(command, 0))
+    ts._run_user(command, timeout=5)
+    with pytest.raises(ts._AppearanceChanged) as change:
+        guard.check()
+    assert change.value.mode == 'light'
+
+
+def test_native_reversal_cancels_palette_command_before_its_final_write(sandbox, monkeypatch):
+    import sys
+    state = sandbox / 'palette'
+    state.write_text('light')
+    command = sandbox / 'plasma-apply-colorscheme'
+    command.write_text(
+        f'#!{sys.executable}\nfrom pathlib import Path\nimport time\n'
+        f'p=Path({str(state)!r})\n'
+        "p.write_text('dark')\ntime.sleep(.15)\n"
+        "p.write_text('light')\ntime.sleep(.3)\n"
+        "p.write_text('dark')\n")
+    command.chmod(0o755)
+    monkeypatch.setattr(ts, '_appearance_snapshot',
+                        lambda: {'colors': state.read_text(), 'automatic': False})
+    monkeypatch.setattr(ts, '_APPEARANCE_GUARD', ts._AppearanceGuard('dark'))
+    with pytest.raises(ts._AppearanceChanged) as change:
+        ts._run_user([str(command), 'MacTahoeLiquidKdeDark'], timeout=3)
+    assert change.value.mode == 'light'
+    assert state.read_text() == 'light'
+
+
+
+def test_successful_native_palette_apply_is_not_replayed(desktop, monkeypatch):
+    native, _, _ = desktop
+    monkeypatch.setattr(ts, '_have', lambda _: True)
+    def apply_scheme(scheme):
+        native('light')  # a newer native selection after the requested apply
+        return True
+    monkeypatch.setattr(ts, 'apply_color_scheme', apply_scheme)
+    writes = []
+    monkeypatch.setattr(ts, '_kwrite', lambda *args: writes.append(args) or True)
+    assert ts.write_kde_theme_config('dark', force_color_reload=False)
+    assert not any('--key' in args and args[args.index('--key') + 1] == 'ColorScheme'
+                   for args in writes)
+    assert ts._appearance_snapshot()['colors'] == 'light'
+
+
+def test_selection_after_final_guard_is_not_acknowledged_as_our_write(desktop, monkeypatch):
+    native, calls, _ = desktop
+    assert ts.select_appearance('light') == 0
+    original_snapshot = ts._appearance_snapshot
+    pending_native = [False]
+    def apply(mode, context='user'):
+        calls.append(mode)
+        native(mode)
+        if mode == 'dark':
+            pending_native[0] = True
+        return True
+    def snapshot():
+        if pending_native[0] and ts._APPEARANCE_GUARD is None:
+            pending_native[0] = False
+            native('light')
+        return original_snapshot()
+    monkeypatch.setattr(ts, '_apply_unlocked', apply)
+    monkeypatch.setattr(ts, '_appearance_snapshot', snapshot)
+    assert ts.select_appearance('dark') == 0
+    assert ts.reconcile_appearance()
+    assert calls == ['light', 'dark', 'light']
+    assert ts._read_appearance_state()['preference'] == 'light'
+    assert ts._read_appearance_state()['applied'] == 'light'

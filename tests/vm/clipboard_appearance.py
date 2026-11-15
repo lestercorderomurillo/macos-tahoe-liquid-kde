@@ -22,16 +22,26 @@ def run(*args):
             pump(.05)
             if time.monotonic()-start>120:p.kill();raise AssertionError('command timed out '+str(args))
     assert p.returncode==0,(args,Path('/tmp/clipboard-transition-command.log').read_text()[-1500:])
-def check(mode,label,timeout=45):
+def check(mode,label,timeout=45,check_gtk=True):
     start=time.monotonic();dark=mode=='dark'
     while time.monotonic()-start<timeout:
         pump(.1)
         palette=w.palette()
+        gtk=[]
+        for version in ('3','4'):
+            try:gtk.append(json.loads(Path(f'/tmp/clipboard-gtk{version}.json').read_text()))
+            except (OSError,ValueError):pass
+        gtk_ready=len(gtk)==2 and all(
+            entry.get('background') and entry.get('foreground') and
+            (sum(entry['background'][:3])/3<.5)==dark and
+            (sum(entry['foreground'][:3])/3>.5)==dark for entry in gtk)
         if ((palette.color(palette.ColorRole.Window).lightnessF()<.5)==dark and
-            (w.findChildren(clip.KeyCap)[0].palette().color(palette.ColorRole.WindowText).lightnessF()>.5)==dark):break
+            (w.findChildren(clip.KeyCap)[0].palette().color(palette.ColorRole.WindowText).lightnessF()>.5)==dark and
+            (gtk_ready or not check_gtk)):break
     else:raise AssertionError(('wrong rendered palette',mode,label))
     assert all(p.poll() is None for p in children)
-    records.append({'selection':label,'mode':mode,'popup_pid':os.getpid(),'gtk_pids':[p.pid for p in children]})
+    records.append({'selection':label,'mode':mode,'popup_pid':os.getpid(),'gtk_pids':[p.pid for p in children],
+                    'gtk_palettes':gtk if check_gtk else 'transition still in flight'})
 try:
     for version in ('3','4'):
         children.append(subprocess.Popen(['python3',str(repo/'tests/vm/appearance_gtk_probe.py'),'--gtk',version,'--output',f'/tmp/clipboard-gtk{version}.json'],stdout=open(f'/tmp/clipboard-gtk{version}.log','w'),stderr=subprocess.STDOUT))
@@ -51,7 +61,7 @@ try:
     run('sudo','date','-s','2026-01-01 17:59:00')
     run(switch,'auto');check('light','auto-before-boundary')
     run('sudo','date','-s','2026-01-01 17:59:58')
-    check('dark','auto-crossed-1800')
+    check('dark','auto-crossed-1800',check_gtk=False)
     run('plasma-apply-colorscheme','MacTahoeLiquidKdeLight');check('light','native-manual-supersedes-auto')
     pump(3);check('light','manual-remains-light')
     print(json.dumps(records),flush=True)
