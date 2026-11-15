@@ -57,6 +57,7 @@ CRON_TIMES = [(6, 0), (18, 0)]
 _PROC_ROOT = Path("/proc")
 _SWITCHER_DRAIN_SECONDS = 35.0
 _SWITCHER_DRAIN_POLL_SECONDS = 0.05
+_WATCHER_STOP_SECONDS = 2.0
 
 
 def _watcher_pids() -> list[int]:
@@ -121,6 +122,22 @@ def stop_gtk_sync_watcher() -> None:
             os.kill(pid, signal.SIGTERM)
         except OSError:
             pass
+    deadline = time.monotonic() + _WATCHER_STOP_SECONDS
+    while _watcher_pids() and time.monotonic() < deadline:
+        time.sleep(0.05)
+    # Older watchers could retain a temporary signal handler after a cancelled
+    # style cycle. Recheck exact executable, arguments and ownership before
+    # terminating those survivors; never leave old code holding the singleton.
+    for pid in _watcher_pids():
+        try:
+            os.kill(pid, signal.SIGKILL)
+        except ProcessLookupError:
+            pass
+    deadline = time.monotonic() + _WATCHER_STOP_SECONDS
+    while _watcher_pids() and time.monotonic() < deadline:
+        time.sleep(0.05)
+    if _watcher_pids():
+        raise RuntimeError('Previous appearance watcher could not be stopped')
 
 
 def _user_service(*args: str) -> bool:
@@ -262,10 +279,6 @@ def install() -> None:
     # appearance value over the scheduled/install target. It is no longer part
     # of the product: kill it and remove its autostart on every upgrade.
     stop_gtk_sync_watcher()
-    for _ in range(40):
-        if not _watcher_pids():
-            break
-        time.sleep(0.05)
     _teardown_gtk_sync_autostart()
 
     BIN_DEST.parent.mkdir(parents=True, exist_ok=True)

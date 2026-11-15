@@ -44,7 +44,7 @@ def defaults() -> dict:
         acrylic_glass=True, rounded_corners=True, shadows="medium", fonts=True, firefox=True,
         window_controls="glassy" if edition == "golden" else "flat", button_position="left",
         files="nautilus", nautilus_bookmarks=True, plymouth=True, glass_style="official" if edition == "golden" else "classic",
-        oled_care=False, oled_interval=5, oled_max_shift=8,
+        clipboard=False, oled_care=False, oled_interval=5, oled_max_shift=8,
         dock_appearance="auto", dock_apps=[], dock_apps_source="native", dock_add_flathub=False,
     )
 
@@ -86,7 +86,7 @@ def features(choices: dict, baseline: dict, *, existing_install: bool = False) -
     choices = validate(choices)
     result = dict(baseline)
     for key in ("acrylic_glass", "rounded_corners", "fonts", "firefox",
-                "plymouth", "oled_care", "oled_interval", "oled_max_shift"):
+                "plymouth", "clipboard", "oled_care", "oled_interval", "oled_max_shift"):
         result[key] = choices[key]
     result.update(
         theme_mode=choices["appearance"], icons=choices["icons"] != "keep",

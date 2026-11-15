@@ -369,6 +369,7 @@ def step_preflight_destinations() -> bool:
 
 _CMAKE_COMPONENTS = (
     # (label, source path under repo)
+    ("clipboard", "src/offline/clipboard/clipd"),
     ("dock-taskmanager",
      "src/offline/plasmoids/org.kde.mac.tahoe.liquid.taskmanager"),
     ("globalmenu",

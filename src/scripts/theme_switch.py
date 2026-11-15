@@ -168,7 +168,31 @@ def _run_user(cmd: list[str], *, timeout: int,
         kwargs.update(capture_output=True, text=True)
     else:
         kwargs.update(stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-    return subprocess.run(cmd, **kwargs)
+    if (_APPEARANCE_GUARD is not None and not observe and
+            Path(cmd[0]).name == "plasma-apply-colorscheme" and not capture):
+        # KDE can notify live windows before its command has finished writing.
+        # Observe a newer native selection while that child is still running,
+        # so its final writes cannot silently replace the user's reversal.
+        popen_kwargs = {key: value for key, value in kwargs.items()
+                        if key not in ("check", "timeout")}
+        with subprocess.Popen(cmd, **popen_kwargs) as process:
+            deadline = time.monotonic() + timeout
+            try:
+                while process.poll() is None:
+                    _APPEARANCE_GUARD.check()
+                    if time.monotonic() >= deadline:
+                        raise subprocess.TimeoutExpired(cmd, timeout)
+                    time.sleep(0.01)
+                result = subprocess.CompletedProcess(cmd, process.returncode)
+            except BaseException:
+                process.kill()
+                process.wait()
+                raise
+    else:
+        result = subprocess.run(cmd, **kwargs)
+    if _APPEARANCE_GUARD is not None and not observe and result.returncode == 0:
+        _APPEARANCE_GUARD.record_write(cmd)
+    return result
 
 
 def _xdg_config() -> Path:
@@ -1441,6 +1465,9 @@ def write_kde_theme_config(
     following_palette = (_APPEARANCE_GUARD is not None
                          and _APPEARANCE_GUARD.follow_colors)
     color_ok = True if following_palette else apply_color_scheme(scheme)
+    # KDE already writes the name together with the palette. Replaying it
+    # later can overwrite a native choice made after that completed apply.
+    scheme_name_written = following_palette or (color_ok and _have("plasma-apply-colorscheme"))
 
     # AutomaticLookAndFeel=false: Plasma's sunrise/sunset scheduler must
     # not fight our 06:00 / 18:00 timer (idempotent).
@@ -1454,7 +1481,7 @@ def write_kde_theme_config(
         *(((("kdeglobals", "KDE", "AutomaticLookAndFeel", "false"),))
           if _APPEARANCE_GUARD is None else ()),
         ("kdeglobals", "Icons", "Theme", icon),
-        *(() if following_palette else (("kdeglobals", "General", "ColorScheme", scheme),)),
+        *(() if scheme_name_written else (("kdeglobals", "General", "ColorScheme", scheme),)),
         ("kdeglobals", "KDE", "widgetStyle", widget),
         ("kdeglobals", "MacTahoeLiquidKde", "SystemMenuPreset",
          "golden-gate" if default_wallpaper() == "MacGoldenGate" else "tahoe"),
@@ -1735,6 +1762,7 @@ def cycle_widget_style_live(target: str) -> bool:
     the finally + signal handler guarantee disk ends at the target.
     False when a widgetStyle write fails or a broadcast phase lands
     nothing — silent success here would mask a sudo'd-uninstall failure."""
+    global _APPEARANCE_GUARD
     if not _have("kwriteconfig6") or not _has_session_dbus():
         return False
     if not target:
@@ -1771,12 +1799,20 @@ def cycle_widget_style_live(target: str) -> bool:
         phase_ok.append(bool(_broadcast_widget_style_change("Breeze")))
         time.sleep(0.4)
     finally:
-        _restore_target()
-        if handlers_installed:
-            signal.signal(signal.SIGTERM, old_term)
-            signal.signal(signal.SIGINT, old_int)
-    if interrupted:
-        raise SystemExit(128 + interrupted[0])
+        # Restoring the neutral widget style is cleanup, not a new appearance
+        # choice. Cancellation here used to strand Breeze and leave our
+        # temporary SIGTERM handler installed permanently in the watcher.
+        guard = _APPEARANCE_GUARD
+        _APPEARANCE_GUARD = None
+        try:
+            _restore_target()
+        finally:
+            _APPEARANCE_GUARD = guard
+            if handlers_installed:
+                signal.signal(signal.SIGTERM, old_term)
+                signal.signal(signal.SIGINT, old_int)
+            if interrupted:
+                raise SystemExit(128 + interrupted[0])
     return all(phase_ok)
 
 
@@ -1997,10 +2033,46 @@ class _AppearanceGuard:
         self.previous = _appearance_snapshot()
         self.follow_colors = follow_colors and self.previous.get("colors") == target
 
+    def record_write(self, command):
+        global _GNOME_APPEARANCE_CACHE
+        # A native choice can restore the old value before our next sample.
+        # Remember completed writes so that reversal is still recognized.
+        tool = Path(command[0]).name
+        fields = []
+        if tool == "plasma-apply-colorscheme" and len(command) == 2:
+            fields = ["colors"]
+        elif tool == "gsettings" and len(command) == 5 and command[1:3] == ["set", "org.gnome.desktop.interface"]:
+            fields = {"color-scheme": ["gnome-color-scheme"],
+                      "gtk-theme": ["gnome-gtk-theme"]}.get(command[3], [])
+            # Dconf acknowledges the session write before its database file
+            # necessarily changes. A cached pre-write value is not a new user
+            # choice; read the service again before checking for a reversal.
+            if fields:
+                _GNOME_APPEARANCE_CACHE = (None, {})
+        elif tool == "kwriteconfig6" and all(flag in command for flag in ("--file", "--group", "--key")):
+            setting = tuple(command[command.index(flag) + 1] for flag in ("--file", "--group", "--key"))
+            fields = {("kdeglobals", "General", "ColorScheme"): ["colors"],
+                      ("kdeglobals", "KDE", "LookAndFeelPackage"): ["global"],
+                      ("plasmarc", "Theme", "name"): ["plasma"]}.get(setting, [])
+        mode = _named_mode(command[-1])
+        if mode is not None:
+            for field in fields:
+                self.previous[field] = mode
+
     def check(self):
         global _APPEARANCE_GUARD
         snapshot = _appearance_snapshot()
-        changed = _changed_appearance(self.previous, snapshot)
+        # Our own palette write must not mask a newer, opposite GTK/native
+        # selection observed in the same snapshot. Only an opposing change
+        # can supersede this transition.
+        changed = _changed_appearance(
+            self.previous, {key: value for key, value in snapshot.items()
+                            if value != self.target and key != "gtk"})
+        # GtkConfig can finish writing settings.ini for the cancelled mode
+        # after a newer native palette has arrived. During a transition this
+        # file is an asynchronous output, not another user selection. GTK
+        # preferences remain observable through their GSettings keys; idle
+        # reconciliation still detects direct settings.ini edits.
         self.previous = snapshot
         if changed is not None and changed != self.target:
             # Disable before unwinding: finally blocks must still restore the
@@ -2019,6 +2091,9 @@ def _synchronize_appearance(mode: str, preference: str, *, context: str = "user"
             with preserve_button_layout(button_position() == "keep"):
                 success = _apply_unlocked(mode, context=context)
             _APPEARANCE_GUARD.check()
+            # Acknowledge only the snapshot that passed the guard. A second
+            # read could absorb a newer native choice as our own output.
+            snapshot = dict(_APPEARANCE_GUARD.previous)
         except _AppearanceChanged as change:
             mode = change.mode
             preference = "native-auto" if change.native_auto else mode
@@ -2026,7 +2101,6 @@ def _synchronize_appearance(mode: str, preference: str, *, context: str = "user"
             continue
         finally:
             _APPEARANCE_GUARD = None
-        snapshot = _appearance_snapshot()
         if any(value in ("light", "dark") and value != mode
                for key, value in snapshot.items() if key != "automatic"):
             success = False

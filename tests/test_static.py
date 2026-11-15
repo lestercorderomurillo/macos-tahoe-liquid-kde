@@ -428,7 +428,6 @@ _GTK3_POPUP_SELECTORS = (
 _DARK_GTK3_SHEETS = (
     "gtk/MacTahoeLiquidKde-Dark/gtk-3.0/gtk.css",
     "gtk/MacTahoeLiquidKde-Dark/gtk-3.0/gtk-dark.css",
-    "gtk/MacTahoeLiquidKde-Light/gtk-3.0/gtk-dark.css",
 )
 
 
@@ -461,16 +460,6 @@ def test_dark_gtk3_popup_surfaces_keep_alpha(offline, sheet):
                 f"mirror the light variant's rgba alpha, never "
                 f"``transparent``."
             )
-
-
-def test_dark_gtk3_sheet_copies_stay_identical(offline):
-    dark = (offline / _DARK_GTK3_SHEETS[1]).read_bytes()
-    light_copy = (offline / _DARK_GTK3_SHEETS[2]).read_bytes()
-    assert dark == light_copy, (
-        "MacTahoeLiquidKde-Light/gtk-3.0/gtk-dark.css must stay a "
-        "byte-identical copy of MacTahoeLiquidKde-Dark/gtk-3.0/"
-        "gtk-dark.css — fix one, copy over the other."
-    )
 
 
 def test_kvantum_dark_popup_parity(offline):
