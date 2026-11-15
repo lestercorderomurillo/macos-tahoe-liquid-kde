@@ -228,8 +228,9 @@ The output dir is your forensics trail.
 ## Clipboard qualification
 
 After installing the candidate with Clipboard enabled in a disposable capture VM,
-run `python3 tests/vm/clipboard.py`, `python3 tests/vm/clipboard_appearance.py`
-and `python3 tests/vm/clipboard_lifecycle.py` from the guest checkout. The appearance
+run `python3 tests/vm/clipboard.py`, `python3 tests/vm/clipboard_appearance.py`,
+`python3 tests/vm/clipboard_shortcut.py` and `python3 tests/vm/clipboard_lifecycle.py`
+from the guest checkout. The appearance
 probe requires GTK 3/4 Python bindings and the libadwaita introspection binding
 (`gir1.2-adw-1` on the reference neon VM). It changes only the disposable guest's
 clock and appearance to observe an automatic boundary; the lifecycle probe
