@@ -37,3 +37,10 @@ qt_add_qml_module(launcherinteraction
     SOURCES launcherinteraction.h
 )
 target_link_libraries(launcherinteraction PRIVATE Qt6::Quick Qt6::Test)
+
+add_executable(controlglassprobe controlglassprobe.cpp
+    "${LAUNCHER_NATIVE_SOURCE}/launcher/controlglass.cpp"
+    "${LAUNCHER_NATIVE_SOURCE}/launcher/controlglass.h")
+set_target_properties(controlglassprobe PROPERTIES AUTOMOC ON)
+target_include_directories(controlglassprobe PRIVATE "${LAUNCHER_NATIVE_SOURCE}/launcher")
+target_link_libraries(controlglassprobe PRIVATE Qt6::Quick KF6::WindowSystem)

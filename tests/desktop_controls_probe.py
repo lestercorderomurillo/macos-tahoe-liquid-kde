@@ -1,0 +1,250 @@
+"""Run production controls on a private bus, with deterministic hardware changes."""
+import sys
+from pathlib import Path
+from PyQt6.QtCore import (QAbstractListModel, QModelIndex, QObject, QUrl, QMetaObject,
+                         Qt, QPoint, pyqtSlot, pyqtProperty, qInstallMessageHandler)
+from PyQt6.QtQml import QQmlComponent, QQmlEngine
+from PyQt6.QtWidgets import QApplication
+from PyQt6.QtQuick import QQuickItem, QQuickWindow
+from PyQt6.QtTest import QTest
+
+app = QApplication([])
+engine = QQmlEngine()
+engine.rootContext().setContextProperty('i18n', engine.evaluate('''(function(text) {
+    for (var i = 1; i < arguments.length; i++) text = text.replace('%' + i, arguments[i]);
+    return text;
+})'''))
+engine.rootContext().setContextProperty('i18nd', engine.evaluate('''(function(domain, text) {
+    for (var i = 2; i < arguments.length; i++) text = text.replace('%' + (i - 1), arguments[i]);
+    return text;
+})'''))
+root = Path(sys.argv[1]) / 'src/offline/plasmoids/org.kde.mac-tahoe-liquid-kde.controlcenter/contents/ui'
+errors, keep = [], []
+def report(kind, context, text):
+    if any(token in text for token in ('ReferenceError:', 'TypeError:', 'Unable to assign', 'Binding loop')):
+        errors.append(text)
+qInstallMessageHandler(report)
+
+def component(name, properties=None):
+    c = QQmlComponent(engine, QUrl.fromLocalFile(str(root / name)))
+    assert c.isReady(), [e.toString() for e in c.errors()]
+    obj = c.createWithInitialProperties(properties or {})
+    assert obj is not None, [e.toString() for e in c.errors()]
+    keep.extend([c, obj]); QTest.qWait(30)
+    return obj
+
+def fake(source):
+    c = QQmlComponent(engine)
+    c.setData(('import QtQuick\n' + source).encode(), QUrl())
+    assert c.isReady(), [e.toString() for e in c.errors()]
+    obj = c.create(); assert obj is not None
+    keep.extend([c,obj]); return obj
+
+def child(obj, name):
+    pending = [obj]
+    seen = set()
+    while pending:
+        value = pending.pop()
+        if value in seen: continue
+        seen.add(value)
+        if value.objectName() == name: return value
+        pending.extend(value.children())
+        if hasattr(value, 'childItems'): pending.extend(value.childItems())
+    raise AssertionError(name + ': ' + '\n'.join(errors))
+
+def click(obj):
+    assert obj.property('enabled'), obj.objectName()
+    QMetaObject.invokeMethod(obj, 'clicked', Qt.ConnectionType.DirectConnection)
+    QTest.qWait(10)
+
+# Native imports must load even when the desktop services and hardware are absent.
+for name in ('ControlView.qml','BatteryView.qml','WifiView.qml','NotificationsView.qml'):
+    component(name)
+
+sink = fake('QtObject { property bool muted: false; property int volume: 20000; property string description: "Test output" }')
+audio = component('AudioView.qml', {'sink':sink})
+slider = child(audio, 'volumeSlider'); mute = child(audio,'muteButton')
+assert slider.property('value') == 20000
+sink.setProperty('volume',40000); QTest.qWait(10)
+assert slider.property('value') == 40000
+click(mute); assert sink.property('muted')
+sink.setProperty('muted',False); QTest.qWait(10); assert not mute.property('checked')
+audio.setProperty('sink',None); QTest.qWait(10)
+assert not slider.property('enabled') and not mute.property('enabled')
+
+wireless = fake('QtObject { property bool wirelessEnabled: true; property bool wirelessHwEnabled: true }')
+devices = fake('QtObject { property bool wirelessDeviceAvailable: true }')
+handler = fake('''QtObject {
+    property bool scanning: false
+    property int requests: 0
+    property bool requested: true
+    function enableWireless(value) { requested = value; requests++; }
+}''')
+wifi = component('WifiView.qml', {'wireless':wireless,'devices':devices,'handler':handler})
+toggle = child(wifi,'wirelessToggle')
+click(toggle); assert handler.property('requests') == 1 and not handler.property('requested')
+wireless.setProperty('wirelessEnabled',False);QTest.qWait(10);assert not toggle.property('checked')
+wireless.setProperty('wirelessHwEnabled',False);QTest.qWait(10);assert not toggle.property('enabled')
+wireless.setProperty('wirelessHwEnabled',True);devices.setProperty('wirelessDeviceAvailable',False)
+QTest.qWait(10);assert not toggle.property('enabled')
+
+settings = fake('''QtObject {
+    property date notificationsInhibitedUntil: new Date(0)
+    property bool notificationsInhibitedByApplication: false
+    property int saves: 0
+    function save() { saves++; }
+}''')
+focus = component('FocusSwitch.qml',{'settings':settings})
+focus.setProperty('checked',True);click(focus)
+assert settings.property('saves') == 1
+settings.setProperty('notificationsInhibitedByApplication',True);QTest.qWait(10)
+assert not focus.property('enabled')
+
+
+# Hardware rows are real QAbstractListModel roles, so delegate contracts execute.
+class Rows(QAbstractListModel):
+    def __init__(self, rows):
+        super().__init__(); self.rows = rows
+        self.roles = {Qt.ItemDataRole.UserRole + i: key.encode() for i,key in enumerate(rows[0])}
+    def rowCount(self, parent=QModelIndex()): return 0 if parent.isValid() else len(self.rows)
+    def roleNames(self): return self.roles
+    def data(self, index, role):
+        return self.rows[index.row()].get(self.roles[role].decode()) if index.isValid() and role in self.roles else None
+    def update(self, index, key, value):
+        self.rows[index][key] = value
+        role = next(r for r,k in self.roles.items() if k.decode() == key)
+        self.dataChanged.emit(self.index(index,0),self.index(index,0),[role]); QTest.qWait(20)
+
+screens = Rows([dict(displayName='test-display',label='External monitor',maxBrightness=100,brightness=60)])
+control = fake('''QtObject {
+    property var displays
+    property bool isBrightnessAvailable: true
+    property string selected: ""
+    property int requested: -1
+    function setBrightness(name, value) { selected=name; requested=value; }
+}''')
+control.setProperty('displays',screens)
+display = component('DisplayView.qml', {'control':control})
+brightness = child(display,'brightnessSlider')
+assert brightness.property('value') == 60
+screens.update(0,'brightness',35);assert brightness.property('value') == 35
+brightness.setProperty('value',75)
+QMetaObject.invokeMethod(brightness,'moved',Qt.ConnectionType.DirectConnection)
+assert control.property('selected') == 'test-display' and control.property('requested') == 75
+
+profiles = fake('''QtObject {
+    property bool isPowerProfileDaemonInstalled: true
+    property var profiles: ["power-saver","balanced","performance"]
+    property string activeProfile: "balanced"
+    property string profileError: ""
+    property string requested: ""
+    function setProfile(value) { requested=value; }
+}''')
+battery = fake('''QtObject {
+    property bool hasInternalBatteries: false
+    property int percent: 73
+    property int state: 0
+    property bool pluggedIn: true
+}''')
+power = component('BatteryView.qml',{'battery':battery,'profiles':profiles})
+assert child(power,'batteryPercent').property('text') == 'No internal battery'
+battery.setProperty('hasInternalBatteries',True);QTest.qWait(10)
+assert child(power,'batteryPercent').property('text') == '73%'
+battery.setProperty('percent',41);QTest.qWait(10)
+assert child(power,'batteryPercent').property('text') == '41%'
+profile = child(power,'powerProfile')
+assert profile.property('currentIndex') == 1
+profiles.setProperty('activeProfile','power-saver');QTest.qWait(10)
+assert profile.property('currentIndex') == 0
+
+
+# Exercise actual pointer and keyboard activation, not only signal dispatch.
+window = QQuickWindow(); window.setGeometry(0,0,100,40)
+button = component('PanelButton.qml',{'symbol':'network-wireless','label':'Wi-Fi'})
+button.setParentItem(window.contentItem());button.setWidth(40);button.setHeight(32)
+activations=[];button.clicked.connect(lambda:activations.append(True))
+window.show();QTest.qWait(30)
+QTest.mouseClick(window,Qt.MouseButton.LeftButton,pos=QPoint(20,16));QTest.qWait(10)
+assert len(activations)==1
+button.forceActiveFocus();QTest.keyClick(window,Qt.Key.Key_Space);QTest.qWait(10)
+assert len(activations)==2
+window.close()
+
+
+class History(Rows):
+    def __init__(self):
+        super().__init__([dict(applicationIconName='dialog-information',applicationName='Test app',
+            isGroup=False,isGroupExpanded=False,closable=True,summary='Message',body='Body',type=1,
+            percentage=0,hasDefaultAction=True,actionNames=['test-action'],actionLabels=['Run action'],
+            jobState=1,suspendable=True,killable=True,hasReplyAction=True)])
+        self.calls=[]
+    @pyqtProperty(int,constant=True)
+    def count(self): return 1
+    @pyqtProperty(int,constant=True)
+    def expiredNotificationsCount(self): return 1
+    @pyqtSlot(QModelIndex)
+    def invokeDefaultAction(self,index): self.calls.append(('open',index.row()))
+    @pyqtSlot(QModelIndex,str)
+    def invokeAction(self,index,action): self.calls.append(('action',index.row(),action))
+    @pyqtSlot(QModelIndex,str,int)
+    def reply(self,index,text,flags): self.calls.append(('reply',index.row(),text,flags))
+    @pyqtSlot(QModelIndex)
+    def suspendJob(self,index): self.calls.append(('pause',index.row()))
+    @pyqtSlot(QModelIndex)
+    def resumeJob(self,index): self.calls.append(('resume',index.row()))
+    @pyqtSlot(QModelIndex)
+    def killJob(self,index): self.calls.append(('cancel',index.row()))
+    @pyqtSlot(QModelIndex)
+    def close(self,index): self.calls.append(('close',index.row()))
+    @pyqtSlot(int)
+    def clear(self,flags): self.calls.append(('clear',flags))
+    def setData(self,index,value,role):
+        self.calls.append(('group',index.row(),value));return True
+history=History()
+notifications=component('NotificationsView.qml',{'history':history})
+notifications.setWidth(400);notifications.setHeight(700);QTest.qWait(30)
+click(child(notifications,'notificationOpen'));assert history.calls[-1]==('open',0)
+click(child(notifications,'notificationAction'));assert history.calls[-1]==('action',0,'test-action')
+reply=child(notifications,'notificationReply');send=child(notifications,'notificationSend')
+assert not send.property('enabled')
+reply.setProperty('text','A reply');QTest.qWait(10);click(send)
+assert history.calls[-1][:3]==('reply',0,'A reply') and reply.property('text')==''
+click(child(notifications,'notificationPause'));assert history.calls[-1]==('pause',0)
+history.update(0,'jobState',2)
+click(child(notifications,'notificationPause'));assert history.calls[-1]==('resume',0)
+click(child(notifications,'notificationCancel'));assert history.calls[-1]==('cancel',0)
+click(child(notifications,'notificationDismiss'));assert history.calls[-1]==('close',0)
+click(child(notifications,'clearHistory'));assert history.calls[-1][0]=='clear'
+history.update(0,'isGroup',True)
+click(child(notifications,'notificationGroup'));assert history.calls[-1]==('group',0,True)
+
+
+networkHandler = fake('''QtObject {
+    property bool scanning: false
+    property var calls: []
+    function activateConnection(path,device,specific) { calls = ["activate",path,device,specific]; }
+    function deactivateConnection(path,device) { calls = ["deactivate",path,device]; }
+    function addAndActivateConnection(device,specific) { calls = ["new",device,specific]; }
+}''')
+networks=Rows([dict(Type=14,ConnectionState=0,ConnectionPath='/saved',DevicePath='/device',SpecificPath='/ap',Name='Test Wi-Fi',ConnectionIcon='network-wireless')])
+wireless.setProperty('wirelessEnabled',True);devices.setProperty('wirelessDeviceAvailable',True)
+netView=component('WifiView.qml',{'wireless':wireless,'devices':devices,'handler':networkHandler,'connections':networks})
+netView.setWidth(400);netView.setHeight(500);QTest.qWait(30)
+networkRow=child(netView,'networkRow');assert networkRow.property('visible')
+click(networkRow);assert networkHandler.property('calls').toVariant()==['activate','/saved','/device','/ap']
+networks.update(0,'ConnectionState',2)
+click(networkRow);assert networkHandler.property('calls').toVariant()==['deactivate','/saved','/device']
+networks.update(0,'ConnectionState',0);networks.update(0,'ConnectionPath','')
+click(networkRow);assert networkHandler.property('calls').toVariant()==['new','/device','/ap']
+
+
+preferences=fake('QtObject { property bool showAudio: true }')
+editor=component('EditControls.qml',{'preferences':preferences})
+audioChoice=child(editor,'showAudio');assert audioChoice.property('checked')
+audioChoice.setProperty('checked',False);click(audioChoice)
+assert not preferences.property('showAudio')
+preferences.setProperty('showAudio',True);QTest.qWait(10)
+assert audioChoice.property('checked')
+
+assert not errors, '\n'.join(errors)
+print('DESKTOP_CONTROLS_OK: native imports, external audio changes, mute, unavailable output, wireless requests, hardware blocking, unavailable adapter, notification inhibition ownership')

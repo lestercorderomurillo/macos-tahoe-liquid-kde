@@ -572,7 +572,7 @@ The current status of each component.
 | Kate Theme | Planned |
 | SDDM Theme | Planned |
 | Calendar | Planned |
-| Control Center | Planned |
+| Control Center, Wi-Fi, Battery and Notifications | Available |
 | System Preferences | Planned |
 | OS Selector | Planned |
 

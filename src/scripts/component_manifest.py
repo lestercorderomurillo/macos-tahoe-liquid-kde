@@ -50,6 +50,22 @@ def snapshot(root=REPO_ROOT):
                 step = 'acrylic_glass'
             recipe = dependencies(scripts / 'steps' / (step + '.py'), scripts)
             inputs = [(name, payload)] + [(str(p.relative_to(root)), p) for p in recipe]
+            # Satellite status applets import the Control Center's shared views.
+            if path.name == 'plasmoids' and payload.name in (
+                'org.kde.mac-tahoe-liquid-kde.battery',
+                'org.kde.mac-tahoe-liquid-kde.wifi',
+                'org.kde.mac-tahoe-liquid-kde.notifications',
+            ):
+                shared = path / 'org.kde.mac-tahoe-liquid-kde.controlcenter'
+                inputs.append(('desktop-controls', shared))
+            if path.name == 'plasmoids' and payload.name in (
+                'org.kde.mac-tahoe-liquid-kde.controlcenter',
+                'org.kde.mac-tahoe-liquid-kde.battery',
+                'org.kde.mac-tahoe-liquid-kde.wifi',
+                'org.kde.mac-tahoe-liquid-kde.notifications',
+            ):
+                inputs.append(('desktop-controls-native',
+                               path / 'org.kde.mac.tahoe.liquid.taskmanager' / 'launcher'))
             components[name] = identity(inputs, portable=True)
     # Components with no offline payload still have independently audited recipes.
     for entry in sorted((scripts / 'steps').glob('*.py')):

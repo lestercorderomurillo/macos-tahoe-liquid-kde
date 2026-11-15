@@ -31,7 +31,7 @@ RUN printf '\n[kde-unstable]\nInclude = /etc/pacman.d/mirrorlist\n' >> /etc/pacm
     kwindowsystem kitemmodels \
     # Plasma / KSysGuard / plasma-workspace cmake configs.
     libplasma plasma-activities plasma-activities-stats libksysguard \
-    plasma-workspace \
+    plasma-workspace plasma-nm plasma-pa powerdevil bluez-qt \
     # KWin + KDecoration3 (acrylic-glass effect). vulkan-headers:
     # KWin 6.27+ pulls Vulkan into its cmake config.
     kwin kdecoration vulkan-headers \
