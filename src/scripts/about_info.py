@@ -610,7 +610,7 @@ def _base_disk(dev_path: str) -> str:
     strip one or the other, never both, or nvme0n1 loses its namespace digit."""
     if not dev_path:
         return ""
-    name = re.sub(r"^/dev/", "", dev_path)
+    name = re.sub(r"^/dev/", "", dev_path.split("[", 1)[0])
     if name.startswith("mapper/") or name.startswith("dm-"):
         return name
     m = re.sub(r"p\d+$", "", name)
@@ -657,7 +657,7 @@ def parse_lsblk(stdout: str, root_device: str = "") -> str:
         except ValueError:
             continue
         type_ = parts[2]
-        if type_ != "disk":
+        if type_ != "disk" or name.startswith(("zram", "ram", "loop")):
             continue
         model = parts[3].strip() if len(parts) > 3 else ""
         human = _human_disk(size_bytes)

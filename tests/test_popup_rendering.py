@@ -289,3 +289,21 @@ int main() {
         os.close(read_fd)
         server.terminate()
         server.wait(timeout=10)
+
+
+@pytest.mark.parametrize("gtk_major", ["3", "4"])
+def test_gtk_selection_contrast_survives_all_accents_and_live_states(repo, tmp_path, gtk_major):
+    gi = pytest.importorskip('gi')
+    if not callable(getattr(gi, 'require_version', None)):
+        pytest.skip('PyGObject required')
+    for tool in ('xvfb-run', 'dbus-run-session'):
+        if not shutil.which(tool):
+            pytest.skip(tool + ' required')
+    env = {k: v for k, v in os.environ.items() if k in ('PATH', 'LANG')}
+    env.update(HOME=str(tmp_path), XDG_CONFIG_HOME=str(tmp_path / 'config'),
+               XDG_DATA_HOME=str(tmp_path / 'data'), XDG_CACHE_HOME=str(tmp_path / 'cache'))
+    result = subprocess.run(['dbus-run-session', '--', 'xvfb-run', '-a', sys.executable,
+                             str(repo / 'tests/gtk_accent_probe.py'), str(repo), gtk_major],
+                            env=env, text=True, capture_output=True, timeout=60)
+    assert result.returncode == 0, result.stdout + result.stderr
+    assert 'GTK_ACCENT_STATES_OK' in result.stdout

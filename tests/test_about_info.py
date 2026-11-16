@@ -1222,3 +1222,10 @@ def test_unbaked_copy_outside_repo_reports_empty(tmp_path):
         capture_output=True, text=True,
     )
     assert json.loads(res.stdout)["theme_version"] == ""
+
+
+def test_startup_disk_ignores_zram_and_resolves_btrfs_subvolume():
+    devices = "zram0 68719476736 disk\nnvme0n1 4000000000000 disk Data\nnvme1n1 2000000000000 disk System\n"
+    assert "System" in parse_lsblk(devices, "/dev/nvme1n1p2[/@]")
+    assert "Data" in parse_lsblk(devices, "/dev/mapper/root")
+    assert parse_lsblk("zram0 68719476736 disk\n", "") == ""

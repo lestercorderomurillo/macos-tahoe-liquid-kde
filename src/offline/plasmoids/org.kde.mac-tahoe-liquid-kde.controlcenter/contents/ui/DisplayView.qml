@@ -11,11 +11,12 @@ ColumnLayout {
     Display.ScreenBrightnessControl { id: nativeControl }
     ControlLabel { text: i18n("Display"); font.weight: Font.DemiBold }
     Repeater {
+        id: displays
         model: view.control.displays
         delegate: ColumnLayout {
             required property var model
             Layout.fillWidth: true
-            ControlLabel { visible: view.control.displays.rowCount() > 1; Layout.fillWidth: true; text: model.label || model.displayName; elide: Text.ElideRight }
+            ControlLabel { objectName: "displayLabel"; visible: displays.count > 1; Layout.fillWidth: true; text: model.label || model.displayName; elide: Text.ElideRight }
             RowLayout {
                 Layout.fillWidth: true
                 Kirigami.Icon { source: Style.symbol("display-brightness"); implicitWidth: 14; implicitHeight: 14 }

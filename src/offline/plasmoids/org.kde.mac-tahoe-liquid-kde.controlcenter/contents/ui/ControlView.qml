@@ -1,11 +1,13 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 import QtQuick
+import QtQml.Models
 import "ControlStyle.js" as Style
 import QtQuick.Layouts
 import QtQuick.Controls as QQC
 import org.kde.kirigami as Kirigami
 import org.kde.plasma.networkmanagement as Network
 import org.kde.bluezqt as Bluetooth
+import org.kde.plasma.private.battery as Power
 Item {
     id: view
     property string section: ""
@@ -17,7 +19,29 @@ Item {
     implicitWidth: 320
     implicitHeight: 20 + (section === "" ? grid.implicitHeight + 42 : detail.implicitHeight)
     Network.EnabledConnections { id: wireless }
-    Network.NetworkStatus { id: status }
+    Network.NetworkModel { id: nativeConnections }
+    property var connections: nativeConnections
+    Instantiator {
+        id: activeConnections
+        model: view.connections
+        delegate: QtObject {
+            required property var model
+            readonly property bool physical: model.Type === Network.Enums.Wireless || model.Type === Network.Enums.Wired
+            readonly property bool connected: model.ConnectionState === Network.Enums.Activated
+            readonly property bool wifi: model.Type === Network.Enums.Wireless
+            readonly property string name: model.Name || ""
+        }
+    }
+    readonly property var primaryConnection: {
+        for (let i = 0; i < activeConnections.count; ++i) {
+            const connection = activeConnections.objectAt(i);
+            if (connection && connection.physical && connection.connected)
+                return {name: connection.name, wifi: connection.wifi};
+        }
+        return null;
+    }
+    property var batteryState: nativeBattery
+    Power.BatteryControlModel { id: nativeBattery }
     readonly property var surfaces: section === "" ? [surface(wifi),surface(bluetooth),surface(battery),surface(media),surface(focus),surface(notifications),surface(settings),surface(display),surface(audio),surface(edit)] : [surface(detail)]
     function surface(item) { if (!item.visible) return {}; return {x:item.x + (item === detail || item === edit ? 0 : grid.x), y:item.y + (item === detail || item === edit ? 0 : grid.y), width:item.width, height:item.height, radius:item.cornerRadius}; }
     GridLayout {
@@ -34,10 +58,11 @@ Item {
             Layout.columnSpan: 2; Layout.fillWidth: true; Layout.preferredWidth: 66; Layout.minimumWidth: 0; Layout.preferredHeight: 64
             padding: 10
             contentItem: ControlAction {
-                text: i18n("Wi-Fi")
-                symbol: "network-wireless"
-                active: wireless.wirelessEnabled
-                subtitle: wireless.wirelessEnabled ? status.activeConnections || i18n("Not connected") : i18n("Wi-Fi is off")
+                objectName: "connectionSummary"
+                text: view.primaryConnection && !view.primaryConnection.wifi ? i18n("Network") : i18n("Wi-Fi")
+                symbol: view.primaryConnection && !view.primaryConnection.wifi ? "network-wired" : "network-wireless"
+                active: !!view.primaryConnection
+                subtitle: view.primaryConnection ? view.primaryConnection.name : i18n("Not connected")
                 onClicked: view.section = "WifiView.qml"
             }
         }
@@ -61,7 +86,8 @@ Item {
         }
         ControlTile {
             id: battery
-            visible: view.showControl("showBattery")
+            objectName: "batteryTile"
+            visible: view.showControl("showBattery") && view.batteryState.hasInternalBatteries
             Layout.fillWidth: true; Layout.preferredWidth: 66; Layout.minimumWidth: 0; Layout.preferredHeight: 64; padding: 4
             contentItem: ControlAction { text: i18n("Battery"); symbol: "battery"; compact: true; onClicked: view.section = "BatteryView.qml" }
         }

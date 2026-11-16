@@ -32,8 +32,9 @@ QQC.AbstractButton {
             visible: !action.compact
             spacing: 1
             Layout.fillWidth: true
-            ControlLabel { text: action.text; font.pixelSize: Style.body; font.weight: Font.DemiBold; elide: Text.ElideRight; Layout.fillWidth: true }
-            ControlLabel { text: action.subtitle; visible: text.length > 0; font.pixelSize: Style.caption; opacity: 0.7; elide: Text.ElideRight; Layout.fillWidth: true }
+            Layout.minimumWidth: 0
+            ControlLabel { text: action.text; font.pixelSize: Style.body; font.weight: Font.DemiBold; textFormat: Text.PlainText; maximumLineCount: 1; elide: Text.ElideRight; Layout.fillWidth: true; Layout.minimumWidth: 0 }
+            ControlLabel { text: action.subtitle; visible: text.length > 0; font.pixelSize: Style.caption; opacity: 0.7; textFormat: Text.PlainText; maximumLineCount: 1; elide: Text.ElideRight; Layout.fillWidth: true; Layout.minimumWidth: 0 }
         }
         Item { visible: action.compact; Layout.fillWidth: true }
     }

@@ -1,49 +1,61 @@
 {
-  "version": "0.72.9",
-  "source_sha256": "cbb45eabe320357dd3f7d14719708e3b2757b473fcf039dbe7a4bcbdbbddf8dc",
-  "scope": "CI/CD-only change: weekly source-free registry SDKs, four disjoint primary shards balanced from observed JUnit timings, Nix store reuse, shallow release refs and verified archive extraction for Golden Gate. All distro and executable test coverage retained. No installed desktop behavior changed. Cache publication now retries once and warns on registry failure without skipping execution. Clipboard CI waits for asynchronous reload/clear completion and checks the exact pinned ID. Nix uses the Git source input rather than filesystem metadata.",
-  "environment": "Local Python 3 focused CI-helper regressions and actionlint 1.7.7; full post-publication GitHub matrix remains enabled.",
+  "version": "0.72.10",
+  "source_sha256": "4e10054de20769692558c40db546ff118f77acb8b4e860550bb99db8e0650ed1",
+  "scope": "Btrfs/zram startup disk, Control Center layout/hardware regressions and accent selection contrast. See .github/REGRESSIONS-0.72.10.md.",
+  "environment": "Disposable neon Plasma 6.8.1 / Qt 6.11.1 VM; isolated GTK 3/4 processes; focused Python regressions.",
   "checks": [
     {
-      "command": "python3 -m pytest tests/test_ci_sdk.py tests/test_ci_selection.py tests/test_release_evidence.py tests/test_container_images.py -q",
+      "command": "pytest tests/test_about_info.py -k \"startup_disk or lsblk\"",
       "result": "passed",
-      "detail": "22 passed; cache hit/miss/fork behavior, recipe invalidation, exact shard coverage, shallow tag/gallery retrieval, rejection of wrong tags and stale evidence."
+      "detail": "11 passed"
     },
     {
-      "command": "python3 -m pytest tests/test_release_workflow.py -q (Golden Gate)",
+      "command": "pytest tests/test_installer_wizard.py -k \"accent_changes or accent_preserves\"",
       "result": "passed",
-      "detail": "4 passed; archive checksum, immutable tag and archived VERSION gates exercised before extracting the checker."
+      "detail": "2 passed"
     },
     {
-      "command": "actionlint -shellcheck= .github/workflows/test.yml .github/workflows/release.yml ../macos-golden-gate-liquid-kde/.github/workflows/release.yml",
+      "command": "pytest tests/test_gtk_upgrade.py; pytest tests/test_localization.py",
+      "result": "passed",
+      "detail": "4 upgrade cases and 7 catalog cases passed; msgfmt checks passed"
+    },
+    {
+      "command": "VM: python3 tests/desktop_controls_probe.py <source>",
       "result": "passed"
     },
     {
-      "command": "python3 -m pytest tests/test_ci_sdk.py -q",
+      "command": "VM: dbus-run-session -- xvfb-run -a python3 tests/gtk_accent_probe.py <source> 3; same command with 4",
       "result": "passed",
-      "detail": "4 passed, including two failed registry pushes: a usable local SDK still reaches the complete test suite; build and test failures remain fatal."
+      "detail": "Eight accents; live light/dark/light; selected, hover, focus and backdrop"
     },
     {
-      "command": "docker run --rm -v \"$PWD:/repo\" -w /repo mttkde-launcher-ci-arch:desktop python -m pytest tests/test_launcher_presets.py -k clipboard_launcher_integration -q",
+      "command": "VM: normal installer privilege setup followed by gtk.install(), color_schemes.install(), plasmoids.install(); repeated for reinstall",
       "result": "passed",
-      "detail": "2 passed in 23.16s; both edition cases use real isolated Xvfb and D-Bus, preserve the same assertions and verify the exact pinned entry. The optional git safe-directory setup was unavailable in this image and not used by these tests."
-    },
-    {
-      "command": "docker run --rm -v \"$PWD:/source:ro\" -w /source nixos/nix:latest sh -eu -c 'git config --global --add safe.directory /source; nix --extra-experimental-features \"nix-command flakes\" flake metadata --offline --no-write-lock-file --json .'",
-      "result": "passed",
-      "detail": "Resolved input type is git; all locked inputs retained, no online fetch or native rebuild."
+      "detail": "Desktop user destinations verified, no installer errors; installed gray overrides old blue. Files PID 113175 persisted through light/dark/light."
     }
   ],
   "coverage_limits": [
-    "No desktop VM or native rebuild was run locally: only CI/CD behavior changed.",
-    "Cold and warm pipeline timing results are measured after publication; a 50% reduction is not claimed before measurement."
+    "Focused installer steps, not complete wizard qualification.",
+    "One real Plasma VM; no fresh cross-distro desktop matrix or automatic schedule boundary.",
+    "Breeze reset not reproduced; French localization and independent icon appearance remain outside this repair.",
+    "Post-publication CI status is reported independently."
   ],
-  "baseline": {
-    "tahoe_ci": "https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/actions/runs/43826871438",
-    "longest_job_seconds": 631,
-    "golden_gate_release": "https://github.com/lestercorderomurillo/macos-golden-gate-liquid-kde/actions/runs/43887549715",
-    "publish_job_seconds": 62
-  },
   "gallery_commit": "f09780b200b79302e7c23ef9f6f74d94748bbea3",
-  "captures": []
+  "captures": [
+    {
+      "path": "src/screenshots/previews/gray-selection-light-18ec4d8e5203.png",
+      "sha256": "18ec4d8e5203ffd3c22181cece8183915f7fb0934b90021d126408b47cb19287",
+      "reviewed": true
+    },
+    {
+      "path": "src/screenshots/previews/gray-selection-dark-6dfcd1e32e10.png",
+      "sha256": "6dfcd1e32e10f490cdf29c358f3a24e15ec4d79f315dd135d14e841af02d4858",
+      "reviewed": true
+    },
+    {
+      "path": "src/screenshots/previews/control-center-regression-48ec11cd7e06.png",
+      "sha256": "48ec11cd7e0639e7b154d9820a09b7e6c9fbcb8e294497459a97f41360ce49bc",
+      "reviewed": true
+    }
+  ]
 }

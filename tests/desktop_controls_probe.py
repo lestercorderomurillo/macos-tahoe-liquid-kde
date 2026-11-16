@@ -138,6 +138,21 @@ brightness.setProperty('value',75)
 QMetaObject.invokeMethod(brightness,'moved',Qt.ConnectionType.DirectConnection)
 assert control.property('selected') == 'test-display' and control.property('requested') == 75
 
+threeScreens=Rows([dict(displayName=name,label=name,maxBrightness=100,brightness=60)
+                   for name in ('First monitor','Second monitor','Third monitor')])
+control.setProperty('displays',threeScreens);QTest.qWait(30)
+labels=[]
+pending=[display]; seen=set()
+while pending:
+    item=pending.pop()
+    if item in seen: continue
+    seen.add(item)
+    if item.objectName() == 'displayLabel': labels.append(item)
+    pending.extend(item.children())
+    if hasattr(item,'childItems'): pending.extend(item.childItems())
+assert len(labels) == 3 and all(label.property('visible') for label in labels)
+assert {label.property('text') for label in labels} == {'First monitor','Second monitor','Third monitor'}
+
 profiles = fake('''QtObject {
     property bool isPowerProfileDaemonInstalled: true
     property var profiles: ["power-saver","balanced","performance"]
@@ -251,6 +266,23 @@ click(child(notifications,'clearHistory'));assert history.calls[-1][0]=='clear'
 history.update(0,'isGroup',True)
 click(child(notifications,'notificationGroup'));assert history.calls[-1]==('group',0,True)
 
+
+# Only physical active links belong in the overview; bridges must not leak.
+summaryRows=Rows([dict(Type=4,ConnectionState=2,Name='docker0'),
+                  dict(Type=13,ConnectionState=2,Name='Ethernet LAN'),
+                  dict(Type=14,ConnectionState=0,Name='Offline Wi-Fi')])
+overview=component('ControlView.qml', {'connections':summaryRows, 'batteryState':battery})
+summary=child(overview,'connectionSummary')
+assert summary.property('subtitle') == 'Ethernet LAN'
+assert summary.property('text') == 'Network'
+battery.setProperty('hasInternalBatteries',False);QTest.qWait(10)
+assert not child(overview,'batteryTile').property('visible')
+battery.setProperty('hasInternalBatteries',True);QTest.qWait(10)
+assert child(overview,'batteryTile').property('visible')
+summaryRows.update(1,'ConnectionState',0)
+summaryRows.update(2,'ConnectionState',2);QTest.qWait(10)
+assert summary.property('subtitle') == 'Offline Wi-Fi'
+assert summary.property('text') == 'Wi-Fi'
 
 networkHandler = fake('''QtObject {
     property bool scanning: false
