@@ -409,16 +409,27 @@ def render_installer(prepared: tuple, style: str, mode: str, tint: tuple[int, in
         ImageDraw.Draw(shape).rounded_rectangle((size*.065, size*.065, size*.935, size*.935),
                                                 radius=size*.205, fill=255)
     gray = ImageOps.grayscale(artwork)
-    silver = ImageOps.colorize(gray, (60, 82, 101), (247, 252, 255))
-    shadow = tuple(round(c*.22) for c in tint)
+    # Keep the source's full tonal range. A preliminary silver colorization
+    # lifted black details into the tint's midtones, hiding Finder's eyes and
+    # calendar lettering against the glass plate.
+    shadow = tuple(round(c*.08) for c in tint)
     middle = tuple(round(c*.8+255*.2) for c in tint)
-    relief = ImageOps.colorize(ImageOps.grayscale(silver), black=shadow, white=(248, 252, 255),
+    relief = ImageOps.colorize(gray, black=shadow, white=(248, 252, 255),
                               mid=middle, midpoint=164).convert("RGBA")
+    # Sparse foregrounds (such as Calendar lettering) need darker ink;
+    # applying that curve to broad shaded logos would crush their depth.
+    if sum(artwork.getchannel("A").histogram()[128:]) < size * size * .08:
+        ink = gray.point(lambda value: round(255 * (value / 255) ** 2.2))
+        relief = ImageOps.colorize(ink, black=shadow, white=(248, 252, 255),
+                                  mid=middle, blackpoint=64, midpoint=164).convert("RGBA")
     relief.putalpha(artwork.getchannel("A"))
     ramp = Image.linear_gradient("L").resize((size*2, size*2)).rotate(-35)
     ramp = ramp.crop((size//2, size//2, size//2+size, size//2+size))
-    stops = [(0, (255, 255, 255, 171)), (107, (*tint, 122)),
-             (196, (*tint, 191)), (255, (255, 255, 255, 156))]
+    # Keep dark source details readable over dark wallpaper too. The middle
+    # of the plate needs a little neutral light and a stable opacity floor.
+    lit_tint = tuple(round(c*.88 + 255*.12) for c in tint)
+    stops = [(0, (255, 255, 255, 171)), (107, (*lit_tint, 200)),
+             (196, (*tint, 211)), (255, (255, 255, 255, 156))]
     colors = []
     for value in range(256):
         left, right = next((a, b) for a, b in zip(stops, stops[1:]) if a[0] <= value <= b[0])
@@ -429,7 +440,12 @@ def render_installer(prepared: tuple, style: str, mode: str, tint: tuple[int, in
     inset = shape.filter(ImageFilter.MinFilter(max(3, (round(size*.012)//2)*2+1)))
     rim = ImageChops.subtract(shape, inset).filter(ImageFilter.GaussianBlur(size*.002))
     edge = Image.new("RGBA", image.size, "white"); edge.putalpha(rim.point(lambda v: round(v*.72)))
-    result = Image.alpha_composite(plate, relief)
+    # A restrained relief shadow separates pale glyphs from bright tints.
+    # Its mask comes only from the original artwork, never a replacement glyph.
+    relief_shadow = Image.new("RGBA", image.size, (12, 18, 28))
+    relief_shadow.putalpha(ImageChops.offset(artwork.getchannel("A"), 0, round(size*.008)).filter(
+        ImageFilter.GaussianBlur(size*.004)).point(lambda value: round(value*.42)))
+    result = Image.alpha_composite(Image.alpha_composite(plate, relief_shadow), relief)
     bevel_width = max(3, (round(size*.035)//2)*2+1)
     bevel = ImageChops.subtract(shape, shape.filter(ImageFilter.MinFilter(bevel_width)))
     shine = gradient(size, (255, 255, 255, 220), (195, 225, 255, 90))

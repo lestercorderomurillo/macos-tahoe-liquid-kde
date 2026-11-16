@@ -421,3 +421,40 @@ def test_manifest_source_provenance_and_output_boundaries(built):
     path.write_text(json.dumps(manifest))
     with pytest.raises(ValueError, match="provenance"):
         verify(built)
+
+
+def test_glass_finder_eyes_and_calendar_text_remain_legible_on_both_wallpapers(tmp_path):
+    """Use the shipped artwork at Dock size, not synthetic replacement glyphs."""
+    from statistics import median
+    from icon_materials import render_installer
+    from icon_toolset import ROOT
+    from installer_choices import COLORS
+    unpack(ROOT / 'src/offline/icons/MacTahoeLiquidKde-Icons.tar.zst', tmp_path / 'original')
+    base = tmp_path / 'original' / BASE / 'apps/scalable'
+    prepared = {name: prepare_source(base / (name + '.svg'), 512)
+                for name in ('system-file-manager', 'calendar')}
+    original = prepared['calendar'][0].resize((64, 64), Image.Resampling.LANCZOS)
+    letters = [(x, y) for y in range(12, 22) for x in range(20, 47)
+               if (lambda p: p[0] > 210 and p[1] < 130 and p[2] < 130 and p[3] > 240)(original.getpixel((x, y)))]
+    assert letters
+    def luminance(rgb):
+        return sum((v/255/12.92 if v/255 <= .04045 else ((v/255+.055)/1.055)**2.4)*w
+                   for v, w in zip(rgb, (.2126, .7152, .0722)))
+    def contrast(a, b):
+        low, high = sorted((luminance(a), luminance(b)))
+        return (high + .05) / (low + .05)
+    for tint in COLORS.values():
+        rgb = tuple(bytes.fromhex(tint[1:]))
+        for mode in ('light', 'dark'):
+            icons = {name: render_installer(source, 'glass', mode, rgb)
+                     .resize((256, 256), Image.Resampling.LANCZOS)
+                     .resize((64, 64), Image.Resampling.LANCZOS)
+                     for name, source in prepared.items()}
+            for background in ('#101010', '#eeeeee'):
+                images = {name: Image.alpha_composite(Image.new('RGBA', im.size, background), im).convert('RGB')
+                          for name, im in icons.items()}
+                finder = images['system-file-manager']
+                assert contrast(finder.getpixel((20, 23)), finder.getpixel((17, 23))) >= 3, (tint, mode, background, 'eye')
+                calendar = images['calendar']
+                assert median(contrast(calendar.getpixel(pt), calendar.getpixel((12, 17)))
+                              for pt in letters) >= 3, (tint, mode, background, 'letters')

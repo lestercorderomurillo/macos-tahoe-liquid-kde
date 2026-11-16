@@ -1,47 +1,41 @@
 {
-  "version": "0.72.12",
-  "source_sha256": "52a43dc540e4377fd9f5f6f2100f919a0909d430a6b4ec4d8e73ba2841a29f07",
-  "scope": "Original-artwork glass Trash and canonical Dock application aliases. See .github/DOCK-TINTS-0.72.12.md.",
-  "environment": "Disposable neon Plasma 6.8.1 / Qt 6.11.1; Fedora/openSUSE/neon Qt SDK probes.",
+  "version": "0.72.13",
+  "source_sha256": "f9aeb2f9f14f09c76ad9c62f9d7999a8730c21c91a62b948c9be2fe42c0e3fa4",
+  "scope": "Original icon detail and glass contrast; remove Trash state from color tables. See .github/ICON-CONTRAST-0.72.13.md.",
+  "environment": "Disposable neon Plasma 6.8.1 / Qt 6.11.1 Wayland VM and focused real-artwork pixel regressions.",
   "checks": [
     {
-      "command": "pytest tests/test_icon_toolset.py -k \"installer_glass or installer_duplicate\"",
+      "command": "pytest tests/test_icon_toolset.py -k \"glass or regular_dark\"",
       "result": "passed",
-      "detail": "3 passed"
+      "detail": "10 passed. Actual bundled Finder eye and Calendar letter detail exceed 3:1 at 64px across eight tints, both modes and light/dark backgrounds."
     },
     {
-      "command": "pytest tests/test_icons_step.py tests/test_reserved_menu_icons.py",
+      "command": "VM: normal installer privilege setup; steps.icons.install() twice with a displayed-artwork generation fixture; actual archive staging and installation destinations retained",
       "result": "passed",
-      "detail": "4 passed"
+      "detail": "Four icon themes installed; repeat installation reused matching output. Apps, Settings, Finder and empty/full Trash artifacts present."
     },
     {
-      "command": "pytest tests/test_taskmanager_qml.py -k themed_icons",
+      "command": "VM: live light/dark Dock captures with empty/full Trash; visual review of each original frame",
       "result": "passed",
-      "detail": "Passed locally and in Fedora, openSUSE and neon containers; Qt 6.11.2/6.12.0/6.11.1"
-    },
-    {
-      "command": "VM: rebuild changed Dock backend; normal installer privilege setup; plasmoids.install() twice; restart Plasma; capture actual glass Dock light/dark with empty/full Trash",
-      "result": "passed",
-      "detail": "Reviewed 4 focused frames; every Dock icon including Apps and Settings receives the blue glass material."
+      "detail": "Four actual Dock frames reviewed; original shaded logos retained while eyes, smile and Calendar text remain legible."
     }
   ],
   "coverage_limits": [
-    "Focused Dock component install/reinstall, not complete wizard qualification.",
-    "Wayland Plasma VM plus isolated Qt lookup probes; no fresh X11 desktop session.",
-    "Only displayed Dock source artwork generated in the focused VM fixture; not an exhaustive icon-library render.",
-    "Additional requested color/edition documentation captures are delivered separately.",
-    "Full remote CI tracked after publication."
+    "Focused displayed-icon fixture, not an exhaustive icon-library installation or complete wizard run.",
+    "Wayland VM; no fresh X11 desktop qualification. No native backend or ABI changed.",
+    "Contrast checks cover the specified original details, not accessibility certification of every glyph.",
+    "Remaining requested tint photographs follow as documentation delivery.",
+    "Full remote CI is tracked after publication."
   ],
   "gallery_commit": "f09780b200b79302e7c23ef9f6f74d94748bbea3",
   "captures": [
     {
-      "path": "src/screenshots/previews/tahoe-dark-dock-blue-full-3340df7f3e7e.webp",
-      "sha256": "3340df7f3e7e54890c9ab9d7165aca218211338f605eda6e7c8704d0f83436ae",
+      "path": "src/screenshots/previews/tahoe-dark-dock-blue-full-aa71f8d0f147.webp",
+      "sha256": "aa71f8d0f147ac24c575b13b41a4ee3b5ea10b29e121a164881a3e8433907f08",
       "reviewed": true,
-      "source_base_commit": "9ea13ce6",
+      "source_base_commit": "4f89cd1778a0bd0a17d945000687baf68ea9f609",
       "source_overrides": {
-        "src/scripts/icon_toolset.py": "41a170637008d46324dcf377c10345cf4c7b5bb7cbd841f1c48318ff4de6c334",
-        "src/offline/plasmoids/org.kde.mac.tahoe.liquid.taskmanager/backend.cpp": "b3f7f3433ea4753b36103ff254f1d30f6c6eb61bca2257069ec8c9e6c7dc931b"
+        "src/scripts/icon_materials.py": "aa76fe0bbb0f083bad3cd658752c855caf36855acfb2c3ae7ae0c9ae68592db3"
       },
       "appearance": {
         "Window controls": "__aurorae__svg__MacTahoeLiquidKde-Dark",
@@ -56,13 +50,12 @@
       "trash": "full"
     },
     {
-      "path": "src/screenshots/previews/tahoe-dark-dock-blue-935055fd18e6.webp",
-      "sha256": "935055fd18e6e711ad01b0454f28bbf9eb8151e3a1702f206f8ceb9710bf8829",
+      "path": "src/screenshots/previews/tahoe-dark-dock-blue-553b865ed08c.webp",
+      "sha256": "553b865ed08c57a95a9fee4d5cdf10a47eabdf532d9b3169d353abc3fb2d3f4b",
       "reviewed": true,
-      "source_base_commit": "9ea13ce6",
+      "source_base_commit": "4f89cd1778a0bd0a17d945000687baf68ea9f609",
       "source_overrides": {
-        "src/scripts/icon_toolset.py": "41a170637008d46324dcf377c10345cf4c7b5bb7cbd841f1c48318ff4de6c334",
-        "src/offline/plasmoids/org.kde.mac.tahoe.liquid.taskmanager/backend.cpp": "b3f7f3433ea4753b36103ff254f1d30f6c6eb61bca2257069ec8c9e6c7dc931b"
+        "src/scripts/icon_materials.py": "aa76fe0bbb0f083bad3cd658752c855caf36855acfb2c3ae7ae0c9ae68592db3"
       },
       "appearance": {
         "Window controls": "__aurorae__svg__MacTahoeLiquidKde-Dark",
@@ -77,13 +70,12 @@
       "trash": "empty"
     },
     {
-      "path": "src/screenshots/previews/tahoe-light-dock-blue-full-0032bd0983a1.webp",
-      "sha256": "0032bd0983a1750e13ddaf8bce9f9482315db16891de6059d5bb753676ef67c5",
+      "path": "src/screenshots/previews/tahoe-light-dock-blue-full-d285244b44a0.webp",
+      "sha256": "d285244b44a0a813b11916e14255c6670a48767edc5279184cb8d25be64f13f4",
       "reviewed": true,
-      "source_base_commit": "9ea13ce6",
+      "source_base_commit": "4f89cd1778a0bd0a17d945000687baf68ea9f609",
       "source_overrides": {
-        "src/scripts/icon_toolset.py": "41a170637008d46324dcf377c10345cf4c7b5bb7cbd841f1c48318ff4de6c334",
-        "src/offline/plasmoids/org.kde.mac.tahoe.liquid.taskmanager/backend.cpp": "b3f7f3433ea4753b36103ff254f1d30f6c6eb61bca2257069ec8c9e6c7dc931b"
+        "src/scripts/icon_materials.py": "aa76fe0bbb0f083bad3cd658752c855caf36855acfb2c3ae7ae0c9ae68592db3"
       },
       "appearance": {
         "Window controls": "__aurorae__svg__MacTahoeLiquidKde-Light",
@@ -98,13 +90,12 @@
       "trash": "full"
     },
     {
-      "path": "src/screenshots/previews/tahoe-light-dock-blue-775c1c6afda3.webp",
-      "sha256": "775c1c6afda31b3e833485d111cef2fcda7974a450e96ecfe25610bc6f93f245",
+      "path": "src/screenshots/previews/tahoe-light-dock-blue-c0a884127c13.webp",
+      "sha256": "c0a884127c13392116a7f78cbc7a9b2a00b048aef67d7c9ce5661f2122549dc5",
       "reviewed": true,
-      "source_base_commit": "9ea13ce6",
+      "source_base_commit": "4f89cd1778a0bd0a17d945000687baf68ea9f609",
       "source_overrides": {
-        "src/scripts/icon_toolset.py": "41a170637008d46324dcf377c10345cf4c7b5bb7cbd841f1c48318ff4de6c334",
-        "src/offline/plasmoids/org.kde.mac.tahoe.liquid.taskmanager/backend.cpp": "b3f7f3433ea4753b36103ff254f1d30f6c6eb61bca2257069ec8c9e6c7dc931b"
+        "src/scripts/icon_materials.py": "aa76fe0bbb0f083bad3cd658752c855caf36855acfb2c3ae7ae0c9ae68592db3"
       },
       "appearance": {
         "Window controls": "__aurorae__svg__MacTahoeLiquidKde-Light",

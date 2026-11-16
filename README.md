@@ -175,7 +175,6 @@ Original icon artwork with glass tints, using native application icons.
 <tr><td>Yellow</td><td><a href="src/screenshots/previews/tahoe-light-dock-yellow-65bdb10aeb10.webp"><img src="src/screenshots/previews/tahoe-light-dock-yellow-65bdb10aeb10.webp" alt="Tahoe light Dock with yellow glass Apps, application and empty Trash icons" width="840"></a></td></tr>
 <tr><td>Green</td><td><a href="src/screenshots/previews/tahoe-light-dock-green-51e0126fa418.webp"><img src="src/screenshots/previews/tahoe-light-dock-green-51e0126fa418.webp" alt="Tahoe light Dock with green glass Apps, application and empty Trash icons" width="840"></a></td></tr>
 <tr><td>Gray</td><td><a href="src/screenshots/previews/tahoe-light-dock-gray-e03979af2652.webp"><img src="src/screenshots/previews/tahoe-light-dock-gray-e03979af2652.webp" alt="Tahoe light Dock with gray glass Apps, application and empty Trash icons" width="840"></a></td></tr>
-<tr><td>Full Trash</td><td><a href="src/screenshots/previews/tahoe-light-dock-blue-full-0032bd0983a1.webp"><img src="src/screenshots/previews/tahoe-light-dock-blue-full-0032bd0983a1.webp" alt="Tahoe light blue glass Dock with full Trash" width="840"></a></td></tr>
 </table>
 
 </details>
