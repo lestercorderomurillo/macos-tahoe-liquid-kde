@@ -98,6 +98,6 @@ void main(void)
     }
     // Only the Dock reveals sharp backdrop through its centre. Applet popups
     // need full blur coverage behind their thin client fills.
-    float coverage = (dockSurface ? mix(centerOpacity, 1.0, edgeQ) : 1.0);
+    float coverage = mix(centerOpacity, 1.0, edgeQ);
     LG_OUT = surface * (mask * opacity * coverage);
 }

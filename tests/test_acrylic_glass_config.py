@@ -57,7 +57,12 @@ def test_native_material_follows_source_edition_across_reinstalls(tmp_path, firs
         saved.read(config_file)
         expected = {key: str(value).lower() if isinstance(value, bool) else str(value)
                     for key, value in presets[editions[edition]]["values"].items()}
-        assert dict(saved["Effect-liquidglass"]) == expected | {
+        material = dict(saved["Effect-liquidglass"])
+        components = json.loads(material.pop("ComponentMaterials"))
+        assert components["dock"]["BlurStrength"] == 5
+        assert components["dock"]["DarkGradientOverlay"] is False
+        assert components["apps"]["BlurStrength"] == float(expected["BlurStrength"])
+        assert material == expected | {
             "MaterialPreset": str(editions[edition]), "WindowCornerRadius": "13.5",
             "DockCornerRadius": "0", "PopupCornerRadius": "", "WindowClasses": "custom-app",
             "BlurMatching": "true", "BlurNonMatching": "false",

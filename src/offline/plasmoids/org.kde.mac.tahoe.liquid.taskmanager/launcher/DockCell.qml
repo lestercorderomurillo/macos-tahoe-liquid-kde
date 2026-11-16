@@ -12,7 +12,11 @@ QtObject {
     property bool taskManager: false
     property int count: 1
     property real spacing: 0
-    property real size: DockMetrics.preferredCellSize(vertical ? applet.width : applet.height)
+    // Keep natural layout requests independent of the last allocated width.
+    // Reusing compressed geometry as the maximum size feeds panel
+    // SVG reloads back into GridLayout and can strand space before Trash.
+    readonly property real preferredSize: DockMetrics.preferredCellSize(vertical ? applet.width : applet.height)
+    property real size: preferredSize
     readonly property var panelWindow: applet.Window.window
     onActiveChanged: DockMetrics.schedule()
     onVerticalChanged: DockMetrics.schedule()

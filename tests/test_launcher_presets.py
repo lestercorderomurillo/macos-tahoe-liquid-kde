@@ -761,6 +761,7 @@ Item {
     property int phase: 0
     property int taskCount: 10
     property int settling: 0
+    property bool fit: false
     KSvg.FrameSvgItem { id: taskFrame; imagePath: "widgets/tasks"; prefix: ["south-normal", "normal"]; visible: false }
     QtObject { id: plasmoid; property int formFactor: root.vertical ? PlasmaCore.Types.Vertical : PlasmaCore.Types.Horizontal }
     component DockApplet: Item {
@@ -771,7 +772,7 @@ Item {
     }
     GridLayout {
         id: panel
-        width: root.vertical ? 68 : available
+        width: root.vertical ? 68 : root.fit ? Layout.maximumWidth : available
         height: root.vertical ? available : 68
         property real available: 1100
         columns: root.vertical ? 1 : 5; rows: root.vertical ? 5 : 1
@@ -812,7 +813,7 @@ Item {
         }
         DockApplet { id: downloads }
         DockApplet { id: trash }
-        Item { Layout.fillWidth: true; Layout.fillHeight: true }
+        Item { visible: !root.fit; Layout.fillWidth: true; Layout.fillHeight: true }
     }
     function compare(a,b) { if (Math.abs(a-b)>1.1) throw new Error(a+" != "+b); }
     Timer { interval: 30; repeat: true; running: true; onTriggered: {
@@ -820,8 +821,13 @@ Item {
             const cells = taskList.children.filter(c => c.width>0 && c.height>0);
             if (cells.length !== root.taskCount) throw new Error("Task delegates are still updating");
             const pos = root.vertical ? "y" : "x", length = root.vertical ? "height" : "width";
-            const pitch = cells[1][pos] + cells[1][length]/2 - cells[0][pos] - cells[0][length]/2;
+            const pitch = cells.length > 1
+                ? cells[1][pos] + cells[1][length]/2 - cells[0][pos] - cells[0][length]/2
+                : cells[0][length] + Kirigami.Units.smallSpacing;
             compare(launcher[length], cells[0][length]);
+            // A fit-content panel must recover its natural pitch after being
+            // compressed or receiving a new SVG's geometry notification.
+            if (root.fit) compare(cells[0][length], NativeLauncher.DockMetrics.preferredCellSize(68));
             if (downloads.visible) compare(downloads[length], cells[0][length]);
             compare(trash[length], cells[0][length]);
             compare(tasks[pos] + cells[0][pos] + cells[0][length]/2 - launcher[pos] - launcher[length]/2, pitch);
@@ -831,13 +837,18 @@ Item {
             if (downloads.visible) compare(trash[pos] + trash[length]/2 - downloads[pos] - downloads[length]/2, pitch);
             root.settling = 0;
             root.phase++;
-            if (root.phase === 9) { console.info("DOCK_COMPRESS_OK"); Qt.exit(0); return; }
+            if (root.phase === 13) { console.info("DOCK_COMPRESS_OK"); Qt.exit(0); return; }
             root.vertical = root.phase >= 3 && root.phase < 6;
             panel.available = [1100, 650, 350][root.phase % 3];
-            if (root.phase >= 6) {
+            if (root.phase >= 6 && root.phase < 9) {
                 root.taskCount = 3;
                 downloads.visible = root.phase !== 7;
                 panel.available = root.phase === 7 ? 180 : 350;
+            }
+            if (root.phase >= 9) {
+                root.fit = true;
+                root.taskCount = [14, 1, 20, 14][root.phase - 9];
+                downloads.visible = root.phase !== 11;
             }
         } catch(e) {
             if (++root.settling < 10) return;

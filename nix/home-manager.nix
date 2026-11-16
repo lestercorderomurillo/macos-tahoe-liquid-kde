@@ -46,7 +46,6 @@ in {
       value.source = "${assets}/share/themes/${name}";
     }) names);
     xdg.dataFile = {
-      "plasma/desktoptheme" = { source = "${assets}/share/plasma/desktoptheme"; recursive = true; };
       "plasma/look-and-feel" = { source = "${assets}/share/plasma/look-and-feel"; recursive = true; };
       "plasma/plasmoids" = { source = "${assets}/share/plasma/plasmoids"; recursive = true; };
       "aurorae/themes" = { source = "${assets}/share/aurorae/themes"; recursive = true; };
@@ -55,10 +54,27 @@ in {
     } // lib.optionalAttrs cfg.appleAssets {
       "wallpapers" = { source = "${packages.apple-assets}/share/wallpapers"; recursive = true; };
     };
-    xdg.configFile = lib.listToAttrs (map (name: {
-      name = "Kvantum/${name}";
-      value.source = "${assets}/share/Kvantum/${name}";
-    }) kvNames) // {
+    # Acrylic Glass edits background fills on Apply. Keep these two owned
+    # theme families writable while leaving the store inputs immutable.
+    home.activation.macTahoeGlassSurfaces = lib.hm.dag.entryAfter [ "linkGeneration" ] ''
+      for name in MacTahoeLiquidKde-Light MacTahoeLiquidKde-Dark; do
+        target="${config.xdg.dataHome}/plasma/desktoptheme/$name"
+        if [ -L "$target" ]; then rm "$target"; fi
+        mkdir -p "$target"
+        cp -rL --remove-destination --no-preserve=mode "${assets}/share/plasma/desktoptheme/$name/." "$target/"
+      done
+      for name in mac-tahoe-liquid-kde mac-tahoe-liquid-kdeDark; do
+        target="${config.xdg.configHome}/Kvantum/$name"
+        if [ -L "$target" ]; then rm "$target"; fi
+        mkdir -p "$target"
+        cp -rL --remove-destination --no-preserve=mode "${assets}/share/Kvantum/$name/." "$target/"
+      done
+      material="$(${pkgs.kdePackages.kconfig}/bin/kreadconfig6 --file kwinrc --group Effect-liquidglass --key ComponentMaterials)"
+      if [ -n "$material" ]; then
+        printf '%s' "$material" | ${packages.tools}/bin/mac-tahoe-glass-surfaces --apply
+      fi
+    '';
+    xdg.configFile = {
       "plasma-workspace/env/mac-tahoe-plugin-paths.sh".text = ''
         # Plasma sources this before launching KWin and plasmashell.
         # Extend the inherited paths here; home.sessionVariables would replace them.

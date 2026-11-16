@@ -2,11 +2,12 @@
 import os
 import subprocess
 import sys
+from .test_launcher_presets import launcher_popup_module
 
 
-def test_desktop_controls_native_state_and_actions(repo, tmp_path):
+def test_desktop_controls_native_state_and_actions(repo, tmp_path, launcher_popup_module):
     runtime = tmp_path / 'runtime'; runtime.mkdir(mode=0o700)
-    env = dict(os.environ, QT_QPA_PLATFORM='offscreen', QT_QUICK_BACKEND='software',
+    env = dict(os.environ, QML_IMPORT_PATH=str(launcher_popup_module), QT_QPA_PLATFORM='offscreen', QT_QUICK_BACKEND='software',
                XDG_RUNTIME_DIR=str(runtime), XDG_CONFIG_HOME=str(tmp_path / 'config'),
                XDG_DATA_HOME=str(tmp_path / 'data'), XDG_CACHE_HOME=str(tmp_path / 'cache'),
                DBUS_SYSTEM_BUS_ADDRESS='unix:path=' + str(tmp_path / 'no-system-bus'),

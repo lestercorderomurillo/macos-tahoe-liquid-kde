@@ -38,6 +38,11 @@ def test_native_material_preset_controls(kcm_probe, tmp_path, saved_preset, save
     env = {k: v for k, v in os.environ.items() if k in ("PATH", "LANG")}
     env.update(HOME=str(tmp_path), XDG_CONFIG_HOME=str(tmp_path / "config"),
                XDG_CONFIG_DIRS=str(tmp_path / "system"), QT_QPA_PLATFORM="offscreen")
+    helper = tmp_path / ".local/bin/mac-tahoe-glass-surfaces"
+    helper.parent.mkdir(parents=True)
+    shutil.copy2(REPO / "src/scripts/glass_surface_settings.py", helper)
+    helper.chmod(0o755)
+    env["PATH"] = str(helper.parent) + os.pathsep + env["PATH"]
     result = subprocess.run(["dbus-run-session", "--", str(kcm_probe / "glass-kcm-probe"),
                              str(kcm_probe / "kcm/kwin_liquidglass_config.so"),
                              str(glass.SRC / "src/presets.json"), saved_preset, saved_tint],
@@ -106,10 +111,20 @@ def test_installation_reapplies_complete_edition_material(monkeypatch, edition, 
     if existing == "clear":
         expected["MaterialOpacity"] = "0.55"  # Retired key is ignored, not rewritten.
     assert "MaterialOpacity" not in writes
+    components = json.loads(saved.pop("ComponentMaterials"))
+    assert components["dock"]["BlurStrength"] == 5
+    assert components["dock"]["DarkGradientOverlay"] is False
+    assert components["control-center"]["DarkGradientOverlay"] is False
+    assert components["apps"]["BlurStrength"] == float(expected["BlurStrength"])
     assert saved == expected
     assert writes[-1] == "MaterialPreset"
     writes.clear()
     assert glass._install_material_preset()
+    components = json.loads(saved.pop("ComponentMaterials"))
+    assert components["dock"]["BlurStrength"] == 5
+    assert components["dock"]["DarkGradientOverlay"] is False
+    assert components["control-center"]["DarkGradientOverlay"] is False
+    assert components["apps"]["BlurStrength"] == float(expected["BlurStrength"])
     assert saved == expected
 
 
@@ -172,4 +187,9 @@ def test_installer_frost_glass_values(monkeypatch, edition, style):
                         RefractionWidth="38.0", HighlightWidth="16.0", HighlightStrength="0.1",
                         Brightness="1.0", Contrast="1.0", Saturation="1.33",
                         NoiseStrength="0", BlurDecorations="true")
+    components = json.loads(saved.pop("ComponentMaterials"))
+    assert components["dock"]["BlurStrength"] == 5
+    assert components["dock"]["DarkGradientOverlay"] is False
+    assert components["control-center"]["DarkGradientOverlay"] is False
+    assert components["apps"]["BlurStrength"] == float(expected["BlurStrength"])
     assert saved == expected

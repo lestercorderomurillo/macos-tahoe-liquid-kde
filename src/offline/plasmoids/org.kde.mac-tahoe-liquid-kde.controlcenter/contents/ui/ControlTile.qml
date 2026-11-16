@@ -1,11 +1,13 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 import QtQuick
+import org.kde.mac.tahoe.launcher as NativeGlass
 import "ControlStyle.js" as Style
 import QtQuick.Controls as QQC
 import org.kde.kirigami as Kirigami
 import org.kde.ksvg as KSvg
 QQC.Pane {
     id: tile
+    NativeGlass.GlassSettings { id: glassSettings; component: "control-center" }
     font.family: Style.family
     font.pixelSize: Style.body
     property real cornerRadius: Math.min(width, height) / 2
@@ -18,8 +20,8 @@ QQC.Pane {
         Rectangle {
             anchors.fill: parent
             radius: tile.cornerRadius
-            color: tile.lightMode ? Qt.rgba(1, 1, 1, tile.goldenGate ? 0.60 : 0.55)
-                                 : tile.goldenGate ? Qt.rgba(1, 1, 1, 0.01) : Qt.rgba(0, 0, 0, 0.48)
+            color: tile.lightMode ? Qt.rgba(1, 1, 1, glassSettings.lightOpacity >= 0 ? glassSettings.lightOpacity : (tile.goldenGate ? 0.60 : 0.55))
+                                 : tile.goldenGate ? Qt.rgba(1, 1, 1, glassSettings.darkOpacity >= 0 ? glassSettings.darkOpacity : 0.01) : Qt.rgba(0, 0, 0, glassSettings.darkOpacity >= 0 ? glassSettings.darkOpacity : 0.48)
         }
         GlassRim { anchors.fill: parent; cornerRadius: tile.cornerRadius; lightMode: tile.lightMode }
     }

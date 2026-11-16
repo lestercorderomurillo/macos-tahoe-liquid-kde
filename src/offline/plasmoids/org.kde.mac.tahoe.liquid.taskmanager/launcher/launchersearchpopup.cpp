@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 #include "launchersearchpopup.h"
+#include "glasssettings.h"
 
 #include <Plasma/Theme>
 #include <PlasmaQuick/PlasmaShellWaylandIntegration>
@@ -18,6 +19,10 @@ LauncherSearchPopup::LauncherSearchPopup()
                                        ? QStringLiteral("dialogs/background")
                                        : QStringLiteral("dialogs/launcher-search"))
 {
+    setTitle(QStringLiteral("mttkde-search"));
+    auto *glassSettings = new GlassSettings(this);
+    glassSettings->setComponent(QStringLiteral("search"));
+    glassSettings->setWindow(this);
     setFlags(flags() | Qt::Dialog);
     // Match Plasma's applet role so window effects preserve the SVG capsule.
     if (KWindowSystem::isPlatformX11()) {

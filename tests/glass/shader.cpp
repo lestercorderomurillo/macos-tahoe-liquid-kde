@@ -1,5 +1,4 @@
 #include "gradientcolors.h"
-#include "surfaceoptics.h"
 // SPDX-License-Identifier: GPL-3.0-or-later
 #include <QGuiApplication>
 #include <QFile>
@@ -240,8 +239,12 @@ int main(int argc, char **argv)
         backdrop.fill(QColor(160, 160, 160));
         texture.setData(QOpenGLTexture::RGBA, QOpenGLTexture::UInt8, backdrop.constBits());
         shader.setUniformValue("offset", 2.0f);
-        // A clear-centre factor must never leak sharp backdrop into an applet.
+        // Full coverage remains the default; the new control also works on applets.
         shader.setUniformValue("centerOpacity", 0.65f);
+        image = render();
+        require(std::abs(qAlpha(image.pixel(96,64)) - 166) <= 1,
+                QStringLiteral("Configured applet blur coverage was ignored"));
+        shader.setUniformValue("centerOpacity", 1.0f);
         image = render();
         require(qAlpha(image.pixel(96,64)) == 255,
                 QStringLiteral("Applet centre must retain full blur coverage"));
@@ -304,30 +307,14 @@ int main(int argc, char **argv)
         if (dockReference.isNull()) dockReference = bentDock;
         else require(dockReference == bentDock, QStringLiteral("Dock differs between shader profiles"));
 
-        // Exercise the same surface selection as the effect, on an asymmetric
-        // backdrop: extreme window tuning must leave every Dock pixel intact.
-        QImage fixedDock;
-        for (const auto configured : {SurfaceOptics{0, 0, 0, 0, 0},
-                                      SurfaceOptics{10, .02f, 38, 16, .1f},
-                                      SurfaceOptics{8, .032f, 64, 16, .1f},
-                                      SurfaceOptics{50, .2f, 100, 50, 1}}) {
-            const auto optics = opticsForSurface(true, configured);
-            shader.setUniformValue("rgbDriftStrength", optics.rgbDrift);
-            shader.setUniformValue("magnifyGlassStrength", optics.refraction);
-            shader.setUniformValue("refractionWidth", optics.refractionWidth);
-            shader.setUniformValue("highlightWidth", optics.highlightWidth);
-            shader.setUniformValue("highlightStrength", optics.highlightStrength);
-            const auto fixed = render();
-            if (fixedDock.isNull()) fixedDock = fixed;
-            else require(fixed == fixedDock, QStringLiteral("Window tuning changed Dock pixels"));
-            const auto windowOptics = opticsForSurface(false, configured);
-            require(windowOptics.refraction == configured.refraction
-                    && windowOptics.rgbDrift == configured.rgbDrift
-                    && windowOptics.refractionWidth == configured.refractionWidth
-                    && windowOptics.highlightWidth == configured.highlightWidth
-                    && windowOptics.highlightStrength == configured.highlightStrength,
-                    QStringLiteral("Dock isolation changed window tuning"));
-        }
+        // The Dock uses the same tunable shader, including optional gradient.
+        shader.setUniformValue("darkGradientOverlay", true);
+        shader.setUniformValue("gradientTop", QVector4D(1,0,0,1));
+        shader.setUniformValue("gradientCenter", QVector4D(0,0,0,0));
+        shader.setUniformValue("gradientBottom", QVector4D(0,0,0,0));
+        const auto gradientDock = render();
+        shader.setUniformValue("darkGradientOverlay", false);
+        require(gradientDock != render(), QStringLiteral("Dock gradient control was ignored"));
         shader.setUniformValue("rgbDriftStrength", 0.0f);
         shader.setUniformValue("magnifyGlassStrength", 0.02f);
 

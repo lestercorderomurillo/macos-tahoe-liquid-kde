@@ -1,3 +1,6 @@
+file(READ "${CMAKE_CURRENT_SOURCE_DIR}/presets.json" MATERIAL_PRESETS_JSON)
+configure_file(kcm/presets.h.in presets.h @ONLY)
+set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/presets.json")
 if(GLASS_WAYLAND OR GLASS_X11)
     add_subdirectory(kcm)
 endif()
@@ -52,7 +55,7 @@ endforeach()
 file(GLOB_RECURSE identity_inputs CONFIGURE_DEPENDS
     "${CMAKE_CURRENT_SOURCE_DIR}/*.cpp" "${CMAKE_CURRENT_SOURCE_DIR}/*.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/shaders/*" "${CMAKE_CURRENT_SOURCE_DIR}/metadata.json"
-    "${CMAKE_CURRENT_SOURCE_DIR}/*.kcfg" "${CMAKE_CURRENT_SOURCE_DIR}/*.kcfgc")
+    "${CMAKE_CURRENT_SOURCE_DIR}/presets.json" "${CMAKE_CURRENT_SOURCE_DIR}/*.kcfg" "${CMAKE_CURRENT_SOURCE_DIR}/*.kcfgc")
 list(SORT identity_inputs)
 set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS ${identity_inputs})
 set(identity_contents "")
@@ -84,6 +87,8 @@ if(GLASS_WAYLAND)
     target_include_directories(liquidglass PRIVATE "${CMAKE_CURRENT_BINARY_DIR}")
     target_link_libraries(liquidglass PRIVATE
         KDecoration3::KDecoration
+        KF6::I18n
+        Qt6::DBus
         KF6::ConfigGui
         KWin::kwin
         XCB::XCB
@@ -104,6 +109,8 @@ if(GLASS_X11)
     target_include_directories(liquidglass_x11 PRIVATE "${CMAKE_CURRENT_BINARY_DIR}")
     target_link_libraries(liquidglass_x11 PRIVATE
         KDecoration3::KDecoration
+        KF6::I18n
+        Qt6::DBus
         KF6::ConfigGui
         KWinX11::kwin
         XCB::XCB

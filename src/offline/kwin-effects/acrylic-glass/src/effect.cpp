@@ -43,10 +43,15 @@
 #endif
 
 #include <QGuiApplication>
+#include <QDBusConnection>
+#include <QDBusMessage>
 #include <QMatrix4x4>
 #include <QObject>
 #include <QPalette>
 #include "gradientcolors.h"
+#include "componentmaterials.h"
+#include "presets.h"
+#include <KLocalizedString>
 #include <QScreen>
 #include <QTime>
 #include <QTimer>
@@ -92,6 +97,20 @@ QString BlurEffect::debug(const QString &parameter) const
 {
     if (parameter == QStringLiteral("status")) {
         return m_valid ? QStringLiteral("ready") : QStringLiteral("shader-error");
+    }
+    if (parameter == QStringLiteral("components")) {
+        QJsonArray windows;
+        for (auto *w : effects->stackingOrder()) {
+            const auto &material = materialFor(w);
+            QString component;
+            for (auto i = m_componentMaterials.cbegin(); i != m_componentMaterials.cend(); ++i)
+                if (&i.value() == &material) { component = i.key(); break; }
+            windows.append(QJsonObject{{QStringLiteral("caption"), w->caption()},
+                {QStringLiteral("component"), component},
+                {QStringLiteral("width"), w->frameGeometry().width()},
+                {QStringLiteral("height"), w->frameGeometry().height()}});
+        }
+        return QString::fromUtf8(QJsonDocument(windows).toJson(QJsonDocument::Compact));
     }
     return QStringLiteral(MTTKDE_GLASS_BUILD_ID);
 }
@@ -469,6 +488,12 @@ BlurEffect::BlurEffect()
 #endif
     }
 
+    QDBusConnection::sessionBus().connect(QStringLiteral("org.kde.plasmashell"),
+        QStringLiteral("/org/kde/MacTahoe/Glass"), QStringLiteral("org.kde.MacTahoe.Glass"),
+        QStringLiteral("windowsChanged"), this, SLOT(slotGlassWindows(QString)));
+    QDBusConnection::sessionBus().send(QDBusMessage::createSignal(QStringLiteral("/org/kde/MacTahoe/Glass"),
+        QStringLiteral("org.kde.MacTahoe.Glass"), QStringLiteral("requestWindows")));
+
     // EffectsHandler signal wiring
     connect(effects, &EffectsHandler::windowAdded, this, &BlurEffect::slotWindowAdded);
     connect(effects, &EffectsHandler::windowDeleted, this, &BlurEffect::slotWindowDeleted);
@@ -651,6 +676,8 @@ void BlurEffect::reconfigure(ReconfigureFlags flags)
         m_windowClasses << unescaped;
     }
 
+    configureComponentMaterials();
+
     // Re-evaluate the cached blur region of every open window. Without this,
     // a settings change that affects which region is blurred (e.g. toggling
     // BlurDecorations, or editing the window-class match list) would not take
@@ -663,6 +690,99 @@ void BlurEffect::reconfigure(ReconfigureFlags flags)
 
     // Update all windows for the blur to take effect
     effects->addRepaintFull();
+}
+
+
+void BlurEffect::slotGlassWindows(const QString &json)
+{
+    QList<QPair<qint64, QRect>> docks;
+    const auto entries = QJsonDocument::fromJson(json.toUtf8()).array();
+    if (entries.size() > 64) return;
+    for (const auto &entry : entries) {
+        const auto v = entry.toObject();
+        const qint64 pid = v.value(QStringLiteral("pid")).toInteger();
+        const QRect rect(v.value(QStringLiteral("x")).toInt(), v.value(QStringLiteral("y")).toInt(),
+                         v.value(QStringLiteral("width")).toInt(), v.value(QStringLiteral("height")).toInt());
+        if (pid > 0 && rect.isValid()) docks.append({pid, rect});
+    }
+    if (docks == m_dockWindows) return;
+    m_dockWindows = docks;
+    for (auto *w : effects->stackingOrder()) if (w->isDock()) updateBlurRegion(w);
+    effects->addRepaintFull();
+}
+
+const BlurEffect::ComponentMaterial &BlurEffect::materialFor(EffectWindow *w) const
+{
+    QString caption = w->caption();
+    if (w->isDock()) {
+        const QRect bounds = w->frameGeometry().toRect();
+        for (const auto &dock : m_dockWindows) {
+            if (dock.first == w->window()->pid() && dock.second == bounds) {
+                caption = QStringLiteral("mttkde-dock");
+                break;
+            }
+        }
+    }
+    const auto component = GlassMaterials::classify(w->window()->resourceClass(), caption, w->isDock(),
+        w->isMenu() || w->isDropdownMenu() || w->isPopupMenu(),
+        w->isTooltip() || w->isAppletPopup(), m_aboutTitle);
+    return m_componentMaterials.constFind(component).value();
+}
+
+void BlurEffect::configureComponentMaterials()
+{
+    const KConfigGroup group(BlurConfig::self()->config(), QStringLiteral("Effect-liquidglass"));
+    const auto presets = QJsonDocument::fromJson(materialPresetsJson).array();
+    const auto preset = presets.at(BlurConfig::materialPreset() == 2 ? 1 : 0).toObject();
+    const auto components = GlassMaterials::read(group, preset, BlurConfig::backingTint() != 0, presets.at(0).toObject().value(QStringLiteral("values")).toObject());
+    m_aboutTitle = i18nd("plasma_applet_org.kde.mac.tahoe.liquid.globalmenu", "About This Computer");
+    effects->makeOpenGLContextCurrent();
+    m_noisePass.textures.clear();
+    m_componentMaterials.clear();
+    for (auto it = components.begin(); it != components.end(); ++it) {
+        const auto v = it.value().toObject();
+        ComponentMaterial material;
+        const auto n = [&](const char *key, double fallback, double lo, double hi) {
+            return float(GlassMaterials::number(v, key, fallback, lo, hi));
+        };
+        const bool dock = it.key() == QStringLiteral("dock") || it.key() == QStringLiteral("panel");
+        const double strength = n("BlurStrength", 5, 0, blurStrengthValues.size());
+        if (strength > 0) {
+            if (dock) {
+                // Preserve the original Dock's compact three-level kernel at 5.
+                material.iterations = std::min(size_t(3), size_t(std::max(1.0, std::ceil(strength))));
+                material.offset = strength * 0.14f;
+                material.expand = int(std::ceil(std::max(50.0, strength * 10.0)));
+            } else {
+                const double index = strength - 1.0;
+                const int lo = qBound(0, int(std::floor(index)), int(blurStrengthValues.size()) - 1);
+                const int hi = qBound(0, lo + 1, int(blurStrengthValues.size()) - 1);
+                material.iterations = blurStrengthValues[hi].iteration;
+                material.offset = blurStrengthValues[lo].offset + float(index - lo)
+                    * (blurStrengthValues[hi].offset - blurStrengthValues[lo].offset);
+                material.expand = blurOffsets[material.iterations - 1].expandSize;
+            }
+        }
+        material.optics = {n("RgbDriftStrength", 10, 0, 100), n("MagnifyGlassStrength", .02, 0, .2),
+            n("RefractionWidth", 38, 0, 300), n("HighlightWidth", 16, 0, 600), n("HighlightStrength", .1, 0, 3)};
+        material.noise = int(n("NoiseStrength", 0, 0, 100));
+        material.coverage = n("BlurCoverage", 1, 0, 1);
+        material.color = colorTransformMatrix(n("Saturation", 1.33, 0, 5), n("Contrast", 1, 0, 5), n("Brightness", 1, 0, 5));
+        material.gradient = v.value(QStringLiteral("DarkGradientOverlay")).toBool();
+        const auto color = [&](const QString &key, const char *opacity) {
+            QColor c(v.value(key).toString());
+            if (!c.isValid()) c = Qt::black;
+            return QVector4D(c.redF(), c.greenF(), c.blueF(), n(opacity, 0, 0, 1));
+        };
+        material.top = color(QStringLiteral("GradientTopColor"), "GradientTopOpacity");
+        material.topDark = color(QStringLiteral("GradientTopDarkColor"), "GradientTopOpacity");
+        material.center = color(QStringLiteral("GradientCenterColor"), "GradientCenterOpacity");
+        material.centerDark = color(QStringLiteral("GradientCenterDarkColor"), "GradientCenterOpacity");
+        material.bottom = color(QStringLiteral("GradientBottomColor"), "GradientBottomOpacity");
+        material.bottomDark = color(QStringLiteral("GradientBottomDarkColor"), "GradientBottomOpacity");
+        material.centerPosition = n("GradientCenterPosition", .55, 0, 1);
+        m_componentMaterials.insert(it.key(), material);
+    }
 }
 
 // Per-window state
@@ -816,7 +936,7 @@ void BlurEffect::updateBlurRegion(EffectWindow* w)
             data.backgroundEffect = std::make_unique<BackgroundEffectItem>(w->windowItem());
         }
         data.backgroundEffect->setEffectBoundingRect(RectF(blurRegion(w).boundingRect()));
-        data.backgroundEffect->setPixelsToExpandRepaintsBelowOpaqueRegions(w->isDock() ? 50 : m_expandSize);
+        data.backgroundEffect->setPixelsToExpandRepaintsBelowOpaqueRegions(materialFor(w).expand);
 #endif
     } else {
         if (auto it = m_windows.find(w); it != m_windows.end()) {
@@ -1230,7 +1350,7 @@ void BlurEffect::prePaintWindow(RenderView* view, EffectWindow* w, WindowPrePain
         // the visible bounds so refraction / Kawase taps near the rim
         // sample real content, not whatever was left in the buffer.
         Region expandedBlur = blurArea;
-        const int expandSize = w->isDock() ? 50 : m_expandSize;
+        const int expandSize = materialFor(w).expand;
         for (const Rect& rect : blurArea.rects()) {
             expandedBlur += rect.adjusted(-expandSize, -expandSize, expandSize, expandSize);
         }
@@ -1369,41 +1489,40 @@ AcrylicGlassDrawWindowResult BlurEffect::drawWindow(
 /// grain pass. Rebuilds when DPI scale or strength changes. Returns
 /// nullptr when noise is disabled (strength 0) — callers skip the
 /// whole noise pass in that case.
-GLTexture* BlurEffect::ensureNoiseTexture()
+GLTexture* BlurEffect::ensureNoiseTexture(int strength)
 {
-    if (m_noiseStrength == 0) {
+    if (strength == 0) {
         return nullptr;
     }
 
     const qreal scale = std::max(1.0, QGuiApplication::primaryScreen()->logicalDotsPerInch() / 96.0);
 
-    if (!m_noisePass.noiseTexture || m_noisePass.noiseTextureScale != scale || m_noisePass.noiseTextureStength != m_noiseStrength) {
-        // Seed from the clock so consecutive frames don't all use the
-        // same pattern (subtle temporal jitter).
+    auto &texture = m_noisePass.textures[{scale, strength}];
+    if (!texture) {
+        // Cache one texture per active noise strength and scale. Different
+        // component values must not rebuild it on every window draw.
         std::srand((uint) QTime::currentTime().msec());
 
         QImage noiseImage(QSize(256, 256), QImage::Format_Grayscale8);
         for (int y = 0; y < noiseImage.height(); y++) {
             uint8_t* noiseImageLine = (uint8_t*) noiseImage.scanLine(y);
             for (int x = 0; x < noiseImage.width(); x++) {
-                noiseImageLine[x] = std::rand() % m_noiseStrength;
+                noiseImageLine[x] = std::rand() % strength;
             }
         }
 
         noiseImage = noiseImage.scaled(noiseImage.size() * scale);
 
-        m_noisePass.noiseTexture = GLTexture::upload(noiseImage);
-        if (!m_noisePass.noiseTexture) {
+        texture = GLTexture::upload(noiseImage);
+        if (!texture) {
             return nullptr;
         }
 
-        m_noisePass.noiseTexture->setFilter(GL_NEAREST);
-        m_noisePass.noiseTexture->setWrapMode(GL_REPEAT);
-        m_noisePass.noiseTextureScale = scale;
-        m_noisePass.noiseTextureStength = m_noiseStrength;
+        texture->setFilter(GL_NEAREST);
+        texture->setWrapMode(GL_REPEAT);
     }
 
-    return m_noisePass.noiseTexture.get();
+    return texture.get();
 }
 
 // Main blur pipeline
@@ -1441,13 +1560,11 @@ void BlurEffect::blur(
     // edges into copies. Reconstruct a compact pyramid instead, and avoid
     // leaking a sharp image through the centre of the blurred material.
     const bool dockSurface = w->isDock();
-    const auto optics = opticsForSurface(dockSurface, {m_rgbDriftStrength, m_magnifyGlassStrength,
-        m_refractionWidth, m_highlightWidth, m_highlightStrength});
-    const float centerOpacity = dockSurface ? 0.98f : 1.0f;
-    // Freeze Dock optics at the v0.62.0 material (BlurStrength 5), including
-    // repaint expansion above. Window presets and fine tuning must not leak in.
-    const size_t iterationCount = dockSurface ? size_t(3) : m_iterationCount;
-    const float blurOffset = dockSurface ? 5.0f * 0.14f : m_offset;
+    const auto &material = materialFor(w);
+    const auto &optics = material.optics;
+    const float centerOpacity = material.coverage;
+    const size_t iterationCount = material.iterations;
+    const float blurOffset = material.offset;
 
     // 2. Effective blur shape
     // Wobbly supplies its deformation through WindowQuadList rather than
@@ -1892,7 +2009,7 @@ void BlurEffect::blur(
     // it with kcfg values keyed by window type (dock / popup / normal).
     // Maximized full-screen apps keep sharp corners unless the user
     // opts in via RoundCornersOfMaximizedWindows.
-    const QMatrix4x4 colorMatrix = dockSurface ? colorTransformMatrix(1.33, 1.0, 1.0) : m_colorMatrix;
+    const QMatrix4x4 colorMatrix = material.color;
     const float modulation = opacity * opacity;
 
     BorderRadius cornerRadius = w->window()->borderRadius();
@@ -2035,22 +2152,21 @@ void BlurEffect::blur(
         m_roundedOnscreenPass.shader->setUniform(m_roundedOnscreenPass.refractionWidthLocation, float(optics.refractionWidth * viewport.scale()));
         m_roundedOnscreenPass.shader->setUniform(m_roundedOnscreenPass.highlightWidthLocation, float(optics.highlightWidth * viewport.scale()));
         m_roundedOnscreenPass.shader->setUniform(m_roundedOnscreenPass.highlightStrengthLocation, optics.highlightStrength);
-        // Dock and Control Center retain untinted glass under every material.
+        // Defaults disable the gradient for Dock and Control Center; users can opt in.
         m_roundedOnscreenPass.shader->setUniform(m_roundedOnscreenPass.darkGradientOverlayLocation,
-            int(gradientEnabledForSurface(m_darkGradientOverlay, dockSurface,
-                w->window()->resourceClass(), w->caption())));
+            int(material.gradient));
         const QPalette windowPalette = w->window()->palette();
         m_roundedOnscreenPass.shader->setUniform(m_roundedOnscreenPass.centerOpacityLocation, centerOpacity);
         m_roundedOnscreenPass.shader->setUniform(m_roundedOnscreenPass.dockSurfaceLocation, int(dockSurface));
         m_roundedOnscreenPass.shader->setUniform(m_roundedOnscreenPass.backgroundSizeLocation,
             QVector2D(scaledBackgroundRect.width(), scaledBackgroundRect.height()));
         m_roundedOnscreenPass.shader->setUniform(m_roundedOnscreenPass.gradientTopLocation,
-            gradientColorForPalette(m_gradientTop, m_gradientTopDark, windowPalette));
+            gradientColorForPalette(material.top, material.topDark, windowPalette));
         m_roundedOnscreenPass.shader->setUniform(m_roundedOnscreenPass.gradientCenterLocation,
-            gradientColorForPalette(m_gradientCenter, m_gradientCenterDark, windowPalette));
-        m_roundedOnscreenPass.shader->setUniform(m_roundedOnscreenPass.gradientCenterPositionLocation, m_gradientCenterPosition);
+            gradientColorForPalette(material.center, material.centerDark, windowPalette));
+        m_roundedOnscreenPass.shader->setUniform(m_roundedOnscreenPass.gradientCenterPositionLocation, material.centerPosition);
         m_roundedOnscreenPass.shader->setUniform(m_roundedOnscreenPass.gradientBottomLocation,
-            gradientColorForPalette(m_gradientBottom, m_gradientBottomDark, windowPalette));
+            gradientColorForPalette(material.bottom, material.bottomDark, windowPalette));
 
         read->colorAttachment()->bind();
 
@@ -2066,14 +2182,14 @@ void BlurEffect::blur(
         // 9. Grain pass (optional)
         // v0.62.0 used NoiseStrength 1: rand() % 1 produces a zero texture.
         // Skipping that no-op preserves the Dock while windows keep their grain.
-        if (!dockSurface && m_noiseStrength > 0) {
+        if (material.noise > 0) {
             // Additive noise over the blurred image. Masks banding artefacts
             // that show up in smooth gradients after heavy blur.
 
             glEnable(GL_BLEND);
             glBlendFunc(GL_ONE, GL_ONE);
 
-            if (GLTexture* noiseTexture = ensureNoiseTexture()) {
+            if (GLTexture* noiseTexture = ensureNoiseTexture(material.noise)) {
                 ShaderManager::instance()->pushShader(m_noisePass.shader.get());
 
                 QMatrix4x4 projectionMatrix = viewport.projectionMatrix();

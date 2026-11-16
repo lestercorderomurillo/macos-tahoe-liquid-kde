@@ -9,6 +9,7 @@
 
 #include "kwin_version_compat.h"
 #include "roundedblurshape.h"
+#include "surfaceoptics.h"
 #include "wobbly_shape.h"
 
 #include "effect/effect.h"
@@ -196,6 +197,7 @@ public:
     bool blocksDirectScanout() const override;
 
 public Q_SLOTS:
+    void slotGlassWindows(const QString &json);
     // Window / view bookkeeping (slots)
 
     /// Allocates per-window state and wires up the property / contrast
@@ -276,7 +278,7 @@ private:
     /// Lazily generate the procedural noise texture used to grain the
     /// blurred output. Returns the cached texture on subsequent calls
     /// unless the configured noise strength changed.
-    GLTexture* ensureNoiseTexture();
+    GLTexture* ensureNoiseTexture(int strength);
 
     /// Pure helper: combine saturation × contrast × brightness into one
     /// 4×4 colour matrix. Identity (an empty optional) when all three
@@ -352,9 +354,7 @@ private:
         int cornerSquircleLocation;
         int opacityLocation;
 
-        std::unique_ptr<GLTexture> noiseTexture;
-        qreal noiseTextureScale = 1.0;
-        int noiseTextureStength = 0;
+        std::map<std::pair<qreal, int>, std::unique_ptr<GLTexture>> textures;
     } m_noisePass;
 
     // Mutable state
@@ -390,6 +390,24 @@ private:
     float m_gradientCenterPosition;
     QVector4D m_gradientBottom;
     QVector4D m_gradientBottomDark;
+
+    struct ComponentMaterial {
+        SurfaceOptics optics;
+        size_t iterations = 1;
+        float offset = 0;
+        int expand = 0;
+        int noise = 0;
+        float coverage = 1;
+        QMatrix4x4 color;
+        bool gradient = false;
+        QVector4D top, topDark, center, centerDark, bottom, bottomDark;
+        float centerPosition = 0.55;
+    };
+    QMap<QString, ComponentMaterial> m_componentMaterials;
+    QList<QPair<qint64, QRect>> m_dockWindows;
+    QString m_aboutTitle;
+    const ComponentMaterial &materialFor(EffectWindow *w) const;
+    void configureComponentMaterials();
 
     size_t m_iterationCount; ///< Number of Kawase halve/double passes (drives texture chain length).
     float m_offset; ///< Kawase tap offset; 0.0 means "no blur, passthrough".

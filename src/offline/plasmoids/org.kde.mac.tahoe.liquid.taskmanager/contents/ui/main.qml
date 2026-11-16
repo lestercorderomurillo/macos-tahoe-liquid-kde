@@ -6,6 +6,7 @@
 pragma ComponentBehavior: Bound
 
 import QtQuick
+import QtQuick.Window
 import QtQuick.Layouts
 
 import org.kde.plasma.plasmoid
@@ -26,6 +27,7 @@ import "TaskTools.js" as TaskTools
 
 PlasmoidItem {
     id: tasks
+    NativeLauncher.GlassSettings { component: "dock"; window: tasks.Window.window }
 
     // For making a bottom to top layout since qml flow can't do that.
     // We just hang the task manager upside down to achieve that.

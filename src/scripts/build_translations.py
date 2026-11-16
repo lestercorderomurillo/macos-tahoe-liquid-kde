@@ -48,7 +48,7 @@ def widget_messages(widget: Path) -> dict[tuple[str | None, str], str | None]:
 def kcm_messages() -> dict[tuple[None, str], None]:
     ui = ROOT / "offline/kwin-effects/acrylic-glass/src/kcm/config.ui"
     return {(None, node.text): None for node in ET.parse(ui).iter("string")
-            if node.text and node.get("notr") != "true"}
+            if node.text and node.get("notr") != "true"} | widget_messages(ui.parent)
 
 
 def write_catalog(base: Path, domain: str, messages: dict,

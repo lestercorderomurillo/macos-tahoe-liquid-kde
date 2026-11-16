@@ -1,139 +1,259 @@
 {
-  "version": "0.72.3",
-  "source_sha256": "9df46c3cfe742d8305742ce5e85ac8eca87842deb463894c12a786660ea65c46",
-  "environment": "Private offscreen Qt 6.11.2 / PipeWire 1.6.8; disposable KDE neon Plasma 6.8.1 / Qt 6.11.1 VM; private Xvfb launcher tests. No host installer or desktop modification.",
-  "scope": "Preferred output discovery, volume/mute writes and output changes; shared slider interaction; launcher Clipboard menu. No native engine, shader, ABI or appearance scheduling changes.",
+  "version": "0.72.4",
+  "source_sha256": "c841165328eb55f3bcf1a0b4117b0b86b3155382d172de3578638c117b4c14aa",
+  "environment": "Disposable KDE neon Plasma 6.8.1 / Qt 6.11.1 Wayland desktop; isolated X11/Wayland rendering; selected 6.6, 6.7.4 and 6.8 SDK builds. Desktop validation did not run on the host.",
+  "scope": "Shared per-preset component materials, transactional SVG/QML transparency, live reload and cached optics; Dock layout recovery and intention-based VM checks.",
   "qualified_source": {
-    "base_commit": "950da0026fc8ce3cebc54ad64a556da3fb5bfc05",
+    "base_commit": "99d08d1f2b24233b51a37463ad8762b71b787cf0",
     "changed_files": {
-      "src/offline/plasmoids/org.kde.mac-tahoe-liquid-kde.controlcenter/contents/ui/AudioView.qml": "6d1a6af774890db698aa3fb003c2c9327fdee1644a067894bcccdeec389b605f",
-      "src/offline/plasmoids/org.kde.mac-tahoe-liquid-kde.controlcenter/contents/ui/GlassSlider.qml": "161fc7a3f9d74142f2d1e52a0919e45a23b88f38463edb9470883ce159b96990",
-      "src/offline/plasmoids/org.kde.mac-tahoe-liquid-kde.launcher/contents/ui/SearchBar.qml": "5b4666cf58d1d3c683575a40f77ee0317e7613af310dc60306645641b4a05288",
-      "src/offline/plasmoids/org.kde.mac-tahoe-liquid-kde.launcher/contents/ui/MenuButton.qml": "6a35c315d08a5c63598d4560037e1ad858ccdf95cfb82653056d6be0d96c7f5b",
-      "tests/desktop_controls_probe.py": "68bb551580acc353e8a6ce6de7e38b924d1be243f9f983ebe9b779e11f58b0b5",
-      "tests/control_center_audio.py": "bd61ed9582c78a3065bdc223a251d3f8d500be8a0b8aa015486c6923115685d1",
-      "tests/qml/ClipboardLauncherProbe.qml": "c3322ce7cfe126ed87c67d0d638de84d7ae35a812dbdd7ffbfd16a11d2448ee4",
-      "tests/qml/LauncherPresetProbe.qml": "945131025e1b2bfad29af8683cf36870d9eb391b54dfedb899bfa1178b8f5d54"
+      "nix/home-manager.nix": "455c7c32fc6a8fd30e4e8d7004dd0e48e6416cda08bbdf894b5c6bc197e1c449",
+      "nix/packages.nix": "c817ed68a2576086e9a61df3d7f7ec1f35f832ca4608def26c74552c5b4a1907",
+      "src/offline/kwin-effects/acrylic-glass/locale/de/LC_MESSAGES/kwin_effect_liquidglass.mo": "f7a794bfa890d940b1b4954897f519a36da1dbf3212c2cd2dbc6dff03f9ccca4",
+      "src/offline/kwin-effects/acrylic-glass/locale/pt_BR/LC_MESSAGES/kwin_effect_liquidglass.mo": "e20d9677f734d535a38734097ae01689be38c94e97acf2b5b23593f70033eb35",
+      "src/offline/kwin-effects/acrylic-glass/po/de.po": "c74345bdd1044491369d6fbf26b08988cff4ecaec54e2e91c12f4a15130b8723",
+      "src/offline/kwin-effects/acrylic-glass/po/pt_BR.po": "dd96d8908a409161c4b83b15f0ca6f1cdc8e6c7a81395f21fc62cacf876824e9",
+      "src/offline/kwin-effects/acrylic-glass/src/CMakeLists.txt": "a21adfe56590ad3bae4b05b492dbfd76e7a9575c3ac03a77a2c5617d545c97b4",
+      "src/offline/kwin-effects/acrylic-glass/src/effect.cpp": "5c5c0624bd86f9564a02d9deecd7fa1c33521b0fdc684c4406df934a6906b693",
+      "src/offline/kwin-effects/acrylic-glass/src/effect.h": "c347cbf9776bfa91a05c7fbadcbfb2070e6549a40352a3dc2ba8af5a3b10d16d",
+      "src/offline/kwin-effects/acrylic-glass/src/kcm/config.cpp": "255205cd24e0c40df414ce4da5bb8f1c5fd693a5ef1f889a1c5b02e455c603fa",
+      "src/offline/kwin-effects/acrylic-glass/src/kcm/config.h": "2a510de48864c3333fdd28720458bcd25fb975381010dde1eea56b94c0d552ea",
+      "src/offline/kwin-effects/acrylic-glass/src/presets.json": "c72f87f5bdd23b140205a282c4d61234efa1fc8994b6a99d8f4aaeb4da5d7d6d",
+      "src/offline/kwin-effects/acrylic-glass/src/shaders/glass.glsl": "4a4a61cf26603415dd41fdba86685605b7dc1e1ba176580cc4229f718511ca51",
+      "src/offline/kwin-effects/acrylic-glass/src/shaders/glass_core.glsl": "8441c2d75a820470b3ad8cc8759535153c5130e2af77c98318b7bc4c343c02f6",
+      "src/offline/kwin-effects/acrylic-glass/src/surfaceoptics.h": "eb68fb0a28d34e23d0cdd7df74e7f04a87031e7f2c31a9bf6c9a6c442f2f1639",
+      "src/offline/plasmoids/org.kde.mac-tahoe-liquid-kde.controlcenter/contents/ui/ControlTile.qml": "67cb3b450cef00d1e0f80e8710f5b6f1d7a53214b7845a999054b09ad1ed0e53",
+      "src/offline/plasmoids/org.kde.mac-tahoe-liquid-kde.launcher/contents/ui/MenuRepresentation.qml": "6d1dc85d32e5a331a8f14fa89fb8d6b6797f779a50cd3e854089ea4bc11ffa4d",
+      "src/offline/plasmoids/org.kde.mac-tahoe-liquid-kde.launcher/contents/ui/main.qml": "6bff5e5b7556092cd0c670208e3190b102a2f11b68eefe1058e453b8b2f8ec0b",
+      "src/offline/plasmoids/org.kde.mac-tahoe-liquid-kde.trashcan/contents/ui/main.qml": "394b0ac1fa87623aafc0faa5f8614ac4e47a49fe2130308feb573dd8ce12dfda",
+      "src/offline/plasmoids/org.kde.mac.tahoe.liquid.globalmenu/qml/AboutWindow.qml": "a58913e5f1d945050bbaa03748d24dba8458e6fca2d64796509568f5b57e6986",
+      "src/offline/plasmoids/org.kde.mac.tahoe.liquid.taskmanager/contents/ui/main.qml": "b3240452e2c7e0b8bfd93d2a79270b0adf2805eb416bbcbb7c11ad1c7e552033",
+      "src/offline/plasmoids/org.kde.mac.tahoe.liquid.taskmanager/launcher/CMakeLists.txt": "6e263d9d846cd89ae08bb9e91ca84ff576e1298b92dd7eb50114a35e98f020f4",
+      "src/offline/plasmoids/org.kde.mac.tahoe.liquid.taskmanager/launcher/DockCell.qml": "76e00843ba1fb1cd7c52b783baa540e1edd377e34a7ee0da1375a7004a36c24a",
+      "src/offline/plasmoids/org.kde.mac.tahoe.liquid.taskmanager/launcher/launchersearchpopup.cpp": "ed5f5f3e9f117377431939dbc5c15db9c39d60fee2caa059c53e5e282f65de3c",
+      "src/scripts/build_translations.py": "1b95e3a0d3ec717ee67b74c2269fc9e912c399434d5ade549e502d03eb3281e0",
+      "src/scripts/locales/de.json": "ed20d840490f3586a9fe364aff6ea73c43649d42d4f1fc337797504794d5ee7c",
+      "src/scripts/locales/pt_BR.json": "2274dc98fc2490783516c8343962006d78a882f2dfd9ab3f4d1fb27b65576ab3",
+      "src/scripts/release_capture_guest.py": "6f7aa84ff70b8dca212c2b93196455326ffcec2fe00842abef5919130151b3c7",
+      "src/scripts/screenshot_checks.py": "2fb553748eec3b41315037df195dc12f3360e847f50d33f8776a058ae5c230ec",
+      "src/scripts/steps/acrylic_glass.py": "40b2937f8c15c48389ee8776389d6e8408a7e19e06b5b8e005d9f003625a84a8",
+      "src/scripts/theme_switch.py": "2195025bdfda1d39307369169a986def81232b4f217a27690e1f1c039cc20898",
+      "tests/glass/kcm.cpp": "48091ff1122609121d42175313c38754d8f703e1f0a7eb4a84e1316ac1bd4705",
+      "tests/glass/shader.cpp": "1a56cbcad1f53aa7bdab7f6322a694301a791cd04f9ff94aef54077aa2771d27",
+      "tests/test_acrylic_glass_cmake.py": "8eb85b3c16eabf780384d9dc3d8568bc780e42e60674624e3675e9ba86d2186c",
+      "tests/test_acrylic_glass_config.py": "7852736b7af99610d376d4fdfc0179d9937477f6c1c7a56e6a9cd90570138877",
+      "tests/test_acrylic_glass_uninstall.py": "8cf33d9dd54f8f5872abcff112ec099b088072fb30f59e73989e3d4f72dc9132",
+      "tests/test_desktop_controls.py": "36513c1d806c0becda28d7df2582b96edb5d0fe3ae13009434794a1e2e6bb672",
+      "tests/test_glass_presets.py": "47662673682bbc599f400806255c9d0b3aab7181820b17f8f5d449c72d3ad88b",
+      "tests/test_launcher_presets.py": "cf957c5bf66986ed9819f38a11682c635a357cd64f30081051695d444e54f5cf",
+      "tests/test_screenshot_checks.py": "166631315828d2ee3518c61c4d0c7e6f0b01a6d7a1aba5e117b59d96c642e35e",
+      "tests/test_theme_switch.py": "b208e49c36fc7cd04ebcd32a0bfa319272df782e8fee8a7eaa27d7d6705ab8d2",
+      "src/offline/kwin-effects/acrylic-glass/src/componentmaterials.h": "7102a229f9e1f2a4ae7530f949d1d457c2e8ad7c5fec2afa9683675e8a2d5566",
+      "src/offline/plasmoids/org.kde.mac.tahoe.liquid.taskmanager/launcher/glasssettings.cpp": "2e7c0267347669762a82246b4d4d2ed4ea64bb11efee51866108036ee9f80116",
+      "src/offline/plasmoids/org.kde.mac.tahoe.liquid.taskmanager/launcher/glasssettings.h": "9dade45f9615a5360259901f46411fef9e4efcd902fe4154482e21ecb0ba8c07",
+      "src/scripts/glass_surface_settings.py": "f795e1db7152dada04b3207abd5d79dd19d913ed34ee17e8101ca8956644b634",
+      "tests/glass/component_apply.cpp": "78a10c4a88263677b2f978345dcdbb75ca6e03c01552b6c244a74c9064152b9d",
+      "tests/glass_live_probe.py": "3321fb6431945af52441fdcbb57aa02c585eeda18b29b1126aef402d74aa0689",
+      "tests/test_component_glass_surfaces.py": "a3aa19ac513dfed1001501eeaecb9335da9a3591fbebedea1c11671703b27101",
+      "tests/vm/component_glass.py": "9637fd5d54d3398f75190bc8beaa52610a619b9576092f78bb6de610d71a2026"
     },
-    "vm_source_tar_sha256": "10235d27f63278b13a4546aa5f65762bca2944eac845271a1acae3cd51cd7915",
-    "bookkeeping": "Final v0.72.3 payload qualified; evidence and documentation finalized afterward."
+    "initial_component_source_archive": "92e0282dafbdce5d961c9deb0b8690679b4a2e2382ec11ce44d0df46b3ed174a",
+    "final_dock_installed_fingerprints": {
+      "src/offline/plasmoids/org.kde.mac.tahoe.liquid.taskmanager/launcher/DockCell.qml": "76e00843ba1fb1cd7c52b783baa540e1edd377e34a7ee0da1375a7004a36c24a",
+      "src/offline/plasmoids/org.kde.mac.tahoe.liquid.taskmanager/launcher/DockMetrics.qml": "41236ea447a43d500b1332b1c81ee31110e697ed94537341cd575f337a4f5681",
+      "src/offline/plasmoids/org.kde.mac.tahoe.liquid.taskmanager/contents/ui/main.qml": "b3240452e2c7e0b8bfd93d2a79270b0adf2805eb416bbcbb7c11ad1c7e552033",
+      "src/scripts/screenshot_checks.py": "2fb553748eec3b41315037df195dc12f3360e847f50d33f8776a058ae5c230ec",
+      "tests/vm/component_glass.py": "9637fd5d54d3398f75190bc8beaa52610a619b9576092f78bb6de610d71a2026",
+      "tests/glass/component_apply.cpp": "78a10c4a88263677b2f978345dcdbb75ca6e03c01552b6c244a74c9064152b9d",
+      "/usr/lib/x86_64-linux-gnu/qt6/plugins/kwin/effects/plugins/liquidglass.so": "b071761994b1bbbbbad61d93a02d0258a10913516cb3f6fce7ab57fae9b7ebfe",
+      "/usr/lib/x86_64-linux-gnu/qt6/plugins/kwin/effects/configs/kwin_liquidglass_config.so": "abebcba8e14150f2a272b26082a2db78f898a41103fe32d6df11ce2be2b1ef8e",
+      "/usr/lib/x86_64-linux-gnu/qt6/plugins/plasma/applets/org.kde.mac.tahoe.liquid.taskmanager.so": "7d2382c489cca23021c80edcac86a864d32f508a792f08c9e14b3dd4a72f9a08"
+    },
+    "bookkeeping": "Implementation qualified before final version/evidence bookkeeping; unchanged passing engine checks reused."
   },
   "checks": [
     {
-      "command": "python3 tests/control_center_audio.py <checkout>",
+      "command": "python3 -m pytest tests/test_acrylic_glass_cmake.py -k native_kcm; native catalog checks",
       "result": "passed",
-      "detail": "Production AudioView with the final slider passed actual pointer volume, mute/unmute, zero-volume mute, external changes, output switching and disconnect against private PipeWire servers locally and inside the disposable Plasma VM. Independent pactl readback confirmed writes. The pre-fix AudioView failed discovery as expected.",
+      "detail": "10 final KCM/profile/catalog checks passed; same control state, independent presets, migration and cancel/save behavior. Native UI render exercised separately.",
       "logs": {
-        "audio-final.log": "abb5e3d88690ee250b10853500f67ebe07dc395cbd5635c70f1fec7399b69cc9",
-        "control-audio-final-test.log": "c5ab49c9384d72e169eef659f2177b6375c8a677967af6ef31392864fee93ee1"
+        "kcm-release-check.log": "6ca04621673902507837075e7c0c5ee2297963a1b7e1112469bb97f1670ddce6"
       }
     },
     {
-      "command": "env QT_QPA_PLATFORM=offscreen QT_QUICK_BACKEND=software <private XDG/audio/system-bus settings> dbus-run-session -- python3 tests/desktop_controls_probe.py <checkout>",
+      "command": "python3 -m pytest tests/test_component_glass_surfaces.py <focused selections>",
       "result": "passed",
-      "detail": "Final native probe passed audio/brightness actions and capsule behavior: absent at rest; visible on hover/drag; disappears after mouse departure even after click; keyboard focus and movement; disabled state. Private offscreen Qt session.",
+      "detail": "Transactional SVG/SVGZ fill patching and exact restoration, rollback, symlink refusal, live native assets reload, Dock separation and installed helper reload entry points passed.",
       "logs": {
-        "control-slider-final-test.log": "0bcb5cb5f4a0ac0c18e5d06c31fbb5c5ed9faef5cafd0b21f7a744b0389aa06c"
+        "reload-cli-tests.log": "26b33690794b65d34d105cd6b4711eef215801e42fe258d2f94ac4a3b0f165b4",
+        "reload-tests.log": "d6ff56c1786ce6789b07cf46cb76a691ec512bbc903b55dd667cb38e807dba8e"
+      }
+    },
+    {
+      "command": "python3 -m pytest <affected installer/uninstall/theme selections>",
+      "result": "passed",
+      "detail": "47 isolated installer/uninstall and 5 owned Finder-mapping transition cases passed. Test HOME/XDG directories are isolated.",
+      "logs": {
+        "isolated-install-tests.log": "6a99b176bb4863b4ce4516c13ee4f029370bbfaf6918761d9801512d39c95050",
+        "theme-tests.log": "5e8e8a7e0d526f5a5fb9b0249772545d88210bb19b900c6a3639e14976b1358a"
+      }
+    },
+    {
+      "command": "python3 -m pytest <focused Acrylic/launcher regressions>",
+      "result": "passed",
+      "detail": "82 focused checks passed before the final Dock-only change; final native launcher/KCM UI checks passed. Unchanged engine evidence reused.",
+      "logs": {
+        "final-focused.log": "87eb2b764fb07e45581ab36a201c26a7551a23196351dd810e9d3462bf10b674",
+        "final-ui-tests.log": "be3ca9cb6738d81d8cf2ae454239c094a3e08715bede00eae7ffae3a1d8cc85d"
+      }
+    },
+    {
+      "command": "cmake --build <selected Plasma SDK build directories>",
+      "result": "passed",
+      "detail": "Final shared engine/registry builds passed with Plasma 6.6, 6.7.4 and 6.8 APIs. 6.7.4 included X11 and Wayland. These are SDK builds, not live distro installations.",
+      "logs": {
+        "sdk66-registry.log": "a1d34e1f70e0316f1b3584a53682d6d56975197c3e130340c1f40b66d0c83e98",
+        "sdk67-registry.log": "5687ca9002b69297a4529ac2e6b2eb46857a74025b0f7be453fe4e3360fd7cb1",
+        "sdk68-registry.log": "d4ca730a2e7793762ed5c10289eaf0c0265988f00348ff233481c2240f72cddb"
+      }
+    },
+    {
+      "command": "python3 tests/acrylic_glass_capture.py --plugin <final plugin> --compositor x11|wayland --material golden-gate --expect changed",
+      "result": "passed",
+      "detail": "Actual isolated X11 and Wayland rendering passed. X11 also exercised popup islands. Final Dock-only layout changes do not change these engine/shader inputs.",
+      "logs": {
+        "x11-final.log": "ffafe212a38848df236e51ba7f2dc6825ed2294b6982ccc9fff92f4c32a71f56",
+        "wayland-final.log": "44d69223e379d49435ae2260991640ea709b7ba190c1ea5351d441c5c6641e35"
+      }
+    },
+    {
+      "command": "nix-instantiate --parse nix/home-manager.nix; python3 -m pytest <Golden Gate wrapper checks>",
+      "result": "passed",
+      "detail": "Nix parse passed; 47 Golden Gate wrapper/source-selection checks passed. No live NixOS desktop qualification is claimed.",
+      "logs": {
+        "nix-parse.log": "cf8ef4d19009b99313ecaa4cc0b22b4b13e955c40217197404b5ad4192f9e224",
+        "gg-wrapper.log": "d3f89a8e8cbeecf30afcfd8c1a74cdd3da596285b43a500f0c1ec0ea07c1b4cd"
+      }
+    },
+    {
+      "command": "disposable VM: installed KCM Apply, native KDE/GTK/project appearance changes and clock boundary transitions",
+      "result": "passed",
+      "detail": "Both editions passed 14 appearance scenarios with persistent Qt/Kvantum, GTK3, GTK4 and About windows; actual project-scheduler dusk/dawn crossings, rapid/overlapping choices, native setting changes and manual override. Native KDE scheduler boundary crossing was not separately qualified.",
+      "logs": {
+        "vm/tahoe-appearance.log": "f0b6f2d890d4a6f43c3f00f98a568589a52dda40210e9066a634e5babffef8e3",
+        "vm/gg-appearance.log": "f0b6f2d890d4a6f43c3f00f98a568589a52dda40210e9066a634e5babffef8e3"
+      }
+    },
+    {
+      "command": "disposable VM: per-component SVG/QML transparency, Finder, Apps and Dock Apply",
+      "result": "passed",
+      "detail": "Live component isolation and visible SVG/QML changes passed. Golden Gate Control Center custom-fill frame was reviewed; the earlier Tahoe custom Control Center frame was rejected and is not evidence. Earlier deliberately enabled Dock gradients were custom stress cases, not factory-default captures.",
+      "logs": {
+        "vm/gg-fills.log": "9361c89892f0bf636eff1d7e1bb3fd1c9a47f3a41ee62015d962098cc0f31f25",
+        "vm/finder.log": "ab1d43dbf0a3a6fd24a9a190ad15dc0b9688098d9423bcd800a61033a9da0a9b",
+        "vm/gg-finder.log": "fa67b1862a94f82fa1f5e8cd2466a3f0aec6c0b36bfe8db1c86b83899b1bb5d5",
+        "vm/final-apps.log": "b695e10b4f568addfdb7f5ad222e5b393257281da4d69eeb9bd0227abfeba6f5",
+        "vm/gg-apps-preset2.log": "a10e680fc9112fcf1c53f45c6d624add21daa3f8a3a9f77f67618df8d47e1b90"
       }
     },
     {
       "command": "sudo env MAC_TAHOE_NO_UPDATE_CHECK=true MTTKDE_NO_CONFIRM=1 src/scripts/installer_backend.py install --only --plasmoids --no-apply-theme --no-grub-modify",
       "result": "passed",
-      "detail": "Installer and repeated installation passed for Tahoe defaults and Golden Gate defaults in a fresh disposable Plasma VM overlay. Installed AudioView.qml and GlassSlider.qml bytes matched the qualified sources after each of four transactions. Guest was synced before shutdown. Scope was plasmoid installation; no new full-desktop lifecycle claim.",
+      "detail": "Final shared Dock source installed and reinstalled successfully with both edition defaults in the disposable Plasma VM. Original full Acrylic/theme installer transactions also passed. A stale Python import after the first final install was a harness issue; subsequent independent commands loaded and validated the installed final code.",
       "logs": {
-        "final.log": "e0d5d0f330a61d662a0dd6fc5d3148de159a6c3f38e9b9fcc1f724ec11122015",
-        "tahoe-install.log": "21f3570e761d4e49d5d18074712154b43d7511a891b0f1cad668fcb7e40ccec8",
-        "tahoe-reinstall.log": "f68e03e83a8a03039c16e2ccaaa89dde59a2629ebd7c0383c48ec4b7ab9ad45b",
-        "golden-gate-install.log": "799ee5636244eec53a4e5a0c98bc597cd476a791c9c4b0f34ad9096a76348007",
-        "golden-gate-reinstall.log": "fde49222f7ef80ca8b9fb367cd2e7141cfecda45156ca4ed54bca9cbbf82c5dc",
-        "installed-source.json": "cf68d9e57d08ec5c3508e28efb6fb3d4c875669b7d9d7ec96feed83cb27a6a7d"
+        "dock-gap/install_final.log": "c39f6377919552499fd118f085a40c5ac8a487a1fda61b99d329c48028b42ee0",
+        "dock-gap/install_tahoe.log": "c279b8d6bb9eaf81815f1132a7c0cd977c9eb51ddfde3cec304d35660a872a43",
+        "vm/tahoe-install.log": "4edb4e8e79d08c3e90d6649d348de7916b9651379520ea19d1c83baec75d4ae4",
+        "vm/tahoe-reinstall.log": "d1f5af649b88ad82494d1dc7d9edaed23208189341a079be50566eb7500b7b7a",
+        "vm/golden-gate-install.log": "97c2df41d27c8c022b15253543561cc4333ac239556980e941a177c4508cf8b4",
+        "vm/golden-gate-reinstall.log": "942b26e5c1cc54706fe8d8601b5600d3b75bfc4c322cc5ae5eb1b1abaccb2ce3"
       }
     },
     {
-      "command": "python3 -m pytest tests/test_launcher_presets.py -k \"clipboard_launcher_integration or native_launcher_popup_presets\"; python3 -m pytest tests/test_launcher_presets.py -k clipboard_launcher_integration",
+      "command": "python3 -m pytest tests/test_launcher_presets.py -k \"dock_cells_share_compression_and_limit_extra_space or dock_boundary_spacing\"; python3 -m pytest tests/test_screenshot_checks.py",
       "result": "passed",
-      "detail": "Eight native preset-menu scenarios passed; after fixing the detached-popup test timing, both edition Clipboard-menu scenarios passed. Keyboard shortcuts retained.",
+      "detail": "10 native Dock geometry/scale cases and 8 capture-guard checks passed. Fit-content recovery, changing task counts, horizontal/vertical compression and fractional scales retain spacing. Capture guard rejects stale gaps and clipping and wakes the VM display.",
       "logs": {
-        "clipboard-menu-tests.log": "de65ff25e04c31dc34feb7d6d02f14d823eaa1a3e644a0e5e42b44c620d1daa7",
-        "clipboard-menu-integration.log": "2d486af29effb6a5c69622b4ee0184bfc221e9083ad4e0f2ff7d3695c4af84a5"
+        "dock-gap/final-hints-tests.log": "0717e2939353cad0b90d2336228577633e4acbcc7222ba19ee4893e40020fd84",
+        "dock-gap/guard-tests.log": "1aa0e443d6a2862389f7bee3ed0eda88e529d0c587a357ebc29f39d56207d12e"
       }
     },
     {
-      "command": "GOLDEN_GATE_TAHOE_SOURCE=<candidate> MAC_TAHOE_NO_UPDATE_CHECK=true ./install --prepare; compare changed executable bytes and edition defaults",
+      "command": "disposable VM: real application open/close, light/dark SVG Apply and display sleep/wake",
       "result": "passed",
-      "detail": "Golden Gate staged wallpaper MacGoldenGate and launcher preset 2; all eight changed implementation/probe files equal the qualified Tahoe candidate."
-    },
-    {
-      "command": "python3 -m pytest -q tests/test_bootstrap.py tests/test_source_archive.py tests/test_release_update.py",
-      "result": "passed",
-      "detail": "47 Golden Gate wrapper/source/archive/release-selection cases passed.",
+      "detail": "11 geometry cases per edition passed after final install, including custom transparency followed by restoration. These stress captures are separate from the factory-default evidence below.",
       "logs": {
-        "volume-wrapper-tests.log": "d20006559aeeb1afbfbe71e503a0735ed0954e0385004d66c1cb66e516693056"
+        "dock-gap/qualify-gg.log": "66e0855d2651dd80e9d090abe547e1eb0075b8262e40fca1a4ba6f189e4ee2b8",
+        "dock-gap/qualify-tahoe.log": "b46ac3912a78194a9d3a8b5083a79b52cde60cea7bce95e5c8808c323fa43669"
       }
     },
     {
-      "command": "Disposable VM: python3 /tmp/final-slider-preview.py",
+      "command": "python3 tests/vm/component_glass.py --edition tahoe|golden-gate --output <guest evidence>",
       "result": "passed",
-      "detail": "Reviewed four corrected capsule previews: light/dark and rest/hover. Light/dark/light effective-palette transitions and opacity passed; final installed audio/slider bytes matched. Earlier bubble styling and its previews were rejected and excluded. Native automatic scheduler transitions were not retested for this component-only change.",
+      "detail": "Both editions passed: all three actual KCM presets have Dock blur 5, refraction .1, coverage .98, light/dark transparency 98.5 and gradient false. Rendered Dock pixels match between all three presets in each appearance mode. Cancel cannot persist a test gradient; changing Apps leaves all other components unchanged. Finally restores every preset to factory values and verifies the edition selection. Edition-default light/dark frames reviewed.",
       "logs": {
-        "final.log": "e0d5d0f330a61d662a0dd6fc5d3148de159a6c3f38e9b9fcc1f724ec11122015"
+        "dock-gap/intent-tahoe.log": "d6a04bc81f292541fd3e0d0a8a5e896d9ae32d0c28b7698ecc2a194daa49b793",
+        "dock-gap/intent-gg.log": "6ceec10ebd10d45a56f281014a59222ff8218660a12935ab842d6a7c40476b3f",
+        "dock-gap/intent-tahoe/results.json": "ed53b6313dd2fd73ad0b0191b3bc0db2d6808827dbe053830cc0d15c8ed7c53f",
+        "dock-gap/intent-golden-gate/results.json": "b0bdf58865690500286608517a0a5deececc97aa01b48a56c495dbf460d504ca"
+      }
+    },
+    {
+      "command": "MAC_TAHOE_NO_UPDATE_CHECK=true GOLDEN_GATE_TAHOE_SOURCE=<qualified Tahoe checkout> ./install --prepare; staged-byte/default/version checks",
+      "result": "passed",
+      "detail": "Final v0.72.4 Golden Gate stage preserves the qualified shared implementation, selects launcher preset 2 and its own wallpaper.",
+      "logs": {
+        "dock-gap/gg-final-stage.json": "e47307fe958763e4769fc7eda6e110f0d14d26db641915237a08043265b78e17"
       }
     }
   ],
   "gallery_commit": "f09780b200b79302e7c23ef9f6f74d94748bbea3",
-  "captures": [
-    {
-      "path": "src/screenshots/previews/control-slider-light-rest-72326631efed.png",
-      "sha256": "72326631efeda465a30604f09d5f662fe1a899ec4314853bb9164c5d5b24f532",
+  "focused_vm_captures": {
+    "dock-gap/intent-tahoe/preset-0-light.png": {
+      "sha256": "f21101753ae69e4040927735f07fef3f6db5fa5d0fa53f355ec5525dfeacc592",
       "reviewed": true,
-      "source_files": {
-        "src/offline/plasmoids/org.kde.mac-tahoe-liquid-kde.controlcenter/contents/ui/GlassSlider.qml": "161fc7a3f9d74142f2d1e52a0919e45a23b88f38463edb9470883ce159b96990"
-      },
-      "scope": "Shared production QML component in disposable Plasma VM, explicit effective palette; not a new edition desktop gallery or automatic-scheduler claim."
+      "kind": "factory-default Dock",
+      "edition": "tahoe",
+      "mode": "light",
+      "gradient": false,
+      "blur": 5
     },
-    {
-      "path": "src/screenshots/previews/control-slider-light-hover-1ef34ef85268.png",
-      "sha256": "1ef34ef852680166536c9e024850ae2adcff830a750672eb43f067d9b5404403",
+    "dock-gap/intent-tahoe/preset-0-dark.png": {
+      "sha256": "8e0958990f1d43b480498badfb80a40e32193697a3697e67398b17e4520cfcac",
       "reviewed": true,
-      "source_files": {
-        "src/offline/plasmoids/org.kde.mac-tahoe-liquid-kde.controlcenter/contents/ui/GlassSlider.qml": "161fc7a3f9d74142f2d1e52a0919e45a23b88f38463edb9470883ce159b96990"
-      },
-      "scope": "Shared production QML component in disposable Plasma VM, explicit effective palette; not a new edition desktop gallery or automatic-scheduler claim."
+      "kind": "factory-default Dock",
+      "edition": "tahoe",
+      "mode": "dark",
+      "gradient": false,
+      "blur": 5
     },
-    {
-      "path": "src/screenshots/previews/control-slider-dark-rest-35deb7da4cc9.png",
-      "sha256": "35deb7da4cc9a42d6f717256071ef516b8d84b60eada1c5193398c95f4d560b8",
+    "dock-gap/intent-golden-gate/preset-2-light.png": {
+      "sha256": "8f6a092cd802c7af325ddc1caee9f0849a906172d534e63faa53e65d5bd3fdd4",
       "reviewed": true,
-      "source_files": {
-        "src/offline/plasmoids/org.kde.mac-tahoe-liquid-kde.controlcenter/contents/ui/GlassSlider.qml": "161fc7a3f9d74142f2d1e52a0919e45a23b88f38463edb9470883ce159b96990"
-      },
-      "scope": "Shared production QML component in disposable Plasma VM, explicit effective palette; not a new edition desktop gallery or automatic-scheduler claim."
+      "kind": "factory-default Dock",
+      "edition": "golden-gate",
+      "mode": "light",
+      "gradient": false,
+      "blur": 5
     },
-    {
-      "path": "src/screenshots/previews/control-slider-dark-hover-6196a3ee7a63.png",
-      "sha256": "6196a3ee7a63f2adfe5f513d01d3cec38ced76a86c60fc27eee0ee9768993951",
+    "dock-gap/intent-golden-gate/preset-2-dark.png": {
+      "sha256": "7b35107d14dc4a83350be67cc76e387e9c8cf9425ff15c848f98132dfb68ade6",
       "reviewed": true,
-      "source_files": {
-        "src/offline/plasmoids/org.kde.mac-tahoe-liquid-kde.controlcenter/contents/ui/GlassSlider.qml": "161fc7a3f9d74142f2d1e52a0919e45a23b88f38463edb9470883ce159b96990"
-      },
-      "scope": "Shared production QML component in disposable Plasma VM, explicit effective palette; not a new edition desktop gallery or automatic-scheduler claim."
+      "kind": "factory-default Dock",
+      "edition": "golden-gate",
+      "mode": "dark",
+      "gradient": false,
+      "blur": 5
     }
+  },
+  "coverage_limits": [
+    "SDK/container builds are not live Plasma distro VM tests. One disposable Plasma desktop environment exercised both editions.",
+    "Nix staging was parsed/checked; no live NixOS desktop session.",
+    "Automatic boundary tests use the project scheduler; native KDE scheduler boundary crossing is not claimed.",
+    "Temporary enabled Dock-gradient stress frames are not factory-default evidence; the final intention-based suite resets and verifies all three presets.",
+    "An earlier insufficiently isolated mock test wrote host auxiliary files; those writes were backed up and restored and tests were isolated. Separately, the user explicitly authorized repairing the installed launcher property and restarting Plasma."
   ],
-  "coverage_limits": "One disposable Plasma 6.8.1 VM plus private local Qt/audio and Xvfb checks. No physical sound-card/HDMI/Bluetooth matrix or new full desktop lifecycle. Audio regression uses real virtual outputs; it does not claim listening verification on physical speakers. Existing documentation photographs retain original provenance. Full CI is tracked separately on dev; main promotion does not repeat it.",
-  "references": [
-    {
-      "url": "https://appleinsider.com/articles/25/09/11/macos-tahoe-review----a-strong-update-just-not-for-the-reasons-you-expect",
-      "image_url": "https://photos5.appleinsider.com/gallery/64936-135389-888-Control-Center-xl.jpg",
-      "image_sha256": "00c176a6225a90cdc9297859fab1daba8305de741ccd29b34230a6acf8817d58",
-      "observed": "Resting sound track has no thumb; interaction shows a small rounded capsule. Reference photograph inspected, not redistributed."
-    },
-    {
-      "url": "https://github.com/zayronxio/Plasma.Flex.Hub/blob/main/contents/ui/components/Volume1x2.qml",
-      "scope": "Read-only KDE implementation reference; uses a standard QtQuick Slider. No source copied."
-    },
-    {
-      "url": "https://github.com/jaxparrow07/liquidglass-kde-widgets/blob/master/packages/music/contents/ui/widget/MusicSlider.qml",
-      "scope": "Read-only KDE hover/drag reference; music track expands on hover/press. No source copied."
-    }
-  ]
+  "remote_ci": {
+    "state": "not_submitted",
+    "note": "Final dev workflow will run once after publication; full remote matrix is distinct from local VM/SDK evidence."
+  }
 }

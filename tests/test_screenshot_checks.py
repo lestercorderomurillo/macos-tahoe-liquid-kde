@@ -73,3 +73,31 @@ def test_session_rejects_the_other_control_style(monkeypatch, style):
     monkeypatch.setattr(checks, '_read', lambda *args: f'__aurorae__svg__{other}LiquidKde-Light')
     with pytest.raises(checks.AppearanceMismatch, match='Window controls'):
         checks.check_session('light')
+
+
+def test_dock_geometry_rejects_gap_and_clipping():
+    import copy
+    def widget(name, x, width):
+        return {"type": name, "geometry": {"x": x, "y": 8, "width": width, "height": 68}}
+    state = [{"location": "bottom", "length": 900, "widgets": [
+        widget("org.kde.mac-tahoe-liquid-kde.launcher", 12, 52),
+        widget("org.kde.mac.tahoe.liquid.icontasks", 68, 780),
+        widget("org.kde.mac-tahoe-liquid-kde.trashcan", 852, 52)]}]
+    checks.check_dock_geometry(state)
+    gap = copy.deepcopy(state)
+    gap[0]["length"] += 44
+    gap[0]["widgets"][-1]["geometry"]["x"] += 44
+    with pytest.raises(checks.AppearanceMismatch, match="spacing"):
+        checks.check_dock_geometry(gap)
+    clipped = copy.deepcopy(state)
+    clipped[0]["length"] = 829
+    with pytest.raises(checks.AppearanceMismatch, match="outside"):
+        checks.check_dock_geometry(clipped)
+    vertical = copy.deepcopy(state)
+    vertical[0]["location"] = "left"
+    for widget in vertical[0]["widgets"]:
+        g = widget["geometry"]
+        g["x"], g["y"], g["width"], g["height"] = g["y"], g["x"], g["height"], g["width"]
+    checks.check_dock_geometry(vertical)
+    with pytest.raises(checks.AppearanceMismatch, match="No project Dock"):
+        checks.check_dock_geometry([])

@@ -2,6 +2,9 @@
 msgid ""
 msgstr "Project-Id-Version: MacTahoe Liquid KDE\nPO-Revision-Date: 2026-10-22 00:00-0600\nLast-Translator: MacTahoe Liquid KDE contributors\nLanguage-Team: pt_BR\nLanguage: pt_BR\nMIME-Version: 1.0\nContent-Type: text/plain; charset=UTF-8\nContent-Transfer-Encoding: 8bit\nPlural-Forms: nplurals=2; plural=(n > 1);\n"
 
+msgid "About This Computer"
+msgstr "Sobre este computador"
+
 msgid "Acrylic Glass — a complete material for your Dock, menus and windows."
 msgstr "Acrylic Glass — um material completo para seu Dock, menus e janelas."
 
@@ -17,14 +20,26 @@ msgstr "Ajusta a diferença entre tons claros e escuros. 1 mantém o contraste o
 msgid "All except matching windows"
 msgstr "Todas exceto as janelas correspondentes"
 
+msgid "Amount of blurred backdrop in the centre. 1 keeps full blur; lower values reveal more sharp background."
+msgstr "Quantidade de fundo desfocado no centro. 1 mantém o desfoque completo; valores menores revelam mais do fundo nítido."
+
 msgid "Appearance"
 msgstr "Aparência"
+
+msgid "Apps + Clipboard"
+msgstr "Apps + Área de transferência"
 
 msgid "Background gradient"
 msgstr "Gradiente de fundo"
 
+msgid "Background transparency only. 0% is opaque; 100% is transparent. Text, borders and icons stay intact."
+msgstr "Transparência apenas do fundo. 0% é opaco; 100% é transparente. Textos, bordas e ícones permanecem intactos."
+
 msgid "Bend the background near the glass edge. 0 disables distortion."
 msgstr "Distorce o fundo próximo à borda do vidro. 0 desativa a distorção."
+
+msgid "Blur coverage"
+msgstr "Cobertura do desfoque"
 
 msgid "Blur strength"
 msgstr "Intensidade do desfoque"
@@ -74,8 +89,14 @@ msgstr "Separação de cores (px)"
 msgid "Colors follow each window's light or dark appearance automatically."
 msgstr "As cores seguem automaticamente a aparência clara ou escura de cada janela."
 
+msgid "Component"
+msgstr "Componente"
+
 msgid "Contrast"
 msgstr "Contraste"
+
+msgid "Control Center"
+msgstr "Central de Controle"
 
 msgid "Corner Radius (px)"
 msgstr "Raio dos cantos (px)"
@@ -83,8 +104,14 @@ msgstr "Raio dos cantos (px)"
 msgid "Corners"
 msgstr "Cantos"
 
+msgid "Could not apply background transparency: %1"
+msgstr "Não foi possível aplicar a transparência do fundo: %1"
+
 msgid "Dark mode"
 msgstr "Modo escuro"
+
+msgid "Dock"
+msgstr "Dock"
 
 msgid "Dock/Launcher"
 msgstr "Dock/Lançador"
@@ -95,11 +122,17 @@ msgstr "Ativar gradiente"
 msgid "Extend background blur to translucent window frames and title bars."
 msgstr "Estende o desfoque do fundo às molduras e barras de título translúcidas das janelas."
 
+msgid "Finder"
+msgstr "Finder"
+
 msgid "Fine tuning"
 msgstr "Ajustes finos"
 
 msgid "Force Blur List"
 msgstr "Lista de desfoque forçado"
+
+msgid "General windows"
+msgstr "Janelas gerais"
 
 msgid "Glass"
 msgstr "Vidro"
@@ -128,6 +161,12 @@ msgstr "Clareia ou escurece o fundo do vidro. 1 mantém o brilho original."
 msgid "Match Mode"
 msgstr "Modo de correspondência"
 
+msgid "Menu bar"
+msgstr "Barra de menus"
+
+msgid "Menus / Shell"
+msgstr "Menus / Shell"
+
 msgid "One window class or resource name per line."
 msgstr "Uma classe ou nome de recurso de janela por linha."
 
@@ -136,6 +175,9 @@ msgstr "Somente janelas correspondentes"
 
 msgid "Optics"
 msgstr "Óptica"
+
+msgid "Other Plasma popups"
+msgstr "Outras janelas flutuantes do Plasma"
 
 msgid "Popups"
 msgstr "Janelas sobrepostas"
@@ -160,6 +202,9 @@ msgstr "Arredondar janelas maximizadas"
 
 msgid "Saturation"
 msgstr "Saturação"
+
+msgid "Search capsule"
+msgstr "Cápsula de pesquisa"
 
 msgid "Separate red, green and blue near the glass edge. 0 disables color fringes."
 msgstr "Separa vermelho, verde e azul perto da borda do vidro. 0 desativa as franjas de cor."
@@ -196,6 +241,12 @@ msgstr "Intensidade da tonalidade superior"
 
 msgid "Top tint strength for both modes. 0 leaves the glass untinted at this stop."
 msgstr "Intensidade da tonalidade superior para ambos os modos. 0 deixa o vidro sem tonalidade neste ponto."
+
+msgid "Transparency — dark"
+msgstr "Transparência — escuro"
+
+msgid "Transparency — light"
+msgstr "Transparência — claro"
 
 msgid "Width of the bright rim along the glass edge."
 msgstr "Largura do brilho ao longo da borda do vidro."

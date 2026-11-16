@@ -82,6 +82,8 @@ in rec {
       cp -r ${../src/scripts/locales} "$out/libexec/locales"
       cp ${../src/scripts/defaults.json} "$out/libexec/defaults.json"
       cp ${../src/scripts/oled_care.py} "$out/libexec/oled_care.py"
+      cp ${../src/scripts/glass_surface_settings.py} "$out/libexec/glass_surface_settings.py"
+      makeWrapper ${pkgs.python3}/bin/python "$out/bin/mac-tahoe-glass-surfaces" --add-flags "$out/libexec/glass_surface_settings.py"
       for tool in theme-switch oled-care; do
         script="$(echo "$tool" | tr - _)"
         makeWrapper ${pkgs.python3}/bin/python "$out/bin/mac-tahoe-$tool" \

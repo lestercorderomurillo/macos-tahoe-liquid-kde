@@ -2435,3 +2435,33 @@ def test_stop_reaps_only_exact_legacy_watcher_that_ignores_sigterm(tmp_path, mon
             if process.poll() is None:
                 process.kill()
             process.wait(timeout=2)
+
+
+@pytest.mark.parametrize("mapping", ["mac-tahoe-liquid-kdeFinder=dolphin", "Other=dolphin"])
+def test_finder_component_theme_tracks_mode_without_replacing_user_mapping(monkeypatch, tmp_path, mapping):
+    import theme_switch
+    import configparser
+    import shutil
+    import subprocess
+    if not shutil.which("kwriteconfig6"):
+        pytest.skip("KConfig CLI required")
+    root = tmp_path / "config"
+    for name in ("mac-tahoe-liquid-kdeFinder", "mac-tahoe-liquid-kdeFinderDark"):
+        (root / "Kvantum" / name).mkdir(parents=True)
+    chooser = root / "Kvantum/kvantum.kvconfig"
+    chooser.write_text("[General]\ntheme=mac-tahoe-liquid-kde\n[Applications]\n" + mapping + "\nUnrelated=other-app\n")
+    monkeypatch.setattr(theme_switch, "_xdg_config", lambda: root)
+    monkeypatch.setattr(theme_switch, "_have", lambda name: name == "kwriteconfig6")
+    monkeypatch.setattr(theme_switch, "_run_user", lambda args, **kwargs: subprocess.run(args, capture_output=True, text=True, timeout=10))
+    theme_switch._set_kvantum_theme("dark")
+    saved = configparser.ConfigParser()
+    saved.optionxform = str
+    saved.read(chooser)
+    assert saved["General"]["theme"] == "mac-tahoe-liquid-kdeDark"
+    assert saved["Applications"]["Unrelated"] == "other-app"
+    if mapping.startswith("Other"):
+        assert saved["Applications"]["Other"] == "dolphin"
+        assert "mac-tahoe-liquid-kdeFinderDark" not in saved["Applications"]
+    else:
+        assert saved["Applications"]["mac-tahoe-liquid-kdeFinderDark"] == "dolphin"
+        assert "mac-tahoe-liquid-kdeFinder" not in saved["Applications"]

@@ -1,4 +1,5 @@
 import QtQuick
+import org.kde.mac.tahoe.launcher as NativeGlass
 import QtQml
 import org.kde.plasma.core as PlasmaCore
 import org.kde.plasma.components as PlasmaComponents
@@ -7,6 +8,8 @@ import org.kde.kirigami as Kirigami
 
 PlasmaCore.Dialog {
 	id: root
+	title: "mttkde-apps"
+	readonly property NativeGlass.GlassSettings glassSettings: NativeGlass.GlassSettings { component: "apps"; window: root }
 	readonly property bool goldenGate: kicker.launcherPreset === 2
 
 	objectName: "popupWindow"

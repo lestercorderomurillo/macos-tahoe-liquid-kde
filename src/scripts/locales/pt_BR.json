@@ -1224,5 +1224,20 @@
   "Delete": "Excluir",
   "Confirm clear history": "Confirmar limpeza do histórico",
   "Clear history": "Limpar histórico",
-  "Clipboard action failed. Try again.": "A ação da área de transferência falhou. Tente novamente."
+  "Clipboard action failed. Try again.": "A ação da área de transferência falhou. Tente novamente.",
+  "General windows": "Janelas gerais",
+  "Finder": "Finder",
+  "Menus / Shell": "Menus / Shell",
+  "Other Plasma popups": "Outras janelas flutuantes do Plasma",
+  "Apps + Clipboard": "Apps + Área de transferência",
+  "Search capsule": "Cápsula de pesquisa",
+  "Dock": "Dock",
+  "Component": "Componente",
+  "Blur coverage": "Cobertura do desfoque",
+  "Amount of blurred backdrop in the centre. 1 keeps full blur; lower values reveal more sharp background.": "Quantidade de fundo desfocado no centro. 1 mantém o desfoque completo; valores menores revelam mais do fundo nítido.",
+  "Background transparency only. 0% is opaque; 100% is transparent. Text, borders and icons stay intact.": "Transparência apenas do fundo. 0% é opaco; 100% é transparente. Textos, bordas e ícones permanecem intactos.",
+  "Transparency — light": "Transparência — claro",
+  "Transparency — dark": "Transparência — escuro",
+  "Could not apply background transparency: %1": "Não foi possível aplicar a transparência do fundo: %1",
+  "Menu bar": "Barra de menus"
 }

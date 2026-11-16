@@ -4,6 +4,7 @@ import json
 import os
 import re
 import subprocess
+import shutil
 import time
 import uuid
 from pathlib import Path
@@ -259,8 +260,12 @@ def _edition_preset() -> dict[str, str]:
     values = dict(preset["values"])
     if choices and choices["files"] == "nautilus" and choices["glass_style"] == "tinted":
         values.update(preset.get("tinted_values", {}))
+    components = {"general": dict(values)}
+    for name, overrides in preset.get("components", {}).items():
+        components[name] = dict(values) | overrides
     return {key: str(value).lower() if isinstance(value, bool) else str(value)
-            for key, value in values.items()} | {"MaterialPreset": str(preset["value"])}
+            for key, value in values.items()} | {"ComponentMaterials": json.dumps(components, separators=(",", ":")),
+                "MaterialPreset": str(preset["value"])}
 
 
 def _install_material_preset() -> bool:
@@ -461,12 +466,25 @@ def install() -> None:
                     except OSError:
                         pass
 
+    helper = HOME / ".local/bin/mac-tahoe-glass-surfaces"
+    helper.parent.mkdir(parents=True, exist_ok=True)
+    shutil.copy2(SRC.parents[2] / "scripts/glass_surface_settings.py", helper)
+    helper.chmod(0o755)
     material_applied = _install_material_preset()
     _install_corner_defaults()
     _install_missing_defaults((("BlurDecorations", "true"),
                                ("BlurMatching", "false"), ("BlurNonMatching", "true")))
     if not material_applied or not _install_backing_tint():
         fail(tr('Acrylic Glass material settings could not be applied'))
+        return
+    try:
+        from glass_surface_settings import apply as apply_surfaces
+        apply_surfaces(json.loads(_edition_preset()["ComponentMaterials"]),
+                       Path(os.environ.get("XDG_DATA_HOME", HOME / ".local/share")),
+                       Path(os.environ.get("XDG_CONFIG_HOME", HOME / ".config")),
+                       Path(os.environ.get("XDG_STATE_HOME", HOME / ".local/state")))
+    except (OSError, ValueError) as error:
+        fail(str(error))
         return
     ok(tr('Acrylic Glass material settings ready'))
     if not _disable_conflicting_blurs():
@@ -517,6 +535,12 @@ def install() -> None:
 
 
 def uninstall() -> None:
+    home = Path.home()
+    from glass_surface_settings import restore as restore_surfaces
+    restore_surfaces(Path(os.environ.get("XDG_DATA_HOME", home / ".local/share")),
+                     Path(os.environ.get("XDG_CONFIG_HOME", home / ".config")),
+                     Path(os.environ.get("XDG_STATE_HOME", home / ".local/state")))
+    (home / ".local/bin/mac-tahoe-glass-surfaces").unlink(missing_ok=True)
     # Persist the disabled state before asking KWin to unload the effect.
     # Unloading first can race a config notification/reconfigure and let KWin
     # immediately load the still-enabled plugin again, leaving every window

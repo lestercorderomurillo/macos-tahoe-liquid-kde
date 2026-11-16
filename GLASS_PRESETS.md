@@ -4,6 +4,14 @@ Material presets for **v0.63.0**. Each pair shows the same preset in light and d
 
 The Dock retains v0.62.0 optics in every view. These are independent community themes, not Apple or KDE products.
 
+## Component settings
+
+Select a preset, then a component: general windows, Finder, menus, other Plasma popups, Apps + Clipboard, search, Control Center, About, Dock or menu bar. Every component has the same optical controls. Each preset retains its own component edits; **Restore this preset** resets only that preset. Existing defaults are unchanged, including Dock blur 5 and its disabled gradient in all three presets.
+
+**Blur coverage** controls how much blurred backdrop fills the centre. **Transparency — light/dark** edits background SVG fills in Plasma/Kvantum and the QML fills in About and Control Center. It leaves text, icons, masks and borders intact. GTK client CSS is separate from SVG transparency; its windows still receive the selected compositor optics.
+
+**Apply** saves all components in the preset, patches installed backgrounds and reloads the affected surfaces. Cancel discards pending changes. Switching appearance keeps each component's optics and uses its corresponding light/dark fill.
+
 ## Tahoe (Clear)
 
 | Light mode | Dark mode |
@@ -96,4 +104,3 @@ The Dock retains v0.62.0 optics in every view. These are independent community t
 | `GradientCenterDarkColor` | `#000000` |
 | `GradientBottomDarkColor` | `#000000` |
 | `BlurDecorations` | `True` |
-

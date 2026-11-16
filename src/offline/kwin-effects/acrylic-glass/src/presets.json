@@ -24,10 +24,76 @@
       "GradientTopDarkColor": "#000000",
       "GradientCenterDarkColor": "#000000",
       "GradientBottomDarkColor": "#000000",
-      "BlurDecorations": true
+      "BlurDecorations": true,
+      "BlurCoverage": 1.0,
+      "SurfaceTransparencyLight": 25.0,
+      "SurfaceTransparencyDark": 25.0
     },
     "tinted_values": {
       "BlurStrength": 12.0
+    },
+    "components": {
+      "finder": {
+        "SurfaceTransparencyLight": 25.0,
+        "SurfaceTransparencyDark": 25.0
+      },
+      "menus": {
+        "SurfaceTransparencyLight": 45.0,
+        "SurfaceTransparencyDark": 52.0
+      },
+      "apps": {
+        "SurfaceTransparencyLight": 45.0,
+        "SurfaceTransparencyDark": 52.0
+      },
+      "search": {
+        "SurfaceTransparencyLight": 45.0,
+        "SurfaceTransparencyDark": 52.0
+      },
+      "control-center": {
+        "DarkGradientOverlay": false,
+        "SurfaceTransparencyLight": 45.0,
+        "SurfaceTransparencyDark": 52.0
+      },
+      "about": {
+        "SurfaceTransparencyLight": 45.0,
+        "SurfaceTransparencyDark": 52.0
+      },
+      "dock": {
+        "BlurStrength": 5.0,
+        "NoiseStrength": 0,
+        "RgbDriftStrength": 2.88,
+        "MagnifyGlassStrength": 0.1,
+        "RefractionWidth": 18.0,
+        "HighlightWidth": 3.5,
+        "HighlightStrength": 0.1,
+        "Brightness": 1.0,
+        "Contrast": 1.0,
+        "Saturation": 1.33,
+        "DarkGradientOverlay": false,
+        "BlurCoverage": 0.98,
+        "SurfaceTransparencyLight": 98.5,
+        "SurfaceTransparencyDark": 98.5
+      },
+      "popups": {
+        "SurfaceTransparencyLight": 45.0,
+        "SurfaceTransparencyDark": 52.0
+      },
+      "panel": {
+        "BlurStrength": 5.0,
+        "NoiseStrength": 0,
+        "RgbDriftStrength": 2.88,
+        "MagnifyGlassStrength": 0.1,
+        "RefractionWidth": 18.0,
+        "HighlightWidth": 3.5,
+        "HighlightStrength": 0.1,
+        "Brightness": 1.0,
+        "Contrast": 1.0,
+        "Saturation": 1.33,
+        "DarkGradientOverlay": false,
+        "BlurCoverage": 0.98,
+        "SurfaceTransparencyLight": 98.5,
+        "SurfaceTransparencyDark": 98.5
+      }
     }
   },
   {
@@ -55,8 +121,74 @@
       "GradientTopDarkColor": "#000000",
       "GradientCenterDarkColor": "#000000",
       "GradientBottomDarkColor": "#000000",
-      "BlurDecorations": true
+      "BlurDecorations": true,
+      "BlurCoverage": 1.0,
+      "SurfaceTransparencyLight": 25.0,
+      "SurfaceTransparencyDark": 25.0
     },
-    "tinted_values": {}
+    "tinted_values": {},
+    "components": {
+      "finder": {
+        "SurfaceTransparencyLight": 25.0,
+        "SurfaceTransparencyDark": 25.0
+      },
+      "menus": {
+        "SurfaceTransparencyLight": 40.0,
+        "SurfaceTransparencyDark": 99.0
+      },
+      "apps": {
+        "SurfaceTransparencyLight": 45.0,
+        "SurfaceTransparencyDark": 88.0
+      },
+      "search": {
+        "SurfaceTransparencyLight": 45.0,
+        "SurfaceTransparencyDark": 88.0
+      },
+      "control-center": {
+        "DarkGradientOverlay": false,
+        "SurfaceTransparencyLight": 40.0,
+        "SurfaceTransparencyDark": 99.0
+      },
+      "about": {
+        "SurfaceTransparencyLight": 40.0,
+        "SurfaceTransparencyDark": 99.0
+      },
+      "dock": {
+        "BlurStrength": 5.0,
+        "NoiseStrength": 0,
+        "RgbDriftStrength": 2.88,
+        "MagnifyGlassStrength": 0.1,
+        "RefractionWidth": 18.0,
+        "HighlightWidth": 3.5,
+        "HighlightStrength": 0.1,
+        "Brightness": 1.0,
+        "Contrast": 1.0,
+        "Saturation": 1.33,
+        "DarkGradientOverlay": false,
+        "BlurCoverage": 0.98,
+        "SurfaceTransparencyLight": 98.5,
+        "SurfaceTransparencyDark": 98.5
+      },
+      "popups": {
+        "SurfaceTransparencyLight": 45.0,
+        "SurfaceTransparencyDark": 88.0
+      },
+      "panel": {
+        "BlurStrength": 5.0,
+        "NoiseStrength": 0,
+        "RgbDriftStrength": 2.88,
+        "MagnifyGlassStrength": 0.1,
+        "RefractionWidth": 18.0,
+        "HighlightWidth": 3.5,
+        "HighlightStrength": 0.1,
+        "Brightness": 1.0,
+        "Contrast": 1.0,
+        "Saturation": 1.33,
+        "DarkGradientOverlay": false,
+        "BlurCoverage": 0.98,
+        "SurfaceTransparencyLight": 98.5,
+        "SurfaceTransparencyDark": 98.5
+      }
+    }
   }
 ]

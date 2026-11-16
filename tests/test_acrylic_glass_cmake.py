@@ -113,29 +113,6 @@ def test_acrylic_glass_version_floor_matches_preflight():
     assert "VERSION_LESS 6.4" not in top
 
 
-def test_acrylic_glass_preset_fits_kcm_ranges():
-    """Installer tuning must remain representable in the effect KCM."""
-    from steps import acrylic_glass
-
-    presets = json.loads((ROOT / "src/presets.json").read_text())
-    assert [p["id"] for p in presets] == ["tahoe", "golden-gate"]
-    assert [p["value"] for p in presets] == [1, 2]
-    root = ET.parse(ROOT / "src/kcm/config.ui").getroot()
-    schema = ET.parse(ROOT / "src/glass.kcfg").getroot()
-    assert schema.find(".//{*}entry[@name='AcrylicGlassType']") is None
-    for preset in presets:
-        for key, value in preset["values"].items():
-            widget = root.find(f".//widget[@name='kcfg_{key}']")
-            assert widget is not None, key
-            assert schema.find(f".//{{*}}entry[@name='{key}']") is not None
-            if isinstance(value, (int, float)) and not isinstance(value, bool):
-                maximum = widget.find("./property[@name='maximum']")[0]
-                assert 0 <= value <= float(maximum.text), key
-    for key, value in presets[0]["values"].items():
-        default = schema.find(f".//{{*}}entry[@name='{key}']/{{*}}default").text
-        assert default == (str(value).lower() if isinstance(value, bool) else str(value)), key
-
-
 @pytest.mark.parametrize("active,returncode,identity,confirmed", [
     ("liquidglass\n", 0, True, True),
     ("liquidglass\n", 0, False, False),
@@ -154,6 +131,14 @@ def test_acrylic_glass_installs_the_effect_default_blur(monkeypatch, tmp_path, c
     from subprocess import CompletedProcess
     monkeypatch.setattr(acrylic_glass, "_as_root", contextlib.nullcontext)
     monkeypatch.setattr(acrylic_glass, "default_wallpaper", lambda: edition)
+    home = tmp_path / "home"
+    home.mkdir()
+    monkeypatch.setattr(acrylic_glass, "HOME", home)
+    monkeypatch.setattr(acrylic_glass, "DATA_HOME", home / ".local/share")
+    monkeypatch.setenv("HOME", str(home))
+    monkeypatch.setenv("XDG_DATA_HOME", str(home / ".local/share"))
+    monkeypatch.setenv("XDG_CONFIG_HOME", str(home / ".config"))
+    monkeypatch.setenv("XDG_STATE_HOME", str(home / ".local/state"))
 
     build = tmp_path / "build"
     for name in ("src/liquidglass.so", "src/liquidglass_x11.so",

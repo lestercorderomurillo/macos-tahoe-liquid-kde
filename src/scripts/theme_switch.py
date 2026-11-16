@@ -1117,6 +1117,14 @@ def _set_kvantum_theme(mode: str) -> None:
     need the manager GUI; the engine reads this same config key directly.
     """
     theme = _kvantum_theme(mode)
+    # The optional Finder profile follows this same authoritative mode.
+    finder = "mac-tahoe-liquid-kdeFinder" + ("Dark" if mode == "dark" else "")
+    chooser = _xdg_config() / "Kvantum/kvantum.kvconfig"
+    if ((_xdg_config() / "Kvantum" / finder).is_dir() and _have("kwriteconfig6")
+            and chooser.is_file() and re.search(r"^mac-tahoe-liquid-kdeFinder(?:Dark)?=dolphin$", chooser.read_text(), re.M)):
+        other = "mac-tahoe-liquid-kdeFinder" + ("" if mode == "dark" else "Dark")
+        _run_user(["kwriteconfig6", "--file", str(chooser), "--group", "Applications", "--key", other, "--delete"], timeout=5)
+        _run_user(["kwriteconfig6", "--file", str(chooser), "--group", "Applications", "--key", finder, "dolphin"], timeout=5)
     if _have("kvantummanager"):
         env = os.environ.copy()
         env["QT_QPA_PLATFORM"] = "offscreen"

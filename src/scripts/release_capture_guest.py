@@ -35,6 +35,28 @@ def plasma(script):
     return run('qdbus6', 'org.kde.plasmashell', '/PlasmaShell', 'org.kde.PlasmaShell.evaluateScript', script)
 
 
+def wait_for_dock_geometry(timeout=10):
+    from screenshot_checks import AppearanceMismatch, check_dock_geometry
+    run('kscreen-doctor', '--dpms', 'on')
+    deadline = time.monotonic() + timeout
+    previous = None
+    error = None
+    while time.monotonic() < deadline:
+        state = json.loads(plasma('print(JSON.stringify(panels().map(p=>({'
+            'location:p.location,length:p.length,widgets:p.widgets().map(w=>({'
+            'type:w.type,geometry:w.geometry}))}))));'))
+        try:
+            check_dock_geometry(state)
+            if state == previous:
+                return state
+            previous = state
+        except AppearanceMismatch as exc:
+            error = exc
+            previous = None
+        time.sleep(.2)
+    raise RuntimeError(f'Dock layout did not settle: {error or "geometry keeps changing"}')
+
+
 def windows(script=''):
     from PyQt6.QtCore import QCoreApplication, QObject, QTimer, pyqtClassInfo, pyqtSlot
     from PyQt6.QtDBus import QDBusConnection, QDBusInterface
@@ -358,6 +380,7 @@ def capture(repo, profile, edition, requested, case):
     if presets != [EDITIONS[edition][1]]:
         raise RuntimeError(f'Wrong launcher preset: {presets}')
     run('sudo', 'date', '--set', profile['clock'])
+    wait_for_dock_geometry()
     target = repo.parent / 'frame.png'
     if case in ('finder', 'showcase', 'about', 'topbar') or case in MATERIAL_CASES:
         verify_desktop_window(case, windows())
@@ -455,6 +478,7 @@ def file_preview(repo, profile, manager):
         raise RuntimeError('File manager did not open exactly one window')
     arrange({candidates[0]['caption']: dict(x=480, y=240, width=960, height=600)})
     previous = None
+    wait_for_dock_geometry()
     target = repo.parent / 'frame.png'
     deadline = time.monotonic() + 30
     while time.monotonic() < deadline:

@@ -939,11 +939,9 @@ wrapper selecting `MacGoldenGate`, not a separate theme implementation.
 
 Golden Gate (Official) is the only offered Golden Gate material and the
 installer default. Its independently tuned three-stop gradient, documented
-above, applies to menus in both light and dark mode. Dock surfaces are exempt
-from the gradient under every material; do not
-change the saved gradient settings or remove their blur and refraction.
-Dock/panel optics stay pinned to v0.62.0 independently of window presets and
-fine tuning: three Kawase levels, offset `5 * 0.14`, repaint expansion 50,
+above, applies to menus in both light and dark mode. Dock surfaces default to no gradient under every material, with an independent
+component override. Do not reset saved optics during an appearance transition.
+Dock/panel defaults preserve the v0.62.0 optics independently of window presets: three Kawase levels, offset `5 * 0.14`, repaint expansion 50,
 RGB separation `12 * 0.24`, refraction 0.1 / width 18, highlight 3.5 / 0.1,
 brightness 1, contrast 1, saturation 1.33 and 98% centre coverage. The old
 grain strength 1 generated an all-zero texture, so skip that no-op on Docks.
@@ -1562,4 +1560,6 @@ symbols, not hand-drawn approximations. Regenerate the committed paths with
 uniform transforms in `systemmenusymbols.json`. The plugin must not require
 a host Apple font or an SVG loader at runtime. App Store remains unchanged.
 
-Dock and Control Center surfaces never receive the material gradient, in either edition or appearance mode. Preserve blur and refraction. Recover separate rounded blur islands and let shader coverage antialias their edges; integer region clipping must not cut off fractional coverage. Keep transparent gaps and custom cutouts intact.
+Dock and Control Center gradients default off in every material and appearance mode; explicit component overrides may enable them. Preserve blur and refraction. Recover separate rounded blur islands and let shader coverage antialias their edges; integer region clipping must not cut off fractional coverage. Keep transparent gaps and custom cutouts intact.
+
+Acrylic Glass stores an independent component map for each stable material/variant ID. The KCM selector covers general windows, Finder, menus, other Plasma popups, Apps + Clipboard, search, Control Center, About, Dock and menu bar, with the same optical controls. Preserve existing defaults and legacy saved optics when migrating. Dock and Control Center gradients default off in all three presets but may be enabled explicitly for that component. Switching presets retains their edits; Restore resets only the selected preset. Background transparency edits Plasma/Kvantum SVG fills and About/Control Center QML fills, never whole-window opacity. Apply must patch owned assets transactionally and reload live surfaces; Cancel must not write assets. Preserve mode-specific values, unrelated app mappings and externally edited files. Keep implementations and preset definitions exclusively in Tahoe.

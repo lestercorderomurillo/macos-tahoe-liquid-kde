@@ -1,9 +1,9 @@
 # Installer testing
 
-Tahoe **v0.72.3** restores Control Center volume control and updates slider interaction and the launcher Clipboard menu.
-Focused native controls, real audio-server checks, and both editions' disposable Plasma VM install/reinstall checks passed.
-See [validation and coverage limits](release-evidence.json).
-README and installer photographs retain their original reviewed [provenance](src/screenshots/release-capture.json).
+Tahoe **v0.72.4** adds per-component Acrylic Glass settings and fixes Dock spacing after material reloads.
+Native KCM, SVG reload, selected SDK/rendering checks and paired disposable-VM install/reinstall checks passed.
+All three presets retain Dock blur 5 and no gradient in light/dark mode; VM checks cover saved settings, rendered pixels, Cancel and component isolation.
+See [validation and coverage limits](release-evidence.json). Existing gallery photographs retain their original reviewed [provenance](src/screenshots/release-capture.json).
 
 ## Installation steps
 

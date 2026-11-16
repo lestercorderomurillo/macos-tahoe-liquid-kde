@@ -14,6 +14,9 @@
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QPushButton>
+#include <QDir>
+#include <QStandardPaths>
+#include <QLabel>
 #include <QSpinBox>
 #include <cmath>
 #include <cstdio>
@@ -123,6 +126,7 @@ int main(int argc, char **argv)
     for (int i : {1, 2, 0}) {
         selector->setCurrentIndex(i);
         selector->activated(i);
+        control<QPushButton>(module.get(), QStringLiteral("resetPreset"))->click();
         auto values = presets.at(i == 2 ? 1 : 0).toObject().value(QStringLiteral("values")).toObject();
         if (i != 0) {
             values.insert(QStringLiteral("BlurStrength"), 12.0);
@@ -173,6 +177,77 @@ int main(int argc, char **argv)
         require(control<QSpinBox>(module.get(), QStringLiteral("kcfg_BackingTint"))->value() == (i != 0 ? 1 : 0),
                 QStringLiteral("appearance or reopening lost the backing tint"));
     }
+    // Components share controls, but edits and restoration stay independent.
+    auto *components = control<QComboBox>(module.get(), QStringLiteral("componentSelector"));
+    require(components->count() == 10, QStringLiteral("missing component controls"));
+    for (int presetIndex = 0; presetIndex < 3; ++presetIndex) {
+        selector->setCurrentIndex(presetIndex);
+        selector->activated(presetIndex);
+        components->setCurrentIndex(components->findData(QStringLiteral("dock")));
+        require(control<QDoubleSpinBox>(module.get(), QStringLiteral("kcfg_BlurStrength"))->value() == 5,
+                QStringLiteral("Dock default blur changed"));
+        require(!control<QCheckBox>(module.get(), QStringLiteral("kcfg_DarkGradientOverlay"))->isChecked(),
+                QStringLiteral("Dock default gradient must be off"));
+    }
+    selector->setCurrentIndex(0);
+    selector->activated(0);
+    control<QDoubleSpinBox>(module.get(), QStringLiteral("kcfg_BlurStrength"))->setValue(7.5);
+    control<QCheckBox>(module.get(), QStringLiteral("kcfg_DarkGradientOverlay"))->setChecked(true);
+    control<QDoubleSpinBox>(module.get(), QStringLiteral("kcfg_SurfaceTransparencyLight"))->setValue(72.5);
+    components->setCurrentIndex(components->findData(QStringLiteral("apps")));
+    require(control<QDoubleSpinBox>(module.get(), QStringLiteral("kcfg_BlurStrength"))->value() == 5,
+            QStringLiteral("Dock settings leaked into Apps"));
+    control<QDoubleSpinBox>(module.get(), QStringLiteral("kcfg_BlurStrength"))->setValue(3.25);
+    module->save();
+    module.reset();
+    module = open();
+    components = control<QComboBox>(module.get(), QStringLiteral("componentSelector"));
+    components->setCurrentIndex(components->findData(QStringLiteral("dock")));
+    require(control<QDoubleSpinBox>(module.get(), QStringLiteral("kcfg_BlurStrength"))->value() == 7.5
+        && control<QCheckBox>(module.get(), QStringLiteral("kcfg_DarkGradientOverlay"))->isChecked()
+        && control<QDoubleSpinBox>(module.get(), QStringLiteral("kcfg_SurfaceTransparencyLight"))->value() == 72.5,
+        QStringLiteral("Dock component values were not persisted"));
+    components->setCurrentIndex(components->findData(QStringLiteral("apps")));
+    require(control<QDoubleSpinBox>(module.get(), QStringLiteral("kcfg_BlurStrength"))->value() == 3.25,
+            QStringLiteral("Apps component values were not persisted"));
+    control<QDoubleSpinBox>(module.get(), QStringLiteral("kcfg_BlurStrength"))->setValue(9);
+    module->load();
+    require(control<QDoubleSpinBox>(module.get(), QStringLiteral("kcfg_BlurStrength"))->value() == 3.25,
+            QStringLiteral("Cancel retained component edit"));
+    components->setCurrentIndex(0);
+    selector = control<QComboBox>(module.get(), QStringLiteral("kcfg_MaterialPreset"));
+    selector->setCurrentIndex(1);
+    selector->activated(1);
+    components->setCurrentIndex(components->findData(QStringLiteral("dock")));
+    require(control<QDoubleSpinBox>(module.get(), QStringLiteral("kcfg_BlurStrength"))->value() == 5,
+            QStringLiteral("Dock override leaked across presets"));
+    selector->setCurrentIndex(0);
+    selector->activated(0);
+    require(control<QDoubleSpinBox>(module.get(), QStringLiteral("kcfg_BlurStrength"))->value() == 7.5,
+            QStringLiteral("Switching preset discarded its component edits"));
+    components->setCurrentIndex(0);
+
+    // A failed SVG Apply must leave both optical configuration and saved
+    // component values unchanged, with the editor still offering Apply.
+    QFile beforeFile(QStandardPaths::writableLocation(QStandardPaths::ConfigLocation) + QStringLiteral("/kwinrc"));
+    require(beforeFile.open(QIODevice::ReadOnly), QStringLiteral("configuration unreadable"));
+    const auto beforeFailure = beforeFile.readAll();
+    beforeFile.close();
+    const QString helper = QDir::homePath() + QStringLiteral("/.local/bin/mac-tahoe-glass-surfaces");
+    require(QFile::rename(helper, helper + QStringLiteral(".working")), QStringLiteral("helper rename failed"));
+    QFile failed(helper);
+    require(failed.open(QIODevice::WriteOnly), QStringLiteral("failure helper creation failed"));
+    failed.write("#!/bin/sh\necho 'test failure' >&2\nexit 1\n");
+    failed.close();
+    failed.setPermissions(QFile::ReadOwner | QFile::WriteOwner | QFile::ExeOwner);
+    control<QDoubleSpinBox>(module.get(), QStringLiteral("kcfg_BlurStrength"))->setValue(10);
+    module->save();
+    require(!control<QLabel>(module.get(), QStringLiteral("applyError"))->isHidden(), QStringLiteral("Apply failure hidden"));
+    require(beforeFile.open(QIODevice::ReadOnly) && beforeFile.readAll() == beforeFailure,
+            QStringLiteral("Failed SVG Apply changed optical settings"));
+    beforeFile.close();
+    require(QFile::remove(helper) && QFile::rename(helper + QStringLiteral(".working"), helper), QStringLiteral("helper restore failed"));
+    module->load();
     auto *blur = control<QDoubleSpinBox>(module.get(), QStringLiteral("kcfg_BlurStrength"));
     blur->setValue(8.25);
     auto *color = control<KColorButton>(module.get(), QStringLiteral("kcfg_GradientTopColor"));

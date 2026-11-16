@@ -35,10 +35,10 @@ PlasmoidItem {
     Layout.fillHeight: dockCell.active
     Layout.minimumWidth: Plasmoid.formFactor === PlasmaCore.Types.Horizontal ? Math.floor(dockCell.size) : 0
     Layout.preferredWidth: Plasmoid.formFactor === PlasmaCore.Types.Horizontal ? dockCell.size : -1
-    Layout.maximumWidth: Plasmoid.formFactor === PlasmaCore.Types.Horizontal ? Math.ceil(dockCell.size) : Infinity
+    Layout.maximumWidth: Plasmoid.formFactor === PlasmaCore.Types.Horizontal ? dockCell.preferredSize : Infinity
     Layout.minimumHeight: Plasmoid.formFactor === PlasmaCore.Types.Vertical ? Math.floor(dockCell.size) : 0
     Layout.preferredHeight: Plasmoid.formFactor === PlasmaCore.Types.Vertical ? dockCell.size : -1
-    Layout.maximumHeight: Plasmoid.formFactor === PlasmaCore.Types.Vertical ? Math.ceil(dockCell.size) : Infinity
+    Layout.maximumHeight: Plasmoid.formFactor === PlasmaCore.Types.Vertical ? dockCell.preferredSize : Infinity
 
     readonly property bool inPanel: (Plasmoid.location === PlasmaCore.Types.TopEdge
         || Plasmoid.location === PlasmaCore.Types.RightEdge

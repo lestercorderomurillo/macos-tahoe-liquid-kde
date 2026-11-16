@@ -6,6 +6,9 @@ from steps import acrylic_glass
 def test_uninstall_disables_before_unload_and_reconfigures_after_removal(
         monkeypatch, tmp_path):
     home = tmp_path / "home"
+    monkeypatch.setenv("XDG_DATA_HOME", str(home / ".local/share"))
+    monkeypatch.setenv("XDG_CONFIG_HOME", str(home / ".config"))
+    monkeypatch.setenv("XDG_STATE_HOME", str(home / ".local/state"))
     plugin_dir = tmp_path / "plugins"
     kwinrc = home / ".config/kwinrc"
     kwinrc.parent.mkdir(parents=True)

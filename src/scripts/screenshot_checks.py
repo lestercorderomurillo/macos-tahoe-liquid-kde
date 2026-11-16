@@ -122,3 +122,37 @@ def check_files_pixels(image, mode: str, windows: list[dict], scale: float,
     if matching < .95:
         raise AppearanceMismatch(f'Files pixels contradict {mode}: median={median:.1f}, matching={matching:.1%}')
     return {'window': matches[0], 'sample': box, 'median_luminance': median, 'matching_fraction': matching}
+
+
+def check_dock_geometry(panels: list[dict]) -> None:
+    """Reject a stale panel layout, including the empty slot before Trash."""
+    manager = "org.kde.mac.tahoe.liquid.icontasks"
+    launcher = "org.kde.mac-tahoe-liquid-kde.launcher"
+    trash = "org.kde.mac-tahoe-liquid-kde.trashcan"
+    found = False
+    for panel in panels:
+        widgets = panel["widgets"]
+        for i, task in enumerate(widgets):
+            if task["type"] != manager:
+                continue
+            found = True
+            axis, extent = ("y", "height") if panel["location"] in ("left", "right") else ("x", "width")
+            # Widget positions include floating-panel margins; length does not.
+            origin = min(w["geometry"][axis] for w in widgets)
+            for widget in widgets:
+                geometry = widget["geometry"]
+                if geometry[extent] <= 0 or geometry[axis] < -1.5 or geometry[axis] + geometry[extent] - origin > panel["length"] + 1.5:
+                    raise AppearanceMismatch("Dock widget lies outside the panel")
+            if i == 0 or i + 1 == len(widgets):
+                continue
+            before, after = widgets[i - 1], widgets[i + 1]
+            # Respect user-added separators and other applets.
+            if before["type"] != launcher or after["type"] != trash:
+                continue
+            a, b, c = (w["geometry"] for w in (before, task, after))
+            leading = b[axis] - a[axis] - a[extent]
+            trailing = c[axis] - b[axis] - b[extent]
+            if min(leading, trailing) < -1.5 or abs(leading - trailing) > 1.5 or abs(a[extent] - c[extent]) > 1.5:
+                raise AppearanceMismatch(f"Dock spacing has not settled: {leading=}, {trailing=}")
+    if not found:
+        raise AppearanceMismatch("No project Dock is visible")

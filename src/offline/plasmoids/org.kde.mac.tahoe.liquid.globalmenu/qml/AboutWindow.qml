@@ -21,6 +21,7 @@
 pragma ComponentBehavior: Bound
 
 import QtQuick
+import org.kde.mac.tahoe.launcher as NativeGlass
 import QtQuick.Layouts
 import QtQuick.Controls as QQC2
 import QtQuick.Window
@@ -32,6 +33,7 @@ import org.kde.ksvg as KSvg
 
 Window {
     id: aboutWindow
+    NativeGlass.GlassSettings { id: glassSettings; component: "about"; window: aboutWindow }
 
     KI18n.KI18nContext {
         id: translations
@@ -290,8 +292,13 @@ Window {
         objectName: "aboutGlassSurface"
         anchors.fill: parent
         radius: 22
-        color: popupSurface.clearSurface ? Qt.rgba(1, 1, 1, aboutWindow.isDarkTheme ? 0.01 : 0.60)
-            : aboutWindow.isDarkTheme ? Qt.rgba(0, 0, 0, 0.48) : Qt.rgba(1, 1, 1, 0.55)
+        color: {
+            const alpha = aboutWindow.isDarkTheme ? glassSettings.darkOpacity : glassSettings.lightOpacity;
+            if (popupSurface.clearSurface)
+                return Qt.rgba(1, 1, 1, alpha >= 0 ? alpha : (aboutWindow.isDarkTheme ? 0.01 : 0.60));
+            return aboutWindow.isDarkTheme ? Qt.rgba(0, 0, 0, alpha >= 0 ? alpha : 0.48)
+                : Qt.rgba(1, 1, 1, alpha >= 0 ? alpha : 0.55);
+        }
         border.width: 0.75
         border.color: Qt.rgba(0, 0, 0, 0.18)
 
