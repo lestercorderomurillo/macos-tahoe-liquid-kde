@@ -154,30 +154,45 @@ Find apps, browse categories and keep your favorites within reach.
 
 Glass refraction, hover zoom, red notification count bubbles and auto-hide.
 
-<p align="center">
-  <img src="src/screenshots/dock_1_v4-16250ed9e41d.webp" alt="Glass Dock with light icons and a red notification count bubble" width="840">
-  <br>
-  <img src="src/screenshots/dock_1_dark_v4-16f0b8604e32.webp" alt="Glass Dock with dark icons, a complete App Store icon and a red notification count bubble" width="840">
-</p>
+- **Light**
 
-<details>
-<summary>Glass icons in all eight colors</summary>
+  <a href="src/screenshots/dock_1_v4-16250ed9e41d.webp"><img src="src/screenshots/dock_1_v4-16250ed9e41d.webp" alt="Glass Dock with light icons and a red notification count bubble" width="840"></a>
 
-Original icon artwork with glass tints, using native application icons.
+- **Dark**
 
-<table>
-<tr><th>Tint</th><th>Preview</th></tr>
-<tr><td>Blue</td><td><a href="src/screenshots/previews/tahoe-light-dock-blue-c0a884127c13.webp"><img src="src/screenshots/previews/tahoe-light-dock-blue-c0a884127c13.webp" alt="Tahoe light Dock with blue glass Apps, application and empty Trash icons" width="840"></a></td></tr>
-<tr><td>Purple</td><td><a href="src/screenshots/previews/tahoe-light-dock-purple-aacad095e84c.webp"><img src="src/screenshots/previews/tahoe-light-dock-purple-aacad095e84c.webp" alt="Tahoe light Dock with purple glass Apps, application and empty Trash icons" width="840"></a></td></tr>
-<tr><td>Pink</td><td><a href="src/screenshots/previews/tahoe-light-dock-pink-b1f568d9960c.webp"><img src="src/screenshots/previews/tahoe-light-dock-pink-b1f568d9960c.webp" alt="Tahoe light Dock with pink glass Apps, application and empty Trash icons" width="840"></a></td></tr>
-<tr><td>Red</td><td><a href="src/screenshots/previews/tahoe-light-dock-red-becc9c02bcb4.webp"><img src="src/screenshots/previews/tahoe-light-dock-red-becc9c02bcb4.webp" alt="Tahoe light Dock with red glass Apps, application and empty Trash icons" width="840"></a></td></tr>
-<tr><td>Orange</td><td><a href="src/screenshots/previews/tahoe-light-dock-orange-119f0e0c26ed.webp"><img src="src/screenshots/previews/tahoe-light-dock-orange-119f0e0c26ed.webp" alt="Tahoe light Dock with orange glass Apps, application and empty Trash icons" width="840"></a></td></tr>
-<tr><td>Yellow</td><td><a href="src/screenshots/previews/tahoe-light-dock-yellow-76266bf8cd00.webp"><img src="src/screenshots/previews/tahoe-light-dock-yellow-76266bf8cd00.webp" alt="Tahoe light Dock with yellow glass Apps, application and empty Trash icons" width="840"></a></td></tr>
-<tr><td>Green</td><td><a href="src/screenshots/previews/tahoe-light-dock-green-7150851a9c40.webp"><img src="src/screenshots/previews/tahoe-light-dock-green-7150851a9c40.webp" alt="Tahoe light Dock with green glass Apps, application and empty Trash icons" width="840"></a></td></tr>
-<tr><td>Gray</td><td><a href="src/screenshots/previews/tahoe-light-dock-gray-60a19190c655.webp"><img src="src/screenshots/previews/tahoe-light-dock-gray-60a19190c655.webp" alt="Tahoe light Dock with gray glass Apps, application and empty Trash icons" width="840"></a></td></tr>
-</table>
+  <a href="src/screenshots/dock_1_dark_v4-16f0b8604e32.webp"><img src="src/screenshots/dock_1_dark_v4-16f0b8604e32.webp" alt="Glass Dock with dark icons, a complete App Store icon and a red notification count bubble" width="840"></a>
 
-</details>
+- **Blue**
+
+  <a href="src/screenshots/previews/tahoe-light-dock-blue-c0a884127c13.webp"><img src="src/screenshots/previews/tahoe-light-dock-blue-c0a884127c13.webp" alt="Tahoe light Dock with blue glass Apps, application and empty Trash icons" width="840"></a>
+
+- **Purple**
+
+  <a href="src/screenshots/previews/tahoe-light-dock-purple-aacad095e84c.webp"><img src="src/screenshots/previews/tahoe-light-dock-purple-aacad095e84c.webp" alt="Tahoe light Dock with purple glass Apps, application and empty Trash icons" width="840"></a>
+
+- **Pink**
+
+  <a href="src/screenshots/previews/tahoe-light-dock-pink-b1f568d9960c.webp"><img src="src/screenshots/previews/tahoe-light-dock-pink-b1f568d9960c.webp" alt="Tahoe light Dock with pink glass Apps, application and empty Trash icons" width="840"></a>
+
+- **Red**
+
+  <a href="src/screenshots/previews/tahoe-light-dock-red-becc9c02bcb4.webp"><img src="src/screenshots/previews/tahoe-light-dock-red-becc9c02bcb4.webp" alt="Tahoe light Dock with red glass Apps, application and empty Trash icons" width="840"></a>
+
+- **Orange**
+
+  <a href="src/screenshots/previews/tahoe-light-dock-orange-119f0e0c26ed.webp"><img src="src/screenshots/previews/tahoe-light-dock-orange-119f0e0c26ed.webp" alt="Tahoe light Dock with orange glass Apps, application and empty Trash icons" width="840"></a>
+
+- **Yellow**
+
+  <a href="src/screenshots/previews/tahoe-light-dock-yellow-76266bf8cd00.webp"><img src="src/screenshots/previews/tahoe-light-dock-yellow-76266bf8cd00.webp" alt="Tahoe light Dock with yellow glass Apps, application and empty Trash icons" width="840"></a>
+
+- **Green**
+
+  <a href="src/screenshots/previews/tahoe-light-dock-green-7150851a9c40.webp"><img src="src/screenshots/previews/tahoe-light-dock-green-7150851a9c40.webp" alt="Tahoe light Dock with green glass Apps, application and empty Trash icons" width="840"></a>
+
+- **Gray**
+
+  <a href="src/screenshots/previews/tahoe-light-dock-gray-60a19190c655.webp"><img src="src/screenshots/previews/tahoe-light-dock-gray-60a19190c655.webp" alt="Tahoe light Dock with gray glass Apps, application and empty Trash icons" width="840"></a>
 
 <br>
 
