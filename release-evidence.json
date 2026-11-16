@@ -258,7 +258,7 @@
       "log_sha256": "31ee3e3c44199a47e5a0107a68139e88f1f87a915d3cdfcb6ffa4f403912a0a5"
     }
   ],
-  "gallery_commit": "9993f61cc0afeba7e39afee776c99f29a55edb8f",
+  "gallery_commit": "003cecb3c75da11af7619ee9c061027ab775a08e",
   "captures": [
     {
       "path": "src/screenshots/showcase_light_2k-5dedfb291557.webp",
@@ -1879,8 +1879,15 @@
     "readme_refresh": {
       "provenance": "src/screenshots/previews/readme-0721-tahoe-provenance-e5182736efb3.json",
       "source_commit": "2f57329f40c38600df1ddc4ac3f9dbf3f8f1d1b4",
-      "scope": "17 new README photographs per edition; existing installer photographs retained"
+      "scope": "17 new README photographs per edition; existing installer photographs retained",
+      "export_review": "All 17 exported photographs visually reviewed; installer gallery retained unchanged."
     }
   },
-  "status": "candidate-publication-awaits-user-confirmation"
+  "status": "qualified-for-publication",
+  "remote_ci": {
+    "result": "passed",
+    "source_commit": "631e70622cfd01c24c695d7b38511e160e340c8c",
+    "url": "https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/actions/runs/43775595410",
+    "reuse": "Implementation and qualification inputs unchanged; later commits update documentation, contributor avatars and reviewed README photography."
+  }
 }
