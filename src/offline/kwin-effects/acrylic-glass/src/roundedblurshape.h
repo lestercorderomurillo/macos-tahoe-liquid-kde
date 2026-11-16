@@ -2,6 +2,7 @@
 #pragma once
 
 #include <QPainterPath>
+#include <QList>
 #include <QImage>
 #include <QPainter>
 #include <QRegion>
@@ -138,4 +139,32 @@ inline std::optional<ClientBlurShape> clientBlurShape(const QRegion &region)
         return ClientBlurShape{bounds, *radius, integerRoundedRegion(bounds, qRound(*radius)) == region};
     }
     return std::nullopt;
+}
+
+// Recover each disconnected popup tile independently. Never replace a custom
+// cutout or overlapping bounds with rectangles: that would blur transparent gaps.
+inline QList<ClientBlurShape> clientBlurShapes(const QRegion &region)
+{
+    QList<QRegion> islands;
+    for (const QRect &rect : region) {
+        QRegion island(rect);
+        for (qsizetype i = 0; i < islands.size();) {
+            QRegion neighbors;
+            for (const QRect &part : island) neighbors += part.adjusted(-1, -1, 1, 1);
+            if (!(neighbors & islands[i]).isEmpty()) {
+                island += islands.takeAt(i);
+                i = 0;
+            } else ++i;
+        }
+        islands.append(island);
+    }
+    QList<ClientBlurShape> shapes;
+    for (const QRegion &island : islands) {
+        const auto shape = clientBlurShape(island);
+        if (!shape) return {};
+        for (const auto &other : shapes)
+            if (shape->bounds.intersects(other.bounds)) return {};
+        shapes.append(*shape);
+    }
+    return shapes;
 }

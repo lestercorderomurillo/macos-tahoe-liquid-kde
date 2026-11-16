@@ -82,7 +82,7 @@ struct BlurEffectData
     std::optional<Region> frame;
 
     /** Client surface geometry, excluding transparent shadow margins. */
-    std::optional<ClientBlurShape> clientShape;
+    QList<ClientBlurShape> clientShapes;
 
     /**
      * Render scratch space keyed by the view it belongs to. Different

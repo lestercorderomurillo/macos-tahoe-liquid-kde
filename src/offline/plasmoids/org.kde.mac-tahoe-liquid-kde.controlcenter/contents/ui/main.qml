@@ -19,6 +19,7 @@ PlasmoidItem {
     Connections { target: Plasmoid; function onActivated() { popup.visible = !popup.visible; } }
     PlasmaCore.Dialog {
         id: popup
+        title: "mttkde-control-center"
         visible: false
         visualParent: root
         location: Plasmoid.location

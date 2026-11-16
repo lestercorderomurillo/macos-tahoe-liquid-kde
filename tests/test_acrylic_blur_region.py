@@ -161,6 +161,20 @@ int main() {
         assert(std::abs(client->radius - radius) <= 1);
         assert(!clientBlurShape(hole));
     }
+    // Separate Control Center tiles must retain their curves and clear gaps.
+    QRegion tiles;
+    for (const QRect bounds : {QRect(0,0,128,96), QRect(140,0,128,96), QRect(0,108,268,52)}) {
+        QPainterPath path;
+        path.addRoundedRect(bounds, 22, 22);
+        tiles += QRegion(path.toFillPolygon().toPolygon());
+    }
+    const auto tileShapes = clientBlurShapes(tiles);
+    assert(tileShapes.size() == 3);
+    for (const auto &tile : tileShapes) {
+        assert(std::abs(tile.radius - 22) <= 3);
+        assert(!tile.bounds.contains(QPoint(134,40)));
+    }
+    assert(clientBlurShapes(tiles - QRect(30,30,8,8)).isEmpty());
     // Kvantum's native integer ellipse mask has asymmetric top/bottom rows.
     // The real 249x274 menu with radius 9 must not fall back to hard steps.
     for (int radius : {6, 9, 16, 22, 52}) {

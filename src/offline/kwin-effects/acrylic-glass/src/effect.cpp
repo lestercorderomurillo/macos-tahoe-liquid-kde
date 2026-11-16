@@ -797,7 +797,7 @@ void BlurEffect::updateBlurRegion(EffectWindow* w)
         BlurEffectData& data = m_windows[w];
         data.content = content;
         data.frame = frame;
-        data.clientShape.reset();
+        data.clientShapes.clear();
         if (!w->decoration() && content.has_value() && !frame.has_value()
             && (w->isDock() || w->isTooltip() || w->isMenu() || w->isDropdownMenu()
                 || w->isPopupMenu() || w->isAppletPopup() || w->isPopupWindow())) {
@@ -805,7 +805,7 @@ void BlurEffect::updateBlurRegion(EffectWindow* w)
             for (const Rect &rect : content->rects()) {
                 clientRegion += QRect(rect);
             }
-            data.clientShape = clientBlurShape(clientRegion & w->contentsRect().toRect());
+            data.clientShapes = clientBlurShapes(clientRegion & w->contentsRect().toRect());
         }
         data.colorMatrix = colorTransformMatrix(saturation.value_or(1.0), contrast.value_or(1.0), 1.0);
         data.windowEffect = ItemEffect(w->windowItem());
@@ -1458,6 +1458,13 @@ void BlurEffect::blur(
     const QRectF frameRect = w->frameGeometry();
 
     Region blurShape = blurRegion(w).translated(w->pos().toPoint());
+    if (!wobblySurface && !blurInfo.clientShapes.isEmpty()) {
+        // Integer scanline clipping cuts off the shader's fractional coverage.
+        // Rasterize complete tile bounds; the SDF supplies the curved edge.
+        blurShape = Region();
+        for (const auto &shape : blurInfo.clientShapes)
+            blurShape += shape.bounds.translated(w->pos().toPoint());
+    }
     if (!wobblySurface) {
         if (data.xScale() != 1 || data.yScale() != 1) {
             QPoint pt = blurShape.boundingRect().topLeft();
@@ -1916,12 +1923,14 @@ void BlurEffect::blur(
     }
 
     QRectF surfaceRect = w->frameGeometry();
-    if (blurInfo.clientShape.has_value()) {
-        topCornerRadius = bottomCornerRadius = blurInfo.clientShape->cornerRadius();
-        surfaceRect = blurInfo.clientShape->surfaceRect().translated(w->pos());
+    if (blurInfo.clientShapes.size() == 1) {
+        const auto &shape = blurInfo.clientShapes.front();
+        topCornerRadius = bottomCornerRadius = shape.cornerRadius();
+        surfaceRect = shape.surfaceRect().translated(w->pos());
         cornerRadius = BorderRadius(topCornerRadius, topCornerRadius,
                                     bottomCornerRadius, bottomCornerRadius);
     }
+
 
     // ShapeCorners publishes its animated geometry during prePaintWindow.
     // Follow the actual cutout, including inactive/maximized/excluded states,
@@ -1958,7 +1967,6 @@ void BlurEffect::blur(
     }
 
     // 8. Onscreen pass
-    ShaderManager::instance()->pushShader(m_roundedOnscreenPass.shader.get());
 
     QMatrix4x4 projectionMatrix = viewport.projectionMatrix();
 #if defined(GLASS_X11)
@@ -1980,108 +1988,119 @@ void BlurEffect::blur(
 
     const QVector2D halfpixel(0.5 / read->colorAttachment()->width(), 0.5 / read->colorAttachment()->height());
 
-    const QRectF transformedRect = QRectF {
-        w->x() + (surfaceRect.x() - w->x()) * data.xScale() + data.xTranslation(),
-        w->y() + (surfaceRect.y() - w->y()) * data.yScale() + data.yTranslation(),
-        surfaceRect.width() * data.xScale(),
-        surfaceRect.height() * data.yScale(),
-    };
-    // Floor to integer device pixels so the SDF rounded corners are always
-    // pixel-aligned — prevents subpixel border artifacts that shift with
-    // window position.
-    const QRectF nativeBoxF = agSnapToPixelGridF(scaledRect(transformedRect, viewport.scale()))
-#if defined(GLASS_X11)
-        .translated(-deviceBackgroundRect.topLeft());
-#else
-        .translated(-scaledBackgroundRect.topLeft());
-#endif
-    const QRectF nativeBox(std::floor(nativeBoxF.x()), std::floor(nativeBoxF.y()), std::floor(nativeBoxF.width()), std::floor(nativeBoxF.height()));
-    const BorderRadius nativeCornerRadius = cornerRadius.scaled(viewport.scale()).rounded();
+    const qsizetype surfaceCount = wobblySurface ? 1 : std::max(qsizetype(1), blurInfo.clientShapes.size());
+    for (qsizetype surfaceIndex = 0; surfaceIndex < surfaceCount; ++surfaceIndex) {
+        if (!wobblySurface && !blurInfo.clientShapes.isEmpty()) {
+            const auto &shape = blurInfo.clientShapes[surfaceIndex];
+            surfaceRect = shape.surfaceRect().translated(w->pos());
+            const float radius = shape.cornerRadius();
+            cornerRadius = BorderRadius(radius, radius, radius, radius);
+        }
+        const QRectF transformedRect = QRectF {
+            w->x() + (surfaceRect.x() - w->x()) * data.xScale() + data.xTranslation(),
+            w->y() + (surfaceRect.y() - w->y()) * data.yScale() + data.yTranslation(),
+            surfaceRect.width() * data.xScale(),
+            surfaceRect.height() * data.yScale(),
+        };
+        // Floor to integer device pixels so the SDF rounded corners are always
+        // pixel-aligned — prevents subpixel border artifacts that shift with
+        // window position.
+        const QRectF nativeBoxF = agSnapToPixelGridF(scaledRect(transformedRect, viewport.scale()))
+    #if defined(GLASS_X11)
+            .translated(-deviceBackgroundRect.topLeft());
+    #else
+            .translated(-scaledBackgroundRect.topLeft());
+    #endif
+        const QRectF nativeBox(std::floor(nativeBoxF.x()), std::floor(nativeBoxF.y()), std::floor(nativeBoxF.width()), std::floor(nativeBoxF.height()));
+        const BorderRadius nativeCornerRadius = cornerRadius.scaled(viewport.scale()).rounded();
 
-    m_roundedOnscreenPass.shader->setUniform(m_roundedOnscreenPass.mvpMatrixLocation, projectionMatrix);
-    m_roundedOnscreenPass.shader->setUniform(m_roundedOnscreenPass.colorMatrixLocation, colorMatrix);
-    m_roundedOnscreenPass.shader->setUniform(m_roundedOnscreenPass.halfpixelLocation, halfpixel);
+        ShaderManager::instance()->pushShader(m_roundedOnscreenPass.shader.get());
+        m_roundedOnscreenPass.shader->setUniform(m_roundedOnscreenPass.mvpMatrixLocation, projectionMatrix);
+        m_roundedOnscreenPass.shader->setUniform(m_roundedOnscreenPass.colorMatrixLocation, colorMatrix);
+        m_roundedOnscreenPass.shader->setUniform(m_roundedOnscreenPass.halfpixelLocation, halfpixel);
 
-    // The Gaussian finish is a fixed reconstruction filter in source texels.
-    // Scale compensation belongs to the Kawase passes; offset gates bypass.
-    m_roundedOnscreenPass.shader->setUniform(m_roundedOnscreenPass.offsetLocation, float(blurOffset * viewport.scale()));
-    m_roundedOnscreenPass.shader->setUniform(m_roundedOnscreenPass.boxLocation,
-        QVector4D(nativeBox.x() + nativeBox.width() * 0.5, nativeBox.y() + nativeBox.height() * 0.5, nativeBox.width() * 0.5, nativeBox.height() * 0.5));
+        // The Gaussian finish is a fixed reconstruction filter in source texels.
+        // Scale compensation belongs to the Kawase passes; offset gates bypass.
+        m_roundedOnscreenPass.shader->setUniform(m_roundedOnscreenPass.offsetLocation, float(blurOffset * viewport.scale()));
+        m_roundedOnscreenPass.shader->setUniform(m_roundedOnscreenPass.boxLocation,
+            QVector4D(nativeBox.x() + nativeBox.width() * 0.5, nativeBox.y() + nativeBox.height() * 0.5, nativeBox.width() * 0.5, nativeBox.height() * 0.5));
 
-    m_roundedOnscreenPass.shader->setUniform(m_roundedOnscreenPass.cornerSquircleLocation, cornerSquircle);
-    m_roundedOnscreenPass.shader->setUniform(m_roundedOnscreenPass.cornerRadiusLocation, nativeCornerRadius.toVector());
-    m_roundedOnscreenPass.shader->setUniform(m_roundedOnscreenPass.opacityLocation, modulation);
-    m_roundedOnscreenPass.shader->setUniform(m_roundedOnscreenPass.blurSizeLocation, QVector2D(nativeBox.width(), nativeBox.height()));
-    m_roundedOnscreenPass.shader->setUniform(m_roundedOnscreenPass.rgbDriftStrengthLocation,
-        float(optics.rgbDrift * viewport.scale()));
-    m_roundedOnscreenPass.shader->setUniform(m_roundedOnscreenPass.magnifyGlassStrengthLocation, optics.refraction);
-    m_roundedOnscreenPass.shader->setUniform(m_roundedOnscreenPass.refractionWidthLocation, float(optics.refractionWidth * viewport.scale()));
-    m_roundedOnscreenPass.shader->setUniform(m_roundedOnscreenPass.highlightWidthLocation, float(optics.highlightWidth * viewport.scale()));
-    m_roundedOnscreenPass.shader->setUniform(m_roundedOnscreenPass.highlightStrengthLocation, optics.highlightStrength);
-    // Panels and the Dock retain untinted glass under every material.
-    m_roundedOnscreenPass.shader->setUniform(m_roundedOnscreenPass.darkGradientOverlayLocation,
-        int(m_darkGradientOverlay && !w->isDock()));
-    const QPalette windowPalette = w->window()->palette();
-    m_roundedOnscreenPass.shader->setUniform(m_roundedOnscreenPass.centerOpacityLocation, centerOpacity);
-    m_roundedOnscreenPass.shader->setUniform(m_roundedOnscreenPass.dockSurfaceLocation, int(dockSurface));
-    m_roundedOnscreenPass.shader->setUniform(m_roundedOnscreenPass.backgroundSizeLocation,
-        QVector2D(scaledBackgroundRect.width(), scaledBackgroundRect.height()));
-    m_roundedOnscreenPass.shader->setUniform(m_roundedOnscreenPass.gradientTopLocation,
-        gradientColorForPalette(m_gradientTop, m_gradientTopDark, windowPalette));
-    m_roundedOnscreenPass.shader->setUniform(m_roundedOnscreenPass.gradientCenterLocation,
-        gradientColorForPalette(m_gradientCenter, m_gradientCenterDark, windowPalette));
-    m_roundedOnscreenPass.shader->setUniform(m_roundedOnscreenPass.gradientCenterPositionLocation, m_gradientCenterPosition);
-    m_roundedOnscreenPass.shader->setUniform(m_roundedOnscreenPass.gradientBottomLocation,
-        gradientColorForPalette(m_gradientBottom, m_gradientBottomDark, windowPalette));
+        m_roundedOnscreenPass.shader->setUniform(m_roundedOnscreenPass.cornerSquircleLocation, cornerSquircle);
+        m_roundedOnscreenPass.shader->setUniform(m_roundedOnscreenPass.cornerRadiusLocation, nativeCornerRadius.toVector());
+        m_roundedOnscreenPass.shader->setUniform(m_roundedOnscreenPass.opacityLocation, modulation);
+        m_roundedOnscreenPass.shader->setUniform(m_roundedOnscreenPass.blurSizeLocation, QVector2D(nativeBox.width(), nativeBox.height()));
+        m_roundedOnscreenPass.shader->setUniform(m_roundedOnscreenPass.rgbDriftStrengthLocation,
+            float(optics.rgbDrift * viewport.scale()));
+        m_roundedOnscreenPass.shader->setUniform(m_roundedOnscreenPass.magnifyGlassStrengthLocation, optics.refraction);
+        m_roundedOnscreenPass.shader->setUniform(m_roundedOnscreenPass.refractionWidthLocation, float(optics.refractionWidth * viewport.scale()));
+        m_roundedOnscreenPass.shader->setUniform(m_roundedOnscreenPass.highlightWidthLocation, float(optics.highlightWidth * viewport.scale()));
+        m_roundedOnscreenPass.shader->setUniform(m_roundedOnscreenPass.highlightStrengthLocation, optics.highlightStrength);
+        // Dock and Control Center retain untinted glass under every material.
+        m_roundedOnscreenPass.shader->setUniform(m_roundedOnscreenPass.darkGradientOverlayLocation,
+            int(gradientEnabledForSurface(m_darkGradientOverlay, dockSurface,
+                w->window()->resourceClass(), w->caption())));
+        const QPalette windowPalette = w->window()->palette();
+        m_roundedOnscreenPass.shader->setUniform(m_roundedOnscreenPass.centerOpacityLocation, centerOpacity);
+        m_roundedOnscreenPass.shader->setUniform(m_roundedOnscreenPass.dockSurfaceLocation, int(dockSurface));
+        m_roundedOnscreenPass.shader->setUniform(m_roundedOnscreenPass.backgroundSizeLocation,
+            QVector2D(scaledBackgroundRect.width(), scaledBackgroundRect.height()));
+        m_roundedOnscreenPass.shader->setUniform(m_roundedOnscreenPass.gradientTopLocation,
+            gradientColorForPalette(m_gradientTop, m_gradientTopDark, windowPalette));
+        m_roundedOnscreenPass.shader->setUniform(m_roundedOnscreenPass.gradientCenterLocation,
+            gradientColorForPalette(m_gradientCenter, m_gradientCenterDark, windowPalette));
+        m_roundedOnscreenPass.shader->setUniform(m_roundedOnscreenPass.gradientCenterPositionLocation, m_gradientCenterPosition);
+        m_roundedOnscreenPass.shader->setUniform(m_roundedOnscreenPass.gradientBottomLocation,
+            gradientColorForPalette(m_gradientBottom, m_gradientBottomDark, windowPalette));
 
-    read->colorAttachment()->bind();
-
-    glEnable(GL_BLEND);
-    glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
-
-    vbo->draw(GL_TRIANGLES, 6, vertexCount);
-
-    glDisable(GL_BLEND);
-
-    ShaderManager::instance()->popShader();
-
-    // 9. Grain pass (optional)
-    // v0.62.0 used NoiseStrength 1: rand() % 1 produces a zero texture.
-    // Skipping that no-op preserves the Dock while windows keep their grain.
-    if (!dockSurface && m_noiseStrength > 0) {
-        // Additive noise over the blurred image. Masks banding artefacts
-        // that show up in smooth gradients after heavy blur.
+        read->colorAttachment()->bind();
 
         glEnable(GL_BLEND);
-        glBlendFunc(GL_ONE, GL_ONE);
+        glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
 
-        if (GLTexture* noiseTexture = ensureNoiseTexture()) {
-            ShaderManager::instance()->pushShader(m_noisePass.shader.get());
-
-            QMatrix4x4 projectionMatrix = viewport.projectionMatrix();
-#if defined(GLASS_X11)
-            projectionMatrix.translate(deviceBackgroundRect.x(), deviceBackgroundRect.y());
-#else
-            projectionMatrix.translate(scaledBackgroundRect.x(), scaledBackgroundRect.y());
-#endif
-
-            m_noisePass.shader->setUniform(m_noisePass.mvpMatrixLocation, projectionMatrix);
-            m_noisePass.shader->setUniform(m_noisePass.noiseTextureSizeLocation, QVector2D(noiseTexture->width(), noiseTexture->height()));
-
-            m_noisePass.shader->setUniform(m_noisePass.boxLocation, QVector4D(nativeBox.center().x(), nativeBox.center().y(), nativeBox.width() * 0.5, nativeBox.height() * 0.5));
-            m_noisePass.shader->setUniform(m_noisePass.blurSizeLocation, QVector2D(nativeBox.width(), nativeBox.height()));
-            m_noisePass.shader->setUniform(m_noisePass.cornerRadiusLocation, nativeCornerRadius.toVector());
-            m_noisePass.shader->setUniform(m_noisePass.cornerSquircleLocation, cornerSquircle);
-            m_noisePass.shader->setUniform(m_noisePass.opacityLocation,
-                modulation * centerOpacity * (dockSurface ? 0.25f : 1.0f));
-            noiseTexture->bind();
-
-            vbo->draw(GL_TRIANGLES, 6, vertexCount);
-
-            ShaderManager::instance()->popShader();
-        }
+        vbo->draw(GL_TRIANGLES, 6, vertexCount);
 
         glDisable(GL_BLEND);
+
+        ShaderManager::instance()->popShader();
+
+        // 9. Grain pass (optional)
+        // v0.62.0 used NoiseStrength 1: rand() % 1 produces a zero texture.
+        // Skipping that no-op preserves the Dock while windows keep their grain.
+        if (!dockSurface && m_noiseStrength > 0) {
+            // Additive noise over the blurred image. Masks banding artefacts
+            // that show up in smooth gradients after heavy blur.
+
+            glEnable(GL_BLEND);
+            glBlendFunc(GL_ONE, GL_ONE);
+
+            if (GLTexture* noiseTexture = ensureNoiseTexture()) {
+                ShaderManager::instance()->pushShader(m_noisePass.shader.get());
+
+                QMatrix4x4 projectionMatrix = viewport.projectionMatrix();
+    #if defined(GLASS_X11)
+                projectionMatrix.translate(deviceBackgroundRect.x(), deviceBackgroundRect.y());
+    #else
+                projectionMatrix.translate(scaledBackgroundRect.x(), scaledBackgroundRect.y());
+    #endif
+
+                m_noisePass.shader->setUniform(m_noisePass.mvpMatrixLocation, projectionMatrix);
+                m_noisePass.shader->setUniform(m_noisePass.noiseTextureSizeLocation, QVector2D(noiseTexture->width(), noiseTexture->height()));
+
+                m_noisePass.shader->setUniform(m_noisePass.boxLocation, QVector4D(nativeBox.center().x(), nativeBox.center().y(), nativeBox.width() * 0.5, nativeBox.height() * 0.5));
+                m_noisePass.shader->setUniform(m_noisePass.blurSizeLocation, QVector2D(nativeBox.width(), nativeBox.height()));
+                m_noisePass.shader->setUniform(m_noisePass.cornerRadiusLocation, nativeCornerRadius.toVector());
+                m_noisePass.shader->setUniform(m_noisePass.cornerSquircleLocation, cornerSquircle);
+                m_noisePass.shader->setUniform(m_noisePass.opacityLocation,
+                    modulation * centerOpacity * (dockSurface ? 0.25f : 1.0f));
+                noiseTexture->bind();
+
+                vbo->draw(GL_TRIANGLES, 6, vertexCount);
+
+                ShaderManager::instance()->popShader();
+            }
+
+            glDisable(GL_BLEND);
+        }
     }
 
     vbo->unbindArrays();

@@ -1561,3 +1561,5 @@ symbols, not hand-drawn approximations. Regenerate the committed paths with
 `src/scripts/build_menu_symbols.py`; keep the font hash, glyph identities and
 uniform transforms in `systemmenusymbols.json`. The plugin must not require
 a host Apple font or an SVG loader at runtime. App Store remains unchanged.
+
+Dock and Control Center surfaces never receive the material gradient, in either edition or appearance mode. Preserve blur and refraction. Recover separate rounded blur islands and let shader coverage antialias their edges; integer region clipping must not cut off fractional coverage. Keep transparent gaps and custom cutouts intact.

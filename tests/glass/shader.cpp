@@ -131,6 +131,20 @@ int main(int argc, char **argv)
         image = render();
         require(qRed(image.pixel(96,12)) + 40 < qRed(image.pixel(96,115)), QStringLiteral("black gradient must start at the top"));
         require(qAlpha(image.pixel(96,12)) == 255 && qAlpha(image.pixel(96,115)) == 255, QStringLiteral("gradient must not reveal sharp background at the bottom"));
+        // Tint must retain fractional coverage, and excluded surfaces must
+        // match untinted glass even with an opaque colored preset selected.
+        int partialEdges = 0;
+        for (int y = 0; y < 20; ++y) for (int x = 0; x < 20; ++x) {
+            const int alpha = qAlpha(image.pixel(x,y));
+            if (alpha > 0 && alpha < 255) ++partialEdges;
+        }
+        require(partialEdges > 10, QStringLiteral("gradient lost antialiased edge coverage"));
+        for (bool enabled : {false, true}) {
+            require(!gradientEnabledForSurface(enabled, true, "plasmashell", "Dock"), QStringLiteral("Dock gradient enabled"));
+            require(!gradientEnabledForSurface(enabled, false, "plasmashell", "mttkde-control-center"), QStringLiteral("Control Center gradient enabled"));
+            require(gradientEnabledForSurface(enabled, false, "plasmashell", "Launcher") == enabled, QStringLiteral("Launcher gradient changed"));
+            require(gradientEnabledForSurface(enabled, false, "application", "mttkde-control-center") == enabled, QStringLiteral("Unrelated application excluded"));
+        }
         shader.setUniformValue("gradientTop", QVector4D(0,0,1,0.8f));
         shader.setUniformValue("gradientBottom", QVector4D(1,0,0,0.6f));
         image = render();
