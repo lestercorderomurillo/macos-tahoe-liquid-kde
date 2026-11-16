@@ -81,6 +81,9 @@ def client(role):
     # Qt 6.10 does not map QWidget desktop windows on every Wayland backend.
     # The first fullscreen client supplies the background beneath the probe.
     flags = Qt.WindowType.Window if role == "vm" and rounded else Qt.WindowType.FramelessWindowHint
+    islands = role == "vm" and bool(os.environ.get("MTTKDE_CAPTURE_POPUP_ISLANDS"))
+    if islands:
+        flags = Qt.WindowType.Popup | Qt.WindowType.FramelessWindowHint
     window = Surface(None, flags)
     if role != "desktop":
         window.setAttribute(Qt.WidgetAttribute.WA_TranslucentBackground)
@@ -106,9 +109,77 @@ def client(role):
             subprocess.run(["xprop", "-id", str(int(window.winId())), "-f",
                             "_KDE_NET_WM_BLUR_BEHIND_REGION", "32c", "-set",
                             "_KDE_NET_WM_BLUR_BEHIND_REGION", "0,0,480,320"], check=True)
+    elif islands:
+        window.move(0, 0)
+        window.show()
     else:
         window.showFullScreen()
+    if islands:
+        publish_popup_islands(int(window.winId()))
     app.exec()
+
+
+
+def popup_island_region():
+    from PyQt6.QtCore import QRectF
+    from PyQt6.QtGui import QPainterPath, QRegion
+    path = QPainterPath()
+    path.addRoundedRect(QRectF(12, 12, 444, 616), 72, 72)
+    path.addRoundedRect(QRectF(492, 12, 456, 616), 72, 72)
+    return QRegion(path.toFillPolygon().toPolygon())
+
+
+def publish_popup_islands(window_id):
+    import ctypes
+    import ctypes.util
+    from PyQt6.QtCore import QPoint
+    region = popup_island_region()
+    rectangles = []
+    for y in range(640):
+        start = None
+        for x in range(961):
+            inside = x < 960 and region.contains(QPoint(x, y))
+            if inside and start is None:
+                start = x
+            if not inside and start is not None:
+                rectangles.extend((start, y, x - start, 1))
+                start = None
+    # xprop -set truncates long lists: publish every scanline through Xlib.
+    x11 = ctypes.CDLL(ctypes.util.find_library("X11"))
+    x11.XOpenDisplay.argtypes = [ctypes.c_char_p]
+    x11.XOpenDisplay.restype = ctypes.c_void_p
+    x11.XInternAtom.argtypes = [ctypes.c_void_p, ctypes.c_char_p, ctypes.c_int]
+    x11.XInternAtom.restype = ctypes.c_ulong
+    x11.XChangeProperty.argtypes = [ctypes.c_void_p, ctypes.c_ulong, ctypes.c_ulong,
+                                    ctypes.c_ulong, ctypes.c_int, ctypes.c_int, ctypes.c_void_p, ctypes.c_int]
+    x11.XCloseDisplay.argtypes = [ctypes.c_void_p]
+    display = x11.XOpenDisplay(None)
+    assert display, "Private X11 display unavailable"
+    try:
+        popup_type = ctypes.c_ulong(x11.XInternAtom(display, b"_NET_WM_WINDOW_TYPE_POPUP_MENU", False))
+        type_atom = x11.XInternAtom(display, b"_NET_WM_WINDOW_TYPE", False)
+        x11.XChangeProperty(display, window_id, type_atom, 4, 32, 0, ctypes.byref(popup_type), 1)
+        values = (ctypes.c_ulong * len(rectangles))(*rectangles)
+        atom = x11.XInternAtom(display, b"_KDE_NET_WM_BLUR_BEHIND_REGION", False)
+        x11.XChangeProperty(display, window_id, atom, 6, 32, 0, values, len(rectangles))
+    finally:
+        x11.XCloseDisplay(display)
+
+
+def compare_popup_islands(output):
+    from PyQt6.QtCore import QPoint
+    from PIL import Image
+    region = popup_island_region()
+    before = Image.open(output / "effect-off.png").convert("RGB")
+    after = Image.open(output / "effect-on.png").convert("RGB")
+    fringe = sum(not region.contains(QPoint(x, y)) and before.getpixel((x, y)) != after.getpixel((x, y))
+                 for y in range(12, 90) for x in range(12, 90))
+    gap = sum(before.getpixel((x, y)) != after.getpixel((x, y))
+              for y in range(50, 180) for x in range(460, 488))
+    metrics = {"fractional_pixels_outside_integer_mask": fringe, "changed_gap_pixels": gap}
+    (output / "island-pixels.json").write_text(json.dumps(metrics, indent=2) + "\n")
+    assert fringe > 10, "Integer region clipped antialiased corner coverage"
+    assert gap == 0, "Glass leaked into the gap between popup islands"
 
 
 def session():
@@ -346,7 +417,8 @@ def inside(output):
         stop(xserver)
 
 
-def run(plugin, output, scale, expected, backend, identity, renderer="software", shader_dir=None, companion=None, desktop_surface=False, squircle_blend=0.0, decoration_blur=True, backing_tint=False, appearance="light", compositor="wayland", conflicts=False, screenshot_api="spectacle", damage=False, conflict_effect="blur", application="synthetic", material=None, wobbly=False):
+def run(plugin, output, scale, expected, backend, identity, renderer="software", shader_dir=None, companion=None, desktop_surface=False, squircle_blend=0.0, decoration_blur=True, backing_tint=False, appearance="light", compositor="wayland", conflicts=False, screenshot_api="spectacle", damage=False, conflict_effect="blur", application="synthetic", material=None, wobbly=False, popup_islands=False):
+    assert not popup_islands or (compositor == "x11" and application == "synthetic" and not wobbly and not shader_dir)
     assert not wobbly or (compositor == "x11" and application == "synthetic" and not shader_dir), "Wobbly probe requires native X11 synthetic client"
     assert not conflicts or not shader_dir, "Conflict probe requires Acrylic Glass"
     if compositor == "x11":
@@ -442,6 +514,7 @@ def run(plugin, output, scale, expected, backend, identity, renderer="software",
                MTTKDE_CAPTURE_CONFLICTS="1" if conflicts else "",
                MTTKDE_CAPTURE_CONFLICT_EFFECT=conflict_effect,
                MTTKDE_CAPTURE_APPLICATION=application,
+               MTTKDE_CAPTURE_POPUP_ISLANDS="1" if popup_islands else "",
                MTTKDE_CAPTURE_WOBBLY="1" if wobbly else "",
                MTTKDE_CAPTURE_SCREENSHOT_API=screenshot_api,
                MTTKDE_CAPTURE_DAMAGE="1" if damage else "",
@@ -511,6 +584,8 @@ def run(plugin, output, scale, expected, backend, identity, renderer="software",
         assert passed, "Application glass pixel comparison failed"
     else:
         compare(output, expected)
+        if popup_islands:
+            compare_popup_islands(output)
     if damage:
         from PIL import Image, ImageChops
         initial = Image.open(output / "effect-on.png").convert("RGB")
@@ -646,6 +721,7 @@ if __name__ == "__main__":
     parser.add_argument("--squircle-blend", type=float, choices=(0.0, 0.55, 1.0), default=0.0)
     parser.add_argument("--desktop-surface", action="store_true", help="Probe an Xwayland desktop window, including forced inclusions")
     parser.add_argument("--companion-plugin", type=Path, help="Also test Acrylic Glass with Rounded Corners")
+    parser.add_argument("--popup-islands", action="store_true", help="Test native X11 rounded popup edge coverage and transparent gaps")
     parser.add_argument("--inside", type=Path)
     parser.add_argument("--session", action="store_true")
     parser.add_argument("--client", choices=("desktop", "vm"))
@@ -660,6 +736,6 @@ if __name__ == "__main__":
         run(args.plugin.resolve(), args.output.resolve(), args.scale, args.expect, args.backend, args.identity, args.renderer,
             args.rounded_shaders.resolve() if args.rounded_shaders else None,
             args.companion_plugin.resolve() if args.companion_plugin else None, args.desktop_surface, args.squircle_blend,
-            not args.no_decoration_blur, args.backing_tint, args.appearance, args.compositor, args.conflicts, args.screenshot_api, args.damage, args.conflict_effect, args.application, args.material, args.wobbly)
+            not args.no_decoration_blur, args.backing_tint, args.appearance, args.compositor, args.conflicts, args.screenshot_api, args.damage, args.conflict_effect, args.application, args.material, args.wobbly, args.popup_islands)
     else:
         parser.error("--plugin and --output required")
