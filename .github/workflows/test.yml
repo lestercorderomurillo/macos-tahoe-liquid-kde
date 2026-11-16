@@ -28,7 +28,7 @@ jobs:
           primary-key: nix-${{ hashFiles('flake.lock') }}-${{ github.sha }}
           restore-prefixes-first-match: nix-${{ hashFiles('flake.lock') }}-
       - name: Evaluate modules and build Nix packages
-        run: nix --extra-experimental-features 'nix-command flakes' flake check path:. --print-build-logs --max-jobs 2 --cores 2
+        run: nix --extra-experimental-features 'nix-command flakes' flake check . --print-build-logs --max-jobs 2 --cores 2
 
   # Primary suite — runs on Arch (CachyOS's parent, the maintainer's
   # daily-driver libdir convention). The full Plasma 6 dev SDK is

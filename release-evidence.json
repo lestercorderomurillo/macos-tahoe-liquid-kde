@@ -1,7 +1,7 @@
 {
-  "version": "0.72.8",
-  "source_sha256": "258b24a987a7182a0164db91fbbccee859917bc7f4c243390338e6ee090511fc",
-  "scope": "CI/CD-only change: weekly source-free registry SDKs, four disjoint primary shards balanced from observed JUnit timings, Nix store reuse, shallow release refs and verified archive extraction for Golden Gate. All distro and executable test coverage retained. No installed desktop behavior changed. Cache publication now retries once and warns on registry failure without skipping execution.",
+  "version": "0.72.9",
+  "source_sha256": "cbb45eabe320357dd3f7d14719708e3b2757b473fcf039dbe7a4bcbdbbddf8dc",
+  "scope": "CI/CD-only change: weekly source-free registry SDKs, four disjoint primary shards balanced from observed JUnit timings, Nix store reuse, shallow release refs and verified archive extraction for Golden Gate. All distro and executable test coverage retained. No installed desktop behavior changed. Cache publication now retries once and warns on registry failure without skipping execution. Clipboard CI waits for asynchronous reload/clear completion and checks the exact pinned ID. Nix uses the Git source input rather than filesystem metadata.",
   "environment": "Local Python 3 focused CI-helper regressions and actionlint 1.7.7; full post-publication GitHub matrix remains enabled.",
   "checks": [
     {
@@ -22,6 +22,16 @@
       "command": "python3 -m pytest tests/test_ci_sdk.py -q",
       "result": "passed",
       "detail": "4 passed, including two failed registry pushes: a usable local SDK still reaches the complete test suite; build and test failures remain fatal."
+    },
+    {
+      "command": "docker run --rm -v \"$PWD:/repo\" -w /repo mttkde-launcher-ci-arch:desktop python -m pytest tests/test_launcher_presets.py -k clipboard_launcher_integration -q",
+      "result": "passed",
+      "detail": "2 passed in 23.16s; both edition cases use real isolated Xvfb and D-Bus, preserve the same assertions and verify the exact pinned entry. The optional git safe-directory setup was unavailable in this image and not used by these tests."
+    },
+    {
+      "command": "docker run --rm -v \"$PWD:/source:ro\" -w /source nixos/nix:latest sh -eu -c 'git config --global --add safe.directory /source; nix --extra-experimental-features \"nix-command flakes\" flake metadata --offline --no-write-lock-file --json .'",
+      "result": "passed",
+      "detail": "Resolved input type is git; all locked inputs retained, no online fetch or native rebuild."
     }
   ],
   "coverage_limits": [
