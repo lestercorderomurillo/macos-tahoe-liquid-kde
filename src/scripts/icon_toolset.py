@@ -95,6 +95,15 @@ def installer_themes(source: Path, output: Path, style: str, tint: str, *,
         if (path.suffix.lower() in (".svg", ".png") and path.is_file()
                 and path.stem not in SYSTEM_MENU_ICONS):
             entries[path.stem] = path
+    # The Dock's empty/full trash icons live under places, not applications.
+    # Include both in the glass overlay so the bin follows the selected tint
+    # and mode just like the application and Apps icons. Symbolic UI stays in
+    # the inherited base theme.
+    if style == "glass":
+        for name in ("user-trash", "user-trash-full"):
+            path = source / BASE / "places/scalable" / (name + ".svg")
+            if path.is_file():
+                entries[name] = path
     seen = {}
     records = {}
     total = len(entries)

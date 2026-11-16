@@ -77,6 +77,16 @@ Backend::~Backend() { }
 QVariant Backend::iconSource(const QVariant& decoration)
 {
     const QString name = decoration.value<QIcon>().name();
+    // Application launchers use the generated artwork; shared menu symbols
+    // deliberately retain their original, untinted theme aliases.
+    if (QIcon::themeName().startsWith(QStringLiteral("MacTahoeLiquidKde-Icons-"))) {
+        const QString application = name == QStringLiteral("preferences-system")
+            ? QStringLiteral("systemsettings")
+            : name == QStringLiteral("software-store") ? QStringLiteral("org.kde.discover") : QString();
+        if (!application.isEmpty() && QIcon::hasThemeIcon(application)) {
+            return QVariant(application);
+        }
+    }
     return name.isEmpty() ? decoration : QVariant(name);
 }
 

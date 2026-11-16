@@ -1,84 +1,122 @@
 {
-  "version": "0.72.11",
-  "source_sha256": "d78055ef475f6f91c02b981a4aae747edb43132a5c16c7ab2998a9f4e54dd580",
-  "scope": "Btrfs/zram startup disk, Control Center layout/hardware regressions and accent selection contrast. See .github/REGRESSIONS-0.72.10.md. Also preserve inherited defaults during reinstall, provide French controls and repair post-publication CI cases; see .github/REGRESSIONS-0.72.11.md.",
-  "environment": "Disposable neon Plasma 6.8.1 / Qt 6.11.1 VM; isolated GTK 3/4 processes; focused Python regressions.",
+  "version": "0.72.12",
+  "source_sha256": "52a43dc540e4377fd9f5f6f2100f919a0909d430a6b4ec4d8e73ba2841a29f07",
+  "scope": "Original-artwork glass Trash and canonical Dock application aliases. See .github/DOCK-TINTS-0.72.12.md.",
+  "environment": "Disposable neon Plasma 6.8.1 / Qt 6.11.1; Fedora/openSUSE/neon Qt SDK probes.",
   "checks": [
     {
-      "command": "pytest tests/test_about_info.py -k \"startup_disk or lsblk\"",
+      "command": "pytest tests/test_icon_toolset.py -k \"installer_glass or installer_duplicate\"",
       "result": "passed",
-      "detail": "11 passed"
+      "detail": "3 passed"
     },
     {
-      "command": "pytest tests/test_installer_wizard.py -k \"accent_changes or accent_preserves\"",
+      "command": "pytest tests/test_icons_step.py tests/test_reserved_menu_icons.py",
       "result": "passed",
-      "detail": "2 passed"
+      "detail": "4 passed"
     },
     {
-      "command": "pytest tests/test_gtk_upgrade.py; pytest tests/test_localization.py",
+      "command": "pytest tests/test_taskmanager_qml.py -k themed_icons",
       "result": "passed",
-      "detail": "4 upgrade cases and 7 catalog cases passed; msgfmt checks passed"
+      "detail": "Passed locally and in Fedora, openSUSE and neon containers; Qt 6.11.2/6.12.0/6.11.1"
     },
     {
-      "command": "VM: python3 tests/desktop_controls_probe.py <source>",
-      "result": "passed"
-    },
-    {
-      "command": "VM: dbus-run-session -- xvfb-run -a python3 tests/gtk_accent_probe.py <source> 3; same command with 4",
+      "command": "VM: rebuild changed Dock backend; normal installer privilege setup; plasmoids.install() twice; restart Plasma; capture actual glass Dock light/dark with empty/full Trash",
       "result": "passed",
-      "detail": "Eight accents; live light/dark/light; selected, hover, focus and backdrop"
-    },
-    {
-      "command": "VM: normal installer privilege setup followed by gtk.install(), color_schemes.install(), plasmoids.install(); repeated for reinstall",
-      "result": "passed",
-      "detail": "Desktop user destinations verified, no installer errors; installed gray overrides old blue. Files PID 113175 persisted through light/dark/light."
-    },
-    {
-      "command": "pytest tests/test_kconf_update.py -q",
-      "result": "passed",
-      "detail": "12 passed"
-    },
-    {
-      "command": "pytest tests/test_multilanguage.py -k catalogs_cover; pytest tests/test_localization.py -k french",
-      "result": "passed",
-      "detail": "2 shared catalog cases and 1 four-domain French gettext case; msgfmt format checks passed"
-    },
-    {
-      "command": "VM: normal installer privilege setup; kconf_update.install() twice; restart plasma-plasmashell.service",
-      "result": "passed",
-      "detail": "Inherited defaults byte-identical after both phases"
-    },
-    {
-      "command": "VM: dbus-run-session -- xvfb-run -a python3 tests/desktop_controls_render.py <source> <capture>",
-      "result": "passed",
-      "detail": "Actual dynamic gap, input mask, X11 blur request, theme refresh and reopen"
+      "detail": "Reviewed 4 focused frames; every Dock icon including Apps and Settings receives the blue glass material."
     }
   ],
   "coverage_limits": [
-    "Focused installer steps, not complete wizard qualification.",
-    "One real Plasma VM; no fresh cross-distro desktop matrix or automatic schedule boundary.",
-    "Post-publication CI status is reported independently.",
-    "Independent icon appearance remains a feature request. French coverage is limited to the affected controls. Minimal SDKs without GTK 4 report that case skipped; primary GTK coverage remains required."
+    "Focused Dock component install/reinstall, not complete wizard qualification.",
+    "Wayland Plasma VM plus isolated Qt lookup probes; no fresh X11 desktop session.",
+    "Only displayed Dock source artwork generated in the focused VM fixture; not an exhaustive icon-library render.",
+    "Additional requested color/edition documentation captures are delivered separately.",
+    "Full remote CI tracked after publication."
   ],
   "gallery_commit": "f09780b200b79302e7c23ef9f6f74d94748bbea3",
   "captures": [
     {
-      "path": "src/screenshots/previews/gray-selection-light-18ec4d8e5203.png",
-      "sha256": "18ec4d8e5203ffd3c22181cece8183915f7fb0934b90021d126408b47cb19287",
+      "path": "src/screenshots/previews/tahoe-dark-dock-blue-full-3340df7f3e7e.webp",
+      "sha256": "3340df7f3e7e54890c9ab9d7165aca218211338f605eda6e7c8704d0f83436ae",
       "reviewed": true,
-      "source_commit": "6ef284ccba1f6c57e86e0460ff55ca33408e5cad"
+      "source_base_commit": "9ea13ce6",
+      "source_overrides": {
+        "src/scripts/icon_toolset.py": "41a170637008d46324dcf377c10345cf4c7b5bb7cbd841f1c48318ff4de6c334",
+        "src/offline/plasmoids/org.kde.mac.tahoe.liquid.taskmanager/backend.cpp": "b3f7f3433ea4753b36103ff254f1d30f6c6eb61bca2257069ec8c9e6c7dc931b"
+      },
+      "appearance": {
+        "Window controls": "__aurorae__svg__MacTahoeLiquidKde-Dark",
+        "Plasma": "MacTahoeLiquidKde-Dark",
+        "Qt": "MacTahoeLiquidKdeDark",
+        "Kvantum": "mac-tahoe-liquid-kdeDark",
+        "GTK preference": "'prefer-dark'",
+        "GTK theme": "'MacTahoeLiquidKde-Dark'",
+        "GTK 4 stylesheet": "MacTahoeLiquidKde-Dark",
+        "Icons": "MacTahoeLiquidKde-Icons-Glass-Dark"
+      },
+      "trash": "full"
     },
     {
-      "path": "src/screenshots/previews/gray-selection-dark-6dfcd1e32e10.png",
-      "sha256": "6dfcd1e32e10f490cdf29c358f3a24e15ec4d79f315dd135d14e841af02d4858",
+      "path": "src/screenshots/previews/tahoe-dark-dock-blue-935055fd18e6.webp",
+      "sha256": "935055fd18e6e711ad01b0454f28bbf9eb8151e3a1702f206f8ceb9710bf8829",
       "reviewed": true,
-      "source_commit": "6ef284ccba1f6c57e86e0460ff55ca33408e5cad"
+      "source_base_commit": "9ea13ce6",
+      "source_overrides": {
+        "src/scripts/icon_toolset.py": "41a170637008d46324dcf377c10345cf4c7b5bb7cbd841f1c48318ff4de6c334",
+        "src/offline/plasmoids/org.kde.mac.tahoe.liquid.taskmanager/backend.cpp": "b3f7f3433ea4753b36103ff254f1d30f6c6eb61bca2257069ec8c9e6c7dc931b"
+      },
+      "appearance": {
+        "Window controls": "__aurorae__svg__MacTahoeLiquidKde-Dark",
+        "Plasma": "MacTahoeLiquidKde-Dark",
+        "Qt": "MacTahoeLiquidKdeDark",
+        "Kvantum": "mac-tahoe-liquid-kdeDark",
+        "GTK preference": "'prefer-dark'",
+        "GTK theme": "'MacTahoeLiquidKde-Dark'",
+        "GTK 4 stylesheet": "MacTahoeLiquidKde-Dark",
+        "Icons": "MacTahoeLiquidKde-Icons-Glass-Dark"
+      },
+      "trash": "empty"
     },
     {
-      "path": "src/screenshots/previews/control-center-regression-48ec11cd7e06.png",
-      "sha256": "48ec11cd7e0639e7b154d9820a09b7e6c9fbcb8e294497459a97f41360ce49bc",
+      "path": "src/screenshots/previews/tahoe-light-dock-blue-full-0032bd0983a1.webp",
+      "sha256": "0032bd0983a1750e13ddaf8bce9f9482315db16891de6059d5bb753676ef67c5",
       "reviewed": true,
-      "source_commit": "6ef284ccba1f6c57e86e0460ff55ca33408e5cad"
+      "source_base_commit": "9ea13ce6",
+      "source_overrides": {
+        "src/scripts/icon_toolset.py": "41a170637008d46324dcf377c10345cf4c7b5bb7cbd841f1c48318ff4de6c334",
+        "src/offline/plasmoids/org.kde.mac.tahoe.liquid.taskmanager/backend.cpp": "b3f7f3433ea4753b36103ff254f1d30f6c6eb61bca2257069ec8c9e6c7dc931b"
+      },
+      "appearance": {
+        "Window controls": "__aurorae__svg__MacTahoeLiquidKde-Light",
+        "Plasma": "MacTahoeLiquidKde-Light",
+        "Qt": "MacTahoeLiquidKdeLight",
+        "Kvantum": "mac-tahoe-liquid-kde",
+        "GTK preference": "'prefer-light'",
+        "GTK theme": "'MacTahoeLiquidKde-Light'",
+        "GTK 4 stylesheet": "MacTahoeLiquidKde-Light",
+        "Icons": "MacTahoeLiquidKde-Icons-Glass-Light"
+      },
+      "trash": "full"
+    },
+    {
+      "path": "src/screenshots/previews/tahoe-light-dock-blue-775c1c6afda3.webp",
+      "sha256": "775c1c6afda31b3e833485d111cef2fcda7974a450e96ecfe25610bc6f93f245",
+      "reviewed": true,
+      "source_base_commit": "9ea13ce6",
+      "source_overrides": {
+        "src/scripts/icon_toolset.py": "41a170637008d46324dcf377c10345cf4c7b5bb7cbd841f1c48318ff4de6c334",
+        "src/offline/plasmoids/org.kde.mac.tahoe.liquid.taskmanager/backend.cpp": "b3f7f3433ea4753b36103ff254f1d30f6c6eb61bca2257069ec8c9e6c7dc931b"
+      },
+      "appearance": {
+        "Window controls": "__aurorae__svg__MacTahoeLiquidKde-Light",
+        "Plasma": "MacTahoeLiquidKde-Light",
+        "Qt": "MacTahoeLiquidKdeLight",
+        "Kvantum": "mac-tahoe-liquid-kde",
+        "GTK preference": "'prefer-light'",
+        "GTK theme": "'MacTahoeLiquidKde-Light'",
+        "GTK 4 stylesheet": "MacTahoeLiquidKde-Light",
+        "Icons": "MacTahoeLiquidKde-Icons-Glass-Light"
+      },
+      "trash": "empty"
     }
   ]
 }

@@ -1,6 +1,6 @@
 # Installer testing
 
-Tahoe **v0.72.11** fixes accent selection contrast, Control Center, Btrfs startup-disk detection and reinstall fallback to Breeze; French controls are included. Focused regressions, GTK 3/4 state checks and disposable Plasma VM install/reinstall qualification passed. See [scope and results](.github/REGRESSIONS-0.72.11.md); full remote CI follows publication.
+Tahoe **v0.72.12** repairs glass Trash and Dock application aliases while preserving original artwork and menu symbols. Focused checks and disposable-VM component install/reinstall passed; [scope and limits](.github/DOCK-TINTS-0.72.12.md). Full CI runs after publication.
 See [validation and coverage limits](release-evidence.json). Existing gallery photographs retain their original reviewed [provenance](src/screenshots/release-capture.json).
 
 ## Installation steps

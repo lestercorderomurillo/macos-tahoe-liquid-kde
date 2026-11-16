@@ -90,6 +90,21 @@ int main(int argc, char **argv) {
     assert(preserved.pixmap(16, 16).toImage().pixelColor(8, 8) == QColor(Qt::red));
     assert(Backend::iconSource(QStringLiteral("example")).toString() == "example");
     assert(!Backend::iconSource(QVariant()).isValid());
+    const QString generated = "MacTahoeLiquidKde-Icons-Glass-Light";
+    QDir().mkpath(root + "/" + generated + "/16x16/apps");
+    assert(QFile::copy(root + "/light/index.theme", root + "/" + generated + "/index.theme"));
+    for (const QString &name : {QStringLiteral("preferences-system"), QStringLiteral("systemsettings"),
+                               QStringLiteral("software-store"), QStringLiteral("org.kde.discover")}) {
+        assert(QFile::copy(root + "/light/16x16/apps/example.png",
+                          root + "/" + generated + "/16x16/apps/" + name + ".png"));
+    }
+    QIcon::setThemeName(generated);
+    assert(Backend::iconSource(QVariant::fromValue(QIcon::fromTheme("preferences-system"))).toString() == "systemsettings");
+    assert(Backend::iconSource(QVariant::fromValue(QIcon::fromTheme("software-store"))).toString() == "org.kde.discover");
+    assert(QIcon::fromTheme("preferences-system").name() == "preferences-system");
+    assert(QDir(root).rename(generated, "unrelated"));
+    QIcon::setThemeName("unrelated");
+    assert(Backend::iconSource(QVariant::fromValue(QIcon::fromTheme("preferences-system"))).toString() == "preferences-system");
 }
 ''')
     binary = tmp_path / 'icons'

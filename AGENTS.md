@@ -223,6 +223,8 @@ pin, archive checksum and evidence before committing or pushing a release tag;
 use fail-fast scripts or separate dependent commands. Never continue publication
 after a failed validation command. Policy-only edits need no new release.
 
+Dock icon qualification includes Apps, every pinned application, and both empty/full Trash. Use the bundled original artwork and its aliases; tint/material changes must not substitute newly invented symbols. Check application aliases separately from reserved menu symbols.
+
 ## Respect for the user's time
 
 Apply these rules in both Tahoe and Golden Gate. They supersede older delivery

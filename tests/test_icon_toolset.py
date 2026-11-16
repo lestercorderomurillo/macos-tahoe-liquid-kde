@@ -157,6 +157,14 @@ def test_installer_glass_tint_changes_artwork_and_preserves_aliases(source, tmp_
     staging = tmp_path / "source"
     unpack(source, staging)
     (staging / BASE / "apps/scalable/system-file-manager.svg").symlink_to("demo.svg")
+    (staging / BASE / "apps/scalable/view-app-grid.svg").symlink_to("demo.svg")
+    places = staging / BASE / "places/scalable"
+    places.mkdir(parents=True)
+    for name, shape in (("user-trash", '<rect x="30" y="20" width="60" height="90"/>'),
+                        ("user-trash-full", '<circle cx="64" cy="64" r="45"/>')):
+        (places / (name + ".svg")).write_text(
+            '<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128">'
+            + shape + '</svg>')
     blue, green = tmp_path / "blue", tmp_path / "green"
     names = installer_themes(staging, blue, "glass", "#007aff")
     installer_themes(staging, green, "glass", "#28cd41")
@@ -170,6 +178,12 @@ def test_installer_glass_tint_changes_artwork_and_preserves_aliases(source, tmp_
         image = Image.open(first).convert("RGBA")
         assert image.getpixel((0, 0))[3] < 8
         assert 0 < image.getpixel((128, 36))[3] < 255
+        for icon in ("view-app-grid", "user-trash", "user-trash-full"):
+            rendered = blue / name / "apps/256" / (icon + ".png")
+            assert Image.open(rendered).getbbox()
+            assert digest(rendered) != digest(green / name / "apps/256" / rendered.name)
+        assert digest(blue / name / "apps/256/user-trash.png") != digest(
+            blue / name / "apps/256/user-trash-full.png")
 
 
 @pytest.mark.parametrize("style", ["regular", "glass"])
