@@ -27,7 +27,7 @@ actual source hashes. The installer fixture limits generated artwork to displaye
 Dock applications, Apps and both Trash states while retaining the real installer
 archive staging, installation destinations and repeat-install behavior. Main
 README color tables contain eight colors only; Trash states remain test evidence.
-Full remote CI follows publication.
+[Full remote CI passed](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/actions/runs/43951362726), including all four primary shards, eleven distro legs and Nix.
 
 Reviewed 22 focused Dock photographs: eight light tints per edition and blue
 light/dark with empty/full Trash. Each edition uses its own wallpaper and
