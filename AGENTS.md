@@ -407,8 +407,6 @@ release is downloaded, checksum-verified, and built best-effort.
   Keep the standard GPL text intact and do not add copying, rebranding, or
   commercial-use bans. Do not claim third-party marks or artwork as project-owned.
 - README **Credits** section is managed manually by the user.
-- Do NOT add "fork of X" or "based on Y" to README descriptions —
-  use "inspired by" wording.
 - Do NOT reference Pear OS.
 
 ## Contributor and Pull Request Safety
