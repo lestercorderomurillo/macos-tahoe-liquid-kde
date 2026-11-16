@@ -1306,6 +1306,34 @@ green   yellow   orange   red   purple   blue
 
 ## Documentation style
 
+### README presentation
+
+Use concise, factual English descriptions without marketing slogans or em dashes.
+Use the repository's edition name in feature headings: Finder, Launchpad, Dock,
+Shell, Control Center, Clipboard History, System Information, Plasma Theme and
+Boot Splash. Mark Shell, Control Center and Clipboard History as Alpha; do not
+add Alpha to System Information. Place the small centered distro-status caption
+above the distro icons.
+
+Show each feature once. Keep Finder and About/System Information photographs in
+their own sections, with no duplicate Finder or About gallery. Use only the
+startup photograph in Boot Splash. Keep implementation/reference links and
+capture-provenance commentary out of feature descriptions; retain the underlying
+provenance records and all required attribution and license notices. Credits
+should identify references and actual third-party components without promotional
+appeals. Use green text badges for available, supported or verified states,
+yellow for Alpha, planned, in-progress or pending states, and red for unsupported
+states. Preserve explicit coverage limits when summarizing testing.
+
+Keep the contribution guide linked and include verified contributors and issue
+reporters from both repositories, with working local avatars and profile links.
+Apply shared README edits to both editions using their respective names, defaults
+and photographs. Do not restore removed explanatory sections or duplicate
+screenshots during release bookkeeping. Batch requested editorial changes until
+the user finishes; commit and deliver both repositories when asked to publish.
+An explicit request for fresh photographs covers the requested README features,
+not the installer gallery or unrelated artwork.
+
 Keep TESTING.md as a concise snapshot of the latest verified release, stated
 once, followed by the installer photographs. Replace the previous summary;
 never append a changelog, superseded candidates or unreleased development logs.
