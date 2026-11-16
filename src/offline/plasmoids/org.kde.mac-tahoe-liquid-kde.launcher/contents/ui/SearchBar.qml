@@ -97,15 +97,6 @@ RowLayout {
     }
 
     ToolButton {
-        objectName: "clipboardModeButton"
-        icon.name: main.clipboardMode ? "view-grid" : "edit-paste"
-        Accessible.name: main.clipboardMode ? i18n("Applications") : i18n("Clipboard")
-        ToolTip.visible: hovered
-        ToolTip.text: Accessible.name + (main.clipboardMode ? " (Ctrl+1)" : " (Ctrl+4)")
-        onClicked: main.showClipboard(!main.clipboardMode)
-    }
-
-    ToolButton {
         visible: main.clipboardMode
         Layout.preferredWidth: 28
         Layout.preferredHeight: 28

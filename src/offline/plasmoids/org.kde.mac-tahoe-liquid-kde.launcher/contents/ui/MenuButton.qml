@@ -107,6 +107,12 @@ Item {
             checkable: true
             checked: kicker.launcherPreset === 2
             onClicked: Plasmoid.configuration.launcherPreset = 2
+        },
+        PlasmaExtras.MenuItem { separator: true },
+        PlasmaExtras.MenuItem {
+            objectName: "clipboard"
+            text: i18n("Clipboard")
+            onClicked: main.showClipboard(true)
         }
         ]
     }

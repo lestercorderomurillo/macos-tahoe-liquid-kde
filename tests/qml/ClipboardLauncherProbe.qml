@@ -5,14 +5,18 @@ Timer {
     interval: 350
     running: true
     repeat: true
-    property int phase: 0
+    property int phase: -1
     property int waits: 0
     function verify(ok, message) { if (!ok) throw new Error(message); }
     onTriggered: {
         try {
-            if (phase === 0) {
+            if (phase === -1) {
                 root.visible = true;
-                main.showClipboard(true);
+            } else if (phase === 0) {
+                LauncherInteraction.click(main.searchBar.testMenuButton.testButton);
+                for (let i = 0; i < 5; ++i) LauncherInteraction.key(Qt.Key_Down);
+                LauncherInteraction.key(Qt.Key_Return);
+                verify(main.clipboardMode, "options menu opens clipboard history");
             } else if (phase === 1) {
                 if (!main.clipboard.available && ++waits < 20) return;
                 verify(main.clipboard.available, "real daemon available");

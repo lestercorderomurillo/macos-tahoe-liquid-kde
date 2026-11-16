@@ -5,13 +5,15 @@ import org.kde.kirigami as Kirigami
 QQC.Slider {
     id: slider
     implicitHeight: 22
+    hoverEnabled: true
+    readonly property bool handleShown: enabled && (hovered || pressed || visualFocus)
     leftPadding: 0
     rightPadding: 0
     background: Rectangle {
         x: slider.leftPadding
         y: (slider.height - height) / 2
         width: slider.availableWidth
-        height: 7
+        height: 4
         radius: height / 2
         color: Qt.rgba(Kirigami.Theme.textColor.r, Kirigami.Theme.textColor.g, Kirigami.Theme.textColor.b, 0.16)
         Rectangle {
@@ -22,14 +24,24 @@ QQC.Slider {
             opacity: slider.enabled ? 0.85 : 0.25
         }
     }
-    handle: Rectangle {
+    handle: Item {
+        id: thumb
+        objectName: "glassSliderHandle"
         x: slider.leftPadding + slider.visualPosition * (slider.availableWidth - width)
         y: (slider.height - height) / 2
-        width: slider.pressed || slider.activeFocus ? 14 : 7
-        height: width
-        radius: width / 2
-        color: Kirigami.Theme.textColor
-        opacity: slider.enabled ? 0.9 : 0.25
-        Behavior on width { NumberAnimation { duration: 100 } }
+        // Keep pointer mapping fixed while the visual capsule appears.
+        width: 18
+        height: 14
+        opacity: slider.handleShown ? 1 : 0
+        Behavior on opacity { NumberAnimation { duration: 120 } }
+        Rectangle {
+            anchors.centerIn: parent
+            width: parent.width
+            height: parent.height
+            radius: height / 2
+            color: "#e6ffffff"
+            border.width: 0.5
+            border.color: "#33000000"
+        }
     }
 }

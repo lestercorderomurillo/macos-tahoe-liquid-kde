@@ -145,7 +145,7 @@ Timer {
             eventLoopDelay = 0;
         }
         let state = LauncherInteraction.menuState();
-        verify(state.actions && state.actions.length === 7, "both presets open the seven rendered menu rows");
+        verify(state.actions && state.actions.length === 9, "both presets include clipboard in the rendered options menu");
         verify(state.actions[0].separator && state.actions[0].text === "View content as",
                "view heading exists in both presets");
         verify(state.actions[4].separator && state.actions[4].text === "Launcher preset",

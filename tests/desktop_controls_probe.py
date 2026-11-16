@@ -68,6 +68,12 @@ assert slider.property('value') == 20000
 sink.setProperty('volume',40000); QTest.qWait(10)
 assert slider.property('value') == 40000
 click(mute); assert sink.property('muted')
+slider.setProperty('value', 30000)
+QMetaObject.invokeMethod(slider, 'moved', Qt.ConnectionType.DirectConnection)
+assert sink.property('volume') == 30000 and not sink.property('muted')
+slider.setProperty('value', 0)
+QMetaObject.invokeMethod(slider, 'moved', Qt.ConnectionType.DirectConnection)
+assert sink.property('volume') == 0 and sink.property('muted')
 sink.setProperty('muted',False); QTest.qWait(10); assert not mute.property('checked')
 audio.setProperty('sink',None); QTest.qWait(10)
 assert not slider.property('enabled') and not mute.property('enabled')
@@ -168,6 +174,33 @@ QTest.mouseClick(window,Qt.MouseButton.LeftButton,pos=QPoint(20,16));QTest.qWait
 assert len(activations)==1
 button.forceActiveFocus();QTest.keyClick(window,Qt.Key.Key_Space);QTest.qWait(10)
 assert len(activations)==2
+window.close()
+
+
+# The capsule is absent at rest and appears for hover, drag or keyboard focus.
+window = QQuickWindow(); window.setGeometry(0,0,260,100)
+glass = component('GlassSlider.qml', {'width':200, 'height':22, 'value':0.5})
+glass.setParentItem(window.contentItem()); glass.setX(30); glass.setY(30)
+thumb = child(glass, 'glassSliderHandle')
+window.show(); QTest.mouseMove(window,QPoint(250,90)); QTest.qWait(200)
+assert thumb.opacity() == 0
+centre = thumb.x()+thumb.width()/2
+QTest.mouseMove(window,QPoint(130,41)); QTest.qWait(200)
+assert glass.property('hovered') and thumb.opacity() == 1
+assert thumb.width() > thumb.height()
+assert thumb.x()+thumb.width()/2 == centre and glass.property('value') == 0.5
+QTest.mousePress(window,Qt.MouseButton.LeftButton,pos=QPoint(130,41))
+QTest.mouseMove(window,QPoint(190,41)); QTest.qWait(30)
+QTest.mouseRelease(window,Qt.MouseButton.LeftButton,pos=QPoint(190,41))
+assert glass.property('value') > 0.7
+QTest.mouseMove(window,QPoint(250,90)); QTest.qWait(200)
+assert thumb.opacity() == 0  # A mouse click must not leave a persistent knob.
+glass.setFocus(False); glass.forceActiveFocus(Qt.FocusReason.TabFocusReason); QTest.qWait(200)
+value = glass.property('value')
+QTest.keyClick(window,Qt.Key.Key_Left)
+assert glass.property('value') < value and thumb.opacity() == 1
+glass.setProperty('enabled',False); QTest.qWait(200)
+assert thumb.opacity() == 0
 window.close()
 
 
