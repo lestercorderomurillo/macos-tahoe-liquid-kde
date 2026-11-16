@@ -9,7 +9,7 @@ from PIL import Image
 
 from icon_materials import prepare_source, raster, render_installer
 from icon_sources import digest, unpack
-from icon_toolset import BASE, ROOT, new_destination, installer_dark_sources
+from icon_toolset import BASE, ROOT, new_destination
 from installer_choices import COLORS
 
 SAMPLES = ("org.kde.dolphin", "firefox", "systemsettings", "org.kde.konsole",
@@ -22,7 +22,6 @@ def build(output):
     source = ROOT / "src/offline/icons/MacTahoeLiquidKde-Icons.tar.zst"
     records = {}
     source_hash = digest(source)
-    dark_sources = installer_dark_sources()
     with tempfile.TemporaryDirectory(prefix="installer-preview-") as temporary:
         extracted = Path(temporary) / "source"
         unpack(source, extracted)
@@ -37,13 +36,9 @@ def build(output):
                 for filename, variant, color in variants:
                     tint = tuple(int(COLORS[color][i:i+2], 16) for i in (1, 3, 5))
                     original = icon
-                    if variant == "dark" and digest(icon) in dark_sources:
-                        original = dark_sources[digest(icon)]
-                        image = raster(original, 512)
-                    else:
-                        glass = variant.startswith("tinted-")
-                        image = render_installer(prepared if glass else regular,
-                                                 "glass" if glass else "regular", mode, tint)
+                    glass = variant.startswith("tinted-")
+                    image = render_installer(prepared if glass else regular,
+                                             "glass" if glass else "regular", mode, tint)
                     image = image.resize((256, 256), Image.Resampling.LANCZOS)
                     image.resize((128, 128), Image.Resampling.LANCZOS).save(output / filename)
                     records[filename] = {

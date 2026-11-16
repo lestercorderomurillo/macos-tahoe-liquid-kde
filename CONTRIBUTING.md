@@ -343,7 +343,7 @@ there is no image-generation model, random seed or downloaded artwork.
 ./icon-toolset installer-build --output build/icons/dock --tint '#007aff' \
   --jobs 4 --icons system-file-manager firefox calendar user-trash user-trash-full
 # Optional material overrides, with all resolved values recorded in generation.json:
-printf '%s\n' '{"bevel_width":0.035,"rim_opacity":0.72,"sparse_gamma":2.2}' > /tmp/glass.json
+printf '%s\n' '{"shadow_tint":0.08,"relief_tint":0.8,"sparse_gamma":2.2}' > /tmp/glass.json
 ./icon-toolset installer-build --output build/icons/custom --tint '#ff7a18' \
   --material /tmp/glass.json --jobs 4 --icons system-file-manager calendar
 ```

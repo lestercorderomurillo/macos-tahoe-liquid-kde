@@ -29,12 +29,6 @@ class GlassMaterial:
     sparse_fraction: float = .08
     sparse_gamma: float = 2.2
     ink_blackpoint: int = 64
-    plate_neutral: float = .12
-    rim_width: float = .012
-    rim_opacity: float = .72
-    relief_shadow_opacity: float = .42
-    bevel_width: float = .035
-    shadow_opacity: float = .24
 
     def __post_init__(self):
         for name, value in asdict(self).items():
@@ -192,6 +186,14 @@ def prepare_source(source: Path, size: int, glyph: bool = False, *, clean_rim: b
     for i in removed:
         drawables[i].set("style", drawables[i].get("style", "") + ";display:none")
     artwork = raster_svg(ET.tostring(root), size)
+    # Retain the actual background, including its existing rim and shadows.
+    # Color variants may recolor these layers, never replace their geometry.
+    for i, node in enumerate(drawables):
+        node.attrib.clear()
+        node.attrib.update(originals[i])
+        if i not in removed:
+            node.set("style", node.get("style", "") + ";display:none")
+    image.info["icon_background"] = raster_svg(ET.tostring(root), size)
     if artwork.getchannel("A").getbbox() is None:
         return (*prepare(image), None, removed_images)
     for i, node in enumerate(drawables):
@@ -298,80 +300,14 @@ def prepare(image: Image.Image, glyph: bool = False) -> tuple:
 
 
 def render(prepared: tuple, variant: str, tint: tuple[int, int, int]) -> Image.Image:
-    image, plate, classification, artwork, _ = prepared
-    size = image.width
-    dark = variant in {"dark", "black", "clear-dark", "tinted-dark"}
-    glass = variant.startswith(("clear-", "tinted-"))
-    mono = variant not in {"light", "dark"}
-    if artwork is not None:
-        if classification == "vector-colored" and not mono:
-            return image.copy()
-        glyph = artwork.copy()
-        lum = ImageOps.grayscale(glyph)
-        if mono:
-            if not dark:
-                lum = ImageOps.invert(lum)
-            low, high = ((130, 138, 150), (255, 255, 255)) if dark else ((18, 25, 35), (90, 100, 115))
-            glyph = ImageOps.colorize(lum, low, high).convert("RGBA")
-            glyph.putalpha(artwork.getchannel("A"))
-        elif (dark and classification == "vector-light") or (not dark and classification == "vector-dark"):
-            r, g, b = glyph.convert("RGB").split()
-            spread = ImageChops.subtract(ImageChops.lighter(ImageChops.lighter(r, g), b),
-                                         ImageChops.darker(ImageChops.darker(r, g), b))
-            neutral = spread.point(lambda v: 255 if v < 18 else 0)
-            extreme = lum.point(lambda v: 255 if (v < 85 if dark else v > 180) else 0)
-            inverted = ImageOps.invert(glyph.convert("RGB")).convert("RGBA")
-            inverted.putalpha(glyph.getchannel("A"))
-            glyph = Image.composite(inverted, glyph, ImageChops.multiply(neutral, extreme))
-        material = tile(size, variant, tint)
-        material.putalpha(ImageChops.multiply(material.getchannel("A"), plate))
-        # An inset highlight follows the actual SVG tile contour, including squircles.
-        inset = plate.filter(ImageFilter.MinFilter(3))
-        rim = ImageChops.subtract(plate, inset).point(lambda v: round(v * (.4 if glass else .16)))
-        edge = Image.new("RGBA", image.size, "white")
-        edge.putalpha(rim)
-        return Image.alpha_composite(Image.alpha_composite(material, edge), glyph)
-    result = image.copy()
-    lum = ImageOps.grayscale(image)
-    if mono:
-        # Preserve luminance differences: flattening alpha into one color erases logos.
-        if classification == "light-plate" or (classification == "glyph" and dark):
-            lum = ImageOps.invert(lum)
-        low, high = ((115, 125, 142), (255, 255, 255)) if dark else ((15, 23, 35), (110, 120, 135))
-        result = ImageOps.colorize(lum, low, high).convert("RGBA")
-        result.putalpha(image.getchannel("A"))
-    elif plate is not None:
-        # Preserve colored branding while giving neutral foregrounds contrast.
-        r, g, b = image.convert("RGB").split()
-        spread = ImageChops.subtract(ImageChops.lighter(ImageChops.lighter(r, g), b),
-                                     ImageChops.darker(ImageChops.darker(r, g), b))
-        neutral = spread.point(lambda v: 255 if v < 18 else 0)
-        extreme = lum.point(lambda v: 255 if (v < 85 if dark else v > 180) else 0)
-        if (dark and classification == "light-plate") or (not dark and classification == "dark-plate"):
-            change = ImageChops.multiply(neutral, extreme)
-            change = ImageChops.multiply(change, ImageOps.invert(plate))
-            inverted = ImageOps.invert(image.convert("RGB")).convert("RGBA")
-            inverted.putalpha(image.getchannel("A"))
-            result = Image.composite(inverted, result, change)
-    material = tile(size, variant, tint)
-    if plate is not None:
-        material.putalpha(ImageChops.multiply(material.getchannel("A"), image.getchannel("A")))
-        result = Image.composite(material, result, plate)
-    elif classification == "glyph":
-        shape = Image.new("L", image.size)
-        ImageDraw.Draw(shape).rounded_rectangle((size*.065, size*.065, size*.935, size*.935),
-                                               radius=size*.205, fill=255)
-        material.putalpha(ImageChops.multiply(material.getchannel("A"), shape))
-        result = Image.alpha_composite(material, result)
-    # Unknown backgrounds keep their geometry and alpha; never blindly erase a logo.
-    if plate is not None or classification == "glyph":
-        edge = Image.new("RGBA", image.size)
-        ImageDraw.Draw(edge).rounded_rectangle((size*.067, size*.067, size*.933, size*.933),
-                                              radius=size*.20,
-                                              outline=(255, 255, 255, 75 if glass else 35),
-                                              width=max(1, round(size/192)))
-        result = Image.alpha_composite(result, edge)
-    return result
+    if variant not in VARIANTS:
+        raise ValueError("Unknown icon variant")
+    if variant in {"light", "dark"}:
+        return render_installer(prepared, "regular", variant, tint)
+    mode = "dark" if variant in {"dark", "black", "clear-dark", "tinted-dark"} else "light"
+    style = "clear" if variant.startswith("clear-") else "glass"
+    return render_installer(prepared, style, mode,
+                            (142, 142, 147) if variant in {"black", "white"} else tint)
 
 
 def dark_foreground(artwork: Image.Image) -> Image.Image:
@@ -418,81 +354,85 @@ def dark_foreground(artwork: Image.Image) -> Image.Image:
     return Image.composite(lifted, artwork, mask)
 
 
+def _recolor_layer(layer: Image.Image, low: tuple, high: tuple,
+                   *, opacity: float = 1.0, invert: bool = False, gamma: float = 1.0) -> Image.Image:
+    """Change paint only: retain the layer's coverage, holes and tonal detail."""
+    luminance = ImageOps.grayscale(layer)
+    if gamma != 1:
+        luminance = luminance.point(lambda v: round(255 * (v / 255) ** gamma))
+    if invert:
+        luminance = ImageOps.invert(luminance)
+    result = ImageOps.colorize(luminance, low, high).convert("RGBA")
+    alpha = layer.getchannel("A")
+    result.putalpha(alpha if opacity == 1 else alpha.point(lambda a: round(a * opacity)))
+    return result
+
+
 def render_installer(prepared: tuple, style: str, mode: str, tint: tuple[int, int, int],
                      material: GlassMaterial = DEFAULT_GLASS) -> Image.Image:
-    """Use the wizard's approved materials for both previews and installed icons.
+    """Repaint the original layers without creating tiles, rims or shadows.
 
-    Preserve the original foreground in regular icons. Glass uses that same
-    artwork's luminance and alpha, with a tinted relief and translucent plate.
+    Default preserves the original paint. Clear uses neutral translucent paint;
+    tinted light colors the background, tinted dark colors the foreground.
+    Unlayered assets retain their own silhouette, including both Trash states.
     """
-    if style not in {"regular", "glass"} or mode not in {"light", "dark"}:
+    if style not in {"regular", "glass", "clear"} or mode not in {"light", "dark"}:
         raise ValueError("Unknown installer icon material")
-    image, shape, _, artwork, _ = prepared
-    size = image.width
+    image, shape, classification, artwork, _ = prepared
+    background = image.info.get("icon_background")
     if style == "regular":
-        if mode == "light" or prepared[2] != "vector-light":
+        if mode == "light" or classification != "vector-light" or background is None:
             return image.copy()
-        if artwork is None or shape is None:
-            return image.copy()
-        plate = gradient(size, (52, 52, 54, 255), (12, 12, 14, 255))
-        plate.putalpha(shape)
-        # One subdued neutral rim replaces the light icon's partial colored rims.
-        inset = shape.filter(ImageFilter.MinFilter(3))
-        rim = ImageChops.subtract(shape, inset)
-        edge = gradient(size, (255, 255, 255, 65), (255, 255, 255, 12))
-        edge.putalpha(ImageChops.multiply(rim, edge.getchannel("A")))
-        plate = Image.alpha_composite(plate, edge)
-        return Image.alpha_composite(plate, dark_foreground(artwork))
-    if artwork is None or shape is None:
-        # Unclassified artwork keeps its silhouette and interior detail.
-        artwork = image
-        shape = Image.new("L", image.size)
-        ImageDraw.Draw(shape).rounded_rectangle((size*.065, size*.065, size*.935, size*.935),
-                                                radius=size*.205, fill=255)
-    gray = ImageOps.grayscale(artwork)
-    # Keep the source's full tonal range. A preliminary silver colorization
-    # lifted black details into the tint's midtones, hiding Finder's eyes and
-    # calendar lettering against the glass plate.
-    shadow = tuple(round(c*material.shadow_tint) for c in tint)
-    middle = tuple(round(c*material.relief_tint+255*round(1-material.relief_tint, 12)) for c in tint)
-    relief = ImageOps.colorize(gray, black=shadow, white=(248, 252, 255),
-                              mid=middle, midpoint=164).convert("RGBA")
-    # Sparse foregrounds (such as Calendar lettering) need darker ink;
-    # applying that curve to broad shaded logos would crush their depth.
-    if sum(artwork.getchannel("A").histogram()[128:]) < size * size * material.sparse_fraction:
-        ink = gray.point(lambda value: round(255 * (value / 255) ** material.sparse_gamma))
-        relief = ImageOps.colorize(ink, black=shadow, white=(248, 252, 255),
-                                  mid=middle, blackpoint=material.ink_blackpoint, midpoint=164).convert("RGBA")
-    relief.putalpha(artwork.getchannel("A"))
-    ramp = Image.linear_gradient("L").resize((size*2, size*2)).rotate(-35)
-    ramp = ramp.crop((size//2, size//2, size//2+size, size//2+size))
-    # Keep dark source details readable over dark wallpaper too. The middle
-    # of the plate needs a little neutral light and a stable opacity floor.
-    lit_tint = tuple(round(c*round(1-material.plate_neutral, 12) + 255*material.plate_neutral) for c in tint)
-    stops = [(0, (255, 255, 255, 171)), (107, (*lit_tint, 200)),
-             (196, (*tint, 211)), (255, (255, 255, 255, 156))]
-    colors = []
-    for value in range(256):
-        left, right = next((a, b) for a, b in zip(stops, stops[1:]) if a[0] <= value <= b[0])
-        t = (value-left[0])/(right[0]-left[0])
-        colors.append(tuple(round(a+(b-a)*t) for a,b in zip(left[1], right[1])))
-    plate = Image.merge("RGBA", [ramp.point([c[channel] for c in colors]) for channel in range(4)])
-    plate.putalpha(ImageChops.multiply(plate.getchannel("A"), shape))
-    inset = minimum_filter(shape, max(3, (round(size*material.rim_width)//2)*2+1))
-    rim = ImageChops.subtract(shape, inset).filter(ImageFilter.GaussianBlur(size*.002))
-    edge = Image.new("RGBA", image.size, "white"); edge.putalpha(rim.point(lambda v: round(v*material.rim_opacity)))
-    # A restrained relief shadow separates pale glyphs from bright tints.
-    # Its mask comes only from the original artwork, never a replacement glyph.
-    relief_shadow = Image.new("RGBA", image.size, (12, 18, 28))
-    relief_shadow.putalpha(ImageChops.offset(artwork.getchannel("A"), 0, round(size*.008)).filter(
-        ImageFilter.GaussianBlur(size*.004)).point(lambda value: round(value*material.relief_shadow_opacity)))
-    result = Image.alpha_composite(Image.alpha_composite(plate, relief_shadow), relief)
-    bevel_width = max(3, (round(size*material.bevel_width)//2)*2+1)
-    bevel = ImageChops.subtract(shape, minimum_filter(shape, bevel_width))
-    shine = gradient(size, (255, 255, 255, 220), (195, 225, 255, 90))
-    shine.putalpha(ImageChops.multiply(shine.getchannel("A"), bevel))
-    result = Image.alpha_composite(Image.alpha_composite(result, shine), edge)
-    shadow = Image.new("RGBA", image.size, (20, 35, 60))
-    shadow.putalpha(ImageChops.offset(shape, 0, round(size*.025)).filter(
-        ImageFilter.GaussianBlur(size*.025)).point(lambda value: round(value*material.shadow_opacity)))
-    return Image.alpha_composite(shadow, result)
+        background = _recolor_layer(background, (8, 8, 10), (48, 48, 51))
+        result = Image.alpha_composite(background, dark_foreground(artwork))
+        result.putalpha(image.getchannel("A"))
+        return result
+    dark = mode == "dark"
+    clear = style == "clear"
+    rgb = (142, 142, 147) if clear else tint
+    def mix(amount, white=0):
+        return tuple(round(c * amount + white * (1 - amount)) for c in rgb)
+    if dark:
+        plate_low, plate_high = (4, 4, 6), (35, 35, 39)
+        low, high = mix(.30), mix(.78, 255)
+    else:
+        plate_low, plate_high = mix(.48), mix(.78, 255)
+        low, high = mix(material.shadow_tint), mix(.08, 255)
+    if clear:
+        plate_low, plate_high = ((12, 12, 14), (58, 58, 62)) if dark else ((170, 174, 180), (245, 247, 250))
+        low, high = ((135, 140, 148), (250, 252, 255)) if dark else ((35, 40, 48), (250, 252, 255))
+    if background is None or artwork is None:
+        # No background layer exists. Do not invent a squircle behind the asset.
+        return _recolor_layer(image, low if dark or clear else mix(.30),
+                              high if dark or clear else mix(.65, 255), opacity=.85 if clear else 1)
+    plate = _recolor_layer(background, plate_low, plate_high,
+                           opacity=.60 if clear else 1)
+    # Sparse dark lettering needs the opposite polarity against a dark tile.
+    sparse = sum(artwork.getchannel("A").histogram()[128:]) < image.width * image.height * material.sparse_fraction
+    if sparse:
+        ink = ImageOps.grayscale(artwork).point(
+            lambda value: round(255 * (value / 255) ** material.sparse_gamma))
+        foreground = ImageOps.colorize(ink, high if dark else low, low if dark else high,
+                                      blackpoint=material.ink_blackpoint).convert("RGBA")
+        foreground.putalpha(artwork.getchannel("A"))
+    else:
+        lifted = dark_foreground(artwork)
+        foreground = _recolor_layer(lifted if dark else artwork,
+                                    low if dark or clear else mix(material.relief_tint * .4375, 255), high)
+        if not dark and not clear:
+            # Exposed black strokes (Finder's face) keep dark ink; the broad
+            # illustration uses pale tint paint, as in Tahoe's light appearance.
+            changed = ImageChops.difference(lifted, artwork).convert("RGB")
+            mask = ImageChops.lighter(ImageChops.lighter(*changed.split()[:2]), changed.split()[2])
+            r, g, b = artwork.convert("RGB").split()
+            peak = ImageChops.lighter(ImageChops.lighter(r, g), b)
+            floor = ImageChops.darker(ImageChops.darker(r, g), b)
+            neutral = ImageChops.subtract(peak, floor).point(lambda v: max(0, 255 - v * 12))
+            black = peak.point(lambda v: max(0, min(255, (95 - v) * 8)))
+            mask = ImageChops.lighter(mask.point(lambda v: 255 if v else 0), ImageChops.multiply(neutral, black))
+            ink = _recolor_layer(artwork, low, high, gamma=1.4)
+            foreground = Image.composite(ink, foreground, mask)
+    result = Image.alpha_composite(plate, foreground)
+    original_alpha = image.getchannel("A")
+    result.putalpha(ImageChops.darker(result.getchannel("A"), original_alpha) if clear else original_alpha)
+    return result

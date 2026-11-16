@@ -1,0 +1,229 @@
+{
+  "schema": 1,
+  "edition": "tahoe",
+  "implementation_version": "0.72.15",
+  "source_base_commit": "b1b6f944b6d4dddb8a0d606bc869c68b5d65c53a",
+  "generator": {
+    "icon_materials.py": "e4ffde3f6f58cdd861d6bc24585ece0eb48e03744d0ac036887094fff82306cb",
+    "icon_toolset.py": "88160bb4557ae564092f1f187d11b1e96399fa885bc6493b3821f035f9dc8925"
+  },
+  "proof": {
+    "captured_pngs_unchanged": {
+      "blue": 536,
+      "red": 536
+    },
+    "geometry": [
+      {
+        "name": "Appstore.svg",
+        "source_sha256": "a3905306bcefa3809c64a5da38b1d336abdbf320deafa54b2a31804fd8ed70af"
+      },
+      {
+        "name": "Gnome-Notes.svg",
+        "source_sha256": "796b15e647e7ac90f017efc2f4f47e76dbbb7b24afc7c24635f5bd3cca33dee9"
+      },
+      {
+        "name": "Gnome-Photos.svg",
+        "source_sha256": "5f8eb7594ee00628afaae671e44536306b41944d97129722364eade5ed106168"
+      },
+      {
+        "name": "Insight-FileManager.svg",
+        "source_sha256": "1dd88e9ee27a257855d8712de3870cf7ca7c87f3e591f45de7444c2456bfa007"
+      },
+      {
+        "name": "applications-system-orange.svg",
+        "source_sha256": "8ff99c6c70c0a33282aa351e3de4f0fc29bb4437d3cfe6c6ae6cfda4a7b97632"
+      },
+      {
+        "name": "appointment.svg",
+        "source_sha256": "c767f07a84992e28a5bf81c95e9e7020acbb6cc27d2424145b65304a11f23789"
+      },
+      {
+        "name": "elisa.svg",
+        "source_sha256": "1b3bcbcfdbe059ca0f60a3ea1ef69cab5e242ca80b3040270fc97009e0478af5"
+      },
+      {
+        "name": "firefox-3.0.svg",
+        "source_sha256": "7d07a906714441fadc7355be9b081a7559ecdbd48193c7dc2a04f547a6bd22cf"
+      },
+      {
+        "name": "haruna.svg",
+        "source_sha256": "dabccb38072b9a57587b3f3a902b47f6b3dd0737ee3c9acbc9d0186deedc6a54"
+      },
+      {
+        "name": "mozilla-thunderbird.svg",
+        "source_sha256": "738cb532ecad8328d178f70f17cf9075a8357f79e5f7aee9394e40ac42457400"
+      },
+      {
+        "name": "view-app-grid.svg",
+        "source_sha256": "2961c8cd92c6270b7b2acefa1e275692466f5d5c69b948c25f51efd72c53c13e"
+      },
+      {
+        "name": "user-trash-full.svg",
+        "source_sha256": "cbd4a9a3b6e2186e2b0f9aa4808f5e4e9c92dfd10f760060789e126d884a0af2"
+      },
+      {
+        "name": "user-trash.svg",
+        "source_sha256": "4ca95dd5934d278e37d281dd8d97d32542412f054b752d50e1301f687f1f9f8b"
+      }
+    ],
+    "generator": {
+      "icon_materials.py": "e4ffde3f6f58cdd861d6bc24585ece0eb48e03744d0ac036887094fff82306cb",
+      "icon_toolset.py": "88160bb4557ae564092f1f187d11b1e96399fa885bc6493b3821f035f9dc8925"
+    }
+  },
+  "source_archive_sha256": "ee296e09926f0f2b9e8b7916eb8383150c1bf8597ebbb85f1e97251d18c35225",
+  "capture_harness_sha256": "5b690f8217bb4425adf8478e67787077055660be18cf9376b56a04126a344c49",
+  "profile_sha256": "2a3bd2d31ca0dfdd65c45a09a3c8c2bbe35a122ab2ca7961f1c33edf8b9a3b09",
+  "vm": "Disposable overlay of qualified neon Plasma 6.8.1 / Qt 6.11.1 Wayland image.",
+  "coverage_limits": [
+    "Displayed Dock artwork and aliases; no complete installer lifecycle, new X11 session or automatic scheduler boundary test.",
+    "Final source reproduces every captured tinted PNG byte for byte.",
+    "Static recoloring of original layers; not live macOS refraction or a pixel-perfect reproduction."
+  ],
+  "frames": {
+    "tahoe-dark-dock-blue-full": {
+      "file": "src/screenshots/previews/tahoe-dark-dock-blue-full-layers-7786da01ab34.webp",
+      "sha256": "7786da01ab34d272a8c0b9b69db2f7418ceec9c935c329e6bf034384444a40f3",
+      "original_capture_sha256": "cdb48392670d4efbe3bb0e5d2371951ac5e6fc1e775f3ddd5a79fbd6aa751bcb",
+      "reviewed": true,
+      "crop": [
+        1200,
+        1964,
+        2640,
+        2160
+      ],
+      "appearance": {
+        "Window controls": "__aurorae__svg__MacTahoeLiquidKde-Dark",
+        "Plasma": "MacTahoeLiquidKde-Dark",
+        "Qt": "MacTahoeLiquidKdeDark",
+        "Kvantum": "mac-tahoe-liquid-kdeDark",
+        "GTK preference": "'prefer-dark'",
+        "GTK theme": "'MacTahoeLiquidKde-Dark'",
+        "GTK 4 stylesheet": "MacTahoeLiquidKde-Dark",
+        "Icons": "MacTahoeLiquidKde-Icons-Glass-Dark"
+      },
+      "wallpaper": "MacTahoe",
+      "trash": "full"
+    },
+    "tahoe-dark-dock-blue": {
+      "file": "src/screenshots/previews/tahoe-dark-dock-blue-layers-993ec56b695b.webp",
+      "sha256": "993ec56b695beed54c27e187f618debdf25d0c5f3e5304f063243e07632f64c2",
+      "original_capture_sha256": "8b7b80364bb06dc122a09562aba9fe48979f00d7e720a7b44d2b7039b72a06f8",
+      "reviewed": true,
+      "crop": [
+        1200,
+        1964,
+        2640,
+        2160
+      ],
+      "appearance": {
+        "Window controls": "__aurorae__svg__MacTahoeLiquidKde-Dark",
+        "Plasma": "MacTahoeLiquidKde-Dark",
+        "Qt": "MacTahoeLiquidKdeDark",
+        "Kvantum": "mac-tahoe-liquid-kdeDark",
+        "GTK preference": "'prefer-dark'",
+        "GTK theme": "'MacTahoeLiquidKde-Dark'",
+        "GTK 4 stylesheet": "MacTahoeLiquidKde-Dark",
+        "Icons": "MacTahoeLiquidKde-Icons-Glass-Dark"
+      },
+      "wallpaper": "MacTahoe",
+      "trash": "empty"
+    },
+    "tahoe-dark-dock-red": {
+      "file": "src/screenshots/previews/tahoe-dark-dock-red-layers-1179b9a45b42.webp",
+      "sha256": "1179b9a45b42a776c4bc3aca137599593a0c18462ada9b76038e67ab4201432d",
+      "original_capture_sha256": "d8dfe152ab9cd4764e1af8e22b5577c4fed711661dc1a9c6dd00bf416945f512",
+      "reviewed": true,
+      "crop": [
+        1200,
+        1964,
+        2640,
+        2160
+      ],
+      "appearance": {
+        "Window controls": "__aurorae__svg__MacTahoeLiquidKde-Dark",
+        "Plasma": "MacTahoeLiquidKde-Dark",
+        "Qt": "MacTahoeLiquidKdeDark",
+        "Kvantum": "mac-tahoe-liquid-kdeDark",
+        "GTK preference": "'prefer-dark'",
+        "GTK theme": "'MacTahoeLiquidKde-Dark'",
+        "GTK 4 stylesheet": "MacTahoeLiquidKde-Dark",
+        "Icons": "MacTahoeLiquidKde-Icons-Glass-Dark"
+      },
+      "wallpaper": "MacTahoe",
+      "trash": "empty"
+    },
+    "tahoe-light-dock-blue-full": {
+      "file": "src/screenshots/previews/tahoe-light-dock-blue-full-layers-fb432241ebf0.webp",
+      "sha256": "fb432241ebf03ac0639d9b9c4bc99c3f760bbca1a48713f790387b5cca66dae2",
+      "original_capture_sha256": "5013e4528a3e0dada05156eac74d967c96ab5f618206d6dc46682a85bd2e8153",
+      "reviewed": true,
+      "crop": [
+        1200,
+        1964,
+        2640,
+        2160
+      ],
+      "appearance": {
+        "Window controls": "__aurorae__svg__MacTahoeLiquidKde-Light",
+        "Plasma": "MacTahoeLiquidKde-Light",
+        "Qt": "MacTahoeLiquidKdeLight",
+        "Kvantum": "mac-tahoe-liquid-kde",
+        "GTK preference": "'prefer-light'",
+        "GTK theme": "'MacTahoeLiquidKde-Light'",
+        "GTK 4 stylesheet": "MacTahoeLiquidKde-Light",
+        "Icons": "MacTahoeLiquidKde-Icons-Glass-Light"
+      },
+      "wallpaper": "MacTahoe",
+      "trash": "full"
+    },
+    "tahoe-light-dock-blue": {
+      "file": "src/screenshots/previews/tahoe-light-dock-blue-layers-876689c40e66.webp",
+      "sha256": "876689c40e663931f45703ed9595daff025265a183b46dc09aca2f5698c471a7",
+      "original_capture_sha256": "de25f28e2f3e4dc370bdbcf8e4ffbe74a1d41a0ca8b66db0dfb4f61b5ef4617e",
+      "reviewed": true,
+      "crop": [
+        1200,
+        1964,
+        2640,
+        2160
+      ],
+      "appearance": {
+        "Window controls": "__aurorae__svg__MacTahoeLiquidKde-Light",
+        "Plasma": "MacTahoeLiquidKde-Light",
+        "Qt": "MacTahoeLiquidKdeLight",
+        "Kvantum": "mac-tahoe-liquid-kde",
+        "GTK preference": "'prefer-light'",
+        "GTK theme": "'MacTahoeLiquidKde-Light'",
+        "GTK 4 stylesheet": "MacTahoeLiquidKde-Light",
+        "Icons": "MacTahoeLiquidKde-Icons-Glass-Light"
+      },
+      "wallpaper": "MacTahoe",
+      "trash": "empty"
+    },
+    "tahoe-light-dock-red": {
+      "file": "src/screenshots/previews/tahoe-light-dock-red-layers-89f98a764f85.webp",
+      "sha256": "89f98a764f85a8f63a0237cd3551fc48774c7d405d7756a0f9b57acaf42afe76",
+      "original_capture_sha256": "495db2aa8b10516eb1a508867a9a4e4dcdc2a96ad5ec6eee97556e2060a29155",
+      "reviewed": true,
+      "crop": [
+        1200,
+        1964,
+        2640,
+        2160
+      ],
+      "appearance": {
+        "Window controls": "__aurorae__svg__MacTahoeLiquidKde-Light",
+        "Plasma": "MacTahoeLiquidKde-Light",
+        "Qt": "MacTahoeLiquidKdeLight",
+        "Kvantum": "mac-tahoe-liquid-kde",
+        "GTK preference": "'prefer-light'",
+        "GTK theme": "'MacTahoeLiquidKde-Light'",
+        "GTK 4 stylesheet": "MacTahoeLiquidKde-Light",
+        "Icons": "MacTahoeLiquidKde-Icons-Glass-Light"
+      },
+      "wallpaper": "MacTahoe",
+      "trash": "empty"
+    }
+  }
+}

@@ -92,7 +92,6 @@ def installer_themes(source: Path, output: Path, style: str, tint: str, *,
             "Transformations: Copyright (C) 2026 Lester Cordero Murillo; GPL-3.0-or-later.\n")
         for notice in ("NOTICE", "LICENSING.md", "THIRD_PARTY_NOTICES.md"):
             shutil.copyfile(ROOT / notice, target / notice)
-    dark_sources = installer_dark_sources() if style == "regular" else {}
     # Extensions disappear in the PNG output: Grsync.SVG and Grsync.svg
     # must not write the same file twice. Prefer SVG, then lowercase suffixes.
     entries = {}
@@ -124,16 +123,7 @@ def installer_themes(source: Path, output: Path, style: str, tint: str, *,
         check_cancelled()
         prepared = prepare_source(path, 512, clean_rim=style == "regular")
         for name, mode in zip(names, ("light", "dark")):
-            if style == "glass" and mode == "dark":
-                # The glass material is mode-independent. Reuse exact PNG bytes.
-                shutil.copyfile(output / names[0] / "apps/256" / (path.stem + ".png"),
-                                output / name / "apps/256" / (path.stem + ".png"))
-                continue
-            if mode == "dark" and checksum in dark_sources:
-                from icon_materials import raster
-                result = raster(dark_sources[checksum], 512)
-            else:
-                result = render_installer(prepared, style, mode, rgb, material)
+            result = render_installer(prepared, style, mode, rgb, material)
             result.resize((256, 256), Image.Resampling.LANCZOS).save(
                 output / name / "apps/256" / (path.stem + ".png"))
 
@@ -167,7 +157,7 @@ def installer_themes(source: Path, output: Path, style: str, tint: str, *,
         raise ValueError("No application artwork found")
     for name in names:
         write_json(output / name / "generation.json", {"style": style, "tint": tint, "sources": records,
-            "dark_artwork": {path.name: digest(path) for path in dark_sources.values()},
+            "dark_artwork": {},
             "material": asdict(material) if style == "glass" else None, "partial": bool(icons),
             "generator": {file: digest(Path(__file__).with_name(file)) for file in
                           ("icon_toolset.py", "icon_materials.py")},

@@ -1,31 +1,68 @@
 {
-  "version": "0.72.14",
-  "source_sha256": "09a1e829fb3617af98685bc2d0405a8da228e485f6e578a1906dd7b713becbe8",
-  "scope": "Deterministic parameterized icon generation; same pixels, faster rendering. See .github/ICON-GENERATION-0.72.14.md.",
-  "environment": "Disposable neon Plasma 6.8.1 / Qt 6.11.1 Wayland VM and focused real-artwork pixel regressions.",
+  "version": "0.72.15",
+  "source_sha256": "ab9afd5a478a2f2b67a9dbe641c46faebad9ddf25d0ff5fef17726a4b889db6e",
+  "scope": "Repaint original icon layers in all appearances without adding geometry or alternate artwork; distinct light/dark tints. See .github/ICON-LAYERS-0.72.15.md.",
+  "environment": "Focused Python/Pillow/librsvg rendering tests and disposable neon Plasma 6.8.1 / Qt 6.11.1 Wayland VM.",
   "checks": [
     {
-      "command": "pytest tests/test_icon_toolset.py tests/test_icons_step.py -q",
+      "command": "pytest tests/test_icon_toolset.py -q; affected follow-up selectors recorded in .github/ICON-LAYERS-0.72.15.md",
       "result": "passed",
-      "detail": "47 passed; after cancellation and recipe coverage edits, 5 focused cases passed; separate worker failure cleanup case passed."
+      "detail": "46 component cases passed initially; all observed failures repaired and affected recipe, alias, contrast and geometry cases passed on the final relevant implementation."
     },
     {
-      "command": "Same-fixture baseline/candidate installer_themes generation plus PNG SHA-256 comparison",
+      "command": "layer-proof-guest.py in disposable Plasma VM",
       "result": "passed",
-      "detail": "536 PNGs identical; 13 artworks, 268 names; 3.84s to 0.97s (74.7% reduction). Repeat output identical."
+      "detail": "13 original artworks preserve geometry across six modes; all 536 PNGs per tint reproduce reviewed captures exactly."
     },
     {
-      "command": "Disposable Plasma VM: steps.icons.install() twice with displayed-artwork generation fixture",
+      "command": "layer-capture-guest.py; review of twelve Dock frames",
       "result": "passed",
-      "detail": "Real archive staging and install destinations; normal privilege setup; repeat installation skips unchanged output."
+      "detail": "Both editions, red/blue light/dark, pinned applications and Apps, empty/full Trash; source identities in capture manifests."
+    },
+    {
+      "command": "Verify generated installer icon sample manifest hashes",
+      "result": "passed",
+      "detail": "80 preview hashes valid; unchanged samples reused."
     }
   ],
   "coverage_limits": [
-    "Benchmark covers the recorded 13-artwork fixture, not full-library or complete installer latency.",
-    "Focused VM icon lifecycle, not full wizard or fresh X11 qualification.",
-    "Original photographs retained; default rendered PNGs match v0.72.13.",
-    "Full remote CI tracked after publication."
+    "Displayed Dock artwork and aliases; no complete installer lifecycle, new X11 session or automatic scheduler boundary test.",
+    "Final source reproduces every captured tinted PNG byte for byte.",
+    "Static recoloring of original layers; not live macOS refraction or a pixel-perfect reproduction.",
+    "Live captures cover tinted modes. Default and clear have renderer checks, not new live desktop captures.",
+    "Full new remote CI remains asynchronous."
   ],
   "gallery_commit": "f09780b200b79302e7c23ef9f6f74d94748bbea3",
-  "captures": []
+  "captures": [
+    {
+      "path": "src/screenshots/previews/tahoe-dark-dock-blue-full-layers-7786da01ab34.webp",
+      "sha256": "7786da01ab34d272a8c0b9b69db2f7418ceec9c935c329e6bf034384444a40f3",
+      "reviewed": true
+    },
+    {
+      "path": "src/screenshots/previews/tahoe-dark-dock-blue-layers-993ec56b695b.webp",
+      "sha256": "993ec56b695beed54c27e187f618debdf25d0c5f3e5304f063243e07632f64c2",
+      "reviewed": true
+    },
+    {
+      "path": "src/screenshots/previews/tahoe-dark-dock-red-layers-1179b9a45b42.webp",
+      "sha256": "1179b9a45b42a776c4bc3aca137599593a0c18462ada9b76038e67ab4201432d",
+      "reviewed": true
+    },
+    {
+      "path": "src/screenshots/previews/tahoe-light-dock-blue-full-layers-fb432241ebf0.webp",
+      "sha256": "fb432241ebf03ac0639d9b9c4bc99c3f760bbca1a48713f790387b5cca66dae2",
+      "reviewed": true
+    },
+    {
+      "path": "src/screenshots/previews/tahoe-light-dock-blue-layers-876689c40e66.webp",
+      "sha256": "876689c40e663931f45703ed9595daff025265a183b46dc09aca2f5698c471a7",
+      "reviewed": true
+    },
+    {
+      "path": "src/screenshots/previews/tahoe-light-dock-red-layers-89f98a764f85.webp",
+      "sha256": "89f98a764f85a8f63a0237cd3551fc48774c7d405d7756a0f9b57acaf42afe76",
+      "reviewed": true
+    }
+  ]
 }
