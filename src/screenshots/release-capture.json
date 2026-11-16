@@ -16533,6 +16533,20 @@
         "tahoe-dark-context": "7148ec8f973c0c4b3ad77e53b26d023d1c78b50ccead513852e7d255e0adf30e",
         "tahoe-light-boot": "1f628792b5bc52f507d52d7bc8c67322299431a9a5f16a92c447eeba571adcfe"
       }
+    },
+    {
+      "source_version": "0.72.2",
+      "scope": "Control Center gradient removal and native glass edge qualification; unrelated README photographs retained",
+      "provenance": "src/screenshots/previews/gradient-0722-tahoe-provenance-e4197de3ea98.json",
+      "reviewed": true,
+      "frames": {
+        "src/screenshots/previews/gradient-0722-tahoe-light-dock-eba099f3f14f.webp": "eba099f3f14f8df231c15641b1a65dad1b435bd64a0254b975edeeae15ed64ec",
+        "src/screenshots/control-center-light-912d3227499f.webp": "912d3227499fddcf0a24bec671338976ef61aea21bb747179a3e68440d8b6350",
+        "src/screenshots/previews/gradient-0722-tahoe-light-menu-9d27b34e924c.webp": "9d27b34e924c72cf90dcfe5120127e1bb7e62a8206b340504a5e33053bc6075f",
+        "src/screenshots/control-center-dark-0413d0b90a04.webp": "0413d0b90a04efe24a783a9333d41cb12c513fafada61bc15cddc2ad6358e175",
+        "src/screenshots/previews/gradient-0722-tahoe-dark-dock-c0aa6ef0c065.webp": "c0aa6ef0c0651b7f506e1c22376320b73e096f9bc9d507250c26b4e31f7a9e89",
+        "src/screenshots/previews/gradient-0722-tahoe-dark-menu-b400a597e6f9.webp": "b400a597e6f9714cc8391c6e4e962e39d2a0d5d2dfb8d39d5ad1afe25272240e"
+      }
     }
   ],
   "component_previews": [

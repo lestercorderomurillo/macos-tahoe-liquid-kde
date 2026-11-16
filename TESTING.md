@@ -1,11 +1,11 @@
 # Installer testing
 
-Tahoe **v0.72.1** includes Clipboard history in Launchpad. Focused component,
-install/reinstall and appearance checks passed in disposable environments; see
-[source identities, CI results and coverage limits](release-evidence.json).
-All README feature photographs were refreshed from v0.72.1 in the pinned Plasma VM
-([capture records](src/screenshots/previews/readme-0721-tahoe-provenance-e5182736efb3.json)). The installer photographs below retain
-their original reviewed provenance ([gallery records](src/screenshots/release-capture.json)).
+Tahoe **v0.72.2** removes Control Center gradients and fixes rounded glass edge coverage.
+Focused shader, native X11 and disposable Plasma VM checks passed; see
+[validation and coverage limits](release-evidence.json).
+[Control Center photographs and focused render evidence](src/screenshots/previews/gradient-0722-tahoe-provenance-e4197de3ea98.json) accompany this fix.
+Other README and installer photographs retain their original reviewed
+[provenance](src/screenshots/release-capture.json).
 
 ## Installation steps
 
