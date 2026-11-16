@@ -149,6 +149,7 @@ def _install_taskmanager_qml() -> bool:
     return sudo_install_tree(
         module_src, qt6_qml_dir() / _TASKMANAGER_QML_RELPATH,
         tr('org.kde.mac.tahoe.liquid.taskmanager (installed runtime QML)'),
+        directory_root=qt6_qml_dir(),
     )
 
 
@@ -187,6 +188,7 @@ def install() -> None:
         if sudo_install_file(
             artifact, qt6_plugins_dir() / _TASKMANAGER_SO_RELPATH,
             tr('org.kde.mac.tahoe.liquid.taskmanager (installed compiled dock base)'),
+            directory_root=qt6_plugins_dir(),
         ):
             _install_taskmanager_package()
             _install_taskmanager_qml()
@@ -196,7 +198,7 @@ def install() -> None:
     launcher_module = TASKMANAGER_BUILD / "bin" / _LAUNCHER_QML_RELPATH
     if (launcher_module / "libmactahoelauncher.so").is_file():
         sudo_install_tree(launcher_module, qt6_qml_dir() / _LAUNCHER_QML_RELPATH,
-                          tr('Launcher (installed native search popup)'))
+                          tr('Launcher (installed native search popup)'), directory_root=qt6_qml_dir())
     else:
         fail(tr('Launcher (missing native search popup build artifact)'))
 

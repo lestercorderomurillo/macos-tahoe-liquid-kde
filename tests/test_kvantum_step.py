@@ -170,7 +170,7 @@ def test_pending_marker_owns_old_and_new_plugin_during_reinstall(
     monkeypatch.setattr(kvantum, "ENGINE_SOURCE", source)
     monkeypatch.setattr(kvantum, "ENGINE_WORK", tmp_path / "work")
 
-    def install_file(src, dest, _label):
+    def install_file(src, dest, _label, **kwargs):
         calls.append(dest)
         # The marker published before replacement must recognize the old file.
         if dest == destination:
@@ -221,7 +221,7 @@ def test_failed_reinstall_leaves_pending_marker_owning_previous_plugin(
     monkeypatch.setattr(kvantum, "ENGINE_SOURCE", source)
     monkeypatch.setattr(kvantum, "ENGINE_WORK", tmp_path / "work")
 
-    def fail_plugin(src, dest, _label):
+    def fail_plugin(src, dest, _label, **kwargs):
         if dest == marker:
             dest.write_bytes(Path(src).read_bytes())
             return True
@@ -437,7 +437,7 @@ def test_continuous_menu_install_reinstall_uninstall(tmp_path, monkeypatch):
     monkeypatch.setattr(kvantum, "have", lambda _: False)
     writes = []
     monkeypatch.setattr(kvantum, "kw_write", lambda *args: writes.append(args) or True)
-    def install(src, dst, label):
+    def install(src, dst, label, **kwargs):
         if not src.is_file():
             return False
         dst.parent.mkdir(parents=True, exist_ok=True)
@@ -461,7 +461,7 @@ def test_missing_menu_plugin_does_not_activate_style(tmp_path, monkeypatch):
     from steps import kvantum
     monkeypatch.setattr(kvantum, "MENU_BUILD", tmp_path / "missing-build")
     monkeypatch.setattr(kvantum, "_install_bundled_engine", lambda: True)
-    monkeypatch.setattr(kvantum, "sudo_install_file", lambda *args: False)
+    monkeypatch.setattr(kvantum, "sudo_install_file", lambda *args, **kwargs: False)
     writes = []
     monkeypatch.setattr(kvantum, "kw_write", lambda *args: writes.append(args) or True)
     kvantum.install()

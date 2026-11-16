@@ -34,13 +34,13 @@ def _stub_sudo_helpers(monkeypatch):
     helpers express (atomic copy + correct ownership at the destination)
     is real-system territory; in the test we just want to verify the
     install code targets the right paths and copies the right bytes."""
-    def fake_install_file(src: Path, dest: Path, label: str, *, user_owned=False) -> bool:
+    def fake_install_file(src: Path, dest: Path, label: str, *, user_owned=False, **kwargs) -> bool:
         assert user_owned == (dest.name == "mac-tahoe-gtk-appmenu.sh")
         dest.parent.mkdir(parents=True, exist_ok=True)
         shutil.copy2(str(src), str(dest))
         return True
 
-    def fake_install_tree(src: Path, dest: Path, label: str | None = None) -> bool:
+    def fake_install_tree(src: Path, dest: Path, label: str | None = None, **kwargs) -> bool:
         if dest.exists():
             shutil.rmtree(dest)
         shutil.copytree(str(src), str(dest))

@@ -1,10 +1,11 @@
 """Common helpers shared between step modules."""
 
 from localization import tr
-from component_cache import identical
+from component_cache import identical, fingerprint
 
 import os
 import shutil
+import stat
 import subprocess
 import tempfile
 from contextlib import contextmanager
@@ -111,7 +112,54 @@ def _as_root() -> Iterator[None]:
         os.seteuid(saved_euid)
 
 
-def sudo_install_file(src: Path, dest: Path, label: str, *, user_owned: bool = False) -> bool:
+def _same_public_payload(src: Path, dest: Path) -> bool:
+    try:
+        return fingerprint(src, portable=True) == fingerprint(dest, portable=True)
+    except (OSError, ValueError):
+        return False
+
+
+def _public_payload(path: Path) -> None:
+    """Normalize installed assets without following links outside the payload."""
+    mode = path.lstat().st_mode
+    if stat.S_ISLNK(mode):
+        return
+    if stat.S_ISDIR(mode):
+        path.chmod(0o755)
+        for child in path.iterdir():
+            _public_payload(child)
+    elif stat.S_ISREG(mode):
+        path.chmod(0o755 if mode & 0o111 else 0o644)
+
+
+def _public_parent(path: Path, root: Path | None = None) -> None:
+    """Create public parents; repair only the explicitly owned namespace."""
+    namespace = []
+    if root is not None:
+        try:
+            path.relative_to(root)
+        except ValueError as exc:
+            raise OSError(f"Destination outside installation namespace: {path}") from exc
+        current = path
+        while current != root:
+            if current.is_symlink():
+                raise OSError(f"Symlink in installation namespace: {current}")
+            namespace.append(current)
+            current = current.parent
+    missing = []
+    current = path
+    while not current.exists():
+        missing.append(current)
+        current = current.parent
+    path.mkdir(parents=True, exist_ok=True)
+    for directory in reversed(missing):
+        directory.chmod(0o755)
+    for directory in reversed(namespace):
+        directory.chmod(0o755)
+
+
+def sudo_install_file(src: Path, dest: Path, label: str, *, user_owned: bool = False,
+                      directory_root: Path | None = None) -> bool:
     """Atomic copy+rename under a transient seteuid(0).
 
     Destinations default to root ownership. For per-user configuration,
@@ -121,21 +169,29 @@ def sudo_install_file(src: Path, dest: Path, label: str, *, user_owned: bool = F
     label = tr(label)
     src = Path(src)
     dest = Path(dest)
-    if identical(src, dest) and (dest.stat().st_uid == (os.geteuid() if user_owned else 0)):
-        ok(tr("{label} (unchanged)", label=label))
-        return True
     try:
+        same = identical(src, dest) if user_owned else _same_public_payload(src, dest)
+        if same and (dest.stat().st_uid == (os.geteuid() if user_owned else 0)):
+            if not user_owned:
+                with _as_root():
+                    _public_parent(dest.parent, directory_root)
+                    _public_payload(dest)
+            ok(tr("{label} (unchanged)", label=label))
+            return True
         owner = (os.geteuid(), os.getegid()) if user_owned else None
         if user_owned:
             # Create per-user directories before elevation so the user can
             # keep managing other files in the same configuration directory.
             dest.parent.mkdir(parents=True, exist_ok=True)
         with _as_root():
-            dest.parent.mkdir(parents=True, exist_ok=True)
+            if not user_owned:
+                _public_parent(dest.parent, directory_root)
             tmp = dest.with_name(dest.name + ".mttkde-tmp")
             shutil.copy2(str(src), str(tmp))
             if owner is not None:
                 os.chown(tmp, *owner, follow_symlinks=False)
+            else:
+                _public_payload(tmp)
             os.replace(str(tmp), str(dest))
     except OSError as exc:
         fail(f"{label} ({exc.__class__.__name__}: {exc})")
@@ -144,7 +200,8 @@ def sudo_install_file(src: Path, dest: Path, label: str, *, user_owned: bool = F
     return True
 
 
-def sudo_install_tree(src: Path, dest: Path, label: str | None = None) -> bool:
+def sudo_install_tree(src: Path, dest: Path, label: str | None = None,
+                      *, directory_root: Path | None = None) -> bool:
     """Copy a tree to a root-owned destination, staged at a sibling
     .mttkde-tmp then renamed so the live destination is never half-written."""
     label = tr(label or dest.name)
@@ -153,16 +210,18 @@ def sudo_install_tree(src: Path, dest: Path, label: str | None = None) -> bool:
     if not src.is_dir():
         fail(tr('{label} (source missing: {src})', label=label, src=src))
         return False
-    if identical(src, dest) and dest.stat().st_uid == 0:
-        ok(tr("{label} (unchanged)", label=label))
-        return True
     try:
         with _as_root():
-            dest.parent.mkdir(parents=True, exist_ok=True)
+            _public_parent(dest.parent, directory_root)
+            if _same_public_payload(src, dest) and dest.stat().st_uid == 0:
+                _public_payload(dest)
+                ok(tr("{label} (unchanged)", label=label))
+                return True
             tmp = dest.with_name(dest.name + ".mttkde-tmp")
             if tmp.exists():
                 shutil.rmtree(str(tmp))
             shutil.copytree(str(src), str(tmp), symlinks=True)
+            _public_payload(tmp)
             if dest.exists():
                 shutil.rmtree(str(dest))
             os.replace(str(tmp), str(dest))

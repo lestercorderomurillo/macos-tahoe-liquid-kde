@@ -25,12 +25,12 @@ def _stub_qt6_paths(monkeypatch, tmp_path):
 
 
 def _stub_sudo_helpers(monkeypatch):
-    def fake_install_file(src: Path, dest: Path, label: str) -> bool:
+    def fake_install_file(src: Path, dest: Path, label: str, **kwargs) -> bool:
         dest.parent.mkdir(parents=True, exist_ok=True)
         shutil.copy2(str(src), str(dest))
         return True
 
-    def fake_install_tree(src: Path, dest: Path, label: str | None = None) -> bool:
+    def fake_install_tree(src: Path, dest: Path, label: str | None = None, **kwargs) -> bool:
         if dest.exists():
             shutil.rmtree(dest)
         shutil.copytree(str(src), str(dest))

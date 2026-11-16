@@ -272,7 +272,8 @@ def _install_bundled_engine() -> bool:
     ):
         return False
     if not sudo_install_file(
-        artifact, destination, tr('Kvantum Qt 6 engine v{ENGINE_VERSION} installed', ENGINE_VERSION=ENGINE_VERSION)
+        artifact, destination, tr('Kvantum Qt 6 engine v{ENGINE_VERSION} installed', ENGINE_VERSION=ENGINE_VERSION),
+        directory_root=qt6_plugins_dir(),
     ):
         return False
     if not sudo_install_file(
@@ -320,7 +321,7 @@ def install() -> None:
 
     if not sudo_install_file(
         MENU_BUILD / "libmactahoestyle.so", menu_style_destination(),
-        tr('Continuous menu corners installed'),
+        tr('Continuous menu corners installed'), directory_root=qt6_plugins_dir(),
     ):
         return
 

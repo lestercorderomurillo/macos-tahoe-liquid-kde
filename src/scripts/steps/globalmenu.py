@@ -142,10 +142,11 @@ def install() -> None:
         fail(tr('Global Menu runtime QML missing'))
         return
     if not sudo_install_tree(glass_module, qt6_qml_dir() / _GLASS_QML_RELPATH,
-                             tr('Global Menu runtime QML')):
+                             tr('Global Menu runtime QML'), directory_root=qt6_qml_dir()):
         return
     dest_so = qt6_plugins_dir() / _SO_RELPATH
-    if not sudo_install_file(artifact, dest_so, tr('Global Menu installed')):
+    if not sudo_install_file(artifact, dest_so, tr('Global Menu installed'),
+                             directory_root=qt6_plugins_dir()):
         return
 
     module_src = BUILD / "bin/plasma/applet/org/kde/mac/tahoe/liquid/globalmenu"
@@ -153,7 +154,7 @@ def install() -> None:
         fail(tr('Global Menu runtime QML missing'))
         return
     sudo_install_tree(module_src, qt6_qml_dir() / _QML_RELPATH,
-                      tr('Global Menu runtime QML'))
+                      tr('Global Menu runtime QML'), directory_root=qt6_qml_dir())
 
     _install_translations()
     _install_about_info()

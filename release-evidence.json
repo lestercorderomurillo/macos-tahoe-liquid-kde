@@ -1,322 +1,447 @@
 {
-  "version": "0.72.5",
-  "source_sha256": "b342b7b16377f3ef3ff39f99deca5a0cedb934df9242dd544db0a8f7fd493581",
-  "environment": "Disposable KDE neon Plasma 6.8.1 / Qt 6.11.1 Wayland desktop; isolated X11/Wayland rendering; selected 6.6, 6.7.4 and 6.8 SDK builds. Desktop validation did not run on the host.",
-  "scope": "Shared per-preset component materials, transactional SVG/QML transparency, live reload and cached optics; Dock layout recovery and intention-based VM checks. Standalone Global Menu now supplies the shared About glass module; tests build it explicitly, and uninstall preserves remaining consumers.",
+  "version": "0.72.6",
+  "source_sha256": "3b57daa16b36dbb6f93dcc3494d93ea22a4cc1145ad53ac662b0d1e4f5ba5597",
+  "environment": "Local Python pytest; disposable QEMU KDE neon Plasma 6.8.1 / Qt 6.11.1 Wayland guest. No host desktop changes.",
+  "scope": "Issue #129: normalize system files to 0644/0755 and directories to 0755, repair unchanged installations and explicitly bounded Qt namespace parents, preserve private user configuration and symlink targets. Shared helpers serve both editions; no native ABI, shader or appearance changes.",
   "qualified_source": {
-    "base_commit": "99d08d1f2b24233b51a37463ad8762b71b787cf0",
+    "base_commit": "6e9be1da8a847d11a41294a172bbf3421b7cfaef",
     "changed_files": {
-      "nix/home-manager.nix": "455c7c32fc6a8fd30e4e8d7004dd0e48e6416cda08bbdf894b5c6bc197e1c449",
-      "nix/packages.nix": "c817ed68a2576086e9a61df3d7f7ec1f35f832ca4608def26c74552c5b4a1907",
-      "src/offline/kwin-effects/acrylic-glass/locale/de/LC_MESSAGES/kwin_effect_liquidglass.mo": "f7a794bfa890d940b1b4954897f519a36da1dbf3212c2cd2dbc6dff03f9ccca4",
-      "src/offline/kwin-effects/acrylic-glass/locale/pt_BR/LC_MESSAGES/kwin_effect_liquidglass.mo": "e20d9677f734d535a38734097ae01689be38c94e97acf2b5b23593f70033eb35",
-      "src/offline/kwin-effects/acrylic-glass/po/de.po": "c74345bdd1044491369d6fbf26b08988cff4ecaec54e2e91c12f4a15130b8723",
-      "src/offline/kwin-effects/acrylic-glass/po/pt_BR.po": "dd96d8908a409161c4b83b15f0ca6f1cdc8e6c7a81395f21fc62cacf876824e9",
-      "src/offline/kwin-effects/acrylic-glass/src/CMakeLists.txt": "a21adfe56590ad3bae4b05b492dbfd76e7a9575c3ac03a77a2c5617d545c97b4",
-      "src/offline/kwin-effects/acrylic-glass/src/effect.cpp": "5c5c0624bd86f9564a02d9deecd7fa1c33521b0fdc684c4406df934a6906b693",
-      "src/offline/kwin-effects/acrylic-glass/src/effect.h": "c347cbf9776bfa91a05c7fbadcbfb2070e6549a40352a3dc2ba8af5a3b10d16d",
-      "src/offline/kwin-effects/acrylic-glass/src/kcm/config.cpp": "255205cd24e0c40df414ce4da5bb8f1c5fd693a5ef1f889a1c5b02e455c603fa",
-      "src/offline/kwin-effects/acrylic-glass/src/kcm/config.h": "2a510de48864c3333fdd28720458bcd25fb975381010dde1eea56b94c0d552ea",
-      "src/offline/kwin-effects/acrylic-glass/src/presets.json": "c72f87f5bdd23b140205a282c4d61234efa1fc8994b6a99d8f4aaeb4da5d7d6d",
-      "src/offline/kwin-effects/acrylic-glass/src/shaders/glass.glsl": "4a4a61cf26603415dd41fdba86685605b7dc1e1ba176580cc4229f718511ca51",
-      "src/offline/kwin-effects/acrylic-glass/src/shaders/glass_core.glsl": "8441c2d75a820470b3ad8cc8759535153c5130e2af77c98318b7bc4c343c02f6",
-      "src/offline/kwin-effects/acrylic-glass/src/surfaceoptics.h": "eb68fb0a28d34e23d0cdd7df74e7f04a87031e7f2c31a9bf6c9a6c442f2f1639",
-      "src/offline/plasmoids/org.kde.mac-tahoe-liquid-kde.controlcenter/contents/ui/ControlTile.qml": "67cb3b450cef00d1e0f80e8710f5b6f1d7a53214b7845a999054b09ad1ed0e53",
-      "src/offline/plasmoids/org.kde.mac-tahoe-liquid-kde.launcher/contents/ui/MenuRepresentation.qml": "6d1dc85d32e5a331a8f14fa89fb8d6b6797f779a50cd3e854089ea4bc11ffa4d",
-      "src/offline/plasmoids/org.kde.mac-tahoe-liquid-kde.launcher/contents/ui/main.qml": "6bff5e5b7556092cd0c670208e3190b102a2f11b68eefe1058e453b8b2f8ec0b",
-      "src/offline/plasmoids/org.kde.mac-tahoe-liquid-kde.trashcan/contents/ui/main.qml": "394b0ac1fa87623aafc0faa5f8614ac4e47a49fe2130308feb573dd8ce12dfda",
-      "src/offline/plasmoids/org.kde.mac.tahoe.liquid.globalmenu/qml/AboutWindow.qml": "a58913e5f1d945050bbaa03748d24dba8458e6fca2d64796509568f5b57e6986",
-      "src/offline/plasmoids/org.kde.mac.tahoe.liquid.taskmanager/contents/ui/main.qml": "b3240452e2c7e0b8bfd93d2a79270b0adf2805eb416bbcbb7c11ad1c7e552033",
-      "src/offline/plasmoids/org.kde.mac.tahoe.liquid.taskmanager/launcher/CMakeLists.txt": "6e263d9d846cd89ae08bb9e91ca84ff576e1298b92dd7eb50114a35e98f020f4",
-      "src/offline/plasmoids/org.kde.mac.tahoe.liquid.taskmanager/launcher/DockCell.qml": "76e00843ba1fb1cd7c52b783baa540e1edd377e34a7ee0da1375a7004a36c24a",
-      "src/offline/plasmoids/org.kde.mac.tahoe.liquid.taskmanager/launcher/launchersearchpopup.cpp": "ed5f5f3e9f117377431939dbc5c15db9c39d60fee2caa059c53e5e282f65de3c",
-      "src/scripts/build_translations.py": "1b95e3a0d3ec717ee67b74c2269fc9e912c399434d5ade549e502d03eb3281e0",
-      "src/scripts/locales/de.json": "ed20d840490f3586a9fe364aff6ea73c43649d42d4f1fc337797504794d5ee7c",
-      "src/scripts/locales/pt_BR.json": "2274dc98fc2490783516c8343962006d78a882f2dfd9ab3f4d1fb27b65576ab3",
-      "src/scripts/release_capture_guest.py": "6f7aa84ff70b8dca212c2b93196455326ffcec2fe00842abef5919130151b3c7",
-      "src/scripts/screenshot_checks.py": "2fb553748eec3b41315037df195dc12f3360e847f50d33f8776a058ae5c230ec",
-      "src/scripts/steps/acrylic_glass.py": "40b2937f8c15c48389ee8776389d6e8408a7e19e06b5b8e005d9f003625a84a8",
-      "src/scripts/theme_switch.py": "2195025bdfda1d39307369169a986def81232b4f217a27690e1f1c039cc20898",
-      "tests/glass/kcm.cpp": "48091ff1122609121d42175313c38754d8f703e1f0a7eb4a84e1316ac1bd4705",
-      "tests/glass/shader.cpp": "1a56cbcad1f53aa7bdab7f6322a694301a791cd04f9ff94aef54077aa2771d27",
-      "tests/test_acrylic_glass_cmake.py": "8eb85b3c16eabf780384d9dc3d8568bc780e42e60674624e3675e9ba86d2186c",
-      "tests/test_acrylic_glass_config.py": "7852736b7af99610d376d4fdfc0179d9937477f6c1c7a56e6a9cd90570138877",
-      "tests/test_acrylic_glass_uninstall.py": "8cf33d9dd54f8f5872abcff112ec099b088072fb30f59e73989e3d4f72dc9132",
-      "tests/test_desktop_controls.py": "36513c1d806c0becda28d7df2582b96edb5d0fe3ae13009434794a1e2e6bb672",
-      "tests/test_glass_presets.py": "47662673682bbc599f400806255c9d0b3aab7181820b17f8f5d449c72d3ad88b",
-      "tests/test_launcher_presets.py": "cf957c5bf66986ed9819f38a11682c635a357cd64f30081051695d444e54f5cf",
-      "tests/test_screenshot_checks.py": "166631315828d2ee3518c61c4d0c7e6f0b01a6d7a1aba5e117b59d96c642e35e",
-      "tests/test_theme_switch.py": "b208e49c36fc7cd04ebcd32a0bfa319272df782e8fee8a7eaa27d7d6705ab8d2",
-      "src/offline/kwin-effects/acrylic-glass/src/componentmaterials.h": "7102a229f9e1f2a4ae7530f949d1d457c2e8ad7c5fec2afa9683675e8a2d5566",
-      "src/offline/plasmoids/org.kde.mac.tahoe.liquid.taskmanager/launcher/glasssettings.cpp": "2e7c0267347669762a82246b4d4d2ed4ea64bb11efee51866108036ee9f80116",
-      "src/offline/plasmoids/org.kde.mac.tahoe.liquid.taskmanager/launcher/glasssettings.h": "9dade45f9615a5360259901f46411fef9e4efcd902fe4154482e21ecb0ba8c07",
-      "src/scripts/glass_surface_settings.py": "f795e1db7152dada04b3207abd5d79dd19d913ed34ee17e8101ca8956644b634",
-      "tests/glass/component_apply.cpp": "78a10c4a88263677b2f978345dcdbb75ca6e03c01552b6c244a74c9064152b9d",
-      "tests/glass_live_probe.py": "3321fb6431945af52441fdcbb57aa02c585eeda18b29b1126aef402d74aa0689",
-      "tests/test_component_glass_surfaces.py": "a3aa19ac513dfed1001501eeaecb9335da9a3591fbebedea1c11671703b27101",
-      "tests/vm/component_glass.py": "9637fd5d54d3398f75190bc8beaa52610a619b9576092f78bb6de610d71a2026"
+      "src/scripts/steps/_helpers.py": "4a51817438c583bfd3052f70028bd5bcb6d34828a9c52701114ec4a760c94ee6",
+      "src/scripts/steps/plasmoids.py": "0c1a64c9ab3f6e5415fe2154de113e9b2146c116f350f22a5aee6d52f7baddaf",
+      "src/scripts/steps/globalmenu.py": "a184b690375692933201f4775da1ecf3c1fd7a9e4112012d8770c20d3398b54f",
+      "src/scripts/steps/kvantum.py": "bd639f4f7c13e726cc454b23eeac961b085338175c4ac324970a914084b0910d",
+      "tests/vm/plugin_permissions.py": "04e8481f26eec1e7208b3e45ba9b3070bc0494afef1eb285b663ce9ece700501"
     },
-    "initial_component_source_archive": "92e0282dafbdce5d961c9deb0b8690679b4a2e2382ec11ce44d0df46b3ed174a",
-    "final_dock_installed_fingerprints": {
-      "src/offline/plasmoids/org.kde.mac.tahoe.liquid.taskmanager/launcher/DockCell.qml": "76e00843ba1fb1cd7c52b783baa540e1edd377e34a7ee0da1375a7004a36c24a",
-      "src/offline/plasmoids/org.kde.mac.tahoe.liquid.taskmanager/launcher/DockMetrics.qml": "41236ea447a43d500b1332b1c81ee31110e697ed94537341cd575f337a4f5681",
-      "src/offline/plasmoids/org.kde.mac.tahoe.liquid.taskmanager/contents/ui/main.qml": "b3240452e2c7e0b8bfd93d2a79270b0adf2805eb416bbcbb7c11ad1c7e552033",
-      "src/scripts/screenshot_checks.py": "2fb553748eec3b41315037df195dc12f3360e847f50d33f8776a058ae5c230ec",
-      "tests/vm/component_glass.py": "9637fd5d54d3398f75190bc8beaa52610a619b9576092f78bb6de610d71a2026",
-      "tests/glass/component_apply.cpp": "78a10c4a88263677b2f978345dcdbb75ca6e03c01552b6c244a74c9064152b9d",
-      "/usr/lib/x86_64-linux-gnu/qt6/plugins/kwin/effects/plugins/liquidglass.so": "b071761994b1bbbbbad61d93a02d0258a10913516cb3f6fce7ab57fae9b7ebfe",
-      "/usr/lib/x86_64-linux-gnu/qt6/plugins/kwin/effects/configs/kwin_liquidglass_config.so": "abebcba8e14150f2a272b26082a2db78f898a41103fe32d6df11ce2be2b1ef8e",
-      "/usr/lib/x86_64-linux-gnu/qt6/plugins/plasma/applets/org.kde.mac.tahoe.liquid.taskmanager.so": "7d2382c489cca23021c80edcac86a864d32f508a792f08c9e14b3dd4a72f9a08"
-    },
-    "bookkeeping": "Implementation qualified before final version/evidence bookkeeping; unchanged passing engine checks reused."
+    "vm_initial_source_archive_sha256": "43bc809f80c758997861027ea85a47d2c19c7afc269a8d49c28759b641a63b0e",
+    "note": "Final verification harness copied separately; implementation bytes unchanged after focused validation. Version and evidence bookkeeping followed qualification."
   },
   "checks": [
     {
-      "command": "python3 -m pytest tests/test_acrylic_glass_cmake.py -k native_kcm; native catalog checks",
+      "command": "python3 -m pytest tests/test_helpers_step.py tests/test_component_cache.py tests/test_plasmoids_step.py tests/test_globalmenu_step.py tests/test_kvantum_step.py -q",
       "result": "passed",
-      "detail": "10 final KCM/profile/catalog checks passed; same control state, independent presets, migration and cancel/save behavior. Native UI render exercised separately.",
-      "logs": {
-        "kcm-release-check.log": "6ca04621673902507837075e7c0c5ee2297963a1b7e1112469bb97f1670ddce6"
-      }
+      "detail": "51 passed; restrictive modes, unchanged repair, symlink isolation, private user files, error reporting, cache and component wiring."
     },
     {
-      "command": "python3 -m pytest tests/test_component_glass_surfaces.py <focused selections>",
+      "command": "python3 -m pytest tests/test_step_guards.py tests/test_plymouth_step.py tests/test_rounded_corners_step.py -q; python3 -m pytest tests/test_step_guards.py -q",
       "result": "passed",
-      "detail": "Transactional SVG/SVGZ fill patching and exact restoration, rollback, symlink refusal, live native assets reload, Dock separation and installed helper reload entry points passed.",
-      "logs": {
-        "reload-cli-tests.log": "26b33690794b65d34d105cd6b4711eef215801e42fe258d2f94ac4a3b0f165b4",
-        "reload-tests.log": "d6ff56c1786ce6789b07cf46cb76a691ec512bbc903b55dd667cb38e807dba8e"
-      }
+      "detail": "99 caller checks passed and one environment-dependent skip; 11 guard checks passed after adapting mocks to the optional namespace argument. Passing caller checks reused."
     },
     {
-      "command": "python3 -m pytest <affected installer/uninstall/theme selections>",
+      "command": "GOLDEN_GATE_TAHOE_SOURCE=<Tahoe checkout> MAC_TAHOE_NO_UPDATE_CHECK=true ./install --prepare; python3 -m pytest tests/test_helpers_step.py tests/test_plasmoids_step.py -q (prepared source)",
       "result": "passed",
-      "detail": "47 isolated installer/uninstall and 5 owned Finder-mapping transition cases passed. Test HOME/XDG directories are isolated.",
-      "logs": {
-        "isolated-install-tests.log": "6a99b176bb4863b4ce4516c13ee4f029370bbfaf6918761d9801512d39c95050",
-        "theme-tests.log": "5e8e8a7e0d526f5a5fb9b0249772545d88210bb19b900c6a3639e14976b1358a"
-      }
+      "detail": "12 passed against the staged Golden Gate source."
     },
     {
-      "command": "python3 -m pytest <focused Acrylic/launcher regressions>",
+      "command": "python3 -m pytest -q (Golden Gate)",
       "result": "passed",
-      "detail": "82 focused checks passed before the final Dock-only change; final native launcher/KCM UI checks passed. Unchanged engine evidence reused.",
-      "logs": {
-        "final-focused.log": "87eb2b764fb07e45581ab36a201c26a7551a23196351dd810e9d3462bf10b674",
-        "final-ui-tests.log": "be3ca9cb6738d81d8cf2ae454239c094a3e08715bede00eae7ffae3a1d8cc85d"
-      }
+      "detail": "98 wrapper and pin/source-selection checks passed."
     },
     {
-      "command": "cmake --build <selected Plasma SDK build directories>",
+      "command": "sudo env MAC_TAHOE_NO_UPDATE_CHECK=true python3 tests/vm/plugin_permissions.py install --output install-result.json; python3 tests/vm/plugin_permissions.py verify --output verify-after-install.json; sudo env MAC_TAHOE_NO_UPDATE_CHECK=true python3 tests/vm/plugin_permissions.py reinstall --output reinstall.json; python3 tests/vm/plugin_permissions.py verify --output verify-after-reinstall.json",
       "result": "passed",
-      "detail": "Final shared engine/registry builds passed with Plasma 6.6, 6.7.4 and 6.8 APIs. 6.7.4 included X11 and Wayland. These are SDK builds, not live distro installations.",
-      "logs": {
-        "sdk66-registry.log": "a1d34e1f70e0316f1b3584a53682d6d56975197c3e130340c1f40b66d0c83e98",
-        "sdk67-registry.log": "5687ca9002b69297a4529ac2e6b2eb46857a74025b0f7be453fe4e3360fd7cb1",
-        "sdk68-registry.log": "d4ca730a2e7793762ed5c10289eaf0c0265988f00348ff233481c2240f72cddb"
-      }
-    },
-    {
-      "command": "python3 tests/acrylic_glass_capture.py --plugin <final plugin> --compositor x11|wayland --material golden-gate --expect changed",
-      "result": "passed",
-      "detail": "Actual isolated X11 and Wayland rendering passed. X11 also exercised popup islands. Final Dock-only layout changes do not change these engine/shader inputs.",
-      "logs": {
-        "x11-final.log": "ffafe212a38848df236e51ba7f2dc6825ed2294b6982ccc9fff92f4c32a71f56",
-        "wayland-final.log": "44d69223e379d49435ae2260991640ea709b7ba190c1ea5351d441c5c6641e35"
-      }
-    },
-    {
-      "command": "nix-instantiate --parse nix/home-manager.nix; python3 -m pytest <Golden Gate wrapper checks>",
-      "result": "passed",
-      "detail": "Nix parse passed; 47 Golden Gate wrapper/source-selection checks passed. No live NixOS desktop qualification is claimed.",
-      "logs": {
-        "nix-parse.log": "cf8ef4d19009b99313ecaa4cc0b22b4b13e955c40217197404b5ad4192f9e224",
-        "gg-wrapper.log": "d3f89a8e8cbeecf30afcfd8c1a74cdd3da596285b43a500f0c1ec0ea07c1b4cd"
-      }
-    },
-    {
-      "command": "disposable VM: installed KCM Apply, native KDE/GTK/project appearance changes and clock boundary transitions",
-      "result": "passed",
-      "detail": "Both editions passed 14 appearance scenarios with persistent Qt/Kvantum, GTK3, GTK4 and About windows; actual project-scheduler dusk/dawn crossings, rapid/overlapping choices, native setting changes and manual override. Native KDE scheduler boundary crossing was not separately qualified.",
-      "logs": {
-        "vm/tahoe-appearance.log": "f0b6f2d890d4a6f43c3f00f98a568589a52dda40210e9066a634e5babffef8e3",
-        "vm/gg-appearance.log": "f0b6f2d890d4a6f43c3f00f98a568589a52dda40210e9066a634e5babffef8e3"
-      }
-    },
-    {
-      "command": "disposable VM: per-component SVG/QML transparency, Finder, Apps and Dock Apply",
-      "result": "passed",
-      "detail": "Live component isolation and visible SVG/QML changes passed. Golden Gate Control Center custom-fill frame was reviewed; the earlier Tahoe custom Control Center frame was rejected and is not evidence. Earlier deliberately enabled Dock gradients were custom stress cases, not factory-default captures.",
-      "logs": {
-        "vm/gg-fills.log": "9361c89892f0bf636eff1d7e1bb3fd1c9a47f3a41ee62015d962098cc0f31f25",
-        "vm/finder.log": "ab1d43dbf0a3a6fd24a9a190ad15dc0b9688098d9423bcd800a61033a9da0a9b",
-        "vm/gg-finder.log": "fa67b1862a94f82fa1f5e8cd2466a3f0aec6c0b36bfe8db1c86b83899b1bb5d5",
-        "vm/final-apps.log": "b695e10b4f568addfdb7f5ad222e5b393257281da4d69eeb9bd0227abfeba6f5",
-        "vm/gg-apps-preset2.log": "a10e680fc9112fcf1c53f45c6d624add21daa3f8a3a9f77f67618df8d47e1b90"
-      }
-    },
-    {
-      "command": "sudo env MAC_TAHOE_NO_UPDATE_CHECK=true MTTKDE_NO_CONFIRM=1 src/scripts/installer_backend.py install --only --plasmoids --no-apply-theme --no-grub-modify",
-      "result": "passed",
-      "detail": "Final shared Dock source installed and reinstalled successfully with both edition defaults in the disposable Plasma VM. Original full Acrylic/theme installer transactions also passed. A stale Python import after the first final install was a harness issue; subsequent independent commands loaded and validated the installed final code.",
-      "logs": {
-        "dock-gap/install_final.log": "c39f6377919552499fd118f085a40c5ac8a487a1fda61b99d329c48028b42ee0",
-        "dock-gap/install_tahoe.log": "c279b8d6bb9eaf81815f1132a7c0cd977c9eb51ddfde3cec304d35660a872a43",
-        "vm/tahoe-install.log": "4edb4e8e79d08c3e90d6649d348de7916b9651379520ea19d1c83baec75d4ae4",
-        "vm/tahoe-reinstall.log": "d1f5af649b88ad82494d1dc7d9edaed23208189341a079be50566eb7500b7b7a",
-        "vm/golden-gate-install.log": "97c2df41d27c8c022b15253543561cc4333ac239556980e941a177c4508cf8b4",
-        "vm/golden-gate-reinstall.log": "942b26e5c1cc54706fe8d8601b5600d3b75bfc4c322cc5ae5eb1b1abaccb2ce3"
-      }
-    },
-    {
-      "command": "python3 -m pytest tests/test_launcher_presets.py -k \"dock_cells_share_compression_and_limit_extra_space or dock_boundary_spacing\"; python3 -m pytest tests/test_screenshot_checks.py",
-      "result": "passed",
-      "detail": "10 native Dock geometry/scale cases and 8 capture-guard checks passed. Fit-content recovery, changing task counts, horizontal/vertical compression and fractional scales retain spacing. Capture guard rejects stale gaps and clipping and wakes the VM display.",
-      "logs": {
-        "dock-gap/final-hints-tests.log": "0717e2939353cad0b90d2336228577633e4acbcc7222ba19ee4893e40020fd84",
-        "dock-gap/guard-tests.log": "1aa0e443d6a2862389f7bee3ed0eda88e529d0c587a357ebc29f39d56207d12e"
-      }
-    },
-    {
-      "command": "disposable VM: real application open/close, light/dark SVG Apply and display sleep/wake",
-      "result": "passed",
-      "detail": "11 geometry cases per edition passed after final install, including custom transparency followed by restoration. These stress captures are separate from the factory-default evidence below.",
-      "logs": {
-        "dock-gap/qualify-gg.log": "66e0855d2651dd80e9d090abe547e1eb0075b8262e40fca1a4ba6f189e4ee2b8",
-        "dock-gap/qualify-tahoe.log": "b46ac3912a78194a9d3a8b5083a79b52cde60cea7bce95e5c8808c323fa43669"
-      }
-    },
-    {
-      "command": "python3 tests/vm/component_glass.py --edition tahoe|golden-gate --output <guest evidence>",
-      "result": "passed",
-      "detail": "Both editions passed: all three actual KCM presets have Dock blur 5, refraction .1, coverage .98, light/dark transparency 98.5 and gradient false. Rendered Dock pixels match between all three presets in each appearance mode. Cancel cannot persist a test gradient; changing Apps leaves all other components unchanged. Finally restores every preset to factory values and verifies the edition selection. Edition-default light/dark frames reviewed.",
-      "logs": {
-        "dock-gap/intent-tahoe.log": "d6a04bc81f292541fd3e0d0a8a5e896d9ae32d0c28b7698ecc2a194daa49b793",
-        "dock-gap/intent-gg.log": "6ceec10ebd10d45a56f281014a59222ff8218660a12935ab842d6a7c40476b3f",
-        "dock-gap/intent-tahoe/results.json": "ed53b6313dd2fd73ad0b0191b3bc0db2d6808827dbe053830cc0d15c8ed7c53f",
-        "dock-gap/intent-golden-gate/results.json": "b0bdf58865690500286608517a0a5deececc97aa01b48a56c495dbf460d504ca"
-      }
-    },
-    {
-      "command": "MAC_TAHOE_NO_UPDATE_CHECK=true GOLDEN_GATE_TAHOE_SOURCE=<qualified Tahoe checkout> ./install --prepare; staged-byte/default/version checks",
-      "result": "passed",
-      "detail": "Final v0.72.4 Golden Gate stage preserves the qualified shared implementation, selects launcher preset 2 and its own wallpaper.",
-      "logs": {
-        "dock-gap/gg-final-stage.json": "e47307fe958763e4769fc7eda6e110f0d14d26db641915237a08043265b78e17"
-      }
-    },
-    {
-      "command": "python3 -m pytest tests/test_globalmenu_step.py tests/test_plasmoids_step.py tests/test_component_cache.py -q",
-      "result": "passed",
-      "detail": "26 passed: real build cache invalidation and shared runtime lifecycle ownership."
-    },
-    {
-      "command": "MTTKDE_REQUIRE_NATIVE_GLOBALMENU=1 python3 -m pytest tests/test_globalmenu_model.py -q; python3 -m pytest tests/test_screenshots.py tests/test_traffic_lights.py -q",
-      "result": "passed",
-      "detail": "Native X11 menu/model/composition scenario and 17 About/capture/artwork regressions passed with the real shared QML module."
-    },
-    {
-      "command": "python3 -m pytest tests/test_component_glass_surfaces.py -q; python3 -m pytest --collect-only -q; nix-instantiate --parse nix/packages.nix",
-      "result": "passed",
-      "detail": "Live SVG reload fixture remains functional; collection and Nix expression validation passed. Nix runtime is not claimed."
-    },
-    {
-      "command": "Disposable VM: move shared launcher module out of Qt imports; installer_backend.py install --only --globalmenu --no-apply-theme --no-grub-modify twice; launch About preview",
-      "result": "passed",
-      "detail": "Both standalone install and reinstall restored the runtime module (SHA-256 20c6644779b4df8eca7cc3fa143bf49ed1d34735f3a4522e19bf5c032cc8ad40). Initial ad-hoc readiness assertion lacked Qt stderr logging; the established capture helper then verified one focused, rendered About window. Corrective source archive 17c151b5c5b4306f0a7aeb148e6382e02c0cddfa5dc0c11e701ae8d8973f055c; VERSION still displayed 0.72.4 at capture, before metadata-only bump. Prior paired VM material/appearance and SDK rendering evidence is reused because its runtime source is unchanged."
-    },
-    {
-      "command": "MAC_TAHOE_NO_UPDATE_CHECK=true GOLDEN_GATE_TAHOE_SOURCE=<candidate> ./install --prepare; compare shared dependency sources, VERSION and edition defaults",
-      "result": "passed",
-      "detail": "Golden Gate v0.72.5 stage preserves the corrected shared implementation and launcher preset 2."
+      "detail": "Built the final Dock, Global Menu and Kvantum/menu-style sources under umask 0007. Both install and deliberately damaged-permission reinstall passed as the ordinary desktop user, including native plugin loads and org.kde.mac.tahoe.launcher import. All inspected system artifacts are root-owned."
     }
   ],
-  "gallery_commit": "f09780b200b79302e7c23ef9f6f74d94748bbea3",
-  "focused_vm_captures": {
-    "dock-gap/intent-tahoe/preset-0-light.png": {
-      "sha256": "f21101753ae69e4040927735f07fef3f6db5fa5d0fa53f355ec5525dfeacc592",
-      "reviewed": true,
-      "kind": "factory-default Dock",
-      "edition": "tahoe",
-      "mode": "light",
-      "gradient": false,
-      "blur": 5
+  "vm_installed_artifacts": {
+    "/usr/lib/x86_64-linux-gnu/qt6/plugins/plasma/applets/org.kde.mac.tahoe.liquid.taskmanager.so": {
+      "mode": "0o755",
+      "uid": 0,
+      "sha256": "54a6abba44b38f56028b8fd116e7fff79fe40b5994f4c5167e7e21d6c9625e5a"
     },
-    "dock-gap/intent-tahoe/preset-0-dark.png": {
-      "sha256": "8e0958990f1d43b480498badfb80a40e32193697a3697e67398b17e4520cfcac",
-      "reviewed": true,
-      "kind": "factory-default Dock",
-      "edition": "tahoe",
-      "mode": "dark",
-      "gradient": false,
-      "blur": 5
+    "/usr/lib/x86_64-linux-gnu/qt6/plugins/plasma/applets/org.kde.mac.tahoe.liquid.globalmenu.so": {
+      "mode": "0o755",
+      "uid": 0,
+      "sha256": "12b86b85c1780bcc275bdef41473cc44351aa500adc5e11f3dd1eaa870e8f9f5"
     },
-    "dock-gap/intent-golden-gate/preset-2-light.png": {
-      "sha256": "8f6a092cd802c7af325ddc1caee9f0849a906172d534e63faa53e65d5bd3fdd4",
-      "reviewed": true,
-      "kind": "factory-default Dock",
-      "edition": "golden-gate",
-      "mode": "light",
-      "gradient": false,
-      "blur": 5
+    "/usr/lib/x86_64-linux-gnu/qt6/plugins/styles/libmactahoestyle.so": {
+      "mode": "0o755",
+      "uid": 0,
+      "sha256": "5179123ab9c45c799bc75d631dc54a8ff8daddbe34666d93dd831443f3aad825"
     },
-    "dock-gap/intent-golden-gate/preset-2-dark.png": {
-      "sha256": "7b35107d14dc4a83350be67cc76e387e9c8cf9425ff15c848f98132dfb68ade6",
-      "reviewed": true,
-      "kind": "factory-default Dock",
-      "edition": "golden-gate",
-      "mode": "dark",
-      "gradient": false,
-      "blur": 5
+    "/usr/lib/x86_64-linux-gnu/qt6/qml/plasma/applet/org/kde/mac/tahoe/liquid/taskmanager": {
+      "mode": "0o755",
+      "uid": 0
+    },
+    "/usr/lib/x86_64-linux-gnu/qt6/qml/plasma/applet/org/kde/mac/tahoe/liquid/taskmanager/main.qml": {
+      "mode": "0o644",
+      "uid": 0,
+      "sha256": "b3240452e2c7e0b8bfd93d2a79270b0adf2805eb416bbcbb7c11ad1c7e552033"
+    },
+    "/usr/lib/x86_64-linux-gnu/qt6/qml/plasma/applet/org/kde/mac/tahoe/liquid/taskmanager/ToolTipWindowMouseArea.qml": {
+      "mode": "0o644",
+      "uid": 0,
+      "sha256": "d11004379772e6c8ac94a12875afee18f8263767347266715fe9cd9172f832dc"
+    },
+    "/usr/lib/x86_64-linux-gnu/qt6/qml/plasma/applet/org/kde/mac/tahoe/liquid/taskmanager/config.qml": {
+      "mode": "0o644",
+      "uid": 0,
+      "sha256": "02ed1f89a4acfe62d894bf93d979abe5b3d2ff67c64be70951eb1cf290a904aa"
+    },
+    "/usr/lib/x86_64-linux-gnu/qt6/qml/plasma/applet/org/kde/mac/tahoe/liquid/taskmanager/org.kde.mac.tahoe.liquid.taskmanager.qmltypes": {
+      "mode": "0o644",
+      "uid": 0,
+      "sha256": "2209b5c31871a9b6e8087bc09200216297456b4a618bd1bd5487209e66af3aef"
+    },
+    "/usr/lib/x86_64-linux-gnu/qt6/qml/plasma/applet/org/kde/mac/tahoe/liquid/taskmanager/ToolTipDelegate.qml": {
+      "mode": "0o644",
+      "uid": 0,
+      "sha256": "1c0e7619a093cd0be45871216f3abf72e09c6a8899ee41fd8b3e944c190f6390"
+    },
+    "/usr/lib/x86_64-linux-gnu/qt6/qml/plasma/applet/org/kde/mac/tahoe/liquid/taskmanager/GroupExpanderOverlay.qml": {
+      "mode": "0o644",
+      "uid": 0,
+      "sha256": "3952b93347507327fdcde6b31b29f963bb0be3ea6e8ddd59ef4a919b29ac075f"
+    },
+    "/usr/lib/x86_64-linux-gnu/qt6/qml/plasma/applet/org/kde/mac/tahoe/liquid/taskmanager/TaskList.qml": {
+      "mode": "0o644",
+      "uid": 0,
+      "sha256": "3424aea343ed52ab940f81772a2f57d6f6290aeade702baf12af44e5fe6b7eba"
+    },
+    "/usr/lib/x86_64-linux-gnu/qt6/qml/plasma/applet/org/kde/mac/tahoe/liquid/taskmanager/PulseAudio.qml": {
+      "mode": "0o644",
+      "uid": 0,
+      "sha256": "c0ea1c1375ecc829a0578f9721722ffd0816cead8a86c4167ee6d297c0282e39"
+    },
+    "/usr/lib/x86_64-linux-gnu/qt6/qml/plasma/applet/org/kde/mac/tahoe/liquid/taskmanager/org.kde.mac.tahoe.liquid.taskmanager_qml_module_dir_map.qrc": {
+      "mode": "0o644",
+      "uid": 0,
+      "sha256": "ce0cbca286e391e14bfcaec1698cbd846b935f34b7e2f8d00f6bfa0b9233a880"
+    },
+    "/usr/lib/x86_64-linux-gnu/qt6/qml/plasma/applet/org/kde/mac/tahoe/liquid/taskmanager/LayoutMetrics.js": {
+      "mode": "0o644",
+      "uid": 0,
+      "sha256": "d8a6e1f5a91465df2b3ab93cdcfedf7a5d424d4270828c9a4a62c65ecbd8af44"
+    },
+    "/usr/lib/x86_64-linux-gnu/qt6/qml/plasma/applet/org/kde/mac/tahoe/liquid/taskmanager/TaskProgressOverlay.qml": {
+      "mode": "0o644",
+      "uid": 0,
+      "sha256": "e432ac0288cfa976d3f2953da617232d90526d7aab1b95d6a0d8ead356ca3cb7"
+    },
+    "/usr/lib/x86_64-linux-gnu/qt6/qml/plasma/applet/org/kde/mac/tahoe/liquid/taskmanager/main.xml": {
+      "mode": "0o644",
+      "uid": 0,
+      "sha256": "11316f47e0719f9c2dfeb2c0fac9c2e1713a2938f9b10c8a662c85e52d134594"
+    },
+    "/usr/lib/x86_64-linux-gnu/qt6/qml/plasma/applet/org/kde/mac/tahoe/liquid/taskmanager/qmldir": {
+      "mode": "0o644",
+      "uid": 0,
+      "sha256": "2ad8b224ebe462f3a0560f1dd0a74f26891cfc017a4c21634d3130881d081d4e"
+    },
+    "/usr/lib/x86_64-linux-gnu/qt6/qml/plasma/applet/org/kde/mac/tahoe/liquid/taskmanager/TaskBadgeOverlay.qml": {
+      "mode": "0o644",
+      "uid": 0,
+      "sha256": "fff34ff61fba7497bf232e9d69d4b6ee7b67dea85f404e5dc2d5f87ecbddb62a"
+    },
+    "/usr/lib/x86_64-linux-gnu/qt6/qml/plasma/applet/org/kde/mac/tahoe/liquid/taskmanager/ConfigBehavior.qml": {
+      "mode": "0o644",
+      "uid": 0,
+      "sha256": "18177d2b513b4c197cb6cc7d05931b3cebc8c843d8d5f5214e90ca9990cce784"
+    },
+    "/usr/lib/x86_64-linux-gnu/qt6/qml/plasma/applet/org/kde/mac/tahoe/liquid/taskmanager/icons": {
+      "mode": "0o755",
+      "uid": 0
+    },
+    "/usr/lib/x86_64-linux-gnu/qt6/qml/plasma/applet/org/kde/mac/tahoe/liquid/taskmanager/ConfigAppearance.qml": {
+      "mode": "0o644",
+      "uid": 0,
+      "sha256": "72fa2304eb1ed4a5da1ac9a8968fc3508a5704f28cd38d4147031ac96ad97312"
+    },
+    "/usr/lib/x86_64-linux-gnu/qt6/qml/plasma/applet/org/kde/mac/tahoe/liquid/taskmanager/ScrollableTextWrapper.qml": {
+      "mode": "0o644",
+      "uid": 0,
+      "sha256": "4584629b45e2ff5d0b78d0531a782dc9dae8c4a86f60b16062567bbf2bccb3ee"
+    },
+    "/usr/lib/x86_64-linux-gnu/qt6/qml/plasma/applet/org/kde/mac/tahoe/liquid/taskmanager/GroupDialog.qml": {
+      "mode": "0o644",
+      "uid": 0,
+      "sha256": "168c0b379ad7aadc5735e72792d158d551231a348dc2727547734b7610c0cbc7"
+    },
+    "/usr/lib/x86_64-linux-gnu/qt6/qml/plasma/applet/org/kde/mac/tahoe/liquid/taskmanager/AudioStream.qml": {
+      "mode": "0o644",
+      "uid": 0,
+      "sha256": "1e8524a3599085dae13c8b01fda9aaa684fbade08eeb056b6800d4c8cfbc04cf"
+    },
+    "/usr/lib/x86_64-linux-gnu/qt6/qml/plasma/applet/org/kde/mac/tahoe/liquid/taskmanager/Task.qml": {
+      "mode": "0o644",
+      "uid": 0,
+      "sha256": "55b1655d5f7027bb349ad9cfc47d29dca0a586228c455ed18ed9021b116056a0"
+    },
+    "/usr/lib/x86_64-linux-gnu/qt6/qml/plasma/applet/org/kde/mac/tahoe/liquid/taskmanager/PipeWireThumbnail.qml": {
+      "mode": "0o644",
+      "uid": 0,
+      "sha256": "b76fc7105bb69bf00a1cad94533fc0292a6ca7171409ec89bee75d2f68077e6b"
+    },
+    "/usr/lib/x86_64-linux-gnu/qt6/qml/plasma/applet/org/kde/mac/tahoe/liquid/taskmanager/PlayerController.qml": {
+      "mode": "0o644",
+      "uid": 0,
+      "sha256": "0e5b699efaf8b4b7b0b6ff3c5532043b38cb2df275e440ee232aec7cc827779f"
+    },
+    "/usr/lib/x86_64-linux-gnu/qt6/qml/plasma/applet/org/kde/mac/tahoe/liquid/taskmanager/MouseHandler.qml": {
+      "mode": "0o644",
+      "uid": 0,
+      "sha256": "5fc614fd20ec8b9075f6bb3493f95e6085493d404d370a2d6284e085c39bee82"
+    },
+    "/usr/lib/x86_64-linux-gnu/qt6/qml/plasma/applet/org/kde/mac/tahoe/liquid/taskmanager/DockRoles.js": {
+      "mode": "0o644",
+      "uid": 0,
+      "sha256": "47a9884d3788019f522c2b28893f4a68d6c05fa30be94be7247f4fd20d0a1ee5"
+    },
+    "/usr/lib/x86_64-linux-gnu/qt6/qml/plasma/applet/org/kde/mac/tahoe/liquid/taskmanager/Badge.qml": {
+      "mode": "0o644",
+      "uid": 0,
+      "sha256": "56c71c494155b5fd54d7d5e2ce9f159751ad89f11545e5769dad996cbde6c03a"
+    },
+    "/usr/lib/x86_64-linux-gnu/qt6/qml/plasma/applet/org/kde/mac/tahoe/liquid/taskmanager/TaskTools.js": {
+      "mode": "0o644",
+      "uid": 0,
+      "sha256": "276c952996157dad182af0fb78e5e2cdf5a69add1bc915706182abb31c2afd5d"
+    },
+    "/usr/lib/x86_64-linux-gnu/qt6/qml/plasma/applet/org/kde/mac/tahoe/liquid/taskmanager/ContextMenu.qml": {
+      "mode": "0o644",
+      "uid": 0,
+      "sha256": "5e145e8c9d70d555a33189cb928513f9f4875dfdfebddfb4110d71dc4edd4084"
+    },
+    "/usr/lib/x86_64-linux-gnu/qt6/qml/plasma/applet/org/kde/mac/tahoe/liquid/taskmanager/ToolTipInstance.qml": {
+      "mode": "0o644",
+      "uid": 0,
+      "sha256": "540f0e2269e6b8d00a2eccb371627d01faf59beca560560cc2af6e63f59140ba"
+    },
+    "/usr/lib/x86_64-linux-gnu/qt6/qml/plasma/applet/org/kde/mac/tahoe/liquid/taskmanager/icons/light": {
+      "mode": "0o755",
+      "uid": 0
+    },
+    "/usr/lib/x86_64-linux-gnu/qt6/qml/plasma/applet/org/kde/mac/tahoe/liquid/taskmanager/icons/dark": {
+      "mode": "0o755",
+      "uid": 0
+    },
+    "/usr/lib/x86_64-linux-gnu/qt6/qml/plasma/applet/org/kde/mac/tahoe/liquid/taskmanager/icons/light/mail.svg": {
+      "mode": "0o644",
+      "uid": 0,
+      "sha256": "a55db5fe761f3b5dadbeea41cbd9575a23d75952117cd49b24cb586a717465b0"
+    },
+    "/usr/lib/x86_64-linux-gnu/qt6/qml/plasma/applet/org/kde/mac/tahoe/liquid/taskmanager/icons/light/files.svg": {
+      "mode": "0o644",
+      "uid": 0,
+      "sha256": "1dd88e9ee27a257855d8712de3870cf7ca7c87f3e591f45de7444c2456bfa007"
+    },
+    "/usr/lib/x86_64-linux-gnu/qt6/qml/plasma/applet/org/kde/mac/tahoe/liquid/taskmanager/icons/light/notes.svg": {
+      "mode": "0o644",
+      "uid": 0,
+      "sha256": "31aaec5b1fe843db80e2bae73ca9611ed8b4520b7e66799981f00bfa52879151"
+    },
+    "/usr/lib/x86_64-linux-gnu/qt6/qml/plasma/applet/org/kde/mac/tahoe/liquid/taskmanager/icons/light/browser.svg": {
+      "mode": "0o644",
+      "uid": 0,
+      "sha256": "38b75967592c55a04c4c1d1e3c9e98a55851693024048e5e4895f95d150592c4"
+    },
+    "/usr/lib/x86_64-linux-gnu/qt6/qml/plasma/applet/org/kde/mac/tahoe/liquid/taskmanager/icons/light/video.svg": {
+      "mode": "0o644",
+      "uid": 0,
+      "sha256": "b80cad927337a71d68f2dfd0bfb19aea9b5ee37e308f6bd62306c19ee96ab369"
+    },
+    "/usr/lib/x86_64-linux-gnu/qt6/qml/plasma/applet/org/kde/mac/tahoe/liquid/taskmanager/icons/light/settings.svg": {
+      "mode": "0o644",
+      "uid": 0,
+      "sha256": "8ff99c6c70c0a33282aa351e3de4f0fc29bb4437d3cfe6c6ae6cfda4a7b97632"
+    },
+    "/usr/lib/x86_64-linux-gnu/qt6/qml/plasma/applet/org/kde/mac/tahoe/liquid/taskmanager/icons/light/music.svg": {
+      "mode": "0o644",
+      "uid": 0,
+      "sha256": "dc8f1e4942cf4d3adb155b2dcd9c9a600448cd629d961cef26d96462b0e118fd"
+    },
+    "/usr/lib/x86_64-linux-gnu/qt6/qml/plasma/applet/org/kde/mac/tahoe/liquid/taskmanager/icons/light/calendar.svg": {
+      "mode": "0o644",
+      "uid": 0,
+      "sha256": "c767f07a84992e28a5bf81c95e9e7020acbb6cc27d2424145b65304a11f23789"
+    },
+    "/usr/lib/x86_64-linux-gnu/qt6/qml/plasma/applet/org/kde/mac/tahoe/liquid/taskmanager/icons/light/photos.svg": {
+      "mode": "0o644",
+      "uid": 0,
+      "sha256": "5f8eb7594ee00628afaae671e44536306b41944d97129722364eade5ed106168"
+    },
+    "/usr/lib/x86_64-linux-gnu/qt6/qml/plasma/applet/org/kde/mac/tahoe/liquid/taskmanager/icons/light/store.svg": {
+      "mode": "0o644",
+      "uid": 0,
+      "sha256": "a3905306bcefa3809c64a5da38b1d336abdbf320deafa54b2a31804fd8ed70af"
+    },
+    "/usr/lib/x86_64-linux-gnu/qt6/qml/plasma/applet/org/kde/mac/tahoe/liquid/taskmanager/icons/dark/mail.svg": {
+      "mode": "0o644",
+      "uid": 0,
+      "sha256": "f379f8cb82ec84bdc00e3c2065bd445aba08e73051e7ac9b998c91a2d9af8f27"
+    },
+    "/usr/lib/x86_64-linux-gnu/qt6/qml/plasma/applet/org/kde/mac/tahoe/liquid/taskmanager/icons/dark/files.svg": {
+      "mode": "0o644",
+      "uid": 0,
+      "sha256": "062243ab98053f71c7e2c35a35bcaafea0b471390e9f5a2a82353c0d27caf4f8"
+    },
+    "/usr/lib/x86_64-linux-gnu/qt6/qml/plasma/applet/org/kde/mac/tahoe/liquid/taskmanager/icons/dark/notes.svg": {
+      "mode": "0o644",
+      "uid": 0,
+      "sha256": "a9d991a342ac6cd006428a3e3ef5b10073e0ee283939f30575f0f3e5cef67000"
+    },
+    "/usr/lib/x86_64-linux-gnu/qt6/qml/plasma/applet/org/kde/mac/tahoe/liquid/taskmanager/icons/dark/browser.svg": {
+      "mode": "0o644",
+      "uid": 0,
+      "sha256": "35f0c8868292f88cc0d563916fdad518723ad6e596ed79a4d2f912ca8f3fd0d1"
+    },
+    "/usr/lib/x86_64-linux-gnu/qt6/qml/plasma/applet/org/kde/mac/tahoe/liquid/taskmanager/icons/dark/video.svg": {
+      "mode": "0o644",
+      "uid": 0,
+      "sha256": "68d2595428eee95b6890afd7c07c8e3e0e2c40f4e2a4f80084c1022ffe743064"
+    },
+    "/usr/lib/x86_64-linux-gnu/qt6/qml/plasma/applet/org/kde/mac/tahoe/liquid/taskmanager/icons/dark/settings.svg": {
+      "mode": "0o644",
+      "uid": 0,
+      "sha256": "4eb3b3da773e58389b31d9d522bad9477c1362ccd767c2077c4d639d814a1903"
+    },
+    "/usr/lib/x86_64-linux-gnu/qt6/qml/plasma/applet/org/kde/mac/tahoe/liquid/taskmanager/icons/dark/music.svg": {
+      "mode": "0o644",
+      "uid": 0,
+      "sha256": "bc155b2776be5d27f54a1097abb04a140a7492780cf3b9ac53a2ec3fd1850bdf"
+    },
+    "/usr/lib/x86_64-linux-gnu/qt6/qml/plasma/applet/org/kde/mac/tahoe/liquid/taskmanager/icons/dark/calendar.svg": {
+      "mode": "0o644",
+      "uid": 0,
+      "sha256": "57d17b56737428418e7f9ea1189f3584d555a6a94d60754595c9aa122e3b6bbd"
+    },
+    "/usr/lib/x86_64-linux-gnu/qt6/qml/plasma/applet/org/kde/mac/tahoe/liquid/taskmanager/icons/dark/photos.svg": {
+      "mode": "0o644",
+      "uid": 0,
+      "sha256": "8d5e040865881661a296a99dae19f99c5352052fb7007ad13391dd7931652c5a"
+    },
+    "/usr/lib/x86_64-linux-gnu/qt6/qml/plasma/applet/org/kde/mac/tahoe/liquid/taskmanager/icons/dark/store.svg": {
+      "mode": "0o644",
+      "uid": 0,
+      "sha256": "277ded065a934c093979430e0e2c130dd1181e309407571eca1e7f622440ee18"
+    },
+    "/usr/lib/x86_64-linux-gnu/qt6/qml/org/kde/mac/tahoe/launcher": {
+      "mode": "0o755",
+      "uid": 0
+    },
+    "/usr/lib/x86_64-linux-gnu/qt6/qml/org/kde/mac/tahoe/launcher/DockMetrics.qml": {
+      "mode": "0o644",
+      "uid": 0,
+      "sha256": "41236ea447a43d500b1332b1c81ee31110e697ed94537341cd575f337a4f5681"
+    },
+    "/usr/lib/x86_64-linux-gnu/qt6/qml/org/kde/mac/tahoe/launcher/qmldir": {
+      "mode": "0o644",
+      "uid": 0,
+      "sha256": "9f1dfe1270c4685dad1048a07ae7438232066ea893024781ca08f6c7b5233a3c"
+    },
+    "/usr/lib/x86_64-linux-gnu/qt6/qml/org/kde/mac/tahoe/launcher/mactahoelauncher_qml_module_dir_map.qrc": {
+      "mode": "0o644",
+      "uid": 0,
+      "sha256": "0742031a96fd4ed5b9574c9daa95dc25e3428276e9fc08644ffa8eb3ac193389"
+    },
+    "/usr/lib/x86_64-linux-gnu/qt6/qml/org/kde/mac/tahoe/launcher/libmactahoelauncher.so": {
+      "mode": "0o755",
+      "uid": 0,
+      "sha256": "0e078d68da6504d353b4f58e30b0192f9cf2d9cceb1424092e8396904b780ccb"
+    },
+    "/usr/lib/x86_64-linux-gnu/qt6/qml/org/kde/mac/tahoe/launcher/DockCell.qml": {
+      "mode": "0o644",
+      "uid": 0,
+      "sha256": "76e00843ba1fb1cd7c52b783baa540e1edd377e34a7ee0da1375a7004a36c24a"
+    },
+    "/usr/lib/x86_64-linux-gnu/qt6/qml/org/kde/mac/tahoe/launcher/DockIcon.qml": {
+      "mode": "0o644",
+      "uid": 0,
+      "sha256": "b8ba82fa45f4d77c6d3e1f84f92eccee6d52717cdd303fba0e6565a0e5a16cf1"
+    },
+    "/usr/lib/x86_64-linux-gnu/qt6/qml/org/kde/mac/tahoe/launcher/mactahoelauncher.qmltypes": {
+      "mode": "0o644",
+      "uid": 0,
+      "sha256": "0d148412b2f3fa0c0f3063af5b34f4a7681a529333959b21c7a0dc3ee998fd7d"
+    },
+    "/usr/lib/x86_64-linux-gnu/qt6/qml/plasma/applet/org/kde/mac/tahoe/liquid/globalmenu": {
+      "mode": "0o755",
+      "uid": 0
+    },
+    "/usr/lib/x86_64-linux-gnu/qt6/qml/plasma/applet/org/kde/mac/tahoe/liquid/globalmenu/main.qml": {
+      "mode": "0o644",
+      "uid": 0,
+      "sha256": "1937b8207b37d5febb5b04c2a1834863d0ac7a5aaa83f62ca8663b343c8596c3"
+    },
+    "/usr/lib/x86_64-linux-gnu/qt6/qml/plasma/applet/org/kde/mac/tahoe/liquid/globalmenu/org.kde.mac.tahoe.liquid.globalmenu.qmltypes": {
+      "mode": "0o644",
+      "uid": 0,
+      "sha256": "183018dc5a04205d0daac9a296704919c0f11e15de4c726ba531321d0f4d9276"
+    },
+    "/usr/lib/x86_64-linux-gnu/qt6/qml/plasma/applet/org/kde/mac/tahoe/liquid/globalmenu/config.qml": {
+      "mode": "0o644",
+      "uid": 0,
+      "sha256": "012eb979c8c294485f84a73d693139f7e9ab4403bc40578d265af9140e71bd35"
+    },
+    "/usr/lib/x86_64-linux-gnu/qt6/qml/plasma/applet/org/kde/mac/tahoe/liquid/globalmenu/copy-dark.svg": {
+      "mode": "0o644",
+      "uid": 0,
+      "sha256": "5442e14641164858c8d77e5b56dcd67c501bc72fa943b672b1c332fafc95ae9e"
+    },
+    "/usr/lib/x86_64-linux-gnu/qt6/qml/plasma/applet/org/kde/mac/tahoe/liquid/globalmenu/MenuDelegate.qml": {
+      "mode": "0o644",
+      "uid": 0,
+      "sha256": "6b0522d994cf3c534fc83161fd66c542d02056d8178537682ed35d6ebbdd58b1"
+    },
+    "/usr/lib/x86_64-linux-gnu/qt6/qml/plasma/applet/org/kde/mac/tahoe/liquid/globalmenu/configSystemMenu.qml": {
+      "mode": "0o644",
+      "uid": 0,
+      "sha256": "8d7193b0e71a3f90947c6c45d70857e89b43a07420bb468d57a7e9189844f481"
+    },
+    "/usr/lib/x86_64-linux-gnu/qt6/qml/plasma/applet/org/kde/mac/tahoe/liquid/globalmenu/org.kde.mac.tahoe.liquid.globalmenu_qml_module_dir_map.qrc": {
+      "mode": "0o644",
+      "uid": 0,
+      "sha256": "138ed9dd76cfe12c2a965e6f9e364056daef5ef38af68a9050db55c68e52dd0f"
+    },
+    "/usr/lib/x86_64-linux-gnu/qt6/qml/plasma/applet/org/kde/mac/tahoe/liquid/globalmenu/GlassButton.qml": {
+      "mode": "0o644",
+      "uid": 0,
+      "sha256": "d784a5f330559c423e1ede7da92a7629d5056db8bdd739da7fdc77b88c3acd64"
+    },
+    "/usr/lib/x86_64-linux-gnu/qt6/qml/plasma/applet/org/kde/mac/tahoe/liquid/globalmenu/main.xml": {
+      "mode": "0o644",
+      "uid": 0,
+      "sha256": "9076f87b74b43dd12c94f609840bcd94fdc823381727b97b8b513f357da65b57"
+    },
+    "/usr/lib/x86_64-linux-gnu/qt6/qml/plasma/applet/org/kde/mac/tahoe/liquid/globalmenu/qmldir": {
+      "mode": "0o644",
+      "uid": 0,
+      "sha256": "3379776e82261dcd59ab8ef68b006088509827bb1119abf86089823d4ace027d"
+    },
+    "/usr/lib/x86_64-linux-gnu/qt6/qml/plasma/applet/org/kde/mac/tahoe/liquid/globalmenu/configGeneral.qml": {
+      "mode": "0o644",
+      "uid": 0,
+      "sha256": "101038e1af1db7c9a2f09fb112c9635de7a02991903714d7b4df05098e16604a"
+    },
+    "/usr/lib/x86_64-linux-gnu/qt6/qml/plasma/applet/org/kde/mac/tahoe/liquid/globalmenu/AboutWindow.qml": {
+      "mode": "0o644",
+      "uid": 0,
+      "sha256": "a58913e5f1d945050bbaa03748d24dba8458e6fca2d64796509568f5b57e6986"
+    },
+    "/usr/lib/x86_64-linux-gnu/qt6/qml/plasma/applet/org/kde/mac/tahoe/liquid/globalmenu/ApplicationAboutWindow.qml": {
+      "mode": "0o644",
+      "uid": 0,
+      "sha256": "c4173c80ca6f27ccc3a3d20b99505c4ed7e42b1f888516406593982b0d595545"
+    },
+    "/usr/lib/x86_64-linux-gnu/qt6/qml/plasma/applet/org/kde/mac/tahoe/liquid/globalmenu/copy-light.svg": {
+      "mode": "0o644",
+      "uid": 0,
+      "sha256": "88b79b8d8fbaab217a1031ed095b05cb2bfc14080ce12783bbbf9f833c4b1038"
     }
+  },
+  "visual_validation": {
+    "command": "Restart plasma-plasmashell.service inside disposable VM; inspect panels and journal; capture with spectacle.",
+    "reviewed": true,
+    "source": "Same installed implementation as vm_installed_artifacts",
+    "local_capture": "build/issue129/permissions-desktop.png",
+    "sha256": "ffe112af35f351df5383cdd382d485b4cb0c3c6e19abd013d71a6d9c5a02d9fe",
+    "result": "Dock icons and Global Menu render; no matching plugin permission or missing-module errors after restart."
   },
   "coverage_limits": [
-    "SDK/container builds are not live Plasma distro VM tests. One disposable Plasma desktop environment exercised both editions.",
-    "Nix staging was parsed/checked; no live NixOS desktop session.",
-    "Automatic boundary tests use the project scheduler; native KDE scheduler boundary crossing is not claimed.",
-    "Temporary enabled Dock-gradient stress frames are not factory-default evidence; the final intention-based suite resets and verifies all three presets.",
-    "An earlier insufficiently isolated mock test wrote host auxiliary files; those writes were backed up and restored and tests were isolated. Separately, the user explicitly authorized repairing the installed launcher property and restarting Plasma."
+    "Focused component lifecycle, not a new whole-desktop installer or distro-matrix qualification.",
+    "Live guest: KDE neon Plasma 6.8.1 Wayland; Debian 6.7.4 report reproduced via umask 0007 and root-owned restrictive artifacts, not a fresh Debian VM.",
+    "Golden Gate staged helper/package regressions passed; shared permission logic is identical.",
+    "No automatic-appearance or X11 qualification required for this permission-only change. Full remote CI is tracked separately."
   ],
-  "remote_ci": {
-    "state": "not yet submitted for v0.72.5 at evidence recording",
-    "previous_run": "https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/actions/runs/43824096921",
-    "previous_result": "Failed solely on About shared-module imports: all 11 distro legs plus both general shards. Nix passed. Corrected and focused regressions passed before the new release; new dev CI tracked separately."
-  },
-  "corrective_qualification": {
-    "base_commit": "5d8b4097fbabeac4beb013908bdb5e6a256fb176",
-    "logs": {
-      "dependency-focused.log": "5e30e0bd9aa9a4b19ac560fe444ff2d0df0ea40a975ccac845b28858666cd684",
-      "dependency-native.log": "3f638c089c41d2c4fc72c708ec6430b08be8bd8857834a932763d566607e729c",
-      "dependency-about.log": "f8544015c8eb3deb08b7ae98b8292a384b7a1f740ecd353eaaec6b7dac9c91af",
-      "dependency-reload.log": "df0fd887d050bdbb5a9b19412cf15e8201d3f27dcfce2692ef1ded50b7de8fcc",
-      "dependency-collection.log": "0bca1e912e1aa973a695c6cdd13d5426a3ba030cb377273ec4bb924d1d77efac",
-      "dependency-nix.log": "a5801eb0bc49bd7c790e9b4abc44128aeb847fb78fc0db3537d6624fac442d4c",
-      "dependency-vm/qualify.log": "065b70be34a1af577a7b8914ab252787894865f6fb4582335752e33c89e75459",
-      "dependency-vm/oneframe.log": "0b78c04bb8fc94afa301980922a8e27c3b9ff06132b5ac17a3e5f879c6b2aa80"
-    },
-    "source_files": {
-      "component-hashes.json": "79e5dbcdca04ffe7f7cb378061455d14a10bdec368b811f18baa3a03b623c24e",
-      "nix/packages.nix": "d81aa842e37af43b8d059c926ef9fce1e01b5c0fccd806273fdd34a8a4d2c4fd",
-      "src/offline/plasmoids/org.kde.mac.tahoe.liquid.globalmenu/CMakeLists.txt": "8a7b571ab1d5d66a7eccdd32f40afa13488cd8fc7fc618a9759784ec666f3a9f",
-      "src/scripts/component_manifest.py": "0590fbfc178500d4d6f2a867111fa2c6626d4c791d7c625bcddb4174f9a72d1e",
-      "src/scripts/steps/_native_build.py": "b41f745a8d81d14d28faa6a5af0a3dfc02b1a0c7fa665b84fff5bd99b3b244d4",
-      "src/scripts/steps/globalmenu.py": "ea3f718499c719d1674ab31ed222a37de244c327a33803d65467b64ac21175f4",
-      "src/scripts/steps/plasmoids.py": "f33947cecd9f623cc731188d7d09228d02daed1ffff41c1c8b1350e9d0400ed2",
-      "tests/conftest.py": "6c9fb15e739b0df0bfa91d76deb9f1c69b32907dc511c9befa0a27c48f85234d",
-      "tests/test_component_cache.py": "2006dd576dff45efcec4f3836d3f66deeaaa4b174689507bb6e3cbeb7c7a9565",
-      "tests/test_component_glass_surfaces.py": "2a033792726badbd66b25924342aed0b4875a897748ef638f0f8c1da3308c8dc",
-      "tests/test_desktop_controls.py": "13c64f1b7b771d312079dcaff93ef20e524d88a16f6c40102ee3809578583654",
-      "tests/test_globalmenu_step.py": "74098d90f94876129d279ac49c156221d1208bda9f0b585b9d947f2b5aa92895",
-      "tests/test_launcher_presets.py": "036ae933c979c3654313233adbdcb821fbb6cf65128670bc17eff957ee342a86",
-      "tests/test_plasmoids_step.py": "bf5002c3af564c8718547f4f36a81e8a46d67cc212c40f1bf35860447ff339ac",
-      "tests/test_screenshots.py": "c802729f09e383fa0075f665d08955c051529797f8bcecb9f63baaa350a4d1fc",
-      "tests/test_traffic_lights.py": "dd26dbf9528d153b1fb321581b908b03750d4f934da7b948d866bf85f8bce7e9"
-    },
-    "capture": {
-      "path": "dependency-vm/standalone-about.png",
-      "sha256": "6a4a894594676b9ddf8fc6af6f9e07915f7d78cbc41bcc1f9316cc0836eaab63",
-      "reviewed": true,
-      "published_gallery": false
-    }
-  }
+  "gallery_commit": "f09780b200b79302e7c23ef9f6f74d94748bbea3",
+  "captures": []
 }

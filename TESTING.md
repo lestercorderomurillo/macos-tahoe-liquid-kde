@@ -1,8 +1,7 @@
 # Installer testing
 
-Tahoe **v0.72.5** adds per-component Acrylic Glass settings and fixes Dock spacing after material reloads.
-Native KCM, SVG reload, selected SDK/rendering checks and paired disposable-VM install/reinstall checks passed. Standalone Global Menu also installs its shared About material module.
-All three presets retain Dock blur 5 and no gradient in light/dark mode; VM checks cover saved settings, rendered pixels, Cancel and component isolation.
+Tahoe **v0.72.6** fixes unreadable system plugins and QML modules when installing with a restrictive umask.
+Focused permission, installer-caller and component-cache checks passed. A disposable KDE neon Plasma 6.8.1 / Qt 6.11.1 VM passed component install/reinstall under umask `0007`, native plugin loading, QML import and a rendered desktop check.
 See [validation and coverage limits](release-evidence.json). Existing gallery photographs retain their original reviewed [provenance](src/screenshots/release-capture.json).
 
 ## Installation steps
