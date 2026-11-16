@@ -261,48 +261,89 @@
   "gallery_commit": "9993f61cc0afeba7e39afee776c99f29a55edb8f",
   "captures": [
     {
-      "path": "src/screenshots/previews/clipboard-launcher-light-5fc3d40da024.png",
-      "sha256": "5fc3d40da024721da23fd555d1e0887af8935deb09888669dd8aa4acb2e531d3",
-      "reviewed": true,
-      "edition": "tahoe",
-      "mode": "light",
-      "provenance": "src/screenshots/previews/clipboard-launcher-provenance-3a4b55e0592a.json"
+      "path": "src/screenshots/showcase_light_2k-5dedfb291557.webp",
+      "sha256": "5dedfb291557db28c845b524546fd0c064ea056394cc0996c34dbf574771af7c",
+      "reviewed": true
     },
     {
-      "path": "src/screenshots/previews/clipboard-launcher-dark-c62021460b99.png",
-      "sha256": "c62021460b9925137ccb31165fa2f8ce3df52b9ffb2dba60776b7e055dc8fea2",
-      "reviewed": true,
-      "edition": "tahoe",
-      "mode": "dark",
-      "provenance": "src/screenshots/previews/clipboard-launcher-provenance-3a4b55e0592a.json"
+      "path": "src/screenshots/showcase_dark_2k-b6fcdffe7c22.webp",
+      "sha256": "b6fcdffe7c22c5ce732688bef80a82496e5d2eda5b3d68d453f05e3410fddc51",
+      "reviewed": true
     },
     {
-      "path": "src/screenshots/control-center-light-3e44b74c9a4d.png",
-      "sha256": "3e44b74c9a4dbac71afac988207af4d7b8f3b67e9f15617061e635b1c3507b07",
-      "reviewed": true,
-      "edition": "tahoe",
-      "mode": "light",
-      "original_sha256": "91857cdfebc491adf20bf296989de02807864e54489c4b10b308f320e1bea4b6",
-      "crop": [
-        3170,
-        0,
-        3840,
-        1010
-      ]
+      "path": "src/screenshots/launcher_preset_1_light-2234900b9d82.webp",
+      "sha256": "2234900b9d823070f3ebeb2feb07dbfa6561e35157a3fa0fa6be9ee1745c8e3e",
+      "reviewed": true
     },
     {
-      "path": "src/screenshots/control-center-dark-ef0768193f51.png",
-      "sha256": "ef0768193f511b8efccb0e91dd720ea0709af5604fd50febae3dbb2610f58c5c",
-      "reviewed": true,
-      "edition": "tahoe",
-      "mode": "dark",
-      "original_sha256": "d403b51c13f1fad55d41c8577423e5b43108300e928c741e6e038441247f64bf",
-      "crop": [
-        3170,
-        0,
-        3840,
-        1010
-      ]
+      "path": "src/screenshots/launcher_preset_1_dark-0cabfbb9e4f6.webp",
+      "sha256": "0cabfbb9e4f6cf2cdb426af4bcf8cd9ab945d772d478cc4e93cda89dc08c99af",
+      "reviewed": true
+    },
+    {
+      "path": "src/screenshots/dock_1_v4-16250ed9e41d.webp",
+      "sha256": "16250ed9e41da8ad5d302591dea6a363f530a4ac594d077b2d5263e098a13edb",
+      "reviewed": true
+    },
+    {
+      "path": "src/screenshots/dock_1_dark_v4-16f0b8604e32.webp",
+      "sha256": "16f0b8604e3299337df6c7eb9624fd75b501e22ac9ea273cc4ce8fb20899b354",
+      "reviewed": true
+    },
+    {
+      "path": "src/screenshots/menu_v4-b41832636db3.webp",
+      "sha256": "b41832636db3bc812988ac408045d35e4b675d5554598bd6d2cb3126e4edff55",
+      "reviewed": true
+    },
+    {
+      "path": "src/screenshots/menu_dark_v4-0f9fbb1971bd.webp",
+      "sha256": "0f9fbb1971bdfd4208ea3ba9df158e07fcc67f6944cf40d9cc6b9c12ea67a3a0",
+      "reviewed": true
+    },
+    {
+      "path": "src/screenshots/control-center-light-79d3fa140129.webp",
+      "sha256": "79d3fa140129b25284a8f5c71ae66febbbf3b1577526037fecfe043d8ccdc2e5",
+      "reviewed": true
+    },
+    {
+      "path": "src/screenshots/control-center-dark-f2d99932f644.webp",
+      "sha256": "f2d99932f6441d97031110238c75369ded93aa4a98b862b73d6c00e1e9ee476c",
+      "reviewed": true
+    },
+    {
+      "path": "src/screenshots/previews/clipboard-launcher-light-41232b9ea980.webp",
+      "sha256": "41232b9ea980dbf40aa67eb78deb0da225a48132b449d60749b24f0da7379422",
+      "reviewed": true
+    },
+    {
+      "path": "src/screenshots/previews/clipboard-launcher-dark-383fc47bdf9a.webp",
+      "sha256": "383fc47bdf9afeaac13aad3b7c2d068c47174877b6e7bd343a7e997dfb74b73b",
+      "reviewed": true
+    },
+    {
+      "path": "src/screenshots/about_v4-03352b9758c3.webp",
+      "sha256": "03352b9758c3858563559460d6b688a3fb997a4eb7f6a2f873a8cea10e49ae8d",
+      "reviewed": true
+    },
+    {
+      "path": "src/screenshots/about_dark_v4-f2d6c47fe0e6.webp",
+      "sha256": "f2d6c47fe0e6e762f41240a2d5e8e2f966ffd505e871139515203ebc8b2f4848",
+      "reviewed": true
+    },
+    {
+      "path": "src/screenshots/context_menu_v4-1e63c5d70acd.webp",
+      "sha256": "1e63c5d70acd1cb224a1861f1c77b1393364e448ab17c3b5b58090216364dada",
+      "reviewed": true
+    },
+    {
+      "path": "src/screenshots/context_menu_dark_v4-7148ec8f973c.webp",
+      "sha256": "7148ec8f973c0c4b3ad77e53b26d023d1c78b50ccead513852e7d255e0adf30e",
+      "reviewed": true
+    },
+    {
+      "path": "src/screenshots/boot_v4-1f628792b5bc.webp",
+      "sha256": "1f628792b5bc52f507d52d7bc8c67322299431a9a5f16a92c447eeba571adcfe",
+      "reviewed": true
     }
   ],
   "qualification": {
@@ -1834,7 +1875,12 @@
         "Ctrl+1 restores applications"
       ]
     },
-    "merge_scope": "Control Center and Clipboard share native QML registration; combined module qualified on SDK 6.6, host SDK 6.7 isolated X11, and disposable Plasma 6.8.1 Wayland. Existing edition appearance evidence reused: synchronizer and clipboard palettes unchanged."
+    "merge_scope": "Control Center and Clipboard share native QML registration; combined module qualified on SDK 6.6, host SDK 6.7 isolated X11, and disposable Plasma 6.8.1 Wayland. Existing edition appearance evidence reused: synchronizer and clipboard palettes unchanged.",
+    "readme_refresh": {
+      "provenance": "src/screenshots/previews/readme-0721-tahoe-provenance-e5182736efb3.json",
+      "source_commit": "2f57329f40c38600df1ddc4ac3f9dbf3f8f1d1b4",
+      "scope": "17 new README photographs per edition; existing installer photographs retained"
+    }
   },
   "status": "candidate-publication-awaits-user-confirmation"
 }

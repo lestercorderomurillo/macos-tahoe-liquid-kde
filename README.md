@@ -121,8 +121,8 @@ Code contributors and issue reporters across Tahoe and Golden Gate:
 Finder-style file browsing with Tahoe glass.
 
 <p align="center">
-  <a href="src/screenshots/showcase_light_2k-84cf80ed6028.webp"><img src="src/screenshots/showcase_light_2k-84cf80ed6028.webp" alt="Tahoe light desktop with Files focused" width="415"></a>
-  <a href="src/screenshots/showcase_dark_2k-421bb9e5798a.webp"><img src="src/screenshots/showcase_dark_2k-421bb9e5798a.webp" alt="Tahoe dark desktop with Files focused" width="415"></a>
+  <a href="src/screenshots/showcase_light_2k-5dedfb291557.webp"><img src="src/screenshots/showcase_light_2k-5dedfb291557.webp" alt="Tahoe light desktop with Files focused" width="415"></a>
+  <a href="src/screenshots/showcase_dark_2k-b6fcdffe7c22.webp"><img src="src/screenshots/showcase_dark_2k-b6fcdffe7c22.webp" alt="Tahoe dark desktop with Files focused" width="415"></a>
 </p>
 
 <br>
@@ -132,8 +132,8 @@ Finder-style file browsing with Tahoe glass.
 Find apps, browse categories and keep your favorites within reach.
 
 <p align="center">
-  <img src="src/screenshots/launcher_preset_1_light-8999bb38291b.webp" alt="Default Tahoe preset 1 in light mode, with integrated search and Tahoe wallpaper" width="415">
-  <img src="src/screenshots/launcher_preset_1_dark-5349732aa184.webp" alt="Default Tahoe preset 1 in dark mode, with integrated search and Tahoe wallpaper" width="415">
+  <img src="src/screenshots/launcher_preset_1_light-2234900b9d82.webp" alt="Default Tahoe preset 1 in light mode, with integrated search and Tahoe wallpaper" width="415">
+  <img src="src/screenshots/launcher_preset_1_dark-0cabfbb9e4f6.webp" alt="Default Tahoe preset 1 in dark mode, with integrated search and Tahoe wallpaper" width="415">
 </p>
 
 <br>
@@ -143,9 +143,9 @@ Find apps, browse categories and keep your favorites within reach.
 Glass refraction, hover zoom, red notification count bubbles and auto-hide.
 
 <p align="center">
-  <img src="src/screenshots/dock_1_v4-5c41cf6a0a7c.webp" alt="Glass Dock with light icons and a red notification count bubble" width="840">
+  <img src="src/screenshots/dock_1_v4-16250ed9e41d.webp" alt="Glass Dock with light icons and a red notification count bubble" width="840">
   <br>
-  <img src="src/screenshots/dock_1_dark_v4-9624a00a62d5.webp" alt="Glass Dock with dark icons, a complete App Store icon and a red notification count bubble" width="840">
+  <img src="src/screenshots/dock_1_dark_v4-16f0b8604e32.webp" alt="Glass Dock with dark icons, a complete App Store icon and a red notification count bubble" width="840">
 </p>
 
 <br>
@@ -155,8 +155,8 @@ Glass refraction, hover zoom, red notification count bubbles and auto-hide.
 Quick access to system settings, apps and session controls.
 
 <p align="center">
-  <img src="src/screenshots/menu_v4-0343811e426d.webp" alt="System menu in light mode" width="415">
-  <img src="src/screenshots/menu_dark_v4-171bb0e051ff.webp" alt="System menu in dark mode" width="415">
+  <img src="src/screenshots/menu_v4-b41832636db3.webp" alt="System menu in light mode" width="415">
+  <img src="src/screenshots/menu_dark_v4-0f9fbb1971bd.webp" alt="System menu in dark mode" width="415">
 </p>
 
 <br>
@@ -166,8 +166,8 @@ Quick access to system settings, apps and session controls.
 Wi-Fi, sound, brightness and notifications in one glass menu. Updates will come very soon.
 
 <p align="center">
-  <img src="src/screenshots/control-center-light-3e44b74c9a4d.png" alt="Control Center in light mode" width="415">
-  <img src="src/screenshots/control-center-dark-ef0768193f51.png" alt="Control Center in dark mode" width="415">
+  <img src="src/screenshots/control-center-light-79d3fa140129.webp" alt="Control Center in light mode" width="415">
+  <img src="src/screenshots/control-center-dark-f2d99932f644.webp" alt="Control Center in dark mode" width="415">
 </p>
 
 <br>
@@ -177,8 +177,8 @@ Wi-Fi, sound, brightness and notifications in one glass menu. Updates will come 
 Find and reuse copied text and images directly from Launchpad.
 
 <p align="center">
-  <img src="src/screenshots/previews/clipboard-launcher-light-5fc3d40da024.png" alt="Clipboard history in the tahoe launcher in light mode" width="415">
-  <img src="src/screenshots/previews/clipboard-launcher-dark-c62021460b99.png" alt="Clipboard history in the tahoe launcher in dark mode" width="415">
+  <img src="src/screenshots/previews/clipboard-launcher-light-41232b9ea980.webp" alt="Clipboard history in the tahoe launcher in light mode" width="415">
+  <img src="src/screenshots/previews/clipboard-launcher-dark-383fc47bdf9a.webp" alt="Clipboard history in the tahoe launcher in dark mode" width="415">
 </p>
 
 <br>
@@ -188,8 +188,8 @@ Find and reuse copied text and images directly from Launchpad.
 Your hardware, software and theme details at a glance.
 
 <p align="center">
-  <img src="src/screenshots/about_v4-89bf172117ec.webp" alt="About This Computer in light mode" width="415">
-  <img src="src/screenshots/about_dark_v4-bcfd5f536826.webp" alt="About This Computer in dark mode" width="415">
+  <img src="src/screenshots/about_v4-03352b9758c3.webp" alt="About This Computer in light mode" width="415">
+  <img src="src/screenshots/about_dark_v4-f2d6c47fe0e6.webp" alt="About This Computer in dark mode" width="415">
 </p>
 
 <br>
@@ -199,8 +199,8 @@ Your hardware, software and theme details at a glance.
 Translucent menus and popups with matching light and dark colors.
 
 <p align="center">
-  <img src="src/screenshots/context_menu_v4-7598f30fb989.webp" alt="Desktop context menu in light mode" width="415">
-  <img src="src/screenshots/context_menu_dark_v4-f858978d15b9.webp" alt="Desktop context menu in dark mode" width="415">
+  <img src="src/screenshots/context_menu_v4-1e63c5d70acd.webp" alt="Desktop context menu in light mode" width="415">
+  <img src="src/screenshots/context_menu_dark_v4-7148ec8f973c.webp" alt="Desktop context menu in dark mode" width="415">
 </p>
 
 <br>
@@ -565,7 +565,7 @@ Licensed [GPL-3.0](LICENSE) as a whole; individual component licenses and third-
 Project references and third-party components:
 
 - **[EliverLara](https://github.com/EliverLara/TahoeLauncher)**: `TahoeLauncher`: Launchpad design reference.
-- **[vinceliuice](https://github.com/vinceliuice)**: `MacTahoe-icon-theme`: base icons and cursors; GTK design reference. The [`MacTahoe-gtk-theme` Firefox CSS/SVG](https://github.com/vinceliuice/MacTahoe-gtk-theme/tree/main/other/firefox), maintained here as an MIT-licensed fork and integrated with this project's profile backup and restore system.
+- **[vinceliuice](https://github.com/vinceliuice)**: `MacTahoe-icon-theme`: base icons and cursors; GTK design reference. [`MacTahoe-gtk-theme` Firefox CSS/SVG](https://github.com/vinceliuice/MacTahoe-gtk-theme/tree/main/other/firefox) is maintained here as an MIT-licensed fork with profile backup and restore support.
 - **[taj-ny](https://github.com/taj-ny/kwin-effects-forceblur)** and **[4v3ngR](https://github.com/4v3ngR/kwin-effects-glass)**: Better Blur and its glass fork: upstream code used by Acrylic Glass (the KWin blur authors stay credited in the source headers).
 - **[luisbocanegra](https://github.com/luisbocanegra/plasma-panel-colorizer)**: `plasma-panel-colorizer` v7.3.0, bundled offline and installed by the layout step to tint the panels (GPL-3.0, license shipped alongside).
 - **[Matin Lotfaliei / KDE-Rounded-Corners](https://github.com/matinlotfali/KDE-Rounded-Corners)**: the GPL-3.0 KWin rounded-window effect, fetched from the pinned v0.9.0 release and built online against the host KWin SDK (license installed alongside).

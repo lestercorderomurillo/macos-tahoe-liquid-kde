@@ -1,18 +1,11 @@
 # Installer testing
 
-Tahoe **v0.72.1 candidate** integrates macOS-style Clipboard history into the launcher.
-Focused clipboard, launcher, install/reinstall and Qt/GTK light/dark/automatic checks
-passed in disposable environments. See [source identities and coverage limits](release-evidence.json).
-Release publication awaits confirmation.
-
-[Light menu](src/screenshots/menu_v4-0343811e426d.webp) · [Dark menu](src/screenshots/menu_dark_v4-171bb0e051ff.webp) · [Capture provenance](src/screenshots/previews/system-menu-tahoe-069-provenance-9c458fcf42db.json)
-
-The README About, Finder and top bar photographs retain their v0.67.0 source from a
-disposable VM. Other desktop images and the installer gallery retain their original
-reviewed provenance ([capture records](src/screenshots/release-capture.json)). The retained v0.66.2 About previews show the corrected labels
-in both modes ([provenance](src/screenshots/previews/about-buttons-provenance.json)).
-
-[Light preview](src/screenshots/previews/about-buttons-light-eaebe82caa18.png) · [Dark preview](src/screenshots/previews/about-buttons-dark-57536aa93c40.png)
+Tahoe **v0.72.1** includes Clipboard history in Launchpad. Focused component,
+install/reinstall and appearance checks passed in disposable environments; see
+[source identities, CI results and coverage limits](release-evidence.json).
+All README feature photographs were refreshed from v0.72.1 in the pinned Plasma VM
+([capture records](src/screenshots/previews/readme-0721-tahoe-provenance-e5182736efb3.json)). The installer photographs below retain
+their original reviewed provenance ([gallery records](src/screenshots/release-capture.json)).
 
 ## Installation steps
 
