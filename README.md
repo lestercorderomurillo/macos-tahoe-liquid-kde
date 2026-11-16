@@ -117,7 +117,7 @@ Code contributors and issue reporters across Tahoe and Golden Gate:
 
 ![Features and screenshots](https://img.shields.io/badge/features-%26%20screenshots-4B6B8A?style=for-the-badge&logo=kde&logoColor=white)
 
-### Tahoe Finder
+### Tahoe Finder (Alpha)
 
 Finder-style file browsing with Tahoe glass.
 
@@ -139,7 +139,7 @@ Finder-style file browsing with Tahoe glass.
 
 <br>
 
-### Tahoe Launchpad
+### Tahoe Launchpad (Alpha)
 
 Find apps, browse categories and keep your favorites within reach.
 
@@ -150,7 +150,7 @@ Find apps, browse categories and keep your favorites within reach.
 
 <br>
 
-### Tahoe Dock
+### Tahoe Dock (Alpha)
 
 Glass refraction, hover zoom, red notification count bubbles and auto-hide.
 
@@ -229,7 +229,7 @@ Find and reuse copied text and images directly from Launchpad.
 
 <br>
 
-### Tahoe System Information
+### Tahoe System Information (Alpha)
 
 Your hardware, software and theme details at a glance.
 
@@ -240,7 +240,7 @@ Your hardware, software and theme details at a glance.
 
 <br>
 
-### Tahoe Plasma Theme
+### Tahoe Plasma Theme (Alpha)
 
 Translucent menus and popups with matching light and dark colors.
 
@@ -251,7 +251,7 @@ Translucent menus and popups with matching light and dark colors.
 
 <br>
 
-### Tahoe Boot Splash
+### Tahoe Boot Splash (Alpha)
 
 A matching look from startup to shutdown, with built-in unlocking for LUKS2-encrypted drives.
 
@@ -534,33 +534,33 @@ The current status of each component.
 
 | Component | Status |
 |-----------|--------|
-| Color Schemes | ![Available](https://img.shields.io/badge/Available-1A7F37) |
-| Wallpapers | ![Available](https://img.shields.io/badge/Available-1A7F37) |
-| Fonts | ![Available](https://img.shields.io/badge/Available-1A7F37) |
-| Cursors | ![Available](https://img.shields.io/badge/Available-1A7F37) |
-| Plasma Theme | ![Available](https://img.shields.io/badge/Available-1A7F37) |
-| Kvantum Theme | ![Available](https://img.shields.io/badge/Available-1A7F37) |
-| GTK Theme | ![Available](https://img.shields.io/badge/Available-1A7F37) |
-| Acrylic Glass | ![Available](https://img.shields.io/badge/Available-1A7F37) |
-| KDE Rounded Corners | ![Available](https://img.shields.io/badge/Available-1A7F37) |
-| Auto Theme Switcher | ![Available](https://img.shields.io/badge/Available-1A7F37) |
-| OLED Care | ![Available](https://img.shields.io/badge/Available-1A7F37) |
-| Installer UI | ![Available](https://img.shields.io/badge/Available-1A7F37) |
-| Localization | ![Available](https://img.shields.io/badge/Available-1A7F37) |
-| Aurorae Decorations | ![Available](https://img.shields.io/badge/Available-1A7F37) |
-| Global Menu | ![Available](https://img.shields.io/badge/Available-1A7F37) |
-| Dock | ![Available](https://img.shields.io/badge/Available-1A7F37) |
-| Finder-style Nautilus | ![Available](https://img.shields.io/badge/Available-1A7F37) |
-| Launchpad | ![Available](https://img.shields.io/badge/Available-1A7F37) |
+| Color Schemes | ![Alpha](https://img.shields.io/badge/Alpha-D4A017) |
+| Wallpapers | ![Alpha](https://img.shields.io/badge/Alpha-D4A017) |
+| Fonts | ![Alpha](https://img.shields.io/badge/Alpha-D4A017) |
+| Cursors | ![Alpha](https://img.shields.io/badge/Alpha-D4A017) |
+| Plasma Theme | ![Alpha](https://img.shields.io/badge/Alpha-D4A017) |
+| Kvantum Theme | ![Alpha](https://img.shields.io/badge/Alpha-D4A017) |
+| GTK Theme | ![Alpha](https://img.shields.io/badge/Alpha-D4A017) |
+| Acrylic Glass | ![Alpha](https://img.shields.io/badge/Alpha-D4A017) |
+| KDE Rounded Corners | ![Alpha](https://img.shields.io/badge/Alpha-D4A017) |
+| Auto Theme Switcher | ![Alpha](https://img.shields.io/badge/Alpha-D4A017) |
+| OLED Care | ![Alpha](https://img.shields.io/badge/Alpha-D4A017) |
+| Installer UI | ![Alpha](https://img.shields.io/badge/Alpha-D4A017) |
+| Localization | ![Alpha](https://img.shields.io/badge/Alpha-D4A017) |
+| Aurorae Decorations | ![Alpha](https://img.shields.io/badge/Alpha-D4A017) |
+| Global Menu | ![Alpha](https://img.shields.io/badge/Alpha-D4A017) |
+| Dock | ![Alpha](https://img.shields.io/badge/Alpha-D4A017) |
+| Finder-style Nautilus | ![Alpha](https://img.shields.io/badge/Alpha-D4A017) |
+| Launchpad | ![Alpha](https://img.shields.io/badge/Alpha-D4A017) |
 | Shell | ![Alpha](https://img.shields.io/badge/Alpha-D4A017) |
 | Clipboard History | ![Alpha](https://img.shields.io/badge/Alpha-D4A017) |
-| System Information | ![Available](https://img.shields.io/badge/Available-1A7F37) |
-| Trash | ![Available](https://img.shields.io/badge/Available-1A7F37) |
-| Sounds | ![Available](https://img.shields.io/badge/Available-1A7F37) |
-| Boot Screen | ![Available](https://img.shields.io/badge/Available-1A7F37) |
-| Shutdown Screen | ![Available](https://img.shields.io/badge/Available-1A7F37) |
-| Firefox Theme | ![Available](https://img.shields.io/badge/Available-1A7F37) |
-| Icons | ![Available](https://img.shields.io/badge/Available-1A7F37) |
+| System Information | ![Alpha](https://img.shields.io/badge/Alpha-D4A017) |
+| Trash | ![Alpha](https://img.shields.io/badge/Alpha-D4A017) |
+| Sounds | ![Alpha](https://img.shields.io/badge/Alpha-D4A017) |
+| Boot Screen | ![Alpha](https://img.shields.io/badge/Alpha-D4A017) |
+| Shutdown Screen | ![Alpha](https://img.shields.io/badge/Alpha-D4A017) |
+| Firefox Theme | ![Alpha](https://img.shields.io/badge/Alpha-D4A017) |
+| Icons | ![Alpha](https://img.shields.io/badge/Alpha-D4A017) |
 | Multi-Distro Support | ![Supported](https://img.shields.io/badge/Supported-1A7F37) |
 | OpenRC Testing | ![VM verified](https://img.shields.io/badge/VM%20verified-1A7F37) |
 | Konsole Theme | ![Planned](https://img.shields.io/badge/Planned-D4A017) |
