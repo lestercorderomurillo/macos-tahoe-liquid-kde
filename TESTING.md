@@ -1,6 +1,6 @@
 # Installer testing
 
-Tahoe **v0.72.7** improves CI/CD preparation, caching and release checkout time without changing installed desktop behavior.
+Tahoe **v0.72.8** improves CI/CD preparation, caching and release checkout time without changing installed desktop behavior.
 Focused pipeline regressions passed; the complete remote matrix runs after publication. Performance reductions remain unverified until measured.
 See [validation and coverage limits](release-evidence.json). Existing gallery photographs retain their original reviewed [provenance](src/screenshots/release-capture.json).
 

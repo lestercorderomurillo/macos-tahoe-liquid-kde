@@ -1,7 +1,7 @@
 {
-  "version": "0.72.7",
-  "source_sha256": "d0056c38cccf1e0e7ed046c8a91b30cd2a60b1a6fc621fc25fde8a3252641665",
-  "scope": "CI/CD-only change: weekly source-free registry SDKs, four disjoint primary shards balanced from observed JUnit timings, Nix store reuse, shallow release refs and verified archive extraction for Golden Gate. All distro and executable test coverage retained. No installed desktop behavior changed.",
+  "version": "0.72.8",
+  "source_sha256": "258b24a987a7182a0164db91fbbccee859917bc7f4c243390338e6ee090511fc",
+  "scope": "CI/CD-only change: weekly source-free registry SDKs, four disjoint primary shards balanced from observed JUnit timings, Nix store reuse, shallow release refs and verified archive extraction for Golden Gate. All distro and executable test coverage retained. No installed desktop behavior changed. Cache publication now retries once and warns on registry failure without skipping execution.",
   "environment": "Local Python 3 focused CI-helper regressions and actionlint 1.7.7; full post-publication GitHub matrix remains enabled.",
   "checks": [
     {
@@ -17,6 +17,11 @@
     {
       "command": "actionlint -shellcheck= .github/workflows/test.yml .github/workflows/release.yml ../macos-golden-gate-liquid-kde/.github/workflows/release.yml",
       "result": "passed"
+    },
+    {
+      "command": "python3 -m pytest tests/test_ci_sdk.py -q",
+      "result": "passed",
+      "detail": "4 passed, including two failed registry pushes: a usable local SDK still reaches the complete test suite; build and test failures remain fatal."
     }
   ],
   "coverage_limits": [

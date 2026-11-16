@@ -31,6 +31,8 @@ runs:
         if ! docker pull "$image"; then
           docker build --pull --target sdk --label "org.opencontainers.image.source=https://github.com/$REPOSITORY" -f "$recipe" -t "$image" .
           if [[ "$EVENT" != pull_request ]]; then
-            docker push "$image"
+            if ! docker push "$image" && ! docker push "$image"; then
+              echo "::warning::SDK cache upload failed; running the complete tests with the locally built image."
+            fi
           fi
         fi
