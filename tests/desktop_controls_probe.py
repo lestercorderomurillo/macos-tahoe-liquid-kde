@@ -246,5 +246,38 @@ assert not preferences.property('showAudio')
 preferences.setProperty('showAudio',True);QTest.qWait(10)
 assert audioChoice.property('checked')
 
+# Render the production tile over transparency with each edition's SVG marker.
+# An edition-local gradient must not survive compositor gradient exclusion.
+import tempfile
+from PyQt6.QtGui import QPalette, QColor
+with tempfile.TemporaryDirectory() as directory:
+    for golden in (False, True):
+        svg = Path(directory) / ('golden.svg' if golden else 'tahoe.svg')
+        marker = '<rect id="hint-clear-surface" width="1" height="1"/>' if golden else ''
+        svg.write_text('<svg xmlns="http://www.w3.org/2000/svg" width="10" height="10">' + marker + '</svg>')
+        tile_source = (root / 'ControlTile.qml').read_text().replace('imagePath: "dialogs/background"', 'imagePath: "' + str(svg) + '"')
+        c = QQmlComponent(engine)
+        c.setData(tile_source.encode(), QUrl.fromLocalFile(str(root / 'tile-probe.qml')))
+        assert c.isReady(), [e.toString() for e in c.errors()]
+        tile = c.create(); assert tile is not None
+        keep.extend([c, tile])
+        tile_window = QQuickWindow(); tile_window.setColor(QColor(Qt.GlobalColor.transparent))
+        tile_window.setGeometry(0,0,200,120)
+        tile.setParentItem(tile_window.contentItem());tile.setWidth(200);tile.setHeight(120)
+        tile_window.show(); QTest.qWait(80)
+        assert tile.property('goldenGate') == golden
+        for light in (True, False, True):
+            palette = QPalette(app.palette())
+            palette.setColor(QPalette.ColorRole.WindowText, QColor('black' if light else 'white'))
+            palette.setColor(QPalette.ColorRole.Window, QColor('white' if light else 'black'))
+            app.setPalette(palette);QTest.qWait(80)
+            assert tile.property('lightMode') == light
+            image = tile_window.grabWindow();assert not image.isNull()
+            top,bottom = image.pixelColor(100,25),image.pixelColor(100,95)
+            assert top == bottom, ('Tile contains a vertical tint', golden,light,top.getRgb(),bottom.getRgb())
+            expected = (153 if golden else 140) if light else (3 if golden else 122)
+            assert abs(top.alpha() - expected) <= 2, ('Tile fill changed',golden,light,top.getRgb())
+        tile_window.close()
+
 assert not errors, '\n'.join(errors)
 print('DESKTOP_CONTROLS_OK: native imports, external audio changes, mute, unavailable output, wireless requests, hardware blocking, unavailable adapter, notification inhibition ownership')

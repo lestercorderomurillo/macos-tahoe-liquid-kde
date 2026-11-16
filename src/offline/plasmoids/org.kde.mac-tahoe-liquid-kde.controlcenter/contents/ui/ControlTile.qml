@@ -18,15 +18,6 @@ QQC.Pane {
         Rectangle {
             anchors.fill: parent
             radius: tile.cornerRadius
-            visible: tile.goldenGate
-            gradient: Gradient {
-                GradientStop { position: 0; color: "#d9000000" }
-                GradientStop { position: 0.55; color: "transparent" }
-            }
-        }
-        Rectangle {
-            anchors.fill: parent
-            radius: tile.cornerRadius
             color: tile.lightMode ? Qt.rgba(1, 1, 1, tile.goldenGate ? 0.60 : 0.55)
                                  : tile.goldenGate ? Qt.rgba(1, 1, 1, 0.01) : Qt.rgba(0, 0, 0, 0.48)
         }
