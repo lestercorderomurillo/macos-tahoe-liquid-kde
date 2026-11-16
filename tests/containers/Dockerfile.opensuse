@@ -12,7 +12,7 @@
 #   - Plasma / KSysGuard / plasma-workspace cmake configs
 #   - KWin + KDecoration (acrylic-glass kwin effect)
 #   - libepoxy + libdrm + libX11 + libxcb (acrylic-glass effect)
-FROM opensuse/tumbleweed:latest
+FROM opensuse/tumbleweed:latest AS sdk
 
 # Regional mirror metadata can lead GitHub runners to RPMs that still return
 # 404 after a refresh (binutils/libctf in the 2026-11-08 SDK image). Use the
@@ -57,6 +57,8 @@ RUN for i in 1 2 3; do \
     && zypper clean --all
 
 WORKDIR /repo
+
+FROM sdk AS test
 COPY . /repo
 
 CMD ["python3", "tests/containers/run_in_container.py"]

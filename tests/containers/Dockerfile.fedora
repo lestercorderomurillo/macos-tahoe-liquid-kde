@@ -1,5 +1,5 @@
 # Fedora SDK and native build validation.
-FROM fedora:latest
+FROM fedora:latest AS sdk
 
 # Dep groups (do NOT inline comments inside the `\`-continued arg list
 # — bash treats `#` mid-command as a line comment and silently drops
@@ -31,6 +31,8 @@ RUN dnf install -y --setopt=install_weak_deps=False --setopt=zchunk=False \
     && dnf clean all
 
 WORKDIR /repo
+
+FROM sdk AS test
 COPY . /repo
 
 CMD ["python3", "tests/containers/run_in_container.py"]

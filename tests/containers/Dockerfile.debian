@@ -2,7 +2,7 @@
 # Plasma 6.3 and remains below the installer's 6.6 minimum.
 # Use --build-arg DEBIAN_SUITE=sid-slim to check unstable with the same probe.
 ARG DEBIAN_SUITE=testing-slim
-FROM debian:${DEBIAN_SUITE}
+FROM debian:${DEBIAN_SUITE} AS sdk
 
 ENV PYTHONUNBUFFERED=1
 # This matrix target provides the maintained X11 SDK and exercises the exact
@@ -31,6 +31,8 @@ RUN apt-get update && \
     apt-get clean
 
 WORKDIR /repo
+
+FROM sdk AS test
 COPY . /repo
 
 CMD ["python3", "tests/containers/run_in_container.py"]

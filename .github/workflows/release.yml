@@ -17,11 +17,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
-        with:
-          fetch-depth: 0
       - name: Verify focused local evidence
         run: |
-          python3 .github/scripts/release_evidence.py
+          python3 .github/scripts/release_evidence.py --fetch-refs
           python3 src/scripts/component_manifest.py
           test "$(git describe --tags --exact-match HEAD)" = "v$(cat VERSION)"
       - name: Publish installable release

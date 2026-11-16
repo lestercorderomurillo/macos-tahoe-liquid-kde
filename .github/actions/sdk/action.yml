@@ -1,0 +1,36 @@
+name: Reuse weekly distro SDK
+description: Pull a source-free SDK keyed by its recipe and week; build only on a miss.
+inputs:
+  distro:
+    required: true
+    description: Dockerfile suffix
+outputs:
+  image:
+    description: Local SDK image reference
+    value: ${{ steps.image.outputs.image }}
+runs:
+  using: composite
+  steps:
+    - uses: docker/login-action@v3
+      with:
+        registry: ghcr.io
+        username: ${{ github.actor }}
+        password: ${{ github.token }}
+    - id: image
+      shell: bash
+      env:
+        DISTRO: ${{ inputs.distro }}
+        REPOSITORY: ${{ github.repository }}
+        EVENT: ${{ github.event_name }}
+      run: |
+        set -euo pipefail
+        recipe="tests/containers/Dockerfile.$DISTRO"
+        digest=$( { cat "$recipe"; if [[ "$DISTRO" == neon ]]; then cat tests/containers/neon/*; fi; } | sha256sum | cut -c1-16)
+        image="ghcr.io/${REPOSITORY,,}/sdk-$DISTRO:$(date -u +%G-%V)-$digest"
+        echo "image=$image" >> "$GITHUB_OUTPUT"
+        if ! docker pull "$image"; then
+          docker build --pull --target sdk --label "org.opencontainers.image.source=https://github.com/$REPOSITORY" -f "$recipe" -t "$image" .
+          if [[ "$EVENT" != pull_request ]]; then
+            docker push "$image"
+          fi
+        fi

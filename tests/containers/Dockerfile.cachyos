@@ -2,7 +2,7 @@
 # /usr/lib/qt6 libdir, same pacman package names. Existing Arch
 # coverage already exercises this in practice, but a dedicated row
 # makes the CI matrix reflect the README claim.
-FROM cachyos/cachyos:latest
+FROM cachyos/cachyos:latest AS sdk
 
 # Base image ships pacman keyrings that drift out of date — pacman -Sy
 # then fails with ``signature from "CachyOS <admin@cachyos.org>" is
@@ -29,6 +29,8 @@ RUN pacman-key --init && \
     && pacman -Scc --noconfirm
 
 WORKDIR /repo
+
+FROM sdk AS test
 COPY . /repo
 
 CMD ["python3", "tests/containers/run_in_container.py"]

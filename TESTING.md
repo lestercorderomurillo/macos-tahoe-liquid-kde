@@ -1,7 +1,7 @@
 # Installer testing
 
-Tahoe **v0.72.6** fixes unreadable system plugins and QML modules when installing with a restrictive umask.
-Focused permission, installer-caller and component-cache checks passed. A disposable KDE neon Plasma 6.8.1 / Qt 6.11.1 VM passed component install/reinstall under umask `0007`, native plugin loading, QML import and a rendered desktop check.
+Tahoe **v0.72.7** improves CI/CD preparation, caching and release checkout time without changing installed desktop behavior.
+Focused pipeline regressions passed; the complete remote matrix runs after publication. Performance reductions remain unverified until measured.
 See [validation and coverage limits](release-evidence.json). Existing gallery photographs retain their original reviewed [provenance](src/screenshots/release-capture.json).
 
 ## Installation steps

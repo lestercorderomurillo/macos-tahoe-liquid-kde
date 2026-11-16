@@ -71,8 +71,9 @@ def test_every_matrix_image_installs_suite_dependencies(repo):
         assert 'zstd' in packages, distro
         assert packages.intersection({'python-pillow', 'python3-pil', 'python3-pillow', 'python3-Pillow'}), distro
         assert packages.intersection({'librsvg', 'librsvg2-bin', 'librsvg2-tools', 'rsvg-convert'}), distro
-    assert 'python-pillow' in workflow
-    assert 'librsvg ' in workflow
+    primary = (repo / 'tests/containers/Dockerfile.primary').read_text()
+    assert 'python-pillow' in primary
+    assert 'librsvg ' in primary
     assert 'from PIL import Image' in workflow
     assert 'command -v rsvg-convert' in workflow
 

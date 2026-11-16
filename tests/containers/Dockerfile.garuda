@@ -2,7 +2,7 @@
 # performance-tuned kernel. Same /usr/lib/qt6 layout. Garuda also has
 # no first-party Docker image, so we synthesise /etc/os-release on top
 # of the Arch base.
-FROM archlinux:latest
+FROM archlinux:latest AS sdk
 
 RUN printf 'NAME="Garuda Linux"\nID=garuda\nID_LIKE=arch\nPRETTY_NAME="Garuda Linux"\n' > /etc/os-release
 
@@ -24,6 +24,8 @@ RUN pacman -Sy --noconfirm --needed archlinux-keyring && \
     && pacman -Scc --noconfirm
 
 WORKDIR /repo
+
+FROM sdk AS test
 COPY . /repo
 
 CMD ["python3", "tests/containers/run_in_container.py"]

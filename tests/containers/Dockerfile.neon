@@ -1,7 +1,7 @@
 # KDE neon User Edition SDK, using the same signed archives and Ubuntu
 # LTS base as KDE's official image, without downloading a complete desktop.
 # The vendored archive key and sources are pinned in neon/SOURCE.json.
-FROM ubuntu:24.04
+FROM ubuntu:24.04 AS sdk
 
 RUN apt-get update && apt-get install -y --no-install-recommends ca-certificates git
 COPY tests/containers/neon/neon-archive-keyring.asc /etc/apt/keyrings/neon-archive-keyring.asc
@@ -50,6 +50,8 @@ RUN (apt-get update || { \
     python3 -c "import platform; assert platform.freedesktop_os_release()['ID'] == 'neon'"
 
 WORKDIR /repo
+
+FROM sdk AS test
 COPY . /repo
 
 CMD ["python3", "tests/containers/run_in_container.py"]

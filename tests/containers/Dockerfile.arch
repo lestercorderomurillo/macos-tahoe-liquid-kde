@@ -1,6 +1,6 @@
 # Arch Linux — pacman ecosystem. CachyOS / Manjaro share this libdir
 # layout, so a pass here covers all three.
-FROM archlinux:latest
+FROM archlinux:latest AS sdk
 
 # Refresh signing keys immediately before the full upgrade.
 RUN pacman -Sy --noconfirm --needed archlinux-keyring && \
@@ -25,6 +25,8 @@ RUN pacman -Sy --noconfirm --needed archlinux-keyring && \
     && pacman -Scc --noconfirm
 
 WORKDIR /repo
+
+FROM sdk AS test
 COPY . /repo
 
 # Smoke-check the distro layer + cmake configure for the compiled

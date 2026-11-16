@@ -10,7 +10,7 @@
 # before a user on a fast-moving distro hits it. run_in_container.py
 # compiles the effect, not just configures it, which is what makes this
 # a real per-Plasma-version build gate.
-FROM archlinux:latest
+FROM archlinux:latest AS sdk
 
 # Enable [kde-unstable] ABOVE [extra] (pacman is first-match-wins on repo
 # order for equal versions, and kde-unstable carries the higher version
@@ -40,6 +40,8 @@ RUN printf '\n[kde-unstable]\nInclude = /etc/pacman.d/mirrorlist\n' >> /etc/pacm
     && pacman -Scc --noconfirm
 
 WORKDIR /repo
+
+FROM sdk AS test
 COPY . /repo
 
 CMD ["python3", "tests/containers/run_in_container.py"]

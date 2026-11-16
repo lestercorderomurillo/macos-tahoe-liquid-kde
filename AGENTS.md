@@ -1,48 +1,47 @@
 # AGENTS.md
 
-## Binding correction after repeated delivery failures
+## Non-negotiable execution discipline
 
-The agent has repeatedly wasted the user's time by extending validation after
-the affected behavior passed, delaying release delivery, and switching to a
-follow-up task before clearly closing the requested release. The user has
-already corrected this behavior multiple times. Treat another occurrence as
-an agent execution failure. An apology or a promise does not correct it; the
-next action must follow the user's correction.
+**NEVER OVERTHINK. NEVER OVER TEST. TEST ONLY THE CHANGED PIECE, RELEASE,
+THEN TEST THE REST.**
 
-These rules apply to both editions and override conflicting delivery wording
-elsewhere in this file:
+The agent has repeatedly done more than requested and wasted the user's time.
+Repeating that behavior is a delivery failure. Acknowledging the correction
+while continuing the same work pattern is also a failure.
 
-- Finish the requested release before starting pipeline optimization, cleanup,
-  redesign or any other follow-up. A follow-up request does not reorder an
-  unfinished delivery unless the user explicitly says so.
-- Once the affected checks and required focused VM qualification pass on the
-  final implementation, publish both releases immediately. Do not add a whole
-  suite, another SDK matrix, extra screenshots or repeated passing checks as a
-  new release gate. Expand validation only for a concrete unresolved failure
-  or affected dependency, and record that reason in the evidence.
-- Full remote CI remains enabled and asynchronous. Pending jobs do not block
-  publication, installation or the delivery response. State their known status
-  once. Do not keep the user waiting for the matrix to finish. A known relevant
-  failure still requires repair; pending, skipped and failed are never passed.
-- Distinguish three facts: the fix passed its focused qualification, the release
-  was published, and the full CI run passed or is pending. Use successful
-  publication output as evidence. When both releases are published, give their
-  links immediately; do not describe the release as unfinished merely because
-  CI continues, and do not re-query successful publication.
-- Treat an explicit time limit as an execution constraint. Track the deadline,
-  prioritize the smallest authorized delivery and stop optional work. If a real
-  prerequisite cannot finish within it, state that specific blocker before the
-  deadline. Never silently exceed the limit or invent a passing result.
-- When the user says stop testing, publish, hurry or finish first, change the
-  next action accordingly. Do not acknowledge the correction and continue the
-  same loop. Preserve completed evidence and name any unmet mandatory gate.
-- Keep routine work silent. Do not substitute explanations, reassurance,
-  repeated apologies or arguments about already published work for the requested
-  action. Return the usable result and any material remaining limitation.
-- For an AGENTS.md-only correction, reconcile contradictory clauses in both
-  editions, review the diff, run `git diff --check`, commit and push to `dev` and
-  `main`, check the actual checkouts are clean, and stop. No runtime tests, VM,
-  version bump, release or CI-waiting phase belongs to that task.
+- Use the diff to identify the exact changed behavior and its direct regression
+  risks. Run the smallest executable checks that prove those claims. Tests
+  exist to verify the change or catch a concrete regression; they are not a
+  reason to explore unrelated components or seek reassurance.
+- When those checks pass, publish the paired release immediately. Run the full
+  regression suite and distro matrix afterward through the existing CI. Do not
+  expand the pre-release gate because a helper is shared, a version changed or
+  another test happens to exist. Expand only for an observed failure or a
+  specific dependency affected by the diff, recorded in the evidence.
+- VM checks are scoped to changed installer or desktop behavior. A CI helper,
+  workflow or documentation change does not justify a desktop VM, rendering
+  checks, SDK rebuilds or new photographs before publication.
+- Reuse passing evidence. Do not repeat tests after version, pin or evidence
+  bookkeeping. Do not run a second full matrix on main. Pending remote CI
+  never blocks an already qualified release or its delivery response; report
+  its status once and repair relevant failures when observed.
+- Finish the requested delivery before follow-up optimization or cleanup.
+  Stop when the result is delivered. No unsolicited redesign, framework,
+  extra verification phase or successful-publication recheck.
+- Treat explicit deadlines as hard execution constraints. Stop optional work;
+  deliver within the limit or identify the actual unmet prerequisite before
+  it expires. Never silently exceed the deadline or invent a passing result.
+- When corrected, change the next action. Keep routine work silent and return
+  the usable result. Explanations, apologies and promises do not replace it.
+- For CI/CD optimization, preserve executable coverage and compare measured
+  before/after timings under stated cache conditions. A reduction below the
+  user's required 50% is an unmet objective, not a completed optimization.
+- Documentation-only changes require diff review and `git diff --check`, then
+  paired commits/pushes to dev and main and clean checkouts. No runtime tests,
+  version bump, release or CI-waiting phase.
+
+These rules supersede broader validation requirements elsewhere in this file.
+Keep complete post-release regression coverage and fail on real errors.
 
 ## Required skills
 
@@ -144,8 +143,8 @@ and the user's task in tool justifications when needed.
 
 The user's approval requirement refers to passing VM/CI validation, not a
 separate permission question addressed to the user. Complete the selected
-qualification and focused disposable-VM install/reinstall checks before
-publication. Report successful paired publication immediately, with the known
+qualification for the exact changed behavior before publication; include a
+focused disposable-VM check only when the changed behavior requires it. Report successful paired publication immediately, with the known
 status of the existing CI run. Workflow submission alone is not proof of a
 published release. Do not wait for the full matrix as a condition of delivering
 the installable fix. Do not return a known relevant failure to the user as
@@ -181,9 +180,9 @@ and the exact VM/SDK coverage; configuration readback alone is insufficient.
 
 ## Review and merge qualification
 
-Every implementation release requires a focused install/reinstall check in at
-least one disposable Plasma VM before publication. Record the actual source,
-commands and results. Captures alone do not replace installer qualification or
+Changes to installer lifecycle require a focused install/reinstall check in a
+disposable Plasma VM before publication. Other changes require only the checks
+that prove their affected behavior. Record the actual source, commands and results. Captures alone do not replace installer qualification or
 resolve known CI failures. Dependency changes require the exhaustive package
 mapping checks; translated messages require catalog checks; native rendering
 tests must pass with their declared dependencies in a clean CI environment.

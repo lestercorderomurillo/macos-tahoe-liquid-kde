@@ -1,7 +1,7 @@
 # Nobara — Fedora-derived gaming distro. Same /usr/lib64/qt6 layout,
 # same dnf. Nobara doesn't publish a Docker image, so we piggyback on
 # Fedora base and synthesise /etc/os-release.
-FROM fedora:latest
+FROM fedora:latest AS sdk
 
 RUN printf 'NAME="Nobara Linux"\nID=nobara\nID_LIKE=fedora\nPRETTY_NAME="Nobara Linux"\n' > /etc/os-release
 
@@ -25,6 +25,8 @@ RUN dnf install -y --setopt=install_weak_deps=False \
     && dnf clean all
 
 WORKDIR /repo
+
+FROM sdk AS test
 COPY . /repo
 
 CMD ["python3", "tests/containers/run_in_container.py"]

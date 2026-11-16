@@ -15,15 +15,16 @@ def load(path):
     return module
 
 
-def test_shards_cover_every_test_file_exactly_once():
+@pytest.mark.parametrize("count", [2, 4])
+def test_shards_cover_every_test_file_exactly_once(count):
     shard = load('.github/scripts/test_shard.py')
-    parts = [set(shard.select_files(ROOT, index, 2)) for index in range(2)]
+    parts = [set(shard.select_files(ROOT, index, count)) for index in range(count)]
     expected = {p.relative_to(ROOT).as_posix() for p in (ROOT / 'tests').rglob('test_*.py')}
-    assert parts[0] and parts[1]
-    assert not parts[0] & parts[1]
-    assert parts[0] | parts[1] == expected
+    assert all(parts)
+    assert sum(map(len, parts)) == len(set.union(*parts))
+    assert set.union(*parts) == expected
     with pytest.raises(ValueError):
-        shard.select_files(ROOT, 2, 2)
+        shard.select_files(ROOT, count, count)
 
 
 def test_package_queries_are_deduplicated_without_hiding_failure(monkeypatch):

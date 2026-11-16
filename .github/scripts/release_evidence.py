@@ -23,6 +23,32 @@ def source_fingerprint(repo):
     return digest.hexdigest()
 
 
+def fetch_release_refs(repo):
+    """Fetch only the release tag and the original gallery commit, not history."""
+    version = (repo / 'VERSION').read_text().strip()
+    import re
+    if not re.fullmatch(r'\d+\.\d+(?:\.\d+|rc[1-9]\d*)', version):
+        raise ValueError('Invalid release version')
+    tag = 'v' + version
+    subprocess.run(['git', '-C', str(repo), 'fetch', '--no-tags', '--depth=1',
+                    '--filter=blob:none', 'origin', f'refs/tags/{tag}:refs/tags/{tag}'], check=True)
+    def resolve(ref):
+        return subprocess.check_output(['git', '-C', str(repo), 'rev-parse', ref], text=True).strip()
+    if resolve(tag + '^{commit}') != resolve('HEAD'):
+        raise ValueError('Release tag does not match checked-out commit')
+    evidence = json.loads((repo / 'release-evidence.json').read_text())
+    commit = evidence.get('gallery_commit')
+    if commit and (repo / 'src/screenshots/release-capture.json').exists():
+        if not re.fullmatch('[a-f0-9]{40}', commit):
+            raise ValueError('Invalid gallery commit')
+        available = subprocess.run(['git', '-C', str(repo), 'cat-file', '-e',
+                                    commit + ':src/screenshots/release-capture.json'],
+                                   stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL).returncode == 0
+        if not available:
+            subprocess.run(['git', '-C', str(repo), 'fetch', '--no-tags', '--depth=1',
+                            '--filter=blob:none', 'origin', commit], check=True)
+
+
 def verify(repo):
     evidence = json.loads((repo / 'release-evidence.json').read_text())
     if evidence['version'] != (repo / 'VERSION').read_text().strip():
@@ -55,7 +81,10 @@ def verify(repo):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--repo', type=Path, default=Path.cwd())
+    parser.add_argument('--fetch-refs', action='store_true')
     args = parser.parse_args()
+    if args.fetch_refs:
+        fetch_release_refs(args.repo.resolve())
     verify(args.repo.resolve())
     print('Focused local evidence verified. Full remote CI is tracked separately.')
 

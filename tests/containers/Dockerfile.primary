@@ -1,0 +1,16 @@
+FROM archlinux:latest AS sdk
+RUN pacman -Sy --noconfirm --needed archlinux-keyring && \
+    pacman -Syu --noconfirm --needed \
+  python python-pytest ccache zstd python-pillow python-gobject python-pyqt6 gtk3 gtk4 \
+  qt6-svg qqc2-desktop-style librsvg xorg-server-xvfb xorg-xprop bash git diffutils findutils \
+  base-devel cmake extra-cmake-modules pkgconf \
+  qt6-base qt6-declarative qt6-wayland qt6-tools \
+  kconfig kconfigwidgets kcoreaddons kcrash kglobalaccel \
+  kguiaddons ki18n kio kcmutils knotifications kservice \
+  kwidgetsaddons kwindowsystem kdbusaddons kiconthemes \
+  kitemmodels \
+  libplasma plasma-activities plasma-activities-stats \
+  libksysguard plasma-workspace plasma-desktop plasma5support plasma-sdk plasma-nm plasma-pa powerdevil bluez-qt \
+  kwin kdecoration kvantum \
+  libepoxy libdrm libx11 libxcb libxtst nodejs && pacman -Scc --noconfirm
+WORKDIR /repo
