@@ -1,0 +1,24 @@
+{
+  "description": "Disposable Plasma VM rendered reproduction using the reported disk topology as a fixture. Disk values are computed by unmodified released about_info.py parsers; other displayed hardware fields are fixture data. These are not photographs of the reporter computer. Both frames use the same v0.72.14 About UI.",
+  "lsblk_fixture": "zram0 67001489818 disk\nnvme0n1 3936251627438 disk\nnvme1n1 1024249035162 disk\n",
+  "findmnt_fixture": "/dev/nvme1n1p2[/@]",
+  "frames": {
+    "before": {
+      "source_version": "0.72.5",
+      "source_sha256": "a293238d86d2a3d9a5aa563181fdf25379eec828f53edd801365c9f379094dc5",
+      "result": "64 GB",
+      "file": "issue132-before-f061a3e91f1e.webp",
+      "sha256": "f061a3e91f1eae1e45eb7c0789f3bdb855da3eb0c6adaabc580201caa0d03b71"
+    },
+    "after": {
+      "source_version": "0.72.14",
+      "source_sha256": "2dad85c88083ced9194f2f6d97f1b051e08b170c9037f91a99e5d534cb595dd7",
+      "result": "960 GB",
+      "file": "issue132-after-44b6836bddf4.webp",
+      "sha256": "44b6836bddf4957564e2607244258a048d747c21e2a4d3ac36dcabc5f6ee3216"
+    }
+  },
+  "ui_source": "ebf0e2d75320f1930e20aab4e0995237e85458d8",
+  "edition": "tahoe",
+  "review": "Both full desktop captures visually reviewed; old parser shows 64 GB, fixed parser shows 960 GB. Captured in disposable Plasma VM on 2026-11-16."
+}
