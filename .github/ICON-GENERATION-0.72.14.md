@@ -61,4 +61,4 @@ fixture and compares the SHA-256 of every PNG. Captured result and source identi
 }
 ```
 
-Full remote CI is tracked after publication.
+[Full remote CI passed](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/actions/runs/43953947694): four primary shards, eleven distro legs and Nix.

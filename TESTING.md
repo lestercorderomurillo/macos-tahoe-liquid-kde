@@ -1,6 +1,6 @@
 # Installer testing
 
-Tahoe **v0.72.14** delivers parameterized, deterministic icon generation. The representative fixture generated 74.7% faster with identical PNG bytes; focused tests and disposable-VM icon install/reinstall passed. [Evidence and coverage limits](.github/ICON-GENERATION-0.72.14.md). Full CI is tracked after publication.
+Tahoe **v0.72.14** delivers parameterized, deterministic icon generation. The representative fixture generated 74.7% faster with identical PNG bytes; focused tests and disposable-VM icon install/reinstall passed. [Evidence and coverage limits](.github/ICON-GENERATION-0.72.14.md). [Full CI passed](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/actions/runs/43953947694).
 See [validation and coverage limits](release-evidence.json) and the [reviewed tint captures](src/screenshots/previews/tahoe-icon-contrast-provenance.json). Existing gallery photographs retain their original reviewed [provenance](src/screenshots/release-capture.json).
 
 ## Installation steps
