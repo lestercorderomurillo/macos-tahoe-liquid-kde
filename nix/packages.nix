@@ -56,7 +56,10 @@ in rec {
     cmakeFlags = [ "-DCMAKE_BUILD_TYPE=Release"
       "-DMENU_STYLE_PLUGIN_DIR=${placeholder "out"}/${kde.qtbase.qtPluginPrefix}/styles" ];
   };
-  global-menu = buildPlugin "global-menu" (offline + "/plasmoids/org.kde.mac.tahoe.liquid.globalmenu") {};
+  global-menu = buildPlugin "global-menu" (offline + "/plasmoids/org.kde.mac.tahoe.liquid.globalmenu") {
+    cmakeFlags = [ "-DCMAKE_BUILD_TYPE=Release" "-DTAHOE_BUILD_LAUNCHER_MODULE=OFF" ];
+    propagatedBuildInputs = [ task-manager ];
+  };
   task-manager = buildPlugin "task-manager" (offline + "/plasmoids/org.kde.mac.tahoe.liquid.taskmanager") {};
   acrylic-glass = buildPlugin "acrylic-glass" (offline + "/kwin-effects/acrylic-glass") {};
   rounded-corners = buildPlugin "rounded-corners" (pkgs.fetchurl {

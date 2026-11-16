@@ -205,12 +205,28 @@ def test_uninstall_preserves_user_overrides_of_upstream_plasmoid_ids(
     )
     monkeypatch.setattr(plasmoids, "qt6_plugins_dir", lambda: tmp_path / "plugins")
     monkeypatch.setattr(plasmoids, "qt6_qml_dir", lambda: tmp_path / "qml")
-    monkeypatch.setattr(plasmoids, "sudo_remove", lambda *_args, **_kwargs: False)
+    menu = tmp_path / "plugins/plasma/applets/org.kde.mac.tahoe.liquid.globalmenu.so"
+    menu.parent.mkdir(parents=True); menu.touch()
+    shared = tmp_path / "qml/org/kde/mac/tahoe/launcher"
+    shared.mkdir(parents=True); (shared / "qmldir").touch()
+    def remove(path, *_args):
+        assert path.is_relative_to(tmp_path)
+        if path.is_dir():
+            import shutil
+            shutil.rmtree(path)
+        else:
+            path.unlink(missing_ok=True)
+        return True
+    monkeypatch.setattr(plasmoids, "sudo_remove", remove)
     monkeypatch.setattr(plasmoids, "ok", lambda _message: None)
     monkeypatch.setattr(plasmoids, "info", lambda _message: None)
 
     plasmoids.uninstall()
 
+    assert shared.is_dir()
+    menu.unlink()
+    plasmoids.uninstall()
+    assert not shared.exists()
     assert stock_taskmanager.is_dir()
     assert stock_icontasks.is_dir()
     assert not owned.exists()

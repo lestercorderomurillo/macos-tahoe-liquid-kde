@@ -25,6 +25,7 @@ ABOUT_INFO_DEST = HOME / ".local/bin/mac-tahoe-about-info"
 # live under the qmake6-reported libdir (qt6_*_dir() handles per-distro).
 _SO_RELPATH = "plasma/applets/org.kde.mac.tahoe.liquid.globalmenu.so"
 _QML_RELPATH = "plasma/applet/org/kde/mac/tahoe/liquid/globalmenu"
+_GLASS_QML_RELPATH = "org/kde/mac/tahoe/launcher"
 TRANSLATION_DOMAIN = "plasma_applet_org.kde.mac.tahoe.liquid.globalmenu.mo"
 TRANSLATION_LANGUAGES = ("es", "zh_CN", "pt_BR", "de")
 GTK_ENV_MARKER = "# Managed by mac-tahoe-liquid-kde: GTK appmenu lifetime\n"
@@ -98,11 +99,13 @@ def build_artifacts() -> list[Path]:
     return [
         BUILD / "bin/plasma/applets/org.kde.mac.tahoe.liquid.globalmenu.so",
         BUILD / "bin/plasma/applet/org/kde/mac/tahoe/liquid/globalmenu",
+        BUILD / "bin" / _GLASS_QML_RELPATH / "libmactahoelauncher.so",
     ]
 
 
 def build() -> None:
-    cmake_build(SRC, BUILD, "Global Menu")
+    cmake_build(SRC, BUILD, "Global Menu", extra_sources=(
+        SRC.parent / "org.kde.mac.tahoe.liquid.taskmanager/launcher",))
 
 
 def _drop_legacy() -> None:
@@ -133,6 +136,13 @@ def install() -> None:
     artifact = BUILD / "bin/plasma/applets/org.kde.mac.tahoe.liquid.globalmenu.so"
     if not artifact.is_file():
         fail(tr('Global Menu build artifact missing'))
+        return
+    glass_module = BUILD / "bin" / _GLASS_QML_RELPATH
+    if not (glass_module / "libmactahoelauncher.so").is_file():
+        fail(tr('Global Menu runtime QML missing'))
+        return
+    if not sudo_install_tree(glass_module, qt6_qml_dir() / _GLASS_QML_RELPATH,
+                             tr('Global Menu runtime QML')):
         return
     dest_so = qt6_plugins_dir() / _SO_RELPATH
     if not sudo_install_file(artifact, dest_so, tr('Global Menu installed')):
@@ -251,6 +261,8 @@ def uninstall() -> None:
     _remove_gtk_appmenu_environment()
     sudo_remove(qt6_plugins_dir() / _SO_RELPATH, tr('Global Menu .so removed'))
     sudo_remove(qt6_qml_dir() / _QML_RELPATH, tr('Global Menu runtime QML removed'))
+    if not (qt6_plugins_dir() / "plasma/applets/org.kde.mac.tahoe.liquid.taskmanager.so").is_file():
+        sudo_remove(qt6_qml_dir() / _GLASS_QML_RELPATH, tr('Global Menu runtime QML removed'))
     for language in TRANSLATION_LANGUAGES:
         try:
             _translation_dest(language).unlink()

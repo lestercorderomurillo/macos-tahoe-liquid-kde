@@ -1,8 +1,8 @@
 {
-  "version": "0.72.4",
-  "source_sha256": "c841165328eb55f3bcf1a0b4117b0b86b3155382d172de3578638c117b4c14aa",
+  "version": "0.72.5",
+  "source_sha256": "b342b7b16377f3ef3ff39f99deca5a0cedb934df9242dd544db0a8f7fd493581",
   "environment": "Disposable KDE neon Plasma 6.8.1 / Qt 6.11.1 Wayland desktop; isolated X11/Wayland rendering; selected 6.6, 6.7.4 and 6.8 SDK builds. Desktop validation did not run on the host.",
-  "scope": "Shared per-preset component materials, transactional SVG/QML transparency, live reload and cached optics; Dock layout recovery and intention-based VM checks.",
+  "scope": "Shared per-preset component materials, transactional SVG/QML transparency, live reload and cached optics; Dock layout recovery and intention-based VM checks. Standalone Global Menu now supplies the shared About glass module; tests build it explicitly, and uninstall preserves remaining consumers.",
   "qualified_source": {
     "base_commit": "99d08d1f2b24233b51a37463ad8762b71b787cf0",
     "changed_files": {
@@ -204,6 +204,31 @@
       "logs": {
         "dock-gap/gg-final-stage.json": "e47307fe958763e4769fc7eda6e110f0d14d26db641915237a08043265b78e17"
       }
+    },
+    {
+      "command": "python3 -m pytest tests/test_globalmenu_step.py tests/test_plasmoids_step.py tests/test_component_cache.py -q",
+      "result": "passed",
+      "detail": "26 passed: real build cache invalidation and shared runtime lifecycle ownership."
+    },
+    {
+      "command": "MTTKDE_REQUIRE_NATIVE_GLOBALMENU=1 python3 -m pytest tests/test_globalmenu_model.py -q; python3 -m pytest tests/test_screenshots.py tests/test_traffic_lights.py -q",
+      "result": "passed",
+      "detail": "Native X11 menu/model/composition scenario and 17 About/capture/artwork regressions passed with the real shared QML module."
+    },
+    {
+      "command": "python3 -m pytest tests/test_component_glass_surfaces.py -q; python3 -m pytest --collect-only -q; nix-instantiate --parse nix/packages.nix",
+      "result": "passed",
+      "detail": "Live SVG reload fixture remains functional; collection and Nix expression validation passed. Nix runtime is not claimed."
+    },
+    {
+      "command": "Disposable VM: move shared launcher module out of Qt imports; installer_backend.py install --only --globalmenu --no-apply-theme --no-grub-modify twice; launch About preview",
+      "result": "passed",
+      "detail": "Both standalone install and reinstall restored the runtime module (SHA-256 20c6644779b4df8eca7cc3fa143bf49ed1d34735f3a4522e19bf5c032cc8ad40). Initial ad-hoc readiness assertion lacked Qt stderr logging; the established capture helper then verified one focused, rendered About window. Corrective source archive 17c151b5c5b4306f0a7aeb148e6382e02c0cddfa5dc0c11e701ae8d8973f055c; VERSION still displayed 0.72.4 at capture, before metadata-only bump. Prior paired VM material/appearance and SDK rendering evidence is reused because its runtime source is unchanged."
+    },
+    {
+      "command": "MAC_TAHOE_NO_UPDATE_CHECK=true GOLDEN_GATE_TAHOE_SOURCE=<candidate> ./install --prepare; compare shared dependency sources, VERSION and edition defaults",
+      "result": "passed",
+      "detail": "Golden Gate v0.72.5 stage preserves the corrected shared implementation and launcher preset 2."
     }
   ],
   "gallery_commit": "f09780b200b79302e7c23ef9f6f74d94748bbea3",
@@ -253,7 +278,45 @@
     "An earlier insufficiently isolated mock test wrote host auxiliary files; those writes were backed up and restored and tests were isolated. Separately, the user explicitly authorized repairing the installed launcher property and restarting Plasma."
   ],
   "remote_ci": {
-    "state": "not_submitted",
-    "note": "Final dev workflow will run once after publication; full remote matrix is distinct from local VM/SDK evidence."
+    "state": "not yet submitted for v0.72.5 at evidence recording",
+    "previous_run": "https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/actions/runs/43824096921",
+    "previous_result": "Failed solely on About shared-module imports: all 11 distro legs plus both general shards. Nix passed. Corrected and focused regressions passed before the new release; new dev CI tracked separately."
+  },
+  "corrective_qualification": {
+    "base_commit": "5d8b4097fbabeac4beb013908bdb5e6a256fb176",
+    "logs": {
+      "dependency-focused.log": "5e30e0bd9aa9a4b19ac560fe444ff2d0df0ea40a975ccac845b28858666cd684",
+      "dependency-native.log": "3f638c089c41d2c4fc72c708ec6430b08be8bd8857834a932763d566607e729c",
+      "dependency-about.log": "f8544015c8eb3deb08b7ae98b8292a384b7a1f740ecd353eaaec6b7dac9c91af",
+      "dependency-reload.log": "df0fd887d050bdbb5a9b19412cf15e8201d3f27dcfce2692ef1ded50b7de8fcc",
+      "dependency-collection.log": "0bca1e912e1aa973a695c6cdd13d5426a3ba030cb377273ec4bb924d1d77efac",
+      "dependency-nix.log": "a5801eb0bc49bd7c790e9b4abc44128aeb847fb78fc0db3537d6624fac442d4c",
+      "dependency-vm/qualify.log": "065b70be34a1af577a7b8914ab252787894865f6fb4582335752e33c89e75459",
+      "dependency-vm/oneframe.log": "0b78c04bb8fc94afa301980922a8e27c3b9ff06132b5ac17a3e5f879c6b2aa80"
+    },
+    "source_files": {
+      "component-hashes.json": "79e5dbcdca04ffe7f7cb378061455d14a10bdec368b811f18baa3a03b623c24e",
+      "nix/packages.nix": "d81aa842e37af43b8d059c926ef9fce1e01b5c0fccd806273fdd34a8a4d2c4fd",
+      "src/offline/plasmoids/org.kde.mac.tahoe.liquid.globalmenu/CMakeLists.txt": "8a7b571ab1d5d66a7eccdd32f40afa13488cd8fc7fc618a9759784ec666f3a9f",
+      "src/scripts/component_manifest.py": "0590fbfc178500d4d6f2a867111fa2c6626d4c791d7c625bcddb4174f9a72d1e",
+      "src/scripts/steps/_native_build.py": "b41f745a8d81d14d28faa6a5af0a3dfc02b1a0c7fa665b84fff5bd99b3b244d4",
+      "src/scripts/steps/globalmenu.py": "ea3f718499c719d1674ab31ed222a37de244c327a33803d65467b64ac21175f4",
+      "src/scripts/steps/plasmoids.py": "f33947cecd9f623cc731188d7d09228d02daed1ffff41c1c8b1350e9d0400ed2",
+      "tests/conftest.py": "6c9fb15e739b0df0bfa91d76deb9f1c69b32907dc511c9befa0a27c48f85234d",
+      "tests/test_component_cache.py": "2006dd576dff45efcec4f3836d3f66deeaaa4b174689507bb6e3cbeb7c7a9565",
+      "tests/test_component_glass_surfaces.py": "2a033792726badbd66b25924342aed0b4875a897748ef638f0f8c1da3308c8dc",
+      "tests/test_desktop_controls.py": "13c64f1b7b771d312079dcaff93ef20e524d88a16f6c40102ee3809578583654",
+      "tests/test_globalmenu_step.py": "74098d90f94876129d279ac49c156221d1208bda9f0b585b9d947f2b5aa92895",
+      "tests/test_launcher_presets.py": "036ae933c979c3654313233adbdcb821fbb6cf65128670bc17eff957ee342a86",
+      "tests/test_plasmoids_step.py": "bf5002c3af564c8718547f4f36a81e8a46d67cc212c40f1bf35860447ff339ac",
+      "tests/test_screenshots.py": "c802729f09e383fa0075f665d08955c051529797f8bcecb9f63baaa350a4d1fc",
+      "tests/test_traffic_lights.py": "dd26dbf9528d153b1fb321581b908b03750d4f934da7b948d866bf85f8bce7e9"
+    },
+    "capture": {
+      "path": "dependency-vm/standalone-about.png",
+      "sha256": "6a4a894594676b9ddf8fc6af6f9e07915f7d78cbc41bcc1f9316cc0836eaab63",
+      "reviewed": true,
+      "published_gallery": false
+    }
   }
 }

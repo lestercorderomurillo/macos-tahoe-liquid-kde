@@ -49,7 +49,7 @@ def test_about_capture_never_runs_when_preview_is_not_ready(capture_module, monk
 @pytest.mark.parametrize("edition", ["MacTahoe", "MacGoldenGate"])
 @pytest.mark.parametrize("initial_mode", ["Light", "Dark"])
 @pytest.mark.parametrize("control_style", ["Basic", "org.kde.desktop"])
-def test_about_labels_and_surface_follow_appearance(repo, tmp_path, monkeypatch, edition, initial_mode, control_style):
+def test_about_labels_and_surface_follow_appearance(repo, tmp_path, monkeypatch, edition, initial_mode, control_style, launcher_popup_module):
     import configparser
     import json
     import glass_surfaces
@@ -180,7 +180,7 @@ assert not errors, '\n'.join(errors)
     monkeypatch.setattr(glass_surfaces, 'default_wallpaper', lambda: edition)
     glass_surfaces.apply_plasma_surface_defaults(theme)
     (tmp_path / 'plasmarc').write_text('[Theme]\nname=' + name + '\n')
-    env = dict(os.environ, QT_QPA_PLATFORM='offscreen', QT_QUICK_BACKEND='software',
+    env = dict(os.environ, QML_IMPORT_PATH=str(launcher_popup_module), QT_QPA_PLATFORM='offscreen', QT_QUICK_BACKEND='software',
                QT_QUICK_CONTROLS_STYLE=control_style,
                LANGUAGE='en', LC_ALL='C.UTF-8', HOME=str(tmp_path),
                XDG_DATA_HOME=str(tmp_path / 'data'),

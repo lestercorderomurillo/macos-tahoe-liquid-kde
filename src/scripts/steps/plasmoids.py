@@ -234,8 +234,9 @@ def uninstall() -> None:
         n += 1
     if sudo_remove(dest_qml, dest_qml.name):
         n += 1
-    if sudo_remove(qt6_qml_dir() / _LAUNCHER_QML_RELPATH, tr('Launcher native search popup')):
-        n += 1
+    if not (qt6_plugins_dir() / "plasma/applets/org.kde.mac.tahoe.liquid.globalmenu.so").is_file():
+        if sudo_remove(qt6_qml_dir() / _LAUNCHER_QML_RELPATH, tr('Launcher native search popup')):
+            n += 1
     if LEGACY_TASKMANAGER_USER_SO.is_file():
         try:
             LEGACY_TASKMANAGER_USER_SO.unlink()

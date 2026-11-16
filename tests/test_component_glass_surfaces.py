@@ -6,7 +6,6 @@ from pathlib import Path
 import shutil
 import pytest
 import glass_surface_settings as surfaces
-from .test_launcher_presets import launcher_popup_module
 
 REPO = Path(__file__).resolve().parents[1]
 

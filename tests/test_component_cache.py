@@ -183,15 +183,25 @@ def test_native_build_reuses_objects_and_rebuilds_changed_source(tmp_path, monke
     code = source / 'main.cpp'
     code.write_text('int main() { return 0; }\n')
     build = tmp_path / 'build'
-    assert cmake_build(source, build, 'probe')
+    shared = tmp_path / 'shared'; shared.mkdir()
+    header = shared / 'result.h'; header.write_text('#define RESULT 0\n')
+    code.write_text('#include "' + str(header) + '"\nint main() { return RESULT; }\n')
+    def build_probe():
+        return cmake_build(source, build, 'probe', extra_sources=(shared,))
+    assert build_probe()
     obj = next(build.rglob('main.cpp.o'))
     stamp = obj.stat().st_mtime_ns
-    assert cmake_build(source, build, 'probe')
+    assert build_probe()
     assert obj.stat().st_mtime_ns == stamp
+    header.write_text('#define RESULT 2\n')
+    import os
+    os.utime(header, (1, 1))
+    assert build_probe()
+    assert subprocess.run([str(build / 'probe')]).returncode == 2
     code.write_text('int main() { return 3; }\n')
     import os
     os.utime(code, (1, 1))  # Archives can restore older mtimes despite changed bytes.
-    assert cmake_build(source, build, 'probe')
+    assert build_probe()
     assert subprocess.run([str(build / 'probe')]).returncode == 3
     if launcher != 'absent':
         assert (tmp_path / (launcher + '.log')).read_text().count('called') >= 2
@@ -234,6 +244,7 @@ def test_icon_uninstall_invalidates_receipt_even_without_payload(monkeypatch, tm
 def test_desktop_control_shared_views_and_native_regions_invalidate_satellites(tmp_path):
     scripts = tmp_path / 'src/scripts/steps'; scripts.mkdir(parents=True)
     (scripts / 'plasmoids.py').write_text('')
+    (scripts / 'globalmenu.py').write_text('')
     packages = tmp_path / 'src/offline/plasmoids'; packages.mkdir(parents=True)
     names = ['org.kde.mac-tahoe-liquid-kde.' + suffix for suffix in
              ('controlcenter', 'battery', 'wifi', 'notifications', 'unrelated')]
@@ -241,6 +252,8 @@ def test_desktop_control_shared_views_and_native_regions_invalidate_satellites(t
         path = packages / name; path.mkdir(); (path / 'view.qml').write_text('original')
     native = packages / 'org.kde.mac.tahoe.liquid.taskmanager/launcher'
     native.mkdir(parents=True); (native / 'controlglass.cpp').write_text('original')
+    menu = packages / 'org.kde.mac.tahoe.liquid.globalmenu'
+    menu.mkdir(); (menu / 'AboutWindow.qml').write_text('original')
     first = component_manifest.snapshot(tmp_path)["components"]
     (packages / names[0] / 'view.qml').write_text('updated shared view')
     second = component_manifest.snapshot(tmp_path)["components"]
@@ -249,6 +262,7 @@ def test_desktop_control_shared_views_and_native_regions_invalidate_satellites(t
     assert first['plasmoids/' + names[-1]] == second['plasmoids/' + names[-1]]
     (native / 'controlglass.cpp').write_text('updated native region')
     third = component_manifest.snapshot(tmp_path)["components"]
+    assert second['plasmoids/' + menu.name] != third['plasmoids/' + menu.name]
     for name in names[:4]:
         assert second['plasmoids/' + name] != third['plasmoids/' + name]
     assert second['plasmoids/' + names[-1]] == third['plasmoids/' + names[-1]]

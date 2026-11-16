@@ -1,7 +1,7 @@
 # Installer testing
 
-Tahoe **v0.72.4** adds per-component Acrylic Glass settings and fixes Dock spacing after material reloads.
-Native KCM, SVG reload, selected SDK/rendering checks and paired disposable-VM install/reinstall checks passed.
+Tahoe **v0.72.5** adds per-component Acrylic Glass settings and fixes Dock spacing after material reloads.
+Native KCM, SVG reload, selected SDK/rendering checks and paired disposable-VM install/reinstall checks passed. Standalone Global Menu also installs its shared About material module.
 All three presets retain Dock blur 5 and no gradient in light/dark mode; VM checks cover saved settings, rendered pixels, Cancel and component isolation.
 See [validation and coverage limits](release-evidence.json). Existing gallery photographs retain their original reviewed [provenance](src/screenshots/release-capture.json).
 

@@ -28,6 +28,14 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 add_definitions(-DTRANSLATION_DOMAIN="plasma_applet_org.kde.mac.tahoe.liquid.globalmenu")
 
+# AboutWindow consumes the same material settings as the other surfaces.
+# Standalone installations must provide that module too.
+option(TAHOE_BUILD_LAUNCHER_MODULE "Build the shared glass QML module" ON)
+if(TAHOE_BUILD_LAUNCHER_MODULE)
+    find_package(PlasmaQuick REQUIRED)
+    add_subdirectory(../org.kde.mac.tahoe.liquid.taskmanager/launcher launcher)
+endif()
+
 add_subdirectory(libdbusmenuqt)
 
 # Note: plasma_add_applet requires a CMake-valid target name (no hyphens).

@@ -112,23 +112,6 @@ for (const dock of docks) {
     assert result.returncode == 0, result.stderr
 
 
-@pytest.fixture(scope="session")
-def launcher_popup_module(repo, tmp_path_factory):
-    if not shutil.which("cmake") or not shutil.which("c++"):
-        pytest.skip("CMake and a C++ compiler required for the native popup")
-    build = tmp_path_factory.mktemp("launcher-popup-native")
-    source = repo / "src/offline/plasmoids/org.kde.mac.tahoe.liquid.taskmanager"
-    result = subprocess.run(
-        ["cmake", "-S", str(repo / "tests/qml"), "-B", str(build),
-         f"-DLAUNCHER_NATIVE_SOURCE={source}"], capture_output=True, text=True, timeout=60)
-    if "LAUNCHER_POPUP_SDK_MISSING" in result.stdout:
-        pytest.skip("Plasma Quick development SDK required for the native popup")
-    assert result.returncode == 0, result.stdout + result.stderr
-    result = subprocess.run(["cmake", "--build", str(build), "-j", "2"],
-                            capture_output=True, text=True, timeout=120)
-    assert result.returncode == 0, result.stdout + result.stderr
-    return build / "bin"
-
 
 def test_native_launcher_anchor_geometry(repo, tmp_path, launcher_popup_module):
     """Late item layout must recenter the popup without a window resize."""

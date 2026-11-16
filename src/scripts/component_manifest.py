@@ -59,6 +59,7 @@ def snapshot(root=REPO_ROOT):
                 shared = path / 'org.kde.mac-tahoe-liquid-kde.controlcenter'
                 inputs.append(('desktop-controls', shared))
             if path.name == 'plasmoids' and payload.name in (
+                'org.kde.mac.tahoe.liquid.globalmenu',
                 'org.kde.mac-tahoe-liquid-kde.controlcenter',
                 'org.kde.mac-tahoe-liquid-kde.battery',
                 'org.kde.mac-tahoe-liquid-kde.wifi',

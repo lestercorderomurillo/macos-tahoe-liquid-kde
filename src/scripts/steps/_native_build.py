@@ -20,6 +20,7 @@ def cmake_build(
     label: str,
     *,
     targets: tuple[str, ...] = (),
+    extra_sources: tuple[Path, ...] = (),
 ) -> bool:
     label = tr(label)
     if not (src_dir_ / "CMakeLists.txt").is_file():
@@ -30,7 +31,8 @@ def cmake_build(
     scripts = Path(__file__).resolve().parent.parent
     recipe = dependencies(Path(__file__), scripts)
     source_key = identity(
-        [("source", src_dir_)] + [(str(path.relative_to(scripts)), path) for path in recipe],
+        [("source", src_dir_)] + [(f"shared-{i}", path) for i, path in enumerate(extra_sources)]
+        + [(str(path.relative_to(scripts)), path) for path in recipe],
         list(targets),
     )
     stamp = build_dir / ".mttkde-source-sha256"

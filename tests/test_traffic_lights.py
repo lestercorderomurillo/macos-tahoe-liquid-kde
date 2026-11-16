@@ -104,7 +104,7 @@ assert any(key[-1] == 'deactivated' for key in window.minimize_button._pixmaps)
     assert result.returncode == 0, result.stdout + result.stderr
 
 
-def test_about_qml_uses_selected_artwork_across_mode_changes(repo, offline, tmp_path):
+def test_about_qml_uses_selected_artwork_across_mode_changes(repo, offline, tmp_path, launcher_popup_module):
     from PyQt6.QtCore import QLibraryInfo
     imports = Path(QLibraryInfo.path(QLibraryInfo.LibraryPath.QmlImportsPath))
     if not (imports / "org/kde/ki18n/qmldir").is_file():
@@ -160,7 +160,7 @@ for paths in json.loads(sys.argv[2]).values():
 assert not errors, '\n'.join(errors)
 '''
     qml = offline / "plasmoids/org.kde.mac.tahoe.liquid.globalmenu/qml/AboutWindow.qml"
-    env = dict(os.environ, QT_QPA_PLATFORM="offscreen", QT_QUICK_BACKEND="software",
+    env = dict(os.environ, QML_IMPORT_PATH=str(launcher_popup_module), QT_QPA_PLATFORM="offscreen", QT_QUICK_BACKEND="software",
                HOME=str(tmp_path), XDG_CONFIG_HOME=str(tmp_path),
                DBUS_SESSION_BUS_ADDRESS="unix:path=/nonexistent")
     result = subprocess.run([sys.executable, "-c", probe, str(qml), json.dumps(families)],

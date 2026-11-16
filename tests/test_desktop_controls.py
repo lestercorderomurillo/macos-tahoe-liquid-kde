@@ -2,7 +2,6 @@
 import os
 import subprocess
 import sys
-from .test_launcher_presets import launcher_popup_module
 
 
 def test_desktop_controls_native_state_and_actions(repo, tmp_path, launcher_popup_module):
