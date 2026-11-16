@@ -1,5 +1,49 @@
 # AGENTS.md
 
+## Binding correction after repeated delivery failures
+
+The agent has repeatedly wasted the user's time by extending validation after
+the affected behavior passed, delaying release delivery, and switching to a
+follow-up task before clearly closing the requested release. The user has
+already corrected this behavior multiple times. Treat another occurrence as
+an agent execution failure. An apology or a promise does not correct it; the
+next action must follow the user's correction.
+
+These rules apply to both editions and override conflicting delivery wording
+elsewhere in this file:
+
+- Finish the requested release before starting pipeline optimization, cleanup,
+  redesign or any other follow-up. A follow-up request does not reorder an
+  unfinished delivery unless the user explicitly says so.
+- Once the affected checks and required focused VM qualification pass on the
+  final implementation, publish both releases immediately. Do not add a whole
+  suite, another SDK matrix, extra screenshots or repeated passing checks as a
+  new release gate. Expand validation only for a concrete unresolved failure
+  or affected dependency, and record that reason in the evidence.
+- Full remote CI remains enabled and asynchronous. Pending jobs do not block
+  publication, installation or the delivery response. State their known status
+  once. Do not keep the user waiting for the matrix to finish. A known relevant
+  failure still requires repair; pending, skipped and failed are never passed.
+- Distinguish three facts: the fix passed its focused qualification, the release
+  was published, and the full CI run passed or is pending. Use successful
+  publication output as evidence. When both releases are published, give their
+  links immediately; do not describe the release as unfinished merely because
+  CI continues, and do not re-query successful publication.
+- Treat an explicit time limit as an execution constraint. Track the deadline,
+  prioritize the smallest authorized delivery and stop optional work. If a real
+  prerequisite cannot finish within it, state that specific blocker before the
+  deadline. Never silently exceed the limit or invent a passing result.
+- When the user says stop testing, publish, hurry or finish first, change the
+  next action accordingly. Do not acknowledge the correction and continue the
+  same loop. Preserve completed evidence and name any unmet mandatory gate.
+- Keep routine work silent. Do not substitute explanations, reassurance,
+  repeated apologies or arguments about already published work for the requested
+  action. Return the usable result and any material remaining limitation.
+- For an AGENTS.md-only correction, reconcile contradictory clauses in both
+  editions, review the diff, run `git diff --check`, commit and push to `dev` and
+  `main`, check the actual checkouts are clean, and stop. No runtime tests, VM,
+  version bump, release or CI-waiting phase belongs to that task.
+
 ## Required skills
 
 Read and follow these skills on every task in this repository:
@@ -85,8 +129,9 @@ Selected qualification precedes merge; the full remote matrix stays async.
 For this project, a fix means a tested, published paired release. A request
 to "test harder" strengthens the required validation; it does not cancel
 release delivery or introduce another user confirmation step. Continue
-through testing, repairs, publication and CI completion within the user's
-authorized scope. A local commit or a proposed release is not delivery.
+through focused qualification, repairs and paired publication within the user's
+authorized scope. Report remaining full CI as asynchronous. A local commit or
+a proposed release is not delivery.
 
 The user explicitly authorizes the complete paired maintenance delivery whenever
 requesting a fix or a versioned change: implement and validate it, commit the
@@ -100,9 +145,11 @@ and the user's task in tool justifications when needed.
 The user's approval requirement refers to passing VM/CI validation, not a
 separate permission question addressed to the user. Complete the selected
 qualification and focused disposable-VM install/reinstall checks before
-publication. Publish, then follow the existing CI/CD runs and relevant VM
-results through completion. Do not stop at workflow submission or return a
-known failure to the user as their follow-up work. If CI or VM checks fail,
+publication. Report successful paired publication immediately, with the known
+status of the existing CI run. Workflow submission alone is not proof of a
+published release. Do not wait for the full matrix as a condition of delivering
+the installable fix. Do not return a known relevant failure to the user as
+their follow-up work. If CI or VM checks fail,
 investigate, repair the failure and deliver the next matching patch release
 (`x.y.z` -> `x.y.(z+1)`) in both repositories without another permission question.
 Reuse passing evidence while its implementation, inputs and environment are
@@ -112,9 +159,10 @@ Inspect actual workflow steps and artifacts before describing VM coverage.
 Container SDK tests and GitHub-hosted runner VMs do not prove a live Plasma
 installation. Keep CI results, recorded local desktop-VM qualification and
 publication results distinct; never report pending or unrun checks as passed.
-This standing workflow supersedes older wording that ends delivery while CI is
-still pending. Publication can precede the complete matrix, but task completion
-requires checking its outcome and resolving relevant failures.
+Successful paired publication and clean install-ready checkouts complete the
+release delivery after focused qualification. Full CI completion is a separate
+status; report it accurately without holding the delivery response open.
+Investigate relevant failures when observed, without launching duplicate runs.
 
 ## Appearance synchronization qualification
 
