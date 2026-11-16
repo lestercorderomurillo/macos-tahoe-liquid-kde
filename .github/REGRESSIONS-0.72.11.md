@@ -29,7 +29,7 @@ scheme and icons. Explicit uninstallation still performs the cleanup.
 The v0.72.10 post-publication matrix exposed missing satellite translations,
 the obsolete fixed gap coordinate and the missing-GTK-4 condition on Fedora/
 Nobara. These were corrected here; that failed matrix is not passing evidence.
-The full v0.72.11 matrix runs after publication.
+The [full v0.72.11 matrix](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/actions/runs/43912624471) passed all 16 jobs. Arch initially stalled in GitHub checkout before testing; only that job was retried, retaining the other 15 passing results. The [Golden Gate wrapper CI](https://github.com/lestercorderomurillo/macos-golden-gate-liquid-kde/actions/runs/43913154331) also passed.
 
 The [v0.72.10 qualification](REGRESSIONS-0.72.10.md) remains the evidence for
 unchanged accent, disk and layout repairs. Its reviewed captures retain commit
