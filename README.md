@@ -38,7 +38,8 @@
 </p>
 
 > [!CAUTION]
-> Experimental. Desktop updates may break compatibility. Avoid production systems; [report issues here](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/issues/new).
+> **Rolling Release Philosophy**
+> Experimental. Receives daily updates. Updates may break compatibility. Avoid production systems; [report issues here](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/issues/new).
 
 > [!WARNING]
 > **Beware of paywall repackers: this theme is FREE.**
