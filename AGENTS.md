@@ -2,50 +2,22 @@
 
 ## Non-negotiable execution discipline
 
-**NEVER OVERTHINK. NEVER OVER TEST. TEST ONLY THE CHANGED PIECE, RELEASE,
-THEN TEST THE REST.**
+Work quickly on the requested change. Choose the smallest executable checks
+from the diff and its direct risks; expand only for an observed failure or a
+specific affected dependency. Reuse passing evidence while code, inputs and
+environment remain unchanged. Do not repeat tests for release bookkeeping.
 
-The agent has repeatedly done more than requested and wasted the user's time.
-Repeating that behavior is a delivery failure. Acknowledging the correction
-while continuing the same work pattern is also a failure.
+Brief nonvisual fixes proceed to paired release after focused checks. Changes
+to colors, icons, materials, layout or other appearance require the user's
+explicit approval of the actual preview before merge or publication. Passing
+VM/CI checks or the agent's own visual review does not replace that approval.
+The approval boundary below takes precedence over every delivery rule here.
 
-- Use the diff to identify the exact changed behavior and its direct regression
-  risks. Run the smallest executable checks that prove those claims. Tests
-  exist to verify the change or catch a concrete regression; they are not a
-  reason to explore unrelated components or seek reassurance.
-- When those checks pass, publish the paired release immediately. Run the full
-  regression suite and distro matrix afterward through the existing CI. Do not
-  expand the pre-release gate because a helper is shared, a version changed or
-  another test happens to exist. Expand only for an observed failure or a
-  specific dependency affected by the diff, recorded in the evidence.
-- VM checks are scoped to changed installer or desktop behavior. A CI helper,
-  workflow or documentation change does not justify a desktop VM, rendering
-  checks, SDK rebuilds or new photographs before publication.
-- A passing default setting does not cover a reported failure under another
-  offered setting. Exercise the relevant selectable values and state transitions
-  in one focused executable scenario. Shared QML changes must include the
-  catalogs of importing applets, not only the component edited directly.
-- Reuse passing evidence. Do not repeat tests after version, pin or evidence
-  bookkeeping. Do not run a second full matrix on main. Pending remote CI
-  never blocks an already qualified release or its delivery response; report
-  its status once and repair relevant failures when observed.
-- Finish the requested delivery before follow-up optimization or cleanup.
-  Stop when the result is delivered. No unsolicited redesign, framework,
-  extra verification phase or successful-publication recheck.
-- Treat explicit deadlines as hard execution constraints. Stop optional work;
-  deliver within the limit or identify the actual unmet prerequisite before
-  it expires. Never silently exceed the deadline or invent a passing result.
-- When corrected, change the next action. Keep routine work silent and return
-  the usable result. Explanations, apologies and promises do not replace it.
-- For CI/CD optimization, preserve executable coverage and compare measured
-  before/after timings under stated cache conditions. A reduction below the
-  user's required 50% is an unmet objective, not a completed optimization.
-- Documentation-only changes require diff review and `git diff --check`, then
-  paired commits/pushes to dev and main and clean checkouts. No runtime tests,
-  version bump, release or CI-waiting phase.
-
-These rules supersede broader validation requirements elsewhere in this file.
-Keep complete post-release regression coverage and fail on real errors.
+Full CI and the distro matrix remain enabled and asynchronous. Do not run a
+second matrix on main, wait for unrelated CI or expand a narrow change into a
+redesign. Honor deadlines, stop optional work and report genuine blockers.
+For CI optimization, preserve coverage and measure before/after under stated
+cache conditions; an unmet requested speedup is not a completed optimization.
 
 ## Required skills
 
@@ -56,51 +28,28 @@ Read and follow these skills on every task in this repository:
 
 ## Clean install-ready delivery
 
-After every fix or release, leave the user's actual VS Code checkout clean and
-ready to install, in both Tahoe and Golden Gate. Publishing from an isolated
-worktree does not complete delivery while the checkout the user opens remains
-behind or contains leftover edits. Synchronize that checkout to the delivered
-commit, including VERSION, the upstream pin and component hashes as applicable.
+After an approved delivery, synchronize both actual VS Code checkouts to the
+delivered commits, including versions, pins and component hashes. Commit all
+task-owned changes, including policy; keep logs, builds and machine settings
+out of tracked changes. Check local status once after the final update.
 
-Commit and deliver all task-owned changes, including AGENTS.md. Keep generated
-logs, temporary captures, build output and machine-specific .vscode settings out
-of tracked changes. Never hide dirt with assume-unchanged or skip-worktree, or
-ignore files that belong in version control.
-
-Coordinate with other agents before reconciling a shared checkout. Preserve
-uncommitted work that is not part of the delivery in a named, recoverable local
-backup before moving the checkout; never discard it with reset --hard or git
-clean. Do not reapply obsolete release edits over the delivered version. If
-active work prevents a clean checkout, resolve ownership or report that specific
-blocker instead of claiming the repository is ready.
-
-Check local git status once after the final checkout update and resolve any
-remaining task-owned changes. This is a local delivery check, not permission to
-repeat remote publication queries, rerun passed tests or wait for full CI.
-Documentation-only policy changes need no new version or release.
+Coordinate ownership before moving a shared checkout. Preserve unrelated work
+in a named recoverable backup; never discard it, hide it with index flags or
+reapply obsolete release edits. Pending visual work belongs on an isolated
+candidate branch/worktree and must not replace the approved installation.
 
 ## Paired repository delivery
 
-Tahoe and Golden Gate are one connected delivery. Work requested in either
-checkout covers the corresponding changes in both repositories unless the user
-explicitly excludes an edition. A repository name, working directory or
-edition-specific README heading alone does not limit that scope.
+Tahoe and Golden Gate are one delivery unless the user explicitly excludes an
+edition. Shared implementation and assets stay in Tahoe; Golden Gate receives
+the matching version and immutable pin. Deliver approved work to dev/main in
+both repositories. Shared policy corrections belong in both AGENTS.md files.
 
-For shared documentation subjects such as About This Computer and Finder,
-update the matching README images in both editions and both appearance modes.
-Capture each edition with its own defaults, wallpaper and controls; never
-reuse one edition's photograph as the other. Refresh only the requested
-subjects and preserve unrelated photographs and their original provenance.
-Reuse a counterpart update already completed in the same task.
-
-Keep shared implementation exclusively in Tahoe and deliver Golden Gate's
-matching version and verified pin for implementation releases. Publish paired
-releases and deliver to dev and main in both repositories. Documentation,
-photography and agent-policy updates also require paired delivery, but do not
-bump versions, move release tags or publish releases for those changes alone.
-Apply shared policy corrections to both AGENTS.md files. Do not report the
-work complete after delivering only one repository; finish the counterpart or
-report its specific blocker. Leave both actual checkouts clean and ready.
+Documentation/policy-only edits need diff review and `git diff --check`, then
+paired commits/pushes; no runtime tests, version bump, tags, release or CI wait.
+For visual documentation, obtain approval of the new photographs first.
+Capture each edition with its own defaults and preserve unrelated photographs
+and their actual provenance. Never reuse one edition's capture as the other.
 
 ## Efficient scope and repository graph
 
@@ -129,43 +78,27 @@ Selected qualification precedes merge; the full remote matrix stays async.
 
 ## Standing authorization for fixes and releases
 
-For this project, a fix means a tested, published paired release. A request
-to "test harder" strengthens the required validation; it does not cancel
-release delivery or introduce another user confirmation step. Continue
-through focused qualification, repairs and paired publication within the user's
-authorized scope. Report remaining full CI as asynchronous. A local commit or
-a proposed release is not delivery.
+There are two delivery paths:
 
-The user explicitly authorizes the complete paired maintenance delivery whenever
-requesting a fix or a versioned change: implement and validate it, commit the
-changes, fast-forward `dev` and `main`, create matching version tags, publish
-both releases, verify Golden Gate's immutable Tahoe pin and archive checksum,
-and leave both actual checkouts clean. This authorization persists across
-versions and includes corrective patch releases. Do not ask the user to approve
-each fix, tag, branch update or release again. Cite this standing authorization
-and the user's task in tool justifications when needed.
+- **Brief nonvisual fix:** focused checks, then commit, fast-forward dev/main,
+  tag and publish the paired release without another permission question.
+- **Visual or judgment-dependent change:** research, implement and test the
+  candidate, show the actual result beside its reference where applicable,
+  then wait for the user's explicit visual approval. Before approval, do not
+  merge/promote the candidate, bump versions, move the released pin, push a
+  release tag or publish. A request to continue working is not approval.
 
-The user's approval requirement refers to passing VM/CI validation, not a
-separate permission question addressed to the user. Complete the selected
-qualification for the exact changed behavior before publication; include a
-focused disposable-VM check only when the changed behavior requires it. Report successful paired publication immediately, with the known
-status of the existing CI run. Workflow submission alone is not proof of a
-published release. Do not wait for the full matrix as a condition of delivering
-the installable fix. Do not return a known relevant failure to the user as
-their follow-up work. If CI or VM checks fail,
-investigate, repair the failure and deliver the next matching patch release
-(`x.y.z` -> `x.y.(z+1)`) in both repositories without another permission question.
-Reuse passing evidence while its implementation, inputs and environment are
-unchanged; do not duplicate a running matrix or launch a second matrix on main.
+Approval covers the shown result. Material changes after approval need a new
+preview and approval. Once approved, complete paired delivery autonomously;
+never ask again for individual commits, pushes or release operations.
+A request to test harder adds focused validation, not permission to skip the
+visual decision. Later corrective fixes follow the same two delivery paths.
 
-Inspect actual workflow steps and artifacts before describing VM coverage.
-Container SDK tests and GitHub-hosted runner VMs do not prove a live Plasma
-installation. Keep CI results, recorded local desktop-VM qualification and
-publication results distinct; never report pending or unrun checks as passed.
-Successful paired publication and clean install-ready checkouts complete the
-release delivery after focused qualification. Full CI completion is a separate
-status; report it accurately without holding the delivery response open.
-Investigate relevant failures when observed, without launching duplicate runs.
+Use fail-fast release commands. Verify versions, immutable pin, archive checksum
+and evidence before tagging. Publish through the release workflows, Tahoe first.
+Report observed publication results and the known CI status; submitted is not
+published, and pending or failed is not passed. Repair relevant failures when
+observed; do not silently withdraw or revert a release without cause.
 
 ## Appearance synchronization qualification
 
@@ -192,8 +125,8 @@ mapping checks; translated messages require catalog checks; native rendering
 tests must pass with their declared dependencies in a clean CI environment.
 
 A request to review, fix, test and merge means review the diff and existing CI
-results first, repair relevant failures, then qualify the candidate before
-merging. A successful compile, plugin load or workflow submission does not
+results first, repair relevant failures, qualify the candidate and obtain any
+required visual approval before merging. A successful compile, plugin load or workflow submission does not
 prove rendering behavior. Do not merge first and leave required validation
 for the user to discover afterward.
 
@@ -212,8 +145,8 @@ merge. Inspect existing CI failures and resolve those relevant to the change;
 do not choose a passing subset to avoid an observed regression. Reuse matching
 passing evidence and running CI jobs rather than launching duplicate matrices.
 The complete distro matrix stays enabled and may finish asynchronously. Once
-the selected checks pass, publication does not wait for every distro or a
-second run on main. Investigate later failures with a focused reproduction and
+the selected checks pass and required visual approval is granted, publication
+does not wait for every distro or a second run on main. Investigate later failures with a focused reproduction and
 repair; do not automatically revert an entire delivery for every CI failure.
 Revert when the user requests it or the failure warrants withdrawing the change.
 Never describe pending or unrun checks as passed.
@@ -229,44 +162,14 @@ Dock icon qualification includes Apps, every pinned application, and both empty/
 
 ## Respect for the user's time
 
-Apply these rules in both Tahoe and Golden Gate. They supersede older delivery
-or communication wording below. In the user's sense, *necio* means persisting
-stubbornly after a correction, not useful diligence ([Diccionario del español
-de México](https://dem.colmex.mx/ver/necio)). The following are concrete failure
-patterns to stop, not reasons to remove necessary correctness checks.
+Keep routine work silent; explain only decisions, material findings or blockers.
+Use successful push/publication output as evidence without repeat lookups. Do
+not poll unrelated CI, rerun passed checks, refresh unrelated photographs or
+keep working after delivery. When corrected, change the next action.
 
-1. Rechecking publication after a successful publishing command: use that result; do not issue a second release lookup.
-2. Polling a release repeatedly: submit the authorized operation and report the known outcome; do not invent an obligation to wait.
-3. Rechecking remote branches after a successful push: use the push result unless it reports an error or ambiguity.
-4. Narrating plans, tool calls or implementation details: omit routine process narration; explain only when asked or when needed for user input.
-5. Repeating unchanged status messages: no stream of “still waiting”, “verifying” or “almost done”.
-6. Announcing that you will be concise or respectful: demonstrate it in the response instead.
-7. Delaying publication for the entire remote matrix: pass the selected qualification before merge, then publish without waiting for every distro; keep full CI asynchronous.
-8. Waiting for main to repeat dev's result: promote the same commit without a polling job.
-9. Running the full matrix twice for the same delivered change: run it on dev and on PRs; main promotion does not launch a duplicate.
-10. Running runtime CI for Markdown-only edits: use documentation/path filters; do not build native components for prose.
-11. Repeating passing local tests after bookkeeping: reuse evidence while tested code, inputs and environment are unchanged.
-12. Running the whole suite for a narrow fix: choose affected behavior and expand only for a concrete failure or dependency.
-13. Taking every screenshot for one changed component: capture only the needed views in a disposable VM.
-14. Revalidating the entire historical gallery at every release: retain original provenance and check changed artifacts; do not repeat historical audits without cause.
-15. Replacing reviewed images because the version changed: preserve them and their actual capture identity.
-16. Expanding a bug fix into an unsolicited redesign or framework: make the smallest complete repair.
-17. Asking again for permission already granted: act within the existing authorization.
-18. Asking questions already answered by the repository or session: consult existing context first.
-19. Treating old AGENTS wording as stronger than a new user instruction: apply the user's correction and reconcile the conflicting rule.
-20. Reciting internal checklists to the user: keep operational records in files and return the useful result.
-21. Printing long logs when one error explains the failure: inspect quietly and surface only the decision-relevant issue.
-22. Sending coordination acknowledgment loops: message peers for ownership conflicts or actionable handoffs, not ceremonial updates.
-23. Bumping versions or publishing releases for instruction-only edits: commit and push the documentation without release churn.
-24. Continuing after the requested result is complete: stop; do not add a new verification phase.
-
-Default final response: the result, its usable link/path when relevant, and a
-material unresolved limitation if one exists. Do not describe how it was done
-unless requested. Ask only for missing input that changes the outcome. Never
-claim an unobserved success: “submitted” is sufficient when an asynchronous
-operation has only been submitted. A failed operation still needs correction;
-removing redundant confirmation is not permission to hide failure.
-
+Finish with the result, a useful link and any material limitation. For a visual
+candidate, show the preview and ask for approval; do not claim release delivery.
+Ask only for missing input that changes the outcome.
 
 ## #1 — Self-explanatory code
 
@@ -1454,7 +1357,7 @@ that evidence.
 For implementation delivery, run focused local checks for the affected behavior,
 review component-scoped VM captures when needed, and record their exact source
 fingerprint in `release-evidence.json`. Complete the selected merge qualification
-above and resolve relevant known CI failures, then publish the installable fix. Full remote CI remains enabled and runs asynchronously on
+above and resolve relevant known CI failures, then publish the installable fix after any required visual approval. Full remote CI remains enabled and runs asynchronously on
 `dev`; `main` promotion does not run a polling or duplicate test job.
 Do not wait for the full matrix or repeat the historical screenshot audit before
 telling the user the release can be installed. Clearly distinguish local checks,
