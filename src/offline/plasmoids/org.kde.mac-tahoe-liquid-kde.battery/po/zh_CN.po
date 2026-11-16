@@ -86,6 +86,9 @@ msgstr "已充满"
 msgid "Mute sound"
 msgstr "静音"
 
+msgid "Network"
+msgstr "网络"
+
 msgid "Network Settings…"
 msgstr "网络设置…"
 

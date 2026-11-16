@@ -13,7 +13,7 @@ The installer never invokes the kconf_update binary itself: it lives in
 libexec (not on PATH) on most distros, and install/uninstall need the
 effect immediately anyway, so the step runs the bundled helpers directly
 with explicit targets. Only the applet rename and malformed color-group repair
-run again at login. The kdedefaults cleanup is transaction-only: repeating it
+run again at login. The kdedefaults cleanup is uninstall-only: running it during installation
 would erase the active theme's inherited settings after KConfig removed
 matching per-user overrides.
 """
@@ -126,7 +126,12 @@ def run_migration(name: str) -> None:
 
 def run_migrations() -> None:
     for name in _enabled_scripts():
-        run_migration(name)
+        # Installing/reinstalling must preserve the active inherited theme.
+        # KConfig may have removed identical user overrides already; changing
+        # kdedefaults/package to Breeze here makes Plasma reapply Breeze later.
+        # Uninstall calls this helper explicitly through apply._scrub_kdedefaults.
+        if name != "mac-tahoe-scrub-kdedefaults.sh":
+            run_migration(name)
 
 
 def _targets_for(name: str) -> list[Path]:

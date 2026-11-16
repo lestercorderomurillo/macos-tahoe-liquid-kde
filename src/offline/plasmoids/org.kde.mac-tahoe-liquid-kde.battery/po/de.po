@@ -86,6 +86,9 @@ msgstr "Vollständig geladen"
 msgid "Mute sound"
 msgstr "Ton stummschalten"
 
+msgid "Network"
+msgstr "Netzwerk"
+
 msgid "Network Settings…"
 msgstr "Netzwerkeinstellungen…"
 

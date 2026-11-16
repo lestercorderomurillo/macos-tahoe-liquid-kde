@@ -305,5 +305,7 @@ def test_gtk_selection_contrast_survives_all_accents_and_live_states(repo, tmp_p
     result = subprocess.run(['dbus-run-session', '--', 'xvfb-run', '-a', sys.executable,
                              str(repo / 'tests/gtk_accent_probe.py'), str(repo), gtk_major],
                             env=env, text=True, capture_output=True, timeout=60)
+    if result.returncode == 77:
+        pytest.skip('GTK ' + gtk_major + ' introspection is unavailable in this SDK')
     assert result.returncode == 0, result.stdout + result.stderr
     assert 'GTK_ACCENT_STATES_OK' in result.stdout

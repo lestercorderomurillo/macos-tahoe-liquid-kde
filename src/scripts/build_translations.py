@@ -54,7 +54,7 @@ def kcm_messages() -> dict[tuple[None, str], None]:
 def write_catalog(base: Path, domain: str, messages: dict,
                   language: str, catalog: dict[str, str], locale_dir: Path) -> None:
     quote = lambda value: json.dumps(value, ensure_ascii=False)
-    plural_rule = "n > 1" if language == "pt_BR" else "n != 1"
+    plural_rule = "n > 1" if language in ("pt_BR", "fr") else "n != 1"
     header = (
         "Project-Id-Version: MacTahoe Liquid KDE\n"
         "PO-Revision-Date: 2026-10-22 00:00-0600\n"
@@ -102,8 +102,10 @@ def main() -> None:
     for suffix in ("controlcenter", "battery", "wifi", "notifications"):
         widget = ROOT / "offline/plasmoids" / ("org.kde.mac-tahoe-liquid-kde." + suffix)
         messages = widget_messages(widget)
-        for language in ("es", "zh_CN"):
-            catalog = {message: localization.translate(message, language) for _, message in messages}
+        for language in ("es", "zh_CN", "fr"):
+            catalog = (json.loads((ROOT / "scripts/locales/fr-controls.json").read_text(encoding="utf-8"))
+                       if language == "fr" else
+                       {message: localization.translate(message, language) for _, message in messages})
             write_catalog(widget, f"plasma_applet_{widget.name}", messages, language, catalog,
                           widget / "contents/locale")
 

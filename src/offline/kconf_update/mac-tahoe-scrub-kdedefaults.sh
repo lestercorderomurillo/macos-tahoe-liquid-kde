@@ -1,6 +1,6 @@
 #!/bin/sh
 # kconf_update helper: scrub MacTahoe / Liquid leftovers from kdedefaults.
-# Cleanup is valid only inside an explicit installer/uninstaller transaction.
+# Cleanup is valid only inside an explicit uninstaller transaction.
 # At login these values can be the active theme's only persisted defaults:
 # KConfig removes matching per-user overrides. Never scrub them at login,
 # including when an older installed .upd descriptor still invokes this helper.

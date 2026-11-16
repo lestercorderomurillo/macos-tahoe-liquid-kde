@@ -194,3 +194,24 @@ def test_login_migrations_preserve_active_inherited_theme(tmp_path, offline, mod
     assert "[Colors:Button]" not in (cfg / "kdeglobals").read_text()
     assert "org.kde.mac.tahoe.liquid.icontasks" in \
         (cfg / "plasma-org.kde.plasma.desktop-appletsrc").read_text()
+
+
+@pytest.mark.parametrize("mode", ["Light", "Dark"])
+def test_reinstall_preserves_inherited_theme_but_uninstall_can_scrub(tmp_path, monkeypatch, mode):
+    import steps.kconf_update as kc
+    monkeypatch.setattr(kc, "HOME", tmp_path)
+    defaults=tmp_path/".config/kdedefaults"
+    defaults.mkdir(parents=True)
+    package=f"org.kde.mac-tahoe-liquid-kde.{mode.lower()}\n"
+    values=f"[General]\nColorScheme=MacTahoeLiquidKde{mode}\n[Icons]\nTheme=MacTahoeLiquidKde-Icons\n"
+    (defaults/"package").write_text(package)
+    (defaults/"kdeglobals").write_text(values)
+    # Real migration subprocesses; a missing user override is normal KConfig.
+    (tmp_path/".config/kdeglobals").write_text("[General]\n")
+    for _ in range(2):
+        kc.run_migrations()
+        assert (defaults/"package").read_text()==package
+        assert (defaults/"kdeglobals").read_text()==values
+    kc.run_migration("mac-tahoe-scrub-kdedefaults.sh")
+    assert (defaults/"package").read_text()=="org.kde.breeze.desktop\n"
+    assert "MacTahoe" not in (defaults/"kdeglobals").read_text()

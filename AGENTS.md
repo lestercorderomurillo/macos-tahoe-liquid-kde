@@ -21,6 +21,10 @@ while continuing the same work pattern is also a failure.
 - VM checks are scoped to changed installer or desktop behavior. A CI helper,
   workflow or documentation change does not justify a desktop VM, rendering
   checks, SDK rebuilds or new photographs before publication.
+- A passing default setting does not cover a reported failure under another
+  offered setting. Exercise the relevant selectable values and state transitions
+  in one focused executable scenario. Shared QML changes must include the
+  catalogs of importing applets, not only the component edited directly.
 - Reuse passing evidence. Do not repeat tests after version, pin or evidence
   bookkeeping. Do not run a second full matrix on main. Pending remote CI
   never blocks an already qualified release or its delivery response; report

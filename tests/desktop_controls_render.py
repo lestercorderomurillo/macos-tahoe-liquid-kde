@@ -67,7 +67,13 @@ def published_blur_region():
 def assert_islands():
     assert view.mask().contains(QPoint(42,42)), 'Plasma cleared the control mask'
     assert not view.mask().contains(QPoint(5,5)), 'Transparent margin intercepts input'
-    assert not view.mask().contains(QPoint(160,42)), 'Gap between controls intercepts input'
+    surfaces = [s for s in root.property('surfaces').toVariant() if s.get('width', 0) > 0]
+    top = min(s['y'] for s in surfaces)
+    first, second = sorted((s for s in surfaces if s['y'] == top), key=lambda s:s['x'])[:2]
+    right = first['x'] + first['width']
+    assert second['x'] - right >= 2, 'Controls have no transparent gap'
+    gap = QPoint(round((right + second['x'])/2), round(top + min(first['height'], second['height'])/2))
+    assert not view.mask().contains(gap), 'Gap between controls intercepts input'
     assert published_blur_region() == view.mask(), 'Compositor blur and input islands disagree'
 
 assert_islands()

@@ -89,3 +89,15 @@ def test_desktop_controls_translate_when_installed_independently(repo):
                                    ('de', 'Fokus'), ('pt_BR', 'Foco')):
             catalog = _catalog(root / language / 'LC_MESSAGES' / ('plasma_applet_' + widget + '.mo'))
             assert catalog.gettext('Focus') == expected
+
+
+def test_french_control_catalogs_resolve_shared_views(repo):
+    import gettext
+    for suffix in ('controlcenter','battery','wifi','notifications'):
+        name='org.kde.mac-tahoe-liquid-kde.'+suffix
+        path=repo/'src/offline/plasmoids'/name/'contents/locale/fr/LC_MESSAGES'/('plasma_applet_'+name+'.mo')
+        with path.open('rb') as stream: catalog=gettext.GNUTranslations(stream)
+        assert catalog.gettext('Nothing playing')=='Aucune lecture en cours'
+        assert catalog.gettext('Do Not Disturb')=='Ne pas déranger'
+        assert catalog.gettext('Edit Controls')=='Modifier les commandes'
+        assert catalog.gettext('Network')=='Réseau'

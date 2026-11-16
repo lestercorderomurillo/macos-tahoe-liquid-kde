@@ -1,7 +1,8 @@
 import sys,json,gi
 from pathlib import Path
 major=sys.argv[2] if len(sys.argv)>2 else '4'
-gi.require_version('Gtk',major+'.0')
+try: gi.require_version('Gtk',major+'.0')
+except ValueError: sys.exit(77)
 from gi.repository import Gtk,GLib
 sys.path.insert(0,str(Path(sys.argv[1])/'src/scripts'))
 from theme_accent import recolor

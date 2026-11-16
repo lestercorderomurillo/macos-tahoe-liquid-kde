@@ -1,7 +1,7 @@
 {
-  "version": "0.72.10",
-  "source_sha256": "4e10054de20769692558c40db546ff118f77acb8b4e860550bb99db8e0650ed1",
-  "scope": "Btrfs/zram startup disk, Control Center layout/hardware regressions and accent selection contrast. See .github/REGRESSIONS-0.72.10.md.",
+  "version": "0.72.11",
+  "source_sha256": "d78055ef475f6f91c02b981a4aae747edb43132a5c16c7ab2998a9f4e54dd580",
+  "scope": "Btrfs/zram startup disk, Control Center layout/hardware regressions and accent selection contrast. See .github/REGRESSIONS-0.72.10.md. Also preserve inherited defaults during reinstall, provide French controls and repair post-publication CI cases; see .github/REGRESSIONS-0.72.11.md.",
   "environment": "Disposable neon Plasma 6.8.1 / Qt 6.11.1 VM; isolated GTK 3/4 processes; focused Python regressions.",
   "checks": [
     {
@@ -32,30 +32,53 @@
       "command": "VM: normal installer privilege setup followed by gtk.install(), color_schemes.install(), plasmoids.install(); repeated for reinstall",
       "result": "passed",
       "detail": "Desktop user destinations verified, no installer errors; installed gray overrides old blue. Files PID 113175 persisted through light/dark/light."
+    },
+    {
+      "command": "pytest tests/test_kconf_update.py -q",
+      "result": "passed",
+      "detail": "12 passed"
+    },
+    {
+      "command": "pytest tests/test_multilanguage.py -k catalogs_cover; pytest tests/test_localization.py -k french",
+      "result": "passed",
+      "detail": "2 shared catalog cases and 1 four-domain French gettext case; msgfmt format checks passed"
+    },
+    {
+      "command": "VM: normal installer privilege setup; kconf_update.install() twice; restart plasma-plasmashell.service",
+      "result": "passed",
+      "detail": "Inherited defaults byte-identical after both phases"
+    },
+    {
+      "command": "VM: dbus-run-session -- xvfb-run -a python3 tests/desktop_controls_render.py <source> <capture>",
+      "result": "passed",
+      "detail": "Actual dynamic gap, input mask, X11 blur request, theme refresh and reopen"
     }
   ],
   "coverage_limits": [
     "Focused installer steps, not complete wizard qualification.",
     "One real Plasma VM; no fresh cross-distro desktop matrix or automatic schedule boundary.",
-    "Breeze reset not reproduced; French localization and independent icon appearance remain outside this repair.",
-    "Post-publication CI status is reported independently."
+    "Post-publication CI status is reported independently.",
+    "Independent icon appearance remains a feature request. French coverage is limited to the affected controls. Minimal SDKs without GTK 4 report that case skipped; primary GTK coverage remains required."
   ],
   "gallery_commit": "f09780b200b79302e7c23ef9f6f74d94748bbea3",
   "captures": [
     {
       "path": "src/screenshots/previews/gray-selection-light-18ec4d8e5203.png",
       "sha256": "18ec4d8e5203ffd3c22181cece8183915f7fb0934b90021d126408b47cb19287",
-      "reviewed": true
+      "reviewed": true,
+      "source_commit": "6ef284ccba1f6c57e86e0460ff55ca33408e5cad"
     },
     {
       "path": "src/screenshots/previews/gray-selection-dark-6dfcd1e32e10.png",
       "sha256": "6dfcd1e32e10f490cdf29c358f3a24e15ec4d79f315dd135d14e841af02d4858",
-      "reviewed": true
+      "reviewed": true,
+      "source_commit": "6ef284ccba1f6c57e86e0460ff55ca33408e5cad"
     },
     {
       "path": "src/screenshots/previews/control-center-regression-48ec11cd7e06.png",
       "sha256": "48ec11cd7e0639e7b154d9820a09b7e6c9fbcb8e294497459a97f41360ce49bc",
-      "reviewed": true
+      "reviewed": true,
+      "source_commit": "6ef284ccba1f6c57e86e0460ff55ca33408e5cad"
     }
   ]
 }
