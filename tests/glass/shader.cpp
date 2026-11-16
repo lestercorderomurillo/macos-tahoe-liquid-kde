@@ -141,7 +141,8 @@ int main(int argc, char **argv)
         require(partialEdges > 10, QStringLiteral("gradient lost antialiased edge coverage"));
         for (bool enabled : {false, true}) {
             require(!gradientEnabledForSurface(enabled, true, "plasmashell", "Dock"), QStringLiteral("Dock gradient enabled"));
-            require(!gradientEnabledForSurface(enabled, false, "plasmashell", "mttkde-control-center"), QStringLiteral("Control Center gradient enabled"));
+            for (const QString shell : {QStringLiteral("plasmashell"), QStringLiteral("org.kde.plasmashell")})
+                require(!gradientEnabledForSurface(enabled, false, shell, "mttkde-control-center"), QStringLiteral("Control Center gradient enabled"));
             require(gradientEnabledForSurface(enabled, false, "plasmashell", "Launcher") == enabled, QStringLiteral("Launcher gradient changed"));
             require(gradientEnabledForSurface(enabled, false, "application", "mttkde-control-center") == enabled, QStringLiteral("Unrelated application excluded"));
         }
