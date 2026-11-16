@@ -1,113 +1,31 @@
 {
-  "version": "0.72.13",
-  "source_sha256": "f9aeb2f9f14f09c76ad9c62f9d7999a8730c21c91a62b948c9be2fe42c0e3fa4",
-  "scope": "Original icon detail and glass contrast; remove Trash state from color tables. See .github/ICON-CONTRAST-0.72.13.md.",
+  "version": "0.72.14",
+  "source_sha256": "09a1e829fb3617af98685bc2d0405a8da228e485f6e578a1906dd7b713becbe8",
+  "scope": "Deterministic parameterized icon generation; same pixels, faster rendering. See .github/ICON-GENERATION-0.72.14.md.",
   "environment": "Disposable neon Plasma 6.8.1 / Qt 6.11.1 Wayland VM and focused real-artwork pixel regressions.",
   "checks": [
     {
-      "command": "pytest tests/test_icon_toolset.py -k \"glass or regular_dark\"",
+      "command": "pytest tests/test_icon_toolset.py tests/test_icons_step.py -q",
       "result": "passed",
-      "detail": "10 passed. Actual bundled Finder eye and Calendar letter detail exceed 3:1 at 64px across eight tints, both modes and light/dark backgrounds."
+      "detail": "47 passed; after cancellation and recipe coverage edits, 5 focused cases passed; separate worker failure cleanup case passed."
     },
     {
-      "command": "VM: normal installer privilege setup; steps.icons.install() twice with a displayed-artwork generation fixture; actual archive staging and installation destinations retained",
+      "command": "Same-fixture baseline/candidate installer_themes generation plus PNG SHA-256 comparison",
       "result": "passed",
-      "detail": "Four icon themes installed; repeat installation reused matching output. Apps, Settings, Finder and empty/full Trash artifacts present."
+      "detail": "536 PNGs identical; 13 artworks, 268 names; 3.84s to 0.97s (74.7% reduction). Repeat output identical."
     },
     {
-      "command": "VM: live light/dark Dock captures with empty/full Trash; visual review of each original frame",
+      "command": "Disposable Plasma VM: steps.icons.install() twice with displayed-artwork generation fixture",
       "result": "passed",
-      "detail": "Four actual Dock frames reviewed; original shaded logos retained while eyes, smile and Calendar text remain legible."
+      "detail": "Real archive staging and install destinations; normal privilege setup; repeat installation skips unchanged output."
     }
   ],
   "coverage_limits": [
-    "Focused displayed-icon fixture, not an exhaustive icon-library installation or complete wizard run.",
-    "Wayland VM; no fresh X11 desktop qualification. No native backend or ABI changed.",
-    "Contrast checks cover the specified original details, not accessibility certification of every glyph.",
-    "Remaining requested tint photographs follow as documentation delivery.",
-    "Full remote CI is tracked after publication."
+    "Benchmark covers the recorded 13-artwork fixture, not full-library or complete installer latency.",
+    "Focused VM icon lifecycle, not full wizard or fresh X11 qualification.",
+    "Original photographs retained; default rendered PNGs match v0.72.13.",
+    "Full remote CI tracked after publication."
   ],
   "gallery_commit": "f09780b200b79302e7c23ef9f6f74d94748bbea3",
-  "captures": [
-    {
-      "path": "src/screenshots/previews/tahoe-dark-dock-blue-full-aa71f8d0f147.webp",
-      "sha256": "aa71f8d0f147ac24c575b13b41a4ee3b5ea10b29e121a164881a3e8433907f08",
-      "reviewed": true,
-      "source_base_commit": "4f89cd1778a0bd0a17d945000687baf68ea9f609",
-      "source_overrides": {
-        "src/scripts/icon_materials.py": "aa76fe0bbb0f083bad3cd658752c855caf36855acfb2c3ae7ae0c9ae68592db3"
-      },
-      "appearance": {
-        "Window controls": "__aurorae__svg__MacTahoeLiquidKde-Dark",
-        "Plasma": "MacTahoeLiquidKde-Dark",
-        "Qt": "MacTahoeLiquidKdeDark",
-        "Kvantum": "mac-tahoe-liquid-kdeDark",
-        "GTK preference": "'prefer-dark'",
-        "GTK theme": "'MacTahoeLiquidKde-Dark'",
-        "GTK 4 stylesheet": "MacTahoeLiquidKde-Dark",
-        "Icons": "MacTahoeLiquidKde-Icons-Glass-Dark"
-      },
-      "trash": "full"
-    },
-    {
-      "path": "src/screenshots/previews/tahoe-dark-dock-blue-553b865ed08c.webp",
-      "sha256": "553b865ed08c57a95a9fee4d5cdf10a47eabdf532d9b3169d353abc3fb2d3f4b",
-      "reviewed": true,
-      "source_base_commit": "4f89cd1778a0bd0a17d945000687baf68ea9f609",
-      "source_overrides": {
-        "src/scripts/icon_materials.py": "aa76fe0bbb0f083bad3cd658752c855caf36855acfb2c3ae7ae0c9ae68592db3"
-      },
-      "appearance": {
-        "Window controls": "__aurorae__svg__MacTahoeLiquidKde-Dark",
-        "Plasma": "MacTahoeLiquidKde-Dark",
-        "Qt": "MacTahoeLiquidKdeDark",
-        "Kvantum": "mac-tahoe-liquid-kdeDark",
-        "GTK preference": "'prefer-dark'",
-        "GTK theme": "'MacTahoeLiquidKde-Dark'",
-        "GTK 4 stylesheet": "MacTahoeLiquidKde-Dark",
-        "Icons": "MacTahoeLiquidKde-Icons-Glass-Dark"
-      },
-      "trash": "empty"
-    },
-    {
-      "path": "src/screenshots/previews/tahoe-light-dock-blue-full-d285244b44a0.webp",
-      "sha256": "d285244b44a0a813b11916e14255c6670a48767edc5279184cb8d25be64f13f4",
-      "reviewed": true,
-      "source_base_commit": "4f89cd1778a0bd0a17d945000687baf68ea9f609",
-      "source_overrides": {
-        "src/scripts/icon_materials.py": "aa76fe0bbb0f083bad3cd658752c855caf36855acfb2c3ae7ae0c9ae68592db3"
-      },
-      "appearance": {
-        "Window controls": "__aurorae__svg__MacTahoeLiquidKde-Light",
-        "Plasma": "MacTahoeLiquidKde-Light",
-        "Qt": "MacTahoeLiquidKdeLight",
-        "Kvantum": "mac-tahoe-liquid-kde",
-        "GTK preference": "'prefer-light'",
-        "GTK theme": "'MacTahoeLiquidKde-Light'",
-        "GTK 4 stylesheet": "MacTahoeLiquidKde-Light",
-        "Icons": "MacTahoeLiquidKde-Icons-Glass-Light"
-      },
-      "trash": "full"
-    },
-    {
-      "path": "src/screenshots/previews/tahoe-light-dock-blue-c0a884127c13.webp",
-      "sha256": "c0a884127c13392116a7f78cbc7a9b2a00b048aef67d7c9ce5661f2122549dc5",
-      "reviewed": true,
-      "source_base_commit": "4f89cd1778a0bd0a17d945000687baf68ea9f609",
-      "source_overrides": {
-        "src/scripts/icon_materials.py": "aa76fe0bbb0f083bad3cd658752c855caf36855acfb2c3ae7ae0c9ae68592db3"
-      },
-      "appearance": {
-        "Window controls": "__aurorae__svg__MacTahoeLiquidKde-Light",
-        "Plasma": "MacTahoeLiquidKde-Light",
-        "Qt": "MacTahoeLiquidKdeLight",
-        "Kvantum": "mac-tahoe-liquid-kde",
-        "GTK preference": "'prefer-light'",
-        "GTK theme": "'MacTahoeLiquidKde-Light'",
-        "GTK 4 stylesheet": "MacTahoeLiquidKde-Light",
-        "Icons": "MacTahoeLiquidKde-Icons-Glass-Light"
-      },
-      "trash": "empty"
-    }
-  ]
+  "captures": []
 }

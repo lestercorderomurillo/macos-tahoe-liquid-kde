@@ -223,7 +223,7 @@ pin, archive checksum and evidence before committing or pushing a release tag;
 use fail-fast scripts or separate dependent commands. Never continue publication
 after a failed validation command. Policy-only edits need no new release.
 
-Dock icon qualification includes Apps, every pinned application, and both empty/full Trash. Use the bundled original artwork and its aliases; tint/material changes must not substitute newly invented symbols. Check application aliases separately from reserved menu symbols. Review facial details and lettering at actual Dock size over light and dark backgrounds. State examples such as full Trash do not belong in color tables.
+Dock icon qualification includes Apps, every pinned application, and both empty/full Trash. Use the bundled original artwork and its aliases; tint/material changes must not substitute newly invented symbols. Check application aliases separately from reserved menu symbols. Review facial details and lettering at actual Dock size over light and dark backgrounds. Generate icons deterministically from original artwork and explicit material parameters, never an image model. For performance-only changes, compare output hashes and benchmark the same fixture; reuse reviewed photographs when pixels are unchanged. State examples such as full Trash do not belong in color tables.
 
 ## Respect for the user's time
 

@@ -335,6 +335,34 @@ artwork, or changes the installed icon choice. Python 3.10+, Pillow,
 ./icon-toolset pack build/icons/full --output build/icons/full.tar.gz
 ```
 
+For the exact glass material used by the installer and Dock photographs, use
+`installer-build`. It transforms original SVG artwork with Pillow/librsvg;
+there is no image-generation model, random seed or downloaded artwork.
+
+```sh
+./icon-toolset installer-build --output build/icons/dock --tint '#007aff' \
+  --jobs 4 --icons system-file-manager firefox calendar user-trash user-trash-full
+# Optional material overrides, with all resolved values recorded in generation.json:
+printf '%s\n' '{"bevel_width":0.035,"rim_opacity":0.72,"sparse_gamma":2.2}' > /tmp/glass.json
+./icon-toolset installer-build --output build/icons/custom --tint '#ff7a18' \
+  --material /tmp/glass.json --jobs 4 --icons system-file-manager calendar
+```
+
+The immutable `GlassMaterial` recipe in `src/scripts/icon_materials.py` defines
+contrast, plate mixing, rim, bevel and shadow parameters. JSON accepts only those
+fields and validates their ranges. Omit `--icons` for the whole application set;
+partial builds are marked in their metadata. This command writes the two installer
+overlay directories, not the separate `build` command's distributable bundle.
+It does not install or switch desktop icons.
+
+Unique artwork renders concurrently (default four jobs, configurable from 1 to 32).
+Aliases reuse artwork; identical light/dark glass reuses PNG bytes. Small minimum
+filters replace expensive large kernels with pixel-identical results. Repeated
+runs and job counts produce identical files with the same source, recipe and
+Pillow/librsvg versions; metadata records those versions and generator hashes.
+Changing tint or optics requires only a focused build and comparison, not new
+artwork or a complete screenshot gallery.
+
 `--variants` accepts `light`, `dark`, `black`, `white`, `clear-light`,
 `clear-dark`, `tinted-light`, and `tinted-dark`. Light/Dark preserve colored
 application artwork and branded color tiles. Black/White use dark/light tiles

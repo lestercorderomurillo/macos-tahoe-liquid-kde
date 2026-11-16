@@ -7,6 +7,7 @@ from __future__ import annotations
 
 import argparse
 import gzip
+from dataclasses import asdict
 import json
 import re
 import shutil
@@ -15,6 +16,7 @@ import sys
 import tarfile
 import tempfile
 from collections.abc import Callable
+from concurrent.futures import ThreadPoolExecutor
 from time import monotonic
 from xml.etree.ElementTree import ParseError
 from pathlib import Path
@@ -22,7 +24,7 @@ from pathlib import Path
 import PIL
 from PIL import Image, ImageDraw
 
-from icon_materials import VARIANTS, prepare_source, render, render_installer
+from icon_materials import VARIANTS, DEFAULT_GLASS, GlassMaterial, prepare_source, render, render_installer
 from icon_sources import digest, inventory, unpack, validate_links
 from interface_icons import INTERFACE_ICONS
 
@@ -61,7 +63,9 @@ def installer_dark_sources() -> dict[str, Path]:
 
 
 def installer_themes(source: Path, output: Path, style: str, tint: str, *,
-                     progress: Callable[[int, int], None] | None = None) -> list[str]:
+                     progress: Callable[[int, int], None] | None = None,
+                     material: GlassMaterial = DEFAULT_GLASS,
+                     icons: list[str] | None = None, workers: int = 4) -> list[str]:
     """Build explicitly selected installer overlays in a fresh staging tree.
 
     The maintainer CLI still never changes installed themes or defaults.
@@ -70,6 +74,8 @@ def installer_themes(source: Path, output: Path, style: str, tint: str, *,
     from utils import check_cancelled
     if style not in ("regular", "glass"):
         raise ValueError("Unknown installer icon style")
+    if isinstance(workers, bool) or not isinstance(workers, int) or not 1 <= workers <= 32:
+        raise ValueError("Icon jobs must be between 1 and 32")
     rgb = color(tint)
     output = new_destination(output)
     output.mkdir()
@@ -104,39 +110,92 @@ def installer_themes(source: Path, output: Path, style: str, tint: str, *,
             path = source / BASE / "places/scalable" / (name + ".svg")
             if path.is_file():
                 entries[name] = path
-    seen = {}
+    if icons:
+        missing = set(icons) - entries.keys()
+        if missing:
+            raise ValueError("Unknown icon names: " + ", ".join(sorted(missing)))
+        entries = {name: entries[name] for name in sorted(set(icons))}
+    entries = [(path, digest(path)) for _, path in sorted(entries.items())]
+    unique = {}
+    for path, checksum in entries:
+        unique.setdefault(checksum, path)
+
+    def generate(path, checksum):
+        check_cancelled()
+        prepared = prepare_source(path, 512, clean_rim=style == "regular")
+        for name, mode in zip(names, ("light", "dark")):
+            if style == "glass" and mode == "dark":
+                # The glass material is mode-independent. Reuse exact PNG bytes.
+                shutil.copyfile(output / names[0] / "apps/256" / (path.stem + ".png"),
+                                output / name / "apps/256" / (path.stem + ".png"))
+                continue
+            if mode == "dark" and checksum in dark_sources:
+                from icon_materials import raster
+                result = raster(dark_sources[checksum], 512)
+            else:
+                result = render_installer(prepared, style, mode, rgb, material)
+            result.resize((256, 256), Image.Resampling.LANCZOS).save(
+                output / name / "apps/256" / (path.stem + ".png"))
+
     records = {}
     total = len(entries)
     last_report = monotonic()
     if progress:
         progress(0, total)
-    for completed, (_, path) in enumerate(sorted(entries.items()), 1):
-        check_cancelled()
-        checksum = digest(path)
-        if checksum in seen:
-            for name in names:
-                (output / name / "apps/256" / (path.stem + ".png")).symlink_to(seen[checksum] + ".png")
-        else:
-            prepared = prepare_source(path, 512, clean_rim=style == "regular")
-            for name, mode in zip(names, ("light", "dark")):
-                if mode == "dark" and checksum in dark_sources:
-                    from icon_materials import raster
-                    result = raster(dark_sources[checksum], 512)
-                else:
-                    result = render_installer(prepared, style, mode, rgb)
-                result.resize((256, 256), Image.Resampling.LANCZOS).save(
-                    output / name / "apps/256" / (path.stem + ".png"))
-            seen[checksum] = path.stem
-        records[path.name] = checksum
-        if progress and (completed == total or monotonic() - last_report >= 5):
-            progress(completed, total)
-            last_report = monotonic()
+    # Each artwork owns distinct output files. Ordered collection keeps aliases,
+    # progress and metadata independent of worker scheduling.
+    with ThreadPoolExecutor(max_workers=workers) as executor:
+        pending = {checksum: executor.submit(generate, path, checksum)
+                   for checksum, path in unique.items()}
+        try:
+            for completed, (path, checksum) in enumerate(entries, 1):
+                check_cancelled()
+                pending[checksum].result()
+                original = unique[checksum]
+                if path != original:
+                    for name in names:
+                        (output / name / "apps/256" / (path.stem + ".png")).symlink_to(original.stem + ".png")
+                records[path.name] = checksum
+                if progress and (completed == total or monotonic() - last_report >= 5):
+                    progress(completed, total)
+                    last_report = monotonic()
+        except BaseException:
+            for future in pending.values():
+                future.cancel()
+            raise
     if not records:
         raise ValueError("No application artwork found")
     for name in names:
         write_json(output / name / "generation.json", {"style": style, "tint": tint, "sources": records,
-            "dark_artwork": {path.name: digest(path) for path in dark_sources.values()}})
+            "dark_artwork": {path.name: digest(path) for path in dark_sources.values()},
+            "material": asdict(material) if style == "glass" else None, "partial": bool(icons),
+            "generator": {file: digest(Path(__file__).with_name(file)) for file in
+                          ("icon_toolset.py", "icon_materials.py")},
+            "renderer": {"pillow": PIL.__version__, "librsvg": subprocess.check_output(
+                ["rsvg-convert", "--version"], text=True).strip()}})
     return names
+
+
+def installer_build(args) -> None:
+    """Generate the exact installer material offline, without touching the desktop."""
+    material = DEFAULT_GLASS
+    if args.material:
+        values = json.loads(args.material.read_text())
+        if not isinstance(values, dict) or values.keys() - asdict(DEFAULT_GLASS).keys():
+            raise ValueError("Unknown glass material parameters")
+        material = GlassMaterial(**values)
+    output = new_destination(args.output)
+    with tempfile.TemporaryDirectory(prefix="icon-installer-", dir=output.parent) as temp:
+        temp = Path(temp)
+        unpack(args.source.resolve(), temp / "source")
+        from interface_icons import apply_interface_icons
+        apply_interface_icons(temp / "source")
+        installer_themes(temp / "source", temp / "generated", args.style, args.tint,
+                         material=material, icons=args.icons, workers=args.jobs)
+        if output.exists():
+            raise ValueError(f"Output appeared during build: {output}")
+        (temp / "generated").rename(output)
+    print(f"Generated installer material: {output}")
 
 
 def valid_icon_name(name: str) -> bool:
@@ -430,6 +489,14 @@ def main(argv=None) -> int:
     build_parser.add_argument("--tint", type=color, default=color("#6796d2"))
     build_parser.add_argument("--icons", nargs="+", help="Build only named icons for review; marks the bundle partial")
     build_parser.add_argument("--overrides", type=Path, help="JSON map of local glyph/icon artwork and notices")
+    installer_parser = commands.add_parser("installer-build", help="Generate the exact installer materials offline")
+    installer_parser.add_argument("--source", type=Path, default=ROOT / "src/offline/icons" / (BASE + ".tar.zst"))
+    installer_parser.add_argument("--output", type=Path, required=True)
+    installer_parser.add_argument("--style", choices=("regular", "glass"), default="glass")
+    installer_parser.add_argument("--tint", default="#007aff")
+    installer_parser.add_argument("--material", type=Path, help="JSON glass parameter overrides; values recorded in generation.json")
+    installer_parser.add_argument("--jobs", type=int, default=4, help="Concurrent unique artworks (1-32); output is schedule-independent")
+    installer_parser.add_argument("--icons", nargs="+", help="Only named icons; records partial generation")
     verify_parser = commands.add_parser("verify", help="Check hashes, aliases, themes and generated image sizes")
     verify_parser.add_argument("bundle", type=Path)
     preview_parser = commands.add_parser("preview", help="Render an artwork contact sheet on light/dark backdrops")
@@ -444,6 +511,8 @@ def main(argv=None) -> int:
     try:
         if args.command == "build":
             build(args)
+        elif args.command == "installer-build":
+            installer_build(args)
         elif args.command == "verify":
             manifest = verify(args.bundle)
             print(f"Verified {len(manifest['icons'])} icon names in {len(manifest['variants'])} appearances")

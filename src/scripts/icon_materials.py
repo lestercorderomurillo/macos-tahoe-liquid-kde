@@ -10,6 +10,8 @@ import re
 import subprocess
 import xml.etree.ElementTree as ET
 from collections import deque
+from dataclasses import dataclass, asdict
+import math
 from pathlib import Path
 
 from PIL import Image, ImageChops, ImageDraw, ImageFilter, ImageOps
@@ -17,6 +19,44 @@ from PIL import Image, ImageChops, ImageDraw, ImageFilter, ImageOps
 
 VARIANTS = ("light", "dark", "black", "white", "clear-light", "clear-dark",
             "tinted-light", "tinted-dark")
+
+
+@dataclass(frozen=True)
+class GlassMaterial:
+    """Versioned by generator source hash; defaults preserve the reviewed material."""
+    shadow_tint: float = .08
+    relief_tint: float = .8
+    sparse_fraction: float = .08
+    sparse_gamma: float = 2.2
+    ink_blackpoint: int = 64
+    plate_neutral: float = .12
+    rim_width: float = .012
+    rim_opacity: float = .72
+    relief_shadow_opacity: float = .42
+    bevel_width: float = .035
+    shadow_opacity: float = .24
+
+    def __post_init__(self):
+        for name, value in asdict(self).items():
+            maximum = 8 if name == "sparse_gamma" else 163 if name == "ink_blackpoint" else 1
+            if isinstance(value, bool) or not isinstance(value, (int, float)) or not math.isfinite(value) or not 0 <= value <= maximum:
+                raise ValueError(f"Invalid glass material parameter: {name}")
+        if not isinstance(self.ink_blackpoint, int) or self.sparse_gamma == 0:
+            raise ValueError("Invalid glass ink curve")
+
+
+DEFAULT_GLASS = GlassMaterial()
+
+
+def minimum_filter(image: Image.Image, width: int) -> Image.Image:
+    """Exact square erosion via small kernels; identical edge extension to Pillow.
+
+    Repeating a 3x3 minimum n times equals a (2n+1)x(2n+1) minimum,
+    without Pillow's expensive large-window rank selection.
+    """
+    for _ in range(width // 2):
+        image = image.filter(ImageFilter.MinFilter(3))
+    return image
 
 
 def svg_input(data: bytes) -> tuple[bytes, int]:
@@ -138,7 +178,7 @@ def prepare_source(source: Path, size: int, glyph: bool = False, *, clean_rim: b
             if clean_rim and central < 8:
                 plate_alpha = plate_probe.getchannel("A")
                 edge_band = ImageChops.subtract(plate_alpha.filter(ImageFilter.MaxFilter(3)),
-                                               plate_alpha.filter(ImageFilter.MinFilter(7)))
+                                               minimum_filter(plate_alpha, 7))
                 edge_alpha = ImageChops.multiply(alpha, edge_band)
                 weight = sum(value * count for value, count in enumerate(alpha.histogram()))
                 edge_weight = sum(value * count for value, count in enumerate(edge_alpha.histogram()))
@@ -166,7 +206,7 @@ def prepare_source(source: Path, size: int, glyph: bool = False, *, clean_rim: b
     # Split-color tiles can express a white logo through the base layer itself.
     # Their colored edge panels are part of the background, not removable rims.
     plate_alpha = plate_probe.getchannel("A")
-    inset_alpha = plate_alpha.filter(ImageFilter.MinFilter(13))
+    inset_alpha = minimum_filter(plate_alpha, 13)
     edge_pixels = [p for p, outer, inner in zip(
         image.resize((64, 64), Image.Resampling.LANCZOS).getdata(),
         plate_alpha.getdata(), inset_alpha.getdata()) if outer > 230 and inner < 128]
@@ -378,7 +418,8 @@ def dark_foreground(artwork: Image.Image) -> Image.Image:
     return Image.composite(lifted, artwork, mask)
 
 
-def render_installer(prepared: tuple, style: str, mode: str, tint: tuple[int, int, int]) -> Image.Image:
+def render_installer(prepared: tuple, style: str, mode: str, tint: tuple[int, int, int],
+                     material: GlassMaterial = DEFAULT_GLASS) -> Image.Image:
     """Use the wizard's approved materials for both previews and installed icons.
 
     Preserve the original foreground in regular icons. Glass uses that same
@@ -412,22 +453,22 @@ def render_installer(prepared: tuple, style: str, mode: str, tint: tuple[int, in
     # Keep the source's full tonal range. A preliminary silver colorization
     # lifted black details into the tint's midtones, hiding Finder's eyes and
     # calendar lettering against the glass plate.
-    shadow = tuple(round(c*.08) for c in tint)
-    middle = tuple(round(c*.8+255*.2) for c in tint)
+    shadow = tuple(round(c*material.shadow_tint) for c in tint)
+    middle = tuple(round(c*material.relief_tint+255*round(1-material.relief_tint, 12)) for c in tint)
     relief = ImageOps.colorize(gray, black=shadow, white=(248, 252, 255),
                               mid=middle, midpoint=164).convert("RGBA")
     # Sparse foregrounds (such as Calendar lettering) need darker ink;
     # applying that curve to broad shaded logos would crush their depth.
-    if sum(artwork.getchannel("A").histogram()[128:]) < size * size * .08:
-        ink = gray.point(lambda value: round(255 * (value / 255) ** 2.2))
+    if sum(artwork.getchannel("A").histogram()[128:]) < size * size * material.sparse_fraction:
+        ink = gray.point(lambda value: round(255 * (value / 255) ** material.sparse_gamma))
         relief = ImageOps.colorize(ink, black=shadow, white=(248, 252, 255),
-                                  mid=middle, blackpoint=64, midpoint=164).convert("RGBA")
+                                  mid=middle, blackpoint=material.ink_blackpoint, midpoint=164).convert("RGBA")
     relief.putalpha(artwork.getchannel("A"))
     ramp = Image.linear_gradient("L").resize((size*2, size*2)).rotate(-35)
     ramp = ramp.crop((size//2, size//2, size//2+size, size//2+size))
     # Keep dark source details readable over dark wallpaper too. The middle
     # of the plate needs a little neutral light and a stable opacity floor.
-    lit_tint = tuple(round(c*.88 + 255*.12) for c in tint)
+    lit_tint = tuple(round(c*round(1-material.plate_neutral, 12) + 255*material.plate_neutral) for c in tint)
     stops = [(0, (255, 255, 255, 171)), (107, (*lit_tint, 200)),
              (196, (*tint, 211)), (255, (255, 255, 255, 156))]
     colors = []
@@ -437,21 +478,21 @@ def render_installer(prepared: tuple, style: str, mode: str, tint: tuple[int, in
         colors.append(tuple(round(a+(b-a)*t) for a,b in zip(left[1], right[1])))
     plate = Image.merge("RGBA", [ramp.point([c[channel] for c in colors]) for channel in range(4)])
     plate.putalpha(ImageChops.multiply(plate.getchannel("A"), shape))
-    inset = shape.filter(ImageFilter.MinFilter(max(3, (round(size*.012)//2)*2+1)))
+    inset = minimum_filter(shape, max(3, (round(size*material.rim_width)//2)*2+1))
     rim = ImageChops.subtract(shape, inset).filter(ImageFilter.GaussianBlur(size*.002))
-    edge = Image.new("RGBA", image.size, "white"); edge.putalpha(rim.point(lambda v: round(v*.72)))
+    edge = Image.new("RGBA", image.size, "white"); edge.putalpha(rim.point(lambda v: round(v*material.rim_opacity)))
     # A restrained relief shadow separates pale glyphs from bright tints.
     # Its mask comes only from the original artwork, never a replacement glyph.
     relief_shadow = Image.new("RGBA", image.size, (12, 18, 28))
     relief_shadow.putalpha(ImageChops.offset(artwork.getchannel("A"), 0, round(size*.008)).filter(
-        ImageFilter.GaussianBlur(size*.004)).point(lambda value: round(value*.42)))
+        ImageFilter.GaussianBlur(size*.004)).point(lambda value: round(value*material.relief_shadow_opacity)))
     result = Image.alpha_composite(Image.alpha_composite(plate, relief_shadow), relief)
-    bevel_width = max(3, (round(size*.035)//2)*2+1)
-    bevel = ImageChops.subtract(shape, shape.filter(ImageFilter.MinFilter(bevel_width)))
+    bevel_width = max(3, (round(size*material.bevel_width)//2)*2+1)
+    bevel = ImageChops.subtract(shape, minimum_filter(shape, bevel_width))
     shine = gradient(size, (255, 255, 255, 220), (195, 225, 255, 90))
     shine.putalpha(ImageChops.multiply(shine.getchannel("A"), bevel))
     result = Image.alpha_composite(Image.alpha_composite(result, shine), edge)
     shadow = Image.new("RGBA", image.size, (20, 35, 60))
     shadow.putalpha(ImageChops.offset(shape, 0, round(size*.025)).filter(
-        ImageFilter.GaussianBlur(size*.025)).point(lambda value: round(value*.24)))
+        ImageFilter.GaussianBlur(size*.025)).point(lambda value: round(value*material.shadow_opacity)))
     return Image.alpha_composite(shadow, result)

@@ -458,3 +458,66 @@ def test_glass_finder_eyes_and_calendar_text_remain_legible_on_both_wallpapers(t
                 calendar = images['calendar']
                 assert median(contrast(calendar.getpixel(pt), calendar.getpixel((12, 17)))
                               for pt in letters) >= 3, (tint, mode, background, 'letters')
+
+
+def test_small_kernel_erosion_is_pixel_identical():
+    from PIL import ImageFilter, ImageChops
+    from icon_materials import minimum_filter
+    image = Image.frombytes('L', (37, 29), bytes((i * 53 + i // 37 * 17) % 256 for i in range(37 * 29)))
+    for width in (3, 7, 19):
+        assert ImageChops.difference(minimum_filter(image, width),
+                                    image.filter(ImageFilter.MinFilter(width))).getbbox() is None
+
+
+def test_installer_recipe_is_reproducible_and_parameters_change_pixels(source, tmp_path, monkeypatch):
+    import icon_toolset
+    from icon_sources import inventory
+    staging = tmp_path / 'recipe-source'
+    unpack(source, staging)
+    (staging / BASE / 'apps/scalable/second.svg').write_bytes(ARTWORK.replace(b'#f05020', b'#20a060'))
+    archive = tmp_path / 'recipe.tar.gz'
+    with tarfile.open(archive, 'w:gz') as tar:
+        for child in sorted(staging.iterdir()):
+            tar.add(child, arcname=child.name)
+    source = archive
+    calls = []
+    original = icon_toolset.render_installer
+    def counted(*args, **kwargs):
+        calls.append(args[2])
+        return original(*args, **kwargs)
+    monkeypatch.setattr(icon_toolset, 'render_installer', counted)
+    recipe = tmp_path / 'material.json'
+    recipe.write_text('{"rim_opacity": 0.5, "bevel_width": 0.02}')
+    outputs = [tmp_path / name for name in ('first', 'repeat', 'default')]
+    for output in outputs:
+        args = ['installer-build', '--source', str(source), '--output', str(output),
+                '--tint', '#ff7a18', '--jobs', '1' if output == outputs[0] else '4',
+                '--icons', 'demo', 'org.example.Demo', 'second']
+        if output != outputs[-1]:
+            args += ['--material', str(recipe)]
+        assert main(args) == 0
+    assert calls == ['light'] * 6  # aliases and identical dark glass do not re-render
+    assert inventory(outputs[0]) == inventory(outputs[1])
+    theme = BASE + '-Glass-Light'
+    icon = Path(theme) / 'apps/256/demo.png'
+    assert (outputs[0] / icon).read_bytes() != (outputs[-1] / icon).read_bytes()
+    assert (outputs[0] / icon).read_bytes() == (outputs[0] / (BASE + '-Glass-Dark') / 'apps/256/demo.png').read_bytes()
+    metadata = json.loads((outputs[0] / theme / 'generation.json').read_text())
+    assert metadata['partial'] and metadata['material']['rim_opacity'] == .5
+    assert metadata['renderer']['pillow'] and metadata['generator']['icon_materials.py']
+    for invalid in ('{"unknown": 1}', '{"sparse_gamma": 0}', '{"rim_opacity": NaN}', '{"ink_blackpoint": 2.5}'):
+        recipe.write_text(invalid)
+        output = tmp_path / 'invalid'
+        assert main(['installer-build', '--source', str(source), '--output', str(output), '--material', str(recipe)]) == 1
+        assert not output.exists()
+
+
+def test_installer_worker_failure_never_publishes_partial_output(source, tmp_path, monkeypatch):
+    import icon_toolset
+    def fail(*args, **kwargs):
+        raise ValueError("render failed")
+    monkeypatch.setattr(icon_toolset, 'render_installer', fail)
+    output = tmp_path / 'failed'
+    assert main(['installer-build', '--source', str(source), '--output', str(output)]) == 1
+    assert not output.exists()
+    assert not list(tmp_path.glob('icon-installer-*'))
