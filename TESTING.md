@@ -1,7 +1,7 @@
 # Installer testing
 
 Tahoe **v0.72.13** improves original glass icon detail and contrast. Focused real-artwork regressions and disposable-VM icon install/reinstall passed; [scope, references and limits](.github/ICON-CONTRAST-0.72.13.md). Full CI runs after publication.
-See [validation and coverage limits](release-evidence.json) and the [reviewed tint captures](src/screenshots/previews/tahoe-tint-gallery-provenance.json). Existing gallery photographs retain their original reviewed [provenance](src/screenshots/release-capture.json).
+See [validation and coverage limits](release-evidence.json) and the [reviewed tint captures](src/screenshots/previews/tahoe-icon-contrast-provenance.json). Existing gallery photographs retain their original reviewed [provenance](src/screenshots/release-capture.json).
 
 ## Installation steps
 

@@ -28,3 +28,10 @@ Dock applications, Apps and both Trash states while retaining the real installer
 archive staging, installation destinations and repeat-install behavior. Main
 README color tables contain eight colors only; Trash states remain test evidence.
 Full remote CI follows publication.
+
+Reviewed 22 focused Dock photographs: eight light tints per edition and blue
+light/dark with empty/full Trash. Each edition uses its own wallpaper and
+controls. [Capture provenance](../src/screenshots/previews/tahoe-icon-contrast-provenance.json)
+records the archive, renderer override, original artwork hashes and image hashes.
+The original artwork checks passed for all eight generated tints and both modes.
+Golden Gate pin/archive validation and focused wrapper checks: 45 passed.
