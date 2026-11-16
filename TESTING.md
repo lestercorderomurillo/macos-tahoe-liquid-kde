@@ -1,7 +1,7 @@
 # Installer testing
 
-Tahoe **v0.72.12** repairs glass Trash and Dock application aliases while preserving original artwork and menu symbols. Focused checks and disposable-VM component install/reinstall passed; [scope and limits](.github/DOCK-TINTS-0.72.12.md). Full CI runs after publication.
-See [validation and coverage limits](release-evidence.json). Existing gallery photographs retain their original reviewed [provenance](src/screenshots/release-capture.json).
+Tahoe **v0.72.12** repairs glass Trash and Dock application aliases while preserving original artwork and menu symbols. Focused checks and disposable-VM component install/reinstall passed; [scope and limits](.github/DOCK-TINTS-0.72.12.md). [Full CI passed](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/actions/runs/43945881151).
+See [validation and coverage limits](release-evidence.json) and the [reviewed tint captures](src/screenshots/previews/tahoe-tint-gallery-provenance.json). Existing gallery photographs retain their original reviewed [provenance](src/screenshots/release-capture.json).
 
 ## Installation steps
 
