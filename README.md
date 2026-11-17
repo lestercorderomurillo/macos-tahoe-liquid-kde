@@ -6,6 +6,15 @@
 <h1 align="center">macOS Tahoe for KDE Plasma</h1>
 
 <p align="center">
+  <a href="README.md" lang="en" hreflang="en" aria-current="page">🇺🇸 English</a> ·
+  <a href="README.es.md" lang="es" hreflang="es">🇪🇸 Español</a> ·
+  <a href="README.zh-CN.md" lang="zh-CN" hreflang="zh-CN">🇨🇳 简体中文</a> ·
+  <a href="README.pt-BR.md" lang="pt-BR" hreflang="pt-BR">🇧🇷 Português (Brasil)</a> ·
+  <a href="README.de.md" lang="de" hreflang="de">🇩🇪 Deutsch</a> ·
+  <a href="README.fr.md" lang="fr" hreflang="fr">🇫🇷 Français</a>
+</p>
+
+<p align="center">
   <a href="https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/releases"><img src="https://img.shields.io/github/v/release/lestercorderomurillo/macos-tahoe-liquid-kde?label=release&amp;color=blue" alt="release"></a>
   <a href="https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/actions/workflows/test.yml"><img src="https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/actions/workflows/test.yml/badge.svg?branch=dev" alt="tests"></a>
   <a href="https://kde.org/plasma-desktop/"><img src="https://img.shields.io/badge/Plasma-6.6%2B-1d99f3?logo=kde" alt="plasma"></a>
@@ -273,7 +282,7 @@ A matching look from startup to shutdown, with built-in unlocking for LUKS2-encr
 
 ![Features](https://img.shields.io/badge/features-6B4B8A?style=for-the-badge&logo=github&logoColor=white)
 
-- **Languages:** English, Spanish, Simplified Chinese, Brazilian Portuguese and German installer; translated Plasma widgets.
+- **Languages:** English, Spanish, Simplified Chinese, Brazilian Portuguese, German and French installer; translated Plasma widgets.
 - **Installer:** graphical component selection, bundled theme assets and update support.
 - **Distributions:** dependency installation for Arch-based, Fedora-based, openSUSE, Debian and KDE neon systems.
 - **Scheduling:** automatic theme switching and OLED care through systemd user timers or cron on OpenRC.
@@ -314,7 +323,7 @@ To free disk space while keeping your Git checkout and local work:
 | 🇨🇳 Simplified Chinese | ![Available](https://img.shields.io/badge/Available-1A7F37) |
 | 🇧🇷 Brazilian Portuguese | ![Available](https://img.shields.io/badge/Available-1A7F37) |
 | 🇩🇪 German | ![Available](https://img.shields.io/badge/Available-1A7F37) |
-| 🇫🇷 French | ![Planned](https://img.shields.io/badge/Planned-D4A017) |
+| 🇫🇷 French | ![Available](https://img.shields.io/badge/Available-1A7F37) |
 | 🇮🇹 Italian | ![Planned](https://img.shields.io/badge/Planned-D4A017) |
 | 🇯🇵 Japanese | ![Planned](https://img.shields.io/badge/Planned-D4A017) |
 | 🇰🇷 Korean | ![Planned](https://img.shields.io/badge/Planned-D4A017) |

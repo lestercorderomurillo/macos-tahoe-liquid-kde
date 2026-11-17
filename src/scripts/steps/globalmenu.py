@@ -27,7 +27,7 @@ _SO_RELPATH = "plasma/applets/org.kde.mac.tahoe.liquid.globalmenu.so"
 _QML_RELPATH = "plasma/applet/org/kde/mac/tahoe/liquid/globalmenu"
 _GLASS_QML_RELPATH = "org/kde/mac/tahoe/launcher"
 TRANSLATION_DOMAIN = "plasma_applet_org.kde.mac.tahoe.liquid.globalmenu.mo"
-TRANSLATION_LANGUAGES = ("es", "zh_CN", "pt_BR", "de")
+TRANSLATION_LANGUAGES = ("es", "zh_CN", "pt_BR", "de", "fr")
 GTK_ENV_MARKER = "# Managed by mac-tahoe-liquid-kde: GTK appmenu lifetime\n"
 GTK_ENV_TEMPLATE = offline("plasma-env/mac-tahoe-gtk-appmenu.sh.in")
 

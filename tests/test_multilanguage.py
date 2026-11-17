@@ -19,14 +19,15 @@ from localization_bundle import standalone_source
 import log
 
 
-LANGUAGES = ("pt_BR", "de")
+LANGUAGES = ("pt_BR", "de", "fr")
 
 
 @pytest.mark.parametrize(("value", "expected"), [
     ("pt-BR.UTF-8", "pt_BR"), ("pt", "pt_BR"),
     ("pt_PT.UTF-8", "en"), ("de_DE.UTF-8", "de"),
     ("de_AT@euro", "de"), ("de_CH", "de"),
-    ("debug", "en"), ("esperanto", "en"),
+    ("fr_FR.UTF-8", "fr"), ("fr-CA", "fr"), ("fr_BE@euro", "fr"),
+    ("french", "en"), ("debug", "en"), ("esperanto", "en"),
 ])
 def test_locale_aliases_are_exact(value, expected):
     assert localization.normalize_language(value) == expected
@@ -123,7 +124,7 @@ def test_installed_helpers_translate_without_repository_or_pythonpath(
     result = subprocess.run([sys.executable, "-I", str(installed)], cwd=sandbox,
                             env=env, capture_output=True, text=True)
     assert result.returncode == 1
-    assert result.stderr.startswith("Uso:" if language == "pt_BR" else "Aufruf:")
+    assert result.stderr.startswith({"pt_BR": "Uso:", "de": "Aufruf:", "fr": "Utilisation :"}[language])
     assert "Traceback" not in result.stderr
 
 
