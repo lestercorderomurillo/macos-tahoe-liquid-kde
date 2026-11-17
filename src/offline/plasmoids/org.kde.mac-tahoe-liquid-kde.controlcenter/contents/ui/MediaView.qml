@@ -17,7 +17,7 @@ ColumnLayout {
         Kirigami.Icon { anchors.centerIn: parent; width: 24; height: 24; source: Style.symbol("audio-x-generic"); visible: view.hasTrack && cover.status !== Image.Ready }
         Image { id: cover; anchors.fill: parent; source: view.hasTrack ? view.player.artUrl : ""; fillMode: Image.PreserveAspectCrop }
     }
-    ControlLabel { Layout.fillWidth: true; Layout.minimumWidth: 0; objectName: "trackTitle"; text: view.hasTrack ? view.player.track : i18n("Nothing playing"); elide: Text.ElideRight }
+    ControlLabel { Layout.fillWidth: true; Layout.minimumWidth: 0; objectName: "trackTitle"; wrapMode: Text.Wrap; maximumLineCount: 2; text: view.hasTrack ? view.player.track : i18n("Nothing playing"); elide: Text.ElideRight }
     ControlLabel { Layout.fillWidth: true; visible: view.hasTrack && text.length > 0; font.pixelSize: Style.caption; opacity: 0.7; text: view.player ? view.player.artist : ""; elide: Text.ElideRight }
     RowLayout {
         Layout.fillWidth: true
