@@ -1,6 +1,6 @@
 # Installer testing
 
-Tahoe **v0.72.15** recolors original icon layers without adding contours or replacing artwork. Focused geometry, contrast and alias checks passed; red/blue light/dark Dock captures were reviewed in a disposable Plasma VM. [Evidence and coverage limits](.github/ICON-LAYERS-0.72.15.md). Full remote CI runs asynchronously.
+Tahoe **v0.72.16** preserves custom GTK files during uninstall, tolerates corrupt clipboard shortcut state and reports failed history deletion. Focused regressions and paired component install/reinstall/uninstall checks passed in a disposable Plasma VM. [Evidence and coverage limits](.github/LIFECYCLE-AUDIT-0.72.16.md). Full remote CI runs asynchronously.
 
 See [reviewed Dock captures](src/screenshots/previews/tahoe-icon-layers-provenance.json). Installer photographs retain their original [provenance](src/screenshots/release-capture.json).
 

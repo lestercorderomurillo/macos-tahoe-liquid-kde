@@ -1,5 +1,5 @@
 from localization import tr
-import shutil
+import os
 import subprocess
 import tempfile
 from pathlib import Path
@@ -92,20 +92,13 @@ def install() -> None:
 
 
 def uninstall() -> None:
+    # Compare overrides before removing their installed reference sources.
+    _remove_owned_gtk4_overrides()
     n = 0
     for v in VARIANTS:
         remove_tree(DEST_DIR / (v + "-ReducedTransparency"))
         if remove_tree(DEST_DIR / v, tr('{v} removed', v=v)):
             n += 1
-
-    # Wipe ~/.config/gtk-4.0/* — kde-gtk-config regenerates its own files on
-    # the next theme change; ours mixed with KDE's output causes split state.
-    for sub in GTK4_DIRS_TO_REMOVE:
-        shutil.rmtree(GTK4_DEST / sub, ignore_errors=True)
-    for fn in GTK4_FILES_TO_REMOVE:
-        try: (GTK4_DEST / fn).unlink()
-        except FileNotFoundError: pass
-        except OSError: pass
 
     qdbus_call("org.kde.GtkConfig", "/GtkConfig",
                "org.kde.GtkConfig.setGtkTheme", "Breeze")
@@ -121,3 +114,70 @@ def uninstall() -> None:
                      check=False,
                      stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
     info(tr('{n} GTK themes removed', n=n))
+
+
+def _remove_owned_gtk4_overrides() -> None:
+    """Remove unchanged project copies, preserving KDE/user CSS and assets."""
+    from theme_switch import GTK4_ADAPTIVE_CSS, gtk4_legacy_adaptive_css
+
+    if GTK4_DEST.is_symlink() or not GTK4_DEST.is_dir():
+        return
+    sources = [DEST_DIR / (variant + suffix) / "gtk-4.0"
+               for variant in VARIANTS for suffix in ("", "-ReducedTransparency")]
+
+    def contents(path):
+        if path.is_symlink() or not path.is_file():
+            return None
+        return path.read_bytes()
+
+    def reference(source, relative):
+        path = source / relative
+        # copytree dereferences bundled aliases. Compare those copies too,
+        # but never use an external symlink target as ownership evidence.
+        if path.resolve().is_relative_to(source.resolve()) and path.is_file():
+            return path.read_bytes()
+        return None
+
+    sheets = {GTK4_ADAPTIVE_CSS.strip().encode()}
+    for source in sources:
+        for path in source.glob("*.css"):
+            data = contents(path)
+            if data is not None:
+                sheets.add(data.strip())
+                if path.name == "gtk-Light.css":
+                    for mode in ("light", "dark"):
+                        sheets.add(gtk4_legacy_adaptive_css(data.decode("utf-8"), mode).strip().encode())
+
+    owned = set()
+    for name in GTK4_FILES_TO_REMOVE:
+        path = GTK4_DEST / name
+        data = contents(path)
+        if data is not None:
+            text = data.strip()
+            if name == "gtk.css":
+                text = text.removesuffix(b"@import 'colors.css';").rstrip()
+            if text in sheets:
+                owned.add(path)
+    # A familiar basename alone does not prove ownership of an external link.
+    targets = owned | {p.relative_to(GTK4_DEST) for p in owned}
+    for name in GTK4_FILES_TO_REMOVE:
+        path = GTK4_DEST / name
+        if path.is_symlink() and path.readlink() in targets:
+            path.unlink()
+    for path in owned:
+        path.unlink()
+
+    for sub in GTK4_DIRS_TO_REMOVE:
+        directory = GTK4_DEST / sub
+        if directory.is_symlink() or not directory.is_dir():
+            continue
+        for root, _, files in os.walk(directory, topdown=False, followlinks=False):
+            for name in files:
+                path = Path(root) / name
+                data = contents(path)
+                if data is not None and any(reference(source, path.relative_to(GTK4_DEST)) == data
+                                            for source in sources):
+                    path.unlink()
+            # Remove empty project directories only; never traverse symlinks.
+            if not any(Path(root).iterdir()):
+                Path(root).rmdir()

@@ -1,68 +1,41 @@
 {
-  "version": "0.72.15",
-  "source_sha256": "ab9afd5a478a2f2b67a9dbe641c46faebad9ddf25d0ff5fef17726a4b889db6e",
-  "scope": "Repaint original icon layers in all appearances without adding geometry or alternate artwork; distinct light/dark tints. See .github/ICON-LAYERS-0.72.15.md.",
-  "environment": "Focused Python/Pillow/librsvg rendering tests and disposable neon Plasma 6.8.1 / Qt 6.11.1 Wayland VM.",
+  "version": "0.72.16",
+  "source_sha256": "10f6d96540195015669b932dc0212fbb7e0b266ddd04e682073c2858bfa213da",
+  "scope": "Three nonvisual uninstall fixes: preserve custom GTK files, validate saved clipboard shortcut state, report history deletion failure. See .github/LIFECYCLE-AUDIT-0.72.16.md.",
+  "environment": "KDE neon disposable Plasma 6.8.1 / Qt 6.11.1 Wayland VM; focused local Python regressions.",
   "checks": [
     {
-      "command": "pytest tests/test_icon_toolset.py -q; affected follow-up selectors recorded in .github/ICON-LAYERS-0.72.15.md",
+      "command": "python3 -m pytest tests/test_gtk_uninstall.py -q --tb=short",
       "result": "passed",
-      "detail": "46 component cases passed initially; all observed failures repaired and affected recipe, alias, contrast and geometry cases passed on the final relevant implementation."
+      "detail": "8 cases; original code failed all five initial data-preservation cases."
     },
     {
-      "command": "layer-proof-guest.py in disposable Plasma VM",
+      "command": "python3 -m pytest tests/test_clipboard_step.py -q --tb=short",
       "result": "passed",
-      "detail": "13 original artworks preserve geometry across six modes; all 536 PNGs per tint reproduce reviewed captures exactly."
+      "detail": "22 cases; original code failed five new corruption/deletion-error cases."
     },
     {
-      "command": "layer-capture-guest.py; review of twelve Dock frames",
+      "command": "pytest tests/test_gtk_upgrade.py tests/test_window_shadows.py::test_reinstall_rebuilds_shadows_for_both_modes_and_uninstall_removes_them tests/test_vm_qualification.py::test_gtk_bridge_is_loaded_after_theme_files_are_installed",
       "result": "passed",
-      "detail": "Both editions, red/blue light/dark, pinned applications and Apps, empty/full Trash; source identities in capture manifests."
+      "detail": "6 direct caller/install regressions. Evidence reused for unchanged install paths."
     },
     {
-      "command": "Verify generated installer icon sample manifest hashes",
+      "command": "tests/vm/uninstall_safety.py --output <guest-output>; held installer_lock concurrent backend probe",
       "result": "passed",
-      "detail": "80 preview hashes valid; unchanged samples reused."
+      "detail": "Both edition defaults: selected GTK/clipboard install/reinstall and actual component cleanup; permission failure/retry and invalid state; concurrent uninstall refused. Exact source hashes in .github/LIFECYCLE-AUDIT-0.72.16.json."
+    },
+    {
+      "command": "python3 src/scripts/component_manifest.py; git diff --check",
+      "result": "passed",
+      "detail": "GTK and clipboard recipes/component hashes updated; no rendering changes."
     }
   ],
   "coverage_limits": [
-    "Displayed Dock artwork and aliases; no complete installer lifecycle, new X11 session or automatic scheduler boundary test.",
-    "Final source reproduces every captured tinted PNG byte for byte.",
-    "Static recoloring of original layers; not live macOS refraction or a pixel-perfect reproduction.",
-    "Live captures cover tinted modes. Default and clear have renderer checks, not new live desktop captures.",
-    "Full new remote CI remains asynchronous."
+    "Selected component lifecycle only, not a full desktop reinstall/uninstall or reboot.",
+    "VM uses the existing neon reference snapshot in a new private overlay; no new distro/SDK/X11 or rendered appearance qualification.",
+    "Full remote matrix runs asynchronously.",
+    "Unknown or customized GTK files are retained when ownership cannot be established."
   ],
   "gallery_commit": "f09780b200b79302e7c23ef9f6f74d94748bbea3",
-  "captures": [
-    {
-      "path": "src/screenshots/previews/tahoe-dark-dock-blue-full-layers-7786da01ab34.webp",
-      "sha256": "7786da01ab34d272a8c0b9b69db2f7418ceec9c935c329e6bf034384444a40f3",
-      "reviewed": true
-    },
-    {
-      "path": "src/screenshots/previews/tahoe-dark-dock-blue-layers-993ec56b695b.webp",
-      "sha256": "993ec56b695beed54c27e187f618debdf25d0c5f3e5304f063243e07632f64c2",
-      "reviewed": true
-    },
-    {
-      "path": "src/screenshots/previews/tahoe-dark-dock-red-layers-1179b9a45b42.webp",
-      "sha256": "1179b9a45b42a776c4bc3aca137599593a0c18462ada9b76038e67ab4201432d",
-      "reviewed": true
-    },
-    {
-      "path": "src/screenshots/previews/tahoe-light-dock-blue-full-layers-fb432241ebf0.webp",
-      "sha256": "fb432241ebf03ac0639d9b9c4bc99c3f760bbca1a48713f790387b5cca66dae2",
-      "reviewed": true
-    },
-    {
-      "path": "src/screenshots/previews/tahoe-light-dock-blue-layers-876689c40e66.webp",
-      "sha256": "876689c40e663931f45703ed9595daff025265a183b46dc09aca2f5698c471a7",
-      "reviewed": true
-    },
-    {
-      "path": "src/screenshots/previews/tahoe-light-dock-red-layers-89f98a764f85.webp",
-      "sha256": "89f98a764f85a8f63a0237cd3551fc48774c7d405d7756a0f9b57acaf42afe76",
-      "reviewed": true
-    }
-  ]
+  "captures": []
 }

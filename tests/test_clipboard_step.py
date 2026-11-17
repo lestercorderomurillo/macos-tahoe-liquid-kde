@@ -221,3 +221,31 @@ def test_stop_timeout_preserves_installed_files(step, monkeypatch):
     with pytest.raises(RuntimeError, match="did not stop"):
         step.uninstall()
     assert step.DAEMON_DEST.exists()
+
+
+@pytest.mark.parametrize('saved', ['null', '[]', '{"keys": 42}', '{"keys": "invalid"}', '{"keys": ["bad"]}'])
+def test_uninstall_tolerates_invalid_shortcut_state(step, saved):
+    step.install()
+    step._shortcut_state().write_text(saved)
+    step.uninstall()
+    assert not step.DAEMON_DEST.exists()
+    assert not step._shortcut_state().exists()
+
+
+def test_uninstall_reports_history_removal_failure_and_can_retry(step, monkeypatch):
+    step.install()
+    step.HISTORY_DIR.mkdir(parents=True)
+    secret = step.HISTORY_DIR / 'index.json'
+    secret.write_text('["private clipboard text"]')
+    original = step.shutil.rmtree
+    def denied(path, **kwargs):
+        if kwargs.get('ignore_errors'):
+            return
+        raise PermissionError('history is not writable')
+    monkeypatch.setattr(step.shutil, 'rmtree', denied)
+    with pytest.raises(PermissionError, match='history is not writable'):
+        step.uninstall()
+    assert secret.exists()
+    monkeypatch.setattr(step.shutil, 'rmtree', original)
+    step.uninstall()
+    assert not step.HISTORY_DIR.exists()

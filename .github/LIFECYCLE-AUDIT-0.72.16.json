@@ -1,0 +1,154 @@
+{
+  "base_commit": "a5230600",
+  "editions": {
+    "tahoe": {
+      "environment": "plasmashell 6.8.1",
+      "source_files": {
+        "src/scripts/steps/gtk.py": "f8a503e62800afa5a2f386babdabdfc5bc2612ec7881771ffd7b0a8bfa6e1489",
+        "src/scripts/steps/clipboard.py": "295034f4020fd1edb482d8d73ae023a6d54039af35e960e7b1ab3b1b9a3a2945",
+        "component-hashes.json": "bdf6b6fccc9a1ba1aa921de803f97c68eb20d7e317570584ac1bbc079d46e48b"
+      },
+      "checks": [
+        {
+          "phase": "install",
+          "command": [
+            "sudo",
+            "-n",
+            "env",
+            "MAC_TAHOE_NO_UPDATE_CHECK=true",
+            "MTTKDE_NO_CONFIRM=1",
+            "MTTKDE_LANGUAGE=en",
+            "MTTKDE_WIZARD_OPTIONS={\"appearance\":\"light\",\"reset_layout\":false}",
+            "python3",
+            "/home/tester/release-capture/source/src/scripts/installer_backend.py",
+            "install",
+            "--only",
+            "--gtk",
+            "--clipboard",
+            "--no-apply-theme",
+            "--light"
+          ],
+          "returncode": 0
+        },
+        {
+          "phase": "reinstall",
+          "command": [
+            "sudo",
+            "-n",
+            "env",
+            "MAC_TAHOE_NO_UPDATE_CHECK=true",
+            "MTTKDE_NO_CONFIRM=1",
+            "MTTKDE_LANGUAGE=en",
+            "MTTKDE_WIZARD_OPTIONS={\"appearance\":\"light\",\"reset_layout\":false}",
+            "python3",
+            "/home/tester/release-capture/source/src/scripts/installer_backend.py",
+            "install",
+            "--only",
+            "--gtk",
+            "--clipboard",
+            "--no-apply-theme",
+            "--light"
+          ],
+          "returncode": 0
+        },
+        {
+          "phase": "gtk-uninstall",
+          "preserved": [
+            "/home/tester/.config/gtk-4.0/gtk.css",
+            "/home/tester/.config/gtk-4.0/assets/audit-user.svg",
+            "/home/tester/.config/gtk-4.0/windows-assets/audit-user.svg",
+            "/home/tester/.config/gtk-4.0/gtk-dark.css"
+          ],
+          "removed_owned_assets": 129
+        },
+        {
+          "phase": "clipboard-invalid-state",
+          "result": "passed"
+        },
+        {
+          "phase": "clipboard-permission-failure-and-retry",
+          "result": "passed"
+        }
+      ]
+    },
+    "golden-gate": {
+      "environment": "plasmashell 6.8.1",
+      "source_files": {
+        "src/scripts/steps/gtk.py": "f8a503e62800afa5a2f386babdabdfc5bc2612ec7881771ffd7b0a8bfa6e1489",
+        "src/scripts/steps/clipboard.py": "295034f4020fd1edb482d8d73ae023a6d54039af35e960e7b1ab3b1b9a3a2945",
+        "component-hashes.json": "bdf6b6fccc9a1ba1aa921de803f97c68eb20d7e317570584ac1bbc079d46e48b"
+      },
+      "checks": [
+        {
+          "phase": "install",
+          "command": [
+            "sudo",
+            "-n",
+            "env",
+            "MAC_TAHOE_NO_UPDATE_CHECK=true",
+            "MTTKDE_NO_CONFIRM=1",
+            "MTTKDE_LANGUAGE=en",
+            "MTTKDE_WIZARD_OPTIONS={\"appearance\":\"light\",\"reset_layout\":false}",
+            "python3",
+            "/home/tester/release-capture/source/src/scripts/installer_backend.py",
+            "install",
+            "--only",
+            "--gtk",
+            "--clipboard",
+            "--no-apply-theme",
+            "--light"
+          ],
+          "returncode": 0
+        },
+        {
+          "phase": "reinstall",
+          "command": [
+            "sudo",
+            "-n",
+            "env",
+            "MAC_TAHOE_NO_UPDATE_CHECK=true",
+            "MTTKDE_NO_CONFIRM=1",
+            "MTTKDE_LANGUAGE=en",
+            "MTTKDE_WIZARD_OPTIONS={\"appearance\":\"light\",\"reset_layout\":false}",
+            "python3",
+            "/home/tester/release-capture/source/src/scripts/installer_backend.py",
+            "install",
+            "--only",
+            "--gtk",
+            "--clipboard",
+            "--no-apply-theme",
+            "--light"
+          ],
+          "returncode": 0
+        },
+        {
+          "phase": "gtk-uninstall",
+          "preserved": [
+            "/home/tester/.config/gtk-4.0/gtk.css",
+            "/home/tester/.config/gtk-4.0/assets/audit-user.svg",
+            "/home/tester/.config/gtk-4.0/windows-assets/audit-user.svg",
+            "/home/tester/.config/gtk-4.0/gtk-dark.css"
+          ],
+          "removed_owned_assets": 129
+        },
+        {
+          "phase": "clipboard-invalid-state",
+          "result": "passed"
+        },
+        {
+          "phase": "clipboard-permission-failure-and-retry",
+          "result": "passed"
+        }
+      ]
+    }
+  },
+  "negative_control_log_sha256": "114579836bdff8aba73fbf73c7c256a4803e5c72d98c10e3556582ca3ab2a8e8",
+  "overlap_log_sha256": "c199d79e7c27568d251a42f861266d453d7b1b4b5edc96d48dde14224c385284",
+  "log_hashes": {
+    "golden-fixed.log": "9f573bcf89d9778553eb225751f4061538e8f13f8a25460ffe4c0681704ac42a",
+    "tahoe-install.log": "573d5cb04ac919cae943ef6bc27ed7f117aaafa91a1baf2ec74cf32159f48689",
+    "tahoe-reinstall.log": "edf3313f6396b23e7b0237d4bc3161393dbb34ff88069ddce45ece3901ef5952",
+    "golden-gate-install.log": "6aad989f2fd612ac145ecc0a931e3aa91fec49773f7a8727c7209140e38264d9",
+    "golden-gate-reinstall.log": "2cf08cd325b6d8ba251b897aa1881c87af5639b4e1ae96f6c68d371c7216058d"
+  }
+}

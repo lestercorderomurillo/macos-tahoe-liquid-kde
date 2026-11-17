@@ -246,7 +246,9 @@ def uninstall() -> None:
     # Hand Meta+V back to Plasma's clipboard widget before dropping our entry.
     try:
         previous = json.loads(_shortcut_state().read_text())["keys"]
-    except (OSError, ValueError, KeyError):
+    except (OSError, ValueError, KeyError, TypeError):
+        previous = None
+    if not isinstance(previous, list) or not all(type(key) is int and 0 <= key <= 0x7fffffff for key in previous):
         previous = None
     current = _shortcut_keys("plasmashell", "show-on-mouse-pos")
     if previous is not None and META_V in previous:
@@ -262,7 +264,10 @@ def uninstall() -> None:
             path.unlink()
             removed = True
     if HISTORY_DIR.is_dir() and not HISTORY_DIR.is_symlink():
-        shutil.rmtree(HISTORY_DIR, ignore_errors=True)   # the user's recorded history goes with the feature
+        # Failure must reach the installer; never report private history as
+        # removed when permissions or I/O errors left it on disk. A retry can
+        # still discover HISTORY_DIR after the other payloads were removed.
+        shutil.rmtree(HISTORY_DIR)
         removed = True
     if removed:
         ok(tr('Clipboard popup and service removed'))
