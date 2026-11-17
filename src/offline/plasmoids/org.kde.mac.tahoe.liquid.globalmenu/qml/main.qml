@@ -16,6 +16,7 @@ import org.kde.plasma.core as PlasmaCore
 import org.kde.plasma.private.keyboardindicator as KeyboardIndicator
 import org.kde.plasma.components as PlasmaComponents3
 import org.kde.kirigami as Kirigami
+import org.kde.ksvg as KSvg
 import plasma.applet.org.kde.mac.tahoe.liquid.globalmenu
 
 PlasmoidItem {
@@ -24,6 +25,13 @@ PlasmoidItem {
     readonly property bool vertical: Plasmoid.formFactor === PlasmaCore.Types.Vertical
     readonly property bool view: Plasmoid.configuration.compactView
     readonly property string cfgIcon: Plasmoid.configuration.menuIcon || "start-here-kde-symbolic"
+
+    readonly property real lightCapsuleOpacityBoost: material.hasElement("hint-clear-surface") ? 0 : 0.10
+
+    KSvg.Svg {
+        id: material
+        imagePath: "dialogs/background"
+    }
 
     Rectangle {
         id: barTint
@@ -147,6 +155,7 @@ PlasmoidItem {
 
         MenuDelegate {
             id: systemMenuButton
+            lightCapsuleOpacityBoost: root.lightCapsuleOpacityBoost
             Accessible.name: i18n("System menu")
             readonly property int buttonIndex: -3
             menuIsOpen: Plasmoid.currentIndex !== -1
@@ -172,6 +181,7 @@ PlasmoidItem {
 
         MenuDelegate {
             id: appNameButton
+            lightCapsuleOpacityBoost: root.lightCapsuleOpacityBoost
             readonly property int buttonIndex: -2
             visible: appMenuModel.activeAppName !== ""
             text: appMenuModel.activeAppName
@@ -194,6 +204,7 @@ PlasmoidItem {
                 required property PlasmaCore.Action activeActions
                 readonly property int buttonIndex: index
 
+                lightCapsuleOpacityBoost: root.lightCapsuleOpacityBoost
                 Layout.fillWidth: root.vertical
                 Layout.fillHeight: !root.vertical
                 text: activeMenu
