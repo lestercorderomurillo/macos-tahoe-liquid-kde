@@ -2,6 +2,8 @@
 
 SPDX-License-Identifier: GPL-3.0-or-later
 """
+from contextlib import contextmanager
+from contextvars import ContextVar
 import os
 import shutil
 import subprocess
@@ -12,6 +14,66 @@ from component_manifest import dependencies
 from localization import tr
 from log import fail, ok, warn
 from steps._helpers import _as_root, _drop_privs_in_child
+
+
+# Only builds completed in this installation are eligible, never arbitrary build/ data.
+_install_builds = ContextVar("install_builds", default=None)
+
+
+@contextmanager
+def installation_build_cleanup():
+    builds = {}
+    token = _install_builds.set(builds)
+
+    def cleanup():
+        reclaimed = 0
+        for directory, (source_key, objects) in builds.items():
+            try:
+                if directory.is_symlink() or (directory / ".mttkde-source-sha256").read_text() != source_key:
+                    continue
+                for path, stamp in objects:
+                    # Preserve replaced files, hardlinks, symlinks and another build's output.
+                    if any(parent.is_symlink() for parent in (path, *path.parents)):
+                        continue
+                    current = path.lstat()
+                    if _object_stamp(current) != stamp or current.st_nlink != 1:
+                        continue
+                    path.unlink()
+                    reclaimed += current.st_blocks * 512
+            except OSError:
+                # Cleanup is best effort and must not turn a successful install into a failure.
+                continue
+        return reclaimed
+
+    try:
+        yield cleanup
+    finally:
+        _install_builds.reset(token)
+
+
+def _object_stamp(info):
+    return (info.st_dev, info.st_ino, info.st_size, info.st_mtime_ns, info.st_ctime_ns)
+
+
+def _record_build_objects(directory, source_key):
+    builds = _install_builds.get()
+    if builds is None:
+        return
+    objects = []
+    # CMake places object files in CMakeFiles at each source subdirectory level.
+    for parent, dirs, files in os.walk(directory, followlinks=False):
+        relative = Path(parent).relative_to(directory)
+        if "CMakeFiles" not in relative.parts:
+            continue
+        for name in files:
+            if name.endswith((".o", ".o.d")):
+                path = Path(parent) / name
+                try:
+                    if not path.is_symlink() and path.is_file():
+                        objects.append((path, _object_stamp(path.lstat())))
+                except OSError:
+                    pass
+    builds[directory] = (source_key, objects)
 
 
 def cmake_build(
@@ -89,6 +151,7 @@ def cmake_build(
         _emit_cmd_log(label, "make", mk.stdout, mk.stderr, build_dir / "make-build.log")
         return False
     stamp.write_text(source_key)
+    _record_build_objects(build_dir, source_key)
     ok(tr('{label} built', label=label))
     return True
 

@@ -1249,5 +1249,6 @@
   "Display Settings…": "Configurações de tela…",
   "Connected": "Conectado",
   "On": "Ativado",
-  "Off": "Desativado"
+  "Off": "Desativado",
+  "Removed {size} MiB of temporary compiler objects.": "Removidos {size} MiB de arquivos objeto temporários do compilador."
 }

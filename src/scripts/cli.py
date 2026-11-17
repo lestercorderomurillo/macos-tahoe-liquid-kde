@@ -1064,8 +1064,16 @@ def _print_done(verb: str) -> None:
 def _run_install_body(feat: dict[str, object]) -> int:
     from theme_switch import button_position, preserve_button_layout
 
-    with preserve_button_layout(button_position() == "keep"):
-        return _run_install_steps(feat)
+    from steps._native_build import installation_build_cleanup
+
+    with installation_build_cleanup() as cleanup, preserve_button_layout(button_position() == "keep"):
+        result = _run_install_steps(feat)
+        if result == 0:
+            reclaimed = cleanup()
+            if reclaimed:
+                note(tr("Removed {size} MiB of temporary compiler objects.",
+                        size=f"{reclaimed / 1024**2:.1f}"))
+        return result
 
 
 def _run_install_steps(feat: dict[str, object]) -> int:

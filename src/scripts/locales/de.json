@@ -1249,5 +1249,6 @@
   "Display Settings…": "Anzeigeeinstellungen…",
   "Connected": "Verbunden",
   "On": "Ein",
-  "Off": "Aus"
+  "Off": "Aus",
+  "Removed {size} MiB of temporary compiler objects.": "{size} MiB temporäre Compiler-Objektdateien entfernt."
 }

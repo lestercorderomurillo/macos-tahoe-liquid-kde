@@ -459,6 +459,8 @@ _ZH_CN.update({'Dock apps': 'Dock 应用',
  'Music': '音乐',
  'Video': '视频'})
 
+_ES["Removed {size} MiB of temporary compiler objects."] = "Se eliminaron {size} MiB de archivos objeto temporales del compilador."
+_ZH_CN["Removed {size} MiB of temporary compiler objects."] = "已删除 {size} MiB 的临时编译目标文件。"
 _TRANSLATIONS = {"es": _ES, "zh_CN": _ZH_CN}
 
 

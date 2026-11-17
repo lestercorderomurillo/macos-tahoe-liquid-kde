@@ -162,6 +162,15 @@ Dock icon qualification includes Apps, every pinned application, and both empty/
 
 ## Respect for the user's time
 
+Disposable development VM overlays, capture working copies and source archives
+must be removed once the requested qualification is complete and its reviewed
+images and evidence are preserved. Do not retain whole VM disks as release
+evidence. Preserve unique scripts, logs and recovery data in a named compact
+backup before cleanup; never delete active work or user-owned files. Report
+before/after allocated sizes for storage cleanup tasks. Installer cleanup only
+removes its own successful-build intermediates; failed-run diagnostics, final
+binaries, compiler caches and user recovery data remain available.
+
 Keep routine work silent; explain only decisions, material findings or blockers.
 Use successful push/publication output as evidence without repeat lookups. Do
 not poll unrelated CI, rerun passed checks, refresh unrelated photographs or

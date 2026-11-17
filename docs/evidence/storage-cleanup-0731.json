@@ -1,0 +1,51 @@
+{
+  "before_reinstall": {
+    "binaries": {
+      "/home/tester/release-capture/source/build/plasmoids/org.kde.mac.tahoe.liquid.globalmenu/bin/org/kde/mac/tahoe/launcher/libmactahoelauncher.so": "7c7b80a93ddddc12ccd619de0864f2dfe01c964855d01e359f3c063124a71690",
+      "/home/tester/release-capture/source/build/plasmoids/org.kde.mac.tahoe.liquid.globalmenu/bin/plasma/applets/org.kde.mac.tahoe.liquid.globalmenu.so": "b47f392a9edf1d605d1bd89e8d38d0b92ca8fee7ff13b1d56b117f77a9f37412",
+      "/usr/lib/x86_64-linux-gnu/qt6/plugins/plasma/applets/org.kde.mac.tahoe.liquid.globalmenu.so": "b47f392a9edf1d605d1bd89e8d38d0b92ca8fee7ff13b1d56b117f77a9f37412"
+    },
+    "object_count": 0,
+    "retained_build_bytes": 7912874,
+    "plasma": "plasmashell 6.8.1",
+    "qt": "6.11.1",
+    "source": {
+      "src/scripts/cli.py": "8b29c1b3031129ecc4a77c1a0140b7f63ed6cf5cc5b77b65e0b766b4fe92915f",
+      "src/scripts/steps/_native_build.py": "c472baef53c12572f990259c6db585e4276c460e7803219698398e325d4ae2ed"
+    }
+  },
+  "after_reinstall": {
+    "binaries": {
+      "/home/tester/release-capture/source/build/plasmoids/org.kde.mac.tahoe.liquid.globalmenu/bin/org/kde/mac/tahoe/launcher/libmactahoelauncher.so": "7c7b80a93ddddc12ccd619de0864f2dfe01c964855d01e359f3c063124a71690",
+      "/home/tester/release-capture/source/build/plasmoids/org.kde.mac.tahoe.liquid.globalmenu/bin/plasma/applets/org.kde.mac.tahoe.liquid.globalmenu.so": "b47f392a9edf1d605d1bd89e8d38d0b92ca8fee7ff13b1d56b117f77a9f37412",
+      "/usr/lib/x86_64-linux-gnu/qt6/plugins/plasma/applets/org.kde.mac.tahoe.liquid.globalmenu.so": "b47f392a9edf1d605d1bd89e8d38d0b92ca8fee7ff13b1d56b117f77a9f37412"
+    },
+    "object_count": 0,
+    "retained_build_bytes": 8439939,
+    "plasma": "plasmashell 6.8.1",
+    "qt": "6.11.1",
+    "source": {
+      "src/scripts/cli.py": "8b29c1b3031129ecc4a77c1a0140b7f63ed6cf5cc5b77b65e0b766b4fe92915f",
+      "src/scripts/steps/_native_build.py": "c472baef53c12572f990259c6db585e4276c460e7803219698398e325d4ae2ed"
+    }
+  },
+  "install_commands": [
+    "sudo env MAC_TAHOE_NO_UPDATE_CHECK=true MTTKDE_NO_CONFIRM=1 MTTKDE_LANGUAGE=en python3 /home/tester/release-capture/source/src/scripts/installer_backend.py install --only --globalmenu --no-apply-theme",
+    "sudo env MAC_TAHOE_NO_UPDATE_CHECK=true MTTKDE_NO_CONFIRM=1 MTTKDE_LANGUAGE=en python3 /home/tester/release-capture/source/src/scripts/installer_backend.py install --only --globalmenu --no-apply-theme"
+  ],
+  "install_exit_codes": [
+    0,
+    0
+  ],
+  "scope": "Post-success compiler object cleanup; Global Menu build/install/reinstall in disposable Plasma VM. No native source, compiler flags or rendered appearance changes.",
+  "checks": {
+    "focused_local": "130 passed in 5.10s",
+    "prepared_golden_gate": "4 passed in 0.78s",
+    "cleanup_per_vm_install": "6.0 MiB",
+    "retained_binary_hashes": "identical before and after reinstall"
+  },
+  "coverage_limits": [
+    "Plasma 6.8.1 / Qt 6.11.1 VM; no new 6.6/6.7 SDK builds or rendering checks.",
+    "Selected --only --globalmenu --no-apply-theme install/reinstall; not a full desktop lifecycle."
+  ]
+}
