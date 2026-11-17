@@ -1,7 +1,7 @@
 {
-  "version": "0.72.16",
-  "source_sha256": "10f6d96540195015669b932dc0212fbb7e0b266ddd04e682073c2858bfa213da",
-  "scope": "Three nonvisual uninstall fixes: preserve custom GTK files, validate saved clipboard shortcut state, report history deletion failure. See .github/LIFECYCLE-AUDIT-0.72.16.md.",
+  "version": "0.72.17",
+  "source_sha256": "633d11950dfc07c02d89b16696861a30b78907394c2cb4893abf531801ccd825",
+  "scope": "Three nonvisual uninstall fixes: preserve custom GTK files, validate saved clipboard shortcut state, report history deletion failure. See .github/LIFECYCLE-AUDIT-0.72.17.md. Also repairs annotated-tag verification in shallow release checkouts.",
   "environment": "KDE neon disposable Plasma 6.8.1 / Qt 6.11.1 Wayland VM; focused local Python regressions.",
   "checks": [
     {
@@ -28,6 +28,11 @@
       "command": "python3 src/scripts/component_manifest.py; git diff --check",
       "result": "passed",
       "detail": "GTK and clipboard recipes/component hashes updated; no rendering changes."
+    },
+    {
+      "command": "python3 -m pytest tests/test_release_evidence.py -q --tb=short",
+      "result": "passed",
+      "detail": "11 checks; annotated-tag/shallow checkout regression fails before fix and passes after; wrong remote commit still rejected."
     }
   ],
   "coverage_limits": [

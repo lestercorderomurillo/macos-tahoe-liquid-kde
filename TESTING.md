@@ -1,6 +1,6 @@
 # Installer testing
 
-Tahoe **v0.72.16** preserves custom GTK files during uninstall, tolerates corrupt clipboard shortcut state and reports failed history deletion. Focused regressions and paired component install/reinstall/uninstall checks passed in a disposable Plasma VM. [Evidence and coverage limits](.github/LIFECYCLE-AUDIT-0.72.16.md). Full remote CI runs asynchronously.
+Tahoe **v0.72.17** preserves custom GTK files during uninstall, tolerates corrupt clipboard shortcut state and reports failed history deletion. Focused regressions and paired component install/reinstall/uninstall checks passed in a disposable Plasma VM. [Evidence and coverage limits](.github/LIFECYCLE-AUDIT-0.72.17.md). Full remote CI runs asynchronously.
 
 See [reviewed Dock captures](src/screenshots/previews/tahoe-icon-layers-provenance.json). Installer photographs retain their original [provenance](src/screenshots/release-capture.json).
 

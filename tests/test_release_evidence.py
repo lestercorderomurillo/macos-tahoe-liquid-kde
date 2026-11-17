@@ -78,7 +78,8 @@ def test_historical_gallery_is_preserved_byte_for_byte(evidence_repo, changed):
         module.verify(root)
 
 
-def test_shallow_release_fetch_preserves_gallery_and_rejects_wrong_tag(evidence_repo, tmp_path):
+@pytest.mark.parametrize('annotated', [False, True])
+def test_shallow_release_fetch_preserves_gallery_and_rejects_wrong_tag(evidence_repo, tmp_path, annotated):
     module, root, data = evidence_repo
     def git(*args):
         return subprocess.check_output(['git', '-C', str(root), *args], text=True).strip()
@@ -93,9 +94,14 @@ def test_shallow_release_fetch_preserves_gallery_and_rejects_wrong_tag(evidence_
     (root / 'release-evidence.json').write_text(json.dumps(data))
     git('add', '.')
     git('commit', '-qm', 'Release')
-    git('tag', 'v1.2.3')
+    git('-c', 'tag.gpgSign=false', 'tag', *(['-a', '-m', 'Release'] if annotated else []), 'v1.2.3')
     clone = root / 'shallow'
     subprocess.run(['git', 'clone', '-q', '--depth=1', '--no-tags', root.as_uri(), str(clone)], check=True)
+    if annotated:
+        # actions/checkout can represent an annotated remote tag locally as
+        # a lightweight ref to the peeled commit in its shallow checkout.
+        subprocess.run(['git', '-C', str(clone), '-c', 'tag.gpgSign=false',
+                        'tag', 'v1.2.3'], check=True)
     module.fetch_release_refs(clone)
     module.verify(clone)
     git('tag', '-f', 'v1.2.3', data['gallery_commit'])

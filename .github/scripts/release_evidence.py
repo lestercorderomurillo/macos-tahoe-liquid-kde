@@ -30,11 +30,14 @@ def fetch_release_refs(repo):
     if not re.fullmatch(r'\d+\.\d+(?:\.\d+|rc[1-9]\d*)', version):
         raise ValueError('Invalid release version')
     tag = 'v' + version
+    # A shallow Actions checkout may contain a lightweight local ref for an
+    # annotated remote tag. Verify the fetched remote object without replacing
+    # that ref (or trusting its potentially stale target).
     subprocess.run(['git', '-C', str(repo), 'fetch', '--no-tags', '--depth=1',
-                    '--filter=blob:none', 'origin', f'refs/tags/{tag}:refs/tags/{tag}'], check=True)
+                    '--filter=blob:none', 'origin', f'refs/tags/{tag}'], check=True)
     def resolve(ref):
         return subprocess.check_output(['git', '-C', str(repo), 'rev-parse', ref], text=True).strip()
-    if resolve(tag + '^{commit}') != resolve('HEAD'):
+    if resolve('FETCH_HEAD^{commit}') != resolve('HEAD'):
         raise ValueError('Release tag does not match checked-out commit')
     evidence = json.loads((repo / 'release-evidence.json').read_text())
     commit = evidence.get('gallery_commit')
