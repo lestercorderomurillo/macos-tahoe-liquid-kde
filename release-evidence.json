@@ -1,89 +1,63 @@
 {
-  "version": "0.72.19",
-  "source_sha256": "e309edc178a67af555f41054d4be7e463d3d551e36efef74970955582b291e10",
-  "scope": "Paired release for Golden Gate startup-cache repair (issue #8). Tahoe implementation and component payloads are unchanged from v0.72.18; existing checks and reviewed captures below are reused.",
-  "environment": "Local Python/PyQt6 checks; disposable KDE neon Plasma 6.8.1 VM with Xwayland Qt windows.",
+  "version": "0.72.20",
+  "source_sha256": "ac23d8ce942dc7b248a062e8b44c4a69dbc0e89b57c0d5331bb0def0f190ff2f",
+  "scope": "User-approved Control Center fixes for issues 130/133: Apple slider glyphs and fixed sizing, translated layout, clear shared Dock-style glass and notifications, half-strength gradients. No native C++ or GLSL implementation changes.",
+  "environment": "Focused native QML/material/shader checks and disposable Plasma/KWin 6.8.1, Qt 6.11.1 Wayland VM; exact installed fingerprints in docs/evidence/control-center-130-133.json.",
   "checks": [
     {
-      "command": "python3 -m pytest tests/test_installer_wizard.py -q",
+      "command": "python3 -m pytest tests/test_desktop_controls.py -q",
       "result": "passed",
-      "detail": "47 cases on final UI and fonts; reused unchanged evidence."
+      "detail": "Final controls and edit navigation: 1 passed in 14.28s; unchanged implementation evidence reused."
     },
     {
-      "command": "python3 -m pytest tests/test_installer_wizard.py -k installed_switcher tests/test_icon_toolset.py -k 'installed_switcher or installer_' -q",
+      "command": "python3 -m pytest tests/test_glass_presets.py -q -k \"native_material_preset_controls or native_glass_shader_pixels\"",
       "result": "passed",
-      "detail": "54 cases; no renderer implementation changes after passing run."
+      "detail": "9 passed, 23 deselected; final half-strength gradient and pixel regressions."
     },
     {
-      "command": "python3 /tmp/installer-font-preview/capture.py",
+      "command": "python3 /tmp/control-center-evidence/capture_all.py",
       "result": "passed",
-      "detail": "88 edition/mode/page font checks; seven reviewed frames from source 9ff2d9a4. User approved release."
-    },
-    {
-      "command": "python3 /tmp/installer-release-qualification/capture.py",
-      "result": "passed",
-      "detail": "Full Dark/Clear icon payload installation, unchanged reinstall reuse, and light/dark/light installed Qt icon rendering for both editions. Detailed hashes in docs/evidence/installer-icons-installed.json."
-    },
-    {
-      "command": "python3 src/scripts/component_manifest.py; git diff --check",
-      "result": "passed",
-      "detail": "Component ledger matches; unchanged evidence reused."
+      "detail": "Both edition defaults, light/dark Control Center and notifications; source a12828e68fe119298d16b979b6fac02df7ff7cce; actual installed hashes match. User authorized release on 2026-11-17."
     }
   ],
   "coverage_limits": [
-    "No new Tahoe runtime qualification: implementation unchanged; Golden Gate wrapper repair is qualified separately in its release-evidence.json.",
-    "Selected installer UI and icon component scope, not a full desktop installation or uninstall.",
-    "No new scheduler boundary, GTK continuity, native SDK or distro qualification; those implementations are unchanged.",
-    "Full remote CI runs asynchronously. Historical installer gallery is labeled; approved focused previews are separate."
+    "VM rendering: Plasma/KWin 6.8.1, Qt 6.11.1, Wayland; Qt menu via Xwayland. No new KWin 6.6/6.7 builds or real KWin X11 shader qualification.",
+    "No automatic schedule boundary, GTK continuity or physical Bluetooth/multi-monitor hardware qualification in this candidate.",
+    "Stage Manager and AirDrop symbols are reference reconstructions; the four slider endpoint symbols use bundled Apple glyph contours.",
+    "Local preview paths are review artifacts, not published documentation photographs."
   ],
   "gallery_commit": "f09780b200b79302e7c23ef9f6f74d94748bbea3",
   "captures": [
     {
-      "path": "src/screenshots/previews/installer-golden-gate-dark-icons-42546edab93e.png",
-      "sha256": "42546edab93e75a8ea8b21f7f25483aeb24a942f3676984bceef37f7e674e421",
+      "path": "src/screenshots/previews/controls-comparison-e6b02844645c.png",
+      "sha256": "e6b02844645c489619a2d0de7d299c1f30ff6a3c6426d324f93ed94ee025b7bb",
       "reviewed": true,
-      "source_commit": "9ff2d9a4"
+      "source_commit": "a12828e68fe119298d16b979b6fac02df7ff7cce"
     },
     {
-      "path": "src/screenshots/previews/installer-golden-gate-dark-progress-144f0095011c.png",
-      "sha256": "144f0095011cf26969efb018300685b5c77b15ac0724ee8b03373f6b9dffe8d0",
+      "path": "src/screenshots/previews/notifications-comparison-110593fc0239.png",
+      "sha256": "110593fc02398afff3376681092af431f3072731c1d9ac53c70773a9f2e2353d",
       "reviewed": true,
-      "source_commit": "9ff2d9a4"
+      "source_commit": "a12828e68fe119298d16b979b6fac02df7ff7cce"
     },
     {
-      "path": "src/screenshots/previews/installer-golden-gate-dark-summary-d270482045cb.png",
-      "sha256": "d270482045cb8a1183e3fe2b5a59cb11f25334e000d2b0a4f3fa6381702ce283",
+      "path": "src/screenshots/previews/golden-gate-light-french-crop-aeba9763e847.png",
+      "sha256": "aeba9763e847d4977f699f5ed272b923ae1e23b42f8c1d43653a66e46c2cd7dd",
       "reviewed": true,
-      "source_commit": "9ff2d9a4"
+      "source_commit": "a12828e68fe119298d16b979b6fac02df7ff7cce"
     },
     {
-      "path": "src/screenshots/previews/installer-golden-gate-light-icons-03fa4b14b92f.png",
-      "sha256": "03fa4b14b92fc8db4ed566d50137b18265227178a9172f8b4ff81ed1d84c6675",
+      "path": "src/screenshots/previews/golden-gate-dark-menu-crop-196b5b856d2b.png",
+      "sha256": "196b5b856d2b8355dd6eff211e518fea54167b4a45d5ee4090497a2d374e876a",
       "reviewed": true,
-      "source_commit": "9ff2d9a4"
+      "source_commit": "a12828e68fe119298d16b979b6fac02df7ff7cce"
     },
     {
-      "path": "src/screenshots/previews/installer-tahoe-dark-icons-dbc66adc81c4.png",
-      "sha256": "dbc66adc81c4a9a368438eb4607daed2af41134ee25afa3967d1ebe69455fb9a",
+      "path": "src/screenshots/previews/golden-gate-light-menu-crop-7f2331f795ed.png",
+      "sha256": "7f2331f795ed215bc487c9afed96a3028792ef10065d718ccc42fbcaa70a79ae",
       "reviewed": true,
-      "source_commit": "9ff2d9a4"
-    },
-    {
-      "path": "src/screenshots/previews/installer-tahoe-light-fonts-229167674cd8.png",
-      "sha256": "229167674cd83b463c596cb7c480fcbd5612809b3449f1b7a0ed5f074b7212e4",
-      "reviewed": true,
-      "source_commit": "9ff2d9a4"
-    },
-    {
-      "path": "src/screenshots/previews/installer-tahoe-light-icons-805970eab6b7.png",
-      "sha256": "805970eab6b7701dc80413adccebdfdf6f3d20eb34f18ddcda69d300456c08ab",
-      "reviewed": true,
-      "source_commit": "9ff2d9a4"
+      "source_commit": "a12828e68fe119298d16b979b6fac02df7ff7cce"
     }
   ],
-  "pending_candidate": {
-    "evidence": "docs/evidence/control-center-130-133.json",
-    "status": "pending_visual_approval",
-    "source_commit": "a12828e68fe119298d16b979b6fac02df7ff7cce"
-  }
+  "detail": "docs/evidence/control-center-130-133.json"
 }

@@ -1,6 +1,6 @@
 # Installer testing
 
-Tahoe **v0.72.19** pairs the Golden Gate installer startup-cache repair. 116 wrapper checks passed, including damaged-cache recovery and active-session protection. Tahoe component behavior is unchanged; prior VM evidence and reviewed images are reused. [Validation and coverage limits](release-evidence.json). Full remote CI runs asynchronously.
+Tahoe **v0.72.20** includes the approved Control Center icons, translated layout and clearer glass surfaces. Focused QML, material and shader checks passed; light/dark rendering was reviewed in a disposable Plasma 6.8.1 VM. [Evidence and coverage limits](docs/evidence/control-center-130-133.json). Full remote CI runs asynchronously; no new SDK matrix or automatic schedule-boundary qualification.
 
 Approved installer previews: [Light](src/screenshots/previews/installer-tahoe-light-icons-805970eab6b7.png) · [Dark](src/screenshots/previews/installer-tahoe-dark-icons-dbc66adc81c4.png). The gallery below is historical and predates these installer changes; its original [provenance](src/screenshots/release-capture.json) is retained.
 

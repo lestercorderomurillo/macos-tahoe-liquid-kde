@@ -1,5 +1,5 @@
 {
-  "status": "pending_visual_approval",
+  "status": "approved",
   "source_commit": "a12828e68fe119298d16b979b6fac02df7ff7cce",
   "scope": "Control Center issues 130/133, original slider glyphs, clear notification surface and reduced material gradients",
   "installed_source_matches": true,
@@ -520,7 +520,7 @@
         },
         "source_commit": "a12828e68fe119298d16b979b6fac02df7ff7cce",
         "agent_reviewed": true,
-        "user_approved": false
+        "user_approved": true
       },
       {
         "name": "tahoe-dark-controls",
@@ -660,7 +660,7 @@
         },
         "source_commit": "a12828e68fe119298d16b979b6fac02df7ff7cce",
         "agent_reviewed": true,
-        "user_approved": false
+        "user_approved": true
       },
       {
         "name": "golden-gate-light-controls",
@@ -800,7 +800,7 @@
         },
         "source_commit": "a12828e68fe119298d16b979b6fac02df7ff7cce",
         "agent_reviewed": true,
-        "user_approved": false
+        "user_approved": true
       },
       {
         "name": "golden-gate-dark-controls",
@@ -940,7 +940,7 @@
         },
         "source_commit": "a12828e68fe119298d16b979b6fac02df7ff7cce",
         "agent_reviewed": true,
-        "user_approved": false
+        "user_approved": true
       },
       {
         "name": "tahoe-light-notifications",
@@ -1080,7 +1080,7 @@
         },
         "source_commit": "a12828e68fe119298d16b979b6fac02df7ff7cce",
         "agent_reviewed": true,
-        "user_approved": false
+        "user_approved": true
       },
       {
         "name": "tahoe-dark-notifications",
@@ -1220,7 +1220,7 @@
         },
         "source_commit": "a12828e68fe119298d16b979b6fac02df7ff7cce",
         "agent_reviewed": true,
-        "user_approved": false
+        "user_approved": true
       },
       {
         "name": "golden-gate-light-notifications",
@@ -1360,7 +1360,7 @@
         },
         "source_commit": "a12828e68fe119298d16b979b6fac02df7ff7cce",
         "agent_reviewed": true,
-        "user_approved": false
+        "user_approved": true
       },
       {
         "name": "golden-gate-dark-notifications",
@@ -1500,7 +1500,7 @@
         },
         "source_commit": "a12828e68fe119298d16b979b6fac02df7ff7cce",
         "agent_reviewed": true,
-        "user_approved": false
+        "user_approved": true
       }
     ],
     "reference_url": "https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/issues/133"
@@ -1549,10 +1549,47 @@
     }
   ],
   "coverage_limits": [
-    "Candidate has not been pushed, merged or published; remote CI has not run on this candidate.",
+    "Candidate approved for paired publication; remote CI status is tracked separately.",
     "VM rendering: Plasma/KWin 6.8.1, Qt 6.11.1, Wayland; Qt menu via Xwayland. No new KWin 6.6/6.7 builds or real KWin X11 shader qualification.",
     "No automatic schedule boundary, GTK continuity or physical Bluetooth/multi-monitor hardware qualification in this candidate.",
     "Stage Manager and AirDrop symbols are reference reconstructions; the four slider endpoint symbols use bundled Apple glyph contours.",
     "Local preview paths are review artifacts, not published documentation photographs."
+  ],
+  "approval": {
+    "instruction": "release",
+    "date": "2026-11-17",
+    "scope": "Shown Control Center, slider icons and glass candidate"
+  },
+  "published_preview_artifacts": [
+    {
+      "path": "src/screenshots/previews/controls-comparison-e6b02844645c.png",
+      "sha256": "e6b02844645c489619a2d0de7d299c1f30ff6a3c6426d324f93ed94ee025b7bb",
+      "reviewed": true,
+      "source_commit": "a12828e68fe119298d16b979b6fac02df7ff7cce"
+    },
+    {
+      "path": "src/screenshots/previews/notifications-comparison-110593fc0239.png",
+      "sha256": "110593fc02398afff3376681092af431f3072731c1d9ac53c70773a9f2e2353d",
+      "reviewed": true,
+      "source_commit": "a12828e68fe119298d16b979b6fac02df7ff7cce"
+    },
+    {
+      "path": "src/screenshots/previews/golden-gate-light-french-crop-aeba9763e847.png",
+      "sha256": "aeba9763e847d4977f699f5ed272b923ae1e23b42f8c1d43653a66e46c2cd7dd",
+      "reviewed": true,
+      "source_commit": "a12828e68fe119298d16b979b6fac02df7ff7cce"
+    },
+    {
+      "path": "src/screenshots/previews/golden-gate-dark-menu-crop-196b5b856d2b.png",
+      "sha256": "196b5b856d2b8355dd6eff211e518fea54167b4a45d5ee4090497a2d374e876a",
+      "reviewed": true,
+      "source_commit": "a12828e68fe119298d16b979b6fac02df7ff7cce"
+    },
+    {
+      "path": "src/screenshots/previews/golden-gate-light-menu-crop-7f2331f795ed.png",
+      "sha256": "7f2331f795ed215bc487c9afed96a3028792ef10065d718ccc42fbcaa70a79ae",
+      "reviewed": true,
+      "source_commit": "a12828e68fe119298d16b979b6fac02df7ff7cce"
+    }
   ]
 }
