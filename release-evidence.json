@@ -1,51 +1,92 @@
 {
-  "version": "0.73.4",
-  "source_sha256": "ea1b55371b9013107d55c6aa26ad4a439988fb5245ab1c4cf4862e29a2bae19a",
-  "scope": "CI regression repair only: icon reinstall/uninstall test now expects restoration of a backed-up user edit and removal of the untouched theme. Installed implementation and appearance are unchanged from v0.73.3.",
-  "environment": "Host pytest with isolated temporary HOME/XDG directories; no desktop installer or rendering run.",
+  "version": "0.73.5",
+  "source_sha256": "88efe8e5418830dc883dc2e6dd4fafa54a487fdc5c07febae073840869fb5b2c",
+  "scope": "User-approved macOS-style notification banners/history, original close and chevron contours, fixed right alignment/hover geometry, and duplicate tray-control migration. Shared implementation only; no unrelated gallery refresh.",
+  "environment": "Disposable KDE neon Plasma 6.8.1 / Qt 6.11.1 Wayland VM; isolated Arch 6.6 X11 rendering and 6.6/6.7/6.8 selected native SDK builds.",
+  "implementation_commit": "1e4fb383de04495e7aa0c65cf4c9fedaabe1d66d",
+  "approval": {
+    "date": "2026-11-17",
+    "message": "pls release with that... its OKAY",
+    "approved_hover_sha256": "8908d4edf9c56438fdf337451664b28d8159b01c825e314079fdc7c57cd4ed5f"
+  },
   "checks": [
     {
-      "command": "python3 -m pytest tests/test_status_icons.py::test_icon_install_reinstall_uninstall_recolors_staged_batteries tests/test_owned_assets.py -q",
+      "command": "python3 -m pytest -q tests/test_layout_step.py tests/test_dock_defaults.py::test_status_control_migration_preserves_apps_and_unrelated_panels tests/test_acrylic_blur_region.py tests/test_acrylic_capture_safety.py tests/test_localization.py::test_french_control_catalogs_resolve_shared_views",
       "result": "passed",
-      "detail": "13 passed in 6.03s. Real bundled icons installed/reinstalled into a temporary destination; edited battery restored on uninstall, untouched dark theme removed, repeated uninstall preserves restored edit."
+      "detail": 37
+    },
+    {
+      "command": "dbus-run-session -- python3 tests/desktop_controls_probe.py <source> (private offscreen bus/config/data)",
+      "result": "passed",
+      "detail": [
+        "native import and host election",
+        "DND filtering",
+        "real identified D-Bus notification retained and cleared in real history",
+        "actions/replies/jobs callbacks",
+        "history card content width 316 inside a 344px surface",
+        "rendered light/dark/light native banner palettes",
+        "explicit fixture teardown before Python models die"
+      ]
+    },
+    {
+      "command": "msgfmt --check -o /dev/null <catalog>",
+      "result": "passed",
+      "detail": "See detailed qualification evidence."
+    },
+    {
+      "command": "cmake --build <build> --target mactahoelauncher controlglassprobe; QT_QPA_PLATFORM=offscreen <build>/controlglassprobe",
+      "result": "passed",
+      "detail": "Effect and native module builds; native surface region/input-mask probe. These builds do not independently prove visual behavior."
+    },
+    {
+      "command": "Real isolated X11 6.6 compositor, production effect loaded, notification-role surface rendered",
+      "result": "passed",
+      "detail": "Real isolated X11 6.6 compositor, production effect loaded, notification-role surface rendered"
+    },
+    {
+      "command": "Selected real source install and reinstall in disposable VM",
+      "result": "passed",
+      "detail": "Selected real source install and reinstall in disposable VM"
+    },
+    {
+      "command": "Persistent notification and Qt MacTahoe/Kvantum, GTK 3 and GTK 4 applications survive manual/native/GTK, overlapping selections and real automatic dusk crossing in each edition",
+      "result": "passed",
+      "detail": "Persistent notification and Qt MacTahoe/Kvantum, GTK 3 and GTK 4 applications survive manual/native/GTK, overlapping selections and real automatic dusk crossing in each edition"
+    },
+    {
+      "command": "Current source actual banner normal, hover and X-hover, dismissal by pointer; current history grouping, expansion and clear by pointer",
+      "result": "passed",
+      "detail": "Current source actual banner normal, hover and X-hover, dismissal by pointer; current history grouping, expansion and clear by pointer"
+    },
+    {
+      "command": "GOLDEN_GATE_TAHOE_SOURCE=<candidate> MAC_TAHOE_NO_UPDATE_CHECK=true ./install --prepare",
+      "result": "passed",
+      "detail": "All 70 changed payload files match the candidate byte-for-byte; Golden Gate wallpaper and launcher preset 2 verified; source checkouts were not updated."
+    },
+    {
+      "command": "git diff --check",
+      "result": "passed",
+      "detail": "See detailed qualification evidence."
     }
   ],
+  "details": "docs/evidence/notifications-0735.json",
   "coverage_limits": [
-    "Test-only correction; installer implementation, component hashes and artwork unchanged from v0.73.3. Prior selected VM lifecycle evidence remains in docs/evidence/uninstall-safety-0733.json.",
-    "The failed v0.73.3 CI run 44138421505 had this single failing test in primary shard 2 and all 11 distro legs; full CI on this correction remains asynchronous.",
-    "Historical reviewed photographs retained with original provenance; no new visual claims."
+    "Qt and CoreText rasterization and wallpapers differ; geometry comparisons do not establish pixel identity. Original bundled application artwork is preserved.",
+    "No refresh of unrelated README/installer photographs.",
+    "Desktop visual scope is banners and notification history; no additional macOS widgets or tray-management component.",
+    "X11 visible qualification uses a synthetic notification-role surface with the production effect; complete live applet qualification is Wayland.",
+    "Full candidate CI is asynchronous on dev; the observed base d2d149cb run passed. Later CI failures remain actionable.",
+    "Existing galleries are historical and preserve their original provenance. No unrelated captures were refreshed."
   ],
   "gallery_commit": "f09780b200b79302e7c23ef9f6f74d94748bbea3",
   "captures": [
     {
-      "path": "src/screenshots/previews/controls-comparison-e6b02844645c.png",
-      "sha256": "e6b02844645c489619a2d0de7d299c1f30ff6a3c6426d324f93ed94ee025b7bb",
+      "path": "src/screenshots/previews/notifications-golden-gate-hover-8908d4edf9c5.png",
+      "sha256": "8908d4edf9c56438fdf337451664b28d8159b01c825e314079fdc7c57cd4ed5f",
       "reviewed": true,
-      "source_commit": "a12828e68fe119298d16b979b6fac02df7ff7cce"
-    },
-    {
-      "path": "src/screenshots/previews/notifications-comparison-110593fc0239.png",
-      "sha256": "110593fc02398afff3376681092af431f3072731c1d9ac53c70773a9f2e2353d",
-      "reviewed": true,
-      "source_commit": "a12828e68fe119298d16b979b6fac02df7ff7cce"
-    },
-    {
-      "path": "src/screenshots/previews/golden-gate-light-french-crop-aeba9763e847.png",
-      "sha256": "aeba9763e847d4977f699f5ed272b923ae1e23b42f8c1d43653a66e46c2cd7dd",
-      "reviewed": true,
-      "source_commit": "a12828e68fe119298d16b979b6fac02df7ff7cce"
-    },
-    {
-      "path": "src/screenshots/previews/golden-gate-dark-menu-crop-196b5b856d2b.png",
-      "sha256": "196b5b856d2b8355dd6eff211e518fea54167b4a45d5ee4090497a2d374e876a",
-      "reviewed": true,
-      "source_commit": "a12828e68fe119298d16b979b6fac02df7ff7cce"
-    },
-    {
-      "path": "src/screenshots/previews/golden-gate-light-menu-crop-7f2331f795ed.png",
-      "sha256": "7f2331f795ed215bc487c9afed96a3028792ef10065d718ccc42fbcaa70a79ae",
-      "reviewed": true,
-      "source_commit": "a12828e68fe119298d16b979b6fac02df7ff7cce"
+      "source_commit": "1e4fb383de04495e7aa0c65cf4c9fedaabe1d66d",
+      "edition": "golden-gate",
+      "description": "Actual corrected-chevron hover explicitly approved by the user."
     }
   ]
 }
