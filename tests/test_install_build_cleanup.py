@@ -78,3 +78,64 @@ def test_cleanup_preserves_changed_foreign_and_linked_files(tmp_path):
         stamp.unlink()  # Another build has started and invalidated the success marker.
         assert cleanup() == 0
     assert (objects / 'changed.o').exists()
+
+
+@pytest.mark.parametrize('outcome', [0, 1])
+def test_previous_successful_build_cleaned_when_component_reused(tmp_path, monkeypatch, outcome):
+    if not all(shutil.which(tool) for tool in ('cmake', 'make', 'c++')):
+        pytest.skip('Native build tools unavailable')
+    monkeypatch.setenv('BUILD', str(tmp_path / 'build'))
+    monkeypatch.setenv('OFFLINE', str(tmp_path / 'offline'))
+    source = tmp_path / 'offline/menu-style'; source.mkdir(parents=True)
+    (source / 'CMakeLists.txt').write_text(
+        'cmake_minimum_required(VERSION 3.16)\nproject(probe LANGUAGES CXX)\n'
+        'add_executable(probe main.cpp)\n')
+    (source / 'main.cpp').write_text('int main() { return 0; }\n')
+    build = tmp_path / 'build/menu-style'
+    assert native.cmake_build(source, build, 'previous installation')
+    assert list(build.rglob('*.o'))
+    before = hashlib.sha256((build / 'probe').read_bytes()).hexdigest()
+    # The current transaction reuses installed payloads, never calling cmake_build.
+    monkeypatch.setattr(cli, '_run_install_steps', lambda _: outcome)
+    assert cli._run_install_body({}) == outcome
+    assert bool(list(build.rglob('*.o'))) == bool(outcome)
+    assert hashlib.sha256((build / 'probe').read_bytes()).hexdigest() == before
+    assert (build / 'CMakeCache.txt').is_file()
+
+
+@pytest.mark.parametrize('guard', ['foreign-source', 'incomplete', 'symlink', 'changed-stamp'])
+def test_previous_build_ownership_and_success_guards(tmp_path, monkeypatch, guard):
+    monkeypatch.setenv('BUILD', str(tmp_path / 'build'))
+    monkeypatch.setenv('OFFLINE', str(tmp_path / 'offline'))
+    source = tmp_path / 'offline/menu-style'
+    build = tmp_path / 'build/menu-style'
+    obj = build / 'CMakeFiles/probe.dir/old.o'; obj.parent.mkdir(parents=True)
+    obj.write_bytes(b'old compiler output')
+    marker = build / '.mttkde-source-sha256'; marker.write_text('a' * 64)
+    (build / 'CMakeCache.txt').write_text(f'CMAKE_HOME_DIRECTORY:INTERNAL={source}\n')
+    if guard == 'foreign-source':
+        (build / 'CMakeCache.txt').write_text('CMAKE_HOME_DIRECTORY:INTERNAL=/foreign/project\n')
+    elif guard == 'incomplete':
+        marker.unlink()
+    elif guard == 'symlink':
+        other = tmp_path / 'other'; build.rename(other); build.symlink_to(other, target_is_directory=True)
+    with native.installation_build_cleanup() as cleanup:
+        if guard == 'changed-stamp':
+            marker.write_text('b' * 64)
+        assert cleanup() == 0
+    assert obj.read_bytes() == b'old compiler output'
+
+
+def test_cleanup_preserves_active_legacy_build(tmp_path):
+    build = tmp_path / 'build'; objects = build / 'CMakeFiles/probe.dir'
+    objects.mkdir(parents=True)
+    obj = objects / 'active.o'; obj.write_bytes(b'compiler output')
+    (build / '.mttkde-source-sha256').write_text('ours')
+    process = subprocess.Popen(['sleep', '60'], cwd=build)
+    try:
+        with native.installation_build_cleanup() as cleanup:
+            native._record_build_objects(build, 'ours')
+            assert cleanup() == 0
+        assert obj.exists()
+    finally:
+        process.terminate(); process.wait()

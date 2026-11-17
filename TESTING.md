@@ -1,6 +1,6 @@
 # Installer testing
 
-Tahoe **v0.73.1** automatically removes temporary compiler objects after successful installation. Focused cleanup, failure/cancellation and component-cache checks passed, including the prepared Golden Gate source. A disposable Plasma 6.8.1 / Qt 6.11.1 VM passed Global Menu installation and reinstallation with identical installed binaries. [Evidence and coverage limits](docs/evidence/storage-cleanup-0731.json). Full remote CI runs asynchronously; existing photographs retain their original provenance.
+Tahoe **v0.73.2** also removes recognized compiler objects from previous successful builds, including components not rebuilt by the current installation. Focused cleanup and component-cache checks passed, including the prepared Golden Gate source. A disposable Plasma 6.8.1 / Qt 6.11.1 VM verified old-object removal without rebuilding or changing the installed component. [Evidence and coverage limits](docs/evidence/storage-cleanup-0732.json). Full remote CI runs asynchronously; existing photographs retain their original provenance.
 
 Approved installer previews: [Light](src/screenshots/previews/installer-tahoe-light-icons-805970eab6b7.png) · [Dark](src/screenshots/previews/installer-tahoe-dark-icons-dbc66adc81c4.png). The gallery below is historical and predates these installer changes; its original [provenance](src/screenshots/release-capture.json) is retained.
 

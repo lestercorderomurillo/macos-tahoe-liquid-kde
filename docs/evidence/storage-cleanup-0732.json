@@ -1,0 +1,27 @@
+{
+  "before": {
+    "objects": 39,
+    "object_bytes": 5394432,
+    "installed_sha256": "56d8348df296ea89c0598d6a47b2b5595f97b1b29a2f795f865af6e249e44b8d",
+    "stamp_mtime": 1791790701129120195,
+    "source_sha256": "bb02872f07c1556d9031af8d1f06452ffd3b8c9fdc0910bd19dd787d17090b88"
+  },
+  "after": {
+    "objects": 0,
+    "object_bytes": 0,
+    "installed_sha256": "56d8348df296ea89c0598d6a47b2b5595f97b1b29a2f795f865af6e249e44b8d",
+    "stamp_mtime": 1791790701129120195,
+    "source_sha256": "bb02872f07c1556d9031af8d1f06452ffd3b8c9fdc0910bd19dd787d17090b88"
+  },
+  "command": "sudo env MAC_TAHOE_NO_UPDATE_CHECK=true MTTKDE_NO_CONFIRM=1 MTTKDE_LANGUAGE=en python3 /home/tester/release-capture/source/src/scripts/installer_backend.py install --only --fonts --no-apply-theme",
+  "install_and_reinstall_exit_codes": [
+    0,
+    0
+  ],
+  "environment": "Disposable Plasma 6.8.1 / Qt 6.11.1 VM",
+  "scope": "Recreated previous compiler objects with make after initial successful install; fonts-only reinstall left Global Menu unselected and removed its old objects without rebuilding or changing its installed binary.",
+  "limits": [
+    "Focused Global Menu install/reinstall and fonts-only cleanup of unselected previous Global Menu build; not a full desktop lifecycle.",
+    "No native code or appearance changes; no new rendering or 6.6/6.7 SDK qualification."
+  ]
+}

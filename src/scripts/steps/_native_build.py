@@ -5,6 +5,7 @@ SPDX-License-Identifier: GPL-3.0-or-later
 from contextlib import contextmanager
 from contextvars import ContextVar
 import os
+import re
 import shutil
 import subprocess
 from pathlib import Path
@@ -16,7 +17,7 @@ from log import fail, ok, warn
 from steps._helpers import _as_root, _drop_privs_in_child
 
 
-# Only builds completed in this installation are eligible, never arbitrary build/ data.
+# Only recognized successful builds are eligible, never arbitrary build/ data.
 _install_builds = ContextVar("install_builds", default=None)
 
 
@@ -29,7 +30,7 @@ def installation_build_cleanup():
         reclaimed = 0
         for directory, (source_key, objects) in builds.items():
             try:
-                if directory.is_symlink() or (directory / ".mttkde-source-sha256").read_text() != source_key:
+                if directory.is_symlink() or _build_in_use(directory) or (directory / ".mttkde-source-sha256").read_text() != source_key:
                     continue
                 for path, stamp in objects:
                     # Preserve replaced files, hardlinks, symlinks and another build's output.
@@ -40,15 +41,74 @@ def installation_build_cleanup():
                         continue
                     path.unlink()
                     reclaimed += current.st_blocks * 512
-            except OSError:
+            except (OSError, UnicodeError):
                 # Cleanup is best effort and must not turn a successful install into a failure.
                 continue
         return reclaimed
 
     try:
+        _record_previous_build_objects()
         yield cleanup
     finally:
         _install_builds.reset(token)
+
+
+def _record_previous_build_objects():
+    """Include older successful builds even when their installed payload is reused.
+
+    Both the fixed build location and CMake source must match our recipe. The
+    success stamp excludes interrupted builds; never sweep arbitrary build trees.
+    """
+    from steps._helpers import build_dir, offline
+
+    pairs = [
+        ("kwin-effects/acrylic-glass", offline("kwin-effects/acrylic-glass")),
+        ("clipboard/clipd", offline("clipboard/clipd")),
+        ("menu-style", offline("menu-style")),
+        ("plasmoids/org.kde.mac.tahoe.liquid.globalmenu", offline("plasmoids/org.kde.mac.tahoe.liquid.globalmenu")),
+        ("plasmoids/org.kde.mac.tahoe.liquid.taskmanager", offline("plasmoids/org.kde.mac.tahoe.liquid.taskmanager")),
+    ]
+    for work, prefix in (("kvantum-engine", "Kvantum-"),
+                         ("online/kde-rounded-corners", "KDE-Rounded-Corners-")):
+        # Include prior versions still present in these installer-owned work areas.
+        pairs.extend((work + "/build", source / "Kvantum" if work == "kvantum-engine" else source)
+                     for source in build_dir(work).glob(prefix + "*"))
+    for relative, source in pairs:
+        directory = build_dir(relative)
+        try:
+            if any(p.is_symlink() for p in (directory, *directory.parents, source, *source.parents)):
+                continue
+            key = (directory / ".mttkde-source-sha256").read_text()
+            if not re.fullmatch(r"[0-9a-f]{64}", key):
+                continue
+            if f"CMAKE_HOME_DIRECTORY:INTERNAL={source.resolve()}" not in (directory / "CMakeCache.txt").read_text().splitlines():
+                continue
+            _record_build_objects(directory, key)
+        except (OSError, UnicodeError):
+            continue
+
+
+def _build_in_use(directory):
+    """Protect old build tools that predate the installer transaction lock."""
+    try:
+        processes = list(Path("/proc").iterdir())
+    except OSError:
+        return True
+    for process in processes:
+        if process.name.isdecimal():
+            try:
+                if Path(os.readlink(process / "cwd")).is_relative_to(directory.resolve()):
+                    return True
+            except FileNotFoundError:
+                continue
+            except PermissionError:
+                # Unprivileged callers cannot inspect other users. Production
+                # installer cleanup runs under its privileged transaction lock.
+                if os.geteuid() == 0:
+                    return True
+            except OSError:
+                return True  # Cannot establish that this build is idle.
+    return False
 
 
 def _object_stamp(info):

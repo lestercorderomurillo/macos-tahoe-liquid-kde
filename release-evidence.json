@@ -1,30 +1,30 @@
 {
-  "version": "0.73.1",
-  "source_sha256": "333c4e9a8bf5b46385ac9b50ac1268bf28612c5056f2d234bd96aea4f66e5946",
-  "scope": "Automatic successful-install compiler-object cleanup. No native code, compiler flags, appearance or README changes.",
+  "version": "0.73.2",
+  "source_sha256": "d9b8f3e4025dbc8f82fd334c8334c89540ba70124ec581b17234036ffac1e150",
+  "scope": "Extend successful-install cleanup to recognized previous successful builds, including unselected or reused components. Active builds and unknown files remain untouched.",
   "environment": "Local Linux/Python and disposable Plasma 6.8.1 / Qt 6.11.1 VM; prepared Golden Gate source.",
   "checks": [
     {
-      "command": "python3 -m pytest tests/test_install_build_cleanup.py tests/test_component_cache.py tests/test_cli.py tests/test_multilanguage.py -q",
+      "command": "python3 -m pytest tests/test_install_build_cleanup.py tests/test_component_cache.py -q",
       "result": "passed",
-      "detail": "130 passed in 5.10s; success, failure, cancellation, foreign files, symlinks, hardlinks and component cache."
+      "detail": "26 passed in 4.70s; old-build cleanup, failure preservation, ownership/source guards, changed stamps, active builds, links and component reuse."
     },
     {
       "command": "python3 -m pytest tests/test_install_build_cleanup.py -q",
       "result": "passed",
-      "detail": "Prepared Golden Gate source: 4 passed in 0.78s."
+      "detail": "Prepared Golden Gate source: 11 passed in 1.25s."
     },
     {
-      "command": "sudo env MAC_TAHOE_NO_UPDATE_CHECK=true MTTKDE_NO_CONFIRM=1 MTTKDE_LANGUAGE=en python3 /home/tester/release-capture/source/src/scripts/installer_backend.py install --only --globalmenu --no-apply-theme",
+      "command": "sudo env MAC_TAHOE_NO_UPDATE_CHECK=true MTTKDE_NO_CONFIRM=1 MTTKDE_LANGUAGE=en python3 /home/tester/release-capture/source/src/scripts/installer_backend.py install --only --fonts --no-apply-theme",
       "result": "passed",
-      "detail": "Disposable VM install and reinstall both exited 0; each reclaimed 6.0 MiB; installed binary hashes identical. See docs/evidence/storage-cleanup-0731.json."
+      "detail": "After successful Global Menu installation and recreation of prior objects, fonts-only install removed 39 old objects; build stamp and installed binary hash unchanged. See docs/evidence/storage-cleanup-0732.json."
     }
   ],
   "coverage_limits": [
-    "Selected Global Menu install/reinstall; not a full desktop lifecycle.",
-    "No new 6.6/6.7 SDK or rendering checks; no native code or appearance changes.",
-    "Full remote CI runs asynchronously; prior v0.73.0 CI passed.",
-    "Historical photographs and original provenance preserved."
+    "Only recognized successful compiler intermediates are removed, not arbitrary directories or user recovery data.",
+    "Focused Global Menu install/reinstall and fonts-only old-build cleanup on Plasma 6.8.1 / Qt 6.11.1; not a full desktop lifecycle.",
+    "No new rendering or 6.6/6.7 SDK checks; no native code or appearance changes.",
+    "Full remote CI asynchronous; v0.73.1 matrix was still in progress at inspection."
   ],
   "gallery_commit": "f09780b200b79302e7c23ef9f6f74d94748bbea3",
   "captures": [
