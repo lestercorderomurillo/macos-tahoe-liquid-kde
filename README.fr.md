@@ -75,8 +75,8 @@ Le changement automatique clair/sombre et la protection OLED utilisent des minut
 Navigation de fichiers de style Finder avec le verre Tahoe.
 
 <p align="center">
-  <a href="src/screenshots/showcase_light_2k-5dedfb291557.webp"><img src="src/screenshots/showcase_light_2k-5dedfb291557.webp" alt="Tahoe Finder · Clair" width="415"></a>
-  <a href="src/screenshots/showcase_dark_2k-b6fcdffe7c22.webp"><img src="src/screenshots/showcase_dark_2k-b6fcdffe7c22.webp" alt="Tahoe Finder · Sombre" width="415"></a>
+  <a href="src/screenshots/previews/readme-tahoe-light-finder-4203d60bcd59.webp"><img src="src/screenshots/previews/readme-tahoe-light-finder-4203d60bcd59.webp" alt="Tahoe Finder · Clair" width="415"></a>
+  <a href="src/screenshots/previews/readme-tahoe-dark-finder-3fba4166a2d8.webp"><img src="src/screenshots/previews/readme-tahoe-dark-finder-3fba4166a2d8.webp" alt="Tahoe Finder · Sombre" width="415"></a>
 </p>
 
 <details>
@@ -84,8 +84,8 @@ Navigation de fichiers de style Finder avec le verre Tahoe.
 
 <table>
 <tr><th>Accent</th><th>Clair</th><th>Sombre</th></tr>
-<tr><td>Rouge</td><td><a href="src/screenshots/previews/tahoe-light-finder-red-a330af534340.webp"><img src="src/screenshots/previews/tahoe-light-finder-red-a330af534340.webp" alt="Tahoe Finder · Clair" width="415"></a></td><td><a href="src/screenshots/previews/tahoe-dark-finder-red-10e9028543a1.webp"><img src="src/screenshots/previews/tahoe-dark-finder-red-10e9028543a1.webp" alt="Tahoe Finder · Sombre" width="415"></a></td></tr>
-<tr><td>Bleu</td><td><a href="src/screenshots/previews/tahoe-light-finder-blue-bbf03b509a68.webp"><img src="src/screenshots/previews/tahoe-light-finder-blue-bbf03b509a68.webp" alt="Tahoe Finder · Clair" width="415"></a></td><td><a href="src/screenshots/previews/tahoe-dark-finder-blue-8ac67b97300d.webp"><img src="src/screenshots/previews/tahoe-dark-finder-blue-8ac67b97300d.webp" alt="Tahoe Finder · Sombre" width="415"></a></td></tr>
+<tr><td>Rouge</td><td><a href="src/screenshots/previews/readme-tahoe-light-finder-red-cf60519353bc.webp"><img src="src/screenshots/previews/readme-tahoe-light-finder-red-cf60519353bc.webp" alt="Tahoe Finder · Clair" width="415"></a></td><td><a href="src/screenshots/previews/readme-tahoe-dark-finder-red-a5d3144faf0f.webp"><img src="src/screenshots/previews/readme-tahoe-dark-finder-red-a5d3144faf0f.webp" alt="Tahoe Finder · Sombre" width="415"></a></td></tr>
+<tr><td>Bleu</td><td><a href="src/screenshots/previews/readme-tahoe-light-finder-blue-ad74eeb6e7a1.webp"><img src="src/screenshots/previews/readme-tahoe-light-finder-blue-ad74eeb6e7a1.webp" alt="Tahoe Finder · Clair" width="415"></a></td><td><a href="src/screenshots/previews/readme-tahoe-dark-finder-blue-2a9bacc3b9a9.webp"><img src="src/screenshots/previews/readme-tahoe-dark-finder-blue-2a9bacc3b9a9.webp" alt="Tahoe Finder · Sombre" width="415"></a></td></tr>
 </table>
 
 </details>
@@ -95,61 +95,61 @@ Navigation de fichiers de style Finder avec le verre Tahoe.
 Recherchez des applications, parcourez les catégories et gardez vos favoris. Deux préréglages sont disponibles.
 
 <p align="center">
-  <img src="src/screenshots/launcher_preset_1_light-2234900b9d82.webp" alt="Tahoe Launchpad · Clair" width="415">
-  <img src="src/screenshots/launcher_preset_1_dark-0cabfbb9e4f6.webp" alt="Tahoe Launchpad · Sombre" width="415">
+  <img src="src/screenshots/previews/readme-tahoe-light-launcher-95744cf7a341.webp" alt="Tahoe Launchpad · Clair" width="415">
+  <img src="src/screenshots/previews/readme-tahoe-dark-launcher-2399734a1625.webp" alt="Tahoe Launchpad · Sombre" width="415">
 </p>
 
 ### Tahoe Dock (Alpha)
 
 Réfraction du verre, agrandissement au survol, compteurs de notifications et masquage automatique.
 
-<p align="center"><a href="src/screenshots/previews/tahoe-dock-regular-light-reference-74619aaa7764.webp"><img src="src/screenshots/previews/tahoe-dock-regular-light-reference-74619aaa7764.webp" alt="Tahoe Dock · Clair" width="415"></a><br>Standard · Clair</p>
+<p align="center"><a href="src/screenshots/previews/readme-tahoe-light-dock-regular-6d506b3465fd.webp"><img src="src/screenshots/previews/readme-tahoe-light-dock-regular-6d506b3465fd.webp" alt="Tahoe Dock · Clair" width="415"></a><br>Standard · Clair</p>
 
-<p align="center"><a href="src/screenshots/previews/tahoe-dock-regular-dark-reference-5a56afc6c7ac.webp"><img src="src/screenshots/previews/tahoe-dock-regular-dark-reference-5a56afc6c7ac.webp" alt="Tahoe Dock · Sombre" width="415"></a><br>Standard · Sombre</p>
+<p align="center"><a href="src/screenshots/previews/readme-tahoe-dark-dock-regular-9254e2db86a7.webp"><img src="src/screenshots/previews/readme-tahoe-dark-dock-regular-9254e2db86a7.webp" alt="Tahoe Dock · Sombre" width="415"></a><br>Standard · Sombre</p>
 
-<p align="center"><a href="src/screenshots/previews/tahoe-dock-clear-light-reference-97f0fdd5e0a1.webp"><img src="src/screenshots/previews/tahoe-dock-clear-light-reference-97f0fdd5e0a1.webp" alt="Tahoe Dock · Clair" width="415"></a><br>Transparent · Clair</p>
+<p align="center"><a href="src/screenshots/previews/readme-tahoe-light-dock-clear-843c40a052a7.webp"><img src="src/screenshots/previews/readme-tahoe-light-dock-clear-843c40a052a7.webp" alt="Tahoe Dock · Clair" width="415"></a><br>Transparent · Clair</p>
 
-<p align="center"><a href="src/screenshots/previews/tahoe-dock-clear-dark-reference-9cdf564ebb32.webp"><img src="src/screenshots/previews/tahoe-dock-clear-dark-reference-9cdf564ebb32.webp" alt="Tahoe Dock · Sombre" width="415"></a><br>Transparent · Sombre</p>
+<p align="center"><a href="src/screenshots/previews/readme-tahoe-dark-dock-clear-58edd6d52e38.webp"><img src="src/screenshots/previews/readme-tahoe-dark-dock-clear-58edd6d52e38.webp" alt="Tahoe Dock · Sombre" width="415"></a><br>Transparent · Sombre</p>
 
-<p align="center"><a href="src/screenshots/previews/tahoe-dock-blue-light-reference-451ebd6e17bc.webp"><img src="src/screenshots/previews/tahoe-dock-blue-light-reference-451ebd6e17bc.webp" alt="Tahoe Dock · Clair" width="415"></a><br>Bleu · Clair</p>
+<p align="center"><a href="src/screenshots/previews/readme-tahoe-light-dock-blue-d39bb78e2f1d.webp"><img src="src/screenshots/previews/readme-tahoe-light-dock-blue-d39bb78e2f1d.webp" alt="Tahoe Dock · Clair" width="415"></a><br>Bleu · Clair</p>
 
-<p align="center"><a href="src/screenshots/previews/tahoe-dock-blue-dark-reference-a2757a9e1690.webp"><img src="src/screenshots/previews/tahoe-dock-blue-dark-reference-a2757a9e1690.webp" alt="Tahoe Dock · Sombre" width="415"></a><br>Bleu · Sombre</p>
+<p align="center"><a href="src/screenshots/previews/readme-tahoe-dark-dock-blue-a292ebe93f08.webp"><img src="src/screenshots/previews/readme-tahoe-dark-dock-blue-a292ebe93f08.webp" alt="Tahoe Dock · Sombre" width="415"></a><br>Bleu · Sombre</p>
 
-<p align="center"><a href="src/screenshots/previews/tahoe-dock-purple-light-reference-ce34696e8a65.webp"><img src="src/screenshots/previews/tahoe-dock-purple-light-reference-ce34696e8a65.webp" alt="Tahoe Dock · Clair" width="415"></a><br>Violet · Clair</p>
+<p align="center"><a href="src/screenshots/previews/readme-tahoe-light-dock-purple-b8d6d4a59d58.webp"><img src="src/screenshots/previews/readme-tahoe-light-dock-purple-b8d6d4a59d58.webp" alt="Tahoe Dock · Clair" width="415"></a><br>Violet · Clair</p>
 
-<p align="center"><a href="src/screenshots/previews/tahoe-dock-purple-dark-reference-a9513c3b6673.webp"><img src="src/screenshots/previews/tahoe-dock-purple-dark-reference-a9513c3b6673.webp" alt="Tahoe Dock · Sombre" width="415"></a><br>Violet · Sombre</p>
+<p align="center"><a href="src/screenshots/previews/readme-tahoe-dark-dock-purple-090970372f80.webp"><img src="src/screenshots/previews/readme-tahoe-dark-dock-purple-090970372f80.webp" alt="Tahoe Dock · Sombre" width="415"></a><br>Violet · Sombre</p>
 
-<p align="center"><a href="src/screenshots/previews/tahoe-dock-pink-light-reference-080e7323ffb1.webp"><img src="src/screenshots/previews/tahoe-dock-pink-light-reference-080e7323ffb1.webp" alt="Tahoe Dock · Clair" width="415"></a><br>Rose · Clair</p>
+<p align="center"><a href="src/screenshots/previews/readme-tahoe-light-dock-pink-c0b0ba00ddeb.webp"><img src="src/screenshots/previews/readme-tahoe-light-dock-pink-c0b0ba00ddeb.webp" alt="Tahoe Dock · Clair" width="415"></a><br>Rose · Clair</p>
 
-<p align="center"><a href="src/screenshots/previews/tahoe-dock-pink-dark-reference-37badc9241a8.webp"><img src="src/screenshots/previews/tahoe-dock-pink-dark-reference-37badc9241a8.webp" alt="Tahoe Dock · Sombre" width="415"></a><br>Rose · Sombre</p>
+<p align="center"><a href="src/screenshots/previews/readme-tahoe-dark-dock-pink-ba6941817529.webp"><img src="src/screenshots/previews/readme-tahoe-dark-dock-pink-ba6941817529.webp" alt="Tahoe Dock · Sombre" width="415"></a><br>Rose · Sombre</p>
 
-<p align="center"><a href="src/screenshots/previews/tahoe-dock-red-light-reference-a654bc25c74f.webp"><img src="src/screenshots/previews/tahoe-dock-red-light-reference-a654bc25c74f.webp" alt="Tahoe Dock · Clair" width="415"></a><br>Rouge · Clair</p>
+<p align="center"><a href="src/screenshots/previews/readme-tahoe-light-dock-red-19adb9d798fd.webp"><img src="src/screenshots/previews/readme-tahoe-light-dock-red-19adb9d798fd.webp" alt="Tahoe Dock · Clair" width="415"></a><br>Rouge · Clair</p>
 
-<p align="center"><a href="src/screenshots/previews/tahoe-dock-red-dark-reference-2799aac75e5c.webp"><img src="src/screenshots/previews/tahoe-dock-red-dark-reference-2799aac75e5c.webp" alt="Tahoe Dock · Sombre" width="415"></a><br>Rouge · Sombre</p>
+<p align="center"><a href="src/screenshots/previews/readme-tahoe-dark-dock-red-379c09615f96.webp"><img src="src/screenshots/previews/readme-tahoe-dark-dock-red-379c09615f96.webp" alt="Tahoe Dock · Sombre" width="415"></a><br>Rouge · Sombre</p>
 
-<p align="center"><a href="src/screenshots/previews/tahoe-dock-orange-light-reference-25bcc0e95908.webp"><img src="src/screenshots/previews/tahoe-dock-orange-light-reference-25bcc0e95908.webp" alt="Tahoe Dock · Clair" width="415"></a><br>Orange · Clair</p>
+<p align="center"><a href="src/screenshots/previews/readme-tahoe-light-dock-orange-18c4663ce547.webp"><img src="src/screenshots/previews/readme-tahoe-light-dock-orange-18c4663ce547.webp" alt="Tahoe Dock · Clair" width="415"></a><br>Orange · Clair</p>
 
-<p align="center"><a href="src/screenshots/previews/tahoe-dock-orange-dark-reference-70fab1e16209.webp"><img src="src/screenshots/previews/tahoe-dock-orange-dark-reference-70fab1e16209.webp" alt="Tahoe Dock · Sombre" width="415"></a><br>Orange · Sombre</p>
+<p align="center"><a href="src/screenshots/previews/readme-tahoe-dark-dock-orange-5079b478c649.webp"><img src="src/screenshots/previews/readme-tahoe-dark-dock-orange-5079b478c649.webp" alt="Tahoe Dock · Sombre" width="415"></a><br>Orange · Sombre</p>
 
-<p align="center"><a href="src/screenshots/previews/tahoe-dock-yellow-light-reference-ccb4a109822b.webp"><img src="src/screenshots/previews/tahoe-dock-yellow-light-reference-ccb4a109822b.webp" alt="Tahoe Dock · Clair" width="415"></a><br>Jaune · Clair</p>
+<p align="center"><a href="src/screenshots/previews/readme-tahoe-light-dock-yellow-c7656eaf2b61.webp"><img src="src/screenshots/previews/readme-tahoe-light-dock-yellow-c7656eaf2b61.webp" alt="Tahoe Dock · Clair" width="415"></a><br>Jaune · Clair</p>
 
-<p align="center"><a href="src/screenshots/previews/tahoe-dock-yellow-dark-reference-9bde557131d1.webp"><img src="src/screenshots/previews/tahoe-dock-yellow-dark-reference-9bde557131d1.webp" alt="Tahoe Dock · Sombre" width="415"></a><br>Jaune · Sombre</p>
+<p align="center"><a href="src/screenshots/previews/readme-tahoe-dark-dock-yellow-c1945efddc21.webp"><img src="src/screenshots/previews/readme-tahoe-dark-dock-yellow-c1945efddc21.webp" alt="Tahoe Dock · Sombre" width="415"></a><br>Jaune · Sombre</p>
 
-<p align="center"><a href="src/screenshots/previews/tahoe-dock-green-light-reference-36f3c1ba2de1.webp"><img src="src/screenshots/previews/tahoe-dock-green-light-reference-36f3c1ba2de1.webp" alt="Tahoe Dock · Clair" width="415"></a><br>Vert · Clair</p>
+<p align="center"><a href="src/screenshots/previews/readme-tahoe-light-dock-green-ac9611249165.webp"><img src="src/screenshots/previews/readme-tahoe-light-dock-green-ac9611249165.webp" alt="Tahoe Dock · Clair" width="415"></a><br>Vert · Clair</p>
 
-<p align="center"><a href="src/screenshots/previews/tahoe-dock-green-dark-reference-6f4857af9d43.webp"><img src="src/screenshots/previews/tahoe-dock-green-dark-reference-6f4857af9d43.webp" alt="Tahoe Dock · Sombre" width="415"></a><br>Vert · Sombre</p>
+<p align="center"><a href="src/screenshots/previews/readme-tahoe-dark-dock-green-84eab2e65cf2.webp"><img src="src/screenshots/previews/readme-tahoe-dark-dock-green-84eab2e65cf2.webp" alt="Tahoe Dock · Sombre" width="415"></a><br>Vert · Sombre</p>
 
-<p align="center"><a href="src/screenshots/previews/tahoe-dock-gray-light-reference-de7e0b3ebeae.webp"><img src="src/screenshots/previews/tahoe-dock-gray-light-reference-de7e0b3ebeae.webp" alt="Tahoe Dock · Clair" width="415"></a><br>Gris · Clair</p>
+<p align="center"><a href="src/screenshots/previews/readme-tahoe-light-dock-gray-18617e5c0df8.webp"><img src="src/screenshots/previews/readme-tahoe-light-dock-gray-18617e5c0df8.webp" alt="Tahoe Dock · Clair" width="415"></a><br>Gris · Clair</p>
 
-<p align="center"><a href="src/screenshots/previews/tahoe-dock-gray-dark-reference-85d9f5de1cae.webp"><img src="src/screenshots/previews/tahoe-dock-gray-dark-reference-85d9f5de1cae.webp" alt="Tahoe Dock · Sombre" width="415"></a><br>Gris · Sombre</p>
+<p align="center"><a href="src/screenshots/previews/readme-tahoe-dark-dock-gray-e7baf051c7cb.webp"><img src="src/screenshots/previews/readme-tahoe-dark-dock-gray-e7baf051c7cb.webp" alt="Tahoe Dock · Sombre" width="415"></a><br>Gris · Sombre</p>
 
 ### Tahoe Shell (Alpha)
 
 Accès aux réglages système, aux applications et aux commandes de session.
 
 <p align="center">
-  <img src="src/screenshots/menu_v4-b41832636db3.webp" alt="Tahoe Shell · Clair" width="415">
-  <img src="src/screenshots/menu_dark_v4-0f9fbb1971bd.webp" alt="Tahoe Shell · Sombre" width="415">
+  <img src="src/screenshots/previews/readme-tahoe-light-menu-a8579c6bdc3c.webp" alt="Tahoe Shell · Clair" width="415">
+  <img src="src/screenshots/previews/readme-tahoe-dark-menu-01a3a4305740.webp" alt="Tahoe Shell · Sombre" width="415">
 </p>
 
 ### Tahoe Centre de contrôle (Alpha)
@@ -157,8 +157,8 @@ Accès aux réglages système, aux applications et aux commandes de session.
 Wi-Fi, son, luminosité et notifications dans un menu en verre.
 
 <p align="center">
-  <img src="src/screenshots/control-center-light-912d3227499f.webp" alt="Tahoe Centre de contrôle · Clair" width="415">
-  <img src="src/screenshots/control-center-dark-0413d0b90a04.webp" alt="Tahoe Centre de contrôle · Sombre" width="415">
+  <img src="src/screenshots/previews/readme-tahoe-light-control-f093af128a34.webp" alt="Tahoe Centre de contrôle · Clair" width="415">
+  <img src="src/screenshots/previews/readme-tahoe-dark-control-3a039c914a10.webp" alt="Tahoe Centre de contrôle · Sombre" width="415">
 </p>
 
 ### Tahoe Historique du presse-papiers (Alpha)
@@ -166,8 +166,8 @@ Wi-Fi, son, luminosité et notifications dans un menu en verre.
 Retrouvez et réutilisez le texte et les images copiés depuis Launchpad.
 
 <p align="center">
-  <img src="src/screenshots/previews/clipboard-launcher-light-41232b9ea980.webp" alt="Tahoe Historique du presse-papiers · Clair" width="415">
-  <img src="src/screenshots/previews/clipboard-launcher-dark-383fc47bdf9a.webp" alt="Tahoe Historique du presse-papiers · Sombre" width="415">
+  <img src="src/screenshots/previews/readme-tahoe-light-clipboard-e0cf55fa87a4.webp" alt="Tahoe Historique du presse-papiers · Clair" width="415">
+  <img src="src/screenshots/previews/readme-tahoe-dark-clipboard-024174b100b7.webp" alt="Tahoe Historique du presse-papiers · Sombre" width="415">
 </p>
 
 ### Tahoe Informations système
@@ -175,8 +175,8 @@ Retrouvez et réutilisez le texte et les images copiés depuis Launchpad.
 Informations sur votre matériel, vos logiciels et votre thème.
 
 <p align="center">
-  <img src="src/screenshots/about_v4-03352b9758c3.webp" alt="Tahoe Informations système · Clair" width="415">
-  <img src="src/screenshots/about_dark_v4-f2d6c47fe0e6.webp" alt="Tahoe Informations système · Sombre" width="415">
+  <img src="src/screenshots/previews/readme-tahoe-light-about-2a83d687da3f.webp" alt="Tahoe Informations système · Clair" width="415">
+  <img src="src/screenshots/previews/readme-tahoe-dark-about-c6bf5138a206.webp" alt="Tahoe Informations système · Sombre" width="415">
 </p>
 
 ### Tahoe Thème Plasma (Alpha)
@@ -184,8 +184,8 @@ Informations sur votre matériel, vos logiciels et votre thème.
 Menus et fenêtres contextuelles translucides avec des couleurs claires et sombres coordonnées.
 
 <p align="center">
-  <img src="src/screenshots/context_menu_v4-1e63c5d70acd.webp" alt="Tahoe Thème Plasma · Clair" width="415">
-  <img src="src/screenshots/context_menu_dark_v4-7148ec8f973c.webp" alt="Tahoe Thème Plasma · Sombre" width="415">
+  <img src="src/screenshots/previews/readme-tahoe-light-context-a94e322fac42.webp" alt="Tahoe Thème Plasma · Clair" width="415">
+  <img src="src/screenshots/previews/readme-tahoe-dark-context-359afa6d3a32.webp" alt="Tahoe Thème Plasma · Sombre" width="415">
 </p>
 
 ### Tahoe Écran de démarrage (Alpha)
@@ -193,7 +193,7 @@ Menus et fenêtres contextuelles translucides avec des couleurs claires et sombr
 Écran de démarrage avec déverrouillage intégré des disques chiffrés LUKS2.
 
 <p align="center">
-  <img src="src/screenshots/boot_v4-1f628792b5bc.webp" alt="Tahoe Écran de démarrage" width="415">
+  <img src="src/screenshots/previews/readme-tahoe-light-boot-959163f469f4.webp" alt="Tahoe Écran de démarrage" width="415">
 </p>
 
 ## Options et outils

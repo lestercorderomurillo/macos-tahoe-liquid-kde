@@ -159,7 +159,7 @@
         "icons": "MacTahoeLiquidKde-Icons-Regular-Dark",
         "effect": "a4a55b2f39b8b7fa42903c622bcf18d113847b624874d88af15a38f81e67ea99"
       },
-      "user_approved": false
+      "user_approved": true
     },
     "previews/readme-tahoe-light-about-2a83d687da3f.webp": {
       "sha256": "2a83d687da3f36b5fb01dc194ebec999ce588b06ac3770cad9a131c320782850",
@@ -313,7 +313,7 @@
         "icons": "MacTahoeLiquidKde-Icons-Regular-Light",
         "effect": "a4a55b2f39b8b7fa42903c622bcf18d113847b624874d88af15a38f81e67ea99"
       },
-      "user_approved": false
+      "user_approved": true
     },
     "previews/readme-tahoe-light-boot-959163f469f4.webp": {
       "sha256": "959163f469f4d9ba1197e3a5b122a0c3b482d232a84f8499fad536be62bab3ba",
@@ -333,7 +333,7 @@
         "sha256": "f685ec98f1e4407f2624c352f6b6e18ae8c2a686a64f162f6d0666d8fcbfb4d0",
         "capture_method": "Plymouth startup rendered by release_capture_guest.boot inside disposable VM; progress fixture 65%; no shutdown photograph"
       },
-      "user_approved": false
+      "user_approved": true
     },
     "previews/readme-tahoe-dark-context-359afa6d3a32.webp": {
       "sha256": "359afa6d3a32f66353159f2f3c5edcc961215a7ce79ba8c23a53e4d94917285a",
@@ -487,7 +487,7 @@
         "icons": "MacTahoeLiquidKde-Icons-Regular-Dark",
         "effect": "a4a55b2f39b8b7fa42903c622bcf18d113847b624874d88af15a38f81e67ea99"
       },
-      "user_approved": false
+      "user_approved": true
     },
     "previews/readme-tahoe-light-context-a94e322fac42.webp": {
       "sha256": "a94e322fac42c77a91879444cbdbb0bc2eea32a9fadbde6d74ef9964e4b4ce56",
@@ -641,7 +641,7 @@
         "icons": "MacTahoeLiquidKde-Icons-Regular-Light",
         "effect": "a4a55b2f39b8b7fa42903c622bcf18d113847b624874d88af15a38f81e67ea99"
       },
-      "user_approved": false
+      "user_approved": true
     },
     "previews/readme-tahoe-dark-control-3a039c914a10.webp": {
       "sha256": "3a039c914a108999fd19bc0929b34074db9b450d80bfcd0d72ffe41db5fd0efb",
@@ -795,7 +795,7 @@
         "icons": "MacTahoeLiquidKde-Icons-Regular-Dark",
         "effect": "a4a55b2f39b8b7fa42903c622bcf18d113847b624874d88af15a38f81e67ea99"
       },
-      "user_approved": false
+      "user_approved": true
     },
     "previews/readme-tahoe-light-control-f093af128a34.webp": {
       "sha256": "f093af128a34c720e12ec5e7f0058e0c3c46e34e86f2dc8ac606221f10f50444",
@@ -949,7 +949,7 @@
         "icons": "MacTahoeLiquidKde-Icons-Regular-Light",
         "effect": "a4a55b2f39b8b7fa42903c622bcf18d113847b624874d88af15a38f81e67ea99"
       },
-      "user_approved": false
+      "user_approved": true
     },
     "previews/readme-tahoe-dark-launcher-2399734a1625.webp": {
       "sha256": "2399734a1625f19cd91d0e09693ab78b3dd93c9cb1894f29352f5925c05c83e6",
@@ -1098,7 +1098,7 @@
         "icons": "MacTahoeLiquidKde-Icons-Regular-Dark",
         "effect": "a4a55b2f39b8b7fa42903c622bcf18d113847b624874d88af15a38f81e67ea99"
       },
-      "user_approved": false
+      "user_approved": true
     },
     "previews/readme-tahoe-light-launcher-95744cf7a341.webp": {
       "sha256": "95744cf7a341b5bac81bfd4cc654f701f6ae22a20f8461f47b961fe071c59eb8",
@@ -1247,7 +1247,7 @@
         "icons": "MacTahoeLiquidKde-Icons-Regular-Light",
         "effect": "a4a55b2f39b8b7fa42903c622bcf18d113847b624874d88af15a38f81e67ea99"
       },
-      "user_approved": false
+      "user_approved": true
     },
     "previews/readme-tahoe-dark-menu-01a3a4305740.webp": {
       "sha256": "01a3a4305740ab7e6f4afbc569e59eec76d4f3438f1b6429367182d547df2489",
@@ -1401,7 +1401,7 @@
         "icons": "MacTahoeLiquidKde-Icons-Regular-Dark",
         "effect": "a4a55b2f39b8b7fa42903c622bcf18d113847b624874d88af15a38f81e67ea99"
       },
-      "user_approved": false
+      "user_approved": true
     },
     "previews/readme-tahoe-light-menu-a8579c6bdc3c.webp": {
       "sha256": "a8579c6bdc3c23d1e666f47b6ea202eec54a4c80ce93bbeeef2d6c4f7e053f07",
@@ -1555,7 +1555,7 @@
         "icons": "MacTahoeLiquidKde-Icons-Regular-Light",
         "effect": "a4a55b2f39b8b7fa42903c622bcf18d113847b624874d88af15a38f81e67ea99"
       },
-      "user_approved": false
+      "user_approved": true
     },
     "previews/readme-tahoe-dark-clipboard-024174b100b7.webp": {
       "sha256": "024174b100b75cbe88607bb5e79e56da826cb6450aba5ef6634f8b4fe971e1e4",
@@ -1625,7 +1625,7 @@
           "Ctrl+1 restores applications"
         ]
       },
-      "user_approved": false
+      "user_approved": true
     },
     "previews/readme-tahoe-light-clipboard-e0cf55fa87a4.webp": {
       "sha256": "e0cf55fa87a4480a8b8dd529de0709e1a48e91b4ecee26de14720832303709e2",
@@ -1695,7 +1695,7 @@
           "Ctrl+1 restores applications"
         ]
       },
-      "user_approved": false
+      "user_approved": true
     },
     "previews/readme-tahoe-dark-finder-blue-2a9bacc3b9a9.webp": {
       "sha256": "2a9bacc3b9a9fe5ead1d0ebe9167326e22a68779aa5a2d01826a66d3cfcb1fd0",
@@ -1844,7 +1844,7 @@
         "icons": "MacTahoeLiquidKde-Icons-Readme-blue-Dark",
         "effect": "a4a55b2f39b8b7fa42903c622bcf18d113847b624874d88af15a38f81e67ea99"
       },
-      "user_approved": false
+      "user_approved": true
     },
     "previews/readme-tahoe-dark-finder-red-a5d3144faf0f.webp": {
       "sha256": "a5d3144faf0f90792f3b76c5c533a2c5b50cb9e07e2ec2812394348984797a09",
@@ -1993,7 +1993,7 @@
         "icons": "MacTahoeLiquidKde-Icons-Readme-red-Dark",
         "effect": "a4a55b2f39b8b7fa42903c622bcf18d113847b624874d88af15a38f81e67ea99"
       },
-      "user_approved": false
+      "user_approved": true
     },
     "previews/readme-tahoe-dark-dock-blue-a292ebe93f08.webp": {
       "sha256": "a292ebe93f08d69d3b0e96a004c172dd7872a65774737c20cfb52792d7ba1adb",
@@ -2117,7 +2117,7 @@
         "icons": "MacTahoeLiquidKde-Icons-Readme-blue-Dark",
         "effect": "a4a55b2f39b8b7fa42903c622bcf18d113847b624874d88af15a38f81e67ea99"
       },
-      "user_approved": false
+      "user_approved": true
     },
     "previews/readme-tahoe-light-dock-blue-d39bb78e2f1d.webp": {
       "sha256": "d39bb78e2f1d264a65b61e7d7ab431ae12c9ff1ae6fe257b96ac0149b42c47e7",
@@ -2241,7 +2241,7 @@
         "icons": "MacTahoeLiquidKde-Icons-Readme-blue-Light",
         "effect": "a4a55b2f39b8b7fa42903c622bcf18d113847b624874d88af15a38f81e67ea99"
       },
-      "user_approved": false
+      "user_approved": true
     },
     "previews/readme-tahoe-dark-dock-clear-58edd6d52e38.webp": {
       "sha256": "58edd6d52e3883ceebfb95b8d9c4c0dffa5d1abbbea523479c7cab424c5e0a45",
@@ -2365,7 +2365,7 @@
         "icons": "MacTahoeLiquidKde-Icons-Readme-clear-Dark",
         "effect": "a4a55b2f39b8b7fa42903c622bcf18d113847b624874d88af15a38f81e67ea99"
       },
-      "user_approved": false
+      "user_approved": true
     },
     "previews/readme-tahoe-light-dock-clear-843c40a052a7.webp": {
       "sha256": "843c40a052a78e6f9d33431a3f7a37758834185856ba8074edd98a8109d2a6ea",
@@ -2489,7 +2489,7 @@
         "icons": "MacTahoeLiquidKde-Icons-Readme-clear-Light",
         "effect": "a4a55b2f39b8b7fa42903c622bcf18d113847b624874d88af15a38f81e67ea99"
       },
-      "user_approved": false
+      "user_approved": true
     },
     "previews/readme-tahoe-dark-dock-gray-e7baf051c7cb.webp": {
       "sha256": "e7baf051c7cbf1f949ffeadcbf9331fecc359acf004f0c69216fc67ce5134e55",
@@ -2613,7 +2613,7 @@
         "icons": "MacTahoeLiquidKde-Icons-Readme-gray-Dark",
         "effect": "a4a55b2f39b8b7fa42903c622bcf18d113847b624874d88af15a38f81e67ea99"
       },
-      "user_approved": false
+      "user_approved": true
     },
     "previews/readme-tahoe-light-dock-gray-18617e5c0df8.webp": {
       "sha256": "18617e5c0df80fee1275f46706749e4da5b93695755ceee557045a63e7afce01",
@@ -2737,7 +2737,7 @@
         "icons": "MacTahoeLiquidKde-Icons-Readme-gray-Light",
         "effect": "a4a55b2f39b8b7fa42903c622bcf18d113847b624874d88af15a38f81e67ea99"
       },
-      "user_approved": false
+      "user_approved": true
     },
     "previews/readme-tahoe-dark-dock-green-84eab2e65cf2.webp": {
       "sha256": "84eab2e65cf24aa5107c9d85845848d01e9c16d89437cd00393ae8653037c9af",
@@ -2861,7 +2861,7 @@
         "icons": "MacTahoeLiquidKde-Icons-Readme-green-Dark",
         "effect": "a4a55b2f39b8b7fa42903c622bcf18d113847b624874d88af15a38f81e67ea99"
       },
-      "user_approved": false
+      "user_approved": true
     },
     "previews/readme-tahoe-light-dock-green-ac9611249165.webp": {
       "sha256": "ac9611249165684212941e2d1faf29af15a562ee93967d5b49087c5761e527ed",
@@ -2985,7 +2985,7 @@
         "icons": "MacTahoeLiquidKde-Icons-Readme-green-Light",
         "effect": "a4a55b2f39b8b7fa42903c622bcf18d113847b624874d88af15a38f81e67ea99"
       },
-      "user_approved": false
+      "user_approved": true
     },
     "previews/readme-tahoe-dark-dock-orange-5079b478c649.webp": {
       "sha256": "5079b478c6492e702f0f32d4868c0a6afc510d466ea32e3fa6b25317e64e5e9e",
@@ -3109,7 +3109,7 @@
         "icons": "MacTahoeLiquidKde-Icons-Readme-orange-Dark",
         "effect": "a4a55b2f39b8b7fa42903c622bcf18d113847b624874d88af15a38f81e67ea99"
       },
-      "user_approved": false
+      "user_approved": true
     },
     "previews/readme-tahoe-light-dock-orange-18c4663ce547.webp": {
       "sha256": "18c4663ce5476ff8f8f3ab07bb907023cd48cc11140f0d4bdb02ff10cf583990",
@@ -3233,7 +3233,7 @@
         "icons": "MacTahoeLiquidKde-Icons-Readme-orange-Light",
         "effect": "a4a55b2f39b8b7fa42903c622bcf18d113847b624874d88af15a38f81e67ea99"
       },
-      "user_approved": false
+      "user_approved": true
     },
     "previews/readme-tahoe-dark-dock-pink-ba6941817529.webp": {
       "sha256": "ba69418175298da90ff21fe71ff3e1652dbc51807148ea05389186345ca26601",
@@ -3357,7 +3357,7 @@
         "icons": "MacTahoeLiquidKde-Icons-Readme-pink-Dark",
         "effect": "a4a55b2f39b8b7fa42903c622bcf18d113847b624874d88af15a38f81e67ea99"
       },
-      "user_approved": false
+      "user_approved": true
     },
     "previews/readme-tahoe-light-dock-pink-c0b0ba00ddeb.webp": {
       "sha256": "c0b0ba00ddebb37a12c5efbdb78520499b8ba9416e8a8c752866e94a91dddd41",
@@ -3481,7 +3481,7 @@
         "icons": "MacTahoeLiquidKde-Icons-Readme-pink-Light",
         "effect": "a4a55b2f39b8b7fa42903c622bcf18d113847b624874d88af15a38f81e67ea99"
       },
-      "user_approved": false
+      "user_approved": true
     },
     "previews/readme-tahoe-dark-dock-purple-090970372f80.webp": {
       "sha256": "090970372f80e2b479c1eb028e365cdef9c6d8c697d00d4b369a7c26f3622e1d",
@@ -3605,7 +3605,7 @@
         "icons": "MacTahoeLiquidKde-Icons-Readme-purple-Dark",
         "effect": "a4a55b2f39b8b7fa42903c622bcf18d113847b624874d88af15a38f81e67ea99"
       },
-      "user_approved": false
+      "user_approved": true
     },
     "previews/readme-tahoe-light-dock-purple-b8d6d4a59d58.webp": {
       "sha256": "b8d6d4a59d58c71db5bac440221ec7e2e2cb533746ca346d07a4e515e54191ea",
@@ -3729,7 +3729,7 @@
         "icons": "MacTahoeLiquidKde-Icons-Readme-purple-Light",
         "effect": "a4a55b2f39b8b7fa42903c622bcf18d113847b624874d88af15a38f81e67ea99"
       },
-      "user_approved": false
+      "user_approved": true
     },
     "previews/readme-tahoe-dark-dock-red-379c09615f96.webp": {
       "sha256": "379c09615f96139f42bb3e353d33968466fcdca719f192f83f41a9d6ac23e983",
@@ -3853,7 +3853,7 @@
         "icons": "MacTahoeLiquidKde-Icons-Readme-red-Dark",
         "effect": "a4a55b2f39b8b7fa42903c622bcf18d113847b624874d88af15a38f81e67ea99"
       },
-      "user_approved": false
+      "user_approved": true
     },
     "previews/readme-tahoe-light-dock-red-19adb9d798fd.webp": {
       "sha256": "19adb9d798fd178221e6ce275b3aeda3d62f6ceb88a88f9bd882620530900873",
@@ -3977,7 +3977,7 @@
         "icons": "MacTahoeLiquidKde-Icons-Readme-red-Light",
         "effect": "a4a55b2f39b8b7fa42903c622bcf18d113847b624874d88af15a38f81e67ea99"
       },
-      "user_approved": false
+      "user_approved": true
     },
     "previews/readme-tahoe-dark-dock-regular-9254e2db86a7.webp": {
       "sha256": "9254e2db86a75be26c8d5a73c6a5ede71a1847d763c437198f494efee5386bc3",
@@ -4101,7 +4101,7 @@
         "icons": "MacTahoeLiquidKde-Icons-Regular-Dark",
         "effect": "a4a55b2f39b8b7fa42903c622bcf18d113847b624874d88af15a38f81e67ea99"
       },
-      "user_approved": false
+      "user_approved": true
     },
     "previews/readme-tahoe-light-dock-regular-6d506b3465fd.webp": {
       "sha256": "6d506b3465fdb3b8d1deae173f0fee42fbdb76e8f5c408cc831f90708a90ccf0",
@@ -4225,7 +4225,7 @@
         "icons": "MacTahoeLiquidKde-Icons-Regular-Light",
         "effect": "a4a55b2f39b8b7fa42903c622bcf18d113847b624874d88af15a38f81e67ea99"
       },
-      "user_approved": false
+      "user_approved": true
     },
     "previews/readme-tahoe-dark-dock-yellow-c1945efddc21.webp": {
       "sha256": "c1945efddc21fd56a51f14ed2223a7dc769be4d22d638c9ca946beffc15fefa6",
@@ -4349,7 +4349,7 @@
         "icons": "MacTahoeLiquidKde-Icons-Readme-yellow-Dark",
         "effect": "a4a55b2f39b8b7fa42903c622bcf18d113847b624874d88af15a38f81e67ea99"
       },
-      "user_approved": false
+      "user_approved": true
     },
     "previews/readme-tahoe-light-dock-yellow-c7656eaf2b61.webp": {
       "sha256": "c7656eaf2b61ef9263f452de2937830216148ae9073d9a56a5155079186cd891",
@@ -4473,7 +4473,7 @@
         "icons": "MacTahoeLiquidKde-Icons-Readme-yellow-Light",
         "effect": "a4a55b2f39b8b7fa42903c622bcf18d113847b624874d88af15a38f81e67ea99"
       },
-      "user_approved": false
+      "user_approved": true
     },
     "previews/readme-tahoe-light-finder-blue-ad74eeb6e7a1.webp": {
       "sha256": "ad74eeb6e7a16c253d2db604b418e8485b8446d4dcfa7e754cfae77c0bbdb509",
@@ -4622,7 +4622,7 @@
         "icons": "MacTahoeLiquidKde-Icons-Readme-blue-Light",
         "effect": "a4a55b2f39b8b7fa42903c622bcf18d113847b624874d88af15a38f81e67ea99"
       },
-      "user_approved": false
+      "user_approved": true
     },
     "previews/readme-tahoe-light-finder-red-cf60519353bc.webp": {
       "sha256": "cf60519353bc03e2894d2b0cdcc271b14974020b21562e61b095704f2d8b818d",
@@ -4771,7 +4771,7 @@
         "icons": "MacTahoeLiquidKde-Icons-Readme-red-Light",
         "effect": "a4a55b2f39b8b7fa42903c622bcf18d113847b624874d88af15a38f81e67ea99"
       },
-      "user_approved": false
+      "user_approved": true
     },
     "previews/readme-tahoe-dark-finder-3fba4166a2d8.webp": {
       "sha256": "3fba4166a2d82bc96c500a9ac9da4dd05cfc28b676c0eb7424a586938d9600ff",
@@ -4920,7 +4920,7 @@
         "icons": "MacTahoeLiquidKde-Icons-Regular-Dark",
         "effect": "a4a55b2f39b8b7fa42903c622bcf18d113847b624874d88af15a38f81e67ea99"
       },
-      "user_approved": false
+      "user_approved": true
     },
     "previews/readme-tahoe-light-finder-4203d60bcd59.webp": {
       "sha256": "4203d60bcd59c2d02ab66d8c624e3a8ffd843872f65d9fb81921c4acf09fb77e",
@@ -5069,7 +5069,7 @@
         "icons": "MacTahoeLiquidKde-Icons-Regular-Light",
         "effect": "a4a55b2f39b8b7fa42903c622bcf18d113847b624874d88af15a38f81e67ea99"
       },
-      "user_approved": false
+      "user_approved": true
     }
   },
   "missing": [],
@@ -5082,5 +5082,9 @@
     "Capture clock was initialized from the pinned profile; elapsed times in screenshots are retained."
   ],
   "agent_reviewed": true,
-  "user_approved": false
+  "user_approved": true,
+  "approval": {
+    "instruction": "si",
+    "date": "2026-11-17"
+  }
 }
