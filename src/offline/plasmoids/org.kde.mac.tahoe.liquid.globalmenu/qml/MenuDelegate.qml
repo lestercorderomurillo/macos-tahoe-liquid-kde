@@ -12,7 +12,7 @@ import org.kde.kirigami as Kirigami
 AbstractButton {
     id: controlRoot
 
-    font.weight: Font.Normal
+    font.weight: Font.Bold
     property bool menuIsOpen: false
     property bool hoverOpensMenu: true
 
@@ -49,12 +49,37 @@ AbstractButton {
     Accessible.description: i18nc("@info:usagetip", "Open a menu")
 
     background: Rectangle {
+        id: capsule
+
         y: Math.min(Kirigami.Units.smallSpacing, controlRoot.height / 4)
         height: Math.max(0, controlRoot.height - 2 * y)
         radius: Math.min(width, height) / 2
-        color: controlRoot.menuState === MenuDelegate.State.Rest
-               ? "transparent"
-               : Qt.rgba(0.5, 0.5, 0.5, controlRoot.menuState === MenuDelegate.State.Down ? 0.25 : 0.18)
+        // Panel foreground can follow the wallpaper, so pair the capsule with the actual label color.
+        readonly property bool lightText: Kirigami.ColorUtils.brightnessForColor(Kirigami.Theme.textColor)
+                                          === Kirigami.ColorUtils.Light
+        readonly property bool pressed: controlRoot.menuState === MenuDelegate.State.Down
+        readonly property real fillOpacity: pressed ? 0.30 : 0.20
+        readonly property real gradientOffset: lightText ? 0.08 : -0.08
+
+        visible: controlRoot.menuState !== MenuDelegate.State.Rest
+        border.width: 1
+        border.color: overlay(pressed ? 0.65 : 0.50)
+        gradient: Gradient {
+            GradientStop {
+                position: 0
+                color: capsule.overlay(capsule.fillOpacity + capsule.gradientOffset)
+            }
+            GradientStop {
+                position: 1
+                color: capsule.overlay(capsule.fillOpacity - capsule.gradientOffset)
+            }
+        }
+
+        // Source-over tint shifts the visible backdrop without flattening its colors.
+        function overlay(alpha: real): color {
+            const channel = lightText ? 1 : 0;
+            return Qt.rgba(channel, channel, channel, alpha);
+        }
     }
 
     contentItem: PC3.Label {

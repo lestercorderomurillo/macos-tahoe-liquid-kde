@@ -9,7 +9,6 @@ pragma ComponentBehavior: Bound
 
 import QtQuick
 import QtQuick.Layouts
-import QtQuick.Controls as QQC2
 import QtQml
 
 import org.kde.plasma.plasmoid
@@ -128,7 +127,7 @@ PlasmoidItem {
             }
         }
 
-        QQC2.AbstractButton {
+        MenuDelegate {
             id: systemMenuButton
             Accessible.name: i18n("System menu")
             readonly property int buttonIndex: -3
@@ -141,26 +140,9 @@ PlasmoidItem {
             leftPadding: 3.5 * Kirigami.Units.smallSpacing
             rightPadding: 3.5 * Kirigami.Units.smallSpacing
 
-            hoverEnabled: true
-            onHoveredChanged: if (Plasmoid.configuration.hoverOpensMenu && hovered && menuIsOpen) { Plasmoid.triggerSystemMenu(this); }
-            onPressed: Plasmoid.triggerSystemMenu(this)
-
             down: Plasmoid.currentIndex === -3
-
-            property int menuState: {
-                if (down) return 2;
-                if (hovered && !menuIsOpen) return 1;
-                return 0;
-            }
-
-            background: Rectangle {
-                y: Math.min(Kirigami.Units.smallSpacing, systemMenuButton.height / 4)
-                height: Math.max(0, systemMenuButton.height - 2 * y)
-                radius: Math.min(width, height) / 2
-                color: systemMenuButton.menuState === 0
-                       ? "transparent"
-                       : Qt.rgba(0.5, 0.5, 0.5, systemMenuButton.menuState === 2 ? 0.25 : 0.18)
-            }
+            hoverOpensMenu: Plasmoid.configuration.hoverOpensMenu
+            onActivated: Plasmoid.triggerSystemMenu(this)
 
             contentItem: Kirigami.Icon {
                 source: root.cfgIcon
@@ -175,7 +157,7 @@ PlasmoidItem {
             readonly property int buttonIndex: -2
             visible: appMenuModel.activeAppName !== ""
             text: appMenuModel.activeAppName
-            font.weight: Font.Bold
+            font.weight: Font.ExtraBold
             Layout.fillHeight: !root.vertical
 
             down: Plasmoid.currentIndex === -2
