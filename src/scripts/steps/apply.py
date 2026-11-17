@@ -542,7 +542,7 @@ def _reset_wallpaper(*, live_ready: bool, native_reset: bool) -> None:
         declared = None
     candidates = _wallpaper_reset_candidates(_BREEZE_LOOK_AND_FEEL)
     if not candidates:
-        warn(tr('Wallpaper reset failed: Breeze declared no usable wallpaper and no installed fallback package was found'))
+        fail(tr('Wallpaper reset failed: Breeze declared no usable wallpaper and no installed fallback package was found'))
         return
 
     current: list[dict[str, object]] | None = None
@@ -589,15 +589,19 @@ def _reset_wallpaper(*, live_ready: bool, native_reset: bool) -> None:
             ok(tr('Wallpaper reset'))
             return
 
-    warn(tr('Wallpaper reset failed after native, path, DBus, and on-disk fallbacks'))
+    fail(tr('Wallpaper reset failed after native, path, DBus, and on-disk fallbacks'))
 
 
 def uninstall() -> None:
     # Keep Breeze on disk as the source of truth, then best-effort the live
     # switch only when the full Plasma session is ready enough for it.
-    if have("kwriteconfig6"):
-        kw_write("--file", "kdeglobals", "--group", "KDE",
-                 "--key", "LookAndFeelPackage", _BREEZE_LOOK_AND_FEEL)
+    if not have("kwriteconfig6"):
+        fail("Cannot restore Breeze: kwriteconfig6 is unavailable")
+        return
+    for key, value in (("LookAndFeelPackage", _BREEZE_LOOK_AND_FEEL), ("widgetStyle", "Breeze")):
+        if not kw_write("--file", "kdeglobals", "--group", "KDE", "--key", key, value):
+            fail("Cannot persist Breeze settings")
+            return
 
     _scrub_kdedefaults()
     live_ready = _live_plasma_ready_quick()
@@ -614,12 +618,16 @@ def uninstall() -> None:
 
     if have("kwriteconfig6"):
         if feat_enabled("FONTS"):
+            fonts_reset = True
             for key, val in _FONTS_RESET.items():
-                kw_write("--file", "kdeglobals", "--group", "General",
-                         "--key", key, val)
-            kw_write("--file", "kdeglobals", "--group", "WM",
-                     "--key", "activeFont", "Noto Sans,10,-1,5,50,0,0,0,0,0")
-            ok(tr('Fonts reset'))
+                fonts_reset = kw_write("--file", "kdeglobals", "--group", "General",
+                         "--key", key, val) and fonts_reset
+            fonts_reset = kw_write("--file", "kdeglobals", "--group", "WM",
+                     "--key", "activeFont", "Noto Sans,10,-1,5,50,0,0,0,0,0") and fonts_reset
+            if fonts_reset:
+                ok(tr('Fonts reset'))
+            else:
+                fail("Could not restore default fonts")
         if feat_enabled("CURSORS"):
             cursor_reset = (
                 have("plasma-apply-cursortheme")
@@ -633,7 +641,7 @@ def uninstall() -> None:
             if cursor_reset:
                 ok(tr('Cursor reset'))
             else:
-                warn(tr('Cursor reset failed'))
+                fail(tr('Cursor reset failed'))
         # Reset icons UNCONDITIONALLY (not gated on the ICONS feature): the
         # MacTahoe icon dirs are deleted later, so point config at breeze first.
         changeicons = kde_libexec_binary("plasma-changeicons")
@@ -649,11 +657,11 @@ def uninstall() -> None:
         if icons_reset:
             ok(tr('Icons reset'))
         else:
-            warn(tr('Icons reset failed'))
+            fail(tr('Icons reset failed'))
         if reset_kde_color_scheme_config("BreezeLight"):
             ok(tr('Color scheme reset'))
         else:
-            warn(tr('Color scheme reset failed'))
+            fail(tr('Color scheme reset failed'))
 
     _flush_caches()
 

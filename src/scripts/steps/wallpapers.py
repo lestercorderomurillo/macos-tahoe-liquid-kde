@@ -11,6 +11,7 @@ from steps._helpers import (
     DATA_HOME, fail, info, offline, ok, reinstall,
 )
 from utils import safe_copy
+from owned_assets import install as install_owned, remove_owned
 
 DEST_DIR = DATA_HOME / "wallpapers"
 OFFLINE_DIR = offline("wallpapers")
@@ -27,7 +28,11 @@ def install() -> None:
             return
         custom = DEST_DIR / "MacTahoe-Custom"
         custom.mkdir(parents=True, exist_ok=True)
-        shutil.copyfile(source, custom / "wallpaper")
+        from steps.fonts import _copy_font
+        def copy(src, dst):
+            _copy_font(src, dst)
+            return True
+        install_owned("wallpapers", source, custom / "wallpaper", copy)
     pre = {p.name for p in DEST_DIR.glob("*/") if p.is_dir()}
     DEST_DIR.mkdir(parents=True, exist_ok=True)
 
@@ -40,7 +45,7 @@ def install() -> None:
         if not (wp / "metadata.json").is_file():
             fail(tr('{value1} (missing metadata.json in offline bundle)', value1=wp.name))
             continue
-        if not safe_copy(wp, DEST_DIR / wp.name):
+        if not install_owned("wallpapers", wp, DEST_DIR / wp.name, safe_copy):
             fail(tr('{value1} (copy failed)', value1=wp.name))
             continue
         if wp.name in pre:
@@ -64,20 +69,5 @@ _FIXED_NAMES = (
 
 
 def uninstall() -> None:
-    n = 0
-    for name in _FIXED_NAMES:
-        d = DEST_DIR / name
-        if d.is_dir():
-            try:
-                shutil.rmtree(d)
-                ok(name); n += 1
-            except OSError:
-                fail(name)
-    # Legacy index-numbered landscapes from earlier releases.
-    for d in DEST_DIR.glob("MacTahoe-Landscape-[0-9][0-9]/"):
-        try:
-            shutil.rmtree(d)
-            ok(d.name); n += 1
-        except OSError:
-            fail(d.name)
+    n = remove_owned("wallpapers", DEST_DIR)
     info(tr('{n} wallpapers removed', n=n))

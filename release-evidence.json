@@ -1,30 +1,31 @@
 {
-  "version": "0.73.2",
-  "source_sha256": "d9b8f3e4025dbc8f82fd334c8334c89540ba70124ec581b17234036ffac1e150",
-  "scope": "Extend successful-install cleanup to recognized previous successful builds, including unselected or reused components. Active builds and unknown files remain untouched.",
-  "environment": "Local Linux/Python and disposable Plasma 6.8.1 / Qt 6.11.1 VM; prepared Golden Gate source.",
+  "version": "0.73.3",
+  "source_sha256": "505b54c29cd76059438f77663fa7196e4018a1dcd827c484f3b17b506a8f84a7",
+  "scope": "User-approved audit fixes 3, 2 and 1: stop removal after failed Breeze restoration; preserve preexisting or modified fonts, icons and wallpapers through ownership records and recovery copies. Clipboard behavior unchanged.",
+  "environment": "Disposable Plasma 6.8.1 / Qt 6.11.1 VM; final focused tests and selected lifecycle, including prepared Golden Gate source.",
   "checks": [
     {
-      "command": "python3 -m pytest tests/test_install_build_cleanup.py tests/test_component_cache.py -q",
+      "command": "python3 -m pytest tests/test_owned_assets.py tests/test_fonts.py tests/test_component_cache.py tests/test_wallpaper_defaults.py tests/test_apply_portability.py tests/test_cli.py -q",
       "result": "passed",
-      "detail": "26 passed in 4.70s; old-build cleanup, failure preservation, ownership/source guards, changed stamps, active builds, links and component reuse."
+      "detail": "144 passed in 7.40s inside the VM on final implementation."
     },
     {
-      "command": "python3 -m pytest tests/test_install_build_cleanup.py -q",
+      "command": "python3 -m pytest tests/test_owned_assets.py tests/test_fonts.py tests/test_wallpaper_defaults.py -q",
       "result": "passed",
-      "detail": "Prepared Golden Gate source: 11 passed in 1.25s."
+      "detail": "26 passed in 3.60s on prepared Golden Gate source inside VM."
     },
     {
-      "command": "sudo env MAC_TAHOE_NO_UPDATE_CHECK=true MTTKDE_NO_CONFIRM=1 MTTKDE_LANGUAGE=en python3 /home/tester/release-capture/source/src/scripts/installer_backend.py install --only --fonts --no-apply-theme",
+      "command": "python3 /tmp/safety-0733-lifecycle.py",
       "result": "passed",
-      "detail": "After successful Global Menu installation and recreation of prior objects, fonts-only install removed 39 old objects; build stamp and installed binary hash unchanged. See docs/evidence/storage-cleanup-0732.json."
+      "detail": "VM install/reinstall/uninstall of fonts, icons and wallpapers all exited 0; six personal files preserved/restored, new owned font removed, effective Breeze config and live Next wallpaper verified. Exact guest commands and source hashes in docs/evidence/uninstall-safety-0733.json."
     }
   ],
   "coverage_limits": [
-    "Only recognized successful compiler intermediates are removed, not arbitrary directories or user recovery data.",
-    "Focused Global Menu install/reinstall and fonts-only old-build cleanup on Plasma 6.8.1 / Qt 6.11.1; not a full desktop lifecycle.",
-    "No new rendering or 6.6/6.7 SDK checks; no native code or appearance changes.",
-    "Full remote CI asynchronous; v0.73.1 matrix was still in progress at inspection."
+    "Selected fonts/icons/wallpapers lifecycle, not a full desktop or distro matrix.",
+    "Breeze effective configuration and live wallpaper selection verified; no new rendering or SDK qualification.",
+    "Unrecorded legacy assets and user-modified installed trees are preserved. Existing originals are backed up and restored; earlier user versions retain recovery metadata.",
+    "Clipboard history behavior unchanged.",
+    "Full remote CI asynchronous; prior v0.73.2 matrix passed."
   ],
   "gallery_commit": "f09780b200b79302e7c23ef9f6f74d94748bbea3",
   "captures": [

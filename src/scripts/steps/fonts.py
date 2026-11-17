@@ -17,6 +17,7 @@ from steps._helpers import (
     DATA_HOME, fail, have, info, ok, offline, reinstall, warn,
 )
 from utils import run_user
+from owned_assets import install as install_owned, remove_owned
 
 OFFLINE_DIR = offline("fonts")
 DEST_DIR = DATA_HOME / "fonts"
@@ -60,8 +61,12 @@ def install() -> None:
             target = DEST_DIR / f.name
             existed = target.is_file()
             try:
-                any_copied = _copy_font(f, target) or any_copied
-            except OSError:
+                def copy(source, destination):
+                    nonlocal any_copied
+                    any_copied = _copy_font(source, destination) or any_copied
+                    return True
+                install_owned("fonts", f, target, copy)
+            except (OSError, ValueError):
                 fail(tr('{value1} (copy failed)', value1=f.name))
                 continue
             grp = _group(f.name)
@@ -88,14 +93,7 @@ def _refresh_font_cache() -> None:
 
 
 def uninstall() -> None:
-    n = 0
-    for pat in ("SF-Pro*", "SF-Mono*", "SFPro*", "SFMono*"):
-        for f in DEST_DIR.glob(pat):
-            try:
-                f.unlink()
-                n += 1
-            except OSError:
-                pass
+    n = remove_owned("fonts", DEST_DIR)
     if n > 0:
         _refresh_font_cache()
     info(tr('{n} font files removed', n=n))

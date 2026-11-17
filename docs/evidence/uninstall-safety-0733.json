@@ -1,0 +1,57 @@
+{
+  "preserved": [
+    "/home/tester/.local/share/fonts/SF-Pro-Display-Regular.otf",
+    "/home/tester/.local/share/fonts/SFPro-AuditPersonal.otf",
+    "/home/tester/.local/share/icons/MacTahoeLiquidKde-Icons-AuditPersonal/photo.svg",
+    "/home/tester/.local/share/wallpapers/MacTahoe-Landscape-99/personal.jpg",
+    "/home/tester/.local/share/wallpapers/MacTahoe/personal-before.txt",
+    "/home/tester/.local/share/icons/MacTahoeLiquidKde-Icons/personal-after.svg"
+  ],
+  "new_owned_font_removed": true,
+  "breeze_config_verified": true,
+  "live_wallpapers": [
+    {
+      "screen": 0,
+      "image": "file:///usr/share/wallpapers/Next"
+    }
+  ],
+  "source": {
+    "src/scripts/owned_assets.py": "d3f5d24a5a260a4353cd5aa16d8c0fd6af6213432a1743143f76f558abfff210",
+    "src/scripts/cli.py": "616da61f62a40198562658e98fd26a63e4a383fca42e0593a5d9666ec6982aac",
+    "src/scripts/steps/apply.py": "0810838ad374cc98454bd71414c9eac2d381078551feb68bbf0fe75b37cc2126",
+    "src/scripts/steps/fonts.py": "fc0f48a77788b174cd4843a1424e839610019023c64d963a65ef0027bc288d04",
+    "src/scripts/steps/icons.py": "8f93767bb3625958994c8ca033cb62703b5ad351f7ba798d347835cd9afe0ce6",
+    "src/scripts/steps/wallpapers.py": "a0a1b97efe5e54695fac38c859f53c027fe8de4a4357edf9c587cefa2b0b847c"
+  },
+  "checks": [
+    {
+      "phase": "install",
+      "command": "sudo env MAC_TAHOE_NO_UPDATE_CHECK=true MTTKDE_NO_CONFIRM=1 MTTKDE_LANGUAGE=en python3 /home/tester/release-capture/source/src/scripts/installer_backend.py install --only --fonts --icons --wallpapers --no-apply-theme",
+      "exit_code": 0
+    },
+    {
+      "phase": "reinstall",
+      "command": "sudo env MAC_TAHOE_NO_UPDATE_CHECK=true MTTKDE_NO_CONFIRM=1 MTTKDE_LANGUAGE=en python3 /home/tester/release-capture/source/src/scripts/installer_backend.py install --only --fonts --icons --wallpapers --no-apply-theme",
+      "exit_code": 0
+    },
+    {
+      "phase": "uninstall",
+      "command": "sudo env MAC_TAHOE_NO_UPDATE_CHECK=true MTTKDE_NO_CONFIRM=1 MTTKDE_LANGUAGE=en python3 /home/tester/release-capture/source/src/scripts/installer_backend.py uninstall --only --fonts --icons --wallpapers",
+      "exit_code": 0
+    }
+  ],
+  "environment": "Disposable Plasma 6.8.1 / Qt 6.11.1 VM",
+  "focused_checks": {
+    "Tahoe": "144 passed in 7.40s inside VM",
+    "prepared_Golden_Gate": "26 passed in 3.60s inside VM"
+  },
+  "coverage_limits": [
+    "Selected fonts/icons/wallpapers lifecycle, not a full desktop or distro matrix.",
+    "Breeze effective configuration and live wallpaper selection verified; no new rendering or SDK qualification.",
+    "Unrecorded legacy assets and user-modified installed trees are preserved. Existing originals are backed up and restored; earlier user versions retain recovery metadata.",
+    "Clipboard history behavior unchanged."
+  ],
+  "validation_notes": [
+    "An initial host unit run detected a widgetStyle change outside its intended sandbox; the test safety net restored the file. Final focused tests and lifecycle were run inside the disposable VM."
+  ]
+}

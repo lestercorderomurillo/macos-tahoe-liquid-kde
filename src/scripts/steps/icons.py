@@ -15,6 +15,7 @@ from steps._helpers import (
     DATA_HOME, fail, info, install_tree, offline, ok, temp_dir,
 )
 from utils import remove_path, run_user
+from owned_assets import install as install_owned, remove_owned
 
 OFFLINE_DIR = offline("icons")
 DEST_DIR = DATA_HOME / "icons"
@@ -126,24 +127,15 @@ def _install_payload() -> None:
             if not (source / "index.theme").is_file():
                 fail(tr('{name} (index.theme missing from offline archive)', name=name))
                 continue
-            if install_tree(source, DEST_DIR / name, name):
+            def copy(src, dst):
+                if not install_tree(src, dst, name):
+                    return False
+                if shutil.which("gtk-update-icon-cache"):
+                    run_user(["gtk-update-icon-cache", "-f", "-t", str(dst)],
+                             check=False, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+                return True
+            if install_owned("icons", source, DEST_DIR / name, copy):
                 n += 1
-
-    # A running application may still use the previous material until activation.
-    # Retain supported overlays across transitions; uninstall removes all of them.
-    if n == len(names):
-        for old in DEST_DIR.glob("MacTahoeLiquidKde-Icons*"):
-            if old.is_dir() and old.name not in names and old.name not in _OVERLAY_NAMES:
-                shutil.rmtree(old, ignore_errors=True)
-
-    if shutil.which("gtk-update-icon-cache"):
-        for theme in DEST_DIR.glob("MacTahoeLiquidKde-Icons*"):
-            if theme.is_dir():
-                run_user(
-                    ["gtk-update-icon-cache", "-f", "-t", str(theme)],
-                    check=False,
-                    stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
-                )
 
     label = "icon theme" if n == 1 else "icon themes"
     info(tr('{n} {label} installed/reinstalled', n=n, label=tr(label)))
@@ -156,14 +148,7 @@ def uninstall() -> None:
         Receipt("icons", "").invalidate()
     except OSError as exc:
         warn(f"Could not remove icon installation fingerprint: {exc}")
-    n = 0
-    for theme in DEST_DIR.glob("MacTahoeLiquidKde-Icons*"):
-        if theme.is_dir():
-            try:
-                shutil.rmtree(theme)
-                ok(theme.name); n += 1
-            except OSError:
-                fail(theme.name)
+    n = remove_owned("icons", DEST_DIR)
     info(tr('{n} icon themes removed', n=n))
 
 

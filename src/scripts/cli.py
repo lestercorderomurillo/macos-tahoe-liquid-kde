@@ -1138,8 +1138,8 @@ def _run_install_steps(feat: dict[str, object]) -> int:
         if not installed and feature in CRITICAL_INSTALL_FEATURES:
             fail(tr('{label} install failed — aborting (critical compiled component)', label=label))
             return 1
-        if not installed and feature == "icons":
-            # Never activate a generated icon name whose staging failed.
+        if not installed and feature in {"icons", "fonts", "wallpapers"}:
+            # Never activate assets whose safe staging or ownership recording failed.
             return 1
 
     step('Installing Theme Switcher')
@@ -1252,7 +1252,10 @@ def _run_uninstall_steps(feat: dict[str, object]) -> int:
 
     step('Applying Changes')
     note(tr('Resets to Breeze defaults before removing theme assets'))
-    run_phase("apply", "uninstall")
+    restored = run_phase("apply", "uninstall")
+    if not restored or errors:
+        progress_event("phase", id="restore", state="failed")
+        return 1
 
     progress_event('phase', id='restore', state='failed' if errors else 'done')
     progress_event('phase', id='remove', state='running')

@@ -470,16 +470,18 @@ def _seed_uninstall_env(monkeypatch, tmp_path):
     return oks, warns
 
 
-def test_uninstall_warns_when_color_reset_fails(monkeypatch, tmp_path):
+def test_uninstall_fails_when_color_reset_fails(monkeypatch, tmp_path):
     """Issue #37: under the sudo'd installer every kwriteconfig6 child hit
     Qt6's setuid abort, the reset silently no-opped, and the step still
     printed 'Color scheme reset'. Failure must warn, never ok."""
     oks, warns = _seed_uninstall_env(monkeypatch, tmp_path)
+    failures = []
+    monkeypatch.setattr(apply, "fail", failures.append)
     monkeypatch.setattr(apply, "reset_kde_color_scheme_config",
                         lambda s: False)
     apply.uninstall()
     assert not any("Color scheme reset" == m for m in oks)
-    assert any("Color scheme reset failed" in m for m in warns)
+    assert any("Color scheme reset failed" in m for m in failures)
 
 
 def test_uninstall_oks_color_reset_on_success(monkeypatch, tmp_path):
@@ -757,11 +759,13 @@ def test_wallpaper_does_not_trust_unverified_native_success(
     assert oks == ["Wallpaper reset"]
 
 
-def test_uninstall_wallpaper_failure_warns_instead_of_ok(monkeypatch,
+def test_uninstall_wallpaper_failure_fails_instead_of_ok(monkeypatch,
                                                           tmp_path):
     wallpaper = tmp_path / "Next"
     wallpaper.mkdir()
     oks, warns = _seed_uninstall_env(monkeypatch, tmp_path)
+    failures = []
+    monkeypatch.setattr(apply, "fail", failures.append)
     monkeypatch.setattr(
         apply, "_wallpaper_reset_candidates", lambda package: (wallpaper,),
     )
@@ -781,7 +785,7 @@ def test_uninstall_wallpaper_failure_warns_instead_of_ok(monkeypatch,
     apply.uninstall()
 
     assert "Wallpaper reset" not in oks
-    assert any("Wallpaper reset failed" in message for message in warns)
+    assert any("Wallpaper reset failed" in message for message in failures)
 
 
 def test_uninstall_wallpaper_uses_disk_fallback_when_live_apply_fails(
@@ -850,11 +854,13 @@ def test_uninstall_wallpaper_headless_writes_config_without_live_dbus(
     assert not any("Wallpaper reset" in message for message in warns)
 
 
-def test_uninstall_wallpaper_missing_tool_warns_instead_of_ok(
+def test_uninstall_wallpaper_missing_tool_fails_instead_of_ok(
         monkeypatch, tmp_path):
     wallpaper = tmp_path / "Next"
     wallpaper.mkdir()
     oks, warns = _seed_uninstall_env(monkeypatch, tmp_path)
+    failures = []
+    monkeypatch.setattr(apply, "fail", failures.append)
     monkeypatch.setattr(
         apply, "_wallpaper_reset_candidates", lambda package: (wallpaper,),
     )
@@ -867,12 +873,14 @@ def test_uninstall_wallpaper_missing_tool_warns_instead_of_ok(
 
     assert "Wallpaper reset" not in oks
     assert any("native, path, DBus, and on-disk" in message
-               for message in warns)
+               for message in failures)
 
 
-def test_uninstall_wallpaper_missing_laf_default_warns_instead_of_ok(
+def test_uninstall_wallpaper_missing_laf_default_fails_instead_of_ok(
         monkeypatch, tmp_path):
     oks, warns = _seed_uninstall_env(monkeypatch, tmp_path)
+    failures = []
+    monkeypatch.setattr(apply, "fail", failures.append)
     monkeypatch.setattr(
         apply, "_wallpaper_reset_candidates", lambda package: (),
     )
@@ -887,7 +895,7 @@ def test_uninstall_wallpaper_missing_laf_default_warns_instead_of_ok(
     apply.uninstall()
 
     assert "Wallpaper reset" not in oks
-    assert any("no installed fallback package" in message for message in warns)
+    assert any("no installed fallback package" in message for message in failures)
 
 
 def test_uninstall_wallpaper_has_no_hardcoded_fallback_directories():
