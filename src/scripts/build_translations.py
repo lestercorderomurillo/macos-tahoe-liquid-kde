@@ -1,4 +1,4 @@
-"""Rebuild the bundled German and Brazilian Portuguese KDE catalogs.
+"""Rebuild the bundled German, Brazilian Portuguese and French KDE catalogs.
 
 Run with Python from any directory; gettext's msgfmt must be on PATH.
 The JSON catalogs are the editable source shared with the installer.
@@ -12,7 +12,7 @@ import xml.etree.ElementTree as ET
 
 
 ROOT = Path(__file__).resolve().parents[1]
-LANGUAGES = ("pt_BR", "de")
+LANGUAGES = ("pt_BR", "de", "fr")
 KCM_DOMAIN = "kwin_effect_liquidglass"
 _STRING = r'"(?:[^"\\]|\\.)*"'
 _CALL = re.compile(
@@ -102,10 +102,8 @@ def main() -> None:
     for suffix in ("controlcenter", "battery", "wifi", "notifications"):
         widget = ROOT / "offline/plasmoids" / ("org.kde.mac-tahoe-liquid-kde." + suffix)
         messages = widget_messages(widget)
-        for language in ("es", "zh_CN", "fr"):
-            catalog = (json.loads((ROOT / "scripts/locales/fr-controls.json").read_text(encoding="utf-8"))
-                       if language == "fr" else
-                       {message: localization.translate(message, language) for _, message in messages})
+        for language in ("es", "zh_CN"):
+            catalog = {message: localization.translate(message, language) for _, message in messages}
             write_catalog(widget, f"plasma_applet_{widget.name}", messages, language, catalog,
                           widget / "contents/locale")
 

@@ -245,6 +245,14 @@ assert all(not pixmap.isNull() for light in lights for pixmap in light._pixmaps.
 assert abs(window.welcome_actions.mapTo(window, window.welcome_actions.rect().center()).x() - window.width()/2) <= 2
 window.language.setCurrentIndex(window.language.findData('de')); app.processEvents()
 assert bridge.language == 'de'
+window.language.setCurrentIndex(window.language.findData('fr')); app.processEvents()
+assert bridge.language == 'fr'
+assert window.t('Next') == 'Suivant'
+assert window.t('Enable clipboard history?') == 'Activer l’historique du presse-papiers ?'
+for page, _ in STEPS:
+    window.page = page; window.render(); app.processEvents(); app.processEvents()
+    assert window.scroll.horizontalScrollBar().maximum() == 0, page
+    assert window.scroll.verticalScrollBar().maximum() == 0, page
 window.language.setCurrentIndex(window.language.findData('es')); app.processEvents()
 assert bridge.language == 'es'
 for page, _ in STEPS:

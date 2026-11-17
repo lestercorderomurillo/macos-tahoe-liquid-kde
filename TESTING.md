@@ -1,6 +1,6 @@
 # Installer testing
 
-Tahoe **v0.72.20** includes the approved Control Center icons, translated layout and clearer glass surfaces. Focused QML, material and shader checks passed; light/dark rendering was reviewed in a disposable Plasma 6.8.1 VM. [Evidence and coverage limits](docs/evidence/control-center-130-133.json). Full remote CI runs asynchronously; no new SDK matrix or automatic schedule-boundary qualification.
+Tahoe **v0.73.0** adds French throughout the installer, standalone tools and project Plasma/Acrylic Glass catalogs. Focused catalog, placeholder, locale selection and offscreen wizard checks passed for both editions. [Evidence and coverage limits](release-evidence.json). Full remote CI runs asynchronously; no new desktop rendering or distro qualification. Existing photographs retain their original provenance.
 
 Approved installer previews: [Light](src/screenshots/previews/installer-tahoe-light-icons-805970eab6b7.png) · [Dark](src/screenshots/previews/installer-tahoe-dark-icons-dbc66adc81c4.png). The gallery below is historical and predates these installer changes; its original [provenance](src/screenshots/release-capture.json) is retained.
 

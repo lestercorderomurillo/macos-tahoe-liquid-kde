@@ -14,7 +14,7 @@ def test_locale_normalization_and_english_fallback():
     assert localization.normalize_language("zh-CN.UTF-8") == "zh_CN"
     assert localization.normalize_language("zh_Hans") == "zh_CN"
     assert localization.normalize_language("es_CR.UTF-8") == "es"
-    assert localization.normalize_language("fr_FR.UTF-8") == "en"
+    assert localization.normalize_language("fr_FR.UTF-8") == "fr"
     assert localization.translate("Untranslated source", "es") == "Untranslated source"
 
 
@@ -101,3 +101,21 @@ def test_french_control_catalogs_resolve_shared_views(repo):
         assert catalog.gettext('Do Not Disturb')=='Ne pas déranger'
         assert catalog.gettext('Edit Controls')=='Modifier les commandes'
         assert catalog.gettext('Network')=='Réseau'
+
+
+def test_french_auto_preference_and_plural_catalogs(sandbox, monkeypatch, repo):
+    for key in ("LC_ALL", "LC_MESSAGES", "LANGUAGE", "MTTKDE_LANGUAGE"):
+        monkeypatch.delenv(key, raising=False)
+    monkeypatch.setenv("LANG", "fr_CA.UTF-8")
+    assert localization.translate("Install", "auto") == "Installer"
+    assert localization.set_language("fr")
+    assert localization.get_language() == "fr"
+    assert localization.translate("About {minutes} minutes remaining", minutes=3) == "Environ 3 minutes restantes"
+    import build_translations
+    build_translations.write_catalog(
+        sandbox, "plural-probe", {(None, "%1 more Place…"): "%1 more Places…"},
+        "fr", localization._TRANSLATIONS["fr"], sandbox / "locale")
+    catalog = _catalog(sandbox / "locale/fr/LC_MESSAGES/plural-probe.mo")
+    for count in (0, 1, 2):
+        expected = "%1 emplacement supplémentaire…" if count < 2 else "%1 emplacements supplémentaires…"
+        assert catalog.ngettext("%1 more Place…", "%1 more Places…", count) == expected

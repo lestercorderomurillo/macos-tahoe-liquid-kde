@@ -22,6 +22,7 @@ LANGUAGES = (
     {"code": "zh_CN", "label": "简体中文"},
     {"code": "pt_BR", "label": "Português (Brasil)"},
     {"code": "de", "label": "Deutsch"},
+    {"code": "fr", "label": "Français"},
 )
 LANGUAGE_CODES = tuple(item["code"] for item in LANGUAGES)
 
@@ -469,7 +470,7 @@ def _load_catalog(code: str) -> dict[str, str]:
     return json.loads(path.read_text(encoding="utf-8"))
 
 
-for _code in ("pt_BR", "de"):
+for _code in ("pt_BR", "de", "fr"):
     _TRANSLATIONS[_code] = _load_catalog(_code)
 
 
@@ -481,6 +482,8 @@ def normalize_language(value: str | None) -> str:
         return "zh_CN"
     if low == "pt" or low == "pt_br":
         return "pt_BR"
+    if low == "fr" or low.startswith("fr_"):
+        return "fr"
     if low == "de" or low.startswith("de_"):
         return "de"
     if low == "es" or low.startswith("es_"):

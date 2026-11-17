@@ -1,30 +1,35 @@
 {
-  "version": "0.72.20",
-  "source_sha256": "ac23d8ce942dc7b248a062e8b44c4a69dbc0e89b57c0d5331bb0def0f190ff2f",
-  "scope": "User-approved Control Center fixes for issues 130/133: Apple slider glyphs and fixed sizing, translated layout, clear shared Dock-style glass and notifications, half-strength gradients. No native C++ or GLSL implementation changes.",
-  "environment": "Focused native QML/material/shader checks and disposable Plasma/KWin 6.8.1, Qt 6.11.1 Wayland VM; exact installed fingerprints in docs/evidence/control-center-130-133.json.",
+  "version": "0.73.0",
+  "source_sha256": "08974ba7631debf237c4bcb5cd2007e6e4d44a200391aca5a80570368c60c2c4",
+  "scope": "French localization only: 1,408 shared messages, wizard selector, standalone helpers, Plasma and Acrylic Glass catalogs and locale installation lists. No installer lifecycle, native rendering, optics or layout changes.",
+  "environment": "Local Linux, Python 3.14.7, gettext msgfmt and offscreen PyQt6 wizard; both edition defaults and Golden Gate prepared source.",
   "checks": [
     {
-      "command": "python3 -m pytest tests/test_desktop_controls.py -q",
+      "command": "python3 src/scripts/build_translations.py",
       "result": "passed",
-      "detail": "Final controls and edit navigation: 1 passed in 14.28s; unchanged implementation evidence reused."
+      "detail": "All generated catalogs compiled with msgfmt --check --check-format; existing French control catalogs unchanged."
     },
     {
-      "command": "python3 -m pytest tests/test_glass_presets.py -q -k \"native_material_preset_controls or native_glass_shader_pixels\"",
+      "command": "python3 -m pytest tests/test_localization.py tests/test_acrylic_glass_uninstall.py tests/test_installer_wizard.py tests/test_globalmenu_step.py tests/test_nix.py -q -k 'french_auto or uninstall_disables or navigation or translations or nix'",
       "result": "passed",
-      "detail": "9 passed, 23 deselected; final half-strength gradient and pixel regressions."
+      "detail": "8 passed, 58 deselected in 6.51s. French auto/persisted locale and plurals, both edition wizard navigation and overflow checks, locale installation/removal, Nix asset assembly."
     },
     {
-      "command": "python3 /tmp/control-center-evidence/capture_all.py",
+      "command": "python3 -m pytest tests/test_localization.py tests/test_multilanguage.py -q -k 'fr or french'",
       "result": "passed",
-      "detail": "Both edition defaults, light/dark Control Center and notifications; source a12828e68fe119298d16b979b6fac02df7ff7cce; actual installed hashes match. User authorized release on 2026-11-17."
+      "detail": "Golden Gate prepared source build/01af8db44e91670dec29: 17 passed, 38 deselected in 0.37s; catalog completeness, placeholder preservation, installed standalone tools, privilege-boundary language forwarding."
+    },
+    {
+      "command": "python3 src/scripts/component_manifest.py",
+      "result": "passed",
+      "detail": "Component ledger matches final implementation."
     }
   ],
   "coverage_limits": [
-    "VM rendering: Plasma/KWin 6.8.1, Qt 6.11.1, Wayland; Qt menu via Xwayland. No new KWin 6.6/6.7 builds or real KWin X11 shader qualification.",
-    "No automatic schedule boundary, GTK continuity or physical Bluetooth/multi-monitor hardware qualification in this candidate.",
-    "Stage Manager and AirDrop symbols are reference reconstructions; the four slider endpoint symbols use bundled Apple glyph contours.",
-    "Local preview paths are review artifacts, not published documentation photographs."
+    "No new live desktop VM, native SDK build or distro matrix; translation-only implementation and catalog installation lists.",
+    "No native-speaker review; French translations authored for this release.",
+    "Full remote CI runs asynchronously; prior v0.72.20 matrix was in progress at inspection, preceding completed matrix passed.",
+    "Original photographs and provenance retained; no new documentation captures."
   ],
   "gallery_commit": "f09780b200b79302e7c23ef9f6f74d94748bbea3",
   "captures": [
@@ -58,6 +63,5 @@
       "reviewed": true,
       "source_commit": "a12828e68fe119298d16b979b6fac02df7ff7cce"
     }
-  ],
-  "detail": "docs/evidence/control-center-130-133.json"
+  ]
 }

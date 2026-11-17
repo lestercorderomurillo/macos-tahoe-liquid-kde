@@ -273,7 +273,7 @@ A matching look from startup to shutdown, with built-in unlocking for LUKS2-encr
 
 ![Features](https://img.shields.io/badge/features-6B4B8A?style=for-the-badge&logo=github&logoColor=white)
 
-- **Languages:** English, Spanish, Simplified Chinese, Brazilian Portuguese and German installer; translated Plasma widgets.
+- **Languages:** English, Spanish, Simplified Chinese, Brazilian Portuguese, German and French installer; translated Plasma widgets.
 - **Installer:** graphical component selection, bundled theme assets and update support.
 - **Distributions:** dependency installation for Arch-based, Fedora-based, openSUSE, Debian and KDE neon systems.
 - **Scheduling:** automatic theme switching and OLED care through systemd user timers or cron on OpenRC.
@@ -314,7 +314,7 @@ To free disk space while keeping your Git checkout and local work:
 | 🇨🇳 Simplified Chinese | ![Available](https://img.shields.io/badge/Available-1A7F37) |
 | 🇧🇷 Brazilian Portuguese | ![Available](https://img.shields.io/badge/Available-1A7F37) |
 | 🇩🇪 German | ![Available](https://img.shields.io/badge/Available-1A7F37) |
-| 🇫🇷 French | ![Planned](https://img.shields.io/badge/Planned-D4A017) |
+| 🇫🇷 French | ![Available](https://img.shields.io/badge/Available-1A7F37) |
 | 🇮🇹 Italian | ![Planned](https://img.shields.io/badge/Planned-D4A017) |
 | 🇯🇵 Japanese | ![Planned](https://img.shields.io/badge/Planned-D4A017) |
 | 🇰🇷 Korean | ![Planned](https://img.shields.io/badge/Planned-D4A017) |
