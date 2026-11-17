@@ -8,14 +8,31 @@ def test_topbar_highlight_preserves_hit_area_and_text(repo, tmp_path):
     probe = r'''
 import sys
 from PyQt6.QtCore import QUrl
-from PyQt6.QtGui import QGuiApplication
+from PyQt6.QtGui import QFont, QGuiApplication
 from PyQt6.QtQuick import QQuickItem
-from PyQt6.QtQml import QQmlEngine, QQmlComponent, QQmlProperty
+from PyQt6.QtQml import QQmlEngine, QQmlComponent, QQmlExpression, QQmlProperty
 app = QGuiApplication([])
 engine = QQmlEngine()
 component = QQmlComponent(engine, QUrl.fromLocalFile(sys.argv[1]))
 button = component.create()
 assert button is not None, component.errors()
+assert button.property('font').weight() == QFont.Weight.Bold
+background = QQmlProperty(button, 'background').read()
+opacity_probe = QQmlExpression(engine.rootContext(), background,
+                               'gradient.stops.map(stop => stop.color.a)')
+
+def gradient_opacities():
+    values, undefined = opacity_probe.evaluate()
+    assert not undefined and not opacity_probe.hasError(), opacity_probe.error()
+    return sorted(round(value, 2) for value in values.toVariant())
+
+assert not background.isVisible()
+assert gradient_opacities() in ([0.11, 0.21], [0.13, 0.23])
+button.setProperty('down', True)
+assert background.isVisible()
+assert gradient_opacities() in ([0.18, 0.28], [0.20, 0.30])
+button.setProperty('down', False)
+assert not background.isVisible()
 for height in (24, 32, 48):
     for text in ('Files', 'Visual Studio Code', 'Window'):
         button.setProperty('text', text)

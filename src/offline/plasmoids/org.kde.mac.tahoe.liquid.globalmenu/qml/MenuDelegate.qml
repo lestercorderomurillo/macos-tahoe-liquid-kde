@@ -58,27 +58,24 @@ AbstractButton {
         readonly property bool lightText: Kirigami.ColorUtils.brightnessForColor(Kirigami.Theme.textColor)
                                           === Kirigami.ColorUtils.Light
         readonly property bool pressed: controlRoot.menuState === MenuDelegate.State.Down
-        readonly property real fillOpacity: pressed ? 0.30 : 0.20
-        readonly property real gradientOffset: lightText ? 0.08 : -0.08
+        readonly property color tint: lightText ? "#ffffff" : "#e3e7ee"
+        readonly property real fillOpacity: (pressed ? 0.25 : 0.18) - (lightText ? 0.02 : 0)
 
         visible: controlRoot.menuState !== MenuDelegate.State.Rest
-        border.width: 1
-        border.color: overlay(pressed ? 0.65 : 0.50)
         gradient: Gradient {
             GradientStop {
                 position: 0
-                color: capsule.overlay(capsule.fillOpacity + capsule.gradientOffset)
+                color: capsule.overlay(capsule.fillOpacity + 0.05)
             }
             GradientStop {
                 position: 1
-                color: capsule.overlay(capsule.fillOpacity - capsule.gradientOffset)
+                color: capsule.overlay(capsule.fillOpacity - 0.05)
             }
         }
 
         // Source-over tint shifts the visible backdrop without flattening its colors.
         function overlay(alpha: real): color {
-            const channel = lightText ? 1 : 0;
-            return Qt.rgba(channel, channel, channel, alpha);
+            return Qt.rgba(tint.r, tint.g, tint.b, alpha);
         }
     }
 
