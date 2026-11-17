@@ -16,6 +16,12 @@
       "source": "bundled Apple font; unchanged contours, uniform scale and translation",
       "sha256": "8e9ec3f70d3b9061b54b73100c43f86fb320f99f70b40da2e480ef5b4c3e62a2"
     },
+    "lock": {
+      "symbol": "lock",
+      "glyph": "uni1003A0.small",
+      "source": "bundled Apple font; unchanged contours, uniform scale and translation",
+      "sha256": "05a76b99b97a38509f003d17d997ccc45bc61c207b8eaf420b3a3eb76338f9e9"
+    },
     "wifi-off": {
       "symbol": "wifi.slash",
       "glyph": "uni100648.small",

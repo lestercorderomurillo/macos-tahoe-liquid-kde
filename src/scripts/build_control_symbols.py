@@ -15,6 +15,7 @@ DEST = ROOT / 'src/offline/plasmoids/org.kde.mac-tahoe-liquid-kde.controlcenter/
 GLYPHS = {
     'ethernet': ('network adapter', '10097E', 22),
     'wifi': ('wifi', '100647', 22),
+    'lock': ('lock', '1003A0', 16),
     'wifi-off': ('wifi.slash', '100648', 22),
     'bluetooth': ('bluetooth', '10045B', 22),
     'moon': ('moon.fill', '1001BA', 20),

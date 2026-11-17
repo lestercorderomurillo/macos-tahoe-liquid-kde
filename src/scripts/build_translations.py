@@ -13,6 +13,7 @@ import xml.etree.ElementTree as ET
 
 ROOT = Path(__file__).resolve().parents[1]
 LANGUAGES = ("pt_BR", "de", "fr")
+STATUS_MENUS = json.loads((ROOT / "scripts/locales/status_menus.json").read_text(encoding="utf-8"))
 KCM_DOMAIN = "kwin_effect_liquidglass"
 _STRING = r'"(?:[^"\\]|\\.)*"'
 _CALL = re.compile(
@@ -87,6 +88,7 @@ def write_catalog(base: Path, domain: str, messages: dict,
 def main() -> None:
     for language in LANGUAGES:
         catalog = json.loads((ROOT / "scripts/locales" / f"{language}.json").read_text(encoding="utf-8"))
+        catalog.update(STATUS_MENUS[language])
         for widget in sorted((ROOT / "offline/plasmoids").glob("org.kde.mac*")):
             messages = widget_messages(widget)
             if not messages:
@@ -104,6 +106,7 @@ def main() -> None:
         messages = widget_messages(widget)
         for language in ("es", "zh_CN"):
             catalog = {message: localization.translate(message, language) for _, message in messages}
+            catalog.update(STATUS_MENUS[language])
             write_catalog(widget, f"plasma_applet_{widget.name}", messages, language, catalog,
                           widget / "contents/locale")
 

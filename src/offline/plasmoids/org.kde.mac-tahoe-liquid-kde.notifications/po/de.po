@@ -11,14 +11,17 @@ msgstr "%1%"
 msgid "Audio outputs"
 msgstr "Audioausgänge"
 
+msgid "Automatic"
+msgstr "Automatisch"
+
 msgid "Back"
 msgstr "Zurück"
 
-msgid "Balanced"
-msgstr "Ausgeglichen"
-
 msgid "Battery"
 msgstr "Akku"
+
+msgid "Battery Settings…"
+msgstr "Batterieeinstellungen…"
 
 msgid "Battery information will appear when a battery is available."
 msgstr "Akkuinformationen werden angezeigt, sobald ein Akku verfügbar ist."
@@ -77,8 +80,8 @@ msgstr "Nicht stören"
 msgid "Edit Controls"
 msgstr "Steuerelemente bearbeiten"
 
-msgid "Energy Settings…"
-msgstr "Energieeinstellungen…"
+msgid "Energy Mode"
+msgstr "Energiemodus"
 
 msgid "Energy mode"
 msgstr "Energiemodus"
@@ -95,14 +98,20 @@ msgstr "Fokus"
 msgid "Fully charged"
 msgstr "Vollständig geladen"
 
+msgid "High Power"
+msgstr "Hohe Leistung"
+
+msgid "Known Networks"
+msgstr "Bekannte Netzwerke"
+
+msgid "Low Power"
+msgstr "Stromsparmodus"
+
 msgid "Mute sound"
 msgstr "Ton stummschalten"
 
 msgid "Network"
 msgstr "Netzwerk"
-
-msgid "Network Settings…"
-msgstr "Netzwerkeinstellungen…"
 
 msgid "Next track"
 msgstr "Nächster Titel"
@@ -143,14 +152,14 @@ msgstr "Aus"
 msgid "On"
 msgstr "Ein"
 
-msgid "On battery power"
-msgstr "Im Akkubetrieb"
-
 msgid "Open"
 msgstr "Öffnen"
 
 msgid "Options"
 msgstr "Optionen"
+
+msgid "Other Networks"
+msgstr "Andere Netzwerke"
 
 msgid "Overview"
 msgstr "Übersicht"
@@ -161,14 +170,14 @@ msgstr "Anhalten"
 msgid "Pause notifications for one hour"
 msgstr "Benachrichtigungen für eine Stunde anhalten"
 
-msgid "Performance"
-msgstr "Leistung"
-
 msgid "Play or pause"
 msgstr "Wiedergeben oder anhalten"
 
-msgid "Power saver"
-msgstr "Energiesparen"
+msgid "Power Source: Battery"
+msgstr "Stromquelle: Batterie"
+
+msgid "Power Source: Power Adapter"
+msgstr "Stromquelle: Netzteil"
 
 msgid "Previous track"
 msgstr "Vorheriger Titel"
@@ -202,6 +211,9 @@ msgstr "Lautstärke"
 
 msgid "Wi-Fi"
 msgstr "WLAN"
+
+msgid "Wi-Fi Settings…"
+msgstr "WLAN-Einstellungen…"
 
 msgid "Wi-Fi is blocked by the hardware switch"
 msgstr "WLAN ist durch den Hardwareschalter gesperrt"

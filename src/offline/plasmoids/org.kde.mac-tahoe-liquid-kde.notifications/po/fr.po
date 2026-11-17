@@ -11,14 +11,17 @@ msgstr "%1 %"
 msgid "Audio outputs"
 msgstr "Sorties audio"
 
+msgid "Automatic"
+msgstr "Automatique"
+
 msgid "Back"
 msgstr "Retour"
 
-msgid "Balanced"
-msgstr "Équilibré"
-
 msgid "Battery"
 msgstr "Batterie"
+
+msgid "Battery Settings…"
+msgstr "Réglages Batterie…"
 
 msgid "Battery information will appear when a battery is available."
 msgstr "Les informations apparaîtront lorsqu’une batterie sera disponible."
@@ -77,8 +80,8 @@ msgstr "Ne pas déranger"
 msgid "Edit Controls"
 msgstr "Modifier les commandes"
 
-msgid "Energy Settings…"
-msgstr "Paramètres d’énergie…"
+msgid "Energy Mode"
+msgstr "Mode d’énergie"
 
 msgid "Energy mode"
 msgstr "Mode d’énergie"
@@ -95,14 +98,20 @@ msgstr "Concentration"
 msgid "Fully charged"
 msgstr "Charge complète"
 
+msgid "High Power"
+msgstr "Performance élevée"
+
+msgid "Known Networks"
+msgstr "Réseaux connus"
+
+msgid "Low Power"
+msgstr "Faible consommation"
+
 msgid "Mute sound"
 msgstr "Couper le son"
 
 msgid "Network"
 msgstr "Réseau"
-
-msgid "Network Settings…"
-msgstr "Paramètres réseau…"
 
 msgid "Next track"
 msgstr "Piste suivante"
@@ -143,14 +152,14 @@ msgstr "Désactivé"
 msgid "On"
 msgstr "Activé"
 
-msgid "On battery power"
-msgstr "Sur batterie"
-
 msgid "Open"
 msgstr "Ouvrir"
 
 msgid "Options"
 msgstr "Options"
+
+msgid "Other Networks"
+msgstr "Autres réseaux"
 
 msgid "Overview"
 msgstr "Vue d’ensemble"
@@ -161,14 +170,14 @@ msgstr "Pause"
 msgid "Pause notifications for one hour"
 msgstr "Suspendre les notifications pendant une heure"
 
-msgid "Performance"
-msgstr "Performances"
-
 msgid "Play or pause"
 msgstr "Lire ou mettre en pause"
 
-msgid "Power saver"
-msgstr "Économie d’énergie"
+msgid "Power Source: Battery"
+msgstr "Source d’alimentation : batterie"
+
+msgid "Power Source: Power Adapter"
+msgstr "Source d’alimentation : adaptateur secteur"
 
 msgid "Previous track"
 msgstr "Piste précédente"
@@ -202,6 +211,9 @@ msgstr "Volume"
 
 msgid "Wi-Fi"
 msgstr "Wi-Fi"
+
+msgid "Wi-Fi Settings…"
+msgstr "Réglages Wi-Fi…"
 
 msgid "Wi-Fi is blocked by the hardware switch"
 msgstr "Le Wi-Fi est bloqué par l’interrupteur matériel"
