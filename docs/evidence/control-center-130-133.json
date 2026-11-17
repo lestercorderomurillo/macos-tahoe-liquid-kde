@@ -1,0 +1,1558 @@
+{
+  "status": "pending_visual_approval",
+  "source_commit": "a12828e68fe119298d16b979b6fac02df7ff7cce",
+  "scope": "Control Center issues 130/133, original slider glyphs, clear notification surface and reduced material gradients",
+  "installed_source_matches": true,
+  "environment": {
+    "kwin": "kwin 6.8.1",
+    "qt": "6.11.1",
+    "shader_status": "ready",
+    "effect_build": "a4a55b2f39b8b7fa42903c622bcf18d113847b624874d88af15a38f81e67ea99",
+    "installed_files": {
+      "src/offline/plasmoids/org.kde.mac-tahoe-liquid-kde.controlcenter/contents/config/main.xml": "1f9d740d6b3e7f61f54ec118d56fbf02a8ce0ddc336fe23358b2736d95a6158e",
+      "src/offline/plasmoids/org.kde.mac-tahoe-liquid-kde.controlcenter/contents/locale/de/LC_MESSAGES/plasma_applet_org.kde.mac-tahoe-liquid-kde.controlcenter.mo": "baddc11c002ea2edc4fd65766b18ef691a48d63c92520ec4995371d21bbba766",
+      "src/offline/plasmoids/org.kde.mac-tahoe-liquid-kde.controlcenter/contents/locale/es/LC_MESSAGES/plasma_applet_org.kde.mac-tahoe-liquid-kde.controlcenter.mo": "38207096611fcf3d8b6fefef3d53d2e041fc6e9cd846bc9b622b443f761fae20",
+      "src/offline/plasmoids/org.kde.mac-tahoe-liquid-kde.controlcenter/contents/locale/fr/LC_MESSAGES/plasma_applet_org.kde.mac-tahoe-liquid-kde.controlcenter.mo": "272cdae5a589577c939243c48361c5dc73c7b1fbe36ff2279b694f100a02bcaf",
+      "src/offline/plasmoids/org.kde.mac-tahoe-liquid-kde.controlcenter/contents/locale/pt_BR/LC_MESSAGES/plasma_applet_org.kde.mac-tahoe-liquid-kde.controlcenter.mo": "d1f8a40d84fa9b501890b8eb41433556ab30ec223ad6bef3564a260f3c6d80df",
+      "src/offline/plasmoids/org.kde.mac-tahoe-liquid-kde.controlcenter/contents/locale/zh_CN/LC_MESSAGES/plasma_applet_org.kde.mac-tahoe-liquid-kde.controlcenter.mo": "ea368424962782c8ca282a677fbb861e1dc08c21be01bcd0921b0405fa418215",
+      "src/offline/plasmoids/org.kde.mac-tahoe-liquid-kde.controlcenter/contents/ui/AudioDetails.qml": "8b5123771ba7122c70dd37ffffe7f398ea09b15eeebac23b2f403951e6847852",
+      "src/offline/plasmoids/org.kde.mac-tahoe-liquid-kde.controlcenter/contents/ui/AudioView.qml": "690cdc3b6b22ca04ab3c86fe927bfe178becad7a598612322dc5057a5420c510",
+      "src/offline/plasmoids/org.kde.mac-tahoe-liquid-kde.controlcenter/contents/ui/BatteryView.qml": "d102ab929c30b41747582222693d65594ac309c50c082fae68b95ec629eedf76",
+      "src/offline/plasmoids/org.kde.mac-tahoe-liquid-kde.controlcenter/contents/ui/BluetoothView.qml": "78ae19a0657afb33816e054bf5e17fe813508e84670399789a137060a6066c44",
+      "src/offline/plasmoids/org.kde.mac-tahoe-liquid-kde.controlcenter/contents/ui/ControlAction.qml": "7c5e30b555554706856ccc41e8e1166a645aba434dfc0f172af50cca571552c7",
+      "src/offline/plasmoids/org.kde.mac-tahoe-liquid-kde.controlcenter/contents/ui/ControlCommands.qml": "ed79e99f7e9c267fb160ce1cb396af1c0a01eef173839dd58cb4901ebd0742c2",
+      "src/offline/plasmoids/org.kde.mac-tahoe-liquid-kde.controlcenter/contents/ui/ControlIconButton.qml": "c192a12a09cd0a636d4126866db3fefd5916c20ed9f0b2be197cdb54e73b9511",
+      "src/offline/plasmoids/org.kde.mac-tahoe-liquid-kde.controlcenter/contents/ui/ControlLabel.qml": "52af06a63ea75b5c4d0fd701326f2bbdb5d539689477f726ebd83f6277259bb0",
+      "src/offline/plasmoids/org.kde.mac-tahoe-liquid-kde.controlcenter/contents/ui/ControlStyle.js": "dd93993293b9a289c27d9b12e1be4d9cb5475a81d9e89f5a6ab8d33ccc6c4599",
+      "src/offline/plasmoids/org.kde.mac-tahoe-liquid-kde.controlcenter/contents/ui/ControlTile.qml": "e4d3f20016e404c3e7676dbf6ae119c6939de4c3a9d787a05755405dcdc6cbf6",
+      "src/offline/plasmoids/org.kde.mac-tahoe-liquid-kde.controlcenter/contents/ui/ControlView.qml": "047c9f603d92b05007254c2cdb3b892c4f2e5d96537cac80089fe5e9f51fa271",
+      "src/offline/plasmoids/org.kde.mac-tahoe-liquid-kde.controlcenter/contents/ui/DisplayDetails.qml": "96ff88b6fface1ff3c917eca18a236885d56072bfd0ae35db9d45e676cd0dcce",
+      "src/offline/plasmoids/org.kde.mac-tahoe-liquid-kde.controlcenter/contents/ui/DisplayView.qml": "bfc28c51f514c5167be18fd86a8f7fba1c4af09c097494929ec6cf959dc3f28c",
+      "src/offline/plasmoids/org.kde.mac-tahoe-liquid-kde.controlcenter/contents/ui/EditControls.qml": "cf313d221dd9d42225e4f27cc9c44baf92019102e90680b321bb6a2aa2e24fb6",
+      "src/offline/plasmoids/org.kde.mac-tahoe-liquid-kde.controlcenter/contents/ui/FocusSwitch.qml": "ef1ef9fac4b2abd5117ccd5ab9c5c81cfd70ff3fa47cf08114883afbfa25d40c",
+      "src/offline/plasmoids/org.kde.mac-tahoe-liquid-kde.controlcenter/contents/ui/GlassRim.qml": "4e4413e4b03b4c0f06f483db2709df6918dc6a723c26ee3aa380ae1298ab652c",
+      "src/offline/plasmoids/org.kde.mac-tahoe-liquid-kde.controlcenter/contents/ui/GlassSlider.qml": "161fc7a3f9d74142f2d1e52a0919e45a23b88f38463edb9470883ce159b96990",
+      "src/offline/plasmoids/org.kde.mac-tahoe-liquid-kde.controlcenter/contents/ui/MediaView.qml": "d319c4cd7055dbcd248698ec24708f99ae7b95c20205169e027003aba2dfd610",
+      "src/offline/plasmoids/org.kde.mac-tahoe-liquid-kde.controlcenter/contents/ui/NotificationsView.qml": "8157b72ac81596f971407c449ef171ae0546ba93c0c61111319b94b08e498cc0",
+      "src/offline/plasmoids/org.kde.mac-tahoe-liquid-kde.controlcenter/contents/ui/Page.qml": "6d2c999099d556e37ae937769fb90260b931d5403bb501cdf5391b9eb69f8576",
+      "src/offline/plasmoids/org.kde.mac-tahoe-liquid-kde.controlcenter/contents/ui/PanelButton.qml": "688ee3c01ab077ec6f6fc761083acdcd60ddd1bd468ed113391e5f9c248521c6",
+      "src/offline/plasmoids/org.kde.mac-tahoe-liquid-kde.controlcenter/contents/ui/SettingsLink.qml": "8c0da542beffb3ba79990fb3e14bb6e34cc9cc8b59a06f3aec8dbe21cca05d26",
+      "src/offline/plasmoids/org.kde.mac-tahoe-liquid-kde.controlcenter/contents/ui/WifiView.qml": "b3499617e6c19b5b3b03367a170b439928641975790eda2155430460c02eb4cf",
+      "src/offline/plasmoids/org.kde.mac-tahoe-liquid-kde.controlcenter/contents/ui/controlcenter.svg": "a1149ac7986ed1af0c872feb780c912b911377d793943cfe864dc9eed7f08e2c",
+      "src/offline/plasmoids/org.kde.mac-tahoe-liquid-kde.controlcenter/contents/ui/main.qml": "e7a94ebc2e9f3078b8332765447446ac4bfd4cab7d8acabcfc13135a52de9ada",
+      "src/offline/plasmoids/org.kde.mac-tahoe-liquid-kde.controlcenter/contents/ui/symbols/control-symbols.json": "25ac51df0840938ad8f19e3e81f07d2376579281f4b235912aca3c80bfcd414f",
+      "src/offline/plasmoids/org.kde.mac-tahoe-liquid-kde.controlcenter/contents/ui/symbols/mttkde-control-airdrop-off.svg": "b3256dd975e4fea256001aac3cd391698f9618c35f8cc836a7a8c90b094bb4a6",
+      "src/offline/plasmoids/org.kde.mac-tahoe-liquid-kde.controlcenter/contents/ui/symbols/mttkde-control-airplay.svg": "bba9871ae5a5437e6f13543c885b21af145e959011d8bec8127089b86d39f873",
+      "src/offline/plasmoids/org.kde.mac-tahoe-liquid-kde.controlcenter/contents/ui/symbols/mttkde-control-appearance.svg": "3f9c8bd48cd0e5a5d6e77c779fbcccef9a7e8c1c8483788eff81b4cbffd0cbf4",
+      "src/offline/plasmoids/org.kde.mac-tahoe-liquid-kde.controlcenter/contents/ui/symbols/mttkde-control-battery-0.svg": "ddb01b182a0d9c1aa266d8cf3b1ed69a01b47b35d94941f4796619031404e623",
+      "src/offline/plasmoids/org.kde.mac-tahoe-liquid-kde.controlcenter/contents/ui/symbols/mttkde-control-battery-10.svg": "60dc2bde34dd2d9c420760c2fd6a649f86ce94e60ee324385b3a1c0aaa391ec9",
+      "src/offline/plasmoids/org.kde.mac-tahoe-liquid-kde.controlcenter/contents/ui/symbols/mttkde-control-battery-100.svg": "8a594726d9b03c08f024fe5dc2c5fff61dc5231dc56ed3326d7e3d69deaf1c05",
+      "src/offline/plasmoids/org.kde.mac-tahoe-liquid-kde.controlcenter/contents/ui/symbols/mttkde-control-battery-20.svg": "b2060ce357c19cfebab2e06c7b5bb2e2ab62dd788fd9da5d17c0f90e77a76081",
+      "src/offline/plasmoids/org.kde.mac-tahoe-liquid-kde.controlcenter/contents/ui/symbols/mttkde-control-battery-30.svg": "062686a8de31bc41bd1fb4f9b4fd8f69015dd64a31996f6c3e22606e29b5886c",
+      "src/offline/plasmoids/org.kde.mac-tahoe-liquid-kde.controlcenter/contents/ui/symbols/mttkde-control-battery-40.svg": "e5c7c5d154551da3abc27c6cd7c66385589e78377f6eb0f7697fcc3e8595440b",
+      "src/offline/plasmoids/org.kde.mac-tahoe-liquid-kde.controlcenter/contents/ui/symbols/mttkde-control-battery-50.svg": "bb6defc38787da6c3632806032acfadb861cae8aa0f12a85d4cf94058a6b028e",
+      "src/offline/plasmoids/org.kde.mac-tahoe-liquid-kde.controlcenter/contents/ui/symbols/mttkde-control-battery-60.svg": "58bba5010a9c691c83b1a7c26f4a823ef0708e0b4b77e448266b7c2eb5618fae",
+      "src/offline/plasmoids/org.kde.mac-tahoe-liquid-kde.controlcenter/contents/ui/symbols/mttkde-control-battery-70.svg": "bde048741feda5fe648dd020b9f07503af40a7d0bd717a8a8fc2fd3703f0aaa4",
+      "src/offline/plasmoids/org.kde.mac-tahoe-liquid-kde.controlcenter/contents/ui/symbols/mttkde-control-battery-80.svg": "1668b035452f608a327771d5044e604cb1884badbaf2763fd1ce6a1aead3b70d",
+      "src/offline/plasmoids/org.kde.mac-tahoe-liquid-kde.controlcenter/contents/ui/symbols/mttkde-control-battery-90.svg": "99d8687fa0c8abc85e7745128101f1f3dde5b8a712908945ae6644d14cb5940f",
+      "src/offline/plasmoids/org.kde.mac-tahoe-liquid-kde.controlcenter/contents/ui/symbols/mttkde-control-battery-charging.svg": "8dc41e495323a2ca90b301138dc88ae6b05360735e95fb097b3575e9cc4d7e28",
+      "src/offline/plasmoids/org.kde.mac-tahoe-liquid-kde.controlcenter/contents/ui/symbols/mttkde-control-battery-missing.svg": "24eac2d42c8e01c88ef64855fb868d61e44b052ec46a32649a507a3d074a63dc",
+      "src/offline/plasmoids/org.kde.mac-tahoe-liquid-kde.controlcenter/contents/ui/symbols/mttkde-control-battery.svg": "8a594726d9b03c08f024fe5dc2c5fff61dc5231dc56ed3326d7e3d69deaf1c05",
+      "src/offline/plasmoids/org.kde.mac-tahoe-liquid-kde.controlcenter/contents/ui/symbols/mttkde-control-bell.svg": "fb24b82b915d17899629dd054bd8dd0c7322f5173af879acacd10d1df4966b66",
+      "src/offline/plasmoids/org.kde.mac-tahoe-liquid-kde.controlcenter/contents/ui/symbols/mttkde-control-bluetooth.svg": "086411a16a8e23f2ad9b5f8f28ef052bc89fd15ad0ad7792e7c6357dbb190096",
+      "src/offline/plasmoids/org.kde.mac-tahoe-liquid-kde.controlcenter/contents/ui/symbols/mttkde-control-ethernet.svg": "3fe6269db75e8d98d35d9cd960c8b578d478e856d0516ff900ff9229eb859de1",
+      "src/offline/plasmoids/org.kde.mac-tahoe-liquid-kde.controlcenter/contents/ui/symbols/mttkde-control-mirroring.svg": "0be0b7860b4b0c7842f3e1131342e39517fe3b6b515b958325f22b6cf050891f",
+      "src/offline/plasmoids/org.kde.mac-tahoe-liquid-kde.controlcenter/contents/ui/symbols/mttkde-control-moon.svg": "d72e434e82f07a284a65c841fd31fe5c07670e51d7c539c5c5009302482de48c",
+      "src/offline/plasmoids/org.kde.mac-tahoe-liquid-kde.controlcenter/contents/ui/symbols/mttkde-control-music.svg": "e609e76598feb21faada87989ebaa18074b7bdc33b7c431a37b59d7beba6158c",
+      "src/offline/plasmoids/org.kde.mac-tahoe-liquid-kde.controlcenter/contents/ui/symbols/mttkde-control-next.svg": "3a2aeff5f83b24c0cc70d46e3e8767b00a79d4576964690181ad521918760182",
+      "src/offline/plasmoids/org.kde.mac-tahoe-liquid-kde.controlcenter/contents/ui/symbols/mttkde-control-pause.svg": "38ebe857f345ca6066f279a60de71d9bdf73e6650eed79fdea7f579e61b9c08e",
+      "src/offline/plasmoids/org.kde.mac-tahoe-liquid-kde.controlcenter/contents/ui/symbols/mttkde-control-play.svg": "f062590fa3f75e2ccabbe6faf88c85ebd7abf4882b260b44d927b3c2ac4525f2",
+      "src/offline/plasmoids/org.kde.mac-tahoe-liquid-kde.controlcenter/contents/ui/symbols/mttkde-control-previous.svg": "7bb553388da9a13c330639678db8cf732a62f533ecca630e4925aa224ae5cf1a",
+      "src/offline/plasmoids/org.kde.mac-tahoe-liquid-kde.controlcenter/contents/ui/symbols/mttkde-control-screenshot.svg": "41b0f5990e5bd4d2d74c262a37cb618b272b16fb9a6cf934145b2c0ea654fb4c",
+      "src/offline/plasmoids/org.kde.mac-tahoe-liquid-kde.controlcenter/contents/ui/symbols/mttkde-control-settings.svg": "9063fed00e73401691a7068689c96d928539c7f34b7a06c8162d3976472dc342",
+      "src/offline/plasmoids/org.kde.mac-tahoe-liquid-kde.controlcenter/contents/ui/symbols/mttkde-control-speaker-low.svg": "48f5f7345eba26cce9b4c3210e0ab4cfd4ea2b01ca1f253c88e7e5365f51eb6f",
+      "src/offline/plasmoids/org.kde.mac-tahoe-liquid-kde.controlcenter/contents/ui/symbols/mttkde-control-speaker-off.svg": "f019e4a5132c23f29dd43c440e2616bd61344d0aa1d6169fcaf36e2aca01bea1",
+      "src/offline/plasmoids/org.kde.mac-tahoe-liquid-kde.controlcenter/contents/ui/symbols/mttkde-control-speaker.svg": "c3979f3576f0b17f9f5199a9e84c6b4d09f2174c445eba6ec0bb23b58c71d0c3",
+      "src/offline/plasmoids/org.kde.mac-tahoe-liquid-kde.controlcenter/contents/ui/symbols/mttkde-control-stage-manager.svg": "9800cd06c2a61e6aadd1e2d1396fd513ea5fc9a8bc04cea73c0061569965707c",
+      "src/offline/plasmoids/org.kde.mac-tahoe-liquid-kde.controlcenter/contents/ui/symbols/mttkde-control-sun-low.svg": "5a8ebd6f64fdcd89afc16807493ed8a2e850781930e4f9dcafe6ccc7a6844dfa",
+      "src/offline/plasmoids/org.kde.mac-tahoe-liquid-kde.controlcenter/contents/ui/symbols/mttkde-control-sun.svg": "36aac141788d095cccd810877aa8d059fd009428d0936619003331d2d881c5bf",
+      "src/offline/plasmoids/org.kde.mac-tahoe-liquid-kde.controlcenter/contents/ui/symbols/mttkde-control-wifi-off.svg": "a49a0d0204e73d0917530422ac7d580446ce64a4254096973a5dffc591dbd11f",
+      "src/offline/plasmoids/org.kde.mac-tahoe-liquid-kde.controlcenter/contents/ui/symbols/mttkde-control-wifi.svg": "8e9ec3f70d3b9061b54b73100c43f86fb320f99f70b40da2e480ef5b4c3e62a2",
+      "src/offline/plasmoids/org.kde.mac-tahoe-liquid-kde.controlcenter/metadata.json": "15dc3890ae27588240947ca97488512c7919e6935345e79023c30e6ea2b284f8",
+      "src/offline/plasmoids/org.kde.mac-tahoe-liquid-kde.controlcenter/po/de.po": "4d9d966ef81d62d9f1fbb3c16ef89ebb3ebd84ee695dc9be97caef4f0a22e7b2",
+      "src/offline/plasmoids/org.kde.mac-tahoe-liquid-kde.controlcenter/po/es.po": "7b8235b79d3300a72b78370572fa675239f0cea7860caebc41902a9b185d32ff",
+      "src/offline/plasmoids/org.kde.mac-tahoe-liquid-kde.controlcenter/po/fr.po": "8b38ebe8405483fac2a57e379cabc329a931164656d17250851dce54bb34fc00",
+      "src/offline/plasmoids/org.kde.mac-tahoe-liquid-kde.controlcenter/po/pt_BR.po": "6263b589c1f66130181452550b973ee51e95f90380f9003075012e10aef6a68b",
+      "src/offline/plasmoids/org.kde.mac-tahoe-liquid-kde.controlcenter/po/zh_CN.po": "e8bb64a4224b562ee2fe14c605f5bc6fb074a3ccac254517f25581babf6786cc",
+      "src/offline/plasmoids/org.kde.mac-tahoe-liquid-kde.notifications/contents/locale/de/LC_MESSAGES/plasma_applet_org.kde.mac-tahoe-liquid-kde.notifications.mo": "baddc11c002ea2edc4fd65766b18ef691a48d63c92520ec4995371d21bbba766",
+      "src/offline/plasmoids/org.kde.mac-tahoe-liquid-kde.notifications/contents/locale/es/LC_MESSAGES/plasma_applet_org.kde.mac-tahoe-liquid-kde.notifications.mo": "38207096611fcf3d8b6fefef3d53d2e041fc6e9cd846bc9b622b443f761fae20",
+      "src/offline/plasmoids/org.kde.mac-tahoe-liquid-kde.notifications/contents/locale/fr/LC_MESSAGES/plasma_applet_org.kde.mac-tahoe-liquid-kde.notifications.mo": "272cdae5a589577c939243c48361c5dc73c7b1fbe36ff2279b694f100a02bcaf",
+      "src/offline/plasmoids/org.kde.mac-tahoe-liquid-kde.notifications/contents/locale/pt_BR/LC_MESSAGES/plasma_applet_org.kde.mac-tahoe-liquid-kde.notifications.mo": "d1f8a40d84fa9b501890b8eb41433556ab30ec223ad6bef3564a260f3c6d80df",
+      "src/offline/plasmoids/org.kde.mac-tahoe-liquid-kde.notifications/contents/locale/zh_CN/LC_MESSAGES/plasma_applet_org.kde.mac-tahoe-liquid-kde.notifications.mo": "ea368424962782c8ca282a677fbb861e1dc08c21be01bcd0921b0405fa418215",
+      "src/offline/plasmoids/org.kde.mac-tahoe-liquid-kde.notifications/contents/ui/main.qml": "0e645123a5a28fae76dea010338207da884bf7e5002f1110778396502232ff4f",
+      "src/offline/plasmoids/org.kde.mac-tahoe-liquid-kde.notifications/metadata.json": "e9d3cc8debf9d707ea25cd00e77264dd6a813c1991bf0db3026b6c986229ba97",
+      "src/offline/plasmoids/org.kde.mac-tahoe-liquid-kde.notifications/po/de.po": "4d9d966ef81d62d9f1fbb3c16ef89ebb3ebd84ee695dc9be97caef4f0a22e7b2",
+      "src/offline/plasmoids/org.kde.mac-tahoe-liquid-kde.notifications/po/es.po": "7b8235b79d3300a72b78370572fa675239f0cea7860caebc41902a9b185d32ff",
+      "src/offline/plasmoids/org.kde.mac-tahoe-liquid-kde.notifications/po/fr.po": "8b38ebe8405483fac2a57e379cabc329a931164656d17250851dce54bb34fc00",
+      "src/offline/plasmoids/org.kde.mac-tahoe-liquid-kde.notifications/po/pt_BR.po": "6263b589c1f66130181452550b973ee51e95f90380f9003075012e10aef6a68b",
+      "src/offline/plasmoids/org.kde.mac-tahoe-liquid-kde.notifications/po/zh_CN.po": "e8bb64a4224b562ee2fe14c605f5bc6fb074a3ccac254517f25581babf6786cc",
+      "src/offline/kwin-effects/acrylic-glass/src/presets.json": "2834645a45858f4e00eb6843d67eb062680d6e5cd343112f9fe9224d6d7b2704",
+      "src/offline/kwin-effects/acrylic-glass/src/glass.kcfg": "8b7e1c8c2aa671be55a1fbffa1f93d4eed1ab18119769881a5b0efcbe029c0c7"
+    },
+    "material": {
+      "general": {
+        "BlurStrength": 4.0,
+        "NoiseStrength": 0,
+        "RgbDriftStrength": 8.0,
+        "MagnifyGlassStrength": 0.032,
+        "RefractionWidth": 64.0,
+        "HighlightWidth": 16.0,
+        "HighlightStrength": 0.1,
+        "Brightness": 1.1,
+        "Contrast": 1.0,
+        "Saturation": 1.13,
+        "DarkGradientOverlay": true,
+        "GradientTopColor": "#cecece",
+        "GradientBottomColor": "#cecece",
+        "GradientTopOpacity": 0.5,
+        "GradientBottomOpacity": 0.0,
+        "GradientCenterColor": "#cecece",
+        "GradientCenterOpacity": 0.35,
+        "GradientCenterPosition": 0.56,
+        "GradientTopDarkColor": "#000000",
+        "GradientCenterDarkColor": "#000000",
+        "GradientBottomDarkColor": "#000000",
+        "BlurDecorations": true,
+        "BlurCoverage": 1.0,
+        "SurfaceTransparencyLight": 25.0,
+        "SurfaceTransparencyDark": 25.0
+      },
+      "finder": {
+        "BlurStrength": 4.0,
+        "NoiseStrength": 0,
+        "RgbDriftStrength": 8.0,
+        "MagnifyGlassStrength": 0.032,
+        "RefractionWidth": 64.0,
+        "HighlightWidth": 16.0,
+        "HighlightStrength": 0.1,
+        "Brightness": 1.1,
+        "Contrast": 1.0,
+        "Saturation": 1.13,
+        "DarkGradientOverlay": true,
+        "GradientTopColor": "#cecece",
+        "GradientBottomColor": "#cecece",
+        "GradientTopOpacity": 0.5,
+        "GradientBottomOpacity": 0.0,
+        "GradientCenterColor": "#cecece",
+        "GradientCenterOpacity": 0.35,
+        "GradientCenterPosition": 0.56,
+        "GradientTopDarkColor": "#000000",
+        "GradientCenterDarkColor": "#000000",
+        "GradientBottomDarkColor": "#000000",
+        "BlurDecorations": true,
+        "BlurCoverage": 1.0,
+        "SurfaceTransparencyLight": 25.0,
+        "SurfaceTransparencyDark": 25.0
+      },
+      "menus": {
+        "BlurStrength": 4.0,
+        "NoiseStrength": 0,
+        "RgbDriftStrength": 8.0,
+        "MagnifyGlassStrength": 0.032,
+        "RefractionWidth": 64.0,
+        "HighlightWidth": 16.0,
+        "HighlightStrength": 0.1,
+        "Brightness": 1.1,
+        "Contrast": 1.0,
+        "Saturation": 1.13,
+        "DarkGradientOverlay": true,
+        "GradientTopColor": "#cecece",
+        "GradientBottomColor": "#cecece",
+        "GradientTopOpacity": 0.5,
+        "GradientBottomOpacity": 0.0,
+        "GradientCenterColor": "#cecece",
+        "GradientCenterOpacity": 0.35,
+        "GradientCenterPosition": 0.56,
+        "GradientTopDarkColor": "#000000",
+        "GradientCenterDarkColor": "#000000",
+        "GradientBottomDarkColor": "#000000",
+        "BlurDecorations": true,
+        "BlurCoverage": 1.0,
+        "SurfaceTransparencyLight": 40.0,
+        "SurfaceTransparencyDark": 99.0
+      },
+      "apps": {
+        "BlurStrength": 4.0,
+        "NoiseStrength": 0,
+        "RgbDriftStrength": 8.0,
+        "MagnifyGlassStrength": 0.032,
+        "RefractionWidth": 64.0,
+        "HighlightWidth": 16.0,
+        "HighlightStrength": 0.1,
+        "Brightness": 1.1,
+        "Contrast": 1.0,
+        "Saturation": 1.13,
+        "DarkGradientOverlay": true,
+        "GradientTopColor": "#cecece",
+        "GradientBottomColor": "#cecece",
+        "GradientTopOpacity": 0.5,
+        "GradientBottomOpacity": 0.0,
+        "GradientCenterColor": "#cecece",
+        "GradientCenterOpacity": 0.35,
+        "GradientCenterPosition": 0.56,
+        "GradientTopDarkColor": "#000000",
+        "GradientCenterDarkColor": "#000000",
+        "GradientBottomDarkColor": "#000000",
+        "BlurDecorations": true,
+        "BlurCoverage": 1.0,
+        "SurfaceTransparencyLight": 45.0,
+        "SurfaceTransparencyDark": 88.0
+      },
+      "search": {
+        "BlurStrength": 4.0,
+        "NoiseStrength": 0,
+        "RgbDriftStrength": 8.0,
+        "MagnifyGlassStrength": 0.032,
+        "RefractionWidth": 64.0,
+        "HighlightWidth": 16.0,
+        "HighlightStrength": 0.1,
+        "Brightness": 1.1,
+        "Contrast": 1.0,
+        "Saturation": 1.13,
+        "DarkGradientOverlay": true,
+        "GradientTopColor": "#cecece",
+        "GradientBottomColor": "#cecece",
+        "GradientTopOpacity": 0.5,
+        "GradientBottomOpacity": 0.0,
+        "GradientCenterColor": "#cecece",
+        "GradientCenterOpacity": 0.35,
+        "GradientCenterPosition": 0.56,
+        "GradientTopDarkColor": "#000000",
+        "GradientCenterDarkColor": "#000000",
+        "GradientBottomDarkColor": "#000000",
+        "BlurDecorations": true,
+        "BlurCoverage": 1.0,
+        "SurfaceTransparencyLight": 45.0,
+        "SurfaceTransparencyDark": 88.0
+      },
+      "control-center": {
+        "BlurStrength": 5.0,
+        "NoiseStrength": 0,
+        "RgbDriftStrength": 2.88,
+        "MagnifyGlassStrength": 0.1,
+        "RefractionWidth": 18.0,
+        "HighlightWidth": 3.5,
+        "HighlightStrength": 0.1,
+        "Brightness": 1.0,
+        "Contrast": 1.0,
+        "Saturation": 1.0,
+        "DarkGradientOverlay": false,
+        "GradientTopColor": "#cecece",
+        "GradientBottomColor": "#cecece",
+        "GradientTopOpacity": 0.5,
+        "GradientBottomOpacity": 0.0,
+        "GradientCenterColor": "#cecece",
+        "GradientCenterOpacity": 0.35,
+        "GradientCenterPosition": 0.56,
+        "GradientTopDarkColor": "#000000",
+        "GradientCenterDarkColor": "#000000",
+        "GradientBottomDarkColor": "#000000",
+        "BlurDecorations": true,
+        "BlurCoverage": 1.0,
+        "SurfaceTransparencyLight": 82.0,
+        "SurfaceTransparencyDark": 88.0
+      },
+      "about": {
+        "BlurStrength": 4.0,
+        "NoiseStrength": 0,
+        "RgbDriftStrength": 8.0,
+        "MagnifyGlassStrength": 0.032,
+        "RefractionWidth": 64.0,
+        "HighlightWidth": 16.0,
+        "HighlightStrength": 0.1,
+        "Brightness": 1.1,
+        "Contrast": 1.0,
+        "Saturation": 1.13,
+        "DarkGradientOverlay": true,
+        "GradientTopColor": "#cecece",
+        "GradientBottomColor": "#cecece",
+        "GradientTopOpacity": 0.5,
+        "GradientBottomOpacity": 0.0,
+        "GradientCenterColor": "#cecece",
+        "GradientCenterOpacity": 0.35,
+        "GradientCenterPosition": 0.56,
+        "GradientTopDarkColor": "#000000",
+        "GradientCenterDarkColor": "#000000",
+        "GradientBottomDarkColor": "#000000",
+        "BlurDecorations": true,
+        "BlurCoverage": 1.0,
+        "SurfaceTransparencyLight": 40.0,
+        "SurfaceTransparencyDark": 99.0
+      },
+      "dock": {
+        "BlurStrength": 5.0,
+        "NoiseStrength": 0,
+        "RgbDriftStrength": 2.88,
+        "MagnifyGlassStrength": 0.1,
+        "RefractionWidth": 18.0,
+        "HighlightWidth": 3.5,
+        "HighlightStrength": 0.1,
+        "Brightness": 1.0,
+        "Contrast": 1.0,
+        "Saturation": 1.0,
+        "DarkGradientOverlay": false,
+        "GradientTopColor": "#cecece",
+        "GradientBottomColor": "#cecece",
+        "GradientTopOpacity": 0.5,
+        "GradientBottomOpacity": 0.0,
+        "GradientCenterColor": "#cecece",
+        "GradientCenterOpacity": 0.35,
+        "GradientCenterPosition": 0.56,
+        "GradientTopDarkColor": "#000000",
+        "GradientCenterDarkColor": "#000000",
+        "GradientBottomDarkColor": "#000000",
+        "BlurDecorations": true,
+        "BlurCoverage": 0.98,
+        "SurfaceTransparencyLight": 98.5,
+        "SurfaceTransparencyDark": 98.5
+      },
+      "popups": {
+        "BlurStrength": 4.0,
+        "NoiseStrength": 0,
+        "RgbDriftStrength": 8.0,
+        "MagnifyGlassStrength": 0.032,
+        "RefractionWidth": 64.0,
+        "HighlightWidth": 16.0,
+        "HighlightStrength": 0.1,
+        "Brightness": 1.1,
+        "Contrast": 1.0,
+        "Saturation": 1.13,
+        "DarkGradientOverlay": true,
+        "GradientTopColor": "#cecece",
+        "GradientBottomColor": "#cecece",
+        "GradientTopOpacity": 0.5,
+        "GradientBottomOpacity": 0.0,
+        "GradientCenterColor": "#cecece",
+        "GradientCenterOpacity": 0.35,
+        "GradientCenterPosition": 0.56,
+        "GradientTopDarkColor": "#000000",
+        "GradientCenterDarkColor": "#000000",
+        "GradientBottomDarkColor": "#000000",
+        "BlurDecorations": true,
+        "BlurCoverage": 1.0,
+        "SurfaceTransparencyLight": 45.0,
+        "SurfaceTransparencyDark": 88.0
+      },
+      "panel": {
+        "BlurStrength": 5.0,
+        "NoiseStrength": 0,
+        "RgbDriftStrength": 2.88,
+        "MagnifyGlassStrength": 0.1,
+        "RefractionWidth": 18.0,
+        "HighlightWidth": 3.5,
+        "HighlightStrength": 0.1,
+        "Brightness": 1.0,
+        "Contrast": 1.0,
+        "Saturation": 1.33,
+        "DarkGradientOverlay": false,
+        "GradientTopColor": "#cecece",
+        "GradientBottomColor": "#cecece",
+        "GradientTopOpacity": 0.5,
+        "GradientBottomOpacity": 0.0,
+        "GradientCenterColor": "#cecece",
+        "GradientCenterOpacity": 0.35,
+        "GradientCenterPosition": 0.56,
+        "GradientTopDarkColor": "#000000",
+        "GradientCenterDarkColor": "#000000",
+        "GradientBottomDarkColor": "#000000",
+        "BlurDecorations": true,
+        "BlurCoverage": 0.98,
+        "SurfaceTransparencyLight": 98.5,
+        "SurfaceTransparencyDark": 98.5
+      }
+    }
+  },
+  "review": {
+    "files": {
+      "controls-comparison": "/mnt/M2_1/Projects/Repositories/macos-golden-gate-liquid-kde/build/control-center-review/controls-comparison-e6b02844645c.png",
+      "notifications-comparison": "/mnt/M2_1/Projects/Repositories/macos-golden-gate-liquid-kde/build/control-center-review/notifications-comparison-110593fc0239.png",
+      "control-center-reference-comparison": "/mnt/M2_1/Projects/Repositories/macos-golden-gate-liquid-kde/build/control-center-review/control-center-reference-comparison-f45fb0d9692a.png",
+      "golden-gate-light-french-crop": "/mnt/M2_1/Projects/Repositories/macos-golden-gate-liquid-kde/build/control-center-review/golden-gate-light-french-crop-aeba9763e847.png",
+      "golden-gate-dark-menu-crop": "/mnt/M2_1/Projects/Repositories/macos-golden-gate-liquid-kde/build/control-center-review/golden-gate-dark-menu-crop-196b5b856d2b.png",
+      "golden-gate-light-menu-crop": "/mnt/M2_1/Projects/Repositories/macos-golden-gate-liquid-kde/build/control-center-review/golden-gate-light-menu-crop-7f2331f795ed.png"
+    },
+    "captures": [
+      {
+        "name": "tahoe-light-controls",
+        "full_capture_sha256": "cf6024e0f8d6866f00625d9e15cbc68950ea5a76f5e6399e8806dc33d5f5e130",
+        "crop_physical_pixels": [
+          3120,
+          64,
+          3840,
+          1180
+        ],
+        "window_evidence": {
+          "before": [
+            {
+              "id": "{6f5a74b5-0dd1-4080-80b7-b4fd57e702af}",
+              "caption": "",
+              "resourceClass": "plasmashell",
+              "type": 1,
+              "appletPopup": false,
+              "hidden": false,
+              "active": false,
+              "geometry": {
+                "x": 0,
+                "y": 0,
+                "width": 1920,
+                "height": 1080
+              }
+            },
+            {
+              "id": "{0c26fb16-f7e2-40d7-9c45-6bf5e0e02714}",
+              "caption": "",
+              "resourceClass": "plasmashell",
+              "type": 2,
+              "appletPopup": false,
+              "hidden": false,
+              "active": false,
+              "geometry": {
+                "x": 0,
+                "y": 0,
+                "width": 1920,
+                "height": 32
+              }
+            },
+            {
+              "id": "{4b95f37c-fd65-47ff-a433-5d2230fb1557}",
+              "caption": "",
+              "resourceClass": "plasmashell",
+              "type": 2,
+              "appletPopup": false,
+              "hidden": false,
+              "active": false,
+              "geometry": {
+                "x": 614,
+                "y": 996,
+                "width": 692,
+                "height": 84
+              }
+            },
+            {
+              "id": "{6412706c-03a0-454f-821e-9eeebac18c2f}",
+              "caption": "mttkde-control-center",
+              "resourceClass": "org.kde.plasmashell",
+              "type": 18,
+              "appletPopup": true,
+              "hidden": false,
+              "active": true,
+              "geometry": {
+                "x": 1560,
+                "y": 32,
+                "width": 360,
+                "height": 558
+              }
+            }
+          ],
+          "after": [
+            {
+              "id": "{6f5a74b5-0dd1-4080-80b7-b4fd57e702af}",
+              "caption": "",
+              "resourceClass": "plasmashell",
+              "type": 1,
+              "appletPopup": false,
+              "hidden": false,
+              "active": false,
+              "geometry": {
+                "x": 0,
+                "y": 0,
+                "width": 1920,
+                "height": 1080
+              }
+            },
+            {
+              "id": "{0c26fb16-f7e2-40d7-9c45-6bf5e0e02714}",
+              "caption": "",
+              "resourceClass": "plasmashell",
+              "type": 2,
+              "appletPopup": false,
+              "hidden": false,
+              "active": false,
+              "geometry": {
+                "x": 0,
+                "y": 0,
+                "width": 1920,
+                "height": 32
+              }
+            },
+            {
+              "id": "{4b95f37c-fd65-47ff-a433-5d2230fb1557}",
+              "caption": "",
+              "resourceClass": "plasmashell",
+              "type": 2,
+              "appletPopup": false,
+              "hidden": false,
+              "active": false,
+              "geometry": {
+                "x": 614,
+                "y": 996,
+                "width": 692,
+                "height": 84
+              }
+            },
+            {
+              "id": "{6412706c-03a0-454f-821e-9eeebac18c2f}",
+              "caption": "mttkde-control-center",
+              "resourceClass": "org.kde.plasmashell",
+              "type": 18,
+              "appletPopup": true,
+              "hidden": false,
+              "active": true,
+              "geometry": {
+                "x": 1560,
+                "y": 32,
+                "width": 360,
+                "height": 558
+              }
+            }
+          ],
+          "mode": "light"
+        },
+        "source_commit": "a12828e68fe119298d16b979b6fac02df7ff7cce",
+        "agent_reviewed": true,
+        "user_approved": false
+      },
+      {
+        "name": "tahoe-dark-controls",
+        "full_capture_sha256": "0c856ff20c85ccf426b849721d924ec982cdb89baf4a9b67e0e5d7e9d5dc7e5b",
+        "crop_physical_pixels": [
+          3120,
+          64,
+          3840,
+          1180
+        ],
+        "window_evidence": {
+          "before": [
+            {
+              "id": "{6f5a74b5-0dd1-4080-80b7-b4fd57e702af}",
+              "caption": "",
+              "resourceClass": "plasmashell",
+              "type": 1,
+              "appletPopup": false,
+              "hidden": false,
+              "active": false,
+              "geometry": {
+                "x": 0,
+                "y": 0,
+                "width": 1920,
+                "height": 1080
+              }
+            },
+            {
+              "id": "{0c26fb16-f7e2-40d7-9c45-6bf5e0e02714}",
+              "caption": "",
+              "resourceClass": "plasmashell",
+              "type": 2,
+              "appletPopup": false,
+              "hidden": false,
+              "active": false,
+              "geometry": {
+                "x": 0,
+                "y": 0,
+                "width": 1920,
+                "height": 32
+              }
+            },
+            {
+              "id": "{4b95f37c-fd65-47ff-a433-5d2230fb1557}",
+              "caption": "",
+              "resourceClass": "plasmashell",
+              "type": 2,
+              "appletPopup": false,
+              "hidden": false,
+              "active": false,
+              "geometry": {
+                "x": 614,
+                "y": 996,
+                "width": 692,
+                "height": 84
+              }
+            },
+            {
+              "id": "{1a29cc9a-a66d-4da8-996c-e08fee746c9a}",
+              "caption": "mttkde-control-center",
+              "resourceClass": "org.kde.plasmashell",
+              "type": 18,
+              "appletPopup": true,
+              "hidden": false,
+              "active": true,
+              "geometry": {
+                "x": 1560,
+                "y": 32,
+                "width": 360,
+                "height": 558
+              }
+            }
+          ],
+          "after": [
+            {
+              "id": "{6f5a74b5-0dd1-4080-80b7-b4fd57e702af}",
+              "caption": "",
+              "resourceClass": "plasmashell",
+              "type": 1,
+              "appletPopup": false,
+              "hidden": false,
+              "active": false,
+              "geometry": {
+                "x": 0,
+                "y": 0,
+                "width": 1920,
+                "height": 1080
+              }
+            },
+            {
+              "id": "{0c26fb16-f7e2-40d7-9c45-6bf5e0e02714}",
+              "caption": "",
+              "resourceClass": "plasmashell",
+              "type": 2,
+              "appletPopup": false,
+              "hidden": false,
+              "active": false,
+              "geometry": {
+                "x": 0,
+                "y": 0,
+                "width": 1920,
+                "height": 32
+              }
+            },
+            {
+              "id": "{4b95f37c-fd65-47ff-a433-5d2230fb1557}",
+              "caption": "",
+              "resourceClass": "plasmashell",
+              "type": 2,
+              "appletPopup": false,
+              "hidden": false,
+              "active": false,
+              "geometry": {
+                "x": 614,
+                "y": 996,
+                "width": 692,
+                "height": 84
+              }
+            },
+            {
+              "id": "{1a29cc9a-a66d-4da8-996c-e08fee746c9a}",
+              "caption": "mttkde-control-center",
+              "resourceClass": "org.kde.plasmashell",
+              "type": 18,
+              "appletPopup": true,
+              "hidden": false,
+              "active": true,
+              "geometry": {
+                "x": 1560,
+                "y": 32,
+                "width": 360,
+                "height": 558
+              }
+            }
+          ],
+          "mode": "dark"
+        },
+        "source_commit": "a12828e68fe119298d16b979b6fac02df7ff7cce",
+        "agent_reviewed": true,
+        "user_approved": false
+      },
+      {
+        "name": "golden-gate-light-controls",
+        "full_capture_sha256": "06a5ba98d405d4662adeb6c61ed6fdbf5534099ccea6b08f1ee3e577541e05c0",
+        "crop_physical_pixels": [
+          3120,
+          64,
+          3840,
+          1180
+        ],
+        "window_evidence": {
+          "before": [
+            {
+              "id": "{6f5a74b5-0dd1-4080-80b7-b4fd57e702af}",
+              "caption": "",
+              "resourceClass": "plasmashell",
+              "type": 1,
+              "appletPopup": false,
+              "hidden": false,
+              "active": false,
+              "geometry": {
+                "x": 0,
+                "y": 0,
+                "width": 1920,
+                "height": 1080
+              }
+            },
+            {
+              "id": "{0c26fb16-f7e2-40d7-9c45-6bf5e0e02714}",
+              "caption": "",
+              "resourceClass": "plasmashell",
+              "type": 2,
+              "appletPopup": false,
+              "hidden": false,
+              "active": false,
+              "geometry": {
+                "x": 0,
+                "y": 0,
+                "width": 1920,
+                "height": 32
+              }
+            },
+            {
+              "id": "{4b95f37c-fd65-47ff-a433-5d2230fb1557}",
+              "caption": "",
+              "resourceClass": "plasmashell",
+              "type": 2,
+              "appletPopup": false,
+              "hidden": false,
+              "active": false,
+              "geometry": {
+                "x": 614,
+                "y": 996,
+                "width": 692,
+                "height": 84
+              }
+            },
+            {
+              "id": "{3b6c86ec-894f-4279-81af-8bbcfbb62686}",
+              "caption": "mttkde-control-center",
+              "resourceClass": "org.kde.plasmashell",
+              "type": 18,
+              "appletPopup": true,
+              "hidden": false,
+              "active": true,
+              "geometry": {
+                "x": 1560,
+                "y": 32,
+                "width": 360,
+                "height": 558
+              }
+            }
+          ],
+          "after": [
+            {
+              "id": "{6f5a74b5-0dd1-4080-80b7-b4fd57e702af}",
+              "caption": "",
+              "resourceClass": "plasmashell",
+              "type": 1,
+              "appletPopup": false,
+              "hidden": false,
+              "active": false,
+              "geometry": {
+                "x": 0,
+                "y": 0,
+                "width": 1920,
+                "height": 1080
+              }
+            },
+            {
+              "id": "{0c26fb16-f7e2-40d7-9c45-6bf5e0e02714}",
+              "caption": "",
+              "resourceClass": "plasmashell",
+              "type": 2,
+              "appletPopup": false,
+              "hidden": false,
+              "active": false,
+              "geometry": {
+                "x": 0,
+                "y": 0,
+                "width": 1920,
+                "height": 32
+              }
+            },
+            {
+              "id": "{4b95f37c-fd65-47ff-a433-5d2230fb1557}",
+              "caption": "",
+              "resourceClass": "plasmashell",
+              "type": 2,
+              "appletPopup": false,
+              "hidden": false,
+              "active": false,
+              "geometry": {
+                "x": 614,
+                "y": 996,
+                "width": 692,
+                "height": 84
+              }
+            },
+            {
+              "id": "{3b6c86ec-894f-4279-81af-8bbcfbb62686}",
+              "caption": "mttkde-control-center",
+              "resourceClass": "org.kde.plasmashell",
+              "type": 18,
+              "appletPopup": true,
+              "hidden": false,
+              "active": true,
+              "geometry": {
+                "x": 1560,
+                "y": 32,
+                "width": 360,
+                "height": 558
+              }
+            }
+          ],
+          "mode": "light"
+        },
+        "source_commit": "a12828e68fe119298d16b979b6fac02df7ff7cce",
+        "agent_reviewed": true,
+        "user_approved": false
+      },
+      {
+        "name": "golden-gate-dark-controls",
+        "full_capture_sha256": "64141df349fe59bcc43344cfa23416daa67e457adc94a9535d23ae0fd4b907fb",
+        "crop_physical_pixels": [
+          3120,
+          64,
+          3840,
+          1180
+        ],
+        "window_evidence": {
+          "before": [
+            {
+              "id": "{6f5a74b5-0dd1-4080-80b7-b4fd57e702af}",
+              "caption": "",
+              "resourceClass": "plasmashell",
+              "type": 1,
+              "appletPopup": false,
+              "hidden": false,
+              "active": false,
+              "geometry": {
+                "x": 0,
+                "y": 0,
+                "width": 1920,
+                "height": 1080
+              }
+            },
+            {
+              "id": "{0c26fb16-f7e2-40d7-9c45-6bf5e0e02714}",
+              "caption": "",
+              "resourceClass": "plasmashell",
+              "type": 2,
+              "appletPopup": false,
+              "hidden": false,
+              "active": false,
+              "geometry": {
+                "x": 0,
+                "y": 0,
+                "width": 1920,
+                "height": 32
+              }
+            },
+            {
+              "id": "{4b95f37c-fd65-47ff-a433-5d2230fb1557}",
+              "caption": "",
+              "resourceClass": "plasmashell",
+              "type": 2,
+              "appletPopup": false,
+              "hidden": false,
+              "active": false,
+              "geometry": {
+                "x": 614,
+                "y": 996,
+                "width": 692,
+                "height": 84
+              }
+            },
+            {
+              "id": "{1e0504d9-a23e-46a9-ad3b-7d05c401541e}",
+              "caption": "mttkde-control-center",
+              "resourceClass": "org.kde.plasmashell",
+              "type": 18,
+              "appletPopup": true,
+              "hidden": false,
+              "active": true,
+              "geometry": {
+                "x": 1560,
+                "y": 32,
+                "width": 360,
+                "height": 558
+              }
+            }
+          ],
+          "after": [
+            {
+              "id": "{6f5a74b5-0dd1-4080-80b7-b4fd57e702af}",
+              "caption": "",
+              "resourceClass": "plasmashell",
+              "type": 1,
+              "appletPopup": false,
+              "hidden": false,
+              "active": false,
+              "geometry": {
+                "x": 0,
+                "y": 0,
+                "width": 1920,
+                "height": 1080
+              }
+            },
+            {
+              "id": "{0c26fb16-f7e2-40d7-9c45-6bf5e0e02714}",
+              "caption": "",
+              "resourceClass": "plasmashell",
+              "type": 2,
+              "appletPopup": false,
+              "hidden": false,
+              "active": false,
+              "geometry": {
+                "x": 0,
+                "y": 0,
+                "width": 1920,
+                "height": 32
+              }
+            },
+            {
+              "id": "{4b95f37c-fd65-47ff-a433-5d2230fb1557}",
+              "caption": "",
+              "resourceClass": "plasmashell",
+              "type": 2,
+              "appletPopup": false,
+              "hidden": false,
+              "active": false,
+              "geometry": {
+                "x": 614,
+                "y": 996,
+                "width": 692,
+                "height": 84
+              }
+            },
+            {
+              "id": "{1e0504d9-a23e-46a9-ad3b-7d05c401541e}",
+              "caption": "mttkde-control-center",
+              "resourceClass": "org.kde.plasmashell",
+              "type": 18,
+              "appletPopup": true,
+              "hidden": false,
+              "active": true,
+              "geometry": {
+                "x": 1560,
+                "y": 32,
+                "width": 360,
+                "height": 558
+              }
+            }
+          ],
+          "mode": "dark"
+        },
+        "source_commit": "a12828e68fe119298d16b979b6fac02df7ff7cce",
+        "agent_reviewed": true,
+        "user_approved": false
+      },
+      {
+        "name": "tahoe-light-notifications",
+        "full_capture_sha256": "b4804267d61a0a47144bc45b228c684f1e3a872007aac6d7b969c04de33a2308",
+        "crop_physical_pixels": [
+          3120,
+          64,
+          3840,
+          1170
+        ],
+        "window_evidence": {
+          "before": [
+            {
+              "id": "{6f5a74b5-0dd1-4080-80b7-b4fd57e702af}",
+              "caption": "",
+              "resourceClass": "plasmashell",
+              "type": 1,
+              "appletPopup": false,
+              "hidden": false,
+              "active": false,
+              "geometry": {
+                "x": 0,
+                "y": 0,
+                "width": 1920,
+                "height": 1080
+              }
+            },
+            {
+              "id": "{0c26fb16-f7e2-40d7-9c45-6bf5e0e02714}",
+              "caption": "",
+              "resourceClass": "plasmashell",
+              "type": 2,
+              "appletPopup": false,
+              "hidden": false,
+              "active": false,
+              "geometry": {
+                "x": 0,
+                "y": 0,
+                "width": 1920,
+                "height": 32
+              }
+            },
+            {
+              "id": "{4b95f37c-fd65-47ff-a433-5d2230fb1557}",
+              "caption": "",
+              "resourceClass": "plasmashell",
+              "type": 2,
+              "appletPopup": false,
+              "hidden": false,
+              "active": false,
+              "geometry": {
+                "x": 614,
+                "y": 996,
+                "width": 692,
+                "height": 84
+              }
+            },
+            {
+              "id": "{26d9ec07-e4df-4c74-8225-091ca04aecec}",
+              "caption": "mttkde-control-center",
+              "resourceClass": "org.kde.plasmashell",
+              "type": 18,
+              "appletPopup": true,
+              "hidden": false,
+              "active": true,
+              "geometry": {
+                "x": 1560,
+                "y": 32,
+                "width": 360,
+                "height": 553
+              }
+            }
+          ],
+          "after": [
+            {
+              "id": "{6f5a74b5-0dd1-4080-80b7-b4fd57e702af}",
+              "caption": "",
+              "resourceClass": "plasmashell",
+              "type": 1,
+              "appletPopup": false,
+              "hidden": false,
+              "active": false,
+              "geometry": {
+                "x": 0,
+                "y": 0,
+                "width": 1920,
+                "height": 1080
+              }
+            },
+            {
+              "id": "{0c26fb16-f7e2-40d7-9c45-6bf5e0e02714}",
+              "caption": "",
+              "resourceClass": "plasmashell",
+              "type": 2,
+              "appletPopup": false,
+              "hidden": false,
+              "active": false,
+              "geometry": {
+                "x": 0,
+                "y": 0,
+                "width": 1920,
+                "height": 32
+              }
+            },
+            {
+              "id": "{4b95f37c-fd65-47ff-a433-5d2230fb1557}",
+              "caption": "",
+              "resourceClass": "plasmashell",
+              "type": 2,
+              "appletPopup": false,
+              "hidden": false,
+              "active": false,
+              "geometry": {
+                "x": 614,
+                "y": 996,
+                "width": 692,
+                "height": 84
+              }
+            },
+            {
+              "id": "{26d9ec07-e4df-4c74-8225-091ca04aecec}",
+              "caption": "mttkde-control-center",
+              "resourceClass": "org.kde.plasmashell",
+              "type": 18,
+              "appletPopup": true,
+              "hidden": false,
+              "active": true,
+              "geometry": {
+                "x": 1560,
+                "y": 32,
+                "width": 360,
+                "height": 553
+              }
+            }
+          ],
+          "mode": "light"
+        },
+        "source_commit": "a12828e68fe119298d16b979b6fac02df7ff7cce",
+        "agent_reviewed": true,
+        "user_approved": false
+      },
+      {
+        "name": "tahoe-dark-notifications",
+        "full_capture_sha256": "5f9819721a3d5aa09dd427c0c1c5a8c994e962a22bb93b1fd3180c52aa06ff7c",
+        "crop_physical_pixels": [
+          3120,
+          64,
+          3840,
+          1170
+        ],
+        "window_evidence": {
+          "before": [
+            {
+              "id": "{6f5a74b5-0dd1-4080-80b7-b4fd57e702af}",
+              "caption": "",
+              "resourceClass": "plasmashell",
+              "type": 1,
+              "appletPopup": false,
+              "hidden": false,
+              "active": false,
+              "geometry": {
+                "x": 0,
+                "y": 0,
+                "width": 1920,
+                "height": 1080
+              }
+            },
+            {
+              "id": "{0c26fb16-f7e2-40d7-9c45-6bf5e0e02714}",
+              "caption": "",
+              "resourceClass": "plasmashell",
+              "type": 2,
+              "appletPopup": false,
+              "hidden": false,
+              "active": false,
+              "geometry": {
+                "x": 0,
+                "y": 0,
+                "width": 1920,
+                "height": 32
+              }
+            },
+            {
+              "id": "{4b95f37c-fd65-47ff-a433-5d2230fb1557}",
+              "caption": "",
+              "resourceClass": "plasmashell",
+              "type": 2,
+              "appletPopup": false,
+              "hidden": false,
+              "active": false,
+              "geometry": {
+                "x": 614,
+                "y": 996,
+                "width": 692,
+                "height": 84
+              }
+            },
+            {
+              "id": "{01d8f825-8eb1-4f5f-992e-ebabc04a9980}",
+              "caption": "mttkde-control-center",
+              "resourceClass": "org.kde.plasmashell",
+              "type": 18,
+              "appletPopup": true,
+              "hidden": false,
+              "active": true,
+              "geometry": {
+                "x": 1560,
+                "y": 32,
+                "width": 360,
+                "height": 553
+              }
+            }
+          ],
+          "after": [
+            {
+              "id": "{6f5a74b5-0dd1-4080-80b7-b4fd57e702af}",
+              "caption": "",
+              "resourceClass": "plasmashell",
+              "type": 1,
+              "appletPopup": false,
+              "hidden": false,
+              "active": false,
+              "geometry": {
+                "x": 0,
+                "y": 0,
+                "width": 1920,
+                "height": 1080
+              }
+            },
+            {
+              "id": "{0c26fb16-f7e2-40d7-9c45-6bf5e0e02714}",
+              "caption": "",
+              "resourceClass": "plasmashell",
+              "type": 2,
+              "appletPopup": false,
+              "hidden": false,
+              "active": false,
+              "geometry": {
+                "x": 0,
+                "y": 0,
+                "width": 1920,
+                "height": 32
+              }
+            },
+            {
+              "id": "{4b95f37c-fd65-47ff-a433-5d2230fb1557}",
+              "caption": "",
+              "resourceClass": "plasmashell",
+              "type": 2,
+              "appletPopup": false,
+              "hidden": false,
+              "active": false,
+              "geometry": {
+                "x": 614,
+                "y": 996,
+                "width": 692,
+                "height": 84
+              }
+            },
+            {
+              "id": "{01d8f825-8eb1-4f5f-992e-ebabc04a9980}",
+              "caption": "mttkde-control-center",
+              "resourceClass": "org.kde.plasmashell",
+              "type": 18,
+              "appletPopup": true,
+              "hidden": false,
+              "active": true,
+              "geometry": {
+                "x": 1560,
+                "y": 32,
+                "width": 360,
+                "height": 553
+              }
+            }
+          ],
+          "mode": "dark"
+        },
+        "source_commit": "a12828e68fe119298d16b979b6fac02df7ff7cce",
+        "agent_reviewed": true,
+        "user_approved": false
+      },
+      {
+        "name": "golden-gate-light-notifications",
+        "full_capture_sha256": "de86dcd9a9b09d24dbcd2f2ce6de73f964b111c0b9ddc1599a0854b3f0703844",
+        "crop_physical_pixels": [
+          3120,
+          64,
+          3840,
+          1170
+        ],
+        "window_evidence": {
+          "before": [
+            {
+              "id": "{6f5a74b5-0dd1-4080-80b7-b4fd57e702af}",
+              "caption": "",
+              "resourceClass": "plasmashell",
+              "type": 1,
+              "appletPopup": false,
+              "hidden": false,
+              "active": false,
+              "geometry": {
+                "x": 0,
+                "y": 0,
+                "width": 1920,
+                "height": 1080
+              }
+            },
+            {
+              "id": "{0c26fb16-f7e2-40d7-9c45-6bf5e0e02714}",
+              "caption": "",
+              "resourceClass": "plasmashell",
+              "type": 2,
+              "appletPopup": false,
+              "hidden": false,
+              "active": false,
+              "geometry": {
+                "x": 0,
+                "y": 0,
+                "width": 1920,
+                "height": 32
+              }
+            },
+            {
+              "id": "{4b95f37c-fd65-47ff-a433-5d2230fb1557}",
+              "caption": "",
+              "resourceClass": "plasmashell",
+              "type": 2,
+              "appletPopup": false,
+              "hidden": false,
+              "active": false,
+              "geometry": {
+                "x": 614,
+                "y": 996,
+                "width": 692,
+                "height": 84
+              }
+            },
+            {
+              "id": "{ed201742-0b2e-4615-b724-0039c19e065d}",
+              "caption": "mttkde-control-center",
+              "resourceClass": "org.kde.plasmashell",
+              "type": 18,
+              "appletPopup": true,
+              "hidden": false,
+              "active": true,
+              "geometry": {
+                "x": 1560,
+                "y": 32,
+                "width": 360,
+                "height": 553
+              }
+            }
+          ],
+          "after": [
+            {
+              "id": "{6f5a74b5-0dd1-4080-80b7-b4fd57e702af}",
+              "caption": "",
+              "resourceClass": "plasmashell",
+              "type": 1,
+              "appletPopup": false,
+              "hidden": false,
+              "active": false,
+              "geometry": {
+                "x": 0,
+                "y": 0,
+                "width": 1920,
+                "height": 1080
+              }
+            },
+            {
+              "id": "{0c26fb16-f7e2-40d7-9c45-6bf5e0e02714}",
+              "caption": "",
+              "resourceClass": "plasmashell",
+              "type": 2,
+              "appletPopup": false,
+              "hidden": false,
+              "active": false,
+              "geometry": {
+                "x": 0,
+                "y": 0,
+                "width": 1920,
+                "height": 32
+              }
+            },
+            {
+              "id": "{4b95f37c-fd65-47ff-a433-5d2230fb1557}",
+              "caption": "",
+              "resourceClass": "plasmashell",
+              "type": 2,
+              "appletPopup": false,
+              "hidden": false,
+              "active": false,
+              "geometry": {
+                "x": 614,
+                "y": 996,
+                "width": 692,
+                "height": 84
+              }
+            },
+            {
+              "id": "{ed201742-0b2e-4615-b724-0039c19e065d}",
+              "caption": "mttkde-control-center",
+              "resourceClass": "org.kde.plasmashell",
+              "type": 18,
+              "appletPopup": true,
+              "hidden": false,
+              "active": true,
+              "geometry": {
+                "x": 1560,
+                "y": 32,
+                "width": 360,
+                "height": 553
+              }
+            }
+          ],
+          "mode": "light"
+        },
+        "source_commit": "a12828e68fe119298d16b979b6fac02df7ff7cce",
+        "agent_reviewed": true,
+        "user_approved": false
+      },
+      {
+        "name": "golden-gate-dark-notifications",
+        "full_capture_sha256": "b75119103734def5f03aa48e7c0e9ddaeb16cf0b674141dbaf58de7ae4cdf93c",
+        "crop_physical_pixels": [
+          3120,
+          64,
+          3840,
+          1170
+        ],
+        "window_evidence": {
+          "before": [
+            {
+              "id": "{6f5a74b5-0dd1-4080-80b7-b4fd57e702af}",
+              "caption": "",
+              "resourceClass": "plasmashell",
+              "type": 1,
+              "appletPopup": false,
+              "hidden": false,
+              "active": false,
+              "geometry": {
+                "x": 0,
+                "y": 0,
+                "width": 1920,
+                "height": 1080
+              }
+            },
+            {
+              "id": "{0c26fb16-f7e2-40d7-9c45-6bf5e0e02714}",
+              "caption": "",
+              "resourceClass": "plasmashell",
+              "type": 2,
+              "appletPopup": false,
+              "hidden": false,
+              "active": false,
+              "geometry": {
+                "x": 0,
+                "y": 0,
+                "width": 1920,
+                "height": 32
+              }
+            },
+            {
+              "id": "{4b95f37c-fd65-47ff-a433-5d2230fb1557}",
+              "caption": "",
+              "resourceClass": "plasmashell",
+              "type": 2,
+              "appletPopup": false,
+              "hidden": false,
+              "active": false,
+              "geometry": {
+                "x": 614,
+                "y": 996,
+                "width": 692,
+                "height": 84
+              }
+            },
+            {
+              "id": "{668d1d5e-378f-43ab-b1d5-170479cd8eb0}",
+              "caption": "mttkde-control-center",
+              "resourceClass": "org.kde.plasmashell",
+              "type": 18,
+              "appletPopup": true,
+              "hidden": false,
+              "active": true,
+              "geometry": {
+                "x": 1560,
+                "y": 32,
+                "width": 360,
+                "height": 553
+              }
+            }
+          ],
+          "after": [
+            {
+              "id": "{6f5a74b5-0dd1-4080-80b7-b4fd57e702af}",
+              "caption": "",
+              "resourceClass": "plasmashell",
+              "type": 1,
+              "appletPopup": false,
+              "hidden": false,
+              "active": false,
+              "geometry": {
+                "x": 0,
+                "y": 0,
+                "width": 1920,
+                "height": 1080
+              }
+            },
+            {
+              "id": "{0c26fb16-f7e2-40d7-9c45-6bf5e0e02714}",
+              "caption": "",
+              "resourceClass": "plasmashell",
+              "type": 2,
+              "appletPopup": false,
+              "hidden": false,
+              "active": false,
+              "geometry": {
+                "x": 0,
+                "y": 0,
+                "width": 1920,
+                "height": 32
+              }
+            },
+            {
+              "id": "{4b95f37c-fd65-47ff-a433-5d2230fb1557}",
+              "caption": "",
+              "resourceClass": "plasmashell",
+              "type": 2,
+              "appletPopup": false,
+              "hidden": false,
+              "active": false,
+              "geometry": {
+                "x": 614,
+                "y": 996,
+                "width": 692,
+                "height": 84
+              }
+            },
+            {
+              "id": "{668d1d5e-378f-43ab-b1d5-170479cd8eb0}",
+              "caption": "mttkde-control-center",
+              "resourceClass": "org.kde.plasmashell",
+              "type": 18,
+              "appletPopup": true,
+              "hidden": false,
+              "active": true,
+              "geometry": {
+                "x": 1560,
+                "y": 32,
+                "width": 360,
+                "height": 553
+              }
+            }
+          ],
+          "mode": "dark"
+        },
+        "source_commit": "a12828e68fe119298d16b979b6fac02df7ff7cce",
+        "agent_reviewed": true,
+        "user_approved": false
+      }
+    ],
+    "reference_url": "https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/issues/133"
+  },
+  "artifacts": [
+    {
+      "path": "/mnt/M2_1/Projects/Repositories/macos-golden-gate-liquid-kde/build/control-center-review/controls-comparison-e6b02844645c.png",
+      "sha256": "e6b02844645c489619a2d0de7d299c1f30ff6a3c6426d324f93ed94ee025b7bb"
+    },
+    {
+      "path": "/mnt/M2_1/Projects/Repositories/macos-golden-gate-liquid-kde/build/control-center-review/notifications-comparison-110593fc0239.png",
+      "sha256": "110593fc02398afff3376681092af431f3072731c1d9ac53c70773a9f2e2353d"
+    },
+    {
+      "path": "/mnt/M2_1/Projects/Repositories/macos-golden-gate-liquid-kde/build/control-center-review/control-center-reference-comparison-f45fb0d9692a.png",
+      "sha256": "f45fb0d9692abe7c647bab58348e129e4a92e8a517f013f19e22f89d5d37a953"
+    },
+    {
+      "path": "/mnt/M2_1/Projects/Repositories/macos-golden-gate-liquid-kde/build/control-center-review/golden-gate-light-french-crop-aeba9763e847.png",
+      "sha256": "aeba9763e847d4977f699f5ed272b923ae1e23b42f8c1d43653a66e46c2cd7dd"
+    },
+    {
+      "path": "/mnt/M2_1/Projects/Repositories/macos-golden-gate-liquid-kde/build/control-center-review/golden-gate-dark-menu-crop-196b5b856d2b.png",
+      "sha256": "196b5b856d2b8355dd6eff211e518fea54167b4a45d5ee4090497a2d374e876a"
+    },
+    {
+      "path": "/mnt/M2_1/Projects/Repositories/macos-golden-gate-liquid-kde/build/control-center-review/golden-gate-light-menu-crop-7f2331f795ed.png",
+      "sha256": "7f2331f795ed215bc487c9afed96a3028792ef10065d718ccc42fbcaa70a79ae"
+    }
+  ],
+  "checks": [
+    {
+      "log": "/tmp/control-center-evidence/final-controls-navigation.log",
+      "sha256": "c428e51fe9f984234b8f70b3e08ef27fe31606e42572a010c224879cd3443391",
+      "result": "1 passed in 14.28s"
+    },
+    {
+      "log": "/tmp/control-center-evidence/material-tests.log",
+      "sha256": "a48cac500afd097203cd828ed7b1ea444e41dedf9a3af945ebe61fa5990a7d4b",
+      "result": "9 passed, 23 deselected in 10.29s"
+    },
+    {
+      "log": "/tmp/control-center-evidence/controls-catalog-tests.log",
+      "sha256": "1d5329b87fc2453d771de5ba932f95b2fcb4f05b59784eeb9a6f8a2a476f7cf3",
+      "result": "9 passed in 14.43s"
+    }
+  ],
+  "coverage_limits": [
+    "Candidate has not been pushed, merged or published; remote CI has not run on this candidate.",
+    "VM rendering: Plasma/KWin 6.8.1, Qt 6.11.1, Wayland; Qt menu via Xwayland. No new KWin 6.6/6.7 builds or real KWin X11 shader qualification.",
+    "No automatic schedule boundary, GTK continuity or physical Bluetooth/multi-monitor hardware qualification in this candidate.",
+    "Stage Manager and AirDrop symbols are reference reconstructions; the four slider endpoint symbols use bundled Apple glyph contours.",
+    "Local preview paths are review artifacts, not published documentation photographs."
+  ]
+}

@@ -79,5 +79,10 @@
       "reviewed": true,
       "source_commit": "9ff2d9a4"
     }
-  ]
+  ],
+  "pending_candidate": {
+    "evidence": "docs/evidence/control-center-130-133.json",
+    "status": "pending_visual_approval",
+    "source_commit": "a12828e68fe119298d16b979b6fac02df7ff7cce"
+  }
 }
