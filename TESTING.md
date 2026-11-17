@@ -1,6 +1,6 @@
 # Installer testing
 
-Tahoe **v0.73.5** adds the user-approved notification banners and history and removes duplicated bar controls. Focused regressions, SDK builds for KWin 6.6/6.7/6.8, selected VM install/reinstall, X11 effect rendering and Wayland notification checks passed. Both editions passed persistent light/dark/automatic transitions. [Detailed evidence and coverage limits](docs/evidence/notifications-0735.json). Full remote CI remains asynchronous; installer photographs retain their original provenance.
+Tahoe **v0.73.6** improves Shell contrast in light and dark mode while preserving the original typography and capsule geometry. Focused geometry tests and ten rendered Wayland configurations were verified. [Detailed evidence and coverage limits](docs/evidence/shell-0736.json). Full CI runs independently. Installer photographs retain their original provenance.
 
 Approved installer previews: [Light](src/screenshots/previews/installer-tahoe-light-icons-805970eab6b7.png) · [Dark](src/screenshots/previews/installer-tahoe-dark-icons-dbc66adc81c4.png). The gallery below is historical and predates these installer changes; its original [provenance](src/screenshots/release-capture.json) is retained.
 
