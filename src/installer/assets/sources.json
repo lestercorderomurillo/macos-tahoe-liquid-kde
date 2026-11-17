@@ -2540,8 +2540,8 @@
     "kind": "generated-icon-preview"
   },
   "weather-dark-light-neutral.png": {
-    "file": "weather-dark-light-neutral-b484226f4290.png",
-    "sha256": "b484226f4290c9c0a4fef32dc0c63be22fe512b31a931c5c1d6a124e8b7cf961",
+    "file": "weather-dark-light-neutral-63667a61e0b4.png",
+    "sha256": "63667a61e0b40e1609bf9ea4c8b8c3b49e87adfcdb7e386c8d44a2a8d5b4fa2f",
     "source": "src/offline/icons/MacTahoeLiquidKde-Icons.tar.zst",
     "source_sha256": "f9ea0a95a94ac79df7939fca6ef636fbc3ceb3a2e5333a16d20ff3f42488040d",
     "artwork_sha256": "250e49e2a9e5c5bbf792b08fddc15f8e3c97919e94acd04ea10ef33385357a07",
@@ -2553,8 +2553,8 @@
     "kind": "generated-icon-preview"
   },
   "weather-dark-dark-neutral.png": {
-    "file": "weather-dark-dark-neutral-b484226f4290.png",
-    "sha256": "b484226f4290c9c0a4fef32dc0c63be22fe512b31a931c5c1d6a124e8b7cf961",
+    "file": "weather-dark-dark-neutral-63667a61e0b4.png",
+    "sha256": "63667a61e0b40e1609bf9ea4c8b8c3b49e87adfcdb7e386c8d44a2a8d5b4fa2f",
     "source": "src/offline/icons/MacTahoeLiquidKde-Icons.tar.zst",
     "source_sha256": "f9ea0a95a94ac79df7939fca6ef636fbc3ceb3a2e5333a16d20ff3f42488040d",
     "artwork_sha256": "250e49e2a9e5c5bbf792b08fddc15f8e3c97919e94acd04ea10ef33385357a07",

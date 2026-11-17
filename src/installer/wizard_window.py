@@ -984,7 +984,14 @@ class InstallerWindow(OpaqueSurface):
         style = style or ("glass" if glass else "regular")
         mode = "dark" if style == "dark" else self.mode
         color = self.choices["color"] if style == "glass" else "neutral"
-        return picture(f"weather-{style}-{mode}-{color}.png", 96, 96)
+        canvas = QPixmap(362, 160)
+        canvas.fill(Qt.GlobalColor.transparent)
+        painter = QPainter(canvas)
+        painter.scale(2, 2)
+        painter.drawPixmap(62, 12, picture(f"weather-{style}-{mode}-{color}.png", 56, 56))
+        painter.end()
+        canvas.setDevicePixelRatio(2)
+        return canvas
 
     def page_icons(self):
         group = self.cards("icons", [

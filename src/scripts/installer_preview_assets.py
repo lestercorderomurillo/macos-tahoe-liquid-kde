@@ -67,8 +67,12 @@ def build_selectors(output):
                 for color in (COLORS if style == "glass" else ("neutral",)):
                     tint = COLORS.get(color, "#8e8e93")
                     rgb = tuple(int(tint[i:i+2], 16) for i in (1, 3, 5))
-                    image = render_installer(prepared, "regular" if style == "dark" else style,
-                                             "dark" if style == "dark" else mode, rgb)
+                    # The macOS selector uses Weather's neutral dark plate. Keep
+                    # its original cloud/sun layers and change only that plate's paint.
+                    selector = (*prepared[:2], "vector-light", *prepared[3:]) if style == "dark" else prepared
+                    sample_mode = "dark" if style == "dark" else "light" if style == "regular" else mode
+                    image = render_installer(selector, "regular" if style == "dark" else style,
+                                             sample_mode, rgb)
                     key = f"weather-{style}-{mode}-{color}.png"
                     target = output / key
                     image.resize((192, 192), Image.Resampling.LANCZOS).save(target)
