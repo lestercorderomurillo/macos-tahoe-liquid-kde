@@ -147,12 +147,14 @@ def prepare_source(source: Path, size: int, glyph: bool = False, *, clean_rim: b
     plate_index = None
     plate_probe = None
     found_artwork = False
+    probes = []
     for i, node in enumerate(drawables[:24]):
         for other in drawables:
             other.set("style", other.get("style", "") + ";display:none")
         node.attrib.clear()
         node.attrib.update(originals[i])
         isolated = raster_svg(ET.tostring(root), 64)
+        probes.append(isolated)
         for other, original in zip(drawables, originals):
             other.attrib.clear()
             other.attrib.update(original)
@@ -181,6 +183,31 @@ def prepare_source(source: Path, size: int, glyph: bool = False, *, clean_rim: b
                 removed.append(i)
             else:
                 found_artwork = True
+    plate_parts = {plate_index} if plate_index is not None else set()
+    if plate_index is None:
+        # Some originals draw the tile as adjacent header/body paths (Notes).
+        # Recognize their union only when both span the tile's full width and
+        # meet without overlapping. Narrow unplated objects remain unplated.
+        wide = []
+        for index, probe in enumerate(probes):
+            alpha = probe.getchannel("A")
+            bounds = alpha.point(lambda a: 255 if a > 230 else 0).getbbox()
+            if bounds and bounds[0] <= 5 and bounds[2] >= 59:
+                wide.append(index)
+        for index, first in enumerate(wide):
+            for second in wide[index+1:]:
+                a, b = (probes[i].getchannel("A") for i in (first, second))
+                union = ImageChops.lighter(a, b)
+                overlap = sum(ImageChops.darker(a, b).histogram()[128:])
+                if (sum(union.crop((12,12,52,52)).histogram()[231:]) > 1600*.94
+                        and sum(union.histogram()[231:]) > 4096*.60 and overlap < 40):
+                    plate_index = first
+                    plate_parts = {first, second}
+                    plate_probe = Image.alpha_composite(probes[first], probes[second])
+                    removed = list(range(first+1)) + [second]
+                    break
+            if plate_index is not None:
+                break
     if plate_index is None:
         return (*prepare(image), None, removed_images)
     for i in removed:
@@ -194,14 +221,19 @@ def prepare_source(source: Path, size: int, glyph: bool = False, *, clean_rim: b
         if i not in removed:
             node.set("style", node.get("style", "") + ";display:none")
     image.info["icon_background"] = raster_svg(ET.tostring(root), size)
+    for index in plate_parts:
+        drawables[index].set("style", drawables[index].get("style", "") + ";display:none")
+    image.info["icon_background_detail"] = raster_svg(ET.tostring(root), size)
     if artwork.getchannel("A").getbbox() is None:
         return (*prepare(image), None, removed_images)
     for i, node in enumerate(drawables):
         node.attrib.clear()
         node.attrib.update(originals[i])
-        if i != plate_index:
+        if i not in plate_parts:
             node.set("style", node.get("style", "") + ";display:none")
-    shape = raster_svg(ET.tostring(root), size).getchannel("A")
+    original_plate = raster_svg(ET.tostring(root), size)
+    image.info["icon_plate"] = original_plate
+    shape = original_plate.getchannel("A")
     plate_pixels = [p for p in plate_probe.getdata() if p[3] > 230]
     colored = sum(max(p[:3]) - min(p[:3]) >= 20 for p in plate_pixels)
     brightness = sum(sum(p[:3]) / 3 for p in plate_pixels) / len(plate_pixels)
@@ -213,6 +245,7 @@ def prepare_source(source: Path, size: int, glyph: bool = False, *, clean_rim: b
         image.resize((64, 64), Image.Resampling.LANCZOS).getdata(),
         plate_alpha.getdata(), inset_alpha.getdata()) if outer > 230 and inner < 128]
     colored_edge = sum(max(p[:3]) - min(p[:3]) >= 20 and p[3] > 230 for p in edge_pixels)
+    image.info["icon_plate_colored"] = colored / len(plate_pixels) > .01
     classification = "vector-colored" if (colored / len(plate_pixels) > .01
         or colored_edge > len(edge_pixels) * .25) else (
         "vector-light" if brightness > 145 else "vector-dark")
@@ -368,71 +401,175 @@ def _recolor_layer(layer: Image.Image, low: tuple, high: tuple,
     return result
 
 
+def _plate_tones(layer: Image.Image) -> Image.Image:
+    """Use the source gradient's range, not the entire 0..255 RGB interval."""
+    gray = ImageOps.grayscale(layer)
+    values = sorted(v for v, a in zip(gray.getdata(), layer.getchannel("A").getdata()) if a > 240)
+    if not values:
+        return gray
+    low, high = values[len(values)//20], values[len(values)*19//20]
+    if high - low < 3:
+        return Image.new("L", layer.size, 128)
+    return gray.point(lambda v: max(0, min(255, round((v-low)*255/(high-low)))))
+
+
+def _exposed_ink(artwork: Image.Image) -> Image.Image:
+    """Find dark ink on the plate, retaining dark details inside a light symbol.
+
+    Close small holes in the original bright foreground to identify its support.
+    This mask selects paint only; it never adds pixels to any original layer.
+    """
+    probe = artwork.resize((128, 128), Image.Resampling.LANCZOS)
+    gray = ImageOps.grayscale(probe)
+    bright = ImageChops.multiply(gray.point(lambda v: min(255, max(0, (v-100)*4))),
+                                 probe.getchannel("A"))
+    support = bright.filter(ImageFilter.MaxFilter(9)).filter(ImageFilter.MinFilter(9))
+    support = support.point(lambda v: min(255, v*3))
+    exposed = ImageOps.invert(support).resize(artwork.size, Image.Resampling.BILINEAR)
+    dark = ImageOps.grayscale(artwork).point(lambda v: min(255, max(0, (120-v)*4)))
+    return ImageChops.multiply(exposed, dark)
+
+
+def _oklab(rgb):
+    r, g, b = [v/3294.6 if v <= 10.31475 else ((v/255+.055)/1.055)**2.4 for v in rgb]
+    l = (.4122214708*r+.5363325363*g+.0514459929*b)**(1/3)
+    m = (.2119034982*r+.6806995451*g+.1073969566*b)**(1/3)
+    s = (.0883024619*r+.2817188376*g+.6299787005*b)**(1/3)
+    return (.2104542553*l+.793617785*m-.0040720468*s,
+            1.9779984951*l-2.428592205*m+.4505937099*s,
+            .0259040371*l+.7827717662*m-.808675766*s)
+
+
+def _from_oklab(lightness, a, b):
+    # Reduce chroma into sRGB rather than clipping channels and shifting hue.
+    for _ in range(32):
+        l = (lightness+.3963377774*a+.2158037573*b)**3
+        m = (lightness-.1055613458*a-.0638541728*b)**3
+        s = (lightness-.0894841775*a-1.291485548*b)**3
+        rgb = (4.0767416621*l-3.3077115913*m+.2309699292*s,
+               -1.2684380046*l+2.6097574011*m-.3413193965*s,
+               -.0041960863*l-.7034186147*m+1.707614701*s)
+        if min(rgb) >= -.00001 and max(rgb) <= 1.00001:
+            break
+        a *= .96; b *= .96
+    return tuple(round(255 * (12.92*v if v <= .0031308 else 1.055*v**(1/2.4)-.055))
+                 for v in (max(0, min(1, c)) for c in rgb))
+
+
+def _tint_palette(tint):
+    """Interpolate measured Tahoe paint transfers in perceptual hue space.
+
+    Anchors: MacMost red/blue Dock frames, 512 Pixels green original PNG.
+    Values are lightness changes and chroma ratios, not per-icon colors.
+    These captures constrain a paint approximation, not macOS live refraction.
+    """
+    L, a, b = _oklab(tint)
+    hue = math.degrees(math.atan2(b, a)) % 360
+    anchors = ((26.9, -.266, -.291, .64, .040, .89, -13.1),
+               (147.4, -.203, -.286, .71, .053, .93, 3.2),
+               (256.9, -.251, -.298, .48, .048, .90, -5.4),
+               (386.9, -.266, -.291, .64, .040, .89, -13.1))
+    if hue < anchors[0][0]:
+        hue += 360
+    left, right = next((x, y) for x, y in zip(anchors, anchors[1:]) if x[0] <= hue <= y[0])
+    t = (hue-left[0])/(right[0]-left[0])
+    top, bottom, chroma, lift, saturation, rotation = [x+(y-x)*t for x, y in zip(left[1:], right[1:])]
+    angle = math.radians(rotation)
+    fa = (a*math.cos(angle)-b*math.sin(angle))*saturation
+    fb = (a*math.sin(angle)+b*math.cos(angle))*saturation
+    # Neutral and very dark inputs keep a usable dark plate without inventing hue.
+    return (_from_oklab(max(.16, L+bottom), a*chroma, b*chroma),
+            _from_oklab(max(.20, L+top), a*chroma, b*chroma),
+            _from_oklab(min(.96, max(.58, L+lift)), fa, fb))
+
+
 def render_installer(prepared: tuple, style: str, mode: str, tint: tuple[int, int, int],
                      material: GlassMaterial = DEFAULT_GLASS) -> Image.Image:
-    """Repaint the original layers without creating tiles, rims or shadows.
-
-    Default preserves the original paint. Clear uses neutral translucent paint;
-    tinted light colors the background, tinted dark colors the foreground.
-    Unlayered assets retain their own silhouette, including both Trash states.
-    """
+    """Repaint original layers; preserve all silhouettes, holes and drawn rims."""
     if style not in {"regular", "glass", "clear"} or mode not in {"light", "dark"}:
         raise ValueError("Unknown installer icon material")
     image, shape, classification, artwork, _ = prepared
     background = image.info.get("icon_background")
-    if style == "regular":
-        if mode == "light" or classification != "vector-light" or background is None:
-            return image.copy()
-        background = _recolor_layer(background, (8, 8, 10), (48, 48, 51))
-        result = Image.alpha_composite(background, dark_foreground(artwork))
-        result.putalpha(image.getchannel("A"))
-        return result
-    dark = mode == "dark"
-    clear = style == "clear"
-    rgb = (142, 142, 147) if clear else tint
-    def mix(amount, white=0):
-        return tuple(round(c * amount + white * (1 - amount)) for c in rgb)
-    if dark:
-        plate_low, plate_high = (4, 4, 6), (35, 35, 39)
-        low, high = mix(.30), mix(.78, 255)
-    else:
-        plate_low, plate_high = mix(.48), mix(.78, 255)
-        low, high = mix(material.shadow_tint), mix(.08, 255)
-    if clear:
-        plate_low, plate_high = ((12, 12, 14), (58, 58, 62)) if dark else ((170, 174, 180), (245, 247, 250))
-        low, high = ((135, 140, 148), (250, 252, 255)) if dark else ((35, 40, 48), (250, 252, 255))
+    if style == "regular" and (mode == "light" or background is None or artwork is None):
+        return image.copy()
+    if style == "regular" and classification == "vector-colored" and not image.info.get("icon_plate_colored", True):
+        # White negative space belongs to split-color brand panels, not a tile.
+        return image.copy()
+    # Unplated objects (including Trash) keep their own original material.
     if background is None or artwork is None:
-        # No background layer exists. Do not invent a squircle behind the asset.
-        return _recolor_layer(image, low if dark or clear else mix(.30),
-                              high if dark or clear else mix(.65, 255), opacity=.85 if clear else 1)
-    plate = _recolor_layer(background, plate_low, plate_high,
-                           opacity=.60 if clear else 1)
-    # Sparse dark lettering needs the opposite polarity against a dark tile.
+        return image.copy()
+    dark, clear = mode == "dark", style == "clear"
+    original_plate = image.info.get("icon_plate", background)
+    tones = _plate_tones(original_plate)
+    if style == "regular":
+        plate = ImageOps.colorize(tones, (17, 17, 18), (52, 52, 54)).convert("RGBA")
+        plate.putalpha(background.getchannel("A"))
+    elif dark and not clear:
+        # Cached PNGs cannot reproduce macOS backdrop filtering. Keep the dark
+        # surface sufficiently opaque to retain detail over bright wallpapers.
+        low, high, _ = _tint_palette(tint)
+        low = tuple(round(5+c*.10) for c in low)
+        high = tuple(round(12+c*.15) for c in high)
+        plate = ImageOps.colorize(tones, low, high).convert("RGBA")
+        plate.putalpha(background.getchannel("A").point(lambda a: round(a*.94)))
+    elif clear:
+        plate = Image.new("RGBA", image.size, (0, 0, 0) if dark else (215, 220, 220))
+        opacity = tones.point(lambda v: round((.58-.29*v/255)*255) if dark else 35)
+        plate.putalpha(ImageChops.multiply(background.getchannel("A"), opacity))
+    else:
+        low, high, _ = _tint_palette(tint)
+        plate = ImageOps.colorize(tones, low, high).convert("RGBA")
+        plate.putalpha(background.getchannel("A"))
+    # Composite the actual source rim/shadow drawing, never a derived outline.
+    detail = image.info.get("icon_background_detail")
+    if detail is not None:
+        detail = _recolor_layer(detail, (0, 0, 0), (255, 255, 255), opacity=.28 if clear else .10)
+        plate = Image.alpha_composite(plate, detail)
+    if style == "regular":
+        probe = artwork.resize((64, 64), Image.Resampling.LANCZOS)
+        pixels = [p for p in probe.getdata() if p[3] > 180]
+        neutral = sum(max(p[:3])-min(p[:3]) < 20 for p in pixels) / max(1, len(pixels))
+        if classification != "vector-colored" or neutral < .9:
+            result = Image.alpha_composite(plate, dark_foreground(artwork))
+            result.putalpha(image.getchannel("A") if style == "regular" else ImageChops.darker(result.getchannel("A"), image.getchannel("A")))
+            return result
+        # A white symbol on a colored plate exchanges its paint roles in Dark.
+        pixels = [p for p in original_plate.resize((64, 64)).getdata() if p[3] > 240]
+        tint = tuple(round(sum(p[c] for p in pixels)/len(pixels)) for c in range(3))
+    if clear:
+        low, high = (20, 25, 28), (255, 255, 255)
+    elif dark:
+        low = tuple(round(c * material.shadow_tint) for c in tint)
+        high = _tint_palette(tint)[2] if style != "regular" else tint
+    else:
+        low = tuple(round(c * material.shadow_tint) for c in tint)
+        high = tuple(round(247 + c*.03) for c in tint)
+    foreground = _recolor_layer(artwork, low, high, gamma=material.relief_tint/.8)
+    exposed = _exposed_ink(artwork)
     sparse = sum(artwork.getchannel("A").histogram()[128:]) < image.width * image.height * material.sparse_fraction
     if sparse:
-        ink = ImageOps.grayscale(artwork).point(
-            lambda value: round(255 * (value / 255) ** material.sparse_gamma))
-        foreground = ImageOps.colorize(ink, high if dark else low, low if dark else high,
-                                      blackpoint=material.ink_blackpoint).convert("RGBA")
-        foreground.putalpha(artwork.getchannel("A"))
-    else:
-        lifted = dark_foreground(artwork)
-        foreground = _recolor_layer(lifted if dark else artwork,
-                                    low if dark or clear else mix(material.relief_tint * .4375, 255), high)
-        if not dark and not clear:
-            # Exposed black strokes (Finder's face) keep dark ink; the broad
-            # illustration uses pale tint paint, as in Tahoe's light appearance.
-            changed = ImageChops.difference(lifted, artwork).convert("RGB")
-            mask = ImageChops.lighter(ImageChops.lighter(*changed.split()[:2]), changed.split()[2])
-            r, g, b = artwork.convert("RGB").split()
-            peak = ImageChops.lighter(ImageChops.lighter(r, g), b)
-            floor = ImageChops.darker(ImageChops.darker(r, g), b)
-            neutral = ImageChops.subtract(peak, floor).point(lambda v: max(0, 255 - v * 12))
-            black = peak.point(lambda v: max(0, min(255, (95 - v) * 8)))
-            mask = ImageChops.lighter(mask.point(lambda v: 255 if v else 0), ImageChops.multiply(neutral, black))
-            ink = _recolor_layer(artwork, low, high, gamma=1.4)
-            foreground = Image.composite(ink, foreground, mask)
+        exposed = Image.new("L", image.size, 255)
+    # Exposed strokes share the symbol paint. Embedded eyes/holes retain dark ink.
+    neutral_dark = ImageOps.grayscale(artwork).point(lambda v: max(0, min(255, (100-v)*4)))
+    embedded = ImageChops.subtract(neutral_dark, exposed)
+    ink = _recolor_layer(artwork, tuple(round(c*.12) for c in high), high)
+    foreground = Image.composite(ink, foreground, embedded)
+    light_ink = _recolor_layer(artwork, high, high)
+    foreground = Image.composite(light_ink, foreground, exposed)
+    if style == "regular":
+        # Carry the original colored plate gradient into the neutral symbol.
+        color = original_plate.convert("RGB")
+        tone = ImageOps.grayscale(artwork)
+        painted = Image.merge("RGB", tuple(ImageChops.multiply(c, tone) for c in color.split())).convert("RGBA")
+        painted.putalpha(artwork.getchannel("A"))
+        bright = color.convert("RGBA")
+        bright.putalpha(artwork.getchannel("A"))
+        foreground = Image.composite(bright, painted, exposed)
     result = Image.alpha_composite(plate, foreground)
-    original_alpha = image.getchannel("A")
-    result.putalpha(ImageChops.darker(result.getchannel("A"), original_alpha) if clear else original_alpha)
+    alpha = image.getchannel("A")
+    if style != "regular":
+        # Even a faint original shadow remains present after opacity scaling.
+        alpha = ImageChops.lighter(ImageChops.darker(result.getchannel("A"), alpha),
+                                   alpha.point(lambda v: 1 if v else 0))
+    result.putalpha(alpha)
     return result

@@ -1,0 +1,416 @@
+{
+  "frames": [
+    {
+      "name": "native-Light",
+      "variant": "light",
+      "tint": [
+        53,
+        199,
+        89
+      ],
+      "size": 104,
+      "origin": [
+        122,
+        1660
+      ],
+      "step": 124,
+      "url": "https://media.512pixels.net/downloads/macos-screenshots/26/26-Tahoe-Apperance-Style-Light.png",
+      "kind": "original PNG with ICC",
+      "sha256": "1ccf4ba0518b610c3b5152bddb2d5e4df8002151a33dc0318c26e82c936b7741",
+      "dimensions": [
+        2880,
+        1800
+      ],
+      "icc_sha256": "9e190b8351f501d9d32867a714d5d53922a35e42459ae4146bfa87338db21388",
+      "selector_crop": [
+        1940,
+        750,
+        2360,
+        1020
+      ],
+      "mode_verified": "Selected appearance control inspected in the complete original capture",
+      "tint_source": "Median displayed selector swatch in sRGB, not an asserted macOS internal numeric color",
+      "swatch_center": [
+        2178,
+        990
+      ]
+    },
+    {
+      "name": "native-Dark",
+      "variant": "dark",
+      "tint": [
+        53,
+        199,
+        89
+      ],
+      "size": 104,
+      "origin": [
+        122,
+        1660
+      ],
+      "step": 124,
+      "url": "https://media.512pixels.net/downloads/macos-screenshots/26/26-Tahoe-Apperance-Style-Dark.png",
+      "kind": "original PNG with ICC",
+      "sha256": "7d4811f9dee9a631cd7b7d44594590c6ce12a8ad6fdbcce074c6e11508ff0e56",
+      "dimensions": [
+        2880,
+        1800
+      ],
+      "icc_sha256": "9e190b8351f501d9d32867a714d5d53922a35e42459ae4146bfa87338db21388",
+      "selector_crop": [
+        1940,
+        750,
+        2360,
+        1020
+      ],
+      "mode_verified": "Selected appearance control inspected in the complete original capture",
+      "tint_source": "Median displayed selector swatch in sRGB, not an asserted macOS internal numeric color",
+      "swatch_center": [
+        2178,
+        990
+      ]
+    },
+    {
+      "name": "native-Clear-Light",
+      "variant": "clear-light",
+      "tint": [
+        53,
+        199,
+        89
+      ],
+      "size": 104,
+      "origin": [
+        122,
+        1660
+      ],
+      "step": 124,
+      "url": "https://media.512pixels.net/downloads/macos-screenshots/26/26-Tahoe-Apperance-Style-Clear-Light.png",
+      "kind": "original PNG with ICC",
+      "sha256": "3183e49e1a880123e4704c81226157a4459eb84167cda2e3a3cf508c2893a0be",
+      "dimensions": [
+        2880,
+        1800
+      ],
+      "icc_sha256": "9e190b8351f501d9d32867a714d5d53922a35e42459ae4146bfa87338db21388",
+      "selector_crop": [
+        1940,
+        750,
+        2360,
+        1020
+      ],
+      "mode_verified": "Selected appearance control inspected in the complete original capture",
+      "tint_source": "Median displayed selector swatch in sRGB, not an asserted macOS internal numeric color",
+      "swatch_center": [
+        2178,
+        990
+      ]
+    },
+    {
+      "name": "native-Clear-Dark",
+      "variant": "clear-dark",
+      "tint": [
+        53,
+        199,
+        89
+      ],
+      "size": 104,
+      "origin": [
+        122,
+        1660
+      ],
+      "step": 124,
+      "url": "https://media.512pixels.net/downloads/macos-screenshots/26/26-Tahoe-Apperance-Style-Clear-Dark.png",
+      "kind": "original PNG with ICC",
+      "sha256": "cdf5780ba8eed560a850268fec2982d29386faed7eacedfd8909c14c78760e2e",
+      "dimensions": [
+        2880,
+        1800
+      ],
+      "icc_sha256": "9e190b8351f501d9d32867a714d5d53922a35e42459ae4146bfa87338db21388",
+      "selector_crop": [
+        1940,
+        750,
+        2360,
+        1020
+      ],
+      "mode_verified": "Selected appearance control inspected in the complete original capture",
+      "tint_source": "Median displayed selector swatch in sRGB, not an asserted macOS internal numeric color",
+      "swatch_center": [
+        2178,
+        990
+      ]
+    },
+    {
+      "name": "native-Tinted-Green-Light",
+      "variant": "tinted-light",
+      "tint": [
+        53,
+        199,
+        89
+      ],
+      "size": 104,
+      "origin": [
+        122,
+        1660
+      ],
+      "step": 124,
+      "url": "https://media.512pixels.net/downloads/macos-screenshots/26/26-Tahoe-Apperance-Style-Tinted-Green-Light.png",
+      "kind": "original PNG with ICC",
+      "sha256": "5d0f30fb31ea3516904b58eb47a5aaaf6d39057681d057220858afcc83b58823",
+      "dimensions": [
+        2880,
+        1800
+      ],
+      "icc_sha256": "9e190b8351f501d9d32867a714d5d53922a35e42459ae4146bfa87338db21388",
+      "selector_crop": [
+        1940,
+        750,
+        2360,
+        1020
+      ],
+      "mode_verified": "Selected appearance control inspected in the complete original capture",
+      "tint_source": "Median displayed selector swatch in sRGB, not an asserted macOS internal numeric color",
+      "swatch_center": [
+        2178,
+        990
+      ]
+    },
+    {
+      "name": "native-Tinted-Green-Dark",
+      "variant": "tinted-dark",
+      "tint": [
+        53,
+        199,
+        89
+      ],
+      "size": 104,
+      "origin": [
+        122,
+        1660
+      ],
+      "step": 124,
+      "url": "https://media.512pixels.net/downloads/macos-screenshots/26/26-Tahoe-Apperance-Style-Tinted-Green-Dark.png",
+      "kind": "original PNG with ICC",
+      "sha256": "4279b4212a995aba7d96eece36f82bc7149a5559507ce05b36218968b5a3f74a",
+      "dimensions": [
+        2880,
+        1800
+      ],
+      "icc_sha256": "9e190b8351f501d9d32867a714d5d53922a35e42459ae4146bfa87338db21388",
+      "selector_crop": [
+        1940,
+        750,
+        2360,
+        1020
+      ],
+      "mode_verified": "Selected appearance control inspected in the complete original capture",
+      "tint_source": "Median displayed selector swatch in sRGB, not an asserted macOS internal numeric color",
+      "swatch_center": [
+        2178,
+        990
+      ]
+    },
+    {
+      "name": "blue-light",
+      "variant": "tinted-light",
+      "tint": [
+        0,
+        123,
+        252
+      ],
+      "size": 80,
+      "origin": [
+        89,
+        1328
+      ],
+      "step": 94,
+      "url": "https://macmost.com/customizing-your-mac-with-icon-widget-styles.html",
+      "kind": "2560x1440 compressed video frame; no ICC",
+      "sha256": "01deb0cbf3529bde541330dcfda2322887efd59c4d0dee0e4c15f1d3af121724",
+      "dimensions": [
+        2560,
+        1440
+      ],
+      "icc_sha256": null,
+      "selector_crop": [
+        1550,
+        680,
+        1970,
+        960
+      ],
+      "mode_verified": "Selected appearance control inspected in the complete original capture",
+      "tint_source": "Median displayed selector swatch in sRGB, not an asserted macOS internal numeric color",
+      "swatch_center": [
+        1735,
+        917
+      ],
+      "video_time_seconds": 493,
+      "video_url": "https://vz-2b98893a-a04.b-cdn.net/4ed096b0-bc1c-4231-8259-e8cddc4582f7/1440p/video.m3u8"
+    },
+    {
+      "name": "blue-dark",
+      "variant": "tinted-dark",
+      "tint": [
+        0,
+        123,
+        252
+      ],
+      "size": 80,
+      "origin": [
+        89,
+        1328
+      ],
+      "step": 94,
+      "url": "https://macmost.com/customizing-your-mac-with-icon-widget-styles.html",
+      "kind": "2560x1440 compressed video frame; no ICC",
+      "sha256": "12161639a87ee99a09dbdb564cd04255e77ce887caa57732cd66fafc77621c44",
+      "dimensions": [
+        2560,
+        1440
+      ],
+      "icc_sha256": null,
+      "selector_crop": [
+        1550,
+        680,
+        1970,
+        960
+      ],
+      "mode_verified": "Selected appearance control inspected in the complete original capture",
+      "tint_source": "Median displayed selector swatch in sRGB, not an asserted macOS internal numeric color",
+      "swatch_center": [
+        1735,
+        917
+      ],
+      "video_time_seconds": 499,
+      "video_url": "https://vz-2b98893a-a04.b-cdn.net/4ed096b0-bc1c-4231-8259-e8cddc4582f7/1440p/video.m3u8"
+    },
+    {
+      "name": "red-light",
+      "variant": "tinted-light",
+      "tint": [
+        252,
+        49,
+        50
+      ],
+      "size": 80,
+      "origin": [
+        89,
+        1328
+      ],
+      "step": 94,
+      "url": "https://macmost.com/customizing-your-mac-with-icon-widget-styles.html",
+      "kind": "2560x1440 compressed video frame; no ICC",
+      "sha256": "35e8ec165caa36fb9f26a30eb87a90457f216e77eb758b7aaa3358dced218c63",
+      "dimensions": [
+        2560,
+        1440
+      ],
+      "icc_sha256": null,
+      "selector_crop": [
+        1550,
+        680,
+        1970,
+        960
+      ],
+      "mode_verified": "Selected appearance control inspected in the complete original capture",
+      "tint_source": "Median displayed selector swatch in sRGB, not an asserted macOS internal numeric color",
+      "swatch_center": [
+        1812,
+        917
+      ],
+      "video_time_seconds": 524,
+      "video_url": "https://vz-2b98893a-a04.b-cdn.net/4ed096b0-bc1c-4231-8259-e8cddc4582f7/1440p/video.m3u8"
+    },
+    {
+      "name": "red-dark",
+      "variant": "tinted-dark",
+      "tint": [
+        252,
+        49,
+        50
+      ],
+      "size": 80,
+      "origin": [
+        89,
+        1328
+      ],
+      "step": 94,
+      "url": "https://macmost.com/customizing-your-mac-with-icon-widget-styles.html",
+      "kind": "2560x1440 compressed video frame; no ICC",
+      "sha256": "c7ff85749075f12d82881587e08d10f5acc382ba30c5aa520d12cbe225799ed8",
+      "dimensions": [
+        2560,
+        1440
+      ],
+      "icc_sha256": null,
+      "selector_crop": [
+        1550,
+        680,
+        1970,
+        960
+      ],
+      "mode_verified": "Selected appearance control inspected in the complete original capture",
+      "tint_source": "Median displayed selector swatch in sRGB, not an asserted macOS internal numeric color",
+      "swatch_center": [
+        1812,
+        917
+      ],
+      "video_time_seconds": 543,
+      "video_url": "https://vz-2b98893a-a04.b-cdn.net/4ed096b0-bc1c-4231-8259-e8cddc4582f7/1440p/video.m3u8"
+    }
+  ],
+  "dock_artwork": [
+    {
+      "name": "Appstore.svg",
+      "source_sha256": "a3905306bcefa3809c64a5da38b1d336abdbf320deafa54b2a31804fd8ed70af"
+    },
+    {
+      "name": "Gnome-Notes.svg",
+      "source_sha256": "796b15e647e7ac90f017efc2f4f47e76dbbb7b24afc7c24635f5bd3cca33dee9"
+    },
+    {
+      "name": "Gnome-Photos.svg",
+      "source_sha256": "5f8eb7594ee00628afaae671e44536306b41944d97129722364eade5ed106168"
+    },
+    {
+      "name": "Insight-FileManager.svg",
+      "source_sha256": "1dd88e9ee27a257855d8712de3870cf7ca7c87f3e591f45de7444c2456bfa007"
+    },
+    {
+      "name": "applications-system-orange.svg",
+      "source_sha256": "8ff99c6c70c0a33282aa351e3de4f0fc29bb4437d3cfe6c6ae6cfda4a7b97632"
+    },
+    {
+      "name": "appointment.svg",
+      "source_sha256": "c767f07a84992e28a5bf81c95e9e7020acbb6cc27d2424145b65304a11f23789"
+    },
+    {
+      "name": "elisa.svg",
+      "source_sha256": "1b3bcbcfdbe059ca0f60a3ea1ef69cab5e242ca80b3040270fc97009e0478af5"
+    },
+    {
+      "name": "firefox-3.0.svg",
+      "source_sha256": "7d07a906714441fadc7355be9b081a7559ecdbd48193c7dc2a04f547a6bd22cf"
+    },
+    {
+      "name": "org.kde.haruna.svg",
+      "source_sha256": "dabccb38072b9a57587b3f3a902b47f6b3dd0737ee3c9acbc9d0186deedc6a54"
+    },
+    {
+      "name": "mozilla-thunderbird.svg",
+      "source_sha256": "738cb532ecad8328d178f70f17cf9075a8357f79e5f7aee9394e40ac42457400"
+    },
+    {
+      "name": "view-app-grid.svg",
+      "source_sha256": "2961c8cd92c6270b7b2acefa1e275692466f5d5c69b948c25f51efd72c53c13e"
+    },
+    {
+      "name": "user-trash-full.svg",
+      "source_sha256": "cbd4a9a3b6e2186e2b0f9aa4808f5e4e9c92dfd10f760060789e126d884a0af2"
+    },
+    {
+      "name": "user-trash.svg",
+      "source_sha256": "4ca95dd5934d278e37d281dd8d97d32542412f054b752d50e1301f687f1f9f8b"
+    }
+  ]
+}

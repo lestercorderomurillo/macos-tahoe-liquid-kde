@@ -80,7 +80,7 @@ def test_materials_preserve_color_detail_and_glass_alpha(built):
 
 
 @pytest.mark.parametrize("background", ["#5865f2", "#1db954", "url(#brand)"])
-def test_regular_dark_keeps_colored_brand_plates(tmp_path, background):
+def test_regular_dark_exchanges_colored_plate_and_neutral_symbol_paint(tmp_path, background):
     from icon_materials import render_installer
     if not shutil.which("rsvg-convert"):
         pytest.skip("rsvg-convert is required for material rendering")
@@ -95,7 +95,9 @@ def test_regular_dark_keeps_colored_brand_plates(tmp_path, background):
     prepared = prepare_source(source, 64, clean_rim=True)
     assert prepared[2] == "vector-colored"
     dark = render_installer(prepared, "regular", "dark", (0, 122, 255))
-    assert dark.tobytes() == prepared[0].tobytes()
+    assert max(dark.getpixel((32, 9))[:3]) < 65
+    assert dark.getchannel('A').tobytes() == prepared[0].getchannel('A').tobytes()
+    assert max(dark.getpixel((32, 32))[:3]) - min(dark.getpixel((32, 32))[:3]) > 30
 
 
 def test_regular_dark_keeps_unclassified_raster_artwork(tmp_path):
@@ -104,6 +106,21 @@ def test_regular_dark_keeps_unclassified_raster_artwork(tmp_path):
     Image.new("RGBA", (64, 64), "#5865f2").save(source)
     prepared = prepare_source(source, 64)
     assert render_installer(prepared, "regular", "dark", (0, 122, 255)).tobytes() == prepared[0].tobytes()
+
+
+def test_adjacent_header_and_body_are_one_original_background(tmp_path):
+    path = tmp_path / 'split-background.svg'
+    path.write_text('''<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64">
+    <rect x="4" y="4" width="56" height="15" fill="#007aff"/>
+    <rect x="4" y="19" width="56" height="41" fill="white"/>
+    <circle cx="32" cy="35" r="4" fill="black"/></svg>''')
+    prepared = prepare_source(path, 128)
+    for variant in ('tinted-light', 'tinted-dark', 'clear-light', 'clear-dark'):
+        result = render(prepared, variant, (252,49,50))
+        assert result.getpixel((32,20)) != prepared[0].getpixel((32,20))
+        assert result.getpixel((32,90)) != prepared[0].getpixel((32,90))
+        assert result.getpixel((64,70))[:3] != result.getpixel((32,70))[:3]
+        assert result.getchannel('A').point(bool).tobytes() == prepared[0].getchannel('A').point(bool).tobytes()
 
 
 def test_regular_dark_preserves_white_negative_space_between_brand_panels(tmp_path):
@@ -177,11 +194,14 @@ def test_installer_glass_tint_changes_artwork_and_preserves_aliases(source, tmp_
         assert json.loads((blue / name / "generation.json").read_text())["tint"] == "#007aff"
         image = Image.open(first).convert("RGBA")
         assert image.getpixel((0, 0))[3] < 8
-        assert image.getpixel((128, 36))[3] == 255  # Tinted preserves original coverage.
+        assert image.getpixel((128, 36))[3] >= 235  # Dark glass retains slight transmission.
         for icon in ("view-app-grid", "user-trash", "user-trash-full"):
             rendered = blue / name / "apps/256" / (icon + ".png")
             assert Image.open(rendered).getbbox()
-            assert digest(rendered) != digest(green / name / "apps/256" / rendered.name)
+            if icon == 'view-app-grid':
+                assert digest(rendered) != digest(green / name / "apps/256" / rendered.name)
+            else:
+                assert digest(rendered) == digest(green / name / "apps/256" / rendered.name)
         assert digest(blue / name / "apps/256/user-trash.png") != digest(
             blue / name / "apps/256/user-trash-full.png")
 
@@ -387,7 +407,9 @@ def test_arbitrary_rgb_tints_preserve_glyph_and_original_coverage(tmp_path, tint
     prepared = prepare_source(path, 64)
     for variant in ("tinted-light", "tinted-dark"):
         image = render(prepared, variant, color(tint))
-        assert image.getchannel("A").tobytes() == prepared[0].getchannel("A").tobytes()
+        from PIL import ImageChops
+        assert ImageChops.subtract(image.getchannel('A'), prepared[0].getchannel('A')).getbbox() is None
+        assert image.getchannel('A').getbbox() == prepared[0].getchannel('A').getbbox()
         assert image.getpixel((32, 24))[3] > 240
         assert image.getpixel((32, 9))[:3] != image.getpixel((32, 24))[:3]
 
@@ -456,6 +478,8 @@ def test_glass_finder_eyes_and_calendar_text_remain_legible_on_both_wallpapers(t
                 images = {name: Image.alpha_composite(Image.new('RGBA', im.size, background), im).convert('RGB')
                           for name, im in icons.items()}
                 finder = images['system-file-manager']
+                assert luminance(finder.getpixel((20, 23))) > luminance(finder.getpixel((17, 23)))
+                assert luminance(finder.getpixel((44, 23))) < luminance(finder.getpixel((48, 23)))
                 assert contrast(finder.getpixel((20, 23)), finder.getpixel((17, 23))) >= 3, (tint, mode, background, 'eye')
                 calendar = images['calendar']
                 assert median(contrast(calendar.getpixel(pt), calendar.getpixel((12, 17)))
@@ -530,7 +554,7 @@ def test_variants_preserve_original_geometry_including_unplated_icons(tmp_path):
     from icon_materials import VARIANTS
     from PIL import ImageChops
     for name, svg in {
-        "layered": ARTWORK,
+        "layered": ARTWORK.replace(b'</svg>', b'<path d="M1 1H63V63H1Z" fill="white" opacity=".005"/></svg>'),
         "unplated": b'<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64"><path fill="#aaa" fill-rule="evenodd" d="M18 10H46L42 55H22Z M27 20H37V38H27Z"/><path d="M16 10H48" stroke="white" stroke-width="2"/></svg>',
     }.items():
         path = tmp_path / (name + ".svg")
@@ -542,9 +566,12 @@ def test_variants_preserve_original_geometry_including_unplated_icons(tmp_path):
             for variant in VARIANTS:
                 result = render(source, variant, tint)
                 coverage = result.getchannel("A")
-                assert ImageChops.subtract(coverage.point(lambda v: 255 if v else 0), mask).getbbox() is None, (name, variant)
-                if not variant.startswith("clear-"):
+                assert coverage.point(lambda v: 255 if v else 0).tobytes() == mask.tobytes(), (name, variant)
+                if variant in {"light", "dark"}:
                     assert coverage.tobytes() == alpha.tobytes(), (name, variant)
                 else:
                     assert coverage.getbbox() == alpha.getbbox(), (name, variant)
-            assert render(source, "tinted-light", tint).tobytes() != render(source, "tinted-dark", tint).tobytes()
+            if name == 'layered':
+                assert render(source, "tinted-light", tint).tobytes() != render(source, "tinted-dark", tint).tobytes()
+            else:
+                assert render(source, "tinted-light", tint).tobytes() == source[0].tobytes()
