@@ -25,6 +25,24 @@ PlasmoidItem {
     readonly property bool view: Plasmoid.configuration.compactView
     readonly property string cfgIcon: Plasmoid.configuration.menuIcon || "start-here-kde-symbolic"
 
+    Rectangle {
+        id: barTint
+
+        // Attach to the top panel window so the tint also sits behind its other applets.
+        parent: Plasmoid.location === PlasmaCore.Types.TopEdge ? root.Window.window?.contentItem ?? null : null
+        anchors.fill: parent
+        visible: parent !== null
+        z: -1
+
+        readonly property bool lightText: Kirigami.ColorUtils.brightnessForColor(Kirigami.Theme.textColor)
+                                          === Kirigami.ColorUtils.Light
+
+        gradient: Gradient {
+            GradientStop { position: 0; color: barTint.lightText ? "#29000000" : "#29ffffff" }
+            GradientStop { position: 1; color: "transparent" }
+        }
+    }
+
     AboutWindow {
         id: aboutWindow
         useSystemFont: Plasmoid.configuration.useSystemFont

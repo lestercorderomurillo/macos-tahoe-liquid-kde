@@ -49,34 +49,16 @@ AbstractButton {
     Accessible.description: i18nc("@info:usagetip", "Open a menu")
 
     background: Rectangle {
-        id: capsule
-
         y: Math.min(Kirigami.Units.smallSpacing, controlRoot.height / 4)
         height: Math.max(0, controlRoot.height - 2 * y)
         radius: Math.min(width, height) / 2
-        // Panel foreground can follow the wallpaper, so pair the capsule with the actual label color.
+
         readonly property bool lightText: Kirigami.ColorUtils.brightnessForColor(Kirigami.Theme.textColor)
                                           === Kirigami.ColorUtils.Light
-        readonly property bool pressed: controlRoot.menuState === MenuDelegate.State.Down
         readonly property color tint: lightText ? "#ffffff" : "#e3e7ee"
-        readonly property real fillOpacity: (pressed ? 0.25 : 0.18) - (lightText ? 0.02 : 0)
 
         visible: controlRoot.menuState !== MenuDelegate.State.Rest
-        gradient: Gradient {
-            GradientStop {
-                position: 0
-                color: capsule.overlay(capsule.fillOpacity + 0.05)
-            }
-            GradientStop {
-                position: 1
-                color: capsule.overlay(capsule.fillOpacity - 0.05)
-            }
-        }
-
-        // Source-over tint shifts the visible backdrop without flattening its colors.
-        function overlay(alpha: real): color {
-            return Qt.rgba(tint.r, tint.g, tint.b, alpha);
-        }
+        color: Qt.rgba(tint.r, tint.g, tint.b, controlRoot.menuState === MenuDelegate.State.Down ? 0.25 : 0.18)
     }
 
     contentItem: PC3.Label {
