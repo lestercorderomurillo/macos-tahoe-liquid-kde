@@ -16,7 +16,7 @@ engine = QQmlEngine()
 component = QQmlComponent(engine, QUrl.fromLocalFile(sys.argv[1]))
 button = component.create()
 assert button is not None, component.errors()
-assert button.property('font').weight() == QFont.Weight.Bold
+assert button.property('font').weight() == QFont.Weight.Normal
 background = QQmlProperty(button, 'background').read()
 assert not background.isVisible()
 assert round(background.property('color').alphaF(), 2) == 0.18
@@ -40,9 +40,7 @@ for height in (24, 32, 48):
         assert background.property('radius') == background.height() / 2
         assert button.height() == height
         assert button.property('topPadding') == button.property('bottomPadding')
-        label, original_label = content.childItems()
-        assert label.width() >= label.property('implicitWidth') - 1
-        assert content.width() == original_label.property('implicitWidth')
+        assert content.width() >= content.property('implicitWidth') - 1
         assert button.property('leftPadding') == button.property('rightPadding')
         assert button.property('leftPadding') >= 12
 '''

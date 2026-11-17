@@ -12,8 +12,7 @@ import org.kde.kirigami as Kirigami
 AbstractButton {
     id: controlRoot
 
-    font.weight: Font.Bold
-    property int originalFontWeight: Font.Normal
+    font.weight: Font.Normal
     readonly property bool lightText: Kirigami.ColorUtils.brightnessForColor(Kirigami.Theme.textColor)
                                       === Kirigami.ColorUtils.Light
     readonly property color foregroundColor: Qt.tint(Kirigami.Theme.textColor, lightText ? "#40ffffff" : "#40000000")
@@ -64,30 +63,12 @@ AbstractButton {
         color: Qt.rgba(tint.r, tint.g, tint.b, controlRoot.menuState === MenuDelegate.State.Down ? 0.25 : 0.18)
     }
 
-    contentItem: Item {
-        implicitWidth: originalLabel.implicitWidth
-        implicitHeight: originalLabel.implicitHeight
-
-        PC3.Label {
-            id: label
-
-            // The heavier text can use existing padding without moving any menu buttons.
-            width: Math.min(parent.width + controlRoot.rightPadding, Math.max(parent.width, implicitWidth))
-            height: parent.height
-            text: controlRoot.Kirigami.MnemonicData.richTextLabel
-            textFormat: Text.StyledText
-            verticalAlignment: Text.AlignVCenter
-            elide: Text.ElideRight
-            color: controlRoot.foregroundColor
-            font.weight: controlRoot.font.weight
-        }
-
-        PC3.Label {
-            id: originalLabel
-            visible: false
-            text: label.text
-            textFormat: label.textFormat
-            font.weight: controlRoot.originalFontWeight
-        }
+    contentItem: PC3.Label {
+        text: controlRoot.Kirigami.MnemonicData.richTextLabel
+        textFormat: Text.StyledText
+        verticalAlignment: Text.AlignVCenter
+        elide: Text.ElideRight
+        color: controlRoot.foregroundColor
+        font.weight: controlRoot.font.weight
     }
 }

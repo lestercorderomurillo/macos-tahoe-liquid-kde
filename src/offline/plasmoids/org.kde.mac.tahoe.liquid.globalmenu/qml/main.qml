@@ -149,7 +149,7 @@ PlasmoidItem {
             id: systemMenuButton
             Accessible.name: i18n("System menu")
             readonly property int buttonIndex: -3
-            property bool menuIsOpen: Plasmoid.currentIndex !== -1
+            menuIsOpen: Plasmoid.currentIndex !== -1
 
             Layout.fillHeight: !root.vertical
 
@@ -166,7 +166,7 @@ PlasmoidItem {
                 source: root.cfgIcon
                 implicitWidth: Kirigami.Units.iconSizes.small
                 implicitHeight: Kirigami.Units.iconSizes.small
-                color: systemMenuButton.foregroundColor
+                color: Kirigami.Theme.textColor
             }
         }
 
@@ -175,8 +175,7 @@ PlasmoidItem {
             readonly property int buttonIndex: -2
             visible: appMenuModel.activeAppName !== ""
             text: appMenuModel.activeAppName
-            font.weight: Font.ExtraBold
-            originalFontWeight: Font.Bold
+            font.weight: Font.Bold
             Layout.fillHeight: !root.vertical
 
             down: Plasmoid.currentIndex === -2
