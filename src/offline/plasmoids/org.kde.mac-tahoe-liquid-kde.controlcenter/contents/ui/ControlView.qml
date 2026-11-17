@@ -93,31 +93,31 @@ Item {
             id: sharing
             visible: view.showControl("showSharing")
             Layout.columnSpan: 2; Layout.fillWidth: true; Layout.preferredWidth: 66; Layout.minimumWidth: 0; Layout.preferredHeight: 72; padding: 10
-            contentItem: ControlAction { text: i18n("File Sharing"); symbol: "network-connect"; onClicked: commands.run("sharing") }
+            contentItem: ControlAction { text: i18n("File Sharing"); symbol: "mac-airdrop-off"; iconDisc: true; onClicked: commands.run("sharing") }
         }
         ControlTile {
             id: overview
             visible: view.showControl("showOverview")
             Layout.fillWidth: true; Layout.preferredWidth: 66; Layout.minimumWidth: 0; Layout.preferredHeight: 72; padding: 4
-            contentItem: ControlAction { text: i18n("Overview"); symbol: "view-grid"; compact: true; onClicked: commands.run("overview") }
+            contentItem: ControlAction { text: i18n("Overview"); symbol: "mac-stage-manager"; compact: true; onClicked: commands.run("overview") }
         }
         ControlTile {
             id: mirroring
             visible: view.showControl("showMirroring")
             Layout.fillWidth: true; Layout.preferredWidth: 66; Layout.minimumWidth: 0; Layout.preferredHeight: 72; padding: 4
-            contentItem: ControlAction { text: i18n("Screen Mirroring"); symbol: "edit-copy"; compact: true; onClicked: commands.run("display") }
+            contentItem: ControlAction { text: i18n("Screen Mirroring"); symbol: "mac-mirroring"; compact: true; onClicked: commands.run("display") }
         }
         ControlTile {
             id: darkMode
             visible: view.showControl("showDarkMode")
             Layout.fillWidth: true; Layout.preferredWidth: 66; Layout.minimumWidth: 0; Layout.preferredHeight: 72; padding: 4
-            contentItem: ControlAction { text: i18n("Dark Mode"); symbol: "weather-clear-night"; compact: true; active: !darkMode.lightMode; onClicked: commands.run(darkMode.lightMode ? "dark" : "light") }
+            contentItem: ControlAction { text: i18n("Dark Mode"); symbol: "mac-appearance"; activeSymbolColor: "black"; compact: true; active: !darkMode.lightMode; onClicked: commands.run(darkMode.lightMode ? "dark" : "light") }
         }
         ControlTile {
             id: screenshot
             visible: view.showControl("showScreenshot")
             Layout.fillWidth: true; Layout.preferredWidth: 66; Layout.minimumWidth: 0; Layout.preferredHeight: 72; padding: 4
-            contentItem: ControlAction { text: i18n("Screenshot"); symbol: "camera-photo-symbolic"; compact: true; onClicked: { view.closeRequested(); commands.run("screenshot"); } }
+            contentItem: ControlAction { text: i18n("Screenshot"); symbol: "mac-screenshot"; compact: true; onClicked: { view.closeRequested(); commands.run("screenshot"); } }
         }
         ControlTile {
             id: focus

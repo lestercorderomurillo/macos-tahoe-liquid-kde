@@ -8,6 +8,8 @@ QQC.ToolButton {
     Accessible.name: text
     contentItem: Kirigami.Icon {
         isMask: true
+        Kirigami.Theme.inherit: false
+        Kirigami.Theme.colorGroup: Kirigami.Theme.Active
         implicitWidth: button.icon.width > 0 ? button.icon.width : 20
         implicitHeight: button.icon.height > 0 ? button.icon.height : 20
         source: button.icon.source.toString().length ? button.icon.source : button.icon.name

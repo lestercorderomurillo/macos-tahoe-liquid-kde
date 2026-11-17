@@ -10,6 +10,8 @@ QQC.AbstractButton {
     property string subtitle
     property bool active: false
     property bool compact: false
+    property bool iconDisc: false
+    property color activeSymbolColor: "#008aff"
     Accessible.name: text
     background: Rectangle { radius: height / 2; color: "white"; opacity: action.down ? 0.2 : action.hovered || action.activeFocus ? 0.1 : 0 }
     contentItem: RowLayout {
@@ -19,12 +21,12 @@ QQC.AbstractButton {
             implicitWidth: 36
             implicitHeight: implicitWidth
             radius: width / 2
-            color: action.active ? "white" : "transparent"
+            color: action.active ? "white" : action.iconDisc ? Qt.rgba(1,1,1,0.22) : "transparent"
             Kirigami.Icon {
                 anchors.centerIn: parent
                 width: action.compact ? Style.circleIcon : Style.actionIcon; height: width
                 source: Style.symbol(action.symbol)
-                color: action.active ? "#008aff" : Kirigami.Theme.textColor
+                color: action.active ? action.activeSymbolColor : Kirigami.Theme.textColor
                 opacity: action.enabled ? 1 : 0.35
             }
         }

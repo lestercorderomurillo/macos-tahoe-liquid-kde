@@ -8,7 +8,7 @@ var panelIcon = 18;
 var actionIcon = 22;
 var circleIcon = 26;
 function symbol(name) {
-    var names = {"network-wireless":"wifi", "network-wireless-offline":"wifi-off",
+    var names = {"network-wired-symbolic":"ethernet", "mac-stage-manager":"stage-manager", "mac-mirroring":"mirroring", "mac-appearance":"appearance", "mac-screenshot":"screenshot", "mac-airdrop-off":"airdrop-off", "mac-airplay":"airplay", "mac-speaker-low":"speaker-low", "network-wireless":"wifi", "network-wireless-offline":"wifi-off",
         "preferences-system-bluetooth":"bluetooth", "battery":"battery",
         "weather-clear-night":"moon", "notifications":"bell", "configure":"settings",
         "audio-x-generic":"music", "media-skip-backward":"previous", "media-skip-forward":"next",

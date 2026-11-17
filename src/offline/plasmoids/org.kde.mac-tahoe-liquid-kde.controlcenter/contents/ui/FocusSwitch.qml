@@ -6,6 +6,7 @@ ControlAction {
     id: control
     text: i18n("Focus")
     symbol: "weather-clear-night"
+    iconDisc: true
     checkable: true
     active: checked
     subtitle: checked ? i18n("Do Not Disturb") : ""

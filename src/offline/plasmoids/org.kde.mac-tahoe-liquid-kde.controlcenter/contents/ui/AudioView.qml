@@ -13,7 +13,7 @@ ColumnLayout {
     ControlLabel { text: i18n("Sound"); font.weight: Font.DemiBold }
     RowLayout {
         ControlIconButton { font.family: "SF Pro Text"; font.pixelSize: 13;
-            icon.color: Kirigami.Theme.textColor; icon.source: Style.symbol(view.sink && view.sink.muted ? "audio-volume-muted" : "audio-volume-high")
+            icon.color: Kirigami.Theme.textColor; icon.source: Style.symbol(view.sink && view.sink.muted ? "audio-volume-muted" : "mac-speaker-low")
             icon.width: 16; icon.height: 16; padding: 0; implicitWidth: 22; implicitHeight: 22
             objectName: "muteButton"
             text: i18n("Mute sound"); Accessible.name: text
@@ -36,7 +36,9 @@ ColumnLayout {
         Kirigami.Icon { source: Style.symbol("audio-volume-high"); implicitWidth: 18; implicitHeight: 18 }
         ControlIconButton {
             objectName: "audioOutputs"
-            icon.name: "audio-headphones-symbolic"; icon.color: Kirigami.Theme.textColor
+            implicitWidth: 28; implicitHeight: 28; padding: 4
+            background: Rectangle { radius: width / 2; color: Qt.rgba(1,1,1,0.18) }
+            icon.source: Style.symbol("mac-airplay"); icon.color: Kirigami.Theme.textColor
             text: i18n("Audio outputs"); Accessible.name: text
             display: QQC.AbstractButton.IconOnly
             onClicked: view.detailsRequested()
