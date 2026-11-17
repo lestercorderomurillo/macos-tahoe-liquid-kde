@@ -166,7 +166,7 @@ PlasmoidItem {
                 source: root.cfgIcon
                 implicitWidth: Kirigami.Units.iconSizes.small
                 implicitHeight: Kirigami.Units.iconSizes.small
-                color: Kirigami.Theme.textColor
+                color: systemMenuButton.foregroundColor
             }
         }
 
@@ -176,6 +176,7 @@ PlasmoidItem {
             visible: appMenuModel.activeAppName !== ""
             text: appMenuModel.activeAppName
             font.weight: Font.ExtraBold
+            originalFontWeight: Font.Bold
             Layout.fillHeight: !root.vertical
 
             down: Plasmoid.currentIndex === -2

@@ -40,7 +40,9 @@ for height in (24, 32, 48):
         assert background.property('radius') == background.height() / 2
         assert button.height() == height
         assert button.property('topPadding') == button.property('bottomPadding')
-        assert content.width() >= content.property('implicitWidth') - 1
+        label, original_label = content.childItems()
+        assert label.width() >= label.property('implicitWidth') - 1
+        assert content.width() == original_label.property('implicitWidth')
         assert button.property('leftPadding') == button.property('rightPadding')
         assert button.property('leftPadding') >= 12
 '''
