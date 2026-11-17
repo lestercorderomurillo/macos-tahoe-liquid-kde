@@ -252,6 +252,12 @@ for page, _ in STEPS:
     assert window.scroll.horizontalScrollBar().maximum() == 0, page
     assert window.scroll.verticalScrollBar().maximum() == 0, page
     assert window.content.findChild(type(window.label('')), 'pageTitle') is not None or page == 'welcome'
+    from PyQt6.QtGui import QFontInfo
+    from PyQt6.QtWidgets import QWidget
+    for widget in window.content.findChildren(QWidget):
+        if widget.isVisible() and isinstance(widget, (QLabel, QPushButton)):
+            expected = 'SF Pro Display' if widget.objectName() == 'pageTitle' else 'SF Pro Text'
+            assert QFontInfo(widget.font()).family() == expected, (page, widget.objectName())
     cards = window.content.findChildren(ChoiceCard)
     if page in ('appearance', 'icons', 'wallpaper', 'launcher', 'window_controls', 'button_position', 'shadows', 'fonts', 'files'):
         assert cards and cards[0].isChecked(), page
@@ -632,7 +638,9 @@ for dark in (False, True):
         QTest.qWait(30)
         assert app.style().objectName().lower() == 'fusion'
         assert app.palette() == window.palette()
-        assert window.font().family() == font.family()
+        assert window.font().family() == 'SF Pro Text'
+        assert window._desktop_font.family() == font.family()
+        assert abs(window.font().pointSizeF() - font.pointSizeF() * 7/6) < .01
         assert window.palette().highlight().color().name() == '#007aff'
         capture = window.grab().toImage()
         if baseline is None:

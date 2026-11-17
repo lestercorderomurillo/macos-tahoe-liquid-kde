@@ -104,6 +104,34 @@ def current_wallpaper_preview(width, height):
     return canvas
 
 
+def installer_fonts(app):
+    """Load bundled SF faces into this process, without installing desktop fonts."""
+    cached = app.property("installerFontFamilies")
+    if cached:
+        return cached
+    import tarfile
+    from PyQt6.QtCore import QByteArray
+    from paths import REPO_ROOT
+    folder = REPO_ROOT / "src/offline/fonts"
+    families = set()
+    def register(data):
+        font_id = QFontDatabase.addApplicationFontFromData(QByteArray(data))
+        families.update(QFontDatabase.applicationFontFamilies(font_id))
+    register((folder / "SF-Pro-Display-Regular.otf").read_bytes())
+    wanted = {f"SF-Pro-{face}-{weight}.otf" for face in ("Text", "Display")
+              for weight in ("Regular", "Medium", "Semibold", "Bold")}
+    with tarfile.open(folder / "fonts.tar.xz", "r:xz") as archive:
+        for member in archive:
+            if member.name in wanted and member.isfile():
+                with archive.extractfile(member) as stream:
+                    register(stream.read())
+    if not {"SF Pro Text", "SF Pro Display"} <= families:
+        raise RuntimeError("The bundled SF Pro installer fonts could not be loaded")
+    result = ["SF Pro Text", "SF Pro Display"]
+    app.setProperty("installerFontFamilies", result)
+    return result
+
+
 def relative_font(widget, scale=1, weight=None):
     font = QFont(widget.font())
     font.setPointSizeF(font.pointSizeF() * scale)
@@ -604,15 +632,21 @@ class InstallerWindow(OpaqueSurface):
         # controls cannot acquire Breeze/Kvantum geometry or transparent fills.
         app = QApplication.instance()
         desktop_palette = QPalette(app.palette())
-        desktop_font = QFont(app.font())
+        desktop_font = app.property("installerDesktopFont") or QFont(app.font())
+        app.setProperty("installerDesktopFont", desktop_font)
+        text_family, display_family = installer_fonts(app)
+        ui_font = QFont(desktop_font)
+        ui_font.setFamily(text_family)
         dark = desktop_palette.window().color().lightnessF() <= .5
         app.setStyle("Fusion")
         app.setPalette(installer_palette(dark))
-        app.setFont(desktop_font)
+        app.setFont(ui_font)
         super().__init__()
         self.setPalette(installer_palette(dark))
         self.bridge = bridge
-        self._log_font = QFont(QFontDatabase.systemFont(QFontDatabase.SystemFont.FixedFont))
+        self._desktop_font = QFont(desktop_font)
+        self._display_family = display_family
+        self._log_font = QFont(ui_font)
         self._operation_started = None
         self._details_expanded = False
         self._eta_timer = QTimer(self)
@@ -633,7 +667,7 @@ class InstallerWindow(OpaqueSurface):
         self.groups = []
         self.setObjectName("installerWindow")
         self.setWindowTitle(self.t("Install") + " " + self.edition)
-        # Use the system face and scale its hierarchy together with accessibility settings.
+        # Keep the desktop text size and scale the SF hierarchy for accessibility.
         self.setFont(relative_font(self, 7/6))
         self.setWindowFlags(Qt.WindowType.Window | Qt.WindowType.FramelessWindowHint)
         self.resize(900, 680)
@@ -771,7 +805,8 @@ class InstallerWindow(OpaqueSurface):
         widget.setWordWrap(True)
         widget.setTextFormat(Qt.TextFormat.PlainText)
         if heading:
-            font = widget.font(); font.setPointSizeF(font.pointSizeF() * 1.57)
+            font = widget.font(); font.setFamily(self._display_family)
+            font.setPointSizeF(font.pointSizeF() * 1.57)
             font.setWeight(QFont.Weight.Bold); widget.setFont(font)
             widget.setObjectName("pageTitle")
         return widget
@@ -1310,16 +1345,9 @@ class InstallerWindow(OpaqueSurface):
         ])
 
     def font_sample(self, theme):
-        from PyQt6.QtGui import QFontDatabase
-        font = QFont(self.font())
+        font = QFont(self.font() if theme else self._desktop_font)
         if theme:
-            from paths import REPO_ROOT
-            if not hasattr(self, "specimen_family"):
-                candidates = sorted((REPO_ROOT / "src/offline/fonts").rglob("SF-Pro-Display-Regular.otf"))
-                families = QFontDatabase.applicationFontFamilies(QFontDatabase.addApplicationFont(str(candidates[0]))) if candidates else []
-                self.specimen_family = families[0] if families else ""
-            if self.specimen_family:
-                font = QFont(self.specimen_family, font.pointSize())
+            font.setFamily(self._display_family)
         canvas = QPixmap(724, 468); canvas.fill(self.palette().base().color())
         painter = QPainter(canvas); painter.scale(2, 2); painter.setPen(self.palette().text().color())
         font.setPointSizeF(self.font().pointSizeF()*2.4); font.setWeight(QFont.Weight.Bold); painter.setFont(font)
