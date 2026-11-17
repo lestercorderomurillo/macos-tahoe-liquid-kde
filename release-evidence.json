@@ -1,7 +1,7 @@
 {
-  "version": "0.72.18",
-  "source_sha256": "c0f74df0fdd5ccbaa7e744c013ffeb5ba91f52abd85485ea9570b3967cb0f09f",
-  "scope": "Approved installer: Weather Default/Dark/Clear/Tinted selectors, Tahoe-style color row, and bundled SF Pro throughout. Existing icon renderers exposed by new choices.",
+  "version": "0.72.19",
+  "source_sha256": "e309edc178a67af555f41054d4be7e463d3d551e36efef74970955582b291e10",
+  "scope": "Paired release for Golden Gate startup-cache repair (issue #8). Tahoe implementation and component payloads are unchanged from v0.72.18; existing checks and reviewed captures below are reused.",
   "environment": "Local Python/PyQt6 checks; disposable KDE neon Plasma 6.8.1 VM with Xwayland Qt windows.",
   "checks": [
     {
@@ -31,6 +31,7 @@
     }
   ],
   "coverage_limits": [
+    "No new Tahoe runtime qualification: implementation unchanged; Golden Gate wrapper repair is qualified separately in its release-evidence.json.",
     "Selected installer UI and icon component scope, not a full desktop installation or uninstall.",
     "No new scheduler boundary, GTK continuity, native SDK or distro qualification; those implementations are unchanged.",
     "Full remote CI runs asynchronously. Historical installer gallery is labeled; approved focused previews are separate."

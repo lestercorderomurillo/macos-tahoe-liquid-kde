@@ -1,6 +1,6 @@
 # Installer testing
 
-Tahoe **v0.72.18** uses macOS-style Weather icon selectors, a grouped color row and bundled SF Pro throughout the installer. Focused wizard checks and 88 edition/mode/page font checks passed in a disposable Plasma VM. [Font evidence and coverage limits](docs/evidence/installer-fonts.json). Dark/Clear component install/reinstall and installed Qt icon transitions also passed ([evidence](docs/evidence/installer-icons-installed.json)). Full remote CI runs asynchronously.
+Tahoe **v0.72.19** pairs the Golden Gate installer startup-cache repair. 116 wrapper checks passed, including damaged-cache recovery and active-session protection. Tahoe component behavior is unchanged; prior VM evidence and reviewed images are reused. [Validation and coverage limits](release-evidence.json). Full remote CI runs asynchronously.
 
 Approved installer previews: [Light](src/screenshots/previews/installer-tahoe-light-icons-805970eab6b7.png) · [Dark](src/screenshots/previews/installer-tahoe-dark-icons-dbc66adc81c4.png). The gallery below is historical and predates these installer changes; its original [provenance](src/screenshots/release-capture.json) is retained.
 
