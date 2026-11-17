@@ -5,12 +5,14 @@ import QtQuick
 Canvas {
     id: rim
     property real cornerRadius: 24
+    property real lineWidth: 1.25
     property bool lightMode: true
     antialiasing: true
     onWidthChanged: requestPaint()
     onHeightChanged: requestPaint()
     onCornerRadiusChanged: requestPaint()
     onLightModeChanged: requestPaint()
+    onLineWidthChanged: requestPaint()
     onPaint: {
         const ctx = getContext("2d"); ctx.reset();
         const inset = 0.65, w = width - 2 * inset, h = height - 2 * inset;
@@ -27,6 +29,6 @@ Canvas {
         edge.addColorStop(0.45,"rgba(255,255,255,0.08)");
         edge.addColorStop(0.72,"rgba(0,0,0,0.12)");
         edge.addColorStop(1,"rgba(255,255,255,0.34)");
-        ctx.strokeStyle = edge; ctx.lineWidth = 1.25; ctx.stroke();
+        ctx.strokeStyle = edge; ctx.lineWidth = rim.lineWidth; ctx.stroke();
     }
 }

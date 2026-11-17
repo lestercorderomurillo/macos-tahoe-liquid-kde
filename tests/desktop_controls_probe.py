@@ -1,5 +1,8 @@
 """Run production controls on a private bus, with deterministic hardware changes."""
 import sys
+import os
+import subprocess
+import time
 from pathlib import Path
 from PyQt6.QtCore import (QAbstractListModel, QModelIndex, QObject, QUrl, QMetaObject,
                          Qt, QPoint, pyqtSlot, pyqtProperty, qInstallMessageHandler)
@@ -35,7 +38,7 @@ def component(name, properties=None):
 
 def fake(source):
     c = QQmlComponent(engine)
-    c.setData(('import QtQuick\n' + source).encode(), QUrl())
+    c.setData(('import QtQuick\n' + source).encode(), QUrl.fromLocalFile(str(root / '_probe.qml')))
     assert c.isReady(), [e.toString() for e in c.errors()]
     obj = c.create(); assert obj is not None
     keep.extend([c,obj]); return obj
@@ -54,12 +57,107 @@ def child(obj, name):
 
 def click(obj):
     assert obj.property('enabled'), obj.objectName()
-    QMetaObject.invokeMethod(obj, 'clicked', Qt.ConnectionType.DirectConnection)
+    QMetaObject.invokeMethod(obj, 'triggered' if obj.metaObject().indexOfSignal(b'triggered()') >= 0 else 'clicked', Qt.ConnectionType.DirectConnection)
     QTest.qWait(10)
 
 # Native imports must load even when the desktop services and hardware are absent.
 for name in ('ControlView.qml','BatteryView.qml','WifiView.qml','NotificationsView.qml'):
     component(name)
+
+# Notification windows and the process-wide frontend must load independently
+# of the stock KDE applet, and multiple bars must elect only one popup host.
+notices = root.parents[2] / 'org.kde.mac-tahoe-liquid-kde.notifications/contents/ui'
+noticeHost = fake('''import org.kde.mac.tahoe.launcher as Native
+import org.kde.notificationmanager as Notifications
+import "''' + QUrl.fromLocalFile(str(notices)).toString() + '''" as Notices
+Item {
+    id: host
+    property color notificationTextColor: "black"
+    property color notificationBackgroundColor: "white"
+    property color notificationDisabledColor: "gray"
+    property var service: Notices.NotificationPopups
+    property QtObject settings: QtObject {
+        property date notificationsInhibitedUntil: new Date(0)
+        property bool notificationsInhibitedByApplication: false
+        property bool inhibitNotificationsWhenFullscreen: false
+        property bool fullscreenFocused: false
+        property bool inhibitNotificationsWhenScreensMirrored: false
+        property bool screensMirrored: false
+        property bool jobsInNotifications: true
+        property var popupBlacklistedApplications: []
+        property var popupBlacklistedServices: []
+        property var doNotDisturbPopupWhitelistedApplications: []
+        property var doNotDisturbPopupWhitelistedServices: []
+        property bool criticalPopupsInDoNotDisturbMode: true
+        property bool lowPriorityPopups: false
+        property int popupTimeout: 5000
+        property bool permanentJobPopups: true
+        function save() {}
+    }
+    property QtObject plasmoid: QtObject {
+        property QtObject containment: QtObject {
+            property rect screenGeometry: Qt.rect(0, 0, 1920, 1080)
+            property rect availableScreenRect: Qt.rect(0, 32, 1920, 1048)
+        }
+    }
+    property bool normalAllowed: !!(service.popups.urgencies & Notifications.Notifications.NormalUrgency)
+    property var secondHost: Item { property var plasmoid: host.plasmoid; property bool historyVisible: false }
+    function addHost() { service.adopt(secondHost); }
+    function removeHost() { service.forget(host); }
+    function resetHosts() { service.forget(secondHost); service.adopt(host); }
+    property var banner: Native.NotificationBanner {
+        mainItem: Item { width: 360; height: 120 }
+    }
+    function inhibit() { service.settings.notificationsInhibitedUntil = new Date(Date.now() + 60000); service.settings.save(); }
+    function restore() { service.settings.notificationsInhibitedUntil = new Date(0); service.settings.save(); }
+    Component.onCompleted: { service.settings = settings; service.adopt(host); }
+}''')
+noticeService = noticeHost.property('service')
+assert noticeService.property('host') == noticeHost
+QMetaObject.invokeMethod(noticeHost, 'addHost'); QTest.qWait(10)
+assert noticeService.property('host') == noticeHost
+QMetaObject.invokeMethod(noticeHost, 'removeHost'); QTest.qWait(10)
+assert noticeService.property('host') == noticeHost.property('secondHost')
+QMetaObject.invokeMethod(noticeHost, 'resetHosts'); QTest.qWait(10)
+assert noticeService.property('host') == noticeHost
+assert noticeHost.property('normalAllowed')
+QMetaObject.invokeMethod(noticeHost, 'inhibit'); QTest.qWait(10)
+assert noticeService.property('inhibited') and not noticeHost.property('normalAllowed')
+QMetaObject.invokeMethod(noticeHost, 'restore'); QTest.qWait(10)
+assert not noticeService.property('inhibited') and noticeHost.property('normalAllowed')
+banner = noticeHost.property('banner')
+assert banner.property('mainItem').parentItem() == banner.contentItem()
+assert not banner.property('takeFocus')
+banner.setProperty('takeFocus', True); assert banner.property('takeFocus')
+banner.setProperty('isCritical', True); assert banner.property('isCritical')
+
+# Exercise the real D-Bus manager and history, including the default exclusion
+# of unidentified applications. A mock list cannot prove receipt or retention.
+applications = Path(os.environ['XDG_DATA_HOME']) / 'applications'
+applications.mkdir(parents=True, exist_ok=True)
+(applications / 'notification-review.desktop').write_text(
+    '[Desktop Entry]\nType=Application\nName=Notification Review\nExec=true\n')
+nativeView = component('NotificationsView.qml', {'standalone': True})
+nativeView.setWidth(344); nativeView.setHeight(700)
+nativeHistory = nativeView.property('history')
+sender = subprocess.Popen([
+    'gdbus', 'call', '--session', '--dest', 'org.freedesktop.Notifications',
+    '--object-path', '/org/freedesktop/Notifications', '--method',
+    'org.freedesktop.Notifications.Notify', 'Notification Review', '0', '',
+    'A real notification', 'Retained when history opens', '[]',
+    "{'desktop-entry': <'notification-review'>}", '0'],
+    stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+deadline = time.monotonic() + 5
+while sender.poll() is None and time.monotonic() < deadline:
+    QTest.qWait(10)
+assert sender.poll() == 0, sender.communicate(timeout=1)
+QTest.qWait(100)
+assert nativeHistory.property('count') == 1
+QMetaObject.invokeMethod(noticeService, 'markSeen'); QTest.qWait(100)
+assert nativeHistory.property('count') == 1
+assert nativeHistory.property('expiredNotificationsCount') == 1
+click(child(nativeView, 'clearHistory')); QTest.qWait(100)
+assert nativeHistory.property('count') == 0
 
 sink = fake('QtObject { property bool muted: false; property int volume: 20000; property string description: "Test output" }')
 audio = component('AudioView.qml', {'sink':sink})
@@ -256,6 +354,8 @@ class History(Rows):
     @pyqtSlot(QModelIndex)
     def killJob(self,index): self.calls.append(('cancel',index.row()))
     @pyqtSlot(QModelIndex)
+    def stopTimeout(self,index): self.calls.append(('stop-timeout',index.row()))
+    @pyqtSlot(QModelIndex)
     def close(self,index): self.calls.append(('close',index.row()))
     @pyqtSlot(int)
     def clear(self,flags): self.calls.append(('clear',flags))
@@ -263,7 +363,8 @@ class History(Rows):
         self.calls.append(('group',index.row(),value));return True
 history=History()
 notifications=component('NotificationsView.qml',{'history':history})
-notifications.setWidth(400);notifications.setHeight(700);QTest.qWait(30)
+notifications.setWidth(344);notifications.setHeight(700);QTest.qWait(30)
+assert child(notifications,'notificationCard').width() == 316
 click(child(notifications,'notificationOpen'));assert history.calls[-1]==('open',0)
 click(child(notifications,'notificationAction'));assert history.calls[-1]==('action',0,'test-action')
 reply=child(notifications,'notificationReply');send=child(notifications,'notificationSend')
@@ -278,6 +379,50 @@ click(child(notifications,'notificationDismiss'));assert history.calls[-1]==('cl
 click(child(notifications,'clearHistory'));assert history.calls[-1][0]=='clear'
 history.update(0,'isGroup',True)
 click(child(notifications,'notificationGroup'));assert history.calls[-1]==('group',0,True)
+
+
+# Render the real native banner across palette changes without reconstructing it.
+# A new QQuickWindow must follow its host rather than freezing its initial theme.
+role = fake('''QtObject {
+    property string notificationId: "1"
+    property string applicationIconName: "dialog-information"
+    property string applicationName: "Notify Me"
+    property string summary: "A persistent notification"
+    property string body: "The text and surface follow the current mode."
+    property bool isGroup: false
+    property bool isGroupExpanded: false
+    property bool closable: true
+    property bool hasDefaultAction: false
+    property bool hasReplyAction: false
+    property bool suspendable: false
+    property bool killable: false
+    property int type: 1
+    property int urgency: 2
+    property int timeout: 0
+    property int jobState: 0
+    property int percentage: 0
+    property bool resident: false
+    property var actionNames: []
+    property var actionLabels: []
+}''')
+notice = component(str(notices / 'NotificationPopup.qml'), {'model':role, 'index':0,
+                   'history':history, 'settings':noticeHost.property('settings')})
+notice.setProperty('visible', True)
+from PyQt6.QtGui import QColor
+frames=[]
+for dark in (False, True, False):
+    notice.setProperty('foregroundColor', QColor('white' if dark else 'black'))
+    notice.setProperty('backgroundColor', QColor('black' if dark else 'white'))
+    QTest.qWait(80)
+    assert child(notice,'notificationCard').property('lightMode') != dark
+    rendered=notice.grabWindow(); assert not rendered.isNull()
+    text=[rendered.pixelColor(x,y) for x in range(68,rendered.width()-24)
+          for y in range(26,rendered.height()-25)
+          if rendered.pixelColor(x,y).alphaF() > .95]
+    assert text and (sum(p.lightnessF() for p in text)/len(text) > .5) == dark
+    frames.append(rendered.constBits().asstring(rendered.sizeInBytes()))
+assert frames[0] != frames[1] and frames[0] == frames[2]
+notice.close()
 
 
 # Only physical active links belong in the overview; bridges must not leak.
@@ -361,4 +506,12 @@ with tempfile.TemporaryDirectory() as directory:
         tile_window.close()
 
 assert not errors, '\n'.join(errors)
+# Destroy QML consumers while their Python-owned model fixtures are still
+# alive. Interpreter shutdown otherwise destroys these in arbitrary order.
+from PyQt6 import sip
+QMetaObject.invokeMethod(noticeHost, 'removeHost'); QTest.qWait(30)
+for value in reversed(keep):
+    if not sip.isdeleted(value):
+        sip.delete(value)
+sip.delete(engine)
 print('DESKTOP_CONTROLS_OK: native imports, external audio changes, mute, unavailable output, wireless requests, hardware blocking, unavailable adapter, notification inhibition ownership')

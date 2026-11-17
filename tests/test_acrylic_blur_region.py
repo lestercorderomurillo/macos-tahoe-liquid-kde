@@ -39,7 +39,7 @@ struct EffectWindow {
     QString resourceClass() const { return identity; }
     QString resourceName() const { return identity; }
     bool isNormalWindow() const { return type == Normal; }
-    enum Type { Normal, Popup, AppletPopup, Menu, Dropdown, Context, Tooltip, Dock } type = Normal;
+    enum Type { Normal, Popup, AppletPopup, Menu, Dropdown, Context, Tooltip, Dock, Notification, CriticalNotification } type = Normal;
     QRectF contentsRect() const { return QRectF(10, 20, 100, 80); }
     bool decoration() const { return decorated; }
     bool decorationHasAlpha() const { return false; }
@@ -53,6 +53,8 @@ struct EffectWindow {
     bool isPopupMenu() const { return type == Context; }
     bool isPopupWindow() const { return type == Popup; }
     bool isAppletPopup() const { return type == AppletPopup; }
+    bool isNotification() const { return type == Notification; }
+    bool isCriticalNotification() const { return type == CriticalNotification; }
 };
 struct BlurEffectData { std::optional<Region> content, frame; };
 struct BlurEffect {
@@ -129,7 +131,7 @@ int main() {
     state.content = capsule;
     for (auto type : {EffectWindow::Popup, EffectWindow::AppletPopup, EffectWindow::Menu,
                       EffectWindow::Dropdown, EffectWindow::Context, EffectWindow::Tooltip,
-                      EffectWindow::Dock}) {
+                      EffectWindow::Dock, EffectWindow::Notification, EffectWindow::CriticalNotification}) {
         window.type = type;
         // A late Plasma shell role must not retain the initial normal frame.
         state.frame = Region(QRect(0, 0, 120, 120));

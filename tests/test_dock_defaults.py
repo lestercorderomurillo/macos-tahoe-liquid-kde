@@ -267,3 +267,45 @@ def test_requested_install_fills_legacy_revision_one_dock(monkeypatch):
     script += layout._dock_migration_script()
     assert execute(script, ['thunderbird.desktop'])[0][0]['pins'] == [
         'applications:custom.desktop', 'applications:thunderbird.desktop']
+
+
+def test_status_control_migration_preserves_apps_and_unrelated_panels(offline):
+    script = (offline / 'layouts/migrate-status-controls.js').read_text()
+    source = HARNESS + '''
+Panel.prototype.widgets = function() { return this.widgetIds.map(id => this.widgetById(id)); };
+function fixture(themed) {
+    var bar = new Panel();
+    if (themed) {
+        bar.addWidget('org.kde.mac-tahoe-liquid-kde.controlcenter');
+        bar.addWidget('org.kde.mac-tahoe-liquid-kde.notifications');
+    }
+    var tray = bar.addWidget('org.kde.plasma.systemtray');
+    tray.config = {
+        shownItems: ['slack', 'org.kde.plasma.bluetooth', 'org.kde.plasma.volume', 'org.kde.plasma.notifications'],
+        hiddenItems: 'discord,org.kde.plasma.brightness',
+        knownItems: ['org.kde.plasma.networkmanagement'],
+        extraItems: ['org.kde.plasma.notifications', 'org.kde.plasma.bluetooth', 'org.kde.plasma.brightness', 'org.kde.plasma.volume', 'org.kde.plasma.networkmanagement']
+    };
+    return tray;
+}
+var themed = fixture(true), unrelated = fixture(false);
+var before = JSON.stringify(unrelated.config);
+''' + script + '''
+var once = JSON.stringify(themed.config);
+''' + script + '''
+JSON.stringify({themed:themed.config, unrelated:before === JSON.stringify(unrelated.config),
+    stable:once === JSON.stringify(themed.config), panels:created.length,
+    widgets:created[0].widgetIds.length});
+'''
+    result = subprocess.run([sys.executable, '-c', RUNNER], input=source,
+                            capture_output=True, text=True, check=True)
+    actual = json.loads(result.stdout)
+    assert actual['stable'] and actual['unrelated']
+    assert actual['panels'] == 2 and actual['widgets'] == 3
+    tray = actual['themed']
+    assert tray['shownItems'] == ['slack']
+    assert set(tray['hiddenItems']) == {'discord', 'org.kde.plasma.brightness',
+                                      'org.kde.plasma.bluetooth', 'org.kde.plasma.volume'}
+    assert tray['extraItems'] == ['org.kde.plasma.networkmanagement']
+    assert set(tray['knownItems']) == {'org.kde.plasma.networkmanagement', 'org.kde.plasma.notifications',
+                                      'org.kde.plasma.bluetooth', 'org.kde.plasma.brightness', 'org.kde.plasma.volume'}

@@ -1,11 +1,19 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 import QtQuick
+import org.kde.kirigami as Kirigami
+import "."
 import org.kde.plasma.plasmoid
 import org.kde.plasma.core as PlasmaCore
 import org.kde.mac.tahoe.launcher as Native
 import "../../../org.kde.mac-tahoe-liquid-kde.controlcenter/contents/ui" as Controls
 PlasmoidItem {
     id: root
+    readonly property color notificationTextColor: Kirigami.Theme.textColor
+    readonly property color notificationBackgroundColor: Kirigami.Theme.backgroundColor
+    readonly property color notificationDisabledColor: Kirigami.Theme.disabledTextColor
+    readonly property bool historyVisible: popup.visible
+    Component.onCompleted: NotificationPopups.adopt(root)
+    Component.onDestruction: NotificationPopups.forget(root)
     Plasmoid.backgroundHints: PlasmaCore.Types.NoBackground
     preferredRepresentation: fullRepresentation
     compactRepresentation: null
@@ -16,29 +24,45 @@ PlasmoidItem {
         onClicked: popup.visible = !popup.visible
     }
     Connections { target: Plasmoid; function onActivated() { popup.visible = !popup.visible; } }
-    PlasmaCore.Dialog {
+    Native.NotificationBanner {
         id: popup
-        // Notification history uses the same component material as Control Center.
-        title: "mttkde-control-center"
+        // Notification history and banners share the popup material.
+        title: "mttkde-notifications"
         visible: false
-        visualParent: root
-        location: Plasmoid.location
-        type: PlasmaCore.Dialog.AppletPopup
-        flags: Qt.WindowStaysOnTopHint
-        backgroundHints: PlasmaCore.Dialog.NoBackground
-        hideOnWindowDeactivate: true
-        mainItem: Controls.ControlTile {
-            id: tile
-            width: 360; height: implicitHeight
-            cornerRadius: 24
-            focus: true
-            Keys.onEscapePressed: popup.visible = false
-            contentItem: Controls.NotificationsView {}
+        takeFocus: true
+        width: 364; height: history.implicitHeight + 20
+        property bool hadFocus: false
+        onActiveChanged: {
+            if (active) hadFocus = true;
+            else if (hadFocus) visible = false;
         }
-        onVisibleChanged: if (visible) { requestActivate(); tile.forceActiveFocus(); }
+        mainItem: Item {
+            id: tile
+            width: popup.width; height: popup.height
+            Kirigami.Theme.inherit: false
+            Kirigami.Theme.textColor: root.notificationTextColor
+            Kirigami.Theme.backgroundColor: root.notificationBackgroundColor
+            Kirigami.Theme.disabledTextColor: root.notificationDisabledColor
+            Controls.NotificationsView {
+                id: history
+                x: 10; y: 10; width: 344; height: implicitHeight
+                standalone: true
+                focus: true
+                Keys.onEscapePressed: popup.visible = false
+            }
+        }
+        onVisibleChanged: if (visible) {
+            hadFocus = false;
+            NotificationPopups.markSeen(); requestActivate(); history.forceActiveFocus();
+            const screen = root.plasmoid.containment.screenGeometry;
+            const available = root.plasmoid.containment.availableScreenRect;
+            popup.x = screen.x + available.x + available.width - popup.width - 6;
+            popup.y = screen.y + available.y + 6;
+        }
     }
     Native.ControlGlass {
         window: popup
-        surfaces: [{x:0, y:0, width:tile.width, height:tile.height, radius:tile.cornerRadius}]
+        maskWindow: false
+        surfaces: history.surfaces.map(area => ({x:area.x+10,y:area.y+10,width:area.width,height:area.height,radius:area.radius}))
     }
 }

@@ -198,6 +198,16 @@ def _dock_migration_script() -> str:
             + DOCK_MIGRATION.read_text())
 
 
+def migrate_status_controls() -> None:
+    """Remove duplicated controls without rebuilding an existing themed bar."""
+    from installer_choices import selected
+    choices = selected()
+    if choices and not choices["panel"]:
+        return
+    if not _evaluate_layout_script(offline("layouts/migrate-status-controls.js").read_text()):
+        warn(tr('layout failed — set layout manually'))
+
+
 def migrate_dock_preset() -> None:
     """Upgrade existing Docks without rebuilding panels or changing their geometry."""
     from installer_choices import selected

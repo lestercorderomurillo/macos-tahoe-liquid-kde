@@ -1250,5 +1250,7 @@
   "Connected": "Verbunden",
   "On": "Ein",
   "Off": "Aus",
-  "Removed {size} MiB of temporary compiler objects.": "{size} MiB temporäre Compiler-Objektdateien entfernt."
+  "Removed {size} MiB of temporary compiler objects.": "{size} MiB temporäre Compiler-Objektdateien entfernt.",
+  "Options": "Optionen",
+  "Notification Center": "Mitteilungszentrale"
 }

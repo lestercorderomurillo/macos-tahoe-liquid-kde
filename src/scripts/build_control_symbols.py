@@ -33,6 +33,8 @@ GLYPHS = {
     'next': ('forward.fill', '10028C', 24),
     'music': ('music.note', '100469', 20),
     'bell': ('bell', '1002D9', 20),
+    'notification-close': ('multiply', 'multiply', 9),
+    'notification-options': ('chevron.down', '100188', 16),
     'settings': ('gear', '10035F', 22),
 }
 REFERENCE = 'https://gist.githubusercontent.com/RoxasYTB/b552334b7afd3ff281a4a0fe71a0b00a/raw/reference-macos-tahoe-control-center.png'
@@ -60,7 +62,7 @@ def main():
     glyphs = TTFont(FONT).getGlyphSet()
     records = {}
     for name, (symbol, code, size) in GLYPHS.items():
-        glyph = 'uni'+code+'.small'
+        glyph = code if code in glyphs else 'uni'+code+'.small'
         bounds = BoundsPen(glyphs); glyphs[glyph].draw(bounds)
         left,bottom,right,top = bounds.bounds
         scale = size / max(right-left,top-bottom)

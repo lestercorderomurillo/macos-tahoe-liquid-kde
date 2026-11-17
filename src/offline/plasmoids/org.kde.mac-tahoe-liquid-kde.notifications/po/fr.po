@@ -125,6 +125,9 @@ msgstr "Non connecté"
 msgid "Nothing playing"
 msgstr "Aucune lecture en cours"
 
+msgid "Notification Center"
+msgstr "Centre de notifications"
+
 msgid "Notification Settings…"
 msgstr "Paramètres des notifications…"
 
@@ -145,6 +148,9 @@ msgstr "Sur batterie"
 
 msgid "Open"
 msgstr "Ouvrir"
+
+msgid "Options"
+msgstr "Options"
 
 msgid "Overview"
 msgstr "Vue d’ensemble"

@@ -53,3 +53,10 @@ The Global Menu also bundles KDE plasma-wayland-protocols `fake-input.xml`
 (commit `1db07441870d54157e937674b99380a7dcc0fb32`), copyright 2015 Martin
 Gräßlin, LGPL-2.1-or-later. The original notice is retained in the XML;
 see `LICENSES/LGPL-2.1.txt` and `docs/topbar-integration.md`.
+
+The notification banner adapts KDE Plasma's `NotificationWindow`, copyright
+2024 David Edmundson, under its retained
+`GPL-2.0-only OR GPL-3.0-only OR LicenseRef-KDE-Accepted-GPL` alternatives.
+See the original headers in
+`src/offline/plasmoids/org.kde.mac.tahoe.liquid.taskmanager/launcher/notificationbanner.h`
+and `notificationbanner.cpp`, and [notification provenance](docs/notifications-reference.md).

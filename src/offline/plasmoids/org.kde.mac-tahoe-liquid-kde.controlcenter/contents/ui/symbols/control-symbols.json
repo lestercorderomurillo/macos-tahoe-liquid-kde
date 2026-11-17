@@ -124,6 +124,18 @@
       "source": "bundled Apple font; unchanged contours, uniform scale and translation",
       "sha256": "fb24b82b915d17899629dd054bd8dd0c7322f5173af879acacd10d1df4966b66"
     },
+    "notification-close": {
+      "symbol": "multiply",
+      "glyph": "multiply",
+      "source": "bundled Apple font; unchanged contours, uniform scale and translation",
+      "sha256": "d629764f19decba99429c7009387a043935050a85d1448ab92594130db13a017"
+    },
+    "notification-options": {
+      "symbol": "chevron.down",
+      "glyph": "uni100188.small",
+      "source": "bundled Apple font; unchanged contours, uniform scale and translation",
+      "sha256": "481b7a68694bcac15fc0f863e146905a5f920feb05631c5d9d8440180a9fa28f"
+    },
     "settings": {
       "symbol": "gear",
       "glyph": "uni10035F.small",

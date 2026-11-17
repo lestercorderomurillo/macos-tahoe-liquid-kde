@@ -57,10 +57,21 @@ void ControlGlass::setSurfaces(const QVariantList &surfaces)
     apply();
 }
 
+void ControlGlass::setMaskWindow(bool enabled)
+{
+    if (m_maskWindow == enabled) return;
+    m_maskWindow = enabled;
+    Q_EMIT maskWindowChanged();
+    apply();
+}
+
 void ControlGlass::apply()
 {
     if (!m_window) return;
-    if (m_window->mask() != m_region) m_window->setMask(m_region);
+    // Floating notification headers need pointer input and text outside the
+    // glass cards. Their blur islands remain independently constrained.
+    const QRegion inputRegion = m_maskWindow ? m_region : QRegion();
+    if (m_window->mask() != inputRegion) m_window->setMask(inputRegion);
     KWindowEffects::enableBlurBehind(m_window, !m_region.isEmpty(), m_region);
 }
 

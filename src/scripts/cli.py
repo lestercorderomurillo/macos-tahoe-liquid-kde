@@ -1177,6 +1177,9 @@ def _run_install_steps(feat: dict[str, object]) -> int:
         note(tr('Checking theme configuration was applied'))
         verify_config(feat)
 
+        if step_exists("layout"):
+            run_phase("layout", "migrate_status_controls")
+
         step('Restarting Plasma')
         note(tr('Restarts Plasma shell to load all changes'))
         run_phase("apply", "restart_plasma")

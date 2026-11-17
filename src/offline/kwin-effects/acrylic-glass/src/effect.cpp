@@ -725,7 +725,7 @@ const BlurEffect::ComponentMaterial &BlurEffect::materialFor(EffectWindow *w) co
     }
     const auto component = GlassMaterials::classify(w->window()->resourceClass(), caption, w->isDock(),
         w->isMenu() || w->isDropdownMenu() || w->isPopupMenu(),
-        w->isTooltip() || w->isAppletPopup(), m_aboutTitle);
+        w->isTooltip() || (w->isAppletPopup() || w->isNotification() || w->isCriticalNotification()), m_aboutTitle);
     return m_componentMaterials.constFind(component).value();
 }
 
@@ -840,7 +840,7 @@ void BlurEffect::updateBlurRegion(EffectWindow* w)
     // application popups keep their existing rendering path.
     if (legacyBlurPropertyMissing && !content.has_value() && effects->xcbConnection() && w->windowId()
         && w->window()->resourceClass() == QStringLiteral("plasmashell")
-        && (w->isMenu() || w->isDropdownMenu() || w->isPopupMenu() || w->isAppletPopup())) {
+        && (w->isMenu() || w->isDropdownMenu() || w->isPopupMenu() || (w->isAppletPopup() || w->isNotification() || w->isCriticalNotification()))) {
         const auto attributesCookie = xcb_get_window_attributes(
             effects->xcbConnection(), xcb_window_t(w->windowId()));
         const std::unique_ptr<xcb_get_window_attributes_reply_t, decltype(&std::free)> attributes(
@@ -908,7 +908,7 @@ void BlurEffect::updateBlurRegion(EffectWindow* w)
     // own opaque chrome doesn't double-blur).
     if (m_blurDecorations && w->decorationHasAlpha() && decorationSupportsBlurBehind(w)) {
         frame = decorationBlurRegion(w);
-    } else if (m_blurDecorations && !(w->isDock() || w->isTooltip() || w->isMenu() || w->isDropdownMenu() || w->isPopupMenu() || w->isPopupWindow() || w->isAppletPopup())) {
+    } else if (m_blurDecorations && !(w->isDock() || w->isTooltip() || w->isMenu() || w->isDropdownMenu() || w->isPopupMenu() || w->isPopupWindow() || (w->isAppletPopup() || w->isNotification() || w->isCriticalNotification()))) {
         frame = Rect(w->frameGeometry().translated(-w->x(), -w->y()).toRect());
     }
 
@@ -920,7 +920,7 @@ void BlurEffect::updateBlurRegion(EffectWindow* w)
         data.clientShapes.clear();
         if (!w->decoration() && content.has_value() && !frame.has_value()
             && (w->isDock() || w->isTooltip() || w->isMenu() || w->isDropdownMenu()
-                || w->isPopupMenu() || w->isAppletPopup() || w->isPopupWindow())) {
+                || w->isPopupMenu() || (w->isAppletPopup() || w->isNotification() || w->isCriticalNotification()) || w->isPopupWindow())) {
             QRegion clientRegion;
             for (const Rect &rect : content->rects()) {
                 clientRegion += QRect(rect);
@@ -1246,7 +1246,7 @@ Region BlurEffect::blurRegion(EffectWindow* w) const
         const std::optional<Region>& frame = it->second.frame;
         const bool clientPopup = !w->decoration() && (w->isDock() || w->isTooltip()
             || w->isMenu() || w->isDropdownMenu() || w->isPopupMenu()
-            || w->isAppletPopup() || w->isPopupWindow());
+            || (w->isAppletPopup() || w->isNotification() || w->isCriticalNotification()) || w->isPopupWindow());
 
         if (content.has_value()) {
             if (content->isEmpty()) {
@@ -1302,7 +1302,7 @@ void BlurEffect::prePaintWindow(RenderView* view, EffectWindow* w, WindowPrePain
     // exposes no window-type change signal; discard an earlier implicit
     // rectangular frame as soon as the window becomes an applet popup.
     if (!w->decoration() && (w->isDock() || w->isTooltip() || w->isMenu()
-        || w->isDropdownMenu() || w->isPopupMenu() || w->isAppletPopup() || w->isPopupWindow())) {
+        || w->isDropdownMenu() || w->isPopupMenu() || (w->isAppletPopup() || w->isNotification() || w->isCriticalNotification()) || w->isPopupWindow())) {
         const auto it = m_windows.find(w);
         if (it != m_windows.end() && it->second.frame.has_value()) {
             updateBlurRegion(w);
@@ -2020,7 +2020,7 @@ void BlurEffect::blur(
         topCornerRadius = BlurConfig::dockCornerRadius();
         bottomCornerRadius = BlurConfig::dockCornerRadius();
 
-    } else if (w->isTooltip() || w->isPopupWindow() || w->isMenu() || w->isDropdownMenu() || w->isPopupMenu() || w->isAppletPopup()) {
+    } else if (w->isTooltip() || w->isPopupWindow() || w->isMenu() || w->isDropdownMenu() || w->isPopupMenu() || (w->isAppletPopup() || w->isNotification() || w->isCriticalNotification())) {
         topCornerRadius = BlurConfig::popupCornerRadius();
         bottomCornerRadius = BlurConfig::popupCornerRadius();
 

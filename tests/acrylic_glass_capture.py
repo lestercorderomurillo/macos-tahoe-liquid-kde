@@ -83,11 +83,13 @@ def client(role):
     flags = Qt.WindowType.Window if role == "vm" and rounded else Qt.WindowType.FramelessWindowHint
     islands = role == "vm" and bool(os.environ.get("MTTKDE_CAPTURE_POPUP_ISLANDS"))
     if islands:
-        flags = Qt.WindowType.Popup | Qt.WindowType.FramelessWindowHint
+        flags = (Qt.WindowType.Popup if os.environ.get("MTTKDE_CAPTURE_POPUP_ROLE", "popup") == "popup"
+                 else Qt.WindowType.Window | Qt.WindowType.WindowStaysOnTopHint | Qt.WindowType.WindowDoesNotAcceptFocus) | Qt.WindowType.FramelessWindowHint
     window = Surface(None, flags)
     if role != "desktop":
         window.setAttribute(Qt.WidgetAttribute.WA_TranslucentBackground)
-    window.setWindowTitle("Synthetic VM surface" if role == "vm" else "Capture background")
+    window.setWindowTitle("mttkde-notifications" if islands and os.environ.get("MTTKDE_CAPTURE_POPUP_ROLE", "popup") != "popup"
+                         else "Synthetic VM surface" if role == "vm" else "Capture background")
     if role == "desktop" and os.environ.get("MTTKDE_CAPTURE_DAMAGE"):
         marker = Path(os.environ["MTTKDE_CAPTURE_DIR"]) / "damage-trigger"
         timer = QTimer(window)
@@ -97,7 +99,8 @@ def client(role):
                 window.update(QRect(80, 80, 32, 32))
         timer.timeout.connect(update_patch)
         timer.start(50)
-    if role == "vm" and os.environ.get("MTTKDE_CAPTURE_DESKTOP"):
+    if (role == "vm" and os.environ.get("MTTKDE_CAPTURE_DESKTOP")) or (
+            role == "desktop" and os.environ.get("MTTKDE_CAPTURE_POPUP_ROLE", "popup") != "popup"):
         # Set the actual X11 desktop type before mapping on this private Xwayland.
         subprocess.run(["xprop", "-id", str(int(window.winId())), "-f", "_NET_WM_WINDOW_TYPE", "32a",
                         "-set", "_NET_WM_WINDOW_TYPE", "_NET_WM_WINDOW_TYPE_DESKTOP"], check=True, timeout=5)
@@ -156,7 +159,10 @@ def publish_popup_islands(window_id):
     display = x11.XOpenDisplay(None)
     assert display, "Private X11 display unavailable"
     try:
-        popup_type = ctypes.c_ulong(x11.XInternAtom(display, b"_NET_WM_WINDOW_TYPE_POPUP_MENU", False))
+        role = os.environ.get("MTTKDE_CAPTURE_POPUP_ROLE", "popup")
+        atom_name = {"popup": b"_NET_WM_WINDOW_TYPE_POPUP_MENU", "notification": b"_NET_WM_WINDOW_TYPE_NOTIFICATION",
+                     "critical": b"_KDE_NET_WM_WINDOW_TYPE_CRITICAL_NOTIFICATION"}[role]
+        popup_type = ctypes.c_ulong(x11.XInternAtom(display, atom_name, False))
         type_atom = x11.XInternAtom(display, b"_NET_WM_WINDOW_TYPE", False)
         x11.XChangeProperty(display, window_id, type_atom, 4, 32, 0, ctypes.byref(popup_type), 1)
         values = (ctypes.c_ulong * len(rectangles))(*rectangles)
@@ -417,7 +423,7 @@ def inside(output):
         stop(xserver)
 
 
-def run(plugin, output, scale, expected, backend, identity, renderer="software", shader_dir=None, companion=None, desktop_surface=False, squircle_blend=0.0, decoration_blur=True, backing_tint=False, appearance="light", compositor="wayland", conflicts=False, screenshot_api="spectacle", damage=False, conflict_effect="blur", application="synthetic", material=None, wobbly=False, popup_islands=False):
+def run(plugin, output, scale, expected, backend, identity, renderer="software", shader_dir=None, companion=None, desktop_surface=False, squircle_blend=0.0, decoration_blur=True, backing_tint=False, appearance="light", compositor="wayland", conflicts=False, screenshot_api="spectacle", damage=False, conflict_effect="blur", application="synthetic", material=None, wobbly=False, popup_islands=False, popup_role="popup"):
     assert not popup_islands or (compositor == "x11" and application == "synthetic" and not wobbly and not shader_dir)
     assert not wobbly or (compositor == "x11" and application == "synthetic" and not shader_dir), "Wobbly probe requires native X11 synthetic client"
     assert not conflicts or not shader_dir, "Conflict probe requires Acrylic Glass"
@@ -514,6 +520,7 @@ def run(plugin, output, scale, expected, backend, identity, renderer="software",
                MTTKDE_CAPTURE_CONFLICTS="1" if conflicts else "",
                MTTKDE_CAPTURE_CONFLICT_EFFECT=conflict_effect,
                MTTKDE_CAPTURE_APPLICATION=application,
+               MTTKDE_CAPTURE_POPUP_ROLE=popup_role,
                MTTKDE_CAPTURE_POPUP_ISLANDS="1" if popup_islands else "",
                MTTKDE_CAPTURE_WOBBLY="1" if wobbly else "",
                MTTKDE_CAPTURE_SCREENSHOT_API=screenshot_api,
@@ -722,6 +729,8 @@ if __name__ == "__main__":
     parser.add_argument("--desktop-surface", action="store_true", help="Probe an Xwayland desktop window, including forced inclusions")
     parser.add_argument("--companion-plugin", type=Path, help="Also test Acrylic Glass with Rounded Corners")
     parser.add_argument("--popup-islands", action="store_true", help="Test native X11 rounded popup edge coverage and transparent gaps")
+    parser.add_argument("--popup-role", choices=("popup", "notification", "critical"), default="popup",
+                        help="Window role for the isolated popup-islands probe")
     parser.add_argument("--inside", type=Path)
     parser.add_argument("--session", action="store_true")
     parser.add_argument("--client", choices=("desktop", "vm"))
@@ -736,6 +745,6 @@ if __name__ == "__main__":
         run(args.plugin.resolve(), args.output.resolve(), args.scale, args.expect, args.backend, args.identity, args.renderer,
             args.rounded_shaders.resolve() if args.rounded_shaders else None,
             args.companion_plugin.resolve() if args.companion_plugin else None, args.desktop_surface, args.squircle_blend,
-            not args.no_decoration_blur, args.backing_tint, args.appearance, args.compositor, args.conflicts, args.screenshot_api, args.damage, args.conflict_effect, args.application, args.material, args.wobbly, args.popup_islands)
+            not args.no_decoration_blur, args.backing_tint, args.appearance, args.compositor, args.conflicts, args.screenshot_api, args.damage, args.conflict_effect, args.application, args.material, args.wobbly, args.popup_islands, args.popup_role)
     else:
         parser.error("--plugin and --output required")

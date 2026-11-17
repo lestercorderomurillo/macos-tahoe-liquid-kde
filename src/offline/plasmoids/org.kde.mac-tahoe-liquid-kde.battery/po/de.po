@@ -128,6 +128,9 @@ msgstr "Nicht verbunden"
 msgid "Nothing playing"
 msgstr "Keine Wiedergabe"
 
+msgid "Notification Center"
+msgstr "Mitteilungszentrale"
+
 msgid "Notification Settings…"
 msgstr "Benachrichtigungseinstellungen…"
 
@@ -148,6 +151,9 @@ msgstr "Im Akkubetrieb"
 
 msgid "Open"
 msgstr "Öffnen"
+
+msgid "Options"
+msgstr "Optionen"
 
 msgid "Overview"
 msgstr "Übersicht"

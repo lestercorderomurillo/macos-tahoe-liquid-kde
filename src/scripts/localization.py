@@ -28,6 +28,8 @@ LANGUAGE_CODES = tuple(item["code"] for item in LANGUAGES)
 
 
 _ES = {
+    "Notification Center": "Centro de notificaciones",
+    "Options": "Opciones",
     "On": "Activado",
     "Off": "Desactivado",
     "Audio outputs": "Salidas de audio",
@@ -166,6 +168,8 @@ _ES = {
 }
 
 _ZH_CN = {
+    "Notification Center": "通知中心",
+    "Options": "选项",
     "On": "开启",
     "Off": "关闭",
     "Audio outputs": "音频输出",

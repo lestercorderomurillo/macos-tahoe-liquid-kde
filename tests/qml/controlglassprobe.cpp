@@ -23,6 +23,10 @@ int main(int argc, char **argv)
     if (!window.mask().contains(QPoint(42,42)) || window.mask().contains(QPoint(0,0))) return 4;
     glass.setSurfaces({rect(80,10,64,64,32)});
     if (window.mask().contains(QPoint(42,42)) || !window.mask().contains(QPoint(112,42))) return 5;
+    glass.setMaskWindow(false);
+    if (!window.mask().isEmpty() || glass.surfaces().size() != 1) return 6;
+    glass.setMaskWindow(true);
+    if (!window.mask().contains(QPoint(112,42)) || window.mask().contains(QPoint(0,0))) return 7;
     glass.setWindow(nullptr);
     std::cout << "CONTROL_GLASS_REGIONS_OK\n";
 }

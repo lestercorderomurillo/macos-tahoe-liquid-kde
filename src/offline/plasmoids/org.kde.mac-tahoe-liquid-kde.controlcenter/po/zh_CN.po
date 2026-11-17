@@ -125,6 +125,9 @@ msgstr "未连接"
 msgid "Nothing playing"
 msgstr "未在播放"
 
+msgid "Notification Center"
+msgstr "通知中心"
+
 msgid "Notification Settings…"
 msgstr "通知设置…"
 
@@ -145,6 +148,9 @@ msgstr "使用电池供电"
 
 msgid "Open"
 msgstr "Open"
+
+msgid "Options"
+msgstr "选项"
 
 msgid "Overview"
 msgstr "概览"

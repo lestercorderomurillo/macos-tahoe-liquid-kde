@@ -125,6 +125,9 @@ msgstr "Sin conexión"
 msgid "Nothing playing"
 msgstr "No se está reproduciendo nada"
 
+msgid "Notification Center"
+msgstr "Centro de notificaciones"
+
 msgid "Notification Settings…"
 msgstr "Ajustes de notificaciones…"
 
@@ -145,6 +148,9 @@ msgstr "Usando la batería"
 
 msgid "Open"
 msgstr "Open"
+
+msgid "Options"
+msgstr "Opciones"
 
 msgid "Overview"
 msgstr "Vista general"

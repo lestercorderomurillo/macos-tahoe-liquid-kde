@@ -1,12 +1,35 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 import QtQuick
+import QtQuick.Effects
 import QtQuick.Layouts
 import QtQuick.Controls as QQC
 import org.kde.kirigami as Kirigami
 import org.kde.notificationmanager as Notifications
 Page {
     id: view
-    title: i18n("Notifications")
+    title: ""
+    property bool standalone: false
+    spacing: 6
+    readonly property var surfaces: {
+        const offset = list.contentY;
+        const extent = list.contentHeight;
+        const areas = [];
+        for (const delegate of list.contentItem.children) {
+            if (delegate.objectName !== "historyNotificationDelegate" || !delegate.visible) continue;
+            const card = delegate.surface;
+            const point = list.mapToItem(view, delegate.x, delegate.y - list.contentY);
+            const top = Math.max(point.y, scroll.y);
+            const bottom = Math.min(point.y + card.height, scroll.y + scroll.height);
+            if (bottom <= top) continue;
+            areas.push({x:point.x, y:top, width:card.width, height:bottom-top, radius:card.cornerRadius});
+            if (delegate.stacked)
+                areas.push({x:point.x+8,y:bottom-8,width:card.width-16,height:16,radius:8});
+            if (card.contentItem.closeVisible)
+                areas.push({x:point.x-6, y:point.y-4, width:20, height:20, radius:10});
+        }
+        areas.push({x:clear.mapToItem(view,0,0).x, y:clear.mapToItem(view,0,0).y, width:20, height:20, radius:10});
+        return areas;
+    }
     property var history: nativeHistory
     Notifications.Settings { id: settings }
     Notifications.Notifications {
@@ -17,65 +40,100 @@ Page {
         sortMode: Notifications.Notifications.SortByDate
         sortOrder: Qt.DescendingOrder
         groupMode: Notifications.Notifications.GroupApplicationsFlat
-        groupLimit: 3
+        groupLimit: 1
         blacklistedDesktopEntries: settings.historyBlacklistedApplications
         blacklistedNotifyRcNames: settings.historyBlacklistedServices
     }
-    FocusSwitch { Layout.fillWidth: true }
-    ControlLabel { text: i18n("No notifications"); visible: view.history.count === 0 }
-    QQC.ScrollView {
+    RowLayout {
         Layout.fillWidth: true
-        Layout.preferredHeight: Kirigami.Units.gridUnit * 20
+        Layout.preferredHeight: 24
+        Text {
+            text: view.standalone ? i18n("Notification Center") : i18n("Notifications")
+            font.family: "SF Pro Display"; font.pixelSize: 18; font.weight: Font.DemiBold
+            color: view.standalone ? "white" : Kirigami.Theme.textColor
+            Layout.fillWidth: true
+            layer.enabled: view.standalone
+            layer.effect: MultiEffect { shadowEnabled: true; shadowBlur: 0.25; shadowColor: "#66000000"; shadowVerticalOffset: 1 }
+        }
+        QQC.AbstractButton {
+            id: clear
+            objectName: "clearHistory"
+            implicitWidth: 20; implicitHeight: 20
+            Accessible.name: i18n("Clear History")
+            enabled: view.history.expiredNotificationsCount > 0
+            background: Rectangle {
+                radius: 10
+                color: clear.hovered ? Qt.rgba(1,1,1,.7) : Qt.rgba(1,1,1,.5)
+            }
+            contentItem: Kirigami.Icon { source: Qt.resolvedUrl("symbols/mttkde-control-notification-close.svg"); isMask: true; color: "#88000000" }
+            onClicked: view.history.clear(Notifications.Notifications.ClearExpired)
+        }
+    }
+    ControlLabel {
+        text: i18n("No notifications")
+        color: view.standalone ? "white" : Kirigami.Theme.textColor
+        visible: view.history.count === 0
+    }
+    Item {
+        id: scroll
+        Layout.leftMargin: -8; Layout.rightMargin: -8
+        Layout.topMargin: -8; Layout.bottomMargin: -8
+        Layout.fillWidth: true
+        Layout.preferredHeight: Math.min(560, list.contentHeight) + 16
+        visible: view.history.count > 0
         clip: true
         ListView {
             id: list
-            spacing: Kirigami.Units.smallSpacing * 2
+            x: 8; y: 8
+            width: parent.width - 16; height: parent.height - 16
+            boundsBehavior: Flickable.StopAtBounds
+            QQC.ScrollBar.vertical: QQC.ScrollBar {}
+            spacing: 0
             model: view.history
-            delegate: ColumnLayout {
-                id: row
+            delegate: Item {
+                id: entry
+                objectName: "historyNotificationDelegate"
                 required property var model
                 required property int index
+                readonly property bool stacked: !!model.isGroup && !model.isGroupExpanded
+                readonly property var surface: card
+                visible: !model.isInGroup || model.isGroupExpanded
                 width: ListView.view.width
-                spacing: Kirigami.Units.smallSpacing
-                function itemIndex() { return view.history.index(index, 0); }
-                RowLayout {
-                    Layout.fillWidth: true
-                    Kirigami.Icon { source: row.model.applicationIconName; implicitWidth: Kirigami.Units.iconSizes.small; implicitHeight: implicitWidth }
-                    ControlLabel { Layout.fillWidth: true; text: row.model.applicationName || ""; elide: Text.ElideRight; font.weight: Font.DemiBold }
-                    QQC.ToolButton { font.family: "SF Pro Text"; font.pixelSize: 13;
-                        objectName: "notificationGroup"; text: row.model.isGroupExpanded ? i18n("Collapse") : i18n("Expand")
-                        visible: !!row.model.isGroup
-                        onClicked: view.history.setData(row.itemIndex(), !row.model.isGroupExpanded, Notifications.Notifications.IsGroupExpandedRole)
-                    }
-                    QQC.ToolButton { font.family: "SF Pro Text"; font.pixelSize: 13; objectName: "notificationDismiss"; icon.name: "window-close"; text: i18n("Dismiss"); display: QQC.AbstractButton.IconOnly; Accessible.name: text; visible: row.model.closable; onClicked: view.history.close(row.itemIndex()) }
-                }
-                ControlLabel { Layout.fillWidth: true; visible: !row.model.isGroup; text: row.model.summary || ""; textFormat: Text.PlainText; wrapMode: Text.WordWrap; font.weight: Font.DemiBold }
-                ControlLabel { Layout.fillWidth: true; visible: !row.model.isGroup; text: row.model.body || ""; textFormat: Text.StyledText; wrapMode: Text.WordWrap;  onLinkActivated: link => Qt.openUrlExternally(link) }
-                QQC.ProgressBar { Layout.fillWidth: true; visible: row.model.type === Notifications.Notifications.JobType; from: 0; to: 100; value: row.model.percentage || 0 }
-                Flow {
-                    Layout.fillWidth: true; spacing: Kirigami.Units.smallSpacing
-                    QQC.Button { font.family: "SF Pro Text"; font.pixelSize: 13; objectName: "notificationOpen"; text: i18n("Open"); visible: row.model.hasDefaultAction; onClicked: view.history.invokeDefaultAction(row.itemIndex()) }
-                    Repeater {
-                        model: row.model.actionNames || []
-                        delegate: QQC.Button { font.family: "SF Pro Text"; font.pixelSize: 13;
-                            objectName: "notificationAction"
-                            required property string modelData
-                            required property int index
-                            text: row.model.actionLabels[index] || modelData
-                            onClicked: view.history.invokeAction(row.itemIndex(), modelData)
+                height: visible ? card.implicitHeight + (stacked ? 8 : 0) + 6 : 0
+                Repeater {
+                    model: entry.stacked ? 2 : 0
+                    Item {
+                        required property int index
+                        x: (2-index)*4; y: card.height+(1-index)*4
+                        width: entry.width-x*2; height: 4
+                        clip: true
+                        NotificationSurface {
+                            y: 4-card.height
+                            width: parent.width; height: card.height
+                            contentItem: Item {}
                         }
                     }
-                    QQC.Button { font.family: "SF Pro Text"; font.pixelSize: 13; objectName: "notificationPause"; text: row.model.jobState === Notifications.Notifications.JobStateSuspended ? i18n("Resume") : i18n("Pause"); visible: row.model.suspendable; onClicked: row.model.jobState === Notifications.Notifications.JobStateSuspended ? view.history.resumeJob(row.itemIndex()) : view.history.suspendJob(row.itemIndex()) }
-                    QQC.Button { font.family: "SF Pro Text"; font.pixelSize: 13; objectName: "notificationCancel"; text: i18n("Cancel Job"); visible: row.model.killable; onClicked: view.history.killJob(row.itemIndex()) }
                 }
-                RowLayout {
-                    visible: row.model.hasReplyAction
-                    QQC.TextField { font.family: "SF Pro Text"; font.pixelSize: 13; id: reply; objectName: "notificationReply"; Layout.fillWidth: true; placeholderText: i18n("Reply…"); Accessible.name: placeholderText }
-                    QQC.Button { font.family: "SF Pro Text"; font.pixelSize: 13; objectName: "notificationSend"; text: i18n("Send"); enabled: reply.text.trim().length > 0; onClicked: { view.history.reply(row.itemIndex(), reply.text, Notifications.Notifications.None); reply.clear(); } }
+                NotificationSurface {
+                    id: card
+                    width: parent.width; height: implicitHeight
+                    contentItem: NotificationCard {
+                        model: entry.model
+                        index: entry.index
+                        history: view.history
+                    }
                 }
             }
         }
     }
-    QQC.Button { font.family: "SF Pro Text"; font.pixelSize: 13; objectName: "clearHistory"; text: i18n("Clear History"); enabled: view.history.expiredNotificationsCount > 0; onClicked: view.history.clear(Notifications.Notifications.ClearExpired) }
-    SettingsLink { text: i18n("Notification Settings…"); module: "kcm_notifications" }
+    SettingsLink { id: preferences; visible: !view.standalone; text: i18n("Notification Settings…"); module: "kcm_notifications" }
+    TapHandler {
+        acceptedButtons: Qt.RightButton
+        onTapped: (point,button) => contextMenu.popup(point.position.x, point.position.y)
+    }
+    QQC.Menu {
+        id: contextMenu
+        font.family: "SF Pro Display"; font.pixelSize: 13
+        QQC.MenuItem { text: i18n("Notification Settings…"); onTriggered: preferences.clicked() }
+    }
 }
