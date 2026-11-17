@@ -1,0 +1,51 @@
+{
+  "status": "candidate awaiting visual approval; not released",
+  "source_commit": "3eb9cc7d0213308e81d4c9f9a2f9c9f661f9d1e5",
+  "scope": "Theme color row in the shared installer; both editions. Replaces desktop photograph and checkmarked swatches with a Tahoe-style grouped Color row and separated blue selection ring. Existing color values and installation behavior preserved.",
+  "checks": [
+    {
+      "command": "python3 -m pytest tests/test_installer_wizard.py -q",
+      "result": "47 passed; selection repaint, keyboard/mouse navigation, translations and transaction retention"
+    },
+    {
+      "command": "git diff --check",
+      "result": "passed"
+    }
+  ],
+  "vm": {
+    "command": "python3 /tmp/installer-theme-row-preview/capture.py",
+    "image": "/mnt/DISK_0/mttkde-release-v061/neon-base-v2.qcow2",
+    "sha256": "2a09de13ad568da01a8e16dd93e6aec120e63375bfc0ec24b4e804b43ecb4f8c",
+    "scope": "Isolated QEMU guest, native PyQt6 wizard on Xwayland; both edition defaults in light and dark palettes, blue/red selection. Six actual window captures reviewed. Focus and no-overflow assertions passed.",
+    "limitations": "Older disposable VM, not current pinned full-release reference. No install or live appearance transitions; earlier candidate release qualification remains pending."
+  },
+  "frames": {
+    "golden-gate-dark-red": {
+      "file": "/tmp/installer-theme-row-preview/golden-gate-dark-red-3282de5c2793.png",
+      "sha256": "3282de5c2793485f0c76e5dde77689b602ddfb66194953ba6f99aac7169ace10"
+    },
+    "golden-gate-dark": {
+      "file": "/tmp/installer-theme-row-preview/golden-gate-dark-8b36b11c1b07.png",
+      "sha256": "8b36b11c1b07f61c304fc12ca38a7fc732eef88e9dcd3efe2b8715c58f9e58e6"
+    },
+    "golden-gate-light-red": {
+      "file": "/tmp/installer-theme-row-preview/golden-gate-light-red-65f89377c217.png",
+      "sha256": "65f89377c2175977a1a7b5c9e0b15b65fa551ed895d8be5ed7434cb3e021acdb"
+    },
+    "golden-gate-light": {
+      "file": "/tmp/installer-theme-row-preview/golden-gate-light-6679deee7a5d.png",
+      "sha256": "6679deee7a5df05f4300e20872659c09e7ae6864b8000d7b1059020951f4765c"
+    },
+    "tahoe-dark": {
+      "file": "/tmp/installer-theme-row-preview/tahoe-dark-b88e8788ee84.png",
+      "sha256": "b88e8788ee84d8ae9b77ac17391e63fe99f845992455b12655cee832f8f319d3"
+    },
+    "tahoe-light": {
+      "file": "/tmp/installer-theme-row-preview/tahoe-light-67565af8ee38.png",
+      "sha256": "67565af8ee3847132d853c64354ac55e6c31a0c55cc25106268276a8f0c46658"
+    }
+  },
+  "reference": "https://macmost.com/customizing-your-mac-with-icon-widget-styles.html",
+  "ci": "not submitted",
+  "release": "No merge, version bump, pin update, tags or publication."
+}
