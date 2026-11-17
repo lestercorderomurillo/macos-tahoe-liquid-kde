@@ -78,6 +78,13 @@ sink.setProperty('muted',False); QTest.qWait(10); assert not mute.property('chec
 audio.setProperty('sink',None); QTest.qWait(10)
 assert not slider.property('enabled') and not mute.property('enabled')
 
+# Browser sessions without track metadata must keep the neutral placeholder.
+player = fake('QtObject { property string track: ""; property string identity: "Chrome"; property string artUrl: ""; property string artist: ""; property bool canPlay: false; property bool canPause: false; property bool canGoNext: false; property bool canGoPrevious: false; property int playbackStatus: 0 }')
+media = component('MediaView.qml', {'player':player})
+assert child(media,'trackTitle').property('text') == 'Nothing playing'
+player.setProperty('track','A track'); QTest.qWait(10)
+assert child(media,'trackTitle').property('text') == 'A track'
+
 wireless = fake('QtObject { property bool wirelessEnabled: true; property bool wirelessHwEnabled: true }')
 devices = fake('QtObject { property bool wirelessDeviceAvailable: true }')
 handler = fake('''QtObject {
@@ -150,7 +157,9 @@ while pending:
     if item.objectName() == 'displayLabel': labels.append(item)
     pending.extend(item.children())
     if hasattr(item,'childItems'): pending.extend(item.childItems())
-assert len(labels) == 3 and all(label.property('visible') for label in labels)
+assert len(labels) == 3 and not any(label.property('visible') for label in labels)
+display.setProperty('detailed', True); QTest.qWait(30)
+assert all(label.property('visible') for label in labels)
 assert {label.property('text') for label in labels} == {'First monitor','Second monitor','Third monitor'}
 
 profiles = fake('''QtObject {
@@ -273,7 +282,7 @@ summaryRows=Rows([dict(Type=4,ConnectionState=2,Name='docker0'),
                   dict(Type=14,ConnectionState=0,Name='Offline Wi-Fi')])
 overview=component('ControlView.qml', {'connections':summaryRows, 'batteryState':battery})
 summary=child(overview,'connectionSummary')
-assert summary.property('subtitle') == 'Ethernet LAN'
+assert summary.property('subtitle') == 'Connected'
 assert summary.property('text') == 'Network'
 battery.setProperty('hasInternalBatteries',False);QTest.qWait(10)
 assert not child(overview,'batteryTile').property('visible')
@@ -340,7 +349,7 @@ with tempfile.TemporaryDirectory() as directory:
             image = tile_window.grabWindow();assert not image.isNull()
             top,bottom = image.pixelColor(100,25),image.pixelColor(100,95)
             assert top == bottom, ('Tile contains a vertical tint', golden,light,top.getRgb(),bottom.getRgb())
-            expected = (153 if golden else 140) if light else (3 if golden else 122)
+            expected = 46 if light else 31
             assert abs(top.alpha() - expected) <= 2, ('Tile fill changed',golden,light,top.getRgb())
         tile_window.close()
 

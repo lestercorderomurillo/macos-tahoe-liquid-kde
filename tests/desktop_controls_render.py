@@ -86,7 +86,7 @@ assert_islands()
 view.hide();QTest.qWait(50);view.show();QTest.qWait(300)
 assert_islands()
 image=view.grabWindow();assert not image.isNull()
-assert image.pixelColor(42,42).alpha() > 80
+assert 0 < image.pixelColor(42,42).alpha() < 255, 'Glass centre must stay translucent'
 assert image.pixelColor(5,5).alpha() == 0
 assert image.save(sys.argv[2])
 print('CONTROL_CENTER_X11_RENDER_OK',view.width(),view.height())

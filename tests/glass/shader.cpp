@@ -397,7 +397,10 @@ int main(int argc, char **argv)
                 const auto tinted = render();
                 shader.setUniformValue("darkGradientOverlay", false);
                 const auto untinted = render();
-                require(std::abs(qRed(tinted.pixel(96, 0)) - (mode == "Light" ? 206 : 0)) <= 1,
+                const double topAlpha = golden["GradientTopOpacity"].toDouble();
+                const double expectedTop = (mode == "Light" ? 206 : 0) * topAlpha
+                    + qRed(untinted.pixel(96, 0)) * (1 - topAlpha);
+                require(std::abs(qRed(tinted.pixel(96, 0)) - expectedTop) <= 2,
                         QStringLiteral("Golden Gate top tint does not follow appearance"));
                 require(std::abs(qRed(tinted.pixel(96, 127)) - qRed(untinted.pixel(96, 127))) <= 1,
                         QStringLiteral("Golden Gate bottom must remain untinted"));

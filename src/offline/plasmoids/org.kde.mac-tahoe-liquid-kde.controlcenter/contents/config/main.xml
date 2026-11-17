@@ -5,8 +5,13 @@
 <entry name="showBattery" type="Bool"><default>true</default></entry>
 <entry name="showMedia" type="Bool"><default>true</default></entry>
 <entry name="showFocus" type="Bool"><default>true</default></entry>
-<entry name="showNotifications" type="Bool"><default>true</default></entry>
-<entry name="showSettings" type="Bool"><default>true</default></entry>
+<entry name="showNotifications" type="Bool"><default>false</default></entry>
+<entry name="showSettings" type="Bool"><default>false</default></entry>
 <entry name="showDisplay" type="Bool"><default>true</default></entry>
 <entry name="showAudio" type="Bool"><default>true</default></entry>
+<entry name="showSharing" type="Bool"><default>true</default></entry>
+<entry name="showOverview" type="Bool"><default>true</default></entry>
+<entry name="showMirroring" type="Bool"><default>true</default></entry>
+<entry name="showDarkMode" type="Bool"><default>true</default></entry>
+<entry name="showScreenshot" type="Bool"><default>true</default></entry>
 </group></kcfg>

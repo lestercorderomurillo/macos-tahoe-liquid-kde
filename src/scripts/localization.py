@@ -27,6 +27,17 @@ LANGUAGE_CODES = tuple(item["code"] for item in LANGUAGES)
 
 
 _ES = {
+    "On": "Activado",
+    "Off": "Desactivado",
+    "Audio outputs": "Salidas de audio",
+    "File Sharing": "Compartir archivos",
+    "Overview": "Vista general",
+    "Screen Mirroring": "Duplicar pantalla",
+    "Dark Mode": "Modo oscuro",
+    "Screenshot": "Captura de pantalla",
+    "Display Settings…": "Configuración de pantalla…",
+    "Connected": "Conectado",
+
     "Edit Controls": "Editar controles",
     "Focus": "Concentración",
     "%1 — %2%": "%1 — %2%",
@@ -154,6 +165,17 @@ _ES = {
 }
 
 _ZH_CN = {
+    "On": "开启",
+    "Off": "关闭",
+    "Audio outputs": "音频输出",
+    "File Sharing": "文件共享",
+    "Overview": "概览",
+    "Screen Mirroring": "屏幕镜像",
+    "Dark Mode": "深色模式",
+    "Screenshot": "截屏",
+    "Display Settings…": "显示设置…",
+    "Connected": "已连接",
+
     "Edit Controls": "编辑控制",
     "Focus": "专注模式",
     "%1 — %2%": "%1 — %2%",

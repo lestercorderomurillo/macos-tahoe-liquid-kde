@@ -30,7 +30,12 @@ Disable the gradient for untinted glass.
 The Dock keeps its v0.62.0 optics independently of these controls: blur 5,
 RGB separation 12 with the existing 24% Dock attenuation, refraction 0.1,
 refraction width 18, highlight width 3.5 and strength 0.1, brightness 1,
-contrast 1, saturation 1.33 and 98% center coverage. It stays free of gradients.
+contrast 1, saturation 1 and 98% center coverage. Its gradient defaults off.
+Control Center and notification history share these edge optics with full blur
+coverage, an 18% white light fill and a 12% white dark fill in all presets.
+Their gradient also defaults off; explicit component edits remain supported.
+The default gradient strengths are 19%/1%/1% for Tahoe and 50%/35%/0%
+for Golden Gate, ordered top/center/bottom with the existing center positions.
 Corner settings and rendering fixes continue to apply.
 
 Selecting a preset replaces its surface, fine tuning and gradient values.

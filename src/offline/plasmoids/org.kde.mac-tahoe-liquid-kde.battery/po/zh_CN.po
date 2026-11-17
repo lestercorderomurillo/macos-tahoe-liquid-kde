@@ -8,6 +8,9 @@ msgstr "%1 — %2%"
 msgid "%1%"
 msgstr "%1%"
 
+msgid "Audio outputs"
+msgstr "音频输出"
+
 msgid "Back"
 msgstr "返回"
 
@@ -47,6 +50,9 @@ msgstr "清除历史记录"
 msgid "Collapse"
 msgstr "收起"
 
+msgid "Connected"
+msgstr "已连接"
+
 msgid "Connected to power"
 msgstr "已连接电源"
 
@@ -56,11 +62,17 @@ msgstr "控制中心"
 msgid "Controlled by another application"
 msgstr "由其他应用控制"
 
+msgid "Dark Mode"
+msgstr "深色模式"
+
 msgid "Dismiss"
 msgstr "关闭"
 
 msgid "Display"
 msgstr "显示器"
+
+msgid "Display Settings…"
+msgstr "显示设置…"
 
 msgid "Do Not Disturb"
 msgstr "勿扰模式"
@@ -76,6 +88,9 @@ msgstr "电源模式"
 
 msgid "Expand"
 msgstr "展开"
+
+msgid "File Sharing"
+msgstr "文件共享"
 
 msgid "Focus"
 msgstr "专注模式"
@@ -122,11 +137,20 @@ msgstr "通知"
 msgid "Now Playing"
 msgstr "正在播放"
 
+msgid "Off"
+msgstr "关闭"
+
+msgid "On"
+msgstr "开启"
+
 msgid "On battery power"
 msgstr "使用电池供电"
 
 msgid "Open"
 msgstr "Open"
+
+msgid "Overview"
+msgstr "概览"
 
 msgid "Pause"
 msgstr "暂停"
@@ -157,6 +181,12 @@ msgstr "扫描网络"
 
 msgid "Scanning…"
 msgstr "正在扫描…"
+
+msgid "Screen Mirroring"
+msgstr "屏幕镜像"
+
+msgid "Screenshot"
+msgstr "截屏"
 
 msgid "Send"
 msgstr "发送"

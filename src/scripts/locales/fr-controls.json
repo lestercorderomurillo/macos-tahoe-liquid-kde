@@ -56,5 +56,15 @@
   "Volume": "Volume",
   "Wi-Fi": "Wi-Fi",
   "Wi-Fi is blocked by the hardware switch": "Le Wi-Fi est bloqué par l’interrupteur matériel",
-  "Wi-Fi is off": "Le Wi-Fi est désactivé"
+  "Wi-Fi is off": "Le Wi-Fi est désactivé",
+  "Audio outputs": "Sorties audio",
+  "File Sharing": "Partage de fichiers",
+  "Overview": "Vue d’ensemble",
+  "Screen Mirroring": "Recopie de l’écran",
+  "Dark Mode": "Mode sombre",
+  "Screenshot": "Capture d’écran",
+  "Display Settings…": "Réglages de l’écran…",
+  "Connected": "Connecté",
+  "On": "Activé",
+  "Off": "Désactivé"
 }

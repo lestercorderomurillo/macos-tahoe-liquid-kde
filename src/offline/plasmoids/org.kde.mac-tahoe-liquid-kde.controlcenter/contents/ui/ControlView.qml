@@ -16,8 +16,9 @@ Item {
     signal closeRequested()
     focus: true
     Keys.onEscapePressed: { if (section.length) section = ""; else closeRequested(); }
-    implicitWidth: 320
+    implicitWidth: 360
     implicitHeight: 20 + (section === "" ? grid.implicitHeight + 42 : detail.implicitHeight)
+    ControlCommands { id: commands }
     Network.EnabledConnections { id: wireless }
     Network.NetworkModel { id: nativeConnections }
     property var connections: nativeConnections
@@ -42,7 +43,7 @@ Item {
     }
     property var batteryState: nativeBattery
     Power.BatteryControlModel { id: nativeBattery }
-    readonly property var surfaces: section === "" ? [surface(wifi),surface(bluetooth),surface(battery),surface(media),surface(focus),surface(notifications),surface(settings),surface(display),surface(audio),surface(edit)] : [surface(detail)]
+    readonly property var surfaces: section === "" ? [surface(wifi),surface(bluetooth),surface(sharing),surface(overview),surface(mirroring),surface(darkMode),surface(screenshot),surface(battery),surface(media),surface(focus),surface(notifications),surface(settings),surface(display),surface(audio),surface(edit)] : [surface(detail)]
     function surface(item) { if (!item.visible) return {}; return {x:item.x + (item === detail || item === edit ? 0 : grid.x), y:item.y + (item === detail || item === edit ? 0 : grid.y), width:item.width, height:item.height, radius:item.cornerRadius}; }
     GridLayout {
         id: grid
@@ -55,14 +56,14 @@ Item {
         ControlTile {
             id: wifi
             visible: view.showControl("showWifi")
-            Layout.columnSpan: 2; Layout.fillWidth: true; Layout.preferredWidth: 66; Layout.minimumWidth: 0; Layout.preferredHeight: 64
+            Layout.columnSpan: 2; Layout.fillWidth: true; Layout.preferredWidth: 66; Layout.minimumWidth: 0; Layout.preferredHeight: 72
             padding: 10
             contentItem: ControlAction {
                 objectName: "connectionSummary"
                 text: view.primaryConnection && !view.primaryConnection.wifi ? i18n("Network") : i18n("Wi-Fi")
-                symbol: view.primaryConnection && !view.primaryConnection.wifi ? "network-wired" : "network-wireless"
+                symbol: view.primaryConnection && !view.primaryConnection.wifi ? "network-wired-symbolic" : "network-wireless"
                 active: !!view.primaryConnection
-                subtitle: view.primaryConnection ? view.primaryConnection.name : i18n("Not connected")
+                subtitle: view.primaryConnection ? (view.primaryConnection.wifi ? view.primaryConnection.name : i18n("Connected")) : i18n("Not connected")
                 onClicked: view.section = "WifiView.qml"
             }
         }
@@ -76,55 +77,90 @@ Item {
         ControlTile {
             id: bluetooth
             visible: view.showControl("showBluetooth")
-            Layout.fillWidth: true; Layout.preferredWidth: 66; Layout.minimumWidth: 0; Layout.preferredHeight: 64; padding: 4
+            Layout.columnSpan: 2; Layout.fillWidth: true; Layout.preferredWidth: 66; Layout.minimumWidth: 0; Layout.preferredHeight: 72; padding: 10
             contentItem: ControlAction {
-                text: i18n("Bluetooth"); symbol: "preferences-system-bluetooth"; compact: true
+                text: i18n("Bluetooth"); symbol: "preferences-system-bluetooth"
+                subtitle: active ? i18n("On") : i18n("Off")
                 active: Bluetooth.Manager.operational && !Bluetooth.Manager.bluetoothBlocked
-                enabled: Bluetooth.Manager.operational && Bluetooth.Manager.adapters.length > 0
-                onClicked: Bluetooth.Manager.bluetoothBlocked = !Bluetooth.Manager.bluetoothBlocked
+                onClicked: {
+                    if (Bluetooth.Manager.operational && Bluetooth.Manager.adapters.length > 0)
+                        Bluetooth.Manager.bluetoothBlocked = !Bluetooth.Manager.bluetoothBlocked;
+                    else view.section = "BluetoothView.qml";
+                }
             }
+        }
+        ControlTile {
+            id: sharing
+            visible: view.showControl("showSharing")
+            Layout.columnSpan: 2; Layout.fillWidth: true; Layout.preferredWidth: 66; Layout.minimumWidth: 0; Layout.preferredHeight: 72; padding: 10
+            contentItem: ControlAction { text: i18n("File Sharing"); symbol: "network-connect"; onClicked: commands.run("sharing") }
+        }
+        ControlTile {
+            id: overview
+            visible: view.showControl("showOverview")
+            Layout.fillWidth: true; Layout.preferredWidth: 66; Layout.minimumWidth: 0; Layout.preferredHeight: 72; padding: 4
+            contentItem: ControlAction { text: i18n("Overview"); symbol: "view-grid"; compact: true; onClicked: commands.run("overview") }
+        }
+        ControlTile {
+            id: mirroring
+            visible: view.showControl("showMirroring")
+            Layout.fillWidth: true; Layout.preferredWidth: 66; Layout.minimumWidth: 0; Layout.preferredHeight: 72; padding: 4
+            contentItem: ControlAction { text: i18n("Screen Mirroring"); symbol: "edit-copy"; compact: true; onClicked: commands.run("display") }
+        }
+        ControlTile {
+            id: darkMode
+            visible: view.showControl("showDarkMode")
+            Layout.fillWidth: true; Layout.preferredWidth: 66; Layout.minimumWidth: 0; Layout.preferredHeight: 72; padding: 4
+            contentItem: ControlAction { text: i18n("Dark Mode"); symbol: "weather-clear-night"; compact: true; active: !darkMode.lightMode; onClicked: commands.run(darkMode.lightMode ? "dark" : "light") }
+        }
+        ControlTile {
+            id: screenshot
+            visible: view.showControl("showScreenshot")
+            Layout.fillWidth: true; Layout.preferredWidth: 66; Layout.minimumWidth: 0; Layout.preferredHeight: 72; padding: 4
+            contentItem: ControlAction { text: i18n("Screenshot"); symbol: "camera-photo-symbolic"; compact: true; onClicked: { view.closeRequested(); commands.run("screenshot"); } }
+        }
+        ControlTile {
+            id: focus
+            visible: view.showControl("showFocus")
+            Layout.columnSpan: 2; Layout.fillWidth: true; Layout.preferredWidth: 66; Layout.minimumWidth: 0; Layout.preferredHeight: 72; padding: 10
+            contentItem: FocusSwitch {}
+        }
+        ControlTile {
+            id: notifications
+            visible: view.preferences && view.preferences.showNotifications === true
+            Layout.fillWidth: true; Layout.preferredWidth: 66; Layout.minimumWidth: 0; Layout.preferredHeight: 72; padding: 4
+            contentItem: ControlAction { text: i18n("Notifications"); symbol: "notifications"; compact: true; onClicked: view.section = "NotificationsView.qml" }
+        }
+        ControlTile {
+            id: settings
+            visible: view.preferences && view.preferences.showSettings === true
+            Layout.fillWidth: true; Layout.preferredWidth: 66; Layout.minimumWidth: 0; Layout.preferredHeight: 72; padding: 4
+            contentItem: ControlAction { text: i18n("Bluetooth Settings…"); symbol: "configure"; compact: true; onClicked: view.section = "BluetoothView.qml" }
         }
         ControlTile {
             id: battery
             objectName: "batteryTile"
             visible: view.showControl("showBattery") && view.batteryState.hasInternalBatteries
-            Layout.fillWidth: true; Layout.preferredWidth: 66; Layout.minimumWidth: 0; Layout.preferredHeight: 64; padding: 4
+            Layout.fillWidth: true; Layout.preferredWidth: 66; Layout.minimumWidth: 0; Layout.preferredHeight: 72; padding: 4
             contentItem: ControlAction { text: i18n("Battery"); symbol: "battery"; compact: true; onClicked: view.section = "BatteryView.qml" }
-        }
-        ControlTile {
-            id: focus
-            visible: view.showControl("showFocus")
-            Layout.columnSpan: 2; Layout.fillWidth: true; Layout.preferredWidth: 66; Layout.minimumWidth: 0; Layout.preferredHeight: 64; padding: 10
-            contentItem: FocusSwitch {}
-        }
-        ControlTile {
-            id: notifications
-            visible: view.showControl("showNotifications")
-            Layout.fillWidth: true; Layout.preferredWidth: 66; Layout.minimumWidth: 0; Layout.preferredHeight: 64; padding: 4
-            contentItem: ControlAction { text: i18n("Notifications"); symbol: "notifications"; compact: true; onClicked: view.section = "NotificationsView.qml" }
-        }
-        ControlTile {
-            id: settings
-            visible: view.showControl("showSettings")
-            Layout.fillWidth: true; Layout.preferredWidth: 66; Layout.minimumWidth: 0; Layout.preferredHeight: 64; padding: 4
-            contentItem: ControlAction { text: i18n("Bluetooth Settings…"); symbol: "configure"; compact: true; onClicked: view.section = "BluetoothView.qml" }
         }
         ControlTile {
             id: display
             visible: view.showControl("showDisplay")
             Layout.columnSpan: 4; Layout.fillWidth: true; Layout.minimumHeight: 64; cornerRadius: 24
-            contentItem: DisplayView {}
+            contentItem: DisplayView { onDetailsRequested: view.section = "DisplayDetails.qml" }
         }
         ControlTile {
             id: audio
             visible: view.showControl("showAudio")
             Layout.columnSpan: 4; Layout.fillWidth: true; Layout.minimumHeight: 64; cornerRadius: 24
-            contentItem: AudioView {}
+            contentItem: AudioView { onDetailsRequested: view.section = "AudioDetails.qml" }
         }
     }
+    TextMetrics { id: editMetrics; text: i18n("Edit Controls"); font.family: Style.family; font.pixelSize: Style.caption }
     ControlTile {
         id: edit
-        width: 110; height: 28
+        width: Math.min(parent.width - 20, editMetrics.width + 28); height: 28
         x: (parent.width - width) / 2; y: grid.y + grid.height + 12
         visible: view.section === ""
         padding: 0

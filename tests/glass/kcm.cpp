@@ -148,8 +148,8 @@ int main(int argc, char **argv)
                 for (const QString stop : {QStringLiteral("Top"), QStringLiteral("Center"), QStringLiteral("Bottom")}) {
                     values.insert("Gradient" + stop + "Color", QStringLiteral("#cecece"));
                 }
-                values.insert(QStringLiteral("GradientTopOpacity"), 1.0);
-                values.insert(QStringLiteral("GradientCenterOpacity"), 0.69);
+                values.insert(QStringLiteral("GradientTopOpacity"), 0.5);
+                values.insert(QStringLiteral("GradientCenterOpacity"), 0.35);
                 values.insert(QStringLiteral("GradientCenterPosition"), 0.56);
                 values.insert(QStringLiteral("GradientBottomOpacity"), 0.0);
             }
@@ -183,6 +183,14 @@ int main(int argc, char **argv)
     for (int presetIndex = 0; presetIndex < 3; ++presetIndex) {
         selector->setCurrentIndex(presetIndex);
         selector->activated(presetIndex);
+        components->setCurrentIndex(components->findData(QStringLiteral("control-center")));
+        require(!control<QCheckBox>(module.get(), QStringLiteral("kcfg_DarkGradientOverlay"))->isChecked(),
+                QStringLiteral("Control Center default gradient must be off in every preset"));
+        require(control<QDoubleSpinBox>(module.get(), QStringLiteral("kcfg_Saturation"))->value() == 1.0,
+                QStringLiteral("Control Center must not amplify wallpaper color"));
+        require(control<QDoubleSpinBox>(module.get(), QStringLiteral("kcfg_SurfaceTransparencyLight"))->value() == 82.0
+                && control<QDoubleSpinBox>(module.get(), QStringLiteral("kcfg_SurfaceTransparencyDark"))->value() == 88.0,
+                QStringLiteral("Control Center must retain clear fills in every preset"));
         components->setCurrentIndex(components->findData(QStringLiteral("dock")));
         require(control<QDoubleSpinBox>(module.get(), QStringLiteral("kcfg_BlurStrength"))->value() == 5,
                 QStringLiteral("Dock default blur changed"));

@@ -8,6 +8,9 @@ msgstr "%1 — %2%"
 msgid "%1%"
 msgstr "%1%"
 
+msgid "Audio outputs"
+msgstr "Saídas de áudio"
+
 msgid "Back"
 msgstr "Voltar"
 
@@ -47,6 +50,9 @@ msgstr "Limpar histórico"
 msgid "Collapse"
 msgstr "Recolher"
 
+msgid "Connected"
+msgstr "Conectado"
+
 msgid "Connected to power"
 msgstr "Conectado à energia"
 
@@ -56,11 +62,17 @@ msgstr "Central de Controle"
 msgid "Controlled by another application"
 msgstr "Controlado por outro aplicativo"
 
+msgid "Dark Mode"
+msgstr "Modo escuro"
+
 msgid "Dismiss"
 msgstr "Dispensar"
 
 msgid "Display"
 msgstr "Tela"
+
+msgid "Display Settings…"
+msgstr "Configurações de tela…"
 
 msgid "Do Not Disturb"
 msgstr "Não perturbe"
@@ -76,6 +88,9 @@ msgstr "Modo de energia"
 
 msgid "Expand"
 msgstr "Expandir"
+
+msgid "File Sharing"
+msgstr "Compartilhamento de arquivos"
 
 msgid "Focus"
 msgstr "Foco"
@@ -122,11 +137,20 @@ msgstr "Notificações"
 msgid "Now Playing"
 msgstr "Em reprodução"
 
+msgid "Off"
+msgstr "Desativado"
+
+msgid "On"
+msgstr "Ativado"
+
 msgid "On battery power"
 msgstr "Usando bateria"
 
 msgid "Open"
 msgstr "Abrir"
+
+msgid "Overview"
+msgstr "Visão geral"
 
 msgid "Pause"
 msgstr "Pausar"
@@ -157,6 +181,12 @@ msgstr "Buscar redes"
 
 msgid "Scanning…"
 msgstr "Buscando…"
+
+msgid "Screen Mirroring"
+msgstr "Espelhamento de tela"
+
+msgid "Screenshot"
+msgstr "Captura de tela"
 
 msgid "Send"
 msgstr "Enviar"

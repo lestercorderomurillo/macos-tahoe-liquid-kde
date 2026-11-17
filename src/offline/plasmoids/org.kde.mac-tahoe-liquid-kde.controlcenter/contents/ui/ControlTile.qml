@@ -20,8 +20,8 @@ QQC.Pane {
         Rectangle {
             anchors.fill: parent
             radius: tile.cornerRadius
-            color: tile.lightMode ? Qt.rgba(1, 1, 1, glassSettings.lightOpacity >= 0 ? glassSettings.lightOpacity : (tile.goldenGate ? 0.60 : 0.55))
-                                 : tile.goldenGate ? Qt.rgba(1, 1, 1, glassSettings.darkOpacity >= 0 ? glassSettings.darkOpacity : 0.01) : Qt.rgba(0, 0, 0, glassSettings.darkOpacity >= 0 ? glassSettings.darkOpacity : 0.48)
+            color: tile.lightMode ? Qt.rgba(1, 1, 1, glassSettings.lightOpacity >= 0 ? glassSettings.lightOpacity : 0.18)
+                                 : Qt.rgba(1, 1, 1, glassSettings.darkOpacity >= 0 ? glassSettings.darkOpacity : 0.12)
         }
         GlassRim { anchors.fill: parent; cornerRadius: tile.cornerRadius; lightMode: tile.lightMode }
     }

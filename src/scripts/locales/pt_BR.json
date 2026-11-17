@@ -1239,5 +1239,15 @@
   "Transparency — light": "Transparência — claro",
   "Transparency — dark": "Transparência — escuro",
   "Could not apply background transparency: %1": "Não foi possível aplicar a transparência do fundo: %1",
-  "Menu bar": "Barra de menus"
+  "Menu bar": "Barra de menus",
+  "Audio outputs": "Saídas de áudio",
+  "File Sharing": "Compartilhamento de arquivos",
+  "Overview": "Visão geral",
+  "Screen Mirroring": "Espelhamento de tela",
+  "Dark Mode": "Modo escuro",
+  "Screenshot": "Captura de tela",
+  "Display Settings…": "Configurações de tela…",
+  "Connected": "Conectado",
+  "On": "Ativado",
+  "Off": "Desativado"
 }

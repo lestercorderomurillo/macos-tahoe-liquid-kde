@@ -93,7 +93,7 @@ xembedsniproxy</default>
             <default>#000000</default>
         </entry>
         <entry name="GradientCenterOpacity" type="Double">
-            <default>0.02</default>
+            <default>0.01</default>
             <min>0.0</min>
             <max>1.0</max>
         </entry>
@@ -106,10 +106,10 @@ xembedsniproxy</default>
             <default>#000000</default>
         </entry>
         <entry name="GradientTopOpacity" type="Double">
-            <default>0.38</default>
+            <default>0.19</default>
         </entry>
         <entry name="GradientBottomOpacity" type="Double">
-            <default>0.02</default>
+            <default>0.01</default>
         </entry>
         <entry name="GradientTopDarkColor" type="Color">
             <default>#000000</default>

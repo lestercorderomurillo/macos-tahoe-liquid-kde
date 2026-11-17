@@ -8,15 +8,19 @@ import org.kde.plasma.private.brightnesscontrolplugin as Display
 ColumnLayout {
     id: view
     property var control: nativeControl
+    property bool detailed: false
+    signal detailsRequested()
     Display.ScreenBrightnessControl { id: nativeControl }
-    ControlLabel { text: i18n("Display"); font.weight: Font.DemiBold }
+    QQC.AbstractButton { text: i18n("Display"); onClicked: view.detailsRequested(); contentItem: ControlLabel { text: parent.text; font.weight: Font.DemiBold } }
     Repeater {
         id: displays
         model: view.control.displays
         delegate: ColumnLayout {
             required property var model
+            required property int index
+            visible: view.detailed || index === 0
             Layout.fillWidth: true
-            ControlLabel { objectName: "displayLabel"; visible: displays.count > 1; Layout.fillWidth: true; text: model.label || model.displayName; elide: Text.ElideRight }
+            ControlLabel { objectName: "displayLabel"; visible: view.detailed && displays.count > 1; Layout.fillWidth: true; text: model.label || model.displayName; elide: Text.ElideRight }
             RowLayout {
                 Layout.fillWidth: true
                 Kirigami.Icon { source: Style.symbol("display-brightness"); implicitWidth: 14; implicitHeight: 14 }

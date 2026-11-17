@@ -1239,5 +1239,15 @@
   "Transparency — light": "Transparenz — hell",
   "Transparency — dark": "Transparenz — dunkel",
   "Could not apply background transparency: %1": "Hintergrundtransparenz konnte nicht angewendet werden: %1",
-  "Menu bar": "Menüleiste"
+  "Menu bar": "Menüleiste",
+  "Audio outputs": "Audioausgänge",
+  "File Sharing": "Dateifreigabe",
+  "Overview": "Übersicht",
+  "Screen Mirroring": "Bildschirmspiegelung",
+  "Dark Mode": "Dunkler Modus",
+  "Screenshot": "Bildschirmfoto",
+  "Display Settings…": "Anzeigeeinstellungen…",
+  "Connected": "Verbunden",
+  "On": "Ein",
+  "Off": "Aus"
 }
