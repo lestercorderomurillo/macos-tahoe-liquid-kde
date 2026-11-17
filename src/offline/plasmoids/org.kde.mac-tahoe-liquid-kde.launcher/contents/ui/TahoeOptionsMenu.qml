@@ -154,6 +154,9 @@ PlasmaCore.Dialog {
                         }
                     }
                     padding: 0
+                    // The desktop style sets bottomPadding independently of padding.
+                    topPadding: 0
+                    bottomPadding: 0
                 }
             }
         }
