@@ -6,6 +6,15 @@
 <h1 align="center">macOS Tahoe for KDE Plasma</h1>
 
 <p align="center">
+  <a href="README.md" lang="en" hreflang="en" aria-current="page">🇺🇸 English</a> ·
+  <a href="README.es.md" lang="es" hreflang="es">🇪🇸 Español</a> ·
+  <a href="README.zh-CN.md" lang="zh-CN" hreflang="zh-CN">🇨🇳 简体中文</a> ·
+  <a href="README.pt-BR.md" lang="pt-BR" hreflang="pt-BR">🇧🇷 Português (Brasil)</a> ·
+  <a href="README.de.md" lang="de" hreflang="de">🇩🇪 Deutsch</a> ·
+  <a href="README.fr.md" lang="fr" hreflang="fr">🇫🇷 Français</a>
+</p>
+
+<p align="center">
   <a href="https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/releases"><img src="https://img.shields.io/github/v/release/lestercorderomurillo/macos-tahoe-liquid-kde?label=release&amp;color=blue" alt="release"></a>
   <a href="https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/actions/workflows/test.yml"><img src="https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/actions/workflows/test.yml/badge.svg?branch=dev" alt="tests"></a>
   <a href="https://kde.org/plasma-desktop/"><img src="https://img.shields.io/badge/Plasma-6.6%2B-1d99f3?logo=kde" alt="plasma"></a>
