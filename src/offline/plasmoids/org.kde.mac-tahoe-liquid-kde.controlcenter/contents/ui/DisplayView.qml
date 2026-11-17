@@ -23,7 +23,7 @@ ColumnLayout {
             ControlLabel { objectName: "displayLabel"; visible: view.detailed && displays.count > 1; Layout.fillWidth: true; text: model.label || model.displayName; elide: Text.ElideRight }
             RowLayout {
                 Layout.fillWidth: true
-                Kirigami.Icon { source: Style.symbol("display-brightness"); implicitWidth: 14; implicitHeight: 14 }
+                Kirigami.Icon { source: Style.symbol("mac-brightness-low"); implicitWidth: 16; implicitHeight: 16 }
                 GlassSlider {
                 objectName: "brightnessSlider"
                 Layout.fillWidth: true
@@ -31,7 +31,7 @@ ColumnLayout {
                 from: 0; to: model.maxBrightness; value: model.brightness
                 onMoved: view.control.setBrightness(model.displayName, Math.round(value))
                 }
-                Kirigami.Icon { source: Style.symbol("display-brightness"); implicitWidth: 18; implicitHeight: 18 }
+                Kirigami.Icon { source: Style.symbol("display-brightness"); implicitWidth: 20; implicitHeight: 20 }
             }
         }
     }

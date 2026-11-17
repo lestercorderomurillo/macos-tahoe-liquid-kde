@@ -23,6 +23,7 @@ GLYPHS = {
     'mirroring': ('rectangle.on.rectangle', '1003E7', 24),
     'airplay': ('airplayaudio', '100462', 20),
     'sun': ('sun.max.fill', '1001AE', 22),
+    'sun-low': ('sun.min.fill', '1001AC', 22),
     'speaker-low': ('speaker.fill', '1002A1', 22),
     'speaker': ('speaker.wave.3.fill', '1002A9', 24),
     'speaker-off': ('speaker.slash.fill', '1002A3', 22),

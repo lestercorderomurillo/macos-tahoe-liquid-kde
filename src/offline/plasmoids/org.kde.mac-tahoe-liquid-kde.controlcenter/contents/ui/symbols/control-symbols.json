@@ -64,6 +64,12 @@
       "source": "bundled Apple font; unchanged contours, uniform scale and translation",
       "sha256": "36aac141788d095cccd810877aa8d059fd009428d0936619003331d2d881c5bf"
     },
+    "sun-low": {
+      "symbol": "sun.min.fill",
+      "glyph": "uni1001AC.small",
+      "source": "bundled Apple font; unchanged contours, uniform scale and translation",
+      "sha256": "5a8ebd6f64fdcd89afc16807493ed8a2e850781930e4f9dcafe6ccc7a6844dfa"
+    },
     "speaker-low": {
       "symbol": "speaker.fill",
       "glyph": "uni1002A1.small",

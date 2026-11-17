@@ -65,6 +65,10 @@ sink = fake('QtObject { property bool muted: false; property int volume: 20000; 
 audio = component('AudioView.qml', {'sink':sink})
 slider = child(audio, 'volumeSlider'); mute = child(audio,'muteButton')
 assert slider.property('value') == 20000
+# Enlarging the click target must not stretch the reference-size glyph.
+mute.setWidth(48); mute.setHeight(48); QTest.qWait(10)
+assert child(mute, 'controlIcon').width() == 16
+assert child(mute, 'controlIcon').height() == 16
 sink.setProperty('volume',40000); QTest.qWait(10)
 assert slider.property('value') == 40000
 click(mute); assert sink.property('muted')
