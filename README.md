@@ -237,6 +237,17 @@ Wi-Fi, sound, brightness and notifications in one glass menu. Updates will come 
 
 <br>
 
+### Tahoe Notifications (Alpha)
+
+Glass notification banners and grouped history with app actions and reply support.
+
+<p align="center">
+  <img src="src/screenshots/previews/readme-tahoe-light-notifications-e23889cb576c.webp" alt="Tahoe notifications in light mode" width="415">
+  <img src="src/screenshots/previews/readme-tahoe-dark-notifications-964aef6ed481.webp" alt="Tahoe notifications in dark mode" width="415">
+</p>
+
+<br>
+
 ### Tahoe Clipboard History (Alpha)
 
 Find and reuse copied text and images directly from Launchpad.
