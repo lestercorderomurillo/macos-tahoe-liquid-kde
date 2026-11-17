@@ -317,7 +317,10 @@ click(networkRow);assert networkHandler.property('calls').toVariant()==['new','/
 
 
 preferences=fake('QtObject { property bool showAudio: true }')
-editor=component('EditControls.qml',{'preferences':preferences})
+overview.setProperty('preferences',preferences)
+click(child(overview,'editControlsButton'))
+assert overview.property('section') == 'EditControls.qml'
+editor=overview
 audioChoice=child(editor,'showAudio');assert audioChoice.property('checked')
 audioChoice.setProperty('checked',False);click(audioChoice)
 assert not preferences.property('showAudio')

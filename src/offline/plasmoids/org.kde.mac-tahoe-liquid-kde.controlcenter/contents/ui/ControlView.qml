@@ -164,11 +164,17 @@ Item {
         x: (parent.width - width) / 2; y: grid.y + grid.height + 12
         visible: view.section === ""
         padding: 0
-        contentItem: QQC.Button {
-            flat: true
+        contentItem: QQC.AbstractButton {
+            objectName: "editControlsButton"
             text: i18n("Edit Controls")
-            font.family: Style.family
-            font.pixelSize: Style.caption
+            padding: 0
+            contentItem: ControlLabel {
+                text: parent.text
+                font.family: Style.family
+                font.pixelSize: Style.caption
+                horizontalAlignment: Text.AlignHCenter
+                verticalAlignment: Text.AlignVCenter
+            }
             onClicked: view.section = "EditControls.qml"
         }
     }
