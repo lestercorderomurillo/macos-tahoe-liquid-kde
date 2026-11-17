@@ -1,46 +1,83 @@
 {
-  "version": "0.72.17",
-  "source_sha256": "633d11950dfc07c02d89b16696861a30b78907394c2cb4893abf531801ccd825",
-  "scope": "Three nonvisual uninstall fixes: preserve custom GTK files, validate saved clipboard shortcut state, report history deletion failure. See .github/LIFECYCLE-AUDIT-0.72.17.md. Also repairs annotated-tag verification in shallow release checkouts.",
-  "environment": "KDE neon disposable Plasma 6.8.1 / Qt 6.11.1 Wayland VM; focused local Python regressions.",
+  "version": "0.72.18",
+  "source_sha256": "c0f74df0fdd5ccbaa7e744c013ffeb5ba91f52abd85485ea9570b3967cb0f09f",
+  "scope": "Approved installer: Weather Default/Dark/Clear/Tinted selectors, Tahoe-style color row, and bundled SF Pro throughout. Existing icon renderers exposed by new choices.",
+  "environment": "Local Python/PyQt6 checks; disposable KDE neon Plasma 6.8.1 VM with Xwayland Qt windows.",
   "checks": [
     {
-      "command": "python3 -m pytest tests/test_gtk_uninstall.py -q --tb=short",
+      "command": "python3 -m pytest tests/test_installer_wizard.py -q",
       "result": "passed",
-      "detail": "8 cases; original code failed all five initial data-preservation cases."
+      "detail": "47 cases on final UI and fonts; reused unchanged evidence."
     },
     {
-      "command": "python3 -m pytest tests/test_clipboard_step.py -q --tb=short",
+      "command": "python3 -m pytest tests/test_installer_wizard.py -k installed_switcher tests/test_icon_toolset.py -k 'installed_switcher or installer_' -q",
       "result": "passed",
-      "detail": "22 cases; original code failed five new corruption/deletion-error cases."
+      "detail": "54 cases; no renderer implementation changes after passing run."
     },
     {
-      "command": "pytest tests/test_gtk_upgrade.py tests/test_window_shadows.py::test_reinstall_rebuilds_shadows_for_both_modes_and_uninstall_removes_them tests/test_vm_qualification.py::test_gtk_bridge_is_loaded_after_theme_files_are_installed",
+      "command": "python3 /tmp/installer-font-preview/capture.py",
       "result": "passed",
-      "detail": "6 direct caller/install regressions. Evidence reused for unchanged install paths."
+      "detail": "88 edition/mode/page font checks; seven reviewed frames from source 9ff2d9a4. User approved release."
     },
     {
-      "command": "tests/vm/uninstall_safety.py --output <guest-output>; held installer_lock concurrent backend probe",
+      "command": "python3 /tmp/installer-release-qualification/capture.py",
       "result": "passed",
-      "detail": "Both edition defaults: selected GTK/clipboard install/reinstall and actual component cleanup; permission failure/retry and invalid state; concurrent uninstall refused. Exact source hashes in .github/LIFECYCLE-AUDIT-0.72.16.json."
+      "detail": "Full Dark/Clear icon payload installation, unchanged reinstall reuse, and light/dark/light installed Qt icon rendering for both editions. Detailed hashes in docs/evidence/installer-icons-installed.json."
     },
     {
       "command": "python3 src/scripts/component_manifest.py; git diff --check",
       "result": "passed",
-      "detail": "GTK and clipboard recipes/component hashes updated; no rendering changes."
-    },
-    {
-      "command": "python3 -m pytest tests/test_release_evidence.py -q --tb=short",
-      "result": "passed",
-      "detail": "11 checks; annotated-tag/shallow checkout regression fails before fix and passes after; wrong remote commit still rejected."
+      "detail": "Component ledger matches; unchanged evidence reused."
     }
   ],
   "coverage_limits": [
-    "Selected component lifecycle only, not a full desktop reinstall/uninstall or reboot.",
-    "VM uses the existing neon reference snapshot in a new private overlay; no new distro/SDK/X11 or rendered appearance qualification.",
-    "Full remote matrix runs asynchronously.",
-    "Unknown or customized GTK files are retained when ownership cannot be established."
+    "Selected installer UI and icon component scope, not a full desktop installation or uninstall.",
+    "No new scheduler boundary, GTK continuity, native SDK or distro qualification; those implementations are unchanged.",
+    "Full remote CI runs asynchronously. Historical installer gallery is labeled; approved focused previews are separate."
   ],
   "gallery_commit": "f09780b200b79302e7c23ef9f6f74d94748bbea3",
-  "captures": []
+  "captures": [
+    {
+      "path": "src/screenshots/previews/installer-golden-gate-dark-icons-42546edab93e.png",
+      "sha256": "42546edab93e75a8ea8b21f7f25483aeb24a942f3676984bceef37f7e674e421",
+      "reviewed": true,
+      "source_commit": "9ff2d9a4"
+    },
+    {
+      "path": "src/screenshots/previews/installer-golden-gate-dark-progress-144f0095011c.png",
+      "sha256": "144f0095011cf26969efb018300685b5c77b15ac0724ee8b03373f6b9dffe8d0",
+      "reviewed": true,
+      "source_commit": "9ff2d9a4"
+    },
+    {
+      "path": "src/screenshots/previews/installer-golden-gate-dark-summary-d270482045cb.png",
+      "sha256": "d270482045cb8a1183e3fe2b5a59cb11f25334e000d2b0a4f3fa6381702ce283",
+      "reviewed": true,
+      "source_commit": "9ff2d9a4"
+    },
+    {
+      "path": "src/screenshots/previews/installer-golden-gate-light-icons-03fa4b14b92f.png",
+      "sha256": "03fa4b14b92fc8db4ed566d50137b18265227178a9172f8b4ff81ed1d84c6675",
+      "reviewed": true,
+      "source_commit": "9ff2d9a4"
+    },
+    {
+      "path": "src/screenshots/previews/installer-tahoe-dark-icons-dbc66adc81c4.png",
+      "sha256": "dbc66adc81c4a9a368438eb4607daed2af41134ee25afa3967d1ebe69455fb9a",
+      "reviewed": true,
+      "source_commit": "9ff2d9a4"
+    },
+    {
+      "path": "src/screenshots/previews/installer-tahoe-light-fonts-229167674cd8.png",
+      "sha256": "229167674cd83b463c596cb7c480fcbd5612809b3449f1b7a0ed5f074b7212e4",
+      "reviewed": true,
+      "source_commit": "9ff2d9a4"
+    },
+    {
+      "path": "src/screenshots/previews/installer-tahoe-light-icons-805970eab6b7.png",
+      "sha256": "805970eab6b7701dc80413adccebdfdf6f3d20eb34f18ddcda69d300456c08ab",
+      "reviewed": true,
+      "source_commit": "9ff2d9a4"
+    }
+  ]
 }

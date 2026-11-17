@@ -1,0 +1,172 @@
+{
+  "source": {
+    "src/scripts/icon_toolset.py": "3fa46a4441106f7819deb1213a8aee9dc2ebeaf24ad8bc52a06376bfc5924dc8",
+    "src/scripts/installer_choices.py": "3042a069d858d561787ad64cafffbd28028240031984cacfe7126488d7197b67",
+    "src/scripts/steps/icons.py": "5d92546406f11cd22b881297ac433bbb8d2f5a6a3ce3a86131390bec8935cdf4",
+    "src/scripts/theme_switch.py": "dc10156034b17873b587d0b9fc48fdc2e81817dd315585bb0c45af2e2aa1ab3b"
+  },
+  "environment": "plasmashell 6.8.1",
+  "checks": [
+    {
+      "style": "dark",
+      "install_and_reinstall": "passed",
+      "reused_prior_install_reinstall": true,
+      "files": 12724,
+      "seconds": 0.11
+    },
+    {
+      "edition": "MacTahoe",
+      "style": "dark",
+      "mode": "light",
+      "theme": "MacTahoeLiquidKde-Icons-Dark-Light",
+      "rendered_icon_hashes": [
+        "a716de404b7ca1dedd0db1161547013b5122461b612f304f5521f03db742fe95",
+        "6ae800526f737a22c5a8fcc9005cd426533c8da9cf6a3b4573744fc2453e5051",
+        "4dd0598f4943aa2193cd47d8e85a7df23cddcf2702666c4b03dfbcc141a9f9c5",
+        "afeff4377f19ce7049f23959f3b006cff9a2b5a7c9349ffb8a9c7ed84bcfddda"
+      ]
+    },
+    {
+      "edition": "MacTahoe",
+      "style": "dark",
+      "mode": "dark",
+      "theme": "MacTahoeLiquidKde-Icons-Dark-Dark",
+      "rendered_icon_hashes": [
+        "a716de404b7ca1dedd0db1161547013b5122461b612f304f5521f03db742fe95",
+        "6ae800526f737a22c5a8fcc9005cd426533c8da9cf6a3b4573744fc2453e5051",
+        "4dd0598f4943aa2193cd47d8e85a7df23cddcf2702666c4b03dfbcc141a9f9c5",
+        "afeff4377f19ce7049f23959f3b006cff9a2b5a7c9349ffb8a9c7ed84bcfddda"
+      ]
+    },
+    {
+      "edition": "MacTahoe",
+      "style": "dark",
+      "mode": "light",
+      "theme": "MacTahoeLiquidKde-Icons-Dark-Light",
+      "rendered_icon_hashes": [
+        "a716de404b7ca1dedd0db1161547013b5122461b612f304f5521f03db742fe95",
+        "6ae800526f737a22c5a8fcc9005cd426533c8da9cf6a3b4573744fc2453e5051",
+        "4dd0598f4943aa2193cd47d8e85a7df23cddcf2702666c4b03dfbcc141a9f9c5",
+        "afeff4377f19ce7049f23959f3b006cff9a2b5a7c9349ffb8a9c7ed84bcfddda"
+      ]
+    },
+    {
+      "edition": "MacGoldenGate",
+      "style": "dark",
+      "mode": "light",
+      "theme": "MacTahoeLiquidKde-Icons-Dark-Light",
+      "rendered_icon_hashes": [
+        "a716de404b7ca1dedd0db1161547013b5122461b612f304f5521f03db742fe95",
+        "6ae800526f737a22c5a8fcc9005cd426533c8da9cf6a3b4573744fc2453e5051",
+        "4dd0598f4943aa2193cd47d8e85a7df23cddcf2702666c4b03dfbcc141a9f9c5",
+        "afeff4377f19ce7049f23959f3b006cff9a2b5a7c9349ffb8a9c7ed84bcfddda"
+      ]
+    },
+    {
+      "edition": "MacGoldenGate",
+      "style": "dark",
+      "mode": "dark",
+      "theme": "MacTahoeLiquidKde-Icons-Dark-Dark",
+      "rendered_icon_hashes": [
+        "a716de404b7ca1dedd0db1161547013b5122461b612f304f5521f03db742fe95",
+        "6ae800526f737a22c5a8fcc9005cd426533c8da9cf6a3b4573744fc2453e5051",
+        "4dd0598f4943aa2193cd47d8e85a7df23cddcf2702666c4b03dfbcc141a9f9c5",
+        "afeff4377f19ce7049f23959f3b006cff9a2b5a7c9349ffb8a9c7ed84bcfddda"
+      ]
+    },
+    {
+      "edition": "MacGoldenGate",
+      "style": "dark",
+      "mode": "light",
+      "theme": "MacTahoeLiquidKde-Icons-Dark-Light",
+      "rendered_icon_hashes": [
+        "a716de404b7ca1dedd0db1161547013b5122461b612f304f5521f03db742fe95",
+        "6ae800526f737a22c5a8fcc9005cd426533c8da9cf6a3b4573744fc2453e5051",
+        "4dd0598f4943aa2193cd47d8e85a7df23cddcf2702666c4b03dfbcc141a9f9c5",
+        "afeff4377f19ce7049f23959f3b006cff9a2b5a7c9349ffb8a9c7ed84bcfddda"
+      ]
+    },
+    {
+      "style": "clear",
+      "install_and_reinstall": "passed",
+      "reused_prior_install_reinstall": false,
+      "files": 12728,
+      "seconds": 74.5
+    },
+    {
+      "edition": "MacTahoe",
+      "style": "clear",
+      "mode": "light",
+      "theme": "MacTahoeLiquidKde-Icons-Clear-Light",
+      "rendered_icon_hashes": [
+        "6be522175f648217b43e60e69715fa3d0886d42bac2fd1aac28e617e4057100d",
+        "8e5fa9c54e3556985003d8c6245f439ef5ce7048fc85059936c27c67f003ba7f",
+        "61a9d567c85c664dee04d0ce8ebdb07b988f925ef22fdbd822d273f56ad5068c",
+        "6f9d9ba62fafeaef9a8b61a17e8dd05314531ccf13d6c39a61f541cb7b08b081"
+      ]
+    },
+    {
+      "edition": "MacTahoe",
+      "style": "clear",
+      "mode": "dark",
+      "theme": "MacTahoeLiquidKde-Icons-Clear-Dark",
+      "rendered_icon_hashes": [
+        "b4c4be443987d3a181bcf3e8148103f2069507602146f927378ab3b0fa12ba87",
+        "1fc45b13444f8ee322032120863366936d25cb08a2f74b1b1806479f956bb64c",
+        "22039ee60faf7a87e1d392ccb4284e494f1c3b8cd3eaa0e46a789549d43db2e4",
+        "3a19cc47c113d047e285089cf15009e55b5bb59bb067f6575a4b77c3d97922f2"
+      ]
+    },
+    {
+      "edition": "MacTahoe",
+      "style": "clear",
+      "mode": "light",
+      "theme": "MacTahoeLiquidKde-Icons-Clear-Light",
+      "rendered_icon_hashes": [
+        "6be522175f648217b43e60e69715fa3d0886d42bac2fd1aac28e617e4057100d",
+        "8e5fa9c54e3556985003d8c6245f439ef5ce7048fc85059936c27c67f003ba7f",
+        "61a9d567c85c664dee04d0ce8ebdb07b988f925ef22fdbd822d273f56ad5068c",
+        "6f9d9ba62fafeaef9a8b61a17e8dd05314531ccf13d6c39a61f541cb7b08b081"
+      ]
+    },
+    {
+      "edition": "MacGoldenGate",
+      "style": "clear",
+      "mode": "light",
+      "theme": "MacTahoeLiquidKde-Icons-Clear-Light",
+      "rendered_icon_hashes": [
+        "6be522175f648217b43e60e69715fa3d0886d42bac2fd1aac28e617e4057100d",
+        "8e5fa9c54e3556985003d8c6245f439ef5ce7048fc85059936c27c67f003ba7f",
+        "61a9d567c85c664dee04d0ce8ebdb07b988f925ef22fdbd822d273f56ad5068c",
+        "6f9d9ba62fafeaef9a8b61a17e8dd05314531ccf13d6c39a61f541cb7b08b081"
+      ]
+    },
+    {
+      "edition": "MacGoldenGate",
+      "style": "clear",
+      "mode": "dark",
+      "theme": "MacTahoeLiquidKde-Icons-Clear-Dark",
+      "rendered_icon_hashes": [
+        "b4c4be443987d3a181bcf3e8148103f2069507602146f927378ab3b0fa12ba87",
+        "1fc45b13444f8ee322032120863366936d25cb08a2f74b1b1806479f956bb64c",
+        "22039ee60faf7a87e1d392ccb4284e494f1c3b8cd3eaa0e46a789549d43db2e4",
+        "3a19cc47c113d047e285089cf15009e55b5bb59bb067f6575a4b77c3d97922f2"
+      ]
+    },
+    {
+      "edition": "MacGoldenGate",
+      "style": "clear",
+      "mode": "light",
+      "theme": "MacTahoeLiquidKde-Icons-Clear-Light",
+      "rendered_icon_hashes": [
+        "6be522175f648217b43e60e69715fa3d0886d42bac2fd1aac28e617e4057100d",
+        "8e5fa9c54e3556985003d8c6245f439ef5ce7048fc85059936c27c67f003ba7f",
+        "61a9d567c85c664dee04d0ce8ebdb07b988f925ef22fdbd822d273f56ad5068c",
+        "6f9d9ba62fafeaef9a8b61a17e8dd05314531ccf13d6c39a61f541cb7b08b081"
+      ]
+    }
+  ],
+  "qualification": "passed; initial transition probe lacked color schemes, installed the real color-schemes prerequisite and passed. Dark install/reinstall evidence reused from the preceding run.",
+  "command": "python3 /tmp/installer-release-qualification/capture.py; real steps.icons.install and theme_switch.write_kde_theme_config in disposable Plasma VM",
+  "limits": "Selected icon component install/reinstall and Qt icon rendering only. No full desktop lifecycle, scheduler boundary, GTK continuity, native build or distro matrix."
+}

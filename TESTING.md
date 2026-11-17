@@ -1,8 +1,8 @@
 # Installer testing
 
-Tahoe **v0.72.17** preserves custom GTK files during uninstall, tolerates corrupt clipboard shortcut state and reports failed history deletion. Focused regressions and paired component install/reinstall/uninstall checks passed in a disposable Plasma VM. [Evidence and coverage limits](.github/LIFECYCLE-AUDIT-0.72.17.md). Full remote CI runs asynchronously.
+Tahoe **v0.72.18** uses macOS-style Weather icon selectors, a grouped color row and bundled SF Pro throughout the installer. Focused wizard checks and 88 edition/mode/page font checks passed in a disposable Plasma VM. [Font evidence and coverage limits](docs/evidence/installer-fonts.json). Dark/Clear component install/reinstall and installed Qt icon transitions also passed ([evidence](docs/evidence/installer-icons-installed.json)). Full remote CI runs asynchronously.
 
-See [reviewed Dock captures](src/screenshots/previews/tahoe-icon-layers-provenance.json). Installer photographs retain their original [provenance](src/screenshots/release-capture.json).
+Approved installer previews: [Light](src/screenshots/previews/installer-tahoe-light-icons-805970eab6b7.png) · [Dark](src/screenshots/previews/installer-tahoe-dark-icons-dbc66adc81c4.png). The gallery below is historical and predates these installer changes; its original [provenance](src/screenshots/release-capture.json) is retained.
 
 ## Installation steps
 
