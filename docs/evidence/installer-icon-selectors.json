@@ -1,0 +1,59 @@
+{
+  "status": "candidate awaiting visual approval; not released",
+  "source_commit": "a802223a1438ab76938b5ff8100bee622f298c05",
+  "source_tree": "7c90e55cf53ab302fa8b115314c51984b4981009",
+  "checks": [
+    {
+      "command": "python3 -m pytest tests/test_installer_wizard.py tests/test_icons_step.py -q",
+      "result": "40 passed before thumbnail refinement; unchanged icon install code reused"
+    },
+    {
+      "command": "python3 -m pytest tests/test_installer_wizard.py -k installed_switcher tests/test_icon_toolset.py -k 'installed_switcher or installer_' -q",
+      "result": "54 passed, 42 deselected"
+    },
+    {
+      "command": "python3 -m pytest tests/test_installer_wizard.py -q",
+      "result": "47 passed on final UI"
+    },
+    {
+      "command": "git diff --check",
+      "result": "passed"
+    }
+  ],
+  "vm": {
+    "image": "/mnt/DISK_0/mttkde-release-v061/neon-base-v2.qcow2",
+    "sha256": "2a09de13ad568da01a8e16dd93e6aec120e63375bfc0ec24b4e804b43ecb4f8c",
+    "capture_command": "python3 /tmp/installer-selector-preview/capture.py",
+    "scope": "Native PyQt6 wizard, isolated QEMU guest, Xwayland. Separate source defaults for Tahoe and Golden Gate; light/dark wizard palettes; blue/red tint previews. Focus and no-overflow assertions passed. Six frames reviewed.",
+    "limitation": "This older disposable guest is not the current pinned full-release reference VM. No install, live system appearance transition or SDK build qualification was performed."
+  },
+  "reference": "https://macmost.com/customizing-your-mac-with-icon-widget-styles.html",
+  "frames": {
+    "golden-gate-dark-red": {
+      "file": "/tmp/installer-selector-preview/golden-gate-dark-red-cead00e2f26b.png",
+      "sha256": "cead00e2f26b1e4d8d6928758f3e812cc6faf81ef117a98bd428711e47ddde32"
+    },
+    "golden-gate-dark": {
+      "file": "/tmp/installer-selector-preview/golden-gate-dark-f3ad3f6c241e.png",
+      "sha256": "f3ad3f6c241e56d0a5024c9454e0e60435753993b50d41900d8fa7700d8c3d60"
+    },
+    "golden-gate-light-red": {
+      "file": "/tmp/installer-selector-preview/golden-gate-light-red-4483d60b3b7a.png",
+      "sha256": "4483d60b3b7a88fc67455e690925e198e5b6cb2d4951c9f1e59ac7fe21a714ad"
+    },
+    "golden-gate-light": {
+      "file": "/tmp/installer-selector-preview/golden-gate-light-b5d136149ca8.png",
+      "sha256": "b5d136149ca87a3af68c2bbbd8cc3176037b0fe3d489bb4ebf02c4e1395442fc"
+    },
+    "tahoe-dark": {
+      "file": "/tmp/installer-selector-preview/tahoe-dark-5081395661c9.png",
+      "sha256": "5081395661c9dda6470433f273ba85ca2f98c581c8653482d394e4ec94df67b2"
+    },
+    "tahoe-light": {
+      "file": "/tmp/installer-selector-preview/tahoe-light-b8fdcf37af21.png",
+      "sha256": "b8fdcf37af215840d480e39d9f0f969c004113ce365893477affc18871f16198"
+    }
+  },
+  "ci": "not submitted for this isolated candidate",
+  "release": "no version or pin changes, no tags, no publication"
+}
