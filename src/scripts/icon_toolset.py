@@ -72,7 +72,7 @@ def installer_themes(source: Path, output: Path, style: str, tint: str, *,
     Application aliases share artwork; interface icons inherit the base pack.
     """
     from utils import check_cancelled
-    if style not in ("regular", "glass"):
+    if style not in ("regular", "dark", "clear", "glass"):
         raise ValueError("Unknown installer icon style")
     if isinstance(workers, bool) or not isinstance(workers, int) or not 1 <= workers <= 32:
         raise ValueError("Icon jobs must be between 1 and 32")
@@ -104,7 +104,7 @@ def installer_themes(source: Path, output: Path, style: str, tint: str, *,
     # Include both in the glass overlay so the bin follows the selected tint
     # and mode just like the application and Apps icons. Symbolic UI stays in
     # the inherited base theme.
-    if style == "glass":
+    if style in ("glass", "clear"):
         for name in ("user-trash", "user-trash-full"):
             path = source / BASE / "places/scalable" / (name + ".svg")
             if path.is_file():
@@ -121,9 +121,10 @@ def installer_themes(source: Path, output: Path, style: str, tint: str, *,
 
     def generate(path, checksum):
         check_cancelled()
-        prepared = prepare_source(path, 512, clean_rim=style == "regular")
+        prepared = prepare_source(path, 512, clean_rim=style in ("regular", "dark"))
         for name, mode in zip(names, ("light", "dark")):
-            result = render_installer(prepared, style, mode, rgb, material)
+            result = render_installer(prepared, "regular" if style == "dark" else style,
+                                      "dark" if style == "dark" else mode, rgb, material)
             result.resize((256, 256), Image.Resampling.LANCZOS).save(
                 output / name / "apps/256" / (path.stem + ".png"))
 
@@ -482,7 +483,7 @@ def main(argv=None) -> int:
     installer_parser = commands.add_parser("installer-build", help="Generate the exact installer materials offline")
     installer_parser.add_argument("--source", type=Path, default=ROOT / "src/offline/icons" / (BASE + ".tar.zst"))
     installer_parser.add_argument("--output", type=Path, required=True)
-    installer_parser.add_argument("--style", choices=("regular", "glass"), default="glass")
+    installer_parser.add_argument("--style", choices=("regular", "dark", "clear", "glass"), default="glass")
     installer_parser.add_argument("--tint", default="#007aff")
     installer_parser.add_argument("--material", type=Path, help="JSON glass parameter overrides; values recorded in generation.json")
     installer_parser.add_argument("--jobs", type=int, default=4, help="Concurrent unique artworks (1-32); output is schedule-independent")

@@ -24,7 +24,7 @@ _THEME_NAMES = (
 )
 _OVERLAY_NAMES = {
     f"MacTahoeLiquidKde-Icons-{style}-{mode}"
-    for style in ("Regular", "Glass") for mode in ("Light", "Dark")
+    for style in ("Regular", "Dark", "Clear", "Glass") for mode in ("Light", "Dark")
 }
 
 # Subdirs _assemble() cherry-picks from upstream into the default theme.

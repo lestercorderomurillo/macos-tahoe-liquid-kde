@@ -16,7 +16,7 @@ ENUMS = {
     "appearance": ("auto", "light", "dark"),
     "dock_appearance": ("auto", "keep", "macos", "native"),
     "dock_apps_source": ("native", "flatpak"),
-    "icons": ("regular", "glass", "keep"),
+    "icons": ("regular", "dark", "clear", "glass", "keep"),
     "color": tuple(COLORS),
     "wallpaper": ("tahoe", "golden", "landscape", "sonoma", "prism", "macos", "keep", "custom"),
     "launcher": ("tahoe", "golden"),

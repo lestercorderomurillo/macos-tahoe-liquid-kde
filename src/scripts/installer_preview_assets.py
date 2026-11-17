@@ -51,7 +51,44 @@ def build(output):
     (output / "sources.json").write_text(json.dumps(records, indent=2) + "\n")
 
 
+def build_selectors(output):
+    """Render Weather selectors from original bundled layers, without new artwork."""
+    output.mkdir(parents=True, exist_ok=True)
+    manifest = output / "sources.json"
+    records = json.loads(manifest.read_text()) if manifest.exists() else {}
+    source = ROOT / "src/offline/icons/MacTahoeLiquidKde-Icons.tar.zst"
+    with tempfile.TemporaryDirectory(prefix="weather-selectors-") as temporary:
+        extracted = Path(temporary) / "source"
+        unpack(source, extracted)
+        icon = extracted / BASE / "apps/scalable/indicator-weather.svg"
+        prepared = prepare_source(icon, 512)
+        for style in ("regular", "dark", "clear", "glass"):
+            for mode in ("light", "dark"):
+                for color in (COLORS if style == "glass" else ("neutral",)):
+                    tint = COLORS.get(color, "#8e8e93")
+                    rgb = tuple(int(tint[i:i+2], 16) for i in (1, 3, 5))
+                    image = render_installer(prepared, "regular" if style == "dark" else style,
+                                             "dark" if style == "dark" else mode, rgb)
+                    key = f"weather-{style}-{mode}-{color}.png"
+                    target = output / key
+                    image.resize((192, 192), Image.Resampling.LANCZOS).save(target)
+                    checksum = digest(target)
+                    filename = target.stem + "-" + checksum[:12] + ".png"
+                    target.rename(output / filename)
+                    previous = records.get(key, {}).get("file")
+                    if previous and previous != filename:
+                        (output / previous).unlink(missing_ok=True)
+                    records[key] = dict(file=filename, sha256=checksum,
+                        source="src/offline/icons/MacTahoeLiquidKde-Icons.tar.zst",
+                        source_sha256=digest(source), artwork_sha256=digest(icon),
+                        sample="indicator-weather", style=style, mode=mode, tint=tint,
+                        generator="src/scripts/installer_preview_assets.py", kind="generated-icon-preview")
+    manifest.write_text(json.dumps(records, indent=2) + "\n")
+
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("output", type=Path)
-    build(parser.parse_args().output)
+    parser.add_argument("--selectors-only", action="store_true")
+    args = parser.parse_args()
+    (build_selectors if args.selectors_only else build)(args.output)

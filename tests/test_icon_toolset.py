@@ -548,3 +548,26 @@ def test_variants_preserve_original_geometry_including_unplated_icons(tmp_path):
                 else:
                     assert coverage.getbbox() == alpha.getbbox(), (name, variant)
             assert render(source, "tinted-light", tint).tobytes() != render(source, "tinted-dark", tint).tobytes()
+
+
+@pytest.mark.parametrize("style", ["dark", "clear"])
+def test_installer_selector_styles_generate_matching_overlays(source, tmp_path, style):
+    from icon_toolset import installer_themes
+    staging = tmp_path / "source"
+    unpack(source, staging)
+    blue, red = tmp_path / "blue", tmp_path / "red"
+    names = installer_themes(staging, blue, style, "#007aff")
+    installer_themes(staging, red, style, "#ff3b30")
+    images = []
+    for name in names:
+        icon = blue / name / "apps/256/demo.png"
+        assert digest(icon) == digest(red / name / "apps/256/demo.png")
+        assert (blue / name / "apps/256/org.example.Demo.png").resolve() == icon
+        image = Image.open(icon).convert("RGBA")
+        assert image.getpixel((0, 0))[3] == 0
+        images.append(image.tobytes())
+    if style == "dark":
+        assert images[0] == images[1]  # Dark remains dark in a light desktop.
+    else:
+        assert images[0] != images[1]  # Clear follows the desktop appearance.
+        assert 0 < Image.open(blue / names[0] / "apps/256/demo.png").getpixel((128, 36))[3] < 255

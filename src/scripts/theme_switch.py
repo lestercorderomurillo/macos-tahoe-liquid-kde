@@ -1481,8 +1481,8 @@ def write_kde_theme_config(
     # not fight our 06:00 / 18:00 timer (idempotent).
     if INSTALLER_OPTIONS.get("icons") == "keep":
         icon = INSTALLER_OPTIONS.get("preserved_icon", icon)
-    elif INSTALLER_OPTIONS.get("icons") in ("regular", "glass"):
-        style = "Glass" if INSTALLER_OPTIONS["icons"] == "glass" else "Regular"
+    elif INSTALLER_OPTIONS.get("icons") in ("regular", "dark", "clear", "glass"):
+        style = INSTALLER_OPTIONS["icons"].capitalize()
         icon = f"MacTahoeLiquidKde-Icons-{style}-{'Dark' if mode == 'dark' else 'Light'}"
     fixed = (
         ("kdeglobals", "KDE", "LookAndFeelPackage", laf),

@@ -980,33 +980,19 @@ class InstallerWindow(OpaqueSurface):
             ("dark", "Dark", "", picture(stem+"dark.jpg", 232, 131)),
         ], columns=3)
 
-    def icon_sample(self, glass=False):
-        pixmap = QPixmap(724, 220); pixmap.fill(QColor("#edf0f3"))
-        painter = QPainter(pixmap); painter.scale(2, 2)
-        if glass:
-            stage = QLinearGradient(0, 0, 362, 110)
-            stage.setColorAt(0, QColor("#e9edf2")); stage.setColorAt(.65, QColor("#d5e0eb")); stage.setColorAt(1, QColor("#f4f6f8"))
-            painter.fillRect(0, 0, 362, 110, stage)
-            for i in range(4):
-                icon = picture(f"glass-{self.mode}-{self.choices['color']}-{i}.png", 55, 55)
-                painter.drawPixmap(55+i*65, 27, icon)
-        else:
-            painter.fillRect(181, 0, 181, 110, QColor("#333a45"))
-            for side, mode in enumerate(("light", "dark")):
-                painter.setFont(relative_font(self, .71))
-                painter.setPen(QColor("#686868" if side == 0 else "#d8dce3"))
-                painter.drawText(QRectF(side*181, 9, 181, 15), Qt.AlignmentFlag.AlignCenter,
-                                 self.t("Light" if mode == "light" else "Dark"))
-                for i in range(8):
-                    painter.drawPixmap(side*181+17+(i%4)*39, 29+(i//4)*35,
-                                       picture(f"regular-{mode}-{i}.png", 32, 32))
-        painter.end(); pixmap.setDevicePixelRatio(2); return pixmap
+    def icon_sample(self, glass=False, *, style=None):
+        style = style or ("glass" if glass else "regular")
+        mode = "dark" if style == "dark" else self.mode
+        color = self.choices["color"] if style == "glass" else "neutral"
+        return picture(f"weather-{style}-{mode}-{color}.png", 96, 96)
 
     def page_icons(self):
         group = self.cards("icons", [
-            ("regular", "Regular", "Light and dark, following your appearance.", self.icon_sample()),
-            ("glass", "Glass", "Translucent, with your chosen color.", self.icon_sample(True)),
-        ])
+            ("regular", "Default", "", self.icon_sample()),
+            ("dark", "Dark", "", self.icon_sample(style="dark")),
+            ("clear", "Clear", "", self.icon_sample(style="clear")),
+            ("glass", "Tinted", "", self.icon_sample(True)),
+        ], columns=4, compact=True)
         keep = ChoiceCard(self.t("Keep my icons"), "", None, self.choices["icons"] == "keep", self.content, compact=True)
         keep.setObjectName("choice-icons-keep")
         group.addButton(keep)
@@ -1373,8 +1359,8 @@ class InstallerWindow(OpaqueSurface):
         grid.setHorizontalSpacing(24)
         grid.setVerticalSpacing(0)
         c = self.choices
-        names = {"auto": "Automatic", "light": "Light", "dark": "Dark", "regular": "Regular",
-                 "glass": "Glass", "keep": "Keep", "golden": "Golden Gate", "tahoe": "Tahoe",
+        names = {"auto": "Automatic", "light": "Light", "dark": "Dark",
+                 "glass": "Tinted", "regular": "Default", "clear": "Clear", "keep": "Keep", "golden": "Golden Gate", "tahoe": "Tahoe",
                  "landscape": "Landscape", "sonoma": "Sonoma", "macos": "Monterey", "custom": "Custom file",
                  "nautilus": "Nautilus", "dolphin": "Dolphin",
                  "classic": "Tahoe (Clear)", "tinted": "Tahoe (Frosted)",

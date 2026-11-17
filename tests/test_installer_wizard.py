@@ -175,12 +175,13 @@ def test_layout_uses_explicit_launcher_and_independent_panels(monkeypatch, tmp_p
 
 
 @pytest.mark.parametrize("pack", ["landscape", "prism", "macos"])
-def test_installed_switcher_uses_selected_wallpaper_pair_and_icon_mode(monkeypatch, tmp_path, pack):
+@pytest.mark.parametrize("style", ["regular", "dark", "clear", "glass"])
+def test_installed_switcher_uses_selected_wallpaper_pair_and_icon_mode(monkeypatch, tmp_path, pack, style):
     import theme_switch as switch
     monkeypatch.setenv("XDG_DATA_HOME", str(tmp_path))
     for name in set(choices.WALLPAPERS[pack]):
         (tmp_path / "wallpapers" / name).mkdir(parents=True)
-    monkeypatch.setattr(switch, "INSTALLER_OPTIONS", choices.defaults() | {"wallpaper": pack, "icons": "glass"})
+    monkeypatch.setattr(switch, "INSTALLER_OPTIONS", choices.defaults() | {"wallpaper": pack, "icons": style})
     assert switch._wallpaper_path("light").name == choices.WALLPAPERS[pack][0]
     assert switch._wallpaper_path("dark").name == choices.WALLPAPERS[pack][1]
     writes = []
@@ -188,10 +189,10 @@ def test_installed_switcher_uses_selected_wallpaper_pair_and_icon_mode(monkeypat
     monkeypatch.setattr(switch, "_kwrite", lambda *args: writes.append(args) or True)
     monkeypatch.setattr(switch, "apply_color_scheme", lambda _: True)
     assert switch.write_kde_theme_config("dark")
-    assert any(args[-1] == "MacTahoeLiquidKde-Icons-Glass-Dark" for args in writes)
+    assert any(args[-1] == f"MacTahoeLiquidKde-Icons-{style.capitalize()}-Dark" for args in writes)
     writes.clear()
     assert switch.write_kde_theme_config("light")
-    assert any(args[-1] == "MacTahoeLiquidKde-Icons-Glass-Light" for args in writes)
+    assert any(args[-1] == f"MacTahoeLiquidKde-Icons-{style.capitalize()}-Light" for args in writes)
 
 
 @pytest.mark.parametrize("edition", ["MacTahoe", "MacGoldenGate"])
