@@ -1,0 +1,584 @@
+{
+  "status": "candidate awaiting visual approval; not released",
+  "source_commit": "9ff2d9a492ab63643f40816db754c64f5f85eea7",
+  "scope": "Process-local bundled SF Pro Text for installer controls and logs, SF Pro Display for headings. Regular/Medium/Semibold/Bold faces registered once per QApplication. Desktop text sizing and original-font specimen retained. No host font installation.",
+  "checks": [
+    {
+      "command": "python3 -m pytest tests/test_installer_wizard.py -q",
+      "result": "47 passed; actual font-family checks on page labels/buttons, existing navigation, typography scaling, translation and stable log font regressions"
+    },
+    {
+      "command": "git diff --check",
+      "result": "passed"
+    }
+  ],
+  "vm": {
+    "command": "python3 /tmp/installer-font-preview/capture.py",
+    "image_sha256": "2a09de13ad568da01a8e16dd93e6aec120e63375bfc0ec24b4e804b43ecb4f8c",
+    "environment": "Disposable QEMU Neon guest, native PyQt6 under Xwayland",
+    "checks": [
+      [
+        "tahoe",
+        "light",
+        "welcome",
+        "SF Pro resolved"
+      ],
+      [
+        "tahoe",
+        "light",
+        "appearance",
+        "SF Pro resolved"
+      ],
+      [
+        "tahoe",
+        "light",
+        "icons",
+        "SF Pro resolved"
+      ],
+      [
+        "tahoe",
+        "light",
+        "wallpaper",
+        "SF Pro resolved"
+      ],
+      [
+        "tahoe",
+        "light",
+        "launcher",
+        "SF Pro resolved"
+      ],
+      [
+        "tahoe",
+        "light",
+        "layout",
+        "SF Pro resolved"
+      ],
+      [
+        "tahoe",
+        "light",
+        "effects",
+        "SF Pro resolved"
+      ],
+      [
+        "tahoe",
+        "light",
+        "window_controls",
+        "SF Pro resolved"
+      ],
+      [
+        "tahoe",
+        "light",
+        "button_position",
+        "SF Pro resolved"
+      ],
+      [
+        "tahoe",
+        "light",
+        "shadows",
+        "SF Pro resolved"
+      ],
+      [
+        "tahoe",
+        "light",
+        "fonts",
+        "SF Pro resolved"
+      ],
+      [
+        "tahoe",
+        "light",
+        "firefox",
+        "SF Pro resolved"
+      ],
+      [
+        "tahoe",
+        "light",
+        "files",
+        "SF Pro resolved"
+      ],
+      [
+        "tahoe",
+        "light",
+        "glass_style",
+        "SF Pro resolved"
+      ],
+      [
+        "tahoe",
+        "light",
+        "boot",
+        "SF Pro resolved"
+      ],
+      [
+        "tahoe",
+        "light",
+        "clipboard",
+        "SF Pro resolved"
+      ],
+      [
+        "tahoe",
+        "light",
+        "oled",
+        "SF Pro resolved"
+      ],
+      [
+        "tahoe",
+        "light",
+        "summary",
+        "SF Pro resolved"
+      ],
+      [
+        "tahoe",
+        "light",
+        "uninstall",
+        "SF Pro resolved"
+      ],
+      [
+        "tahoe",
+        "light",
+        "progress",
+        "SF Pro resolved"
+      ],
+      [
+        "tahoe",
+        "light",
+        "done",
+        "SF Pro resolved"
+      ],
+      [
+        "tahoe",
+        "light",
+        "error",
+        "SF Pro resolved"
+      ],
+      [
+        "tahoe",
+        "dark",
+        "welcome",
+        "SF Pro resolved"
+      ],
+      [
+        "tahoe",
+        "dark",
+        "appearance",
+        "SF Pro resolved"
+      ],
+      [
+        "tahoe",
+        "dark",
+        "icons",
+        "SF Pro resolved"
+      ],
+      [
+        "tahoe",
+        "dark",
+        "wallpaper",
+        "SF Pro resolved"
+      ],
+      [
+        "tahoe",
+        "dark",
+        "launcher",
+        "SF Pro resolved"
+      ],
+      [
+        "tahoe",
+        "dark",
+        "layout",
+        "SF Pro resolved"
+      ],
+      [
+        "tahoe",
+        "dark",
+        "effects",
+        "SF Pro resolved"
+      ],
+      [
+        "tahoe",
+        "dark",
+        "window_controls",
+        "SF Pro resolved"
+      ],
+      [
+        "tahoe",
+        "dark",
+        "button_position",
+        "SF Pro resolved"
+      ],
+      [
+        "tahoe",
+        "dark",
+        "shadows",
+        "SF Pro resolved"
+      ],
+      [
+        "tahoe",
+        "dark",
+        "fonts",
+        "SF Pro resolved"
+      ],
+      [
+        "tahoe",
+        "dark",
+        "firefox",
+        "SF Pro resolved"
+      ],
+      [
+        "tahoe",
+        "dark",
+        "files",
+        "SF Pro resolved"
+      ],
+      [
+        "tahoe",
+        "dark",
+        "glass_style",
+        "SF Pro resolved"
+      ],
+      [
+        "tahoe",
+        "dark",
+        "boot",
+        "SF Pro resolved"
+      ],
+      [
+        "tahoe",
+        "dark",
+        "clipboard",
+        "SF Pro resolved"
+      ],
+      [
+        "tahoe",
+        "dark",
+        "oled",
+        "SF Pro resolved"
+      ],
+      [
+        "tahoe",
+        "dark",
+        "summary",
+        "SF Pro resolved"
+      ],
+      [
+        "tahoe",
+        "dark",
+        "uninstall",
+        "SF Pro resolved"
+      ],
+      [
+        "tahoe",
+        "dark",
+        "progress",
+        "SF Pro resolved"
+      ],
+      [
+        "tahoe",
+        "dark",
+        "done",
+        "SF Pro resolved"
+      ],
+      [
+        "tahoe",
+        "dark",
+        "error",
+        "SF Pro resolved"
+      ],
+      [
+        "golden-gate",
+        "light",
+        "welcome",
+        "SF Pro resolved"
+      ],
+      [
+        "golden-gate",
+        "light",
+        "appearance",
+        "SF Pro resolved"
+      ],
+      [
+        "golden-gate",
+        "light",
+        "icons",
+        "SF Pro resolved"
+      ],
+      [
+        "golden-gate",
+        "light",
+        "wallpaper",
+        "SF Pro resolved"
+      ],
+      [
+        "golden-gate",
+        "light",
+        "launcher",
+        "SF Pro resolved"
+      ],
+      [
+        "golden-gate",
+        "light",
+        "layout",
+        "SF Pro resolved"
+      ],
+      [
+        "golden-gate",
+        "light",
+        "effects",
+        "SF Pro resolved"
+      ],
+      [
+        "golden-gate",
+        "light",
+        "window_controls",
+        "SF Pro resolved"
+      ],
+      [
+        "golden-gate",
+        "light",
+        "button_position",
+        "SF Pro resolved"
+      ],
+      [
+        "golden-gate",
+        "light",
+        "shadows",
+        "SF Pro resolved"
+      ],
+      [
+        "golden-gate",
+        "light",
+        "fonts",
+        "SF Pro resolved"
+      ],
+      [
+        "golden-gate",
+        "light",
+        "firefox",
+        "SF Pro resolved"
+      ],
+      [
+        "golden-gate",
+        "light",
+        "files",
+        "SF Pro resolved"
+      ],
+      [
+        "golden-gate",
+        "light",
+        "glass_style",
+        "SF Pro resolved"
+      ],
+      [
+        "golden-gate",
+        "light",
+        "boot",
+        "SF Pro resolved"
+      ],
+      [
+        "golden-gate",
+        "light",
+        "clipboard",
+        "SF Pro resolved"
+      ],
+      [
+        "golden-gate",
+        "light",
+        "oled",
+        "SF Pro resolved"
+      ],
+      [
+        "golden-gate",
+        "light",
+        "summary",
+        "SF Pro resolved"
+      ],
+      [
+        "golden-gate",
+        "light",
+        "uninstall",
+        "SF Pro resolved"
+      ],
+      [
+        "golden-gate",
+        "light",
+        "progress",
+        "SF Pro resolved"
+      ],
+      [
+        "golden-gate",
+        "light",
+        "done",
+        "SF Pro resolved"
+      ],
+      [
+        "golden-gate",
+        "light",
+        "error",
+        "SF Pro resolved"
+      ],
+      [
+        "golden-gate",
+        "dark",
+        "welcome",
+        "SF Pro resolved"
+      ],
+      [
+        "golden-gate",
+        "dark",
+        "appearance",
+        "SF Pro resolved"
+      ],
+      [
+        "golden-gate",
+        "dark",
+        "icons",
+        "SF Pro resolved"
+      ],
+      [
+        "golden-gate",
+        "dark",
+        "wallpaper",
+        "SF Pro resolved"
+      ],
+      [
+        "golden-gate",
+        "dark",
+        "launcher",
+        "SF Pro resolved"
+      ],
+      [
+        "golden-gate",
+        "dark",
+        "layout",
+        "SF Pro resolved"
+      ],
+      [
+        "golden-gate",
+        "dark",
+        "effects",
+        "SF Pro resolved"
+      ],
+      [
+        "golden-gate",
+        "dark",
+        "window_controls",
+        "SF Pro resolved"
+      ],
+      [
+        "golden-gate",
+        "dark",
+        "button_position",
+        "SF Pro resolved"
+      ],
+      [
+        "golden-gate",
+        "dark",
+        "shadows",
+        "SF Pro resolved"
+      ],
+      [
+        "golden-gate",
+        "dark",
+        "fonts",
+        "SF Pro resolved"
+      ],
+      [
+        "golden-gate",
+        "dark",
+        "firefox",
+        "SF Pro resolved"
+      ],
+      [
+        "golden-gate",
+        "dark",
+        "files",
+        "SF Pro resolved"
+      ],
+      [
+        "golden-gate",
+        "dark",
+        "glass_style",
+        "SF Pro resolved"
+      ],
+      [
+        "golden-gate",
+        "dark",
+        "boot",
+        "SF Pro resolved"
+      ],
+      [
+        "golden-gate",
+        "dark",
+        "clipboard",
+        "SF Pro resolved"
+      ],
+      [
+        "golden-gate",
+        "dark",
+        "oled",
+        "SF Pro resolved"
+      ],
+      [
+        "golden-gate",
+        "dark",
+        "summary",
+        "SF Pro resolved"
+      ],
+      [
+        "golden-gate",
+        "dark",
+        "uninstall",
+        "SF Pro resolved"
+      ],
+      [
+        "golden-gate",
+        "dark",
+        "progress",
+        "SF Pro resolved"
+      ],
+      [
+        "golden-gate",
+        "dark",
+        "done",
+        "SF Pro resolved"
+      ],
+      [
+        "golden-gate",
+        "dark",
+        "error",
+        "SF Pro resolved"
+      ]
+    ],
+    "result": "88 edition/mode/page checks passed. Seven focused screenshots reviewed; capture frames focused with no vertical overflow.",
+    "limitations": "Older disposable VM, not the pinned full-release image. No installation performed. Existing icon candidate install/transition qualification remains pending."
+  },
+  "frames": {
+    "golden-gate-dark-icons": {
+      "file": "/tmp/installer-font-preview/golden-gate-dark-icons-42546edab93e.png",
+      "sha256": "42546edab93e75a8ea8b21f7f25483aeb24a942f3676984bceef37f7e674e421"
+    },
+    "golden-gate-dark-progress": {
+      "file": "/tmp/installer-font-preview/golden-gate-dark-progress-144f0095011c.png",
+      "sha256": "144f0095011cf26969efb018300685b5c77b15ac0724ee8b03373f6b9dffe8d0"
+    },
+    "golden-gate-dark-summary": {
+      "file": "/tmp/installer-font-preview/golden-gate-dark-summary-d270482045cb.png",
+      "sha256": "d270482045cb8a1183e3fe2b5a59cb11f25334e000d2b0a4f3fa6381702ce283"
+    },
+    "golden-gate-light-icons": {
+      "file": "/tmp/installer-font-preview/golden-gate-light-icons-03fa4b14b92f.png",
+      "sha256": "03fa4b14b92fc8db4ed566d50137b18265227178a9172f8b4ff81ed1d84c6675"
+    },
+    "tahoe-dark-icons": {
+      "file": "/tmp/installer-font-preview/tahoe-dark-icons-dbc66adc81c4.png",
+      "sha256": "dbc66adc81c4a9a368438eb4607daed2af41134ee25afa3967d1ebe69455fb9a"
+    },
+    "tahoe-light-fonts": {
+      "file": "/tmp/installer-font-preview/tahoe-light-fonts-229167674cd8.png",
+      "sha256": "229167674cd83b463c596cb7c480fcbd5612809b3449f1b7a0ed5f074b7212e4"
+    },
+    "tahoe-light-icons": {
+      "file": "/tmp/installer-font-preview/tahoe-light-icons-805970eab6b7.png",
+      "sha256": "805970eab6b7701dc80413adccebdfdf6f3d20eb34f18ddcda69d300456c08ab"
+    }
+  },
+  "ci": "not submitted",
+  "publication": "No merge, version change, pin update, tags or release."
+}
