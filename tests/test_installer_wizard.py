@@ -452,10 +452,10 @@ photo = window.glass_preview
 regular = window.content.findChild(ChoiceCard, 'choice-icons-regular').photo
 regular_image = regular.pixmap.toImage()
 window.select('color', 'blue')
-before = photo.pixmap.toImage(); before_accent = window.accent_preview.pixmap().toImage()
+before = photo.pixmap.toImage(); before_swatch = window.color_buttons['green'].grab().toImage()
 window.select('color', 'green'); app.processEvents()
 assert photo is window.glass_preview and photo.pixmap.toImage() != before
-assert window.accent_preview.pixmap().toImage() != before_accent
+assert window.color_buttons['green'].grab().toImage() != before_swatch
 assert regular.pixmap.toImage() == regular_image
 assert window.color_buttons['green'].isChecked() and not window.color_buttons['blue'].isChecked()
 window.select('icons', 'glass')

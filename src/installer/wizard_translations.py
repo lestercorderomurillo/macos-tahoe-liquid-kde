@@ -73,6 +73,7 @@ Use the defaults and review before installing.|Usa los valores predeterminados y
 Selections, top bar and Dock.|Selecciones, barra superior y Dock.|选中项、顶栏和程序坞。|Seleções, barra superior e Dock.|Auswahl, obere Leiste und Dock.
 Icons, selections, top bar and Dock.|Iconos, selecciones, barra superior y Dock.|图标、选中项、顶栏和程序坞。|Ícones, seleções, barra superior e Dock.|Symbole, Auswahl, obere Leiste und Dock.
 Everything in its place.|Todo en su lugar.|一切井然有序。|Tudo em seu lugar.|Alles an seinem Platz.
+Theme|Tema|主题|Tema|Design
 Color|Color|颜色|Cor|Farbe
 Background|Fondo|壁纸|Fundo|Hintergrund
 Boot|Arranque|启动|Inicialização|Systemstart

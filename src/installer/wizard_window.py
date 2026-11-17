@@ -143,6 +143,32 @@ def paint_glass_control(widget, painter, *, pressed=False):
         painter.drawRoundedRect(rect, radius, radius)
 
 
+class ColorSwatch(QPushButton):
+    """Native color choice with the separated selection ring used by Appearance."""
+
+    def __init__(self, color, parent=None):
+        super().__init__(parent)
+        self.color = QColor(color)
+        self.setFixedSize(32, 36)
+        self.setCheckable(True)
+        self.setCursor(Qt.CursorShape.PointingHandCursor)
+
+    def paintEvent(self, event):
+        painter = QPainter(self)
+        painter.setRenderHint(QPainter.RenderHint.Antialiasing)
+        circle = QRectF(5, 7, 22, 22)
+        painter.setPen(QPen(QColor(0, 0, 0, 25), .7))
+        painter.setBrush(self.color)
+        painter.drawEllipse(circle)
+        painter.setBrush(Qt.BrushStyle.NoBrush)
+        if self.isChecked():
+            painter.setPen(QPen(QColor("#007aff"), 2))
+            painter.drawEllipse(circle.adjusted(-3, -3, 3, 3))
+        elif self.hasFocus():
+            painter.setPen(QPen(self.palette().text().color(), 1, Qt.PenStyle.DotLine))
+            painter.drawEllipse(circle.adjusted(-3, -3, 3, 3))
+
+
 class GlassButton(QPushButton):
     def focusInEvent(self, event):
         self.keyboard_focus = event.reason() in (
@@ -784,12 +810,8 @@ class InstallerWindow(OpaqueSurface):
                 group.setExclusive(True)
         if self.page == "icons":
             if key == "color":
-                for name, button in self.color_buttons.items():
-                    button.setText("✓" if name == value else "")
                 self.glass_preview.pixmap = self.icon_sample(True)
                 self.glass_preview.update()
-                self.accent_preview.setPixmap(picture(
-                    f"accent-{self.asset_edition}-{self.mode}-{value}.jpg", 236, 133))
         elif self.page == "wallpaper" and key == "wallpaper":
             self.wallpaper_filename.setText(Path(self.choices["wallpaper_path"]).name)
             self.wallpaper_filename.setVisible(value == "custom")
@@ -1007,33 +1029,33 @@ class InstallerWindow(OpaqueSurface):
         self.glass_preview = next(button.photo for button in group.buttons()
                                   if button.objectName() == "choice-icons-glass")
         keep.clicked.connect(lambda: self.select("icons", "keep")); self.body.addWidget(keep)
-        self.separator()
-        row = QHBoxLayout(); controls = QVBoxLayout()
-        title = self.label("Theme color")
+        self.body.addSpacing(8)
+        title = self.label("Theme")
         title.setFont(relative_font(self, .93, QFont.Weight.Bold))
-        controls.addWidget(title)
-        swatches = QHBoxLayout()
-        swatches.setContentsMargins(4, 4, 0, 4)
-        swatches.setSpacing(14)
+        self.body.addWidget(title)
+        panel = QFrame(self.content)
+        panel.setObjectName("themeColorPanel")
+        dark = self.palette().window().color().lightnessF() <= .5
+        panel.setStyleSheet("QFrame#themeColorPanel { background: "
+                            + ("#333333" if dark else "#f0f0f0")
+                            + "; border-radius: 10px; }")
+        row = QHBoxLayout(panel)
+        row.setContentsMargins(14, 8, 12, 8)
+        row.setSpacing(4)
+        row.addWidget(self.label("Color"))
+        row.addStretch()
         self.color_buttons = {}
         for name, color in COLORS.items():
-            button = QPushButton("✓" if self.choices["color"] == name else "")
-            button.setObjectName("color-"+name); button.setAccessibleName(self.t(name.capitalize()))
-            button.setFixedSize(23, 23)
-            button.setCheckable(True)
+            button = ColorSwatch(color, panel)
+            button.setObjectName("color-"+name)
+            button.setAccessibleName(self.t(name.capitalize()))
+            button.setToolTip(self.t(name.capitalize()))
             button.setChecked(self.choices["color"] == name)
-            button.setStyleSheet(f"QPushButton {{ background:{color};color:white;border:1px solid #00000018;"
-                                 "border-radius:11px;padding:0 } QPushButton:checked { border:2px solid #555 }")
             self.bind_choice("color", name, button)
             self.color_buttons[name] = button
             button.clicked.connect(lambda _, value=name: self.select("color", value))
-            swatches.addWidget(button)
-        swatches.addStretch()
-        controls.addLayout(swatches)
-        controls.addStretch(); row.addLayout(controls, 1)
-        self.accent_preview = self.image(f"accent-{self.asset_edition}-{self.mode}-{self.choices['color']}.jpg", 236, 133)
-        row.addWidget(self.accent_preview)
-        self.body.addLayout(row)
+            row.addWidget(button)
+        self.body.addWidget(panel)
 
     @property
     def mode(self):
