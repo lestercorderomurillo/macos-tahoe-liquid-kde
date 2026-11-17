@@ -91,7 +91,13 @@ def test_icon_install_reinstall_uninstall_recolors_staged_batteries(repo, tmp_pa
     icons.install()
     assert battery.read_text() == fixed
     icons.uninstall()
-    assert not list(dest.glob("MacTahoeLiquidKde-Icons*"))
+    # Reinstallation replaces the edited battery but keeps it as the user's
+    # baseline; uninstall restores that edit and removes the untouched theme.
+    assert battery.read_text() == "stale previous install"
+    assert sorted(path.name for path in dest.glob("MacTahoeLiquidKde-Icons*")) == [
+        "MacTahoeLiquidKde-Icons"]
+    icons.uninstall()
+    assert battery.read_text() == "stale previous install"
     assert config.read_text() == choices
 
 

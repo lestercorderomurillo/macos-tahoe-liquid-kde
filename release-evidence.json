@@ -1,31 +1,19 @@
 {
-  "version": "0.73.3",
-  "source_sha256": "505b54c29cd76059438f77663fa7196e4018a1dcd827c484f3b17b506a8f84a7",
-  "scope": "User-approved audit fixes 3, 2 and 1: stop removal after failed Breeze restoration; preserve preexisting or modified fonts, icons and wallpapers through ownership records and recovery copies. Clipboard behavior unchanged.",
-  "environment": "Disposable Plasma 6.8.1 / Qt 6.11.1 VM; final focused tests and selected lifecycle, including prepared Golden Gate source.",
+  "version": "0.73.4",
+  "source_sha256": "ea1b55371b9013107d55c6aa26ad4a439988fb5245ab1c4cf4862e29a2bae19a",
+  "scope": "CI regression repair only: icon reinstall/uninstall test now expects restoration of a backed-up user edit and removal of the untouched theme. Installed implementation and appearance are unchanged from v0.73.3.",
+  "environment": "Host pytest with isolated temporary HOME/XDG directories; no desktop installer or rendering run.",
   "checks": [
     {
-      "command": "python3 -m pytest tests/test_owned_assets.py tests/test_fonts.py tests/test_component_cache.py tests/test_wallpaper_defaults.py tests/test_apply_portability.py tests/test_cli.py -q",
+      "command": "python3 -m pytest tests/test_status_icons.py::test_icon_install_reinstall_uninstall_recolors_staged_batteries tests/test_owned_assets.py -q",
       "result": "passed",
-      "detail": "144 passed in 7.40s inside the VM on final implementation."
-    },
-    {
-      "command": "python3 -m pytest tests/test_owned_assets.py tests/test_fonts.py tests/test_wallpaper_defaults.py -q",
-      "result": "passed",
-      "detail": "26 passed in 3.60s on prepared Golden Gate source inside VM."
-    },
-    {
-      "command": "python3 /tmp/safety-0733-lifecycle.py",
-      "result": "passed",
-      "detail": "VM install/reinstall/uninstall of fonts, icons and wallpapers all exited 0; six personal files preserved/restored, new owned font removed, effective Breeze config and live Next wallpaper verified. Exact guest commands and source hashes in docs/evidence/uninstall-safety-0733.json."
+      "detail": "13 passed in 6.03s. Real bundled icons installed/reinstalled into a temporary destination; edited battery restored on uninstall, untouched dark theme removed, repeated uninstall preserves restored edit."
     }
   ],
   "coverage_limits": [
-    "Selected fonts/icons/wallpapers lifecycle, not a full desktop or distro matrix.",
-    "Breeze effective configuration and live wallpaper selection verified; no new rendering or SDK qualification.",
-    "Unrecorded legacy assets and user-modified installed trees are preserved. Existing originals are backed up and restored; earlier user versions retain recovery metadata.",
-    "Clipboard history behavior unchanged.",
-    "Full remote CI asynchronous; prior v0.73.2 matrix passed."
+    "Test-only correction; installer implementation, component hashes and artwork unchanged from v0.73.3. Prior selected VM lifecycle evidence remains in docs/evidence/uninstall-safety-0733.json.",
+    "The failed v0.73.3 CI run 44138421505 had this single failing test in primary shard 2 and all 11 distro legs; full CI on this correction remains asynchronous.",
+    "Historical reviewed photographs retained with original provenance; no new visual claims."
   ],
   "gallery_commit": "f09780b200b79302e7c23ef9f6f74d94748bbea3",
   "captures": [

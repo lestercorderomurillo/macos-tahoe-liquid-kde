@@ -1,6 +1,6 @@
 # Installer testing
 
-Tahoe **v0.73.3** protects user fonts, icon themes and wallpapers with recorded ownership and recovery copies, and stops payload removal when Breeze restoration fails. In a disposable Plasma 6.8.1 / Qt 6.11.1 VM, 144 focused checks passed plus 26 on the prepared Golden Gate source; selected installation, reinstallation and uninstallation preserved six user fixtures and restored effective Breeze settings and wallpaper selection. [Evidence and coverage limits](docs/evidence/uninstall-safety-0733.json). Full remote CI runs asynchronously; existing photographs retain their original provenance.
+Tahoe **v0.73.4** corrects the icon lifecycle regression test to expect restoration of a backed-up user edit; installed behavior is unchanged from v0.73.3. All 13 focused icon lifecycle and asset ownership checks passed in isolated temporary directories. Prior selected VM lifecycle qualification is retained in the [safety evidence](docs/evidence/uninstall-safety-0733.json); current checks and coverage limits are in [release evidence](release-evidence.json). Full remote CI runs asynchronously; existing photographs retain their original provenance.
 
 Approved installer previews: [Light](src/screenshots/previews/installer-tahoe-light-icons-805970eab6b7.png) · [Dark](src/screenshots/previews/installer-tahoe-dark-icons-dbc66adc81c4.png). The gallery below is historical and predates these installer changes; its original [provenance](src/screenshots/release-capture.json) is retained.
 
