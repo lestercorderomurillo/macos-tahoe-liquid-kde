@@ -1,48 +1,126 @@
 {
-  "version": "0.73.8",
-  "scope": "Vertically center Launcher options labels and antialias the checkmark.",
-  "environment": "Disposable KDE neon Wayland / Plasma 6.8.1 / Qt 6.11.1 / scale 2",
-  "implementation_commit": "45342ce96e19fd6f5393e73015160a1d26708776",
+  "version": "0.73.9",
+  "scope": "Installed notification stacks; canonical Discord label; menu material and shader with notification gradients disabled; subtle About-style black/white card rims; compact exterior title shadow; foreground contrast from actual compositor backdrop without shadows inside cards.",
+  "environment": "Disposable pinned KDE neon Wayland VM, Plasma 6.8.1 / Qt 6.11.1, 3840x2160 at 2x; isolated Arch KWin X11 6.6.5; Fedora SDK 6.7.5.",
+  "implementation_commit": "ca723816012f27f988fff6c4b69c6c3acb3450ec",
   "approval": {
     "date": "2026-11-17",
-    "message": "si men",
-    "preview_sha256": "191355079d7b6464a31b9eb09537188fbc0be17401ad4af381cdfc2eea9ee45f"
+    "message": "bro esta bien, ya release"
   },
   "gallery_commit": "f09780b200b79302e7c23ef9f6f74d94748bbea3",
   "coverage_limits": [
-    "Visual checks ran at 2\u00d7 scale in a disposable KDE neon Wayland VM.",
-    "Visual verification used Wayland. Isolated X11 probes cover launcher behavior without qualifying the compositor's visual output.",
-    "The preexisting Acrylic Glass plugin was built and enabled for the VM comparison. The patch changes only Launcher QML and its component hash."
+    "Focused native notification qualification, not a fresh full desktop/installer gallery.",
+    "The complete remote distro matrix remains enabled and asynchronous.",
+    "The unchanged appearance controller retains its prior full Qt/Kvantum/GTK application-continuity evidence; this run adds actual notification boundary crossing in each edition.",
+    "Foreground uses an 8x8 sample of the blurred backdrop per notification window, not a per-glyph sampler.",
+    "Software scenegraphs use an exterior raised text shadow; compositor-adaptive foreground requires Acrylic Glass."
   ],
-  "details": "docs/evidence/launcher-menu-alignment.json",
+  "details": "docs/evidence/notifications-0739.json",
   "checks": [
     {
-      "command": "QT_QUICK_CONTROLS_STYLE=org.kde.desktop python3 -m pytest -q tests/test_launcher_presets.py -k 'native_launcher_popup_presets and ((MacTahoe and Light and 1) or (MacGoldenGate and Dark and 2))'",
+      "command": "Private D-Bus/offscreen production desktop_controls_probe.py, then combined v0.73.8 integration probe",
       "result": "passed",
-      "detail": "2 passed"
+      "detail": [
+        "three Discord messages become one stack",
+        "latest summary/body and Discord capitalization",
+        "expand/collapse and one sound per arriving ID",
+        "replace permanent notifications without starting an expiry timer",
+        "expanded header leaves individual child expiry and interaction timers in charge",
+        "original member deadlines survive regrouping",
+        "independent applications, retained history, read/expire/clear without resurrection",
+        "real backdrop sample routing and invalid process/geometry/RGB rejection",
+        "WCAG foreground contrast on white, black and gray",
+        "native light/dark/light banner palette and job/action/reply paths",
+        "combined Wi-Fi/battery/Launcher releases preserved"
+      ],
+      "log": "probe-integration-0739.log"
     },
     {
-      "command": "Disposable Plasma VM Launcher's options menu with Acrylic Glass on and off",
+      "command": "CMake native effect and mactahoelauncher builds; controlglassprobe",
       "result": "passed",
-      "detail": "Both editions and both appearance modes. Highlighted label measured centered, check edges antialiased, and the same backdrop softened with Acrylic Glass enabled."
+      "detail": "Arch KWin/libplasma 6.6.5; Fedora KWin 6.7.5/libplasma 6.8.2; neon KWin 6.8.1/Qt 6.11.1.",
+      "logs": [
+        "sdk66.log",
+        "sdk67.log",
+        "native-build-final.log"
+      ]
     },
     {
-      "command": "python3 src/scripts/component_manifest.py",
+      "command": "Isolated Xvfb/KWin X11 production effect notification pixel probe",
+      "result": "passed",
+      "detail": "Exact loaded plugin verified, rendered islands/gaps checked, real compositor backdrop samples received by the owning client.",
+      "log": "x11-render.log"
+    },
+    {
+      "command": "Production glass-shader-probe plus focused blur-region/capture-safety regressions",
+      "result": "passed",
+      "detail": "Shader colors, orientation, coverage, premultiplication and both profiles; nine focused regressions.",
+      "logs": [
+        "shader-final.log",
+        "shader-checks.log"
+      ]
+    },
+    {
+      "command": "Installed Wayland notification frontend: both editions x light/dark x pure white/black/checker backgrounds",
+      "result": "passed",
+      "detail": "12 history frames and four live-stack frames; native effect classifies notifications as menus; all backgrounds settled, same history window survives background changes; pointer expansion and clear in each edition/mode.",
+      "log": "capture-final-menu-material.log"
+    },
+    {
+      "command": "Real automatic dusk crossing in the disposable VM for both editions",
+      "result": "passed",
+      "detail": "Same notification and shell/compositor processes survive; saved optical settings unchanged. Deliberately moved only the VM clock across 18:00.",
+      "log": "automatic-boundary.log"
+    },
+    {
+      "command": "Compare final installed foreground crop and original reviewed matrix; verify installed native/QML fingerprints",
+      "result": "passed",
+      "detail": {
+        "gpu_crop_matches_capture_matrix_with_antialias_tolerance": true,
+        "crop": [
+          3100,
+          80,
+          3828,
+          360
+        ],
+        "maximum_channel_difference_255": 1,
+        "changed_pixels": 9,
+        "mean_channel_difference_255": 3.597592883307169e-05,
+        "tolerance": "At most 16 pixels differ by one 8-bit channel step; all other pixels identical."
+      }
+    },
+    {
+      "command": "git diff --check; python3 src/scripts/component_manifest.py",
       "result": "passed"
     },
     {
-      "command": "git diff --check",
-      "result": "passed"
+      "command": "GOLDEN_GATE_TAHOE_SOURCE=<candidate> MAC_TAHOE_NO_UPDATE_CHECK=true ./install --prepare; compare every changed source payload and staged component ledger",
+      "result": "passed",
+      "detail": "Golden Gate wallpaper and launcher preset 2; 16 source payload files match byte for byte."
     }
   ],
   "captures": [
     {
-      "path": "src/screenshots/previews/launcher-menu-191355079d7b.png",
-      "sha256": "191355079d7b6464a31b9eb09537188fbc0be17401ad4af381cdfc2eea9ee45f",
+      "path": "src/screenshots/previews/tahoe-contrast-preview-e1e4b3f2c81d.png",
+      "sha256": "e1e4b3f2c81d438a06544e1f87f89906a3b274b25e2b3f23252c1607cab214f9",
       "reviewed": true,
-      "source_commit": "45342ce96e19fd6f5393e73015160a1d26708776",
-      "description": "Both editions in light and dark with a magnified checkmark and Acrylic Glass comparison."
+      "capture_base_commit": "63f8c949eced2e9e8fdad62e50473fd0c6f7bc5d",
+      "description": "Focused notification rendering stress frames; original capture baseline retained. Later timer-only changes preserve these pixels within one 8-bit antialias step in nine pixels."
+    },
+    {
+      "path": "src/screenshots/previews/golden-gate-contrast-preview-43f1f858d56d.png",
+      "sha256": "43f1f858d56d643308f9c8a6f0a5cce03fb18c6d905c8476e37711e611db0385",
+      "reviewed": true,
+      "capture_base_commit": "63f8c949eced2e9e8fdad62e50473fd0c6f7bc5d",
+      "description": "Focused notification rendering stress frames; original capture baseline retained. Later timer-only changes preserve these pixels within one 8-bit antialias step in nine pixels."
+    },
+    {
+      "path": "src/screenshots/previews/installed-stacks-preview-918679787275.png",
+      "sha256": "91867978727542eb752e702a743773b0039899dfde419f2b2318d0f72fae75c3",
+      "reviewed": true,
+      "capture_base_commit": "63f8c949eced2e9e8fdad62e50473fd0c6f7bc5d",
+      "description": "Focused notification rendering stress frames; original capture baseline retained. Later timer-only changes preserve these pixels within one 8-bit antialias step in nine pixels."
     }
   ],
-  "source_sha256": "4502f6abad7eec03403aae1f9d5475cb08b21f0f70c8e1dff1c103784a2b53e0"
+  "source_sha256": "27eedc913a7c062140f28861dda2d308547675e0ad924d3425224ee7cb17afee"
 }

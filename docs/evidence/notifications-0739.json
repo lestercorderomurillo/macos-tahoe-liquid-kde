@@ -1,0 +1,506 @@
+{
+  "schema": 1,
+  "status": "user-approved",
+  "version": "0.73.9",
+  "scope": "Installed notification stacks; canonical Discord label; menu material and shader with notification gradients disabled; subtle About-style black/white card rims; compact exterior title shadow; foreground contrast from actual compositor backdrop without shadows inside cards.",
+  "implementation_commit": "ca723816012f27f988fff6c4b69c6c3acb3450ec",
+  "base_release": "v0.73.8",
+  "source_files": {
+    "src/offline/kwin-effects/acrylic-glass/src/componentmaterials.h": "81c66738446ff178fe145701cdebd72073b98a5770fd1ba45a1e4c20624d0799",
+    "src/offline/kwin-effects/acrylic-glass/src/effect.cpp": "b31fc3dc302b965689c80897b9fd08ea89f4e5dbf44cad477b319cb65b909098",
+    "src/offline/kwin-effects/acrylic-glass/src/effect.h": "2bc9f640fc8d6f45af2dbf98a99ded381c3bcb0a941bb5c7cc7e63257a73c91d",
+    "src/offline/kwin-effects/acrylic-glass/src/gradientcolors.h": "5cc6945243465d3f508fd0a36ea3b140207f42e128606c03329c51d64e8ca71b",
+    "src/offline/plasmoids/org.kde.mac-tahoe-liquid-kde.controlcenter/contents/ui/ControlTile.qml": "caf2eba1b978db12f6ab4fb756d5eac82d866c871378b0aaeb234769a7409f46",
+    "src/offline/plasmoids/org.kde.mac-tahoe-liquid-kde.controlcenter/contents/ui/NotificationBackdropLabel.qml": "8946d54c1b2404b20dba717d591569966e72f78db65977a292ca8e1f449a4d63",
+    "src/offline/plasmoids/org.kde.mac-tahoe-liquid-kde.controlcenter/contents/ui/NotificationCard.qml": "e3fa52c29b9ed720079f1c4a78159063f1bc315b67833f71e672b2fb9f38c9c0",
+    "src/offline/plasmoids/org.kde.mac-tahoe-liquid-kde.controlcenter/contents/ui/NotificationContrast.js": "536c255a6bee4211cbe1f772b6e8a9eed6629565d16a6692c970a16f9593dda3",
+    "src/offline/plasmoids/org.kde.mac-tahoe-liquid-kde.controlcenter/contents/ui/NotificationStackSurface.qml": "1a1921b892270ac058b72573e8f373d1e96a826ff06d547a59afd5cc673a068a",
+    "src/offline/plasmoids/org.kde.mac-tahoe-liquid-kde.controlcenter/contents/ui/NotificationSurface.qml": "ee1d8575d55f5b664a1a0264d5d56c8b0eeec322f75bec74b355984c9a4bc03c",
+    "src/offline/plasmoids/org.kde.mac-tahoe-liquid-kde.controlcenter/contents/ui/NotificationsView.qml": "c51ca60ce9f52141b38ae91cfe3eebda6921168115a91389d96941f1da486014",
+    "src/offline/plasmoids/org.kde.mac-tahoe-liquid-kde.notifications/contents/ui/NotificationPopup.qml": "8ccb45a513408f9df792a4fdd939e99812db83717b687ebe06afbb54b3fe5f02",
+    "src/offline/plasmoids/org.kde.mac-tahoe-liquid-kde.notifications/contents/ui/NotificationPopups.qml": "b1391de55d166f4d080d7d97f91789c685be791a103a8a4948eddccb9014b70a",
+    "src/offline/plasmoids/org.kde.mac-tahoe-liquid-kde.notifications/contents/ui/main.qml": "f34ca707a62805d1e1cf40b1f6ab0cb73442b2df2029b0df1752745e70eb0d1f",
+    "src/offline/plasmoids/org.kde.mac.tahoe.liquid.taskmanager/launcher/notificationbanner.cpp": "7d6118bca631323f28323c4c35371fc293d400f5ab327bbce38c8a7db63404bd",
+    "src/offline/plasmoids/org.kde.mac.tahoe.liquid.taskmanager/launcher/notificationbanner.h": "1de97967d547fdf22c56f1667c3482a7d242e534d0d6c432469393da17e230a0",
+    "tests/acrylic_glass_capture.py": "012d2ccc51b79f713aeebb08292595bb89d30eab97631c900fa0f55233b8af5b",
+    "tests/desktop_controls_probe.py": "126dd3080c83f0e521b9febe8abdd19ff1a943ed082ce639ef84c78471d4b050",
+    "tests/glass/shader.cpp": "42f71e8b154174d0cfec0c5726957318e8e4b1d649080b34c465bd1c94d7cb72"
+  },
+  "environment": "Disposable pinned KDE neon Wayland VM, Plasma 6.8.1 / Qt 6.11.1, 3840x2160 at 2x; isolated Arch KWin X11 6.6.5; Fedora SDK 6.7.5.",
+  "approval": {
+    "date": "2026-11-17",
+    "message": "bro esta bien, ya release"
+  },
+  "checks": [
+    {
+      "command": "Private D-Bus/offscreen production desktop_controls_probe.py, then combined v0.73.8 integration probe",
+      "result": "passed",
+      "detail": [
+        "three Discord messages become one stack",
+        "latest summary/body and Discord capitalization",
+        "expand/collapse and one sound per arriving ID",
+        "replace permanent notifications without starting an expiry timer",
+        "expanded header leaves individual child expiry and interaction timers in charge",
+        "original member deadlines survive regrouping",
+        "independent applications, retained history, read/expire/clear without resurrection",
+        "real backdrop sample routing and invalid process/geometry/RGB rejection",
+        "WCAG foreground contrast on white, black and gray",
+        "native light/dark/light banner palette and job/action/reply paths",
+        "combined Wi-Fi/battery/Launcher releases preserved"
+      ],
+      "log": "probe-integration-0739.log"
+    },
+    {
+      "command": "CMake native effect and mactahoelauncher builds; controlglassprobe",
+      "result": "passed",
+      "detail": "Arch KWin/libplasma 6.6.5; Fedora KWin 6.7.5/libplasma 6.8.2; neon KWin 6.8.1/Qt 6.11.1.",
+      "logs": [
+        "sdk66.log",
+        "sdk67.log",
+        "native-build-final.log"
+      ]
+    },
+    {
+      "command": "Isolated Xvfb/KWin X11 production effect notification pixel probe",
+      "result": "passed",
+      "detail": "Exact loaded plugin verified, rendered islands/gaps checked, real compositor backdrop samples received by the owning client.",
+      "log": "x11-render.log"
+    },
+    {
+      "command": "Production glass-shader-probe plus focused blur-region/capture-safety regressions",
+      "result": "passed",
+      "detail": "Shader colors, orientation, coverage, premultiplication and both profiles; nine focused regressions.",
+      "logs": [
+        "shader-final.log",
+        "shader-checks.log"
+      ]
+    },
+    {
+      "command": "Installed Wayland notification frontend: both editions x light/dark x pure white/black/checker backgrounds",
+      "result": "passed",
+      "detail": "12 history frames and four live-stack frames; native effect classifies notifications as menus; all backgrounds settled, same history window survives background changes; pointer expansion and clear in each edition/mode.",
+      "log": "capture-final-menu-material.log"
+    },
+    {
+      "command": "Real automatic dusk crossing in the disposable VM for both editions",
+      "result": "passed",
+      "detail": "Same notification and shell/compositor processes survive; saved optical settings unchanged. Deliberately moved only the VM clock across 18:00.",
+      "log": "automatic-boundary.log"
+    },
+    {
+      "command": "Compare final installed foreground crop and original reviewed matrix; verify installed native/QML fingerprints",
+      "result": "passed",
+      "detail": {
+        "gpu_crop_matches_capture_matrix_with_antialias_tolerance": true,
+        "crop": [
+          3100,
+          80,
+          3828,
+          360
+        ],
+        "maximum_channel_difference_255": 1,
+        "changed_pixels": 9,
+        "mean_channel_difference_255": 3.597592883307169e-05,
+        "tolerance": "At most 16 pixels differ by one 8-bit channel step; all other pixels identical."
+      }
+    },
+    {
+      "command": "git diff --check; python3 src/scripts/component_manifest.py",
+      "result": "passed"
+    }
+  ],
+  "captures": [
+    {
+      "path": "src/screenshots/previews/tahoe-contrast-preview-e1e4b3f2c81d.png",
+      "sha256": "e1e4b3f2c81d438a06544e1f87f89906a3b274b25e2b3f23252c1607cab214f9",
+      "reviewed": true,
+      "capture_base_commit": "63f8c949eced2e9e8fdad62e50473fd0c6f7bc5d",
+      "description": "Focused notification rendering stress frames; original capture baseline retained. Later timer-only changes preserve these pixels within one 8-bit antialias step in nine pixels."
+    },
+    {
+      "path": "src/screenshots/previews/golden-gate-contrast-preview-43f1f858d56d.png",
+      "sha256": "43f1f858d56d643308f9c8a6f0a5cce03fb18c6d905c8476e37711e611db0385",
+      "reviewed": true,
+      "capture_base_commit": "63f8c949eced2e9e8fdad62e50473fd0c6f7bc5d",
+      "description": "Focused notification rendering stress frames; original capture baseline retained. Later timer-only changes preserve these pixels within one 8-bit antialias step in nine pixels."
+    },
+    {
+      "path": "src/screenshots/previews/installed-stacks-preview-918679787275.png",
+      "sha256": "91867978727542eb752e702a743773b0039899dfde419f2b2318d0f72fae75c3",
+      "reviewed": true,
+      "capture_base_commit": "63f8c949eced2e9e8fdad62e50473fd0c6f7bc5d",
+      "description": "Focused notification rendering stress frames; original capture baseline retained. Later timer-only changes preserve these pixels within one 8-bit antialias step in nine pixels."
+    }
+  ],
+  "capture_provenance": {
+    "base_commit": "63f8c949eced2e9e8fdad62e50473fd0c6f7bc5d",
+    "native_install": {
+      "kwin_pid": "1243",
+      "active_effect_build_id": "eba0dc3ff176850c9b67c0f21937ddbfdadf6450db0c32f4beeac449203257e8",
+      "mapped_effects": [
+        "/usr/lib/x86_64-linux-gnu/qt6/plugins/kwin/effects/plugins/.mttkde-liquidglass/0fa973b7c53c070aa1fd4bdfee6948bfa092c6c09f3ba4e01d2b2f835e0e5dda/liquidglass.so (deleted)",
+        "/usr/lib/x86_64-linux-gnu/qt6/plugins/kwin/effects/plugins/.mttkde-liquidglass/1fb44e074c017b00885bfcd0a2b488571597c495f75fb6d60ce50f7555de9758/liquidglass.so (deleted)",
+        "/usr/lib/x86_64-linux-gnu/qt6/plugins/kwin/effects/plugins/.mttkde-liquidglass/372aae8c5c7e9d3b4ce72ce8ecea499ccfd7781aedc40900fd61fe71f668752e/liquidglass.so (deleted)",
+        "/usr/lib/x86_64-linux-gnu/qt6/plugins/kwin/effects/plugins/.mttkde-liquidglass/79799fd7f978df37eb6f9c561592877abf82e32264f5e152529648916db8e299/liquidglass.so (deleted)",
+        "/usr/lib/x86_64-linux-gnu/qt6/plugins/kwin/effects/plugins/.mttkde-liquidglass/84d77793e93b8e87e53c7086bbd3abec03b5f99b7c85b60302aa9e5aaabc1b88/liquidglass.so (deleted)",
+        "/usr/lib/x86_64-linux-gnu/qt6/plugins/kwin/effects/plugins/.mttkde-liquidglass/a4bddd5bbadd3a23965129be6526b245b877a0e70e2478108ff48dd465f893d3/liquidglass.so (deleted)",
+        "/usr/lib/x86_64-linux-gnu/qt6/plugins/kwin/effects/plugins/.mttkde-liquidglass/cbd21399dc69705eb1ffb964c82211cbbab593158ea8b6743e67c0f18cfcc122/liquidglass.so"
+      ],
+      "sha256": {
+        "/usr/lib/x86_64-linux-gnu/qt6/plugins/kwin/effects/plugins/.mttkde-liquidglass/cbd21399dc69705eb1ffb964c82211cbbab593158ea8b6743e67c0f18cfcc122/liquidglass.so": "cbd21399dc69705eb1ffb964c82211cbbab593158ea8b6743e67c0f18cfcc122",
+        "/usr/lib/x86_64-linux-gnu/qt6/qml/org/kde/mac/tahoe/launcher/libmactahoelauncher.so": "5d2b300d3b815fb4cb33ae55fdef67d493958eaae87954d217a09b35b7dcff86"
+      },
+      "installed_applets": {
+        "/home/tester/.local/share/plasma/plasmoids/org.kde.mac-tahoe-liquid-kde.controlcenter/metadata.json": "15dc3890ae27588240947ca97488512c7919e6935345e79023c30e6ea2b284f8",
+        "/home/tester/.local/share/plasma/plasmoids/org.kde.mac-tahoe-liquid-kde.controlcenter/po/es.po": "f167c92ea7a4e9964391d3c5df527c7023d93e7951efcfa4afa1cb76841728f9",
+        "/home/tester/.local/share/plasma/plasmoids/org.kde.mac-tahoe-liquid-kde.controlcenter/po/fr.po": "656790215842d549c460cf551141d3a4be1ba3aa844375c0142fe420eb347d1c",
+        "/home/tester/.local/share/plasma/plasmoids/org.kde.mac-tahoe-liquid-kde.controlcenter/po/de.po": "03f86ad1b77a0fbd1083a7144ea8640a2bbde5373188262980f62a15e4cb1c05",
+        "/home/tester/.local/share/plasma/plasmoids/org.kde.mac-tahoe-liquid-kde.controlcenter/po/pt_BR.po": "9c75d5484e9583784d02459061f1d58fa232ca968407c54db0fbaa6da1eec466",
+        "/home/tester/.local/share/plasma/plasmoids/org.kde.mac-tahoe-liquid-kde.controlcenter/po/zh_CN.po": "7871ff7ca8111350ed9c27371f39d84069001c5bbc663152396690443a6a0dc5",
+        "/home/tester/.local/share/plasma/plasmoids/org.kde.mac-tahoe-liquid-kde.controlcenter/contents/ui/main.qml": "e7a94ebc2e9f3078b8332765447446ac4bfd4cab7d8acabcfc13135a52de9ada",
+        "/home/tester/.local/share/plasma/plasmoids/org.kde.mac-tahoe-liquid-kde.controlcenter/contents/ui/NotificationStackSurface.qml": "1a1921b892270ac058b72573e8f373d1e96a826ff06d547a59afd5cc673a068a",
+        "/home/tester/.local/share/plasma/plasmoids/org.kde.mac-tahoe-liquid-kde.controlcenter/contents/ui/FocusSwitch.qml": "ef1ef9fac4b2abd5117ccd5ab9c5c81cfd70ff3fa47cf08114883afbfa25d40c",
+        "/home/tester/.local/share/plasma/plasmoids/org.kde.mac-tahoe-liquid-kde.controlcenter/contents/ui/ControlIconButton.qml": "c192a12a09cd0a636d4126866db3fefd5916c20ed9f0b2be197cdb54e73b9511",
+        "/home/tester/.local/share/plasma/plasmoids/org.kde.mac-tahoe-liquid-kde.controlcenter/contents/ui/NotificationContrast.js": "536c255a6bee4211cbe1f772b6e8a9eed6629565d16a6692c970a16f9593dda3",
+        "/home/tester/.local/share/plasma/plasmoids/org.kde.mac-tahoe-liquid-kde.controlcenter/contents/ui/ControlCommands.qml": "ed79e99f7e9c267fb160ce1cb396af1c0a01eef173839dd58cb4901ebd0742c2",
+        "/home/tester/.local/share/plasma/plasmoids/org.kde.mac-tahoe-liquid-kde.controlcenter/contents/ui/EditControls.qml": "cf313d221dd9d42225e4f27cc9c44baf92019102e90680b321bb6a2aa2e24fb6",
+        "/home/tester/.local/share/plasma/plasmoids/org.kde.mac-tahoe-liquid-kde.controlcenter/contents/ui/ControlView.qml": "047c9f603d92b05007254c2cdb3b892c4f2e5d96537cac80089fe5e9f51fa271",
+        "/home/tester/.local/share/plasma/plasmoids/org.kde.mac-tahoe-liquid-kde.controlcenter/contents/ui/WifiView.qml": "b3499617e6c19b5b3b03367a170b439928641975790eda2155430460c02eb4cf",
+        "/home/tester/.local/share/plasma/plasmoids/org.kde.mac-tahoe-liquid-kde.controlcenter/contents/ui/ControlStyle.js": "dd93993293b9a289c27d9b12e1be4d9cb5475a81d9e89f5a6ab8d33ccc6c4599",
+        "/home/tester/.local/share/plasma/plasmoids/org.kde.mac-tahoe-liquid-kde.controlcenter/contents/ui/MediaView.qml": "d319c4cd7055dbcd248698ec24708f99ae7b95c20205169e027003aba2dfd610",
+        "/home/tester/.local/share/plasma/plasmoids/org.kde.mac-tahoe-liquid-kde.controlcenter/contents/ui/BatteryView.qml": "d102ab929c30b41747582222693d65594ac309c50c082fae68b95ec629eedf76",
+        "/home/tester/.local/share/plasma/plasmoids/org.kde.mac-tahoe-liquid-kde.controlcenter/contents/ui/PanelButton.qml": "688ee3c01ab077ec6f6fc761083acdcd60ddd1bd468ed113391e5f9c248521c6",
+        "/home/tester/.local/share/plasma/plasmoids/org.kde.mac-tahoe-liquid-kde.controlcenter/contents/ui/ControlLabel.qml": "52af06a63ea75b5c4d0fd701326f2bbdb5d539689477f726ebd83f6277259bb0",
+        "/home/tester/.local/share/plasma/plasmoids/org.kde.mac-tahoe-liquid-kde.controlcenter/contents/ui/NotificationSurface.qml": "ee1d8575d55f5b664a1a0264d5d56c8b0eeec322f75bec74b355984c9a4bc03c",
+        "/home/tester/.local/share/plasma/plasmoids/org.kde.mac-tahoe-liquid-kde.controlcenter/contents/ui/ControlTile.qml": "caf2eba1b978db12f6ab4fb756d5eac82d866c871378b0aaeb234769a7409f46",
+        "/home/tester/.local/share/plasma/plasmoids/org.kde.mac-tahoe-liquid-kde.controlcenter/contents/ui/AudioView.qml": "690cdc3b6b22ca04ab3c86fe927bfe178becad7a598612322dc5057a5420c510",
+        "/home/tester/.local/share/plasma/plasmoids/org.kde.mac-tahoe-liquid-kde.controlcenter/contents/ui/BluetoothView.qml": "78ae19a0657afb33816e054bf5e17fe813508e84670399789a137060a6066c44",
+        "/home/tester/.local/share/plasma/plasmoids/org.kde.mac-tahoe-liquid-kde.controlcenter/contents/ui/NotificationCard.qml": "e3fa52c29b9ed720079f1c4a78159063f1bc315b67833f71e672b2fb9f38c9c0",
+        "/home/tester/.local/share/plasma/plasmoids/org.kde.mac-tahoe-liquid-kde.controlcenter/contents/ui/Page.qml": "6d2c999099d556e37ae937769fb90260b931d5403bb501cdf5391b9eb69f8576",
+        "/home/tester/.local/share/plasma/plasmoids/org.kde.mac-tahoe-liquid-kde.controlcenter/contents/ui/DisplayDetails.qml": "96ff88b6fface1ff3c917eca18a236885d56072bfd0ae35db9d45e676cd0dcce",
+        "/home/tester/.local/share/plasma/plasmoids/org.kde.mac-tahoe-liquid-kde.controlcenter/contents/ui/DisplayView.qml": "bfc28c51f514c5167be18fd86a8f7fba1c4af09c097494929ec6cf959dc3f28c",
+        "/home/tester/.local/share/plasma/plasmoids/org.kde.mac-tahoe-liquid-kde.controlcenter/contents/ui/controlcenter.svg": "a1149ac7986ed1af0c872feb780c912b911377d793943cfe864dc9eed7f08e2c",
+        "/home/tester/.local/share/plasma/plasmoids/org.kde.mac-tahoe-liquid-kde.controlcenter/contents/ui/GlassRim.qml": "4636c464f5fb00a219c9486fe0186b5bfd7a25e20cc2442113f27a83a5c39bc4",
+        "/home/tester/.local/share/plasma/plasmoids/org.kde.mac-tahoe-liquid-kde.controlcenter/contents/ui/NotificationBackdropLabel.qml": "8946d54c1b2404b20dba717d591569966e72f78db65977a292ca8e1f449a4d63",
+        "/home/tester/.local/share/plasma/plasmoids/org.kde.mac-tahoe-liquid-kde.controlcenter/contents/ui/SettingsLink.qml": "8c0da542beffb3ba79990fb3e14bb6e34cc9cc8b59a06f3aec8dbe21cca05d26",
+        "/home/tester/.local/share/plasma/plasmoids/org.kde.mac-tahoe-liquid-kde.controlcenter/contents/ui/ControlAction.qml": "7c5e30b555554706856ccc41e8e1166a645aba434dfc0f172af50cca571552c7",
+        "/home/tester/.local/share/plasma/plasmoids/org.kde.mac-tahoe-liquid-kde.controlcenter/contents/ui/AudioDetails.qml": "8b5123771ba7122c70dd37ffffe7f398ea09b15eeebac23b2f403951e6847852",
+        "/home/tester/.local/share/plasma/plasmoids/org.kde.mac-tahoe-liquid-kde.controlcenter/contents/ui/GlassSlider.qml": "161fc7a3f9d74142f2d1e52a0919e45a23b88f38463edb9470883ce159b96990",
+        "/home/tester/.local/share/plasma/plasmoids/org.kde.mac-tahoe-liquid-kde.controlcenter/contents/ui/NotificationsView.qml": "c51ca60ce9f52141b38ae91cfe3eebda6921168115a91389d96941f1da486014",
+        "/home/tester/.local/share/plasma/plasmoids/org.kde.mac-tahoe-liquid-kde.controlcenter/contents/config/main.xml": "1f9d740d6b3e7f61f54ec118d56fbf02a8ce0ddc336fe23358b2736d95a6158e",
+        "/home/tester/.local/share/plasma/plasmoids/org.kde.mac-tahoe-liquid-kde.controlcenter/contents/locale/de/LC_MESSAGES/plasma_applet_org.kde.mac-tahoe-liquid-kde.controlcenter.mo": "5a483547e0664942bb4cd20e0dc47ddda07cfde0070490d62829079be52e8878",
+        "/home/tester/.local/share/plasma/plasmoids/org.kde.mac-tahoe-liquid-kde.controlcenter/contents/locale/pt_BR/LC_MESSAGES/plasma_applet_org.kde.mac-tahoe-liquid-kde.controlcenter.mo": "cd960723601b867c64b8fbbc03d258fb018b3f897f027de6e3392b80a9cfc182",
+        "/home/tester/.local/share/plasma/plasmoids/org.kde.mac-tahoe-liquid-kde.controlcenter/contents/locale/zh_CN/LC_MESSAGES/plasma_applet_org.kde.mac-tahoe-liquid-kde.controlcenter.mo": "21e266a5d08f992d42f663cee4f889396534b701d041a03107a96d2ace6a12e3",
+        "/home/tester/.local/share/plasma/plasmoids/org.kde.mac-tahoe-liquid-kde.controlcenter/contents/locale/es/LC_MESSAGES/plasma_applet_org.kde.mac-tahoe-liquid-kde.controlcenter.mo": "806c19666251ca168039c7ebd6849860891c8e2ad1802bc6ee33341dc9eaa863",
+        "/home/tester/.local/share/plasma/plasmoids/org.kde.mac-tahoe-liquid-kde.controlcenter/contents/locale/fr/LC_MESSAGES/plasma_applet_org.kde.mac-tahoe-liquid-kde.controlcenter.mo": "c4fdd9489d1d53735de6a5a3c012feaccaa73aa2fd59f1b0ea0d09505a9cc60d",
+        "/home/tester/.local/share/plasma/plasmoids/org.kde.mac-tahoe-liquid-kde.controlcenter/contents/ui/symbols/mttkde-control-battery-20.svg": "b2060ce357c19cfebab2e06c7b5bb2e2ab62dd788fd9da5d17c0f90e77a76081",
+        "/home/tester/.local/share/plasma/plasmoids/org.kde.mac-tahoe-liquid-kde.controlcenter/contents/ui/symbols/mttkde-control-stage-manager.svg": "9800cd06c2a61e6aadd1e2d1396fd513ea5fc9a8bc04cea73c0061569965707c",
+        "/home/tester/.local/share/plasma/plasmoids/org.kde.mac-tahoe-liquid-kde.controlcenter/contents/ui/symbols/mttkde-control-previous.svg": "7bb553388da9a13c330639678db8cf732a62f533ecca630e4925aa224ae5cf1a",
+        "/home/tester/.local/share/plasma/plasmoids/org.kde.mac-tahoe-liquid-kde.controlcenter/contents/ui/symbols/mttkde-control-battery-80.svg": "1668b035452f608a327771d5044e604cb1884badbaf2763fd1ce6a1aead3b70d",
+        "/home/tester/.local/share/plasma/plasmoids/org.kde.mac-tahoe-liquid-kde.controlcenter/contents/ui/symbols/mttkde-control-notification-options.svg": "481b7a68694bcac15fc0f863e146905a5f920feb05631c5d9d8440180a9fa28f",
+        "/home/tester/.local/share/plasma/plasmoids/org.kde.mac-tahoe-liquid-kde.controlcenter/contents/ui/symbols/control-symbols.json": "0e3ab20341fe9fbe802518ab0b23bed37d0c6179202ea3b033842c9ea915ae4f",
+        "/home/tester/.local/share/plasma/plasmoids/org.kde.mac-tahoe-liquid-kde.controlcenter/contents/ui/symbols/mttkde-control-next.svg": "3a2aeff5f83b24c0cc70d46e3e8767b00a79d4576964690181ad521918760182",
+        "/home/tester/.local/share/plasma/plasmoids/org.kde.mac-tahoe-liquid-kde.controlcenter/contents/ui/symbols/mttkde-control-wifi.svg": "8e9ec3f70d3b9061b54b73100c43f86fb320f99f70b40da2e480ef5b4c3e62a2",
+        "/home/tester/.local/share/plasma/plasmoids/org.kde.mac-tahoe-liquid-kde.controlcenter/contents/ui/symbols/mttkde-control-airplay.svg": "bba9871ae5a5437e6f13543c885b21af145e959011d8bec8127089b86d39f873",
+        "/home/tester/.local/share/plasma/plasmoids/org.kde.mac-tahoe-liquid-kde.controlcenter/contents/ui/symbols/mttkde-control-ethernet.svg": "3fe6269db75e8d98d35d9cd960c8b578d478e856d0516ff900ff9229eb859de1",
+        "/home/tester/.local/share/plasma/plasmoids/org.kde.mac-tahoe-liquid-kde.controlcenter/contents/ui/symbols/mttkde-control-settings.svg": "9063fed00e73401691a7068689c96d928539c7f34b7a06c8162d3976472dc342",
+        "/home/tester/.local/share/plasma/plasmoids/org.kde.mac-tahoe-liquid-kde.controlcenter/contents/ui/symbols/mttkde-control-bell.svg": "fb24b82b915d17899629dd054bd8dd0c7322f5173af879acacd10d1df4966b66",
+        "/home/tester/.local/share/plasma/plasmoids/org.kde.mac-tahoe-liquid-kde.controlcenter/contents/ui/symbols/mttkde-control-battery-0.svg": "ddb01b182a0d9c1aa266d8cf3b1ed69a01b47b35d94941f4796619031404e623",
+        "/home/tester/.local/share/plasma/plasmoids/org.kde.mac-tahoe-liquid-kde.controlcenter/contents/ui/symbols/mttkde-control-appearance.svg": "3f9c8bd48cd0e5a5d6e77c779fbcccef9a7e8c1c8483788eff81b4cbffd0cbf4",
+        "/home/tester/.local/share/plasma/plasmoids/org.kde.mac-tahoe-liquid-kde.controlcenter/contents/ui/symbols/mttkde-control-battery-60.svg": "58bba5010a9c691c83b1a7c26f4a823ef0708e0b4b77e448266b7c2eb5618fae",
+        "/home/tester/.local/share/plasma/plasmoids/org.kde.mac-tahoe-liquid-kde.controlcenter/contents/ui/symbols/mttkde-control-pause.svg": "38ebe857f345ca6066f279a60de71d9bdf73e6650eed79fdea7f579e61b9c08e",
+        "/home/tester/.local/share/plasma/plasmoids/org.kde.mac-tahoe-liquid-kde.controlcenter/contents/ui/symbols/mttkde-control-sun-low.svg": "5a8ebd6f64fdcd89afc16807493ed8a2e850781930e4f9dcafe6ccc7a6844dfa",
+        "/home/tester/.local/share/plasma/plasmoids/org.kde.mac-tahoe-liquid-kde.controlcenter/contents/ui/symbols/mttkde-control-moon.svg": "d72e434e82f07a284a65c841fd31fe5c07670e51d7c539c5c5009302482de48c",
+        "/home/tester/.local/share/plasma/plasmoids/org.kde.mac-tahoe-liquid-kde.controlcenter/contents/ui/symbols/mttkde-control-battery-charging.svg": "8dc41e495323a2ca90b301138dc88ae6b05360735e95fb097b3575e9cc4d7e28",
+        "/home/tester/.local/share/plasma/plasmoids/org.kde.mac-tahoe-liquid-kde.controlcenter/contents/ui/symbols/mttkde-control-notification-close.svg": "d629764f19decba99429c7009387a043935050a85d1448ab92594130db13a017",
+        "/home/tester/.local/share/plasma/plasmoids/org.kde.mac-tahoe-liquid-kde.controlcenter/contents/ui/symbols/mttkde-control-battery-10.svg": "60dc2bde34dd2d9c420760c2fd6a649f86ce94e60ee324385b3a1c0aaa391ec9",
+        "/home/tester/.local/share/plasma/plasmoids/org.kde.mac-tahoe-liquid-kde.controlcenter/contents/ui/symbols/mttkde-control-wifi-off.svg": "a49a0d0204e73d0917530422ac7d580446ce64a4254096973a5dffc591dbd11f",
+        "/home/tester/.local/share/plasma/plasmoids/org.kde.mac-tahoe-liquid-kde.controlcenter/contents/ui/symbols/mttkde-control-play.svg": "f062590fa3f75e2ccabbe6faf88c85ebd7abf4882b260b44d927b3c2ac4525f2",
+        "/home/tester/.local/share/plasma/plasmoids/org.kde.mac-tahoe-liquid-kde.controlcenter/contents/ui/symbols/mttkde-control-speaker-off.svg": "f019e4a5132c23f29dd43c440e2616bd61344d0aa1d6169fcaf36e2aca01bea1",
+        "/home/tester/.local/share/plasma/plasmoids/org.kde.mac-tahoe-liquid-kde.controlcenter/contents/ui/symbols/mttkde-control-bluetooth.svg": "086411a16a8e23f2ad9b5f8f28ef052bc89fd15ad0ad7792e7c6357dbb190096",
+        "/home/tester/.local/share/plasma/plasmoids/org.kde.mac-tahoe-liquid-kde.controlcenter/contents/ui/symbols/mttkde-control-battery-40.svg": "e5c7c5d154551da3abc27c6cd7c66385589e78377f6eb0f7697fcc3e8595440b",
+        "/home/tester/.local/share/plasma/plasmoids/org.kde.mac-tahoe-liquid-kde.controlcenter/contents/ui/symbols/mttkde-control-battery-30.svg": "062686a8de31bc41bd1fb4f9b4fd8f69015dd64a31996f6c3e22606e29b5886c",
+        "/home/tester/.local/share/plasma/plasmoids/org.kde.mac-tahoe-liquid-kde.controlcenter/contents/ui/symbols/mttkde-control-battery-100.svg": "8a594726d9b03c08f024fe5dc2c5fff61dc5231dc56ed3326d7e3d69deaf1c05",
+        "/home/tester/.local/share/plasma/plasmoids/org.kde.mac-tahoe-liquid-kde.controlcenter/contents/ui/symbols/mttkde-control-sun.svg": "36aac141788d095cccd810877aa8d059fd009428d0936619003331d2d881c5bf",
+        "/home/tester/.local/share/plasma/plasmoids/org.kde.mac-tahoe-liquid-kde.controlcenter/contents/ui/symbols/mttkde-control-screenshot.svg": "41b0f5990e5bd4d2d74c262a37cb618b272b16fb9a6cf934145b2c0ea654fb4c",
+        "/home/tester/.local/share/plasma/plasmoids/org.kde.mac-tahoe-liquid-kde.controlcenter/contents/ui/symbols/mttkde-control-speaker-low.svg": "48f5f7345eba26cce9b4c3210e0ab4cfd4ea2b01ca1f253c88e7e5365f51eb6f",
+        "/home/tester/.local/share/plasma/plasmoids/org.kde.mac-tahoe-liquid-kde.controlcenter/contents/ui/symbols/mttkde-control-battery-missing.svg": "24eac2d42c8e01c88ef64855fb868d61e44b052ec46a32649a507a3d074a63dc",
+        "/home/tester/.local/share/plasma/plasmoids/org.kde.mac-tahoe-liquid-kde.controlcenter/contents/ui/symbols/mttkde-control-airdrop-off.svg": "b3256dd975e4fea256001aac3cd391698f9618c35f8cc836a7a8c90b094bb4a6",
+        "/home/tester/.local/share/plasma/plasmoids/org.kde.mac-tahoe-liquid-kde.controlcenter/contents/ui/symbols/mttkde-control-mirroring.svg": "0be0b7860b4b0c7842f3e1131342e39517fe3b6b515b958325f22b6cf050891f",
+        "/home/tester/.local/share/plasma/plasmoids/org.kde.mac-tahoe-liquid-kde.controlcenter/contents/ui/symbols/mttkde-control-music.svg": "e609e76598feb21faada87989ebaa18074b7bdc33b7c431a37b59d7beba6158c",
+        "/home/tester/.local/share/plasma/plasmoids/org.kde.mac-tahoe-liquid-kde.controlcenter/contents/ui/symbols/mttkde-control-battery-90.svg": "99d8687fa0c8abc85e7745128101f1f3dde5b8a712908945ae6644d14cb5940f",
+        "/home/tester/.local/share/plasma/plasmoids/org.kde.mac-tahoe-liquid-kde.controlcenter/contents/ui/symbols/mttkde-control-battery-70.svg": "bde048741feda5fe648dd020b9f07503af40a7d0bd717a8a8fc2fd3703f0aaa4",
+        "/home/tester/.local/share/plasma/plasmoids/org.kde.mac-tahoe-liquid-kde.controlcenter/contents/ui/symbols/mttkde-control-battery.svg": "8a594726d9b03c08f024fe5dc2c5fff61dc5231dc56ed3326d7e3d69deaf1c05",
+        "/home/tester/.local/share/plasma/plasmoids/org.kde.mac-tahoe-liquid-kde.controlcenter/contents/ui/symbols/mttkde-control-battery-50.svg": "bb6defc38787da6c3632806032acfadb861cae8aa0f12a85d4cf94058a6b028e",
+        "/home/tester/.local/share/plasma/plasmoids/org.kde.mac-tahoe-liquid-kde.controlcenter/contents/ui/symbols/mttkde-control-speaker.svg": "c3979f3576f0b17f9f5199a9e84c6b4d09f2174c445eba6ec0bb23b58c71d0c3",
+        "/home/tester/.local/share/plasma/plasmoids/org.kde.mac-tahoe-liquid-kde.notifications/metadata.json": "e9d3cc8debf9d707ea25cd00e77264dd6a813c1991bf0db3026b6c986229ba97",
+        "/home/tester/.local/share/plasma/plasmoids/org.kde.mac-tahoe-liquid-kde.notifications/po/es.po": "f167c92ea7a4e9964391d3c5df527c7023d93e7951efcfa4afa1cb76841728f9",
+        "/home/tester/.local/share/plasma/plasmoids/org.kde.mac-tahoe-liquid-kde.notifications/po/fr.po": "656790215842d549c460cf551141d3a4be1ba3aa844375c0142fe420eb347d1c",
+        "/home/tester/.local/share/plasma/plasmoids/org.kde.mac-tahoe-liquid-kde.notifications/po/de.po": "03f86ad1b77a0fbd1083a7144ea8640a2bbde5373188262980f62a15e4cb1c05",
+        "/home/tester/.local/share/plasma/plasmoids/org.kde.mac-tahoe-liquid-kde.notifications/po/pt_BR.po": "9c75d5484e9583784d02459061f1d58fa232ca968407c54db0fbaa6da1eec466",
+        "/home/tester/.local/share/plasma/plasmoids/org.kde.mac-tahoe-liquid-kde.notifications/po/zh_CN.po": "7871ff7ca8111350ed9c27371f39d84069001c5bbc663152396690443a6a0dc5",
+        "/home/tester/.local/share/plasma/plasmoids/org.kde.mac-tahoe-liquid-kde.notifications/contents/ui/main.qml": "f34ca707a62805d1e1cf40b1f6ab0cb73442b2df2029b0df1752745e70eb0d1f",
+        "/home/tester/.local/share/plasma/plasmoids/org.kde.mac-tahoe-liquid-kde.notifications/contents/ui/NotificationPopups.qml": "b1391de55d166f4d080d7d97f91789c685be791a103a8a4948eddccb9014b70a",
+        "/home/tester/.local/share/plasma/plasmoids/org.kde.mac-tahoe-liquid-kde.notifications/contents/ui/qmldir": "e8a08257a36d1e19f08285532436ab076533cc06ccf42d7a235ea20ccdcfdec5",
+        "/home/tester/.local/share/plasma/plasmoids/org.kde.mac-tahoe-liquid-kde.notifications/contents/ui/NotificationPopup.qml": "8ccb45a513408f9df792a4fdd939e99812db83717b687ebe06afbb54b3fe5f02",
+        "/home/tester/.local/share/plasma/plasmoids/org.kde.mac-tahoe-liquid-kde.notifications/contents/locale/de/LC_MESSAGES/plasma_applet_org.kde.mac-tahoe-liquid-kde.notifications.mo": "5a483547e0664942bb4cd20e0dc47ddda07cfde0070490d62829079be52e8878",
+        "/home/tester/.local/share/plasma/plasmoids/org.kde.mac-tahoe-liquid-kde.notifications/contents/locale/pt_BR/LC_MESSAGES/plasma_applet_org.kde.mac-tahoe-liquid-kde.notifications.mo": "cd960723601b867c64b8fbbc03d258fb018b3f897f027de6e3392b80a9cfc182",
+        "/home/tester/.local/share/plasma/plasmoids/org.kde.mac-tahoe-liquid-kde.notifications/contents/locale/zh_CN/LC_MESSAGES/plasma_applet_org.kde.mac-tahoe-liquid-kde.notifications.mo": "21e266a5d08f992d42f663cee4f889396534b701d041a03107a96d2ace6a12e3",
+        "/home/tester/.local/share/plasma/plasmoids/org.kde.mac-tahoe-liquid-kde.notifications/contents/locale/es/LC_MESSAGES/plasma_applet_org.kde.mac-tahoe-liquid-kde.notifications.mo": "806c19666251ca168039c7ebd6849860891c8e2ad1802bc6ee33341dc9eaa863",
+        "/home/tester/.local/share/plasma/plasmoids/org.kde.mac-tahoe-liquid-kde.notifications/contents/locale/fr/LC_MESSAGES/plasma_applet_org.kde.mac-tahoe-liquid-kde.notifications.mo": "c4fdd9489d1d53735de6a5a3c012feaccaa73aa2fd59f1b0ea0d09505a9cc60d"
+      }
+    },
+    "matrix": [
+      {
+        "edition": "MacTahoe",
+        "mode": "light",
+        "background": "white",
+        "window": {
+          "id": "{e3403966-95d9-449f-b86b-c777e584c2b0}",
+          "caption": "mttkde-notifications",
+          "resourceClass": "org.kde.plasmashell",
+          "type": 13,
+          "appletPopup": false,
+          "hidden": false,
+          "active": true,
+          "geometry": {
+            "x": 1550,
+            "y": 38,
+            "width": 364,
+            "height": 136
+          }
+        }
+      },
+      {
+        "edition": "MacTahoe",
+        "mode": "light",
+        "background": "black",
+        "window": {
+          "id": "{e3403966-95d9-449f-b86b-c777e584c2b0}",
+          "caption": "mttkde-notifications",
+          "resourceClass": "org.kde.plasmashell",
+          "type": 13,
+          "appletPopup": false,
+          "hidden": false,
+          "active": true,
+          "geometry": {
+            "x": 1550,
+            "y": 38,
+            "width": 364,
+            "height": 136
+          }
+        }
+      },
+      {
+        "edition": "MacTahoe",
+        "mode": "light",
+        "background": "checker",
+        "window": {
+          "id": "{e3403966-95d9-449f-b86b-c777e584c2b0}",
+          "caption": "mttkde-notifications",
+          "resourceClass": "org.kde.plasmashell",
+          "type": 13,
+          "appletPopup": false,
+          "hidden": false,
+          "active": true,
+          "geometry": {
+            "x": 1550,
+            "y": 38,
+            "width": 364,
+            "height": 136
+          }
+        }
+      },
+      {
+        "edition": "MacTahoe",
+        "mode": "dark",
+        "background": "white",
+        "window": {
+          "id": "{c015fc2f-23d9-45d0-bac4-933eade6fdf6}",
+          "caption": "mttkde-notifications",
+          "resourceClass": "org.kde.plasmashell",
+          "type": 13,
+          "appletPopup": false,
+          "hidden": false,
+          "active": true,
+          "geometry": {
+            "x": 1550,
+            "y": 38,
+            "width": 364,
+            "height": 136
+          }
+        }
+      },
+      {
+        "edition": "MacTahoe",
+        "mode": "dark",
+        "background": "black",
+        "window": {
+          "id": "{c015fc2f-23d9-45d0-bac4-933eade6fdf6}",
+          "caption": "mttkde-notifications",
+          "resourceClass": "org.kde.plasmashell",
+          "type": 13,
+          "appletPopup": false,
+          "hidden": false,
+          "active": true,
+          "geometry": {
+            "x": 1550,
+            "y": 38,
+            "width": 364,
+            "height": 136
+          }
+        }
+      },
+      {
+        "edition": "MacTahoe",
+        "mode": "dark",
+        "background": "checker",
+        "window": {
+          "id": "{c015fc2f-23d9-45d0-bac4-933eade6fdf6}",
+          "caption": "mttkde-notifications",
+          "resourceClass": "org.kde.plasmashell",
+          "type": 13,
+          "appletPopup": false,
+          "hidden": false,
+          "active": true,
+          "geometry": {
+            "x": 1550,
+            "y": 38,
+            "width": 364,
+            "height": 136
+          }
+        }
+      },
+      {
+        "edition": "MacGoldenGate",
+        "mode": "light",
+        "background": "white",
+        "window": {
+          "id": "{afc0b625-721d-4946-9cd3-7c52aea09f22}",
+          "caption": "mttkde-notifications",
+          "resourceClass": "org.kde.plasmashell",
+          "type": 13,
+          "appletPopup": false,
+          "hidden": false,
+          "active": true,
+          "geometry": {
+            "x": 1550,
+            "y": 38,
+            "width": 364,
+            "height": 136
+          }
+        }
+      },
+      {
+        "edition": "MacGoldenGate",
+        "mode": "light",
+        "background": "black",
+        "window": {
+          "id": "{afc0b625-721d-4946-9cd3-7c52aea09f22}",
+          "caption": "mttkde-notifications",
+          "resourceClass": "org.kde.plasmashell",
+          "type": 13,
+          "appletPopup": false,
+          "hidden": false,
+          "active": true,
+          "geometry": {
+            "x": 1550,
+            "y": 38,
+            "width": 364,
+            "height": 136
+          }
+        }
+      },
+      {
+        "edition": "MacGoldenGate",
+        "mode": "light",
+        "background": "checker",
+        "window": {
+          "id": "{afc0b625-721d-4946-9cd3-7c52aea09f22}",
+          "caption": "mttkde-notifications",
+          "resourceClass": "org.kde.plasmashell",
+          "type": 13,
+          "appletPopup": false,
+          "hidden": false,
+          "active": true,
+          "geometry": {
+            "x": 1550,
+            "y": 38,
+            "width": 364,
+            "height": 136
+          }
+        }
+      },
+      {
+        "edition": "MacGoldenGate",
+        "mode": "dark",
+        "background": "white",
+        "window": {
+          "id": "{6de57b0a-d4f8-47cc-a894-465cda8afa4f}",
+          "caption": "mttkde-notifications",
+          "resourceClass": "org.kde.plasmashell",
+          "type": 13,
+          "appletPopup": false,
+          "hidden": false,
+          "active": true,
+          "geometry": {
+            "x": 1550,
+            "y": 38,
+            "width": 364,
+            "height": 136
+          }
+        }
+      },
+      {
+        "edition": "MacGoldenGate",
+        "mode": "dark",
+        "background": "black",
+        "window": {
+          "id": "{6de57b0a-d4f8-47cc-a894-465cda8afa4f}",
+          "caption": "mttkde-notifications",
+          "resourceClass": "org.kde.plasmashell",
+          "type": 13,
+          "appletPopup": false,
+          "hidden": false,
+          "active": true,
+          "geometry": {
+            "x": 1550,
+            "y": 38,
+            "width": 364,
+            "height": 136
+          }
+        }
+      },
+      {
+        "edition": "MacGoldenGate",
+        "mode": "dark",
+        "background": "checker",
+        "window": {
+          "id": "{6de57b0a-d4f8-47cc-a894-465cda8afa4f}",
+          "caption": "mttkde-notifications",
+          "resourceClass": "org.kde.plasmashell",
+          "type": 13,
+          "appletPopup": false,
+          "hidden": false,
+          "active": true,
+          "geometry": {
+            "x": 1550,
+            "y": 38,
+            "width": 364,
+            "height": 136
+          }
+        }
+      }
+    ],
+    "source_reuse": "Unrelated Shell, Wi-Fi/battery and Launcher deliveries were integrated without changing the notification rendering sources. Timer-only changes were qualified separately and the final installed crop differs in only nine antialias pixels by one 8-bit step.",
+    "original_readme_photographs": "Notification README photographs remain historical v0.73.5 images with their original provenance."
+  },
+  "coverage_limits": [
+    "Focused native notification qualification, not a fresh full desktop/installer gallery.",
+    "The complete remote distro matrix remains enabled and asynchronous.",
+    "The unchanged appearance controller retains its prior full Qt/Kvantum/GTK application-continuity evidence; this run adds actual notification boundary crossing in each edition.",
+    "Foreground uses an 8x8 sample of the blurred backdrop per notification window, not a per-glyph sampler.",
+    "Software scenegraphs use an exterior raised text shadow; compositor-adaptive foreground requires Acrylic Glass."
+  ],
+  "artifacts": "/mnt/M2_1/Projects/Review-artifacts/notifications-stack-contrast-2026-11-17"
+}
