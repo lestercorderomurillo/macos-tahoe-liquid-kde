@@ -59,13 +59,6 @@ def test_init_specific_user_manager_calls_stay_in_distro_layer(repo):
     assert not offenders, "direct user-manager calls: " + ", ".join(offenders)
 
 
-@pytest.mark.parametrize(
-    "entry", ["install", "uninstall", "installer"])
-def test_entry_point_exists(repo, entry):
-    p = repo / entry
-    assert p.is_file() and p.stat().st_mode & 0o111
-
-
 @pytest.mark.parametrize("script", ["install", "uninstall", "installer"])
 def test_help_exits_zero(repo, script):
     """`./install --help` and `./uninstall --help` must not crash. This

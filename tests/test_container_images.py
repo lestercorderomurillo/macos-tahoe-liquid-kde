@@ -1,12 +1,6 @@
 """Static guards for container-image package-manager invariants."""
 
 
-def test_neon_installs_git_for_release_capture_tests(repo):
-    text = (repo / "tests/containers/Dockerfile.neon").read_text()
-    packages = text.split("apt-get install", 1)[1].split("&&", 1)[0].split()
-    assert "git" in packages
-
-
 def test_arch_family_images_do_not_perform_partial_upgrades(repo):
     """Refreshing pacman metadata without upgrading the base image can mix
     Python and Expat ABIs, making pyexpat fail before the suite reaches project

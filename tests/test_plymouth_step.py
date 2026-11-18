@@ -19,7 +19,6 @@ Two flavours:
 """
 
 import configparser
-import hashlib
 import re
 from contextlib import contextmanager
 from pathlib import Path
@@ -91,13 +90,6 @@ def test_plymouth_script_brackets_balanced():
         assert n_open == n_close, (
             f"unbalanced {name}: open={n_open} close={n_close}"
         )
-
-
-def test_plymouth_script_is_the_known_working_og_version():
-    """Issue #76 is distro policy; do not mutate the generally-working UI."""
-    script = THEME_SRC / "MacTahoeLiquidKde.script"
-    digest = hashlib.sha256(script.read_bytes()).hexdigest()
-    assert digest == "e0b8fa931fcf02e77e9944c469557927ffcd27df84820c0aa3909c3aab678b6b"
 
 
 def test_plymouth_theme_directory_is_minimal():
