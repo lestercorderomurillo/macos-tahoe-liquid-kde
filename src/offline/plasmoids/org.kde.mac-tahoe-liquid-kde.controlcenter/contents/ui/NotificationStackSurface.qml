@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 import QtQuick
+import QtQuick.Effects
 
 Item {
     id: stack
@@ -9,27 +10,60 @@ Item {
     readonly property color fillColor: surface.fillColor
     readonly property real cardHeight: surface.height
     readonly property real cornerRadius: surface.cornerRadius
+    readonly property real layerOffset: 4
     readonly property var surfaces: {
-        const areas = [{x:0, y:0, width:width, height:cardHeight, radius:cornerRadius}];
-        for (let layer = 0; layer < depth; ++layer)
-            areas.push({x:(layer+1)*4, y:cardHeight-8+layer*4,
-                width:width-(layer+1)*8, height:12, radius:8});
+        const areas = [];
+        for (let i = 0; i <= depth; ++i) {
+            const offset = i * layerOffset;
+            areas.push({x: offset, y: offset, width: width - 2 * offset,
+                        height: cardHeight, radius: cornerRadius});
+        }
         return areas;
     }
     implicitWidth: 344
-    implicitHeight: surface.implicitHeight + depth * 4
+    implicitHeight: surface.implicitHeight + depth * layerOffset
     Repeater {
         model: stack.depth
         Item {
+            id: lip
             required property int index
-            x: (stack.depth-index)*4
-            y: surface.height+(stack.depth-index-1)*4
-            width: stack.width-x*2; height: 4
+            // The Qt software scene graph cannot run a layer shader.
+            readonly property bool useMask: GraphicsInfo.api !== GraphicsInfo.Software
+            readonly property var area: stack.surfaces[stack.depth - index]
+            x: area.x
+            y: area.y + area.height - height
+            width: area.width
+            height: useMask ? Math.min(area.height, area.radius + stack.layerOffset) : stack.layerOffset
             clip: true
-            NotificationSurface {
-                y: 4-surface.height
-                width: parent.width; height: surface.height
-                contentItem: Item {}
+
+            // Show the curved lip only where the card in front leaves it exposed.
+            Item {
+                anchors.fill: parent
+                layer.enabled: lip.useMask
+                layer.effect: MultiEffect {
+                    maskEnabled: true
+                    maskInverted: true
+                    maskSource: occluder
+                }
+                NotificationSurface {
+                    anchors.bottom: parent.bottom
+                    width: parent.width
+                    height: lip.area.height
+                    contentItem: Item {}
+                }
+            }
+            Item {
+                id: occluder
+                anchors.fill: parent
+                visible: false
+                layer.enabled: lip.useMask
+                Rectangle {
+                    x: -stack.layerOffset
+                    y: parent.height - height - stack.layerOffset
+                    width: parent.width + 2 * stack.layerOffset
+                    height: lip.area.height
+                    radius: lip.area.radius
+                }
             }
         }
     }
