@@ -1,55 +1,48 @@
 {
-  "version": "0.73.7",
-  "implementation_commit": "5ecf6b116095d00c9a8d5b1c62f04638bd3c5a32",
+  "version": "0.73.8",
+  "scope": "Vertically center Launcher options labels and antialias the checkmark.",
+  "environment": "Disposable KDE neon Wayland / Plasma 6.8.1 / Qt 6.11.1 / scale 2",
+  "implementation_commit": "45342ce96e19fd6f5393e73015160a1d26708776",
   "approval": {
     "date": "2026-11-17",
-    "message": "release yes",
-    "preview_sha256": "81f9d6d037f48b68b576b451128b09d8828261d105e5949239c72db0e1b038ff"
+    "message": "si men",
+    "preview_sha256": "191355079d7b6464a31b9eb09537188fbc0be17401ad4af381cdfc2eea9ee45f"
   },
-  "scope": "macOS-style Wi-Fi and battery menus, shared with Control Center, using edition-specific glass and existing native network/power actions.",
-  "environment": "Disposable KDE neon Plasma 6.8.1 / Qt 6.11.1 Wayland VM at 3840x2160, scale 2; host Qt 6.11.2 isolated native-action probe.",
+  "gallery_commit": "f09780b200b79302e7c23ef9f6f74d94748bbea3",
+  "coverage_limits": [
+    "Visual checks ran at 2\u00d7 scale in a disposable KDE neon Wayland VM.",
+    "Visual verification used Wayland. Isolated X11 probes cover launcher behavior without qualifying the compositor's visual output.",
+    "The preexisting Acrylic Glass plugin was built and enabled for the VM comparison. The patch changes only Launcher QML and its component hash."
+  ],
+  "details": "docs/evidence/launcher-menu-alignment.json",
   "checks": [
     {
-      "command": "python3 -m pytest tests/test_desktop_controls.py -q",
+      "command": "QT_QUICK_CONTROLS_STYLE=org.kde.desktop python3 -m pytest -q tests/test_launcher_presets.py -k 'native_launcher_popup_presets and ((MacTahoe and Light and 1) or (MacGoldenGate and Dark and 2))'",
       "result": "passed",
-      "detail": "1 passed; real pointer/keyboard power-profile selection plus native network and battery state/action contracts."
+      "detail": "2 passed"
     },
     {
-      "command": "python3 -m pytest tests/test_localization.py -q",
+      "command": "Disposable Plasma VM Launcher's options menu with Acrylic Glass on and off",
       "result": "passed",
-      "detail": "10 passed; all five translated applet domains resolve the shared menu labels."
-    },
-    {
-      "command": "python3 /tmp/status-transitions.py MacTahoe / MacGoldenGate in disposable VM",
-      "result": "passed",
-      "detail": "9 scenarios per edition. Both menus and Qt/Kvantum plus GTK 3/4 processes remained alive. Rendered menu pixels, effective text colors and GTK surfaces verified at each transition."
+      "detail": "Both editions and both appearance modes. Highlighted label measured centered, check edges antialiased, and the same backdrop softened with Acrylic Glass enabled."
     },
     {
       "command": "python3 src/scripts/component_manifest.py",
-      "result": "passed",
-      "detail": "Independent component ledger generated and verified."
+      "result": "passed"
     },
     {
       "command": "git diff --check",
       "result": "passed"
     }
   ],
-  "details": "docs/evidence/status-menus-0737.json",
-  "gallery_commit": "f09780b200b79302e7c23ef9f6f74d94748bbea3",
   "captures": [
     {
-      "path": "src/screenshots/previews/status-menus-tahoe-81f9d6d037f4.png",
-      "sha256": "81f9d6d037f48b68b576b451128b09d8828261d105e5949239c72db0e1b038ff",
+      "path": "src/screenshots/previews/launcher-menu-191355079d7b.png",
+      "sha256": "191355079d7b6464a31b9eb09537188fbc0be17401ad4af381cdfc2eea9ee45f",
       "reviewed": true,
-      "source_commit": "5ecf6b116095d00c9a8d5b1c62f04638bd3c5a32"
+      "source_commit": "45342ce96e19fd6f5393e73015160a1d26708776",
+      "description": "Both editions in light and dark with a magnified checkmark and Acrylic Glass comparison."
     }
   ],
-  "coverage_limits": [
-    "Single representative KDE neon Plasma 6.8.1 / Qt 6.11.1 Wayland VM. Native code, shaders, SDK APIs and installer lifecycle did not change.",
-    "Physical Wi-Fi connections and real battery hardware were not exercised; native action contracts used deterministic hardware models.",
-    "Actual project automatic dusk/dawn crossings were observed with persistent menus, Qt/Kvantum and GTK 3/4 windows. Native KDE appearance changes used plasma-apply-colorscheme; native sunrise/sunset scheduler configuration was not changed.",
-    "Historical README/installer galleries retain their original provenance; only the user-approved focused preview is added.",
-    "Full distro CI remains asynchronous; no passing status is claimed for uncompleted jobs."
-  ],
-  "source_sha256": "f9d5dd1e79805a7629d68a33e0fb5b0e0eb4f9dc83c4eec6d2bf0b8419af5aad"
+  "source_sha256": "4502f6abad7eec03403aae1f9d5475cb08b21f0f70c8e1dff1c103784a2b53e0"
 }
