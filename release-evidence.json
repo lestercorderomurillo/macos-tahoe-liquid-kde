@@ -1,46 +1,55 @@
 {
-  "version": "0.73.6",
-  "implementation_commit": "afda507745881d8a53f2083db8de0d1b9d852ef4",
+  "version": "0.73.7",
+  "implementation_commit": "5ecf6b116095d00c9a8d5b1c62f04638bd3c5a32",
   "approval": {
     "date": "2026-11-17",
-    "message": "si pero muestrame unas 10 capturas de muchas configuraciones, talvez 20, on y off",
-    "preview_sha256": "4033f1848a7a08a758f6b9c5ec395a19625bb02edf4f0e9be54b500ab9cd93de"
+    "message": "release yes",
+    "preview_sha256": "81f9d6d037f48b68b576b451128b09d8828261d105e5949239c72db0e1b038ff"
   },
-  "scope": "Preserve Shell font weights, layout and capsule geometry. Improve text and hover contrast, add a subtle translucent gradient to the full top bar, and slightly strengthen the Tahoe light capsule.",
-  "environment": "Disposable KDE neon Plasma 6.8.1 / Qt 6.11.1 Wayland VM, 3840×2160 at scale 2; Kate exported the fixture menus.",
+  "scope": "macOS-style Wi-Fi and battery menus, shared with Control Center, using edition-specific glass and existing native network/power actions.",
+  "environment": "Disposable KDE neon Plasma 6.8.1 / Qt 6.11.1 Wayland VM at 3840x2160, scale 2; host Qt 6.11.2 isolated native-action probe.",
   "checks": [
     {
-      "command": "python3 -m pytest -q tests/test_topbar_geometry.py",
+      "command": "python3 -m pytest tests/test_desktop_controls.py -q",
       "result": "passed",
-      "detail": "1 passed. Geometry at three heights, original normal menu weight, and capsule hidden/hover/active properties."
+      "detail": "1 passed; real pointer/keyboard power-profile selection plus native network and battery state/action contracts."
+    },
+    {
+      "command": "python3 -m pytest tests/test_localization.py -q",
+      "result": "passed",
+      "detail": "10 passed; all five translated applet domains resolve the shared menu labels."
+    },
+    {
+      "command": "python3 /tmp/status-transitions.py MacTahoe / MacGoldenGate in disposable VM",
+      "result": "passed",
+      "detail": "9 scenarios per edition. Both menus and Qt/Kvantum plus GTK 3/4 processes remained alive. Rendered menu pixels, effective text colors and GTK surfaces verified at each transition."
     },
     {
       "command": "python3 src/scripts/component_manifest.py",
       "result": "passed",
-      "detail": "Shared independent component ledger matches staged sources."
-    },
-    {
-      "command": "Build and load current Shell in disposable Plasma Wayland VM; compare captured pixels and capsule bounds",
-      "result": "passed",
-      "detail": "Both modes and editions. Tahoe light contrast over its default wallpaper increased from 1.108:1 to 1.173:1, while all four default samples retained identical capsule bounds."
-    },
-    {
-      "command": "python3 -u multi-wallpaper.py tahoe / golden-gate",
-      "result": "passed",
-      "detail": "Twelve additional rendered frames across six configurations compared with eight existing frames from the same implementation; each pair shows the inactive and hovered capsule."
+      "detail": "Independent component ledger generated and verified."
     },
     {
       "command": "git diff --check",
       "result": "passed"
     }
   ],
-  "details": "docs/evidence/shell-0736.json",
+  "details": "docs/evidence/status-menus-0737.json",
   "gallery_commit": "f09780b200b79302e7c23ef9f6f74d94748bbea3",
-  "coverage_limits": [
-    "Single representative Wayland VM. The incremental QML styling does not change the installer lifecycle, X11 backend, or native KWin interfaces.",
-    "The substitute and default wallpapers are representative fixtures; the numeric sample covers the capsule over the Tahoe default light wallpaper.",
-    "A Plasma service stop with exported Kate menus can trigger an AppMenuModel teardown crash in both the prior implementation and the candidate. The contrast change does not touch that model. The affected disposable session was recovered before further captures.",
-    "Existing documentation galleries keep their original provenance. Full CI runs independently."
+  "captures": [
+    {
+      "path": "src/screenshots/previews/status-menus-tahoe-81f9d6d037f4.png",
+      "sha256": "81f9d6d037f48b68b576b451128b09d8828261d105e5949239c72db0e1b038ff",
+      "reviewed": true,
+      "source_commit": "5ecf6b116095d00c9a8d5b1c62f04638bd3c5a32"
+    }
   ],
-  "source_sha256": "2868b0ea0b4ec72225d66f7d9f18ac529eb4263fdade468d294233ac169baf8f"
+  "coverage_limits": [
+    "Single representative KDE neon Plasma 6.8.1 / Qt 6.11.1 Wayland VM. Native code, shaders, SDK APIs and installer lifecycle did not change.",
+    "Physical Wi-Fi connections and real battery hardware were not exercised; native action contracts used deterministic hardware models.",
+    "Actual project automatic dusk/dawn crossings were observed with persistent menus, Qt/Kvantum and GTK 3/4 windows. Native KDE appearance changes used plasma-apply-colorscheme; native sunrise/sunset scheduler configuration was not changed.",
+    "Historical README/installer galleries retain their original provenance; only the user-approved focused preview is added.",
+    "Full distro CI remains asynchronous; no passing status is claimed for uncompleted jobs."
+  ],
+  "source_sha256": "f9d5dd1e79805a7629d68a33e0fb5b0e0eb4f9dc83c4eec6d2bf0b8419af5aad"
 }
