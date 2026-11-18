@@ -3447,5 +3447,12 @@
   "approval": {
     "instruction": "si",
     "date": "2026-11-17"
+  },
+  "dock_gallery_approval": {
+    "version": "0.73.11",
+    "date": "2026-11-17",
+    "instruction": "Sí, publica estas fotos",
+    "scope": "20 Dock photographs for the README galleries, captured on the alternate Neon VM.",
+    "review_sheet_sha256": "daba186093fbd38c844fd72c14cc49f0c3bb3f4013c9f753b726ca006a59eeaf"
   }
 }
