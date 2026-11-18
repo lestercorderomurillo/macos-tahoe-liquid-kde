@@ -1,0 +1,147 @@
+{
+  "candidate_commit": "45342ce96e19fd6f5393e73015160a1d26708776",
+  "menu_qml_sha256": "2169d81b1e1b1cdf53329525f9bdd4c11e3be423a34773fdde6e40dfd1a804ff",
+  "preview_sha256": "191355079d7b6464a31b9eb09537188fbc0be17401ad4af381cdfc2eea9ee45f",
+  "tested_vm": "Disposable KDE neon Wayland / Plasma 6.8.1 / Qt 6.11.1 / scale 2",
+  "vm_base_sha256": "2a09de13ad568da01a8e16dd93e6aec120e63375bfc0ec24b4e804b43ecb4f8c",
+  "effect_build_id": "0761b0abc4640e6ebebf07a90010272cf40a15572f21a11830954fd065f0fcd2",
+  "check_edge_pixels_before": 0,
+  "check_edge_pixels_after": 23,
+  "frames": {
+    "golden-gate-light": {
+      "on": {
+        "crop_sha256": "6a5b4faa29cb967c9e2dd10bb86c3ca01dfcb7c006b3039565f3b0c4fe3880b2",
+        "label_center_offset_logical_px": 0.0,
+        "highlight_y_device_px": [
+          224,
+          271
+        ],
+        "background_edge_strength": 0.08148839690584156,
+        "menu_geometry": {
+          "x": 1087,
+          "y": 235,
+          "width": 154,
+          "height": 202
+        }
+      },
+      "off": {
+        "crop_sha256": "eb9dfc634428be6842dd01d1e5d63d7398cfe1bd27838b0b87bbc90d5f198d04",
+        "label_center_offset_logical_px": 0.0,
+        "highlight_y_device_px": [
+          224,
+          271
+        ],
+        "background_edge_strength": 3.034142437983462,
+        "menu_geometry": {
+          "x": 1087,
+          "y": 235,
+          "width": 154,
+          "height": 202
+        }
+      }
+    },
+    "golden-gate-dark": {
+      "on": {
+        "crop_sha256": "b8b0227fbf000330d4835877c1ad1d429cc2611f718cdb0662de4ef0003204ae",
+        "label_center_offset_logical_px": 0.0,
+        "highlight_y_device_px": [
+          224,
+          271
+        ],
+        "background_edge_strength": 0.18524939983995733,
+        "menu_geometry": {
+          "x": 1087,
+          "y": 235,
+          "width": 154,
+          "height": 202
+        }
+      },
+      "off": {
+        "crop_sha256": "3f43a50e337e59c967dd4aba156e1312839991d52cebaa214e50e111ab9aee6c",
+        "label_center_offset_logical_px": 0.0,
+        "highlight_y_device_px": [
+          224,
+          271
+        ],
+        "background_edge_strength": 4.5301413710322755,
+        "menu_geometry": {
+          "x": 1087,
+          "y": 235,
+          "width": 154,
+          "height": 202
+        }
+      }
+    },
+    "tahoe-light": {
+      "on": {
+        "crop_sha256": "5014321b2decf5ff7ec408726e7282d32d9357606c3f329f58aa33cf76b35e75",
+        "label_center_offset_logical_px": 0.0,
+        "highlight_y_device_px": [
+          224,
+          271
+        ],
+        "background_edge_strength": 0.10256068284875967,
+        "menu_geometry": {
+          "x": 1112,
+          "y": 313,
+          "width": 154,
+          "height": 202
+        }
+      },
+      "off": {
+        "crop_sha256": "444b1984f7e0f6333f433257f5c3a7ad2b1ff9953df2be7379c7a166e15719d0",
+        "label_center_offset_logical_px": 0.0,
+        "highlight_y_device_px": [
+          224,
+          271
+        ],
+        "background_edge_strength": 0.3747666044278474,
+        "menu_geometry": {
+          "x": 1112,
+          "y": 313,
+          "width": 154,
+          "height": 202
+        }
+      }
+    },
+    "tahoe-dark": {
+      "on": {
+        "crop_sha256": "93405a3c948dc26d13e2bb9cb8ee0b447591843fa1a29af3692eb4fb2648b132",
+        "label_center_offset_logical_px": 0.0,
+        "highlight_y_device_px": [
+          224,
+          271
+        ],
+        "background_edge_strength": 0.24419845292077888,
+        "menu_geometry": {
+          "x": 1112,
+          "y": 313,
+          "width": 154,
+          "height": 202
+        }
+      },
+      "off": {
+        "crop_sha256": "899724cbe9707eaf48d23fd04e096206348661bb8334b4fb2a6eba81e3678167",
+        "label_center_offset_logical_px": 0.0,
+        "highlight_y_device_px": [
+          224,
+          271
+        ],
+        "background_edge_strength": 0.4533208855694852,
+        "menu_geometry": {
+          "x": 1112,
+          "y": 313,
+          "width": 154,
+          "height": 202
+        }
+      }
+    }
+  },
+  "preview": "src/screenshots/previews/launcher-menu-191355079d7b.png",
+  "scope": "Launcher options and its shared menu delegate. Verified both default launcher presets in light and dark.",
+  "coverage_limits": [
+    "Visual checks ran at 2\u00d7 scale in a disposable KDE neon Wayland VM.",
+    "Visual verification used Wayland. Isolated X11 probes cover launcher behavior without qualifying the compositor's visual output.",
+    "The preexisting Acrylic Glass plugin was built and enabled for the VM comparison. The patch changes only Launcher QML and its component hash."
+  ]
+}
