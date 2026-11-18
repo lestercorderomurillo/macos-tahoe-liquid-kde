@@ -1,0 +1,318 @@
+{
+  "version": "0.73.6",
+  "implementation_commit": "afda507745881d8a53f2083db8de0d1b9d852ef4",
+  "approval": {
+    "date": "2026-11-17",
+    "message": "si pero muestrame unas 10 capturas de muchas configuraciones, talvez 20, on y off",
+    "preview_sha256": "4033f1848a7a08a758f6b9c5ec395a19625bb02edf4f0e9be54b500ab9cd93de"
+  },
+  "scope": "Preserve Shell font weights, layout and capsule geometry. Improve text and hover contrast, add a subtle translucent gradient to the full top bar, and slightly strengthen the Tahoe light capsule.",
+  "environment": "Disposable KDE neon Plasma 6.8.1 / Qt 6.11.1 Wayland VM, 3840×2160 at scale 2; Kate exported the fixture menus.",
+  "checks": [
+    {
+      "command": "python3 -m pytest -q tests/test_topbar_geometry.py",
+      "result": "passed",
+      "detail": "1 passed. Geometry at three heights, original normal menu weight, and capsule hidden/hover/active properties."
+    },
+    {
+      "command": "python3 src/scripts/component_manifest.py",
+      "result": "passed",
+      "detail": "Shared independent component ledger matches staged sources."
+    },
+    {
+      "command": "Build and load current Shell in disposable Plasma Wayland VM; compare captured pixels and capsule bounds",
+      "result": "passed",
+      "detail": "Both modes and editions. Tahoe light contrast over its default wallpaper increased from 1.108:1 to 1.173:1, while all four default samples retained identical capsule bounds."
+    },
+    {
+      "command": "python3 -u multi-wallpaper.py tahoe / golden-gate",
+      "result": "passed",
+      "detail": "Twelve additional rendered frames across six configurations compared with eight existing frames from the same implementation; each pair shows the inactive and hovered capsule."
+    },
+    {
+      "command": "git diff --check",
+      "result": "passed"
+    }
+  ],
+  "details": "docs/evidence/shell-0736.json",
+  "gallery_commit": "f09780b200b79302e7c23ef9f6f74d94748bbea3",
+  "coverage_limits": [
+    "Single representative Wayland VM. The incremental QML styling does not change the installer lifecycle, X11 backend, or native KWin interfaces.",
+    "The substitute and default wallpapers are representative fixtures; the numeric sample covers the capsule over the Tahoe default light wallpaper.",
+    "A Plasma service stop with exported Kate menus can trigger an AppMenuModel teardown crash in both the prior implementation and the candidate. The contrast change does not touch that model. The affected disposable session was recovered before further captures.",
+    "Existing documentation galleries keep their original provenance. Full CI runs independently."
+  ],
+  "installed_qml_sha256": {
+    "main.qml": "a9cca94690f56e56adee095822af7d3ceca261effd689db189ef033c515ec6d6",
+    "MenuDelegate.qml": "277cbcf8df969d17a756638705f4e79625dfb02b3509a1fe446457270ec6aeb5"
+  },
+  "installed_applet_sha256": "3b1e967b3ae136dbcdf74bddd01923dd72f9a57bbe783631dad5e176e1683411",
+  "vm_base_sha256": "2a09de13ad568da01a8e16dd93e6aec120e63375bfc0ec24b4e804b43ecb4f8c",
+  "contrast_measurement": {
+    "cases": {
+      "MacTahoe-light": {
+        "before": {
+          "bounds": [
+            210,
+            8,
+            302,
+            56
+          ],
+          "sample": [
+            224,
+            21,
+            232,
+            41
+          ],
+          "luminance_delta": 0.0541,
+          "lightness_delta": 3.42,
+          "contrast": 1.108
+        },
+        "after": {
+          "bounds": [
+            210,
+            8,
+            302,
+            56
+          ],
+          "sample": [
+            224,
+            21,
+            232,
+            41
+          ],
+          "luminance_delta": 0.0871,
+          "lightness_delta": 5.38,
+          "contrast": 1.173
+        }
+      },
+      "MacTahoe-dark": {
+        "before": {
+          "bounds": [
+            210,
+            8,
+            302,
+            56
+          ],
+          "sample": [
+            224,
+            21,
+            232,
+            41
+          ],
+          "luminance_delta": 0.0375,
+          "lightness_delta": 15.56,
+          "contrast": 1.594
+        },
+        "after": {
+          "bounds": [
+            210,
+            8,
+            302,
+            56
+          ],
+          "sample": [
+            224,
+            21,
+            232,
+            41
+          ],
+          "luminance_delta": 0.0375,
+          "lightness_delta": 15.56,
+          "contrast": 1.594
+        }
+      },
+      "MacGoldenGate-light": {
+        "before": {
+          "bounds": [
+            210,
+            8,
+            302,
+            56
+          ],
+          "sample": [
+            224,
+            21,
+            232,
+            41
+          ],
+          "luminance_delta": 0.072,
+          "lightness_delta": 8.42,
+          "contrast": 1.349
+        },
+        "after": {
+          "bounds": [
+            210,
+            8,
+            302,
+            56
+          ],
+          "sample": [
+            224,
+            21,
+            232,
+            41
+          ],
+          "luminance_delta": 0.072,
+          "lightness_delta": 8.42,
+          "contrast": 1.349
+        }
+      },
+      "MacGoldenGate-dark": {
+        "before": {
+          "bounds": [
+            210,
+            8,
+            302,
+            56
+          ],
+          "sample": [
+            224,
+            21,
+            232,
+            41
+          ],
+          "luminance_delta": 0.0458,
+          "lightness_delta": 18.99,
+          "contrast": 1.755
+        },
+        "after": {
+          "bounds": [
+            210,
+            8,
+            302,
+            56
+          ],
+          "sample": [
+            224,
+            21,
+            232,
+            41
+          ],
+          "luminance_delta": 0.0458,
+          "lightness_delta": 18.99,
+          "contrast": 1.755
+        }
+      }
+    },
+    "preview": "tahoe-claro-contraste-4033f1848a7a.png",
+    "preview_sha256": "4033f1848a7a08a758f6b9c5ec395a19625bb02edf4f0e9be54b500ab9cd93de"
+  },
+  "measurement_reference": "https://www.w3.org/TR/WCAG21/relative-luminance.html",
+  "review_capture_sheet_hashes": {
+    "tahoe": "ea9b65f8628fac18a14297b7dc4d8bd2ab3b6e5658720ed1090b075c2dffa69d",
+    "golden-gate": "5c8123381efbdcbb7752470b193b8578298fb5c7f8137f6e0003d529e418f2af"
+  },
+  "review_frame_hashes": {
+    "MacTahoe-light": {
+      "off": "0ed24f01dd6694eda319ca8cacd5b19919b8258f4b72506d40bdc5e0d19fbfba",
+      "on": "1ad473a3ad10fad83aaef1c4b4cd31ff2ffe57828445c3f1333ff8dbbaad15e5"
+    },
+    "tahoe-light-bigsur": {
+      "off": "67c37fd5cebb305864479a9f5abe9292625a9a7629801ad0b5189a0c88f843f1",
+      "on": "08596529791e9ccac4d2dde540723be526e81886ae2184acb6b6dd7cdd9b4f79"
+    },
+    "tahoe-light-prism": {
+      "off": "59bd0ca62263b03173a7516c6c6539d7925a866b2af4d4e453c5ad58cad4c225",
+      "on": "0b808db6ce3fd151fe8bafd5f4144680669a0ad765fc590fdefa8434f14f5513"
+    },
+    "tahoe-light-morning": {
+      "off": "24b2ae5d3c9960fadb31b9e1c691cc5c21469bfb44b0da10a40ab2fd94bd34f0",
+      "on": "4f7ff5e5ae2e66986d2240da775c32d0fa99dcfe1de7bd68b34057cf421d04a7"
+    },
+    "MacTahoe-dark": {
+      "off": "71f68e324bf1046f0f781528f3c564fc104d5f2bccaf5c4ed8fc669b7f142832",
+      "on": "efdc36198be2c204faec09f4fed6f36402b3f93dbd4eccb7d1f20f7cf6d492d7"
+    },
+    "tahoe-dark-beach": {
+      "off": "e867cb5aeb2d410553612b06f5303ca125c18e77a53b5b0fbb4e7882f73d802f",
+      "on": "4c939fa8408c59b3040bc80e8ec8bfd8b2a190484bcf225da712589824212a18"
+    },
+    "MacGoldenGate-light": {
+      "off": "2793ffd0dbebfc5b03be843baf94346ac681450929efb708e7c8605a8b7cbb00",
+      "on": "9a32518f9fe1fdd404dc9850271fdeccf1e8fc3193286e47b72999f2621d80a1"
+    },
+    "gate-light-beach": {
+      "off": "3aefd35a426cc85040fbb011a1a43fb1a9ed5636f7bb2bb88269cc40d112097e",
+      "on": "d2bae9432c34b05f76efa2353ce0ae1d0fcba9f9f4cb7fb35979ff62460546e7"
+    },
+    "MacGoldenGate-dark": {
+      "off": "c5cdb0a94a8b03ba3b3553713084bdcdcab8338fc1a662612eeb64b3308de6cd",
+      "on": "c7431684bc671bc7b0c77672b8c89505d207b6757b2c0147b9b455528e2de8cc"
+    },
+    "gate-dark-prism": {
+      "off": "dd6e443aeb2016cc796f975123bc3e30ae372760f0162f315375a8b39ea3a82e",
+      "on": "da05911317e1d923a9e15e423de6fb4ed2fe9acae09b717c30a09b40d62622ef"
+    }
+  },
+  "prior_qualification": {
+    "baseline_commit": "63f8c949eced2e9e8fdad62e50473fd0c6f7bc5d",
+    "implementation_commit": "e78d69087484edced3cca274ced79220c8350c86",
+    "popup_anchors": {
+      "MacGoldenGate-dark": {
+        "system": {
+          "x": 6,
+          "y": 32,
+          "width": 288,
+          "height": 284
+        },
+        "after_pointer_move": {
+          "x": 6,
+          "y": 32,
+          "width": 288,
+          "height": 284
+        },
+        "switched": false
+      },
+      "MacGoldenGate-light": {
+        "system": {
+          "x": 6,
+          "y": 32,
+          "width": 208,
+          "height": 45
+        },
+        "after_pointer_move": {
+          "x": 106,
+          "y": 32,
+          "width": 246,
+          "height": 473
+        },
+        "switched": true
+      },
+      "MacTahoe-dark": {
+        "system": {
+          "x": 6,
+          "y": 32,
+          "width": 288,
+          "height": 284
+        },
+        "after_pointer_move": {
+          "x": 6,
+          "y": 32,
+          "width": 288,
+          "height": 284
+        },
+        "switched": false
+      },
+      "MacTahoe-light": {
+        "system": {
+          "x": 6,
+          "y": 32,
+          "width": 288,
+          "height": 284
+        },
+        "after_pointer_move": {
+          "x": 106,
+          "y": 32,
+          "width": 246,
+          "height": 473
+        },
+        "switched": true
+      }
+    },
+    "coverage_limits": [
+      "Single Wayland VM and representative Kate menus with each edition’s default wallpapers",
+      "Preview only. Approval and publication pending."
+    ]
+  }
+}

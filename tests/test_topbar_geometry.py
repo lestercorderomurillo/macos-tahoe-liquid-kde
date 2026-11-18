@@ -8,7 +8,7 @@ def test_topbar_highlight_preserves_hit_area_and_text(repo, tmp_path):
     probe = r'''
 import sys
 from PyQt6.QtCore import QUrl
-from PyQt6.QtGui import QGuiApplication
+from PyQt6.QtGui import QFont, QGuiApplication
 from PyQt6.QtQuick import QQuickItem
 from PyQt6.QtQml import QQmlEngine, QQmlComponent, QQmlProperty
 app = QGuiApplication([])
@@ -16,6 +16,15 @@ engine = QQmlEngine()
 component = QQmlComponent(engine, QUrl.fromLocalFile(sys.argv[1]))
 button = component.create()
 assert button is not None, component.errors()
+assert button.property('font').weight() == QFont.Weight.Normal
+background = QQmlProperty(button, 'background').read()
+assert not background.isVisible()
+assert round(background.property('color').alphaF(), 2) == 0.18
+button.setProperty('down', True)
+assert background.isVisible()
+assert round(background.property('color').alphaF(), 2) == 0.25
+button.setProperty('down', False)
+assert not background.isVisible()
 for height in (24, 32, 48):
     for text in ('Files', 'Visual Studio Code', 'Window'):
         button.setProperty('text', text)

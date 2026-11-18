@@ -13,6 +13,11 @@ AbstractButton {
     id: controlRoot
 
     font.weight: Font.Normal
+    readonly property bool lightText: Kirigami.ColorUtils.brightnessForColor(Kirigami.Theme.textColor)
+                                      === Kirigami.ColorUtils.Light
+    readonly property color foregroundColor: Qt.tint(Kirigami.Theme.textColor, lightText ? "#40ffffff" : "#40000000")
+
+    property real lightCapsuleOpacityBoost: 0
     property bool menuIsOpen: false
     property bool hoverOpensMenu: true
 
@@ -52,9 +57,14 @@ AbstractButton {
         y: Math.min(Kirigami.Units.smallSpacing, controlRoot.height / 4)
         height: Math.max(0, controlRoot.height - 2 * y)
         radius: Math.min(width, height) / 2
-        color: controlRoot.menuState === MenuDelegate.State.Rest
-               ? "transparent"
-               : Qt.rgba(0.5, 0.5, 0.5, controlRoot.menuState === MenuDelegate.State.Down ? 0.25 : 0.18)
+
+        readonly property color tint: controlRoot.lightText ? "#ffffff" : "#e3e7ee"
+
+        readonly property real baseOpacity: controlRoot.menuState === MenuDelegate.State.Down ? 0.25 : 0.18
+        readonly property real fillOpacity: baseOpacity + (controlRoot.lightText ? 0 : controlRoot.lightCapsuleOpacityBoost)
+
+        visible: controlRoot.menuState !== MenuDelegate.State.Rest
+        color: Qt.rgba(tint.r, tint.g, tint.b, fillOpacity)
     }
 
     contentItem: PC3.Label {
@@ -62,7 +72,7 @@ AbstractButton {
         textFormat: Text.StyledText
         verticalAlignment: Text.AlignVCenter
         elide: Text.ElideRight
-        color: Kirigami.Theme.textColor
+        color: controlRoot.foregroundColor
         font.weight: controlRoot.font.weight
     }
 }

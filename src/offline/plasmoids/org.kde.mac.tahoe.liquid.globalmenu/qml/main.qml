@@ -9,7 +9,6 @@ pragma ComponentBehavior: Bound
 
 import QtQuick
 import QtQuick.Layouts
-import QtQuick.Controls as QQC2
 import QtQml
 
 import org.kde.plasma.plasmoid
@@ -17,6 +16,7 @@ import org.kde.plasma.core as PlasmaCore
 import org.kde.plasma.private.keyboardindicator as KeyboardIndicator
 import org.kde.plasma.components as PlasmaComponents3
 import org.kde.kirigami as Kirigami
+import org.kde.ksvg as KSvg
 import plasma.applet.org.kde.mac.tahoe.liquid.globalmenu
 
 PlasmoidItem {
@@ -25,6 +25,31 @@ PlasmoidItem {
     readonly property bool vertical: Plasmoid.formFactor === PlasmaCore.Types.Vertical
     readonly property bool view: Plasmoid.configuration.compactView
     readonly property string cfgIcon: Plasmoid.configuration.menuIcon || "start-here-kde-symbolic"
+
+    readonly property real lightCapsuleOpacityBoost: material.hasElement("hint-clear-surface") ? 0 : 0.10
+
+    KSvg.Svg {
+        id: material
+        imagePath: "dialogs/background"
+    }
+
+    Rectangle {
+        id: barTint
+
+        // Attach to the top panel window so the tint also sits behind its other applets.
+        parent: Plasmoid.location === PlasmaCore.Types.TopEdge ? root.Window.window?.contentItem ?? null : null
+        anchors.fill: parent
+        visible: parent !== null
+        z: -1
+
+        readonly property bool lightText: Kirigami.ColorUtils.brightnessForColor(Kirigami.Theme.textColor)
+                                          === Kirigami.ColorUtils.Light
+
+        gradient: Gradient {
+            GradientStop { position: 0; color: barTint.lightText ? "#29000000" : "#29ffffff" }
+            GradientStop { position: 1; color: "transparent" }
+        }
+    }
 
     AboutWindow {
         id: aboutWindow
@@ -128,11 +153,12 @@ PlasmoidItem {
             }
         }
 
-        QQC2.AbstractButton {
+        MenuDelegate {
             id: systemMenuButton
+            lightCapsuleOpacityBoost: root.lightCapsuleOpacityBoost
             Accessible.name: i18n("System menu")
             readonly property int buttonIndex: -3
-            property bool menuIsOpen: Plasmoid.currentIndex !== -1
+            menuIsOpen: Plasmoid.currentIndex !== -1
 
             Layout.fillHeight: !root.vertical
 
@@ -141,26 +167,9 @@ PlasmoidItem {
             leftPadding: 3.5 * Kirigami.Units.smallSpacing
             rightPadding: 3.5 * Kirigami.Units.smallSpacing
 
-            hoverEnabled: true
-            onHoveredChanged: if (Plasmoid.configuration.hoverOpensMenu && hovered && menuIsOpen) { Plasmoid.triggerSystemMenu(this); }
-            onPressed: Plasmoid.triggerSystemMenu(this)
-
             down: Plasmoid.currentIndex === -3
-
-            property int menuState: {
-                if (down) return 2;
-                if (hovered && !menuIsOpen) return 1;
-                return 0;
-            }
-
-            background: Rectangle {
-                y: Math.min(Kirigami.Units.smallSpacing, systemMenuButton.height / 4)
-                height: Math.max(0, systemMenuButton.height - 2 * y)
-                radius: Math.min(width, height) / 2
-                color: systemMenuButton.menuState === 0
-                       ? "transparent"
-                       : Qt.rgba(0.5, 0.5, 0.5, systemMenuButton.menuState === 2 ? 0.25 : 0.18)
-            }
+            hoverOpensMenu: Plasmoid.configuration.hoverOpensMenu
+            onActivated: Plasmoid.triggerSystemMenu(this)
 
             contentItem: Kirigami.Icon {
                 source: root.cfgIcon
@@ -172,6 +181,7 @@ PlasmoidItem {
 
         MenuDelegate {
             id: appNameButton
+            lightCapsuleOpacityBoost: root.lightCapsuleOpacityBoost
             readonly property int buttonIndex: -2
             visible: appMenuModel.activeAppName !== ""
             text: appMenuModel.activeAppName
@@ -194,6 +204,7 @@ PlasmoidItem {
                 required property PlasmaCore.Action activeActions
                 readonly property int buttonIndex: index
 
+                lightCapsuleOpacityBoost: root.lightCapsuleOpacityBoost
                 Layout.fillWidth: root.vertical
                 Layout.fillHeight: !root.vertical
                 text: activeMenu
