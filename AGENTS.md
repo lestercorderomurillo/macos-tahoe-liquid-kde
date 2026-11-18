@@ -2,6 +2,13 @@
 
 ## Non-negotiable execution discipline
 
+**Top priority: Do not make changes the user did not request.** Treat
+everything outside the requested change as a constraint to preserve. When
+editing or recapturing an approved result, use that result and its provenance
+as the baseline. Compare the candidate against it and correct any unrelated
+difference before presenting or publishing the work. If a necessary deviation
+cannot be avoided, explain it and get approval before making it.
+
 Work quickly on the requested change. Choose the smallest executable checks
 from the diff and its direct risks; expand only for an observed failure or a
 specific affected dependency. Reuse passing evidence while code, inputs and

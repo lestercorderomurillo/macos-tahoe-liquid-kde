@@ -25,20 +25,10 @@
       "result": "passed"
     }
   ],
-  "captures": [
-    {
-      "path": "src/screenshots/previews/readme-tahoe-light-menu-2a7e73476d08.webp",
-      "sha256": "2a7e73476d08cb899ade194065567c0f26cce24f2c04d05ed87c23fc86047095",
-      "reviewed": true
-    },
-    {
-      "path": "src/screenshots/previews/readme-tahoe-dark-menu-bd2c48aa010e.webp",
-      "sha256": "bd2c48aa010e1346e51854acae034fd4a2814da28277f395f2947333d06189c0",
-      "reviewed": true
-    }
-  ],
+  "captures": [],
   "coverage_limits": [
     "Qt row pixels were checked on the primary SDK in Xvfb. The README captures cover the shared Shell on KDE neon Wayland. Full CI runs asynchronously."
   ],
-  "source_sha256": "811364b451cbf9f7ed845fe42c0c72137ea7d044d159758cfc434cc4eb7688cd"
+  "source_sha256": "811364b451cbf9f7ed845fe42c0c72137ea7d044d159758cfc434cc4eb7688cd",
+  "documentation_note": "The README currently uses the previous approved Shell photographs. The original v0.73.14 tag retains its separate historical capture record."
 }

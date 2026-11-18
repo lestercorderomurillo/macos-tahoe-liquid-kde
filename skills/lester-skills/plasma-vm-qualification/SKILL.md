@@ -48,6 +48,12 @@ menu capture offers `capture --only-system-menu`; it is not a generic
 single-component flag. If no focused option exists, inspect the helper and keep
 the preview separate instead of guessing flags or rebuilding the gallery.
 
+For a targeted recapture, inspect the exact approved frame and its provenance
+first. Reuse its capture method, installed configuration, fonts, material,
+wallpaper, scale and crop. Change only what the user requested. Compare the
+actual frames at the same scale before staging them. If the original setup
+cannot be reproduced, keep the existing approved image and report the gap.
+
 Review frame identity/focus and retain source hashes. User approval of the
 actual preview remains separate. On success, failure or interruption, account for each task-created disk.
 Save the requested frames, logs, source fingerprints and unique recovery data
