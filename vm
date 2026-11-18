@@ -11,6 +11,7 @@
 #                     RAM — override with VM_CPUS / VM_MEM_MIB.
 # ./vm list           list supported distros
 # ./vm inventory      show which distros have reusable bases
+# ./vm <distro> --installed  boot the provisioned disk without installer media
 # ./vm <distro> --prepared  boot a disposable overlay of a prepared base
 # ./vm seal <distro>  save a stopped, prepared guest as a reusable base
 # ./vm capture <distro...|all> --output DIR  run the prepared capture batch
@@ -158,7 +159,7 @@ qemu_command() {
 }
 
 prepare_one() {
-    local distro="$1" clean="$2"
+    local distro="$1" clean="$2" installed="${3:-0}"
     local base port work disk cidata ci tmp
     base="${BASE[$distro]:-}"
     [[ -n "$base" ]] || { warn "unknown distro: $distro"; return 1; }
@@ -169,11 +170,14 @@ prepare_one() {
         rm -rf "$RUN/$distro"
     fi
 
-    ensure_base "$base" || { warn "$distro: base image download failed"; return 1; }
-
     work="$RUN/$distro"
-    mkdir -p "$work"
     disk="$work/disk.qcow2"
+    if (( installed )); then
+        [[ -f "$disk" ]] || { warn "$distro: no installed disk at $disk"; return 1; }
+    else
+        ensure_base "$base" || { warn "$distro: base image download failed"; return 1; }
+        mkdir -p "$work"
+    fi
     cidata="$work/cidata.iso"
 
     local extra=()
@@ -186,9 +190,12 @@ prepare_one() {
             -drive if=pflash,format=raw,readonly=on,file="$firmware_code"
             -drive if=pflash,format=raw,file="$work/OVMF_VARS.fd"
             -drive file="$disk",if=virtio,format=qcow2
-            -drive file="$CACHE/$base",media=cdrom,readonly=on
-            -boot order=cd,menu=on
         )
+        if (( ! installed )); then
+            extra+=(-drive file="$CACHE/$base",media=cdrom,readonly=on -boot order=cd,menu=on)
+        fi
+    elif (( installed )); then
+        extra=(-drive file="$disk",if=virtio,format=qcow2)
     else
         [[ -f "$disk" ]] || qemu-img create -f qcow2 -F qcow2 -b "$CACHE/$base" "$disk" 60G >/dev/null
         ci="$CI/$distro.yaml"
@@ -248,11 +255,17 @@ boot_all() {
 }
 
 boot_one() {
-    local distro="$1" clean="$2"
-    require_tools
-    prepare_one "$distro" "$clean" || die "cannot boot $distro"
+    local distro="$1" clean="$2" installed="${3:-0}"
+    if (( installed )); then
+        command -v qemu-system-x86_64 >/dev/null || die "missing tool: qemu-system-x86_64"
+    else
+        require_tools
+    fi
+    prepare_one "$distro" "$clean" "$installed" || die "cannot boot $distro"
     say "booting $distro VM (loopback SSH port: ${PORT[$distro]})"
-    if [[ "${BASE[$distro]}" == *.iso ]]; then
+    if (( installed )); then
+        say "starting the existing guest disk without installer media"
+    elif [[ "${BASE[$distro]}" == *.iso ]]; then
         say "install $distro from its official media onto the disposable guest disk; see tests/vm/README.md"
     else
         say "the installer UI opens from a writable copy; manual path: /home/tester/macos-tahoe-liquid-kde"
@@ -346,10 +359,14 @@ case "${1:-}" in
 
 esac
 
-if [[ $# == 2 && "$2" == --prepared ]]; then
+if [[ $# == 2 && ( "$2" == --prepared || "$2" == --installed ) ]]; then
     DEFAULT_CPUS=4
     DEFAULT_MEM=6144
-    boot_prepared "$1"
+    if [[ "$2" == --prepared ]]; then
+        boot_prepared "$1"
+    else
+        boot_one "$1" 0 1
+    fi
     exit
 fi
 

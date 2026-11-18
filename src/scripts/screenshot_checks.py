@@ -58,17 +58,18 @@ def check_session(mode: str, *, home: Path | None = None) -> dict[str, str]:
     palette_import = "@import 'colors.css';"
     if actual.endswith(palette_import):
         actual = actual[:-len(palette_import)].rstrip()
-    wanted = (home / '.themes' / theme / 'gtk-4.0/gtk.css').read_text().strip()
+    installed = home / '.themes' / theme / 'gtk-4.0'
     from theme_switch import GTK4_ADAPTIVE_CSS, gtk4_legacy_adaptive_css
     if actual == GTK4_ADAPTIVE_CSS.strip():
-        imported = home / '.config/gtk-4.0' / f'gtk-{mode.capitalize()}.css'
-        if imported.read_text().strip() != wanted:
+        filename = f'gtk-{mode.capitalize()}.css'
+        imported = home / '.config/gtk-4.0' / filename
+        if imported.read_text().strip() != (installed / filename).read_text().strip():
             raise AppearanceMismatch(f'GTK 4 adaptive sheet imports stale {mode} CSS')
     elif actual.startswith('/* mac-tahoe-liquid-kde: adaptive legacy GTK 4 */'):
-        source = home / '.themes' / theme / 'gtk-4.0/gtk-Light.css'
+        source = installed / 'gtk-Light.css'
         if actual != gtk4_legacy_adaptive_css(source.read_text(), mode).strip():
             raise AppearanceMismatch('GTK 4 legacy adaptive sheet is stale or customized')
-    elif actual != wanted:
+    elif actual != (installed / 'gtk.css').read_text().strip():
         raise AppearanceMismatch(f'GTK 4 stylesheet differs from {theme}; stale or custom CSS must be reviewed')
     observed['GTK 4 stylesheet'] = theme
     return observed

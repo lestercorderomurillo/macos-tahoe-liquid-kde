@@ -33,6 +33,12 @@ the image cannot establish. Show the passing visual change for approval
 before publication. Keep this workflow in maintainer files, outside product
 UI and README feature copy.
 
+Use prepared desktop bases for fast capture checks. Keep release qualification
+independent and select its checks from the affected behavior and existing
+coverage. A successful capture answers the visual claim it exercised. It does
+not count as evidence for independent installer, application, backend or
+compatibility behavior.
+
 Brief nonvisual fixes proceed to paired release after focused checks. Changes
 to colors, icons, materials, layout or other appearance require the user's
 explicit approval of the actual preview before merge or publication. Passing

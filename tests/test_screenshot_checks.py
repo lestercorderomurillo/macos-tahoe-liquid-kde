@@ -49,6 +49,19 @@ def test_session_rejects_stale_css_when_settings_all_match(tmp_path, monkeypatch
     active.write_text(source.read_text() + "\n@import 'colors.css';")
     assert checks.check_session(mode, home=tmp_path)['GTK 4 stylesheet'] == theme
 
+    from theme_switch import GTK4_ADAPTIVE_CSS
+
+    active.write_text(GTK4_ADAPTIVE_CSS)
+    variant = f'gtk-{mode.capitalize()}.css'
+    packaged_variant = source.with_name(variant)
+    imported_variant = active.with_name(variant)
+    packaged_variant.write_text('/* adaptive variant */\n' + source.read_text())
+    imported_variant.write_text(source.read_text())
+    with pytest.raises(checks.AppearanceMismatch, match='adaptive sheet imports stale'):
+        checks.check_session(mode, home=tmp_path)
+    imported_variant.write_text(packaged_variant.read_text())
+    assert checks.check_session(mode, home=tmp_path)['GTK 4 stylesheet'] == theme
+
 
 def test_wait_requires_consecutive_matches(monkeypatch):
     outcomes = iter([{}, checks.AppearanceMismatch('stale'), {}, {}, {}])

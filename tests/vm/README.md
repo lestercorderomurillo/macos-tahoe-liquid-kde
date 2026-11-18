@@ -31,12 +31,20 @@ shared across the batch and includes time spent waiting for a worker. A failed,
 missing or timed-out guest makes the batch incomplete.
 
 To add a base, prepare the distro once using the instructions below, including
-its installer dependencies and build cache. Shut the guest down and run
-`./vm seal <distro>`. For an existing prepared image, place its standalone
-QCOW2 at `$VM_PREPARED_DIR/<distro>/disk.qcow2`. UEFI guests also need their
+its installer dependencies and build cache. Remove
+`~/.config/autostart/mttkde-installer.desktop` from the capture account if it
+exists, so the capture worker is the only process that copies the installer.
+On the Arch cloud image, run
+`sudo systemctl mask --now systemd-time-wait-sync.service` inside the capture
+base. Its SSH service waits for clock synchronization, and the isolated capture
+network cannot reach the upstream time server. Shut the guest down and run
+`./vm seal <distro>`. Verify the base with a capture batch. Place existing
+standalone images at `$VM_PREPARED_DIR/<distro>/disk.qcow2`. UEFI guests also need their
 `OVMF_VARS.fd` in that directory. `./vm <distro> --prepared` opens a single
-disposable overlay. The full install, mode changes, reboot and uninstall
-scenario remains available through the lifecycle command below.
+disposable overlay. These captures establish the rendered desktop behavior
+exercised by the capture run. Use the release qualification below for the
+other affected behavior, including installer lifecycle, application continuity,
+and distro-specific checks.
 
 Ten minutes is the target for a warm capture batch. A base that lacks its
 dependencies or a change that invalidates its build cache can miss that
@@ -62,6 +70,10 @@ installation media, pinned by URL and checksum in `.vm/images.json`. Complete
 the native installer onto the disposable 60 GB guest disk, select KDE Plasma,
 and create `tester`. Artix uses its OpenRC Plasma edition. These guests are not
 Arch or Fedora images with a changed distribution name.
+
+After shutting down the ISO installer, start the existing disk with
+`./vm <distro> --installed`. This keeps the guest online for initial
+preparation and boots without the installer media.
 
 After booting the installed OS, open its terminal and prepare it:
 
@@ -116,7 +128,7 @@ when automatic discovery does not find the host's installation.
 fresh one. Shut the target down before using it. `./vm all` opens all targets;
 it does not automate the native ISO installers or assert that any test passed.
 
-## Run the lifecycle test
+## Run release qualification
 
 On the host, after guest preparation:
 

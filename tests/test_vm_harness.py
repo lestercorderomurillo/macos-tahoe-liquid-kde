@@ -335,3 +335,31 @@ def test_prepared_guest_uses_only_an_overlay_and_cleans_it(tmp_path):
                              capture_output=True, text=True, timeout=10)
     assert missing.returncode and 'no prepared image' in missing.stderr
     assert not cache.exists()
+
+
+def test_installed_iso_boot_needs_only_the_guest_disk_and_firmware(tmp_path):
+    shutil.copy2(REPO / 'vm', tmp_path / 'vm')
+    metadata = tmp_path / '.vm'
+    metadata.mkdir()
+    shutil.copy2(REPO / '.vm/images.json', metadata / 'images.json')
+    bin_dir = tmp_path / 'bin'
+    bin_dir.mkdir()
+    qemu = bin_dir / 'qemu-system-x86_64'
+    qemu.write_text('#!/bin/bash\nprintf "%s\\n" "$@"\n')
+    qemu.chmod(0o755)
+    work = tmp_path / 'run/kubuntu'
+    work.mkdir(parents=True)
+    for name in ('disk.qcow2', 'OVMF_VARS.fd'):
+        (work / name).write_bytes(b'existing')
+    firmware = tmp_path / 'firmware.fd'
+    firmware.touch()
+    env = dict(os.environ, PATH=f'{bin_dir}:{os.environ["PATH"]}', VM_RUN_DIR=str(work.parent),
+               VM_CACHE_DIR=str(tmp_path / 'missing-media'), VM_UEFI_CODE=str(firmware),
+               VM_UEFI_VARS=str(firmware))
+    result = subprocess.check_output([tmp_path / 'vm', 'kubuntu', '--installed'],
+                                     env=env, text=True, timeout=10)
+    assert str(work / 'disk.qcow2') in result
+    assert str(work / 'OVMF_VARS.fd') in result
+    assert 'media=cdrom' not in result and 'cidata.iso' not in result
+    assert (work / 'OVMF_VARS.fd').read_bytes() == b'existing'
+    assert not (tmp_path / 'missing-media').exists()
