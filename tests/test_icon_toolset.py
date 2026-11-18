@@ -181,7 +181,8 @@ def test_installer_glass_tint_changes_artwork_and_preserves_aliases(source, tmp_
         for icon in ("view-app-grid", "user-trash", "user-trash-full"):
             rendered = blue / name / "apps/256" / (icon + ".png")
             assert Image.open(rendered).getbbox()
-            assert digest(rendered) != digest(green / name / "apps/256" / rendered.name)
+            changed = digest(rendered) != digest(green / name / "apps/256" / rendered.name)
+            assert changed == (icon == "view-app-grid")
         assert digest(blue / name / "apps/256/user-trash.png") != digest(
             blue / name / "apps/256/user-trash-full.png")
 
@@ -425,7 +426,7 @@ def test_manifest_source_provenance_and_output_boundaries(built):
         verify(built)
 
 
-def test_glass_finder_eyes_and_calendar_text_remain_legible_on_both_wallpapers(tmp_path):
+def test_glass_finder_face_and_calendar_text_remain_legible_on_both_wallpapers(tmp_path):
     """Use the shipped artwork at Dock size, not synthetic replacement glyphs."""
     from statistics import median
     from icon_materials import render_installer
@@ -457,6 +458,8 @@ def test_glass_finder_eyes_and_calendar_text_remain_legible_on_both_wallpapers(t
                           for name, im in icons.items()}
                 finder = images['system-file-manager']
                 assert contrast(finder.getpixel((20, 23)), finder.getpixel((17, 23))) >= 3, (tint, mode, background, 'eye')
+                if mode == 'light':
+                    assert contrast(finder.getpixel((37, 46)), finder.getpixel((37, 43))) >= 3, (tint, background, 'smile')
                 calendar = images['calendar']
                 assert median(contrast(calendar.getpixel(pt), calendar.getpixel((12, 17)))
                               for pt in letters) >= 3, (tint, mode, background, 'letters')
