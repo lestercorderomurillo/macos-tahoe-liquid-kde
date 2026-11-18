@@ -1,6 +1,6 @@
 # Installer testing
 
-Tahoe **v0.73.11** includes the approved Dock icon materials and Finder contrast fix. The renderer comparison covers 59 pairs. [Evidence and coverage limits](release-evidence.json).
+Tahoe **v0.73.12** corrects the rounded edges and blur region of stacked notification banners. [Focused checks and coverage](release-evidence.json).
 
 Approved installer previews: [Light](src/screenshots/previews/installer-tahoe-light-icons-805970eab6b7.png) · [Dark](src/screenshots/previews/installer-tahoe-dark-icons-dbc66adc81c4.png). The gallery below is historical and predates these installer changes; its original [provenance](src/screenshots/release-capture.json) is retained.
 
