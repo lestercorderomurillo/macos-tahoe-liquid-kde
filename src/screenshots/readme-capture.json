@@ -3430,23 +3430,6 @@
           "org.kde.haruna.desktop"
         ]
       }
-    },
-    "previews/readme-tahoe-notification-stack-1c2fe7571829.webp": {
-      "edition": "tahoe",
-      "mode": "light",
-      "sha256": "1c2fe75718297ddefa1b69965848535d81554b52944d0cedd85220135f0290ee",
-      "source_commit": "16806a0f1170796383f9addb8ee9330327876806",
-      "source_capture_sha256": "584adfee77def8b59fe9a1669f975e2736c210d6355d321cf321b73e7feeb83e",
-      "qml_sha256": "2483d6a5f0aa5d22795073aa6ecc7b6971ce420b97133c120247480798cb1970",
-      "vm_image_sha256": "2a09de13ad568da01a8e16dd93e6aec120e63375bfc0ec24b4e804b43ecb4f8c",
-      "capture": "Grouped notification banner from a disposable KDE neon Wayland VM, 2x scale, diagonal test wallpaper, edition material, three messages. Lossless window crop.",
-      "window_geometry": {
-        "x": 1550,
-        "y": 54,
-        "width": 364,
-        "height": 104
-      },
-      "user_approval": "screenshoots looks perfect; update readme related screenshots and release new version"
     }
   },
   "missing": [],

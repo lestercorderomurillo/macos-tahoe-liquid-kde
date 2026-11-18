@@ -292,10 +292,6 @@ Wi-Fi, sound, brightness and notifications in one glass menu. Updates will come 
 Glass notification banners and grouped history with app actions and reply support.
 
 <p align="center">
-  <img src="src/screenshots/previews/readme-tahoe-notification-stack-1c2fe7571829.webp" alt="Three grouped notifications in Tahoe" width="415">
-</p>
-
-<p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-notifications-e23889cb576c.webp" alt="Tahoe notifications in light mode" width="415">
   <img src="src/screenshots/previews/readme-tahoe-dark-notifications-964aef6ed481.webp" alt="Tahoe notifications in dark mode" width="415">
 </p>
