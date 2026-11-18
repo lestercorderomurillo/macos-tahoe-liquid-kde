@@ -1,6 +1,6 @@
 # Installer testing
 
-Tahoe **v0.73.9** fixes notification stacks and uses transparent menu glass without gradients, adaptive text and subtle card rims. Focused regressions, KWin 6.6/6.7/6.8 builds, isolated X11 rendering, both editions in light/dark on incompatible backgrounds and actual automatic notification transitions passed. [Evidence and coverage limits](docs/evidence/notifications-0739.json). Full CI remains asynchronous. Notification README photographs remain historical; all photographs retain their original provenance.
+Tahoe **v0.73.10** fixes the notification-history and translation tests. All 47 focused cases passed in the primary CI image. Full CI runs asynchronously. Notification README photographs remain historical. [Evidence and coverage limits](release-evidence.json).
 
 Approved installer previews: [Light](src/screenshots/previews/installer-tahoe-light-icons-805970eab6b7.png) · [Dark](src/screenshots/previews/installer-tahoe-dark-icons-dbc66adc81c4.png). The gallery below is historical and predates these installer changes; its original [provenance](src/screenshots/release-capture.json) is retained.
 
