@@ -7,6 +7,13 @@ description: Qualify an affected Plasma component in a disposable VM with explic
 
 Before starting a guest, identify the changed component, visible difference,
 required scenarios/frames and exact SDK/backend coverage from `AGENTS.md`.
+Check the scratch filesystem with `df -h` before booting. For Tahoe's `./vm`,
+set `VM_RUN_DIR` to a task-owned directory on the secondary project disk and
+point `VM_CACHE_DIR` at the reusable image cache there. Verify the mount with
+`findmnt -T` before creating files. On this workstation `/var/tmp` shares
+the root device. Budget for guest writes across all concurrent guests, and
+run them sequentially when space is tight.
+
 Inspect the existing VM inventory and harness options in Tahoe:
 
 ```bash
@@ -37,5 +44,12 @@ single-component flag. If no focused option exists, inspect the helper and keep
 the preview separate instead of guessing flags or rebuilding the gallery.
 
 Review frame identity/focus and retain source hashes. User approval of the
-actual preview remains separate. Preserve compact evidence/recovery data, then
-remove only task-created disposable resources after qualification is complete.
+actual preview remains separate. On success, failure or interruption, account for each task-created disk.
+Save the requested frames, logs, source fingerprints and unique recovery data
+outside the disposable run directory. After the last required scenario for
+each guest, shut down that task's guest, confirm its disk is closed and check
+that no retained overlay depends on it. Remove its disposable disk before
+starting the next independent run. Preserve active work, shared bases and
+disks needed for a specific pending reproduction. Record the path and reason
+for any retained disk so the next agent can finish cleanup. Verify allocated
+usage with `du -sh` and available space with `df -h` after cleanup.

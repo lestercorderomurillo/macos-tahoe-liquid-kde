@@ -167,6 +167,10 @@ Dock icon qualification includes Apps, every pinned application, and both empty/
 
 ## Respect for the user's time
 
+Before allocating qualification or capture disks, use the
+[Plasma VM qualification skill](skills/lester-skills/plasma-vm-qualification/SKILL.md)
+to select a scratch filesystem with enough space and plan per-guest cleanup.
+
 Disposable development VM overlays, capture working copies and source archives
 must be removed once the requested qualification is complete and its reviewed
 images and evidence are preserved. Do not retain whole VM disks as release
