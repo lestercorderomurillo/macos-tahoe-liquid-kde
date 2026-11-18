@@ -1336,11 +1336,26 @@ dependencies, affected editions/backends/SDKs, and the checks that prove each
 claim. Use the actual diff, not just the issue title, to choose scope. Expand
 that scope when a failure or shared dependency reveals another affected path.
 
+Use the least costly environment that can prove each claim. Reuse applicable
+evidence and existing CI environments. Run focused executable checks in an
+existing distro container or isolated graphical session when it provides the
+required SDK, render stack and backend. For a rendering claim, exercise the
+actual renderer and check visible output. A build or a configuration check
+alone is insufficient.
+
+Use a disposable desktop VM when the claim depends on an installed Plasma
+session, system lifecycle or hardware integration, or when a desktop preview
+is required. Check the local inventory first and reuse a prepared image with
+the required dependencies through a disposable overlay. A listed distro, a
+downloaded ISO and a raw cloud image are provisioning inputs. Provision or
+rebuild a guest only when a required check has no suitable prepared base.
+Existing scope, approval and backend requirements still apply.
+
 | Change | Required focused validation |
 | --- | --- |
 | Wrapper, downloader or source selection | Wrapper suite, including local-source staging, release fallback and checksum/version handling where affected. |
 | Tahoe implementation | Component regressions and affected installer lifecycle paths in Tahoe; exercise the prepared Golden Gate source when edition staging can change the result. |
-| Defaults, materials or appearance | Target the changed behavior, affected editions and saved choices. Use a disposable VM only for rendering or transition claims that need visual evidence; scope it to the changed component. Documentation photography follows the optional capture policy. |
+| Defaults, materials or appearance | Target the changed behavior, affected editions and saved choices. Use isolated rendering checks when they can exercise the affected stack. Use a prepared desktop VM for desktop-dependent behavior and required previews. |
 | Native backend, ABI or distro packages | Build against the affected SDKs and test the changed backend on representative distros with distinct relevant SDK/package layouts. Record build, load and behavior results separately. |
 | Documentation or agent instructions only | Review consistency, references and `git diff --check`; no manual pytest, native builds or VM runs. |
 

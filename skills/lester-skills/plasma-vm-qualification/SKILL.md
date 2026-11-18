@@ -5,6 +5,11 @@ description: Qualify an affected Plasma component in a disposable VM with explic
 
 # Plasma VM qualification
 
+First apply [focused validation](../focused-validation/SKILL.md) and the
+environment selection rules in `AGENTS.md`. Use this workflow for claims that
+need a desktop VM or for required desktop captures. Check the inventory for a
+prepared base for the relevant distro and backend before provisioning.
+
 Before starting a guest, identify the changed component, visible difference,
 required scenarios/frames and exact SDK/backend coverage from `AGENTS.md`.
 Check the scratch filesystem with `df -h` before booting. For Tahoe's `./vm`,
