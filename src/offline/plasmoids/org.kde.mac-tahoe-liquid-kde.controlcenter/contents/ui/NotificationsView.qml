@@ -1,6 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 import QtQuick
-import QtQuick.Effects
 import QtQuick.Layouts
 import QtQuick.Controls as QQC
 import org.kde.kirigami as Kirigami
@@ -8,6 +7,7 @@ import org.kde.notificationmanager as Notifications
 Page {
     id: view
     title: ""
+    property color backdropColor: "transparent"
     property bool standalone: false
     spacing: 6
     readonly property var surfaces: {
@@ -18,12 +18,13 @@ Page {
             if (delegate.objectName !== "historyNotificationDelegate" || !delegate.visible) continue;
             const card = delegate.surface;
             const point = list.mapToItem(view, delegate.x, delegate.y - list.contentY);
-            const top = Math.max(point.y, scroll.y);
-            const bottom = Math.min(point.y + card.height, scroll.y + scroll.height);
-            if (bottom <= top) continue;
-            areas.push({x:point.x, y:top, width:card.width, height:bottom-top, radius:card.cornerRadius});
-            if (delegate.stacked)
-                areas.push({x:point.x+8,y:bottom-8,width:card.width-16,height:16,radius:8});
+            for (const area of card.surfaces) {
+                const top = Math.max(point.y + area.y, scroll.y);
+                const bottom = Math.min(point.y + area.y + area.height, scroll.y + scroll.height);
+                if (bottom > top)
+                    areas.push({x:point.x+area.x, y:top, width:area.width,
+                        height:bottom-top, radius:area.radius});
+            }
             if (card.contentItem.closeVisible)
                 areas.push({x:point.x-6, y:point.y-4, width:20, height:20, radius:10});
         }
@@ -44,16 +45,22 @@ Page {
         blacklistedDesktopEntries: settings.historyBlacklistedApplications
         blacklistedNotifyRcNames: settings.historyBlacklistedServices
     }
+    Notifications.Notifications {
+        id: details
+        showExpired: true
+        showDismissed: true
+        showJobs: true
+        groupMode: Notifications.Notifications.GroupDisabled
+    }
     RowLayout {
         Layout.fillWidth: true
         Layout.preferredHeight: 24
-        Text {
+        NotificationBackdropLabel {
+            objectName: "notificationCenterHeading"
             text: view.standalone ? i18n("Notification Center") : i18n("Notifications")
             font.family: "SF Pro Display"; font.pixelSize: 18; font.weight: Font.DemiBold
-            color: view.standalone ? "white" : Kirigami.Theme.textColor
+            floating: view.standalone
             Layout.fillWidth: true
-            layer.enabled: view.standalone
-            layer.effect: MultiEffect { shadowEnabled: true; shadowBlur: 0.25; shadowColor: "#66000000"; shadowVerticalOffset: 1 }
         }
         QQC.AbstractButton {
             id: clear
@@ -69,9 +76,9 @@ Page {
             onClicked: view.history.clear(Notifications.Notifications.ClearExpired)
         }
     }
-    ControlLabel {
+    NotificationBackdropLabel {
         text: i18n("No notifications")
-        color: view.standalone ? "white" : Kirigami.Theme.textColor
+        floating: view.standalone
         visible: view.history.count === 0
     }
     Item {
@@ -99,28 +106,18 @@ Page {
                 readonly property var surface: card
                 visible: !model.isInGroup || model.isGroupExpanded
                 width: ListView.view.width
-                height: visible ? card.implicitHeight + (stacked ? 8 : 0) + 6 : 0
-                Repeater {
-                    model: entry.stacked ? 2 : 0
-                    Item {
-                        required property int index
-                        x: (2-index)*4; y: card.height+(1-index)*4
-                        width: entry.width-x*2; height: 4
-                        clip: true
-                        NotificationSurface {
-                            y: 4-card.height
-                            width: parent.width; height: card.height
-                            contentItem: Item {}
-                        }
-                    }
-                }
-                NotificationSurface {
+                height: visible ? card.implicitHeight + 6 : 0
+                NotificationStackSurface {
                     id: card
                     width: parent.width; height: implicitHeight
+                    depth: entry.stacked ? Math.min(2, Math.max(1, Number(entry.model.groupChildrenCount || 2)-1)) : 0
                     contentItem: NotificationCard {
                         model: entry.model
                         index: entry.index
                         history: view.history
+                        previewHistory: details
+                        backdropColor: view.backdropColor
+                        surfaceColor: card.fillColor
                     }
                 }
             }

@@ -23,6 +23,8 @@
 #endif
 
 #include <QList>
+#include <QElapsedTimer>
+#include <QColor>
 #include <QRegion>
 #include <QStringList>
 
@@ -84,6 +86,10 @@ struct BlurEffectData
 
     /** Client surface geometry, excluding transparent shadow margins. */
     QList<ClientBlurShape> clientShapes;
+    QElapsedTimer contrastTimer;
+    bool contrastScheduled = false;
+    QColor contrastColor;
+    QRect contrastBounds;
 
     /**
      * Render scratch space keyed by the view it belongs to. Different
@@ -322,6 +328,10 @@ private:
         int gradientCenterPositionLocation;
         int gradientBottomLocation;
     } m_roundedOnscreenPass;
+
+    // A tiny readback target for notification foreground contrast only.
+    std::unique_ptr<GLTexture> m_contrastTexture;
+    std::unique_ptr<GLFramebuffer> m_contrastFramebuffer;
 
     /// Dual Kawase downsample (halves resolution per iteration).
     struct

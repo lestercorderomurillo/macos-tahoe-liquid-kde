@@ -47,6 +47,7 @@ PlasmoidItem {
                 id: history
                 x: 10; y: 10; width: 344; height: implicitHeight
                 standalone: true
+                backdropColor: popup.backdropColor
                 focus: true
                 Keys.onEscapePressed: popup.visible = false
             }

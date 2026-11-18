@@ -90,6 +90,21 @@ def client(role):
         window.setAttribute(Qt.WidgetAttribute.WA_TranslucentBackground)
     window.setWindowTitle("mttkde-notifications" if islands and os.environ.get("MTTKDE_CAPTURE_POPUP_ROLE", "popup") != "popup"
                          else "Synthetic VM surface" if role == "vm" else "Capture background")
+    if islands and os.environ.get("MTTKDE_CAPTURE_POPUP_ROLE", "popup") != "popup" and app.desktopFileName() == "org.kde.plasmashell":
+        from PyQt6.QtCore import QObject, pyqtSlot
+        from PyQt6.QtDBus import QDBusConnection
+        class BackdropReceiver(QObject):
+            @pyqtSlot(str)
+            def sample(self, text):
+                sample = json.loads(text)
+                if sample.get("pid") != os.getpid(): return
+                bounds = window.geometry()
+                if [sample.get(key) for key in ("x", "y", "width", "height")] != [bounds.x(), bounds.y(), bounds.width(), bounds.height()]: return
+                with (Path(os.environ["MTTKDE_CAPTURE_DIR"]) / "backdrop-samples.jsonl").open("a") as stream:
+                    stream.write(json.dumps(sample) + "\n")
+        receiver = BackdropReceiver(window)
+        QDBusConnection.sessionBus().connect("org.kde.KWin", "/org/kde/MacTahoe/Glass",
+            "org.kde.MacTahoe.Glass", "backdropSample", receiver.sample)
     if role == "desktop" and os.environ.get("MTTKDE_CAPTURE_DAMAGE"):
         marker = Path(os.environ["MTTKDE_CAPTURE_DIR"]) / "damage-trigger"
         timer = QTimer(window)
@@ -114,6 +129,7 @@ def client(role):
                             "_KDE_NET_WM_BLUR_BEHIND_REGION", "0,0,480,320"], check=True)
     elif islands:
         window.move(0, 0)
+        publish_popup_islands(int(window.winId()))
         window.show()
     else:
         window.showFullScreen()
@@ -159,6 +175,11 @@ def publish_popup_islands(window_id):
     display = x11.XOpenDisplay(None)
     assert display, "Private X11 display unavailable"
     try:
+        if os.environ.get("MTTKDE_CAPTURE_IDENTITY") == "org.kde.plasmashell":
+            # Match Plasma's actual WM_CLASS before mapping this QWidget fixture.
+            wm_class = ctypes.create_string_buffer(b"plasmashell\0org.kde.plasmashell\0")
+            class_atom = x11.XInternAtom(display, b"WM_CLASS", False)
+            x11.XChangeProperty(display, window_id, class_atom, 31, 8, 0, wm_class, len(wm_class.raw)-1)
         role = os.environ.get("MTTKDE_CAPTURE_POPUP_ROLE", "popup")
         atom_name = {"popup": b"_NET_WM_WINDOW_TYPE_POPUP_MENU", "notification": b"_NET_WM_WINDOW_TYPE_NOTIFICATION",
                      "critical": b"_KDE_NET_WM_WINDOW_TYPE_CRITICAL_NOTIFICATION"}[role]
@@ -348,6 +369,14 @@ def inside(output):
         assert loaded == "true" and effect in active.splitlines(), "Effect did not activate"
         assert vm.poll() is None and (background is None or background.poll() is None), "Test client exited"
         capture("effect-on.png")
+        if os.environ.get("MTTKDE_CAPTURE_POPUP_ISLANDS") and os.environ.get("MTTKDE_CAPTURE_POPUP_ROLE", "popup") != "popup" and os.environ["MTTKDE_CAPTURE_IDENTITY"] == "org.kde.plasmashell":
+            samples_file = output / "backdrop-samples.jsonl"
+            wait_for(lambda: samples_file.exists() and samples_file.stat().st_size)
+            samples = [json.loads(line) for line in samples_file.read_text().splitlines()]
+            assert all(len(sample["rgb"]) == 3 and all(0 <= value <= 1 for value in sample["rgb"]) for sample in samples)
+            # The fixture's two backdrop colors average near neutral gray.
+            # Its opaque blue client content must never contaminate this sample.
+            assert any(all(0.35 < value < 0.65 for value in sample["rgb"]) for sample in samples), samples
         if os.environ.get("MTTKDE_CAPTURE_WOBBLY"):
             # All input targets the private Xvfb display, after verifying its
             # compositor owner above. Never inherit the user's DISPLAY/bus.

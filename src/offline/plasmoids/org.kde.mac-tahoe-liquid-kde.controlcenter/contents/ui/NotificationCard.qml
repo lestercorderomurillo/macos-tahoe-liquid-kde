@@ -5,6 +5,7 @@ import QtQuick.Controls as QQC
 import org.kde.kirigami as Kirigami
 import org.kde.kquickcontrolsaddons as KQuickAddons
 import org.kde.notificationmanager as Notifications
+import "NotificationContrast.js" as Contrast
 
 Item {
     id: row
@@ -12,9 +13,23 @@ Item {
     required property var model
     required property int index
     required property var history
+    property var previewHistory: history
+    property int previewRevision: 0
+    function refreshPreview() { Qt.callLater(function() { ++row.previewRevision; }); }
+    Connections {
+        target: row.previewHistory
+        ignoreUnknownSignals: true
+        function onCountChanged() { row.refreshPreview(); }
+        function onDataChanged() { row.refreshPreview(); }
+        function onModelReset() { row.refreshPreview(); }
+    }
     property bool compact: false
     property bool replying: false
     readonly property bool lightMode: Kirigami.Theme.textColor.r * 0.2126 + Kirigami.Theme.textColor.g * 0.7152 + Kirigami.Theme.textColor.b * 0.0722 < 0.5
+    property color backdropColor: "transparent"
+    property color surfaceColor: "transparent"
+    readonly property color foregroundColor: Contrast.foreground(Kirigami.Theme.textColor,
+        backdropColor, surfaceColor)
     readonly property bool hovered: hover.hovered
     readonly property bool interacting: hovered || dismiss.hovered || reply.activeFocus || options.visible
     readonly property bool closeVisible: dismiss.opacity > 0
@@ -59,26 +74,29 @@ Item {
                 Layout.fillWidth: true
                 spacing: 0
                 ControlLabel {
+                    objectName: "notificationApplicationName"
                     Layout.fillWidth: true
-                    text: row.model.applicationName || ""
+                    text: /^discord$/i.test(row.model.applicationName || "") ? "Discord" : row.model.applicationName || ""
                     visible: text.length > 0
-                    color: row.lightMode ? "black" : Kirigami.Theme.textColor
+                    color: row.foregroundColor
                     font.family: "SF Pro Display"; font.pixelSize: 13; font.weight: Font.DemiBold
                     lineHeightMode: Text.FixedHeight; lineHeight: 16
                     elide: Text.ElideRight
                 }
                 ControlLabel {
                     Layout.fillWidth: true
+                    objectName: "notificationSummary"
                     text: row.model.summary || ""
                     visible: (!row.model.isGroup || !row.model.isGroupExpanded) && text.length > 0
                     textFormat: Text.PlainText
-                    color: row.lightMode ? "black" : Kirigami.Theme.textColor
+                    color: row.foregroundColor
                     font.family: "SF Pro Display"; font.pixelSize: 13; font.weight: Font.DemiBold
                     lineHeightMode: Text.FixedHeight; lineHeight: 16
                     maximumLineCount: 1; elide: Text.ElideRight
                 }
                 ControlLabel {
                     id: description
+                    objectName: "notificationBody"
                     Layout.fillWidth: true
                     readonly property int restingLines: Math.min(measure.lineCount, row.compact || row.model.isGroup ? 2 : 100)
                     Layout.preferredHeight: restingLines * 16
@@ -86,13 +104,18 @@ Item {
                         // Read the aggregate role as well, so a new message in
                         // an existing collapsed group refreshes its preview.
                         const body = row.model.body || "";
-                        return row.model.isGroup && !row.model.isGroupExpanded
-                            ? row.history.data(row.history.index(row.index + 1, 0), Notifications.Notifications.BodyRole) || ""
-                            : body;
+                        const revision = row.previewRevision;
+                        if (!row.model.isGroup || row.model.isGroupExpanded) return body;
+                        for (let i = 0; i < row.previewHistory.count; ++i) {
+                            const index = row.previewHistory.index(i, 0);
+                            if (String(row.previewHistory.data(index, Notifications.Notifications.IdRole)) === String(row.model.notificationId))
+                                return row.previewHistory.data(index, Notifications.Notifications.BodyRole) || "";
+                        }
+                        return "";
                     }
                     visible: (!row.model.isGroup || !row.model.isGroupExpanded) && text.length > 0
                     textFormat: Text.StyledText
-                    color: row.lightMode ? "black" : Kirigami.Theme.textColor
+                    color: row.foregroundColor
                     font.family: "SF Pro Display"; font.pixelSize: 13; font.weight: Font.Normal
                     lineHeightMode: Text.FixedHeight; lineHeight: 16
                     wrapMode: Text.WordWrap
@@ -187,13 +210,13 @@ Item {
             spacing: 4
             Text {
                 text: more.text; font: more.font
-                color: row.lightMode ? "black" : Kirigami.Theme.textColor
+                color: row.foregroundColor
                 Layout.alignment: Qt.AlignVCenter
             }
             Kirigami.Icon {
                 source: Qt.resolvedUrl("symbols/mttkde-control-notification-options.svg")
                 isMask: true
-                color: row.lightMode ? "black" : Kirigami.Theme.textColor
+                color: row.foregroundColor
                 Layout.preferredWidth: 12; Layout.preferredHeight: 12
                 Layout.alignment: Qt.AlignVCenter
             }

@@ -17,3 +17,9 @@ inline bool gradientEnabledForSurface(bool enabled, bool dock, const QString &re
         || resourceClass == QStringLiteral("org.kde.plasmashell"))
         && caption == QStringLiteral("mttkde-control-center"));
 }
+
+inline bool isProjectNotification(const QString &resourceClass, const QString &caption)
+{
+    return caption == QStringLiteral("mttkde-notifications")
+        && (resourceClass == QStringLiteral("plasmashell") || resourceClass == QStringLiteral("org.kde.plasmashell"));
+}

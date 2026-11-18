@@ -73,7 +73,7 @@ inline QString classify(const QString &resource, const QString &caption, bool do
 {
     const QString name = resource.toLower();
     if (name == QStringLiteral("plasmashell") || name == QStringLiteral("org.kde.plasmashell")) {
-        if (caption == QStringLiteral("mttkde-notifications")) return QStringLiteral("popups");
+        if (caption == QStringLiteral("mttkde-notifications")) return QStringLiteral("menus");
         if (caption == QStringLiteral("mttkde-control-center")) return QStringLiteral("control-center");
         if (caption == QStringLiteral("mttkde-apps")) return QStringLiteral("apps");
         if (caption == QStringLiteral("mttkde-search")) return QStringLiteral("search");

@@ -3,11 +3,13 @@ import sys
 import os
 import subprocess
 import time
+import json
 from pathlib import Path
 from PyQt6.QtCore import (QAbstractListModel, QModelIndex, QObject, QUrl, QMetaObject,
                          Qt, QPoint, QPointF, Q_ARG, pyqtSlot, pyqtProperty, qInstallMessageHandler)
 from PyQt6.QtQml import QQmlComponent, QQmlEngine
 from PyQt6.QtWidgets import QApplication
+from PyQt6.QtGui import QTextDocument, QColor
 from PyQt6.QtQuick import QQuickItem, QQuickWindow
 from PyQt6.QtTest import QTest
 from PyQt6 import sip
@@ -77,6 +79,15 @@ Item {
     property color notificationBackgroundColor: "white"
     property color notificationDisabledColor: "gray"
     property var service: Notices.NotificationPopups
+    property var popupState: function() { return [service.popups.count, service.windows.count, service.host === host, service.available.width, service.popups.urgencies, service.inhibited, service.historyVisible, service.popups.showExpired]; }
+    property var visibleNotices: function() {
+        const result = [];
+        for (let i = 0; i < service.windows.count; ++i) {
+            const popup = service.windows.objectAt(i);
+            if (popup && popup.visible) result.push(popup);
+        }
+        return result;
+    }
     property QtObject settings: QtObject {
         property date notificationsInhibitedUntil: new Date(0)
         property bool notificationsInhibitedByApplication: false
@@ -141,24 +152,117 @@ applications.mkdir(parents=True, exist_ok=True)
 nativeView = component('NotificationsView.qml', {'standalone': True})
 nativeView.setWidth(344); nativeView.setHeight(700)
 nativeHistory = nativeView.property('history')
-sender = subprocess.Popen([
-    'gdbus', 'call', '--session', '--dest', 'org.freedesktop.Notifications',
-    '--object-path', '/org/freedesktop/Notifications', '--method',
-    'org.freedesktop.Notifications.Notify', 'Notification Review', '0', '',
-    'A real notification', 'Retained when history opens', '[]',
-    "{'desktop-entry': <'notification-review'>}", '0'],
-    stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
-deadline = time.monotonic() + 5
-while sender.poll() is None and time.monotonic() < deadline:
-    QTest.qWait(10)
-assert sender.poll() == 0, sender.communicate(timeout=1)
-QTest.qWait(100)
+def notify(app, summary, body, desktop, timeout=0, replace=0):
+    sender = subprocess.Popen([
+        'gdbus', 'call', '--session', '--dest', 'org.freedesktop.Notifications',
+        '--object-path', '/org/freedesktop/Notifications', '--method',
+        'org.freedesktop.Notifications.Notify', app, str(replace), '',
+        summary, body, '[]', "{'desktop-entry': <'" + desktop + "'>}", str(timeout)],
+        stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+    deadline = time.monotonic() + 5
+    while sender.poll() is None and time.monotonic() < deadline:
+        QTest.qWait(10)
+    assert sender.poll() == 0, sender.communicate(timeout=1)
+    output, _ = sender.communicate(timeout=1)
+    QTest.qWait(100)
+    return int(output.split('uint32 ')[1].split(',')[0])
+
+def notification_body(card):
+    document = QTextDocument()
+    document.setHtml(child(card, 'notificationBody').property('text'))
+    return document.toPlainText().strip()
+
+def visible_notices():
+    # Read the binding after the native grouping model and window delegates settle.
+    QTest.qWait(50)
+    return noticeHost.property('visibleNotices').call().toVariant()
+
+notify('Notification Review', 'A real notification', 'Retained when history opens', 'notification-review')
 assert nativeHistory.property('count') == 1
 QMetaObject.invokeMethod(noticeService, 'markSeen'); QTest.qWait(100)
 assert nativeHistory.property('count') == 1
 assert nativeHistory.property('expiredNotificationsCount') == 1
 click(child(nativeView, 'clearHistory')); QTest.qWait(100)
 assert nativeHistory.property('count') == 0
+
+# Real application messages must stack in the installed popup frontend, retain
+# their individual bodies, and never replay sounds when the stack is expanded.
+(applications / 'discord.desktop').write_text(
+    '[Desktop Entry]\nType=Application\nName=Discord\nExec=true\n')
+ids = [notify('discord', 'Message ' + str(i), 'Body ' + str(i), 'discord') for i in range(3)]
+popups = visible_notices()
+assert len(popups) == 1, (len(popups), errors, noticeHost.property('popupState').call().toVariant(), nativeHistory.property('count'), nativeHistory.property('expiredNotificationsCount'))
+stack = child(popups[0].property('mainItem'), 'notificationStackSurface')
+assert stack.property('depth') == 2
+card = child(stack, 'notificationCard')
+assert child(card, 'notificationApplicationName').property('text') == 'Discord'
+assert child(card, 'notificationSummary').property('text') == 'Message 2'
+assert notification_body(card) == 'Body 2', (notification_body(card), errors)
+sounded = noticeService.property('soundedIds').toVariant()
+QMetaObject.invokeMethod(card, 'open'); QTest.qWait(100)
+assert len(visible_notices()) == 4
+QMetaObject.invokeMethod(card, 'open'); QTest.qWait(100)
+assert len(visible_notices()) == 1
+assert noticeService.property('soundedIds').toVariant() == sounded
+noticeHost.property('settings').setProperty('popupTimeout', 40)
+assert notify('discord', 'Edited message', 'Edited body', 'discord', replace=ids[-1]) == ids[-1]
+popups = visible_notices()
+assert len(popups) == 1
+assert child(popups[0].property('mainItem'), 'notificationSummary').property('text') == 'Edited message'
+assert notification_body(popups[0].property('mainItem')) == 'Edited body'
+noticeHost.property('settings').setProperty('popupTimeout', 5000)
+notify('Notification Review', 'Another app', 'Separate stack', 'notification-review')
+assert len(visible_notices()) == 2
+QMetaObject.invokeMethod(noticeService, 'markSeen'); QTest.qWait(100)
+assert len(visible_notices()) == 0
+assert nativeHistory.property('expiredNotificationsCount') == 4
+click(child(nativeView, 'clearHistory')); QTest.qWait(100)
+assert nativeHistory.property('count') == 0
+notify('discord', 'Expiring one', 'First', 'discord', timeout=1200)
+notify('discord', 'Expiring two', 'Second', 'discord', timeout=1200)
+popups = visible_notices()
+assert len(popups) == 1
+assert child(popups[0].property('mainItem'), 'notificationStackSurface').property('depth') == 1
+QMetaObject.invokeMethod(child(popups[0].property('mainItem'), 'notificationCard'), 'open')
+QTest.qWait(100)
+expanded = visible_notices()
+assert len(expanded) == 3
+assert not child(expanded[0], 'notificationExpiry').property('running')
+assert child(expanded[1], 'notificationExpiry').property('running')
+QTest.qWait(1400)
+assert len(visible_notices()) == 0
+assert nativeHistory.property('expiredNotificationsCount') == 2
+click(child(nativeView, 'clearHistory')); QTest.qWait(100)
+assert nativeHistory.property('count') == 0
+
+# The same native window must follow real backdrop samples independently of
+# the desktop mode. Samples for another process/window must not affect it.
+noticeForContrast = noticeHost.property('banner')
+noticeForContrast.setGeometry(100, 100, 364, 100)
+noticeForContrast.setProperty('visible', True)
+sample = dict(pid=os.getpid(), x=100, y=100, width=364, height=100, rgb=[1,1,1])
+QMetaObject.invokeMethod(noticeForContrast, 'updateBackdrop', Q_ARG(str, json.dumps(sample)))
+assert noticeForContrast.property('backdropColor').lightnessF() == 1
+for invalid in (dict(sample, pid=os.getpid()+1), dict(sample, width=365), dict(sample, rgb=[-1,0,0])):
+    QMetaObject.invokeMethod(noticeForContrast, 'updateBackdrop', Q_ARG(str, json.dumps(invalid)))
+    assert noticeForContrast.property('backdropColor').lightnessF() == 1
+sample['rgb'] = [0,0,0]
+QMetaObject.invokeMethod(noticeForContrast, 'updateBackdrop', Q_ARG(str, json.dumps(sample)))
+assert noticeForContrast.property('backdropColor').lightnessF() == 0
+noticeForContrast.setProperty('visible', False)
+contrast = fake('''import "NotificationContrast.js" as Contrast
+Item {
+    property color base: "white"
+    property color backdrop: "white"
+    property color surface: "transparent"
+    property color foreground: Contrast.foreground(base, backdrop, surface)
+    property real contrastRatio: Contrast.ratio(Contrast.luminance(foreground), Contrast.luminance(backdrop))
+}''')
+for base in ('#eeeeee', '#333333'):
+    contrast.setProperty('base', QColor(base))
+    for backdrop in ('white', 'black', '#808080'):
+        contrast.setProperty('backdrop', QColor(backdrop)); QTest.qWait(10)
+        assert contrast.property('contrastRatio') >= 4.5, (base, backdrop)
 
 sink = fake('QtObject { property bool muted: false; property int volume: 20000; property string description: "Test output" }')
 audio = component('AudioView.qml', {'sink':sink})
@@ -436,6 +540,8 @@ class History(Rows):
     def stopTimeout(self,index): self.calls.append(('stop-timeout',index.row()))
     @pyqtSlot(QModelIndex)
     def close(self,index): self.calls.append(('close',index.row()))
+    @pyqtSlot(QModelIndex)
+    def expire(self,index): self.calls.append(('expire',index.row()))
     @pyqtSlot(int)
     def clear(self,flags): self.calls.append(('clear',flags))
     def setData(self,index,value,role):
@@ -501,6 +607,10 @@ for dark in (False, True, False):
     assert text and (sum(p.lightnessF() for p in text)/len(text) > .5) == dark
     frames.append(rendered.constBits().asstring(rendered.sizeInBytes()))
 assert frames[0] != frames[1] and frames[0] == frames[2]
+# Jobs stay on KDE's job-expiry path rather than the notification-member model.
+role.setProperty('type', 2)
+QMetaObject.invokeMethod(child(notice, 'notificationExpiry'), 'triggered')
+assert history.calls[-1] == ('expire', 0)
 notice.close()
 
 

@@ -2004,6 +2004,85 @@ void BlurEffect::blur(
         }
     }
 
+    // Foreground contrast uses the captured backdrop, never the notification's
+    // own pixels. The existing blur/material passes and saved optics are unchanged.
+    if (isProjectNotification(w->window()->resourceClass(), w->caption())) {
+        if (!blurInfo.contrastTimer.isValid() || blurInfo.contrastTimer.elapsed() >= 200) {
+            blurInfo.contrastTimer.start();
+            if (!m_contrastTexture) {
+                m_contrastTexture = GLTexture::allocate(GL_RGBA8, QSize(8, 8));
+                if (m_contrastTexture) {
+                    m_contrastTexture->setFilter(GL_LINEAR);
+                    m_contrastTexture->setWrapMode(GL_CLAMP_TO_EDGE);
+                    m_contrastFramebuffer = std::make_unique<GLFramebuffer>(m_contrastTexture.get());
+                }
+            }
+            if (m_contrastFramebuffer && m_contrastFramebuffer->valid()) {
+                const bool blendEnabled = glIsEnabled(GL_BLEND);
+                glDisable(GL_BLEND);
+                const auto &read = renderInfo.framebuffers[blurOffset > 0 ? 1 : 0];
+                ShaderManager::instance()->pushShader(m_downsamplePass.shader.get());
+                QMatrix4x4 projection;
+                projection.ortho(QRectF(0, 0, scaledBackgroundRect.width(), scaledBackgroundRect.height()));
+                m_downsamplePass.shader->setUniform(m_downsamplePass.mvpMatrixLocation, projection);
+                m_downsamplePass.shader->setUniform(m_downsamplePass.offsetLocation, 0.0f);
+                m_downsamplePass.shader->setUniform(m_downsamplePass.halfpixelLocation, QVector2D(0, 0));
+                read->colorAttachment()->bind();
+                GLFramebuffer::pushFramebuffer(m_contrastFramebuffer.get());
+                vbo->draw(GL_TRIANGLES, 0, 6);
+                std::array<unsigned char, 8 * 8 * 4> pixels{};
+                GLint packBuffer = 0;
+                glGetIntegerv(GL_PIXEL_PACK_BUFFER_BINDING, &packBuffer);
+                glBindBuffer(GL_PIXEL_PACK_BUFFER, 0);
+                const std::array<GLenum, 3> packNames{GL_PACK_ROW_LENGTH, GL_PACK_SKIP_ROWS, GL_PACK_SKIP_PIXELS};
+                std::array<GLint, 3> packValues{};
+                for (size_t i = 0; i < packNames.size(); ++i) {
+                    glGetIntegerv(packNames[i], &packValues[i]);
+                    glPixelStorei(packNames[i], 0);
+                }
+                glReadPixels(0, 0, 8, 8, GL_RGBA, GL_UNSIGNED_BYTE, pixels.data());
+                for (size_t i = 0; i < packNames.size(); ++i) glPixelStorei(packNames[i], packValues[i]);
+                glBindBuffer(GL_PIXEL_PACK_BUFFER, packBuffer);
+                GLFramebuffer::popFramebuffer();
+                ShaderManager::instance()->popShader();
+                if (blendEnabled) glEnable(GL_BLEND);
+                QVector4D rgb(0, 0, 0, 1);
+                for (size_t i = 0; i < pixels.size(); i += 4) {
+                    rgb.setX(rgb.x() + pixels[i] / (255.0f * 64));
+                    rgb.setY(rgb.y() + pixels[i + 1] / (255.0f * 64));
+                    rgb.setZ(rgb.z() + pixels[i + 2] / (255.0f * 64));
+                }
+                // The production fragment shader uses a row-vector transform.
+                rgb = material.color.transposed() * rgb;
+                const QColor color = QColor::fromRgbF(std::clamp(rgb.x(), 0.0f, 1.0f),
+                    std::clamp(rgb.y(), 0.0f, 1.0f), std::clamp(rgb.z(), 0.0f, 1.0f));
+                const QRect bounds = w->frameGeometry().toAlignedRect();
+                if (color != blurInfo.contrastColor || bounds != blurInfo.contrastBounds) {
+                    blurInfo.contrastColor = color;
+                    blurInfo.contrastBounds = bounds;
+                    auto message = QDBusMessage::createSignal(QStringLiteral("/org/kde/MacTahoe/Glass"),
+                        QStringLiteral("org.kde.MacTahoe.Glass"), QStringLiteral("backdropSample"));
+                    const QJsonObject sample{{QStringLiteral("pid"), w->window()->pid()},
+                        {QStringLiteral("x"), bounds.x()}, {QStringLiteral("y"), bounds.y()},
+                        {QStringLiteral("width"), bounds.width()}, {QStringLiteral("height"), bounds.height()},
+                        {QStringLiteral("rgb"), QJsonArray{color.redF(), color.greenF(), color.blueF()}}};
+                    message << QString::fromUtf8(QJsonDocument(sample).toJson(QJsonDocument::Compact));
+                    QDBusConnection::sessionBus().send(message);
+                }
+            }
+        } else if (!blurInfo.contrastScheduled) {
+            // One trailing repaint catches the settled frame of a transition;
+            // unchanged notifications do not keep a polling repaint loop alive.
+            blurInfo.contrastScheduled = true;
+            QTimer::singleShot(200 - blurInfo.contrastTimer.elapsed(), this, [this, w] {
+                const auto found = m_windows.find(w);
+                if (found == m_windows.end()) return;
+                found->second.contrastScheduled = false;
+                effects->addRepaint(w->frameGeometry().toAlignedRect());
+            });
+        }
+    }
+
     // 7. Resolve per-window corner radius
     // KDecoration provides the client-declared corner radius; we override
     // it with kcfg values keyed by window type (dock / popup / normal).
@@ -2152,9 +2231,9 @@ void BlurEffect::blur(
         m_roundedOnscreenPass.shader->setUniform(m_roundedOnscreenPass.refractionWidthLocation, float(optics.refractionWidth * viewport.scale()));
         m_roundedOnscreenPass.shader->setUniform(m_roundedOnscreenPass.highlightWidthLocation, float(optics.highlightWidth * viewport.scale()));
         m_roundedOnscreenPass.shader->setUniform(m_roundedOnscreenPass.highlightStrengthLocation, optics.highlightStrength);
-        // Defaults disable the gradient for Dock and Control Center; users can opt in.
+        // Notifications keep a flat material; other components retain their saved gradient.
         m_roundedOnscreenPass.shader->setUniform(m_roundedOnscreenPass.darkGradientOverlayLocation,
-            int(material.gradient));
+            int(material.gradient && !isProjectNotification(w->window()->resourceClass(), w->caption())));
         const QPalette windowPalette = w->window()->palette();
         m_roundedOnscreenPass.shader->setUniform(m_roundedOnscreenPass.centerOpacityLocation, centerOpacity);
         m_roundedOnscreenPass.shader->setUniform(m_roundedOnscreenPass.dockSurfaceLocation, int(dockSurface));

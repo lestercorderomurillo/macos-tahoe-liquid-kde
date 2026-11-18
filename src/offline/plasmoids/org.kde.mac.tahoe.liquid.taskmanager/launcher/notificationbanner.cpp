@@ -6,12 +6,21 @@
 #include "notificationbanner.h"
 
 #include <KWindowSystem>
+#include <QDBusConnection>
+#include <QJsonDocument>
+#include <QJsonObject>
+#include <QJsonArray>
+#include <QGuiApplication>
+#include <cmath>
 #include <KX11Extras>
 #include <PlasmaQuick/PlasmaShellWaylandIntegration>
 
 NotificationBanner::NotificationBanner()
     : QQuickWindow()
 {
+    QDBusConnection::sessionBus().connect(QStringLiteral("org.kde.KWin"),
+        QStringLiteral("/org/kde/MacTahoe/Glass"), QStringLiteral("org.kde.MacTahoe.Glass"),
+        QStringLiteral("backdropSample"), this, SLOT(updateBackdrop(QString)));
     setColor(Qt::transparent);
     setFlags(Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint | Qt::WindowDoesNotAcceptFocus);
     PlasmaShellWaylandIntegration::get(this)->setRole(QtWayland::org_kde_plasma_surface::role_notification);
@@ -24,6 +33,25 @@ NotificationBanner::NotificationBanner()
 }
 
 NotificationBanner::~NotificationBanner() = default;
+
+void NotificationBanner::updateBackdrop(const QString &sample)
+{
+    if (!isVisible()) return;
+    const auto object = QJsonDocument::fromJson(sample.toUtf8()).object();
+    if (object.value(QStringLiteral("pid")).toInteger() != qGuiApp->applicationPid()) return;
+    const QRect bounds(object.value(QStringLiteral("x")).toInt(), object.value(QStringLiteral("y")).toInt(),
+                       object.value(QStringLiteral("width")).toInt(), object.value(QStringLiteral("height")).toInt());
+    if (bounds != geometry()) return;
+    const auto rgb = object.value(QStringLiteral("rgb")).toArray();
+    if (rgb.size() != 3) return;
+    for (const auto &value : rgb) {
+        if (!value.isDouble() || !std::isfinite(value.toDouble()) || value.toDouble() < 0 || value.toDouble() > 1) return;
+    }
+    const QColor color = QColor::fromRgbF(rgb.at(0).toDouble(), rgb.at(1).toDouble(), rgb.at(2).toDouble());
+    if (color == m_backdropColor) return;
+    m_backdropColor = color;
+    Q_EMIT backdropColorChanged();
+}
 
 QQuickItem *NotificationBanner::mainItem() const
 {

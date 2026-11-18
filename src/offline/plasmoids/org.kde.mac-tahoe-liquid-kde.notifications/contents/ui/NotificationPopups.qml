@@ -14,12 +14,28 @@ QtObject {
     readonly property bool historyVisible: hosts.some(item => item.historyVisible === true)
     onHistoryVisibleChanged: position()
     function markSeen() {
-        for (let i = windows.count - 1; i >= 0; --i) {
-            const popup = windows.objectAt(i);
-            if (popup && popup.model.type === Notifications.Notifications.NotificationType) {
-                popup.model.read = true;
-                popup.model.expired = true;
-            }
+        for (let i = members.count - 1; i >= 0; --i) {
+            const index = members.index(i, 0);
+            members.setData(index, true, Notifications.Notifications.ReadRole);
+            members.setData(index, true, Notifications.Notifications.ExpiredRole);
+        }
+    }
+    function expireStack(row) {
+        const selected = popups.index(row, 0);
+        const grouped = popups.data(selected, Notifications.Notifications.IsGroupRole);
+        const roles = [Notifications.Notifications.ApplicationNameRole,
+            Notifications.Notifications.DesktopEntryRole, Notifications.Notifications.OriginNameRole];
+        const identity = roles.map(role => popups.data(selected, role));
+        const id = popups.data(selected, Notifications.Notifications.IdRole);
+        for (let i = members.count - 1; i >= 0; --i) {
+            const index = members.index(i, 0);
+            if (grouped ? !roles.every((role, n) => members.data(index, role) === identity[n])
+                        : members.data(index, Notifications.Notifications.IdRole) !== id) continue;
+            const actions = members.data(index, Notifications.Notifications.ActionNamesRole) || [];
+            if (members.data(index, Notifications.Notifications.ResidentRole)
+                    || (actions.length && !members.data(index, Notifications.Notifications.TransientRole)))
+                members.setData(index, true, Notifications.Notifications.ExpiredRole);
+            else members.expire(index);
         }
     }
     function adopt(item) { hosts = hosts.concat([item]); }
@@ -52,19 +68,61 @@ QtObject {
         urgencies: (service.inhibited ? 0 : Notifications.Notifications.NormalUrgency)
             | (!service.inhibited || service.settings.criticalPopupsInDoNotDisturbMode ? Notifications.Notifications.CriticalUrgency : 0)
             | (!service.inhibited && service.settings.lowPriorityPopups ? Notifications.Notifications.LowUrgency : 0)
-        groupMode: Notifications.Notifications.GroupDisabled
+        groupMode: Notifications.Notifications.GroupApplicationsFlat
+        groupLimit: 1
         sortMode: Notifications.Notifications.SortByDate
         sortOrder: Qt.DescendingOrder
         window: service.host ? service.host.Window.window : null
     }
+    // Keep a stable ungrouped view for member mutations. Switching KDE's
+    // grouping proxy on a live model can detach its collapsing proxy.
+    property Notifications.Notifications members: Notifications.Notifications {
+        showExpired: false
+        showDismissed: false
+        showJobs: false
+        showAddedDuringInhibition: popups.showAddedDuringInhibition
+        blacklistedDesktopEntries: popups.blacklistedDesktopEntries
+        blacklistedNotifyRcNames: popups.blacklistedNotifyRcNames
+        whitelistedDesktopEntries: popups.whitelistedDesktopEntries
+        whitelistedNotifyRcNames: popups.whitelistedNotifyRcNames
+        urgencies: popups.urgencies
+        sortMode: Notifications.Notifications.SortByDate
+        sortOrder: Qt.DescendingOrder
+        groupMode: Notifications.Notifications.GroupDisabled
+    }
+    property var soundedIds: []
+    property var expiryDeadlines: ({})
     function position() {
         let y = geometry.y + available.y + 16;
         for (let i = 0; i < windows.count; ++i) {
             const popup = windows.objectAt(i);
             if (!popup) continue;
+            if (!popup.displayable) { popup.visible = false; continue; }
             popup.x = geometry.x + available.x + available.width - popup.width - 6;
             popup.y = y - 10;
             popup.visible = !!host && !historyVisible && available.width > 0 && y + popup.height < geometry.y + available.y + available.height;
+            if (popup.visible && popup.model.type === Notifications.Notifications.NotificationType) {
+                const key = popup.notificationId + ":" + Number(popup.model.updated);
+                if (popup.interacting) {
+                    delete expiryDeadlines[key];
+                } else if (popup.expiry.eligible) {
+                    if (!expiryDeadlines[key]) {
+                        const keys = Object.keys(expiryDeadlines);
+                        if (keys.length >= 256) delete expiryDeadlines[keys[0]];
+                        expiryDeadlines[key] = Date.now() + (popup.model.timeout > 0
+                            ? popup.model.timeout : settings.popupTimeout);
+                    }
+                    // A group becoming a single message can replace its window.
+                    // Retain the original deadline instead of restarting expiry.
+                    popup.remainingTimeout = Math.max(1, expiryDeadlines[key] - Date.now());
+                }
+            }
+            // Group formation, expansion and model resets can recreate delegates.
+            // Sound each arriving notification once, including updates to a stack.
+            if (popup.visible && !soundedIds.includes(popup.notificationId)) {
+                soundedIds = soundedIds.slice(-255).concat([popup.notificationId]);
+                popups.playSoundHint(popups.index(popup.index, 0));
+            }
             y += popup.height - 14;
         }
     }
@@ -76,16 +134,17 @@ QtObject {
         delegate: NotificationPopup {
             history: service.popups
             settings: service.settings
+            members: service.members
             cardWidth: Math.min(344, service.available.width - 32)
             foregroundColor: service.host ? service.host.notificationTextColor : "black"
             backgroundColor: service.host ? service.host.notificationBackgroundColor : "white"
             disabledColor: service.host ? service.host.notificationDisabledColor : "gray"
+            onExpiryRequested: service.expireStack(index)
             onRepositionRequested: Qt.callLater(service.position)
         }
         onObjectAdded: (index, object) => {
             service.position();
             if (service.historyVisible) Qt.callLater(service.markSeen);
-            service.popups.playSoundHint(service.popups.index(index, 0));
         }
         onObjectRemoved: (index, object) => {
             service.popups.startTimeout(Number(object.notificationId));

@@ -142,6 +142,11 @@ int main(int argc, char **argv)
             require(!gradientEnabledForSurface(enabled, true, "plasmashell", "Dock"), QStringLiteral("Dock gradient enabled"));
             for (const QString shell : {QStringLiteral("plasmashell"), QStringLiteral("org.kde.plasmashell")})
                 require(!gradientEnabledForSurface(enabled, false, shell, "mttkde-control-center"), QStringLiteral("Control Center gradient enabled"));
+            for (const auto &shell : {"plasmashell", "org.kde.plasmashell"}) {
+                require(isProjectNotification(shell, "mttkde-notifications"), QStringLiteral("Notification contrast/flat-surface gate missing"));
+                require(!isProjectNotification(shell, "mttkde-control-center"), QStringLiteral("Other glass surfaces must retain their settings"));
+            }
+            require(!isProjectNotification("application", "mttkde-notifications"), QStringLiteral("Unrelated application excluded"));
             require(gradientEnabledForSurface(enabled, false, "plasmashell", "Launcher") == enabled, QStringLiteral("Launcher gradient changed"));
             require(gradientEnabledForSurface(enabled, false, "application", "mttkde-control-center") == enabled, QStringLiteral("Unrelated application excluded"));
         }
