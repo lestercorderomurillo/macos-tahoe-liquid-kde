@@ -14,19 +14,18 @@ from the diff and its direct risks; expand only for an observed failure or a
 specific affected dependency. Reuse passing evidence while code, inputs and
 environment remain unchanged. Do not repeat tests for release bookkeeping.
 
-When the user says “retest and fix,” inspect the failure and run the affected
-scenario through the existing harness on its prepared VM or isolated backend.
-Fix the product when the behavior is wrong. Repair the existing test or capture
-recipe when it measures the wrong thing. Preserve its assertions and coverage.
-Extend that scenario only for a demonstrated gap. Reuse the VM base and the
-approved frame's fixture, appearance and framing.
+For a visible change, use a capture of the affected component on the candidate.
+If it clearly shows the requested behavior, that capture is the complete
+focused validation. “Retest and fix” does not require a separate test run.
+Reuse a matching capture or take the needed frame with the existing capture
+tools in a prepared isolated environment. Do not build a custom harness, add
+a test suite or provision a new VM for a question the capture answers.
 
-After the fix, rerun the same scenario on the candidate and recapture the
-affected README slots. Discard failed frames from staging, keep diagnostic
-logs, and retry the failed scope. Compare the passing frames with the approved
-baseline. Show the actual visual change for approval, then complete paired
-delivery. Keep test commands, capture status and agent instructions in
-maintainer files. Keep them out of product UI and README feature copy.
+If the capture shows a defect, keep it out of the gallery, fix the defect
+and recapture the same view. Use another check only for a specific behavior
+the image cannot establish. Show the passing visual change for approval
+before publication. Keep this workflow in maintainer files, outside product
+UI and README feature copy.
 
 Brief nonvisual fixes proceed to paired release after focused checks. Changes
 to colors, icons, materials, layout or other appearance require the user's
