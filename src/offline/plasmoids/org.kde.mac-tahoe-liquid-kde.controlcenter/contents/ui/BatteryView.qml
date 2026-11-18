@@ -5,50 +5,113 @@ import QtQuick.Controls as QQC
 import org.kde.kirigami as Kirigami
 import org.kde.plasma.private.battery as Power
 import org.kde.plasma.private.batterymonitor as Profiles
+import "ControlStyle.js" as Style
 Page {
     id: view
-    title: i18n("Battery")
+    title: ""
+    spacing: 0
+    Layout.preferredWidth: 280
     property var battery: nativeBattery
     property var profiles: nativeProfiles
     Power.BatteryControlModel { id: nativeBattery }
     Profiles.PowerProfilesControl { id: nativeProfiles }
-    ControlLabel {
-        objectName: "batteryPercent"
-        Layout.fillWidth: true
-        text: view.battery.hasInternalBatteries ? i18n("%1%", view.battery.percent) : i18n("No internal battery")
-        font: Kirigami.Theme.defaultFont
-        Accessible.name: text
+    function profileLabel(profile) {
+        return profile === "power-saver" ? i18n("Low Power") : profile === "performance" ? i18n("High Power") : profile === "balanced" ? i18n("Automatic") : profile;
     }
-    QQC.ProgressBar { Layout.fillWidth: true; visible: view.battery.hasInternalBatteries; from: 0; to: 100; value: view.battery.percent }
-    ControlLabel {
+    RowLayout {
         Layout.fillWidth: true
+        Layout.margins: 6
+        ControlLabel { text: i18n("Battery"); font.weight: Font.DemiBold; Layout.fillWidth: true }
+        ControlLabel {
+            objectName: "batteryPercent"
+            text: view.battery.hasInternalBatteries ? i18n("%1%", view.battery.percent) : i18n("No internal battery")
+            opacity: 0.65
+            Accessible.name: text
+        }
+    }
+    ControlLabel {
+        objectName: "batterySource"
+        Layout.fillWidth: true; Layout.margins: 6
         wrapMode: Text.WordWrap
+        font.pixelSize: 12; opacity: 0.65
         text: !view.battery.hasInternalBatteries ? i18n("Battery information will appear when a battery is available.")
-            : view.battery.state === Power.BatteryControlModel.Charging ? i18n("Charging")
-            : view.battery.state === Power.BatteryControlModel.FullyCharged ? i18n("Fully charged")
-            : view.battery.pluggedIn ? i18n("Connected to power") : i18n("On battery power")
+            : view.battery.pluggedIn ? i18n("Power Source: Power Adapter") : i18n("Power Source: Battery")
     }
+    ControlLabel {
+        Layout.fillWidth: true; Layout.leftMargin: 6; Layout.rightMargin: 6; Layout.bottomMargin: 6
+        visible: view.battery.hasInternalBatteries && view.battery.pluggedIn
+        font.pixelSize: 12; opacity: 0.65
+        text: view.battery.state === Power.BatteryControlModel.Charging ? i18n("Charging")
+            : view.battery.state === Power.BatteryControlModel.FullyCharged ? i18n("Fully charged") : i18n("Connected to power")
+    }
+    StatusMenuDivider { visible: view.profiles.isPowerProfileDaemonInstalled }
+    ControlLabel { text: i18n("Energy Mode"); font.pixelSize: 12; font.weight: Font.DemiBold; opacity: 0.6; Layout.margins: 6; visible: view.profiles.isPowerProfileDaemonInstalled }
+    QQC.ComboBox {
+        id: profile
+        objectName: "powerProfile"
+        Layout.fillWidth: true
+        implicitHeight: 36
+        visible: view.profiles.isPowerProfileDaemonInstalled
+        model: view.profiles.profiles
+        currentIndex: view.profiles.profiles.indexOf(view.profiles.activeProfile)
+        displayText: view.profileLabel(currentText)
+        onActivated: view.profiles.setProfile(currentText)
+        Accessible.name: i18n("Energy mode")
+        leftPadding: 6; rightPadding: 6
+        background: Item {
+            Rectangle { anchors.fill: parent; radius: 8; color: Kirigami.Theme.textColor; opacity: profile.hovered || profile.activeFocus ? 0.10 : 0 }
+            Rectangle {
+                x: profile.leftPadding; y: (parent.height - height) / 2
+                width: 26; height: 26; radius: 13; color: "#008aff"
+                Kirigami.Icon { anchors.centerIn: parent; width: 18; height: 18; source: Style.symbol("battery"); isMask: true; color: "white" }
+            }
+        }
+        indicator: Kirigami.Icon {
+            x: profile.width - width - profile.rightPadding
+            y: (profile.height - height) / 2
+            source: Style.symbol("mac-menu-chevron"); isMask: true; color: Kirigami.Theme.textColor
+            width: 12; height: 12; opacity: 0.65
+        }
+        contentItem: QQC.TextField {
+            text: profile.displayText
+            readOnly: true
+            enabled: false
+            selectByMouse: false
+            activeFocusOnPress: false
+            leftPadding: 34; rightPadding: 20; topPadding: 0; bottomPadding: 0
+            font.family: Style.family; font.pixelSize: Style.body
+            color: profile.palette.text
+            opacity: 1
+            background: Item {}
+
+        }
+        delegate: QQC.ItemDelegate {
+            required property string modelData
+            width: profile.width
+            text: view.profileLabel(modelData)
+            font.family: Style.family; font.pixelSize: Style.body
+            highlighted: profile.currentText === modelData
+        }
+    }
+    ControlLabel { Layout.fillWidth: true; Layout.margins: 6; visible: text.length > 0; text: view.profiles.profileError; textFormat: Text.PlainText; wrapMode: Text.WordWrap }
     Repeater {
         model: view.battery
         delegate: ControlLabel {
             required property var model
-            visible: !model.IsPowerSupply
-            text: i18n("%1 — %2%", model.PrettyName, model.Percent)
-            Layout.fillWidth: true
+            objectName: "peripheralBattery"
+            visible: model.IsPowerSupply === false && model.PrettyName !== undefined && model.Percent !== undefined
+            text: visible ? i18n("%1 — %2%", model.PrettyName, model.Percent) : ""
+            Layout.fillWidth: true; Layout.margins: 6
             elide: Text.ElideRight
         }
     }
-    ControlLabel { text: i18n("Energy mode"); visible: view.profiles.isPowerProfileDaemonInstalled }
-    QQC.ComboBox { font.family: "SF Pro Text"; font.pixelSize: 13;
-        objectName: "powerProfile"
+    StatusMenuDivider {}
+    SettingsLink {
         Layout.fillWidth: true
-        visible: view.profiles.isPowerProfileDaemonInstalled
-        model: view.profiles.profiles
-        currentIndex: view.profiles.profiles.indexOf(view.profiles.activeProfile)
-        displayText: currentText === "power-saver" ? i18n("Power saver") : currentText === "performance" ? i18n("Performance") : currentText === "balanced" ? i18n("Balanced") : currentText
-        onActivated: view.profiles.setProfile(currentText)
-        Accessible.name: i18n("Energy mode")
+        text: i18n("Battery Settings…"); module: "kcm_powerdevilprofilesconfig"
+        icon.name: ""
+        leftPadding: 6; rightPadding: 6
+        background: Rectangle { radius: 8; color: Kirigami.Theme.textColor; opacity: parent.hovered || parent.activeFocus ? 0.10 : 0 }
+        contentItem: ControlLabel { text: parent.text; verticalAlignment: Text.AlignVCenter }
     }
-    ControlLabel { Layout.fillWidth: true; visible: text.length > 0; text: view.profiles.profileError; wrapMode: Text.WordWrap }
-    SettingsLink { text: i18n("Energy Settings…"); module: "kcm_powerdevilprofilesconfig" }
 }

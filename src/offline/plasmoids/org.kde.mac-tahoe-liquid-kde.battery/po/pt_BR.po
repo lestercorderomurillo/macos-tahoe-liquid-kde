@@ -11,14 +11,17 @@ msgstr "%1%"
 msgid "Audio outputs"
 msgstr "Saídas de áudio"
 
+msgid "Automatic"
+msgstr "Automático"
+
 msgid "Back"
 msgstr "Voltar"
 
-msgid "Balanced"
-msgstr "Equilibrado"
-
 msgid "Battery"
 msgstr "Bateria"
+
+msgid "Battery Settings…"
+msgstr "Ajustes de bateria…"
 
 msgid "Battery information will appear when a battery is available."
 msgstr "As informações aparecerão quando uma bateria estiver disponível."
@@ -80,8 +83,8 @@ msgstr "Não perturbe"
 msgid "Edit Controls"
 msgstr "Editar controles"
 
-msgid "Energy Settings…"
-msgstr "Configurações de energia…"
+msgid "Energy Mode"
+msgstr "Modo de energia"
 
 msgid "Energy mode"
 msgstr "Modo de energia"
@@ -98,14 +101,20 @@ msgstr "Foco"
 msgid "Fully charged"
 msgstr "Totalmente carregada"
 
+msgid "High Power"
+msgstr "Alto Desempenho"
+
+msgid "Known Networks"
+msgstr "Redes conhecidas"
+
+msgid "Low Power"
+msgstr "Pouca Energia"
+
 msgid "Mute sound"
 msgstr "Silenciar som"
 
 msgid "Network"
 msgstr "Rede"
-
-msgid "Network Settings…"
-msgstr "Configurações de rede…"
 
 msgid "Next track"
 msgstr "Próxima faixa"
@@ -146,14 +155,14 @@ msgstr "Desativado"
 msgid "On"
 msgstr "Ativado"
 
-msgid "On battery power"
-msgstr "Usando bateria"
-
 msgid "Open"
 msgstr "Abrir"
 
 msgid "Options"
 msgstr "Opções"
+
+msgid "Other Networks"
+msgstr "Outras redes"
 
 msgid "Overview"
 msgstr "Visão geral"
@@ -164,14 +173,14 @@ msgstr "Pausar"
 msgid "Pause notifications for one hour"
 msgstr "Pausar notificações por uma hora"
 
-msgid "Performance"
-msgstr "Desempenho"
-
 msgid "Play or pause"
 msgstr "Reproduzir ou pausar"
 
-msgid "Power saver"
-msgstr "Economia de energia"
+msgid "Power Source: Battery"
+msgstr "Fonte de energia: bateria"
+
+msgid "Power Source: Power Adapter"
+msgstr "Fonte de energia: adaptador de alimentação"
 
 msgid "Previous track"
 msgstr "Faixa anterior"
@@ -205,6 +214,9 @@ msgstr "Volume"
 
 msgid "Wi-Fi"
 msgstr "Wi-Fi"
+
+msgid "Wi-Fi Settings…"
+msgstr "Ajustes de Wi-Fi…"
 
 msgid "Wi-Fi is blocked by the hardware switch"
 msgstr "O Wi-Fi está bloqueado pelo botão físico"

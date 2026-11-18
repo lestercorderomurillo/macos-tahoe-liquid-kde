@@ -1,6 +1,6 @@
 # Installer testing
 
-Tahoe **v0.73.6** improves Shell contrast in light and dark mode while preserving the original typography and capsule geometry. Focused geometry tests and ten rendered Wayland configurations were verified. [Detailed evidence and coverage limits](docs/evidence/shell-0736.json). Full CI runs independently. Installer photographs retain their original provenance.
+Tahoe **v0.73.7** includes the approved Wi-Fi and battery menus. Focused native-action and translation checks passed; persistent menus and Qt/Kvantum plus GTK 3/4 applications were verified across manual changes, rapid overlapping selections and actual automatic dusk/dawn crossings in one Wayland VM. [Detailed evidence and coverage limits](docs/evidence/status-menus-0737.json). Full CI runs independently. Installer photographs retain their original provenance.
 
 Approved installer previews: [Light](src/screenshots/previews/installer-tahoe-light-icons-805970eab6b7.png) · [Dark](src/screenshots/previews/installer-tahoe-dark-icons-dbc66adc81c4.png). The gallery below is historical and predates these installer changes; its original [provenance](src/screenshots/release-capture.json) is retained.
 

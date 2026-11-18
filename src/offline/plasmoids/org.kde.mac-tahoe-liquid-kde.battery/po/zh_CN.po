@@ -11,14 +11,17 @@ msgstr "%1%"
 msgid "Audio outputs"
 msgstr "音频输出"
 
+msgid "Automatic"
+msgstr "自动"
+
 msgid "Back"
 msgstr "返回"
 
-msgid "Balanced"
-msgstr "平衡"
-
 msgid "Battery"
 msgstr "电池"
+
+msgid "Battery Settings…"
+msgstr "电池设置…"
 
 msgid "Battery information will appear when a battery is available."
 msgstr "电池可用时将显示电池信息。"
@@ -80,8 +83,8 @@ msgstr "勿扰模式"
 msgid "Edit Controls"
 msgstr "编辑控制"
 
-msgid "Energy Settings…"
-msgstr "电源设置…"
+msgid "Energy Mode"
+msgstr "电源模式"
 
 msgid "Energy mode"
 msgstr "电源模式"
@@ -98,14 +101,20 @@ msgstr "专注模式"
 msgid "Fully charged"
 msgstr "已充满"
 
+msgid "High Power"
+msgstr "高功率"
+
+msgid "Known Networks"
+msgstr "已知网络"
+
+msgid "Low Power"
+msgstr "低电量"
+
 msgid "Mute sound"
 msgstr "静音"
 
 msgid "Network"
 msgstr "网络"
-
-msgid "Network Settings…"
-msgstr "网络设置…"
 
 msgid "Next track"
 msgstr "下一首"
@@ -146,14 +155,14 @@ msgstr "关闭"
 msgid "On"
 msgstr "开启"
 
-msgid "On battery power"
-msgstr "使用电池供电"
-
 msgid "Open"
 msgstr "Open"
 
 msgid "Options"
 msgstr "选项"
+
+msgid "Other Networks"
+msgstr "其他网络"
 
 msgid "Overview"
 msgstr "概览"
@@ -164,14 +173,14 @@ msgstr "暂停"
 msgid "Pause notifications for one hour"
 msgstr "暂停通知一小时"
 
-msgid "Performance"
-msgstr "性能"
-
 msgid "Play or pause"
 msgstr "播放或暂停"
 
-msgid "Power saver"
-msgstr "节能"
+msgid "Power Source: Battery"
+msgstr "电源：电池"
+
+msgid "Power Source: Power Adapter"
+msgstr "电源：电源适配器"
 
 msgid "Previous track"
 msgstr "上一首"
@@ -205,6 +214,9 @@ msgstr "音量"
 
 msgid "Wi-Fi"
 msgstr "无线网络"
+
+msgid "Wi-Fi Settings…"
+msgstr "Wi-Fi 设置…"
 
 msgid "Wi-Fi is blocked by the hardware switch"
 msgstr "无线网络已被硬件开关禁用"

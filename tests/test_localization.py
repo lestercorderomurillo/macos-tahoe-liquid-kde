@@ -119,3 +119,20 @@ def test_french_auto_preference_and_plural_catalogs(sandbox, monkeypatch, repo):
     for count in (0, 1, 2):
         expected = "%1 emplacement supplémentaire…" if count < 2 else "%1 emplacements supplémentaires…"
         assert catalog.ngettext("%1 more Place…", "%1 more Places…", count) == expected
+
+
+def test_status_menu_catalogs_resolve_shared_views(repo):
+    expected = {
+        "es": ("Redes conocidas", "Ajustes de batería…"),
+        "zh_CN": ("已知网络", "电池设置…"),
+        "pt_BR": ("Redes conhecidas", "Ajustes de bateria…"),
+        "de": ("Bekannte Netzwerke", "Batterieeinstellungen…"),
+        "fr": ("Réseaux connus", "Réglages Batterie…"),
+    }
+    for suffix in ("controlcenter", "wifi", "battery", "notifications"):
+        widget = "org.kde.mac-tahoe-liquid-kde." + suffix
+        for language, (known, settings) in expected.items():
+            catalog = _catalog(repo / "src/offline/plasmoids" / widget / "contents/locale" /
+                               language / "LC_MESSAGES" / ("plasma_applet_" + widget + ".mo"))
+            assert catalog.gettext("Known Networks") == known
+            assert catalog.gettext("Battery Settings…") == settings

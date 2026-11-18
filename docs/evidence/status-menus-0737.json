@@ -1,0 +1,1912 @@
+{
+  "version": "0.73.7",
+  "approved_candidate_commit": "5ecf6b116095d00c9a8d5b1c62f04638bd3c5a32",
+  "integration_commit": "060ecbb09c6cf04e82de4bf4824f9bc732e27774",
+  "approval": {
+    "date": "2026-11-17",
+    "message": "release yes",
+    "previews": {
+      "MacTahoe-preview": {
+        "path": "/mnt/M2_1/Projects/Repositories/.worktrees/wifi-battery-macos/build/wifi-battery-review/MacTahoe-preview-81f9d6d037f4.png",
+        "sha256": "81f9d6d037f48b68b576b451128b09d8828261d105e5949239c72db0e1b038ff"
+      },
+      "MacGoldenGate-preview": {
+        "path": "/mnt/M2_1/Projects/Repositories/.worktrees/wifi-battery-macos/build/wifi-battery-review/MacGoldenGate-preview-935a69faeaa9.png",
+        "sha256": "935a69faeaa99f937a19078ce84a8488a3e0138a0f2ff6271ee60f7cb8a8afef"
+      },
+      "tahoe-reference-comparison": {
+        "path": "/mnt/M2_1/Projects/Repositories/.worktrees/wifi-battery-macos/build/wifi-battery-review/tahoe-reference-comparison-130e981ff815.png",
+        "sha256": "130e981ff8154377ba527864c96fb9077210d62094c6a0917cec3378de2f5f7f"
+      }
+    }
+  },
+  "scope": "macOS-style Wi-Fi and battery menus, shared with Control Center, using edition-specific glass and existing native network/power actions.",
+  "preview_provenance": {
+    "source_commit": "5ecf6b116095d00c9a8d5b1c62f04638bd3c5a32",
+    "environment": {
+      "image": "/mnt/DISK_0/mttkde-release-v061/neon-base-v2.qcow2",
+      "disposable_overlay": true,
+      "plasma": "6.8.1",
+      "qt": "6.11.1",
+      "session": "Wayland",
+      "resolution": [
+        3840,
+        2160
+      ],
+      "scale": 2,
+      "installed_native_backend": "liquidglass",
+      "fixture_preview": true,
+      "real_plasmashell_popups": "Both native applets activated via KGlobalAccel; active AppletPopup windows recorded in live-menu-final.log. Hardware unavailable in VM; populated lists and battery percentage in preview use deterministic fixtures."
+    },
+    "hardware_fixtures": true,
+    "source_file_sha256": {
+      "src/offline/plasmoids/org.kde.mac-tahoe-liquid-kde.controlcenter/contents/ui/StatusMenuDivider.qml": "30817c6da06b701f6d9b6d7fbd69ce322c6928b0f64d8a815f3c101307d7b52e",
+      "src/offline/plasmoids/org.kde.mac-tahoe-liquid-kde.controlcenter/contents/ui/StatusMenuPopup.qml": "863f8a07ad9fcc5aff76c58ddd7d40f72a513cf8b1b04d5f2184e409fc0b3acf",
+      "src/offline/plasmoids/org.kde.mac-tahoe-liquid-kde.controlcenter/contents/ui/StatusMenuRow.qml": "d93fb78d3f4a54d1f0833f7f0653c701af221b427874c4d66ff71ee2cb4dd21d",
+      "src/offline/plasmoids/org.kde.mac-tahoe-liquid-kde.controlcenter/contents/ui/symbols/mttkde-control-lock.svg": "05a76b99b97a38509f003d17d997ccc45bc61c207b8eaf420b3a3eb76338f9e9",
+      "src/scripts/locales/status_menus.json": "6162d61fd421b370954139049ec71da0b00743cf97fb3fd84a5a316db509f968",
+      "component-hashes.json": "22d0bc7a0e649dd03c5762caa335fe0be7dc5e9c6e512afdea87c9bac7bf6633",
+      "src/offline/plasmoids/org.kde.mac-tahoe-liquid-kde.battery/contents/locale/de/LC_MESSAGES/plasma_applet_org.kde.mac-tahoe-liquid-kde.battery.mo": "05194c6b1cbca8400024b1c1e8e567427230bf8d756d598023d1d0f6ee1f9b2a",
+      "src/offline/plasmoids/org.kde.mac-tahoe-liquid-kde.battery/contents/locale/es/LC_MESSAGES/plasma_applet_org.kde.mac-tahoe-liquid-kde.battery.mo": "e7368926091fb6b98c9771ed9393d28cac724844152c3551e7367a5e3c52d438",
+      "src/offline/plasmoids/org.kde.mac-tahoe-liquid-kde.battery/contents/locale/fr/LC_MESSAGES/plasma_applet_org.kde.mac-tahoe-liquid-kde.battery.mo": "3c5d5c592a0c17cf0cc936d5f415f4f56a3344e47dc6c359d64046e39b929eb6",
+      "src/offline/plasmoids/org.kde.mac-tahoe-liquid-kde.battery/contents/locale/pt_BR/LC_MESSAGES/plasma_applet_org.kde.mac-tahoe-liquid-kde.battery.mo": "c7a925d602b6e1656e5383091e7a70461f7c09011f82e8cd8b5baf47ea594dba",
+      "src/offline/plasmoids/org.kde.mac-tahoe-liquid-kde.battery/contents/locale/zh_CN/LC_MESSAGES/plasma_applet_org.kde.mac-tahoe-liquid-kde.battery.mo": "51c38c2c85894ce2bd28a74659ae147beb8ada3a2e427c30764f04c9d62d560c",
+      "src/offline/plasmoids/org.kde.mac-tahoe-liquid-kde.battery/contents/ui/main.qml": "dce7fb94945c32342c19eee9d66ffccfcb82f82179b5206cbecc883366983acf",
+      "src/offline/plasmoids/org.kde.mac-tahoe-liquid-kde.battery/po/de.po": "c87572bcbb452aa1328365dca7f30c011695dd4ea86e88b28b47b69700edaa64",
+      "src/offline/plasmoids/org.kde.mac-tahoe-liquid-kde.battery/po/es.po": "65acf50776315526b64b970116cd771cd89d1cfaa7005911bbafc86f010dc2e6",
+      "src/offline/plasmoids/org.kde.mac-tahoe-liquid-kde.battery/po/fr.po": "b49974166b3a8ceb3e76c5e19a3938b0b6c5773e425b362d6a94f6a66407d766",
+      "src/offline/plasmoids/org.kde.mac-tahoe-liquid-kde.battery/po/pt_BR.po": "0fc8f7845a07bccfbd3981b849cebf6a37a7389c9b97584ff3b78aa300c8f02a",
+      "src/offline/plasmoids/org.kde.mac-tahoe-liquid-kde.battery/po/zh_CN.po": "06997bf98f3b9329de7de9557756b89a99669ee433a2a6ee6e3ddfa6384faf3c",
+      "src/offline/plasmoids/org.kde.mac-tahoe-liquid-kde.controlcenter/contents/locale/de/LC_MESSAGES/plasma_applet_org.kde.mac-tahoe-liquid-kde.controlcenter.mo": "e8a0d3b71159766c981d99e20bd2eacbed8bd9ec7f466e43c2a37d41c7255107",
+      "src/offline/plasmoids/org.kde.mac-tahoe-liquid-kde.controlcenter/contents/locale/es/LC_MESSAGES/plasma_applet_org.kde.mac-tahoe-liquid-kde.controlcenter.mo": "0ee4a014b2b21211ee2a0f2e2ad2284f47dc71f33eb4a9046489919d0f4bb211",
+      "src/offline/plasmoids/org.kde.mac-tahoe-liquid-kde.controlcenter/contents/locale/fr/LC_MESSAGES/plasma_applet_org.kde.mac-tahoe-liquid-kde.controlcenter.mo": "e5497c44b46766d8ba4930dcf69b1973afc396b28307b7da521e0ddec7f98256",
+      "src/offline/plasmoids/org.kde.mac-tahoe-liquid-kde.controlcenter/contents/locale/pt_BR/LC_MESSAGES/plasma_applet_org.kde.mac-tahoe-liquid-kde.controlcenter.mo": "8120f973b22cc391be6bd0e4c96f9bad930bd6a490f0dcf15fd21f9110db7c50",
+      "src/offline/plasmoids/org.kde.mac-tahoe-liquid-kde.controlcenter/contents/locale/zh_CN/LC_MESSAGES/plasma_applet_org.kde.mac-tahoe-liquid-kde.controlcenter.mo": "ea4d3e4733529dfe08a6d4378fa5ed1af8a68b8fd7da36239705748ee771fdd3",
+      "src/offline/plasmoids/org.kde.mac-tahoe-liquid-kde.controlcenter/contents/ui/BatteryView.qml": "c7389c1e525a7c8b8b15a8e3f0ec9d971dba621b556b1a7c8720766ebab46cbd",
+      "src/offline/plasmoids/org.kde.mac-tahoe-liquid-kde.controlcenter/contents/ui/ControlStyle.js": "176ebf4617f0682c441d412b7a5237ec39f89bfd411969200f4ddb7853595340",
+      "src/offline/plasmoids/org.kde.mac-tahoe-liquid-kde.controlcenter/contents/ui/WifiView.qml": "046258f978138290d8370d55369a50f1fb6483adb6f3a92cb48d7b2df85aa83f",
+      "src/offline/plasmoids/org.kde.mac-tahoe-liquid-kde.controlcenter/contents/ui/symbols/control-symbols.json": "fcc8647a0b65691ba34ebd71891b6a400c9715d0691e5cda2de7d8604177db17",
+      "src/offline/plasmoids/org.kde.mac-tahoe-liquid-kde.controlcenter/po/de.po": "d365942132eee9d9b1ec7357c15b0236c54ac5c4ef82051d1e9a65b03a507459",
+      "src/offline/plasmoids/org.kde.mac-tahoe-liquid-kde.controlcenter/po/es.po": "9f6c14106d61d4096ab5c1533cae2cf06a94388cb1446a8a9d8808b61c464551",
+      "src/offline/plasmoids/org.kde.mac-tahoe-liquid-kde.controlcenter/po/fr.po": "3fd9048fce8100551f9eb01d7352acf5a73e40f4e4a2b5a8e33b165208448ab6",
+      "src/offline/plasmoids/org.kde.mac-tahoe-liquid-kde.controlcenter/po/pt_BR.po": "c0c420d419ed9383a7673a4637920594737b861fa95c72efd13ae0a1edffdcbe",
+      "src/offline/plasmoids/org.kde.mac-tahoe-liquid-kde.controlcenter/po/zh_CN.po": "56925b6a10f42e51136e8c832fa481dea9ca42449974118266d267a4481ab330",
+      "src/offline/plasmoids/org.kde.mac-tahoe-liquid-kde.notifications/contents/locale/de/LC_MESSAGES/plasma_applet_org.kde.mac-tahoe-liquid-kde.notifications.mo": "e8a0d3b71159766c981d99e20bd2eacbed8bd9ec7f466e43c2a37d41c7255107",
+      "src/offline/plasmoids/org.kde.mac-tahoe-liquid-kde.notifications/contents/locale/es/LC_MESSAGES/plasma_applet_org.kde.mac-tahoe-liquid-kde.notifications.mo": "0ee4a014b2b21211ee2a0f2e2ad2284f47dc71f33eb4a9046489919d0f4bb211",
+      "src/offline/plasmoids/org.kde.mac-tahoe-liquid-kde.notifications/contents/locale/fr/LC_MESSAGES/plasma_applet_org.kde.mac-tahoe-liquid-kde.notifications.mo": "e5497c44b46766d8ba4930dcf69b1973afc396b28307b7da521e0ddec7f98256",
+      "src/offline/plasmoids/org.kde.mac-tahoe-liquid-kde.notifications/contents/locale/pt_BR/LC_MESSAGES/plasma_applet_org.kde.mac-tahoe-liquid-kde.notifications.mo": "8120f973b22cc391be6bd0e4c96f9bad930bd6a490f0dcf15fd21f9110db7c50",
+      "src/offline/plasmoids/org.kde.mac-tahoe-liquid-kde.notifications/contents/locale/zh_CN/LC_MESSAGES/plasma_applet_org.kde.mac-tahoe-liquid-kde.notifications.mo": "ea4d3e4733529dfe08a6d4378fa5ed1af8a68b8fd7da36239705748ee771fdd3",
+      "src/offline/plasmoids/org.kde.mac-tahoe-liquid-kde.notifications/po/de.po": "d365942132eee9d9b1ec7357c15b0236c54ac5c4ef82051d1e9a65b03a507459",
+      "src/offline/plasmoids/org.kde.mac-tahoe-liquid-kde.notifications/po/es.po": "9f6c14106d61d4096ab5c1533cae2cf06a94388cb1446a8a9d8808b61c464551",
+      "src/offline/plasmoids/org.kde.mac-tahoe-liquid-kde.notifications/po/fr.po": "3fd9048fce8100551f9eb01d7352acf5a73e40f4e4a2b5a8e33b165208448ab6",
+      "src/offline/plasmoids/org.kde.mac-tahoe-liquid-kde.notifications/po/pt_BR.po": "c0c420d419ed9383a7673a4637920594737b861fa95c72efd13ae0a1edffdcbe",
+      "src/offline/plasmoids/org.kde.mac-tahoe-liquid-kde.notifications/po/zh_CN.po": "56925b6a10f42e51136e8c832fa481dea9ca42449974118266d267a4481ab330",
+      "src/offline/plasmoids/org.kde.mac-tahoe-liquid-kde.wifi/contents/locale/de/LC_MESSAGES/plasma_applet_org.kde.mac-tahoe-liquid-kde.wifi.mo": "e8a0d3b71159766c981d99e20bd2eacbed8bd9ec7f466e43c2a37d41c7255107",
+      "src/offline/plasmoids/org.kde.mac-tahoe-liquid-kde.wifi/contents/locale/es/LC_MESSAGES/plasma_applet_org.kde.mac-tahoe-liquid-kde.wifi.mo": "0ee4a014b2b21211ee2a0f2e2ad2284f47dc71f33eb4a9046489919d0f4bb211",
+      "src/offline/plasmoids/org.kde.mac-tahoe-liquid-kde.wifi/contents/locale/fr/LC_MESSAGES/plasma_applet_org.kde.mac-tahoe-liquid-kde.wifi.mo": "e5497c44b46766d8ba4930dcf69b1973afc396b28307b7da521e0ddec7f98256",
+      "src/offline/plasmoids/org.kde.mac-tahoe-liquid-kde.wifi/contents/locale/pt_BR/LC_MESSAGES/plasma_applet_org.kde.mac-tahoe-liquid-kde.wifi.mo": "8120f973b22cc391be6bd0e4c96f9bad930bd6a490f0dcf15fd21f9110db7c50",
+      "src/offline/plasmoids/org.kde.mac-tahoe-liquid-kde.wifi/contents/locale/zh_CN/LC_MESSAGES/plasma_applet_org.kde.mac-tahoe-liquid-kde.wifi.mo": "ea4d3e4733529dfe08a6d4378fa5ed1af8a68b8fd7da36239705748ee771fdd3",
+      "src/offline/plasmoids/org.kde.mac-tahoe-liquid-kde.wifi/contents/ui/main.qml": "bd9e6824a283eacb0f943739dd372e65c3968e8370b8c60f96c72adaaa48998e",
+      "src/offline/plasmoids/org.kde.mac-tahoe-liquid-kde.wifi/po/de.po": "d365942132eee9d9b1ec7357c15b0236c54ac5c4ef82051d1e9a65b03a507459",
+      "src/offline/plasmoids/org.kde.mac-tahoe-liquid-kde.wifi/po/es.po": "9f6c14106d61d4096ab5c1533cae2cf06a94388cb1446a8a9d8808b61c464551",
+      "src/offline/plasmoids/org.kde.mac-tahoe-liquid-kde.wifi/po/fr.po": "3fd9048fce8100551f9eb01d7352acf5a73e40f4e4a2b5a8e33b165208448ab6",
+      "src/offline/plasmoids/org.kde.mac-tahoe-liquid-kde.wifi/po/pt_BR.po": "c0c420d419ed9383a7673a4637920594737b861fa95c72efd13ae0a1edffdcbe",
+      "src/offline/plasmoids/org.kde.mac-tahoe-liquid-kde.wifi/po/zh_CN.po": "56925b6a10f42e51136e8c832fa481dea9ca42449974118266d267a4481ab330",
+      "src/scripts/build_control_symbols.py": "77b5e346cdf33158f1459d1f7bd4d251a6bfc17e993e7b094999ad1ca27afad4",
+      "src/scripts/build_translations.py": "0e517661f27362700a6744f22744a4a84271562a7fae8fd014bc6606c8911722",
+      "tests/desktop_controls_probe.py": "333e33042eb5bac73f9ed1f562716acc01208a7e23f1672b2a13d76de616c945",
+      "tests/test_localization.py": "1842c6916766dc92cea466056f4b2323adbf0634b1bda71d411b5b2a1b42dffc"
+    },
+    "references": [
+      {
+        "component": "wifi",
+        "edition": "macOS Tahoe",
+        "source": "https://www.lesnumeriques.com/ordinateur-portable/macos-tahoe-fini-la-galere-du-partage-de-connexion-votre-macbook-s-occupe-de-tout-n242544.html",
+        "image": "tahoe-wifi.jpg"
+      },
+      {
+        "component": "battery",
+        "edition": "macOS Tahoe 26.0.1",
+        "source": "https://www.kimi-blog.com/entry/MacBook_Air_6",
+        "image": "tahoe-battery.png"
+      }
+    ],
+    "comparison": {
+      "scale": "2 physical pixels per logical pixel, aligned top-left with no screenshot rescaling; 50/50 opacity overlay",
+      "differences": [
+        "Different fixture text, percentage and wallpaper; Wi-Fi reference has an extra Personal Hotspot section.",
+        "Battery reference includes app energy-usage information that the Linux menu does not fabricate.",
+        "The existing edition materials remain distinct; this is not a pixel-identical claim."
+      ]
+    }
+  },
+  "focused_checks": [
+    {
+      "command": "python3 -m pytest tests/test_desktop_controls.py -q",
+      "result": "passed",
+      "evidence": "controls-final.log",
+      "claims": "Native imports, native wireless enable/disable, hardware blocking, saved/discovered network grouping, connect/disconnect/add activation arguments, busy state, scan gating, battery source state, real pointer and keyboard energy-profile selection, popup rendering."
+    },
+    {
+      "command": "python3 -m pytest tests/test_localization.py -q",
+      "result": "10 passed",
+      "evidence": "localization-final.log"
+    },
+    {
+      "command": "git diff --check",
+      "result": "passed"
+    },
+    {
+      "command": "python3 src/scripts/component_manifest.py --write",
+      "result": "only Wi-Fi, battery, Control Center and dependent notification payload hashes changed"
+    }
+  ],
+  "automatic_transition_qualification": {
+    "tahoe": [
+      {
+        "case": "manual-light",
+        "expected": "light",
+        "menus": [
+          {
+            "case": "manual-light",
+            "mode": "light",
+            "pid": 54245,
+            "text": "#242424",
+            "size": [
+              656,
+              548
+            ],
+            "frame": "MacTahoe-manual-light-wifi.png",
+            "sha256": "db1616e0941d26e7a9f9a2ad7e597ad7cb45f3dc4a9239cdbbd3280e45ed0c9c",
+            "header_luminance_range": [
+              0.1411764770746231,
+              1.0
+            ]
+          },
+          {
+            "case": "manual-light",
+            "mode": "light",
+            "pid": 54246,
+            "text": "#242424",
+            "size": [
+              656,
+              376
+            ],
+            "frame": "MacTahoe-manual-light-battery.png",
+            "sha256": "d80d8e784608c7fd6b753f7075eb31cee6865637a8381996a91c916c1aa76872",
+            "header_luminance_range": [
+              0.1411764770746231,
+              1.0
+            ]
+          }
+        ],
+        "gtk": [
+          {
+            "gtk": "3",
+            "background": [
+              0.9607843137254902,
+              0.9607843137254902,
+              0.9607843137254902,
+              1.0
+            ],
+            "foreground": [
+              0.1411764705882353,
+              0.1411764705882353,
+              0.1411764705882353,
+              1.0
+            ],
+            "theme": "MacTahoeLiquidKde-Light",
+            "prefer_dark": false
+          },
+          {
+            "gtk": "4",
+            "background": [
+              0.9803921580314636,
+              0.9803921580314636,
+              0.9803921580314636,
+              1.0
+            ],
+            "foreground": [
+              0.0,
+              0.0,
+              0.0,
+              0.800000011920929
+            ],
+            "theme": "Adwaita-empty",
+            "prefer_dark": false,
+            "dark": false
+          }
+        ],
+        "appearance": {
+          "preference": "light",
+          "observed": {
+            "gnome-color-scheme": "light",
+            "gnome-gtk-theme": "light",
+            "colors": "light",
+            "global": "light",
+            "plasma": "light",
+            "kvantum": "light",
+            "gtk": "light",
+            "automatic": false
+          },
+          "applied": "light"
+        },
+        "continuous_pids": [
+          54244,
+          54245,
+          54246,
+          54247,
+          54248,
+          54249
+        ]
+      },
+      {
+        "case": "native-kde-dark",
+        "expected": "dark",
+        "menus": [
+          {
+            "case": "native-kde-dark",
+            "mode": "dark",
+            "pid": 54245,
+            "text": "#dedede",
+            "size": [
+              656,
+              548
+            ],
+            "frame": "MacTahoe-native-kde-dark-wifi.png",
+            "sha256": "8d5f9c8e634cf3a9b4271e96481ec0eca0fb302d15736b92c4ba4e41efc5fc7c",
+            "header_luminance_range": [
+              0.0,
+              0.8719462752342224
+            ]
+          },
+          {
+            "case": "native-kde-dark",
+            "mode": "dark",
+            "pid": 54246,
+            "text": "#dedede",
+            "size": [
+              656,
+              376
+            ],
+            "frame": "MacTahoe-native-kde-dark-battery.png",
+            "sha256": "a0427fda4e96d4a750f70c568785a087d4f12f0ef7117750c4572377bcd112fd",
+            "header_luminance_range": [
+              0.0,
+              0.8705882430076599
+            ]
+          }
+        ],
+        "gtk": [
+          {
+            "gtk": "3",
+            "background": [
+              0.2,
+              0.2,
+              0.2,
+              1.0
+            ],
+            "foreground": [
+              0.8705882352941177,
+              0.8705882352941177,
+              0.8705882352941177,
+              1.0
+            ],
+            "theme": "MacTahoeLiquidKde-Dark",
+            "prefer_dark": false
+          },
+          {
+            "gtk": "4",
+            "background": [
+              0.1411764770746231,
+              0.1411764770746231,
+              0.1411764770746231,
+              1.0
+            ],
+            "foreground": [
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ],
+            "theme": "Adwaita-empty",
+            "prefer_dark": true,
+            "dark": true
+          }
+        ],
+        "appearance": {
+          "preference": "light",
+          "observed": {
+            "gnome-color-scheme": "light",
+            "gnome-gtk-theme": "light",
+            "colors": "light",
+            "global": "light",
+            "plasma": "light",
+            "kvantum": "light",
+            "gtk": "light",
+            "automatic": false
+          },
+          "applied": "light"
+        },
+        "continuous_pids": [
+          54244,
+          54245,
+          54246,
+          54247,
+          54248,
+          54249
+        ]
+      },
+      {
+        "case": "gtk-light",
+        "expected": "light",
+        "menus": [
+          {
+            "case": "gtk-light",
+            "mode": "light",
+            "pid": 54245,
+            "text": "#242424",
+            "size": [
+              656,
+              548
+            ],
+            "frame": "MacTahoe-gtk-light-wifi.png",
+            "sha256": "db1616e0941d26e7a9f9a2ad7e597ad7cb45f3dc4a9239cdbbd3280e45ed0c9c",
+            "header_luminance_range": [
+              0.1411764770746231,
+              1.0
+            ]
+          },
+          {
+            "case": "gtk-light",
+            "mode": "light",
+            "pid": 54246,
+            "text": "#242424",
+            "size": [
+              656,
+              376
+            ],
+            "frame": "MacTahoe-gtk-light-battery.png",
+            "sha256": "d80d8e784608c7fd6b753f7075eb31cee6865637a8381996a91c916c1aa76872",
+            "header_luminance_range": [
+              0.1411764770746231,
+              1.0
+            ]
+          }
+        ],
+        "gtk": [
+          {
+            "gtk": "3",
+            "background": [
+              0.9607843137254902,
+              0.9607843137254902,
+              0.9607843137254902,
+              1.0
+            ],
+            "foreground": [
+              0.1411764705882353,
+              0.1411764705882353,
+              0.1411764705882353,
+              1.0
+            ],
+            "theme": "MacTahoeLiquidKde-Light",
+            "prefer_dark": false
+          },
+          {
+            "gtk": "4",
+            "background": [
+              0.9803921580314636,
+              0.9803921580314636,
+              0.9803921580314636,
+              1.0
+            ],
+            "foreground": [
+              0.0,
+              0.0,
+              0.0,
+              0.800000011920929
+            ],
+            "theme": "Adwaita-empty",
+            "prefer_dark": false,
+            "dark": false
+          }
+        ],
+        "appearance": {
+          "preference": "light",
+          "observed": {
+            "gnome-color-scheme": "light",
+            "gnome-gtk-theme": "light",
+            "colors": "light",
+            "global": "light",
+            "plasma": "light",
+            "kvantum": "light",
+            "gtk": "light",
+            "automatic": false
+          },
+          "applied": "light"
+        },
+        "continuous_pids": [
+          54244,
+          54245,
+          54246,
+          54247,
+          54248,
+          54249
+        ]
+      },
+      {
+        "case": "rapid-native-dark",
+        "expected": "dark",
+        "menus": [
+          {
+            "case": "rapid-native-dark",
+            "mode": "dark",
+            "pid": 54245,
+            "text": "#dedede",
+            "size": [
+              656,
+              548
+            ],
+            "frame": "MacTahoe-rapid-native-dark-wifi.png",
+            "sha256": "8d5f9c8e634cf3a9b4271e96481ec0eca0fb302d15736b92c4ba4e41efc5fc7c",
+            "header_luminance_range": [
+              0.0,
+              0.8719462752342224
+            ]
+          },
+          {
+            "case": "rapid-native-dark",
+            "mode": "dark",
+            "pid": 54246,
+            "text": "#dedede",
+            "size": [
+              656,
+              376
+            ],
+            "frame": "MacTahoe-rapid-native-dark-battery.png",
+            "sha256": "a0427fda4e96d4a750f70c568785a087d4f12f0ef7117750c4572377bcd112fd",
+            "header_luminance_range": [
+              0.0,
+              0.8705882430076599
+            ]
+          }
+        ],
+        "gtk": [
+          {
+            "gtk": "3",
+            "background": [
+              0.2,
+              0.2,
+              0.2,
+              1.0
+            ],
+            "foreground": [
+              0.8705882352941177,
+              0.8705882352941177,
+              0.8705882352941177,
+              1.0
+            ],
+            "theme": "MacTahoeLiquidKde-Dark",
+            "prefer_dark": false
+          },
+          {
+            "gtk": "4",
+            "background": [
+              0.1411764770746231,
+              0.1411764770746231,
+              0.1411764770746231,
+              1.0
+            ],
+            "foreground": [
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ],
+            "theme": "Adwaita-empty",
+            "prefer_dark": true,
+            "dark": true
+          }
+        ],
+        "appearance": {
+          "preference": "light",
+          "observed": {
+            "gnome-color-scheme": "light",
+            "gnome-gtk-theme": "light",
+            "colors": "light",
+            "global": "light",
+            "plasma": "light",
+            "kvantum": "light",
+            "gtk": "light",
+            "automatic": false
+          },
+          "applied": "light"
+        },
+        "continuous_pids": [
+          54244,
+          54245,
+          54246,
+          54247,
+          54248,
+          54249
+        ]
+      },
+      {
+        "case": "overlapping-cli-light",
+        "expected": "light",
+        "menus": [
+          {
+            "case": "overlapping-cli-light",
+            "mode": "light",
+            "pid": 54245,
+            "text": "#242424",
+            "size": [
+              656,
+              548
+            ],
+            "frame": "MacTahoe-overlapping-cli-light-wifi.png",
+            "sha256": "db1616e0941d26e7a9f9a2ad7e597ad7cb45f3dc4a9239cdbbd3280e45ed0c9c",
+            "header_luminance_range": [
+              0.1411764770746231,
+              1.0
+            ]
+          },
+          {
+            "case": "overlapping-cli-light",
+            "mode": "light",
+            "pid": 54246,
+            "text": "#242424",
+            "size": [
+              656,
+              376
+            ],
+            "frame": "MacTahoe-overlapping-cli-light-battery.png",
+            "sha256": "d80d8e784608c7fd6b753f7075eb31cee6865637a8381996a91c916c1aa76872",
+            "header_luminance_range": [
+              0.1411764770746231,
+              1.0
+            ]
+          }
+        ],
+        "gtk": [
+          {
+            "gtk": "3",
+            "background": [
+              0.9607843137254902,
+              0.9607843137254902,
+              0.9607843137254902,
+              1.0
+            ],
+            "foreground": [
+              0.1411764705882353,
+              0.1411764705882353,
+              0.1411764705882353,
+              1.0
+            ],
+            "theme": "MacTahoeLiquidKde-Light",
+            "prefer_dark": false
+          },
+          {
+            "gtk": "4",
+            "background": [
+              0.9803921580314636,
+              0.9803921580314636,
+              0.9803921580314636,
+              1.0
+            ],
+            "foreground": [
+              0.0,
+              0.0,
+              0.0,
+              0.800000011920929
+            ],
+            "theme": "Adwaita-empty",
+            "prefer_dark": false,
+            "dark": false
+          }
+        ],
+        "appearance": {
+          "preference": "light",
+          "observed": {
+            "gnome-color-scheme": "light",
+            "gnome-gtk-theme": "light",
+            "colors": "light",
+            "global": "light",
+            "plasma": "light",
+            "kvantum": "light",
+            "gtk": "light",
+            "automatic": false
+          },
+          "applied": "light"
+        },
+        "continuous_pids": [
+          54244,
+          54245,
+          54246,
+          54247,
+          54248,
+          54249
+        ]
+      },
+      {
+        "case": "auto-before-dusk",
+        "expected": "light",
+        "menus": [
+          {
+            "case": "auto-before-dusk",
+            "mode": "light",
+            "pid": 54245,
+            "text": "#242424",
+            "size": [
+              656,
+              548
+            ],
+            "frame": "MacTahoe-auto-before-dusk-wifi.png",
+            "sha256": "db1616e0941d26e7a9f9a2ad7e597ad7cb45f3dc4a9239cdbbd3280e45ed0c9c",
+            "header_luminance_range": [
+              0.1411764770746231,
+              1.0
+            ]
+          },
+          {
+            "case": "auto-before-dusk",
+            "mode": "light",
+            "pid": 54246,
+            "text": "#242424",
+            "size": [
+              656,
+              376
+            ],
+            "frame": "MacTahoe-auto-before-dusk-battery.png",
+            "sha256": "d80d8e784608c7fd6b753f7075eb31cee6865637a8381996a91c916c1aa76872",
+            "header_luminance_range": [
+              0.1411764770746231,
+              1.0
+            ]
+          }
+        ],
+        "gtk": [
+          {
+            "gtk": "3",
+            "background": [
+              0.9607843137254902,
+              0.9607843137254902,
+              0.9607843137254902,
+              1.0
+            ],
+            "foreground": [
+              0.1411764705882353,
+              0.1411764705882353,
+              0.1411764705882353,
+              1.0
+            ],
+            "theme": "MacTahoeLiquidKde-Light",
+            "prefer_dark": false
+          },
+          {
+            "gtk": "4",
+            "background": [
+              0.9803921580314636,
+              0.9803921580314636,
+              0.9803921580314636,
+              1.0
+            ],
+            "foreground": [
+              0.0,
+              0.0,
+              0.0,
+              0.800000011920929
+            ],
+            "theme": "Adwaita-empty",
+            "prefer_dark": false,
+            "dark": false
+          }
+        ],
+        "appearance": {
+          "preference": "auto",
+          "observed": {
+            "gnome-color-scheme": "light",
+            "gnome-gtk-theme": "light",
+            "colors": "light",
+            "global": "light",
+            "plasma": "light",
+            "kvantum": "light",
+            "gtk": "light",
+            "automatic": false
+          },
+          "applied": "light"
+        },
+        "continuous_pids": [
+          54244,
+          54245,
+          54246,
+          54247,
+          54248,
+          54249
+        ]
+      },
+      {
+        "case": "auto-cross-dusk",
+        "expected": "dark",
+        "menus": [
+          {
+            "case": "auto-cross-dusk",
+            "mode": "dark",
+            "pid": 54245,
+            "text": "#dedede",
+            "size": [
+              656,
+              548
+            ],
+            "frame": "MacTahoe-auto-cross-dusk-wifi.png",
+            "sha256": "8d5f9c8e634cf3a9b4271e96481ec0eca0fb302d15736b92c4ba4e41efc5fc7c",
+            "header_luminance_range": [
+              0.0,
+              0.8719462752342224
+            ]
+          },
+          {
+            "case": "auto-cross-dusk",
+            "mode": "dark",
+            "pid": 54246,
+            "text": "#dedede",
+            "size": [
+              656,
+              376
+            ],
+            "frame": "MacTahoe-auto-cross-dusk-battery.png",
+            "sha256": "a0427fda4e96d4a750f70c568785a087d4f12f0ef7117750c4572377bcd112fd",
+            "header_luminance_range": [
+              0.0,
+              0.8705882430076599
+            ]
+          }
+        ],
+        "gtk": [
+          {
+            "gtk": "3",
+            "background": [
+              0.2,
+              0.2,
+              0.2,
+              1.0
+            ],
+            "foreground": [
+              0.8705882352941177,
+              0.8705882352941177,
+              0.8705882352941177,
+              1.0
+            ],
+            "theme": "MacTahoeLiquidKde-Dark",
+            "prefer_dark": false
+          },
+          {
+            "gtk": "4",
+            "background": [
+              0.1411764770746231,
+              0.1411764770746231,
+              0.1411764770746231,
+              1.0
+            ],
+            "foreground": [
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ],
+            "theme": "Adwaita-empty",
+            "prefer_dark": true,
+            "dark": true
+          }
+        ],
+        "appearance": {
+          "preference": "auto",
+          "observed": {
+            "gnome-color-scheme": "light",
+            "gnome-gtk-theme": "light",
+            "colors": "light",
+            "global": "light",
+            "plasma": "light",
+            "kvantum": "light",
+            "gtk": "light",
+            "automatic": false
+          },
+          "applied": "light"
+        },
+        "continuous_pids": [
+          54244,
+          54245,
+          54246,
+          54247,
+          54248,
+          54249
+        ]
+      },
+      {
+        "case": "auto-cross-dawn",
+        "expected": "light",
+        "menus": [
+          {
+            "case": "auto-cross-dawn",
+            "mode": "light",
+            "pid": 54245,
+            "text": "#242424",
+            "size": [
+              656,
+              548
+            ],
+            "frame": "MacTahoe-auto-cross-dawn-wifi.png",
+            "sha256": "db1616e0941d26e7a9f9a2ad7e597ad7cb45f3dc4a9239cdbbd3280e45ed0c9c",
+            "header_luminance_range": [
+              0.1411764770746231,
+              1.0
+            ]
+          },
+          {
+            "case": "auto-cross-dawn",
+            "mode": "light",
+            "pid": 54246,
+            "text": "#242424",
+            "size": [
+              656,
+              376
+            ],
+            "frame": "MacTahoe-auto-cross-dawn-battery.png",
+            "sha256": "d80d8e784608c7fd6b753f7075eb31cee6865637a8381996a91c916c1aa76872",
+            "header_luminance_range": [
+              0.1411764770746231,
+              1.0
+            ]
+          }
+        ],
+        "gtk": [
+          {
+            "gtk": "3",
+            "background": [
+              0.9607843137254902,
+              0.9607843137254902,
+              0.9607843137254902,
+              1.0
+            ],
+            "foreground": [
+              0.1411764705882353,
+              0.1411764705882353,
+              0.1411764705882353,
+              1.0
+            ],
+            "theme": "MacTahoeLiquidKde-Light",
+            "prefer_dark": false
+          },
+          {
+            "gtk": "4",
+            "background": [
+              0.9803921580314636,
+              0.9803921580314636,
+              0.9803921580314636,
+              1.0
+            ],
+            "foreground": [
+              0.0,
+              0.0,
+              0.0,
+              0.800000011920929
+            ],
+            "theme": "Adwaita-empty",
+            "prefer_dark": false,
+            "dark": false
+          }
+        ],
+        "appearance": {
+          "preference": "auto",
+          "observed": {
+            "gnome-color-scheme": "dark",
+            "gnome-gtk-theme": "dark",
+            "colors": "dark",
+            "global": "dark",
+            "plasma": "dark",
+            "kvantum": "dark",
+            "gtk": "dark",
+            "automatic": false
+          },
+          "applied": "dark"
+        },
+        "continuous_pids": [
+          54244,
+          54245,
+          54246,
+          54247,
+          54248,
+          54249
+        ]
+      },
+      {
+        "case": "manual-supersedes-auto",
+        "expected": "dark",
+        "menus": [
+          {
+            "case": "manual-supersedes-auto",
+            "mode": "dark",
+            "pid": 54245,
+            "text": "#dedede",
+            "size": [
+              656,
+              548
+            ],
+            "frame": "MacTahoe-manual-supersedes-auto-wifi.png",
+            "sha256": "8d5f9c8e634cf3a9b4271e96481ec0eca0fb302d15736b92c4ba4e41efc5fc7c",
+            "header_luminance_range": [
+              0.0,
+              0.8719462752342224
+            ]
+          },
+          {
+            "case": "manual-supersedes-auto",
+            "mode": "dark",
+            "pid": 54246,
+            "text": "#dedede",
+            "size": [
+              656,
+              376
+            ],
+            "frame": "MacTahoe-manual-supersedes-auto-battery.png",
+            "sha256": "a0427fda4e96d4a750f70c568785a087d4f12f0ef7117750c4572377bcd112fd",
+            "header_luminance_range": [
+              0.0,
+              0.8705882430076599
+            ]
+          }
+        ],
+        "gtk": [
+          {
+            "gtk": "3",
+            "background": [
+              0.2,
+              0.2,
+              0.2,
+              1.0
+            ],
+            "foreground": [
+              0.8705882352941177,
+              0.8705882352941177,
+              0.8705882352941177,
+              1.0
+            ],
+            "theme": "MacTahoeLiquidKde-Dark",
+            "prefer_dark": false
+          },
+          {
+            "gtk": "4",
+            "background": [
+              0.1411764770746231,
+              0.1411764770746231,
+              0.1411764770746231,
+              1.0
+            ],
+            "foreground": [
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ],
+            "theme": "Adwaita-empty",
+            "prefer_dark": true,
+            "dark": true
+          }
+        ],
+        "appearance": {
+          "preference": "dark",
+          "observed": {
+            "gnome-color-scheme": "dark",
+            "gnome-gtk-theme": "dark",
+            "colors": "dark",
+            "global": "dark",
+            "plasma": "dark",
+            "kvantum": "dark",
+            "gtk": "dark",
+            "automatic": false
+          },
+          "applied": "dark"
+        },
+        "continuous_pids": [
+          54244,
+          54245,
+          54246,
+          54247,
+          54248,
+          54249
+        ]
+      }
+    ],
+    "golden": [
+      {
+        "case": "manual-light",
+        "expected": "light",
+        "menus": [
+          {
+            "case": "manual-light",
+            "mode": "light",
+            "pid": 72512,
+            "text": "#242424",
+            "size": [
+              656,
+              548
+            ],
+            "frame": "MacGoldenGate-manual-light-wifi.png",
+            "sha256": "8567c153ec9c59189fa2464eb723bb44ec6b580a62f953e68c4d9b8ecc560b47",
+            "header_luminance_range": [
+              0.1411764770746231,
+              1.0
+            ]
+          },
+          {
+            "case": "manual-light",
+            "mode": "light",
+            "pid": 72513,
+            "text": "#242424",
+            "size": [
+              656,
+              376
+            ],
+            "frame": "MacGoldenGate-manual-light-battery.png",
+            "sha256": "afad77a88693f193e98f5dad4fa640a28078591c73468c232cfbd4ef93590686",
+            "header_luminance_range": [
+              0.1411764770746231,
+              1.0
+            ]
+          }
+        ],
+        "gtk": [
+          {
+            "gtk": "3",
+            "background": [
+              0.9607843137254902,
+              0.9607843137254902,
+              0.9607843137254902,
+              1.0
+            ],
+            "foreground": [
+              0.1411764705882353,
+              0.1411764705882353,
+              0.1411764705882353,
+              1.0
+            ],
+            "theme": "MacTahoeLiquidKde-Light",
+            "prefer_dark": false
+          },
+          {
+            "gtk": "4",
+            "background": [
+              0.9803921580314636,
+              0.9803921580314636,
+              0.9803921580314636,
+              1.0
+            ],
+            "foreground": [
+              0.0,
+              0.0,
+              0.0,
+              0.800000011920929
+            ],
+            "theme": "Adwaita-empty",
+            "prefer_dark": false,
+            "dark": false
+          }
+        ],
+        "appearance": {
+          "preference": "light",
+          "observed": {
+            "gnome-color-scheme": "light",
+            "gnome-gtk-theme": "light",
+            "colors": "light",
+            "global": "light",
+            "plasma": "light",
+            "kvantum": "light",
+            "gtk": "light",
+            "automatic": false
+          },
+          "applied": "light"
+        },
+        "continuous_pids": [
+          72511,
+          72512,
+          72513,
+          72514,
+          72515,
+          72516
+        ]
+      },
+      {
+        "case": "native-kde-dark",
+        "expected": "dark",
+        "menus": [
+          {
+            "case": "native-kde-dark",
+            "mode": "dark",
+            "pid": 72512,
+            "text": "#dedede",
+            "size": [
+              656,
+              548
+            ],
+            "frame": "MacGoldenGate-native-kde-dark-wifi.png",
+            "sha256": "7c9429acc9984633badb4b727ba75454075425cc5ea36578dfeff20b3cc49f5a",
+            "header_luminance_range": [
+              0.2731059789657593,
+              1.0
+            ]
+          },
+          {
+            "case": "native-kde-dark",
+            "mode": "dark",
+            "pid": 72513,
+            "text": "#dedede",
+            "size": [
+              656,
+              376
+            ],
+            "frame": "MacGoldenGate-native-kde-dark-battery.png",
+            "sha256": "d50b6f7dc53e0826aa115bc7ebe8b3c9f2aee69339d308f4ffdc1844f40eaa05",
+            "header_luminance_range": [
+              0.07444876432418823,
+              1.0
+            ]
+          }
+        ],
+        "gtk": [
+          {
+            "gtk": "3",
+            "background": [
+              0.2,
+              0.2,
+              0.2,
+              1.0
+            ],
+            "foreground": [
+              0.8705882352941177,
+              0.8705882352941177,
+              0.8705882352941177,
+              1.0
+            ],
+            "theme": "MacTahoeLiquidKde-Dark",
+            "prefer_dark": false
+          },
+          {
+            "gtk": "4",
+            "background": [
+              0.1411764770746231,
+              0.1411764770746231,
+              0.1411764770746231,
+              1.0
+            ],
+            "foreground": [
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ],
+            "theme": "Adwaita-empty",
+            "prefer_dark": true,
+            "dark": true
+          }
+        ],
+        "appearance": {
+          "preference": "light",
+          "observed": {
+            "gnome-color-scheme": "light",
+            "gnome-gtk-theme": "light",
+            "colors": "light",
+            "global": "light",
+            "plasma": "light",
+            "kvantum": "light",
+            "gtk": "light",
+            "automatic": false
+          },
+          "applied": "light"
+        },
+        "continuous_pids": [
+          72511,
+          72512,
+          72513,
+          72514,
+          72515,
+          72516
+        ]
+      },
+      {
+        "case": "gtk-light",
+        "expected": "light",
+        "menus": [
+          {
+            "case": "gtk-light",
+            "mode": "light",
+            "pid": 72512,
+            "text": "#242424",
+            "size": [
+              656,
+              548
+            ],
+            "frame": "MacGoldenGate-gtk-light-wifi.png",
+            "sha256": "8567c153ec9c59189fa2464eb723bb44ec6b580a62f953e68c4d9b8ecc560b47",
+            "header_luminance_range": [
+              0.1411764770746231,
+              1.0
+            ]
+          },
+          {
+            "case": "gtk-light",
+            "mode": "light",
+            "pid": 72513,
+            "text": "#242424",
+            "size": [
+              656,
+              376
+            ],
+            "frame": "MacGoldenGate-gtk-light-battery.png",
+            "sha256": "afad77a88693f193e98f5dad4fa640a28078591c73468c232cfbd4ef93590686",
+            "header_luminance_range": [
+              0.1411764770746231,
+              1.0
+            ]
+          }
+        ],
+        "gtk": [
+          {
+            "gtk": "3",
+            "background": [
+              0.9607843137254902,
+              0.9607843137254902,
+              0.9607843137254902,
+              1.0
+            ],
+            "foreground": [
+              0.1411764705882353,
+              0.1411764705882353,
+              0.1411764705882353,
+              1.0
+            ],
+            "theme": "MacTahoeLiquidKde-Light",
+            "prefer_dark": false
+          },
+          {
+            "gtk": "4",
+            "background": [
+              0.9803921580314636,
+              0.9803921580314636,
+              0.9803921580314636,
+              1.0
+            ],
+            "foreground": [
+              0.0,
+              0.0,
+              0.0,
+              0.800000011920929
+            ],
+            "theme": "Adwaita-empty",
+            "prefer_dark": false,
+            "dark": false
+          }
+        ],
+        "appearance": {
+          "preference": "light",
+          "observed": {
+            "gnome-color-scheme": "light",
+            "gnome-gtk-theme": "light",
+            "colors": "light",
+            "global": "light",
+            "plasma": "light",
+            "kvantum": "light",
+            "gtk": "light",
+            "automatic": false
+          },
+          "applied": "light"
+        },
+        "continuous_pids": [
+          72511,
+          72512,
+          72513,
+          72514,
+          72515,
+          72516
+        ]
+      },
+      {
+        "case": "rapid-native-dark",
+        "expected": "dark",
+        "menus": [
+          {
+            "case": "rapid-native-dark",
+            "mode": "dark",
+            "pid": 72512,
+            "text": "#dedede",
+            "size": [
+              656,
+              548
+            ],
+            "frame": "MacGoldenGate-rapid-native-dark-wifi.png",
+            "sha256": "7c9429acc9984633badb4b727ba75454075425cc5ea36578dfeff20b3cc49f5a",
+            "header_luminance_range": [
+              0.2731059789657593,
+              1.0
+            ]
+          },
+          {
+            "case": "rapid-native-dark",
+            "mode": "dark",
+            "pid": 72513,
+            "text": "#dedede",
+            "size": [
+              656,
+              376
+            ],
+            "frame": "MacGoldenGate-rapid-native-dark-battery.png",
+            "sha256": "d50b6f7dc53e0826aa115bc7ebe8b3c9f2aee69339d308f4ffdc1844f40eaa05",
+            "header_luminance_range": [
+              0.07444876432418823,
+              1.0
+            ]
+          }
+        ],
+        "gtk": [
+          {
+            "gtk": "3",
+            "background": [
+              0.2,
+              0.2,
+              0.2,
+              1.0
+            ],
+            "foreground": [
+              0.8705882352941177,
+              0.8705882352941177,
+              0.8705882352941177,
+              1.0
+            ],
+            "theme": "MacTahoeLiquidKde-Dark",
+            "prefer_dark": false
+          },
+          {
+            "gtk": "4",
+            "background": [
+              0.1411764770746231,
+              0.1411764770746231,
+              0.1411764770746231,
+              1.0
+            ],
+            "foreground": [
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ],
+            "theme": "Adwaita-empty",
+            "prefer_dark": true,
+            "dark": true
+          }
+        ],
+        "appearance": {
+          "preference": "light",
+          "observed": {
+            "gnome-color-scheme": "light",
+            "gnome-gtk-theme": "light",
+            "colors": "light",
+            "global": "light",
+            "plasma": "light",
+            "kvantum": "light",
+            "gtk": "light",
+            "automatic": false
+          },
+          "applied": "light"
+        },
+        "continuous_pids": [
+          72511,
+          72512,
+          72513,
+          72514,
+          72515,
+          72516
+        ]
+      },
+      {
+        "case": "overlapping-cli-light",
+        "expected": "light",
+        "menus": [
+          {
+            "case": "overlapping-cli-light",
+            "mode": "light",
+            "pid": 72512,
+            "text": "#242424",
+            "size": [
+              656,
+              548
+            ],
+            "frame": "MacGoldenGate-overlapping-cli-light-wifi.png",
+            "sha256": "8567c153ec9c59189fa2464eb723bb44ec6b580a62f953e68c4d9b8ecc560b47",
+            "header_luminance_range": [
+              0.1411764770746231,
+              1.0
+            ]
+          },
+          {
+            "case": "overlapping-cli-light",
+            "mode": "light",
+            "pid": 72513,
+            "text": "#242424",
+            "size": [
+              656,
+              376
+            ],
+            "frame": "MacGoldenGate-overlapping-cli-light-battery.png",
+            "sha256": "afad77a88693f193e98f5dad4fa640a28078591c73468c232cfbd4ef93590686",
+            "header_luminance_range": [
+              0.1411764770746231,
+              1.0
+            ]
+          }
+        ],
+        "gtk": [
+          {
+            "gtk": "3",
+            "background": [
+              0.9607843137254902,
+              0.9607843137254902,
+              0.9607843137254902,
+              1.0
+            ],
+            "foreground": [
+              0.1411764705882353,
+              0.1411764705882353,
+              0.1411764705882353,
+              1.0
+            ],
+            "theme": "MacTahoeLiquidKde-Light",
+            "prefer_dark": false
+          },
+          {
+            "gtk": "4",
+            "background": [
+              0.9803921580314636,
+              0.9803921580314636,
+              0.9803921580314636,
+              1.0
+            ],
+            "foreground": [
+              0.0,
+              0.0,
+              0.0,
+              0.800000011920929
+            ],
+            "theme": "Adwaita-empty",
+            "prefer_dark": false,
+            "dark": false
+          }
+        ],
+        "appearance": {
+          "preference": "light",
+          "observed": {
+            "gnome-color-scheme": "light",
+            "gnome-gtk-theme": "light",
+            "colors": "light",
+            "global": "light",
+            "plasma": "light",
+            "kvantum": "light",
+            "gtk": "light",
+            "automatic": false
+          },
+          "applied": "light"
+        },
+        "continuous_pids": [
+          72511,
+          72512,
+          72513,
+          72514,
+          72515,
+          72516
+        ]
+      },
+      {
+        "case": "auto-before-dusk",
+        "expected": "light",
+        "menus": [
+          {
+            "case": "auto-before-dusk",
+            "mode": "light",
+            "pid": 72512,
+            "text": "#242424",
+            "size": [
+              656,
+              548
+            ],
+            "frame": "MacGoldenGate-auto-before-dusk-wifi.png",
+            "sha256": "8567c153ec9c59189fa2464eb723bb44ec6b580a62f953e68c4d9b8ecc560b47",
+            "header_luminance_range": [
+              0.1411764770746231,
+              1.0
+            ]
+          },
+          {
+            "case": "auto-before-dusk",
+            "mode": "light",
+            "pid": 72513,
+            "text": "#242424",
+            "size": [
+              656,
+              376
+            ],
+            "frame": "MacGoldenGate-auto-before-dusk-battery.png",
+            "sha256": "afad77a88693f193e98f5dad4fa640a28078591c73468c232cfbd4ef93590686",
+            "header_luminance_range": [
+              0.1411764770746231,
+              1.0
+            ]
+          }
+        ],
+        "gtk": [
+          {
+            "gtk": "3",
+            "background": [
+              0.9607843137254902,
+              0.9607843137254902,
+              0.9607843137254902,
+              1.0
+            ],
+            "foreground": [
+              0.1411764705882353,
+              0.1411764705882353,
+              0.1411764705882353,
+              1.0
+            ],
+            "theme": "MacTahoeLiquidKde-Light",
+            "prefer_dark": false
+          },
+          {
+            "gtk": "4",
+            "background": [
+              0.9803921580314636,
+              0.9803921580314636,
+              0.9803921580314636,
+              1.0
+            ],
+            "foreground": [
+              0.0,
+              0.0,
+              0.0,
+              0.800000011920929
+            ],
+            "theme": "Adwaita-empty",
+            "prefer_dark": false,
+            "dark": false
+          }
+        ],
+        "appearance": {
+          "preference": "auto",
+          "observed": {
+            "gnome-color-scheme": "light",
+            "gnome-gtk-theme": "light",
+            "colors": "light",
+            "global": "light",
+            "plasma": "light",
+            "kvantum": "light",
+            "gtk": "light",
+            "automatic": false
+          },
+          "applied": "light"
+        },
+        "continuous_pids": [
+          72511,
+          72512,
+          72513,
+          72514,
+          72515,
+          72516
+        ]
+      },
+      {
+        "case": "auto-cross-dusk",
+        "expected": "dark",
+        "menus": [
+          {
+            "case": "auto-cross-dusk",
+            "mode": "dark",
+            "pid": 72512,
+            "text": "#dedede",
+            "size": [
+              656,
+              548
+            ],
+            "frame": "MacGoldenGate-auto-cross-dusk-wifi.png",
+            "sha256": "7c9429acc9984633badb4b727ba75454075425cc5ea36578dfeff20b3cc49f5a",
+            "header_luminance_range": [
+              0.2731059789657593,
+              1.0
+            ]
+          },
+          {
+            "case": "auto-cross-dusk",
+            "mode": "dark",
+            "pid": 72513,
+            "text": "#dedede",
+            "size": [
+              656,
+              376
+            ],
+            "frame": "MacGoldenGate-auto-cross-dusk-battery.png",
+            "sha256": "d50b6f7dc53e0826aa115bc7ebe8b3c9f2aee69339d308f4ffdc1844f40eaa05",
+            "header_luminance_range": [
+              0.07444876432418823,
+              1.0
+            ]
+          }
+        ],
+        "gtk": [
+          {
+            "gtk": "3",
+            "background": [
+              0.2,
+              0.2,
+              0.2,
+              1.0
+            ],
+            "foreground": [
+              0.8705882352941177,
+              0.8705882352941177,
+              0.8705882352941177,
+              1.0
+            ],
+            "theme": "MacTahoeLiquidKde-Dark",
+            "prefer_dark": false
+          },
+          {
+            "gtk": "4",
+            "background": [
+              0.1411764770746231,
+              0.1411764770746231,
+              0.1411764770746231,
+              1.0
+            ],
+            "foreground": [
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ],
+            "theme": "Adwaita-empty",
+            "prefer_dark": true,
+            "dark": true
+          }
+        ],
+        "appearance": {
+          "preference": "auto",
+          "observed": {
+            "gnome-color-scheme": "light",
+            "gnome-gtk-theme": "light",
+            "colors": "light",
+            "global": "light",
+            "plasma": "light",
+            "kvantum": "light",
+            "gtk": "light",
+            "automatic": false
+          },
+          "applied": "light"
+        },
+        "continuous_pids": [
+          72511,
+          72512,
+          72513,
+          72514,
+          72515,
+          72516
+        ]
+      },
+      {
+        "case": "auto-cross-dawn",
+        "expected": "light",
+        "menus": [
+          {
+            "case": "auto-cross-dawn",
+            "mode": "light",
+            "pid": 72512,
+            "text": "#242424",
+            "size": [
+              656,
+              548
+            ],
+            "frame": "MacGoldenGate-auto-cross-dawn-wifi.png",
+            "sha256": "8567c153ec9c59189fa2464eb723bb44ec6b580a62f953e68c4d9b8ecc560b47",
+            "header_luminance_range": [
+              0.1411764770746231,
+              1.0
+            ]
+          },
+          {
+            "case": "auto-cross-dawn",
+            "mode": "light",
+            "pid": 72513,
+            "text": "#242424",
+            "size": [
+              656,
+              376
+            ],
+            "frame": "MacGoldenGate-auto-cross-dawn-battery.png",
+            "sha256": "afad77a88693f193e98f5dad4fa640a28078591c73468c232cfbd4ef93590686",
+            "header_luminance_range": [
+              0.1411764770746231,
+              1.0
+            ]
+          }
+        ],
+        "gtk": [
+          {
+            "gtk": "3",
+            "background": [
+              0.9607843137254902,
+              0.9607843137254902,
+              0.9607843137254902,
+              1.0
+            ],
+            "foreground": [
+              0.1411764705882353,
+              0.1411764705882353,
+              0.1411764705882353,
+              1.0
+            ],
+            "theme": "MacTahoeLiquidKde-Light",
+            "prefer_dark": false
+          },
+          {
+            "gtk": "4",
+            "background": [
+              0.9803921580314636,
+              0.9803921580314636,
+              0.9803921580314636,
+              1.0
+            ],
+            "foreground": [
+              0.0,
+              0.0,
+              0.0,
+              0.800000011920929
+            ],
+            "theme": "Adwaita-empty",
+            "prefer_dark": false,
+            "dark": false
+          }
+        ],
+        "appearance": {
+          "preference": "auto",
+          "observed": {
+            "gnome-color-scheme": "dark",
+            "gnome-gtk-theme": "dark",
+            "colors": "dark",
+            "global": "dark",
+            "plasma": "dark",
+            "kvantum": "dark",
+            "gtk": "dark",
+            "automatic": false
+          },
+          "applied": "dark"
+        },
+        "continuous_pids": [
+          72511,
+          72512,
+          72513,
+          72514,
+          72515,
+          72516
+        ]
+      },
+      {
+        "case": "manual-supersedes-auto",
+        "expected": "dark",
+        "menus": [
+          {
+            "case": "manual-supersedes-auto",
+            "mode": "dark",
+            "pid": 72512,
+            "text": "#dedede",
+            "size": [
+              656,
+              548
+            ],
+            "frame": "MacGoldenGate-manual-supersedes-auto-wifi.png",
+            "sha256": "7c9429acc9984633badb4b727ba75454075425cc5ea36578dfeff20b3cc49f5a",
+            "header_luminance_range": [
+              0.2731059789657593,
+              1.0
+            ]
+          },
+          {
+            "case": "manual-supersedes-auto",
+            "mode": "dark",
+            "pid": 72513,
+            "text": "#dedede",
+            "size": [
+              656,
+              376
+            ],
+            "frame": "MacGoldenGate-manual-supersedes-auto-battery.png",
+            "sha256": "d50b6f7dc53e0826aa115bc7ebe8b3c9f2aee69339d308f4ffdc1844f40eaa05",
+            "header_luminance_range": [
+              0.07444876432418823,
+              1.0
+            ]
+          }
+        ],
+        "gtk": [
+          {
+            "gtk": "3",
+            "background": [
+              0.2,
+              0.2,
+              0.2,
+              1.0
+            ],
+            "foreground": [
+              0.8705882352941177,
+              0.8705882352941177,
+              0.8705882352941177,
+              1.0
+            ],
+            "theme": "MacTahoeLiquidKde-Dark",
+            "prefer_dark": false
+          },
+          {
+            "gtk": "4",
+            "background": [
+              0.1411764770746231,
+              0.1411764770746231,
+              0.1411764770746231,
+              1.0
+            ],
+            "foreground": [
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ],
+            "theme": "Adwaita-empty",
+            "prefer_dark": true,
+            "dark": true
+          }
+        ],
+        "appearance": {
+          "preference": "dark",
+          "observed": {
+            "gnome-color-scheme": "dark",
+            "gnome-gtk-theme": "dark",
+            "colors": "dark",
+            "global": "dark",
+            "plasma": "dark",
+            "kvantum": "dark",
+            "gtk": "dark",
+            "automatic": false
+          },
+          "applied": "dark"
+        },
+        "continuous_pids": [
+          72511,
+          72512,
+          72513,
+          72514,
+          72515,
+          72516
+        ]
+      }
+    ]
+  },
+  "golden_gate_staging": {
+    "stage": "/mnt/M2_1/Projects/Repositories/.worktrees/golden-wifi-battery-release/build/d58e9d5ba1137664b240",
+    "version": "0.73.7",
+    "defaults": {
+      "wallpaper": "MacGoldenGate",
+      "launcher_preset": 2
+    },
+    "all_status_menu_payload_bytes_match": true
+  },
+  "coverage_limits": [
+    "Single representative KDE neon Plasma 6.8.1 / Qt 6.11.1 Wayland VM. Native code, shaders, SDK APIs and installer lifecycle did not change.",
+    "Physical Wi-Fi connections and real battery hardware were not exercised; native action contracts used deterministic hardware models.",
+    "Actual project automatic dusk/dawn crossings were observed with persistent menus, Qt/Kvantum and GTK 3/4 windows. Native KDE appearance changes used plasma-apply-colorscheme; native sunrise/sunset scheduler configuration was not changed.",
+    "Historical README/installer galleries retain their original provenance; only the user-approved focused preview is added.",
+    "Full distro CI remains asynchronous; no passing status is claimed for uncompleted jobs."
+  ]
+}

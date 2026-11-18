@@ -5,11 +5,12 @@ import subprocess
 import time
 from pathlib import Path
 from PyQt6.QtCore import (QAbstractListModel, QModelIndex, QObject, QUrl, QMetaObject,
-                         Qt, QPoint, pyqtSlot, pyqtProperty, qInstallMessageHandler)
+                         Qt, QPoint, QPointF, Q_ARG, pyqtSlot, pyqtProperty, qInstallMessageHandler)
 from PyQt6.QtQml import QQmlComponent, QQmlEngine
 from PyQt6.QtWidgets import QApplication
 from PyQt6.QtQuick import QQuickItem, QQuickWindow
 from PyQt6.QtTest import QTest
+from PyQt6 import sip
 
 app = QApplication([])
 engine = QQmlEngine()
@@ -180,6 +181,11 @@ sink.setProperty('muted',False); QTest.qWait(10); assert not mute.property('chec
 audio.setProperty('sink',None); QTest.qWait(10)
 assert not slider.property('enabled') and not mute.property('enabled')
 
+# The standalone menus use the same production content with a bounded glass surface.
+for name in ('WifiView.qml','BatteryView.qml'):
+    menu = component('StatusMenuPopup.qml', {'source': QUrl.fromLocalFile(str(root/name))})
+    assert menu.implicitHeight() > 40 and menu.implicitWidth() == 328
+
 # Browser sessions without track metadata must keep the neutral placeholder.
 player = fake('QtObject { property string track: ""; property string identity: "Chrome"; property string artUrl: ""; property string artist: ""; property bool canPlay: false; property bool canPause: false; property bool canGoNext: false; property bool canGoPrevious: false; property int playbackStatus: 0 }')
 media = component('MediaView.qml', {'player':player})
@@ -229,6 +235,58 @@ class Rows(QAbstractListModel):
         self.rows[index][key] = value
         role = next(r for r,k in self.roles.items() if k.decode() == key)
         self.dataChanged.emit(self.index(index,0),self.index(index,0),[role]); QTest.qWait(20)
+
+# Saved and discovered networks stay separate and retain their native actions.
+networkRows = Rows([
+    dict(Name='Saved Wi-Fi', Type=2, ConnectionPath='/saved', DevicePath='/wifi', SpecificPath='/ap', ConnectionState=0, SecurityType=6),
+    dict(Name='Open Wi-Fi', Type=2, ConnectionPath='', DevicePath='/wifi', SpecificPath='/open', ConnectionState=0, SecurityType=0),
+    dict(Name='Wired', Type=1, ConnectionPath='/wired', DevicePath='/ethernet', SpecificPath='', ConnectionState=0, SecurityType=0),
+])
+networkHandler = fake('''QtObject {
+    property bool scanning: false
+    property string action: ""
+    property string path: ""
+    property var calls: []
+    function requestScan() { action="scan"; }
+    function activateConnection(connection, device, specific) { action="activate"; path=connection; calls=[connection,device,specific]; }
+    function deactivateConnection(connection, device) { action="deactivate"; path=connection; calls=[connection,device]; }
+    function addAndActivateConnection(device, specific) { action="add"; path=specific; calls=[device,specific]; }
+}''')
+wireless.setProperty('wirelessEnabled',True)
+wireless.setProperty('wirelessHwEnabled',True)
+devices.setProperty('wirelessDeviceAvailable',True)
+netMenu=component('WifiView.qml',{'wireless':wireless,'devices':devices,'handler':networkHandler,'connections':networkRows})
+# Use production enum values, independent of NetworkManagerQt's numeric API.
+enums=fake('''import org.kde.plasma.networkmanagement as Network
+QtObject { property int wireless: Network.Enums.Wireless; property int wired: Network.Enums.Wired; property int activated: Network.Enums.Activated; property int activating: Network.Enums.Activating }''')
+for index in (0,1):networkRows.update(index,'Type',enums.property('wireless'))
+networkRows.update(2,'Type',enums.property('wired'))
+def menuRows(menu, name):
+    pending=[menu]; seen=set(); found=[]
+    while pending:
+        item=pending.pop()
+        if item in seen:continue
+        seen.add(item)
+        if item.objectName()==name:found.append(item)
+        pending.extend(item.children())
+        if hasattr(item,'childItems'):pending.extend(item.childItems())
+    return found
+saved=next(r for r in menuRows(netMenu,'networkRow') if r.property('text')=='Saved Wi-Fi')
+other=next(r for r in menuRows(netMenu,'otherNetworkRow') if r.property('text')=='Open Wi-Fi')
+assert saved.property('visible') and saved.property('secured') and not other.property('visible')
+click(saved);assert networkHandler.property('action')=='activate' and networkHandler.property('calls').toVariant()==['/saved','/wifi','/ap']
+networkRows.update(0,'ConnectionState',enums.property('activated'))
+assert saved.property('selected')
+click(saved);assert networkHandler.property('action')=='deactivate' and networkHandler.property('calls').toVariant()==['/saved','/wifi']
+click(child(netMenu,'otherNetworks'));assert netMenu.property('otherNetworksExpanded') and networkHandler.property('action')=='scan'
+assert other.property('visible') and not other.property('secured')
+click(other);assert networkHandler.property('action')=='add' and networkHandler.property('calls').toVariant()==['/wifi','/open']
+networkRows.update(1,'ConnectionState',enums.property('activating'))
+assert other.property('busy') and not other.property('enabled')
+assert not any(r.property('visible') for r in menuRows(netMenu,'networkRow') if r.property('text')=='Wired')
+networkHandler.setProperty('scanning',True);assert not child(netMenu,'scanNetworks').property('enabled')
+wireless.setProperty('wirelessHwEnabled',False);assert not saved.property('enabled')
+wireless.setProperty('wirelessHwEnabled',True)
 
 screens = Rows([dict(displayName='test-display',label='External monitor',maxBrightness=100,brightness=60)])
 control = fake('''QtObject {
@@ -280,6 +338,7 @@ battery = fake('''QtObject {
 }''')
 power = component('BatteryView.qml',{'battery':battery,'profiles':profiles})
 assert child(power,'batteryPercent').property('text') == 'No internal battery'
+assert not child(power,'peripheralBattery').property('visible')
 battery.setProperty('hasInternalBatteries',True);QTest.qWait(10)
 assert child(power,'batteryPercent').property('text') == '73%'
 battery.setProperty('percent',41);QTest.qWait(10)
@@ -288,6 +347,26 @@ profile = child(power,'powerProfile')
 assert profile.property('currentIndex') == 1
 profiles.setProperty('activeProfile','power-saver');QTest.qWait(10)
 assert profile.property('currentIndex') == 0
+assert profile.property('displayText') == 'Low Power'
+profile.setProperty('currentIndex',2)
+QMetaObject.invokeMethod(profile,'activated',Qt.ConnectionType.DirectConnection,Q_ARG(int,2))
+assert profiles.property('requested') == 'performance'
+battery.setProperty('pluggedIn',False);QTest.qWait(10)
+assert child(power,'batterySource').property('text') == 'Power Source: Battery'
+battery.setProperty('pluggedIn',True);QTest.qWait(10)
+assert child(power,'batterySource').property('text') == 'Power Source: Power Adapter'
+# Render and operate the styled selector through real input. KDE's desktop style
+# expects a text input content item when placing its popup, even when read-only.
+powerWindow=QQuickWindow();powerWindow.setGeometry(0,0,320,280)
+power.setParentItem(powerWindow.contentItem());power.setWidth(280);power.setHeight(power.implicitHeight())
+powerWindow.show();QTest.qWait(50)
+position=profile.mapToScene(QPointF(profile.width()/2,profile.height()/2)).toPoint()
+QTest.mouseClick(powerWindow,Qt.MouseButton.LeftButton,pos=position);QTest.qWait(30)
+assert engine.newQObject(profile).property('popup').property('visible').toBool()
+QTest.keyClick(powerWindow,Qt.Key.Key_Home);QTest.keyClick(powerWindow,Qt.Key.Key_Return);QTest.qWait(20)
+assert profiles.property('requested') == 'power-saver'
+powerWindow.close()
+
 
 
 # Exercise actual pointer and keyboard activation, not only signal dispatch.
@@ -442,23 +521,6 @@ summaryRows.update(2,'ConnectionState',2);QTest.qWait(10)
 assert summary.property('subtitle') == 'Offline Wi-Fi'
 assert summary.property('text') == 'Wi-Fi'
 
-networkHandler = fake('''QtObject {
-    property bool scanning: false
-    property var calls: []
-    function activateConnection(path,device,specific) { calls = ["activate",path,device,specific]; }
-    function deactivateConnection(path,device) { calls = ["deactivate",path,device]; }
-    function addAndActivateConnection(device,specific) { calls = ["new",device,specific]; }
-}''')
-networks=Rows([dict(Type=14,ConnectionState=0,ConnectionPath='/saved',DevicePath='/device',SpecificPath='/ap',Name='Test Wi-Fi',ConnectionIcon='network-wireless')])
-wireless.setProperty('wirelessEnabled',True);devices.setProperty('wirelessDeviceAvailable',True)
-netView=component('WifiView.qml',{'wireless':wireless,'devices':devices,'handler':networkHandler,'connections':networks})
-netView.setWidth(400);netView.setHeight(500);QTest.qWait(30)
-networkRow=child(netView,'networkRow');assert networkRow.property('visible')
-click(networkRow);assert networkHandler.property('calls').toVariant()==['activate','/saved','/device','/ap']
-networks.update(0,'ConnectionState',2)
-click(networkRow);assert networkHandler.property('calls').toVariant()==['deactivate','/saved','/device']
-networks.update(0,'ConnectionState',0);networks.update(0,'ConnectionPath','')
-click(networkRow);assert networkHandler.property('calls').toVariant()==['new','/device','/ap']
 
 
 preferences=fake('QtObject { property bool showAudio: true }')

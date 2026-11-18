@@ -1,0 +1,62 @@
+{
+  "es": {
+    "Known Networks": "Redes conocidas",
+    "Other Networks": "Otras redes",
+    "Wi-Fi Settings…": "Ajustes de Wi-Fi…",
+    "Low Power": "Bajo consumo",
+    "High Power": "Alto rendimiento",
+    "Automatic": "Automático",
+    "Power Source: Power Adapter": "Fuente de alimentación: adaptador de corriente",
+    "Power Source: Battery": "Fuente de alimentación: batería",
+    "Energy Mode": "Modo de energía",
+    "Battery Settings…": "Ajustes de batería…"
+  },
+  "zh_CN": {
+    "Known Networks": "已知网络",
+    "Other Networks": "其他网络",
+    "Wi-Fi Settings…": "Wi-Fi 设置…",
+    "Low Power": "低电量",
+    "High Power": "高功率",
+    "Automatic": "自动",
+    "Power Source: Power Adapter": "电源：电源适配器",
+    "Power Source: Battery": "电源：电池",
+    "Energy Mode": "电源模式",
+    "Battery Settings…": "电池设置…"
+  },
+  "pt_BR": {
+    "Known Networks": "Redes conhecidas",
+    "Other Networks": "Outras redes",
+    "Wi-Fi Settings…": "Ajustes de Wi-Fi…",
+    "Low Power": "Pouca Energia",
+    "High Power": "Alto Desempenho",
+    "Automatic": "Automático",
+    "Power Source: Power Adapter": "Fonte de energia: adaptador de alimentação",
+    "Power Source: Battery": "Fonte de energia: bateria",
+    "Energy Mode": "Modo de energia",
+    "Battery Settings…": "Ajustes de bateria…"
+  },
+  "de": {
+    "Known Networks": "Bekannte Netzwerke",
+    "Other Networks": "Andere Netzwerke",
+    "Wi-Fi Settings…": "WLAN-Einstellungen…",
+    "Low Power": "Stromsparmodus",
+    "High Power": "Hohe Leistung",
+    "Automatic": "Automatisch",
+    "Power Source: Power Adapter": "Stromquelle: Netzteil",
+    "Power Source: Battery": "Stromquelle: Batterie",
+    "Energy Mode": "Energiemodus",
+    "Battery Settings…": "Batterieeinstellungen…"
+  },
+  "fr": {
+    "Known Networks": "Réseaux connus",
+    "Other Networks": "Autres réseaux",
+    "Wi-Fi Settings…": "Réglages Wi-Fi…",
+    "Low Power": "Faible consommation",
+    "High Power": "Performance élevée",
+    "Automatic": "Automatique",
+    "Power Source: Power Adapter": "Source d’alimentation : adaptateur secteur",
+    "Power Source: Battery": "Source d’alimentation : batterie",
+    "Energy Mode": "Mode d’énergie",
+    "Battery Settings…": "Réglages Batterie…"
+  }
+}

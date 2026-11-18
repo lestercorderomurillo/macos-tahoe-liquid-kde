@@ -11,14 +11,17 @@ msgstr "%1%"
 msgid "Audio outputs"
 msgstr "Salidas de audio"
 
+msgid "Automatic"
+msgstr "Automático"
+
 msgid "Back"
 msgstr "Atrás"
 
-msgid "Balanced"
-msgstr "Equilibrado"
-
 msgid "Battery"
 msgstr "Batería"
+
+msgid "Battery Settings…"
+msgstr "Ajustes de batería…"
 
 msgid "Battery information will appear when a battery is available."
 msgstr "La información aparecerá cuando haya una batería disponible."
@@ -77,8 +80,8 @@ msgstr "No molestar"
 msgid "Edit Controls"
 msgstr "Editar controles"
 
-msgid "Energy Settings…"
-msgstr "Ajustes de energía…"
+msgid "Energy Mode"
+msgstr "Modo de energía"
 
 msgid "Energy mode"
 msgstr "Modo de energía"
@@ -95,14 +98,20 @@ msgstr "Concentración"
 msgid "Fully charged"
 msgstr "Carga completa"
 
+msgid "High Power"
+msgstr "Alto rendimiento"
+
+msgid "Known Networks"
+msgstr "Redes conocidas"
+
+msgid "Low Power"
+msgstr "Bajo consumo"
+
 msgid "Mute sound"
 msgstr "Silenciar sonido"
 
 msgid "Network"
 msgstr "Red"
-
-msgid "Network Settings…"
-msgstr "Ajustes de red…"
 
 msgid "Next track"
 msgstr "Pista siguiente"
@@ -143,14 +152,14 @@ msgstr "Desactivado"
 msgid "On"
 msgstr "Activado"
 
-msgid "On battery power"
-msgstr "Usando la batería"
-
 msgid "Open"
 msgstr "Open"
 
 msgid "Options"
 msgstr "Opciones"
+
+msgid "Other Networks"
+msgstr "Otras redes"
 
 msgid "Overview"
 msgstr "Vista general"
@@ -161,14 +170,14 @@ msgstr "Pausar"
 msgid "Pause notifications for one hour"
 msgstr "Pausar las notificaciones durante una hora"
 
-msgid "Performance"
-msgstr "Rendimiento"
-
 msgid "Play or pause"
 msgstr "Reproducir o pausar"
 
-msgid "Power saver"
-msgstr "Ahorro de energía"
+msgid "Power Source: Battery"
+msgstr "Fuente de alimentación: batería"
+
+msgid "Power Source: Power Adapter"
+msgstr "Fuente de alimentación: adaptador de corriente"
 
 msgid "Previous track"
 msgstr "Pista anterior"
@@ -202,6 +211,9 @@ msgstr "Volumen"
 
 msgid "Wi-Fi"
 msgstr "Wi-Fi"
+
+msgid "Wi-Fi Settings…"
+msgstr "Ajustes de Wi-Fi…"
 
 msgid "Wi-Fi is blocked by the hardware switch"
 msgstr "El interruptor físico bloquea el Wi-Fi"
