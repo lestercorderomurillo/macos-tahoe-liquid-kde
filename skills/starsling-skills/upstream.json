@@ -1,0 +1,12 @@
+{
+  "repository": "https://github.com/starslingdev/skills",
+  "commit": "8f17f5bcf43d5ec82433186658962a17c90f7c6a",
+  "adapted_on": "2026-11-17",
+  "skills": {
+    "ci-speedup": {
+      "path": "skills/ci-speedup",
+      "mode": "independent-project-workflow; upstream-reference-only",
+      "reason": "Bounded tooling review"
+    }
+  }
+}

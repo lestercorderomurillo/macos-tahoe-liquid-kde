@@ -1,0 +1,85 @@
+{
+  "adapted_on": "2026-11-17",
+  "commit": "062f7c9f0e16b7d2f66cd55e449a3ed85fba699e",
+  "repository": "https://github.com/TheQtCompanyRnD/agent-skills",
+  "skills": {
+    "qt-cmake-project": {
+      "adaptation": "Project-scoped entry point; original SKILL.md retained as UPSTREAM_SKILL.md.",
+      "original_sha256": {
+        "LICENSE.txt": "886cf7a2a54af4903496fe19ad022766525b7612d8b1adfd59dac7e90a483604",
+        "SKILL.md": "ab55f9ced2a898db26519bba1283090cf1af985f83e6137195a34d7f2aedcc35",
+        "references/common-mistakes.md": "2418dc828083b462bf21f8eeff7a0534a39d30047749f12e094b91b41e5443fd",
+        "references/configure.md": "d8632924af1388241b11e6addebc80d575ea65faeaabdb8b25e9c2c9352ac127",
+        "references/modular-architecture.md": "de132330bf93c3833fdc064d38e504d9f81a83c13b527475c28c877df5e76ea8",
+        "references/qml-integration.md": "a667c98cb4a5f0326ac42e5f88b4e8a56975d648c0806bc8d730d2cea48da01b",
+        "references/resources.md": "94b5b6e31660198486d31857f24b9b034b6192b163f06ecd970cf8b2cf8f3328",
+        "references/simple-project.md": "4b71580e1039089eb6e49c4e79a47f8ed7fc3a7618b9c31b8752128fe2a847a3"
+      },
+      "path": "skills/qt-cmake-project"
+    },
+    "qt-cpp-review": {
+      "adaptation": "Project-scoped entry point; original SKILL.md retained as UPSTREAM_SKILL.md.",
+      "original_sha256": {
+        "LICENSE.txt": "886cf7a2a54af4903496fe19ad022766525b7612d8b1adfd59dac7e90a483604",
+        "SKILL.md": "8021e34b9288cfe251c3d628482545b30bb98164ab3d0bd3c9d8a5d288a742a7",
+        "platforms/windsurf.md": "103c35e3ae13dd99c4ab6885374c1b26160941d5cd21537a03553fdd8f41d06c",
+        "references/agent-rules.md": "e46d122a530999b33ad94aec3bc893d2658f7d091f736a4d6761f790f33a8295",
+        "references/lint-scripts/qt_review_lint.py": "b776510c73df9045671d3fa767db2121ba2086631c17b50dbf7427d82776c3cc",
+        "references/qt-deprecated-classes.md": "67e079f0bd869bd6238dd784786260d2058500915804911e94829d32e265534a",
+        "references/qt-framework-checklist.md": "39d3cef13506fe67cd2cdf570794c54624c95073fcdfba14866359be50d037ee",
+        "references/qt-review-checklist.md": "3c38a74d1836963ab6f7a69187fc9152086ef65d6e4517dae196352795951a18"
+      },
+      "path": "skills/qt-cpp-review"
+    },
+    "qt-qml": {
+      "adaptation": "Project-scoped entry point; original SKILL.md retained as UPSTREAM_SKILL.md. Trailing blank line normalized in upstream entry point.",
+      "modified_files": {
+        "SKILL.md": "e8900b95160c44ea22ac6297f343fa37ed60c6268bde0843561ad1af9fca4276"
+      },
+      "original_sha256": {
+        "LICENSE.txt": "886cf7a2a54af4903496fe19ad022766525b7612d8b1adfd59dac7e90a483604",
+        "SKILL.md": "ea01c49149b126609889832b98702c41a51bd90971318f783999d8a9c01e66fe",
+        "platforms/windsurf.md": "dc346d0ba6c6fb786b4b8e500e6f0cfc8cc127d83b4afda0310936cbdc9c10e0"
+      },
+      "path": "skills/qt-qml"
+    },
+    "qt-qml-profiler": {
+      "adaptation": "Project-scoped entry point; original SKILL.md retained as UPSTREAM_SKILL.md.",
+      "original_sha256": {
+        "LICENSE.txt": "886cf7a2a54af4903496fe19ad022766525b7612d8b1adfd59dac7e90a483604",
+        "SKILL.md": "6cfdceefbe0ac465c32f0b53d603129ee143fb2b41072d61eda49ba3181cdab8",
+        "references/qml-performance-anti-patterns.md": "19addcabc26d0ac719213ab6b954d414836191869acd0cd37b65b80f984c89cf",
+        "references/scripts/parse-qmlprofiler-trace.py": "9a0002b82b7c51c5628c0ddd74ca50c691da76019aae18ebba6845df7b362be9"
+      },
+      "path": "skills/qt-qml-profiler"
+    },
+    "qt-qml-test": {
+      "adaptation": "Project-scoped entry point; original SKILL.md retained as UPSTREAM_SKILL.md.",
+      "original_sha256": {
+        "LICENSE.txt": "886cf7a2a54af4903496fe19ad022766525b7612d8b1adfd59dac7e90a483604",
+        "SKILL.md": "71077b350c0fab6658864ab7cf121b12278a716587c8d508dbf31bdf1a39d0ec",
+        "platforms/copilot.prompt.md": "7cf077100979e28b2bc2eefd4a3caf3dfee851c75965b867c74a847258019d2d",
+        "references/qt-quick-test-controls.md": "f4c3d1aea50b26a9399a62d73f8e3af7be55838a1d194faf1478dd8e79bcc7b9",
+        "references/qt-quick-test-pitfalls.md": "23dd9ce103120a6d645a98a84e4dc9e5d5c9e77e16cf5917f6832a6fa9bccd02",
+        "references/qt-quick-test-pre-send-scan.md": "5d9d1c09d276c68e2463ec2586000fcf0d54251941c81075e915ae4b9d7df3eb",
+        "references/qt-quick-test-project-context.md": "7ed42bca15c1e558af475dc481de5325b7d51f038b6623458ea9a38159a7c079",
+        "references/qt-quick-test-properties.md": "6558c222c0d89a4f37941230f5991a5785bbb11c70e2d982dbb4f6bb5901315b",
+        "references/qt-quick-test-rules.md": "12c581a436032bfd937d87b0b4371eaafbcf12d61a8234993b2f16c7a6ce795e",
+        "references/qt-quick-test-source-import.md": "2da3cf776c8d4c656c9e9bc84cccdb1653ffcacb1ada635fa48158bb212fcba3",
+        "references/qt-quick-test-template.md": "f4c1376076dd582127c71c4129d75799174b9d330a4f2dc0e02bde441af2b646"
+      },
+      "path": "skills/qt-qml-test"
+    },
+    "qt-qml-test-run": {
+      "adaptation": "Project-scoped entry point; original SKILL.md retained as UPSTREAM_SKILL.md.",
+      "original_sha256": {
+        "LICENSE.txt": "886cf7a2a54af4903496fe19ad022766525b7612d8b1adfd59dac7e90a483604",
+        "SKILL.md": "90242c780a078a5fba19db09f2d8e30a8acc759e6f83f77b3e8398c158c12a2a",
+        "references/qt-quick-test-cmake.md": "70bec6559c5fffaefc8b6d2e516ec89832b2c5ff96779e0a7d67c95ae2aacd4e",
+        "references/qt-quick-test-report-format.md": "8deb0c36e4300656eea80e17166ddfb19cbb3e6a395d1e2255dbdb54ea73bbf7",
+        "references/scripts/parse-qmltestrunner-output.py": "010a4c246c9cb61fda740a671ec0ac9c3882c6defa2d45e4a335df2903264a9b"
+      },
+      "path": "skills/qt-qml-test-run"
+    }
+  }
+}

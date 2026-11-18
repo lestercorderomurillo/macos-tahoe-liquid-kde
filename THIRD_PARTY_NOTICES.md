@@ -60,3 +60,14 @@ The notification banner adapts KDE Plasma's `NotificationWindow`, copyright
 See the original headers in
 `src/offline/plasmoids/org.kde.mac.tahoe.liquid.taskmanager/launcher/notificationbanner.h`
 and `notificationbanner.cpp`, and [notification provenance](docs/notifications-reference.md).
+
+## Development skills
+
+The optional development resources under `skills/qt-skills`,
+`skills/wshobson-skills`, `skills/openai-skills` and
+`skills/superpowers-skills` retain their upstream licenses and notices.
+Their collection `upstream.json` records source commits, original hashes and
+project adaptations. See [the skill catalog](skills/catalog.md). These
+resources are separate development aids; their original authors retain their
+rights. Project entry points and independently written helpers do not imply
+upstream endorsement.

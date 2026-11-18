@@ -1,0 +1,76 @@
+{
+  "adapted_on": "2026-11-17",
+  "commit": "49f948faa9258a0c61caceaf225e179651397431",
+  "repository": "https://github.com/openai/skills",
+  "skills": {
+    "gh-address-comments": {
+      "adaptation": "Project-scoped entry point; original SKILL.md retained as UPSTREAM_SKILL.md. Helper fixes covered by ../tests/test_helpers.py.",
+      "modified_files": {
+        "scripts/fetch_comments.py": "6f87e056f99795caea9167754fbb4d5371bc4f00c0b6ee6675bac45e891c4431"
+      },
+      "original_sha256": {
+        "LICENSE.txt": "58d1e17ffe5109a7ae296caafcadfdbe6a7d176f0bc4ab01e12a689b0499d8bd",
+        "SKILL.md": "77389eefd3fb6584210668ca8e43f4b8de87e7722ddd953474bc9e24cdfaaedd",
+        "agents/openai.yaml": "12cf845a78254dde85e60eefb45a60e6ce2129d321f3e1d691d4ebca9a140861",
+        "assets/github-small.svg": "ee05e92d373d4d84f4612af3c1090ef67698d421bbe30896a4ed5a00cb86a069",
+        "assets/github.png": "d55a9baa41798d8b5108e3058df3a5bda09914ea9fd73b49929cc38a8832424f",
+        "scripts/fetch_comments.py": "d7bc64f6b26f7482f9ca9dd7c923a5b8b20e1ef13491ae2d9052cd208a7c1ad1"
+      },
+      "path": "skills/.curated/gh-address-comments"
+    },
+    "gh-fix-ci": {
+      "adaptation": "Project-scoped entry point; original SKILL.md retained as UPSTREAM_SKILL.md. Helper fixes covered by ../tests/test_helpers.py.",
+      "modified_files": {
+        "scripts/inspect_pr_checks.py": "953a18700f297962e557eb0bc2c9f8c9170ffb31e89a338d24acfe3944532bdd"
+      },
+      "original_sha256": {
+        "LICENSE.txt": "4dd13869245e356246a5b770723247bbb80a8f07a181d1d3d873a1734297cdb9",
+        "SKILL.md": "7b326b4a2f0f5f85122144628ec02077e48841e0e0e82efce88b3415bcfb7c26",
+        "agents/openai.yaml": "36f73b9450504983d1647c960689596f59bf9147c14b1b43162912ed7ada9af6",
+        "assets/github-small.svg": "ee05e92d373d4d84f4612af3c1090ef67698d421bbe30896a4ed5a00cb86a069",
+        "assets/github.png": "d55a9baa41798d8b5108e3058df3a5bda09914ea9fd73b49929cc38a8832424f",
+        "scripts/inspect_pr_checks.py": "9459e5b03f86785d184a83e5cd8d621b832e918ec04158a2962d867785812c6c"
+      },
+      "path": "skills/.curated/gh-fix-ci"
+    },
+    "security-best-practices": {
+      "adaptation": "Project-scoped entry point; original SKILL.md retained as UPSTREAM_SKILL.md. Trailing whitespace normalized in references/javascript-express-web-server-security.md. Trailing whitespace normalized in references/javascript-general-web-frontend-security.md. Trailing whitespace normalized in references/javascript-typescript-react-web-frontend-security.md. Trailing whitespace normalized in references/python-django-web-server-security.md.",
+      "modified_files": {
+        "references/javascript-express-web-server-security.md": "5f2e29bec275f8ba76789cf9cd4845c7b3096a0caea90c91bc76f6810d90a867",
+        "references/javascript-general-web-frontend-security.md": "11ad70ddb982405042d254ae6bbcd313b6f1ed77efe09298204e04a034ffdf10",
+        "references/javascript-typescript-react-web-frontend-security.md": "1790418407eedb51e748bc44bf06a2f5e896d469f5f6b8050c61c56e6045b008",
+        "references/python-django-web-server-security.md": "703a848fa1be93bb20373f5d5002cc35996a6e3eb39c6e650258489478422a1d"
+      },
+      "original_sha256": {
+        "LICENSE.txt": "4dd13869245e356246a5b770723247bbb80a8f07a181d1d3d873a1734297cdb9",
+        "SKILL.md": "7b3dae1ffc5434d890f3c65c8f552af52d0307fab3b35dec13013c9ca3844c4f",
+        "agents/openai.yaml": "6e9c6f2edce448eb2b589f81ad6e3f722665021785513bcbfd0bf7b86b529171",
+        "references/golang-general-backend-security.md": "a73c47c34497b120672d48411fe51dc90d426a571801a0b3f649e2ce4ec658b4",
+        "references/javascript-express-web-server-security.md": "427835cbb5be7ba96172ea6ca9af80ddd4419c833e9ebf870996740c80d8406c",
+        "references/javascript-general-web-frontend-security.md": "3a7bc7b3f6e7ff043db9dbaa8933894d7a19d987d0607e4ddae5d70184a63d63",
+        "references/javascript-jquery-web-frontend-security.md": "bcbad2fa6c2a02709e47e889e70102c76886bf36bc798624d27db570eccf40da",
+        "references/javascript-typescript-nextjs-web-server-security.md": "71c773f7a97ce60c853adfa100b3d88b3b7bc4c6b8acaef1432ffabd923ee182",
+        "references/javascript-typescript-react-web-frontend-security.md": "d3030c0f24bddb56b9bbb91bbec1ee49eb7778bce4d3e0297b2641b2fc6b0d9c",
+        "references/javascript-typescript-vue-web-frontend-security.md": "77c6a747f9f17e3df03aad0fcb20d99ac7898001b81aef8b80908e45ac14a688",
+        "references/python-django-web-server-security.md": "4fb69b5d45f10e588d1a8c35cdc5f59e18910f6b46a93e2d342d90f286f8dfd2",
+        "references/python-fastapi-web-server-security.md": "7383c7f4fc271190b05e562ada7e825982a2c76b6c79a9f95a1da7687b65a616",
+        "references/python-flask-web-server-security.md": "9606d69190c04c167fdeac57e61297547a57b0542fd89dede36f355970446929"
+      },
+      "path": "skills/.curated/security-best-practices"
+    },
+    "security-threat-model": {
+      "adaptation": "Project-scoped entry point; original SKILL.md retained as UPSTREAM_SKILL.md. Trailing whitespace normalized in references/prompt-template.md.",
+      "modified_files": {
+        "references/prompt-template.md": "688470d4405648421dfaf2d773d4dbfd3a444239d6a74a0c6bce33eb1ac0ae5c"
+      },
+      "original_sha256": {
+        "LICENSE.txt": "4dd13869245e356246a5b770723247bbb80a8f07a181d1d3d873a1734297cdb9",
+        "SKILL.md": "1283c0dd62a8104d9edda4583569b5d8510b4ddaa45120687c999250fd96bad2",
+        "agents/openai.yaml": "3319b59736312abceca614e341c0e59cae47263e3b58a22b2b5ddf1e5fc8c227",
+        "references/prompt-template.md": "81a59aa3fb3ac3a739d6a26ab38e4015965f215581ee54becef21a2b121ec29b",
+        "references/security-controls-and-assets.md": "d536cfa9acad2523dc39134bcf33b9566c29dd9a57b407cbc9901637230c6b98"
+      },
+      "path": "skills/.curated/security-threat-model"
+    }
+  }
+}

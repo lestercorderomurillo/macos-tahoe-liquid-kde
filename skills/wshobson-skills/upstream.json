@@ -1,0 +1,63 @@
+{
+  "adapted_on": "2026-11-17",
+  "collection_files": {
+    "LICENSE": {
+      "adaptation": "Trailing whitespace normalized; license wording unchanged.",
+      "original_sha256": "f89abb55d9f073f38f1703e4518f0613c788c6174be7f13b8dfe48a1c076c746",
+      "sha256": "8ceaab71b527eb5db43810b74afc618ee36556197d2d51c45fd00aac483988c1"
+    }
+  },
+  "commit": "9c61ab243def98f72da12abd41cfcf5bcd91af9d",
+  "repository": "https://github.com/wshobson/agents",
+  "skills": {
+    "bash-defensive-patterns": {
+      "adaptation": "Project-scoped entry point; original SKILL.md retained as UPSTREAM_SKILL.md.",
+      "original_sha256": {
+        "SKILL.md": "741b42d1fa3167f2131a17f3e0fe891e93be4fc87aa3c19e1de5fd26d763f711",
+        "references/details.md": "d0421adaa8edf86e63cc69ea55ecde03192e4f62b7f9201280dbca7ebf5c67c7"
+      },
+      "path": "plugins/shell-scripting/skills/bash-defensive-patterns"
+    },
+    "changelog-automation": {
+      "adaptation": "Project-scoped entry point; original SKILL.md retained as UPSTREAM_SKILL.md.",
+      "original_sha256": {
+        "SKILL.md": "b9748be2063023ba754d47ab9e727bcfa053041fd6f83c524eb8ae4a257cb6a1",
+        "references/details.md": "bb85b108b101f76ec02cd678e34e83181148a2bb49e240f23131c51288c76c32"
+      },
+      "path": "plugins/documentation-generation/skills/changelog-automation"
+    },
+    "github-actions-templates": {
+      "adaptation": "Project-scoped entry point; original SKILL.md retained as UPSTREAM_SKILL.md.",
+      "original_sha256": {
+        "SKILL.md": "fc3c06ddb2423804be275defbb8a2c35f1564ba28aaeb07dcf01ec9c4cc8f023"
+      },
+      "path": "plugins/cicd-automation/skills/github-actions-templates"
+    },
+    "python-performance-optimization": {
+      "adaptation": "Project-scoped entry point; original SKILL.md retained as UPSTREAM_SKILL.md.",
+      "original_sha256": {
+        "SKILL.md": "807aa725cc2b46b4d68a11a52e5b345be0449e80b7f4b60c32bfd2c35345afb5",
+        "references/advanced-patterns.md": "3109ef651c7591017505aeed1d171fbf9000ee522c1b4dac35f90192974b20f0",
+        "references/details.md": "8643031fabcbaf555ae1b4e702f1b5159689a31a4b286280d4df2822c9731281"
+      },
+      "path": "plugins/python-development/skills/python-performance-optimization"
+    },
+    "python-testing-patterns": {
+      "adaptation": "Project-scoped entry point; original SKILL.md retained as UPSTREAM_SKILL.md.",
+      "original_sha256": {
+        "SKILL.md": "a1020718f31629c2a5b20731cad1804dbb81b18800495c5cebdf16e6cac9c175",
+        "references/advanced-patterns.md": "f560ee8b3cffc0fe971e78269bed21dc74f541c2056eae58d34259d9e537176a",
+        "references/details.md": "39411069cafe265c7000e9a605aa3c17448981756799f3981137ed2d9cc24c20"
+      },
+      "path": "plugins/python-development/skills/python-testing-patterns"
+    },
+    "shellcheck-configuration": {
+      "adaptation": "Project-scoped entry point; original SKILL.md retained as UPSTREAM_SKILL.md.",
+      "original_sha256": {
+        "SKILL.md": "0442d7cb63b35ac5eccb60450822b66bf036381d476f5aed7a148aa635c5c598",
+        "references/details.md": "65ba7c3e5ac0132e1fa4f75fe9776a68cb3c14b60d2b504f63e3ffad781e5723"
+      },
+      "path": "plugins/shell-scripting/skills/shellcheck-configuration"
+    }
+  }
+}
