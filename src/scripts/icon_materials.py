@@ -422,6 +422,9 @@ def _render_dock_layers(image, style, mode, tint):
             plate = blend(plate, blend(black, tint, .33), green)
         plate = blend(blend(black, tint, .42), plate, pigment)
         opacity = .52 + .39 * pigment
+        if kind == "finder":
+            # Keep the pale eye legible over light wallpaper.
+            opacity = max(opacity, .59)
         ink = blend(blend(tint, white, .97), blend(saturated, white, .94), pigment)
 
     gradients = {node.get("id"): node for node in root[0]}
