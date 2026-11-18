@@ -1,6 +1,7 @@
 """Failure controls for the real desktop qualification harness."""
 import importlib.util
 import json
+import shutil
 from pathlib import Path
 import subprocess
 
@@ -150,3 +151,35 @@ def test_visible_capture_positive_control():
     data = io.BytesIO()
     image.save(data, format='PNG')
     qualify.verify_capture(data.getvalue())
+
+
+def test_capture_batch_runs_only_prepared_guests_with_a_common_budget(tmp_path, monkeypatch):
+    monkeypatch.setattr(qualify.subprocess, 'check_output', lambda *a, **k:
+                        'arch\tprepared\t/arch\nneon\tprepared\t/neon\nkubuntu\tmedia-only\t/kubuntu\n')
+    executions = []
+
+    repo = tmp_path / 'repo'
+    repo.mkdir()
+    (repo / 'install').write_text('local installer')
+    monkeypatch.setattr(qualify, 'REPO', repo)
+    monkeypatch.setenv('VM_RUN_DIR', str(tmp_path / 'runs'))
+
+    def copy(argv, **options):
+        assert argv[0] == 'rsync' and options['check']
+        shutil.copytree(argv[-2], argv[-1], dirs_exist_ok=True)
+
+    monkeypatch.setattr(qualify.subprocess, 'run', copy)
+
+    def capture(distro, output, deadline, source):
+        assert (source / 'install').read_text() == 'local installer'
+        executions.append((distro, output, deadline, source))
+        return {'distro': distro, 'status': 'pass'}
+
+    monkeypatch.setattr(qualify, 'prepared_capture', capture)
+    assert qualify.capture_batch(['arch', 'kubuntu', 'neon', 'arch'], tmp_path / 'results', 2, 600) == 1
+    assert {run[0] for run in executions} == {'arch', 'neon'}
+    assert len({item[2:] for item in executions}) == 1
+    assert list((tmp_path / 'runs').iterdir()) == []
+    report = json.loads((tmp_path / 'results/batch.json').read_text())
+    assert report['passed'] == 2 and report['missing'] == ['kubuntu'] and report['status'] == 'incomplete'
+    assert len(report['source_sha256']) == 64

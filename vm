@@ -10,6 +10,10 @@
 #                     Per-VM resources are trimmed so the fleet fits in
 #                     RAM — override with VM_CPUS / VM_MEM_MIB.
 # ./vm list           list supported distros
+# ./vm inventory      show which distros have reusable bases
+# ./vm <distro> --prepared  boot a disposable overlay of a prepared base
+# ./vm seal <distro>  save a stopped, prepared guest as a reusable base
+# ./vm capture <distro...|all> --output DIR  run the prepared capture batch
 # ./vm --help         show this help
 #
 # Flags:
@@ -25,6 +29,7 @@ REPO="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 CACHE="${VM_CACHE_DIR:-$REPO/.vm/cache}"
 CI="$REPO/.vm/cloud-init"
 RUN="${VM_RUN_DIR:-$REPO/.vm/run}"
+PREPARED="${VM_PREPARED_DIR:-$CACHE/prepared}"
 
 declare -A BASE=(
     [arch]=arch.qcow2
@@ -104,9 +109,57 @@ ensure_base() {
 }
 
 QEMU_ARGV=()
+find_firmware() {
+    local candidate
+    firmware_code="${VM_UEFI_CODE:-}"
+    firmware_vars="${VM_UEFI_VARS:-}"
+    if [[ -z "$firmware_code" || -z "$firmware_vars" ]]; then
+        for candidate in /usr/share/edk2/x64 /usr/share/OVMF /usr/share/edk2/ovmf; do
+            if [[ -f "$candidate/OVMF_CODE.4m.fd" && -f "$candidate/OVMF_VARS.4m.fd" ]]; then
+                firmware_code="$candidate/OVMF_CODE.4m.fd"
+                firmware_vars="$candidate/OVMF_VARS.4m.fd"
+                break
+            elif [[ -f "$candidate/OVMF_CODE_4M.fd" && -f "$candidate/OVMF_VARS_4M.fd" ]]; then
+                firmware_code="$candidate/OVMF_CODE_4M.fd"
+                firmware_vars="$candidate/OVMF_VARS_4M.fd"
+                break
+            fi
+        done
+    fi
+    [[ -f "$firmware_code" && -f "$firmware_vars" ]] || {
+        warn "UEFI firmware missing; set VM_UEFI_CODE and VM_UEFI_VARS"; return 1;
+    }
+}
+
+qemu_command() {
+    local distro="$1" work="$2" port="$3"
+    shift 3
+    local console="${VM_CONSOLE_LOG:-$work/console.log}" display="${VM_DISPLAY:-gtk}" restrict="${VM_NET_RESTRICT:-off}"
+    case "$display" in
+        egl-headless|none) ;;
+        *) display+=",gl=${VM_GL:-on},show-cursor=on" ;;
+    esac
+    QEMU_ARGV=(
+        qemu-system-x86_64
+        -name "mttkde-$distro"
+        -enable-kvm -cpu host -smp "${VM_CPUS:-$DEFAULT_CPUS}" -m "${VM_MEM_MIB:-$DEFAULT_MEM}"
+        "$@"
+        -serial file:"$console"
+        -virtfs local,path="${VM_SOURCE_DIR:-$REPO}",mount_tag=repo,security_model=none,readonly=on
+        -netdev user,id=net0,restrict="$restrict",hostfwd=tcp:127.0.0.1:"$port"-:22
+        -device virtio-net-pci,netdev=net0
+        -device "${VM_GPU:-virtio-vga-gl}",xres="${VM_XRES:-1920}",yres="${VM_YRES:-1080}"
+        -display "$display"
+        -qmp unix:"${qmp_path:-$work/qmp.sock}",server,nowait
+    )
+    if [[ -n "${VM_GUEST_UUID:-}" ]]; then
+        QEMU_ARGV+=(-uuid "$VM_GUEST_UUID")
+    fi
+}
+
 prepare_one() {
     local distro="$1" clean="$2"
-    local base port work disk cidata console ci tmp
+    local base port work disk cidata ci tmp
     base="${BASE[$distro]:-}"
     [[ -n "$base" ]] || { warn "unknown distro: $distro"; return 1; }
     port="${PORT[$distro]}"
@@ -122,28 +175,11 @@ prepare_one() {
     mkdir -p "$work"
     disk="$work/disk.qcow2"
     cidata="$work/cidata.iso"
-    console="$work/console.log"
 
     local extra=()
     if [[ "$base" == *.iso ]]; then
         [[ -f "$disk" ]] || qemu-img create -f qcow2 "$disk" 60G >/dev/null
-        local firmware_code="${VM_UEFI_CODE:-}" firmware_vars="${VM_UEFI_VARS:-}" candidate
-        if [[ -z "$firmware_code" || -z "$firmware_vars" ]]; then
-            for candidate in /usr/share/edk2/x64 /usr/share/OVMF /usr/share/edk2/ovmf; do
-                if [[ -f "$candidate/OVMF_CODE.4m.fd" && -f "$candidate/OVMF_VARS.4m.fd" ]]; then
-                    firmware_code="$candidate/OVMF_CODE.4m.fd"
-                    firmware_vars="$candidate/OVMF_VARS.4m.fd"
-                    break
-                elif [[ -f "$candidate/OVMF_CODE_4M.fd" && -f "$candidate/OVMF_VARS_4M.fd" ]]; then
-                    firmware_code="$candidate/OVMF_CODE_4M.fd"
-                    firmware_vars="$candidate/OVMF_VARS_4M.fd"
-                    break
-                fi
-            done
-        fi
-        [[ -f "$firmware_code" && -f "$firmware_vars" ]] || {
-            warn "UEFI firmware missing; set VM_UEFI_CODE and VM_UEFI_VARS"; return 1;
-        }
+        find_firmware || return 1
         [[ -f "$work/OVMF_VARS.fd" ]] || cp "$firmware_vars" "$work/OVMF_VARS.fd"
         extra=(
             -machine q35
@@ -171,19 +207,7 @@ prepare_one() {
         )
     fi
 
-    QEMU_ARGV=(
-        qemu-system-x86_64
-        -name "mttkde-$distro"
-        -enable-kvm -cpu host -smp "${VM_CPUS:-$DEFAULT_CPUS}" -m "${VM_MEM_MIB:-$DEFAULT_MEM}"
-        "${extra[@]}"
-        -serial file:"$console"
-        -virtfs local,path="$REPO",mount_tag=repo,security_model=none,readonly=on
-        -netdev user,id=net0,hostfwd=tcp:127.0.0.1:"$port"-:22
-        -device virtio-net-pci,netdev=net0
-        -device "${VM_GPU:-virtio-vga-gl}",xres="${VM_XRES:-1920}",yres="${VM_YRES:-1080}"
-        -display "${VM_DISPLAY:-gtk}",gl="${VM_GL:-on}",show-cursor=on
-        -qmp unix:"$work/qmp.sock",server,nowait
-    )
+    qemu_command "$distro" "$work" "$port" "${extra[@]}"
     return 0
 }
 
@@ -237,10 +261,97 @@ boot_one() {
     exec "${QEMU_ARGV[@]}"
 }
 
+
+inventory() {
+    local distro state base
+    for distro in "${ORDER[@]}"; do
+        base="$PREPARED/$distro/disk.qcow2"
+        if [[ -f "$base" ]]; then
+            state=prepared
+        elif [[ -f "$CACHE/${BASE[$distro]}" ]]; then
+            state=media-only
+        else
+            state=missing
+        fi
+        printf '%s\t%s\t%s\n' "$distro" "$state" "$base"
+    done
+}
+
+seal_prepared() (
+    local distro="$1" source destination
+    [[ -n "${BASE[$distro]:-}" ]] || die "unknown distro: $distro"
+    source="$RUN/$distro"
+    destination="$PREPARED/$distro"
+    command -v qemu-img >/dev/null || die "missing tool: qemu-img"
+    [[ -f "$source/disk.qcow2" ]] || die "no installed disk at $source"
+    [[ ! -e "$destination" && ! -L "$destination" ]] || die "prepared image already exists: $destination"
+    mkdir -p "$PREPARED"
+    tmp="$(mktemp -d "$PREPARED/.seal-$distro.XXXXXX")"
+    trap 'rm -rf -- "$tmp"' EXIT
+    # QEMU refuses to open a source disk held writable by a running guest.
+    qemu-img convert -f qcow2 -O qcow2 "$source/disk.qcow2" "$tmp/disk.qcow2"
+    if [[ -f "$source/OVMF_VARS.fd" ]]; then
+        cp "$source/OVMF_VARS.fd" "$tmp/OVMF_VARS.fd"
+    fi
+    mv -T --no-clobber "$tmp" "$destination"
+    [[ ! -d "$tmp" ]] || die "prepared image already exists: $destination"
+    say "prepared image: $destination"
+)
+
+boot_prepared() {
+    local distro="$1" base disk port qmp_path
+    prepared_pid=
+    [[ -n "${BASE[$distro]:-}" ]] || die "unknown distro: $distro"
+    for tool in qemu-img qemu-system-x86_64; do command -v "$tool" >/dev/null || die "missing tool: $tool"; done
+    base="$PREPARED/$distro/disk.qcow2"
+    [[ -f "$base" ]] || die "no prepared image for $distro: $base (see ./vm inventory)"
+    base="$(realpath "$base")"
+    port="${VM_SSH_PORT:-${PORT[$distro]}}"
+    [[ "$port" =~ ^[1-9][0-9]{0,4}$ ]] && (( port <= 65535 )) || die "invalid SSH port: $port"
+    mkdir -p "$RUN"
+    prepared_directory="$(mktemp -d "$(realpath "$RUN")/$distro.XXXXXX")"
+    trap 'if [[ -n "$prepared_pid" ]]; then kill "$prepared_pid" 2>/dev/null || true; wait "$prepared_pid" || true; fi; rm -rf -- "$prepared_directory"' EXIT
+    trap 'exit 130' INT
+    trap 'exit 143' TERM
+
+    disk="$prepared_directory/disk.qcow2"
+    qemu-img create -q -f qcow2 -F qcow2 -b "$base" "$disk"
+    local extra=()
+    if [[ "${BASE[$distro]}" == *.iso || -f "$PREPARED/$distro/OVMF_VARS.fd" ]]; then
+        [[ -f "$PREPARED/$distro/OVMF_VARS.fd" ]] || die "prepared UEFI image needs OVMF_VARS.fd"
+        find_firmware || exit 1
+        cp "$PREPARED/$distro/OVMF_VARS.fd" "$prepared_directory/OVMF_VARS.fd"
+        extra=(-machine q35
+            -drive if=pflash,format=raw,readonly=on,file="$firmware_code"
+            -drive if=pflash,format=raw,file="$prepared_directory/OVMF_VARS.fd")
+    fi
+    # QMP UNIX sockets have a short pathname limit. Use the guest's own cwd.
+    cd "$prepared_directory"
+    qmp_path=qmp.sock
+    VM_NET_RESTRICT=on
+    qemu_command "$distro" "$prepared_directory" "$port" "${extra[@]}" -drive "file=$disk,if=virtio,format=qcow2"
+    say "booting prepared $distro VM (loopback SSH port: $port)"
+    "${QEMU_ARGV[@]}" &
+    prepared_pid=$!
+    wait "$prepared_pid"
+    prepared_pid=
+}
+
 case "${1:-}" in
-    ""|-h|--help) sed -n '2,20p' "$0" | sed 's|^#||; s|^ ||'; exit 0 ;;
+    ""|-h|--help) sed -n '2,/^$/p' "$0" | sed 's|^#||; s|^ ||'; exit 0 ;;
     list) printf '%s\n' "${ORDER[@]}"; exit 0 ;;
+    inventory) inventory; exit 0 ;;
+    seal) [[ $# == 2 ]] || die "usage: ./vm seal <distro>"; seal_prepared "$2"; exit ;;
+    capture) shift; exec python3 "$REPO/tests/vm/qualify.py" --prepared "$@" ;;
+
 esac
+
+if [[ $# == 2 && "$2" == --prepared ]]; then
+    DEFAULT_CPUS=4
+    DEFAULT_MEM=6144
+    boot_prepared "$1"
+    exit
+fi
 
 target="$1"; shift || true
 clean=0

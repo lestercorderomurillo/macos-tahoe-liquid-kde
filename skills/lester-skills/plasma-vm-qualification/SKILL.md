@@ -5,6 +5,14 @@ description: Qualify an affected Plasma component in a disposable VM with explic
 
 # Plasma VM qualification
 
+For repeated distro checks, use prepared desktop images with the SDK and
+build cache already available. Run the requested capture scenario from the
+current local installer source. Keep provisioning separate from timed
+qualification. Aim for ten minutes per representative batch and report
+missing bases, measured timings and incomplete work. If an attempt or retry is
+expected to take 20 minutes or more, reassess scope and tell the user the
+estimate and reason before starting it.
+
 First apply [focused validation](../focused-validation/SKILL.md) and the
 environment selection rules in `AGENTS.md`. Use this workflow for claims that
 need a desktop VM or for required desktop captures. Check the inventory for a

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
-"""Exercise install, live mode switches, reboot and uninstall in a disposable VM.
+"""Run either prepared captures or a full VM lifecycle qualification.
 
-Start the guest with ./vm first. SSH must accept tester/tester on its loopback
+For lifecycle qualification, start the guest with ./vm first. SSH must accept tester/tester on its loopback
 port, with passwordless sudo and the repository mounted read-only at ~/repo.
 Artifacts are retained even when a phase fails. A failed phase never qualifies
 that distribution. This harness never installs the theme on the host.
@@ -9,21 +9,29 @@ that distribution. This harness never installs the theme on the host.
 from __future__ import annotations
 
 import argparse
+from concurrent.futures import ThreadPoolExecutor
 import datetime
+import hashlib
 import io
 import json
 import os
 from pathlib import Path
 import shlex
+import signal
+import socket
 import subprocess
 import sys
+import tempfile
 import time
+import uuid
 import xml.etree.ElementTree as ET
 
 PORTS = dict(arch=2221, cachyos=2222, manjaro=2223, endeavouros=2224,
              garuda=2225, fedora=2226, nobara=2227, opensuse=2228,
              neon=2231, debian=2232, artix=2233, kubuntu=2234)
 WORKTREE = '/home/tester/macos-tahoe-liquid-kde'
+REPO = Path(__file__).resolve().parents[2]
+VM = REPO / 'vm'
 
 
 def verify_capture(data: bytes):
@@ -39,23 +47,33 @@ def verify_capture(data: bytes):
 
 
 class Guest:
-    def __init__(self, distro: str, output: Path):
+    def __init__(self, distro: str, output: Path, *, port=None, identity=None, deadline=None):
         self.distro = distro
+        self.identity = identity
+        self.deadline = deadline
         self.output = output
         self.output.mkdir(parents=True, exist_ok=True)
         self.ssh = ['sshpass', '-e', 'ssh', '-o', 'StrictHostKeyChecking=no',
                     '-o', 'UserKnownHostsFile=/dev/null', '-o', 'ConnectTimeout=5',
                     '-o', 'ServerAliveInterval=15', '-o', 'ServerAliveCountMax=3',
-                    '-p', str(PORTS[distro]), 'tester@127.0.0.1']
+                    '-p', str(port or PORTS[distro]), 'tester@127.0.0.1']
         self.env = {**os.environ, 'SSHPASS': os.environ.get('VM_PASSWORD', 'tester')}
         self.report = {'distro': distro, 'started': now(), 'status': 'running', 'phases': []}
+
+    def remaining(self, timeout):
+        if self.deadline is None:
+            return timeout
+        remaining = self.deadline - time.monotonic()
+        if remaining <= 0:
+            raise RuntimeError('Capture batch time budget exhausted')
+        return min(timeout, remaining)
 
     def run(self, command: str, *, timeout: int = 120, check: bool = True):
         # SSH/PAM may export a different bus from the logged-in Plasma session
         # (notably OpenRC). Let the desktop recovery code discover that session.
         command = 'unset DBUS_SESSION_BUS_ADDRESS DISPLAY WAYLAND_DISPLAY XDG_SESSION_TYPE; ' + command
         result = subprocess.run([*self.ssh, 'bash -c ' + shlex.quote(command)], env=self.env,
-                                capture_output=True, timeout=timeout)
+                                capture_output=True, timeout=self.remaining(timeout))
         if check and result.returncode:
             raise RuntimeError(f'Guest command exited {result.returncode}: {command}\n'
                                + result.stderr.decode(errors='replace')[-2000:])
@@ -74,6 +92,10 @@ class Guest:
                           ". /etc/os-release && " + flavor_check + "printf '%s' \"$ID\"")
         if result.stdout.decode().strip() != wanted:
             raise RuntimeError('Guest identity does not match the selected distribution')
+        if self.identity is not None:
+            result = self.run('sudo -n cat /sys/class/dmi/id/product_uuid', timeout=10)
+            if result.stdout.decode().strip().lower() != self.identity:
+                raise RuntimeError('SSH does not reach the guest created for this capture')
 
     def save(self):
         (self.output / 'result.json').write_text(json.dumps(self.report, indent=2) + '\n')
@@ -94,11 +116,21 @@ class Guest:
         print(f'{self.distro}: {name}', flush=True)
         started = now()
         guest_log = f'/tmp/mttkde-qa-{name}.log'
-        wrapped = (f'( {command} ) > {guest_log} 2>&1; '
-                   f'result=$?; cat {guest_log}; exit "$result"')
-        result = self.run(wrapped, timeout=timeout, check=False)
+        wrapped = f'set -o pipefail; ( {command} ) 2>&1 | tee {guest_log}'
+        begin = time.monotonic()
+        try:
+            result = self.run(wrapped, timeout=timeout, check=False)
+        except subprocess.TimeoutExpired as error:
+            if self.deadline is not None:
+                (self.output / f'{name}.log').write_bytes((error.stdout or b'') + (error.stderr or b''))
+                self.report['phases'].append(dict(name=name, started=started, finished=now(),
+                                                  seconds=round(time.monotonic() - begin, 2),
+                                                  exit_code=None, timed_out=True))
+                self.save()
+            raise
         (self.output / f'{name}.log').write_bytes(result.stdout + result.stderr)
         self.report['phases'].append(dict(name=name, started=started, finished=now(),
+                                         seconds=round(time.monotonic() - begin, 2),
                                          exit_code=result.returncode))
         self.save()
         if result.returncode:
@@ -161,22 +193,32 @@ class Guest:
             time.sleep(5)
         raise RuntimeError('Guest did not reboot into Plasma within five minutes')
 
-    def qualify(self):
+    def installed_captures(self, *, capture_only):
         self.assert_identity()
+        if capture_only:
+            self.phase('mount-source', 'mkdir -p /home/tester/repo && '
+                       '(mountpoint -q /home/tester/repo || '
+                       'sudo mount -t 9p -o trans=virtio,version=9p2000.L,ro repo /home/tester/repo) && '
+                       'findmnt --mountpoint /home/tester/repo --types 9p --options ro >/dev/null')
         self.phase('prepare', f'mkdir -p {WORKTREE} && '
                    f'rsync -a --delete --exclude=.git --exclude=.vm --exclude=build '
                    f'/home/tester/repo/ {WORKTREE}/')
-        self.probe('baseline', 'baseline')
+        if not capture_only:
+            self.probe('baseline', 'baseline')
         self.phase('screen-unlocked', self.desktop_command(
             'kwriteconfig6 --file kscreenlockerrc --group Daemon --key Autolock false && '
             'kwriteconfig6 --file kscreenlockerrc --group Daemon --key LockOnResume false && '
             'sudo loginctl unlock-sessions'))
         self.phase('apps-profile', self.desktop_command('python3 tests/vm/desktop_apps.py --prepare'))
         self.phase('resolution', self.desktop_command('kscreen-doctor output.1.mode.3840x2160@60 output.1.scale.2'))
+        if capture_only:
+            self.phase('source-identity', f'cd {WORKTREE} && sha256sum VERSION src/scripts/installer_backend.py '
+                       'src/scripts/defaults.json')
+
         self.phase('install', f'cd {WORKTREE} && sudo env MTTKDE_NO_CONFIRM=1 '
                    'MAC_TAHOE_NO_UPDATE_CHECK=true ./src/scripts/installer_backend.py install --dark', timeout=3600)
         dark = self.probe('dark', 'dark')
-        if self.distro == 'kubuntu':
+        if not capture_only and self.distro == 'kubuntu':
             self.launcher('launcher-installed')
         dark_apps = self.apps('apps-dark', 'dark')
         self.screenshot('dark', mode='dark', apps=dark_apps)
@@ -188,6 +230,10 @@ class Guest:
         if light['shell_pid'] != dark['shell_pid'] or light['compositor_pid'] != dark['compositor_pid']:
             raise RuntimeError('Live switch restarted Plasma or KWin')
         self.screenshot('light', mode='light', apps=light_apps)
+        return dark
+
+    def qualify(self):
+        dark = self.installed_captures(capture_only=False)
         self.phase('switch-dark', self.desktop_command('~/.local/bin/mac-tahoe-theme-switch dark'))
         self.probe('dark-again', 'dark')
         self.apps('apps-dark-again', 'dark')
@@ -208,17 +254,145 @@ class Guest:
         self.save()
 
 
+def prepared_capture(distro, output, deadline, source):
+    identity = str(uuid.uuid4())
+    with socket.socket() as probe:
+        probe.bind(('127.0.0.1', 0))
+        port = probe.getsockname()[1]
+    guest = Guest(distro, output, port=port, identity=identity, deadline=deadline)
+    env = os.environ | {
+        'VM_SSH_PORT': str(port), 'VM_GUEST_UUID': identity,
+        'VM_SOURCE_DIR': str(source),
+        'VM_DISPLAY': os.environ.get('VM_DISPLAY', 'egl-headless'),
+        'VM_CPUS': os.environ.get('VM_CPUS', '2'),
+        'VM_MEM_MIB': os.environ.get('VM_MEM_MIB', '4096'),
+        'VM_XRES': '3840', 'VM_YRES': '2160',
+        'VM_CONSOLE_LOG': str(output / 'console.log'),
+    }
+    started = time.monotonic()
+    process = None
+    try:
+        guest.remaining(1)
+        with (output / 'boot.log').open('wb') as log:
+            process = subprocess.Popen([str(VM), distro, '--prepared'], env=env,
+                                       stdout=log, stderr=subprocess.STDOUT, start_new_session=True)
+            boot_limit = min(deadline, time.monotonic() + 90)
+            while time.monotonic() < boot_limit:
+                if process.poll() is not None:
+                    raise RuntimeError('Prepared guest exited during boot; see boot.log')
+                try:
+                    result = guest.run('pgrep -u tester -x plasmashell', check=False, timeout=8)
+                except subprocess.TimeoutExpired:
+                    continue
+                if result.returncode == 0:
+                    guest.report['boot_seconds'] = round(time.monotonic() - started, 2)
+                    break
+                time.sleep(1)
+            else:
+                raise RuntimeError('Prepared guest did not reach Plasma within the boot budget')
+        guest.installed_captures(capture_only=True)
+        guest.report['status'] = 'pass'
+    except (OSError, ValueError, RuntimeError, subprocess.SubprocessError) as error:
+        guest.report.update(status='fail', error=str(error))
+        print(f'{distro}: FAIL: {error}', flush=True)
+    finally:
+        if process is not None and process.poll() is None:
+            # The launcher owns the disposable overlay and cleans it on SIGTERM.
+            process.terminate()
+            try:
+                process.wait(timeout=8)
+            except subprocess.TimeoutExpired:
+                os.killpg(process.pid, signal.SIGKILL)
+                process.wait()
+        guest.report.update(finished=now(), seconds=round(time.monotonic() - started, 2))
+        guest.save()
+    return guest.report
+
+
+def capture_batch(targets, output, jobs, budget):
+    listed = subprocess.check_output([str(VM), 'inventory'], text=True)
+    inventory = dict((distro, state) for distro, state, _ in
+                     (line.split('\t', 2) for line in listed.splitlines()))
+    targets = list(PORTS) if targets == ['all'] else list(dict.fromkeys(targets))
+    missing = [distro for distro in targets if inventory[distro] != 'prepared']
+    ready = [distro for distro in targets if inventory[distro] == 'prepared']
+    output.mkdir(parents=True, exist_ok=True)
+    if any(output.iterdir()):
+        raise RuntimeError(f'Capture batch output must be empty: {output}')
+    print(f'Prepared: {len(ready)}/{len(targets)}; {jobs} concurrent; {budget}s wall budget', flush=True)
+    if missing:
+        print('Missing prepared images: ' + ', '.join(missing), flush=True)
+    started = time.monotonic()
+    deadline = started + budget
+    results = []
+    source_digest = None
+    if ready:
+        # Freeze the working tree once, including local edits, before any VM
+        # can read it. Ignore display artifacts and unrelated build caches.
+        scratch = Path(os.environ.get('VM_RUN_DIR', REPO / '.vm/run')).resolve()
+        scratch.mkdir(parents=True, exist_ok=True)
+        with tempfile.TemporaryDirectory(prefix='capture-source.', dir=scratch) as staged:
+            source = Path(staged)
+            excludes = ['--exclude=/.git', '--exclude=/.vm', '--exclude=/build',
+                        '--exclude=/src/screenshots']
+            if scratch.is_relative_to(REPO) and scratch != REPO:
+                excludes.append('--exclude=/' + str(scratch.relative_to(REPO)))
+            elif source.is_relative_to(REPO):
+                excludes.append('--exclude=/' + source.name)
+            subprocess.run(
+                ['rsync', '-a', *excludes, str(REPO) + '/', str(source) + '/'],
+                check=True, timeout=max(0.01, deadline - time.monotonic()),
+            )
+            digest = hashlib.sha256()
+            for path in sorted(source.rglob('*')):
+                if path.is_symlink():
+                    payload = b'link:' + os.fsencode(path.readlink())
+                elif path.is_file():
+                    with path.open('rb') as stream:
+                        payload = hashlib.file_digest(stream, 'sha256').digest()
+                else:
+                    continue
+                digest.update(os.fsencode(path.relative_to(source)) + b'\0' + payload)
+            source_digest = digest.hexdigest()
+            with ThreadPoolExecutor(max_workers=jobs) as pool:
+                futures = [pool.submit(prepared_capture, distro, output / distro, deadline, source)
+                           for distro in ready]
+                results = [future.result() for future in futures]
+    passed = sum(result['status'] == 'pass' for result in results)
+    elapsed = round(time.monotonic() - started, 2)
+    report = dict(status='pass' if passed == len(targets) else 'incomplete',
+                  seconds=elapsed, budget_seconds=budget,
+                  passed=passed, requested=len(targets), missing=missing, results=results,
+                  source_sha256=source_digest)
+    (output / 'batch.json').write_text(json.dumps(report, indent=2) + '\n')
+    print(f'{passed}/{len(targets)} passed in {elapsed:.1f}s ({output / "batch.json"})', flush=True)
+    return int(passed != len(targets))
+
+
 def now():
     return datetime.datetime.now(datetime.timezone.utc).isoformat()
 
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('distro', choices=PORTS)
+    parser.add_argument('distro', nargs='+', choices=(*PORTS, 'all'))
     parser.add_argument('--output', type=Path, required=True)
     parser.add_argument('--poweroff', action='store_true', help='Stop the guest after a passing run')
+    parser.add_argument('--prepared', action='store_true', help='Boot prepared guests and run the capture batch')
+    parser.add_argument('--jobs', type=int, default=4, help='Concurrent prepared guests (default: 4)')
+    parser.add_argument('--budget', type=int, default=600, help='Batch wall budget in seconds (default: 600)')
     args = parser.parse_args()
-    guest = Guest(args.distro, args.output.resolve())
+    if args.prepared:
+        if args.jobs < 1 or args.budget < 1 or ('all' in args.distro and args.distro != ['all']) or args.poweroff:
+            parser.error('invalid capture batch options')
+        try:
+            return capture_batch(args.distro, args.output.resolve(), args.jobs, args.budget)
+        except (OSError, ValueError, RuntimeError, subprocess.SubprocessError) as error:
+            print(f'Capture batch: {error}', file=sys.stderr)
+            return 1
+    if len(args.distro) != 1 or args.distro == ['all']:
+        parser.error('lifecycle qualification requires one already running distro; use ./vm capture for batches')
+    guest = Guest(args.distro[0], args.output.resolve())
     try:
         guest.qualify()
         if args.poweroff:

@@ -293,3 +293,45 @@ def test_invalid_image_manifest_stops_before_vm_start(tmp_path, invalid):
     result = subprocess.run([str(tmp_path / "vm"), "list"], capture_output=True, text=True)
     assert result.returncode != 0
     assert "Invalid .vm/images.json" in result.stderr
+
+
+def test_prepared_guest_uses_only_an_overlay_and_cleans_it(tmp_path):
+    shutil.copy2(REPO / 'vm', tmp_path / 'vm')
+    metadata = tmp_path / '.vm'
+    metadata.mkdir()
+    shutil.copy2(REPO / '.vm/images.json', metadata / 'images.json')
+    binaries = tmp_path / 'bin'
+    binaries.mkdir()
+    commands = tmp_path / 'qemu-arguments'
+    for name, body in {
+        'qemu-img': '[[ "$1" == create ]] && touch "${@: -1}"',
+        'qemu-system-x86_64': '[[ -f disk.qcow2 ]] && printf "%s\\n" "$@" > "$VM_TEST_LOG"',
+    }.items():
+        binary = binaries / name
+        binary.write_text('#!/bin/bash\n' + body + '\n')
+        binary.chmod(0o755)
+    prepared = tmp_path / 'prepared'
+    base = prepared / 'neon/disk.qcow2'
+    base.parent.mkdir(parents=True)
+    base.write_bytes(b'read-only reference')
+    cache = tmp_path / 'cache'
+    runs = tmp_path / 'runs'
+    env = dict(os.environ, PATH=f'{binaries}:{os.environ["PATH"]}', VM_PREPARED_DIR=str(prepared),
+               VM_CACHE_DIR=str(cache), VM_RUN_DIR=str(runs), VM_TEST_LOG=str(commands),
+               VM_DISPLAY='egl-headless', VM_SSH_PORT='50001')
+    listing = subprocess.check_output([tmp_path / 'vm', 'inventory'], env=env, text=True)
+    assert f'neon\tprepared\t{base}' in listing
+    assert 'arch\tmissing\t' in listing
+    subprocess.run([tmp_path / 'vm', 'neon', '--prepared'], env=env, check=True, timeout=10)
+    assert base.read_bytes() == b'read-only reference'
+    assert list(runs.iterdir()) == []
+    assert not cache.exists()
+    launched = commands.read_text()
+    assert 'restrict=on,hostfwd=tcp:127.0.0.1:50001-:22' in launched
+    assert 'mount_tag=repo,security_model=none,readonly=on' in launched
+    assert 'egl-headless\n' in launched
+    assert str(base) not in launched
+    missing = subprocess.run([tmp_path / 'vm', 'arch', '--prepared'], env=env,
+                             capture_output=True, text=True, timeout=10)
+    assert missing.returncode and 'no prepared image' in missing.stderr
+    assert not cache.exists()

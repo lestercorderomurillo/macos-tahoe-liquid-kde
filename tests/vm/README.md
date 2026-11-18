@@ -8,6 +8,40 @@ Kubuntu pins 26.04.1 LTS for the Plasma 6.6 launcher regression reported in
 This new test target is pending full live qualification; adding it is not a
 compatibility badge.
 
+## Run a prepared capture batch
+
+Use a prepared desktop disk for repeat checks. The base should have Plasma
+autologin, SSH, the project dependencies and a populated compiler cache. Pick
+the fast local disk once for both the base library and disposable overlays.
+
+```sh
+export VM_PREPARED_DIR=/path/to/desktop-bases
+export VM_RUN_DIR=/path/to/fast-scratch
+./vm inventory
+./vm capture neon arch kubuntu --jobs 4 --budget 600 --output build/vm-captures
+```
+
+`all` requests the whole distro list. Missing images are reported immediately.
+They are never downloaded or provisioned by the capture batch. The batch boots
+isolated copies in parallel, mounts the current checkout read-only, copies the
+installer into each guest, then runs the existing dark/light desktop capture
+checks. Use a fresh output directory. The batch saves source fingerprints, per-phase
+times, logs, images and a result. The budget is
+shared across the batch and includes time spent waiting for a worker. A failed,
+missing or timed-out guest makes the batch incomplete.
+
+To add a base, prepare the distro once using the instructions below, including
+its installer dependencies and build cache. Shut the guest down and run
+`./vm seal <distro>`. For an existing prepared image, place its standalone
+QCOW2 at `$VM_PREPARED_DIR/<distro>/disk.qcow2`. UEFI guests also need their
+`OVMF_VARS.fd` in that directory. `./vm <distro> --prepared` opens a single
+disposable overlay. The full install, mode changes, reboot and uninstall
+scenario remains available through the lifecycle command below.
+
+Ten minutes is the target for a warm capture batch. A base that lacks its
+dependencies or a change that invalidates its build cache can miss that
+target. Time spent provisioning new bases is separate.
+
 ## Start a guest
 
 Install QEMU with KVM, `qemu-img`, `genisoimage`, `curl`, Python 3 and OVMF on

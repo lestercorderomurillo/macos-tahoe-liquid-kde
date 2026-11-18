@@ -2,6 +2,12 @@
 
 ## Non-negotiable execution discipline
 
+If an operation is likely to take 20 minutes or more, treat that as a sign
+that its scope may exceed the request or its method may be inefficient. First
+look for a smaller sufficient check or an existing prepared environment.
+Before starting or retrying a run that still needs 20 minutes or more, tell
+the user the expected time and what makes it necessary.
+
 **Top priority: Do not make changes the user did not request.** Treat
 everything outside the requested change as a constraint to preserve. When
 editing or recapturing an approved result, use that result and its provenance
