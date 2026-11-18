@@ -54,6 +54,10 @@ elif [[ "$ID" == ubuntu ]]; then
 else
     systemctl enable --now sshd
 fi
+if command -v ufw >/dev/null && LC_ALL=C ufw status | grep -Fxq 'Status: active'; then
+    # Accept the host's loopback SSH forward through QEMU's NAT gateway.
+    ufw allow from 10.0.2.2 to any port 22 proto tcp
+fi
 mkdir -p /home/tester/repo /home/tester/macos-tahoe-liquid-kde
 chown tester:tester /home/tester/macos-tahoe-liquid-kde
 [[ -d /sys/module/9pnet_virtio ]] || modprobe 9pnet_virtio
