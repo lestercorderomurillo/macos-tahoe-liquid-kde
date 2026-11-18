@@ -1,5 +1,5 @@
 {
-  "version": "0.73.12",
+  "version": "0.73.13",
   "implementation_commit": "16806a0f1170796383f9addb8ee9330327876806",
   "scope": "Grouped notification card contours and compositor blur regions",
   "gallery_commit": "f09780b200b79302e7c23ef9f6f74d94748bbea3",
@@ -27,7 +27,7 @@
             "x": 1550,
             "y": 54,
             "width": 364,
-            "height": 96
+            "height": 100
           },
           "2483d6a5f0aa5d22795073aa6ecc7b6971ce420b97133c120247480798cb1970"
         ],
@@ -38,7 +38,7 @@
             "x": 1550,
             "y": 54,
             "width": 364,
-            "height": 96
+            "height": 104
           },
           "2483d6a5f0aa5d22795073aa6ecc7b6971ce420b97133c120247480798cb1970"
         ]
@@ -56,13 +56,13 @@
   ],
   "captures": [
     {
-      "path": "src/screenshots/previews/readme-tahoe-notification-stack-7b82f493a69c.webp",
-      "sha256": "7b82f493a69ca7c2ddff6475b3ac39408448edab030897cf4680a637f4419869",
+      "path": "src/screenshots/previews/readme-tahoe-notification-stack-1c2fe7571829.webp",
+      "sha256": "1c2fe75718297ddefa1b69965848535d81554b52944d0cedd85220135f0290ee",
       "reviewed": true
     }
   ],
   "coverage_limits": [
     "Rendered on Wayland with accelerated Qt Quick. The software renderer retains strip clipping. History shares the QML surface; the live photographic comparison covers the popup."
   ],
-  "source_sha256": "8d46090326eaaf58909a39718df010485a8bae4876b41e34f7b811219c4d2313"
+  "source_sha256": "09b13b0671ebaf276972587ca2186561fd9322b5464dc453ee6a824851eb853d"
 }

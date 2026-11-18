@@ -1995,6 +1995,2486 @@
       },
       "user_approved": true
     },
+    "previews/readme-tahoe-dark-dock-blue-a292ebe93f08.webp": {
+      "sha256": "a292ebe93f08d69d3b0e96a004c172dd7872a65774737c20cfb52792d7ba1adb",
+      "source_sha256": "f96290a6d937192b5b3fec2c9cb0aa0f1029449259fea85492af32c5c8ef022f",
+      "source_commit": "bcbe83a5182a9f30e49195e5d605c40ae46b3c85",
+      "replaces": "src/screenshots/previews/tahoe-dock-blue-dark-reference-a2757a9e1690.webp",
+      "crop": [
+        1200,
+        1964,
+        2640,
+        2160
+      ],
+      "export_size": [
+        1440,
+        196
+      ],
+      "capture": {
+        "source_commit": "bcbe83a5182a9f30e49195e5d605c40ae46b3c85",
+        "edition": "tahoe",
+        "mode": "dark",
+        "case": "dock-blue",
+        "before": [
+          {
+            "id": "{804ea748-5af8-4b35-b356-756a05ba96a7}",
+            "caption": "",
+            "resourceClass": "plasmashell",
+            "type": 1,
+            "appletPopup": false,
+            "hidden": false,
+            "active": true,
+            "geometry": {
+              "x": 0,
+              "y": 0,
+              "width": 1920,
+              "height": 1080
+            }
+          },
+          {
+            "id": "{970d8913-87bd-454d-b043-090a2b16e5b5}",
+            "caption": "",
+            "resourceClass": "plasmashell",
+            "type": 2,
+            "appletPopup": false,
+            "hidden": false,
+            "active": false,
+            "geometry": {
+              "x": 0,
+              "y": 0,
+              "width": 1920,
+              "height": 32
+            }
+          },
+          {
+            "id": "{1ccbc9e7-0107-4582-9518-062887c4cdb0}",
+            "caption": "",
+            "resourceClass": "plasmashell",
+            "type": 2,
+            "appletPopup": false,
+            "hidden": false,
+            "active": false,
+            "geometry": {
+              "x": 614,
+              "y": 996,
+              "width": 692,
+              "height": 84
+            }
+          }
+        ],
+        "after": [
+          {
+            "id": "{804ea748-5af8-4b35-b356-756a05ba96a7}",
+            "caption": "",
+            "resourceClass": "plasmashell",
+            "type": 1,
+            "appletPopup": false,
+            "hidden": false,
+            "active": true,
+            "geometry": {
+              "x": 0,
+              "y": 0,
+              "width": 1920,
+              "height": 1080
+            }
+          },
+          {
+            "id": "{970d8913-87bd-454d-b043-090a2b16e5b5}",
+            "caption": "",
+            "resourceClass": "plasmashell",
+            "type": 2,
+            "appletPopup": false,
+            "hidden": false,
+            "active": false,
+            "geometry": {
+              "x": 0,
+              "y": 0,
+              "width": 1920,
+              "height": 32
+            }
+          },
+          {
+            "id": "{1ccbc9e7-0107-4582-9518-062887c4cdb0}",
+            "caption": "",
+            "resourceClass": "plasmashell",
+            "type": 2,
+            "appletPopup": false,
+            "hidden": false,
+            "active": false,
+            "geometry": {
+              "x": 614,
+              "y": 996,
+              "width": 692,
+              "height": 84
+            }
+          }
+        ],
+        "sha256": "f96290a6d937192b5b3fec2c9cb0aa0f1029449259fea85492af32c5c8ef022f",
+        "defaults": {
+          "wallpaper": "MacTahoe",
+          "launcher_preset": 1
+        },
+        "icons": "MacTahoeLiquidKde-Icons-Readme-blue-Dark",
+        "effect": "a4a55b2f39b8b7fa42903c622bcf18d113847b624874d88af15a38f81e67ea99"
+      },
+      "user_approved": true
+    },
+    "previews/readme-tahoe-light-dock-blue-d39bb78e2f1d.webp": {
+      "sha256": "d39bb78e2f1d264a65b61e7d7ab431ae12c9ff1ae6fe257b96ac0149b42c47e7",
+      "source_sha256": "fe9598296a6dcc24e26c6785be456d47c3b4b2c924a2563aebf28b9903fb7059",
+      "source_commit": "bcbe83a5182a9f30e49195e5d605c40ae46b3c85",
+      "replaces": "src/screenshots/previews/tahoe-dock-blue-light-reference-451ebd6e17bc.webp",
+      "crop": [
+        1200,
+        1964,
+        2640,
+        2160
+      ],
+      "export_size": [
+        1440,
+        196
+      ],
+      "capture": {
+        "source_commit": "bcbe83a5182a9f30e49195e5d605c40ae46b3c85",
+        "edition": "tahoe",
+        "mode": "light",
+        "case": "dock-blue",
+        "before": [
+          {
+            "id": "{804ea748-5af8-4b35-b356-756a05ba96a7}",
+            "caption": "",
+            "resourceClass": "plasmashell",
+            "type": 1,
+            "appletPopup": false,
+            "hidden": false,
+            "active": true,
+            "geometry": {
+              "x": 0,
+              "y": 0,
+              "width": 1920,
+              "height": 1080
+            }
+          },
+          {
+            "id": "{970d8913-87bd-454d-b043-090a2b16e5b5}",
+            "caption": "",
+            "resourceClass": "plasmashell",
+            "type": 2,
+            "appletPopup": false,
+            "hidden": false,
+            "active": false,
+            "geometry": {
+              "x": 0,
+              "y": 0,
+              "width": 1920,
+              "height": 32
+            }
+          },
+          {
+            "id": "{1ccbc9e7-0107-4582-9518-062887c4cdb0}",
+            "caption": "",
+            "resourceClass": "plasmashell",
+            "type": 2,
+            "appletPopup": false,
+            "hidden": false,
+            "active": false,
+            "geometry": {
+              "x": 614,
+              "y": 996,
+              "width": 692,
+              "height": 84
+            }
+          }
+        ],
+        "after": [
+          {
+            "id": "{804ea748-5af8-4b35-b356-756a05ba96a7}",
+            "caption": "",
+            "resourceClass": "plasmashell",
+            "type": 1,
+            "appletPopup": false,
+            "hidden": false,
+            "active": true,
+            "geometry": {
+              "x": 0,
+              "y": 0,
+              "width": 1920,
+              "height": 1080
+            }
+          },
+          {
+            "id": "{970d8913-87bd-454d-b043-090a2b16e5b5}",
+            "caption": "",
+            "resourceClass": "plasmashell",
+            "type": 2,
+            "appletPopup": false,
+            "hidden": false,
+            "active": false,
+            "geometry": {
+              "x": 0,
+              "y": 0,
+              "width": 1920,
+              "height": 32
+            }
+          },
+          {
+            "id": "{1ccbc9e7-0107-4582-9518-062887c4cdb0}",
+            "caption": "",
+            "resourceClass": "plasmashell",
+            "type": 2,
+            "appletPopup": false,
+            "hidden": false,
+            "active": false,
+            "geometry": {
+              "x": 614,
+              "y": 996,
+              "width": 692,
+              "height": 84
+            }
+          }
+        ],
+        "sha256": "fe9598296a6dcc24e26c6785be456d47c3b4b2c924a2563aebf28b9903fb7059",
+        "defaults": {
+          "wallpaper": "MacTahoe",
+          "launcher_preset": 1
+        },
+        "icons": "MacTahoeLiquidKde-Icons-Readme-blue-Light",
+        "effect": "a4a55b2f39b8b7fa42903c622bcf18d113847b624874d88af15a38f81e67ea99"
+      },
+      "user_approved": true
+    },
+    "previews/readme-tahoe-dark-dock-clear-58edd6d52e38.webp": {
+      "sha256": "58edd6d52e3883ceebfb95b8d9c4c0dffa5d1abbbea523479c7cab424c5e0a45",
+      "source_sha256": "6fcf4116b6a91ce2a2c7fdff8664e2321372300cf32f21b2b06cb8bff5dd79e2",
+      "source_commit": "bcbe83a5182a9f30e49195e5d605c40ae46b3c85",
+      "replaces": "src/screenshots/previews/tahoe-dock-clear-dark-reference-9cdf564ebb32.webp",
+      "crop": [
+        1200,
+        1964,
+        2640,
+        2160
+      ],
+      "export_size": [
+        1440,
+        196
+      ],
+      "capture": {
+        "source_commit": "bcbe83a5182a9f30e49195e5d605c40ae46b3c85",
+        "edition": "tahoe",
+        "mode": "dark",
+        "case": "dock-clear",
+        "before": [
+          {
+            "id": "{804ea748-5af8-4b35-b356-756a05ba96a7}",
+            "caption": "",
+            "resourceClass": "plasmashell",
+            "type": 1,
+            "appletPopup": false,
+            "hidden": false,
+            "active": true,
+            "geometry": {
+              "x": 0,
+              "y": 0,
+              "width": 1920,
+              "height": 1080
+            }
+          },
+          {
+            "id": "{970d8913-87bd-454d-b043-090a2b16e5b5}",
+            "caption": "",
+            "resourceClass": "plasmashell",
+            "type": 2,
+            "appletPopup": false,
+            "hidden": false,
+            "active": false,
+            "geometry": {
+              "x": 0,
+              "y": 0,
+              "width": 1920,
+              "height": 32
+            }
+          },
+          {
+            "id": "{1ccbc9e7-0107-4582-9518-062887c4cdb0}",
+            "caption": "",
+            "resourceClass": "plasmashell",
+            "type": 2,
+            "appletPopup": false,
+            "hidden": false,
+            "active": false,
+            "geometry": {
+              "x": 614,
+              "y": 996,
+              "width": 692,
+              "height": 84
+            }
+          }
+        ],
+        "after": [
+          {
+            "id": "{804ea748-5af8-4b35-b356-756a05ba96a7}",
+            "caption": "",
+            "resourceClass": "plasmashell",
+            "type": 1,
+            "appletPopup": false,
+            "hidden": false,
+            "active": true,
+            "geometry": {
+              "x": 0,
+              "y": 0,
+              "width": 1920,
+              "height": 1080
+            }
+          },
+          {
+            "id": "{970d8913-87bd-454d-b043-090a2b16e5b5}",
+            "caption": "",
+            "resourceClass": "plasmashell",
+            "type": 2,
+            "appletPopup": false,
+            "hidden": false,
+            "active": false,
+            "geometry": {
+              "x": 0,
+              "y": 0,
+              "width": 1920,
+              "height": 32
+            }
+          },
+          {
+            "id": "{1ccbc9e7-0107-4582-9518-062887c4cdb0}",
+            "caption": "",
+            "resourceClass": "plasmashell",
+            "type": 2,
+            "appletPopup": false,
+            "hidden": false,
+            "active": false,
+            "geometry": {
+              "x": 614,
+              "y": 996,
+              "width": 692,
+              "height": 84
+            }
+          }
+        ],
+        "sha256": "6fcf4116b6a91ce2a2c7fdff8664e2321372300cf32f21b2b06cb8bff5dd79e2",
+        "defaults": {
+          "wallpaper": "MacTahoe",
+          "launcher_preset": 1
+        },
+        "icons": "MacTahoeLiquidKde-Icons-Readme-clear-Dark",
+        "effect": "a4a55b2f39b8b7fa42903c622bcf18d113847b624874d88af15a38f81e67ea99"
+      },
+      "user_approved": true
+    },
+    "previews/readme-tahoe-light-dock-clear-843c40a052a7.webp": {
+      "sha256": "843c40a052a78e6f9d33431a3f7a37758834185856ba8074edd98a8109d2a6ea",
+      "source_sha256": "0c2ad6ca3b47603c1252b2ca848f3e74648329baadf7293eaabd1e0ad9b15629",
+      "source_commit": "bcbe83a5182a9f30e49195e5d605c40ae46b3c85",
+      "replaces": "src/screenshots/previews/tahoe-dock-clear-light-reference-97f0fdd5e0a1.webp",
+      "crop": [
+        1200,
+        1964,
+        2640,
+        2160
+      ],
+      "export_size": [
+        1440,
+        196
+      ],
+      "capture": {
+        "source_commit": "bcbe83a5182a9f30e49195e5d605c40ae46b3c85",
+        "edition": "tahoe",
+        "mode": "light",
+        "case": "dock-clear",
+        "before": [
+          {
+            "id": "{804ea748-5af8-4b35-b356-756a05ba96a7}",
+            "caption": "",
+            "resourceClass": "plasmashell",
+            "type": 1,
+            "appletPopup": false,
+            "hidden": false,
+            "active": true,
+            "geometry": {
+              "x": 0,
+              "y": 0,
+              "width": 1920,
+              "height": 1080
+            }
+          },
+          {
+            "id": "{970d8913-87bd-454d-b043-090a2b16e5b5}",
+            "caption": "",
+            "resourceClass": "plasmashell",
+            "type": 2,
+            "appletPopup": false,
+            "hidden": false,
+            "active": false,
+            "geometry": {
+              "x": 0,
+              "y": 0,
+              "width": 1920,
+              "height": 32
+            }
+          },
+          {
+            "id": "{1ccbc9e7-0107-4582-9518-062887c4cdb0}",
+            "caption": "",
+            "resourceClass": "plasmashell",
+            "type": 2,
+            "appletPopup": false,
+            "hidden": false,
+            "active": false,
+            "geometry": {
+              "x": 614,
+              "y": 996,
+              "width": 692,
+              "height": 84
+            }
+          }
+        ],
+        "after": [
+          {
+            "id": "{804ea748-5af8-4b35-b356-756a05ba96a7}",
+            "caption": "",
+            "resourceClass": "plasmashell",
+            "type": 1,
+            "appletPopup": false,
+            "hidden": false,
+            "active": true,
+            "geometry": {
+              "x": 0,
+              "y": 0,
+              "width": 1920,
+              "height": 1080
+            }
+          },
+          {
+            "id": "{970d8913-87bd-454d-b043-090a2b16e5b5}",
+            "caption": "",
+            "resourceClass": "plasmashell",
+            "type": 2,
+            "appletPopup": false,
+            "hidden": false,
+            "active": false,
+            "geometry": {
+              "x": 0,
+              "y": 0,
+              "width": 1920,
+              "height": 32
+            }
+          },
+          {
+            "id": "{1ccbc9e7-0107-4582-9518-062887c4cdb0}",
+            "caption": "",
+            "resourceClass": "plasmashell",
+            "type": 2,
+            "appletPopup": false,
+            "hidden": false,
+            "active": false,
+            "geometry": {
+              "x": 614,
+              "y": 996,
+              "width": 692,
+              "height": 84
+            }
+          }
+        ],
+        "sha256": "0c2ad6ca3b47603c1252b2ca848f3e74648329baadf7293eaabd1e0ad9b15629",
+        "defaults": {
+          "wallpaper": "MacTahoe",
+          "launcher_preset": 1
+        },
+        "icons": "MacTahoeLiquidKde-Icons-Readme-clear-Light",
+        "effect": "a4a55b2f39b8b7fa42903c622bcf18d113847b624874d88af15a38f81e67ea99"
+      },
+      "user_approved": true
+    },
+    "previews/readme-tahoe-dark-dock-gray-e7baf051c7cb.webp": {
+      "sha256": "e7baf051c7cbf1f949ffeadcbf9331fecc359acf004f0c69216fc67ce5134e55",
+      "source_sha256": "c5aab5865c932e441f38f34090d84e031ea320c9ce78c8844ec78630594c9e9c",
+      "source_commit": "bcbe83a5182a9f30e49195e5d605c40ae46b3c85",
+      "replaces": "src/screenshots/previews/tahoe-dock-gray-dark-reference-85d9f5de1cae.webp",
+      "crop": [
+        1200,
+        1964,
+        2640,
+        2160
+      ],
+      "export_size": [
+        1440,
+        196
+      ],
+      "capture": {
+        "source_commit": "bcbe83a5182a9f30e49195e5d605c40ae46b3c85",
+        "edition": "tahoe",
+        "mode": "dark",
+        "case": "dock-gray",
+        "before": [
+          {
+            "id": "{804ea748-5af8-4b35-b356-756a05ba96a7}",
+            "caption": "",
+            "resourceClass": "plasmashell",
+            "type": 1,
+            "appletPopup": false,
+            "hidden": false,
+            "active": true,
+            "geometry": {
+              "x": 0,
+              "y": 0,
+              "width": 1920,
+              "height": 1080
+            }
+          },
+          {
+            "id": "{970d8913-87bd-454d-b043-090a2b16e5b5}",
+            "caption": "",
+            "resourceClass": "plasmashell",
+            "type": 2,
+            "appletPopup": false,
+            "hidden": false,
+            "active": false,
+            "geometry": {
+              "x": 0,
+              "y": 0,
+              "width": 1920,
+              "height": 32
+            }
+          },
+          {
+            "id": "{1ccbc9e7-0107-4582-9518-062887c4cdb0}",
+            "caption": "",
+            "resourceClass": "plasmashell",
+            "type": 2,
+            "appletPopup": false,
+            "hidden": false,
+            "active": false,
+            "geometry": {
+              "x": 614,
+              "y": 996,
+              "width": 692,
+              "height": 84
+            }
+          }
+        ],
+        "after": [
+          {
+            "id": "{804ea748-5af8-4b35-b356-756a05ba96a7}",
+            "caption": "",
+            "resourceClass": "plasmashell",
+            "type": 1,
+            "appletPopup": false,
+            "hidden": false,
+            "active": true,
+            "geometry": {
+              "x": 0,
+              "y": 0,
+              "width": 1920,
+              "height": 1080
+            }
+          },
+          {
+            "id": "{970d8913-87bd-454d-b043-090a2b16e5b5}",
+            "caption": "",
+            "resourceClass": "plasmashell",
+            "type": 2,
+            "appletPopup": false,
+            "hidden": false,
+            "active": false,
+            "geometry": {
+              "x": 0,
+              "y": 0,
+              "width": 1920,
+              "height": 32
+            }
+          },
+          {
+            "id": "{1ccbc9e7-0107-4582-9518-062887c4cdb0}",
+            "caption": "",
+            "resourceClass": "plasmashell",
+            "type": 2,
+            "appletPopup": false,
+            "hidden": false,
+            "active": false,
+            "geometry": {
+              "x": 614,
+              "y": 996,
+              "width": 692,
+              "height": 84
+            }
+          }
+        ],
+        "sha256": "c5aab5865c932e441f38f34090d84e031ea320c9ce78c8844ec78630594c9e9c",
+        "defaults": {
+          "wallpaper": "MacTahoe",
+          "launcher_preset": 1
+        },
+        "icons": "MacTahoeLiquidKde-Icons-Readme-gray-Dark",
+        "effect": "a4a55b2f39b8b7fa42903c622bcf18d113847b624874d88af15a38f81e67ea99"
+      },
+      "user_approved": true
+    },
+    "previews/readme-tahoe-light-dock-gray-18617e5c0df8.webp": {
+      "sha256": "18617e5c0df80fee1275f46706749e4da5b93695755ceee557045a63e7afce01",
+      "source_sha256": "e10948ff19ceb70a1abb746fd948a4c2d96994337d81393fa10c71031dd504c0",
+      "source_commit": "bcbe83a5182a9f30e49195e5d605c40ae46b3c85",
+      "replaces": "src/screenshots/previews/tahoe-dock-gray-light-reference-de7e0b3ebeae.webp",
+      "crop": [
+        1200,
+        1964,
+        2640,
+        2160
+      ],
+      "export_size": [
+        1440,
+        196
+      ],
+      "capture": {
+        "source_commit": "bcbe83a5182a9f30e49195e5d605c40ae46b3c85",
+        "edition": "tahoe",
+        "mode": "light",
+        "case": "dock-gray",
+        "before": [
+          {
+            "id": "{804ea748-5af8-4b35-b356-756a05ba96a7}",
+            "caption": "",
+            "resourceClass": "plasmashell",
+            "type": 1,
+            "appletPopup": false,
+            "hidden": false,
+            "active": true,
+            "geometry": {
+              "x": 0,
+              "y": 0,
+              "width": 1920,
+              "height": 1080
+            }
+          },
+          {
+            "id": "{970d8913-87bd-454d-b043-090a2b16e5b5}",
+            "caption": "",
+            "resourceClass": "plasmashell",
+            "type": 2,
+            "appletPopup": false,
+            "hidden": false,
+            "active": false,
+            "geometry": {
+              "x": 0,
+              "y": 0,
+              "width": 1920,
+              "height": 32
+            }
+          },
+          {
+            "id": "{1ccbc9e7-0107-4582-9518-062887c4cdb0}",
+            "caption": "",
+            "resourceClass": "plasmashell",
+            "type": 2,
+            "appletPopup": false,
+            "hidden": false,
+            "active": false,
+            "geometry": {
+              "x": 614,
+              "y": 996,
+              "width": 692,
+              "height": 84
+            }
+          }
+        ],
+        "after": [
+          {
+            "id": "{804ea748-5af8-4b35-b356-756a05ba96a7}",
+            "caption": "",
+            "resourceClass": "plasmashell",
+            "type": 1,
+            "appletPopup": false,
+            "hidden": false,
+            "active": true,
+            "geometry": {
+              "x": 0,
+              "y": 0,
+              "width": 1920,
+              "height": 1080
+            }
+          },
+          {
+            "id": "{970d8913-87bd-454d-b043-090a2b16e5b5}",
+            "caption": "",
+            "resourceClass": "plasmashell",
+            "type": 2,
+            "appletPopup": false,
+            "hidden": false,
+            "active": false,
+            "geometry": {
+              "x": 0,
+              "y": 0,
+              "width": 1920,
+              "height": 32
+            }
+          },
+          {
+            "id": "{1ccbc9e7-0107-4582-9518-062887c4cdb0}",
+            "caption": "",
+            "resourceClass": "plasmashell",
+            "type": 2,
+            "appletPopup": false,
+            "hidden": false,
+            "active": false,
+            "geometry": {
+              "x": 614,
+              "y": 996,
+              "width": 692,
+              "height": 84
+            }
+          }
+        ],
+        "sha256": "e10948ff19ceb70a1abb746fd948a4c2d96994337d81393fa10c71031dd504c0",
+        "defaults": {
+          "wallpaper": "MacTahoe",
+          "launcher_preset": 1
+        },
+        "icons": "MacTahoeLiquidKde-Icons-Readme-gray-Light",
+        "effect": "a4a55b2f39b8b7fa42903c622bcf18d113847b624874d88af15a38f81e67ea99"
+      },
+      "user_approved": true
+    },
+    "previews/readme-tahoe-dark-dock-green-84eab2e65cf2.webp": {
+      "sha256": "84eab2e65cf24aa5107c9d85845848d01e9c16d89437cd00393ae8653037c9af",
+      "source_sha256": "17c9ef1831d0d87db7574ddf9174c454bdcadf7e7376953f4bebded0f56a32d0",
+      "source_commit": "bcbe83a5182a9f30e49195e5d605c40ae46b3c85",
+      "replaces": "src/screenshots/previews/tahoe-dock-green-dark-reference-6f4857af9d43.webp",
+      "crop": [
+        1200,
+        1964,
+        2640,
+        2160
+      ],
+      "export_size": [
+        1440,
+        196
+      ],
+      "capture": {
+        "source_commit": "bcbe83a5182a9f30e49195e5d605c40ae46b3c85",
+        "edition": "tahoe",
+        "mode": "dark",
+        "case": "dock-green",
+        "before": [
+          {
+            "id": "{804ea748-5af8-4b35-b356-756a05ba96a7}",
+            "caption": "",
+            "resourceClass": "plasmashell",
+            "type": 1,
+            "appletPopup": false,
+            "hidden": false,
+            "active": true,
+            "geometry": {
+              "x": 0,
+              "y": 0,
+              "width": 1920,
+              "height": 1080
+            }
+          },
+          {
+            "id": "{970d8913-87bd-454d-b043-090a2b16e5b5}",
+            "caption": "",
+            "resourceClass": "plasmashell",
+            "type": 2,
+            "appletPopup": false,
+            "hidden": false,
+            "active": false,
+            "geometry": {
+              "x": 0,
+              "y": 0,
+              "width": 1920,
+              "height": 32
+            }
+          },
+          {
+            "id": "{1ccbc9e7-0107-4582-9518-062887c4cdb0}",
+            "caption": "",
+            "resourceClass": "plasmashell",
+            "type": 2,
+            "appletPopup": false,
+            "hidden": false,
+            "active": false,
+            "geometry": {
+              "x": 614,
+              "y": 996,
+              "width": 692,
+              "height": 84
+            }
+          }
+        ],
+        "after": [
+          {
+            "id": "{804ea748-5af8-4b35-b356-756a05ba96a7}",
+            "caption": "",
+            "resourceClass": "plasmashell",
+            "type": 1,
+            "appletPopup": false,
+            "hidden": false,
+            "active": true,
+            "geometry": {
+              "x": 0,
+              "y": 0,
+              "width": 1920,
+              "height": 1080
+            }
+          },
+          {
+            "id": "{970d8913-87bd-454d-b043-090a2b16e5b5}",
+            "caption": "",
+            "resourceClass": "plasmashell",
+            "type": 2,
+            "appletPopup": false,
+            "hidden": false,
+            "active": false,
+            "geometry": {
+              "x": 0,
+              "y": 0,
+              "width": 1920,
+              "height": 32
+            }
+          },
+          {
+            "id": "{1ccbc9e7-0107-4582-9518-062887c4cdb0}",
+            "caption": "",
+            "resourceClass": "plasmashell",
+            "type": 2,
+            "appletPopup": false,
+            "hidden": false,
+            "active": false,
+            "geometry": {
+              "x": 614,
+              "y": 996,
+              "width": 692,
+              "height": 84
+            }
+          }
+        ],
+        "sha256": "17c9ef1831d0d87db7574ddf9174c454bdcadf7e7376953f4bebded0f56a32d0",
+        "defaults": {
+          "wallpaper": "MacTahoe",
+          "launcher_preset": 1
+        },
+        "icons": "MacTahoeLiquidKde-Icons-Readme-green-Dark",
+        "effect": "a4a55b2f39b8b7fa42903c622bcf18d113847b624874d88af15a38f81e67ea99"
+      },
+      "user_approved": true
+    },
+    "previews/readme-tahoe-light-dock-green-ac9611249165.webp": {
+      "sha256": "ac9611249165684212941e2d1faf29af15a562ee93967d5b49087c5761e527ed",
+      "source_sha256": "810ef1137b0f573cac7c9043b8a58f964b2dc9ca0305a7e490075a07beb8e16f",
+      "source_commit": "bcbe83a5182a9f30e49195e5d605c40ae46b3c85",
+      "replaces": "src/screenshots/previews/tahoe-dock-green-light-reference-36f3c1ba2de1.webp",
+      "crop": [
+        1200,
+        1964,
+        2640,
+        2160
+      ],
+      "export_size": [
+        1440,
+        196
+      ],
+      "capture": {
+        "source_commit": "bcbe83a5182a9f30e49195e5d605c40ae46b3c85",
+        "edition": "tahoe",
+        "mode": "light",
+        "case": "dock-green",
+        "before": [
+          {
+            "id": "{804ea748-5af8-4b35-b356-756a05ba96a7}",
+            "caption": "",
+            "resourceClass": "plasmashell",
+            "type": 1,
+            "appletPopup": false,
+            "hidden": false,
+            "active": true,
+            "geometry": {
+              "x": 0,
+              "y": 0,
+              "width": 1920,
+              "height": 1080
+            }
+          },
+          {
+            "id": "{970d8913-87bd-454d-b043-090a2b16e5b5}",
+            "caption": "",
+            "resourceClass": "plasmashell",
+            "type": 2,
+            "appletPopup": false,
+            "hidden": false,
+            "active": false,
+            "geometry": {
+              "x": 0,
+              "y": 0,
+              "width": 1920,
+              "height": 32
+            }
+          },
+          {
+            "id": "{1ccbc9e7-0107-4582-9518-062887c4cdb0}",
+            "caption": "",
+            "resourceClass": "plasmashell",
+            "type": 2,
+            "appletPopup": false,
+            "hidden": false,
+            "active": false,
+            "geometry": {
+              "x": 614,
+              "y": 996,
+              "width": 692,
+              "height": 84
+            }
+          }
+        ],
+        "after": [
+          {
+            "id": "{804ea748-5af8-4b35-b356-756a05ba96a7}",
+            "caption": "",
+            "resourceClass": "plasmashell",
+            "type": 1,
+            "appletPopup": false,
+            "hidden": false,
+            "active": true,
+            "geometry": {
+              "x": 0,
+              "y": 0,
+              "width": 1920,
+              "height": 1080
+            }
+          },
+          {
+            "id": "{970d8913-87bd-454d-b043-090a2b16e5b5}",
+            "caption": "",
+            "resourceClass": "plasmashell",
+            "type": 2,
+            "appletPopup": false,
+            "hidden": false,
+            "active": false,
+            "geometry": {
+              "x": 0,
+              "y": 0,
+              "width": 1920,
+              "height": 32
+            }
+          },
+          {
+            "id": "{1ccbc9e7-0107-4582-9518-062887c4cdb0}",
+            "caption": "",
+            "resourceClass": "plasmashell",
+            "type": 2,
+            "appletPopup": false,
+            "hidden": false,
+            "active": false,
+            "geometry": {
+              "x": 614,
+              "y": 996,
+              "width": 692,
+              "height": 84
+            }
+          }
+        ],
+        "sha256": "810ef1137b0f573cac7c9043b8a58f964b2dc9ca0305a7e490075a07beb8e16f",
+        "defaults": {
+          "wallpaper": "MacTahoe",
+          "launcher_preset": 1
+        },
+        "icons": "MacTahoeLiquidKde-Icons-Readme-green-Light",
+        "effect": "a4a55b2f39b8b7fa42903c622bcf18d113847b624874d88af15a38f81e67ea99"
+      },
+      "user_approved": true
+    },
+    "previews/readme-tahoe-dark-dock-orange-5079b478c649.webp": {
+      "sha256": "5079b478c6492e702f0f32d4868c0a6afc510d466ea32e3fa6b25317e64e5e9e",
+      "source_sha256": "88645390c3479acbff222245c5620c74833ec483da3525116fe23e9acc328cda",
+      "source_commit": "bcbe83a5182a9f30e49195e5d605c40ae46b3c85",
+      "replaces": "src/screenshots/previews/tahoe-dock-orange-dark-reference-70fab1e16209.webp",
+      "crop": [
+        1200,
+        1964,
+        2640,
+        2160
+      ],
+      "export_size": [
+        1440,
+        196
+      ],
+      "capture": {
+        "source_commit": "bcbe83a5182a9f30e49195e5d605c40ae46b3c85",
+        "edition": "tahoe",
+        "mode": "dark",
+        "case": "dock-orange",
+        "before": [
+          {
+            "id": "{804ea748-5af8-4b35-b356-756a05ba96a7}",
+            "caption": "",
+            "resourceClass": "plasmashell",
+            "type": 1,
+            "appletPopup": false,
+            "hidden": false,
+            "active": true,
+            "geometry": {
+              "x": 0,
+              "y": 0,
+              "width": 1920,
+              "height": 1080
+            }
+          },
+          {
+            "id": "{970d8913-87bd-454d-b043-090a2b16e5b5}",
+            "caption": "",
+            "resourceClass": "plasmashell",
+            "type": 2,
+            "appletPopup": false,
+            "hidden": false,
+            "active": false,
+            "geometry": {
+              "x": 0,
+              "y": 0,
+              "width": 1920,
+              "height": 32
+            }
+          },
+          {
+            "id": "{1ccbc9e7-0107-4582-9518-062887c4cdb0}",
+            "caption": "",
+            "resourceClass": "plasmashell",
+            "type": 2,
+            "appletPopup": false,
+            "hidden": false,
+            "active": false,
+            "geometry": {
+              "x": 614,
+              "y": 996,
+              "width": 692,
+              "height": 84
+            }
+          }
+        ],
+        "after": [
+          {
+            "id": "{804ea748-5af8-4b35-b356-756a05ba96a7}",
+            "caption": "",
+            "resourceClass": "plasmashell",
+            "type": 1,
+            "appletPopup": false,
+            "hidden": false,
+            "active": true,
+            "geometry": {
+              "x": 0,
+              "y": 0,
+              "width": 1920,
+              "height": 1080
+            }
+          },
+          {
+            "id": "{970d8913-87bd-454d-b043-090a2b16e5b5}",
+            "caption": "",
+            "resourceClass": "plasmashell",
+            "type": 2,
+            "appletPopup": false,
+            "hidden": false,
+            "active": false,
+            "geometry": {
+              "x": 0,
+              "y": 0,
+              "width": 1920,
+              "height": 32
+            }
+          },
+          {
+            "id": "{1ccbc9e7-0107-4582-9518-062887c4cdb0}",
+            "caption": "",
+            "resourceClass": "plasmashell",
+            "type": 2,
+            "appletPopup": false,
+            "hidden": false,
+            "active": false,
+            "geometry": {
+              "x": 614,
+              "y": 996,
+              "width": 692,
+              "height": 84
+            }
+          }
+        ],
+        "sha256": "88645390c3479acbff222245c5620c74833ec483da3525116fe23e9acc328cda",
+        "defaults": {
+          "wallpaper": "MacTahoe",
+          "launcher_preset": 1
+        },
+        "icons": "MacTahoeLiquidKde-Icons-Readme-orange-Dark",
+        "effect": "a4a55b2f39b8b7fa42903c622bcf18d113847b624874d88af15a38f81e67ea99"
+      },
+      "user_approved": true
+    },
+    "previews/readme-tahoe-light-dock-orange-18c4663ce547.webp": {
+      "sha256": "18c4663ce5476ff8f8f3ab07bb907023cd48cc11140f0d4bdb02ff10cf583990",
+      "source_sha256": "e9a589c35468fbf6d2ca239cece4f23c350cc6c78a33227e837f979c1d89d26a",
+      "source_commit": "bcbe83a5182a9f30e49195e5d605c40ae46b3c85",
+      "replaces": "src/screenshots/previews/tahoe-dock-orange-light-reference-25bcc0e95908.webp",
+      "crop": [
+        1200,
+        1964,
+        2640,
+        2160
+      ],
+      "export_size": [
+        1440,
+        196
+      ],
+      "capture": {
+        "source_commit": "bcbe83a5182a9f30e49195e5d605c40ae46b3c85",
+        "edition": "tahoe",
+        "mode": "light",
+        "case": "dock-orange",
+        "before": [
+          {
+            "id": "{804ea748-5af8-4b35-b356-756a05ba96a7}",
+            "caption": "",
+            "resourceClass": "plasmashell",
+            "type": 1,
+            "appletPopup": false,
+            "hidden": false,
+            "active": true,
+            "geometry": {
+              "x": 0,
+              "y": 0,
+              "width": 1920,
+              "height": 1080
+            }
+          },
+          {
+            "id": "{970d8913-87bd-454d-b043-090a2b16e5b5}",
+            "caption": "",
+            "resourceClass": "plasmashell",
+            "type": 2,
+            "appletPopup": false,
+            "hidden": false,
+            "active": false,
+            "geometry": {
+              "x": 0,
+              "y": 0,
+              "width": 1920,
+              "height": 32
+            }
+          },
+          {
+            "id": "{1ccbc9e7-0107-4582-9518-062887c4cdb0}",
+            "caption": "",
+            "resourceClass": "plasmashell",
+            "type": 2,
+            "appletPopup": false,
+            "hidden": false,
+            "active": false,
+            "geometry": {
+              "x": 614,
+              "y": 996,
+              "width": 692,
+              "height": 84
+            }
+          }
+        ],
+        "after": [
+          {
+            "id": "{804ea748-5af8-4b35-b356-756a05ba96a7}",
+            "caption": "",
+            "resourceClass": "plasmashell",
+            "type": 1,
+            "appletPopup": false,
+            "hidden": false,
+            "active": true,
+            "geometry": {
+              "x": 0,
+              "y": 0,
+              "width": 1920,
+              "height": 1080
+            }
+          },
+          {
+            "id": "{970d8913-87bd-454d-b043-090a2b16e5b5}",
+            "caption": "",
+            "resourceClass": "plasmashell",
+            "type": 2,
+            "appletPopup": false,
+            "hidden": false,
+            "active": false,
+            "geometry": {
+              "x": 0,
+              "y": 0,
+              "width": 1920,
+              "height": 32
+            }
+          },
+          {
+            "id": "{1ccbc9e7-0107-4582-9518-062887c4cdb0}",
+            "caption": "",
+            "resourceClass": "plasmashell",
+            "type": 2,
+            "appletPopup": false,
+            "hidden": false,
+            "active": false,
+            "geometry": {
+              "x": 614,
+              "y": 996,
+              "width": 692,
+              "height": 84
+            }
+          }
+        ],
+        "sha256": "e9a589c35468fbf6d2ca239cece4f23c350cc6c78a33227e837f979c1d89d26a",
+        "defaults": {
+          "wallpaper": "MacTahoe",
+          "launcher_preset": 1
+        },
+        "icons": "MacTahoeLiquidKde-Icons-Readme-orange-Light",
+        "effect": "a4a55b2f39b8b7fa42903c622bcf18d113847b624874d88af15a38f81e67ea99"
+      },
+      "user_approved": true
+    },
+    "previews/readme-tahoe-dark-dock-pink-ba6941817529.webp": {
+      "sha256": "ba69418175298da90ff21fe71ff3e1652dbc51807148ea05389186345ca26601",
+      "source_sha256": "cece9b572913ddfcc21430b770a22854e2e6a257513352b2c9f2998bdf709ae9",
+      "source_commit": "bcbe83a5182a9f30e49195e5d605c40ae46b3c85",
+      "replaces": "src/screenshots/previews/tahoe-dock-pink-dark-reference-37badc9241a8.webp",
+      "crop": [
+        1200,
+        1964,
+        2640,
+        2160
+      ],
+      "export_size": [
+        1440,
+        196
+      ],
+      "capture": {
+        "source_commit": "bcbe83a5182a9f30e49195e5d605c40ae46b3c85",
+        "edition": "tahoe",
+        "mode": "dark",
+        "case": "dock-pink",
+        "before": [
+          {
+            "id": "{804ea748-5af8-4b35-b356-756a05ba96a7}",
+            "caption": "",
+            "resourceClass": "plasmashell",
+            "type": 1,
+            "appletPopup": false,
+            "hidden": false,
+            "active": true,
+            "geometry": {
+              "x": 0,
+              "y": 0,
+              "width": 1920,
+              "height": 1080
+            }
+          },
+          {
+            "id": "{970d8913-87bd-454d-b043-090a2b16e5b5}",
+            "caption": "",
+            "resourceClass": "plasmashell",
+            "type": 2,
+            "appletPopup": false,
+            "hidden": false,
+            "active": false,
+            "geometry": {
+              "x": 0,
+              "y": 0,
+              "width": 1920,
+              "height": 32
+            }
+          },
+          {
+            "id": "{1ccbc9e7-0107-4582-9518-062887c4cdb0}",
+            "caption": "",
+            "resourceClass": "plasmashell",
+            "type": 2,
+            "appletPopup": false,
+            "hidden": false,
+            "active": false,
+            "geometry": {
+              "x": 614,
+              "y": 996,
+              "width": 692,
+              "height": 84
+            }
+          }
+        ],
+        "after": [
+          {
+            "id": "{804ea748-5af8-4b35-b356-756a05ba96a7}",
+            "caption": "",
+            "resourceClass": "plasmashell",
+            "type": 1,
+            "appletPopup": false,
+            "hidden": false,
+            "active": true,
+            "geometry": {
+              "x": 0,
+              "y": 0,
+              "width": 1920,
+              "height": 1080
+            }
+          },
+          {
+            "id": "{970d8913-87bd-454d-b043-090a2b16e5b5}",
+            "caption": "",
+            "resourceClass": "plasmashell",
+            "type": 2,
+            "appletPopup": false,
+            "hidden": false,
+            "active": false,
+            "geometry": {
+              "x": 0,
+              "y": 0,
+              "width": 1920,
+              "height": 32
+            }
+          },
+          {
+            "id": "{1ccbc9e7-0107-4582-9518-062887c4cdb0}",
+            "caption": "",
+            "resourceClass": "plasmashell",
+            "type": 2,
+            "appletPopup": false,
+            "hidden": false,
+            "active": false,
+            "geometry": {
+              "x": 614,
+              "y": 996,
+              "width": 692,
+              "height": 84
+            }
+          }
+        ],
+        "sha256": "cece9b572913ddfcc21430b770a22854e2e6a257513352b2c9f2998bdf709ae9",
+        "defaults": {
+          "wallpaper": "MacTahoe",
+          "launcher_preset": 1
+        },
+        "icons": "MacTahoeLiquidKde-Icons-Readme-pink-Dark",
+        "effect": "a4a55b2f39b8b7fa42903c622bcf18d113847b624874d88af15a38f81e67ea99"
+      },
+      "user_approved": true
+    },
+    "previews/readme-tahoe-light-dock-pink-c0b0ba00ddeb.webp": {
+      "sha256": "c0b0ba00ddebb37a12c5efbdb78520499b8ba9416e8a8c752866e94a91dddd41",
+      "source_sha256": "1d21bc2a95bab6482b4f6af192aa4de9b5bfa9a8840e7e803b444fb290f37bda",
+      "source_commit": "bcbe83a5182a9f30e49195e5d605c40ae46b3c85",
+      "replaces": "src/screenshots/previews/tahoe-dock-pink-light-reference-080e7323ffb1.webp",
+      "crop": [
+        1200,
+        1964,
+        2640,
+        2160
+      ],
+      "export_size": [
+        1440,
+        196
+      ],
+      "capture": {
+        "source_commit": "bcbe83a5182a9f30e49195e5d605c40ae46b3c85",
+        "edition": "tahoe",
+        "mode": "light",
+        "case": "dock-pink",
+        "before": [
+          {
+            "id": "{804ea748-5af8-4b35-b356-756a05ba96a7}",
+            "caption": "",
+            "resourceClass": "plasmashell",
+            "type": 1,
+            "appletPopup": false,
+            "hidden": false,
+            "active": true,
+            "geometry": {
+              "x": 0,
+              "y": 0,
+              "width": 1920,
+              "height": 1080
+            }
+          },
+          {
+            "id": "{970d8913-87bd-454d-b043-090a2b16e5b5}",
+            "caption": "",
+            "resourceClass": "plasmashell",
+            "type": 2,
+            "appletPopup": false,
+            "hidden": false,
+            "active": false,
+            "geometry": {
+              "x": 0,
+              "y": 0,
+              "width": 1920,
+              "height": 32
+            }
+          },
+          {
+            "id": "{1ccbc9e7-0107-4582-9518-062887c4cdb0}",
+            "caption": "",
+            "resourceClass": "plasmashell",
+            "type": 2,
+            "appletPopup": false,
+            "hidden": false,
+            "active": false,
+            "geometry": {
+              "x": 614,
+              "y": 996,
+              "width": 692,
+              "height": 84
+            }
+          }
+        ],
+        "after": [
+          {
+            "id": "{804ea748-5af8-4b35-b356-756a05ba96a7}",
+            "caption": "",
+            "resourceClass": "plasmashell",
+            "type": 1,
+            "appletPopup": false,
+            "hidden": false,
+            "active": true,
+            "geometry": {
+              "x": 0,
+              "y": 0,
+              "width": 1920,
+              "height": 1080
+            }
+          },
+          {
+            "id": "{970d8913-87bd-454d-b043-090a2b16e5b5}",
+            "caption": "",
+            "resourceClass": "plasmashell",
+            "type": 2,
+            "appletPopup": false,
+            "hidden": false,
+            "active": false,
+            "geometry": {
+              "x": 0,
+              "y": 0,
+              "width": 1920,
+              "height": 32
+            }
+          },
+          {
+            "id": "{1ccbc9e7-0107-4582-9518-062887c4cdb0}",
+            "caption": "",
+            "resourceClass": "plasmashell",
+            "type": 2,
+            "appletPopup": false,
+            "hidden": false,
+            "active": false,
+            "geometry": {
+              "x": 614,
+              "y": 996,
+              "width": 692,
+              "height": 84
+            }
+          }
+        ],
+        "sha256": "1d21bc2a95bab6482b4f6af192aa4de9b5bfa9a8840e7e803b444fb290f37bda",
+        "defaults": {
+          "wallpaper": "MacTahoe",
+          "launcher_preset": 1
+        },
+        "icons": "MacTahoeLiquidKde-Icons-Readme-pink-Light",
+        "effect": "a4a55b2f39b8b7fa42903c622bcf18d113847b624874d88af15a38f81e67ea99"
+      },
+      "user_approved": true
+    },
+    "previews/readme-tahoe-dark-dock-purple-090970372f80.webp": {
+      "sha256": "090970372f80e2b479c1eb028e365cdef9c6d8c697d00d4b369a7c26f3622e1d",
+      "source_sha256": "1b6de360a0b7999f84154316de42b77c780cd138c7d8b35d019852ee9c782c61",
+      "source_commit": "bcbe83a5182a9f30e49195e5d605c40ae46b3c85",
+      "replaces": "src/screenshots/previews/tahoe-dock-purple-dark-reference-a9513c3b6673.webp",
+      "crop": [
+        1200,
+        1964,
+        2640,
+        2160
+      ],
+      "export_size": [
+        1440,
+        196
+      ],
+      "capture": {
+        "source_commit": "bcbe83a5182a9f30e49195e5d605c40ae46b3c85",
+        "edition": "tahoe",
+        "mode": "dark",
+        "case": "dock-purple",
+        "before": [
+          {
+            "id": "{804ea748-5af8-4b35-b356-756a05ba96a7}",
+            "caption": "",
+            "resourceClass": "plasmashell",
+            "type": 1,
+            "appletPopup": false,
+            "hidden": false,
+            "active": true,
+            "geometry": {
+              "x": 0,
+              "y": 0,
+              "width": 1920,
+              "height": 1080
+            }
+          },
+          {
+            "id": "{970d8913-87bd-454d-b043-090a2b16e5b5}",
+            "caption": "",
+            "resourceClass": "plasmashell",
+            "type": 2,
+            "appletPopup": false,
+            "hidden": false,
+            "active": false,
+            "geometry": {
+              "x": 0,
+              "y": 0,
+              "width": 1920,
+              "height": 32
+            }
+          },
+          {
+            "id": "{1ccbc9e7-0107-4582-9518-062887c4cdb0}",
+            "caption": "",
+            "resourceClass": "plasmashell",
+            "type": 2,
+            "appletPopup": false,
+            "hidden": false,
+            "active": false,
+            "geometry": {
+              "x": 614,
+              "y": 996,
+              "width": 692,
+              "height": 84
+            }
+          }
+        ],
+        "after": [
+          {
+            "id": "{804ea748-5af8-4b35-b356-756a05ba96a7}",
+            "caption": "",
+            "resourceClass": "plasmashell",
+            "type": 1,
+            "appletPopup": false,
+            "hidden": false,
+            "active": true,
+            "geometry": {
+              "x": 0,
+              "y": 0,
+              "width": 1920,
+              "height": 1080
+            }
+          },
+          {
+            "id": "{970d8913-87bd-454d-b043-090a2b16e5b5}",
+            "caption": "",
+            "resourceClass": "plasmashell",
+            "type": 2,
+            "appletPopup": false,
+            "hidden": false,
+            "active": false,
+            "geometry": {
+              "x": 0,
+              "y": 0,
+              "width": 1920,
+              "height": 32
+            }
+          },
+          {
+            "id": "{1ccbc9e7-0107-4582-9518-062887c4cdb0}",
+            "caption": "",
+            "resourceClass": "plasmashell",
+            "type": 2,
+            "appletPopup": false,
+            "hidden": false,
+            "active": false,
+            "geometry": {
+              "x": 614,
+              "y": 996,
+              "width": 692,
+              "height": 84
+            }
+          }
+        ],
+        "sha256": "1b6de360a0b7999f84154316de42b77c780cd138c7d8b35d019852ee9c782c61",
+        "defaults": {
+          "wallpaper": "MacTahoe",
+          "launcher_preset": 1
+        },
+        "icons": "MacTahoeLiquidKde-Icons-Readme-purple-Dark",
+        "effect": "a4a55b2f39b8b7fa42903c622bcf18d113847b624874d88af15a38f81e67ea99"
+      },
+      "user_approved": true
+    },
+    "previews/readme-tahoe-light-dock-purple-b8d6d4a59d58.webp": {
+      "sha256": "b8d6d4a59d58c71db5bac440221ec7e2e2cb533746ca346d07a4e515e54191ea",
+      "source_sha256": "a984f11683c29c9f0a7e7b5affc54fed5f1cf101ffd9acf615a9eef07d6faacf",
+      "source_commit": "bcbe83a5182a9f30e49195e5d605c40ae46b3c85",
+      "replaces": "src/screenshots/previews/tahoe-dock-purple-light-reference-ce34696e8a65.webp",
+      "crop": [
+        1200,
+        1964,
+        2640,
+        2160
+      ],
+      "export_size": [
+        1440,
+        196
+      ],
+      "capture": {
+        "source_commit": "bcbe83a5182a9f30e49195e5d605c40ae46b3c85",
+        "edition": "tahoe",
+        "mode": "light",
+        "case": "dock-purple",
+        "before": [
+          {
+            "id": "{804ea748-5af8-4b35-b356-756a05ba96a7}",
+            "caption": "",
+            "resourceClass": "plasmashell",
+            "type": 1,
+            "appletPopup": false,
+            "hidden": false,
+            "active": true,
+            "geometry": {
+              "x": 0,
+              "y": 0,
+              "width": 1920,
+              "height": 1080
+            }
+          },
+          {
+            "id": "{970d8913-87bd-454d-b043-090a2b16e5b5}",
+            "caption": "",
+            "resourceClass": "plasmashell",
+            "type": 2,
+            "appletPopup": false,
+            "hidden": false,
+            "active": false,
+            "geometry": {
+              "x": 0,
+              "y": 0,
+              "width": 1920,
+              "height": 32
+            }
+          },
+          {
+            "id": "{1ccbc9e7-0107-4582-9518-062887c4cdb0}",
+            "caption": "",
+            "resourceClass": "plasmashell",
+            "type": 2,
+            "appletPopup": false,
+            "hidden": false,
+            "active": false,
+            "geometry": {
+              "x": 614,
+              "y": 996,
+              "width": 692,
+              "height": 84
+            }
+          }
+        ],
+        "after": [
+          {
+            "id": "{804ea748-5af8-4b35-b356-756a05ba96a7}",
+            "caption": "",
+            "resourceClass": "plasmashell",
+            "type": 1,
+            "appletPopup": false,
+            "hidden": false,
+            "active": true,
+            "geometry": {
+              "x": 0,
+              "y": 0,
+              "width": 1920,
+              "height": 1080
+            }
+          },
+          {
+            "id": "{970d8913-87bd-454d-b043-090a2b16e5b5}",
+            "caption": "",
+            "resourceClass": "plasmashell",
+            "type": 2,
+            "appletPopup": false,
+            "hidden": false,
+            "active": false,
+            "geometry": {
+              "x": 0,
+              "y": 0,
+              "width": 1920,
+              "height": 32
+            }
+          },
+          {
+            "id": "{1ccbc9e7-0107-4582-9518-062887c4cdb0}",
+            "caption": "",
+            "resourceClass": "plasmashell",
+            "type": 2,
+            "appletPopup": false,
+            "hidden": false,
+            "active": false,
+            "geometry": {
+              "x": 614,
+              "y": 996,
+              "width": 692,
+              "height": 84
+            }
+          }
+        ],
+        "sha256": "a984f11683c29c9f0a7e7b5affc54fed5f1cf101ffd9acf615a9eef07d6faacf",
+        "defaults": {
+          "wallpaper": "MacTahoe",
+          "launcher_preset": 1
+        },
+        "icons": "MacTahoeLiquidKde-Icons-Readme-purple-Light",
+        "effect": "a4a55b2f39b8b7fa42903c622bcf18d113847b624874d88af15a38f81e67ea99"
+      },
+      "user_approved": true
+    },
+    "previews/readme-tahoe-dark-dock-red-379c09615f96.webp": {
+      "sha256": "379c09615f96139f42bb3e353d33968466fcdca719f192f83f41a9d6ac23e983",
+      "source_sha256": "8cda8ca9e0175c905915977780edea85fec40ab4dad055b10a8083f426c3e5ac",
+      "source_commit": "bcbe83a5182a9f30e49195e5d605c40ae46b3c85",
+      "replaces": "src/screenshots/previews/tahoe-dock-red-dark-reference-2799aac75e5c.webp",
+      "crop": [
+        1200,
+        1964,
+        2640,
+        2160
+      ],
+      "export_size": [
+        1440,
+        196
+      ],
+      "capture": {
+        "source_commit": "bcbe83a5182a9f30e49195e5d605c40ae46b3c85",
+        "edition": "tahoe",
+        "mode": "dark",
+        "case": "dock-red",
+        "before": [
+          {
+            "id": "{804ea748-5af8-4b35-b356-756a05ba96a7}",
+            "caption": "",
+            "resourceClass": "plasmashell",
+            "type": 1,
+            "appletPopup": false,
+            "hidden": false,
+            "active": true,
+            "geometry": {
+              "x": 0,
+              "y": 0,
+              "width": 1920,
+              "height": 1080
+            }
+          },
+          {
+            "id": "{970d8913-87bd-454d-b043-090a2b16e5b5}",
+            "caption": "",
+            "resourceClass": "plasmashell",
+            "type": 2,
+            "appletPopup": false,
+            "hidden": false,
+            "active": false,
+            "geometry": {
+              "x": 0,
+              "y": 0,
+              "width": 1920,
+              "height": 32
+            }
+          },
+          {
+            "id": "{1ccbc9e7-0107-4582-9518-062887c4cdb0}",
+            "caption": "",
+            "resourceClass": "plasmashell",
+            "type": 2,
+            "appletPopup": false,
+            "hidden": false,
+            "active": false,
+            "geometry": {
+              "x": 614,
+              "y": 996,
+              "width": 692,
+              "height": 84
+            }
+          }
+        ],
+        "after": [
+          {
+            "id": "{804ea748-5af8-4b35-b356-756a05ba96a7}",
+            "caption": "",
+            "resourceClass": "plasmashell",
+            "type": 1,
+            "appletPopup": false,
+            "hidden": false,
+            "active": true,
+            "geometry": {
+              "x": 0,
+              "y": 0,
+              "width": 1920,
+              "height": 1080
+            }
+          },
+          {
+            "id": "{970d8913-87bd-454d-b043-090a2b16e5b5}",
+            "caption": "",
+            "resourceClass": "plasmashell",
+            "type": 2,
+            "appletPopup": false,
+            "hidden": false,
+            "active": false,
+            "geometry": {
+              "x": 0,
+              "y": 0,
+              "width": 1920,
+              "height": 32
+            }
+          },
+          {
+            "id": "{1ccbc9e7-0107-4582-9518-062887c4cdb0}",
+            "caption": "",
+            "resourceClass": "plasmashell",
+            "type": 2,
+            "appletPopup": false,
+            "hidden": false,
+            "active": false,
+            "geometry": {
+              "x": 614,
+              "y": 996,
+              "width": 692,
+              "height": 84
+            }
+          }
+        ],
+        "sha256": "8cda8ca9e0175c905915977780edea85fec40ab4dad055b10a8083f426c3e5ac",
+        "defaults": {
+          "wallpaper": "MacTahoe",
+          "launcher_preset": 1
+        },
+        "icons": "MacTahoeLiquidKde-Icons-Readme-red-Dark",
+        "effect": "a4a55b2f39b8b7fa42903c622bcf18d113847b624874d88af15a38f81e67ea99"
+      },
+      "user_approved": true
+    },
+    "previews/readme-tahoe-light-dock-red-19adb9d798fd.webp": {
+      "sha256": "19adb9d798fd178221e6ce275b3aeda3d62f6ceb88a88f9bd882620530900873",
+      "source_sha256": "ef55907e69c4fa2d03cffe7f49b5e2c0bd3bdae23196ecf61d89376f291e0dac",
+      "source_commit": "bcbe83a5182a9f30e49195e5d605c40ae46b3c85",
+      "replaces": "src/screenshots/previews/tahoe-dock-red-light-reference-a654bc25c74f.webp",
+      "crop": [
+        1200,
+        1964,
+        2640,
+        2160
+      ],
+      "export_size": [
+        1440,
+        196
+      ],
+      "capture": {
+        "source_commit": "bcbe83a5182a9f30e49195e5d605c40ae46b3c85",
+        "edition": "tahoe",
+        "mode": "light",
+        "case": "dock-red",
+        "before": [
+          {
+            "id": "{804ea748-5af8-4b35-b356-756a05ba96a7}",
+            "caption": "",
+            "resourceClass": "plasmashell",
+            "type": 1,
+            "appletPopup": false,
+            "hidden": false,
+            "active": true,
+            "geometry": {
+              "x": 0,
+              "y": 0,
+              "width": 1920,
+              "height": 1080
+            }
+          },
+          {
+            "id": "{970d8913-87bd-454d-b043-090a2b16e5b5}",
+            "caption": "",
+            "resourceClass": "plasmashell",
+            "type": 2,
+            "appletPopup": false,
+            "hidden": false,
+            "active": false,
+            "geometry": {
+              "x": 0,
+              "y": 0,
+              "width": 1920,
+              "height": 32
+            }
+          },
+          {
+            "id": "{1ccbc9e7-0107-4582-9518-062887c4cdb0}",
+            "caption": "",
+            "resourceClass": "plasmashell",
+            "type": 2,
+            "appletPopup": false,
+            "hidden": false,
+            "active": false,
+            "geometry": {
+              "x": 614,
+              "y": 996,
+              "width": 692,
+              "height": 84
+            }
+          }
+        ],
+        "after": [
+          {
+            "id": "{804ea748-5af8-4b35-b356-756a05ba96a7}",
+            "caption": "",
+            "resourceClass": "plasmashell",
+            "type": 1,
+            "appletPopup": false,
+            "hidden": false,
+            "active": true,
+            "geometry": {
+              "x": 0,
+              "y": 0,
+              "width": 1920,
+              "height": 1080
+            }
+          },
+          {
+            "id": "{970d8913-87bd-454d-b043-090a2b16e5b5}",
+            "caption": "",
+            "resourceClass": "plasmashell",
+            "type": 2,
+            "appletPopup": false,
+            "hidden": false,
+            "active": false,
+            "geometry": {
+              "x": 0,
+              "y": 0,
+              "width": 1920,
+              "height": 32
+            }
+          },
+          {
+            "id": "{1ccbc9e7-0107-4582-9518-062887c4cdb0}",
+            "caption": "",
+            "resourceClass": "plasmashell",
+            "type": 2,
+            "appletPopup": false,
+            "hidden": false,
+            "active": false,
+            "geometry": {
+              "x": 614,
+              "y": 996,
+              "width": 692,
+              "height": 84
+            }
+          }
+        ],
+        "sha256": "ef55907e69c4fa2d03cffe7f49b5e2c0bd3bdae23196ecf61d89376f291e0dac",
+        "defaults": {
+          "wallpaper": "MacTahoe",
+          "launcher_preset": 1
+        },
+        "icons": "MacTahoeLiquidKde-Icons-Readme-red-Light",
+        "effect": "a4a55b2f39b8b7fa42903c622bcf18d113847b624874d88af15a38f81e67ea99"
+      },
+      "user_approved": true
+    },
+    "previews/readme-tahoe-dark-dock-regular-9254e2db86a7.webp": {
+      "sha256": "9254e2db86a75be26c8d5a73c6a5ede71a1847d763c437198f494efee5386bc3",
+      "source_sha256": "2621579064883d07e907356346df498cb2afeafc7b05345b9bbbc7705e6de2dd",
+      "source_commit": "bcbe83a5182a9f30e49195e5d605c40ae46b3c85",
+      "replaces": "src/screenshots/previews/tahoe-dock-regular-dark-reference-5a56afc6c7ac.webp",
+      "crop": [
+        1200,
+        1964,
+        2640,
+        2160
+      ],
+      "export_size": [
+        1440,
+        196
+      ],
+      "capture": {
+        "source_commit": "bcbe83a5182a9f30e49195e5d605c40ae46b3c85",
+        "edition": "tahoe",
+        "mode": "dark",
+        "case": "dock-regular",
+        "before": [
+          {
+            "id": "{804ea748-5af8-4b35-b356-756a05ba96a7}",
+            "caption": "",
+            "resourceClass": "plasmashell",
+            "type": 1,
+            "appletPopup": false,
+            "hidden": false,
+            "active": true,
+            "geometry": {
+              "x": 0,
+              "y": 0,
+              "width": 1920,
+              "height": 1080
+            }
+          },
+          {
+            "id": "{970d8913-87bd-454d-b043-090a2b16e5b5}",
+            "caption": "",
+            "resourceClass": "plasmashell",
+            "type": 2,
+            "appletPopup": false,
+            "hidden": false,
+            "active": false,
+            "geometry": {
+              "x": 0,
+              "y": 0,
+              "width": 1920,
+              "height": 32
+            }
+          },
+          {
+            "id": "{1ccbc9e7-0107-4582-9518-062887c4cdb0}",
+            "caption": "",
+            "resourceClass": "plasmashell",
+            "type": 2,
+            "appletPopup": false,
+            "hidden": false,
+            "active": false,
+            "geometry": {
+              "x": 614,
+              "y": 996,
+              "width": 692,
+              "height": 84
+            }
+          }
+        ],
+        "after": [
+          {
+            "id": "{804ea748-5af8-4b35-b356-756a05ba96a7}",
+            "caption": "",
+            "resourceClass": "plasmashell",
+            "type": 1,
+            "appletPopup": false,
+            "hidden": false,
+            "active": true,
+            "geometry": {
+              "x": 0,
+              "y": 0,
+              "width": 1920,
+              "height": 1080
+            }
+          },
+          {
+            "id": "{970d8913-87bd-454d-b043-090a2b16e5b5}",
+            "caption": "",
+            "resourceClass": "plasmashell",
+            "type": 2,
+            "appletPopup": false,
+            "hidden": false,
+            "active": false,
+            "geometry": {
+              "x": 0,
+              "y": 0,
+              "width": 1920,
+              "height": 32
+            }
+          },
+          {
+            "id": "{1ccbc9e7-0107-4582-9518-062887c4cdb0}",
+            "caption": "",
+            "resourceClass": "plasmashell",
+            "type": 2,
+            "appletPopup": false,
+            "hidden": false,
+            "active": false,
+            "geometry": {
+              "x": 614,
+              "y": 996,
+              "width": 692,
+              "height": 84
+            }
+          }
+        ],
+        "sha256": "2621579064883d07e907356346df498cb2afeafc7b05345b9bbbc7705e6de2dd",
+        "defaults": {
+          "wallpaper": "MacTahoe",
+          "launcher_preset": 1
+        },
+        "icons": "MacTahoeLiquidKde-Icons-Regular-Dark",
+        "effect": "a4a55b2f39b8b7fa42903c622bcf18d113847b624874d88af15a38f81e67ea99"
+      },
+      "user_approved": true
+    },
+    "previews/readme-tahoe-light-dock-regular-6d506b3465fd.webp": {
+      "sha256": "6d506b3465fdb3b8d1deae173f0fee42fbdb76e8f5c408cc831f90708a90ccf0",
+      "source_sha256": "b6cb97fd4db9a823b6c0a92122acae4a926105638433737c869ddfb9278bdc28",
+      "source_commit": "bcbe83a5182a9f30e49195e5d605c40ae46b3c85",
+      "replaces": "src/screenshots/previews/tahoe-dock-regular-light-reference-74619aaa7764.webp",
+      "crop": [
+        1200,
+        1964,
+        2640,
+        2160
+      ],
+      "export_size": [
+        1440,
+        196
+      ],
+      "capture": {
+        "source_commit": "bcbe83a5182a9f30e49195e5d605c40ae46b3c85",
+        "edition": "tahoe",
+        "mode": "light",
+        "case": "dock-regular",
+        "before": [
+          {
+            "id": "{804ea748-5af8-4b35-b356-756a05ba96a7}",
+            "caption": "",
+            "resourceClass": "plasmashell",
+            "type": 1,
+            "appletPopup": false,
+            "hidden": false,
+            "active": true,
+            "geometry": {
+              "x": 0,
+              "y": 0,
+              "width": 1920,
+              "height": 1080
+            }
+          },
+          {
+            "id": "{970d8913-87bd-454d-b043-090a2b16e5b5}",
+            "caption": "",
+            "resourceClass": "plasmashell",
+            "type": 2,
+            "appletPopup": false,
+            "hidden": false,
+            "active": false,
+            "geometry": {
+              "x": 0,
+              "y": 0,
+              "width": 1920,
+              "height": 32
+            }
+          },
+          {
+            "id": "{1ccbc9e7-0107-4582-9518-062887c4cdb0}",
+            "caption": "",
+            "resourceClass": "plasmashell",
+            "type": 2,
+            "appletPopup": false,
+            "hidden": false,
+            "active": false,
+            "geometry": {
+              "x": 614,
+              "y": 996,
+              "width": 692,
+              "height": 84
+            }
+          }
+        ],
+        "after": [
+          {
+            "id": "{804ea748-5af8-4b35-b356-756a05ba96a7}",
+            "caption": "",
+            "resourceClass": "plasmashell",
+            "type": 1,
+            "appletPopup": false,
+            "hidden": false,
+            "active": true,
+            "geometry": {
+              "x": 0,
+              "y": 0,
+              "width": 1920,
+              "height": 1080
+            }
+          },
+          {
+            "id": "{970d8913-87bd-454d-b043-090a2b16e5b5}",
+            "caption": "",
+            "resourceClass": "plasmashell",
+            "type": 2,
+            "appletPopup": false,
+            "hidden": false,
+            "active": false,
+            "geometry": {
+              "x": 0,
+              "y": 0,
+              "width": 1920,
+              "height": 32
+            }
+          },
+          {
+            "id": "{1ccbc9e7-0107-4582-9518-062887c4cdb0}",
+            "caption": "",
+            "resourceClass": "plasmashell",
+            "type": 2,
+            "appletPopup": false,
+            "hidden": false,
+            "active": false,
+            "geometry": {
+              "x": 614,
+              "y": 996,
+              "width": 692,
+              "height": 84
+            }
+          }
+        ],
+        "sha256": "b6cb97fd4db9a823b6c0a92122acae4a926105638433737c869ddfb9278bdc28",
+        "defaults": {
+          "wallpaper": "MacTahoe",
+          "launcher_preset": 1
+        },
+        "icons": "MacTahoeLiquidKde-Icons-Regular-Light",
+        "effect": "a4a55b2f39b8b7fa42903c622bcf18d113847b624874d88af15a38f81e67ea99"
+      },
+      "user_approved": true
+    },
+    "previews/readme-tahoe-dark-dock-yellow-c1945efddc21.webp": {
+      "sha256": "c1945efddc21fd56a51f14ed2223a7dc769be4d22d638c9ca946beffc15fefa6",
+      "source_sha256": "d38eef8a40412b339754f73ba93889aa6d7599f48ee92636744ef3d7e9d21718",
+      "source_commit": "bcbe83a5182a9f30e49195e5d605c40ae46b3c85",
+      "replaces": "src/screenshots/previews/tahoe-dock-yellow-dark-reference-9bde557131d1.webp",
+      "crop": [
+        1200,
+        1964,
+        2640,
+        2160
+      ],
+      "export_size": [
+        1440,
+        196
+      ],
+      "capture": {
+        "source_commit": "bcbe83a5182a9f30e49195e5d605c40ae46b3c85",
+        "edition": "tahoe",
+        "mode": "dark",
+        "case": "dock-yellow",
+        "before": [
+          {
+            "id": "{804ea748-5af8-4b35-b356-756a05ba96a7}",
+            "caption": "",
+            "resourceClass": "plasmashell",
+            "type": 1,
+            "appletPopup": false,
+            "hidden": false,
+            "active": true,
+            "geometry": {
+              "x": 0,
+              "y": 0,
+              "width": 1920,
+              "height": 1080
+            }
+          },
+          {
+            "id": "{970d8913-87bd-454d-b043-090a2b16e5b5}",
+            "caption": "",
+            "resourceClass": "plasmashell",
+            "type": 2,
+            "appletPopup": false,
+            "hidden": false,
+            "active": false,
+            "geometry": {
+              "x": 0,
+              "y": 0,
+              "width": 1920,
+              "height": 32
+            }
+          },
+          {
+            "id": "{1ccbc9e7-0107-4582-9518-062887c4cdb0}",
+            "caption": "",
+            "resourceClass": "plasmashell",
+            "type": 2,
+            "appletPopup": false,
+            "hidden": false,
+            "active": false,
+            "geometry": {
+              "x": 614,
+              "y": 996,
+              "width": 692,
+              "height": 84
+            }
+          }
+        ],
+        "after": [
+          {
+            "id": "{804ea748-5af8-4b35-b356-756a05ba96a7}",
+            "caption": "",
+            "resourceClass": "plasmashell",
+            "type": 1,
+            "appletPopup": false,
+            "hidden": false,
+            "active": true,
+            "geometry": {
+              "x": 0,
+              "y": 0,
+              "width": 1920,
+              "height": 1080
+            }
+          },
+          {
+            "id": "{970d8913-87bd-454d-b043-090a2b16e5b5}",
+            "caption": "",
+            "resourceClass": "plasmashell",
+            "type": 2,
+            "appletPopup": false,
+            "hidden": false,
+            "active": false,
+            "geometry": {
+              "x": 0,
+              "y": 0,
+              "width": 1920,
+              "height": 32
+            }
+          },
+          {
+            "id": "{1ccbc9e7-0107-4582-9518-062887c4cdb0}",
+            "caption": "",
+            "resourceClass": "plasmashell",
+            "type": 2,
+            "appletPopup": false,
+            "hidden": false,
+            "active": false,
+            "geometry": {
+              "x": 614,
+              "y": 996,
+              "width": 692,
+              "height": 84
+            }
+          }
+        ],
+        "sha256": "d38eef8a40412b339754f73ba93889aa6d7599f48ee92636744ef3d7e9d21718",
+        "defaults": {
+          "wallpaper": "MacTahoe",
+          "launcher_preset": 1
+        },
+        "icons": "MacTahoeLiquidKde-Icons-Readme-yellow-Dark",
+        "effect": "a4a55b2f39b8b7fa42903c622bcf18d113847b624874d88af15a38f81e67ea99"
+      },
+      "user_approved": true
+    },
+    "previews/readme-tahoe-light-dock-yellow-c7656eaf2b61.webp": {
+      "sha256": "c7656eaf2b61ef9263f452de2937830216148ae9073d9a56a5155079186cd891",
+      "source_sha256": "846276cf92aacc1b260a05690c249ac90db9038d596ae2b73811a1e06ce66890",
+      "source_commit": "bcbe83a5182a9f30e49195e5d605c40ae46b3c85",
+      "replaces": "src/screenshots/previews/tahoe-dock-yellow-light-reference-ccb4a109822b.webp",
+      "crop": [
+        1200,
+        1964,
+        2640,
+        2160
+      ],
+      "export_size": [
+        1440,
+        196
+      ],
+      "capture": {
+        "source_commit": "bcbe83a5182a9f30e49195e5d605c40ae46b3c85",
+        "edition": "tahoe",
+        "mode": "light",
+        "case": "dock-yellow",
+        "before": [
+          {
+            "id": "{804ea748-5af8-4b35-b356-756a05ba96a7}",
+            "caption": "",
+            "resourceClass": "plasmashell",
+            "type": 1,
+            "appletPopup": false,
+            "hidden": false,
+            "active": true,
+            "geometry": {
+              "x": 0,
+              "y": 0,
+              "width": 1920,
+              "height": 1080
+            }
+          },
+          {
+            "id": "{970d8913-87bd-454d-b043-090a2b16e5b5}",
+            "caption": "",
+            "resourceClass": "plasmashell",
+            "type": 2,
+            "appletPopup": false,
+            "hidden": false,
+            "active": false,
+            "geometry": {
+              "x": 0,
+              "y": 0,
+              "width": 1920,
+              "height": 32
+            }
+          },
+          {
+            "id": "{1ccbc9e7-0107-4582-9518-062887c4cdb0}",
+            "caption": "",
+            "resourceClass": "plasmashell",
+            "type": 2,
+            "appletPopup": false,
+            "hidden": false,
+            "active": false,
+            "geometry": {
+              "x": 614,
+              "y": 996,
+              "width": 692,
+              "height": 84
+            }
+          }
+        ],
+        "after": [
+          {
+            "id": "{804ea748-5af8-4b35-b356-756a05ba96a7}",
+            "caption": "",
+            "resourceClass": "plasmashell",
+            "type": 1,
+            "appletPopup": false,
+            "hidden": false,
+            "active": true,
+            "geometry": {
+              "x": 0,
+              "y": 0,
+              "width": 1920,
+              "height": 1080
+            }
+          },
+          {
+            "id": "{970d8913-87bd-454d-b043-090a2b16e5b5}",
+            "caption": "",
+            "resourceClass": "plasmashell",
+            "type": 2,
+            "appletPopup": false,
+            "hidden": false,
+            "active": false,
+            "geometry": {
+              "x": 0,
+              "y": 0,
+              "width": 1920,
+              "height": 32
+            }
+          },
+          {
+            "id": "{1ccbc9e7-0107-4582-9518-062887c4cdb0}",
+            "caption": "",
+            "resourceClass": "plasmashell",
+            "type": 2,
+            "appletPopup": false,
+            "hidden": false,
+            "active": false,
+            "geometry": {
+              "x": 614,
+              "y": 996,
+              "width": 692,
+              "height": 84
+            }
+          }
+        ],
+        "sha256": "846276cf92aacc1b260a05690c249ac90db9038d596ae2b73811a1e06ce66890",
+        "defaults": {
+          "wallpaper": "MacTahoe",
+          "launcher_preset": 1
+        },
+        "icons": "MacTahoeLiquidKde-Icons-Readme-yellow-Light",
+        "effect": "a4a55b2f39b8b7fa42903c622bcf18d113847b624874d88af15a38f81e67ea99"
+      },
+      "user_approved": true
+    },
     "previews/readme-tahoe-light-finder-blue-ad74eeb6e7a1.webp": {
       "sha256": "ad74eeb6e7a16c253d2db604b418e8485b8446d4dcfa7e754cfae77c0bbdb509",
       "source_sha256": "f6ecbf01c118fe3bb0478069848bd55248d9b05d9ac4ee43b644c1f40da1ed7f",
@@ -2591,852 +5071,12 @@
       },
       "user_approved": true
     },
-    "previews/readme-tahoe-light-dock-regular-0997fd2f3e46.webp": {
-      "sha256": "0997fd2f3e464117b52a45597113998195acb75bb8f5e6a4cd88b97c27bd32d0",
-      "source_commit": "097cf573b9250f9ef56e859afc5cda25d2d95e66",
-      "source_sha256": "868c3abf41da42e0cacd1e00e6d42fb5b15ac5ea1b74010e300bb869c0f06ff1",
-      "replaces": "src/screenshots/previews/readme-tahoe-light-dock-regular-6d506b3465fd.webp",
-      "export_size": [
-        1404,
-        178
-      ],
-      "capture": {
-        "edition": "tahoe",
-        "vm_image_sha256": "2a09de13ad568da01a8e16dd93e6aec120e63375bfc0ec24b4e804b43ecb4f8c",
-        "record": {
-          "file": "dock-proof-tahoe-regular-light-blue-empty.png",
-          "sha256": "0997fd2f3e464117b52a45597113998195acb75bb8f5e6a4cd88b97c27bd32d0",
-          "theme": "MacTahoeLiquidKde-Icons-Regular-Light",
-          "wallpaper": "MacTahoe/images/3840x2160.jpg",
-          "state": "empty",
-          "geometry": {
-            "x": 614,
-            "y": 996,
-            "width": 692,
-            "height": 84
-          },
-          "center_offset": 0.0,
-          "glass": "ready",
-          "png_sha256": "7f4f467f270e00f9992c8ebee31f1e0e33f1a15a6aba984124b90f0041eb2e48",
-          "export_size": [
-            1404,
-            178
-          ]
-        },
-        "qualification": "Focused disposable Neon overlay; see per-frame geometry and source.",
-        "fixture_launchers": [
-          "thunderbird.desktop",
-          "org.kde.merkuro.calendar.desktop",
-          "org.kde.marknote.desktop",
-          "org.kde.elisa.desktop",
-          "org.kde.haruna.desktop"
-        ]
-      }
-    },
-    "previews/readme-tahoe-dark-dock-regular-f6c4b141b09e.webp": {
-      "sha256": "f6c4b141b09e29a9b491355c88b83d8d8f4a0a57f28e5015612cc8331d96a791",
-      "source_commit": "097cf573b9250f9ef56e859afc5cda25d2d95e66",
-      "source_sha256": "868c3abf41da42e0cacd1e00e6d42fb5b15ac5ea1b74010e300bb869c0f06ff1",
-      "replaces": "src/screenshots/previews/readme-tahoe-dark-dock-regular-9254e2db86a7.webp",
-      "export_size": [
-        1404,
-        178
-      ],
-      "capture": {
-        "edition": "tahoe",
-        "vm_image_sha256": "2a09de13ad568da01a8e16dd93e6aec120e63375bfc0ec24b4e804b43ecb4f8c",
-        "record": {
-          "file": "dock-proof-tahoe-regular-dark-blue-empty.png",
-          "sha256": "f6c4b141b09e29a9b491355c88b83d8d8f4a0a57f28e5015612cc8331d96a791",
-          "theme": "MacTahoeLiquidKde-Icons-Regular-Dark",
-          "wallpaper": "MacTahoe/images_dark/3840x2160.jpg",
-          "state": "empty",
-          "geometry": {
-            "x": 614,
-            "y": 996,
-            "width": 692,
-            "height": 84
-          },
-          "center_offset": 0.0,
-          "glass": "ready",
-          "png_sha256": "4d6311e0bc57b71f8b8df403ffe54a3ce4e6c5df2c71a4c20703a7ecdd1d6088",
-          "export_size": [
-            1404,
-            178
-          ]
-        },
-        "qualification": "Focused disposable Neon overlay; see per-frame geometry and source.",
-        "fixture_launchers": [
-          "thunderbird.desktop",
-          "org.kde.merkuro.calendar.desktop",
-          "org.kde.marknote.desktop",
-          "org.kde.elisa.desktop",
-          "org.kde.haruna.desktop"
-        ]
-      }
-    },
-    "previews/readme-tahoe-light-dock-clear-3a2ade5c0f60.webp": {
-      "sha256": "3a2ade5c0f6025d390702ab2540a2721c7b34d775dd6a97a13b58b807efbcfda",
-      "source_commit": "097cf573b9250f9ef56e859afc5cda25d2d95e66",
-      "source_sha256": "868c3abf41da42e0cacd1e00e6d42fb5b15ac5ea1b74010e300bb869c0f06ff1",
-      "replaces": "src/screenshots/previews/readme-tahoe-light-dock-clear-843c40a052a7.webp",
-      "export_size": [
-        1404,
-        178
-      ],
-      "capture": {
-        "edition": "tahoe",
-        "vm_image_sha256": "2a09de13ad568da01a8e16dd93e6aec120e63375bfc0ec24b4e804b43ecb4f8c",
-        "record": {
-          "file": "dock-proof-tahoe-clear-light-blue-empty.png",
-          "sha256": "3a2ade5c0f6025d390702ab2540a2721c7b34d775dd6a97a13b58b807efbcfda",
-          "theme": "MacTahoeLiquidKde-Icons-Clear-Light",
-          "wallpaper": "MacTahoe/images/3840x2160.jpg",
-          "state": "empty",
-          "geometry": {
-            "x": 614,
-            "y": 996,
-            "width": 692,
-            "height": 84
-          },
-          "center_offset": 0.0,
-          "glass": "ready",
-          "png_sha256": "0dd7bef781de31d4c739ddb6a7c3cdcc6b707bdae144d3a7a6cc6434201a6efb",
-          "export_size": [
-            1404,
-            178
-          ]
-        },
-        "qualification": "Focused disposable Neon overlay; see per-frame geometry and source.",
-        "fixture_launchers": [
-          "thunderbird.desktop",
-          "org.kde.merkuro.calendar.desktop",
-          "org.kde.marknote.desktop",
-          "org.kde.elisa.desktop",
-          "org.kde.haruna.desktop"
-        ]
-      }
-    },
-    "previews/readme-tahoe-dark-dock-clear-9cf1f9739dac.webp": {
-      "sha256": "9cf1f9739dac900889463519fe62e5aadd9625d13c6887310e9f59cba798fa84",
-      "source_commit": "097cf573b9250f9ef56e859afc5cda25d2d95e66",
-      "source_sha256": "868c3abf41da42e0cacd1e00e6d42fb5b15ac5ea1b74010e300bb869c0f06ff1",
-      "replaces": "src/screenshots/previews/readme-tahoe-dark-dock-clear-58edd6d52e38.webp",
-      "export_size": [
-        1404,
-        178
-      ],
-      "capture": {
-        "edition": "tahoe",
-        "vm_image_sha256": "2a09de13ad568da01a8e16dd93e6aec120e63375bfc0ec24b4e804b43ecb4f8c",
-        "record": {
-          "file": "dock-proof-tahoe-clear-dark-blue-empty.png",
-          "sha256": "9cf1f9739dac900889463519fe62e5aadd9625d13c6887310e9f59cba798fa84",
-          "theme": "MacTahoeLiquidKde-Icons-Clear-Dark",
-          "wallpaper": "MacTahoe/images_dark/3840x2160.jpg",
-          "state": "empty",
-          "geometry": {
-            "x": 614,
-            "y": 996,
-            "width": 692,
-            "height": 84
-          },
-          "center_offset": 0.0,
-          "glass": "ready",
-          "png_sha256": "56eae8b143eaceb87be761f9d02deaa35768c8afbbd41628abf9c1ab0e27ab5f",
-          "export_size": [
-            1404,
-            178
-          ]
-        },
-        "qualification": "Focused disposable Neon overlay; see per-frame geometry and source.",
-        "fixture_launchers": [
-          "thunderbird.desktop",
-          "org.kde.merkuro.calendar.desktop",
-          "org.kde.marknote.desktop",
-          "org.kde.elisa.desktop",
-          "org.kde.haruna.desktop"
-        ]
-      }
-    },
-    "previews/readme-tahoe-light-dock-blue-dd0eb5c8bff5.webp": {
-      "sha256": "dd0eb5c8bff5e42bbb99fef1e2628ec4f62210da1d539b51f4bc3a62be7a2835",
-      "source_commit": "097cf573b9250f9ef56e859afc5cda25d2d95e66",
-      "source_sha256": "868c3abf41da42e0cacd1e00e6d42fb5b15ac5ea1b74010e300bb869c0f06ff1",
-      "replaces": "src/screenshots/previews/readme-tahoe-light-dock-blue-d39bb78e2f1d.webp",
-      "export_size": [
-        1404,
-        178
-      ],
-      "capture": {
-        "edition": "tahoe",
-        "vm_image_sha256": "2a09de13ad568da01a8e16dd93e6aec120e63375bfc0ec24b4e804b43ecb4f8c",
-        "record": {
-          "file": "dock-proof-tahoe-glass-light-blue-empty.png",
-          "sha256": "dd0eb5c8bff5e42bbb99fef1e2628ec4f62210da1d539b51f4bc3a62be7a2835",
-          "theme": "MacTahoeLiquidKde-Icons-Glass-Light",
-          "wallpaper": "MacTahoe/images/3840x2160.jpg",
-          "state": "empty",
-          "geometry": {
-            "x": 614,
-            "y": 996,
-            "width": 692,
-            "height": 84
-          },
-          "center_offset": 0.0,
-          "glass": "ready",
-          "png_sha256": "adb7df0cc82aaa09867739fc92d59b115ead649ac22e73f14791368517e74afe",
-          "export_size": [
-            1404,
-            178
-          ]
-        },
-        "qualification": "Focused disposable Neon overlay; see per-frame geometry and source.",
-        "fixture_launchers": [
-          "thunderbird.desktop",
-          "org.kde.merkuro.calendar.desktop",
-          "org.kde.marknote.desktop",
-          "org.kde.elisa.desktop",
-          "org.kde.haruna.desktop"
-        ]
-      }
-    },
-    "previews/readme-tahoe-dark-dock-blue-9acb2689e21d.webp": {
-      "sha256": "9acb2689e21df9b4ad15dfb14cf76495e04fad57628f5c5724df6f825efb219c",
-      "source_commit": "097cf573b9250f9ef56e859afc5cda25d2d95e66",
-      "source_sha256": "868c3abf41da42e0cacd1e00e6d42fb5b15ac5ea1b74010e300bb869c0f06ff1",
-      "replaces": "src/screenshots/previews/readme-tahoe-dark-dock-blue-a292ebe93f08.webp",
-      "export_size": [
-        1404,
-        178
-      ],
-      "capture": {
-        "edition": "tahoe",
-        "vm_image_sha256": "2a09de13ad568da01a8e16dd93e6aec120e63375bfc0ec24b4e804b43ecb4f8c",
-        "record": {
-          "file": "dock-proof-tahoe-glass-dark-blue-empty.png",
-          "sha256": "9acb2689e21df9b4ad15dfb14cf76495e04fad57628f5c5724df6f825efb219c",
-          "theme": "MacTahoeLiquidKde-Icons-Glass-Dark",
-          "wallpaper": "MacTahoe/images_dark/3840x2160.jpg",
-          "state": "empty",
-          "geometry": {
-            "x": 614,
-            "y": 996,
-            "width": 692,
-            "height": 84
-          },
-          "center_offset": 0.0,
-          "glass": "ready",
-          "png_sha256": "3e6693056c1647fe73816c49af404f848cc4d7f008d1f5da9030a7260170b0c3",
-          "export_size": [
-            1404,
-            178
-          ]
-        },
-        "qualification": "Focused disposable Neon overlay; see per-frame geometry and source.",
-        "fixture_launchers": [
-          "thunderbird.desktop",
-          "org.kde.merkuro.calendar.desktop",
-          "org.kde.marknote.desktop",
-          "org.kde.elisa.desktop",
-          "org.kde.haruna.desktop"
-        ]
-      }
-    },
-    "previews/readme-tahoe-light-dock-purple-91e404540269.webp": {
-      "sha256": "91e40454026922cdd9154b79a5048691d10d05bece77874e31daa239f5fc8f8d",
-      "source_commit": "097cf573b9250f9ef56e859afc5cda25d2d95e66",
-      "source_sha256": "868c3abf41da42e0cacd1e00e6d42fb5b15ac5ea1b74010e300bb869c0f06ff1",
-      "replaces": "src/screenshots/previews/readme-tahoe-light-dock-purple-b8d6d4a59d58.webp",
-      "export_size": [
-        1404,
-        178
-      ],
-      "capture": {
-        "edition": "tahoe",
-        "vm_image_sha256": "2a09de13ad568da01a8e16dd93e6aec120e63375bfc0ec24b4e804b43ecb4f8c",
-        "record": {
-          "file": "dock-proof-tahoe-glass-light-purple-empty.png",
-          "sha256": "91e40454026922cdd9154b79a5048691d10d05bece77874e31daa239f5fc8f8d",
-          "theme": "MacTahoeLiquidKde-Icons-Glass-Light",
-          "wallpaper": "MacTahoe/images/3840x2160.jpg",
-          "state": "empty",
-          "geometry": {
-            "x": 614,
-            "y": 996,
-            "width": 692,
-            "height": 84
-          },
-          "center_offset": 0.0,
-          "glass": "ready",
-          "png_sha256": "4ad4381e51c954ae965a9c004c6187ec895fbe87e334820d9d6496092ac20c48",
-          "export_size": [
-            1404,
-            178
-          ]
-        },
-        "qualification": "Focused disposable Neon overlay; see per-frame geometry and source.",
-        "fixture_launchers": [
-          "thunderbird.desktop",
-          "org.kde.merkuro.calendar.desktop",
-          "org.kde.marknote.desktop",
-          "org.kde.elisa.desktop",
-          "org.kde.haruna.desktop"
-        ]
-      }
-    },
-    "previews/readme-tahoe-dark-dock-purple-c2f4a4493b4b.webp": {
-      "sha256": "c2f4a4493b4bd4aba376a07b7bda58fa750eeca3bcf9d6fe3e44760c8a90d1d3",
-      "source_commit": "097cf573b9250f9ef56e859afc5cda25d2d95e66",
-      "source_sha256": "868c3abf41da42e0cacd1e00e6d42fb5b15ac5ea1b74010e300bb869c0f06ff1",
-      "replaces": "src/screenshots/previews/readme-tahoe-dark-dock-purple-090970372f80.webp",
-      "export_size": [
-        1404,
-        178
-      ],
-      "capture": {
-        "edition": "tahoe",
-        "vm_image_sha256": "2a09de13ad568da01a8e16dd93e6aec120e63375bfc0ec24b4e804b43ecb4f8c",
-        "record": {
-          "file": "dock-proof-tahoe-glass-dark-purple-empty.png",
-          "sha256": "c2f4a4493b4bd4aba376a07b7bda58fa750eeca3bcf9d6fe3e44760c8a90d1d3",
-          "theme": "MacTahoeLiquidKde-Icons-Glass-Dark",
-          "wallpaper": "MacTahoe/images_dark/3840x2160.jpg",
-          "state": "empty",
-          "geometry": {
-            "x": 614,
-            "y": 996,
-            "width": 692,
-            "height": 84
-          },
-          "center_offset": 0.0,
-          "glass": "ready",
-          "png_sha256": "e7c6730d127b73f85bc18cb81c7e1d738d2f78a52b9b49f758fde4e19286b3e8",
-          "export_size": [
-            1404,
-            178
-          ]
-        },
-        "qualification": "Focused disposable Neon overlay; see per-frame geometry and source.",
-        "fixture_launchers": [
-          "thunderbird.desktop",
-          "org.kde.merkuro.calendar.desktop",
-          "org.kde.marknote.desktop",
-          "org.kde.elisa.desktop",
-          "org.kde.haruna.desktop"
-        ]
-      }
-    },
-    "previews/readme-tahoe-light-dock-pink-f9a47518554a.webp": {
-      "sha256": "f9a47518554a4273baf11ab2aacc561cbd24588ec27b842f472c6b5047e0b0c5",
-      "source_commit": "097cf573b9250f9ef56e859afc5cda25d2d95e66",
-      "source_sha256": "868c3abf41da42e0cacd1e00e6d42fb5b15ac5ea1b74010e300bb869c0f06ff1",
-      "replaces": "src/screenshots/previews/readme-tahoe-light-dock-pink-c0b0ba00ddeb.webp",
-      "export_size": [
-        1404,
-        178
-      ],
-      "capture": {
-        "edition": "tahoe",
-        "vm_image_sha256": "2a09de13ad568da01a8e16dd93e6aec120e63375bfc0ec24b4e804b43ecb4f8c",
-        "record": {
-          "file": "dock-proof-tahoe-glass-light-pink-empty.png",
-          "sha256": "f9a47518554a4273baf11ab2aacc561cbd24588ec27b842f472c6b5047e0b0c5",
-          "theme": "MacTahoeLiquidKde-Icons-Glass-Light",
-          "wallpaper": "MacTahoe/images/3840x2160.jpg",
-          "state": "empty",
-          "geometry": {
-            "x": 614,
-            "y": 996,
-            "width": 692,
-            "height": 84
-          },
-          "center_offset": 0.0,
-          "glass": "ready",
-          "png_sha256": "aa67d6f5c6ae64d442251e656629482848ed45aea5f0799d8dfd49f55deabffd",
-          "export_size": [
-            1404,
-            178
-          ]
-        },
-        "qualification": "Focused disposable Neon overlay; see per-frame geometry and source.",
-        "fixture_launchers": [
-          "thunderbird.desktop",
-          "org.kde.merkuro.calendar.desktop",
-          "org.kde.marknote.desktop",
-          "org.kde.elisa.desktop",
-          "org.kde.haruna.desktop"
-        ]
-      }
-    },
-    "previews/readme-tahoe-dark-dock-pink-9a8acd5e420e.webp": {
-      "sha256": "9a8acd5e420edb0739ebf32da432dc1342ad2707e86061d52ce6a7956ca522ec",
-      "source_commit": "097cf573b9250f9ef56e859afc5cda25d2d95e66",
-      "source_sha256": "868c3abf41da42e0cacd1e00e6d42fb5b15ac5ea1b74010e300bb869c0f06ff1",
-      "replaces": "src/screenshots/previews/readme-tahoe-dark-dock-pink-ba6941817529.webp",
-      "export_size": [
-        1404,
-        178
-      ],
-      "capture": {
-        "edition": "tahoe",
-        "vm_image_sha256": "2a09de13ad568da01a8e16dd93e6aec120e63375bfc0ec24b4e804b43ecb4f8c",
-        "record": {
-          "file": "dock-proof-tahoe-glass-dark-pink-empty.png",
-          "sha256": "9a8acd5e420edb0739ebf32da432dc1342ad2707e86061d52ce6a7956ca522ec",
-          "theme": "MacTahoeLiquidKde-Icons-Glass-Dark",
-          "wallpaper": "MacTahoe/images_dark/3840x2160.jpg",
-          "state": "empty",
-          "geometry": {
-            "x": 614,
-            "y": 996,
-            "width": 692,
-            "height": 84
-          },
-          "center_offset": 0.0,
-          "glass": "ready",
-          "png_sha256": "32773ecfa5507e5d457df836f9b4dadf7f5a109b2a24b1821a90f4e546e64f2d",
-          "export_size": [
-            1404,
-            178
-          ]
-        },
-        "qualification": "Focused disposable Neon overlay; see per-frame geometry and source.",
-        "fixture_launchers": [
-          "thunderbird.desktop",
-          "org.kde.merkuro.calendar.desktop",
-          "org.kde.marknote.desktop",
-          "org.kde.elisa.desktop",
-          "org.kde.haruna.desktop"
-        ]
-      }
-    },
-    "previews/readme-tahoe-light-dock-red-d7227e7a735b.webp": {
-      "sha256": "d7227e7a735baeb4a9490aed453a3838133930ce0f03a6423aff1d85bdc5617e",
-      "source_commit": "097cf573b9250f9ef56e859afc5cda25d2d95e66",
-      "source_sha256": "868c3abf41da42e0cacd1e00e6d42fb5b15ac5ea1b74010e300bb869c0f06ff1",
-      "replaces": "src/screenshots/previews/readme-tahoe-light-dock-red-19adb9d798fd.webp",
-      "export_size": [
-        1404,
-        178
-      ],
-      "capture": {
-        "edition": "tahoe",
-        "vm_image_sha256": "2a09de13ad568da01a8e16dd93e6aec120e63375bfc0ec24b4e804b43ecb4f8c",
-        "record": {
-          "file": "dock-proof-tahoe-glass-light-red-empty.png",
-          "sha256": "d7227e7a735baeb4a9490aed453a3838133930ce0f03a6423aff1d85bdc5617e",
-          "theme": "MacTahoeLiquidKde-Icons-Glass-Light",
-          "wallpaper": "MacTahoe/images/3840x2160.jpg",
-          "state": "empty",
-          "geometry": {
-            "x": 614,
-            "y": 996,
-            "width": 692,
-            "height": 84
-          },
-          "center_offset": 0.0,
-          "glass": "ready",
-          "png_sha256": "3d26a4f9c2596b456655b95eb6cc7057aee75fc06e2ce75a522e6e75c042dc66",
-          "export_size": [
-            1404,
-            178
-          ]
-        },
-        "qualification": "Focused disposable Neon overlay; see per-frame geometry and source.",
-        "fixture_launchers": [
-          "thunderbird.desktop",
-          "org.kde.merkuro.calendar.desktop",
-          "org.kde.marknote.desktop",
-          "org.kde.elisa.desktop",
-          "org.kde.haruna.desktop"
-        ]
-      }
-    },
-    "previews/readme-tahoe-dark-dock-red-9b053dab4782.webp": {
-      "sha256": "9b053dab4782afcae6f337c97ef0c867a401cf658b481d24a636da504f8cbdcd",
-      "source_commit": "097cf573b9250f9ef56e859afc5cda25d2d95e66",
-      "source_sha256": "868c3abf41da42e0cacd1e00e6d42fb5b15ac5ea1b74010e300bb869c0f06ff1",
-      "replaces": "src/screenshots/previews/readme-tahoe-dark-dock-red-379c09615f96.webp",
-      "export_size": [
-        1404,
-        178
-      ],
-      "capture": {
-        "edition": "tahoe",
-        "vm_image_sha256": "2a09de13ad568da01a8e16dd93e6aec120e63375bfc0ec24b4e804b43ecb4f8c",
-        "record": {
-          "file": "dock-proof-tahoe-glass-dark-red-empty.png",
-          "sha256": "9b053dab4782afcae6f337c97ef0c867a401cf658b481d24a636da504f8cbdcd",
-          "theme": "MacTahoeLiquidKde-Icons-Glass-Dark",
-          "wallpaper": "MacTahoe/images_dark/3840x2160.jpg",
-          "state": "empty",
-          "geometry": {
-            "x": 614,
-            "y": 996,
-            "width": 692,
-            "height": 84
-          },
-          "center_offset": 0.0,
-          "glass": "ready",
-          "png_sha256": "2154c49a36491b3938a113b600487e3b52d5de4e0fc9a8ebf8e7a4216fb7f8ba",
-          "export_size": [
-            1404,
-            178
-          ]
-        },
-        "qualification": "Focused disposable Neon overlay; see per-frame geometry and source.",
-        "fixture_launchers": [
-          "thunderbird.desktop",
-          "org.kde.merkuro.calendar.desktop",
-          "org.kde.marknote.desktop",
-          "org.kde.elisa.desktop",
-          "org.kde.haruna.desktop"
-        ]
-      }
-    },
-    "previews/readme-tahoe-light-dock-orange-df7e33379ecf.webp": {
-      "sha256": "df7e33379ecfe7bec73354a4e30e71a4cb7eb81ca33d3b48b4a5cfb723ed69f1",
-      "source_commit": "097cf573b9250f9ef56e859afc5cda25d2d95e66",
-      "source_sha256": "868c3abf41da42e0cacd1e00e6d42fb5b15ac5ea1b74010e300bb869c0f06ff1",
-      "replaces": "src/screenshots/previews/readme-tahoe-light-dock-orange-18c4663ce547.webp",
-      "export_size": [
-        1404,
-        178
-      ],
-      "capture": {
-        "edition": "tahoe",
-        "vm_image_sha256": "2a09de13ad568da01a8e16dd93e6aec120e63375bfc0ec24b4e804b43ecb4f8c",
-        "record": {
-          "file": "dock-proof-tahoe-glass-light-orange-empty.png",
-          "sha256": "df7e33379ecfe7bec73354a4e30e71a4cb7eb81ca33d3b48b4a5cfb723ed69f1",
-          "theme": "MacTahoeLiquidKde-Icons-Glass-Light",
-          "wallpaper": "MacTahoe/images/3840x2160.jpg",
-          "state": "empty",
-          "geometry": {
-            "x": 614,
-            "y": 996,
-            "width": 692,
-            "height": 84
-          },
-          "center_offset": 0.0,
-          "glass": "ready",
-          "png_sha256": "b26f0baca6b09c11e73ca5d89a857a6444a9031bb30f80d6aae56e877b5f754d",
-          "export_size": [
-            1404,
-            178
-          ]
-        },
-        "qualification": "Focused disposable Neon overlay; see per-frame geometry and source.",
-        "fixture_launchers": [
-          "thunderbird.desktop",
-          "org.kde.merkuro.calendar.desktop",
-          "org.kde.marknote.desktop",
-          "org.kde.elisa.desktop",
-          "org.kde.haruna.desktop"
-        ]
-      }
-    },
-    "previews/readme-tahoe-dark-dock-orange-e2bbb5d97042.webp": {
-      "sha256": "e2bbb5d97042b5ff5e1ce81fdf19db09438ea05858e7e09cb49ded4c682adfb1",
-      "source_commit": "097cf573b9250f9ef56e859afc5cda25d2d95e66",
-      "source_sha256": "868c3abf41da42e0cacd1e00e6d42fb5b15ac5ea1b74010e300bb869c0f06ff1",
-      "replaces": "src/screenshots/previews/readme-tahoe-dark-dock-orange-5079b478c649.webp",
-      "export_size": [
-        1404,
-        178
-      ],
-      "capture": {
-        "edition": "tahoe",
-        "vm_image_sha256": "2a09de13ad568da01a8e16dd93e6aec120e63375bfc0ec24b4e804b43ecb4f8c",
-        "record": {
-          "file": "dock-proof-tahoe-glass-dark-orange-empty.png",
-          "sha256": "e2bbb5d97042b5ff5e1ce81fdf19db09438ea05858e7e09cb49ded4c682adfb1",
-          "theme": "MacTahoeLiquidKde-Icons-Glass-Dark",
-          "wallpaper": "MacTahoe/images_dark/3840x2160.jpg",
-          "state": "empty",
-          "geometry": {
-            "x": 614,
-            "y": 996,
-            "width": 692,
-            "height": 84
-          },
-          "center_offset": 0.0,
-          "glass": "ready",
-          "png_sha256": "6020f80500e115fa64dde6b0b806504589007d1ef9589356cc5cb5a87846f5f2",
-          "export_size": [
-            1404,
-            178
-          ]
-        },
-        "qualification": "Focused disposable Neon overlay; see per-frame geometry and source.",
-        "fixture_launchers": [
-          "thunderbird.desktop",
-          "org.kde.merkuro.calendar.desktop",
-          "org.kde.marknote.desktop",
-          "org.kde.elisa.desktop",
-          "org.kde.haruna.desktop"
-        ]
-      }
-    },
-    "previews/readme-tahoe-light-dock-yellow-0cdbbd4a4ca5.webp": {
-      "sha256": "0cdbbd4a4ca5df5081d16d0b85f2516bcb087f141b53556193f5a4bbaba4ff71",
-      "source_commit": "097cf573b9250f9ef56e859afc5cda25d2d95e66",
-      "source_sha256": "868c3abf41da42e0cacd1e00e6d42fb5b15ac5ea1b74010e300bb869c0f06ff1",
-      "replaces": "src/screenshots/previews/readme-tahoe-light-dock-yellow-c7656eaf2b61.webp",
-      "export_size": [
-        1404,
-        178
-      ],
-      "capture": {
-        "edition": "tahoe",
-        "vm_image_sha256": "2a09de13ad568da01a8e16dd93e6aec120e63375bfc0ec24b4e804b43ecb4f8c",
-        "record": {
-          "file": "dock-proof-tahoe-glass-light-yellow-empty.png",
-          "sha256": "0cdbbd4a4ca5df5081d16d0b85f2516bcb087f141b53556193f5a4bbaba4ff71",
-          "theme": "MacTahoeLiquidKde-Icons-Glass-Light",
-          "wallpaper": "MacTahoe/images/3840x2160.jpg",
-          "state": "empty",
-          "geometry": {
-            "x": 614,
-            "y": 996,
-            "width": 692,
-            "height": 84
-          },
-          "center_offset": 0.0,
-          "glass": "ready",
-          "png_sha256": "957e2c59fdb329f8df8111db82838831729e2e422fa02b3855c73824475f87bc",
-          "export_size": [
-            1404,
-            178
-          ]
-        },
-        "qualification": "Focused disposable Neon overlay; see per-frame geometry and source.",
-        "fixture_launchers": [
-          "thunderbird.desktop",
-          "org.kde.merkuro.calendar.desktop",
-          "org.kde.marknote.desktop",
-          "org.kde.elisa.desktop",
-          "org.kde.haruna.desktop"
-        ]
-      }
-    },
-    "previews/readme-tahoe-dark-dock-yellow-90fd8dfd1060.webp": {
-      "sha256": "90fd8dfd1060fc0cf6a27c41de5737f201e20cc56059e67439b0a41bebbee6a5",
-      "source_commit": "097cf573b9250f9ef56e859afc5cda25d2d95e66",
-      "source_sha256": "868c3abf41da42e0cacd1e00e6d42fb5b15ac5ea1b74010e300bb869c0f06ff1",
-      "replaces": "src/screenshots/previews/readme-tahoe-dark-dock-yellow-c1945efddc21.webp",
-      "export_size": [
-        1404,
-        178
-      ],
-      "capture": {
-        "edition": "tahoe",
-        "vm_image_sha256": "2a09de13ad568da01a8e16dd93e6aec120e63375bfc0ec24b4e804b43ecb4f8c",
-        "record": {
-          "file": "dock-proof-tahoe-glass-dark-yellow-empty.png",
-          "sha256": "90fd8dfd1060fc0cf6a27c41de5737f201e20cc56059e67439b0a41bebbee6a5",
-          "theme": "MacTahoeLiquidKde-Icons-Glass-Dark",
-          "wallpaper": "MacTahoe/images_dark/3840x2160.jpg",
-          "state": "empty",
-          "geometry": {
-            "x": 614,
-            "y": 996,
-            "width": 692,
-            "height": 84
-          },
-          "center_offset": 0.0,
-          "glass": "ready",
-          "png_sha256": "5beb9301c49796bc2e514feb1b971796922b13cf96df08ac99c5671d9fc5bf71",
-          "export_size": [
-            1404,
-            178
-          ]
-        },
-        "qualification": "Focused disposable Neon overlay; see per-frame geometry and source.",
-        "fixture_launchers": [
-          "thunderbird.desktop",
-          "org.kde.merkuro.calendar.desktop",
-          "org.kde.marknote.desktop",
-          "org.kde.elisa.desktop",
-          "org.kde.haruna.desktop"
-        ]
-      }
-    },
-    "previews/readme-tahoe-light-dock-green-6dd6a05798cf.webp": {
-      "sha256": "6dd6a05798cfe0bd358a30ba82a01b63f2d0231050916a56de5c43971f39674a",
-      "source_commit": "097cf573b9250f9ef56e859afc5cda25d2d95e66",
-      "source_sha256": "868c3abf41da42e0cacd1e00e6d42fb5b15ac5ea1b74010e300bb869c0f06ff1",
-      "replaces": "src/screenshots/previews/readme-tahoe-light-dock-green-ac9611249165.webp",
-      "export_size": [
-        1404,
-        178
-      ],
-      "capture": {
-        "edition": "tahoe",
-        "vm_image_sha256": "2a09de13ad568da01a8e16dd93e6aec120e63375bfc0ec24b4e804b43ecb4f8c",
-        "record": {
-          "file": "dock-proof-tahoe-glass-light-green-empty.png",
-          "sha256": "6dd6a05798cfe0bd358a30ba82a01b63f2d0231050916a56de5c43971f39674a",
-          "theme": "MacTahoeLiquidKde-Icons-Glass-Light",
-          "wallpaper": "MacTahoe/images/3840x2160.jpg",
-          "state": "empty",
-          "geometry": {
-            "x": 614,
-            "y": 996,
-            "width": 692,
-            "height": 84
-          },
-          "center_offset": 0.0,
-          "glass": "ready",
-          "png_sha256": "ce9841a7bb67ecf64af3b17c09ab6d77a14d0e5cc0d830ef86ef0a6f4de67da9",
-          "export_size": [
-            1404,
-            178
-          ]
-        },
-        "qualification": "Focused disposable Neon overlay; see per-frame geometry and source.",
-        "fixture_launchers": [
-          "thunderbird.desktop",
-          "org.kde.merkuro.calendar.desktop",
-          "org.kde.marknote.desktop",
-          "org.kde.elisa.desktop",
-          "org.kde.haruna.desktop"
-        ]
-      }
-    },
-    "previews/readme-tahoe-dark-dock-green-ce9afa35c909.webp": {
-      "sha256": "ce9afa35c9095ef471efbfcb4efdee0ee4147135a36980bab01a321760dacad0",
-      "source_commit": "097cf573b9250f9ef56e859afc5cda25d2d95e66",
-      "source_sha256": "868c3abf41da42e0cacd1e00e6d42fb5b15ac5ea1b74010e300bb869c0f06ff1",
-      "replaces": "src/screenshots/previews/readme-tahoe-dark-dock-green-84eab2e65cf2.webp",
-      "export_size": [
-        1404,
-        178
-      ],
-      "capture": {
-        "edition": "tahoe",
-        "vm_image_sha256": "2a09de13ad568da01a8e16dd93e6aec120e63375bfc0ec24b4e804b43ecb4f8c",
-        "record": {
-          "file": "dock-proof-tahoe-glass-dark-green-empty.png",
-          "sha256": "ce9afa35c9095ef471efbfcb4efdee0ee4147135a36980bab01a321760dacad0",
-          "theme": "MacTahoeLiquidKde-Icons-Glass-Dark",
-          "wallpaper": "MacTahoe/images_dark/3840x2160.jpg",
-          "state": "empty",
-          "geometry": {
-            "x": 614,
-            "y": 996,
-            "width": 692,
-            "height": 84
-          },
-          "center_offset": 0.0,
-          "glass": "ready",
-          "png_sha256": "e7683dcbe96e7054ebc7fa6118256bfb630a28b1294ac868aa2c63e1e53f7287",
-          "export_size": [
-            1404,
-            178
-          ]
-        },
-        "qualification": "Focused disposable Neon overlay; see per-frame geometry and source.",
-        "fixture_launchers": [
-          "thunderbird.desktop",
-          "org.kde.merkuro.calendar.desktop",
-          "org.kde.marknote.desktop",
-          "org.kde.elisa.desktop",
-          "org.kde.haruna.desktop"
-        ]
-      }
-    },
-    "previews/readme-tahoe-light-dock-gray-efd0f3169e36.webp": {
-      "sha256": "efd0f3169e3668336aef833f37f7bc9a62322eb3b103bd49b7f93b32dfff7571",
-      "source_commit": "097cf573b9250f9ef56e859afc5cda25d2d95e66",
-      "source_sha256": "868c3abf41da42e0cacd1e00e6d42fb5b15ac5ea1b74010e300bb869c0f06ff1",
-      "replaces": "src/screenshots/previews/readme-tahoe-light-dock-gray-18617e5c0df8.webp",
-      "export_size": [
-        1404,
-        178
-      ],
-      "capture": {
-        "edition": "tahoe",
-        "vm_image_sha256": "2a09de13ad568da01a8e16dd93e6aec120e63375bfc0ec24b4e804b43ecb4f8c",
-        "record": {
-          "file": "dock-proof-tahoe-glass-light-gray-empty.png",
-          "sha256": "efd0f3169e3668336aef833f37f7bc9a62322eb3b103bd49b7f93b32dfff7571",
-          "theme": "MacTahoeLiquidKde-Icons-Glass-Light",
-          "wallpaper": "MacTahoe/images/3840x2160.jpg",
-          "state": "empty",
-          "geometry": {
-            "x": 614,
-            "y": 996,
-            "width": 692,
-            "height": 84
-          },
-          "center_offset": 0.0,
-          "glass": "ready",
-          "png_sha256": "43f24bb76a261e604683bf5481a1d6228f39beb8a861f1c9b160fa5cc20d6062",
-          "export_size": [
-            1404,
-            178
-          ]
-        },
-        "qualification": "Focused disposable Neon overlay; see per-frame geometry and source.",
-        "fixture_launchers": [
-          "thunderbird.desktop",
-          "org.kde.merkuro.calendar.desktop",
-          "org.kde.marknote.desktop",
-          "org.kde.elisa.desktop",
-          "org.kde.haruna.desktop"
-        ]
-      }
-    },
-    "previews/readme-tahoe-dark-dock-gray-f5be1bcd7ab5.webp": {
-      "sha256": "f5be1bcd7ab56b46f30ac65576567f45b3d153c1b6a639d2c6249bd0288fe245",
-      "source_commit": "097cf573b9250f9ef56e859afc5cda25d2d95e66",
-      "source_sha256": "868c3abf41da42e0cacd1e00e6d42fb5b15ac5ea1b74010e300bb869c0f06ff1",
-      "replaces": "src/screenshots/previews/readme-tahoe-dark-dock-gray-e7baf051c7cb.webp",
-      "export_size": [
-        1404,
-        178
-      ],
-      "capture": {
-        "edition": "tahoe",
-        "vm_image_sha256": "2a09de13ad568da01a8e16dd93e6aec120e63375bfc0ec24b4e804b43ecb4f8c",
-        "record": {
-          "file": "dock-proof-tahoe-glass-dark-gray-empty.png",
-          "sha256": "f5be1bcd7ab56b46f30ac65576567f45b3d153c1b6a639d2c6249bd0288fe245",
-          "theme": "MacTahoeLiquidKde-Icons-Glass-Dark",
-          "wallpaper": "MacTahoe/images_dark/3840x2160.jpg",
-          "state": "empty",
-          "geometry": {
-            "x": 614,
-            "y": 996,
-            "width": 692,
-            "height": 84
-          },
-          "center_offset": 0.0,
-          "glass": "ready",
-          "png_sha256": "acd5027a197e3c93b0bbf4af87cc5804a51124d8a4b8e1ee9f64e5b58cdc83f7",
-          "export_size": [
-            1404,
-            178
-          ]
-        },
-        "qualification": "Focused disposable Neon overlay; see per-frame geometry and source.",
-        "fixture_launchers": [
-          "thunderbird.desktop",
-          "org.kde.merkuro.calendar.desktop",
-          "org.kde.marknote.desktop",
-          "org.kde.elisa.desktop",
-          "org.kde.haruna.desktop"
-        ]
-      }
-    },
-    "previews/readme-tahoe-notification-stack-7b82f493a69c.webp": {
+    "previews/readme-tahoe-notification-stack-1c2fe7571829.webp": {
       "edition": "tahoe",
       "mode": "light",
-      "sha256": "7b82f493a69ca7c2ddff6475b3ac39408448edab030897cf4680a637f4419869",
+      "sha256": "1c2fe75718297ddefa1b69965848535d81554b52944d0cedd85220135f0290ee",
       "source_commit": "16806a0f1170796383f9addb8ee9330327876806",
-      "source_capture_sha256": "5dc443d16b1b781a1e322d5e192de9e1667a317ed65237235bb18ee87e46927a",
+      "source_capture_sha256": "584adfee77def8b59fe9a1669f975e2736c210d6355d321cf321b73e7feeb83e",
       "qml_sha256": "2483d6a5f0aa5d22795073aa6ecc7b6971ce420b97133c120247480798cb1970",
       "vm_image_sha256": "2a09de13ad568da01a8e16dd93e6aec120e63375bfc0ec24b4e804b43ecb4f8c",
       "capture": "Grouped notification banner from a disposable KDE neon Wayland VM, 2x scale, diagonal test wallpaper, edition material, three messages. Lossless window crop.",
@@ -3444,7 +5084,7 @@
         "x": 1550,
         "y": 54,
         "width": 364,
-        "height": 96
+        "height": 104
       },
       "user_approval": "screenshoots looks perfect; update readme related screenshots and release new version"
     }
@@ -3456,20 +5096,12 @@
     "Dock material examples use native application artwork for every variant, with macOS role overrides disabled consistently. Clear and tint overlays were generated deterministically by the existing installer_themes renderer for the visible icon aliases.",
     "The original gallery is retained with its provenance because complete-gallery staging also replaces unrelated installer photographs. These README photographs are staged separately.",
     "The pinned profile supplied VM identity, resolution, scale and fixtures; the QML Bluetooth dependency was added only to this disposable overlay.",
-    "Capture clock was initialized from the pinned profile; elapsed times in screenshots are retained.",
-    "The v0.73.11 Dock photographs use the VM image, source and fixture launchers recorded on each Dock image. Earlier capture notes and approvals describe the historical photographs."
+    "Capture clock was initialized from the pinned profile; elapsed times in screenshots are retained."
   ],
   "agent_reviewed": true,
   "user_approved": true,
   "approval": {
     "instruction": "si",
     "date": "2026-11-17"
-  },
-  "dock_gallery_approval": {
-    "version": "0.73.11",
-    "date": "2026-11-17",
-    "instruction": "Sí, publica estas fotos",
-    "scope": "20 Dock photographs for the README galleries, captured on the alternate Neon VM.",
-    "review_sheet_sha256": "daba186093fbd38c844fd72c14cc49f0c3bb3f4013c9f753b726ca006a59eeaf"
   }
 }
