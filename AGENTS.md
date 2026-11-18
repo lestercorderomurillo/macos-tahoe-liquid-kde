@@ -14,6 +14,20 @@ from the diff and its direct risks; expand only for an observed failure or a
 specific affected dependency. Reuse passing evidence while code, inputs and
 environment remain unchanged. Do not repeat tests for release bookkeeping.
 
+When the user says “retest and fix,” inspect the failure and run the affected
+scenario through the existing harness on its prepared VM or isolated backend.
+Fix the product when the behavior is wrong. Repair the existing test or capture
+recipe when it measures the wrong thing. Preserve its assertions and coverage.
+Extend that scenario only for a demonstrated gap. Reuse the VM base and the
+approved frame's fixture, appearance and framing.
+
+After the fix, rerun the same scenario on the candidate and recapture the
+affected README slots. Discard failed frames from staging, keep diagnostic
+logs, and retry the failed scope. Compare the passing frames with the approved
+baseline. Show the actual visual change for approval, then complete paired
+delivery. Keep test commands, capture status and agent instructions in
+maintainer files. Keep them out of product UI and README feature copy.
+
 Brief nonvisual fixes proceed to paired release after focused checks. Changes
 to colors, icons, materials, layout or other appearance require the user's
 explicit approval of the actual preview before merge or publication. Passing
