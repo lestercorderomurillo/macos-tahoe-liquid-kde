@@ -12,6 +12,10 @@ qualification. Aim for ten minutes per representative batch and report
 missing bases, measured timings and incomplete work. If an attempt or retry is
 expected to take 20 minutes or more, reassess scope and tell the user the
 estimate and reason before starting it.
+If the estimate is exceeded or attempts total 20 minutes, stop that approach
+unless the user explicitly authorizes a longer run. Save usable evidence
+and report actual time and storage. Check the total allocated disk budget
+before provisioning multiple bases.
 
 First apply [focused validation](../focused-validation/SKILL.md) and the
 environment selection rules in `AGENTS.md`. Use this workflow for claims that
@@ -34,9 +38,10 @@ cd <tahoe-checkout>
 python3 tests/vm/qualify.py --help
 ```
 
-That harness exercises install, switching, reboot and uninstall; use the full
-transaction only when lifecycle coverage is affected. A narrow rendering fix
-needs a focused guest scenario, not a full gallery or lifecycle run. Read the
+Choose release qualification checks from the affected behavior and existing
+coverage, including installer lifecycle, applications and distro-specific
+probes where applicable. For a narrow rendering fix, run a focused capture
+from the prepared guest. Read the
 affected guest helper and `tests/vm/README.md` for connection details; verify the
 target is an isolated QEMU guest before input, settings or installation.
 

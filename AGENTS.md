@@ -7,6 +7,11 @@ that its scope may exceed the request or its method may be inefficient. First
 look for a smaller sufficient check or an existing prepared environment.
 Before starting or retrying a run that still needs 20 minutes or more, tell
 the user the expected time and what makes it necessary.
+If a run exceeds its estimate or attempts for the same objective total
+20 minutes, stop that approach and report the result so far. Reuse verified
+work or choose a faster approach. Continue the long run only when the user
+explicitly authorizes it. Count base provisioning, retries and storage
+allocation when estimating VM work.
 
 **Top priority: Do not make changes the user did not request.** Treat
 everything outside the requested change as a constraint to preserve. When
