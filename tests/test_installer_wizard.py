@@ -687,7 +687,11 @@ def test_accent_preserves_brightness_and_only_overrides_gray_selection_text():
         "label { color: #ffffff; }\n"
     )
     kde = "[Colors:Selection]\nBackgroundNormal=0,122,255\nForegroundNormal=255,255,255\n"
-    kvantum = "[GeneralColors]\nhighlight.color=#007aff\nhighlight.text.color=#ffffff\n"
+    kvantum = (
+        "[GeneralColors]\nhighlight.color=#007aff\nhighlight.text.color=#ffffff\n"
+        "[MenuItem]\ntext.normal.color=#333333\ntext.focus.color=#ffffff\n"
+        "[LineEdit]\ntext.focus.color=#ffffff\n"
+    )
     for name, accent in choices.COLORS.items():
         gray = name == "gray"
         foreground = "#000000" if gray else "#ffffff"
@@ -697,4 +701,8 @@ def test_accent_preserves_brightness_and_only_overrides_gray_selection_text():
             selection_css = selection_css.replace("#ffffff;", "#000000;", 3)
         assert recolor(css, accent) == selection_css
         assert f"ForegroundNormal={rgb}\n" in recolor(kde, accent)
-        assert f"highlight.text.color={foreground}\n" in recolor(kvantum, accent)
+        assert recolor(kvantum, accent) == (
+            f"[GeneralColors]\nhighlight.color={accent}\nhighlight.text.color={foreground}\n"
+            f"[MenuItem]\ntext.normal.color=#333333\ntext.focus.color={foreground}\n"
+            "[LineEdit]\ntext.focus.color=#ffffff\n"
+        )

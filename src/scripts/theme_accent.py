@@ -84,6 +84,16 @@ def recolor(text: str, accent: str) -> str:
         return re.sub(r"(?m)^((?:inactive\.)?highlight\.text\.color)=[^\n]+", lambda m: m[1] + "=" + selected_foreground, section)
 
     text = re.sub(r"(?m)^\[(?:Colors:Selection|GeneralColors)\][^\[]*", selection_palette, text)
+    # Kvantum paints selected menu rows from MenuItem's focused label color.
+    text = re.sub(
+        r"(?m)^\[MenuItem\][^\[]*",
+        lambda match: re.sub(
+            r"(?m)^(highlight\.text\.color|text\.focus\.color)=[^\n]+",
+            lambda color: color[1] + "=" + gray_foreground,
+            match[0],
+        ),
+        text,
+    )
     text = re.sub(r"(@define-color (?:accent_fg_color|theme_selected_fg_color|selected_fg_color)) #[0-9a-fA-F]{6};",
                   lambda m: m[1] + " " + gray_foreground + ";", text)
     return text
