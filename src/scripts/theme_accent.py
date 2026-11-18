@@ -26,11 +26,8 @@ def recolor(text: str, accent: str) -> str:
         rgb = tuple(int(value[i:i+2], 16) for i in (0, 2, 4))
         return "#" + "".join(f"{v:02x}" for v in convert(rgb))
 
-    # Selection backgrounds and their text are a pair. Bright accents (notably
-    # gray, yellow and green) cannot retain the bundled white-on-blue text.
-    linear = [v / 12.92 if v <= .04045 else ((v + .055) / 1.055) ** 2.4 for v in target]
-    luminance = sum(v * w for v, w in zip(linear, (.2126, .7152, .0722)))
-    foreground = "#000000" if luminance > .179 else "#ffffff"
+    gray = accent.lower() == COLORS["gray"]
+    gray_foreground = "#000000"
 
     def css_selection(match):
         body = match[0]
@@ -41,10 +38,11 @@ def recolor(text: str, accent: str) -> str:
             old_hue, old_saturation, _ = colorsys.rgb_to_hsv(*original)
             accent_background |= .52 <= old_hue <= .68 and old_saturation >= .25
         if accent_background:
-            body = re.sub(r"(?<![-\w])color\s*:\s*#ffffff\s*;", "color: " + foreground + ";", body)
+            body = re.sub(r"(?<![-\w])color\s*:\s*#ffffff\s*;", "color: " + gray_foreground + ";", body)
         return body
 
-    text = re.sub(r"\{[^{}]*\}", css_selection, text)
+    if gray:
+        text = re.sub(r"\{[^{}]*\}", css_selection, text)
     text = re.sub(r"#([0-9a-fA-F]{6})(?![0-9a-fA-F])", hex_color, text)
 
     def rgb_color(match):
@@ -64,10 +62,14 @@ def recolor(text: str, accent: str) -> str:
         r"(?=[ \t]*(?:[,)]|$))",
         rgb_color, text, flags=re.MULTILINE)
 
+    # Only gray needs an override to the bundled selection foregrounds.
+    if not gray:
+        return text
+
     # KDE and Qt delegates use palette roles rather than CSS inheritance.
     def selection_palette(match):
         section = match[0]
-        selected_foreground = foreground
+        selected_foreground = gray_foreground
         background = re.search(r"(?m)^BackgroundNormal=(\d+),(\d+),(\d+)", section)
         highlight = re.search(r"(?m)^highlight\.color=#([0-9a-fA-F]{6})", section)
         values = ([int(v)/255 for v in background.groups()] if background else
@@ -83,7 +85,7 @@ def recolor(text: str, accent: str) -> str:
 
     text = re.sub(r"(?m)^\[(?:Colors:Selection|GeneralColors)\][^\[]*", selection_palette, text)
     text = re.sub(r"(@define-color (?:accent_fg_color|theme_selected_fg_color|selected_fg_color)) #[0-9a-fA-F]{6};",
-                  lambda m: m[1] + " " + foreground + ";", text)
+                  lambda m: m[1] + " " + gray_foreground + ";", text)
     return text
 
 

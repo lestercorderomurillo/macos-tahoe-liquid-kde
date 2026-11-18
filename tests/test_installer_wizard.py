@@ -134,7 +134,7 @@ def test_accent_changes_blue_selection_but_preserves_status_and_alpha():
     config = '[Colors:Selection]\nBackgroundNormal=0,122,255\nForegroundNormal=255,255,255\n'
     tinted = recolor(config, "#28cd41")
     assert 'BackgroundNormal=0,122,255' not in tinted
-    assert 'ForegroundNormal=0,0,0' in tinted
+    assert 'ForegroundNormal=255,255,255' in tinted
 
 
 def test_all_accent_colors_preserve_bundled_svg_geometry(repo):
@@ -676,19 +676,25 @@ print('Compared light/dark renders:', ', '.join(styles))
     assert result.returncode == 0, result.stdout + result.stderr
 
 
-def test_accent_preserves_requested_brightness_and_selection_contrast():
-    import re
+def test_accent_preserves_brightness_and_only_overrides_gray_selection_text():
     from theme_accent import recolor
-    from installer_choices import COLORS
-    def luminance(rgb):
-        values=[v/255 for v in rgb]
-        return sum((v/12.92 if v <= .04045 else ((v+.055)/1.055)**2.4)*w
-                   for v,w in zip(values,(.2126,.7152,.0722)))
-    source='@define-color accent_bg_color #0088ff; row:selected { background-color: @accent_bg_color; color: #ffffff; }'
-    for name,color in COLORS.items():
-        css=recolor(source,color)
-        background=tuple(int(v,16) for v in re.findall(r'@define-color accent_bg_color #(..)(..)(..)',css)[0])
-        foreground=tuple(int(v,16) for v in re.findall(r'(?<![-\w])color: #(..)(..)(..)',css)[0])
-        assert max(background)==max(int(color[i:i+2],16) for i in (1,3,5)), name
-        a,b=sorted((luminance(background),luminance(foreground)))
-        assert (b+.05)/(a+.05) >= 4.5, (name,css)
+
+    css = (
+        "@define-color accent_bg_color #007aff;\n"
+        "@define-color accent_fg_color #ffffff;\n"
+        "row:selected { background-color: @accent_bg_color; color: #ffffff; }\n"
+        "selection { background: #007aff; color: #ffffff; }\n"
+        "label { color: #ffffff; }\n"
+    )
+    kde = "[Colors:Selection]\nBackgroundNormal=0,122,255\nForegroundNormal=255,255,255\n"
+    kvantum = "[GeneralColors]\nhighlight.color=#007aff\nhighlight.text.color=#ffffff\n"
+    for name, accent in choices.COLORS.items():
+        gray = name == "gray"
+        foreground = "#000000" if gray else "#ffffff"
+        rgb = "0,0,0" if gray else "255,255,255"
+        selection_css = css.replace("#007aff", accent)
+        if gray:
+            selection_css = selection_css.replace("#ffffff;", "#000000;", 3)
+        assert recolor(css, accent) == selection_css
+        assert f"ForegroundNormal={rgb}\n" in recolor(kde, accent)
+        assert f"highlight.text.color={foreground}\n" in recolor(kvantum, accent)

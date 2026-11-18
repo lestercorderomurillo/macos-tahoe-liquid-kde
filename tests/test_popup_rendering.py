@@ -292,7 +292,7 @@ int main() {
 
 
 @pytest.mark.parametrize("gtk_major", ["3", "4"])
-def test_gtk_selection_contrast_survives_all_accents_and_live_states(repo, tmp_path, gtk_major):
+def test_gtk_selection_foregrounds_follow_gray_only_override(repo, tmp_path, gtk_major):
     gi = pytest.importorskip('gi')
     if not callable(getattr(gi, 'require_version', None)):
         pytest.skip('PyGObject required')

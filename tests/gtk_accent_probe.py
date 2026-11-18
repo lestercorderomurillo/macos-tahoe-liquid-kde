@@ -26,21 +26,33 @@ if major=='4': Gtk.StyleContext.add_provider_for_display(w.get_display(),provide
 else: Gtk.StyleContext.add_provider_for_screen(w.get_screen(),provider,Gtk.STYLE_PROVIDER_PRIORITY_USER)
 def lum(v):
  return sum((c/12.92 if c<=.04045 else ((c+.055)/1.055)**2.4)*k for c,k in zip(v,(.2126,.7152,.0722)))
+
+states=(Gtk.StateFlags.NORMAL,Gtk.StateFlags.PRELIGHT,Gtk.StateFlags.FOCUSED,Gtk.StateFlags.BACKDROP)
+
+def selection_colors(css):
+ if major=='4': css=gtk4_compatible_css(css)
+ provider.load_from_data(css.encode())
+ for extra in states:
+  state=Gtk.StateFlags.SELECTED|extra
+  row.set_state_flags(state,True)
+  while GLib.MainContext.default().iteration(False):pass
+  context=label.get_style_context()
+  if major=='4':
+   fg=context.get_color();found,bg=context.lookup_color('accent_bg_color');assert found
+  else:
+   fg=context.get_color(state);bg=context.get_background_color(state)
+  yield (fg.red,fg.green,fg.blue),(bg.red,bg.green,bg.blue)
+
 for mode in ('Light','Dark','Light'):
  source=(Path(sys.argv[1])/f'src/offline/gtk/MacTahoeLiquidKde-{mode}/gtk-{major}.0/gtk.css').read_text()
+ bundled=list(selection_colors(source))
  for name,color in COLORS.items():
-  css=recolor(source,color)
-  if major=='4': css=gtk4_compatible_css(css)
-  provider.load_from_data(css.encode())
-  for extra in (Gtk.StateFlags.NORMAL,Gtk.StateFlags.PRELIGHT,Gtk.StateFlags.FOCUSED,Gtk.StateFlags.BACKDROP):
-   row.set_state_flags(Gtk.StateFlags.SELECTED|extra,True)
-   while GLib.MainContext.default().iteration(False):pass
-   context=label.get_style_context()
-   if major=='4':
-    fg=context.get_color();found,bg=context.lookup_color('accent_bg_color');assert found
+  actual=selection_colors(recolor(source,color))
+  for extra,(foreground,background),(bundled_foreground,_) in zip(states,actual,bundled):
+   if name=='gray':
+    darker,lighter=sorted((lum(foreground),lum(background)))
+    assert (lighter+.05)/(darker+.05)>=4.5,(mode,name,int(extra),foreground,background)
    else:
-    fg=context.get_color(Gtk.StateFlags.SELECTED|extra);bg=context.get_background_color(Gtk.StateFlags.SELECTED|extra)
-   a,b=sorted((lum((fg.red,fg.green,fg.blue)),lum((bg.red,bg.green,bg.blue))))
-   assert (b+.05)/(a+.05)>=4.5,(mode,name,int(extra),fg.to_string(),bg.to_string())
+    assert foreground==bundled_foreground,(mode,name,int(extra),foreground,bundled_foreground)
 print('GTK_ACCENT_STATES_OK: 8 accents, light/dark/light, selected/hover/focus/backdrop')
 w.destroy()
