@@ -164,53 +164,103 @@ Find apps, browse categories and keep your favorites within reach.
 Glass refraction, hover zoom, red notification count bubbles and auto-hide.
 
 <p align="center">
-  <a href="src/screenshots/previews/readme-tahoe-light-dock-regular-6d506b3465fd.webp"><img src="src/screenshots/previews/readme-tahoe-light-dock-regular-6d506b3465fd.webp" alt="Tahoe Dock icon appearance preview: Light" width="415"></a>
-  <a href="src/screenshots/previews/readme-tahoe-dark-dock-regular-9254e2db86a7.webp"><img src="src/screenshots/previews/readme-tahoe-dark-dock-regular-9254e2db86a7.webp" alt="Tahoe Dock icon appearance preview: Dark" width="415"></a>
+  <strong>Light</strong><br>
+  <a href="src/screenshots/previews/readme-tahoe-light-dock-regular-0997fd2f3e46.webp"><img src="src/screenshots/previews/readme-tahoe-light-dock-regular-0997fd2f3e46.webp" alt="Tahoe Dock icon appearance preview: Light" width="830"></a>
 </p>
 
 <p align="center">
-  <a href="src/screenshots/previews/readme-tahoe-light-dock-clear-843c40a052a7.webp"><img src="src/screenshots/previews/readme-tahoe-light-dock-clear-843c40a052a7.webp" alt="Tahoe Dock icon appearance preview: Clear Light" width="415"></a>
-  <a href="src/screenshots/previews/readme-tahoe-dark-dock-clear-58edd6d52e38.webp"><img src="src/screenshots/previews/readme-tahoe-dark-dock-clear-58edd6d52e38.webp" alt="Tahoe Dock icon appearance preview: Clear Dark" width="415"></a>
+  <strong>Dark</strong><br>
+  <a href="src/screenshots/previews/readme-tahoe-dark-dock-regular-f6c4b141b09e.webp"><img src="src/screenshots/previews/readme-tahoe-dark-dock-regular-f6c4b141b09e.webp" alt="Tahoe Dock icon appearance preview: Dark" width="830"></a>
 </p>
 
 <p align="center">
-  <a href="src/screenshots/previews/readme-tahoe-light-dock-blue-d39bb78e2f1d.webp"><img src="src/screenshots/previews/readme-tahoe-light-dock-blue-d39bb78e2f1d.webp" alt="Tahoe Dock icon appearance preview: Blue Light" width="415"></a>
-  <a href="src/screenshots/previews/readme-tahoe-dark-dock-blue-a292ebe93f08.webp"><img src="src/screenshots/previews/readme-tahoe-dark-dock-blue-a292ebe93f08.webp" alt="Tahoe Dock icon appearance preview: Blue Dark" width="415"></a>
+  <strong>Clear Light</strong><br>
+  <a href="src/screenshots/previews/readme-tahoe-light-dock-clear-3a2ade5c0f60.webp"><img src="src/screenshots/previews/readme-tahoe-light-dock-clear-3a2ade5c0f60.webp" alt="Tahoe Dock icon appearance preview: Clear Light" width="830"></a>
 </p>
 
 <p align="center">
-  <a href="src/screenshots/previews/readme-tahoe-light-dock-purple-b8d6d4a59d58.webp"><img src="src/screenshots/previews/readme-tahoe-light-dock-purple-b8d6d4a59d58.webp" alt="Tahoe Dock icon appearance preview: Purple Light" width="415"></a>
-  <a href="src/screenshots/previews/readme-tahoe-dark-dock-purple-090970372f80.webp"><img src="src/screenshots/previews/readme-tahoe-dark-dock-purple-090970372f80.webp" alt="Tahoe Dock icon appearance preview: Purple Dark" width="415"></a>
+  <strong>Clear Dark</strong><br>
+  <a href="src/screenshots/previews/readme-tahoe-dark-dock-clear-9cf1f9739dac.webp"><img src="src/screenshots/previews/readme-tahoe-dark-dock-clear-9cf1f9739dac.webp" alt="Tahoe Dock icon appearance preview: Clear Dark" width="830"></a>
 </p>
 
 <p align="center">
-  <a href="src/screenshots/previews/readme-tahoe-light-dock-pink-c0b0ba00ddeb.webp"><img src="src/screenshots/previews/readme-tahoe-light-dock-pink-c0b0ba00ddeb.webp" alt="Tahoe Dock icon appearance preview: Pink Light" width="415"></a>
-  <a href="src/screenshots/previews/readme-tahoe-dark-dock-pink-ba6941817529.webp"><img src="src/screenshots/previews/readme-tahoe-dark-dock-pink-ba6941817529.webp" alt="Tahoe Dock icon appearance preview: Pink Dark" width="415"></a>
+  <strong>Blue Light</strong><br>
+  <a href="src/screenshots/previews/readme-tahoe-light-dock-blue-dd0eb5c8bff5.webp"><img src="src/screenshots/previews/readme-tahoe-light-dock-blue-dd0eb5c8bff5.webp" alt="Tahoe Dock icon appearance preview: Blue Light" width="830"></a>
 </p>
 
 <p align="center">
-  <a href="src/screenshots/previews/readme-tahoe-light-dock-red-19adb9d798fd.webp"><img src="src/screenshots/previews/readme-tahoe-light-dock-red-19adb9d798fd.webp" alt="Tahoe Dock icon appearance preview: Red Light" width="415"></a>
-  <a href="src/screenshots/previews/readme-tahoe-dark-dock-red-379c09615f96.webp"><img src="src/screenshots/previews/readme-tahoe-dark-dock-red-379c09615f96.webp" alt="Tahoe Dock icon appearance preview: Red Dark" width="415"></a>
+  <strong>Blue Dark</strong><br>
+  <a href="src/screenshots/previews/readme-tahoe-dark-dock-blue-9acb2689e21d.webp"><img src="src/screenshots/previews/readme-tahoe-dark-dock-blue-9acb2689e21d.webp" alt="Tahoe Dock icon appearance preview: Blue Dark" width="830"></a>
 </p>
 
 <p align="center">
-  <a href="src/screenshots/previews/readme-tahoe-light-dock-orange-18c4663ce547.webp"><img src="src/screenshots/previews/readme-tahoe-light-dock-orange-18c4663ce547.webp" alt="Tahoe Dock icon appearance preview: Orange Light" width="415"></a>
-  <a href="src/screenshots/previews/readme-tahoe-dark-dock-orange-5079b478c649.webp"><img src="src/screenshots/previews/readme-tahoe-dark-dock-orange-5079b478c649.webp" alt="Tahoe Dock icon appearance preview: Orange Dark" width="415"></a>
+  <strong>Purple Light</strong><br>
+  <a href="src/screenshots/previews/readme-tahoe-light-dock-purple-91e404540269.webp"><img src="src/screenshots/previews/readme-tahoe-light-dock-purple-91e404540269.webp" alt="Tahoe Dock icon appearance preview: Purple Light" width="830"></a>
 </p>
 
 <p align="center">
-  <a href="src/screenshots/previews/readme-tahoe-light-dock-yellow-c7656eaf2b61.webp"><img src="src/screenshots/previews/readme-tahoe-light-dock-yellow-c7656eaf2b61.webp" alt="Tahoe Dock icon appearance preview: Yellow Light" width="415"></a>
-  <a href="src/screenshots/previews/readme-tahoe-dark-dock-yellow-c1945efddc21.webp"><img src="src/screenshots/previews/readme-tahoe-dark-dock-yellow-c1945efddc21.webp" alt="Tahoe Dock icon appearance preview: Yellow Dark" width="415"></a>
+  <strong>Purple Dark</strong><br>
+  <a href="src/screenshots/previews/readme-tahoe-dark-dock-purple-c2f4a4493b4b.webp"><img src="src/screenshots/previews/readme-tahoe-dark-dock-purple-c2f4a4493b4b.webp" alt="Tahoe Dock icon appearance preview: Purple Dark" width="830"></a>
 </p>
 
 <p align="center">
-  <a href="src/screenshots/previews/readme-tahoe-light-dock-green-ac9611249165.webp"><img src="src/screenshots/previews/readme-tahoe-light-dock-green-ac9611249165.webp" alt="Tahoe Dock icon appearance preview: Green Light" width="415"></a>
-  <a href="src/screenshots/previews/readme-tahoe-dark-dock-green-84eab2e65cf2.webp"><img src="src/screenshots/previews/readme-tahoe-dark-dock-green-84eab2e65cf2.webp" alt="Tahoe Dock icon appearance preview: Green Dark" width="415"></a>
+  <strong>Pink Light</strong><br>
+  <a href="src/screenshots/previews/readme-tahoe-light-dock-pink-f9a47518554a.webp"><img src="src/screenshots/previews/readme-tahoe-light-dock-pink-f9a47518554a.webp" alt="Tahoe Dock icon appearance preview: Pink Light" width="830"></a>
 </p>
 
 <p align="center">
-  <a href="src/screenshots/previews/readme-tahoe-light-dock-gray-18617e5c0df8.webp"><img src="src/screenshots/previews/readme-tahoe-light-dock-gray-18617e5c0df8.webp" alt="Tahoe Dock icon appearance preview: Gray Light" width="415"></a>
-  <a href="src/screenshots/previews/readme-tahoe-dark-dock-gray-e7baf051c7cb.webp"><img src="src/screenshots/previews/readme-tahoe-dark-dock-gray-e7baf051c7cb.webp" alt="Tahoe Dock icon appearance preview: Gray Dark" width="415"></a>
+  <strong>Pink Dark</strong><br>
+  <a href="src/screenshots/previews/readme-tahoe-dark-dock-pink-9a8acd5e420e.webp"><img src="src/screenshots/previews/readme-tahoe-dark-dock-pink-9a8acd5e420e.webp" alt="Tahoe Dock icon appearance preview: Pink Dark" width="830"></a>
+</p>
+
+<p align="center">
+  <strong>Red Light</strong><br>
+  <a href="src/screenshots/previews/readme-tahoe-light-dock-red-d7227e7a735b.webp"><img src="src/screenshots/previews/readme-tahoe-light-dock-red-d7227e7a735b.webp" alt="Tahoe Dock icon appearance preview: Red Light" width="830"></a>
+</p>
+
+<p align="center">
+  <strong>Red Dark</strong><br>
+  <a href="src/screenshots/previews/readme-tahoe-dark-dock-red-9b053dab4782.webp"><img src="src/screenshots/previews/readme-tahoe-dark-dock-red-9b053dab4782.webp" alt="Tahoe Dock icon appearance preview: Red Dark" width="830"></a>
+</p>
+
+<p align="center">
+  <strong>Orange Light</strong><br>
+  <a href="src/screenshots/previews/readme-tahoe-light-dock-orange-df7e33379ecf.webp"><img src="src/screenshots/previews/readme-tahoe-light-dock-orange-df7e33379ecf.webp" alt="Tahoe Dock icon appearance preview: Orange Light" width="830"></a>
+</p>
+
+<p align="center">
+  <strong>Orange Dark</strong><br>
+  <a href="src/screenshots/previews/readme-tahoe-dark-dock-orange-e2bbb5d97042.webp"><img src="src/screenshots/previews/readme-tahoe-dark-dock-orange-e2bbb5d97042.webp" alt="Tahoe Dock icon appearance preview: Orange Dark" width="830"></a>
+</p>
+
+<p align="center">
+  <strong>Yellow Light</strong><br>
+  <a href="src/screenshots/previews/readme-tahoe-light-dock-yellow-0cdbbd4a4ca5.webp"><img src="src/screenshots/previews/readme-tahoe-light-dock-yellow-0cdbbd4a4ca5.webp" alt="Tahoe Dock icon appearance preview: Yellow Light" width="830"></a>
+</p>
+
+<p align="center">
+  <strong>Yellow Dark</strong><br>
+  <a href="src/screenshots/previews/readme-tahoe-dark-dock-yellow-90fd8dfd1060.webp"><img src="src/screenshots/previews/readme-tahoe-dark-dock-yellow-90fd8dfd1060.webp" alt="Tahoe Dock icon appearance preview: Yellow Dark" width="830"></a>
+</p>
+
+<p align="center">
+  <strong>Green Light</strong><br>
+  <a href="src/screenshots/previews/readme-tahoe-light-dock-green-6dd6a05798cf.webp"><img src="src/screenshots/previews/readme-tahoe-light-dock-green-6dd6a05798cf.webp" alt="Tahoe Dock icon appearance preview: Green Light" width="830"></a>
+</p>
+
+<p align="center">
+  <strong>Green Dark</strong><br>
+  <a href="src/screenshots/previews/readme-tahoe-dark-dock-green-ce9afa35c909.webp"><img src="src/screenshots/previews/readme-tahoe-dark-dock-green-ce9afa35c909.webp" alt="Tahoe Dock icon appearance preview: Green Dark" width="830"></a>
+</p>
+
+<p align="center">
+  <strong>Gray Light</strong><br>
+  <a href="src/screenshots/previews/readme-tahoe-light-dock-gray-efd0f3169e36.webp"><img src="src/screenshots/previews/readme-tahoe-light-dock-gray-efd0f3169e36.webp" alt="Tahoe Dock icon appearance preview: Gray Light" width="830"></a>
+</p>
+
+<p align="center">
+  <strong>Gray Dark</strong><br>
+  <a href="src/screenshots/previews/readme-tahoe-dark-dock-gray-f5be1bcd7ab5.webp"><img src="src/screenshots/previews/readme-tahoe-dark-dock-gray-f5be1bcd7ab5.webp" alt="Tahoe Dock icon appearance preview: Gray Dark" width="830"></a>
 </p>
 
 <br>
