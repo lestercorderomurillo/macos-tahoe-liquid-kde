@@ -1,7 +1,7 @@
 {
-  "version": "0.73.14",
+  "version": "0.73.15",
   "implementation_commit": "8fbc63ac2f39a3ecf13293c75a220983f2f675d9",
-  "scope": "Gray-only selected text overrides for GTK, KDE and Kvantum Shell rows",
+  "scope": "Approved light and dark Notification Center README photographs",
   "gallery_commit": "f09780b200b79302e7c23ef9f6f74d94748bbea3",
   "runtime_sha256": "27d26c56fb1bd44e24918212d345ea193f0f6be1fae8f7efb8b4638b6defe5e3",
   "checks": [
@@ -23,12 +23,28 @@
     {
       "command": "python3 src/scripts/component_manifest.py; git diff --check",
       "result": "passed"
+    },
+    {
+      "command": "python3 .agents/skills/screenshot-provenance/scripts/audit.py --repo . --edition tahoe; git diff --cached --check",
+      "result": "passed",
+      "detail": "Audit of existing README gallery, with the new approved photographs checked against their separate capture manifest."
     }
   ],
-  "captures": [],
+  "captures": [
+    {
+      "path": "src/screenshots/previews/readme-tahoe-light-notifications-1751d29fa5df.webp",
+      "sha256": "1751d29fa5df489cc8c2cd7956cf5048465d8c4432f45f87b6143cf6fb39943a",
+      "reviewed": true
+    },
+    {
+      "path": "src/screenshots/previews/readme-tahoe-dark-notifications-6e3677470b76.webp",
+      "sha256": "6e3677470b76ef067986d5ccb12a14a371c1981ffbc5ed8eb6c00c7852311953",
+      "reviewed": true
+    }
+  ],
   "coverage_limits": [
     "Qt row pixels were checked on the primary SDK in Xvfb. The README captures cover the shared Shell on KDE neon Wayland. Full CI runs asynchronously."
   ],
-  "source_sha256": "811364b451cbf9f7ed845fe42c0c72137ea7d044d159758cfc434cc4eb7688cd",
-  "documentation_note": "The README currently uses the previous approved Shell photographs. The original v0.73.14 tag retains its separate historical capture record."
+  "source_sha256": "1838a650b610c7a0d66aab12bd8d0a3b9c620de98159c0ea7ed32872a392a19a",
+  "documentation_note": "The user approved the four edition-specific Notification Center photographs in the paired preview. The previous approved Shell and installer photographs retain their original provenance."
 }

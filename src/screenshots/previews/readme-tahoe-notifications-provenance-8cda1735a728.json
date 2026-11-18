@@ -1,0 +1,68 @@
+{
+  "purpose": "README Notifications (Alpha)",
+  "edition": "tahoe",
+  "source_commit": "50bbe2bae7a3fe6c55c86441423d50bd86386b4e",
+  "vm_image_sha256": "2a09de13ad568da01a8e16dd93e6aec120e63375bfc0ec24b4e804b43ecb4f8c",
+  "capture_environment": {
+    "plasma": "plasmashell 6.8.1",
+    "backend": "wayland"
+  },
+  "images": {
+    "readme-tahoe-light-notifications-1751d29fa5df.webp": {
+      "focused_window": {
+        "id": "{9a30a73e-94d1-4c25-9d78-c06a39f82726}",
+        "caption": "mttkde-notifications",
+        "resourceClass": "org.kde.plasmashell",
+        "type": 13,
+        "appletPopup": false,
+        "hidden": false,
+        "active": true,
+        "geometry": {
+          "x": 1550,
+          "y": 38,
+          "width": 364,
+          "height": 214
+        }
+      },
+      "source_capture_sha256": "0b9e36a178fa866f74db5fd7bc48cbaa1ad7ea145b13f1edf2421c3a845c5ce8",
+      "crop_physical_pixels": [
+        3100,
+        76,
+        3828,
+        504
+      ],
+      "edition": "tahoe",
+      "mode": "light",
+      "sha256": "1751d29fa5df489cc8c2cd7956cf5048465d8c4432f45f87b6143cf6fb39943a",
+      "replaces": "readme-tahoe-light-notifications-e23889cb576c.webp"
+    },
+    "readme-tahoe-dark-notifications-6e3677470b76.webp": {
+      "focused_window": {
+        "id": "{c9eccd47-812b-4b5b-906c-dc43ec465f9d}",
+        "caption": "mttkde-notifications",
+        "resourceClass": "org.kde.plasmashell",
+        "type": 13,
+        "appletPopup": false,
+        "hidden": false,
+        "active": true,
+        "geometry": {
+          "x": 1550,
+          "y": 38,
+          "width": 364,
+          "height": 214
+        }
+      },
+      "source_capture_sha256": "c4f859393b58741350de0d510a01d21c9b024d03f643da34a2d6e01a5fea659c",
+      "crop_physical_pixels": [
+        3100,
+        76,
+        3828,
+        504
+      ],
+      "edition": "tahoe",
+      "mode": "dark",
+      "sha256": "6e3677470b76ef067986d5ccb12a14a371c1981ffbc5ed8eb6c00c7852311953",
+      "replaces": "readme-tahoe-dark-notifications-964aef6ed481.webp"
+    }
+  }
+}
