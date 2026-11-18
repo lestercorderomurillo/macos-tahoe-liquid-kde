@@ -936,6 +936,11 @@ _PACKAGE_MAP: dict[str, dict[str, str]] = {
         "centos":   "kf6-kglobalaccel-devel",
         "opensuse": "kf6-kglobalaccel-devel",
     },
+    "libsodium-dev": {
+        "arch": "libsodium", "debian": "libsodium-dev", "ubuntu": "libsodium-dev",
+        "fedora": "libsodium-devel", "rhel": "libsodium-devel", "centos": "libsodium-devel",
+        "opensuse": "libsodium-devel",
+    },
     "kf6-guiaddons-cmake": {
         "arch":     "kguiaddons",
         "debian":   "libkf6guiaddons-dev",

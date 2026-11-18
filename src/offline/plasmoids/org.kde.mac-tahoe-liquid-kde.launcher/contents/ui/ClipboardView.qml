@@ -143,7 +143,7 @@ FocusScope {
         font.pointSize: main.textSize
         visible: view.entries.length === 0 || main.clipboard.error !== ""
         text: main.clipboard.error ? i18n("Clipboard action failed. Try again.") : (!main.clipboard.available
-            ? i18n("Clipboard history is unavailable. Enable Clipboard history in the installer.")
+            ? i18n("Clipboard history is unavailable.")
             : main.searchText ? i18n("No results") : i18n("Nothing copied yet"))
     }
     TahoeOptionsMenu {

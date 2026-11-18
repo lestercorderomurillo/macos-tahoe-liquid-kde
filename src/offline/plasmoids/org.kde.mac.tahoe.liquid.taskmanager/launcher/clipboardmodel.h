@@ -67,8 +67,8 @@ public Q_SLOTS:
                     const auto kind = item.value(QStringLiteral("kind")).toString();
                     if (kind != QStringLiteral("text") && kind != QStringLiteral("image")) continue;
                     auto map = item.toVariantMap();
-                    // Encode local filenames, never interpret clipboard data as URLs or markup.
-                    map.insert(QStringLiteral("imageUrl"), QUrl::fromLocalFile(item.value(QStringLiteral("path")).toString()));
+                    if (kind == QStringLiteral("image"))
+                        map.insert(QStringLiteral("imageUrl"), QStringLiteral("data:image/png;base64,%1").arg(item.value(QStringLiteral("thumbnail")).toString()));
                     m_entries.append(map);
                 }
             }

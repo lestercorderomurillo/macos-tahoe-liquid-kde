@@ -1,4 +1,4 @@
-"""Opt-in clipboard history popup (Meta+V) with pinning and image previews.
+"""Encrypted clipboard history popup (Meta+V) with pinning and image previews.
 
 Two user-level pieces, no root needed:
 
@@ -79,6 +79,8 @@ X-KDE-autostart-after=panel
 def deps():
     return [
         "cmake",
+        "libsodium-dev:libsodium",
+        "pkg-config:pkgconf",
         "g++:gcc",
         "make",
         "qmake6:qt6-base",
@@ -237,8 +239,10 @@ def install() -> None:
 
 
 def uninstall() -> None:
+    key = Path(os.environ.get("XDG_CONFIG_HOME") or HOME / ".config") / "mac-tahoe-liquid-kde/clipboard.key"
+    legacy = [APP_DIR / name for name in ("clipboard-pins.json", "clipboard-pins.json.migrated")]
     owned = any(path.exists() or path.is_symlink() for path in
-                (DAEMON_DEST, LAUNCHER_DEST, POPUP_DEST, DESKTOP_DEST, AUTOSTART_DEST, _shortcut_state()))
+                (DAEMON_DEST, LAUNCHER_DEST, POPUP_DEST, DESKTOP_DEST, AUTOSTART_DEST, _shortcut_state(), key, *legacy))
     owned = owned or (HISTORY_DIR.is_dir() and not HISTORY_DIR.is_symlink())
     if not owned:
         return
@@ -269,5 +273,7 @@ def uninstall() -> None:
         # still discover HISTORY_DIR after the other payloads were removed.
         shutil.rmtree(HISTORY_DIR)
         removed = True
+    for path in [key, *legacy]:
+        path.unlink(missing_ok=True)
     if removed:
         ok(tr('Clipboard popup and service removed'))

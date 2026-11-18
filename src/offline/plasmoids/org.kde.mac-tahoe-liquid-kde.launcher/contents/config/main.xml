@@ -6,6 +6,7 @@
   <kcfgfile name=""/>
 
   <group name="General">
+    <entry name="launcherApplication" type="String"><default></default></entry>
     <entry name="launcherPreset" type="Int">
       <label>Launcher preset: 0 follows the edition default, 1 is Tahoe, 2 is Golden Gate.</label>
       <default>0</default>

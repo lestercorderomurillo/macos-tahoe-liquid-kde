@@ -167,8 +167,10 @@ def _layout_script_with_launchers(
     script = script_path.read_text()
     if script_path == LAYOUT_SCRIPT:
         preset = default_launcher_preset() if applied_edition(HOME) != edition_name() else 0
-        from installer_choices import selected
+        from installer_choices import selected, use_user_launcher
         choices = selected()
+        if use_user_launcher():
+            script = user_launcher_script() + script
         if choices:
             preset = 2 if choices["launcher"] == "golden" else 1
             script = (f"var mttkdeTopPanel = {str(choices['panel']).lower()};\n"
@@ -185,6 +187,40 @@ def _layout_script_with_launchers(
     if script_path == LAYOUT_SCRIPT:
         script += "\n" + _dock_migration_script()
     return script
+
+
+def user_launcher_script() -> str:
+    import os
+    launchers = {"org.kde.plasma.kickoff", "org.kde.plasma.kicker", "org.kde.plasma.kickerdash"}
+    roots = [DATA_HOME, *map(Path, os.environ.get("XDG_DATA_DIRS", "/usr/local/share:/usr/share").split(":"))]
+    for root in roots:
+        for path in (root / "plasma/plasmoids").glob("*/metadata.json"):
+            try:
+                meta = json.loads(path.read_text())["KPlugin"]
+                if meta.get("Category") == "Application Launchers" and meta["Id"] != LAUNCHER_ID:
+                    launchers.add(meta["Id"])
+            except (OSError, ValueError, KeyError):
+                continue
+    return "var userLauncherTypes = " + json.dumps(sorted(launchers)) + ";\n"
+
+
+def replace_project_launcher() -> None:
+    script = user_launcher_script() + """
+const panelList = panels();
+for (const panel of panelList) {
+    const current = panel.widgets();
+    const ours = current.filter(w => w.type === "org.kde.mac-tahoe-liquid-kde.launcher");
+    if (!ours.length) continue;
+    if (!panelList.some(p => p.screen === panel.screen && p.widgets().some(w => userLauncherTypes.includes(w.type)))) {
+        const replacement = panel.addWidget("org.kde.plasma.kickoff");
+        if (!replacement) throw Error("Could not restore the Plasma launcher");
+        replacement.index = ours[0].index;
+    }
+    for (const widget of ours) widget.remove();
+}
+"""
+    if not _evaluate_layout_script(script):
+        raise RuntimeError("Could not replace the installed launcher")
 
 
 def _dock_migration_script() -> str:
@@ -338,9 +374,11 @@ def _layout_looks_installed() -> bool:
         text = appletsrc.read_text()
     except OSError:
         return False
-    from installer_choices import selected
+    from installer_choices import selected, use_user_launcher
     choices = selected()
     needles = _CUSTOM_PANEL_NEEDLES
+    if use_user_launcher():
+        needles = tuple(needle for needle in needles if LAUNCHER_ID not in needle)
     if choices:
         needles = tuple(needle for needle in needles
                         if (choices["panel"] if "globalmenu" in needle else choices["dock"]))

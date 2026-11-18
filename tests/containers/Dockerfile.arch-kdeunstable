@@ -26,7 +26,7 @@ RUN printf '\n[kde-unstable]\nInclude = /etc/pacman.d/mirrorlist\n' >> /etc/pacm
     qt6-base qt6-tools qt6-declarative qt6-svg qt6-wayland \
     pkgconf \
     # KF6 frameworks required by deps() of the compiled steps.
-    kconfig kconfigwidgets kcoreaddons kcrash kglobalaccel kguiaddons \
+    kconfig kconfigwidgets kcoreaddons kcrash kglobalaccel libsodium kguiaddons \
     ki18n kio kcmutils knotifications kservice kwidgetsaddons \
     kwindowsystem kitemmodels \
     # Plasma / KSysGuard / plasma-workspace cmake configs.

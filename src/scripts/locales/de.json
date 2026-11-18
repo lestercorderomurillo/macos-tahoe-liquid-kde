@@ -1252,5 +1252,11 @@
   "Off": "Aus",
   "Removed {size} MiB of temporary compiler objects.": "{size} MiB temporäre Compiler-Objektdateien entfernt.",
   "Options": "Optionen",
-  "Notification Center": "Mitteilungszentrale"
+  "Notification Center": "Mitteilungszentrale",
+  "Use my launcher": "Meinen Starter verwenden",
+  "Skip Launchpad and its encrypted clipboard history.": "Launchpad und den verschlüsselten Zwischenablageverlauf überspringen.",
+  "Tahoe and Golden Gate include encrypted clipboard history (Meta+V).": "Tahoe und Golden Gate enthalten einen verschlüsselten Zwischenablageverlauf (Meta+V).",
+  "Open from the launcher:": "Über den Starter öffnen:",
+  "Launchpad": "Launchpad",
+  "Clipboard history is unavailable.": "Der Zwischenablageverlauf ist nicht verfügbar."
 }

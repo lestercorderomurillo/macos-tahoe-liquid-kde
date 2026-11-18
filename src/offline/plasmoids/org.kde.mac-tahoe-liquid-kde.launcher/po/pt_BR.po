@@ -20,8 +20,8 @@ msgstr "Área de transferência"
 msgid "Clipboard action failed. Try again."
 msgstr "A ação da área de transferência falhou. Tente novamente."
 
-msgid "Clipboard history is unavailable. Enable Clipboard history in the installer."
-msgstr "O histórico está indisponível. Ative o histórico da área de transferência no instalador."
+msgid "Clipboard history is unavailable."
+msgstr "O histórico da área de transferência está indisponível."
 
 msgid "Clipboard options"
 msgstr "Opções da área de transferência"
@@ -104,6 +104,9 @@ msgstr "Predefinição do lançador"
 msgid "Launcher preset:"
 msgstr "Predefinição do lançador:"
 
+msgid "Launchpad"
+msgstr "Launchpad"
+
 msgid "List"
 msgstr "Lista"
 
@@ -136,6 +139,9 @@ msgstr "Em todas as atividades"
 
 msgid "On the Current Activity"
 msgstr "Na atividade atual"
+
+msgid "Open from the launcher:"
+msgstr "Abrir pelo lançador:"
 
 msgid "Pin"
 msgstr "Fixar"

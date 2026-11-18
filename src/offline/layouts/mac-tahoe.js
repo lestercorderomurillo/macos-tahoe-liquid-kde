@@ -6,6 +6,7 @@
 // ── remove existing panels ──────────────────────
 var old = panels();
 var launcherPresets = {};
+var userLaunchers = {};
 var dockPresetRevisions = {};
 var dockPresetCategories = {};
 var dockIconChoices = {};
@@ -19,6 +20,10 @@ for (var p = 0; p < old.length; p++) {
             dockPresetRevisions[old[p].screen] = Number(widget.readConfig("dockPresetRevision", 0));
             dockPresetCategories[old[p].screen] = widget.readConfig("dockPresetCategories", []);
         }
+        if (typeof userLauncherTypes !== "undefined" && widget && userLauncherTypes.includes(widget.type)) {
+            if (!userLaunchers[old[p].screen]) userLaunchers[old[p].screen] = [];
+            userLaunchers[old[p].screen].push(widget);
+        }
         if (widget && widget.type === "org.kde.mac-tahoe-liquid-kde.launcher") {
             widget.currentConfigGroup = ["General"];
             var preset = Number(widget.readConfig("launcherPreset", 0));
@@ -28,8 +33,8 @@ for (var p = 0; p < old.length; p++) {
         }
     }
 }
-for (var i = 0; i < old.length; i++) {
-    old[i].remove();
+if (typeof userLauncherTypes === "undefined") {
+    for (var i = 0; i < old.length; i++) old[i].remove();
 }
 
 for (var screen = 0; screen < screenCount; screen++) {
@@ -50,6 +55,10 @@ for (var screen = 0; screen < screenCount; screen++) {
     // floating and produce a full-width gray strip plus dark blocks behind
     // individual applets. Plasma's own floating-applet surfaces provide the
     // intended light/dark-aware glass treatment.
+    if (typeof userLauncherTypes !== "undefined" && typeof mttkdeDock !== "undefined" && !mttkdeDock) {
+        var saved = userLaunchers[screen] || [];
+        for (var n = 0; n < saved.length; n++) bar.addWidget(saved[n]);
+    }
     var colorizer = bar.addWidget("luisbocanegra.panel.colorizer");
     if (colorizer) {
         colorizer.currentConfigGroup = ["General"];
@@ -113,15 +122,20 @@ for (var screen = 0; screen < screenCount; screen++) {
     // opacity is set to translucent via plasmashellrc after layout apply
     // (JS scripting API does not expose panelOpacity)
 
-    var launcher = dock.addWidget("org.kde.mac-tahoe-liquid-kde.launcher");
-    launcher.currentConfigGroup = ["General"];
-    launcher.writeConfig("icon", "view-app-grid");
-    // The installer selects the new edition when migrating between editions.
-    if (typeof mttkdeLauncherPreset !== "undefined"
-            && (mttkdeLauncherPreset === 1 || mttkdeLauncherPreset === 2)) {
-        launcher.writeConfig("launcherPreset", mttkdeLauncherPreset);
-    } else if (launcherPresets[dock.screen] !== undefined) {
-        launcher.writeConfig("launcherPreset", launcherPresets[dock.screen]);
+    if (typeof userLauncherTypes !== "undefined") {
+        var saved = userLaunchers[dock.screen] || [];
+        for (var n = 0; n < saved.length; n++) dock.addWidget(saved[n]);
+    } else {
+        var launcher = dock.addWidget("org.kde.mac-tahoe-liquid-kde.launcher");
+        launcher.currentConfigGroup = ["General"];
+        launcher.writeConfig("icon", "view-app-grid");
+        // The installer selects the new edition when migrating between editions.
+        if (typeof mttkdeLauncherPreset !== "undefined"
+                && (mttkdeLauncherPreset === 1 || mttkdeLauncherPreset === 2)) {
+            launcher.writeConfig("launcherPreset", mttkdeLauncherPreset);
+        } else if (launcherPresets[dock.screen] !== undefined) {
+            launcher.writeConfig("launcherPreset", launcherPresets[dock.screen]);
+        }
     }
 
     var tasks = dock.addWidget("org.kde.mac.tahoe.liquid.icontasks");
@@ -160,4 +174,7 @@ for (var screen = 0; screen < screenCount; screen++) {
 
     dock.addWidget("org.kde.mac-tahoe-liquid-kde.trashcan");
 }
+}
+if (typeof userLauncherTypes !== "undefined") {
+    for (var i = 0; i < old.length; i++) old[i].remove();
 }

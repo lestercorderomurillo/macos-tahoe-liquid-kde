@@ -1,3 +1,4 @@
+import org.kde.mac.tahoe.launcher as NativeLauncher
 import QtQuick 2.15
 import QtQuick.Controls 2.15
 import QtQuick.Dialogs
@@ -16,6 +17,8 @@ import org.kde.iconthemes as KIconThemes
 
 KCM.SimpleKCM {
     id: configGeneral
+
+    property string cfg_launcherApplication: Plasmoid.configuration.launcherApplication
 
     property bool isDash: false
 
@@ -144,6 +147,14 @@ KCM.SimpleKCM {
               }
           }
       }
+    }
+
+    ComboBox {
+        Kirigami.FormData.label: i18n("Open from the launcher:")
+        model: [{name: i18n("Launchpad"), id: ""}].concat(Array.from(NativeLauncher.LauncherApplications.choices()))
+        textRole: "name"
+        currentIndex: model.findIndex(app => app.id === configGeneral.cfg_launcherApplication)
+        onActivated: index => configGeneral.cfg_launcherApplication = model[index].id
     }
 
     ComboBox {

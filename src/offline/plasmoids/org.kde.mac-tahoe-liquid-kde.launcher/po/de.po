@@ -20,8 +20,8 @@ msgstr "Zwischenablage"
 msgid "Clipboard action failed. Try again."
 msgstr "Die Zwischenablageaktion ist fehlgeschlagen. Versuche es erneut."
 
-msgid "Clipboard history is unavailable. Enable Clipboard history in the installer."
-msgstr "Der Verlauf ist nicht verfügbar. Aktiviere den Zwischenablageverlauf im Installationsprogramm."
+msgid "Clipboard history is unavailable."
+msgstr "Der Zwischenablageverlauf ist nicht verfügbar."
 
 msgid "Clipboard options"
 msgstr "Zwischenablageoptionen"
@@ -104,6 +104,9 @@ msgstr "Starter-Voreinstellung"
 msgid "Launcher preset:"
 msgstr "Starter-Vorgabe:"
 
+msgid "Launchpad"
+msgstr "Launchpad"
+
 msgid "List"
 msgstr "Liste"
 
@@ -136,6 +139,9 @@ msgstr "In allen Aktivitäten"
 
 msgid "On the Current Activity"
 msgstr "In der aktuellen Aktivität"
+
+msgid "Open from the launcher:"
+msgstr "Über den Starter öffnen:"
 
 msgid "Pin"
 msgstr "Anheften"

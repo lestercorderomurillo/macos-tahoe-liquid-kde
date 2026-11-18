@@ -3,7 +3,11 @@
 from localization import effective_language, translate
 
 # English | Spanish | Simplified Chinese | Brazilian Portuguese | German
-_ROWS = '''Enable clipboard history?|¿Activar el historial del portapapeles?|启用剪贴板历史记录？|Ativar o histórico da área de transferência?|Zwischenablageverlauf aktivieren?
+_ROWS = '''Remove Launchpad and its saved clipboard history.|Eliminar Launchpad y su historial del portapapeles guardado.|移除启动台及其保存的剪贴板历史记录。|Remover o Launchpad e seu histórico salvo da área de transferência.|Launchpad und seinen gespeicherten Zwischenablageverlauf entfernen.
+Use my launcher|Usar mi lanzador|使用我的启动器|Usar meu lançador|Meinen Starter verwenden
+Skip Launchpad and its encrypted clipboard history.|Omitir Launchpad y su historial cifrado del portapapeles.|跳过启动台及其加密剪贴板历史记录。|Ignorar o Launchpad e seu histórico criptografado da área de transferência.|Launchpad und den verschlüsselten Zwischenablageverlauf überspringen.
+Tahoe and Golden Gate include encrypted clipboard history (Meta+V).|Tahoe y Golden Gate incluyen un historial cifrado del portapapeles (Meta+V).|Tahoe 和 Golden Gate 包含加密剪贴板历史记录（Meta+V）。|Tahoe e Golden Gate incluem histórico criptografado da área de transferência (Meta+V).|Tahoe und Golden Gate enthalten einen verschlüsselten Zwischenablageverlauf (Meta+V).
+Enable clipboard history?|¿Activar el historial del portapapeles?|启用剪贴板历史记录？|Ativar o histórico da área de transferência?|Zwischenablageverlauf aktivieren?
 Enable clipboard history|Activar el historial del portapapeles|启用剪贴板历史记录|Ativar o histórico da área de transferência|Zwischenablageverlauf aktivieren
 Clipboard history|Historial del portapapeles|剪贴板历史记录|Histórico da área de transferência|Zwischenablageverlauf
 Copied text and images are saved unencrypted on this computer. Uninstall deletes this history.|El texto y las imágenes copiados se guardan sin cifrar en este equipo. La desinstalación elimina este historial.|复制的文本和图像将以未加密形式保存在此计算机上。卸载会删除此历史记录。|O texto e as imagens copiados são salvos sem criptografia neste computador. A desinstalação apaga esse histórico.|Kopierte Texte und Bilder werden unverschlüsselt auf diesem Computer gespeichert. Die Deinstallation löscht diesen Verlauf.

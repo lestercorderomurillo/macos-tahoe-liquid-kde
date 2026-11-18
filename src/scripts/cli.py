@@ -145,9 +145,6 @@ Options:
     --nautilus-bookmarks  macOS-style sidebar bookmarks (backs up the
                        existing bookmarks; uninstall restores them)
     --portals          Route FileChooser/AppChooser to KDE (fixes stale dialogs)
-    --clipboard        Clipboard history popup on Meta+V (text and images,
-                       pinning, search). Builds a small background service;
-                       history stays private on this machine. Default: off
     --oled-care        OLED burn-in care: pixel-shift the panels every
                        5 minutes (top bar height, dock offset). Default: off
     --oled-interval=N  Minutes between pixel shifts (1-59, default 5)
@@ -218,8 +215,6 @@ Examples:
 DEFAULT_FEATURES: dict[str, object] = {f: True for f in ALL_FEATURES}
 # Opt-in: shifts panel geometry on a timer — only wanted on OLED monitors.
 DEFAULT_FEATURES["oled_care"] = False
-# Opt-in: records everything copied to the clipboard, so it must be chosen.
-DEFAULT_FEATURES["clipboard"] = False
 DEFAULT_FEATURES["oled_interval"] = 5   # minutes between shifts (1-59)
 DEFAULT_FEATURES["oled_max_shift"] = 8  # max shift distance in px (1-16)
 DEFAULT_FEATURES["theme_mode"] = "auto"
@@ -250,6 +245,8 @@ def load_features() -> dict[str, object]:
 def save_features(feat: dict[str, object]) -> None:
     lines = ["{"]
     for k in ALL_FEATURES:
+        if k == "clipboard":
+            continue
         v = feat.get(k, True)
         lines.append(f'  "{k}":'.ljust(24) + f"{'true' if v else 'false'},")
     lines.append('  "oled_interval":'.ljust(24) +
@@ -338,7 +335,7 @@ def parse_args(argv: list[str]) -> ParsedArgs:
             os.environ["MTTKDE_NO_GRUB_MODIFY"] = "1"
         elif arg.startswith("--no-"):
             key = arg[5:].replace("-", "_")
-            if key in ALL_FEATURES:
+            if key in ALL_FEATURES and key != "clipboard":
                 p.cli_overrides[key] = False
         elif arg.startswith("--"):
             key = arg[2:].replace("-", "_")
@@ -544,6 +541,13 @@ def apply_overrides(feat: dict[str, object], parsed: ParsedArgs) -> dict[str, ob
 
     for k, v in parsed.cli_overrides.items():
         feat[k] = v
+
+    from installer_choices import use_user_launcher
+    launcher_installed = bool(feat.get("plasmoids"))
+    if parsed.only_mode and parsed.cli_overrides.get("clipboard"):
+        from steps.plasmoids import DEST_DIR, LAUNCHER_ID
+        launcher_installed |= (DEST_DIR / LAUNCHER_ID / "metadata.json").is_file()
+    feat["clipboard"] = launcher_installed and not use_user_launcher()
 
     if parsed.theme_mode:
         feat["theme_mode"] = parsed.theme_mode
@@ -857,7 +861,7 @@ def _layout_is_installed() -> bool:
 # Compiled .so + QML drops — if any fails to install, abort rather than
 # ship a half-broken desktop.
 CRITICAL_INSTALL_FEATURES = {
-    "globalmenu", "plasmoids", "acrylic_glass", "rounded_corners",
+    "globalmenu", "plasmoids", "acrylic_glass", "rounded_corners", "clipboard",
 }
 
 
@@ -1122,6 +1126,9 @@ def _run_install_steps(feat: dict[str, object]) -> int:
 
     progress_event('phase', id='build', state='done' if _build_features(feat) else 'skipped')
     progress_event('phase', id='install', state='running')
+    from installer_choices import selected
+    if selected().get("launcher") == "keep" and not run_phase("clipboard", "uninstall"):
+        return 1
     for feature in INSTALL_ORDER:
         check_cancelled()
         if feature == "layout":
@@ -1144,7 +1151,6 @@ def _run_install_steps(feat: dict[str, object]) -> int:
 
     step('Installing Theme Switcher')
     note(tr('Installs the auto light/dark theme switcher'))
-    from installer_choices import selected
     if selected().get("files") == "dolphin":
         from steps.nautilus import _set_default, DOLPHIN_DESKTOP, MIME_FOLDER, MIME_SEARCH
         if not all(_set_default(DOLPHIN_DESKTOP, mime) for mime in (MIME_FOLDER, MIME_SEARCH)):

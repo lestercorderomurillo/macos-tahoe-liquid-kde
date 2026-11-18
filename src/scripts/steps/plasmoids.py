@@ -216,9 +216,23 @@ def install() -> None:
         if not (widget / "metadata.json").is_file():
             fail(tr('{value1} (no metadata.json — skipping)', value1=widget.name))
             continue
+        if widget.name == LAUNCHER_ID:
+            from installer_choices import launcher_preference, use_user_launcher
+            if use_user_launcher():
+                if (DEST_DIR / LAUNCHER_ID).is_dir():
+                    from steps.layout import replace_project_launcher
+                    replace_project_launcher()
+                    if not remove_tree(DEST_DIR / LAUNCHER_ID, LAUNCHER_ID):
+                        raise RuntimeError("Could not remove the project launcher")
+                marker = launcher_preference()
+                marker.parent.mkdir(parents=True, exist_ok=True)
+                marker.touch()
+                continue
         installed = (_install_launcher_package(widget) if widget.name == LAUNCHER_ID
                      else install_tree(widget, DEST_DIR / widget.name))
         if installed:
+            if widget.name == LAUNCHER_ID:
+                launcher_preference().unlink(missing_ok=True)
             n += 1
     spacing_script = offline("layouts/dock-spacing.js")
     if spacing_script.is_file():
@@ -229,6 +243,8 @@ def install() -> None:
 
 
 def uninstall() -> None:
+    from installer_choices import launcher_preference
+    launcher_preference().unlink(missing_ok=True)
     n = 0
     dest_so = qt6_plugins_dir() / _TASKMANAGER_SO_RELPATH
     dest_qml = qt6_qml_dir() / _TASKMANAGER_QML_RELPATH
