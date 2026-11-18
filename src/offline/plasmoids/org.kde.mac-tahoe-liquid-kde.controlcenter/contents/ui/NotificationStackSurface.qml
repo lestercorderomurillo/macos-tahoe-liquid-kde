@@ -11,13 +11,15 @@ Item {
     readonly property real cardHeight: surface.height
     readonly property real cornerRadius: surface.cornerRadius
     readonly property real layerOffset: 4
+    function layerArea(level) {
+        const offset = level * layerOffset;
+        return {x: offset, y: offset, width: width - 2 * offset,
+                height: cardHeight, radius: cornerRadius};
+    }
     readonly property var surfaces: {
         const areas = [];
-        for (let i = 0; i <= depth; ++i) {
-            const offset = i * layerOffset;
-            areas.push({x: offset, y: offset, width: width - 2 * offset,
-                        height: cardHeight, radius: cornerRadius});
-        }
+        for (let i = 0; i <= depth; ++i)
+            areas.push(layerArea(i));
         return areas;
     }
     implicitWidth: 344
@@ -29,7 +31,7 @@ Item {
             required property int index
             // The Qt software scene graph cannot run a layer shader.
             readonly property bool useMask: GraphicsInfo.api !== GraphicsInfo.Software
-            readonly property var area: stack.surfaces[stack.depth - index]
+            readonly property var area: stack.layerArea(Math.max(0, stack.depth - index))
             x: area.x
             y: area.y + area.height - height
             width: area.width
