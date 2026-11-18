@@ -5,11 +5,12 @@ description: Qualify an affected Plasma component in a disposable VM with explic
 
 # Plasma VM qualification
 
-For repeated distro checks, use prepared desktop images with the SDK and
-build cache already available. Run the requested capture scenario from the
-current local installer source. Keep provisioning separate from timed
-qualification. Aim for ten minutes per representative batch and report
-missing bases, measured timings and incomplete work. If an attempt or retry is
+Use one prepared KDE neon desktop with the SDK and build cache for quick
+captures and README previews of both editions. Install the current local
+candidate in a disposable overlay and use the edition's defaults. Select
+additional environments only for specific release qualification claims.
+Keep provisioning separate from timed qualification and report measured
+timings and incomplete work. If an attempt or retry is
 expected to take 20 minutes or more, reassess scope and tell the user the
 estimate and reason before starting it.
 If the estimate is exceeded or attempts total 20 minutes, stop that approach

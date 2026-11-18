@@ -8,47 +8,31 @@ Kubuntu pins 26.04.1 LTS for the Plasma 6.6 launcher regression reported in
 This new test target is pending full live qualification; adding it is not a
 compatibility badge.
 
-## Run a prepared capture batch
+## Run quick captures on KDE neon
 
-Use a prepared desktop disk for repeat checks. The base should have Plasma
-autologin, SSH, the project dependencies and a populated compiler cache. Pick
-the fast local disk once for both the base library and disposable overlays.
+Reuse one KDE neon desktop for both editions. The base has Plasma autologin,
+SSH, the project dependencies and a populated compiler cache. Keep the base
+and disposable overlays on the fast local disk.
 
 ```sh
 export VM_PREPARED_DIR=/path/to/desktop-bases
 export VM_RUN_DIR=/path/to/fast-scratch
-./vm inventory
-./vm capture neon arch kubuntu --jobs 4 --budget 600 --output build/vm-captures
+./vm capture neon --budget 600 --output build/vm-captures
 ```
 
-`all` requests the whole distro list. Missing images are reported immediately.
-They are never downloaded or provisioned by the capture batch. The batch boots
-isolated copies in parallel, mounts the current checkout read-only, copies the
-installer into each guest, then runs the existing dark/light desktop capture
-checks. Use a fresh output directory. The batch saves source fingerprints, per-phase
-times, logs, images and a result. The budget is
-shared across the batch and includes time spent waiting for a worker. A failed,
-missing or timed-out guest makes the batch incomplete.
+Run from the edition checkout with a fresh output directory. The harness
+boots an isolated overlay, copies and installs the local candidate, and
+records dark/light screenshots, logs, timings and source fingerprints.
+Use `./vm neon --prepared` for an interactive preview of a specific component.
+Published README photographs follow the reviewed capture workflow and its
+pinned image profile.
 
-To add a base, prepare the distro once using the instructions below, including
-its installer dependencies and build cache. Remove
+To replace a missing base, prepare KDE neon once using the guest setup below,
+including installer dependencies and the build cache. Remove
 `~/.config/autostart/mttkde-installer.desktop` from the capture account if it
-exists, so the capture worker is the only process that copies the installer.
-On the Arch cloud image, run
-`sudo systemctl mask --now systemd-time-wait-sync.service` inside the capture
-base. Its SSH service waits for clock synchronization, and the isolated capture
-network cannot reach the upstream time server. Shut the guest down and run
-`./vm seal <distro>`. Verify the base with a capture batch. Place existing
-standalone images at `$VM_PREPARED_DIR/<distro>/disk.qcow2`. UEFI guests also need their
-`OVMF_VARS.fd` in that directory. `./vm <distro> --prepared` opens a single
-disposable overlay. These captures establish the rendered desktop behavior
-exercised by the capture run. Use the release qualification below for the
-other affected behavior, including installer lifecycle, application continuity,
-and distro-specific checks.
-
-Ten minutes is the target for a warm capture batch. A base that lacks its
-dependencies or a change that invalidates its build cache can miss that
-target. Time spent provisioning new bases is separate.
+exists so the harness is the only process copying the installer. Shut down
+and run `./vm seal neon`. Release qualification uses the environments needed
+for the affected behavior.
 
 ## Start a guest
 
