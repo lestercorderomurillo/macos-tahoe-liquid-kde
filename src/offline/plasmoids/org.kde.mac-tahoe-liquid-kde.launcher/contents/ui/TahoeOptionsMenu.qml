@@ -128,6 +128,7 @@ PlasmaCore.Dialog {
                     }
                     contentItem: Item {
                         Shape {
+                            preferredRendererType: Shape.CurveRenderer
                             visible: row.modelData.checkable && row.modelData.checked
                             width: 9
                             height: 9
