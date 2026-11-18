@@ -14,6 +14,14 @@ from PyQt6.QtQuick import QQuickItem, QQuickWindow
 from PyQt6.QtTest import QTest
 from PyQt6 import sip
 
+# KDE caches desktop-entry lookups. Register both senders before the first
+# notification so history recognizes them in a clean SDK container.
+applications = Path(os.environ['XDG_DATA_HOME']) / 'applications'
+applications.mkdir(parents=True, exist_ok=True)
+for desktop, name in (('notification-review', 'Notification Review'), ('discord', 'Discord')):
+    (applications / f'{desktop}.desktop').write_text(
+        f'[Desktop Entry]\nType=Application\nName={name}\nExec=true\n')
+
 app = QApplication([])
 engine = QQmlEngine()
 engine.rootContext().setContextProperty('i18n', engine.evaluate('''(function(text) {
@@ -145,10 +153,6 @@ banner.setProperty('isCritical', True); assert banner.property('isCritical')
 
 # Exercise the real D-Bus manager and history, including the default exclusion
 # of unidentified applications. A mock list cannot prove receipt or retention.
-applications = Path(os.environ['XDG_DATA_HOME']) / 'applications'
-applications.mkdir(parents=True, exist_ok=True)
-(applications / 'notification-review.desktop').write_text(
-    '[Desktop Entry]\nType=Application\nName=Notification Review\nExec=true\n')
 nativeView = component('NotificationsView.qml', {'standalone': True})
 nativeView.setWidth(344); nativeView.setHeight(700)
 nativeHistory = nativeView.property('history')
@@ -187,8 +191,6 @@ assert nativeHistory.property('count') == 0
 
 # Real application messages must stack in the installed popup frontend, retain
 # their individual bodies, and never replay sounds when the stack is expanded.
-(applications / 'discord.desktop').write_text(
-    '[Desktop Entry]\nType=Application\nName=Discord\nExec=true\n')
 ids = [notify('discord', 'Message ' + str(i), 'Body ' + str(i), 'discord') for i in range(3)]
 popups = visible_notices()
 assert len(popups) == 1, (len(popups), errors, noticeHost.property('popupState').call().toVariant(), nativeHistory.property('count'), nativeHistory.property('expiredNotificationsCount'))
@@ -215,7 +217,9 @@ notify('Notification Review', 'Another app', 'Separate stack', 'notification-rev
 assert len(visible_notices()) == 2
 QMetaObject.invokeMethod(noticeService, 'markSeen'); QTest.qWait(100)
 assert len(visible_notices()) == 0
-assert nativeHistory.property('expiredNotificationsCount') == 4
+assert nativeHistory.property('expiredNotificationsCount') == 4, (
+    nativeHistory.property('count'), nativeHistory.property('expiredNotificationsCount'),
+    noticeHost.property('popupState').call().toVariant(), errors)
 click(child(nativeView, 'clearHistory')); QTest.qWait(100)
 assert nativeHistory.property('count') == 0
 notify('discord', 'Expiring one', 'First', 'discord', timeout=1200)

@@ -68,7 +68,7 @@ def test_translation_preserves_fields_and_commands(language):
 
 @pytest.mark.parametrize("language", LANGUAGES)
 def test_catalogs_cover_all_project_widget_and_kcm_messages(repo, language):
-    catalog = localization._TRANSLATIONS[language]
+    catalog = localization._TRANSLATIONS[language] | build_translations.STATUS_MENUS[language]
     widgets = repo / "src/offline/plasmoids"
     for widget in widgets.glob("org.kde.mac*"):
         messages = build_translations.widget_messages(widget)
