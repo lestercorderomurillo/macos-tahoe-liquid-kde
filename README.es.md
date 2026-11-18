@@ -270,8 +270,8 @@ Refracción del cristal, ampliación al pasar el cursor, burbujas rojas con el n
 Acceso rápido a los ajustes del sistema, aplicaciones y controles de sesión.
 
 <p align="center">
-  <img src="src/screenshots/previews/readme-tahoe-light-menu-a8579c6bdc3c.webp" alt="System menu in light mode" width="415">
-  <img src="src/screenshots/previews/readme-tahoe-dark-menu-01a3a4305740.webp" alt="System menu in dark mode" width="415">
+  <img src="src/screenshots/previews/readme-tahoe-light-menu-2a7e73476d08.webp" alt="System menu in light mode" width="415">
+  <img src="src/screenshots/previews/readme-tahoe-dark-menu-bd2c48aa010e.webp" alt="System menu in dark mode" width="415">
 </p>
 
 <br>

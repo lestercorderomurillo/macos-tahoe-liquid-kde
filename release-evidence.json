@@ -1,68 +1,44 @@
 {
-  "version": "0.73.13",
-  "implementation_commit": "16806a0f1170796383f9addb8ee9330327876806",
-  "scope": "Grouped notification card contours and compositor blur regions",
+  "version": "0.73.14",
+  "implementation_commit": "8fbc63ac2f39a3ecf13293c75a220983f2f675d9",
+  "scope": "Gray-only selected text overrides for GTK, KDE and Kvantum Shell rows",
   "gallery_commit": "f09780b200b79302e7c23ef9f6f74d94748bbea3",
+  "runtime_sha256": "27d26c56fb1bd44e24918212d345ea193f0f6be1fae8f7efb8b4638b6defe5e3",
   "checks": [
     {
-      "command": "probe.py (disposable KDE neon Wayland, installed plasmoids and liquidglass)",
+      "command": "xvfb-run -a python kvantum-pixel-probe.py (cached primary CI SDK container)",
       "result": "passed",
-      "detail": "Sent one, two and three grouped notifications, checked banner identity, geometry and KWin render status before each capture.",
-      "observations": [
-        [
-          "despues",
-          1,
-          {
-            "x": 1550,
-            "y": 54,
-            "width": 364,
-            "height": 96
-          },
-          "2483d6a5f0aa5d22795073aa6ecc7b6971ce420b97133c120247480798cb1970"
-        ],
-        [
-          "despues",
-          2,
-          {
-            "x": 1550,
-            "y": 54,
-            "width": 364,
-            "height": 100
-          },
-          "2483d6a5f0aa5d22795073aa6ecc7b6971ce420b97133c120247480798cb1970"
-        ],
-        [
-          "despues",
-          3,
-          {
-            "x": 1550,
-            "y": 54,
-            "width": 364,
-            "height": 104
-          },
-          "2483d6a5f0aa5d22795073aa6ecc7b6971ce420b97133c120247480798cb1970"
-        ]
-      ]
+      "detail": "A real Kvantum QMenu rendered each of the eight generated accent themes in light and dark. Measured selected text pixels were black with gray and white with every other accent."
     },
     {
-      "command": "python -m pytest -q tests/test_desktop_controls.py",
+      "command": "pytest -q tests/test_installer_wizard.py -k accent; pytest -q tests/test_popup_rendering.py -k gtk_selection_foregrounds (same SDK container)",
       "result": "passed",
-      "detail": "Native grouping, expanding and collapsing; interaction and history in the isolated software scene graph."
+      "detail": "Three source/generation regressions and two live GTK 3/4 cases passed, including selected, hover, focus and backdrop states over light/dark/light."
     },
     {
-      "command": "python src/scripts/component_manifest.py",
+      "command": "Focused capture using Tahoe release_capture.Guest and Spectacle",
+      "result": "passed",
+      "detail": "Plasma 6.8.1, Qt 6.11.1, Wayland, bundled global-menu module, Kvantum 1.1.8 and Acrylic Glass on the pinned KDE neon base. Verified focused Nautilus identity, stable window geometry and exclusion of its window from the crop in each edition and mode."
+    },
+    {
+      "command": "python3 src/scripts/component_manifest.py; git diff --check",
       "result": "passed"
     }
   ],
   "captures": [
     {
-      "path": "src/screenshots/previews/readme-tahoe-notification-stack-1c2fe7571829.webp",
-      "sha256": "1c2fe75718297ddefa1b69965848535d81554b52944d0cedd85220135f0290ee",
+      "path": "src/screenshots/previews/readme-tahoe-light-menu-2a7e73476d08.webp",
+      "sha256": "2a7e73476d08cb899ade194065567c0f26cce24f2c04d05ed87c23fc86047095",
+      "reviewed": true
+    },
+    {
+      "path": "src/screenshots/previews/readme-tahoe-dark-menu-bd2c48aa010e.webp",
+      "sha256": "bd2c48aa010e1346e51854acae034fd4a2814da28277f395f2947333d06189c0",
       "reviewed": true
     }
   ],
   "coverage_limits": [
-    "Rendered on Wayland with accelerated Qt Quick. The software renderer retains strip clipping. History shares the QML surface; the live photographic comparison covers the popup."
+    "Qt row pixels were checked on the primary SDK in Xvfb. The README captures cover the shared Shell on KDE neon Wayland. Full CI runs asynchronously."
   ],
-  "source_sha256": "09b13b0671ebaf276972587ca2186561fd9322b5464dc453ee6a824851eb853d"
+  "source_sha256": "811364b451cbf9f7ed845fe42c0c72137ea7d044d159758cfc434cc4eb7688cd"
 }

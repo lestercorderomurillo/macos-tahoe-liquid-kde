@@ -1249,35 +1249,54 @@
       },
       "user_approved": true
     },
-    "previews/readme-tahoe-dark-menu-01a3a4305740.webp": {
-      "sha256": "01a3a4305740ab7e6f4afbc569e59eec76d4f3438f1b6429367182d547df2489",
-      "source_sha256": "3191f316a30333a6324ef216ad50bfb340016abe8dfb92b4f96248520d9cdf78",
-      "source_commit": "bcbe83a5182a9f30e49195e5d605c40ae46b3c85",
-      "replaces": "src/screenshots/menu_dark_v4-0f9fbb1971bd.webp",
+    "previews/readme-tahoe-dark-menu-bd2c48aa010e.webp": {
+      "sha256": "bd2c48aa010e1346e51854acae034fd4a2814da28277f395f2947333d06189c0",
+      "source_sha256": "0cedddba79186f6ca0c4ebe46d38099da14d85e10008707b834bbe345f824ee0",
+      "source_commit": "8fbc63ac2f39a3ecf13293c75a220983f2f675d9",
+      "source_version": "0.73.13",
+      "replaces": "src/screenshots/previews/readme-tahoe-dark-menu-01a3a4305740.webp",
       "crop": [
         0,
         0,
-        608,
-        660
+        602,
+        654
       ],
       "export_size": [
-        608,
-        660
+        602,
+        654
       ],
       "capture": {
-        "source_commit": "bcbe83a5182a9f30e49195e5d605c40ae46b3c85",
+        "source_commit": "8fbc63ac2f39a3ecf13293c75a220983f2f675d9",
+        "runtime_sha256": "27d26c56fb1bd44e24918212d345ea193f0f6be1fae8f7efb8b4638b6defe5e3",
         "edition": "tahoe",
         "mode": "dark",
-        "case": "menu",
+        "case": "shell",
+        "environment": "KDE neon, Plasma 6.8.1, Qt 6.11.1, Wayland, 2x",
+        "fixture": "Nautilus desktop display name set to Finder in the guest; the active application is outside the crop.",
         "before": [
           {
-            "id": "{804ea748-5af8-4b35-b356-756a05ba96a7}",
+            "id": "{48d616f6-5199-4bea-a240-0bcd6746124f}",
+            "caption": "Documents",
+            "resourceClass": "org.gnome.Nautilus",
+            "type": 0,
+            "appletPopup": false,
+            "hidden": false,
+            "active": true,
+            "geometry": {
+              "x": 850,
+              "y": 400,
+              "width": 900,
+              "height": 610
+            }
+          },
+          {
+            "id": "{54d8bc02-6c30-4ce1-a8ad-4c099be66c35}",
             "caption": "",
             "resourceClass": "plasmashell",
             "type": 1,
             "appletPopup": false,
             "hidden": false,
-            "active": true,
+            "active": false,
             "geometry": {
               "x": 0,
               "y": 0,
@@ -1286,7 +1305,7 @@
             }
           },
           {
-            "id": "{970d8913-87bd-454d-b043-090a2b16e5b5}",
+            "id": "{2c1734fc-b5c4-4ca4-a0d4-3e897a2e40c2}",
             "caption": "",
             "resourceClass": "plasmashell",
             "type": 2,
@@ -1301,22 +1320,7 @@
             }
           },
           {
-            "id": "{1ccbc9e7-0107-4582-9518-062887c4cdb0}",
-            "caption": "",
-            "resourceClass": "plasmashell",
-            "type": 2,
-            "appletPopup": false,
-            "hidden": false,
-            "active": false,
-            "geometry": {
-              "x": 614,
-              "y": 996,
-              "width": 692,
-              "height": 84
-            }
-          },
-          {
-            "id": "{3f675c27-6c8b-4f8a-a069-56eed0676f89}",
+            "id": "{3d7a219c-e34e-4567-9697-73f285e949a4}",
             "caption": "",
             "resourceClass": "plasmashell",
             "type": -1,
@@ -1333,13 +1337,28 @@
         ],
         "after": [
           {
-            "id": "{804ea748-5af8-4b35-b356-756a05ba96a7}",
+            "id": "{48d616f6-5199-4bea-a240-0bcd6746124f}",
+            "caption": "Documents",
+            "resourceClass": "org.gnome.Nautilus",
+            "type": 0,
+            "appletPopup": false,
+            "hidden": false,
+            "active": true,
+            "geometry": {
+              "x": 850,
+              "y": 400,
+              "width": 900,
+              "height": 610
+            }
+          },
+          {
+            "id": "{54d8bc02-6c30-4ce1-a8ad-4c099be66c35}",
             "caption": "",
             "resourceClass": "plasmashell",
             "type": 1,
             "appletPopup": false,
             "hidden": false,
-            "active": true,
+            "active": false,
             "geometry": {
               "x": 0,
               "y": 0,
@@ -1348,7 +1367,7 @@
             }
           },
           {
-            "id": "{970d8913-87bd-454d-b043-090a2b16e5b5}",
+            "id": "{2c1734fc-b5c4-4ca4-a0d4-3e897a2e40c2}",
             "caption": "",
             "resourceClass": "plasmashell",
             "type": 2,
@@ -1363,22 +1382,7 @@
             }
           },
           {
-            "id": "{1ccbc9e7-0107-4582-9518-062887c4cdb0}",
-            "caption": "",
-            "resourceClass": "plasmashell",
-            "type": 2,
-            "appletPopup": false,
-            "hidden": false,
-            "active": false,
-            "geometry": {
-              "x": 614,
-              "y": 996,
-              "width": 692,
-              "height": 84
-            }
-          },
-          {
-            "id": "{3f675c27-6c8b-4f8a-a069-56eed0676f89}",
+            "id": "{3d7a219c-e34e-4567-9697-73f285e949a4}",
             "caption": "",
             "resourceClass": "plasmashell",
             "type": -1,
@@ -1393,45 +1397,42 @@
             }
           }
         ],
-        "sha256": "3191f316a30333a6324ef216ad50bfb340016abe8dfb92b4f96248520d9cdf78",
-        "defaults": {
-          "wallpaper": "MacTahoe",
-          "launcher_preset": 1
-        },
-        "icons": "MacTahoeLiquidKde-Icons-Regular-Dark",
-        "effect": "a4a55b2f39b8b7fa42903c622bcf18d113847b624874d88af15a38f81e67ea99"
-      },
-      "user_approved": true
+        "vm_image_sha256": "2a09de13ad568da01a8e16dd93e6aec120e63375bfc0ec24b4e804b43ecb4f8c"
+      }
     },
-    "previews/readme-tahoe-light-menu-a8579c6bdc3c.webp": {
-      "sha256": "a8579c6bdc3c23d1e666f47b6ea202eec54a4c80ce93bbeeef2d6c4f7e053f07",
-      "source_sha256": "c8f2985d353653dcb9cc7911532ba3b57129b5bf2eb2620e81d206d1c8a55943",
-      "source_commit": "bcbe83a5182a9f30e49195e5d605c40ae46b3c85",
-      "replaces": "src/screenshots/menu_v4-b41832636db3.webp",
+    "previews/readme-tahoe-light-menu-2a7e73476d08.webp": {
+      "sha256": "2a7e73476d08cb899ade194065567c0f26cce24f2c04d05ed87c23fc86047095",
+      "source_sha256": "88bc9577fdf05999b3a74f563f8e1826662a6f43ad840a90837ec44406f7c5aa",
+      "source_commit": "8fbc63ac2f39a3ecf13293c75a220983f2f675d9",
+      "source_version": "0.73.13",
+      "replaces": "src/screenshots/previews/readme-tahoe-light-menu-a8579c6bdc3c.webp",
       "crop": [
         0,
         0,
-        608,
-        660
+        602,
+        654
       ],
       "export_size": [
-        608,
-        660
+        602,
+        654
       ],
       "capture": {
-        "source_commit": "bcbe83a5182a9f30e49195e5d605c40ae46b3c85",
+        "source_commit": "8fbc63ac2f39a3ecf13293c75a220983f2f675d9",
+        "runtime_sha256": "27d26c56fb1bd44e24918212d345ea193f0f6be1fae8f7efb8b4638b6defe5e3",
         "edition": "tahoe",
         "mode": "light",
-        "case": "menu",
+        "case": "shell",
+        "environment": "KDE neon, Plasma 6.8.1, Qt 6.11.1, Wayland, 2x",
+        "fixture": "Nautilus desktop display name set to Finder in the guest; the active application is outside the crop.",
         "before": [
           {
-            "id": "{804ea748-5af8-4b35-b356-756a05ba96a7}",
+            "id": "{d12a45b7-c9e8-4ce0-a200-cf063cc29d9d}",
             "caption": "",
             "resourceClass": "plasmashell",
             "type": 1,
             "appletPopup": false,
             "hidden": false,
-            "active": true,
+            "active": false,
             "geometry": {
               "x": 0,
               "y": 0,
@@ -1440,7 +1441,7 @@
             }
           },
           {
-            "id": "{970d8913-87bd-454d-b043-090a2b16e5b5}",
+            "id": "{d334e631-fe30-477a-8205-2b820c84ae92}",
             "caption": "",
             "resourceClass": "plasmashell",
             "type": 2,
@@ -1455,22 +1456,22 @@
             }
           },
           {
-            "id": "{1ccbc9e7-0107-4582-9518-062887c4cdb0}",
-            "caption": "",
-            "resourceClass": "plasmashell",
-            "type": 2,
+            "id": "{48d616f6-5199-4bea-a240-0bcd6746124f}",
+            "caption": "Documents",
+            "resourceClass": "org.gnome.Nautilus",
+            "type": 0,
             "appletPopup": false,
             "hidden": false,
-            "active": false,
+            "active": true,
             "geometry": {
-              "x": 614,
-              "y": 996,
-              "width": 692,
-              "height": 84
+              "x": 850,
+              "y": 400,
+              "width": 900,
+              "height": 610
             }
           },
           {
-            "id": "{17a2cce4-9147-4024-b8bb-003cbe2614d9}",
+            "id": "{9390f2df-d60e-443c-bc79-0785708824fe}",
             "caption": "",
             "resourceClass": "plasmashell",
             "type": -1,
@@ -1487,13 +1488,13 @@
         ],
         "after": [
           {
-            "id": "{804ea748-5af8-4b35-b356-756a05ba96a7}",
+            "id": "{d12a45b7-c9e8-4ce0-a200-cf063cc29d9d}",
             "caption": "",
             "resourceClass": "plasmashell",
             "type": 1,
             "appletPopup": false,
             "hidden": false,
-            "active": true,
+            "active": false,
             "geometry": {
               "x": 0,
               "y": 0,
@@ -1502,7 +1503,7 @@
             }
           },
           {
-            "id": "{970d8913-87bd-454d-b043-090a2b16e5b5}",
+            "id": "{d334e631-fe30-477a-8205-2b820c84ae92}",
             "caption": "",
             "resourceClass": "plasmashell",
             "type": 2,
@@ -1517,22 +1518,22 @@
             }
           },
           {
-            "id": "{1ccbc9e7-0107-4582-9518-062887c4cdb0}",
-            "caption": "",
-            "resourceClass": "plasmashell",
-            "type": 2,
+            "id": "{48d616f6-5199-4bea-a240-0bcd6746124f}",
+            "caption": "Documents",
+            "resourceClass": "org.gnome.Nautilus",
+            "type": 0,
             "appletPopup": false,
             "hidden": false,
-            "active": false,
+            "active": true,
             "geometry": {
-              "x": 614,
-              "y": 996,
-              "width": 692,
-              "height": 84
+              "x": 850,
+              "y": 400,
+              "width": 900,
+              "height": 610
             }
           },
           {
-            "id": "{17a2cce4-9147-4024-b8bb-003cbe2614d9}",
+            "id": "{9390f2df-d60e-443c-bc79-0785708824fe}",
             "caption": "",
             "resourceClass": "plasmashell",
             "type": -1,
@@ -1547,15 +1548,8 @@
             }
           }
         ],
-        "sha256": "c8f2985d353653dcb9cc7911532ba3b57129b5bf2eb2620e81d206d1c8a55943",
-        "defaults": {
-          "wallpaper": "MacTahoe",
-          "launcher_preset": 1
-        },
-        "icons": "MacTahoeLiquidKde-Icons-Regular-Light",
-        "effect": "a4a55b2f39b8b7fa42903c622bcf18d113847b624874d88af15a38f81e67ea99"
-      },
-      "user_approved": true
+        "vm_image_sha256": "2a09de13ad568da01a8e16dd93e6aec120e63375bfc0ec24b4e804b43ecb4f8c"
+      }
     },
     "previews/readme-tahoe-dark-clipboard-024174b100b7.webp": {
       "sha256": "024174b100b75cbe88607bb5e79e56da826cb6450aba5ef6634f8b4fe971e1e4",
