@@ -1,6 +1,7 @@
 import QtQuick
 import QtQuick.Window
 import QtQuick.Controls as Controls
+import QtQuick.Shapes
 import org.kde.plasma.core as PlasmaCore
 import org.kde.plasma.extras as PlasmaExtras
 
@@ -126,15 +127,29 @@ PlasmaCore.Dialog {
                         }
                     }
                     contentItem: Item {
-                        Text {
+                        Shape {
                             visible: row.modelData.checkable && row.modelData.checked
-                            width: 12
+                            width: 9
+                            height: 9
+                            anchors.left: parent.left
+                            anchors.leftMargin: 2.5
                             anchors.verticalCenter: parent.verticalCenter
-                            horizontalAlignment: Text.AlignHCenter
-                            text: "✓"
-                            font.family: main.textFont
-                            font.pointSize: main.textSize
-                            color: label.color
+
+                            ShapePath {
+                                fillColor: "transparent"
+                                strokeColor: label.color
+                                strokeWidth: 1.4
+                                capStyle: ShapePath.RoundCap
+                                joinStyle: ShapePath.RoundJoin
+                                startX: 1.2
+                                startY: 4.8
+                                PathLine { x: 3.4; y: 7.5 }
+                                PathLine { x: 8; y: 1.2 }
+                            }
+                        }
+                        FontMetrics {
+                            id: labelMetrics
+                            font: label.font
                         }
                         Text {
                             id: label
@@ -143,7 +158,10 @@ PlasmaCore.Dialog {
                             anchors.leftMargin: 16
                             anchors.right: parent.right
                             anchors.verticalCenter: parent.verticalCenter
-                            anchors.verticalCenterOffset: row.modelData.section ? 2.5 : 0
+                            readonly property rect inkBounds: labelMetrics.tightBoundingRect(text)
+                            // Allow one pixel for the rasterized font's optical alignment.
+                            anchors.verticalCenterOffset: row.modelData.section ? 2.5
+                                : height / 2 - baselineOffset - inkBounds.y - inkBounds.height / 2 + 1
                             text: row.modelData.text
                             font.family: main.textFont
                             font.pointSize: main.textSize * (row.modelData.section ? 0.85 : 1.05)
