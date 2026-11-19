@@ -566,6 +566,9 @@ def render_installer(prepared: tuple, style: str, mode: str, tint: tuple[int, in
         alpha = artwork.getchannel("A")
         tones = ImageOps.autocontrast(ImageOps.grayscale(artwork), cutoff=2,
                                       mask=alpha.point(lambda a: 255 if a > 224 else 0))
+        # The blue feather and globe layers occupy the low end of luminance.
+        # Lift their midtones while keeping the original deepest folds distinct.
+        tones = tones.point(lambda v: round(255 * (v / 255) ** .40))
         highlight = (255, 255, 255) if clear else mix(.30 if dark else .04, 255)
         shade = (36, 36, 36) if clear else mix(.66)
         foreground = ImageOps.colorize(tones, shade, highlight).convert("RGBA")
