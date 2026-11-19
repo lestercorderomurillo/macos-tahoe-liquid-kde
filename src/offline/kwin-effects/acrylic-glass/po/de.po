@@ -161,9 +161,6 @@ msgstr "Hellt den Glashintergrund auf oder dunkelt ihn ab. 1 behält die ursprü
 msgid "Match Mode"
 msgstr "Abgleichmodus"
 
-msgid "Menu bar"
-msgstr "Menüleiste"
-
 msgid "Menus / Shell"
 msgstr "Menüs / Shell"
 
@@ -238,6 +235,9 @@ msgstr "Obere Farbe im dunklen Modus."
 
 msgid "Top color in light mode."
 msgstr "Obere Farbe im hellen Modus."
+
+msgid "Top panel"
+msgstr "Obere Kontrollleiste"
 
 msgid "Top tint strength"
 msgstr "Obere Tönungsstärke"

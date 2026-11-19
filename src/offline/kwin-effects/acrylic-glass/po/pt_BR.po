@@ -161,9 +161,6 @@ msgstr "Clareia ou escurece o fundo do vidro. 1 mantém o brilho original."
 msgid "Match Mode"
 msgstr "Modo de correspondência"
 
-msgid "Menu bar"
-msgstr "Barra de menus"
-
 msgid "Menus / Shell"
 msgstr "Menus / Shell"
 
@@ -238,6 +235,9 @@ msgstr "Cor superior no modo escuro."
 
 msgid "Top color in light mode."
 msgstr "Cor superior no modo claro."
+
+msgid "Top panel"
+msgstr "Painel superior"
 
 msgid "Top tint strength"
 msgstr "Intensidade da tonalidade superior"

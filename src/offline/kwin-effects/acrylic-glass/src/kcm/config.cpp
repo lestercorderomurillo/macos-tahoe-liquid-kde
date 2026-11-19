@@ -49,7 +49,7 @@ LiquidGlassEffectConfig::LiquidGlassEffectConfig(QObject* parent, const KPluginM
     m_componentSelector->setObjectName(QStringLiteral("componentSelector"));
     const QStringList labels = {i18n("General windows"), i18n("Finder"), i18n("Menus / Shell"),
         i18n("Other Plasma popups"), i18n("Apps + Clipboard"), i18n("Search capsule"),
-        i18n("Control Center"), i18n("About This Computer"), i18n("Dock"), i18n("Menu bar")};
+        i18n("Control Center"), i18n("About This Computer"), i18n("Dock"), i18n("Top panel")};
     for (int i = 0; i < GlassMaterials::components.size(); ++i)
         m_componentSelector->addItem(labels.at(i), GlassMaterials::components.at(i));
     auto *rowLayout = new QHBoxLayout;

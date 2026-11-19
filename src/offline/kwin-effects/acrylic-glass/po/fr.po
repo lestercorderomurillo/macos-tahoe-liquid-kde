@@ -161,9 +161,6 @@ msgstr "Éclaircit ou assombrit l’arrière-plan du verre. 1 conserve la lumino
 msgid "Match Mode"
 msgstr "Mode de correspondance"
 
-msgid "Menu bar"
-msgstr "Barre de menus"
-
 msgid "Menus / Shell"
 msgstr "Menus / Shell"
 
@@ -238,6 +235,9 @@ msgstr "Couleur supérieure en mode sombre."
 
 msgid "Top color in light mode."
 msgstr "Couleur supérieure en mode clair."
+
+msgid "Top panel"
+msgstr "Panneau supérieur"
 
 msgid "Top tint strength"
 msgstr "Intensité de la teinte supérieure"
