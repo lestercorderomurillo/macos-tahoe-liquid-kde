@@ -1,90 +1,26 @@
 {
-  "version": "0.73.22",
-  "implementation_commit": "5fd74d99e669b8dc539d8fb3d7ff046c4e415bec",
+  "version": "0.73.23",
+  "implementation_commit": "48d926db7192d840caead83f7e1894cca2c48ccd",
   "gallery_commit": "f09780b200b79302e7c23ef9f6f74d94748bbea3",
-  "scope": "Live launcher frame transparency and Golden Gate material defaults.",
+  "scope": "Dismiss launcher options with the launcher window.",
   "checks": [
     {
-      "command": "Spectacle capture before and after changing Apps transparency from 0 to 95 with the same window open",
+      "command": "KDE neon Wayland: open options, toggle the launcher closed and open, then click options again",
       "result": "passed",
-      "detail": "Golden Gate KDE neon Wayland, Apps and Clipboard in both modes. The original dark Apps frame was pixel-identical at both settings. The corrected frames changed in all four cases."
-    },
-    {
-      "command": "pytest -q tests/test_glass_surfaces.py tests/test_component_glass_surfaces.py tests/test_glass_presets.py::test_native_glass_shader_pixels",
-      "result": "passed",
-      "detail": "42 passed, covering Qt rendering of surfaces, isolated shader pixels, live component reload, independent edits and rollback."
-    },
-    {
-      "command": "pytest tests/test_glass_presets.py::test_installation_reapplies_complete_edition_material tests/test_glass_presets.py::test_installer_frost_glass_values and native preset controls [2-1]",
-      "result": "passed",
-      "detail": "20 installer preset cases passed and the native KCM probe passed in the guest. All ten effective Golden Gate template components also matched the approved saved material maps."
+      "detail": "The close removed all three popup windows. Reopening restored Apps and Search with the button idle. The next click opened the options window. Installed TahoeOptionsMenu.qml SHA-256: 2037561446f93c67a1ff36c0e3ed4fa42f493c868e748bda38eeecb299298546."
     }
   ],
   "reviewed_frames": [
     {
-      "frame": "Dark-apps-0.png",
+      "frame": "menu.png",
       "edition": "golden-gate",
-      "sha256": "ae872513c17274b1b7a15e8a2e529020a9a80789b45fe0deed1ebbf659d9a0d4",
-      "source_commit": "5fd74d99e669b8dc539d8fb3d7ff046c4e415bec"
-    },
-    {
-      "frame": "Dark-apps-95.png",
-      "edition": "golden-gate",
-      "sha256": "67da3826e51580ef44476ab44d18cb16fd75ba9c74d67f473d314538a0861344",
-      "source_commit": "5fd74d99e669b8dc539d8fb3d7ff046c4e415bec"
-    },
-    {
-      "frame": "Dark-clipboard-0.png",
-      "edition": "golden-gate",
-      "sha256": "ef027f9e2d1062237e810eab115b4f8f5e8441244baf376df34517bd9851f015",
-      "source_commit": "5fd74d99e669b8dc539d8fb3d7ff046c4e415bec"
-    },
-    {
-      "frame": "Dark-clipboard-95.png",
-      "edition": "golden-gate",
-      "sha256": "5bb4f7d8236c689f82bac1f4f93d280eda835c5b825dff9062d070f070948244",
-      "source_commit": "5fd74d99e669b8dc539d8fb3d7ff046c4e415bec"
-    },
-    {
-      "frame": "Dark-comparacion.png",
-      "edition": "golden-gate",
-      "sha256": "daaac1a7fa8061863a8dcf6dfb58f6a2c1203ac2e34304b9b04e50867d1f46fd",
-      "source_commit": "5fd74d99e669b8dc539d8fb3d7ff046c4e415bec"
-    },
-    {
-      "frame": "Light-apps-0.png",
-      "edition": "golden-gate",
-      "sha256": "14d12b751fb0efe6682329a76a904f39cf1084a64dc8a7693456eca446e5340f",
-      "source_commit": "5fd74d99e669b8dc539d8fb3d7ff046c4e415bec"
-    },
-    {
-      "frame": "Light-apps-95.png",
-      "edition": "golden-gate",
-      "sha256": "c800fee11832e6e71c225c56614da3f15810e4028ac7ad6765dabdf7b2d7f06f",
-      "source_commit": "5fd74d99e669b8dc539d8fb3d7ff046c4e415bec"
-    },
-    {
-      "frame": "Light-clipboard-0.png",
-      "edition": "golden-gate",
-      "sha256": "553ef81c848f16c9d7bd8d8ed4759202e30291bfebd04e816a679441c12f5df4",
-      "source_commit": "5fd74d99e669b8dc539d8fb3d7ff046c4e415bec"
-    },
-    {
-      "frame": "Light-clipboard-95.png",
-      "edition": "golden-gate",
-      "sha256": "6e287f00a592cdad0f4a4564fa47ffb6a626e6b479a79d9b5d42b2a89e070d97",
-      "source_commit": "5fd74d99e669b8dc539d8fb3d7ff046c4e415bec"
-    },
-    {
-      "frame": "Light-comparacion.png",
-      "edition": "golden-gate",
-      "sha256": "5bb430045ac9d170ceec8ccace8a56d78127b33a738ff82b85786fd778274394",
-      "source_commit": "5fd74d99e669b8dc539d8fb3d7ff046c4e415bec"
+      "sha256": "cbe850466e564bd65dd83aa07644f6301f7f1ae06530bf62f256cd09d43bc69d",
+      "source_commit": "48d926db7192d840caead83f7e1894cca2c48ccd"
     }
   ],
-  "approval": "Maintainer approved the light and dark Apps and Clipboard comparisons for paired release.",
+  "approval": "Maintainer approved the Golden Gate open and reopened comparison for publication.",
   "coverage_limits": [
-    "Installed desktop captures cover Golden Gate on Wayland. Clipboard history was disabled in that guest. The Xvfb shader check covers isolated renderer pixels. Desktop X11 and a separate Tahoe desktop capture were not exercised."
+    "Desktop interaction exercised on Golden Gate Wayland. Tahoe uses the shared menu. No separate Tahoe or X11 runtime capture."
   ],
-  "source_sha256": "43d28bef7012850c7e1b79efb45a3a60b065929a6af437cb9e772e1ffca8827b"
+  "source_sha256": "6defcd297d7f00db6ac53feb8575e5eae2a2de38a1ba7b43cc66c149ffdc06e3"
 }
