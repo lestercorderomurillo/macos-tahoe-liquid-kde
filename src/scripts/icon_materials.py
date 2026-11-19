@@ -380,28 +380,21 @@ def _recolor_layer(layer: Image.Image, low: tuple, high: tuple,
     return result
 
 
-def _render_dock_layers(image, style, mode, tint):
-    """Paint the existing face, smile, petals and overlaps before compositing."""
-    kind, data = image.info["material_svg"]
-    root = ET.fromstring(data)
-    clear = style == "clear"
-    dark = mode == "dark"
+def _blend(a, b, fraction):
+    return tuple(round(x + (y - x) * fraction) for x, y in zip(a, b))
+
+
+def _dock_palette(kind, clear, dark, tint):
     white, black = (255, 255, 255), (0, 0, 0)
-
-    def blend(a, b, fraction):
-        return tuple(round(x + (y - x) * fraction) for x, y in zip(a, b))
-
-    def color(rgb):
-        return "#%02x%02x%02x" % rgb
-
+    pigment = 0
     if clear:
         plate = black if dark else white
         opacity = .63 if dark else .17
         ink = white
     elif dark:
-        plate = blend(black, tint, .095)
+        plate = _blend(black, tint, .095)
         opacity = .83
-        ink = blend(tint, white, .26)
+        ink = _blend(tint, white, .26)
     else:
         # Recover the hue even from a pastel swatch. Ease into neutral paint
         # for low chroma so near-gray RGB choices remain stable.
@@ -409,9 +402,9 @@ def _render_dock_layers(image, style, mode, tint):
         chroma = peak - floor
         hue = tuple(round(255 * (v - floor) / max(chroma, 1)) for v in tint)
         strength = min(1, chroma / 40)
-        saturated = blend(tint, hue, strength)
+        saturated = _blend(tint, hue, strength)
         density = .57 - .11 * saturated[1] / 255 + .09 * min(saturated) / 255
-        plate = blend(black, saturated, density)
+        plate = _blend(black, saturated, density)
         # Warm and pale accents need more pigment to resist a cool backdrop.
         warm = max(0, tint[0] - max(tint[1:])) / 128
         pastel = max(0, floor - 112) / 40
@@ -419,13 +412,28 @@ def _render_dock_layers(image, style, mode, tint):
         if kind == "settings":
             pigment = 1
             green = max(0, tint[1] - max(tint[0], tint[2])) / 255
-            plate = blend(plate, blend(black, tint, .33), green)
-        plate = blend(blend(black, tint, .42), plate, pigment)
+            plate = _blend(plate, _blend(black, tint, .33), green)
+        plate = _blend(_blend(black, tint, .42), plate, pigment)
         opacity = .52 + .39 * pigment
         if kind == "finder":
             # Keep the pale eye legible over light wallpaper.
             opacity = max(opacity, .59)
-        ink = blend(blend(tint, white, .97), blend(saturated, white, .94), pigment)
+        ink = _blend(_blend(tint, white, .97), _blend(saturated, white, .94), pigment)
+
+    return plate, opacity, ink, pigment
+
+
+def _render_dock_layers(image, style, mode, tint):
+    """Paint the existing face, smile, petals and overlaps before compositing."""
+    kind, data = image.info["material_svg"]
+    root = ET.fromstring(data)
+    clear = style == "clear"
+    dark = mode == "dark"
+    white, black = (255, 255, 255), (0, 0, 0)
+    plate, opacity, ink, pigment = _dock_palette(kind, clear, dark, tint)
+
+    def color(rgb):
+        return "#%02x%02x%02x" % rgb
 
     gradients = {node.get("id"): node for node in root[0]}
     plate_id = {"apps": "linearGradient3", "store": "d"}.get(kind, "b")
@@ -433,8 +441,8 @@ def _render_dock_layers(image, style, mode, tint):
         stop.set("stop-color", color(plate))
         stop.set("stop-opacity", str(opacity))
     if not clear and not dark and pigment:
-        gradients[plate_id][0].set("stop-color", color(blend(plate, white, .045 * pigment)))
-        gradients[plate_id][-1].set("stop-color", color(blend(plate, black, .07 * pigment)))
+        gradients[plate_id][0].set("stop-color", color(_blend(plate, white, .045 * pigment)))
+        gradients[plate_id][-1].set("stop-color", color(_blend(plate, black, .07 * pigment)))
     if kind == "finder":
         for stop in gradients["c"]:
             stop.set("stop-color", color(ink))
@@ -442,7 +450,7 @@ def _render_dock_layers(image, style, mode, tint):
         smile = gradients["h"]
         smile.set("x1", "4.196")
         smile.set("x2", "12.737")
-        dark_ink = blend(plate, black, .75)
+        dark_ink = _blend(plate, black, .75)
         for stop, offset, paint in zip(smile, ["0", "1"], [ink, dark_ink]):
             stop.set("offset", offset)
             stop.set("stop-color", color(paint))
@@ -471,13 +479,13 @@ def _render_dock_layers(image, style, mode, tint):
     elif kind == "settings" and not clear and not dark:
         for key, top, bottom in (("g", .49, .29), ("j", .91, .56)):
             for stop, strength in zip(gradients[key], (top, bottom)):
-                stop.set("stop-color", color(blend(plate, ink, strength)))
+                stop.set("stop-color", color(_blend(plate, ink, strength)))
         # The original soft gear layer adds depth behind the fine teeth.
-        root[2].set("fill", color(blend(plate, ink, .75)))
+        root[2].set("fill", color(_blend(plate, ink, .75)))
         root[2].set("opacity", ".80")
         for node in root.findall("{*}path"):
             if node.get("fill") == "#fff":
-                node.set("fill", color(blend(plate, ink, .45)))
+                node.set("fill", color(_blend(plate, ink, .45)))
     elif kind == "settings":
         for key, strength in (("g", .48), ("j", .78)):
             for stop, factor in zip(gradients[key], [strength, strength * .70]):
@@ -556,12 +564,7 @@ def render_installer(prepared: tuple, style: str, mode: str, tint: tuple[int, in
     if artwork_name in ("firefox", "thunderbird"):
         # Transmit the backdrop through the original plate and the illustration's
         # shadows. Keep the brightest folds of the flame and feathers reflective.
-        if clear:
-            base = (0, 0, 0) if dark else (255, 255, 255)
-            plate_opacity = .63 if dark else .17
-        else:
-            base = mix(.095 if dark else .50)
-            plate_opacity = .83 if dark else .72
+        base, plate_opacity, highlight, _ = _dock_palette("finder", clear, dark, tint)
         plate = _recolor_layer(background, base, base, opacity=plate_opacity)
         alpha = artwork.getchannel("A")
         tones = ImageOps.autocontrast(ImageOps.grayscale(artwork), cutoff=2,
@@ -569,7 +572,6 @@ def render_installer(prepared: tuple, style: str, mode: str, tint: tuple[int, in
         # The blue feather and globe layers occupy the low end of luminance.
         # Lift their midtones while keeping the original deepest folds distinct.
         tones = tones.point(lambda v: round(255 * (v / 255) ** .40))
-        highlight = (255, 255, 255) if clear else mix(.30 if dark else .04, 255)
         shade = (36, 36, 36) if clear else mix(.66)
         foreground = ImageOps.colorize(tones, shade, highlight).convert("RGBA")
         opacity = tones.point(lambda v: round(140 + 115 * v / 255))

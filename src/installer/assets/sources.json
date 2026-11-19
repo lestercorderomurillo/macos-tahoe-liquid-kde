@@ -1415,9 +1415,9 @@
     "tint": "#007aff",
     "sample": "firefox",
     "generator": "src/scripts/installer_preview_assets.py",
-    "sha256": "8379b8b543a7c99265252d53676d067f5fadb7405ecf87b99474770b54cb9a83",
+    "sha256": "fbf06da90f08b2353fe6b890bbb9804a0ae1b8c379032e0fa17ea1e786d14128",
     "kind": "generated-icon-preview",
-    "file": "glass-light-blue-1-8379b8b543a7.png"
+    "file": "glass-light-blue-1-fbf06da90f08.png"
   },
   "glass-light-purple-1.png": {
     "source": "src/offline/icons/MacTahoeLiquidKde-Icons.tar.zst",
@@ -1427,9 +1427,9 @@
     "tint": "#af52de",
     "sample": "firefox",
     "generator": "src/scripts/installer_preview_assets.py",
-    "sha256": "2573b25a332e53389e5fbc2edd02a09a1e1047c199a21c95b96d8eb96916c3e3",
+    "sha256": "804b5d966648ff716069e554000326e78709cad2298a7965faf6e8573901cda7",
     "kind": "generated-icon-preview",
-    "file": "glass-light-purple-1-2573b25a332e.png"
+    "file": "glass-light-purple-1-804b5d966648.png"
   },
   "glass-light-pink-1.png": {
     "source": "src/offline/icons/MacTahoeLiquidKde-Icons.tar.zst",
@@ -1439,9 +1439,9 @@
     "tint": "#ff2d55",
     "sample": "firefox",
     "generator": "src/scripts/installer_preview_assets.py",
-    "sha256": "d37967d6bb58c2b7e59a36f3247b9d67b81d70fedbe461bb053437920b8dc3e5",
+    "sha256": "1825698c9dd8da3f46cc16857621f99e6a8cf7052b62f64d14930f9c932d0c0d",
     "kind": "generated-icon-preview",
-    "file": "glass-light-pink-1-d37967d6bb58.png"
+    "file": "glass-light-pink-1-1825698c9dd8.png"
   },
   "glass-light-red-1.png": {
     "source": "src/offline/icons/MacTahoeLiquidKde-Icons.tar.zst",
@@ -1451,9 +1451,9 @@
     "tint": "#ff3b30",
     "sample": "firefox",
     "generator": "src/scripts/installer_preview_assets.py",
-    "sha256": "5e9478cf54e21196184831e12a912d7b9ac79b19ff6f575c044bae6d274fb5db",
+    "sha256": "4a19281fd29c105d649b137a8876457afd664ff7d197a956a980de9d7469514c",
     "kind": "generated-icon-preview",
-    "file": "glass-light-red-1-5e9478cf54e2.png"
+    "file": "glass-light-red-1-4a19281fd29c.png"
   },
   "glass-light-orange-1.png": {
     "source": "src/offline/icons/MacTahoeLiquidKde-Icons.tar.zst",
@@ -1463,9 +1463,9 @@
     "tint": "#ff9500",
     "sample": "firefox",
     "generator": "src/scripts/installer_preview_assets.py",
-    "sha256": "96635b6c28436c1447513d09e1027e533b268b2d0dc31a6f6571bed9c29cc84a",
+    "sha256": "0648b1696295c3e0734984386e91e98e6c3c54e718398ae1581aec58400b88cd",
     "kind": "generated-icon-preview",
-    "file": "glass-light-orange-1-96635b6c2843.png"
+    "file": "glass-light-orange-1-0648b1696295.png"
   },
   "glass-light-yellow-1.png": {
     "source": "src/offline/icons/MacTahoeLiquidKde-Icons.tar.zst",
@@ -1475,9 +1475,9 @@
     "tint": "#ffcc00",
     "sample": "firefox",
     "generator": "src/scripts/installer_preview_assets.py",
-    "sha256": "b72f24cd51bde8e11b9bd47979571589fc207076d5169c7dc1b20be93ff5abe8",
+    "sha256": "0e1a872e8cad0c0aa09e0b21a53ccee4649d6d6b855f99e3d8c2f7cbcdc5a3ba",
     "kind": "generated-icon-preview",
-    "file": "glass-light-yellow-1-b72f24cd51bd.png"
+    "file": "glass-light-yellow-1-0e1a872e8cad.png"
   },
   "glass-light-green-1.png": {
     "source": "src/offline/icons/MacTahoeLiquidKde-Icons.tar.zst",
@@ -1487,9 +1487,9 @@
     "tint": "#28cd41",
     "sample": "firefox",
     "generator": "src/scripts/installer_preview_assets.py",
-    "sha256": "632f2b7a1c5a102b435dd1df8dcad9984929b3f0a7718a4d05d2676c99d3e38a",
+    "sha256": "e21b17c15c69e1e2ab6d23a53e546024351728e1abc13355ef6040bae549fc5a",
     "kind": "generated-icon-preview",
-    "file": "glass-light-green-1-632f2b7a1c5a.png"
+    "file": "glass-light-green-1-e21b17c15c69.png"
   },
   "glass-light-gray-1.png": {
     "source": "src/offline/icons/MacTahoeLiquidKde-Icons.tar.zst",
@@ -1499,9 +1499,9 @@
     "tint": "#8e8e93",
     "sample": "firefox",
     "generator": "src/scripts/installer_preview_assets.py",
-    "sha256": "78f4466121556ed1f900d43c590de610f35da0c2a06e092f13839a717d025e78",
+    "sha256": "0325f4adef4bc000310f70dd2ccfd19e7878386c6c16b67c88a816155cd368f2",
     "kind": "generated-icon-preview",
-    "file": "glass-light-gray-1-78f446612155.png"
+    "file": "glass-light-gray-1-0325f4adef4b.png"
   },
   "glass-dark-blue-1.png": {
     "source": "src/offline/icons/MacTahoeLiquidKde-Icons.tar.zst",
@@ -1511,9 +1511,9 @@
     "tint": "#007aff",
     "sample": "firefox",
     "generator": "src/scripts/installer_preview_assets.py",
-    "sha256": "20a9dc6b0e95a37a5264d659a8d9c94bb5445236b55910fa73144dda71b88a48",
+    "sha256": "d9831ea6d212983671a1466afadebd0d652a22348c418f9da82ab7a8f56f352a",
     "kind": "generated-icon-preview",
-    "file": "glass-dark-blue-1-20a9dc6b0e95.png"
+    "file": "glass-dark-blue-1-d9831ea6d212.png"
   },
   "glass-dark-purple-1.png": {
     "source": "src/offline/icons/MacTahoeLiquidKde-Icons.tar.zst",
@@ -1523,9 +1523,9 @@
     "tint": "#af52de",
     "sample": "firefox",
     "generator": "src/scripts/installer_preview_assets.py",
-    "sha256": "e6abed04f056267347af0e1f63328fdc3e75df7629fb01de64f687bbb5070736",
+    "sha256": "8f37a6f9d63c81aad8be601b54c4e2ef3396ea064fc6e0077032ceb2de64a905",
     "kind": "generated-icon-preview",
-    "file": "glass-dark-purple-1-e6abed04f056.png"
+    "file": "glass-dark-purple-1-8f37a6f9d63c.png"
   },
   "glass-dark-pink-1.png": {
     "source": "src/offline/icons/MacTahoeLiquidKde-Icons.tar.zst",
@@ -1535,9 +1535,9 @@
     "tint": "#ff2d55",
     "sample": "firefox",
     "generator": "src/scripts/installer_preview_assets.py",
-    "sha256": "b8f68aba1b40a59a9366b7d4c54f621211514b7133a66703a8b9253645258135",
+    "sha256": "66fd5e81933c973da50306059f84584fe53087e1d2398e1c2580df2456c65298",
     "kind": "generated-icon-preview",
-    "file": "glass-dark-pink-1-b8f68aba1b40.png"
+    "file": "glass-dark-pink-1-66fd5e81933c.png"
   },
   "glass-dark-red-1.png": {
     "source": "src/offline/icons/MacTahoeLiquidKde-Icons.tar.zst",
@@ -1547,9 +1547,9 @@
     "tint": "#ff3b30",
     "sample": "firefox",
     "generator": "src/scripts/installer_preview_assets.py",
-    "sha256": "360ad4c8062f233f3da3be1512e0a732abed80c8d86b8b0cd8c674bed31e5099",
+    "sha256": "99bce291afa60c7405fd85634a30522d0aed460a05559f7586397a6ca0d396e6",
     "kind": "generated-icon-preview",
-    "file": "glass-dark-red-1-360ad4c8062f.png"
+    "file": "glass-dark-red-1-99bce291afa6.png"
   },
   "glass-dark-orange-1.png": {
     "source": "src/offline/icons/MacTahoeLiquidKde-Icons.tar.zst",
@@ -1559,9 +1559,9 @@
     "tint": "#ff9500",
     "sample": "firefox",
     "generator": "src/scripts/installer_preview_assets.py",
-    "sha256": "4a6d9684f06a8873a2c295e5ad66df59d0a22b1f9a59d8b93372b76b2f656de0",
+    "sha256": "1e3110015cc9a844cd27f67f8a6323c88374a60f06ff9ac800002c534c579b28",
     "kind": "generated-icon-preview",
-    "file": "glass-dark-orange-1-4a6d9684f06a.png"
+    "file": "glass-dark-orange-1-1e3110015cc9.png"
   },
   "glass-dark-yellow-1.png": {
     "source": "src/offline/icons/MacTahoeLiquidKde-Icons.tar.zst",
@@ -1571,9 +1571,9 @@
     "tint": "#ffcc00",
     "sample": "firefox",
     "generator": "src/scripts/installer_preview_assets.py",
-    "sha256": "35172fe96d3042c5f42d569645cd800c99669a420823f9ff04f09fa3a804f03f",
+    "sha256": "5284939a313fa9fd7a08918b29af3a75f5aff42a3b47ec32a1bfdcadfd64227c",
     "kind": "generated-icon-preview",
-    "file": "glass-dark-yellow-1-35172fe96d30.png"
+    "file": "glass-dark-yellow-1-5284939a313f.png"
   },
   "glass-dark-green-1.png": {
     "source": "src/offline/icons/MacTahoeLiquidKde-Icons.tar.zst",
@@ -1583,9 +1583,9 @@
     "tint": "#28cd41",
     "sample": "firefox",
     "generator": "src/scripts/installer_preview_assets.py",
-    "sha256": "ab5a75a3b06322f36b1e1a9d566b7b04c60bc4a33ca8d63f0dc659a474d0918c",
+    "sha256": "13a8de442a88272510061b29995675f8f01d053735dc9c4888b69e8b4637d15e",
     "kind": "generated-icon-preview",
-    "file": "glass-dark-green-1-ab5a75a3b063.png"
+    "file": "glass-dark-green-1-13a8de442a88.png"
   },
   "glass-dark-gray-1.png": {
     "source": "src/offline/icons/MacTahoeLiquidKde-Icons.tar.zst",
@@ -1595,9 +1595,9 @@
     "tint": "#8e8e93",
     "sample": "firefox",
     "generator": "src/scripts/installer_preview_assets.py",
-    "sha256": "a852ff12b4ca615f6f8595823f5483d05b5e8064432608ed9a41f8111ac51335",
+    "sha256": "560ac6b66c5463c2a5a2558519979a583ea337c6e9c17a0faca3a338771d74ea",
     "kind": "generated-icon-preview",
-    "file": "glass-dark-gray-1-a852ff12b4ca.png"
+    "file": "glass-dark-gray-1-560ac6b66c54.png"
   },
   "glass-light-blue-2.png": {
     "source": "src/offline/icons/MacTahoeLiquidKde-Icons.tar.zst",
