@@ -88,7 +88,7 @@
       },
       {
         "id": "{c6a9bc7b-446f-4e88-ac94-942ab4838752}",
-        "caption": "Documents \u2014 Dolphin",
+        "caption": "Documents — Dolphin",
         "resourceClass": "org.kde.dolphin",
         "type": 0,
         "appletPopup": false,
@@ -150,7 +150,7 @@
       },
       {
         "id": "{c6a9bc7b-446f-4e88-ac94-942ab4838752}",
-        "caption": "Documents \u2014 Dolphin",
+        "caption": "Documents — Dolphin",
         "resourceClass": "org.kde.dolphin",
         "type": 0,
         "appletPopup": false,
@@ -397,7 +397,7 @@
       },
       {
         "id": "{8bfcc1bd-014e-4ca6-a7fd-ade1003fc5a7}",
-        "caption": "Documents \u2014 Dolphin",
+        "caption": "Documents — Dolphin",
         "resourceClass": "org.kde.dolphin",
         "type": 0,
         "appletPopup": false,
@@ -459,7 +459,7 @@
       },
       {
         "id": "{8bfcc1bd-014e-4ca6-a7fd-ade1003fc5a7}",
-        "caption": "Documents \u2014 Dolphin",
+        "caption": "Documents — Dolphin",
         "resourceClass": "org.kde.dolphin",
         "type": 0,
         "appletPopup": false,
@@ -735,14 +735,14 @@
   "regular-dark-0.png": {
     "source": "src/offline/icons/MacTahoeLiquidKde-Icons.tar.zst",
     "source_sha256": "f9ea0a95a94ac79df7939fca6ef636fbc3ceb3a2e5333a16d20ff3f42488040d",
-    "artwork_sha256": "1dd88e9ee27a257855d8712de3870cf7ca7c87f3e591f45de7444c2456bfa007",
+    "artwork_sha256": "062243ab98053f71c7e2c35a35bcaafea0b471390e9f5a2a82353c0d27caf4f8",
     "variant": "dark",
     "tint": "#007aff",
     "sample": "org.kde.dolphin",
     "generator": "src/scripts/installer_preview_assets.py",
-    "sha256": "1df0054faf48534ae23ed228649aa11d84b427848d13f5364c3da21a58ec837a",
+    "sha256": "3f9a264d9cca6a79cca965f5a3574446c50d4039faa8b506879f940d59aa03bb",
     "kind": "generated-icon-preview",
-    "file": "regular-dark-0-1df0054faf48.png"
+    "file": "regular-dark-0-3f9a264d9cca.png"
   },
   "regular-light-1.png": {
     "source": "src/offline/icons/MacTahoeLiquidKde-Icons.tar.zst",
@@ -783,14 +783,14 @@
   "regular-dark-2.png": {
     "source": "src/offline/icons/MacTahoeLiquidKde-Icons.tar.zst",
     "source_sha256": "f9ea0a95a94ac79df7939fca6ef636fbc3ceb3a2e5333a16d20ff3f42488040d",
-    "artwork_sha256": "8ff99c6c70c0a33282aa351e3de4f0fc29bb4437d3cfe6c6ae6cfda4a7b97632",
+    "artwork_sha256": "4eb3b3da773e58389b31d9d522bad9477c1362ccd767c2077c4d639d814a1903",
     "variant": "dark",
     "tint": "#007aff",
     "sample": "systemsettings",
     "generator": "src/scripts/installer_preview_assets.py",
-    "sha256": "2e6a612d9f04d87346e5ef95b0b0594b8facd2f54e930a68f4f8f666420bbdba",
+    "sha256": "262c344730fd896af10ad4f4b97b5d8fb06281e375a5499faaf05b225a239f3e",
     "kind": "generated-icon-preview",
-    "file": "regular-dark-2-2e6a612d9f04.png"
+    "file": "regular-dark-2-262c344730fd.png"
   },
   "regular-light-3.png": {
     "source": "src/offline/icons/MacTahoeLiquidKde-Icons.tar.zst",
@@ -807,14 +807,14 @@
   "regular-dark-3.png": {
     "source": "src/offline/icons/MacTahoeLiquidKde-Icons.tar.zst",
     "source_sha256": "f9ea0a95a94ac79df7939fca6ef636fbc3ceb3a2e5333a16d20ff3f42488040d",
-    "artwork_sha256": "de120d786536281adf81d69e2a778a404dd7a5981668ccb82a695e7f621229f5",
+    "artwork_sha256": "b89298c3a1682e0f18b151b23b4ff8e9fc7bd1928fadb272d3546f6376ec7261",
     "variant": "dark",
     "tint": "#007aff",
     "sample": "org.kde.konsole",
     "generator": "src/scripts/installer_preview_assets.py",
-    "sha256": "18669e8f77336e7e6e84deb968ef972b410aa0247c324b7852cb8b91537aa497",
+    "sha256": "98832049ce825d0063b8b63de4b196eabb307feac8c43e32278ff943d4832199",
     "kind": "generated-icon-preview",
-    "file": "regular-dark-3-18669e8f7733.png"
+    "file": "regular-dark-3-98832049ce82.png"
   },
   "sonoma.jpg": {
     "source": "src/offline/wallpapers/MacHeritage-Sonoma/contents/images/3840x2160.jpg",
@@ -1134,14 +1134,14 @@
   "regular-dark-4.png": {
     "source": "src/offline/icons/MacTahoeLiquidKde-Icons.tar.zst",
     "source_sha256": "f9ea0a95a94ac79df7939fca6ef636fbc3ceb3a2e5333a16d20ff3f42488040d",
-    "artwork_sha256": "3756a88005181fb71f434b01b956cb3ef70185d1e24c11e33e90f96b3df8bedf",
+    "artwork_sha256": "4ebbf3eb93b6f37b7591dba8245765fa093aa084592e5b10a44074992ecfb9bf",
     "variant": "dark",
     "tint": "#007aff",
     "sample": "org.kde.kate",
     "generator": "src/scripts/installer_preview_assets.py",
-    "sha256": "bb9cacb1879dacc8e3755e756c736b58f65f30fef62dcb50d868d4ed47556477",
+    "sha256": "e36edfac8fdfa07c9a5eda86c9fe809c7e135c7ac394c4c8ec95b77de613e051",
     "kind": "generated-icon-preview",
-    "file": "regular-dark-4-bb9cacb1879d.png"
+    "file": "regular-dark-4-e36edfac8fdf.png"
   },
   "regular-light-5.png": {
     "source": "src/offline/icons/MacTahoeLiquidKde-Icons.tar.zst",
@@ -1182,14 +1182,14 @@
   "regular-dark-6.png": {
     "source": "src/offline/icons/MacTahoeLiquidKde-Icons.tar.zst",
     "source_sha256": "f9ea0a95a94ac79df7939fca6ef636fbc3ceb3a2e5333a16d20ff3f42488040d",
-    "artwork_sha256": "a3905306bcefa3809c64a5da38b1d336abdbf320deafa54b2a31804fd8ed70af",
+    "artwork_sha256": "1f164dd85f3f56ab80bb843b902cec7ee57a7208bab2fb49d4925cb53351072a",
     "variant": "dark",
     "tint": "#007aff",
     "sample": "org.kde.discover",
     "generator": "src/scripts/installer_preview_assets.py",
-    "sha256": "120c98da34624f3208470081123002276037abc430664e8ae354b2046408eba5",
+    "sha256": "8791c725f6c7f1b4da05c2c4f425935f34a264b668a2f5033ccd06a4b7cd0f62",
     "kind": "generated-icon-preview",
-    "file": "regular-dark-6-120c98da3462.png"
+    "file": "regular-dark-6-8791c725f6c7.png"
   },
   "regular-light-7.png": {
     "source": "src/offline/icons/MacTahoeLiquidKde-Icons.tar.zst",
