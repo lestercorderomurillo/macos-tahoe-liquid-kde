@@ -519,8 +519,12 @@ def render_installer(prepared: tuple, style: str, mode: str, tint: tuple[int, in
     if style == "regular":
         if mode == "light" or classification != "vector-light" or background is None:
             return image.copy()
-        background = _recolor_layer(background, (8, 8, 10), (48, 48, 51))
-        result = Image.alpha_composite(background, dark_foreground(artwork))
+        # Use the approved vertical graphite gradient on the existing plate.
+        # Modulate by its original paint to keep inset detail and perimeter shading.
+        graphite = gradient(image.width, (52, 52, 54, 255), (12, 12, 14, 255))
+        graphite = ImageChops.multiply(graphite, ImageOps.grayscale(background).convert("RGBA"))
+        graphite.putalpha(background.getchannel("A"))
+        result = Image.alpha_composite(graphite, dark_foreground(artwork))
         result.putalpha(image.getchannel("A"))
         return result
     if "material_svg" in image.info:
