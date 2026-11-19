@@ -1,34 +1,61 @@
 {
-  "version": "0.73.16",
-  "implementation_commit": "0b2f4f60d4216fb13671f73a41050260a1fc70f8",
+  "version": "0.73.17",
+  "implementation_commit": "fb4c532d06dafac202fe920f65f2b5dec2032c19",
   "gallery_commit": "f09780b200b79302e7c23ef9f6f74d94748bbea3",
-  "scope": "Restore reviewed dark application icons and their graphite gradient for the selected installer appearance.",
+  "scope": "Glass highlights on Firefox and Thunderbird, including lower-edge reflections in Clear Light.",
   "checks": [
     {
-      "command": "python -m pytest -q tests/test_icon_toolset.py (Tahoe)",
+      "command": "release_capture.Guest + installer_themes + Spectacle (focused Dock capture)",
       "result": "passed",
-      "detail": "50 passed, including pixel checks for both installer selections, alias identity and the dark gradient."
-    },
-    {
-      "command": "capture.py + probe.py (release_capture.Guest, Plasma 6.8.1 on KDE neon Wayland)",
-      "result": "passed",
-      "detail": "Verified installer-generated Finder, Discover and Settings pixels against reviewed SVGs and photographed the regular dark Dock."
+      "detail": "Reviewed Clear, red and blue in light and dark mode. The maintainer approved the final Clear Light and the other glass appearances."
     }
   ],
-  "captures": [
+  "reviewed_frames": [
     {
-      "path": "src/screenshots/previews/readme-tahoe-dark-dock-regular-23aded93b8b1.webp",
-      "sha256": "23aded93b8b163cf7d39e4b0510c847488c6a2e60951a4c40a0df8d3993fd655",
-      "reviewed": true,
-      "source_commit": "f27a6b524c789d5db133e2f33dac93ff311b9ace",
-      "source_sha256": "64dd9d5239e3304349cf355cb4fc50b140529b6667e83d89d78ea1256029a916",
-      "icon_materials_sha256": "4ddf251b57ce841b8f69cb8160ab54c3207148ba9c8673103fd7c67f5a6ca317",
-      "icon_toolset_sha256": "5512c1a57922e3e6006ea934997041ffc2ef8504caea3e411761f8895325c2b0"
+      "frame": "dock-proof-tahoe-clear-dark-blue-empty.png",
+      "sha256": "b9705c947f5f6f36b3b7d8a07f773b41faa947bf0eb9d3b84c9dc03e28403557",
+      "source_commit": "d8057e901374602a9d199e5047575e9565dfd7b1",
+      "renderer_sha256": "98f276d6daacb5a448b88f1c0dcc6c9d0a03ecc0f83e80f51cddcd2275835a4a",
+      "wallpaper": "MacTahoe/images_dark/3840x2160.jpg"
+    },
+    {
+      "frame": "dock-proof-tahoe-glass-light-blue-empty.png",
+      "sha256": "80b9f56cc408d94175fb26a2013f3755293de2189c3c930c6b7eecc2f7b0a36e",
+      "source_commit": "d8057e901374602a9d199e5047575e9565dfd7b1",
+      "renderer_sha256": "98f276d6daacb5a448b88f1c0dcc6c9d0a03ecc0f83e80f51cddcd2275835a4a",
+      "wallpaper": "MacTahoe/images/3840x2160.jpg"
+    },
+    {
+      "frame": "dock-proof-tahoe-glass-dark-blue-empty.png",
+      "sha256": "c69a03ab2917a11c7375a8825210670635936fe0ddd0f8a63839a59582fc581a",
+      "source_commit": "d8057e901374602a9d199e5047575e9565dfd7b1",
+      "renderer_sha256": "98f276d6daacb5a448b88f1c0dcc6c9d0a03ecc0f83e80f51cddcd2275835a4a",
+      "wallpaper": "MacTahoe/images_dark/3840x2160.jpg"
+    },
+    {
+      "frame": "dock-proof-tahoe-glass-light-red-empty.png",
+      "sha256": "1f3583eda85026891049fed6e6cb56754808ec473cb97565ea2fc7d3cac3a73a",
+      "source_commit": "d8057e901374602a9d199e5047575e9565dfd7b1",
+      "renderer_sha256": "98f276d6daacb5a448b88f1c0dcc6c9d0a03ecc0f83e80f51cddcd2275835a4a",
+      "wallpaper": "MacTahoe/images/3840x2160.jpg"
+    },
+    {
+      "frame": "dock-proof-tahoe-glass-dark-red-empty.png",
+      "sha256": "f1d46fadd4b934e8fb0a81045bff3cde3c70f70cf035f3e798b31051b28e9e39",
+      "source_commit": "d8057e901374602a9d199e5047575e9565dfd7b1",
+      "renderer_sha256": "98f276d6daacb5a448b88f1c0dcc6c9d0a03ecc0f83e80f51cddcd2275835a4a",
+      "wallpaper": "MacTahoe/images_dark/3840x2160.jpg"
+    },
+    {
+      "frame": "dock-proof-tahoe-clear-light-blue-empty.png",
+      "sha256": "711d2f1dd64b702137cd61675788695ea04ef450799b1a6e1235848a790131df",
+      "source_commit": "fb4c532d06dafac202fe920f65f2b5dec2032c19",
+      "renderer_sha256": "f3a7351ff3e3418bfb718b3384066195c3839fd302e28a203d244f8196c7da6d",
+      "wallpaper": "MacTahoe/images/3840x2160.jpg"
     }
   ],
   "coverage_limits": [
-    "Visual qualification covers the Dark Dock on KDE neon Wayland in each edition. Full CI runs asynchronously."
+    "KDE neon, Plasma 6.8.1, Wayland; the Thunderbird launcher used its bundled icon through a desktop-entry fixture."
   ],
-  "documentation_note": "The maintainer approved the corrected photographs and publication of the installer-selected shared theme.",
-  "source_sha256": "77c5ac23d3eb93948409009938e2a45a391094528623c274728d3ab5af124c0f"
+  "source_sha256": "2fdcac5e33d3ec04cba2123875b6b7c42db65ac3f68dfa2e433faa4ab57a85b9"
 }
