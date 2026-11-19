@@ -1182,14 +1182,14 @@
   "regular-dark-6.png": {
     "source": "src/offline/icons/MacTahoeLiquidKde-Icons.tar.zst",
     "source_sha256": "f9ea0a95a94ac79df7939fca6ef636fbc3ceb3a2e5333a16d20ff3f42488040d",
-    "artwork_sha256": "1f164dd85f3f56ab80bb843b902cec7ee57a7208bab2fb49d4925cb53351072a",
+    "artwork_sha256": "277ded065a934c093979430e0e2c130dd1181e309407571eca1e7f622440ee18",
     "variant": "dark",
     "tint": "#007aff",
     "sample": "org.kde.discover",
     "generator": "src/scripts/installer_preview_assets.py",
-    "sha256": "8791c725f6c7f1b4da05c2c4f425935f34a264b668a2f5033ccd06a4b7cd0f62",
+    "sha256": "778fe1e6a876aaa28cedcc29e0993020e24f3e7601fd9d789f266c1d9e7ce5fe",
     "kind": "generated-icon-preview",
-    "file": "regular-dark-6-8791c725f6c7.png"
+    "file": "regular-dark-6-778fe1e6a876.png"
   },
   "regular-light-7.png": {
     "source": "src/offline/icons/MacTahoeLiquidKde-Icons.tar.zst",
