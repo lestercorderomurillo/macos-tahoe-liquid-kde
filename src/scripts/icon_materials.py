@@ -536,8 +536,7 @@ def render_installer(prepared: tuple, style: str, mode: str, tint: tuple[int, in
             return _recolor_layer(image, (8, 8, 8), (78, 78, 78), gamma=2.5)
         return _recolor_layer(image, (45, 45, 45), (243, 243, 243), gamma=1.45)
     clear = style == "clear"
-    light_glass_artwork = image.info.get("artwork_name") if not dark and not clear else None
-    browser_or_mail = light_glass_artwork in ("firefox", "thunderbird")
+    artwork_name = image.info.get("artwork_name")
     rgb = (142, 142, 147) if clear else tint
     def mix(amount, white=0):
         return tuple(round(c * amount + white * (1 - amount)) for c in rgb)
@@ -554,15 +553,30 @@ def render_installer(prepared: tuple, style: str, mode: str, tint: tuple[int, in
         # No background layer exists. Do not invent a squircle behind the asset.
         return _recolor_layer(image, low if dark or clear else mix(.30),
                               high if dark or clear else mix(.65, 255), opacity=.85 if clear else 1)
-    if browser_or_mail:
-        plate_low, plate_high = mix(.36), mix(.67)
+    if artwork_name in ("firefox", "thunderbird"):
+        # Transmit the backdrop through the original plate and the illustration's
+        # shadows. Keep the brightest folds of the flame and feathers reflective.
+        if clear:
+            base = (0, 0, 0) if dark else (255, 255, 255)
+            plate_opacity = .63 if dark else .17
+        else:
+            base = mix(.095 if dark else .50)
+            plate_opacity = .83 if dark else .72
+        plate = _recolor_layer(background, base, base, opacity=plate_opacity)
+        alpha = artwork.getchannel("A")
+        tones = ImageOps.autocontrast(ImageOps.grayscale(artwork), cutoff=2,
+                                      mask=alpha.point(lambda a: 255 if a > 224 else 0))
+        highlight = (255, 255, 255) if clear else mix(.30 if dark else .04, 255)
+        shade = (36, 36, 36) if clear else mix(.66)
+        foreground = ImageOps.colorize(tones, shade, highlight).convert("RGBA")
+        opacity = tones.point(lambda v: round(140 + 115 * v / 255))
+        foreground.putalpha(ImageChops.multiply(alpha, opacity))
+        return Image.alpha_composite(plate, foreground)
     plate = _recolor_layer(background, plate_low, plate_high,
                            opacity=.60 if clear else 1)
     # Sparse dark lettering needs the opposite polarity against a dark tile.
     sparse = sum(artwork.getchannel("A").histogram()[128:]) < image.width * image.height * material.sparse_fraction
-    if browser_or_mail:
-        foreground = _recolor_layer(artwork, mix(material.relief_tint * .8, 255), high, gamma=1.25)
-    elif sparse:
+    if sparse:
         ink = ImageOps.grayscale(artwork).point(
             lambda value: round(255 * (value / 255) ** material.sparse_gamma))
         foreground = ImageOps.colorize(ink, high if dark else low, low if dark else high,
@@ -584,7 +598,7 @@ def render_installer(prepared: tuple, style: str, mode: str, tint: tuple[int, in
             black = peak.point(lambda v: max(0, min(255, (95 - v) * 8)))
             mask = ImageChops.lighter(mask.point(lambda v: 255 if v else 0), ImageChops.multiply(neutral, black))
             ink = _recolor_layer(artwork, low, high, gamma=1.4)
-            if light_glass_artwork == "file-manager":
+            if artwork_name == "file-manager":
                 # The smile is beveled in the original, so parts of it are
                 # neither black nor strictly neutral. Keep their ink connected.
                 stroke = peak.point(lambda v: max(0, min(255, (152 - v) * 6)))
