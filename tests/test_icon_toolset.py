@@ -258,7 +258,8 @@ def test_verify_rejects_changes_extra_files_and_escaping_links(built, tmp_path):
         verify(built)
 
 
-def test_every_alias_uses_original_geometry_in_both_regular_modes(tmp_path):
+@pytest.mark.parametrize("style", ["regular", "dark"])
+def test_every_alias_uses_reviewed_artwork_for_its_mode(tmp_path, style):
     from icon_materials import raster
     from icon_toolset import ROOT, installer_themes
     manifest = json.loads((ROOT / 'src/offline/icons/overrides/sources.json').read_text())
@@ -272,17 +273,16 @@ def test_every_alias_uses_original_geometry_in_both_regular_modes(tmp_path):
         assert digest(original) == entry['source_sha256']
         (apps / f'app-{index}.svg').write_bytes(original.read_bytes())
         (apps / f'alias-{index}.svg').symlink_to(f'app-{index}.svg')
-    names = installer_themes(source, tmp_path / 'generated', 'regular', '#007aff')
-    for index in range(len(manifest)):
+    names = installer_themes(source, tmp_path / 'generated', style, '#007aff')
+    for index, dark_file in enumerate(manifest):
         original = apps / f'app-{index}.svg'
         for name in names:
             generated = tmp_path / 'generated' / name / 'apps/256'
             assert (generated / f'alias-{index}.png').resolve() == (generated / f'app-{index}.png').resolve()
-            expected = raster(original, 512).resize((256, 256), Image.Resampling.LANCZOS)
+            artwork = ROOT / 'src/offline/icons/overrides' / dark_file if style == 'dark' or name.endswith('-Dark') else original
+            expected = raster(artwork, 512).resize((256, 256), Image.Resampling.LANCZOS)
             actual = Image.open(generated / f'app-{index}.png').convert('RGBA')
-            assert actual.getchannel('A').tobytes() == expected.getchannel('A').tobytes()
-            if name.endswith('-Light'):
-                assert actual.tobytes() == expected.tobytes()
+            assert actual.tobytes() == expected.tobytes()
 
 
 def test_regular_dark_removes_partial_colored_rim_without_losing_foreground(tmp_path):

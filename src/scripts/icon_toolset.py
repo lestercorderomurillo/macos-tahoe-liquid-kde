@@ -24,7 +24,7 @@ from pathlib import Path
 import PIL
 from PIL import Image, ImageDraw
 
-from icon_materials import VARIANTS, DEFAULT_GLASS, GlassMaterial, prepare_source, render, render_installer
+from icon_materials import VARIANTS, DEFAULT_GLASS, GlassMaterial, prepare_source, raster, render, render_installer
 from icon_sources import digest, inventory, unpack, validate_links
 from interface_icons import INTERFACE_ICONS
 
@@ -118,12 +118,18 @@ def installer_themes(source: Path, output: Path, style: str, tint: str, *,
     for path, checksum in entries:
         unique.setdefault(checksum, path)
 
+    dark_sources = installer_dark_sources() if style in ("regular", "dark") else {}
+
     def generate(path, checksum):
         check_cancelled()
         prepared = prepare_source(path, 512, clean_rim=style in ("regular", "dark"))
         for name, mode in zip(names, ("light", "dark")):
-            result = render_installer(prepared, "regular" if style == "dark" else style,
-                                      "dark" if style == "dark" else mode, rgb, material)
+            effective_mode = "dark" if style == "dark" else mode
+            if effective_mode == "dark" and checksum in dark_sources:
+                result = raster(dark_sources[checksum], 512)
+            else:
+                result = render_installer(prepared, "regular" if style == "dark" else style,
+                                          effective_mode, rgb, material)
             result.resize((256, 256), Image.Resampling.LANCZOS).save(
                 output / name / "apps/256" / (path.stem + ".png"))
 
@@ -155,9 +161,10 @@ def installer_themes(source: Path, output: Path, style: str, tint: str, *,
             raise
     if not records:
         raise ValueError("No application artwork found")
-    for name in names:
+    for name, mode in zip(names, ("light", "dark")):
         write_json(output / name / "generation.json", {"style": style, "tint": tint, "sources": records,
-            "dark_artwork": {},
+            "dark_artwork": {path.name: digest(path) for checksum, path in dark_sources.items()
+                             if checksum in unique and (mode == "dark" or style == "dark")},
             "material": asdict(material) if style == "glass" else None, "partial": bool(icons),
             "generator": {file: digest(Path(__file__).with_name(file)) for file in
                           ("icon_toolset.py", "icon_materials.py")},
