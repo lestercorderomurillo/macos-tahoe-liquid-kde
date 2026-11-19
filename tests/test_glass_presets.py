@@ -115,7 +115,7 @@ def test_installation_reapplies_complete_edition_material(monkeypatch, edition, 
     assert components["dock"]["BlurStrength"] == 5
     assert components["dock"]["DarkGradientOverlay"] is False
     assert components["control-center"]["DarkGradientOverlay"] is False
-    assert components["apps"]["BlurStrength"] == float(expected["BlurStrength"])
+    assert components["apps"]["BlurStrength"] == (2 if golden else float(expected["BlurStrength"]))
     assert saved == expected
     assert writes[-1] == "MaterialPreset"
     writes.clear()
@@ -124,7 +124,7 @@ def test_installation_reapplies_complete_edition_material(monkeypatch, edition, 
     assert components["dock"]["BlurStrength"] == 5
     assert components["dock"]["DarkGradientOverlay"] is False
     assert components["control-center"]["DarkGradientOverlay"] is False
-    assert components["apps"]["BlurStrength"] == float(expected["BlurStrength"])
+    assert components["apps"]["BlurStrength"] == (2 if golden else float(expected["BlurStrength"]))
     assert saved == expected
 
 
@@ -191,5 +191,5 @@ def test_installer_frost_glass_values(monkeypatch, edition, style):
     assert components["dock"]["BlurStrength"] == 5
     assert components["dock"]["DarkGradientOverlay"] is False
     assert components["control-center"]["DarkGradientOverlay"] is False
-    assert components["apps"]["BlurStrength"] == float(expected["BlurStrength"])
+    assert components["apps"]["BlurStrength"] == (2 if style == "official" else float(expected["BlurStrength"]))
     assert saved == expected

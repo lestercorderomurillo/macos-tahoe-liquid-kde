@@ -140,40 +140,79 @@
     "tinted_values": {},
     "components": {
       "finder": {
-        "SurfaceTransparencyLight": 25.0,
-        "SurfaceTransparencyDark": 25.0
+        "SurfaceTransparencyLight": 65,
+        "SurfaceTransparencyDark": 65,
+        "GradientBottomColor": "#ffffff",
+        "GradientCenterColor": "#ffffff",
+        "GradientCenterOpacity": 0.55,
+        "GradientCenterPosition": 0.65,
+        "GradientTopColor": "#ffffff",
+        "GradientTopOpacity": 1,
+        "HighlightWidth": 20,
+        "MagnifyGlassStrength": 0.024,
+        "RefractionWidth": 45,
+        "RgbDriftStrength": 7.5
       },
       "menus": {
         "SurfaceTransparencyLight": 40.0,
         "SurfaceTransparencyDark": 99.0
       },
       "apps": {
-        "SurfaceTransparencyLight": 45.0,
-        "SurfaceTransparencyDark": 88.0
+        "SurfaceTransparencyLight": 95,
+        "SurfaceTransparencyDark": 95,
+        "BlurStrength": 2,
+        "GradientCenterOpacity": 0,
+        "GradientCenterPosition": 0.45,
+        "GradientTopColor": "#ffffff",
+        "GradientTopOpacity": 1,
+        "MagnifyGlassStrength": 0.02,
+        "RefractionWidth": 45
       },
       "search": {
-        "SurfaceTransparencyLight": 45.0,
-        "SurfaceTransparencyDark": 88.0
+        "SurfaceTransparencyLight": 85,
+        "SurfaceTransparencyDark": 95,
+        "BlurStrength": 2.5,
+        "GradientCenterOpacity": 0,
+        "GradientCenterPosition": 0.6,
+        "GradientTopColor": "#ffffff",
+        "GradientTopOpacity": 1,
+        "MagnifyGlassStrength": 0.02
       },
       "control-center": {
-        "BlurStrength": 5.0,
+        "BlurStrength": 1,
         "NoiseStrength": 0,
-        "RgbDriftStrength": 2.88,
-        "MagnifyGlassStrength": 0.1,
-        "RefractionWidth": 18.0,
-        "HighlightWidth": 3.5,
-        "HighlightStrength": 0.1,
-        "Brightness": 1.0,
+        "RgbDriftStrength": 0.5,
+        "MagnifyGlassStrength": 0.04,
+        "RefractionWidth": 32,
+        "HighlightWidth": 20,
+        "HighlightStrength": 0.2,
+        "Brightness": 1.1,
         "Contrast": 1.0,
-        "Saturation": 1.0,
+        "Saturation": 0.93,
         "DarkGradientOverlay": false,
         "BlurCoverage": 1.0,
-        "SurfaceTransparencyLight": 82.0,
-        "SurfaceTransparencyDark": 88.0
+        "SurfaceTransparencyLight": 90,
+        "SurfaceTransparencyDark": 90,
+        "GradientBottomColor": "#ffffff",
+        "GradientCenterColor": "#ffffff",
+        "GradientCenterOpacity": 0.55,
+        "GradientCenterPosition": 0.65,
+        "GradientTopColor": "#ffffff",
+        "GradientTopOpacity": 1
       },
       "about": {
-        "SurfaceTransparencyLight": 40.0,
-        "SurfaceTransparencyDark": 99.0
+        "SurfaceTransparencyLight": 65,
+        "SurfaceTransparencyDark": 65,
+        "GradientBottomColor": "#ffffff",
+        "GradientCenterColor": "#ffffff",
+        "GradientCenterOpacity": 0.55,
+        "GradientCenterPosition": 0.65,
+        "GradientTopColor": "#ffffff",
+        "GradientTopOpacity": 1,
+        "HighlightWidth": 20,
+        "MagnifyGlassStrength": 0.024,
+        "RefractionWidth": 45,
+        "RgbDriftStrength": 7.5
       },
       "dock": {
         "BlurStrength": 5.0,

@@ -63,7 +63,20 @@ public:
         const auto prefix = theme.themeName().endsWith(QStringLiteral("-Light")) ? QStringLiteral("Light/") : QStringLiteral("Dark/");
         QList<QObject *> objects = window->findChildren<QObject *>();
         if (auto *quick = qobject_cast<QQuickWindow *>(window)) {
-            if (quick->contentItem()) objects.append(quick->contentItem()->findChildren<QObject *>());
+            auto *root = quick->contentItem();
+            if (root) objects.append(root->findChildren<QObject *>());
+            // PlasmaQuick::Dialog parents its painted frame visually to the
+            // window, but its QObject owner is the shared QML engine.
+            if (root && component == QStringLiteral("apps")) {
+                const auto *content = window->property("mainItem").value<QQuickItem *>();
+                auto items = root->childItems();
+                while (!items.isEmpty()) {
+                    auto *item = items.takeLast();
+                    if (item == content) continue;
+                    objects.append(item);
+                    items.append(item->childItems());
+                }
+            }
         }
         for (auto *object : objects) {
             if (object->metaObject()->indexOfProperty("imagePath") < 0) continue;
