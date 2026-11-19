@@ -3,7 +3,7 @@
   <img src="docs/artwork/kde-26-5bc32be65b24.png" alt="26 · KDE" width="180" height="180">
 </p>
 
-<h1 align="center">macOS Tahoe 适用于 KDE Plasma</h1>
+<h1 align="center">适用于 Linux KDE 桌面的 macOS Tahoe 外观与操作体验</h1>
 
 <p align="center">
   <a href="README.md" lang="en" hreflang="en">🇺🇸 English</a> ·
@@ -45,6 +45,8 @@
   <a href="tests/vm/PROOF.md#debian" title="Debian testing / sid (Plasma 6.6+)"><img src="src/screenshots/distros/debian.svg" alt="Debian" width="32" height="32"></a>
   <a href="tests/vm/PROOF.md#nixos" title="NixOS (experimental)"><img src="src/screenshots/distros/nixos.svg" alt="NixOS" width="32" height="32"></a>
 </p>
+
+本项目用于自定义 Linux 上 KDE 桌面的外观，不包含任何 Apple 服务，也不会连接到这些服务。如需 Apple 服务，请[直接前往 Apple 官方商店选购](https://www.apple.com/store)。
 
 > [!CAUTION]
 > **滚动发布理念**

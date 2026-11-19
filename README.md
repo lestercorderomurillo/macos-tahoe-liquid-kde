@@ -3,7 +3,7 @@
   <img src="docs/artwork/kde-26-5bc32be65b24.png" alt="26 · KDE" width="180" height="180">
 </p>
 
-<h1 align="center">macOS Tahoe for KDE Plasma</h1>
+<h1 align="center">macOS Tahoe Look &amp; Feel for KDE Linux</h1>
 
 <p align="center">
   <a href="README.md" lang="en" hreflang="en" aria-current="page">🇺🇸 English</a> ·
@@ -45,6 +45,8 @@
   <a href="tests/vm/PROOF.md#debian" title="Debian testing / sid (Plasma 6.6+)"><img src="src/screenshots/distros/debian.svg" alt="Debian" width="32" height="32"></a>
   <a href="tests/vm/PROOF.md#nixos" title="NixOS (experimental)"><img src="src/screenshots/distros/nixos.svg" alt="NixOS" width="32" height="32"></a>
 </p>
+
+This project customizes the look and feel of your KDE desktop on Linux. It does not include or connect to Apple services. If you need Apple services, [shop directly with Apple](https://www.apple.com/store).
 
 > [!CAUTION]
 > **Rolling Release Philosophy**
