@@ -570,9 +570,15 @@ def render_installer(prepared: tuple, style: str, mode: str, tint: tuple[int, in
         tones = ImageOps.autocontrast(ImageOps.grayscale(artwork), cutoff=2,
                                       mask=alpha.point(lambda a: 255 if a > 224 else 0))
         if clear and not dark:
-            # Let the wallpaper supply the shadow color. The existing flame
-            # and feather gradients determine how much white light is reflected.
-            reflection = tones.point(lambda v: round(18 + 229 * (v / 255) ** .68))
+            # Separate the illuminated facets from the transparent folds, then
+            # fade the reflection vertically like the light side of Finder.
+            def reflect(value):
+                t = max(0, min(1, (value - 12) / 145))
+                return round(6 + 249 * t * t * (3 - 2 * t))
+
+            fade = Image.linear_gradient("L").resize(artwork.size).point(
+                lambda y: round(255 - 106 * y / 255))
+            reflection = ImageChops.multiply(tones.point(reflect), fade)
             foreground = Image.new("RGBA", artwork.size, highlight)
             foreground.putalpha(ImageChops.multiply(alpha, reflection))
             return Image.alpha_composite(plate, foreground)
