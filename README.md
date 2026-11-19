@@ -1,6 +1,6 @@
 <p align="center">
   <!-- Adapted with ImageGen from artwork by Apple: https://developer.apple.com/assets/elements/icons/macos-26/macos-26-128x128_2x.png -->
-  <img src="docs/artwork/kde-26-5128776ed9f5.png" alt="26 · KDE" width="180" height="180">
+  <img src="docs/artwork/kde-26-5bc32be65b24.png" alt="26 · KDE" width="180" height="180">
 </p>
 
 <h1 align="center">macOS Tahoe for KDE Plasma</h1>
