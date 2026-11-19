@@ -2633,10 +2633,10 @@
         ]
       }
     },
-    "previews/readme-tahoe-dark-dock-regular-b2bc5a4d8dc7.webp": {
-      "sha256": "b2bc5a4d8dc70d51e7dbbb73824df30f89c23f82a6140a14293e5f40fc1ed92d",
-      "source_commit": "6179fda6c79cdb08f828de1346dbdc9bae00cf97",
-      "source_sha256": "e77bb641018e94d25072baa7586fa7e9630d6261d156a853f56a4cc0eba23c71",
+    "previews/readme-tahoe-dark-dock-regular-23aded93b8b1.webp": {
+      "sha256": "23aded93b8b163cf7d39e4b0510c847488c6a2e60951a4c40a0df8d3993fd655",
+      "source_commit": "f27a6b524c789d5db133e2f33dac93ff311b9ace",
+      "source_sha256": "64dd9d5239e3304349cf355cb4fc50b140529b6667e83d89d78ea1256029a916",
       "replaces": "src/screenshots/previews/readme-tahoe-dark-dock-regular-f6c4b141b09e.webp",
       "export_size": [
         1404,
@@ -2649,11 +2649,11 @@
         "kwin": "kwin 6.8.1",
         "backend": "Wayland",
         "icon_toolset_sha256": "5512c1a57922e3e6006ea934997041ffc2ef8504caea3e411761f8895325c2b0",
-        "icon_materials_sha256": "868c3abf41da42e0cacd1e00e6d42fb5b15ac5ea1b74010e300bb869c0f06ff1",
+        "icon_materials_sha256": "4ddf251b57ce841b8f69cb8160ab54c3207148ba9c8673103fd7c67f5a6ca317",
         "capture_script_sha256": "fb7cc64953631160684eacd30d23f5b81ede9c80771cd92f257f352aba15d021",
         "record": {
           "file": "dock-proof-tahoe-regular-dark-blue-empty.png",
-          "sha256": "b2bc5a4d8dc70d51e7dbbb73824df30f89c23f82a6140a14293e5f40fc1ed92d",
+          "sha256": "23aded93b8b163cf7d39e4b0510c847488c6a2e60951a4c40a0df8d3993fd655",
           "theme": "MacTahoeLiquidKde-Icons-Regular-Dark",
           "wallpaper": "MacTahoe/images_dark/3840x2160.jpg",
           "state": "empty",
@@ -2665,7 +2665,7 @@
           },
           "center_offset": 0.0,
           "glass": "ready",
-          "png_sha256": "a4985ff6b0a474addc56667eb69181f67b40000c71bbf41afa517fd87cfd0e0a",
+          "png_sha256": "e08977da2ffb3a9ee4544e970a95efe4e8e8a40516825b4b94d95d293474cad7",
           "export_size": [
             1404,
             178

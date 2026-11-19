@@ -170,7 +170,7 @@ Refracción del cristal, ampliación al pasar el cursor, burbujas rojas con el n
 
 <p align="center">
   <strong>Dark</strong><br>
-  <a href="src/screenshots/previews/readme-tahoe-dark-dock-regular-b2bc5a4d8dc7.webp"><img src="src/screenshots/previews/readme-tahoe-dark-dock-regular-b2bc5a4d8dc7.webp" alt="Tahoe Dock icon appearance preview: Dark" width="830"></a>
+  <a href="src/screenshots/previews/readme-tahoe-dark-dock-regular-23aded93b8b1.webp"><img src="src/screenshots/previews/readme-tahoe-dark-dock-regular-23aded93b8b1.webp" alt="Tahoe Dock icon appearance preview: Dark" width="830"></a>
 </p>
 
 <p align="center">
