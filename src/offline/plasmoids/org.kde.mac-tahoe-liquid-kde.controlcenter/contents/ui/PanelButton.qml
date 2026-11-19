@@ -19,11 +19,9 @@ Item {
     Accessible.onPressAction: clicked()
     Keys.onSpacePressed: clicked()
     Keys.onReturnPressed: clicked()
-    Rectangle {
-        anchors.fill: parent
-        radius: Kirigami.Units.smallSpacing
-        color: Kirigami.Theme.textColor
-        opacity: pointer.pressed ? 0.16 : pointer.containsMouse || button.selected || button.activeFocus ? 0.09 : 0
+    PanelCapsule {
+        pressed: pointer.pressed
+        visible: pressed || pointer.containsMouse || button.selected || button.activeFocus
     }
     Kirigami.Icon {
         anchors.centerIn: parent

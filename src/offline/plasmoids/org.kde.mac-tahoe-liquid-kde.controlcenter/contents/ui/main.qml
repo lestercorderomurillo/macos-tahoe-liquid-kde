@@ -6,6 +6,7 @@ import org.kde.mac.tahoe.launcher as Native
 PlasmoidItem {
     id: root
     Plasmoid.backgroundHints: PlasmaCore.Types.NoBackground
+    StatusTrayStyle { panelItem: root }
     preferredRepresentation: fullRepresentation
     compactRepresentation: null
     fullRepresentation: PanelButton {
