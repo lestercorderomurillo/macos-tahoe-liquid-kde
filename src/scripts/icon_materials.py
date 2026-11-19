@@ -572,8 +572,9 @@ def render_installer(prepared: tuple, style: str, mode: str, tint: tuple[int, in
         # Sample the original silhouette and painted folds in the direction
         # of the light. The reflection stays inside the original coverage.
         distance = max(1, round(artwork.width / 64))
-        outer = ImageChops.subtract(alpha, ImageChops.offset(alpha, distance, distance))
-        folds = ImageChops.subtract(tones, ImageChops.offset(tones, distance, distance))
+        offset = (0, -distance) if clear and not dark else (distance, distance)
+        outer = ImageChops.subtract(alpha, ImageChops.offset(alpha, *offset))
+        folds = ImageChops.subtract(tones, ImageChops.offset(tones, *offset))
         edge = ImageChops.lighter(outer, folds).point(lambda v: min(234, v * 2))
         if clear and not dark:
             # Separate the illuminated facets from the transparent folds, then
