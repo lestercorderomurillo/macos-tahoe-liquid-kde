@@ -764,9 +764,9 @@
     "tint": "#007aff",
     "sample": "firefox",
     "generator": "src/scripts/installer_preview_assets.py",
-    "sha256": "69195a34db3981c5b264227e4740a420a79f6f3a9f6344a5276522a9948a376c",
+    "sha256": "b8200ff568bb6025ac58faec01904afbb07789b82a071e1724101cd71c5dcbb0",
     "kind": "generated-icon-preview",
-    "file": "regular-dark-1-69195a34db39.png"
+    "file": "regular-dark-1-b8200ff568bb.png"
   },
   "regular-light-2.png": {
     "source": "src/offline/icons/MacTahoeLiquidKde-Icons.tar.zst",
@@ -1163,9 +1163,9 @@
     "tint": "#007aff",
     "sample": "gwenview",
     "generator": "src/scripts/installer_preview_assets.py",
-    "sha256": "6cacecc53665ad7f879f96e9c63228dabae36208cf549754ecdbe0a21afc70be",
+    "sha256": "e2e26740b7137d68e26069fc881a53bb29f3e18e6f718f1b3a32c3d9ea0ca0ef",
     "kind": "generated-icon-preview",
-    "file": "regular-dark-5-6cacecc53665.png"
+    "file": "regular-dark-5-e2e26740b713.png"
   },
   "regular-light-6.png": {
     "source": "src/offline/icons/MacTahoeLiquidKde-Icons.tar.zst",
@@ -2540,8 +2540,8 @@
     "kind": "generated-icon-preview"
   },
   "weather-dark-light-neutral.png": {
-    "file": "weather-dark-light-neutral-63667a61e0b4.png",
-    "sha256": "63667a61e0b40e1609bf9ea4c8b8c3b49e87adfcdb7e386c8d44a2a8d5b4fa2f",
+    "file": "weather-dark-light-neutral-44ffdb262439.png",
+    "sha256": "44ffdb2624397b4d1c299c9f23e00800ec1911d65ca84dac334d8db082e6e956",
     "source": "src/offline/icons/MacTahoeLiquidKde-Icons.tar.zst",
     "source_sha256": "f9ea0a95a94ac79df7939fca6ef636fbc3ceb3a2e5333a16d20ff3f42488040d",
     "artwork_sha256": "250e49e2a9e5c5bbf792b08fddc15f8e3c97919e94acd04ea10ef33385357a07",
@@ -2553,8 +2553,8 @@
     "kind": "generated-icon-preview"
   },
   "weather-dark-dark-neutral.png": {
-    "file": "weather-dark-dark-neutral-63667a61e0b4.png",
-    "sha256": "63667a61e0b40e1609bf9ea4c8b8c3b49e87adfcdb7e386c8d44a2a8d5b4fa2f",
+    "file": "weather-dark-dark-neutral-44ffdb262439.png",
+    "sha256": "44ffdb2624397b4d1c299c9f23e00800ec1911d65ca84dac334d8db082e6e956",
     "source": "src/offline/icons/MacTahoeLiquidKde-Icons.tar.zst",
     "source_sha256": "f9ea0a95a94ac79df7939fca6ef636fbc3ceb3a2e5333a16d20ff3f42488040d",
     "artwork_sha256": "250e49e2a9e5c5bbf792b08fddc15f8e3c97919e94acd04ea10ef33385357a07",

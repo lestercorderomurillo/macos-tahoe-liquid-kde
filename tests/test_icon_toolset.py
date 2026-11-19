@@ -69,6 +69,9 @@ def test_materials_preserve_color_detail_and_glass_alpha(built):
     # Neutral tile changes, saturated logo keeps its identity and white inset remains white.
     assert light.getpixel((32, 9))[0] > 220
     assert dark.getpixel((32, 9))[0] < 70
+    # The established Dark appearance fades from charcoal to nearly black.
+    assert 10 <= dark.getpixel((32, 55))[0] <= 20
+    assert dark.getpixel((32, 9))[0] - dark.getpixel((32, 55))[0] >= 24
     assert light.getpixel((32, 32))[:3] == (255, 255, 255)
     for image in (light, dark):
         red = image.getpixel((32, 24))
