@@ -73,6 +73,12 @@ PlasmaCore.Dialog {
 
     mainItem: FocusScope {
         id: menuBody
+        Connections {
+            target: root
+            function onVisibleChanged() {
+                if (!root.visible) menu.close();
+            }
+        }
         width: 154 - dialogSvg.margins.left - dialogSvg.margins.right
         height: rows.height
         focus: true
