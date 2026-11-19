@@ -1,6 +1,6 @@
 # Installer testing
 
-Tahoe **v0.73.19** supports copying a complete Acrylic Glass material between components. A native settings check in KDE neon verified that pasted values survive reopening. [Evidence and coverage](release-evidence.json).
+Tahoe **v0.73.20** adds a brush button before Wi-Fi that opens Acrylic Glass settings. The button was checked in a Golden Gate KDE neon Wayland guest. [Evidence and coverage](release-evidence.json).
 
 Approved installer previews: [Light](src/screenshots/previews/installer-tahoe-light-icons-805970eab6b7.png) · [Dark](src/screenshots/previews/installer-tahoe-dark-icons-dbc66adc81c4.png). The gallery below is historical and predates these installer changes; its original [provenance](src/screenshots/release-capture.json) is retained.
 

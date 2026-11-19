@@ -1,37 +1,38 @@
 {
-  "version": "0.73.19",
-  "implementation_commit": "30fb3b6ed1d5b323e6224863c014c70f8c332c6a",
+  "version": "0.73.20",
+  "implementation_commit": "0649244e81ceea90ed33cb6737418aaed2a40fdf",
   "gallery_commit": "f09780b200b79302e7c23ef9f6f74d94748bbea3",
-  "scope": "Acrylic Glass component settings transfer and removal of the introductory label.",
+  "scope": "Open Acrylic Glass settings from the menu bar.",
   "checks": [
     {
-      "command": "dbus-run-session -- glass-kcm-probe kwin_liquidglass_config.so presets.json (2 1 and 1 0)",
+      "command": "Apply migrate-status-controls.js twice via PlasmaShell.evaluateScript, click the brush in the disposable guest and capture the panel and active KCM with Spectacle",
       "result": "passed",
-      "detail": "Built and loaded the candidate in a disposable KDE neon guest. The probe copied edited Apps values into Finder, saved, reopened and compared the complete component maps."
-    },
-    {
-      "command": "python3 -m pytest -q tests/test_multilanguage.py::test_catalogs_cover_all_project_widget_and_kcm_messages",
-      "result": "passed",
-      "detail": "Three translation catalogs passed."
+      "detail": "A single brush preceded Wi-Fi. A click opened the Acrylic Glass configuration module. Light and dark panel previews were approved."
     }
   ],
   "reviewed_frames": [
     {
-      "frame": "golden-gate.png",
+      "frame": "panel-light.png",
       "edition": "golden-gate",
-      "sha256": "07a0b135a17d0d56d50e81ed14dab2dc44f7a91cc92fab9f2e81fdab65ea6003",
-      "source_commit": "30fb3b6ed1d5b323e6224863c014c70f8c332c6a"
+      "sha256": "b07710bc09e236fb653118f1bc048187f420276bcd7ad43c1c89b8ab3f6e7e0c",
+      "source_commit": "0649244e81ceea90ed33cb6737418aaed2a40fdf"
     },
     {
-      "frame": "tahoe.png",
-      "edition": "tahoe",
-      "sha256": "15e740758971ed38b70a498af59428518c16dbdc84be3b1f8f1968e6622dac96",
-      "source_commit": "30fb3b6ed1d5b323e6224863c014c70f8c332c6a"
+      "frame": "panel.png",
+      "edition": "golden-gate",
+      "sha256": "1f133308a4af61324fc3f299eabc328b442008353cc214314c16b0e337be2a5a",
+      "source_commit": "0649244e81ceea90ed33cb6737418aaed2a40fdf"
+    },
+    {
+      "frame": "settings.png",
+      "edition": "golden-gate",
+      "sha256": "855f5ceda05bab87b2e522fe33771f1f297f959bc4f0006d17ec1b995d018c49",
+      "source_commit": "0649244e81ceea90ed33cb6737418aaed2a40fdf"
     }
   ],
-  "approval": "Maintainer approved the shown Tahoe and Golden Gate settings previews for paired release.",
+  "approval": "Maintainer approved the Golden Gate panel previews for paired release.",
   "coverage_limits": [
-    "The shared KCM was exercised with the Qt offscreen platform in KDE neon. The change affects settings controls and leaves rendering code unchanged."
+    "Golden Gate KDE neon Wayland guest. Tahoe shares the button and panel layout. X11 was not exercised."
   ],
-  "source_sha256": "6eef9c21fd77f4bcd2e826ecf66e7f939ccb5bfa1c978a762937addd757938d6"
+  "source_sha256": "751bbc9301b05d0ad22f13d68f0dc21ff473fff4eaa514cbf24f4f3410bd61df"
 }
