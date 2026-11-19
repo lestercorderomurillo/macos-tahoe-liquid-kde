@@ -1,50 +1,34 @@
 {
-  "version": "0.73.15",
-  "implementation_commit": "8fbc63ac2f39a3ecf13293c75a220983f2f675d9",
-  "scope": "Approved light and dark Notification Center README photographs",
+  "version": "0.73.16",
+  "implementation_commit": "0b2f4f60d4216fb13671f73a41050260a1fc70f8",
   "gallery_commit": "f09780b200b79302e7c23ef9f6f74d94748bbea3",
-  "runtime_sha256": "27d26c56fb1bd44e24918212d345ea193f0f6be1fae8f7efb8b4638b6defe5e3",
+  "scope": "Restore reviewed dark application icons and their graphite gradient for the selected installer appearance.",
   "checks": [
     {
-      "command": "xvfb-run -a python kvantum-pixel-probe.py (cached primary CI SDK container)",
+      "command": "python -m pytest -q tests/test_icon_toolset.py (Tahoe)",
       "result": "passed",
-      "detail": "A real Kvantum QMenu rendered each of the eight generated accent themes in light and dark. Measured selected text pixels were black with gray and white with every other accent."
+      "detail": "50 passed, including pixel checks for both installer selections, alias identity and the dark gradient."
     },
     {
-      "command": "pytest -q tests/test_installer_wizard.py -k accent; pytest -q tests/test_popup_rendering.py -k gtk_selection_foregrounds (same SDK container)",
+      "command": "capture.py + probe.py (release_capture.Guest, Plasma 6.8.1 on KDE neon Wayland)",
       "result": "passed",
-      "detail": "Three source/generation regressions and two live GTK 3/4 cases passed, including selected, hover, focus and backdrop states over light/dark/light."
-    },
-    {
-      "command": "Focused capture using Tahoe release_capture.Guest and Spectacle",
-      "result": "passed",
-      "detail": "Plasma 6.8.1, Qt 6.11.1, Wayland, bundled global-menu module, Kvantum 1.1.8 and Acrylic Glass on the pinned KDE neon base. Verified focused Nautilus identity, stable window geometry and exclusion of its window from the crop in each edition and mode."
-    },
-    {
-      "command": "python3 src/scripts/component_manifest.py; git diff --check",
-      "result": "passed"
-    },
-    {
-      "command": "python3 .agents/skills/screenshot-provenance/scripts/audit.py --repo . --edition tahoe; git diff --cached --check",
-      "result": "passed",
-      "detail": "Audit of existing README gallery, with the new approved photographs checked against their separate capture manifest."
+      "detail": "Verified installer-generated Finder, Discover and Settings pixels against reviewed SVGs and photographed the regular dark Dock."
     }
   ],
   "captures": [
     {
-      "path": "src/screenshots/previews/readme-tahoe-light-notifications-1751d29fa5df.webp",
-      "sha256": "1751d29fa5df489cc8c2cd7956cf5048465d8c4432f45f87b6143cf6fb39943a",
-      "reviewed": true
-    },
-    {
-      "path": "src/screenshots/previews/readme-tahoe-dark-notifications-6e3677470b76.webp",
-      "sha256": "6e3677470b76ef067986d5ccb12a14a371c1981ffbc5ed8eb6c00c7852311953",
-      "reviewed": true
+      "path": "src/screenshots/previews/readme-tahoe-dark-dock-regular-23aded93b8b1.webp",
+      "sha256": "23aded93b8b163cf7d39e4b0510c847488c6a2e60951a4c40a0df8d3993fd655",
+      "reviewed": true,
+      "source_commit": "f27a6b524c789d5db133e2f33dac93ff311b9ace",
+      "source_sha256": "64dd9d5239e3304349cf355cb4fc50b140529b6667e83d89d78ea1256029a916",
+      "icon_materials_sha256": "4ddf251b57ce841b8f69cb8160ab54c3207148ba9c8673103fd7c67f5a6ca317",
+      "icon_toolset_sha256": "5512c1a57922e3e6006ea934997041ffc2ef8504caea3e411761f8895325c2b0"
     }
   ],
   "coverage_limits": [
-    "Qt row pixels were checked on the primary SDK in Xvfb. The README captures cover the shared Shell on KDE neon Wayland. Full CI runs asynchronously."
+    "Visual qualification covers the Dark Dock on KDE neon Wayland in each edition. Full CI runs asynchronously."
   ],
-  "source_sha256": "1838a650b610c7a0d66aab12bd8d0a3b9c620de98159c0ea7ed32872a392a19a",
-  "documentation_note": "The user approved the four edition-specific Notification Center photographs in the paired preview. The previous approved Shell and installer photographs retain their original provenance."
+  "documentation_note": "The maintainer approved the corrected photographs and publication of the installer-selected shared theme.",
+  "source_sha256": "77c5ac23d3eb93948409009938e2a45a391094528623c274728d3ab5af124c0f"
 }
