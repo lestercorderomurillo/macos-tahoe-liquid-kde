@@ -245,11 +245,11 @@ msgstr "Obere Tönungsstärke"
 msgid "Top tint strength for both modes. 0 leaves the glass untinted at this stop."
 msgstr "Obere Tönungsstärke für beide Modi. Bei 0 bleibt das Glas an diesem Punkt ungetönt."
 
-msgid "Transparency — dark"
-msgstr "Transparenz — dunkel"
+msgid "Transparency SVG (Dark)"
+msgstr "SVG-Transparenz (dunkel)"
 
-msgid "Transparency — light"
-msgstr "Transparenz — hell"
+msgid "Transparency SVG (Light)"
+msgstr "SVG-Transparenz (hell)"
 
 msgid "Width of the bright rim along the glass edge."
 msgstr "Breite des hellen Saums am Glasrand."

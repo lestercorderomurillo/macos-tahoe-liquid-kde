@@ -91,7 +91,7 @@ LiquidGlassEffectConfig::LiquidGlassEffectConfig(QObject* parent, const KPluginM
             number->setRange(0, 100);
             number->setSuffix(QStringLiteral(" %"));
             number->setToolTip(i18n("Background transparency only. 0% is opaque; 100% is transparent. Text, borders and icons stay intact."));
-            ui.surfaceGroupForm->addRow(entry.endsWith(QStringLiteral("Light")) ? i18n("Transparency — light") : i18n("Transparency — dark"), number);
+            ui.surfaceGroupForm->addRow(entry.endsWith(QStringLiteral("Light")) ? i18n("Transparency SVG (Light)") : i18n("Transparency SVG (Dark)"), number);
         }
     }
     const auto keys = presetAt(0).value(QStringLiteral("values")).toObject().keys();

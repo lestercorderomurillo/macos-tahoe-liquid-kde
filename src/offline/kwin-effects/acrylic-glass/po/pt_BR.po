@@ -245,11 +245,11 @@ msgstr "Intensidade da tonalidade superior"
 msgid "Top tint strength for both modes. 0 leaves the glass untinted at this stop."
 msgstr "Intensidade da tonalidade superior para ambos os modos. 0 deixa o vidro sem tonalidade neste ponto."
 
-msgid "Transparency — dark"
-msgstr "Transparência — escuro"
+msgid "Transparency SVG (Dark)"
+msgstr "Transparência SVG (escuro)"
 
-msgid "Transparency — light"
-msgstr "Transparência — claro"
+msgid "Transparency SVG (Light)"
+msgstr "Transparência SVG (claro)"
 
 msgid "Width of the bright rim along the glass edge."
 msgstr "Largura do brilho ao longo da borda do vidro."
