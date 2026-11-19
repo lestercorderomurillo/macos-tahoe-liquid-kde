@@ -1,38 +1,44 @@
 {
-  "version": "0.73.20",
-  "implementation_commit": "0649244e81ceea90ed33cb6737418aaed2a40fdf",
+  "version": "0.73.21",
+  "implementation_commit": "c5a743f527076a17fba52d6256b8e8af070a9295",
   "gallery_commit": "f09780b200b79302e7c23ef9f6f74d94748bbea3",
-  "scope": "Open Acrylic Glass settings from the menu bar.",
+  "scope": "Compact Discord and Slack indicators and individual menu bar status hover capsules.",
   "checks": [
     {
-      "command": "Apply migrate-status-controls.js twice via PlasmaShell.evaluateScript, click the brush in the disposable guest and capture the panel and active KCM with Spectacle",
+      "command": "Register Discord and Slack QSystemTrayIcon fixtures, move the pointer over individual controls and capture the panel with Spectacle in light and dark modes",
       "result": "passed",
-      "detail": "A single brush preceded Wi-Fi. A click opened the Acrylic Glass configuration module. Light and dark panel previews were approved."
+      "detail": "Reviewed idle, Discord, Slack and Wi-Fi frames show compact indicators and an individual hover highlight."
     }
   ],
   "reviewed_frames": [
     {
-      "frame": "panel-light.png",
+      "frame": "dark-app.png",
       "edition": "golden-gate",
-      "sha256": "b07710bc09e236fb653118f1bc048187f420276bcd7ad43c1c89b8ab3f6e7e0c",
-      "source_commit": "0649244e81ceea90ed33cb6737418aaed2a40fdf"
+      "sha256": "acf8ac32a333016b947f6ff7b69ebb3ab1807d79d8c517beda07064eb67dd396",
+      "source_commit": "c5a743f527076a17fba52d6256b8e8af070a9295"
     },
     {
-      "frame": "panel.png",
+      "frame": "light-rest.png",
       "edition": "golden-gate",
-      "sha256": "1f133308a4af61324fc3f299eabc328b442008353cc214314c16b0e337be2a5a",
-      "source_commit": "0649244e81ceea90ed33cb6737418aaed2a40fdf"
+      "sha256": "f49aff9d141741951035d067518c75e1f1a81e6427d891830e2512fde58ecd5b",
+      "source_commit": "c5a743f527076a17fba52d6256b8e8af070a9295"
     },
     {
-      "frame": "settings.png",
+      "frame": "light-wifi.png",
       "edition": "golden-gate",
-      "sha256": "855f5ceda05bab87b2e522fe33771f1f297f959bc4f0006d17ec1b995d018c49",
-      "source_commit": "0649244e81ceea90ed33cb6737418aaed2a40fdf"
+      "sha256": "7a0cbb7148c6f2c41adf5b73f342a9db207183bf05438914d9bb21c09381d224",
+      "source_commit": "c5a743f527076a17fba52d6256b8e8af070a9295"
+    },
+    {
+      "frame": "light-slack.png",
+      "edition": "golden-gate",
+      "sha256": "f0865baefe9746f8d57b6ec2cd7de3246178b7bc88b7bfa830962fc2987604a4",
+      "source_commit": "c5a743f527076a17fba52d6256b8e8af070a9295"
     }
   ],
   "approval": "Maintainer approved the Golden Gate panel previews for paired release.",
   "coverage_limits": [
-    "Golden Gate KDE neon Wayland guest. Tahoe shares the button and panel layout. X11 was not exercised."
+    "Golden Gate KDE neon Wayland guest. Tahoe shares the status controls. Indicator fixtures used app artwork. Full Discord and Slack clients and X11 were not exercised."
   ],
-  "source_sha256": "751bbc9301b05d0ad22f13d68f0dc21ff473fff4eaa514cbf24f4f3410bd61df"
+  "source_sha256": "62335dc8736a635f6fab745e72c3915ebf6396fe6f288bcbd601e0d4bd0e985d"
 }
