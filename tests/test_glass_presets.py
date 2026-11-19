@@ -112,19 +112,19 @@ def test_installation_reapplies_complete_edition_material(monkeypatch, edition, 
         expected["MaterialOpacity"] = "0.55"  # Retired key is ignored, not rewritten.
     assert "MaterialOpacity" not in writes
     components = json.loads(saved.pop("ComponentMaterials"))
-    assert components["dock"]["BlurStrength"] == 5
+    assert components["dock"]["BlurStrength"] == (4 if golden else 5)
     assert components["dock"]["DarkGradientOverlay"] is False
     assert components["control-center"]["DarkGradientOverlay"] is False
-    assert components["apps"]["BlurStrength"] == (2 if golden else float(expected["BlurStrength"]))
+    assert components["apps"]["BlurStrength"] == (3 if golden else float(expected["BlurStrength"]))
     assert saved == expected
     assert writes[-1] == "MaterialPreset"
     writes.clear()
     assert glass._install_material_preset()
     components = json.loads(saved.pop("ComponentMaterials"))
-    assert components["dock"]["BlurStrength"] == 5
+    assert components["dock"]["BlurStrength"] == (4 if golden else 5)
     assert components["dock"]["DarkGradientOverlay"] is False
     assert components["control-center"]["DarkGradientOverlay"] is False
-    assert components["apps"]["BlurStrength"] == (2 if golden else float(expected["BlurStrength"]))
+    assert components["apps"]["BlurStrength"] == (3 if golden else float(expected["BlurStrength"]))
     assert saved == expected
 
 
@@ -188,8 +188,8 @@ def test_installer_frost_glass_values(monkeypatch, edition, style):
                         Brightness="1.0", Contrast="1.0", Saturation="1.33",
                         NoiseStrength="0", BlurDecorations="true")
     components = json.loads(saved.pop("ComponentMaterials"))
-    assert components["dock"]["BlurStrength"] == 5
+    assert components["dock"]["BlurStrength"] == (4 if style == "official" else 5)
     assert components["dock"]["DarkGradientOverlay"] is False
     assert components["control-center"]["DarkGradientOverlay"] is False
-    assert components["apps"]["BlurStrength"] == (2 if style == "official" else float(expected["BlurStrength"]))
+    assert components["apps"]["BlurStrength"] == (3 if style == "official" else float(expected["BlurStrength"]))
     assert saved == expected
