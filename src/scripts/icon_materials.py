@@ -569,6 +569,13 @@ def render_installer(prepared: tuple, style: str, mode: str, tint: tuple[int, in
         alpha = artwork.getchannel("A")
         tones = ImageOps.autocontrast(ImageOps.grayscale(artwork), cutoff=2,
                                       mask=alpha.point(lambda a: 255 if a > 224 else 0))
+        if clear and not dark:
+            # Let the wallpaper supply the shadow color. The existing flame
+            # and feather gradients determine how much white light is reflected.
+            reflection = tones.point(lambda v: round(18 + 229 * (v / 255) ** .68))
+            foreground = Image.new("RGBA", artwork.size, highlight)
+            foreground.putalpha(ImageChops.multiply(alpha, reflection))
+            return Image.alpha_composite(plate, foreground)
         # The blue feather and globe layers occupy the low end of luminance.
         # Lift their midtones while keeping the original deepest folds distinct.
         tones = tones.point(lambda v: round(255 * (v / 255) ** .40))
