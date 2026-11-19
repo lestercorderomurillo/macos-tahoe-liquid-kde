@@ -88,11 +88,10 @@ dock.screen = 0;
 dock.alignment = "center";
 dock.lengthMode = "fit";
 dock.floating = true;
+dock.opacity = "translucent";
 // Auto-hide avoids the stuck-visible dodge behavior reported in issue #87.
 dock.hiding = "autohide";
 dock.height = 68;
-// opacity is set to translucent via plasmashellrc after layout apply
-// (JS scripting API does not expose panelOpacity)
 
 var launcher = dock.addWidget("org.kde.mac-tahoe-liquid-kde.launcher");
 launcher.currentConfigGroup = ["General"];

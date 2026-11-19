@@ -29,6 +29,7 @@
                 ps[p].alignment = "center";
                 ps[p].lengthMode = "fit";
                 ps[p].floating = true;
+                ps[p].opacity = "translucent";
                 ps[p].hiding = "autohide";
                 ps[p].height = 68;
             }

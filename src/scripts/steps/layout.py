@@ -356,8 +356,8 @@ def _wait_for_layout_install(timeout_seconds: float = 5.0) -> bool:
     return _layout_looks_installed()
 
 
-# Plasma's JS API doesn't expose panelOpacity / floatingApplets, so they
-# are patched into plasmashellrc directly after the layout runs.
+# The layout sets the Dock's live opacity. Also persist panel glass settings
+# here, including floatingApplets, after Plasma creates the views.
 _PRC_PANEL_RE = re.compile(
     r"(\[PlasmaViews\]\[Panel \d+\]\n(?:[^\[]*\n)*)", re.MULTILINE,
 )
