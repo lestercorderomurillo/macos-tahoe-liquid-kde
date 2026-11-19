@@ -2873,11 +2873,11 @@
         ]
       }
     },
-    "previews/readme-tahoe-light-dock-purple-91e404540269.webp": {
-      "sha256": "91e40454026922cdd9154b79a5048691d10d05bece77874e31daa239f5fc8f8d",
-      "source_commit": "097cf573b9250f9ef56e859afc5cda25d2d95e66",
-      "source_sha256": "868c3abf41da42e0cacd1e00e6d42fb5b15ac5ea1b74010e300bb869c0f06ff1",
-      "replaces": "src/screenshots/previews/readme-tahoe-light-dock-purple-b8d6d4a59d58.webp",
+    "previews/readme-tahoe-light-dock-purple-5fd66eb61c38.webp": {
+      "sha256": "5fd66eb61c38c3c8d6eb05d4a90c68e36f144c4c1a851c222a925c1747cccfdb",
+      "source_commit": "fb4c532d06dafac202fe920f65f2b5dec2032c19",
+      "source_sha256": "f6d9e92c0f70ec55043d993c298fa85fc47707ff4f49defcc5b2eebf7a3c6c00",
+      "replaces": "src/screenshots/previews/readme-tahoe-light-dock-purple-91e404540269.webp",
       "export_size": [
         1404,
         178
@@ -2885,9 +2885,15 @@
       "capture": {
         "edition": "tahoe",
         "vm_image_sha256": "2a09de13ad568da01a8e16dd93e6aec120e63375bfc0ec24b4e804b43ecb4f8c",
+        "plasma": "plasmashell 6.8.1",
+        "kwin": "kwin 6.8.1",
+        "backend": "Wayland",
+        "icon_toolset_sha256": "5512c1a57922e3e6006ea934997041ffc2ef8504caea3e411761f8895325c2b0",
+        "icon_materials_sha256": "f3a7351ff3e3418bfb718b3384066195c3839fd302e28a203d244f8196c7da6d",
+        "capture_script_sha256": "3757399bd121bf4c42204e1eeb0f93246dfe48d9fea80d563b31617c64732b69",
         "record": {
           "file": "dock-proof-tahoe-glass-light-purple-empty.png",
-          "sha256": "91e40454026922cdd9154b79a5048691d10d05bece77874e31daa239f5fc8f8d",
+          "sha256": "5fd66eb61c38c3c8d6eb05d4a90c68e36f144c4c1a851c222a925c1747cccfdb",
           "theme": "MacTahoeLiquidKde-Icons-Glass-Light",
           "wallpaper": "MacTahoe/images/3840x2160.jpg",
           "state": "empty",
@@ -2899,13 +2905,13 @@
           },
           "center_offset": 0.0,
           "glass": "ready",
-          "png_sha256": "4ad4381e51c954ae965a9c004c6187ec895fbe87e334820d9d6496092ac20c48",
+          "png_sha256": "6bf2b73410f0d9f0a5969a9f0fe62114930928694aa03230d7ee5aad94f5cd8b",
           "export_size": [
             1404,
             178
           ]
         },
-        "qualification": "Focused disposable Neon overlay; see per-frame geometry and source.",
+        "qualification": "Installer-generated icons on the KDE neon Dock.",
         "fixture_launchers": [
           "thunderbird.desktop",
           "org.kde.merkuro.calendar.desktop",
@@ -2915,11 +2921,11 @@
         ]
       }
     },
-    "previews/readme-tahoe-dark-dock-purple-c2f4a4493b4b.webp": {
-      "sha256": "c2f4a4493b4bd4aba376a07b7bda58fa750eeca3bcf9d6fe3e44760c8a90d1d3",
-      "source_commit": "097cf573b9250f9ef56e859afc5cda25d2d95e66",
-      "source_sha256": "868c3abf41da42e0cacd1e00e6d42fb5b15ac5ea1b74010e300bb869c0f06ff1",
-      "replaces": "src/screenshots/previews/readme-tahoe-dark-dock-purple-090970372f80.webp",
+    "previews/readme-tahoe-dark-dock-purple-1d3d8bb982c3.webp": {
+      "sha256": "1d3d8bb982c3d0446e00023579cf15b320fcbab008089ab991091d8033663ada",
+      "source_commit": "fb4c532d06dafac202fe920f65f2b5dec2032c19",
+      "source_sha256": "f6d9e92c0f70ec55043d993c298fa85fc47707ff4f49defcc5b2eebf7a3c6c00",
+      "replaces": "src/screenshots/previews/readme-tahoe-dark-dock-purple-c2f4a4493b4b.webp",
       "export_size": [
         1404,
         178
@@ -2927,9 +2933,15 @@
       "capture": {
         "edition": "tahoe",
         "vm_image_sha256": "2a09de13ad568da01a8e16dd93e6aec120e63375bfc0ec24b4e804b43ecb4f8c",
+        "plasma": "plasmashell 6.8.1",
+        "kwin": "kwin 6.8.1",
+        "backend": "Wayland",
+        "icon_toolset_sha256": "5512c1a57922e3e6006ea934997041ffc2ef8504caea3e411761f8895325c2b0",
+        "icon_materials_sha256": "f3a7351ff3e3418bfb718b3384066195c3839fd302e28a203d244f8196c7da6d",
+        "capture_script_sha256": "3757399bd121bf4c42204e1eeb0f93246dfe48d9fea80d563b31617c64732b69",
         "record": {
           "file": "dock-proof-tahoe-glass-dark-purple-empty.png",
-          "sha256": "c2f4a4493b4bd4aba376a07b7bda58fa750eeca3bcf9d6fe3e44760c8a90d1d3",
+          "sha256": "1d3d8bb982c3d0446e00023579cf15b320fcbab008089ab991091d8033663ada",
           "theme": "MacTahoeLiquidKde-Icons-Glass-Dark",
           "wallpaper": "MacTahoe/images_dark/3840x2160.jpg",
           "state": "empty",
@@ -2941,13 +2953,13 @@
           },
           "center_offset": 0.0,
           "glass": "ready",
-          "png_sha256": "e7c6730d127b73f85bc18cb81c7e1d738d2f78a52b9b49f758fde4e19286b3e8",
+          "png_sha256": "1c0f343f9b0fb8899e0543e0c76034b8c79771e94a8a4504b341106195dbeb81",
           "export_size": [
             1404,
             178
           ]
         },
-        "qualification": "Focused disposable Neon overlay; see per-frame geometry and source.",
+        "qualification": "Installer-generated icons on the KDE neon Dock.",
         "fixture_launchers": [
           "thunderbird.desktop",
           "org.kde.merkuro.calendar.desktop",
@@ -2957,11 +2969,11 @@
         ]
       }
     },
-    "previews/readme-tahoe-light-dock-pink-f9a47518554a.webp": {
-      "sha256": "f9a47518554a4273baf11ab2aacc561cbd24588ec27b842f472c6b5047e0b0c5",
-      "source_commit": "097cf573b9250f9ef56e859afc5cda25d2d95e66",
-      "source_sha256": "868c3abf41da42e0cacd1e00e6d42fb5b15ac5ea1b74010e300bb869c0f06ff1",
-      "replaces": "src/screenshots/previews/readme-tahoe-light-dock-pink-c0b0ba00ddeb.webp",
+    "previews/readme-tahoe-light-dock-pink-d5bbc31dc36c.webp": {
+      "sha256": "d5bbc31dc36c5dd8cf5501db0cbb1e088c5703eb299d6cbb91ba906765435515",
+      "source_commit": "fb4c532d06dafac202fe920f65f2b5dec2032c19",
+      "source_sha256": "f6d9e92c0f70ec55043d993c298fa85fc47707ff4f49defcc5b2eebf7a3c6c00",
+      "replaces": "src/screenshots/previews/readme-tahoe-light-dock-pink-f9a47518554a.webp",
       "export_size": [
         1404,
         178
@@ -2969,9 +2981,15 @@
       "capture": {
         "edition": "tahoe",
         "vm_image_sha256": "2a09de13ad568da01a8e16dd93e6aec120e63375bfc0ec24b4e804b43ecb4f8c",
+        "plasma": "plasmashell 6.8.1",
+        "kwin": "kwin 6.8.1",
+        "backend": "Wayland",
+        "icon_toolset_sha256": "5512c1a57922e3e6006ea934997041ffc2ef8504caea3e411761f8895325c2b0",
+        "icon_materials_sha256": "f3a7351ff3e3418bfb718b3384066195c3839fd302e28a203d244f8196c7da6d",
+        "capture_script_sha256": "3757399bd121bf4c42204e1eeb0f93246dfe48d9fea80d563b31617c64732b69",
         "record": {
           "file": "dock-proof-tahoe-glass-light-pink-empty.png",
-          "sha256": "f9a47518554a4273baf11ab2aacc561cbd24588ec27b842f472c6b5047e0b0c5",
+          "sha256": "d5bbc31dc36c5dd8cf5501db0cbb1e088c5703eb299d6cbb91ba906765435515",
           "theme": "MacTahoeLiquidKde-Icons-Glass-Light",
           "wallpaper": "MacTahoe/images/3840x2160.jpg",
           "state": "empty",
@@ -2983,13 +3001,13 @@
           },
           "center_offset": 0.0,
           "glass": "ready",
-          "png_sha256": "aa67d6f5c6ae64d442251e656629482848ed45aea5f0799d8dfd49f55deabffd",
+          "png_sha256": "62b100ac8547ff2493a2f828f976733998c1d2d134330439938f7546074fcf12",
           "export_size": [
             1404,
             178
           ]
         },
-        "qualification": "Focused disposable Neon overlay; see per-frame geometry and source.",
+        "qualification": "Installer-generated icons on the KDE neon Dock.",
         "fixture_launchers": [
           "thunderbird.desktop",
           "org.kde.merkuro.calendar.desktop",
@@ -2999,11 +3017,11 @@
         ]
       }
     },
-    "previews/readme-tahoe-dark-dock-pink-9a8acd5e420e.webp": {
-      "sha256": "9a8acd5e420edb0739ebf32da432dc1342ad2707e86061d52ce6a7956ca522ec",
-      "source_commit": "097cf573b9250f9ef56e859afc5cda25d2d95e66",
-      "source_sha256": "868c3abf41da42e0cacd1e00e6d42fb5b15ac5ea1b74010e300bb869c0f06ff1",
-      "replaces": "src/screenshots/previews/readme-tahoe-dark-dock-pink-ba6941817529.webp",
+    "previews/readme-tahoe-dark-dock-pink-7ac825015cd9.webp": {
+      "sha256": "7ac825015cd9d08ca88f8607e4190683c115021d759a859d50c10174f1ad29d1",
+      "source_commit": "fb4c532d06dafac202fe920f65f2b5dec2032c19",
+      "source_sha256": "f6d9e92c0f70ec55043d993c298fa85fc47707ff4f49defcc5b2eebf7a3c6c00",
+      "replaces": "src/screenshots/previews/readme-tahoe-dark-dock-pink-9a8acd5e420e.webp",
       "export_size": [
         1404,
         178
@@ -3011,9 +3029,15 @@
       "capture": {
         "edition": "tahoe",
         "vm_image_sha256": "2a09de13ad568da01a8e16dd93e6aec120e63375bfc0ec24b4e804b43ecb4f8c",
+        "plasma": "plasmashell 6.8.1",
+        "kwin": "kwin 6.8.1",
+        "backend": "Wayland",
+        "icon_toolset_sha256": "5512c1a57922e3e6006ea934997041ffc2ef8504caea3e411761f8895325c2b0",
+        "icon_materials_sha256": "f3a7351ff3e3418bfb718b3384066195c3839fd302e28a203d244f8196c7da6d",
+        "capture_script_sha256": "3757399bd121bf4c42204e1eeb0f93246dfe48d9fea80d563b31617c64732b69",
         "record": {
           "file": "dock-proof-tahoe-glass-dark-pink-empty.png",
-          "sha256": "9a8acd5e420edb0739ebf32da432dc1342ad2707e86061d52ce6a7956ca522ec",
+          "sha256": "7ac825015cd9d08ca88f8607e4190683c115021d759a859d50c10174f1ad29d1",
           "theme": "MacTahoeLiquidKde-Icons-Glass-Dark",
           "wallpaper": "MacTahoe/images_dark/3840x2160.jpg",
           "state": "empty",
@@ -3025,13 +3049,13 @@
           },
           "center_offset": 0.0,
           "glass": "ready",
-          "png_sha256": "32773ecfa5507e5d457df836f9b4dadf7f5a109b2a24b1821a90f4e546e64f2d",
+          "png_sha256": "9d790dfec92150460609ab489c5454fed0da017fc88f663de237bda19c0c27a7",
           "export_size": [
             1404,
             178
           ]
         },
-        "qualification": "Focused disposable Neon overlay; see per-frame geometry and source.",
+        "qualification": "Installer-generated icons on the KDE neon Dock.",
         "fixture_launchers": [
           "thunderbird.desktop",
           "org.kde.merkuro.calendar.desktop",
@@ -3137,11 +3161,11 @@
         ]
       }
     },
-    "previews/readme-tahoe-light-dock-orange-df7e33379ecf.webp": {
-      "sha256": "df7e33379ecfe7bec73354a4e30e71a4cb7eb81ca33d3b48b4a5cfb723ed69f1",
-      "source_commit": "097cf573b9250f9ef56e859afc5cda25d2d95e66",
-      "source_sha256": "868c3abf41da42e0cacd1e00e6d42fb5b15ac5ea1b74010e300bb869c0f06ff1",
-      "replaces": "src/screenshots/previews/readme-tahoe-light-dock-orange-18c4663ce547.webp",
+    "previews/readme-tahoe-light-dock-orange-5c0f476c143d.webp": {
+      "sha256": "5c0f476c143d45d1abd1df60b959d07bee8123f89c2c3a3e8ddcae1c706e2a0a",
+      "source_commit": "fb4c532d06dafac202fe920f65f2b5dec2032c19",
+      "source_sha256": "f6d9e92c0f70ec55043d993c298fa85fc47707ff4f49defcc5b2eebf7a3c6c00",
+      "replaces": "src/screenshots/previews/readme-tahoe-light-dock-orange-df7e33379ecf.webp",
       "export_size": [
         1404,
         178
@@ -3149,9 +3173,15 @@
       "capture": {
         "edition": "tahoe",
         "vm_image_sha256": "2a09de13ad568da01a8e16dd93e6aec120e63375bfc0ec24b4e804b43ecb4f8c",
+        "plasma": "plasmashell 6.8.1",
+        "kwin": "kwin 6.8.1",
+        "backend": "Wayland",
+        "icon_toolset_sha256": "5512c1a57922e3e6006ea934997041ffc2ef8504caea3e411761f8895325c2b0",
+        "icon_materials_sha256": "f3a7351ff3e3418bfb718b3384066195c3839fd302e28a203d244f8196c7da6d",
+        "capture_script_sha256": "3757399bd121bf4c42204e1eeb0f93246dfe48d9fea80d563b31617c64732b69",
         "record": {
           "file": "dock-proof-tahoe-glass-light-orange-empty.png",
-          "sha256": "df7e33379ecfe7bec73354a4e30e71a4cb7eb81ca33d3b48b4a5cfb723ed69f1",
+          "sha256": "5c0f476c143d45d1abd1df60b959d07bee8123f89c2c3a3e8ddcae1c706e2a0a",
           "theme": "MacTahoeLiquidKde-Icons-Glass-Light",
           "wallpaper": "MacTahoe/images/3840x2160.jpg",
           "state": "empty",
@@ -3163,13 +3193,13 @@
           },
           "center_offset": 0.0,
           "glass": "ready",
-          "png_sha256": "b26f0baca6b09c11e73ca5d89a857a6444a9031bb30f80d6aae56e877b5f754d",
+          "png_sha256": "b9cca0b8da9aa98098a87a26740877c8f9713a63e8dcd4375b9c953581e47799",
           "export_size": [
             1404,
             178
           ]
         },
-        "qualification": "Focused disposable Neon overlay; see per-frame geometry and source.",
+        "qualification": "Installer-generated icons on the KDE neon Dock.",
         "fixture_launchers": [
           "thunderbird.desktop",
           "org.kde.merkuro.calendar.desktop",
@@ -3179,11 +3209,11 @@
         ]
       }
     },
-    "previews/readme-tahoe-dark-dock-orange-e2bbb5d97042.webp": {
-      "sha256": "e2bbb5d97042b5ff5e1ce81fdf19db09438ea05858e7e09cb49ded4c682adfb1",
-      "source_commit": "097cf573b9250f9ef56e859afc5cda25d2d95e66",
-      "source_sha256": "868c3abf41da42e0cacd1e00e6d42fb5b15ac5ea1b74010e300bb869c0f06ff1",
-      "replaces": "src/screenshots/previews/readme-tahoe-dark-dock-orange-5079b478c649.webp",
+    "previews/readme-tahoe-dark-dock-orange-a6bf72331f47.webp": {
+      "sha256": "a6bf72331f47e156954db3100724ae19882a3bad0b37a1379e2d88c0c4c3d53e",
+      "source_commit": "fb4c532d06dafac202fe920f65f2b5dec2032c19",
+      "source_sha256": "f6d9e92c0f70ec55043d993c298fa85fc47707ff4f49defcc5b2eebf7a3c6c00",
+      "replaces": "src/screenshots/previews/readme-tahoe-dark-dock-orange-e2bbb5d97042.webp",
       "export_size": [
         1404,
         178
@@ -3191,9 +3221,15 @@
       "capture": {
         "edition": "tahoe",
         "vm_image_sha256": "2a09de13ad568da01a8e16dd93e6aec120e63375bfc0ec24b4e804b43ecb4f8c",
+        "plasma": "plasmashell 6.8.1",
+        "kwin": "kwin 6.8.1",
+        "backend": "Wayland",
+        "icon_toolset_sha256": "5512c1a57922e3e6006ea934997041ffc2ef8504caea3e411761f8895325c2b0",
+        "icon_materials_sha256": "f3a7351ff3e3418bfb718b3384066195c3839fd302e28a203d244f8196c7da6d",
+        "capture_script_sha256": "3757399bd121bf4c42204e1eeb0f93246dfe48d9fea80d563b31617c64732b69",
         "record": {
           "file": "dock-proof-tahoe-glass-dark-orange-empty.png",
-          "sha256": "e2bbb5d97042b5ff5e1ce81fdf19db09438ea05858e7e09cb49ded4c682adfb1",
+          "sha256": "a6bf72331f47e156954db3100724ae19882a3bad0b37a1379e2d88c0c4c3d53e",
           "theme": "MacTahoeLiquidKde-Icons-Glass-Dark",
           "wallpaper": "MacTahoe/images_dark/3840x2160.jpg",
           "state": "empty",
@@ -3205,13 +3241,13 @@
           },
           "center_offset": 0.0,
           "glass": "ready",
-          "png_sha256": "6020f80500e115fa64dde6b0b806504589007d1ef9589356cc5cb5a87846f5f2",
+          "png_sha256": "22685ec2d4791bc380b370dfc3251232f998ffb098cb9bdfee9f259eca110361",
           "export_size": [
             1404,
             178
           ]
         },
-        "qualification": "Focused disposable Neon overlay; see per-frame geometry and source.",
+        "qualification": "Installer-generated icons on the KDE neon Dock.",
         "fixture_launchers": [
           "thunderbird.desktop",
           "org.kde.merkuro.calendar.desktop",
@@ -3221,11 +3257,11 @@
         ]
       }
     },
-    "previews/readme-tahoe-light-dock-yellow-0cdbbd4a4ca5.webp": {
-      "sha256": "0cdbbd4a4ca5df5081d16d0b85f2516bcb087f141b53556193f5a4bbaba4ff71",
-      "source_commit": "097cf573b9250f9ef56e859afc5cda25d2d95e66",
-      "source_sha256": "868c3abf41da42e0cacd1e00e6d42fb5b15ac5ea1b74010e300bb869c0f06ff1",
-      "replaces": "src/screenshots/previews/readme-tahoe-light-dock-yellow-c7656eaf2b61.webp",
+    "previews/readme-tahoe-light-dock-yellow-a8813c6e3f9b.webp": {
+      "sha256": "a8813c6e3f9bcaf6a6f1c9e4e05f38cf1b6c8ae0312252bb4f68d32b9766e0e1",
+      "source_commit": "fb4c532d06dafac202fe920f65f2b5dec2032c19",
+      "source_sha256": "f6d9e92c0f70ec55043d993c298fa85fc47707ff4f49defcc5b2eebf7a3c6c00",
+      "replaces": "src/screenshots/previews/readme-tahoe-light-dock-yellow-0cdbbd4a4ca5.webp",
       "export_size": [
         1404,
         178
@@ -3233,9 +3269,15 @@
       "capture": {
         "edition": "tahoe",
         "vm_image_sha256": "2a09de13ad568da01a8e16dd93e6aec120e63375bfc0ec24b4e804b43ecb4f8c",
+        "plasma": "plasmashell 6.8.1",
+        "kwin": "kwin 6.8.1",
+        "backend": "Wayland",
+        "icon_toolset_sha256": "5512c1a57922e3e6006ea934997041ffc2ef8504caea3e411761f8895325c2b0",
+        "icon_materials_sha256": "f3a7351ff3e3418bfb718b3384066195c3839fd302e28a203d244f8196c7da6d",
+        "capture_script_sha256": "3757399bd121bf4c42204e1eeb0f93246dfe48d9fea80d563b31617c64732b69",
         "record": {
           "file": "dock-proof-tahoe-glass-light-yellow-empty.png",
-          "sha256": "0cdbbd4a4ca5df5081d16d0b85f2516bcb087f141b53556193f5a4bbaba4ff71",
+          "sha256": "a8813c6e3f9bcaf6a6f1c9e4e05f38cf1b6c8ae0312252bb4f68d32b9766e0e1",
           "theme": "MacTahoeLiquidKde-Icons-Glass-Light",
           "wallpaper": "MacTahoe/images/3840x2160.jpg",
           "state": "empty",
@@ -3247,13 +3289,13 @@
           },
           "center_offset": 0.0,
           "glass": "ready",
-          "png_sha256": "957e2c59fdb329f8df8111db82838831729e2e422fa02b3855c73824475f87bc",
+          "png_sha256": "1ea425f884edf0bf5fea1b12d24350fc87956b7b53560b397ae3c12093a68c55",
           "export_size": [
             1404,
             178
           ]
         },
-        "qualification": "Focused disposable Neon overlay; see per-frame geometry and source.",
+        "qualification": "Installer-generated icons on the KDE neon Dock.",
         "fixture_launchers": [
           "thunderbird.desktop",
           "org.kde.merkuro.calendar.desktop",
@@ -3263,11 +3305,11 @@
         ]
       }
     },
-    "previews/readme-tahoe-dark-dock-yellow-90fd8dfd1060.webp": {
-      "sha256": "90fd8dfd1060fc0cf6a27c41de5737f201e20cc56059e67439b0a41bebbee6a5",
-      "source_commit": "097cf573b9250f9ef56e859afc5cda25d2d95e66",
-      "source_sha256": "868c3abf41da42e0cacd1e00e6d42fb5b15ac5ea1b74010e300bb869c0f06ff1",
-      "replaces": "src/screenshots/previews/readme-tahoe-dark-dock-yellow-c1945efddc21.webp",
+    "previews/readme-tahoe-dark-dock-yellow-4bac804a9dd8.webp": {
+      "sha256": "4bac804a9dd8a6e06d7a79228a3f85c195ff2dc3e3db07f58bbe837a531f106b",
+      "source_commit": "fb4c532d06dafac202fe920f65f2b5dec2032c19",
+      "source_sha256": "f6d9e92c0f70ec55043d993c298fa85fc47707ff4f49defcc5b2eebf7a3c6c00",
+      "replaces": "src/screenshots/previews/readme-tahoe-dark-dock-yellow-90fd8dfd1060.webp",
       "export_size": [
         1404,
         178
@@ -3275,9 +3317,15 @@
       "capture": {
         "edition": "tahoe",
         "vm_image_sha256": "2a09de13ad568da01a8e16dd93e6aec120e63375bfc0ec24b4e804b43ecb4f8c",
+        "plasma": "plasmashell 6.8.1",
+        "kwin": "kwin 6.8.1",
+        "backend": "Wayland",
+        "icon_toolset_sha256": "5512c1a57922e3e6006ea934997041ffc2ef8504caea3e411761f8895325c2b0",
+        "icon_materials_sha256": "f3a7351ff3e3418bfb718b3384066195c3839fd302e28a203d244f8196c7da6d",
+        "capture_script_sha256": "3757399bd121bf4c42204e1eeb0f93246dfe48d9fea80d563b31617c64732b69",
         "record": {
           "file": "dock-proof-tahoe-glass-dark-yellow-empty.png",
-          "sha256": "90fd8dfd1060fc0cf6a27c41de5737f201e20cc56059e67439b0a41bebbee6a5",
+          "sha256": "4bac804a9dd8a6e06d7a79228a3f85c195ff2dc3e3db07f58bbe837a531f106b",
           "theme": "MacTahoeLiquidKde-Icons-Glass-Dark",
           "wallpaper": "MacTahoe/images_dark/3840x2160.jpg",
           "state": "empty",
@@ -3289,13 +3337,13 @@
           },
           "center_offset": 0.0,
           "glass": "ready",
-          "png_sha256": "5beb9301c49796bc2e514feb1b971796922b13cf96df08ac99c5671d9fc5bf71",
+          "png_sha256": "4e261b8e4cef5274c485cb80cdc1ee50c22f8c5d946a1909cbe6e9ef2cebf6f2",
           "export_size": [
             1404,
             178
           ]
         },
-        "qualification": "Focused disposable Neon overlay; see per-frame geometry and source.",
+        "qualification": "Installer-generated icons on the KDE neon Dock.",
         "fixture_launchers": [
           "thunderbird.desktop",
           "org.kde.merkuro.calendar.desktop",
@@ -3305,11 +3353,11 @@
         ]
       }
     },
-    "previews/readme-tahoe-light-dock-green-6dd6a05798cf.webp": {
-      "sha256": "6dd6a05798cfe0bd358a30ba82a01b63f2d0231050916a56de5c43971f39674a",
-      "source_commit": "097cf573b9250f9ef56e859afc5cda25d2d95e66",
-      "source_sha256": "868c3abf41da42e0cacd1e00e6d42fb5b15ac5ea1b74010e300bb869c0f06ff1",
-      "replaces": "src/screenshots/previews/readme-tahoe-light-dock-green-ac9611249165.webp",
+    "previews/readme-tahoe-light-dock-green-7c4a97984458.webp": {
+      "sha256": "7c4a979844585af2ba9520b0dbf2a4276db2756698db7586da15fac04b1642a6",
+      "source_commit": "fb4c532d06dafac202fe920f65f2b5dec2032c19",
+      "source_sha256": "f6d9e92c0f70ec55043d993c298fa85fc47707ff4f49defcc5b2eebf7a3c6c00",
+      "replaces": "src/screenshots/previews/readme-tahoe-light-dock-green-6dd6a05798cf.webp",
       "export_size": [
         1404,
         178
@@ -3317,9 +3365,15 @@
       "capture": {
         "edition": "tahoe",
         "vm_image_sha256": "2a09de13ad568da01a8e16dd93e6aec120e63375bfc0ec24b4e804b43ecb4f8c",
+        "plasma": "plasmashell 6.8.1",
+        "kwin": "kwin 6.8.1",
+        "backend": "Wayland",
+        "icon_toolset_sha256": "5512c1a57922e3e6006ea934997041ffc2ef8504caea3e411761f8895325c2b0",
+        "icon_materials_sha256": "f3a7351ff3e3418bfb718b3384066195c3839fd302e28a203d244f8196c7da6d",
+        "capture_script_sha256": "3757399bd121bf4c42204e1eeb0f93246dfe48d9fea80d563b31617c64732b69",
         "record": {
           "file": "dock-proof-tahoe-glass-light-green-empty.png",
-          "sha256": "6dd6a05798cfe0bd358a30ba82a01b63f2d0231050916a56de5c43971f39674a",
+          "sha256": "7c4a979844585af2ba9520b0dbf2a4276db2756698db7586da15fac04b1642a6",
           "theme": "MacTahoeLiquidKde-Icons-Glass-Light",
           "wallpaper": "MacTahoe/images/3840x2160.jpg",
           "state": "empty",
@@ -3331,13 +3385,13 @@
           },
           "center_offset": 0.0,
           "glass": "ready",
-          "png_sha256": "ce9841a7bb67ecf64af3b17c09ab6d77a14d0e5cc0d830ef86ef0a6f4de67da9",
+          "png_sha256": "5bd16672295650e3eb10eb53a9dafca6e03fb96ade2d6922617474b34372d1ff",
           "export_size": [
             1404,
             178
           ]
         },
-        "qualification": "Focused disposable Neon overlay; see per-frame geometry and source.",
+        "qualification": "Installer-generated icons on the KDE neon Dock.",
         "fixture_launchers": [
           "thunderbird.desktop",
           "org.kde.merkuro.calendar.desktop",
@@ -3347,11 +3401,11 @@
         ]
       }
     },
-    "previews/readme-tahoe-dark-dock-green-ce9afa35c909.webp": {
-      "sha256": "ce9afa35c9095ef471efbfcb4efdee0ee4147135a36980bab01a321760dacad0",
-      "source_commit": "097cf573b9250f9ef56e859afc5cda25d2d95e66",
-      "source_sha256": "868c3abf41da42e0cacd1e00e6d42fb5b15ac5ea1b74010e300bb869c0f06ff1",
-      "replaces": "src/screenshots/previews/readme-tahoe-dark-dock-green-84eab2e65cf2.webp",
+    "previews/readme-tahoe-dark-dock-green-4946c3364e3a.webp": {
+      "sha256": "4946c3364e3aaf99940c80b23c2a08314f38b63da572c5f2a652aa96da6cf138",
+      "source_commit": "fb4c532d06dafac202fe920f65f2b5dec2032c19",
+      "source_sha256": "f6d9e92c0f70ec55043d993c298fa85fc47707ff4f49defcc5b2eebf7a3c6c00",
+      "replaces": "src/screenshots/previews/readme-tahoe-dark-dock-green-ce9afa35c909.webp",
       "export_size": [
         1404,
         178
@@ -3359,9 +3413,15 @@
       "capture": {
         "edition": "tahoe",
         "vm_image_sha256": "2a09de13ad568da01a8e16dd93e6aec120e63375bfc0ec24b4e804b43ecb4f8c",
+        "plasma": "plasmashell 6.8.1",
+        "kwin": "kwin 6.8.1",
+        "backend": "Wayland",
+        "icon_toolset_sha256": "5512c1a57922e3e6006ea934997041ffc2ef8504caea3e411761f8895325c2b0",
+        "icon_materials_sha256": "f3a7351ff3e3418bfb718b3384066195c3839fd302e28a203d244f8196c7da6d",
+        "capture_script_sha256": "3757399bd121bf4c42204e1eeb0f93246dfe48d9fea80d563b31617c64732b69",
         "record": {
           "file": "dock-proof-tahoe-glass-dark-green-empty.png",
-          "sha256": "ce9afa35c9095ef471efbfcb4efdee0ee4147135a36980bab01a321760dacad0",
+          "sha256": "4946c3364e3aaf99940c80b23c2a08314f38b63da572c5f2a652aa96da6cf138",
           "theme": "MacTahoeLiquidKde-Icons-Glass-Dark",
           "wallpaper": "MacTahoe/images_dark/3840x2160.jpg",
           "state": "empty",
@@ -3373,13 +3433,13 @@
           },
           "center_offset": 0.0,
           "glass": "ready",
-          "png_sha256": "e7683dcbe96e7054ebc7fa6118256bfb630a28b1294ac868aa2c63e1e53f7287",
+          "png_sha256": "47c87da0a4048974a65c5e797da6bf79124aef0210956d439756703a77d153a4",
           "export_size": [
             1404,
             178
           ]
         },
-        "qualification": "Focused disposable Neon overlay; see per-frame geometry and source.",
+        "qualification": "Installer-generated icons on the KDE neon Dock.",
         "fixture_launchers": [
           "thunderbird.desktop",
           "org.kde.merkuro.calendar.desktop",
@@ -3389,11 +3449,11 @@
         ]
       }
     },
-    "previews/readme-tahoe-light-dock-gray-efd0f3169e36.webp": {
-      "sha256": "efd0f3169e3668336aef833f37f7bc9a62322eb3b103bd49b7f93b32dfff7571",
-      "source_commit": "097cf573b9250f9ef56e859afc5cda25d2d95e66",
-      "source_sha256": "868c3abf41da42e0cacd1e00e6d42fb5b15ac5ea1b74010e300bb869c0f06ff1",
-      "replaces": "src/screenshots/previews/readme-tahoe-light-dock-gray-18617e5c0df8.webp",
+    "previews/readme-tahoe-light-dock-gray-d41e514cc206.webp": {
+      "sha256": "d41e514cc2060bd4f62e92aa93598806b765b1babc0f871040b8084c2266d3e6",
+      "source_commit": "fb4c532d06dafac202fe920f65f2b5dec2032c19",
+      "source_sha256": "f6d9e92c0f70ec55043d993c298fa85fc47707ff4f49defcc5b2eebf7a3c6c00",
+      "replaces": "src/screenshots/previews/readme-tahoe-light-dock-gray-efd0f3169e36.webp",
       "export_size": [
         1404,
         178
@@ -3401,9 +3461,15 @@
       "capture": {
         "edition": "tahoe",
         "vm_image_sha256": "2a09de13ad568da01a8e16dd93e6aec120e63375bfc0ec24b4e804b43ecb4f8c",
+        "plasma": "plasmashell 6.8.1",
+        "kwin": "kwin 6.8.1",
+        "backend": "Wayland",
+        "icon_toolset_sha256": "5512c1a57922e3e6006ea934997041ffc2ef8504caea3e411761f8895325c2b0",
+        "icon_materials_sha256": "f3a7351ff3e3418bfb718b3384066195c3839fd302e28a203d244f8196c7da6d",
+        "capture_script_sha256": "3757399bd121bf4c42204e1eeb0f93246dfe48d9fea80d563b31617c64732b69",
         "record": {
           "file": "dock-proof-tahoe-glass-light-gray-empty.png",
-          "sha256": "efd0f3169e3668336aef833f37f7bc9a62322eb3b103bd49b7f93b32dfff7571",
+          "sha256": "d41e514cc2060bd4f62e92aa93598806b765b1babc0f871040b8084c2266d3e6",
           "theme": "MacTahoeLiquidKde-Icons-Glass-Light",
           "wallpaper": "MacTahoe/images/3840x2160.jpg",
           "state": "empty",
@@ -3415,13 +3481,13 @@
           },
           "center_offset": 0.0,
           "glass": "ready",
-          "png_sha256": "43f24bb76a261e604683bf5481a1d6228f39beb8a861f1c9b160fa5cc20d6062",
+          "png_sha256": "ec803b6bfcb8f6977a7b3acf126a497112275ea1a63e9d1c7226f3eecbb7bfd1",
           "export_size": [
             1404,
             178
           ]
         },
-        "qualification": "Focused disposable Neon overlay; see per-frame geometry and source.",
+        "qualification": "Installer-generated icons on the KDE neon Dock.",
         "fixture_launchers": [
           "thunderbird.desktop",
           "org.kde.merkuro.calendar.desktop",
@@ -3431,11 +3497,11 @@
         ]
       }
     },
-    "previews/readme-tahoe-dark-dock-gray-f5be1bcd7ab5.webp": {
-      "sha256": "f5be1bcd7ab56b46f30ac65576567f45b3d153c1b6a639d2c6249bd0288fe245",
-      "source_commit": "097cf573b9250f9ef56e859afc5cda25d2d95e66",
-      "source_sha256": "868c3abf41da42e0cacd1e00e6d42fb5b15ac5ea1b74010e300bb869c0f06ff1",
-      "replaces": "src/screenshots/previews/readme-tahoe-dark-dock-gray-e7baf051c7cb.webp",
+    "previews/readme-tahoe-dark-dock-gray-646b69e80fc2.webp": {
+      "sha256": "646b69e80fc274ee693df327874cdd2d8793e991068393fdbed1eaa315872bd8",
+      "source_commit": "fb4c532d06dafac202fe920f65f2b5dec2032c19",
+      "source_sha256": "f6d9e92c0f70ec55043d993c298fa85fc47707ff4f49defcc5b2eebf7a3c6c00",
+      "replaces": "src/screenshots/previews/readme-tahoe-dark-dock-gray-f5be1bcd7ab5.webp",
       "export_size": [
         1404,
         178
@@ -3443,9 +3509,15 @@
       "capture": {
         "edition": "tahoe",
         "vm_image_sha256": "2a09de13ad568da01a8e16dd93e6aec120e63375bfc0ec24b4e804b43ecb4f8c",
+        "plasma": "plasmashell 6.8.1",
+        "kwin": "kwin 6.8.1",
+        "backend": "Wayland",
+        "icon_toolset_sha256": "5512c1a57922e3e6006ea934997041ffc2ef8504caea3e411761f8895325c2b0",
+        "icon_materials_sha256": "f3a7351ff3e3418bfb718b3384066195c3839fd302e28a203d244f8196c7da6d",
+        "capture_script_sha256": "3757399bd121bf4c42204e1eeb0f93246dfe48d9fea80d563b31617c64732b69",
         "record": {
           "file": "dock-proof-tahoe-glass-dark-gray-empty.png",
-          "sha256": "f5be1bcd7ab56b46f30ac65576567f45b3d153c1b6a639d2c6249bd0288fe245",
+          "sha256": "646b69e80fc274ee693df327874cdd2d8793e991068393fdbed1eaa315872bd8",
           "theme": "MacTahoeLiquidKde-Icons-Glass-Dark",
           "wallpaper": "MacTahoe/images_dark/3840x2160.jpg",
           "state": "empty",
@@ -3457,13 +3529,13 @@
           },
           "center_offset": 0.0,
           "glass": "ready",
-          "png_sha256": "acd5027a197e3c93b0bbf4af87cc5804a51124d8a4b8e1ee9f64e5b58cdc83f7",
+          "png_sha256": "eb0b441359dfe0ea73536d1c60bf81f16cf54b8fa5a7d2aba0c45c63f0763825",
           "export_size": [
             1404,
             178
           ]
         },
-        "qualification": "Focused disposable Neon overlay; see per-frame geometry and source.",
+        "qualification": "Installer-generated icons on the KDE neon Dock.",
         "fixture_launchers": [
           "thunderbird.desktop",
           "org.kde.merkuro.calendar.desktop",
