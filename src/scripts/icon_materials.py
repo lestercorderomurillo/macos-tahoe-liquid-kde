@@ -569,6 +569,12 @@ def render_installer(prepared: tuple, style: str, mode: str, tint: tuple[int, in
         alpha = artwork.getchannel("A")
         tones = ImageOps.autocontrast(ImageOps.grayscale(artwork), cutoff=2,
                                       mask=alpha.point(lambda a: 255 if a > 224 else 0))
+        # Sample the original silhouette and painted folds in the direction
+        # of the light. The reflection stays inside the original coverage.
+        distance = max(1, round(artwork.width / 64))
+        outer = ImageChops.subtract(alpha, ImageChops.offset(alpha, distance, distance))
+        folds = ImageChops.subtract(tones, ImageChops.offset(tones, distance, distance))
+        edge = ImageChops.lighter(outer, folds).point(lambda v: min(234, v * 2))
         if clear and not dark:
             # Separate the illuminated facets from the transparent folds, then
             # fade the reflection vertically like the light side of Finder.
@@ -581,14 +587,17 @@ def render_installer(prepared: tuple, style: str, mode: str, tint: tuple[int, in
             reflection = ImageChops.multiply(tones.point(reflect), fade)
             foreground = Image.new("RGBA", artwork.size, highlight)
             foreground.putalpha(ImageChops.multiply(alpha, reflection))
-            return Image.alpha_composite(plate, foreground)
-        # The blue feather and globe layers occupy the low end of luminance.
-        # Lift their midtones while keeping the original deepest folds distinct.
-        tones = tones.point(lambda v: round(255 * (v / 255) ** .40))
-        shade = (36, 36, 36) if clear else mix(.66)
-        foreground = ImageOps.colorize(tones, shade, highlight).convert("RGBA")
-        opacity = tones.point(lambda v: round(140 + 115 * v / 255))
-        foreground.putalpha(ImageChops.multiply(alpha, opacity))
+        else:
+            # The blue feather and globe layers occupy the low end of luminance.
+            # Lift their midtones while keeping the original deepest folds distinct.
+            tones = tones.point(lambda v: round(255 * (v / 255) ** .40))
+            shade = (36, 36, 36) if clear else mix(.66)
+            foreground = ImageOps.colorize(tones, shade, highlight).convert("RGBA")
+            opacity = tones.point(lambda v: round(140 + 115 * v / 255))
+            foreground.putalpha(ImageChops.multiply(alpha, opacity))
+        glint = Image.new("RGBA", artwork.size, _blend(highlight, (255, 255, 255), .78))
+        glint.putalpha(alpha)
+        foreground = Image.composite(glint, foreground, edge)
         return Image.alpha_composite(plate, foreground)
     plate = _recolor_layer(background, plate_low, plate_high,
                            opacity=.60 if clear else 1)
