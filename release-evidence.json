@@ -1,32 +1,37 @@
 {
-  "version": "0.73.18",
-  "implementation_commit": "27439a055bd34b2a18aa2e02644238972e398d9c",
+  "version": "0.73.19",
+  "implementation_commit": "30fb3b6ed1d5b323e6224863c014c70f8c332c6a",
   "gallery_commit": "f09780b200b79302e7c23ef9f6f74d94748bbea3",
-  "scope": "Translucent Dock panel opacity at layout creation.",
+  "scope": "Acrylic Glass component settings transfer and removal of the introductory label.",
   "checks": [
     {
-      "command": "steps.layout.install() twice in release_capture.Guest, followed by a guest reboot and Plasma panel opacity readback",
+      "command": "dbus-run-session -- glass-kcm-probe kwin_liquidglass_config.so presets.json (2 1 and 1 0)",
       "result": "passed",
-      "detail": "Both layout applications and the next boot reported translucent for the bottom panel."
+      "detail": "Built and loaded the candidate in a disposable KDE neon guest. The probe copied edited Apps values into Finder, saved, reopened and compared the complete component maps."
     },
     {
-      "command": "KWin maximize Gwenview, reveal Dock, capture with Spectacle",
+      "command": "python3 -m pytest -q tests/test_multilanguage.py::test_catalogs_cover_all_project_widget_and_kcm_messages",
       "result": "passed",
-      "detail": "Maintainer approved the Golden Gate preview for paired publication."
+      "detail": "Three translation catalogs passed."
     }
   ],
   "reviewed_frames": [
     {
-      "frame": "maximized.png",
+      "frame": "golden-gate.png",
       "edition": "golden-gate",
-      "sha256": "982b50d2e6afbcb78a7b11a60b62c5abb247b212ad8294fa91a9d042fe5ce2f4",
-      "source_commit": "27439a055bd34b2a18aa2e02644238972e398d9c"
+      "sha256": "07a0b135a17d0d56d50e81ed14dab2dc44f7a91cc92fab9f2e81fdab65ea6003",
+      "source_commit": "30fb3b6ed1d5b323e6224863c014c70f8c332c6a"
+    },
+    {
+      "frame": "tahoe.png",
+      "edition": "tahoe",
+      "sha256": "15e740758971ed38b70a498af59428518c16dbdc84be3b1f8f1968e6622dac96",
+      "source_commit": "30fb3b6ed1d5b323e6224863c014c70f8c332c6a"
     }
   ],
-  "installed_layout_sha256": "01f69a0858c1289a95c3a8f3ec114f5cc81391af43c69e0de4297f380c9d0672",
-  "installed_migration_sha256": "845b0ff458c6a6ff4abe222a53f23db3963969526808d9e69eb1c9484113b81f",
+  "approval": "Maintainer approved the shown Tahoe and Golden Gate settings previews for paired release.",
   "coverage_limits": [
-    "Focused Golden Gate layout installation and reinstallation on KDE neon, Plasma 6.8.1 Wayland. Tahoe uses the same Dock creation script."
+    "The shared KCM was exercised with the Qt offscreen platform in KDE neon. The change affects settings controls and leaves rendering code unchanged."
   ],
-  "source_sha256": "53ddc560dbea98ef9cf58f199f889d03786504a11a9ecbaa20260a46994a2a31"
+  "source_sha256": "6eef9c21fd77f4bcd2e826ecf66e7f939ccb5bfa1c978a762937addd757938d6"
 }
