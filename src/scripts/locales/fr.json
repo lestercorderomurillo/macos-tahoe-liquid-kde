@@ -1,7 +1,9 @@
 {
   "Continuous menu corners": "Coins continus des menus",
   "Continuous menu corners installed": "Coins continus des menus installés",
+  "Copy values": "Copier les valeurs",
   "Icons unchanged — skipping generation and installation": "Icônes inchangées — génération et installation ignorées",
+  "Paste values": "Coller les valeurs",
   "{label} (unchanged)": "{label} (inchangé)",
   "Dock preset update failed": "Échec de la mise à jour du préréglage du Dock",
   "Could not remove old Rounded Corners cache: {exc}": "Impossible de supprimer l’ancien cache de Rounded Corners : {exc}",
@@ -90,7 +92,6 @@
   "Acrylic Glass {key} preserved — could not read it ({exc})": "Valeur {key} d’Acrylic Glass conservée — lecture impossible ({exc})",
   "Acrylic Glass {key} preserved — kreadconfig6 failed": "Valeur {key} d’Acrylic Glass conservée — échec de kreadconfig6",
   "Acrylic Glass {key} preset not applied — kwriteconfig6 failed": "Préréglage {key} d’Acrylic Glass non appliqué — échec de kwriteconfig6",
-  "Acrylic Glass — a complete material for your Dock, menus and windows.": "Acrylic Glass — un matériau complet pour votre Dock, vos menus et vos fenêtres.",
   "Acrylic Glass — blur and rounded corners for KDE Plasma 6.": "Acrylic Glass — flou et coins arrondis pour KDE Plasma 6.",
   "Activate after install": "Activer après l’installation",
   "Active Plasma theme not reset to 'default' — kwriteconfig6 unavailable. Files are removed but Plasma will still try to load MacTahoeLiquidKde until you set plasmarc:Theme.name=default manually.": "Le thème Plasma actif n’a pas été réinitialisé sur 'default' — kwriteconfig6 est indisponible. Les fichiers sont supprimés, mais Plasma tentera encore de charger MacTahoeLiquidKde jusqu’à ce que vous définissiez manuellement plasmarc:Theme.name=default.",

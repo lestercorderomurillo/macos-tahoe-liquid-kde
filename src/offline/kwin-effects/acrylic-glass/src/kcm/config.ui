@@ -12,16 +12,6 @@
   </property>
   <layout class="QVBoxLayout" name="verticalLayoutMain">
    <item>
-    <widget class="QLabel" name="introLabel">
-     <property name="text">
-      <string>Acrylic Glass — a complete material for your Dock, menus and windows.</string>
-     </property>
-     <property name="wordWrap">
-      <bool>true</bool>
-     </property>
-    </widget>
-   </item>
-   <item>
     <widget class="QTabWidget" name="settingsTabs">
      <property name="documentMode">
       <bool>true</bool>

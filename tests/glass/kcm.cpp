@@ -206,9 +206,19 @@ int main(int argc, char **argv)
     require(control<QDoubleSpinBox>(module.get(), QStringLiteral("kcfg_BlurStrength"))->value() == 5,
             QStringLiteral("Dock settings leaked into Apps"));
     control<QDoubleSpinBox>(module.get(), QStringLiteral("kcfg_BlurStrength"))->setValue(3.25);
+    auto *pasteValues = control<QPushButton>(module.get(), QStringLiteral("pasteComponentValues"));
+    require(!pasteValues->isEnabled(), QStringLiteral("Paste available before Copy"));
+    control<QPushButton>(module.get(), QStringLiteral("copyComponentValues"))->click();
+    components->setCurrentIndex(components->findData(QStringLiteral("finder")));
+    pasteValues->click();
     module->save();
     module.reset();
     module = open();
+    config->reparseConfiguration();
+    const auto savedComponents = QJsonDocument::fromJson(group.readEntry("ComponentMaterials", QString()).toUtf8()).object();
+    require(savedComponents.value("apps").toObject().value("BlurStrength").toDouble() == 3.25
+        && savedComponents.value("finder") == savedComponents.value("apps"),
+        QStringLiteral("Paste must persist every copied component value"));
     components = control<QComboBox>(module.get(), QStringLiteral("componentSelector"));
     components->setCurrentIndex(components->findData(QStringLiteral("dock")));
     require(control<QDoubleSpinBox>(module.get(), QStringLiteral("kcfg_BlurStrength"))->value() == 7.5

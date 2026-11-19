@@ -39,6 +39,7 @@ private:
     QComboBox *m_componentSelector = nullptr;
     QJsonObject m_materials;
     QJsonObject m_profiles;
+    QJsonObject m_copiedValues;
     int m_activePresetIndex = 0;
     QMap<QString, QWidget *> m_controls;
     bool m_loading = false;

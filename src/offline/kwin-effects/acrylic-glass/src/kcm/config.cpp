@@ -8,6 +8,7 @@
 #include "../componentmaterials.h"
 #include <KLocalizedString>
 #include <QFormLayout>
+#include <QHBoxLayout>
 #include <QProcess>
 #include <QStandardPaths>
 #include <QDir>
@@ -51,7 +52,27 @@ LiquidGlassEffectConfig::LiquidGlassEffectConfig(QObject* parent, const KPluginM
         i18n("Control Center"), i18n("About This Computer"), i18n("Dock"), i18n("Menu bar")};
     for (int i = 0; i < GlassMaterials::components.size(); ++i)
         m_componentSelector->addItem(labels.at(i), GlassMaterials::components.at(i));
-    ui.presetGroupForm->addRow(i18n("Component"), m_componentSelector);
+    auto *rowLayout = new QHBoxLayout;
+    rowLayout->addWidget(m_componentSelector, 1);
+    auto *copy = new QPushButton(i18n("Copy values"), widget());
+    auto *paste = new QPushButton(i18n("Paste values"), widget());
+    copy->setObjectName(QStringLiteral("copyComponentValues"));
+    paste->setObjectName(QStringLiteral("pasteComponentValues"));
+    paste->setEnabled(false);
+    rowLayout->addWidget(copy);
+    rowLayout->addWidget(paste);
+    ui.presetGroupForm->addRow(i18n("Component"), rowLayout);
+    connect(copy, &QPushButton::clicked, this, [this, paste] {
+        captureComponent();
+        m_copiedValues = m_materials.value(component()).toObject();
+        paste->setEnabled(!m_copiedValues.isEmpty());
+    });
+    connect(paste, &QPushButton::clicked, this, [this] {
+        if (m_materials.value(component()) == m_copiedValues) return;
+        m_materials[component()] = m_copiedValues;
+        showComponent();
+        setNeedsSave(true);
+    });
     auto *error = new QLabel(widget());
     error->setObjectName(QStringLiteral("applyError"));
     error->setWordWrap(true);

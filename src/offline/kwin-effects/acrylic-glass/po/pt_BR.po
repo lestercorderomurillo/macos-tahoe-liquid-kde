@@ -5,9 +5,6 @@ msgstr "Project-Id-Version: MacTahoe Liquid KDE\nPO-Revision-Date: 2026-10-22 00
 msgid "About This Computer"
 msgstr "Sobre este computador"
 
-msgid "Acrylic Glass — a complete material for your Dock, menus and windows."
-msgstr "Acrylic Glass — um material completo para seu Dock, menus e janelas."
-
 msgid "Add fine grain to the glass texture. 0 disables grain."
 msgstr "Adiciona granulação fina à textura do vidro. 0 desativa a granulação."
 
@@ -98,6 +95,9 @@ msgstr "Contraste"
 msgid "Control Center"
 msgstr "Central de Controle"
 
+msgid "Copy values"
+msgstr "Copiar valores"
+
 msgid "Corner Radius (px)"
 msgstr "Raio dos cantos (px)"
 
@@ -178,6 +178,9 @@ msgstr "Óptica"
 
 msgid "Other Plasma popups"
 msgstr "Outras janelas flutuantes do Plasma"
+
+msgid "Paste values"
+msgstr "Colar valores"
 
 msgid "Popups"
 msgstr "Janelas sobrepostas"
