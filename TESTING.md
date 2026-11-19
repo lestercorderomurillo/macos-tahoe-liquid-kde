@@ -1,6 +1,6 @@
 # Installer testing
 
-Tahoe **v0.73.17** updates the Firefox and Thunderbird Dock icons. Clear and tinted appearances were verified on KDE neon Wayland. [Evidence and coverage](release-evidence.json).
+Tahoe **v0.73.18** sets the Dock to Translucent by default. The shared layout kept its glass appearance over a maximized window in a Golden Gate KDE neon Wayland guest. [Evidence and coverage](release-evidence.json).
 
 Approved installer previews: [Light](src/screenshots/previews/installer-tahoe-light-icons-805970eab6b7.png) · [Dark](src/screenshots/previews/installer-tahoe-dark-icons-dbc66adc81c4.png). The gallery below is historical and predates these installer changes; its original [provenance](src/screenshots/release-capture.json) is retained.
 

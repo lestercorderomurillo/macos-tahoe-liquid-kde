@@ -1,61 +1,32 @@
 {
-  "version": "0.73.17",
-  "implementation_commit": "fb4c532d06dafac202fe920f65f2b5dec2032c19",
+  "version": "0.73.18",
+  "implementation_commit": "27439a055bd34b2a18aa2e02644238972e398d9c",
   "gallery_commit": "f09780b200b79302e7c23ef9f6f74d94748bbea3",
-  "scope": "Glass highlights on Firefox and Thunderbird, including lower-edge reflections in Clear Light.",
+  "scope": "Translucent Dock panel opacity at layout creation.",
   "checks": [
     {
-      "command": "release_capture.Guest + installer_themes + Spectacle (focused Dock capture)",
+      "command": "steps.layout.install() twice in release_capture.Guest, followed by a guest reboot and Plasma panel opacity readback",
       "result": "passed",
-      "detail": "Reviewed Clear, red and blue in light and dark mode. The maintainer approved the final Clear Light and the other glass appearances."
+      "detail": "Both layout applications and the next boot reported translucent for the bottom panel."
+    },
+    {
+      "command": "KWin maximize Gwenview, reveal Dock, capture with Spectacle",
+      "result": "passed",
+      "detail": "Maintainer approved the Golden Gate preview for paired publication."
     }
   ],
   "reviewed_frames": [
     {
-      "frame": "dock-proof-tahoe-clear-dark-blue-empty.png",
-      "sha256": "b9705c947f5f6f36b3b7d8a07f773b41faa947bf0eb9d3b84c9dc03e28403557",
-      "source_commit": "d8057e901374602a9d199e5047575e9565dfd7b1",
-      "renderer_sha256": "98f276d6daacb5a448b88f1c0dcc6c9d0a03ecc0f83e80f51cddcd2275835a4a",
-      "wallpaper": "MacTahoe/images_dark/3840x2160.jpg"
-    },
-    {
-      "frame": "dock-proof-tahoe-glass-light-blue-empty.png",
-      "sha256": "80b9f56cc408d94175fb26a2013f3755293de2189c3c930c6b7eecc2f7b0a36e",
-      "source_commit": "d8057e901374602a9d199e5047575e9565dfd7b1",
-      "renderer_sha256": "98f276d6daacb5a448b88f1c0dcc6c9d0a03ecc0f83e80f51cddcd2275835a4a",
-      "wallpaper": "MacTahoe/images/3840x2160.jpg"
-    },
-    {
-      "frame": "dock-proof-tahoe-glass-dark-blue-empty.png",
-      "sha256": "c69a03ab2917a11c7375a8825210670635936fe0ddd0f8a63839a59582fc581a",
-      "source_commit": "d8057e901374602a9d199e5047575e9565dfd7b1",
-      "renderer_sha256": "98f276d6daacb5a448b88f1c0dcc6c9d0a03ecc0f83e80f51cddcd2275835a4a",
-      "wallpaper": "MacTahoe/images_dark/3840x2160.jpg"
-    },
-    {
-      "frame": "dock-proof-tahoe-glass-light-red-empty.png",
-      "sha256": "1f3583eda85026891049fed6e6cb56754808ec473cb97565ea2fc7d3cac3a73a",
-      "source_commit": "d8057e901374602a9d199e5047575e9565dfd7b1",
-      "renderer_sha256": "98f276d6daacb5a448b88f1c0dcc6c9d0a03ecc0f83e80f51cddcd2275835a4a",
-      "wallpaper": "MacTahoe/images/3840x2160.jpg"
-    },
-    {
-      "frame": "dock-proof-tahoe-glass-dark-red-empty.png",
-      "sha256": "f1d46fadd4b934e8fb0a81045bff3cde3c70f70cf035f3e798b31051b28e9e39",
-      "source_commit": "d8057e901374602a9d199e5047575e9565dfd7b1",
-      "renderer_sha256": "98f276d6daacb5a448b88f1c0dcc6c9d0a03ecc0f83e80f51cddcd2275835a4a",
-      "wallpaper": "MacTahoe/images_dark/3840x2160.jpg"
-    },
-    {
-      "frame": "dock-proof-tahoe-clear-light-blue-empty.png",
-      "sha256": "711d2f1dd64b702137cd61675788695ea04ef450799b1a6e1235848a790131df",
-      "source_commit": "fb4c532d06dafac202fe920f65f2b5dec2032c19",
-      "renderer_sha256": "f3a7351ff3e3418bfb718b3384066195c3839fd302e28a203d244f8196c7da6d",
-      "wallpaper": "MacTahoe/images/3840x2160.jpg"
+      "frame": "maximized.png",
+      "edition": "golden-gate",
+      "sha256": "982b50d2e6afbcb78a7b11a60b62c5abb247b212ad8294fa91a9d042fe5ce2f4",
+      "source_commit": "27439a055bd34b2a18aa2e02644238972e398d9c"
     }
   ],
+  "installed_layout_sha256": "01f69a0858c1289a95c3a8f3ec114f5cc81391af43c69e0de4297f380c9d0672",
+  "installed_migration_sha256": "845b0ff458c6a6ff4abe222a53f23db3963969526808d9e69eb1c9484113b81f",
   "coverage_limits": [
-    "KDE neon, Plasma 6.8.1, Wayland; the Thunderbird launcher used its bundled icon through a desktop-entry fixture."
+    "Focused Golden Gate layout installation and reinstallation on KDE neon, Plasma 6.8.1 Wayland. Tahoe uses the same Dock creation script."
   ],
-  "source_sha256": "2fdcac5e33d3ec04cba2123875b6b7c42db65ac3f68dfa2e433faa4ab57a85b9"
+  "source_sha256": "53ddc560dbea98ef9cf58f199f889d03786504a11a9ecbaa20260a46994a2a31"
 }
