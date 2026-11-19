@@ -177,22 +177,22 @@ Refracción del cristal, ampliación al pasar el cursor, burbujas rojas con el n
 
 <p align="center">
   <strong>Clear Light</strong><br>
-  <a href="src/screenshots/previews/readme-tahoe-light-dock-clear-3a2ade5c0f60.webp"><img src="src/screenshots/previews/readme-tahoe-light-dock-clear-3a2ade5c0f60.webp" alt="Tahoe Dock icon appearance preview: Clear Light" width="830"></a>
+  <a href="src/screenshots/previews/readme-tahoe-light-dock-clear-87f4e4715e7b.webp"><img src="src/screenshots/previews/readme-tahoe-light-dock-clear-87f4e4715e7b.webp" alt="Tahoe Dock icon appearance preview: Clear Light" width="830"></a>
 </p>
 
 <p align="center">
   <strong>Clear Dark</strong><br>
-  <a href="src/screenshots/previews/readme-tahoe-dark-dock-clear-9cf1f9739dac.webp"><img src="src/screenshots/previews/readme-tahoe-dark-dock-clear-9cf1f9739dac.webp" alt="Tahoe Dock icon appearance preview: Clear Dark" width="830"></a>
+  <a href="src/screenshots/previews/readme-tahoe-dark-dock-clear-a0c50a4b244a.webp"><img src="src/screenshots/previews/readme-tahoe-dark-dock-clear-a0c50a4b244a.webp" alt="Tahoe Dock icon appearance preview: Clear Dark" width="830"></a>
 </p>
 
 <p align="center">
   <strong>Blue Light</strong><br>
-  <a href="src/screenshots/previews/readme-tahoe-light-dock-blue-dd0eb5c8bff5.webp"><img src="src/screenshots/previews/readme-tahoe-light-dock-blue-dd0eb5c8bff5.webp" alt="Tahoe Dock icon appearance preview: Blue Light" width="830"></a>
+  <a href="src/screenshots/previews/readme-tahoe-light-dock-blue-de75bea1596b.webp"><img src="src/screenshots/previews/readme-tahoe-light-dock-blue-de75bea1596b.webp" alt="Tahoe Dock icon appearance preview: Blue Light" width="830"></a>
 </p>
 
 <p align="center">
   <strong>Blue Dark</strong><br>
-  <a href="src/screenshots/previews/readme-tahoe-dark-dock-blue-9acb2689e21d.webp"><img src="src/screenshots/previews/readme-tahoe-dark-dock-blue-9acb2689e21d.webp" alt="Tahoe Dock icon appearance preview: Blue Dark" width="830"></a>
+  <a href="src/screenshots/previews/readme-tahoe-dark-dock-blue-cd2a57ca932b.webp"><img src="src/screenshots/previews/readme-tahoe-dark-dock-blue-cd2a57ca932b.webp" alt="Tahoe Dock icon appearance preview: Blue Dark" width="830"></a>
 </p>
 
 <p align="center">
@@ -217,12 +217,12 @@ Refracción del cristal, ampliación al pasar el cursor, burbujas rojas con el n
 
 <p align="center">
   <strong>Red Light</strong><br>
-  <a href="src/screenshots/previews/readme-tahoe-light-dock-red-d7227e7a735b.webp"><img src="src/screenshots/previews/readme-tahoe-light-dock-red-d7227e7a735b.webp" alt="Tahoe Dock icon appearance preview: Red Light" width="830"></a>
+  <a href="src/screenshots/previews/readme-tahoe-light-dock-red-424f26c92f54.webp"><img src="src/screenshots/previews/readme-tahoe-light-dock-red-424f26c92f54.webp" alt="Tahoe Dock icon appearance preview: Red Light" width="830"></a>
 </p>
 
 <p align="center">
   <strong>Red Dark</strong><br>
-  <a href="src/screenshots/previews/readme-tahoe-dark-dock-red-9b053dab4782.webp"><img src="src/screenshots/previews/readme-tahoe-dark-dock-red-9b053dab4782.webp" alt="Tahoe Dock icon appearance preview: Red Dark" width="830"></a>
+  <a href="src/screenshots/previews/readme-tahoe-dark-dock-red-8239765998d5.webp"><img src="src/screenshots/previews/readme-tahoe-dark-dock-red-8239765998d5.webp" alt="Tahoe Dock icon appearance preview: Red Dark" width="830"></a>
 </p>
 
 <p align="center">
