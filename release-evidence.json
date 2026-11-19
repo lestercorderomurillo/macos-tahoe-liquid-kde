@@ -1,26 +1,66 @@
 {
-  "version": "0.73.23",
-  "implementation_commit": "48d926db7192d840caead83f7e1894cca2c48ccd",
+  "version": "0.73.24",
+  "implementation_commit": "623d44abc4127afc137bc75d17fd0af36186c1c3",
   "gallery_commit": "f09780b200b79302e7c23ef9f6f74d94748bbea3",
-  "scope": "Dismiss launcher options with the launcher window.",
+  "scope": "Clarify Acrylic Glass labels and update the Golden Gate Official material preset.",
   "checks": [
     {
-      "command": "KDE neon Wayland: open options, toggle the launcher closed and open, then click options again",
+      "command": "pytest -q tests/test_multilanguage.py::test_catalogs_cover_all_project_widget_and_kcm_messages",
       "result": "passed",
-      "detail": "The close removed all three popup windows. Reopening restored Apps and Search with the button idle. The next click opened the options window. Installed TahoeOptionsMenu.qml SHA-256: 2037561446f93c67a1ff36c0e3ed4fa42f493c868e748bda38eeecb299298546."
+      "detail": "All three shipped KCM translation catalogs passed on the combined implementation."
+    },
+    {
+      "command": "pytest tests/test_glass_presets.py::{test_installation_reapplies_complete_edition_material,test_installer_frost_glass_values} and tests/test_acrylic_glass_config.py::test_native_material_follows_source_edition_across_reinstalls",
+      "result": "passed",
+      "detail": "22 installer and KConfig cases passed, including both cases that failed in the previous Tahoe dev run."
+    },
+    {
+      "command": "glass-kcm-probe and KDE neon VM settings and desktop previews",
+      "result": "passed",
+      "detail": "Verified the ten Golden Gate material maps against the saved settings, native preset controls, component and SVG labels, and Golden Gate light and dark desktop previews."
     }
   ],
   "reviewed_frames": [
     {
-      "frame": "menu.png",
+      "frame": "golden-gate.png",
       "edition": "golden-gate",
-      "sha256": "cbe850466e564bd65dd83aa07644f6301f7f1ae06530bf62f256cd09d43bc69d",
-      "source_commit": "48d926db7192d840caead83f7e1894cca2c48ccd"
+      "source_commit": "84ea99e00e87cecc53629a627b00b80108b89add",
+      "sha256": "32c4e0b98eaaabdfcb42ca8ae9e1db5ae8cabb3c82d3bc02f61722956a4bc134"
+    },
+    {
+      "frame": "tahoe.png",
+      "edition": "tahoe",
+      "source_commit": "84ea99e00e87cecc53629a627b00b80108b89add",
+      "sha256": "8837becccc2d95393e6596f627a41bfdbe5087e3dc5ca4ae54752c6428bc2ddf"
+    },
+    {
+      "frame": "light.png",
+      "edition": "golden-gate",
+      "source_commit": "8359d0aeb8740bc4430922eef20d9dceed37578d",
+      "sha256": "40f218c89c79606a38b4d3aedecacfdc816d49e8a81f5ce71397a6512cc60acf"
+    },
+    {
+      "frame": "dark.png",
+      "edition": "golden-gate",
+      "source_commit": "8359d0aeb8740bc4430922eef20d9dceed37578d",
+      "sha256": "6d67af4e30f0c7a10fc5bf3711249c4be0e58b6ee8508ad5cd793094e8432032"
+    },
+    {
+      "frame": "preview.jpg",
+      "edition": "golden-gate",
+      "source_commit": "8359d0aeb8740bc4430922eef20d9dceed37578d",
+      "sha256": "7daceca0cd77a091e609dee7d2afcdb363dc1043af2c918cb29811817a739e64"
+    },
+    {
+      "frame": "settings.png",
+      "edition": "golden-gate",
+      "source_commit": "8359d0aeb8740bc4430922eef20d9dceed37578d",
+      "sha256": "afaf401d5cf1436c3a6e543085a5c9b68659fad9042f9e1cc1c458a855bec470"
     }
   ],
-  "approval": "Maintainer approved the Golden Gate open and reopened comparison for publication.",
+  "approval": "Maintainer approved the saved preset and component labels, then confirmed inclusion of the SVG light and dark labels.",
   "coverage_limits": [
-    "Desktop interaction exercised on Golden Gate Wayland. Tahoe uses the shared menu. No separate Tahoe or X11 runtime capture."
+    "Desktop material preview covers Golden Gate under Wayland. Native SVG label previews cover both editions. Captures retain the source commits of the separately approved changes."
   ],
-  "source_sha256": "6defcd297d7f00db6ac53feb8575e5eae2a2de38a1ba7b43cc66c149ffdc06e3"
+  "source_sha256": "9356cb4a6555af6246688348f4dcaf8660c4cd7a23cb3d0444959985ff89846e"
 }
