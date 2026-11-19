@@ -1,44 +1,90 @@
 {
-  "version": "0.73.21",
-  "implementation_commit": "c5a743f527076a17fba52d6256b8e8af070a9295",
+  "version": "0.73.22",
+  "implementation_commit": "5fd74d99e669b8dc539d8fb3d7ff046c4e415bec",
   "gallery_commit": "f09780b200b79302e7c23ef9f6f74d94748bbea3",
-  "scope": "Compact Discord and Slack indicators and individual menu bar status hover capsules.",
+  "scope": "Live launcher frame transparency and Golden Gate material defaults.",
   "checks": [
     {
-      "command": "Register Discord and Slack QSystemTrayIcon fixtures, move the pointer over individual controls and capture the panel with Spectacle in light and dark modes",
+      "command": "Spectacle capture before and after changing Apps transparency from 0 to 95 with the same window open",
       "result": "passed",
-      "detail": "Reviewed idle, Discord, Slack and Wi-Fi frames show compact indicators and an individual hover highlight."
+      "detail": "Golden Gate KDE neon Wayland, Apps and Clipboard in both modes. The original dark Apps frame was pixel-identical at both settings. The corrected frames changed in all four cases."
+    },
+    {
+      "command": "pytest -q tests/test_glass_surfaces.py tests/test_component_glass_surfaces.py tests/test_glass_presets.py::test_native_glass_shader_pixels",
+      "result": "passed",
+      "detail": "42 passed, covering Qt rendering of surfaces, isolated shader pixels, live component reload, independent edits and rollback."
+    },
+    {
+      "command": "pytest tests/test_glass_presets.py::test_installation_reapplies_complete_edition_material tests/test_glass_presets.py::test_installer_frost_glass_values and native preset controls [2-1]",
+      "result": "passed",
+      "detail": "20 installer preset cases passed and the native KCM probe passed in the guest. All ten effective Golden Gate template components also matched the approved saved material maps."
     }
   ],
   "reviewed_frames": [
     {
-      "frame": "dark-app.png",
+      "frame": "Dark-apps-0.png",
       "edition": "golden-gate",
-      "sha256": "acf8ac32a333016b947f6ff7b69ebb3ab1807d79d8c517beda07064eb67dd396",
-      "source_commit": "c5a743f527076a17fba52d6256b8e8af070a9295"
+      "sha256": "ae872513c17274b1b7a15e8a2e529020a9a80789b45fe0deed1ebbf659d9a0d4",
+      "source_commit": "5fd74d99e669b8dc539d8fb3d7ff046c4e415bec"
     },
     {
-      "frame": "light-rest.png",
+      "frame": "Dark-apps-95.png",
       "edition": "golden-gate",
-      "sha256": "f49aff9d141741951035d067518c75e1f1a81e6427d891830e2512fde58ecd5b",
-      "source_commit": "c5a743f527076a17fba52d6256b8e8af070a9295"
+      "sha256": "67da3826e51580ef44476ab44d18cb16fd75ba9c74d67f473d314538a0861344",
+      "source_commit": "5fd74d99e669b8dc539d8fb3d7ff046c4e415bec"
     },
     {
-      "frame": "light-wifi.png",
+      "frame": "Dark-clipboard-0.png",
       "edition": "golden-gate",
-      "sha256": "7a0cbb7148c6f2c41adf5b73f342a9db207183bf05438914d9bb21c09381d224",
-      "source_commit": "c5a743f527076a17fba52d6256b8e8af070a9295"
+      "sha256": "ef027f9e2d1062237e810eab115b4f8f5e8441244baf376df34517bd9851f015",
+      "source_commit": "5fd74d99e669b8dc539d8fb3d7ff046c4e415bec"
     },
     {
-      "frame": "light-slack.png",
+      "frame": "Dark-clipboard-95.png",
       "edition": "golden-gate",
-      "sha256": "f0865baefe9746f8d57b6ec2cd7de3246178b7bc88b7bfa830962fc2987604a4",
-      "source_commit": "c5a743f527076a17fba52d6256b8e8af070a9295"
+      "sha256": "5bb4f7d8236c689f82bac1f4f93d280eda835c5b825dff9062d070f070948244",
+      "source_commit": "5fd74d99e669b8dc539d8fb3d7ff046c4e415bec"
+    },
+    {
+      "frame": "Dark-comparacion.png",
+      "edition": "golden-gate",
+      "sha256": "daaac1a7fa8061863a8dcf6dfb58f6a2c1203ac2e34304b9b04e50867d1f46fd",
+      "source_commit": "5fd74d99e669b8dc539d8fb3d7ff046c4e415bec"
+    },
+    {
+      "frame": "Light-apps-0.png",
+      "edition": "golden-gate",
+      "sha256": "14d12b751fb0efe6682329a76a904f39cf1084a64dc8a7693456eca446e5340f",
+      "source_commit": "5fd74d99e669b8dc539d8fb3d7ff046c4e415bec"
+    },
+    {
+      "frame": "Light-apps-95.png",
+      "edition": "golden-gate",
+      "sha256": "c800fee11832e6e71c225c56614da3f15810e4028ac7ad6765dabdf7b2d7f06f",
+      "source_commit": "5fd74d99e669b8dc539d8fb3d7ff046c4e415bec"
+    },
+    {
+      "frame": "Light-clipboard-0.png",
+      "edition": "golden-gate",
+      "sha256": "553ef81c848f16c9d7bd8d8ed4759202e30291bfebd04e816a679441c12f5df4",
+      "source_commit": "5fd74d99e669b8dc539d8fb3d7ff046c4e415bec"
+    },
+    {
+      "frame": "Light-clipboard-95.png",
+      "edition": "golden-gate",
+      "sha256": "6e287f00a592cdad0f4a4564fa47ffb6a626e6b479a79d9b5d42b2a89e070d97",
+      "source_commit": "5fd74d99e669b8dc539d8fb3d7ff046c4e415bec"
+    },
+    {
+      "frame": "Light-comparacion.png",
+      "edition": "golden-gate",
+      "sha256": "5bb430045ac9d170ceec8ccace8a56d78127b33a738ff82b85786fd778274394",
+      "source_commit": "5fd74d99e669b8dc539d8fb3d7ff046c4e415bec"
     }
   ],
-  "approval": "Maintainer approved the Golden Gate panel previews for paired release.",
+  "approval": "Maintainer approved the light and dark Apps and Clipboard comparisons for paired release.",
   "coverage_limits": [
-    "Golden Gate KDE neon Wayland guest. Tahoe shares the status controls. Indicator fixtures used app artwork. Full Discord and Slack clients and X11 were not exercised."
+    "Installed desktop captures cover Golden Gate on Wayland. Clipboard history was disabled in that guest. The Xvfb shader check covers isolated renderer pixels. Desktop X11 and a separate Tahoe desktop capture were not exercised."
   ],
-  "source_sha256": "62335dc8736a635f6fab745e72c3915ebf6396fe6f288bcbd601e0d4bd0e985d"
+  "source_sha256": "43d28bef7012850c7e1b79efb45a3a60b065929a6af437cb9e772e1ffca8827b"
 }

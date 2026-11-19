@@ -1,6 +1,6 @@
 # Installer testing
 
-Tahoe **v0.73.21** adds individual status button hover capsules and caps Discord and Slack indicators at 16 logical pixels. The shared controls were checked in a Golden Gate KDE neon Wayland guest. [Evidence and coverage](release-evidence.json).
+Tahoe **v0.73.22** applies light and dark transparency changes to open Apps and Clipboard backgrounds. Golden Gate includes the reviewed ten-component material profile. [Evidence and coverage](release-evidence.json).
 
 Approved installer previews: [Light](src/screenshots/previews/installer-tahoe-light-icons-805970eab6b7.png) · [Dark](src/screenshots/previews/installer-tahoe-dark-icons-dbc66adc81c4.png). The gallery below is historical and predates these installer changes; its original [provenance](src/screenshots/release-capture.json) is retained.
 
