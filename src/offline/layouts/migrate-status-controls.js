@@ -12,6 +12,13 @@
         var widgets = bars[i].widgets();
         var themed = widgets.some(function (w) { return w.type === 'org.kde.mac-tahoe-liquid-kde.controlcenter'; });
         var notifications = widgets.some(function (w) { return w.type === 'org.kde.mac-tahoe-liquid-kde.notifications'; });
+        var wifi = widgets.find(function (w) { return w.type === 'org.kde.mac-tahoe-liquid-kde.wifi'; });
+        var glassId = 'org.kde.mac-tahoe-liquid-kde.acrylicglass';
+        if (themed && wifi && !widgets.some(function (w) { return w.type === glassId; })) {
+            var index = wifi.index;
+            var glass = bars[i].addWidget(glassId);
+            if (glass) glass.index = index;
+        }
         if (!themed || !notifications) continue;
         for (var j = 0; j < widgets.length; ++j) {
             var tray = widgets[j];

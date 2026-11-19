@@ -52,6 +52,7 @@ def snapshot(root=REPO_ROOT):
             inputs = [(name, payload)] + [(str(p.relative_to(root)), p) for p in recipe]
             # Satellite status applets import the Control Center's shared views.
             if path.name == 'plasmoids' and payload.name in (
+                'org.kde.mac-tahoe-liquid-kde.acrylicglass',
                 'org.kde.mac-tahoe-liquid-kde.battery',
                 'org.kde.mac-tahoe-liquid-kde.wifi',
                 'org.kde.mac-tahoe-liquid-kde.notifications',

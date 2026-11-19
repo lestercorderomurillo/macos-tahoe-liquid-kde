@@ -5,6 +5,9 @@ Support.DataSource {
     engine: "executable"
     function run(action) {
         const commands = {
+            acrylic: "setsid -f kcmshell6 --icon draw-brush-symbolic --caption 'Acrylic Glass' "
+                     + (Qt.platform.pluginName === "xcb" ? "kwin-x11" : "kwin")
+                     + "/effects/configs/kwin_liquidglass_config",
             sharing: "kdeconnect-app",
             overview: "qdbus6 org.kde.kglobalaccel /component/kwin org.kde.kglobalaccel.Component.invokeShortcut Overview",
             display: "systemsettings kcm_kscreen",

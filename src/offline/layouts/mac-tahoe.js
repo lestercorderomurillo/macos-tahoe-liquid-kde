@@ -77,6 +77,7 @@ for (var screen = 0; screen < screenCount; screen++) {
     tray.writeConfig("hiddenItems", "org.kde.plasma.bluetooth,org.kde.plasma.brightness,org.kde.plasma.volume,org.kde.plasma.networkmanagement,org.kde.plasma.clipboard,org.kde.plasma.devicenotifier,org.kde.plasma.manage-inputmethod,org.kde.plasma.mediacontroller,org.kde.plasma.notifications,org.kde.plasma.keyboardindicator,org.kde.plasma.weather,org.kde.kscreen,org.kde.plasma.keyboardlayout,org.kde.plasma.printmanager,org.kde.plasma.cameraindicator,org.kde.plasma.vault,org.kde.kdeconnect,org.kde.plasma.battery,Arch-Update,chrome_status_icon_1,discord,plasmashell_microphone,steam,spotify,telegram,slack");
     tray.writeConfig("iconSpacing", 3);
 
+    bar.addWidget("org.kde.mac-tahoe-liquid-kde.acrylicglass");
     bar.addWidget("org.kde.mac-tahoe-liquid-kde.wifi");
     bar.addWidget("org.kde.mac-tahoe-liquid-kde.battery");
     bar.addWidget("org.kde.mac-tahoe-liquid-kde.controlcenter");
