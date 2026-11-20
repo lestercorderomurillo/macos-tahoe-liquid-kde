@@ -9,7 +9,7 @@ Item {
     property string label
     property bool selected: false
     signal clicked()
-    implicitWidth: 28
+    implicitWidth: Style.panelCell
     implicitHeight: implicitWidth
     Layout.minimumWidth: implicitWidth
     Layout.fillHeight: true
