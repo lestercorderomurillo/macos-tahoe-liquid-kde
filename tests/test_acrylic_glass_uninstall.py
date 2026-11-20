@@ -48,7 +48,7 @@ def test_uninstall_disables_before_unload_and_reconfigures_after_removal(
     )
     assert calls[2][1][-1] == "org.kde.KWin.reconfigure"
     assert calls[-1][1][-1] == "org.kde.KWin.reconfigure"
-    assert len(removed) == 7
+    assert len(removed) == 8
     assert plugin_dir / "kwin/effects/configs/kwin_liquidglass_config.so" in removed
     assert plugin_dir / "kwin-x11/effects/configs/kwin_liquidglass_config.so" in removed
     assert {p.parts[-3] for p in removed if p.suffix == ".mo"} == {"pt_BR", "de", "fr", "it"}
