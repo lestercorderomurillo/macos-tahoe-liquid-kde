@@ -37,25 +37,46 @@ Window {
 
     NativeGlass.PopupBackdrop { id: backdrop; window: aboutWindow }
 
-    function ink(item, preferred, face) {
-        if (!glassSettings.dynamicTinting || !backdrop.backdropRevision || !item.width || !item.height)
-            return preferred;
-        const point = item.mapToItem(contentItem, item.width / 2, item.height / 2);
-        const sample = backdrop.backdropAt(point);
-        if (!sample.a)
-            return preferred;
-        let background = Qt.tint(sample, glass.color);
-        if (face)
-            background = Qt.tint(background, face);
-        function luminance(c) {
-            function linear(v) { return v <= 0.04045 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4); }
-            return 0.2126 * linear(c.r) + 0.7152 * linear(c.g) + 0.0722 * linear(c.b);
+    // Average across each horizontal band once, so columns share the same tint.
+    readonly property var backdropBands: {
+        const bands = [];
+        if (!glassSettings.dynamicTinting || !backdrop.backdropRevision)
+            return bands;
+        for (let row = 0; row < 8; ++row) {
+            let red = 0, green = 0, blue = 0;
+            for (let col = 0; col < 8; ++col) {
+                const sample = backdrop.backdropAt(Qt.point(width * (col + 0.5) / 8,
+                                                            height * (row + 0.5) / 8));
+                if (!sample.a)
+                    return [];
+                red += sample.r;
+                green += sample.g;
+                blue += sample.b;
+            }
+            bands.push(Qt.rgba(red / 8, green / 8, blue / 8, 1));
         }
-        const bg = luminance(background) + 0.05;
-        const fg = luminance(Qt.tint(background, preferred)) + 0.05;
-        if (Math.max(bg, fg) / Math.min(bg, fg) >= 4.5)
+        return bands;
+    }
+
+    function ink(item, preferred, face) {
+        if (!backdropBands.length || !item.width || !item.height)
             return preferred;
-        return bg / 0.05 >= 1.05 / bg ? "black" : "white";
+        const y = item.mapToItem(contentItem, 0, item.height / 2).y;
+        const row = y * backdropBands.length / height - 0.5;
+        let brightness = 0, weights = 0;
+        for (let i = 0; i < backdropBands.length; ++i) {
+            // A bell-shaped footprint moves continuously between sample rows.
+            const distance = (row - i) / 1.25;
+            const weight = Math.exp(-0.5 * distance * distance);
+            let surface = Qt.tint(backdropBands[i], glass.color);
+            if (face)
+                surface = Qt.tint(surface, face);
+            brightness += weight * (0.2126 * surface.r + 0.7152 * surface.g + 0.0722 * surface.b);
+            weights += weight;
+        }
+        const t = Math.max(0, Math.min(1, (brightness / weights - 0.22) / 0.37));
+        const tone = 0.97 - 0.92 * t * t * (3 - 2 * t);
+        return Qt.rgba(tone, tone, tone, preferred.a);
     }
 
     component PrimaryLabel: Text {
