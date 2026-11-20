@@ -50,6 +50,10 @@ def snapshot(root=REPO_ROOT):
                 step = 'acrylic_glass'
             recipe = dependencies(scripts / 'steps' / (step + '.py'), scripts)
             inputs = [(name, payload)] + [(str(p.relative_to(root)), p) for p in recipe]
+            # Launcher and notification options share the Control Center menu.
+            if path.name == 'plasmoids' and payload.name == 'org.kde.mac-tahoe-liquid-kde.launcher':
+                inputs.append(('shared-options-menu', path /
+                    'org.kde.mac-tahoe-liquid-kde.controlcenter/contents/ui/MacOptionsMenu.qml'))
             # Satellite status applets import the Control Center's shared views.
             if path.name == 'plasmoids' and payload.name in (
                 'org.kde.mac-tahoe-liquid-kde.acrylicglass',

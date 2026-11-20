@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 #include <KCModule>
+#include <KColorButton>
 #include <KPluginFactory>
 #include <KPluginMetaData>
 #include <QApplication>
@@ -41,7 +42,11 @@ int main(int argc,char **argv){
   if(auto *n=qobject_cast<QDoubleSpinBox*>(w))n->setValue(i.value().toDouble());
   else if(auto *n=qobject_cast<QSpinBox*>(w))n->setValue(i.value().toInt());
   else if(auto *b=qobject_cast<QCheckBox*>(w))b->setChecked(i.value().toBool());
-  else return 6;
+  else if(auto *button=qobject_cast<KColorButton*>(w)){
+   const QColor color(i.value().toString());
+   if(!color.isValid()) return 6;
+   button->setColor(color);
+  } else return 6;
  }
  if(!request.contains("save") || request.value("save").toBool())m->save();
  auto *error=m->widget()->findChild<QLabel*>(QStringLiteral("applyError"));

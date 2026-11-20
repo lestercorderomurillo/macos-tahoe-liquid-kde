@@ -5,6 +5,8 @@ import QtQuick.Controls as QQC
 import org.kde.kirigami as Kirigami
 import org.kde.kquickcontrolsaddons as KQuickAddons
 import org.kde.notificationmanager as Notifications
+import org.kde.plasma.extras as PlasmaExtras
+import QtQml.Models
 import "NotificationContrast.js" as Contrast
 
 Item {
@@ -198,6 +200,7 @@ Item {
     }
     QQC.ToolButton {
         id: more
+        objectName: "notificationOptionsButton"
         anchors.right: parent.right
         anchors.bottom: parent.bottom
         anchors.rightMargin: -4; anchors.bottomMargin: -2
@@ -226,58 +229,74 @@ Item {
             color: Kirigami.Theme.textColor.r < 0.5 ? Qt.rgba(0, 0, 0, more.hovered ? 0.16 : 0.09)
                                                        : Qt.rgba(1, 1, 1, more.hovered ? 0.22 : 0.12)
         }
-        onClicked: options.open()
-        QQC.Menu {
-            id: options
-            y: more.height + 4
-            font.family: "SF Pro Display"; font.pixelSize: 13
-            QQC.MenuItem {
-                objectName: "notificationGroup"
-                text: row.model.isGroupExpanded ? i18n("Collapse") : i18n("Expand")
-                visible: !!row.model.isGroup
-                height: visible ? implicitHeight : 0
-                onTriggered: row.history.setData(row.itemIndex(), !row.model.isGroupExpanded, Notifications.Notifications.IsGroupExpandedRole)
+        onClicked: options.openRelative()
+    }
+    MacOptionsMenu {
+        id: options
+        objectName: "notificationOptionsMenu"
+        anchorItem: more
+        textColor: Kirigami.Theme.textColor
+        preferredWidth: 184
+        fitContents: true
+        property var applicationActions: []
+        actions: [groupAction, openAction].concat(applicationActions,
+            [replyAction, pauseAction, cancelAction, settingsAction])
+        onRestoreFocusRequested: more.forceActiveFocus()
+
+        property QtObject groupAction: PlasmaExtras.MenuItem {
+            objectName: "notificationGroup"
+            text: row.model.isGroupExpanded ? i18n("Collapse") : i18n("Expand")
+            visible: !!row.model.isGroup
+            onClicked: row.history.setData(row.itemIndex(), !row.model.isGroupExpanded, Notifications.Notifications.IsGroupExpandedRole)
+        }
+        property QtObject openAction: PlasmaExtras.MenuItem {
+            objectName: "notificationOpen"; text: i18n("Open")
+            visible: !!row.model.hasDefaultAction
+            onClicked: row.open()
+        }
+        property Instantiator actionObjects: Instantiator {
+            model: row.model.actionNames || []
+            delegate: PlasmaExtras.MenuItem {
+                objectName: "notificationAction"
+                required property string modelData
+                required property int index
+                text: row.model.actionLabels[index] || modelData
+                onClicked: row.history.invokeAction(row.itemIndex(), modelData)
             }
-            QQC.MenuItem {
-                objectName: "notificationOpen"; text: i18n("Open")
-                visible: !!row.model.hasDefaultAction
-                height: visible ? implicitHeight : 0
-                onTriggered: row.open()
+            onObjectAdded: (index, object) => {
+                const actions = options.applicationActions.slice();
+                actions.splice(index, 0, object);
+                options.applicationActions = actions;
             }
-            Repeater {
-                model: row.model.actionNames || []
-                QQC.MenuItem {
-                    objectName: "notificationAction"
-                    required property string modelData
-                    required property int index
-                    text: row.model.actionLabels[index] || modelData
-                    onTriggered: row.history.invokeAction(row.itemIndex(), modelData)
-                }
-            }
-            QQC.MenuItem {
-                text: i18n("Reply…")
-                visible: !!row.model.hasReplyAction
-                height: visible ? implicitHeight : 0
-                onTriggered: { row.replying = true; reply.forceActiveFocus(); }
-            }
-            QQC.MenuItem {
-                objectName: "notificationPause"
-                text: row.model.jobState === Notifications.Notifications.JobStateSuspended ? i18n("Resume") : i18n("Pause")
-                visible: !!row.model.suspendable
-                height: visible ? implicitHeight : 0
-                onTriggered: row.model.jobState === Notifications.Notifications.JobStateSuspended ? row.history.resumeJob(row.itemIndex()) : row.history.suspendJob(row.itemIndex())
-            }
-            QQC.MenuItem {
-                objectName: "notificationCancel"; text: i18n("Cancel Job")
-                visible: !!row.model.killable
-                height: visible ? implicitHeight : 0
-                onTriggered: row.history.killJob(row.itemIndex())
-            }
-            QQC.MenuItem {
-                text: i18n("Notification Settings…")
-                onTriggered: preferences.clicked()
+            onObjectRemoved: (index, object) => {
+                const actions = options.applicationActions.slice();
+                actions.splice(index, 1);
+                options.applicationActions = actions;
             }
         }
+        property QtObject replyAction: PlasmaExtras.MenuItem {
+            objectName: "notificationReplyAction"
+            text: i18n("Reply…")
+            visible: !!row.model.hasReplyAction
+            onClicked: { row.replying = true; reply.forceActiveFocus(); }
+        }
+        property QtObject pauseAction: PlasmaExtras.MenuItem {
+            objectName: "notificationPause"
+            text: row.model.jobState === Notifications.Notifications.JobStateSuspended ? i18n("Resume") : i18n("Pause")
+            visible: !!row.model.suspendable
+            onClicked: row.model.jobState === Notifications.Notifications.JobStateSuspended ? row.history.resumeJob(row.itemIndex()) : row.history.suspendJob(row.itemIndex())
+        }
+        property QtObject cancelAction: PlasmaExtras.MenuItem {
+            objectName: "notificationCancel"; text: i18n("Cancel Job")
+            visible: !!row.model.killable
+            onClicked: row.history.killJob(row.itemIndex())
+        }
+        property QtObject settingsAction: PlasmaExtras.MenuItem {
+            objectName: "notificationSettings"
+            text: i18n("Notification Settings…")
+            onClicked: preferences.clicked()
+        }
     }
+
     SettingsLink { id: preferences; visible: false; module: "kcm_notifications" }
 }

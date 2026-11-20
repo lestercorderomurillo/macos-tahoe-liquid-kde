@@ -288,6 +288,7 @@ void LiquidGlassEffectConfig::save()
     group.writeEntry("MaterialPreset", ui.kcfg_MaterialPreset->presetValue());
     const auto general = m_materials.value(QStringLiteral("general")).toObject();
     for (auto it = general.begin(); it != general.end(); ++it) {
+        if (it.key() == QStringLiteral("BlurDecorations")) continue; // Saved by the global checkbox.
         if (it.value().isBool()) group.writeEntry(it.key(), it.value().toBool());
         else if (it.value().isDouble()) group.writeEntry(it.key(), it.value().toDouble());
         else group.writeEntry(it.key(), QColor(it.value().toString()));
@@ -308,10 +309,11 @@ void LiquidGlassEffectConfig::save()
 
     OrgKdeKwinEffectsInterface interface(QStringLiteral("org.kde.KWin"), QStringLiteral("/Effects"), QDBusConnection::sessionBus());
 
-    if (QGuiApplication::platformName() == QStringLiteral("xcb")) {
-        interface.reconfigureEffect(QStringLiteral("liquidglass_x11"));
-    } else {
-        interface.reconfigureEffect(QStringLiteral("liquidglass"));
+    // An XWayland settings window still controls the Wayland compositor.
+    for (const QString &effect : {QStringLiteral("liquidglass"), QStringLiteral("liquidglass_x11")}) {
+        auto loaded = interface.isEffectLoaded(effect);
+        loaded.waitForFinished();
+        if (!loaded.isError() && loaded.value()) interface.reconfigureEffect(effect);
     }
 }
 

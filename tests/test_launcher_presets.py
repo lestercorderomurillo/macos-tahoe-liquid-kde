@@ -258,6 +258,11 @@ def test_native_launcher_popup_presets(repo, tmp_path, monkeypatch, launcher_pop
             pytest.skip(f"{tool} required for the isolated launcher preview")
     package = tmp_path / "widget"
     shutil.copytree(repo / "src/offline/plasmoids" / launcher_defaults.LAUNCHER_ID, package)
+    shared = "org.kde.mac-tahoe-liquid-kde.controlcenter/contents/ui"
+    destination = tmp_path / shared
+    destination.mkdir(parents=True)
+    shutil.copy2(repo / "src/offline/plasmoids" / shared / "MacOptionsMenu.qml",
+                 destination / "MacOptionsMenu.qml")
     shutil.copytree(repo / f"src/offline/plasma-theme/MacTahoeLiquidKde-{mode}",
                     tmp_path / f"data/plasma/desktoptheme/MacTahoeLiquidKde-{mode}")
     # Minimal CI desktops have no visible apps. Seed a real All Apps category

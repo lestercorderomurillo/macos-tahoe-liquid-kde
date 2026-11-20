@@ -724,7 +724,7 @@ const BlurEffect::ComponentMaterial &BlurEffect::materialFor(EffectWindow *w) co
         }
     }
     const auto component = GlassMaterials::classify(w->window()->resourceClass(), caption, w->isDock(),
-        w->isMenu() || w->isDropdownMenu() || w->isPopupMenu(),
+        w->isMenu() || w->isDropdownMenu() || w->isPopupMenu() || w->isPopupWindow(),
         w->isTooltip() || (w->isAppletPopup() || w->isNotification() || w->isCriticalNotification()), m_aboutTitle);
     return m_componentMaterials.constFind(component).value();
 }
@@ -2259,9 +2259,8 @@ void BlurEffect::blur(
         m_roundedOnscreenPass.shader->setUniform(m_roundedOnscreenPass.refractionWidthLocation, float(optics.refractionWidth * viewport.scale()));
         m_roundedOnscreenPass.shader->setUniform(m_roundedOnscreenPass.highlightWidthLocation, float(optics.highlightWidth * viewport.scale()));
         m_roundedOnscreenPass.shader->setUniform(m_roundedOnscreenPass.highlightStrengthLocation, optics.highlightStrength);
-        // Notifications keep a flat material; other components retain their saved gradient.
         m_roundedOnscreenPass.shader->setUniform(m_roundedOnscreenPass.darkGradientOverlayLocation,
-            int(material.gradient && !isProjectNotification(w->window()->resourceClass(), w->caption())));
+            int(material.gradient));
         const QPalette windowPalette = w->window()->palette();
         m_roundedOnscreenPass.shader->setUniform(m_roundedOnscreenPass.centerOpacityLocation, centerOpacity);
         m_roundedOnscreenPass.shader->setUniform(m_roundedOnscreenPass.dockSurfaceLocation, int(dockSurface));

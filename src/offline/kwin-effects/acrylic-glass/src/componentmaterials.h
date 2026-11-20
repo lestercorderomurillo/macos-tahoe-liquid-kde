@@ -79,6 +79,7 @@ inline QString classify(const QString &resource, const QString &caption, bool do
         if (caption == QStringLiteral("mttkde-search")) return QStringLiteral("search");
         if (caption == aboutTitle || caption == QStringLiteral("About This Computer")) return QStringLiteral("about");
     }
+    if (name == QStringLiteral("mac-tahoe-clipboard") && caption == QStringLiteral("Clipboard")) return QStringLiteral("apps");
     if (dock) return caption == QStringLiteral("mttkde-dock") ? QStringLiteral("dock") : QStringLiteral("panel");
     if (applet && (name == QStringLiteral("plasmashell") || name == QStringLiteral("org.kde.plasmashell"))) return QStringLiteral("popups");
     if (popup || applet) return QStringLiteral("menus");

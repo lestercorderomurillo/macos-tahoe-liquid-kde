@@ -266,3 +266,27 @@ def test_desktop_control_shared_views_and_native_regions_invalidate_satellites(t
     for name in names[:4]:
         assert second['plasmoids/' + name] != third['plasmoids/' + name]
     assert second['plasmoids/' + names[-1]] == third['plasmoids/' + names[-1]]
+
+
+def test_shared_options_menu_invalidates_launcher_and_controls_only(tmp_path):
+    root = tmp_path / 'source'
+    widgets = root / 'src/offline/plasmoids'
+    controls = widgets / 'org.kde.mac-tahoe-liquid-kde.controlcenter'
+    menu = controls / 'contents/ui/MacOptionsMenu.qml'
+    menu.parent.mkdir(parents=True)
+    menu.write_text('import QtQuick\nItem {}\n')
+    for name in ('launcher', 'notifications', 'wifi', 'battery', 'trashcan'):
+        folder = widgets / ('org.kde.mac-tahoe-liquid-kde.' + name)
+        folder.mkdir(parents=True)
+        (folder / 'metadata.json').write_text('{}')
+    (widgets / 'org.kde.mac.tahoe.liquid.taskmanager/launcher').mkdir(parents=True)
+    scripts = root / 'src/scripts'
+    scripts.mkdir(parents=True)
+    before = component_manifest.snapshot(root)['components']
+    menu.write_text('import QtQuick\nItem { width: 1 }\n')
+    after = component_manifest.snapshot(root)['components']
+    for name in ('launcher', 'controlcenter', 'notifications', 'wifi', 'battery'):
+        key = 'plasmoids/org.kde.mac-tahoe-liquid-kde.' + name
+        assert before[key] != after[key]
+    key = 'plasmoids/org.kde.mac-tahoe-liquid-kde.trashcan'
+    assert before[key] == after[key]
