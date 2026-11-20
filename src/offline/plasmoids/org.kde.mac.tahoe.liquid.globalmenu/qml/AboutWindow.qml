@@ -382,7 +382,7 @@ Window {
             Kirigami.Icon {
                 Layout.alignment: Qt.AlignHCenter
                 implicitWidth: 132; implicitHeight: 132
-                source: "computer"
+                source: popupSurface.clearSurface ? Qt.resolvedUrl("about-computer.svg") : "computer"
             }
 
             Item { Layout.preferredHeight: 18 }

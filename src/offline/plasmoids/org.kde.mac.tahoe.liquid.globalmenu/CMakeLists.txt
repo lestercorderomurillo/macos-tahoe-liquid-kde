@@ -56,6 +56,7 @@ plasma_add_applet(org.kde.mac.tahoe.liquid.globalmenu
         appmenumodel.cpp
     RESOURCES
         main.xml
+        qml/about-computer.svg
         qml/copy-light.svg
         qml/copy-dark.svg
     QML_ARGS DEPENDENCIES QtCore org.kde.plasma.core
