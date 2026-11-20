@@ -25,7 +25,7 @@ PlasmoidItem {
         function toggle() { visible = !visible; }
         function dismiss() { visible = false; }
         title: "mttkde-control-center"
-        Native.GlassSettings { id: inkSettings; component: "control-center"; window: popup }
+        property Native.GlassSettings inkSettings: Native.GlassSettings { component: "control-center"; window: popup }
         adaptiveForeground: inkSettings.dynamicTinting
         regionalForeground: true
         // The transparent shadow margin must not let the pointer reach windows below.
