@@ -11,7 +11,7 @@ import org.kde.ksvg as KSvg
 PlasmaCore.Dialog {
     id: menu
     objectName: "macOptionsMenu"
-    property rect screenGeometry: Qt.rect(Screen.virtualX, Screen.virtualY, Screen.width, Screen.height)
+    property var availableGeometry: () => Qt.rect(Screen.virtualX, Screen.virtualY, Screen.width, Screen.height)
     property string textFont: Kirigami.Theme.defaultFont.family
     property real textSize: Kirigami.Theme.defaultFont.pointSize
     property color textColor: Kirigami.Theme.textColor
@@ -42,7 +42,7 @@ PlasmaCore.Dialog {
         if (!anchorItem) return;
         const below = anchorItem.mapToGlobal(anchorItem.width, anchorItem.height);
         const above = anchorItem.mapToGlobal(0, 0);
-        const area = menu.screenGeometry;
+        const area = menu.availableGeometry();
         x = Math.round(Math.max(area.x, Math.min(below.x - width, area.x + area.width - width)));
         y = Math.round(below.y + height <= area.y + area.height ? below.y : Math.max(area.y, above.y - height));
     }
@@ -90,7 +90,7 @@ PlasmaCore.Dialog {
             for (const action of menu.actions) {
                 if (action.visible) width = Math.max(width, labelMetrics.advanceWidth(action.text));
             }
-            return Math.min(menu.screenGeometry.width, Math.ceil(width) + 32 + dialogSvg.margins.left + dialogSvg.margins.right);
+            return Math.min(menu.availableGeometry().width, Math.ceil(width) + 32 + dialogSvg.margins.left + dialogSvg.margins.right);
         }
         KSvg.FrameSvgItem { id: dialogSvg; visible: false; imagePath: "dialogs/background" }
         FontMetrics { id: labelMetrics; font.family: menu.textFont; font.pointSize: menu.textSize * 1.05 }

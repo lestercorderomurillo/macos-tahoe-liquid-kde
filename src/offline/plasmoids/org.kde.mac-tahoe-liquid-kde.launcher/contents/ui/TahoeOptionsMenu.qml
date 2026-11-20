@@ -11,7 +11,7 @@ Controls.MacOptionsMenu {
         }
     }
     objectName: "launcherOptionsMenu"
-    screenGeometry: kicker.screenGeometry
+    availableGeometry: () => kicker.screenGeometry
     textFont: main.textFont
     textSize: main.textSize
     textColor: main.textColor
