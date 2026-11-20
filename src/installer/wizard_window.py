@@ -653,8 +653,6 @@ class InstallerWindow(OpaqueSurface):
         self._eta_timer.timeout.connect(self.refresh_progress)
         self.defaults = defaults()
         self.choices = dict(self.defaults)
-        from cli import _theme_is_already_installed
-        self.existing_install = _theme_is_already_installed()
         self.edition = "Golden Gate" if bridge.editionName == "MacGoldenGate" else "Tahoe"
         self.asset_edition = "golden-gate" if self.edition == "Golden Gate" else "tahoe"
         self.page = "uninstall" if uninstall else "welcome"
@@ -1144,13 +1142,12 @@ class InstallerWindow(OpaqueSurface):
             ("panel", "Top bar", "Global menu, clock and system controls.", picture("panel-detail.jpg", 362, 160)),
             ("dock", "Dock", "Pinned apps and open windows.", picture("dock.jpg", 362, 160)),
         ], independent=True)
-        dock_apps = self.dock_app_options()
         def enable_layout_options():
             for card in self.content.findChildren(ChoiceCard):
                 card.setEnabled(self.choices["reset_layout"])
-            dock_apps.setEnabled(self.choices["reset_layout"] and self.choices["dock"])
         reset.toggled.connect(enable_layout_options)
         enable_layout_options()
+        self.dock_app_options()
 
     def dock_app_options(self):
         button = GlassButton(self.t("Dock apps…"))
@@ -1158,7 +1155,6 @@ class InstallerWindow(OpaqueSurface):
         button.setEnabled(self.choices["dock"])
         button.clicked.connect(self.edit_dock_apps)
         self.body.addWidget(button, 0, Qt.AlignmentFlag.AlignLeft)
-        return button
 
     def edit_dock_apps(self):
         from dock_apps import OPTIONAL, LABELS, installed_apps, recommendation
@@ -1181,7 +1177,7 @@ class InstallerWindow(OpaqueSurface):
         for key, label in (("auto", "Automatic"), ("keep", "Keep current Dock icons"), ("macos", "macOS-style Dock icons"), ("native", "Application icons")):
             appearance.addItem(self.t(label), key)
         appearance.setCurrentIndex(appearance.findData(choices["dock_appearance"]))
-        appearance.setEnabled(choices["dock"])
+        appearance.setEnabled(choices["dock"] and choices["reset_layout"])
         appearance.currentIndexChanged.connect(lambda: choices.update(dock_appearance=appearance.currentData()))
         body.addWidget(appearance)
         body.addWidget(self.label("Only Dock icons change. Your apps, pin order and desktop icon theme stay the same."))
@@ -1445,7 +1441,7 @@ class InstallerWindow(OpaqueSurface):
             ("wallpaper", "Background", value("wallpaper"), "wallpaper"),
             ("launcher", "Launcher", self.t("Use my launcher") if c["launcher"] == "keep" else value("launcher"), "launcher"),
             ("panel", "Desktop", desktop or self.t("Keep"), "layout"),
-            ("dock_apps", "Dock apps", self.t("Keep") if keep_layout else self.dock_app_summary() + (" · " + self.t("macOS-style Dock icons" if c["dock_appearance"] == "macos" else "Application icons") if c["dock"] and c["dock_appearance"] not in ("auto", "keep") else ""), "layout"),
+            ("dock_apps", "Dock apps", self.dock_app_summary() + (" · " + self.t("macOS-style Dock icons" if c["dock_appearance"] == "macos" else "Application icons") if not keep_layout and c["dock"] and c["dock_appearance"] not in ("auto", "keep") else ""), "layout"),
             ("acrylic_glass", "Effects", effects or self.t("Disabled"), "effects"),
             ("window_controls", "Window controls", value("window_controls"), "window_controls"),
             ("button_position", "Window buttons", value("button_position"), "button_position"),

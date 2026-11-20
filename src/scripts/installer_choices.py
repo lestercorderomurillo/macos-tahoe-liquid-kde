@@ -116,7 +116,7 @@ def features(choices: dict, baseline: dict, *, existing_install: bool = False) -
         nautilus=choices["files"] == "nautilus",
         nautilus_bookmarks=choices["files"] == "nautilus" and choices["nautilus_bookmarks"],
         apply_theme=True, sddm=False,
-        apps=choices["reset_layout"] and choices["dock"] and bool(choices["dock_apps"]),
+        apps=choices["dock"] and bool(choices["dock_apps"]),
         _reset_wallpapers=choices["wallpaper"] != "keep",
     )
     return result
