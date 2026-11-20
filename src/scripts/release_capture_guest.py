@@ -181,6 +181,17 @@ def setup(repo, profile, edition, scope=None):
 def verify_dock_defaults(repo):
     """Exercise legacy updates and repeat installs in the disposable guest only."""
     from steps.layout import _dock_migration_script
+    from dock_apps import CANDIDATES
+    available = json.loads(plasma(
+        'print(JSON.stringify(' + json.dumps(list(CANDIDATES.values())) +
+        '.map(group => group.find(id => applicationExists(id))).filter(Boolean)))'))
+    def expected_pins(existing):
+        pins = list(existing)
+        for desktop in available:
+            launcher = 'applications:' + desktop
+            if launcher not in pins:
+                pins.append(launcher)
+        return pins
     saved_options = os.environ.get('MTTKDE_WIZARD_OPTIONS')
     evidence = []
     try:
@@ -203,13 +214,11 @@ def verify_dock_defaults(repo):
             script += 'print(JSON.stringify({first:first, icons:icons, second:second, kept:kept, reset:reset, restored:restored, revision:revision}));'
             result = json.loads(plasma(script))
             pins = lambda value: value.split(',') if isinstance(value, str) else value
-            if (pins(result['first'])[:2] != ['applications:systemsettings.desktop', 'applications:firefox.desktop']
-                    or len(pins(result['first'])) != 10
+            if (pins(result['first']) != expected_pins(['applications:systemsettings.desktop', 'applications:firefox.desktop'])
                     or result['icons'] not in (True, 'true')
                     or pins(result['second']) != ['applications:firefox.desktop']
                     or result['kept'] not in (False, 'false')
-                    or pins(result['reset'])[0] != 'applications:firefox.desktop'
-                    or len(pins(result['reset'])) != 10
+                    or pins(result['reset']) != expected_pins(['applications:firefox.desktop'])
                     or result['restored'] not in (True, 'true') or int(result['revision']) != 3):
                 raise RuntimeError(f'Dock migration {revision} failed: {result}')
             evidence.append(dict(previous_revision=revision, **result))
