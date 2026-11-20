@@ -169,14 +169,15 @@
       },
       "apps": {
         "SurfaceTransparencyLight": 40,
-        "SurfaceTransparencyDark": 40,
+        "SurfaceTransparencyDark": 90,
         "BlurStrength": 3,
         "GradientCenterOpacity": 0,
         "GradientCenterPosition": 0.55,
         "GradientTopColor": "#ffffff",
         "GradientTopOpacity": 0.86,
         "MagnifyGlassStrength": 0.025,
-        "RefractionWidth": 45
+        "RefractionWidth": 45,
+        "DarkGradientStrength": 0.23
       },
       "search": {
         "SurfaceTransparencyLight": 98,
@@ -192,8 +193,9 @@
         "GradientBottomColor": "#000000",
         "GradientBottomOpacity": 0.57,
         "GradientTopDarkColor": "#060606",
-        "GradientCenterDarkColor": "#33291c",
-        "GradientBottomDarkColor": "#725e3c"
+        "GradientCenterDarkColor": "#2d2b27",
+        "GradientBottomDarkColor": "#514c42",
+        "DarkGradientStrength": 0.37
       },
       "control-center": {
         "BlurStrength": 3.0,

@@ -769,17 +769,18 @@ void BlurEffect::configureComponentMaterials()
         material.coverage = n("BlurCoverage", 1, 0, 1);
         material.color = colorTransformMatrix(n("Saturation", 1.33, 0, 5), n("Contrast", 1, 0, 5), n("Brightness", 1, 0, 5));
         material.gradient = v.value(QStringLiteral("DarkGradientOverlay")).toBool();
-        const auto color = [&](const QString &key, const char *opacity) {
+        const float darkGradientStrength = n("DarkGradientStrength", 1, 0, 1);
+        const auto color = [&](const QString &key, const char *opacity, float strength = 1.0f) {
             QColor c(v.value(key).toString());
             if (!c.isValid()) c = Qt::black;
-            return QVector4D(c.redF(), c.greenF(), c.blueF(), n(opacity, 0, 0, 1));
+            return QVector4D(c.redF(), c.greenF(), c.blueF(), n(opacity, 0, 0, 1) * strength);
         };
         material.top = color(QStringLiteral("GradientTopColor"), "GradientTopOpacity");
-        material.topDark = color(QStringLiteral("GradientTopDarkColor"), "GradientTopOpacity");
+        material.topDark = color(QStringLiteral("GradientTopDarkColor"), "GradientTopOpacity", darkGradientStrength);
         material.center = color(QStringLiteral("GradientCenterColor"), "GradientCenterOpacity");
-        material.centerDark = color(QStringLiteral("GradientCenterDarkColor"), "GradientCenterOpacity");
+        material.centerDark = color(QStringLiteral("GradientCenterDarkColor"), "GradientCenterOpacity", darkGradientStrength);
         material.bottom = color(QStringLiteral("GradientBottomColor"), "GradientBottomOpacity");
-        material.bottomDark = color(QStringLiteral("GradientBottomDarkColor"), "GradientBottomOpacity");
+        material.bottomDark = color(QStringLiteral("GradientBottomDarkColor"), "GradientBottomOpacity", darkGradientStrength);
         material.centerPosition = n("GradientCenterPosition", .55, 0, 1);
         m_componentMaterials.insert(it.key(), material);
     }
