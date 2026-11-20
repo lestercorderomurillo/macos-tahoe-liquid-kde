@@ -34,6 +34,10 @@ def main(argv=None):
     history_stage.add_argument('--bundle', type=Path, required=True)
     history_stage.add_argument('--edition', choices=EDITIONS, required=True)
     history_stage.add_argument('--destination', type=Path, required=True)
+    installer_photos = sub.add_parser('stage-readme-installer', help='Stage the reviewed light and dark wizard pages in TESTING.md')
+    installer_photos.add_argument('--bundle', type=Path, required=True)
+    installer_photos.add_argument('--edition', choices=EDITIONS, required=True)
+    installer_photos.add_argument('--destination', type=Path, required=True)
     audit = sub.add_parser('readme-photos', help='Verify and list the existing README capture slots')
     audit.add_argument('--destination', type=Path, default=ROOT)
     photos = sub.add_parser('stage-readme-photos', help='Replace selected existing README photographs')
@@ -41,6 +45,12 @@ def main(argv=None):
     photos.add_argument('--edition', choices=EDITIONS, required=True)
     photos.add_argument('--destination', type=Path, required=True)
     photos.add_argument('--slot', action='append', help='Exact slot name; repeat to select multiple')
+    shell = sub.add_parser('capture-readme-photos', help='Photograph the README and installer on each edition wallpaper')
+    shell.add_argument('--ref', default='HEAD')
+    shell.add_argument('--vm-image', type=Path, required=True)
+    shell.add_argument('--output', type=Path, required=True)
+    shell.add_argument('--edition', choices=EDITIONS, action='append')
+    shell.add_argument('--guest-package', type=Path, action='append', default=[], help='Offline SDK dependency for the prepared guest')
     previews = sub.add_parser('file-previews', help='Capture focused Nautilus/Dolphin installer previews only')
     previews.add_argument('--ref', default='HEAD')
     previews.add_argument('--resume', action='store_true', help='Reuse this failed capture overlay with the identical source archive')
@@ -66,7 +76,14 @@ def main(argv=None):
         command.add_argument('--tahoe-repo', type=Path)
     args = parser.parse_args(argv)
     try:
-        if args.command == 'readme-photos':
+        if args.command == 'capture-readme-photos':
+            from readme_shell_capture import capture
+            capture(args.repo.resolve(), args.ref, args.vm_image, args.output.resolve(),
+                    args.edition or list(EDITIONS), args.guest_package)
+        elif args.command == 'stage-readme-installer':
+            from release_readme_photos import stage_installer_gallery
+            stage_installer_gallery(args.destination.resolve(), args.edition, args.bundle.resolve())
+        elif args.command == 'readme-photos':
             from release_readme_photos import inventory
             edition, documents, _, slots = inventory(args.destination)
             print(f'{edition}: {len(slots)} verified slots in {len(documents)} READMEs')

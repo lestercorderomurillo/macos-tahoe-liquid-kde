@@ -79,8 +79,9 @@ def stage(repo, edition, bundle, names=None):
     if names is None:
         names = [
             name
-            for name in batch["frames"]
+            for name, record in batch["frames"].items()
             if name.startswith("readme-" + edition + "-")
+            and not record.get("case", "").startswith("installer-")
         ]
     require(bool(names), "No capture slots selected")
     require(
@@ -159,3 +160,79 @@ def stage(repo, edition, bundle, names=None):
         for previous, _, _ in pending:
             (gallery / previous).unlink()
     return len(pending)
+
+
+def stage_installer_gallery(repo, edition, bundle):
+    """Stage all wizard pages together while preserving the separate qualification summary."""
+    from release_screenshots import INSTALLER_PAGES
+    from html import escape
+
+    batch = json.loads((bundle / "manifest.json").read_text())
+    testing = repo / "TESTING.md"
+    text = testing.read_text()
+    begin = text.index("## Installation steps")
+    table_end = text.index("</table>", begin) + len("</table>")
+    gallery = repo / "src/screenshots/previews"
+    actual = json.loads((repo / "src/screenshots/readme-capture.json").read_text())[
+        "edition"
+    ]
+    require(actual == edition, "Destination edition differs from requested edition")
+    require(
+        re.fullmatch("[0-9a-f]{40}", batch["source_commit"])
+        and re.fullmatch("[0-9a-f]{64}", batch["vm_image_sha256"]),
+        "Missing capture identity",
+    )
+    frames = {}
+    copies = []
+    rows = []
+    for page in INSTALLER_PAGES:
+        cells = []
+        for mode in ("light", "dark"):
+            name = f"readme-{edition}-{mode}-installer-{page}"
+            record = batch["frames"][name]
+            src = bundle / (name + ".webp")
+            sha = digest(src)
+            with src.open("rb") as image:
+                header = image.read(12)
+            require(
+                header[:4] == b"RIFF" and header[8:12] == b"WEBP",
+                f"Invalid WebP: {name}",
+            )
+            require(
+                record["sha256"] == sha
+                and record.get("page") == page
+                and record["edition"] == edition
+                and record["mode"] == mode,
+                "Wrong wizard frame: " + name,
+            )
+            filename = f"wizard-{edition}-{mode}-{page}-{sha[:12]}.webp"
+            copies.append((src, gallery / filename))
+            frames[filename] = record
+            label = escape(page.replace("_", " ").capitalize())
+            url = PREFIX + filename
+            cells.append(
+                f'<td><a href="{url}"><img src="{url}" width="480" alt="{label}, {mode}"></a></td>'
+            )
+        rows.append(f"<tr><th>{label}</th>" + "".join(cells) + "</tr>")
+    label = "## Installation steps\n\n<table>\n<tr><th>Step</th><th>Light</th><th>Dark</th></tr>\n"
+    text = text[:begin] + label + "\n".join(rows) + "\n</table>" + text[table_end:]
+    ledger = dict(
+        edition=edition,
+        source_commit=batch["source_commit"],
+        vm_image_sha256=batch["vm_image_sha256"],
+        frames=frames,
+    )
+    for src, target in copies:
+        target.write_bytes(src.read_bytes())
+    data = (json.dumps(ledger, indent=2) + "\n").encode()
+    filename = (
+        f"wizard-{edition}-provenance-{hashlib.sha256(data).hexdigest()[:12]}.json"
+    )
+    (gallery / filename).write_bytes(data)
+    intro = text.index("\n\n", text.index("**v")) + 2
+    text = (
+        text[:intro]
+        + f"[Installer photo evidence]({PREFIX}{filename}).\n\n"
+        + text[text.index("## Installation steps", intro) :]
+    )
+    testing.write_text(text)

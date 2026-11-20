@@ -520,6 +520,38 @@ Be a decent human. I'll close anything abusive, off-topic, or trying to drag thi
 
 ## Documentation screenshots
 
+### README and installer photographs
+
+Run the README recipe against a sealed KDE neon capture image. The prepared
+desktop needs the Plasma SDK and the English Tesseract model on the capture
+host. Supply any offline guest SDK packages with repeated `--guest-package`
+arguments. The bundle records their checksums.
+
+```bash
+./release-screenshots capture-readme-photos --ref HEAD --vm-image "$VM_IMAGE" --output "$PHOTO_BUNDLE"
+```
+
+The recipe opens Field Notes in Kate, locates File in the rendered panel, and
+checks that the document and its menu are visible together. Finder uses the
+same Documents folder in both modes. Red and blue are applied through the
+installed GTK theme. Panel views use the edition wallpaper, and the installer
+gallery uses the actual wizard page ID. Each frame records its mode, source
+environment and checksum. The capture VM runs Baloo's metadata extractor with
+Qt's offscreen platform so desktop restarts do not interrupt indexing. The Dock
+uses the installed theme family and the profile's fixed application list.
+For applications absent from the VM, the recipe uses local desktop entries
+that point to their bundled icons. The red and blue photographs are checked
+for a visible tint on Apps and each pinned application, including System
+Settings. Review the full-size photographs before staging.
+
+```bash
+./release-screenshots stage-readme-photos --bundle "$PHOTO_BUNDLE" --edition tahoe --destination "$TAHOE"
+./release-screenshots stage-readme-installer --bundle "$PHOTO_BUNDLE" --edition tahoe --destination "$TAHOE"
+./release-screenshots readme-photos --destination "$TAHOE"
+```
+
+Use `golden-gate` and its own checkout for the second edition.
+
 Keep the installer gallery in [TESTING.md](TESTING.md); the README links to it
 without embedding installer screenshots. Desktop and Dock photographs stay in the README.
 

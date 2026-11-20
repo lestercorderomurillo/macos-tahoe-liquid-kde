@@ -1,0 +1,2625 @@
+{
+  "edition": "tahoe",
+  "source_commit": "2368236ece9096533e702685722f518aa379bc07",
+  "vm_image_sha256": "74004cc15d7180e9b23c93a2c097824853375651b0984f68d9e940c45d461703",
+  "frames": {
+    "wizard-tahoe-light-welcome-e760ba6623d9.webp": {
+      "windows": [
+        {
+          "id": "{5dc7badf-313c-4649-a692-40f924221f0b}",
+          "caption": "",
+          "resourceClass": "plasmashell",
+          "type": 1,
+          "appletPopup": false,
+          "hidden": false,
+          "active": false,
+          "geometry": {
+            "x": 0,
+            "y": 0,
+            "width": 1920,
+            "height": 1080
+          }
+        },
+        {
+          "id": "{c7c10870-b659-4fc1-ae68-73ba13328e9f}",
+          "caption": "",
+          "resourceClass": "plasmashell",
+          "type": 2,
+          "appletPopup": false,
+          "hidden": false,
+          "active": false,
+          "geometry": {
+            "x": 0,
+            "y": 0,
+            "width": 1920,
+            "height": 32
+          }
+        },
+        {
+          "id": "{ae993158-58d9-4278-9818-30bcb83921c4}",
+          "caption": "",
+          "resourceClass": "plasmashell",
+          "type": 2,
+          "appletPopup": false,
+          "hidden": true,
+          "active": false,
+          "geometry": {
+            "x": 590.5,
+            "y": 996,
+            "width": 739,
+            "height": 84
+          }
+        },
+        {
+          "id": "{25eef9b1-5d13-42e1-aa5a-e0520df41659}",
+          "caption": "Install Tahoe \u00b7 v0.73.34",
+          "resourceClass": "python3",
+          "type": 0,
+          "appletPopup": false,
+          "hidden": false,
+          "active": true,
+          "geometry": {
+            "x": 550,
+            "y": 225,
+            "width": 820,
+            "height": 600
+          }
+        }
+      ],
+      "wallpaper_uri": "file:///home/tester/.local/share/wallpapers/MacTahoe",
+      "page": "welcome",
+      "case": "installer-welcome",
+      "mode": "light",
+      "edition": "tahoe",
+      "sha256": "e760ba6623d944eea37ba9dfbfc4657229f06f906fe280bf4c1b2b63c5fd6a76",
+      "source_sha256": "2204aaad38bb6a9e6ca9a6b300fa9301ddcb4a1c3410fa4d54cc2e774ddc9b70",
+      "crop": [
+        535,
+        189,
+        1513,
+        931
+      ]
+    },
+    "wizard-tahoe-dark-welcome-43b2194cafac.webp": {
+      "windows": [
+        {
+          "id": "{5dc7badf-313c-4649-a692-40f924221f0b}",
+          "caption": "",
+          "resourceClass": "plasmashell",
+          "type": 1,
+          "appletPopup": false,
+          "hidden": false,
+          "active": false,
+          "geometry": {
+            "x": 0,
+            "y": 0,
+            "width": 1920,
+            "height": 1080
+          }
+        },
+        {
+          "id": "{c7c10870-b659-4fc1-ae68-73ba13328e9f}",
+          "caption": "",
+          "resourceClass": "plasmashell",
+          "type": 2,
+          "appletPopup": false,
+          "hidden": false,
+          "active": false,
+          "geometry": {
+            "x": 0,
+            "y": 0,
+            "width": 1920,
+            "height": 32
+          }
+        },
+        {
+          "id": "{ae993158-58d9-4278-9818-30bcb83921c4}",
+          "caption": "",
+          "resourceClass": "plasmashell",
+          "type": 2,
+          "appletPopup": false,
+          "hidden": true,
+          "active": false,
+          "geometry": {
+            "x": 590.5,
+            "y": 996,
+            "width": 739,
+            "height": 84
+          }
+        },
+        {
+          "id": "{a641725f-867f-4f2f-be8e-df983855f442}",
+          "caption": "Install Tahoe \u00b7 v0.73.34",
+          "resourceClass": "python3",
+          "type": 0,
+          "appletPopup": false,
+          "hidden": false,
+          "active": true,
+          "geometry": {
+            "x": 550,
+            "y": 225,
+            "width": 820,
+            "height": 600
+          }
+        }
+      ],
+      "wallpaper_uri": "file:///home/tester/.local/share/wallpapers/MacTahoe",
+      "page": "welcome",
+      "case": "installer-welcome",
+      "mode": "dark",
+      "edition": "tahoe",
+      "sha256": "43b2194cafac835a2c43e3a9a4ecabd28b2c52b783e709dd768e68c941da3db3",
+      "source_sha256": "0a5468a4d4916e3a92c5f1da782054efeb3c848a25b49badb997a3eb8562ffdb",
+      "crop": [
+        535,
+        189,
+        1513,
+        931
+      ]
+    },
+    "wizard-tahoe-light-appearance-8f7633f43ea0.webp": {
+      "windows": [
+        {
+          "id": "{5dc7badf-313c-4649-a692-40f924221f0b}",
+          "caption": "",
+          "resourceClass": "plasmashell",
+          "type": 1,
+          "appletPopup": false,
+          "hidden": false,
+          "active": false,
+          "geometry": {
+            "x": 0,
+            "y": 0,
+            "width": 1920,
+            "height": 1080
+          }
+        },
+        {
+          "id": "{c7c10870-b659-4fc1-ae68-73ba13328e9f}",
+          "caption": "",
+          "resourceClass": "plasmashell",
+          "type": 2,
+          "appletPopup": false,
+          "hidden": false,
+          "active": false,
+          "geometry": {
+            "x": 0,
+            "y": 0,
+            "width": 1920,
+            "height": 32
+          }
+        },
+        {
+          "id": "{ae993158-58d9-4278-9818-30bcb83921c4}",
+          "caption": "",
+          "resourceClass": "plasmashell",
+          "type": 2,
+          "appletPopup": false,
+          "hidden": true,
+          "active": false,
+          "geometry": {
+            "x": 590.5,
+            "y": 996,
+            "width": 739,
+            "height": 84
+          }
+        },
+        {
+          "id": "{25eef9b1-5d13-42e1-aa5a-e0520df41659}",
+          "caption": "Install Tahoe \u00b7 v0.73.34",
+          "resourceClass": "python3",
+          "type": 0,
+          "appletPopup": false,
+          "hidden": false,
+          "active": true,
+          "geometry": {
+            "x": 550,
+            "y": 225,
+            "width": 820,
+            "height": 600
+          }
+        }
+      ],
+      "wallpaper_uri": "file:///home/tester/.local/share/wallpapers/MacTahoe",
+      "page": "appearance",
+      "case": "installer-appearance",
+      "mode": "light",
+      "edition": "tahoe",
+      "sha256": "8f7633f43ea058097da93aca9b56b21228a0d1e45a99ff0836514d32a3b13b73",
+      "source_sha256": "6ad94b5f011ea45b68b7c4f1aa0dc4826562cd2b501a61dc46dbe2c0bdcd74b3",
+      "crop": [
+        535,
+        189,
+        1513,
+        931
+      ]
+    },
+    "wizard-tahoe-dark-appearance-e2feef6a12e6.webp": {
+      "windows": [
+        {
+          "id": "{5dc7badf-313c-4649-a692-40f924221f0b}",
+          "caption": "",
+          "resourceClass": "plasmashell",
+          "type": 1,
+          "appletPopup": false,
+          "hidden": false,
+          "active": false,
+          "geometry": {
+            "x": 0,
+            "y": 0,
+            "width": 1920,
+            "height": 1080
+          }
+        },
+        {
+          "id": "{c7c10870-b659-4fc1-ae68-73ba13328e9f}",
+          "caption": "",
+          "resourceClass": "plasmashell",
+          "type": 2,
+          "appletPopup": false,
+          "hidden": false,
+          "active": false,
+          "geometry": {
+            "x": 0,
+            "y": 0,
+            "width": 1920,
+            "height": 32
+          }
+        },
+        {
+          "id": "{ae993158-58d9-4278-9818-30bcb83921c4}",
+          "caption": "",
+          "resourceClass": "plasmashell",
+          "type": 2,
+          "appletPopup": false,
+          "hidden": true,
+          "active": false,
+          "geometry": {
+            "x": 590.5,
+            "y": 996,
+            "width": 739,
+            "height": 84
+          }
+        },
+        {
+          "id": "{a641725f-867f-4f2f-be8e-df983855f442}",
+          "caption": "Install Tahoe \u00b7 v0.73.34",
+          "resourceClass": "python3",
+          "type": 0,
+          "appletPopup": false,
+          "hidden": false,
+          "active": true,
+          "geometry": {
+            "x": 550,
+            "y": 225,
+            "width": 820,
+            "height": 600
+          }
+        }
+      ],
+      "wallpaper_uri": "file:///home/tester/.local/share/wallpapers/MacTahoe",
+      "page": "appearance",
+      "case": "installer-appearance",
+      "mode": "dark",
+      "edition": "tahoe",
+      "sha256": "e2feef6a12e639b728fe82552abba983a25c696a052d6aba4b0c67c1cfaa26d4",
+      "source_sha256": "c8e273e65b156ef04aea6bad1d9968a4a1716ad7d5c64f165207bac378cc11c0",
+      "crop": [
+        535,
+        189,
+        1513,
+        931
+      ]
+    },
+    "wizard-tahoe-light-icons-45d8dcfdc33e.webp": {
+      "windows": [
+        {
+          "id": "{5dc7badf-313c-4649-a692-40f924221f0b}",
+          "caption": "",
+          "resourceClass": "plasmashell",
+          "type": 1,
+          "appletPopup": false,
+          "hidden": false,
+          "active": false,
+          "geometry": {
+            "x": 0,
+            "y": 0,
+            "width": 1920,
+            "height": 1080
+          }
+        },
+        {
+          "id": "{c7c10870-b659-4fc1-ae68-73ba13328e9f}",
+          "caption": "",
+          "resourceClass": "plasmashell",
+          "type": 2,
+          "appletPopup": false,
+          "hidden": false,
+          "active": false,
+          "geometry": {
+            "x": 0,
+            "y": 0,
+            "width": 1920,
+            "height": 32
+          }
+        },
+        {
+          "id": "{ae993158-58d9-4278-9818-30bcb83921c4}",
+          "caption": "",
+          "resourceClass": "plasmashell",
+          "type": 2,
+          "appletPopup": false,
+          "hidden": true,
+          "active": false,
+          "geometry": {
+            "x": 590.5,
+            "y": 996,
+            "width": 739,
+            "height": 84
+          }
+        },
+        {
+          "id": "{25eef9b1-5d13-42e1-aa5a-e0520df41659}",
+          "caption": "Install Tahoe \u00b7 v0.73.34",
+          "resourceClass": "python3",
+          "type": 0,
+          "appletPopup": false,
+          "hidden": false,
+          "active": true,
+          "geometry": {
+            "x": 550,
+            "y": 225,
+            "width": 820,
+            "height": 600
+          }
+        }
+      ],
+      "wallpaper_uri": "file:///home/tester/.local/share/wallpapers/MacTahoe",
+      "page": "icons",
+      "case": "installer-icons",
+      "mode": "light",
+      "edition": "tahoe",
+      "sha256": "45d8dcfdc33eba516dca47f43b58d9f375f8bf9d45f8877e842e28dfd6ade6f5",
+      "source_sha256": "92b2e8164ecd5984d7c7946d11eaf8ecad469ad5df1b9254f59a35a15133adb5",
+      "crop": [
+        535,
+        189,
+        1513,
+        931
+      ]
+    },
+    "wizard-tahoe-dark-icons-32091ec6eabf.webp": {
+      "windows": [
+        {
+          "id": "{5dc7badf-313c-4649-a692-40f924221f0b}",
+          "caption": "",
+          "resourceClass": "plasmashell",
+          "type": 1,
+          "appletPopup": false,
+          "hidden": false,
+          "active": false,
+          "geometry": {
+            "x": 0,
+            "y": 0,
+            "width": 1920,
+            "height": 1080
+          }
+        },
+        {
+          "id": "{c7c10870-b659-4fc1-ae68-73ba13328e9f}",
+          "caption": "",
+          "resourceClass": "plasmashell",
+          "type": 2,
+          "appletPopup": false,
+          "hidden": false,
+          "active": false,
+          "geometry": {
+            "x": 0,
+            "y": 0,
+            "width": 1920,
+            "height": 32
+          }
+        },
+        {
+          "id": "{ae993158-58d9-4278-9818-30bcb83921c4}",
+          "caption": "",
+          "resourceClass": "plasmashell",
+          "type": 2,
+          "appletPopup": false,
+          "hidden": true,
+          "active": false,
+          "geometry": {
+            "x": 590.5,
+            "y": 996,
+            "width": 739,
+            "height": 84
+          }
+        },
+        {
+          "id": "{a641725f-867f-4f2f-be8e-df983855f442}",
+          "caption": "Install Tahoe \u00b7 v0.73.34",
+          "resourceClass": "python3",
+          "type": 0,
+          "appletPopup": false,
+          "hidden": false,
+          "active": true,
+          "geometry": {
+            "x": 550,
+            "y": 225,
+            "width": 820,
+            "height": 600
+          }
+        }
+      ],
+      "wallpaper_uri": "file:///home/tester/.local/share/wallpapers/MacTahoe",
+      "page": "icons",
+      "case": "installer-icons",
+      "mode": "dark",
+      "edition": "tahoe",
+      "sha256": "32091ec6eabf49607638178a84d7889bf9f86cf846dd26590206a91392d4b361",
+      "source_sha256": "eccb17f8fd128aa915a616ba69e218f0313be4ce82f32eae999d4710bea0178f",
+      "crop": [
+        535,
+        189,
+        1513,
+        931
+      ]
+    },
+    "wizard-tahoe-light-wallpaper-a27c9231db35.webp": {
+      "windows": [
+        {
+          "id": "{5dc7badf-313c-4649-a692-40f924221f0b}",
+          "caption": "",
+          "resourceClass": "plasmashell",
+          "type": 1,
+          "appletPopup": false,
+          "hidden": false,
+          "active": false,
+          "geometry": {
+            "x": 0,
+            "y": 0,
+            "width": 1920,
+            "height": 1080
+          }
+        },
+        {
+          "id": "{c7c10870-b659-4fc1-ae68-73ba13328e9f}",
+          "caption": "",
+          "resourceClass": "plasmashell",
+          "type": 2,
+          "appletPopup": false,
+          "hidden": false,
+          "active": false,
+          "geometry": {
+            "x": 0,
+            "y": 0,
+            "width": 1920,
+            "height": 32
+          }
+        },
+        {
+          "id": "{ae993158-58d9-4278-9818-30bcb83921c4}",
+          "caption": "",
+          "resourceClass": "plasmashell",
+          "type": 2,
+          "appletPopup": false,
+          "hidden": true,
+          "active": false,
+          "geometry": {
+            "x": 590.5,
+            "y": 996,
+            "width": 739,
+            "height": 84
+          }
+        },
+        {
+          "id": "{25eef9b1-5d13-42e1-aa5a-e0520df41659}",
+          "caption": "Install Tahoe \u00b7 v0.73.34",
+          "resourceClass": "python3",
+          "type": 0,
+          "appletPopup": false,
+          "hidden": false,
+          "active": true,
+          "geometry": {
+            "x": 550,
+            "y": 225,
+            "width": 820,
+            "height": 600
+          }
+        }
+      ],
+      "wallpaper_uri": "file:///home/tester/.local/share/wallpapers/MacTahoe",
+      "page": "wallpaper",
+      "case": "installer-wallpaper",
+      "mode": "light",
+      "edition": "tahoe",
+      "sha256": "a27c9231db351869bd403eaad3b57d21ba99a3f1de57c187d2f7c8ec58ba80d1",
+      "source_sha256": "114563fa5bd55cc5b8270615289bab94c818caee2aa46d27a8318d7605a6315e",
+      "crop": [
+        535,
+        189,
+        1513,
+        931
+      ]
+    },
+    "wizard-tahoe-dark-wallpaper-13de25dca930.webp": {
+      "windows": [
+        {
+          "id": "{5dc7badf-313c-4649-a692-40f924221f0b}",
+          "caption": "",
+          "resourceClass": "plasmashell",
+          "type": 1,
+          "appletPopup": false,
+          "hidden": false,
+          "active": false,
+          "geometry": {
+            "x": 0,
+            "y": 0,
+            "width": 1920,
+            "height": 1080
+          }
+        },
+        {
+          "id": "{c7c10870-b659-4fc1-ae68-73ba13328e9f}",
+          "caption": "",
+          "resourceClass": "plasmashell",
+          "type": 2,
+          "appletPopup": false,
+          "hidden": false,
+          "active": false,
+          "geometry": {
+            "x": 0,
+            "y": 0,
+            "width": 1920,
+            "height": 32
+          }
+        },
+        {
+          "id": "{ae993158-58d9-4278-9818-30bcb83921c4}",
+          "caption": "",
+          "resourceClass": "plasmashell",
+          "type": 2,
+          "appletPopup": false,
+          "hidden": true,
+          "active": false,
+          "geometry": {
+            "x": 590.5,
+            "y": 996,
+            "width": 739,
+            "height": 84
+          }
+        },
+        {
+          "id": "{a641725f-867f-4f2f-be8e-df983855f442}",
+          "caption": "Install Tahoe \u00b7 v0.73.34",
+          "resourceClass": "python3",
+          "type": 0,
+          "appletPopup": false,
+          "hidden": false,
+          "active": true,
+          "geometry": {
+            "x": 550,
+            "y": 225,
+            "width": 820,
+            "height": 600
+          }
+        }
+      ],
+      "wallpaper_uri": "file:///home/tester/.local/share/wallpapers/MacTahoe",
+      "page": "wallpaper",
+      "case": "installer-wallpaper",
+      "mode": "dark",
+      "edition": "tahoe",
+      "sha256": "13de25dca93012dc5f63eaadcfc1452c77222a6e08eeb3d7c2219d996e6d9a31",
+      "source_sha256": "0a0efa281daec97a3fdf7e97e74b07b9bf9817df707caeb705402ff79647a306",
+      "crop": [
+        535,
+        189,
+        1513,
+        931
+      ]
+    },
+    "wizard-tahoe-light-launcher-97eeaa9f00ad.webp": {
+      "windows": [
+        {
+          "id": "{5dc7badf-313c-4649-a692-40f924221f0b}",
+          "caption": "",
+          "resourceClass": "plasmashell",
+          "type": 1,
+          "appletPopup": false,
+          "hidden": false,
+          "active": false,
+          "geometry": {
+            "x": 0,
+            "y": 0,
+            "width": 1920,
+            "height": 1080
+          }
+        },
+        {
+          "id": "{c7c10870-b659-4fc1-ae68-73ba13328e9f}",
+          "caption": "",
+          "resourceClass": "plasmashell",
+          "type": 2,
+          "appletPopup": false,
+          "hidden": false,
+          "active": false,
+          "geometry": {
+            "x": 0,
+            "y": 0,
+            "width": 1920,
+            "height": 32
+          }
+        },
+        {
+          "id": "{ae993158-58d9-4278-9818-30bcb83921c4}",
+          "caption": "",
+          "resourceClass": "plasmashell",
+          "type": 2,
+          "appletPopup": false,
+          "hidden": true,
+          "active": false,
+          "geometry": {
+            "x": 590.5,
+            "y": 996,
+            "width": 739,
+            "height": 84
+          }
+        },
+        {
+          "id": "{25eef9b1-5d13-42e1-aa5a-e0520df41659}",
+          "caption": "Install Tahoe \u00b7 v0.73.34",
+          "resourceClass": "python3",
+          "type": 0,
+          "appletPopup": false,
+          "hidden": false,
+          "active": true,
+          "geometry": {
+            "x": 550,
+            "y": 225,
+            "width": 820,
+            "height": 600
+          }
+        }
+      ],
+      "wallpaper_uri": "file:///home/tester/.local/share/wallpapers/MacTahoe",
+      "page": "launcher",
+      "case": "installer-launcher",
+      "mode": "light",
+      "edition": "tahoe",
+      "sha256": "97eeaa9f00add32091e94fc04bb84958110b3154643ae8e83ee592978b417df2",
+      "source_sha256": "c0c6830f0ef74279f351ed4e8fb1115b4b256e3aae321ce08fb722ce489e19ac",
+      "crop": [
+        535,
+        189,
+        1513,
+        931
+      ]
+    },
+    "wizard-tahoe-dark-launcher-3a8d789c5c63.webp": {
+      "windows": [
+        {
+          "id": "{5dc7badf-313c-4649-a692-40f924221f0b}",
+          "caption": "",
+          "resourceClass": "plasmashell",
+          "type": 1,
+          "appletPopup": false,
+          "hidden": false,
+          "active": false,
+          "geometry": {
+            "x": 0,
+            "y": 0,
+            "width": 1920,
+            "height": 1080
+          }
+        },
+        {
+          "id": "{c7c10870-b659-4fc1-ae68-73ba13328e9f}",
+          "caption": "",
+          "resourceClass": "plasmashell",
+          "type": 2,
+          "appletPopup": false,
+          "hidden": false,
+          "active": false,
+          "geometry": {
+            "x": 0,
+            "y": 0,
+            "width": 1920,
+            "height": 32
+          }
+        },
+        {
+          "id": "{ae993158-58d9-4278-9818-30bcb83921c4}",
+          "caption": "",
+          "resourceClass": "plasmashell",
+          "type": 2,
+          "appletPopup": false,
+          "hidden": true,
+          "active": false,
+          "geometry": {
+            "x": 590.5,
+            "y": 996,
+            "width": 739,
+            "height": 84
+          }
+        },
+        {
+          "id": "{a641725f-867f-4f2f-be8e-df983855f442}",
+          "caption": "Install Tahoe \u00b7 v0.73.34",
+          "resourceClass": "python3",
+          "type": 0,
+          "appletPopup": false,
+          "hidden": false,
+          "active": true,
+          "geometry": {
+            "x": 550,
+            "y": 225,
+            "width": 820,
+            "height": 600
+          }
+        }
+      ],
+      "wallpaper_uri": "file:///home/tester/.local/share/wallpapers/MacTahoe",
+      "page": "launcher",
+      "case": "installer-launcher",
+      "mode": "dark",
+      "edition": "tahoe",
+      "sha256": "3a8d789c5c63ced7b6c32853c2fd28f8ef2b27928e2268123c5f9a74c86c9a89",
+      "source_sha256": "b5a954fb51c600216a59e0ea058e4d3cd94987498f47b209e3708a99632ec952",
+      "crop": [
+        535,
+        189,
+        1513,
+        931
+      ]
+    },
+    "wizard-tahoe-light-layout-3788da3975ce.webp": {
+      "windows": [
+        {
+          "id": "{5dc7badf-313c-4649-a692-40f924221f0b}",
+          "caption": "",
+          "resourceClass": "plasmashell",
+          "type": 1,
+          "appletPopup": false,
+          "hidden": false,
+          "active": false,
+          "geometry": {
+            "x": 0,
+            "y": 0,
+            "width": 1920,
+            "height": 1080
+          }
+        },
+        {
+          "id": "{c7c10870-b659-4fc1-ae68-73ba13328e9f}",
+          "caption": "",
+          "resourceClass": "plasmashell",
+          "type": 2,
+          "appletPopup": false,
+          "hidden": false,
+          "active": false,
+          "geometry": {
+            "x": 0,
+            "y": 0,
+            "width": 1920,
+            "height": 32
+          }
+        },
+        {
+          "id": "{ae993158-58d9-4278-9818-30bcb83921c4}",
+          "caption": "",
+          "resourceClass": "plasmashell",
+          "type": 2,
+          "appletPopup": false,
+          "hidden": true,
+          "active": false,
+          "geometry": {
+            "x": 590.5,
+            "y": 996,
+            "width": 739,
+            "height": 84
+          }
+        },
+        {
+          "id": "{25eef9b1-5d13-42e1-aa5a-e0520df41659}",
+          "caption": "Install Tahoe \u00b7 v0.73.34",
+          "resourceClass": "python3",
+          "type": 0,
+          "appletPopup": false,
+          "hidden": false,
+          "active": true,
+          "geometry": {
+            "x": 550,
+            "y": 225,
+            "width": 820,
+            "height": 600
+          }
+        }
+      ],
+      "wallpaper_uri": "file:///home/tester/.local/share/wallpapers/MacTahoe",
+      "page": "layout",
+      "case": "installer-layout",
+      "mode": "light",
+      "edition": "tahoe",
+      "sha256": "3788da3975ce4afc728f4c351ae520d37ff8353f16fbeadb47205e4fb7ac2e03",
+      "source_sha256": "ff5d48b73ccda60a508a460a1d186b2aed45b0dbdacb528ec0390f3717a5b2fa",
+      "crop": [
+        535,
+        189,
+        1513,
+        931
+      ]
+    },
+    "wizard-tahoe-dark-layout-922c9712d3e4.webp": {
+      "windows": [
+        {
+          "id": "{5dc7badf-313c-4649-a692-40f924221f0b}",
+          "caption": "",
+          "resourceClass": "plasmashell",
+          "type": 1,
+          "appletPopup": false,
+          "hidden": false,
+          "active": false,
+          "geometry": {
+            "x": 0,
+            "y": 0,
+            "width": 1920,
+            "height": 1080
+          }
+        },
+        {
+          "id": "{c7c10870-b659-4fc1-ae68-73ba13328e9f}",
+          "caption": "",
+          "resourceClass": "plasmashell",
+          "type": 2,
+          "appletPopup": false,
+          "hidden": false,
+          "active": false,
+          "geometry": {
+            "x": 0,
+            "y": 0,
+            "width": 1920,
+            "height": 32
+          }
+        },
+        {
+          "id": "{ae993158-58d9-4278-9818-30bcb83921c4}",
+          "caption": "",
+          "resourceClass": "plasmashell",
+          "type": 2,
+          "appletPopup": false,
+          "hidden": true,
+          "active": false,
+          "geometry": {
+            "x": 590.5,
+            "y": 996,
+            "width": 739,
+            "height": 84
+          }
+        },
+        {
+          "id": "{a641725f-867f-4f2f-be8e-df983855f442}",
+          "caption": "Install Tahoe \u00b7 v0.73.34",
+          "resourceClass": "python3",
+          "type": 0,
+          "appletPopup": false,
+          "hidden": false,
+          "active": true,
+          "geometry": {
+            "x": 550,
+            "y": 225,
+            "width": 820,
+            "height": 600
+          }
+        }
+      ],
+      "wallpaper_uri": "file:///home/tester/.local/share/wallpapers/MacTahoe",
+      "page": "layout",
+      "case": "installer-layout",
+      "mode": "dark",
+      "edition": "tahoe",
+      "sha256": "922c9712d3e450714e3cf5b694b9f3f62d3c9f79605d5a0fe74c00b7015b25f7",
+      "source_sha256": "5c2d6103693ae2ca56f38049931cbc7e6ba3cf2db7bfce779e8e2de0dee3fc74",
+      "crop": [
+        535,
+        189,
+        1513,
+        931
+      ]
+    },
+    "wizard-tahoe-light-effects-ca40b6365384.webp": {
+      "windows": [
+        {
+          "id": "{5dc7badf-313c-4649-a692-40f924221f0b}",
+          "caption": "",
+          "resourceClass": "plasmashell",
+          "type": 1,
+          "appletPopup": false,
+          "hidden": false,
+          "active": false,
+          "geometry": {
+            "x": 0,
+            "y": 0,
+            "width": 1920,
+            "height": 1080
+          }
+        },
+        {
+          "id": "{c7c10870-b659-4fc1-ae68-73ba13328e9f}",
+          "caption": "",
+          "resourceClass": "plasmashell",
+          "type": 2,
+          "appletPopup": false,
+          "hidden": false,
+          "active": false,
+          "geometry": {
+            "x": 0,
+            "y": 0,
+            "width": 1920,
+            "height": 32
+          }
+        },
+        {
+          "id": "{ae993158-58d9-4278-9818-30bcb83921c4}",
+          "caption": "",
+          "resourceClass": "plasmashell",
+          "type": 2,
+          "appletPopup": false,
+          "hidden": true,
+          "active": false,
+          "geometry": {
+            "x": 590.5,
+            "y": 996,
+            "width": 739,
+            "height": 84
+          }
+        },
+        {
+          "id": "{25eef9b1-5d13-42e1-aa5a-e0520df41659}",
+          "caption": "Install Tahoe \u00b7 v0.73.34",
+          "resourceClass": "python3",
+          "type": 0,
+          "appletPopup": false,
+          "hidden": false,
+          "active": true,
+          "geometry": {
+            "x": 550,
+            "y": 225,
+            "width": 820,
+            "height": 600
+          }
+        }
+      ],
+      "wallpaper_uri": "file:///home/tester/.local/share/wallpapers/MacTahoe",
+      "page": "effects",
+      "case": "installer-effects",
+      "mode": "light",
+      "edition": "tahoe",
+      "sha256": "ca40b6365384b9c05ec9155d1570a06b3d394cd31e6dd207a125e8a7826ff97e",
+      "source_sha256": "1cb49b5e4d270cdc6e4f46df493ef9778ddda376fd35649a6f384c4b1fb7d238",
+      "crop": [
+        535,
+        189,
+        1513,
+        931
+      ]
+    },
+    "wizard-tahoe-dark-effects-6e17f48055c9.webp": {
+      "windows": [
+        {
+          "id": "{5dc7badf-313c-4649-a692-40f924221f0b}",
+          "caption": "",
+          "resourceClass": "plasmashell",
+          "type": 1,
+          "appletPopup": false,
+          "hidden": false,
+          "active": false,
+          "geometry": {
+            "x": 0,
+            "y": 0,
+            "width": 1920,
+            "height": 1080
+          }
+        },
+        {
+          "id": "{c7c10870-b659-4fc1-ae68-73ba13328e9f}",
+          "caption": "",
+          "resourceClass": "plasmashell",
+          "type": 2,
+          "appletPopup": false,
+          "hidden": false,
+          "active": false,
+          "geometry": {
+            "x": 0,
+            "y": 0,
+            "width": 1920,
+            "height": 32
+          }
+        },
+        {
+          "id": "{ae993158-58d9-4278-9818-30bcb83921c4}",
+          "caption": "",
+          "resourceClass": "plasmashell",
+          "type": 2,
+          "appletPopup": false,
+          "hidden": true,
+          "active": false,
+          "geometry": {
+            "x": 590.5,
+            "y": 996,
+            "width": 739,
+            "height": 84
+          }
+        },
+        {
+          "id": "{a641725f-867f-4f2f-be8e-df983855f442}",
+          "caption": "Install Tahoe \u00b7 v0.73.34",
+          "resourceClass": "python3",
+          "type": 0,
+          "appletPopup": false,
+          "hidden": false,
+          "active": true,
+          "geometry": {
+            "x": 550,
+            "y": 225,
+            "width": 820,
+            "height": 600
+          }
+        }
+      ],
+      "wallpaper_uri": "file:///home/tester/.local/share/wallpapers/MacTahoe",
+      "page": "effects",
+      "case": "installer-effects",
+      "mode": "dark",
+      "edition": "tahoe",
+      "sha256": "6e17f48055c99c8dd2aaa9d1b01fab6b35c47256f1d2a9f528aa9e04484e4fdb",
+      "source_sha256": "8539e828349ea0d045de8db4669f9e5d8198d096e817437d222c7030a0b37465",
+      "crop": [
+        535,
+        189,
+        1513,
+        931
+      ]
+    },
+    "wizard-tahoe-light-window_controls-9e49b1b39c69.webp": {
+      "windows": [
+        {
+          "id": "{5dc7badf-313c-4649-a692-40f924221f0b}",
+          "caption": "",
+          "resourceClass": "plasmashell",
+          "type": 1,
+          "appletPopup": false,
+          "hidden": false,
+          "active": false,
+          "geometry": {
+            "x": 0,
+            "y": 0,
+            "width": 1920,
+            "height": 1080
+          }
+        },
+        {
+          "id": "{c7c10870-b659-4fc1-ae68-73ba13328e9f}",
+          "caption": "",
+          "resourceClass": "plasmashell",
+          "type": 2,
+          "appletPopup": false,
+          "hidden": false,
+          "active": false,
+          "geometry": {
+            "x": 0,
+            "y": 0,
+            "width": 1920,
+            "height": 32
+          }
+        },
+        {
+          "id": "{ae993158-58d9-4278-9818-30bcb83921c4}",
+          "caption": "",
+          "resourceClass": "plasmashell",
+          "type": 2,
+          "appletPopup": false,
+          "hidden": true,
+          "active": false,
+          "geometry": {
+            "x": 590.5,
+            "y": 996,
+            "width": 739,
+            "height": 84
+          }
+        },
+        {
+          "id": "{25eef9b1-5d13-42e1-aa5a-e0520df41659}",
+          "caption": "Install Tahoe \u00b7 v0.73.34",
+          "resourceClass": "python3",
+          "type": 0,
+          "appletPopup": false,
+          "hidden": false,
+          "active": true,
+          "geometry": {
+            "x": 550,
+            "y": 225,
+            "width": 820,
+            "height": 600
+          }
+        }
+      ],
+      "wallpaper_uri": "file:///home/tester/.local/share/wallpapers/MacTahoe",
+      "page": "window_controls",
+      "case": "installer-window_controls",
+      "mode": "light",
+      "edition": "tahoe",
+      "sha256": "9e49b1b39c691a0b081d926bd8acb15ae5d21a5900ac50e52ebe246edc78d5d1",
+      "source_sha256": "a30b6b0b74c0c5fc2dae645f1c9c9c175e7bbc1b1352b98f9ded57235a097a4e",
+      "crop": [
+        535,
+        189,
+        1513,
+        931
+      ]
+    },
+    "wizard-tahoe-dark-window_controls-ef172192d738.webp": {
+      "windows": [
+        {
+          "id": "{5dc7badf-313c-4649-a692-40f924221f0b}",
+          "caption": "",
+          "resourceClass": "plasmashell",
+          "type": 1,
+          "appletPopup": false,
+          "hidden": false,
+          "active": false,
+          "geometry": {
+            "x": 0,
+            "y": 0,
+            "width": 1920,
+            "height": 1080
+          }
+        },
+        {
+          "id": "{c7c10870-b659-4fc1-ae68-73ba13328e9f}",
+          "caption": "",
+          "resourceClass": "plasmashell",
+          "type": 2,
+          "appletPopup": false,
+          "hidden": false,
+          "active": false,
+          "geometry": {
+            "x": 0,
+            "y": 0,
+            "width": 1920,
+            "height": 32
+          }
+        },
+        {
+          "id": "{ae993158-58d9-4278-9818-30bcb83921c4}",
+          "caption": "",
+          "resourceClass": "plasmashell",
+          "type": 2,
+          "appletPopup": false,
+          "hidden": true,
+          "active": false,
+          "geometry": {
+            "x": 590.5,
+            "y": 996,
+            "width": 739,
+            "height": 84
+          }
+        },
+        {
+          "id": "{a641725f-867f-4f2f-be8e-df983855f442}",
+          "caption": "Install Tahoe \u00b7 v0.73.34",
+          "resourceClass": "python3",
+          "type": 0,
+          "appletPopup": false,
+          "hidden": false,
+          "active": true,
+          "geometry": {
+            "x": 550,
+            "y": 225,
+            "width": 820,
+            "height": 600
+          }
+        }
+      ],
+      "wallpaper_uri": "file:///home/tester/.local/share/wallpapers/MacTahoe",
+      "page": "window_controls",
+      "case": "installer-window_controls",
+      "mode": "dark",
+      "edition": "tahoe",
+      "sha256": "ef172192d73822d8c745e3bae78d0fb373de2914ec4c1f3b55e76aa2e3fc9549",
+      "source_sha256": "31116c17324eac059dc91c8ee456a02919614a0d8f2288106dea456c3ee548b0",
+      "crop": [
+        535,
+        189,
+        1513,
+        931
+      ]
+    },
+    "wizard-tahoe-light-button_position-4f77cace76c6.webp": {
+      "windows": [
+        {
+          "id": "{5dc7badf-313c-4649-a692-40f924221f0b}",
+          "caption": "",
+          "resourceClass": "plasmashell",
+          "type": 1,
+          "appletPopup": false,
+          "hidden": false,
+          "active": false,
+          "geometry": {
+            "x": 0,
+            "y": 0,
+            "width": 1920,
+            "height": 1080
+          }
+        },
+        {
+          "id": "{c7c10870-b659-4fc1-ae68-73ba13328e9f}",
+          "caption": "",
+          "resourceClass": "plasmashell",
+          "type": 2,
+          "appletPopup": false,
+          "hidden": false,
+          "active": false,
+          "geometry": {
+            "x": 0,
+            "y": 0,
+            "width": 1920,
+            "height": 32
+          }
+        },
+        {
+          "id": "{ae993158-58d9-4278-9818-30bcb83921c4}",
+          "caption": "",
+          "resourceClass": "plasmashell",
+          "type": 2,
+          "appletPopup": false,
+          "hidden": true,
+          "active": false,
+          "geometry": {
+            "x": 590.5,
+            "y": 996,
+            "width": 739,
+            "height": 84
+          }
+        },
+        {
+          "id": "{25eef9b1-5d13-42e1-aa5a-e0520df41659}",
+          "caption": "Install Tahoe \u00b7 v0.73.34",
+          "resourceClass": "python3",
+          "type": 0,
+          "appletPopup": false,
+          "hidden": false,
+          "active": true,
+          "geometry": {
+            "x": 550,
+            "y": 225,
+            "width": 820,
+            "height": 600
+          }
+        }
+      ],
+      "wallpaper_uri": "file:///home/tester/.local/share/wallpapers/MacTahoe",
+      "page": "button_position",
+      "case": "installer-button_position",
+      "mode": "light",
+      "edition": "tahoe",
+      "sha256": "4f77cace76c6a8646e87841b786d6e88938cea759c070e8946935a5c657246f6",
+      "source_sha256": "564f3eed7e5d2dc8eac7a0238ef0b6226c09a0658bcee9c946bc33e8c37581c7",
+      "crop": [
+        535,
+        189,
+        1513,
+        931
+      ]
+    },
+    "wizard-tahoe-dark-button_position-550fd397e4c3.webp": {
+      "windows": [
+        {
+          "id": "{5dc7badf-313c-4649-a692-40f924221f0b}",
+          "caption": "",
+          "resourceClass": "plasmashell",
+          "type": 1,
+          "appletPopup": false,
+          "hidden": false,
+          "active": false,
+          "geometry": {
+            "x": 0,
+            "y": 0,
+            "width": 1920,
+            "height": 1080
+          }
+        },
+        {
+          "id": "{c7c10870-b659-4fc1-ae68-73ba13328e9f}",
+          "caption": "",
+          "resourceClass": "plasmashell",
+          "type": 2,
+          "appletPopup": false,
+          "hidden": false,
+          "active": false,
+          "geometry": {
+            "x": 0,
+            "y": 0,
+            "width": 1920,
+            "height": 32
+          }
+        },
+        {
+          "id": "{ae993158-58d9-4278-9818-30bcb83921c4}",
+          "caption": "",
+          "resourceClass": "plasmashell",
+          "type": 2,
+          "appletPopup": false,
+          "hidden": true,
+          "active": false,
+          "geometry": {
+            "x": 590.5,
+            "y": 996,
+            "width": 739,
+            "height": 84
+          }
+        },
+        {
+          "id": "{a641725f-867f-4f2f-be8e-df983855f442}",
+          "caption": "Install Tahoe \u00b7 v0.73.34",
+          "resourceClass": "python3",
+          "type": 0,
+          "appletPopup": false,
+          "hidden": false,
+          "active": true,
+          "geometry": {
+            "x": 550,
+            "y": 225,
+            "width": 820,
+            "height": 600
+          }
+        }
+      ],
+      "wallpaper_uri": "file:///home/tester/.local/share/wallpapers/MacTahoe",
+      "page": "button_position",
+      "case": "installer-button_position",
+      "mode": "dark",
+      "edition": "tahoe",
+      "sha256": "550fd397e4c396901154ab24a7a22683c9a8ae05e51e3c10e0aa4f45da632c06",
+      "source_sha256": "a3629d496779f2f39d0098beee6ed060599eafc239593dba8c47af873abcd940",
+      "crop": [
+        535,
+        189,
+        1513,
+        931
+      ]
+    },
+    "wizard-tahoe-light-shadows-73e234fafed9.webp": {
+      "windows": [
+        {
+          "id": "{5dc7badf-313c-4649-a692-40f924221f0b}",
+          "caption": "",
+          "resourceClass": "plasmashell",
+          "type": 1,
+          "appletPopup": false,
+          "hidden": false,
+          "active": false,
+          "geometry": {
+            "x": 0,
+            "y": 0,
+            "width": 1920,
+            "height": 1080
+          }
+        },
+        {
+          "id": "{c7c10870-b659-4fc1-ae68-73ba13328e9f}",
+          "caption": "",
+          "resourceClass": "plasmashell",
+          "type": 2,
+          "appletPopup": false,
+          "hidden": false,
+          "active": false,
+          "geometry": {
+            "x": 0,
+            "y": 0,
+            "width": 1920,
+            "height": 32
+          }
+        },
+        {
+          "id": "{ae993158-58d9-4278-9818-30bcb83921c4}",
+          "caption": "",
+          "resourceClass": "plasmashell",
+          "type": 2,
+          "appletPopup": false,
+          "hidden": true,
+          "active": false,
+          "geometry": {
+            "x": 590.5,
+            "y": 996,
+            "width": 739,
+            "height": 84
+          }
+        },
+        {
+          "id": "{25eef9b1-5d13-42e1-aa5a-e0520df41659}",
+          "caption": "Install Tahoe \u00b7 v0.73.34",
+          "resourceClass": "python3",
+          "type": 0,
+          "appletPopup": false,
+          "hidden": false,
+          "active": true,
+          "geometry": {
+            "x": 550,
+            "y": 225,
+            "width": 820,
+            "height": 600
+          }
+        }
+      ],
+      "wallpaper_uri": "file:///home/tester/.local/share/wallpapers/MacTahoe",
+      "page": "shadows",
+      "case": "installer-shadows",
+      "mode": "light",
+      "edition": "tahoe",
+      "sha256": "73e234fafed94e54b3286c1b43bb878d326b47bd584684bac3c47c41ef177c40",
+      "source_sha256": "58f0e309dda36567768508abcf5bca6591846ae3c50ba0fa3552d4dd1bc14716",
+      "crop": [
+        535,
+        189,
+        1513,
+        931
+      ]
+    },
+    "wizard-tahoe-dark-shadows-192646014fe8.webp": {
+      "windows": [
+        {
+          "id": "{5dc7badf-313c-4649-a692-40f924221f0b}",
+          "caption": "",
+          "resourceClass": "plasmashell",
+          "type": 1,
+          "appletPopup": false,
+          "hidden": false,
+          "active": false,
+          "geometry": {
+            "x": 0,
+            "y": 0,
+            "width": 1920,
+            "height": 1080
+          }
+        },
+        {
+          "id": "{c7c10870-b659-4fc1-ae68-73ba13328e9f}",
+          "caption": "",
+          "resourceClass": "plasmashell",
+          "type": 2,
+          "appletPopup": false,
+          "hidden": false,
+          "active": false,
+          "geometry": {
+            "x": 0,
+            "y": 0,
+            "width": 1920,
+            "height": 32
+          }
+        },
+        {
+          "id": "{ae993158-58d9-4278-9818-30bcb83921c4}",
+          "caption": "",
+          "resourceClass": "plasmashell",
+          "type": 2,
+          "appletPopup": false,
+          "hidden": true,
+          "active": false,
+          "geometry": {
+            "x": 590.5,
+            "y": 996,
+            "width": 739,
+            "height": 84
+          }
+        },
+        {
+          "id": "{a641725f-867f-4f2f-be8e-df983855f442}",
+          "caption": "Install Tahoe \u00b7 v0.73.34",
+          "resourceClass": "python3",
+          "type": 0,
+          "appletPopup": false,
+          "hidden": false,
+          "active": true,
+          "geometry": {
+            "x": 550,
+            "y": 225,
+            "width": 820,
+            "height": 600
+          }
+        }
+      ],
+      "wallpaper_uri": "file:///home/tester/.local/share/wallpapers/MacTahoe",
+      "page": "shadows",
+      "case": "installer-shadows",
+      "mode": "dark",
+      "edition": "tahoe",
+      "sha256": "192646014fe882584f9a6235688b9028ea250b0957cc5770a9539d28d2a9f766",
+      "source_sha256": "a79370aebe6c90f48d2dcb390845efdad27e22a92793285b27e87e346c6d8c50",
+      "crop": [
+        535,
+        189,
+        1513,
+        931
+      ]
+    },
+    "wizard-tahoe-light-fonts-60b88c7becec.webp": {
+      "windows": [
+        {
+          "id": "{5dc7badf-313c-4649-a692-40f924221f0b}",
+          "caption": "",
+          "resourceClass": "plasmashell",
+          "type": 1,
+          "appletPopup": false,
+          "hidden": false,
+          "active": false,
+          "geometry": {
+            "x": 0,
+            "y": 0,
+            "width": 1920,
+            "height": 1080
+          }
+        },
+        {
+          "id": "{c7c10870-b659-4fc1-ae68-73ba13328e9f}",
+          "caption": "",
+          "resourceClass": "plasmashell",
+          "type": 2,
+          "appletPopup": false,
+          "hidden": false,
+          "active": false,
+          "geometry": {
+            "x": 0,
+            "y": 0,
+            "width": 1920,
+            "height": 32
+          }
+        },
+        {
+          "id": "{ae993158-58d9-4278-9818-30bcb83921c4}",
+          "caption": "",
+          "resourceClass": "plasmashell",
+          "type": 2,
+          "appletPopup": false,
+          "hidden": true,
+          "active": false,
+          "geometry": {
+            "x": 590.5,
+            "y": 996,
+            "width": 739,
+            "height": 84
+          }
+        },
+        {
+          "id": "{25eef9b1-5d13-42e1-aa5a-e0520df41659}",
+          "caption": "Install Tahoe \u00b7 v0.73.34",
+          "resourceClass": "python3",
+          "type": 0,
+          "appletPopup": false,
+          "hidden": false,
+          "active": true,
+          "geometry": {
+            "x": 550,
+            "y": 225,
+            "width": 820,
+            "height": 600
+          }
+        }
+      ],
+      "wallpaper_uri": "file:///home/tester/.local/share/wallpapers/MacTahoe",
+      "page": "fonts",
+      "case": "installer-fonts",
+      "mode": "light",
+      "edition": "tahoe",
+      "sha256": "60b88c7becec16b2526e8db4694ddf43e94f1d990c9ffb64c0b7c8b5224a3d6f",
+      "source_sha256": "fd0faf5c17b81d7dc8b2b530bc12920da1d47352f444572a4810b457784915a3",
+      "crop": [
+        535,
+        189,
+        1513,
+        931
+      ]
+    },
+    "wizard-tahoe-dark-fonts-a3f7e33adab7.webp": {
+      "windows": [
+        {
+          "id": "{5dc7badf-313c-4649-a692-40f924221f0b}",
+          "caption": "",
+          "resourceClass": "plasmashell",
+          "type": 1,
+          "appletPopup": false,
+          "hidden": false,
+          "active": false,
+          "geometry": {
+            "x": 0,
+            "y": 0,
+            "width": 1920,
+            "height": 1080
+          }
+        },
+        {
+          "id": "{c7c10870-b659-4fc1-ae68-73ba13328e9f}",
+          "caption": "",
+          "resourceClass": "plasmashell",
+          "type": 2,
+          "appletPopup": false,
+          "hidden": false,
+          "active": false,
+          "geometry": {
+            "x": 0,
+            "y": 0,
+            "width": 1920,
+            "height": 32
+          }
+        },
+        {
+          "id": "{ae993158-58d9-4278-9818-30bcb83921c4}",
+          "caption": "",
+          "resourceClass": "plasmashell",
+          "type": 2,
+          "appletPopup": false,
+          "hidden": true,
+          "active": false,
+          "geometry": {
+            "x": 590.5,
+            "y": 996,
+            "width": 739,
+            "height": 84
+          }
+        },
+        {
+          "id": "{a641725f-867f-4f2f-be8e-df983855f442}",
+          "caption": "Install Tahoe \u00b7 v0.73.34",
+          "resourceClass": "python3",
+          "type": 0,
+          "appletPopup": false,
+          "hidden": false,
+          "active": true,
+          "geometry": {
+            "x": 550,
+            "y": 225,
+            "width": 820,
+            "height": 600
+          }
+        }
+      ],
+      "wallpaper_uri": "file:///home/tester/.local/share/wallpapers/MacTahoe",
+      "page": "fonts",
+      "case": "installer-fonts",
+      "mode": "dark",
+      "edition": "tahoe",
+      "sha256": "a3f7e33adab76e556d08b6b82f3f723e7e2ac033f99b61238565409365b25b56",
+      "source_sha256": "b3ba46abc87293b46cd77ab61379af1a798cd3cf3dd83d296c6e911bea17a82e",
+      "crop": [
+        535,
+        189,
+        1513,
+        931
+      ]
+    },
+    "wizard-tahoe-light-firefox-cd8766e9326b.webp": {
+      "windows": [
+        {
+          "id": "{5dc7badf-313c-4649-a692-40f924221f0b}",
+          "caption": "",
+          "resourceClass": "plasmashell",
+          "type": 1,
+          "appletPopup": false,
+          "hidden": false,
+          "active": false,
+          "geometry": {
+            "x": 0,
+            "y": 0,
+            "width": 1920,
+            "height": 1080
+          }
+        },
+        {
+          "id": "{c7c10870-b659-4fc1-ae68-73ba13328e9f}",
+          "caption": "",
+          "resourceClass": "plasmashell",
+          "type": 2,
+          "appletPopup": false,
+          "hidden": false,
+          "active": false,
+          "geometry": {
+            "x": 0,
+            "y": 0,
+            "width": 1920,
+            "height": 32
+          }
+        },
+        {
+          "id": "{ae993158-58d9-4278-9818-30bcb83921c4}",
+          "caption": "",
+          "resourceClass": "plasmashell",
+          "type": 2,
+          "appletPopup": false,
+          "hidden": true,
+          "active": false,
+          "geometry": {
+            "x": 590.5,
+            "y": 996,
+            "width": 739,
+            "height": 84
+          }
+        },
+        {
+          "id": "{25eef9b1-5d13-42e1-aa5a-e0520df41659}",
+          "caption": "Install Tahoe \u00b7 v0.73.34",
+          "resourceClass": "python3",
+          "type": 0,
+          "appletPopup": false,
+          "hidden": false,
+          "active": true,
+          "geometry": {
+            "x": 550,
+            "y": 225,
+            "width": 820,
+            "height": 600
+          }
+        }
+      ],
+      "wallpaper_uri": "file:///home/tester/.local/share/wallpapers/MacTahoe",
+      "page": "firefox",
+      "case": "installer-firefox",
+      "mode": "light",
+      "edition": "tahoe",
+      "sha256": "cd8766e9326be24839fbb0004fa3bc3951f81821bd3ae0b0f2b1991f8689383e",
+      "source_sha256": "f648e82f272770c30af4e65c78803c2f7479fcda07217b03261dbb58b5178e8d",
+      "crop": [
+        535,
+        189,
+        1513,
+        931
+      ]
+    },
+    "wizard-tahoe-dark-firefox-087fc1c84f07.webp": {
+      "windows": [
+        {
+          "id": "{5dc7badf-313c-4649-a692-40f924221f0b}",
+          "caption": "",
+          "resourceClass": "plasmashell",
+          "type": 1,
+          "appletPopup": false,
+          "hidden": false,
+          "active": false,
+          "geometry": {
+            "x": 0,
+            "y": 0,
+            "width": 1920,
+            "height": 1080
+          }
+        },
+        {
+          "id": "{c7c10870-b659-4fc1-ae68-73ba13328e9f}",
+          "caption": "",
+          "resourceClass": "plasmashell",
+          "type": 2,
+          "appletPopup": false,
+          "hidden": false,
+          "active": false,
+          "geometry": {
+            "x": 0,
+            "y": 0,
+            "width": 1920,
+            "height": 32
+          }
+        },
+        {
+          "id": "{ae993158-58d9-4278-9818-30bcb83921c4}",
+          "caption": "",
+          "resourceClass": "plasmashell",
+          "type": 2,
+          "appletPopup": false,
+          "hidden": true,
+          "active": false,
+          "geometry": {
+            "x": 590.5,
+            "y": 996,
+            "width": 739,
+            "height": 84
+          }
+        },
+        {
+          "id": "{a641725f-867f-4f2f-be8e-df983855f442}",
+          "caption": "Install Tahoe \u00b7 v0.73.34",
+          "resourceClass": "python3",
+          "type": 0,
+          "appletPopup": false,
+          "hidden": false,
+          "active": true,
+          "geometry": {
+            "x": 550,
+            "y": 225,
+            "width": 820,
+            "height": 600
+          }
+        }
+      ],
+      "wallpaper_uri": "file:///home/tester/.local/share/wallpapers/MacTahoe",
+      "page": "firefox",
+      "case": "installer-firefox",
+      "mode": "dark",
+      "edition": "tahoe",
+      "sha256": "087fc1c84f079e0b69a1b75a98c8e2d726157bc346c02620c89c2f428ff9139e",
+      "source_sha256": "27f84343b7418571bb3b381483fddc62d6fc03b73563c2e06a9b6caad0a0d16b",
+      "crop": [
+        535,
+        189,
+        1513,
+        931
+      ]
+    },
+    "wizard-tahoe-light-files-455eee81ce7a.webp": {
+      "windows": [
+        {
+          "id": "{5dc7badf-313c-4649-a692-40f924221f0b}",
+          "caption": "",
+          "resourceClass": "plasmashell",
+          "type": 1,
+          "appletPopup": false,
+          "hidden": false,
+          "active": false,
+          "geometry": {
+            "x": 0,
+            "y": 0,
+            "width": 1920,
+            "height": 1080
+          }
+        },
+        {
+          "id": "{c7c10870-b659-4fc1-ae68-73ba13328e9f}",
+          "caption": "",
+          "resourceClass": "plasmashell",
+          "type": 2,
+          "appletPopup": false,
+          "hidden": false,
+          "active": false,
+          "geometry": {
+            "x": 0,
+            "y": 0,
+            "width": 1920,
+            "height": 32
+          }
+        },
+        {
+          "id": "{ae993158-58d9-4278-9818-30bcb83921c4}",
+          "caption": "",
+          "resourceClass": "plasmashell",
+          "type": 2,
+          "appletPopup": false,
+          "hidden": true,
+          "active": false,
+          "geometry": {
+            "x": 590.5,
+            "y": 996,
+            "width": 739,
+            "height": 84
+          }
+        },
+        {
+          "id": "{25eef9b1-5d13-42e1-aa5a-e0520df41659}",
+          "caption": "Install Tahoe \u00b7 v0.73.34",
+          "resourceClass": "python3",
+          "type": 0,
+          "appletPopup": false,
+          "hidden": false,
+          "active": true,
+          "geometry": {
+            "x": 550,
+            "y": 225,
+            "width": 820,
+            "height": 600
+          }
+        }
+      ],
+      "wallpaper_uri": "file:///home/tester/.local/share/wallpapers/MacTahoe",
+      "page": "files",
+      "case": "installer-files",
+      "mode": "light",
+      "edition": "tahoe",
+      "sha256": "455eee81ce7a68b02eaa7d8bcde17a3420c48c765b954e6d4f254abb2d36f009",
+      "source_sha256": "63f41387c293bc4468b89930be5e2068be8e4c4c1ec995a460584a5a01814583",
+      "crop": [
+        535,
+        189,
+        1513,
+        931
+      ]
+    },
+    "wizard-tahoe-dark-files-4c0b7f7efd4a.webp": {
+      "windows": [
+        {
+          "id": "{5dc7badf-313c-4649-a692-40f924221f0b}",
+          "caption": "",
+          "resourceClass": "plasmashell",
+          "type": 1,
+          "appletPopup": false,
+          "hidden": false,
+          "active": false,
+          "geometry": {
+            "x": 0,
+            "y": 0,
+            "width": 1920,
+            "height": 1080
+          }
+        },
+        {
+          "id": "{c7c10870-b659-4fc1-ae68-73ba13328e9f}",
+          "caption": "",
+          "resourceClass": "plasmashell",
+          "type": 2,
+          "appletPopup": false,
+          "hidden": false,
+          "active": false,
+          "geometry": {
+            "x": 0,
+            "y": 0,
+            "width": 1920,
+            "height": 32
+          }
+        },
+        {
+          "id": "{ae993158-58d9-4278-9818-30bcb83921c4}",
+          "caption": "",
+          "resourceClass": "plasmashell",
+          "type": 2,
+          "appletPopup": false,
+          "hidden": true,
+          "active": false,
+          "geometry": {
+            "x": 590.5,
+            "y": 996,
+            "width": 739,
+            "height": 84
+          }
+        },
+        {
+          "id": "{a641725f-867f-4f2f-be8e-df983855f442}",
+          "caption": "Install Tahoe \u00b7 v0.73.34",
+          "resourceClass": "python3",
+          "type": 0,
+          "appletPopup": false,
+          "hidden": false,
+          "active": true,
+          "geometry": {
+            "x": 550,
+            "y": 225,
+            "width": 820,
+            "height": 600
+          }
+        }
+      ],
+      "wallpaper_uri": "file:///home/tester/.local/share/wallpapers/MacTahoe",
+      "page": "files",
+      "case": "installer-files",
+      "mode": "dark",
+      "edition": "tahoe",
+      "sha256": "4c0b7f7efd4a8f5cd4df96141b50f861972a84db7970fe57dd30fa668e9159f6",
+      "source_sha256": "9b04fedaefdbb1f40ea5d1ca14a59bc18ec3c017d8a7dba6c5aaa177c55a8f96",
+      "crop": [
+        535,
+        189,
+        1513,
+        931
+      ]
+    },
+    "wizard-tahoe-light-glass_style-6e7be9a149d6.webp": {
+      "windows": [
+        {
+          "id": "{5dc7badf-313c-4649-a692-40f924221f0b}",
+          "caption": "",
+          "resourceClass": "plasmashell",
+          "type": 1,
+          "appletPopup": false,
+          "hidden": false,
+          "active": false,
+          "geometry": {
+            "x": 0,
+            "y": 0,
+            "width": 1920,
+            "height": 1080
+          }
+        },
+        {
+          "id": "{c7c10870-b659-4fc1-ae68-73ba13328e9f}",
+          "caption": "",
+          "resourceClass": "plasmashell",
+          "type": 2,
+          "appletPopup": false,
+          "hidden": false,
+          "active": false,
+          "geometry": {
+            "x": 0,
+            "y": 0,
+            "width": 1920,
+            "height": 32
+          }
+        },
+        {
+          "id": "{ae993158-58d9-4278-9818-30bcb83921c4}",
+          "caption": "",
+          "resourceClass": "plasmashell",
+          "type": 2,
+          "appletPopup": false,
+          "hidden": true,
+          "active": false,
+          "geometry": {
+            "x": 590.5,
+            "y": 996,
+            "width": 739,
+            "height": 84
+          }
+        },
+        {
+          "id": "{25eef9b1-5d13-42e1-aa5a-e0520df41659}",
+          "caption": "Install Tahoe \u00b7 v0.73.34",
+          "resourceClass": "python3",
+          "type": 0,
+          "appletPopup": false,
+          "hidden": false,
+          "active": true,
+          "geometry": {
+            "x": 550,
+            "y": 225,
+            "width": 820,
+            "height": 600
+          }
+        }
+      ],
+      "wallpaper_uri": "file:///home/tester/.local/share/wallpapers/MacTahoe",
+      "page": "glass_style",
+      "case": "installer-glass_style",
+      "mode": "light",
+      "edition": "tahoe",
+      "sha256": "6e7be9a149d6ea779a024571ddd7443255ce4d9995b5ba3dcc37957925fe0e2f",
+      "source_sha256": "a8fc848a4dc01df7eca54ea90a6c382886bc766cfebf74b9ec35a366d53a8cab",
+      "crop": [
+        535,
+        189,
+        1513,
+        931
+      ]
+    },
+    "wizard-tahoe-dark-glass_style-b4732c8176c2.webp": {
+      "windows": [
+        {
+          "id": "{5dc7badf-313c-4649-a692-40f924221f0b}",
+          "caption": "",
+          "resourceClass": "plasmashell",
+          "type": 1,
+          "appletPopup": false,
+          "hidden": false,
+          "active": false,
+          "geometry": {
+            "x": 0,
+            "y": 0,
+            "width": 1920,
+            "height": 1080
+          }
+        },
+        {
+          "id": "{c7c10870-b659-4fc1-ae68-73ba13328e9f}",
+          "caption": "",
+          "resourceClass": "plasmashell",
+          "type": 2,
+          "appletPopup": false,
+          "hidden": false,
+          "active": false,
+          "geometry": {
+            "x": 0,
+            "y": 0,
+            "width": 1920,
+            "height": 32
+          }
+        },
+        {
+          "id": "{ae993158-58d9-4278-9818-30bcb83921c4}",
+          "caption": "",
+          "resourceClass": "plasmashell",
+          "type": 2,
+          "appletPopup": false,
+          "hidden": true,
+          "active": false,
+          "geometry": {
+            "x": 590.5,
+            "y": 996,
+            "width": 739,
+            "height": 84
+          }
+        },
+        {
+          "id": "{a641725f-867f-4f2f-be8e-df983855f442}",
+          "caption": "Install Tahoe \u00b7 v0.73.34",
+          "resourceClass": "python3",
+          "type": 0,
+          "appletPopup": false,
+          "hidden": false,
+          "active": true,
+          "geometry": {
+            "x": 550,
+            "y": 225,
+            "width": 820,
+            "height": 600
+          }
+        }
+      ],
+      "wallpaper_uri": "file:///home/tester/.local/share/wallpapers/MacTahoe",
+      "page": "glass_style",
+      "case": "installer-glass_style",
+      "mode": "dark",
+      "edition": "tahoe",
+      "sha256": "b4732c8176c24577de4e27a84c36b53ddaf19e9475c035e10567881fda051eeb",
+      "source_sha256": "38f40127f02d70c7fce314db0b8fe37bfba8eaab8794cd61400b27e935a71d24",
+      "crop": [
+        535,
+        189,
+        1513,
+        931
+      ]
+    },
+    "wizard-tahoe-light-boot-5540beb3d855.webp": {
+      "windows": [
+        {
+          "id": "{5dc7badf-313c-4649-a692-40f924221f0b}",
+          "caption": "",
+          "resourceClass": "plasmashell",
+          "type": 1,
+          "appletPopup": false,
+          "hidden": false,
+          "active": false,
+          "geometry": {
+            "x": 0,
+            "y": 0,
+            "width": 1920,
+            "height": 1080
+          }
+        },
+        {
+          "id": "{c7c10870-b659-4fc1-ae68-73ba13328e9f}",
+          "caption": "",
+          "resourceClass": "plasmashell",
+          "type": 2,
+          "appletPopup": false,
+          "hidden": false,
+          "active": false,
+          "geometry": {
+            "x": 0,
+            "y": 0,
+            "width": 1920,
+            "height": 32
+          }
+        },
+        {
+          "id": "{ae993158-58d9-4278-9818-30bcb83921c4}",
+          "caption": "",
+          "resourceClass": "plasmashell",
+          "type": 2,
+          "appletPopup": false,
+          "hidden": true,
+          "active": false,
+          "geometry": {
+            "x": 590.5,
+            "y": 996,
+            "width": 739,
+            "height": 84
+          }
+        },
+        {
+          "id": "{25eef9b1-5d13-42e1-aa5a-e0520df41659}",
+          "caption": "Install Tahoe \u00b7 v0.73.34",
+          "resourceClass": "python3",
+          "type": 0,
+          "appletPopup": false,
+          "hidden": false,
+          "active": true,
+          "geometry": {
+            "x": 550,
+            "y": 225,
+            "width": 820,
+            "height": 600
+          }
+        }
+      ],
+      "wallpaper_uri": "file:///home/tester/.local/share/wallpapers/MacTahoe",
+      "page": "boot",
+      "case": "installer-boot",
+      "mode": "light",
+      "edition": "tahoe",
+      "sha256": "5540beb3d8558667f439cdb63d127e1b8ddef3a8cdecd7b41d6fb50b2d81f4ad",
+      "source_sha256": "f5ba12060d84a5b9513f774613ff4568320d500db0d574a872054aeac33ab885",
+      "crop": [
+        535,
+        189,
+        1513,
+        931
+      ]
+    },
+    "wizard-tahoe-dark-boot-5c457d0f0a63.webp": {
+      "windows": [
+        {
+          "id": "{5dc7badf-313c-4649-a692-40f924221f0b}",
+          "caption": "",
+          "resourceClass": "plasmashell",
+          "type": 1,
+          "appletPopup": false,
+          "hidden": false,
+          "active": false,
+          "geometry": {
+            "x": 0,
+            "y": 0,
+            "width": 1920,
+            "height": 1080
+          }
+        },
+        {
+          "id": "{c7c10870-b659-4fc1-ae68-73ba13328e9f}",
+          "caption": "",
+          "resourceClass": "plasmashell",
+          "type": 2,
+          "appletPopup": false,
+          "hidden": false,
+          "active": false,
+          "geometry": {
+            "x": 0,
+            "y": 0,
+            "width": 1920,
+            "height": 32
+          }
+        },
+        {
+          "id": "{ae993158-58d9-4278-9818-30bcb83921c4}",
+          "caption": "",
+          "resourceClass": "plasmashell",
+          "type": 2,
+          "appletPopup": false,
+          "hidden": true,
+          "active": false,
+          "geometry": {
+            "x": 590.5,
+            "y": 996,
+            "width": 739,
+            "height": 84
+          }
+        },
+        {
+          "id": "{a641725f-867f-4f2f-be8e-df983855f442}",
+          "caption": "Install Tahoe \u00b7 v0.73.34",
+          "resourceClass": "python3",
+          "type": 0,
+          "appletPopup": false,
+          "hidden": false,
+          "active": true,
+          "geometry": {
+            "x": 550,
+            "y": 225,
+            "width": 820,
+            "height": 600
+          }
+        }
+      ],
+      "wallpaper_uri": "file:///home/tester/.local/share/wallpapers/MacTahoe",
+      "page": "boot",
+      "case": "installer-boot",
+      "mode": "dark",
+      "edition": "tahoe",
+      "sha256": "5c457d0f0a63c4d1980c8e0328afb7749a63cf79a72f24ea932fa8a5a6db2a9c",
+      "source_sha256": "33ef12654b59a67a279ad6c4b08b30a428470b7327501af5a1600fd8d5450eb1",
+      "crop": [
+        535,
+        189,
+        1513,
+        931
+      ]
+    },
+    "wizard-tahoe-light-oled-d6b948edca37.webp": {
+      "windows": [
+        {
+          "id": "{5dc7badf-313c-4649-a692-40f924221f0b}",
+          "caption": "",
+          "resourceClass": "plasmashell",
+          "type": 1,
+          "appletPopup": false,
+          "hidden": false,
+          "active": false,
+          "geometry": {
+            "x": 0,
+            "y": 0,
+            "width": 1920,
+            "height": 1080
+          }
+        },
+        {
+          "id": "{c7c10870-b659-4fc1-ae68-73ba13328e9f}",
+          "caption": "",
+          "resourceClass": "plasmashell",
+          "type": 2,
+          "appletPopup": false,
+          "hidden": false,
+          "active": false,
+          "geometry": {
+            "x": 0,
+            "y": 0,
+            "width": 1920,
+            "height": 32
+          }
+        },
+        {
+          "id": "{ae993158-58d9-4278-9818-30bcb83921c4}",
+          "caption": "",
+          "resourceClass": "plasmashell",
+          "type": 2,
+          "appletPopup": false,
+          "hidden": true,
+          "active": false,
+          "geometry": {
+            "x": 590.5,
+            "y": 996,
+            "width": 739,
+            "height": 84
+          }
+        },
+        {
+          "id": "{25eef9b1-5d13-42e1-aa5a-e0520df41659}",
+          "caption": "Install Tahoe \u00b7 v0.73.34",
+          "resourceClass": "python3",
+          "type": 0,
+          "appletPopup": false,
+          "hidden": false,
+          "active": true,
+          "geometry": {
+            "x": 550,
+            "y": 225,
+            "width": 820,
+            "height": 600
+          }
+        }
+      ],
+      "wallpaper_uri": "file:///home/tester/.local/share/wallpapers/MacTahoe",
+      "page": "oled",
+      "case": "installer-oled",
+      "mode": "light",
+      "edition": "tahoe",
+      "sha256": "d6b948edca37adda7101a48189f10d4fafdbd77bec5208ee83bd1d3a4dd6c4ff",
+      "source_sha256": "94b87d03d164387816f231e7d946f6baffd45529cee9807c612bd67f91d2d20d",
+      "crop": [
+        535,
+        189,
+        1513,
+        931
+      ]
+    },
+    "wizard-tahoe-dark-oled-b37faebb2574.webp": {
+      "windows": [
+        {
+          "id": "{5dc7badf-313c-4649-a692-40f924221f0b}",
+          "caption": "",
+          "resourceClass": "plasmashell",
+          "type": 1,
+          "appletPopup": false,
+          "hidden": false,
+          "active": false,
+          "geometry": {
+            "x": 0,
+            "y": 0,
+            "width": 1920,
+            "height": 1080
+          }
+        },
+        {
+          "id": "{c7c10870-b659-4fc1-ae68-73ba13328e9f}",
+          "caption": "",
+          "resourceClass": "plasmashell",
+          "type": 2,
+          "appletPopup": false,
+          "hidden": false,
+          "active": false,
+          "geometry": {
+            "x": 0,
+            "y": 0,
+            "width": 1920,
+            "height": 32
+          }
+        },
+        {
+          "id": "{ae993158-58d9-4278-9818-30bcb83921c4}",
+          "caption": "",
+          "resourceClass": "plasmashell",
+          "type": 2,
+          "appletPopup": false,
+          "hidden": true,
+          "active": false,
+          "geometry": {
+            "x": 590.5,
+            "y": 996,
+            "width": 739,
+            "height": 84
+          }
+        },
+        {
+          "id": "{a641725f-867f-4f2f-be8e-df983855f442}",
+          "caption": "Install Tahoe \u00b7 v0.73.34",
+          "resourceClass": "python3",
+          "type": 0,
+          "appletPopup": false,
+          "hidden": false,
+          "active": true,
+          "geometry": {
+            "x": 550,
+            "y": 225,
+            "width": 820,
+            "height": 600
+          }
+        }
+      ],
+      "wallpaper_uri": "file:///home/tester/.local/share/wallpapers/MacTahoe",
+      "page": "oled",
+      "case": "installer-oled",
+      "mode": "dark",
+      "edition": "tahoe",
+      "sha256": "b37faebb257489742670e51acf64e1336e206cc6631af7bb54f270f52da72763",
+      "source_sha256": "52b87b47e36353f238da893eaeb59c1b4c276779c75770b56a9865e6f0f532ea",
+      "crop": [
+        535,
+        189,
+        1513,
+        931
+      ]
+    },
+    "wizard-tahoe-light-summary-38551d2a70d6.webp": {
+      "windows": [
+        {
+          "id": "{5dc7badf-313c-4649-a692-40f924221f0b}",
+          "caption": "",
+          "resourceClass": "plasmashell",
+          "type": 1,
+          "appletPopup": false,
+          "hidden": false,
+          "active": false,
+          "geometry": {
+            "x": 0,
+            "y": 0,
+            "width": 1920,
+            "height": 1080
+          }
+        },
+        {
+          "id": "{c7c10870-b659-4fc1-ae68-73ba13328e9f}",
+          "caption": "",
+          "resourceClass": "plasmashell",
+          "type": 2,
+          "appletPopup": false,
+          "hidden": false,
+          "active": false,
+          "geometry": {
+            "x": 0,
+            "y": 0,
+            "width": 1920,
+            "height": 32
+          }
+        },
+        {
+          "id": "{ae993158-58d9-4278-9818-30bcb83921c4}",
+          "caption": "",
+          "resourceClass": "plasmashell",
+          "type": 2,
+          "appletPopup": false,
+          "hidden": true,
+          "active": false,
+          "geometry": {
+            "x": 590.5,
+            "y": 996,
+            "width": 739,
+            "height": 84
+          }
+        },
+        {
+          "id": "{25eef9b1-5d13-42e1-aa5a-e0520df41659}",
+          "caption": "Install Tahoe \u00b7 v0.73.34",
+          "resourceClass": "python3",
+          "type": 0,
+          "appletPopup": false,
+          "hidden": false,
+          "active": true,
+          "geometry": {
+            "x": 550,
+            "y": 225,
+            "width": 820,
+            "height": 600
+          }
+        }
+      ],
+      "wallpaper_uri": "file:///home/tester/.local/share/wallpapers/MacTahoe",
+      "page": "summary",
+      "case": "installer-summary",
+      "mode": "light",
+      "edition": "tahoe",
+      "sha256": "38551d2a70d6f6361b4f29cc4c10e90c4e32d86be817b087af473f8f4aa41986",
+      "source_sha256": "f4a3002245df86a4638bf12f03b5a9c871cdaa1a5c90c020e4907d2cbdeeeeac",
+      "crop": [
+        535,
+        189,
+        1513,
+        931
+      ]
+    },
+    "wizard-tahoe-dark-summary-320c57883a85.webp": {
+      "windows": [
+        {
+          "id": "{5dc7badf-313c-4649-a692-40f924221f0b}",
+          "caption": "",
+          "resourceClass": "plasmashell",
+          "type": 1,
+          "appletPopup": false,
+          "hidden": false,
+          "active": false,
+          "geometry": {
+            "x": 0,
+            "y": 0,
+            "width": 1920,
+            "height": 1080
+          }
+        },
+        {
+          "id": "{c7c10870-b659-4fc1-ae68-73ba13328e9f}",
+          "caption": "",
+          "resourceClass": "plasmashell",
+          "type": 2,
+          "appletPopup": false,
+          "hidden": false,
+          "active": false,
+          "geometry": {
+            "x": 0,
+            "y": 0,
+            "width": 1920,
+            "height": 32
+          }
+        },
+        {
+          "id": "{ae993158-58d9-4278-9818-30bcb83921c4}",
+          "caption": "",
+          "resourceClass": "plasmashell",
+          "type": 2,
+          "appletPopup": false,
+          "hidden": true,
+          "active": false,
+          "geometry": {
+            "x": 590.5,
+            "y": 996,
+            "width": 739,
+            "height": 84
+          }
+        },
+        {
+          "id": "{a641725f-867f-4f2f-be8e-df983855f442}",
+          "caption": "Install Tahoe \u00b7 v0.73.34",
+          "resourceClass": "python3",
+          "type": 0,
+          "appletPopup": false,
+          "hidden": false,
+          "active": true,
+          "geometry": {
+            "x": 550,
+            "y": 225,
+            "width": 820,
+            "height": 600
+          }
+        }
+      ],
+      "wallpaper_uri": "file:///home/tester/.local/share/wallpapers/MacTahoe",
+      "page": "summary",
+      "case": "installer-summary",
+      "mode": "dark",
+      "edition": "tahoe",
+      "sha256": "320c57883a85aff7f9857d42aa0ec56a138741b5bbe8aeee8cfb6e679dff9fc4",
+      "source_sha256": "11d05b0892a551cd578066267ec3858ed3d0ca0c03f8e04449232598cc0009ad",
+      "crop": [
+        535,
+        189,
+        1513,
+        931
+      ]
+    }
+  }
+}
