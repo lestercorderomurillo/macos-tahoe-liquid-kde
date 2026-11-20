@@ -59,6 +59,9 @@ ListView {
 		property: showSectionSeparator ? "group" : "nosection"
 		criteria: ViewSection.FullString
 		delegate: PlasmaExtras.ListSectionHeader {
+			id: sectionHeading
+			Kirigami.Theme.inherit: false
+			Kirigami.Theme.textColor: main.labelColor(sectionHeading, leftPadding + Kirigami.Units.gridUnit)
 			required property string section
 			width: listView.availableWidth
 			text: section

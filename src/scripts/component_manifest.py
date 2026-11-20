@@ -52,8 +52,9 @@ def snapshot(root=REPO_ROOT):
             inputs = [(name, payload)] + [(str(p.relative_to(root)), p) for p in recipe]
             # Launcher and notification options share the Control Center menu.
             if path.name == 'plasmoids' and payload.name == 'org.kde.mac-tahoe-liquid-kde.launcher':
-                inputs.append(('shared-options-menu', path /
-                    'org.kde.mac-tahoe-liquid-kde.controlcenter/contents/ui/MacOptionsMenu.qml'))
+                controls = path / 'org.kde.mac-tahoe-liquid-kde.controlcenter/contents/ui'
+                inputs.append(('shared-options-menu', controls / 'MacOptionsMenu.qml'))
+                inputs.append(('shared-text-contrast', controls / 'NotificationContrast.js'))
             # Satellite status applets import the Control Center's shared views.
             if path.name == 'plasmoids' and payload.name in (
                 'org.kde.mac-tahoe-liquid-kde.acrylicglass',
@@ -65,6 +66,7 @@ def snapshot(root=REPO_ROOT):
                 inputs.append(('desktop-controls', shared))
             if path.name == 'plasmoids' and payload.name in (
                 'org.kde.mac.tahoe.liquid.globalmenu',
+                'org.kde.mac-tahoe-liquid-kde.launcher',
                 'org.kde.mac-tahoe-liquid-kde.controlcenter',
                 'org.kde.mac-tahoe-liquid-kde.battery',
                 'org.kde.mac-tahoe-liquid-kde.wifi',

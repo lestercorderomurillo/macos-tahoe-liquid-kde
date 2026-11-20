@@ -268,13 +268,15 @@ def test_desktop_control_shared_views_and_native_regions_invalidate_satellites(t
     assert second['plasmoids/' + names[-1]] == third['plasmoids/' + names[-1]]
 
 
-def test_shared_options_menu_invalidates_launcher_and_controls_only(tmp_path):
+@pytest.mark.parametrize("updated", ["MacOptionsMenu.qml", "NotificationContrast.js"])
+def test_shared_launcher_sources_invalidate_launcher_and_controls_only(tmp_path, updated):
     root = tmp_path / 'source'
     widgets = root / 'src/offline/plasmoids'
     controls = widgets / 'org.kde.mac-tahoe-liquid-kde.controlcenter'
     menu = controls / 'contents/ui/MacOptionsMenu.qml'
     menu.parent.mkdir(parents=True)
     menu.write_text('import QtQuick\nItem {}\n')
+    (menu.parent / 'NotificationContrast.js').write_text('function ratio() { return 1; }')
     for name in ('launcher', 'notifications', 'wifi', 'battery', 'trashcan'):
         folder = widgets / ('org.kde.mac-tahoe-liquid-kde.' + name)
         folder.mkdir(parents=True)
@@ -283,7 +285,8 @@ def test_shared_options_menu_invalidates_launcher_and_controls_only(tmp_path):
     scripts = root / 'src/scripts'
     scripts.mkdir(parents=True)
     before = component_manifest.snapshot(root)['components']
-    menu.write_text('import QtQuick\nItem { width: 1 }\n')
+    source = menu.parent / updated
+    source.write_text(source.read_text() + '\n// Updated shared source\n')
     after = component_manifest.snapshot(root)['components']
     for name in ('launcher', 'controlcenter', 'notifications', 'wifi', 'battery'):
         key = 'plasmoids/org.kde.mac-tahoe-liquid-kde.' + name

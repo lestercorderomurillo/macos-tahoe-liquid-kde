@@ -2008,9 +2008,9 @@ void BlurEffect::blur(
     // Foreground contrast uses the captured backdrop, never the notification's
     // own pixels. The existing blur/material passes and saved optics are unchanged.
     const QString resourceClass = w->window()->resourceClass();
-    const bool controlCenter = GlassMaterials::isControlPanel(w->caption())
+    const bool spatialBackdrop = (GlassMaterials::isControlPanel(w->caption()) || w->caption() == QStringLiteral("mttkde-apps"))
         && (resourceClass == QStringLiteral("plasmashell") || resourceClass == QStringLiteral("org.kde.plasmashell"));
-    if (controlCenter || isProjectNotification(resourceClass, w->caption())) {
+    if (spatialBackdrop || isProjectNotification(resourceClass, w->caption())) {
         if (!blurInfo.contrastTimer.isValid() || blurInfo.contrastTimer.elapsed() >= 200) {
             blurInfo.contrastTimer.start();
             if (!m_contrastTexture) {
@@ -2050,7 +2050,7 @@ void BlurEffect::blur(
                 GLFramebuffer::popFramebuffer();
                 ShaderManager::instance()->popShader();
                 if (blendEnabled) glEnable(GL_BLEND);
-                if (controlCenter) {
+                if (spatialBackdrop) {
                     // Keep the spatial samples: two labels can be over opposite backdrops.
                     QByteArray colors;
                     colors.reserve(8 * 8 * 3);

@@ -15,7 +15,7 @@ AbstractButton {
     font.weight: Font.Normal
     readonly property bool lightText: Kirigami.ColorUtils.brightnessForColor(Kirigami.Theme.textColor)
                                       === Kirigami.ColorUtils.Light
-    readonly property color foregroundColor: Qt.tint(Kirigami.Theme.textColor, lightText ? "#40ffffff" : "#40000000")
+    readonly property color foregroundColor: Qt.tint(Kirigami.Theme.textColor, lightText ? "#66ffffff" : "#66000000")
 
     property real lightCapsuleOpacityBoost: 0
     property bool menuIsOpen: false

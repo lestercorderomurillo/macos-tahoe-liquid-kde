@@ -1,4 +1,5 @@
 import QtQuick
+import "../../../org.kde.mac-tahoe-liquid-kde.controlcenter/contents/ui/NotificationContrast.js" as Contrast
 import QtQuick.Layouts
 import Qt5Compat.GraphicalEffects
 import org.kde.plasma.core as PlasmaCore
@@ -136,7 +137,21 @@ Item {
 		Kirigami.Theme.inherit: false
 		Kirigami.Theme.colorSet: Kirigami.Theme.Window
 	}
-	readonly property color textColor: glassPalette.Kirigami.Theme.textColor
+    Tahoe.PopupBackdrop { id: appBackdrop; window: root }
+    function labelColor(item, sampleX = item.width / 2, overlay = "transparent") {
+        appBackdrop.backdropRevision;
+        // Track delegate movement as well as changes behind the stationary popup.
+        for (let parentItem = item; parentItem; parentItem = parentItem.parent) {
+            parentItem.x; parentItem.y;
+        }
+        const point = item.mapToItem(root.contentItem, sampleX, item.height / 2);
+        const saved = isDarkTheme ? root.glassSettings.darkOpacity : root.glassSettings.lightOpacity;
+        const alpha = saved >= 0 ? saved : isDarkTheme ? (goldenGateEdition ? 0.12 : 0.48) : 0.55;
+        const tint = isDarkTheme ? 0 : 1;
+        return Contrast.foreground(glassPalette.Kirigami.Theme.textColor, appBackdrop.backdropAt(point),
+                                   Qt.tint(Qt.rgba(tint, tint, tint, alpha), overlay));
+    }
+	readonly property color textColor: Contrast.preferredText(glassPalette.Kirigami.Theme.textColor)
 	readonly property string textFont: Kirigami.Theme.defaultFont.family
 	readonly property real textSize: Kirigami.Theme.defaultFont.pointSize
 	readonly property real appTextSize: textSize * (detachedSearch ? 1.25 : 1)

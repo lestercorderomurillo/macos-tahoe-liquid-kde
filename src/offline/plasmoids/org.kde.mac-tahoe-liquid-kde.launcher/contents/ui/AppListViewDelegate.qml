@@ -93,9 +93,7 @@ T.ItemDelegate {
 				wrapMode: Text.NoWrap
 				verticalAlignment: Text.AlignVCenter
 			   	//maximumLineCount: root.isMultilineText ? Infinity : 1
-				color: main.textColor
-				layer.enabled: true
-				layer.effect: GlassTextShadow {}
+				color: main.labelColor(label, Math.min(width, contentWidth) / 2)
 			}
 
 			Label {
@@ -110,9 +108,8 @@ T.ItemDelegate {
 				verticalAlignment: Text.AlignVCenter
 				horizontalAlignment: listDelegate.compact ? Text.AlignRight : Text.AlignLeft
 				maximumLineCount: 1
-				color: main.textColor
-				layer.enabled: true
-				layer.effect: GlassTextShadow {}
+				color: main.labelColor(descriptionLabel, listDelegate.compact
+                    ? width - Math.min(width, contentWidth) / 2 : Math.min(width, contentWidth) / 2)
 			}
 		}
 	}

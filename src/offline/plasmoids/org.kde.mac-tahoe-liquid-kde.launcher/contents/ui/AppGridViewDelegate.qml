@@ -86,9 +86,7 @@ Item {
 		font.family: main.textFont
 		font.pointSize: main.appTextSize
 		font.weight: main.detachedSearch || main.tahoeStyle ? Font.Medium : 650
-		color: main.textColor
-		layer.enabled: true
-		layer.effect: GlassTextShadow {}
+		color: main.labelColor(appname)
 		anchors {
 			top: appicon.bottom
 			left: parent.left

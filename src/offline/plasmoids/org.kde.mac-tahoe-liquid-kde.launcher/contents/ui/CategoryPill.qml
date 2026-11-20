@@ -22,9 +22,8 @@ Item {
         font.family: Kirigami.Theme.defaultFont.family
         font.pointSize: main.appTextSize
 
-        color: pill.selected ? main.textColor : main.dimmedTextColor
-        layer.enabled: true
-        layer.effect: GlassTextShadow {}
+        color: main.labelColor(label, width / 2, pillBg.color)
+        opacity: pill.selected ? 1 : 0.85
     }
 
     Rectangle {

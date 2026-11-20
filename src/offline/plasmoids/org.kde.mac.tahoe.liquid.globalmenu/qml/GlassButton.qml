@@ -15,12 +15,10 @@ QQC2.Button {
         bottomPadding: 6
 
         contentItem: Text {
-            style: Text.Raised
-            styleColor: Qt.rgba(0, 0, 0, 0.12)
             objectName: "aboutButtonLabel"
             text: control.text
             font: control.font
-            color: Kirigami.Theme.textColor
+            color: Qt.tint(Kirigami.Theme.textColor, control.isDarkTheme ? "#66ffffff" : "#66000000")
             opacity: control.enabled ? 1 : 0.4
             horizontalAlignment: Text.AlignHCenter
             verticalAlignment: Text.AlignVCenter

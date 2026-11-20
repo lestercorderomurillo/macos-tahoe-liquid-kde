@@ -127,8 +127,7 @@ Item {
                             text: parent.heading ? Qt.locale().standaloneDayName(parent.weekday, Locale.NarrowFormat)
                                 : parent.valid ? Number(parent.day).toLocaleString(Qt.locale(), 'f', 0) : ""
                             color: parent.current ? "white" : popup.foregroundFor(dayLabel, Kirigami.Theme.textColor)
-                            style: parent.current ? Text.Normal : Text.Raised
-                            styleColor: color.hslLightness < 0.5 ? "#70ffffff" : "#70000000"
+
                             opacity: !parent.current && (parent.weekday === 0 || parent.weekday === 6) ? 0.8 : 1
                             font.family: Style.family
                             font.pixelSize: 20

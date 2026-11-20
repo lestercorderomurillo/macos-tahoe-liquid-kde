@@ -11,14 +11,14 @@
 #include <algorithm>
 #include <cmath>
 
-ControlGlass::ControlGlass(QObject *parent) : QObject(parent)
+PopupBackdrop::PopupBackdrop(QObject *parent) : QObject(parent)
 {
     QDBusConnection::sessionBus().connect(QStringLiteral("org.kde.KWin"),
         QStringLiteral("/org/kde/MacTahoe/Glass"), QStringLiteral("org.kde.MacTahoe.Glass"),
         QStringLiteral("controlBackdrop"), this, SLOT(updateBackdrop(int,QRect,QRect,QByteArray,QString)));
 }
 
-void ControlGlass::updateBackdrop(int pid, const QRect &frame, const QRect &bounds, const QByteArray &colors, const QString &title)
+void PopupBackdrop::updateBackdrop(int pid, const QRect &frame, const QRect &bounds, const QByteArray &colors, const QString &title)
 {
     if (!m_window || !m_window->isVisible() || m_window->title() != title
         || pid != QCoreApplication::applicationPid() || frame.size() != m_window->size()
@@ -31,7 +31,7 @@ void ControlGlass::updateBackdrop(int pid, const QRect &frame, const QRect &boun
     Q_EMIT backdropChanged();
 }
 
-QColor ControlGlass::backdropAt(QPointF point) const
+QColor PopupBackdrop::backdropAt(QPointF point) const
 {
     if (m_backdropGrid.isEmpty()) return Qt::transparent;
     const int x = std::clamp(int((point.x() - m_sampleBounds.x()) * 8 / m_sampleBounds.width()), 0, 7);
@@ -61,12 +61,29 @@ QRegion ControlGlass::regionFor(const QVariantList &surfaces)
     return result;
 }
 
+void PopupBackdrop::setWindow(QWindow *window)
+{
+    if (m_window == window) return;
+    if (m_window) disconnect(m_window, &QWindow::visibleChanged, this, nullptr);
+    m_window = window;
+    const auto clear = [this] {
+        m_backdropGrid.clear();
+        ++m_revision;
+        Q_EMIT backdropChanged();
+    };
+    if (window) connect(window, &QWindow::visibleChanged, this, [clear](bool visible) {
+        if (!visible) clear();
+    });
+    clear();
+    Q_EMIT windowChanged();
+}
+
 void ControlGlass::setWindow(QWindow *window)
 {
     if (m_window == window) return;
     if (m_window) m_window->removeEventFilter(this);
     disconnect(m_frameConnection);
-    m_window = window;
+    PopupBackdrop::setWindow(window);
     if (m_window) m_window->installEventFilter(this);
     if (auto quickWindow = qobject_cast<QQuickWindow *>(m_window.data())) {
         // Plasma Dialog::NoBackground clears blur and the input mask during
@@ -76,7 +93,6 @@ void ControlGlass::setWindow(QWindow *window)
         m_frameConnection = connect(quickWindow, &QQuickWindow::afterAnimating,
                                     this, &ControlGlass::apply);
     }
-    Q_EMIT windowChanged();
     apply();
 }
 

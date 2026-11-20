@@ -15,6 +15,21 @@ public:
     using QMenu::QMenu;
 
 protected:
+    void initStyleOption(QStyleOptionMenuItem *option, const QAction *action) const override
+    {
+        QMenu::initStyleOption(option, action);
+        if (!action->isEnabled()) return;
+        for (auto group : {QPalette::Active, QPalette::Inactive}) {
+            for (auto role : {QPalette::WindowText, QPalette::Text, QPalette::ButtonText}) {
+                const QColor base = option->palette.color(group, role);
+                const qreal offset = base.lightnessF() > 0.5 ? 0.4 : 0.0;
+                option->palette.setColor(group, role, QColor::fromRgbF(
+                    base.redF() * 0.6 + offset, base.greenF() * 0.6 + offset,
+                    base.blueF() * 0.6 + offset, base.alphaF()));
+            }
+        }
+    }
+
     void paintEvent(QPaintEvent *event) override
     {
         QMenu::paintEvent(event);

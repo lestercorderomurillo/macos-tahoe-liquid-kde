@@ -41,12 +41,11 @@ AppListView {
 			}
 			Item { width: 1; height: 10 }
 			Text {
+				id: categoryLabel
 				text: currentCategory.name
 				font.bold: true
 				font.pointSize: main.appTextSize
-				color: main.textColor
-				layer.enabled: true
-				layer.effect: GlassTextShadow {}
+				color: main.labelColor(categoryLabel)
 			}
 			Item { width: 1; height: 10 }
 		}

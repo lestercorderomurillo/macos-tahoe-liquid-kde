@@ -1121,13 +1121,10 @@ colors and strengths. Keep legacy/core shaders equivalent, output premultiplied,
 and pixel widths scaled to the viewport. Shared light/dark Plasma and Kvantum
 surface fills let the effect define the material in either edition. Keep popup
 fills translucent; use the system window foreground consistently on popups
-and the detached search capsule. Launcher text uses a soft, centered halo
-of the opposite luminance to its system foreground color in both modes. Keep
-the halo low-opacity and diffuse; do not use a hard outline. Light-mode
-category pills use a translucent white backing to keep dark labels readable
-over the upper gradient.
-Golden Gate light mode uses full-opacity search text and a stronger diffuse
-halo in the Apps input; category fills use 68% white when selected and 52%
+and the detached search capsule. Launcher labels use the system foreground shifted 40% toward black or white.
+Use the sampled background and client fill to select readable grid and list
+text. Light-mode category pills retain their translucent white backing.
+Golden Gate light mode uses full-opacity search text. Its category fills use 68% white when selected and 52%
 otherwise. Stage the edition flag independently of the user's launcher preset.
 Tahoe and dark-mode search/category styling keep their existing values.
 Validate black and white

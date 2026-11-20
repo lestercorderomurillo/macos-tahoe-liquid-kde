@@ -12,9 +12,14 @@ function ratio(a, b) {
     return (Math.max(a, b) + 0.05) / (Math.min(a, b) + 0.05);
 }
 
-function foreground(base, backdrop, surface) {
+function preferredText(base) {
     // Move the preferred text 40% toward its nearest luminance extreme.
-    const preferred = Qt.tint(base, luminance(base) > 0.5 ? "#66ffffff" : "#66000000");
+    const rgb = Qt.tint(base, luminance(base) > 0.5 ? "#66ffffff" : "#66000000");
+    return Qt.rgba(rgb.r, rgb.g, rgb.b, base.a);
+}
+
+function foreground(base, backdrop, surface) {
+    const preferred = preferredText(base);
     if (backdrop.a === 0) return preferred;
     const background = Qt.rgba(surface.r * surface.a + backdrop.r * (1 - surface.a),
         surface.g * surface.a + backdrop.g * (1 - surface.a),

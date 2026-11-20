@@ -20,12 +20,6 @@ RowLayout {
         id: searchIcon
         opacity: main.clipboardMode ? 0.68 : 1
         scale: main.tahoeStyle && !main.clipboardMode ? 1.15 : 1
-        layer.enabled: !main.clipboardMode
-        layer.effect: GlassTextShadow {
-            haloOpacity: (main.goldenGateLight || goldenGateCapsule) ? 0.65 : 0.35
-            radius: (main.goldenGateLight || goldenGateCapsule) ? 3 : 2
-            samples: (main.goldenGateLight || goldenGateCapsule) ? 13 : 9
-        }
         Layout.leftMargin: main.tahoeStyle ? 1 : 0
         Layout.rightMargin: 0
         Layout.preferredWidth: main.detachedSearch ? Kirigami.Units.gridUnit * 2 : (main.tahoeStyle ? 38 : Kirigami.Units.iconSizes.medium)
@@ -37,12 +31,6 @@ RowLayout {
 
     TextField {
         id: textField
-        layer.enabled: true
-        layer.effect: GlassTextShadow {
-            haloOpacity: (main.goldenGateLight || goldenGateCapsule) ? 0.65 : 0.35
-            radius: (main.goldenGateLight || goldenGateCapsule) ? 3 : 2
-            samples: (main.goldenGateLight || goldenGateCapsule) ? 13 : 9
-        }
         Layout.fillHeight: true
         Layout.fillWidth: true
         Layout.leftMargin: main.tahoeStyle ? -2 : 0
