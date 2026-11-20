@@ -168,13 +168,13 @@
         "DarkGradientOverlay": false
       },
       "apps": {
-        "SurfaceTransparencyLight": 40,
-        "SurfaceTransparencyDark": 90,
+        "SurfaceTransparencyLight": 86,
+        "SurfaceTransparencyDark": 96,
         "BlurStrength": 12,
         "GradientCenterOpacity": 0,
         "GradientCenterPosition": 0.55,
         "GradientTopColor": "#ffffff",
-        "GradientTopOpacity": 0.86,
+        "GradientTopOpacity": 0.18,
         "MagnifyGlassStrength": 0.025,
         "RefractionWidth": 45,
         "DarkGradientStrength": 0.23
@@ -183,19 +183,19 @@
         "SurfaceTransparencyLight": 98,
         "SurfaceTransparencyDark": 98,
         "BlurStrength": 6,
-        "GradientCenterOpacity": 0.76,
+        "GradientCenterOpacity": 0.5472,
         "GradientCenterPosition": 0.6,
-        "GradientTopColor": "#000000",
-        "GradientTopOpacity": 0.99,
+        "GradientTopColor": "#060606",
+        "GradientTopOpacity": 0.7128,
         "MagnifyGlassStrength": 0.025,
         "RefractionWidth": 45,
-        "GradientCenterColor": "#000000",
-        "GradientBottomColor": "#000000",
-        "GradientBottomOpacity": 0.57,
+        "GradientCenterColor": "#33291c",
+        "GradientBottomColor": "#725e3c",
+        "GradientBottomOpacity": 0.4104,
         "GradientTopDarkColor": "#060606",
         "GradientCenterDarkColor": "#33291c",
         "GradientBottomDarkColor": "#725e3c",
-        "DarkGradientStrength": 0.72
+        "DarkGradientStrength": 1
       },
       "control-center": {
         "BlurStrength": 3.0,
