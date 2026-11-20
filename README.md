@@ -128,121 +128,12 @@ Code contributors and issue reporters across Tahoe and Golden Gate:
 
 ![Features and screenshots](https://img.shields.io/badge/features-%26%20screenshots-4B6B8A?style=for-the-badge&logo=kde&logoColor=white)
 
-### Tahoe Finder (Alpha)
-
-Finder-style file browsing with Tahoe glass.
-
-<p align="center">
-  <a href="src/screenshots/previews/readme-tahoe-light-finder-8b64ba8e3a8b.webp"><img src="src/screenshots/previews/readme-tahoe-light-finder-8b64ba8e3a8b.webp" alt="Tahoe light desktop with Files focused" width="415"></a>
-  <a href="src/screenshots/previews/readme-tahoe-dark-finder-dd8777a43699.webp"><img src="src/screenshots/previews/readme-tahoe-dark-finder-dd8777a43699.webp" alt="Tahoe dark desktop with Files focused" width="415"></a>
-</p>
-
-<details>
-<summary><strong>Red and blue accents in light and dark mode</strong></summary>
-
-<table>
-<tr><th>Accent</th><th>Light</th><th>Dark</th></tr>
-<tr><td>Blue</td><td><a href="src/screenshots/previews/readme-tahoe-light-finder-blue-8b64ba8e3a8b.webp"><img src="src/screenshots/previews/readme-tahoe-light-finder-blue-8b64ba8e3a8b.webp" alt="Finder with a blue sidebar selection in light mode" width="415"></a></td><td><a href="src/screenshots/previews/readme-tahoe-dark-finder-blue-dd8777a43699.webp"><img src="src/screenshots/previews/readme-tahoe-dark-finder-blue-dd8777a43699.webp" alt="Finder with a blue sidebar selection in dark mode" width="415"></a></td></tr>
-<tr><td>Red</td><td><a href="src/screenshots/previews/readme-tahoe-light-finder-red-67a385c4a31e.webp"><img src="src/screenshots/previews/readme-tahoe-light-finder-red-67a385c4a31e.webp" alt="Finder with a red sidebar selection in light mode" width="415"></a></td><td><a href="src/screenshots/previews/readme-tahoe-dark-finder-red-6587e895a835.webp"><img src="src/screenshots/previews/readme-tahoe-dark-finder-red-6587e895a835.webp" alt="Finder with a red sidebar selection in dark mode" width="415"></a></td></tr>
-</table>
-
-</details>
-
-<br>
-
-### Tahoe Launchpad (Alpha)
-
-Find apps, browse categories and keep your favorites within reach.
-
-<p align="center">
-  <img src="src/screenshots/previews/readme-tahoe-light-launcher-e9e005b8c0a7.webp" alt="Default Tahoe preset 1 in light mode, with integrated search and Tahoe wallpaper" width="415">
-  <img src="src/screenshots/previews/readme-tahoe-dark-launcher-48f5a12fe6a9.webp" alt="Default Tahoe preset 1 in dark mode, with integrated search and Tahoe wallpaper" width="415">
-</p>
-
-<br>
-
-### Tahoe Dock (Alpha)
+### Tahoe Dock with Multicolor Support (Alpha)
 
 Glass refraction, hover zoom, red notification count bubbles and auto-hide.
 
 <p align="center">
-  <a href="src/screenshots/previews/readme-tahoe-light-dock-regular-597fb47f6d49.webp"><img src="src/screenshots/previews/readme-tahoe-light-dock-regular-597fb47f6d49.webp" alt="Tahoe Dock icon appearance preview: Light" width="830"></a>
-</p>
-
-<p align="center">
-  <a href="src/screenshots/previews/readme-tahoe-dark-dock-regular-6edaacd456e5.webp"><img src="src/screenshots/previews/readme-tahoe-dark-dock-regular-6edaacd456e5.webp" alt="Tahoe Dock icon appearance preview: Dark" width="830"></a>
-</p>
-
-<p align="center">
-  <a href="src/screenshots/previews/readme-tahoe-light-dock-clear-056e74f82157.webp"><img src="src/screenshots/previews/readme-tahoe-light-dock-clear-056e74f82157.webp" alt="Tahoe Dock icon appearance preview: Clear Light" width="830"></a>
-</p>
-
-<p align="center">
-  <a href="src/screenshots/previews/readme-tahoe-dark-dock-clear-055a23a7ce53.webp"><img src="src/screenshots/previews/readme-tahoe-dark-dock-clear-055a23a7ce53.webp" alt="Tahoe Dock icon appearance preview: Clear Dark" width="830"></a>
-</p>
-
-<p align="center">
-  <a href="src/screenshots/previews/readme-tahoe-light-dock-blue-56eaeac2a965.webp"><img src="src/screenshots/previews/readme-tahoe-light-dock-blue-56eaeac2a965.webp" alt="Tahoe Dock icon appearance preview: Blue Light" width="830"></a>
-</p>
-
-<p align="center">
-  <a href="src/screenshots/previews/readme-tahoe-dark-dock-blue-805922934d8a.webp"><img src="src/screenshots/previews/readme-tahoe-dark-dock-blue-805922934d8a.webp" alt="Tahoe Dock icon appearance preview: Blue Dark" width="830"></a>
-</p>
-
-<p align="center">
-  <a href="src/screenshots/previews/readme-tahoe-light-dock-purple-c07865f28c95.webp"><img src="src/screenshots/previews/readme-tahoe-light-dock-purple-c07865f28c95.webp" alt="Tahoe Dock icon appearance preview: Purple Light" width="830"></a>
-</p>
-
-<p align="center">
-  <a href="src/screenshots/previews/readme-tahoe-dark-dock-purple-63b683011b4b.webp"><img src="src/screenshots/previews/readme-tahoe-dark-dock-purple-63b683011b4b.webp" alt="Tahoe Dock icon appearance preview: Purple Dark" width="830"></a>
-</p>
-
-<p align="center">
-  <a href="src/screenshots/previews/readme-tahoe-light-dock-pink-be482589e8df.webp"><img src="src/screenshots/previews/readme-tahoe-light-dock-pink-be482589e8df.webp" alt="Tahoe Dock icon appearance preview: Pink Light" width="830"></a>
-</p>
-
-<p align="center">
-  <a href="src/screenshots/previews/readme-tahoe-dark-dock-pink-ed2c4b7071d2.webp"><img src="src/screenshots/previews/readme-tahoe-dark-dock-pink-ed2c4b7071d2.webp" alt="Tahoe Dock icon appearance preview: Pink Dark" width="830"></a>
-</p>
-
-<p align="center">
-  <a href="src/screenshots/previews/readme-tahoe-light-dock-red-f74ee411563b.webp"><img src="src/screenshots/previews/readme-tahoe-light-dock-red-f74ee411563b.webp" alt="Tahoe Dock icon appearance preview: Red Light" width="830"></a>
-</p>
-
-<p align="center">
-  <a href="src/screenshots/previews/readme-tahoe-dark-dock-red-0de97e6f1bbf.webp"><img src="src/screenshots/previews/readme-tahoe-dark-dock-red-0de97e6f1bbf.webp" alt="Tahoe Dock icon appearance preview: Red Dark" width="830"></a>
-</p>
-
-<p align="center">
-  <a href="src/screenshots/previews/readme-tahoe-light-dock-orange-8ec0678a8afb.webp"><img src="src/screenshots/previews/readme-tahoe-light-dock-orange-8ec0678a8afb.webp" alt="Tahoe Dock icon appearance preview: Orange Light" width="830"></a>
-</p>
-
-<p align="center">
-  <a href="src/screenshots/previews/readme-tahoe-dark-dock-orange-2a9cb5a740eb.webp"><img src="src/screenshots/previews/readme-tahoe-dark-dock-orange-2a9cb5a740eb.webp" alt="Tahoe Dock icon appearance preview: Orange Dark" width="830"></a>
-</p>
-
-<p align="center">
-  <a href="src/screenshots/previews/readme-tahoe-light-dock-yellow-c01ad97000b8.webp"><img src="src/screenshots/previews/readme-tahoe-light-dock-yellow-c01ad97000b8.webp" alt="Tahoe Dock icon appearance preview: Yellow Light" width="830"></a>
-</p>
-
-<p align="center">
-  <a href="src/screenshots/previews/readme-tahoe-dark-dock-yellow-361509d7cc42.webp"><img src="src/screenshots/previews/readme-tahoe-dark-dock-yellow-361509d7cc42.webp" alt="Tahoe Dock icon appearance preview: Yellow Dark" width="830"></a>
-</p>
-
-<p align="center">
-  <a href="src/screenshots/previews/readme-tahoe-light-dock-green-a6fdc823d617.webp"><img src="src/screenshots/previews/readme-tahoe-light-dock-green-a6fdc823d617.webp" alt="Tahoe Dock icon appearance preview: Green Light" width="830"></a>
-</p>
-
-<p align="center">
-  <a href="src/screenshots/previews/readme-tahoe-dark-dock-green-8f1be9d871f0.webp"><img src="src/screenshots/previews/readme-tahoe-dark-dock-green-8f1be9d871f0.webp" alt="Tahoe Dock icon appearance preview: Green Dark" width="830"></a>
-</p>
-
-<p align="center">
-  <a href="src/screenshots/previews/readme-tahoe-light-dock-gray-5577fc6bb663.webp"><img src="src/screenshots/previews/readme-tahoe-light-dock-gray-5577fc6bb663.webp" alt="Tahoe Dock icon appearance preview: Gray Light" width="830"></a>
-</p>
-
-<p align="center">
-  <a href="src/screenshots/previews/readme-tahoe-dark-dock-gray-8867fd63aba7.webp"><img src="src/screenshots/previews/readme-tahoe-dark-dock-gray-8867fd63aba7.webp" alt="Tahoe Dock icon appearance preview: Gray Dark" width="830"></a>
+  <img src="src/screenshots/previews/tahoe-dock-90735b7d355e.gif" alt="Tahoe Dock showing multicolor icons in light and dark mode, then cycling through rainbow tints" width="830">
 </p>
 
 <br>
@@ -258,13 +149,13 @@ File, Edit and the other application menus follow the active window. Open the sy
 
 <br>
 
-### Tahoe Calendar (Alpha)
+### Tahoe Launchpad (Alpha)
 
-Open the panel clock to see the month on glass. Scroll or use the arrow keys to browse months. Press Home to return to the current month.
+Find apps, browse categories and keep your favorites within reach.
 
 <p align="center">
-  <img src="src/screenshots/previews/readme-tahoe-light-calendar-b917d2025bca.webp" alt="Calendar · Light" width="328">
-  <img src="src/screenshots/previews/readme-tahoe-dark-calendar-1267abeca5d4.webp" alt="Calendar · Dark" width="328">
+  <img src="src/screenshots/previews/readme-tahoe-light-launcher-e9e005b8c0a7.webp" alt="Default Tahoe preset 1 in light mode, with integrated search and Tahoe wallpaper" width="415">
+  <img src="src/screenshots/previews/readme-tahoe-dark-launcher-48f5a12fe6a9.webp" alt="Default Tahoe preset 1 in dark mode, with integrated search and Tahoe wallpaper" width="415">
 </p>
 
 <br>
@@ -276,6 +167,44 @@ Wi-Fi, sound, brightness and notifications in one glass menu. The appearance but
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-control-5f066f7e22f2.webp" alt="Control Center in light mode" width="415">
   <img src="src/screenshots/previews/readme-tahoe-dark-control-176530068a4d.webp" alt="Control Center in dark mode" width="415">
+</p>
+
+<br>
+
+### Tahoe Notifications (Alpha)
+
+Glass notification banners and grouped history with app actions and reply support.
+
+<p align="center">
+  <img src="src/screenshots/previews/readme-tahoe-light-notifications-0be9825c63c2.webp" alt="Tahoe notification banners in light mode" width="48%">
+  <img src="src/screenshots/previews/readme-tahoe-dark-notifications-3bdf43d58e1e.webp" alt="Tahoe notification banners in dark mode" width="48%">
+</p>
+
+<p align="center">
+  <img src="src/screenshots/previews/readme-tahoe-light-notification-history-5f40a7a2616e.webp" alt="Tahoe notification history in light mode" width="48%">
+  <img src="src/screenshots/previews/readme-tahoe-dark-notification-history-34db79c1db88.webp" alt="Tahoe notification history in dark mode" width="48%">
+</p>
+
+<br>
+
+### Tahoe Finder (Alpha)
+
+Finder-style file browsing with Tahoe glass.
+
+<p align="center">
+  <a href="src/screenshots/previews/readme-tahoe-light-finder-8b64ba8e3a8b.webp"><img src="src/screenshots/previews/readme-tahoe-light-finder-8b64ba8e3a8b.webp" alt="Tahoe light desktop with Files focused" width="415"></a>
+  <a href="src/screenshots/previews/readme-tahoe-dark-finder-dd8777a43699.webp"><img src="src/screenshots/previews/readme-tahoe-dark-finder-dd8777a43699.webp" alt="Tahoe dark desktop with Files focused" width="415"></a>
+</p>
+
+<br>
+
+### Tahoe Calendar (Alpha)
+
+Open the panel clock to see the month on glass. Scroll or use the arrow keys to browse months. Press Home to return to the current month.
+
+<p align="center">
+  <img src="src/screenshots/previews/readme-tahoe-light-calendar-b917d2025bca.webp" alt="Calendar · Light" width="328">
+  <img src="src/screenshots/previews/readme-tahoe-dark-calendar-1267abeca5d4.webp" alt="Calendar · Dark" width="328">
 </p>
 
 <br>
@@ -302,19 +231,6 @@ Open the battery menu to check the charge level and power status.
 
 <br>
 
-### Tahoe Notifications (Alpha)
-
-Glass notification banners and grouped history with app actions and reply support.
-
-<p align="center">
-  <img src="src/screenshots/previews/readme-tahoe-light-notifications-0be9825c63c2.webp" alt="Tahoe notifications in light mode" width="415">
-  <img src="src/screenshots/previews/readme-tahoe-light-notification-history-5f40a7a2616e.webp" alt="Tahoe notifications in light mode" width="415">
-  <img src="src/screenshots/previews/readme-tahoe-dark-notifications-3bdf43d58e1e.webp" alt="Tahoe notifications in dark mode" width="415">
-  <img src="src/screenshots/previews/readme-tahoe-dark-notification-history-34db79c1db88.webp" alt="Tahoe notifications in dark mode" width="415">
-</p>
-
-<br>
-
 ### Tahoe Clipboard History (Alpha)
 
 Find and reuse copied text and images directly from Launchpad.
@@ -334,6 +250,18 @@ Your hardware, software and theme details at a glance.
   <img src="src/screenshots/previews/readme-tahoe-light-about-46901764dde1.webp" alt="About This Computer in light mode" width="415">
   <img src="src/screenshots/previews/readme-tahoe-dark-about-5f1088d764fc.webp" alt="About This Computer in dark mode" width="415">
 </p>
+
+<br>
+
+### Acrylic Glass 2.0 with Dynamic Tinting
+
+Adaptive text contrast in the Apple and application menus.
+
+<p align="center">
+  <img src="src/screenshots/previews/acrylic-glass-dynamic-tinting-c13767e72b64.png" alt="Two menus with text switching between black and white over light and dark backgrounds" width="830">
+</p>
+
+<!-- User-supplied comparison image. SHA-256 c13767e72b648e38bc92e49005378616cca5f80e3a639f8f979d5a591fe27c0d -->
 
 <br>
 
