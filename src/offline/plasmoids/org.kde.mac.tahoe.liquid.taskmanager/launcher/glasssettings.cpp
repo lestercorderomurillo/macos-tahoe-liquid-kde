@@ -236,3 +236,9 @@ QColor GlassSettings::notificationForeground(QColor base, QColor backdrop, QColo
     const auto light = GlassInk::luminance(GlassInk::composite(backdrop, fill));
     return GlassInk::foreground(base, light, light, light, light, light);
 }
+
+QColor GlassSettings::animatedNotificationForeground(QObject *item, QWindow *window, QColor base, QColor backdrop, QColor fill)
+{
+    m_ink.observe(window);
+    return m_ink.color(item, base, notificationForeground(base, backdrop, fill));
+}

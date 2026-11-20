@@ -27,7 +27,7 @@ void ShellMenu::reloadTinting()
     const auto config = KSharedConfig::openConfig(QStringLiteral("kwinrc"));
     config->reparseConfiguration();
     m_dynamicTinting = config->group(QStringLiteral("Effect-liquidglass")).readEntry("DynamicTinting", true);
-    if (!m_dynamicTinting) m_grid.clear();
+    if (!m_dynamicTinting) { m_grid.clear(); m_ink.reset(); }
     update();
 }
 
@@ -39,6 +39,9 @@ void ShellMenu::updateBackdrop(int pid, const QRect &frame, const QRect &bounds,
     const QPoint origin = mapToGlobal(QPoint());
     const int tolerance = BackdropGeometry::edgeTolerance(*windowHandle());
     if (qAbs(frame.x() - origin.x()) > tolerance || qAbs(frame.y() - origin.y()) > tolerance) return;
+    m_ink.observe(windowHandle());
+    if (!m_lastFrame.isEmpty() && frame.topLeft() != m_lastFrame.topLeft()) m_ink.moved();
+    m_lastFrame = frame;
     m_bounds = bounds.translated(-frame.topLeft());
     m_grid = grid;
     update();
@@ -47,6 +50,8 @@ void ShellMenu::updateBackdrop(int pid, const QRect &frame, const QRect &bounds,
 void ShellMenu::hideEvent(QHideEvent *event)
 {
     m_grid.clear();
+    m_lastFrame = {};
+    m_ink.reset();
     QMenu::hideEvent(event);
 }
 
@@ -90,9 +95,10 @@ void ShellMenu::initStyleOption(QStyleOptionMenuItem *option, const QAction *act
     if (!m_dynamicTinting || option->state.testFlag(QStyle::State_Selected)) return;
     const auto sampledInk = m_rowInks.value(action);
     if (!sampledInk.isValid()) return;
+    const QColor animated = m_ink.color(action, option->palette.color(QPalette::Active, QPalette::WindowText), sampledInk);
     for (auto group : {QPalette::Active, QPalette::Inactive, QPalette::Disabled}) {
         for (auto role : {QPalette::WindowText, QPalette::Text, QPalette::ButtonText}) {
-            QColor color = sampledInk;
+            QColor color = animated;
             if (group == QPalette::Disabled) color.setAlphaF(.48);
             option->palette.setColor(group, role, color);
         }

@@ -25,7 +25,7 @@ PlasmaCore.Dialog {
         while (tile && tile.fillColor === undefined) tile = tile.parent;
         const fill = tile ? tile.fillColor : Qt.rgba(0, 0, 0, 0);
         const radius = Qt.size(Math.min(36, (tile || item).width / 3), Math.min(64, (tile || item).height / 2));
-        return glass.foregroundAt(point, radius, base, fill);
+        return glass.animatedForegroundAt(item, point, radius, base, fill);
     }
     property Native.ControlGlass glass: Native.ControlGlass {
         window: popup

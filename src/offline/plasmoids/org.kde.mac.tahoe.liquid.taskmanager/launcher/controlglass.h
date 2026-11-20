@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 #pragma once
+#include "inktransition.h"
 #include <QObject>
 #include <QPointer>
 #include <QRegion>
@@ -19,6 +20,7 @@ public:
     virtual void setWindow(QWindow *window);
     quint64 backdropRevision() const { return m_revision; }
     Q_INVOKABLE QColor foregroundAt(QPointF point, QSizeF radius, QColor base, QColor fill) const;
+    Q_INVOKABLE QColor animatedForegroundAt(QObject *item, QPointF point, QSizeF radius, QColor base, QColor fill);
     Q_INVOKABLE QColor backdropAt(QPointF point) const;
 Q_SIGNALS:
     void backdropChanged();
@@ -30,6 +32,8 @@ private:
     quint64 m_revision = 0;
     QByteArray m_backdropGrid;
     QRect m_sampleBounds;
+    QRect m_lastFrame;
+    GlassInk::Transition m_ink{[this] { ++m_revision; Q_EMIT backdropChanged(); }};
 };
 
 class ControlGlass : public PopupBackdrop

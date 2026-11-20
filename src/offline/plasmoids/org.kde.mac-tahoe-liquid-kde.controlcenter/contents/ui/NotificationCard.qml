@@ -32,9 +32,12 @@ Item {
     property color backdropColor: "transparent"
     property color surfaceColor: "transparent"
     Native.GlassSettings { id: inkSettings; component: "notifications" }
-    readonly property color foregroundColor: inkSettings.dynamicTinting
-        ? inkSettings.notificationForeground(Contrast.preferredText(Kirigami.Theme.textColor), backdropColor, surfaceColor)
-        : Contrast.preferredText(Kirigami.Theme.textColor)
+    readonly property color foregroundColor: {
+        const base = Contrast.preferredText(Kirigami.Theme.textColor);
+        if (!inkSettings.dynamicTinting) return base;
+        inkSettings.inkRevision;
+        return inkSettings.animatedNotificationForeground(row, row.Window.window, base, backdropColor, surfaceColor);
+    }
     readonly property bool hovered: hover.hovered
     readonly property bool interacting: hovered || dismiss.hovered || reply.activeFocus || options.visible
     readonly property bool closeVisible: dismiss.opacity > 0

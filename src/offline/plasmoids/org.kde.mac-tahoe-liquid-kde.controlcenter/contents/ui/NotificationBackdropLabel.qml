@@ -9,8 +9,11 @@ ControlLabel {
     property bool floating: false
     property color backdropColor: "transparent"
     Native.GlassSettings { id: inkSettings; component: "notifications" }
-    color: floating && inkSettings.dynamicTinting
-        ? inkSettings.notificationForeground(Contrast.preferredText(Kirigami.Theme.textColor), backdropColor, Qt.rgba(0,0,0,0))
-        : Contrast.preferredText(Kirigami.Theme.textColor)
+    color: {
+        const base = Contrast.preferredText(Kirigami.Theme.textColor);
+        if (!floating || !inkSettings.dynamicTinting) return base;
+        inkSettings.inkRevision;
+        return inkSettings.animatedNotificationForeground(label, label.Window.window, base, backdropColor, Qt.rgba(0,0,0,0));
+    }
     font.family: "SF Pro Display"; font.pixelSize: 13
 }

@@ -63,6 +63,7 @@ in rec {
       (offline + "/plasmoids/org.kde.mac.tahoe.liquid.globalmenu")
       (offline + "/plasmoids/org.kde.mac.tahoe.liquid.taskmanager/launcher/backdropgeometry.h")
       (offline + "/plasmoids/org.kde.mac.tahoe.liquid.taskmanager/launcher/glassink.h")
+      (offline + "/plasmoids/org.kde.mac.tahoe.liquid.taskmanager/launcher/inktransition.h")
     ];
   }) {
     sourceRoot = "source/org.kde.mac.tahoe.liquid.globalmenu";

@@ -41,7 +41,7 @@ Window {
         if (!glassSettings.dynamicTinting || !backdrop.backdropRevision || !item.width || !item.height)
             return preferred;
         const point = item.mapToItem(contentItem, item.width / 2, item.height / 2);
-        return backdrop.foregroundAt(point, Qt.size(width / 4, height / 9), preferred,
+        return backdrop.animatedForegroundAt(item, point, Qt.size(width / 4, height / 9), preferred,
                                      face ? Qt.tint(glass.color, face) : glass.color);
     }
 

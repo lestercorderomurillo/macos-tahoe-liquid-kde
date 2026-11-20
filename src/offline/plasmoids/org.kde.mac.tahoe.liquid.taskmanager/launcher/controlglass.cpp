@@ -27,6 +27,8 @@ void PopupBackdrop::updateBackdrop(int pid, const QRect &frame, const QRect &bou
         // Wayland repositions the anchored Plasma dialog relative to its panel.
         || !m_window->screen() || !m_window->screen()->geometry().intersects(frame)
         || bounds.isEmpty() || colors.size() != 8 * 8 * 3) return;
+    if (!m_lastFrame.isEmpty() && frame.topLeft() != m_lastFrame.topLeft()) m_ink.moved();
+    m_lastFrame = frame;
     m_sampleBounds = bounds.translated(-frame.topLeft());
     m_backdropGrid = colors;
     ++m_revision;
@@ -46,6 +48,11 @@ QColor PopupBackdrop::foregroundAt(QPointF point, QSizeF radius, QColor base, QC
 {
     if (m_backdropGrid.isEmpty()) return base;
     return GlassInk::sample(base, point, radius, [&](QPointF p) { return GlassInk::composite(backdropAt(p), fill); });
+}
+
+QColor PopupBackdrop::animatedForegroundAt(QObject *item, QPointF point, QSizeF radius, QColor base, QColor fill)
+{
+    return m_ink.color(item, base, foregroundAt(point, radius, base, fill));
 }
 
 QRegion ControlGlass::regionFor(const QVariantList &surfaces, bool glassOnly)
@@ -77,7 +84,10 @@ void PopupBackdrop::setWindow(QWindow *window)
     if (m_window == window) return;
     if (m_window) disconnect(m_window, &QWindow::visibleChanged, this, nullptr);
     m_window = window;
+    m_ink.observe(window);
     const auto clear = [this] {
+        m_lastFrame = {};
+        m_ink.reset();
         m_backdropGrid.clear();
         ++m_revision;
         Q_EMIT backdropChanged();
