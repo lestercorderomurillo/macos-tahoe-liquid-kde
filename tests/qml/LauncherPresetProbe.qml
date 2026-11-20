@@ -21,6 +21,7 @@ Timer {
     property real inlineWidth: 0
     property size initialPopupSize
     property color originalForeground: "transparent"
+    property double dismissalDeadline: 0
     property int rapidWaits: 0
     property int resizeWaits: 0
     property Timer rapidPresets: Timer {
@@ -40,6 +41,18 @@ Timer {
         if (!condition) {
             throw new Error(label);
         }
+    }
+    function focusOutside() {
+        outsideProbe.requestActivate();
+        dismissalDeadline = Date.now() + 3000;
+    }
+    function awaitingDismissal() {
+        // X11 delivers focus asynchronously, then the launcher runs its dismissal timer.
+        if ((root.visible || searchPopup.visible) && Date.now() < dismissalDeadline) {
+            --phase;
+            return true;
+        }
+        return false;
     }
     function verifyCapsulePosition() {
         verify(Math.abs(searchPopup.width - root.width * 0.617) <= 1,
@@ -311,9 +324,10 @@ Timer {
                 break;
             case 5:
                 outsideProbe.show();
-                outsideProbe.requestActivate();
+                focusOutside();
                 break;
             case 6:
+                if (awaitingDismissal()) break;
                 verify(!root.visible && !searchPopup.visible && searchBar.textField.text === "", "outside focus closes both popups and resets query");
                 outsideProbe.close();
                 plasmoid.configuration.showAllAppsInList = false;
@@ -363,9 +377,10 @@ Timer {
             case 12:
                 verify(root.visible, "inline popup stays open with a transient parent");
                 verify(searchBar.textField.activeFocus, "reopened inline search has focus");
-                outsideProbe.requestActivate();
+                focusOutside();
                 break;
             case 13:
+                if (awaitingDismissal()) break;
                 verify(!root.visible, "focusing the parent closes the inline launcher");
                 plasmoid.configuration.launcherPreset = 2;
                 root.visible = true;
@@ -391,9 +406,10 @@ Timer {
                 appList.viewItem.currentItem.testActionMenu.menu.close();
                 break;
             case 18:
-                outsideProbe.requestActivate();
+                focusOutside();
                 break;
             case 19:
+                if (awaitingDismissal()) break;
                 verify(!root.visible && !searchPopup.visible, "focusing the parent closes both detached popups");
                 plasmoid.configuration.launcherPreset = 1;
                 break;

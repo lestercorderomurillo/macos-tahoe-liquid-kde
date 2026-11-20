@@ -144,6 +144,9 @@ and evidence before tagging. Publish through the release workflows, Tahoe first.
 Report observed publication results and the known CI status; submitted is not
 published, and pending or failed is not passed. Repair relevant failures when
 observed; do not silently withdraw or revert a release without cause.
+After publication, check the tag's release workflow and the tests for the
+released commit on dev in both repositories. Follow pending runs to completion,
+investigate failures, and report each final result with its run link.
 
 ## Appearance synchronization qualification
 
