@@ -51,7 +51,7 @@ def capture(repo, ref, image, output, editions, packages):
                 tempfile.TemporaryDirectory(dir=scratch) as work,
                 Guest(Path(work), profile, image, archive, edition) as vm,
             ):
-                configure_indexer(vm)
+                vm.action("configure-indexer")
                 if packages:
                     for package in packages:
                         vm.put(package, "/tmp/" + package.name)
@@ -71,18 +71,3 @@ def capture(repo, ref, image, output, editions, packages):
                         output / (stem + "blue.webp"),
                         profile["pins"],
                     )
-
-
-def configure_indexer(vm):
-    """Keep Baloo metadata extraction available while the VM restarts Plasma."""
-    directory = "/home/tester/.config/systemd/user/kde-baloo.service.d"
-    vm.remote("mkdir", "-p", directory)
-    vm.remote(
-        "bash",
-        "-c",
-        'printf "%s\\n" "[Service]" "Environment=QT_QPA_PLATFORM=offscreen" > "$1/10-capture.conf"',
-        "bash",
-        directory,
-    )
-    vm.remote("systemctl", "--user", "daemon-reload")
-    vm.remote("systemctl", "--user", "restart", "kde-baloo.service")

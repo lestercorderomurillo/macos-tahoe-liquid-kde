@@ -31,6 +31,23 @@ def session():
     os.environ.update(LANG='en_US.UTF-8', LANGUAGE='en', LC_ALL='en_US.UTF-8', TZ='UTC')
 
 
+def run_user_service(*args):
+    from distro import user_service_manager_command
+    command = user_service_manager_command(*args)
+    if command is None:
+        raise RuntimeError("The reference capture guest requires a systemd user session")
+    return run(*command)
+
+
+def configure_indexer():
+    """Keep Baloo available while Plasma restarts inside the capture guest."""
+    directory = Path.home() / ".config/systemd/user/kde-baloo.service.d"
+    directory.mkdir(parents=True, exist_ok=True)
+    (directory / "10-capture.conf").write_text("[Service]\nEnvironment=QT_QPA_PLATFORM=offscreen\n")
+    run_user_service("daemon-reload")
+    run_user_service("restart", "kde-baloo.service")
+
+
 def plasma(script):
     return run('qdbus6', 'org.kde.plasmashell', '/PlasmaShell', 'org.kde.PlasmaShell.evaluateScript', script)
 
@@ -544,7 +561,7 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--repo', type=Path, required=True)
     parser.add_argument('--profile', type=Path, required=True)
-    parser.add_argument('action', choices=('file-preview', 'material', 'setup', 'mode', 'launch', 'launcher', 'arrange', 'close', 'clean-desktop', 'wizard', 'plasma', 'capture', 'boot'))
+    parser.add_argument('action', choices=('configure-indexer', 'file-preview', 'material', 'setup', 'mode', 'launch', 'launcher', 'arrange', 'close', 'clean-desktop', 'wizard', 'plasma', 'capture', 'boot'))
     parser.add_argument('args', nargs='*')
     args = parser.parse_args()
     sys.path.insert(0, str(args.repo / 'src/scripts'))
@@ -552,6 +569,7 @@ def main():
     profile = json.loads(args.profile.read_text())
     result = None
     if args.action == 'file-preview': result = file_preview(args.repo, profile, args.args[0])
+    elif args.action == 'configure-indexer': configure_indexer()
     elif args.action == 'setup': result = setup(args.repo, profile, *args.args)
     elif args.action == 'material': result = material(args.repo, args.args[0])
     elif args.action == 'mode': result = mode(args.repo, *args.args)

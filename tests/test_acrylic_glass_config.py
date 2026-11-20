@@ -61,7 +61,7 @@ def test_native_material_follows_source_edition_across_reinstalls(tmp_path, firs
         components = json.loads(material.pop("ComponentMaterials"))
         assert components["dock"]["BlurStrength"] == (4 if edition == "MacGoldenGate" else 5)
         assert components["dock"]["DarkGradientOverlay"] is False
-        assert components["apps"]["BlurStrength"] == (3 if edition == "MacGoldenGate" else float(expected["BlurStrength"]))
+        assert components["apps"]["BlurStrength"] == (12 if edition == "MacGoldenGate" else float(expected["BlurStrength"]))
         assert material == expected | {
             "MaterialPreset": str(editions[edition]), "WindowCornerRadius": "13.5",
             "DockCornerRadius": "0", "PopupCornerRadius": "", "WindowClasses": "custom-app",

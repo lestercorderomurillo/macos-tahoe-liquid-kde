@@ -8,7 +8,7 @@ from pathlib import Path
 
 from icon_toolset import BASE, SYSTEM_MENU_ICONS, installer_themes
 from installer_choices import COLORS
-from release_capture_guest import plasma, run, session, windows
+from release_capture_guest import plasma, run, run_user_service, session, windows
 from theme_switch import refresh_icons_live
 
 
@@ -104,8 +104,8 @@ def appearance(style, mode, profile):
         theme,
     )
     refresh_icons_live()
-    run("systemctl", "--user", "reset-failed", "plasma-plasmashell.service")
-    run("systemctl", "--user", "restart", "plasma-plasmashell.service")
+    run_user_service("reset-failed", "plasma-plasmashell.service")
+    run_user_service("restart", "plasma-plasmashell.service")
     for _ in range(25):
         try:
             session()

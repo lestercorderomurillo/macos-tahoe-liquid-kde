@@ -1,6 +1,6 @@
 # Installer testing
 
-**v0.74.3**. KDE neon Wayland previews verified launcher text in light and dark mode in both editions. Golden Gate also switched automatically with the launcher open. [Evidence and coverage](release-evidence.json).
+**v0.74.4**. Focused tests passed for material reinstalls, capture tooling and user service management. [Evidence and coverage](release-evidence.json).
 
 [Installer photo evidence](src/screenshots/previews/wizard-tahoe-provenance-9ba9cfba299b.json).
 
