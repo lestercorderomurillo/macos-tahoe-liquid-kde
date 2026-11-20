@@ -23,6 +23,7 @@
 #include <algorithm>
 
 #include "dbusmenuimporter.h"
+#include "shellmenu.h"
 #include <abstracttasksmodel.h>
 
 class KDBusMenuImporter : public DBusMenuImporter
@@ -33,6 +34,7 @@ public:
     { }
 
 protected:
+    QMenu *createMenu(QWidget *parent) override { return new ShellMenu(parent); }
     QIcon iconForName(const QString& name) override { return QIcon::fromTheme(name); }
 };
 

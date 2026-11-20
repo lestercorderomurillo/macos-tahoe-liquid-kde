@@ -7,8 +7,8 @@
 #include "appmenuapplet.h"
 #include "appmenumodel.h"
 #include "systemmenustyle.h"
+#include "shellmenu.h"
 
-#include <KColorScheme>
 #include <KLocalizedString>
 #include <KUser>
 #include <QAction>
@@ -47,35 +47,6 @@ QString viewService()
     return QStringLiteral("org.kde.kappmenuview");
 }
 
-/// Force a menu to follow the ACTIVE KDE colour scheme (light/dark).
-///
-/// The system / window menus are plain QWidget QMenus, so they inherit
-/// plasmashell's widget-style palette (Kvantum). Kvantum does not hot-reload
-/// its kvconfig, so after a live light↔dark switch a freshly-opened menu can
-/// still paint with the previous mode's palette — the "About This Computer"
-/// popup staying light in dark mode. KColorScheme reads the scheme from
-/// kdeglobals on disk (always current), so applying it here makes the menu
-/// track the mode regardless of what the running widget style cached. Safe:
-/// it only sets this widget's palette, touches nothing global, and needs no
-/// plasmashell restart.
-void applyActiveColorScheme(QWidget* menu)
-{
-    if (!menu) {
-        return;
-    }
-    QPalette pal = menu->palette();
-    const KColorScheme window(QPalette::Active, KColorScheme::Window);
-    const KColorScheme view(QPalette::Active, KColorScheme::View);
-    pal.setBrush(QPalette::Window, window.background());
-    pal.setBrush(QPalette::WindowText, window.foreground());
-    pal.setBrush(QPalette::Base, view.background());
-    pal.setBrush(QPalette::Text, view.foreground());
-    pal.setBrush(QPalette::ButtonText, window.foreground());
-    const KColorScheme selection(QPalette::Active, KColorScheme::Selection);
-    pal.setBrush(QPalette::Highlight, selection.background());
-    pal.setBrush(QPalette::HighlightedText, selection.foreground());
-    menu->setPalette(pal);
-}
 } // namespace
 
 // Lifecycle
@@ -322,7 +293,7 @@ void AppMenuApplet::showMenu(QQuickItem* ctx, QMenu* actionMenu, int idx)
 
     if (view() == FullView) {
         if (!m_currentMenu || !m_ownsCurrentMenu) {
-            m_currentMenu = new QMenu;
+            m_currentMenu = new ShellMenu;
             m_ownsCurrentMenu = true;
             connect(m_currentMenu, &QMenu::aboutToHide, this, &AppMenuApplet::onMenuAboutToHide, Qt::UniqueConnection);
         } else if (m_sourceMenu != actionMenu) {
@@ -332,8 +303,9 @@ void AppMenuApplet::showMenu(QQuickItem* ctx, QMenu* actionMenu, int idx)
             restoreBorrowedActions();
         }
         m_currentMenu->setActiveAction(nullptr);
-        m_currentMenu->setStyle(actionMenu->style());
-        m_currentMenu->setPalette(actionMenu->palette());
+        // Keep the application style and palette live on this popup, just as
+        // on its cascading QMenus. Only the system menu has a custom row style.
+        m_currentMenu->setStyle(actionMenu == m_systemMenu ? actionMenu->style() : nullptr);
         m_currentMenu->setFont(actionMenu->font());
         m_sourceMenu = actionMenu;
         auto menuAction = m_sourceMenu->menuAction();
@@ -417,11 +389,9 @@ void AppMenuApplet::triggerWindowMenu(QQuickItem* ctx)
     }
 
     if (!m_windowMenu) {
-        m_windowMenu = std::make_unique<QMenu>();
+        m_windowMenu = std::make_unique<ShellMenu>();
     }
     m_windowMenu->clear();
-    // Reused across light↔dark switches, so refresh the palette on every open.
-    applyActiveColorScheme(m_windowMenu.get());
 
     // Read metadata only. Never execute an application's binary or Exec entry
     // to discover its version, and never expose process command-line arguments.
@@ -582,7 +552,7 @@ void AppMenuApplet::triggerSystemMenu(QQuickItem* ctx)
     }
 
     if (!m_systemMenu) {
-        m_systemMenu = new QMenu;
+        m_systemMenu = new ShellMenu;
         QFont menuFont = QApplication::font("QMenu");
         menuFont.setWeight(QFont::Normal);
         m_systemMenu->setFont(menuFont);
@@ -590,7 +560,6 @@ void AppMenuApplet::triggerSystemMenu(QQuickItem* ctx)
     }
     auto* menu = m_systemMenu.data();
     menu->clear();
-    applyActiveColorScheme(menu);
 
     const auto cfg = config();
 

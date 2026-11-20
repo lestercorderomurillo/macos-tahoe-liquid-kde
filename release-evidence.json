@@ -1,26 +1,32 @@
 {
-  "version": "0.74.1",
+  "version": "0.74.2",
   "gallery_commit": "f09780b200b79302e7c23ef9f6f74d94748bbea3",
-  "scope": "Global menu hover, cascading submenus and direct command activation.",
+  "scope": "Shared Shell menu appearance and README edits.",
+  "approval": "Maintainer accepted the menu fix and requested delivery with both README edits.",
   "checks": [
     {
-      "command": "Native globalmenu-popup-test and globalmenu-model-test on isolated Xvfb and session D-Bus",
+      "command": "Build and install the candidate global menu applet in KDE neon on Wayland; switch light/dark with the Firefox system menu and Kate cascading menu open",
       "result": "passed",
-      "detail": "13 popup and 12 model checks passed, including exporter root refresh on open and navigation across a direct command."
+      "frames": {
+        "final-ff-light.png": "4dda7653908f191c8df824269ee3633a71993d66bb4c79adc174c02516e9be16",
+        "final-ff-dark.png": "6e53222a8c098bc0f101969284fe0b1f6133eec727058f0a3c6d20b77d8fe963",
+        "final-ff-return.png": "3ca8beb18938bc2f248595813e63a37870f4ba02620462e49f0e0e4932843bc3",
+        "final-sub-light.png": "f6797186dd3b794417108ff266df5716bfef05b239a660c09e8f7855e4a61781",
+        "final-sub-dark.png": "1dfae91c8c6d695e463a89c6fe2b2d36ef483ac41142e3b098f4cd3c4316a748"
+      },
+      "source_files": [
+        "0568555e736870a19aa6f245d645a09380c69e55abcb67f6aeec26164da3e72a  src/offline/plasmoids/org.kde.mac.tahoe.liquid.globalmenu/appmenuapplet.cpp",
+        "998ef39c70c2d616f5b67d384a16e051f9f4a049f6288c4162d9e10383b23cfd  src/offline/plasmoids/org.kde.mac.tahoe.liquid.globalmenu/appmenumodel.cpp",
+        "def3d871df059219fbbaaad6d0d458009d17995305ed920c14b473fac5bca823  src/offline/plasmoids/org.kde.mac.tahoe.liquid.globalmenu/shellmenu.h"
+      ]
     },
     {
-      "command": "KDE neon Wayland guest with Kate: traverse 12 headings 16 times with QMP pointer movement, query Plasma after each loop, and inspect View > Split View",
-      "result": "passed",
-      "environment": "KDE neon / Wayland, Plasma 6.8.1, Kate 26.08.2",
-      "install": "Built and loaded global menu plugin from candidate sources verified by SHA-256 in guest",
-      "plugin_sha256": "5864fc8cbe6b0e44799e085b6b312fa15c80e15dc939ded309d5563251191c00",
-      "frame_sha256": "a87a0ef647574e6e1fb179466b43fe3a0d324113ea58977c76f606482378bed4",
-      "detail": "Kate document remained open, 192 menu switches, 16 successful D-Bus pings to one plasmashell process, Split View submenu visibly populated."
+      "command": "Review README diffs in both editions and check repository-local image sources",
+      "result": "passed"
     }
   ],
   "coverage_limits": [
-    "Installed-session navigation was exercised on the shared Tahoe applet in KDE neon Wayland with Kate. Golden Gate consumes the same source.",
-    "Two native cases are excluded from the isolated Xvfb run: installed-session window controls and the X11 task backend removed in Plasma 6.8."
+    "Rendered menu qualification used the Golden Gate material in a KDE neon Wayland guest. The applet is shared with Tahoe. Full remote CI is asynchronous."
   ],
-  "source_sha256": "8d590e10215c2353e2f3f119bef6b36268b3ae00bfb5b4fb8d15b8f7dc56b714"
+  "source_sha256": "6e1b4466f3e491b36059fb5b28abefbe79741a4061a8b1ba14164f478fc8dfec"
 }

@@ -1,6 +1,6 @@
 # Installer testing
 
-**v0.74.1**. On KDE neon Wayland, Kate’s global menu remained responsive through 192 menu switches. The native suite also exercised changing menus and commands during pointer navigation. [Evidence and coverage](release-evidence.json).
+**v0.74.2**. KDE neon Wayland checks covered switching appearance with the Firefox system menu and a Kate submenu open. [Evidence and coverage](release-evidence.json).
 
 [Installer photo evidence](src/screenshots/previews/wizard-tahoe-provenance-9ba9cfba299b.json).
 
