@@ -7,8 +7,8 @@ NativeGlass.PopupBackdrop {
     required property color preferred
     required property color fill
     required property bool tintEnabled
-    readonly property bool sampled: tintEnabled && backdropRevision > 0 && window !== null
-    readonly property color foreground: sampled
+    readonly property bool sampled: tintEnabled && window !== null
+    readonly property color foreground: sampled && backdropRevision > 0
         ? animatedForegroundAt(window, Qt.point(window.width / 2, window.height / 2),
                                Qt.size(window.width / 4, window.height / 9), preferred, fill)
         : preferred
