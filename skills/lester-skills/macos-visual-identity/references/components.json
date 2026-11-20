@@ -1,0 +1,146 @@
+{
+  "menus": {
+    "sources": [
+      "src/offline/plasmoids/org.kde.mac-tahoe-liquid-kde.controlcenter/contents/ui/MacOptionsMenu.qml",
+      "src/offline/plasmoids/org.kde.mac-tahoe-liquid-kde.launcher/contents/ui/TahoeOptionsMenu.qml",
+      "src/offline/menu-style/menu_style.cpp"
+    ],
+    "references": [
+      "docs/menu-reference-comparison.md",
+      "docs/evidence/launcher-menu-alignment.json"
+    ]
+  },
+  "notifications": {
+    "sources": [
+      "src/offline/plasmoids/org.kde.mac-tahoe-liquid-kde.controlcenter/contents/ui/NotificationCard.qml",
+      "src/offline/plasmoids/org.kde.mac-tahoe-liquid-kde.controlcenter/contents/ui/MacOptionsMenu.qml",
+      "src/offline/plasmoids/org.kde.mac-tahoe-liquid-kde.controlcenter/contents/ui/NotificationSurface.qml",
+      "src/offline/plasmoids/org.kde.mac-tahoe-liquid-kde.notifications/contents/ui/NotificationPopup.qml",
+      "src/offline/plasmoids/org.kde.mac.tahoe.liquid.taskmanager/launcher/notificationbanner.cpp"
+    ],
+    "references": [
+      "docs/notifications-reference.md",
+      "docs/evidence/notifications-0739.json"
+    ]
+  },
+  "launcher": {
+    "sources": [
+      "src/offline/plasmoids/org.kde.mac-tahoe-liquid-kde.launcher/contents/ui/MainView.qml",
+      "src/offline/plasmoids/org.kde.mac-tahoe-liquid-kde.launcher/contents/ui/MenuButton.qml",
+      "src/offline/plasmoids/org.kde.mac-tahoe-liquid-kde.launcher/contents/ui/TahoeOptionsMenu.qml",
+      "src/offline/plasmoids/org.kde.mac-tahoe-liquid-kde.controlcenter/contents/ui/MacOptionsMenu.qml",
+      "src/scripts/launcher_defaults.py"
+    ],
+    "references": [
+      "docs/evidence/launcher-menu-alignment.json"
+    ]
+  },
+  "glass": {
+    "sources": [
+      "src/scripts/glass_surface_settings.py",
+      "src/scripts/glass_surfaces.py",
+      "src/offline/plasmoids/org.kde.mac-tahoe-liquid-kde.controlcenter/contents/ui/ControlTile.qml",
+      "src/offline/kwin-effects/acrylic-glass/src/componentmaterials.h"
+    ],
+    "references": [
+      "docs/glass-materials.md",
+      "docs/appearance-sync.md"
+    ]
+  },
+  "controls": {
+    "sources": [
+      "src/offline/plasmoids/org.kde.mac-tahoe-liquid-kde.controlcenter/contents/ui/ControlStyle.js",
+      "src/offline/plasmoids/org.kde.mac-tahoe-liquid-kde.controlcenter/contents/ui/ControlTile.qml",
+      "src/offline/plasmoids/org.kde.mac-tahoe-liquid-kde.controlcenter/contents/ui/GlassRim.qml",
+      "src/offline/plasmoids/org.kde.mac-tahoe-liquid-kde.controlcenter/contents/ui/ControlView.qml"
+    ],
+    "references": [
+      "docs/desktop-controls.md",
+      "docs/evidence/status-menus-0737.json"
+    ]
+  },
+  "icons": {
+    "sources": [
+      "src/scripts/icon_toolset.py",
+      "src/scripts/icon_sources.py",
+      "src/scripts/icon_materials.py",
+      "src/scripts/build_control_symbols.py",
+      "src/scripts/build_menu_symbols.py"
+    ],
+    "references": [
+      "NOTICE",
+      "LICENSING.md",
+      "THIRD_PARTY_NOTICES.md"
+    ]
+  },
+  "window-controls": {
+    "sources": [
+      "src/scripts/window_controls.py",
+      "src/scripts/window_shadows.py"
+    ],
+    "references": [
+      "docs/window-controls.md"
+    ]
+  },
+  "installer": {
+    "sources": [
+      "src/installer/wizard_window.py",
+      "src/installer/installer_ui.py",
+      "src/scripts/installer_preview_assets.py",
+      "src/scripts/installer_choices.py"
+    ],
+    "references": [
+      "docs/wizard-glass.md",
+      "docs/evidence/installer-fonts.json"
+    ]
+  },
+  "edition": {
+    "sources": [
+      "src/scripts/defaults.json",
+      "src/scripts/launcher_defaults.py",
+      "src/scripts/theme_switch.py",
+      "nix/install-assets.py"
+    ],
+    "references": [
+      "AGENTS.md",
+      "docs/appearance-sync.md"
+    ]
+  },
+  "dock": {
+    "sources": [
+      "src/offline/plasmoids/org.kde.mac.tahoe.liquid.taskmanager/contents/ui/Task.qml",
+      "src/scripts/dock_apps.py",
+      "src/scripts/icon_toolset.py"
+    ],
+    "references": [
+      "CONTRIBUTING.md"
+    ]
+  },
+  "files": {
+    "sources": [
+      "src/scripts/steps/nautilus.py",
+      "src/scripts/steps/gtk.py",
+      "src/scripts/window_controls.py"
+    ],
+    "references": [
+      "docs/window-controls.md"
+    ]
+  },
+  "about": {
+    "sources": [
+      "src/scripts/preview_about.qml",
+      "src/scripts/about_info.py"
+    ],
+    "references": [
+      "docs/appearance-sync.md"
+    ]
+  },
+  "boot": {
+    "sources": [
+      "src/scripts/steps/plymouth.py"
+    ],
+    "references": [
+      "CONTRIBUTING.md"
+    ]
+  }
+}

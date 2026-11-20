@@ -1,6 +1,6 @@
 # Development skills
 
-These 25 task-specific skills supplement the existing communication skill.
+These 26 task-specific skills supplement the existing communication skill.
 Canonical collections live under `skills/`; `.agents/skills/` contains relative
 symlinks for normal Codex discovery. Load only the skill relevant to the task.
 Read [project integration](project-integration.md) when using external guidance.
@@ -10,6 +10,7 @@ No global skills, desktop settings, installer defaults or release pins are chang
 
 | Skill | Operation |
 | --- | --- |
+| [macos-visual-identity](lester-skills/macos-visual-identity/SKILL.md) | Preserve the reviewed macOS identity using current source, matching edition references and shared components. |
 | [project-impact](lester-skills/project-impact/SKILL.md) | Read-only diff, caller and suggested-test report using the existing offline graph. |
 | [focused-validation](lester-skills/focused-validation/SKILL.md) | Connect affected claims to sufficient selected checks and explicit coverage gaps. |
 | [evidence-reuse](lester-skills/evidence-reuse/SKILL.md) | Distinguish reusable evidence, invalidated checks and whole-record integrity. |

@@ -1,5 +1,7 @@
 {
   "es": {
+    "Bluetooth is off": "Bluetooth está desactivado",
+    "No Bluetooth adapter": "No hay adaptador Bluetooth",
     "Known Networks": "Redes conocidas",
     "Other Networks": "Otras redes",
     "Wi-Fi Settings…": "Ajustes de Wi-Fi…",
@@ -12,6 +14,8 @@
     "Battery Settings…": "Ajustes de batería…"
   },
   "zh_CN": {
+    "Bluetooth is off": "蓝牙已关闭",
+    "No Bluetooth adapter": "没有蓝牙适配器",
     "Known Networks": "已知网络",
     "Other Networks": "其他网络",
     "Wi-Fi Settings…": "Wi-Fi 设置…",

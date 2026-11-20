@@ -63,6 +63,9 @@ Read and follow these skills on every task in this repository:
 - [communication-autonomy](skills/lester-skills/communication-autonomy/SKILL.md) — work silently, interrupt only for real decisions or blockers, and close with a one-line "Done." report.
 - [Skill organization](skills/lester-skills/other-skills.md) — keep Lester and other skill collections under `skills/`.
 
+For visible desktop changes, use [macos-visual-identity](skills/lester-skills/macos-visual-identity/SKILL.md)
+to identify the matching approved component and reference before implementation.
+
 Task-specific development skills are indexed in [skills/catalog.md](skills/catalog.md).
 Load only the relevant skill; `.agents/skills/` holds discovery links to the
 canonical collections under `skills/`. Project policy and current user
