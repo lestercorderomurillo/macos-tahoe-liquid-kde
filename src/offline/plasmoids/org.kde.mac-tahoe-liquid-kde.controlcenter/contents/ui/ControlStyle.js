@@ -5,7 +5,6 @@ var family = "SF Pro Text";
 var body = 13;
 var caption = 11;
 var panelIcon = 18;
-var panelCell = 28;
 var actionIcon = 22;
 var circleIcon = 26;
 function foreground(item, window, base) {

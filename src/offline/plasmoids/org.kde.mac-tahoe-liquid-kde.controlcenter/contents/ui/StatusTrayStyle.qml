@@ -2,7 +2,6 @@
 import QtQuick
 import QtQuick.Layouts
 import QtQml.Models
-import "ControlStyle.js" as Style
 import org.kde.kirigami as Kirigami
 
 Item {
@@ -38,19 +37,6 @@ Item {
         sourceComponent: Component {
             PanelCalendar { clock: style.clock }
         }
-    }
-
-    Binding {
-        target: style.tray?.visibleLayout ?? null
-        property: "cellWidth"
-        when: !!style.tray && !style.tray.vertical
-        value: Style.panelCell + Math.max(0, style.panelLayout?.columnSpacing ?? 0)
-    }
-    Binding {
-        target: style.arrow?.Layout ?? null
-        property: "preferredWidth"
-        when: !!style.arrow && !style.tray.vertical
-        value: Style.panelCell
     }
 
     function delegates(grid: Item): list<Item> {
