@@ -1,6 +1,6 @@
 # Installer testing
 
-**v0.74.6**. Golden Gate Shell menu contrast was verified at 145% scale. Both editions were photographed with one-line Battery status and three scanned Wi-Fi networks in light and dark mode. [Evidence and coverage](release-evidence.json).
+**v0.74.7**. The global menu plugin built and installed from its packaged Nix sources on x86_64-linux. [Evidence and coverage](release-evidence.json).
 
 [Installer photo evidence](src/screenshots/previews/wizard-tahoe-provenance-9ba9cfba299b.json).
 

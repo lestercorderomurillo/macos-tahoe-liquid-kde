@@ -56,7 +56,14 @@ in rec {
     cmakeFlags = [ "-DCMAKE_BUILD_TYPE=Release"
       "-DMENU_STYLE_PLUGIN_DIR=${placeholder "out"}/${kde.qtbase.qtPluginPrefix}/styles" ];
   };
-  global-menu = buildPlugin "global-menu" (offline + "/plasmoids/org.kde.mac.tahoe.liquid.globalmenu") {
+  global-menu = buildPlugin "global-menu" (lib.fileset.toSource {
+    root = offline + "/plasmoids";
+    fileset = lib.fileset.unions [
+      (offline + "/plasmoids/org.kde.mac.tahoe.liquid.globalmenu")
+      (offline + "/plasmoids/org.kde.mac.tahoe.liquid.taskmanager/launcher/backdropgeometry.h")
+    ];
+  }) {
+    sourceRoot = "source/org.kde.mac.tahoe.liquid.globalmenu";
     cmakeFlags = [ "-DCMAKE_BUILD_TYPE=Release" "-DTAHOE_BUILD_LAUNCHER_MODULE=OFF" ];
     propagatedBuildInputs = [ task-manager ];
   };

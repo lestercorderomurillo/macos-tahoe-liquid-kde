@@ -1,39 +1,14 @@
 {
-  "version": "0.74.6",
+  "version": "0.74.7",
   "gallery_commit": "f09780b200b79302e7c23ef9f6f74d94748bbea3",
-  "scope": "Adaptive Shell menu contrast, single-line Battery menu, and approved README galleries.",
-  "approval": "Maintainer approved the menu opacity and requested publication of all reviewed work in both editions.",
+  "scope": "Nix source packaging for the global menu plugin.",
+  "approval": "Maintainer requested the CI/CD repair.",
   "checks": [
     {
-      "command": "Focused menu, native and contour checks plus recorded KWin SDK qualification",
-      "candidate": "d27d609c662899d88e97265d632e3caa2a6f8cc5",
-      "coverage": [
-        "KWin 6.7 Wayland build",
-        "KWin 6.6 X11 build and isolated Xvfb sample transition",
-        "KWin 6.8.1 installed Wayland rendering"
-      ],
-      "result": "passed"
-    },
-    {
-      "command": "Inspect open Apple and Edit menus over a reversing backdrop at 145% scale in Golden Gate",
-      "frames": {
-        "apple-light-normal.png": "8f7a2410d42a53fa86165466df7946a0b832917e89a959a886fb077dad61a34f",
-        "apple-light-reversed.png": "8cee7aed10a4646aafcb34ba41ef4ba57f6be16871482b8f8faa3b9835d59ec9",
-        "apple-dark-normal.png": "8274e4ca64d59126c5dfe6e12fdf7ced2acf3176fa0813bf4c2f459f32f3638f",
-        "apple-dark-reversed.png": "435d9cf86fee3f138edebce3e87f31a137459f59e8159182d0f1243e74f4ffa3",
-        "edit-flipped.png": "45da6d8ab0c409cc4b14b097b37d898a74935c04a22ac589da1cbb8e34184d55",
-        "edit-light.png": "e1618c33026363ee6f1c21bb568f4cc7eb94edce21a73e7d887365a3c7778bc3"
-      },
-      "result": "passed"
-    },
-    {
-      "command": "Verify battery message catalogs and inspect both editions in light and dark modes",
-      "source": "7f3b34178adda1be1218fbe0b2eccc8998971c7b",
-      "result": "passed"
-    },
-    {
-      "command": "release-screenshots readme-photos and verify the approved 18.8-second Dock animation and scanned Wi-Fi photographs",
-      "result": "passed"
+      "command": "nix build path:/repo#global-menu and verify the installed org.kde.mac.tahoe.liquid.globalmenu.so",
+      "result": "passed",
+      "output": "Verified global-menu plugin in /nix/store/0hmj08fiimqpq9rp3hss0hafhbmdrq2y-mac-tahoe-global-menu-0.74.7",
+      "recipe_sha256": "84e416af343329efc316e80f60681601066229bf1d2abacf24f77d46f4c83e3b"
     }
   ],
   "captures": [
@@ -73,8 +48,7 @@
     }
   ],
   "coverage_limits": [
-    "Adaptive Shell menu rendering was photographed on Golden Gate Wayland. The 6.6 X11 check exercised backdrop transitions and 6.7 coverage was a build.",
-    "The Wi-Fi examples use guest test access points. Dock GIFs use previously reviewed standard-theme photographs."
+    "Focused local Nix build on x86_64-linux. Desktop and gallery evidence carried forward from v0.74.6."
   ],
-  "source_sha256": "fdca789e9fb0bf07eb785f041c89a3ada1f88bd09e478f8e1c4c21b8dbac8ae6"
+  "source_sha256": "65e1198256da79c421a165fddc0416b4c8ba53d417d33c0d21d94354a4d6844a"
 }
