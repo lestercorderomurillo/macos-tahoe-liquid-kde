@@ -341,8 +341,8 @@ Kopierte Texte und Bilder direkt im Launchpad finden und wiederverwenden.
 Hardware-, Software- und Designdetails mit dynamischer Textfarbe.
 
 <p align="center">
-  <img src="src/screenshots/previews/readme-tahoe-light-about-46901764dde1.webp" alt="Helle Systeminformationen mit Fensterknöpfen links" width="415">
-  <img src="src/screenshots/previews/readme-tahoe-dark-about-5f1088d764fc.webp" alt="Dunkle Systeminformationen mit Fensterknöpfen rechts" width="415">
+  <img src="src/screenshots/previews/readme-tahoe-light-about-46901764dde1.webp" alt="Helle Systeminformationen" width="415">
+  <img src="src/screenshots/previews/readme-tahoe-dark-about-5f1088d764fc.webp" alt="Dunkle Systeminformationen" width="415">
 </p>
 
 <br>

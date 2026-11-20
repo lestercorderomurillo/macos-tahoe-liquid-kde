@@ -341,8 +341,8 @@ Encontre e reutilize textos e imagens copiados diretamente pelo Launchpad.
 Detalhes de hardware, software e tema com cor de texto adaptativa.
 
 <p align="center">
-  <img src="src/screenshots/previews/readme-tahoe-light-about-46901764dde1.webp" alt="Informações do sistema no modo claro com botões à esquerda" width="415">
-  <img src="src/screenshots/previews/readme-tahoe-dark-about-5f1088d764fc.webp" alt="Informações do sistema no modo escuro com botões à direita" width="415">
+  <img src="src/screenshots/previews/readme-tahoe-light-about-46901764dde1.webp" alt="Informações do sistema no modo claro" width="415">
+  <img src="src/screenshots/previews/readme-tahoe-dark-about-5f1088d764fc.webp" alt="Informações do sistema no modo escuro" width="415">
 </p>
 
 <br>
