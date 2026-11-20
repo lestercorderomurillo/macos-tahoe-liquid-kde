@@ -1,6 +1,6 @@
 # Installer testing
 
-**v0.74.7**. The global menu plugin built and installed from its packaged Nix sources on x86_64-linux. [Evidence and coverage](release-evidence.json).
+**v0.75.0**. Italian catalog checks and installer navigation passed for both editions. The Italian welcome screen was verified in KDE neon. [Evidence and coverage](release-evidence.json).
 
 [Installer photo evidence](src/screenshots/previews/wizard-tahoe-provenance-531f633f4ff6.json).
 

@@ -1,54 +1,32 @@
 {
-  "version": "0.74.7",
+  "version": "0.75.0",
   "gallery_commit": "f09780b200b79302e7c23ef9f6f74d94748bbea3",
-  "scope": "Nix source packaging for the global menu plugin.",
-  "approval": "Maintainer requested the CI/CD repair.",
+  "scope": "Italian installer, standalone helpers and desktop catalogs.",
+  "approval": "Maintainer approved paired publication after reviewing the Italian welcome screens.",
   "checks": [
     {
-      "command": "nix build path:/repo#global-menu and verify the installed org.kde.mac.tahoe.liquid.globalmenu.so",
+      "command": "pytest -q tests/test_multilanguage.py -k it",
       "result": "passed",
-      "output": "Verified global-menu plugin in /nix/store/0hmj08fiimqpq9rp3hss0hafhbmdrq2y-mac-tahoe-global-menu-0.74.7",
-      "recipe_sha256": "84e416af343329efc316e80f60681601066229bf1d2abacf24f77d46f4c83e3b"
+      "output": "23 passed. Italian placeholders, commands, catalog coverage and installed helpers checked."
+    },
+    {
+      "command": "pytest -q tests/test_installer_wizard.py::test_native_wizard_navigation_preserves_choices_and_waits_for_completion",
+      "result": "passed",
+      "output": "2 passed. Both editions, including Italian progress summaries."
     }
   ],
   "captures": [
     {
-      "path": "src/screenshots/previews/readme-tahoe-dark-battery-e328f9c5c963.webp",
-      "sha256": "e328f9c5c963b0515845de58c0b6d8bbb730a151b998c647f925fc49daf94d61",
-      "source_commit": "7f3b34178adda1be1218fbe0b2eccc8998971c7b",
-      "reviewed": true
-    },
-    {
-      "path": "src/screenshots/previews/readme-tahoe-light-battery-a1636d3884e6.webp",
-      "sha256": "a1636d3884e64f60d0b742ac65173c6c78287b4f35c84511b8d5b97153052ee3",
-      "source_commit": "7f3b34178adda1be1218fbe0b2eccc8998971c7b",
-      "reviewed": true
-    },
-    {
-      "path": "src/screenshots/previews/readme-tahoe-dark-wifi-41d18810df8b.webp",
-      "sha256": "41d18810df8b50a1e2d1509730c606ea1039145778d78850e48290dd84f55bff",
-      "source_commit": "f4e15238718fc7aab116f1c7d23f3377d31d823b",
-      "reviewed": true
-    },
-    {
-      "path": "src/screenshots/previews/readme-tahoe-light-wifi-d55cc1382c4f.webp",
-      "sha256": "d55cc1382c4fda213117600eb0224e054ea683af2ee065464406fec87bf14c15",
-      "source_commit": "f4e15238718fc7aab116f1c7d23f3377d31d823b",
-      "reviewed": true
-    },
-    {
-      "path": "src/screenshots/previews/tahoe-dock-90735b7d355e.gif",
-      "sha256": "90735b7d355e4f925fa2d9d72375c7c3ec53b71cb5e363dc4b191dea2a0ec225",
-      "reviewed": true
-    },
-    {
-      "path": "src/screenshots/previews/acrylic-glass-dynamic-tinting-c13767e72b64.png",
-      "sha256": "c13767e72b648e38bc92e49005378616cca5f80e3a639f8f979d5a591fe27c0d",
-      "reviewed": true
+      "path": "src/screenshots/previews/installer-italian-tahoe-b55a6aa015d2.png",
+      "sha256": "b55a6aa015d29c812c37d0a70fa1b572bd86e94cb4a270413017fe0b5d641396",
+      "source_commit": "f4fbb478da54290e079152222d4d9b026d92cf53",
+      "reviewed": true,
+      "locale": "it",
+      "edition": "tahoe"
     }
   ],
   "coverage_limits": [
-    "Focused local Nix build on x86_64-linux. Desktop and gallery evidence carried forward from v0.74.6."
+    "Visual inspection covered the welcome screen of each edition in KDE neon. The full remote CI matrix runs independently."
   ],
-  "source_sha256": "65e1198256da79c421a165fddc0416b4c8ba53d417d33c0d21d94354a4d6844a"
+  "source_sha256": "61e469d787bd81365d44824b718549bf3526fe58a70e83d24f016605a40f6957"
 }

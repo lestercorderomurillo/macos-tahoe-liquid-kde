@@ -1,4 +1,4 @@
-"""Rebuild the bundled German, Brazilian Portuguese and French KDE catalogs.
+"""Rebuild the bundled KDE catalogs.
 
 Run with Python from any directory; gettext's msgfmt must be on PATH.
 The JSON catalogs are the editable source shared with the installer.
@@ -12,7 +12,7 @@ import xml.etree.ElementTree as ET
 
 
 ROOT = Path(__file__).resolve().parents[1]
-LANGUAGES = ("pt_BR", "de", "fr")
+LANGUAGES = ("pt_BR", "de", "fr", "it")
 STATUS_MENUS = json.loads((ROOT / "scripts/locales/status_menus.json").read_text(encoding="utf-8"))
 KCM_DOMAIN = "kwin_effect_liquidglass"
 _STRING = r'"(?:[^"\\]|\\.)*"'

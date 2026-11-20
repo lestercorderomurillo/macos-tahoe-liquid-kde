@@ -199,8 +199,8 @@ for row in _ROWS.splitlines():
         CATALOGS[code][source] = text
 
 
-# French shares the complete JSON catalog with installed tools and KDE widgets.
-CATALOGS["fr"] = {source: translate(source, "fr") for source in CATALOGS["de"]}
+for code in ("fr", "it"):
+    CATALOGS[code] = {source: translate(source, code) for source in CATALOGS["de"]}
 
 def wizard_translate(message, language):
     return CATALOGS.get(effective_language(language), {}).get(message, translate(message, language))

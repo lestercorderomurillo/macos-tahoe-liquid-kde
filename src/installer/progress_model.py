@@ -1,4 +1,4 @@
-"""English operation summary, driven by backend events rather than console text."""
+"""Localized operation summary, driven by backend events rather than console text."""
 
 PHASES = (
     ('system', 'System checks'), ('dependencies', 'Dependencies'),
@@ -55,18 +55,18 @@ class ProgressModel:
                 row['state'] = 'cancelled' if code == 130 else 'failed' if code else 'done'
         # A phase never announced by the backend is not evidence of completion.
 
-    def text(self):
+    def text(self, translate=str):
         marks = {'pending': '·', 'running': '●', 'done': '✓', 'failed': '✗',
                  'cancelled': '–', 'skipped': '–', 'unchanged': '✓'}
         lines = []
         for key, row in self.phases.items():
-            suffix = ' · Skipped' if row['state'] == 'skipped' else ' · Unchanged' if row['state'] == 'unchanged' else ''
-            lines.append(marks[row['state']] + '  ' + row['label'] + suffix)
+            suffix = ' · ' + translate('Skipped') if row['state'] == 'skipped' else ' · ' + translate('Unchanged') if row['state'] == 'unchanged' else ''
+            lines.append(marks[row['state']] + '  ' + translate(row['label']) + suffix)
             if key == 'build':
                 for task in self.tasks.values():
-                    lines.append('    ' + marks[task['state']] + '  ' + task['label'])
+                    lines.append('    ' + marks[task['state']] + '  ' + translate(task['label']))
         if self.warnings:
-            lines.extend(['', 'Warnings', *('  ' + message for message in self.warnings)])
+            lines.extend(['', translate('Warnings'), *('  ' + message for message in self.warnings)])
         return '\n'.join(lines)
 
     def failed_label(self):
@@ -74,6 +74,7 @@ class ProgressModel:
                     self.phases.get(self.active, {}).get('label', 'installation'))
 
 
-def elapsed_text(seconds):
+def elapsed_text(seconds, translate=str):
     minutes, seconds = divmod(max(0, int(seconds)), 60)
-    return f'{minutes} min {seconds:02d} sec' if minutes else f'{seconds} sec'
+    template = "{minutes} min {seconds:02d} sec" if minutes else "{seconds} sec"
+    return translate(template).format(minutes=minutes, seconds=seconds)

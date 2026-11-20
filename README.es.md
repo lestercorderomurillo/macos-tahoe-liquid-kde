@@ -412,7 +412,7 @@ Para liberar espacio en disco conservando tu copia de Git y el trabajo local:
 | 🇧🇷 Portugués de Brasil | ![Disponible](https://img.shields.io/badge/Available-1A7F37) |
 | 🇩🇪 Alemán | ![Disponible](https://img.shields.io/badge/Available-1A7F37) |
 | 🇫🇷 Francés | ![Disponible](https://img.shields.io/badge/Available-1A7F37) |
-| 🇮🇹 Italiano | ![Previsto](https://img.shields.io/badge/Planned-D4A017) |
+| 🇮🇹 Italiano | ![Disponible](https://img.shields.io/badge/Available-1A7F37) |
 | 🇯🇵 Japonés | ![Previsto](https://img.shields.io/badge/Planned-D4A017) |
 | 🇰🇷 Coreano | ![Previsto](https://img.shields.io/badge/Planned-D4A017) |
 | 🇷🇺 Ruso | ![Previsto](https://img.shields.io/badge/Planned-D4A017) |

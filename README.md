@@ -330,7 +330,7 @@ To free disk space while keeping your Git checkout and local work:
 | 🇧🇷 Brazilian Portuguese | ![Available](https://img.shields.io/badge/Available-1A7F37) |
 | 🇩🇪 German | ![Available](https://img.shields.io/badge/Available-1A7F37) |
 | 🇫🇷 French | ![Available](https://img.shields.io/badge/Available-1A7F37) |
-| 🇮🇹 Italian | ![Planned](https://img.shields.io/badge/Planned-D4A017) |
+| 🇮🇹 Italian | ![Available](https://img.shields.io/badge/Available-1A7F37) |
 | 🇯🇵 Japanese | ![Planned](https://img.shields.io/badge/Planned-D4A017) |
 | 🇰🇷 Korean | ![Planned](https://img.shields.io/badge/Planned-D4A017) |
 | 🇷🇺 Russian | ![Planned](https://img.shields.io/badge/Planned-D4A017) |

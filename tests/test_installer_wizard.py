@@ -404,6 +404,10 @@ assert window.log.isHidden() and window.details_toggle.accessibleName() == 'Show
 for fraction, expected in [(0, 'Elapsed 10 min 00 sec'), (.99, 'Elapsed 10 min 00 sec'), (1, 'Elapsed 10 min 00 sec')]:
     bridge._progress = fraction; window.refresh_progress()
     assert window.remaining_label.text() == expected
+bridge._language = 'it'; window.refresh_progress()
+assert window.remaining_label.text() == 'Tempo trascorso: 10 min 00 s'
+assert window.full_output_toggle.text() == 'Mostra riepilogo'
+assert 'Verifiche di sistema' in bridge.summary.text(window.t)
 bridge._language = 'de'; bridge._progress = .5; window.refresh_progress()
 assert window.remaining_label.text() == 'Elapsed 10 min 00 sec'
 bridge._language = 'es'
