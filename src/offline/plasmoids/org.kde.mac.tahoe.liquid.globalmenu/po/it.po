@@ -3,25 +3,25 @@ msgid ""
 msgstr "Project-Id-Version: MacTahoe Liquid KDE\nPO-Revision-Date: 2026-10-22 00:00-0600\nLast-Translator: MacTahoe Liquid KDE contributors\nLanguage-Team: it\nLanguage: it\nMIME-Version: 1.0\nContent-Type: text/plain; charset=UTF-8\nContent-Transfer-Encoding: 8bit\nPlural-Forms: nplurals=2; plural=(n != 1);\n"
 
 msgid "%1 (%2 physical)"
-msgstr "%1 (%2 fisico)"
+msgstr "%1 (%2 fisici)"
 
 msgid "&Copy"
-msgstr "&amp; Copy"
+msgstr "&Copia"
 
 msgid "&Edit"
-msgstr "&amp; Edit"
+msgstr "&Modifica"
 
 msgid "&Paste"
-msgstr "&gt; &gt;"
+msgstr "&Incolla"
 
 msgid "&Redo"
-msgstr "&gt;"
+msgstr "&Ripeti"
 
 msgid "&Undo"
-msgstr "&gt;"
+msgstr "&Annulla"
 
 msgid "&View"
-msgstr "&gt;"
+msgstr "&Visualizza"
 
 msgid "About %1"
 msgstr "Informazioni su %1"
@@ -33,7 +33,7 @@ msgid "About This Computer:"
 msgstr "Informazioni su questo computer:"
 
 msgid "About window:"
-msgstr "Sulla finestra:"
+msgstr "Finestra delle informazioni:"
 
 msgid "App Store:"
 msgstr "App Store:"
@@ -66,19 +66,19 @@ msgid "Commands"
 msgstr "Comandi"
 
 msgid "Copied"
-msgstr "Affrontato"
+msgstr "Copiato"
 
 msgid "Copy Details"
 msgstr "Copia dettagli"
 
 msgid "Copy details"
-msgstr "Copiare i dettagli"
+msgstr "Copia dettagli"
 
 msgid "Cores"
-msgstr "Nuclei"
+msgstr "Core"
 
 msgid "Cu&t"
-msgstr "Cu&t"
+msgstr "&Taglia"
 
 msgid "Desktop file"
 msgstr "File Desktop"
@@ -90,13 +90,13 @@ msgid "Executable"
 msgstr "Eseguibile"
 
 msgid "Exit Full Screen"
-msgstr "Uscita schermo intero"
+msgstr "Esci dalla modalità a schermo intero"
 
 msgid "Force Quit:"
-msgstr "Forza Quit:"
+msgstr "Uscita forzata:"
 
 msgid "Force Quit…"
-msgstr "Forza..."
+msgstr "Uscita forzata…"
 
 msgid "Graphics"
 msgstr "Grafica"
@@ -108,22 +108,22 @@ msgid "Lock Screen"
 msgstr "Blocca schermo"
 
 msgid "Lock Screen:"
-msgstr "Schermo di bloccaggio:"
+msgstr "Blocca schermo:"
 
 msgid "Log Out %1…"
-msgstr "Accedi %1…"
+msgstr "Termina la sessione di %1…"
 
 msgid "Log Out:"
-msgstr "Diario:"
+msgstr "Termina sessione:"
 
 msgid "Memory"
 msgstr "Memoria"
 
 msgid "Menu Item Icons"
-msgstr "Icone menu"
+msgstr "Icone delle voci di menu"
 
 msgid "Menu icon:"
-msgstr "icona del menu:"
+msgstr "Icona del menu:"
 
 msgid "Minimize"
 msgstr "Minimizza"
@@ -150,10 +150,10 @@ msgid "Report a Bug…"
 msgstr "Segnala un bug..."
 
 msgid "Restart:"
-msgstr "Riavviare:"
+msgstr "Riavvia:"
 
 msgid "Restart…"
-msgstr "Riavviare..."
+msgstr "Riavvia…"
 
 msgid "Restore"
 msgstr "Ripristina"
@@ -162,13 +162,13 @@ msgid "Search"
 msgstr "Cerca"
 
 msgid "Search application menu actions"
-msgstr "Azioni di menu di ricerca"
+msgstr "Cerca azioni nei menu delle applicazioni"
 
 msgid "Search…"
 msgstr "Cerca…"
 
 msgid "Select &All"
-msgstr "Seleziona &gt;"
+msgstr "Seleziona &tutto"
 
 msgid "Serial number"
 msgstr "Numero di serie"
@@ -180,25 +180,25 @@ msgid "Show full application menu"
 msgstr "Mostra il menu completo dell'applicazione"
 
 msgid "Show menus for apps on different screens"
-msgstr "Mostra menu per le applicazioni su diversi schermi"
+msgstr "Mostra i menu delle applicazioni su schermi diversi"
 
 msgid "Shut Down:"
-msgstr "Sta' zitto!"
+msgstr "Spegni:"
 
 msgid "Shut Down…"
-msgstr "Zitto..."
+msgstr "Spegni…"
 
 msgid "Sleep"
-msgstr "Dormire"
+msgstr "Sospendi"
 
 msgid "Sleep:"
-msgstr "Dormire:"
+msgstr "Sospendi:"
 
 msgid "Startup disk"
 msgstr "Disco di avvio"
 
 msgid "Switch open menus on hover"
-msgstr "Accendere i menu aperti su hover"
+msgstr "Cambia menu al passaggio del puntatore"
 
 msgid "System Menu"
 msgstr "Menu di sistema"
@@ -216,14 +216,14 @@ msgid "Unknown"
 msgstr "Sconosciuto"
 
 msgid "Use single button for application menu"
-msgstr "Utilizzare un solo pulsante per il menu di applicazione"
+msgstr "Usa un solo pulsante per il menu delle applicazioni"
 
 msgid "Use system font instead of SF Pro"
-msgstr "Utilizzare font di sistema invece di SF Pro"
+msgstr "Usa il carattere di sistema al posto di SF Pro"
 
 msgid "Zoom"
 msgstr "Zoom"
 
 msgctxt "@info:usagetip"
 msgid "Open a menu"
-msgstr "Aprire un menu"
+msgstr "Apri un menu"

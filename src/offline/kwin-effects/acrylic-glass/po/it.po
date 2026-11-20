@@ -6,16 +6,16 @@ msgid "About This Computer"
 msgstr "Informazioni su questo computer"
 
 msgid "Add fine grain to the glass texture. 0 disables grain."
-msgstr "Aggiungere il grano fine alla consistenza di vetro. 0 disabilita il grano."
+msgstr "Aggiunge una grana fine alla superficie del vetro. Il valore 0 disattiva la grana."
 
 msgid "Adjust color intensity. 0 gives grayscale; 1 keeps the original colors."
-msgstr "Regolare l'intensità del colore. 0 dà scala di grigi; 1 mantiene i colori originali."
+msgstr "Regola l’intensità dei colori. Con 0 si ottiene la scala di grigi, con 1 i colori originali."
 
 msgid "Adjust the difference between light and dark tones. 1 keeps the original contrast."
-msgstr "Regolare la differenza tra tonalità chiare e scure. 1 mantiene il contrasto originale."
+msgstr "Regola la differenza tra i toni chiari e scuri. Il valore 1 mantiene il contrasto originale."
 
 msgid "All except matching windows"
-msgstr "Tutti tranne le finestre corrispondenti"
+msgstr "Tutte tranne le finestre corrispondenti"
 
 msgid "Amount of blurred backdrop in the centre. 1 keeps full blur; lower values reveal more sharp background."
 msgstr "Regola la sfocatura al centro. Con 1 lo sfondo è completamente sfocato. Valori inferiori lasciano intravedere più dettagli."
@@ -24,43 +24,43 @@ msgid "Appearance"
 msgstr "Aspetto"
 
 msgid "Application windows"
-msgstr "Finestre di applicazione"
+msgstr "Finestre delle applicazioni"
 
 msgid "Apps + Clipboard"
-msgstr "Apps + Clipboard"
+msgstr "Applicazioni e appunti"
 
 msgid "Background gradient"
-msgstr "gradiente dello sfondo"
+msgstr "Sfumatura dello sfondo"
 
 msgid "Background transparency only. 0% is opaque; 100% is transparent. Text, borders and icons stay intact."
 msgstr "Regola solo la trasparenza dello sfondo. Con 0% è opaco, con 100% è trasparente. Testo, bordi e icone restano invariati."
 
 msgid "Bend the background near the glass edge. 0 disables distortion."
-msgstr "Piegare lo sfondo vicino al bordo di vetro. 0 disabilita la distorsione."
+msgstr "Deforma lo sfondo vicino al bordo del vetro. Il valore 0 disattiva la distorsione."
 
 msgid "Blur coverage"
 msgstr "Copertura della sfocatura"
 
 msgid "Blur strength"
-msgstr "Forza di sfocatura"
+msgstr "Intensità della sfocatura"
 
 msgid "Blur window decorations"
-msgstr "Decorazioni finestra blur"
+msgstr "Sfoca le decorazioni delle finestre"
 
 msgid "Bottom color"
 msgstr "Colore inferiore"
 
 msgid "Bottom color in dark mode."
-msgstr "Colore inferiore in modalità scuro."
+msgstr "Colore inferiore in modalità scura."
 
 msgid "Bottom color in light mode."
-msgstr "Colore inferiore in modalità luce."
+msgstr "Colore inferiore in modalità chiara."
 
 msgid "Bottom tint strength"
-msgstr "Resistenza alla tinta inferiore"
+msgstr "Intensità della tinta inferiore"
 
 msgid "Bottom tint strength for both modes. 0 leaves the glass untinted at this stop."
-msgstr "Resistenza di fondo per entrambe le modalità. 0 lascia il vetro non colorato a questa fermata."
+msgstr "Intensità della tinta inferiore in entrambe le modalità. Con 0 il vetro rimane incolore in questo punto."
 
 msgid "Brightness"
 msgstr "Luminosità"
@@ -69,25 +69,25 @@ msgid "Center color"
 msgstr "Colore del centro"
 
 msgid "Center color in dark mode."
-msgstr "Colore centrale in modalità scuro."
+msgstr "Colore centrale in modalità scura."
 
 msgid "Center color in light mode."
-msgstr "Colore centrale in modalità luce."
+msgstr "Colore centrale in modalità chiara."
 
 msgid "Center position"
 msgstr "Posizione centrale"
 
 msgid "Center tint strength"
-msgstr "Forza centro tinta"
+msgstr "Intensità della tinta centrale"
 
 msgid "Center tint strength for both modes. 0 leaves the glass untinted at this stop."
-msgstr "La resistenza della tinta centrale per entrambe le modalità. 0 lascia il vetro non colorato a questa fermata."
+msgstr "Intensità della tinta centrale in entrambe le modalità. Con 0 il vetro rimane incolore in questo punto."
 
 msgid "Color separation (px)"
 msgstr "Separazione del colore (px)"
 
 msgid "Colors follow each window's light or dark appearance automatically."
-msgstr "I colori seguono automaticamente l'aspetto luminoso o scuro di ogni finestra."
+msgstr "I colori seguono automaticamente l’aspetto chiaro o scuro di ciascuna finestra."
 
 msgid "Component"
 msgstr "Componente"
@@ -102,7 +102,7 @@ msgid "Copy values"
 msgstr "Copia valori"
 
 msgid "Corner Radius (px)"
-msgstr "Radius d'angolo (px)"
+msgstr "Raggio degli angoli (px)"
 
 msgid "Corners"
 msgstr "Angoli"
@@ -111,7 +111,7 @@ msgid "Could not apply background transparency: %1"
 msgstr "Non è possibile applicare la trasparenza dello sfondo: %1"
 
 msgid "Dark mode"
-msgstr "Modalità oscura"
+msgstr "Modalità scura"
 
 msgid "Dock"
 msgstr "Dock"
@@ -120,19 +120,19 @@ msgid "Dock/Launcher"
 msgstr "Dock/Launcher"
 
 msgid "Enable gradient"
-msgstr "Abilitare il gradiente"
+msgstr "Attiva la sfumatura"
 
 msgid "Extend background blur to translucent window frames and title bars."
-msgstr "Estendere la sfocatura di sfondo a cornici di finestra traslucida e barre di titolo."
+msgstr "Estende la sfocatura dello sfondo alle cornici traslucide e alle barre del titolo delle finestre."
 
 msgid "Finder"
-msgstr "Ricercatore"
+msgstr "Finder"
 
 msgid "Fine tuning"
-msgstr "Finitura fine"
+msgstr "Regolazioni avanzate"
 
 msgid "Force Blur List"
-msgstr "Elenco dei Blur della Forza"
+msgstr "Elenco delle finestre con sfocatura forzata"
 
 msgid "Glass"
 msgstr "Vetro"
@@ -141,34 +141,34 @@ msgid "Golden Gate (Official)"
 msgstr "Golden Gate (ufficiale)"
 
 msgid "Grain"
-msgstr "Grave"
+msgstr "Grana"
 
 msgid "Highlight strength"
-msgstr "Elevata resistenza"
+msgstr "Intensità del riflesso"
 
 msgid "Highlight width (px)"
-msgstr "Larghezza di luce (px)"
+msgstr "Larghezza del riflesso (px)"
 
 msgid "Intensity of the edge highlight. 0 disables it."
-msgstr "L'intensità del bordo evidenzia. 0 lo disabilita."
+msgstr "Intensità del riflesso sul bordo. Il valore 0 lo disattiva."
 
 msgid "Light mode"
-msgstr "Modalità di luce"
+msgstr "Modalità chiara"
 
 msgid "Lighten or darken the glass background. 1 keeps the original brightness."
-msgstr "Accendi o scurisci lo sfondo di vetro. 1 mantiene la luminosità originale."
+msgstr "Schiarisce o scurisce lo sfondo del vetro. Il valore 1 mantiene la luminosità originale."
 
 msgid "Match Mode"
 msgstr "Modalità di corrispondenza"
 
 msgid "Menus / Shell"
-msgstr "Menù / Shell"
+msgstr "Menu / Shell"
 
 msgid "One window class or resource name per line."
-msgstr "Una classe di finestra o un nome di risorsa per linea."
+msgstr "Una classe di finestra o un nome di risorsa per riga."
 
 msgid "Only matching windows"
-msgstr "Solo finestre abbinate"
+msgstr "Solo le finestre corrispondenti"
 
 msgid "Optics"
 msgstr "Ottica"
@@ -177,16 +177,16 @@ msgid "Paste values"
 msgstr "Incolla valori"
 
 msgid "Plasma widget popups"
-msgstr "Plasma widget popups"
+msgstr "Finestre a comparsa degli oggetti di Plasma"
 
 msgid "Popups"
-msgstr "Popups"
+msgstr "Finestre a comparsa"
 
 msgid "Position from top (0) to bottom (1). 0.5 is halfway down the surface."
-msgstr "Posizione dall'alto (0) al basso (1). 0.5 è a metà della superficie."
+msgstr "Posizione dall’alto (0) al basso (1). Il valore 0,5 indica la metà della superficie."
 
 msgid "Preset"
-msgstr "Preset"
+msgstr "Preimpostazione"
 
 msgid "Refraction"
 msgstr "Rifrazione"
@@ -195,22 +195,22 @@ msgid "Refraction width (px)"
 msgstr "Larghezza di rifrazione (px)"
 
 msgid "Restore this preset"
-msgstr "Ripristinare questa preimpostazione"
+msgstr "Ripristina questa preimpostazione"
 
 msgid "Round maximized windows"
-msgstr "Finestre rotonde ottimizzate"
+msgstr "Arrotonda gli angoli delle finestre massimizzate"
 
 msgid "Saturation"
 msgstr "Saturazione"
 
 msgid "Search capsule"
-msgstr "Ricerca capsula"
+msgstr "Campo di ricerca"
 
 msgid "Separate red, green and blue near the glass edge. 0 disables color fringes."
-msgstr "Separato rosso, verde e blu vicino al bordo di vetro. 0 disabilita le frange di colore."
+msgstr "Separa rosso, verde e blu vicino al bordo del vetro. Con 0 le frange colorate sono disattivate."
 
 msgid "Soften the background behind glass. 0 leaves the background sharp."
-msgstr "Ammorbidire lo sfondo dietro il vetro. 0 lascia lo sfondo affilato."
+msgstr "Sfoca lo sfondo dietro il vetro. Con 0 lo sfondo resta nitido."
 
 msgid "Surface"
 msgstr "Superficie"
@@ -222,43 +222,43 @@ msgid "Tahoe (Frosted)"
 msgstr "Tahoe (satinato)"
 
 msgid "Tint strength"
-msgstr "Resistenza alla tinta"
+msgstr "Intensità della tinta"
 
 msgid "Tooltips, menus, dialogs and applet popups."
-msgstr "Tooltips, menu, finestre di dialogo e popup applet."
+msgstr "Suggerimenti, menu, finestre di dialogo e finestre a comparsa degli oggetti."
 
 msgid "Top color"
 msgstr "Colore superiore"
 
 msgid "Top color in dark mode."
-msgstr "Colore superiore in modalità scuro."
+msgstr "Colore superiore in modalità scura."
 
 msgid "Top color in light mode."
-msgstr "Colore superiore in modalità luce."
+msgstr "Colore superiore in modalità chiara."
 
 msgid "Top panel"
 msgstr "Pannello superiore"
 
 msgid "Top tint strength"
-msgstr "Top tinta forza"
+msgstr "Intensità della tinta superiore"
 
 msgid "Top tint strength for both modes. 0 leaves the glass untinted at this stop."
-msgstr "La massima resistenza alla tinta per entrambe le modalità. 0 lascia il vetro non colorato a questa fermata."
+msgstr "Intensità della tinta superiore in entrambe le modalità. Con 0 il vetro rimane incolore in questo punto."
 
 msgid "Transparency SVG (Dark)"
-msgstr "Trasparenza SVG (Dark)"
+msgstr "Trasparenza SVG (tema scuro)"
 
 msgid "Transparency SVG (Light)"
-msgstr "Trasparenza SVG (Luce)"
+msgstr "Trasparenza SVG (tema chiaro)"
 
 msgid "Width of the bright rim along the glass edge."
-msgstr "Larghezza del bordo luminoso lungo il bordo di vetro."
+msgstr "Larghezza del riflesso luminoso lungo il bordo del vetro."
 
 msgid "Width of the edge band where refraction and color separation appear."
-msgstr "Larghezza della banda di bordo in cui appaiono rifrazione e separazione dei colori."
+msgstr "Larghezza della fascia lungo il bordo in cui si vedono la rifrazione e la separazione dei colori."
 
 msgid "Window Rules"
-msgstr "Regole della finestra"
+msgstr "Regole delle finestre"
 
 msgid "Windows"
 msgstr "Finestre"

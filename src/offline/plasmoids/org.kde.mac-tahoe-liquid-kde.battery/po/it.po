@@ -39,7 +39,7 @@ msgid "Brightness control unavailable"
 msgstr "Controllo della luminosità non disponibile"
 
 msgid "Cancel Job"
-msgstr "Annullare il lavoro"
+msgstr "Annulla operazione"
 
 msgid "Charging"
 msgstr "In carica"
@@ -48,7 +48,7 @@ msgid "Clear History"
 msgstr "Cancella la cronologia"
 
 msgid "Collapse"
-msgstr "Colpisco"
+msgstr "Comprimi"
 
 msgid "Connect a battery to see its status."
 msgstr "Collegare una batteria per vedere il suo stato."
@@ -57,7 +57,7 @@ msgid "Connected"
 msgstr "Connesso"
 
 msgid "Connected to power"
-msgstr "Collegato alla potenza"
+msgstr "Alimentazione da rete elettrica"
 
 msgid "Control Center"
 msgstr "Centro di controllo"
@@ -66,16 +66,16 @@ msgid "Controlled by another application"
 msgstr "Controllato da un'altra applicazione"
 
 msgid "Dark Mode"
-msgstr "Modalità oscura"
+msgstr "Modalità scura"
 
 msgid "Dismiss"
-msgstr "Deliberazione"
+msgstr "Chiudi"
 
 msgid "Display"
 msgstr "Display"
 
 msgid "Display Settings…"
-msgstr "Impostazioni di visualizzazione..."
+msgstr "Impostazioni dello schermo…"
 
 msgid "Do Not Disturb"
 msgstr "Non disturbare"
@@ -96,7 +96,7 @@ msgid "File Sharing"
 msgstr "Condivisione file"
 
 msgid "Focus"
-msgstr "Fuoco"
+msgstr "Concentrazione"
 
 msgid "Fully charged"
 msgstr "Completamente carica"
@@ -114,7 +114,7 @@ msgid "Low Power"
 msgstr "Risparmio energetico"
 
 msgid "Mute sound"
-msgstr "Suono muto"
+msgstr "Disattiva audio"
 
 msgid "Network"
 msgstr "Rete"
@@ -138,19 +138,19 @@ msgid "Not connected"
 msgstr "Non connesso"
 
 msgid "Nothing playing"
-msgstr "Niente da giocare"
+msgstr "Nessun contenuto in riproduzione"
 
 msgid "Notification Center"
 msgstr "Centro notifiche"
 
 msgid "Notification Settings…"
-msgstr "Impostazioni di notifica..."
+msgstr "Impostazioni delle notifiche…"
 
 msgid "Notifications"
 msgstr "Notifiche"
 
 msgid "Now Playing"
-msgstr "Ora Giocare"
+msgstr "In riproduzione"
 
 msgid "Off"
 msgstr "Disattivo"
@@ -174,10 +174,10 @@ msgid "Pause"
 msgstr "Pausa"
 
 msgid "Pause notifications for one hour"
-msgstr "Pausa notifiche per un'ora"
+msgstr "Sospendi le notifiche per un’ora"
 
 msgid "Play or pause"
-msgstr "Gioco o pausa"
+msgstr "Riproduci o metti in pausa"
 
 msgid "Power Source: Battery"
 msgstr "Alimentazione: batteria"
@@ -195,16 +195,16 @@ msgid "Resume"
 msgstr "Riprendi"
 
 msgid "Scan for Networks"
-msgstr "Scansione per le reti"
+msgstr "Cerca reti"
 
 msgid "Scanning…"
-msgstr "Scansione..."
+msgstr "Ricerca in corso…"
 
 msgid "Screen Mirroring"
 msgstr "Duplicazione schermo"
 
 msgid "Screenshot"
-msgstr "Schermata"
+msgstr "Cattura schermata"
 
 msgid "Send"
 msgstr "Invia"

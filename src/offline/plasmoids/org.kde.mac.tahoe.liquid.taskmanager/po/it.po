@@ -15,25 +15,25 @@ msgid "Files"
 msgstr "File"
 
 msgid "Hover magnification:"
-msgstr "Ingrandimento dell'otturatore:"
+msgstr "Ingrandimento al passaggio del puntatore:"
 
 msgid "Mail"
-msgstr "Mail"
+msgstr "Posta"
 
 msgid "Music"
 msgstr "Musica"
 
 msgid "Notes"
-msgstr "Osservazioni"
+msgstr "Note"
 
 msgid "Photos"
-msgstr "Fotografie"
+msgstr "Foto"
 
 msgid "System Settings"
 msgstr "Impostazioni di sistema"
 
 msgid "Use macOS-style Dock icons"
-msgstr "Uso macOS-stile icone di Dock"
+msgstr "Usa icone del Dock in stile macOS"
 
 msgid "Video"
 msgstr "Video"

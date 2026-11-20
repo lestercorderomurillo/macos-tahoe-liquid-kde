@@ -3,16 +3,16 @@ msgid ""
 msgstr "Project-Id-Version: MacTahoe Liquid KDE\nPO-Revision-Date: 2026-10-22 00:00-0600\nLast-Translator: MacTahoe Liquid KDE contributors\nLanguage-Team: it\nLanguage: it\nMIME-Version: 1.0\nContent-Type: text/plain; charset=UTF-8\nContent-Transfer-Encoding: 8bit\nPlural-Forms: nplurals=2; plural=(n != 1);\n"
 
 msgid "Empty Trash"
-msgstr "Cestino vuoto"
+msgstr "Svuota il cestino"
 
 msgid "Empty trash icon:"
-msgstr "Icona vuota del cestino:"
+msgstr "Icona del cestino vuoto:"
 
 msgid "Enter any icon name from your current icon theme."
-msgstr "Inserisci qualsiasi nome icona dal tema dell'icona corrente."
+msgstr "Inserisci il nome di un’icona del tema attuale."
 
 msgid "Full trash icon:"
-msgstr "Icona completa del cestino:"
+msgstr "Icona del cestino pieno:"
 
 msgid "Open"
 msgstr "Apri"
