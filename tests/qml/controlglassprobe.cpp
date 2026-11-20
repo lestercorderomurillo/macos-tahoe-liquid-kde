@@ -40,7 +40,9 @@ int main(int argc, char **argv)
     if (!sample(window.size(), 0) || glass.backdropAt(QPointF(40,40)) != QColor(Qt::black)) return 8;
     const bool fractional = !qFuzzyCompare(window.devicePixelRatio(), qreal(qRound(window.devicePixelRatio())));
     if (!sample(window.size() + QSize(1,0), char(255))
-        || glass.backdropAt(QPointF(40,40)) != QColor(fractional ? Qt::white : Qt::black)) return 9;
+        || glass.backdropAt(QPointF(40,40)) != QColor(Qt::white)) return 9;
+    if (!sample(window.size() + QSize(2,0), 0)
+        || glass.backdropAt(QPointF(40,40)) != QColor(fractional ? Qt::black : Qt::white)) return 11;
     const auto revision = glass.backdropRevision();
     if (!sample(window.size() + QSize(8,0), char(90)) || glass.backdropRevision() != revision) return 10;
     glass.setWindow(nullptr);

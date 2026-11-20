@@ -249,15 +249,11 @@ QMetaObject.invokeMethod(noticeForContrast, 'updateBackdrop', Q_ARG(str, json.du
 assert noticeForContrast.property('backdropColor').lightnessF() == 1
 rounded = dict(sample, width=365, rgb=[0,0,0])
 QMetaObject.invokeMethod(noticeForContrast, 'updateBackdrop', Q_ARG(str, json.dumps(rounded)))
-fractional = not float(noticeForContrast.devicePixelRatio()).is_integer()
-expected = 0 if fractional else 1
-assert noticeForContrast.property('backdropColor').lightnessF() == expected
+assert noticeForContrast.property('backdropColor').lightnessF() == 0
 for invalid in (dict(sample, pid=os.getpid()+1), dict(sample, width=370),
                 dict(sample, y=140), dict(sample, rgb=[-1,0,0])):
-    if invalid['rgb'] == [1,1,1]:
-        invalid['rgb'] = [1 - expected] * 3
     QMetaObject.invokeMethod(noticeForContrast, 'updateBackdrop', Q_ARG(str, json.dumps(invalid)))
-    assert noticeForContrast.property('backdropColor').lightnessF() == expected
+    assert noticeForContrast.property('backdropColor').lightnessF() == 0
 sample['rgb'] = [0,0,0]
 QMetaObject.invokeMethod(noticeForContrast, 'updateBackdrop', Q_ARG(str, json.dumps(sample)))
 assert noticeForContrast.property('backdropColor').lightnessF() == 0
@@ -625,7 +621,8 @@ frames=[]
 for dark in (False, True, False):
     notice.setProperty('foregroundColor', QColor('white' if dark else 'black'))
     notice.setProperty('backgroundColor', QColor('black' if dark else 'white'))
-    QTest.qWait(80)
+    # Compare settled pixels after the 150 ms hold and 500 ms transition.
+    QTest.qWait(750)
     assert child(notice,'notificationCard').property('lightMode') != dark
     rendered=notice.grabWindow(); assert not rendered.isNull()
     text=[rendered.pixelColor(x,y) for x in range(68,rendered.width()-24)
