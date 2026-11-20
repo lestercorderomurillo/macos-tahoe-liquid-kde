@@ -193,9 +193,9 @@
         "GradientBottomColor": "#000000",
         "GradientBottomOpacity": 0.57,
         "GradientTopDarkColor": "#060606",
-        "GradientCenterDarkColor": "#2d2b27",
-        "GradientBottomDarkColor": "#514c42",
-        "DarkGradientStrength": 0.37
+        "GradientCenterDarkColor": "#33291c",
+        "GradientBottomDarkColor": "#725e3c",
+        "DarkGradientStrength": 0.72
       },
       "control-center": {
         "BlurStrength": 3.0,
