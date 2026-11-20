@@ -286,7 +286,7 @@ Accès rapide aux réglages système, aux applications et aux commandes de sessi
 
 ### Tahoe Centre de contrôle (Alpha)
 
-Wi-Fi, son, luminosité et notifications dans un menu en verre. Des mises à jour arriveront très bientôt.
+Wi-Fi, son, luminosité et notifications dans un menu en verre. Le bouton d’apparence affiche un soleil en mode clair, une lune en mode sombre et un cercle bicolore en mode automatique.
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-control-0950a52001ba.webp" alt="Control Center in light mode" width="415">

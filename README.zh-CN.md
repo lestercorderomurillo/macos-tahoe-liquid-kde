@@ -286,7 +286,7 @@ Tahoe 和 Golden Gate 的代码贡献者及问题报告者：
 
 ### Tahoe 控制中心 (Alpha)
 
-Wi-Fi、声音、亮度和通知集中在一个玻璃菜单中。更新即将到来。
+Wi-Fi、声音、亮度和通知集中在一个玻璃菜单中。外观按钮用太阳表示浅色模式，用月亮表示深色模式，用双色圆形表示自动模式。
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-control-0950a52001ba.webp" alt="Control Center in light mode" width="415">

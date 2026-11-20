@@ -286,7 +286,7 @@ Quick access to system settings, apps and session controls.
 
 ### Tahoe Control Center (Alpha)
 
-Wi-Fi, sound, brightness and notifications in one glass menu. Updates will come very soon.
+Wi-Fi, sound, brightness and notifications in one glass menu. The appearance button shows a sun for Light, a moon for Dark and a split circle for Automatic.
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-control-0950a52001ba.webp" alt="Control Center in light mode" width="415">

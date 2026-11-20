@@ -286,7 +286,7 @@ Schneller Zugriff auf Systemeinstellungen, Anwendungen und Sitzungsaktionen.
 
 ### Tahoe Kontrollzentrum (Alpha)
 
-WLAN, Klang, Helligkeit und Benachrichtigungen in einem Glasmenü. Aktualisierungen folgen in Kürze.
+WLAN, Klang, Helligkeit und Benachrichtigungen in einem Glasmenü. Die Schaltfläche für das Erscheinungsbild zeigt eine Sonne im hellen Modus, einen Mond im dunklen Modus und einen zweifarbigen Kreis im Automatikmodus.
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-control-0950a52001ba.webp" alt="Control Center in light mode" width="415">

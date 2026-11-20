@@ -286,7 +286,7 @@ Acceso rápido a los ajustes del sistema, aplicaciones y controles de sesión.
 
 ### Tahoe Centro de control (Alpha)
 
-Wi-Fi, sonido, brillo y notificaciones en un menú de cristal. Las actualizaciones llegarán muy pronto.
+Wi-Fi, sonido, brillo y notificaciones en un menú de cristal. El botón de apariencia muestra un sol en modo claro, una luna en modo oscuro y un círculo bicolor en automático.
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-control-0950a52001ba.webp" alt="Control Center in light mode" width="415">
