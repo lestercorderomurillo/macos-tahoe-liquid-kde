@@ -30,6 +30,17 @@ def main(argv=None):
     capture.add_argument('--reuse', type=Path, help='Reuse reviewed frames whose visual inputs are unchanged')
     capture.add_argument('--only-system-menu', action='store_true',
                          help='Capture only the two editions of the system menu in light and dark mode')
+    history_stage = sub.add_parser('stage-notification-photos', help='Replace the existing README notification photographs')
+    history_stage.add_argument('--bundle', type=Path, required=True)
+    history_stage.add_argument('--edition', choices=EDITIONS, required=True)
+    history_stage.add_argument('--destination', type=Path, required=True)
+    audit = sub.add_parser('readme-photos', help='Verify and list the existing README capture slots')
+    audit.add_argument('--destination', type=Path, default=ROOT)
+    photos = sub.add_parser('stage-readme-photos', help='Replace selected existing README photographs')
+    photos.add_argument('--bundle', type=Path, required=True)
+    photos.add_argument('--edition', choices=EDITIONS, required=True)
+    photos.add_argument('--destination', type=Path, required=True)
+    photos.add_argument('--slot', action='append', help='Exact slot name; repeat to select multiple')
     previews = sub.add_parser('file-previews', help='Capture focused Nautilus/Dolphin installer previews only')
     previews.add_argument('--ref', default='HEAD')
     previews.add_argument('--resume', action='store_true', help='Reuse this failed capture overlay with the identical source archive')
@@ -55,7 +66,18 @@ def main(argv=None):
         command.add_argument('--tahoe-repo', type=Path)
     args = parser.parse_args(argv)
     try:
-        if args.command == 'stage-file-previews':
+        if args.command == 'readme-photos':
+            from release_readme_photos import inventory
+            edition, documents, _, slots = inventory(args.destination)
+            print(f'{edition}: {len(slots)} verified slots in {len(documents)} READMEs')
+            print('\n'.join(slots))
+        elif args.command in ('stage-readme-photos', 'stage-notification-photos'):
+            from release_readme_photos import stage as stage_photos
+            names = ([f'readme-{args.edition}-{mode}-notifications' for mode in ('light', 'dark')]
+                     if args.command == 'stage-notification-photos' else args.slot)
+            count = stage_photos(args.destination, args.edition, args.bundle, names)
+            print(f'Updated {count} README photographs.')
+        elif args.command == 'stage-file-previews':
             from release_capture import stage_file_previews
             stage_file_previews(args.repo.resolve(), args.bundle.resolve())
             print('Staged four reviewed, focused file-manager previews.')
