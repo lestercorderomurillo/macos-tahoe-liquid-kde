@@ -295,6 +295,17 @@ Wi-Fi, son, luminosité et notifications dans un menu en verre. Des mises à jou
 
 <br>
 
+### Tahoe Notifications (Alpha)
+
+Bannières en verre et historique groupé avec actions des applications et réponses directes.
+
+<p align="center">
+  <img src="src/screenshots/previews/readme-tahoe-light-notifications-1751d29fa5df.webp" alt="Notifications en mode clair" width="415">
+  <img src="src/screenshots/previews/readme-tahoe-dark-notifications-6e3677470b76.webp" alt="Notifications en mode sombre" width="415">
+</p>
+
+<br>
+
 ### Tahoe Historique du presse-papiers (Alpha)
 
 Retrouvez et réutilisez le texte et les images copiés directement depuis Launchpad.

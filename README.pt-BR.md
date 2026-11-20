@@ -295,6 +295,17 @@ Wi-Fi, som, brilho e notificações em um menu de vidro. As atualizações chega
 
 <br>
 
+### Tahoe Notificações (Alpha)
+
+Banners de vidro e histórico agrupado com ações dos aplicativos e respostas diretas.
+
+<p align="center">
+  <img src="src/screenshots/previews/readme-tahoe-light-notifications-1751d29fa5df.webp" alt="Notificações no modo claro" width="415">
+  <img src="src/screenshots/previews/readme-tahoe-dark-notifications-6e3677470b76.webp" alt="Notificações no modo escuro" width="415">
+</p>
+
+<br>
+
 ### Tahoe Histórico da área de transferência (Alpha)
 
 Encontre e reutilize textos e imagens copiados diretamente pelo Launchpad.

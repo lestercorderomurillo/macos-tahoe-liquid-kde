@@ -295,6 +295,17 @@ WLAN, Klang, Helligkeit und Benachrichtigungen in einem Glasmenü. Aktualisierun
 
 <br>
 
+### Tahoe Benachrichtigungen (Alpha)
+
+Gläserne Banner und ein gruppierter Verlauf unterstützen App-Aktionen und direkte Antworten.
+
+<p align="center">
+  <img src="src/screenshots/previews/readme-tahoe-light-notifications-1751d29fa5df.webp" alt="Benachrichtigungen im hellen Modus" width="415">
+  <img src="src/screenshots/previews/readme-tahoe-dark-notifications-6e3677470b76.webp" alt="Benachrichtigungen im dunklen Modus" width="415">
+</p>
+
+<br>
+
 ### Tahoe Zwischenablageverlauf (Alpha)
 
 Kopierte Texte und Bilder direkt im Launchpad finden und wiederverwenden.
