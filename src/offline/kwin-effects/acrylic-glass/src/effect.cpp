@@ -2014,7 +2014,8 @@ void BlurEffect::blur(
     const bool notification = isProjectNotification(resourceClass, w->caption());
     const bool shellMenu = plasma && !namedPopup && !notification && (w->isPopupMenu() || w->isDropdownMenu() || w->isMenu()
         || (w->isPopupWindow() && !w->isAppletPopup() && !w->isTooltip()));
-    const bool spatialBackdrop = (plasma && namedPopup) || shellMenu;
+    const bool about = plasma && (w->caption() == m_aboutTitle || w->caption() == QStringLiteral("About This Computer"));
+    const bool spatialBackdrop = (plasma && namedPopup) || shellMenu || about;
     if (spatialBackdrop || notification) {
         if (!blurInfo.contrastTimer.isValid() || blurInfo.contrastTimer.elapsed() >= 200) {
             blurInfo.contrastTimer.start();
@@ -2076,7 +2077,7 @@ void BlurEffect::blur(
                         const auto path = QStringLiteral("/org/kde/MacTahoe/Glass");
                         const auto interface = QStringLiteral("org.kde.MacTahoe.Glass");
                         const auto signal = QStringLiteral("controlBackdrop");
-                        auto message = shellMenu
+                        auto message = (shellMenu || about)
                             ? QDBusMessage::createTargetedSignal(QStringLiteral("org.kde.plasmashell"), path, interface, signal)
                             : QDBusMessage::createSignal(path, interface, signal);
                         message << int(w->window()->pid()) << frame << backgroundRect << colors

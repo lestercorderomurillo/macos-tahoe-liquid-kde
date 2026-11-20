@@ -4,6 +4,8 @@ import QtQuick.Controls as QQC2
 import org.kde.kirigami as Kirigami
 QQC2.Button {
     property bool isDarkTheme: false
+    readonly property alias faceColor: face.color
+    property color labelColor: Qt.tint(Kirigami.Theme.textColor, isDarkTheme ? "#66ffffff" : "#66000000")
         id: control
         hoverEnabled: true
         implicitWidth: Math.max(implicitBackgroundWidth + leftInset + rightInset,
@@ -18,7 +20,7 @@ QQC2.Button {
             objectName: "aboutButtonLabel"
             text: control.text
             font: control.font
-            color: Qt.tint(Kirigami.Theme.textColor, control.isDarkTheme ? "#66ffffff" : "#66000000")
+            color: control.labelColor
             opacity: control.enabled ? 1 : 0.4
             horizontalAlignment: Text.AlignHCenter
             verticalAlignment: Text.AlignVCenter

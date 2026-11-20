@@ -19,19 +19,29 @@ from pathlib import Path
 _BAKED_VERSION = "@THEME_VERSION@"
 
 
-def window_controls() -> dict[str, str]:
-    """Resolve both modes of the selected project decoration, including KDE defaults."""
+def decoration_settings() -> dict[str, str]:
     config = Path(os.environ.get("XDG_CONFIG_HOME") or Path.home() / ".config")
-    theme = ""
-    for path in (config / "kwinrc", config / "kdedefaults/kwinrc"):
+    values = {}
+    for path in (config / "kdedefaults/kwinrc", config / "kwinrc"):
         parser = configparser.RawConfigParser(interpolation=None, strict=False)
         try:
             parser.read(path)
         except (OSError, configparser.Error):
             continue
-        if parser.has_option("org.kde.kdecoration2", "theme"):
-            theme = parser.get("org.kde.kdecoration2", "theme")
-            break
+        if parser.has_section("org.kde.kdecoration2"):
+            values.update(parser.items("org.kde.kdecoration2"))
+    return values
+
+
+def window_button_layout(settings):
+    names = {"X": "close", "I": "minimize", "A": "maximize"}
+    return {side: [names[key] for key in settings.get("buttonson" + side, default) if key in names]
+            for side, default in (("left", "M"), ("right", "IAX"))}
+
+
+def window_controls(settings=None) -> dict[str, str]:
+    """Resolve both modes of the selected project decoration, including KDE defaults."""
+    theme = (decoration_settings() if settings is None else settings).get("theme", "")
     match = re.fullmatch(r"__aurorae__svg__(Mac(?:Tahoe|GoldenGate)LiquidKde)-(?:Light|Dark)", theme)
     if not match:
         return {}
@@ -982,7 +992,8 @@ _MOCK_DATA = {
 
 def main(argv: list[str]) -> int:
     if "--window-controls" in argv:
-        sys.stdout.write(json.dumps(window_controls()) + "\n")
+        settings = decoration_settings()
+        sys.stdout.write(json.dumps(window_controls(settings) | window_button_layout(settings)) + "\n")
         return 0
     pretty = "--pretty" in argv
     mock = "--mock" in argv or os.environ.get("MAC_TAHOE_ABOUT_MOCK") == "1"

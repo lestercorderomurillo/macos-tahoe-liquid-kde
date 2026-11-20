@@ -3,7 +3,8 @@
 from localization import effective_language, translate
 
 # English | Spanish | Simplified Chinese | Brazilian Portuguese | German
-_ROWS = '''Remove Launchpad and its saved clipboard history.|Eliminar Launchpad y su historial del portapapeles guardado.|移除启动台及其保存的剪贴板历史记录。|Remover o Launchpad e seu histórico salvo da área de transferência.|Launchpad und seinen gespeicherten Zwischenablageverlauf entfernen.
+_ROWS = '''Remove the installed Launchpad widget.|Eliminar el widget de Launchpad instalado.|移除已安装的启动台组件。|Remover o widget do Launchpad instalado.|Das installierte Launchpad-Miniprogramm entfernen.
+Remove Launchpad and its saved clipboard history.|Eliminar Launchpad y su historial del portapapeles guardado.|移除启动台及其保存的剪贴板历史记录。|Remover o Launchpad e seu histórico salvo da área de transferência.|Launchpad und seinen gespeicherten Zwischenablageverlauf entfernen.
 Use my launcher|Usar mi lanzador|使用我的启动器|Usar meu lançador|Meinen Starter verwenden
 Skip Launchpad and its encrypted clipboard history.|Omitir Launchpad y su historial cifrado del portapapeles.|跳过启动台及其加密剪贴板历史记录。|Ignorar o Launchpad e seu histórico criptografado da área de transferência.|Launchpad und den verschlüsselten Zwischenablageverlauf überspringen.
 Tahoe and Golden Gate include encrypted clipboard history (Meta+V).|Tahoe y Golden Gate incluyen un historial cifrado del portapapeles (Meta+V).|Tahoe 和 Golden Gate 包含加密剪贴板历史记录（Meta+V）。|Tahoe e Golden Gate incluem histórico criptografado da área de transferência (Meta+V).|Tahoe und Golden Gate enthalten einen verschlüsselten Zwischenablageverlauf (Meta+V).

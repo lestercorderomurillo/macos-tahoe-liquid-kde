@@ -35,6 +35,38 @@ Window {
     id: aboutWindow
     NativeGlass.GlassSettings { id: glassSettings; component: "about"; window: aboutWindow }
 
+    NativeGlass.PopupBackdrop { id: backdrop; window: aboutWindow }
+
+    function ink(item, preferred, face) {
+        if (!backdrop.backdropRevision || !item.width || !item.height)
+            return preferred;
+        const point = item.mapToItem(contentItem, item.width / 2, item.height / 2);
+        const sample = backdrop.backdropAt(point);
+        if (!sample.a)
+            return preferred;
+        let background = Qt.tint(sample, glass.color);
+        if (face)
+            background = Qt.tint(background, face);
+        function luminance(c) {
+            function linear(v) { return v <= 0.04045 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4); }
+            return 0.2126 * linear(c.r) + 0.7152 * linear(c.g) + 0.0722 * linear(c.b);
+        }
+        const bg = luminance(background) + 0.05;
+        const fg = luminance(Qt.tint(background, preferred)) + 0.05;
+        if (Math.max(bg, fg) / Math.min(bg, fg) >= 4.5)
+            return preferred;
+        return bg / 0.05 >= 1.05 / bg ? "black" : "white";
+    }
+
+    component PrimaryLabel: Text {
+        id: primaryLabel
+        color: aboutWindow.ink(primaryLabel, aboutWindow.primaryTextColor)
+    }
+    component SecondaryLabel: Text {
+        id: secondaryLabel
+        color: aboutWindow.ink(secondaryLabel, aboutWindow.secondaryTextColor)
+    }
+
     KI18n.KI18nContext {
         id: translations
         translationDomain: "plasma_applet_org.kde.mac.tahoe.liquid.globalmenu"
@@ -320,13 +352,15 @@ Window {
         }
 
         // window buttons
-        Row {
-            anchors { left: parent.left; top: parent.top; leftMargin: 14; topMargin: 14 }
+        component ButtonRow: Row {
+            required property var buttons
+            anchors.top: parent.top
+            anchors.topMargin: 14
             spacing: 8
             z: 1
 
             Repeater {
-                model: ["close", "minimize", "maximize"]
+                model: buttons
                 delegate: Item {
                     id: light
                     objectName: "aboutWindowLight-" + modelData
@@ -368,6 +402,16 @@ Window {
                 }
             }
         }
+        ButtonRow {
+            anchors.left: parent.left
+            anchors.leftMargin: 14
+            buttons: aboutWindow.windowControlPaths.left || []
+        }
+        ButtonRow {
+            anchors.right: parent.right
+            anchors.rightMargin: 14
+            buttons: aboutWindow.windowControlPaths.right || ["minimize", "maximize", "close"]
+        }
 
         // content
         ColumnLayout {
@@ -384,10 +428,10 @@ Window {
 
             Item { Layout.preferredHeight: 18 }
 
-            Text {
+            PrimaryLabel {
                 Layout.alignment: Qt.AlignHCenter
                 text: aboutWindow.vendorDisplay
-                color: aboutWindow.primaryTextColor
+
                 font.family: aboutWindow.fontFamilyDisplay
                 font.pixelSize: 22
                 font.bold: true
@@ -397,7 +441,7 @@ Window {
 
             Item { Layout.preferredHeight: 4 }
 
-            Text {
+            SecondaryLabel {
                 Layout.alignment: Qt.AlignHCenter
                 text: {
                     let parts = [];
@@ -411,7 +455,7 @@ Window {
                     // when the real value (or empty model) lands.
                     return parts.length ? parts.join(", ") : " ";
                 }
-                color: aboutWindow.secondaryTextColor
+
                 font.family: aboutWindow.fontFamily
                 font.pixelSize: 13
                 opacity: aboutWindow.infoReady ? 1.0 : 0.0
@@ -431,18 +475,18 @@ Window {
                 Behavior on opacity { NumberAnimation { duration: 260; easing.type: Easing.OutQuad } }
 
                 // Chip
-                Text {
+                SecondaryLabel {
                     text: translations.i18n("Chip")
-                    color: aboutWindow.secondaryTextColor
+
                     font.family: aboutWindow.fontFamily
                     font.pointSize: Kirigami.Theme.defaultFont.pointSize
                     Layout.alignment: Qt.AlignRight
                     Layout.preferredWidth: 110
                     horizontalAlignment: Text.AlignRight
                 }
-                Text {
+                PrimaryLabel {
                     text: aboutWindow.chipDisplay
-                    color: aboutWindow.primaryTextColor
+
                     font.family: aboutWindow.fontFamily
                     font.pointSize: Kirigami.Theme.defaultFont.pointSize
                     Layout.preferredWidth: 180
@@ -452,54 +496,54 @@ Window {
                 }
 
                 // Cores
-                Text {
+                SecondaryLabel {
                     text: translations.i18n("Cores")
-                    color: aboutWindow.secondaryTextColor
+
                     font.family: aboutWindow.fontFamily
                     font.pointSize: Kirigami.Theme.defaultFont.pointSize
                     Layout.alignment: Qt.AlignRight
                     Layout.preferredWidth: 110
                     horizontalAlignment: Text.AlignRight
                 }
-                Text {
+                PrimaryLabel {
                     text: aboutWindow.coresDisplay
-                    color: aboutWindow.primaryTextColor
+
                     font.family: aboutWindow.fontFamily
                     font.pointSize: Kirigami.Theme.defaultFont.pointSize
                     Layout.preferredWidth: 180
                 }
 
                 // Memory
-                Text {
+                SecondaryLabel {
                     text: translations.i18n("Memory")
-                    color: aboutWindow.secondaryTextColor
+
                     font.family: aboutWindow.fontFamily
                     font.pointSize: Kirigami.Theme.defaultFont.pointSize
                     Layout.alignment: Qt.AlignRight
                     Layout.preferredWidth: 110
                     horizontalAlignment: Text.AlignRight
                 }
-                Text {
+                PrimaryLabel {
                     text: aboutWindow.memoryDisplay
-                    color: aboutWindow.primaryTextColor
+
                     font.family: aboutWindow.fontFamily
                     font.pointSize: Kirigami.Theme.defaultFont.pointSize
                     Layout.preferredWidth: 180
                 }
 
                 // Graphics
-                Text {
+                SecondaryLabel {
                     text: translations.i18n("Graphics")
-                    color: aboutWindow.secondaryTextColor
+
                     font.family: aboutWindow.fontFamily
                     font.pointSize: Kirigami.Theme.defaultFont.pointSize
                     Layout.alignment: Qt.AlignRight
                     Layout.preferredWidth: 110
                     horizontalAlignment: Text.AlignRight
                 }
-                Text {
+                PrimaryLabel {
                     text: aboutWindow.graphicsDisplay
-                    color: aboutWindow.primaryTextColor
+
                     font.family: aboutWindow.fontFamily
                     font.pointSize: Kirigami.Theme.defaultFont.pointSize
                     Layout.preferredWidth: 180
@@ -509,18 +553,18 @@ Window {
                 }
 
                 // Startup disk
-                Text {
+                SecondaryLabel {
                     text: translations.i18n("Startup disk")
-                    color: aboutWindow.secondaryTextColor
+
                     font.family: aboutWindow.fontFamily
                     font.pointSize: Kirigami.Theme.defaultFont.pointSize
                     Layout.alignment: Qt.AlignRight
                     Layout.preferredWidth: 110
                     horizontalAlignment: Text.AlignRight
                 }
-                Text {
+                PrimaryLabel {
                     text: aboutWindow.diskDisplay
-                    color: aboutWindow.primaryTextColor
+
                     font.family: aboutWindow.fontFamily
                     font.pointSize: Kirigami.Theme.defaultFont.pointSize
                     Layout.preferredWidth: 180
@@ -530,18 +574,18 @@ Window {
                 }
 
                 // Network address
-                Text {
+                SecondaryLabel {
                     text: translations.i18n("Network")
-                    color: aboutWindow.secondaryTextColor
+
                     font.family: aboutWindow.fontFamily
                     font.pointSize: Kirigami.Theme.defaultFont.pointSize
                     Layout.alignment: Qt.AlignRight
                     Layout.preferredWidth: 110
                     horizontalAlignment: Text.AlignRight
                 }
-                Text {
+                PrimaryLabel {
                     text: aboutWindow.networkDisplay
-                    color: aboutWindow.primaryTextColor
+
                     font.family: aboutWindow.fontFamily
                     font.pointSize: Kirigami.Theme.defaultFont.pointSize
                     Layout.preferredWidth: 180
@@ -549,18 +593,18 @@ Window {
                 }
 
                 // Serial number
-                Text {
+                SecondaryLabel {
                     text: translations.i18n("Serial number")
-                    color: aboutWindow.secondaryTextColor
+
                     font.family: aboutWindow.fontFamily
                     font.pointSize: Kirigami.Theme.defaultFont.pointSize
                     Layout.alignment: Qt.AlignRight
                     Layout.preferredWidth: 110
                     horizontalAlignment: Text.AlignRight
                 }
-                Text {
+                PrimaryLabel {
                     text: aboutWindow.serialDisplay
-                    color: aboutWindow.primaryTextColor
+
                     font.family: aboutWindow.fontFamily
                     font.pointSize: Kirigami.Theme.defaultFont.pointSize
                     Layout.preferredWidth: 180
@@ -568,18 +612,18 @@ Window {
                 }
 
                 // OS
-                Text {
+                SecondaryLabel {
                     text: translations.i18n("OS")
-                    color: aboutWindow.secondaryTextColor
+
                     font.family: aboutWindow.fontFamily
                     font.pointSize: Kirigami.Theme.defaultFont.pointSize
                     Layout.alignment: Qt.AlignRight
                     Layout.preferredWidth: 110
                     horizontalAlignment: Text.AlignRight
                 }
-                Text {
+                PrimaryLabel {
                     text: aboutWindow.osDisplay
-                    color: aboutWindow.primaryTextColor
+
                     font.family: aboutWindow.fontFamily
                     font.pointSize: Kirigami.Theme.defaultFont.pointSize
                     Layout.preferredWidth: 180
@@ -596,6 +640,8 @@ Window {
                 spacing: 8
 
                 GlassButton {
+                    id: moreInfoButton
+                    labelColor: aboutWindow.ink(moreInfoButton, aboutWindow.primaryTextColor, faceColor)
                     isDarkTheme: aboutWindow.isDarkTheme
                     text: translations.i18n("More Info…")
                     onClicked: {
@@ -605,6 +651,8 @@ Window {
                 }
 
                 GlassButton {
+                    id: reportButton
+                    labelColor: aboutWindow.ink(reportButton, aboutWindow.primaryTextColor, faceColor)
                     isDarkTheme: aboutWindow.isDarkTheme
                     text: translations.i18n("Report a Bug…")
                     onClicked: {
@@ -614,6 +662,7 @@ Window {
                 }
 
                 GlassButton {
+                    labelColor: aboutWindow.ink(copyButton, aboutWindow.primaryTextColor, faceColor)
                     isDarkTheme: aboutWindow.isDarkTheme
                     id: copyButton
                     property bool justCopied: false
@@ -636,7 +685,7 @@ Window {
                             anchors.centerIn: parent
                             width: 18
                             height: 18
-                            source: Qt.resolvedUrl(aboutWindow.isDarkTheme
+                            source: Qt.resolvedUrl(copyButton.labelColor.hslLightness > 0.5
                                 ? "copy-dark.svg" : "copy-light.svg")
                             sourceSize.width: 36
                             sourceSize.height: 36
@@ -646,11 +695,12 @@ Window {
                             visible: !copyButton.justCopied
                         }
                         Kirigami.Icon {
+                            id: copyStatusIcon
                             anchors.centerIn: parent
                             width: 18
                             height: 18
                             source: "dialog-ok"
-                            color: aboutWindow.primaryTextColor
+                            color: aboutWindow.ink(copyStatusIcon, aboutWindow.primaryTextColor)
                             visible: copyButton.justCopied
                         }
                     }
@@ -665,10 +715,10 @@ Window {
 
             Item { Layout.fillHeight: true }
 
-            Text {
+            SecondaryLabel {
                 Layout.alignment: Qt.AlignHCenter
                 text: aboutWindow.themeVersionDisplay
-                color: aboutWindow.secondaryTextColor
+
                 font.family: aboutWindow.fontFamily
                 font.pointSize: Kirigami.Theme.defaultFont.pointSize - 1
                 opacity: aboutWindow.infoReady ? 1.0 : 0.0

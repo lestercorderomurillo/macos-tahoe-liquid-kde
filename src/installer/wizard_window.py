@@ -1117,18 +1117,22 @@ class InstallerWindow(OpaqueSurface):
             self.choices["wallpaper_path"] = path
             self.select("wallpaper", "custom")
 
-    def page_launcher(self):
+    def launcher_notice(self):
         from steps.clipboard import HISTORY_DIR
-        keep_detail = ("Remove Launchpad and its saved clipboard history." if HISTORY_DIR.exists()
-                       else "Skip Launchpad and its encrypted clipboard history.")
+        from steps.plasmoids import DEST_DIR, LAUNCHER_ID
+        if HISTORY_DIR.is_dir():
+            return "Remove Launchpad and its saved clipboard history."
+        if (DEST_DIR / LAUNCHER_ID).is_dir():
+            return "Remove the installed Launchpad widget."
+        return "Skip Launchpad and its encrypted clipboard history."
+
+    def page_launcher(self):
         self.cards("launcher", [
             ("tahoe", "Tahoe", "Categories and apps in one window.", picture("launcher-tahoe.jpg", 362, 204)),
             ("golden", "Golden Gate", "Separate search and application grid.", picture("launcher-golden.jpg", 362, 204)),
-            ("keep", "Use my launcher", keep_detail, None),
+            ("keep", "Use my launcher", self.launcher_notice(), None),
         ])
         self.body.addWidget(self.label("Tahoe and Golden Gate include encrypted clipboard history (Meta+V)."))
-        if self.existing_install and not self.choices["reset_layout"]:
-            self.body.addWidget(self.label("The current launcher setup is kept unless you reset the layout."))
 
     def page_layout(self):
         self.body.addSpacing(4)
@@ -1435,7 +1439,7 @@ class InstallerWindow(OpaqueSurface):
             ("icons", "Icons", value("icons"), "icons"),
             ("color", "Color", value("color"), "icons"),
             ("wallpaper", "Background", value("wallpaper"), "wallpaper"),
-            ("launcher", "Launcher", self.t("Keep") if keep_layout else value("launcher"), "launcher"),
+            ("launcher", "Launcher", self.t("Use my launcher") if c["launcher"] == "keep" else value("launcher"), "launcher"),
             ("panel", "Desktop", desktop or self.t("Keep"), "layout"),
             ("dock_apps", "Dock apps", self.dock_app_summary() + (" · " + self.t("macOS-style Dock icons" if c["dock_appearance"] == "macos" else "Application icons") if c["dock"] and c["dock_appearance"] not in ("auto", "keep") else ""), "layout"),
             ("acrylic_glass", "Effects", effects or self.t("Disabled"), "effects"),
@@ -1465,6 +1469,19 @@ class InstallerWindow(OpaqueSurface):
             button.clicked.connect(lambda _, page=step: self.edit(page)); row.addWidget(button)
             grid.addWidget(entry, i//2, i%2)
         self.body.addLayout(grid)
+        notices = []
+        if c["launcher"] == "keep":
+            notices.append(self.launcher_notice())
+        if self.existing_install and c["reset_layout"] and (c["panel"] or c["dock"]):
+            notices.append("Reset Dock and panel customization")
+        if notices:
+            warning = self.label("")
+            warning.setObjectName("summaryWarning")
+            warning.setText("\n".join(self.t(message) for message in notices))
+            red = "#ff9994" if self.mode == "dark" else "#a32322"
+            warning.setStyleSheet(f"border-left: 3px solid {red}; padding-left: 8px; color: {red};")
+            self.body.addWidget(warning)
+
 
 
     def edit(self, page):
