@@ -1,15 +1,37 @@
 {
-  "version": "0.76.1",
+  "version": "0.76.2",
   "gallery_commit": "f09780b200b79302e7c23ef9f6f74d94748bbea3",
-  "scope": "Regional background sampling and smooth transitions for About This Computer text.",
-  "approval": "Maintainer approved the paired regional tint previews on 2026-11-20.",
+  "scope": "Adaptive text on glass surfaces in both editions and the bundled blue computer icon in About.",
+  "approval": "Maintainer approved publication of the tint adjustment and the previously reviewed About photos with the blue monitor.",
   "checks": [
     {
-      "command": "Open installed About This Computer from the Plasma Apple menu; capture on a split background, invert it, then use a neutral gradient and switch to light mode",
+      "command": "Apply and disable Dynamic Tinting in a disposable KDE neon Wayland guest; capture Control Center on a split background and reverse it, switch appearance and open the other glass surfaces",
       "result": "passed",
       "edition": "tahoe",
-      "environment": "KDE neon disposable Wayland VM",
-      "source_commit": "31b25c819a57e411905d276ccfa8b97d61a30f66"
+      "source_commit": "00bebe0830234b92f9d096475fef6ebcab09ce2b",
+      "frames": [
+        "tahoe-off.png",
+        "tahoe-on.png",
+        "tahoe-inverted.png",
+        "tahoe-dark-mode.png",
+        "tahoe-apple.png",
+        "tahoe-about.png",
+        "tahoe-wifi.png",
+        "tahoe-battery.png",
+        "tahoe-digitalclock.png",
+        "tahoe-launcher.png",
+        "tahoe-notification.png"
+      ]
+    },
+    {
+      "command": "tests/test_launcher_presets.py::test_control_center_native_x11_render",
+      "result": "passed",
+      "output": "1 passed"
+    },
+    {
+      "command": "nix build path:/repo#global-menu",
+      "result": "passed",
+      "output": "/nix/store/9s7nzcwaylsl4xrld8p0w55jkpfmk1ls-mac-tahoe-global-menu-0.76.1"
     }
   ],
   "captures": [
@@ -22,22 +44,8 @@
       "edition": "tahoe"
     },
     {
-      "path": "src/screenshots/previews/readme-tahoe-light-about-ede43c195294.webp",
-      "sha256": "ede43c1952940d51bb46fe4f5cd423014f7d5e3729c5eb2e62c30b3531ba3ef2",
-      "source_commit": "7455a59d995acb332ede95a137576ed86d467eaf",
-      "reviewed": true,
-      "edition": "tahoe"
-    },
-    {
       "path": "src/screenshots/previews/wizard-tahoe-light-summary-b3c64449efd7.webp",
       "sha256": "b3c64449efd738a2e234dfaf34db8e6331fa3bbe4f3e203a722d68f517c35389",
-      "source_commit": "7455a59d995acb332ede95a137576ed86d467eaf",
-      "reviewed": true,
-      "edition": "tahoe"
-    },
-    {
-      "path": "src/screenshots/previews/readme-tahoe-dark-about-336526659522.webp",
-      "sha256": "336526659522538bd20bf35cfcd8ad41e3e8c73bf2acf909d4ad165f437198fb",
       "source_commit": "7455a59d995acb332ede95a137576ed86d467eaf",
       "reviewed": true,
       "edition": "tahoe"
@@ -48,16 +56,37 @@
       "source_commit": "7455a59d995acb332ede95a137576ed86d467eaf",
       "reviewed": true,
       "edition": "tahoe"
+    },
+    {
+      "path": "src/screenshots/previews/readme-tahoe-light-about-46901764dde1.webp",
+      "reviewed": true,
+      "source_commit": "2368236ece9096533e702685722f518aa379bc07",
+      "sha256": "46901764dde1fd069a2b70b0a8c6cb716f93b8f88befd1054ff8befd71ee7efb",
+      "edition": "tahoe"
+    },
+    {
+      "path": "src/screenshots/previews/readme-tahoe-dark-about-5f1088d764fc.webp",
+      "reviewed": true,
+      "source_commit": "2368236ece9096533e702685722f518aa379bc07",
+      "sha256": "5f1088d764fc58ad04544303e2b3267760f3e2ce2a447270cbf2ed7ffe1ffd08",
+      "edition": "tahoe"
     }
   ],
   "coverage_limits": [
-    "Visual validation in the prepared Wayland guest. Contrast can be lower where a background boundary crosses the intermediate text tone."
+    "The Wayland gallery checks the tint implementation. The later Tahoe-only change selects the same bundled monitor asset already rendered by Golden Gate. The restored Tahoe README images retain their original source. Notification banners use their existing compositor-provided average."
   ],
-  "source_sha256": "e7ac52952966200babfc38d0292cb4efeb0bbd9368598977e02636f67e7f49a3",
+  "source_sha256": "ec89a757b2d414fcc835b2bcd627c25ee5977dd466edb816f9fb6b087f87cc62",
   "reviewed_preview_sha256": {
-    "tahoe-dark.jpg": "6c9391d7828ed828209a37f6c8d6d0c28ba00ca7638af478f3000dd48e80b019",
-    "tahoe-light.jpg": "18700e9c40ac654a4bfde9e2eb7f35c190dc00690b7bc61ce84ad4211af24ea6",
-    "tahoe-inverted.jpg": "75fad5f5cf5d53649d901831d3a3ba33d58ef831ab187f3cafebef5adda5b4c2",
-    "tahoe-neutral-gradient.jpg": "997e1c5cb578b855827779e668c209e3e2f470b140966e97be5288bde6d08e43"
+    "tahoe-off.png": "615212dbe4165e744968159689d5cdd8fbb801e02908155f44e1404489264378",
+    "tahoe-on.png": "6c194e4c0dd6354bb8b7939e837e38d7e2a1ee90a67097d06c67d32de71bab42",
+    "tahoe-inverted.png": "19c1d3b292fd25894da22293a5daf9dfccf8a83ffe61223d285569ba13a6d373",
+    "tahoe-dark-mode.png": "126f0d21e360a0321c5bf17639c76cf943a1d67deea055b4e9f92e9a362ece63",
+    "tahoe-apple.png": "ef2650fca959fbd473dd95fdabe1f464feb42db0136a3b0accbd4e02de7ce915",
+    "tahoe-about.png": "5e394b892687ef10ebe5e85d689210b0150092b15e8a9f10dccea9d18adb164e",
+    "tahoe-wifi.png": "fc4ec16722397159f9073f494144987be6487b8fc081d198334783bd62be68b2",
+    "tahoe-battery.png": "469488dcd7435881f904c1ad054a743fb3a5acb491b5387a19b715ee53ac8596",
+    "tahoe-digitalclock.png": "cc273672a10952999383cd7eba2321f7f5bec921a9a180a4756c039d1e88e59a",
+    "tahoe-launcher.png": "7fc3ca43490aa31c7370314a5a4e640d740d533b0e3ce1a866a08ad5baf699ef",
+    "tahoe-notification.png": "27adae71457423ffc899d537323cbcb66e9c53ac0e203847aa1323f3f179a833"
   }
 }
