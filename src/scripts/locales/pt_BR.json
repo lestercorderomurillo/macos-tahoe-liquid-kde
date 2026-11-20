@@ -1258,5 +1258,7 @@
   "Tahoe and Golden Gate include encrypted clipboard history (Meta+V).": "Tahoe e Golden Gate incluem histórico criptografado da área de transferência (Meta+V).",
   "Open from the launcher:": "Abrir pelo lançador:",
   "Launchpad": "Launchpad",
-  "Clipboard history is unavailable.": "O histórico da área de transferência está indisponível."
+  "Clipboard history is unavailable.": "O histórico da área de transferência está indisponível.",
+  "Tahoe (Clear)": "Tahoe (Transparente)",
+  "Tahoe (Frosted)": "Tahoe (Fosco)"
 }

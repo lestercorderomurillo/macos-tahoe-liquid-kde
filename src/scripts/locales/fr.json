@@ -1416,5 +1416,7 @@
   "Open from the launcher:": "Ouvrir depuis le lanceur :",
   "Launchpad": "Launchpad",
   "Clipboard history is unavailable.": "L’historique du presse-papiers est indisponible.",
-  "Remove Launchpad and its saved clipboard history.": "Supprimer Launchpad et son historique enregistré du presse-papiers."
+  "Remove Launchpad and its saved clipboard history.": "Supprimer Launchpad et son historique enregistré du presse-papiers.",
+  "Tahoe (Clear)": "Tahoe (transparent)",
+  "Tahoe (Frosted)": "Tahoe (dépoli)"
 }

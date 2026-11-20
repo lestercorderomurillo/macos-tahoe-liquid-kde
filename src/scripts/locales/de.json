@@ -1258,5 +1258,7 @@
   "Tahoe and Golden Gate include encrypted clipboard history (Meta+V).": "Tahoe und Golden Gate enthalten einen verschlüsselten Zwischenablageverlauf (Meta+V).",
   "Open from the launcher:": "Über den Starter öffnen:",
   "Launchpad": "Launchpad",
-  "Clipboard history is unavailable.": "Der Zwischenablageverlauf ist nicht verfügbar."
+  "Clipboard history is unavailable.": "Der Zwischenablageverlauf ist nicht verfügbar.",
+  "Tahoe (Clear)": "Tahoe (Klar)",
+  "Tahoe (Frosted)": "Tahoe (Mattiert)"
 }
