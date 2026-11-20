@@ -1,21 +1,107 @@
 {
-  "version": "0.73.35",
+  "version": "0.74.0",
   "gallery_commit": "f09780b200b79302e7c23ef9f6f74d94748bbea3",
-  "scope": "Issue #138: optional GTK 3 exporter warning in the installer summary.",
+  "scope": "Integrated 0.73.x fixes, launcher materials, panel appearance and documentation photographs.",
+  "approval": "Maintainer approved the shown preview and requested an ordinary paired release.",
   "checks": [
     {
-      "command": "python3 -m pytest -q tests/test_gtk_appmenu.py tests/test_globalmenu_step.py",
+      "command": "python3 tests/vm/qt_appearance.py (clipboard_appearance scenario with a persistent Qt widget and GTK 3/4 probes)",
       "result": "passed",
-      "detail": "31 passed. The new Fedora and Nobara cases failed on the unpatched source. Arch and KDE neon still warn for a missing expected exporter."
+      "cases": [
+        "standalone-dark",
+        "standalone-light",
+        "gtk-preference-dark",
+        "gtk-preference-light",
+        "rapid-latest-wins",
+        "auto-before-boundary",
+        "auto-crossed-1800",
+        "native-manual-after-completed-auto",
+        "auto-before-overlap",
+        "auto-transition-in-flight",
+        "native-manual-supersedes-auto",
+        "manual-remains-light"
+      ]
     },
     {
-      "command": "docker run --rm fedora:45 (candidate mounted read-only, PYTHONPATH=/candidate/src/scripts) with Python 3.15.2 invoking steps.globalmenu._install_gtk_appmenu_environment()",
+      "command": "release-screenshots readme-photos and SHA-256 audit of installer photographs",
       "result": "passed",
-      "detail": "Fedora 45 x86_64, image sha256:a7d72ba2745b100a3351087472e5ee7b2450af7cf331e7673007e3817612839c. Asserted no installed exporter, no warning event and no login hook."
+      "detail": "49 README photographs and 34 installer frames in this edition."
+    },
+    {
+      "command": "python3 -m pytest -q tests/test_gtk_appmenu.py tests/test_component_glass_surfaces.py tests/test_glass_presets.py",
+      "result": "passed",
+      "detail": "68 passed in 26.69s"
+    },
+    {
+      "command": "python3 src/scripts/component_manifest.py",
+      "result": "passed"
+    }
+  ],
+  "captures": [
+    {
+      "path": "src/screenshots/previews/readme-tahoe-light-launcher-e9e005b8c0a7.webp",
+      "sha256": "e9e005b8c0a7d9da0b207253ea4b14c1b88ee4be80e32189d97f27e46adc2f47",
+      "reviewed": true
+    },
+    {
+      "path": "src/screenshots/previews/readme-tahoe-light-calendar-b917d2025bca.webp",
+      "sha256": "b917d2025bca93e7c6a4517bc607cb6f12f0e89367dff08c8c61313447a1246f",
+      "reviewed": true
+    },
+    {
+      "path": "src/screenshots/previews/readme-tahoe-light-control-5f066f7e22f2.webp",
+      "sha256": "5f066f7e22f234d2ae9eeac131cc74af23ad164f4884b3d5e350f346a473ed51",
+      "reviewed": true
+    },
+    {
+      "path": "src/screenshots/previews/readme-tahoe-light-notifications-0be9825c63c2.webp",
+      "sha256": "0be9825c63c2b248600a576a48ae694e9afada9993230a99c1ba10801884d335",
+      "reviewed": true
+    },
+    {
+      "path": "src/screenshots/previews/readme-tahoe-light-wifi-603193d9a909.webp",
+      "sha256": "603193d9a9098a0f6afe43ac8b9554edfb705e4affdb93149fdecc03f0352159",
+      "reviewed": true
+    },
+    {
+      "path": "src/screenshots/previews/readme-tahoe-light-battery-fb40427bb7dc.webp",
+      "sha256": "fb40427bb7dce351321c110595d566907841c439b2f7627c7682ef8d4afeff99",
+      "reviewed": true
+    },
+    {
+      "path": "src/screenshots/previews/readme-tahoe-dark-launcher-48f5a12fe6a9.webp",
+      "sha256": "48f5a12fe6a957e3c7539d45522da30921f56af0e3c0514241b394403f04e6d5",
+      "reviewed": true
+    },
+    {
+      "path": "src/screenshots/previews/readme-tahoe-dark-calendar-1267abeca5d4.webp",
+      "sha256": "1267abeca5d4c7c75517e4486430ea4decd90bfbc27d6909a0d36353ba2aa257",
+      "reviewed": true
+    },
+    {
+      "path": "src/screenshots/previews/readme-tahoe-dark-control-176530068a4d.webp",
+      "sha256": "176530068a4d3e66475116b1adcbea1673115fbba4c276920ce16f5fecf901d0",
+      "reviewed": true
+    },
+    {
+      "path": "src/screenshots/previews/readme-tahoe-dark-notifications-3bdf43d58e1e.webp",
+      "sha256": "3bdf43d58e1e5202fe198e8d087867fe7fc0f9a6a22007d8893ac5d00240ed8f",
+      "reviewed": true
+    },
+    {
+      "path": "src/screenshots/previews/readme-tahoe-dark-wifi-0a9856b27a14.webp",
+      "sha256": "0a9856b27a14b5ffdffa85ab9539715a51c09c34ae294001aec6386c6b94ad73",
+      "reviewed": true
+    },
+    {
+      "path": "src/screenshots/previews/readme-tahoe-dark-battery-77e5e230e81d.webp",
+      "sha256": "77e5e230e81d586c9db442799b2e4b9eb2816129ccd077722ad5a5943bc36db7",
+      "reviewed": true
     }
   ],
   "coverage_limits": [
-    "Installer reporting only. No changes to package installation, login hook contents or runtime menu export. No graphical Plasma session exercised."
+    "Visual qualification used KDE neon on Wayland. VM Wi-Fi and battery photographs show the no-hardware state.",
+    "KWin 6.6 X11 rendering and 6.6, 6.7 and 6.8 SDK builds were exercised during integration. Full remote CI is asynchronous."
   ],
-  "source_sha256": "7fd0abe213533a8e629b0b8529eb494f751f7859b3dcef7723ba6435600da03d"
+  "source_sha256": "ac2de2f8f560f2e4a4ed2f7c3b2642d20276d53009be4a9e9f4ca8c8ef14663c"
 }

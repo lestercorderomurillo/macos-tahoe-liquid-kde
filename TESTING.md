@@ -1,6 +1,6 @@
 # Installer testing
 
-**v0.73.35**. A Fedora 45 container ran the GTK startup integration step without an exporter or a warning. Focused regressions covered distributions that require the exporter. [Evidence and coverage](release-evidence.json).
+**v0.74.0**. KDE neon Wayland captures cover launcher and panel materials in both appearances. The installed-session check exercised a scheduled appearance transition and rapid manual selections with Qt and GTK applications open. [Evidence and coverage](release-evidence.json).
 
 [Installer photo evidence](src/screenshots/previews/wizard-tahoe-provenance-9ba9cfba299b.json).
 
