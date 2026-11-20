@@ -13,6 +13,7 @@ Support.DataSource {
             sharing: "kdeconnect-app",
             overview: "qdbus6 org.kde.kglobalaccel /component/kwin org.kde.kglobalaccel.Component.invokeShortcut Overview",
             display: "systemsettings kcm_kscreen",
+            auto: themeSwitch + "auto",
             dark: themeSwitch + "dark",
             light: themeSwitch + "light",
             screenshot: "spectacle -r -d 300"

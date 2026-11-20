@@ -107,6 +107,9 @@ msgstr "Alto Desempenho"
 msgid "Known Networks"
 msgstr "Redes conhecidas"
 
+msgid "Light"
+msgstr "Claro"
+
 msgid "Low Power"
 msgstr "Pouca Energia"
 

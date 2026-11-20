@@ -107,6 +107,9 @@ msgstr "高功率"
 msgid "Known Networks"
 msgstr "已知网络"
 
+msgid "Light"
+msgstr "浅色"
+
 msgid "Low Power"
 msgstr "低电量"
 

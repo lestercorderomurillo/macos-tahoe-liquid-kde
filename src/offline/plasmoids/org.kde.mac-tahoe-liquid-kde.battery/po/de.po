@@ -107,6 +107,9 @@ msgstr "Hohe Leistung"
 msgid "Known Networks"
 msgstr "Bekannte Netzwerke"
 
+msgid "Light"
+msgstr "Hell"
+
 msgid "Low Power"
 msgstr "Stromsparmodus"
 
