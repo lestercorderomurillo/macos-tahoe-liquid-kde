@@ -1260,5 +1260,8 @@
   "Launchpad": "Launchpad",
   "Clipboard history is unavailable.": "O histórico da área de transferência está indisponível.",
   "Tahoe (Clear)": "Tahoe (Transparente)",
-  "Tahoe (Frosted)": "Tahoe (Fosco)"
+  "Tahoe (Frosted)": "Tahoe (Fosco)",
+  "Control Center transition": "Transição da Central de Controle",
+  "Control Center transition could not be enabled in kwinrc": "Não foi possível ativar a transição da Central de Controle no kwinrc",
+  "Control Center transition removed": "Transição da Central de Controle removida"
 }

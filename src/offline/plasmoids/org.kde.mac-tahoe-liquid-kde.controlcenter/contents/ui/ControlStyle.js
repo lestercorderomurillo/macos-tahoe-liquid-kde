@@ -7,11 +7,13 @@ var caption = 11;
 var panelIcon = 18;
 var actionIcon = 22;
 var circleIcon = 26;
+// Control Center tile titles render at macOS Tahoe's 12 px semibold.
+var tileTitle = 12;
 function foreground(item, window, base) {
     return window && typeof window.foregroundFor === "function" ? window.foregroundFor(item, base) : base;
 }
 function symbol(name) {
-    var names = {"mac-menu-chevron":"notification-options","mac-menu-lock":"lock","mac-brightness-low":"sun-low", "network-wired-symbolic":"ethernet", "mac-stage-manager":"stage-manager", "mac-mirroring":"mirroring", "mac-appearance":"appearance", "mac-screenshot":"screenshot", "mac-airdrop-off":"airdrop-off", "mac-airplay":"airplay", "mac-speaker-low":"speaker-low", "network-wireless":"wifi", "network-wireless-offline":"wifi-off",
+    var names = {"mac-menu-chevron":"notification-options", "mac-chevron-right":"chevron-right","mac-menu-lock":"lock","mac-brightness-low":"sun-low", "network-wired-symbolic":"ethernet", "mac-stage-manager":"stage-manager", "mac-mirroring":"mirroring", "mac-appearance":"appearance", "mac-screenshot":"screenshot", "mac-airdrop-off":"airdrop-off", "mac-airplay":"airplay", "mac-speaker-low":"speaker-low", "network-wireless":"wifi", "network-wireless-offline":"wifi-off",
         "preferences-system-bluetooth":"bluetooth", "battery":"battery",
         "weather-clear-night":"moon", "notifications":"bell", "configure":"settings",
         "audio-x-generic":"music", "media-skip-backward":"previous", "media-skip-forward":"next",

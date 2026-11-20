@@ -1,0 +1,14 @@
+{
+    "KPackageStructure": "KWin/Effect",
+    "KPlugin": {
+        "Authors": [{ "Name": "Lester Cordero Murillo" }],
+        "Category": "Appearance",
+        "Description": "macOS Tahoe Control Center opening and closing: zoom from 1.2 with a fade, so the Liquid Glass follows the panel.",
+        "EnabledByDefault": true,
+        "Id": "mttkde_controlcenter_transition",
+        "License": "GPL-3.0-or-later",
+        "Name": "Control Center Transition"
+    },
+    "X-KDE-Ordering": 60,
+    "X-Plasma-API": "javascript"
+}

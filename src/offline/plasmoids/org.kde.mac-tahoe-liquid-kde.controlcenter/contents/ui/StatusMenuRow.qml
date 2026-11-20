@@ -15,7 +15,7 @@ QQC.AbstractButton {
     property bool opened: false
     property string detail
     readonly property bool lightMode: Kirigami.Theme.textColor.r * 0.2126 + Kirigami.Theme.textColor.g * 0.7152 + Kirigami.Theme.textColor.b * 0.0722 < 0.5
-    implicitHeight: 36
+    implicitHeight: 32
     implicitWidth: 270
     leftPadding: 6; rightPadding: 6; topPadding: 3; bottomPadding: 3
     hoverEnabled: true
@@ -30,13 +30,15 @@ QQC.AbstractButton {
         Rectangle {
             visible: row.symbol.length > 0
             implicitWidth: 26; implicitHeight: 26; radius: 13
-            color: row.selected ? "#008aff" : row.lightMode ? Qt.rgba(0, 0, 0, 0.10) : Qt.rgba(1, 1, 1, 0.14)
+            // macOS Tahoe: the active item is a white disc with a blue symbol.
+            color: row.selected ? (row.lightMode ? "#008aff" : "white") : row.lightMode ? Qt.rgba(0, 0, 0, 0.10) : Qt.rgba(1, 1, 1, 0.22)
             Kirigami.Icon {
                 anchors.centerIn: parent
-                width: 18; height: 18
+                width: 16; height: 16
+                roundToIconSize: false
                 source: Style.symbol(row.symbol)
                 isMask: true
-                color: row.selected ? "white" : caption.color
+                color: row.selected ? (row.lightMode ? "white" : "#008aff") : caption.color
                 visible: !row.busy
             }
             QQC.BusyIndicator { anchors.centerIn: parent; width: 22; height: 22; running: row.busy; visible: running }

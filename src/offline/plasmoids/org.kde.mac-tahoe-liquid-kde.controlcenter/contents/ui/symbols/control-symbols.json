@@ -49,14 +49,14 @@
     "screenshot": {
       "symbol": "camera.viewfinder",
       "glyph": "uni1003BC.small",
-      "source": "bundled Apple font; unchanged contours, uniform scale and translation",
-      "sha256": "41b0f5990e5bd4d2d74c262a37cb618b272b16fb9a6cf934145b2c0ea654fb4c"
+      "source": "bundled Apple font (Medium); unchanged contours, uniform scale and translation",
+      "sha256": "6a2e383ae24afd06b5e0ec45c8db2739b56a935b6f852858621a9af8ac6fb47d"
     },
     "mirroring": {
       "symbol": "rectangle.on.rectangle",
       "glyph": "uni1003E7.small",
-      "source": "bundled Apple font; unchanged contours, uniform scale and translation",
-      "sha256": "0be0b7860b4b0c7842f3e1131342e39517fe3b6b515b958325f22b6cf050891f"
+      "source": "bundled Apple font (Medium); unchanged contours, uniform scale and translation",
+      "sha256": "99c7a9a01bf9838cc20986c706d3e079c141434ea04c7a1c3c904aa6b9cf0e32"
     },
     "airplay": {
       "symbol": "airplayaudio",
@@ -148,10 +148,16 @@
       "source": "bundled Apple font; unchanged contours, uniform scale and translation",
       "sha256": "9063fed00e73401691a7068689c96d928539c7f34b7a06c8162d3976472dc342"
     },
+    "chevron-right": {
+      "symbol": "chevron.right",
+      "glyph": "uni10018A.small",
+      "source": "bundled Apple font; unchanged contours, uniform scale and translation",
+      "sha256": "a90d87f612d4efa1d7390a5a3a51c87a97de900cb71c66290fb3c30ae8ea65f3"
+    },
     "stage-manager": {
       "source": "vector reconstruction from supplied macOS reference",
       "reference": "https://gist.githubusercontent.com/RoxasYTB/b552334b7afd3ff281a4a0fe71a0b00a/raw/reference-macos-tahoe-control-center.png",
-      "sha256": "9800cd06c2a61e6aadd1e2d1396fd513ea5fc9a8bc04cea73c0061569965707c"
+      "sha256": "b32510e3a1c4b51d6983e00610d5d444915a65278a091e7f781dfe4bb6a6be60"
     },
     "airdrop-off": {
       "source": "vector reconstruction from supplied macOS reference",

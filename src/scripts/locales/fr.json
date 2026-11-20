@@ -1421,5 +1421,8 @@
   "Clipboard history is unavailable.": "L’historique du presse-papiers est indisponible.",
   "Remove Launchpad and its saved clipboard history.": "Supprimer Launchpad et son historique enregistré du presse-papiers.",
   "Tahoe (Clear)": "Tahoe (transparent)",
-  "Tahoe (Frosted)": "Tahoe (dépoli)"
+  "Tahoe (Frosted)": "Tahoe (dépoli)",
+  "Control Center transition": "Transition du Control Center",
+  "Control Center transition could not be enabled in kwinrc": "La transition du Control Center n'a pas pu être activée dans kwinrc",
+  "Control Center transition removed": "Transition du Control Center supprimée"
 }

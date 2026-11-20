@@ -44,7 +44,9 @@ public:
     void setMaskWindow(bool enabled);
     void setWindow(QWindow *window) override;
     void setSurfaces(const QVariantList &surfaces);
-    static QRegion regionFor(const QVariantList &surfaces);
+    // glassOnly skips surfaces marked {glass: false}: they take pointer input
+    // but no glass, so a control overlapping a card cannot merge with its shape.
+    static QRegion regionFor(const QVariantList &surfaces, bool glassOnly = true);
 Q_SIGNALS:
     void surfacesChanged();
     void maskWindowChanged();
@@ -54,6 +56,7 @@ private:
     void apply();
     QVariantList m_surfaces;
     QRegion m_region;
+    QRegion m_inputRegion;
     bool m_maskWindow = true;
     QMetaObject::Connection m_frameConnection;
 };

@@ -319,6 +319,7 @@ private:
         int rgbDriftStrengthLocation;
         int magnifyGlassStrengthLocation;
         int refractionWidthLocation;
+        int edgeLensDepthLocation = -1;
         int highlightWidthLocation;
         int highlightStrengthLocation;
         int darkGradientOverlayLocation;

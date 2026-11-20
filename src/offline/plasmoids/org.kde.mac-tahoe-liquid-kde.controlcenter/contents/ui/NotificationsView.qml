@@ -26,7 +26,8 @@ Page {
                         height:bottom-top, radius:area.radius});
             }
             if (card.contentItem.closeVisible)
-                areas.push({x:point.x-6, y:point.y-4, width:20, height:20, radius:10});
+                // Input only: glass here would merge with the card corner it overlaps.
+                areas.push({x:point.x-6, y:point.y-4, width:20, height:20, radius:10, glass:false});
         }
         areas.push({x:clear.mapToItem(view,0,0).x, y:clear.mapToItem(view,0,0).y, width:20, height:20, radius:10});
         return areas;

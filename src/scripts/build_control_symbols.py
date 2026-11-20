@@ -10,6 +10,9 @@ from fontTools.pens.transformPen import TransformPen
 
 ROOT = Path(__file__).resolve().parents[2]
 FONT = ROOT / 'src/offline/fonts/SF-Pro-Display-Regular.otf'
+FONT_ARCHIVE = ROOT / 'src/offline/fonts/fonts.tar.xz'
+# macOS Tahoe draws these Control Center symbols at Medium weight.
+MEDIUM = {'screenshot', 'mirroring'}
 DEST = ROOT / 'src/offline/plasmoids/org.kde.mac-tahoe-liquid-kde.controlcenter/contents/ui/symbols'
 # Glyph identities visually checked against the bundled font atlas and issue #133.
 GLYPHS = {
@@ -37,14 +40,17 @@ GLYPHS = {
     'notification-close': ('multiply', 'multiply', 9),
     'notification-options': ('chevron.down', '100188', 16),
     'settings': ('gear', '10035F', 22),
+    'chevron-right': ('chevron.right', '10018A', 12),
 }
+# macOS Tahoe draws these secondary contours at reduced opacity.
+SECONDARY_OPACITY = '.55'
 REFERENCE = 'https://gist.githubusercontent.com/RoxasYTB/b552334b7afd3ff281a4a0fe71a0b00a/raw/reference-macos-tahoe-control-center.png'
 # The 2020 bundled font predates Stage Manager. These contours reproduce the
 # reference's three filled sidebar tiles and continuous rounded main window.
-STAGE = ('<rect x="2" y="3" width="3.5" height="4" rx=".8"/>'
-         '<rect x="2" y="10" width="3.5" height="4" rx=".8"/>'
-         '<rect x="2" y="17" width="3.5" height="4" rx=".8"/>'
-         '<rect x="9" y="4" width="13" height="16" rx="2.2" fill="none" stroke="currentColor" stroke-width="1.8"/>')
+STAGE = ('<rect x="1.3" y="4.9" width="3.75" height="3.4" rx=".7"/>'
+         '<rect x="1.3" y="10.15" width="3.75" height="3.4" rx=".7"/>'
+         '<rect x="1.3" y="15.4" width="3.75" height="3.4" rx=".7"/>'
+         '<rect x="8.25" y="5.45" width="13.9" height="12" rx="2" fill="none" stroke="currentColor" stroke-width="1.45" opacity="'+SECONDARY_OPACITY+'"/>')
 # AirDrop Off: three interrupted concentric rings and a diagonal slash, as in
 # the supplied reference. This is a reference reconstruction, not a font glyph.
 AIRDROP_OFF = ('<g fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round">'
@@ -59,19 +65,40 @@ def svg(body):
             '<style id="current-color-scheme">.ColorScheme-Text{color:#242424}</style>'
             '<g class="ColorScheme-Text" fill="currentColor">'+body+'</g></svg>\n')
 
+def viewfinder_layers(commands):
+    # camera.viewfinder: the four corner brackets touch the glyph box and are
+    # drawn translucent; the camera body in the middle stays opaque.
+    parts = [part + 'Z' for part in commands.split('Z') if part.strip()]
+    import re
+    def outer(part):
+        values = [float(v) for v in re.findall(r'-?\d+(?:\.\d+)?', part)]
+        xs, ys = values[0::2], values[1::2]
+        return min(xs) < 2 or max(xs) > 22 or min(ys) < 2 or max(ys) > 22
+    brackets = ''.join(p for p in parts if outer(p))
+    camera = ''.join(p for p in parts if not outer(p))
+    return '<path opacity="'+SECONDARY_OPACITY+'" d="'+brackets+'"/><path d="'+camera+'"/>'
+
 def main():
+    import io, tarfile
     glyphs = TTFont(FONT).getGlyphSet()
+    with tarfile.open(FONT_ARCHIVE) as archive:
+        medium = TTFont(io.BytesIO(archive.extractfile('SF-Pro-Display-Medium.otf').read())).getGlyphSet()
     records = {}
     for name, (symbol, code, size) in GLYPHS.items():
-        glyph = code if code in glyphs else 'uni'+code+'.small'
-        bounds = BoundsPen(glyphs); glyphs[glyph].draw(bounds)
+        glyphs_for = medium if name in MEDIUM else glyphs
+        glyph = code if code in glyphs_for else 'uni'+code+'.small'
+        bounds = BoundsPen(glyphs_for); glyphs_for[glyph].draw(bounds)
         left,bottom,right,top = bounds.bounds
         scale = size / max(right-left,top-bottom)
-        pen = SVGPathPen(glyphs)
-        glyphs[glyph].draw(TransformPen(pen,(scale,0,0,-scale,12-scale*(left+right)/2,12+scale*(bottom+top)/2)))
-        content = svg('<path d="'+pen.getCommands()+'"/>')
+        pen = SVGPathPen(glyphs_for)
+        glyphs_for[glyph].draw(TransformPen(pen,(scale,0,0,-scale,12-scale*(left+right)/2,12+scale*(bottom+top)/2)))
+        commands = pen.getCommands()
+        if name == 'screenshot':
+            content = svg(viewfinder_layers(commands))
+        else:
+            content = svg('<path d="'+commands+'"/>')
         (DEST/f'mttkde-control-{name}.svg').write_text(content)
-        records[name] = {'symbol':symbol,'glyph':glyph,'source':'bundled Apple font; unchanged contours, uniform scale and translation','sha256':hashlib.sha256(content.encode()).hexdigest()}
+        records[name] = {'symbol':symbol,'glyph':glyph,'source':'bundled Apple font'+(' (Medium)' if name in MEDIUM else '')+'; unchanged contours, uniform scale and translation','sha256':hashlib.sha256(content.encode()).hexdigest()}
     for name,body in [('stage-manager',STAGE),('airdrop-off',AIRDROP_OFF)]:
         content=svg(body);(DEST/f'mttkde-control-{name}.svg').write_text(content)
         records[name]={'source':'vector reconstruction from supplied macOS reference','reference':REFERENCE,'sha256':hashlib.sha256(content.encode()).hexdigest()}

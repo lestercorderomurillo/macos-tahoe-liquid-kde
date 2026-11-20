@@ -64,6 +64,6 @@ PlasmoidItem {
     Native.ControlGlass {
         window: popup
         maskWindow: false
-        surfaces: history.surfaces.map(area => ({x:area.x+10,y:area.y+10,width:area.width,height:area.height,radius:area.radius}))
+        surfaces: history.surfaces.map(area => ({x:area.x+10,y:area.y+10,width:area.width,height:area.height,radius:area.radius,glass:area.glass !== false}))
     }
 }
