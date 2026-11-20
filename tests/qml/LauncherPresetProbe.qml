@@ -180,7 +180,7 @@ Timer {
         verify(icon.Kirigami.Theme.textColor === search.textField.color, "options icon follows the search foreground");
     }
     function verifySearchContrast(search) {
-        const stronger = expectedGoldenGate && !expectedDark;
+        const stronger = expectedGoldenGate && (!expectedDark || main.detachedSearch);
         const tahoe = kicker.launcherPreset === 1;
         verify(search.textField.placeholderText === (tahoe ? "Applications" : "Apps"),
                "reference heading follows the selected preset");
@@ -279,7 +279,8 @@ Timer {
                 verify(searchBar.parent === detachedSearchSlot, "detached field parent");
                 verifyOptionsIcon(searchBar);
                 verifySearchContrast(searchBar);
-                verify(searchBar.textField.color === main.textColor, "search and app labels share the mode foreground");
+                verify(Qt.colorEqual(searchBar.textField.color, expectedGoldenGate ? "white" : main.textColor),
+                       "detached search uses its edition's capsule foreground");
                 verify(searchBar.textField.text === "terminal", "query survives preset change");
                 verify(!inlineSearchSlot.visible && inlineSearchSlot.Layout.preferredHeight === 40, "detached preset hides its inline search row");
                 verifyCapsulePosition();
