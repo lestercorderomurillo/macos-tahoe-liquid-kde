@@ -306,8 +306,8 @@ Wi-Fi、声音、亮度和通知集中在一个玻璃菜单中。外观按钮用
 
 <p align="center">
   <strong>电池</strong><br>
-  <img src="src/screenshots/previews/readme-tahoe-light-battery-fb40427bb7dc.webp" alt="电池 · 浅色" width="328">
-  <img src="src/screenshots/previews/readme-tahoe-dark-battery-77e5e230e81d.webp" alt="电池 · 深色" width="328">
+  <img src="src/screenshots/previews/readme-tahoe-light-battery-a1636d3884e6.webp" alt="电池 · 浅色" width="328">
+  <img src="src/screenshots/previews/readme-tahoe-dark-battery-e328f9c5c963.webp" alt="电池 · 深色" width="328">
 </p>
 
 <br>

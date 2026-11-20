@@ -306,8 +306,8 @@ WLAN, Klang, Helligkeit und Benachrichtigungen in einem Glasmenü. Die Schaltfl�
 
 <p align="center">
   <strong>Akku</strong><br>
-  <img src="src/screenshots/previews/readme-tahoe-light-battery-fb40427bb7dc.webp" alt="Akku · Hell" width="328">
-  <img src="src/screenshots/previews/readme-tahoe-dark-battery-77e5e230e81d.webp" alt="Akku · Dunkel" width="328">
+  <img src="src/screenshots/previews/readme-tahoe-light-battery-a1636d3884e6.webp" alt="Akku · Hell" width="328">
+  <img src="src/screenshots/previews/readme-tahoe-dark-battery-e328f9c5c963.webp" alt="Akku · Dunkel" width="328">
 </p>
 
 <br>

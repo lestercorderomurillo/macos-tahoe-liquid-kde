@@ -306,8 +306,8 @@ Wi-Fi, som, brilho e notificações em um menu de vidro. O botão de aparência 
 
 <p align="center">
   <strong>Bateria</strong><br>
-  <img src="src/screenshots/previews/readme-tahoe-light-battery-fb40427bb7dc.webp" alt="Bateria · Claro" width="328">
-  <img src="src/screenshots/previews/readme-tahoe-dark-battery-77e5e230e81d.webp" alt="Bateria · Escuro" width="328">
+  <img src="src/screenshots/previews/readme-tahoe-light-battery-a1636d3884e6.webp" alt="Bateria · Claro" width="328">
+  <img src="src/screenshots/previews/readme-tahoe-dark-battery-e328f9c5c963.webp" alt="Bateria · Escuro" width="328">
 </p>
 
 <br>

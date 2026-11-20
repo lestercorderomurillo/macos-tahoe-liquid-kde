@@ -82,81 +82,6 @@
         "tahoe": "kwin-wayland\t4:6.8.1-0zneon+24.04+noble+release+build114\nplasma-workspace\t4:6.8.1-0zneon+24.04+noble+release+build100"
       }
     },
-    "previews/readme-tahoe-dark-battery-77e5e230e81d.webp": {
-      "windows": [
-        {
-          "id": "{5dc7badf-313c-4649-a692-40f924221f0b}",
-          "caption": "",
-          "resourceClass": "plasmashell",
-          "type": 1,
-          "appletPopup": false,
-          "hidden": false,
-          "active": false,
-          "geometry": {
-            "x": 0,
-            "y": 0,
-            "width": 1920,
-            "height": 1080
-          }
-        },
-        {
-          "id": "{c7c10870-b659-4fc1-ae68-73ba13328e9f}",
-          "caption": "",
-          "resourceClass": "plasmashell",
-          "type": 2,
-          "appletPopup": false,
-          "hidden": false,
-          "active": false,
-          "geometry": {
-            "x": 0,
-            "y": 0,
-            "width": 1920,
-            "height": 32
-          }
-        },
-        {
-          "id": "{ae993158-58d9-4278-9818-30bcb83921c4}",
-          "caption": "",
-          "resourceClass": "plasmashell",
-          "type": 2,
-          "appletPopup": false,
-          "hidden": true,
-          "active": false,
-          "geometry": {
-            "x": 590.5,
-            "y": 996,
-            "width": 739,
-            "height": 84
-          }
-        },
-        {
-          "id": "{b21cf1b5-edf3-4ecd-95c9-9adfdec16752}",
-          "caption": "mttkde-battery",
-          "resourceClass": "org.kde.plasmashell",
-          "type": 18,
-          "appletPopup": true,
-          "hidden": false,
-          "active": true,
-          "geometry": {
-            "x": 1592,
-            "y": 32,
-            "width": 328,
-            "height": 155
-          }
-        }
-      ],
-      "wallpaper_uri": "file:///home/tester/.local/share/wallpapers/MacTahoe",
-      "case": "battery",
-      "mode": "dark",
-      "edition": "tahoe",
-      "sha256": "77e5e230e81d586c9db442799b2e4b9eb2816129ccd077722ad5a5943bc36db7",
-      "replaces": "src/screenshots/previews/readme-tahoe-dark-battery-9b5611f494d5.webp",
-      "source_commit": "2368236ece9096533e702685722f518aa379bc07",
-      "vm_image_sha256": "74004cc15d7180e9b23c93a2c097824853375651b0984f68d9e940c45d461703",
-      "capture_environment": {
-        "tahoe": "kwin-wayland\t4:6.8.1-0zneon+24.04+noble+release+build114\nplasma-workspace\t4:6.8.1-0zneon+24.04+noble+release+build100"
-      }
-    },
     "previews/readme-tahoe-dark-calendar-1267abeca5d4.webp": {
       "windows": [
         {
@@ -1700,78 +1625,6 @@
       "mode": "dark",
       "edition": "tahoe",
       "sha256": "0a9856b27a14b5ffdffa85ab9539715a51c09c34ae294001aec6386c6b94ad73",
-      "source_commit": "2368236ece9096533e702685722f518aa379bc07",
-      "vm_image_sha256": "74004cc15d7180e9b23c93a2c097824853375651b0984f68d9e940c45d461703",
-      "user_approved": false
-    },
-    "previews/readme-tahoe-light-battery-fb40427bb7dc.webp": {
-      "windows": [
-        {
-          "id": "{5dc7badf-313c-4649-a692-40f924221f0b}",
-          "caption": "",
-          "resourceClass": "plasmashell",
-          "type": 1,
-          "appletPopup": false,
-          "hidden": false,
-          "active": false,
-          "geometry": {
-            "x": 0,
-            "y": 0,
-            "width": 1920,
-            "height": 1080
-          }
-        },
-        {
-          "id": "{c7c10870-b659-4fc1-ae68-73ba13328e9f}",
-          "caption": "",
-          "resourceClass": "plasmashell",
-          "type": 2,
-          "appletPopup": false,
-          "hidden": false,
-          "active": false,
-          "geometry": {
-            "x": 0,
-            "y": 0,
-            "width": 1920,
-            "height": 32
-          }
-        },
-        {
-          "id": "{ae993158-58d9-4278-9818-30bcb83921c4}",
-          "caption": "",
-          "resourceClass": "plasmashell",
-          "type": 2,
-          "appletPopup": false,
-          "hidden": true,
-          "active": false,
-          "geometry": {
-            "x": 644,
-            "y": 996,
-            "width": 632,
-            "height": 84
-          }
-        },
-        {
-          "id": "{27f6a356-2ac8-4ee4-abdf-f507e726e13c}",
-          "caption": "mttkde-battery",
-          "resourceClass": "org.kde.plasmashell",
-          "type": 18,
-          "appletPopup": true,
-          "hidden": false,
-          "active": true,
-          "geometry": {
-            "x": 1592,
-            "y": 32,
-            "width": 328,
-            "height": 155
-          }
-        }
-      ],
-      "wallpaper_uri": "file:///home/tester/.local/share/wallpapers/MacTahoe",
-      "case": "battery",
-      "mode": "light",
-      "edition": "tahoe",
-      "sha256": "fb40427bb7dce351321c110595d566907841c439b2f7627c7682ef8d4afeff99",
       "source_commit": "2368236ece9096533e702685722f518aa379bc07",
       "vm_image_sha256": "74004cc15d7180e9b23c93a2c097824853375651b0984f68d9e940c45d461703",
       "user_approved": false
@@ -3548,6 +3401,190 @@
       "vm_image_sha256": "74004cc15d7180e9b23c93a2c097824853375651b0984f68d9e940c45d461703",
       "capture_environment": {
         "tahoe": "kwin-wayland\t4:6.8.1-0zneon+24.04+noble+release+build114\nplasma-workspace\t4:6.8.1-0zneon+24.04+noble+release+build100"
+      }
+    },
+    "previews/readme-tahoe-dark-battery-e328f9c5c963.webp": {
+      "windows": [
+        {
+          "id": "{522421b4-57c4-454c-99e8-e4a3621efa6b}",
+          "caption": "",
+          "resourceClass": "plasmashell",
+          "type": 1,
+          "appletPopup": false,
+          "hidden": false,
+          "active": false,
+          "geometry": {
+            "x": 0,
+            "y": 0,
+            "width": 1920,
+            "height": 1080
+          }
+        },
+        {
+          "id": "{f13c5027-a621-47dd-b873-735327307730}",
+          "caption": "",
+          "resourceClass": "plasmashell",
+          "type": 2,
+          "appletPopup": false,
+          "hidden": false,
+          "active": false,
+          "geometry": {
+            "x": 0,
+            "y": 0,
+            "width": 1920,
+            "height": 32
+          }
+        },
+        {
+          "id": "{701f7b71-0ca0-4bf0-a0ec-b32359f73531}",
+          "caption": "",
+          "resourceClass": "plasmashell",
+          "type": 2,
+          "appletPopup": false,
+          "hidden": true,
+          "active": false,
+          "geometry": {
+            "x": 644,
+            "y": 996,
+            "width": 632,
+            "height": 84
+          }
+        },
+        {
+          "id": "{35f5bd85-30cd-4151-a0bc-4562b3536225}",
+          "caption": "mttkde-battery",
+          "resourceClass": "org.kde.plasmashell",
+          "type": 18,
+          "appletPopup": true,
+          "hidden": false,
+          "active": true,
+          "geometry": {
+            "x": 1592,
+            "y": 32,
+            "width": 328,
+            "height": 140
+          }
+        }
+      ],
+      "wallpaper_uri": "file:///home/tester/.local/share/wallpapers/MacTahoe",
+      "edition": "tahoe",
+      "mode": "dark",
+      "case": "battery",
+      "source_commit": "7f3b34178adda1be1218fbe0b2eccc8998971c7b",
+      "sha256": "e328f9c5c963b0515845de58c0b6d8bbb730a151b998c647f925fc49daf94d61",
+      "plasma": "plasmashell 6.8.1",
+      "kwin": "kwin 6.8.1",
+      "profile_sha256": "2a3bd2d31ca0dfdd65c45a09a3c8c2bbe35a122ab2ca7961f1c33edf8b9a3b09",
+      "installed_battery_qml_sha256": "cbd5b2bb73c6f416adeaacf053c3b37026ee3a14f89511e67519740c93742962",
+      "replaces": "src/screenshots/previews/readme-tahoe-dark-battery-77e5e230e81d.webp",
+      "vm_image_sha256": "74004cc15d7180e9b23c93a2c097824853375651b0984f68d9e940c45d461703",
+      "capture_environment": {
+        "tahoe": {
+          "plasma": "plasmashell 6.8.1",
+          "kwin": "kwin 6.8.1",
+          "session": "Wayland",
+          "scale": 2,
+          "wallpaper": "file:///home/tester/.local/share/wallpapers/MacTahoe"
+        },
+        "golden-gate": {
+          "plasma": "plasmashell 6.8.1",
+          "kwin": "kwin 6.8.1",
+          "session": "Wayland",
+          "scale": 2,
+          "wallpaper": "file:///home/tester/.local/share/wallpapers/MacGoldenGate"
+        }
+      }
+    },
+    "previews/readme-tahoe-light-battery-a1636d3884e6.webp": {
+      "windows": [
+        {
+          "id": "{522421b4-57c4-454c-99e8-e4a3621efa6b}",
+          "caption": "",
+          "resourceClass": "plasmashell",
+          "type": 1,
+          "appletPopup": false,
+          "hidden": false,
+          "active": false,
+          "geometry": {
+            "x": 0,
+            "y": 0,
+            "width": 1920,
+            "height": 1080
+          }
+        },
+        {
+          "id": "{f13c5027-a621-47dd-b873-735327307730}",
+          "caption": "",
+          "resourceClass": "plasmashell",
+          "type": 2,
+          "appletPopup": false,
+          "hidden": false,
+          "active": false,
+          "geometry": {
+            "x": 0,
+            "y": 0,
+            "width": 1920,
+            "height": 32
+          }
+        },
+        {
+          "id": "{701f7b71-0ca0-4bf0-a0ec-b32359f73531}",
+          "caption": "",
+          "resourceClass": "plasmashell",
+          "type": 2,
+          "appletPopup": false,
+          "hidden": true,
+          "active": false,
+          "geometry": {
+            "x": 644,
+            "y": 996,
+            "width": 632,
+            "height": 84
+          }
+        },
+        {
+          "id": "{f9524d48-cfe9-40cd-8926-a70feeed8016}",
+          "caption": "mttkde-battery",
+          "resourceClass": "org.kde.plasmashell",
+          "type": 18,
+          "appletPopup": true,
+          "hidden": false,
+          "active": true,
+          "geometry": {
+            "x": 1592,
+            "y": 32,
+            "width": 328,
+            "height": 140
+          }
+        }
+      ],
+      "wallpaper_uri": "file:///home/tester/.local/share/wallpapers/MacTahoe",
+      "edition": "tahoe",
+      "mode": "light",
+      "case": "battery",
+      "source_commit": "7f3b34178adda1be1218fbe0b2eccc8998971c7b",
+      "sha256": "a1636d3884e64f60d0b742ac65173c6c78287b4f35c84511b8d5b97153052ee3",
+      "plasma": "plasmashell 6.8.1",
+      "kwin": "kwin 6.8.1",
+      "profile_sha256": "2a3bd2d31ca0dfdd65c45a09a3c8c2bbe35a122ab2ca7961f1c33edf8b9a3b09",
+      "installed_battery_qml_sha256": "cbd5b2bb73c6f416adeaacf053c3b37026ee3a14f89511e67519740c93742962",
+      "replaces": "src/screenshots/previews/readme-tahoe-light-battery-fb40427bb7dc.webp",
+      "vm_image_sha256": "74004cc15d7180e9b23c93a2c097824853375651b0984f68d9e940c45d461703",
+      "capture_environment": {
+        "tahoe": {
+          "plasma": "plasmashell 6.8.1",
+          "kwin": "kwin 6.8.1",
+          "session": "Wayland",
+          "scale": 2,
+          "wallpaper": "file:///home/tester/.local/share/wallpapers/MacTahoe"
+        },
+        "golden-gate": {
+          "plasma": "plasmashell 6.8.1",
+          "kwin": "kwin 6.8.1",
+          "session": "Wayland",
+          "scale": 2,
+          "wallpaper": "file:///home/tester/.local/share/wallpapers/MacGoldenGate"
+        }
       }
     }
   },

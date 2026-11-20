@@ -306,8 +306,8 @@ Wi-Fi, son, luminosité et notifications dans un menu en verre. Le bouton d’ap
 
 <p align="center">
   <strong>Batterie</strong><br>
-  <img src="src/screenshots/previews/readme-tahoe-light-battery-fb40427bb7dc.webp" alt="Batterie · Clair" width="328">
-  <img src="src/screenshots/previews/readme-tahoe-dark-battery-77e5e230e81d.webp" alt="Batterie · Sombre" width="328">
+  <img src="src/screenshots/previews/readme-tahoe-light-battery-a1636d3884e6.webp" alt="Batterie · Clair" width="328">
+  <img src="src/screenshots/previews/readme-tahoe-dark-battery-e328f9c5c963.webp" alt="Batterie · Sombre" width="328">
 </p>
 
 <br>

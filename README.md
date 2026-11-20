@@ -296,8 +296,8 @@ Open the Wi-Fi menu to see available wireless networks.
 Open the battery menu to check the charge level and power status.
 
 <p align="center">
-  <img src="src/screenshots/previews/readme-tahoe-light-battery-fb40427bb7dc.webp" alt="Battery · Light" width="830">
-  <img src="src/screenshots/previews/readme-tahoe-dark-battery-77e5e230e81d.webp" alt="Battery · Dark" width="830">
+  <img src="src/screenshots/previews/readme-tahoe-light-battery-a1636d3884e6.webp" alt="Battery · Light" width="830">
+  <img src="src/screenshots/previews/readme-tahoe-dark-battery-e328f9c5c963.webp" alt="Battery · Dark" width="830">
 </p>
 
 <br>

@@ -306,8 +306,8 @@ Wi-Fi, sonido, brillo y notificaciones en un menú de cristal. El botón de apar
 
 <p align="center">
   <strong>Batería</strong><br>
-  <img src="src/screenshots/previews/readme-tahoe-light-battery-fb40427bb7dc.webp" alt="Batería · Claro" width="328">
-  <img src="src/screenshots/previews/readme-tahoe-dark-battery-77e5e230e81d.webp" alt="Batería · Oscuro" width="328">
+  <img src="src/screenshots/previews/readme-tahoe-light-battery-a1636d3884e6.webp" alt="Batería · Claro" width="328">
+  <img src="src/screenshots/previews/readme-tahoe-dark-battery-e328f9c5c963.webp" alt="Batería · Oscuro" width="328">
 </p>
 
 <br>
