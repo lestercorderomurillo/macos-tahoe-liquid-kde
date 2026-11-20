@@ -23,9 +23,6 @@ msgstr "Batterie"
 msgid "Battery Settings…"
 msgstr "Réglages Batterie…"
 
-msgid "Connect a battery to see its status."
-msgstr "Branchez une batterie pour voir son état."
-
 msgid "Battery — %1%"
 msgstr "Batterie — %1 %"
 
@@ -52,6 +49,9 @@ msgstr "Effacer l’historique"
 
 msgid "Collapse"
 msgstr "Réduire"
+
+msgid "Connect a battery to see its status."
+msgstr "Branchez une batterie pour voir son état."
 
 msgid "Connected"
 msgstr "Connecté"

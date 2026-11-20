@@ -23,9 +23,6 @@ msgstr "电池"
 msgid "Battery Settings…"
 msgstr "电池设置…"
 
-msgid "Connect a battery to see its status."
-msgstr "连接电池以查看其状态。"
-
 msgid "Battery — %1%"
 msgstr "电池 — %1%"
 
@@ -52,6 +49,9 @@ msgstr "清除历史记录"
 
 msgid "Collapse"
 msgstr "收起"
+
+msgid "Connect a battery to see its status."
+msgstr "连接电池以查看其状态。"
 
 msgid "Connected"
 msgstr "已连接"

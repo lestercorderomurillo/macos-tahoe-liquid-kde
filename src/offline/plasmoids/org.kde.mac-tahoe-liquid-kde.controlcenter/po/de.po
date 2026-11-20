@@ -23,9 +23,6 @@ msgstr "Akku"
 msgid "Battery Settings…"
 msgstr "Batterieeinstellungen…"
 
-msgid "Connect a battery to see its status."
-msgstr "Akku anschließen, um den Status zu sehen."
-
 msgid "Bluetooth"
 msgstr "Bluetooth"
 
@@ -49,6 +46,9 @@ msgstr "Verlauf löschen"
 
 msgid "Collapse"
 msgstr "Einklappen"
+
+msgid "Connect a battery to see its status."
+msgstr "Akku anschließen, um den Status zu sehen."
 
 msgid "Connected"
 msgstr "Verbunden"

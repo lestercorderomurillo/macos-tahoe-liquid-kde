@@ -23,9 +23,6 @@ msgstr "Batería"
 msgid "Battery Settings…"
 msgstr "Ajustes de batería…"
 
-msgid "Connect a battery to see its status."
-msgstr "Conecta una batería para ver su estado."
-
 msgid "Bluetooth"
 msgstr "Bluetooth"
 
@@ -49,6 +46,9 @@ msgstr "Borrar historial"
 
 msgid "Collapse"
 msgstr "Contraer"
+
+msgid "Connect a battery to see its status."
+msgstr "Conecta una batería para ver su estado."
 
 msgid "Connected"
 msgstr "Conectado"
