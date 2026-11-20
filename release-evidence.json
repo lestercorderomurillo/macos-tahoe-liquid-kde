@@ -1,28 +1,80 @@
 {
-  "version": "0.74.5",
+  "version": "0.74.6",
   "gallery_commit": "f09780b200b79302e7c23ef9f6f74d94748bbea3",
-  "scope": "Fractional-scale glass backdrop matching.",
-  "approval": "Maintainer requested publication of the shown fix.",
+  "scope": "Adaptive Shell menu contrast, single-line Battery menu, and approved README galleries.",
+  "approval": "Maintainer approved the menu opacity and requested publication of all reviewed work in both editions.",
   "checks": [
     {
-      "command": "pytest -q tests/test_launcher_presets.py -k control_center_glass_regions; desktop_controls_probe.py in disposable KDE neon guest at scales 1 and 1.45",
-      "result": "passed",
-      "candidate": "de04e75e1fbddeb94f1d8bfa4df095e648811925",
-      "module_sha256": "aa9bc6f0bc90433121c564a2d4a91bf8d07eb4e38b0cc40edf711a49153ca761"
+      "command": "Focused menu, native and contour checks plus recorded KWin SDK qualification",
+      "candidate": "d27d609c662899d88e97265d632e3caa2a6f8cc5",
+      "coverage": [
+        "KWin 6.7 Wayland build",
+        "KWin 6.6 X11 build and isolated Xvfb sample transition",
+        "KWin 6.8.1 installed Wayland rendering"
+      ],
+      "result": "passed"
     },
     {
-      "command": "Inspect Golden Gate launcher at 145% over alternating black and white backgrounds in a Wayland guest",
-      "result": "passed",
+      "command": "Inspect open Apple and Edit menus over a reversing backdrop at 145% scale in Golden Gate",
       "frames": {
-        "before.png": "59574a28fb6d08d7ae81d78d824a08d4151f9e05f2e29df34b2bca3c888ea73c",
-        "after.png": "2e03bf8215f0c7ec8f6f9d249f4349809ffca28fc5d491c3cfc8b3aea78b5277",
-        "open-initial.png": "2fe528b26f6ae2010df12a653f512920b31820e3b66cef47aca2af89cbca8c1c",
-        "open-reversed.png": "b5d0f0b082f41a17c7425f822fb74c40d97030ceeab067cc2a0341f080e80dd6"
-      }
+        "apple-light-normal.png": "8f7a2410d42a53fa86165466df7946a0b832917e89a959a886fb077dad61a34f",
+        "apple-light-reversed.png": "8cee7aed10a4646aafcb34ba41ef4ba57f6be16871482b8f8faa3b9835d59ec9",
+        "apple-dark-normal.png": "8274e4ca64d59126c5dfe6e12fdf7ced2acf3176fa0813bf4c2f459f32f3638f",
+        "apple-dark-reversed.png": "435d9cf86fee3f138edebce3e87f31a137459f59e8159182d0f1243e74f4ffa3",
+        "edit-flipped.png": "45da6d8ab0c409cc4b14b097b37d898a74935c04a22ac589da1cbb8e34184d55",
+        "edit-light.png": "e1618c33026363ee6f1c21bb568f4cc7eb94edce21a73e7d887365a3c7778bc3"
+      },
+      "result": "passed"
+    },
+    {
+      "command": "Verify battery message catalogs and inspect both editions in light and dark modes",
+      "source": "7f3b34178adda1be1218fbe0b2eccc8998971c7b",
+      "result": "passed"
+    },
+    {
+      "command": "release-screenshots readme-photos and verify the approved 18.8-second Dock animation and scanned Wi-Fi photographs",
+      "result": "passed"
+    }
+  ],
+  "captures": [
+    {
+      "path": "src/screenshots/previews/readme-tahoe-dark-battery-e328f9c5c963.webp",
+      "sha256": "e328f9c5c963b0515845de58c0b6d8bbb730a151b998c647f925fc49daf94d61",
+      "source_commit": "7f3b34178adda1be1218fbe0b2eccc8998971c7b",
+      "reviewed": true
+    },
+    {
+      "path": "src/screenshots/previews/readme-tahoe-light-battery-a1636d3884e6.webp",
+      "sha256": "a1636d3884e64f60d0b742ac65173c6c78287b4f35c84511b8d5b97153052ee3",
+      "source_commit": "7f3b34178adda1be1218fbe0b2eccc8998971c7b",
+      "reviewed": true
+    },
+    {
+      "path": "src/screenshots/previews/readme-tahoe-dark-wifi-41d18810df8b.webp",
+      "sha256": "41d18810df8b50a1e2d1509730c606ea1039145778d78850e48290dd84f55bff",
+      "source_commit": "f4e15238718fc7aab116f1c7d23f3377d31d823b",
+      "reviewed": true
+    },
+    {
+      "path": "src/screenshots/previews/readme-tahoe-light-wifi-d55cc1382c4f.webp",
+      "sha256": "d55cc1382c4fda213117600eb0224e054ea683af2ee065464406fec87bf14c15",
+      "source_commit": "f4e15238718fc7aab116f1c7d23f3377d31d823b",
+      "reviewed": true
+    },
+    {
+      "path": "src/screenshots/previews/tahoe-dock-90735b7d355e.gif",
+      "sha256": "90735b7d355e4f925fa2d9d72375c7c3ec53b71cb5e363dc4b191dea2a0ec225",
+      "reviewed": true
+    },
+    {
+      "path": "src/screenshots/previews/acrylic-glass-dynamic-tinting-c13767e72b64.png",
+      "sha256": "c13767e72b648e38bc92e49005378616cca5f80e3a639f8f979d5a591fe27c0d",
+      "reviewed": true
     }
   ],
   "coverage_limits": [
-    "The rendered launcher preview used Golden Gate at 145% on KDE neon Wayland. Both editions share the corrected module."
+    "Adaptive Shell menu rendering was photographed on Golden Gate Wayland. The 6.6 X11 check exercised backdrop transitions and 6.7 coverage was a build.",
+    "The Wi-Fi examples use guest test access points. Dock GIFs use previously reviewed standard-theme photographs."
   ],
-  "source_sha256": "4b8d03e5a3fb431375b897dd521599295bf45227820a448c32fdc69e3d64ab36"
+  "source_sha256": "fdca789e9fb0bf07eb785f041c89a3ada1f88bd09e478f8e1c4c21b8dbac8ae6"
 }

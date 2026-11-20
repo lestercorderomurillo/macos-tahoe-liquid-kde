@@ -19,19 +19,32 @@ def inventory(repo):
     manifests = {primary: data, separate: json.loads(separate.read_text())}
     documents = {p: p.read_text() for p in sorted(repo.glob("README*.md"))}
     slots = {}
-    for doc in [repo / "README.md", *[p for p in documents if p.name != "README.md"]]:
+    english = repo / "README.md"
+    # Translations still show the individual Dock and Finder accent captures.
+    # Use their full gallery as the inventory for future per-slot replacements.
+    ordered = sorted(documents, key=lambda doc: doc == english)
+    for doc in ordered:
         sources = re.findall(
             r'<img\b[^>]*\bsrc="(' + PREFIX + r'[^"]+)"', documents[doc]
         )
-        require(
-            sources and len(set(sources)) == len(sources),
-            f"Missing or duplicate captures in {doc}",
-        )
+        animated_dock = False
+        if doc == english:
+            for asset in list(sources):
+                match = re.fullmatch(
+                    PREFIX + rf"(?:{edition}-dock-([0-9a-f]{{12}})\.gif|acrylic-glass-dynamic-tinting-([0-9a-f]{{12}})\.png)", asset
+                )
+                if match:
+                    require(digest(repo / asset).startswith(match[1] or match[2]), f"Invalid image hash: {asset}")
+                    animated_dock |= bool(match[1])
+                    sources.remove(asset)
+        require(sources and len(set(sources)) == len(sources), f"Missing or duplicate captures in {doc}")
         if slots:
-            require(
-                set(sources) == {PREFIX + row[0] for row in slots.values()},
-                f"Capture mismatch in {doc}",
-            )
+            expected = {PREFIX + row[0] for row in slots.values()}
+            if animated_dock:
+                expected = {path for path in expected if "-dock-" not in path}
+            if doc == english and not any("-finder-red-" in path or "-finder-blue-" in path for path in sources):
+                expected = {path for path in expected if "-finder-red-" not in path and "-finder-blue-" not in path}
+            require(set(sources) == expected, f"Capture mismatch in {doc}")
             continue
         for src in sources:
             filename = Path(src).name

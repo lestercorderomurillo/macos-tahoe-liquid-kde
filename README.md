@@ -214,8 +214,8 @@ Open the panel clock to see the month on glass. Scroll or use the arrow keys to 
 Open the Wi-Fi menu to see available wireless networks.
 
 <p align="center">
-  <img src="src/screenshots/previews/readme-tahoe-light-wifi-d55cc1382c4f.webp" alt="Wi-Fi · Light" width="830">
-  <img src="src/screenshots/previews/readme-tahoe-dark-wifi-41d18810df8b.webp" alt="Wi-Fi · Dark" width="830">
+  <img src="src/screenshots/previews/readme-tahoe-light-wifi-d55cc1382c4f.webp" alt="Light Wi-Fi menu connected to Harbor Studio, with Garden Guest and Workshop available" width="48%">
+  <img src="src/screenshots/previews/readme-tahoe-dark-wifi-41d18810df8b.webp" alt="Dark Wi-Fi menu connected to Harbor Studio, with Garden Guest and Workshop available" width="48%">
 </p>
 
 <br>
@@ -225,8 +225,8 @@ Open the Wi-Fi menu to see available wireless networks.
 Open the battery menu to check the charge level and power status.
 
 <p align="center">
-  <img src="src/screenshots/previews/readme-tahoe-light-battery-a1636d3884e6.webp" alt="Battery · Light" width="830">
-  <img src="src/screenshots/previews/readme-tahoe-dark-battery-e328f9c5c963.webp" alt="Battery · Dark" width="830">
+  <img src="src/screenshots/previews/readme-tahoe-light-battery-a1636d3884e6.webp" alt="Light Battery menu showing no internal battery" width="48%">
+  <img src="src/screenshots/previews/readme-tahoe-dark-battery-e328f9c5c963.webp" alt="Dark Battery menu showing no internal battery" width="48%">
 </p>
 
 <br>
