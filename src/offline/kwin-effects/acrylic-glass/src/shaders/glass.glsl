@@ -18,6 +18,17 @@ uniform float opacity;
 uniform float rgbDriftStrength;
 uniform float magnifyGlassStrength;
 uniform float refractionWidth;
+uniform float edgeLensDepth;
+uniform bool backdropMode;
+uniform int backdropCount;
+uniform vec4 backdropShapes[24];   // centre xy, half size zw (background-local device px)
+uniform float backdropRadii[24];
+uniform float backdropGap;         // fully covered distance outside the tiles
+uniform float backdropFeather;     // fade length beyond backdropGap
+uniform float backdropBlurMix;     // blurred share at full coverage
+uniform float backdropShadow;      // darkening at full coverage
+uniform float backdropCurve;       // falloff exponent
+uniform float backdropTopFade;     // fade below the top edge
 uniform float highlightWidth;
 uniform float highlightStrength;
 uniform float centerOpacity;
@@ -34,6 +45,34 @@ varying vec2 vertex;
 
 void main(void)
 {
+    if (backdropMode) {
+        // Seamless backdrop under a Control Center: blur the gaps between the
+        // tiles and fade out smoothly past the outer tiles, with no visible edge.
+        float dUnion = 1e6;
+        for (int i = 0; i < 24; ++i) {
+            if (i >= backdropCount) break;
+            float r = backdropRadii[i];
+            vec2 q = abs(vertex - backdropShapes[i].xy) - backdropShapes[i].zw + r;
+            dUnion = min(dUnion, min(max(q.x, q.y), 0.0) + length(max(q, 0.0)) - r);
+        }
+        float cover = pow(1.0 - smoothstep(backdropGap, backdropGap + max(backdropFeather, 1.0), dUnion), backdropCurve);
+        if (backdropTopFade > 0.0) {
+            cover *= smoothstep(0.0, backdropTopFade, vertex.y);
+        }
+        if (cover <= 0.001) {
+            discard;
+        }
+        vec2 bgSize = max(backgroundSize, vec2(1.0));
+        vec2 bgUV = vec2(vertex.x / bgSize.x, 1.0 - vertex.y / bgSize.y);
+        vec3 bcol = offset > 0.0 ? lgGaussianBlur(texUnit, halfpixel * 2.0, bgUV) : LG_SAMPLE(texUnit, bgUV).rgb;
+        // Over the sharp desktop B: mix(B, blurred, m) * (1 - s), as one
+        // premultiplied colour, so the edge never shows.
+        float m = cover * backdropBlurMix;
+        float s = cover * backdropShadow;
+        vec3 blurred = (vec4(bcol, 1.0) * colorMatrix).rgb;
+        LG_OUT = vec4(blurred * m * (1.0 - s), 1.0 - (1.0 - m) * (1.0 - s)) * opacity;
+        return;
+    }
     vec2 halfSize = blurSize * 0.5;
     vec2 localPos = uv - box.xy;
 
@@ -56,7 +95,13 @@ void main(void)
     vec2 backgroundUV = vec2(vertex.x / safeBackgroundSize.x, 1.0 - vertex.y / safeBackgroundSize.y);
     vec2 lensCenter = vec2(box.x / safeBackgroundSize.x, 1.0 - box.y / safeBackgroundSize.y);
     vec2 lensUV = backgroundUV;
-    if (magnifyGlassStrength > 0.0) {
+    if (edgeLensDepth > 0.0 && !dockSurface) {
+        // macOS Tahoe glass: see glass_core.glsl.
+        float x = clamp(inside / refrBand, 0.0, 1.0);
+        float cap = 1.0 - sqrt(max(1.0 - (1.0 - x) * (1.0 - x), 0.0));
+        vec2 textureNormal = vec2(outNorm.x, -outNorm.y);
+        lensUV = clamp(backgroundUV - textureNormal * edgeLensDepth * cap / safeBackgroundSize, 0.0, 1.0);
+    } else if (magnifyGlassStrength > 0.0) {
         lensUV = dockSurface
             ? lgDockLensUV(backgroundUV, outNorm, localPos, blurSize, safeBackgroundSize, magnifyGlassStrength, edgeQ)
             : lgLensUV(backgroundUV, lensCenter, magnifyGlassStrength, edgeQ);

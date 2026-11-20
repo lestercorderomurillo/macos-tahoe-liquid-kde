@@ -376,6 +376,7 @@ BlurEffect::BlurEffect()
         m_roundedOnscreenPass.rgbDriftStrengthLocation = m_roundedOnscreenPass.shader->uniformLocation("rgbDriftStrength");
         m_roundedOnscreenPass.magnifyGlassStrengthLocation = m_roundedOnscreenPass.shader->uniformLocation("magnifyGlassStrength");
         m_roundedOnscreenPass.refractionWidthLocation = m_roundedOnscreenPass.shader->uniformLocation("refractionWidth");
+        m_roundedOnscreenPass.edgeLensDepthLocation = m_roundedOnscreenPass.shader->uniformLocation("edgeLensDepth");
         m_roundedOnscreenPass.highlightWidthLocation = m_roundedOnscreenPass.shader->uniformLocation("highlightWidth");
         m_roundedOnscreenPass.highlightStrengthLocation = m_roundedOnscreenPass.shader->uniformLocation("highlightStrength");
         m_roundedOnscreenPass.darkGradientOverlayLocation = m_roundedOnscreenPass.shader->uniformLocation("darkGradientOverlay");
@@ -764,7 +765,13 @@ void BlurEffect::configureComponentMaterials()
             }
         }
         material.optics = {n("RgbDriftStrength", 10, 0, 100), n("MagnifyGlassStrength", .02, 0, .2),
-            n("RefractionWidth", 38, 0, 300), n("HighlightWidth", 16, 0, 600), n("HighlightStrength", .1, 0, 3)};
+            n("RefractionWidth", 38, 0, 300), n("HighlightWidth", 16, 0, 600), n("HighlightStrength", .1, 0, 3),
+            n("EdgeLensDepth", 0, 0, 120), n("BackdropGap", 0, 0, 60), n("BackdropFeather", 0, 0, 300),
+            n("BackdropBlurMix", 1, 0, 1), n("BackdropShadow", 0, 0, 1), n("BackdropCurve", 1, 0.2, 6),
+            n("SurfaceBlur", 1, 0, 1), n("BackdropTopFade", 0, 0, 120)};
+        // The seamless backdrop draws past the surfaces: capture enough around them.
+        if (material.optics.backdropFeather > 0)
+            material.expand = std::max(material.expand, int(std::ceil(material.optics.backdropGap + material.optics.backdropFeather)));
         material.noise = int(n("NoiseStrength", 0, 0, 100));
         material.coverage = n("BlurCoverage", 1, 0, 1);
         material.color = colorTransformMatrix(n("Saturation", 1.33, 0, 5), n("Contrast", 1, 0, 5), n("Brightness", 1, 0, 5));
@@ -1616,6 +1623,17 @@ void BlurEffect::blur(
                             .toAlignedRect();
     } else {
         backgroundRect = blurShape.boundingRect();
+        // The seamless backdrop shadow reaches past the tiles: capture and draw
+        // it over the window's transparent margin too, or it ends in a hard edge.
+        if (blurInfo.clientShapes.size() >= 2 && optics.backdropFeather > 0
+            && w->caption() == QStringLiteral("mttkde-control-center")) {
+            const int reach = int(std::ceil(optics.backdropGap + optics.backdropFeather));
+            const QRectF frame = w->frameGeometry();
+            const QRectF moved{w->x() + (frame.x() - w->x()) * data.xScale() + data.xTranslation(),
+                               w->y() + (frame.y() - w->y()) * data.yScale() + data.yTranslation(),
+                               frame.width() * data.xScale(), frame.height() * data.yScale()};
+            backgroundRect = backgroundRect.adjusted(-reach, -reach, reach, reach) & moved.toAlignedRect();
+        }
     }
 
     if (backgroundRect.isEmpty()) {
@@ -2223,6 +2241,60 @@ void BlurEffect::blur(
 
     const QVector2D halfpixel(0.5 / read->colorAttachment()->width(), 0.5 / read->colorAttachment()->height());
 
+    // Seamless backdrop: one pass over the captured quad beneath all surfaces.
+    if (!wobblySurface && blurInfo.clientShapes.size() >= 2 && optics.backdropFeather > 0
+        && w->caption() == QStringLiteral("mttkde-control-center")) {
+        constexpr int maxShapes = 24;
+        std::array<float, maxShapes * 4> boxes{};
+        std::array<float, maxShapes> radii{};
+        int count = 0;
+        for (const auto &shape : blurInfo.clientShapes) {
+            if (count >= maxShapes) break;
+            const QRectF rect = shape.surfaceRect().translated(w->pos());
+            const QRectF moved{w->x() + (rect.x() - w->x()) * data.xScale() + data.xTranslation(),
+                               w->y() + (rect.y() - w->y()) * data.yScale() + data.yTranslation(),
+                               rect.width() * data.xScale(), rect.height() * data.yScale()};
+            const QRectF box = scaledRect(moved, viewport.scale())
+    #if defined(GLASS_X11)
+                .translated(-deviceBackgroundRect.topLeft());
+    #else
+                .translated(-scaledBackgroundRect.topLeft());
+    #endif
+            boxes[count * 4 + 0] = box.center().x();
+            boxes[count * 4 + 1] = box.center().y();
+            boxes[count * 4 + 2] = box.width() * 0.5;
+            boxes[count * 4 + 3] = box.height() * 0.5;
+            radii[count] = shape.cornerRadius() * viewport.scale();
+            ++count;
+        }
+        GLShader *shader = m_roundedOnscreenPass.shader.get();
+        ShaderManager::instance()->pushShader(shader);
+        shader->setUniform(m_roundedOnscreenPass.mvpMatrixLocation, projectionMatrix);
+        shader->setUniform(m_roundedOnscreenPass.colorMatrixLocation, colorMatrix);
+        shader->setUniform(m_roundedOnscreenPass.halfpixelLocation, halfpixel);
+        shader->setUniform(m_roundedOnscreenPass.offsetLocation, float(blurOffset * viewport.scale()));
+        shader->setUniform(m_roundedOnscreenPass.opacityLocation, modulation);
+        shader->setUniform(m_roundedOnscreenPass.backgroundSizeLocation,
+            QVector2D(scaledBackgroundRect.width(), scaledBackgroundRect.height()));
+        glUniform1i(shader->uniformLocation("backdropMode"), 1);
+        glUniform1i(shader->uniformLocation("backdropCount"), count);
+        glUniform4fv(shader->uniformLocation("backdropShapes"), count, boxes.data());
+        glUniform1fv(shader->uniformLocation("backdropRadii"), count, radii.data());
+        glUniform1f(shader->uniformLocation("backdropGap"), optics.backdropGap * viewport.scale());
+        glUniform1f(shader->uniformLocation("backdropFeather"), optics.backdropFeather * viewport.scale());
+        glUniform1f(shader->uniformLocation("backdropBlurMix"), optics.backdropBlurMix);
+        glUniform1f(shader->uniformLocation("backdropShadow"), optics.backdropShadow);
+        glUniform1f(shader->uniformLocation("backdropCurve"), optics.backdropCurve);
+        glUniform1f(shader->uniformLocation("backdropTopFade"), optics.backdropTopFade * viewport.scale());
+        read->colorAttachment()->bind();
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
+        vbo->draw(GL_TRIANGLES, 0, 6);
+        glDisable(GL_BLEND);
+        glUniform1i(shader->uniformLocation("backdropMode"), 0);
+        ShaderManager::instance()->popShader();
+    }
+
     const qsizetype surfaceCount = wobblySurface ? 1 : std::max(qsizetype(1), blurInfo.clientShapes.size());
     for (qsizetype surfaceIndex = 0; surfaceIndex < surfaceCount; ++surfaceIndex) {
         if (!wobblySurface && !blurInfo.clientShapes.isEmpty()) {
@@ -2252,11 +2324,15 @@ void BlurEffect::blur(
         ShaderManager::instance()->pushShader(m_roundedOnscreenPass.shader.get());
         m_roundedOnscreenPass.shader->setUniform(m_roundedOnscreenPass.mvpMatrixLocation, projectionMatrix);
         m_roundedOnscreenPass.shader->setUniform(m_roundedOnscreenPass.colorMatrixLocation, colorMatrix);
-        m_roundedOnscreenPass.shader->setUniform(m_roundedOnscreenPass.halfpixelLocation, halfpixel);
+        // Sharp surfaces read the unblurred capture; the blur is kept for the backdrop.
+        const bool sharpSurface = optics.surfaceBlur < 0.5f;
+        const auto &surfaceRead = sharpSurface ? renderInfo.framebuffers[0] : read;
+        m_roundedOnscreenPass.shader->setUniform(m_roundedOnscreenPass.halfpixelLocation,
+            sharpSurface ? QVector2D(0.5 / surfaceRead->colorAttachment()->width(), 0.5 / surfaceRead->colorAttachment()->height()) : halfpixel);
 
         // The Gaussian finish is a fixed reconstruction filter in source texels.
         // Scale compensation belongs to the Kawase passes; offset gates bypass.
-        m_roundedOnscreenPass.shader->setUniform(m_roundedOnscreenPass.offsetLocation, float(blurOffset * viewport.scale()));
+        m_roundedOnscreenPass.shader->setUniform(m_roundedOnscreenPass.offsetLocation, sharpSurface ? 0.0f : float(blurOffset * viewport.scale()));
         m_roundedOnscreenPass.shader->setUniform(m_roundedOnscreenPass.boxLocation,
             QVector4D(nativeBox.x() + nativeBox.width() * 0.5, nativeBox.y() + nativeBox.height() * 0.5, nativeBox.width() * 0.5, nativeBox.height() * 0.5));
 
@@ -2268,6 +2344,7 @@ void BlurEffect::blur(
             float(optics.rgbDrift * viewport.scale()));
         m_roundedOnscreenPass.shader->setUniform(m_roundedOnscreenPass.magnifyGlassStrengthLocation, optics.refraction);
         m_roundedOnscreenPass.shader->setUniform(m_roundedOnscreenPass.refractionWidthLocation, float(optics.refractionWidth * viewport.scale()));
+        m_roundedOnscreenPass.shader->setUniform(m_roundedOnscreenPass.edgeLensDepthLocation, float(optics.edgeLens * viewport.scale()));
         m_roundedOnscreenPass.shader->setUniform(m_roundedOnscreenPass.highlightWidthLocation, float(optics.highlightWidth * viewport.scale()));
         m_roundedOnscreenPass.shader->setUniform(m_roundedOnscreenPass.highlightStrengthLocation, optics.highlightStrength);
         m_roundedOnscreenPass.shader->setUniform(m_roundedOnscreenPass.darkGradientOverlayLocation,
@@ -2285,7 +2362,7 @@ void BlurEffect::blur(
         m_roundedOnscreenPass.shader->setUniform(m_roundedOnscreenPass.gradientBottomLocation,
             gradientColorForPalette(material.bottom, material.bottomDark, windowPalette));
 
-        read->colorAttachment()->bind();
+        surfaceRead->colorAttachment()->bind();
 
         glEnable(GL_BLEND);
         glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);

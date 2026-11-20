@@ -160,8 +160,17 @@ inline QList<ClientBlurShape> clientBlurShapes(const QRegion &region)
     }
     QList<ClientBlurShape> shapes;
     for (const QRegion &island : islands) {
-        const auto shape = clientBlurShape(island);
-        if (!shape) return {};
+        auto shape = clientBlurShape(island);
+        if (!shape) {
+            // A small capsule whose rasterized corners match no integer radius
+            // must not discard every other surface: estimate it from the first
+            // row's inset, as roundedBlurRadius() does.
+            const QRect bounds = island.boundingRect();
+            const QRect firstRow = island.intersected(QRect(bounds.x(), bounds.y(), bounds.width(), 1)).boundingRect();
+            const int inset = std::max(0, firstRow.left() - bounds.left());
+            const float maximum = std::min(bounds.width(), bounds.height()) / 2.0f;
+            shape = ClientBlurShape{bounds, std::min(maximum, float(qRound(inset + 0.5 + std::sqrt(float(inset)))))};
+        }
         for (const auto &other : shapes)
             if (shape->bounds.intersects(other.bounds)) return {};
         shapes.append(*shape);
