@@ -1,37 +1,26 @@
 {
-  "version": "0.76.2",
+  "version": "0.76.3",
   "gallery_commit": "f09780b200b79302e7c23ef9f6f74d94748bbea3",
-  "scope": "Adaptive text on glass surfaces in both editions and the bundled blue computer icon in About.",
-  "approval": "Maintainer approved publication of the tint adjustment and the previously reviewed About photos with the blue monitor.",
+  "scope": "Settled-window adaptive text with regional background sampling and a one-second transition.",
+  "approval": "Maintainer approved the two recorded movement previews before paired publication.",
   "checks": [
     {
-      "command": "Apply and disable Dynamic Tinting in a disposable KDE neon Wayland guest; capture Control Center on a split background and reverse it, switch appearance and open the other glass surfaces",
+      "command": "Record rapid About window drags over a split background in a disposable KDE neon Wayland guest; measure title luminance frame by frame",
       "result": "passed",
       "edition": "tahoe",
-      "source_commit": "00bebe0830234b92f9d096475fef6ebcab09ce2b",
-      "frames": [
-        "tahoe-off.png",
-        "tahoe-on.png",
-        "tahoe-inverted.png",
-        "tahoe-dark-mode.png",
-        "tahoe-apple.png",
-        "tahoe-about.png",
-        "tahoe-wifi.png",
-        "tahoe-battery.png",
-        "tahoe-digitalclock.png",
-        "tahoe-launcher.png",
-        "tahoe-notification.png"
-      ]
+      "source_commit": "fb2334f192f2f5e27f37eabf8ef498ebcdab3e42",
+      "preview": "tahoe.mp4"
     },
     {
-      "command": "tests/test_launcher_presets.py::test_control_center_native_x11_render",
+      "command": "pytest tests/test_launcher_presets.py::test_control_center_native_x11_render tests/test_screenshots.py::test_about_drag_uses_compositor_move",
       "result": "passed",
-      "output": "1 passed"
+      "output": "2 passed",
+      "source_commit": "fb2334f192f2f5e27f37eabf8ef498ebcdab3e42"
     },
     {
-      "command": "nix build path:/repo#global-menu",
+      "command": "nix build #global-menu (including task-manager)",
       "result": "passed",
-      "output": "/nix/store/9s7nzcwaylsl4xrld8p0w55jkpfmk1ls-mac-tahoe-global-menu-0.76.1"
+      "source_commit": "fb2334f192f2f5e27f37eabf8ef498ebcdab3e42"
     }
   ],
   "captures": [
@@ -73,20 +62,10 @@
     }
   ],
   "coverage_limits": [
-    "The Wayland gallery checks the tint implementation. The later Tahoe-only change selects the same bundled monitor asset already rendered by Golden Gate. The restored Tahoe README images retain their original source. Notification banners use their existing compositor-provided average."
+    "Frame timing was measured in About on Wayland. X11 coverage exercised native Control Center rendering. The existing README and installer photographs retain their historical provenance."
   ],
-  "source_sha256": "ec89a757b2d414fcc835b2bcd627c25ee5977dd466edb816f9fb6b087f87cc62",
+  "source_sha256": "89e920b8014a40ffb875fa25e03f1dafe242f730440a56886a2236bba6c81ea6",
   "reviewed_preview_sha256": {
-    "tahoe-off.png": "615212dbe4165e744968159689d5cdd8fbb801e02908155f44e1404489264378",
-    "tahoe-on.png": "6c194e4c0dd6354bb8b7939e837e38d7e2a1ee90a67097d06c67d32de71bab42",
-    "tahoe-inverted.png": "19c1d3b292fd25894da22293a5daf9dfccf8a83ffe61223d285569ba13a6d373",
-    "tahoe-dark-mode.png": "126f0d21e360a0321c5bf17639c76cf943a1d67deea055b4e9f92e9a362ece63",
-    "tahoe-apple.png": "ef2650fca959fbd473dd95fdabe1f464feb42db0136a3b0accbd4e02de7ce915",
-    "tahoe-about.png": "5e394b892687ef10ebe5e85d689210b0150092b15e8a9f10dccea9d18adb164e",
-    "tahoe-wifi.png": "fc4ec16722397159f9073f494144987be6487b8fc081d198334783bd62be68b2",
-    "tahoe-battery.png": "469488dcd7435881f904c1ad054a743fb3a5acb491b5387a19b715ee53ac8596",
-    "tahoe-digitalclock.png": "cc273672a10952999383cd7eba2321f7f5bec921a9a180a4756c039d1e88e59a",
-    "tahoe-launcher.png": "7fc3ca43490aa31c7370314a5a4e640d740d533b0e3ce1a866a08ad5baf699ef",
-    "tahoe-notification.png": "27adae71457423ffc899d537323cbcb66e9c53ac0e203847aa1323f3f179a833"
+    "tahoe.mp4": "8c84ab5f172affe94603b93461fa35f4e21f3d799d9e76e689a60558f4e960b5"
   }
 }
