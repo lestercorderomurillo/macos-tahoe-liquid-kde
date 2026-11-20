@@ -206,7 +206,7 @@
       },
       "about": {
         "SurfaceTransparencyLight": 65,
-        "SurfaceTransparencyDark": 65,
+        "SurfaceTransparencyDark": 95.0,
         "GradientBottomColor": "#ffffff",
         "GradientCenterColor": "#ffffff",
         "GradientCenterOpacity": 0.55,
