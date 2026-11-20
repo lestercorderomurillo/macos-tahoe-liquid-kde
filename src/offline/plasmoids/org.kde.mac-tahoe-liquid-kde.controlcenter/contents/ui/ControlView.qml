@@ -112,10 +112,9 @@ Item {
             id: darkMode
             visible: view.showControl("showDarkMode")
             Layout.fillWidth: true; Layout.preferredWidth: 66; Layout.minimumWidth: 0; Layout.preferredHeight: 72; padding: 4
-            Native.AppearancePreference { id: appearance }
+            Native.AppearanceControl { id: appearance }
             contentItem: ControlAction {
-                readonly property string mode: ["light", "dark", "auto"].includes(appearance.mode)
-                    ? appearance.mode : darkMode.lightMode ? "light" : "dark"
+                readonly property string mode: appearance.preference
                 text: mode === "auto" ? i18n("Automatic") : mode === "light" ? i18n("Light") : i18n("Dark Mode")
                 symbol: mode === "auto" ? "mac-appearance" : mode === "light" ? "display-brightness" : "weather-clear-night"
                 activeSymbolColor: "black"
