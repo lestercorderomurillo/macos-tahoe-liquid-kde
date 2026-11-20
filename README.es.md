@@ -300,8 +300,8 @@ Wi-Fi, sonido, brillo y notificaciones en un menú de cristal. El botón de apar
 
 <p align="center">
   <strong>Wi-Fi</strong><br>
-  <img src="src/screenshots/previews/readme-tahoe-light-wifi-603193d9a909.webp" alt="Wi-Fi · Claro" width="328">
-  <img src="src/screenshots/previews/readme-tahoe-dark-wifi-0a9856b27a14.webp" alt="Wi-Fi · Oscuro" width="328">
+  <img src="src/screenshots/previews/readme-tahoe-light-wifi-d55cc1382c4f.webp" alt="Wi-Fi · Claro" width="328">
+  <img src="src/screenshots/previews/readme-tahoe-dark-wifi-41d18810df8b.webp" alt="Wi-Fi · Oscuro" width="328">
 </p>
 
 <p align="center">

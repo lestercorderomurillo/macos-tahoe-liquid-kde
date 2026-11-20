@@ -1405,81 +1405,6 @@
         "tahoe": "kwin-wayland\t4:6.8.1-0zneon+24.04+noble+release+build114\nplasma-workspace\t4:6.8.1-0zneon+24.04+noble+release+build100"
       }
     },
-    "previews/readme-tahoe-light-wifi-603193d9a909.webp": {
-      "windows": [
-        {
-          "id": "{5dc7badf-313c-4649-a692-40f924221f0b}",
-          "caption": "",
-          "resourceClass": "plasmashell",
-          "type": 1,
-          "appletPopup": false,
-          "hidden": false,
-          "active": false,
-          "geometry": {
-            "x": 0,
-            "y": 0,
-            "width": 1920,
-            "height": 1080
-          }
-        },
-        {
-          "id": "{c7c10870-b659-4fc1-ae68-73ba13328e9f}",
-          "caption": "",
-          "resourceClass": "plasmashell",
-          "type": 2,
-          "appletPopup": false,
-          "hidden": false,
-          "active": false,
-          "geometry": {
-            "x": 0,
-            "y": 0,
-            "width": 1920,
-            "height": 32
-          }
-        },
-        {
-          "id": "{ae993158-58d9-4278-9818-30bcb83921c4}",
-          "caption": "",
-          "resourceClass": "plasmashell",
-          "type": 2,
-          "appletPopup": false,
-          "hidden": true,
-          "active": false,
-          "geometry": {
-            "x": 644,
-            "y": 996,
-            "width": 632,
-            "height": 84
-          }
-        },
-        {
-          "id": "{5b4a4e1d-5e2e-4b87-9684-2395e878f627}",
-          "caption": "mttkde-wifi",
-          "resourceClass": "org.kde.plasmashell",
-          "type": 18,
-          "appletPopup": true,
-          "hidden": false,
-          "active": true,
-          "geometry": {
-            "x": 1571,
-            "y": 32,
-            "width": 328,
-            "height": 166
-          }
-        }
-      ],
-      "wallpaper_uri": "file:///home/tester/.local/share/wallpapers/MacTahoe",
-      "case": "wifi",
-      "mode": "light",
-      "edition": "tahoe",
-      "sha256": "603193d9a9098a0f6afe43ac8b9554edfb705e4affdb93149fdecc03f0352159",
-      "replaces": "src/screenshots/previews/readme-tahoe-light-wifi-2ac89480e812.webp",
-      "source_commit": "2368236ece9096533e702685722f518aa379bc07",
-      "vm_image_sha256": "74004cc15d7180e9b23c93a2c097824853375651b0984f68d9e940c45d461703",
-      "capture_environment": {
-        "tahoe": "kwin-wayland\t4:6.8.1-0zneon+24.04+noble+release+build114\nplasma-workspace\t4:6.8.1-0zneon+24.04+noble+release+build100"
-      }
-    },
     "previews/readme-tahoe-dark-dock-regular-6edaacd456e5.webp": {
       "windows": [
         {
@@ -1556,78 +1481,6 @@
       "capture_environment": {
         "tahoe": "kwin-wayland\t4:6.8.1-0zneon+24.04+noble+release+build114\nplasma-workspace\t4:6.8.1-0zneon+24.04+noble+release+build100"
       }
-    },
-    "previews/readme-tahoe-dark-wifi-0a9856b27a14.webp": {
-      "windows": [
-        {
-          "id": "{5dc7badf-313c-4649-a692-40f924221f0b}",
-          "caption": "",
-          "resourceClass": "plasmashell",
-          "type": 1,
-          "appletPopup": false,
-          "hidden": false,
-          "active": false,
-          "geometry": {
-            "x": 0,
-            "y": 0,
-            "width": 1920,
-            "height": 1080
-          }
-        },
-        {
-          "id": "{c7c10870-b659-4fc1-ae68-73ba13328e9f}",
-          "caption": "",
-          "resourceClass": "plasmashell",
-          "type": 2,
-          "appletPopup": false,
-          "hidden": false,
-          "active": false,
-          "geometry": {
-            "x": 0,
-            "y": 0,
-            "width": 1920,
-            "height": 32
-          }
-        },
-        {
-          "id": "{ae993158-58d9-4278-9818-30bcb83921c4}",
-          "caption": "",
-          "resourceClass": "plasmashell",
-          "type": 2,
-          "appletPopup": false,
-          "hidden": true,
-          "active": false,
-          "geometry": {
-            "x": 590.5,
-            "y": 996,
-            "width": 739,
-            "height": 84
-          }
-        },
-        {
-          "id": "{025fbdb0-f02c-4f3c-b860-be876d214da1}",
-          "caption": "mttkde-wifi",
-          "resourceClass": "org.kde.plasmashell",
-          "type": 18,
-          "appletPopup": true,
-          "hidden": false,
-          "active": true,
-          "geometry": {
-            "x": 1571,
-            "y": 32,
-            "width": 328,
-            "height": 166
-          }
-        }
-      ],
-      "wallpaper_uri": "file:///home/tester/.local/share/wallpapers/MacTahoe",
-      "case": "wifi",
-      "mode": "dark",
-      "edition": "tahoe",
-      "sha256": "0a9856b27a14b5ffdffa85ab9539715a51c09c34ae294001aec6386c6b94ad73",
-      "source_commit": "2368236ece9096533e702685722f518aa379bc07",
-      "vm_image_sha256": "74004cc15d7180e9b23c93a2c097824853375651b0984f68d9e940c45d461703",
-      "user_approved": false
     },
     "previews/readme-tahoe-dark-clipboard-8d5f7445bc51.webp": {
       "windows": [
@@ -3569,6 +3422,192 @@
       "profile_sha256": "2a3bd2d31ca0dfdd65c45a09a3c8c2bbe35a122ab2ca7961f1c33edf8b9a3b09",
       "installed_battery_qml_sha256": "cbd5b2bb73c6f416adeaacf053c3b37026ee3a14f89511e67519740c93742962",
       "replaces": "src/screenshots/previews/readme-tahoe-light-battery-fb40427bb7dc.webp",
+      "vm_image_sha256": "74004cc15d7180e9b23c93a2c097824853375651b0984f68d9e940c45d461703",
+      "capture_environment": {
+        "tahoe": {
+          "plasma": "plasmashell 6.8.1",
+          "kwin": "kwin 6.8.1",
+          "session": "Wayland",
+          "scale": 2,
+          "wallpaper": "file:///home/tester/.local/share/wallpapers/MacTahoe"
+        },
+        "golden-gate": {
+          "plasma": "plasmashell 6.8.1",
+          "kwin": "kwin 6.8.1",
+          "session": "Wayland",
+          "scale": 2,
+          "wallpaper": "file:///home/tester/.local/share/wallpapers/MacGoldenGate"
+        }
+      }
+    },
+    "previews/readme-tahoe-dark-wifi-41d18810df8b.webp": {
+      "windows": [
+        {
+          "id": "{f8376150-6a3e-42e5-b4be-669f90296587}",
+          "caption": "",
+          "resourceClass": "plasmashell",
+          "type": 1,
+          "appletPopup": false,
+          "hidden": false,
+          "active": false,
+          "geometry": {
+            "x": 0,
+            "y": 0,
+            "width": 1920,
+            "height": 1080
+          }
+        },
+        {
+          "id": "{bddda93d-5bf7-410f-be94-fcb37e1dd06a}",
+          "caption": "",
+          "resourceClass": "plasmashell",
+          "type": 2,
+          "appletPopup": false,
+          "hidden": false,
+          "active": false,
+          "geometry": {
+            "x": 0,
+            "y": 0,
+            "width": 1920,
+            "height": 32
+          }
+        },
+        {
+          "id": "{4a9687d9-54a5-4fe6-b182-ca8365f1b1bf}",
+          "caption": "",
+          "resourceClass": "plasmashell",
+          "type": 2,
+          "appletPopup": false,
+          "hidden": true,
+          "active": false,
+          "geometry": {
+            "x": 644,
+            "y": 996,
+            "width": 632,
+            "height": 84
+          }
+        },
+        {
+          "id": "{02d090a9-204e-4df0-80f0-301d31d2361a}",
+          "caption": "mttkde-wifi",
+          "resourceClass": "org.kde.plasmashell",
+          "type": 18,
+          "appletPopup": true,
+          "hidden": false,
+          "active": true,
+          "geometry": {
+            "x": 1577,
+            "y": 32,
+            "width": 328,
+            "height": 338
+          }
+        }
+      ],
+      "wallpaper_uri": "file:///home/tester/.local/share/wallpapers/MacTahoe",
+      "edition": "tahoe",
+      "mode": "dark",
+      "case": "wifi",
+      "source_commit": "f4e15238718fc7aab116f1c7d23f3377d31d823b",
+      "sha256": "41d18810df8b50a1e2d1509730c606ea1039145778d78850e48290dd84f55bff",
+      "plasma": "plasmashell 6.8.1",
+      "kwin": "kwin 6.8.1",
+      "profile_sha256": "2a3bd2d31ca0dfdd65c45a09a3c8c2bbe35a122ab2ca7961f1c33edf8b9a3b09",
+      "installed_wifi_qml_sha256": "02e5a6630337d2956770a7bc61101cad3ce69c40a3c38a8312f79d366d183db2",
+      "radio_fixture": "mac80211_hwsim in the disposable guest; three WPA access points scanned by NetworkManager, connected to Harbor Studio.",
+      "replaces": "src/screenshots/previews/readme-tahoe-dark-wifi-0a9856b27a14.webp",
+      "vm_image_sha256": "74004cc15d7180e9b23c93a2c097824853375651b0984f68d9e940c45d461703",
+      "capture_environment": {
+        "tahoe": {
+          "plasma": "plasmashell 6.8.1",
+          "kwin": "kwin 6.8.1",
+          "session": "Wayland",
+          "scale": 2,
+          "wallpaper": "file:///home/tester/.local/share/wallpapers/MacTahoe"
+        },
+        "golden-gate": {
+          "plasma": "plasmashell 6.8.1",
+          "kwin": "kwin 6.8.1",
+          "session": "Wayland",
+          "scale": 2,
+          "wallpaper": "file:///home/tester/.local/share/wallpapers/MacGoldenGate"
+        }
+      }
+    },
+    "previews/readme-tahoe-light-wifi-d55cc1382c4f.webp": {
+      "windows": [
+        {
+          "id": "{f8376150-6a3e-42e5-b4be-669f90296587}",
+          "caption": "",
+          "resourceClass": "plasmashell",
+          "type": 1,
+          "appletPopup": false,
+          "hidden": false,
+          "active": false,
+          "geometry": {
+            "x": 0,
+            "y": 0,
+            "width": 1920,
+            "height": 1080
+          }
+        },
+        {
+          "id": "{bddda93d-5bf7-410f-be94-fcb37e1dd06a}",
+          "caption": "",
+          "resourceClass": "plasmashell",
+          "type": 2,
+          "appletPopup": false,
+          "hidden": false,
+          "active": false,
+          "geometry": {
+            "x": 0,
+            "y": 0,
+            "width": 1920,
+            "height": 32
+          }
+        },
+        {
+          "id": "{4a9687d9-54a5-4fe6-b182-ca8365f1b1bf}",
+          "caption": "",
+          "resourceClass": "plasmashell",
+          "type": 2,
+          "appletPopup": false,
+          "hidden": true,
+          "active": false,
+          "geometry": {
+            "x": 644,
+            "y": 996,
+            "width": 632,
+            "height": 84
+          }
+        },
+        {
+          "id": "{ac64b6d8-ae0f-4f98-a470-5f02634acc42}",
+          "caption": "mttkde-wifi",
+          "resourceClass": "org.kde.plasmashell",
+          "type": 18,
+          "appletPopup": true,
+          "hidden": false,
+          "active": true,
+          "geometry": {
+            "x": 1577,
+            "y": 32,
+            "width": 328,
+            "height": 338
+          }
+        }
+      ],
+      "wallpaper_uri": "file:///home/tester/.local/share/wallpapers/MacTahoe",
+      "edition": "tahoe",
+      "mode": "light",
+      "case": "wifi",
+      "source_commit": "f4e15238718fc7aab116f1c7d23f3377d31d823b",
+      "sha256": "d55cc1382c4fda213117600eb0224e054ea683af2ee065464406fec87bf14c15",
+      "plasma": "plasmashell 6.8.1",
+      "kwin": "kwin 6.8.1",
+      "profile_sha256": "2a3bd2d31ca0dfdd65c45a09a3c8c2bbe35a122ab2ca7961f1c33edf8b9a3b09",
+      "installed_wifi_qml_sha256": "02e5a6630337d2956770a7bc61101cad3ce69c40a3c38a8312f79d366d183db2",
+      "radio_fixture": "mac80211_hwsim in the disposable guest; three WPA access points scanned by NetworkManager, connected to Harbor Studio.",
+      "replaces": "src/screenshots/previews/readme-tahoe-light-wifi-603193d9a909.webp",
       "vm_image_sha256": "74004cc15d7180e9b23c93a2c097824853375651b0984f68d9e940c45d461703",
       "capture_environment": {
         "tahoe": {

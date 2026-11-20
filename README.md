@@ -285,8 +285,8 @@ Wi-Fi, sound, brightness and notifications in one glass menu. The appearance but
 Open the Wi-Fi menu to see available wireless networks.
 
 <p align="center">
-  <img src="src/screenshots/previews/readme-tahoe-light-wifi-603193d9a909.webp" alt="Wi-Fi · Light" width="830">
-  <img src="src/screenshots/previews/readme-tahoe-dark-wifi-0a9856b27a14.webp" alt="Wi-Fi · Dark" width="830">
+  <img src="src/screenshots/previews/readme-tahoe-light-wifi-d55cc1382c4f.webp" alt="Wi-Fi · Light" width="830">
+  <img src="src/screenshots/previews/readme-tahoe-dark-wifi-41d18810df8b.webp" alt="Wi-Fi · Dark" width="830">
 </p>
 
 <br>
