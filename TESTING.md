@@ -1,6 +1,6 @@
 # Installer testing
 
-**v0.76.0**. Verified layout preservation during installation, the saved Dynamic Tinting setting, and the Dock and Control Center in both editions. [Evidence and coverage](release-evidence.json).
+**v0.76.1**. Verified regional text tinting in About This Computer on split and graded backgrounds in both editions. [Evidence and coverage](release-evidence.json).
 
 [Installer photo evidence](src/screenshots/previews/wizard-tahoe-provenance-531f633f4ff6.json).
 

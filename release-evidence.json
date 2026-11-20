@@ -1,33 +1,15 @@
 {
-  "version": "0.76.0",
+  "version": "0.76.1",
   "gallery_commit": "f09780b200b79302e7c23ef9f6f74d94748bbea3",
-  "scope": "Installer layout preservation, About and shell dynamic tinting, Control Center, Dock rim, Italian support and README updates.",
-  "approval": "Maintainer approved the paired previews and existing emblems on 2026-11-20.",
+  "scope": "Regional background sampling and smooth transitions for About This Computer text.",
+  "approval": "Maintainer approved the paired regional tint previews on 2026-11-20.",
   "checks": [
     {
-      "command": "Clean install keeping an existing panel layout and reinstall with a personal launcher in disposable Plasma guests",
+      "command": "Open installed About This Computer from the Plasma Apple menu; capture on a split background, invert it, then use a neutral gradient and switch to light mode",
       "result": "passed",
-      "output": "Installer qualification and retained launcher evidence; 64 installer tests and 12 focused follow-up checks."
-    },
-    {
-      "command": "Apply, close, reopen and restore Dynamic Tinting in the Acrylic Glass settings module",
-      "result": "passed",
-      "output": "Default enabled and saved state verified. Compared About on/off on the same split background in Golden Gate."
-    },
-    {
-      "command": "Build Acrylic Glass on KWin 6.6.5, 6.7.5 and 6.8.2; run the isolated X11 contrast probe",
-      "result": "passed",
-      "output": "Three builds and the X11 probe passed. Both editions captured in a Plasma Wayland guest."
-    },
-    {
-      "command": "Render the Control Center X11 fixture and Qt SVG glass surface checks",
-      "result": "passed",
-      "output": "Verified updated Wi-Fi sampling point and 30 glass-surface regressions."
-    },
-    {
-      "command": "nix build #acrylic-glass and inspect the packaged Control Center transition",
-      "result": "passed",
-      "output": "Verified installed transition."
+      "edition": "tahoe",
+      "environment": "KDE neon disposable Wayland VM",
+      "source_commit": "31b25c819a57e411905d276ccfa8b97d61a30f66"
     }
   ],
   "captures": [
@@ -69,15 +51,13 @@
     }
   ],
   "coverage_limits": [
-    "Focused selected checks. SDK builds and installed desktop rendering have separate coverage. The complete remote matrix runs asynchronously."
+    "Visual validation in the prepared Wayland guest. Contrast can be lower where a background boundary crosses the intermediate text tone."
   ],
-  "source_sha256": "bf4eb45ea18c2b112533cc3a8fa37b8a453c2f9474004f9b64dfc629861cdfa2",
+  "source_sha256": "e7ac52952966200babfc38d0292cb4efeb0bbd9368598977e02636f67e7f49a3",
   "reviewed_preview_sha256": {
-    "tahoe-acrylic.jpg": "cf996386720457c56a12df0fa9f156b10634cfa7416f19d688742d6c4dda402c",
-    "tahoe-control-center-dark.jpg": "ca660bf06f32253642fdde7a057111351f001d689fa139abaaaa88b3f303ffa5",
-    "tahoe-control-center-light.jpg": "ecc69f1c80cc129f7e582a2e8ffde6236a86b33a97aae0602facd499bea73dec",
-    "tahoe-dock-dark.jpg": "0b5f65702b94ca0d01c9a96a237b00de1e20ab25f0db040a8bb965147e24e853",
-    "tahoe-dock-light.jpg": "d146e3f487fb897f78e2d79f58e75031086660d52e9cdf666e8845d5a95c6266",
-    "tahoe-tint-disabled.jpg": "7c3a21f6b70b3144680e5ad1c3d1e678808ee7e2195d65f000e746e24a8fe276"
+    "tahoe-dark.jpg": "6c9391d7828ed828209a37f6c8d6d0c28ba00ca7638af478f3000dd48e80b019",
+    "tahoe-light.jpg": "18700e9c40ac654a4bfde9e2eb7f35c190dc00690b7bc61ce84ad4211af24ea6",
+    "tahoe-inverted.jpg": "75fad5f5cf5d53649d901831d3a3ba33d58ef831ab187f3cafebef5adda5b4c2",
+    "tahoe-neutral-gradient.jpg": "997e1c5cb578b855827779e668c209e3e2f470b140966e97be5288bde6d08e43"
   }
 }
