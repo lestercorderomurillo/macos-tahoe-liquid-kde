@@ -15,12 +15,12 @@ ControlGlass::ControlGlass(QObject *parent) : QObject(parent)
 {
     QDBusConnection::sessionBus().connect(QStringLiteral("org.kde.KWin"),
         QStringLiteral("/org/kde/MacTahoe/Glass"), QStringLiteral("org.kde.MacTahoe.Glass"),
-        QStringLiteral("controlBackdrop"), this, SLOT(updateBackdrop(int,QRect,QRect,QByteArray)));
+        QStringLiteral("controlBackdrop"), this, SLOT(updateBackdrop(int,QRect,QRect,QByteArray,QString)));
 }
 
-void ControlGlass::updateBackdrop(int pid, const QRect &frame, const QRect &bounds, const QByteArray &colors)
+void ControlGlass::updateBackdrop(int pid, const QRect &frame, const QRect &bounds, const QByteArray &colors, const QString &title)
 {
-    if (!m_window || !m_window->isVisible() || m_window->title() != QStringLiteral("mttkde-control-center")
+    if (!m_window || !m_window->isVisible() || m_window->title() != title
         || pid != QCoreApplication::applicationPid() || frame.size() != m_window->size()
         // Wayland repositions the anchored Plasma dialog relative to its panel.
         || !m_window->screen() || !m_window->screen()->geometry().intersects(frame)

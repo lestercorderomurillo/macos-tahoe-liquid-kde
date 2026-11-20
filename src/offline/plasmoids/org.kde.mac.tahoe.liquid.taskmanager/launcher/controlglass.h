@@ -36,7 +36,7 @@ Q_SIGNALS:
 protected:
     bool eventFilter(QObject *object, QEvent *event) override;
 private:
-    Q_SLOT void updateBackdrop(int pid, const QRect &frame, const QRect &bounds, const QByteArray &colors);
+    Q_SLOT void updateBackdrop(int pid, const QRect &frame, const QRect &bounds, const QByteArray &colors, const QString &title);
     void apply();
     quint64 m_revision = 0;
     QByteArray m_backdropGrid;

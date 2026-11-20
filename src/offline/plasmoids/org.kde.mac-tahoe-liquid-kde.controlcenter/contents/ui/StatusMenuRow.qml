@@ -15,7 +15,7 @@ QQC.AbstractButton {
     property bool opened: false
     property string detail
     readonly property bool lightMode: Kirigami.Theme.textColor.r * 0.2126 + Kirigami.Theme.textColor.g * 0.7152 + Kirigami.Theme.textColor.b * 0.0722 < 0.5
-    implicitHeight: symbol.length ? 34 : 30
+    implicitHeight: 36
     implicitWidth: 270
     leftPadding: 6; rightPadding: 6; topPadding: 3; bottomPadding: 3
     hoverEnabled: true
@@ -36,19 +36,20 @@ QQC.AbstractButton {
                 width: 18; height: 18
                 source: Style.symbol(row.symbol)
                 isMask: true
-                color: row.selected ? "white" : Kirigami.Theme.textColor
+                color: row.selected ? "white" : caption.color
                 visible: !row.busy
             }
             QQC.BusyIndicator { anchors.centerIn: parent; width: 22; height: 22; running: row.busy; visible: running }
         }
         ControlLabel {
+            id: caption
             text: row.text
             textFormat: Text.PlainText
             elide: Text.ElideRight
             Layout.fillWidth: true; Layout.minimumWidth: 0
         }
         ControlLabel { visible: row.detail.length > 0; text: row.detail; opacity: 0.65; font.pixelSize: 11 }
-        Kirigami.Icon { visible: row.secured; source: Style.symbol("mac-menu-lock"); isMask: true; color: Kirigami.Theme.textColor; implicitWidth: 12; implicitHeight: 14; opacity: 0.65 }
-        Kirigami.Icon { visible: row.disclosure; source: Style.symbol("mac-menu-chevron"); rotation: row.opened ? 0 : -90; isMask: true; color: Kirigami.Theme.textColor; implicitWidth: 12; implicitHeight: 12; opacity: 0.65 }
+        Kirigami.Icon { visible: row.secured; source: Style.symbol("mac-menu-lock"); isMask: true; color: caption.color; implicitWidth: 12; implicitHeight: 14; opacity: 0.65 }
+        Kirigami.Icon { visible: row.disclosure; source: Style.symbol("mac-menu-chevron"); rotation: row.opened ? 0 : -90; isMask: true; color: caption.color; implicitWidth: 12; implicitHeight: 12; opacity: 0.65 }
     }
 }

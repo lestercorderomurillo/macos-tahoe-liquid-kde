@@ -7,7 +7,7 @@ import org.kde.plasma.networkmanagement as Network
 Page {
     id: view
     title: ""
-    spacing: 0
+    spacing: 4
     Layout.preferredWidth: 280
     property var wireless: enabledConnections
     property var devices: nativeDevices
@@ -58,7 +58,7 @@ Page {
     }
     StatusMenuDivider {}
     ControlLabel {
-        Layout.fillWidth: true; Layout.margins: 6
+        Layout.fillWidth: true; Layout.leftMargin: 6; Layout.rightMargin: 6; Layout.topMargin: 4; Layout.bottomMargin: 4
         visible: !view.wirelessAvailable
         wrapMode: Text.WordWrap
         text: !view.devices.wirelessDeviceAvailable ? i18n("No Wi-Fi adapter")
@@ -77,8 +77,8 @@ Page {
         ColumnLayout {
             id: networksColumn
             width: networkScroll.availableWidth
-            spacing: 0
-            ControlLabel { text: i18n("Known Networks"); font.weight: Font.DemiBold; font.pixelSize: 12; opacity: 0.6; Layout.margins: 6 }
+            spacing: 4
+            ControlLabel { text: i18n("Known Networks"); font.weight: Font.DemiBold; font.pixelSize: 12; opacity: 0.6; Layout.leftMargin: 6; Layout.rightMargin: 6; Layout.topMargin: 4; Layout.bottomMargin: 4 }
             Repeater {
                 model: view.connections
                 delegate: StatusMenuRow {
@@ -132,11 +132,12 @@ Page {
             }
         }
     }
-    ControlLabel { Layout.fillWidth: true; Layout.margins: 6; visible: view.error.length > 0; text: view.error; textFormat: Text.PlainText; wrapMode: Text.WordWrap }
+    ControlLabel { Layout.fillWidth: true; Layout.leftMargin: 6; Layout.rightMargin: 6; Layout.topMargin: 4; Layout.bottomMargin: 4; visible: view.error.length > 0; text: view.error; textFormat: Text.PlainText; wrapMode: Text.WordWrap }
     StatusMenuDivider {}
     SettingsLink {
         Layout.fillWidth: true
         text: i18n("Wi-Fi Settings…"); module: "kcm_networkmanagement"
+        implicitHeight: 36
         icon.name: ""
         leftPadding: 6; rightPadding: 6
         background: Rectangle { radius: 8; color: Kirigami.Theme.textColor; opacity: parent.hovered || parent.activeFocus ? 0.10 : 0 }

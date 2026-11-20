@@ -6,7 +6,7 @@ QQC.Label {
     id: label
     // Draw the small letterforms from their outlines on translucent controls.
     Binding on renderType {
-        when: label.Window.window && label.Window.window.title === "mttkde-control-center"
+        when: label.Window.window && typeof label.Window.window.foregroundFor === "function"
             && label.GraphicsInfo.api !== GraphicsInfo.Software
         value: Text.CurveRendering
     }

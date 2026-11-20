@@ -2008,7 +2008,7 @@ void BlurEffect::blur(
     // Foreground contrast uses the captured backdrop, never the notification's
     // own pixels. The existing blur/material passes and saved optics are unchanged.
     const QString resourceClass = w->window()->resourceClass();
-    const bool controlCenter = w->caption() == QStringLiteral("mttkde-control-center")
+    const bool controlCenter = GlassMaterials::isControlPanel(w->caption())
         && (resourceClass == QStringLiteral("plasmashell") || resourceClass == QStringLiteral("org.kde.plasmashell"));
     if (controlCenter || isProjectNotification(resourceClass, w->caption())) {
         if (!blurInfo.contrastTimer.isValid() || blurInfo.contrastTimer.elapsed() >= 200) {
@@ -2070,7 +2070,7 @@ void BlurEffect::blur(
                         blurInfo.contrastBounds = frame;
                         auto message = QDBusMessage::createSignal(QStringLiteral("/org/kde/MacTahoe/Glass"),
                             QStringLiteral("org.kde.MacTahoe.Glass"), QStringLiteral("controlBackdrop"));
-                        message << int(w->window()->pid()) << frame << backgroundRect << colors;
+                        message << int(w->window()->pid()) << frame << backgroundRect << colors << w->caption();
                         QDBusConnection::sessionBus().send(message);
                     }
                 } else {

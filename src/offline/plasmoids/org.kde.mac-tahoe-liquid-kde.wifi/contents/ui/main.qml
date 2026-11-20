@@ -3,7 +3,6 @@ import QtQuick
 import org.kde.plasma.networkmanagement as Network
 import org.kde.plasma.plasmoid
 import org.kde.plasma.core as PlasmaCore
-import org.kde.mac.tahoe.launcher as Native
 import "../../../org.kde.mac-tahoe-liquid-kde.controlcenter/contents/ui" as Controls
 PlasmoidItem {
     id: root
@@ -19,18 +18,14 @@ PlasmoidItem {
         onClicked: popup.visible = !popup.visible
     }
     Connections { target: Plasmoid; function onActivated() { popup.visible = !popup.visible; } }
-    PlasmaCore.Dialog {
+    Controls.ControlDialog {
         id: popup
         title: "mttkde-wifi"
         visible: false
         visualParent: root
         location: Plasmoid.location
-        type: PlasmaCore.Dialog.AppletPopup
-        flags: Qt.WindowStaysOnTopHint
-        backgroundHints: PlasmaCore.Dialog.NoBackground
-        hideOnWindowDeactivate: true
+        surfaces: menu.surfaces
         mainItem: Controls.StatusMenuPopup { id: menu; source: Qt.resolvedUrl("../../../org.kde.mac-tahoe-liquid-kde.controlcenter/contents/ui/WifiView.qml"); width: implicitWidth; height: implicitHeight }
         onVisibleChanged: if (visible) { requestActivate(); menu.forceActiveFocus(); }
     }
-    Native.ControlGlass { window: popup; surfaces: menu.surfaces }
 }

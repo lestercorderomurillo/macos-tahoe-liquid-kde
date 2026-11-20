@@ -2,7 +2,6 @@
 import QtQuick
 ControlTile {
     doubleRim: true
-    materialComponent: "menus"
     cornerRadius: 20
     rimWidth: 0.75
     leftPadding: 14; rightPadding: 14

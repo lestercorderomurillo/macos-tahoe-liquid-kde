@@ -68,13 +68,18 @@ inline double number(const QJsonObject &v, const char *key, double fallback, dou
     return std::isfinite(value) ? qBound(lo, value, hi) : fallback;
 }
 
+inline bool isControlPanel(const QString &caption)
+{
+    return caption == QStringLiteral("mttkde-control-center") || caption == QStringLiteral("mttkde-wifi")
+        || caption == QStringLiteral("mttkde-battery") || caption == QStringLiteral("mttkde-calendar");
+}
+
 inline QString classify(const QString &resource, const QString &caption, bool dock, bool popup, bool applet,
                         const QString &aboutTitle)
 {
     const QString name = resource.toLower();
     if (name == QStringLiteral("plasmashell") || name == QStringLiteral("org.kde.plasmashell")) {
-        if (caption == QStringLiteral("mttkde-notifications")) return QStringLiteral("menus");
-        if (caption == QStringLiteral("mttkde-control-center")) return QStringLiteral("control-center");
+        if (isControlPanel(caption) || caption == QStringLiteral("mttkde-notifications")) return QStringLiteral("control-center");
         if (caption == QStringLiteral("mttkde-apps")) return QStringLiteral("apps");
         if (caption == QStringLiteral("mttkde-search")) return QStringLiteral("search");
         if (caption == aboutTitle || caption == QStringLiteral("About This Computer")) return QStringLiteral("about");

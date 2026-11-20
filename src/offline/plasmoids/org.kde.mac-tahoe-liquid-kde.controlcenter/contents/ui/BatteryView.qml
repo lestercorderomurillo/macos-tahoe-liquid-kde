@@ -9,7 +9,7 @@ import "ControlStyle.js" as Style
 Page {
     id: view
     title: ""
-    spacing: 0
+    spacing: 4
     Layout.preferredWidth: 280
     property var battery: nativeBattery
     property var profiles: nativeProfiles
@@ -20,7 +20,7 @@ Page {
     }
     RowLayout {
         Layout.fillWidth: true
-        Layout.margins: 6
+        Layout.leftMargin: 6; Layout.rightMargin: 6; Layout.topMargin: 4; Layout.bottomMargin: 4
         ControlLabel { text: i18n("Battery"); font.weight: Font.DemiBold; Layout.fillWidth: true }
         ControlLabel {
             objectName: "batteryPercent"
@@ -31,7 +31,7 @@ Page {
     }
     ControlLabel {
         objectName: "batterySource"
-        Layout.fillWidth: true; Layout.margins: 6
+        Layout.fillWidth: true; Layout.leftMargin: 6; Layout.rightMargin: 6; Layout.topMargin: 4; Layout.bottomMargin: 4
         wrapMode: Text.WordWrap
         font.pixelSize: 12; opacity: 0.65
         text: !view.battery.hasInternalBatteries ? i18n("Battery information will appear when a battery is available.")
@@ -45,7 +45,7 @@ Page {
             : view.battery.state === Power.BatteryControlModel.FullyCharged ? i18n("Fully charged") : i18n("Connected to power")
     }
     StatusMenuDivider { visible: view.profiles.isPowerProfileDaemonInstalled }
-    ControlLabel { text: i18n("Energy Mode"); font.pixelSize: 12; font.weight: Font.DemiBold; opacity: 0.6; Layout.margins: 6; visible: view.profiles.isPowerProfileDaemonInstalled }
+    ControlLabel { text: i18n("Energy Mode"); font.pixelSize: 12; font.weight: Font.DemiBold; opacity: 0.6; Layout.leftMargin: 6; Layout.rightMargin: 6; Layout.topMargin: 4; Layout.bottomMargin: 4; visible: view.profiles.isPowerProfileDaemonInstalled }
     QQC.ComboBox {
         id: profile
         objectName: "powerProfile"
@@ -72,18 +72,10 @@ Page {
             source: Style.symbol("mac-menu-chevron"); isMask: true; color: Kirigami.Theme.textColor
             width: 12; height: 12; opacity: 0.65
         }
-        contentItem: QQC.TextField {
+        contentItem: ControlLabel {
             text: profile.displayText
-            readOnly: true
-            enabled: false
-            selectByMouse: false
-            activeFocusOnPress: false
-            leftPadding: 34; rightPadding: 20; topPadding: 0; bottomPadding: 0
-            font.family: Style.family; font.pixelSize: Style.body
-            color: profile.palette.text
-            opacity: 1
-            background: Item {}
-
+            leftPadding: 34; rightPadding: 20
+            verticalAlignment: Text.AlignVCenter
         }
         delegate: QQC.ItemDelegate {
             required property string modelData
@@ -93,7 +85,7 @@ Page {
             highlighted: profile.currentText === modelData
         }
     }
-    ControlLabel { Layout.fillWidth: true; Layout.margins: 6; visible: text.length > 0; text: view.profiles.profileError; textFormat: Text.PlainText; wrapMode: Text.WordWrap }
+    ControlLabel { Layout.fillWidth: true; Layout.leftMargin: 6; Layout.rightMargin: 6; Layout.topMargin: 4; Layout.bottomMargin: 4; visible: text.length > 0; text: view.profiles.profileError; textFormat: Text.PlainText; wrapMode: Text.WordWrap }
     Repeater {
         model: view.battery
         delegate: ControlLabel {
@@ -101,7 +93,7 @@ Page {
             objectName: "peripheralBattery"
             visible: model.IsPowerSupply === false && model.PrettyName !== undefined && model.Percent !== undefined
             text: visible ? i18n("%1 — %2%", model.PrettyName, model.Percent) : ""
-            Layout.fillWidth: true; Layout.margins: 6
+            Layout.fillWidth: true; Layout.leftMargin: 6; Layout.rightMargin: 6; Layout.topMargin: 4; Layout.bottomMargin: 4
             elide: Text.ElideRight
         }
     }
@@ -109,6 +101,7 @@ Page {
     SettingsLink {
         Layout.fillWidth: true
         text: i18n("Battery Settings…"); module: "kcm_powerdevilprofilesconfig"
+        implicitHeight: 36
         icon.name: ""
         leftPadding: 6; rightPadding: 6
         background: Rectangle { radius: 8; color: Kirigami.Theme.textColor; opacity: parent.hovered || parent.activeFocus ? 0.10 : 0 }
