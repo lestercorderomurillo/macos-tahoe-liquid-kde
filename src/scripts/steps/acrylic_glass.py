@@ -12,7 +12,7 @@ from pathlib import Path
 from distro import qt6_plugins_dir
 from steps._native_build import cmake_build
 from steps._helpers import (
-    DATA_HOME, build_dir, fail, info, kw_write, ok, offline, qdbus_call,
+    DATA_HOME, build_dir, fail, info, install_tree, kw_write, ok, offline, qdbus_call, remove_tree,
     sudo_install_file, sudo_remove, warn, _as_root,
     kwin_plugin_mapping_matches as _plugin_mapping_matches,
     running_kwin_plugin_matches as _running_plugin_matches,
@@ -22,6 +22,28 @@ from theme_switch import default_wallpaper
 from installer_choices import selected
 
 SRC = offline("kwin-effects/acrylic-glass")
+# Scripted KWin effect for the Control Center zoom/fade; Liquid Glass follows it.
+TRANSITION_ID = "mttkde_controlcenter_transition"
+TRANSITION_SRC = offline("kwin-effects/controlcenter-transition")
+TRANSITION_DEST = DATA_HOME / "kwin/effects" / TRANSITION_ID
+
+
+def _install_transition() -> None:
+    if not install_tree(TRANSITION_SRC, TRANSITION_DEST, "Control Center transition"):
+        return
+    if not kw_write("--file", "kwinrc", "--group", "Plugins",
+                    "--key", f"{TRANSITION_ID}Enabled", "true"):
+        warn(tr('Control Center transition could not be enabled in kwinrc'))
+        return
+    # Scripted effects are re-read on load, so a reload picks up an update.
+    qdbus_call("org.kde.KWin", "/Effects", "org.kde.kwin.Effects.unloadEffect", TRANSITION_ID)
+    qdbus_call("org.kde.KWin", "/Effects", "org.kde.kwin.Effects.loadEffect", TRANSITION_ID)
+
+
+def _uninstall_transition() -> None:
+    kw_write("--file", "kwinrc", "--group", "Plugins", "--key", f"{TRANSITION_ID}Enabled", "false")
+    qdbus_call("org.kde.KWin", "/Effects", "org.kde.kwin.Effects.unloadEffect", TRANSITION_ID)
+    remove_tree(TRANSITION_DEST, "Control Center transition")
 BUILD = build_dir("kwin-effects/acrylic-glass")
 HOME = Path.home()
 LEGACY_USER_PLUGIN_DIR = HOME / ".local/lib/qt6/plugins"
@@ -495,6 +517,8 @@ def install() -> None:
         _restore_conflicting_blurs()
         return
 
+    _install_transition()
+
     # Reload the effect instance. Qt may still retain its old shared library;
     # activeEffects alone cannot prove the newly installed code is running.
     qdbus_call("org.kde.KWin", "/Effects",
@@ -541,6 +565,7 @@ def uninstall() -> None:
                      Path(os.environ.get("XDG_CONFIG_HOME", home / ".config")),
                      Path(os.environ.get("XDG_STATE_HOME", home / ".local/state")))
     (home / ".local/bin/mac-tahoe-glass-surfaces").unlink(missing_ok=True)
+    _uninstall_transition()
     # Persist the disabled state before asking KWin to unload the effect.
     # Unloading first can race a config notification/reconfigure and let KWin
     # immediately load the still-enabled plugin again, leaving every window

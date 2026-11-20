@@ -1260,5 +1260,8 @@
   "Launchpad": "Launchpad",
   "Clipboard history is unavailable.": "Der Zwischenablageverlauf ist nicht verfügbar.",
   "Tahoe (Clear)": "Tahoe (Klar)",
-  "Tahoe (Frosted)": "Tahoe (Mattiert)"
+  "Tahoe (Frosted)": "Tahoe (Mattiert)",
+  "Control Center transition": "Control-Center-Übergang",
+  "Control Center transition could not be enabled in kwinrc": "Der Control-Center-Übergang konnte in kwinrc nicht aktiviert werden",
+  "Control Center transition removed": "Control-Center-Übergang entfernt"
 }
