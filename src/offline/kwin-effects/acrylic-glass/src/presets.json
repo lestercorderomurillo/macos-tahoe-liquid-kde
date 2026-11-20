@@ -155,7 +155,7 @@
       },
       "menus": {
         "SurfaceTransparencyLight": 40.0,
-        "SurfaceTransparencyDark": 40,
+        "SurfaceTransparencyDark": 99.0,
         "BlurStrength": 3,
         "DarkGradientOverlay": false
       },
