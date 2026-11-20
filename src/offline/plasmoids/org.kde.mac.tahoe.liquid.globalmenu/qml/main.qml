@@ -129,15 +129,15 @@ PlasmoidItem {
 
         Connections {
             target: Plasmoid
-            function onRequestActivateIndex(index: int) {
+            function onRequestActivateIndex(index: int, navigationOnly: bool) {
                 if (index === -3) {
                     Plasmoid.triggerSystemMenu(systemMenuButton);
                 } else if (index === -2) {
-                    appNameButton.activated();
+                    appNameButton.activated(navigationOnly);
                 } else {
                     const button = buttonRepeater.itemAt(index) as MenuDelegate;
                     if (button) {
-                        button.activated();
+                        button.activated(navigationOnly);
                     }
                 }
             }
@@ -148,7 +148,7 @@ PlasmoidItem {
             function onActivated() {
                 const button = buttonRepeater.itemAt(0) as MenuDelegate;
                 if (button) {
-                    button.activated();
+                    button.activated(false);
                 }
             }
         }
@@ -216,7 +216,7 @@ PlasmoidItem {
 
                 hoverOpensMenu: Plasmoid.configuration.hoverOpensMenu
                 menuIsOpen: Plasmoid.currentIndex !== -1
-                onActivated: Plasmoid.trigger(this, index)
+                onActivated: (navigationOnly) => Plasmoid.trigger(this, index, navigationOnly)
 
                 KeyboardIndicator.KeyState {
                     id: altState
@@ -239,7 +239,7 @@ PlasmoidItem {
         allScreens: Plasmoid.configuration.allScreens
         enableGenericMenu: Plasmoid.configuration.enableGenericMenu
         enableMenuSearch: Plasmoid.configuration.enableMenuSearch
-        onRequestActivateIndex: Plasmoid.requestActivateIndex(index)
+        onRequestActivateIndex: Plasmoid.requestActivateIndex(index, false)
         Component.onCompleted: {
             Plasmoid.model = appMenuModel;
         }

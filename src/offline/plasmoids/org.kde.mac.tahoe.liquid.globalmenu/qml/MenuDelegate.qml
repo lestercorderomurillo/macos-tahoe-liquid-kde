@@ -21,12 +21,12 @@ AbstractButton {
     property bool menuIsOpen: false
     property bool hoverOpensMenu: true
 
-    signal activated()
+    signal activated(bool navigationOnly)
 
     hoverEnabled: true
 
-    onHoveredChanged: if (hoverOpensMenu && hovered && menuIsOpen) { activated(); }
-    onPressed: activated()
+    onHoveredChanged: if (hoverOpensMenu && hovered && menuIsOpen) { activated(true); }
+    onPressed: activated(false)
 
     enum State {
         Rest,

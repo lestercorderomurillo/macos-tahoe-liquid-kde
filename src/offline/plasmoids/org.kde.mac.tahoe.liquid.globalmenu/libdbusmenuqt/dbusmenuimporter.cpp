@@ -114,6 +114,7 @@ public:
 
         if (map.take(QStringLiteral("children-display")).toString() == QLatin1String("submenu")) {
             QMenu *menu = createMenu(parent);
+            menu->setProperty(DBUSMENU_PROPERTY_ID, id);
             action->setMenu(menu);
         }
 
@@ -414,7 +415,8 @@ void DBusMenuImporter::slotGetLayoutFinished(QDBusPendingCallWatcher *watcher)
         }
     }
 
-    // insert or update new actions into our menu
+    QList<QAction *> orderedActions;
+    // Insert or update the exported actions.
     for (const DBusMenuLayoutItem &dbusMenuItem : std::as_const(rootItem.children)) {
         DBusMenuImporterPrivate::ActionForId::Iterator it = d->m_actionForId.find(dbusMenuItem.id);
         QAction *action = nullptr;
@@ -436,7 +438,6 @@ void DBusMenuImporter::slotGetLayoutFinished(QDBusPendingCallWatcher *watcher)
             }
             connect(menu, &QMenu::aboutToHide, this, &DBusMenuImporter::slotMenuAboutToHide, Qt::UniqueConnection);
 
-            menu->addAction(action);
         } else {
             action = *it;
             QStringList filteredKeys = dbusMenuItem.properties.keys();
@@ -444,18 +445,19 @@ void DBusMenuImporter::slotGetLayoutFinished(QDBusPendingCallWatcher *watcher)
             filteredKeys.removeOne(QStringLiteral("toggle-type"));
             filteredKeys.removeOne(QStringLiteral("children-display"));
             d->updateAction(*it, dbusMenuItem.properties, filteredKeys);
-            // Move the action to the tail so we can keep the order same as the dbus request.
-            menu->removeAction(action);
-            menu->addAction(action);
         }
+        orderedActions.append(action);
     }
 
-    // Keep locally appended actions after the exporter's ordered actions.
-    for (QAction *action : menu->actions()) {
-        if (!action->property(DBUSMENU_PROPERTY_ID).isValid()) {
-            menu->removeAction(action);
-            menu->addAction(action);
-        }
+    // Moving an unchanged action interrupts hover and can close its open submenu.
+    // Insert only missing or displaced actions; local controls stay at the end.
+    auto current = menu->actions();
+    for (int row = 0; row < orderedActions.size(); ++row) {
+        auto *action = orderedActions.at(row);
+        if (current.value(row) == action) continue;
+        menu->insertAction(current.value(row), action);
+        current.removeOne(action);
+        current.insert(row, action);
     }
     Q_EMIT menuUpdated(menu);
 }
@@ -470,6 +472,12 @@ void DBusMenuImporter::sendClickedEvent(int id)
     d->sendEvent(id, QStringLiteral("clicked"));
 }
 
+void DBusMenuImporter::preloadMenu(QAction *action)
+{
+    const QVariant id = action->property(DBUSMENU_PROPERTY_ID);
+    if (id.isValid()) d->refresh(id.toInt());
+}
+
 void DBusMenuImporter::updateMenu()
 {
     updateMenu(DBusMenuImporter::menu());
@@ -479,10 +487,17 @@ void DBusMenuImporter::updateMenu(QMenu *menu)
 {
     Q_ASSERT(menu);
 
-    QAction *action = menu->menuAction();
-    Q_ASSERT(action);
+    const int id = menu->property(DBUSMENU_PROPERTY_ID).toInt();
 
-    int id = action->property(DBUSMENU_PROPERTY_ID).toInt();
+    // QMenu cannot display an empty cascading popup while its asynchronous
+    // layout is in flight. Warm the next level when the parent actually opens.
+    if (id != 0) {
+        if (auto *displayed = d->menuForId(id)) {
+            for (auto *child : displayed->actions()) {
+                if (child->menu() && child->menu()->isEmpty()) preloadMenu(child);
+            }
+        }
+    }
 
     auto call = d->m_interface->AboutToShow(id);
     auto *watcher = new QDBusPendingCallWatcher(call, this);
@@ -525,10 +540,7 @@ void DBusMenuImporter::slotMenuAboutToHide()
     auto *menu = qobject_cast<QMenu *>(sender());
     Q_ASSERT(menu);
 
-    QAction *action = menu->menuAction();
-    Q_ASSERT(action);
-
-    int id = action->property(DBUSMENU_PROPERTY_ID).toInt();
+    const int id = menu->property(DBUSMENU_PROPERTY_ID).toInt();
     d->sendEvent(id, QStringLiteral("closed"));
 }
 

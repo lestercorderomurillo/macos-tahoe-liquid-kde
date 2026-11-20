@@ -288,7 +288,7 @@ Qt::Edges edgeFromLocation(Plasma::Types::Location location)
 
 // QML-triggered popups
 
-void AppMenuApplet::trigger(QQuickItem* ctx, int idx)
+void AppMenuApplet::trigger(QQuickItem* ctx, int idx, bool navigationOnly)
 {
     if (!m_model || idx < 0 || idx >= m_model->rowCount()) {
         return;
@@ -307,7 +307,7 @@ void AppMenuApplet::trigger(QQuickItem* ctx, int idx)
 
     if (QMenu* actionMenu = createMenu(idx)) {
         showMenu(ctx, actionMenu, idx);
-    } else if (selectedAction) {
+    } else if (selectedAction && !navigationOnly) {
         selectedAction->trigger();
     }
 }
@@ -707,7 +707,7 @@ bool AppMenuApplet::eventFilter(QObject* watched, QEvent* event)
             } else {
                 desiredIndex = m_currentIndex - 1;
             }
-            Q_EMIT requestActivateIndex(desiredIndex);
+            Q_EMIT requestActivateIndex(desiredIndex, true);
             return true;
         } else if (e->key() == Qt::Key_Right) {
             if (menu->activeAction() && menu->activeAction()->menu()) {
@@ -721,7 +721,7 @@ bool AppMenuApplet::eventFilter(QObject* watched, QEvent* event)
             } else {
                 desiredIndex = m_currentIndex + 1;
             }
-            Q_EMIT requestActivateIndex(desiredIndex);
+            Q_EMIT requestActivateIndex(desiredIndex, true);
             return true;
         }
 
@@ -753,7 +753,7 @@ bool AppMenuApplet::eventFilter(QObject* watched, QEvent* event)
         }
 
         if (buttonIndex != m_currentIndex) {
-            Q_EMIT requestActivateIndex(buttonIndex);
+            Q_EMIT requestActivateIndex(buttonIndex, true);
         }
         // QMenu must not process the old popup's mouse event after a switch.
         return true;

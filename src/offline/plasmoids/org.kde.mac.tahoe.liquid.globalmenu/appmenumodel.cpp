@@ -262,6 +262,13 @@ void AppMenuModel::insertSearchActionsIntoMenu(const QString& filter)
 
 // Window / model refresh
 
+void AppMenuModel::onMenuActionChanged()
+{
+    if (!m_menuAvailable || !m_menu) return;
+    const int row = m_menu->actions().indexOf(qobject_cast<QAction *>(sender()));
+    if (row >= 0) Q_EMIT dataChanged(index(row, 0), index(row, 0));
+}
+
 void AppMenuModel::update()
 {
     beginResetModel();
@@ -423,19 +430,13 @@ void AppMenuModel::updateApplicationMenu(const QString& serviceName, const QStri
 
             const auto actions = m_menu->actions();
             for (QAction* a : actions) {
-                connect(a, &QAction::changed, this, [this, a] {
-                    if (m_menuAvailable && m_menu) {
-                        const int actionIdx = m_menu->actions().indexOf(a);
-                        if (actionIdx > -1) {
-                            const QModelIndex modelIdx = index(actionIdx, 0);
-                            Q_EMIT dataChanged(modelIdx, modelIdx);
-                        }
-                    }
-                });
-                connect(a, &QAction::destroyed, this, &AppMenuModel::modelNeedsUpdate);
+                if (!connect(a, &QAction::changed, this, &AppMenuModel::onMenuActionChanged, Qt::UniqueConnection)) {
+                    continue;
+                }
+                connect(a, &QObject::destroyed, this, &AppMenuModel::modelNeedsUpdate);
 
                 if (a->menu() && !a->menu()->property("tahoeLocalView").toBool()) {
-                    m_importer->updateMenu(a->menu());
+                    m_importer->preloadMenu(a);
                 }
             }
 

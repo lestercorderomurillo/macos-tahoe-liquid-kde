@@ -31,6 +31,9 @@ public:
 
     ~DBusMenuImporter() override;
 
+    // Load searchable actions without notifying the application of a user opening the menu.
+    void preloadMenu(QAction *action);
+
     QAction *actionForId(int id) const;
 
     /**

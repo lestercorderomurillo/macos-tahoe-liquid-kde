@@ -1,6 +1,6 @@
 # Installer testing
 
-**v0.74.0**. KDE neon Wayland captures cover launcher and panel materials in both appearances. The installed-session check exercised a scheduled appearance transition and rapid manual selections with Qt and GTK applications open. [Evidence and coverage](release-evidence.json).
+**v0.74.1**. On KDE neon Wayland, Kate’s global menu remained responsive through 192 menu switches. The native suite also exercised changing menus and commands during pointer navigation. [Evidence and coverage](release-evidence.json).
 
 [Installer photo evidence](src/screenshots/previews/wizard-tahoe-provenance-9ba9cfba299b.json).
 

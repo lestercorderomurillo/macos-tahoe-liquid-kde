@@ -140,6 +140,7 @@ Q_SIGNALS:
 private Q_SLOTS:
     /// Re-attach to the new active window's AppMenu service.
     void onActiveWindowChanged();
+    void onMenuActionChanged();
 
     void setVisible(bool visible);
 

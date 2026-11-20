@@ -60,8 +60,10 @@ public Q_SLOTS:
     }
     bool AboutToShow(int id)
     {
-        if (id == 1)
+        if (id == 1) {
             ++openings;
+            Q_EMIT LayoutUpdated(openings + 1, 0);
+        }
         return true;
     }
     int Openings() { return openings; }
@@ -463,6 +465,21 @@ private Q_SLOTS:
             popup->hide();
         QCOMPARE(count, 1);
     }
+    void navigatingPastCommandDoesNotTriggerIt()
+    {
+        QAction command(QStringLiteral("Command"));
+        QSignalSpy triggered(&command, &QAction::triggered);
+        QStandardItemModel model(1, 1);
+        model.setData(model.index(0, 0), QVariant::fromValue(&command), AppMenuModel::ActionRole);
+        QQuickWindow window;
+        QQuickItem anchor(window.contentItem());
+        AppMenuApplet applet(nullptr, KPluginMetaData(), {});
+        applet.setModel(&model);
+        applet.trigger(&anchor, 0, true);
+        QCOMPARE(triggered.count(), 0);
+        applet.trigger(&anchor, 0);
+        QCOMPARE(triggered.count(), 1);
+    }
     void disabledMenuDoesNotOpen()
     {
         QMenu root;
@@ -498,7 +515,7 @@ private Q_SLOTS:
         auto* action = model.index(0, 0).data(AppMenuModel::ActionRole).value<QAction*>();
         QVERIFY(action && action->menu());
         QTRY_COMPARE(action->menu()->actions().size(), 1);
-        const int initial = openings();
+        QCOMPARE(openings(), 0);
         QQuickWindow window;
         window.resize(400, 100);
         window.show();
@@ -511,9 +528,9 @@ private Q_SLOTS:
             applet.trigger(&anchor, 0);
             auto* popup = qobject_cast<QMenu*>(QApplication::activePopupWidget());
             QVERIFY(popup);
-            QTRY_COMPARE(openings(), initial + i);
+            QTRY_COMPARE(openings(), i);
             QTRY_COMPARE(popup->actions().size(), 1);
-            QTRY_COMPARE(popup->actions().first()->text(), QStringLiteral("Revision %1").arg(initial + i));
+            QTRY_COMPARE(popup->actions().first()->text(), QStringLiteral("Revision %1").arg(i));
             popup->hide();
         }
         exporter.terminate();

@@ -90,7 +90,7 @@ Q_SIGNALS:
 
     /// Fired when the user keyboards into menu index ``index`` — QML
     /// uses this to focus the corresponding button.
-    void requestActivateIndex(int index);
+    void requestActivateIndex(int index, bool navigationOnly = false);
 
     /// "About This Computer" menu entry selected.
     void aboutRequested();
@@ -103,7 +103,7 @@ public Q_SLOTS:
 
     /// Pop the menu for top-level index ``idx``, anchored to ``ctx``
     /// (the QML button representing that entry).
-    void trigger(QQuickItem* ctx, int idx);
+    void trigger(QQuickItem* ctx, int idx, bool navigationOnly = false);
 
     /// Open the window-title submenu (close / minimize / etc).
     void triggerWindowMenu(QQuickItem* ctx);
