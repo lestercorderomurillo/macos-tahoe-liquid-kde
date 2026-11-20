@@ -13,6 +13,7 @@ Page {
     Layout.preferredWidth: 280
     property var battery: nativeBattery
     property var profiles: nativeProfiles
+    readonly property bool hasProfiles: profiles.isPowerProfileDaemonInstalled && profiles.profiles.length > 0
     Power.BatteryControlModel { id: nativeBattery }
     Profiles.PowerProfilesControl { id: nativeProfiles }
     function profileLabel(profile) {
@@ -44,17 +45,17 @@ Page {
         text: view.battery.state === Power.BatteryControlModel.Charging ? i18n("Charging")
             : view.battery.state === Power.BatteryControlModel.FullyCharged ? i18n("Fully charged") : i18n("Connected to power")
     }
-    StatusMenuDivider { visible: view.profiles.isPowerProfileDaemonInstalled }
-    ControlLabel { text: i18n("Energy Mode"); font.pixelSize: 12; font.weight: Font.DemiBold; opacity: 0.6; Layout.leftMargin: 6; Layout.rightMargin: 6; Layout.topMargin: 4; Layout.bottomMargin: 4; visible: view.profiles.isPowerProfileDaemonInstalled }
+    StatusMenuDivider { visible: view.hasProfiles }
+    ControlLabel { text: i18n("Energy Mode"); font.pixelSize: 12; font.weight: Font.DemiBold; opacity: 0.6; Layout.leftMargin: 6; Layout.rightMargin: 6; Layout.topMargin: 4; Layout.bottomMargin: 4; visible: view.hasProfiles }
     QQC.ComboBox {
         id: profile
         objectName: "powerProfile"
         Layout.fillWidth: true
         implicitHeight: 36
-        visible: view.profiles.isPowerProfileDaemonInstalled
+        visible: view.hasProfiles
         model: view.profiles.profiles
         currentIndex: view.profiles.profiles.indexOf(view.profiles.activeProfile)
-        displayText: view.profileLabel(currentText)
+        displayText: currentIndex >= 0 ? view.profileLabel(currentText) : i18n("Energy mode")
         onActivated: view.profiles.setProfile(currentText)
         Accessible.name: i18n("Energy mode")
         leftPadding: 6; rightPadding: 6
