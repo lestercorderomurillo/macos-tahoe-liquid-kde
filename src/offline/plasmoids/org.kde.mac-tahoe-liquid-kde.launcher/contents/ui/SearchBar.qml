@@ -10,19 +10,21 @@ RowLayout {
     property alias textField: textField
     property alias showMenuButton: menuButton.visible
     readonly property bool menuOpen: menuButton.menuOpen
-    readonly property color textColor: main.textColor
-    readonly property color dimmedTextColor: main.goldenGateLight
+    readonly property bool goldenGateCapsule: main.goldenGateEdition && main.detachedSearch
+    readonly property color textColor: goldenGateCapsule ? "white" : main.textColor
+    readonly property color dimmedTextColor: (main.goldenGateLight || goldenGateCapsule)
         ? textColor : Qt.rgba(textColor.r, textColor.g, textColor.b, 0.85)
     function closeMenu() { menuButton.closeMenu(); }
 
     Kirigami.Icon {
         id: searchIcon
-        scale: main.tahoeStyle ? 1.15 : 1
-        layer.enabled: true
+        opacity: main.clipboardMode ? 0.68 : 1
+        scale: main.tahoeStyle && !main.clipboardMode ? 1.15 : 1
+        layer.enabled: !main.clipboardMode
         layer.effect: GlassTextShadow {
-            haloOpacity: main.goldenGateLight ? 0.65 : 0.35
-            radius: main.goldenGateLight ? 3 : 2
-            samples: main.goldenGateLight ? 13 : 9
+            haloOpacity: (main.goldenGateLight || goldenGateCapsule) ? 0.65 : 0.35
+            radius: (main.goldenGateLight || goldenGateCapsule) ? 3 : 2
+            samples: (main.goldenGateLight || goldenGateCapsule) ? 13 : 9
         }
         Layout.leftMargin: main.tahoeStyle ? 1 : 0
         Layout.rightMargin: 0
@@ -37,9 +39,9 @@ RowLayout {
         id: textField
         layer.enabled: true
         layer.effect: GlassTextShadow {
-            haloOpacity: main.goldenGateLight ? 0.65 : 0.35
-            radius: main.goldenGateLight ? 3 : 2
-            samples: main.goldenGateLight ? 13 : 9
+            haloOpacity: (main.goldenGateLight || goldenGateCapsule) ? 0.65 : 0.35
+            radius: (main.goldenGateLight || goldenGateCapsule) ? 3 : 2
+            samples: (main.goldenGateLight || goldenGateCapsule) ? 13 : 9
         }
         Layout.fillHeight: true
         Layout.fillWidth: true
@@ -50,6 +52,16 @@ RowLayout {
         font.letterSpacing: main.tahoeStyle ? -0.55 : 0
         color: searchFieldBar.textColor
 
+        Component {
+            id: glowingCursor
+            SearchCursor { field: textField }
+        }
+        Binding {
+            target: textField
+            property: "cursorDelegate"
+            when: searchFieldBar.goldenGateCapsule && !Kirigami.Settings.tabletMode
+            value: glowingCursor
+        }
         Component.onCompleted: text = main.searchText
         Connections {
             target: main

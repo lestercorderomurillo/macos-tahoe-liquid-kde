@@ -86,8 +86,9 @@
         "SurfaceTransparencyDark": 98.5
       },
       "popups": {
-        "SurfaceTransparencyLight": 45.0,
-        "SurfaceTransparencyDark": 52.0
+        "SurfaceTransparencyLight": 41.8,
+        "SurfaceTransparencyDark": 52.8,
+        "BlurStrength": 6
       },
       "panel": {
         "BlurStrength": 5.0,
@@ -171,15 +172,21 @@
         "RefractionWidth": 45
       },
       "search": {
-        "SurfaceTransparencyLight": 57,
-        "SurfaceTransparencyDark": 57,
-        "BlurStrength": 3.5,
-        "GradientCenterOpacity": 0,
-        "GradientCenterPosition": 0.65,
-        "GradientTopColor": "#ffffff",
-        "GradientTopOpacity": 1,
+        "SurfaceTransparencyLight": 98,
+        "SurfaceTransparencyDark": 98,
+        "BlurStrength": 6,
+        "GradientCenterOpacity": 0.76,
+        "GradientCenterPosition": 0.6,
+        "GradientTopColor": "#000000",
+        "GradientTopOpacity": 0.99,
         "MagnifyGlassStrength": 0.025,
-        "RefractionWidth": 45
+        "RefractionWidth": 45,
+        "GradientCenterColor": "#000000",
+        "GradientBottomColor": "#000000",
+        "GradientBottomOpacity": 0.57,
+        "GradientTopDarkColor": "#060606",
+        "GradientCenterDarkColor": "#33291c",
+        "GradientBottomDarkColor": "#725e3c"
       },
       "control-center": {
         "BlurStrength": 2,
@@ -234,8 +241,9 @@
         "SurfaceTransparencyDark": 98.5
       },
       "popups": {
-        "SurfaceTransparencyLight": 45.0,
-        "SurfaceTransparencyDark": 88.0
+        "SurfaceTransparencyLight": 38,
+        "SurfaceTransparencyDark": 48,
+        "BlurStrength": 6
       },
       "panel": {
         "BlurStrength": 5.0,
