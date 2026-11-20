@@ -1,29 +1,25 @@
 {
-  "version": "0.76.4",
+  "version": "0.76.5",
   "gallery_commit": "f09780b200b79302e7c23ef9f6f74d94748bbea3",
-  "scope": "150 ms settle delay and 500 ms text transition. Each About window uses one center reference. Other adaptive surfaces keep regional contrast.",
-  "approval": "Maintainer approved the paired About previews and the recorded Dolphin transition for publication.",
+  "scope": "Adaptive text contrast includes the glass material and client fill. Movement settles for 50 ms and text transitions over 250 ms.",
+  "approval": "Maintainer approved the fixed-backdrop surface comparisons and the recorded transition for paired publication.",
   "checks": [
     {
-      "command": "Installed panel applet on KDE neon Wayland, rebuilt in a clean directory. Opened About This Computer and About Dolphin from their panel menus on a split background; verified a shared tone in each window on both sides of the divide.",
-      "source_commit": "1921ea2674f125da5a0228e0c4dfe4f135c62cdf",
+      "command": "Dark desktop, fixed backdrop and About window geometry. Change the saved About material stops from dark to translucent white. Compare the same title strokes after each surface change.",
+      "source_commit": "188a1764462030cd1e1e8a05346909e55b7e2132",
       "edition": "tahoe",
       "result": "passed"
     },
     {
-      "command": "pytest tests/test_application_about.py tests/test_screenshots.py::test_about_labels_and_surface_follow_appearance",
-      "result": "passed",
-      "output": "10 passed",
-      "source_commit": "1921ea2674f125da5a0228e0c4dfe4f135c62cdf"
-    },
-    {
-      "command": "Build Acrylic Glass with KWin 6.6.5, 6.7.5 and 6.8.2; load the 6.6.5 module in an isolated X11 session",
+      "command": "pytest tests/test_glass_presets.py::test_native_glass_shader_pixels tests/test_desktop_controls.py::test_desktop_controls_native_state_and_actions",
+      "source_commit": "a068b09de79a3ad8798912c5a853577d3894a8ba",
+      "output": "2 passed in 32.54s",
       "result": "passed"
     },
     {
-      "command": "pytest tests/test_desktop_controls.py::test_desktop_controls_native_state_and_actions tests/test_launcher_presets.py::test_control_center_glass_regions",
-      "result": "passed",
-      "output": "3 passed in 24.37s"
+      "command": "KWin 6.6.5 X11 effect module built and loaded, 6.7.5 and 6.8.2 Wayland effect modules built",
+      "source_commit": "188a1764462030cd1e1e8a05346909e55b7e2132",
+      "result": "passed"
     }
   ],
   "captures": [
@@ -65,13 +61,11 @@
     }
   ],
   "coverage_limits": [
-    "Both About windows were captured on KDE neon Wayland. Frame luminance was measured in Golden Gate. X11 coverage included module loading and Control Center rendering. Historical gallery images retain their original provenance."
+    "The installed About window was captured in both editions on KDE neon Wayland. The transition recording is from Golden Gate. X11 qualification covered native shader pixels and effect loading. Existing gallery images retain their original provenance."
   ],
-  "source_sha256": "afd4e36d38271708e370b875f307d1a2254ab38de8b9e474f36faf175f375011",
+  "source_sha256": "5e93e92e40f9e14d1d929741011586579d16e237d357db3033b9bb7e4732cf59",
   "reviewed_preview_sha256": {
-    "equipo-centro-claro.png": "ff86efa1a0df171a763c0ce31989694b39553be80368d50b8110c6800f5d1e0a",
-    "equipo-centro-oscuro.png": "862bb5abd681b981bf497e421e66b7e0ebf2a9257620699847ff77c867a4270c",
-    "app-centro-claro.png": "8fc28fcc027c8fa324a203fd36767f835d74f40d02056b1a18e77a8e01c5224b",
-    "app-centro-oscuro.png": "b086055ec9758a9209614642cb605dc6aed379e1080310651448af6ee0bd0343"
+    "tahoe/cristal-oscuro.png": "00a12644e008c7f2686817ccb838dc5397290f62f085841e06dcab7141ec9a8a",
+    "tahoe/cristal-claro.png": "e0abf89cda0dbe977014f9304814337992b2d5c6e054d18f3ea5d588e1157de3"
   }
 }
