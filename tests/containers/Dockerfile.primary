@@ -6,7 +6,7 @@ RUN pacman -Sy --noconfirm --needed archlinux-keyring && \
   base-devel cmake extra-cmake-modules pkgconf \
   qt6-base qt6-declarative qt6-wayland qt6-tools \
   kconfig kconfigwidgets kcoreaddons kcrash kglobalaccel \
-  kguiaddons ki18n kio kcmutils knotifications kservice \
+  libsodium kguiaddons ki18n kio kcmutils knotifications kservice \
   kwidgetsaddons kwindowsystem kdbusaddons kiconthemes \
   kitemmodels \
   libplasma plasma-activities plasma-activities-stats \

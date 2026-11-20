@@ -4,10 +4,15 @@
 // ── remove existing panels ──────────────────────
 var old = panels();
 var launcherPresets = {};
+var userLaunchers = {};
 for (var p = 0; p < old.length; p++) {
     var widgets = old[p].widgetIds;
     for (var w = 0; w < widgets.length; w++) {
         var widget = old[p].widgetById(widgets[w]);
+        if (typeof userLauncherTypes !== "undefined" && widget && userLauncherTypes.includes(widget.type)) {
+            if (!userLaunchers[old[p].screen]) userLaunchers[old[p].screen] = [];
+            userLaunchers[old[p].screen].push(widget);
+        }
         if (widget && widget.type === "org.kde.mac-tahoe-liquid-kde.launcher") {
             widget.currentConfigGroup = ["General"];
             var preset = Number(widget.readConfig("launcherPreset", 0));
@@ -17,8 +22,8 @@ for (var p = 0; p < old.length; p++) {
         }
     }
 }
-for (var i = 0; i < old.length; i++) {
-    old[i].remove();
+if (typeof userLauncherTypes === "undefined") {
+    for (var i = 0; i < old.length; i++) old[i].remove();
 }
 
 // ── top menu bar ────────────────────────────────
@@ -94,16 +99,21 @@ dock.opacity = "translucent";
 dock.hiding = "autohide";
 dock.height = 68;
 
-var launcher = dock.addWidget("org.kde.mac-tahoe-liquid-kde.launcher");
-launcher.currentConfigGroup = ["General"];
-launcher.writeConfig("icon", "view-app-grid");
-// The installer selects the new edition when migrating between editions.
-if (typeof mttkdeLauncherPreset !== "undefined"
-        && (mttkdeLauncherPreset === 1 || mttkdeLauncherPreset === 2)) {
-    launcher.writeConfig("launcherPreset", mttkdeLauncherPreset);
-} else if (launcherPresets[dock.screen] !== undefined) {
-    launcher.writeConfig("launcherPreset", launcherPresets[dock.screen]);
-}
+if (typeof userLauncherTypes !== "undefined") {
+        var saved = userLaunchers[dock.screen] || [];
+        for (var n = 0; n < saved.length; n++) dock.addWidget(saved[n]);
+    } else {
+        var launcher = dock.addWidget("org.kde.mac-tahoe-liquid-kde.launcher");
+    launcher.currentConfigGroup = ["General"];
+    launcher.writeConfig("icon", "view-app-grid");
+    // The installer selects the new edition when migrating between editions.
+    if (typeof mttkdeLauncherPreset !== "undefined"
+            && (mttkdeLauncherPreset === 1 || mttkdeLauncherPreset === 2)) {
+        launcher.writeConfig("launcherPreset", mttkdeLauncherPreset);
+    } else if (launcherPresets[dock.screen] !== undefined) {
+        launcher.writeConfig("launcherPreset", launcherPresets[dock.screen]);
+    }
+    }
 
 var tasks = dock.addWidget("org.kde.mac.tahoe.liquid.icontasks");
 tasks.currentConfigGroup = ["General"];
@@ -139,3 +149,6 @@ tasks.writeConfig("dockPresetCategories", resolvedDockCategories);
 tasks.writeConfig("dockPresetRevision", 2);
 
 dock.addWidget("org.kde.mac-tahoe-liquid-kde.trashcan");
+if (typeof userLauncherTypes !== "undefined") {
+    for (var i = 0; i < old.length; i++) old[i].remove();
+}

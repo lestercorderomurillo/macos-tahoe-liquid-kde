@@ -2,7 +2,8 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 """Minimal clipboard popup: text + image history, search, pin, copy, delete.
 Talks to the mac-tahoe-clipd service (org.mactahoe.Clipboard) over D-Bus."""
-import json, os, re, shutil, signal, subprocess, sys, time
+import json, os, re, signal, subprocess, sys, time
+import base64
 import tempfile
 import html
 from PyQt6.QtCore import Qt, QTimer, QRectF, QPointF, QSize, QObject, pyqtSignal, pyqtSlot
@@ -12,8 +13,6 @@ from PyQt6.QtWidgets import (QApplication, QWidget, QVBoxLayout, QHBoxLayout, QL
                              QPushButton, QLabel, QFrame, QAbstractButton, QSizePolicy, QMenu)
 
 APP_ID = "mac-tahoe-clipboard"
-DATA = os.path.join(os.environ.get("XDG_DATA_HOME", os.path.expanduser("~/.local/share")), "mac-tahoe-liquid-kde")
-OLD_PINS_FILE = os.path.join(DATA, "clipboard-pins.json")
 LOCK = os.path.join(os.environ.get("XDG_RUNTIME_DIR", os.path.join(tempfile.gettempdir(), APP_ID + "-" + str(os.getuid()))), APP_ID + ".pid")
 DAEMON = os.path.expanduser("~/.local/bin/mac-tahoe-clipd")
 
@@ -131,19 +130,6 @@ def ensure_daemon(timeout=3.0):
     return be
 
 
-def migrate_old_pins(be):
-    """One-time import of pins saved by the first version of this popup."""
-    try:
-        with open(OLD_PINS_FILE, encoding="utf-8") as f:
-            old = [s for s in json.load(f) if isinstance(s, str) and s]
-    except (OSError, ValueError, TypeError):
-        return
-    if be.available():
-        for t in reversed(old):
-            be.add_text(t, True)
-        shutil.move(OLD_PINS_FILE, OLD_PINS_FILE + ".migrated")
-
-
 # ── widgets ────────────────────────────────────────────────────────────────
 
 class IconButton(QAbstractButton):
@@ -209,14 +195,14 @@ class IconButton(QAbstractButton):
 
 class Thumb(QWidget):
     """Image preview: aspect-correct, rounded, hairline border; shows a placeholder if the file is missing."""
-    def __init__(self, path, w, h, cache):
+    def __init__(self, thumbnail, w, h, cache):
         super().__init__()
         self.pix = None
         self.setAttribute(Qt.WidgetAttribute.WA_TransparentForMouseEvents)
-        if path and os.path.exists(path):
-            self.pix = cache.get(path)
+        if thumbnail:
+            self.pix = cache.get(thumbnail)
             if self.pix is None:
-                img = QImage(path)
+                img = QImage.fromData(base64.b64decode(thumbnail), "PNG")
                 if not img.isNull():
                     w, h = img.width(), img.height()
                     dpr = 2.0
@@ -225,7 +211,7 @@ class Thumb(QWidget):
                                                             Qt.AspectRatioMode.KeepAspectRatio,
                                                             Qt.TransformationMode.SmoothTransformation))
                     self.pix.setDevicePixelRatio(dpr)
-                    cache[path] = self.pix
+                    cache[thumbnail] = self.pix
         if self.pix is not None:
             lw, lh = int(self.pix.width() / self.pix.devicePixelRatio()), int(self.pix.height() / self.pix.devicePixelRatio())
             self.setFixedSize(max(1, lw), max(1, lh))
@@ -261,7 +247,7 @@ class Row(QFrame):
         outer = QHBoxLayout(self); outer.setContentsMargins(12, 8, 12, 8); outer.setSpacing(14)
         self.setMinimumHeight(58)
         if self.kind == "image":
-            self.thumb = Thumb(item.get("path"), item.get("w", 0), item.get("h", 0), popup.thumb_cache)
+            self.thumb = Thumb(item.get("thumbnail"), item.get("w", 0), item.get("h", 0), popup.thumb_cache)
             outer.addWidget(self.thumb)
         else:
             icon = QLabel(); icon.setFixedSize(36, 40)
@@ -723,7 +709,6 @@ def main():
     signal.signal(signal.SIGTERM, lambda *_: app.quit())
     pump = QTimer(); pump.start(150); pump.timeout.connect(lambda: None)  # let Python run signal handlers
     be = ensure_daemon()
-    migrate_old_pins(be)
     w = Popup(be)
     w.finished.connect(app.quit)
     w.show()

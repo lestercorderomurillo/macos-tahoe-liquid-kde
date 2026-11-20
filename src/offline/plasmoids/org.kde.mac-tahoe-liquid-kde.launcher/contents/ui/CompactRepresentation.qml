@@ -28,6 +28,12 @@ NativeLauncher.DockIcon {
     active: mouseArea.containsMouse
     hovered: mouseArea.containsMouse
 
+    function activateLauncher() {
+        const app = Plasmoid.configuration.launcherApplication;
+        if (app && NativeLauncher.LauncherApplications.open(app)) return;
+        dashWindow.visible = !dashWindow.visible;
+    }
+
     MouseArea
     {
         id: mouseArea
@@ -36,15 +42,11 @@ NativeLauncher.DockIcon {
 
         hoverEnabled: true
 
-        onClicked: {
-            dashWindow.visible = !dashWindow.visible;
-        }
+        onClicked: root.activateLauncher()
     }
 
     Component.onCompleted: {
         dashWindow = Qt.createQmlObject("MenuRepresentation {}", root);
-        plasmoid.activated.connect(function() {
-            dashWindow.visible = !dashWindow.visible;
-        });
+        plasmoid.activated.connect(root.activateLauncher);
     }
 }

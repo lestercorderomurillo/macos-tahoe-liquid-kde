@@ -1,4 +1,6 @@
 """Real X11 clipboard traffic between independent Qt producer and history service."""
+import os
+from pathlib import Path
 import json
 import subprocess
 import sys
@@ -51,6 +53,10 @@ try:
             wait(lambda: app.clipboard().text() == item['text'])
         else:
             wait(lambda: not app.clipboard().image().isNull())
+    history = Path(os.environ["XDG_DATA_HOME"]) / "mac-tahoe-liquid-kde/clipboard"
+    blobs = list((history / "images").iterdir())
+    assert blobs and all(path.suffix == ".enc" and not path.read_bytes().startswith(b"\x89PNG") for path in blobs)
+    assert all(item.get("thumbnail") for item in entries() if item["kind"] == "image")
     print('X11_CLIPBOARD_OK')
 finally:
     for process in (producer, daemon):

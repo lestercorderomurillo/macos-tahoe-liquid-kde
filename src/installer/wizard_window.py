@@ -37,7 +37,6 @@ STEPS = (
     ("files", "Install Nautilus as your file manager?"),
     ("glass_style", "Which window glass would you like?"),
     ("boot", "Change the boot animation?"),
-    ("clipboard", "Enable clipboard history?"),
     ("oled", "Enable OLED protection?"),
     ("summary", "Review your installation"),
 )
@@ -1119,10 +1118,15 @@ class InstallerWindow(OpaqueSurface):
             self.select("wallpaper", "custom")
 
     def page_launcher(self):
+        from steps.clipboard import HISTORY_DIR
+        keep_detail = ("Remove Launchpad and its saved clipboard history." if HISTORY_DIR.exists()
+                       else "Skip Launchpad and its encrypted clipboard history.")
         self.cards("launcher", [
             ("tahoe", "Tahoe", "Categories and apps in one window.", picture("launcher-tahoe.jpg", 362, 204)),
             ("golden", "Golden Gate", "Separate search and application grid.", picture("launcher-golden.jpg", 362, 204)),
+            ("keep", "Use my launcher", keep_detail, None),
         ])
+        self.body.addWidget(self.label("Tahoe and Golden Gate include encrypted clipboard history (Meta+V)."))
         if self.existing_install and not self.choices["reset_layout"]:
             self.body.addWidget(self.label("The current launcher setup is kept unless you reset the layout."))
 
@@ -1384,10 +1388,6 @@ class InstallerWindow(OpaqueSurface):
         self.body.addWidget(self.image("boot.jpg", width=744, height=255, background="#000000"))
         self.radio("plymouth", [(True, "Use the theme animation"), (False, "Keep my boot animation")], inline=True)
 
-    def page_clipboard(self):
-        self.radio("clipboard", [(False, "Do not enable"), (True, "Enable clipboard history")])
-        self.body.addWidget(self.label("Copied text and images are saved unencrypted on this computer. Uninstall deletes this history."))
-
     def page_oled(self):
         self.radio("oled_care", [(False, "Do not enable"), (True, "Enable pixel shifting")])
         for key, title, maximum in (("oled_interval", "Interval (minutes)", 59), ("oled_max_shift", "Maximum shift (pixels)", 16)):
@@ -1448,7 +1448,6 @@ class InstallerWindow(OpaqueSurface):
             *((("glass_style", "Glass", value("glass_style"), "glass_style"),)
               if self.show_glass_style() else ()),
             ("plymouth", "Boot", enabled("plymouth"), "boot"),
-            ("clipboard", "Clipboard history", enabled("clipboard"), "clipboard"),
             ("oled_care", "OLED", enabled("oled_care"), "oled"),
         )
         for i, (key, title, text, step) in enumerate(rows):

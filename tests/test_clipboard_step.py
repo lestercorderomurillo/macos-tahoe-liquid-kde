@@ -67,13 +67,11 @@ def dbus_calls(cb):
     return [c for c in cb.calls if c[:1] == ["dbus-send"]]
 
 
-def test_clipboard_is_opt_in_and_flag_is_recognised():
+def test_clipboard_follows_cli_plasmoids_selection():
     import cli
-
-    assert cli.DEFAULT_FEATURES["clipboard"] is False
-    assert "clipboard" in cli.INSTALL_ORDER and "clipboard" in cli.FEATURE_DESC and "clipboard" in cli.ALL_FEATURES
-    assert cli.parse_args(["--clipboard"]).cli_overrides == {"clipboard": True}
-    assert cli.parse_args(["--no-clipboard"]).cli_overrides == {"clipboard": False}
+    for argv, enabled in [([], True), (["--only", "--fonts"], False), (["--only", "--plasmoids"], True)]:
+        flags = cli.apply_overrides(dict(cli.DEFAULT_FEATURES, clipboard=False), cli.parse_args(argv))
+        assert flags["clipboard"] == enabled
 
 
 def test_deps_cover_the_native_build():
@@ -184,12 +182,12 @@ def test_sources_ship_a_spdx_header_and_the_quit_slot():
     assert "void quit()" in (root / "clipd/main.cpp").read_text()    # the uninstaller relies on it
 
 
-def test_wizard_clipboard_requires_explicit_choice():
+def test_wizard_clipboard_follows_launcher_choice():
     import installer_choices
     import cli
     defaults = installer_choices.defaults()
-    assert not installer_choices.features(defaults, cli.DEFAULT_FEATURES)["clipboard"]
-    assert installer_choices.features(defaults | {"clipboard": True}, cli.DEFAULT_FEATURES)["clipboard"]
+    assert installer_choices.features(defaults, cli.DEFAULT_FEATURES)["clipboard"]
+    assert not installer_choices.features(defaults | {"launcher": "keep", "clipboard": True}, cli.DEFAULT_FEATURES)["clipboard"]
 
 
 def test_uninstall_preserves_shortcut_changed_after_install(step, monkeypatch):

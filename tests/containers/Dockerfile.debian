@@ -18,7 +18,7 @@ RUN apt-get update && \
         qt6-svg-dev qt6-svg-plugins qt6-wayland-dev \
         libkf6config-bin libkf6config-dev libkf6configwidgets-dev \
         libkf6coreaddons-dev libkf6crash-dev libkf6globalaccel-dev \
-        libkf6guiaddons-dev libkf6i18n-dev libkf6itemmodels-dev \
+        libsodium-dev libkf6guiaddons-dev libkf6i18n-dev libkf6itemmodels-dev \
         libkf6kcmutils-dev libkf6kio-dev libkf6notifications-dev \
         libkf6service-dev libkf6widgetsaddons-dev libkf6windowsystem-dev \
         libplasma-dev libplasmaactivities-dev libplasmaactivitiesstats-dev \

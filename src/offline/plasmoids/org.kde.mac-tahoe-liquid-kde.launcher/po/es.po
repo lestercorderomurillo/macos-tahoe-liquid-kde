@@ -139,3 +139,12 @@ msgstr "Borrar historial"
 
 msgid "Clipboard action failed. Try again."
 msgstr "La acción del portapapeles falló. Inténtalo de nuevo."
+
+msgid "Open from the launcher:"
+msgstr "Abrir desde el lanzador:"
+
+msgid "Launchpad"
+msgstr "Launchpad"
+
+msgid "Clipboard history is unavailable."
+msgstr "El historial del portapapeles no está disponible."

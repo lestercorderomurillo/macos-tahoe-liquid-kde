@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 // mac-tahoe-clipd: records clipboard text and images, serves them to the clipboard popup over D-Bus.
+#include "historycipher.h"
 #include <QBuffer>
+#include <sys/stat.h>
 #include <QCryptographicHash>
 #include <QDBusConnection>
 #include <QDBusInterface>
@@ -16,7 +18,8 @@
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QMimeData>
-#include <QSaveFile>
+#include <QLockFile>
+#include <memory>
 #include <QStandardPaths>
 #include <QTimer>
 #include <KSystemClipboard>
@@ -42,8 +45,13 @@ public:
     Store()
     {
         m_dir = QStandardPaths::writableLocation(QStandardPaths::GenericDataLocation) + "/mac-tahoe-liquid-kde/clipboard";
-        QDir().mkpath(m_dir + "/images");
-        QFile::setPermissions(m_dir, QFileDevice::ReadOwner | QFileDevice::WriteOwner | QFileDevice::ExeOwner);
+        if (!QDir().mkpath(m_dir + "/images") ||
+            !QFile::setPermissions(m_dir, QFileDevice::ReadOwner | QFileDevice::WriteOwner | QFileDevice::ExeOwner))
+            throw std::runtime_error("Cannot secure clipboard directory");
+        lock = std::make_unique<QLockFile>(m_dir + "/store.lock");
+        lock->setStaleLockTime(0);
+        if (!lock->tryLock()) throw std::runtime_error("Clipboard history is in use");
+        cipher.initialize(QFile::exists(m_dir + "/index.enc") || !QDir(m_dir + "/images").entryList({"*.enc"}).isEmpty());
         load();
         m_debounce.setSingleShot(true);
         m_debounce.setInterval(90);
@@ -69,7 +77,7 @@ public Q_SLOTS:
         for (const Item &it : std::as_const(m_items)) {
             QJsonObject o{{"id", it.id}, {"kind", it.kind}, {"ts", double(it.ts)}, {"pinned", it.pinned}};
             if (it.kind == "text") o["text"] = it.text;
-            else { o["w"] = it.w; o["h"] = it.h; o["bytes"] = double(it.bytes); o["path"] = imagePath(it.id); }
+            else { o["w"] = it.w; o["h"] = it.h; o["bytes"] = double(it.bytes); o["thumbnail"] = thumbnail(it.id); }
             arr.append(o);
         }
         return QString::fromUtf8(QJsonDocument(arr).toJson(QJsonDocument::Compact));
@@ -88,9 +96,9 @@ public Q_SLOTS:
         if (it.kind == "text") {
             md->setText(it.text);
         } else {
-            QImage img(imagePath(id), "PNG");
+            const auto png = imageData(id);
+            QImage img = QImage::fromData(png, "PNG");
             if (img.isNull()) { delete md; return; }
-            QByteArray png; QBuffer buf(&png); buf.open(QIODevice::WriteOnly); img.save(&buf, "PNG");
             md->setImageData(img);
             md->setData("image/png", png);
         }
@@ -137,20 +145,46 @@ Q_SIGNALS:
     void changed();
 
 private:
+    std::unique_ptr<QLockFile> lock;
+    HistoryCipher cipher;
+    QHash<QString, QString> previews;
+    QByteArray imageData(const QString &id) const {
+        auto png = cipher.open(imagePath(id));
+        if (QCryptographicHash::hash("img" + png, QCryptographicHash::Sha1).toHex() != id.toLatin1())
+            throw std::runtime_error("Clipboard image does not match its index");
+        return png;
+    }
+
+    QString thumbnail(const QString &id) {
+        if (!previews.contains(id)) {
+            const auto image = QImage::fromData(imageData(id), "PNG");
+            QByteArray png;
+            QBuffer buffer(&png);
+            buffer.open(QIODevice::WriteOnly);
+            image.scaled(160, 120, Qt::KeepAspectRatio, Qt::SmoothTransformation).save(&buffer, "PNG");
+            previews.insert(id, QString::fromLatin1(png.toBase64()));
+        }
+        return previews.value(id);
+    }
     QString m_dir;
     QString m_currentId;
     QList<Item> m_items; // newest first
     QTimer m_debounce;
 
     static qint64 now() { return QDateTime::currentMSecsSinceEpoch(); }
-    QString imagePath(const QString &id) const { return m_dir + "/images/" + id + ".png"; }
+    QString imagePath(const QString &id) const { return m_dir + "/images/" + cipher.imageName(id) + ".enc"; }
     int indexOf(const QString &id) const
     {
         for (int i = 0; i < m_items.size(); ++i)
             if (m_items.at(i).id == id) return i;
         return -1;
     }
-    void dropFiles(const Item &it) { if (it.kind == "image") QFile::remove(imagePath(it.id)); }
+    void dropFiles(const Item &it) {
+        if (it.kind == "image") {
+            previews.remove(it.id);
+            QFile::remove(imagePath(it.id));
+        }
+    }
 
     static bool textItem(const QString &text, Item &out)
     {
@@ -185,10 +219,7 @@ private:
         Item it; QByteArray png;
         if (!build(KSystemClipboard::instance()->mimeData(QClipboard::Clipboard), it, &png)) return;
         if (it.kind == "image" && !QFile::exists(imagePath(it.id))) {
-            QSaveFile f(imagePath(it.id));
-            if (!f.open(QIODevice::WriteOnly)) return;
-            f.setPermissions(QFileDevice::ReadOwner | QFileDevice::WriteOwner);
-            if (f.write(png) != png.size() || !f.commit()) return;
+            cipher.seal(imagePath(it.id), png);
         }
         m_currentId = it.id;
         insert(it);
@@ -214,9 +245,21 @@ private:
 
     void load()
     {
-        QFile f(m_dir + "/index.json");
-        if (!f.open(QIODevice::ReadOnly)) return;
-        for (const QJsonValue &v : QJsonDocument::fromJson(f.readAll()).array()) {
+        const QString legacy = m_dir + "/index.json";
+        const QString encrypted = m_dir + "/index.enc";
+        // Leave the legacy originals intact until the encrypted index commits.
+        QDir images(m_dir + "/images");
+        const auto originals = images.entryList({"*.png"}, QDir::Files);
+        for (const QString &name : originals) {
+            if (!QRegularExpression("^[0-9a-f]{40}\\.png$").match(name).hasMatch()) continue;
+            cipher.seal(imagePath(name.left(40)), HistoryCipher::read(images.filePath(name)));
+        }
+        QJsonDocument doc;
+        if (QFile::exists(encrypted)) doc = QJsonDocument::fromJson(cipher.open(encrypted));
+        else if (QFile::exists(legacy)) doc = QJsonDocument::fromJson(HistoryCipher::read(legacy));
+        else doc = QJsonDocument(QJsonArray());
+        if (!doc.isArray()) throw std::runtime_error("Invalid clipboard index");
+        for (const QJsonValue &v : doc.array()) {
             QJsonObject o = v.toObject(); Item it;
             it.id = o["id"].toString(); it.kind = o["kind"].toString(); it.text = o["text"].toString();
             it.w = o["w"].toInt(); it.h = o["h"].toInt(); it.bytes = qint64(o["bytes"].toDouble());
@@ -229,7 +272,28 @@ private:
             } else if (!QFile::exists(imagePath(it.id))) continue;
             if (indexOf(it.id) < 0) m_items.append(it);
         }
+        const auto pins = m_dir + "/../clipboard-pins.json";
+        if (QFile::exists(pins)) {
+            const auto old = QJsonDocument::fromJson(HistoryCipher::read(pins));
+            if (!old.isArray()) throw std::runtime_error("Invalid legacy clipboard pins");
+            for (const auto &value : old.array()) {
+                Item item;
+                if (textItem(value.toString(), item) && indexOf(item.id) < 0) {
+                    item.pinned = true;
+                    m_items.append(item);
+                }
+            }
+        }
         prune();
+        if (QFile::exists(legacy) || QFile::exists(pins) || !originals.isEmpty()) {
+            save();
+            for (const QString &name : originals)
+                if (QRegularExpression("^[0-9a-f]{40}\\.png$").match(name).hasMatch() && !images.remove(name))
+                    throw std::runtime_error("Cannot remove legacy clipboard image");
+        }
+        for (const QString &path : {legacy, pins, pins + ".migrated"})
+            if (QFile::exists(path) && !QFile::remove(path))
+                throw std::runtime_error("Cannot remove legacy clipboard history");
     }
 
     void save()
@@ -240,11 +304,7 @@ private:
             if (it.kind == "text") o["text"] = it.text; else { o["w"] = it.w; o["h"] = it.h; o["bytes"] = double(it.bytes); }
             arr.append(o);
         }
-        QSaveFile f(m_dir + "/index.json");
-        if (f.open(QIODevice::WriteOnly)) {
-            f.setPermissions(QFileDevice::ReadOwner | QFileDevice::WriteOwner);
-            f.write(QJsonDocument(arr).toJson(QJsonDocument::Compact)); f.commit();
-        }
+        cipher.seal(m_dir + "/index.enc", QJsonDocument(arr).toJson(QJsonDocument::Compact));
         Q_EMIT changed();
     }
 
@@ -253,14 +313,20 @@ private:
 
 int main(int argc, char **argv)
 {
+    umask(0077);
     QGuiApplication app(argc, argv);
     app.setApplicationName("mac-tahoe-clipd");
     app.setQuitOnLastWindowClosed(false);
     QDBusConnection bus = QDBusConnection::sessionBus();
     if (!bus.registerService("org.mactahoe.Clipboard")) return 0; // already running
-    Store store;
-    bus.registerObject("/Clipboard", &store, QDBusConnection::ExportAllSlots | QDBusConnection::ExportAllSignals);
-    return app.exec();
+    try {
+        Store store;
+        bus.registerObject("/Clipboard", &store, QDBusConnection::ExportAllSlots | QDBusConnection::ExportAllSignals);
+        return app.exec();
+    } catch (const std::exception &error) {
+        qCritical("%s", error.what());
+        return 1;
+    }
 }
 
 #include "main.moc"

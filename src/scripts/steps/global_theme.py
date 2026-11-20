@@ -23,6 +23,11 @@ def install() -> None:
         if install_tree(theme, DEST_DIR / theme_id, theme.name):
             from window_controls import apply_global_theme
             apply_global_theme(DEST_DIR / theme_id)
+            from installer_choices import use_user_launcher
+            if use_user_launcher():
+                from steps.layout import user_launcher_script
+                layout = DEST_DIR / theme_id / "contents/layouts/org.kde.plasma.desktop-layout.js"
+                layout.write_text(user_launcher_script() + layout.read_text())
 
 
 def uninstall() -> None:

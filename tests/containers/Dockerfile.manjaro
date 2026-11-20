@@ -13,7 +13,7 @@ RUN gpg --homedir "$(pacman-conf GPGDir)" --auto-key-locate clear,nodefault,wkd 
     xorg-server-xvfb dbus ttf-dejavu \
     qt6-base qt6-tools qt6-declarative qt6-svg qt6-wayland \
     pkgconf \
-    kconfig kconfigwidgets kcoreaddons kcrash kglobalaccel kguiaddons \
+    kconfig kconfigwidgets kcoreaddons kcrash kglobalaccel libsodium kguiaddons \
     ki18n kio kcmutils knotifications kservice kwidgetsaddons \
     kwindowsystem kitemmodels \
     libplasma plasma-activities plasma-activities-stats libksysguard \

@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 import os
+from pathlib import Path
 
 from launcher_defaults import edition_name
 
@@ -19,7 +20,7 @@ ENUMS = {
     "icons": ("regular", "dark", "clear", "glass", "keep"),
     "color": tuple(COLORS),
     "wallpaper": ("tahoe", "golden", "landscape", "sonoma", "prism", "macos", "keep", "custom"),
-    "launcher": ("tahoe", "golden"),
+    "launcher": ("tahoe", "golden", "keep"),
     "files": ("nautilus", "dolphin", "keep"),
     "shadows": ("none", "soft", "medium", "hard"),
     "window_controls": ("flat", "glassy"),
@@ -36,20 +37,32 @@ WALLPAPERS = {
 }
 
 
+def launcher_preference() -> Path:
+    state = Path(os.environ.get("XDG_STATE_HOME") or Path.home() / ".local/state")
+    return state / "mac-tahoe-liquid-kde/use-user-launcher"
+
+
+def use_user_launcher() -> bool:
+    choices = selected()
+    return choices["launcher"] == "keep" if choices else launcher_preference().exists()
+
+
 def defaults() -> dict:
     edition = "golden" if edition_name() == "MacGoldenGate" else "tahoe"
     return dict(
         appearance="auto", icons="regular", color="blue", wallpaper=edition,
-        wallpaper_path="", launcher=edition, panel=True, dock=True, reset_layout=True,
+        wallpaper_path="", launcher="keep" if launcher_preference().exists() else edition, panel=True, dock=True, reset_layout=True,
         acrylic_glass=True, rounded_corners=True, shadows="medium", fonts=True, firefox=True,
         window_controls="glassy" if edition == "golden" else "flat", button_position="left",
         files="nautilus", nautilus_bookmarks=True, plymouth=True, glass_style="official" if edition == "golden" else "classic",
-        clipboard=False, oled_care=False, oled_interval=5, oled_max_shift=8,
+        oled_care=False, oled_interval=5, oled_max_shift=8,
         dock_appearance="auto", dock_apps=[], dock_apps_source="native", dock_add_flathub=False,
     )
 
 
 def validate(value: object) -> dict:
+    if isinstance(value, dict) and "clipboard" in value:
+        value = {key: item for key, item in value.items() if key != "clipboard"}
     if not isinstance(value, dict) or set(value) - defaults().keys():
         raise ValueError("Invalid installer choices")
     result = defaults() | value
@@ -88,9 +101,10 @@ def features(choices: dict, baseline: dict, *, existing_install: bool = False) -
     choices = validate(choices)
     result = dict(baseline)
     for key in ("acrylic_glass", "rounded_corners", "fonts", "firefox",
-                "plymouth", "clipboard", "oled_care", "oled_interval", "oled_max_shift"):
+                "plymouth", "oled_care", "oled_interval", "oled_max_shift"):
         result[key] = choices[key]
     result.update(
+        clipboard=choices["launcher"] != "keep",
         theme_mode=choices["appearance"], icons=choices["icons"] != "keep",
         wallpapers=choices["wallpaper"] != "keep",
         layout=(choices["panel"] or choices["dock"]) and

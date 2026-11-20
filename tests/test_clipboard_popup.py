@@ -65,7 +65,7 @@ def I(w, h, pinned=False, missing=False):  # noqa: E743
     p.end()
     if not missing:
         img.save(path, "PNG")
-    return {"id": f"i{_n[0]}", "kind": "image", "w": w, "h": h, "path": path, "pinned": pinned, "ts": 1000 - _n[0],
+    return {"id": f"i{_n[0]}", "kind": "image", "w": w, "h": h, "thumbnail": __import__("base64").b64encode(Path(path).read_bytes()).decode() if not missing else "", "pinned": pinned, "ts": 1000 - _n[0],
             "bytes": os.path.getsize(path) if not missing else 1234}
 
 
@@ -430,21 +430,6 @@ class Tests(unittest.TestCase):
         self.assertEqual(p.be.removed, [b["id"]]); self.assertEqual(len(p.rows), 2); self.assertEqual(p.marked, {a["id"], c["id"]})
 
     # ── plumbing ──
-    def test_migrate_old_pins(self):
-        clip.OLD_PINS_FILE = os.path.join(tempfile.mkdtemp(), "clipboard-pins.json")
-        with open(clip.OLD_PINS_FILE, "w") as f:
-            json.dump(["one", "two", 5, ""], f)
-        be = Fake([])
-        clip.migrate_old_pins(be)
-        self.assertEqual(be.added, [("two", True), ("one", True)])
-        self.assertFalse(os.path.exists(clip.OLD_PINS_FILE)); self.assertTrue(os.path.exists(clip.OLD_PINS_FILE + ".migrated"))
-        with open(clip.OLD_PINS_FILE, "w") as f:
-            f.write("{broken")
-        be = Fake([]); clip.migrate_old_pins(be); self.assertEqual(be.added, [])
-        with open(clip.OLD_PINS_FILE, "w") as f:
-            json.dump(["x"], f)
-        be = Fake([], ok=False); clip.migrate_old_pins(be); self.assertTrue(os.path.exists(clip.OLD_PINS_FILE))
-        os.remove(clip.OLD_PINS_FILE); clip.migrate_old_pins(Fake([]))                       # missing file: no crash
 
     def test_backend_parsing_is_defensive(self):
         be = clip.DaemonBackend.__new__(clip.DaemonBackend)

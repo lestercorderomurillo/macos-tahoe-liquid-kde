@@ -1252,5 +1252,11 @@
   "Off": "Desativado",
   "Removed {size} MiB of temporary compiler objects.": "Removidos {size} MiB de arquivos objeto temporários do compilador.",
   "Options": "Opções",
-  "Notification Center": "Central de Notificações"
+  "Notification Center": "Central de Notificações",
+  "Use my launcher": "Usar meu lançador",
+  "Skip Launchpad and its encrypted clipboard history.": "Ignorar o Launchpad e seu histórico criptografado da área de transferência.",
+  "Tahoe and Golden Gate include encrypted clipboard history (Meta+V).": "Tahoe e Golden Gate incluem histórico criptografado da área de transferência (Meta+V).",
+  "Open from the launcher:": "Abrir pelo lançador:",
+  "Launchpad": "Launchpad",
+  "Clipboard history is unavailable.": "O histórico da área de transferência está indisponível."
 }

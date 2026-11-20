@@ -14,6 +14,7 @@ def test_native_clipboard_persistence_pins_and_invalid_paths(repo, tmp_path):
             pytest.skip(f'{command} unavailable')
     build = tmp_path / 'build'
     env = os.environ | {'QT_QPA_PLATFORM': 'offscreen',
+                        'XDG_CONFIG_HOME': str(tmp_path / 'config'),
                         'XDG_DATA_HOME': str(tmp_path / 'data'),
                         'XDG_RUNTIME_DIR': str(tmp_path / 'runtime')}
     Path(env['XDG_RUNTIME_DIR']).mkdir(mode=0o700)

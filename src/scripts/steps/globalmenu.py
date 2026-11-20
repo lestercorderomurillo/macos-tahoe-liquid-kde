@@ -87,6 +87,8 @@ def deps():
         "kf6-config-cmake:kconfig",
         "kf6-coreaddons-cmake:kcoreaddons",
         "kf6-i18n-cmake:ki18n",
+        "kf6-kio-cmake:kio",
+        "kf6-service-cmake:kservice",
         "kf6-windowsystem-cmake:kwindowsystem",
         "kf6-itemmodels-cmake:kitemmodels",
         # Plasma + plasma-workspace (provides LibTaskManager cmake config).

@@ -139,3 +139,12 @@ msgstr "清除历史"
 
 msgid "Clipboard action failed. Try again."
 msgstr "剪贴板操作失败。请重试。"
+
+msgid "Open from the launcher:"
+msgstr "从启动器打开："
+
+msgid "Launchpad"
+msgstr "启动台"
+
+msgid "Clipboard history is unavailable."
+msgstr "剪贴板历史记录不可用。"
