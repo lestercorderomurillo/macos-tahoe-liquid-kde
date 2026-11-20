@@ -38,7 +38,7 @@ Window {
     NativeGlass.PopupBackdrop { id: backdrop; window: aboutWindow }
 
     function ink(item, preferred, face) {
-        if (!backdrop.backdropRevision || !item.width || !item.height)
+        if (!glassSettings.dynamicTinting || !backdrop.backdropRevision || !item.width || !item.height)
             return preferred;
         const point = item.mapToItem(contentItem, item.width / 2, item.height / 2);
         const sample = backdrop.backdropAt(point);

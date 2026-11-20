@@ -27,7 +27,7 @@ if(LibTaskManager_VERSION VERSION_LESS "6.7.90")
     target_compile_definitions(globalmenu-model-test PRIVATE MTTKDE_HAS_X11_TASKS)
 endif()
 target_include_directories(globalmenu-model-test PRIVATE ${MENU_SOURCE})
-target_link_libraries(globalmenu-model-test PRIVATE Qt6::Widgets Qt6::Quick Qt6::DBus Qt6::Test KF6::WindowSystem KF6::I18n Plasma::Plasma Plasma::PlasmaQuick PW::LibTaskManager dbusmenuqt PkgConfig::XCB)
+target_link_libraries(globalmenu-model-test PRIVATE KF6::ConfigCore Qt6::Widgets Qt6::Quick Qt6::DBus Qt6::Test KF6::WindowSystem KF6::I18n Plasma::Plasma Plasma::PlasmaQuick PW::LibTaskManager dbusmenuqt PkgConfig::XCB)
 add_executable(globalmenu-composition-test composition_test.cpp)
 target_link_libraries(globalmenu-composition-test PRIVATE Qt6::Widgets Qt6::Quick Qt6::Test Plasma::Plasma Plasma::PlasmaQuick KF6::Package KF6::ConfigGui KF6::ConfigQml PW::LibTaskManager)
 

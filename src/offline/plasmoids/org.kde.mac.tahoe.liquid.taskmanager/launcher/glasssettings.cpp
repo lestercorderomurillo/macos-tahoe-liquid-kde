@@ -25,6 +25,7 @@ class GlassSettingsStore : public QObject
 {
     Q_OBJECT
 public:
+    bool dynamicTinting = true;
     QJsonObject materials;
     QJsonObject assets;
     Plasma::Theme theme;
@@ -154,7 +155,9 @@ public Q_SLOTS:
             + QStringLiteral("/mac-tahoe-liquid-kde/glass-surfaces/assets.json"));
         QJsonObject paths;
         if (file.open(QIODevice::ReadOnly)) paths = QJsonDocument::fromJson(file.readAll()).object();
-        if (current == materials && paths == assets) return;
+        const bool tinting = group.readEntry("DynamicTinting", true);
+        if (current == materials && paths == assets && dynamicTinting == tinting) return;
+        dynamicTinting = tinting;
         materials = current;
         assets = paths;
         refreshWindows();
@@ -175,6 +178,11 @@ protected:
         return false;
     }
 };
+
+bool GlassSettings::dynamicTinting() const
+{
+    return GlassSettingsStore::instance()->dynamicTinting;
+}
 
 GlassSettings::GlassSettings(QObject *parent) : QObject(parent)
 {

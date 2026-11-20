@@ -119,6 +119,9 @@ msgstr "Dock"
 msgid "Dock/Launcher"
 msgstr "Dock/Lanceur"
 
+msgid "Dynamic text tinting"
+msgstr "Teinte dynamique du texte"
+
 msgid "Enable gradient"
 msgstr "Activer le dégradé"
 

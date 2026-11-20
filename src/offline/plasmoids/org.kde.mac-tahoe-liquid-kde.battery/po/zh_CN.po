@@ -32,6 +32,9 @@ msgstr "蓝牙"
 msgid "Bluetooth Settings…"
 msgstr "蓝牙设置…"
 
+msgid "Bluetooth is off"
+msgstr "Bluetooth is off"
+
 msgid "Brightness"
 msgstr "Brightness"
 
@@ -121,6 +124,9 @@ msgstr "网络"
 
 msgid "Next track"
 msgstr "下一首"
+
+msgid "No Bluetooth adapter"
+msgstr "No Bluetooth adapter"
 
 msgid "No Wi-Fi adapter"
 msgstr "没有无线网卡"

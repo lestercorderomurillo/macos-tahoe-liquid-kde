@@ -162,14 +162,14 @@ inline QList<ClientBlurShape> clientBlurShapes(const QRegion &region)
     for (const QRegion &island : islands) {
         auto shape = clientBlurShape(island);
         if (!shape) {
-            // A small capsule whose rasterized corners match no integer radius
-            // must not discard every other surface: estimate it from the first
-            // row's inset, as roundedBlurRadius() does.
+            // Accept the half-pixel radius of an odd-sized QML capsule only
+            // when its complete raster mask matches, including any cutouts.
             const QRect bounds = island.boundingRect();
-            const QRect firstRow = island.intersected(QRect(bounds.x(), bounds.y(), bounds.width(), 1)).boundingRect();
-            const int inset = std::max(0, firstRow.left() - bounds.left());
-            const float maximum = std::min(bounds.width(), bounds.height()) / 2.0f;
-            shape = ClientBlurShape{bounds, std::min(maximum, float(qRound(inset + 0.5 + std::sqrt(float(inset)))))};
+            const qreal radius = std::min(bounds.width(), bounds.height()) / 2.0;
+            QPainterPath capsule;
+            capsule.addRoundedRect(QRectF(bounds), radius, radius);
+            if (QRegion(capsule.toFillPolygon().toPolygon()) != island) return {};
+            shape = ClientBlurShape{bounds, float(radius)};
         }
         for (const auto &other : shapes)
             if (shape->bounds.intersects(other.bounds)) return {};

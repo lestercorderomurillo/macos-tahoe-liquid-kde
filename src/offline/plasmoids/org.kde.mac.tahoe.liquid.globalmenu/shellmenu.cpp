@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 #include "shellmenu.h"
 #include "../org.kde.mac.tahoe.liquid.taskmanager/launcher/backdropgeometry.h"
+#include <KConfigGroup>
+#include <KSharedConfig>
 #include <QApplication>
 #include <QDBusConnection>
 #include <QPainter>
@@ -31,14 +33,26 @@ QColor ink(const QColor &base, const QColor &background)
 ShellMenu::ShellMenu(QWidget *parent) : QMenu(parent)
 {
     setProperty("_mttkde_shell_menu", true);
+    connect(this, &QMenu::aboutToShow, this, &ShellMenu::reloadTinting);
+    QDBusConnection::sessionBus().connect(QString(), QStringLiteral("/org/kde/MacTahoe/Glass"),
+        QStringLiteral("org.kde.MacTahoe.Glass"), QStringLiteral("changed"), this, SLOT(reloadTinting()));
     QDBusConnection::sessionBus().connect(QStringLiteral("org.kde.KWin"),
         QStringLiteral("/org/kde/MacTahoe/Glass"), QStringLiteral("org.kde.MacTahoe.Glass"),
         QStringLiteral("controlBackdrop"), this, SLOT(updateBackdrop(int,QRect,QRect,QByteArray,QString)));
 }
 
+void ShellMenu::reloadTinting()
+{
+    const auto config = KSharedConfig::openConfig(QStringLiteral("kwinrc"));
+    config->reparseConfiguration();
+    m_dynamicTinting = config->group(QStringLiteral("Effect-liquidglass")).readEntry("DynamicTinting", true);
+    if (!m_dynamicTinting) m_grid.clear();
+    update();
+}
+
 void ShellMenu::updateBackdrop(int pid, const QRect &frame, const QRect &bounds, const QByteArray &grid, const QString &role)
 {
-    if (!isVisible() || role != QLatin1String("mttkde-shell-menu") || pid != qApp->applicationPid()
+    if (!m_dynamicTinting || !isVisible() || role != QLatin1String("mttkde-shell-menu") || pid != qApp->applicationPid()
         || !windowHandle() || grid.size() != 8 * 8 * 3 || bounds.isEmpty()
         || !BackdropGeometry::sizeMatches(frame, *windowHandle())) return;
     const QPoint origin = mapToGlobal(QPoint());
@@ -89,7 +103,7 @@ void ShellMenu::paintEvent(QPaintEvent *event)
 void ShellMenu::initStyleOption(QStyleOptionMenuItem *option, const QAction *action) const
 {
     QMenu::initStyleOption(option, action);
-    if (option->state.testFlag(QStyle::State_Selected)) return;
+    if (!m_dynamicTinting || option->state.testFlag(QStyle::State_Selected)) return;
     const auto background = m_rowBackgrounds.value(action);
     for (auto group : {QPalette::Active, QPalette::Inactive, QPalette::Disabled}) {
         for (auto role : {QPalette::WindowText, QPalette::Text, QPalette::ButtonText}) {

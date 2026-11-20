@@ -5,6 +5,9 @@
     http://www.kde.org/standards/kcfg/1.0/kcfg.xsd" >
     <kcfgfile arg="true"/>
     <group name="Effect-liquidglass">
+        <entry name="DynamicTinting" type="Bool">
+            <default>true</default>
+        </entry>
         <entry name="BlurStrength" type="Double">
             <default>5.0</default>
         </entry>

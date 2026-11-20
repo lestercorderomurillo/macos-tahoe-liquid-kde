@@ -16,9 +16,11 @@ protected:
     void initStyleOption(QStyleOptionMenuItem *option, const QAction *action) const override;
 
 private Q_SLOTS:
+    void reloadTinting();
     void updateBackdrop(int pid, const QRect &frame, const QRect &bounds, const QByteArray &grid, const QString &role);
 
 private:
+    bool m_dynamicTinting = true;
     QByteArray m_grid;
     QRect m_bounds;
     QHash<const QAction *, QColor> m_rowBackgrounds;

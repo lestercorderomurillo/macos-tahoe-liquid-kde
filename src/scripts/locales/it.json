@@ -1,4 +1,10 @@
 {
+  "Dynamic text tinting": "Tinta dinamica del testo",
+  "Bluetooth is off": "Bluetooth disattivato",
+  "No Bluetooth adapter": "Nessun adattatore Bluetooth",
+  "Keep the current launcher and clipboard history.": "Mantieni il lanciatore attuale e la cronologia degli appunti.",
+  "Clear this option to keep your panels, widgets and pinned apps.": "Deseleziona questa opzione per mantenere i pannelli, i widget e le applicazioni fissate.",
+  "Remove the installed Launchpad widget.": "Rimuovi il widget Launchpad installato.",
   "Continuous menu corners": "Angoli dei menu a curvatura continua",
   "Continuous menu corners installed": "Angoli dei menu a curvatura continua installati",
   "Copy values": "Copia valori",

@@ -2033,7 +2033,7 @@ void BlurEffect::blur(
     const bool shellMenu = plasma && !namedPopup && !notification && (w->isPopupMenu() || w->isDropdownMenu() || w->isMenu()
         || (w->isPopupWindow() && !w->isAppletPopup() && !w->isTooltip()));
     const bool about = plasma && (w->caption() == m_aboutTitle || w->caption() == QStringLiteral("About This Computer"));
-    const bool spatialBackdrop = (plasma && namedPopup) || shellMenu || about;
+    const bool spatialBackdrop = (plasma && namedPopup) || (BlurConfig::dynamicTinting() && (shellMenu || about));
     if (spatialBackdrop || notification) {
         if (!blurInfo.contrastTimer.isValid() || blurInfo.contrastTimer.elapsed() >= 200) {
             blurInfo.contrastTimer.start();

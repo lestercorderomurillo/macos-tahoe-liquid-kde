@@ -565,7 +565,6 @@ def uninstall() -> None:
                      Path(os.environ.get("XDG_CONFIG_HOME", home / ".config")),
                      Path(os.environ.get("XDG_STATE_HOME", home / ".local/state")))
     (home / ".local/bin/mac-tahoe-glass-surfaces").unlink(missing_ok=True)
-    _uninstall_transition()
     # Persist the disabled state before asking KWin to unload the effect.
     # Unloading first can race a config notification/reconfigure and let KWin
     # immediately load the still-enabled plugin again, leaving every window
@@ -581,6 +580,7 @@ def uninstall() -> None:
     reconfigured = qdbus_call(
         "org.kde.KWin", "/KWin", "org.kde.KWin.reconfigure",
     )
+    _uninstall_transition()
     if not disabled:
         warn(tr('Acrylic Glass could not be disabled in kwinrc'))
     if not unloaded and not reconfigured:

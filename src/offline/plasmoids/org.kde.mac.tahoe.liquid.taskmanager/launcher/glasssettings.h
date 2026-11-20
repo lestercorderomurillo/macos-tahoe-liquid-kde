@@ -14,6 +14,7 @@ class GlassSettings : public QObject
     Q_PROPERTY(QString component READ component WRITE setComponent NOTIFY changed)
     Q_PROPERTY(QWindow *window READ window WRITE setWindow NOTIFY changed)
     Q_PROPERTY(QString frameSource READ frameSource WRITE setFrameSource NOTIFY changed)
+    Q_PROPERTY(bool dynamicTinting READ dynamicTinting NOTIFY changed)
     Q_PROPERTY(qreal lightOpacity READ lightOpacity NOTIFY changed)
     Q_PROPERTY(qreal darkOpacity READ darkOpacity NOTIFY changed)
 public:
@@ -24,6 +25,7 @@ public:
     void setFrameSource(const QString &source);
     void setComponent(const QString &component);
     void setWindow(QWindow *window);
+    bool dynamicTinting() const;
     qreal lightOpacity() const;
     qreal darkOpacity() const;
 Q_SIGNALS:

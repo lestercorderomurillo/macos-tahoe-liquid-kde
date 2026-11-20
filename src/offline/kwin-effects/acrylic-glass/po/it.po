@@ -119,6 +119,9 @@ msgstr "Dock"
 msgid "Dock/Launcher"
 msgstr "Dock/Launcher"
 
+msgid "Dynamic text tinting"
+msgstr "Tinta dinamica del testo"
+
 msgid "Enable gradient"
 msgstr "Attiva la sfumatura"
 

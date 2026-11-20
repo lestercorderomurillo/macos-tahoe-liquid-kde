@@ -29,6 +29,9 @@ msgstr "Bluetooth"
 msgid "Bluetooth Settings…"
 msgstr "Ajustes de Bluetooth…"
 
+msgid "Bluetooth is off"
+msgstr "Bluetooth is off"
+
 msgid "Brightness"
 msgstr "Brightness"
 
@@ -118,6 +121,9 @@ msgstr "Red"
 
 msgid "Next track"
 msgstr "Pista siguiente"
+
+msgid "No Bluetooth adapter"
+msgstr "No Bluetooth adapter"
 
 msgid "No Wi-Fi adapter"
 msgstr "No hay adaptador Wi-Fi"
@@ -223,9 +229,3 @@ msgstr "El interruptor físico bloquea el Wi-Fi"
 
 msgid "Wi-Fi is off"
 msgstr "El Wi-Fi está desactivado"
-
-msgid "No Bluetooth adapter"
-msgstr "No hay adaptador Bluetooth"
-
-msgid "Bluetooth is off"
-msgstr "Bluetooth está desactivado"

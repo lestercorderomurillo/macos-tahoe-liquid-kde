@@ -32,6 +32,9 @@ msgstr "Bluetooth"
 msgid "Bluetooth Settings…"
 msgstr "Bluetooth-Einstellungen…"
 
+msgid "Bluetooth is off"
+msgstr "Bluetooth ist ausgeschaltet"
+
 msgid "Brightness"
 msgstr "Helligkeit"
 
@@ -121,6 +124,9 @@ msgstr "Netzwerk"
 
 msgid "Next track"
 msgstr "Nächster Titel"
+
+msgid "No Bluetooth adapter"
+msgstr "Kein Bluetooth-Adapter"
 
 msgid "No Wi-Fi adapter"
 msgstr "Kein WLAN-Adapter"

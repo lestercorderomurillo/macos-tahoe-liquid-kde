@@ -119,6 +119,9 @@ msgstr "Dock"
 msgid "Dock/Launcher"
 msgstr "Dock/Anwendungsstarter"
 
+msgid "Dynamic text tinting"
+msgstr "Dynamische Textfarbe"
+
 msgid "Enable gradient"
 msgstr "Farbverlauf aktivieren"
 
