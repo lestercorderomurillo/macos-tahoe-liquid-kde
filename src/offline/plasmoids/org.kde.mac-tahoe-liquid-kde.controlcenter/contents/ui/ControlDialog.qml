@@ -30,7 +30,7 @@ PlasmaCore.Dialog {
             return Contrast.foreground(base, center, fill);
 
         const dx = Math.min(36, (tile || item).width / 3);
-        const dy = Math.min(24, Math.max(12, item.height), (tile || item).height / 3);
+        const dy = Math.min(64, (tile || item).height / 2);
         function lightness(x, y) {
             return Contrast.luminance(Qt.tint(glass.backdropAt(Qt.point(x, y)), fill));
         }
