@@ -210,7 +210,7 @@ def test_capture_refuses_host_before_switch(capture_module, monkeypatch):
 
 def test_about_drag_uses_compositor_move(repo):
     qml = (repo / 'src/offline/plasmoids/org.kde.mac.tahoe.liquid.globalmenu/qml/AboutWindow.qml').read_text()
-    assert 'onPressed: aboutWindow.startSystemMove()' in qml
+    assert 'aboutWindow.startSystemMove()' in qml
     assert 'acceptedButtons: Qt.LeftButton' in qml
     assert 'aboutWindow.x +=' not in qml
     assert 'aboutWindow.y +=' not in qml

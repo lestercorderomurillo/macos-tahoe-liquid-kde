@@ -19,6 +19,7 @@ public:
     QWindow *window() const { return m_window; }
     virtual void setWindow(QWindow *window);
     quint64 backdropRevision() const { return m_revision; }
+    Q_INVOKABLE void windowMoveStarted() { m_ink.moved(); }
     Q_INVOKABLE QColor foregroundAt(QPointF point, QSizeF radius, QColor base, QColor fill) const;
     Q_INVOKABLE QColor animatedForegroundAt(QObject *item, QPointF point, QSizeF radius, QColor base, QColor fill);
     Q_INVOKABLE QColor backdropAt(QPointF point) const;

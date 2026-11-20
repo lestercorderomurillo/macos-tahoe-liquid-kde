@@ -335,7 +335,9 @@ Window {
             objectName: "aboutDragArea"
             anchors.fill: parent
             acceptedButtons: Qt.LeftButton
-            onPressed: aboutWindow.startSystemMove()
+            onPressed: {
+                if (aboutWindow.startSystemMove()) backdrop.windowMoveStarted();
+            }
         }
 
         // window buttons
