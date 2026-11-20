@@ -1,6 +1,6 @@
 # Installer testing
 
-**v0.73.34**. The approved Golden Gate Control Center kept its glass fill while text and monochrome controls followed the backdrop, including a split background. Notification history showed the fine dark edge. The desktop capture used KDE neon on Wayland. [Evidence and coverage](release-evidence.json).
+**v0.73.35**. A Fedora 45 container ran the GTK startup integration step without an exporter or a warning. Focused regressions covered distributions that require the exporter. [Evidence and coverage](release-evidence.json).
 
 Approved installer previews: [Light](src/screenshots/previews/installer-tahoe-light-icons-805970eab6b7.png) · [Dark](src/screenshots/previews/installer-tahoe-dark-icons-dbc66adc81c4.png). The gallery below is historical and predates these installer changes; its original [provenance](src/screenshots/release-capture.json) is retained.
 
