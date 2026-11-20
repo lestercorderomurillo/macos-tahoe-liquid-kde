@@ -69,7 +69,12 @@ in rec {
     propagatedBuildInputs = [ task-manager ];
   };
   task-manager = buildPlugin "task-manager" (offline + "/plasmoids/org.kde.mac.tahoe.liquid.taskmanager") {};
-  acrylic-glass = buildPlugin "acrylic-glass" (offline + "/kwin-effects/acrylic-glass") {};
+  acrylic-glass = buildPlugin "acrylic-glass" (offline + "/kwin-effects/acrylic-glass") {
+    postInstall = ''
+      mkdir -p "$out/share/kwin/effects"
+      cp -r ${offline + "/kwin-effects/controlcenter-transition"} "$out/share/kwin/effects/mttkde_controlcenter_transition"
+    '';
+  };
   rounded-corners = buildPlugin "rounded-corners" (pkgs.fetchurl {
     url = "https://github.com/matinlotfali/KDE-Rounded-Corners/archive/refs/tags/v${capture "UPSTREAM_VERSION"}.tar.gz";
     sha256 = capture "UPSTREAM_SHA256";

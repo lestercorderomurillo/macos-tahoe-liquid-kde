@@ -3,7 +3,7 @@
     "KPlugin": {
         "Authors": [{ "Name": "Lester Cordero Murillo" }],
         "Category": "Appearance",
-        "Description": "macOS Tahoe Control Center opening and closing: zoom from 1.2 with a fade, so the Liquid Glass follows the panel.",
+        "Description": "macOS Tahoe Control Center opening and closing: a slight zoom with a fade, so the Liquid Glass follows the panel.",
         "EnabledByDefault": true,
         "Id": "mttkde_controlcenter_transition",
         "License": "GPL-3.0-or-later",
