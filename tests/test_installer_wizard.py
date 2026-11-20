@@ -511,11 +511,11 @@ assert window.page == 'glass_style'
 glass_text = ' '.join(label.text() for label in window.content.findChildren(QLabel))
 assert 'white backing' not in glass_text
 assert 'Dock' not in glass_text and 'blur strength' not in glass_text
-assert len(window.content.findChildren(ChoiceCard)) == 3
-window.content.findChild(ChoiceCard, 'choice-glass_style-tinted').click()
-assert window.choices['glass_style'] == 'tinted'
+assert len(window.content.findChildren(ChoiceCard)) == 2
+window.content.findChild(ChoiceCard, 'choice-glass_style-official').click()
+assert window.choices['glass_style'] == 'official'
 window.advance(); window.previous(); app.processEvents()
-assert window.page == 'glass_style' and window.choices['glass_style'] == 'tinted'
+assert window.page == 'glass_style' and window.choices['glass_style'] == 'official'
 window.choices['acrylic_glass'] = False
 window.page = 'files'; window.render()
 window.advance(); app.processEvents()

@@ -1325,11 +1325,10 @@ class InstallerWindow(OpaqueSurface):
                                      f"glass-preset-{preset}-dark.png" if automatic else None,
                                      cover=True, crop=(820, 300, 1280, 1214)))
             for key, title, preset in (
-                ("classic", "Tahoe (Clear)", "tahoe-clear"),
-                ("tinted", "Tahoe (Frosted)", "tahoe-frosted"),
+                ("classic", "Tahoe (Official)", "tahoe-clear"),
                 ("official", "Golden Gate (Official)", "golden-gate-official"),
             )
-        ], columns=3)
+        ], columns=2)
 
     def page_shadows(self):
         self.cards("shadows", [
@@ -1420,7 +1419,7 @@ class InstallerWindow(OpaqueSurface):
                  "glass": "Tinted", "regular": "Default", "clear": "Clear", "keep": "Keep", "golden": "Golden Gate", "tahoe": "Tahoe",
                  "landscape": "Landscape", "sonoma": "Sonoma", "macos": "Monterey", "custom": "Custom file",
                  "nautilus": "Nautilus", "dolphin": "Dolphin",
-                 "classic": "Tahoe (Clear)", "tinted": "Tahoe (Frosted)",
+                 "classic": "Tahoe (Official)",
                  "official": "Golden Gate (Official)"}
         value = lambda key: self.t(names.get(str(c[key]), str(c[key]).capitalize()))
         enabled = lambda key: self.t("Enabled" if c[key] else "Disabled")

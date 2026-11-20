@@ -24,7 +24,7 @@ ENUMS = {
     "shadows": ("none", "soft", "medium", "hard"),
     "window_controls": ("flat", "glassy"),
     "button_position": ("left", "right", "keep"),
-    "glass_style": ("classic", "tinted", "official"),
+    "glass_style": ("classic", "official"),
 }
 WALLPAPERS = {
     "prism": ("MacPrism", "MacPrism"),
@@ -53,6 +53,8 @@ def validate(value: object) -> dict:
     if not isinstance(value, dict) or set(value) - defaults().keys():
         raise ValueError("Invalid installer choices")
     result = defaults() | value
+    if result["glass_style"] == "tinted":  # Saved before Tahoe Official replaced Frosted.
+        result["glass_style"] = "classic"
     for key, allowed in ENUMS.items():
         if result[key] not in allowed:
             raise ValueError(f"Invalid choice: {key}")

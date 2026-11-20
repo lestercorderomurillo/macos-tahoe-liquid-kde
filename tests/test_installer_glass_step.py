@@ -35,16 +35,17 @@ window = InstallerWindow(bridge)
 window.choices['appearance'] = sys.argv[2]
 window.page = 'glass_style'; window.render(); window.show(); app.processEvents()
 cards = window.content.findChildren(ChoiceCard)
-assert len(cards) == 3
+assert len(cards) == 2
 assert sum(c.isChecked() for c in cards) == 1
 assert window.choices['glass_style'] == ('official' if sys.argv[1] == 'MacGoldenGate' else 'classic')
 text = ' '.join(l.text() for l in window.content.findChildren(QLabel))
 assert 'Dock' not in text and 'blur strength' not in text and 'Three-color' not in text
+assert installer_choices.validate({'glass_style': 'tinted'})['glass_style'] == 'classic'
 acrylic_glass.selected = lambda: window.choices
-for key, material, blur, variant in [('classic', '1', '5.0', '0'), ('tinted', '1', '12.0', '1'), ('official', '2', '4.0', '1')]:
+for key, material, blur, variant in [('classic', '1', '5.0', '0'), ('official', '2', '4.0', '1')]:
     card = window.content.findChild(ChoiceCard, 'choice-glass_style-' + key)
     assert card.photo is not None and not card.photo.pixmap.isNull()
-    preset = {'classic': 'tahoe-clear', 'tinted': 'tahoe-frosted', 'official': 'golden-gate-official'}[key]
+    preset = {'classic': 'tahoe-clear', 'official': 'golden-gate-official'}[key]
     actual = card.photo.pixmap.toImage()
     light = picture(f'glass-preset-{preset}-light.png', 232, 220, cover=True,
                     crop=(820, 300, 1280, 1214)).toImage()
