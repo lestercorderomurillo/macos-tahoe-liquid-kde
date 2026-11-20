@@ -155,6 +155,16 @@ int main(int argc, char **argv)
         image = render();
         require(qBlue(image.pixel(96,12)) > qRed(image.pixel(96,12)), QStringLiteral("custom top color ignored"));
         require(qRed(image.pixel(96,115)) > qBlue(image.pixel(96,115)), QStringLiteral("custom bottom color ignored"));
+        // Text contrast must see the same color as the shaded surface.
+        for (int y : {12, 42, 70, 95, 115}) {
+            const auto tint = gradientOverlayAt((y + .5f) / height, .55f, QVector4D(0,0,1,.8f),
+                                                QVector4D(0,0,0,.02f), QVector4D(1,0,0,.6f));
+            const QVector3D predicted = QVector3D(160,160,160) * (1 - tint.w()) + tint.toVector3D() * 255;
+            const auto pixel = image.pixel(96,y);
+            require(std::abs(qRed(pixel) - predicted.x()) <= 1 && std::abs(qGreen(pixel) - predicted.y()) <= 1
+                        && std::abs(qBlue(pixel) - predicted.z()) <= 1,
+                    QStringLiteral("contrast sample differs from shaded glass"));
+        }
         for (const QColor windowColor : {QColor(Qt::white), QColor(Qt::black), QColor(Qt::white)}) {
             QPalette palette;
             palette.setColor(QPalette::Window, windowColor);
