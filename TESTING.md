@@ -1,6 +1,6 @@
 # Installer testing
 
-Tahoe **v0.73.27** restores the Golden Gate preset’s 1% white fill for dark menus. The approved desktop preview shows the dark system menu and white top-panel labels. [Evidence and coverage](release-evidence.json).
+Tahoe **v0.73.28** passed focused installation and reinstallation checks on KDE neon. The approved Plasma 6.8.1 Wayland previews cover the calendar, launcher, clipboard and Control Center. [Evidence and coverage](release-evidence.json).
 
 Approved installer previews: [Light](src/screenshots/previews/installer-tahoe-light-icons-805970eab6b7.png) · [Dark](src/screenshots/previews/installer-tahoe-dark-icons-dbc66adc81c4.png). The gallery below is historical and predates these installer changes; its original [provenance](src/screenshots/release-capture.json) is retained.
 
