@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 import QtQuick
+import org.kde.mac.tahoe.launcher as Native
 import org.kde.plasma.plasmoid
 import org.kde.plasma.core as PlasmaCore
 PlasmoidItem {
@@ -24,8 +25,9 @@ PlasmoidItem {
         function toggle() { visible = !visible; }
         function dismiss() { visible = false; }
         title: "mttkde-control-center"
-        // macOS Tahoe keeps the Control Center text and symbols white in dark mode.
-        adaptiveForeground: false
+        Native.GlassSettings { id: inkSettings; component: "control-center"; window: popup }
+        adaptiveForeground: inkSettings.dynamicTinting
+        regionalForeground: true
         // The transparent shadow margin must not let the pointer reach windows below.
         inputOnGlassOnly: false
         visible: false
