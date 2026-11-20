@@ -190,13 +190,9 @@ Timer {
         verify(main.isDarkTheme === expectedDark, "expected appearance mode");
         verify(Math.abs(search.textField.placeholderTextColor.a - (stronger ? 1 : 0.85)) < 0.005,
                "search placeholder contrast follows edition and mode");
-        // Instantiate the actual layer component even under CI's software renderer.
-        const halo = search.textField.layer.effect.createObject(search);
-        verify(halo !== null, "search halo loads");
-        verify(Math.abs(halo.color.a - (stronger ? 0.65 : 0.35)) < 0.005,
-               "search halo strength follows edition and mode");
-        verify(halo.radius === (stronger ? 3 : 2), "search halo remains diffuse");
-        halo.destroy();
+        const foreground = expectedGoldenGate && main.detachedSearch ? Qt.rgba(1, 1, 1, 1) : main.textColor;
+        verify(search.textField.color === foreground, "search text follows its glass surface");
+        verify(!search.textField.layer.enabled, "search text renders without a shadow layer");
     }
     onTriggered: {
         try {
@@ -247,7 +243,9 @@ Timer {
                     verifyOptionsMenu(searchBar);
                 }
                 verify(glassPalette.Kirigami.Theme.colorSet === Kirigami.Theme.Window, "labels use the popup color set");
-                verify(main.textColor === glassPalette.Kirigami.Theme.textColor, "labels follow the mode-specific window foreground");
+                const paletteInk = Qt.tint(glassPalette.Kirigami.Theme.textColor,
+                                           expectedDark ? "#66ffffff" : "#66000000");
+                verify(Qt.colorEqual(main.textColor, paletteInk), "window foreground uses the 40% contrast offset");
                 verify(!searchPopup.visible, "inline search has no second popup");
                 verify(main.inlineSearchHeight === 40,
                        "Tahoe reference header preserves Golden Gate geometry");

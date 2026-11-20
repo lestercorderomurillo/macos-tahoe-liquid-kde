@@ -261,8 +261,8 @@ def test_native_launcher_popup_presets(repo, tmp_path, monkeypatch, launcher_pop
     shared = "org.kde.mac-tahoe-liquid-kde.controlcenter/contents/ui"
     destination = tmp_path / shared
     destination.mkdir(parents=True)
-    shutil.copy2(repo / "src/offline/plasmoids" / shared / "MacOptionsMenu.qml",
-                 destination / "MacOptionsMenu.qml")
+    for filename in ("MacOptionsMenu.qml", "NotificationContrast.js"):
+        shutil.copy2(repo / "src/offline/plasmoids" / shared / filename, destination)
     shutil.copytree(repo / f"src/offline/plasma-theme/MacTahoeLiquidKde-{mode}",
                     tmp_path / f"data/plasma/desktoptheme/MacTahoeLiquidKde-{mode}")
     # Minimal CI desktops have no visible apps. Seed a real All Apps category

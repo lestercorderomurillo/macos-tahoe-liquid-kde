@@ -1,32 +1,47 @@
 {
-  "version": "0.74.2",
+  "version": "0.74.3",
   "gallery_commit": "f09780b200b79302e7c23ef9f6f74d94748bbea3",
-  "scope": "Shared Shell menu appearance and README edits.",
-  "approval": "Maintainer accepted the menu fix and requested delivery with both README edits.",
+  "scope": "Adaptive text contrast on glass surfaces.",
+  "approval": "Maintainer approved both edition previews before publication.",
   "checks": [
     {
-      "command": "Build and install the candidate global menu applet in KDE neon on Wayland; switch light/dark with the Firefox system menu and Kate cascading menu open",
+      "command": "KDE neon Wayland launcher grid and search text in light and dark in both editions; Golden Gate automatic evening transition",
       "result": "passed",
-      "frames": {
-        "final-ff-light.png": "4dda7653908f191c8df824269ee3633a71993d66bb4c79adc174c02516e9be16",
-        "final-ff-dark.png": "6e53222a8c098bc0f101969284fe0b1f6133eec727058f0a3c6d20b77d8fe963",
-        "final-ff-return.png": "3ca8beb18938bc2f248595813e63a37870f4ba02620462e49f0e0e4932843bc3",
-        "final-sub-light.png": "f6797186dd3b794417108ff266df5716bfef05b239a660c09e8f7855e4a61781",
-        "final-sub-dark.png": "1dfae91c8c6d695e463a89c6fe2b2d36ef483ac41142e3b098f4cd3c4316a748"
+      "sources": {
+        "tahoe": "0bdd50f1797a4df3878af19e78d53302232e2e1f",
+        "golden-gate": "4d2898f33a913290d9e1ddd432139ed7b62bbf85"
       },
-      "source_files": [
-        "0568555e736870a19aa6f245d645a09380c69e55abcb67f6aeec26164da3e72a  src/offline/plasmoids/org.kde.mac.tahoe.liquid.globalmenu/appmenuapplet.cpp",
-        "998ef39c70c2d616f5b67d384a16e051f9f4a049f6288c4162d9e10383b23cfd  src/offline/plasmoids/org.kde.mac.tahoe.liquid.globalmenu/appmenumodel.cpp",
-        "def3d871df059219fbbaaad6d0d458009d17995305ed920c14b473fac5bca823  src/offline/plasmoids/org.kde.mac.tahoe.liquid.globalmenu/shellmenu.h"
-      ]
+      "frames": {
+        "apple-ink.png": "d9f70407a33f62371cd6e21bb6dba990a19e037953de80fea0769cfee3784f2d",
+        "calendar-ink.png": "6bac8375bbfd4b6bd3e03b7ef4d2ff9e330de8cb6ecaa53253dc52ca1db83405",
+        "ink-auto-dark.png": "72ca21155ea991fbbdfc9a3e8d153854d4b8052898e243347c61516256cfde39",
+        "ink-auto-light.png": "be05edc47b7c808f190b4d13a8ae51d44968f594f7df8ba5b94d0afa1c53054c",
+        "ink-grid-dark.png": "b2756dd4ef3fe04f14367ce60593ed0891477508fda16c4045df84bffa0f81ad",
+        "ink-grid-light.png": "32c374ab460df1617fa3ec004c0165a99830d5e1dee2081a3fe2153bcf0ae292",
+        "ink-list-dark.png": "347c1110befe4e7606ce5d11d8ec4c989dce3cac7c6310c616e9f4228f08cc56",
+        "ink-list-light.png": "86527e06df658f09a4249817ddb24701e9812422d33c9edc6cf7701f78fe0ed8",
+        "notification-ink.png": "826a477e796ee6dbdd764ec6ca6e826045dd7cef51c245a6d6cba3cb12ba5784",
+        "tahoe-ink-grid-dark.png": "ad30108a56ed1348d2c328228f889654f20a046ade3356a3e89e6bcd74a53e91",
+        "tahoe-ink-grid-light.png": "1864982c1d46f1b9a9e70d5c006abe446cb64942a5bcb2da27c0b5d1f1f54b97",
+        "tahoe-ink-list-dark.png": "9608287f02a7bef5b3a6a9762858d6f25ac00bf66cce38aff72085125a15edfc",
+        "tahoe-ink-list-light.png": "0399cfe4b884ca0ac40771777ccc0f9823e4b3a757715795b57b67dbd2b52a83"
+      }
     },
     {
-      "command": "Review README diffs in both editions and check repository-local image sources",
+      "command": "Native desktop controls probe and 17 component cache tests; KWin Wayland 6.8.1 rendering, 6.7.5 build and 6.6.5 X11 window backdrop probe",
       "result": "passed"
+    },
+    {
+      "command": "pytest launcher popup presets and About appearance",
+      "result": "passed",
+      "detail": [
+        "8 passed, 71 deselected in 113.03s (0:01:53)",
+        "10 passed, 2 deselected in 15.04s"
+      ]
     }
   ],
   "coverage_limits": [
-    "Rendered menu qualification used the Golden Gate material in a KDE neon Wayland guest. The applet is shared with Tahoe. Full remote CI is asynchronous."
+    "Wayland visual previews cover both editions. The automatic evening transition was exercised in Golden Gate. The X11 probe verifies backdrop sampling. Native translucent dark Qt menus retain their fallback text shadow. Full remote CI is asynchronous."
   ],
-  "source_sha256": "6e1b4466f3e491b36059fb5b28abefbe79741a4061a8b1ba14164f478fc8dfec"
+  "source_sha256": "f2d9153a4bc74dd0063bba93b6d19b624504725f76cad2734b038c766a92ce72"
 }
