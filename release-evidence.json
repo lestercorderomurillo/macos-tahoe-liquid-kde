@@ -1,23 +1,23 @@
 {
-  "version": "0.73.24",
-  "implementation_commit": "623d44abc4127afc137bc75d17fd0af36186c1c3",
+  "version": "0.73.25",
+  "implementation_commit": "e255383fadb9796932fc316a7387a434a4a15b6e",
   "gallery_commit": "f09780b200b79302e7c23ef9f6f74d94748bbea3",
-  "scope": "Clarify Acrylic Glass labels and update the Golden Gate Official material preset.",
+  "scope": "Render Control Center sound and media controls as single-edge white glyphs in both editions; retain a visible disabled state. Notification Center clear-history contrast was reviewed and is already present in the pinned source.",
   "checks": [
     {
-      "command": "pytest -q tests/test_multilanguage.py::test_catalogs_cover_all_project_widget_and_kcm_messages",
+      "command": "python3 src/scripts/component_manifest.py",
       "result": "passed",
-      "detail": "All three shipped KCM translation catalogs passed on the combined implementation."
+      "detail": "Component source fingerprints match the reviewed Tahoe candidate."
     },
     {
-      "command": "pytest tests/test_glass_presets.py::{test_installation_reapplies_complete_edition_material,test_installer_frost_glass_values} and tests/test_acrylic_glass_config.py::test_native_material_follows_source_edition_across_reinstalls",
+      "command": "Approved 1:1 media-icons preview; Tahoe and Golden Gate light/dark, idle/playing/paused, notification-history frames",
       "result": "passed",
-      "detail": "22 installer and KConfig cases passed, including both cases that failed in the previous Tahoe dev run."
+      "detail": "User approved the exact visible result. Preview source commit e255383fadb9796932fc316a7387a434a4a15b6e; frame hashes are recorded in the preview media-icons/sources.json."
     },
     {
-      "command": "glass-kcm-probe and KDE neon VM settings and desktop previews",
+      "command": "VLC Play/Pause transition in Control Center",
       "result": "passed",
-      "detail": "Verified the ten Golden Gate material maps against the saved settings, native preset controls, component and SVG labels, and Golden Gate light and dark desktop previews."
+      "detail": "User verified the glyph switches between play and pause while VLC is controlling playback."
     }
   ],
   "reviewed_frames": [
@@ -58,9 +58,9 @@
       "sha256": "afaf401d5cf1436c3a6e543085a5c9b68659fad9042f9e1cc1c458a855bec470"
     }
   ],
-  "approval": "Maintainer approved the saved preset and component labels, then confirmed inclusion of the SVG light and dark labels.",
+  "approval": "User explicitly approved the media-controls and Notification Center preview, then authorized paired release.",
   "coverage_limits": [
-    "Desktop material preview covers Golden Gate under Wayland. Native SVG label previews cover both editions. Captures retain the source commits of the separately approved changes."
+    "The approved captures cover Tahoe and Golden Gate in light and dark modes, with no player, playing and paused states, plus Notification Center history. VLC Play/Pause interaction was verified by the user. No fresh desktop session was run for release bookkeeping."
   ],
-  "source_sha256": "9356cb4a6555af6246688348f4dcaf8660c4cd7a23cb3d0444959985ff89846e"
+  "source_sha256": "d09095352399b30dbd6e380bf09f2c14325ecacd2ffbafb9aef3c47923ea9b9c"
 }
