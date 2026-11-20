@@ -2008,9 +2008,14 @@ void BlurEffect::blur(
     // Foreground contrast uses the captured backdrop, never the notification's
     // own pixels. The existing blur/material passes and saved optics are unchanged.
     const QString resourceClass = w->window()->resourceClass();
-    const bool spatialBackdrop = (GlassMaterials::isControlPanel(w->caption()) || w->caption() == QStringLiteral("mttkde-apps"))
-        && (resourceClass == QStringLiteral("plasmashell") || resourceClass == QStringLiteral("org.kde.plasmashell"));
-    if (spatialBackdrop || isProjectNotification(resourceClass, w->caption())) {
+    const bool plasma = resourceClass == QStringLiteral("plasmashell") || resourceClass == QStringLiteral("org.kde.plasmashell");
+    // Native QMenus are xdg_popups on Wayland and have no client title.
+    const bool namedPopup = GlassMaterials::isControlPanel(w->caption()) || w->caption() == QStringLiteral("mttkde-apps");
+    const bool notification = isProjectNotification(resourceClass, w->caption());
+    const bool shellMenu = plasma && !namedPopup && !notification && (w->isPopupMenu() || w->isDropdownMenu() || w->isMenu()
+        || (w->isPopupWindow() && !w->isAppletPopup() && !w->isTooltip()));
+    const bool spatialBackdrop = (plasma && namedPopup) || shellMenu;
+    if (spatialBackdrop || notification) {
         if (!blurInfo.contrastTimer.isValid() || blurInfo.contrastTimer.elapsed() >= 200) {
             blurInfo.contrastTimer.start();
             if (!m_contrastTexture) {
@@ -2068,9 +2073,14 @@ void BlurEffect::blur(
                         blurInfo.contrastGrid = colors;
                         blurInfo.sampleBounds = backgroundRect;
                         blurInfo.contrastBounds = frame;
-                        auto message = QDBusMessage::createSignal(QStringLiteral("/org/kde/MacTahoe/Glass"),
-                            QStringLiteral("org.kde.MacTahoe.Glass"), QStringLiteral("controlBackdrop"));
-                        message << int(w->window()->pid()) << frame << backgroundRect << colors << w->caption();
+                        const auto path = QStringLiteral("/org/kde/MacTahoe/Glass");
+                        const auto interface = QStringLiteral("org.kde.MacTahoe.Glass");
+                        const auto signal = QStringLiteral("controlBackdrop");
+                        auto message = shellMenu
+                            ? QDBusMessage::createTargetedSignal(QStringLiteral("org.kde.plasmashell"), path, interface, signal)
+                            : QDBusMessage::createSignal(path, interface, signal);
+                        message << int(w->window()->pid()) << frame << backgroundRect << colors
+                                << (shellMenu ? QStringLiteral("mttkde-shell-menu") : w->caption());
                         QDBusConnection::sessionBus().send(message);
                     }
                 } else {
