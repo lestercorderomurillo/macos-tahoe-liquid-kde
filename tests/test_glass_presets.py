@@ -115,7 +115,7 @@ def test_installation_reapplies_complete_edition_material(monkeypatch, edition, 
     assert components["dock"]["BlurStrength"] == (4 if golden else 5)
     assert components["dock"]["DarkGradientOverlay"] is False
     assert components["control-center"]["DarkGradientOverlay"] is False
-    assert components["apps"]["BlurStrength"] == (3 if golden else float(expected["BlurStrength"]))
+    assert components["apps"]["BlurStrength"] == (12 if golden else float(expected["BlurStrength"]))
     assert saved == expected
     assert writes[-1] == "MaterialPreset"
     writes.clear()
@@ -124,7 +124,7 @@ def test_installation_reapplies_complete_edition_material(monkeypatch, edition, 
     assert components["dock"]["BlurStrength"] == (4 if golden else 5)
     assert components["dock"]["DarkGradientOverlay"] is False
     assert components["control-center"]["DarkGradientOverlay"] is False
-    assert components["apps"]["BlurStrength"] == (3 if golden else float(expected["BlurStrength"]))
+    assert components["apps"]["BlurStrength"] == (12 if golden else float(expected["BlurStrength"]))
     assert saved == expected
 
 
@@ -191,5 +191,12 @@ def test_installer_frost_glass_values(monkeypatch, edition, style):
     assert components["dock"]["BlurStrength"] == (4 if style == "official" else 5)
     assert components["dock"]["DarkGradientOverlay"] is False
     assert components["control-center"]["DarkGradientOverlay"] is False
-    assert components["apps"]["BlurStrength"] == (3 if style == "official" else float(expected["BlurStrength"]))
+    assert components["apps"]["BlurStrength"] == (12 if style == "official" else float(expected["BlurStrength"]))
+    if style == "official":
+        assert components["apps"]["SurfaceTransparencyLight"] == 86
+        assert components["apps"]["SurfaceTransparencyDark"] == 96
+        search = components["search"]
+        for stop in ("Top", "Center", "Bottom"):
+            assert search[f"Gradient{stop}Color"] == search[f"Gradient{stop}DarkColor"]
+        assert search["DarkGradientStrength"] == 1
     assert saved == expected
