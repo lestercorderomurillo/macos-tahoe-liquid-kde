@@ -1,6 +1,6 @@
 # Installer testing
 
-**v0.74.4**. Focused tests passed for material reinstalls, capture tooling and user service management. [Evidence and coverage](release-evidence.json).
+**v0.74.5**. Golden Gate launcher labels followed the changing background at 145% scale in a KDE neon Wayland guest. Native backdrop checks passed at 100% and 145%. [Evidence and coverage](release-evidence.json).
 
 [Installer photo evidence](src/screenshots/previews/wizard-tahoe-provenance-9ba9cfba299b.json).
 
