@@ -30,8 +30,10 @@ def test_component_apply_is_independent_repeatable_and_reversible(installed):
     plasma = data / 'plasma/desktoptheme/MacTahoeLiquidKde-Light'
     dock = plasma / 'widgets/panel-background.svgz'
     original = dock.read_bytes()
+    # Request the bundled 1.5% panel fill to exercise byte-exact reuse.
+    materials["panel"]["SurfaceTransparencyLight"] = 98.5
     surfaces.apply(materials, data, config, state)
-    assert dock.read_bytes() == original  # exact historical default, no SVG serialization
+    assert dock.read_bytes() == original
     assert surfaces.apply(materials, data, config, state) == []
     unrelated = (plasma / 'dialogs/background.svgz').read_bytes()
     changed = copy.deepcopy(materials)

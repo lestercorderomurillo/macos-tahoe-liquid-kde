@@ -160,7 +160,8 @@ Item {
     TextMetrics { id: editMetrics; text: i18n("Edit Controls"); font.family: Style.family; font.pixelSize: Style.caption }
     ControlTile {
         id: edit
-        width: Math.min(parent.width - 20, editMetrics.width + 28); height: 28
+        // Center on whole logical pixels so the compositor can recover this capsule from its mask.
+        width: Math.min(parent.width - 20, 2 * Math.ceil((editMetrics.width + 28) / 2)); height: 28
         x: (parent.width - width) / 2; y: grid.y + grid.height + 12
         visible: view.section === ""
         padding: 0

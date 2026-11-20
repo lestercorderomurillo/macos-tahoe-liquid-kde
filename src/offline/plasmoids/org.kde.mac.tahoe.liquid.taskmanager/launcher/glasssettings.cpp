@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 #include "glasssettings.h"
 #include <KConfigGroup>
+#include <KWindowEffects>
+#include <QRegion>
 #include <KSharedConfig>
 #include <Plasma/Theme>
 #include <QDBusConnection>
@@ -78,18 +80,38 @@ public:
                 }
             }
         }
+        const QString frameSource = window->property("_mttkde_glass_frame_source").toString();
         for (auto *object : objects) {
             if (object->metaObject()->indexOfProperty("imagePath") < 0) continue;
             QString source = object->property("_mttkde_glass_source").toString();
             if (source.isEmpty()) source = object->property("imagePath").toString();
             const QString surfaceComponent = source == QStringLiteral("widgets/panel-background") ? (component == QStringLiteral("dock") ? component : QStringLiteral("panel")) : component;
-            const auto path = projectTheme ? assets.value(prefix + surfaceComponent + QLatin1Char('/') + source).toString() : QString();
+            const QString assetSource = !frameSource.isEmpty() && source == QStringLiteral("dialogs/background")
+                ? frameSource : source;
+            auto path = projectTheme ? assets.value(prefix + surfaceComponent + QLatin1Char('/') + assetSource).toString() : QString();
+            if (projectTheme && assetSource != source && !QFile::exists(path)) {
+                path = QStandardPaths::locate(QStandardPaths::GenericDataLocation,
+                    QStringLiteral("plasma/desktoptheme/") + theme.themeName() + QLatin1Char('/') + assetSource + QStringLiteral(".svgz"));
+            }
             if (path.isEmpty() || !QFile::exists(path)) {
                 if (!object->property("_mttkde_glass_source").toString().isEmpty()) object->setProperty("imagePath", source);
                 continue;
             }
             object->setProperty("_mttkde_glass_source", source);
             if (object->property("imagePath").toString() != path) object->setProperty("imagePath", path);
+            // Dialog manages blur from a separate default frame. Submit the
+            // visible replacement's mask so glass ends at the painted edge.
+            auto *item = qobject_cast<QQuickItem *>(object);
+            if (item && item->isVisible() && item->size().toSize() == window->size()
+                && source == QStringLiteral("dialogs/background")
+                && (!frameSource.isEmpty() || window->property("_mttkde_custom_frame_mask").toBool())) {
+                const QRegion region = item->property("mask").value<QRegion>();
+                if (!region.isEmpty()) {
+                    if (window->mask() != region) window->setMask(region);
+                    KWindowEffects::enableBlurBehind(window, true, region);
+                    window->setProperty("_mttkde_custom_frame_mask", !frameSource.isEmpty());
+                }
+            }
         }
     }
     void refreshWindows()
@@ -169,12 +191,21 @@ void GlassSettings::setComponent(const QString &component)
     GlassSettingsStore::instance()->refresh(m_window);
     Q_EMIT changed();
 }
+void GlassSettings::setFrameSource(const QString &source)
+{
+    if (m_frameSource == source) return;
+    m_frameSource = source;
+    if (m_window) m_window->setProperty("_mttkde_glass_frame_source", source);
+    GlassSettingsStore::instance()->refresh(m_window);
+    Q_EMIT changed();
+}
 void GlassSettings::setWindow(QWindow *window)
 {
     if (m_window == window) return;
     m_window = window;
     if (m_window) {
         m_window->setProperty("_mttkde_glass_component", m_component);
+        m_window->setProperty("_mttkde_glass_frame_source", m_frameSource);
         if (m_component == QStringLiteral("dock")) m_window->setTitle(QStringLiteral("mttkde-dock"));
     }
     GlassSettingsStore::instance()->refresh(m_window);

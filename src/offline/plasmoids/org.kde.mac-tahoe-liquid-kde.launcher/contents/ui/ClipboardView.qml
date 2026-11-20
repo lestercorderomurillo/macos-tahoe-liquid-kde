@@ -118,7 +118,7 @@ FocusScope {
                     Layout.preferredHeight: 28
                     padding: 7
                     contentItem: Kirigami.Icon {
-                        source: Qt.resolvedUrl("icons/ClipboardIcon.svg")
+                        source: Qt.resolvedUrl("icons/ClipboardCopy.svg")
                         isMask: true
                         color: main.textColor
                     }

@@ -9,7 +9,11 @@ import org.kde.kirigami as Kirigami
 PlasmaCore.Dialog {
 	id: root
 	title: "mttkde-apps"
-	readonly property NativeGlass.GlassSettings glassSettings: NativeGlass.GlassSettings { component: "apps"; window: root }
+	readonly property NativeGlass.GlassSettings glassSettings: NativeGlass.GlassSettings {
+		component: "apps"
+		window: root
+		frameSource: main.goldenGateEdition && !main.clipboardMode ? "dialogs/launcher-apps" : ""
+	}
 	readonly property bool goldenGate: kicker.launcherPreset === 2
 
 	objectName: "popupWindow"

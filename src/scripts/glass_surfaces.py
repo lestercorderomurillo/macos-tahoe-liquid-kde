@@ -66,6 +66,52 @@ def _write_svg(path: Path, root: ET.Element) -> None:
     path.write_bytes(gzip.compress(data, mtime=0) if path.suffix == ".svgz" else data)
 
 
+def _apps_frame(root: ET.Element) -> None:
+    """Give the Apps frame a continuous 44 px corner, including its blur mask."""
+    indexed = {node.get("id"): node for node in root.iter()}
+    # Controls parallel to each straight edge let its curvature start at zero.
+    def boundary(inset):
+        def point(x, y):
+            scale = (44 - inset) / 44
+            return f"{inset + x * scale:g} {inset + y * scale:g}"
+        return (f"M{point(44, 0)} C{point(26, 0)} {point(18, 0)} {point(10, 6)} "
+                f"C{point(8.5, 7.125)} {point(7.125, 8.5)} {point(6, 10)} "
+                f"C{point(0, 18)} {point(0, 26)} {point(0, 44)} L44 44 Z")
+
+    center = indexed["center"]
+    edge_layers = list(indexed["topleft"])
+    for masked in (False, True):
+        prefix = "mask-" if masked else ""
+        for corner, sides in ((True, ("topleft", "topright", "bottomright", "bottomleft")),
+                              (False, ("top", "right", "bottom", "left"))):
+            for turn, side in enumerate(sides):
+                tile = indexed[prefix + side]
+                tile.clear()
+                tile.tag = f"{{{_SVG}}}g"
+                tile.set("id", prefix + side)
+                # KSvg renders each tile separately. Keep its natural bounds
+                # within the original document, including rotated mask tiles.
+                x, y = ((0, 0), (108, 0), (108, 108), (0, 108))[turn]
+                tile.set("transform", f"translate({x} {904.36218 + y}) rotate({turn * 90})")
+                shape = boundary(0) if corner else "M0 0 H20 V44 H0 Z"
+                paint = {"fill": "#000000"} if masked else {"style": center.get("style")}
+                ET.SubElement(tile, f"{{{_SVG}}}path", {"d": shape, **paint})
+                if masked:
+                    continue
+                # Preserve the two edge highlights and their straight-edge widths.
+                for i, layer in enumerate(edge_layers[1:3]):
+                    inset = 0.75 * i
+                    inner = inset + 0.75
+                    if corner:
+                        band = boundary(inset) + " " + boundary(inner)
+                    else:
+                        band = f"M0 {inset} H20 V{inner} H0 Z"
+                    ET.SubElement(tile, f"{{{_SVG}}}path", {
+                        "d": band, "fill-rule": "evenodd", "fill": layer.get("fill"),
+                        "opacity": layer.get("opacity"),
+                    })
+
+
 def apply_plasma_surface_defaults(theme: Path) -> None:
     """Apply to a staged copy of the bundled theme, never user configuration."""
     if default_wallpaper() != "MacGoldenGate":
@@ -84,6 +130,9 @@ def apply_plasma_surface_defaults(theme: Path) -> None:
                 "id": "hint-clear-surface", "width": "1", "height": "1", "opacity": "0",
             })
         _write_svg(path, root)
+        if name == "dialogs/background.svgz":
+            _apps_frame(root)
+            _write_svg(path.with_name("launcher-apps.svgz"), root)
 
 
 def apply_kvantum_surface_defaults(path: Path) -> None:

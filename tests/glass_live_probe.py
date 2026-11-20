@@ -49,7 +49,8 @@ assert w is not None,[e.toString() for e in c.errors()]
 QTest.qWait(250)
 initial=w.property('surface')
 assert str(data) in initial,initial
-assert abs(w.property('fill')-.55)<.001
+expected_fill = 1 - materials['apps']['SurfaceTransparencyLight'] / 100
+assert abs(w.property('fill') - expected_fill) < .001
 materials['apps']['SurfaceTransparencyLight']=70
 apply()
 QTest.qWait(250)

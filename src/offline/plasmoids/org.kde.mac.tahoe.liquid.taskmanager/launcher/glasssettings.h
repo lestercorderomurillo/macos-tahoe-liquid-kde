@@ -13,12 +13,15 @@ class GlassSettings : public QObject
     QML_ELEMENT
     Q_PROPERTY(QString component READ component WRITE setComponent NOTIFY changed)
     Q_PROPERTY(QWindow *window READ window WRITE setWindow NOTIFY changed)
+    Q_PROPERTY(QString frameSource READ frameSource WRITE setFrameSource NOTIFY changed)
     Q_PROPERTY(qreal lightOpacity READ lightOpacity NOTIFY changed)
     Q_PROPERTY(qreal darkOpacity READ darkOpacity NOTIFY changed)
 public:
     explicit GlassSettings(QObject *parent = nullptr);
     QString component() const { return m_component; }
     QWindow *window() const { return m_window; }
+    QString frameSource() const { return m_frameSource; }
+    void setFrameSource(const QString &source);
     void setComponent(const QString &component);
     void setWindow(QWindow *window);
     qreal lightOpacity() const;
@@ -28,5 +31,6 @@ Q_SIGNALS:
 private:
     qreal opacity(const QString &key) const;
     QString m_component;
+    QString m_frameSource;
     QPointer<QWindow> m_window;
 };

@@ -186,10 +186,10 @@ int main(int argc, char **argv)
         components->setCurrentIndex(components->findData(QStringLiteral("control-center")));
         require(!control<QCheckBox>(module.get(), QStringLiteral("kcfg_DarkGradientOverlay"))->isChecked(),
                 QStringLiteral("Control Center default gradient must be off in every preset"));
-        require(control<QDoubleSpinBox>(module.get(), QStringLiteral("kcfg_Saturation"))->value() == (presetIndex == 2 ? 0.93 : 1.0),
+        require(control<QDoubleSpinBox>(module.get(), QStringLiteral("kcfg_Saturation"))->value() == 1.0,
                 QStringLiteral("Control Center must not amplify wallpaper color"));
-        require(control<QDoubleSpinBox>(module.get(), QStringLiteral("kcfg_SurfaceTransparencyLight"))->value() == (presetIndex == 2 ? 86.0 : 82.0)
-                && control<QDoubleSpinBox>(module.get(), QStringLiteral("kcfg_SurfaceTransparencyDark"))->value() == (presetIndex == 2 ? 86.0 : 88.0),
+        require(control<QDoubleSpinBox>(module.get(), QStringLiteral("kcfg_SurfaceTransparencyLight"))->value() == 82.0
+                && control<QDoubleSpinBox>(module.get(), QStringLiteral("kcfg_SurfaceTransparencyDark"))->value() == 93.0,
                 QStringLiteral("Control Center must retain clear fills in every preset"));
         components->setCurrentIndex(components->findData(QStringLiteral("dock")));
         require(control<QDoubleSpinBox>(module.get(), QStringLiteral("kcfg_BlurStrength"))->value() == (presetIndex == 2 ? 4 : 5),

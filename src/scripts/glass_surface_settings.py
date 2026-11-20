@@ -181,8 +181,14 @@ def apply(materials: dict, data_home: Path, config_home: Path, state_home: Path)
             light = suffix == "Light"
             theme = data_home / "plasma/desktoptheme" / ("MacTahoeLiquidKde-" + suffix)
             background = theme / "dialogs/background.svgz"
-            for component, source in (("apps", background), ("search", theme / "dialogs/launcher-search.svgz")):
-                patch(source, component, light, TILES, theme / "dialogs" / ("glass-" + component + ".svgz"))
+            patch(background, "apps", light, TILES, theme / "dialogs/glass-apps.svgz")
+            # The continuous frame is staged only for Golden Gate. Clipboard
+            # shares Apps optics and keeps the ordinary dialog silhouette.
+            patch(theme / "dialogs/launcher-apps.svgz", "apps", light, TILES)
+            # PopupPlasmaWindow paints this dedicated theme frame internally.
+            # Update the frame itself as well as its live content-addressed copy.
+            patch(theme / "dialogs/launcher-search.svgz", "search", light, TILES)
+            patch(theme / "dialogs/launcher-search.svgz", "search", light, TILES, theme / "dialogs/glass-search.svgz")
             for name in ("dialogs/background.svgz", "widgets/background.svgz", "widgets/translucentbackground.svgz", "widgets/tooltip.svgz"):
                 patch(theme / name, "popups", light, TILES)
             patch(theme / "widgets/panel-background.svgz", "dock", light, TILES,
