@@ -63,7 +63,7 @@ Window {
             return preferred;
         const y = item.mapToItem(contentItem, 0, item.height / 2).y;
         const row = y * backdropBands.length / height - 0.5;
-        let brightness = 0, weights = 0;
+        let inkSum = 0, weights = 0;
         for (let i = 0; i < backdropBands.length; ++i) {
             // A bell-shaped footprint moves continuously between sample rows.
             const distance = (row - i) / 1.25;
@@ -71,11 +71,12 @@ Window {
             let surface = Qt.tint(backdropBands[i], glass.color);
             if (face)
                 surface = Qt.tint(surface, face);
-            brightness += weight * (0.2126 * surface.r + 0.7152 * surface.g + 0.0722 * surface.b);
+            const luma = 0.2126 * surface.r + 0.7152 * surface.g + 0.0722 * surface.b;
+            const t = Math.max(0, Math.min(1, (luma - 0.34) / 0.16));
+            inkSum += weight * (1 - t * t * (3 - 2 * t));
             weights += weight;
         }
-        const t = Math.max(0, Math.min(1, (brightness / weights - 0.22) / 0.37));
-        const tone = 0.97 - 0.92 * t * t * (3 - 2 * t);
+        const tone = 0.05 + 0.92 * inkSum / weights;
         return Qt.rgba(tone, tone, tone, preferred.a);
     }
 
