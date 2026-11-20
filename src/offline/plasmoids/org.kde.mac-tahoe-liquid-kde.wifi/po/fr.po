@@ -23,8 +23,8 @@ msgstr "Batterie"
 msgid "Battery Settings…"
 msgstr "Réglages Batterie…"
 
-msgid "Battery information will appear when a battery is available."
-msgstr "Les informations apparaîtront lorsqu’une batterie sera disponible."
+msgid "Connect a battery to see its status."
+msgstr "Branchez une batterie pour voir son état."
 
 msgid "Bluetooth"
 msgstr "Bluetooth"

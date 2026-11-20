@@ -35,7 +35,7 @@ Page {
         Layout.fillWidth: true; Layout.leftMargin: 6; Layout.rightMargin: 6; Layout.topMargin: 4; Layout.bottomMargin: 4
         wrapMode: Text.WordWrap
         font.pixelSize: 12; opacity: 0.65
-        text: !view.battery.hasInternalBatteries ? i18n("Battery information will appear when a battery is available.")
+        text: !view.battery.hasInternalBatteries ? i18n("Connect a battery to see its status.")
             : view.battery.pluggedIn ? i18n("Power Source: Power Adapter") : i18n("Power Source: Battery")
     }
     ControlLabel {

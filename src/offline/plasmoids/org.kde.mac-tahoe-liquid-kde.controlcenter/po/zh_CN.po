@@ -23,8 +23,8 @@ msgstr "电池"
 msgid "Battery Settings…"
 msgstr "电池设置…"
 
-msgid "Battery information will appear when a battery is available."
-msgstr "电池可用时将显示电池信息。"
+msgid "Connect a battery to see its status."
+msgstr "连接电池以查看其状态。"
 
 msgid "Bluetooth"
 msgstr "蓝牙"
