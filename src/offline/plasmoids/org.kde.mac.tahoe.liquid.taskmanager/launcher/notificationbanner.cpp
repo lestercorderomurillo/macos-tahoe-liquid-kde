@@ -4,6 +4,7 @@
 */
 
 #include "notificationbanner.h"
+#include "backdropgeometry.h"
 
 #include <KWindowSystem>
 #include <QDBusConnection>
@@ -41,7 +42,9 @@ void NotificationBanner::updateBackdrop(const QString &sample)
     if (object.value(QStringLiteral("pid")).toInteger() != qGuiApp->applicationPid()) return;
     const QRect bounds(object.value(QStringLiteral("x")).toInt(), object.value(QStringLiteral("y")).toInt(),
                        object.value(QStringLiteral("width")).toInt(), object.value(QStringLiteral("height")).toInt());
-    if (bounds != geometry()) return;
+    const int tolerance = BackdropGeometry::edgeTolerance(*this);
+    if (!BackdropGeometry::sizeMatches(bounds, *this)
+        || qAbs(bounds.x() - x()) > tolerance || qAbs(bounds.y() - y()) > tolerance) return;
     const auto rgb = object.value(QStringLiteral("rgb")).toArray();
     if (rgb.size() != 3) return;
     for (const auto &value : rgb) {

@@ -1023,11 +1023,12 @@ def test_clipboard_launcher_integration(repo, tmp_path, monkeypatch, launcher_po
     pytest.importorskip("PyQt6.QtDBus")
     test_native_launcher_popup_presets(repo, tmp_path, monkeypatch, launcher_popup_module,
                                       preset, mode, edition, clipboard_launcher_daemon)
-def test_control_center_glass_regions(launcher_popup_module):
+@pytest.mark.parametrize("scale", [1, 1.45])
+def test_control_center_glass_regions(launcher_popup_module, scale):
     """Floating controls blur and receive input only inside their rounded islands."""
     result = subprocess.run(
         [str(launcher_popup_module.parent / 'controlglassprobe')],
-        env=dict(os.environ, QT_QPA_PLATFORM='offscreen',
+        env=dict(os.environ, QT_QPA_PLATFORM='offscreen', QT_SCALE_FACTOR=str(scale),
                  DBUS_SESSION_BUS_ADDRESS='unix:path=/tmp/no-control-glass-test-bus'),
         capture_output=True, text=True, timeout=30)
     assert result.returncode == 0, result.stdout + result.stderr

@@ -27,6 +27,22 @@ int main(int argc, char **argv)
     if (!window.mask().isEmpty() || glass.surfaces().size() != 1) return 6;
     glass.setMaskWindow(true);
     if (!window.mask().contains(QPoint(112,42)) || window.mask().contains(QPoint(0,0))) return 7;
+    window.setTitle(QStringLiteral("mttkde-apps"));
+    window.setGeometry(10, 10, 420, 250);
+    window.show();
+    const auto sample = [&](QSize size, char channel) {
+        const QRect frame(window.position(), size);
+        const QByteArray colors(8 * 8 * 3, channel);
+        return QMetaObject::invokeMethod(&glass, "updateBackdrop", Qt::DirectConnection,
+            Q_ARG(int, int(app.applicationPid())), Q_ARG(QRect, frame), Q_ARG(QRect, frame),
+            Q_ARG(QByteArray, colors), Q_ARG(QString, window.title()));
+    };
+    if (!sample(window.size(), 0) || glass.backdropAt(QPointF(40,40)) != QColor(Qt::black)) return 8;
+    const bool fractional = !qFuzzyCompare(window.devicePixelRatio(), qreal(qRound(window.devicePixelRatio())));
+    if (!sample(window.size() + QSize(1,0), char(255))
+        || glass.backdropAt(QPointF(40,40)) != QColor(fractional ? Qt::white : Qt::black)) return 9;
+    const auto revision = glass.backdropRevision();
+    if (!sample(window.size() + QSize(8,0), char(90)) || glass.backdropRevision() != revision) return 10;
     glass.setWindow(nullptr);
     std::cout << "CONTROL_GLASS_REGIONS_OK\n";
 }

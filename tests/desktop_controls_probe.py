@@ -247,9 +247,17 @@ noticeForContrast.setProperty('visible', True)
 sample = dict(pid=os.getpid(), x=100, y=100, width=364, height=100, rgb=[1,1,1])
 QMetaObject.invokeMethod(noticeForContrast, 'updateBackdrop', Q_ARG(str, json.dumps(sample)))
 assert noticeForContrast.property('backdropColor').lightnessF() == 1
-for invalid in (dict(sample, pid=os.getpid()+1), dict(sample, width=365), dict(sample, rgb=[-1,0,0])):
+rounded = dict(sample, width=365, rgb=[0,0,0])
+QMetaObject.invokeMethod(noticeForContrast, 'updateBackdrop', Q_ARG(str, json.dumps(rounded)))
+fractional = not float(noticeForContrast.devicePixelRatio()).is_integer()
+expected = 0 if fractional else 1
+assert noticeForContrast.property('backdropColor').lightnessF() == expected
+for invalid in (dict(sample, pid=os.getpid()+1), dict(sample, width=370),
+                dict(sample, y=140), dict(sample, rgb=[-1,0,0])):
+    if invalid['rgb'] == [1,1,1]:
+        invalid['rgb'] = [1 - expected] * 3
     QMetaObject.invokeMethod(noticeForContrast, 'updateBackdrop', Q_ARG(str, json.dumps(invalid)))
-    assert noticeForContrast.property('backdropColor').lightnessF() == 1
+    assert noticeForContrast.property('backdropColor').lightnessF() == expected
 sample['rgb'] = [0,0,0]
 QMetaObject.invokeMethod(noticeForContrast, 'updateBackdrop', Q_ARG(str, json.dumps(sample)))
 assert noticeForContrast.property('backdropColor').lightnessF() == 0

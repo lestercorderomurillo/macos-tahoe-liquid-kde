@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 #include "controlglass.h"
+#include "backdropgeometry.h"
 #include <KWindowEffects>
 #include <QEvent>
 #include <QDBusConnection>
@@ -21,7 +22,7 @@ PopupBackdrop::PopupBackdrop(QObject *parent) : QObject(parent)
 void PopupBackdrop::updateBackdrop(int pid, const QRect &frame, const QRect &bounds, const QByteArray &colors, const QString &title)
 {
     if (!m_window || !m_window->isVisible() || m_window->title() != title
-        || pid != QCoreApplication::applicationPid() || frame.size() != m_window->size()
+        || pid != QCoreApplication::applicationPid() || !BackdropGeometry::sizeMatches(frame, *m_window)
         // Wayland repositions the anchored Plasma dialog relative to its panel.
         || !m_window->screen() || !m_window->screen()->geometry().intersects(frame)
         || bounds.isEmpty() || colors.size() != 8 * 8 * 3) return;
