@@ -17,13 +17,13 @@ QQC.Slider {
         width: slider.availableWidth
         height: 4
         radius: height / 2
-        color: Qt.rgba(slider.ink.r, slider.ink.g, slider.ink.b, 0.16)
+        color: Qt.rgba(slider.ink.r, slider.ink.g, slider.ink.b, 0.2)
         Rectangle {
             width: slider.visualPosition * parent.width
             height: parent.height
             radius: parent.radius
             color: slider.ink
-            opacity: slider.enabled ? 0.85 : 0.25
+            opacity: slider.enabled ? 1 : 0.25
         }
     }
     handle: Item {

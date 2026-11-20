@@ -223,3 +223,9 @@ msgstr "WLAN ist durch den Hardwareschalter gesperrt"
 
 msgid "Wi-Fi is off"
 msgstr "WLAN ist ausgeschaltet"
+
+msgid "No Bluetooth adapter"
+msgstr "Kein Bluetooth-Adapter"
+
+msgid "Bluetooth is off"
+msgstr "Bluetooth ist aus"

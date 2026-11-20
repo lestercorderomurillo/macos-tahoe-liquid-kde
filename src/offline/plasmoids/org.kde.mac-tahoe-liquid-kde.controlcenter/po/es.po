@@ -223,3 +223,9 @@ msgstr "El interruptor físico bloquea el Wi-Fi"
 
 msgid "Wi-Fi is off"
 msgstr "El Wi-Fi está desactivado"
+
+msgid "No Bluetooth adapter"
+msgstr "No hay adaptador Bluetooth"
+
+msgid "Bluetooth is off"
+msgstr "Bluetooth está desactivado"

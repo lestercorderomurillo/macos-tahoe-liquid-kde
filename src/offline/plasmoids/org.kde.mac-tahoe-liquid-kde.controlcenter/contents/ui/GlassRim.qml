@@ -29,10 +29,10 @@ Canvas {
         ctx.strokeStyle = "rgba(0,0,0,0.36)";
         ctx.stroke();
         const edge = ctx.createLinearGradient(0,0,width*0.3,height);
-        edge.addColorStop(0, lightMode ? "rgba(255,255,255,0.82)" : "rgba(255,255,255,0.68)");
+        edge.addColorStop(0, lightMode ? "rgba(255,255,255,0.86)" : "rgba(255,255,255,0.78)");
         edge.addColorStop(0.45,"rgba(255,255,255,0.08)");
         edge.addColorStop(0.72,"rgba(0,0,0,0.12)");
-        edge.addColorStop(1,"rgba(255,255,255,0.46)");
+        edge.addColorStop(1,"rgba(255,255,255,0.56)");
         ctx.strokeStyle = edge; ctx.stroke();
     }
 }

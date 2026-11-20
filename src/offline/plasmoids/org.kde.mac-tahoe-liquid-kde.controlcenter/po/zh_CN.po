@@ -223,3 +223,9 @@ msgstr "无线网络已被硬件开关禁用"
 
 msgid "Wi-Fi is off"
 msgstr "无线网络已关闭"
+
+msgid "No Bluetooth adapter"
+msgstr "没有蓝牙适配器"
+
+msgid "Bluetooth is off"
+msgstr "蓝牙已关闭"

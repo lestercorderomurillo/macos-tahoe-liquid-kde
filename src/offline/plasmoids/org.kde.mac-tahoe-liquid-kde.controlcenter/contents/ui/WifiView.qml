@@ -35,26 +35,13 @@ Page {
             handler.activateConnection(network.ConnectionPath, network.DevicePath, network.SpecificPath);
         else handler.addAndActivateConnection(network.DevicePath, network.SpecificPath);
     }
-    QQC.Switch {
+    MacSwitchHeader {
         id: toggle
         objectName: "wirelessToggle"
-        Layout.fillWidth: true
-        implicitHeight: 36
-        leftPadding: 6; rightPadding: 6
         text: i18n("Wi-Fi")
         checked: view.wireless.wirelessEnabled
         enabled: view.devices.wirelessDeviceAvailable && view.wireless.wirelessHwEnabled
         onClicked: view.handler.enableWireless(!view.wireless.wirelessEnabled)
-        contentItem: ControlLabel { text: toggle.text; font.weight: Font.DemiBold; verticalAlignment: Text.AlignVCenter; rightPadding: 60 }
-        indicator: Rectangle {
-            x: toggle.width - width - toggle.rightPadding
-            y: (toggle.height - height) / 2
-            width: 50; height: 24; radius: 12
-            color: toggle.checked ? "#008aff" : view.lightMode ? Qt.rgba(0,0,0,0.18) : Qt.rgba(1,1,1,0.22)
-            opacity: toggle.enabled ? 1 : 0.4
-            Rectangle { x: toggle.checked ? parent.width - width - 2 : 2; y: 2; width: 30; height: 20; radius: 10; color: "white" }
-        }
-        background: Rectangle { radius: 8; color: Kirigami.Theme.textColor; opacity: toggle.activeFocus ? 0.10 : 0 }
     }
     StatusMenuDivider {}
     ControlLabel {
@@ -65,6 +52,24 @@ Page {
             : !view.wireless.wirelessHwEnabled ? i18n("Wi-Fi is blocked by the hardware switch") : i18n("Wi-Fi is off")
         opacity: 0.65
     }
+    // Wired links have no switch on macOS; list the active ones as known networks.
+    Repeater {
+        id: wiredRepeater
+        model: view.connections
+        delegate: StatusMenuRow {
+            objectName: "wiredRow"
+            required property var model
+            Layout.fillWidth: true
+            visible: model.Type === Network.Enums.Wired && !!model.ConnectionPath
+            text: model.Name || ""
+            symbol: "network-wired-symbolic"
+            selected: model.ConnectionState === Network.Enums.Activated
+            busy: model.ConnectionState === Network.Enums.Activating
+            enabled: !busy
+            onClicked: view.activate(model)
+        }
+    }
+    StatusMenuDivider {}
     QQC.ScrollView {
         id: networkScroll
         padding: 0

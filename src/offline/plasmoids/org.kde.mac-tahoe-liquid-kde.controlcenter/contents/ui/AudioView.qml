@@ -7,11 +7,15 @@ import org.kde.kirigami as Kirigami
 import org.kde.plasma.private.volume as Audio
 ColumnLayout {
     id: view
+    spacing: 5
     property bool detailed: false
     signal detailsRequested()
     property var sink: Audio.PreferredDevice.sink
-    ControlLabel { text: i18n("Sound"); font.weight: Font.DemiBold }
+    ControlLabel { Layout.leftMargin: 16; Layout.topMargin: 11; text: i18n("Sound"); font.pixelSize: Style.tileTitle; font.weight: Font.DemiBold }
     RowLayout {
+        Layout.fillWidth: true
+        Layout.leftMargin: 12; Layout.rightMargin: 13
+        spacing: 6
         ControlIconButton { font.family: "SF Pro Text"; font.pixelSize: 13;
             icon.source: Style.symbol(view.sink && view.sink.muted ? "audio-volume-muted" : "mac-speaker-low")
             icon.width: 16; icon.height: 16; padding: 0; implicitWidth: 22; implicitHeight: 22
@@ -33,10 +37,10 @@ ColumnLayout {
                 view.sink.muted = value === 0;
             }
         }
-        Kirigami.Icon { source: Style.symbol("audio-volume-high"); isMask: true; color: Style.foreground(this, Window.window, "white"); implicitWidth: 22; implicitHeight: 22 }
+        Kirigami.Icon { source: Style.symbol("audio-volume-high"); roundToIconSize: false; isMask: true; color: Style.foreground(this, Window.window, "white"); implicitWidth: 22; implicitHeight: 22 }
         ControlIconButton {
             objectName: "audioOutputs"
-            implicitWidth: 28; implicitHeight: 28; padding: 4
+            implicitWidth: 26; implicitHeight: 26; padding: 4
             background: Rectangle { radius: width / 2; color: Qt.rgba(1,1,1,0.18) }
             icon.source: Style.symbol("mac-airplay")
             text: i18n("Audio outputs"); Accessible.name: text
@@ -44,5 +48,6 @@ ColumnLayout {
             onClicked: view.detailsRequested()
         }
     }
-    ControlLabel { visible: view.detailed; Layout.fillWidth: true; font.pixelSize: Style.caption; opacity: 0.7; text: view.sink ? view.sink.description : i18n("No audio output"); elide: Text.ElideRight }
+    ControlLabel { visible: view.detailed; Layout.fillWidth: true; Layout.leftMargin: 16; font.pixelSize: Style.caption; opacity: 0.7; text: view.sink ? view.sink.description : i18n("No audio output"); elide: Text.ElideRight }
+    Item { Layout.fillHeight: true }
 }

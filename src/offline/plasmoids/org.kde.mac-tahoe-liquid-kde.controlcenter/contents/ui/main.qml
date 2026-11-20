@@ -12,19 +12,27 @@ PlasmoidItem {
         symbol: Qt.resolvedUrl("controlcenter.svg")
         label: i18n("Control Center")
         selected: popup.visible
-        onClicked: popup.visible = !popup.visible
+        onClicked: popup.toggle()
     }
     toolTipMainText: popup.visible ? "" : i18n("Control Center")
     toolTipSubText: ""
-    Connections { target: Plasmoid; function onActivated() { popup.visible = !popup.visible; } }
+    Connections { target: Plasmoid; function onActivated() { popup.toggle(); } }
     ControlDialog {
         id: popup
+        // The 200 ms macOS Tahoe zoom and fade are run by the
+        // mttkde_controlcenter_transition KWin effect, at display rate.
+        function toggle() { visible = !visible; }
+        function dismiss() { visible = false; }
         title: "mttkde-control-center"
+        // macOS Tahoe keeps the Control Center text and symbols white in dark mode.
+        adaptiveForeground: false
+        // The transparent shadow margin must not let the pointer reach windows below.
+        inputOnGlassOnly: false
         visible: false
         visualParent: root
         location: Plasmoid.location
         surfaces: controls.surfaces
-        mainItem: ControlView { id: controls; preferences: Plasmoid.configuration; width: implicitWidth; height: implicitHeight; onCloseRequested: popup.visible = false }
+        mainItem: ControlView { id: controls; shadowMargin: 170; preferences: Plasmoid.configuration; width: implicitWidth; height: implicitHeight; onCloseRequested: popup.dismiss() }
         onVisibleChanged: { if (visible) { requestActivate(); controls.forceActiveFocus(); } else controls.section = ""; }
     }
 }

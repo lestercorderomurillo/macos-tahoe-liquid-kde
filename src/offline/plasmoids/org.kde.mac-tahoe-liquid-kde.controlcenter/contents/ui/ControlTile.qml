@@ -13,7 +13,7 @@ QQC.Pane {
     property string materialComponent: "control-center"
     property real lightFallback: 0.18
     property real darkFallback: 0.12
-    property real rimWidth: 0.85
+    property real rimWidth: 1.1
     property bool doubleRim: false
     property color darkTint: "white"
     property real cornerRadius: Math.min(width, height) / 2

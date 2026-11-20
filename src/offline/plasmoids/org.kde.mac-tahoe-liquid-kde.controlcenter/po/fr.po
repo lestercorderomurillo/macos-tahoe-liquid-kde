@@ -223,3 +223,9 @@ msgstr "Le Wi-Fi est bloqué par l’interrupteur matériel"
 
 msgid "Wi-Fi is off"
 msgstr "Le Wi-Fi est désactivé"
+
+msgid "No Bluetooth adapter"
+msgstr "Aucun adaptateur Bluetooth"
+
+msgid "Bluetooth is off"
+msgstr "Le Bluetooth est désactivé"
