@@ -1478,7 +1478,8 @@ class InstallerWindow(OpaqueSurface):
             warning = self.label("")
             warning.setObjectName("summaryWarning")
             warning.setText("\n".join(self.t(message) for message in notices))
-            red = "#ff9994" if self.mode == "dark" else "#a32322"
+            dark = self.palette().window().color().lightnessF() <= .5
+            red = "#ff9994" if dark else "#a32322"
             warning.setStyleSheet(f"border-left: 3px solid {red}; padding-left: 8px; color: {red};")
             self.body.addWidget(warning)
 
