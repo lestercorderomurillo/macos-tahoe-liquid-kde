@@ -170,7 +170,7 @@
       "apps": {
         "SurfaceTransparencyLight": 40,
         "SurfaceTransparencyDark": 90,
-        "BlurStrength": 3,
+        "BlurStrength": 12,
         "GradientCenterOpacity": 0,
         "GradientCenterPosition": 0.55,
         "GradientTopColor": "#ffffff",
