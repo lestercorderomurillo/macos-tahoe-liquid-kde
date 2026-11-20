@@ -284,7 +284,7 @@ def test_dock_assets_are_identical_between_modes():
 @pytest.mark.parametrize("mode", ["Light", "Dark"])
 @pytest.mark.parametrize("name", ["dialogs/background", "dialogs/launcher-search",
                                   "widgets/tooltip", "widgets/panel-background"])
-def test_surface_contours_have_same_dark_outer_and_light_inner_line(mode, name):
+def test_surface_contours_match_material(mode, name):
     svg = pytest.importorskip("PyQt6.QtSvg")
     gui = pytest.importorskip("PyQt6.QtGui")
     core = pytest.importorskip("PyQt6.QtCore")
@@ -297,14 +297,18 @@ def test_surface_contours_have_same_dark_outer_and_light_inner_line(mode, name):
     painter.end()
     x = size.width() // 2
     outer, inner, body = (image.pixelColor(x, y) for y in (1, 4, 12))
-    assert outer.red() < inner.red(), (mode, name, outer.getRgb(), inner.getRgb())
-    assert outer.alphaF() > body.alphaF() and inner.alphaF() > body.alphaF()
-    # Two adjacent .75 logical-pixel contours; no wider third border.
+    if name == "widgets/panel-background":
+        assert outer == body
+        assert inner.red() > 240 and inner.alphaF() > body.alphaF()
+    else:
+        assert outer.red() < inner.red(), (mode, name, outer.getRgb(), inner.getRgb())
+        assert outer.alphaF() > body.alphaF() and inner.alphaF() > body.alphaF()
+    # The contour ends before the second logical pixel.
     assert image.pixelColor(x, 7) == body
 
 
 @pytest.mark.parametrize("mode", ["Light", "Dark"])
-def test_all_dock_corners_keep_both_contours(mode):
+def test_all_dock_corners_have_single_light_rim(mode):
     svg = pytest.importorskip("PyQt6.QtSvg")
     gui = pytest.importorskip("PyQt6.QtGui")
     core = pytest.importorskip("PyQt6.QtCore")
@@ -317,6 +321,6 @@ def test_all_dock_corners_keep_both_contours(mode):
             renderer.render(painter, prefix + corner, core.QRectF(0, 0, 128, 128))
             painter.end()
             contour = [image.pixelColor(x, y) for x in range(128) for y in range(128)
-                       if image.pixelColor(x, y).alphaF() > .15]
-            assert any(c.red() < 40 for c in contour), (prefix, corner, "dark line missing")
-            assert any(c.red() > 240 for c in contour), (prefix, corner, "light line missing")
+                       if image.pixelColor(x, y).alphaF() > .08]
+            assert contour, (prefix, corner, "rim missing")
+            assert all(c.red() > 240 for c in contour), (prefix, corner, "light line missing")
