@@ -2,11 +2,43 @@
 #include "controlglass.h"
 #include <KWindowEffects>
 #include <QEvent>
+#include <QDBusConnection>
+#include <QCoreApplication>
 #include <QPainterPath>
 #include <QQuickWindow>
+#include <QScreen>
 #include <QTimer>
 #include <algorithm>
 #include <cmath>
+
+ControlGlass::ControlGlass(QObject *parent) : QObject(parent)
+{
+    QDBusConnection::sessionBus().connect(QStringLiteral("org.kde.KWin"),
+        QStringLiteral("/org/kde/MacTahoe/Glass"), QStringLiteral("org.kde.MacTahoe.Glass"),
+        QStringLiteral("controlBackdrop"), this, SLOT(updateBackdrop(int,QRect,QRect,QByteArray)));
+}
+
+void ControlGlass::updateBackdrop(int pid, const QRect &frame, const QRect &bounds, const QByteArray &colors)
+{
+    if (!m_window || !m_window->isVisible() || m_window->title() != QStringLiteral("mttkde-control-center")
+        || pid != QCoreApplication::applicationPid() || frame.size() != m_window->size()
+        // Wayland repositions the anchored Plasma dialog relative to its panel.
+        || !m_window->screen() || !m_window->screen()->geometry().intersects(frame)
+        || bounds.isEmpty() || colors.size() != 8 * 8 * 3) return;
+    m_sampleBounds = bounds.translated(-frame.topLeft());
+    m_backdropGrid = colors;
+    ++m_revision;
+    Q_EMIT backdropChanged();
+}
+
+QColor ControlGlass::backdropAt(QPointF point) const
+{
+    if (m_backdropGrid.isEmpty()) return Qt::transparent;
+    const int x = std::clamp(int((point.x() - m_sampleBounds.x()) * 8 / m_sampleBounds.width()), 0, 7);
+    const int y = std::clamp(int((point.y() - m_sampleBounds.y()) * 8 / m_sampleBounds.height()), 0, 7);
+    const auto *rgb = reinterpret_cast<const unsigned char *>(m_backdropGrid.constData()) + (y * 8 + x) * 3;
+    return QColor(rgb[0], rgb[1], rgb[2]);
+}
 
 QRegion ControlGlass::regionFor(const QVariantList &surfaces)
 {

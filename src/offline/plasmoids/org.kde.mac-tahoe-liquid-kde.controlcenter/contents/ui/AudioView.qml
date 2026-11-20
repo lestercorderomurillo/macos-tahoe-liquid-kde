@@ -33,7 +33,7 @@ ColumnLayout {
                 view.sink.muted = value === 0;
             }
         }
-        Kirigami.Icon { source: Style.symbol("audio-volume-high"); isMask: true; color: "white"; implicitWidth: 22; implicitHeight: 22 }
+        Kirigami.Icon { source: Style.symbol("audio-volume-high"); isMask: true; color: Style.foreground(this, Window.window, "white"); implicitWidth: 22; implicitHeight: 22 }
         ControlIconButton {
             objectName: "audioOutputs"
             implicitWidth: 28; implicitHeight: 28; padding: 4

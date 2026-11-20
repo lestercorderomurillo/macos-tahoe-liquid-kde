@@ -13,8 +13,8 @@ function ratio(a, b) {
 }
 
 function foreground(base, backdrop, surface) {
-    // Match the Shell's 25% offset from its effective text palette.
-    const preferred = Qt.tint(base, luminance(base) > 0.5 ? "#40ffffff" : "#40000000");
+    // Move the preferred text 40% toward its nearest luminance extreme.
+    const preferred = Qt.tint(base, luminance(base) > 0.5 ? "#66ffffff" : "#66000000");
     if (backdrop.a === 0) return preferred;
     const background = Qt.rgba(surface.r * surface.a + backdrop.r * (1 - surface.a),
         surface.g * surface.a + backdrop.g * (1 - surface.a),

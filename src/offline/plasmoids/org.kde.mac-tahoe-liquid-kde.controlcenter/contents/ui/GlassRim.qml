@@ -15,7 +15,7 @@ Canvas {
     onLineWidthChanged: requestPaint()
     onPaint: {
         const ctx = getContext("2d"); ctx.reset();
-        const inset = 0.65, w = width - 2 * inset, h = height - 2 * inset;
+        const inset = rim.lineWidth / 2, w = width - 2 * inset, h = height - 2 * inset;
         if (w <= 0 || h <= 0) return;
         const r = Math.max(0, Math.min(cornerRadius - inset, w / 2, h / 2));
         const x = inset, y = inset;
@@ -24,11 +24,15 @@ Canvas {
         ctx.arcTo(x+w,y+h,x+w-r,y+h,r); ctx.lineTo(x+r,y+h);
         ctx.arcTo(x,y+h,x,y+h-r,r); ctx.lineTo(x,y+r);
         ctx.arcTo(x,y,x+r,y,r); ctx.closePath();
+        // A neutral keyline keeps the fine highlight visible across a white backdrop.
+        ctx.lineWidth = rim.lineWidth;
+        ctx.strokeStyle = "rgba(0,0,0,0.36)";
+        ctx.stroke();
         const edge = ctx.createLinearGradient(0,0,width*0.3,height);
-        edge.addColorStop(0, lightMode ? "rgba(255,255,255,0.82)" : "rgba(255,255,255,0.5)");
+        edge.addColorStop(0, lightMode ? "rgba(255,255,255,0.82)" : "rgba(255,255,255,0.68)");
         edge.addColorStop(0.45,"rgba(255,255,255,0.08)");
         edge.addColorStop(0.72,"rgba(0,0,0,0.12)");
-        edge.addColorStop(1,"rgba(255,255,255,0.34)");
-        ctx.strokeStyle = edge; ctx.lineWidth = rim.lineWidth; ctx.stroke();
+        edge.addColorStop(1,"rgba(255,255,255,0.46)");
+        ctx.strokeStyle = edge; ctx.stroke();
     }
 }

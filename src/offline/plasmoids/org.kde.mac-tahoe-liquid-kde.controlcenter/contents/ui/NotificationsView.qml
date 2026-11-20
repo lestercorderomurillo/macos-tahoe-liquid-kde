@@ -59,6 +59,7 @@ Page {
             objectName: "notificationCenterHeading"
             text: view.standalone ? i18n("Notification Center") : i18n("Notifications")
             font.family: "SF Pro Display"; font.pixelSize: 18; font.weight: Font.DemiBold
+            backdropColor: view.backdropColor
             floating: view.standalone
             Layout.fillWidth: true
         }
@@ -78,6 +79,7 @@ Page {
     }
     NotificationBackdropLabel {
         text: i18n("No notifications")
+        backdropColor: view.backdropColor
         floating: view.standalone
         visible: view.history.count === 0
     }

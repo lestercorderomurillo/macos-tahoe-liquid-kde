@@ -26,7 +26,7 @@ QQC.AbstractButton {
                 anchors.centerIn: parent
                 width: action.compact ? Style.circleIcon : Style.actionIcon; height: width
                 source: Style.symbol(action.symbol)
-                color: action.active ? action.activeSymbolColor : Kirigami.Theme.textColor
+                color: action.active ? action.activeSymbolColor : Style.foreground(this, Window.window, Kirigami.Theme.textColor)
                 opacity: action.enabled ? 1 : 0.35
             }
         }

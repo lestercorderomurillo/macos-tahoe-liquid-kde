@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 import QtQuick
+import "ControlStyle.js" as Style
 import QtQuick.Controls as QQC
 import org.kde.kirigami as Kirigami
 QQC.ToolButton {
@@ -27,7 +28,7 @@ QQC.ToolButton {
             Kirigami.Theme.inherit: false
             Kirigami.Theme.colorGroup: Kirigami.Theme.Active
             source: button.icon.source.toString().length ? button.icon.source : button.icon.name
-            color: button.icon.color
+            color: Style.foreground(this, Window.window, button.icon.color)
             opacity: button.enabled ? 1 : 0.55
         }
     }

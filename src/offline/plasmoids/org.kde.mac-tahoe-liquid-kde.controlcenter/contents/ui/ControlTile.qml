@@ -13,7 +13,7 @@ QQC.Pane {
     property string materialComponent: "control-center"
     property real lightFallback: 0.18
     property real darkFallback: 0.12
-    property real rimWidth: 1.25
+    property real rimWidth: 0.85
     property bool doubleRim: false
     property color darkTint: "white"
     property real cornerRadius: Math.min(width, height) / 2
@@ -28,8 +28,9 @@ QQC.Pane {
             id: backgroundTint
             anchors.fill: parent
             radius: tile.cornerRadius
-            border.width: tile.doubleRim ? 0.75 : 0
-            border.color: Qt.rgba(0, 0, 0, 0.18)
+            border.width: tile.doubleRim ? 0.7 : 0
+            border.pixelAligned: false
+            border.color: Qt.rgba(0, 0, 0, 0.38)
             color: tile.lightMode ? Qt.rgba(1, 1, 1, glassSettings.lightOpacity >= 0 ? glassSettings.lightOpacity : tile.lightFallback)
                                  : Qt.rgba(tile.darkTint.r, tile.darkTint.g, tile.darkTint.b, glassSettings.darkOpacity >= 0 ? glassSettings.darkOpacity : tile.darkFallback)
         }

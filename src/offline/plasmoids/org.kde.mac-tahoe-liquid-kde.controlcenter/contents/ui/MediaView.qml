@@ -14,7 +14,7 @@ ColumnLayout {
     Item {
         Layout.preferredWidth: 38; Layout.preferredHeight: 38; Layout.minimumHeight: 38
         Rectangle { anchors.fill: parent; radius: 9; color: "#20808080" }
-        Kirigami.Icon { anchors.centerIn: parent; width: 24; height: 24; source: Style.symbol("audio-x-generic"); isMask: true; color: "white"; visible: view.hasTrack && cover.status !== Image.Ready }
+        Kirigami.Icon { anchors.centerIn: parent; width: 24; height: 24; source: Style.symbol("audio-x-generic"); isMask: true; color: Style.foreground(this, Window.window, "white"); visible: view.hasTrack && cover.status !== Image.Ready }
         Image { id: cover; anchors.fill: parent; source: view.hasTrack ? view.player.artUrl : ""; fillMode: Image.PreserveAspectCrop }
     }
     ControlLabel { Layout.fillWidth: true; Layout.minimumWidth: 0; objectName: "trackTitle"; wrapMode: Text.Wrap; maximumLineCount: 2; text: view.hasTrack ? view.player.track : i18n("Nothing playing"); elide: Text.ElideRight }

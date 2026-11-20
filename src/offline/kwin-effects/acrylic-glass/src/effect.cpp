@@ -2006,7 +2006,10 @@ void BlurEffect::blur(
 
     // Foreground contrast uses the captured backdrop, never the notification's
     // own pixels. The existing blur/material passes and saved optics are unchanged.
-    if (isProjectNotification(w->window()->resourceClass(), w->caption())) {
+    const QString resourceClass = w->window()->resourceClass();
+    const bool controlCenter = w->caption() == QStringLiteral("mttkde-control-center")
+        && (resourceClass == QStringLiteral("plasmashell") || resourceClass == QStringLiteral("org.kde.plasmashell"));
+    if (controlCenter || isProjectNotification(resourceClass, w->caption())) {
         if (!blurInfo.contrastTimer.isValid() || blurInfo.contrastTimer.elapsed() >= 200) {
             blurInfo.contrastTimer.start();
             if (!m_contrastTexture) {
@@ -2046,28 +2049,53 @@ void BlurEffect::blur(
                 GLFramebuffer::popFramebuffer();
                 ShaderManager::instance()->popShader();
                 if (blendEnabled) glEnable(GL_BLEND);
-                QVector4D rgb(0, 0, 0, 1);
-                for (size_t i = 0; i < pixels.size(); i += 4) {
-                    rgb.setX(rgb.x() + pixels[i] / (255.0f * 64));
-                    rgb.setY(rgb.y() + pixels[i + 1] / (255.0f * 64));
-                    rgb.setZ(rgb.z() + pixels[i + 2] / (255.0f * 64));
-                }
-                // The production fragment shader uses a row-vector transform.
-                rgb = material.color.transposed() * rgb;
-                const QColor color = QColor::fromRgbF(std::clamp(rgb.x(), 0.0f, 1.0f),
-                    std::clamp(rgb.y(), 0.0f, 1.0f), std::clamp(rgb.z(), 0.0f, 1.0f));
-                const QRect bounds = w->frameGeometry().toAlignedRect();
-                if (color != blurInfo.contrastColor || bounds != blurInfo.contrastBounds) {
-                    blurInfo.contrastColor = color;
-                    blurInfo.contrastBounds = bounds;
-                    auto message = QDBusMessage::createSignal(QStringLiteral("/org/kde/MacTahoe/Glass"),
-                        QStringLiteral("org.kde.MacTahoe.Glass"), QStringLiteral("backdropSample"));
-                    const QJsonObject sample{{QStringLiteral("pid"), w->window()->pid()},
-                        {QStringLiteral("x"), bounds.x()}, {QStringLiteral("y"), bounds.y()},
-                        {QStringLiteral("width"), bounds.width()}, {QStringLiteral("height"), bounds.height()},
-                        {QStringLiteral("rgb"), QJsonArray{color.redF(), color.greenF(), color.blueF()}}};
-                    message << QString::fromUtf8(QJsonDocument(sample).toJson(QJsonDocument::Compact));
-                    QDBusConnection::sessionBus().send(message);
+                if (controlCenter) {
+                    // Keep the spatial samples: two labels can be over opposite backdrops.
+                    QByteArray colors;
+                    colors.reserve(8 * 8 * 3);
+                    const auto transform = material.color.transposed();
+                    for (int y = 7; y >= 0; --y) {
+                        for (int x = 0; x < 8; ++x) {
+                            const auto *pixel = pixels.data() + (y * 8 + x) * 4;
+                            const auto rgb = transform * QVector4D(pixel[0] / 255.f, pixel[1] / 255.f, pixel[2] / 255.f, 1);
+                            for (int c = 0; c < 3; ++c)
+                                colors.append(char(qRound(std::clamp(rgb[c], 0.f, 1.f) * 255)));
+                        }
+                    }
+                    const QRect frame = w->frameGeometry().toAlignedRect();
+                    if (colors != blurInfo.contrastGrid || backgroundRect != blurInfo.sampleBounds || frame != blurInfo.contrastBounds) {
+                        blurInfo.contrastGrid = colors;
+                        blurInfo.sampleBounds = backgroundRect;
+                        blurInfo.contrastBounds = frame;
+                        auto message = QDBusMessage::createSignal(QStringLiteral("/org/kde/MacTahoe/Glass"),
+                            QStringLiteral("org.kde.MacTahoe.Glass"), QStringLiteral("controlBackdrop"));
+                        message << int(w->window()->pid()) << frame << backgroundRect << colors;
+                        QDBusConnection::sessionBus().send(message);
+                    }
+                } else {
+                    QVector4D rgb(0, 0, 0, 1);
+                    for (size_t i = 0; i < pixels.size(); i += 4) {
+                        rgb.setX(rgb.x() + pixels[i] / (255.0f * 64));
+                        rgb.setY(rgb.y() + pixels[i + 1] / (255.0f * 64));
+                        rgb.setZ(rgb.z() + pixels[i + 2] / (255.0f * 64));
+                    }
+                    // The production fragment shader uses a row-vector transform.
+                    rgb = material.color.transposed() * rgb;
+                    const QColor color = QColor::fromRgbF(std::clamp(rgb.x(), 0.0f, 1.0f),
+                        std::clamp(rgb.y(), 0.0f, 1.0f), std::clamp(rgb.z(), 0.0f, 1.0f));
+                    const QRect bounds = w->frameGeometry().toAlignedRect();
+                    if (color != blurInfo.contrastColor || bounds != blurInfo.contrastBounds) {
+                        blurInfo.contrastColor = color;
+                        blurInfo.contrastBounds = bounds;
+                        auto message = QDBusMessage::createSignal(QStringLiteral("/org/kde/MacTahoe/Glass"),
+                            QStringLiteral("org.kde.MacTahoe.Glass"), QStringLiteral("backdropSample"));
+                        const QJsonObject sample{{QStringLiteral("pid"), w->window()->pid()},
+                            {QStringLiteral("x"), bounds.x()}, {QStringLiteral("y"), bounds.y()},
+                            {QStringLiteral("width"), bounds.width()}, {QStringLiteral("height"), bounds.height()},
+                            {QStringLiteral("rgb"), QJsonArray{color.redF(), color.greenF(), color.blueF()}}};
+                        message << QString::fromUtf8(QJsonDocument(sample).toJson(QJsonDocument::Compact));
+                        QDBusConnection::sessionBus().send(message);
+                    }
                 }
             }
         } else if (!blurInfo.contrastScheduled) {

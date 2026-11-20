@@ -1,9 +1,11 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 import QtQuick
+import "ControlStyle.js" as Style
 import QtQuick.Controls as QQC
 import org.kde.kirigami as Kirigami
 QQC.Slider {
     id: slider
+    readonly property color ink: Style.foreground(slider, Window.window, Kirigami.Theme.textColor)
     implicitHeight: 22
     hoverEnabled: true
     readonly property bool handleShown: enabled && (hovered || pressed || visualFocus)
@@ -15,12 +17,12 @@ QQC.Slider {
         width: slider.availableWidth
         height: 4
         radius: height / 2
-        color: Qt.rgba(Kirigami.Theme.textColor.r, Kirigami.Theme.textColor.g, Kirigami.Theme.textColor.b, 0.16)
+        color: Qt.rgba(slider.ink.r, slider.ink.g, slider.ink.b, 0.16)
         Rectangle {
             width: slider.visualPosition * parent.width
             height: parent.height
             radius: parent.radius
-            color: Kirigami.Theme.textColor
+            color: slider.ink
             opacity: slider.enabled ? 0.85 : 0.25
         }
     }

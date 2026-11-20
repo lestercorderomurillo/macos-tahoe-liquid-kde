@@ -89,6 +89,8 @@ struct BlurEffectData
     QElapsedTimer contrastTimer;
     bool contrastScheduled = false;
     QColor contrastColor;
+    QByteArray contrastGrid;
+    QRect sampleBounds;
     QRect contrastBounds;
 
     /**
