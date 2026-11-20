@@ -100,8 +100,8 @@ dock.hiding = "autohide";
 dock.height = 68;
 
 if (typeof userLauncherTypes !== "undefined") {
-        var saved = userLaunchers[dock.screen] || [];
-        for (var n = 0; n < saved.length; n++) dock.addWidget(saved[n]);
+        var savedScreenLaunchers = userLaunchers[dock.screen] || [];
+        for (var n = 0; n < savedScreenLaunchers.length; n++) dock.addWidget(savedScreenLaunchers[n]);
     } else {
         var launcher = dock.addWidget("org.kde.mac-tahoe-liquid-kde.launcher");
     launcher.currentConfigGroup = ["General"];

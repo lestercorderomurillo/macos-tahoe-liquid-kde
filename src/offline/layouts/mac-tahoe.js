@@ -56,8 +56,8 @@ for (var screen = 0; screen < screenCount; screen++) {
     // individual applets. Plasma's own floating-applet surfaces provide the
     // intended light/dark-aware glass treatment.
     if (typeof userLauncherTypes !== "undefined" && typeof mttkdeDock !== "undefined" && !mttkdeDock) {
-        var saved = userLaunchers[screen] || [];
-        for (var n = 0; n < saved.length; n++) bar.addWidget(saved[n]);
+        var savedScreenLaunchers = userLaunchers[screen] || [];
+        for (var n = 0; n < savedScreenLaunchers.length; n++) bar.addWidget(savedScreenLaunchers[n]);
     }
     var colorizer = bar.addWidget("luisbocanegra.panel.colorizer");
     if (colorizer) {
@@ -123,8 +123,8 @@ for (var screen = 0; screen < screenCount; screen++) {
     dock.height = 68;
 
     if (typeof userLauncherTypes !== "undefined") {
-        var saved = userLaunchers[dock.screen] || [];
-        for (var n = 0; n < saved.length; n++) dock.addWidget(saved[n]);
+        var savedScreenLaunchers = userLaunchers[dock.screen] || [];
+        for (var n = 0; n < savedScreenLaunchers.length; n++) dock.addWidget(savedScreenLaunchers[n]);
     } else {
         var launcher = dock.addWidget("org.kde.mac-tahoe-liquid-kde.launcher");
         launcher.currentConfigGroup = ["General"];
