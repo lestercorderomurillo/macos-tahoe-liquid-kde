@@ -60,7 +60,7 @@ Native.NotificationBanner {
         window: banner
         surfaces: tile.surfaces.map(area => ({x:area.x+10, y:area.y+10,
             width:area.width, height:area.height, radius:area.radius})).concat(
-            card.closeVisible ? [{x:4, y:6, width:20, height:20, radius:10}] : [])
+            card.closeVisible ? [{x:4, y:6, width:20, height:20, radius:10, glass:false}] : [])
     }
     property Timer expiry: Timer {
         objectName: "notificationExpiry"

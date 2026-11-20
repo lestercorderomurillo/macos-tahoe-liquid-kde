@@ -41,11 +41,14 @@ QColor PopupBackdrop::backdropAt(QPointF point) const
     return QColor(rgb[0], rgb[1], rgb[2]);
 }
 
-QRegion ControlGlass::regionFor(const QVariantList &surfaces)
+QRegion ControlGlass::regionFor(const QVariantList &surfaces, bool glassOnly)
 {
     QRegion result;
     for (const auto &value : surfaces) {
         const auto surface = value.toMap();
+        if (glassOnly && surface.contains(QStringLiteral("glass")) && !surface.value(QStringLiteral("glass")).toBool()) {
+            continue;
+        }
         const QRectF rect(surface.value(QStringLiteral("x")).toReal(), surface.value(QStringLiteral("y")).toReal(),
                           surface.value(QStringLiteral("width")).toReal(), surface.value(QStringLiteral("height")).toReal());
         const qreal radius = surface.value(QStringLiteral("radius")).toReal();
@@ -102,6 +105,7 @@ void ControlGlass::setSurfaces(const QVariantList &surfaces)
     if (m_surfaces == surfaces) return;
     m_surfaces = surfaces;
     m_region = regionFor(surfaces);
+    m_inputRegion = regionFor(surfaces, false);
     Q_EMIT surfacesChanged();
     apply();
 }
@@ -119,7 +123,7 @@ void ControlGlass::apply()
     if (!m_window) return;
     // Floating notification headers need pointer input and text outside the
     // glass cards. Their blur islands remain independently constrained.
-    const QRegion inputRegion = m_maskWindow ? m_region : QRegion();
+    const QRegion inputRegion = m_maskWindow ? m_inputRegion : QRegion();
     if (m_window->mask() != inputRegion) m_window->setMask(inputRegion);
     KWindowEffects::enableBlurBehind(m_window, !m_region.isEmpty(), m_region);
 }
