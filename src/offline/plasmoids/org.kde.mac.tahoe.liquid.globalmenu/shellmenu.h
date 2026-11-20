@@ -23,5 +23,5 @@ private:
     bool m_dynamicTinting = true;
     QByteArray m_grid;
     QRect m_bounds;
-    QHash<const QAction *, QColor> m_rowBackgrounds;
+    QHash<const QAction *, QColor> m_rowInks;
 };

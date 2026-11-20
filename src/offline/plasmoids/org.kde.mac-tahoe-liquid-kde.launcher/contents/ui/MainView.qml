@@ -139,6 +139,7 @@ Item {
 	}
     Tahoe.PopupBackdrop { id: appBackdrop; window: root }
     function labelColor(item, sampleX = item.width / 2, overlay = "transparent") {
+        if (!root.glassSettings.dynamicTinting) return main.textColor;
         appBackdrop.backdropRevision;
         // Track delegate movement as well as changes behind the stationary popup.
         for (let parentItem = item; parentItem; parentItem = parentItem.parent) {
@@ -148,8 +149,8 @@ Item {
         const saved = isDarkTheme ? root.glassSettings.darkOpacity : root.glassSettings.lightOpacity;
         const alpha = saved >= 0 ? saved : isDarkTheme ? (goldenGateEdition ? 0.12 : 0.48) : 0.55;
         const tint = isDarkTheme ? 0 : 1;
-        return Contrast.foreground(glassPalette.Kirigami.Theme.textColor, appBackdrop.backdropAt(point),
-                                   Qt.tint(Qt.rgba(tint, tint, tint, alpha), overlay));
+        return appBackdrop.foregroundAt(point, Qt.size(Math.min(40, item.width / 2), Math.max(24, item.height / 2)),
+                                      main.textColor, Qt.tint(Qt.rgba(tint, tint, tint, alpha), overlay));
     }
 	readonly property color textColor: Contrast.preferredText(glassPalette.Kirigami.Theme.textColor)
 	readonly property string textFont: Kirigami.Theme.defaultFont.family

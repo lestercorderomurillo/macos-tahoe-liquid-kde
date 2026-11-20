@@ -7,6 +7,7 @@ import org.kde.kquickcontrolsaddons as KQuickAddons
 import org.kde.notificationmanager as Notifications
 import org.kde.plasma.extras as PlasmaExtras
 import QtQml.Models
+import org.kde.mac.tahoe.launcher as Native
 import "NotificationContrast.js" as Contrast
 
 Item {
@@ -30,8 +31,10 @@ Item {
     readonly property bool lightMode: Kirigami.Theme.textColor.r * 0.2126 + Kirigami.Theme.textColor.g * 0.7152 + Kirigami.Theme.textColor.b * 0.0722 < 0.5
     property color backdropColor: "transparent"
     property color surfaceColor: "transparent"
-    readonly property color foregroundColor: Contrast.foreground(Kirigami.Theme.textColor,
-        backdropColor, surfaceColor)
+    Native.GlassSettings { id: inkSettings; component: "notifications" }
+    readonly property color foregroundColor: inkSettings.dynamicTinting
+        ? inkSettings.notificationForeground(Contrast.preferredText(Kirigami.Theme.textColor), backdropColor, surfaceColor)
+        : Contrast.preferredText(Kirigami.Theme.textColor)
     readonly property bool hovered: hover.hovered
     readonly property bool interacting: hovered || dismiss.hovered || reply.activeFocus || options.visible
     readonly property bool closeVisible: dismiss.opacity > 0

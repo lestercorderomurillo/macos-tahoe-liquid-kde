@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 #include "controlglass.h"
+#include "glassink.h"
 #include "backdropgeometry.h"
 #include <KWindowEffects>
 #include <QEvent>
@@ -39,6 +40,12 @@ QColor PopupBackdrop::backdropAt(QPointF point) const
     const int y = std::clamp(int((point.y() - m_sampleBounds.y()) * 8 / m_sampleBounds.height()), 0, 7);
     const auto *rgb = reinterpret_cast<const unsigned char *>(m_backdropGrid.constData()) + (y * 8 + x) * 3;
     return QColor(rgb[0], rgb[1], rgb[2]);
+}
+
+QColor PopupBackdrop::foregroundAt(QPointF point, QSizeF radius, QColor base, QColor fill) const
+{
+    if (m_backdropGrid.isEmpty()) return base;
+    return GlassInk::sample(base, point, radius, [&](QPointF p) { return GlassInk::composite(backdropAt(p), fill); });
 }
 
 QRegion ControlGlass::regionFor(const QVariantList &surfaces, bool glassOnly)

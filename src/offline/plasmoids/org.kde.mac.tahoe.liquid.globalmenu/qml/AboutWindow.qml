@@ -37,51 +37,12 @@ Window {
 
     NativeGlass.PopupBackdrop { id: backdrop; window: aboutWindow }
 
-    // Average across each horizontal band once, so columns share the same tint.
-    readonly property var backdropBands: {
-        const bands = [];
-        if (!glassSettings.dynamicTinting || !backdrop.backdropRevision)
-            return bands;
-        for (let row = 0; row < 8; ++row) {
-            let red = 0, green = 0, blue = 0;
-            for (let col = 0; col < 8; ++col) {
-                const sample = backdrop.backdropAt(Qt.point(width * (col + 0.5) / 8,
-                                                            height * (row + 0.5) / 8));
-                if (!sample.a)
-                    return [];
-                red += sample.r;
-                green += sample.g;
-                blue += sample.b;
-            }
-            bands.push(Qt.rgba(red / 8, green / 8, blue / 8, 1));
-        }
-        return bands;
-    }
-
     function ink(item, preferred, face) {
-        if (!backdropBands.length || !item.width || !item.height)
+        if (!glassSettings.dynamicTinting || !backdrop.backdropRevision || !item.width || !item.height)
             return preferred;
-        const y = item.mapToItem(contentItem, 0, item.height / 2).y;
-        const row = y * backdropBands.length / height - 0.5;
-        let inkSum = 0, weights = 0;
-        for (let i = 0; i < backdropBands.length; ++i) {
-            // A bell-shaped footprint moves continuously between sample rows.
-            const distance = (row - i) / 1.25;
-            const weight = Math.exp(-0.5 * distance * distance);
-            let surface = Qt.tint(backdropBands[i], glass.color);
-            if (face)
-                surface = Qt.tint(surface, face);
-            const luma = 0.2126 * surface.r + 0.7152 * surface.g + 0.0722 * surface.b;
-            const t = Math.max(0, Math.min(1, (luma - 0.34) / 0.16));
-            inkSum += weight * (1 - t * t * (3 - 2 * t));
-            weights += weight;
-        }
-        // Keep intermediate gray near the crossing; give adjoining lines
-        // enough contrast while retaining a continuous change in tone.
-        const mix = inkSum / weights;
-        const mid = Math.max(0, Math.min(1, (mix - 0.25) / 0.5));
-        const tone = 0.05 + 0.92 * (0.2 * mix + 0.8 * mid * mid * (3 - 2 * mid));
-        return Qt.rgba(tone, tone, tone, preferred.a);
+        const point = item.mapToItem(contentItem, item.width / 2, item.height / 2);
+        return backdrop.foregroundAt(point, Qt.size(width / 4, height / 9), preferred,
+                                     face ? Qt.tint(glass.color, face) : glass.color);
     }
 
     component PrimaryLabel: Text {

@@ -2,7 +2,6 @@
 import QtQuick
 import org.kde.plasma.core as PlasmaCore
 import org.kde.mac.tahoe.launcher as Native
-import "NotificationContrast.js" as Contrast
 
 PlasmaCore.Dialog {
     id: popup
@@ -14,8 +13,8 @@ PlasmaCore.Dialog {
 
     // When false, text and symbols keep the theme colour instead of switching
     // to dark over a bright backdrop.
-    property bool adaptiveForeground: true
-    property bool regionalForeground: false
+    property Native.GlassSettings inkSettings: Native.GlassSettings { window: popup }
+    readonly property bool adaptiveForeground: inkSettings.dynamicTinting
     // When false, the whole window takes pointer input (not only the glass islands).
     property bool inputOnGlassOnly: true
     function foregroundFor(item: Item, base: color): color {
@@ -25,41 +24,8 @@ PlasmaCore.Dialog {
         let tile = item;
         while (tile && tile.fillColor === undefined) tile = tile.parent;
         const fill = tile ? tile.fillColor : Qt.rgba(0, 0, 0, 0);
-        const center = glass.backdropAt(point);
-        if (!regionalForeground || !center.a)
-            return Contrast.foreground(base, center, fill);
-
-        const dx = Math.min(36, (tile || item).width / 3);
-        const dy = Math.min(64, (tile || item).height / 2);
-        function lightness(x, y) {
-            return Contrast.luminance(Qt.tint(glass.backdropAt(Qt.point(x, y)), fill));
-        }
-        const local = Contrast.luminance(Qt.tint(center, fill));
-        const left = lightness(point.x - dx, point.y);
-        const right = lightness(point.x + dx, point.y);
-        const top = lightness(point.x, point.y - dy);
-        const bottom = lightness(point.x, point.y + dy);
-        const nearby = (left + right + top + bottom) / 4;
-        const level = 0.65 * local + 0.35 * nearby;
-        // Start with a gradual transition, then pull the tone toward the
-        // readable endpoint if a sharp background edge crosses this label.
-        const t = Math.max(0, Math.min(1, (level - 0.09) / 0.22));
-        let tone = 0.98 - 0.92 * t * t * (3 - 2 * t);
-        const white = Contrast.ratio(1, local) > Contrast.ratio(0, local);
-        const limit = white ? (local + 0.05) * 4.5 - 0.05 : (local + 0.05) / 4.5 - 0.05;
-        function channelFor(luminance) {
-            return luminance <= 0.0031308 ? 12.92 * luminance : 1.055 * Math.pow(luminance, 1 / 2.4) - 0.055;
-        }
-        const channel = channelFor(limit);
-        tone = white ? Math.max(tone, channel) : Math.min(tone, channel);
-        // A single grid cell can straddle a sharp edge. Balance contrast on
-        // both sides when nearby samples strongly disagree about the backdrop.
-        const low = Math.min(local, left, right, top, bottom);
-        const high = Math.max(local, left, right, top, bottom);
-        const edge = Math.max(0, Math.min(1, (Contrast.ratio(low, high) - 4.5) / 5));
-        const balanced = channelFor(Math.sqrt((low + 0.05) * (high + 0.05)) - 0.05);
-        tone = Math.max(0, Math.min(1, tone + edge * (balanced - tone)));
-        return Qt.rgba(tone, tone, tone, base.a);
+        const radius = Qt.size(Math.min(36, (tile || item).width / 3), Math.min(64, (tile || item).height / 2));
+        return glass.foregroundAt(point, radius, base, fill);
     }
     property Native.ControlGlass glass: Native.ControlGlass {
         window: popup

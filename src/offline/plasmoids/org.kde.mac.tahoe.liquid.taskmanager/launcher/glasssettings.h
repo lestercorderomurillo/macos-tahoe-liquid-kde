@@ -26,6 +26,7 @@ public:
     void setComponent(const QString &component);
     void setWindow(QWindow *window);
     bool dynamicTinting() const;
+    Q_INVOKABLE QColor notificationForeground(QColor base, QColor backdrop, QColor fill) const;
     qreal lightOpacity() const;
     qreal darkOpacity() const;
 Q_SIGNALS:

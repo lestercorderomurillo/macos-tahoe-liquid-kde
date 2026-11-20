@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 #include "glasssettings.h"
+#include "glassink.h"
 #include <KConfigGroup>
 #include <KWindowEffects>
 #include <QRegion>
@@ -228,3 +229,10 @@ qreal GlassSettings::opacity(const QString &key) const
 qreal GlassSettings::lightOpacity() const { return opacity(QStringLiteral("SurfaceTransparencyLight")); }
 qreal GlassSettings::darkOpacity() const { return opacity(QStringLiteral("SurfaceTransparencyDark")); }
 #include "glasssettings.moc"
+
+QColor GlassSettings::notificationForeground(QColor base, QColor backdrop, QColor fill) const
+{
+    if (!dynamicTinting() || !backdrop.alpha()) return base;
+    const auto light = GlassInk::luminance(GlassInk::composite(backdrop, fill));
+    return GlassInk::foreground(base, light, light, light, light, light);
+}

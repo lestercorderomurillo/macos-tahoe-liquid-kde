@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 #include "shellmenu.h"
+#include "../org.kde.mac.tahoe.liquid.taskmanager/launcher/glassink.h"
 #include "../org.kde.mac.tahoe.liquid.taskmanager/launcher/backdropgeometry.h"
 #include <KConfigGroup>
 #include <KSharedConfig>
@@ -9,26 +10,6 @@
 #include <QWindow>
 #include <algorithm>
 #include <cmath>
-
-namespace {
-double luminance(const QColor &c)
-{
-    const auto linear = [](double x) { return x <= .04045 ? x / 12.92 : std::pow((x + .055) / 1.055, 2.4); };
-    return .2126 * linear(c.redF()) + .7152 * linear(c.greenF()) + .0722 * linear(c.blueF());
-}
-
-QColor ink(const QColor &base, const QColor &background)
-{
-    const double offset = luminance(base) > .5 ? .4 : 0.;
-    QColor preferred = QColor::fromRgbF(.6 * base.redF() + offset, .6 * base.greenF() + offset,
-                                        .6 * base.blueF() + offset, base.alphaF());
-    if (!background.isValid()) return preferred;
-    const double bg = luminance(background) + .05;
-    const double fg = luminance(preferred) + .05;
-    if (std::max(bg, fg) / std::min(bg, fg) >= 4.5) return preferred;
-    return bg / .05 >= 1.05 / bg ? Qt::black : Qt::white;
-}
-}
 
 ShellMenu::ShellMenu(QWidget *parent) : QMenu(parent)
 {
@@ -87,28 +68,32 @@ void ShellMenu::paintEvent(QPaintEvent *event)
             if (!action->isVisible() || action->isSeparator()) continue;
             const QRect row = actionGeometry(action);
             const QPoint point(row.left() + row.width() / 3, row.center().y());
-            const int col = qBound(0, (point.x() - m_bounds.x()) * 8 / m_bounds.width(), 7);
-            const int line = qBound(0, (point.y() - m_bounds.y()) * 8 / m_bounds.height(), 7);
-            const auto *rgb = reinterpret_cast<const uchar *>(m_grid.constData()) + (line * 8 + col) * 3;
-            const QColor fill = panel.pixelColor(qBound(0, point.x() * 8 / width(), 7), qBound(0, point.y() * 8 / height(), 7));
-            const double a = fill.alphaF();
-            m_rowBackgrounds.insert(action, QColor::fromRgbF(fill.redF() * a + rgb[0] / 255. * (1 - a),
-                fill.greenF() * a + rgb[1] / 255. * (1 - a), fill.blueF() * a + rgb[2] / 255. * (1 - a)));
+            const auto surfaceAt = [&](QPointF p) {
+                const int col = qBound(0, int((p.x() - m_bounds.x()) * 8 / m_bounds.width()), 7);
+                const int line = qBound(0, int((p.y() - m_bounds.y()) * 8 / m_bounds.height()), 7);
+                const auto *rgb = reinterpret_cast<const uchar *>(m_grid.constData()) + (line * 8 + col) * 3;
+                const auto fill = panel.pixelColor(qBound(0, int(p.x() * 8 / width()), 7),
+                                                   qBound(0, int(p.y() * 8 / height()), 7));
+                return GlassInk::composite(QColor(rgb[0], rgb[1], rgb[2]), fill);
+            };
+            m_rowInks.insert(action, GlassInk::sample(Qt::white, point,
+                QSizeF(row.width() / 4., row.height()), surfaceAt));
         }
     }
     QMenu::paintEvent(event);
-    m_rowBackgrounds.clear();
+    m_rowInks.clear();
 }
 
 void ShellMenu::initStyleOption(QStyleOptionMenuItem *option, const QAction *action) const
 {
     QMenu::initStyleOption(option, action);
     if (!m_dynamicTinting || option->state.testFlag(QStyle::State_Selected)) return;
-    const auto background = m_rowBackgrounds.value(action);
+    const auto sampledInk = m_rowInks.value(action);
+    if (!sampledInk.isValid()) return;
     for (auto group : {QPalette::Active, QPalette::Inactive, QPalette::Disabled}) {
         for (auto role : {QPalette::WindowText, QPalette::Text, QPalette::ButtonText}) {
-            QColor color = ink(option->palette.color(group, role), background);
-            if (group == QPalette::Disabled && background.isValid()) color.setAlphaF(.48);
+            QColor color = sampledInk;
+            if (group == QPalette::Disabled) color.setAlphaF(.48);
             option->palette.setColor(group, role, color);
         }
     }
