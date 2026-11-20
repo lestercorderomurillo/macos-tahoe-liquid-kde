@@ -1,172 +1,26 @@
 {
-  "version": "0.73.28",
-  "implementation_commit": "d634efdfdee725dbb7a6232024a9b8427e4a0bef",
+  "version": "0.73.29",
+  "implementation_commit": "c4ec6cd3999871ab60c5d203727f20b1bc99f74e",
   "gallery_commit": "f09780b200b79302e7c23ef9f6f74d94748bbea3",
-  "scope": "Panel calendar, Golden Gate search and Apps, clipboard encryption and launcher choice, Control Center glass.",
+  "scope": "Golden Gate About dark transparency and computer artwork.",
   "checks": [
     {
-      "command": "python3 -m pytest -q tests/test_distro_packages.py",
+      "command": "Install Golden Gate in a disposable KDE neon guest, switch to dark mode, verify About SurfaceTransparencyDark = 95, launch About and capture the composited desktop with Spectacle.",
       "result": "passed",
-      "detail": "417 distro mapping cases passed"
-    },
-    {
-      "command": "python3 -m pytest -q tests/test_clipboard_native.py",
-      "result": "passed",
-      "detail": "Native clipboard persistence and private capture tests passed"
-    },
-    {
-      "command": "python3 -m pytest -q tests/test_component_glass_surfaces.py tests/test_clipboard_step.py",
-      "result": "passed",
-      "detail": "33 focused Tahoe glass surface and clipboard installer tests passed"
-    },
-    {
-      "command": "python3 -m pytest -q tests/test_clipboard_popup.py tests/test_installer_glass_step.py tests/test_glass_presets.py tests/test_component_glass_surfaces.py",
-      "result": "passed",
-      "detail": "86 selected clipboard popup, glass installer, preset and surface tests passed"
-    },
-    {
-      "command": "./install --prepare and pytest tests/test_clipboard_step.py tests/test_installer_glass_step.py",
-      "result": "passed",
-      "detail": "28 tests passed against Golden Gate prepared source"
-    },
-    {
-      "command": "python3 -m pytest -q tests/test_multilanguage.py::test_catalogs_cover_all_project_widget_and_kcm_messages",
-      "result": "passed",
-      "detail": "Three missing catalog entries cases passed following catalog repair"
-    },
-    {
-      "command": "python3 -m pytest -q tests/test_cli.py tests/test_installer_wizard.py tests/test_launcher_presets.py, followed by affected node reruns",
-      "result": "passed",
-      "detail": "191 CLI, wizard and launcher cases: 159 passed initially, 27 screen layout and 5 native contrast cases passed on focused retry"
-    },
-    {
-      "command": "Installer backend install and focused install --only --plasmoids --layout in disposable KDE neon guests",
-      "result": "passed",
-      "detail": "Both edition installs and focused plasmoid and layout reinstalls succeeded"
+      "detail": "Reviewed capture from 810d4019. The integrated globalmenu files and effective Golden Gate About preset match that candidate."
     }
   ],
   "reviewed_frames": [
     {
-      "frame": "golden-gate/search-dark.png",
-      "source_commit": "dd62a79eb4195ce1d1d4d388e95d4d7d743a8521",
-      "sha256": "b262f9a3c17ea7cf3f75fe87dd60937284817091621e0ed708d97e284fd85500",
-      "edition": "golden-gate"
-    },
-    {
-      "frame": "golden-gate/search-light.png",
-      "source_commit": "dd62a79eb4195ce1d1d4d388e95d4d7d743a8521",
-      "sha256": "b279de952a43ddebde83784c6a6bd076a32bae2638a898421b2724c42e77f662",
-      "edition": "golden-gate"
-    },
-    {
-      "frame": "golden-gate/search-typing.png",
-      "source_commit": "dd62a79eb4195ce1d1d4d388e95d4d7d743a8521",
-      "sha256": "311d02197dd31e14f7502c32a9aca067d31575c4dd149ee272aa7dfb289144d4",
-      "edition": "golden-gate"
-    },
-    {
-      "frame": "tahoe/frames/light/clipboard.png",
-      "source_commit": "b3bf73005905a447e8a647525e0eab2e11a1340f",
-      "sha256": "361f8254eb2969bdefd37609c9aba2267b6fe81c14ab6e148240f5c4c44a8db6",
-      "edition": "tahoe"
-    },
-    {
-      "frame": "tahoe/frames/light/control-center.png",
-      "source_commit": "b3bf73005905a447e8a647525e0eab2e11a1340f",
-      "sha256": "9631594dad4f92052fcf26a137bce5c59712ae29350511f5c4ab32e4a2085ab7",
-      "edition": "tahoe"
-    },
-    {
-      "frame": "tahoe/frames/light/popups.png",
-      "source_commit": "b3bf73005905a447e8a647525e0eab2e11a1340f",
-      "sha256": "1d781b5ea63ec2a23e77ef1fb856c8e00425f331f4d570208abd49c0b9e449eb",
-      "edition": "tahoe"
-    },
-    {
-      "frame": "tahoe/frames/dark/clipboard.png",
-      "source_commit": "b3bf73005905a447e8a647525e0eab2e11a1340f",
-      "sha256": "da0cf95edfe508a3d19823ea5067c57b59651b8a2c4aaad434667c5c02bbb68b",
-      "edition": "tahoe"
-    },
-    {
-      "frame": "tahoe/frames/dark/control-center.png",
-      "source_commit": "b3bf73005905a447e8a647525e0eab2e11a1340f",
-      "sha256": "c64d24e7576495b845108c09fe95a2ee5a9a6e72112e4bd6ed6c9a698fa505f3",
-      "edition": "tahoe"
-    },
-    {
-      "frame": "tahoe/frames/dark/popups.png",
-      "source_commit": "b3bf73005905a447e8a647525e0eab2e11a1340f",
-      "sha256": "0d4cb991dab3f0f1fd825157211d3192c555ff12eb7858d3c869566d55ba9159",
-      "edition": "tahoe"
-    },
-    {
-      "frame": "golden-gate/frames/light/apps.png",
-      "source_commit": "dd62a79eb4195ce1d1d4d388e95d4d7d743a8521",
-      "sha256": "8f9473c8bcf4999d8eb7d41ac2900a70c5b590c632f0a922cbeeb40e6510f353",
-      "edition": "golden-gate"
-    },
-    {
-      "frame": "golden-gate/frames/light/search.png",
-      "source_commit": "dd62a79eb4195ce1d1d4d388e95d4d7d743a8521",
-      "sha256": "c36d29edb800b4fc7f05cc3abd49e4de206ffbac59e9a0835998191b7591ad40",
-      "edition": "golden-gate"
-    },
-    {
-      "frame": "golden-gate/frames/light/clipboard.png",
-      "source_commit": "d634efdfdee725dbb7a6232024a9b8427e4a0bef",
-      "sha256": "3c797e6721bf31bafe9cc4384b91a217c1b0d2816d91c6e39a5b961747a05392",
-      "edition": "golden-gate"
-    },
-    {
-      "frame": "golden-gate/frames/light/control-center.png",
-      "source_commit": "dd62a79eb4195ce1d1d4d388e95d4d7d743a8521",
-      "sha256": "400047274ee0a2bb104fe9e2b46df769f9b2947a3b9b608f5a99cdc44e54a39b",
-      "edition": "golden-gate"
-    },
-    {
-      "frame": "golden-gate/frames/light/popups.png",
-      "source_commit": "dd62a79eb4195ce1d1d4d388e95d4d7d743a8521",
-      "sha256": "705b1279c6812551b46d5ad27de0e852b6c1670e458f6560ae09cb45a4386632",
-      "edition": "golden-gate"
-    },
-    {
-      "frame": "golden-gate/frames/dark/apps.png",
-      "source_commit": "dd62a79eb4195ce1d1d4d388e95d4d7d743a8521",
-      "sha256": "e1331ffbddfbd77917d8d9e8b78534e51d0da7ab92ae3c23f7eba1fa17e795b6",
-      "edition": "golden-gate"
-    },
-    {
-      "frame": "golden-gate/frames/dark/search.png",
-      "source_commit": "dd62a79eb4195ce1d1d4d388e95d4d7d743a8521",
-      "sha256": "b262f9a3c17ea7cf3f75fe87dd60937284817091621e0ed708d97e284fd85500",
-      "edition": "golden-gate"
-    },
-    {
-      "frame": "golden-gate/frames/dark/clipboard.png",
-      "source_commit": "d634efdfdee725dbb7a6232024a9b8427e4a0bef",
-      "sha256": "5a68881a862c5e885f5c655eaade7f7efb238d7724f4c6180517a14c71263972",
-      "edition": "golden-gate"
-    },
-    {
-      "frame": "golden-gate/frames/dark/control-center.png",
-      "source_commit": "dd62a79eb4195ce1d1d4d388e95d4d7d743a8521",
-      "sha256": "f440cd1e64e892b26269bec03d5eae3086a22c77900fd7d2412866a8ed7d2f7a",
-      "edition": "golden-gate"
-    },
-    {
-      "frame": "golden-gate/frames/dark/popups.png",
-      "source_commit": "dd62a79eb4195ce1d1d4d388e95d4d7d743a8521",
-      "sha256": "3393372491f67dbd3b7e4698fe32a760e2eaa3918fc5410535a3741aeef8bd9b",
+      "frame": "about-dark.png",
+      "sha256": "b54bab857d7b81211d941097733e0f337229ebfc19e68fa5c47aa98cdedd7da6",
+      "source_commit": "810d40191c9d2b1b28373daaa065f8bba2013343",
       "edition": "golden-gate"
     }
   ],
-  "approval": "Maintainer approved the integrated localhost gallery for this release and requested further calendar and Control Center changes for the following release.",
+  "approval": "Maintainer requested publication after viewing the corrected logo-free monitor.",
   "coverage_limits": [
-    "Launcher-choice screenshot from 50215840",
-    "Golden Gate calendar, Apps, Control Center and cursor captured before catalog, layout variable name and test expectation edits",
-    "Tahoe retained the installed visual sources across the final test-only update",
-    "No remote CI for the isolated candidate"
+    "Focused visual check covers Golden Gate About in dark mode on KDE neon Wayland."
   ],
-  "source_sha256": "9951aee64e33dfd0c0f829fe47a4497a4abd8f958f9a0c3b12c36f12865235aa"
+  "source_sha256": "adffbb2c6106b74484d860859a4852f8013b3aa302957bcfbaaaa690a2ce28da"
 }
