@@ -2,7 +2,7 @@
 
 **v0.74.7**. The global menu plugin built and installed from its packaged Nix sources on x86_64-linux. [Evidence and coverage](release-evidence.json).
 
-[Installer photo evidence](src/screenshots/previews/wizard-tahoe-provenance-9ba9cfba299b.json).
+[Installer photo evidence](src/screenshots/previews/wizard-tahoe-provenance-531f633f4ff6.json).
 
 ## Installation steps
 
@@ -24,7 +24,7 @@
 <tr><th>Glass style</th><td><a href="src/screenshots/previews/wizard-tahoe-light-glass_style-6e7be9a149d6.webp"><img src="src/screenshots/previews/wizard-tahoe-light-glass_style-6e7be9a149d6.webp" width="480" alt="Glass style, light"></a></td><td><a href="src/screenshots/previews/wizard-tahoe-dark-glass_style-b4732c8176c2.webp"><img src="src/screenshots/previews/wizard-tahoe-dark-glass_style-b4732c8176c2.webp" width="480" alt="Glass style, dark"></a></td></tr>
 <tr><th>Boot</th><td><a href="src/screenshots/previews/wizard-tahoe-light-boot-5540beb3d855.webp"><img src="src/screenshots/previews/wizard-tahoe-light-boot-5540beb3d855.webp" width="480" alt="Boot, light"></a></td><td><a href="src/screenshots/previews/wizard-tahoe-dark-boot-5c457d0f0a63.webp"><img src="src/screenshots/previews/wizard-tahoe-dark-boot-5c457d0f0a63.webp" width="480" alt="Boot, dark"></a></td></tr>
 <tr><th>Oled</th><td><a href="src/screenshots/previews/wizard-tahoe-light-oled-d6b948edca37.webp"><img src="src/screenshots/previews/wizard-tahoe-light-oled-d6b948edca37.webp" width="480" alt="Oled, light"></a></td><td><a href="src/screenshots/previews/wizard-tahoe-dark-oled-b37faebb2574.webp"><img src="src/screenshots/previews/wizard-tahoe-dark-oled-b37faebb2574.webp" width="480" alt="Oled, dark"></a></td></tr>
-<tr><th>Summary</th><td><a href="src/screenshots/previews/wizard-tahoe-light-summary-38551d2a70d6.webp"><img src="src/screenshots/previews/wizard-tahoe-light-summary-38551d2a70d6.webp" width="480" alt="Summary, light"></a></td><td><a href="src/screenshots/previews/wizard-tahoe-dark-summary-320c57883a85.webp"><img src="src/screenshots/previews/wizard-tahoe-dark-summary-320c57883a85.webp" width="480" alt="Summary, dark"></a></td></tr>
+<tr><th>Summary</th><td><a href="src/screenshots/previews/wizard-tahoe-light-summary-b3c64449efd7.webp"><img src="src/screenshots/previews/wizard-tahoe-light-summary-b3c64449efd7.webp" width="480" alt="Summary, light"></a></td><td><a href="src/screenshots/previews/wizard-tahoe-dark-summary-fa0fd90df287.webp"><img src="src/screenshots/previews/wizard-tahoe-dark-summary-fa0fd90df287.webp" width="480" alt="Summary, dark"></a></td></tr>
 </table>
 
 Window buttons, captured in a disposable VM: [Light wizard](src/screenshots/previews/button-position-tahoe-light-wizard-9af66fd52939.webp) · [Light comparison](src/screenshots/previews/button-position-tahoe-light-comparison-f3ceb4999d5f.png) · [Dark wizard](src/screenshots/previews/button-position-tahoe-dark-wizard-281c04c32309.webp) · [Dark comparison](src/screenshots/previews/button-position-tahoe-dark-comparison-4b56fedd6db6.png) · [Provenance](src/screenshots/previews/button-position-tahoe-provenance-4002854e5c29.json)

@@ -338,11 +338,11 @@ Kopierte Texte und Bilder direkt im Launchpad finden und wiederverwenden.
 
 ### Tahoe Systeminformationen (Alpha)
 
-Details zu Hardware, Software und Design auf einen Blick.
+Hardware-, Software- und Designdetails mit dynamischer Textfarbe.
 
 <p align="center">
-  <img src="src/screenshots/previews/readme-tahoe-light-about-46901764dde1.webp" alt="About This Computer in light mode" width="415">
-  <img src="src/screenshots/previews/readme-tahoe-dark-about-5f1088d764fc.webp" alt="About This Computer in dark mode" width="415">
+  <img src="src/screenshots/previews/readme-tahoe-light-about-ede43c195294.webp" alt="Helle Systeminformationen mit Fensterknöpfen links" width="415">
+  <img src="src/screenshots/previews/readme-tahoe-dark-about-336526659522.webp" alt="Dunkle Systeminformationen mit Fensterknöpfen rechts" width="415">
 </p>
 
 <br>

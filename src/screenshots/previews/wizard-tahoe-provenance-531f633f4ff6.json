@@ -1,7 +1,5 @@
 {
   "edition": "tahoe",
-  "source_commit": "2368236ece9096533e702685722f518aa379bc07",
-  "vm_image_sha256": "74004cc15d7180e9b23c93a2c097824853375651b0984f68d9e940c45d461703",
   "frames": {
     "wizard-tahoe-light-welcome-e760ba6623d9.webp": {
       "windows": [
@@ -52,7 +50,7 @@
         },
         {
           "id": "{25eef9b1-5d13-42e1-aa5a-e0520df41659}",
-          "caption": "Install Tahoe \u00b7 v0.73.34",
+          "caption": "Install Tahoe · v0.73.34",
           "resourceClass": "python3",
           "type": 0,
           "appletPopup": false,
@@ -78,7 +76,9 @@
         189,
         1513,
         931
-      ]
+      ],
+      "source_commit": "2368236ece9096533e702685722f518aa379bc07",
+      "vm_image_sha256": "74004cc15d7180e9b23c93a2c097824853375651b0984f68d9e940c45d461703"
     },
     "wizard-tahoe-dark-welcome-43b2194cafac.webp": {
       "windows": [
@@ -129,7 +129,7 @@
         },
         {
           "id": "{a641725f-867f-4f2f-be8e-df983855f442}",
-          "caption": "Install Tahoe \u00b7 v0.73.34",
+          "caption": "Install Tahoe · v0.73.34",
           "resourceClass": "python3",
           "type": 0,
           "appletPopup": false,
@@ -155,7 +155,9 @@
         189,
         1513,
         931
-      ]
+      ],
+      "source_commit": "2368236ece9096533e702685722f518aa379bc07",
+      "vm_image_sha256": "74004cc15d7180e9b23c93a2c097824853375651b0984f68d9e940c45d461703"
     },
     "wizard-tahoe-light-appearance-8f7633f43ea0.webp": {
       "windows": [
@@ -206,7 +208,7 @@
         },
         {
           "id": "{25eef9b1-5d13-42e1-aa5a-e0520df41659}",
-          "caption": "Install Tahoe \u00b7 v0.73.34",
+          "caption": "Install Tahoe · v0.73.34",
           "resourceClass": "python3",
           "type": 0,
           "appletPopup": false,
@@ -232,7 +234,9 @@
         189,
         1513,
         931
-      ]
+      ],
+      "source_commit": "2368236ece9096533e702685722f518aa379bc07",
+      "vm_image_sha256": "74004cc15d7180e9b23c93a2c097824853375651b0984f68d9e940c45d461703"
     },
     "wizard-tahoe-dark-appearance-e2feef6a12e6.webp": {
       "windows": [
@@ -283,7 +287,7 @@
         },
         {
           "id": "{a641725f-867f-4f2f-be8e-df983855f442}",
-          "caption": "Install Tahoe \u00b7 v0.73.34",
+          "caption": "Install Tahoe · v0.73.34",
           "resourceClass": "python3",
           "type": 0,
           "appletPopup": false,
@@ -309,7 +313,9 @@
         189,
         1513,
         931
-      ]
+      ],
+      "source_commit": "2368236ece9096533e702685722f518aa379bc07",
+      "vm_image_sha256": "74004cc15d7180e9b23c93a2c097824853375651b0984f68d9e940c45d461703"
     },
     "wizard-tahoe-light-icons-45d8dcfdc33e.webp": {
       "windows": [
@@ -360,7 +366,7 @@
         },
         {
           "id": "{25eef9b1-5d13-42e1-aa5a-e0520df41659}",
-          "caption": "Install Tahoe \u00b7 v0.73.34",
+          "caption": "Install Tahoe · v0.73.34",
           "resourceClass": "python3",
           "type": 0,
           "appletPopup": false,
@@ -386,7 +392,9 @@
         189,
         1513,
         931
-      ]
+      ],
+      "source_commit": "2368236ece9096533e702685722f518aa379bc07",
+      "vm_image_sha256": "74004cc15d7180e9b23c93a2c097824853375651b0984f68d9e940c45d461703"
     },
     "wizard-tahoe-dark-icons-32091ec6eabf.webp": {
       "windows": [
@@ -437,7 +445,7 @@
         },
         {
           "id": "{a641725f-867f-4f2f-be8e-df983855f442}",
-          "caption": "Install Tahoe \u00b7 v0.73.34",
+          "caption": "Install Tahoe · v0.73.34",
           "resourceClass": "python3",
           "type": 0,
           "appletPopup": false,
@@ -463,7 +471,9 @@
         189,
         1513,
         931
-      ]
+      ],
+      "source_commit": "2368236ece9096533e702685722f518aa379bc07",
+      "vm_image_sha256": "74004cc15d7180e9b23c93a2c097824853375651b0984f68d9e940c45d461703"
     },
     "wizard-tahoe-light-wallpaper-a27c9231db35.webp": {
       "windows": [
@@ -514,7 +524,7 @@
         },
         {
           "id": "{25eef9b1-5d13-42e1-aa5a-e0520df41659}",
-          "caption": "Install Tahoe \u00b7 v0.73.34",
+          "caption": "Install Tahoe · v0.73.34",
           "resourceClass": "python3",
           "type": 0,
           "appletPopup": false,
@@ -540,7 +550,9 @@
         189,
         1513,
         931
-      ]
+      ],
+      "source_commit": "2368236ece9096533e702685722f518aa379bc07",
+      "vm_image_sha256": "74004cc15d7180e9b23c93a2c097824853375651b0984f68d9e940c45d461703"
     },
     "wizard-tahoe-dark-wallpaper-13de25dca930.webp": {
       "windows": [
@@ -591,7 +603,7 @@
         },
         {
           "id": "{a641725f-867f-4f2f-be8e-df983855f442}",
-          "caption": "Install Tahoe \u00b7 v0.73.34",
+          "caption": "Install Tahoe · v0.73.34",
           "resourceClass": "python3",
           "type": 0,
           "appletPopup": false,
@@ -617,7 +629,9 @@
         189,
         1513,
         931
-      ]
+      ],
+      "source_commit": "2368236ece9096533e702685722f518aa379bc07",
+      "vm_image_sha256": "74004cc15d7180e9b23c93a2c097824853375651b0984f68d9e940c45d461703"
     },
     "wizard-tahoe-light-launcher-97eeaa9f00ad.webp": {
       "windows": [
@@ -668,7 +682,7 @@
         },
         {
           "id": "{25eef9b1-5d13-42e1-aa5a-e0520df41659}",
-          "caption": "Install Tahoe \u00b7 v0.73.34",
+          "caption": "Install Tahoe · v0.73.34",
           "resourceClass": "python3",
           "type": 0,
           "appletPopup": false,
@@ -694,7 +708,9 @@
         189,
         1513,
         931
-      ]
+      ],
+      "source_commit": "2368236ece9096533e702685722f518aa379bc07",
+      "vm_image_sha256": "74004cc15d7180e9b23c93a2c097824853375651b0984f68d9e940c45d461703"
     },
     "wizard-tahoe-dark-launcher-3a8d789c5c63.webp": {
       "windows": [
@@ -745,7 +761,7 @@
         },
         {
           "id": "{a641725f-867f-4f2f-be8e-df983855f442}",
-          "caption": "Install Tahoe \u00b7 v0.73.34",
+          "caption": "Install Tahoe · v0.73.34",
           "resourceClass": "python3",
           "type": 0,
           "appletPopup": false,
@@ -771,7 +787,9 @@
         189,
         1513,
         931
-      ]
+      ],
+      "source_commit": "2368236ece9096533e702685722f518aa379bc07",
+      "vm_image_sha256": "74004cc15d7180e9b23c93a2c097824853375651b0984f68d9e940c45d461703"
     },
     "wizard-tahoe-light-layout-3788da3975ce.webp": {
       "windows": [
@@ -822,7 +840,7 @@
         },
         {
           "id": "{25eef9b1-5d13-42e1-aa5a-e0520df41659}",
-          "caption": "Install Tahoe \u00b7 v0.73.34",
+          "caption": "Install Tahoe · v0.73.34",
           "resourceClass": "python3",
           "type": 0,
           "appletPopup": false,
@@ -848,7 +866,9 @@
         189,
         1513,
         931
-      ]
+      ],
+      "source_commit": "2368236ece9096533e702685722f518aa379bc07",
+      "vm_image_sha256": "74004cc15d7180e9b23c93a2c097824853375651b0984f68d9e940c45d461703"
     },
     "wizard-tahoe-dark-layout-922c9712d3e4.webp": {
       "windows": [
@@ -899,7 +919,7 @@
         },
         {
           "id": "{a641725f-867f-4f2f-be8e-df983855f442}",
-          "caption": "Install Tahoe \u00b7 v0.73.34",
+          "caption": "Install Tahoe · v0.73.34",
           "resourceClass": "python3",
           "type": 0,
           "appletPopup": false,
@@ -925,7 +945,9 @@
         189,
         1513,
         931
-      ]
+      ],
+      "source_commit": "2368236ece9096533e702685722f518aa379bc07",
+      "vm_image_sha256": "74004cc15d7180e9b23c93a2c097824853375651b0984f68d9e940c45d461703"
     },
     "wizard-tahoe-light-effects-ca40b6365384.webp": {
       "windows": [
@@ -976,7 +998,7 @@
         },
         {
           "id": "{25eef9b1-5d13-42e1-aa5a-e0520df41659}",
-          "caption": "Install Tahoe \u00b7 v0.73.34",
+          "caption": "Install Tahoe · v0.73.34",
           "resourceClass": "python3",
           "type": 0,
           "appletPopup": false,
@@ -1002,7 +1024,9 @@
         189,
         1513,
         931
-      ]
+      ],
+      "source_commit": "2368236ece9096533e702685722f518aa379bc07",
+      "vm_image_sha256": "74004cc15d7180e9b23c93a2c097824853375651b0984f68d9e940c45d461703"
     },
     "wizard-tahoe-dark-effects-6e17f48055c9.webp": {
       "windows": [
@@ -1053,7 +1077,7 @@
         },
         {
           "id": "{a641725f-867f-4f2f-be8e-df983855f442}",
-          "caption": "Install Tahoe \u00b7 v0.73.34",
+          "caption": "Install Tahoe · v0.73.34",
           "resourceClass": "python3",
           "type": 0,
           "appletPopup": false,
@@ -1079,7 +1103,9 @@
         189,
         1513,
         931
-      ]
+      ],
+      "source_commit": "2368236ece9096533e702685722f518aa379bc07",
+      "vm_image_sha256": "74004cc15d7180e9b23c93a2c097824853375651b0984f68d9e940c45d461703"
     },
     "wizard-tahoe-light-window_controls-9e49b1b39c69.webp": {
       "windows": [
@@ -1130,7 +1156,7 @@
         },
         {
           "id": "{25eef9b1-5d13-42e1-aa5a-e0520df41659}",
-          "caption": "Install Tahoe \u00b7 v0.73.34",
+          "caption": "Install Tahoe · v0.73.34",
           "resourceClass": "python3",
           "type": 0,
           "appletPopup": false,
@@ -1156,7 +1182,9 @@
         189,
         1513,
         931
-      ]
+      ],
+      "source_commit": "2368236ece9096533e702685722f518aa379bc07",
+      "vm_image_sha256": "74004cc15d7180e9b23c93a2c097824853375651b0984f68d9e940c45d461703"
     },
     "wizard-tahoe-dark-window_controls-ef172192d738.webp": {
       "windows": [
@@ -1207,7 +1235,7 @@
         },
         {
           "id": "{a641725f-867f-4f2f-be8e-df983855f442}",
-          "caption": "Install Tahoe \u00b7 v0.73.34",
+          "caption": "Install Tahoe · v0.73.34",
           "resourceClass": "python3",
           "type": 0,
           "appletPopup": false,
@@ -1233,7 +1261,9 @@
         189,
         1513,
         931
-      ]
+      ],
+      "source_commit": "2368236ece9096533e702685722f518aa379bc07",
+      "vm_image_sha256": "74004cc15d7180e9b23c93a2c097824853375651b0984f68d9e940c45d461703"
     },
     "wizard-tahoe-light-button_position-4f77cace76c6.webp": {
       "windows": [
@@ -1284,7 +1314,7 @@
         },
         {
           "id": "{25eef9b1-5d13-42e1-aa5a-e0520df41659}",
-          "caption": "Install Tahoe \u00b7 v0.73.34",
+          "caption": "Install Tahoe · v0.73.34",
           "resourceClass": "python3",
           "type": 0,
           "appletPopup": false,
@@ -1310,7 +1340,9 @@
         189,
         1513,
         931
-      ]
+      ],
+      "source_commit": "2368236ece9096533e702685722f518aa379bc07",
+      "vm_image_sha256": "74004cc15d7180e9b23c93a2c097824853375651b0984f68d9e940c45d461703"
     },
     "wizard-tahoe-dark-button_position-550fd397e4c3.webp": {
       "windows": [
@@ -1361,7 +1393,7 @@
         },
         {
           "id": "{a641725f-867f-4f2f-be8e-df983855f442}",
-          "caption": "Install Tahoe \u00b7 v0.73.34",
+          "caption": "Install Tahoe · v0.73.34",
           "resourceClass": "python3",
           "type": 0,
           "appletPopup": false,
@@ -1387,7 +1419,9 @@
         189,
         1513,
         931
-      ]
+      ],
+      "source_commit": "2368236ece9096533e702685722f518aa379bc07",
+      "vm_image_sha256": "74004cc15d7180e9b23c93a2c097824853375651b0984f68d9e940c45d461703"
     },
     "wizard-tahoe-light-shadows-73e234fafed9.webp": {
       "windows": [
@@ -1438,7 +1472,7 @@
         },
         {
           "id": "{25eef9b1-5d13-42e1-aa5a-e0520df41659}",
-          "caption": "Install Tahoe \u00b7 v0.73.34",
+          "caption": "Install Tahoe · v0.73.34",
           "resourceClass": "python3",
           "type": 0,
           "appletPopup": false,
@@ -1464,7 +1498,9 @@
         189,
         1513,
         931
-      ]
+      ],
+      "source_commit": "2368236ece9096533e702685722f518aa379bc07",
+      "vm_image_sha256": "74004cc15d7180e9b23c93a2c097824853375651b0984f68d9e940c45d461703"
     },
     "wizard-tahoe-dark-shadows-192646014fe8.webp": {
       "windows": [
@@ -1515,7 +1551,7 @@
         },
         {
           "id": "{a641725f-867f-4f2f-be8e-df983855f442}",
-          "caption": "Install Tahoe \u00b7 v0.73.34",
+          "caption": "Install Tahoe · v0.73.34",
           "resourceClass": "python3",
           "type": 0,
           "appletPopup": false,
@@ -1541,7 +1577,9 @@
         189,
         1513,
         931
-      ]
+      ],
+      "source_commit": "2368236ece9096533e702685722f518aa379bc07",
+      "vm_image_sha256": "74004cc15d7180e9b23c93a2c097824853375651b0984f68d9e940c45d461703"
     },
     "wizard-tahoe-light-fonts-60b88c7becec.webp": {
       "windows": [
@@ -1592,7 +1630,7 @@
         },
         {
           "id": "{25eef9b1-5d13-42e1-aa5a-e0520df41659}",
-          "caption": "Install Tahoe \u00b7 v0.73.34",
+          "caption": "Install Tahoe · v0.73.34",
           "resourceClass": "python3",
           "type": 0,
           "appletPopup": false,
@@ -1618,7 +1656,9 @@
         189,
         1513,
         931
-      ]
+      ],
+      "source_commit": "2368236ece9096533e702685722f518aa379bc07",
+      "vm_image_sha256": "74004cc15d7180e9b23c93a2c097824853375651b0984f68d9e940c45d461703"
     },
     "wizard-tahoe-dark-fonts-a3f7e33adab7.webp": {
       "windows": [
@@ -1669,7 +1709,7 @@
         },
         {
           "id": "{a641725f-867f-4f2f-be8e-df983855f442}",
-          "caption": "Install Tahoe \u00b7 v0.73.34",
+          "caption": "Install Tahoe · v0.73.34",
           "resourceClass": "python3",
           "type": 0,
           "appletPopup": false,
@@ -1695,7 +1735,9 @@
         189,
         1513,
         931
-      ]
+      ],
+      "source_commit": "2368236ece9096533e702685722f518aa379bc07",
+      "vm_image_sha256": "74004cc15d7180e9b23c93a2c097824853375651b0984f68d9e940c45d461703"
     },
     "wizard-tahoe-light-firefox-cd8766e9326b.webp": {
       "windows": [
@@ -1746,7 +1788,7 @@
         },
         {
           "id": "{25eef9b1-5d13-42e1-aa5a-e0520df41659}",
-          "caption": "Install Tahoe \u00b7 v0.73.34",
+          "caption": "Install Tahoe · v0.73.34",
           "resourceClass": "python3",
           "type": 0,
           "appletPopup": false,
@@ -1772,7 +1814,9 @@
         189,
         1513,
         931
-      ]
+      ],
+      "source_commit": "2368236ece9096533e702685722f518aa379bc07",
+      "vm_image_sha256": "74004cc15d7180e9b23c93a2c097824853375651b0984f68d9e940c45d461703"
     },
     "wizard-tahoe-dark-firefox-087fc1c84f07.webp": {
       "windows": [
@@ -1823,7 +1867,7 @@
         },
         {
           "id": "{a641725f-867f-4f2f-be8e-df983855f442}",
-          "caption": "Install Tahoe \u00b7 v0.73.34",
+          "caption": "Install Tahoe · v0.73.34",
           "resourceClass": "python3",
           "type": 0,
           "appletPopup": false,
@@ -1849,7 +1893,9 @@
         189,
         1513,
         931
-      ]
+      ],
+      "source_commit": "2368236ece9096533e702685722f518aa379bc07",
+      "vm_image_sha256": "74004cc15d7180e9b23c93a2c097824853375651b0984f68d9e940c45d461703"
     },
     "wizard-tahoe-light-files-455eee81ce7a.webp": {
       "windows": [
@@ -1900,7 +1946,7 @@
         },
         {
           "id": "{25eef9b1-5d13-42e1-aa5a-e0520df41659}",
-          "caption": "Install Tahoe \u00b7 v0.73.34",
+          "caption": "Install Tahoe · v0.73.34",
           "resourceClass": "python3",
           "type": 0,
           "appletPopup": false,
@@ -1926,7 +1972,9 @@
         189,
         1513,
         931
-      ]
+      ],
+      "source_commit": "2368236ece9096533e702685722f518aa379bc07",
+      "vm_image_sha256": "74004cc15d7180e9b23c93a2c097824853375651b0984f68d9e940c45d461703"
     },
     "wizard-tahoe-dark-files-4c0b7f7efd4a.webp": {
       "windows": [
@@ -1977,7 +2025,7 @@
         },
         {
           "id": "{a641725f-867f-4f2f-be8e-df983855f442}",
-          "caption": "Install Tahoe \u00b7 v0.73.34",
+          "caption": "Install Tahoe · v0.73.34",
           "resourceClass": "python3",
           "type": 0,
           "appletPopup": false,
@@ -2003,7 +2051,9 @@
         189,
         1513,
         931
-      ]
+      ],
+      "source_commit": "2368236ece9096533e702685722f518aa379bc07",
+      "vm_image_sha256": "74004cc15d7180e9b23c93a2c097824853375651b0984f68d9e940c45d461703"
     },
     "wizard-tahoe-light-glass_style-6e7be9a149d6.webp": {
       "windows": [
@@ -2054,7 +2104,7 @@
         },
         {
           "id": "{25eef9b1-5d13-42e1-aa5a-e0520df41659}",
-          "caption": "Install Tahoe \u00b7 v0.73.34",
+          "caption": "Install Tahoe · v0.73.34",
           "resourceClass": "python3",
           "type": 0,
           "appletPopup": false,
@@ -2080,7 +2130,9 @@
         189,
         1513,
         931
-      ]
+      ],
+      "source_commit": "2368236ece9096533e702685722f518aa379bc07",
+      "vm_image_sha256": "74004cc15d7180e9b23c93a2c097824853375651b0984f68d9e940c45d461703"
     },
     "wizard-tahoe-dark-glass_style-b4732c8176c2.webp": {
       "windows": [
@@ -2131,7 +2183,7 @@
         },
         {
           "id": "{a641725f-867f-4f2f-be8e-df983855f442}",
-          "caption": "Install Tahoe \u00b7 v0.73.34",
+          "caption": "Install Tahoe · v0.73.34",
           "resourceClass": "python3",
           "type": 0,
           "appletPopup": false,
@@ -2157,7 +2209,9 @@
         189,
         1513,
         931
-      ]
+      ],
+      "source_commit": "2368236ece9096533e702685722f518aa379bc07",
+      "vm_image_sha256": "74004cc15d7180e9b23c93a2c097824853375651b0984f68d9e940c45d461703"
     },
     "wizard-tahoe-light-boot-5540beb3d855.webp": {
       "windows": [
@@ -2208,7 +2262,7 @@
         },
         {
           "id": "{25eef9b1-5d13-42e1-aa5a-e0520df41659}",
-          "caption": "Install Tahoe \u00b7 v0.73.34",
+          "caption": "Install Tahoe · v0.73.34",
           "resourceClass": "python3",
           "type": 0,
           "appletPopup": false,
@@ -2234,7 +2288,9 @@
         189,
         1513,
         931
-      ]
+      ],
+      "source_commit": "2368236ece9096533e702685722f518aa379bc07",
+      "vm_image_sha256": "74004cc15d7180e9b23c93a2c097824853375651b0984f68d9e940c45d461703"
     },
     "wizard-tahoe-dark-boot-5c457d0f0a63.webp": {
       "windows": [
@@ -2285,7 +2341,7 @@
         },
         {
           "id": "{a641725f-867f-4f2f-be8e-df983855f442}",
-          "caption": "Install Tahoe \u00b7 v0.73.34",
+          "caption": "Install Tahoe · v0.73.34",
           "resourceClass": "python3",
           "type": 0,
           "appletPopup": false,
@@ -2311,7 +2367,9 @@
         189,
         1513,
         931
-      ]
+      ],
+      "source_commit": "2368236ece9096533e702685722f518aa379bc07",
+      "vm_image_sha256": "74004cc15d7180e9b23c93a2c097824853375651b0984f68d9e940c45d461703"
     },
     "wizard-tahoe-light-oled-d6b948edca37.webp": {
       "windows": [
@@ -2362,7 +2420,7 @@
         },
         {
           "id": "{25eef9b1-5d13-42e1-aa5a-e0520df41659}",
-          "caption": "Install Tahoe \u00b7 v0.73.34",
+          "caption": "Install Tahoe · v0.73.34",
           "resourceClass": "python3",
           "type": 0,
           "appletPopup": false,
@@ -2388,7 +2446,9 @@
         189,
         1513,
         931
-      ]
+      ],
+      "source_commit": "2368236ece9096533e702685722f518aa379bc07",
+      "vm_image_sha256": "74004cc15d7180e9b23c93a2c097824853375651b0984f68d9e940c45d461703"
     },
     "wizard-tahoe-dark-oled-b37faebb2574.webp": {
       "windows": [
@@ -2439,7 +2499,7 @@
         },
         {
           "id": "{a641725f-867f-4f2f-be8e-df983855f442}",
-          "caption": "Install Tahoe \u00b7 v0.73.34",
+          "caption": "Install Tahoe · v0.73.34",
           "resourceClass": "python3",
           "type": 0,
           "appletPopup": false,
@@ -2465,12 +2525,14 @@
         189,
         1513,
         931
-      ]
+      ],
+      "source_commit": "2368236ece9096533e702685722f518aa379bc07",
+      "vm_image_sha256": "74004cc15d7180e9b23c93a2c097824853375651b0984f68d9e940c45d461703"
     },
-    "wizard-tahoe-light-summary-38551d2a70d6.webp": {
+    "wizard-tahoe-light-summary-b3c64449efd7.webp": {
       "windows": [
         {
-          "id": "{5dc7badf-313c-4649-a692-40f924221f0b}",
+          "id": "{06270b21-0803-4859-9c4c-fd3e797f6950}",
           "caption": "",
           "resourceClass": "plasmashell",
           "type": 1,
@@ -2485,7 +2547,7 @@
           }
         },
         {
-          "id": "{c7c10870-b659-4fc1-ae68-73ba13328e9f}",
+          "id": "{a8dc0031-abe3-42de-8f32-84d530040c70}",
           "caption": "",
           "resourceClass": "plasmashell",
           "type": 2,
@@ -2500,7 +2562,7 @@
           }
         },
         {
-          "id": "{ae993158-58d9-4278-9818-30bcb83921c4}",
+          "id": "{2e7691ca-9ef0-4017-92fc-3df374e7e157}",
           "caption": "",
           "resourceClass": "plasmashell",
           "type": 2,
@@ -2508,15 +2570,15 @@
           "hidden": true,
           "active": false,
           "geometry": {
-            "x": 590.5,
+            "x": 644,
             "y": 996,
-            "width": 739,
+            "width": 632,
             "height": 84
           }
         },
         {
-          "id": "{25eef9b1-5d13-42e1-aa5a-e0520df41659}",
-          "caption": "Install Tahoe \u00b7 v0.73.34",
+          "id": "{5eaa2e6f-24b5-487a-a29c-1b63e625ed44}",
+          "caption": "Install Tahoe · v0.74.7",
           "resourceClass": "python3",
           "type": 0,
           "appletPopup": false,
@@ -2531,23 +2593,32 @@
         }
       ],
       "wallpaper_uri": "file:///home/tester/.local/share/wallpapers/MacTahoe",
-      "page": "summary",
+      "sha256": "b3c64449efd738a2e234dfaf34db8e6331fa3bbe4f3e203a722d68f517c35389",
+      "source_commit": "7455a59d995acb332ede95a137576ed86d467eaf",
+      "edition": "tahoe",
       "case": "installer-summary",
+      "crop": [
+        1004,
+        354,
+        2836,
+        1746
+      ],
       "mode": "light",
-      "edition": "tahoe",
-      "sha256": "38551d2a70d6f6361b4f29cc4c10e90c4e32d86be817b087af473f8f4aa41986",
-      "source_sha256": "f4a3002245df86a4638bf12f03b5a9c871cdaa1a5c90c020e4907d2cbdeeeeac",
-      "crop": [
-        535,
-        189,
-        1513,
-        931
-      ]
+      "profile_sha256": "2a3bd2d31ca0dfdd65c45a09a3c8c2bbe35a122ab2ca7961f1c33edf8b9a3b09",
+      "source_frame_sha256": "66b7313172fdada23973c4c30f3308d590a8caf0f6d6f0837934a1bce4dbc84c",
+      "page": "summary",
+      "vm_image_sha256": "74004cc15d7180e9b23c93a2c097824853375651b0984f68d9e940c45d461703",
+      "capture_environment": {
+        "plasma": "plasmashell 6.8.1",
+        "kwin": "kwin 6.8.1",
+        "session": "Wayland",
+        "scale": 2
+      }
     },
-    "wizard-tahoe-dark-summary-320c57883a85.webp": {
+    "wizard-tahoe-dark-summary-fa0fd90df287.webp": {
       "windows": [
         {
-          "id": "{5dc7badf-313c-4649-a692-40f924221f0b}",
+          "id": "{06270b21-0803-4859-9c4c-fd3e797f6950}",
           "caption": "",
           "resourceClass": "plasmashell",
           "type": 1,
@@ -2562,7 +2633,7 @@
           }
         },
         {
-          "id": "{c7c10870-b659-4fc1-ae68-73ba13328e9f}",
+          "id": "{a8dc0031-abe3-42de-8f32-84d530040c70}",
           "caption": "",
           "resourceClass": "plasmashell",
           "type": 2,
@@ -2577,7 +2648,7 @@
           }
         },
         {
-          "id": "{ae993158-58d9-4278-9818-30bcb83921c4}",
+          "id": "{2e7691ca-9ef0-4017-92fc-3df374e7e157}",
           "caption": "",
           "resourceClass": "plasmashell",
           "type": 2,
@@ -2585,15 +2656,15 @@
           "hidden": true,
           "active": false,
           "geometry": {
-            "x": 590.5,
+            "x": 644,
             "y": 996,
-            "width": 739,
+            "width": 632,
             "height": 84
           }
         },
         {
-          "id": "{a641725f-867f-4f2f-be8e-df983855f442}",
-          "caption": "Install Tahoe \u00b7 v0.73.34",
+          "id": "{092d1079-a959-47ce-86f0-819d0b6fb867}",
+          "caption": "Install Tahoe · v0.74.7",
           "resourceClass": "python3",
           "type": 0,
           "appletPopup": false,
@@ -2608,18 +2679,27 @@
         }
       ],
       "wallpaper_uri": "file:///home/tester/.local/share/wallpapers/MacTahoe",
-      "page": "summary",
-      "case": "installer-summary",
-      "mode": "dark",
+      "sha256": "fa0fd90df2873a13f6c4fbbbc20adca30ffeb4617ae3e9c19998e8e3299868ff",
+      "source_commit": "7455a59d995acb332ede95a137576ed86d467eaf",
       "edition": "tahoe",
-      "sha256": "320c57883a85aff7f9857d42aa0ec56a138741b5bbe8aeee8cfb6e679dff9fc4",
-      "source_sha256": "11d05b0892a551cd578066267ec3858ed3d0ca0c03f8e04449232598cc0009ad",
+      "case": "installer-summary",
       "crop": [
-        535,
-        189,
-        1513,
-        931
-      ]
+        1004,
+        354,
+        2836,
+        1746
+      ],
+      "mode": "dark",
+      "profile_sha256": "2a3bd2d31ca0dfdd65c45a09a3c8c2bbe35a122ab2ca7961f1c33edf8b9a3b09",
+      "source_frame_sha256": "29a6395a4a66be36c0d7e4d7cc85769990be3a08be9c6985a335720735f9f4d5",
+      "page": "summary",
+      "vm_image_sha256": "74004cc15d7180e9b23c93a2c097824853375651b0984f68d9e940c45d461703",
+      "capture_environment": {
+        "plasma": "plasmashell 6.8.1",
+        "kwin": "kwin 6.8.1",
+        "session": "Wayland",
+        "scale": 2
+      }
     }
   }
 }

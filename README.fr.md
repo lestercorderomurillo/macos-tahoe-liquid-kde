@@ -338,11 +338,11 @@ Retrouvez et réutilisez le texte et les images copiés directement depuis Launc
 
 ### Tahoe Informations système (Alpha)
 
-Les détails de votre matériel, de vos logiciels et de votre thème en un coup d’œil.
+Informations sur le matériel, les logiciels et le thème avec une teinte de texte adaptative.
 
 <p align="center">
-  <img src="src/screenshots/previews/readme-tahoe-light-about-46901764dde1.webp" alt="About This Computer in light mode" width="415">
-  <img src="src/screenshots/previews/readme-tahoe-dark-about-5f1088d764fc.webp" alt="About This Computer in dark mode" width="415">
+  <img src="src/screenshots/previews/readme-tahoe-light-about-ede43c195294.webp" alt="Informations système en mode clair avec les boutons à gauche" width="415">
+  <img src="src/screenshots/previews/readme-tahoe-dark-about-336526659522.webp" alt="Informations système en mode sombre avec les boutons à droite" width="415">
 </p>
 
 <br>
