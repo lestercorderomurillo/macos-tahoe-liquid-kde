@@ -1,16 +1,32 @@
 {
-  "version": "0.73.33",
+  "version": "0.73.34",
   "gallery_commit": "f09780b200b79302e7c23ef9f6f74d94748bbea3",
-  "scope": "Control Center light and dark command lookup",
+  "scope": "Control Center foreground contrast, 40% palette adjustment and notification glass edges.",
+  "approval": "Maintainer approved the mixed-backdrop Control Center and white-backdrop Notification Center captures.",
+  "preview_source": "d130ecf295da612312997b7c99229d19e6ce17ba",
+  "reviewed_preview_sha256": {
+    "reviewed-split.png": "657e298bb289ee3b2bf1929546569545d93ca6b66295afa6b042e0ad7de30d67",
+    "notification-final.png": "61d7253a2648ad1f1341cb3a0be47ad7e8acc78875419bcf2620969b089d9117"
+  },
   "checks": [
     {
-      "command": "QT_QPA_PLATFORM=offscreen dbus-run-session -- python3 check.py <tahoe-source>",
+      "command": "mixed.py and scene.shot on a KDE neon disposable guest",
       "result": "passed",
-      "detail": "Loaded the release ControlCommands.qml with QQmlComponent and invoked run(dark), run(light), run(dark). An executable recording its single argument was found first with a space-containing temporary HOME and PATH=/usr/local/bin:/usr/bin, then with only a PATH installation."
+      "detail": "The approved Golden Gate Control Center kept its glass fill while text and monochrome controls followed the backdrop, including a split background. Notification history showed the fine dark edge. The desktop capture used KDE neon on Wayland."
+    },
+    {
+      "command": "KWin 6.6 isolated X11 controlBackdrop probe, 6.7.5 SDK build and 6.8.1 Wayland VM",
+      "result": "passed",
+      "detail": "The X11 compositor sampled the same open popup over black and white. The 6.8.1 VM rendered the actual plasmoid."
+    },
+    {
+      "command": "git diff --exit-code approved-source integrated-source -- <changed implementation paths>",
+      "result": "passed",
+      "detail": "Approved implementation files match the integrated release. Intervening edition material updates preserve the approved Golden Gate Control Center defaults."
     }
   ],
   "coverage_limits": [
-    "Command dispatch only. The check used a recording executable and did not switch a live desktop."
+    "Full desktop visual evidence is from Golden Gate on Wayland. The X11 probe checks the live compositor signal. Full distro CI runs independently."
   ],
-  "source_sha256": "aec55f0f8a26141ec95c1087c3eaf84dfec962a9a96ac85efc9ec783772913b5"
+  "source_sha256": "9945484f7dcc90d8472756b4cef755bbe24af41d468e8f84ae1bc945911f7ba0"
 }
