@@ -66,14 +66,10 @@ ListView {
     }
 
     ScrollBar.vertical: Scrollbar {
-		id: verticalScrollBar
-		parent: listView
-		z: 2
-		height: listView.height
-		anchors.right: listView.right
-		visible: showScrollbar
-		active: listView.movedWithWheel
-	}
+        viewport: listView
+        visible: listView.visible && listView.showScrollbar
+        active: listView.movedWithWheel || listView.moving
+    }
 
     Kirigami.WheelHandler {
 		target: listView

@@ -107,14 +107,8 @@ GridView {
     }
 
     ScrollBar.vertical: Scrollbar {
-        id: verticalScrollBar
-        parent: grid
-        z: 2
-        height: grid.height
-        width: 12
-        anchors.right: grid.right
-        active: grid.movedWithWheel
-
+        viewport: grid
+        active: grid.movedWithWheel || grid.moving
     }
 
     Kirigami.WheelHandler {

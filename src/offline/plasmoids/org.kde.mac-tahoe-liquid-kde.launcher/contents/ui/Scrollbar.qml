@@ -3,33 +3,28 @@ import QtQuick.Controls.Basic
 
 ScrollBar {
     id: control
-    z: 2
+
+    required property Flickable viewport
+    // Keep the handle outside the clipped app content and its preset-specific margins.
+    parent: main.parent
+    anchors.right: parent.right
+    anchors.rightMargin: 4
+    anchors.bottom: main.bottom
+    height: viewport.height
     implicitWidth: 12
+    visible: viewport.visible
+    z: 2
     padding: 0
+    leftPadding: 9
+    background: null
 
     contentItem: Rectangle {
-        implicitWidth: 10
-        implicitHeight: 100
         radius: width / 2
-        color: control.pressed ?  main.textColor : main.dimmedTextColor
-        // Hide the ScrollBar when it's not needed.
-        opacity: control.policy === ScrollBar.AlwaysOn || (control.active && control.size < 1.0) ? 0.75 : 0
-
-        // Animate the changes in opacity (default duration is 250 ms).
+        color: main.textColor
+        opacity: control.size < 1 && (control.active || control.hovered || control.pressed)
+                 ? (control.pressed ? 0.44 : 0.22) : 0
         Behavior on opacity {
-            NumberAnimation {}
+            NumberAnimation { duration: 150 }
         }
-    }
-
-
-    background: Rectangle{
-        color: control.active ? main.contrastBgColor : "transparent"
-        opacity: control.policy === ScrollBar.AlwaysOn || (control.active && control.size < 1.0) ? 1 : 0
-
-        // Animate the changes in opacity (default duration is 250 ms).
-        Behavior on opacity {
-            NumberAnimation {}
-        }
-        radius: width / 2
     }
 }

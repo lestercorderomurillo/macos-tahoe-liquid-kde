@@ -52,7 +52,7 @@ FocusScope {
         spacing: 0
         boundsBehavior: Flickable.StopAtBounds
         keyNavigationWraps: false
-        Controls.ScrollBar.vertical: Controls.ScrollBar {}
+        Controls.ScrollBar.vertical: Scrollbar { viewport: list }
         delegate: Controls.ItemDelegate {
             id: row
             required property var modelData
