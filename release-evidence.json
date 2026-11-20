@@ -1,26 +1,26 @@
 {
-  "version": "0.73.26",
-  "implementation_commit": "9009e8b59f022262036944608e01679ffcf2a8a4",
+  "version": "0.73.27",
+  "implementation_commit": "92ff8eb8d6fae8c3e44f5ce971b23b07dd4b19bd",
   "gallery_commit": "f09780b200b79302e7c23ef9f6f74d94748bbea3",
-  "scope": "Restore the two official installer glass presets and migrate saved Frosted choices to Tahoe Official.",
+  "scope": "Restore the Golden Gate dark menu surface transparency.",
   "checks": [
     {
-      "command": "python3 -m pytest -q tests/test_installer_glass_step.py tests/test_installer_wizard.py::test_native_wizard_navigation_preserves_choices_and_waits_for_completion tests/test_installer_wizard.py::test_wizard_catalogs_have_the_same_translated_messages",
+      "command": "Open the system menu over Kate in the Golden Gate KDE neon VM and capture the rendered desktop using Spectacle.",
       "result": "passed",
-      "detail": "9 checks passed on the shared candidate."
+      "detail": "Plasma 6.8.1 Wayland with Acrylic Glass loaded. Verified the menu background and white top-panel labels."
     }
   ],
   "reviewed_frames": [
     {
-      "frame": "golden-gate-9009e8b5.png",
+      "frame": "dark-menu.png",
       "edition": "golden-gate",
-      "source_commit": "9009e8b59f022262036944608e01679ffcf2a8a4",
-      "sha256": "66d0436ec2d9f72f18f25cdac6a81808b64e07c89c226d5c0a05dbb4e3b00f33"
+      "source_commit": "fa2535bf8c49e31ff0199c974900911d829fcc58",
+      "sha256": "4af3de358a6a2fd9572163e4a37334291ce006782c8c8234545e7c61e9666402"
     }
   ],
-  "approval": "Maintainer approved the Golden Gate installer glass selection page captured from the shared candidate in a disposable KDE neon VM.",
+  "approval": "Maintainer approved the displayed dark-menu preview with white top-panel text.",
   "coverage_limits": [
-    "Desktop frame covers Golden Gate. Qt installer checks cover both editions and light, dark and automatic selections."
+    "Focused preview covers the Golden Gate dark system menu on Wayland."
   ],
-  "source_sha256": "826708a0ac1cee2998df596389729e4e479cebe8302751596924639b82ca7a0f"
+  "source_sha256": "0c1687444555270f7897daee1b68b122a07509d80723d6822fddb5fa6b4e7915"
 }

@@ -1,6 +1,6 @@
 # Installer testing
 
-Tahoe **v0.73.26** offers Tahoe (Official) and Golden Gate (Official) in the installer. Both edition defaults and migration of the saved Frosted choice were verified. [Evidence and coverage](release-evidence.json).
+Tahoe **v0.73.27** restores the Golden Gate preset’s 1% white fill for dark menus. The approved desktop preview shows the dark system menu and white top-panel labels. [Evidence and coverage](release-evidence.json).
 
 Approved installer previews: [Light](src/screenshots/previews/installer-tahoe-light-icons-805970eab6b7.png) · [Dark](src/screenshots/previews/installer-tahoe-dark-icons-dbc66adc81c4.png). The gallery below is historical and predates these installer changes; its original [provenance](src/screenshots/release-capture.json) is retained.
 
