@@ -2,10 +2,7 @@
 import QtQuick
 import QtQuick.Layouts
 import QtQml.Models
-import org.kde.ksvg as KSvg
-import org.kde.mac.tahoe.launcher as Native
 import "ControlStyle.js" as Style
-import "NotificationContrast.js" as Contrast
 import org.kde.kirigami as Kirigami
 
 Item {
@@ -54,54 +51,6 @@ Item {
         property: "preferredWidth"
         when: !!style.arrow && !style.tray.vertical
         value: Style.panelCell
-    }
-
-    readonly property var trayWindow: {
-        const window = tray?.hiddenLayout?.Window.window
-        return window?.objectName === "popupWindow" ? window : null
-    }
-    readonly property Item trayContent: trayWindow?.mainItem ?? null
-    readonly property Item nativeFrame: trayWindow?.contentItem.children.find(item => item instanceof KSvg.FrameSvgItem) ?? null
-    Binding {
-        target: style.trayWindow
-        property: "title"
-        when: !!style.trayWindow
-        value: "mttkde-status-tray"
-    }
-    Binding {
-        target: style.nativeFrame
-        property: "opacity"
-        when: !!style.nativeFrame
-        value: 0
-    }
-    NotificationSurface {
-        id: traySurface
-        parent: style.trayWindow?.contentItem ?? null
-        anchors.fill: parent
-        z: -1
-        visible: !!style.trayWindow
-        enabled: false
-    }
-    Native.ControlGlass {
-        id: trayGlass
-        window: style.trayWindow
-        surfaces: [{x: 0, y: 0, width: traySurface.width, height: traySurface.height, radius: traySurface.cornerRadius}]
-    }
-    Binding {
-        target: style.trayContent?.Kirigami.Theme ?? null
-        property: "inherit"
-        when: !!style.trayContent
-        value: false
-    }
-    Binding {
-        target: style.trayContent?.Kirigami.Theme ?? null
-        property: "textColor"
-        when: !!style.trayContent
-        value: {
-            trayGlass.backdropRevision
-            const center = Qt.point(traySurface.width / 2, traySurface.height / 2)
-            return Contrast.foreground(style.Kirigami.Theme.textColor, trayGlass.backdropAt(center), traySurface.fillColor)
-        }
     }
 
     function delegates(grid: Item): list<Item> {
