@@ -276,6 +276,12 @@ Accès rapide aux réglages système, aux applications et aux commandes de sessi
   <img src="src/screenshots/previews/readme-tahoe-dark-menu-01a3a4305740.webp" alt="System menu in dark mode" width="415">
 </p>
 
+<p align="center">
+  <strong>Calendrier du panneau</strong><br>
+  <img src="src/screenshots/previews/readme-tahoe-light-calendar-c13af32f13c8.webp" alt="Calendrier du panneau" width="164">
+  <img src="src/screenshots/previews/readme-tahoe-dark-calendar-1be6636c6878.webp" alt="Calendrier du panneau" width="164">
+</p>
+
 <br>
 
 ### Tahoe Centre de contrôle (Alpha)
@@ -283,8 +289,8 @@ Accès rapide aux réglages système, aux applications et aux commandes de sessi
 Wi-Fi, son, luminosité et notifications dans un menu en verre. Des mises à jour arriveront très bientôt.
 
 <p align="center">
-  <img src="src/screenshots/previews/readme-tahoe-light-control-f093af128a34.webp" alt="Control Center in light mode" width="415">
-  <img src="src/screenshots/previews/readme-tahoe-dark-control-3a039c914a10.webp" alt="Control Center in dark mode" width="415">
+  <img src="src/screenshots/previews/readme-tahoe-light-control-0950a52001ba.webp" alt="Control Center in light mode" width="415">
+  <img src="src/screenshots/previews/readme-tahoe-dark-control-50184f3da7ca.webp" alt="Control Center in dark mode" width="415">
 </p>
 
 <br>

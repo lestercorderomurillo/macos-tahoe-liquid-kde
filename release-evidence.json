@@ -1,26 +1,45 @@
 {
-  "version": "0.73.31",
-  "implementation_commit": "335248d5331c3c5a1ae9c80bf6cd029c56478aee",
+  "version": "0.73.32",
+  "implementation_commit": "c6c1acb245237ffdaf6bb98462e5d72d2ebe2a64",
   "gallery_commit": "f09780b200b79302e7c23ef9f6f74d94748bbea3",
-  "scope": "Golden Gate About gradient center opacity and position.",
+  "scope": "Panel month card and identical Control Center material settings across editions.",
   "checks": [
     {
-      "command": "Install Golden Gate in a disposable KDE neon guest, switch to dark mode, verify the entire installed About material matches the saved values including center opacity 0.65 and position 0.30, launch About and capture the composited desktop with Spectacle.",
+      "command": "scene.widget(\"digitalclock\"), scene.shot(\"popups\") and scene.shot(\"control-center\") in each edition and mode",
       "result": "passed",
-      "detail": "Reviewed capture from 6b738975. The integrated globalmenu files and effective Golden Gate About preset match that candidate."
-    }
-  ],
-  "reviewed_frames": [
+      "detail": "Reviewed light and dark VM captures from the actual calendar and Control Center windows."
+    },
     {
-      "frame": "about-dark.png",
-      "sha256": "da4a2388fb58de9b2460b65743c914f8acfe6ff5dbc2b61cb5267f1acf1b5fd5",
-      "source_commit": "6b738975574ffa367eb5f4afb12113f2a17c7468",
-      "edition": "golden-gate"
+      "command": "kreadconfig6 --file kwinrc --group Effect-liquidglass --key ComponentMaterials",
+      "result": "passed",
+      "detail": "All 25 installed Control Center settings match in both editions and match the integrated preset defaults."
     }
   ],
-  "approval": "Maintainer confirmed seeing the updated gradient and requested publication.",
-  "coverage_limits": [
-    "Focused visual check covers Golden Gate About in dark mode on KDE neon Wayland."
+  "captures": [
+    {
+      "path": "src/screenshots/previews/readme-tahoe-light-control-0950a52001ba.webp",
+      "sha256": "0950a52001ba6e8f4fe2a77cb32eb26dc8ece1dfa31a5dc3e77037cffe366ad8",
+      "reviewed": true
+    },
+    {
+      "path": "src/screenshots/previews/readme-tahoe-dark-control-50184f3da7ca.webp",
+      "sha256": "50184f3da7cae7f3cbb24b9e8915ad74946808e3be3ae54a2f45225b657c8552",
+      "reviewed": true
+    },
+    {
+      "path": "src/screenshots/previews/readme-tahoe-light-calendar-c13af32f13c8.webp",
+      "sha256": "c13af32f13c883ac1dc0f1079a304849f9b042ad11b434fece01d2aae9a9c147",
+      "reviewed": true
+    },
+    {
+      "path": "src/screenshots/previews/readme-tahoe-dark-calendar-1be6636c6878.webp",
+      "sha256": "1be6636c687850638561decb1b4442d26417ae48ec5089717802316fdad732dc",
+      "reviewed": true
+    }
   ],
-  "source_sha256": "91b38fd25e6aa5e7b8f9fc9cc9d102e168a722a28ef38950a7ba870f020f1b08"
+  "approval": "Maintainer approved the eight localhost preview photographs for paired publication.",
+  "coverage_limits": [
+    "KDE neon, Plasma 6.8.1, Wayland. The approved component captures predate the independent About and launcher-scrollbar releases. Component QML fingerprints and effective Control Center settings match the integrated sources."
+  ],
+  "source_sha256": "0db3231c710359b9b20fc89369d6e81f3e01808b1aac4fd9a063cccee86a08a9"
 }

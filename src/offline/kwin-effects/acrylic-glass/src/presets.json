@@ -63,7 +63,14 @@
         "DarkGradientOverlay": false,
         "BlurCoverage": 1.0,
         "SurfaceTransparencyLight": 82.0,
-        "SurfaceTransparencyDark": 93.0
+        "SurfaceTransparencyDark": 93.0,
+        "GradientTopColor": "#cecece",
+        "GradientBottomColor": "#cecece",
+        "GradientTopOpacity": 0.5,
+        "GradientBottomOpacity": 0.0,
+        "GradientCenterColor": "#cecece",
+        "GradientCenterOpacity": 0.35,
+        "GradientCenterPosition": 0.56
       },
       "about": {
         "SurfaceTransparencyLight": 45.0,

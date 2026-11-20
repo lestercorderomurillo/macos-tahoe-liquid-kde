@@ -32,6 +32,13 @@ Item {
     readonly property Item arrow: tray?.visibleLayout.parent?.children.find(child => child.arrowAnimationDuration !== undefined) ?? null
     readonly property Item clock: applet("org.kde.plasma.digitalclock")
 
+    Loader {
+        active: style.clock !== null
+        sourceComponent: Component {
+            PanelCalendar { clock: style.clock }
+        }
+    }
+
     function delegates(grid: Item): list<Item> {
         return (grid?.contentItem.children ?? []).filter(child => child.item?.iconContainer).map(child => child.item);
     }

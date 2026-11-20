@@ -643,314 +643,6 @@
       },
       "user_approved": true
     },
-    "previews/readme-tahoe-dark-control-3a039c914a10.webp": {
-      "sha256": "3a039c914a108999fd19bc0929b34074db9b450d80bfcd0d72ffe41db5fd0efb",
-      "source_sha256": "db6529e38174d0da93d8c47a06e6debb511fc95ad1c10ee858d8659201085da5",
-      "source_commit": "bcbe83a5182a9f30e49195e5d605c40ae46b3c85",
-      "replaces": "src/screenshots/control-center-dark-0413d0b90a04.webp",
-      "crop": [
-        3092,
-        64,
-        3840,
-        1208
-      ],
-      "export_size": [
-        748,
-        1144
-      ],
-      "capture": {
-        "source_commit": "bcbe83a5182a9f30e49195e5d605c40ae46b3c85",
-        "edition": "tahoe",
-        "mode": "dark",
-        "case": "control",
-        "before": [
-          {
-            "id": "{804ea748-5af8-4b35-b356-756a05ba96a7}",
-            "caption": "",
-            "resourceClass": "plasmashell",
-            "type": 1,
-            "appletPopup": false,
-            "hidden": false,
-            "active": false,
-            "geometry": {
-              "x": 0,
-              "y": 0,
-              "width": 1920,
-              "height": 1080
-            }
-          },
-          {
-            "id": "{970d8913-87bd-454d-b043-090a2b16e5b5}",
-            "caption": "",
-            "resourceClass": "plasmashell",
-            "type": 2,
-            "appletPopup": false,
-            "hidden": false,
-            "active": false,
-            "geometry": {
-              "x": 0,
-              "y": 0,
-              "width": 1920,
-              "height": 32
-            }
-          },
-          {
-            "id": "{1ccbc9e7-0107-4582-9518-062887c4cdb0}",
-            "caption": "",
-            "resourceClass": "plasmashell",
-            "type": 2,
-            "appletPopup": false,
-            "hidden": false,
-            "active": false,
-            "geometry": {
-              "x": 614,
-              "y": 996,
-              "width": 692,
-              "height": 84
-            }
-          },
-          {
-            "id": "{c8a404c4-5f73-45bd-a121-d29eb37d4000}",
-            "caption": "mttkde-control-center",
-            "resourceClass": "org.kde.plasmashell",
-            "type": 18,
-            "appletPopup": true,
-            "hidden": false,
-            "active": true,
-            "geometry": {
-              "x": 1560,
-              "y": 32,
-              "width": 360,
-              "height": 558
-            }
-          }
-        ],
-        "after": [
-          {
-            "id": "{804ea748-5af8-4b35-b356-756a05ba96a7}",
-            "caption": "",
-            "resourceClass": "plasmashell",
-            "type": 1,
-            "appletPopup": false,
-            "hidden": false,
-            "active": false,
-            "geometry": {
-              "x": 0,
-              "y": 0,
-              "width": 1920,
-              "height": 1080
-            }
-          },
-          {
-            "id": "{970d8913-87bd-454d-b043-090a2b16e5b5}",
-            "caption": "",
-            "resourceClass": "plasmashell",
-            "type": 2,
-            "appletPopup": false,
-            "hidden": false,
-            "active": false,
-            "geometry": {
-              "x": 0,
-              "y": 0,
-              "width": 1920,
-              "height": 32
-            }
-          },
-          {
-            "id": "{1ccbc9e7-0107-4582-9518-062887c4cdb0}",
-            "caption": "",
-            "resourceClass": "plasmashell",
-            "type": 2,
-            "appletPopup": false,
-            "hidden": false,
-            "active": false,
-            "geometry": {
-              "x": 614,
-              "y": 996,
-              "width": 692,
-              "height": 84
-            }
-          },
-          {
-            "id": "{c8a404c4-5f73-45bd-a121-d29eb37d4000}",
-            "caption": "mttkde-control-center",
-            "resourceClass": "org.kde.plasmashell",
-            "type": 18,
-            "appletPopup": true,
-            "hidden": false,
-            "active": true,
-            "geometry": {
-              "x": 1560,
-              "y": 32,
-              "width": 360,
-              "height": 558
-            }
-          }
-        ],
-        "sha256": "db6529e38174d0da93d8c47a06e6debb511fc95ad1c10ee858d8659201085da5",
-        "defaults": {
-          "wallpaper": "MacTahoe",
-          "launcher_preset": 1
-        },
-        "icons": "MacTahoeLiquidKde-Icons-Regular-Dark",
-        "effect": "a4a55b2f39b8b7fa42903c622bcf18d113847b624874d88af15a38f81e67ea99"
-      },
-      "user_approved": true
-    },
-    "previews/readme-tahoe-light-control-f093af128a34.webp": {
-      "sha256": "f093af128a34c720e12ec5e7f0058e0c3c46e34e86f2dc8ac606221f10f50444",
-      "source_sha256": "c567e949bf47f5a5da9ee07b67122eeb45d45de899456ff474b9ea4f151917a5",
-      "source_commit": "bcbe83a5182a9f30e49195e5d605c40ae46b3c85",
-      "replaces": "src/screenshots/control-center-light-912d3227499f.webp",
-      "crop": [
-        3092,
-        64,
-        3840,
-        1208
-      ],
-      "export_size": [
-        748,
-        1144
-      ],
-      "capture": {
-        "source_commit": "bcbe83a5182a9f30e49195e5d605c40ae46b3c85",
-        "edition": "tahoe",
-        "mode": "light",
-        "case": "control",
-        "before": [
-          {
-            "id": "{804ea748-5af8-4b35-b356-756a05ba96a7}",
-            "caption": "",
-            "resourceClass": "plasmashell",
-            "type": 1,
-            "appletPopup": false,
-            "hidden": false,
-            "active": false,
-            "geometry": {
-              "x": 0,
-              "y": 0,
-              "width": 1920,
-              "height": 1080
-            }
-          },
-          {
-            "id": "{970d8913-87bd-454d-b043-090a2b16e5b5}",
-            "caption": "",
-            "resourceClass": "plasmashell",
-            "type": 2,
-            "appletPopup": false,
-            "hidden": false,
-            "active": false,
-            "geometry": {
-              "x": 0,
-              "y": 0,
-              "width": 1920,
-              "height": 32
-            }
-          },
-          {
-            "id": "{1ccbc9e7-0107-4582-9518-062887c4cdb0}",
-            "caption": "",
-            "resourceClass": "plasmashell",
-            "type": 2,
-            "appletPopup": false,
-            "hidden": false,
-            "active": false,
-            "geometry": {
-              "x": 614,
-              "y": 996,
-              "width": 692,
-              "height": 84
-            }
-          },
-          {
-            "id": "{02542e12-0f57-42b5-a80c-56cf6f5657ac}",
-            "caption": "mttkde-control-center",
-            "resourceClass": "org.kde.plasmashell",
-            "type": 18,
-            "appletPopup": true,
-            "hidden": false,
-            "active": true,
-            "geometry": {
-              "x": 1560,
-              "y": 32,
-              "width": 360,
-              "height": 558
-            }
-          }
-        ],
-        "after": [
-          {
-            "id": "{804ea748-5af8-4b35-b356-756a05ba96a7}",
-            "caption": "",
-            "resourceClass": "plasmashell",
-            "type": 1,
-            "appletPopup": false,
-            "hidden": false,
-            "active": false,
-            "geometry": {
-              "x": 0,
-              "y": 0,
-              "width": 1920,
-              "height": 1080
-            }
-          },
-          {
-            "id": "{970d8913-87bd-454d-b043-090a2b16e5b5}",
-            "caption": "",
-            "resourceClass": "plasmashell",
-            "type": 2,
-            "appletPopup": false,
-            "hidden": false,
-            "active": false,
-            "geometry": {
-              "x": 0,
-              "y": 0,
-              "width": 1920,
-              "height": 32
-            }
-          },
-          {
-            "id": "{1ccbc9e7-0107-4582-9518-062887c4cdb0}",
-            "caption": "",
-            "resourceClass": "plasmashell",
-            "type": 2,
-            "appletPopup": false,
-            "hidden": false,
-            "active": false,
-            "geometry": {
-              "x": 614,
-              "y": 996,
-              "width": 692,
-              "height": 84
-            }
-          },
-          {
-            "id": "{02542e12-0f57-42b5-a80c-56cf6f5657ac}",
-            "caption": "mttkde-control-center",
-            "resourceClass": "org.kde.plasmashell",
-            "type": 18,
-            "appletPopup": true,
-            "hidden": false,
-            "active": true,
-            "geometry": {
-              "x": 1560,
-              "y": 32,
-              "width": 360,
-              "height": 558
-            }
-          }
-        ],
-        "sha256": "c567e949bf47f5a5da9ee07b67122eeb45d45de899456ff474b9ea4f151917a5",
-        "defaults": {
-          "wallpaper": "MacTahoe",
-          "launcher_preset": 1
-        },
-        "icons": "MacTahoeLiquidKde-Icons-Regular-Light",
-        "effect": "a4a55b2f39b8b7fa42903c622bcf18d113847b624874d88af15a38f81e67ea99"
-      },
-      "user_approved": true
-    },
     "previews/readme-tahoe-dark-launcher-2399734a1625.webp": {
       "sha256": "2399734a1625f19cd91d0e09693ab78b3dd93c9cb1894f29352f5925c05c83e6",
       "source_sha256": "754567d3376e801414c8e897c4d31c3866df3034df1f2f4bef3ed9b090a2275c",
@@ -3544,6 +3236,200 @@
           "org.kde.haruna.desktop"
         ]
       }
+    },
+    "previews/readme-tahoe-light-control-0950a52001ba.webp": {
+      "source_commit": "c6c1acb245237ffdaf6bb98462e5d72d2ebe2a64",
+      "source_sha256": "88d2e4da2450a8f0e7b931cea69ea5e0d4d3a3df0c23cf851d92d11b8ee08c98",
+      "sha256": "0950a52001ba6e8f4fe2a77cb32eb26dc8ece1dfa31a5dc3e77037cffe366ad8",
+      "crop": [
+        3092,
+        64,
+        3840,
+        1208
+      ],
+      "export_size": [
+        748,
+        1144
+      ],
+      "capture": {
+        "source_commit": "c6c1acb245237ffdaf6bb98462e5d72d2ebe2a64",
+        "edition": "tahoe",
+        "mode": "light",
+        "case": "control-center",
+        "window": {
+          "id": "{9fddfc7c-9503-4174-9837-d54af57ebd63}",
+          "caption": "mttkde-control-center",
+          "resourceClass": "org.kde.plasmashell",
+          "type": 18,
+          "appletPopup": true,
+          "hidden": false,
+          "active": true,
+          "geometry": {
+            "x": 1560,
+            "y": 32,
+            "width": 360,
+            "height": 558
+          }
+        },
+        "backend": "Wayland",
+        "installed": [
+          "e80c19c1f9846fc9ac6a1d286f37f69f85ebda3f1ec222d819a5a0fd4611dbea  /home/tester/.local/share/plasma/plasmoids/org.kde.mac-tahoe-liquid-kde.controlcenter/contents/ui/PanelCalendar.qml",
+          "13f671fa3ea295ec021b47892a9f1d043379939d3dd8acb80e0e9e879793c78f  /home/tester/.local/share/plasma/plasmoids/org.kde.mac-tahoe-liquid-kde.controlcenter/contents/ui/StatusTrayStyle.qml",
+          "kwin-wayland\t4:6.8.1-0zneon+24.04+noble+release+build114",
+          "plasma-workspace\t4:6.8.1-0zneon+24.04+noble+release+build100"
+        ],
+        "source_image": "component crop",
+        "capture_date_in_guest": "2026-09-09",
+        "installed_base_commit": "e8ce4243c5e70caf827671aa1f09d926b78313aa",
+        "component_update": "Final PanelCalendar.qml and StatusTrayStyle.qml installed in the guest before capture. Installed QML hashes recorded above."
+      },
+      "user_approved": true,
+      "replaces": "src/screenshots/previews/readme-tahoe-light-control-f093af128a34.webp"
+    },
+    "previews/readme-tahoe-dark-control-50184f3da7ca.webp": {
+      "source_commit": "c6c1acb245237ffdaf6bb98462e5d72d2ebe2a64",
+      "source_sha256": "58cf4be6404f7903b004221efd06537d040cf1bd7defd21f24a13df3bf535d70",
+      "sha256": "50184f3da7cae7f3cbb24b9e8915ad74946808e3be3ae54a2f45225b657c8552",
+      "crop": [
+        3092,
+        64,
+        3840,
+        1208
+      ],
+      "export_size": [
+        748,
+        1144
+      ],
+      "capture": {
+        "source_commit": "c6c1acb245237ffdaf6bb98462e5d72d2ebe2a64",
+        "edition": "tahoe",
+        "mode": "dark",
+        "case": "control-center",
+        "window": {
+          "id": "{cc7e6249-311f-4c7b-af3a-1ce9f6fd1b68}",
+          "caption": "mttkde-control-center",
+          "resourceClass": "org.kde.plasmashell",
+          "type": 18,
+          "appletPopup": true,
+          "hidden": false,
+          "active": true,
+          "geometry": {
+            "x": 1560,
+            "y": 32,
+            "width": 360,
+            "height": 558
+          }
+        },
+        "backend": "Wayland",
+        "installed": [
+          "e80c19c1f9846fc9ac6a1d286f37f69f85ebda3f1ec222d819a5a0fd4611dbea  /home/tester/.local/share/plasma/plasmoids/org.kde.mac-tahoe-liquid-kde.controlcenter/contents/ui/PanelCalendar.qml",
+          "13f671fa3ea295ec021b47892a9f1d043379939d3dd8acb80e0e9e879793c78f  /home/tester/.local/share/plasma/plasmoids/org.kde.mac-tahoe-liquid-kde.controlcenter/contents/ui/StatusTrayStyle.qml",
+          "kwin-wayland\t4:6.8.1-0zneon+24.04+noble+release+build114",
+          "plasma-workspace\t4:6.8.1-0zneon+24.04+noble+release+build100"
+        ],
+        "source_image": "component crop",
+        "capture_date_in_guest": "2026-09-09",
+        "installed_base_commit": "e8ce4243c5e70caf827671aa1f09d926b78313aa",
+        "component_update": "Final PanelCalendar.qml and StatusTrayStyle.qml installed in the guest before capture. Installed QML hashes recorded above."
+      },
+      "user_approved": true,
+      "replaces": "src/screenshots/previews/readme-tahoe-dark-control-3a039c914a10.webp"
+    },
+    "previews/readme-tahoe-light-calendar-c13af32f13c8.webp": {
+      "source_commit": "c6c1acb245237ffdaf6bb98462e5d72d2ebe2a64",
+      "source_sha256": "7891d6dc225e6281203f66ab908a3288de4b5dc5f2e819e410cce0ac82fb1aba",
+      "sha256": "c13af32f13c883ac1dc0f1079a304849f9b042ad11b434fece01d2aae9a9c147",
+      "crop": [
+        3512,
+        64,
+        3840,
+        392
+      ],
+      "export_size": [
+        328,
+        328
+      ],
+      "capture": {
+        "source_commit": "c6c1acb245237ffdaf6bb98462e5d72d2ebe2a64",
+        "edition": "tahoe",
+        "mode": "light",
+        "case": "calendar",
+        "window": {
+          "id": "{508aa5de-5f7e-4730-b5a9-d4c2a59f10db}",
+          "caption": "mttkde-calendar",
+          "resourceClass": "org.kde.plasmashell",
+          "type": 18,
+          "appletPopup": true,
+          "hidden": false,
+          "active": true,
+          "geometry": {
+            "x": 1756,
+            "y": 32,
+            "width": 164,
+            "height": 164
+          }
+        },
+        "backend": "Wayland",
+        "installed": [
+          "e80c19c1f9846fc9ac6a1d286f37f69f85ebda3f1ec222d819a5a0fd4611dbea  /home/tester/.local/share/plasma/plasmoids/org.kde.mac-tahoe-liquid-kde.controlcenter/contents/ui/PanelCalendar.qml",
+          "13f671fa3ea295ec021b47892a9f1d043379939d3dd8acb80e0e9e879793c78f  /home/tester/.local/share/plasma/plasmoids/org.kde.mac-tahoe-liquid-kde.controlcenter/contents/ui/StatusTrayStyle.qml",
+          "kwin-wayland\t4:6.8.1-0zneon+24.04+noble+release+build114",
+          "plasma-workspace\t4:6.8.1-0zneon+24.04+noble+release+build100"
+        ],
+        "source_image": "component crop",
+        "capture_date_in_guest": "2026-09-09",
+        "installed_base_commit": "e8ce4243c5e70caf827671aa1f09d926b78313aa",
+        "component_update": "Final PanelCalendar.qml and StatusTrayStyle.qml installed in the guest before capture. Installed QML hashes recorded above."
+      },
+      "user_approved": true
+    },
+    "previews/readme-tahoe-dark-calendar-1be6636c6878.webp": {
+      "source_commit": "c6c1acb245237ffdaf6bb98462e5d72d2ebe2a64",
+      "source_sha256": "38c7fd0df7f268eed34205af1411d5991155494da9b535c8b71ce1aadaa5146b",
+      "sha256": "1be6636c687850638561decb1b4442d26417ae48ec5089717802316fdad732dc",
+      "crop": [
+        3512,
+        64,
+        3840,
+        392
+      ],
+      "export_size": [
+        328,
+        328
+      ],
+      "capture": {
+        "source_commit": "c6c1acb245237ffdaf6bb98462e5d72d2ebe2a64",
+        "edition": "tahoe",
+        "mode": "dark",
+        "case": "calendar",
+        "window": {
+          "id": "{eb49fffc-4516-4f52-9d84-7f78ddd11dd7}",
+          "caption": "mttkde-calendar",
+          "resourceClass": "org.kde.plasmashell",
+          "type": 18,
+          "appletPopup": true,
+          "hidden": false,
+          "active": true,
+          "geometry": {
+            "x": 1756,
+            "y": 32,
+            "width": 164,
+            "height": 164
+          }
+        },
+        "backend": "Wayland",
+        "installed": [
+          "e80c19c1f9846fc9ac6a1d286f37f69f85ebda3f1ec222d819a5a0fd4611dbea  /home/tester/.local/share/plasma/plasmoids/org.kde.mac-tahoe-liquid-kde.controlcenter/contents/ui/PanelCalendar.qml",
+          "13f671fa3ea295ec021b47892a9f1d043379939d3dd8acb80e0e9e879793c78f  /home/tester/.local/share/plasma/plasmoids/org.kde.mac-tahoe-liquid-kde.controlcenter/contents/ui/StatusTrayStyle.qml",
+          "kwin-wayland\t4:6.8.1-0zneon+24.04+noble+release+build114",
+          "plasma-workspace\t4:6.8.1-0zneon+24.04+noble+release+build100"
+        ],
+        "source_image": "component crop",
+        "capture_date_in_guest": "2026-09-09",
+        "installed_base_commit": "e8ce4243c5e70caf827671aa1f09d926b78313aa",
+        "component_update": "Final PanelCalendar.qml and StatusTrayStyle.qml installed in the guest before capture. Installed QML hashes recorded above."
+      },
+      "user_approved": true
     }
   },
   "missing": [],

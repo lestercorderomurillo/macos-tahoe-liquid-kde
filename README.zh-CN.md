@@ -276,6 +276,12 @@ Tahoe 和 Golden Gate 的代码贡献者及问题报告者：
   <img src="src/screenshots/previews/readme-tahoe-dark-menu-01a3a4305740.webp" alt="System menu in dark mode" width="415">
 </p>
 
+<p align="center">
+  <strong>面板日历</strong><br>
+  <img src="src/screenshots/previews/readme-tahoe-light-calendar-c13af32f13c8.webp" alt="面板日历" width="164">
+  <img src="src/screenshots/previews/readme-tahoe-dark-calendar-1be6636c6878.webp" alt="面板日历" width="164">
+</p>
+
 <br>
 
 ### Tahoe 控制中心 (Alpha)
@@ -283,8 +289,8 @@ Tahoe 和 Golden Gate 的代码贡献者及问题报告者：
 Wi-Fi、声音、亮度和通知集中在一个玻璃菜单中。更新即将到来。
 
 <p align="center">
-  <img src="src/screenshots/previews/readme-tahoe-light-control-f093af128a34.webp" alt="Control Center in light mode" width="415">
-  <img src="src/screenshots/previews/readme-tahoe-dark-control-3a039c914a10.webp" alt="Control Center in dark mode" width="415">
+  <img src="src/screenshots/previews/readme-tahoe-light-control-0950a52001ba.webp" alt="Control Center in light mode" width="415">
+  <img src="src/screenshots/previews/readme-tahoe-dark-control-50184f3da7ca.webp" alt="Control Center in dark mode" width="415">
 </p>
 
 <br>
