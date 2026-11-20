@@ -28,7 +28,7 @@ LEGACY_USER_PLUGIN_DIR = HOME / ".local/lib/qt6/plugins"
 
 
 def _translation_files():
-    for language in ("pt_BR", "de", "fr"):
+    for language in ("pt_BR", "de", "fr", "it"):
         relative = Path(language) / "LC_MESSAGES/kwin_effect_liquidglass.mo"
         yield SRC / "locale" / relative, DATA_HOME / "locale" / relative
 

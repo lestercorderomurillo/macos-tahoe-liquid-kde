@@ -58,5 +58,17 @@
     "Power Source: Battery": "Source d’alimentation : batterie",
     "Energy Mode": "Mode d’énergie",
     "Battery Settings…": "Réglages Batterie…"
+  },
+  "it": {
+    "Known Networks": "Reti conosciute",
+    "Other Networks": "Altre reti",
+    "Wi-Fi Settings…": "Impostazioni Wi-Fi…",
+    "Low Power": "Risparmio energetico",
+    "High Power": "Prestazioni elevate",
+    "Automatic": "Automatico",
+    "Power Source: Power Adapter": "Alimentazione: alimentatore",
+    "Power Source: Battery": "Alimentazione: batteria",
+    "Energy Mode": "Profilo energetico",
+    "Battery Settings…": "Impostazioni della batteria…"
   }
 }

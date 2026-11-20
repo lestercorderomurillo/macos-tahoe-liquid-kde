@@ -412,7 +412,7 @@ Speicherplatz freigeben und dabei Git-Arbeitskopie und lokale Arbeit erhalten:
 | 🇧🇷 Brasilianisches Portugiesisch | ![Verfügbar](https://img.shields.io/badge/Available-1A7F37) |
 | 🇩🇪 Deutsch | ![Verfügbar](https://img.shields.io/badge/Available-1A7F37) |
 | 🇫🇷 Französisch | ![Verfügbar](https://img.shields.io/badge/Available-1A7F37) |
-| 🇮🇹 Italienisch | ![Geplant](https://img.shields.io/badge/Planned-D4A017) |
+| 🇮🇹 Italienisch | ![Verfügbar](https://img.shields.io/badge/Available-1A7F37) |
 | 🇯🇵 Japanisch | ![Geplant](https://img.shields.io/badge/Planned-D4A017) |
 | 🇰🇷 Koreanisch | ![Geplant](https://img.shields.io/badge/Planned-D4A017) |
 | 🇷🇺 Russisch | ![Geplant](https://img.shields.io/badge/Planned-D4A017) |
