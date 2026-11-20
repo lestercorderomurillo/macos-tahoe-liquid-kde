@@ -341,8 +341,8 @@ Wi-Fi、声音、亮度和通知集中在一个玻璃菜单中。外观按钮用
 硬件、软件和主题信息，文字颜色随背景调整。
 
 <p align="center">
-  <img src="src/screenshots/previews/readme-tahoe-light-about-ede43c195294.webp" alt="浅色模式的系统信息窗口，控制按钮位于左侧" width="415">
-  <img src="src/screenshots/previews/readme-tahoe-dark-about-336526659522.webp" alt="深色模式的系统信息窗口，控制按钮位于右侧" width="415">
+  <img src="src/screenshots/previews/readme-tahoe-light-about-46901764dde1.webp" alt="浅色模式的系统信息窗口，控制按钮位于左侧" width="415">
+  <img src="src/screenshots/previews/readme-tahoe-dark-about-5f1088d764fc.webp" alt="深色模式的系统信息窗口，控制按钮位于右侧" width="415">
 </p>
 
 <br>

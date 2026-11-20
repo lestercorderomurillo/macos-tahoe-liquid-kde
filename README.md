@@ -259,8 +259,8 @@ Find and reuse copied text and images directly from Launchpad.
 Hardware, software and theme details with dynamic text tinting.
 
 <p align="center">
-  <img src="src/screenshots/previews/readme-tahoe-light-about-ede43c195294.webp" alt="Light system information window with controls on the left" width="415">
-  <img src="src/screenshots/previews/readme-tahoe-dark-about-336526659522.webp" alt="Dark system information window with controls on the right" width="415">
+  <img src="src/screenshots/previews/readme-tahoe-light-about-46901764dde1.webp" alt="Light system information window" width="415">
+  <img src="src/screenshots/previews/readme-tahoe-dark-about-5f1088d764fc.webp" alt="Dark system information window" width="415">
 </p>
 
 <br>
