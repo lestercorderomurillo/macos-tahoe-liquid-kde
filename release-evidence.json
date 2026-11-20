@@ -1,32 +1,21 @@
 {
-  "version": "0.73.34",
+  "version": "0.73.35",
   "gallery_commit": "f09780b200b79302e7c23ef9f6f74d94748bbea3",
-  "scope": "Control Center foreground contrast, 40% palette adjustment and notification glass edges.",
-  "approval": "Maintainer approved the mixed-backdrop Control Center and white-backdrop Notification Center captures.",
-  "preview_source": "d130ecf295da612312997b7c99229d19e6ce17ba",
-  "reviewed_preview_sha256": {
-    "reviewed-split.png": "657e298bb289ee3b2bf1929546569545d93ca6b66295afa6b042e0ad7de30d67",
-    "notification-final.png": "61d7253a2648ad1f1341cb3a0be47ad7e8acc78875419bcf2620969b089d9117"
-  },
+  "scope": "Issue #138: optional GTK 3 exporter warning in the installer summary.",
   "checks": [
     {
-      "command": "mixed.py and scene.shot on a KDE neon disposable guest",
+      "command": "python3 -m pytest -q tests/test_gtk_appmenu.py tests/test_globalmenu_step.py",
       "result": "passed",
-      "detail": "The approved Golden Gate Control Center kept its glass fill while text and monochrome controls followed the backdrop, including a split background. Notification history showed the fine dark edge. The desktop capture used KDE neon on Wayland."
+      "detail": "31 passed. The new Fedora and Nobara cases failed on the unpatched source. Arch and KDE neon still warn for a missing expected exporter."
     },
     {
-      "command": "KWin 6.6 isolated X11 controlBackdrop probe, 6.7.5 SDK build and 6.8.1 Wayland VM",
+      "command": "docker run --rm fedora:45 (candidate mounted read-only, PYTHONPATH=/candidate/src/scripts) with Python 3.15.2 invoking steps.globalmenu._install_gtk_appmenu_environment()",
       "result": "passed",
-      "detail": "The X11 compositor sampled the same open popup over black and white. The 6.8.1 VM rendered the actual plasmoid."
-    },
-    {
-      "command": "git diff --exit-code approved-source integrated-source -- <changed implementation paths>",
-      "result": "passed",
-      "detail": "Approved implementation files match the integrated release. Intervening edition material updates preserve the approved Golden Gate Control Center defaults."
+      "detail": "Fedora 45 x86_64, image sha256:a7d72ba2745b100a3351087472e5ee7b2450af7cf331e7673007e3817612839c. Asserted no installed exporter, no warning event and no login hook."
     }
   ],
   "coverage_limits": [
-    "Full desktop visual evidence is from Golden Gate on Wayland. The X11 probe checks the live compositor signal. Full distro CI runs independently."
+    "Installer reporting only. No changes to package installation, login hook contents or runtime menu export. No graphical Plasma session exercised."
   ],
-  "source_sha256": "9945484f7dcc90d8472756b4cef755bbe24af41d468e8f84ae1bc945911f7ba0"
+  "source_sha256": "7fd0abe213533a8e629b0b8529eb494f751f7859b3dcef7723ba6435600da03d"
 }

@@ -193,7 +193,8 @@ def _install_gtk_appmenu_environment() -> None:
     """
     module = gtk3_appmenu_module()
     if module is None:
-        warn(tr('GTK appmenu module not found; GTK startup integration skipped'))
+        if global_menu_exporter_deps():
+            warn(tr('GTK appmenu module not found; GTK startup integration skipped'))
         return
     destination = gtk_appmenu_env_path()
     try:

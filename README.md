@@ -463,6 +463,9 @@ removed automatically.
 | Fedora family | `dnf install qt6-qttools-devel` | `dnf install extra-cmake-modules plasma-workspace-devel kdecoration-devel libplasma-devel knotifications-devel libksysguard-devel kf6-plasma-activities-devel` |
 | openSUSE Tumbleweed | `zypper install qt6-tools-devel` | `zypper install extra-cmake-modules plasma6-workspace-devel kdecoration-devel libKF6Plasma-devel libnotificationmanager6-devel libksysguard6-devel libKF6PlasmaActivitiesStats6-devel` |
 
+On Fedora, the GTK 3 global menu exporter is optional. Install Fedora’s exporter with
+`sudo dnf install unity-gtk3-module` if you need it for compatible applications.
+
 </details>
 
 <details>
@@ -565,7 +568,8 @@ without importing existing pins.
 plasma-manager keys managed by the theme switcher.
 
 Log out and back in after activation. Firefox profiles, GTK bookmarks and SDDM
-are not configured. GTK global menus need `programs.mac-tahoe.gtkAppmenuModule`.
+are not configured. In Home Manager, set `programs.mac-tahoe.gtkAppmenuModule` to the full path of
+an installed GTK 3 appmenu module library to load it at login.
 Before disabling OLED care, run `mac-tahoe-oled-care restore`; before removing
 the modules, select Breeze. Removal leaves user settings in place.
 

@@ -131,10 +131,23 @@ def test_custom_environment_file_is_never_overwritten_or_removed(
     assert destination.is_symlink() == symlink
 
 
-def test_missing_runtime_module_does_not_create_a_login_hook(
-        gtk_environment, monkeypatch):
+@pytest.mark.parametrize("os_release,expect_warning", [
+    ('ID=fedora\nVERSION_ID=45\n', False),
+    ('ID=nobara\nID_LIKE=fedora\n', False),
+    ('ID=arch\n', True),
+    ('ID=neon\nID_LIKE="ubuntu debian"\n', True),
+])
+def test_missing_runtime_module_warns_only_when_expected(
+        gtk_environment, monkeypatch, tmp_path, os_release, expect_warning):
+    release = tmp_path / "os-release"
+    release.write_text(os_release)
+    monkeypatch.setattr(distro, "_OS_RELEASE_PATH", release)
+    monkeypatch.setattr(distro, "_DISTRO_CACHE", None)
+    warnings = []
+    monkeypatch.setattr(globalmenu, "warn", warnings.append)
     monkeypatch.setattr(globalmenu, "gtk3_appmenu_module", lambda: None)
     globalmenu._install_gtk_appmenu_environment()
+    assert bool(warnings) == expect_warning
     assert not globalmenu.gtk_appmenu_env_path().exists()
 
 
