@@ -88,8 +88,8 @@ public:
     }
 
 private:
-    static constexpr int Duration = 500;
-    static constexpr int QuietPeriod = 150;
+    static constexpr int Duration = 250;
+    static constexpr int QuietPeriod = 50;
     struct Track {
         QColor from, to;
         qint64 start = 0, lastTargetChange = -QuietPeriod;

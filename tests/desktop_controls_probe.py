@@ -621,8 +621,8 @@ frames=[]
 for dark in (False, True, False):
     notice.setProperty('foregroundColor', QColor('white' if dark else 'black'))
     notice.setProperty('backgroundColor', QColor('black' if dark else 'white'))
-    # Compare settled pixels after the 150 ms hold and 500 ms transition.
-    QTest.qWait(750)
+    # Compare settled pixels after the 50 ms hold and 250 ms transition.
+    QTest.qWait(400)
     assert child(notice,'notificationCard').property('lightMode') != dark
     rendered=notice.grabWindow(); assert not rendered.isNull()
     text=[rendered.pixelColor(x,y) for x in range(68,rendered.width()-24)

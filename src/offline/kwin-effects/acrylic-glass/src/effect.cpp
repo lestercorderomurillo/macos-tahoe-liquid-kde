@@ -2026,6 +2026,12 @@ void BlurEffect::blur(
         }
     }
 
+    const QPalette windowPalette = w->window()->palette();
+    const auto &gradientTop = gradientColorForPalette(material.top, material.topDark, windowPalette);
+    const auto &gradientCenter = gradientColorForPalette(material.center, material.centerDark, windowPalette);
+    const auto &gradientBottom = gradientColorForPalette(material.bottom, material.bottomDark, windowPalette);
+    const float modulation = opacity * opacity;
+
     // Foreground contrast uses the captured backdrop, never the notification's
     // own pixels. The existing blur/material passes and saved optics are unchanged.
     const QString resourceClass = w->window()->resourceClass();
@@ -2042,7 +2048,7 @@ void BlurEffect::blur(
     const bool about = plasma && (aboutApp || caption == m_aboutTitle || caption == QStringLiteral("About This Computer"));
     const bool spatialBackdrop = (plasma && namedPopup) || (BlurConfig::dynamicTinting() && (shellMenu || about));
     if (spatialBackdrop || notification) {
-        const int sampleInterval = about ? 75 : 200;
+        const int sampleInterval = about ? 40 : 200;
         if (!blurInfo.contrastTimer.isValid() || blurInfo.contrastTimer.elapsed() >= sampleInterval) {
             blurInfo.contrastTimer.start();
             if (!m_contrastTexture) {
@@ -2056,7 +2062,7 @@ void BlurEffect::blur(
             if (m_contrastFramebuffer && m_contrastFramebuffer->valid()) {
                 const bool blendEnabled = glIsEnabled(GL_BLEND);
                 glDisable(GL_BLEND);
-                const auto &read = renderInfo.framebuffers[blurOffset > 0 ? 1 : 0];
+                const auto &read = renderInfo.framebuffers[blurOffset > 0 && optics.surfaceBlur >= 0.5f ? 1 : 0];
                 ShaderManager::instance()->pushShader(m_downsamplePass.shader.get());
                 QMatrix4x4 projection;
                 projection.ortho(QRectF(0, 0, scaledBackgroundRect.width(), scaledBackgroundRect.height()));
@@ -2082,19 +2088,48 @@ void BlurEffect::blur(
                 GLFramebuffer::popFramebuffer();
                 ShaderManager::instance()->popShader();
                 if (blendEnabled) glEnable(GL_BLEND);
-                if (spatialBackdrop) {
-                    // Keep the spatial samples: two labels can be over opposite backdrops.
-                    QByteArray colors;
-                    colors.reserve(8 * 8 * 3);
-                    const auto transform = material.color.transposed();
-                    for (int y = 7; y >= 0; --y) {
-                        for (int x = 0; x < 8; ++x) {
-                            const auto *pixel = pixels.data() + (y * 8 + x) * 4;
-                            const auto rgb = transform * QVector4D(pixel[0] / 255.f, pixel[1] / 255.f, pixel[2] / 255.f, 1);
-                            for (int c = 0; c < 3; ++c)
-                                colors.append(char(qRound(std::clamp(rgb[c], 0.f, 1.f) * 255)));
+                // Match the interior glass pass before clients composite their own fill.
+                const auto transform = material.color.transposed();
+                QByteArray colors;
+                colors.reserve(8 * 8 * 3);
+                QVector3D total;
+                for (int row = 0; row < 8; ++row) {
+                    for (int col = 0; col < 8; ++col) {
+                        const auto *pixel = pixels.data() + ((7 - row) * 8 + col) * 4;
+                        const QVector3D base(pixel[0] / 255.f, pixel[1] / 255.f, pixel[2] / 255.f);
+                        const QPointF screenPoint(backgroundRect.x() + (col + .5) * backgroundRect.width() / 8,
+                                                  backgroundRect.y() + (row + .5) * backgroundRect.height() / 8);
+                        const QPointF point((screenPoint.x() - w->x() - data.xTranslation()) / data.xScale(),
+                                            (screenPoint.y() - w->y() - data.yTranslation()) / data.yScale());
+                        QRectF surface(QPointF(), frameRect.size());
+                        if (!wobblySurface && !blurInfo.clientShapes.isEmpty()) {
+                            surface = {};
+                            for (const auto &shape : blurInfo.clientShapes) {
+                                if (shape.surfaceRect().contains(point)) {
+                                    surface = shape.surfaceRect();
+                                    break;
+                                }
+                            }
                         }
+                        QVector3D rgb = base;
+                        if (surface.contains(point)) {
+                            rgb = (transform * QVector4D(base, 1)).toVector3D();
+                            if (material.gradient) {
+                                const float height = (point.y() - surface.y()) / surface.height();
+                                const auto tint = gradientOverlayAt(height, material.centerPosition,
+                                                                    gradientTop, gradientCenter, gradientBottom);
+                                rgb = rgb * (1 - tint.w()) + tint.toVector3D();
+                            }
+                            rgb = base + (rgb - base) * (modulation * centerOpacity);
+                        }
+                        for (int c = 0; c < 3; ++c) {
+                            rgb[c] = std::clamp(rgb[c], 0.f, 1.f);
+                            colors.append(char(qRound(rgb[c] * 255)));
+                        }
+                        total += rgb;
                     }
+                }
+                if (spatialBackdrop) {
                     const QRect frame = w->frameGeometry().toAlignedRect();
                     if (colors != blurInfo.contrastGrid || backgroundRect != blurInfo.sampleBounds || frame != blurInfo.contrastBounds) {
                         blurInfo.contrastGrid = colors;
@@ -2111,16 +2146,8 @@ void BlurEffect::blur(
                         QDBusConnection::sessionBus().send(message);
                     }
                 } else {
-                    QVector4D rgb(0, 0, 0, 1);
-                    for (size_t i = 0; i < pixels.size(); i += 4) {
-                        rgb.setX(rgb.x() + pixels[i] / (255.0f * 64));
-                        rgb.setY(rgb.y() + pixels[i + 1] / (255.0f * 64));
-                        rgb.setZ(rgb.z() + pixels[i + 2] / (255.0f * 64));
-                    }
-                    // The production fragment shader uses a row-vector transform.
-                    rgb = material.color.transposed() * rgb;
-                    const QColor color = QColor::fromRgbF(std::clamp(rgb.x(), 0.0f, 1.0f),
-                        std::clamp(rgb.y(), 0.0f, 1.0f), std::clamp(rgb.z(), 0.0f, 1.0f));
+                    const auto average = total / 64;
+                    const QColor color = QColor::fromRgbF(average.x(), average.y(), average.z());
                     const QRect bounds = w->frameGeometry().toAlignedRect();
                     if (color != blurInfo.contrastColor || bounds != blurInfo.contrastBounds) {
                         blurInfo.contrastColor = color;
@@ -2155,7 +2182,6 @@ void BlurEffect::blur(
     // Maximized full-screen apps keep sharp corners unless the user
     // opts in via RoundCornersOfMaximizedWindows.
     const QMatrix4x4 colorMatrix = material.color;
-    const float modulation = opacity * opacity;
 
     BorderRadius cornerRadius = w->window()->borderRadius();
     float topCornerRadius = 0.0;
@@ -2358,18 +2384,17 @@ void BlurEffect::blur(
         m_roundedOnscreenPass.shader->setUniform(m_roundedOnscreenPass.highlightStrengthLocation, optics.highlightStrength);
         m_roundedOnscreenPass.shader->setUniform(m_roundedOnscreenPass.darkGradientOverlayLocation,
             int(material.gradient));
-        const QPalette windowPalette = w->window()->palette();
         m_roundedOnscreenPass.shader->setUniform(m_roundedOnscreenPass.centerOpacityLocation, centerOpacity);
         m_roundedOnscreenPass.shader->setUniform(m_roundedOnscreenPass.dockSurfaceLocation, int(dockSurface));
         m_roundedOnscreenPass.shader->setUniform(m_roundedOnscreenPass.backgroundSizeLocation,
             QVector2D(scaledBackgroundRect.width(), scaledBackgroundRect.height()));
         m_roundedOnscreenPass.shader->setUniform(m_roundedOnscreenPass.gradientTopLocation,
-            gradientColorForPalette(material.top, material.topDark, windowPalette));
+            gradientTop);
         m_roundedOnscreenPass.shader->setUniform(m_roundedOnscreenPass.gradientCenterLocation,
-            gradientColorForPalette(material.center, material.centerDark, windowPalette));
+            gradientCenter);
         m_roundedOnscreenPass.shader->setUniform(m_roundedOnscreenPass.gradientCenterPositionLocation, material.centerPosition);
         m_roundedOnscreenPass.shader->setUniform(m_roundedOnscreenPass.gradientBottomLocation,
-            gradientColorForPalette(material.bottom, material.bottomDark, windowPalette));
+            gradientBottom);
 
         surfaceRead->colorAttachment()->bind();
 
