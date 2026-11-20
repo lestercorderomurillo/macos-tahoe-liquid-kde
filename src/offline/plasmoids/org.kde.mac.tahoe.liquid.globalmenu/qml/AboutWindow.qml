@@ -35,23 +35,19 @@ Window {
     id: aboutWindow
     NativeGlass.GlassSettings { id: glassSettings; component: "about"; window: aboutWindow }
 
-    NativeGlass.PopupBackdrop { id: backdrop; window: aboutWindow }
-
-    function ink(item, preferred, face) {
-        if (!glassSettings.dynamicTinting || !backdrop.backdropRevision || !item.width || !item.height)
-            return preferred;
-        const point = item.mapToItem(contentItem, item.width / 2, item.height / 2);
-        return backdrop.animatedForegroundAt(item, point, Qt.size(width / 4, height / 9), preferred,
-                                     face ? Qt.tint(glass.color, face) : glass.color);
+    AboutInk {
+        id: backdrop
+        window: aboutWindow
+        preferred: aboutWindow.primaryTextColor
+        fill: glass.color
+        tintEnabled: glassSettings.dynamicTinting
     }
 
     component PrimaryLabel: Text {
-        id: primaryLabel
-        color: aboutWindow.ink(primaryLabel, aboutWindow.primaryTextColor)
+        color: backdrop.foreground
     }
     component SecondaryLabel: Text {
-        id: secondaryLabel
-        color: aboutWindow.ink(secondaryLabel, aboutWindow.secondaryTextColor)
+        color: backdrop.withOpacity(aboutWindow.secondaryTextColor)
     }
 
     KI18n.KI18nContext {
@@ -630,7 +626,7 @@ Window {
 
                 GlassButton {
                     id: moreInfoButton
-                    labelColor: aboutWindow.ink(moreInfoButton, aboutWindow.primaryTextColor, faceColor)
+                    labelColor: backdrop.foreground
                     isDarkTheme: aboutWindow.isDarkTheme
                     text: translations.i18n("More Info…")
                     onClicked: {
@@ -641,7 +637,7 @@ Window {
 
                 GlassButton {
                     id: reportButton
-                    labelColor: aboutWindow.ink(reportButton, aboutWindow.primaryTextColor, faceColor)
+                    labelColor: backdrop.foreground
                     isDarkTheme: aboutWindow.isDarkTheme
                     text: translations.i18n("Report a Bug…")
                     onClicked: {
@@ -651,7 +647,7 @@ Window {
                 }
 
                 GlassButton {
-                    labelColor: aboutWindow.ink(copyButton, aboutWindow.primaryTextColor, faceColor)
+                    labelColor: backdrop.foreground
                     isDarkTheme: aboutWindow.isDarkTheme
                     id: copyButton
                     property bool justCopied: false
@@ -689,7 +685,7 @@ Window {
                             width: 18
                             height: 18
                             source: "dialog-ok"
-                            color: aboutWindow.ink(copyStatusIcon, aboutWindow.primaryTextColor)
+                            color: backdrop.foreground
                             visible: copyButton.justCopied
                         }
                     }

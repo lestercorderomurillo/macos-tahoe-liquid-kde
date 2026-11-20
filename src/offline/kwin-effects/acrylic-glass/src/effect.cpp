@@ -737,6 +737,9 @@ void BlurEffect::configureComponentMaterials()
     const auto preset = presets.at(BlurConfig::materialPreset() == 2 ? 1 : 0).toObject();
     const auto components = GlassMaterials::read(group, preset, BlurConfig::backingTint() != 0, presets.at(0).toObject().value(QStringLiteral("values")).toObject());
     m_aboutTitle = i18nd("plasma_applet_org.kde.mac.tahoe.liquid.globalmenu", "About This Computer");
+    const auto aboutApp = i18nd("plasma_applet_org.kde.mac.tahoe.liquid.globalmenu", "About %1", QStringLiteral("%1"));
+    m_aboutAppPrefix = aboutApp.section(QStringLiteral("%1"), 0, 0);
+    m_aboutAppSuffix = aboutApp.section(QStringLiteral("%1"), 1);
     effects->makeOpenGLContextCurrent();
     m_noisePass.textures.clear();
     m_componentMaterials.clear();
@@ -2032,10 +2035,15 @@ void BlurEffect::blur(
     const bool notification = isProjectNotification(resourceClass, w->caption());
     const bool shellMenu = plasma && !namedPopup && !notification && (w->isPopupMenu() || w->isDropdownMenu() || w->isMenu()
         || (w->isPopupWindow() && !w->isAppletPopup() && !w->isTooltip()));
-    const bool about = plasma && (w->caption() == m_aboutTitle || w->caption() == QStringLiteral("About This Computer"));
+    const auto caption = w->caption();
+    const bool aboutApp = (!m_aboutAppPrefix.isEmpty() || !m_aboutAppSuffix.isEmpty())
+        && caption.startsWith(m_aboutAppPrefix) && caption.endsWith(m_aboutAppSuffix)
+        && caption.size() > m_aboutAppPrefix.size() + m_aboutAppSuffix.size();
+    const bool about = plasma && (aboutApp || caption == m_aboutTitle || caption == QStringLiteral("About This Computer"));
     const bool spatialBackdrop = (plasma && namedPopup) || (BlurConfig::dynamicTinting() && (shellMenu || about));
     if (spatialBackdrop || notification) {
-        if (!blurInfo.contrastTimer.isValid() || blurInfo.contrastTimer.elapsed() >= 200) {
+        const int sampleInterval = about ? 75 : 200;
+        if (!blurInfo.contrastTimer.isValid() || blurInfo.contrastTimer.elapsed() >= sampleInterval) {
             blurInfo.contrastTimer.start();
             if (!m_contrastTexture) {
                 m_contrastTexture = GLTexture::allocate(GL_RGBA8, QSize(8, 8));
@@ -2132,7 +2140,7 @@ void BlurEffect::blur(
             // One trailing repaint catches the settled frame of a transition;
             // unchanged notifications do not keep a polling repaint loop alive.
             blurInfo.contrastScheduled = true;
-            QTimer::singleShot(200 - blurInfo.contrastTimer.elapsed(), this, [this, w] {
+            QTimer::singleShot(sampleInterval - blurInfo.contrastTimer.elapsed(), this, [this, w] {
                 const auto found = m_windows.find(w);
                 if (found == m_windows.end()) return;
                 found->second.contrastScheduled = false;

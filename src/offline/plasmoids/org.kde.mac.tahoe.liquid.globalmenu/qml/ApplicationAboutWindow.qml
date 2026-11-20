@@ -2,6 +2,7 @@
 pragma ComponentBehavior: Bound
 
 import QtQuick
+import org.kde.mac.tahoe.launcher as NativeGlass
 import QtQuick.Layouts
 import QtQuick.Controls as QQC2
 import QtQuick.Window
@@ -15,6 +16,14 @@ import org.kde.plasma.plasma5support as P5Support
 Window {
     id: root
     objectName: "applicationAboutWindow"
+    NativeGlass.GlassSettings { id: glassSettings; component: "about"; window: root }
+    AboutInk {
+        id: backdrop
+        window: root
+        preferred: Kirigami.Theme.textColor
+        fill: glass.color
+        tintEnabled: glassSettings.dynamicTinting
+    }
     property var applicationInfo: ({})
     readonly property string applicationName: applicationInfo.name || translations.i18n("Application")
     readonly property string location: applicationInfo.executable || applicationInfo.desktopFile || ""
@@ -107,7 +116,9 @@ Window {
             objectName: "aboutDragArea"
             anchors.fill: parent
             acceptedButtons: Qt.LeftButton
-            onPressed: root.startSystemMove()
+            onPressed: {
+                if (root.startSystemMove()) backdrop.windowMoveStarted();
+            }
         }
 
         // window buttons
@@ -218,6 +229,7 @@ Window {
                 Item { Layout.preferredHeight: 1.25 * root.unit }
 
                 QQC2.Label {
+                    color: backdrop.foreground
                     objectName: "applicationName"
                     text: root.applicationName
                     textFormat: Text.PlainText
@@ -230,6 +242,7 @@ Window {
                 }
 
                 QQC2.Label {
+                    color: backdrop.foreground
                     objectName: "applicationDescription"
                     visible: text.length > 0
                     text: root.applicationInfo.description || ""
@@ -244,6 +257,7 @@ Window {
                 Item { Layout.preferredHeight: root.unit }
 
                 QQC2.Label {
+                    color: backdrop.foreground
                     text: translations.i18n("Location")
                     textFormat: Text.PlainText
                     font: Kirigami.Theme.smallFont
@@ -258,7 +272,7 @@ Window {
                     readOnly: true
                     selectByMouse: true
                     font: Kirigami.Theme.defaultFont
-                    color: Kirigami.Theme.textColor
+                    color: backdrop.foreground
                     horizontalAlignment: TextEdit.AlignHCenter
                     wrapMode: TextEdit.WrapAnywhere
                     Layout.fillWidth: true
@@ -270,7 +284,7 @@ Window {
                     visible: text.length > 0
                     textFormat: Text.PlainText
                     font: Kirigami.Theme.smallFont
-                    color: Kirigami.Theme.disabledTextColor
+                    color: backdrop.withOpacity(Kirigami.Theme.disabledTextColor)
                     Layout.fillWidth: true
                     Layout.topMargin: root.unit
                     horizontalAlignment: Text.AlignHCenter
@@ -281,6 +295,7 @@ Window {
 
         GlassButton {
             isDarkTheme: root.isDarkTheme
+            labelColor: backdrop.withOpacity(Qt.tint(Kirigami.Theme.textColor, root.isDarkTheme ? "#66ffffff" : "#66000000"))
             objectName: "copyApplicationDetails"
             text: translations.i18n("Copy Details")
             Layout.alignment: Qt.AlignHCenter

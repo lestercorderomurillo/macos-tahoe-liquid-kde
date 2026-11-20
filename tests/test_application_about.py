@@ -7,8 +7,8 @@ import pytest
 
 
 @pytest.mark.parametrize('mode', ('light', 'dark'))
-def test_generic_application_about_dialog(repo, tmp_path, mode):
-    env = dict(os.environ, QT_QPA_PLATFORM='offscreen', QT_QUICK_BACKEND='software',
+def test_generic_application_about_dialog(repo, tmp_path, mode, launcher_popup_module):
+    env = dict(os.environ, QML_IMPORT_PATH=str(launcher_popup_module), QT_QPA_PLATFORM='offscreen', QT_QUICK_BACKEND='software',
                QT_QPA_PLATFORMTHEME='generic', XDG_CONFIG_HOME=str(tmp_path / 'config'),
                XDG_CACHE_HOME=str(tmp_path / 'cache'), XDG_DATA_HOME=str(tmp_path / 'data'))
     result = subprocess.run([sys.executable, str(repo / 'tests/application_about_probe.py'), '--mode', mode],

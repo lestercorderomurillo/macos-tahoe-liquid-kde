@@ -419,6 +419,8 @@ private:
     QMap<QString, ComponentMaterial> m_componentMaterials;
     QList<QPair<qint64, QRect>> m_dockWindows;
     QString m_aboutTitle;
+    QString m_aboutAppPrefix;
+    QString m_aboutAppSuffix;
     const ComponentMaterial &materialFor(EffectWindow *w) const;
     void configureComponentMaterials();
 

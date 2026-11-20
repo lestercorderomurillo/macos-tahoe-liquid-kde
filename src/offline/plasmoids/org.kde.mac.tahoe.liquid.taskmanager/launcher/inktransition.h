@@ -88,8 +88,8 @@ public:
     }
 
 private:
-    static constexpr int Duration = 1000;
-    static constexpr int QuietPeriod = 300; // Longer than KWin's 200 ms sample interval.
+    static constexpr int Duration = 500;
+    static constexpr int QuietPeriod = 150;
     struct Track {
         QColor from, to;
         qint64 start = 0, lastTargetChange = -QuietPeriod;
