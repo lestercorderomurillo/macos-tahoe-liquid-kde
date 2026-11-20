@@ -1,6 +1,6 @@
 # Installer testing
 
-**v0.75.0**. Italian catalog checks and installer navigation passed for both editions. The Italian welcome screen was verified in KDE neon. [Evidence and coverage](release-evidence.json).
+**v0.76.0**. Verified layout preservation during installation, the saved Dynamic Tinting setting, and the Dock and Control Center in both editions. [Evidence and coverage](release-evidence.json).
 
 [Installer photo evidence](src/screenshots/previews/wizard-tahoe-provenance-531f633f4ff6.json).
 

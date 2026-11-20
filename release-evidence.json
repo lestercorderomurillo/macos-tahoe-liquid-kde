@@ -1,18 +1,33 @@
 {
-  "version": "0.75.0",
+  "version": "0.76.0",
   "gallery_commit": "f09780b200b79302e7c23ef9f6f74d94748bbea3",
-  "scope": "Italian installer, standalone helpers and desktop catalogs.",
-  "approval": "Maintainer approved paired publication after reviewing the Italian welcome screens.",
+  "scope": "Installer layout preservation, About and shell dynamic tinting, Control Center, Dock rim, Italian support and README updates.",
+  "approval": "Maintainer approved the paired previews and existing emblems on 2026-11-20.",
   "checks": [
     {
-      "command": "pytest -q tests/test_multilanguage.py -k it",
+      "command": "Clean install keeping an existing panel layout and reinstall with a personal launcher in disposable Plasma guests",
       "result": "passed",
-      "output": "23 passed. Italian placeholders, commands, catalog coverage and installed helpers checked."
+      "output": "Installer qualification and retained launcher evidence; 64 installer tests and 12 focused follow-up checks."
     },
     {
-      "command": "pytest -q tests/test_installer_wizard.py::test_native_wizard_navigation_preserves_choices_and_waits_for_completion",
+      "command": "Apply, close, reopen and restore Dynamic Tinting in the Acrylic Glass settings module",
       "result": "passed",
-      "output": "2 passed. Both editions, including Italian progress summaries."
+      "output": "Default enabled and saved state verified. Compared About on/off on the same split background in Golden Gate."
+    },
+    {
+      "command": "Build Acrylic Glass on KWin 6.6.5, 6.7.5 and 6.8.2; run the isolated X11 contrast probe",
+      "result": "passed",
+      "output": "Three builds and the X11 probe passed. Both editions captured in a Plasma Wayland guest."
+    },
+    {
+      "command": "Render the Control Center X11 fixture and Qt SVG glass surface checks",
+      "result": "passed",
+      "output": "Verified updated Wi-Fi sampling point and 30 glass-surface regressions."
+    },
+    {
+      "command": "nix build #acrylic-glass and inspect the packaged Control Center transition",
+      "result": "passed",
+      "output": "Verified installed transition."
     }
   ],
   "captures": [
@@ -23,10 +38,46 @@
       "reviewed": true,
       "locale": "it",
       "edition": "tahoe"
+    },
+    {
+      "path": "src/screenshots/previews/readme-tahoe-light-about-ede43c195294.webp",
+      "sha256": "ede43c1952940d51bb46fe4f5cd423014f7d5e3729c5eb2e62c30b3531ba3ef2",
+      "source_commit": "7455a59d995acb332ede95a137576ed86d467eaf",
+      "reviewed": true,
+      "edition": "tahoe"
+    },
+    {
+      "path": "src/screenshots/previews/wizard-tahoe-light-summary-b3c64449efd7.webp",
+      "sha256": "b3c64449efd738a2e234dfaf34db8e6331fa3bbe4f3e203a722d68f517c35389",
+      "source_commit": "7455a59d995acb332ede95a137576ed86d467eaf",
+      "reviewed": true,
+      "edition": "tahoe"
+    },
+    {
+      "path": "src/screenshots/previews/readme-tahoe-dark-about-336526659522.webp",
+      "sha256": "336526659522538bd20bf35cfcd8ad41e3e8c73bf2acf909d4ad165f437198fb",
+      "source_commit": "7455a59d995acb332ede95a137576ed86d467eaf",
+      "reviewed": true,
+      "edition": "tahoe"
+    },
+    {
+      "path": "src/screenshots/previews/wizard-tahoe-dark-summary-fa0fd90df287.webp",
+      "sha256": "fa0fd90df2873a13f6c4fbbbc20adca30ffeb4617ae3e9c19998e8e3299868ff",
+      "source_commit": "7455a59d995acb332ede95a137576ed86d467eaf",
+      "reviewed": true,
+      "edition": "tahoe"
     }
   ],
   "coverage_limits": [
-    "Visual inspection covered the welcome screen of each edition in KDE neon. The full remote CI matrix runs independently."
+    "Focused selected checks. SDK builds and installed desktop rendering have separate coverage. The complete remote matrix runs asynchronously."
   ],
-  "source_sha256": "61e469d787bd81365d44824b718549bf3526fe58a70e83d24f016605a40f6957"
+  "source_sha256": "bf4eb45ea18c2b112533cc3a8fa37b8a453c2f9474004f9b64dfc629861cdfa2",
+  "reviewed_preview_sha256": {
+    "tahoe-acrylic.jpg": "cf996386720457c56a12df0fa9f156b10634cfa7416f19d688742d6c4dda402c",
+    "tahoe-control-center-dark.jpg": "ca660bf06f32253642fdde7a057111351f001d689fa139abaaaa88b3f303ffa5",
+    "tahoe-control-center-light.jpg": "ecc69f1c80cc129f7e582a2e8ffde6236a86b33a97aae0602facd499bea73dec",
+    "tahoe-dock-dark.jpg": "0b5f65702b94ca0d01c9a96a237b00de1e20ab25f0db040a8bb965147e24e853",
+    "tahoe-dock-light.jpg": "d146e3f487fb897f78e2d79f58e75031086660d52e9cdf666e8845d5a95c6266",
+    "tahoe-tint-disabled.jpg": "7c3a21f6b70b3144680e5ad1c3d1e678808ee7e2195d65f000e746e24a8fe276"
+  }
 }
