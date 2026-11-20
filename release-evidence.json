@@ -1,26 +1,38 @@
 {
-  "version": "0.73.29",
-  "implementation_commit": "c4ec6cd3999871ab60c5d203727f20b1bc99f74e",
+  "version": "0.73.30",
+  "implementation_commit": "91099e4c0f172796a4ecc4f486c178c631fd6d99",
   "gallery_commit": "f09780b200b79302e7c23ef9f6f74d94748bbea3",
-  "scope": "Golden Gate About dark transparency and computer artwork.",
+  "scope": "Shared launcher scrollbars for the grid, app lists, search and clipboard.",
   "checks": [
     {
-      "command": "Install Golden Gate in a disposable KDE neon guest, switch to dark mode, verify About SurfaceTransparencyDark = 95, launch About and capture the composited desktop with Spectacle.",
+      "command": "Scroll the installed Golden Gate app grid in a disposable KDE neon Plasma 6.8.1 Wayland session and capture the active and idle states with Spectacle.",
       "result": "passed",
-      "detail": "Reviewed capture from 810d4019. The integrated globalmenu files and effective Golden Gate About preset match that candidate."
+      "detail": "At 2\u00d7 scale the active and idle frames differ only across the 6-device-pixel-wide handle, 8 device pixels inside the right edge. The integrated launcher tree matches the captured candidate."
     }
   ],
   "reviewed_frames": [
     {
-      "frame": "about-dark.png",
-      "sha256": "b54bab857d7b81211d941097733e0f337229ebfc19e68fa5c47aa98cdedd7da6",
-      "source_commit": "810d40191c9d2b1b28373daaa065f8bba2013343",
-      "edition": "golden-gate"
+      "frame": "candidate.png",
+      "edition": "golden-gate",
+      "source_commit": "6330452860b2655f314e12dcb79a5115ddfa83d7",
+      "sha256": "1f06ded51528504cf2f88d0f2aae035ceacbe21d945a9f04a132dad3d730e2fa"
+    },
+    {
+      "frame": "idle.png",
+      "edition": "golden-gate",
+      "source_commit": "6330452860b2655f314e12dcb79a5115ddfa83d7",
+      "sha256": "01e21e0d702fb60989bc956afb1cd622e2f29600d23398e4910bd7f5a22468e9"
     }
   ],
-  "approval": "Maintainer requested publication after viewing the corrected logo-free monitor.",
+  "installed_qml_sha256": {
+    "Scrollbar.qml": "47eaf938ef9bcce017db0a1adda8873a1649c3aa4120d9ed0cdc4f07b3fc126f",
+    "AppListView.qml": "d1ff4ea7e2095fe31a07376653cfcce4c9134317922596689aafefa96c5b6c01",
+    "AppGridView.qml": "8e8aad035dbd3486ac47abd3c02828aa89d51c3e6b35b4f0ff406e6264b7ffdb",
+    "ClipboardView.qml": "149a67ea060e101c74b8c9e376cf8792470830b28eb8514c18df488e257f5fd5"
+  },
+  "approval": "Maintainer approved the before, scrolling and idle comparison for release.",
   "coverage_limits": [
-    "Focused visual check covers Golden Gate About in dark mode on KDE neon Wayland."
+    "Rendered on Golden Gate in dark mode. The other launcher views and Tahoe share the scrollbar. No separate capture of those views, light mode or X11."
   ],
-  "source_sha256": "adffbb2c6106b74484d860859a4852f8013b3aa302957bcfbaaaa690a2ce28da"
+  "source_sha256": "0b9bd19cda01d7d0e86acacc1677ce835a5da5908931e6ea80fc7dd442dadd55"
 }

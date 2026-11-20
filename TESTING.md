@@ -1,6 +1,6 @@
 # Installer testing
 
-Tahoe **v0.73.29** includes the approved Golden Gate About window with 95% dark transparency and the blue-screen computer icon without the logo. Verified in a KDE neon Wayland session. [Evidence and coverage](release-evidence.json).
+Tahoe **v0.73.30** places thin, fading launcher scrollbars at the right edge. The Golden Gate app grid was verified while scrolling and at rest on KDE neon Wayland. [Evidence and coverage](release-evidence.json).
 
 Approved installer previews: [Light](src/screenshots/previews/installer-tahoe-light-icons-805970eab6b7.png) · [Dark](src/screenshots/previews/installer-tahoe-dark-icons-dbc66adc81c4.png). The gallery below is historical and predates these installer changes; its original [provenance](src/screenshots/release-capture.json) is retained.
 
