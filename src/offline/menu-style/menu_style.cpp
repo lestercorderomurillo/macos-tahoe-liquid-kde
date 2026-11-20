@@ -50,6 +50,50 @@ public:
             return qMax(0, value - 4); // bundled frame 9px -> reference content inset 5px
         return value;
     }
+    void drawControl(ControlElement element, const QStyleOption *option,
+                     QPainter *painter, const QWidget *widget) const override {
+        const auto *row = qstyleoption_cast<const QStyleOptionMenuItem *>(option);
+        if (element != CE_MenuItem || !row || !widget || !widget->property("_mttkde_shell_menu").toBool()
+            || (row->menuItemType != QStyleOptionMenuItem::Normal && row->menuItemType != QStyleOptionMenuItem::DefaultItem
+                && row->menuItemType != QStyleOptionMenuItem::SubMenu)) {
+            QProxyStyle::drawControl(element, option, painter, widget);
+            return;
+        }
+        // Kvantum's SVG theme supplies a literal label color and text shadow.
+        // Keep its row, indicators and icon, then draw the label once using
+        // the palette of this specific action.
+        QStyleOptionMenuItem decoration(*row);
+        decoration.text = QStringLiteral(" ");
+        QProxyStyle::drawControl(element, &decoration, painter, widget);
+        const int icon = pixelMetric(PM_SmallIconSize, row, widget);
+        int leading = 9;
+        if (row->menuHasCheckableItems || row->checkType != QStyleOptionMenuItem::NotCheckable)
+            leading += qMin(icon, pixelMetric(PM_IndicatorWidth, row, widget)) + pixelMetric(PM_CheckBoxLabelSpacing, row, widget);
+        if (row->maxIconWidth > 0 || !row->icon.isNull()) leading += icon + 6;
+        const auto label = row->text.section('\t', 0, 0);
+        const auto shortcut = row->text.section('\t', 1);
+        const int trailing = 9 + (row->menuItemType == QStyleOptionMenuItem::SubMenu ? icon : 0);
+        const int hintWidth = row->fontMetrics.horizontalAdvance(shortcut);
+        const auto group = !row->state.testFlag(State_Enabled) ? QPalette::Disabled :
+            row->state.testFlag(State_Active) ? QPalette::Active : QPalette::Inactive;
+        const auto role = row->state.testFlag(State_Selected) ? QPalette::HighlightedText : QPalette::Text;
+        QColor color = row->palette.color(group, role);
+        painter->save();
+        painter->setFont(row->font);
+        painter->setPen(color);
+        const auto labelRect = visualRect(row->direction, row->rect, row->rect.adjusted(leading, 0,
+            -trailing - (shortcut.isEmpty() ? 0 : hintWidth + 8), 0));
+        const int align = row->direction == Qt::RightToLeft ? Qt::AlignRight : Qt::AlignLeft;
+        const int mnemonic = styleHint(SH_UnderlineShortcut, row, widget) ? Qt::TextShowMnemonic : Qt::TextHideMnemonic;
+        painter->drawText(labelRect, align | Qt::AlignVCenter | mnemonic, label);
+        if (!shortcut.isEmpty()) {
+            color.setAlphaF(color.alphaF() * .8);
+            painter->setPen(color);
+            const auto hint = visualRect(row->direction, row->rect, row->rect.adjusted(row->rect.width() - trailing - hintWidth, 0, -trailing, 0));
+            painter->drawText(hint, Qt::AlignCenter, shortcut);
+        }
+        painter->restore();
+    }
     void drawPrimitive(PrimitiveElement element, const QStyleOption *option,
                        QPainter *painter, const QWidget *widget) const override {
         if (element != PE_PanelMenu || !themed(widget)) {
@@ -81,7 +125,17 @@ public:
                 painter->fillPath(outer.subtracted(shape), QColor(0, 0, 0, 8));
             }
         }
-        painter->fillPath(shape, sample.pixelColor(0, 0));
+        QColor fill = sample.pixelColor(0, 0);
+        if (widget->property("_mttkde_shell_menu").toBool()) {
+            // Thicken only the Shell's top-left menus. Composite onto the
+            // configured material so custom opacity and opaque fallbacks work.
+            QPainter overlay(&sample);
+            const bool light = option->palette.color(QPalette::Window).lightnessF() > .5;
+            overlay.fillRect(sample.rect(), light ? QColor(255,255,255,102) : QColor(0,0,0,25));
+            overlay.end();
+            fill = sample.pixelColor(0, 0);
+        }
+        painter->fillPath(shape, fill);
         const auto inner = contour(surface.adjusted(.75, .75, -.75, -.75));
         painter->fillPath(shape.subtracted(inner), QColor(0, 0, 0, 46));
         painter->fillPath(inner.subtracted(contour(surface.adjusted(1.5, 1.5, -1.5, -1.5))), QColor(255, 255, 255, 56));

@@ -54,6 +54,7 @@ plasma_add_applet(org.kde.mac.tahoe.liquid.globalmenu
     CPP_SOURCES
         appmenuapplet.cpp
         appmenumodel.cpp
+        shellmenu.cpp
     RESOURCES
         main.xml
         qml/about-computer.svg
