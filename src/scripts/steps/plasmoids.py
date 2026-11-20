@@ -181,7 +181,10 @@ def install() -> None:
         except OSError:
             pass
 
-    _migrate_appletsrc()
+    from installer_choices import keep_panel_layout
+    preserve_layout = keep_panel_layout()
+    if not preserve_layout:
+        _migrate_appletsrc()
 
     artifact = TASKMANAGER_BUILD / "bin/plasma/applets/org.kde.mac.tahoe.liquid.taskmanager.so"
     if artifact.is_file():
@@ -220,6 +223,8 @@ def install() -> None:
             from installer_choices import launcher_preference, use_user_launcher
             if use_user_launcher():
                 if (DEST_DIR / LAUNCHER_ID).is_dir():
+                    if preserve_layout:
+                        continue
                     from steps.layout import replace_project_launcher
                     replace_project_launcher()
                     if not remove_tree(DEST_DIR / LAUNCHER_ID, LAUNCHER_ID):
@@ -235,7 +240,7 @@ def install() -> None:
                 launcher_preference().unlink(missing_ok=True)
             n += 1
     spacing_script = offline("layouts/dock-spacing.js")
-    if spacing_script.is_file():
+    if not preserve_layout and spacing_script.is_file():
         qdbus_call("org.kde.plasmashell", "/PlasmaShell",
                    "org.kde.PlasmaShell.evaluateScript", spacing_script.read_text())
     label = "plasmoid" if n == 1 else "plasmoids"

@@ -1126,8 +1126,9 @@ def _run_install_steps(feat: dict[str, object]) -> int:
 
     progress_event('phase', id='build', state='done' if _build_features(feat) else 'skipped')
     progress_event('phase', id='install', state='running')
-    from installer_choices import selected
-    if selected().get("launcher") == "keep" and not run_phase("clipboard", "uninstall"):
+    from installer_choices import keep_panel_layout, selected
+    keep_layout = keep_panel_layout()
+    if not keep_layout and selected().get("launcher") == "keep" and not run_phase("clipboard", "uninstall"):
         return 1
     for feature in INSTALL_ORDER:
         check_cancelled()
@@ -1183,7 +1184,7 @@ def _run_install_steps(feat: dict[str, object]) -> int:
         note(tr('Checking theme configuration was applied'))
         verify_config(feat)
 
-        if step_exists("layout"):
+        if not keep_layout and step_exists("layout"):
             run_phase("layout", "migrate_status_controls")
 
         step('Restarting Plasma')
@@ -1194,7 +1195,7 @@ def _run_install_steps(feat: dict[str, object]) -> int:
             step('Retrying Layout')
             note(tr('Retries the panel layout after Plasma reloads new plasmoids'))
             run_phase("layout", "install")
-        if not feat.get("layout", True) and step_exists("layout"):
+        if not keep_layout and not feat.get("layout", True) and step_exists("layout"):
             run_phase("layout", "migrate_dock_preset")
         run_phase("theme_switch", "start_schedule")
         progress_event("phase", id="verify", state="failed" if errors else "done")

@@ -57,7 +57,8 @@ def deps():
 def _enabled_scripts() -> tuple[str, ...]:
     # The dock-ID rename only makes sense when the fork dock ships: without
     # plasmoids it would point stock applets at a plugin that never installs.
-    if feat_enabled("PLASMOIDS"):
+    from installer_choices import keep_panel_layout
+    if feat_enabled("PLASMOIDS") and not keep_panel_layout():
         return _SCRIPTS
     return tuple(s for s in _SCRIPTS if s != "mac-tahoe-migrate-appletsrc.sh")
 

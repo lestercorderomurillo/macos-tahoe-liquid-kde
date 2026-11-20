@@ -96,6 +96,10 @@ def selected() -> dict:
     return validate(json.loads(raw)) if raw else {}
 
 
+def keep_panel_layout() -> bool:
+    return selected().get("reset_layout") is False
+
+
 def features(choices: dict, baseline: dict, *, existing_install: bool = False) -> dict:
     """Start from source defaults, never another edition's saved selections."""
     choices = validate(choices)
@@ -108,11 +112,11 @@ def features(choices: dict, baseline: dict, *, existing_install: bool = False) -
         theme_mode=choices["appearance"], icons=choices["icons"] != "keep",
         wallpapers=choices["wallpaper"] != "keep",
         layout=(choices["panel"] or choices["dock"]) and
-               (not existing_install or choices["reset_layout"]),
+               choices["reset_layout"],
         nautilus=choices["files"] == "nautilus",
         nautilus_bookmarks=choices["files"] == "nautilus" and choices["nautilus_bookmarks"],
         apply_theme=True, sddm=False,
-        apps=choices["dock"] and bool(choices["dock_apps"]),
+        apps=choices["reset_layout"] and choices["dock"] and bool(choices["dock_apps"]),
         _reset_wallpapers=choices["wallpaper"] != "keep",
     )
     return result

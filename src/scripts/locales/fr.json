@@ -1,4 +1,6 @@
 {
+  "Keep the current launcher and clipboard history.": "Conserver le lanceur actuel et l’historique du presse-papiers.",
+  "Clear this option to keep your panels, widgets and pinned apps.": "Décochez cette option pour conserver vos panneaux, composants graphiques et applications épinglées.",
   "Remove the installed Launchpad widget.": "Supprimer le composant graphique Launchpad installé.",
   "Continuous menu corners": "Coins continus des menus",
   "Continuous menu corners installed": "Coins continus des menus installés",

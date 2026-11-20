@@ -100,7 +100,7 @@ def test_layout_reset_respects_the_selected_option(existing, reset):
     import cli
     selected = choices.defaults() | {"reset_layout": reset}
     actual = choices.features(selected, cli.DEFAULT_FEATURES, existing_install=existing)
-    assert actual["layout"] == (not existing or reset)
+    assert actual["layout"] == reset
     assert actual["plasmoids"] and actual["apply_theme"]
     assert choices.defaults()["reset_layout"]
 

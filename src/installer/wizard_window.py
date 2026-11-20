@@ -1120,6 +1120,8 @@ class InstallerWindow(OpaqueSurface):
     def launcher_notice(self):
         from steps.clipboard import HISTORY_DIR
         from steps.plasmoids import DEST_DIR, LAUNCHER_ID
+        if not self.choices["reset_layout"]:
+            return "Keep the current launcher and clipboard history."
         if HISTORY_DIR.is_dir():
             return "Remove Launchpad and its saved clipboard history."
         if (DEST_DIR / LAUNCHER_ID).is_dir():
@@ -1137,17 +1139,18 @@ class InstallerWindow(OpaqueSurface):
     def page_layout(self):
         self.body.addSpacing(4)
         reset = self.checkbox("reset_layout", "Reset Dock and panel customization")
-        self.body.addWidget(self.label("Reinstall keeps your layout, sizes, hiding behavior and widgets unless reset is selected."))
+        self.body.addWidget(self.label("Clear this option to keep your panels, widgets and pinned apps."))
         self.cards("", [
             ("panel", "Top bar", "Global menu, clock and system controls.", picture("panel-detail.jpg", 362, 160)),
             ("dock", "Dock", "Pinned apps and open windows.", picture("dock.jpg", 362, 160)),
         ], independent=True)
+        dock_apps = self.dock_app_options()
         def enable_layout_options():
             for card in self.content.findChildren(ChoiceCard):
-                card.setEnabled(not self.existing_install or self.choices["reset_layout"])
+                card.setEnabled(self.choices["reset_layout"])
+            dock_apps.setEnabled(self.choices["reset_layout"] and self.choices["dock"])
         reset.toggled.connect(enable_layout_options)
         enable_layout_options()
-        self.dock_app_options()
 
     def dock_app_options(self):
         button = GlassButton(self.t("Dock apps…"))
@@ -1155,6 +1158,7 @@ class InstallerWindow(OpaqueSurface):
         button.setEnabled(self.choices["dock"])
         button.clicked.connect(self.edit_dock_apps)
         self.body.addWidget(button, 0, Qt.AlignmentFlag.AlignLeft)
+        return button
 
     def edit_dock_apps(self):
         from dock_apps import OPTIONAL, LABELS, installed_apps, recommendation
@@ -1428,10 +1432,10 @@ class InstallerWindow(OpaqueSurface):
         value = lambda key: self.t(names.get(str(c[key]), str(c[key]).capitalize()))
         enabled = lambda key: self.t("Enabled" if c[key] else "Disabled")
         desktop = " + ".join(self.t(label) for key, label in (("panel", "Top bar"), ("dock", "Dock")) if c[key])
-        keep_layout = self.existing_install and not c["reset_layout"]
+        keep_layout = not c["reset_layout"]
         if keep_layout:
             desktop = self.t("Keep current layout")
-        elif self.existing_install and desktop:
+        elif desktop:
             desktop = self.t("Reset layout") + ": " + desktop
         effects = " + ".join(self.t(label) for key, label in (("acrylic_glass", "Glass"), ("rounded_corners", "Rounded corners")) if c[key])
         rows = (
@@ -1441,7 +1445,7 @@ class InstallerWindow(OpaqueSurface):
             ("wallpaper", "Background", value("wallpaper"), "wallpaper"),
             ("launcher", "Launcher", self.t("Use my launcher") if c["launcher"] == "keep" else value("launcher"), "launcher"),
             ("panel", "Desktop", desktop or self.t("Keep"), "layout"),
-            ("dock_apps", "Dock apps", self.dock_app_summary() + (" · " + self.t("macOS-style Dock icons" if c["dock_appearance"] == "macos" else "Application icons") if c["dock"] and c["dock_appearance"] not in ("auto", "keep") else ""), "layout"),
+            ("dock_apps", "Dock apps", self.t("Keep") if keep_layout else self.dock_app_summary() + (" · " + self.t("macOS-style Dock icons" if c["dock_appearance"] == "macos" else "Application icons") if c["dock"] and c["dock_appearance"] not in ("auto", "keep") else ""), "layout"),
             ("acrylic_glass", "Effects", effects or self.t("Disabled"), "effects"),
             ("window_controls", "Window controls", value("window_controls"), "window_controls"),
             ("button_position", "Window buttons", value("button_position"), "button_position"),
@@ -1470,9 +1474,9 @@ class InstallerWindow(OpaqueSurface):
             grid.addWidget(entry, i//2, i%2)
         self.body.addLayout(grid)
         notices = []
-        if c["launcher"] == "keep":
+        if not keep_layout and c["launcher"] == "keep":
             notices.append(self.launcher_notice())
-        if self.existing_install and c["reset_layout"] and (c["panel"] or c["dock"]):
+        if c["reset_layout"] and (c["panel"] or c["dock"]):
             notices.append("Reset Dock and panel customization")
         if notices:
             warning = self.label("")

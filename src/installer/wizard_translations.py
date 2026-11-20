@@ -3,7 +3,9 @@
 from localization import effective_language, translate
 
 # English | Spanish | Simplified Chinese | Brazilian Portuguese | German
-_ROWS = '''Remove the installed Launchpad widget.|Eliminar el widget de Launchpad instalado.|移除已安装的启动台组件。|Remover o widget do Launchpad instalado.|Das installierte Launchpad-Miniprogramm entfernen.
+_ROWS = '''Keep the current launcher and clipboard history.|Conservar el lanzador actual y el historial del portapapeles.|保留当前启动器和剪贴板历史记录。|Manter o lançador atual e o histórico da área de transferência.|Aktuellen Starter und Zwischenablageverlauf behalten.
+Clear this option to keep your panels, widgets and pinned apps.|Desmarca esta opción para conservar tus paneles, widgets y aplicaciones fijadas.|取消勾选此项以保留面板、组件和固定的应用。|Desmarque esta opção para manter seus painéis, widgets e aplicativos fixados.|Deaktiviere diese Option, um deine Leisten, Miniprogramme und angehefteten Anwendungen zu behalten.
+Remove the installed Launchpad widget.|Eliminar el widget de Launchpad instalado.|移除已安装的启动台组件。|Remover o widget do Launchpad instalado.|Das installierte Launchpad-Miniprogramm entfernen.
 Remove Launchpad and its saved clipboard history.|Eliminar Launchpad y su historial del portapapeles guardado.|移除启动台及其保存的剪贴板历史记录。|Remover o Launchpad e seu histórico salvo da área de transferência.|Launchpad und seinen gespeicherten Zwischenablageverlauf entfernen.
 Use my launcher|Usar mi lanzador|使用我的启动器|Usar meu lançador|Meinen Starter verwenden
 Skip Launchpad and its encrypted clipboard history.|Omitir Launchpad y su historial cifrado del portapapeles.|跳过启动台及其加密剪贴板历史记录。|Ignorar o Launchpad e seu histórico criptografado da área de transferência.|Launchpad und den verschlüsselten Zwischenablageverlauf überspringen.
