@@ -1,6 +1,6 @@
 # Installer testing
 
-**v0.76.3**. Verified that adaptive text holds its tone during rapid window movement and smoothly switches to black or white after the window settles. [Evidence and coverage](release-evidence.json).
+**v0.76.4**. Verified that About This Computer and application About windows each use one center sample for text contrast. [Evidence and coverage](release-evidence.json).
 
 [Installer photo evidence](src/screenshots/previews/wizard-tahoe-provenance-531f633f4ff6.json).
 
