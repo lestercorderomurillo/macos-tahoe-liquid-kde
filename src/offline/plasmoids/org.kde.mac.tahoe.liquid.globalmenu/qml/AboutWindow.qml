@@ -76,7 +76,11 @@ Window {
             inkSum += weight * (1 - t * t * (3 - 2 * t));
             weights += weight;
         }
-        const tone = 0.05 + 0.92 * inkSum / weights;
+        // Keep intermediate gray near the crossing; give adjoining lines
+        // enough contrast while retaining a continuous change in tone.
+        const mix = inkSum / weights;
+        const mid = Math.max(0, Math.min(1, (mix - 0.25) / 0.5));
+        const tone = 0.05 + 0.92 * (0.2 * mix + 0.8 * mid * mid * (3 - 2 * mid));
         return Qt.rgba(tone, tone, tone, preferred.a);
     }
 
