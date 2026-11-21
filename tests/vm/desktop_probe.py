@@ -39,8 +39,8 @@ def verify_panels(panels: list[dict], installed: bool) -> None:
         if len(panels) < 2 or not required <= widgets:
             raise RuntimeError(f"Missing themed panels/widgets: {sorted(required - widgets)}")
         docks = [panel for panel in panels if "org.kde.mac.tahoe.liquid.icontasks" in panel["widgets"]]
-        if any(panel["hiding"] != "autohide" for panel in docks):
-            raise RuntimeError("Dock is not using autohide")
+        if any(panel["hiding"] != "none" for panel in docks):
+            raise RuntimeError("Expected a visible Dock on a fresh install")
     elif any("mac.tahoe" in widget or "mac-tahoe" in widget for widget in widgets):
         raise RuntimeError("Uninstall left themed widgets on the desktop")
 

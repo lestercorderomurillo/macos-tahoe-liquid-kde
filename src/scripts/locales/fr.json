@@ -1100,6 +1100,10 @@
   "Bottom tint strength for both modes. 0 leaves the glass untinted at this stop.": "Intensité de la teinte inférieure dans les deux modes. 0 laisse le verre sans teinte à ce point.",
   "Tahoe (Official)": "Tahoe (officiel)",
   "Dock apps": "Applications du Dock",
+  "Dock visibility": "Visibilité du Dock",
+  "Auto-hide": "Masquer automatiquement",
+  "Always visible": "Toujours visible",
+  "Hide when a window overlaps (KDE)": "Masquer si une fenêtre le recouvre (KDE)",
   "Dock apps…": "Applications du Dock…",
   "Installed equivalents are reused. Select only the missing apps you want to install.": "Les équivalents installés sont réutilisés. Sélectionnez uniquement les applications manquantes à installer.",
   "Distribution repositories": "Dépôts de la distribution",
@@ -1427,5 +1431,9 @@
   "Tahoe (Frosted)": "Tahoe (dépoli)",
   "Control Center transition": "Transition du Control Center",
   "Control Center transition could not be enabled in kwinrc": "La transition du Control Center n'a pas pu être activée dans kwinrc",
-  "Control Center transition removed": "Transition du Control Center supprimée"
+  "Control Center transition removed": "Transition du Control Center supprimée",
+  "Icon appearance": "Apparence des icônes",
+  "Dock behaviour could not be enabled in kwinrc": "Le comportement du Dock n'a pas pu être activé dans kwinrc",
+  "Dock follows screen": "Dock qui suit l'écran",
+  "Dock on several screens": "Dock sur plusieurs écrans"
 }

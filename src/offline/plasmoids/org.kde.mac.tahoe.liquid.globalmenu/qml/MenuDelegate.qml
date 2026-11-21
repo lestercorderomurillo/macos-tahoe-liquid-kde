@@ -17,6 +17,9 @@ AbstractButton {
                                       === Kirigami.ColorUtils.Light
     readonly property color foregroundColor: Qt.tint(Kirigami.Theme.textColor, lightText ? "#66ffffff" : "#66000000")
 
+    property bool horizontalBar: true
+    property bool goldenGate: false
+    readonly property real titlePadding: horizontalBar ? (goldenGate ? 9.1 : 9.6) : 3 * Kirigami.Units.smallSpacing
     property real lightCapsuleOpacityBoost: 0
     property bool menuIsOpen: false
     property bool hoverOpensMenu: true
@@ -48,14 +51,16 @@ AbstractButton {
 
     topPadding: Kirigami.Units.smallSpacing
     bottomPadding: Kirigami.Units.smallSpacing
-    leftPadding: 3 * Kirigami.Units.smallSpacing
-    rightPadding: 3 * Kirigami.Units.smallSpacing
+    leftPadding: titlePadding
+    rightPadding: titlePadding
+    leftInset: horizontalBar ? (goldenGate ? -4.8 : -5.33) : 0
+    rightInset: leftInset
 
     Accessible.description: i18nc("@info:usagetip", "Open a menu")
 
     background: Rectangle {
-        y: Math.min(Kirigami.Units.smallSpacing, controlRoot.height / 4)
-        height: Math.max(0, controlRoot.height - 2 * y)
+        y: (controlRoot.height - height) / 2
+        height: controlRoot.horizontalBar ? Math.min(controlRoot.height, 24) : controlRoot.height - 2 * Math.min(Kirigami.Units.smallSpacing, controlRoot.height / 4)
         radius: Math.min(width, height) / 2
 
         readonly property color tint: controlRoot.lightText ? "#ffffff" : "#e3e7ee"
@@ -73,6 +78,7 @@ AbstractButton {
         verticalAlignment: Text.AlignVCenter
         elide: Text.ElideRight
         color: controlRoot.foregroundColor
+        font.letterSpacing: controlRoot.horizontalBar && controlRoot.font.weight < Font.Bold ? -0.35 : 0
         font.weight: controlRoot.font.weight
     }
 }

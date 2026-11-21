@@ -69,7 +69,9 @@ Page {
             onClicked: view.activate(model)
         }
     }
-    StatusMenuDivider {}
+    // Only between the wired rows and the network list; without Wi-Fi the
+    // list is hidden and the divider above the settings link is enough.
+    StatusMenuDivider { visible: networkScroll.visible }
     QQC.ScrollView {
         id: networkScroll
         padding: 0

@@ -377,7 +377,7 @@ Une apparence assortie du démarrage à l’arrêt, avec déverrouillage intégr
 - **Effets de verre :** flou, réfraction et dégradés à trois couleurs réglables pour les modes clair et sombre.
 - **Compatibilité :** Plasma 6.6–6.8, avec des effets natifs compilés contre les versions installées de Qt et KWin.
 - **Launchpad :** deux dispositions, recherche intégrée ou détachée, favoris et catégories d’applications défilantes.
-- **Dock :** agrandissement au survol, badges de notification, masquage automatique et éléments épinglés conservés à la réinstallation.
+- **Dock** Le Dock suit le bord inférieur que vous touchez et conserve vos apps épinglées. Le programme d’installation propose le masquage automatique, l’affichage permanent (par défaut) ou le masquage lorsqu’une fenêtre le recouvre.
 - **Apparence :** styles clairs/sombres synchronisés pour le bureau, les applications, les icônes et les décorations de fenêtres ; fonds d’écran par moniteur.
 - **Intégration des applications :** menus globaux, correctifs des menus GTK, Nautilus de style Finder et thème Firefox avec sauvegardes des profils.
 - **Récupération :** vérification des prérequis, sauvegardes des réglages et restauration à la désinstallation.

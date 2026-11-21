@@ -94,7 +94,10 @@ function roleFor(launcherUrl, appId) {
 }
 
 // Material colors may invert luminance independently of the desktop mode.
-function darkMode(themeName, backgroundLightness) {
+// An icon theme with an explicit appearance wins: dark UI with light icons.
+function darkMode(themeName, backgroundLightness, iconThemeName) {
+    if (/-Dark$/.test(iconThemeName || "")) return true;
+    if (/-Light$/.test(iconThemeName || "")) return false;
     if (themeName === "MacTahoeLiquidKde-Dark") return true;
     if (themeName === "MacTahoeLiquidKde-Light") return false;
     return backgroundLightness < 0.5;

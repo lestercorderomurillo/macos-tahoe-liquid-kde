@@ -710,3 +710,19 @@ def test_accent_preserves_brightness_and_only_overrides_gray_selection_text():
             f"[MenuItem]\ntext.normal.color=#333333\ntext.focus.color={foreground}\n"
             "[LineEdit]\ntext.focus.color=#ffffff\n"
         )
+
+
+@pytest.mark.parametrize(("native", "mode"), [(0, "none"), (1, "autohide"), (2, "dodgewindows")])
+def test_dock_visibility_from_legacy_panel_and_saved_choice(tmp_path, monkeypatch, native, mode):
+    monkeypatch.setenv("XDG_CONFIG_HOME", str(tmp_path))
+    monkeypatch.setenv("XDG_STATE_HOME", str(tmp_path / "state"))
+    assert choices.defaults()["dock_visibility"] == "none"
+    (tmp_path / "plasma-org.kde.plasma.desktop-appletsrc").write_text(
+        "[Containments][42][Applets][51]\nplugin=org.kde.mac.tahoe.liquid.icontasks\n")
+    (tmp_path / "plasmashellrc").write_text(
+        f"[PlasmaViews][Panel 11]\npanelVisibility=3\n[PlasmaViews][Panel 42]\npanelVisibility={native}\n")
+    assert choices.defaults()["dock_visibility"] == mode
+    preference = choices.dock_visibility_preference()
+    preference.parent.mkdir(parents=True)
+    preference.write_text("autohide\n")
+    assert choices.defaults()["dock_visibility"] == "autohide"

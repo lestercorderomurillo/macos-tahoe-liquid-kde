@@ -35,7 +35,7 @@ bar.screen = 0;
 bar.lengthMode = "fill";
 bar.floating = false;
 bar.hiding = "none";
-bar.height = 32;
+bar.height = 30;
 
 // panel colorizer: transparent background
 var colorizer = bar.addWidget("luisbocanegra.panel.colorizer");
@@ -91,6 +91,11 @@ clock.writeConfig("dateDisplayFormat", "BesideTime");
 clock.writeConfig("dateFormat", "custom");
 clock.writeConfig("customDateFormat", "ddd d ' | '");
 
+var clockGap = bar.addWidget("org.kde.plasma.panelspacer");
+clockGap.currentConfigGroup = ["General"];
+clockGap.writeConfig("expanding", "false");
+clockGap.writeConfig("length", 10);
+
 // ── bottom dock ─────────────────────────────────
 // floating, centered, large icons like macOS
 var dock = new Panel("org.kde.panel");
@@ -100,8 +105,7 @@ dock.alignment = "center";
 dock.lengthMode = "fit";
 dock.floating = true;
 dock.opacity = "translucent";
-// Auto-hide avoids the stuck-visible dodge behavior reported in issue #87.
-dock.hiding = "autohide";
+dock.hiding = "none";
 dock.height = 68;
 
 if (typeof userLauncherTypes !== "undefined") {

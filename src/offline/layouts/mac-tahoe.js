@@ -1,7 +1,6 @@
 // MacTahoe Liquid KDE — macOS Tahoe-style layout
 // Top menu bar (flush) + bottom dock (floating, large icons)
-// Applied per-screen so multi-monitor setups get a matching bar + dock on
-// every display, not just the primary one.
+// Each display gets a menu bar. One shared Dock starts on the primary display.
 
 // ── remove existing panels ──────────────────────
 var old = panels();
@@ -33,6 +32,16 @@ for (var p = 0; p < old.length; p++) {
         }
     }
 }
+// A Dock on a screen that had none (new or renumbered display) inherits what
+// the other Docks already offered, so it does not pin every default app again.
+var knownDockRevision = 0;
+var knownDockCategories = [];
+for (var s in dockPresetRevisions) knownDockRevision = Math.max(knownDockRevision, dockPresetRevisions[s]);
+for (var s in dockPresetCategories) {
+    var list = dockPresetCategories[s];
+    if (typeof list === "string") list = list ? list.split(",") : [];
+    for (var c = 0; c < list.length; c++) if (knownDockCategories.indexOf(list[c]) === -1) knownDockCategories.push(list[c]);
+}
 if (typeof userLauncherTypes === "undefined") {
     for (var i = 0; i < old.length; i++) old[i].remove();
 }
@@ -48,7 +57,7 @@ for (var screen = 0; screen < screenCount; screen++) {
     bar.lengthMode = "fill";
     bar.floating = false;
     bar.hiding = "none";
-    bar.height = 32;
+    bar.height = 30;
 
     // Panel Colorizer hides the continuous native panel background. Do not add
     // panel/widgets color layers here: both render at once with applets-only
@@ -112,10 +121,15 @@ for (var screen = 0; screen < screenCount; screen++) {
     clock.writeConfig("dateFormat", "custom");
     clock.writeConfig("customDateFormat", "ddd d ' | '");
 
+    var clockGap = bar.addWidget("org.kde.plasma.panelspacer");
+    clockGap.currentConfigGroup = ["General"];
+    clockGap.writeConfig("expanding", "false");
+    clockGap.writeConfig("length", 10);
+
     // ── bottom dock ─────────────────────────────────
     // floating, centered, large icons like macOS
     }
-    if (typeof mttkdeDock === "undefined" || mttkdeDock) {
+    if (screen === 0 && (typeof mttkdeDock === "undefined" || mttkdeDock)) {
     var dock = new Panel("org.kde.panel");
     dock.location = "bottom";
     dock.screen = screen;
@@ -123,8 +137,7 @@ for (var screen = 0; screen < screenCount; screen++) {
     dock.lengthMode = "fit";
     dock.floating = true;
     dock.opacity = "translucent";
-    // Auto-hide avoids the stuck-visible dodge behavior reported in issue #87.
-    dock.hiding = "autohide";
+    dock.hiding = "none";
     dock.height = 68;
 
     if (typeof userLauncherTypes !== "undefined") {
@@ -174,8 +187,8 @@ for (var screen = 0; screen < screenCount; screen++) {
     }
     tasks.writeConfig("launchers", dockLaunchers);
     tasks.writeConfig("macOSDockIcons", dockIconChoices[dock.screen] || false);
-    tasks.writeConfig("dockPresetRevision", dockPresetRevisions[dock.screen] || 0);
-    tasks.writeConfig("dockPresetCategories", dockPresetCategories[dock.screen] || []);
+    tasks.writeConfig("dockPresetRevision", dockPresetRevisions[dock.screen] || knownDockRevision);
+    tasks.writeConfig("dockPresetCategories", dockPresetCategories[dock.screen] || knownDockCategories);
 
     dock.addWidget("org.kde.mac-tahoe-liquid-kde.trashcan");
 }

@@ -851,6 +851,7 @@ class InstallerWindow(OpaqueSurface):
             button = self.content.findChild(QPushButton, "edit-dock-apps")
             if button:
                 button.setEnabled(value)
+            self.content.findChild(QComboBox, "dock-visibility").setEnabled(value)
         elif self.page == "files" and key == "files":
             self.bookmarks.setVisible(value == "nautilus")
         elif self.page == "oled" and key == "oled_care":
@@ -1062,6 +1063,12 @@ class InstallerWindow(OpaqueSurface):
                                   if button.objectName() == "choice-icons-glass")
         keep.clicked.connect(lambda: self.select("icons", "keep")); self.body.addWidget(keep)
         self.body.addSpacing(8)
+        # As on macOS, the icons can stay light (or dark) whatever the appearance.
+        appearance = self.label("Icon appearance")
+        appearance.setFont(relative_font(self, .93, QFont.Weight.Bold))
+        self.body.addWidget(appearance)
+        self.radio("icon_appearance", [("auto", "Automatic"), ("light", "Light"), ("dark", "Dark")], inline=True)
+        self.body.addSpacing(8)
         title = self.label("Theme")
         title.setFont(relative_font(self, .93, QFont.Weight.Bold))
         self.body.addWidget(title)
@@ -1147,14 +1154,24 @@ class InstallerWindow(OpaqueSurface):
                 card.setEnabled(self.choices["reset_layout"])
         reset.toggled.connect(enable_layout_options)
         enable_layout_options()
-        self.dock_app_options()
-
-    def dock_app_options(self):
+        row = QHBoxLayout()
+        row.addWidget(self.label("Dock visibility"))
+        visibility = GlassComboBox()
+        visibility.setObjectName("dock-visibility")
+        for value, label in [("none", "Always visible"), ("autohide", "Auto-hide"),
+                             ("dodgewindows", "Hide when a window overlaps (KDE)")]:
+            visibility.addItem(self.t(label), value)
+        visibility.setCurrentIndex(visibility.findData(self.choices["dock_visibility"]))
+        visibility.currentIndexChanged.connect(lambda: self.select("dock_visibility", visibility.currentData()))
+        visibility.setEnabled(self.choices["dock"])
+        row.addWidget(visibility)
+        row.addStretch()
         button = GlassButton(self.t("Dock apps…"))
         button.setObjectName("edit-dock-apps")
         button.setEnabled(self.choices["dock"])
         button.clicked.connect(self.edit_dock_apps)
-        self.body.addWidget(button, 0, Qt.AlignmentFlag.AlignLeft)
+        row.addWidget(button)
+        self.body.addLayout(row)
 
     def edit_dock_apps(self):
         from dock_apps import OPTIONAL, LABELS, installed_apps, recommendation

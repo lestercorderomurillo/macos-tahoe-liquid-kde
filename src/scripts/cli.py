@@ -1197,6 +1197,8 @@ def _run_install_steps(feat: dict[str, object]) -> int:
             run_phase("layout", "install")
         if not keep_layout and not feat.get("layout", True) and step_exists("layout"):
             run_phase("layout", "migrate_dock_preset")
+        if step_exists("layout") and (feat.get("layout", True) or _layout_is_installed()):
+            run_phase("layout", "configure_dock")
         run_phase("theme_switch", "start_schedule")
         progress_event("phase", id="verify", state="failed" if errors else "done")
     else:

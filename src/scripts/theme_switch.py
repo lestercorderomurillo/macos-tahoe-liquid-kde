@@ -1483,7 +1483,11 @@ def write_kde_theme_config(
         icon = INSTALLER_OPTIONS.get("preserved_icon", icon)
     elif INSTALLER_OPTIONS.get("icons") in ("regular", "dark", "clear", "glass"):
         style = INSTALLER_OPTIONS["icons"].capitalize()
-        icon = f"MacTahoeLiquidKde-Icons-{style}-{'Dark' if mode == 'dark' else 'Light'}"
+        # "auto" follows the appearance; "light"/"dark" keep that variant in
+        # both appearances, like macOS's separate icon appearance setting.
+        variant = INSTALLER_OPTIONS.get("icon_appearance", "auto")
+        dark_icons = mode == "dark" if variant not in ("light", "dark") else variant == "dark"
+        icon = f"MacTahoeLiquidKde-Icons-{style}-{'Dark' if dark_icons else 'Light'}"
     fixed = (
         ("kdeglobals", "KDE", "LookAndFeelPackage", laf),
         *(((("kdeglobals", "KDE", "AutomaticLookAndFeel", "false"),))
@@ -1540,6 +1544,7 @@ _LAF_APPLY_RETRY_SLEEP_SECONDS = 6
 # is a third-party effect we must not silently break.
 _OWN_KWIN_EFFECT_KEYS = frozenset({
     "liquidglassEnabled", "glassEnabled", "blurEnabled",
+    "mttkde-dock-follows-screenEnabled",  # KWin script sharing the Plugins group.
 })
 
 
