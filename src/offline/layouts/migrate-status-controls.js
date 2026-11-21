@@ -47,7 +47,19 @@
                     gap.writeConfig('length', 1);
                     gap.index = clockIndex;
                 }
-                controls.writeConfig('statusOrderRevision', 2);
+            }
+            if (Number(controls.readConfig('statusOrderRevision', 0)) < 3) {
+                var themedClock = widgets.find(function (w) { return w.type === 'org.kde.plasma.digitalclock'; });
+                if (themedClock) {
+                    themedClock.currentConfigGroup = ['Appearance'];
+                    if (themedClock.readConfig('dateFormat') === 'custom' &&
+                        themedClock.readConfig('customDateFormat') === "ddd d ' | '") {
+                        themedClock.writeConfig('customDateFormat', 'ddd MMM d');
+                        if (Number(themedClock.readConfig('use24hFormat')) === 1)
+                            themedClock.writeConfig('use24hFormat', 0);
+                    }
+                }
+                controls.writeConfig('statusOrderRevision', 3);
             }
         }
         if (!themed || !notifications) continue;

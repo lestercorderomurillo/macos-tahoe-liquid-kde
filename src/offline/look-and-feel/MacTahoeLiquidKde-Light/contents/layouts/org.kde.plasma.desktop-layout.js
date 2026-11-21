@@ -73,7 +73,7 @@ bar.addWidget("org.kde.mac-tahoe-liquid-kde.battery");
 var controls = bar.addWidget("org.kde.mac-tahoe-liquid-kde.controlcenter");
 if (controls) {
     controls.currentConfigGroup = ["General"];
-    controls.writeConfig("statusOrderRevision", 2);
+    controls.writeConfig("statusOrderRevision", 3);
 }
 
 bar.addWidget("org.kde.plasma.marginsseparator");
@@ -90,11 +90,11 @@ clock.writeConfig("fontFamily", "SF Pro Text");
 clock.writeConfig("fontSize", 10);
 clock.writeConfig("fontWeight", 500);
 clock.writeConfig("showDate", "true");
-clock.writeConfig("use24hFormat", 1);
+clock.writeConfig("use24hFormat", 0);
 clock.writeConfig("showSeconds", 0);
 clock.writeConfig("dateDisplayFormat", "BesideTime");
 clock.writeConfig("dateFormat", "custom");
-clock.writeConfig("customDateFormat", "ddd d ' | '");
+clock.writeConfig("customDateFormat", "ddd MMM d");
 
 var clockGap = bar.addWidget("org.kde.plasma.panelspacer");
 clockGap.currentConfigGroup = ["General"];

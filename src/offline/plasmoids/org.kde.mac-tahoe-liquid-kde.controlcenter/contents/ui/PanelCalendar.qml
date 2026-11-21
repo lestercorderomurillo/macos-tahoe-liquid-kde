@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 import QtQuick
+import QtQuick.Layouts
 import org.kde.plasma.core as PlasmaCore
 import org.kde.kirigami as Kirigami
 import "ControlStyle.js" as Style
@@ -7,6 +8,46 @@ import "ControlStyle.js" as Style
 Item {
     id: calendar
     required property Item clock
+
+    readonly property Item face: clock?.compactRepresentationItem ?? null
+    readonly property var appearance: clock?.plasmoid?.configuration
+    // The themed one-line clock has its own typography. Other clock layouts,
+    // timezone labels and explicit font choices use Plasma's representation.
+    Loader {
+        id: themedFace
+        parent: calendar.clock
+        property var settings: calendar.appearance
+        readonly property bool ready: status === Loader.Ready && item.clockValid
+        visible: ready
+        anchors.centerIn: parent
+        anchors.alignWhenCentered: false
+        anchors.verticalCenterOffset: -0.5
+        active: calendar.face !== null && calendar.appearance?.customDateFormat === "ddd MMM d"
+            && calendar.appearance.dateFormat === "custom" && calendar.appearance.showDate
+            && calendar.appearance.dateDisplayFormat === 1 && !calendar.appearance.autoFontAndSize
+            && calendar.appearance.fontFamily === "SF Pro Text" && calendar.appearance.fontSize === 10
+            && calendar.appearance.fontWeight === 500 && !calendar.appearance.italicText
+            && calendar.appearance.lastSelectedTimezone === "Local" && !calendar.appearance.showLocalTimezone
+        source: active ? Qt.resolvedUrl("PanelClockText.qml") : ""
+    }
+    Binding {
+        target: calendar.face
+        property: "opacity"
+        when: themedFace.ready
+        value: 0
+    }
+    Binding {
+        target: calendar.face
+        property: "Layout.minimumWidth"
+        when: themedFace.ready
+        value: Math.ceil(themedFace.implicitWidth)
+    }
+    Binding {
+        target: calendar.face
+        property: "Layout.maximumWidth"
+        when: themedFace.ready
+        value: Math.ceil(themedFace.implicitWidth)
+    }
 
     readonly property Item clockTip: {
         for (let item = clock?.compactRepresentationItem; item; item = item.parent) {
