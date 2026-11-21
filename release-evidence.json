@@ -1,31 +1,40 @@
 {
-  "version": "0.76.7",
+  "version": "0.76.8",
   "gallery_commit": "f09780b200b79302e7c23ef9f6f74d94748bbea3",
-  "scope": "Panel status icons follow the Plasma foreground color.",
-  "approval": "Maintainer approved the corrected dark previews for both editions.",
+  "scope": "Dock visibility, display switching and menu bar geometry.",
+  "approval": "Maintainer approved integration and publication after visual review.",
   "checks": [
     {
-      "command": "Open the Bluetooth applet in the installed Plasma panel on KDE neon. Switch appearance and capture the light and dark menu with edition defaults.",
+      "command": "Run the native installer in a KDE neon Wayland VM. Inspect the installed Dock and open the visibility selector.",
       "edition": "tahoe",
-      "source_commit": "e89ae1fac2937024060c7a535b6d99982bb575e1",
+      "source_commit": "b3799c126a942b2e2affacf8e924b79fe4750f47",
+      "result": "passed"
+    },
+    {
+      "command": "Move the pointer to the second output bottom edge, disconnect the output and inspect the panel ID. Reinstall with keep-layout and compare mode and pins.",
+      "source_commit": "b3799c126a942b2e2affacf8e924b79fe4750f47",
+      "edition": "tahoe",
       "result": "passed"
     }
   ],
   "captures": [
     {
-      "path": "src/screenshots/previews/readme-tahoe-dark-bluetooth-ddab9443c80d.webp",
-      "sha256": "ddab9443c80d6bd917c4893d5ca28885722332209670a4629b4f444790539c0b",
-      "source_commit": "e89ae1fac2937024060c7a535b6d99982bb575e1",
+      "path": "docs/evidence/dock-menubar-0768/installer.png",
+      "sha256": "e34bf5691be107766895de60ea6b9dcfd1b29900202472b8ad853e15d40d0765",
+      "source_commit": "eb0701510183dea0880f9f32007d45c4238fdcf9",
+      "edition": "tahoe",
+      "reviewed": true
+    },
+    {
+      "path": "docs/evidence/dock-menubar-0768/menubar.png",
+      "sha256": "cd1de24ff8eb9d69fb18a0fd492adf693e9f4ceedc7a4158efdbf85c6bcdb185",
+      "source_commit": "dcec9d91be65d61aaaa9ea19527eb065a41463bb",
       "edition": "tahoe",
       "reviewed": true
     }
   ],
   "coverage_limits": [
-    "Visual checks used the default edition wallpapers and simulated Bluetooth devices in KDE neon Wayland."
+    "Multi-output and keep-layout reinstall exercised in Tahoe. Golden Gate uses the same panel implementation."
   ],
-  "source_sha256": "3bc5d6aa45bc02638cfa4203d8be041141f09a08ada7cbad84329badcd8ad29d",
-  "reviewed_preview_sha256": {
-    "dark.png": "14d61aa267ce9869058a378ea32cbd6054bd24c3b4a494e27d3be0173b6ea073",
-    "light.png": "e6e9442e2371ab528babc57dd942f867338a79137eb33c816f32a6409ad0d3c9"
-  }
+  "source_sha256": "acb9a1379c649e3bab6b9c5edd5951412b181824e8be938810105b1f60c8066b"
 }
