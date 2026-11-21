@@ -5,7 +5,7 @@
 // window above and the Dock below touch with no gap, as on macOS.
 "use strict";
 
-const GAP = 23;              // px between the floating Dock frame and the screen edge
+const GAP = 10;              // px between the floating Dock frame and the screen edge
 const shifted = new Map();   // dock window -> animation id
 
 function isDock(w) {
