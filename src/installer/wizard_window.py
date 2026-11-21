@@ -851,7 +851,7 @@ class InstallerWindow(OpaqueSurface):
             button = self.content.findChild(QPushButton, "edit-dock-apps")
             if button:
                 button.setEnabled(value)
-            self.content.findChild(QComboBox, "dock-visibility").setEnabled(value)
+            self.content.findChild(QWidget, "dock-visibility").setEnabled(value)
         elif self.page == "files" and key == "files":
             self.bookmarks.setVisible(value == "nautilus")
         elif self.page == "oled" and key == "oled_care":
@@ -1156,15 +1156,6 @@ class InstallerWindow(OpaqueSurface):
         enable_layout_options()
         row = QHBoxLayout()
         row.addWidget(self.label("Dock visibility"))
-        visibility = GlassComboBox()
-        visibility.setObjectName("dock-visibility")
-        for value, label in [("none", "Always visible"), ("autohide", "Auto-hide"),
-                             ("dodgewindows", "Hide when a window overlaps (KDE)")]:
-            visibility.addItem(self.t(label), value)
-        visibility.setCurrentIndex(visibility.findData(self.choices["dock_visibility"]))
-        visibility.currentIndexChanged.connect(lambda: self.select("dock_visibility", visibility.currentData()))
-        visibility.setEnabled(self.choices["dock"])
-        row.addWidget(visibility)
         row.addStretch()
         button = GlassButton(self.t("Dock apps…"))
         button.setObjectName("edit-dock-apps")
@@ -1172,6 +1163,36 @@ class InstallerWindow(OpaqueSurface):
         button.clicked.connect(self.edit_dock_apps)
         row.addWidget(button)
         self.body.addLayout(row)
+
+        visibility = QWidget()
+        visibility.setObjectName("dock-visibility")
+        visibility.setAccessibleName(self.t("Dock visibility"))
+        visibility.setStyleSheet("""
+            QPushButton { border: 1px solid palette(mid); border-radius: 0;
+                          background: palette(button); color: palette(button-text); padding: 4px; }
+            QPushButton#dock-none { border-top-left-radius: 7px; border-bottom-left-radius: 7px; }
+            QPushButton#dock-autohide { border-left: 0; border-right: 0; }
+            QPushButton#dock-dodgewindows { border-top-right-radius: 7px; border-bottom-right-radius: 7px; }
+            QPushButton:checked { background: palette(highlight); color: palette(highlighted-text); }
+            QPushButton:focus { border: 2px solid palette(highlight); }
+            QPushButton:disabled { color: palette(mid); }
+        """)
+        segments = QHBoxLayout(visibility)
+        segments.setContentsMargins(0, 0, 0, 0)
+        segments.setSpacing(0)
+        group = QButtonGroup(visibility)
+        for value, label, platform in [("none", "Always visible", "macOS"),
+                                       ("autohide", "Auto-hide", "macOS"),
+                                       ("dodgewindows", "Hide on overlap", "KDE Plasma")]:
+            segment = QPushButton(f"{self.t(label)}\n({platform})")
+            segment.setObjectName(f"dock-{value}")
+            segment.setCheckable(True)
+            group.addButton(segment)
+            segment.setChecked(self.choices["dock_visibility"] == value)
+            segment.clicked.connect(lambda _, mode=value: self.select("dock_visibility", mode))
+            segments.addWidget(segment, 1)
+        visibility.setEnabled(self.choices["dock"])
+        self.body.addWidget(visibility)
 
     def edit_dock_apps(self):
         from dock_apps import OPTIONAL, LABELS, installed_apps, recommendation

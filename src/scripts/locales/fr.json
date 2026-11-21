@@ -1103,7 +1103,7 @@
   "Dock visibility": "Visibilité du Dock",
   "Auto-hide": "Masquer automatiquement",
   "Always visible": "Toujours visible",
-  "Hide when a window overlaps (KDE)": "Masquer si une fenêtre le recouvre (KDE)",
+  "Hide on overlap": "Masquer si une fenêtre le recouvre",
   "Dock apps…": "Applications du Dock…",
   "Installed equivalents are reused. Select only the missing apps you want to install.": "Les équivalents installés sont réutilisés. Sélectionnez uniquement les applications manquantes à installer.",
   "Distribution repositories": "Dépôts de la distribution",
