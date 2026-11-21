@@ -1,40 +1,27 @@
 {
-  "version": "0.76.8",
+  "version": "0.76.9",
   "gallery_commit": "f09780b200b79302e7c23ef9f6f74d94748bbea3",
-  "scope": "Dock visibility, display switching and menu bar geometry.",
-  "approval": "Maintainer approved integration and publication after visual review.",
+  "scope": "Segmented Dock visibility selector with platform labels.",
+  "approval": "Maintainer requested publication after green CI.",
   "checks": [
     {
-      "command": "Run the native installer in a KDE neon Wayland VM. Inspect the installed Dock and open the visibility selector.",
+      "command": "Click each visibility segment in the native Qt installer, check exclusive selection, disable and re-enable the Dock, and re-render the page.",
       "edition": "tahoe",
-      "source_commit": "b3799c126a942b2e2affacf8e924b79fe4750f47",
-      "result": "passed"
-    },
-    {
-      "command": "Move the pointer to the second output bottom edge, disconnect the output and inspect the panel ID. Reinstall with keep-layout and compare mode and pins.",
-      "source_commit": "b3799c126a942b2e2affacf8e924b79fe4750f47",
-      "edition": "tahoe",
+      "source_commit": "42e554c41743014d9265ec9ab60dea23f92dbdbd",
       "result": "passed"
     }
   ],
   "captures": [
     {
-      "path": "docs/evidence/dock-menubar-0768/installer.png",
-      "sha256": "e34bf5691be107766895de60ea6b9dcfd1b29900202472b8ad853e15d40d0765",
-      "source_commit": "eb0701510183dea0880f9f32007d45c4238fdcf9",
-      "edition": "tahoe",
-      "reviewed": true
-    },
-    {
-      "path": "docs/evidence/dock-menubar-0768/menubar.png",
-      "sha256": "cd1de24ff8eb9d69fb18a0fd492adf693e9f4ceedc7a4158efdbf85c6bcdb185",
-      "source_commit": "dcec9d91be65d61aaaa9ea19527eb065a41463bb",
+      "path": "docs/evidence/dock-visibility-0769/installer.png",
+      "sha256": "ce820229bbed41af94fd5e4b16d5f25cdab8e625f27ab3e7038eee1c28660057",
+      "source_commit": "42e554c41743014d9265ec9ab60dea23f92dbdbd",
       "edition": "tahoe",
       "reviewed": true
     }
   ],
   "coverage_limits": [
-    "Multi-output and keep-layout reinstall exercised in Tahoe. Golden Gate uses the same panel implementation."
+    "Installer-only change. Preview captured offscreen in Spanish."
   ],
-  "source_sha256": "acb9a1379c649e3bab6b9c5edd5951412b181824e8be938810105b1f60c8066b"
+  "source_sha256": "537f53c4086c6966a6b1d4e4b7ed0965d23c2b9f4d6a4709ceca806e9843ff8f"
 }
