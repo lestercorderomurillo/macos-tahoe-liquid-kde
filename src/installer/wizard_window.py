@@ -1170,8 +1170,8 @@ class InstallerWindow(OpaqueSurface):
         visibility.setStyleSheet("""
             QPushButton { border: 1px solid palette(mid); border-radius: 0;
                           background: palette(button); color: palette(button-text); padding: 4px; }
-            QPushButton#dock-none { border-top-left-radius: 7px; border-bottom-left-radius: 7px; }
-            QPushButton#dock-autohide { border-left: 0; border-right: 0; }
+            QPushButton#dock-autohide { border-top-left-radius: 7px; border-bottom-left-radius: 7px; }
+            QPushButton#dock-none { border-left: 0; border-right: 0; }
             QPushButton#dock-dodgewindows { border-top-right-radius: 7px; border-bottom-right-radius: 7px; }
             QPushButton:checked { background: palette(highlight); color: palette(highlighted-text); }
             QPushButton:focus { border: 2px solid palette(highlight); }
@@ -1181,8 +1181,8 @@ class InstallerWindow(OpaqueSurface):
         segments.setContentsMargins(0, 0, 0, 0)
         segments.setSpacing(0)
         group = QButtonGroup(visibility)
-        for value, label, platform in [("none", "Always visible", "macOS"),
-                                       ("autohide", "Auto-hide", "macOS"),
+        for value, label, platform in [("autohide", "Auto-hide", "macOS"),
+                                       ("none", "Show outside full screen", "macOS"),
                                        ("dodgewindows", "Hide on overlap", "KDE Plasma")]:
             segment = QPushButton(f"{self.t(label)}\n({platform})")
             segment.setObjectName(f"dock-{value}")

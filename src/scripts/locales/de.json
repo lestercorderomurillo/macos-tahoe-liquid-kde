@@ -1101,7 +1101,7 @@
   "Dock apps": "Dock-Apps",
   "Dock visibility": "Dock-Sichtbarkeit",
   "Auto-hide": "Automatisch ausblenden",
-  "Always visible": "Immer sichtbar",
+  "Show outside full screen": "Außerhalb des Vollbilds anzeigen",
   "Hide on overlap": "Bei Überlappung ausblenden",
   "Dock apps…": "Dock-Apps…",
   "Installed equivalents are reused. Select only the missing apps you want to install.": "Installierte Alternativen werden weiterverwendet. Wähle nur fehlende Apps aus, die du installieren möchtest.",

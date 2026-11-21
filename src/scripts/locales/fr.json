@@ -1102,7 +1102,7 @@
   "Dock apps": "Applications du Dock",
   "Dock visibility": "Visibilité du Dock",
   "Auto-hide": "Masquer automatiquement",
-  "Always visible": "Toujours visible",
+  "Show outside full screen": "Afficher hors plein écran",
   "Hide on overlap": "Masquer si une fenêtre le recouvre",
   "Dock apps…": "Applications du Dock…",
   "Installed equivalents are reused. Select only the missing apps you want to install.": "Les équivalents installés sont réutilisés. Sélectionnez uniquement les applications manquantes à installer.",
