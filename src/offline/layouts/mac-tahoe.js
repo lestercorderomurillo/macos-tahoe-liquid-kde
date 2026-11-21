@@ -91,7 +91,11 @@ for (var screen = 0; screen < screenCount; screen++) {
     bar.addWidget("org.kde.mac-tahoe-liquid-kde.bluetooth");
     bar.addWidget("org.kde.mac-tahoe-liquid-kde.wifi");
     bar.addWidget("org.kde.mac-tahoe-liquid-kde.battery");
-    bar.addWidget("org.kde.mac-tahoe-liquid-kde.controlcenter");
+    var controls = bar.addWidget("org.kde.mac-tahoe-liquid-kde.controlcenter");
+    if (controls) {
+        controls.currentConfigGroup = ["General"];
+        controls.writeConfig("statusOrderRevision", 1);
+    }
 
     bar.addWidget("org.kde.plasma.marginsseparator");
 
