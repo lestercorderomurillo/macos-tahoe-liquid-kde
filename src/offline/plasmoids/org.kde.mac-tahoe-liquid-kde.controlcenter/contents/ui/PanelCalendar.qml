@@ -21,7 +21,15 @@ Item {
         value: false
     }
 
+    PanelCapsule {
+        parent: calendar.clock
+        z: -1
+        horizontalPadding: 6
+        visible: clockPointer.containsMouse
+    }
     MouseArea {
+        id: clockPointer
+        hoverEnabled: true
         parent: calendar.clock
         anchors.fill: parent
         z: 10

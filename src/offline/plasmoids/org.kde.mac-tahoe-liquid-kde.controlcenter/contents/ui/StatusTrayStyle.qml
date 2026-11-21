@@ -48,15 +48,13 @@ Item {
     Instantiator {
         model: style.delegates(style.tray?.visibleLayout ?? null)
                .concat(style.delegates(style.tray?.hiddenLayout ?? null))
-               .concat([style.arrow, style.clock].filter(item => item !== null))
+               .concat([style.arrow].filter(item => item !== null))
         delegate: PanelCapsule {
             id: capsule
             required property var modelData
             parent: modelData
             z: -1
             visible: hover.hovered && !modelData?.inHiddenLayout
-            // The clock is exactly as wide as its text; give the capsule room around it.
-            horizontalPadding: modelData === style.clock ? 6 : 0
             HoverHandler { id: hover; parent: capsule.modelData; blocking: false }
 
             readonly property var notifier: modelData?.model
