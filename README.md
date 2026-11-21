@@ -223,7 +223,7 @@ Open the panel clock to see the month on glass. Scroll or use the arrow keys to 
 
 ### Tahoe Wi-Fi (Alpha)
 
-Open the Wi-Fi menu to see available wireless networks.
+Open the Wi-Fi menu to see available wireless networks. Without a Wi-Fi adapter, or with Wi-Fi off, the menu lists your wired connections followed by a single divider and the Wi-Fi settings link.
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-wifi-d55cc1382c4f.webp" alt="Light Wi-Fi menu connected to Harbor Studio, with Garden Guest and Workshop available" width="48%">
