@@ -254,11 +254,12 @@ def configure_dock() -> None:
 
 
 def _dock_migration_script() -> str:
-    from installer_choices import selected
+    from installer_choices import dock_visibility, selected
     choices = selected()
     requested = choices.get("dock_apps", []) if choices.get("dock", True) else []
     appearance = choices.get("dock_appearance", "auto") if choices.get("dock", True) else "keep"
     return ("var mttkdeResetDock = " + json.dumps(choices.get("reset_layout", False)) + ";\n"
+            + "var mttkdeDockVisibility = " + json.dumps(choices.get("dock_visibility", dock_visibility())) + ";\n"
             + "var mttkdeDockAppearance = " + json.dumps(appearance) + ";\n"
             + "var mttkdeRequestedDockApps = " + json.dumps(requested) + ";\n"
             + DOCK_MIGRATION.read_text())
