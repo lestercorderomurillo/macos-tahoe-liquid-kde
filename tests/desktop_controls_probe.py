@@ -517,6 +517,18 @@ capsules = [item for item in clock.childItems() if item.z() == -1]  # StatusTray
 assert len(capsules) == 1, capsules
 assert capsules[0].width() > clock.width(), (capsules[0].width(), clock.width())
 assert capsules[0].x() == (clock.width() - capsules[0].width()) / 2  # centred on the text
+clockWindow = QQuickWindow()
+clockWindow.setGeometry(0, 0, 200, 50)
+clock.setParentItem(clockWindow.contentItem())
+clock.setX(40)
+clockWindow.show()
+QTest.mouseMove(clockWindow, QPoint(10, 42)); QTest.qWait(40)
+assert not capsules[0].isVisible()
+QTest.mouseMove(clockWindow, QPoint(62, 16)); QTest.qWait(40)
+assert capsules[0].isVisible()
+QTest.mouseMove(clockWindow, QPoint(10, 42)); QTest.qWait(40)
+assert not capsules[0].isVisible()
+clockWindow.close()
 plain = fake('Item { width: 32; height: 32; PanelCapsule { objectName: "probePlainCapsule" } }')
 assert child(plain, 'probePlainCapsule').width() == 32
 
