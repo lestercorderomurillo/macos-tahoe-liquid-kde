@@ -137,8 +137,7 @@ for (var screen = 0; screen < screenCount; screen++) {
     dock.lengthMode = "fit";
     dock.floating = true;
     dock.opacity = "translucent";
-    // Auto-hide avoids the stuck-visible dodge behavior reported in issue #87.
-    dock.hiding = "autohide";
+    dock.hiding = "none";
     dock.height = 68;
 
     if (typeof userLauncherTypes !== "undefined") {

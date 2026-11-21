@@ -125,7 +125,7 @@ def test_dock_mode_uses_desktop_mode_even_when_material_luminance_is_inverted():
 @pytest.mark.parametrize('revision', [0, 1, 2, 3])
 @pytest.mark.parametrize('reset', [False, True])
 def test_064_defaults_once_or_explicit_reset(monkeypatch, revision, reset):
-    monkeypatch.setenv('MTTKDE_WIZARD_OPTIONS', json.dumps({'reset_layout': reset}))
+    monkeypatch.setenv('MTTKDE_WIZARD_OPTIONS', json.dumps({'reset_layout': reset, 'dock_visibility': 'dodgewindows'}))
     pins = ['applications:custom.desktop', 'preferred://browser']
     script = 'var installed = ["firefox.desktop", "org.kde.marknote.desktop"];\n' + HARNESS
     script += existing_dock(pins, revision=revision)
@@ -136,7 +136,7 @@ def test_064_defaults_once_or_explicit_reset(monkeypatch, revision, reset):
     result = observed['config']
     apply = revision < 3 or reset
     if apply:
-        assert observed['height'] == 68 and observed['hiding'] == 'autohide'
+        assert observed['height'] == 68 and observed['hiding'] == 'dodgewindows'
     else:
         assert 'height' not in observed
     assert result['launchers'] == pins + (['applications:org.kde.marknote.desktop'] if apply else [])

@@ -377,7 +377,7 @@ Una apariencia coordinada desde el inicio hasta el apagado, con desbloqueo integ
 - **Efectos de cristal:** desenfoque, refracción y degradados de tres colores ajustables para los modos claro y oscuro.
 - **Compatibilidad:** Plasma 6.6–6.8, con efectos nativos compilados contra las versiones instaladas de Qt y KWin.
 - **Launchpad:** dos disposiciones, búsqueda integrada o separada, favoritos y categorías de aplicaciones desplazables.
-- **Dock** El Dock se mueve a la pantalla cuyo borde inferior toques y conserva tus apps fijadas. En el instalador puedes elegir ocultarlo automáticamente (por defecto), dejarlo visible u ocultarlo cuando una ventana lo cubra.
+- **Dock** El Dock se mueve a la pantalla cuyo borde inferior toques y conserva tus apps fijadas. En el instalador puedes elegir ocultarlo automáticamente, dejarlo visible (por defecto) u ocultarlo cuando una ventana lo cubra.
 - **Apariencia:** estilos claros/oscuros sincronizados para el escritorio, aplicaciones, iconos y decoraciones de ventanas; fondos por monitor.
 - **Integración de aplicaciones:** menús globales, correcciones de menús GTK, Nautilus al estilo Finder y tema para Firefox con copias de perfiles.
 - **Recuperación:** comprobación de requisitos, copias de ajustes y restauración al desinstalar.

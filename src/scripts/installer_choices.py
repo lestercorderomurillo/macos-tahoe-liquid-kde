@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 import os
+import re
 from pathlib import Path
 
 from launcher_defaults import edition_name
@@ -58,8 +59,21 @@ def dock_visibility() -> str:
     try:
         value = dock_visibility_preference().read_text().strip()
     except OSError:
-        return "autohide"
-    return value if value in ENUMS["dock_visibility"] else "autohide"
+        config = Path(os.environ.get("XDG_CONFIG_HOME") or Path.home() / ".config")
+        try:
+            applets = (config / "plasma-org.kde.plasma.desktop-appletsrc").read_text()
+            panels = (config / "plasmashellrc").read_text()
+        except OSError:
+            return "none"
+        for section, body in re.findall(r"^\[Containments\]\[(\d+)\]\[Applets\]\[\d+\]\n([^\[]*)", applets, re.M):
+            if "plugin=org.kde.mac.tahoe.liquid.icontasks" in body.splitlines():
+                group = re.search(r"^\[PlasmaViews\]\[Panel " + section + r"\]\n([^\[]*)", panels, re.M)
+                if group:
+                    for line in group[1].splitlines():
+                        if line.startswith("panelVisibility="):
+                            return {"1": "autohide", "2": "dodgewindows"}.get(line[16:], "none")
+        return "none"
+    return value if value in ENUMS["dock_visibility"] else "none"
 
 
 def defaults() -> dict:

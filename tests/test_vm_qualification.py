@@ -24,8 +24,8 @@ qualify = load('qualify')
     {'widgets': ['org.kde.mac-tahoe-liquid-kde.launcher',
                  'org.kde.mac-tahoe-liquid-kde.trashcan',
                  'org.kde.mac.tahoe.liquid.globalmenu'], 'hiding': 'none'},
-    {'widgets': ['org.kde.mac.tahoe.liquid.icontasks'], 'hiding': 'none'}]])
-def test_missing_or_non_autohiding_dock_cannot_pass(panels):
+    {'widgets': ['org.kde.mac.tahoe.liquid.icontasks'], 'hiding': 'autohide'}]])
+def test_missing_or_hidden_dock_cannot_pass(panels):
     with pytest.raises(RuntimeError):
         probe.verify_panels(panels, installed=True)
 

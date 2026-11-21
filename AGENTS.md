@@ -450,9 +450,7 @@ Store, Force Quit, Sleep, Restart, Shut Down, Lock Screen, Log Out.
 - Popup plasmoids are fixed-size, not resizable.
 - Top panel is applets-only floating (not full-floating). Keep the menu bar
   backgroundless, including behind its individual applets.
-- The bottom Dock uses `autohide` in all three bundled layouts (issue #87).
-  A selected layout reset rebuilds the Dock with this mode while preserving pinned apps;
-  the scripting API persists visibility, so no extra config patch is needed.
+- New layouts show the Dock by default. Preserve the selected visibility and pinned apps on reinstall.
 - Category switcher must support both mouse drag and wheel scroll.
 
 ## Repository Layout

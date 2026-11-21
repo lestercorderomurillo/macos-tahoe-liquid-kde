@@ -1153,17 +1153,24 @@ class InstallerWindow(OpaqueSurface):
                 card.setEnabled(self.choices["reset_layout"])
         reset.toggled.connect(enable_layout_options)
         enable_layout_options()
-        self.body.addWidget(self.label("Dock visibility"))
-        self.radio("dock_visibility", [("autohide", "Auto-hide"), ("none", "Always visible"),
-                                      ("dodgewindows", "Hide when a window overlaps")])
-        self.dock_app_options()
-
-    def dock_app_options(self):
+        row = QHBoxLayout()
+        row.addWidget(self.label("Dock visibility"))
+        visibility = GlassComboBox()
+        visibility.setObjectName("dock-visibility")
+        for value, label in [("none", "Always visible"), ("autohide", "Auto-hide"),
+                             ("dodgewindows", "Hide when a window overlaps")]:
+            visibility.addItem(self.t(label), value)
+        visibility.setCurrentIndex(visibility.findData(self.choices["dock_visibility"]))
+        visibility.currentIndexChanged.connect(lambda: self.select("dock_visibility", visibility.currentData()))
+        visibility.setEnabled(self.choices["dock"])
+        row.addWidget(visibility)
+        row.addStretch()
         button = GlassButton(self.t("Dock apps…"))
         button.setObjectName("edit-dock-apps")
         button.setEnabled(self.choices["dock"])
         button.clicked.connect(self.edit_dock_apps)
-        self.body.addWidget(button, 0, Qt.AlignmentFlag.AlignLeft)
+        row.addWidget(button)
+        self.body.addLayout(row)
 
     def edit_dock_apps(self):
         from dock_apps import OPTIONAL, LABELS, installed_apps, recommendation

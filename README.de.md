@@ -377,7 +377,7 @@ Ein abgestimmtes Erscheinungsbild vom Start bis zum Herunterfahren mit integrier
 - **Glaseffekte:** einstellbare Unschärfe, Brechung und dreifarbige Verläufe für helle und dunkle Modi.
 - **Kompatibilität:** Plasma 6.6–6.8 mit nativen Effekten, die gegen die installierten Qt- und KWin-Versionen kompiliert werden.
 - **Launchpad:** zwei Anordnungen, integrierte oder abgetrennte Suche, Favoriten und scrollbare Anwendungskategorien.
-- **Dock** Das Dock folgt dem berührten unteren Bildschirmrand und behält angeheftete Apps. Im Installer stehen automatisches Ausblenden (Standard), immer sichtbar und Ausblenden bei überlappenden Fenstern zur Wahl.
+- **Dock** Das Dock folgt dem berührten unteren Bildschirmrand und behält angeheftete Apps. Im Installer stehen automatisches Ausblenden, immer sichtbar (Standard) und Ausblenden bei überlappenden Fenstern zur Wahl.
 - **Erscheinungsbild:** synchronisierte helle/dunkle Stile für Desktop, Anwendungen, Symbole und Fensterdekorationen; Hintergrundbilder pro Monitor.
 - **Anwendungsintegration:** globale Menüs, GTK-Menükorrekturen, Nautilus im Finder-Stil und Firefox-Design mit Profilsicherungen.
 - **Wiederherstellung:** Prüfung der Voraussetzungen, Einstellungssicherungen und Wiederherstellung bei der Deinstallation.
