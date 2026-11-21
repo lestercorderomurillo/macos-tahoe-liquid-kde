@@ -22,6 +22,6 @@ Text {
     font.family: "SF Pro Text"
     font.pixelSize: 13
     font.weight: Font.Medium
-    font.letterSpacing: -0.3125
+    font.letterSpacing: -0.33
     color: Kirigami.Theme.textColor
 }
