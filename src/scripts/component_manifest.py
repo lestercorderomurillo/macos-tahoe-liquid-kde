@@ -59,6 +59,7 @@ def snapshot(root=REPO_ROOT):
             if path.name == 'plasmoids' and payload.name in (
                 'org.kde.mac-tahoe-liquid-kde.acrylicglass',
                 'org.kde.mac-tahoe-liquid-kde.battery',
+                'org.kde.mac-tahoe-liquid-kde.bluetooth',
                 'org.kde.mac-tahoe-liquid-kde.wifi',
                 'org.kde.mac-tahoe-liquid-kde.notifications',
             ):
@@ -69,6 +70,7 @@ def snapshot(root=REPO_ROOT):
                 'org.kde.mac-tahoe-liquid-kde.launcher',
                 'org.kde.mac-tahoe-liquid-kde.controlcenter',
                 'org.kde.mac-tahoe-liquid-kde.battery',
+                'org.kde.mac-tahoe-liquid-kde.bluetooth',
                 'org.kde.mac-tahoe-liquid-kde.wifi',
                 'org.kde.mac-tahoe-liquid-kde.notifications',
             ):

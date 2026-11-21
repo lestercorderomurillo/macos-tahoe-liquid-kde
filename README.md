@@ -174,7 +174,7 @@ Find apps, browse categories and keep your favorites within reach.
 
 ### Tahoe Control Center (Alpha)
 
-Wi-Fi, sound, brightness and notifications in one glass menu. The appearance button shows a sun for Light, a moon for Dark and a split circle for Automatic.
+Wi-Fi, Bluetooth, sound, brightness and notifications in one glass menu. The appearance button shows a sun for Light, a moon for Dark and a split circle for Automatic.
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-control-5f066f7e22f2.webp" alt="Control Center in light mode" width="415">
@@ -220,6 +220,10 @@ Open the panel clock to see the month on glass. Scroll or use the arrow keys to 
 </p>
 
 <br>
+
+### Tahoe Bluetooth (Alpha)
+
+To add Bluetooth to the menu bar, enter Plasma’s Edit Mode, choose **Add Widgets**, and drag **Tahoe Bluetooth** onto the panel. Open it to toggle Bluetooth, connect or disconnect a paired device, or see the battery level a connected device reports. Choose **Bluetooth Settings…** to pair a new device.
 
 ### Tahoe Wi-Fi (Alpha)
 
@@ -596,7 +600,7 @@ The current status of each component.
 | Kate Theme | ![Planned](https://img.shields.io/badge/Planned-D4A017) |
 | SDDM Theme | ![Planned](https://img.shields.io/badge/Planned-D4A017) |
 | Calendar | ![Alpha](https://img.shields.io/badge/Alpha-D4A017) |
-| Control Center, Wi-Fi, Battery and Notifications | ![Alpha](https://img.shields.io/badge/Alpha-D4A017) |
+| Control Center, Bluetooth, Wi-Fi, Battery and Notifications | ![Alpha](https://img.shields.io/badge/Alpha-D4A017) |
 | System Preferences | ![Planned](https://img.shields.io/badge/Planned-D4A017) |
 | OS Selector | ![Planned](https://img.shields.io/badge/Planned-D4A017) |
 
