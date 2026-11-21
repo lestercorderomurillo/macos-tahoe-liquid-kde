@@ -3701,10 +3701,10 @@
       "capture_environment": "Disposable KDE neon Wayland VM, 3840×2160 at 2×, edition wallpaper. Cropped from a full-desktop Plasma screenshot.",
       "radio_fixture": "python-dbusmock BlueZ 5 with two paired devices. Studio Headphones reports 82 percent and Wireless Keyboard is disconnected."
     },
-    "previews/readme-tahoe-dark-bluetooth-7436dda76c53.webp": {
+    "previews/readme-tahoe-dark-bluetooth-ddab9443c80d.webp": {
       "windows": [
         {
-          "id": "{225caf71-3bac-428d-aff2-4d1ece251c3a}",
+          "id": "{8b071858-fa20-4e94-ba7a-ea3ade422cb3}",
           "caption": "",
           "resourceClass": "plasmashell",
           "type": 1,
@@ -3719,7 +3719,7 @@
           }
         },
         {
-          "id": "{837a2ff7-54f5-431f-b95e-918d1b156989}",
+          "id": "{b884f431-3480-4446-b3d9-901e9653aae0}",
           "caption": "",
           "resourceClass": "plasmashell",
           "type": 2,
@@ -3734,7 +3734,7 @@
           }
         },
         {
-          "id": "{b2d5541d-3bb6-4582-9427-4a1b43a219b6}",
+          "id": "{4e747eb5-bdb8-4d66-9038-dce85354e42d}",
           "caption": "",
           "resourceClass": "plasmashell",
           "type": 2,
@@ -3749,7 +3749,7 @@
           }
         },
         {
-          "id": "{770ebf88-5631-47c2-9316-c8fad6e84686}",
+          "id": "{3e6a7485-c4db-49a3-ab79-18023a7787ac}",
           "caption": "mttkde-bluetooth",
           "resourceClass": "org.kde.plasmashell",
           "type": 18,
@@ -3768,13 +3768,14 @@
       "case": "bluetooth",
       "edition": "tahoe",
       "mode": "dark",
-      "source_commit": "7369e9db488a338e7dabdce9eed8e38979d1f1ac",
-      "sha256": "7436dda76c533b21abd435838c1915d317146059747b553cfdd38851812701e8",
+      "source_commit": "e89ae1fac2937024060c7a535b6d99982bb575e1",
+      "sha256": "ddab9443c80d6bd917c4893d5ca28885722332209670a4629b4f444790539c0b",
       "plasma": "plasmashell 6.8.1",
       "kwin": "kwin 6.8.1",
       "profile_sha256": "2a3bd2d31ca0dfdd65c45a09a3c8c2bbe35a122ab2ca7961f1c33edf8b9a3b09",
       "capture_environment": "Disposable KDE neon Wayland VM, 3840×2160 at 2×, edition wallpaper. Cropped from a full-desktop Plasma screenshot.",
-      "radio_fixture": "python-dbusmock BlueZ 5 with two paired devices. Studio Headphones reports 82 percent and Wireless Keyboard is disconnected."
+      "radio_fixture": "python-dbusmock BlueZ 5 with two paired devices. Studio Headphones reports 82 percent and Wireless Keyboard is disconnected.",
+      "icon_theme": "MacTahoeLiquidKde-Icons-Regular-Dark"
     }
   },
   "missing": [],

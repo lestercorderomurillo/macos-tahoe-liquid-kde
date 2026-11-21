@@ -227,7 +227,7 @@ Connect paired devices and check their battery level from the menu bar.
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-bluetooth-58ccf877c692.webp" alt="Light Bluetooth menu with Studio Headphones connected at 82% and Wireless Keyboard disconnected" width="48%">
-  <img src="src/screenshots/previews/readme-tahoe-dark-bluetooth-7436dda76c53.webp" alt="Dark Bluetooth menu with Studio Headphones connected at 82% and Wireless Keyboard disconnected" width="48%">
+  <img src="src/screenshots/previews/readme-tahoe-dark-bluetooth-ddab9443c80d.webp" alt="Dark Bluetooth menu with Studio Headphones connected at 82% and Wireless Keyboard disconnected" width="48%">
 </p>
 
 ### Tahoe Wi-Fi (Alpha)
