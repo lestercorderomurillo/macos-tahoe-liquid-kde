@@ -111,12 +111,15 @@ Window {
     }
 
     title: translations.i18n("About This Computer")
-    width: 360
-    height: 700
+    // The content decides the size: a fixed 360 px window clips its values as
+    // soon as the system font is larger than the default. 360 stays the
+    // minimum so the default look does not change.
+    width: Math.max(360, contentColumn.implicitWidth + 44)
+    height: Math.max(700, contentColumn.implicitHeight + 40)
     minimumWidth: 360
     minimumHeight: 700
-    maximumWidth: 360
-    maximumHeight: 700
+    maximumWidth: 2000
+    maximumHeight: 1400
     flags: Qt.Window | Qt.FramelessWindowHint
     color: "transparent"
 
@@ -400,6 +403,7 @@ Window {
 
         // content
         ColumnLayout {
+            id: contentColumn
             anchors.fill: parent
             spacing: 0
 
@@ -466,7 +470,7 @@ Window {
                     font.family: aboutWindow.fontFamily
                     font.pointSize: Kirigami.Theme.defaultFont.pointSize
                     Layout.alignment: Qt.AlignRight
-                    Layout.preferredWidth: 110
+                    Layout.preferredWidth: implicitWidth
                     horizontalAlignment: Text.AlignRight
                 }
                 PrimaryLabel {
@@ -474,7 +478,7 @@ Window {
 
                     font.family: aboutWindow.fontFamily
                     font.pointSize: Kirigami.Theme.defaultFont.pointSize
-                    Layout.preferredWidth: 180
+                    Layout.preferredWidth: Math.min(Math.max(implicitWidth, 180), 520)
                     Layout.minimumHeight: 2 * _fm.height
                     wrapMode: Text.WordWrap
                     verticalAlignment: Text.AlignVCenter
@@ -487,7 +491,7 @@ Window {
                     font.family: aboutWindow.fontFamily
                     font.pointSize: Kirigami.Theme.defaultFont.pointSize
                     Layout.alignment: Qt.AlignRight
-                    Layout.preferredWidth: 110
+                    Layout.preferredWidth: implicitWidth
                     horizontalAlignment: Text.AlignRight
                 }
                 PrimaryLabel {
@@ -495,7 +499,7 @@ Window {
 
                     font.family: aboutWindow.fontFamily
                     font.pointSize: Kirigami.Theme.defaultFont.pointSize
-                    Layout.preferredWidth: 180
+                    Layout.preferredWidth: Math.min(Math.max(implicitWidth, 180), 520)
                 }
 
                 // Memory
@@ -505,7 +509,7 @@ Window {
                     font.family: aboutWindow.fontFamily
                     font.pointSize: Kirigami.Theme.defaultFont.pointSize
                     Layout.alignment: Qt.AlignRight
-                    Layout.preferredWidth: 110
+                    Layout.preferredWidth: implicitWidth
                     horizontalAlignment: Text.AlignRight
                 }
                 PrimaryLabel {
@@ -513,7 +517,7 @@ Window {
 
                     font.family: aboutWindow.fontFamily
                     font.pointSize: Kirigami.Theme.defaultFont.pointSize
-                    Layout.preferredWidth: 180
+                    Layout.preferredWidth: Math.min(Math.max(implicitWidth, 180), 520)
                 }
 
                 // Graphics
@@ -523,7 +527,7 @@ Window {
                     font.family: aboutWindow.fontFamily
                     font.pointSize: Kirigami.Theme.defaultFont.pointSize
                     Layout.alignment: Qt.AlignRight
-                    Layout.preferredWidth: 110
+                    Layout.preferredWidth: implicitWidth
                     horizontalAlignment: Text.AlignRight
                 }
                 PrimaryLabel {
@@ -531,7 +535,7 @@ Window {
 
                     font.family: aboutWindow.fontFamily
                     font.pointSize: Kirigami.Theme.defaultFont.pointSize
-                    Layout.preferredWidth: 180
+                    Layout.preferredWidth: Math.min(Math.max(implicitWidth, 180), 520)
                     Layout.minimumHeight: 2 * _fm.height
                     wrapMode: Text.WordWrap
                     verticalAlignment: Text.AlignVCenter
@@ -544,7 +548,7 @@ Window {
                     font.family: aboutWindow.fontFamily
                     font.pointSize: Kirigami.Theme.defaultFont.pointSize
                     Layout.alignment: Qt.AlignRight
-                    Layout.preferredWidth: 110
+                    Layout.preferredWidth: implicitWidth
                     horizontalAlignment: Text.AlignRight
                 }
                 PrimaryLabel {
@@ -552,7 +556,7 @@ Window {
 
                     font.family: aboutWindow.fontFamily
                     font.pointSize: Kirigami.Theme.defaultFont.pointSize
-                    Layout.preferredWidth: 180
+                    Layout.preferredWidth: Math.min(Math.max(implicitWidth, 180), 520)
                     Layout.minimumHeight: 2 * _fm.height
                     wrapMode: Text.WordWrap
                     verticalAlignment: Text.AlignVCenter
@@ -565,7 +569,7 @@ Window {
                     font.family: aboutWindow.fontFamily
                     font.pointSize: Kirigami.Theme.defaultFont.pointSize
                     Layout.alignment: Qt.AlignRight
-                    Layout.preferredWidth: 110
+                    Layout.preferredWidth: implicitWidth
                     horizontalAlignment: Text.AlignRight
                 }
                 PrimaryLabel {
@@ -573,7 +577,7 @@ Window {
 
                     font.family: aboutWindow.fontFamily
                     font.pointSize: Kirigami.Theme.defaultFont.pointSize
-                    Layout.preferredWidth: 180
+                    Layout.preferredWidth: Math.min(Math.max(implicitWidth, 180), 520)
                     elide: Text.ElideRight
                 }
 
@@ -584,7 +588,7 @@ Window {
                     font.family: aboutWindow.fontFamily
                     font.pointSize: Kirigami.Theme.defaultFont.pointSize
                     Layout.alignment: Qt.AlignRight
-                    Layout.preferredWidth: 110
+                    Layout.preferredWidth: implicitWidth
                     horizontalAlignment: Text.AlignRight
                 }
                 PrimaryLabel {
@@ -592,7 +596,7 @@ Window {
 
                     font.family: aboutWindow.fontFamily
                     font.pointSize: Kirigami.Theme.defaultFont.pointSize
-                    Layout.preferredWidth: 180
+                    Layout.preferredWidth: Math.min(Math.max(implicitWidth, 180), 520)
                     elide: Text.ElideRight
                 }
 
@@ -603,7 +607,7 @@ Window {
                     font.family: aboutWindow.fontFamily
                     font.pointSize: Kirigami.Theme.defaultFont.pointSize
                     Layout.alignment: Qt.AlignRight
-                    Layout.preferredWidth: 110
+                    Layout.preferredWidth: implicitWidth
                     horizontalAlignment: Text.AlignRight
                 }
                 PrimaryLabel {
@@ -611,7 +615,7 @@ Window {
 
                     font.family: aboutWindow.fontFamily
                     font.pointSize: Kirigami.Theme.defaultFont.pointSize
-                    Layout.preferredWidth: 180
+                    Layout.preferredWidth: Math.min(Math.max(implicitWidth, 180), 520)
                     Layout.minimumHeight: 2 * _fm.height
                     wrapMode: Text.WordWrap
                     verticalAlignment: Text.AlignVCenter
