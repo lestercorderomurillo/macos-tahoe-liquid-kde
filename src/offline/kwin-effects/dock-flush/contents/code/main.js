@@ -31,7 +31,7 @@ function screenKey(w) {
 function refresh() {
     const busy = new Set();
     for (const w of effects.stackingOrder) {
-        if (fillsScreen(w) && w.isOnCurrentDesktop) busy.add(screenKey(w));
+        if (fillsScreen(w) && w.onCurrentDesktop !== false) busy.add(screenKey(w));
     }
     for (const d of effects.stackingOrder) {
         if (!isDock(d)) continue;
