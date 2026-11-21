@@ -27,15 +27,13 @@
                 var radio = widgets.find(function (w) { return w.type === prefix + 'bluetooth'; });
                 if (!radio) radio = bars[i].addWidget(prefix + 'bluetooth');
                 if (!radio) throw Error('Could not add the Bluetooth panel widget');
-                var anchor = controls;
-                // Insert from right to left so custom widgets keep their relative order.
-                ['battery', 'wifi', 'bluetooth', 'notifications'].forEach(function (suffix) {
-                    var item = suffix === 'bluetooth' ? radio : widgets.find(function (w) { return w.type === prefix + suffix; });
-                    if (!item) return;
-                    var target = anchor.index - (item.index < anchor.index ? 1 : 0);
-                    if (item.index !== target) item.index = target;
-                    anchor = item;
-                });
+                var order = ['acrylicglass', 'notifications', 'bluetooth', 'wifi', 'battery', 'controlcenter'];
+                var group = order.map(function (suffix) {
+                    if (suffix === 'bluetooth') return radio;
+                    return bars[i].widgets().find(function (w) { return w.type === prefix + suffix; });
+                }).filter(Boolean);
+                var start = Math.min.apply(null, group.filter(function (w) { return w.index >= 0; }).map(function (w) { return w.index; }));
+                group.forEach(function (w, offset) { w.index = start + offset; });
                 controls.writeConfig('statusOrderRevision', 1);
             }
         }
