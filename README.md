@@ -295,7 +295,7 @@ A matching look from startup to shutdown, with built-in unlocking for LUKS2-encr
 - **Glass effects:** adjustable blur, refraction and three-color gradients for light and dark modes.
 - **Compatibility:** Plasma 6.6–6.8, with native effects compiled against the installed Qt and KWin versions.
 - **Launchpad:** two layouts, integrated or detached search, favorites and scrollable app categories.
-- **Dock:** hover zoom, notification badges, auto-hide and preserved pins on reinstall.
+- **Dock:** hover zoom, notification badges, auto-hide, a separator before the Trash and pins shared by every screen's Dock. On several screens, only one Dock is shown and it follows the screen whose bottom edge you reach. Reinstalls and updates keep your pins as they are: an app you unpinned is never pinned again, and only an app installed since then can be added.
 - **Appearance:** synchronized light/dark styles for the desktop, apps, icons and window decorations; per-monitor wallpapers.
 - **App integration:** global menus, GTK menu fixes, Finder-style Nautilus and Firefox theming with profile backups.
 - **Recovery:** requirement checks, settings backups and uninstall restoration.
