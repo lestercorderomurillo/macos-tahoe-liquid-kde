@@ -75,6 +75,9 @@ in {
       fi
     '';
     xdg.configFile = {
+      "fontconfig/conf.d/60-mac-tahoe-sf-pro-bold.conf" = lib.mkIf cfg.appleAssets {
+        source = ../src/offline/fonts/60-mac-tahoe-sf-pro-bold.conf;
+      };
       "plasma-workspace/env/mac-tahoe-plugin-paths.sh".text = ''
         # Plasma sources this before launching KWin and plasmashell.
         # Extend the inherited paths here; home.sessionVariables would replace them.

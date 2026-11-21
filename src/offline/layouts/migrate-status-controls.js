@@ -34,7 +34,20 @@
                 }).filter(Boolean);
                 var start = Math.min.apply(null, group.filter(function (w) { return w.index >= 0; }).map(function (w) { return w.index; }));
                 group.forEach(function (w, offset) { w.index = start + offset; });
-                controls.writeConfig('statusOrderRevision', 1);
+            }
+            if (Number(controls.readConfig('statusOrderRevision', 0)) < 2) {
+                var clock = widgets.find(function (w) { return w.type === 'org.kde.plasma.digitalclock'; });
+                var before = clock && bars[i].widgets().find(function (w) { return w.index === clock.index - 1; });
+                if (before && (before.type === 'org.kde.plasma.marginsseparator' || before.type === controls.type)) {
+                    var clockIndex = clock.index;
+                    var gap = bars[i].addWidget('org.kde.plasma.panelspacer');
+                    if (!gap) throw Error('Could not add the clock spacer');
+                    gap.currentConfigGroup = ['General'];
+                    gap.writeConfig('expanding', 'false');
+                    gap.writeConfig('length', 1);
+                    gap.index = clockIndex;
+                }
+                controls.writeConfig('statusOrderRevision', 2);
             }
         }
         if (!themed || !notifications) continue;

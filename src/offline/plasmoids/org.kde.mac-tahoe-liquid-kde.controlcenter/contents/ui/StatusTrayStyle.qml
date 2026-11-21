@@ -60,14 +60,12 @@ Item {
             HoverHandler { id: hover; parent: capsule.modelData; blocking: false }
 
             readonly property var notifier: modelData?.model
-            readonly property bool compactIcon: notifier?.itemType === "StatusNotifier"
-                && [notifier.Id, notifier.Title, notifier.ToolTipTitle, notifier.IconName].some(name => /^(?:appindicator[-_.])?(discord|slack)(?:$|[\s._-])/i.test(name ?? ""))
-            readonly property Item glyph: compactIcon ? modelData.iconContainer.children.find(child => child instanceof Kirigami.Icon) ?? null : null
-            Binding {
-                target: capsule.glyph
-                property: "scale"
-                when: capsule.glyph !== null
-                value: capsule.glyph ? Math.min(1, 16 / Math.max(1, capsule.glyph.width, capsule.glyph.height)) : 1
+            readonly property Item glyph: notifier?.itemType === "StatusNotifier" && !modelData.inHiddenLayout
+                ? modelData.iconContainer.children.find(child => child instanceof Kirigami.Icon) ?? null : null
+            Loader {
+                parent: style
+                active: capsule.glyph !== null
+                sourceComponent: TrayArtwork { glyph: capsule.glyph }
             }
         }
     }

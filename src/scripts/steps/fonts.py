@@ -23,6 +23,13 @@ OFFLINE_DIR = offline("fonts")
 DEST_DIR = DATA_HOME / "fonts"
 
 
+RULE_NAME = "60-mac-tahoe-sf-pro-bold.conf"
+
+
+def _rule_dir():
+    return Path(os.environ.get("XDG_CONFIG_HOME") or Path.home() / ".config") / "fontconfig/conf.d"
+
+
 def deps():
     return ["fc-cache:fontconfig"]
 
@@ -77,7 +84,15 @@ def install() -> None:
     for grp in ("SF Pro", "SF Mono", "Other"):
         if inst[grp] or re_[grp]:
             info(tr('{grp} — {value2} installed, {value3} reinstalled', grp=tr(grp), value2=inst[grp], value3=re_[grp]))
-    if any_copied:
+    rule_dir = _rule_dir()
+    rule_dir.mkdir(parents=True, exist_ok=True)
+    rule_changed = not (rule_dir / RULE_NAME).is_file() or not filecmp.cmp(
+        OFFLINE_DIR / RULE_NAME, rule_dir / RULE_NAME, shallow=False)
+    def copy_rule(source, target):
+        _copy_font(source, target)
+        return True
+    install_owned("fontconfig-sf-pro", OFFLINE_DIR / RULE_NAME, rule_dir / RULE_NAME, copy_rule)
+    if any_copied or rule_changed:
         _refresh_font_cache()
 
 
@@ -94,6 +109,6 @@ def _refresh_font_cache() -> None:
 
 def uninstall() -> None:
     n = remove_owned("fonts", DEST_DIR)
-    if n > 0:
+    if remove_owned("fontconfig-sf-pro", _rule_dir()) or n > 0:
         _refresh_font_cache()
     info(tr('{n} font files removed', n=n))

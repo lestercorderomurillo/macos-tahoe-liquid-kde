@@ -76,8 +76,11 @@ LICENSE_FILE = Path(
 STATE_DIR = HOME / ".local/state/mac-tahoe-liquid-kde"
 PREV_ROUND_CORNERS_FILE = STATE_DIR / "rounded-corners-previous.json"
 REPLACED_PACKAGES_FILE = STATE_DIR / "rounded-corners-replaced-packages.json"
-_ROUND_CORNERS_KEYS = ("Size", "InactiveCornerRadius")
-_ROUND_CORNERS_STATE_VERSION = 1
+_RADIUS_KEYS = ("Size", "InactiveCornerRadius")
+_OUTLINE_KEYS = ("OutlineThickness", "InactiveOutlineThickness",
+                 "SecondOutlineThickness", "InactiveSecondOutlineThickness")
+_ROUND_CORNERS_KEYS = _RADIUS_KEYS + _OUTLINE_KEYS
+_ROUND_CORNERS_STATE_VERSION = 2
 
 
 def deps():
@@ -407,14 +410,14 @@ def _read_round_corners_key(key: str) -> tuple[bool, str | None] | None:
 def _validate_round_corners_snapshot(payload: object) -> dict | None:
     if not isinstance(payload, dict):
         return None
-    if payload.get("version") != _ROUND_CORNERS_STATE_VERSION:
+    if payload.get("version") not in (1, _ROUND_CORNERS_STATE_VERSION):
         return None
     keys = payload.get("keys")
     if not isinstance(keys, dict):
         return None
 
     validated: dict[str, dict[str, object]] = {}
-    for key in _ROUND_CORNERS_KEYS:
+    for key in (_RADIUS_KEYS if payload["version"] == 1 else _ROUND_CORNERS_KEYS):
         entry = keys.get(key)
         if not isinstance(entry, dict) or not isinstance(entry.get("present"), bool):
             return None
@@ -465,9 +468,9 @@ def _write_round_corners_snapshot(snapshot: dict) -> bool:
         return False
 
 
-def _capture_round_corners_snapshot() -> dict | None:
+def _capture_round_corners_snapshot(keys=_ROUND_CORNERS_KEYS) -> dict | None:
     snapshot: dict[str, dict[str, object]] = {}
-    for key in _ROUND_CORNERS_KEYS:
+    for key in keys:
         current = _read_round_corners_key(key)
         if current is None:
             return None
@@ -490,7 +493,13 @@ def _snapshot_round_corners_keys() -> bool:
     if PREV_ROUND_CORNERS_FILE.exists():
         # Snapshot once, but never trust a corrupt/unreadable marker as proof
         # that it is safe to overwrite the live user settings.
-        return _load_round_corners_snapshot() is not None
+        snapshot = _load_round_corners_snapshot()
+        if snapshot is None:
+            return False
+        if set(snapshot) == set(_ROUND_CORNERS_KEYS):
+            return True
+        outlines = _capture_round_corners_snapshot(_OUTLINE_KEYS)
+        return outlines is not None and _write_round_corners_snapshot(snapshot | outlines)
     snapshot = _capture_round_corners_snapshot()
     return snapshot is not None and _write_round_corners_snapshot(snapshot)
 
@@ -517,8 +526,7 @@ def _restore_round_corners_keys(*, legacy_install: bool) -> bool:
         return True
 
     restored = True
-    for key in _ROUND_CORNERS_KEYS:
-        entry = snapshot[key]
+    for key, entry in snapshot.items():
         if entry["present"]:
             args = (
                 "--file", "kwinrc", "--group", "Round-Corners",
@@ -596,7 +604,7 @@ def install() -> None:
     for key in _ROUND_CORNERS_KEYS:
         if not kw_write(
             "--file", "kwinrc", "--group", "Round-Corners",
-            "--key", key, str(CORNER_RADIUS),
+            "--key", key, str(CORNER_RADIUS) if key in _RADIUS_KEYS else "0",
         ):
             radius_configured = False
     if radius_configured:

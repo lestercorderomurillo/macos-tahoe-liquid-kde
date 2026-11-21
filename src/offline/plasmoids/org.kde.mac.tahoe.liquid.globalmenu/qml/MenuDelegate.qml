@@ -12,7 +12,7 @@ import org.kde.kirigami as Kirigami
 AbstractButton {
     id: controlRoot
 
-    font.weight: Font.Normal
+    font.weight: horizontalBar ? Font.Medium : Font.Normal
     readonly property bool lightText: Kirigami.ColorUtils.brightnessForColor(Kirigami.Theme.textColor)
                                       === Kirigami.ColorUtils.Light
     readonly property color foregroundColor: Qt.tint(Kirigami.Theme.textColor, lightText ? "#66ffffff" : "#66000000")
@@ -78,7 +78,7 @@ AbstractButton {
         verticalAlignment: Text.AlignVCenter
         elide: Text.ElideRight
         color: controlRoot.foregroundColor
-        font.letterSpacing: controlRoot.horizontalBar && controlRoot.font.weight < Font.Bold ? -0.35 : 0
+        font.letterSpacing: controlRoot.horizontalBar ? -0.35 : 0
         font.weight: controlRoot.font.weight
     }
 }

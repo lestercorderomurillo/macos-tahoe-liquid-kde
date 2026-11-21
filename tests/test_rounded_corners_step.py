@@ -238,6 +238,7 @@ def _snapshot_payload(
     return {
         "version": rounded._ROUND_CORNERS_STATE_VERSION,
         "keys": {
+            **{key: {"present": False, "value": None} for key in rounded._OUTLINE_KEYS},
             "Size": {"present": size[0], "value": size[1]},
             "InactiveCornerRadius": {
                 "present": inactive[0], "value": inactive[1],
@@ -290,6 +291,8 @@ def test_install_places_artifacts_and_enables_effect(monkeypatch, tmp_path):
     assert "false" in plugin_writes[0]
     assert "true" in plugin_writes[-1]
     radius_writes = [write for write in writes if "Round-Corners" in write]
+    assert all(any(write[-2:] == (key, "0") for write in radius_writes)
+               for key in rounded._OUTLINE_KEYS)
     assert rounded.CORNER_RADIUS == 28
     assert any("Size" in write and "28" in write for write in radius_writes)
     assert any(
@@ -361,7 +364,7 @@ def test_install_snapshots_preexisting_round_corners_keys_once(monkeypatch, tmp_
         "InactiveCornerRadius": (True, ""),
     }
     monkeypatch.setattr(
-        rounded, "_read_round_corners_key", lambda key: existing[key],
+        rounded, "_read_round_corners_key", lambda key: existing.get(key, (False, None)),
     )
 
     rounded.install()
@@ -571,7 +574,7 @@ def test_uninstall_retains_recovery_state_when_restore_write_fails(
 
     rounded.uninstall()
 
-    assert len(writes) == 2
+    assert len(writes) == len(rounded._ROUND_CORNERS_KEYS)
     assert rounded.PREV_ROUND_CORNERS_FILE.read_text() == original
     assert removed == []
     assert dbus_calls == []
@@ -614,7 +617,7 @@ def test_uninstall_migrates_pre_snapshot_project_install(monkeypatch, tmp_path):
         "InactiveCornerRadius": (True, "17"),
     }
     monkeypatch.setattr(
-        rounded, "_read_round_corners_key", lambda key: current[key],
+        rounded, "_read_round_corners_key", lambda key: current.get(key, (False, None)),
     )
     writes: list[tuple[str, ...]] = []
     monkeypatch.setattr(
@@ -924,3 +927,18 @@ def test_uninstall_leaves_distro_package_files_and_reports_replacement(
         for message in notes
     )
     assert not rounded.REPLACED_PACKAGES_FILE.exists()
+
+
+def test_upgrade_radius_only_snapshot_preserves_existing_outline(monkeypatch, tmp_path):
+    state = _pin_round_corners_state(monkeypatch, tmp_path)
+    state.mkdir()
+    legacy = _snapshot_payload()
+    legacy["version"] = 1
+    legacy["keys"] = {k: legacy["keys"][k] for k in rounded._RADIUS_KEYS}
+    rounded.PREV_ROUND_CORNERS_FILE.write_text(json.dumps(legacy))
+    monkeypatch.setattr(rounded, "_read_round_corners_key",
+                        lambda key: (True, "3") if key == "OutlineThickness" else (False, None))
+    assert rounded._snapshot_round_corners_keys()
+    snapshot = rounded._load_round_corners_snapshot()
+    assert snapshot["Size"] == legacy["keys"]["Size"]
+    assert snapshot["OutlineThickness"] == {"present": True, "value": "3"}

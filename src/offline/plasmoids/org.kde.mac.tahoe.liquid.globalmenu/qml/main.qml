@@ -198,7 +198,7 @@ PlasmoidItem {
             readonly property int buttonIndex: -2
             visible: appMenuModel.activeAppName !== ""
             text: appMenuModel.activeAppName
-            font.weight: Font.Bold
+            font.weight: Font.ExtraBold
             Layout.fillHeight: !root.vertical
 
             down: Plasmoid.currentIndex === -2

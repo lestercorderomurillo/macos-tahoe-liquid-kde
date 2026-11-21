@@ -9,7 +9,8 @@ Item {
     property string label
     property bool selected: false
     signal clicked()
-    implicitWidth: 28
+    property real iconSize: 16
+    implicitWidth: 30
     implicitHeight: implicitWidth
     Layout.minimumWidth: implicitWidth
     Layout.fillHeight: true
@@ -25,7 +26,8 @@ Item {
     }
     Kirigami.Icon {
         anchors.centerIn: parent
-        width: Math.min(parent.width, parent.height, Style.panelIcon)
+        width: Math.min(parent.width, parent.height, button.iconSize)
+        roundToIconSize: false
         height: width
         source: Style.symbol(button.symbol)
         isMask: true
