@@ -1181,10 +1181,10 @@ class InstallerWindow(OpaqueSurface):
         segments.setContentsMargins(0, 0, 0, 0)
         segments.setSpacing(0)
         group = QButtonGroup(visibility)
-        for value, label, platform in [("autohide", "Auto-hide", "macOS"),
-                                       ("none", "Show outside full screen", "macOS"),
-                                       ("dodgewindows", "Hide on overlap", "KDE Plasma")]:
-            segment = QPushButton(f"{self.t(label)}\n({platform})")
+        for value, label in [("autohide", "Auto-hide"),
+                                       ("none", "Show outside full screen"),
+                                       ("dodgewindows", "Hide on overlap")]:
+            segment = QPushButton(self.t(label))
             segment.setObjectName(f"dock-{value}")
             segment.setCheckable(True)
             group.addButton(segment)

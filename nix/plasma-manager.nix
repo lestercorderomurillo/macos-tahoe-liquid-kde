@@ -40,7 +40,7 @@
           height = 64;
           floating = true;
           opacity = "translucent";
-          hiding = "none";
+          hiding = "autohide";
           lengthMode = "fit";
           alignment = "center";
           widgets = [

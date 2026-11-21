@@ -64,7 +64,7 @@ def dock_visibility() -> str:
             applets = (config / "plasma-org.kde.plasma.desktop-appletsrc").read_text()
             panels = (config / "plasmashellrc").read_text()
         except OSError:
-            return "none"
+            return "autohide"
         for section, body in re.findall(r"^\[Containments\]\[(\d+)\]\[Applets\]\[\d+\]\n([^\[]*)", applets, re.M):
             if "plugin=org.kde.mac.tahoe.liquid.icontasks" in body.splitlines():
                 group = re.search(r"^\[PlasmaViews\]\[Panel " + section + r"\]\n([^\[]*)", panels, re.M)
@@ -72,8 +72,9 @@ def dock_visibility() -> str:
                     for line in group[1].splitlines():
                         if line.startswith("panelVisibility="):
                             return {"1": "autohide", "2": "dodgewindows"}.get(line[16:], "none")
-        return "none"
-    return value if value in ENUMS["dock_visibility"] else "none"
+                return "none"  # Plasma omits its normal visibility setting on some existing panels.
+        return "autohide"
+    return value if value in ENUMS["dock_visibility"] else "autohide"
 
 
 def defaults() -> dict:
