@@ -1159,7 +1159,7 @@ class InstallerWindow(OpaqueSurface):
         visibility = GlassComboBox()
         visibility.setObjectName("dock-visibility")
         for value, label in [("none", "Always visible"), ("autohide", "Auto-hide"),
-                             ("dodgewindows", "Hide when a window overlaps")]:
+                             ("dodgewindows", "Hide when a window overlaps (KDE)")]:
             visibility.addItem(self.t(label), value)
         visibility.setCurrentIndex(visibility.findData(self.choices["dock_visibility"]))
         visibility.currentIndexChanged.connect(lambda: self.select("dock_visibility", visibility.currentData()))
