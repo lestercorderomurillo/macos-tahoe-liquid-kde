@@ -1,46 +1,31 @@
 {
-  "version": "0.76.6",
+  "version": "0.76.7",
   "gallery_commit": "f09780b200b79302e7c23ef9f6f74d94748bbea3",
-  "scope": "Bluetooth menu bar applet and status icon order.",
-  "approval": "Maintainer approved the final Tahoe and Golden Gate menu bar previews in chat.",
+  "scope": "Panel status icons follow the Plasma foreground color.",
+  "approval": "Maintainer approved the corrected dark previews for both editions.",
   "checks": [
     {
-      "command": "pytest -q tests/test_dock_defaults.py tests/test_localization.py tests/test_component_cache.py tests/test_plasmoids_step.py",
-      "result": "passed",
-      "output": "75 passed; 43 layout tests also passed after the migration adjustment."
-    },
-    {
-      "command": "KDE neon disposable Plasma session: open the panel applet and capture both appearances; verify panel widget positions.",
-      "result": "passed",
-      "edition": "tahoe"
-    },
-    {
-      "command": "Click device rows and power switch with BlueZ D-Bus fixture. Check Connect, Disconnect and Adapter1.Powered in the Tahoe VM; run the migration twice and check user removal on Golden Gate.",
+      "command": "Open the Bluetooth applet in the installed Plasma panel on KDE neon. Switch appearance and capture the light and dark menu with edition defaults.",
+      "edition": "tahoe",
+      "source_commit": "e89ae1fac2937024060c7a535b6d99982bb575e1",
       "result": "passed"
     }
   ],
   "captures": [
     {
-      "path": "src/screenshots/previews/readme-tahoe-light-bluetooth-58ccf877c692.webp",
-      "sha256": "58ccf877c6924d4a2688cc1700b7e9e2930467ef8807adf3e926b129e6966985",
-      "source_commit": "7369e9db488a338e7dabdce9eed8e38979d1f1ac",
-      "edition": "tahoe",
-      "reviewed": true
-    },
-    {
-      "path": "src/screenshots/previews/readme-tahoe-dark-bluetooth-7436dda76c53.webp",
-      "sha256": "7436dda76c533b21abd435838c1915d317146059747b553cfdd38851812701e8",
-      "source_commit": "7369e9db488a338e7dabdce9eed8e38979d1f1ac",
+      "path": "src/screenshots/previews/readme-tahoe-dark-bluetooth-ddab9443c80d.webp",
+      "sha256": "ddab9443c80d6bd917c4893d5ca28885722332209670a4629b4f444790539c0b",
+      "source_commit": "e89ae1fac2937024060c7a535b6d99982bb575e1",
       "edition": "tahoe",
       "reviewed": true
     }
   ],
   "coverage_limits": [
-    "Paired devices and battery reports are simulated through BlueZ. No physical Bluetooth peripheral was exercised."
+    "Visual checks used the default edition wallpapers and simulated Bluetooth devices in KDE neon Wayland."
   ],
-  "source_sha256": "2cf8d77e535edf0e398e9bf8f4dd4c814fb373ee1e21d810d4c052002b98cfe5",
+  "source_sha256": "3bc5d6aa45bc02638cfa4203d8be041141f09a08ada7cbad84329badcd8ad29d",
   "reviewed_preview_sha256": {
-    "light.png": "9e8ec1d7040d58a0f1bf3d2e48e5092c7bc2f1f3e20b73a18b6e4ab457b6d955",
-    "dark.png": "36c324c0822b5f9ad6149f1d585529614838d7b899c27d1cc461c88c2c1fa83a"
+    "dark.png": "14d61aa267ce9869058a378ea32cbd6054bd24c3b4a494e27d3be0173b6ea073",
+    "light.png": "e6e9442e2371ab528babc57dd942f867338a79137eb33c816f32a6409ad0d3c9"
   }
 }
