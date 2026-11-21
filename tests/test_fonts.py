@@ -80,3 +80,33 @@ def test_font_bundle_rejects_invalid_members(name):
                 'files': {name: {'size': 4, 'sha256': 'corrupt'}}}
     with pytest.raises(ValueError):
         unpacked_fonts(data, manifest)
+
+
+def test_bundled_sf_pro_selects_real_bold_and_preserves_adjacent_weights(tmp_path, monkeypatch):
+    import os
+    import subprocess
+    import sys
+
+    config = tmp_path / "config"
+    data = tmp_path / "data"
+    installed = data / "fonts"
+    monkeypatch.setenv("XDG_CONFIG_HOME", str(config))
+    monkeypatch.setenv("XDG_DATA_HOME", str(data))
+    monkeypatch.setenv("XDG_STATE_HOME", str(tmp_path / "state"))
+    monkeypatch.setenv("XDG_CACHE_HOME", str(tmp_path / "cache"))
+    monkeypatch.setattr(fonts, "DEST_DIR", installed)
+    fonts.install()
+    check = """
+from PyQt6.QtGui import QFont, QFontInfo, QGuiApplication
+app = QGuiApplication([])
+for family in ("SF Pro Text", "SF Pro Display", "SF Pro Rounded"):
+    for weight, style in ((600, "Semibold"), (700, "Bold"), (800, "Heavy")):
+        actual = QFontInfo(QFont(family, 14, weight)).styleName()
+        assert actual == style, (family, weight, actual)
+    if family != "SF Pro Rounded":
+        assert QFontInfo(QFont(family, 14, 700, True)).styleName() == "Bold Italic"
+"""
+    subprocess.run([sys.executable, "-c", check], check=True,
+                   env=dict(os.environ, QT_QPA_PLATFORM="offscreen"))
+    fonts.uninstall()
+    assert not (fonts._rule_dir() / fonts.RULE_NAME).exists()

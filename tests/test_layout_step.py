@@ -13,6 +13,12 @@ import pytest
 import steps.layout as layout
 
 
+@pytest.fixture(autouse=True)
+def isolate_layout_paths(monkeypatch, tmp_path):
+    monkeypatch.setattr(layout, "DATA_HOME", tmp_path / "share")
+    monkeypatch.setenv("XDG_STATE_HOME", str(tmp_path / "state"))
+
+
 _APPLETSRC = """\
 [Containments][19298][Applets][19302][General]
 launchers=preferred://filemanager,applications:steam.desktop

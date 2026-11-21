@@ -521,6 +521,38 @@ plain = fake('Item { width: 32; height: 32; PanelCapsule { objectName: "probePla
 assert child(plain, 'probePlainCapsule').width() == 32
 
 
+# Changing a monochrome tray icon to a coloured, padded icon must undo
+# the mask and measure its new visible bounds without changing the hit area.
+from PyQt6.QtGui import QImage
+for name, colour, inset in (("full", "#555555", 0), ("padded", "#bf1428", 3)):
+    image = QImage(22, 22, QImage.Format.Format_ARGB32)
+    image.fill(Qt.GlobalColor.transparent)
+    for x in range(inset, 22-inset):
+        for y in range(inset, 22-inset):
+            image.setPixelColor(x, y, QColor(colour))
+    assert image.save(str(applications / (name + ".png")))
+trayWindow = QQuickWindow()
+trayWindow.setGeometry(0, 0, 32, 32)
+trayItem = fake('''import org.kde.kirigami as Kirigami
+Item {
+    width: 32; height: 32
+    Kirigami.Icon { id: icon; objectName: "sampleGlyph"; width: 22; height: 22 }
+    TrayArtwork { glyph: icon }
+}''')
+trayItem.setParentItem(trayWindow.contentItem())
+trayWindow.show()
+glyph = child(trayItem, "sampleGlyph")
+for name, scale, mask in (("full", 16/22, True), ("padded", 1, False)):
+    glyph.setProperty("source", QUrl.fromLocalFile(str(applications / (name + ".png"))))
+    for attempt in range(60):
+        QTest.qWait(50)
+        if abs(glyph.scale()-scale) < .03 and glyph.property("isMask") == mask:
+            break
+    assert abs(glyph.scale()-scale) < .03, (name, glyph.scale(), errors)
+    assert glyph.property("isMask") == mask
+trayWindow.close()
+
+
 # The capsule is absent at rest and appears for hover, drag or keyboard focus.
 window = QQuickWindow(); window.setGeometry(0,0,260,100)
 glass = component('GlassSlider.qml', {'width':200, 'height':22, 'value':0.5})
