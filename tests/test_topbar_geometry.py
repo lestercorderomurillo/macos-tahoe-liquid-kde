@@ -16,7 +16,10 @@ engine = QQmlEngine()
 component = QQmlComponent(engine, QUrl.fromLocalFile(sys.argv[1]))
 button = component.create()
 assert button is not None, component.errors()
+assert button.property('font').weight() == QFont.Weight.Medium
+button.setProperty('horizontalBar', False)
 assert button.property('font').weight() == QFont.Weight.Normal
+button.setProperty('horizontalBar', True)
 background = QQmlProperty(button, 'background').read()
 assert not background.isVisible()
 assert round(background.property('color').alphaF(), 2) == 0.18

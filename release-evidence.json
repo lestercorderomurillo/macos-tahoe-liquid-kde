@@ -1,5 +1,5 @@
 {
-  "version": "0.77.0",
+  "version": "0.77.1",
   "gallery_commit": "f09780b200b79302e7c23ef9f6f74d94748bbea3",
   "implementation_commit": "d12084f4d0437de9f2e2885c3be794f654b6761f",
   "scope": "Window outlines, SF Pro font selection, menu titles, tray icon sizing and the menu bar clock.",
@@ -15,6 +15,10 @@
     },
     {
       "command": "Install and reinstall in a disposable KDE neon Wayland guest. Compare the rendered window corner and menu bar at 150% and 200%, and the clock with the macOS reference.",
+      "result": "passed"
+    },
+    {
+      "command": "python3 -m pytest -q tests/test_topbar_geometry.py (Tahoe menu delegate, horizontal Medium and vertical Normal)",
       "result": "passed"
     }
   ],
@@ -46,5 +50,5 @@
     "The optional separate upstream SDK build was skipped in the unit suite. The guest installer built and loaded Rounded Corners. The secondary outline is disabled by default; the upstream shader is unchanged.",
     "The primary CI SDK passed the controls probe. The workstation SDK emitted a pre-existing notification menu width-binding warning on the baseline and candidate."
   ],
-  "source_sha256": "6fad0ac307dc222f4c2d1b02d6de5283cc361be02ce0417cc88163ea4687efbf"
+  "source_sha256": "aa7dec1a05a26baf1e77a3dc4b072d241b77b79b8d0d46cb891a8e1dc6fbbc1a"
 }
