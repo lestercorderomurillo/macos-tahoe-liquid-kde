@@ -1,27 +1,18 @@
 {
-  "version": "0.76.9",
+  "version": "0.76.10",
   "gallery_commit": "f09780b200b79302e7c23ef9f6f74d94748bbea3",
-  "scope": "Segmented Dock visibility selector. New installations use auto-hide.",
-  "approval": "Maintainer requested publication after green CI.",
+  "scope": "Golden Gate release reporting and prepared cache reuse; paired Tahoe version.",
+  "approval": "Maintainer requested the updater fixes and release.",
   "checks": [
     {
-      "command": "Click each visibility segment in the native Qt installer, check exclusive selection, disable and re-enable the Dock, and re-render the page.",
+      "command": "python -m pytest -q tests/test_auto_update.py tests/test_release_update.py",
       "edition": "tahoe",
-      "source_commit": "2da390b37cdd25ed90b8673ef117fcf7db568e4c",
       "result": "passed"
     }
   ],
-  "captures": [
-    {
-      "path": "docs/evidence/dock-visibility-0769/installer.png",
-      "sha256": "980833760bb2bfe6c1fc2d4d38aa5ae5b140b06c9830dd76ff6aa32a0c904183",
-      "source_commit": "2da390b37cdd25ed90b8673ef117fcf7db568e4c",
-      "edition": "tahoe",
-      "reviewed": true
-    }
-  ],
+  "captures": [],
   "coverage_limits": [
-    "Native UI previews captured offscreen in Spanish."
+    "Offline reuse requires previously prepared sources. Tests did not install a theme into a desktop session."
   ],
-  "source_sha256": "6637afede526e4cb06bcbb6d24d203bff8c754b4de7120012e917cd33f73a510"
+  "source_sha256": "c9262e3ef3a978a9c585c7e04c7d59354957b44fb4353e083eeabbe70db8b5a3"
 }

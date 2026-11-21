@@ -1,6 +1,6 @@
 # Installer testing
 
-**v0.76.9**. Tested the three Dock visibility segments in the native installer. [Evidence](release-evidence.json).
+**v0.76.10**. Verified the updater for the paired release. [Evidence](release-evidence.json).
 
 [Installer photo evidence](src/screenshots/previews/wizard-tahoe-provenance-531f633f4ff6.json).
 
