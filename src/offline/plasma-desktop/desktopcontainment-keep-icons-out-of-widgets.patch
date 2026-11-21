@@ -3,7 +3,7 @@
 @@ -118,6 +118,25 @@
          return height;
      }
- 
+
 +    // The whole rectangle enclosing the desktop widgets, gaps included.
 +    function pointOverApplet(x: real, y: real, from: Item): bool {
 +        if (!appletsLayout) return false;
@@ -28,7 +28,7 @@
          return length >= Application.styleHints.startDragDistance;
 @@ -250,6 +269,14 @@
          }
- 
+
          onDrop: event => {
 +            // Like macOS, files and folders never go under a desktop widget:
 +            // a drop on a widget is refused and the icon goes back.

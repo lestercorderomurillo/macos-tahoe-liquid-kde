@@ -851,6 +851,7 @@ class InstallerWindow(OpaqueSurface):
             button = self.content.findChild(QPushButton, "edit-dock-apps")
             if button:
                 button.setEnabled(value)
+            self.content.findChild(QComboBox, "dock-visibility").setEnabled(value)
         elif self.page == "files" and key == "files":
             self.bookmarks.setVisible(value == "nautilus")
         elif self.page == "oled" and key == "oled_care":

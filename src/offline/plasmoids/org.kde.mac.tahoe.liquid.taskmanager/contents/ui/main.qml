@@ -24,16 +24,9 @@ import org.kde.mac.tahoe.launcher as NativeLauncher
 import org.kde.plasma.workspace.dbus as DBus
 import "LayoutMetrics.js" as LayoutMetrics
 import "TaskTools.js" as TaskTools
-import "DockSync.js" as DockSync
 
 PlasmoidItem {
     id: tasks
-    // The Dock flavour of this task manager shares its pins across screens.
-    readonly property bool isDock: Plasmoid.pluginName === "org.kde.mac.tahoe.liquid.icontasks"
-    function adoptLaunchers(launchers) {
-        if (String(launchers) !== String(Plasmoid.configuration.launchers))
-            Plasmoid.configuration.launchers = launchers;
-    }
     NativeLauncher.GlassSettings { component: "dock"; window: tasks.Window.window }
 
     // For making a bottom to top layout since qml flow can't do that.
@@ -214,10 +207,7 @@ PlasmoidItem {
             ? LayoutMetrics.optimumCapacity(tasks.width, tasks.height) + 1 : -1)
 
         onLauncherListChanged: {
-            if (String(launcherList) !== String(Plasmoid.configuration.launchers))
-                Plasmoid.configuration.launchers = launcherList;
-            // A pin changed on this Dock: apply it to the Docks on the other screens.
-            if (tasks.isDock) DockSync.publish(tasks, launcherList);
+            Plasmoid.configuration.launchers = launcherList;
         }
 
         onGroupingAppIdBlacklistChanged: {
@@ -363,7 +353,6 @@ PlasmoidItem {
             target: Plasmoid.configuration
 
             function onLaunchersChanged(): void {
-                if (tasks.isDock) DockSync.publish(tasks, Plasmoid.configuration.launchers);
                 tasksModel.launcherList = Plasmoid.configuration.launchers
             }
             function onGroupingAppIdBlacklistChanged(): void {
@@ -601,11 +590,9 @@ PlasmoidItem {
     Component.onCompleted: {
         TaskTools.taskManagerInstanceCount += 1;
         requestLayout.connect(iconGeometryTimer.restart);
-        if (isDock) DockSync.register(tasks);
     }
 
     Component.onDestruction: {
         TaskTools.taskManagerInstanceCount -= 1;
-        DockSync.unregister(tasks);
     }
 }
