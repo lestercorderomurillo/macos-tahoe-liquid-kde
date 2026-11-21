@@ -1,18 +1,50 @@
 {
-  "version": "0.76.10",
+  "version": "0.77.0",
   "gallery_commit": "f09780b200b79302e7c23ef9f6f74d94748bbea3",
-  "scope": "Golden Gate release reporting and prepared cache reuse; paired Tahoe version.",
-  "approval": "Maintainer requested the updater fixes and release.",
+  "implementation_commit": "d12084f4d0437de9f2e2885c3be794f654b6761f",
+  "scope": "Window outlines, SF Pro font selection, menu titles, tray icon sizing and the menu bar clock.",
+  "approval": "Maintainer approved the final clock preview and paired release.",
   "checks": [
     {
-      "command": "python -m pytest -q tests/test_auto_update.py tests/test_release_update.py",
-      "edition": "tahoe",
+      "command": "Run tests/test_desktop_controls.py with the primary CI SDK (tray artwork, mask changes and clock pointer entry/exit).",
+      "result": "passed"
+    },
+    {
+      "command": "Run the selected font, Rounded Corners, layout and clock migration regressions.",
+      "result": "passed"
+    },
+    {
+      "command": "Install and reinstall in a disposable KDE neon Wayland guest. Compare the rendered window corner and menu bar at 150% and 200%, and the clock with the macOS reference.",
       "result": "passed"
     }
   ],
-  "captures": [],
-  "coverage_limits": [
-    "Offline reuse requires previously prepared sources. Tests did not install a theme into a desktop session."
+  "captures": [
+    {
+      "path": "src/screenshots/previews/window-corner-150-tahoe-999f1311b9a1.png",
+      "sha256": "999f1311b9a1eb2afb3af7f8f9dc6a61b40e5c860105f075c277df26968f9e72",
+      "source_commit": "ce711e939aa4fe1308d90a4f2aa8420b716965ee",
+      "reviewed": true,
+      "edition": "tahoe"
+    },
+    {
+      "path": "src/screenshots/previews/menu-clock-tahoe-rest-2-1ac7b9e22fe3.png",
+      "sha256": "1ac7b9e22fe3129d1e42641a4a2a0beb400139b2cd7218fce52f5acac1464506",
+      "source_commit": "96bc1769e94ab5fe7d25dc35a02c4234ab6b2fc8",
+      "reviewed": true,
+      "edition": "tahoe"
+    },
+    {
+      "path": "src/screenshots/previews/menu-clock-tahoe-light-hover-2-d80aaa12af1d.png",
+      "sha256": "d80aaa12af1dd03094b8d2120c01cb3a4db916d1a80c60e51972e29a8473c5ef",
+      "source_commit": "96bc1769e94ab5fe7d25dc35a02c4234ab6b2fc8",
+      "reviewed": true,
+      "edition": "tahoe"
+    }
   ],
-  "source_sha256": "c9262e3ef3a978a9c585c7e04c7d59354957b44fb4353e083eeabbe70db8b5a3"
+  "coverage_limits": [
+    "KDE neon Wayland, Plasma/KWin 6.8.1. The clock text measured 234 by 20 physical pixels at 200% in both editions and the macOS reference. Font rasterization differs.",
+    "The optional separate upstream SDK build was skipped in the unit suite. The guest installer built and loaded Rounded Corners. The secondary outline is disabled by default; the upstream shader is unchanged.",
+    "The primary CI SDK passed the controls probe. The workstation SDK emitted a pre-existing notification menu width-binding warning on the baseline and candidate."
+  ],
+  "source_sha256": "6fad0ac307dc222f4c2d1b02d6de5283cc361be02ce0417cc88163ea4687efbf"
 }
