@@ -1,6 +1,6 @@
 # Installer testing
 
-**v0.76.5**. Verified adaptive text on light and dark glass over the same backdrop, and checked contrast samples against rendered gradient pixels. [Evidence and coverage](release-evidence.json).
+**v0.76.6**. Verified the Bluetooth menu in light and dark mode, adapter power, paired-device actions and menu bar order on KDE neon. [Evidence and coverage](release-evidence.json).
 
 [Installer photo evidence](src/screenshots/previews/wizard-tahoe-provenance-531f633f4ff6.json).
 
