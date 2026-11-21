@@ -24,9 +24,10 @@ PlasmoidItem {
 
     readonly property bool vertical: Plasmoid.formFactor === PlasmaCore.Types.Vertical
     readonly property bool view: Plasmoid.configuration.compactView
-    readonly property string cfgIcon: Plasmoid.configuration.menuIcon || "start-here-kde-symbolic"
+    readonly property string cfgIcon: Plasmoid.configuration.menuIcon || "start-here-symbolic"
 
-    readonly property real lightCapsuleOpacityBoost: material.hasElement("hint-clear-surface") ? 0 : 0.10
+    readonly property bool goldenGate: material.hasElement("hint-clear-surface")
+    readonly property real lightCapsuleOpacityBoost: goldenGate ? 0 : 0.10
 
     KSvg.Svg {
         id: material
@@ -155,6 +156,8 @@ PlasmoidItem {
 
         MenuDelegate {
             id: systemMenuButton
+            horizontalBar: !root.vertical
+            goldenGate: root.goldenGate
             lightCapsuleOpacityBoost: root.lightCapsuleOpacityBoost
             Accessible.name: i18n("System menu")
             readonly property int buttonIndex: -3
@@ -164,23 +167,33 @@ PlasmoidItem {
 
             topPadding: Kirigami.Units.smallSpacing
             bottomPadding: Kirigami.Units.smallSpacing
-            leftPadding: 3.5 * Kirigami.Units.smallSpacing
-            rightPadding: 3.5 * Kirigami.Units.smallSpacing
+            Layout.leftMargin: root.vertical ? 0 : 6.5
+            Layout.rightMargin: root.vertical ? 0 : 1
+            leftPadding: root.vertical ? 3.5 * Kirigami.Units.smallSpacing : 7.1
+            rightPadding: root.vertical ? 3.5 * Kirigami.Units.smallSpacing : 7.3
 
             down: Plasmoid.currentIndex === -3
             hoverOpensMenu: Plasmoid.configuration.hoverOpensMenu
             onActivated: Plasmoid.triggerSystemMenu(this)
 
-            contentItem: Kirigami.Icon {
-                source: root.cfgIcon
-                implicitWidth: Kirigami.Units.iconSizes.small
-                implicitHeight: Kirigami.Units.iconSizes.small
-                color: Kirigami.Theme.textColor
+            contentItem: Item {
+                implicitWidth: root.vertical ? Kirigami.Units.iconSizes.small : 18
+                implicitHeight: implicitWidth
+                Kirigami.Icon {
+                    anchors.centerIn: parent
+                    width: parent.implicitWidth
+                    height: width
+                    roundToIconSize: root.vertical
+                    source: root.cfgIcon
+                    color: Kirigami.Theme.textColor
+                }
             }
         }
 
         MenuDelegate {
             id: appNameButton
+            horizontalBar: !root.vertical
+            goldenGate: root.goldenGate
             lightCapsuleOpacityBoost: root.lightCapsuleOpacityBoost
             readonly property int buttonIndex: -2
             visible: appMenuModel.activeAppName !== ""
@@ -204,6 +217,8 @@ PlasmoidItem {
                 required property PlasmaCore.Action activeActions
                 readonly property int buttonIndex: index
 
+                horizontalBar: !root.vertical
+                goldenGate: root.goldenGate
                 lightCapsuleOpacityBoost: root.lightCapsuleOpacityBoost
                 Layout.fillWidth: root.vertical
                 Layout.fillHeight: !root.vertical

@@ -17,7 +17,7 @@
       panels = [
         {
           location = "top";
-          height = 32;
+          height = 30;
           floating = false;
           opacity = "translucent";
           widgets = [
@@ -30,6 +30,8 @@
             "org.kde.mac-tahoe-liquid-kde.controlcenter"
             "org.kde.mac-tahoe-liquid-kde.notifications"
             "org.kde.plasma.digitalclock"
+            { name = "org.kde.plasma.panelspacer";
+              config.General = { expanding = false; length = 10; }; }
           ];
         }
         {

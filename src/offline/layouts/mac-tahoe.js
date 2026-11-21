@@ -48,7 +48,7 @@ for (var screen = 0; screen < screenCount; screen++) {
     bar.lengthMode = "fill";
     bar.floating = false;
     bar.hiding = "none";
-    bar.height = 32;
+    bar.height = 30;
 
     // Panel Colorizer hides the continuous native panel background. Do not add
     // panel/widgets color layers here: both render at once with applets-only
@@ -106,6 +106,11 @@ for (var screen = 0; screen < screenCount; screen++) {
     clock.writeConfig("dateDisplayFormat", "BesideTime");
     clock.writeConfig("dateFormat", "custom");
     clock.writeConfig("customDateFormat", "ddd d ' | '");
+
+    var clockGap = bar.addWidget("org.kde.plasma.panelspacer");
+    clockGap.currentConfigGroup = ["General"];
+    clockGap.writeConfig("expanding", "false");
+    clockGap.writeConfig("length", 10);
 
     // ── bottom dock ─────────────────────────────────
     // floating, centered, large icons like macOS
