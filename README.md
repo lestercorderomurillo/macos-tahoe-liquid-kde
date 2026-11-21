@@ -223,7 +223,7 @@ Open the panel clock to see the month on glass. Scroll or use the arrow keys to 
 
 ### Tahoe Bluetooth (Alpha)
 
-The menu bar groups Bluetooth, Wi-Fi and Battery together, followed by Control Center and the clock. To restore the Bluetooth icon after removing it, open **Edit Mode → Add Widgets** and drag **Tahoe Bluetooth** to the left of Wi-Fi. Open it to toggle Bluetooth, connect or disconnect a paired device, or see the battery level a connected device reports. Choose **Bluetooth Settings…** to pair a new device.
+Connect paired devices and check their battery level from the menu bar.
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-bluetooth-58ccf877c692.webp" alt="Light Bluetooth menu with Studio Headphones connected at 82% and Wireless Keyboard disconnected" width="48%">

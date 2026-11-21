@@ -28,6 +28,7 @@ Item {
         width: Math.min(parent.width, parent.height, Style.panelIcon)
         height: width
         source: Style.symbol(button.symbol)
+        isMask: true
         color: Kirigami.Theme.textColor
     }
     MouseArea {
