@@ -34,7 +34,7 @@ PlasmoidItem {
     Layout.fillWidth: dockCell.active
     Layout.fillHeight: dockCell.active
     // Room on the left for the macOS separator, with space on both sides of it.
-    readonly property int separatorGap: Plasmoid.formFactor === PlasmaCore.Types.Horizontal && dockCell.active ? Math.round(dockCell.size * 0.3) : 0
+    readonly property int separatorGap: Plasmoid.formFactor === PlasmaCore.Types.Horizontal && dockCell.active ? Math.round(dockCell.size * 0.5) : 0
     Layout.minimumWidth: Plasmoid.formFactor === PlasmaCore.Types.Horizontal ? Math.floor(dockCell.size) + separatorGap : 0
     Layout.preferredWidth: Plasmoid.formFactor === PlasmaCore.Types.Horizontal ? dockCell.size + separatorGap : -1
     Layout.maximumWidth: Plasmoid.formFactor === PlasmaCore.Types.Horizontal ? dockCell.preferredSize + separatorGap : Infinity
@@ -164,7 +164,7 @@ PlasmoidItem {
             width: 1
             height: Math.round(parent.height * 0.62)
             anchors.verticalCenter: parent.verticalCenter
-            x: Math.round(root.separatorGap / 2) - Math.round(dockCell.size * 0.05)
+            x: Math.round(root.separatorGap / 2)
             color: Kirigami.Theme.textColor
             opacity: 0.32
         }
