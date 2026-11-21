@@ -55,6 +55,8 @@ Item {
             parent: modelData
             z: -1
             visible: hover.hovered && !modelData?.inHiddenLayout
+            // The clock is exactly as wide as its text; give the capsule room around it.
+            horizontalPadding: modelData === style.clock ? 6 : 0
             HoverHandler { id: hover; parent: capsule.modelData; blocking: false }
 
             readonly property var notifier: modelData?.model

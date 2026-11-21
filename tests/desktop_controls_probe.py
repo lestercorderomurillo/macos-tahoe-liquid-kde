@@ -494,6 +494,33 @@ assert len(activations)==2
 window.close()
 
 
+# The menu-bar clock is exactly as wide as its text, so its hover capsule gets
+# room on both sides; other capsules stay the size of their item.
+panel = fake("""import QtQuick.Layouts
+Item {
+    width: 400; height: 32
+    GridLayout {
+        Item {
+            property Item applet: Item {
+                objectName: "probeClock"; width: 120; height: 32
+                property var plasmoid: ({ pluginName: "org.kde.plasma.digitalclock" })
+                property bool expanded: false
+            }
+        }
+        Item { Item { id: panelItem } }
+    }
+    StatusTrayStyle { panelItem: panelItem }
+}""")
+QTest.qWait(30)
+clock = panel.findChild(QQuickItem, 'probeClock') or child(panel, 'probeClock')
+capsules = [item for item in clock.childItems() if item.z() == -1]  # StatusTrayStyle's hover capsule
+assert len(capsules) == 1, capsules
+assert capsules[0].width() > clock.width(), (capsules[0].width(), clock.width())
+assert capsules[0].x() == (clock.width() - capsules[0].width()) / 2  # centred on the text
+plain = fake('Item { width: 32; height: 32; PanelCapsule { objectName: "probePlainCapsule" } }')
+assert child(plain, 'probePlainCapsule').width() == 32
+
+
 # The capsule is absent at rest and appears for hover, drag or keyboard focus.
 window = QQuickWindow(); window.setGeometry(0,0,260,100)
 glass = component('GlassSlider.qml', {'width':200, 'height':22, 'value':0.5})
