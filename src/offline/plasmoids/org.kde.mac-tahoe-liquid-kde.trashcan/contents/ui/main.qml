@@ -33,9 +33,11 @@ PlasmoidItem {
     Plasmoid.constraintHints: Plasmoid.CanFillArea
     Layout.fillWidth: dockCell.active
     Layout.fillHeight: dockCell.active
-    Layout.minimumWidth: Plasmoid.formFactor === PlasmaCore.Types.Horizontal ? Math.floor(dockCell.size) : 0
-    Layout.preferredWidth: Plasmoid.formFactor === PlasmaCore.Types.Horizontal ? dockCell.size : -1
-    Layout.maximumWidth: Plasmoid.formFactor === PlasmaCore.Types.Horizontal ? dockCell.preferredSize : Infinity
+    // Room on the left for the macOS separator, with space on both sides of it.
+    readonly property int separatorGap: Plasmoid.formFactor === PlasmaCore.Types.Horizontal && dockCell.active ? Math.round(dockCell.size * 0.3) : 0
+    Layout.minimumWidth: Plasmoid.formFactor === PlasmaCore.Types.Horizontal ? Math.floor(dockCell.size) + separatorGap : 0
+    Layout.preferredWidth: Plasmoid.formFactor === PlasmaCore.Types.Horizontal ? dockCell.size + separatorGap : -1
+    Layout.maximumWidth: Plasmoid.formFactor === PlasmaCore.Types.Horizontal ? dockCell.preferredSize + separatorGap : Infinity
     Layout.minimumHeight: Plasmoid.formFactor === PlasmaCore.Types.Vertical ? Math.floor(dockCell.size) : 0
     Layout.preferredHeight: Plasmoid.formFactor === PlasmaCore.Types.Vertical ? dockCell.size : -1
     Layout.maximumHeight: Plasmoid.formFactor === PlasmaCore.Types.Vertical ? dockCell.preferredSize : Infinity
@@ -162,7 +164,7 @@ PlasmoidItem {
             width: 1
             height: Math.round(parent.height * 0.62)
             anchors.verticalCenter: parent.verticalCenter
-            x: -Math.round(dockCell.size * 0.05)
+            x: Math.round(root.separatorGap / 2) - Math.round(dockCell.size * 0.05)
             color: Kirigami.Theme.textColor
             opacity: 0.32
         }
@@ -226,6 +228,7 @@ PlasmoidItem {
             source: Plasmoid.icon
             anchors {
                 left: parent.left
+                leftMargin: root.separatorGap
                 right: parent.right
                 top: parent.top
                 bottom: root.inPanel ? parent.bottom : text.top
