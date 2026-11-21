@@ -35,7 +35,9 @@ function refresh() {
     }
     for (const d of effects.stackingOrder) {
         if (!isDock(d)) continue;
-        const want = busy.has(screenKey(d));
+        // Only the Dock that is actually shown: animating an auto-hidden Dock
+        // would keep it painted on screen.
+        const want = d.visible && busy.has(screenKey(d));
         if (want && !shifted.has(d)) {
             d.setData(Effect.WindowForceBlurRole, true);
             shifted.set(d, set({
@@ -59,6 +61,8 @@ function watch(w) {
     if (w.windowFrameGeometryChanged) w.windowFrameGeometryChanged.connect(refresh);
     if (w.windowMaximizedStateChanged) w.windowMaximizedStateChanged.connect(refresh);
     if (w.minimizedChanged) w.minimizedChanged.connect(refresh);
+    if (w.windowHiddenChanged) w.windowHiddenChanged.connect(refresh);
+    if (w.visibleChanged) w.visibleChanged.connect(refresh);
 }
 
 effects.windowAdded.connect(function (w) { watch(w); refresh(); });
