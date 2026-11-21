@@ -1,27 +1,27 @@
 {
   "version": "0.76.9",
   "gallery_commit": "f09780b200b79302e7c23ef9f6f74d94748bbea3",
-  "scope": "Segmented Dock visibility selector with platform labels.",
+  "scope": "Segmented Dock visibility selector. New installations use auto-hide.",
   "approval": "Maintainer requested publication after green CI.",
   "checks": [
     {
       "command": "Click each visibility segment in the native Qt installer, check exclusive selection, disable and re-enable the Dock, and re-render the page.",
       "edition": "tahoe",
-      "source_commit": "42e554c41743014d9265ec9ab60dea23f92dbdbd",
+      "source_commit": "2da390b37cdd25ed90b8673ef117fcf7db568e4c",
       "result": "passed"
     }
   ],
   "captures": [
     {
       "path": "docs/evidence/dock-visibility-0769/installer.png",
-      "sha256": "ce820229bbed41af94fd5e4b16d5f25cdab8e625f27ab3e7038eee1c28660057",
-      "source_commit": "42e554c41743014d9265ec9ab60dea23f92dbdbd",
+      "sha256": "980833760bb2bfe6c1fc2d4d38aa5ae5b140b06c9830dd76ff6aa32a0c904183",
+      "source_commit": "2da390b37cdd25ed90b8673ef117fcf7db568e4c",
       "edition": "tahoe",
       "reviewed": true
     }
   ],
   "coverage_limits": [
-    "Installer-only change. Preview captured offscreen in Spanish."
+    "Native UI previews captured offscreen in Spanish."
   ],
-  "source_sha256": "537f53c4086c6966a6b1d4e4b7ed0965d23c2b9f4d6a4709ceca806e9843ff8f"
+  "source_sha256": "6637afede526e4cb06bcbb6d24d203bff8c754b4de7120012e917cd33f73a510"
 }
