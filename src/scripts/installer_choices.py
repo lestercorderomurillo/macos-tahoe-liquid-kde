@@ -15,9 +15,12 @@ COLORS = {
 }
 ENUMS = {
     "appearance": ("auto", "light", "dark"),
+    "dock_visibility": ("autohide", "none", "dodgewindows"),
     "dock_appearance": ("auto", "keep", "macos", "native"),
     "dock_apps_source": ("native", "flatpak"),
     "icons": ("regular", "dark", "clear", "glass", "keep"),
+    # Light/dark variant of the icons, independent of the appearance (macOS).
+    "icon_appearance": ("auto", "light", "dark"),
     "color": tuple(COLORS),
     "wallpaper": ("tahoe", "golden", "landscape", "sonoma", "prism", "macos", "keep", "custom"),
     "launcher": ("tahoe", "golden", "keep"),
@@ -47,16 +50,28 @@ def use_user_launcher() -> bool:
     return choices["launcher"] == "keep" if choices else launcher_preference().exists()
 
 
+def dock_visibility_preference() -> Path:
+    return launcher_preference().with_name("dock-visibility")
+
+
+def dock_visibility() -> str:
+    try:
+        value = dock_visibility_preference().read_text().strip()
+    except OSError:
+        return "autohide"
+    return value if value in ENUMS["dock_visibility"] else "autohide"
+
+
 def defaults() -> dict:
     edition = "golden" if edition_name() == "MacGoldenGate" else "tahoe"
     return dict(
-        appearance="auto", icons="regular", color="blue", wallpaper=edition,
+        appearance="auto", icons="regular", icon_appearance="auto", color="blue", wallpaper=edition,
         wallpaper_path="", launcher="keep" if launcher_preference().exists() else edition, panel=True, dock=True, reset_layout=True,
         acrylic_glass=True, rounded_corners=True, shadows="medium", fonts=True, firefox=True,
         window_controls="glassy" if edition == "golden" else "flat", button_position="left",
         files="nautilus", nautilus_bookmarks=True, plymouth=True, glass_style="official" if edition == "golden" else "classic",
         oled_care=False, oled_interval=5, oled_max_shift=8,
-        dock_appearance="auto", dock_apps=[], dock_apps_source="native", dock_add_flathub=False,
+        dock_visibility=dock_visibility(), dock_appearance="auto", dock_apps=[], dock_apps_source="native", dock_add_flathub=False,
     )
 
 

@@ -11,7 +11,7 @@ from launcher_defaults import (
 )
 
 from steps._helpers import (
-    DATA_HOME, HOME, have, install_tree, ok, offline, qdbus_call, warn,
+    DATA_HOME, HOME, have, install_tree, kw_write, ok, offline, qdbus_call, remove_tree, warn,
 )
 from utils import qdbus_cmd, run_user
 
@@ -221,6 +221,36 @@ for (const panel of panelList) {
 """
     if not _evaluate_layout_script(script):
         raise RuntimeError("Could not replace the installed launcher")
+
+
+def configure_dock() -> None:
+    from installer_choices import dock_visibility, dock_visibility_preference, selected
+    choices = selected()
+    if not choices.get("dock", True):
+        return
+    mode = choices.get("dock_visibility", dock_visibility())
+    script = """
+    (function () {
+        for (const panel of panels()) {
+            if (panel.location === "bottom" && panel.widgets().some(
+                    widget => widget.type === "org.kde.mac.tahoe.liquid.icontasks")) {
+                panel.hiding = MODE;
+            }
+        }
+    })()
+    """.replace("MODE", json.dumps(mode))
+    if not _evaluate_layout_script(script):
+        warn(tr("Dock preset update failed"))
+        return
+    if choices:
+        preference = dock_visibility_preference()
+        preference.parent.mkdir(parents=True, exist_ok=True)
+        preference.write_text(mode + "\n")
+    script_id = "mttkde-dock-follows-screen"
+    if install_tree(offline("kwin-scripts", script_id), DATA_HOME / "kwin/scripts" / script_id,
+                    "Dock follows screen"):
+        kw_write("--file", "kwinrc", "--group", "Plugins", "--key", script_id + "Enabled", "true")
+        qdbus_call("org.kde.KWin", "/KWin", "org.kde.KWin.reconfigure")
 
 
 def _dock_migration_script() -> str:
@@ -496,6 +526,13 @@ def is_installed() -> bool:
 
 
 def uninstall() -> None:
+    from installer_choices import dock_visibility_preference
+    script_id = "mttkde-dock-follows-screen"
+    if (DATA_HOME / "kwin/scripts" / script_id).exists():
+        kw_write("--file", "kwinrc", "--group", "Plugins", "--key", script_id + "Enabled", "false")
+        qdbus_call("org.kde.KWin", "/KWin", "org.kde.KWin.reconfigure")
+        remove_tree(DATA_HOME / "kwin/scripts" / script_id, "Dock follows screen")
+    dock_visibility_preference().unlink(missing_ok=True)
     has_theme_widgets = _layout_has_any_theme_widget()
     _clear_layout_marker()
     if _reset_plasmashellrc():

@@ -92,7 +92,7 @@ def test_upgrade_adds_defaults_after_user_pins_on_every_screen(monkeypatch):
     pins = ['applications:custom.desktop', 'preferred://browser']
     script = layout._layout_script_with_launchers(layout.LAYOUT_SCRIPT, pins, layout.MAC_TASKS_ID)
     docks = execute(script, APPS)
-    assert len(docks) == 2
+    assert len(docks) == 1
     for widgets in docks:
         assert next(w['pins'] for w in widgets if w['type'] == layout.MAC_TASKS_ID) == pins + ['applications:' + app for app in APPS if app != 'firefox.desktop']
 
@@ -309,3 +309,46 @@ JSON.stringify({themed:themed.config, unrelated:before === JSON.stringify(unrela
     assert tray['extraItems'] == ['org.kde.plasma.networkmanagement']
     assert set(tray['knownItems']) == {'org.kde.plasma.networkmanagement', 'org.kde.plasma.notifications',
                                       'org.kde.plasma.bluetooth', 'org.kde.plasma.brightness', 'org.kde.plasma.volume'}
+
+
+def test_reset_on_reinstall_does_not_repin_apps_the_user_unpinned():
+    # The wizard resets the Dock by default on every reinstall. Apps the
+    # Dock already offered once and the user unpinned must stay unpinned.
+    migration = layout.DOCK_MIGRATION.read_text()
+    installed = ['org.gnome.Loupe.desktop', 'org.gnome.Showtime.desktop']
+    script = existing_dock(['applications:custom.desktop']) + migration
+    script += 'task.writeConfig("launchers", ["applications:custom.desktop"]);'
+    script += 'var mttkdeResetDock = true;' + migration
+    assert execute(script, installed)[0][0]['pins'] == ['applications:custom.desktop']
+
+
+def test_reset_still_offers_a_default_app_installed_since_the_last_install():
+    migration = layout.DOCK_MIGRATION.read_text()
+    script = existing_dock([]) + migration
+    script += 'task.writeConfig("launchers", []); installed.push("org.gnome.Showtime.desktop");'
+    script += 'var mttkdeResetDock = true;' + migration
+    assert execute(script, ['org.gnome.Loupe.desktop'])[0][0]['pins'] == [
+        'applications:org.gnome.Showtime.desktop']
+
+
+def test_explicitly_requested_app_is_pinned_even_if_offered_before():
+    migration = layout.DOCK_MIGRATION.read_text()
+    script = existing_dock([]) + migration
+    script += 'task.writeConfig("launchers", []);'
+    script += 'var mttkdeRequestedDockApps = ["photos"];' + migration
+    assert execute(script, ['org.gnome.Loupe.desktop'])[0][0]['pins'] == [
+        'applications:org.gnome.Loupe.desktop']
+
+
+def test_rebuild_with_reset_keeps_unpinned_apps_off_every_dock(monkeypatch):
+    # Full reinstall path: layout rebuilt, user pins restored, reset migration.
+    monkeypatch.setattr(layout, '_layout_has_any_theme_widget', lambda: True)
+    monkeypatch.setenv('MTTKDE_WIZARD_OPTIONS', json.dumps({'reset_layout': True}))
+    script = existing_dock(['applications:custom.desktop'], revision=3)
+    script += 'task.writeConfig("dockPresetCategories", "photos,video");'
+    script += layout._layout_script_with_launchers(
+        layout.LAYOUT_SCRIPT, ['applications:custom.desktop'], layout.MAC_TASKS_ID)
+    docks = execute(script, ['org.gnome.Loupe.desktop', 'org.gnome.Showtime.desktop'])
+    for dock in docks:
+        assert next(w['pins'] for w in dock if w['type'] == layout.MAC_TASKS_ID) == [
+            'applications:custom.desktop']

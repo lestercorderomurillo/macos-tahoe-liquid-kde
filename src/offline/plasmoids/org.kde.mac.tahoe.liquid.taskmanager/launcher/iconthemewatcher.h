@@ -3,6 +3,7 @@
 
 #include <Plasma/Theme>
 #include <QDBusConnection>
+#include <QIcon>
 #include <QObject>
 #include <QTimer>
 #include <qqmlregistration.h>
@@ -12,6 +13,8 @@ class IconThemeWatcher : public QObject
     Q_OBJECT
     QML_ELEMENT
     Q_PROPERTY(QString plasmaThemeName READ plasmaThemeName NOTIFY changed)
+    // The icon theme carries the chosen icon appearance (…-Light / …-Dark).
+    Q_PROPERTY(QString iconThemeName READ iconThemeName NOTIFY changed)
 public:
     explicit IconThemeWatcher(QObject *parent = nullptr) : QObject(parent)
     {
@@ -20,6 +23,7 @@ public:
             QStringLiteral("org.kde.KIconLoader"), QStringLiteral("iconChanged"), this, SLOT(refresh(int)));
     }
     QString plasmaThemeName() const { return m_theme.themeName(); }
+    QString iconThemeName() const { return QIcon::themeName(); }
 Q_SIGNALS:
     void changed();
 private:

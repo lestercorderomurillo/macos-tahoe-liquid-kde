@@ -30,7 +30,7 @@
                 ps[p].lengthMode = "fit";
                 ps[p].floating = true;
                 ps[p].opacity = "translucent";
-                ps[p].hiding = "autohide";
+                if (typeof mttkdeDockVisibility !== "undefined") ps[p].hiding = mttkdeDockVisibility;
                 ps[p].height = 68;
             }
             if (applyDefaults && (typeof mttkdeDockAppearance === "undefined" || mttkdeDockAppearance === "auto")) {
@@ -63,6 +63,9 @@
                     if (resolved.indexOf(category) === -1) resolved.push(category);
                     continue;
                 }
+                // Offered once already and no longer pinned: the user unpinned it.
+                // Never pin it again, not even on a reset or an update.
+                if (!requested && revision >= 3 && resolved.indexOf(category) !== -1) continue;
                 for (var i = 0; i < candidates.length; i++) {
                     if (applicationExists(candidates[i])) {
                         var launcher = "applications:" + candidates[i];

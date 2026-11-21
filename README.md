@@ -232,7 +232,7 @@ Connect paired devices and check their battery level from the menu bar.
 
 ### Tahoe Wi-Fi (Alpha)
 
-Open the Wi-Fi menu to see available wireless networks.
+Open the Wi-Fi menu to see available wireless networks. Without a Wi-Fi adapter, or with Wi-Fi off, the menu lists your wired connections followed by a single divider and the Wi-Fi settings link.
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-wifi-d55cc1382c4f.webp" alt="Light Wi-Fi menu connected to Harbor Studio, with Garden Guest and Workshop available" width="48%">
@@ -304,7 +304,7 @@ A matching look from startup to shutdown, with built-in unlocking for LUKS2-encr
 - **Glass effects:** adjustable blur, refraction and three-color gradients for light and dark modes.
 - **Compatibility:** Plasma 6.6–6.8, with native effects compiled against the installed Qt and KWin versions.
 - **Launchpad:** two layouts, integrated or detached search, favorites and scrollable app categories.
-- **Dock:** hover zoom, notification badges, auto-hide and preserved pins on reinstall.
+- **Dock** The Dock follows the bottom edge you touch and keeps your pins. In the installer, choose auto-hide (default), always visible, or hide when a window overlaps.
 - **Appearance:** synchronized light/dark styles for the desktop, apps, icons and window decorations; per-monitor wallpapers.
 - **App integration:** global menus, GTK menu fixes, Finder-style Nautilus and Firefox theming with profile backups.
 - **Recovery:** requirement checks, settings backups and uninstall restoration.

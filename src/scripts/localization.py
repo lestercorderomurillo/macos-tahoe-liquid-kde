@@ -29,6 +29,11 @@ LANGUAGE_CODES = tuple(item["code"] for item in LANGUAGES)
 
 
 _ES = {
+    "Icon appearance": "Apariencia de los iconos",
+    "Automatic": "Automático",
+    "Dock follows screen": "El Dock sigue la pantalla",
+    "Dock on several screens": "Dock en varias pantallas",
+    "Dock behaviour could not be enabled in kwinrc": "No se pudo activar el comportamiento del Dock en kwinrc",
     "Notification Center": "Centro de notificaciones",
     "Options": "Opciones",
     "On": "Activado",
@@ -169,6 +174,11 @@ _ES = {
 }
 
 _ZH_CN = {
+    "Icon appearance": "图标外观",
+    "Automatic": "自动",
+    "Dock follows screen": "Dock 跟随屏幕",
+    "Dock on several screens": "多屏幕 Dock",
+    "Dock behaviour could not be enabled in kwinrc": "无法在 kwinrc 中启用 Dock 行为",
     "Notification Center": "通知中心",
     "Options": "选项",
     "On": "开启",
@@ -382,6 +392,10 @@ _ES["Rollback: {command}"] = "Revertir: {command}"
 _ZH_CN["Rollback: {command}"] = "回退：{command}"
 
 _ES.update({'Dock apps': 'Apps del Dock',
+ 'Dock visibility': 'Visibilidad del Dock',
+ 'Auto-hide': 'Ocultar automáticamente',
+ 'Always visible': 'Siempre visible',
+ 'Hide when a window overlaps': 'Ocultar si una ventana se superpone',
  'Dock apps…': 'Apps del Dock…',
  'Installed equivalents are reused. Select only the missing apps you want to install.': 'Se '
                                                                                         'reutilizan '
@@ -443,6 +457,10 @@ _ES.update({'Dock apps': 'Apps del Dock',
  'Music': 'Música',
  'Video': 'Vídeo'})
 _ZH_CN.update({'Dock apps': 'Dock 应用',
+ 'Dock visibility': 'Dock 可见性',
+ 'Auto-hide': '自动隐藏',
+ 'Always visible': '始终显示',
+ 'Hide when a window overlaps': '窗口重叠时隐藏',
  'Dock apps…': 'Dock 应用…',
  'Installed equivalents are reused. Select only the missing apps you want to install.': '将使用已安装的同类应用。仅选择要安装的缺失应用。',
  'Distribution repositories': '发行版软件仓库',

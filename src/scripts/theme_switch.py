@@ -1483,7 +1483,11 @@ def write_kde_theme_config(
         icon = INSTALLER_OPTIONS.get("preserved_icon", icon)
     elif INSTALLER_OPTIONS.get("icons") in ("regular", "dark", "clear", "glass"):
         style = INSTALLER_OPTIONS["icons"].capitalize()
-        icon = f"MacTahoeLiquidKde-Icons-{style}-{'Dark' if mode == 'dark' else 'Light'}"
+        # "auto" follows the appearance; "light"/"dark" keep that variant in
+        # both appearances, like macOS's separate icon appearance setting.
+        variant = INSTALLER_OPTIONS.get("icon_appearance", "auto")
+        dark_icons = mode == "dark" if variant not in ("light", "dark") else variant == "dark"
+        icon = f"MacTahoeLiquidKde-Icons-{style}-{'Dark' if dark_icons else 'Light'}"
     fixed = (
         ("kdeglobals", "KDE", "LookAndFeelPackage", laf),
         *(((("kdeglobals", "KDE", "AutomaticLookAndFeel", "false"),))

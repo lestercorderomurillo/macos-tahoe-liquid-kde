@@ -1101,6 +1101,10 @@
   "Bottom tint strength for both modes. 0 leaves the glass untinted at this stop.": "Intensità della tinta inferiore in entrambe le modalità. Con 0 il vetro rimane incolore in questo punto.",
   "Tahoe (Official)": "Tahoe (ufficiale)",
   "Dock apps": "Dock app",
+  "Dock visibility": "Visibilità del Dock",
+  "Auto-hide": "Nascondi automaticamente",
+  "Always visible": "Sempre visibile",
+  "Hide when a window overlaps": "Nascondi quando una finestra si sovrappone",
   "Dock apps…": "Dock app...",
   "Installed equivalents are reused. Select only the missing apps you want to install.": "Gli equivalenti installati vengono riutilizzati. Selezionare solo le app mancanti che si desidera installare.",
   "Distribution repositories": "Repositori di distribuzione",
@@ -1471,5 +1475,9 @@
   "Couldn't build {component}": "Compilazione non riuscita: {component}",
   "Couldn't complete {component}": "Operazione non completata: {component}",
   "installation": "installazione",
-  "Review the log before retrying. Some changes may already have been applied.": "Controlla il registro prima di riprovare. Alcune modifiche potrebbero essere già state applicate."
+  "Review the log before retrying. Some changes may already have been applied.": "Controlla il registro prima di riprovare. Alcune modifiche potrebbero essere già state applicate.",
+  "Dock behaviour could not be enabled in kwinrc": "Impossibile attivare il comportamento del Dock in kwinrc",
+  "Dock follows screen": "Il Dock segue lo schermo",
+  "Dock on several screens": "Dock su più schermi",
+  "Icon appearance": "Aspetto delle icone"
 }

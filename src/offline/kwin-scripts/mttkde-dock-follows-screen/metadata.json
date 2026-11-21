@@ -1,0 +1,14 @@
+{
+    "KPackageStructure": "KWin/Script",
+    "KPlugin": {
+        "Authors": [{ "Name": "Lester Cordero Murillo" }],
+        "Category": "Windows and Desktops",
+        "Description": "Shows the Dock only on the screen under the pointer, like the macOS Dock on several displays.",
+        "EnabledByDefault": true,
+        "Id": "mttkde-dock-follows-screen",
+        "License": "GPL-3.0-or-later",
+        "Name": "Dock Follows Screen"
+    },
+    "X-Plasma-API": "javascript",
+    "X-Plasma-MainScript": "code/main.js"
+}

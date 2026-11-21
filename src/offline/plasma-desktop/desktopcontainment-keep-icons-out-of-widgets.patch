@@ -1,0 +1,105 @@
+--- a/contents/ui/main.qml
++++ b/contents/ui/main.qml
+@@ -118,6 +118,25 @@
+         return height;
+     }
+ 
++    // The whole rectangle enclosing the desktop widgets, gaps included.
++    function pointOverApplet(x: real, y: real, from: Item): bool {
++        if (!appletsLayout) return false;
++        const p = from.mapToItem(appletsLayout, x, y);
++        let x0 = Infinity, y0 = Infinity, x1 = -Infinity, y1 = -Infinity;
++        for (const child of appletsLayout.children) {
++            if (!child.visible || !child.applet) continue;
++            x0 = Math.min(x0, child.x); y0 = Math.min(y0, child.y);
++            x1 = Math.max(x1, child.x + child.width); y1 = Math.max(y1, child.y + child.height);
++        }
++        return p.x >= x0 && p.x < x1 && p.y >= y0 && p.y < y1;
++    }
++    Binding {
++        target: folderViewLayer.ready ? folderViewLayer.view : null
++        property: "widgetLayer"
++        value: root.appletsLayout
++        when: root.isContainment && folderViewLayer.ready
++    }
++
+     function isDrag(fromX, fromY, toX, toY) {
+         const length = Math.abs(fromX - toX) + Math.abs(fromY - toY);
+         return length >= Application.styleHints.startDragDistance;
+@@ -250,6 +269,14 @@
+         }
+ 
+         onDrop: event => {
++            // Like macOS, files and folders never go under a desktop widget:
++            // a drop on a widget is refused and the icon goes back.
++            if (root.isContainment && root.isFolder && FolderTools.isFileDrag(event)
++                    && root.pointOverApplet(event.x, event.y, this)) {
++                handleDragEnd(folderViewLayer.view);
++                event.accept(Qt.IgnoreAction);
++                return;
++            }
+             if (root.isFolder && FolderTools.isFileDrag(event)) {
+                 handleDragEnd(folderViewLayer.view);
+                 folderViewLayer.view.drop(root, event, mapToItem(folderViewLayer.view, event.x, event.y));
+--- a/contents/ui/FolderView.qml
++++ b/contents/ui/FolderView.qml
+@@ -52,6 +52,59 @@
+     property alias scrollDown: gridView.scrollDown
+     property alias hoveredItem: gridView.hoveredItem
+     property var history: []
++
++    // macOS keeps desktop icons out of the widgets: the whole rectangle that
++    // encloses the desktop widgets is off limits. Icons dropped or created
++    // there are moved to the first free grid cell outside it.
++    property Item widgetLayer: null
++    function widgetZone() {
++        if (!widgetLayer) return null;
++        let zone = null;
++        for (const child of widgetLayer.children) {
++            if (!child.visible || !child.applet || child.width <= 0 || child.height <= 0) continue;
++            const p = widgetLayer.mapToItem(gridView.contentItem, child.x, child.y);
++            const r = Qt.rect(p.x, p.y, child.width, child.height);
++            zone = zone ? Qt.rect(Math.min(zone.x, r.x), Math.min(zone.y, r.y),
++                                  Math.max(zone.x + zone.width, r.x + r.width) - Math.min(zone.x, r.x),
++                                  Math.max(zone.y + zone.height, r.y + r.height) - Math.min(zone.y, r.y)) : r;
++        }
++        return zone;
++    }
++    function cellRect(index) {
++        const per = Math.max(1, positioner.perStripe);
++        const stripe = Math.floor(index / per), pos = index % per;
++        return gridView.flow === GridView.FlowTopToBottom
++            ? Qt.rect(stripe * gridView.cellWidth, pos * gridView.cellHeight, gridView.cellWidth, gridView.cellHeight)
++            : Qt.rect(pos * gridView.cellWidth, stripe * gridView.cellHeight, gridView.cellWidth, gridView.cellHeight);
++    }
++    function overlaps(a, b) {
++        return a.x < b.x + b.width && b.x < a.x + a.width && a.y < b.y + b.height && b.y < a.y + a.height;
++    }
++    function keepIconsOutOfWidgets() {
++        if (!positioner.enabled || dir.dragging || gridView.count === 0) return;
++        const zone = widgetZone();
++        if (!zone) return;
++        const used = new Set();
++        for (let i = 0; i < gridView.count; ++i) if (!positioner.isBlank(i)) used.add(i);
++        const moves = [];
++        let next = 0;
++        for (let i = 0; i < gridView.count; ++i) {
++            if (!used.has(i) || !overlaps(cellRect(i), zone)) continue;
++            while (next < gridView.count + 512 && (used.has(next) || overlaps(cellRect(next), zone))) ++next;
++            if (next >= gridView.count + 512) break;
++            moves.push(i, next);
++            used.delete(i); used.add(next);
++        }
++        if (moves.length) {
++            positioner.move(moves);
++            gridView.forceLayout();
++        }
++    }
++    Timer {
++        interval: 500; repeat: true
++        running: main.widgetLayer !== null && Plasmoid.isContainment
++        onTriggered: main.keepIconsOutOfWidgets()
++    }
+     property var lastPosition: null
+     property bool goingBack: false
+     readonly property bool krunnerAvailable: Folder.KRunnerChecker.krunnerAvailable
