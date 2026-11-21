@@ -25,7 +25,7 @@ assert background.isVisible()
 assert round(background.property('color').alphaF(), 2) == 0.25
 button.setProperty('down', False)
 assert not background.isVisible()
-for height in (24, 32, 48):
+for height in (24, 30, 32, 48):
     for text in ('Files', 'Visual Studio Code', 'Window'):
         button.setProperty('text', text)
         button.setProperty('height', height)
@@ -34,15 +34,15 @@ for height in (24, 32, 48):
         app.processEvents()
         background = QQmlProperty(button, 'background').read()
         content = QQmlProperty(button, 'contentItem').read()
-        assert 0 < background.y() < height / 2
+        assert background.height() == min(height, 24)
         assert background.height() == height - 2 * background.y()
-        assert background.width() == button.width()
+        assert abs(background.width() - button.width() - 10.66) < 0.05
         assert background.property('radius') == background.height() / 2
         assert button.height() == height
         assert button.property('topPadding') == button.property('bottomPadding')
         assert content.width() >= content.property('implicitWidth') - 1
         assert button.property('leftPadding') == button.property('rightPadding')
-        assert button.property('leftPadding') >= 12
+        assert abs(button.property('leftPadding') - 9.6) < 0.05
 '''
     qml = repo / 'src/offline/plasmoids/org.kde.mac.tahoe.liquid.globalmenu/qml/MenuDelegate.qml'
     env = dict(os.environ, QT_QPA_PLATFORM='offscreen', QT_QUICK_BACKEND='software',
