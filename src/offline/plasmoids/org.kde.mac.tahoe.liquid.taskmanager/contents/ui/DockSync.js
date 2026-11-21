@@ -14,7 +14,15 @@ function unregister(dock) {
     if (i >= 0) docks.splice(i, 1);
 }
 
+// Last pin list shared by the Docks; a change from any Dock that differs
+// from it is mirrored to the others.
+var current = null;
+
 function publish(source, launchers) {
+    const key = String(launchers);
+    if (current === null) { current = key; return; } // first Dock sets the baseline
+    if (key === current) return;
+    current = key;
     for (const dock of docks.slice()) {
         if (dock !== source) dock.adoptLaunchers(launchers);
     }

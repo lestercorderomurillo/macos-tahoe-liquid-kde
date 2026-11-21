@@ -156,6 +156,17 @@ PlasmoidItem {
 
         onClicked: Plasmoid.activated()
 
+        // macOS Dock separator between the apps and the Trash.
+        Rectangle {
+            visible: Plasmoid.formFactor === PlasmaCore.Types.Horizontal && dockCell.active
+            width: 1
+            height: Math.round(parent.height * 0.62)
+            anchors.verticalCenter: parent.verticalCenter
+            x: -Math.round(dockCell.size * 0.05)
+            color: Kirigami.Theme.textColor
+            opacity: 0.32
+        }
+
         DragDrop.DropArea {
             anchors.fill: parent
             preventStealing: true

@@ -50,7 +50,7 @@ file(GLOB_RECURSE TASKMANAGER_QML CONFIGURE_DEPENDS
     contents/ui/*.js
 )
 
-set_source_files_properties(contents/ui/LayoutMetrics.js contents/ui/TaskTools.js contents/ui/DockRoles.js PROPERTIES QT_QML_SKIP_QMLDIR_ENTRY TRUE)
+set_source_files_properties(contents/ui/LayoutMetrics.js contents/ui/TaskTools.js contents/ui/DockRoles.js contents/ui/DockSync.js PROPERTIES QT_QML_SKIP_QMLDIR_ENTRY TRUE)
 
 set(QT_QML_NO_CACHEGEN TRUE)
 

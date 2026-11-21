@@ -214,8 +214,8 @@ PlasmoidItem {
             ? LayoutMetrics.optimumCapacity(tasks.width, tasks.height) + 1 : -1)
 
         onLauncherListChanged: {
-            if (String(launcherList) === String(Plasmoid.configuration.launchers)) return;
-            Plasmoid.configuration.launchers = launcherList;
+            if (String(launcherList) !== String(Plasmoid.configuration.launchers))
+                Plasmoid.configuration.launchers = launcherList;
             // A pin changed on this Dock: apply it to the Docks on the other screens.
             if (tasks.isDock) DockSync.publish(tasks, launcherList);
         }
@@ -363,6 +363,7 @@ PlasmoidItem {
             target: Plasmoid.configuration
 
             function onLaunchersChanged(): void {
+                if (tasks.isDock) DockSync.publish(tasks, Plasmoid.configuration.launchers);
                 tasksModel.launcherList = Plasmoid.configuration.launchers
             }
             function onGroupingAppIdBlacklistChanged(): void {

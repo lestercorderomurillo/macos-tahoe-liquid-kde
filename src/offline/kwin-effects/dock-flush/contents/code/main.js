@@ -41,14 +41,14 @@ function refresh() {
         if (want && !shifted.has(d)) {
             d.setData(Effect.WindowForceBlurRole, true);
             shifted.set(d, set({
-                window: d, duration: 160, curve: QEasingCurve.OutCubic,
+                window: d, duration: 160, curve: QEasingCurve.OutCubic, keepAlive: false,
                 animations: [{ type: Effect.Translation, from: { value1: 0, value2: 0 }, to: { value1: 0, value2: GAP } }]
             }));
         } else if (!want && shifted.has(d)) {
             cancel(shifted.get(d));
             shifted.delete(d);
             animate({
-                window: d, duration: 160, curve: QEasingCurve.OutCubic,
+                window: d, duration: 160, curve: QEasingCurve.OutCubic, keepAlive: false,
                 animations: [{ type: Effect.Translation, from: { value1: 0, value2: GAP }, to: { value1: 0, value2: 0 } }]
             });
         }
@@ -66,7 +66,11 @@ function watch(w) {
 }
 
 effects.windowAdded.connect(function (w) { watch(w); refresh(); });
-effects.windowClosed.connect(function (w) { shifted.delete(w); refresh(); });
+// A closed Dock (Plasma restarting) must not stay painted as a ghost.
+effects.windowClosed.connect(function (w) {
+    if (shifted.has(w)) { cancel(shifted.get(w)); shifted.delete(w); }
+    refresh();
+});
 effects.desktopChanged && effects.desktopChanged.connect(refresh);
 effects.stackingOrder.forEach(watch);
 refresh();
