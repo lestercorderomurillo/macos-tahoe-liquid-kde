@@ -34,6 +34,40 @@ function update() {
     if (pos.y >= g.y + g.height - EDGE) { current = k; moveDockTo(g); }
 }
 
+// As on macOS, a window maximized while the Dock is shown on its screen
+// stops above the Dock; windows maximized before the Dock moved there keep
+// their size.
+function dockOn(output) {
+    for (const w of workspace.stackingOrder) {
+        if (w.dock && w.output === output && w.frameGeometry.y > output.geometry.y + output.geometry.height / 2)
+            return w;
+    }
+    return null;
+}
+
+function fitAboveDock(w) {
+    if (!w.normalWindow || w.fullScreen || !w.output) return;
+    if (key(w.output.geometry) !== current) return;
+    const area = workspace.clientArea(KWin.MaximizeArea, w);
+    const f = w.frameGeometry;
+    // 3 = KWin::MaximizeFull; fall back to the geometry if the mode is hidden.
+    const maximized = w.maximizeMode === 3 || (Math.abs(f.x - area.x) <= 1 && Math.abs(f.y - area.y) <= 1
+        && Math.abs(f.width - area.width) <= 1 && Math.abs(f.height - area.height) <= 1);
+    if (!maximized) return;
+    const dock = dockOn(w.output);
+    if (!dock) return;
+    const top = dock.frameGeometry.y;
+    if (f.y + f.height <= top) return;
+    w.frameGeometry = { x: area.x, y: area.y, width: area.width, height: top - area.y };
+}
+
+function watch(w) {
+    if (!w.normalWindow) return;
+    w.maximizedChanged.connect(function () { fitAboveDock(w); });
+}
+
+workspace.windowAdded.connect(function (w) { watch(w); fitAboveDock(w); });
+workspace.windowList().forEach(watch);
 workspace.cursorPosChanged.connect(update);
 workspace.screensChanged.connect(function () { current = null; update(); });
 update();
