@@ -18,6 +18,8 @@ ENUMS = {
     "dock_appearance": ("auto", "keep", "macos", "native"),
     "dock_apps_source": ("native", "flatpak"),
     "icons": ("regular", "dark", "clear", "glass", "keep"),
+    # Light/dark variant of the icons, independent of the appearance (macOS).
+    "icon_appearance": ("auto", "light", "dark"),
     "color": tuple(COLORS),
     "wallpaper": ("tahoe", "golden", "landscape", "sonoma", "prism", "macos", "keep", "custom"),
     "launcher": ("tahoe", "golden", "keep"),
@@ -50,7 +52,7 @@ def use_user_launcher() -> bool:
 def defaults() -> dict:
     edition = "golden" if edition_name() == "MacGoldenGate" else "tahoe"
     return dict(
-        appearance="auto", icons="regular", color="blue", wallpaper=edition,
+        appearance="auto", icons="regular", icon_appearance="auto", color="blue", wallpaper=edition,
         wallpaper_path="", launcher="keep" if launcher_preference().exists() else edition, panel=True, dock=True, reset_layout=True,
         acrylic_glass=True, rounded_corners=True, shadows="medium", fonts=True, firefox=True,
         window_controls="glassy" if edition == "golden" else "flat", button_position="left",

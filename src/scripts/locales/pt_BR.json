@@ -1266,5 +1266,7 @@
   "Tahoe (Frosted)": "Tahoe (Fosco)",
   "Control Center transition": "Transição da Central de Controle",
   "Control Center transition could not be enabled in kwinrc": "Não foi possível ativar a transição da Central de Controle no kwinrc",
-  "Control Center transition removed": "Transição da Central de Controle removida"
+  "Control Center transition removed": "Transição da Central de Controle removida",
+  "Icon appearance": "Aparência dos ícones",
+  "Automatic": "Automático"
 }
