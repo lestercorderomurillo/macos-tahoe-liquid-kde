@@ -421,6 +421,9 @@ def test_dock_applets_follow_panel_thickness(repo, tmp_path, launcher_popup_modu
     for widget in applets:
         source = (widgets / f'org.kde.mac-tahoe-liquid-kde.{widget}/contents/ui/main.qml').read_text()
         hints = re.findall(r'^    Layout\.(?:fillWidth|fillHeight|minimumWidth|preferredWidth|maximumWidth|minimumHeight|preferredHeight|maximumHeight):.*$', source, re.MULTILINE)
+        # The Trash cell is wider by the room for the macOS separator before it.
+        gap = re.search(r'^    readonly property int separatorGap: .*$', source, re.MULTILINE)
+        hints = ([gap.group(0)] if gap else ['    readonly property int separatorGap: 0']) + hints
         assert hints, f'{widget} has no panel layout hints'
         assert 'Plasmoid.constraintHints: Plasmoid.CanFillArea' in source
         qml = """import QtQuick
@@ -454,7 +457,7 @@ Item {
         onTriggered: {
             const thickness = panel.vertical ? panel.width : panel.height;
             const length = Math.max(16, Math.round(thickness * 13 / 17));
-            if (Math.abs(applet.width - (panel.vertical ? thickness : length)) > 0.01 || Math.abs(applet.height - (panel.vertical ? length : thickness)) > 0.01) {
+            if (Math.abs(applet.width - (panel.vertical ? thickness : length + applet.separatorGap)) > 0.01 || Math.abs(applet.height - (panel.vertical ? length : thickness)) > 0.01) {
                 if (++root.settling < 10) return;
                 console.error("DOCK_CELL_FAILED", root.phase, applet.width, applet.height, thickness);
                 Qt.exit(1); return;
