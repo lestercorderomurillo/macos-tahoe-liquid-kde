@@ -40,6 +40,41 @@ def _install_transition() -> None:
     qdbus_call("org.kde.KWin", "/Effects", "org.kde.kwin.Effects.loadEffect", TRANSITION_ID)
 
 
+# macOS Dock on several displays: a KWin script keeps every Dock in "windows
+# go below" mode (stable desktop area) and fits newly maximized windows above
+# the shown Dock; an effect shows only the last activated Dock and lowers it
+# onto the screen edge next to maximized windows.
+DOCK_SCRIPT_ID = "mttkde-dock-follows-screen"
+DOCK_SCRIPT_SRC = offline("kwin-scripts", DOCK_SCRIPT_ID)
+DOCK_SCRIPT_DEST = DATA_HOME / "kwin/scripts" / DOCK_SCRIPT_ID
+DOCK_EFFECT_ID = "mttkde_dock_flush"
+DOCK_EFFECT_SRC = offline("kwin-effects/dock-flush")
+DOCK_EFFECT_DEST = DATA_HOME / "kwin/effects" / DOCK_EFFECT_ID
+
+
+def _install_dock_behaviour() -> None:
+    if not (install_tree(DOCK_SCRIPT_SRC, DOCK_SCRIPT_DEST, "Dock follows screen")
+            and install_tree(DOCK_EFFECT_SRC, DOCK_EFFECT_DEST, "Dock on several screens")):
+        return
+    for key in (f"{DOCK_SCRIPT_ID}Enabled", f"{DOCK_EFFECT_ID}Enabled"):
+        if not kw_write("--file", "kwinrc", "--group", "Plugins", "--key", key, "true"):
+            warn(tr('Dock behaviour could not be enabled in kwinrc'))
+            return
+    # Scripts reload on reconfigure. A running effect is left in place:
+    # unloading it while it animates a Dock can bring KWin down, so an
+    # update of the effect takes over at the next login.
+    qdbus_call("org.kde.KWin", "/KWin", "org.kde.KWin.reconfigure")
+    qdbus_call("org.kde.KWin", "/Effects", "org.kde.kwin.Effects.loadEffect", DOCK_EFFECT_ID)
+
+
+def _uninstall_dock_behaviour() -> None:
+    for key in (f"{DOCK_SCRIPT_ID}Enabled", f"{DOCK_EFFECT_ID}Enabled"):
+        kw_write("--file", "kwinrc", "--group", "Plugins", "--key", key, "false")
+    qdbus_call("org.kde.KWin", "/KWin", "org.kde.KWin.reconfigure")
+    remove_tree(DOCK_SCRIPT_DEST, "Dock follows screen")
+    remove_tree(DOCK_EFFECT_DEST, "Dock on several screens")
+
+
 def _uninstall_transition() -> None:
     kw_write("--file", "kwinrc", "--group", "Plugins", "--key", f"{TRANSITION_ID}Enabled", "false")
     qdbus_call("org.kde.KWin", "/Effects", "org.kde.kwin.Effects.unloadEffect", TRANSITION_ID)
@@ -518,6 +553,7 @@ def install() -> None:
         return
 
     _install_transition()
+    _install_dock_behaviour()
 
     # Reload the effect instance. Qt may still retain its old shared library;
     # activeEffects alone cannot prove the newly installed code is running.
@@ -581,6 +617,7 @@ def uninstall() -> None:
         "org.kde.KWin", "/KWin", "org.kde.KWin.reconfigure",
     )
     _uninstall_transition()
+    _uninstall_dock_behaviour()
     if not disabled:
         warn(tr('Acrylic Glass could not be disabled in kwinrc'))
     if not unloaded and not reconfigured:

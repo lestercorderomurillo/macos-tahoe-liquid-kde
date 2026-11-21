@@ -1268,5 +1268,8 @@
   "Control Center transition could not be enabled in kwinrc": "Não foi possível ativar a transição da Central de Controle no kwinrc",
   "Control Center transition removed": "Transição da Central de Controle removida",
   "Icon appearance": "Aparência dos ícones",
-  "Automatic": "Automático"
+  "Automatic": "Automático",
+  "Dock behaviour could not be enabled in kwinrc": "Não foi possível ativar o comportamento do Dock no kwinrc",
+  "Dock follows screen": "Dock segue a tela",
+  "Dock on several screens": "Dock em várias telas"
 }

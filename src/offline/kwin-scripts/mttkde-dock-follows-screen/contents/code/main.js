@@ -1,9 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 // macOS keeps one Dock and moves it to a display when the pointer is pushed
 // against that display's bottom edge. Every screen has its own Dock here:
-// the last one revealed stays shown, the others auto-hide. The shown Dock
-// uses "windows go below", so it never resizes windows when it moves; it
-// keeps floating with its rounded corners, and full-screen windows cover it.
+// the last one activated is shown (see the mttkde_dock_flush effect).
 "use strict";
 
 const EDGE = 2;          // px from the bottom edge that reveal the Dock
@@ -11,14 +9,14 @@ let current = null;      // geometry key of the screen holding the Dock
 
 function key(g) { return g.x + "," + g.y + "," + g.width + "," + g.height; }
 
+// Every Dock stays in "windows go below" mode so the desktop's free area,
+// and the desktop icons, never change; the mttkde_dock_flush effect shows
+// only the active Dock.
 function moveDockTo(g) {
     const script =
-        "var x=" + (g.x + g.width / 2) + ",y=" + (g.y + g.height / 2) + ";" +
         "panels().forEach(function(p){" +
         "  if (p.location!=='bottom' || p.widgets('org.kde.mac.tahoe.liquid.icontasks').length===0) return;" +
-        "  var s=screenGeometry(p.screen);" +
-        "  var here=x>=s.x&&x<s.x+s.width&&y>=s.y&&y<s.y+s.height;" +
-        "  p.hiding=here?'windowsgobelow':'autohide';" +
+        "  p.hiding='windowsgobelow';" +
         "});";
     callDBus("org.kde.plasmashell", "/PlasmaShell", "org.kde.PlasmaShell", "evaluateScript", script);
 }
@@ -31,7 +29,10 @@ function update() {
     const k = key(g);
     if (current === null) { current = k; moveDockTo(g); return; }
     if (k === current) return;
-    if (pos.y >= g.y + g.height - EDGE) { current = k; moveDockTo(g); }
+    const dock = dockOn(output);
+    const inDock = dock && pos.x >= dock.frameGeometry.x && pos.x < dock.frameGeometry.x + dock.frameGeometry.width
+        && pos.y >= dock.frameGeometry.y;
+    if (pos.y >= g.y + g.height - EDGE || inDock) { current = k; moveDockTo(g); }
 }
 
 // As on macOS, a window maximized while the Dock is shown on its screen
