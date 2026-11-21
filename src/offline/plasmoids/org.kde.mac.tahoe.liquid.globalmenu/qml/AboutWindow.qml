@@ -727,7 +727,7 @@ Window {
                     }
                 }
 
-                Item { Layout.fillHeight: true }
+                Item { Layout.fillHeight: true; Layout.minimumHeight: 32 }
 
                 SecondaryLabel {
                     Layout.alignment: Qt.AlignHCenter
