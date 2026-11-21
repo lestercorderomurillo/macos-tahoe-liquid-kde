@@ -29,7 +29,7 @@
     </entry>
 
     <entry name="menuIcon" type="String">
-      <default>start-here-kde-symbolic</default>
+      <default>start-here-symbolic</default>
     </entry>
 
     <entry name="useSystemFont" type="Bool">
