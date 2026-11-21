@@ -3625,6 +3625,156 @@
       "capture_environment": {
         "tahoe": "kwin-wayland\t4:6.8.1-0zneon+24.04+noble+release+build114\nplasma-workspace\t4:6.8.1-0zneon+24.04+noble+release+build100"
       }
+    },
+    "previews/readme-tahoe-light-bluetooth-58ccf877c692.webp": {
+      "windows": [
+        {
+          "id": "{225caf71-3bac-428d-aff2-4d1ece251c3a}",
+          "caption": "",
+          "resourceClass": "plasmashell",
+          "type": 1,
+          "appletPopup": false,
+          "hidden": false,
+          "active": false,
+          "geometry": {
+            "x": 0,
+            "y": 0,
+            "width": 1920,
+            "height": 1080
+          }
+        },
+        {
+          "id": "{837a2ff7-54f5-431f-b95e-918d1b156989}",
+          "caption": "",
+          "resourceClass": "plasmashell",
+          "type": 2,
+          "appletPopup": false,
+          "hidden": false,
+          "active": false,
+          "geometry": {
+            "x": 0,
+            "y": 0,
+            "width": 1920,
+            "height": 32
+          }
+        },
+        {
+          "id": "{b2d5541d-3bb6-4582-9427-4a1b43a219b6}",
+          "caption": "",
+          "resourceClass": "plasmashell",
+          "type": 2,
+          "appletPopup": false,
+          "hidden": true,
+          "active": false,
+          "geometry": {
+            "x": 644,
+            "y": 996,
+            "width": 632,
+            "height": 84
+          }
+        },
+        {
+          "id": "{54eb3ab3-c614-4adb-a0eb-2ed9b3bd4869}",
+          "caption": "mttkde-bluetooth",
+          "resourceClass": "org.kde.plasmashell",
+          "type": 18,
+          "appletPopup": true,
+          "hidden": false,
+          "active": true,
+          "geometry": {
+            "x": 1577,
+            "y": 32,
+            "width": 328,
+            "height": 196
+          }
+        }
+      ],
+      "wallpaper_uri": "file:///home/tester/.local/share/wallpapers/MacTahoe",
+      "case": "bluetooth",
+      "edition": "tahoe",
+      "mode": "light",
+      "source_commit": "7369e9db488a338e7dabdce9eed8e38979d1f1ac",
+      "sha256": "58ccf877c6924d4a2688cc1700b7e9e2930467ef8807adf3e926b129e6966985",
+      "plasma": "plasmashell 6.8.1",
+      "kwin": "kwin 6.8.1",
+      "profile_sha256": "2a3bd2d31ca0dfdd65c45a09a3c8c2bbe35a122ab2ca7961f1c33edf8b9a3b09",
+      "capture_environment": "Disposable KDE neon Wayland VM, 3840×2160 at 2×, edition wallpaper. Cropped from a full-desktop Plasma screenshot.",
+      "radio_fixture": "python-dbusmock BlueZ 5 with two paired devices. Studio Headphones reports 82 percent and Wireless Keyboard is disconnected."
+    },
+    "previews/readme-tahoe-dark-bluetooth-7436dda76c53.webp": {
+      "windows": [
+        {
+          "id": "{225caf71-3bac-428d-aff2-4d1ece251c3a}",
+          "caption": "",
+          "resourceClass": "plasmashell",
+          "type": 1,
+          "appletPopup": false,
+          "hidden": false,
+          "active": false,
+          "geometry": {
+            "x": 0,
+            "y": 0,
+            "width": 1920,
+            "height": 1080
+          }
+        },
+        {
+          "id": "{837a2ff7-54f5-431f-b95e-918d1b156989}",
+          "caption": "",
+          "resourceClass": "plasmashell",
+          "type": 2,
+          "appletPopup": false,
+          "hidden": false,
+          "active": false,
+          "geometry": {
+            "x": 0,
+            "y": 0,
+            "width": 1920,
+            "height": 32
+          }
+        },
+        {
+          "id": "{b2d5541d-3bb6-4582-9427-4a1b43a219b6}",
+          "caption": "",
+          "resourceClass": "plasmashell",
+          "type": 2,
+          "appletPopup": false,
+          "hidden": true,
+          "active": false,
+          "geometry": {
+            "x": 644,
+            "y": 996,
+            "width": 632,
+            "height": 84
+          }
+        },
+        {
+          "id": "{770ebf88-5631-47c2-9316-c8fad6e84686}",
+          "caption": "mttkde-bluetooth",
+          "resourceClass": "org.kde.plasmashell",
+          "type": 18,
+          "appletPopup": true,
+          "hidden": false,
+          "active": true,
+          "geometry": {
+            "x": 1577,
+            "y": 32,
+            "width": 328,
+            "height": 196
+          }
+        }
+      ],
+      "wallpaper_uri": "file:///home/tester/.local/share/wallpapers/MacTahoe",
+      "case": "bluetooth",
+      "edition": "tahoe",
+      "mode": "dark",
+      "source_commit": "7369e9db488a338e7dabdce9eed8e38979d1f1ac",
+      "sha256": "7436dda76c533b21abd435838c1915d317146059747b553cfdd38851812701e8",
+      "plasma": "plasmashell 6.8.1",
+      "kwin": "kwin 6.8.1",
+      "profile_sha256": "2a3bd2d31ca0dfdd65c45a09a3c8c2bbe35a122ab2ca7961f1c33edf8b9a3b09",
+      "capture_environment": "Disposable KDE neon Wayland VM, 3840×2160 at 2×, edition wallpaper. Cropped from a full-desktop Plasma screenshot.",
+      "radio_fixture": "python-dbusmock BlueZ 5 with two paired devices. Studio Headphones reports 82 percent and Wireless Keyboard is disconnected."
     }
   },
   "missing": [],
