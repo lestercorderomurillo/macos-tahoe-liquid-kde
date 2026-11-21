@@ -352,3 +352,29 @@ def test_rebuild_with_reset_keeps_unpinned_apps_off_every_dock(monkeypatch):
     for dock in docks:
         assert next(w['pins'] for w in dock if w['type'] == layout.MAC_TASKS_ID) == [
             'applications:custom.desktop']
+
+
+def test_clock_upgrade_preserves_custom_date_and_hour_preferences(offline):
+    migration = (offline / 'layouts/migrate-status-controls.js').read_text()
+    source = HARNESS + '''
+Panel.prototype.widgets = function() { return this.widgetIds.map(id => this.widgetById(id)); };
+function clockWith(format, hourMode) {
+    var panel = new Panel();
+    panel.addWidget('org.kde.mac-tahoe-liquid-kde.controlcenter').writeConfig('statusOrderRevision', 2);
+    panel.addWidget('org.kde.mac-tahoe-liquid-kde.wifi');
+    var clock = panel.addWidget('org.kde.plasma.digitalclock');
+    clock.config = {dateFormat: 'custom', customDateFormat: format, use24hFormat: hourMode};
+    return clock;
+}
+var oldFormat = "ddd d ' | '";
+var original = clockWith(oldFormat, 1), custom = clockWith('yyyy-MM-dd', 1), military = clockWith(oldFormat, 2);
+''' + migration + '''
+var updated = [original, custom, military].map(w => [w.config.customDateFormat, w.config.use24hFormat]);
+original.writeConfig('customDateFormat', oldFormat);
+''' + migration + '''
+JSON.stringify([updated, original.config.customDateFormat]);
+'''
+    result = subprocess.run([sys.executable, '-c', RUNNER], input=source,
+                            capture_output=True, text=True, check=True)
+    assert json.loads(result.stdout) == [
+        [['ddd MMM d', 0], ['yyyy-MM-dd', 1], ['ddd MMM d', 2]], "ddd d ' | '"]
