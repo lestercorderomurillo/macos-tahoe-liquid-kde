@@ -1,4 +1,4 @@
-// Update only themed bars. Preserve applet order, geometry and app status icons.
+// Update themed bars in place. Keep applet instances and their settings.
 (function () {
     function items(widget, key) {
         var value = widget.readConfig(key, []);
@@ -18,6 +18,26 @@
             var index = wifi.index;
             var glass = bars[i].addWidget(glassId);
             if (glass) glass.index = index;
+        }
+        if (themed && wifi) {
+            var controls = widgets.find(function (w) { return w.type === 'org.kde.mac-tahoe-liquid-kde.controlcenter'; });
+            controls.currentConfigGroup = ['General'];
+            if (Number(controls.readConfig('statusOrderRevision', 0)) < 1) {
+                var prefix = 'org.kde.mac-tahoe-liquid-kde.';
+                var radio = widgets.find(function (w) { return w.type === prefix + 'bluetooth'; });
+                if (!radio) radio = bars[i].addWidget(prefix + 'bluetooth');
+                if (!radio) throw Error('Could not add the Bluetooth panel widget');
+                var anchor = controls;
+                // Insert from right to left so custom widgets keep their relative order.
+                ['battery', 'wifi', 'bluetooth', 'notifications'].forEach(function (suffix) {
+                    var item = suffix === 'bluetooth' ? radio : widgets.find(function (w) { return w.type === prefix + suffix; });
+                    if (!item) return;
+                    var target = anchor.index - (item.index < anchor.index ? 1 : 0);
+                    if (item.index !== target) item.index = target;
+                    anchor = item;
+                });
+                controls.writeConfig('statusOrderRevision', 1);
+            }
         }
         if (!themed || !notifications) continue;
         for (var j = 0; j < widgets.length; ++j) {

@@ -66,10 +66,11 @@ tray.writeConfig("hiddenItems", "org.kde.plasma.networkmanagement,org.kde.plasma
 tray.writeConfig("iconSpacing", 3);
 
 bar.addWidget("org.kde.mac-tahoe-liquid-kde.acrylicglass");
+bar.addWidget("org.kde.mac-tahoe-liquid-kde.notifications");
+bar.addWidget("org.kde.mac-tahoe-liquid-kde.bluetooth");
 bar.addWidget("org.kde.mac-tahoe-liquid-kde.wifi");
 bar.addWidget("org.kde.mac-tahoe-liquid-kde.battery");
 bar.addWidget("org.kde.mac-tahoe-liquid-kde.controlcenter");
-bar.addWidget("org.kde.mac-tahoe-liquid-kde.notifications");
 
 bar.addWidget("org.kde.plasma.marginsseparator");
 
