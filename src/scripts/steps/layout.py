@@ -232,7 +232,7 @@ def configure_dock() -> None:
     script = """
     (function () {
         for (const panel of panels()) {
-            if (panel.location === "bottom" && panel.widgets().some(
+            if (panel.screen >= 0 && panel.screen < screenCount && panel.location === "bottom" && panel.widgets().some(
                     widget => widget.type === "org.kde.mac.tahoe.liquid.icontasks")) {
                 panel.hiding = MODE;
             }

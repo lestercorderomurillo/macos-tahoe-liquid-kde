@@ -5,10 +5,11 @@
 
 let edgeOutput = null;
 function followBottomEdge() {
-    if (workspace.screens.length < 2) return;
+    if (!workspace.screens.length) return;
     const pos = workspace.cursorPos;
-    const output = workspace.screenAt(pos);
-    if (!output || pos.y < output.geometry.y + output.geometry.height - 1) {
+    const single = workspace.screens.length === 1;
+    const output = single ? workspace.screens[0] : workspace.screenAt(pos);
+    if (!output || (!single && pos.y < output.geometry.y + output.geometry.height - 1)) {
         edgeOutput = null;
         return;
     }
@@ -24,4 +25,5 @@ function followBottomEdge() {
     callDBus("org.kde.plasmashell", "/PlasmaShell", "org.kde.PlasmaShell", "evaluateScript", script);
 }
 workspace.cursorPosChanged.connect(followBottomEdge);
-workspace.screensChanged.connect(function () { edgeOutput = null; });
+workspace.screensChanged.connect(function () { edgeOutput = null; followBottomEdge(); });
+followBottomEdge();

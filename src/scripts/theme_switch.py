@@ -1544,6 +1544,7 @@ _LAF_APPLY_RETRY_SLEEP_SECONDS = 6
 # is a third-party effect we must not silently break.
 _OWN_KWIN_EFFECT_KEYS = frozenset({
     "liquidglassEnabled", "glassEnabled", "blurEnabled",
+    "mttkde-dock-follows-screenEnabled",  # KWin script sharing the Plugins group.
 })
 
 
