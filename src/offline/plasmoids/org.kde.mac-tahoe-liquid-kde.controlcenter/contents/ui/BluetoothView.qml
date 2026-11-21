@@ -10,7 +10,7 @@ ColumnLayout {
     id: view
     spacing: 2
     Layout.preferredWidth: 280
-    readonly property bool powered: Bluetooth.Manager.operational && Bluetooth.Manager.adapters.length > 0 && !Bluetooth.Manager.bluetoothBlocked
+    readonly property bool powered: Bluetooth.Manager.bluetoothOperational && !Bluetooth.Manager.bluetoothBlocked
     readonly property bool lightMode: Kirigami.Theme.textColor.r * 0.2126 + Kirigami.Theme.textColor.g * 0.7152 + Kirigami.Theme.textColor.b * 0.0722 < 0.5
     function deviceSymbol(icon) {
         if (/headset|headphone|audio-head/.test(icon)) return "audio-headphones-symbolic";
@@ -25,7 +25,15 @@ ColumnLayout {
         text: i18n("Bluetooth")
         checked: view.powered
         enabled: Bluetooth.Manager.operational && Bluetooth.Manager.adapters.length > 0
-        onClicked: Bluetooth.Manager.bluetoothBlocked = !Bluetooth.Manager.bluetoothBlocked
+        onClicked: {
+            const enable = !view.powered;
+            if (enable)
+                Bluetooth.Manager.bluetoothBlocked = false;
+            for (const adapter of Bluetooth.Manager.adapters)
+                adapter.powered = enable;
+            if (!enable)
+                Bluetooth.Manager.bluetoothBlocked = true;
+        }
     }
     StatusMenuDivider {}
     ControlLabel {

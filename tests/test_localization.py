@@ -82,7 +82,7 @@ def test_dock_reuses_complete_upstream_taskmanager_catalog(repo):
 
 def test_desktop_controls_translate_when_installed_independently(repo):
     """Shared QML views use the hosting applet's catalog, without another applet loaded."""
-    for suffix in ('controlcenter', 'battery', 'wifi', 'notifications'):
+    for suffix in ('controlcenter', 'battery', 'bluetooth', 'wifi', 'notifications'):
         widget = 'org.kde.mac-tahoe-liquid-kde.' + suffix
         root = repo / 'src/offline/plasmoids' / widget / 'contents/locale'
         for language, expected in (('es', 'Concentración'), ('zh_CN', '专注模式'),
@@ -93,7 +93,7 @@ def test_desktop_controls_translate_when_installed_independently(repo):
 
 def test_french_control_catalogs_resolve_shared_views(repo):
     import gettext
-    for suffix in ('controlcenter','battery','wifi','notifications'):
+    for suffix in ('controlcenter','battery','bluetooth','wifi','notifications'):
         name='org.kde.mac-tahoe-liquid-kde.'+suffix
         path=repo/'src/offline/plasmoids'/name/'contents/locale/fr/LC_MESSAGES'/('plasma_applet_'+name+'.mo')
         with path.open('rb') as stream: catalog=gettext.GNUTranslations(stream)
