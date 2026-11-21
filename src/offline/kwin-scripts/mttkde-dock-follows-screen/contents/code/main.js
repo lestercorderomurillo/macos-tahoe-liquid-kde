@@ -56,7 +56,9 @@ function fitAboveDock(w) {
     if (!maximized) return;
     const dock = dockOn(w.output);
     if (!dock) return;
-    const top = dock.frameGeometry.y;
+    // Top of the Dock frame once the dock-flush effect has lowered it onto
+    // the screen edge: 9 px inside its window, plus its 23 px floating gap.
+    const top = dock.frameGeometry.y + 9 + 23;
     if (f.y + f.height <= top) return;
     w.frameGeometry = { x: area.x, y: area.y, width: area.width, height: top - area.y };
 }
