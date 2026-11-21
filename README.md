@@ -223,7 +223,7 @@ Open the panel clock to see the month on glass. Scroll or use the arrow keys to 
 
 ### Tahoe Bluetooth (Alpha)
 
-To add Bluetooth to the menu bar, enter Plasma’s Edit Mode, choose **Add Widgets**, and drag **Tahoe Bluetooth** onto the panel. Open it to toggle Bluetooth, connect or disconnect a paired device, or see the battery level a connected device reports. Choose **Bluetooth Settings…** to pair a new device.
+The menu bar groups Bluetooth, Wi-Fi and Battery together, followed by Control Center and the clock. To restore the Bluetooth icon after removing it, open **Edit Mode → Add Widgets** and drag **Tahoe Bluetooth** to the left of Wi-Fi. Open it to toggle Bluetooth, connect or disconnect a paired device, or see the battery level a connected device reports. Choose **Bluetooth Settings…** to pair a new device.
 
 ### Tahoe Wi-Fi (Alpha)
 
