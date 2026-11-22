@@ -152,6 +152,11 @@ Keep Firefox as it is|Conservar Firefox como está|保持 Firefox 原样|Manter 
 Recommended · Files theme|Recomendado · Estilo Files del tema|推荐 · Files 风格|Recomendado · Estilo Files do tema|Empfohlen · Files-Stil des Themas
 KDE file manager|Gestor de archivos de KDE|KDE 文件管理器|Gerenciador de arquivos do KDE|Dateimanager von KDE
 Add folder shortcuts to the sidebar|Añadir accesos a mis carpetas en la barra lateral|在侧栏中添加文件夹快捷方式|Adicionar atalhos de pastas à barra lateral|Ordnerverknüpfungen zur Seitenleiste hinzufügen
+Skip widget pack|Omitir paquete de widgets|跳过小组件套装|Ignorar pacote de widgets|Widget-Paket überspringen
+Install Liquid Glass widgets|Instalar widgets Liquid Glass|安装 Liquid Glass 小组件|Instalar widgets Liquid Glass|Liquid-Glass-Widgets installieren
+Remove any widgets previously installed by this theme.|Elimina los widgets instalados anteriormente por este tema.|移除此主题之前安装的小组件。|Remove os widgets instalados anteriormente por este tema.|Entfernt zuvor von diesem Design installierte Widgets.
+Calendar, weather, clocks, music, timers and photos.|Calendario, tiempo, relojes, música, temporizadores y fotos.|日历、天气、时钟、音乐、计时器和照片。|Calendário, previsão do tempo, relógios, música, temporizadores e fotos.|Kalender, Wetter, Uhren, Musik, Timer und Fotos.
+After installation, place widgets from Plasma’s Add Widgets menu.|Tras la instalación, coloca los widgets desde el menú Añadir elementos gráficos de Plasma.|安装完成后，从 Plasma 的「添加部件」菜单放置小组件。|Após a instalação, adicione os widgets pelo menu Adicionar widgets do Plasma.|Nach der Installation lassen sich Widgets über das Plasma-Menü „Miniprogramme hinzufügen“ platzieren.
 Use the theme animation|Usar la animación del tema|使用主题动画|Usar a animação do tema|Animation des Themas verwenden
 Keep my boot animation|Conservar mi animación|保留我的启动动画|Manter minha animação|Meine Startanimation beibehalten
 Do not enable|No activar|不启用|Não ativar|Nicht aktivieren
