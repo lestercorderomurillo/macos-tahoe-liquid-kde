@@ -92,11 +92,8 @@
                         pins.sort((left, right) => ranks.get(left) - ranks.get(right));
                     }
                 }
-                var filesIndex = pins.findIndex(url => url === "preferred://filemanager"
-                    || dockApplications[0].some(id => url === "applications:" + id || url.endsWith("/" + id)));
-                if (filesIndex > 0) pins.unshift(pins.splice(filesIndex, 1)[0]);
                 if (pins.indexOf(appsPin) === -1 && !tasks.readConfig("appsPinInitialized", false))
-                    pins.splice(filesIndex >= 0 ? 1 : 0, 0, appsPin);
+                    pins.splice(1, 0, appsPin);
                 tasks.writeConfig("appsPinInitialized", true);
             }
             tasks.writeConfig("launchers", pins);

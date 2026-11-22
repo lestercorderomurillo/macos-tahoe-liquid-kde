@@ -516,7 +516,6 @@ PlasmaExtras.Menu {
         visible: menu.visualParent
             && !menu.get(TaskManager.AbstractTasksModel.IsStartup)
             && Plasmoid.immutability !== PlasmaCore.Types.SystemImmutable
-            && !menu.visualParent.fixedFiles
             && (activityInfo.numberOfRunningActivities >= 2)
 
         readonly property Connections activitiesLaunchersMenuConnections: Connections {
@@ -587,7 +586,7 @@ PlasmaExtras.Menu {
     }
 
     PlasmaExtras.MenuItem {
-        visible: (menu.visualParent && !menu.visualParent.fixedFiles
+        visible: (menu.visualParent
                 && menu.get(TaskManager.AbstractTasksModel.IsStartup) !== true
                 && Plasmoid.immutability !== PlasmaCore.Types.SystemImmutable
                 && !launcherToggleAction.visible

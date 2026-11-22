@@ -72,7 +72,7 @@ DropArea {
 
         if (tasksModel.sortMode === TaskManager.TasksModel.SortManual && tasks.dragSource) {
             // Reject drags between different TaskList instances.
-            if (above.fixedFiles || tasks.dragSource.parent !== above.parent) {
+            if (tasks.dragSource.parent !== above.parent) {
                 return;
             }
 
