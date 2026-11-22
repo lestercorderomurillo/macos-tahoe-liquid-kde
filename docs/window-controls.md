@@ -87,3 +87,6 @@ Native capture can be reproduced on a macOS runner, but this inspected output
 is not suitable for the theme. No fork artwork, Apple system assets or fork
 scripts were imported. We retain the independently constructed SVGs and the
 maintainer-requested softer treatment, refined against the close-up they supplied.
+
+Applications that draw their own title bar keep their own buttons; see
+[matching window decorations](app-window-decorations.md) for the per-app settings.
