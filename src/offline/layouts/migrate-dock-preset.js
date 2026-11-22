@@ -76,7 +76,10 @@
                 }
             }
             var appsPin = "applications:org.kde.mac-tahoe-liquid-kde.apps.desktop";
-            if (typeof userLauncherTypes === "undefined" && applicationExists("org.kde.mac-tahoe-liquid-kde.apps.desktop")
+            // A saved false with no pin keeps Apps in the standalone launcher widget.
+            var appsState = tasks.readConfig("appsPinInitialized", "unset");
+            var standaloneApps = revision >= 3 && String(appsState) === "false" && !pins.includes(appsPin);
+            if (!standaloneApps && typeof userLauncherTypes === "undefined" && applicationExists("org.kde.mac-tahoe-liquid-kde.apps.desktop")
                     && ps[p].widgetIds.some(id => ps[p].widgetById(id).type === "org.kde.mac-tahoe-liquid-kde.launcher")) {
                 // Convert only a recognizable factory sequence. A custom pin or a
                 // manually reordered row keeps the user's relative application order.

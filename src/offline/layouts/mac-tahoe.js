@@ -9,12 +9,15 @@ var userLaunchers = {};
 var dockPresetRevisions = {};
 var dockPresetCategories = {};
 var dockIconChoices = {};
+var savedAppsPinState;
 for (var p = 0; p < old.length; p++) {
     var widgets = old[p].widgetIds;
     for (var w = 0; w < widgets.length; w++) {
         var widget = old[p].widgetById(widgets[w]);
         if (widget && widget.type === "org.kde.mac.tahoe.liquid.icontasks") {
             widget.currentConfigGroup = ["General"];
+            var appsState = widget.readConfig("appsPinInitialized", "unset");
+            if (appsState !== "unset") savedAppsPinState = String(appsState) === "true";
             dockIconChoices[old[p].screen] = widget.readConfig("macOSDockIcons", false);
             dockPresetRevisions[old[p].screen] = Number(widget.readConfig("dockPresetRevision", 0));
             dockPresetCategories[old[p].screen] = widget.readConfig("dockPresetCategories", []);
@@ -187,7 +190,8 @@ for (var screen = 0; screen < screenCount; screen++) {
             }
         }
     }
-    if (typeof userLauncherTypes === "undefined" && applicationExists("org.kde.mac-tahoe-liquid-kde.apps.desktop")) {
+    if (savedAppsPinState !== undefined) tasks.writeConfig("appsPinInitialized", savedAppsPinState);
+    if (savedAppsPinState !== false && typeof userLauncherTypes === "undefined" && applicationExists("org.kde.mac-tahoe-liquid-kde.apps.desktop")) {
         dockLaunchers.splice(1, 0, "applications:org.kde.mac-tahoe-liquid-kde.apps.desktop");
     }
     tasks.writeConfig("launchers", dockLaunchers);

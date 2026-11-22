@@ -168,6 +168,20 @@ def test_moved_pins_retain_their_positions_after_edition_rebuild(monkeypatch, fi
     assert next(widget["pins"] for widget in dock if widget["type"] == layout.MAC_TASKS_ID) == pins
 
 
+@pytest.mark.parametrize("rebuild", [False, True])
+def test_reinstall_keeps_explicit_standalone_apps_launcher(monkeypatch, rebuild):
+    pins = ["preferred://filemanager", "applications:steam.desktop", "preferred://browser"]
+    script = existing_dock(pins, revision=3)
+    script += 'dock.addWidget("org.kde.mac-tahoe-liquid-kde.launcher");'
+    script += 'task.writeConfig("appsPinInitialized", false);'
+    monkeypatch.setattr(layout, "_layout_has_any_theme_widget", lambda: True)
+    script += (layout._layout_script_with_launchers(layout.LAYOUT_SCRIPT, pins, layout.MAC_TASKS_ID)
+               if rebuild else layout.DOCK_MIGRATION.read_text())
+    dock, = execute(script, ["org.kde.mac-tahoe-liquid-kde.apps.desktop", *APPS])
+    assert sum(widget["type"] == layout.LAUNCHER_ID for widget in dock) == 1
+    assert next(widget["pins"] for widget in dock if widget["type"] == layout.MAC_TASKS_ID) == pins
+
+
 def test_earlier_factory_pins_adopt_new_order_without_reinstalling_apps():
     apps = "org.kde.mac-tahoe-liquid-kde.apps.desktop"
     old = [APPS[i] for i in (0, 1, 2, 4, 5, 3, 7, 6, 8, 9)]
