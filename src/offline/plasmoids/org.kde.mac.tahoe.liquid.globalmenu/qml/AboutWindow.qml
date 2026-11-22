@@ -315,18 +315,9 @@ Window {
             return aboutWindow.isDarkTheme ? Qt.rgba(0, 0, 0, alpha >= 0 ? alpha : 0.48)
                 : Qt.rgba(1, 1, 1, alpha >= 0 ? alpha : 0.55);
         }
+        border.pixelAligned: false
         border.width: 0.75
-        border.color: Qt.rgba(0, 0, 0, 0.18)
-
-        Rectangle {
-            objectName: "aboutGlassHighlight"
-            anchors.fill: parent
-            anchors.margins: 0.75
-            radius: glass.radius - 0.75
-            color: "transparent"
-            border.width: 0.75
-            border.color: Qt.rgba(1, 1, 1, 0.22)
-        }
+        border.color: Qt.rgba(0.52, 0.52, 0.52, 0.62)
 
         layer.enabled: true
 

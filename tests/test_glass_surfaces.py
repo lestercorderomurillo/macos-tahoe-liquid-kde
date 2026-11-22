@@ -308,7 +308,7 @@ def test_surface_contours_match_material(mode, name):
 
 
 @pytest.mark.parametrize("mode", ["Light", "Dark"])
-def test_all_dock_corners_have_single_light_rim(mode):
+def test_all_dock_corners_are_visible_on_black_and_white(mode):
     svg = pytest.importorskip("PyQt6.QtSvg")
     gui = pytest.importorskip("PyQt6.QtGui")
     core = pytest.importorskip("PyQt6.QtCore")
@@ -323,4 +323,6 @@ def test_all_dock_corners_have_single_light_rim(mode):
             contour = [image.pixelColor(x, y) for x in range(128) for y in range(128)
                        if image.pixelColor(x, y).alphaF() > .08]
             assert contour, (prefix, corner, "rim missing")
-            assert all(c.red() > 240 for c in contour), (prefix, corner, "light line missing")
+            for background in (0, 255):
+                assert max(abs(c.red() - background) * c.alphaF() for c in contour) > 30, (
+                    prefix, corner, background, "indistinguishable Dock edge")

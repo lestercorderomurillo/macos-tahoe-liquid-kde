@@ -581,6 +581,31 @@ class OpaqueSurface(QWidget):
             painter.drawLine(0, 0, self.width(), 0)
 
 
+class WizardFrame(QWidget):
+    """Finish the shared install/remove window after its opaque pages paint."""
+    def __init__(self, parent):
+        super().__init__(parent)
+        self.setAttribute(Qt.WidgetAttribute.WA_TransparentForMouseEvents)
+        self.setFocusPolicy(Qt.FocusPolicy.NoFocus)
+
+    def paintEvent(self, event):
+        if self.window().isMaximized() or self.window().isFullScreen():
+            return
+        painter = QPainter(self)
+        painter.setRenderHint(QPainter.RenderHint.Antialiasing)
+        bounds = QRectF(self.rect())
+        shape = QPainterPath()
+        shape.addRoundedRect(bounds, 28, 28)
+        outside = QPainterPath()
+        outside.addRect(bounds)
+        painter.setCompositionMode(QPainter.CompositionMode.CompositionMode_Clear)
+        painter.fillPath(outside.subtracted(shape), Qt.GlobalColor.transparent)
+        painter.setCompositionMode(QPainter.CompositionMode.CompositionMode_SourceOver)
+        inset = 0.375
+        painter.setPen(QPen(QColor(128, 128, 128, 150), 2 * inset))
+        painter.drawRoundedRect(bounds.adjusted(inset, inset, -inset, -inset), 28 - inset, 28 - inset)
+
+
 class PageScrollArea(QScrollArea):
     def __init__(self):
         super().__init__()
@@ -667,6 +692,8 @@ class InstallerWindow(OpaqueSurface):
         # Keep the desktop text size and scale the SF hierarchy for accessibility.
         self.setFont(relative_font(self, 7/6))
         self.setWindowFlags(Qt.WindowType.Window | Qt.WindowType.FramelessWindowHint)
+        self.setAttribute(Qt.WidgetAttribute.WA_TranslucentBackground)
+        self.setAttribute(Qt.WidgetAttribute.WA_OpaquePaintEvent, False)
         self.resize(900, 680)
         self.setMinimumSize(820, 640)
         self.layout = QVBoxLayout(self)
@@ -740,6 +767,8 @@ class InstallerWindow(OpaqueSurface):
         self.next.clicked.connect(self.advance)
         self.footer_layout.addWidget(self.next, 1, 2, Qt.AlignmentFlag.AlignRight)
         self.layout.addWidget(self.footer)
+        self.frame_edge = WizardFrame(self)
+        self.frame_edge.setGeometry(self.rect())
         bridge.runningChanged.connect(self.refresh_window_controls)
         bridge.finished.connect(self.finished)
         bridge.progressChanged.connect(self.refresh_progress)
@@ -750,6 +779,10 @@ class InstallerWindow(OpaqueSurface):
         bridge.updateReturned.connect(self.update_returned)
         self.render()
         self.next.setFocus(Qt.FocusReason.OtherFocusReason)
+
+    def resizeEvent(self, event):
+        super().resizeEvent(event)
+        self.frame_edge.setGeometry(self.rect())
 
     def express_install(self):
         if self.page != "welcome" or self.bridge.running or self.updating:
