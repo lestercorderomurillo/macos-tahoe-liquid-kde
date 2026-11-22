@@ -2925,5 +2925,33 @@
     "sha256": "b01d56293e69baed6dfb83fa2f256390e91a3cfd029670f162808900d163716b",
     "file": "exuma-b01d56293e69.jpg",
     "crop": null
+  },
+  "desktop-widgets-off.jpg": {
+    "source": "desktop-widgets-off.png",
+    "source_sha256": "8652b96bfbaf7edf82184de5f7757fc8e1dc81e2b086b12260a9204f9eec2077",
+    "crop": null,
+    "sha256": "c89a0ca8784b50378cca7aee6debede41340622507a5514cd9fe9543c32628db",
+    "file": "desktop-widgets-off-c89a0ca8784b.jpg",
+    "kind": "installer-desktop-widgets",
+    "edition": "tahoe",
+    "source_commit": "18d37f4a42cb4d01bad7454012936c028fdfc7c2",
+    "archive_sha256": "3f11de54fa641fce310ca399882c930ac5077e74108cce4621954104799d2cd9",
+    "capture": "KDE neon Plasma 6.8.1 Wayland at 2x, before and after placing Calendar, Analog Clock and Timer.",
+    "desktop_source_commit": "f054fb42b602bc72de0d45a3e69371c908253a19",
+    "vm_image_sha256": "74004cc15d7180e9b23c93a2c097824853375651b0984f68d9e940c45d461703"
+  },
+  "desktop-widgets-on.jpg": {
+    "source": "desktop-widgets-on.png",
+    "source_sha256": "d0f61aefe60a5f1964e684d45eb16442027e6a2a3cbb4b014041831ac40cca91",
+    "crop": null,
+    "sha256": "9606e4718641c5e941736e1e889a0b75bec11dc92f37f8d3b2eb01b305a23757",
+    "file": "desktop-widgets-on-9606e4718641.jpg",
+    "kind": "installer-desktop-widgets",
+    "edition": "tahoe",
+    "source_commit": "18d37f4a42cb4d01bad7454012936c028fdfc7c2",
+    "archive_sha256": "3f11de54fa641fce310ca399882c930ac5077e74108cce4621954104799d2cd9",
+    "capture": "KDE neon Plasma 6.8.1 Wayland at 2x, before and after placing Calendar, Analog Clock and Timer.",
+    "desktop_source_commit": "f054fb42b602bc72de0d45a3e69371c908253a19",
+    "vm_image_sha256": "74004cc15d7180e9b23c93a2c097824853375651b0984f68d9e940c45d461703"
   }
 }
