@@ -1,36 +1,285 @@
 {
-  "version": "0.78.1",
+  "version": "0.79.0",
   "gallery_commit": "f09780b200b79302e7c23ef9f6f74d94748bbea3",
-  "implementation_commit": "6e90971b1d7d7223844f4d24ddcc39278604d418",
-  "scope": "Wallpaper selection and per-screen ownership during install, update and light/dark switches.",
+  "implementation_commit": "e89a56d7cdcb0fc1f0870f6de5b3362ed9e4dfb7",
+  "scope": "Component-specific edges, corner antialiasing and window shadows.",
   "checks": [
     {
-      "command": "74 focused wallpaper, installer wizard, theme switch, edition transition and uninstall regression cases passed on Tahoe. Seven edition and slideshow cases passed on the prepared Golden Gate source.",
+      "command": "Reviewed the 16 surfaces in light and dark appearance, on white and black backgrounds in both editions. Approved by the maintainer for release.",
       "result": "passed"
     },
     {
-      "command": "Disposable KDE neon, Plasma 6.8.1 Wayland. Installed the selected Landscape switcher and ran light install, then dark. Verified Landscape Morning and Night through the live Plasma desktops API.",
+      "command": "KDE neon KWin 6.8.1 Wayland, 2x. Captured Finder with the native-edge shader in all four combinations. Verified automatic dusk and dawn with open applications.",
       "result": "passed"
     },
     {
-      "command": "Selected org.kde.slideshow, reinstalled the switcher, then ran light install and dark. The live plugin remained org.kde.slideshow. Installed a custom JPEG, then reinstalled with an implicit edition default. The custom image remained selected and screen 0 remained user-owned.",
+      "command": "Built the Rounded Corners integration against KWin 6.6.4, 6.7.4 and 6.8.1. The isolated Wayland pixel regression passed at 150%.",
       "result": "passed"
     },
     {
-      "command": "Reinstalled all 18 wallpaper packages with the slideshow active and changed Golden Gate metadata on disk. Verified the installed metadata matched the source, the package directory inode survived, and the slideshow remained active.",
-      "result": "passed"
-    },
-    {
-      "command": "python3 src/scripts/component_manifest.py and git diff --check",
+      "command": "39 focused surface and shadow cases, two Nix staging cases and the About rendering check passed.",
       "result": "passed"
     }
   ],
-  "component_sha256": {
-    "src/scripts/theme_switch.py": "71fb7a2b5f42f831b60fcbcd5fcc4f7c59bf6baf60580a49d28fa041d5599d9e",
-    "src/scripts/steps/wallpapers.py": "6deb46ecc9e78a92fa2e2da6740ce2013b1ef83b3e075f5b96272379c3a6119f",
-    "src/scripts/installer_choices.py": "9ca88ba5495444e694dbab94ea60f7ee9aa08d22738b069c346c34fdcb926fba",
-    "src/installer/wizard_window.py": "c068810981e2b1a96f8e1a8ac9b3c7547972e9d4646bbe90b0e139f60e89dac1"
-  },
-  "coverage_limits": "Single live guest monitor on KDE neon Wayland. Mixed monitors and disconnected containments covered by automated tests. CachyOS 6.8.2 was not exercised.",
-  "source_sha256": "33b0bef9dc0f96bdcac570b7a24af9f4390e1c1e3d0819bc0bf5443357768fec"
+  "coverage_limits": "Native X11 rendered Finder on black. Its effect-on and effect-off images were identical. Corner correction demonstrated on Wayland. Automatic transition photographs precede the final Finder-only shader change.",
+  "source_sha256": "0d13a115b6ddfc36c4e67c4d51e8f680319158863624f399ca2f9a19e50ff609",
+  "approved_candidate": "df3ba3b722d41a52581211106bf4e58e3dfa11d6",
+  "reviewed_frames": {
+    "tahoe-candidata-light-white-control": {
+      "source": "1548cec9e2152544a64ec28a4e469367652f3980",
+      "sha256": "a2309a9d116d73ecb0c7e0e8517c22b1420d57772241bdf030ac2a9dd07f00a2"
+    },
+    "tahoe-candidata-light-white-notifications": {
+      "source": "1548cec9e2152544a64ec28a4e469367652f3980",
+      "sha256": "777861a2001f71d00332ff1cb1e13caeaaca87a7899467612211341cc552ec5c"
+    },
+    "tahoe-candidata-light-white-apps": {
+      "source": "1548cec9e2152544a64ec28a4e469367652f3980",
+      "sha256": "71815f153fbab953c0c089781c899e214fd07626bd36c53c0e8e4ea7a73afa5c"
+    },
+    "tahoe-candidata-light-white-panel": {
+      "source": "1548cec9e2152544a64ec28a4e469367652f3980",
+      "sha256": "ed8847901181db81a4a5ac35f218a8a8b7e25030b3c33d80a6c1907f9e8f725d"
+    },
+    "tahoe-candidata-light-white-wifi": {
+      "source": "1548cec9e2152544a64ec28a4e469367652f3980",
+      "sha256": "5e6c7c1e8f0e0e70fd447224dbf02b970a1763716633864672b3af676a93deee"
+    },
+    "tahoe-candidata-light-white-battery": {
+      "source": "1548cec9e2152544a64ec28a4e469367652f3980",
+      "sha256": "e1858b2e19cc768eac36e449d4f37d31c051d945fa88a5eaa5b4e9ee78e41efb"
+    },
+    "tahoe-candidata-light-white-calendar": {
+      "source": "1548cec9e2152544a64ec28a4e469367652f3980",
+      "sha256": "91fa32eed6c4d562751611e284783bd50bd75bdf2e27ceed820f9cc6d4fd4b5c"
+    },
+    "tahoe-candidata-light-white-clipboard": {
+      "source": "1548cec9e2152544a64ec28a4e469367652f3980",
+      "sha256": "dd74e4c0c07d14d998b4ce0e65de28d9d88f1d6662847df44cb3d9cfd445b2fb"
+    },
+    "tahoe-candidata-light-black-control": {
+      "source": "1548cec9e2152544a64ec28a4e469367652f3980",
+      "sha256": "2b9026d998ea7c92daa29fb4e1aeab6b51d1a4501ac603b1d031e560870c7921"
+    },
+    "tahoe-candidata-light-black-notifications": {
+      "source": "1548cec9e2152544a64ec28a4e469367652f3980",
+      "sha256": "75d09843ce45987e3263f6e67a2babce59f3024cec7b039405a7c60dd0bb5099"
+    },
+    "tahoe-candidata-light-black-apps": {
+      "source": "1548cec9e2152544a64ec28a4e469367652f3980",
+      "sha256": "20cb12a08277d454ce77646da69c17ed498200a9f6b9814a93e875bdbbe4b353"
+    },
+    "tahoe-candidata-light-black-panel": {
+      "source": "1548cec9e2152544a64ec28a4e469367652f3980",
+      "sha256": "748a3e4668d738929e990c2ed683f98c02ddd57b7aad33bc054951533a2bde0f"
+    },
+    "tahoe-candidata-light-black-wifi": {
+      "source": "1548cec9e2152544a64ec28a4e469367652f3980",
+      "sha256": "aabddb18400647df8062166e8a12dabf7ea3a06942402b806bd3b6d329839fcf"
+    },
+    "tahoe-candidata-light-black-battery": {
+      "source": "1548cec9e2152544a64ec28a4e469367652f3980",
+      "sha256": "1df9366cc61b0e99961a89b9bfdd6e42342ae7ff4ddaa58dfba60d097c210ca4"
+    },
+    "tahoe-candidata-light-black-calendar": {
+      "source": "1548cec9e2152544a64ec28a4e469367652f3980",
+      "sha256": "c99d403303babf43f4948722f9788d1f8c75187e4ea75142aee81b1d81880ac7"
+    },
+    "tahoe-candidata-light-black-clipboard": {
+      "source": "1548cec9e2152544a64ec28a4e469367652f3980",
+      "sha256": "3d38832d1b8a085d6e60d6165eac88bf38d8b82f9f48e3c5551ee87f50838ce9"
+    },
+    "tahoe-candidata-dark-white-control": {
+      "source": "1548cec9e2152544a64ec28a4e469367652f3980",
+      "sha256": "88ba310a92d4fe83dcac94a446227548d0af75a4b0aa3bc9ba212d1fc5ca82fd"
+    },
+    "tahoe-candidata-dark-white-notifications": {
+      "source": "1548cec9e2152544a64ec28a4e469367652f3980",
+      "sha256": "15fecdf7a1f7489a14f673cc6ef1b7c5368f009a853948b4059169657cad75a2"
+    },
+    "tahoe-candidata-dark-white-apps": {
+      "source": "1548cec9e2152544a64ec28a4e469367652f3980",
+      "sha256": "7d6b0bfc412660bda810b4fb250ad3755bb20530ab444aa1694c021dd7418ad7"
+    },
+    "tahoe-candidata-dark-white-panel": {
+      "source": "1548cec9e2152544a64ec28a4e469367652f3980",
+      "sha256": "b95b21e27cfc2287f6c4ac30fce58934d6fd8e372595a2c5fc5964ed099e5a8a"
+    },
+    "tahoe-candidata-dark-white-wifi": {
+      "source": "1548cec9e2152544a64ec28a4e469367652f3980",
+      "sha256": "777a53cbfacc4bbd3310b18763c425cc157a8a7f87d16389bcc3c067e2e266c6"
+    },
+    "tahoe-candidata-dark-white-battery": {
+      "source": "1548cec9e2152544a64ec28a4e469367652f3980",
+      "sha256": "85847bfc04122f0b4396214bc658b78a609d0eabb2678f5798f74145bcc4c67c"
+    },
+    "tahoe-candidata-dark-white-calendar": {
+      "source": "1548cec9e2152544a64ec28a4e469367652f3980",
+      "sha256": "a790bec8986d7731a57f7d411a6d88173117c59637fb63328a12f676eb5ffe06"
+    },
+    "tahoe-candidata-dark-white-clipboard": {
+      "source": "1548cec9e2152544a64ec28a4e469367652f3980",
+      "sha256": "d1388ba387fa02dd517c49b9740398a5a38dc58cb4a0a2104c21dbb609d30c75"
+    },
+    "tahoe-candidata-dark-black-control": {
+      "source": "1548cec9e2152544a64ec28a4e469367652f3980",
+      "sha256": "a60b1ead8014e78197d6287887ec08373cbeba9afd0437599d402d7991be6e66"
+    },
+    "tahoe-candidata-dark-black-notifications": {
+      "source": "1548cec9e2152544a64ec28a4e469367652f3980",
+      "sha256": "499855f248b6376551b32520ac908bf5b7f43a177bb2b804c52b03b7d73eda37"
+    },
+    "tahoe-candidata-dark-black-apps": {
+      "source": "1548cec9e2152544a64ec28a4e469367652f3980",
+      "sha256": "666b3ff13108db2c26935c32b46fea4d568240eeab3761cdab2f9888a7dfb3fa"
+    },
+    "tahoe-candidata-dark-black-panel": {
+      "source": "1548cec9e2152544a64ec28a4e469367652f3980",
+      "sha256": "76e0d31a57b711ade3b93993d6c55f5892f3e814cf2828f4274b5295b9f02872"
+    },
+    "tahoe-candidata-dark-black-wifi": {
+      "source": "1548cec9e2152544a64ec28a4e469367652f3980",
+      "sha256": "4b4f3245f3731ddde14a3d961ef649bc765f724d5bde7f67a1d609493980bf0a"
+    },
+    "tahoe-candidata-dark-black-battery": {
+      "source": "1548cec9e2152544a64ec28a4e469367652f3980",
+      "sha256": "2508302acaa8d0b23db947aa9a1d9334c073cc36739a75cdb2ec0f72b4e78d24"
+    },
+    "tahoe-candidata-dark-black-calendar": {
+      "source": "1548cec9e2152544a64ec28a4e469367652f3980",
+      "sha256": "18aef38b6488a6b34cd99e25f21a8ec277fd3a8e953a8e99d5e9b17381cb521a"
+    },
+    "tahoe-candidata-dark-black-clipboard": {
+      "source": "1548cec9e2152544a64ec28a4e469367652f3980",
+      "sha256": "dfa716fe36505d51b2e4993d04feaf3964c935642324838652515d200bf874b3"
+    },
+    "tahoe-final-light-white-dock": {
+      "source": "ebea378cb68a11dd1da4a9b0e6cf1c2f1dda7942",
+      "sha256": "ba4acd9236baa65d5f0ae99a69d1a71aa284f079506f2fb049681f3a459b51aa"
+    },
+    "tahoe-final-light-white-about": {
+      "source": "ebea378cb68a11dd1da4a9b0e6cf1c2f1dda7942",
+      "sha256": "99e5718d42061bf486cdd49373e00badbd2b15f49334d5ed562001fef60268a6"
+    },
+    "tahoe-final-light-white-installer": {
+      "source": "ebea378cb68a11dd1da4a9b0e6cf1c2f1dda7942",
+      "sha256": "38bd7cd0f0f6aa4b56bc656b53c514efa17bb305ce47aafe63a9fd433efd0981"
+    },
+    "tahoe-final-light-white-uninstaller": {
+      "source": "ebea378cb68a11dd1da4a9b0e6cf1c2f1dda7942",
+      "sha256": "f5e52b16ce93966706e3aa0da7d336a4397d778bf6f366ca7c9f065fa6b48e76"
+    },
+    "tahoe-final-light-white-menu": {
+      "source": "ebea378cb68a11dd1da4a9b0e6cf1c2f1dda7942",
+      "sha256": "cdb6808c038ded311265987347c0caf3f45a5c60447a04e69b34cceb4f8e513d"
+    },
+    "tahoe-final-light-white-context": {
+      "source": "ebea378cb68a11dd1da4a9b0e6cf1c2f1dda7942",
+      "sha256": "4edef0c4f4c05088e3b47dc7de0b598c22a7dfe2b6bcfa52eafb04ddcce5fdba"
+    },
+    "tahoe-final-light-white-appabout": {
+      "source": "ebea378cb68a11dd1da4a9b0e6cf1c2f1dda7942",
+      "sha256": "cc42b1fbc28cf582a999c4f8574dce6cd5b95d8258e2fd8ded74e411eb701f1b"
+    },
+    "tahoe-final-light-black-dock": {
+      "source": "ebea378cb68a11dd1da4a9b0e6cf1c2f1dda7942",
+      "sha256": "7cfac4a6970ddd5f7d924f06bcb440f65fff26cc37c58706b15646c19b54fc43"
+    },
+    "tahoe-final-light-black-about": {
+      "source": "ebea378cb68a11dd1da4a9b0e6cf1c2f1dda7942",
+      "sha256": "50e3e798295aa85edfbe00f340429e0e7838d34d33bd6e7e0dc402e84a942fce"
+    },
+    "tahoe-final-light-black-installer": {
+      "source": "ebea378cb68a11dd1da4a9b0e6cf1c2f1dda7942",
+      "sha256": "4b118ef4f916c3f8af18df3710179d5feef33b382f61da7b098a1bf042398d1a"
+    },
+    "tahoe-final-light-black-uninstaller": {
+      "source": "ebea378cb68a11dd1da4a9b0e6cf1c2f1dda7942",
+      "sha256": "444fbe92ec0cd11ea47e8c2dae95b5865cccbbe4cb57a7faff75855e9af96cac"
+    },
+    "tahoe-final-light-black-menu": {
+      "source": "ebea378cb68a11dd1da4a9b0e6cf1c2f1dda7942",
+      "sha256": "f348f90be099c35a93712e162bde80dcac1a8abf58f34f755a7258a95267a01b"
+    },
+    "tahoe-final-light-black-context": {
+      "source": "ebea378cb68a11dd1da4a9b0e6cf1c2f1dda7942",
+      "sha256": "ce955fd7ba9860c21b1b573ed93a00d327cde7e9f8ee7c10e8be5d92b170e633"
+    },
+    "tahoe-final-light-black-appabout": {
+      "source": "ebea378cb68a11dd1da4a9b0e6cf1c2f1dda7942",
+      "sha256": "abe725d1057df9778d64c2a887ee761a3100ada334dbc7f210a0403400761b93"
+    },
+    "tahoe-final-dark-white-dock": {
+      "source": "ebea378cb68a11dd1da4a9b0e6cf1c2f1dda7942",
+      "sha256": "b31b2ca852938375b1c1332bfc2f4abf09c01ff1c8898af3e092d21e29e9a42e"
+    },
+    "tahoe-final-dark-white-about": {
+      "source": "ebea378cb68a11dd1da4a9b0e6cf1c2f1dda7942",
+      "sha256": "f6c6809ba7d3fa9adbb600931b5854d142d593a91ecec44f18ec53af1ed4273b"
+    },
+    "tahoe-final-dark-white-installer": {
+      "source": "ebea378cb68a11dd1da4a9b0e6cf1c2f1dda7942",
+      "sha256": "a02a8beab062c0268dc9c9996b4f56ea10f4cba6830e636fd261686ac3ac450b"
+    },
+    "tahoe-final-dark-white-uninstaller": {
+      "source": "ebea378cb68a11dd1da4a9b0e6cf1c2f1dda7942",
+      "sha256": "2a0238eeb4cdf697b19db82c02c407edf477252a32869a99a4047a354e796719"
+    },
+    "tahoe-final-dark-white-menu": {
+      "source": "ebea378cb68a11dd1da4a9b0e6cf1c2f1dda7942",
+      "sha256": "eea937a8143d695dccf1c5c2837994ddfd8bce13072e8ebb708e3ddad5fbb30f"
+    },
+    "tahoe-final-dark-white-context": {
+      "source": "ebea378cb68a11dd1da4a9b0e6cf1c2f1dda7942",
+      "sha256": "01a949f99328801fea8c4d8e180766c94d9e066b6a6ff51db3cd610f702bf5a5"
+    },
+    "tahoe-final-dark-white-appabout": {
+      "source": "ebea378cb68a11dd1da4a9b0e6cf1c2f1dda7942",
+      "sha256": "fa36c50974094bfc027bf8de2424a590650bcc8b0f50a3edc17ef6f352b6abe5"
+    },
+    "tahoe-final-dark-black-dock": {
+      "source": "ebea378cb68a11dd1da4a9b0e6cf1c2f1dda7942",
+      "sha256": "e99789d920c3141d0da247f6168d6da88a673e0adcbbf2e9aa0a7ef37f8cc433"
+    },
+    "tahoe-final-dark-black-about": {
+      "source": "ebea378cb68a11dd1da4a9b0e6cf1c2f1dda7942",
+      "sha256": "b0d925345f71ef94d32948815b972d47f30dda963120870ae8641bf2e7ba7aa5"
+    },
+    "tahoe-final-dark-black-installer": {
+      "source": "ebea378cb68a11dd1da4a9b0e6cf1c2f1dda7942",
+      "sha256": "4e8b632cab99d75e75a700c5960bf943fb808a096f7ef218332b60ccf9db36d2"
+    },
+    "tahoe-final-dark-black-uninstaller": {
+      "source": "ebea378cb68a11dd1da4a9b0e6cf1c2f1dda7942",
+      "sha256": "d058f607a948e032e300281d57dbafa8a1b7f96f9f38d9e78e60f9cf3c50559c"
+    },
+    "tahoe-final-dark-black-menu": {
+      "source": "ebea378cb68a11dd1da4a9b0e6cf1c2f1dda7942",
+      "sha256": "2c0376502ed54c35b4e4d8c64ae75b6e5dc2ff37840e4cecf52d99dd4582031c"
+    },
+    "tahoe-final-dark-black-context": {
+      "source": "ebea378cb68a11dd1da4a9b0e6cf1c2f1dda7942",
+      "sha256": "b800d4d42a272b9bf0b7e0451b1454b8ee0e22a1ff237523bcb945091decc866"
+    },
+    "tahoe-final-dark-black-appabout": {
+      "source": "ebea378cb68a11dd1da4a9b0e6cf1c2f1dda7942",
+      "sha256": "9cc1ac5eb9ce4ed758918b7e3ea0701f9849eff85038da1fc1cc05ef1545a47a"
+    },
+    "tahoe-corners-light-white-finder": {
+      "source": "df3ba3b722d41a52581211106bf4e58e3dfa11d6",
+      "sha256": "79d37bdec694c51fbf23e689669d912077ca289f1a5941a1db5614ba2640504b"
+    },
+    "tahoe-corners-light-black-finder": {
+      "source": "df3ba3b722d41a52581211106bf4e58e3dfa11d6",
+      "sha256": "bb51226831f000af4d739654c2a0bf9895884da938e777bf5f6a3a474b358879"
+    },
+    "tahoe-corners-dark-white-finder": {
+      "source": "df3ba3b722d41a52581211106bf4e58e3dfa11d6",
+      "sha256": "e4376b2d167ce11fd37565196c1b70320e897500a477ac324bfd6662a60730b3"
+    },
+    "tahoe-corners-dark-black-finder": {
+      "source": "df3ba3b722d41a52581211106bf4e58e3dfa11d6",
+      "sha256": "e079bd7619613816b49a86ad49ae82394d915a39431870eee340a209f3ca331c"
+    }
+  }
 }

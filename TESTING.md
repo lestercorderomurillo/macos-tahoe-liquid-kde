@@ -1,6 +1,6 @@
 # Installer testing
 
-**v0.78.1**. Verified selected project wallpapers, custom images and Plasma slideshows through appearance changes and focused installer updates on KDE neon Wayland. [Evidence and coverage](release-evidence.json).
+**v0.79.0**. Reviewed window, Dock, menu and installer edges on white and black backgrounds in both appearances on KDE neon Wayland. [Evidence and coverage](release-evidence.json).
 
 [Installer photo evidence](src/screenshots/previews/wizard-tahoe-provenance-531f633f4ff6.json).
 
