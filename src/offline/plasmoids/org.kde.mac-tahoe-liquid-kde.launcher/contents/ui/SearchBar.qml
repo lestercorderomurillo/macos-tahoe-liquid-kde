@@ -10,11 +10,12 @@ RowLayout {
     property alias textField: textField
     property alias showMenuButton: menuButton.visible
     readonly property bool menuOpen: menuButton.menuOpen
+    property bool detachedWindow: false
     readonly property bool goldenGateCapsule: main.goldenGateEdition && main.detachedSearch
     readonly property color textColor: main.labelColor(textField,
-        textField.leftPadding + Math.min(textField.availableWidth,
+        textField.leftPadding + Math.min(Math.max(0, textField.width - textField.leftPadding - textField.rightPadding),
             textField.text.length ? Math.max(1, textField.contentWidth) : placeholderMetrics.advanceWidth) / 2,
-        "transparent", searchFieldBar === main.searchBar && main.detachedSearch,
+        "transparent", detachedWindow,
         goldenGateCapsule ? "white" : main.textColor)
     TextMetrics {
         id: placeholderMetrics

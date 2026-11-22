@@ -7,11 +7,15 @@
     "file": "desktop-tahoe-light-a7d8cb0805ad.jpg"
   },
   "desktop-golden-gate-light.jpg": {
-    "source": "build/captures/v0.60.0/frames/golden-gate-light-showcase.png",
-    "source_sha256": "6cc8fb8abde5153c5253f75ba2be2581676432936397a0d1759a11cb0d7d19ce",
+    "source": "desktop-golden-gate-light.png",
+    "source_sha256": "55463f99271d819e06f9558697f1c5f9982b6457a0512f6e1db623300504f82f",
     "crop": null,
-    "sha256": "09ee894401653cb17d1c20192eb6e20cf0af4e7997b2aa3ef9b6621ea6c2b9bc",
-    "file": "desktop-golden-gate-light-09ee89440165.jpg"
+    "sha256": "ee115086ceaf672cc7c93b5951a3f30f2f2eae18de5f2839ff15ea29ea552c88",
+    "file": "desktop-golden-gate-light-ee115086ceaf.jpg",
+    "edition": "golden-gate",
+    "kind": "installer-desktop",
+    "source_commit": "378e3be864cea68c501b12002bfce2a93db76bd8",
+    "vm_image_sha256": "74004cc15d7180e9b23c93a2c097824853375651b0984f68d9e940c45d461703"
   },
   "firefox-light.jpg": {
     "source": "build/installer-wizard-mocks-v5/firefox-frame-light.png",
@@ -88,7 +92,7 @@
       },
       {
         "id": "{c6a9bc7b-446f-4e88-ac94-942ab4838752}",
-        "caption": "Documents \u2014 Dolphin",
+        "caption": "Documents — Dolphin",
         "resourceClass": "org.kde.dolphin",
         "type": 0,
         "appletPopup": false,
@@ -150,7 +154,7 @@
       },
       {
         "id": "{c6a9bc7b-446f-4e88-ac94-942ab4838752}",
-        "caption": "Documents \u2014 Dolphin",
+        "caption": "Documents — Dolphin",
         "resourceClass": "org.kde.dolphin",
         "type": 0,
         "appletPopup": false,
@@ -316,11 +320,15 @@
     "file": "desktop-tahoe-dark-ac0055cedc8f.jpg"
   },
   "desktop-golden-gate-dark.jpg": {
-    "source": "build/captures/v0.60.0/frames/golden-gate-dark-showcase.png",
-    "source_sha256": "bfa17397c9aca3962572bb013d822fe4b0db801e25eedf3fa8f758b447d676c3",
+    "source": "desktop-golden-gate-dark.png",
+    "source_sha256": "c69c698b53b7e1a406c6511296c21ffe82d62b746c94c8adb9b33fafbd80685d",
     "crop": null,
-    "sha256": "496e2430c690439bc91217d696bf3bb77adb7ef986e076841106fa27b1f6489e",
-    "file": "desktop-golden-gate-dark-496e2430c690.jpg"
+    "sha256": "ff5a0bf8bdfc10a5cedec7b60806c541e3a0a9f0a43e6b738c515831bb7f05ff",
+    "file": "desktop-golden-gate-dark-ff5a0bf8bdfc.jpg",
+    "edition": "golden-gate",
+    "kind": "installer-desktop",
+    "source_commit": "378e3be864cea68c501b12002bfce2a93db76bd8",
+    "vm_image_sha256": "74004cc15d7180e9b23c93a2c097824853375651b0984f68d9e940c45d461703"
   },
   "firefox-dark.jpg": {
     "source": "build/installer-wizard-mocks-v5/firefox-frame-dark.png",
@@ -397,7 +405,7 @@
       },
       {
         "id": "{8bfcc1bd-014e-4ca6-a7fd-ade1003fc5a7}",
-        "caption": "Documents \u2014 Dolphin",
+        "caption": "Documents — Dolphin",
         "resourceClass": "org.kde.dolphin",
         "type": 0,
         "appletPopup": false,
@@ -459,7 +467,7 @@
       },
       {
         "id": "{8bfcc1bd-014e-4ca6-a7fd-ade1003fc5a7}",
-        "caption": "Documents \u2014 Dolphin",
+        "caption": "Documents — Dolphin",
         "resourceClass": "org.kde.dolphin",
         "type": 0,
         "appletPopup": false,
@@ -695,18 +703,26 @@
     "file": "corners-0acb8dedee34.jpg"
   },
   "dock.jpg": {
-    "source": "src/screenshots/dock_1_v4-e128d6bd0c58.png",
-    "source_sha256": "e128d6bd0c589e1087451b71b0a418ac69c4e9ec5260e9c3b5ad37da9f532155",
+    "source": "src/screenshots/previews/readme-tahoe-light-dock-regular-b26e1bcf62f0.webp",
+    "source_sha256": "b26e1bcf62f090c090d4851f3a07a58e2332c51f60bfcc244e05f7404d8a82aa",
     "crop": null,
-    "sha256": "1b3607a23cd5299a06bcc479a735d1ac731db7431eac93a5bd1a1bd696cff17f",
-    "file": "dock-1b3607a23cd5.jpg"
+    "sha256": "a2ce396dc5fcd878271c1595a8337bf9b2bb54d5186597bc7e6f4c74ae1f4dfc",
+    "file": "dock-a2ce396dc5fc.jpg",
+    "source_commit": "12315545381b56d69fa76078fe253980bd838c21",
+    "vm_image_sha256": "74004cc15d7180e9b23c93a2c097824853375651b0984f68d9e940c45d461703",
+    "edition": "tahoe",
+    "kind": "reviewed-vm-photo"
   },
   "boot.jpg": {
-    "source": "src/screenshots/boot_v4-f685ec98f1e4.png",
-    "source_sha256": "f685ec98f1e4407f2624c352f6b6e18ae8c2a686a64f162f6d0666d8fcbfb4d0",
+    "source": "src/screenshots/previews/readme-tahoe-light-boot-6d6f3b7d649e.webp",
+    "source_sha256": "6d6f3b7d649ee6ceca440db0b39d25dedd0fde76d86274c45c39398086bcd920",
     "crop": null,
-    "sha256": "bc230f4d8248c54a474d2d8cd6f9d9a89020165d0aa5251aa562ffcd3dbf0bd8",
-    "file": "boot-bc230f4d8248.jpg"
+    "sha256": "0ca2e673847287f50c6721d0e60b90217770a2be3a9c4629dc098451548e3a67",
+    "file": "boot-0ca2e6738472.jpg",
+    "source_commit": "2368236ece9096533e702685722f518aa379bc07",
+    "vm_image_sha256": "74004cc15d7180e9b23c93a2c097824853375651b0984f68d9e940c45d461703",
+    "edition": "tahoe",
+    "kind": "reviewed-vm-photo"
   },
   "panel.jpg": {
     "source": "build/captures/v0.60.0/frames/tahoe-light-showcase.png",
@@ -2438,52 +2454,82 @@
     "capture": "Disposable pinned KDE neon VM; focused Nautilus; 3840x2160 at 4x scale; lossless crop"
   },
   "glass-preset-tahoe-clear-light.png": {
-    "source": "build/captures/launcher-balanced/tahoe-clear-light.png",
-    "source_sha256": "66b8538769de1b45bf72cca70da60bd03dcc7163be3ac2fb95966aac08741501",
-    "sha256": "66b8538769de1b45bf72cca70da60bd03dcc7163be3ac2fb95966aac08741501",
-    "file": "glass-preset-tahoe-clear-light-66b8538769de.png",
+    "source": "glass-tahoe-clear-light.png",
+    "source_sha256": "f730cf3a40ad5ef34f1bbb3e43b42748afc0a28956697fac06792e4b82802857",
     "crop": null,
-    "capture": "Native 3840x2160 disposable VM capture of the Golden Gate launcher on Tahoe Iridescence; material values verified before capture"
+    "sha256": "f730cf3a40ad5ef34f1bbb3e43b42748afc0a28956697fac06792e4b82802857",
+    "file": "glass-preset-tahoe-clear-light-f730cf3a40ad.png",
+    "edition": "golden-gate",
+    "kind": "installer-material",
+    "source_commit": "378e3be864cea68c501b12002bfce2a93db76bd8",
+    "vm_image_sha256": "74004cc15d7180e9b23c93a2c097824853375651b0984f68d9e940c45d461703",
+    "material": "glass-tahoe-clear",
+    "wallpaper": "MacTahoe-Iridescence"
   },
   "glass-preset-tahoe-clear-dark.png": {
-    "source": "build/captures/launcher-balanced/tahoe-clear-dark.png",
-    "source_sha256": "afad6fa93bd4ced5e58d7a6c074cc0397e5cb0ebb064492cd3b11f4cca0d5fe5",
-    "sha256": "afad6fa93bd4ced5e58d7a6c074cc0397e5cb0ebb064492cd3b11f4cca0d5fe5",
-    "file": "glass-preset-tahoe-clear-dark-afad6fa93bd4.png",
+    "source": "glass-tahoe-clear-dark.png",
+    "source_sha256": "cf929b4911f30945d56d90091353fae5dfe8e10423cee09f4cd97eda2d53237f",
     "crop": null,
-    "capture": "Native 3840x2160 disposable VM capture of the Golden Gate launcher on Tahoe Iridescence; material values verified before capture"
+    "sha256": "cf929b4911f30945d56d90091353fae5dfe8e10423cee09f4cd97eda2d53237f",
+    "file": "glass-preset-tahoe-clear-dark-cf929b4911f3.png",
+    "edition": "golden-gate",
+    "kind": "installer-material",
+    "source_commit": "378e3be864cea68c501b12002bfce2a93db76bd8",
+    "vm_image_sha256": "74004cc15d7180e9b23c93a2c097824853375651b0984f68d9e940c45d461703",
+    "material": "glass-tahoe-clear",
+    "wallpaper": "MacTahoe-Iridescence"
   },
   "glass-preset-tahoe-frosted-light.png": {
-    "source": "build/captures/launcher-balanced/tahoe-frosted-light.png",
-    "source_sha256": "8a6194eb5270a19ee32e28c6ae72aeeca239ad4893c4d90d8dbb9624cafe4dd4",
-    "sha256": "8a6194eb5270a19ee32e28c6ae72aeeca239ad4893c4d90d8dbb9624cafe4dd4",
-    "file": "glass-preset-tahoe-frosted-light-8a6194eb5270.png",
+    "source": "glass-tahoe-frosted-light.png",
+    "source_sha256": "2b6e6bef179e68437e88926f42c1a43427b345c9b1bff28c6974305db1c2e7d0",
     "crop": null,
-    "capture": "Native 3840x2160 disposable VM capture of the Golden Gate launcher on Tahoe Iridescence; material values verified before capture"
+    "sha256": "2b6e6bef179e68437e88926f42c1a43427b345c9b1bff28c6974305db1c2e7d0",
+    "file": "glass-preset-tahoe-frosted-light-2b6e6bef179e.png",
+    "edition": "golden-gate",
+    "kind": "installer-material",
+    "source_commit": "378e3be864cea68c501b12002bfce2a93db76bd8",
+    "vm_image_sha256": "74004cc15d7180e9b23c93a2c097824853375651b0984f68d9e940c45d461703",
+    "material": "glass-tahoe-frosted",
+    "wallpaper": "MacTahoe-Iridescence"
   },
   "glass-preset-tahoe-frosted-dark.png": {
-    "source": "build/captures/launcher-balanced/tahoe-frosted-dark.png",
-    "source_sha256": "cdd8fdc107dd8ece00bea047cdf57b0d100bab10b0f25d916a6d65e20b80bac5",
-    "sha256": "cdd8fdc107dd8ece00bea047cdf57b0d100bab10b0f25d916a6d65e20b80bac5",
-    "file": "glass-preset-tahoe-frosted-dark-cdd8fdc107dd.png",
+    "source": "glass-tahoe-frosted-dark.png",
+    "source_sha256": "0b60851affc4ca4aeb3332b7d98334b03d07c21aeae3caf11b264bd29bd252f9",
     "crop": null,
-    "capture": "Native 3840x2160 disposable VM capture of the Golden Gate launcher on Tahoe Iridescence; material values verified before capture"
+    "sha256": "0b60851affc4ca4aeb3332b7d98334b03d07c21aeae3caf11b264bd29bd252f9",
+    "file": "glass-preset-tahoe-frosted-dark-0b60851affc4.png",
+    "edition": "golden-gate",
+    "kind": "installer-material",
+    "source_commit": "378e3be864cea68c501b12002bfce2a93db76bd8",
+    "vm_image_sha256": "74004cc15d7180e9b23c93a2c097824853375651b0984f68d9e940c45d461703",
+    "material": "glass-tahoe-frosted",
+    "wallpaper": "MacTahoe-Iridescence"
   },
   "glass-preset-golden-gate-official-light.png": {
-    "source": "build/captures/launcher-balanced/golden-gate-official-light.png",
-    "source_sha256": "13ca03a3396c4985018de7b9604206a154b783b46374d989933dea1998abb48e",
-    "sha256": "13ca03a3396c4985018de7b9604206a154b783b46374d989933dea1998abb48e",
-    "file": "glass-preset-golden-gate-official-light-13ca03a3396c.png",
+    "source": "glass-golden-gate-official-light.png",
+    "source_sha256": "4d444bd41fde7f3756e87fac5e674cfc835ac7bb16490b9bfecfab282ae36f1a",
     "crop": null,
-    "capture": "Native 3840x2160 disposable VM capture of the Golden Gate launcher on Tahoe Iridescence; material values verified before capture"
+    "sha256": "4d444bd41fde7f3756e87fac5e674cfc835ac7bb16490b9bfecfab282ae36f1a",
+    "file": "glass-preset-golden-gate-official-light-4d444bd41fde.png",
+    "edition": "golden-gate",
+    "kind": "installer-material",
+    "source_commit": "378e3be864cea68c501b12002bfce2a93db76bd8",
+    "vm_image_sha256": "74004cc15d7180e9b23c93a2c097824853375651b0984f68d9e940c45d461703",
+    "material": "glass-golden-gate-official",
+    "wallpaper": "MacTahoe-Iridescence"
   },
   "glass-preset-golden-gate-official-dark.png": {
-    "source": "build/captures/launcher-balanced/golden-gate-official-dark.png",
-    "source_sha256": "3ab1905fbb30a67cd52bc407cfed97852b2e2759638c5fedaf20c8b58f2928bc",
-    "sha256": "3ab1905fbb30a67cd52bc407cfed97852b2e2759638c5fedaf20c8b58f2928bc",
-    "file": "glass-preset-golden-gate-official-dark-3ab1905fbb30.png",
+    "source": "glass-golden-gate-official-dark.png",
+    "source_sha256": "b98a46c3029802acfa3bceb6d04a6d356b365ee5afed2d61641e303a2248e199",
     "crop": null,
-    "capture": "Native 3840x2160 disposable VM capture of the Golden Gate launcher on Tahoe Iridescence; material values verified before capture"
+    "sha256": "b98a46c3029802acfa3bceb6d04a6d356b365ee5afed2d61641e303a2248e199",
+    "file": "glass-preset-golden-gate-official-dark-b98a46c30298.png",
+    "edition": "golden-gate",
+    "kind": "installer-material",
+    "source_commit": "378e3be864cea68c501b12002bfce2a93db76bd8",
+    "vm_image_sha256": "74004cc15d7180e9b23c93a2c097824853375651b0984f68d9e940c45d461703",
+    "material": "glass-golden-gate-official",
+    "wallpaper": "MacTahoe-Iridescence"
   },
   "prism.jpg": {
     "source": "src/offline/wallpapers/MacPrism/contents/images/3840x2160.jpg",
@@ -2798,5 +2844,31 @@
     "tint": "#8e8e93",
     "generator": "src/scripts/installer_preview_assets.py",
     "kind": "generated-icon-preview"
+  },
+  "glass-preset-water-light.png": {
+    "source": "glass-water-light.png",
+    "source_sha256": "504a5d87b7aded10b8f91fea2cb37b61ccf5945bf4e243b80a22926dd37e8a93",
+    "crop": null,
+    "sha256": "504a5d87b7aded10b8f91fea2cb37b61ccf5945bf4e243b80a22926dd37e8a93",
+    "file": "glass-preset-water-light-504a5d87b7ad.png",
+    "edition": "golden-gate",
+    "kind": "installer-material",
+    "source_commit": "378e3be864cea68c501b12002bfce2a93db76bd8",
+    "vm_image_sha256": "74004cc15d7180e9b23c93a2c097824853375651b0984f68d9e940c45d461703",
+    "material": "glass-water",
+    "wallpaper": "MacTahoe-Iridescence"
+  },
+  "glass-preset-water-dark.png": {
+    "source": "glass-water-dark.png",
+    "source_sha256": "1809c6abe14948c8e3f2e841794d6e03e62b78b355cc1298c2a44a36b84bf776",
+    "crop": null,
+    "sha256": "1809c6abe14948c8e3f2e841794d6e03e62b78b355cc1298c2a44a36b84bf776",
+    "file": "glass-preset-water-dark-1809c6abe149.png",
+    "edition": "golden-gate",
+    "kind": "installer-material",
+    "source_commit": "378e3be864cea68c501b12002bfce2a93db76bd8",
+    "vm_image_sha256": "74004cc15d7180e9b23c93a2c097824853375651b0984f68d9e940c45d461703",
+    "material": "glass-water",
+    "wallpaper": "MacTahoe-Iridescence"
   }
 }

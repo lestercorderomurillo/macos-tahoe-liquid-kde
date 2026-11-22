@@ -124,6 +124,7 @@ Item {
 			id: detachedSearchSlot
 			SearchBar {
 				id: detachedSearchBar
+                detachedWindow: true
 				anchors.fill: parent
 				showMenuButton: !main.clipboardMode
 				Keys.priority: Keys.AfterItem

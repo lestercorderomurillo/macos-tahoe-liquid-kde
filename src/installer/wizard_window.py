@@ -1449,13 +1449,14 @@ class InstallerWindow(OpaqueSurface):
     def page_glass_style(self):
         mode = self.mode
         automatic = self.choices["appearance"] == "auto"
-        self.cards("glass_style", [
-            (preset["choice"], preset["title"], "", picture(f"glass-preset-{photo}-{mode}.png",
-                232, 112, f"glass-preset-{photo}-dark.png" if automatic else None,
-                cover=True, crop=(820, 300, 1280, 1214))
-                if f"glass-preset-{photo}-{mode}.png" in ASSET_FILES else None)
-            for preset in GLASS_PRESETS for photo in (preset["photo"],)
-        ], columns=2)
+        items = []
+        for preset in GLASS_PRESETS:
+            stem = "glass-preset-" + preset["photo"]
+            preview = picture(f"{stem}-{mode}.png", 360, 116,
+                              f"{stem}-dark.png" if automatic else None,
+                              cover=True, crop=(820, 245, 2200, 710))
+            items.append((preset["choice"], preset["title"], "", preview))
+        self.cards("glass_style", items, columns=2, compact=True)
 
     def page_shadows(self):
         self.cards("shadows", [

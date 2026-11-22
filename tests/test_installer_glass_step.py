@@ -47,13 +47,13 @@ for key, material, blur, variant in [('classic', '1', 3.75, '0'), ('tinted', '1'
     assert card.photo is not None and not card.photo.pixmap.isNull()
     preset = {'classic': 'tahoe-clear', 'official': 'golden-gate-official', 'tinted': 'tahoe-frosted', 'water': 'water'}[key]
     actual = card.photo.pixmap.toImage()
-    light = picture(f'glass-preset-{preset}-light.png', 232, 112, cover=True,
-                    crop=(820, 300, 1280, 1214)).toImage()
-    dark = picture(f'glass-preset-{preset}-dark.png', 232, 112, cover=True,
-                   crop=(820, 300, 1280, 1214)).toImage()
+    light = picture(f'glass-preset-{preset}-light.png', 360, 116, cover=True,
+                    crop=(820, 245, 2200, 710)).toImage()
+    dark = picture(f'glass-preset-{preset}-dark.png', 360, 116, cover=True,
+                   crop=(820, 245, 2200, 710)).toImage()
     if sys.argv[2] == 'auto':
         # Away from the separator: light on the left, dark on the right.
-        for x, expected in [(60, light), (400, dark)]:
+        for x, expected in [(60, light), (600, dark)]:
             for y in (40, 110, 180):
                 assert actual.pixelColor(x, y) == expected.pixelColor(x, y)
     else:
