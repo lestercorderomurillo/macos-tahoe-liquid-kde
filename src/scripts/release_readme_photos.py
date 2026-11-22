@@ -44,8 +44,13 @@ def inventory(repo):
                 expected = {path for path in expected if "-dock-" not in path}
             if doc == english and not any("-finder-red-" in path or "-finder-blue-" in path for path in sources):
                 expected = {path for path in expected if "-finder-red-" not in path and "-finder-blue-" not in path}
-            require(set(sources) == expected, f"Capture mismatch in {doc}")
-            continue
+            if doc == english:
+                # English can introduce a photographed feature before translation.
+                require(expected <= set(sources), f"Missing captures in {doc}")
+                sources = [src for src in sources if src not in expected]
+            else:
+                require(set(sources) == expected, f"Capture mismatch in {doc}")
+                continue
         for src in sources:
             filename = Path(src).name
             match = re.fullmatch(
