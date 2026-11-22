@@ -142,6 +142,10 @@ def check_dock_geometry(panels: list[dict]) -> None:
             origin = min(w["geometry"][axis] for w in widgets)
             for widget in widgets:
                 geometry = widget["geometry"]
+                # The Apps pin shares its controller with the legacy launcher widget.
+                if (widget["type"] == launcher and geometry["width"] == geometry["height"] == 0
+                        and any(w["type"] == "org.kde.mac-tahoe-liquid-kde.dockseparator" for w in widgets)):
+                    continue
                 if geometry[extent] <= 0 or geometry[axis] < -1.5 or geometry[axis] + geometry[extent] - origin > panel["length"] + 1.5:
                     raise AppearanceMismatch("Dock widget lies outside the panel")
             if i == 0 or i + 1 == len(widgets):
