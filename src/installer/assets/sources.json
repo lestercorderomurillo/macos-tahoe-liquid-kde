@@ -1,10 +1,14 @@
 {
   "desktop-tahoe-light.jpg": {
-    "source": "build/captures/v0.60.0/frames/tahoe-light-showcase.png",
-    "source_sha256": "f0bbdcc567b72adfa1095b58f83f236f85079bd8827bb75c47a6bb80c95ba962",
+    "source": "desktop-tahoe-light.png",
+    "source_sha256": "0adedd7f3eed17b873c93e4db84bf4e31a5555371ba9839e9bf46ab14753dc2b",
     "crop": null,
-    "sha256": "a7d8cb0805ad1882e34be53cac55d5903634adaed7545b7d2de611a4c4b8e320",
-    "file": "desktop-tahoe-light-a7d8cb0805ad.jpg"
+    "sha256": "bdb63e73f1e2f7aa7b0972dce9fe091c4f653a6efede703139afb4686755530a",
+    "file": "desktop-tahoe-light-bdb63e73f1e2.jpg",
+    "edition": "tahoe",
+    "kind": "installer-desktop",
+    "source_commit": "b356b8ea18bceb3455bac520c123a90bc60d1564",
+    "vm_image_sha256": "74004cc15d7180e9b23c93a2c097824853375651b0984f68d9e940c45d461703"
   },
   "desktop-golden-gate-light.jpg": {
     "source": "desktop-golden-gate-light.png",
@@ -31,22 +35,24 @@
     "file": "firefox-light-9c02f1cfb2f7.jpg"
   },
   "dolphin-light.jpg": {
-    "source": "build/captures/v0.66.1-file-previews/dolphin-light.png",
-    "source_sha256": "86c4683cea646922a152e52292ff228670fa9d58045a121bb5a0cecbd062bc3d",
-    "source_commit": "b762888c5ffedfe106de3b8c94ee37b6b2712e89",
-    "vm_image_sha256": "412e7933f10add20b921b92c02709e7eea56acd14dc14cf654f58fba4ea3cc9d",
+    "source": "dolphin-light.png",
+    "source_sha256": "92e32e5d4f7ca350561617be59eb4302af4be72d23399e8429c5e3a1b71ac00f",
     "crop": [
       932,
       452,
       2908,
       1708
     ],
-    "sha256": "1ec7ce2a75e9ba8bf8db551acbf5de9100ee628125812591d1c9c6e508b83790",
-    "file": "dolphin-light-1ec7ce2a75e9.jpg",
-    "kind": "focused-vm-file-preview",
+    "sha256": "b531845568646646b6255238a8205136383561d2f23eaa564d3e44370e24cbd2",
+    "file": "dolphin-light-b53184556864.jpg",
+    "edition": "tahoe",
+    "kind": "installer-file-preview",
+    "source_commit": "b356b8ea18bceb3455bac520c123a90bc60d1564",
+    "vm_image_sha256": "74004cc15d7180e9b23c93a2c097824853375651b0984f68d9e940c45d461703",
+    "resource_class": "org.kde.dolphin",
     "before": [
       {
-        "id": "{c2508302-f20b-4407-87a3-82d44f09a401}",
+        "id": "{1e3959df-2a3c-44d2-b16e-9f0d5510b105}",
         "caption": "",
         "resourceClass": "plasmashell",
         "type": 1,
@@ -61,7 +67,7 @@
         }
       },
       {
-        "id": "{887b48c3-ae9d-4c03-b505-63dc01673ac3}",
+        "id": "{d3422d3b-01ad-4902-bb17-c07bc3933ff9}",
         "caption": "",
         "resourceClass": "plasmashell",
         "type": 2,
@@ -72,26 +78,26 @@
           "x": 0,
           "y": 0,
           "width": 1920,
-          "height": 32
+          "height": 30
         }
       },
       {
-        "id": "{3bd6fbf4-6aea-42bf-8de8-d4281026e3d9}",
+        "id": "{ae4b132f-0c9a-4c9b-961d-8849193991b7}",
         "caption": "",
         "resourceClass": "plasmashell",
         "type": 2,
         "appletPopup": false,
-        "hidden": true,
+        "hidden": false,
         "active": false,
         "geometry": {
-          "x": 644,
+          "x": 604,
           "y": 996,
-          "width": 632,
+          "width": 712,
           "height": 84
         }
       },
       {
-        "id": "{c6a9bc7b-446f-4e88-ac94-942ab4838752}",
+        "id": "{7d632371-55bc-4b65-bb87-1149b5a5b94f}",
         "caption": "Documents — Dolphin",
         "resourceClass": "org.kde.dolphin",
         "type": 0,
@@ -108,7 +114,7 @@
     ],
     "after": [
       {
-        "id": "{c2508302-f20b-4407-87a3-82d44f09a401}",
+        "id": "{1e3959df-2a3c-44d2-b16e-9f0d5510b105}",
         "caption": "",
         "resourceClass": "plasmashell",
         "type": 1,
@@ -123,7 +129,7 @@
         }
       },
       {
-        "id": "{887b48c3-ae9d-4c03-b505-63dc01673ac3}",
+        "id": "{d3422d3b-01ad-4902-bb17-c07bc3933ff9}",
         "caption": "",
         "resourceClass": "plasmashell",
         "type": 2,
@@ -134,26 +140,26 @@
           "x": 0,
           "y": 0,
           "width": 1920,
-          "height": 32
+          "height": 30
         }
       },
       {
-        "id": "{3bd6fbf4-6aea-42bf-8de8-d4281026e3d9}",
+        "id": "{ae4b132f-0c9a-4c9b-961d-8849193991b7}",
         "caption": "",
         "resourceClass": "plasmashell",
         "type": 2,
         "appletPopup": false,
-        "hidden": true,
+        "hidden": false,
         "active": false,
         "geometry": {
-          "x": 644,
+          "x": 604,
           "y": 996,
-          "width": 632,
+          "width": 712,
           "height": 84
         }
       },
       {
-        "id": "{c6a9bc7b-446f-4e88-ac94-942ab4838752}",
+        "id": "{7d632371-55bc-4b65-bb87-1149b5a5b94f}",
         "caption": "Documents — Dolphin",
         "resourceClass": "org.kde.dolphin",
         "type": 0,
@@ -168,26 +174,27 @@
         }
       }
     ],
-    "stable_frames": true,
-    "reviewed": true
+    "stable_frames": true
   },
   "nautilus-light.jpg": {
-    "source": "build/captures/v0.66.1-file-previews/nautilus-light.png",
-    "source_sha256": "4eed87e79aac5df988ef8fabdb59861a6c35e5969f57274cec05d712583ee4e6",
-    "source_commit": "b762888c5ffedfe106de3b8c94ee37b6b2712e89",
-    "vm_image_sha256": "412e7933f10add20b921b92c02709e7eea56acd14dc14cf654f58fba4ea3cc9d",
+    "source": "nautilus-light.png",
+    "source_sha256": "b62dbd8eaf90f49a9f72a71c68d9fce3e529586880cc4c2cf081eaea069e0469",
     "crop": [
       932,
       452,
       2908,
       1708
     ],
-    "sha256": "b2f5b2748f19484678ac00b3fa9da85b150cbcafe83f7f1fd062191d497a53a4",
-    "file": "nautilus-light-b2f5b2748f19.jpg",
-    "kind": "focused-vm-file-preview",
+    "sha256": "5cdeb61f5b97c3eda117fe492934b8c7b82c47056c631583dfb7cdb0b922f599",
+    "file": "nautilus-light-5cdeb61f5b97.jpg",
+    "edition": "tahoe",
+    "kind": "installer-file-preview",
+    "source_commit": "b356b8ea18bceb3455bac520c123a90bc60d1564",
+    "vm_image_sha256": "74004cc15d7180e9b23c93a2c097824853375651b0984f68d9e940c45d461703",
+    "resource_class": "org.gnome.Nautilus",
     "before": [
       {
-        "id": "{c2508302-f20b-4407-87a3-82d44f09a401}",
+        "id": "{808352ec-834c-47c2-9934-4e34ae29569b}",
         "caption": "",
         "resourceClass": "plasmashell",
         "type": 1,
@@ -202,7 +209,7 @@
         }
       },
       {
-        "id": "{887b48c3-ae9d-4c03-b505-63dc01673ac3}",
+        "id": "{45752dde-81b6-4918-b106-536f97b56dcb}",
         "caption": "",
         "resourceClass": "plasmashell",
         "type": 2,
@@ -213,26 +220,26 @@
           "x": 0,
           "y": 0,
           "width": 1920,
-          "height": 32
+          "height": 30
         }
       },
       {
-        "id": "{3bd6fbf4-6aea-42bf-8de8-d4281026e3d9}",
+        "id": "{3d936302-b7e1-46f2-b648-f0da3f4dff16}",
         "caption": "",
         "resourceClass": "plasmashell",
         "type": 2,
         "appletPopup": false,
-        "hidden": true,
+        "hidden": false,
         "active": false,
         "geometry": {
-          "x": 644,
+          "x": 576,
           "y": 996,
-          "width": 632,
+          "width": 768,
           "height": 84
         }
       },
       {
-        "id": "{eae4cad7-12c5-4c83-a3f3-1731c0c20b47}",
+        "id": "{9f75972e-0c63-4827-99c1-2bea388c992b}",
         "caption": "Documents",
         "resourceClass": "org.gnome.Nautilus",
         "type": 0,
@@ -249,7 +256,7 @@
     ],
     "after": [
       {
-        "id": "{c2508302-f20b-4407-87a3-82d44f09a401}",
+        "id": "{808352ec-834c-47c2-9934-4e34ae29569b}",
         "caption": "",
         "resourceClass": "plasmashell",
         "type": 1,
@@ -264,7 +271,7 @@
         }
       },
       {
-        "id": "{887b48c3-ae9d-4c03-b505-63dc01673ac3}",
+        "id": "{45752dde-81b6-4918-b106-536f97b56dcb}",
         "caption": "",
         "resourceClass": "plasmashell",
         "type": 2,
@@ -275,26 +282,26 @@
           "x": 0,
           "y": 0,
           "width": 1920,
-          "height": 32
+          "height": 30
         }
       },
       {
-        "id": "{3bd6fbf4-6aea-42bf-8de8-d4281026e3d9}",
+        "id": "{3d936302-b7e1-46f2-b648-f0da3f4dff16}",
         "caption": "",
         "resourceClass": "plasmashell",
         "type": 2,
         "appletPopup": false,
-        "hidden": true,
+        "hidden": false,
         "active": false,
         "geometry": {
-          "x": 644,
+          "x": 576,
           "y": 996,
-          "width": 632,
+          "width": 768,
           "height": 84
         }
       },
       {
-        "id": "{eae4cad7-12c5-4c83-a3f3-1731c0c20b47}",
+        "id": "{9f75972e-0c63-4827-99c1-2bea388c992b}",
         "caption": "Documents",
         "resourceClass": "org.gnome.Nautilus",
         "type": 0,
@@ -309,15 +316,18 @@
         }
       }
     ],
-    "stable_frames": true,
-    "reviewed": true
+    "stable_frames": true
   },
   "desktop-tahoe-dark.jpg": {
-    "source": "build/captures/v0.60.0/frames/tahoe-dark-showcase.png",
-    "source_sha256": "49718906236eb061cdc49c3190282e65a772402acc4c933bca376630ac7bbd0c",
+    "source": "desktop-tahoe-dark.png",
+    "source_sha256": "452ac7a1ae1eee74f2c09a70db3058ab807881acc9459345df954c4fbf50f3b9",
     "crop": null,
-    "sha256": "ac0055cedc8f37c9958a110630b0501dd54c5b106b9c0c66568af74a92e1a791",
-    "file": "desktop-tahoe-dark-ac0055cedc8f.jpg"
+    "sha256": "d43f1ab489954341a58543e7230f2fc7ad8df5bc3ef757dfe8c1a3b03d968fc4",
+    "file": "desktop-tahoe-dark-d43f1ab48995.jpg",
+    "edition": "tahoe",
+    "kind": "installer-desktop",
+    "source_commit": "b356b8ea18bceb3455bac520c123a90bc60d1564",
+    "vm_image_sha256": "74004cc15d7180e9b23c93a2c097824853375651b0984f68d9e940c45d461703"
   },
   "desktop-golden-gate-dark.jpg": {
     "source": "desktop-golden-gate-dark.png",
@@ -344,22 +354,24 @@
     "file": "firefox-dark-2691a4efbbee.jpg"
   },
   "dolphin-dark.jpg": {
-    "source": "build/captures/v0.66.1-file-previews/dolphin-dark.png",
-    "source_sha256": "e8a044314bf5d3bdd2ece6d70aa2c741401e1bb4fc1e0e667f3b2f94a0f26647",
-    "source_commit": "b762888c5ffedfe106de3b8c94ee37b6b2712e89",
-    "vm_image_sha256": "412e7933f10add20b921b92c02709e7eea56acd14dc14cf654f58fba4ea3cc9d",
+    "source": "dolphin-dark.png",
+    "source_sha256": "52ad4326d578295bb37388d4e10db4af139731bf0ef96682a69e8967f98571a8",
     "crop": [
       932,
       452,
       2908,
       1708
     ],
-    "sha256": "0ad02370b365d8aeeb94ee9e5ebf2fa48624eebc83dc6efa220a639e3ab5af67",
-    "file": "dolphin-dark-0ad02370b365.jpg",
-    "kind": "focused-vm-file-preview",
+    "sha256": "833f87bf2c23269cce1c458a5ff8aaad5ab0154cab6882506c20eb9dd79490e2",
+    "file": "dolphin-dark-833f87bf2c23.jpg",
+    "edition": "tahoe",
+    "kind": "installer-file-preview",
+    "source_commit": "b356b8ea18bceb3455bac520c123a90bc60d1564",
+    "vm_image_sha256": "74004cc15d7180e9b23c93a2c097824853375651b0984f68d9e940c45d461703",
+    "resource_class": "org.kde.dolphin",
     "before": [
       {
-        "id": "{c2508302-f20b-4407-87a3-82d44f09a401}",
+        "id": "{1e3959df-2a3c-44d2-b16e-9f0d5510b105}",
         "caption": "",
         "resourceClass": "plasmashell",
         "type": 1,
@@ -374,7 +386,7 @@
         }
       },
       {
-        "id": "{887b48c3-ae9d-4c03-b505-63dc01673ac3}",
+        "id": "{d3422d3b-01ad-4902-bb17-c07bc3933ff9}",
         "caption": "",
         "resourceClass": "plasmashell",
         "type": 2,
@@ -385,26 +397,26 @@
           "x": 0,
           "y": 0,
           "width": 1920,
-          "height": 32
+          "height": 30
         }
       },
       {
-        "id": "{3bd6fbf4-6aea-42bf-8de8-d4281026e3d9}",
+        "id": "{ae4b132f-0c9a-4c9b-961d-8849193991b7}",
         "caption": "",
         "resourceClass": "plasmashell",
         "type": 2,
         "appletPopup": false,
-        "hidden": true,
+        "hidden": false,
         "active": false,
         "geometry": {
-          "x": 644,
+          "x": 604,
           "y": 996,
-          "width": 632,
+          "width": 712,
           "height": 84
         }
       },
       {
-        "id": "{8bfcc1bd-014e-4ca6-a7fd-ade1003fc5a7}",
+        "id": "{d800b22c-ce16-4ffc-9981-f20155f741e5}",
         "caption": "Documents — Dolphin",
         "resourceClass": "org.kde.dolphin",
         "type": 0,
@@ -421,7 +433,7 @@
     ],
     "after": [
       {
-        "id": "{c2508302-f20b-4407-87a3-82d44f09a401}",
+        "id": "{1e3959df-2a3c-44d2-b16e-9f0d5510b105}",
         "caption": "",
         "resourceClass": "plasmashell",
         "type": 1,
@@ -436,7 +448,7 @@
         }
       },
       {
-        "id": "{887b48c3-ae9d-4c03-b505-63dc01673ac3}",
+        "id": "{d3422d3b-01ad-4902-bb17-c07bc3933ff9}",
         "caption": "",
         "resourceClass": "plasmashell",
         "type": 2,
@@ -447,26 +459,26 @@
           "x": 0,
           "y": 0,
           "width": 1920,
-          "height": 32
+          "height": 30
         }
       },
       {
-        "id": "{3bd6fbf4-6aea-42bf-8de8-d4281026e3d9}",
+        "id": "{ae4b132f-0c9a-4c9b-961d-8849193991b7}",
         "caption": "",
         "resourceClass": "plasmashell",
         "type": 2,
         "appletPopup": false,
-        "hidden": true,
+        "hidden": false,
         "active": false,
         "geometry": {
-          "x": 644,
+          "x": 604,
           "y": 996,
-          "width": 632,
+          "width": 712,
           "height": 84
         }
       },
       {
-        "id": "{8bfcc1bd-014e-4ca6-a7fd-ade1003fc5a7}",
+        "id": "{d800b22c-ce16-4ffc-9981-f20155f741e5}",
         "caption": "Documents — Dolphin",
         "resourceClass": "org.kde.dolphin",
         "type": 0,
@@ -481,26 +493,27 @@
         }
       }
     ],
-    "stable_frames": true,
-    "reviewed": true
+    "stable_frames": true
   },
   "nautilus-dark.jpg": {
-    "source": "build/captures/v0.66.1-file-previews/nautilus-dark.png",
-    "source_sha256": "d4476f8696f4b937bdd40a77cd63cce008b3c610da0731fcadfe2bb0f04c6ad1",
-    "source_commit": "b762888c5ffedfe106de3b8c94ee37b6b2712e89",
-    "vm_image_sha256": "412e7933f10add20b921b92c02709e7eea56acd14dc14cf654f58fba4ea3cc9d",
+    "source": "nautilus-dark.png",
+    "source_sha256": "415451b91b3221ed8e658b1591411686f77260b5f909b9ae8baf830f8b3ca765",
     "crop": [
       932,
       452,
       2908,
       1708
     ],
-    "sha256": "d2747d49c0fedbd5ecca8f8aa64cb7010c26092d4c7756f33102719cd14b3d86",
-    "file": "nautilus-dark-d2747d49c0fe.jpg",
-    "kind": "focused-vm-file-preview",
+    "sha256": "b29603d3740056b5ad9702e2b96d17c80eff48e628677b9631702b4d4f453194",
+    "file": "nautilus-dark-b29603d37400.jpg",
+    "edition": "tahoe",
+    "kind": "installer-file-preview",
+    "source_commit": "b356b8ea18bceb3455bac520c123a90bc60d1564",
+    "vm_image_sha256": "74004cc15d7180e9b23c93a2c097824853375651b0984f68d9e940c45d461703",
+    "resource_class": "org.gnome.Nautilus",
     "before": [
       {
-        "id": "{c2508302-f20b-4407-87a3-82d44f09a401}",
+        "id": "{1e3959df-2a3c-44d2-b16e-9f0d5510b105}",
         "caption": "",
         "resourceClass": "plasmashell",
         "type": 1,
@@ -515,7 +528,7 @@
         }
       },
       {
-        "id": "{887b48c3-ae9d-4c03-b505-63dc01673ac3}",
+        "id": "{d3422d3b-01ad-4902-bb17-c07bc3933ff9}",
         "caption": "",
         "resourceClass": "plasmashell",
         "type": 2,
@@ -526,26 +539,26 @@
           "x": 0,
           "y": 0,
           "width": 1920,
-          "height": 32
+          "height": 30
         }
       },
       {
-        "id": "{3bd6fbf4-6aea-42bf-8de8-d4281026e3d9}",
+        "id": "{ae4b132f-0c9a-4c9b-961d-8849193991b7}",
         "caption": "",
         "resourceClass": "plasmashell",
         "type": 2,
         "appletPopup": false,
-        "hidden": true,
+        "hidden": false,
         "active": false,
         "geometry": {
-          "x": 644,
+          "x": 576,
           "y": 996,
-          "width": 632,
+          "width": 768,
           "height": 84
         }
       },
       {
-        "id": "{33080313-1696-45c9-a3a6-1817b97921a0}",
+        "id": "{062c61ff-b896-45e0-b8be-4626c06048c4}",
         "caption": "Documents",
         "resourceClass": "org.gnome.Nautilus",
         "type": 0,
@@ -562,7 +575,7 @@
     ],
     "after": [
       {
-        "id": "{c2508302-f20b-4407-87a3-82d44f09a401}",
+        "id": "{1e3959df-2a3c-44d2-b16e-9f0d5510b105}",
         "caption": "",
         "resourceClass": "plasmashell",
         "type": 1,
@@ -577,7 +590,7 @@
         }
       },
       {
-        "id": "{887b48c3-ae9d-4c03-b505-63dc01673ac3}",
+        "id": "{d3422d3b-01ad-4902-bb17-c07bc3933ff9}",
         "caption": "",
         "resourceClass": "plasmashell",
         "type": 2,
@@ -588,26 +601,26 @@
           "x": 0,
           "y": 0,
           "width": 1920,
-          "height": 32
+          "height": 30
         }
       },
       {
-        "id": "{3bd6fbf4-6aea-42bf-8de8-d4281026e3d9}",
+        "id": "{ae4b132f-0c9a-4c9b-961d-8849193991b7}",
         "caption": "",
         "resourceClass": "plasmashell",
         "type": 2,
         "appletPopup": false,
-        "hidden": true,
+        "hidden": false,
         "active": false,
         "geometry": {
-          "x": 644,
+          "x": 576,
           "y": 996,
-          "width": 632,
+          "width": 768,
           "height": 84
         }
       },
       {
-        "id": "{33080313-1696-45c9-a3a6-1817b97921a0}",
+        "id": "{062c61ff-b896-45e0-b8be-4626c06048c4}",
         "caption": "Documents",
         "resourceClass": "org.gnome.Nautilus",
         "type": 0,
@@ -622,8 +635,7 @@
         }
       }
     ],
-    "stable_frames": true,
-    "reviewed": true
+    "stable_frames": true
   },
   "tahoe.jpg": {
     "source": "src/offline/wallpapers/MacTahoe/contents/images/3840x2160.jpg",
@@ -675,25 +687,42 @@
     "file": "iridescence-a7522c9a93df.jpg"
   },
   "launcher-tahoe.jpg": {
-    "source": "src/screenshots/launcher_preset_1_light-3577b8871b89.png",
-    "source_sha256": "3577b8871b8907e54ba7b5cbb8e2efe9b0de1321d140e2e79eb9ed8e0edb0a1f",
+    "source": "launcher-tahoe.png",
+    "source_sha256": "0f0fb8130c109d54fea7c52c271d247b2dbb98a66c75dba644757fb81e6ce82d",
     "crop": null,
-    "sha256": "0f1eebbe84baf64af943666dd411b3e9eaba69cd71b5feea725a5c3095306635",
-    "file": "launcher-tahoe-0f1eebbe84ba.jpg"
+    "sha256": "3d74bdb90cd4d48896ad99d2b3df2117853f91783b4d563cec91443a9c61a8b2",
+    "file": "launcher-tahoe-3d74bdb90cd4.jpg",
+    "edition": "tahoe",
+    "kind": "installer-launcher-preview",
+    "source_commit": "b356b8ea18bceb3455bac520c123a90bc60d1564",
+    "vm_image_sha256": "74004cc15d7180e9b23c93a2c097824853375651b0984f68d9e940c45d461703"
   },
   "launcher-golden.jpg": {
-    "source": "../macos-golden-gate-liquid-kde/src/screenshots/launcher_preset_2_light-7bfc5784e046.png",
-    "source_sha256": "7bfc5784e04616ed930f3c5e9d697266f6e40514a492d8e3f3dc971166b80b42",
+    "source": "launcher-golden.png",
+    "source_sha256": "d0e435d742e9596c91dd499d239aca168d7b151fe223c233c39e8eb117a9611c",
     "crop": null,
-    "sha256": "fb4027b18b3c3a713f6fd453339540c9e217d971bd028ef42c3686bcce2e70b4",
-    "file": "launcher-golden-fb4027b18b3c.jpg"
+    "sha256": "3a2c50266386005dbf6d9ebeebf433f20db722be41039e4d69172a326aa561fb",
+    "file": "launcher-golden-3a2c50266386.jpg",
+    "edition": "golden-gate",
+    "kind": "installer-launcher-preview",
+    "source_commit": "629dc2658e5bac1382bc76a45a57cdcb03b2297b",
+    "vm_image_sha256": "74004cc15d7180e9b23c93a2c097824853375651b0984f68d9e940c45d461703"
   },
   "glass.jpg": {
-    "source": "src/screenshots/context_menu_v4-dbda9eae1565.png",
-    "source_sha256": "dbda9eae1565c789fa062e1b36bd6fc9c0860a04f019dd9d37b3817fa6a83fde",
-    "crop": null,
-    "sha256": "cd4ba63f3175dbb3c01936ec35dc839e6f2b0b6793c8f9f1587f719678b70a56",
-    "file": "glass-cd4ba63f3175.jpg"
+    "source": "context.png",
+    "source_sha256": "1e3bd9997541aa3ba180c32216228c9ea598c6ce38658d5e53159dd6a0c915a8",
+    "crop": [
+      2366,
+      964,
+      3128,
+      1432
+    ],
+    "sha256": "9bf06a45853f259e57b74fe65d2ea44c1d3b48ed0d6d029afff2d8e5b1eeb42c",
+    "file": "glass-9bf06a45853f.jpg",
+    "edition": "tahoe",
+    "kind": "installer-popup",
+    "source_commit": "b356b8ea18bceb3455bac520c123a90bc60d1564",
+    "vm_image_sha256": "74004cc15d7180e9b23c93a2c097824853375651b0984f68d9e940c45d461703"
   },
   "corners.jpg": {
     "source": "src/screenshots/finder_v4-88d3f0dd6e17.png",
@@ -2455,81 +2484,87 @@
   },
   "glass-preset-tahoe-clear-light.png": {
     "source": "glass-tahoe-clear-light.png",
-    "source_sha256": "f730cf3a40ad5ef34f1bbb3e43b42748afc0a28956697fac06792e4b82802857",
+    "source_sha256": "d9515ef3db709971b992ca799495cfd5cd5e2d6e5511f55e3a20496f65e4a262",
     "crop": null,
-    "sha256": "f730cf3a40ad5ef34f1bbb3e43b42748afc0a28956697fac06792e4b82802857",
-    "file": "glass-preset-tahoe-clear-light-f730cf3a40ad.png",
+    "sha256": "d9515ef3db709971b992ca799495cfd5cd5e2d6e5511f55e3a20496f65e4a262",
+    "file": "glass-preset-tahoe-clear-light-d9515ef3db70.png",
     "edition": "golden-gate",
     "kind": "installer-material",
-    "source_commit": "378e3be864cea68c501b12002bfce2a93db76bd8",
+    "source_commit": "629dc2658e5bac1382bc76a45a57cdcb03b2297b",
     "vm_image_sha256": "74004cc15d7180e9b23c93a2c097824853375651b0984f68d9e940c45d461703",
     "material": "glass-tahoe-clear",
-    "wallpaper": "MacTahoe-Iridescence"
+    "wallpaper": "MacTahoe-Iridescence",
+    "effect_build": "4ec4b0d060c44d39683f9ffc6ba0568c47c4cc53278457b3f0db14e278cdf108"
   },
   "glass-preset-tahoe-clear-dark.png": {
     "source": "glass-tahoe-clear-dark.png",
-    "source_sha256": "cf929b4911f30945d56d90091353fae5dfe8e10423cee09f4cd97eda2d53237f",
+    "source_sha256": "7e7474c1de8fb23f22e585280601e5c3d98d049ca5a11d27e37c4bd5351a5999",
     "crop": null,
-    "sha256": "cf929b4911f30945d56d90091353fae5dfe8e10423cee09f4cd97eda2d53237f",
-    "file": "glass-preset-tahoe-clear-dark-cf929b4911f3.png",
+    "sha256": "7e7474c1de8fb23f22e585280601e5c3d98d049ca5a11d27e37c4bd5351a5999",
+    "file": "glass-preset-tahoe-clear-dark-7e7474c1de8f.png",
     "edition": "golden-gate",
     "kind": "installer-material",
-    "source_commit": "378e3be864cea68c501b12002bfce2a93db76bd8",
+    "source_commit": "629dc2658e5bac1382bc76a45a57cdcb03b2297b",
     "vm_image_sha256": "74004cc15d7180e9b23c93a2c097824853375651b0984f68d9e940c45d461703",
     "material": "glass-tahoe-clear",
-    "wallpaper": "MacTahoe-Iridescence"
+    "wallpaper": "MacTahoe-Iridescence",
+    "effect_build": "4ec4b0d060c44d39683f9ffc6ba0568c47c4cc53278457b3f0db14e278cdf108"
   },
   "glass-preset-tahoe-frosted-light.png": {
     "source": "glass-tahoe-frosted-light.png",
-    "source_sha256": "2b6e6bef179e68437e88926f42c1a43427b345c9b1bff28c6974305db1c2e7d0",
+    "source_sha256": "b1d41574e0f358e4662b5f898ae9ed51764635e68062acd9756fec56de4ff654",
     "crop": null,
-    "sha256": "2b6e6bef179e68437e88926f42c1a43427b345c9b1bff28c6974305db1c2e7d0",
-    "file": "glass-preset-tahoe-frosted-light-2b6e6bef179e.png",
+    "sha256": "b1d41574e0f358e4662b5f898ae9ed51764635e68062acd9756fec56de4ff654",
+    "file": "glass-preset-tahoe-frosted-light-b1d41574e0f3.png",
     "edition": "golden-gate",
     "kind": "installer-material",
-    "source_commit": "378e3be864cea68c501b12002bfce2a93db76bd8",
+    "source_commit": "629dc2658e5bac1382bc76a45a57cdcb03b2297b",
     "vm_image_sha256": "74004cc15d7180e9b23c93a2c097824853375651b0984f68d9e940c45d461703",
     "material": "glass-tahoe-frosted",
-    "wallpaper": "MacTahoe-Iridescence"
+    "wallpaper": "MacTahoe-Iridescence",
+    "effect_build": "4ec4b0d060c44d39683f9ffc6ba0568c47c4cc53278457b3f0db14e278cdf108"
   },
   "glass-preset-tahoe-frosted-dark.png": {
     "source": "glass-tahoe-frosted-dark.png",
-    "source_sha256": "0b60851affc4ca4aeb3332b7d98334b03d07c21aeae3caf11b264bd29bd252f9",
+    "source_sha256": "de263e3b8043b24a7ced4f7d0b8cb2a2b7907495bc44f978cbb19cb8d149df93",
     "crop": null,
-    "sha256": "0b60851affc4ca4aeb3332b7d98334b03d07c21aeae3caf11b264bd29bd252f9",
-    "file": "glass-preset-tahoe-frosted-dark-0b60851affc4.png",
+    "sha256": "de263e3b8043b24a7ced4f7d0b8cb2a2b7907495bc44f978cbb19cb8d149df93",
+    "file": "glass-preset-tahoe-frosted-dark-de263e3b8043.png",
     "edition": "golden-gate",
     "kind": "installer-material",
-    "source_commit": "378e3be864cea68c501b12002bfce2a93db76bd8",
+    "source_commit": "629dc2658e5bac1382bc76a45a57cdcb03b2297b",
     "vm_image_sha256": "74004cc15d7180e9b23c93a2c097824853375651b0984f68d9e940c45d461703",
     "material": "glass-tahoe-frosted",
-    "wallpaper": "MacTahoe-Iridescence"
+    "wallpaper": "MacTahoe-Iridescence",
+    "effect_build": "4ec4b0d060c44d39683f9ffc6ba0568c47c4cc53278457b3f0db14e278cdf108"
   },
   "glass-preset-golden-gate-official-light.png": {
     "source": "glass-golden-gate-official-light.png",
-    "source_sha256": "4d444bd41fde7f3756e87fac5e674cfc835ac7bb16490b9bfecfab282ae36f1a",
+    "source_sha256": "f4ab5515a32178c42cd489a4334a98c9d361dda6c6e53e454f75e8dffb40fc1b",
     "crop": null,
-    "sha256": "4d444bd41fde7f3756e87fac5e674cfc835ac7bb16490b9bfecfab282ae36f1a",
-    "file": "glass-preset-golden-gate-official-light-4d444bd41fde.png",
+    "sha256": "f4ab5515a32178c42cd489a4334a98c9d361dda6c6e53e454f75e8dffb40fc1b",
+    "file": "glass-preset-golden-gate-official-light-f4ab5515a321.png",
     "edition": "golden-gate",
     "kind": "installer-material",
-    "source_commit": "378e3be864cea68c501b12002bfce2a93db76bd8",
+    "source_commit": "629dc2658e5bac1382bc76a45a57cdcb03b2297b",
     "vm_image_sha256": "74004cc15d7180e9b23c93a2c097824853375651b0984f68d9e940c45d461703",
     "material": "glass-golden-gate-official",
-    "wallpaper": "MacTahoe-Iridescence"
+    "wallpaper": "MacTahoe-Iridescence",
+    "effect_build": "4ec4b0d060c44d39683f9ffc6ba0568c47c4cc53278457b3f0db14e278cdf108"
   },
   "glass-preset-golden-gate-official-dark.png": {
     "source": "glass-golden-gate-official-dark.png",
-    "source_sha256": "b98a46c3029802acfa3bceb6d04a6d356b365ee5afed2d61641e303a2248e199",
+    "source_sha256": "d05b441a88283c94a8f5f101999b0a7ba3a4aab779a8d05b006b32f26c73154d",
     "crop": null,
-    "sha256": "b98a46c3029802acfa3bceb6d04a6d356b365ee5afed2d61641e303a2248e199",
-    "file": "glass-preset-golden-gate-official-dark-b98a46c30298.png",
+    "sha256": "d05b441a88283c94a8f5f101999b0a7ba3a4aab779a8d05b006b32f26c73154d",
+    "file": "glass-preset-golden-gate-official-dark-d05b441a8828.png",
     "edition": "golden-gate",
     "kind": "installer-material",
-    "source_commit": "378e3be864cea68c501b12002bfce2a93db76bd8",
+    "source_commit": "629dc2658e5bac1382bc76a45a57cdcb03b2297b",
     "vm_image_sha256": "74004cc15d7180e9b23c93a2c097824853375651b0984f68d9e940c45d461703",
     "material": "glass-golden-gate-official",
-    "wallpaper": "MacTahoe-Iridescence"
+    "wallpaper": "MacTahoe-Iridescence",
+    "effect_build": "4ec4b0d060c44d39683f9ffc6ba0568c47c4cc53278457b3f0db14e278cdf108"
   },
   "prism.jpg": {
     "source": "src/offline/wallpapers/MacPrism/contents/images/3840x2160.jpg",
@@ -2847,28 +2882,30 @@
   },
   "glass-preset-water-light.png": {
     "source": "glass-water-light.png",
-    "source_sha256": "504a5d87b7aded10b8f91fea2cb37b61ccf5945bf4e243b80a22926dd37e8a93",
+    "source_sha256": "38413fc4567ae2e9bb6b8a915b45b8960756ae91b34224ad4e41332ceafc1f8d",
     "crop": null,
-    "sha256": "504a5d87b7aded10b8f91fea2cb37b61ccf5945bf4e243b80a22926dd37e8a93",
-    "file": "glass-preset-water-light-504a5d87b7ad.png",
+    "sha256": "38413fc4567ae2e9bb6b8a915b45b8960756ae91b34224ad4e41332ceafc1f8d",
+    "file": "glass-preset-water-light-38413fc4567a.png",
     "edition": "golden-gate",
     "kind": "installer-material",
-    "source_commit": "378e3be864cea68c501b12002bfce2a93db76bd8",
+    "source_commit": "629dc2658e5bac1382bc76a45a57cdcb03b2297b",
     "vm_image_sha256": "74004cc15d7180e9b23c93a2c097824853375651b0984f68d9e940c45d461703",
     "material": "glass-water",
-    "wallpaper": "MacTahoe-Iridescence"
+    "wallpaper": "MacTahoe-Iridescence",
+    "effect_build": "4ec4b0d060c44d39683f9ffc6ba0568c47c4cc53278457b3f0db14e278cdf108"
   },
   "glass-preset-water-dark.png": {
     "source": "glass-water-dark.png",
-    "source_sha256": "1809c6abe14948c8e3f2e841794d6e03e62b78b355cc1298c2a44a36b84bf776",
+    "source_sha256": "49c6a46cc4cb7c974f87377e110f2485f85799ce75d242f35cb72fcddd54a6ad",
     "crop": null,
-    "sha256": "1809c6abe14948c8e3f2e841794d6e03e62b78b355cc1298c2a44a36b84bf776",
-    "file": "glass-preset-water-dark-1809c6abe149.png",
+    "sha256": "49c6a46cc4cb7c974f87377e110f2485f85799ce75d242f35cb72fcddd54a6ad",
+    "file": "glass-preset-water-dark-49c6a46cc4cb.png",
     "edition": "golden-gate",
     "kind": "installer-material",
-    "source_commit": "378e3be864cea68c501b12002bfce2a93db76bd8",
+    "source_commit": "629dc2658e5bac1382bc76a45a57cdcb03b2297b",
     "vm_image_sha256": "74004cc15d7180e9b23c93a2c097824853375651b0984f68d9e940c45d461703",
     "material": "glass-water",
-    "wallpaper": "MacTahoe-Iridescence"
+    "wallpaper": "MacTahoe-Iridescence",
+    "effect_build": "4ec4b0d060c44d39683f9ffc6ba0568c47c4cc53278457b3f0db14e278cdf108"
   }
 }
