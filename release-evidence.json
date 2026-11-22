@@ -1,47 +1,34 @@
 {
-  "version": "0.82.0",
+  "version": "0.82.1",
   "gallery_commit": "f09780b200b79302e7c23ef9f6f74d94748bbea3",
-  "implementation_commit": "3f797e54504e5096c9dd2049e77fd074a90b79f1",
-  "scope": "Shared category foreground, local app and search contrast, four glass presets, installer previews and Exuma wallpaper.",
-  "approval": "Maintainer approved the final Golden Gate appearance on Exuma with the shared category row, local search and app foregrounds.",
+  "implementation_commit": "9e509bf90c46a18ad2973f84becf82f0e3682ba0",
+  "scope": "Keep Bluetooth and other symbolic icons visible when their names overlap application artwork in generated overlays.",
+  "approval": "The maintainer explicitly approved the light and dark before-and-after previews shown for PR #161.",
   "checks": [
     {
-      "command": "KDE neon 6.8.1 Wayland: installed the shared candidate with Golden Gate defaults, applied the final category compositing change, verified the light and dark launcher, a Dolphin query, and opposite wallpaper tones.",
+      "command": "python3 -m pytest -q tests/test_icon_toolset.py -k 'overlay or installer_selector' (4 passed)",
       "result": "passed"
     },
     {
-      "command": "tests/test_launcher_presets.py::test_native_launcher_popup_presets and ::test_control_center_glass_regions (10 passed before the final QML composition correction, confirmed separately by Wayland captures).",
+      "command": "python3 -m pytest -q tests/test_reserved_menu_icons.py (2 passed)",
       "result": "passed"
     },
     {
-      "command": "tests/test_installer_glass_step.py (6 passed); native KCM material checks and component surface regressions passed after the dark gradient fallback fix.",
-      "result": "passed"
-    },
-    {
-      "command": "Built and loaded the candidate x11 module in isolated KWin 6.6.5 and 6.7.4 with Xvfb; each delivered a 64x64 launcher grid that tracked a rendered backdrop from black to white. The 6.7.4 Wayland module was also built.",
-      "result": "passed"
-    },
-    {
-      "command": "pytest tests/test_component_cache.py::test_installer_file_previews_keep_verified_focus_and_hashes tests/test_component_cache.py::test_committed_component_hashes_match_sources",
+      "command": "python3 src/scripts/component_manifest.py",
       "result": "passed"
     }
   ],
-  "captures": [
+  "captures": [],
+  "reviewed_pr_previews": [
     {
-      "path": "src/screenshots/previews/golden-gate-categorias-92679197e55a.png",
-      "sha256": "92679197e55ae39c8eb03597f4229c96119c033b7930a7fe09c4809b2689ea64",
-      "reviewed": true,
-      "source_commit": "3f797e54504e5096c9dd2049e77fd074a90b79f1",
-      "edition": "golden-gate"
+      "url": "https://gist.githubusercontent.com/RoxasYTB/b552334b7afd3ff281a4a0fe71a0b00a/raw/pr160-bluetooth-symbols-light.png",
+      "sha256": "f279dde2b7fdd225012da4466c7c0389a9c0873cd8968efc9b1633c447f08885"
     },
     {
-      "path": "src/screenshots/previews/golden-gate-busqueda-656d687e8504.png",
-      "sha256": "656d687e8504e6332eb5d693968db78aafc047412a4f3482ac1da00d21a05e6f",
-      "reviewed": true,
-      "source_commit": "3f797e54504e5096c9dd2049e77fd074a90b79f1",
-      "edition": "golden-gate"
+      "url": "https://gist.githubusercontent.com/RoxasYTB/b552334b7afd3ff281a4a0fe71a0b00a/raw/pr160-bluetooth-symbols-dark.png",
+      "sha256": "03d812624de3f18c9502d9ed172576e722435d22715887f5448a6e6da8e62e76"
     }
   ],
-  "coverage_limits": "Golden Gate launcher photography uses KDE neon Wayland 6.8.1. The X11 checks used a launcher test window and verified compositor readback. Historical galleries retain their original provenance.",
-  "source_sha256": "d0bf91c472e31936561a2577e4c2aa3b839888f37c69a06df40498f44020c480"
+  "coverage_limits": "The PR author provided mask-rendered comparisons and live icon lookups in Plasma 6.7.4 Regular. The merged icon assets, generator and Bluetooth rendering sources match the reviewed PR. Focused local checks exercised generated overlays and reserved symbols.",
+  "source_sha256": "a1aa39848fdc7d60d39b97b7eff8f523516669fb460987147fd460d40a376587"
 }
