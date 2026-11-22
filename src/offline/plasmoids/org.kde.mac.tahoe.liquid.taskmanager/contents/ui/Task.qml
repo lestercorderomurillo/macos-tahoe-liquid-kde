@@ -59,14 +59,17 @@ PlasmaCore.ToolTipArea {
             || appId === "org.kde.mac-tahoe-liquid-kde.apps")
     readonly property int pid: model.AppPid
     readonly property string appName: model.AppName
-    readonly property string dockRole: tasksRoot.iconsOnly && Plasmoid.configuration.macOSDockIcons
+    readonly property string appRole: tasksRoot.iconsOnly && Plasmoid.configuration.macOSDockIcons
         ? DockRoles.appearanceRoleFor(model.LauncherUrlWithoutIcon, model.AppId) : ""
+    readonly property bool fileManagerTask: !inPopup && appRole === "files"
+    readonly property bool secondaryFileManager: fileManagerTask && tasksRoot.finderTask !== task
+    readonly property string dockRole: secondaryFileManager ? "" : appRole
     readonly property bool darkDockIcons: DockRoles.darkMode(
         tasksRoot.iconThemeWatcher.plasmaThemeName, Kirigami.Theme.backgroundColor.hslLightness,
         tasksRoot.iconThemeWatcher.iconThemeName)
     readonly property var dockIconSource: appsButton && tasksRoot.launcherCell ? tasksRoot.launcherCell.applet.dockButtonIcon : dockRole
         ? backend.dockRoleIcon(dockRole, darkDockIcons)
-        : backend.iconSource(task.model.decoration)
+        : secondaryFileManager ? "folder-open" : backend.iconSource(task.model.decoration)
     readonly property string dockRoleLabel: {
         switch (dockRole) {
         case "files": return i18nd("plasma_applet_org.kde.mac.tahoe.liquid.taskmanager", "Files");

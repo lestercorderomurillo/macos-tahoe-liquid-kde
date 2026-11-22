@@ -3,6 +3,7 @@ import LauncherInteraction 1.0
 import QtQuick.Window
 import QtQuick.Layouts
 import org.kde.kirigami as Kirigami
+import org.kde.plasma.core as PlasmaCore
 
 // Runs only in the isolated plasmoidviewer from test_launcher_presets.py.
 Timer {
@@ -213,13 +214,20 @@ Timer {
             console.log("PROBE_GEOMETRY", root.x, root.y, searchPopup.x, searchPopup.y);
             switch (phase++) {
             case -2:
-                root.visible = true;
+                kicker.testAppsPin = true;
+                verify(plasmoid.status === PlasmaCore.Types.HiddenStatus, "pinned Apps hides the backing applet");
+                kicker.toggleDockApps(kicker.fullRepresentationItem);
+                verify(root.visible, "pinned Apps opens the launcher popup");
                 break;
             case -1:
+                verify(plasmoid.status === PlasmaCore.Types.HiddenStatus, "opening Apps keeps the backing applet hidden");
                 verify(searchBar.textField.activeFocus, "opening focuses the search input");
                 verify(!main.detachedSearch || searchPopup.visible, "opening shows the capsule");
                 initialPopupSize = Qt.size(root.width, root.height);
-                root.visible = false;
+                kicker.toggleDockApps();
+                verify(!root.visible, "a second activation closes the same popup");
+                kicker.testAppsPin = false;
+                verify(plasmoid.status === PlasmaCore.Types.PassiveStatus, "standalone Apps is visible while closed");
                 break;
             case 0:
                 root.title = "Launcher app role probe";
@@ -231,6 +239,7 @@ Timer {
                 break;
             case 1:
                 verify(root.visible, "inline panel visible");
+                verify(plasmoid.status === PlasmaCore.Types.RequiresAttentionStatus, "standalone Apps remains visible while open");
                 verifyPopupSize();
                 verifyCategoryPills();
                 if (kicker.launcherPreset === 1) {

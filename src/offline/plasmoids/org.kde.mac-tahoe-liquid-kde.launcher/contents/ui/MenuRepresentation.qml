@@ -59,8 +59,6 @@ PlasmaCore.Dialog {
 		y = pos.y;
 	}
 
-	Plasmoid.status: root.visible ? PlasmaCore.Types.RequiresAttentionStatus : PlasmaCore.Types.PassiveStatus
-
 	readonly property int configuredIconSize: {
 		switch(Plasmoid.configuration.appsIconSize){
 			case 0: return Kirigami.Units.iconSizes.smallMedium;

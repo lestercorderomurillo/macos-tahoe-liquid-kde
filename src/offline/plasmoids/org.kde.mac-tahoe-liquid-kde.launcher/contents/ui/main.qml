@@ -26,24 +26,25 @@ PlasmoidItem {
     }
     readonly property var dockConfigureAction: Plasmoid.internalAction("configure")
     readonly property var dockButtonIcon: Plasmoid.icon
-    property var pinnedAppsWindow: null
+    property MenuRepresentation appsWindow
+    function ensureAppsWindow() {
+        if (!appsWindow) appsWindow = menuRepresentation.createObject(kicker);
+    }
     function toggleDockApps(anchor) {
-        if (fullRepresentationItem) {
-            fullRepresentationItem.activateLauncher(anchor);
-            return;
-        }
         const app = Plasmoid.configuration.launcherApplication;
         if (app && NativeLauncher.LauncherApplications.open(app)) return;
-        if (!pinnedAppsWindow) pinnedAppsWindow = menuRepresentation.createObject(kicker);
-        if (pinnedAppsWindow) {
-            pinnedAppsWindow.dockAnchor = anchor;
-            pinnedAppsWindow.visible = !pinnedAppsWindow.visible;
+        ensureAppsWindow();
+        if (appsWindow) {
+            appsWindow.dockAnchor = anchor || fullRepresentationItem || kicker;
+            appsWindow.visible = !appsWindow.visible;
         }
     }
     readonly property bool usesAppsPin: NativeLauncher.DockMetrics.cells.some(cell =>
         cell.taskManager && cell.panelWindow && cell.panelWindow === dockCell.panelWindow
         && cell.applet.hasAppsPin)
-    Plasmoid.status: usesAppsPin ? PlasmaCore.Types.HiddenStatus : PlasmaCore.Types.PassiveStatus
+    Plasmoid.status: usesAppsPin ? PlasmaCore.Types.HiddenStatus
+        : appsWindow?.visible ? PlasmaCore.Types.RequiresAttentionStatus : PlasmaCore.Types.PassiveStatus
+    Plasmoid.onActivated: toggleDockApps()
     Plasmoid.constraintHints: Plasmoid.CanFillArea
     Layout.fillWidth: dockCell.active
     Layout.fillHeight: dockCell.active

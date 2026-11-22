@@ -10,7 +10,6 @@ import org.kde.mac.tahoe.launcher as NativeLauncher
 NativeLauncher.DockIcon {
     id: root
 
-    property QtObject dashWindow: null
     readonly property bool useCustomButtonImage: (Plasmoid.configuration.useCustomButtonImage && Plasmoid.configuration.customButtonImage.length != 0)
 
     NativeLauncher.IconThemeWatcher {
@@ -28,14 +27,6 @@ NativeLauncher.DockIcon {
     active: mouseArea.containsMouse
     hovered: mouseArea.containsMouse
 
-    function activateLauncher(anchor) {
-        const app = Plasmoid.configuration.launcherApplication;
-        if (app && NativeLauncher.LauncherApplications.open(app)) return;
-        if (!dashWindow) return;
-        dashWindow.dockAnchor = anchor || null;
-        dashWindow.visible = !dashWindow.visible;
-    }
-
     MouseArea
     {
         id: mouseArea
@@ -44,11 +35,8 @@ NativeLauncher.DockIcon {
 
         hoverEnabled: true
 
-        onClicked: root.activateLauncher()
+        onClicked: kicker.toggleDockApps(root)
     }
 
-    Component.onCompleted: {
-        dashWindow = Qt.createQmlObject("MenuRepresentation {}", root);
-        plasmoid.activated.connect(root.activateLauncher);
-    }
+    Component.onCompleted: kicker.ensureAppsWindow()
 }

@@ -108,3 +108,18 @@ function appearanceRoleFor(launcherUrl, appId) {
     var role = roleFor(launcherUrl, appId);
     return role === "browser" ? "" : role;
 }
+
+// Let Plasma resolve the Finder pin to the current default and merge aliases
+// across activities. Keep the activity prefix and the original pin position.
+function preferredFileManagerPin(pin) {
+    const urlStart = pin.lastIndexOf("\n") + 1;
+    const url = pin.substring(urlStart);
+    return roleFor(url, "") === "files"
+        ? pin.substring(0, urlStart) + "preferred://filemanager"
+        : pin;
+}
+
+function finderTask(items) {
+    const fileManagers = items.filter(item => item.fileManagerTask);
+    return fileManagers.find(item => item.model?.IsLauncher || item.model?.HasLauncher) || fileManagers[0];
+}

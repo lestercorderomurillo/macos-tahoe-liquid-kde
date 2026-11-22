@@ -24,6 +24,7 @@ import org.kde.mac.tahoe.launcher as NativeLauncher
 import org.kde.plasma.workspace.dbus as DBus
 import "LayoutMetrics.js" as LayoutMetrics
 import "TaskTools.js" as TaskTools
+import "DockRoles.js" as DockRoles
 
 PlasmoidItem {
     id: tasks
@@ -46,6 +47,7 @@ PlasmoidItem {
         item.model ? String(item.model.LauncherUrlWithoutIcon).split(/[/:]/).pop() : "")
     readonly property var launcherCell: NativeLauncher.DockMetrics.cells.find(cell =>
         cell.panelWindow === tasks.Window.window && cell.applet.toggleDockApps !== undefined)
+    readonly property var finderTask: iconsOnly ? DockRoles.finderTask(taskList.children) : null
 
     property Task toolTipOpenedByClick
     property Task toolTipAreaItem
@@ -218,6 +220,11 @@ PlasmoidItem {
             Plasmoid.configuration.launchers = launcherList;
         }
 
+        function syncConfiguredLaunchers() {
+            const pins = Plasmoid.configuration.launchers;
+            launcherList = tasks.iconsOnly ? pins.map(DockRoles.preferredFileManagerPin) : pins;
+        }
+
         onGroupingAppIdBlacklistChanged: {
             Plasmoid.configuration.groupingAppIdBlacklist = groupingAppIdBlacklist;
         }
@@ -256,7 +263,7 @@ PlasmoidItem {
         }
 
         Component.onCompleted: {
-            launcherList = Plasmoid.configuration.launchers;
+            syncConfiguredLaunchers();
             groupingAppIdBlacklist = Plasmoid.configuration.groupingAppIdBlacklist;
             groupingLauncherUrlBlacklist = Plasmoid.configuration.groupingLauncherUrlBlacklist;
 
@@ -361,7 +368,7 @@ PlasmoidItem {
             target: Plasmoid.configuration
 
             function onLaunchersChanged(): void {
-                tasksModel.launcherList = Plasmoid.configuration.launchers
+                Qt.callLater(tasksModel.syncConfiguredLaunchers);
             }
             function onGroupingAppIdBlacklistChanged(): void {
                 tasksModel.groupingAppIdBlacklist = Plasmoid.configuration.groupingAppIdBlacklist;

@@ -40,6 +40,32 @@ def test_resolves_all_installed_equivalents_and_preserves_unknown_apps():
     assert result == [c[2] for c in cases]
 
 
+def test_finder_aliases_share_the_default_pin_and_only_one_task_uses_finder_artwork():
+    js = (PACKAGE / 'contents/ui/DockRoles.js').read_text().replace('.pragma library', '')
+    result = evaluate(js + r'''
+const pins = ["applications:firefox.desktop", "applications:org.kde.dolphin.desktop",
+    "file:///usr/share/applications/org.gnome.Nautilus.desktop",
+    "[activity-one]\napplications:thunar.desktop", "preferred://filemanager",
+    "applications:org.kde.mac-tahoe-liquid-kde.apps.desktop"];
+const nautilus = {fileManagerTask: true, model: {HasLauncher: true}, name: "nautilus"};
+const dolphin = {fileManagerTask: true, model: {HasLauncher: false}, name: "dolphin"};
+const secondNautilus = {fileManagerTask: true, model: {HasLauncher: true}, name: "nautilus2"};
+const browser = {fileManagerTask: false, model: {IsLauncher: true}, name: "browser"};
+JSON.stringify({
+    pins: pins.map(preferredFileManagerPin),
+    active: finderTask([browser, dolphin, nautilus, secondNautilus]).name,
+    unpinned: finderTask([browser, dolphin]).name
+});
+''')
+    assert result == {
+        'pins': ['applications:firefox.desktop', 'preferred://filemanager',
+                 'preferred://filemanager', '[activity-one]\npreferred://filemanager',
+                 'preferred://filemanager', 'applications:org.kde.mac-tahoe-liquid-kde.apps.desktop'],
+        'active': 'nautilus',
+        'unpinned': 'dolphin',
+    }
+
+
 @pytest.mark.parametrize('appearance,initial,expected', [('keep', True, True), ('keep', False, False),
                                                         ('macos', False, True), ('native', True, False)])
 @pytest.mark.parametrize('rebuild', [False, True])

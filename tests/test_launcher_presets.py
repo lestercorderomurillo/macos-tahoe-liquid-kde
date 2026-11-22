@@ -290,6 +290,11 @@ def test_native_launcher_popup_presets(repo, tmp_path, monkeypatch, launcher_pop
     entry = ui / "main.qml"
     entry.write_text(entry.read_text().replace(
         "mergeResults: true", 'mergeResults: true\n        runners: ["services"]', 1))
+    if not clipboard_daemon:
+        entry.write_text(entry.read_text().replace(
+            "readonly property bool usesAppsPin: NativeLauncher.DockMetrics",
+            "property bool testAppsPin: false\n"
+            "    readonly property bool usesAppsPin: testAppsPin || NativeLauncher.DockMetrics", 1))
     # More favorites than columns exercise the single-row reference layout.
     favorites = '\n'.join(
         f'ListElement {{ display: "Favorite {i}"; name: "Favorite {i}"; '
