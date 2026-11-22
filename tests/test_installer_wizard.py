@@ -174,7 +174,7 @@ def test_layout_uses_explicit_launcher_and_independent_panels(monkeypatch, tmp_p
     assert "applications:example.desktop" in script
 
 
-@pytest.mark.parametrize("pack", ["landscape", "prism", "macos"])
+@pytest.mark.parametrize("pack", ["landscape", "prism", "macos", "exuma"])
 @pytest.mark.parametrize("style", ["regular", "dark", "clear", "glass"])
 def test_installed_switcher_uses_selected_wallpaper_pair_and_icon_mode(monkeypatch, tmp_path, pack, style):
     import theme_switch as switch
@@ -515,7 +515,7 @@ assert window.page == 'glass_style'
 glass_text = ' '.join(label.text() for label in window.content.findChildren(QLabel))
 assert 'white backing' not in glass_text
 assert 'Dock' not in glass_text and 'blur strength' not in glass_text
-assert len(window.content.findChildren(ChoiceCard)) == 2
+assert len(window.content.findChildren(ChoiceCard)) == 4
 window.content.findChild(ChoiceCard, 'choice-glass_style-official').click()
 assert window.choices['glass_style'] == 'official'
 window.advance(); window.previous(); app.processEvents()

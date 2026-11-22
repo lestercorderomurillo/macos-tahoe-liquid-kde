@@ -61,6 +61,10 @@ See the original headers in
 `src/offline/plasmoids/org.kde.mac.tahoe.liquid.taskmanager/launcher/notificationbanner.h`
 and `notificationbanner.cpp`, and [notification provenance](docs/notifications-reference.md).
 
+## Exuma wallpaper
+
+Image courtesy of the Earth Science and Remote Sensing Unit, NASA Johnson Space Center. Expedition 44 photographed Great Exuma on July 19, 2015 (ISS044-E-18893). The original photograph is included in the MacExuma wallpaper package. [Photograph](https://eol.jsc.nasa.gov/Collections/EarthFromSpace/photoinfo.pl?PHOTO=ISS044-E-18893) · [Public-domain usage terms](https://eol.jsc.nasa.gov/collections/earthfromspace/faq.htm).
+
 ## Development skills
 
 The optional development resources under `skills/qt-skills`,

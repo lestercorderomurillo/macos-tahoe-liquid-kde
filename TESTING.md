@@ -1,6 +1,6 @@
 # Installer testing
 
-**v0.81.7**. Verified Dock movement between two displays and menu-bar clock synchronization after installation and reinstallation on KDE neon Wayland. Checked the Dock position next to a maximized window on KWin X11 6.6 and 6.7. [Evidence and coverage](release-evidence.json).
+**v0.82.0**. Verified launcher category, search and app contrast on Wayland, the four installer materials, and launcher backdrop sampling on KWin X11 6.6 and 6.7. [Evidence and coverage](release-evidence.json).
 
 [Installer photo evidence](src/screenshots/previews/wizard-tahoe-provenance-531f633f4ff6.json).
 

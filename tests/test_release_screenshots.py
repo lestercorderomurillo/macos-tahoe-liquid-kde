@@ -82,7 +82,7 @@ def capture(tmp_path, monkeypatch):
     source.mkdir(parents=True)
     (source / 'effect.cpp').write_text('release source\n')
     write_json(source / 'presets.json', [{'value': i, 'values': {'BlurStrength': 5},
-                'tinted_values': {'BlurStrength': 12}} for i in (1, 2)])
+                'tinted_values': {'BlurStrength': 12}} for i in (1, 2, 3)])
     profile = repo / 'src/scripts/release_capture_profile.json'
     profile.parent.mkdir(parents=True)
     write_json(profile.parent / 'defaults.json', {'wallpaper': 'MacTahoe', 'launcher_preset': 1})

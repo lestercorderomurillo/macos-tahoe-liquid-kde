@@ -19,6 +19,7 @@ for folder, destination in (("color-schemes", "color-schemes"),
                             ("plasma-theme", "plasma/desktoptheme"),
                             ("gtk", "themes")):
     copy(source / folder, share / destination)
+copy(source / "wallpapers/MacExuma", share / "wallpapers/MacExuma")
 for theme in sorted((source / "look-and-feel").glob("MacTahoeLiquidKde-*")):
     name = json.loads((theme / "metadata.json").read_text())["KPlugin"]["Id"]
     copy(theme, share / "plasma/look-and-feel" / name)

@@ -39,13 +39,6 @@
           </item>
           <item row="0" column="1">
            <widget class="PresetComboBox" name="kcfg_MaterialPreset">
-            <item>
-             <property name="text">
-              <string>Tahoe (Clear)</string>
-             </property>
-            </item>
-            <item><property name="text"><string>Tahoe (Frosted)</string></property></item>
-            <item><property name="text"><string>Golden Gate (Official)</string></property></item>
            </widget>
           </item>
           <item row="1" column="1">

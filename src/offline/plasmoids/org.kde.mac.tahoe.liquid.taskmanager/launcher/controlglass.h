@@ -22,6 +22,7 @@ public:
     Q_INVOKABLE void windowMoveStarted() { m_ink.moved(); }
     Q_INVOKABLE QColor foregroundAt(QPointF point, QSizeF radius, QColor base, QColor fill) const;
     Q_INVOKABLE QColor animatedForegroundAt(QObject *item, QPointF point, QSizeF radius, QColor base, QColor fill);
+    Q_INVOKABLE QColor animatedLabelForeground(QObject *item, QPointF point, QSizeF radius, QColor base, QColor fill);
     Q_INVOKABLE QColor backdropAt(QPointF point) const;
 Q_SIGNALS:
     void backdropChanged();
@@ -32,6 +33,7 @@ private:
     Q_SLOT void updateBackdrop(int pid, const QRect &frame, const QRect &bounds, const QByteArray &colors, const QString &title);
     quint64 m_revision = 0;
     QByteArray m_backdropGrid;
+    int m_gridSide = 8;
     QRect m_sampleBounds;
     QRect m_lastFrame;
     GlassInk::Transition m_ink{[this] { ++m_revision; Q_EMIT backdropChanged(); }};

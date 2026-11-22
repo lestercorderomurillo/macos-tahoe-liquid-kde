@@ -4,8 +4,6 @@ from pathlib import Path
 import re
 from xml.etree import ElementTree as ET
 
-from installer_choices import selected
-
 LEVELS = {"none": 0, "soft": .30, "medium": .65, "hard": 1.0}
 GTK_SHADOWS = {
     "none": "none",
@@ -67,6 +65,7 @@ def gtk_css(source: str, level: str, version: int) -> str:
 
 
 def apply_aurorae(path: Path) -> None:
+    from installer_choices import selected
     options = selected()
     if options:
         path.write_text(aurorae_svg(path.read_text(), options["shadows"]))
@@ -74,6 +73,7 @@ def apply_aurorae(path: Path) -> None:
 
 def apply_gtk(path: Path, level: str | None = None) -> None:
     if level is None:
+        from installer_choices import selected
         options = selected()
         if not options:
             return

@@ -16,7 +16,7 @@ from PyQt6.QtWidgets import (
     QRadioButton, QScrollArea, QSizePolicy, QSpinBox, QVBoxLayout, QWidget,
 )
 
-from installer_choices import COLORS, defaults, validate
+from installer_choices import COLORS, GLASS_PRESETS, defaults, validate
 from window_controls import button_svg
 from progress_model import ProgressModel, elapsed_text
 
@@ -1188,7 +1188,7 @@ class InstallerWindow(OpaqueSurface):
         items = [(key, label, "", picture(key+".jpg", 170, 112, key+"-dark.jpg", cover=True))
                  for key, label in (("tahoe", "Tahoe"), ("golden", "Golden Gate"),
                                     ("landscape", "Landscape"), ("sonoma", "Sonoma"),
-                                    ("prism", "Prism"), ("macos", "Monterey"))]
+                                    ("prism", "Prism"), ("macos", "Monterey"), ("exuma", "Exuma"))]
         items.append(("keep", "Keep my wallpaper", "", current_wallpaper_preview(170, 112)))
         self.cards("wallpaper", items, columns=4, compact=True)
         row = QHBoxLayout()
@@ -1449,16 +1449,14 @@ class InstallerWindow(OpaqueSurface):
     def page_glass_style(self):
         mode = self.mode
         automatic = self.choices["appearance"] == "auto"
-        self.cards("glass_style", [
-            (key, title, "", picture(f"glass-preset-{preset}-{mode}.png",
-                                     232, 220,
-                                     f"glass-preset-{preset}-dark.png" if automatic else None,
-                                     cover=True, crop=(820, 300, 1280, 1214)))
-            for key, title, preset in (
-                ("classic", "Tahoe (Official)", "tahoe-clear"),
-                ("official", "Golden Gate (Official)", "golden-gate-official"),
-            )
-        ], columns=2)
+        items = []
+        for preset in GLASS_PRESETS:
+            stem = "glass-preset-" + preset["photo"]
+            preview = picture(f"{stem}-{mode}.png", 360, 116,
+                              f"{stem}-dark.png" if automatic else None,
+                              cover=True, crop=(1788, 565, 1320, 425))
+            items.append((preset["choice"], preset["title"], "", preview))
+        self.cards("glass_style", items, columns=2, compact=True)
 
     def page_shadows(self):
         self.cards("shadows", [
@@ -1545,8 +1543,7 @@ class InstallerWindow(OpaqueSurface):
                  "glass": "Tinted", "regular": "Default", "clear": "Clear", "keep": "Keep", "golden": "Golden Gate", "tahoe": "Tahoe",
                  "landscape": "Landscape", "sonoma": "Sonoma", "macos": "Monterey", "custom": "Custom file",
                  "nautilus": "Nautilus", "dolphin": "Dolphin",
-                 "classic": "Tahoe (Official)",
-                 "official": "Golden Gate (Official)"}
+                 **{preset["choice"]: preset["title"] for preset in GLASS_PRESETS}}
         value = lambda key: self.t(names.get(str(c[key]), str(c[key]).capitalize()))
         enabled = lambda key: self.t("Enabled" if c[key] else "Disabled")
         desktop = " + ".join(self.t(label) for key, label in (("panel", "Top bar"), ("dock", "Dock")) if c[key])

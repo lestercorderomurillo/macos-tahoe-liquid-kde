@@ -31,7 +31,7 @@ def kcm_probe(tmp_path_factory):
 
 
 @pytest.mark.parametrize("saved_tint", ["0", "1"])
-@pytest.mark.parametrize("saved_preset", ["absent", "0", "1", "2"])
+@pytest.mark.parametrize("saved_preset", ["absent", "0", "1", "2", "3"])
 def test_native_material_preset_controls(kcm_probe, tmp_path, saved_preset, saved_tint):
     if not shutil.which("dbus-run-session"):
         pytest.skip("private D-Bus session required")
@@ -112,19 +112,19 @@ def test_installation_reapplies_complete_edition_material(monkeypatch, edition, 
         expected["MaterialOpacity"] = "0.55"  # Retired key is ignored, not rewritten.
     assert "MaterialOpacity" not in writes
     components = json.loads(saved.pop("ComponentMaterials"))
-    assert components["dock"]["BlurStrength"] == (4 if golden else 5)
+    assert components["dock"]["BlurStrength"] == (4 if golden else 3.75)
     assert components["dock"]["DarkGradientOverlay"] is False
     assert components["control-center"]["DarkGradientOverlay"] is False
-    assert components["apps"]["BlurStrength"] == (12 if golden else float(expected["BlurStrength"]))
+    assert components["apps"]["BlurStrength"] == (6 if golden else 5.75)
     assert saved == expected
     assert writes[-1] == "MaterialPreset"
     writes.clear()
     assert glass._install_material_preset()
     components = json.loads(saved.pop("ComponentMaterials"))
-    assert components["dock"]["BlurStrength"] == (4 if golden else 5)
+    assert components["dock"]["BlurStrength"] == (4 if golden else 3.75)
     assert components["dock"]["DarkGradientOverlay"] is False
     assert components["control-center"]["DarkGradientOverlay"] is False
-    assert components["apps"]["BlurStrength"] == (12 if golden else float(expected["BlurStrength"]))
+    assert components["apps"]["BlurStrength"] == (6 if golden else 5.75)
     assert saved == expected
 
 
@@ -174,24 +174,21 @@ def test_native_glass_shader_pixels(kcm_probe, tmp_path, monkeypatch):
 
 
 @pytest.mark.parametrize("edition", ["MacTahoe", "MacGoldenGate"])
-@pytest.mark.parametrize("style", ["classic", "tinted", "official"])
+@pytest.mark.parametrize("style", ["classic", "tinted", "official", "water"])
 def test_installer_frost_glass_values(monkeypatch, edition, style):
     monkeypatch.setattr(glass, "default_wallpaper", lambda: edition)
     monkeypatch.setattr(glass, "selected", lambda: {"files": "nautilus", "glass_style": style})
     saved = {}
     monkeypatch.setattr(glass, "kw_write", lambda *args: saved.update({args[-2]: args[-1]}) or True)
     assert glass._install_material_preset()
-    expected = _preset_values(2 if style == "official" else 1)
-    if style == "tinted":
-        expected.update(BlurStrength="12.0", MagnifyGlassStrength="0.02", RgbDriftStrength="10.0",
-                        RefractionWidth="38.0", HighlightWidth="16.0", HighlightStrength="0.1",
-                        Brightness="1.0", Contrast="1.0", Saturation="1.33",
-                        NoiseStrength="0", BlurDecorations="true")
+    preset = next(p for p in glass.GLASS_PRESETS if p["choice"] == style)
+    expected = {k: str(v).lower() if isinstance(v, bool) else str(v) for k, v in preset["values"].items()}
+    expected["MaterialPreset"] = str(preset["value"])
     components = json.loads(saved.pop("ComponentMaterials"))
-    assert components["dock"]["BlurStrength"] == (4 if style == "official" else 5)
+    assert components["dock"]["BlurStrength"] == {"classic": 3.75, "tinted": 8, "official": 4, "water": 1.5}[style]
     assert components["dock"]["DarkGradientOverlay"] is False
     assert components["control-center"]["DarkGradientOverlay"] is False
-    assert components["apps"]["BlurStrength"] == (12 if style == "official" else float(expected["BlurStrength"]))
+    assert components["apps"]["BlurStrength"] == {"classic": 5.75, "tinted": 12, "official": 6, "water": 1.5}[style]
     if style == "official":
         assert components["apps"]["SurfaceTransparencyLight"] == 86
         assert components["apps"]["SurfaceTransparencyDark"] == 96

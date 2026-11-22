@@ -124,6 +124,7 @@ Item {
 			id: detachedSearchSlot
 			SearchBar {
 				id: detachedSearchBar
+                detachedWindow: true
 				anchors.fill: parent
 				showMenuButton: !main.clipboardMode
 				Keys.priority: Keys.AfterItem
@@ -138,19 +139,57 @@ Item {
 		Kirigami.Theme.colorSet: Kirigami.Theme.Window
 	}
     Tahoe.PopupBackdrop { id: appBackdrop; window: root }
-    function labelColor(item, sampleX = item.width / 2, overlay = "transparent") {
-        if (!root.glassSettings.dynamicTinting) return main.textColor;
+    Tahoe.PopupBackdrop { id: searchBackdrop; window: searchPopup }
+    Tahoe.GlassSettings { id: searchMaterial; component: "search" }
+    function materialFill(settings) {
+        const saved = isDarkTheme ? settings.darkOpacity : settings.lightOpacity;
+        const alpha = saved >= 0 ? saved : isDarkTheme ? (goldenGateEdition ? 0.12 : 0.48) : 0.55;
+        const tint = isDarkTheme ? 0 : 1;
+        return Qt.rgba(tint, tint, tint, alpha);
+    }
+    // Compose translucent fills in premultiplied space, as Qt Quick renders them.
+    function layerOver(base, top) {
+        const remaining = base.a * (1 - top.a);
+        const alpha = top.a + remaining;
+        if (!alpha) return Qt.rgba(0, 0, 0, 0);
+        return Qt.rgba((top.r * top.a + base.r * remaining) / alpha,
+                       (top.g * top.a + base.g * remaining) / alpha,
+                       (top.b * top.a + base.b * remaining) / alpha, alpha);
+    }
+    function categorySamples(label, view, backing) {
+        if (!root.glassSettings.dynamicTinting || !root.visible) return [];
         appBackdrop.backdropRevision;
+        view.contentX;
+        for (let ancestor = label; ancestor; ancestor = ancestor.parent) {
+            ancestor.x; ancestor.y;
+        }
+        const fill = layerOver(materialFill(root.glassSettings), backing);
+        const samples = [];
+        for (let i = -2; i <= 2; ++i) {
+            const x = label.width / 2 + i * Math.min(label.contentWidth, label.width) * 0.2;
+            const y = label.height / 2;
+            const viewportX = label.mapToItem(view, x, y).x;
+            if (viewportX < 0 || viewportX >= view.width) continue;
+            const sample = appBackdrop.backdropAt(label.mapToItem(root.contentItem, x, y));
+            if (sample.a > 0) samples.push(Qt.tint(sample, fill));
+        }
+        return samples;
+    }
+    function labelColor(item, sampleX = item.width / 2, overlay = "transparent", detached = false, fallback = main.textColor, textWidth = item.contentWidth) {
+        if (!root.glassSettings.dynamicTinting) return fallback;
+        const sampler = detached ? searchBackdrop : appBackdrop;
+        const settings = detached ? searchMaterial : root.glassSettings;
+        sampler.backdropRevision;
         // Track delegate movement as well as changes behind the stationary popup.
         for (let parentItem = item; parentItem; parentItem = parentItem.parent) {
             parentItem.x; parentItem.y;
         }
-        const point = item.mapToItem(root.contentItem, sampleX, item.height / 2);
-        const saved = isDarkTheme ? root.glassSettings.darkOpacity : root.glassSettings.lightOpacity;
-        const alpha = saved >= 0 ? saved : isDarkTheme ? (goldenGateEdition ? 0.12 : 0.48) : 0.55;
-        const tint = isDarkTheme ? 0 : 1;
-        return appBackdrop.animatedForegroundAt(item, point, Qt.size(Math.min(40, item.width / 2), Math.max(24, item.height / 2)),
-                                      main.textColor, Qt.tint(Qt.rgba(tint, tint, tint, alpha), overlay));
+        const point = item.mapToItem(detached ? searchPopup.contentItem : root.contentItem, sampleX, item.height / 2);
+        // Keep samples inside the visible text, including short labels and elided names.
+        const span = Math.max(0, Math.min(textWidth, sampleX * 2, (item.width - sampleX) * 2));
+        const radius = Qt.size(span * 0.4, Math.min(item.height, item.font.pixelSize > 0 ? item.font.pixelSize : item.height / 2) * 0.22);
+        return sampler.animatedLabelForeground(item, point, radius,
+                                      fallback, Qt.tint(materialFill(settings), overlay));
     }
 	readonly property color textColor: Contrast.preferredText(glassPalette.Kirigami.Theme.textColor)
 	readonly property string textFont: Kirigami.Theme.defaultFont.family

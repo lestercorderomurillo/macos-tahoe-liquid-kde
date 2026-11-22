@@ -87,11 +87,11 @@ int main(int argc, char **argv)
         module->load();
     }
     auto *selector = control<QComboBox>(module.get(), QStringLiteral("kcfg_MaterialPreset"));
-    require(selector->count() == 3, QStringLiteral("exactly three appearances"));
+    require(selector->count() == 4, QStringLiteral("exactly four appearances"));
     require(selector->itemText(0) == QStringLiteral("Tahoe (Clear)") && selector->itemText(1) == QStringLiteral("Tahoe (Frosted)")
-            && selector->itemText(2) == QStringLiteral("Golden Gate (Official)"),
+            && selector->itemText(2) == QStringLiteral("Golden Gate (Official)") && selector->itemText(3) == QStringLiteral("Water"),
             QStringLiteral("Golden Gate clear must not be offered"));
-    require(selector->currentIndex() == (savedPreset == QStringLiteral("2") ? 2 : savedTint),
+    require(selector->currentIndex() == (savedPreset == QStringLiteral("3") ? 3 : savedPreset == QStringLiteral("2") ? 2 : savedTint),
             QStringLiteral("saved preset identity changed"));
     require(control<QDoubleSpinBox>(module.get(), QStringLiteral("kcfg_BlurStrength"))->value()
                 == (savedPreset == QStringLiteral("absent") ? defaults["BlurStrength"].toDouble() : 6.25),
@@ -123,44 +123,18 @@ int main(int argc, char **argv)
     require(!module->widget()->findChild<QWidget *>(QStringLiteral("kcfg_BackgroundOpacity")), QStringLiteral("flat background opacity must be removed"));
     require(control<QSpinBox>(module.get(), QStringLiteral("kcfg_BackingTint"))->isHidden(),
             QStringLiteral("legacy preset identity must not expose a background toggle"));
-    for (int i : {1, 2, 0}) {
+    for (int i : {1, 2, 3, 0}) {
         selector->setCurrentIndex(i);
         selector->activated(i);
         control<QPushButton>(module.get(), QStringLiteral("resetPreset"))->click();
-        auto values = presets.at(i == 2 ? 1 : 0).toObject().value(QStringLiteral("values")).toObject();
-        if (i != 0) {
-            values.insert(QStringLiteral("BlurStrength"), 12.0);
-            values.insert(QStringLiteral("MagnifyGlassStrength"), 0.02);
-            values.insert(QStringLiteral("RgbDriftStrength"), 10.0);
-            values.insert(QStringLiteral("RefractionWidth"), 38.0);
-            values.insert(QStringLiteral("HighlightWidth"), 16.0);
-            values.insert(QStringLiteral("NoiseStrength"), 0);
-            values.insert(QStringLiteral("BlurDecorations"), true);
-            if (i == 2) {
-                values.insert(QStringLiteral("DarkGradientOverlay"), true);
-                values.insert(QStringLiteral("BlurStrength"), 4.0);
-                values.insert(QStringLiteral("MagnifyGlassStrength"), 0.032);
-                values.insert(QStringLiteral("RgbDriftStrength"), 8.0);
-                values.insert(QStringLiteral("RefractionWidth"), 64.0);
-                values.insert(QStringLiteral("Brightness"), 1.1);
-                values.insert(QStringLiteral("Contrast"), 1.0);
-                values.insert(QStringLiteral("Saturation"), 1.13);
-                for (const QString stop : {QStringLiteral("Top"), QStringLiteral("Center"), QStringLiteral("Bottom")}) {
-                    values.insert("Gradient" + stop + "Color", QStringLiteral("#cecece"));
-                }
-                values.insert(QStringLiteral("GradientTopOpacity"), 0.5);
-                values.insert(QStringLiteral("GradientCenterOpacity"), 0.35);
-                values.insert(QStringLiteral("GradientCenterPosition"), 0.56);
-                values.insert(QStringLiteral("GradientBottomOpacity"), 0.0);
-            }
-        }
+        auto values = presets.at(i).toObject().value(QStringLiteral("values")).toObject();
         verifyControls(values);
-        require(control<QSpinBox>(module.get(), QStringLiteral("kcfg_BackingTint"))->value() == (i != 0 ? 1 : 0), QStringLiteral("preset background state"));
+        require(control<QSpinBox>(module.get(), QStringLiteral("kcfg_BackingTint"))->value() == presets.at(i).toObject()["variant"].toInt(), QStringLiteral("preset background state"));
         control<QPushButton>(module.get(), QStringLiteral("resetPreset"))->click();
         verifyControls(values);
         module->save();
         config->reparseConfiguration();
-        require(group.readEntry("MaterialPreset", -1) == presets.at(i == 2 ? 1 : 0).toObject()["value"].toInt(),
+        require(group.readEntry("MaterialPreset", -1) == presets.at(i).toObject()["value"].toInt(),
                 QStringLiteral("saved preset ID changed"));
         for (auto it = values.constBegin(); it != values.constEnd(); ++it) {
             if (it.value().isDouble())
@@ -174,13 +148,13 @@ int main(int argc, char **argv)
         selector = control<QComboBox>(module.get(), QStringLiteral("kcfg_MaterialPreset"));
         require(selector->currentIndex() == i, QStringLiteral("reopening changed selected preset"));
         verifyControls(values);
-        require(control<QSpinBox>(module.get(), QStringLiteral("kcfg_BackingTint"))->value() == (i != 0 ? 1 : 0),
+        require(control<QSpinBox>(module.get(), QStringLiteral("kcfg_BackingTint"))->value() == presets.at(i).toObject()["variant"].toInt(),
                 QStringLiteral("appearance or reopening lost the backing tint"));
     }
     // Components share controls, but edits and restoration stay independent.
     auto *components = control<QComboBox>(module.get(), QStringLiteral("componentSelector"));
     require(components->count() == 10, QStringLiteral("missing component controls"));
-    for (int presetIndex = 0; presetIndex < 3; ++presetIndex) {
+    for (int presetIndex = 0; presetIndex < selector->count(); ++presetIndex) {
         selector->setCurrentIndex(presetIndex);
         selector->activated(presetIndex);
         components->setCurrentIndex(components->findData(QStringLiteral("control-center")));
@@ -188,11 +162,11 @@ int main(int argc, char **argv)
                 QStringLiteral("Control Center default gradient must be off in every preset"));
         require(control<QDoubleSpinBox>(module.get(), QStringLiteral("kcfg_Saturation"))->value() == 1.0,
                 QStringLiteral("Control Center must not amplify wallpaper color"));
-        require(control<QDoubleSpinBox>(module.get(), QStringLiteral("kcfg_SurfaceTransparencyLight"))->value() == 82.0
-                && control<QDoubleSpinBox>(module.get(), QStringLiteral("kcfg_SurfaceTransparencyDark"))->value() == 93.0,
+        require(control<QDoubleSpinBox>(module.get(), QStringLiteral("kcfg_SurfaceTransparencyLight"))->value() == presets.at(presetIndex).toObject()["components"].toObject()["control-center"].toObject()["SurfaceTransparencyLight"].toDouble()
+                && control<QDoubleSpinBox>(module.get(), QStringLiteral("kcfg_SurfaceTransparencyDark"))->value() == presets.at(presetIndex).toObject()["components"].toObject()["control-center"].toObject()["SurfaceTransparencyDark"].toDouble(),
                 QStringLiteral("Control Center must retain clear fills in every preset"));
         components->setCurrentIndex(components->findData(QStringLiteral("dock")));
-        require(control<QDoubleSpinBox>(module.get(), QStringLiteral("kcfg_BlurStrength"))->value() == (presetIndex == 2 ? 4 : 5),
+        require(control<QDoubleSpinBox>(module.get(), QStringLiteral("kcfg_BlurStrength"))->value() == presets.at(presetIndex).toObject()["values"].toObject()["BlurStrength"].toDouble(),
                 QStringLiteral("Dock default blur changed"));
         require(!control<QCheckBox>(module.get(), QStringLiteral("kcfg_DarkGradientOverlay"))->isChecked(),
                 QStringLiteral("Dock default gradient must be off"));
@@ -203,7 +177,7 @@ int main(int argc, char **argv)
     control<QCheckBox>(module.get(), QStringLiteral("kcfg_DarkGradientOverlay"))->setChecked(true);
     control<QDoubleSpinBox>(module.get(), QStringLiteral("kcfg_SurfaceTransparencyLight"))->setValue(72.5);
     components->setCurrentIndex(components->findData(QStringLiteral("apps")));
-    require(control<QDoubleSpinBox>(module.get(), QStringLiteral("kcfg_BlurStrength"))->value() == 5,
+    require(control<QDoubleSpinBox>(module.get(), QStringLiteral("kcfg_BlurStrength"))->value() == 5.75,
             QStringLiteral("Dock settings leaked into Apps"));
     control<QDoubleSpinBox>(module.get(), QStringLiteral("kcfg_BlurStrength"))->setValue(3.25);
     auto *pasteValues = control<QPushButton>(module.get(), QStringLiteral("pasteComponentValues"));
@@ -237,7 +211,7 @@ int main(int argc, char **argv)
     selector->setCurrentIndex(1);
     selector->activated(1);
     components->setCurrentIndex(components->findData(QStringLiteral("dock")));
-    require(control<QDoubleSpinBox>(module.get(), QStringLiteral("kcfg_BlurStrength"))->value() == 5,
+    require(control<QDoubleSpinBox>(module.get(), QStringLiteral("kcfg_BlurStrength"))->value() == 8,
             QStringLiteral("Dock override leaked across presets"));
     selector->setCurrentIndex(0);
     selector->activated(0);

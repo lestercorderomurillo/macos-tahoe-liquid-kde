@@ -35,13 +35,8 @@ LiquidGlassEffectConfig::LiquidGlassEffectConfig(QObject* parent, const KPluginM
     int row = 0;
     for (const auto &entry : presets) {
         const int value = entry.toObject().value(QStringLiteral("value")).toInt();
-        for (int variant : {0, 1}) {
-            if (value == 2 && variant == 0) {
-                continue; // Golden Gate clear is not offered in the selector.
-            }
-            ui.kcfg_MaterialPreset->setItemData(row, value);
-            ui.kcfg_MaterialPreset->setItemData(row++, variant, Qt::UserRole + 1);
-        }
+        ui.kcfg_MaterialPreset->addItem(entry.toObject().value(QStringLiteral("title")).toString(), value);
+        ui.kcfg_MaterialPreset->setItemData(row++, entry.toObject().value(QStringLiteral("variant")).toInt(), Qt::UserRole + 1);
     }
     connect(ui.kcfg_BackingTint, &QSpinBox::valueChanged,
             ui.kcfg_MaterialPreset, &PresetComboBox::setBackingTint);
@@ -152,22 +147,9 @@ LiquidGlassEffectConfig::~LiquidGlassEffectConfig() { }
 
 void LiquidGlassEffectConfig::applyPreset(int index)
 {
-    const auto presets = QJsonDocument::fromJson(materialPresetsJson).array();
-    if (index < 0 || index >= ui.kcfg_MaterialPreset->count()) {
-        return;
-    }
-    const int value = ui.kcfg_MaterialPreset->itemData(index).toInt();
-    const int variant = ui.kcfg_MaterialPreset->itemData(index, Qt::UserRole + 1).toInt();
-    QJsonObject preset;
-    for (const auto &entry : presets) {
-        if (entry.toObject().value(QStringLiteral("value")).toInt() == value) {
-            preset = entry.toObject();
-            break;
-        }
-    }
-    if (preset.isEmpty()) {
-        return;
-    }
+    if (index < 0 || index >= ui.kcfg_MaterialPreset->count()) return;
+    const auto preset = presetAt(index);
+    const int variant = preset.value(QStringLiteral("variant")).toInt();
     captureComponent();
     if (!m_materials.isEmpty()) m_profiles[profileKey(m_activePresetIndex)] = m_materials;
     m_activePresetIndex = index;
@@ -183,7 +165,7 @@ void LiquidGlassEffectConfig::applyPreset(int index)
 QJsonObject LiquidGlassEffectConfig::presetAt(int index) const
 {
     const auto presets = QJsonDocument::fromJson(materialPresetsJson).array();
-    return presets.at(index == 2 ? 1 : 0).toObject();
+    return presets.at(index).toObject();
 }
 
 QString LiquidGlassEffectConfig::profileKey(int index) const

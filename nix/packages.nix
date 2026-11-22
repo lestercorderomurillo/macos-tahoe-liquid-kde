@@ -39,7 +39,7 @@ in rec {
       root = offline;
       fileset = lib.fileset.unions (map (name: offline + "/${name}") [
         "aurorae" "color-schemes" "cursors" "gtk" "icons" "kvantum"
-        "look-and-feel" "plasma-theme" "plasmoids"
+        "look-and-feel" "plasma-theme" "plasmoids" "wallpapers/MacExuma"
       ]);
     };
     nativeBuildInputs = [ pkgs.python3 pkgs.zstd ];
@@ -116,7 +116,9 @@ in rec {
     inherit version;
     src = lib.fileset.toSource {
       root = offline;
-      fileset = lib.fileset.unions [ (offline + "/fonts") (offline + "/wallpapers") (offline + "/sounds") ];
+      fileset = lib.fileset.unions [ (offline + "/fonts")
+        (lib.fileset.difference (offline + "/wallpapers") (offline + "/wallpapers/MacExuma"))
+        (offline + "/sounds") ];
     };
     meta = meta // { license = lib.licenses.unfree; };
     installPhase = ''

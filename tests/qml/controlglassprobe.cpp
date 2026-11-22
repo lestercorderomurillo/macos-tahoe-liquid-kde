@@ -2,6 +2,7 @@
 #include "controlglass.h"
 #include <QGuiApplication>
 #include <QVariantMap>
+#include <QThread>
 #include <limits>
 #include <iostream>
 
@@ -45,6 +46,29 @@ int main(int argc, char **argv)
         || glass.backdropAt(QPointF(40,40)) != QColor(fractional ? Qt::black : Qt::white)) return 11;
     const auto revision = glass.backdropRevision();
     if (!sample(window.size() + QSize(8,0), char(90)) || glass.backdropRevision() != revision) return 10;
+    // Five distinct column samples, repeated on three rows. A bright patch
+    // covering 3/5 of a label may sustain an override but must not start one.
+    QObject label;
+    const QColor theme("#f4f4f4");
+    const QPointF center(210, 125);
+    const QSizeF radius(84, 20);
+    const auto settledInk = [&](int brightColumns) {
+        QByteArray colors(64 * 64 * 3, 0);
+        for (int col = 0; col < brightColumns; ++col) {
+            const int x = int((center.x() + (col - 2) * radius.width() / 2) * 64 / window.width());
+            for (int y = 0; y < 64; ++y)
+                colors.replace((y * 64 + x) * 3, 3, QByteArray(3, char(255)));
+        }
+        const QRect frame(window.position(), window.size());
+        QMetaObject::invokeMethod(&glass, "updateBackdrop", Qt::DirectConnection,
+            Q_ARG(int, int(app.applicationPid())), Q_ARG(QRect, frame), Q_ARG(QRect, frame),
+            Q_ARG(QByteArray, colors), Q_ARG(QString, window.title()));
+        glass.animatedLabelForeground(&label, center, radius, theme, Qt::transparent);
+        QThread::msleep(310);
+        return glass.animatedLabelForeground(&label, center, radius, theme, Qt::transparent);
+    };
+    if (settledInk(3) != theme || settledInk(4) != QColor(Qt::black)
+        || settledInk(3) != QColor(Qt::black) || settledInk(2) != theme) return 12;
     glass.setWindow(nullptr);
     std::cout << "CONTROL_GLASS_REGIONS_OK\n";
 }
