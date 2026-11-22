@@ -1,6 +1,6 @@
 # Installer testing
 
-**v0.81.1**. Verified Finder reordering and unpinning in the shared Dock on KDE neon Wayland. [Evidence and coverage](release-evidence.json).
+**v0.81.2**. Verified Finder edges in light and dark and live Rounded Corners activation on KDE neon Wayland. [Evidence and coverage](release-evidence.json).
 
 [Installer photo evidence](src/screenshots/previews/wizard-tahoe-provenance-531f633f4ff6.json).
 
