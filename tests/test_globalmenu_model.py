@@ -62,6 +62,19 @@ def test_native_globalmenu_recovers_across_focus_and_service_changes(repo, tmp_p
                 "QT_QUICK_BACKEND": "software",
                 "QT_PLUGIN_PATH": str(plugin_build / "bin"),
                 "QML_IMPORT_PATH": str(plugin_build / "bin")})
+    applications = tmp_path / "data" / "applications"
+    applications.mkdir(parents=True)
+    programs = tmp_path / "programs"
+    programs.mkdir()
+    for command, desktop in (("nautilus", "org.gnome.Nautilus"), ("dolphin", "org.kde.dolphin")):
+        executable = programs / command
+        executable.write_text('#!/bin/sh\nprintf "%s\\n" "${0##*/}" "$@" > "$MTTKDE_FINDER_LAUNCH_LOG"\n')
+        executable.chmod(0o755)
+        (applications / (desktop + ".desktop")).write_text(
+            f"[Desktop Entry]\nType=Application\nName={command}\nExec={executable} %U\nMimeType=inode/directory;\n"
+        )
+    env["PATH"] = str(programs) + os.pathsep + env["PATH"]
+    env["MTTKDE_FINDER_LAUNCH_LOG"] = str(tmp_path / "finder-launch.log")
     read_fd, write_fd = os.pipe()
     server = subprocess.Popen(["Xvfb", "-displayfd", str(write_fd), "-screen", "0",
                                "800x600x24", "-nolisten", "tcp"], pass_fds=(write_fd,),

@@ -11,11 +11,14 @@
 #include <QDBusVariant>
 #include <QDBusInterface>
 #include <QApplication>
+#include <QFile>
 #include <QProcess>
 #include <QSignalSpy>
+#include <QStandardPaths>
 #include <QStandardItemModel>
 #include <QTest>
 #include <QWindow>
+#include <KApplicationTrader>
 #include <netwm.h>
 #include <xcb/xcb.h>
 
@@ -389,6 +392,35 @@ private Q_SLOTS:
         model.setEnableGenericMenu(true);
         QTRY_COMPARE(model.rowCount(), 3);
         QCOMPARE(model.activeAppName(), QStringLiteral("Finder"));
+    }
+    void finderUsesThePreferredFileManager()
+    {
+        const auto logPath = qEnvironmentVariable("MTTKDE_FINDER_LAUNCH_LOG");
+        if (logPath.isEmpty()) QSKIP("Requires the private desktop entries and launch recorders");
+        const auto mimeType = QStringLiteral("inode/directory");
+        AppMenuModel model;
+        QTRY_COMPARE(model.activeAppName(), QStringLiteral("Finder"));
+        const auto newWindow = model.index(0).data(AppMenuModel::ActionRole).value<QAction *>()->menu()->actions().first();
+        const auto recents = model.index(1).data(AppMenuModel::ActionRole).value<QAction *>()->menu()->actions().first();
+        const auto recorded = [&] {
+            QFile log(logPath);
+            return log.open(QIODevice::ReadOnly) ? QString::fromUtf8(log.readAll()) : QString();
+        };
+        for (const auto &name : {QStringLiteral("org.gnome.Nautilus"), QStringLiteral("org.kde.dolphin")}) {
+            const auto service = KService::serviceByDesktopName(name);
+            QVERIFY(service);
+            KApplicationTrader::setPreferredService(mimeType, service);
+            QCOMPARE(QProcess::execute(QStringLiteral("kbuildsycoca6"), {QStringLiteral("--noincremental")}), 0);
+            QTRY_VERIFY(KApplicationTrader::preferredService(mimeType)
+                && KApplicationTrader::preferredService(mimeType)->desktopEntryName() == name);
+            const auto program = name.section(QLatin1Char('.'), -1).toLower();
+            const auto recentUrl = program == QStringLiteral("nautilus") ? QStringLiteral("recent:///") : QStringLiteral("recentlyused:/");
+            newWindow->trigger();
+            QTRY_COMPARE(recorded(), program + QStringLiteral("\n--new-window\n")
+                + QStandardPaths::writableLocation(QStandardPaths::HomeLocation) + QLatin1Char('\n'));
+            recents->trigger();
+            QTRY_COMPARE(recorded(), program + QLatin1Char('\n') + recentUrl + QLatin1Char('\n'));
+        }
     }
     void lateMenuAppearsAfterEmptyExport()
     {
