@@ -17,7 +17,9 @@ PlasmoidItem {
     readonly property var manager: NativeLauncher.DockMetrics.cells.find(cell =>
         cell.taskManager && cell.panelWindow === root.Window.window)?.applet
     readonly property var excluded: manager?.visibleAppIds || []
-    readonly property int cellSize: NativeLauncher.DockMetrics.preferredCellSize(vertical ? width : height)
+    // Plasma insets this separator. Size its icons from the adjacent task manager.
+    readonly property real iconThickness: vertical ? (manager?.width || width) : (manager?.height || height)
+    readonly property int cellSize: NativeLauncher.DockMetrics.preferredCellSize(iconThickness)
     readonly property int length: gap + (recentApps.length ? gap + recentApps.length * cellSize : 0)
     property var recentApps: []
     Layout.minimumWidth: vertical ? 0 : length
@@ -84,7 +86,9 @@ PlasmoidItem {
                 Keys.onReturnPressed: activate()
                 Keys.onSpacePressed: activate()
                 NativeLauncher.DockIcon {
-                    anchors.fill: parent
+                    anchors.centerIn: parent
+                    width: root.vertical ? root.iconThickness : recent.width
+                    height: root.vertical ? recent.height : root.iconThickness
                     location: Plasmoid.location
                     source: recent.modelData.icon
                     hovered: hover.hovered
