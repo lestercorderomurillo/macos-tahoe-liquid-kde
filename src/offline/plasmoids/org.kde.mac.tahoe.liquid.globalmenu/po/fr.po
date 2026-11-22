@@ -11,6 +11,15 @@ msgstr "&Copier"
 msgid "&Edit"
 msgstr "É&dition"
 
+msgid "&File"
+msgstr "&Fichier"
+
+msgid "&Go"
+msgstr "&Aller"
+
+msgid "&Help"
+msgstr "&Aide"
+
 msgid "&Paste"
 msgstr "C&oller"
 
@@ -80,8 +89,17 @@ msgstr "Cœurs"
 msgid "Cu&t"
 msgstr "Co&uper"
 
+msgid "Desktop"
+msgstr "Bureau"
+
 msgid "Desktop file"
 msgstr "Fichier desktop"
+
+msgid "Documents"
+msgstr "Documents"
+
+msgid "Downloads"
+msgstr "Téléchargements"
 
 msgid "Enter Full Screen"
 msgstr "Passer en plein écran"
@@ -92,6 +110,9 @@ msgstr "Exécutable"
 msgid "Exit Full Screen"
 msgstr "Quitter le plein écran"
 
+msgid "Finder"
+msgstr "Finder"
+
 msgid "Force Quit:"
 msgstr "Forcer à quitter :"
 
@@ -100,6 +121,12 @@ msgstr "Forcer à quitter…"
 
 msgid "Graphics"
 msgstr "Graphismes"
+
+msgid "Help"
+msgstr "Aide"
+
+msgid "Home"
+msgstr "Dossier personnel"
 
 msgid "Location"
 msgstr "Emplacement"
@@ -134,6 +161,9 @@ msgstr "Plus d’infos…"
 msgid "Network"
 msgstr "Réseau"
 
+msgid "New Finder Window"
+msgstr "Nouvelle fenêtre du Finder"
+
 msgid "Not Available"
 msgstr "Indisponible"
 
@@ -145,6 +175,9 @@ msgstr "Ordinateur personnel"
 
 msgid "Process ID"
 msgstr "Identifiant du processus"
+
+msgid "Recents"
+msgstr "Récents"
 
 msgid "Report a Bug…"
 msgstr "Signaler un bogue…"
@@ -211,6 +244,9 @@ msgstr "Réglages système…"
 
 msgid "System menu"
 msgstr "Menu système"
+
+msgid "Trash"
+msgstr "Corbeille"
 
 msgid "Unknown"
 msgstr "Inconnu"

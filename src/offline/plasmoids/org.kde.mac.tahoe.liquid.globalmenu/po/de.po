@@ -11,6 +11,15 @@ msgstr "&Kopieren"
 msgid "&Edit"
 msgstr "&Bearbeiten"
 
+msgid "&File"
+msgstr "&Datei"
+
+msgid "&Go"
+msgstr "&Gehe zu"
+
+msgid "&Help"
+msgstr "&Hilfe"
+
 msgid "&Paste"
 msgstr "&Einfügen"
 
@@ -80,8 +89,17 @@ msgstr "Kerne"
 msgid "Cu&t"
 msgstr "&Ausschneiden"
 
+msgid "Desktop"
+msgstr "Schreibtisch"
+
 msgid "Desktop file"
 msgstr "Desktop-Datei"
+
+msgid "Documents"
+msgstr "Dokumente"
+
+msgid "Downloads"
+msgstr "Downloads"
 
 msgid "Enter Full Screen"
 msgstr "Vollbildmodus starten"
@@ -92,6 +110,9 @@ msgstr "Programmdatei"
 msgid "Exit Full Screen"
 msgstr "Vollbildmodus beenden"
 
+msgid "Finder"
+msgstr "Finder"
+
 msgid "Force Quit:"
 msgstr "Sofort beenden:"
 
@@ -100,6 +121,12 @@ msgstr "Sofort beenden…"
 
 msgid "Graphics"
 msgstr "Grafik"
+
+msgid "Help"
+msgstr "Hilfe"
+
+msgid "Home"
+msgstr "Benutzerordner"
 
 msgid "Location"
 msgstr "Speicherort"
@@ -134,6 +161,9 @@ msgstr "Weitere Informationen…"
 msgid "Network"
 msgstr "Netzwerk"
 
+msgid "New Finder Window"
+msgstr "Neues Finder-Fenster"
+
 msgid "Not Available"
 msgstr "Nicht verfügbar"
 
@@ -145,6 +175,9 @@ msgstr "Personal Computer"
 
 msgid "Process ID"
 msgstr "Prozesskennung"
+
+msgid "Recents"
+msgstr "Zuletzt benutzt"
 
 msgid "Report a Bug…"
 msgstr "Fehler melden…"
@@ -211,6 +244,9 @@ msgstr "Systemeinstellungen…"
 
 msgid "System menu"
 msgstr "Systemmenü"
+
+msgid "Trash"
+msgstr "Papierkorb"
 
 msgid "Unknown"
 msgstr "Unbekannt"

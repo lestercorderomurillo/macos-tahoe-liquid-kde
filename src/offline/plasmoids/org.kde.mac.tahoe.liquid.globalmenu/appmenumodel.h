@@ -164,6 +164,10 @@ private:
     TaskManager::TasksModel* m_tasksModel;
     std::unique_ptr<QMenu> m_genericMenu;
     QPersistentModelIndex m_genericTarget;
+    // Shown while no window is active, like the Finder menu on macOS (#159).
+    std::unique_ptr<QMenu> m_finderMenu;
+    void updateFinderMenu();
+    bool showingFinder() const;
     MenuShortcutSender *m_shortcutSender;
     quint64 m_shortcutGeneration = 0;
     void updateGenericMenu();

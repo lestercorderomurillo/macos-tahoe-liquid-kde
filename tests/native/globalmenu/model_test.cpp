@@ -139,7 +139,7 @@ private Q_SLOTS:
         QVERIFY(model.setProperty("containmentStatus", Plasma::Types::AcceptingInputStatus));
         tasks.removeRow(1);
         Q_EMIT model.tasksModel()->activeTaskChanged();
-        QTRY_COMPARE(model.rowCount(), 0);
+        QTRY_COMPARE(model.rowCount(), 3); QCOMPARE(model.activeAppName(), QStringLiteral("Finder")); // #159: Finder's menus with no active window
     }
     void fallbackShortcutRequiresTheOriginalWindow()
     {
@@ -280,8 +280,8 @@ private Q_SLOTS:
         QVERIFY(QMetaObject::invokeMethod(&model, "onActiveWindowChanged"));
         QCOMPARE(model.rowCount(), 2);
         QVERIFY(model.setProperty("containmentStatus", Plasma::Types::ActiveStatus));
-        QTRY_COMPARE(model.rowCount(), 0);
-        QVERIFY(!model.menuAvailable());
+        QTRY_COMPARE(model.rowCount(), 3); QCOMPARE(model.activeAppName(), QStringLiteral("Finder")); // #159: Finder's menus with no active window
+        QVERIFY(model.menuAvailable()); // the Finder menu
     }
     void activeApplicationWinsWhilePanelStillAcceptsInput()
     {
@@ -322,7 +322,7 @@ private Q_SLOTS:
         QTRY_VERIFY(!model.tasksModel()->activeTask().isValid());
         QCOMPARE(model.rowCount(), 3);
         QVERIFY(model.setProperty("containmentStatus", Plasma::Types::ActiveStatus));
-        QTRY_COMPARE(model.rowCount(), 0);
+        QTRY_COMPARE(model.rowCount(), 3); QCOMPARE(model.activeAppName(), QStringLiteral("Finder")); // #159: Finder's menus with no active window
     }
     void x11ActiveApplicationWinsWhilePanelStillAcceptsInput()
     {

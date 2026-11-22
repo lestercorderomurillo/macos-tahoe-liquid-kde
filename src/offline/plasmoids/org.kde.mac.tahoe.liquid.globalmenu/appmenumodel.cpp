@@ -15,6 +15,11 @@
 #include <QDBusServiceWatcher>
 #include <QGuiApplication>
 #include <QMenu>
+#include <QDesktopServices>
+#include <QDir>
+#include <QProcess>
+#include <QStandardPaths>
+#include <QUrl>
 
 #include <KLocalizedString>
 #include <QLineEdit>
@@ -149,7 +154,7 @@ QString AppMenuModel::activeAppName() const
 {
     const QModelIndex idx = m_tasksModel->activeTask();
     if (!idx.isValid())
-        return {};
+        return showingFinder() ? i18n("Finder") : QString();
     return m_tasksModel->data(idx, TaskManager::AbstractTasksModel::AppName).toString();
 }
 
@@ -289,8 +294,66 @@ void AppMenuModel::onActiveWindowChanged()
     const QString objectPath = m_tasksModel->data(activeTaskIndex, TaskManager::AbstractTasksModel::ApplicationMenuObjectPath).toString();
     const QString serviceName = m_tasksModel->data(activeTaskIndex, TaskManager::AbstractTasksModel::ApplicationMenuServiceName).toString();
     updateApplicationMenu(serviceName, objectPath);
-    if (serviceName.isEmpty() || objectPath.isEmpty()) updateGenericMenu();
+    if (!activeTaskIndex.isValid()) updateFinderMenu();
+    else if (serviceName.isEmpty() || objectPath.isEmpty()) updateGenericMenu();
     Q_EMIT activeAppNameChanged();
+}
+
+bool AppMenuModel::showingFinder() const
+{
+    return m_finderMenu && m_menu == m_finderMenu.get();
+}
+
+/// With no active window macOS shows Finder's menus; the bar would otherwise
+/// be empty. Its entries open folders in the default file manager.
+void AppMenuModel::updateFinderMenu()
+{
+    if (!m_enableGenericMenu) return;
+    if (!m_finderMenu) {
+        m_finderMenu = std::make_unique<QMenu>();
+        m_finderMenu->setObjectName(QStringLiteral("tahoe-finder-menu"));
+        auto open = [](const QUrl &url) { QDesktopServices::openUrl(url); };
+        auto folder = [](QStandardPaths::StandardLocation location) {
+            return QUrl::fromLocalFile(QStandardPaths::writableLocation(location));
+        };
+        auto *file = m_finderMenu->addMenu(i18n("&File"));
+        auto *window = file->addAction(i18n("New Finder Window"));
+        window->setShortcut(QKeySequence(Qt::CTRL | Qt::Key_N));
+        connect(window, &QAction::triggered, this, [open, folder] {
+            // Dolphin opens a separate window only when asked to.
+            if (!QStandardPaths::findExecutable(QStringLiteral("dolphin")).isEmpty())
+                QProcess::startDetached(QStringLiteral("dolphin"), {QStringLiteral("--new-window"), QDir::homePath()});
+            else
+                open(folder(QStandardPaths::HomeLocation));
+        });
+        auto *go = m_finderMenu->addMenu(i18n("&Go"));
+        const QList<std::pair<QString, QUrl>> places = {
+            {i18n("Recents"), QUrl(QStringLiteral("recentlyused:/"))},
+            {i18n("Documents"), folder(QStandardPaths::DocumentsLocation)},
+            {i18n("Desktop"), folder(QStandardPaths::DesktopLocation)},
+            {i18n("Downloads"), folder(QStandardPaths::DownloadLocation)},
+            {i18n("Home"), folder(QStandardPaths::HomeLocation)},
+            {i18n("Network"), QUrl(QStringLiteral("remote:/"))},
+            {i18n("Trash"), QUrl(QStringLiteral("trash:/"))},
+        };
+        for (const auto &[label, url] : places) {
+            connect(go->addAction(label), &QAction::triggered, this, [open, url] { open(url); });
+        }
+        auto *help = m_finderMenu->addMenu(i18n("&Help"));
+        connect(help->addAction(i18n("Help")), &QAction::triggered, this, [] {
+            if (!QStandardPaths::findExecutable(QStringLiteral("khelpcenter")).isEmpty())
+                QProcess::startDetached(QStringLiteral("khelpcenter"), {});
+            else
+                QDesktopServices::openUrl(QUrl(QStringLiteral("https://userbase.kde.org/")));
+        });
+    }
+    if (m_menu == m_finderMenu.get()) return;
+    Q_EMIT menuSourceAboutToChange();
+    removeSearchActionsFromMenu();
+    m_menu = m_finderMenu.get();
+    setMenuAvailable(true);
+    setVisible(true);
+    Q_EMIT modelNeedsUpdate();
 }
 
 QHash<int, QByteArray> AppMenuModel::roleNames() const
@@ -468,6 +531,13 @@ void AppMenuModel::setEnableGenericMenu(bool enabled)
 {
     if (m_enableGenericMenu == enabled) return;
     m_enableGenericMenu = enabled;
+    if (!enabled && showingFinder()) {
+        Q_EMIT menuSourceAboutToChange();
+        removeSearchActionsFromMenu();
+        m_menu.clear();
+        setMenuAvailable(false);
+        setVisible(false);
+    }
     if (!enabled && m_genericMenu) {
         Q_EMIT menuSourceAboutToChange();
         removeSearchActionsFromMenu();

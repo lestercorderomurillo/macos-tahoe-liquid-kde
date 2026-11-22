@@ -1484,5 +1484,12 @@
   "Dock behaviour could not be enabled in kwinrc": "Impossibile attivare il comportamento del Dock in kwinrc",
   "Dock follows screen": "Il Dock segue lo schermo",
   "Dock on several screens": "Dock su più schermi",
-  "Icon appearance": "Aspetto delle icone"
+  "Icon appearance": "Aspetto delle icone",
+  "New Finder Window": "Nuova finestra del Finder",
+  "&Go": "&Vai",
+  "Recents": "Recenti",
+  "Documents": "Documenti",
+  "Home": "Inizio",
+  "&Help": "&Aiuto",
+  "Help": "Aiuto"
 }

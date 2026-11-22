@@ -11,6 +11,15 @@ msgstr "&Copia"
 msgid "&Edit"
 msgstr "&Modifica"
 
+msgid "&File"
+msgstr "&File"
+
+msgid "&Go"
+msgstr "&Vai"
+
+msgid "&Help"
+msgstr "&Aiuto"
+
 msgid "&Paste"
 msgstr "&Incolla"
 
@@ -80,8 +89,17 @@ msgstr "Core"
 msgid "Cu&t"
 msgstr "&Taglia"
 
+msgid "Desktop"
+msgstr "Desktop"
+
 msgid "Desktop file"
 msgstr "File Desktop"
+
+msgid "Documents"
+msgstr "Documenti"
+
+msgid "Downloads"
+msgstr "Scaricamenti"
 
 msgid "Enter Full Screen"
 msgstr "Attiva schermo intero"
@@ -92,6 +110,9 @@ msgstr "Eseguibile"
 msgid "Exit Full Screen"
 msgstr "Esci dalla modalità a schermo intero"
 
+msgid "Finder"
+msgstr "Finder"
+
 msgid "Force Quit:"
 msgstr "Uscita forzata:"
 
@@ -100,6 +121,12 @@ msgstr "Uscita forzata…"
 
 msgid "Graphics"
 msgstr "Grafica"
+
+msgid "Help"
+msgstr "Aiuto"
+
+msgid "Home"
+msgstr "Inizio"
 
 msgid "Location"
 msgstr "Posizione"
@@ -134,6 +161,9 @@ msgstr "Altre informazioni..."
 msgid "Network"
 msgstr "Rete"
 
+msgid "New Finder Window"
+msgstr "Nuova finestra del Finder"
+
 msgid "Not Available"
 msgstr "Non disponibile"
 
@@ -145,6 +175,9 @@ msgstr "Personal Computer"
 
 msgid "Process ID"
 msgstr "ID di processo"
+
+msgid "Recents"
+msgstr "Recenti"
 
 msgid "Report a Bug…"
 msgstr "Segnala un bug..."
@@ -211,6 +244,9 @@ msgstr "Impostazioni di sistema..."
 
 msgid "System menu"
 msgstr "Menu di sistema"
+
+msgid "Trash"
+msgstr "Cestino"
 
 msgid "Unknown"
 msgstr "Sconosciuto"
