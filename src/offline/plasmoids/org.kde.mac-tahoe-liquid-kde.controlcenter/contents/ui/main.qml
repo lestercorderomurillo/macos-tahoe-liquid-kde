@@ -2,6 +2,7 @@
 import QtQuick
 import org.kde.plasma.plasmoid
 import org.kde.plasma.core as PlasmaCore
+import "MenuBarSync.js" as MenuBarSync
 PlasmoidItem {
     id: root
     Plasmoid.backgroundHints: PlasmaCore.Types.NoBackground
@@ -17,6 +18,21 @@ PlasmoidItem {
     toolTipMainText: popup.visible ? "" : i18n("Control Center")
     toolTipSubText: ""
     Connections { target: Plasmoid; function onActivated() { popup.toggle(); } }
+    // Keep the menu bar the same on every screen: tray icons and widget settings.
+    property var menuBar: null
+    readonly property bool inMenuBar: Plasmoid.location === PlasmaCore.Types.TopEdge && !!Plasmoid.containment
+    function joinMenuBar() {
+        if (menuBar) MenuBarSync.unregister(menuBar);
+        menuBar = inMenuBar ? MenuBarSync.register(Plasmoid.containment) : null;
+    }
+    onInMenuBarChanged: joinMenuBar()
+    Component.onCompleted: joinMenuBar()
+    Component.onDestruction: if (menuBar) MenuBarSync.unregister(menuBar)
+    Connections {
+        target: root.menuBar ? Plasmoid.containment : null
+        function onAppletAdded() { MenuBarSync.refresh(root.menuBar); }
+        function onAppletRemoved() { MenuBarSync.unwatchAll(root.menuBar); MenuBarSync.refresh(root.menuBar); }
+    }
     ControlDialog {
         id: popup
         // The 200 ms macOS Tahoe zoom and fade are run by the

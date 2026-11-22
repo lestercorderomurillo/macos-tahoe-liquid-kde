@@ -8,6 +8,11 @@ encloses the desktop widgets is off limits. A drop there is refused, and icons
 that end up there (new files, earlier drops) move to the first free grid cell
 outside it.
 
+It also keeps the Dock's height free at the bottom of every screen, whether
+the Dock is on that screen or not. The desktop spreads its icon grid over the
+available height, so without this the icons moved each time the single Dock
+changed screen.
+
 It is **not wired into the installer**: it patches a Plasma system file, which
 needs root and is undone by Plasma updates. Apply manually:
 
