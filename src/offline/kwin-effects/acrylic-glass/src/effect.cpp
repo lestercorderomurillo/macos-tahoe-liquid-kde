@@ -2102,7 +2102,7 @@ void BlurEffect::blur(
                 read->colorAttachment()->bind();
                 GLFramebuffer::pushFramebuffer(framebuffer.get());
                 vbo->draw(GL_TRIANGLES, 0, 6);
-                std::array<unsigned char, 64 * 64 * 4> pixels;
+                std::array<unsigned char, 64 * 64 * 4> pixels{};
                 GLint packBuffer = 0;
                 glGetIntegerv(GL_PIXEL_PACK_BUFFER_BINDING, &packBuffer);
                 glBindBuffer(GL_PIXEL_PACK_BUFFER, 0);
