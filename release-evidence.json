@@ -1,19 +1,29 @@
 {
-  "version": "0.82.12",
+  "version": "0.82.13",
   "gallery_commit": "f09780b200b79302e7c23ef9f6f74d94748bbea3",
-  "implementation_commit": "e8a0e98f434f4c7ad1d88e97b30bb385d33c7c42",
-  "scope": "Document how supported applications can use the KDE window decoration and how app-drawn title bars interact with GTK themes and sandbox packaging.",
+  "implementation_commit": "7b946faf7920186a46362c01734a40dc0a3c1862",
+  "scope": "Apply Liquid Glass Dynamic Tinting to the menu bar using the current wallpaper, individually on each output, based on PR #163 by RoxasYTB.",
   "checks": [
     {
-      "command": "Reviewed the merged Markdown diff, verified both relative guide links, and ran git diff --check.",
+      "command": "Ran the focused top bar geometry, component cache, Global Menu installer step and distro package mapping tests. 441 passed.",
       "result": "passed"
     },
     {
-      "command": "Verified the Tahoe component fingerprint ledger with python3 src/scripts/component_manifest.py.",
+      "command": "Built and loaded the final native QML module and Global Menu on KDE neon 6.8.1 Wayland. Captured static and slideshow changes with Dynamic Tinting enabled and disabled. Plasma PID, kdeglobals and plasmarc were stable across those changes.",
+      "result": "passed"
+    },
+    {
+      "command": "Verified the component hash ledger, git diff --check, and Golden Gate local-source staging with unchanged shared runtime sources.",
       "result": "passed"
     }
   ],
   "captures": [],
-  "coverage_limits": "Documentation-only change. Existing gallery provenance is retained. App settings were reviewed against upstream documentation.",
-  "source_sha256": "191618d905d19c4af0f064c538a35e64d0112cac46b45b76216cfe2941534e3c"
+  "coverage_limits": "Rendered at 2x on one KDE neon 6.8.1 Wayland output. The full installer attempt was blocked by guest package downloads for libsodium-dev. The native modules and applets were loaded from the candidate in the disposable guest. Installer lifecycle code was unchanged.",
+  "source_sha256": "da11c67af9606edb4b898002c5b443eed94567a74258f8e7505fc49f22b0b053",
+  "approval": "The maintainer requested publication after reviewing the three inline previews of the wallpaper tinting.",
+  "approved_preview_sha256": {
+    "comparison.png": "4e2a5ef9ae7af1909cae2e4ef98253e70f3c3fd7c242d9738e44cf835ce1c3ff",
+    "slideshow-comparison.png": "6770be3ebdbb0eebb15e199b9e8b3b303d950fd6ac072e5e2e577a4300b6ce97",
+    "edition-wallpapers.png": "d312fbddbbf83a16f07d8922f58aef6fe10ac17e1ab468b4a3f49bc528c9a4bb"
+  }
 }
