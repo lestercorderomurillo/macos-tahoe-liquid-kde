@@ -262,6 +262,9 @@ def _selected_material():
 
 
 def _install_backing_tint() -> bool:
+    choices = selected()
+    if (not choices or choices["files"] != "nautilus") and default_wallpaper() != "MacGoldenGate":
+        return True
     return kw_write("--file", "kwinrc", "--group", "Effect-liquidglass", "--key",
                     "BackingTint", str(_selected_material()["variant"]))
 

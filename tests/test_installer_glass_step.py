@@ -35,26 +35,26 @@ window = InstallerWindow(bridge)
 window.choices['appearance'] = sys.argv[2]
 window.page = 'glass_style'; window.render(); window.show(); app.processEvents()
 cards = window.content.findChildren(ChoiceCard)
-assert len(cards) == 2
+assert len(cards) == 4
 assert sum(c.isChecked() for c in cards) == 1
 assert window.choices['glass_style'] == ('official' if sys.argv[1] == 'MacGoldenGate' else 'classic')
 text = ' '.join(l.text() for l in window.content.findChildren(QLabel))
 assert 'Dock' not in text and 'blur strength' not in text and 'Three-color' not in text
-assert installer_choices.validate({'glass_style': 'tinted'})['glass_style'] == 'classic'
+assert installer_choices.validate({'glass_style': 'tinted'})['glass_style'] == 'tinted'
 acrylic_glass.selected = lambda: window.choices
-for key, material, blur, variant in [('classic', '1', '5.0', '0'), ('official', '2', '4.0', '1')]:
+for key, material, blur, variant in [('classic', '1', 3.75, '0'), ('tinted', '1', 8, '1'), ('official', '2', 4, '1'), ('water', '3', 1.5, '0')]:
     card = window.content.findChild(ChoiceCard, 'choice-glass_style-' + key)
     assert card.photo is not None and not card.photo.pixmap.isNull()
-    preset = {'classic': 'tahoe-clear', 'official': 'golden-gate-official'}[key]
+    preset = {'classic': 'tahoe-clear', 'official': 'golden-gate-official', 'tinted': 'tahoe-frosted', 'water': 'water'}[key]
     actual = card.photo.pixmap.toImage()
-    light = picture(f'glass-preset-{preset}-light.png', 232, 220, cover=True,
+    light = picture(f'glass-preset-{preset}-light.png', 232, 112, cover=True,
                     crop=(820, 300, 1280, 1214)).toImage()
-    dark = picture(f'glass-preset-{preset}-dark.png', 232, 220, cover=True,
+    dark = picture(f'glass-preset-{preset}-dark.png', 232, 112, cover=True,
                    crop=(820, 300, 1280, 1214)).toImage()
     if sys.argv[2] == 'auto':
         # Away from the separator: light on the left, dark on the right.
         for x, expected in [(60, light), (400, dark)]:
-            for y in (80, 220, 360):
+            for y in (40, 110, 180):
                 assert actual.pixelColor(x, y) == expected.pixelColor(x, y)
     else:
         assert actual == (dark if sys.argv[2] == 'dark' else light)
@@ -62,7 +62,7 @@ for key, material, blur, variant in [('classic', '1', '5.0', '0'), ('official', 
     assert window.choices['glass_style'] == key
     assert sum(c.isChecked() for c in cards) == 1
     values = acrylic_glass._edition_preset()
-    assert values['MaterialPreset'] == material and values['BlurStrength'] == blur
+    assert values['MaterialPreset'] == material and float(values['BlurStrength']) == blur
     writes = []
     acrylic_glass.kw_write = lambda *args: writes.append(args) or True
     assert acrylic_glass._install_backing_tint() and writes[-1][-1] == variant

@@ -17,7 +17,7 @@ def test_native_material_follows_source_edition_across_reinstalls(tmp_path, firs
         pytest.skip("KConfig CLI tools required")
     repo = Path(__file__).resolve().parents[1]
     presets_path = Path("src/offline/kwin-effects/acrylic-glass/src/presets.json")
-    presets = {preset["value"]: preset for preset in json.loads((repo / presets_path).read_text())}
+    presets = {preset["value"]: preset for preset in json.loads((repo / presets_path).read_text()) if preset["choice"] in ("classic", "official")}
     editions = {"MacTahoe": 1, "MacGoldenGate": 2}
     for edition in editions:
         checkout = tmp_path / edition
@@ -59,9 +59,9 @@ def test_native_material_follows_source_edition_across_reinstalls(tmp_path, firs
                     for key, value in presets[editions[edition]]["values"].items()}
         material = dict(saved["Effect-liquidglass"])
         components = json.loads(material.pop("ComponentMaterials"))
-        assert components["dock"]["BlurStrength"] == (4 if edition == "MacGoldenGate" else 5)
+        assert components["dock"]["BlurStrength"] == (4 if edition == "MacGoldenGate" else 3.75)
         assert components["dock"]["DarkGradientOverlay"] is False
-        assert components["apps"]["BlurStrength"] == (12 if edition == "MacGoldenGate" else float(expected["BlurStrength"]))
+        assert components["apps"]["BlurStrength"] == (6 if edition == "MacGoldenGate" else 5.75)
         assert material == expected | {
             "MaterialPreset": str(editions[edition]), "WindowCornerRadius": "13.5",
             "DockCornerRadius": "0", "PopupCornerRadius": "", "WindowClasses": "custom-app",

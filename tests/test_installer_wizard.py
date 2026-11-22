@@ -515,7 +515,7 @@ assert window.page == 'glass_style'
 glass_text = ' '.join(label.text() for label in window.content.findChildren(QLabel))
 assert 'white backing' not in glass_text
 assert 'Dock' not in glass_text and 'blur strength' not in glass_text
-assert len(window.content.findChildren(ChoiceCard)) == 2
+assert len(window.content.findChildren(ChoiceCard)) == 4
 window.content.findChild(ChoiceCard, 'choice-glass_style-official').click()
 assert window.choices['glass_style'] == 'official'
 window.advance(); window.previous(); app.processEvents()

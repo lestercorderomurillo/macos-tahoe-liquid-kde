@@ -39,7 +39,8 @@ inline QJsonObject readLegacy(const KConfigGroup &group, QJsonObject values)
     }
     for (const QString stop : {QStringLiteral("Top"), QStringLiteral("Center"), QStringLiteral("Bottom")}) {
         const auto dark = QStringLiteral("Gradient") + stop + QStringLiteral("DarkColor");
-        if (!group.hasKey(dark)) values[dark] = values.value(QStringLiteral("Gradient") + stop + QStringLiteral("Color"));
+        const auto light = QStringLiteral("Gradient") + stop + QStringLiteral("Color");
+        if (!group.hasKey(dark) && group.hasKey(light)) values[dark] = values.value(light);
     }
     return values;
 }

@@ -374,6 +374,9 @@ def material(repo, case):
     for key, value in values.items():
         run('kwriteconfig6', '--file', 'kwinrc', '--group', 'Effect-liquidglass', '--key', key,
             str(value).lower() if isinstance(value, bool) else str(value))
+    if 'ComponentMaterials' in values:
+        subprocess.run([str(Path.home() / '.local/bin/mac-tahoe-glass-surfaces'), '--apply'],
+                       input=values['ComponentMaterials'], text=True, check=True, stdout=subprocess.DEVNULL)
     run('qdbus6', 'org.kde.KWin', '/Effects', 'org.kde.kwin.Effects.reconfigureEffect', 'liquidglass')
     time.sleep(1)
     if case == 'restore':
