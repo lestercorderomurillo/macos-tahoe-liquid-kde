@@ -20,6 +20,8 @@ PlasmoidItem {
     readonly property int cellSize: NativeLauncher.DockMetrics.preferredCellSize(vertical ? width : height)
     readonly property int length: gap + (recentApps.length ? gap + recentApps.length * cellSize : 0)
     property var recentApps: []
+    // Recent apps need the same panel thickness as the pinned task icons.
+    Plasmoid.constraintHints: recentApps.length ? Plasmoid.CanFillArea : Plasmoid.NoHint
     Layout.minimumWidth: vertical ? 0 : length
     Layout.maximumWidth: vertical ? Infinity : length
     Layout.minimumHeight: vertical ? length : 0
