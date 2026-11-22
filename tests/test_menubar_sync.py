@@ -76,6 +76,27 @@ console.log(JSON.stringify(b.applets[1].configuration.iconSpacing));
     assert out == 6
 
 
+def test_duplicate_stock_controls_move_to_overflow_without_disabling_them():
+    out = run(r'''
+const network = "org.kde.plasma.networkmanagement", battery = "org.kde.plasma.battery";
+const clipboard = "org.kde.plasma.clipboard";
+const a = bar();
+a.applets[1].configuration = Config({ hiddenItems: ["discord"], showAllItems: true,
+    shownItems: [network, battery, "slack", clipboard], extraItems: [network, battery] });
+a.applets.push(applet("org.kde.mac-tahoe-liquid-kde.wifi", {}));
+const registered = register(a);
+refresh(registered);
+const config = a.applets[1].configuration;
+console.log(JSON.stringify([config.hiddenItems, config.shownItems, config.extraItems, config.showAllItems, config.writes]));
+''')
+    assert out == [
+        ["discord", "org.kde.plasma.networkmanagement", "org.kde.plasma.mediacontroller"],
+        ["org.kde.plasma.battery", "slack", "org.kde.plasma.clipboard"],
+        ["org.kde.plasma.networkmanagement", "org.kde.plasma.battery"],
+        False, 1,
+    ]
+
+
 def test_unregistered_bar_stops_following():
     out = run(r'''
 const a = bar(), b = bar();

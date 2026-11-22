@@ -10,6 +10,13 @@
 
 // Panel Colorizer stores the widget IDs of its own panel: never copy it.
 var skippedPlugins = ["luisbocanegra.panel.colorizer"];
+var trayPlugin = "org.kde.plasma.systemtray";
+var themePrefix = "org.kde.mac-tahoe-liquid-kde.";
+var stockControls = {
+    wifi: "org.kde.plasma.networkmanagement",
+    bluetooth: "org.kde.plasma.bluetooth",
+    battery: "org.kde.plasma.battery"
+};
 
 var bars = [];
 
@@ -50,6 +57,31 @@ function copyValue(target, key, value) {
     if (!configuration || configuration[key] === undefined || same(configuration[key], value)) return false;
     configuration[key] = value;
     return true;
+}
+
+function prioritizeTray(bar) {
+    var applets = bar.containment.applets;
+    var tray = applets.find(function (applet) { return applet.pluginName === trayPlugin; });
+    if (!tray?.configuration || tray.configuration.hiddenItems === undefined) return;
+
+    var plugins = applets.map(function (applet) { return applet.pluginName; });
+    var duplicates = Object.keys(stockControls).filter(function (control) {
+        return plugins.indexOf(themePrefix + control) >= 0;
+    }).map(function (control) { return stockControls[control]; });
+    if (!duplicates.length) return;
+
+    var shown = Array.from(tray.configuration.shownItems ?? []);
+    var hidden = Array.from(tray.configuration.hiddenItems);
+    var secondary = ["org.kde.plasma.clipboard", "org.kde.plasma.mediacontroller"].filter(function (id) {
+        return shown.indexOf(id) < 0;
+    });
+    duplicates.concat(secondary).forEach(function (id) {
+        if (hidden.indexOf(id) < 0) hidden.push(id);
+    });
+    var changed = copyValue(tray, "hiddenItems", hidden);
+    changed = copyValue(tray, "shownItems", shown.filter(function (id) { return duplicates.indexOf(id) < 0; })) || changed;
+    changed = copyValue(tray, "showAllItems", false) || changed;
+    if (changed) tray.configuration.writeConfig();
 }
 
 function propagate(source, applet, key, value) {
@@ -97,6 +129,7 @@ function adoptFrom(source, bar) {
 }
 
 function refresh(bar) {
+    prioritizeTray(bar);
     var applets = bar.containment.applets;
     for (var i = 0; i < applets.length; i++) watch(bar, applets[i]);
 }
