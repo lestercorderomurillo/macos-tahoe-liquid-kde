@@ -1199,6 +1199,7 @@ class InstallerWindow(OpaqueSurface):
         self.wallpaper_filename = self.label(Path(self.choices["wallpaper_path"]).name)
         self.wallpaper_filename.setVisible(self.choices["wallpaper"] == "custom")
         self.body.addWidget(self.wallpaper_filename)
+        self.checkbox("desktop_widgets", "Add the Liquid Glass desktop widgets (calendar, weather, music, clocks, photos)")
 
     def choose_file(self):
         path, _ = QFileDialog.getOpenFileName(self, self.t("Choose a wallpaper"), "", self.t("Images (*.png *.jpg *.jpeg *.webp)"))

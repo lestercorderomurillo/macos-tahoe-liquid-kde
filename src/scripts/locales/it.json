@@ -1484,5 +1484,8 @@
   "Dock behaviour could not be enabled in kwinrc": "Impossibile attivare il comportamento del Dock in kwinrc",
   "Dock follows screen": "Il Dock segue lo schermo",
   "Dock on several screens": "Dock su più schermi",
-  "Icon appearance": "Aspetto delle icone"
+  "Icon appearance": "Aspetto delle icone",
+  "Add the Liquid Glass desktop widgets (calendar, weather, music, clocks, photos)": "Aggiungi i widget del desktop Liquid Glass (calendario, meteo, musica, orologi, foto)",
+  "Liquid Glass desktop widgets not found — skipping": "Widget del desktop Liquid Glass non trovati — saltati",
+  "Liquid Glass desktop widgets could not be unpacked: {error}": "Impossibile estrarre i widget del desktop Liquid Glass: {error}"
 }

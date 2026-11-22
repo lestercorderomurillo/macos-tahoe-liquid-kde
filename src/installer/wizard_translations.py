@@ -152,6 +152,7 @@ Keep Firefox as it is|Conservar Firefox como está|保持 Firefox 原样|Manter 
 Recommended · Files theme|Recomendado · Estilo Files del tema|推荐 · Files 风格|Recomendado · Estilo Files do tema|Empfohlen · Files-Stil des Themas
 KDE file manager|Gestor de archivos de KDE|KDE 文件管理器|Gerenciador de arquivos do KDE|Dateimanager von KDE
 Add folder shortcuts to the sidebar|Añadir accesos a mis carpetas en la barra lateral|在侧栏中添加文件夹快捷方式|Adicionar atalhos de pastas à barra lateral|Ordnerverknüpfungen zur Seitenleiste hinzufügen
+Add the Liquid Glass desktop widgets (calendar, weather, music, clocks, photos)|Añadir los widgets de escritorio Liquid Glass (calendario, tiempo, música, relojes, fotos)|添加 Liquid Glass 桌面小组件（日历、天气、音乐、时钟、照片）|Adicionar os widgets de área de trabalho Liquid Glass (calendário, clima, música, relógios, fotos)|Liquid-Glass-Desktop-Widgets hinzufügen (Kalender, Wetter, Musik, Uhren, Fotos)
 Use the theme animation|Usar la animación del tema|使用主题动画|Usar a animação do tema|Animation des Themas verwenden
 Keep my boot animation|Conservar mi animación|保留我的启动动画|Manter minha animação|Meine Startanimation beibehalten
 Do not enable|No activar|不启用|Não ativar|Nicht aktivieren

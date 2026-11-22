@@ -86,6 +86,7 @@ def defaults() -> dict:
         window_controls="glassy" if edition == "golden" else "flat", button_position="left",
         files="nautilus", nautilus_bookmarks=True, plymouth=True, glass_style="official" if edition == "golden" else "classic",
         oled_care=False, oled_interval=5, oled_max_shift=8,
+        desktop_widgets=False,
         dock_visibility=dock_visibility(), dock_appearance="auto", dock_apps=[], dock_apps_source="native", dock_add_flathub=False,
     )
 

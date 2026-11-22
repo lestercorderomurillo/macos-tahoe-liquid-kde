@@ -7,7 +7,7 @@ from launcher_defaults import LAUNCHER_ID, apply_launcher_default, remember_inst
 from steps._native_build import cmake_build
 from steps._helpers import (
     DATA_HOME, HOME, build_dir, fail, info, install_tree, ok, offline,
-    remove_tree, qdbus_call,
+    remove_tree, qdbus_call, warn,
     sudo_install_file, sudo_install_tree, sudo_remove, temp_dir,
 )
 
@@ -174,6 +174,10 @@ def _install_launcher_package(widget: Path) -> bool:
 
 def install() -> None:
     DEST_DIR.mkdir(parents=True, exist_ok=True)
+    from installer_choices import selected
+    choices = selected()
+    if choices:
+        install_desktop_widgets(bool(choices.get("desktop_widgets", False)))
 
     dest_qml = qt6_qml_dir() / _TASKMANAGER_QML_RELPATH
     for name in LEGACY_DIRS:
@@ -259,6 +263,7 @@ def install() -> None:
 
 
 def uninstall() -> None:
+    _remove_desktop_widgets()
     from installer_choices import launcher_preference
     launcher_preference().unlink(missing_ok=True)
     (DATA_HOME / "applications" / APPS_ENTRY).unlink(missing_ok=True)
@@ -292,3 +297,54 @@ def uninstall() -> None:
             except OSError:
                 fail(d.name)
     info(tr('{n} plasmoids removed', n=n))
+
+# ── Liquid Glass desktop widgets (#143) ──────────────────────────────
+# jaxparrow07's liquidglass-kde-widgets, with RoxasYTB's Photos widget and
+# automatic Solid/Glass style. Opt-in: the installer only adds or removes the
+# widgets it installed itself, listed in WIDGETS_STATE.
+WIDGETS_ARCHIVE = offline("desktop-widgets", "liquidglass-kde-widgets.tar.zst")
+WIDGETS_STATE = DATA_HOME / "mac-tahoe-liquid-kde/desktop-widgets.list"
+
+
+def _installed_widgets() -> list[str]:
+    try:
+        return [line for line in WIDGETS_STATE.read_text(encoding="utf-8").splitlines() if line]
+    except OSError:
+        return []
+
+
+def _remove_desktop_widgets() -> None:
+    names = _installed_widgets()
+    for name in names:
+        # Only plain plugin IDs from our own list; never a path.
+        if "/" in name or name.startswith("."):
+            continue
+        remove_tree(DEST_DIR / name, name)
+    WIDGETS_STATE.unlink(missing_ok=True)
+
+
+def install_desktop_widgets(enabled: bool) -> None:
+    """Install the bundled desktop widgets, or remove the ones we installed."""
+    if not enabled:
+        if _installed_widgets():
+            _remove_desktop_widgets()
+        return
+    if not WIDGETS_ARCHIVE.is_file():
+        warn(tr('Liquid Glass desktop widgets not found — skipping'))
+        return
+    import subprocess
+    with temp_dir("mttkde-desktop-widgets-") as staging:
+        result = subprocess.run(["tar", "--zstd", "-xf", str(WIDGETS_ARCHIVE), "-C", str(staging)],
+                                check=False, capture_output=True, text=True)
+        if result.returncode != 0:
+            warn(tr('Liquid Glass desktop widgets could not be unpacked: {error}', error=result.stderr.strip()))
+            return
+        names = sorted(entry.name for entry in staging.iterdir()
+                       if entry.is_dir() and (entry / "metadata.json").is_file())
+        installed = []
+        for name in names:
+            if install_tree(staging / name, DEST_DIR / name, name):
+                installed.append(name)
+    WIDGETS_STATE.parent.mkdir(parents=True, exist_ok=True)
+    WIDGETS_STATE.write_text("".join(name + "\n" for name in sorted(set(installed) | set(_installed_widgets()))),
+                             encoding="utf-8")
