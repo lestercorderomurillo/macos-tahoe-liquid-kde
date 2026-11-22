@@ -1,27 +1,22 @@
 {
-  "version": "0.80.0",
+  "version": "0.81.0",
   "gallery_commit": "f09780b200b79302e7c23ef9f6f74d94748bbea3",
-  "implementation_commit": "b4bde4f7759faf356b17eb1bd5f2719dcc9c72d9",
-  "scope": "Default Dock order, movable Apps launcher, section divider, Downloads and edition photography.",
+  "implementation_commit": "0c445e9f870a609d075478825a0e063d95c5562c",
+  "photographed_source": "3bebbfa8105c1e134bdf27bbb1266a1e902b9127",
+  "scope": "Golden Gate dark shell menu backdrop and shared contributor credits.",
+  "approval": "Maintainer approved the Golden Gate comparison and paired v0.81.0 publication.",
+  "effect_build": "309554164697c437a2db267860e3eea8eed262b5d75298790aa402a550727d64",
   "checks": [
     {
-      "command": "Focused Dock defaults, edition transition, launcher and geometry checks on the candidate.",
+      "command": "KDE neon 6.8.1 Wayland: open the Golden Gate system menu over Kate in light and dark modes; verify loaded effect identity and inspected frames.",
       "result": "passed"
     },
     {
-      "command": "Reviewed nine Dock frames per edition from the KDE neon guest. Confirmed Apps opens in both editions and pin order survives Plasma restart on Golden Gate.",
+      "command": "Build liquidglass_x11 with KWin 6.6.5 and liquidglass with KWin 6.7.5; load the X11 candidate in isolated Xvfb and compare captured popup pixels with the effect off and on (481934 changed, 0 changed in the transparent gap).",
       "result": "passed"
     }
   ],
-  "captures": [
-    {
-      "path": "src/screenshots/previews/tahoe-dock-8aa6da6f415f.gif",
-      "sha256": "8aa6da6f415f7ae716bc41f17ef295fc8b0d41c17c8edd24f1fbef8c977769d3",
-      "reviewed": true
-    }
-  ],
-  "photographed_source": "3e2a7fdbe1c01130e444df2ff14631e2cf8aa503",
-  "interaction_fix": "76512ab0",
-  "coverage_limits": "Approved photographs precede the v0.79.0 surface edges. The maintainer requested their reuse without recapture. An attempted integrated capture stopped during guest installation without producing frames.",
-  "source_sha256": "463be3a2888e68d2a427ea05875cc384617cf7c09beffce9ef361149b845dcef"
+  "captures": [],
+  "coverage_limits": "Desktop captures cover Golden Gate on Wayland. KWin 6.7 coverage is build-only. The X11 check exercised a synthetic popup; historical gallery photos retain their original provenance.",
+  "source_sha256": "37241bdda33d1169ed63722f61e8e5d6c07fea628a421fc60a32be4311244319"
 }

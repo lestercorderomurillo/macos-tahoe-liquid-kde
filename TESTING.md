@@ -1,6 +1,6 @@
 # Installer testing
 
-**v0.80.0**. Dock order, Apps activation and saved pin placement were checked on KDE neon Wayland. The approved Dock photographs precede the v0.79.0 outer edge. [Evidence and coverage](release-evidence.json).
+**v0.81.0**. Verified the Golden Gate dark and light system menus on KDE neon Wayland and popup rendering on KWin X11. [Evidence and coverage](release-evidence.json).
 
 [Installer photo evidence](src/screenshots/previews/wizard-tahoe-provenance-531f633f4ff6.json).
 
