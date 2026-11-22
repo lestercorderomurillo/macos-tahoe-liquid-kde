@@ -1,27 +1,32 @@
 {
-  "version": "0.82.7",
+  "version": "0.82.8",
   "gallery_commit": "f09780b200b79302e7c23ef9f6f74d94748bbea3",
-  "implementation_commit": "6fd1f96de1c3b365db299ded06dbb0652b157aa4",
-  "scope": "Prioritize the themed menu bar controls and move duplicate Plasma tray controls into overflow.",
-  "approval": "The maintainer answered yes to the before, after, and overflow tray preview.",
+  "implementation_commit": "d8e1509c9fae5875ec99d4cfe6722bafa9c6fbe9",
+  "scope": "Restore the Tahoe launcher Favorites category and enable real-time wallpaper sampling by default for bundled desktop glass widgets.",
+  "approval": "The maintainer approved the paired release after reviewing the live glass preview and the Tahoe Favorites preview, and asked to leave README files untouched.",
   "checks": [
     {
-      "command": "Five isolated MenuBarSync checks passed, including tray overflow prioritization and preservation of pinned and enabled entries.",
+      "command": "Four isolated native launcher cases passed on Tahoe with both presets in light and dark. Favorites opens the full saved list and toggles back to All Apps.",
       "result": "passed"
     },
     {
-      "command": "KDE neon Plasma 6.8.1 Wayland: installed the reviewed MenuBarSync.js on a Golden Gate panel. Confirmed that the theme Wi-Fi and pinned Clipboard stayed visible and stock Networks appeared under the overflow arrow.",
+      "command": "Five isolated desktop-widget packaging and installer checks passed. The bundled archive comparison found exactly 14 realtimeRefraction default changes.",
       "result": "passed"
     },
     {
-      "command": "Verified the installed MenuBarSync.js SHA-256 against the release source and validated the shared component fingerprints.",
+      "command": "KDE neon Plasma 6.8.1 Wayland: installed the shared candidate and captured Tahoe Favorites. The bundled calendar, analog clock and timer updated their rendered wallpaper samples through light, dark and light in the same Plasma session.",
+      "result": "passed"
+    },
+    {
+      "command": "Verified installed configuration and launcher SHA-256 values against the release sources and regenerated the component fingerprints.",
       "result": "passed"
     }
   ],
   "captures": [],
   "approved_preview_sha256": {
-    "tray-preview.png": "2adb02abcd95edae4af910710d378e7d4e9e71d5b2fbf22c93771756f2e3f27e"
+    "realtime-glass-preview.png": "cd4b35417f7dfb144331b6cb79226d45d547be04bbab5d2854ba0bbfecefce9a",
+    "favorites-preview.png": "8e1814ab65faea9a7283ec9ba6126c825e9bf5d86278e0f79ba44df9d8ed8e30"
   },
-  "coverage_limits": "Rendered on Golden Gate with one wired display fixture in KDE neon Plasma 6.8.1 Wayland. Tahoe shares the same tray implementation. Historical gallery captures retain their provenance.",
-  "source_sha256": "dce43cc657c3f114c6f96f7f1836e4f621f39ab63ee341a71d9f51b8fea37aa3"
+  "coverage_limits": "KDE neon Plasma 6.8.1 Wayland with one display. Golden Gate uses the same desktop widget package. The launcher change is scoped to Tahoe style.",
+  "source_sha256": "339fa7c00b38d7a5fe38c61843aa8533395dcec9811d68f948768d3b4680e591"
 }
