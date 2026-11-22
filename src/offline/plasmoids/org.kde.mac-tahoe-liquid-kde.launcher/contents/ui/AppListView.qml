@@ -61,7 +61,9 @@ ListView {
 		delegate: PlasmaExtras.ListSectionHeader {
 			id: sectionHeading
 			Kirigami.Theme.inherit: false
-			Kirigami.Theme.textColor: main.labelColor(sectionHeading, leftPadding + Kirigami.Units.gridUnit)
+			Kirigami.Theme.textColor: main.labelColor(sectionHeading, leftPadding + headingMetrics.advanceWidth / 2,
+                "transparent", false, main.textColor, headingMetrics.advanceWidth)
+            TextMetrics { id: headingMetrics; font: sectionHeading.font; text: sectionHeading.text }
 			required property string section
 			width: listView.availableWidth
 			text: section
