@@ -243,6 +243,8 @@ def configure_dock() -> None:
         }
     })()
     """.replace("MODE", json.dumps(mode))
+    if (DATA_HOME / "plasma/plasmoids/org.kde.mac-tahoe-liquid-kde.downloads/metadata.json").is_file():
+        script += "\n" + offline("layouts/migrate-downloads.js").read_text()
     if not _evaluate_layout_script(script):
         warn(tr("Dock preset update failed"))
         return

@@ -59,10 +59,15 @@ Controls.AbstractButton {
                 ? Kirigami.Theme.highlightedTextColor : Kirigami.Theme.textColor
         }
     }
-    Controls.ToolTip.visible: hovered && !dragging
-    Controls.ToolTip.text: fileName
-    Controls.ToolTip.textFormat: Text.PlainText
-    Controls.ToolTip.delay: Kirigami.Units.toolTipDelay
+    Controls.ToolTip {
+        visible: card.hovered && !card.dragging
+        delay: Kirigami.Units.toolTipDelay
+        text: card.fileName
+        contentItem: Controls.Label {
+            text: card.fileName
+            textFormat: Text.PlainText
+        }
+    }
 
     DragHandler {
         id: gesture
