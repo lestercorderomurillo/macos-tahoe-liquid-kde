@@ -377,7 +377,7 @@ Ein abgestimmtes Erscheinungsbild vom Start bis zum Herunterfahren mit integrier
 - **Glaseffekte:** einstellbare Unschärfe, Brechung und dreifarbige Verläufe für helle und dunkle Modi.
 - **Kompatibilität:** Plasma 6.6–6.8 mit nativen Effekten, die gegen die installierten Qt- und KWin-Versionen kompiliert werden.
 - **Launchpad:** zwei Anordnungen, integrierte oder abgetrennte Suche, Favoriten und scrollbare Anwendungskategorien.
-- **Dock** Das Dock folgt dem berührten unteren Bildschirmrand und behält angeheftete Apps. Im Installer stehen automatisches Ausblenden (Standard), Anzeigen außerhalb des Vollbilds und Ausblenden bei überlappenden Fenstern zur Wahl.
+- **Dock** Das Dock folgt dem berührten unteren Bildschirmrand und behält angeheftete Apps. Im Installer stehen automatisches Ausblenden (Standard), Anzeigen außerhalb des Vollbilds und Ausblenden bei überlappenden Fenstern zur Wahl. Bei mehreren Bildschirmen wechselt das Dock erst, wenn der Zeiger 2 Sekunden am unteren Rand eines anderen Bildschirms bleibt, damit ein Klick unten in einem Fenster es nicht darüberzieht.
 - **Menüleiste** Bei mehreren Bildschirmen bleiben alle Menüleisten gleich: Ein Symbol im Systemabschnitt ein- oder ausblenden oder die Einstellungen eines Widgets ändern (Uhr, Apple-Menü, Kontrollzentrum) gilt für die Menüleiste jedes Bildschirms. Widgets hinzufügen, entfernen oder verschieben gilt weiterhin nur für eine Menüleiste.
 - **Erscheinungsbild:** synchronisierte helle/dunkle Stile für Desktop, Anwendungen, Symbole und Fensterdekorationen; Hintergrundbilder pro Monitor.
 - **Anwendungsintegration:** globale Menüs, GTK-Menükorrekturen, Nautilus im Finder-Stil und Firefox-Design mit Profilsicherungen.

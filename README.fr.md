@@ -377,7 +377,7 @@ Une apparence assortie du démarrage à l’arrêt, avec déverrouillage intégr
 - **Effets de verre :** flou, réfraction et dégradés à trois couleurs réglables pour les modes clair et sombre.
 - **Compatibilité :** Plasma 6.6–6.8, avec des effets natifs compilés contre les versions installées de Qt et KWin.
 - **Launchpad :** deux dispositions, recherche intégrée ou détachée, favoris et catégories d’applications défilantes.
-- **Dock** Le Dock suit le bord inférieur que vous touchez et conserve vos apps épinglées. Le programme d’installation propose le masquage automatique (par défaut), l’affichage hors plein écran ou le masquage lorsqu’une fenêtre le recouvre.
+- **Dock** Le Dock suit le bord inférieur que vous touchez et conserve vos apps épinglées. Le programme d’installation propose le masquage automatique (par défaut), l’affichage hors plein écran ou le masquage lorsqu’une fenêtre le recouvre. Sur plusieurs écrans, le Dock ne change d’écran qu’après 2 secondes du pointeur sur le bord inférieur, pour qu’un clic en bas d’une fenêtre ne le fasse pas passer devant.
 - **Barre des menus** Sur plusieurs écrans, toutes les barres des menus restent identiques : afficher ou masquer une icône de la zone de notification, ou changer les réglages d’un widget (horloge, menu Apple, Centre de contrôle), s’applique à la barre de chaque écran. Ajouter, retirer ou déplacer des widgets ne concerne encore qu’une seule barre.
 - **Apparence :** styles clairs/sombres synchronisés pour le bureau, les applications, les icônes et les décorations de fenêtres ; fonds d’écran par moniteur.
 - **Intégration des applications :** menus globaux, correctifs des menus GTK, Nautilus de style Finder et thème Firefox avec sauvegardes des profils.
