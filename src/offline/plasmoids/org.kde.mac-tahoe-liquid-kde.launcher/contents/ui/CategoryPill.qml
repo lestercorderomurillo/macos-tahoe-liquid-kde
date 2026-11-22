@@ -24,7 +24,7 @@ Item {
             const overlay = Qt.rgba(shade, shade, shade, step / 32);
             if (step === 12 || samples.every(sample =>
                 Contrast.ratio(ink, Contrast.luminance(Qt.tint(sample, overlay))) >= 4.5))
-                return Qt.tint(baseFill, overlay);
+                return main.layerOver(baseFill, overlay);
         }
         return baseFill;
     }

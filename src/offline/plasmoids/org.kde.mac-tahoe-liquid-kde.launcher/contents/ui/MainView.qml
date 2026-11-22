@@ -147,6 +147,15 @@ Item {
         const tint = isDarkTheme ? 0 : 1;
         return Qt.rgba(tint, tint, tint, alpha);
     }
+    // Compose translucent fills in premultiplied space, as Qt Quick renders them.
+    function layerOver(base, top) {
+        const remaining = base.a * (1 - top.a);
+        const alpha = top.a + remaining;
+        if (!alpha) return Qt.rgba(0, 0, 0, 0);
+        return Qt.rgba((top.r * top.a + base.r * remaining) / alpha,
+                       (top.g * top.a + base.g * remaining) / alpha,
+                       (top.b * top.a + base.b * remaining) / alpha, alpha);
+    }
     function categorySamples(label, view, backing) {
         if (!root.glassSettings.dynamicTinting || !root.visible) return [];
         appBackdrop.backdropRevision;
@@ -154,7 +163,7 @@ Item {
         for (let ancestor = label; ancestor; ancestor = ancestor.parent) {
             ancestor.x; ancestor.y;
         }
-        const fill = Qt.tint(materialFill(root.glassSettings), backing);
+        const fill = layerOver(materialFill(root.glassSettings), backing);
         const samples = [];
         for (let i = -2; i <= 2; ++i) {
             const x = label.width / 2 + i * Math.min(label.contentWidth, label.width) * 0.2;
