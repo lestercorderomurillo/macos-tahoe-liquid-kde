@@ -1,97 +1,35 @@
 {
-  "version": "0.81.6",
+  "version": "0.81.7",
   "gallery_commit": "f09780b200b79302e7c23ef9f6f74d94748bbea3",
-  "implementation_commit": "12315545381b56d69fa76078fe253980bd838c21",
-  "scope": "Preserve standalone Apps across layout updates and narrow the Dock highlight.",
-  "approval": "Maintainer approved both photographed editions with three recent applications for v0.81.6.",
+  "implementation_commit": "b05629a9e84cd0c5f365fde389903742c5442fcc",
+  "scope": "Multi-display menu bar synchronization, Dock movement and maximized windows.",
+  "approval": "Maintainer approved the Tahoe and Golden Gate previews of b05629a9.",
   "checks": [
     {
-      "command": "python3 -m pytest -q tests/test_dock_defaults.py (57 passed on the shared implementation)",
+      "command": "pytest tests/test_dock_always_visible.py tests/test_dock_follows_screen_dwell.py tests/test_menubar_sync.py tests/test_acrylic_glass_uninstall.py; dwell tests rerun after cancellation fix",
       "result": "passed"
     },
     {
-      "command": "Installed the photographed candidate in KDE neon Plasma 6.8.1 Wayland and reviewed nine Dock frames for this edition.",
+      "command": "pytest tests/test_dock_appearance.py tests/test_dock_defaults.py (87 passed)",
       "result": "passed"
     },
     {
-      "command": "Reinstalled Tahoe in the disposable guest and verified the standalone Apps launcher, the false pin preference and the original pin order.",
+      "command": "Installed and reinstalled candidate in KDE neon Wayland 6.8.1, set a clock on one display, read both clocks and captured the Dock moving from display 0 to 1.",
+      "result": "passed"
+    },
+    {
+      "command": "Ran KWin X11 6.6.5 and 6.7.4 in Xvfb, loaded the effect and measured a 10-pixel shift on maximization.",
       "result": "passed"
     }
   ],
-  "reinstall": {
-    "source": "12315545381b56d69fa76078fe253980bd838c21",
-    "before": [
-      "preferred://filemanager",
-      "applications:org.kde.kate.desktop",
-      "preferred://browser"
-    ],
-    "after": [
-      1,
-      "false",
-      "preferred://filemanager,applications:org.kde.kate.desktop,preferred://browser"
-    ]
-  },
   "captures": [
     {
-      "path": "src/screenshots/previews/readme-tahoe-light-dock-regular-b26e1bcf62f0.webp",
-      "sha256": "b26e1bcf62f090c090d4851f3a07a58e2332c51f60bfcc244e05f7404d8a82aa",
+      "path": "src/screenshots/previews/tahoe-multiscreen-dock-7cb13adcee1c.jpg",
+      "sha256": "7cb13adcee1c95a5e2fab3d6d5e9611d47064b2b5310c9d32efeddace854b26c",
       "reviewed": true,
-      "source_commit": "12315545381b56d69fa76078fe253980bd838c21"
-    },
-    {
-      "path": "src/screenshots/previews/readme-tahoe-light-dock-red-798d2ad8fdda.webp",
-      "sha256": "798d2ad8fddad943b475974d072e915e37183fd9dddfbac0aead22edd5982b2d",
-      "reviewed": true,
-      "source_commit": "12315545381b56d69fa76078fe253980bd838c21"
-    },
-    {
-      "path": "src/screenshots/previews/readme-tahoe-light-dock-orange-b2ee9be7772e.webp",
-      "sha256": "b2ee9be7772e8a5c115c7539f635449843770885d47bc336640703d1ffa3b6f4",
-      "reviewed": true,
-      "source_commit": "12315545381b56d69fa76078fe253980bd838c21"
-    },
-    {
-      "path": "src/screenshots/previews/readme-tahoe-light-dock-yellow-986f332a82fb.webp",
-      "sha256": "986f332a82fbfc07bb7e135269c39ca580426ea50d00502f51cf1a4bc70006cb",
-      "reviewed": true,
-      "source_commit": "12315545381b56d69fa76078fe253980bd838c21"
-    },
-    {
-      "path": "src/screenshots/previews/readme-tahoe-light-dock-green-5ebeb19cf5b0.webp",
-      "sha256": "5ebeb19cf5b027f1115315350a0b851c12a49803a8a5d5d9dde7601f2884e86e",
-      "reviewed": true,
-      "source_commit": "12315545381b56d69fa76078fe253980bd838c21"
-    },
-    {
-      "path": "src/screenshots/previews/readme-tahoe-light-dock-blue-95f703deef94.webp",
-      "sha256": "95f703deef94f661bc03875b26b09466a6e1f5165f0a8f83789d3c40d1989432",
-      "reviewed": true,
-      "source_commit": "12315545381b56d69fa76078fe253980bd838c21"
-    },
-    {
-      "path": "src/screenshots/previews/readme-tahoe-light-dock-purple-b7b268963e86.webp",
-      "sha256": "b7b268963e86f8f3c83f32a6e4b062944d3ec04df5347da0e1f92b7c454178e3",
-      "reviewed": true,
-      "source_commit": "12315545381b56d69fa76078fe253980bd838c21"
-    },
-    {
-      "path": "src/screenshots/previews/readme-tahoe-light-dock-pink-ed33bb30f211.webp",
-      "sha256": "ed33bb30f211166d99650de4ec03d974850df0a412af456d98a29f3b402ff07d",
-      "reviewed": true,
-      "source_commit": "12315545381b56d69fa76078fe253980bd838c21"
-    },
-    {
-      "path": "src/screenshots/previews/readme-tahoe-dark-dock-regular-959ef77a3b82.webp",
-      "sha256": "959ef77a3b8295683b7e366ab184ea634ae5405e8b7bb54d1ab70a4357659b14",
-      "reviewed": true,
-      "source_commit": "12315545381b56d69fa76078fe253980bd838c21"
+      "source_commit": "b05629a9e84cd0c5f365fde389903742c5442fcc"
     }
   ],
-  "recent_desktop_ids": [
-    "org.kde.kate.desktop",
-    "org.kde.konsole.desktop",
-    "org.kde.kcalc.desktop"
-  ],
-  "coverage_limits": "Single horizontal Dock on KDE neon Wayland. The reinstall scenario ran in Tahoe. Full distribution CI runs on dev.",
-  "source_sha256": "753c512ecdf5ed888336264c2566b12b6839ddc270186cc45ea35002f1b6208d"
+  "coverage_limits": "Two virtual displays on Wayland. X11 used a rendered Dock test window. The before/after photographs establish location, not animation timing.",
+  "source_sha256": "831187e4b34a70f524bb7cacf6e7cdf7a15079c27ae958d38feccc15355c8d7b"
 }
