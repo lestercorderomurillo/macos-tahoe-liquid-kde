@@ -594,16 +594,29 @@ class WizardFrame(QWidget):
         painter = QPainter(self)
         painter.setRenderHint(QPainter.RenderHint.Antialiasing)
         bounds = QRectF(self.rect())
-        shape = QPainterPath()
-        shape.addRoundedRect(bounds, 28, 28)
+        inset = 0.375
+        left, top = inset, inset
+        right, bottom = bounds.width() - inset, bounds.height() - inset
+        radius = 28 - inset
+        # Tangent handles follow the installed 28-unit continuous window corner.
+        handle = radius * 0.73
+        path = QPainterPath(QPointF(left + radius, top))
+        path.lineTo(right - radius, top)
+        path.cubicTo(right - radius + handle, top, right, top + radius - handle, right, top + radius)
+        path.lineTo(right, bottom - radius)
+        path.cubicTo(right, bottom - radius + handle, right - radius + handle, bottom, right - radius, bottom)
+        path.lineTo(left + radius, bottom)
+        path.cubicTo(left + radius - handle, bottom, left, bottom - radius + handle, left, bottom - radius)
+        path.lineTo(left, top + radius)
+        path.cubicTo(left, top + radius - handle, left + radius - handle, top, left + radius, top)
+        path.closeSubpath()
         outside = QPainterPath()
         outside.addRect(bounds)
         painter.setCompositionMode(QPainter.CompositionMode.CompositionMode_Clear)
-        painter.fillPath(outside.subtracted(shape), Qt.GlobalColor.transparent)
+        painter.fillPath(outside.subtracted(path), Qt.GlobalColor.transparent)
         painter.setCompositionMode(QPainter.CompositionMode.CompositionMode_SourceOver)
-        inset = 0.375
-        painter.setPen(QPen(QColor(128, 128, 128, 150), 2 * inset))
-        painter.drawRoundedRect(bounds.adjusted(inset, inset, -inset, -inset), 28 - inset, 28 - inset)
+        painter.strokePath(path, QPen(QColor(128, 128, 128, 150), 2 * inset))
+
 
 
 class PageScrollArea(QScrollArea):

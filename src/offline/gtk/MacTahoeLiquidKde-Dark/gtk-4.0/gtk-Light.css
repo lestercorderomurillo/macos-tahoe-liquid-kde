@@ -6224,7 +6224,7 @@ window {
 
 window.csd {
   transition: none;
-  border-radius: 28px;
+  border-radius: 21px;
   outline: 1px solid rgba(128, 128, 128, 0.55);
   outline-offset: -1px;
   box-shadow: 0 3px 6px RGB(0 0 0/15%), 0 7px 24px RGB(0 0 0/12%), 0 12px 32px RGB(0 0 0/8%);
