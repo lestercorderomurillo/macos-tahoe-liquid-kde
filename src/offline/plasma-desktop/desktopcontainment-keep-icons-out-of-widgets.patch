@@ -3,7 +3,7 @@
 @@ -118,6 +118,25 @@
          return height;
      }
-
+ 
 +    // The whole rectangle enclosing the desktop widgets, gaps included.
 +    function pointOverApplet(x: real, y: real, from: Item): bool {
 +        if (!appletsLayout) return false;
@@ -26,9 +26,35 @@
      function isDrag(fromX, fromY, toX, toY) {
          const length = Math.abs(fromX - toX) + Math.abs(fromY - toY);
          return length >= Application.styleHints.startDragDistance;
-@@ -250,6 +269,14 @@
+@@ -176,6 +195,12 @@
+ 
+     // FIXME: the use and existence of this property is a workaround
+     preloadFullRepresentation: true
++
++    // MacTahoe: room kept for the Dock at the bottom of every screen, whether
++    // the Dock is on that screen or not (its 84 px panel window).
++    readonly property int mttkdeDockReserve: 84
++    readonly property real mttkdeAvailableHeight: availableScreenRect
++        ? Math.min(availableScreenRect.height, screenGeometry.height - availableScreenRect.y - mttkdeDockReserve) : 0
+     fullRepresentation: FolderViewDropArea {
+         id: dropArea
+ 
+@@ -187,8 +212,11 @@
+             rightMargin: (root.isContainment && root.availableScreenRect && parent)
+                 ? (parent.width - root.availableScreenRect.x - root.availableScreenRect.width) : 0
+ 
++            // MacTahoe: the single Dock moves from screen to screen. Reserve
++            // its height on every screen so the icon grid, which spreads over
++            // the available height, does not move when the Dock comes or goes.
+             bottomMargin: (root.isContainment && root.availableScreenRect && parent)
+-                ? (parent.height - root.availableScreenRect.y - root.availableScreenRect.height) : 0
++                ? Math.max(parent.height - root.availableScreenRect.y - root.availableScreenRect.height, root.mttkdeDockReserve) : 0
          }
-
+ 
+         LongDropBehavior on anchors.topMargin { }
+@@ -250,6 +278,14 @@
+         }
+ 
          onDrop: event => {
 +            // Like macOS, files and folders never go under a desktop widget:
 +            // a drop on a widget is refused and the icon goes back.
@@ -41,6 +67,15 @@
              if (root.isFolder && FolderTools.isFileDrag(event)) {
                  handleDragEnd(folderViewLayer.view);
                  folderViewLayer.view.drop(root, event, mapToItem(folderViewLayer.view, event.x, event.y));
+@@ -288,7 +324,7 @@
+         ContainmentLayoutManager.AppletsLayout {
+             id: appletsLayout
+             anchors.fill: parent
+-            relayoutLock: width !== root.availableScreenRect.width || height !== root.availableScreenRect.height
++            relayoutLock: width !== root.availableScreenRect.width || height !== root.mttkdeAvailableHeight
+             // NOTE: use root.availableScreenRect and not own width and height as they are updated not atomically
+             configKey: "ItemGeometries-" + Math.round(root.screenGeometry.width) + "x" + Math.round(root.screenGeometry.height)
+             fallbackConfigKey: root.availableScreenRect.width > root.availableScreenRect.height ? "ItemGeometriesHorizontal" : "ItemGeometriesVertical"
 --- a/contents/ui/FolderView.qml
 +++ b/contents/ui/FolderView.qml
 @@ -52,6 +52,59 @@
