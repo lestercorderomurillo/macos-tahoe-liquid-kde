@@ -47,6 +47,7 @@
             "org.kde.mac-tahoe-liquid-kde.launcher"
             { name = "org.kde.mac.tahoe.liquid.icontasks";
               config.General.launchers = lib.concatStringsSep "," config.programs.mac-tahoe.panels.launchers; }
+            "org.kde.mac-tahoe-liquid-kde.downloads"
             "org.kde.mac-tahoe-liquid-kde.trashcan"
           ];
         }

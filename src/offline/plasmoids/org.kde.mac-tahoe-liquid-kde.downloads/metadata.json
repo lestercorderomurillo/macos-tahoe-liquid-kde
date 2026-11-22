@@ -1,0 +1,12 @@
+{
+    "KPackageStructure": "Plasma/Applet",
+    "KPlugin": {
+        "Id": "org.kde.mac-tahoe-liquid-kde.downloads",
+        "Name": "Downloads",
+        "Description": "Recent downloads in a fan, with file dragging",
+        "Icon": "folder-download",
+        "Category": "File System",
+        "License": "GPL-3.0-only"
+    },
+    "X-Plasma-API-Minimum-Version": "6.0"
+}

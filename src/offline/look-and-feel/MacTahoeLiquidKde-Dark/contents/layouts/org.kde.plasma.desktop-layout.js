@@ -166,11 +166,7 @@ tasks.writeConfig("dockPresetCategories", resolvedDockCategories);
 tasks.writeConfig("dockPresetRevision", 2);
 
 dock.addWidget("org.kde.mac-tahoe-liquid-kde.dockseparator");
-var downloads = dock.addWidget("org.kde.plasma.folder");
-downloads.currentConfigGroup = ["General"];
-downloads.writeConfig("url", "file://" + userDataPath("downloads").split("/").map(encodeURIComponent).join("/"));
-downloads.writeConfig("icon", "folder-download");
-downloads.writeConfig("useCustomIcon", true);
+dock.addWidget("org.kde.mac-tahoe-liquid-kde.downloads");
 var trash = dock.addWidget("org.kde.mac-tahoe-liquid-kde.trashcan");
 trash.currentConfigGroup = ["General"];
 trash.writeConfig("showSeparator", false);

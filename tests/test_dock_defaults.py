@@ -88,7 +88,7 @@ def test_base_dock_order_and_missing_apps(offline, relative, installed, expected
         tasks = [w for w in widgets if w['type'] == layout.MAC_TASKS_ID]
         assert tasks[0]['pins'] == ['applications:' + app for app in expected]
         assert [w["type"] for w in widgets[-3:]] == [
-            "org.kde.mac-tahoe-liquid-kde.dockseparator", "org.kde.plasma.folder",
+            "org.kde.mac-tahoe-liquid-kde.dockseparator", "org.kde.mac-tahoe-liquid-kde.downloads",
             "org.kde.mac-tahoe-liquid-kde.trashcan",
         ]
 
