@@ -1,6 +1,6 @@
 # Installer testing
 
-**v0.81.5**. Verified recent Dock apps at pinned icon size on KDE neon Wayland, with the bundled Downloads and Trash artwork in light and dark. [Evidence and coverage](release-evidence.json).
+**v0.81.6**. Verified the multicolor Dock with three recent applications on KDE neon Wayland. A Tahoe reinstall preserved the standalone Apps launcher and the existing pin order. [Evidence and coverage](release-evidence.json).
 
 [Installer photo evidence](src/screenshots/previews/wizard-tahoe-provenance-531f633f4ff6.json).
 
