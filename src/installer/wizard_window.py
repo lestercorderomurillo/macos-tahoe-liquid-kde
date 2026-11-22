@@ -8,7 +8,7 @@ import json
 import math
 import time
 
-from PyQt6.QtCore import Qt, QEvent, QPointF, QRectF, QSize, QTimer, QUrl
+from PyQt6.QtCore import Qt, QEvent, QFileSystemWatcher, QSettings, QStandardPaths, QPointF, QRectF, QSize, QTimer, QUrl
 from PyQt6.QtGui import QColor, QFont, QFontDatabase, QPainter, QPainterPath, QLinearGradient, QPalette, QPen, QPixmap, QPolygonF, QRegion
 from PyQt6.QtWidgets import (
     QApplication, QButtonGroup, QCheckBox, QComboBox, QDialog, QDialogButtonBox, QFileDialog, QFrame,
@@ -786,6 +786,17 @@ class InstallerWindow(OpaqueSurface):
         self.frame_edge = WizardFrame(self)
         self.frame_edge.setGeometry(self.rect())
         app.styleHints().colorSchemeChanged.connect(self.system_scheme_changed)
+        # KDE replaces kdeglobals atomically. Watch its directory so the next
+        # switch is observed even after a new inode replaces the original.
+        config = QStandardPaths.writableLocation(QStandardPaths.StandardLocation.ConfigLocation)
+        self.desktop_config = Path(config) / "kdeglobals"
+        if self.desktop_config.is_file():
+            self.config_timer = QTimer(self)
+            self.config_timer.setSingleShot(True)
+            self.config_timer.setInterval(150)
+            self.config_timer.timeout.connect(self.refresh_desktop_scheme)
+            self.config_watcher = QFileSystemWatcher([config], self)
+            self.config_watcher.directoryChanged.connect(lambda _: self.config_timer.start())
         bridge.runningChanged.connect(self.refresh_window_controls)
         bridge.finished.connect(self.finished)
         bridge.progressChanged.connect(self.refresh_progress)
@@ -801,11 +812,22 @@ class InstallerWindow(OpaqueSurface):
         super().resizeEvent(event)
         self.frame_edge.setGeometry(self.rect())
 
+    def refresh_desktop_scheme(self):
+        settings = QSettings(str(self.desktop_config), QSettings.Format.IniFormat)
+        rgb = settings.value("Colors:Window/BackgroundNormal")
+        if isinstance(rgb, list) and len(rgb) >= 3:
+            try:
+                color = QColor(*(int(v) for v in rgb[:3]))
+            except (TypeError, ValueError):
+                return
+            if color.isValid():
+                self.system_scheme_changed(Qt.ColorScheme.Dark if color.lightnessF() <= .5 else Qt.ColorScheme.Light)
+
     def system_scheme_changed(self, scheme):
         if scheme == Qt.ColorScheme.Unknown:
             return
         dark = scheme == Qt.ColorScheme.Dark
-        if dark != (self.palette().window().color().lightnessF() <= .5):
+        if dark != (self.surface_color.lightnessF() <= .5):
             self.setPalette(installer_palette(dark))
             self.render()
             self.frame_edge.update()
