@@ -6,6 +6,7 @@ import json
 import os
 import re
 from pathlib import Path
+from pathlib import Path
 
 from launcher_defaults import edition_name
 
@@ -14,6 +15,8 @@ COLORS = {
     "red": "#ff3b30", "orange": "#ff9500", "yellow": "#ffcc00",
     "green": "#28cd41", "gray": "#8e8e93",
 }
+GLASS_PRESETS = json.loads((Path(__file__).resolve().parents[1] /
+    "offline/kwin-effects/acrylic-glass/src/presets.json").read_text())
 ENUMS = {
     "appearance": ("auto", "light", "dark"),
     "dock_visibility": ("autohide", "none", "dodgewindows"),
@@ -29,7 +32,7 @@ ENUMS = {
     "shadows": ("none", "soft", "medium", "hard"),
     "window_controls": ("flat", "glassy"),
     "button_position": ("left", "right", "keep"),
-    "glass_style": ("classic", "official"),
+    "glass_style": tuple(preset["choice"] for preset in GLASS_PRESETS),
 }
 WALLPAPERS = {
     "prism": ("MacPrism", "MacPrism"),
@@ -96,8 +99,6 @@ def validate(value: object) -> dict:
     if not isinstance(value, dict) or set(value) - defaults().keys():
         raise ValueError("Invalid installer choices")
     result = defaults() | value
-    if result["glass_style"] == "tinted":  # Saved before Tahoe Official replaced Frosted.
-        result["glass_style"] = "classic"
     for key, allowed in ENUMS.items():
         if result[key] not in allowed:
             raise ValueError(f"Invalid choice: {key}")

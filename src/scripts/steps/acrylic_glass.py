@@ -19,7 +19,7 @@ from steps._helpers import (
 )
 from utils import have, qdbus_cmd, run_user
 from theme_switch import default_wallpaper
-from installer_choices import selected
+from installer_choices import GLASS_PRESETS, selected
 
 SRC = offline("kwin-effects/acrylic-glass")
 # Scripted KWin effect for the Control Center zoom/fade; Liquid Glass follows it.
@@ -253,16 +253,17 @@ def _restore_conflicting_blurs() -> None:
         warn(tr("Could not restore competing blur settings: {exc}", exc=exc))
 
 
-def _install_backing_tint() -> bool:
+def _selected_material():
     choices = selected()
+    style = "official" if default_wallpaper() == "MacGoldenGate" else "classic"
     if choices and choices["files"] == "nautilus":
-        variant = "0" if choices["glass_style"] == "classic" else "1"
-    elif default_wallpaper() == "MacGoldenGate":
-        variant = "1"
-    else:
-        return True
+        style = choices["glass_style"]
+    return next(preset for preset in GLASS_PRESETS if preset["choice"] == style)
+
+
+def _install_backing_tint() -> bool:
     return kw_write("--file", "kwinrc", "--group", "Effect-liquidglass", "--key",
-                    "BackingTint", variant)
+                    "BackingTint", str(_selected_material()["variant"]))
 
 
 _CORNER_DEFAULTS = (
@@ -273,15 +274,8 @@ _CORNER_DEFAULTS = (
 
 def _edition_preset() -> dict[str, str]:
     # The KCM and installer apply the same complete material.
-    presets = json.loads((SRC / "src/presets.json").read_text())
-    preset_id = "golden-gate" if default_wallpaper() == "MacGoldenGate" else "tahoe"
-    choices = selected()
-    if choices and choices["files"] == "nautilus":
-        preset_id = "golden-gate" if choices["glass_style"] == "official" else "tahoe"
-    preset = next(preset for preset in presets if preset["id"] == preset_id)
-    values = dict(preset["values"])
-    if choices and choices["files"] == "nautilus" and choices["glass_style"] == "tinted":
-        values.update(preset.get("tinted_values", {}))
+    preset = _selected_material()
+    values = preset["values"]
     components = {"general": dict(values)}
     for name, overrides in preset.get("components", {}).items():
         components[name] = dict(values) | overrides

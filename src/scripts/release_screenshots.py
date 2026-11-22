@@ -14,7 +14,7 @@ EDITIONS = {'tahoe': ('MacTahoe', 1, 'v4'), 'golden-gate': ('MacGoldenGate', 2, 
 INSTALLER_PAGES = ('welcome', 'appearance', 'icons', 'wallpaper', 'launcher', 'layout',
                    'effects', 'window_controls', 'button_position', 'shadows', 'fonts', 'firefox', 'files', 'glass_style', 'boot', 'oled', 'summary')
 MATERIAL_CASES = {'glass-tahoe-clear': (1, 0), 'glass-tahoe-frosted': (1, 1),
-                  'glass-golden-gate-official': (2, 1)}
+                  'glass-golden-gate-official': (2, 1), 'glass-water': (3, 0)}
 CASES = tuple(MATERIAL_CASES) + ('launcher', 'dock', 'menu', 'context', 'finder', 'showcase', 'about') + tuple(
     'installer-' + page for page in INSTALLER_PAGES)
 MODES = ('light', 'dark')
@@ -717,11 +717,16 @@ def verify_visual_source(repo: Path, source: str, target: str, source_tree: str)
 
 def material_values(presets: list[dict], case: str) -> dict:
     material, variant = MATERIAL_CASES[case]
-    preset = next(p for p in presets if p['value'] == material)
+    preset = next(p for p in presets if (p['value'], p.get('variant', variant)) == (material, variant))
     values = dict(preset['values'])
     if variant:
         values.update(preset.get('tinted_values', {}))
-    return values | {'MaterialPreset': material, 'BackingTint': variant}
+    result = values | {'MaterialPreset': material, 'BackingTint': variant}
+    if 'variant' in preset:
+        components = {'general': values}
+        components.update({name: values | overrides for name, overrides in preset['components'].items()})
+        result['ComponentMaterials'] = json.dumps(components, separators=(',', ':'))
+    return result
 
 
 def expected_frames() -> set[str]:

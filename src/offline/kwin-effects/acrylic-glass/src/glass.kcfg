@@ -9,7 +9,7 @@
             <default>true</default>
         </entry>
         <entry name="BlurStrength" type="Double">
-            <default>5.0</default>
+            <default>3.75</default>
         </entry>
         <entry name="DarkGradientOverlay" type="Bool">
             <default>false</default>
@@ -52,36 +52,36 @@ xembedsniproxy</default>
             <default>false</default>
         </entry>
         <entry name="RgbDriftStrength" type="Double">
-            <default>10.0</default>
+            <default>8</default>
         </entry>
         <entry name="MagnifyGlassStrength" type="Double">
-            <default>0.02</default>
+            <default>0.032</default>
             <min>0.0</min>
             <max>0.2</max>
         </entry>
         <entry name="RefractionWidth" type="Double">
-            <default>38.0</default>
+            <default>64</default>
         </entry>
         <entry name="HighlightWidth" type="Double">
-            <default>16.0</default>
+            <default>16</default>
         </entry>
         <entry name="HighlightStrength" type="Double">
             <default>0.1</default>
         </entry>
         <entry name="Brightness" type="Double">
-            <default>1.0</default>
+            <default>1.1</default>
         </entry>
         <entry name="Contrast" type="Double">
-            <default>1.0</default>
+            <default>1</default>
         </entry>
         <entry name="Saturation" type="Double">
-            <default>1.33</default>
+            <default>1.13</default>
         </entry>
         <!-- Keep persisted IDs stable after retiring Clear (0). -->
         <entry name="MaterialPreset" type="Int">
             <default>1</default>
             <min>1</min>
-            <max>2</max>
+            <max>3</max>
         </entry>
         <!-- Legacy key now identifies the alternate preset only; no flat backing is rendered. -->
         <entry name="BackingTint" type="Int">
@@ -90,29 +90,29 @@ xembedsniproxy</default>
             <max>1</max>
         </entry>
         <entry name="GradientTopColor" type="Color">
-            <default>#000000</default>
+            <default>#cecece</default>
         </entry>
         <entry name="GradientCenterColor" type="Color">
-            <default>#000000</default>
+            <default>#cecece</default>
         </entry>
         <entry name="GradientCenterOpacity" type="Double">
-            <default>0.01</default>
+            <default>0</default>
             <min>0.0</min>
             <max>1.0</max>
         </entry>
         <entry name="GradientCenterPosition" type="Double">
-            <default>0.55</default>
+            <default>0.56</default>
             <min>0.0</min>
             <max>1.0</max>
         </entry>
         <entry name="GradientBottomColor" type="Color">
-            <default>#000000</default>
+            <default>#cecece</default>
         </entry>
         <entry name="GradientTopOpacity" type="Double">
-            <default>0.19</default>
+            <default>0</default>
         </entry>
         <entry name="GradientBottomOpacity" type="Double">
-            <default>0.01</default>
+            <default>0</default>
         </entry>
         <entry name="GradientTopDarkColor" type="Color">
             <default>#000000</default>

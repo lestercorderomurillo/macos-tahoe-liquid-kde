@@ -740,7 +740,14 @@ void BlurEffect::configureComponentMaterials()
 {
     const KConfigGroup group(BlurConfig::self()->config(), QStringLiteral("Effect-liquidglass"));
     const auto presets = QJsonDocument::fromJson(materialPresetsJson).array();
-    const auto preset = presets.at(BlurConfig::materialPreset() == 2 ? 1 : 0).toObject();
+    auto preset = presets.first().toObject();
+    for (const auto &entry : presets) {
+        const auto candidate = entry.toObject();
+        if (candidate.value(QStringLiteral("value")).toInt() == BlurConfig::materialPreset()) {
+            preset = candidate;
+            if (candidate.value(QStringLiteral("variant")).toInt() == BlurConfig::backingTint()) break;
+        }
+    }
     auto components = GlassMaterials::read(group, preset, BlurConfig::backingTint() != 0, presets.at(0).toObject().value(QStringLiteral("values")).toObject());
     const auto darkDefaults = preset.value(QStringLiteral("dark_shell_menu")).toObject();
     if (!darkDefaults.isEmpty()) {
