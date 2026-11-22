@@ -10,6 +10,7 @@ from localization import tr
 import os
 import shutil
 import subprocess
+import re
 import sysconfig
 from pathlib import Path
 
@@ -500,9 +501,27 @@ def system_lib_dir() -> Path:
 def global_menu_exporter_deps() -> list[str]:
     """GTK's optional exporter is not packaged in every supported family."""
     family = {current_distro(), *_compatibility_parents()}
-    if family & {"arch", "debian", "ubuntu", "neon"}:
+    # Fedora does not package appmenu-gtk-module; its unity-gtk3-module
+    # exports GTK 3 menus over the same com.canonical.dbusmenu protocol (#138).
+    if family & {"arch", "debian", "ubuntu", "neon", "fedora"}:
         return ["gtk3-appmenu:appmenu-gtk-module"]
     return []
+
+
+# GTK 3 menu exporter modules, in order of preference: GTK loads a module by
+# the name in GTK3_MODULES, the library file name without "lib" and ".so".
+GTK3_APPMENU_LIBRARIES = ("libappmenu-gtk-module.so", "libunity-gtk-module.so")
+
+
+def gtk3_appmenu_module_name(module: Path) -> str:
+    """``libunity-gtk-module.so`` -> ``unity-gtk-module``.
+
+    The name is written unquoted into a shell login hook, so anything but a
+    plain module name falls back to the default exporter's name.
+    """
+    name = module.name
+    name = name[3:-3] if name.startswith("lib") and name.endswith(".so") else ""
+    return name if re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9_-]*", name) else "appmenu-gtk-module"
 
 
 def gtk3_appmenu_module() -> Path | None:
@@ -524,11 +543,12 @@ def gtk3_appmenu_module() -> Path | None:
     if multiarch and Path(multiarch).name == multiarch:
         roots.append(Path("/usr/lib") / multiarch)
     roots.extend((Path("/usr/lib64"), Path("/usr/lib")))
-    for root in dict.fromkeys(roots):
-        for suffix in ("gtk-3.0/3.0.0/modules", "gtk-3.0/modules"):
-            candidate = root / suffix / "libappmenu-gtk-module.so"
-            if candidate.is_file():
-                return candidate
+    for library in GTK3_APPMENU_LIBRARIES:
+        for root in dict.fromkeys(roots):
+            for suffix in ("gtk-3.0/3.0.0/modules", "gtk-3.0/modules"):
+                candidate = root / suffix / library
+                if candidate.is_file():
+                    return candidate
     return None
 
 
@@ -558,7 +578,7 @@ _PACKAGE_MAP: dict[str, dict[str, str]] = {
     },
     "gtk3-appmenu": {
         "arch": "appmenu-gtk-module", "debian": "appmenu-gtk3-module",
-        "ubuntu": "appmenu-gtk3-module",
+        "ubuntu": "appmenu-gtk3-module", "fedora": "unity-gtk3-module",
     },
     "xdg-desktop-portal-gtk": {
         "arch": "xdg-desktop-portal-gtk",

@@ -173,8 +173,10 @@ def gtk_appmenu_env_path() -> Path:
 
 
 def _gtk_appmenu_environment(module: Path) -> str:
+    from distro import gtk3_appmenu_module_name
     return GTK_ENV_TEMPLATE.read_text(encoding="utf-8").replace(
-        "@APPMENU_MODULE@", shlex.quote(str(module)))
+        "@APPMENU_MODULE@", shlex.quote(str(module))).replace(
+        "@APPMENU_NAME@", gtk3_appmenu_module_name(module))
 
 
 def _gtk_appmenu_environment_owned(path: Path) -> bool:
