@@ -1,27 +1,27 @@
 {
-  "version": "0.82.6",
+  "version": "0.82.7",
   "gallery_commit": "f09780b200b79302e7c23ef9f6f74d94748bbea3",
-  "implementation_commit": "e9914c3ffdb379afcf318fe3b102609875286fae",
-  "scope": "Show Finder menus while the desktop has focus and open locations in the selected Dolphin or Nautilus file manager.",
-  "approval": "The maintainer answered yes to the Finder menu preview showing both editions and both file managers.",
+  "implementation_commit": "6fd1f96de1c3b365db299ded06dbb0652b157aa4",
+  "scope": "Prioritize the themed menu bar controls and move duplicate Plasma tray controls into overflow.",
+  "approval": "The maintainer answered yes to the before, after, and overflow tray preview.",
   "checks": [
     {
-      "command": "11 isolated pytest checks passed for the native Global Menu and translation catalogs, including switching the default file manager in the same Finder menu.",
+      "command": "Five isolated MenuBarSync checks passed, including tray overflow prioritization and preservation of pinned and enabled entries.",
       "result": "passed"
     },
     {
-      "command": "KDE neon 6.8.1 Wayland: captured the Finder menu in Tahoe and Golden Gate in light and dark modes.",
+      "command": "KDE neon Plasma 6.8.1 Wayland: installed the reviewed MenuBarSync.js on a Golden Gate panel. Confirmed that the theme Wi-Fi and pinned Clipboard stayed visible and stock Networks appeared under the overflow arrow.",
       "result": "passed"
     },
     {
-      "command": "On KDE neon, selected Nautilus and Dolphin in turn. Each opened a separate Home window and handled Documents, Recents, Network and Trash. The focused app menu took over when its window opened.",
+      "command": "Verified the installed MenuBarSync.js SHA-256 against the release source and validated the shared component fingerprints.",
       "result": "passed"
     }
   ],
   "captures": [],
   "approved_preview_sha256": {
-    "finder-menu-preview.png": "a3e3b2be63902c38c3c2e26304ae24ea65dfff4435b92e9a7eba51b45f0bf5f7"
+    "tray-preview.png": "2adb02abcd95edae4af910710d378e7d4e9e71d5b2fbf22c93771756f2e3f27e"
   },
-  "coverage_limits": "Rendered on KDE neon Plasma 6.8.1 Wayland. Native model, popup and composition tests used an isolated X11 session. Historical gallery captures retain their provenance.",
-  "source_sha256": "d4c3478e76b86947a1bfc97ff2cba87c968086df78346c57b3728307ae224452"
+  "coverage_limits": "Rendered on Golden Gate with one wired display fixture in KDE neon Plasma 6.8.1 Wayland. Tahoe shares the same tray implementation. Historical gallery captures retain their provenance.",
+  "source_sha256": "dce43cc657c3f114c6f96f7f1836e4f621f39ab63ee341a71d9f51b8fea37aa3"
 }
