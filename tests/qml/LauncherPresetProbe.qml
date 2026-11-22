@@ -76,11 +76,13 @@ Timer {
             const label = findCategoryLabel(delegate);
             verify(label !== null, "category label available: " + i);
             const pill = label.parent;
-            const alpha = expectedDark ? (pill.selected ? 0.12 : 0.06)
-                : expectedGoldenGate ? (pill.selected ? 0.68 : 0.52)
-                : (pill.selected ? 0.62 : 0.46);
+            const alpha = expectedDark ? (pill.selected ? 0.66 : 0.76)
+                : expectedGoldenGate ? (pill.selected ? 0.80 : 0.66)
+                : (pill.selected ? 0.78 : 0.64);
             verify(Math.abs(pill.testBackground.color.a - alpha) < 0.005,
                    "category opacity follows edition and mode");
+            verify(pill.testBackground.color.r === (expectedDark ? 0 : 1) && label.opacity === 1,
+                   "category backing and fully opaque ink follow the effective mode");
             const tahoe = kicker.launcherPreset === 1;
             verify(pill.testBackground.border.width === (tahoe ? 1 : 0),
                    "Tahoe glass edge follows preset 1 in either edition");

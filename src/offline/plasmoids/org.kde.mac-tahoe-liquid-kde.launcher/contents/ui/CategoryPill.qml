@@ -23,7 +23,7 @@ Item {
         font.pointSize: main.appTextSize
 
         color: main.labelColor(label, width / 2, pillBg.color)
-        opacity: pill.selected ? 1 : 0.85
+        font.weight: pill.selected ? Font.DemiBold : Font.Medium
     }
 
     Rectangle {
@@ -31,9 +31,9 @@ Item {
         anchors.fill: parent
         z: -1
         color: main.isDarkTheme
-            ? Qt.rgba(1, 1, 1, selected ? 0.12 : 0.06)
+            ? Qt.rgba(0, 0, 0, selected ? 0.66 : 0.76)
             : Qt.rgba(1, 1, 1, main.goldenGateLight
-                ? (selected ? 0.68 : 0.52) : (selected ? 0.62 : 0.46))
+                ? (selected ? 0.80 : 0.66) : (selected ? 0.78 : 0.64))
         radius: main.detachedSearch ? height * 0.45 : (main.tahoeStyle ? 9 : 8)
         border.width: main.tahoeStyle ? 1 : 0
         border.color: Qt.rgba(1, 1, 1, pill.selected ? 0.18 : 0.08)
