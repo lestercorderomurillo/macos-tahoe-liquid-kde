@@ -138,19 +138,24 @@ Item {
 		Kirigami.Theme.colorSet: Kirigami.Theme.Window
 	}
     Tahoe.PopupBackdrop { id: appBackdrop; window: root }
-    function labelColor(item, sampleX = item.width / 2, overlay = "transparent") {
-        if (!root.glassSettings.dynamicTinting) return main.textColor;
-        appBackdrop.backdropRevision;
+    Tahoe.PopupBackdrop { id: searchBackdrop; window: searchPopup }
+    Tahoe.GlassSettings { id: searchMaterial; component: "search" }
+    function labelColor(item, sampleX = item.width / 2, overlay = "transparent", detached = false, fallback = main.textColor) {
+        if (!root.glassSettings.dynamicTinting) return fallback;
+        const sampler = detached ? searchBackdrop : appBackdrop;
+        const settings = detached ? searchMaterial : root.glassSettings;
+        sampler.backdropRevision;
         // Track delegate movement as well as changes behind the stationary popup.
         for (let parentItem = item; parentItem; parentItem = parentItem.parent) {
             parentItem.x; parentItem.y;
         }
-        const point = item.mapToItem(root.contentItem, sampleX, item.height / 2);
-        const saved = isDarkTheme ? root.glassSettings.darkOpacity : root.glassSettings.lightOpacity;
+        const point = item.mapToItem(detached ? searchPopup.contentItem : root.contentItem, sampleX, item.height / 2);
+        const saved = isDarkTheme ? settings.darkOpacity : settings.lightOpacity;
         const alpha = saved >= 0 ? saved : isDarkTheme ? (goldenGateEdition ? 0.12 : 0.48) : 0.55;
         const tint = isDarkTheme ? 0 : 1;
-        return appBackdrop.animatedForegroundAt(item, point, Qt.size(Math.min(40, item.width / 2), Math.max(24, item.height / 2)),
-                                      main.textColor, Qt.tint(Qt.rgba(tint, tint, tint, alpha), overlay));
+        // Only the backdrop under the glyphs determines their polarity.
+        return sampler.animatedForegroundAt(item, point, Qt.size(0, 0),
+                                      fallback, Qt.tint(Qt.rgba(tint, tint, tint, alpha), overlay));
     }
 	readonly property color textColor: Contrast.preferredText(glassPalette.Kirigami.Theme.textColor)
 	readonly property string textFont: Kirigami.Theme.defaultFont.family

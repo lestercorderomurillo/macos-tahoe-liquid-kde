@@ -11,7 +11,16 @@ RowLayout {
     property alias showMenuButton: menuButton.visible
     readonly property bool menuOpen: menuButton.menuOpen
     readonly property bool goldenGateCapsule: main.goldenGateEdition && main.detachedSearch
-    readonly property color textColor: goldenGateCapsule ? "white" : main.textColor
+    readonly property color textColor: main.labelColor(textField,
+        textField.leftPadding + Math.min(textField.availableWidth,
+            textField.text.length ? Math.max(1, textField.contentWidth) : placeholderMetrics.advanceWidth) / 2,
+        "transparent", searchFieldBar === main.searchBar && main.detachedSearch,
+        goldenGateCapsule ? "white" : main.textColor)
+    TextMetrics {
+        id: placeholderMetrics
+        font: textField.font
+        text: textField.placeholderText
+    }
     readonly property color dimmedTextColor: (main.goldenGateLight || goldenGateCapsule)
         ? textColor : Qt.rgba(textColor.r, textColor.g, textColor.b, 0.85)
     function closeMenu() { menuButton.closeMenu(); }

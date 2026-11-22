@@ -2061,7 +2061,8 @@ void BlurEffect::blur(
     const QString resourceClass = w->window()->resourceClass();
     const bool plasma = resourceClass == QStringLiteral("plasmashell") || resourceClass == QStringLiteral("org.kde.plasmashell");
     // Native QMenus are xdg_popups on Wayland and have no client title.
-    const bool namedPopup = GlassMaterials::isControlPanel(w->caption()) || w->caption() == QStringLiteral("mttkde-apps");
+    const bool namedPopup = GlassMaterials::isControlPanel(w->caption()) || w->caption() == QStringLiteral("mttkde-apps")
+        || (BlurConfig::dynamicTinting() && w->caption() == QStringLiteral("mttkde-search"));
     const bool notification = isProjectNotification(resourceClass, w->caption());
     const bool shellMenu = plasma && !namedPopup && !notification && (w->isPopupMenu() || w->isDropdownMenu() || w->isMenu()
         || (w->isPopupWindow() && !w->isAppletPopup() && !w->isTooltip()));
