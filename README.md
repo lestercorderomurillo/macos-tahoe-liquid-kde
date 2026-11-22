@@ -305,6 +305,7 @@ A matching look from startup to shutdown, with built-in unlocking for LUKS2-encr
 - **Compatibility:** Plasma 6.6–6.8, with native effects compiled against the installed Qt and KWin versions.
 - **Launchpad:** two layouts, integrated or detached search, favorites and scrollable app categories.
 - **Dock** The Dock follows the bottom edge you touch and keeps your pins. In the installer, choose auto-hide (default), show outside full screen, or hide when a window overlaps.
+- **Menu bar** On several screens, every menu bar stays the same: showing or hiding a tray icon, or changing a widget's settings (clock, Apple menu, Control Center), applies to the menu bar of every screen. Adding, removing or moving widgets still applies to one menu bar only.
 - **Appearance:** synchronized light/dark styles for the desktop, apps, icons and window decorations; per-monitor wallpapers.
 - **App integration:** global menus, GTK menu fixes, Finder-style Nautilus and Firefox theming with profile backups.
 - **Recovery:** requirement checks, settings backups and uninstall restoration.

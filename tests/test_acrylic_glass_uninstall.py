@@ -27,8 +27,10 @@ def test_uninstall_disables_before_unload_and_reconfigures_after_removal(
     # These paths are resolved at import time from the real home, so the
     # XDG overrides above do not reach them: removing them would delete the
     # user's installed KWin script and effects.
-    for name in ("TRANSITION_DEST", "DOCK_SCRIPT_DEST", "DOCK_EFFECT_DEST"):
+    for name in [n for n in dir(acrylic_glass) if n.endswith("_DEST")]:
         real = getattr(acrylic_glass, name)
+        if not str(real).startswith(str(acrylic_glass.DATA_HOME)):
+            continue
         monkeypatch.setattr(acrylic_glass, name, home / ".local/share" / real.relative_to(acrylic_glass.DATA_HOME))
     monkeypatch.setattr(acrylic_glass, "_conflict_state_path", lambda: tmp_path / "blur-conflicts.json")
     monkeypatch.setattr(

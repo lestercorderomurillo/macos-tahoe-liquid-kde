@@ -378,6 +378,7 @@ Una apariencia coordinada desde el inicio hasta el apagado, con desbloqueo integ
 - **Compatibilidad:** Plasma 6.6–6.8, con efectos nativos compilados contra las versiones instaladas de Qt y KWin.
 - **Launchpad:** dos disposiciones, búsqueda integrada o separada, favoritos y categorías de aplicaciones desplazables.
 - **Dock** El Dock se mueve a la pantalla cuyo borde inferior toques y conserva tus apps fijadas. En el instalador puedes elegir ocultarlo automáticamente (por defecto), mostrarlo salvo en pantalla completa u ocultarlo cuando una ventana lo cubra.
+- **Barra de menús** Con varias pantallas, todas las barras de menús son iguales: mostrar u ocultar un icono de la bandeja o cambiar los ajustes de un widget (reloj, menú Apple, Centro de control) se aplica a la barra de menús de cada pantalla. Añadir, quitar o mover widgets sigue aplicándose a una sola barra.
 - **Apariencia:** estilos claros/oscuros sincronizados para el escritorio, aplicaciones, iconos y decoraciones de ventanas; fondos por monitor.
 - **Integración de aplicaciones:** menús globales, correcciones de menús GTK, Nautilus al estilo Finder y tema para Firefox con copias de perfiles.
 - **Recuperación:** comprobación de requisitos, copias de ajustes y restauración al desinstalar.
