@@ -10,7 +10,7 @@ LEVELS = {"none": 0, "soft": .30, "medium": .65, "hard": 1.0}
 GTK_SHADOWS = {
     "none": "none",
     "soft": "0 8px 28px rgba(0, 0, 0, 0.12)",
-    "medium": "0 8px 20px rgba(0, 0, 0, 0.24)",
+    "medium": "0 18px 40px rgba(0, 0, 0, 0.40)",
     "hard": "0 8px 12px rgba(0, 0, 0, 0.40)",
 }
 

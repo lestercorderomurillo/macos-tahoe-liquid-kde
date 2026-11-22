@@ -615,7 +615,10 @@ class WizardFrame(QWidget):
         painter.setCompositionMode(QPainter.CompositionMode.CompositionMode_Clear)
         painter.fillPath(outside.subtracted(path), Qt.GlobalColor.transparent)
         painter.setCompositionMode(QPainter.CompositionMode.CompositionMode_SourceOver)
-        painter.strokePath(path, QPen(QColor(128, 128, 128, 150), 2 * inset))
+        highlight = QLinearGradient(0, top, 0, bottom)
+        highlight.setColorAt(0, QColor(142, 142, 142, 148))
+        highlight.setColorAt(1, QColor(98, 98, 98, 187))
+        painter.strokePath(path, QPen(highlight, 2 * inset))
 
 
 
@@ -782,6 +785,7 @@ class InstallerWindow(OpaqueSurface):
         self.layout.addWidget(self.footer)
         self.frame_edge = WizardFrame(self)
         self.frame_edge.setGeometry(self.rect())
+        app.styleHints().colorSchemeChanged.connect(self.system_scheme_changed)
         bridge.runningChanged.connect(self.refresh_window_controls)
         bridge.finished.connect(self.finished)
         bridge.progressChanged.connect(self.refresh_progress)
@@ -796,6 +800,15 @@ class InstallerWindow(OpaqueSurface):
     def resizeEvent(self, event):
         super().resizeEvent(event)
         self.frame_edge.setGeometry(self.rect())
+
+    def system_scheme_changed(self, scheme):
+        if scheme == Qt.ColorScheme.Unknown:
+            return
+        dark = scheme == Qt.ColorScheme.Dark
+        if dark != (self.palette().window().color().lightnessF() <= .5):
+            self.setPalette(installer_palette(dark))
+            self.render()
+            self.frame_edge.update()
 
     def express_install(self):
         if self.page != "welcome" or self.bridge.running or self.updating:
@@ -978,7 +991,7 @@ class InstallerWindow(OpaqueSurface):
         QApplication.setPalette(self.palette())
         focused = QApplication.focusWidget()
         focus_name = focused.objectName() if focused else ""
-        # Keep the opening light/dark appearance; installation choices affect previews only.
+        # The live desktop selects the window palette. Wizard choices affect previews only.
         self.accent = "#007aff"
         light = self.window().palette().window().color().lightnessF() > .5
         surface, footer = ("#f6f6f6", "#eeeeee") if light else ("#292929", "#242424")

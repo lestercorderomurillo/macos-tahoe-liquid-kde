@@ -167,11 +167,17 @@ for mode, foreground in [('white', 255), ('black', 0), ('white', 255)]:
         painter.end()
         contrast = (luminance(image.pixelColor(1, 0)) + .05) / (luminance(image.pixelColor(0, 0)) + .05)
         assert contrast >= 4.5, contrast
-    assert QQmlProperty(surface, 'border.width').read() == .75
-    edge = QQmlProperty(surface, 'border.color').read()
-    for background in (0, 255):
-        composite = edge.red() * edge.alphaF() + background * (1 - edge.alphaF())
-        assert abs(composite - background) > 40
+    edge = window.findChild(QQuickItem, 'aboutKeyline')
+    assert edge and edge.property('radius') == surface.property('radius')
+    painted = window.grabWindow()
+    edge.setVisible(False)
+    QTest.qWait(20)
+    without_edge = window.grabWindow()
+    assert painted != without_edge
+    center = painted.rect().center()
+    assert painted.pixelColor(center) == without_edge.pixelColor(center)
+    edge.setVisible(True)
+    QTest.qWait(20)
 assert not errors, '\n'.join(errors)
 '''
     qml = repo / 'src/offline/plasmoids/org.kde.mac.tahoe.liquid.globalmenu/qml/AboutWindow.qml'

@@ -96,9 +96,7 @@ Window {
         radius: 22
         color: popupSurface.clearSurface ? Qt.rgba(1, 1, 1, root.isDarkTheme ? 0.01 : 0.60)
             : root.isDarkTheme ? Qt.rgba(0, 0, 0, 0.48) : Qt.rgba(1, 1, 1, 0.55)
-        border.pixelAligned: false
-        border.width: 0.75
-        border.color: Qt.rgba(0.52, 0.52, 0.52, 0.62)
+        AboutKeyline { objectName: "aboutKeyline"; anchors.fill: parent; radius: glass.radius }
 
         layer.enabled: true
 
