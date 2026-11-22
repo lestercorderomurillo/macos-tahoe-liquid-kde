@@ -242,8 +242,18 @@ Timer {
                            "Tahoe initial viewport includes its favorites row");
                     verify(root.cellSizeHeight < root.cellSizeWidth, "Tahoe uses shorter row pitch");
                     verify(appList.testCategories.testView.count === appList.slicedCategories.length,
-                           "Tahoe capsules show actual categories only");
-                    const category = appList.slicedCategories[0];
+                           "Tahoe capsules show Favorites and app categories");
+                    const favorites = appList.slicedCategories[0];
+                    verify(favorites.isFavorites, "Favorites is the first Tahoe capsule");
+                    appList.testCategories.categorySwitched(favorites.modelIndex);
+                    verify(appList.currentModel === globalFavorites && !appList.selectedIsAllApps,
+                           "Tahoe Favorites opens the full favorites model");
+                    verify(appList.viewItem.count === globalFavorites.count && appList.viewItem.headerItem === null,
+                           "Favorites shows every saved app without repeating the home row");
+                    appList.testCategories.categorySwitched(favorites.modelIndex);
+                    verify(appList.currentModel === appList.allAppsModel && appList.selectedIsAllApps,
+                           "clicking Favorites again restores all apps");
+                    const category = appList.slicedCategories.find(c => !c.isFavorites);
                     appList.updateShowedModel(category.modelIndex);
                     verify(appList.currentModel === category.appModel && !appList.selectedIsAllApps,
                            "Tahoe capsule filters applications");

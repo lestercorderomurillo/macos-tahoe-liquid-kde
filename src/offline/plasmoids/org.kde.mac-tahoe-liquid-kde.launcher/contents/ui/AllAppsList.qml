@@ -107,7 +107,7 @@ ColumnLayout {
             const pos = slicedCategories.findIndex(c => c.modelIndex === selectedModelIndex);
             if (pos < 0) selectedModelIndex = null;
             categorySwitcher.currentIndex = pos;
-            currentModel = pos < 0 ? allAppsModel : slicedCategories[pos].appModel;
+            currentModel = pos < 0 ? allAppsModel : modelForCategory(slicedCategories[pos]);
             return;
         }
 		if (!appsCategoriesList.length) {
@@ -126,12 +126,10 @@ ColumnLayout {
 	}
 
 	property var slicedCategories: {
-		// Sections shown inside the "All Applications" tab: every real
-		// app category. Favorites, Suggestions and the All-Apps entry
-		// itself are their own tabs, so drop them here.
+		// Tahoe uses this list for its pills, including Favorites. The
+		// categorized view already has a separate Favorites tab.
 		return appsCategoriesList.filter(function (c) {
-			return !c.isAllApps && !c.isFavorites
-				&& !c.isSuggestions;
+			return !c.isAllApps && !c.isSuggestions && (main.tahoeStyle || !c.isFavorites);
 		});
 	}
 
