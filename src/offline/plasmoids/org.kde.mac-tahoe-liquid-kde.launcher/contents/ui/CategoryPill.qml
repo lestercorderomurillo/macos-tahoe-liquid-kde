@@ -1,3 +1,4 @@
+import "../../../org.kde.mac-tahoe-liquid-kde.controlcenter/contents/ui/NotificationContrast.js" as Contrast
 import QtQuick
 import org.kde.kirigami as Kirigami
 
@@ -7,7 +8,27 @@ Item {
     implicitWidth: label.implicitWidth
     implicitHeight: label.implicitHeight
 
+    required property Item viewport
+    required property color rowInk
     property bool selected: false
+    readonly property color baseFill: main.isDarkTheme
+            ? Qt.rgba(1, 1, 1, selected ? 0.12 : 0.06)
+            : Qt.rgba(1, 1, 1, main.goldenGateLight
+                ? (selected ? 0.68 : 0.52) : (selected ? 0.62 : 0.46))
+    readonly property var samples: main.categorySamples(label, viewport, baseFill)
+    readonly property color correctedFill: {
+        const ink = Contrast.luminance(rowInk);
+        const shade = ink > 0.179 ? 0 : 1;
+        // Use only as much neutral fill as the poorest sampled region needs.
+        for (let step = 0; step <= 12; ++step) {
+            const overlay = Qt.rgba(shade, shade, shade, step / 32);
+            if (step === 12 || samples.every(sample =>
+                Contrast.ratio(ink, Contrast.luminance(Qt.tint(sample, overlay))) >= 4.5))
+                return Qt.tint(baseFill, overlay);
+        }
+        return baseFill;
+    }
+
     readonly property bool hovered: pointer.containsMouse
     readonly property bool pressed: pointer.pressed
     signal clicked
@@ -22,17 +43,14 @@ Item {
         font.family: Kirigami.Theme.defaultFont.family
         font.pointSize: main.appTextSize
 
-        color: main.labelColor(label, width / 2, pillBg.color)
+        color: pill.rowInk
     }
 
     Rectangle {
         id: pillBg
         anchors.fill: parent
         z: -1
-        color: main.isDarkTheme
-            ? Qt.rgba(1, 1, 1, selected ? 0.12 : 0.06)
-            : Qt.rgba(1, 1, 1, main.goldenGateLight
-                ? (selected ? 0.68 : 0.52) : (selected ? 0.62 : 0.46))
+        color: pill.correctedFill
         radius: main.detachedSearch ? height * 0.45 : (main.tahoeStyle ? 9 : 8)
         border.width: main.tahoeStyle ? 1 : 0
         border.color: Qt.rgba(1, 1, 1, pill.selected ? 0.18 : 0.08)
