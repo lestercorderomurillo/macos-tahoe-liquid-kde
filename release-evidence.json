@@ -1,36 +1,34 @@
 {
-  "version": "0.82.9",
+  "version": "0.82.10",
   "gallery_commit": "f09780b200b79302e7c23ef9f6f74d94748bbea3",
-  "implementation_commit": "5ac5844ed4ef815cf4a758dee1f7278c42ea7343",
-  "scope": "Keep one Dock Apps button when Launchpad opens and one Finder pin that follows the default file manager.",
-  "approval": "The maintainer replied yes to publishing the paired Dock fix after receiving the Tahoe and Golden Gate previews and their coverage limits.",
+  "implementation_commit": "8f549624827c2032c93e9c9b0c1e481d26f31b7e",
+  "scope": "Raise the default desktop calendar, analog clock, and timer stack by 48 logical pixels in both editions.",
+  "approval": "The maintainer replied yes to releasing the placement after seeing the Golden Gate preview and the Tahoe candidate beside the Apple reference.",
   "checks": [
     {
-      "command": "QT_QPA_PLATFORM=offscreen python3 -m pytest -q tests/test_launcher_presets.py tests/test_dock_appearance.py tests/test_dock_defaults.py tests/test_desktop_widgets.py: 173 passed on the v0.82.8-based candidate, covering both editions, both appearance modes, both launcher presets, and the retained Finder pin.",
+      "command": "Installed the approved Tahoe and Golden Gate candidates in disposable KDE neon Plasma 6.8.1 Wayland overlays. On first placement the calendar, analog clock, and timer started at y=62, 286, and 510 logical pixels at x=48. The positions matched in light and dark mode.",
       "result": "passed"
     },
     {
-      "command": "The pinned Apps visibility regression failed on v0.82.7 and passed with the fix.",
+      "command": "Verified both installed placement SHA-256 records against the release source. Between the preview baseline and v0.82.9, runtime changes were scoped to the Dock and Apps button. The widget package, placement entry point, top panel, and desktop containment were unchanged.",
       "result": "passed"
     },
     {
-      "command": "Golden Gate on KDE neon Plasma 6.8.1 Wayland: installed the v0.82.8-based candidate, coalesced Dolphin and Nautilus pins, opened two Dolphin windows without a second Finder task, and opened one Apps popup with the backing applet hidden.",
-      "result": "passed"
-    },
-    {
-      "command": "Tahoe on the same Plasma and Wayland stack: tested the same Dock implementation staged against v0.82.7. Two Nautilus windows shared one Finder task, and opening Apps left one button and one popup.",
-      "result": "passed"
-    },
-    {
-      "command": "Verified the component fingerprint ledger and checked the release diff with git diff --check.",
+      "command": "Verified the Tahoe component fingerprint ledger and inspected the focused release diff with git diff --check.",
       "result": "passed"
     }
   ],
   "captures": [],
   "approved_preview_sha256": {
-    "tahoe-preview.png": "6f8b557ebf99f7151fd02fd6d07732ff308a96db7e8ef76aab370ad7dcde4b6e",
-    "golden-gate-preview.png": "52215cb92e8093f8ba14ba3075ca943d49e7df92829e679d359bd79a1a82c9f5"
+    "tahoe-reference-comparison.png": "584df5a9bbbb99511fc0aa5d8f72d277ac8b1b6e9416fe25fa4ed19ecfb06b50",
+    "golden-gate-light.png": "ab17e84e787499d2b00ddab0d5c1613affe44586bd57dc83ed478884b3ce75cd"
   },
-  "coverage_limits": "The live previews used one output on KDE neon Plasma 6.8.1 Wayland. The Tahoe capture used Breeze application icons and the identical Dock implementation on v0.82.7. A VM interruption prevented recapture on the v0.82.8 baseline. The focused suite passed on the v0.82.8-based candidate. Historical galleries retain their provenance.",
-  "source_sha256": "e90e987f4b43c9baaa4763393bc24107fee0b5456f334769d1ec03442cef4a24"
+  "capture_sha256": {
+    "tahoe-light.png": "9e46bf1f44786a5c1980dc6d2d714f90da30b6216b67e4e6246541d335871f49",
+    "tahoe-dark.png": "126ccc2458b21c90e15d5f70ddcf04304de9844b3fc381bf97657057a341dd9b",
+    "golden-gate-light.png": "ab17e84e787499d2b00ddab0d5c1613affe44586bd57dc83ed478884b3ce75cd",
+    "golden-gate-dark.png": "ece584d6665467e310cc86085068ad495b3fbdf33f5d05607ee17cf85937baf3"
+  },
+  "coverage_limits": "KDE neon Plasma 6.8.1 Wayland at 2x scale with one display. The preview used the v0.82.8 baseline. This changes first placement for the starter set.",
+  "source_sha256": "e2381550e8be01c77fda1a8375fcb8a43789f08cf80085760465976980e44a09"
 }
