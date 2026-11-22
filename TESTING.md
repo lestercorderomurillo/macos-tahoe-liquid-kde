@@ -1,6 +1,6 @@
 # Installer testing
 
-**v0.81.4**. Verified the white running indicator and icon hover in light and dark on KDE neon Wayland. Golden Gate also showed the App Store label. [Evidence and coverage](release-evidence.json).
+**v0.81.5**. Verified recent Dock apps at pinned icon size on KDE neon Wayland, with the bundled Downloads and Trash artwork in light and dark. [Evidence and coverage](release-evidence.json).
 
 [Installer photo evidence](src/screenshots/previews/wizard-tahoe-provenance-531f633f4ff6.json).
 

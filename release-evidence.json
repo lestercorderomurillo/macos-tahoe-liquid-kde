@@ -1,29 +1,70 @@
 {
-  "version": "0.81.4",
+  "version": "0.81.5",
   "gallery_commit": "f09780b200b79302e7c23ef9f6f74d94748bbea3",
-  "implementation_commit": "4ac5883d2faba3a139a42ccdb2b4a9ec4a365d17",
-  "photographed_source": "c2d31cf913308b926a0a3fb687dd2c4ef0914888",
-  "scope": "Dock launcher hover, single-line app label and white running indicator.",
-  "approval": "Maintainer approved publication using the existing preview and requested no further captures.",
+  "photographed_source": "da0807254d25161959c900f7920767d5fee9aff7",
+  "implementation_commit": "47476aa93f4f91519685c713231d56db4cc3b45a",
+  "scope": "Size recent application icons from the adjacent Dock task manager.",
+  "approval": "Maintainer approved the corrected macOS artwork preview, including Downloads, for release in both editions.",
   "checks": [
     {
-      "command": "Reviewed the recorded Plasma 6.8.1 Wayland Dock previews in both editions and modes. Enlarged highlighted launcher and white group dot in both modes. The label was not visible in the captured frames.",
+      "command": "KDE neon Plasma 6.8.1 Wayland at 2\u00d7: compared Kate, KCalc and Konsole as pinned and recent apps in the installed regular icon theme. At native capture scale their opaque interiors matched exactly. Reviewed Downloads and Trash in both modes.",
       "result": "passed"
     },
     {
-      "command": "python3 -m pytest -q tests/test_taskmanager_qml.py tests/test_dock_defaults.py (58 passed on the integrated Tahoe source)",
+      "command": "Integrated Tahoe: python3 -m pytest -q tests/test_taskmanager_qml.py tests/test_dock_defaults.py (58 passed).",
       "result": "passed"
     }
   ],
-  "preview_frame_sha256": {
-    "dark": "c1a3917da4d012657b06ccbf5056616fe84ea1a5a061248071cc8d1226c10c59",
-    "light": "a9bc57cffaa4be58b1633a896a64a574add6007cbcade5b3f77129deaffa72d9"
+  "capture_records": {
+    "after": {
+      "source": "da0807254d25161959c900f7920767d5fee9aff7",
+      "qml_sha256": "8bee5791de50666da423bb66d745a8a418a9ae58af811f8e0565b91cd0397371",
+      "scale": 2,
+      "apps": [
+        "org.kde.kate.desktop",
+        "org.kde.konsole.desktop",
+        "org.kde.kcalc.desktop"
+      ],
+      "icon_theme": "MacTahoeLiquidKde-Icons-Regular-Light",
+      "png_sha256": "21c2bd955444ac2a74f823c1c743cf7a7d99a9e6e39049347f7507c50bb74865"
+    },
+    "dark": {
+      "source": "da0807254d25161959c900f7920767d5fee9aff7",
+      "qml_sha256": "8bee5791de50666da423bb66d745a8a418a9ae58af811f8e0565b91cd0397371",
+      "scale": 2,
+      "apps": [
+        "org.kde.kate.desktop",
+        "org.kde.konsole.desktop",
+        "org.kde.kcalc.desktop"
+      ],
+      "icon_theme": "MacTahoeLiquidKde-Icons-Regular-Dark",
+      "png_sha256": "f4ea00811b2ef68cb43544d7c07546defd76db3ff2225fcf9be89f47451eadb6"
+    },
+    "pinned": {
+      "source": "be8c1a1094de5c907c1ce3240fa0801066df4c38",
+      "qml_sha256": "4d8aa3f13f74c0b89f37ad2fff9ce1ddbb16582fddeacc28dddcdee68cf139b3",
+      "scale": 2,
+      "apps": [
+        "org.kde.kate.desktop",
+        "org.kde.konsole.desktop",
+        "org.kde.kcalc.desktop"
+      ],
+      "icon_theme": "MacTahoeLiquidKde-Icons-Regular-Light",
+      "png_sha256": "902b75c9414c06d585f141bc38c7c921b944b2cf25d9251b87f834f4b16c4dfd"
+    },
+    "before": {
+      "source": "be8c1a1094de5c907c1ce3240fa0801066df4c38",
+      "qml_sha256": "4d8aa3f13f74c0b89f37ad2fff9ce1ddbb16582fddeacc28dddcdee68cf139b3",
+      "scale": 2,
+      "apps": [
+        "org.kde.kate.desktop",
+        "org.kde.konsole.desktop",
+        "org.kde.kcalc.desktop"
+      ],
+      "icon_theme": "MacTahoeLiquidKde-Icons-Regular-Light",
+      "png_sha256": "7ccd93991285ad6bd150a9832e6911994c32c672edadb3b0ea3ba1e0df93fb8f"
+    }
   },
-  "preview_installed_qml": [
-    "8a6e55ff48bf0e0dcc00adabc99d3b600d443f8e8c05ae77ee1e3aeab216dc47  /usr/lib/x86_64-linux-gnu/qt6/qml/plasma/applet/org/kde/mac/tahoe/liquid/taskmanager/GroupExpanderOverlay.qml",
-    "755ed9bde605fa076890e22405eb3cc807f82e4a134c05278001ff94ef731193  /usr/lib/x86_64-linux-gnu/qt6/qml/plasma/applet/org/kde/mac/tahoe/liquid/taskmanager/Task.qml",
-    "e3a289649921948ab7d90f2a471a53c401e5d949846ae46c451aa3b67d9e7c7d  /usr/lib/x86_64-linux-gnu/qt6/qml/plasma/applet/org/kde/mac/tahoe/liquid/taskmanager/ToolTipDelegate.qml"
-  ],
-  "coverage_limits": "Tahoe tooltip visibility was not established. Integration preserves subsequent Finder pin movement changes.",
-  "source_sha256": "4bbf862abc51277ca7f52f21585e0bd1a69a03049725513aa65fe67111e4c01c"
+  "coverage_limits": "Horizontal Dock in light and dark. Preview source preceded the independent Downloads fan and hover deliveries. The integrated recent-app QML matches the photographed file.",
+  "source_sha256": "a68f4bc01d1dab4e8a75a5ffe67aa9f89725f2ba8b4b0950f122ff139521773b"
 }
