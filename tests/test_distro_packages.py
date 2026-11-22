@@ -1212,8 +1212,8 @@ def test_plymouth_rebuild_uses_native_initramfs_tool(monkeypatch, distro_id, ava
     ("artix", (), "libdbusmenu-glib", "appmenu-gtk-module"),
     ("neon", ("ubuntu", "debian"), "libdbusmenu-glib4", "appmenu-gtk3-module"),
     ("debian", (), "libdbusmenu-glib4", "appmenu-gtk3-module"),
-    ("fedora", (), "libdbusmenu", None),
-    ("nobara", ("fedora",), "libdbusmenu", None),
+    ("fedora", (), "libdbusmenu", "unity-gtk3-module"),
+    ("nobara", ("fedora",), "libdbusmenu", "unity-gtk3-module"),
     ("opensuse-tumbleweed", ("opensuse",), "libdbusmenu-glib4", None),
 ])
 def test_globalmenu_installs_available_runtime_exporters(monkeypatch, name, parents, library, exporter):

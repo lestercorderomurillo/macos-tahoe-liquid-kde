@@ -396,8 +396,8 @@ removed automatically.
 | Fedora family | `dnf install qt6-qttools-devel` | `dnf install extra-cmake-modules plasma-workspace-devel kdecoration-devel libplasma-devel knotifications-devel libksysguard-devel kf6-plasma-activities-devel` |
 | openSUSE Tumbleweed | `zypper install qt6-tools-devel` | `zypper install extra-cmake-modules plasma6-workspace-devel kdecoration-devel libKF6Plasma-devel libnotificationmanager6-devel libksysguard6-devel libKF6PlasmaActivitiesStats6-devel` |
 
-On Fedora, the GTK 3 global menu exporter is optional. Install Fedora’s exporter with
-`sudo dnf install unity-gtk3-module` if you need it for compatible applications.
+On Fedora, the installer installs Fedora’s GTK 3 global menu exporter,
+`unity-gtk3-module`, and loads it at login for GTK 3 applications.
 
 </details>
 

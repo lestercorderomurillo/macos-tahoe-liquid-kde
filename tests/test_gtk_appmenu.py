@@ -132,8 +132,8 @@ def test_custom_environment_file_is_never_overwritten_or_removed(
 
 
 @pytest.mark.parametrize("os_release,expect_warning", [
-    ('ID=fedora\nVERSION_ID=45\n', False),
-    ('ID=nobara\nID_LIKE=fedora\n', False),
+    ('ID=fedora\nVERSION_ID=45\n', True),
+    ('ID=nobara\nID_LIKE=fedora\n', True),
     ('ID=arch\n', True),
     ('ID=neon\nID_LIKE="ubuntu debian"\n', True),
 ])
@@ -189,3 +189,46 @@ def test_module_discovery_returns_none_without_a_real_module(monkeypatch):
     monkeypatch.setattr(distro, "system_lib_dir", missing_qt)
     monkeypatch.setattr(Path, "is_file", lambda path: False)
     assert distro.gtk3_appmenu_module() is None
+
+
+@pytest.fixture
+def exporter_libdir(sandbox, monkeypatch):
+    libdir = sandbox / "lib64"
+    monkeypatch.setattr(distro, "_run_query", lambda command: None)
+    monkeypatch.setattr(distro, "system_lib_dir", lambda: libdir)
+    monkeypatch.setattr(distro.sysconfig, "get_config_var", lambda name: None)
+    is_file = Path.is_file
+
+    def has_test_exporter(path):
+        if path.name in distro.GTK3_APPMENU_LIBRARIES and not path.is_relative_to(libdir):
+            return False
+        return is_file(path)
+
+    monkeypatch.setattr(Path, "is_file", has_test_exporter)
+    return libdir
+
+
+def test_fedora_exporter_is_found_and_loaded_by_its_own_name(sandbox, exporter_libdir):
+    # Issue #138: Fedora ships unity-gtk3-module (libunity-gtk-module.so), not
+    # appmenu-gtk-module, so the login hook must load the module it found.
+    module = exporter_libdir / "gtk-3.0/modules/libunity-gtk-module.so"
+    module.parent.mkdir(parents=True)
+    module.touch()
+    assert distro.gtk3_appmenu_module() == module
+    assert distro.gtk3_appmenu_module_name(module) == "unity-gtk-module"
+    script = sandbox / "hook.sh"
+    script.write_text(globalmenu._gtk_appmenu_environment(module))
+    assert _source_twice(script, None) == "unity-gtk-module"
+
+
+def test_appmenu_module_is_preferred_when_both_are_installed(exporter_libdir):
+    for name in ("libunity-gtk-module.so", "libappmenu-gtk-module.so"):
+        path = exporter_libdir / "gtk-3.0/modules" / name
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.touch()
+    assert distro.gtk3_appmenu_module().name == "libappmenu-gtk-module.so"
+
+
+def test_module_names_that_are_not_plain_fall_back(sandbox):
+    assert distro.gtk3_appmenu_module_name(sandbox / "lib$(id).so") == "appmenu-gtk-module"
+    assert distro.gtk3_appmenu_module_name(sandbox / "module's.so") == "appmenu-gtk-module"
