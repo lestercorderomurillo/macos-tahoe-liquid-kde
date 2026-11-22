@@ -26,8 +26,19 @@ PlasmoidItem {
     }
     readonly property var dockConfigureAction: Plasmoid.internalAction("configure")
     readonly property var dockButtonIcon: Plasmoid.icon
+    property var pinnedAppsWindow: null
     function toggleDockApps(anchor) {
-        if (fullRepresentationItem) fullRepresentationItem.activateLauncher(anchor);
+        if (fullRepresentationItem) {
+            fullRepresentationItem.activateLauncher(anchor);
+            return;
+        }
+        const app = Plasmoid.configuration.launcherApplication;
+        if (app && NativeLauncher.LauncherApplications.open(app)) return;
+        if (!pinnedAppsWindow) pinnedAppsWindow = menuRepresentation.createObject(kicker);
+        if (pinnedAppsWindow) {
+            pinnedAppsWindow.dockAnchor = anchor;
+            pinnedAppsWindow.visible = !pinnedAppsWindow.visible;
+        }
     }
     readonly property bool usesAppsPin: NativeLauncher.DockMetrics.cells.some(cell =>
         cell.taskManager && cell.panelWindow && cell.panelWindow === dockCell.panelWindow
