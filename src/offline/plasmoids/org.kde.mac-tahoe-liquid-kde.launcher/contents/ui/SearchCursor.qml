@@ -1,4 +1,5 @@
 import QtQuick
+import org.kde.kirigami as Kirigami
 
 Item {
     id: cursor
@@ -6,8 +7,9 @@ Item {
 
     width: 2
     readonly property int flashTime: Qt.styleHints.cursorFlashTime
-    readonly property bool blinking: visible && field.activeFocus
-        && field.selectionStart === field.selectionEnd && flashTime > 0
+    readonly property bool focusedCaret: field.activeFocus && field.selectionStart === field.selectionEnd
+    readonly property bool blinking: visible && focusedCaret && flashTime > 0
+    readonly property int fadeDuration: Math.min(Kirigami.Units.shortDuration, flashTime / 6)
     property bool illuminated: true
 
     Timer {
@@ -27,8 +29,15 @@ Item {
     }
     Item {
         anchors.fill: parent
-        visible: cursor.illuminated && cursor.field.activeFocus
-            && cursor.field.selectionStart === cursor.field.selectionEnd
+        visible: cursor.focusedCaret
+        opacity: !cursor.blinking || cursor.illuminated ? 1 : 0
+        Behavior on opacity {
+            enabled: cursor.blinking && cursor.fadeDuration > 0
+            NumberAnimation {
+                duration: cursor.fadeDuration
+                easing.type: Easing.InOutSine
+            }
+        }
         Image {
             anchors.centerIn: parent
             width: 26
