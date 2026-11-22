@@ -1,6 +1,6 @@
 # Installer testing
 
-**v0.77.1**. Verified window outlines, menu bar typography, status icon sizing and the clock on KDE neon Wayland at 150% and 200%. [Evidence and coverage](release-evidence.json).
+**v0.78.0**. Verified About This Computer with 10 pt and 15 pt system fonts in light and dark mode on KDE neon Wayland. [Evidence and coverage](release-evidence.json).
 
 [Installer photo evidence](src/screenshots/previews/wizard-tahoe-provenance-531f633f4ff6.json).
 

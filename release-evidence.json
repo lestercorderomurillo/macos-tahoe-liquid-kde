@@ -1,54 +1,54 @@
 {
-  "version": "0.77.1",
+  "version": "0.78.0",
   "gallery_commit": "f09780b200b79302e7c23ef9f6f74d94748bbea3",
-  "implementation_commit": "d12084f4d0437de9f2e2885c3be794f654b6761f",
-  "scope": "Window outlines, SF Pro font selection, menu titles, tray icon sizing and the menu bar clock.",
-  "approval": "Maintainer approved the final clock preview and paired release.",
+  "implementation_commit": "716ebaa651447fecf861dd90d4a670d7299d5c9b",
+  "scope": "About This Computer scales its window and hardware details with the system font.",
+  "approval": "Maintainer approved the 10 pt and 15 pt comparisons for Tahoe and Golden Gate.",
   "checks": [
     {
-      "command": "Run tests/test_desktop_controls.py with the primary CI SDK (tray artwork, mask changes and clock pointer entry/exit).",
+      "command": "KDE neon Wayland at 2x, SF Pro Text at 10 and 15 pt, light and dark. Window geometry measured 360 x 700 and 505 x 774 logical pixels.",
       "result": "passed"
     },
     {
-      "command": "Run the selected font, Rounded Corners, layout and clock migration regressions.",
-      "result": "passed"
-    },
-    {
-      "command": "Install and reinstall in a disposable KDE neon Wayland guest. Compare the rendered window corner and menu bar at 150% and 200%, and the clock with the macOS reference.",
-      "result": "passed"
-    },
-    {
-      "command": "python3 -m pytest -q tests/test_topbar_geometry.py (Tahoe menu delegate, horizontal Medium and vertical Normal)",
+      "command": "python3 src/scripts/component_manifest.py (shared Tahoe source)",
       "result": "passed"
     }
   ],
+  "component_sha256": {
+    "src/offline/plasmoids/org.kde.mac.tahoe.liquid.globalmenu/qml/AboutWindow.qml": "5e17a7ed369b876151b00d57b6d6fa6e6ae4f9a95c516efe5d08078fa56969e2"
+  },
   "captures": [
     {
-      "path": "src/screenshots/previews/window-corner-150-tahoe-999f1311b9a1.png",
-      "sha256": "999f1311b9a1eb2afb3af7f8f9dc6a61b40e5c860105f075c277df26968f9e72",
-      "source_commit": "ce711e939aa4fe1308d90a4f2aa8420b716965ee",
-      "reviewed": true,
-      "edition": "tahoe"
+      "path": "src/screenshots/previews/about-tahoe-light-10pt-e6aad2ca283b.png",
+      "source_commit": "7975116ffc9f66bd7a360d2c136240c6c93e8525",
+      "sha256": "e6aad2ca283b2b5d1920dd1dcd4f00a4dc5f8c1584956c8a83ba160fa789654c",
+      "edition": "tahoe",
+      "reviewed": true
     },
     {
-      "path": "src/screenshots/previews/menu-clock-tahoe-rest-2-1ac7b9e22fe3.png",
-      "sha256": "1ac7b9e22fe3129d1e42641a4a2a0beb400139b2cd7218fce52f5acac1464506",
-      "source_commit": "96bc1769e94ab5fe7d25dc35a02c4234ab6b2fc8",
-      "reviewed": true,
-      "edition": "tahoe"
+      "path": "src/screenshots/previews/about-tahoe-light-15pt-4edf5af63006.png",
+      "source_commit": "7975116ffc9f66bd7a360d2c136240c6c93e8525",
+      "sha256": "4edf5af63006db581f752bbb811dc1e6fcecd5267acb98a416c04f1f12b04ddc",
+      "edition": "tahoe",
+      "reviewed": true
     },
     {
-      "path": "src/screenshots/previews/menu-clock-tahoe-light-hover-2-d80aaa12af1d.png",
-      "sha256": "d80aaa12af1dd03094b8d2120c01cb3a4db916d1a80c60e51972e29a8473c5ef",
-      "source_commit": "96bc1769e94ab5fe7d25dc35a02c4234ab6b2fc8",
-      "reviewed": true,
-      "edition": "tahoe"
+      "path": "src/screenshots/previews/about-tahoe-dark-10pt-b80615d5ff6e.png",
+      "source_commit": "7975116ffc9f66bd7a360d2c136240c6c93e8525",
+      "sha256": "b80615d5ff6eb93536abc52696836152fc577df8daa52fccceb6445ff40a9d31",
+      "edition": "tahoe",
+      "reviewed": true
+    },
+    {
+      "path": "src/screenshots/previews/about-tahoe-dark-15pt-ba18054f4251.png",
+      "source_commit": "7975116ffc9f66bd7a360d2c136240c6c93e8525",
+      "sha256": "ba18054f4251d535fd28e2d7da3eca2b93476ff34ab0579e6733f58329c8060b",
+      "edition": "tahoe",
+      "reviewed": true
     }
   ],
   "coverage_limits": [
-    "KDE neon Wayland, Plasma/KWin 6.8.1. The clock text measured 234 by 20 physical pixels at 200% in both editions and the macOS reference. Font rasterization differs.",
-    "The optional separate upstream SDK build was skipped in the unit suite. The guest installer built and loaded Rounded Corners. The secondary outline is disabled by default; the upstream shader is unchanged.",
-    "The primary CI SDK passed the controls probe. The workstation SDK emitted a pre-existing notification menu width-binding warning on the baseline and candidate."
+    "The captured hardware values are fixtures. Frames were captured on the recorded source commit and reused after matching the About component hash."
   ],
-  "source_sha256": "aa7dec1a05a26baf1e77a3dc4b072d241b77b79b8d0d46cb891a8e1dc6fbbc1a"
+  "source_sha256": "5e3e23f609af4c0cc6228d8f8a91482ec91b25deb348dcf041a882ee8291669b"
 }
