@@ -52,6 +52,7 @@ const previous = PRESETS.map((preset, screen) => ({screen, widgetIds: [1],
     widgetById() { return makeWidget('org.kde.mac-tahoe-liquid-kde.launcher', preset); },
     remove() {} }));
 function panels() { return created.length ? created : previous; }
+function userDataPath(type) { return "/home/tester/Downloads"; }
 function applicationExists(id) { return false; }
 function Panel() {
     this.items = [];

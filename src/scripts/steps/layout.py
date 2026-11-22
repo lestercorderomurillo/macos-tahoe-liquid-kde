@@ -130,7 +130,8 @@ def _capture_pinned_launchers() -> list[str]:
     for m in re.finditer(r"^launchers=(.*)$", text, re.MULTILINE):
         for entry in m.group(1).split(","):
             entry = entry.strip()
-            if entry and "mac.tahoe" not in entry and "mac-tahoe" not in entry:
+            if entry and (entry == "applications:org.kde.mac-tahoe-liquid-kde.apps.desktop"
+                          or ("mac.tahoe" not in entry and "mac-tahoe" not in entry)):
                 if entry not in seen:
                     seen.append(entry)
     return seen
@@ -139,6 +140,8 @@ def _capture_pinned_launchers() -> list[str]:
 def _append_launcher_restore(
         script: str, pins: list[str], widget_type: str, *,
         preserve_empty: bool = False) -> str:
+    if widget_type == DEFAULT_TASKS_ID:
+        pins = [pin for pin in pins if pin != "applications:org.kde.mac-tahoe-liquid-kde.apps.desktop"]
     if pins or preserve_empty:
         joined = json.dumps(pins)
         widget = repr(widget_type)

@@ -1,0 +1,7 @@
+[Desktop Entry]
+Type=Application
+Name=Apps
+Icon=view-app-grid
+NoDisplay=true
+StartupNotify=false
+Exec=dbus-send --session --type=method_call --dest=org.kde.plasmashell /PlasmaShell org.kde.PlasmaShell.activateLauncherMenu

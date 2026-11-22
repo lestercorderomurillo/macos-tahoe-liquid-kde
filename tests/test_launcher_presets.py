@@ -91,6 +91,7 @@ const existing = saved.map((preset, screen) => {
         remove: function() { launcher.config = {}; } };
 });
 function panels() { return existing; }
+function userDataPath(type) { return "/home/tester/Downloads"; }
 function applicationExists(id) { return false; }
 function Panel() {
     this.items = [];

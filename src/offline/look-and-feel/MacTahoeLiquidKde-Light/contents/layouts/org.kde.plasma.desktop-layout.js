@@ -158,11 +158,21 @@ for (var app = 0; app < dockApplications.length; app++) {
         }
     }
 }
-tasks.writeConfig("launchers", dockLaunchers);
+if (typeof userLauncherTypes === "undefined" && applicationExists("org.kde.mac-tahoe-liquid-kde.apps.desktop")) {
+        dockLaunchers.splice(resolvedDockCategories[0] === "files" ? 1 : 0, 0, "applications:org.kde.mac-tahoe-liquid-kde.apps.desktop");
+    }
+    tasks.writeConfig("launchers", dockLaunchers);
 tasks.writeConfig("dockPresetCategories", resolvedDockCategories);
 tasks.writeConfig("dockPresetRevision", 2);
 
-dock.addWidget("org.kde.mac-tahoe-liquid-kde.trashcan");
+dock.addWidget("org.kde.mac-tahoe-liquid-kde.dockseparator");
+var downloads = dock.addWidget("org.kde.plasma.folder");
+downloads.currentConfigGroup = ["General"];
+downloads.writeConfig("url", "file://" + userDataPath("downloads").split("/").map(encodeURIComponent).join("/"));
+downloads.writeConfig("icon", "folder-download");
+var trash = dock.addWidget("org.kde.mac-tahoe-liquid-kde.trashcan");
+trash.currentConfigGroup = ["General"];
+trash.writeConfig("showSeparator", false);
 if (typeof userLauncherTypes !== "undefined") {
     for (var i = 0; i < old.length; i++) old[i].remove();
 }

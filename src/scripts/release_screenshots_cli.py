@@ -46,6 +46,7 @@ def main(argv=None):
     photos.add_argument('--destination', type=Path, required=True)
     photos.add_argument('--slot', action='append', help='Exact slot name; repeat to select multiple')
     shell = sub.add_parser('capture-readme-photos', help='Photograph the README and installer on each edition wallpaper')
+    shell.add_argument('--dock-only', action='store_true', help='Capture the two multicolor Dock animations only')
     shell.add_argument('--ref', default='HEAD')
     shell.add_argument('--vm-image', type=Path, required=True)
     shell.add_argument('--output', type=Path, required=True)
@@ -79,7 +80,7 @@ def main(argv=None):
         if args.command == 'capture-readme-photos':
             from readme_shell_capture import capture
             capture(args.repo.resolve(), args.ref, args.vm_image, args.output.resolve(),
-                    args.edition or list(EDITIONS), args.guest_package)
+                    args.edition or list(EDITIONS), args.guest_package, dock_only=args.dock_only)
         elif args.command == 'stage-readme-installer':
             from release_readme_photos import stage_installer_gallery
             stage_installer_gallery(args.destination.resolve(), args.edition, args.bundle.resolve())

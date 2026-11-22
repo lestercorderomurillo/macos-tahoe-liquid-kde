@@ -153,13 +153,21 @@ def _install_taskmanager_qml() -> bool:
     )
 
 
+APPS_ENTRY = "org.kde.mac-tahoe-liquid-kde.apps.desktop"
+
+
 def _install_launcher_package(widget: Path) -> bool:
     remember_installed_edition(HOME, DEST_DIR / widget.name)
     with temp_dir("mttkde-launcher-package") as tmp:
         staged = tmp / widget.name
         shutil.copytree(widget, staged, symlinks=True)
         apply_launcher_default(staged)
-        return install_tree(staged, DEST_DIR / widget.name, widget.name)
+        if not install_tree(staged, DEST_DIR / widget.name, widget.name):
+            return False
+        applications = DATA_HOME / "applications"
+        applications.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(widget / APPS_ENTRY, applications / APPS_ENTRY)
+        return True
 
 
 def install() -> None:
@@ -225,6 +233,7 @@ def install() -> None:
                 if (DEST_DIR / LAUNCHER_ID).is_dir():
                     if preserve_layout:
                         continue
+                    (DATA_HOME / "applications" / APPS_ENTRY).unlink(missing_ok=True)
                     from steps.layout import replace_project_launcher
                     replace_project_launcher()
                     if not remove_tree(DEST_DIR / LAUNCHER_ID, LAUNCHER_ID):
@@ -250,6 +259,7 @@ def install() -> None:
 def uninstall() -> None:
     from installer_choices import launcher_preference
     launcher_preference().unlink(missing_ok=True)
+    (DATA_HOME / "applications" / APPS_ENTRY).unlink(missing_ok=True)
     n = 0
     dest_so = qt6_plugins_dir() / _TASKMANAGER_SO_RELPATH
     dest_qml = qt6_qml_dir() / _TASKMANAGER_QML_RELPATH

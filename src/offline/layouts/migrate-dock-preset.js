@@ -75,6 +75,16 @@
                     }
                 }
             }
+            var appsPin = "applications:org.kde.mac-tahoe-liquid-kde.apps.desktop";
+            if (typeof userLauncherTypes === "undefined" && applicationExists("org.kde.mac-tahoe-liquid-kde.apps.desktop")
+                    && ps[p].widgetIds.some(id => ps[p].widgetById(id).type === "org.kde.mac-tahoe-liquid-kde.launcher")) {
+                var filesIndex = pins.findIndex(url => url === "preferred://filemanager"
+                    || dockApplications[0].some(id => url === "applications:" + id || url.endsWith("/" + id)));
+                if (filesIndex > 0) pins.unshift(pins.splice(filesIndex, 1)[0]);
+                if (pins.indexOf(appsPin) === -1 && !tasks.readConfig("appsPinInitialized", false))
+                    pins.splice(filesIndex >= 0 ? 1 : 0, 0, appsPin);
+                tasks.writeConfig("appsPinInitialized", true);
+            }
             tasks.writeConfig("launchers", pins);
             tasks.writeConfig("dockPresetCategories", resolved);
             tasks.writeConfig("dockPresetRevision", Math.max(revision, 3));

@@ -39,6 +39,14 @@ PlasmoidItem {
     readonly property bool vertical: Plasmoid.formFactor === PlasmaCore.Types.Vertical
     readonly property bool iconsOnly: Plasmoid.pluginName === "org.kde.mac.tahoe.liquid.icontasks"
 
+    readonly property string appsPin: "applications:org.kde.mac-tahoe-liquid-kde.apps.desktop"
+    readonly property bool hasAppsPin: iconsOnly && !vertical && Plasmoid.configuration.launchers.indexOf(appsPin) >= 0
+
+    readonly property var visibleAppIds: taskList.children.map(item =>
+        item.model ? String(item.model.LauncherUrlWithoutIcon).split(/[/:]/).pop() : "")
+    readonly property var launcherCell: NativeLauncher.DockMetrics.cells.find(cell =>
+        cell.panelWindow === tasks.Window.window && cell.applet.toggleDockApps !== undefined)
+
     property Task toolTipOpenedByClick
     property Task toolTipAreaItem
 

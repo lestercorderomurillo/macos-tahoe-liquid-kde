@@ -39,6 +39,8 @@ for theme in (source / "plasmoids").iterdir():
     if (theme / "metadata.json").is_file() and not (theme / "CMakeLists.txt").exists():
         copy(theme, share / "plasma/plasmoids" / theme.name)
         if theme.name == LAUNCHER_ID:
+            (share / "applications").mkdir(parents=True, exist_ok=True)
+            shutil.copy2(theme / "org.kde.mac-tahoe-liquid-kde.apps.desktop", share / "applications")
             apply_launcher_default(share / "plasma/plasmoids" / theme.name)
 # The icons-only wrapper resolves this runtime package via X-Plasma-RootPath.
 task = source / "plasmoids/org.kde.mac.tahoe.liquid.taskmanager"

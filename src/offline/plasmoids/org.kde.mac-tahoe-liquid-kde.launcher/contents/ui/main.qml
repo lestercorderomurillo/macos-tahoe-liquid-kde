@@ -24,12 +24,20 @@ PlasmoidItem {
             || Plasmoid.formFactor === PlasmaCore.Types.Vertical
         vertical: Plasmoid.formFactor === PlasmaCore.Types.Vertical
     }
+    readonly property var dockButtonIcon: Plasmoid.icon
+    function toggleDockApps(anchor) {
+        if (fullRepresentationItem) fullRepresentationItem.activateLauncher(anchor);
+    }
+    readonly property bool usesAppsPin: NativeLauncher.DockMetrics.cells.some(cell =>
+        cell.taskManager && cell.panelWindow && cell.panelWindow === dockCell.panelWindow
+        && cell.applet.hasAppsPin)
+    Plasmoid.status: usesAppsPin ? PlasmaCore.Types.HiddenStatus : PlasmaCore.Types.PassiveStatus
     Plasmoid.constraintHints: Plasmoid.CanFillArea
     Layout.fillWidth: dockCell.active
     Layout.fillHeight: dockCell.active
-    Layout.minimumWidth: Plasmoid.formFactor === PlasmaCore.Types.Horizontal ? Math.floor(dockCell.size) : 0
-    Layout.preferredWidth: Plasmoid.formFactor === PlasmaCore.Types.Horizontal ? dockCell.size : -1
-    Layout.maximumWidth: Plasmoid.formFactor === PlasmaCore.Types.Horizontal ? dockCell.preferredSize : Infinity
+    Layout.minimumWidth: usesAppsPin ? 0 : Plasmoid.formFactor === PlasmaCore.Types.Horizontal ? Math.floor(dockCell.size) : 0
+    Layout.preferredWidth: usesAppsPin ? 0 : Plasmoid.formFactor === PlasmaCore.Types.Horizontal ? dockCell.size : -1
+    Layout.maximumWidth: usesAppsPin ? 0 : Plasmoid.formFactor === PlasmaCore.Types.Horizontal ? dockCell.preferredSize : Infinity
     Layout.minimumHeight: Plasmoid.formFactor === PlasmaCore.Types.Vertical ? Math.floor(dockCell.size) : 0
     Layout.preferredHeight: Plasmoid.formFactor === PlasmaCore.Types.Vertical ? dockCell.size : -1
     Layout.maximumHeight: Plasmoid.formFactor === PlasmaCore.Types.Vertical ? dockCell.preferredSize : Infinity

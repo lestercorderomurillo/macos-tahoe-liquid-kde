@@ -5,6 +5,7 @@
                           http://www.kde.org/standards/kcfg/2.0/kcfg.xsd">
   <kcfgfile name=""/>
   <group name="General">
+    <entry name="showSeparator" type="Bool"><default>true</default></entry>
     <entry name="emptyIcon" type="String">
       <default>user-trash</default>
     </entry>

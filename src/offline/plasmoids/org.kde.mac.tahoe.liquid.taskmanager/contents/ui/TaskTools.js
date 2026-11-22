@@ -117,6 +117,10 @@ function groupTopTask(childTaskList, attribute, tasks) {
 }
 
 function activateTask(index, model, modifiers, task, plasmoid, tasks, windowViewAvailable) {
+    if (task.appsButton && tasks.launcherCell) {
+        tasks.launcherCell.applet.toggleDockApps(task);
+        return;
+    }
     if (modifiers & Qt.ShiftModifier) {
         tasks.tasksModel.requestNewInstance(index);
         return;

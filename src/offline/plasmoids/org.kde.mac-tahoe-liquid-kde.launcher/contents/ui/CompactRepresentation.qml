@@ -28,9 +28,11 @@ NativeLauncher.DockIcon {
     active: mouseArea.containsMouse
     hovered: mouseArea.containsMouse
 
-    function activateLauncher() {
+    function activateLauncher(anchor) {
         const app = Plasmoid.configuration.launcherApplication;
         if (app && NativeLauncher.LauncherApplications.open(app)) return;
+        if (!dashWindow) return;
+        dashWindow.parent = anchor || root;
         dashWindow.visible = !dashWindow.visible;
     }
 

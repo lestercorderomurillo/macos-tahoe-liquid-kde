@@ -11,15 +11,15 @@ from PIL import Image, ImageChops, ImageFilter
 from release_screenshots import digest, require
 
 
-def photograph(vm, profile, edition, output, manifest, *, materials_only=False):
+def photograph(vm, profile, edition, output, manifest, *, materials_only=False, dock_only=False):
     import fcntl
 
     with (output / ".photograph.lock").open("w") as lock:
         fcntl.flock(lock, fcntl.LOCK_EX)
-        _photograph(vm, profile, edition, output, manifest, materials_only)
+        _photograph(vm, profile, edition, output, manifest, materials_only, dock_only)
 
 
-def _photograph(vm, profile, edition, output, manifest, materials_only):
+def _photograph(vm, profile, edition, output, manifest, materials_only, dock_only):
     helper = Path(__file__).with_name("readme_shell_guest.py")
     manifest["capture_tools"] = {
         p.name: digest(p)
@@ -129,6 +129,11 @@ def _photograph(vm, profile, edition, output, manifest, materials_only):
                 )
             )
 
+        if dock_only:
+            from readme_desktop_scene import photograph_dock
+            styles = ("regular", "red", "orange", "yellow", "green", "blue", "purple", "pink") if mode == "light" else ("regular",)
+            photograph_dock(vm, mode, guest, snapshot, save, taken, styles)
+            continue
         if materials_only:
             from readme_desktop_scene import photograph_materials
 

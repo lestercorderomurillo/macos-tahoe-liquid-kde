@@ -190,12 +190,22 @@ for (var screen = 0; screen < screenCount; screen++) {
             }
         }
     }
+    if (typeof userLauncherTypes === "undefined" && applicationExists("org.kde.mac-tahoe-liquid-kde.apps.desktop")) {
+        dockLaunchers.splice(resolvedDockCategories[0] === "files" ? 1 : 0, 0, "applications:org.kde.mac-tahoe-liquid-kde.apps.desktop");
+    }
     tasks.writeConfig("launchers", dockLaunchers);
     tasks.writeConfig("macOSDockIcons", dockIconChoices[dock.screen] || false);
     tasks.writeConfig("dockPresetRevision", dockPresetRevisions[dock.screen] || knownDockRevision);
     tasks.writeConfig("dockPresetCategories", dockPresetCategories[dock.screen] || knownDockCategories);
 
-    dock.addWidget("org.kde.mac-tahoe-liquid-kde.trashcan");
+    dock.addWidget("org.kde.mac-tahoe-liquid-kde.dockseparator");
+    var downloads = dock.addWidget("org.kde.plasma.folder");
+    downloads.currentConfigGroup = ["General"];
+    downloads.writeConfig("url", "file://" + userDataPath("downloads").split("/").map(encodeURIComponent).join("/"));
+    downloads.writeConfig("icon", "folder-download");
+    var trash = dock.addWidget("org.kde.mac-tahoe-liquid-kde.trashcan");
+    trash.currentConfigGroup = ["General"];
+    trash.writeConfig("showSeparator", false);
 }
 }
 if (typeof userLauncherTypes !== "undefined") {

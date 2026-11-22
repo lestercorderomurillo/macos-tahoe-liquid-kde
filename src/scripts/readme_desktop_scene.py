@@ -144,25 +144,14 @@ def photograph_desktop(vm, edition, mode, guest, snapshot, save, taken):
 
 
 def photograph_materials(vm, edition, mode, guest, snapshot, save, taken):
-    def one(im, record, case, match):
-        wins = [w for w in record["windows"] if not w["hidden"] and match(w)]
-        require(len(wins) == 1, f"Cannot identify {case}")
-        g = wins[0]["geometry"]
-        box = (
-            max(0, 2 * g["x"] - 12),
-            max(0, 2 * g["y"] - 12),
-            min(im.width, 2 * (g["x"] + g["width"]) + 12),
-            min(im.height, 2 * (g["y"] + g["height"]) + 12),
-        )
-        save(im.crop(box), record, case)
-
     clear_notification_history(vm, snapshot)
     guest("notify-group")
     open_notification_history(vm)
     vm.move(900, 700)
     time.sleep(0.6)
     im, record = snapshot()
-    one(
+    save_window(
+        save,
         im,
         record,
         "notification-history",
@@ -198,45 +187,11 @@ def photograph_materials(vm, edition, mode, guest, snapshot, save, taken):
     vm.move(900, 700)
     time.sleep(1)
     im, record = snapshot()
-    one(im, record, "clipboard", lambda w: w["caption"] == "mttkde-apps")
+    save_window(save, im, record, "clipboard", lambda w: w["caption"] == "mttkde-apps")
     vm.key("esc")
     vm.click(1000, 900)
     vm.action("clean-desktop")
-    for style in (
-        "regular",
-        "clear",
-        "red",
-        "blue",
-        "green",
-        "orange",
-        "purple",
-        "gray",
-        "yellow",
-        "pink",
-    ):
-        if taken("dock-" + style):
-            continue
-        evidence = guest("dock", style, mode)
-        vm.action(
-            "plasma",
-            'panels().forEach(p=>{if(p.location==="bottom")p.hiding="none";});',
-        )
-        vm.move(1910, 2159)
-        time.sleep(0.6)
-        vm.move(900, 700)
-        time.sleep(0.6)
-        im, record = snapshot()
-        require(
-            not any(w["type"] == 0 for w in record["windows"]),
-            "An extra application is visible in the Dock",
-        )
-        one(
-            im,
-            dict(record, **evidence),
-            "dock-" + style,
-            lambda w: w["type"] == 2 and w["geometry"]["y"] > 100,
-        )
-    guest("dock", "regular", mode)
+    photograph_dock(vm, mode, guest, snapshot, save, taken)
 
     if mode == "light" and not taken("boot"):
         vm.action("boot")
@@ -259,6 +214,46 @@ def photograph_materials(vm, edition, mode, guest, snapshot, save, taken):
                     },
                     "boot",
                 )
+
+
+def save_window(save, im, record, case, match):
+    wins = [w for w in record["windows"] if not w["hidden"] and match(w)]
+    require(len(wins) == 1, f"Cannot identify {case}")
+    g = wins[0]["geometry"]
+    box = (
+        max(0, 2 * g["x"] - 12),
+        max(0, 2 * g["y"] - 12),
+        min(im.width, 2 * (g["x"] + g["width"]) + 12),
+        min(im.height, 2 * (g["y"] + g["height"]) + 12),
+    )
+    save(im.crop(box), record, case)
+
+
+def photograph_dock(vm, mode, guest, snapshot, save, taken, styles=("regular", "clear", "red", "blue", "green", "orange", "purple", "gray", "yellow", "pink")):
+    for style in styles:
+        if taken("dock-" + style):
+            continue
+        evidence = guest("dock", style, mode)
+        vm.action(
+            "plasma",
+            'panels().forEach(p=>{if(p.location==="bottom")p.hiding="none";});',
+        )
+        vm.move(1910, 2159)
+        time.sleep(0.6)
+        vm.move(900, 700)
+        time.sleep(0.6)
+        im, record = snapshot()
+        require(
+            not any(w["type"] == 0 for w in record["windows"]),
+            "An extra application is visible in the Dock",
+        )
+        save_window(
+        save,
+            im,
+            dict(record, **evidence),
+            "dock-" + style,
+            lambda w: w["type"] == 2 and w["geometry"]["y"] > 100,
+        )
 
 
 def verify_dock_tints(red_path, blue_path, pins):

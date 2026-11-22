@@ -45,6 +45,7 @@ def appearance(style, mode, profile):
             pins.append(desktop.as_uri())
         else:
             pins.append(desktop_id)
+    pins.insert(1, "applications:org.kde.mac-tahoe-liquid-kde.apps.desktop")
     run("kbuildsycoca6", "--noincremental")
     plasma(
         'panels().forEach(p=>p.widgets().forEach(w=>{if(w.type.endsWith(".icontasks")){w.currentConfigGroup=["General"];w.writeConfig("macOSDockIcons",false);w.writeConfig("launchers",'

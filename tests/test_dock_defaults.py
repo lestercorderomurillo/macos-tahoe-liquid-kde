@@ -21,6 +21,7 @@ APPS = [
 HARNESS = '''
 var created = [];
 var screenCount = 2;
+function userDataPath(type) { return "/home/tester/Downloads"; }
 function panels() { return created.slice(); }
 function applicationExists(id) { return installed.indexOf(id) !== -1; }
 function Panel() {

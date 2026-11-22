@@ -11,7 +11,7 @@ from release_screenshots import commit_id, digest, require
 PREPARED_NEON = "74004cc15d7180e9b23c93a2c097824853375651b0984f68d9e940c45d461703"
 
 
-def capture(repo, ref, image, output, editions, packages):
+def capture(repo, ref, image, output, editions, packages, *, dock_only=False):
     languages = subprocess.check_output(
         ["tesseract", "--list-langs"], text=True
     ).splitlines()
@@ -58,10 +58,12 @@ def capture(repo, ref, image, output, editions, packages):
                     vm.remote(
                         "sudo", "dpkg", "-i", *["/tmp/" + p.name for p in packages]
                     )
-                manifest["environment"][edition] = vm.action("setup", edition)
+                manifest["environment"][edition] = vm.action("setup", edition, "installer") if dock_only else vm.action("setup", edition)
                 from readme_shell_scene import photograph
 
-                photograph(vm, profile, edition, output, manifest)
+                photograph(vm, profile, edition, output, manifest, dock_only=dock_only)
+                if dock_only:
+                    continue
                 from readme_desktop_scene import verify_dock_tints
 
                 for mode in ("light", "dark"):
