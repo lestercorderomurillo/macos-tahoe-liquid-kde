@@ -11,6 +11,7 @@ PlasmoidItem {
     preferredRepresentation: fullRepresentation
     compactRepresentation: null
     fullRepresentation: Controls.PanelButton {
+        wallpaperTint: Plasmoid.location === PlasmaCore.Types.TopEdge
         symbol: !power.hasInternalBatteries ? "battery-missing" : "battery-" + Math.max(0, Math.min(100, Math.round(power.percent / 10) * 10)) + (power.pluggedIn ? "-charging" : "")
         label: power.hasInternalBatteries ? i18n("Battery — %1%", power.percent) : i18n("Battery")
         selected: popup.visible

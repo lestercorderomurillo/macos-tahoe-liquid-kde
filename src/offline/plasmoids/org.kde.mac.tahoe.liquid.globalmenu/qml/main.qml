@@ -16,12 +16,14 @@ import org.kde.plasma.core as PlasmaCore
 import org.kde.plasma.private.keyboardindicator as KeyboardIndicator
 import org.kde.plasma.components as PlasmaComponents3
 import org.kde.kirigami as Kirigami
+import org.kde.mac.tahoe.launcher as Native
 import org.kde.ksvg as KSvg
 import plasma.applet.org.kde.mac.tahoe.liquid.globalmenu
 
 PlasmoidItem {
     id: root
 
+    readonly property bool wallpaperTint: Plasmoid.location === PlasmaCore.Types.TopEdge
     readonly property bool vertical: Plasmoid.formFactor === PlasmaCore.Types.Vertical
     readonly property bool view: Plasmoid.configuration.compactView
     readonly property string cfgIcon: Plasmoid.configuration.menuIcon || "start-here-symbolic"
@@ -103,6 +105,18 @@ PlasmoidItem {
         onClicked: Plasmoid.trigger(this, 0);
     }
 
+    component TopBarDelegate: MenuDelegate {
+        id: button
+        foregroundColor: ink.foreground
+        Native.WallpaperInk {
+            id: ink
+            item: button
+            base: button.baseForeground
+            panelInk: Kirigami.Theme.textColor
+            active: root.wallpaperTint
+        }
+    }
+
     fullRepresentation: GridLayout {
         id: buttonGrid
 
@@ -154,8 +168,9 @@ PlasmoidItem {
             }
         }
 
-        MenuDelegate {
+        TopBarDelegate {
             id: systemMenuButton
+            baseForeground: Kirigami.Theme.textColor
             horizontalBar: !root.vertical
             goldenGate: root.goldenGate
             lightCapsuleOpacityBoost: root.lightCapsuleOpacityBoost
@@ -185,12 +200,12 @@ PlasmoidItem {
                     height: width
                     roundToIconSize: root.vertical
                     source: root.cfgIcon
-                    color: Kirigami.Theme.textColor
+                    color: systemMenuButton.foregroundColor
                 }
             }
         }
 
-        MenuDelegate {
+        TopBarDelegate {
             id: appNameButton
             horizontalBar: !root.vertical
             goldenGate: root.goldenGate
@@ -211,7 +226,7 @@ PlasmoidItem {
             id: buttonRepeater
             model: appMenuModel.visible ? appMenuModel : null
 
-            MenuDelegate {
+            TopBarDelegate {
                 required property int index
                 required property string activeMenu
                 required property PlasmaCore.Action activeActions

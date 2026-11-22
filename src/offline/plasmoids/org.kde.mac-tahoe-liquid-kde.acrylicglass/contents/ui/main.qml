@@ -10,6 +10,7 @@ PlasmoidItem {
     preferredRepresentation: fullRepresentation
     compactRepresentation: null
     fullRepresentation: Controls.PanelButton {
+        wallpaperTint: Plasmoid.location === PlasmaCore.Types.TopEdge
         symbol: Plasmoid.icon
         label: Plasmoid.title
         onClicked: commands.run("acrylic")

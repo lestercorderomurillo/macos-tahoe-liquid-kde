@@ -1,22 +1,50 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 import QtQuick
 import QtQuick.Layouts
+import QtQml.Models
 import org.kde.plasma.core as PlasmaCore
+import org.kde.plasma.components as PlasmaComponents
 import org.kde.kirigami as Kirigami
+import org.kde.mac.tahoe.launcher as Native
 import "ControlStyle.js" as Style
 
 Item {
     id: calendar
     required property Item clock
+    property bool wallpaperTint: false
 
     readonly property Item face: clock?.compactRepresentationItem ?? null
     readonly property var appearance: clock?.plasmoid?.configuration
+
+    Native.WallpaperInk {
+        id: stockInk
+        item: calendar.face
+        base: calendar.Kirigami.Theme.textColor
+        active: calendar.wallpaperTint && !themedFace.ready
+    }
+    function clockLabels(item: Item): list<Item> {
+        if (!item) return [];
+        if (item instanceof PlasmaComponents.Label) return [item];
+        let labels = [];
+        for (const child of item.children) labels = labels.concat(clockLabels(child));
+        return labels;
+    }
+    Instantiator {
+        model: stockInk.active && stockInk.settings.dynamicTinting ? calendar.clockLabels(calendar.face) : []
+        delegate: Binding {
+            required property Item modelData
+            target: modelData
+            property: "color"
+            value: stockInk.foreground
+        }
+    }
     // The themed one-line clock has its own typography. Other clock layouts,
     // timezone labels and explicit font choices use Plasma's representation.
     Loader {
         id: themedFace
         parent: calendar.clock
         property var settings: calendar.appearance
+        property bool wallpaperTint: calendar.wallpaperTint
         readonly property bool ready: status === Loader.Ready && item.clockValid
         visible: ready
         anchors.centerIn: parent

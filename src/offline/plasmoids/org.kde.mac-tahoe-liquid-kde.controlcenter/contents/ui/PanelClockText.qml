@@ -2,6 +2,7 @@
 import QtQuick
 import org.kde.kirigami as Kirigami
 import org.kde.plasma.clock as PlasmaClock
+import org.kde.mac.tahoe.launcher as Native
 
 Text {
     id: clockText
@@ -23,5 +24,11 @@ Text {
     font.pixelSize: 13
     font.weight: Font.Medium
     font.letterSpacing: -0.33
-    color: Kirigami.Theme.textColor
+    color: ink.foreground
+    Native.WallpaperInk {
+        id: ink
+        item: clockText
+        base: Kirigami.Theme.textColor
+        active: clockText.parent?.wallpaperTint ?? false
+    }
 }

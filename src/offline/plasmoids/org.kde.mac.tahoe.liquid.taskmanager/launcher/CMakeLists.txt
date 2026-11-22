@@ -1,6 +1,6 @@
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_CXX_STANDARD 20)
-find_package(Qt6 REQUIRED COMPONENTS WaylandClient DBus)
+find_package(Qt6 REQUIRED COMPONENTS WaylandClient DBus Concurrent)
 find_package(KF6Service REQUIRED)
 find_package(KF6KIO REQUIRED)
 find_package(Wayland REQUIRED COMPONENTS Client)
@@ -24,13 +24,13 @@ qt_add_qml_module(mactahoelauncher
     VERSION 1.0
     PLUGIN_TARGET mactahoelauncher
     OUTPUT_DIRECTORY "${launcher_module_dir}"
-    QML_FILES DockIcon.qml DockCell.qml DockMetrics.qml
-    SOURCES appearancecontrol.h launcherapplications.h notificationbanner.cpp notificationbanner.h launchersearchpopup.cpp launchersearchpopup.h iconthemewatcher.h clipboardmodel.h controlglass.cpp controlglass.h glasssettings.cpp glasssettings.h
+    QML_FILES DockIcon.qml DockCell.qml DockMetrics.qml WallpaperInk.qml
+    SOURCES appearancecontrol.h launcherapplications.h notificationbanner.cpp notificationbanner.h launchersearchpopup.cpp launchersearchpopup.h iconthemewatcher.h clipboardmodel.h controlglass.cpp controlglass.h glasssettings.cpp glasssettings.h panelwallpaper.cpp panelwallpaper.h
 )
 target_compile_definitions(mactahoelauncher PRIVATE QT_NO_CAST_FROM_ASCII QT_NO_CAST_TO_ASCII)
 # Only the scanner is needed from Qt Wayland. PlasmaQuick owns the client;
 # linking it here also pulls unused Wayland metatypes into QML registration.
-target_link_libraries(mactahoelauncher PRIVATE KF6::Service KF6::KIOGui Qt6::Quick Qt6::DBus Plasma::Plasma Plasma::PlasmaQuick KF6::WindowSystem KF6::ConfigCore Wayland::Client)
+target_link_libraries(mactahoelauncher PRIVATE KF6::Service KF6::KIOGui Qt6::Quick Qt6::DBus Qt6::Concurrent Plasma::Plasma Plasma::PlasmaQuick KF6::WindowSystem KF6::ConfigCore Wayland::Client)
 # The installer copies this module directly from the build tree.
 set_target_properties(mactahoelauncher PROPERTIES PREFIX "lib" BUILD_WITH_INSTALL_RPATH TRUE)
 target_include_directories(mactahoelauncher PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}" "${CMAKE_CURRENT_BINARY_DIR}")

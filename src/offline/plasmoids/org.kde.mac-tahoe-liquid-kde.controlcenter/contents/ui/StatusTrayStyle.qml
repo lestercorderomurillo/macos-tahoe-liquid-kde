@@ -3,10 +3,12 @@ import QtQuick
 import QtQuick.Layouts
 import QtQml.Models
 import org.kde.kirigami as Kirigami
+import org.kde.mac.tahoe.launcher as Native
 
 Item {
     id: style
     required property Item panelItem
+    property bool wallpaperTint: false
     readonly property Item panelLayout: {
         for (let item = panelItem.parent; item; item = item.parent) {
             if (item instanceof GridLayout) return item;
@@ -35,7 +37,25 @@ Item {
     Loader {
         active: style.clock !== null
         sourceComponent: Component {
-            PanelCalendar { clock: style.clock }
+            PanelCalendar {
+                clock: style.clock
+                wallpaperTint: style.wallpaperTint
+            }
+        }
+    }
+
+    Instantiator {
+        model: style.wallpaperTint ? (style.arrow?.children ?? []).filter(child => child instanceof Kirigami.Icon) : []
+        delegate: Native.WallpaperInk {
+            id: ink
+            required property Item modelData
+            item: modelData
+            base: Kirigami.Theme.textColor
+            property Binding iconColor: Binding {
+                target: ink.modelData
+                property: "color"
+                value: ink.foreground
+            }
         }
     }
 
@@ -63,7 +83,10 @@ Item {
             Loader {
                 parent: style
                 active: capsule.glyph !== null
-                sourceComponent: TrayArtwork { glyph: capsule.glyph }
+                sourceComponent: TrayArtwork {
+                    glyph: capsule.glyph
+                    wallpaperTint: style.wallpaperTint
+                }
             }
         }
     }

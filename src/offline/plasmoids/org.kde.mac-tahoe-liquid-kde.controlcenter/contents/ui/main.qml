@@ -6,10 +6,14 @@ import "MenuBarSync.js" as MenuBarSync
 PlasmoidItem {
     id: root
     Plasmoid.backgroundHints: PlasmaCore.Types.NoBackground
-    StatusTrayStyle { panelItem: root }
+    StatusTrayStyle {
+        panelItem: root
+        wallpaperTint: root.inMenuBar
+    }
     preferredRepresentation: fullRepresentation
     compactRepresentation: null
     fullRepresentation: PanelButton {
+        wallpaperTint: Plasmoid.location === PlasmaCore.Types.TopEdge
         symbol: Qt.resolvedUrl("controlcenter.svg")
         label: i18n("Control Center")
         selected: popup.visible

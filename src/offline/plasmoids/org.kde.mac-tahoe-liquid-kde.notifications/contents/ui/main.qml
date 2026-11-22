@@ -18,6 +18,7 @@ PlasmoidItem {
     preferredRepresentation: fullRepresentation
     compactRepresentation: null
     fullRepresentation: Controls.PanelButton {
+        wallpaperTint: Plasmoid.location === PlasmaCore.Types.TopEdge
         symbol: "notifications"
         label: i18n("Notifications")
         selected: popup.visible

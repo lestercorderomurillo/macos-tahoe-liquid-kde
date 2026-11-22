@@ -1,10 +1,12 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 import QtQuick
 import org.kde.kirigami as Kirigami
+import org.kde.mac.tahoe.launcher as Native
 
 Item {
     id: sample
     required property Item glyph
+    property bool wallpaperTint: false
     property real artworkScale: 1
     property bool monochrome: false
     property int revision: 0
@@ -28,7 +30,14 @@ Item {
         target: sample.glyph
         property: "color"
         when: sample.glyph !== null && sample.monochrome
-        value: Kirigami.Theme.textColor
+        value: ink.foreground
+    }
+
+    Native.WallpaperInk {
+        id: ink
+        item: sample.glyph
+        base: Kirigami.Theme.textColor
+        active: sample.wallpaperTint && sample.monochrome
     }
 
     // Sample a separate copy so recolouring an earlier notification icon

@@ -12,6 +12,7 @@ PlasmoidItem {
     preferredRepresentation: fullRepresentation
     compactRepresentation: null
     fullRepresentation: Controls.PanelButton {
+        wallpaperTint: Plasmoid.location === PlasmaCore.Types.TopEdge
         iconSize: 18.67
         symbol: network.wirelessEnabled ? (connection.connectionIcon.indexOf("wireless") >= 0 ? connection.connectionIcon : "network-wireless") : "network-wireless-offline"
         label: i18n("Wi-Fi")

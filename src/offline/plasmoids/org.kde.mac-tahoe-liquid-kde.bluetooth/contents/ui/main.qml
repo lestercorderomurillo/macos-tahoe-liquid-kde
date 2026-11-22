@@ -9,6 +9,7 @@ PlasmoidItem {
     preferredRepresentation: fullRepresentation
     compactRepresentation: null
     fullRepresentation: Controls.PanelButton {
+        wallpaperTint: Plasmoid.location === PlasmaCore.Types.TopEdge
         symbol: "preferences-system-bluetooth"
         label: i18n("Bluetooth")
         selected: popup.visible
