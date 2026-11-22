@@ -399,8 +399,10 @@ def place_desktop_widgets() -> None:
         const area = screenGeometry(0);
         const size = Math.min(208, Math.max(160, Math.floor((area.height - 188) / 3)));
         const step = size + 20;
+        // Plasma adds the top panel inset to desktop applet coordinates.
+        const top = 28;
         let x = 48;
-        let y = 76;
+        let y = top;
         const placed = {};
         const widgets = desk.widgets();
         for (const name of names) {
@@ -408,7 +410,7 @@ def place_desktop_widgets() -> None:
             while (x + size <= area.width - 48) {
                 if (y + size > area.height - 72) {
                     x += step;
-                    y = 76;
+                    y = top;
                     continue;
                 }
                 const occupied = widgets.some(w => {
