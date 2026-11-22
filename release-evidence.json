@@ -1,36 +1,27 @@
 {
-  "version": "0.82.5",
+  "version": "0.82.6",
   "gallery_commit": "f09780b200b79302e7c23ef9f6f74d94748bbea3",
-  "implementation_commit": "718371a5976b6eaab5fd69cd463b96ade540d020",
-  "scope": "Restore the illustrated desktop widget step with automatic left-column placement and verify panel cleanup and work area after restarting Plasma.",
-  "approval": "The maintainer answered yes to the actual selector and left-column desktop previews for the candidate.",
+  "implementation_commit": "e9914c3ffdb379afcf318fe3b102609875286fae",
+  "scope": "Show Finder menus while the desktop has focus and open locations in the selected Dolphin or Nautilus file manager.",
+  "approval": "The maintainer answered yes to the Finder menu preview showing both editions and both file managers.",
   "checks": [
     {
-      "command": "243 focused regressions for the installer, panels, layout preservation, widget package ownership, Dock and menu bar behavior, and icon overlays.",
+      "command": "11 isolated pytest checks passed for the native Global Menu and translation catalogs, including switching the default file manager in the same Finder menu.",
       "result": "passed"
     },
     {
-      "command": "Both native wizard navigation cases passed with the final side-placement preview and install selected by default.",
+      "command": "KDE neon 6.8.1 Wayland: captured the Finder menu in Tahoe and Golden Gate in light and dark modes.",
       "result": "passed"
     },
     {
-      "command": "The released verifier falsely accepted the incident configuration with three empty panels. Candidate removed a reproduced retired empty panel from live and saved Plasma state.",
-      "result": "passed"
-    },
-    {
-      "command": "KDE neon 6.8.1 Wayland: full Golden Gate reinstall from candidate runtime bytes. One populated top bar and one populated Dock after restart. The calendar, analog clock and timer populated one left column. Maximized Dolphin started at y=30.",
-      "result": "passed"
-    },
-    {
-      "command": "Golden Gate wrapper staged the same installer, widget archive and preview images with its own defaults.",
+      "command": "On KDE neon, selected Nautilus and Dolphin in turn. Each opened a separate Home window and handled Documents, Recents, Network and Trash. The focused app menu took over when its window opened.",
       "result": "passed"
     }
   ],
   "captures": [],
   "approved_preview_sha256": {
-    "installer-left-selector.png": "0648da58a64bff23bac2dec88327ffefdff629fcd7e31c7a87ff58c2cc996315",
-    "widgets-at-left.jpg": "9a49a616a3be03c2f9bac4ae44ce8ebe218ada32f73c50fcd9834a78d59735b6"
+    "finder-menu-preview.png": "a3e3b2be63902c38c3c2e26304ae24ea65dfff4435b92e9a7eba51b45f0bf5f7"
   },
-  "coverage_limits": "The full reinstall and screenshots were tested in Golden Gate on KDE neon Plasma 6.8.1 Wayland with one output. The desktop incident was inspected and repaired on a separate two-monitor Plasma 6.7.4 session, where the work area was rechecked on both outputs. The original spontaneous duplicate-panel incident was not reproduced during a clean VM run. The targeted regression restored an empty panel in the VM to exercise cleanup. Historical gallery captures retain their original provenance.",
-  "source_sha256": "fb405592d9c8bf420924410010ebc957bfd23ab4139037df9df8be51dbf232f7"
+  "coverage_limits": "Rendered on KDE neon Plasma 6.8.1 Wayland. Native model, popup and composition tests used an isolated X11 session. Historical gallery captures retain their provenance.",
+  "source_sha256": "d4c3478e76b86947a1bfc97ff2cba87c968086df78346c57b3728307ae224452"
 }
