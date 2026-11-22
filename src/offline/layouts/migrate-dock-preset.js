@@ -78,6 +78,20 @@
             var appsPin = "applications:org.kde.mac-tahoe-liquid-kde.apps.desktop";
             if (typeof userLauncherTypes === "undefined" && applicationExists("org.kde.mac-tahoe-liquid-kde.apps.desktop")
                     && ps[p].widgetIds.some(id => ps[p].widgetById(id).type === "org.kde.mac-tahoe-liquid-kde.launcher")) {
+                // Convert only a recognizable factory sequence. A custom pin or a
+                // manually reordered row keeps the user's relative application order.
+                if (revision >= 1 && !tasks.readConfig("appsPinInitialized", false) && !pins.includes(appsPin)) {
+                    var oldOrder = ["files", "browser", "mail", "calendar", "notes", "photos", "music", "video", "store", "settings"];
+                    var preferred = {"preferred://filemanager": "files", "preferred://browser": "browser", "preferred://mailer": "mail"};
+                    var categories = pins.map(url => preferred[url] || dockCategories[dockApplications.findIndex(
+                        aliases => aliases.some(id => url === "applications:" + id || url.endsWith("/" + id)))]);
+                    var originalOrder = categories.every((role, index) => role && (index === 0
+                        || oldOrder.indexOf(categories[index - 1]) < oldOrder.indexOf(role)));
+                    if (originalOrder) {
+                        var ranks = new Map(pins.map((url, index) => [url, dockCategories.indexOf(categories[index])]));
+                        pins.sort((left, right) => ranks.get(left) - ranks.get(right));
+                    }
+                }
                 var filesIndex = pins.findIndex(url => url === "preferred://filemanager"
                     || dockApplications[0].some(id => url === "applications:" + id || url.endsWith("/" + id)));
                 if (filesIndex > 0) pins.unshift(pins.splice(filesIndex, 1)[0]);

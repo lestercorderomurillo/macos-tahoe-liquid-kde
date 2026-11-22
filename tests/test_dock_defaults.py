@@ -166,6 +166,15 @@ def test_apps_pin_retains_its_new_position_after_edition_rebuild(monkeypatch):
     assert next(widget["pins"] for widget in dock if widget["type"] == layout.MAC_TASKS_ID) == pins
 
 
+def test_earlier_factory_pins_adopt_new_order_without_reinstalling_apps():
+    apps = "org.kde.mac-tahoe-liquid-kde.apps.desktop"
+    old = [APPS[i] for i in (0, 1, 2, 4, 5, 3, 7, 6, 8, 9)]
+    script = existing_dock(["applications:" + desktop for desktop in old], revision=3)
+    script += 'dock.addWidget("org.kde.mac-tahoe-liquid-kde.launcher");'
+    dock, = execute(script + layout.DOCK_MIGRATION.read_text(), [apps, *APPS])
+    assert dock[0]["pins"] == ["applications:" + desktop for desktop in [APPS[0], apps, *APPS[1:]]]
+
+
 def test_migration_does_not_reintroduce_removed_pins():
     migration = layout.DOCK_MIGRATION.read_text()
     script = existing_dock(['applications:custom.desktop']) + migration
