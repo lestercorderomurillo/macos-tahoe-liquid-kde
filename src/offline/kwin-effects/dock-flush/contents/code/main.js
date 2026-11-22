@@ -142,6 +142,11 @@ function stopWait() {
 function pointerMoved(pos) {
     const d = theDock();
     const key = d ? edgeScreen(pos, d) : null;
+    if (leaving && key !== pending) {
+        cancel(leaving.id);
+        leaving = null;
+        refresh();
+    }
     if (!key) { pending = null; stopWait(); return; }
     if (key === pending) return;
     pending = key;
@@ -160,7 +165,6 @@ effect.animationEnded.connect(function (w) {
     waitId = null;
     const d = theDock();
     if (d && pending && edgeScreen(effects.cursorPos, d) === pending) slideOut(d);
-    pending = null;
 });
 
 function geometryChanged(w) {

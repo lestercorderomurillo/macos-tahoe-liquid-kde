@@ -61,6 +61,12 @@ def test_sliding_to_another_screen_restarts_the_wait():
     assert out["moves"] == ["A"]
 
 
+def test_returning_to_departure_screen_cancels_pending_move():
+    out = run('point(300, 1079); timers[0].fire(); point(2500, 1079); '
+              'point(300, 1079); timers[0].fire(); point(2500, 1079); timers[0].fire();')
+    assert out["moves"] == ["A", "B"]
+
+
 MAXIMIZE = r'''
 const SCREEN_A = { name: "A", geometry: { x: 0, y: 0, width: 1920, height: 1080 } };
 function makeWindow(dock) {

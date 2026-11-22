@@ -56,7 +56,12 @@ function followBottomEdge() {
         dwell.stop();
         return;
     }
-    if (edgeOutput === output.name || pendingOutput === output.name) return;
+    if (pendingOutput === output.name) return;
+    if (edgeOutput === output.name) {
+        pendingOutput = null;
+        dwell.stop();
+        return;
+    }
     // A single screen has nowhere else to move the Dock.
     if (workspace.screens.length === 1) {
         edgeOutput = output.name;
