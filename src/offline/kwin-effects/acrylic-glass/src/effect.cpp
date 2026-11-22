@@ -727,6 +727,12 @@ const BlurEffect::ComponentMaterial &BlurEffect::materialFor(EffectWindow *w) co
     const auto component = GlassMaterials::classify(w->window()->resourceClass(), caption, w->isDock(),
         w->isMenu() || w->isDropdownMenu() || w->isPopupMenu() || w->isPopupWindow(),
         w->isTooltip() || (w->isAppletPopup() || w->isNotification() || w->isCriticalNotification()), m_aboutTitle);
+    if (component == QStringLiteral("menus") && (w->window()->resourceClass() == QStringLiteral("plasmashell")
+        || w->window()->resourceClass() == QStringLiteral("org.kde.plasmashell"))
+        && w->window()->palette().color(QPalette::Window).lightnessF() < 0.5) {
+        const auto dark = m_componentMaterials.constFind(QStringLiteral("dark_shell_menu"));
+        if (dark != m_componentMaterials.cend()) return dark.value();
+    }
     return m_componentMaterials.constFind(component).value();
 }
 
@@ -735,7 +741,18 @@ void BlurEffect::configureComponentMaterials()
     const KConfigGroup group(BlurConfig::self()->config(), QStringLiteral("Effect-liquidglass"));
     const auto presets = QJsonDocument::fromJson(materialPresetsJson).array();
     const auto preset = presets.at(BlurConfig::materialPreset() == 2 ? 1 : 0).toObject();
-    const auto components = GlassMaterials::read(group, preset, BlurConfig::backingTint() != 0, presets.at(0).toObject().value(QStringLiteral("values")).toObject());
+    auto components = GlassMaterials::read(group, preset, BlurConfig::backingTint() != 0, presets.at(0).toObject().value(QStringLiteral("values")).toObject());
+    const auto darkDefaults = preset.value(QStringLiteral("dark_shell_menu")).toObject();
+    if (!darkDefaults.isEmpty()) {
+        auto menu = components.value(QStringLiteral("menus")).toObject();
+        const auto defaults = GlassMaterials::defaults(preset, BlurConfig::backingTint() != 0)
+                                  .value(QStringLiteral("menus")).toObject();
+        for (auto it = darkDefaults.begin(); it != darkDefaults.end(); ++it) {
+            // Preserve any optical adjustment made in the component settings.
+            if (menu.value(it.key()) == defaults.value(it.key())) menu.insert(it.key(), it.value());
+        }
+        components.insert(QStringLiteral("dark_shell_menu"), menu);
+    }
     m_aboutTitle = i18nd("plasma_applet_org.kde.mac.tahoe.liquid.globalmenu", "About This Computer");
     const auto aboutApp = i18nd("plasma_applet_org.kde.mac.tahoe.liquid.globalmenu", "About %1", QStringLiteral("%1"));
     m_aboutAppPrefix = aboutApp.section(QStringLiteral("%1"), 0, 0);

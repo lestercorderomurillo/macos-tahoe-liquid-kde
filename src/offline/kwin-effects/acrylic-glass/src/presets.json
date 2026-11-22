@@ -154,6 +154,11 @@
       "SurfaceTransparencyDark": 25.0
     },
     "tinted_values": {},
+    "dark_shell_menu": {
+      "BlurStrength": 9,
+      "Saturation": 0.48,
+      "RgbDriftStrength": 2.0
+    },
     "components": {
       "finder": {
         "SurfaceTransparencyLight": 65,
