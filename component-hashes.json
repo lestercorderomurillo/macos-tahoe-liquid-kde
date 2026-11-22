@@ -1,12 +1,12 @@
 {
   "components": {
-    "aurorae": "34087bd2367b179b961d0897aad1876632f531b439d3d6803a00cdb35e54992a",
+    "aurorae": "f9887bcf6d4ee63b3b77a7139bd349f5b049d7c69886b70f33cb21940f51337d",
     "clipboard": "a25b0ced8de0dc2c5e68d2d7aed8c8decc0ad4d46053ee15f91349233953c01c",
     "color-schemes": "995c3db0ae23e39b50813c514d2e278b8a17b2a2eadf7ee8d95344eea64a6ffc",
     "cursors": "6891e47ebbe663c9886f9f4191d830247033db0c20750bf9b49a5b18e0e691f7",
     "firefox": "a390379f9bdf87eb2f29824f0b343391fb159fc42feabf9509a4aa719e14fca8",
     "fonts": "3048d65b7f6857c182a92ac32ccbafecd533ebfe47d3ebe630bdcd7b4f29f28a",
-    "gtk": "ae8c70c1970d36ed96ba074fd8dbe9f6c468bb81f14d2a399a8a025931ea26ee",
+    "gtk": "fa88a8dd28e0bd13aaeab7e2862152ab580c3df61311c81dcb2fead6dedc191b",
     "icons": "2590d393bdb27c5c26607340cf91100b05cbf6abbb693c8cd48fe2104e922f0e",
     "kconf_update": "a2b86bbd1316bd9e076117c398e6aa3f532b33ebfcd3e774a5da5286cbef18dd",
     "kvantum": "cb97ee5235770c6f9ce35b3a8e1b7dfff57b17a716cae298ea6b54fd0b83b573",
@@ -48,7 +48,7 @@
     "recipe/fonts": "c0a8ffd94625b11c3731254ce3b402ad196b55bdd41fe9704d4e1324a2c6acbd",
     "recipe/global_theme": "2e4a2e89969c0bc03d16a2600620b0e90494118bae40894cfc63098c4f03742c",
     "recipe/globalmenu": "109d2beb20679abbe507b2aa34c14ac4475060fba6130b76f5875a6a4018f61b",
-    "recipe/gtk": "cea40a1857de54b6897ad87225edc693bc2542478b17968e9e3e802cd21701f9",
+    "recipe/gtk": "edccc76afc0ba48d5a3fd850310e46b44cca79d52876eada7a93ddd2e5098dc7",
     "recipe/icons": "c03985815bc846278809e746ceaeac2bcbcaedbff5d6f7078cca397d9cb74002",
     "recipe/kconf_update": "6a815c89310c0cafff14280fae79d5b789af53b9abb9034983a96ed2ce2b202a",
     "recipe/kvantum": "15545c5c6e390ec58a4da281214fe720be435f6506e7bc249a5ac38427864099",
@@ -64,7 +64,7 @@
     "recipe/sounds": "0c96ac59f32bbd32a09628ccc2aa3accd147fe04fc05b43377beffdcb7189c78",
     "recipe/theme_switch": "632b22312625486ad7e5fc3cb734d67b5dd39d1e72bd50f70d0dd2ac8201cad1",
     "recipe/wallpapers": "9d43f2e06f2697a484991589f6827f3beff7089a4977880e608c6bd96dacaf18",
-    "recipe/window_decorations": "17be72d311314918068d9cf76ff47b1206f0baec767ed45b24c93ccb99ad645a",
+    "recipe/window_decorations": "cc08110f905e588092e5b07060b7c92a0d32e14c713e6fe90d383bc3eea543bf",
     "sounds": "e7613b50bec1b46438cbb360f996e171414136dd38f4011455e33fb73daa12cc",
     "wallpapers": "7cfe7e25b6632255ed2c139a353f3e40cb1c0cdce5c46268482dfa021a439475"
   },
