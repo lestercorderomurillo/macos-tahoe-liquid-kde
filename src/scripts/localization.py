@@ -29,6 +29,7 @@ LANGUAGE_CODES = tuple(item["code"] for item in LANGUAGES)
 
 
 _ES = {
+    "KWin could not activate the installed KDE Rounded Corners build": "KWin no pudo activar la compilación instalada de KDE Rounded Corners",
     "Icon appearance": "Apariencia de los iconos",
     "Automatic": "Automático",
     "Dock follows screen": "El Dock sigue la pantalla",
@@ -174,6 +175,7 @@ _ES = {
 }
 
 _ZH_CN = {
+    "KWin could not activate the installed KDE Rounded Corners build": "KWin 无法启用已安装的 KDE Rounded Corners 版本",
     "Icon appearance": "图标外观",
     "Automatic": "自动",
     "Dock follows screen": "Dock 跟随屏幕",

@@ -1024,6 +1024,7 @@
   "Removed distribution package {names}": "Pacchetto di distribuzione rimosso {names}",
   "The installer replaced the distribution package {names}; reinstall it if you still want Rounded Corners: {command}": "L'installatore ha sostituito il pacchetto di distribuzione {names}; reinstallarlo se si desidera ancora Rounded Corners: {command}",
   "{name} belongs to the distribution package {owner}; left in place": "{name} appartiene al pacchetto di distribuzione {owner}; a sinistra in posizione",
+  "KWin could not activate the installed KDE Rounded Corners build": "KWin non ha potuto attivare la versione installata di KDE Rounded Corners",
   "KWin still runs the previous KDE Rounded Corners build — log out and back in to activate this one": "KWin sta ancora usando la versione precedente di KDE Rounded Corners. Termina la sessione e accedi nuovamente per attivare questa versione",
   "PyQt6 is required for the graphical installer but could not be imported.\n  Install the python-pyqt6 package for your distribution and re-run ./installer.": "Il programma di installazione grafico richiede PyQt6, ma non è stato possibile importarlo.\n  Installa il pacchetto python-pyqt6 per la tua distribuzione e avvia di nuovo ./installer.",
   "Could not apply the published update — keeping the current checkout": "Non è possibile applicare l'aggiornamento pubblicato — mantenendo l'attuale checkout",
