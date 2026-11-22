@@ -241,19 +241,16 @@ def plasma_dock_hiding(mode: str) -> str:
 
 
 def _configure_dock_flush(mode: str) -> None:
-    always_visible = mode == "none"
-    kw_write("--file", "kwinrc", "--group", "Script-" + DOCK_SCRIPT_ID,
-             "--key", "FitAboveDock", "true" if always_visible else "false")
+    """Install the Dock motion effect; the flush part only for the always-visible Dock."""
+    fit = "true" if mode == "none" else "false"
+    kw_write("--file", "kwinrc", "--group", "Script-" + DOCK_SCRIPT_ID, "--key", "FitAboveDock", fit)
+    kw_write("--file", "kwinrc", "--group", "Effect-" + DOCK_FLUSH_ID, "--key", "FitAboveDock", fit)
     dest = DATA_HOME / "kwin/effects" / DOCK_FLUSH_ID
-    if always_visible:
-        if install_tree(offline("kwin-effects", "dock-flush"), dest, "Dock flush with maximized windows"):
-            kw_write("--file", "kwinrc", "--group", "Plugins", "--key", DOCK_FLUSH_ID + "Enabled", "true")
-            # Never unload a running copy: loading picks up the new files.
-            qdbus_call("org.kde.KWin", "/Effects", "org.kde.kwin.Effects.loadEffect", DOCK_FLUSH_ID)
-    elif dest.exists():
-        kw_write("--file", "kwinrc", "--group", "Plugins", "--key", DOCK_FLUSH_ID + "Enabled", "false")
-        qdbus_call("org.kde.KWin", "/Effects", "org.kde.kwin.Effects.unloadEffect", DOCK_FLUSH_ID)
-        remove_tree(dest, "Dock flush with maximized windows")
+    if install_tree(offline("kwin-effects", "dock-flush"), dest, "Dock motion"):
+        kw_write("--file", "kwinrc", "--group", "Plugins", "--key", DOCK_FLUSH_ID + "Enabled", "true")
+        # Never unload a running copy: loading picks up the new files.
+        qdbus_call("org.kde.KWin", "/Effects", "org.kde.kwin.Effects.loadEffect", DOCK_FLUSH_ID)
+        qdbus_call("org.kde.KWin", "/Effects", "org.kde.kwin.Effects.reconfigureEffect", DOCK_FLUSH_ID)
 
 
 def configure_dock() -> None:
@@ -570,7 +567,7 @@ def uninstall() -> None:
     if (DATA_HOME / "kwin/effects" / DOCK_FLUSH_ID).exists():
         kw_write("--file", "kwinrc", "--group", "Plugins", "--key", DOCK_FLUSH_ID + "Enabled", "false")
         qdbus_call("org.kde.KWin", "/Effects", "org.kde.kwin.Effects.unloadEffect", DOCK_FLUSH_ID)
-        remove_tree(DATA_HOME / "kwin/effects" / DOCK_FLUSH_ID, "Dock flush with maximized windows")
+        remove_tree(DATA_HOME / "kwin/effects" / DOCK_FLUSH_ID, "Dock motion")
     dock_visibility_preference().unlink(missing_ok=True)
     has_theme_widgets = _layout_has_any_theme_widget()
     _clear_layout_marker()

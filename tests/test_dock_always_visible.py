@@ -32,9 +32,9 @@ def test_always_visible_installs_the_flush_effect_and_window_fitting(monkeypatch
     assert not any(c[0] == "dbus" and c[-2:] == ("org.kde.kwin.Effects.unloadEffect", layout.DOCK_FLUSH_ID) for c in calls)
 
 
-def test_auto_hide_removes_the_flush_effect(monkeypatch, tmp_path):
+def test_auto_hide_keeps_the_slide_but_not_the_flush(monkeypatch, tmp_path):
     calls = _record(monkeypatch, tmp_path)
-    (tmp_path / "kwin/effects" / layout.DOCK_FLUSH_ID).mkdir(parents=True)
     layout._configure_dock_flush("autohide")
-    assert ("remove", layout.DOCK_FLUSH_ID) in calls
-    assert any(c[0] == "write" and "FitAboveDock" in c and c[-1] == "false" for c in calls)
+    assert ("install", layout.DOCK_FLUSH_ID) in calls
+    fits = [c for c in calls if c[0] == "write" and "FitAboveDock" in c]
+    assert len(fits) == 2 and all(c[-1] == "false" for c in fits)

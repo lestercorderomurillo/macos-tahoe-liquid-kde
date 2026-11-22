@@ -7,12 +7,16 @@
 // Dock moves there, so a click near the bottom of a window, such as a chat
 // input, does not pull the Dock over it.
 const DWELL_MS = 2000;
+// The mttkde_dock_flush effect slides the Dock down off its screen once the
+// rest is over; move the panel only after that slide, so the Dock then rises
+// from below the new screen's edge.
+const SLIDE_MS = 220;
 
 let edgeOutput = null;
 let pendingOutput = null;
 const dwell = new QTimer();
 dwell.singleShot = true;
-dwell.interval = DWELL_MS;
+dwell.interval = DWELL_MS + SLIDE_MS;
 
 function bottomEdgeOutput() {
     if (!workspace.screens.length) return null;
