@@ -156,6 +156,16 @@ def existing_dock(pins, revision=0, screen=0):
     )
 
 
+def test_apps_pin_retains_its_new_position_after_edition_rebuild(monkeypatch):
+    apps = "applications:org.kde.mac-tahoe-liquid-kde.apps.desktop"
+    pins = ["applications:org.kde.dolphin.desktop", "applications:firefox.desktop", apps]
+    monkeypatch.setattr(layout, "_layout_has_any_theme_widget", lambda: True)
+    script = existing_dock(pins, revision=3)
+    script += layout._layout_script_with_launchers(layout.LAYOUT_SCRIPT, pins, layout.MAC_TASKS_ID)
+    dock, = execute(script, [pin.removeprefix("applications:") for pin in pins])
+    assert next(widget["pins"] for widget in dock if widget["type"] == layout.MAC_TASKS_ID) == pins
+
+
 def test_migration_does_not_reintroduce_removed_pins():
     migration = layout.DOCK_MIGRATION.read_text()
     script = existing_dock(['applications:custom.desktop']) + migration
