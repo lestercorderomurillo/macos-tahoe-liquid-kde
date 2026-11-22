@@ -1,22 +1,20 @@
 {
-  "version": "0.81.0",
+  "version": "0.81.1",
   "gallery_commit": "f09780b200b79302e7c23ef9f6f74d94748bbea3",
-  "implementation_commit": "0c445e9f870a609d075478825a0e063d95c5562c",
-  "photographed_source": "3bebbfa8105c1e134bdf27bbb1266a1e902b9127",
-  "scope": "Golden Gate dark shell menu backdrop and shared contributor credits.",
-  "approval": "Maintainer approved the Golden Gate comparison and paired v0.81.0 publication.",
-  "effect_build": "309554164697c437a2db267860e3eea8eed262b5d75298790aa402a550727d64",
+  "implementation_commit": "81f352e84bc5a40d16e4be3b76883aa74dd3600e",
+  "scope": "Move and unpin Finder like any other application in the Dock.",
+  "approval": "Maintainer approved the before, after and Finder context menu previews for paired publication.",
   "checks": [
     {
-      "command": "KDE neon 6.8.1 Wayland: open the Golden Gate system menu over Kate in light and dark modes; verify loaded effect identity and inspected frames.",
+      "command": "python3 -m pytest -q tests/test_dock_defaults.py tests/test_dock_apps.py (77 passed)",
       "result": "passed"
     },
     {
-      "command": "Build liquidglass_x11 with KWin 6.6.5 and liquidglass with KWin 6.7.5; load the X11 candidate in isolated Xvfb and compare captured popup pixels with the effect off and on (481934 changed, 0 changed in the transparent gap).",
+      "command": "KDE neon Wayland VM: drag Finder from first to fourth, restart Plasma, then remove Finder through its context menu and verify the saved pins.",
       "result": "passed"
     }
   ],
   "captures": [],
-  "coverage_limits": "Desktop captures cover Golden Gate on Wayland. KWin 6.7 coverage is build-only. The X11 check exercised a synthetic popup; historical gallery photos retain their original provenance.",
-  "source_sha256": "37241bdda33d1169ed63722f61e8e5d6c07fea628a421fc60a32be4311244319"
+  "coverage_limits": "Shared Dock behavior exercised on a Golden Gate configured KDE neon Wayland VM with the candidate component installed. Full installer qualification and a separate Tahoe desktop capture were outside this check.",
+  "source_sha256": "7f58b89b587a4d0c9c5ef34459cfe1e6d32abb9c000110179138a6119ea5af16"
 }
