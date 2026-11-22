@@ -1,4 +1,9 @@
 {
+  "Downloads": "Téléchargements",
+  "No completed downloads yet": "Aucun téléchargement terminé",
+  "Open Downloads": "Ouvrir les téléchargements",
+  "Open recent files or drag them into an application": "Ouvrir les fichiers récents ou les faire glisser dans une application",
+  "Open this file, or drag it into an application": "Ouvrir ce fichier ou le faire glisser dans une application",
   "Dynamic text tinting": "Teinte dynamique du texte",
   "Bluetooth is off": "Bluetooth désactivé",
   "No Bluetooth adapter": "Aucun adaptateur Bluetooth",

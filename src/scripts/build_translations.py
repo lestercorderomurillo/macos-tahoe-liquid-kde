@@ -102,7 +102,7 @@ def main() -> None:
     # These original controls share translated views but keep independent applet
     # domains, so adding a satellite never depends on Control Center being loaded.
     import localization
-    for suffix in ("controlcenter", "battery", "bluetooth", "wifi", "notifications"):
+    for suffix in ("downloads", "controlcenter", "battery", "bluetooth", "wifi", "notifications"):
         widget = ROOT / "offline/plasmoids" / ("org.kde.mac-tahoe-liquid-kde." + suffix)
         messages = widget_messages(widget)
         for language in ("es", "zh_CN"):

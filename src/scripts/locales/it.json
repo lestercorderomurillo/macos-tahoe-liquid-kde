@@ -1,4 +1,8 @@
 {
+  "No completed downloads yet": "Nessun download completato",
+  "Open Downloads": "Apri la cartella Download",
+  "Open recent files or drag them into an application": "Apri i file recenti o trascinali in un’applicazione",
+  "Open this file, or drag it into an application": "Apri questo file o trascinalo in un’applicazione",
   "Control Center transition could not be enabled in kwinrc": "Impossibile attivare la transizione del Centro di Controllo in kwinrc",
   "Dynamic text tinting": "Tinta dinamica del testo",
   "Bluetooth is off": "Bluetooth disattivato",

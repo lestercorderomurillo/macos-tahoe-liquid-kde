@@ -29,6 +29,11 @@ LANGUAGE_CODES = tuple(item["code"] for item in LANGUAGES)
 
 
 _ES = {
+    'Downloads': 'Descargas',
+    'No completed downloads yet': 'Todavía no hay descargas completadas',
+    'Open Downloads': 'Abrir Descargas',
+    'Open recent files or drag them into an application': 'Abre archivos recientes o arrástralos a una aplicación',
+    'Open this file, or drag it into an application': 'Abre este archivo o arrástralo a una aplicación',
     "Icon appearance": "Apariencia de los iconos",
     "Automatic": "Automático",
     "Dock follows screen": "El Dock sigue la pantalla",
@@ -174,6 +179,11 @@ _ES = {
 }
 
 _ZH_CN = {
+    'Downloads': '下载',
+    'No completed downloads yet': '暂无已完成的下载',
+    'Open Downloads': '打开下载文件夹',
+    'Open recent files or drag them into an application': '打开最近的文件，或将其拖入应用程序',
+    'Open this file, or drag it into an application': '打开此文件，或将其拖入应用程序',
     "Icon appearance": "图标外观",
     "Automatic": "自动",
     "Dock follows screen": "Dock 跟随屏幕",
