@@ -1,23 +1,19 @@
 {
-  "version": "0.82.11",
+  "version": "0.82.12",
   "gallery_commit": "f09780b200b79302e7c23ef9f6f74d94748bbea3",
-  "implementation_commit": "1adaf20884eb3c2895add1655f813333ef8dc1a3",
-  "scope": "Install and load Fedora’s GTK 3 global menu exporter, including on Fedora derivatives.",
+  "implementation_commit": "e8a0e98f434f4c7ad1d88e97b30bb385d33c7c42",
+  "scope": "Document how supported applications can use the KDE window decoration and how app-drawn title bars interact with GTK themes and sandbox packaging.",
   "checks": [
     {
-      "command": "Ran the exhaustive package mapping, GTK login hook and global menu installer tests in a network-isolated Bubblewrap sandbox. All 451 tests passed.",
+      "command": "Reviewed the merged Markdown diff, verified both relative guide links, and ran git diff --check.",
       "result": "passed"
     },
     {
-      "command": "In a disposable Fedora 45 container, installed unity-gtk3-module from Fedora, detected its packaged library, sourced the generated Plasma login hook and confirmed that native GTK 3 loaded the library in a private Xvfb and D-Bus session.",
-      "result": "passed"
-    },
-    {
-      "command": "Verified the regenerated component fingerprint ledger and reviewed the integration with git diff --check.",
+      "command": "Verified the Tahoe component fingerprint ledger with python3 src/scripts/component_manifest.py.",
       "result": "passed"
     }
   ],
   "captures": [],
-  "coverage_limits": "The native check establishes module loading in Fedora 45 under isolated X11. It does not exercise menu display in a full Plasma desktop.",
-  "source_sha256": "44f5a015eed876eaeb22156ae71425218d4b0d09afdd39290de679f02eb330c3"
+  "coverage_limits": "Documentation-only change. Existing gallery provenance is retained. App settings were reviewed against upstream documentation.",
+  "source_sha256": "191618d905d19c4af0f064c538a35e64d0112cac46b45b76216cfe2941534e3c"
 }
